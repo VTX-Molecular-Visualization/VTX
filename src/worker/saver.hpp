@@ -2,7 +2,7 @@
 #define __VTX_SAVER__
 
 #include "base_thread.hpp"
-#include "define.hpp"
+#include "io/filepath.hpp"
 
 namespace VTX::Worker
 {
@@ -18,19 +18,19 @@ namespace VTX::Worker
 		};
 
 	  public:
-		explicit Saver( const FilePath & p_path ) : _path( p_path ) {}
+		explicit Saver( const IO::FilePath & p_path ) : _path( p_path ) {}
 		~Saver() {}
 
 	  protected:
 		uint _run() override;
 
 	  private:
-		const FilePath _path;
+		const IO::FilePath _path;
 
 		bool _saveMolecule();
 		bool _saveSession();
 
-		MODE _getMode( const FilePath & ) const;
+		MODE _getMode( const IO::FilePath & ) const;
 	};
 
 } // namespace VTX::Worker

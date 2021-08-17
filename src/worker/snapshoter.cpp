@@ -18,7 +18,7 @@ namespace VTX
 	{
 		const void Snapshoter::_takeSnapshotGL() const
 		{
-			if ( Util::Filesystem::exists( _path ) )
+			if ( _path.exists() )
 			{
 				VTX_ERROR( "File already exists" );
 				return;
@@ -54,9 +54,9 @@ namespace VTX
 
 #ifndef VTX_DEBUG_WATERMARK
 			// Save.
-			if ( render.save( QString::fromStdString( _path ), "png", 0 ) )
+			if ( render.save( _path.qpath(), "png", 0 ) )
 			{
-				VTX_INFO( "Snapshot taken: " + Util::Filesystem::getFileName( _path ) );
+				VTX_INFO( "Snapshot taken: " + _path.filename() );
 			}
 			else
 			{

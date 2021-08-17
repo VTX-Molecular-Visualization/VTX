@@ -7,16 +7,16 @@ namespace VTX::IO
 {
 	// ScenePathData::Data
 	// /////////////////////////////////////////////////////////////////////////////////////////////////////////
-	ScenePathData::Data::Data() : _path( FilePath() ) {}
-	ScenePathData::Data::Data( const FilePath & p_path ) : _path( p_path ) {}
+	ScenePathData::Data::Data() : _path( IO::FilePath() ) {}
+	ScenePathData::Data::Data( const IO::FilePath & p_path ) : _path( p_path ) {}
 	ScenePathData::Data & ScenePathData::getData( const Model::Molecule * const p_molecule )
 	{
 		return _mapMoleculePath[ p_molecule ];
 	}
 
-	void			 ScenePathData::Data::registerPath( const FilePath & p_filePath ) { _path = p_filePath; }
-	bool			 ScenePathData::Data::hasFilepath() const { return _path != ""; }
-	const FilePath & ScenePathData::Data::getFilepath() const { return _path; }
+	void				 ScenePathData::Data::registerPath( const IO::FilePath & p_filePath ) { _path = p_filePath; }
+	bool				 ScenePathData::Data::hasFilepath() const { return _path != IO::FilePath(); }
+	const IO::FilePath & ScenePathData::Data::getFilepath() const { return _path; }
 
 	bool ScenePathData::Data::hasChanged() const { return _hasChanged; }
 	void ScenePathData::Data::setHasChanged( const bool p_hasChanged ) { _hasChanged = p_hasChanged; };
@@ -62,7 +62,7 @@ namespace VTX::IO
 		}
 	}
 
-	void ScenePathData::registerLoading( const Model::Molecule * const p_molecule, const FilePath & p_filepath )
+	void ScenePathData::registerLoading( const Model::Molecule * const p_molecule, const IO::FilePath & p_filepath )
 	{
 		if ( _mapMoleculePath.find( p_molecule ) == _mapMoleculePath.end() )
 			_mapMoleculePath[ p_molecule ] = Data( p_filepath );
@@ -70,18 +70,18 @@ namespace VTX::IO
 			_mapMoleculePath[ p_molecule ] = Data();
 	}
 
-	void ScenePathData::setCurrentPath( const FilePath & p_filePath, const bool p_addInRecentPath )
+	void ScenePathData::setCurrentPath( const IO::FilePath & p_filePath, const bool p_addInRecentPath )
 	{
 		_currentFilePath = p_filePath;
 		if ( p_addInRecentPath )
 			Setting::enqueueNewLoadingPath( p_filePath );
 
-		VTX_EVENT( new Event::VTXEventRef<const FilePath>( Event::Global::SCENE_PATH_CHANGE, _currentFilePath ) );
+		VTX_EVENT( new Event::VTXEventRef<const IO::FilePath>( Event::Global::SCENE_PATH_CHANGE, _currentFilePath ) );
 	}
 	void ScenePathData::clearCurrentPath()
 	{
-		_currentFilePath = FilePath();
-		VTX_EVENT( new Event::VTXEventRef<const FilePath>( Event::Global::SCENE_PATH_CHANGE, _currentFilePath ) );
+		_currentFilePath = IO::FilePath();
+		VTX_EVENT( new Event::VTXEventRef<const IO::FilePath>( Event::Global::SCENE_PATH_CHANGE, _currentFilePath ) );
 	}
 
 	Writer::ChemfilesWriter * const ScenePathData::Data::getWriter() { return _writer; }
@@ -94,7 +94,7 @@ namespace VTX::IO
 		}
 	}
 
-	bool ScenePathData::Data::needToSaveMolecule() const { return _path == "" || _hasChanged; }
+	bool ScenePathData::Data::needToSaveMolecule() const { return _path == FilePath() || _hasChanged; }
 
 	void ScenePathData::incrementSceneModifications()
 	{

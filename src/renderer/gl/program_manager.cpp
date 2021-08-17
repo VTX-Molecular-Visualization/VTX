@@ -15,9 +15,9 @@ namespace VTX::Renderer::GL
 							 { "tesc", SHADER_TYPE::TESS_CONTROL },
 							 { "tese", SHADER_TYPE::TESS_EVALUATION } } );
 
-	SHADER_TYPE ProgramManager::getShaderType( const FilePath & p_name )
+	SHADER_TYPE ProgramManager::getShaderType( const IO::FilePath & p_name )
 	{
-		std::string extension = Util::Filesystem::getFileExtension( p_name );
+		std::string extension = p_name.extension();
 		if ( ProgramManager::EXTENSIONS.find( extension ) != ProgramManager::EXTENSIONS.end() )
 		{
 			return ProgramManager::EXTENSIONS.at( extension );
@@ -45,7 +45,8 @@ namespace VTX::Renderer::GL
 		_programs.clear();
 	}
 
-	Program * const ProgramManager::createProgram( const std::string & p_name, const std::vector<FilePath> & p_shaders )
+	Program * const ProgramManager::createProgram( const std::string &				 p_name,
+												   const std::vector<IO::FilePath> & p_shaders )
 	{
 		VTX_DEBUG( "Creating program: " + p_name );
 
@@ -55,7 +56,7 @@ namespace VTX::Renderer::GL
 			Program & program	= *_programs[ p_name ];
 			program.create( p_name );
 
-			for ( const FilePath & shader : p_shaders )
+			for ( const IO::FilePath & shader : p_shaders )
 			{
 				GLuint id = _createShader( shader );
 				if ( id != GL_INVALID_INDEX )
@@ -98,9 +99,9 @@ namespace VTX::Renderer::GL
 		return nullptr;
 	}
 
-	GLuint ProgramManager::_createShader( const FilePath & p_path )
+	GLuint ProgramManager::_createShader( const IO::FilePath & p_path )
 	{
-		const std::string name = Util::Filesystem::getFileName( p_path );
+		const std::string name = p_path.filename();
 		VTX_DEBUG( "Creating shader: " + name );
 
 		const SHADER_TYPE type = getShaderType( name );
@@ -114,7 +115,7 @@ namespace VTX::Renderer::GL
 		if ( shaderId == GL_INVALID_INDEX )
 		{
 			shaderId			   = _gl->glCreateShader( (int)type );
-			FilePath		  path = Util::Filesystem::getShadersPath( p_path );
+			IO::FilePath	  path = Util::Filesystem::getShadersPath( p_path );
 			const std::string src  = Util::Filesystem::readPath( path );
 			if ( src.empty() )
 			{
@@ -194,7 +195,7 @@ namespace VTX::Renderer::GL
 			// Don't need to delete program.
 			//_gl->glDeleteProgram( program->getId() );
 			// program->setId( _gl->glCreateProgram() );
-			for ( const FilePath & shader : program->getShaderPaths() )
+			for ( const IO::FilePath & shader : program->getShaderPaths() )
 			{
 				GLuint id = _createShader( shader );
 				if ( id != GL_INVALID_INDEX )

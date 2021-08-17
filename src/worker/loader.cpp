@@ -24,10 +24,10 @@ namespace VTX
 			Model::Configuration::Molecule config = Model::Configuration::Molecule();
 
 			// Load PRM or PSF file firstly.
-			std::vector<FilePath>::iterator itPath = _paths.begin();
+			std::vector<IO::FilePath>::iterator itPath = _paths.begin();
 			while ( itPath != _paths.end() )
 			{
-				const std::string extension = Util::Filesystem::getFileExtension( *itPath );
+				const std::string extension = ( *itPath ).extension();
 				if ( extension == "prm" )
 				{
 					IO::Reader::PRM reader = IO::Reader::PRM();
@@ -48,10 +48,10 @@ namespace VTX
 
 			// Load all files.
 			Tool::Chrono chrono;
-			for ( FilePath & path : _paths )
+			for ( IO::FilePath & path : _paths )
 			{
 				chrono.start();
-				emit logInfo( "Loading " + Util::Filesystem::getFileName( path ) );
+				emit logInfo( "Loading " + path.filename() );
 				MODE mode = _getMode( path );
 
 				_pathResult.emplace( path, Result( SOURCE_TYPE::FILE ) );
@@ -135,10 +135,10 @@ namespace VTX
 			}
 
 			// Load all buffers.
-			for ( const std::pair<FilePath, std::string *> & pair : _mapFileNameBuffer )
+			for ( const std::pair<IO::FilePath, std::string *> & pair : _mapFileNameBuffer )
 			{
 				chrono.start();
-				emit logInfo( "Loading " + Util::Filesystem::getFileName( pair.first ) );
+				emit logInfo( "Loading " + pair.first.filename() );
 				MODE mode = _getMode( pair.first );
 
 				_pathResult.emplace( pair.first, Result( SOURCE_TYPE::BUFFER ) );
@@ -180,9 +180,9 @@ namespace VTX
 			return 1;
 		}
 
-		Loader::MODE Loader::_getMode( const FilePath & p_path ) const
+		Loader::MODE Loader::_getMode( const IO::FilePath & p_path ) const
 		{
-			FilePath extension = Util::Filesystem::getFileExtension( p_path );
+			std::string extension = p_path.extension();
 
 			if ( extension == "nc" || extension == "cif" || extension == "cml" || extension == "cssr"
 				 || extension == "dcd" || extension == "gro" || extension == "lammpstrj" || extension == "mmcif"

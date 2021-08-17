@@ -31,7 +31,7 @@ namespace VTX
 
 	void VTXApp::start()
 	{
-		VTX_INFO( "Starting application: " + Util::Filesystem::getExecutableFile() );
+		VTX_INFO( "Starting application: " + Util::Filesystem::getExecutableFile().path() );
 
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );

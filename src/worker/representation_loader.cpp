@@ -23,9 +23,9 @@ namespace VTX::Worker
 			Representation::RepresentationManager::get().clearAllRepresentations( false );
 		}
 
-		std::set<FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
+		std::set<IO::FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
 
-		for ( const FilePath & file : files )
+		for ( const IO::FilePath & file : files )
 		{
 			Model::Representation::Representation * const representation
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
@@ -33,12 +33,12 @@ namespace VTX::Worker
 			try
 			{
 				reader->readFile( file, *representation );
-				representation->setName( Util::Filesystem::getFileNameWithoutExtension( file ) );
+				representation->setName( file.filenameWithoutExtension() );
 				_library.addRepresentation( representation, false );
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load representation library " + file + ": " + std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load representation library " + file.path() + ": " + std::string( p_e.what() ) );
 				MVC::MvcManager::get().deleteModel( representation );
 			}
 		}
@@ -89,7 +89,7 @@ namespace VTX::Worker
 
 		chrono.start();
 
-		for ( const FilePath & path : _paths )
+		for ( const IO::FilePath & path : _paths )
 		{
 			Model::Representation::Representation * const representation
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
@@ -101,11 +101,11 @@ namespace VTX::Worker
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load representation at " + path + " : " + std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load representation at " + path.path() + " : " + std::string( p_e.what() ) );
 				MVC::MvcManager::get().deleteModel( representation );
 			}
 
-			VTX_INFO( "Representation " + Util::Filesystem::getFileNameWithoutExtension( path ) + " loaded." );
+			VTX_INFO( "Representation " + path.filenameWithoutExtension() + " loaded." );
 		}
 
 		delete reader;

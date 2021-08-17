@@ -25,15 +25,17 @@ namespace VTX::IO::Reader
 {
 	LibChemfiles::LibChemfiles( const Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
 
-	void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
+	void LibChemfiles::readFile( const IO::FilePath & p_path, Model::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
-		chemfiles::Trajectory trajectory	 = chemfiles::Trajectory( p_path, 'r', _getFormat( p_path ) );
+		chemfiles::Trajectory trajectory	 = chemfiles::Trajectory( p_path.path(), 'r', _getFormat( p_path ) );
 		const bool			  recomputeBonds = _needToRecomputeBonds( _getFormat( p_path ) );
 		_readTrajectory( trajectory, p_path, p_molecule, recomputeBonds );
 	}
 
-	void LibChemfiles::readBuffer( const std::string & p_buffer, const FilePath & p_path, Model::Molecule & p_molecule )
+	void LibChemfiles::readBuffer( const std::string &	p_buffer,
+								   const IO::FilePath & p_path,
+								   Model::Molecule &	p_molecule )
 	{
 		_prepareChemfiles();
 		chemfiles::Trajectory trajectory
@@ -72,7 +74,7 @@ namespace VTX::IO::Reader
 	}
 
 	void LibChemfiles::_readTrajectory( chemfiles::Trajectory & p_trajectory,
-										const FilePath &		p_path,
+										const IO::FilePath &	p_path,
 										Model::Molecule &		p_molecule,
 										const bool				p_recomputeBonds ) const
 	{
@@ -84,7 +86,7 @@ namespace VTX::IO::Reader
 		}
 
 		// if opening a DCD file check if a topology file is present in the same folder
-		QFileInfo fileInfo( QString::fromStdString( p_path ) );
+		QFileInfo fileInfo( p_path.qpath() );
 		if ( fileInfo.suffix().toStdString() == "dcd" )
 		{
 			const std::string filePathWithoutExt
@@ -295,7 +297,7 @@ namespace VTX::IO::Reader
 
 			// PDB only.
 			// TODO: modify chemfiles to load handedness!
-			if ( Util::Filesystem::getFileExtension( p_path ) == "pdb" )
+			if ( p_path.extension() == "pdb" )
 			{
 				std::string secondaryStructure
 					= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
@@ -576,9 +578,9 @@ namespace VTX::IO::Reader
 	}
 
 	// http://chemfiles.org/chemfiles/latest/formats.html#list-of-supported-formats
-	const std::string LibChemfiles::_getFormat( const FilePath & p_path )
+	const std::string LibChemfiles::_getFormat( const IO::FilePath & p_path )
 	{
-		std::string extension = Util::Filesystem::getFileExtension( p_path );
+		std::string extension = p_path.extension();
 		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );
 		if ( extension == "nc" )
 		{

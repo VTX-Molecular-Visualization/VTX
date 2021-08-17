@@ -19,7 +19,7 @@ namespace VTX::IO::Writer
 		SerializedObject( const Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
 		SerializedObject( const Worker::BaseWorker * const p_worker ) : _thread( nullptr ) {}
 
-		void writeFile( const FilePath & p_path, const T & p_data ) override
+		void writeFile( const IO::FilePath & p_path, const T & p_data ) override
 		{
 			IO::Serializer serializer = IO::Serializer( _thread );
 
@@ -29,7 +29,7 @@ namespace VTX::IO::Writer
 										{ "REVISION", VTX_VERSION_REVISION } } },
 									{ "DATA", serializer.serialize( p_data ) } };
 
-			std::ofstream os( p_path );
+			std::ofstream os( p_path.path() );
 			os << std::setw( 4 ) << json << std::endl;
 			os.close();
 		}

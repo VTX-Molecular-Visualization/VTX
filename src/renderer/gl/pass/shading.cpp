@@ -20,10 +20,14 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
-		_toonShading	= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { "shading/shading_toon.frag" } );
-		_diffuseShading = VTX_PROGRAM_MANAGER().createProgram( "DiffuseShading", { "shading/shading_diffuse.frag" } );
-		_glossyShading	= VTX_PROGRAM_MANAGER().createProgram( "GlossyShading", { "shading/shading_glossy.frag" } );
-		_flatShading	= VTX_PROGRAM_MANAGER().createProgram( "FlatShading", { "shading/shading_flat.frag" } );
+		_toonShading
+			= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { IO::FilePath( "shading/shading_toon.frag" ) } );
+		_diffuseShading = VTX_PROGRAM_MANAGER().createProgram( "DiffuseShading",
+															   { IO::FilePath( "shading/shading_diffuse.frag" ) } );
+		_glossyShading
+			= VTX_PROGRAM_MANAGER().createProgram( "GlossyShading", { IO::FilePath( "shading/shading_glossy.frag" ) } );
+		_flatShading
+			= VTX_PROGRAM_MANAGER().createProgram( "FlatShading", { IO::FilePath( "shading/shading_flat.frag" ) } );
 
 		// Use setting value.
 		set();

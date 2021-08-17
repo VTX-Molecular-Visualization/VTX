@@ -152,9 +152,9 @@ namespace VTX
 	const int Setting::RECENT_PATH_SAVED_MAX_COUNT			= 10;
 	const int Setting::RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT = 20;
 
-	void Setting::enqueueNewLoadingPath( const FilePath & p_path )
+	void Setting::enqueueNewLoadingPath( const IO::FilePath & p_path )
 	{
-		for ( std::list<FilePath>::const_iterator itPath = recentLoadingPath.cbegin();
+		for ( std::list<IO::FilePath>::const_iterator itPath = recentLoadingPath.cbegin();
 			  itPath != recentLoadingPath.cend();
 			  itPath++ )
 		{
@@ -173,12 +173,12 @@ namespace VTX
 
 		VTX_EVENT( new Event::VTXEvent( Event::Global::RECENT_FILES_CHANGE ) );
 	}
-	const VTX::FilePath * const Setting::getRecentLoadingPath( const int p_index )
+	const IO::FilePath * const Setting::getRecentLoadingPath( const int p_index )
 	{
 		if ( p_index < 0 || p_index >= recentLoadingPath.size() )
 			return nullptr;
 
-		std::list<FilePath>::iterator it = recentLoadingPath.begin();
+		std::list<IO::FilePath>::iterator it = recentLoadingPath.begin();
 
 		for ( int i = 0; i < p_index; i++ )
 			it++;
@@ -234,8 +234,8 @@ namespace VTX
 		{
 			const std::string strPath = settings.value( key ).toString().toStdString();
 
-			const FilePath path = FilePath( strPath );
-			if ( Util::Filesystem::exists( path ) )
+			const IO::FilePath path = IO::FilePath( strPath );
+			if ( path.exists() )
 			{
 				recentLoadingPath.push_back( path );
 			}
@@ -264,11 +264,11 @@ namespace VTX
 							QString::fromStdString( VTX_PROJECT_NAME ) );
 
 		int counter = 0;
-		for ( const FilePath & path : recentLoadingPath )
+		for ( const IO::FilePath & path : recentLoadingPath )
 		{
 			const QString key
 				= QString::fromStdString( RegisterKey::RECENT_LOADED_PATH_PREFIX + std::to_string( counter ) );
-			settings.setValue( key, QString::fromStdString( path ) );
+			settings.setValue( key, path.qpath() );
 
 			counter++;
 		}
@@ -287,7 +287,7 @@ namespace VTX
 	QString Setting::getLastLoadedSessionFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_OPEN_SESSION_FOLDER );
-		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_SAVE_FOLDER ) );
+		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_SAVE_FOLDER.qpath() );
 	}
 	void Setting::saveLastLoadedSessionFolder( const QString & p_path )
 	{
@@ -302,7 +302,7 @@ namespace VTX
 	QString Setting::getLastSavedSessionFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_SAVED_SESSION_FOLDER );
-		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_SAVE_FOLDER ) );
+		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_SAVE_FOLDER.qpath() );
 	}
 	void Setting::saveLastSavedSessionFolder( const QString & p_path )
 	{
@@ -317,7 +317,7 @@ namespace VTX
 	QString Setting::getLastImportedMoleculeFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_IMPORTED_MOLECULE_FOLDER );
-		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_MOLECULE_FOLDER ) );
+		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_MOLECULE_FOLDER.qpath() );
 	}
 	void Setting::saveLastImportedMoleculeFolder( const QString & p_path )
 	{
@@ -332,7 +332,7 @@ namespace VTX
 	QString Setting::getLastExportedMoleculeFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_EXPORTED_MOLECULE_FOLDER );
-		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_MOLECULE_FOLDER ) );
+		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_MOLECULE_FOLDER.qpath() );
 	}
 	void Setting::saveLastExportedMoleculeFolder( const QString & p_path )
 	{
@@ -351,12 +351,12 @@ namespace VTX
 								  QString::fromStdString( VTX_PROJECT_NAME ),
 								  QString::fromStdString( VTX_PROJECT_NAME ) );
 
-		QString path = settings.value( p_key, p_default ).toString();
+		IO::FilePath path = settings.value( p_key, p_default ).toString().toStdString();
 
-		if ( path.isEmpty() || !Util::Filesystem::exists( path.toStdString() ) )
+		if ( path.empty() || path.exists() == false )
 			return p_default;
 
-		return path;
+		return path.qpath();
 	}
 
 	void Setting::backup()

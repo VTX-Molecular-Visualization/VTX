@@ -13,7 +13,7 @@ namespace VTX::UI::Widget::CustomWidget
 		setMaxLength( Util::Filesystem::MAX_FILE_LENGTH );
 
 		QRegExpValidator * const validator
-			= new QRegExpValidator( QRegExp( QString::fromStdString( Util::Filesystem::REGEX_VALID_FILENAME ) ), this );
+			= new QRegExpValidator( QRegExp( Util::Filesystem::REGEX_VALID_FILENAME ), this );
 		setValidator( validator );
 	}
 	void FilenameFieldWidget::_setupSlots() {}

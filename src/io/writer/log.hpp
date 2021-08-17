@@ -18,7 +18,7 @@ namespace VTX
 				Log( const std::string & );
 				~Log();
 
-				void writeFile( const FilePath & p_path, const std::string & p_data ) override;
+				void writeFile( const IO::FilePath & p_path, const std::string & p_data ) override;
 
 			  private:
 				std::ofstream _os;

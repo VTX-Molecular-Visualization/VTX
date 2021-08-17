@@ -9,8 +9,11 @@ namespace VTX::View::D3
 {
 	Renderer::GL::Program * const Ribbon::_createProgram()
 	{
-		return VTX_PROGRAM_MANAGER().createProgram(
-			"Ribbon", { "ribbon_patch.vert", "ribbon_patch.tesc", "ribbon_patch.tese", "ribbon_patch.frag" } );
+		return VTX_PROGRAM_MANAGER().createProgram( "Ribbon",
+													{ IO::FilePath( "ribbon_patch.vert" ),
+													  IO::FilePath( "ribbon_patch.tesc" ),
+													  IO::FilePath( "ribbon_patch.tese" ),
+													  IO::FilePath( "ribbon_patch.frag" ) } );
 	}
 
 	void Ribbon::_init()

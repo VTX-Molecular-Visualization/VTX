@@ -20,8 +20,8 @@ namespace VTX
 			class LibMMTF : public BaseReader<Model::Molecule>
 			{
 			  public:
-				[[deprecated]] void readFile( const FilePath &, Model::Molecule & ) override {}
-				[[deprecated]] void readBuffer( const std::string &, const FilePath &, Model::Molecule & ) override {}
+				[[deprecated]] void readFile( const IO::FilePath &, Model::Molecule & ) override {}
+				[[deprecated]] void readBuffer( const std::string &, const IO::FilePath &, Model::Molecule & ) override {}
 
 			  private:
 				// void _readStructureData( const mmtf::StructureData &, Model::Molecule & );

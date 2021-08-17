@@ -2,7 +2,7 @@
 #define __VTX_SNAPSHOTER__
 
 #include "base_worker.hpp"
-#include "define.hpp"
+#include "io/filepath.hpp"
 #include <QImage>
 
 namespace VTX
@@ -17,7 +17,9 @@ namespace VTX
 				GL
 			};
 
-			explicit Snapshoter( const MODE & p_mode, const FilePath & p_path ) : _mode( p_mode ), _path( p_path ) {}
+			explicit Snapshoter( const MODE & p_mode, const IO::FilePath & p_path ) : _mode( p_mode ), _path( p_path )
+			{
+			}
 
 		  protected:
 			void _run() override
@@ -35,8 +37,8 @@ namespace VTX
 			void _addWatermark( QImage & ) const;
 
 		  private:
-			const MODE	   _mode;
-			const FilePath _path;
+			const MODE		   _mode;
+			const IO::FilePath _path;
 		};
 	} // namespace Worker
 } // namespace VTX

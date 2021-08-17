@@ -31,8 +31,6 @@ namespace VTX
 	using Quatf = glm::quat;
 	using Quatd = glm::dquat;
 
-	using FilePath = std::string;
-
 	// VTX.
 	const std::string VTX_PROJECT_NAME	   = "VTX";
 	constexpr int	  VTX_VERSION_MAJOR	   = 0;

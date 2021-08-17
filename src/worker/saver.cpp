@@ -19,7 +19,7 @@ namespace VTX::Worker
 		Tool::Chrono chrono;
 
 		chrono.start();
-		emit logInfo( "Saving " + Util::Filesystem::getFileName( _path ) );
+		emit logInfo( "Saving " + _path.filename() );
 
 		const MODE mode = _getMode( _path );
 
@@ -83,9 +83,9 @@ namespace VTX::Worker
 
 		Util::Filesystem::checkSaveDirectoryHierarchy( _path );
 
-		const FilePath itemDirectory = Util::Filesystem::getSceneObjectsSaveDirectory( _path );
+		const IO::FilePath itemDirectory = Util::Filesystem::getSceneObjectsSaveDirectory( _path );
 
-		std::set<std::string> filesToRemove = Util::Filesystem::getFilesInDirectory( itemDirectory );
+		std::set<IO::FilePath> filesToRemove = Util::Filesystem::getFilesInDirectory( itemDirectory );
 
 		IO::Writer::SerializedObject<VTXApp> * const writer = new IO::Writer::SerializedObject<VTXApp>( this );
 
@@ -100,7 +100,7 @@ namespace VTX::Worker
 				const IO::ScenePathData::Data & moleculePathData
 					= VTXApp::get().getScenePathData().getData( molecule.first );
 
-				FilePath filePath = moleculePathData.getFilepath();
+				IO::FilePath filePath = moleculePathData.getFilepath();
 
 				if ( moleculePathData.needToSaveMolecule() )
 				{
@@ -131,9 +131,9 @@ namespace VTX::Worker
 			// Clean files
 			while ( filesToRemove.size() > 0 )
 			{
-				const std::string fileToRemove = *filesToRemove.begin();
+				const IO::FilePath fileToRemove = *filesToRemove.begin();
 				filesToRemove.erase( filesToRemove.begin() );
-				Util::Filesystem::remove( FilePath( fileToRemove ) );
+				Util::Filesystem::remove( fileToRemove );
 			}
 		}
 		catch ( const std::exception & p_e )
@@ -148,9 +148,9 @@ namespace VTX::Worker
 		return result;
 	}
 
-	Saver::MODE Saver::_getMode( const FilePath & p_path ) const
+	Saver::MODE Saver::_getMode( const IO::FilePath & p_path ) const
 	{
-		std::string extension = Util::Filesystem::getFileExtension( p_path );
+		std::string extension = p_path.extension();
 
 		if ( extension == "nc" || extension == "cif" || extension == "cml" || extension == "cssr" || extension == "dcd"
 			 || extension == "gro" || extension == "lammpstrj" || extension == "mmcif" || extension == "mmtf"

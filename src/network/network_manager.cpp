@@ -50,8 +50,8 @@ namespace VTX
 
 			VTX_INFO( "Downloaded" );
 
-			std::map<FilePath, std::string *> mapBuffers = std::map<FilePath, std::string *>();
-			mapBuffers.emplace( FilePath( _id + ".mmtf" ), new std::string( replyThis->readAll().toStdString() ) );
+			std::map<IO::FilePath, std::string *> mapBuffers = std::map<IO::FilePath, std::string *>();
+			mapBuffers.emplace( IO::FilePath( _id + ".mmtf" ), new std::string( replyThis->readAll().toStdString() ) );
 
 			VTX_ACTION( new Action::Main::Open( mapBuffers ) );
 		}

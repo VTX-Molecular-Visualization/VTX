@@ -20,11 +20,11 @@ namespace VTX
 		  public:
 			explicit RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary & p_library ) :
 				RenderEffectPresetLibraryLoader( p_library,
-												 FilePath( Util::Filesystem::getRenderEffectPresetsLibraryDir() ) )
+												 IO::FilePath( Util::Filesystem::getRenderEffectPresetsLibraryDir() ) )
 			{
 			}
 			explicit RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary & p_library,
-													  const FilePath							   p_path ) :
+													  const IO::FilePath						   p_path ) :
 				_library( p_library ),
 				_path( p_path )
 			{
@@ -36,7 +36,7 @@ namespace VTX
 			void _run() override;
 
 		  private:
-			const FilePath								 _path;
+			const IO::FilePath							 _path;
 			Model::Renderer::RenderEffectPresetLibrary & _library;
 			bool										 _notify = true;
 		};
@@ -44,14 +44,14 @@ namespace VTX
 		class RenderEffectPresetLoader : public Worker::BaseWorker
 		{
 		  public:
-			explicit RenderEffectPresetLoader( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
-			explicit RenderEffectPresetLoader( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
+			explicit RenderEffectPresetLoader( const IO::FilePath & p_path ) { _paths.emplace_back( p_path ); }
+			explicit RenderEffectPresetLoader( const std::vector<IO::FilePath> & p_paths ) : _paths( p_paths ) {}
 
 		  protected:
 			void _run() override;
 
 		  private:
-			std::vector<FilePath> _paths = std::vector<FilePath>();
+			std::vector<IO::FilePath> _paths = std::vector<IO::FilePath>();
 		};
 	} // namespace Worker
 } // namespace VTX

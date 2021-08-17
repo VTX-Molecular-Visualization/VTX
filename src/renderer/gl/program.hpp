@@ -12,15 +12,15 @@ namespace VTX::Renderer::GL
 	class Program : public Generic::BaseOpenGL
 	{
 	  public:
-		Program( OpenGLFunctions * const p_gl, const std::vector<FilePath> & p_shaderPaths ) :
+		Program( OpenGLFunctions * const p_gl, const std::vector<IO::FilePath> & p_shaderPaths ) :
 			BaseOpenGL( p_gl ), _shaderPaths( p_shaderPaths )
 		{
 		}
 		~Program();
 
-		inline const GLuint					 getId() const { return _id; }
-		inline void							 setId( const GLuint p_id ) { _id = p_id; }
-		inline const std::vector<FilePath> & getShaderPaths() const { return _shaderPaths; }
+		inline const GLuint						 getId() const { return _id; }
+		inline void								 setId( const GLuint p_id ) { _id = p_id; }
+		inline const std::vector<IO::FilePath> & getShaderPaths() const { return _shaderPaths; }
 
 		void create( const std::string & );
 		void attachShader( const GLuint );
@@ -138,10 +138,10 @@ namespace VTX::Renderer::GL
 		// =====================================
 
 	  private:
-		GLuint						_id			 = GL_INVALID_INDEX;
-		std::string					_name		 = "";
-		const std::vector<FilePath> _shaderPaths = std::vector<FilePath>();
-		std::string					_getProgramErrors();
+		GLuint							_id			 = GL_INVALID_INDEX;
+		std::string						_name		 = "";
+		const std::vector<IO::FilePath> _shaderPaths = std::vector<IO::FilePath>();
+		std::string						_getProgramErrors();
 
 		friend class ProgramManager;
 	};

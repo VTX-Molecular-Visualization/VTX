@@ -1,7 +1,7 @@
 #ifndef __VTX_BASE_READER__
 #define __VTX_BASE_READER__
 
-#include "define.hpp"
+#include "io/filepath.hpp"
 #include "exception.hpp"
 
 namespace VTX
@@ -16,8 +16,8 @@ namespace VTX
 			  public:
 				virtual ~BaseReader() = default;
 
-				virtual void readFile( const FilePath &, T & ) = 0;
-				virtual void readBuffer( const std::string & p_buffer, const FilePath &, T & )
+				virtual void readFile( const IO::FilePath &, T & ) = 0;
+				virtual void readBuffer( const std::string & p_buffer, const IO::FilePath &, T & )
 				{
 					throw Exception::NotImplementedException();
 				}

@@ -33,11 +33,11 @@ namespace VTX::UI
 		{
 			Setting::saveLastImportedMoleculeFolder( filenames[ 0 ] );
 
-			std::vector<FilePath> filepathes = std::vector<FilePath>();
+			std::vector<IO::FilePath> filepaths = std::vector<IO::FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
+				filepaths.emplace_back( IO::FilePath( qstr.toStdString() ) );
 
-			VTX_ACTION( new Action::Main::Open( filepathes ) );
+			VTX_ACTION( new Action::Main::Open( filepaths ) );
 		}
 	}
 	void Dialog::openExportMoleculeDialog()
@@ -55,7 +55,7 @@ namespace VTX::UI
 		if ( !filename.isNull() )
 		{
 			Setting::saveLastExportedMoleculeFolder( filename );
-			const FilePath path = FilePath( filename.toStdString() );
+			const IO::FilePath path = IO::FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Save( path ) );
 		}
 	}
@@ -89,17 +89,17 @@ namespace VTX::UI
 
 		if ( res == QMessageBox::StandardButton::Save )
 		{
-			const FilePath & filePath = VTXApp::get().getScenePathData().getCurrentPath();
+			const IO::FilePath & filepath = VTXApp::get().getScenePathData().getCurrentPath();
 
 			Worker::CallbackThread * threadCallback = new Worker::CallbackThread( p_callback );
 
-			if ( filePath.empty() )
+			if ( filepath.empty() )
 			{
 				Dialog::openSaveSessionDialog( threadCallback );
 			}
 			else
 			{
-				VTX_ACTION( new Action::Main::Save( FilePath( filePath ), threadCallback ) );
+				VTX_ACTION( new Action::Main::Save( IO::FilePath( filepath ), threadCallback ) );
 			}
 		}
 		else if ( res == QMessageBox::StandardButton::Discard )
@@ -128,7 +128,7 @@ namespace VTX::UI
 		if ( !filename.isNull() )
 		{
 			Setting::saveLastSavedSessionFolder( filename );
-			const FilePath path = FilePath( filename.toStdString() );
+			const IO::FilePath path = IO::FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Save( path, p_callback ) );
 		}
 	}
@@ -148,7 +148,7 @@ namespace VTX::UI
 		if ( !filename.isNull() )
 		{
 			Setting::saveLastLoadedSessionFolder( filename );
-			const FilePath path = FilePath( filename.toStdString() );
+			const IO::FilePath path = IO::FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Open( path ) );
 		}
 	}
@@ -178,14 +178,14 @@ namespace VTX::UI
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
 											 "Import representation preset",
-											 QString::fromStdString( Util::Filesystem::getExecutableDir() ),
+											 Util::Filesystem::getExecutableDir().qpath(),
 											 Util::Filesystem::REPRESENTATION_PRESET_FILE_FILTERS );
 
 		if ( !filenames.isEmpty() )
 		{
-			std::vector<FilePath> filepathes = std::vector<FilePath>();
+			std::vector<IO::FilePath> filepathes = std::vector<IO::FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
+				filepathes.emplace_back( IO::FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::ImportRepresentationPreset( filepathes ) );
 		}
@@ -195,14 +195,14 @@ namespace VTX::UI
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
 											 "Import render effect preset",
-											 QString::fromStdString( Util::Filesystem::getExecutableDir() ),
+											 Util::Filesystem::getExecutableDir().qpath(),
 											 Util::Filesystem::RENDER_EFFECT_PRESET_FILE_FILTERS );
 
 		if ( !filenames.isEmpty() )
 		{
-			std::vector<FilePath> filepathes = std::vector<FilePath>();
+			std::vector<IO::FilePath> filepathes = std::vector<IO::FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
+				filepathes.emplace_back( IO::FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::ImportRenderEffectPreset( filepathes ) );
 		}

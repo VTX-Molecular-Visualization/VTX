@@ -1,14 +1,12 @@
 #ifndef __VTX_UTIL_FILESYSTEM__
 #define __VTX_UTIL_FILESYSTEM__
 
-#include "define.hpp"
 #include "exception.hpp"
+#include "io/filepath.hpp"
 #include "tool/logger.hpp"
 #include <QCoreApplication>
 #include <QDir>
 #include <QDirIterator>
-#include <QFile>
-#include <QFileInfo>
 #include <QTextStream>
 #include <set>
 
@@ -18,8 +16,11 @@ namespace VTX
 	{
 		namespace Filesystem
 		{
-			inline const FilePath getExecutableFile() { return QCoreApplication::applicationFilePath().toStdString(); }
-			inline const FilePath getExecutableDir()
+			inline const IO::FilePath getExecutableFile()
+			{
+				return QCoreApplication::applicationFilePath().toStdString();
+			}
+			inline const IO::FilePath getExecutableDir()
 			{
 				QDir dir( QCoreApplication::applicationDirPath() );
 				dir.cdUp();
@@ -30,30 +31,33 @@ namespace VTX
 			}
 
 			// Directories.
-			inline const FilePath getShadersDir() { return getExecutableDir() + "/shaders"; }
-			inline const FilePath getSnapshotsDir() { return getExecutableDir() + "/snapshots"; }
-			inline const FilePath getRendersDir() { return getExecutableDir() + "/renders"; }
-			inline const FilePath getLogsDir() { return getExecutableDir() + "/logs"; }
-			inline const FilePath getLibrariesDir() { return getExecutableDir() + "/libraries"; }
-			inline const FilePath getRepresentationsLibraryDir() { return getLibrariesDir() + "/representations"; }
-			inline const FilePath getRenderEffectPresetsLibraryDir() { return getLibrariesDir() + "/render_effects"; }
-			inline const FilePath getInternalDataDir() { return getExecutableDir() + "/data"; }
-			inline const FilePath getResidueDataDir() { return getInternalDataDir() + "/residue_data"; }
+			inline const IO::FilePath getShadersDir() { return getExecutableDir() + "/shaders"; }
+			inline const IO::FilePath getSnapshotsDir() { return getExecutableDir() + "/snapshots"; }
+			inline const IO::FilePath getRendersDir() { return getExecutableDir() + "/renders"; }
+			inline const IO::FilePath getLogsDir() { return getExecutableDir() + "/logs"; }
+			inline const IO::FilePath getLibrariesDir() { return getExecutableDir() + "/libraries"; }
+			inline const IO::FilePath getRepresentationsLibraryDir() { return getLibrariesDir() + "/representations"; }
+			inline const IO::FilePath getRenderEffectPresetsLibraryDir()
+			{
+				return getLibrariesDir() + "/render_effects";
+			}
+			inline const IO::FilePath getInternalDataDir() { return getExecutableDir() + "/data"; }
+			inline const IO::FilePath getResidueDataDir() { return getInternalDataDir() + "/residue_data"; }
 
 			// Files.
-			inline const FilePath getConfigIniFile() { return getExecutableDir() + "/config.ini"; }
-			inline const FilePath getSettingJsonFile() { return getExecutableDir() + "/setting.json"; }
-			inline const FilePath getLicenseFile() { return getExecutableDir() + "/license.txt"; }
+			inline const IO::FilePath getConfigIniFile() { return getExecutableDir() + "/config.ini"; }
+			inline const IO::FilePath getSettingJsonFile() { return getExecutableDir() + "/setting.json"; }
+			inline const IO::FilePath getLicenseFile() { return getExecutableDir() + "/license.txt"; }
 
 			// Dev directories.
-			static const FilePath DATA_DIR				  = FilePath( "../data" );
-			static const FilePath SHADERS_DIR_SRC		  = FilePath( "../src/shader" );
-			static const FilePath DEFAULT_SAVE_FOLDER	  = FilePath( "../save" );
-			static const FilePath DEFAULT_MOLECULE_FOLDER = FilePath( "../data" );
+			static const IO::FilePath DATA_DIR				  = IO::FilePath( "../data" );
+			static const IO::FilePath SHADERS_DIR_SRC		  = IO::FilePath( "../src/shader" );
+			static const IO::FilePath DEFAULT_SAVE_FOLDER	  = IO::FilePath( "../save" );
+			static const IO::FilePath DEFAULT_MOLECULE_FOLDER = IO::FilePath( "../data" );
 
 			// JSon save fail when size > 192
-			static const int	  MAX_FILE_LENGTH	   = 180;
-			static const FilePath REGEX_VALID_FILENAME = "[^\\\\/:*?\"<>|]*";
+			static const int	 MAX_FILE_LENGTH	  = 180;
+			static const QString REGEX_VALID_FILENAME = "[^\\\\/:*?\"<>|]*";
 
 			static const QString MOLECULE_EXTENSIONS_READ
 				= "Amber Net CDF (*.nc);;"
@@ -111,78 +115,60 @@ namespace VTX
 			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
 
-			static const FilePath STYLESHEET_FILE_DEFAULT = ":/stylesheet.css";
-			static const FilePath SCENE_OBJECT_DIR		  = "/obj";
+			static const IO::FilePath STYLESHEET_FILE_DEFAULT = ":/stylesheet.css";
+			static const IO::FilePath SCENE_OBJECT_DIR		  = "/obj";
 
-			inline const FilePath getDataPath( const FilePath & p_filename )
+			inline const IO::FilePath getDataPath( const IO::FilePath & p_filename )
 			{
-				return FilePath( DATA_DIR + "/" + p_filename );
+				return IO::FilePath( DATA_DIR / p_filename );
 			}
 
-			inline const FilePath getShadersPath( const FilePath & p_filename )
+			inline const IO::FilePath getShadersPath( const IO::FilePath & p_filename )
 			{
-				return FilePath( getShadersDir() + "/" + p_filename );
+				return IO::FilePath( getShadersDir() / p_filename );
 			}
 
-			inline const FilePath getSnapshotsPath( const FilePath & p_filename )
+			inline const IO::FilePath getSnapshotsPath( const IO::FilePath & p_filename )
 			{
-				return FilePath( getSnapshotsDir() + "/" + p_filename );
+				return IO::FilePath( getSnapshotsDir() / p_filename );
 			}
 
-			inline const FilePath getRendersPath( const FilePath & p_filename )
+			inline const IO::FilePath getRendersPath( const IO::FilePath & p_filename )
 			{
-				return FilePath( getRendersDir() + "/" + p_filename );
+				return IO::FilePath( getRendersDir() / p_filename );
 			}
 
-			inline const FilePath getLogsPath( const FilePath & p_filename )
+			inline const IO::FilePath getLogsPath( const IO::FilePath & p_filename )
 			{
-				return FilePath( getLogsDir() + "/" + p_filename );
+				return IO::FilePath( getLogsDir() / p_filename );
 			}
 
-			inline const FilePath getRepresentationPath( const FilePath & p_filename )
+			inline const IO::FilePath getRepresentationPath( const IO::FilePath & p_filename )
 			{
-				return FilePath( getRepresentationsLibraryDir() + "/" + p_filename );
+				return IO::FilePath( getRepresentationsLibraryDir() / p_filename );
 			}
 
-			inline const FilePath getRenderEffectPath( const FilePath & p_filename )
+			inline const IO::FilePath getRenderEffectPath( const IO::FilePath & p_filename )
 			{
-				return FilePath( getRenderEffectPresetsLibraryDir() + "/" + p_filename );
+				return IO::FilePath( getRenderEffectPresetsLibraryDir() / p_filename );
 			}
 
-			inline void createDirectory( const FilePath & p_path )
+			inline void createDirectory( const IO::FilePath & p_filePath )
 			{
-				if ( QDir( QString::fromStdString( p_path ) ).exists() == false )
+				if ( QDir( p_filePath.qpath() ).exists() == false )
 				{
-					QDir().mkpath( QString::fromStdString( p_path ) );
+					QDir().mkpath( p_filePath.qpath() );
 				}
 			}
 
-			inline std::string getFileName( const FilePath & p_filePath )
-			{
-				QFileInfo fi( QString::fromStdString( p_filePath ) );
-				return fi.fileName().toStdString();
-			}
+			inline bool isSessionFile( const IO::FilePath & p_filePath ) { return p_filePath.extension() == "vtx"; }
 
-			inline std::string getFileNameWithoutExtension( const FilePath & p_filePath )
+			inline const std::string readPath( const IO::FilePath & p_filePath )
 			{
-				QFileInfo fi( QString::fromStdString( p_filePath ) );
-				return fi.baseName().toStdString();
-			}
-
-			inline std::string getFileExtension( const FilePath & p_filePath )
-			{
-				QFileInfo fi = QFileInfo( QString::fromStdString( p_filePath ) );
-				return fi.suffix().toStdString();
-			}
-
-			inline bool isSessionFile( const FilePath & p_filePath ) { return getFileExtension( p_filePath ) == "vtx"; }
-
-			inline const std::string readPath( const FilePath & p_filePath )
-			{
-				QFile file( QString::fromStdString( p_filePath ) );
+				QFile file( p_filePath.qpath() );
 				if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) == false )
 				{
-					throw Exception::IOException( "Cannot open file " + p_filePath + " : "
+					throw Exception::IOException( "Cannot open file " + p_filePath.path() + " : "
 												  + file.errorString().toStdString() );
 				}
 
@@ -192,122 +178,118 @@ namespace VTX
 				return content;
 			}
 
-			inline void generateUniqueFileName( FilePath & p_filePath )
+			inline void generateUniqueFileName( IO::FilePath & p_filePath )
 			{
 				uint counter = 2;
 
-				const std::string defaultFileName = getFileNameWithoutExtension( p_filePath );
-				const std::string extension		  = getFileExtension( p_filePath );
+				const std::string defaultFileName = p_filePath.filenameWithoutExtension();
+				const std::string extension		  = p_filePath.extension();
 
-				QDir dir = QDir( QString::fromStdString( p_filePath ) );
+				QDir dir = QDir( p_filePath.qpath() );
 
-				while ( QFileInfo( QString::fromStdString( p_filePath ) ).exists() )
+				while ( QFileInfo( p_filePath.qpath() ).exists() )
 				{
 					p_filePath = dir.absolutePath().toStdString() + defaultFileName + " " + std::to_string( counter )
 								 + extension;
 					counter++;
 				}
-
-				std::cout << p_filePath << std::endl;
 			}
 
-			inline bool copyFile( const FilePath & p_from, const FilePath & p_to )
+			inline bool copyFile( const IO::FilePath & p_from, const IO::FilePath & p_to )
 			{
 				try
 				{
-					return QFile::copy( QString::fromStdString( p_from ), QString::fromStdString( p_to ) );
+					return QFile::copy( p_from.qpath(), p_to.qpath() );
 				}
 				catch ( std::exception p_e )
 				{
-					VTX_WARNING( "Cannot copy file " + p_from + " to " + p_to + " : " + p_e.what() );
+					VTX_WARNING( "Cannot copy file " + p_from.path() + " to " + p_to.path() + " : " + p_e.what() );
 					return false;
 				}
 			}
 
-			inline void copyDir( const FilePath & p_from, const FilePath & p_to )
-			{
-				createDirectory( p_to );
+			inline void copyDir( const IO::FilePath & p_from, const IO::FilePath & p_to ) { createDirectory( p_to ); }
 
-				
-			}
-
-			inline bool removeAll( const FilePath & p_directory )
+			inline bool removeAll( const IO::FilePath & p_directory )
 			{
 				try
 				{
-					QDir dir( QString::fromStdString( p_directory ) );
+					QDir dir( p_directory.qpath() );
 					return dir.removeRecursively();
 				}
 				catch ( const std::exception & p_e )
 				{
-					VTX_ERROR( "Error when clear directory " + p_directory + " : " + p_e.what() );
+					VTX_ERROR( "Error when clear directory " + p_directory.path() + " : " + p_e.what() );
 					return false;
 				}
 			}
 
-			inline std::set<FilePath> getFilesInDirectory( const FilePath & p_directory )
+			inline std::set<IO::FilePath> getFilesInDirectory( const IO::FilePath & p_directory )
 			{
-				std::set<FilePath> result = std::set<FilePath>();
-				QDir			   dir( QString::fromStdString( p_directory ) );
-				QStringList		   list = dir.entryList( QDir::Files );
+				std::set<IO::FilePath> result = std::set<IO::FilePath>();
+				QDir				   dir( p_directory.qpath() );
+				QStringList			   list = dir.entryList( QDir::Files );
 
 				for ( const QString & entry : list )
 				{
-					FilePath path = p_directory + "/" + entry.toStdString();
+					IO::FilePath path = p_directory / IO::FilePath( entry.toStdString() );
 					result.emplace( path );
 				}
 
 				return result;
 			}
 
-			inline bool remove( const FilePath & p_filename )
+			inline bool remove( const IO::FilePath & p_filename )
 			{
 				try
 				{
-					return QFile::remove( QString::fromStdString( p_filename ) );
+					return QFile::remove( p_filename.qpath() );
 				}
 				catch ( const std::exception & p_e )
 				{
-					VTX_ERROR( "Error when removing file " + p_filename + " : " + p_e.what() );
+					VTX_ERROR( "Error when removing file " + p_filename.path() + " : " + p_e.what() );
 					return false;
 				}
 			}
 
-			inline bool exists( const FilePath & p_path ) { return QFile::exists( QString::fromStdString( p_path ) ); }
-
-			inline FilePath getParentDir( const FilePath & p_path )
+			inline IO::FilePath getParentDir( const IO::FilePath & p_path )
 			{
-				QDir dir( QString::fromStdString( p_path ) );
+				QDir dir( p_path.qpath() );
 				dir.cdUp();
 				return dir.path().toStdString();
 			}
 
-			inline FilePath getSceneSaveDirectory( const FilePath & p_savePath )
+			inline IO::FilePath getSceneSaveDirectory( const IO::FilePath & p_savePath )
 			{
-				const FilePath projectDirectoryName = FilePath( getFileNameWithoutExtension( p_savePath ) + "_data" );
+				const IO::FilePath projectDirectoryName
+					= IO::FilePath( p_savePath.filenameWithoutExtension() + "_data" );
 
-				return getParentDir( p_savePath ) + "/" + projectDirectoryName;
+				return getParentDir( p_savePath ) / projectDirectoryName;
 			}
 
-			inline FilePath getSceneObjectsSaveDirectory( const FilePath & p_savePath )
+			inline IO::FilePath getSceneObjectsSaveDirectory( const IO::FilePath & p_savePath )
 			{
-				return getSceneSaveDirectory( p_savePath ) + "/" + SCENE_OBJECT_DIR;
+				return getSceneSaveDirectory( p_savePath ) / SCENE_OBJECT_DIR;
 			}
 
-			inline void checkSaveDirectoryHierarchy( const FilePath & p_savePath )
+			inline void checkSaveDirectoryHierarchy( const IO::FilePath & p_savePath )
 			{
-				const FilePath projectDirectory = getSceneSaveDirectory( p_savePath );
-				if ( !Util::Filesystem::exists( projectDirectory ) )
+				const IO::FilePath projectDirectory = getSceneSaveDirectory( p_savePath );
+				if ( projectDirectory.exists() == false )
+				{
 					createDirectory( projectDirectory );
+				}
 
-				const FilePath objectsPath = getSceneObjectsSaveDirectory( p_savePath );
-				if ( !Util::Filesystem::exists( objectsPath ) )
+				const IO::FilePath objectsPath = getSceneObjectsSaveDirectory( p_savePath );
+				if ( objectsPath.exists() == false )
+				{
 					createDirectory( objectsPath );
+				}
 			}
 
-			inline FilePath getResidueDataFilePath( const FilePath & p_residueName )
+			inline IO::FilePath getResidueDataFilePath( const IO::FilePath & p_residueName )
 			{
-				return getResidueDataDir() + "/" + p_residueName.substr( 0, 1 );
+				return getResidueDataDir() / p_residueName.path().substr( 0, 1 );
 			}
 
 		} // namespace Filesystem

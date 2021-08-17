@@ -24,16 +24,16 @@ namespace VTX
 		  public:
 			LibChemfiles( const Worker::BaseThread * const p_loader );
 
-			void readFile( const FilePath &, Model::Molecule & ) override;
-			void readBuffer( const std::string &, const FilePath &, Model::Molecule & ) override;
+			void readFile( const IO::FilePath &, Model::Molecule & ) override;
+			void readBuffer( const std::string &, const IO::FilePath &, Model::Molecule & ) override;
 			void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
 
 		  private:
 			void _readTrajectory( chemfiles::Trajectory &,
-								  const FilePath &,
+								  const IO::FilePath &,
 								  Model::Molecule &,
 								  const bool p_recomputeBonds = false ) const;
-			const std::string _getFormat( const FilePath & );
+			const std::string _getFormat( const IO::FilePath & );
 			const bool		  _needToRecomputeBonds( const std::string & p_format ) const;
 		};
 	} // namespace IO::Reader

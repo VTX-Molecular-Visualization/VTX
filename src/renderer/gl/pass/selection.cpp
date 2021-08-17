@@ -20,7 +20,7 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
 		updateOutputFBO( p_renderer );
 
-		_program = VTX_PROGRAM_MANAGER().createProgram( "Selection", { "shading/selection.frag" } );
+		_program = VTX_PROGRAM_MANAGER().createProgram( "Selection", { IO::FilePath( "shading/selection.frag" ) } );
 
 		_program->use();
 

@@ -23,10 +23,10 @@ namespace VTX
 		{
 			Tool::Chrono chrono;
 
-			for ( const FilePath & path : _paths )
+			for ( const IO::FilePath & path : _paths )
 			{
 				chrono.start();
-				VTX_INFO( "Loading " + Util::Filesystem::getFileName( path ) );
+				VTX_INFO( "Loading " + path.filename() );
 
 				IO::Reader::SerializedObject<VTXApp> * const reader = new IO::Reader::SerializedObject<VTXApp>();
 

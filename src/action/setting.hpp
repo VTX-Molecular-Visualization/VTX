@@ -40,8 +40,8 @@ namespace VTX::Action::Setting
 		explicit Load() {}
 		virtual void execute() override
 		{
-			const VTX::FilePath & path = Util::Filesystem::getSettingJsonFile();
-			if ( Util::Filesystem::exists( path ) == false )
+			const IO::FilePath & path = Util::Filesystem::getSettingJsonFile();
+			if ( path.exists() == false )
 			{
 				VTX_INFO( "No settings file found" );
 				return;

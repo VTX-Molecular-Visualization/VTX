@@ -64,12 +64,12 @@ namespace VTX::IO
 
 	nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
 	{
-		const FilePath moleculePath = VTXApp::get().getScenePathData().getData( &p_molecule ).getFilepath();
+		const IO::FilePath moleculePath = VTXApp::get().getScenePathData().getData( &p_molecule ).getFilepath();
 		const Writer::ChemfilesWriter * const writer
 			= VTXApp::get().getScenePathData().getData( &p_molecule ).getWriter();
 
 		return { { "TRANSFORM", serialize( p_molecule.getTransform() ) },
-				 { "PATH", moleculePath },
+				 { "PATH", moleculePath.path() },
 				 { "REPRESENTATIONS", _serializeMoleculeRepresentations( p_molecule, writer ) },
 				 { "VISIBILITIES", _serializeMoleculeVisibilities( p_molecule, writer ) },
 				 { "NAME", p_molecule.getName() },
@@ -332,7 +332,7 @@ namespace VTX::IO
 			p_molecule.applyTransform( transform );
 		}
 
-		const FilePath molPath = _get<std::string>( p_json, "PATH" );
+		const IO::FilePath molPath = _get<std::string>( p_json, "PATH" );
 
 		try
 		{
@@ -342,7 +342,7 @@ namespace VTX::IO
 		}
 		catch ( const std::exception & p_exception )
 		{
-			_logWarning( "Error when loading " + molPath + " : " + p_exception.what() );
+			_logWarning( "Error when loading " + molPath.path() + " : " + p_exception.what() );
 			throw p_exception;
 		}
 

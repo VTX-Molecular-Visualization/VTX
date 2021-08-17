@@ -3,7 +3,7 @@
 
 #include "base_thread.hpp"
 #include "base_worker.hpp"
-#include "define.hpp"
+#include "io/filepath.hpp"
 
 namespace VTX
 {
@@ -34,7 +34,7 @@ namespace VTX
 		{
 		  public:
 			explicit RenderEffectPresetSaver( const Model::Renderer::RenderEffectPreset * const p_preset,
-											  const FilePath &									p_path ) :
+											  const IO::FilePath &								p_path ) :
 				_preset( p_preset ),
 				_path( p_path )
 			{
@@ -45,7 +45,7 @@ namespace VTX
 
 		  private:
 			const Model::Renderer::RenderEffectPreset * const _preset;
-			const FilePath									  _path;
+			const IO::FilePath								  _path;
 		};
 	}; // namespace Worker
 } // namespace VTX
