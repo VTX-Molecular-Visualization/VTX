@@ -9,6 +9,7 @@
 #include "setting.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
+#include "util/bond_guessing/bond_order_guessing.hpp"
 #include "util/chemfiles.hpp"
 #include "util/molecule.hpp"
 #include "worker/base_thread.hpp"
@@ -478,12 +479,22 @@ namespace VTX::IO::Reader
 			_logInfo( "recomputeBonds : " + bondComputationChrono.elapsedTimeStr() );
 		}
 
-		if ( !Setting::LOAD_BOND_ORDER_FROM_FILE )
+		if ( Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
 		{
-			bondComputationChrono.start();
-			Util::Chemfiles::recomputeBondOrders( frame );
-			bondComputationChrono.stop();
-			_logInfo( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
+			if ( Setting::LOAD_BOND_ORDER_FROM_FILE )
+			{
+				bondComputationChrono.start();
+				Util::Chemfiles::recomputeBondOrdersFromFile( frame );
+				bondComputationChrono.stop();
+				_logInfo( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
+			}
+			else
+			{
+				bondComputationChrono.start();
+				Util::Chemfiles::recomputeBondOrders( frame );
+				bondComputationChrono.stop();
+				_logInfo( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
+			}
 		}
 
 		// Bonds.
@@ -564,12 +575,22 @@ namespace VTX::IO::Reader
 			}
 		}
 
-		if ( Setting::LOAD_BOND_ORDER_FROM_FILE )
+		if ( !Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
 		{
-			bondComputationChrono.start();
-			Util::Molecule::recomputeBondOrdersWithFile( p_molecule );
-			bondComputationChrono.stop();
-			_logInfo( "recomputeBondOrdersWithFile : " + bondComputationChrono.elapsedTimeStr() );
+			if ( Setting::LOAD_BOND_ORDER_FROM_FILE )
+			{
+				bondComputationChrono.start();
+				Util::Molecule::recomputeBondOrdersFromFile( p_molecule );
+				bondComputationChrono.stop();
+				_logInfo( "recomputeBondOrdersFromFile : " + bondComputationChrono.elapsedTimeStr() );
+			}
+			else
+			{
+				bondComputationChrono.start();
+				Util::Molecule::recomputeBondOrders( p_molecule );
+				bondComputationChrono.stop();
+				_logInfo( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
+			}
 		}
 
 		assert( counter == counterOld );

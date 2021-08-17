@@ -2,6 +2,7 @@
 #include "model/bond.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
+#include "util/bond_guessing/bond_order_guessing.hpp"
 #include <sstream>
 
 namespace VTX::Util::Molecule
@@ -31,50 +32,14 @@ namespace VTX::Util::Molecule
 		return mapLoadedResidueData[ p_residueSymbol ].bondData;
 	}
 
-	void recomputeBondOrdersWithFile( Model::Molecule & p_molecule )
+	void recomputeBondOrders( Model::Molecule & p_molecule )
 	{
-		int					   bondDataCurrentIndex = 0;
-		const Model::Residue * previousResidue		= nullptr;
-		for ( Model::Bond * const bond : p_molecule.getBonds() )
-		{
-			if ( bond->getOrder() != Model::Bond::ORDER::UNKNOWN )
-				continue;
+		Util::BondGuessing::BondOrderGuessing::recomputeBondOrders( p_molecule );
+	}
 
-			const uint firstAtomIndex  = bond->getIndexFirstAtom();
-			const uint secondAtomIndex = bond->getIndexSecondAtom();
-
-			const Model::Residue * const firstAtomResidue  = p_molecule.getAtom( firstAtomIndex )->getResiduePtr();
-			const Model::Residue * const secondAtomResidue = p_molecule.getAtom( secondAtomIndex )->getResiduePtr();
-
-			if ( firstAtomResidue != secondAtomResidue )
-				continue;
-
-			const std::vector<IO::Reader::BondData> & bondsData = getResidueBonds( firstAtomResidue->getSymbolStr() );
-
-			if ( previousResidue != firstAtomResidue )
-			{
-				bondDataCurrentIndex = 0;
-				previousResidue		 = firstAtomResidue;
-			}
-			else
-			{
-				bondDataCurrentIndex++;
-			}
-
-			const std::string firstAtomName	 = p_molecule.getAtom( firstAtomIndex )->getName();
-			const std::string secondAtomName = p_molecule.getAtom( secondAtomIndex )->getName();
-
-			for ( bondDataCurrentIndex; bondDataCurrentIndex < bondsData.size(); bondDataCurrentIndex++ )
-			{
-				const IO::Reader::BondData & bondData = bondsData[ bondDataCurrentIndex ];
-
-				if ( bondData.atom1 == firstAtomName && bondData.atom2 == secondAtomName )
-				{
-					bond->setOrder( bondData.bondOrder );
-					break;
-				}
-			}
-		}
+	void recomputeBondOrdersFromFile( Model::Molecule & p_molecule )
+	{
+		Util::BondGuessing::BondOrderGuessing::recomputeBondOrdersFromFile( p_molecule );
 	}
 
 } // namespace VTX::Util::Molecule

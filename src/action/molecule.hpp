@@ -16,7 +16,6 @@
 #include "state/visualization.hpp"
 #include "trajectory/trajectory_enum.hpp"
 #include "util/math.hpp"
-#include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
@@ -122,7 +121,7 @@ namespace VTX::Action::Molecule
 
 		virtual void execute() override
 		{
-			for (Model::Molecule * const molecule : _molecules)
+			for ( Model::Molecule * const molecule : _molecules )
 				VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation( *molecule );
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

@@ -17,7 +17,6 @@
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
-#include "util/molecule.hpp"
 #include "visible.hpp"
 #include <unordered_set>
 
