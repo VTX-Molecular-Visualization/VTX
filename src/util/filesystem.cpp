@@ -9,9 +9,9 @@
 
 namespace VTX::Util::Filesystem
 {
-	FilePath getDefaultMoleculeExportPath()
+	IO::FilePath getDefaultMoleculeExportPath()
 	{
-		const FilePath defaultFolder = FilePath( Setting::getLastExportedMoleculeFolder().toStdString() );
+		const IO::FilePath defaultFolder = IO::FilePath( Setting::getLastExportedMoleculeFolder().toStdString() );
 
 		const Model::Molecule * exportedMolecule = nullptr;
 		const int				nbMoleculeInSelection
@@ -33,15 +33,15 @@ namespace VTX::Util::Filesystem
 
 		return defaultFolder / filename;
 	}
-	FilePath getDefaultSceneSavePath()
+	IO::FilePath getDefaultSceneSavePath()
 	{
 		if ( !VTXApp::get().getScenePathData().getCurrentPath().empty() )
 		{
 			return VTXApp::get().getScenePathData().getCurrentPath();
 		}
 
-		const FilePath defaultFolder = FilePath( Setting::getLastSavedSessionFolder().toStdString() );
-		FilePath	   defaultPath	 = defaultFolder / ( DEFAULT_SCENE_FILENAME + ".vtx" );
+		const IO::FilePath defaultFolder = IO::FilePath( Setting::getLastSavedSessionFolder().toStdString() );
+		IO::FilePath	   defaultPath	 = defaultFolder / ( DEFAULT_SCENE_FILENAME + ".vtx" );
 
 		generateUniqueFileName( defaultPath );
 

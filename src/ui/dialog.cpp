@@ -44,7 +44,7 @@ namespace VTX::UI
 	void Dialog::openExportMoleculeDialog()
 	{
 		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_MOLECULE_WRITE_FILTER );
-		const QString defaultPath = QString::fromStdString( Util::Filesystem::getDefaultMoleculeExportPath().string() );
+		const QString	defaultPath	  = Util::Filesystem::getDefaultMoleculeExportPath().qpath();
 
 		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
 															   "Export molecule",
@@ -55,10 +55,10 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			const FilePath path			 = FilePath( filename.toStdString() );
-			const FilePath directoryPath = path.parent_path();
+			const IO::FilePath path			 = IO::FilePath( filename.toStdString() );
+			const IO::FilePath directoryPath = Util::Filesystem::getParentDir( path );
 
-			Setting::saveLastExportedMoleculeFolder( QString::fromStdString( directoryPath.string() ) );
+			Setting::saveLastExportedMoleculeFolder( directoryPath.qpath() );
 			VTX_ACTION( new Action::Main::Save( path ) );
 		}
 	}
@@ -118,7 +118,7 @@ namespace VTX::UI
 	void Dialog::openSaveSessionDialog( Worker::CallbackThread * const p_callback )
 	{
 		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_FILE_WRITE_FILTER );
-		const QString	defaultPath	  = QString::fromStdString( Util::Filesystem::getDefaultSceneSavePath().string() );
+		const QString	defaultPath	  = Util::Filesystem::getDefaultSceneSavePath().qpath();
 
 		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
 															   "Save session",
@@ -130,10 +130,10 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			const FilePath path			 = FilePath( filename.toStdString() );
-			const FilePath directoryPath = path.parent_path();
+			const IO::FilePath path			 = IO::FilePath( filename.toStdString() );
+			const IO::FilePath directoryPath = Util::Filesystem::getParentDir( path );
 
-			Setting::saveLastSavedSessionFolder( QString::fromStdString( directoryPath.string() ) );
+			Setting::saveLastSavedSessionFolder( directoryPath.qpath() );
 			VTX_ACTION( new Action::Main::Save( path, p_callback ) );
 		}
 	}

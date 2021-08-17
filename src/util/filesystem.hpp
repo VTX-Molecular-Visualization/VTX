@@ -121,7 +121,7 @@ namespace VTX
 
 			static const IO::FilePath STYLESHEET_FILE_DEFAULT = ":/stylesheet.css";
 			static const IO::FilePath SCENE_OBJECT_DIR		  = "/obj";
-			
+
 			static const std::string DEFAULT_SCENE_FILENAME	   = "New Scene";
 			static const std::string DEFAULT_MOLECULE_FILENAME = "New Molecule";
 
@@ -296,11 +296,11 @@ namespace VTX
 
 			inline IO::FilePath getResidueDataFilePath( const IO::FilePath & p_residueName )
 			{
-				return RESIDUE_DATA_DIRECTORY / p_residueName.path().substr( 0, 1 );
+				return getResidueDataDir() / p_residueName.path().substr( 0, 1 );
 			}
 
-			FilePath getDefaultMoleculeExportPath();
-			FilePath getDefaultSceneSavePath();
+			IO::FilePath getDefaultMoleculeExportPath();
+			IO::FilePath getDefaultSceneSavePath();
 
 		} // namespace Filesystem
 	}	  // namespace Util
