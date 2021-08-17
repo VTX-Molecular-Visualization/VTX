@@ -107,16 +107,23 @@ namespace VTX
 			static const QString OPEN_FILE_FILTERS		 = VTX_EXTENSIONS + ";;" + MOLECULE_EXTENSIONS_READ;
 			static const QString SAVE_SCENE_FILTERS		 = VTX_EXTENSIONS;
 
-			static const QString DEFAULT_MOLECULE_READ_FILTER  = "All (*)";
-			static const QString DEFAULT_MOLECULE_WRITE_FILTER = "MMCIF(*.mmcif)";
-			static const QString DEFAULT_FILE_READ_FILTER	   = "All (*)";
-			static const QString DEFAULT_FILE_WRITE_FILTER	   = VTX_EXTENSIONS;
+			static const QString DEFAULT_MOLECULE_READ_FILTER	  = "All (*)";
+			static const QString DEFAULT_MOLECULE_WRITE_FILTER	  = "MMCIF(*.mmcif)";
+			static const QString DEFAULT_MOLECULE_WRITE_EXTENSION = DEFAULT_MOLECULE_WRITE_FILTER.mid(
+				DEFAULT_MOLECULE_WRITE_FILTER.lastIndexOf( '.' ) + 1,
+				DEFAULT_MOLECULE_WRITE_FILTER.size() - DEFAULT_MOLECULE_WRITE_FILTER.lastIndexOf( '.' ) - 2 );
+
+			static const QString DEFAULT_FILE_READ_FILTER  = "All (*)";
+			static const QString DEFAULT_FILE_WRITE_FILTER = VTX_EXTENSIONS;
 
 			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
 
 			static const IO::FilePath STYLESHEET_FILE_DEFAULT = ":/stylesheet.css";
 			static const IO::FilePath SCENE_OBJECT_DIR		  = "/obj";
+			
+			static const std::string DEFAULT_SCENE_FILENAME	   = "New Scene";
+			static const std::string DEFAULT_MOLECULE_FILENAME = "New Molecule";
 
 			inline const IO::FilePath getDataPath( const IO::FilePath & p_filename )
 			{
@@ -289,8 +296,11 @@ namespace VTX
 
 			inline IO::FilePath getResidueDataFilePath( const IO::FilePath & p_residueName )
 			{
-				return getResidueDataDir() / p_residueName.path().substr( 0, 1 );
+				return RESIDUE_DATA_DIRECTORY / p_residueName.path().substr( 0, 1 );
 			}
+
+			FilePath getDefaultMoleculeExportPath();
+			FilePath getDefaultSceneSavePath();
 
 		} // namespace Filesystem
 	}	  // namespace Util

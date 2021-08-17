@@ -2,6 +2,7 @@
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "io/scene_path_data.hpp"
+#include "selection/selection_manager.hpp"
 #include "ui/widget/dialog/download_molecule_dialog.hpp"
 #include "util/filesystem.hpp"
 #include "util/ui.hpp"
@@ -43,7 +44,7 @@ namespace VTX::UI
 	void Dialog::openExportMoleculeDialog()
 	{
 		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_MOLECULE_WRITE_FILTER );
-		QString			defaultPath	  = Setting::getLastExportedMoleculeFolder();
+		const QString defaultPath = QString::fromStdString( Util::Filesystem::getDefaultMoleculeExportPath().string() );
 
 		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
 															   "Export molecule",
@@ -54,8 +55,10 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			Setting::saveLastExportedMoleculeFolder( filename );
-			const IO::FilePath path = IO::FilePath( filename.toStdString() );
+			const FilePath path			 = FilePath( filename.toStdString() );
+			const FilePath directoryPath = path.parent_path();
+
+			Setting::saveLastExportedMoleculeFolder( QString::fromStdString( directoryPath.string() ) );
 			VTX_ACTION( new Action::Main::Save( path ) );
 		}
 	}
@@ -115,7 +118,7 @@ namespace VTX::UI
 	void Dialog::openSaveSessionDialog( Worker::CallbackThread * const p_callback )
 	{
 		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_FILE_WRITE_FILTER );
-		QString			defaultPath	  = Setting::getLastSavedSessionFolder();
+		const QString	defaultPath	  = QString::fromStdString( Util::Filesystem::getDefaultSceneSavePath().string() );
 
 		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
 															   "Save session",
@@ -127,8 +130,10 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			Setting::saveLastSavedSessionFolder( filename );
-			const IO::FilePath path = IO::FilePath( filename.toStdString() );
+			const FilePath path			 = FilePath( filename.toStdString() );
+			const FilePath directoryPath = path.parent_path();
+
+			Setting::saveLastSavedSessionFolder( QString::fromStdString( directoryPath.string() ) );
 			VTX_ACTION( new Action::Main::Save( path, p_callback ) );
 		}
 	}

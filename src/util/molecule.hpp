@@ -21,7 +21,9 @@ namespace VTX
 		void									  loadResidueData( const std::string & p_residueSymbol );
 		const std::string &						  getResidueFullName( const std::string & p_residueSymbol );
 		const std::vector<IO::Reader::BondData> & getResidueBonds( const std::string & p_residueSymbol );
-		void									  recomputeBondOrdersWithFile( Model::Molecule & p_molecule );
+
+		void recomputeBondOrders( Model::Molecule & p_molecule );
+		void recomputeBondOrdersFromFile( Model::Molecule & p_molecule );
 
 	} // namespace Util::Molecule
 } // namespace VTX
