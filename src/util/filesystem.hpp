@@ -125,6 +125,19 @@ namespace VTX
 			static const std::string DEFAULT_SCENE_FILENAME	   = "New Scene";
 			static const std::string DEFAULT_MOLECULE_FILENAME = "New Molecule";
 
+			IO::FilePath		   getParentDir( const IO::FilePath & p_path );
+			void				   createDirectory( const IO::FilePath & p_filePath );
+			bool				   copyFile( const IO::FilePath & p_from, const IO::FilePath & p_to );
+			const std::string	   readPath( const IO::FilePath & p_filePath );
+			bool				   remove( const IO::FilePath & p_filename );
+			bool				   removeAll( const IO::FilePath & p_directory );
+			void				   copyDir( const IO::FilePath & p_from, const IO::FilePath & p_to );
+			std::set<IO::FilePath> getFilesInDirectory( const IO::FilePath & p_directory );
+			void				   generateUniqueFileName( IO::FilePath & p_filePath );
+			void				   checkSaveDirectoryHierarchy( const IO::FilePath & p_savePath );
+			IO::FilePath		   getDefaultMoleculeExportPath();
+			IO::FilePath		   getDefaultSceneSavePath();
+
 			inline const IO::FilePath getDataPath( const IO::FilePath & p_filename )
 			{
 				return IO::FilePath( DATA_DIR / p_filename );
@@ -160,113 +173,7 @@ namespace VTX
 				return IO::FilePath( getRenderEffectPresetsLibraryDir() / p_filename );
 			}
 
-			inline void createDirectory( const IO::FilePath & p_filePath )
-			{
-				if ( QDir( p_filePath.qpath() ).exists() == false )
-				{
-					QDir().mkpath( p_filePath.qpath() );
-				}
-			}
-
 			inline bool isSessionFile( const IO::FilePath & p_filePath ) { return p_filePath.extension() == "vtx"; }
-
-			inline const std::string readPath( const IO::FilePath & p_filePath )
-			{
-				QFile file( p_filePath.qpath() );
-				if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) == false )
-				{
-					throw Exception::IOException( "Cannot open file " + p_filePath.path() + " : "
-												  + file.errorString().toStdString() );
-				}
-
-				QTextStream out( &file );
-				std::string content = out.readAll().toStdString();
-				file.close();
-				return content;
-			}
-
-			inline void generateUniqueFileName( IO::FilePath & p_filePath )
-			{
-				uint counter = 2;
-
-				const std::string defaultFileName = p_filePath.filenameWithoutExtension();
-				const std::string extension		  = p_filePath.extension();
-
-				QDir dir = QDir( p_filePath.qpath() );
-				dir.cdUp();
-
-				while ( QFileInfo( p_filePath.qpath() ).exists() )
-				{
-					p_filePath = dir.filePath( QString::fromStdString( defaultFileName + " " + std::to_string( counter )
-																	   + extension ) )
-									 .toStdString();
-					counter++;
-				}
-			}
-
-			inline bool copyFile( const IO::FilePath & p_from, const IO::FilePath & p_to )
-			{
-				try
-				{
-					return QFile::copy( p_from.qpath(), p_to.qpath() );
-				}
-				catch ( std::exception p_e )
-				{
-					VTX_WARNING( "Cannot copy file " + p_from.path() + " to " + p_to.path() + " : " + p_e.what() );
-					return false;
-				}
-			}
-
-			inline void copyDir( const IO::FilePath & p_from, const IO::FilePath & p_to ) { createDirectory( p_to ); }
-
-			inline bool removeAll( const IO::FilePath & p_directory )
-			{
-				try
-				{
-					QDir dir( p_directory.qpath() );
-					return dir.removeRecursively();
-				}
-				catch ( const std::exception & p_e )
-				{
-					VTX_ERROR( "Error when clear directory " + p_directory.path() + " : " + p_e.what() );
-					return false;
-				}
-			}
-
-			inline std::set<IO::FilePath> getFilesInDirectory( const IO::FilePath & p_directory )
-			{
-				std::set<IO::FilePath> result = std::set<IO::FilePath>();
-				QDir				   dir( p_directory.qpath() );
-				QStringList			   list = dir.entryList( QDir::Files );
-
-				for ( const QString & entry : list )
-				{
-					IO::FilePath path = p_directory / IO::FilePath( entry.toStdString() );
-					result.emplace( path );
-				}
-
-				return result;
-			}
-
-			inline bool remove( const IO::FilePath & p_filename )
-			{
-				try
-				{
-					return QFile::remove( p_filename.qpath() );
-				}
-				catch ( const std::exception & p_e )
-				{
-					VTX_ERROR( "Error when removing file " + p_filename.path() + " : " + p_e.what() );
-					return false;
-				}
-			}
-
-			inline IO::FilePath getParentDir( const IO::FilePath & p_path )
-			{
-				QDir dir( p_path.qpath() );
-				dir.cdUp();
-				return dir.path().toStdString();
-			}
 
 			inline IO::FilePath getSceneSaveDirectory( const IO::FilePath & p_savePath )
 			{
@@ -281,28 +188,10 @@ namespace VTX
 				return getSceneSaveDirectory( p_savePath ) / SCENE_OBJECT_DIR;
 			}
 
-			inline void checkSaveDirectoryHierarchy( const IO::FilePath & p_savePath )
-			{
-				const IO::FilePath projectDirectory = getSceneSaveDirectory( p_savePath );
-				if ( projectDirectory.exists() == false )
-				{
-					createDirectory( projectDirectory );
-				}
-
-				const IO::FilePath objectsPath = getSceneObjectsSaveDirectory( p_savePath );
-				if ( objectsPath.exists() == false )
-				{
-					createDirectory( objectsPath );
-				}
-			}
-
 			inline IO::FilePath getResidueDataFilePath( const IO::FilePath & p_residueName )
 			{
 				return getResidueDataDir() / p_residueName.path().substr( 0, 1 );
 			}
-
-			IO::FilePath getDefaultMoleculeExportPath();
-			IO::FilePath getDefaultSceneSavePath();
 
 		} // namespace Filesystem
 	}	  // namespace Util
