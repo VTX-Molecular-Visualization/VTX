@@ -112,10 +112,14 @@ namespace VTX
 			static const QString OPEN_FILE_FILTERS		 = VTX_EXTENSIONS + ";;" + MOLECULE_EXTENSIONS_READ;
 			static const QString SAVE_SCENE_FILTERS		 = VTX_EXTENSIONS;
 
-			static const QString DEFAULT_MOLECULE_READ_FILTER  = "All (*)";
-			static const QString DEFAULT_MOLECULE_WRITE_FILTER = "MMCIF(*.mmcif)";
-			static const QString DEFAULT_FILE_READ_FILTER	   = "All (*)";
-			static const QString DEFAULT_FILE_WRITE_FILTER	   = VTX_EXTENSIONS;
+			static const QString DEFAULT_MOLECULE_READ_FILTER	  = "All (*)";
+			static const QString DEFAULT_MOLECULE_WRITE_FILTER	  = "MMCIF(*.mmcif)";
+			static const QString DEFAULT_MOLECULE_WRITE_EXTENSION = DEFAULT_MOLECULE_WRITE_FILTER.mid(
+				DEFAULT_MOLECULE_WRITE_FILTER.lastIndexOf( '.' ) + 1,
+				DEFAULT_MOLECULE_WRITE_FILTER.size() - DEFAULT_MOLECULE_WRITE_FILTER.lastIndexOf( '.' ) - 2 );
+
+			static const QString DEFAULT_FILE_READ_FILTER  = "All (*)";
+			static const QString DEFAULT_FILE_WRITE_FILTER = VTX_EXTENSIONS;
 
 			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
@@ -130,6 +134,9 @@ namespace VTX
 			static const FilePath FFMPEG_EXE_FILE = FilePath( "bin/ffmpeg.exe" );
 
 			static const char * STYLESHEET_FILE_DEFAULT = ":/stylesheet.css";
+
+			static const std::string DEFAULT_SCENE_FILENAME	   = "New Scene";
+			static const std::string DEFAULT_MOLECULE_FILENAME = "New Molecule";
 
 			inline const FilePath getDataPath( const std::string & p_filename )
 			{
@@ -350,8 +357,11 @@ namespace VTX
 
 			inline FilePath getResidueDataFilePath( const std::string & p_residueName )
 			{
-				return RESIDUE_DATA_DIRECTORY / p_residueName.substr(0, 1);
+				return RESIDUE_DATA_DIRECTORY / p_residueName.substr( 0, 1 );
 			}
+
+			FilePath getDefaultMoleculeExportPath();
+			FilePath getDefaultSceneSavePath();
 
 		} // namespace Filesystem
 	}	  // namespace Util
