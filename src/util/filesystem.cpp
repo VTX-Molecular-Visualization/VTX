@@ -79,7 +79,30 @@ namespace VTX::Util::Filesystem
 		}
 	}
 
-	void copyDir( const IO::FilePath & p_from, const IO::FilePath & p_to ) { createDirectory( p_to ); }
+	void copyDir( const IO::FilePath & p_from, const IO::FilePath & p_to )
+	{
+		createDirectory( p_to );
+
+		QDir		dir( p_from.qpath() );
+		QStringList list = dir.entryList( QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot );
+
+		for ( const QString & entry : list )
+		{
+			IO::FilePath pathFrom = p_from / IO::FilePath( entry.toStdString() );
+			IO::FilePath pathTo	  = p_to / IO::FilePath( entry.toStdString() );
+
+			QFileInfo fi( pathFrom.qpath() );
+
+			if ( fi.isFile() )
+			{
+				copyFile( pathFrom, pathTo );
+			}
+			else if ( fi.isDir() )
+			{
+				copyDir( pathFrom, pathTo );
+			}
+		}
+	}
 
 	std::set<IO::FilePath> getFilesInDirectory( const IO::FilePath & p_directory )
 	{
