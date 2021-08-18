@@ -1,7 +1,6 @@
 #ifndef __VTX_DEFINE__
 #define __VTX_DEFINE__
 
-#include <filesystem>
 #include <glm/detail/qualifier.hpp>
 #include <glm/detail/type_quat.hpp>
 #include <glm/glm.hpp>
@@ -31,8 +30,6 @@ namespace VTX
 
 	using Quatf = glm::quat;
 	using Quatd = glm::dquat;
-
-	using FilePath = std::filesystem::path;
 
 	// VTX.
 	const std::string VTX_PROJECT_NAME	   = "VTX";

@@ -9,9 +9,167 @@
 
 namespace VTX::Util::Filesystem
 {
-	FilePath getDefaultMoleculeExportPath()
+	IO::FilePath getParentDir( const IO::FilePath & p_path )
 	{
-		const FilePath defaultFolder = FilePath( Setting::getLastExportedMoleculeFolder().toStdString() );
+		QDir dir( p_path.qpath() );
+		dir.cdUp();
+		return dir.path().toStdString();
+	}
+
+	void createDirectory( const IO::FilePath & p_filePath )
+	{
+		if ( QDir( p_filePath.qpath() ).exists() == false )
+		{
+			QDir().mkpath( p_filePath.qpath() );
+		}
+	}
+
+	bool copyFile( const IO::FilePath & p_from, const IO::FilePath & p_to )
+	{
+		try
+		{
+			return QFile::copy( p_from.qpath(), p_to.qpath() );
+		}
+		catch ( std::exception p_e )
+		{
+			VTX_WARNING( "Cannot copy file " + p_from.path() + " to " + p_to.path() + " : " + p_e.what() );
+			return false;
+		}
+	}
+
+	const std::string readPath( const IO::FilePath & p_filePath )
+	{
+		QFile file( p_filePath.qpath() );
+		if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) == false )
+		{
+			throw Exception::IOException( "Cannot open file " + p_filePath.path() + " : "
+										  + file.errorString().toStdString() );
+		}
+
+		QTextStream out( &file );
+		std::string content = out.readAll().toStdString();
+		file.close();
+		return content;
+	}
+
+	void readPath( const IO::FilePath & p_filePath, std::string & p_content )
+	{
+		QFile file( p_filePath.qpath() );
+		if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) == false )
+		{
+			throw Exception::IOException( "Cannot open file " + p_filePath.path() + " : "
+										  + file.errorString().toStdString() );
+		}
+
+		QTextStream out( &file );
+		p_content = out.readAll().toStdString();
+		file.close();
+	}
+
+	bool remove( const IO::FilePath & p_filename )
+	{
+		try
+		{
+			return QFile::remove( p_filename.qpath() );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Error when removing file " + p_filename.path() + " : " + p_e.what() );
+			return false;
+		}
+	}
+
+	bool removeAll( const IO::FilePath & p_directory )
+	{
+		try
+		{
+			QDir dir( p_directory.qpath() );
+			return dir.removeRecursively();
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Error when clear directory " + p_directory.path() + " : " + p_e.what() );
+			return false;
+		}
+	}
+
+	void copyDir( const IO::FilePath & p_from, const IO::FilePath & p_to )
+	{
+		createDirectory( p_to );
+
+		QDir		dir( p_from.qpath() );
+		QStringList list = dir.entryList( QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot );
+
+		for ( const QString & entry : list )
+		{
+			IO::FilePath pathFrom = p_from / IO::FilePath( entry.toStdString() );
+			IO::FilePath pathTo	  = p_to / IO::FilePath( entry.toStdString() );
+
+			QFileInfo fi( pathFrom.qpath() );
+
+			if ( fi.isFile() )
+			{
+				copyFile( pathFrom, pathTo );
+			}
+			else if ( fi.isDir() )
+			{
+				copyDir( pathFrom, pathTo );
+			}
+		}
+	}
+
+	std::set<IO::FilePath> getFilesInDirectory( const IO::FilePath & p_directory )
+	{
+		std::set<IO::FilePath> result = std::set<IO::FilePath>();
+		QDir				   dir( p_directory.qpath() );
+		QStringList			   list = dir.entryList( QDir::Files );
+
+		for ( const QString & entry : list )
+		{
+			IO::FilePath path = p_directory / IO::FilePath( entry.toStdString() );
+			result.emplace( path );
+		}
+
+		return result;
+	}
+
+	void checkSaveDirectoryHierarchy( const IO::FilePath & p_savePath )
+	{
+		const IO::FilePath projectDirectory = getSceneSaveDirectory( p_savePath );
+		if ( projectDirectory.exists() == false )
+		{
+			createDirectory( projectDirectory );
+		}
+
+		const IO::FilePath objectsPath = getSceneObjectsSaveDirectory( p_savePath );
+		if ( objectsPath.exists() == false )
+		{
+			createDirectory( objectsPath );
+		}
+	}
+
+	void generateUniqueFileName( IO::FilePath & p_filePath )
+	{
+		uint counter = 2;
+
+		const std::string defaultFileName = p_filePath.filenameWithoutExtension();
+		const std::string extension		  = p_filePath.extension();
+
+		QDir dir = QDir( p_filePath.qpath() );
+		dir.cdUp();
+
+		while ( QFileInfo( p_filePath.qpath() ).exists() )
+		{
+			p_filePath = dir.filePath( QString::fromStdString( defaultFileName + " " + std::to_string( counter )
+															   + extension ) )
+							 .toStdString();
+			counter++;
+		}
+	}
+
+	IO::FilePath getDefaultMoleculeExportPath()
+	{
+		const IO::FilePath defaultFolder = IO::FilePath( Setting::getLastExportedMoleculeFolder().toStdString() );
 
 		const Model::Molecule * exportedMolecule = nullptr;
 		const int				nbMoleculeInSelection
@@ -33,15 +191,16 @@ namespace VTX::Util::Filesystem
 
 		return defaultFolder / filename;
 	}
-	FilePath getDefaultSceneSavePath()
+
+	IO::FilePath getDefaultSceneSavePath()
 	{
 		if ( !VTXApp::get().getScenePathData().getCurrentPath().empty() )
 		{
 			return VTXApp::get().getScenePathData().getCurrentPath();
 		}
 
-		const FilePath defaultFolder = FilePath( Setting::getLastSavedSessionFolder().toStdString() );
-		FilePath	   defaultPath	 = defaultFolder / ( DEFAULT_SCENE_FILENAME + ".vtx" );
+		const IO::FilePath defaultFolder = IO::FilePath( Setting::getLastSavedSessionFolder().toStdString() );
+		IO::FilePath	   defaultPath	 = defaultFolder / ( DEFAULT_SCENE_FILENAME + ".vtx" );
 
 		generateUniqueFileName( defaultPath );
 

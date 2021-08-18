@@ -19,7 +19,7 @@ namespace VTX::Worker
 		Tool::Chrono chrono;
 
 		chrono.start();
-		emit logInfo( "Saving " + _path.filename().string() );
+		emit logInfo( "Saving " + _path.filename() );
 
 		const MODE mode = _getMode( _path );
 
@@ -52,7 +52,7 @@ namespace VTX::Worker
 				for ( const auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getItems() )
 				{
 					Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( it.first );
-					writer->writeFile( _path.string(), molecule );
+					writer->writeFile( _path, molecule );
 				}
 			}
 			// else export all the structures imported in the scene
@@ -61,7 +61,7 @@ namespace VTX::Worker
 				for ( const auto it : VTXApp::get().getScene().getMolecules() )
 				{
 					Model::Molecule * molecule = it.first;
-					writer->writeFile( _path.string(), *molecule );
+					writer->writeFile( _path, *molecule );
 				}
 			}
 		}
@@ -81,12 +81,11 @@ namespace VTX::Worker
 	{
 		bool result = 1;
 
-		Util::Filesystem::checkSaveDirectoryHierarchy( _path.string() );
+		Util::Filesystem::checkSaveDirectoryHierarchy( _path );
 
-		const FilePath itemDirectory = Util::Filesystem::getSceneObjectsSaveDirectory( _path );
+		const IO::FilePath itemDirectory = Util::Filesystem::getSceneObjectsSaveDirectory( _path );
 
-		std::set<std::string> filesToRemove = std::set<std::string>();
-		Util::Filesystem::getFilesInDirectory( itemDirectory, filesToRemove );
+		std::set<IO::FilePath> filesToRemove = Util::Filesystem::getFilesInDirectory( itemDirectory );
 
 		IO::Writer::SerializedObject<VTXApp> * const writer = new IO::Writer::SerializedObject<VTXApp>( this );
 
@@ -101,24 +100,24 @@ namespace VTX::Worker
 				const IO::ScenePathData::Data & moleculePathData
 					= VTXApp::get().getScenePathData().getData( molecule.first );
 
-				FilePath filePath = moleculePathData.getFilepath();
+				IO::FilePath filePath = moleculePathData.getFilepath();
 
 				if ( moleculePathData.needToSaveMolecule() )
 				{
 					IO::Writer::ChemfilesWriter * const moleculeWriter = new IO::Writer::ChemfilesWriter( this );
 
-					if ( Util::Filesystem::getParentPath( filePath ) != itemDirectory )
+					if ( Util::Filesystem::getParentDir( filePath ) != itemDirectory )
 					{
-						filePath = itemDirectory / "molecule.mmcif";
+						filePath = itemDirectory + "/molecule.mmcif";
 						Util::Filesystem::generateUniqueFileName( filePath );
 						VTXApp::get().getScenePathData().getData( molecule.first ).registerPath( filePath );
 					}
 
-					moleculeWriter->writeFile( filePath.string(), *molecule.first );
+					moleculeWriter->writeFile( filePath, *molecule.first );
 					VTXApp::get().getScenePathData().getData( molecule.first ).registerWriter( moleculeWriter );
 				}
 
-				filesToRemove.erase( filePath.string() );
+				filesToRemove.erase( filePath );
 			}
 
 			writer->writeFile( _path, VTXApp::get() );
@@ -132,9 +131,9 @@ namespace VTX::Worker
 			// Clean files
 			while ( filesToRemove.size() > 0 )
 			{
-				const std::string fileToRemove = *filesToRemove.begin();
+				const IO::FilePath fileToRemove = *filesToRemove.begin();
 				filesToRemove.erase( filesToRemove.begin() );
-				Util::Filesystem::remove( FilePath( fileToRemove ) );
+				Util::Filesystem::remove( fileToRemove );
 			}
 		}
 		catch ( const std::exception & p_e )
@@ -149,20 +148,19 @@ namespace VTX::Worker
 		return result;
 	}
 
-	Saver::MODE Saver::_getMode( const FilePath & p_path ) const
+	Saver::MODE Saver::_getMode( const IO::FilePath & p_path ) const
 	{
-		FilePath extension = p_path.extension();
+		std::string extension = p_path.extension();
 
-		if ( extension == ".nc" || extension == ".cif" || extension == ".cml" || extension == ".cssr"
-			 || extension == ".dcd" || extension == ".gro" || extension == ".lammpstrj" || extension == ".mmcif"
-			 || extension == ".mmtf" || extension == ".mol2" || extension == ".molden" || extension == ".pdb"
-			 || extension == ".sdf" || extension == ".smi" || extension == ".arc" || extension == ".trr"
-			 || extension == ".mmtf" || extension == ".xtc" || extension == ".tng" || extension == ".trj"
-			 || extension == ".xyz" )
+		if ( extension == "nc" || extension == "cif" || extension == "cml" || extension == "cssr" || extension == "dcd"
+			 || extension == "gro" || extension == "lammpstrj" || extension == "mmcif" || extension == "mmtf"
+			 || extension == "mol2" || extension == "molden" || extension == "pdb" || extension == "sdf"
+			 || extension == "smi" || extension == "arc" || extension == "trr" || extension == "mmtf"
+			 || extension == "xtc" || extension == "tng" || extension == "trj" || extension == "xyz" )
 		{
 			return MODE::MOLECULE;
 		}
-		else if ( extension == ".vtx" )
+		else if ( extension == "vtx" )
 		{
 			return MODE::VTX;
 		}

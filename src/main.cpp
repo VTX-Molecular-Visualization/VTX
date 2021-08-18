@@ -3,6 +3,9 @@
 #include "ui/dialog.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
+#ifdef _WIN32
+#include "wtypes.h"
+#endif
 
 using namespace VTX;
 

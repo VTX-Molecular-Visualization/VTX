@@ -31,7 +31,7 @@ namespace VTX
 
 	void VTXApp::start()
 	{
-		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
+		VTX_INFO( "Starting application: " + Util::Filesystem::getExecutableFile().path() );
 
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );
@@ -142,11 +142,11 @@ namespace VTX
 		const bool hasSavePath	   = !getScenePathData().getCurrentPath().empty();
 		const bool sceneIsEmpty	   = getScene().isEmpty();
 		const bool sceneHasChanged = getScenePathData().sceneHasModifications();
-		#ifdef VTX_PRODUCTION
+#ifdef VTX_PRODUCTION
 		return ( !hasSavePath && !sceneIsEmpty ) || ( hasSavePath && sceneHasChanged );
-		#else 
+#else
 		return hasSavePath && sceneHasChanged;
-		#endif
+#endif
 	}
 
 	void VTXApp::_stop()

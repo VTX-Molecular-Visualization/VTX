@@ -1,19 +1,14 @@
 #ifndef __VTX_UTIL_FILESYSTEM__
 #define __VTX_UTIL_FILESYSTEM__
 
-#include "../exception.hpp"
-#include "define.hpp"
+#include "exception.hpp"
+#include "io/filepath.hpp"
 #include "tool/logger.hpp"
-#include <QString>
-#include <fstream>
+#include <QCoreApplication>
+#include <QDir>
+#include <QDirIterator>
+#include <QTextStream>
 #include <set>
-
-#ifdef _MSC_VER
-#include <Windows.h>
-#include <direct.h>
-#else
-#include <unistd.h>
-#endif
 
 namespace VTX
 {
@@ -21,48 +16,48 @@ namespace VTX
 	{
 		namespace Filesystem
 		{
-			inline const FilePath getExecutableFile()
+			inline const IO::FilePath getExecutableFile()
 			{
+				return QCoreApplication::applicationFilePath().toStdString();
+			}
+			inline const IO::FilePath getExecutableDir()
+			{
+				QDir dir( QCoreApplication::applicationDirPath() );
+				dir.cdUp();
 #ifdef _MSC_VER
-				wchar_t path[ MAX_PATH ] = { 0 };
-				GetModuleFileNameW( NULL, path, MAX_PATH );
-				return FilePath( path );
-#else
-				char rawPathName[ PATH_MAX ];
-				realpath( "/proc/self/exe", rawPathName );
-				return Path( rawPathName );
+				dir.cdUp();
 #endif
+				return dir.path().toStdString();
 			}
 
+			// Directories.
+			inline const IO::FilePath getShadersDir() { return getExecutableDir() + "/shaders"; }
+			inline const IO::FilePath getSnapshotsDir() { return getExecutableDir() + "/snapshots"; }
+			inline const IO::FilePath getRendersDir() { return getExecutableDir() + "/renders"; }
+			inline const IO::FilePath getLogsDir() { return getExecutableDir() + "/logs"; }
+			inline const IO::FilePath getLibrariesDir() { return getExecutableDir() + "/libraries"; }
+			inline const IO::FilePath getRepresentationsLibraryDir() { return getLibrariesDir() + "/representations"; }
+			inline const IO::FilePath getRenderEffectPresetsLibraryDir()
+			{
+				return getLibrariesDir() + "/render_effects";
+			}
+			inline const IO::FilePath getInternalDataDir() { return getExecutableDir() + "/data"; }
+			inline const IO::FilePath getResidueDataDir() { return getInternalDataDir() + "/residue_data"; }
+
+			// Files.
+			inline const IO::FilePath getConfigIniFile() { return getExecutableDir() + "/config.ini"; }
+			inline const IO::FilePath getSettingJsonFile() { return getExecutableDir() + "/setting.json"; }
+			inline const IO::FilePath getLicenseFile() { return getExecutableDir() + "/license.txt"; }
+
+			// Dev directories.
+			static const IO::FilePath DATA_DIR				  = IO::FilePath( "../data" );
+			static const IO::FilePath SHADERS_DIR_SRC		  = IO::FilePath( "../src/shader" );
+			static const IO::FilePath DEFAULT_SAVE_FOLDER	  = IO::FilePath( "../save" );
+			static const IO::FilePath DEFAULT_MOLECULE_FOLDER = IO::FilePath( "../data" );
+
 			// JSon save fail when size > 192
-			static const int		 MAX_FILE_LENGTH	  = 180;
-			static const std::string REGEX_VALID_FILENAME = "[^\\\\/:*?\"<>|]*";
-
-			static const FilePath EXECUTABLE_FILE = getExecutableFile();
-#ifdef _MSC_VER
-			static const FilePath EXECUTABLE_DIR = EXECUTABLE_FILE.parent_path().parent_path().parent_path();
-#else
-			static const Path EXECUTABLE_DIR = EXECUTABLE_FILE.parent_path().parent_path();
-#endif
-
-			static const FilePath SHADERS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/shaders" );
-			static const FilePath SNAPSHOTS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/snapshots" );
-			static const FilePath RENDERS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/renders" );
-			static const FilePath PATHS_DIR			= FilePath( EXECUTABLE_DIR.string() + "/paths" );
-			static const FilePath VIDEOS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/videos" );
-			static const FilePath LOGS_DIR			= FilePath( EXECUTABLE_DIR.string() + "/logs" );
-			static const FilePath LIBRARIES_DIR		= FilePath( EXECUTABLE_DIR.string() + "/libraries" );
-			static const FilePath INTERNAL_DATA_DIR = FilePath( EXECUTABLE_DIR.string() + "/data" );
-
-			static const FilePath SCENE_OBJECT_FOLDER = FilePath( "obj" );
-
-			static const FilePath LICENSE_PATH			 = FilePath( EXECUTABLE_DIR.string() + "/license.txt" );
-			static const FilePath RESIDUE_DATA_DIRECTORY = INTERNAL_DATA_DIR / "residue_data";
-
-			static const FilePath DATA_DIR				  = "../data";
-			static const FilePath SHADERS_DIR_SRC		  = "../src/shader";
-			static const QString  DEFAULT_SAVE_FOLDER	  = "../save";
-			static const QString  DEFAULT_MOLECULE_FOLDER = "../data";
+			static const int	 MAX_FILE_LENGTH	  = 180;
+			static const QString REGEX_VALID_FILENAME = "[^\\\\/:*?\"<>|]*";
 
 			static const QString MOLECULE_EXTENSIONS_READ
 				= "Amber Net CDF (*.nc);;"
@@ -124,244 +119,86 @@ namespace VTX
 			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
 
-			static const FilePath REPRESENTATION_LIBRARY_DIR = FilePath( LIBRARIES_DIR.string() + "/representations" );
-			static const FilePath RENDER_EFFECT_PRESET_LIBRARY_DIR
-				= FilePath( LIBRARIES_DIR.string() + "/render_effects" );
-
-			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/setting.json" );
-			static const FilePath CONFIG_INI_FILE	= FilePath( EXECUTABLE_DIR.string() + "/config.ini" );
-
-			static const FilePath FFMPEG_EXE_FILE = FilePath( "bin/ffmpeg.exe" );
-
-			static const char * STYLESHEET_FILE_DEFAULT = ":/stylesheet.css";
+			static const IO::FilePath STYLESHEET_FILE_DEFAULT = ":/stylesheet.css";
+			static const IO::FilePath SCENE_OBJECT_DIR		  = "/obj";
 
 			static const std::string DEFAULT_SCENE_FILENAME	   = "New Scene";
 			static const std::string DEFAULT_MOLECULE_FILENAME = "New Molecule";
 
-			inline const FilePath getDataPath( const std::string & p_filename )
+			IO::FilePath		   getParentDir( const IO::FilePath & p_path );
+			void				   createDirectory( const IO::FilePath & p_filePath );
+			bool				   copyFile( const IO::FilePath & p_from, const IO::FilePath & p_to );
+			const std::string	   readPath( const IO::FilePath & p_filePath );
+			void				   readPath( const IO::FilePath & p_filePath, std::string & p_content );
+			bool				   remove( const IO::FilePath & p_filename );
+			bool				   removeAll( const IO::FilePath & p_directory );
+			void				   copyDir( const IO::FilePath & p_from, const IO::FilePath & p_to );
+			std::set<IO::FilePath> getFilesInDirectory( const IO::FilePath & p_directory );
+			void				   generateUniqueFileName( IO::FilePath & p_filePath );
+			void				   checkSaveDirectoryHierarchy( const IO::FilePath & p_savePath );
+			IO::FilePath		   getDefaultMoleculeExportPath();
+			IO::FilePath		   getDefaultSceneSavePath();
+
+			inline const IO::FilePath getDataPath( const IO::FilePath & p_filename )
 			{
-				return FilePath( DATA_DIR / p_filename );
+				return IO::FilePath( DATA_DIR / p_filename );
 			}
 
-			inline const FilePath getShadersPath( const std::string & p_filename )
+			inline const IO::FilePath getShadersPath( const IO::FilePath & p_filename )
 			{
-				return FilePath( SHADERS_DIR ) /= p_filename;
+				createDirectory( getShadersDir() );
+				return IO::FilePath( getShadersDir() / p_filename );
 			}
 
-			inline const FilePath getSnapshotsPath( const std::string & p_filename )
+			inline const IO::FilePath getSnapshotsPath( const IO::FilePath & p_filename )
 			{
-				std::filesystem::create_directories( SNAPSHOTS_DIR );
-				return FilePath( SNAPSHOTS_DIR ) /= p_filename;
+				createDirectory( getSnapshotsDir() );
+				return IO::FilePath( getSnapshotsDir() / p_filename );
 			}
 
-			inline const FilePath getRendersPath( const std::string & p_filename )
+			inline const IO::FilePath getRendersPath( const IO::FilePath & p_filename )
 			{
-				std::filesystem::create_directories( RENDERS_DIR );
-				return FilePath( RENDERS_DIR ) /= p_filename;
+				createDirectory( getRendersDir() );
+				return IO::FilePath( getRendersDir() / p_filename );
 			}
 
-			inline const FilePath getPathsPath( const std::string & p_filename )
+			inline const IO::FilePath getLogsPath( const IO::FilePath & p_filename )
 			{
-				std::filesystem::create_directories( PATHS_DIR );
-				return FilePath( PATHS_DIR ) /= p_filename;
+				createDirectory( getLogsDir() );
+				return IO::FilePath( getLogsDir() / p_filename );
 			}
 
-			inline const FilePath getVideosBatchPath( const std::string & p_batchName )
+			inline const IO::FilePath getRepresentationPath( const IO::FilePath & p_filename )
 			{
-				FilePath dir = FilePath( VIDEOS_DIR ) /= p_batchName;
-				std::filesystem::create_directories( dir );
-				return FilePath( dir );
+				createDirectory( getRepresentationsLibraryDir() );
+				return IO::FilePath( getRepresentationsLibraryDir() / p_filename );
 			}
 
-			inline const FilePath getVideosPath( const std::string & p_batchName, const std::string & p_fileName )
+			inline const IO::FilePath getRenderEffectPath( const IO::FilePath & p_filename )
 			{
-				FilePath dir = getVideosBatchPath( p_batchName );
-				return dir /= p_fileName;
+				createDirectory( getRenderEffectPresetsLibraryDir() );
+				return IO::FilePath( getRenderEffectPresetsLibraryDir() / p_filename );
 			}
 
-			inline const FilePath getVideosPath( const std::string & p_fileName )
+			inline bool isSessionFile( const IO::FilePath & p_filePath ) { return p_filePath.extension() == "vtx"; }
+
+			inline IO::FilePath getSceneSaveDirectory( const IO::FilePath & p_savePath )
 			{
-				return FilePath( VIDEOS_DIR ) /= p_fileName;
+				const IO::FilePath projectDirectoryName
+					= IO::FilePath( p_savePath.filenameWithoutExtension() + "_data" );
+
+				return getParentDir( p_savePath ) / projectDirectoryName;
 			}
 
-			inline const FilePath getLogsPath( const std::string & p_filename )
+			inline IO::FilePath getSceneObjectsSaveDirectory( const IO::FilePath & p_savePath )
 			{
-				std::filesystem::create_directories( LOGS_DIR );
-				return FilePath( LOGS_DIR ) /= p_filename;
+				return getSceneSaveDirectory( p_savePath ) / SCENE_OBJECT_DIR;
 			}
 
-			inline const FilePath getRepresentationLibraryDirectory()
+			inline IO::FilePath getResidueDataFilePath( const IO::FilePath & p_residueName )
 			{
-				std::filesystem::create_directories( LIBRARIES_DIR );
-				std::filesystem::create_directories( REPRESENTATION_LIBRARY_DIR );
-
-				return REPRESENTATION_LIBRARY_DIR;
+				return getResidueDataDir() / p_residueName.path().substr( 0, 1 );
 			}
-			inline const FilePath getRepresentationPath( const std::string & p_filename )
-			{
-				return getRepresentationLibraryDirectory() / p_filename;
-			}
-
-			inline const FilePath getRenderEffectPresetLibraryDirectory()
-			{
-				std::filesystem::create_directories( LIBRARIES_DIR );
-				std::filesystem::create_directories( RENDER_EFFECT_PRESET_LIBRARY_DIR );
-
-				return RENDER_EFFECT_PRESET_LIBRARY_DIR;
-			}
-			inline const FilePath getRenderEffectPath( const std::string & p_filename )
-			{
-				return getRenderEffectPresetLibraryDirectory() / p_filename;
-			}
-			inline bool isSessionFile( const FilePath & p_filePath ) { return p_filePath.extension() == ".vtx"; }
-
-			inline const std::string readPath( const FilePath & p_path )
-			{
-				std::ifstream file;
-				file.open( p_path, std::ios::in );
-
-				if ( !file.is_open() )
-				{
-					throw Exception::IOException( "Cannot open file " + p_path.string() );
-				}
-
-				const uintmax_t size = std::filesystem::file_size( p_path );
-				std::string		result( size, '\0' );
-				file.read( result.data(), size );
-				file.close();
-
-				return result;
-			}
-
-			inline void readPath( const FilePath & p_path, std::string & p_content )
-			{
-				std::ifstream file;
-				file.open( p_path, std::ios::in );
-
-				if ( !file.is_open() )
-				{
-					throw Exception::IOException( "Cannot open file " + p_path.string() );
-				}
-
-				const uintmax_t size = std::filesystem::file_size( p_path );
-				p_content.resize( size, '\0' );
-				file.read( p_content.data(), size );
-				file.close();
-			}
-
-			inline void		createDirectory( const FilePath & p_path ) { std::filesystem::create_directory( p_path ); }
-			inline FilePath getParentPath( const FilePath & p_path ) { return p_path.parent_path(); }
-
-			inline FilePath getFileNameWithoutExtension( const FilePath & p_path )
-			{
-				return p_path.filename().replace_extension();
-			}
-
-			inline void generateUniqueFileName( FilePath & p_path )
-			{
-				uint counter = 2;
-
-				const std::string defaultFileName = getFileNameWithoutExtension( p_path ).string();
-				const std::string extension		  = p_path.extension().string();
-
-				while ( std::filesystem::exists( p_path ) )
-				{
-					p_path.replace_filename( defaultFileName + " " + std::to_string( counter ) + extension );
-					counter++;
-				}
-			}
-
-			inline bool copy( const FilePath & p_from, const FilePath & p_to )
-			{
-				bool succeed;
-
-				try
-				{
-					std::filesystem::copy( p_from, p_to, std::filesystem::copy_options::recursive );
-					succeed = true;
-				}
-				catch ( std::exception e )
-				{
-					VTX_WARNING( "Cannot copy file " + p_from.string() + " to " + p_to.string() + " : " + e.what() );
-					succeed = false;
-				}
-
-				return succeed;
-			}
-
-			inline bool removeAll( const FilePath & p_directory )
-			{
-				bool succeed;
-				try
-				{
-					succeed = std::filesystem::remove_all( p_directory );
-				}
-				catch ( const std::exception & e )
-				{
-					VTX_ERROR( "Error when clear directory " + p_directory.string() + " : " + e.what() );
-					succeed = false;
-				}
-
-				return succeed;
-			}
-
-			inline void getFilesInDirectory( const FilePath & p_directory, std::set<std::string> & p_container )
-			{
-				for ( const FilePath & file : std::filesystem::directory_iterator( p_directory ) )
-					p_container.emplace( file.string() );
-			}
-
-			inline bool remove( const FilePath & p_filename )
-			{
-				bool succeed;
-				try
-				{
-					succeed = std::filesystem::remove( p_filename );
-				}
-				catch ( const std::exception & e )
-				{
-					VTX_ERROR( "Error when removing file " + p_filename.string() + " : " + e.what() );
-					succeed = false;
-				}
-
-				return succeed;
-			}
-
-			inline bool exists( const FilePath & p_path ) { return std::filesystem::exists( p_path ); }
-
-			inline FilePath getSceneSaveDirectory( const FilePath & p_savePath )
-			{
-				const FilePath projectDirectoryName
-					= FilePath( getFileNameWithoutExtension( p_savePath ).string() + "_Data" );
-
-				return getParentPath( p_savePath ) / projectDirectoryName;
-			}
-			inline FilePath getSceneObjectsSaveDirectory( const FilePath & p_savePath )
-			{
-				const FilePath projectDirectoryName
-					= FilePath( getFileNameWithoutExtension( p_savePath ).string() + "_Data" );
-
-				return getSceneSaveDirectory( p_savePath ) / SCENE_OBJECT_FOLDER;
-			}
-
-			inline void checkSaveDirectoryHierarchy( const FilePath & p_savePath )
-			{
-				const FilePath projectDirectory = getSceneSaveDirectory( p_savePath );
-				if ( !Util::Filesystem::exists( projectDirectory ) )
-					createDirectory( projectDirectory );
-
-				const FilePath objectsPath = getSceneObjectsSaveDirectory( p_savePath );
-				if ( !Util::Filesystem::exists( objectsPath ) )
-					createDirectory( objectsPath );
-			}
-
-			inline FilePath getResidueDataFilePath( const std::string & p_residueName )
-			{
-				return RESIDUE_DATA_DIRECTORY / p_residueName.substr( 0, 1 );
-			}
-
-			FilePath getDefaultMoleculeExportPath();
-			FilePath getDefaultSceneSavePath();
 
 		} // namespace Filesystem
 	}	  // namespace Util

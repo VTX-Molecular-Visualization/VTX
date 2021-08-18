@@ -36,8 +36,8 @@ namespace VTX::IO::Reader
 		bool readResidueData( const std::string & p_residueSymbol, ResidueData & p_residueData );
 
 	  protected:
-		virtual void readFile( const FilePath &, ResidueData & ) { throw Exception::NotImplementedException(); }
-		virtual void readBuffer( const std::string & p_buffer, const FilePath &, ResidueData & )
+		virtual void readFile( const IO::FilePath &, ResidueData & ) { throw Exception::NotImplementedException(); }
+		virtual void readBuffer( const std::string & p_buffer, const IO::FilePath &, ResidueData & )
 		{
 			throw Exception::NotImplementedException();
 		}

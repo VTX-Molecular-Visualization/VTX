@@ -13,10 +13,10 @@ namespace VTX::IO::Reader
 	class SerializedObject : public BaseReader<T>
 	{
 	  public:
-		void readFile( const FilePath & p_path, T & p_data ) override
+		void readFile( const IO::FilePath & p_path, T & p_data ) override
 		{
 			IO::Serializer serializer = IO::Serializer();
-			std::ifstream  is( p_path );
+			std::ifstream  is( p_path.path() );
 			nlohmann::json json;
 			is >> json;
 			serializer.deserialize( json.at( "DATA" ), p_data );

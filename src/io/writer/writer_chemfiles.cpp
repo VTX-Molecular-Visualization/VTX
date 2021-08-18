@@ -9,11 +9,11 @@
 
 namespace VTX::IO::Writer
 {
-	void ChemfilesWriter::writeFile( const FilePath & p_path, const Model::Molecule & p_molecule )
+	void ChemfilesWriter::writeFile( const IO::FilePath & p_path, const Model::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
 
-		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string(), 'w' );
+		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.path(), 'w' );
 		_writeTrajectory( trajectory, p_molecule );
 		trajectory.close();
 	}

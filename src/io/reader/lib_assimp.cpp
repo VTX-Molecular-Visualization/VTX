@@ -7,9 +7,9 @@
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
+//#include <assimp/Importer.hpp>
+//#include <assimp/postprocess.h>
+//#include <assimp/scene.h>
 
 namespace VTX
 {
@@ -17,8 +17,9 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			void LibAssimp::readFile( const FilePath & p_path, Model::MeshTriangle & p_mesh )
+			void LibAssimp::readFile( const IO::FilePath & p_path, Model::MeshTriangle & p_mesh )
 			{
+				/*
 				Assimp::Importer Importer;
 
 				const aiScene * const scene
@@ -86,10 +87,12 @@ namespace VTX
 						color.setB( 0.f );
 					}
 				}
+				*/
 			}
 
-			void LibAssimp::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
+			void LibAssimp::readFile( const IO::FilePath & p_path, Model::Molecule & p_molecule )
 			{
+				/*
 				Assimp::Importer Importer;
 
 				const aiScene * const scene = Importer.ReadFile( p_path.string(), 0 );
@@ -187,6 +190,7 @@ namespace VTX
 						}
 					}
 				}
+				*/
 			}
 		} // namespace Reader
 	}	  // namespace IO

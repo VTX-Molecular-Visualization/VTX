@@ -40,8 +40,8 @@ namespace VTX::Action::Setting
 		explicit Load() {}
 		virtual void execute() override
 		{
-			const VTX::FilePath & path = Util::Filesystem::SETTING_JSON_FILE;
-			if ( std::filesystem::exists( path ) == false )
+			const IO::FilePath & path = Util::Filesystem::getSettingJsonFile();
+			if ( path.exists() == false )
 			{
 				VTX_INFO( "No settings file found" );
 				return;
@@ -69,7 +69,7 @@ namespace VTX::Action::Setting
 			IO::Writer::SerializedObject<VTX::Setting> writer = IO::Writer::SerializedObject<VTX::Setting>();
 			try
 			{
-				writer.writeFile( Util::Filesystem::SETTING_JSON_FILE, VTX_SETTING() );
+				writer.writeFile( Util::Filesystem::getSettingJsonFile(), VTX_SETTING() );
 				VTX_INFO( "Settings saved " );
 			}
 			catch ( const std::exception & p_e )

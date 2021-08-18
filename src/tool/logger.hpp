@@ -5,6 +5,7 @@
 #include "util/time.hpp"
 #include <iostream>
 #include <string>
+#include <vector>
 
 namespace VTX
 {

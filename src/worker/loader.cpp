@@ -12,6 +12,7 @@
 #include "object3d/scene.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
+#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -23,16 +24,17 @@ namespace VTX
 			Model::Configuration::Molecule config = Model::Configuration::Molecule();
 
 			// Load PRM or PSF file firstly.
-			std::vector<FilePath>::iterator itPath = _paths.begin();
+			std::vector<IO::FilePath>::iterator itPath = _paths.begin();
 			while ( itPath != _paths.end() )
 			{
-				if ( itPath->extension() == ".prm" )
+				const std::string extension = ( *itPath ).extension();
+				if ( extension == "prm" )
 				{
 					IO::Reader::PRM reader = IO::Reader::PRM();
 					reader.readFile( *itPath, config );
 					itPath = _paths.erase( itPath );
 				}
-				else if ( itPath->extension() == ".psf" )
+				else if ( extension == "psf" )
 				{
 					IO::Reader::PSF reader = IO::Reader::PSF();
 					reader.readFile( *itPath, config );
@@ -46,10 +48,10 @@ namespace VTX
 
 			// Load all files.
 			Tool::Chrono chrono;
-			for ( FilePath & path : _paths )
+			for ( IO::FilePath & path : _paths )
 			{
 				chrono.start();
-				emit logInfo( "Loading " + path.filename().string() );
+				emit logInfo( "Loading " + path.filename() );
 				MODE mode = _getMode( path );
 
 				_pathResult.emplace( path, Result( SOURCE_TYPE::FILE ) );
@@ -133,10 +135,10 @@ namespace VTX
 			}
 
 			// Load all buffers.
-			for ( const std::pair<FilePath, std::string *> & pair : _mapFileNameBuffer )
+			for ( const std::pair<IO::FilePath, std::string *> & pair : _mapFileNameBuffer )
 			{
 				chrono.start();
-				emit logInfo( "Loading " + pair.first.filename().string() );
+				emit logInfo( "Loading " + pair.first.filename() );
 				MODE mode = _getMode( pair.first );
 
 				_pathResult.emplace( pair.first, Result( SOURCE_TYPE::BUFFER ) );
@@ -178,16 +180,16 @@ namespace VTX
 			return 1;
 		}
 
-		Loader::MODE Loader::_getMode( const FilePath & p_path ) const
+		Loader::MODE Loader::_getMode( const IO::FilePath & p_path ) const
 		{
-			FilePath extension = p_path.extension();
+			std::string extension = p_path.extension();
 
-			if ( extension == ".nc" || extension == ".cif" || extension == ".cml" || extension == ".cssr"
-				 || extension == ".dcd" || extension == ".gro" || extension == ".lammpstrj" || extension == ".mmcif"
-				 || extension == ".mmtf" || extension == ".mol2" || extension == ".molden" || extension == ".pdb"
-				 || extension == ".sdf" || extension == ".smi" || extension == ".arc" || extension == ".trr"
-				 || extension == ".mmtf" || extension == ".xtc" || extension == ".tng" || extension == ".trj"
-				 || extension == ".xyz" )
+			if ( extension == "nc" || extension == "cif" || extension == "cml" || extension == "cssr"
+				 || extension == "dcd" || extension == "gro" || extension == "lammpstrj" || extension == "mmcif"
+				 || extension == "mmtf" || extension == "mol2" || extension == "molden" || extension == "pdb"
+				 || extension == "sdf" || extension == "smi" || extension == "arc" || extension == "trr"
+				 || extension == "mmtf" || extension == "xtc" || extension == "tng" || extension == "trj"
+				 || extension == "xyz" )
 			{
 				return MODE::MOLECULE;
 			}

@@ -101,7 +101,7 @@ namespace VTX::UI
 		_mainMenuBar->setCurrentTab( 0 );
 		_renderWidget->setFocus();
 
-		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT );
+		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
 	}
 	void MainWindow::initWindowLayout()
 	{
@@ -151,11 +151,11 @@ namespace VTX::UI
 		title += " - RELEASE";
 #endif
 #endif
-		const FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
+		const IO::FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
 
 		if ( !currentSessionFilepath.empty() )
 		{
-			title += " - " + currentSessionFilepath.filename().string();
+			title += " - " + currentSessionFilepath.filename();
 
 			if ( VTXApp::get().getScenePathData().sceneHasModifications() )
 			{
@@ -288,12 +288,12 @@ namespace VTX::UI
 
 		if ( mimeData->hasUrls() )
 		{
-			std::vector<FilePath> _paths  = std::vector<FilePath>();
-			const QList<QUrl> &	  urlList = mimeData->urls();
+			std::vector<IO::FilePath> _paths  = std::vector<IO::FilePath>();
+			const QList<QUrl> &		  urlList = mimeData->urls();
 
 			for ( const QUrl & url : urlList )
 			{
-				_paths.emplace_back( FilePath( url.toLocalFile().toStdString() ) );
+				_paths.emplace_back( IO::FilePath( url.toLocalFile().toStdString() ) );
 			}
 
 			VTX_ACTION( new Action::Main::Open( _paths ) );
@@ -376,15 +376,13 @@ namespace VTX::UI
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::CONFIG_INI_FILE.string() ),
-							QSettings::IniFormat );
+		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		return settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 	}
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::CONFIG_INI_FILE.string() ),
-							QSettings::IniFormat );
+		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
 		// Delayed restore state because all widgets grows when restore in maximized (sizes are stored when maximized,
@@ -410,8 +408,7 @@ namespace VTX::UI
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::CONFIG_INI_FILE.string() ),
-							QSettings::IniFormat );
+		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 		delete _restoreStateTimer;
 		_restoreStateTimer = nullptr;
@@ -420,15 +417,13 @@ namespace VTX::UI
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::CONFIG_INI_FILE.string() ),
-							QSettings::IniFormat );
+		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		settings.setValue( "Geometry", saveGeometry() );
 		settings.setValue( "WindowState", saveState() );
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::CONFIG_INI_FILE.string() ),
-							QSettings::IniFormat );
+		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		settings.clear();
 	}
 

@@ -23,11 +23,11 @@ namespace VTX
 			{
 			  public:
 				Data();
-				Data( const FilePath & p_path );
+				Data( const IO::FilePath & p_path );
 
-				void			 registerPath( const FilePath & p_filepath );
-				bool			 hasFilepath() const;
-				const FilePath & getFilepath() const;
+				void				 registerPath( const IO::FilePath & p_filepath );
+				bool				 hasFilepath() const;
+				const IO::FilePath & getFilepath() const;
 
 				bool hasChanged() const;
 				void setHasChanged( const bool p_hasChanged );
@@ -47,11 +47,11 @@ namespace VTX
 			ScenePathData();
 			virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-			void registerLoading( const Model::Molecule * const p_molecule, const FilePath & p_filepath );
+			void registerLoading( const Model::Molecule * const p_molecule, const IO::FilePath & p_filepath );
 
-			inline const FilePath & getCurrentPath() const { return _currentFilePath; }
-			void					setCurrentPath( const FilePath & p_filePath, const bool p_addInRecentPath = true );
-			void					clearCurrentPath();
+			inline const IO::FilePath & getCurrentPath() const { return _currentFilePath; }
+			void setCurrentPath( const IO::FilePath & p_filePath, const bool p_addInRecentPath = true );
+			void clearCurrentPath();
 
 			Data & getData( const Model::Molecule * const p_molecule );
 
@@ -63,7 +63,7 @@ namespace VTX
 			void	   resetSceneModifications();
 
 		  private:
-			FilePath								_currentFilePath = FilePath();
+			IO::FilePath							_currentFilePath = IO::FilePath();
 			std::map<const Model::Molecule *, Data> _mapMoleculePath;
 			int										_sceneModificationsCount = 0;
 			bool									_forceSceneModifications = false;

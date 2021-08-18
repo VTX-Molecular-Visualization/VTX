@@ -113,7 +113,7 @@ namespace VTX::UI::Widget::Information
 			"<a href = \"https://www.flaticon.com/authors/pixel-perfect\">pixel-perfect</a> - "
 			"<a href = \"https://www.flaticon.com/authors/roundicons\">roundicons</a> - "
 			"<a href = \"https://www.flaticon.com/authors/vectors-market\">vectors-market</a>"
-		"");
+			"" );
 
 		QVBoxLayout * const mainVerticalLayout = new QVBoxLayout( this );
 		QHBoxLayout * const headerLayout	   = new QHBoxLayout();
@@ -180,7 +180,7 @@ namespace VTX::UI::Widget::Information
 
 	QString InformationWidget::_getLicenseText() const
 	{
-		return QString::fromStdString( Util::Filesystem::readPath( Util::Filesystem::LICENSE_PATH ) );
+		return QString::fromStdString( Util::Filesystem::readPath( Util::Filesystem::getLicenseFile() ) );
 	}
 
 	void InformationWidget::_onFrameChange( const int p_frame )

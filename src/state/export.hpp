@@ -35,7 +35,7 @@ namespace VTX
 			uint							 _frame		 = 0u;
 			uint							 _frameCount = 0u;
 
-			void _generareVideo() const;
+			// void _generareVideo() const;
 		};
 	} // namespace State
 } // namespace VTX

@@ -4,7 +4,8 @@ namespace VTX::View::D3
 {
 	Renderer::GL::Program * const Triangle::_createProgram()
 	{
-		return VTX_PROGRAM_MANAGER().createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
+		return VTX_PROGRAM_MANAGER().createProgram(
+			"Triangle", { IO::FilePath( "triangle.vert" ), IO::FilePath( "triangle.frag" ) } );
 	}
 
 	void Triangle::render( const Object3D::Camera & p_camera ) const
