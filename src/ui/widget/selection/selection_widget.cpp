@@ -113,7 +113,7 @@ namespace VTX::UI::Widget::Selection
 			default:
 				VTX_WARNING( "Selection " + std::to_string( i )
 							 + " not managed in SelectionWidget::getSelectionTypeText." );
-				txt = "<unknown>";
+				txt = "Unknown";
 				break;
 			}
 

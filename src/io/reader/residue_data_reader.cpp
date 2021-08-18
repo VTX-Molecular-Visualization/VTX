@@ -3,10 +3,16 @@
 
 namespace VTX::IO::Reader
 {
-	void ResidueDataReader::readResidueData( const std::string & p_residueSymbol, ResidueData & p_residueData )
+	const ResidueData ResidueData::DEFAULT = ResidueData( "Unknown", std::vector<BondData>() );
+
+	bool ResidueDataReader::readResidueData( const std::string & p_residueSymbol, ResidueData & p_residueData )
 	{
 		const FilePath filepath = Util::Filesystem::getResidueDataFilePath( p_residueSymbol );
 		std::string	   residueFileData;
+
+		if ( !Util::Filesystem::exists( filepath ) )
+			return false;
+
 		Util::Filesystem::readPath( filepath, residueFileData );
 
 		std::stringstream stream = std::stringstream( residueFileData );
@@ -34,8 +40,9 @@ namespace VTX::IO::Reader
 
 			p_residueData.bondData.emplace_back( bondData );
 		}
-	}
 
+		return true;
+	}
 	void ResidueDataReader::_goToResidue( std::stringstream & p_stream, const std::string & p_residueSymbol )
 	{
 		const std::string residueLine = "#" + p_residueSymbol;

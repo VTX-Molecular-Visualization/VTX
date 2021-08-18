@@ -32,7 +32,7 @@ namespace VTX::UI
 
 		if ( !filenames.isEmpty() )
 		{
-			Setting::saveLastImportedMoleculeFolder( filenames[ 0 ] );
+			Setting::saveLastImportedMoleculeFolder( filenames[ filenames.size() - 1 ] );
 
 			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
@@ -142,19 +142,23 @@ namespace VTX::UI
 		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_FILE_READ_FILTER );
 		QString			defaultPath	  = Setting::getLastLoadedSessionFolder();
 
-		const QString filename = QFileDialog::getOpenFileName( &VTXApp::get().getMainWindow(),
-															   "Open session",
-															   defaultPath,
-															   Util::Filesystem::OPEN_FILE_FILTERS,
-															   defaultFilter );
+		const QStringList filenames = QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
+																	 "Open session",
+																	 defaultPath,
+																	 Util::Filesystem::OPEN_FILE_FILTERS,
+																	 defaultFilter );
 
 		delete defaultFilter;
 
-		if ( !filename.isNull() )
+		if ( filenames.size() > 0 )
 		{
-			Setting::saveLastLoadedSessionFolder( filename );
-			const FilePath path = FilePath( filename.toStdString() );
-			VTX_ACTION( new Action::Main::Open( path ) );
+			Setting::saveLastLoadedSessionFolder( filenames[ filenames.size() - 1 ] );
+
+			std::vector<FilePath> filepathes = std::vector<FilePath>();
+			for ( const QString & qstr : filenames )
+				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
+
+			VTX_ACTION( new Action::Main::Open( filepathes ) );
 		}
 	}
 

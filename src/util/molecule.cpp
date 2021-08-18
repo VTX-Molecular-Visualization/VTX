@@ -11,9 +11,11 @@ namespace VTX::Util::Molecule
 	{
 		IO::Reader::ResidueDataReader reader = IO::Reader::ResidueDataReader();
 		IO::Reader::ResidueData		  residueData;
-		reader.readResidueData( p_residueSymbol, residueData );
 
-		mapLoadedResidueData.emplace( p_residueSymbol, residueData );
+		if ( reader.readResidueData( p_residueSymbol, residueData ) )
+			mapLoadedResidueData.emplace( p_residueSymbol, residueData );
+		else
+			mapLoadedResidueData.emplace( p_residueSymbol, IO::Reader::ResidueData::DEFAULT );
 	}
 
 	const std::string & getResidueFullName( const std::string & p_residueSymbol )
@@ -37,9 +39,9 @@ namespace VTX::Util::Molecule
 		Util::BondGuessing::BondOrderGuessing::recomputeBondOrders( p_molecule );
 	}
 
-	void recomputeBondOrdersFromFile( Model::Molecule & p_molecule )
+	bool recomputeBondOrdersFromFile( Model::Molecule & p_molecule )
 	{
-		Util::BondGuessing::BondOrderGuessing::recomputeBondOrdersFromFile( p_molecule );
+		return Util::BondGuessing::BondOrderGuessing::recomputeBondOrdersFromFile( p_molecule );
 	}
 
 } // namespace VTX::Util::Molecule

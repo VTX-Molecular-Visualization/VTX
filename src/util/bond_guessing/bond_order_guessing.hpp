@@ -80,8 +80,8 @@ namespace VTX
 			static void recomputeBondOrders( chemfiles::Frame & p_frame );
 			static void recomputeBondOrders( Model::Molecule & p_molecule );
 
-			static void recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
-			static void recomputeBondOrdersFromFile( Model::Molecule & p_molecule );
+			static bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
+			static bool recomputeBondOrdersFromFile( Model::Molecule & p_molecule );
 
 			static const std::vector<IO::Reader::BondData> & getResidueBonds( const std::string & p_residueSymbol );
 

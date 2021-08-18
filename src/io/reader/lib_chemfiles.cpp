@@ -128,7 +128,7 @@ namespace VTX::IO::Reader
 			// If no residue, create a fake one.
 			// TODO: check file format instead of residue count?
 			_logInfo( "No residues found" );
-			chemfiles::Residue residue = chemfiles::Residue( "" );
+			chemfiles::Residue residue = chemfiles::Residue( "UNK", 0 );
 			for ( uint i = 0; i < frame.size(); ++i )
 			{
 				residue.add_atom( i );
@@ -184,7 +184,7 @@ namespace VTX::IO::Reader
 		{
 			hasTopology = false;
 			_logInfo( "No residues found" );
-			chemfiles::Residue residue = chemfiles::Residue( "" );
+			chemfiles::Residue residue = chemfiles::Residue( "UNK" );
 			for ( uint i = 0; i < frame.size(); ++i )
 			{
 				residue.add_atom( i );
@@ -481,20 +481,17 @@ namespace VTX::IO::Reader
 
 		if ( Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
 		{
-			if ( Setting::LOAD_BOND_ORDER_FROM_FILE )
+			bondComputationChrono.start();
+			const bool allBondsRecomputed = Util::Chemfiles::recomputeBondOrdersFromFile( frame );
+
+			if ( !allBondsRecomputed )
 			{
-				bondComputationChrono.start();
-				Util::Chemfiles::recomputeBondOrdersFromFile( frame );
-				bondComputationChrono.stop();
-				_logInfo( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
-			}
-			else
-			{
-				bondComputationChrono.start();
+				_logInfo( "recomputeBondOrders with algorithm." );
 				Util::Chemfiles::recomputeBondOrders( frame );
-				bondComputationChrono.stop();
-				_logInfo( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
 			}
+
+			bondComputationChrono.stop();
+			_logInfo( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
 		}
 
 		// Bonds.
@@ -577,20 +574,16 @@ namespace VTX::IO::Reader
 
 		if ( !Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
 		{
-			if ( Setting::LOAD_BOND_ORDER_FROM_FILE )
+			bondComputationChrono.start();
+			const bool allBondsRecomputed = Util::Molecule::recomputeBondOrdersFromFile( p_molecule );
+
+			if ( !allBondsRecomputed )
 			{
-				bondComputationChrono.start();
-				Util::Molecule::recomputeBondOrdersFromFile( p_molecule );
-				bondComputationChrono.stop();
-				_logInfo( "recomputeBondOrdersFromFile : " + bondComputationChrono.elapsedTimeStr() );
-			}
-			else
-			{
-				bondComputationChrono.start();
+				_logInfo( "recomputeBondOrders with algorithm." );
 				Util::Molecule::recomputeBondOrders( p_molecule );
-				bondComputationChrono.stop();
-				_logInfo( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
 			}
+			bondComputationChrono.stop();
+			_logInfo( "recomputeBondOrders: " + bondComputationChrono.elapsedTimeStr() );
 		}
 
 		assert( counter == counterOld );

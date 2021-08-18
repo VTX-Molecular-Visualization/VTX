@@ -30,9 +30,9 @@ namespace VTX::Util::Chemfiles
 		BondGuessing::BondOrderGuessing::recomputeBondOrders( p_frame );
 	}
 
-	void recomputeBondOrdersFromFile( chemfiles::Frame & p_frame )
+	bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame )
 	{
-		BondGuessing::BondOrderGuessing::recomputeBondOrdersFromFile( p_frame );
+		return BondGuessing::BondOrderGuessing::recomputeBondOrdersFromFile( p_frame );
 	}
 
 } // namespace VTX::Util::Chemfiles

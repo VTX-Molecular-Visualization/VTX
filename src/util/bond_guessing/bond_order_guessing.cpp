@@ -1189,10 +1189,13 @@ namespace VTX::Util::BondGuessing
 		}
 	}
 
-	void BondOrderGuessing::recomputeBondOrdersFromFile( chemfiles::Frame & p_frame )
+	bool BondOrderGuessing::recomputeBondOrdersFromFile( chemfiles::Frame & p_frame )
 	{
+		bool res = true;
+
 		int						   bondDataCurrentIndex = 0;
 		const chemfiles::Residue * previousResidue		= nullptr;
+
 		for ( size_t iBond = 0; iBond < p_frame.topology().bonds().size(); iBond++ )
 		{
 			if ( p_frame.topology().bond_orders()[ iBond ] != chemfiles::Bond::BondOrder::UNKNOWN )
@@ -1209,8 +1212,16 @@ namespace VTX::Util::BondGuessing
 			std::experimental::optional<const chemfiles::Residue &> secondResidue
 				= p_frame.topology().residue_for_atom( secondAtomIndex );
 
-			if ( !bool( firstResidue ) || !bool( secondResidue ) || firstResidue.value() != secondResidue.value() )
+			if ( !bool( firstResidue ) || !bool( secondResidue ) )
+			{
+				// Unknown residue => maybe recompute not complete
+				res = false;
 				continue;
+			}
+			else if ( firstResidue.value() != secondResidue.value() )
+			{
+				continue;
+			}
 
 			const chemfiles::Residue & residue = firstResidue.value();
 
@@ -1241,10 +1252,14 @@ namespace VTX::Util::BondGuessing
 				}
 			}
 		}
+
+		return res;
 	}
 
-	void BondOrderGuessing::recomputeBondOrdersFromFile( Model::Molecule & p_molecule )
+	bool BondOrderGuessing::recomputeBondOrdersFromFile( Model::Molecule & p_molecule )
 	{
+		bool res = true;
+
 		int					   bondDataCurrentIndex = 0;
 		const Model::Residue * previousResidue		= nullptr;
 		for ( Model::Bond * const bond : p_molecule.getBonds() )
@@ -1287,6 +1302,7 @@ namespace VTX::Util::BondGuessing
 				}
 			}
 		}
+		return res;
 	}
 
 	const std::vector<IO::Reader::BondData> & BondOrderGuessing::getResidueBonds( const std::string & p_residueSymbol )

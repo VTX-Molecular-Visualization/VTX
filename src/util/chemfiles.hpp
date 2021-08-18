@@ -17,7 +17,7 @@ namespace VTX::Util::Chemfiles
 
 	void recomputeBonds( chemfiles::Frame & p_frame, const VTX::Math::AABB & p_aabb );
 	void recomputeBondOrders( chemfiles::Frame & p_frame );
-	void recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
+	bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
 
 } // namespace VTX::Util::Chemfiles
 

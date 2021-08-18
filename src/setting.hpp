@@ -188,7 +188,6 @@ namespace VTX
 		// Misc.
 		static const int		  CONSOLE_SIZE;
 		static const uint		  ACTION_BUFFER_SIZE; // For undo/redo
-		static const bool		  LOAD_BOND_ORDER_FROM_FILE		 = true;
 		static const bool		  COMPUTE_BOND_ORDER_ON_CHEMFILE = false;
 		inline static const float CELL_LIST_CUBE_SIZE			 = 8.f;
 

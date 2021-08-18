@@ -20,17 +20,20 @@ namespace VTX::IO::Reader
 	class ResidueData
 	{
 	  public:
+		static const ResidueData DEFAULT;
+
+		ResidueData() {};
+		ResidueData( const std::string & p_fullname, const std::vector<BondData> & p_bondData ) :
+			fullname( p_fullname ), bondData( p_bondData ) {};
+
 		std::string			  fullname;
 		std::vector<BondData> bondData;
 	};
 
 	class ResidueDataReader : BaseReader<ResidueData>
 	{
-	  protected:
-		inline static std::map<std::string, ResidueData> mapLoadedResidueData = std::map<std::string, ResidueData>();
-
 	  public:
-		void readResidueData( const std::string & p_residueSymbol, ResidueData & p_residueData );
+		bool readResidueData( const std::string & p_residueSymbol, ResidueData & p_residueData );
 
 	  protected:
 		virtual void readFile( const FilePath &, ResidueData & ) { throw Exception::NotImplementedException(); }

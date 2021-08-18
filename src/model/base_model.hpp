@@ -41,7 +41,7 @@ namespace VTX
 
 		  protected:
 			inline static ID				COUNTER		 = 0;
-			inline static const std::string DEFAULT_NAME = "<unknown>";
+			inline static const std::string DEFAULT_NAME = "Unknown";
 
 			const ID				 _id	  = COUNTER++;
 			bool					 _enabled = true;
