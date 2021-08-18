@@ -145,31 +145,37 @@ namespace VTX
 
 			inline const IO::FilePath getShadersPath( const IO::FilePath & p_filename )
 			{
+				createDirectory( getShadersDir() );
 				return IO::FilePath( getShadersDir() / p_filename );
 			}
 
 			inline const IO::FilePath getSnapshotsPath( const IO::FilePath & p_filename )
 			{
+				createDirectory( getSnapshotsDir() );
 				return IO::FilePath( getSnapshotsDir() / p_filename );
 			}
 
 			inline const IO::FilePath getRendersPath( const IO::FilePath & p_filename )
 			{
+				createDirectory( getRendersDir() );
 				return IO::FilePath( getRendersDir() / p_filename );
 			}
 
 			inline const IO::FilePath getLogsPath( const IO::FilePath & p_filename )
 			{
+				createDirectory( getLogsDir() );
 				return IO::FilePath( getLogsDir() / p_filename );
 			}
 
 			inline const IO::FilePath getRepresentationPath( const IO::FilePath & p_filename )
 			{
+				createDirectory( getRepresentationsLibraryDir() );
 				return IO::FilePath( getRepresentationsLibraryDir() / p_filename );
 			}
 
 			inline const IO::FilePath getRenderEffectPath( const IO::FilePath & p_filename )
 			{
+				createDirectory( getRenderEffectPresetsLibraryDir() );
 				return IO::FilePath( getRenderEffectPresetsLibraryDir() / p_filename );
 			}
 
