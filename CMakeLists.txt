@@ -205,7 +205,7 @@ if(BUILD_LIB)
 		file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
 		file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/cmake)
 		file(REMOVE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib)
-	else()
+	elseif(CMAKE_COMPILER_IS_GNUCC)
 	# For Linux (solo conf), juste build in current mode.
 	# Then use find_package to automatically add include folder and link lib. 
 		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 37f799f6d870e3b63d8190721491aba11d8b6a90 chemfiles "${CMAKE_BUILD_TYPE}")
@@ -217,7 +217,7 @@ message("Looking for dependencies...")
 # Set link directories.
 if(MSVC)
 	link_directories(${PATH_LIB}/chemfiles/lib)
-else()
+elseif(CMAKE_COMPILER_IS_GNUCC)
 	find_package(chemfiles REQUIRED PATHS "${CMAKE_SOURCE_DIR}/lib/chemfiles" NO_DEFAULT_PATH)
 endif()
 
@@ -255,7 +255,7 @@ target_link_libraries(VTX PRIVATE Qt5::Gamepad)
 target_link_libraries(VTX PRIVATE Qt5::Svg)
 target_link_libraries(VTX PRIVATE chemfiles)
 
-if(WIN32)
+if(MSVC)
 	# Add specific libs.
 	target_link_libraries(VTX PRIVATE ws2_32)
 endif()
@@ -263,7 +263,7 @@ endif()
 message("Creating post build events...")
 
 # Copy shared libs to output.	
-if(WIN32)
+if(MSVC)
 	# Debug
 	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB_BIN}/libcrypto-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/libcrypto-1_1-x64.dll)
 	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB_BIN}/libssl-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/libssl-1_1-x64.dll)
@@ -279,7 +279,7 @@ add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_dif
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gamepad> $<TARGET_FILE_DIR:VTX>)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Svg> $<TARGET_FILE_DIR:VTX>)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::QGifPlugin> $<TARGET_FILE_DIR:VTX>/imageformats/$<TARGET_FILE_NAME:Qt5::QGifPlugin>)
-if(WIN32)
+if(MSVC)
 	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::QWindowsIntegrationPlugin> $<TARGET_FILE_DIR:VTX>/platforms/$<TARGET_FILE_NAME:Qt5::QWindowsIntegrationPlugin>)
 endif()
 
