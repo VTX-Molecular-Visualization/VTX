@@ -730,7 +730,8 @@ namespace VTX::IO
 			}
 		}
 
-		return { { "CHAINS", jsonChainVisibilitiesArray },
+		return { { "SELF", p_molecule.isVisible() },
+				 { "CHAINS", jsonChainVisibilitiesArray },
 				 { "RESIDUES", jsonResidueVisibilitiesArray },
 				 { "ATOMS", jsonAtomVisibilitiesArray } };
 	}
@@ -778,6 +779,8 @@ namespace VTX::IO
 	void Serializer::_deserializeMoleculeVisibilities( const nlohmann::json & p_json,
 													   Model::Molecule &	  p_molecule ) const
 	{
+		p_molecule.setVisible( _get<bool>( p_json, "SELF", true ) );
+
 		if ( p_json.contains( "CHAINS" ) )
 		{
 			for ( const uint invisibleChainIndex : p_json.at( "CHAINS" ) )
