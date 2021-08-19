@@ -61,7 +61,9 @@ namespace VTX::UI::Widget::Information
 		licenseTitle->setText( "License:" );
 		QScrollArea * const licenseScrollArea = new QScrollArea( this );
 		QLabel * const		licenseTxt		  = new QLabel( this );
-		licenseTxt->setText( _getLicenseText() );
+		QString				licenseStr;
+		_getLicenseText( licenseStr );
+		licenseTxt->setText( licenseStr );
 		licenseTxt->setWordWrap( true );
 		licenseScrollArea->setWidget( licenseTxt );
 
@@ -178,9 +180,9 @@ namespace VTX::UI::Widget::Information
 		return majorVersion + '.' + minorVersion + '.' + revision;
 	}
 
-	QString InformationWidget::_getLicenseText() const
+	void InformationWidget::_getLicenseText( QString & p_txt ) const
 	{
-		return QString::fromStdString( Util::Filesystem::readPath( Util::Filesystem::getLicenseFile() ) );
+		Util::Filesystem::readPathQString( Util::Filesystem::getLicenseFile(), p_txt, "UTF-8" );
 	}
 
 	void InformationWidget::_onFrameChange( const int p_frame )

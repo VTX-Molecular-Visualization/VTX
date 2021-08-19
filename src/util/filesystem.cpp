@@ -37,22 +37,26 @@ namespace VTX::Util::Filesystem
 		}
 	}
 
-	const std::string readPath( const IO::FilePath & p_filePath )
+	const std::string readPath( const IO::FilePath & p_filePath, const char * p_codecName )
 	{
-		QFile file( p_filePath.qpath() );
-		if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) == false )
-		{
-			throw Exception::IOException( "Cannot open file " + p_filePath.path() + " : "
-										  + file.errorString().toStdString() );
-		}
-
-		QTextStream out( &file );
-		std::string content = out.readAll().toStdString();
-		file.close();
-		return content;
+		QString qStrContent;
+		readPathQString( p_filePath, qStrContent );
+		return qStrContent.toStdString();
+	}
+	void readPath( const IO::FilePath & p_filePath, std::string & p_content, const char * p_codecName )
+	{
+		QString qStrContent;
+		readPathQString( p_filePath, qStrContent );
+		p_content = qStrContent.toStdString();
 	}
 
-	void readPath( const IO::FilePath & p_filePath, std::string & p_content )
+	const QString readPathQString( const IO::FilePath & p_filePath, const char * p_codecName )
+	{
+		QString res;
+		readPathQString( p_filePath, res, p_codecName );
+		return res;
+	}
+	void readPathQString( const IO::FilePath & p_filePath, QString & p_content, const char * p_codecName )
 	{
 		QFile file( p_filePath.qpath() );
 		if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) == false )
@@ -62,7 +66,11 @@ namespace VTX::Util::Filesystem
 		}
 
 		QTextStream out( &file );
-		p_content = out.readAll().toStdString();
+
+		if ( p_codecName != nullptr )
+			out.setCodec( p_codecName );
+
+		p_content = out.readAll();
 		file.close();
 	}
 
@@ -160,9 +168,12 @@ namespace VTX::Util::Filesystem
 
 		while ( QFileInfo( p_filePath.qpath() ).exists() )
 		{
-			p_filePath = dir.filePath( QString::fromStdString( defaultFileName + " " + std::to_string( counter )
-															   + extension ) )
-							 .toStdString();
+			std::string newPath = defaultFileName + " " + std::to_string( counter );
+
+			if ( !extension.empty() )
+				newPath = newPath + '.' + extension;
+
+			p_filePath = dir.filePath( QString::fromStdString( newPath ) ).toStdString();
 			counter++;
 		}
 	}

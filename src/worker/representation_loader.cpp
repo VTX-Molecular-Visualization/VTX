@@ -97,6 +97,7 @@ namespace VTX::Worker
 			try
 			{
 				reader->readFile( path, *representation );
+				representation->setName( path.filenameWithoutExtension() );
 				Model::Representation::RepresentationLibrary::get().addRepresentation( representation, true );
 			}
 			catch ( const std::exception & p_e )

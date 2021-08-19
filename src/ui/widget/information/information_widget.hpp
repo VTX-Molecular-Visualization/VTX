@@ -36,7 +36,7 @@ namespace VTX::UI::Widget::Information
 		QPushButton * _bugReportButton = nullptr;
 
 		QString _getVersionText() const;
-		QString _getLicenseText() const;
+		void	_getLicenseText( QString & p_txt ) const;
 
 		QMovie * _movie = nullptr;
 

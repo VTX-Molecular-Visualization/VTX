@@ -64,6 +64,7 @@ namespace VTX::Worker
 			try
 			{
 				reader->readFile( path, *preset );
+				preset->setName( path.filenameWithoutExtension() );
 				Model::Renderer::RenderEffectPresetLibrary::get().addPreset( preset, true, true );
 			}
 			catch ( const std::exception & p_e )
