@@ -8,8 +8,8 @@
 
 #include <algorithm>
 #include <chrono>
+#include <ctime>
 #include <string>
-#include <time.h>
 
 namespace VTX
 {
