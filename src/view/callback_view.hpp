@@ -34,7 +34,7 @@ namespace VTX::View
 		}
 
 	  protected:
-		CallbackView( T1 * const p_model ) : BaseView( p_model ) {};
+		CallbackView( T1 * const p_model ) : View::BaseView<T1>( p_model ) {};
 
 	  private:
 		T2 * _notifyTarget																				  = nullptr;

@@ -121,12 +121,12 @@ namespace VTX
 		};
 	} // namespace Worker
 
-	inline void VTX_THREAD( VTX::Worker::BaseThread * const p_thread,
+	inline void VTX_THREAD( Worker::BaseThread * const p_thread,
 							Worker::CallbackThread * const	p_callback = nullptr )
 	{
 		Worker::WorkerManager::get().run( p_thread, p_callback );
 	}
-	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker,
+	inline void VTX_WORKER( Worker::BaseWorker * const p_worker,
 							Worker::CallbackWorker * const	p_callback = nullptr )
 	{
 		Worker::WorkerManager::get().run( p_worker, p_callback );
