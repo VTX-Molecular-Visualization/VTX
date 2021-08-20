@@ -5,19 +5,21 @@ namespace VTX
 {
 	namespace Math
 	{
-		AABB::AABB( const Vec3f & p_min, const Vec3f & p_max ) : _min( p_min ), _max( p_max ) {}
-		AABB::AABB( const Vec3f & p_center, const float p_radius ) : _min( p_center - p_radius ), _max( p_center + p_radius ) {}
+		AABB::AABB( const Vec3f & p_min, const Vec3f & p_max ) : data { p_min, p_max } {}
+		AABB::AABB( const Vec3f & p_center, const float p_radius ) : data { p_center - p_radius, p_center + p_radius }
+		{
+		}
 
 		void AABB::extend( const Vec3f & p_point )
 		{
-			_min = Util::Math::min( p_point, _min );
-			_max = Util::Math::max( p_point, _max );
+			data.minMax.min = Util::Math::min( p_point, data.minMax.min );
+			data.minMax.max = Util::Math::max( p_point, data.minMax.max );
 		}
 
 		void AABB::extend( const AABB & p_aabb )
 		{
-			_min = Util::Math::min( _min, p_aabb._min );
-			_max = Util::Math::max( _max, p_aabb._max );
+			data.minMax.min = Util::Math::min( data.minMax.min, p_aabb.data.minMax.min );
+			data.minMax.max = Util::Math::max( data.minMax.max, p_aabb.data.minMax.max );
 		}
 
 		void AABB::extend( const Vec3f & p_center, const float p_radius )
@@ -28,41 +30,41 @@ namespace VTX
 
 		void AABB::translate( const Vec3f & p_translation )
 		{
-			_min += p_translation;
-			_max += p_translation;
+			data.minMax.min += p_translation;
+			data.minMax.max += p_translation;
 		}
 
 		bool AABB::intersect( const Vec3f & p_rayPosition, const Vec3f & p_rayInvDir, const Vec3i & p_isDirNeg, const float p_tMin, const float p_tMax ) const
 		{
-			float t_min = ( _limits[ p_isDirNeg.x ].x - p_rayPosition.x ) * p_rayInvDir.x;
-			float t_max = ( _limits[ 1 - p_isDirNeg.x ].x - p_rayPosition.x ) * p_rayInvDir.x;
+			float tMin = ( data.limits[ p_isDirNeg.x ].x - p_rayPosition.x ) * p_rayInvDir.x;
+			float tMax = ( data.limits[ 1 - p_isDirNeg.x ].x - p_rayPosition.x ) * p_rayInvDir.x;
 
-			const float t_ymin = ( _limits[ p_isDirNeg.y ].y - p_rayPosition.y ) * p_rayInvDir.y;
-			const float t_ymax = ( _limits[ 1 - p_isDirNeg.y ].y - p_rayPosition.y ) * p_rayInvDir.y;
+			const float tYMin = ( data.limits[ p_isDirNeg.y ].y - p_rayPosition.y ) * p_rayInvDir.y;
+			const float tYMax = ( data.limits[ 1 - p_isDirNeg.y ].y - p_rayPosition.y ) * p_rayInvDir.y;
 
-			if ( t_min > t_ymax || t_ymin > t_max )
+			if ( tMin > tYMax || tYMin > tMax )
 				return false;
-			if ( t_ymin > t_min )
-				t_min = t_ymin;
-			if ( t_ymax < t_max )
-				t_max = t_ymax;
+			if ( tYMin > tMin )
+				tMin = tYMin;
+			if ( tYMax < tMax )
+				tMax = tYMax;
 
-			const float t_zmin = ( _limits[ p_isDirNeg.z ].z - p_rayPosition.z ) * p_rayInvDir.z;
-			const float t_zmax = ( _limits[ 1 - p_isDirNeg.z ].z - p_rayPosition.z ) * p_rayInvDir.z;
+			const float tZmin = ( data.limits[ p_isDirNeg.z ].z - p_rayPosition.z ) * p_rayInvDir.z;
+			const float tZmax = ( data.limits[ 1 - p_isDirNeg.z ].z - p_rayPosition.z ) * p_rayInvDir.z;
 
-			if ( t_min > t_zmax || t_zmin > t_max )
+			if ( tMin > tZmax || tZmin > tMax )
 				return false;
-			if ( t_zmin > t_min )
-				t_min = t_zmin;
-			if ( t_zmax < t_max )
-				t_max = t_zmax;
+			if ( tZmin > tMin )
+				tMin = tZmin;
+			if ( tZmax < tMax )
+				tMax = tZmax;
 
-			return ( ( t_min < p_tMax ) && ( t_max > p_tMin ) );
+			return ( ( tMin < p_tMax ) && ( tMax > p_tMin ) );
 		}
 
 		AABB AABB::join( const AABB & p_aabb1, const AABB & p_aabb2 )
 		{
-			return AABB( Util::Math::min( p_aabb1._min, p_aabb2._min ), Util::Math::max( p_aabb1._max, p_aabb2._max ) );
+			return AABB( Util::Math::min( p_aabb1.data.minMax.min, p_aabb2.data.minMax.min ), Util::Math::max( p_aabb1.data.minMax.max, p_aabb2.data.minMax.max ) );
 		}
 	} // namespace Math
 } // namespace VTX
