@@ -75,7 +75,8 @@ namespace VTX
 			return *_renderEffectLibrary;
 		}
 
-		bool hasAnyModifications() const;
+		float getPixelRatio() const;
+		bool  hasAnyModifications() const;
 
 		bool notify( QObject * const, QEvent * const ) override;
 

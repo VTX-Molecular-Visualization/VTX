@@ -76,7 +76,7 @@ namespace VTX::UI::Widget::Render
 		VTX_PROGRAM_MANAGER( _gl );
 		switchRenderer( Setting::MODE_DEFAULT );
 
-		float pixelRatio = VTXApp::get().desktop()->devicePixelRatioF();
+		const float pixelRatio = VTXApp::get().getPixelRatio();
 		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT * pixelRatio,
 							Setting::WINDOW_HEIGHT_DEFAULT * pixelRatio,
 							defaultFramebufferObject() );
@@ -123,8 +123,10 @@ namespace VTX::UI::Widget::Render
 
 		makeCurrent();
 		VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
-		float pixelRatio = VTXApp::get().desktop()->devicePixelRatioF();
+
+		const float pixelRatio = VTXApp::get().getPixelRatio();
 		getRenderer().resize( p_width * pixelRatio, p_height * pixelRatio, defaultFramebufferObject() );
+
 		doneCurrent();
 	}
 

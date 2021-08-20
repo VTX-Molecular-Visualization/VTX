@@ -16,6 +16,7 @@
 #include "util/filesystem.hpp"
 #include "worker/worker_manager.hpp"
 #include <QPalette>
+#include <QScreen>
 #include <QtPlatformHeaders/QWindowsWindowFunctions>
 #include <exception>
 
@@ -193,6 +194,14 @@ namespace VTX
 		{
 			VTX_ERROR( p_e.what() );
 		}
+	}
+
+	float VTXApp::getPixelRatio() const
+	{
+		const QPoint		  globalCenter = _mainWindow->mapToGlobal( _mainWindow->rect().center() );
+		const QScreen * const screenPtr	   = VTXApp::get().screenAt( globalCenter );
+
+		return screenPtr == nullptr ? 1.f : float( screenPtr->devicePixelRatio() );
 	}
 
 	void VTXApp::renderScene() const
