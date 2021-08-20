@@ -41,17 +41,17 @@ namespace VTX::UI
 	  public:
 		virtual void updateWithNewValue( T & p_value )
 		{
-			switch ( _state )
+			switch ( MultiDataField::_state )
 			{
 			case MultiDataField::State::Uninitialized:
 				_setSingleValue( p_value );
-				_state = MultiDataField::State::Identical;
+				MultiDataField::_state = MultiDataField::State::Identical;
 				break;
 
 			case MultiDataField::State::Identical:
 				if ( !_isEquals( _getValue(), p_value ) )
 				{
-					_state = MultiDataField::State::Different;
+					MultiDataField::_state = MultiDataField::State::Different;
 					_displayDifferentsDataFeedback();
 				}
 				break;

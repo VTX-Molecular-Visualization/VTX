@@ -49,7 +49,7 @@ namespace VTX::View
 		explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
 		virtual ~BaseView3D() = default;
 
-		inline OpenGLFunctions * const _gl() const { return _model->getBuffer()->getGL(); }
+		inline OpenGLFunctions * const _gl() const { return BaseView::_model->getBuffer()->getGL(); }
 
 		virtual Renderer::GL::Program * const _createProgram() = 0;
 		virtual void						  _init() {}
