@@ -18,22 +18,20 @@ namespace VTX::UI
 			Different
 		};
 
-		MultiDataField() {};
-		virtual void resetState() { _state = State::Uninitialized; }
-		virtual bool hasIdenticalData() const { return _state == State::Identical; }
-		virtual bool hasDifferentData() const { return _state == State::Different; }
+		virtual void resetState() { _state = MultiDataField::State::Uninitialized; }
+		virtual bool hasIdenticalData() const { return _state == MultiDataField::State::Identical; }
+		virtual bool hasDifferentData() const { return _state == MultiDataField::State::Different; }
 
 	  protected:
 		virtual void _displayDifferentsDataFeedback() = 0;
 
-		State _state = State::Uninitialized;
+		MultiDataField::State _state = MultiDataField::State::Uninitialized;
 	};
 
 	template<typename T>
 	class TMultiDataField : public MultiDataField
 	{
 	  public:
-		TMultiDataField() : MultiDataField() {};
 		virtual void updateWithNewValue( T & p_value ) = 0;
 	};
 
@@ -41,25 +39,24 @@ namespace VTX::UI
 	class TMultiDataFieldEquatable : public TMultiDataField<T>
 	{
 	  public:
-		TMultiDataFieldEquatable() : TMultiDataField() {};
 		virtual void updateWithNewValue( T & p_value )
 		{
 			switch ( _state )
 			{
-			case State::Uninitialized:
+			case MultiDataField::State::Uninitialized:
 				_setSingleValue( p_value );
-				_state = State::Identical;
+				_state = MultiDataField::State::Identical;
 				break;
 
-			case State::Identical:
+			case MultiDataField::State::Identical:
 				if ( !_isEquals( _getValue(), p_value ) )
 				{
-					_state = State::Different;
+					_state = MultiDataField::State::Different;
 					_displayDifferentsDataFeedback();
 				}
 				break;
 
-			case State::Different: break;
+			case MultiDataField::State::Different: break;
 			}
 		}
 
