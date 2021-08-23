@@ -90,7 +90,7 @@ namespace VTX
 			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			const M & getModel( const Model::ID & p_id ) const
 			{
-				const Model::BaseModel & model	  = _container[ p_id ]->getModel();
+				const Model::BaseModel & model	  = _container.at( p_id )->getModel();
 				const M &				 modelPtr = static_cast<const M &>( model );
 				return modelPtr;
 			}
@@ -117,7 +117,8 @@ namespace VTX
 			inline V * const instantiateView( M * const p_model, const ID::VTX_ID & p_id )
 			{
 				V * const view = new V( p_model );
-				_container[ p_model->getId() ]->addView<M, V>( p_id, view );
+
+				static_cast<MvcData *>( _container[ p_model->getId() ] )->addView<M, V>( p_id, view );
 				return view;
 			}
 
@@ -130,7 +131,7 @@ namespace VTX
 													QWidget * const	   p_parentWidget = nullptr )
 			{
 				V * const view = new V( p_model, p_parentWidget );
-				_container[ p_model->getId() ]->addView<M, V>( p_id, view );
+				static_cast<MvcData *>( _container[ p_model->getId() ] )->addView<M, V>( p_id, view );
 				return view;
 			}
 
@@ -140,7 +141,7 @@ namespace VTX
 					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
 			inline V * const getView( const M * const p_model, const ID::VTX_ID & p_id )
 			{
-				return _container[ p_model->getId() ]->getView<M, V>( p_id );
+				return static_cast<MvcData *>( _container[ p_model->getId() ] )->getView<M, V>( p_id );
 			}
 
 			template<typename V,
@@ -149,7 +150,7 @@ namespace VTX
 					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
 			inline void deleteView( const M * const p_model, const ID::VTX_ID & p_id )
 			{
-				delete _container[ p_model->getId() ]->removeView<M, V>( p_id );
+				delete static_cast<MvcData *>( _container[ p_model->getId() ] )->removeView<M, V>( p_id );
 			}
 
 			inline void deleteView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id )
