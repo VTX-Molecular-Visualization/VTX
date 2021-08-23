@@ -16,11 +16,9 @@ namespace VTX
 {
 	namespace Worker
 	{
-		template<typename T>
-		using Callback = std::function<void( T )>;
-
-		using CallbackThread = Callback<uint>;
-		using CallbackWorker = Callback<void>;
+		using CallbackThread = std::function<void( uint )>;
+		using CallbackWorker = std::function<void( void )>;
+		using CallbackError	 = std::function<void( const std::exception & )>;
 
 		class WorkerManager final : public QObject
 		{
@@ -121,13 +119,11 @@ namespace VTX
 		};
 	} // namespace Worker
 
-	inline void VTX_THREAD( Worker::BaseThread * const p_thread,
-							Worker::CallbackThread * const	p_callback = nullptr )
+	inline void VTX_THREAD( Worker::BaseThread * const p_thread, Worker::CallbackThread * const p_callback = nullptr )
 	{
 		Worker::WorkerManager::get().run( p_thread, p_callback );
 	}
-	inline void VTX_WORKER( Worker::BaseWorker * const p_worker,
-							Worker::CallbackWorker * const	p_callback = nullptr )
+	inline void VTX_WORKER( Worker::BaseWorker * const p_worker, Worker::CallbackWorker * const p_callback = nullptr )
 	{
 		Worker::WorkerManager::get().run( p_worker, p_callback );
 	}
