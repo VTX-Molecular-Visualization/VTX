@@ -716,8 +716,7 @@ namespace VTX::View::UI::Widget
 		_enableSignals( false );
 
 		const Qt::CheckState newCheckState = _getCheckState( p_baseVisible.isVisible() );
-		if ( p_itemWidget->checkState( 0 ) != newCheckState )
-			p_itemWidget->setCheckState( 0, newCheckState );
+		p_itemWidget->setCheckState( 0, newCheckState );
 
 		_enableSignals( true );
 	}
