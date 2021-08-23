@@ -30,7 +30,7 @@ namespace VTX::View
 				( _notifyTarget->*_notifyCallback )( p_event );
 
 			if ( _notifyWithModelCallback != nullptr )
-				( _notifyTarget->*_notifyWithModelCallback )( _model, p_event );
+				( _notifyTarget->*_notifyWithModelCallback )( View::BaseView<T1>::_model, p_event );
 		}
 
 	  protected:
