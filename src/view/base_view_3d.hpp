@@ -27,7 +27,7 @@ namespace VTX::View
 			/// TODO ! ^^
 			/// if ( VTXApp::get().MASK )
 			//{
-			const Mat4f MVMatrix = p_camera.getViewMatrix() * _model->getTransform().get();
+			const Mat4f MVMatrix = p_camera.getViewMatrix() * BaseView<T>::_model->getTransform().get();
 			_program->setMat4f( "u_MVMatrix", MVMatrix );
 			_program->setMat4f( "u_projMatrix", p_camera.getProjectionMatrix() );
 			_program->setMat4f( "u_normalMatrix", Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) );
@@ -46,10 +46,10 @@ namespace VTX::View
 	  protected:
 		Renderer::GL::Program * _program = nullptr;
 
-		explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
+		explicit BaseView3D( T * const p_model ) : BaseView<T>( p_model ) {}
 		virtual ~BaseView3D() = default;
 
-		inline OpenGLFunctions * const _gl() const { return BaseView::_model->getBuffer()->getGL(); }
+		inline OpenGLFunctions * const _gl() const { return BaseView<T>::_model->getBuffer()->getGL(); }
 
 		virtual Renderer::GL::Program * const _createProgram() = 0;
 		virtual void						  _init() {}
