@@ -39,7 +39,7 @@ namespace VTX
 				bool needToSaveMolecule() const;
 
 			  private:
-				FilePath				  _path		  = "";
+				FilePath				  _path		  = FilePath( "" );
 				bool					  _hasChanged = false;
 				Writer::ChemfilesWriter * _writer	  = nullptr;
 			};

@@ -4,6 +4,7 @@
 #include "io/writer/writer_chemfiles.hpp"
 #include "math/transform.hpp"
 #include "util/math.hpp"
+#include <magic_enum.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
 
