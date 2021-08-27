@@ -184,7 +184,7 @@ namespace VTX
 		{
 			_needUpdate			   = true;
 			const Vec3f defaultPos = -CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
-									 / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+									 / (float)( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
 			_camera.setPosition( defaultPos );
 			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
 			_target		 = VTXApp::get().getScene().getAABB().centroid();
@@ -198,7 +198,7 @@ namespace VTX
 			_orientTargetPosition	= p_aabb.centroid();
 			_velocity				= VEC3F_ZERO;
 			_orientStartingDistance = Util::Math::distance( _camera.getPosition(), _target );
-			_orientTargetDistance	= p_aabb.radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+			_orientTargetDistance = p_aabb.radius() / (float)( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
 			_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
 						   || abs( _orientTargetDistance - _orientStartingDistance ) > ORIENT_THRESHOLD;
 		}
