@@ -119,8 +119,8 @@ namespace VTX
 			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
 
-			static const IO::FilePath STYLESHEET_FILE_DEFAULT = ":/stylesheet.css";
-			static const IO::FilePath SCENE_OBJECT_DIR		  = "/obj";
+			static const IO::FilePath STYLESHEET_FILE_DEFAULT = IO::FilePath( ":/stylesheet.css" );
+			static const IO::FilePath SCENE_OBJECT_DIR		  = IO::FilePath( "/obj" );
 
 			static const std::string DEFAULT_SCENE_FILENAME	   = "New Scene";
 			static const std::string DEFAULT_MOLECULE_FILENAME = "New Molecule";

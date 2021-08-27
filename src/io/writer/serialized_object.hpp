@@ -35,27 +35,28 @@ namespace VTX::IO::Writer
 		}
 
 	  protected:
-		void SerializedObject::_logError( const std::string & p_log ) const
+		void _logError( const std::string & p_log ) const
 		{
 			if ( _thread != nullptr )
 				emit _thread->logError( p_log );
 			else
-				VTX_Error( p_log );
+				VTX_ERROR( p_log );
 		}
-		void SerializedObject::_logWarning( const std::string & p_log ) const
+		void _logWarning( const std::string & p_log ) const
 		{
 			if ( _thread != nullptr )
 				emit _thread->logWarning( p_log );
 			else
 				VTX_WARNING( p_log );
 		}
-		void SerializedObject::_logInfo( const std::string & p_log ) const
+		void _logInfo( const std::string & p_log ) const
 		{
 			if ( _thread != nullptr )
 				emit _thread->logInfo( p_log );
 			else
+				VTX_INFO( p_log );
 		}
-		void SerializedObject::_logDebug( const std::string & p_log ) const
+		void _logDebug( const std::string & p_log ) const
 		{
 			if ( _thread != nullptr )
 				emit _thread->logDebug( p_log );
