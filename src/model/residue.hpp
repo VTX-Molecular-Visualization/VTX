@@ -16,13 +16,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		class UnknownResidueData
-		{
-		  public:
-			std::string symbolStr;
-			std::string symbolName;
-		};
-
 		class Molecule;
 		class Chain;
 		class Residue :

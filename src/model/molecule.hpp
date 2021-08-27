@@ -25,9 +25,14 @@ namespace VTX
 {
 	namespace Model
 	{
+		struct UnknownResidueData
+		{
+			std::string symbolStr;
+			std::string symbolName;
+		};
+
 		class Chain;
 		class Residue;
-		class UnknownResidueData;
 		class Atom;
 		class Bond;
 		class SecondaryStructure;
