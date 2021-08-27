@@ -1,5 +1,5 @@
 #include "settings_window.hpp"
-#include < QPainter>
+#include <QPainter>
 
 SettingsWindowWidget::SettingsWindowWidget( QWidget * p_parent ) : QDialog( p_parent, Qt::WindowCloseButtonHint )
 {
