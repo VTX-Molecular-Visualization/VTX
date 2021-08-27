@@ -84,7 +84,7 @@ namespace VTX
 		void Freefly::reset()
 		{
 			const Vec3f defaultPos = -CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
-									 / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+									 / (float)( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
 
 			_camera.setPosition( defaultPos );
 			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
@@ -93,9 +93,10 @@ namespace VTX
 
 		void Freefly::_computeOrientPositions( const Math::AABB & p_aabb )
 		{
-			_orientStartingPosition	   = _camera.getPosition();
-			const float targetDistance = p_aabb.radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
-			_orientTargetPosition	   = p_aabb.centroid() - _camera.getFront() * targetDistance;
+			_orientStartingPosition = _camera.getPosition();
+			const float targetDistance
+				= p_aabb.radius() / (float)( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+			_orientTargetPosition = p_aabb.centroid() - _camera.getFront() * targetDistance;
 			_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
 		}
 
