@@ -42,7 +42,7 @@ namespace VTX
 				return;
 			}
 
-			for ( std::map<uint, uint>::iterator & it = p_range.begin(); it != p_range.end(); it++ )
+			for ( std::map<uint, uint>::iterator it = p_range.begin(); it != p_range.end(); it++ )
 			{
 				const uint itFirstIndex = it->first;
 				uint &	   itCount		= it->second;
