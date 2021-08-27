@@ -287,7 +287,7 @@ namespace VTX::IO
 						throw e;
 					}
 
-					molecule->getConfiguration().sceneIndex				 = _get<int>( jsonMolecule, "INDEX", MAXINT );
+					molecule->getConfiguration().sceneIndex				 = _get<int>( jsonMolecule, "INDEX", INT_MAX );
 					molecules[ molecule->getConfiguration().sceneIndex ] = molecule;
 				}
 			}
