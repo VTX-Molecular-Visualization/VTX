@@ -134,12 +134,9 @@ namespace VTX
 			}
 
 			// Compile all targets for gl draw calls.
-			for ( std::map<const InstantiatedRepresentation *, RepresentationTarget>::iterator & it
-				  = _molecule->_representationTargets.begin();
-				  it != _molecule->_representationTargets.end();
-				  it++ )
+			for ( auto & pair : _molecule->_representationTargets )
 			{
-				it->second.compile();
+				pair.second.compile();
 			}
 		}
 
