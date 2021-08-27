@@ -23,10 +23,10 @@ namespace VTX::IO::Writer
 	{
 		_prepareChemfiles();
 
-		chemfiles::Trajectory & trajectory = chemfiles::Trajectory::memory_writer( p_format );
+		chemfiles::Trajectory trajectory = chemfiles::Trajectory::memory_writer( p_format );
 		_writeTrajectory( trajectory, p_molecule );
 
-		chemfiles::span<const char> & span = trajectory.memory_buffer().value_or( chemfiles::span<const char>() );
+		chemfiles::span<const char> span = trajectory.memory_buffer().value_or( chemfiles::span<const char>() );
 		p_buffer.append( span.begin(), span.end() );
 	}
 
