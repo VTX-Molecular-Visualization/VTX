@@ -11,10 +11,9 @@ namespace VTX::UI::Widget::MainMenu
 		BaseManualWidget::_setupUi( p_name );
 		setFixedHeight( 130 );
 
-		setContentsMargins( 10, 2, 10, 2 );
-
 		_tabWidget = new QTabWidget( this );
 		_tabWidget->setObjectName( "tabWidget" );
+		//_tabWidget->setSizePolicy( QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum );
 		_tabWidget->setFixedSize( size() );
 
 		QFont menuBarFont;
