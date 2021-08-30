@@ -63,6 +63,11 @@ QTabBar::tab:selected
 	background: #222222; /*same as the pane color */
 }
 
+QToolButton
+{
+	padding: 2px;
+}
+
 
 QMainWindow > QStatusBar
 {
@@ -171,9 +176,4 @@ QScrollBar#SequenceScrollbar::sub-line:horizontal {
     width: 0px;
     subcontrol-position: left;
     subcontrol-origin: margin;
-}
-QScrollBar:left-arrow:horizontal, QScrollBar::right-arrow:horizontal {
-    border: none;
-    width: 0px;
-    height: 0px;
 }
