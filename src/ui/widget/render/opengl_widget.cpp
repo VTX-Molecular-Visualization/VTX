@@ -68,7 +68,7 @@ namespace VTX::UI::Widget::Render
 		VTX_INFO( "GL device: " + std::string( (const char *)glVendor ) + " "
 				  + std::string( (const char *)glRenderer ) );
 
-#ifdef _DEBUG
+#ifndef VTX_PRODUCTION
 		_gl->glEnable( GL_DEBUG_OUTPUT );
 		_gl->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
 #endif
