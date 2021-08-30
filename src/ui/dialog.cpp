@@ -220,7 +220,7 @@ namespace VTX::UI
 	void Dialog::openGLInitializationFail()
 	{
 		std::string msg
-			= "Unable to create OpenGL 4.5 context. Update your drivers or chek your material compatibility.";
+			= "Unable to create OpenGL 4.5 context. Update your drivers or check your material compatibility.";
 		VTX_ERROR( msg );
 
 		QMessageBox::critical( &VTXApp::get().getMainWindow(),
