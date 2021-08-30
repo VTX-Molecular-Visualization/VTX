@@ -105,7 +105,7 @@ namespace VTX::Renderer::GL
 	{
 		VTX_STAT().drawCalls = 0u;
 
-		getGL()->glViewport( 0, 0, _width, _height );
+		// getGL()->glViewport( 0, 0, _width, _height );
 
 		// TODO: do not change each frame
 		/// TODO2: why this?
