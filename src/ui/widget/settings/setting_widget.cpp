@@ -25,15 +25,15 @@ namespace VTX::UI::Widget::Settings
 	void SettingWidget::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
-		setMinimumSize( 200, 200 );
 
-		_menu = new CustomWidget::DockWindowMainWidget<QWidget>( this );
+		_menu = new CustomWidget::DockWindowMainWidget<QWidget>(
+			Style::SETTINGS_PREFERRED_SIZE, Style::SETTINGS_MINIMUM_SIZE, this );
 		_menu->setObjectName( "settingMenuBar" );
 		_menu->setSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding );
 
 		QHBoxLayout * const horizontalLayout = new QHBoxLayout( _menu );
 		horizontalLayout->setSizeConstraint( QLayout::SetMinAndMaxSize );
-		QWidget * menuLayoutWidget = new QWidget( _menu );
+		QWidget * const menuLayoutWidget = new QWidget( _menu );
 		menuLayoutWidget->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Expanding );
 		_menuLayout = new QVBoxLayout( menuLayoutWidget );
 		_menuLayout->setContentsMargins( 0, 0, 0, 0 );

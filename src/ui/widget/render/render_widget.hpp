@@ -4,12 +4,12 @@
 #include "opengl_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
-#include <QDockWidget>
 #include <QVBoxLayout>
+#include <QWidget>
 
 namespace VTX::UI::Widget::Render
 {
-	class RenderWidget : public BaseManualWidget<QDockWidget>
+	class RenderWidget : public BaseManualWidget<QWidget>
 	{
 		VTX_WIDGET
 

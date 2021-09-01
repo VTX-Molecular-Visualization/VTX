@@ -47,7 +47,7 @@ namespace VTX::UI::Widget::Settings
 		QCheckBox *							   _fullscreenWidget				= nullptr;
 
 		// Trajectory
-		QComboBox *						   _defaultTrajectoryPlayModeWidget = nullptr;
+		QComboBox *								 _defaultTrajectoryPlayModeWidget = nullptr;
 		CustomWidget::IntegerFieldSliderWidget * _defaultTrajectorySpeedWidget	  = nullptr;
 
 		// Data
@@ -80,7 +80,7 @@ namespace VTX::UI::Widget::Settings
 		void _addItemInLayout( QWidget * const p_item );
 
 		void _startSection( const QString & p_title );
-		void _finishSection();
+		void _finishSection( const bool p_addSpacer = true );
 	};
 } // namespace VTX::UI::Widget::Settings
 #endif

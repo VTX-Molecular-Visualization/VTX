@@ -104,8 +104,7 @@ namespace VTX::UI::Widget::Scene
 
 		CustomWidget::DockWindowMainWidget<QScrollArea> * const scrollArea
 			= new CustomWidget::DockWindowMainWidget<QScrollArea>(
-				Style::RENDER_PREFERED_SIZE, Style::RENDER_MINIMUM_SIZE, this );
-		scrollArea->setMinimumSize( Style::SCENE_MINIMUM_SIZE );
+				Style::SCENE_PREFERRED_SIZE, Style::SCENE_MINIMUM_SIZE, this );
 
 		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
 											  QSizePolicy::Policy::MinimumExpanding,
@@ -118,8 +117,6 @@ namespace VTX::UI::Widget::Scene
 		scrollArea->setWidget( _scrollAreaContent );
 		scrollArea->setWidgetResizable( true );
 		scrollArea->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored );
-		scrollArea->setSizeHint( Style::SCENE_PREFERED_SIZE );
-		scrollArea->setMinimumSizeHint( Style::SCENE_MINIMUM_SIZE );
 
 		setWidget( scrollArea );
 

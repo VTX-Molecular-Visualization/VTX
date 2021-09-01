@@ -15,7 +15,10 @@ namespace VTX::UI::Widget::CustomWidget
 							  QWidget *		p_parent = nullptr ) :
 			_sizeHint( p_sizeHint ),
 			_sizeHintOverrided( true ), _minimumSizeHint( p_minimumSizeHint ), _minimumSizeHintOverrided( true ),
-			W( p_parent ) {};
+			W( p_parent )
+		{
+			setMinimumSize( _minimumSizeHint );
+		};
 
 		DockWindowMainWidget( QWidget * p_parent = nullptr ) : W( p_parent ) {};
 
@@ -29,10 +32,10 @@ namespace VTX::UI::Widget::CustomWidget
 
 		QSize minimumSizeHint() const override
 		{
-			if ( _minimumSizeHintOverrided )
+			 if ( _minimumSizeHintOverrided )
 				return _minimumSizeHint;
-			else
-				return W::minimumSizeHint();
+			 else
+				 return W::minimumSizeHint() ;
 		};
 
 		inline void setSizeHint( const QSize & p_sizeHint )
@@ -44,6 +47,7 @@ namespace VTX::UI::Widget::CustomWidget
 		{
 			_minimumSizeHint		  = p_sizeHint;
 			_minimumSizeHintOverrided = true;
+			setMinimumSize( _minimumSizeHint );
 		};
 
 	  private:

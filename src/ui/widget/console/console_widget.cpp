@@ -70,7 +70,7 @@ namespace VTX::UI::Widget::Console
 		BaseManualWidget::_setupUi( p_name );
 
 		_mainWidget = new CustomWidget::DockWindowMainWidget<QWidget>(
-			Style::CONSOLE_MINIMUM_SIZE, Style::CONSOLE_PREFERED_SIZE, this );
+			Style::CONSOLE_PREFERRED_SIZE, Style::CONSOLE_MINIMUM_SIZE, this );
 
 		_listWidget = new QListWidget( this );
 		_listWidget->setObjectName( QString::fromUtf8( "logList" ) );

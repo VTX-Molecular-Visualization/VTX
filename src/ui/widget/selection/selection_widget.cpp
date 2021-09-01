@@ -37,8 +37,7 @@ namespace VTX::UI::Widget::Selection
 		BaseManualWidget::_setupUi( p_name );
 
 		_mainWidget = new CustomWidget::DockWindowMainWidget<QWidget>(
-			Style::SELECTION_PREFERED_SIZE, Style::SELECTION_MINIMUM_SIZE, this );
-		_mainWidget->setMinimumSize( Style::SELECTION_MINIMUM_SIZE );
+			Style::SELECTION_PREFERRED_SIZE, Style::SELECTION_MINIMUM_SIZE, this );
 
 		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
 											  QSizePolicy::Policy::MinimumExpanding,

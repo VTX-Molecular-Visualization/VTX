@@ -6,7 +6,7 @@
 
 namespace VTX::UI::Widget::Render
 {
-	RenderWidget::RenderWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
+	RenderWidget::RenderWidget( QWidget * p_parent ) : BaseManualWidget<QWidget>( p_parent )
 	{
 		_registerEvent( Event::Global::MOLECULE_CREATED );
 		_registerEvent( Event::Global::MESH_CREATED );
@@ -37,20 +37,16 @@ namespace VTX::UI::Widget::Render
 		BaseManualWidget::_setupUi( p_name );
 
 		_openGLWidget = new CustomWidget::DockWindowMainWidget<OpenGLWidget>(
-			Style::RENDER_PREFERED_SIZE, Style::RENDER_MINIMUM_SIZE, this );
+			Style::RENDER_PREFERRED_SIZE, Style::RENDER_MINIMUM_SIZE, this );
 
 		setFocusPolicy( Qt::StrongFocus );
-		setFeatures( DockWidgetFeature::DockWidgetClosable );
-		setWidget( _openGLWidget );
 
-		_openGLWidget->setMinimumSize( Style::RENDER_MINIMUM_SIZE );
+		QVBoxLayout * const layout = new QVBoxLayout( this );
+		layout->setContentsMargins( 1, 1, 1, 1);
 
-		QSizePolicy sizePolicy = QSizePolicy(
-			QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred, QSizePolicy::ControlType::Frame );
-		sizePolicy.setHorizontalStretch( 30 );
-		sizePolicy.setVerticalStretch( 30 );
+		_openGLWidget->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred );
 
-		_openGLWidget->setSizePolicy( sizePolicy );
+		layout->addWidget( _openGLWidget );
 	}
 
 	void RenderWidget::_setupSlots() {}

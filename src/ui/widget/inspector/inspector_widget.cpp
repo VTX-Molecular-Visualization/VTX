@@ -34,8 +34,7 @@ namespace VTX::UI::Widget::Inspector
 		_verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 
 		_scrollArea = new CustomWidget::DockWindowMainWidget<QScrollArea>(
-			Style::INSPECTOR_PREFERED_SIZE, Style::INSPECTOR_MINIMUM_SIZE, this );
-		_scrollArea->setMinimumSize( Style::INSPECTOR_MINIMUM_SIZE );
+			Style::INSPECTOR_PREFERRED_SIZE, Style::INSPECTOR_MINIMUM_SIZE, this );
 
 		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
 											  QSizePolicy::Policy::MinimumExpanding,
@@ -48,8 +47,6 @@ namespace VTX::UI::Widget::Inspector
 		_scrollArea->setWidget( _scrollWidget );
 		_scrollArea->setWidgetResizable( true );
 		_scrollArea->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored );
-		_scrollArea->setSizeHint( Style::INSPECTOR_PREFERED_SIZE );
-		_scrollArea->setMinimumSizeHint( Style::INSPECTOR_MINIMUM_SIZE );
 
 		_moleculesInspector
 			= WidgetFactory::get().instantiateWidget<MultipleMoleculeWidget>( this, "multipleMoleculeInspector" );
