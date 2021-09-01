@@ -87,6 +87,11 @@ namespace VTX::UI
 		_informationWidget = WidgetFactory::get().instantiateWidget<Widget::Information::InformationWidget>(
 			this, "informationWidget" );
 
+		QWidget *			centralWidget = new QWidget( this );
+		QVBoxLayout * const layout		  = new QVBoxLayout( centralWidget );
+		layout->addWidget( _renderWidget );
+		setCentralWidget( centralWidget );
+
 		_statusBarWidget
 			= WidgetFactory::get().instantiateWidget<Widget::StatusBar::StatusBarWidget>( this, "statusBar" );
 		_statusBarWidget->setFixedHeight( 25 );
@@ -210,7 +215,6 @@ namespace VTX::UI
 		// !V0.1
 		// splitDockWidget( _sceneWidget, _selectionWidget, Qt::Orientation::Vertical );
 		addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _sequenceWidget, Qt::Orientation::Horizontal );
-		setCentralWidget( _renderWidget );
 		addDockWidget( Qt::DockWidgetArea::RightDockWidgetArea, _inspectorWidget, Qt::Orientation::Horizontal );
 		addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _consoleWidget, Qt::Orientation::Vertical );
 
@@ -386,7 +390,6 @@ namespace VTX::UI
 	void MainWindow::_delayRestoreState()
 	{
 		// Hide all stuff
-		_renderWidget->hide();
 		_sceneWidget->hide();
 		_consoleWidget->hide();
 		_inspectorWidget->hide();

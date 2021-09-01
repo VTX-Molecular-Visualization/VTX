@@ -36,13 +36,12 @@ namespace VTX::UI::Widget::Render
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_openGLWidget = new CustomWidget::DockWindowMainWidget<OpenGLWidget>(
-			Style::RENDER_PREFERRED_SIZE, Style::RENDER_MINIMUM_SIZE, this );
+		_openGLWidget = new OpenGLWidget( this );
 
 		setFocusPolicy( Qt::StrongFocus );
 
 		QVBoxLayout * const layout = new QVBoxLayout( this );
-		layout->setContentsMargins( 1, 1, 1, 1);
+		layout->setContentsMargins( 1, 1, 1, 1 );
 
 		_openGLWidget->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred );
 
