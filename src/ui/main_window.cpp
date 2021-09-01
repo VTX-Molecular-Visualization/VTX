@@ -87,7 +87,7 @@ namespace VTX::UI
 		_informationWidget = WidgetFactory::get().instantiateWidget<Widget::Information::InformationWidget>(
 			this, "informationWidget" );
 
-		QWidget *			centralWidget = new QWidget( this );
+		QWidget * const			centralWidget = new QWidget( this );
 		QVBoxLayout * const layout		  = new QVBoxLayout( centralWidget );
 		layout->addWidget( _renderWidget );
 		setCentralWidget( centralWidget );
