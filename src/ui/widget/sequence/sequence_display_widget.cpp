@@ -109,12 +109,14 @@ namespace VTX::UI::Widget::Sequence
 		painter.setWorldMatrixEnabled( false );
 		painter.setBrush( Qt::NoBrush );
 
-		const int charSize = (int)_fontMetrics->averageCharWidth();
+		const double charSize = double( _fontMetrics->averageCharWidth() );
 
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
 		const Model::ID & linkedMoleculeId = _chainData->getMoleculePtr()->getId();
 		const uint		  linkedChainIndex = _chainData->getChainIndex();
+
+		int lastPixelDrawn = -1;
 
 		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & pairMoleculeChains :
 			  selectionModel.getItems() )
@@ -140,8 +142,19 @@ namespace VTX::UI::Widget::Sequence
 							const int charIndexPaint  = _chainData->getPaintCharIndex( locaResidueIndex );
 							const int charLengthPaint = _chainData->getPaintLength( locaResidueIndex );
 
-							const QRect selectionRect
-								= QRect( charIndexPaint * charSize, 0, charLengthPaint * charSize, height() );
+							// Trick to prevent double painting on same pixel when charsize is not int
+							int firstPixel = int( floor( charIndexPaint * charSize ) );
+							int rectWidth  = int( ceil( charLengthPaint * charSize ) );
+
+							if ( lastPixelDrawn > firstPixel )
+							{
+								firstPixel += 1;
+								rectWidth -= 1;
+							}
+
+							lastPixelDrawn = firstPixel + rectWidth;
+
+							const QRect selectionRect = QRect( firstPixel, 0, rectWidth, height() );
 							painter.fillRect( selectionRect, Style::SEQUENCE_FOREGROUND_SELECTION_COLOR );
 						}
 						break;

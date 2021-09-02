@@ -87,6 +87,11 @@ namespace VTX::UI
 		_informationWidget = WidgetFactory::get().instantiateWidget<Widget::Information::InformationWidget>(
 			this, "informationWidget" );
 
+		QWidget * const			centralWidget = new QWidget( this );
+		QVBoxLayout * const layout		  = new QVBoxLayout( centralWidget );
+		layout->addWidget( _renderWidget );
+		setCentralWidget( centralWidget );
+
 		_statusBarWidget
 			= WidgetFactory::get().instantiateWidget<Widget::StatusBar::StatusBarWidget>( this, "statusBar" );
 		_statusBarWidget->setFixedHeight( 25 );
@@ -127,7 +132,6 @@ namespace VTX::UI
 
 	void MainWindow::_setupSlots()
 	{
-		connect( _renderWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 		connect( _sceneWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 		connect( _inspectorWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 		// !V0.1
@@ -188,12 +192,6 @@ namespace VTX::UI
 			restoreDockWidget( _sequenceWidget );
 			_sequenceWidget->setFloating( false );
 		}
-		if ( dockWidgetArea( _renderWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
-		{
-			removeDockWidget( _renderWidget );
-			restoreDockWidget( _renderWidget );
-			_renderWidget->setFloating( false );
-		}
 		if ( dockWidgetArea( _inspectorWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
 		{
 			removeDockWidget( _inspectorWidget );
@@ -213,18 +211,18 @@ namespace VTX::UI
 			_settingWidget->setFloating( false );
 		}
 
-		addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _sceneWidget, Qt::Orientation::Horizontal );
+		addDockWidget( Qt::DockWidgetArea::LeftDockWidgetArea, _sceneWidget, Qt::Orientation::Horizontal );
 		// !V0.1
 		// splitDockWidget( _sceneWidget, _selectionWidget, Qt::Orientation::Vertical );
 		addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _sequenceWidget, Qt::Orientation::Horizontal );
-		splitDockWidget( _sequenceWidget, _renderWidget, Qt::Orientation::Vertical );
-		addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _inspectorWidget, Qt::Orientation::Horizontal );
-		addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _consoleWidget, Qt::Orientation::Vertical );
+		addDockWidget( Qt::DockWidgetArea::RightDockWidgetArea, _inspectorWidget, Qt::Orientation::Horizontal );
+		addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _consoleWidget, Qt::Orientation::Vertical );
 
 		// Create an emplacement for the widget before setting it floating to prevent warning
 		// TODO check https://bugreports.qt.io/browse/QTBUG-88157 to remove useless tabifyDockWidget
 		tabifyDockWidget( _inspectorWidget, _settingWidget );
 		_settingWidget->setFloating( true );
+		_settingWidget->resize( Style::SETTINGS_PREFERRED_SIZE );
 
 		if ( !_sceneWidget->isVisible() )
 			_sceneWidget->show();
@@ -233,8 +231,6 @@ namespace VTX::UI
 		//	_selectionWidget->show();
 		if ( !_sequenceWidget->isVisible() )
 			_sequenceWidget->show();
-		if ( !_renderWidget->isVisible() )
-			_renderWidget->show();
 		if ( !_inspectorWidget->isVisible() )
 			_inspectorWidget->show();
 		if ( !_consoleWidget->isVisible() )
@@ -394,7 +390,6 @@ namespace VTX::UI
 	void MainWindow::_delayRestoreState()
 	{
 		// Hide all stuff
-		_renderWidget->hide();
 		_sceneWidget->hide();
 		_consoleWidget->hide();
 		_inspectorWidget->hide();

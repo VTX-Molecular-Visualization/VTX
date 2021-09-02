@@ -192,18 +192,20 @@ namespace VTX
 
 		inline static const std::string WINDOW_TITLE_SCENE_MODIFIED_FEEDBACK = "*";
 
-		inline static const QSize INSPECTOR_PREFERED_SIZE = QSize( 300, 100 );
-		inline static const QSize INSPECTOR_MINIMUM_SIZE  = QSize( 50, 50 );
-		inline static const QSize RENDER_PREFERED_SIZE	  = QSize( 1000, 1000 );
-		inline static const QSize RENDER_MINIMUM_SIZE	  = QSize( 400, 236 );
-		inline static const QSize SCENE_PREFERED_SIZE	  = QSize( 250, 100 );
-		inline static const QSize SCENE_MINIMUM_SIZE	  = QSize( 50, 50 );
-		inline static const QSize CONSOLE_PREFERED_SIZE	  = QSize( 100, 100 );
-		inline static const QSize CONSOLE_MINIMUM_SIZE	  = QSize( 100, 80 );
-		inline static const QSize SEQUENCE_PREFERED_SIZE  = QSize( 100, 80 );
-		inline static const QSize SEQUENCE_MINIMUM_SIZE	  = QSize( 50, 50 );
-		inline static const QSize SELECTION_PREFERED_SIZE = QSize( 250, 100 );
-		inline static const QSize SELECTION_MINIMUM_SIZE  = QSize( 20, 20 );
+		static const QSize INSPECTOR_PREFERRED_SIZE = QSize( 300, 100 );
+		static const QSize INSPECTOR_MINIMUM_SIZE	= QSize( 1, 1 );
+		static const QSize RENDER_PREFERRED_SIZE	= QSize( 1000, 1000 );
+		static const QSize RENDER_MINIMUM_SIZE		= QSize( 1, 1 );
+		static const QSize SCENE_PREFERRED_SIZE		= QSize( 200, 100 );
+		static const QSize SCENE_MINIMUM_SIZE		= QSize( 1, 1 );
+		static const QSize CONSOLE_PREFERRED_SIZE	= QSize( 100, 80 );
+		static const QSize CONSOLE_MINIMUM_SIZE		= QSize( 1, 1 );
+		static const QSize SEQUENCE_PREFERRED_SIZE	= QSize( 100, 70 );
+		static const QSize SEQUENCE_MINIMUM_SIZE	= QSize( 1, 1 );
+		static const QSize SELECTION_PREFERRED_SIZE = QSize( 100, 150 );
+		static const QSize SELECTION_MINIMUM_SIZE	= QSize( 1, 1 );
+		static const QSize SETTINGS_PREFERRED_SIZE	= QSize( 550, 600 );
+		static const QSize SETTINGS_MINIMUM_SIZE	= QSize( 1, 1 );
 
 		inline static const int MAIN_MENU_MAX_BUTTON_PRESET_WIDTH = 125;
 

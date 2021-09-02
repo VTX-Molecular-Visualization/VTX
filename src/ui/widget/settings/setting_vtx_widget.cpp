@@ -109,7 +109,7 @@ namespace VTX::UI::Widget::Settings
 		_startSection( "Data" );
 		_addItemInLayout( _symbolDisplayModeWidget, "Symbol display mode" );
 		_addItemInLayout( _restoreLayoutButton );
-		_finishSection();
+		_finishSection( false );
 
 		bottomLayout->addStretch( 1000 );
 		bottomLayout->addWidget( _restoreSettingsButton );
@@ -335,11 +335,13 @@ namespace VTX::UI::Widget::Settings
 
 		_currentRow++;
 	}
-	void SettingVTXWidget::_finishSection()
+	void SettingVTXWidget::_finishSection( const bool p_addSpacer )
 	{
-		QSpacerItem * const spacer = new QSpacerItem( 0, 30 );
-		_settingsLayout->addItem( spacer, _currentRow, 0, 1, 2 );
-
+		if ( p_addSpacer )
+		{
+			QSpacerItem * const spacer = new QSpacerItem( 0, 30 );
+			_settingsLayout->addItem( spacer, _currentRow, 0, 1, 2 );
+		}
 		_currentRow++;
 	}
 
