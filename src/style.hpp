@@ -192,6 +192,8 @@ namespace VTX
 
 		inline static const std::string WINDOW_TITLE_SCENE_MODIFIED_FEEDBACK = "*";
 
+		inline static const int LAYOUT_VERSION = 1;
+
 		static const QSize INSPECTOR_PREFERRED_SIZE = QSize( 300, 100 );
 		static const QSize INSPECTOR_MINIMUM_SIZE	= QSize( 1, 1 );
 		static const QSize RENDER_PREFERRED_SIZE	= QSize( 1000, 1000 );

@@ -87,7 +87,7 @@ namespace VTX::UI
 		_informationWidget = WidgetFactory::get().instantiateWidget<Widget::Information::InformationWidget>(
 			this, "informationWidget" );
 
-		QWidget * const			centralWidget = new QWidget( this );
+		QWidget * const		centralWidget = new QWidget( this );
 		QVBoxLayout * const layout		  = new QVBoxLayout( centralWidget );
 		layout->addWidget( _renderWidget );
 		setCentralWidget( centralWidget );
@@ -372,8 +372,10 @@ namespace VTX::UI
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
-		return settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
+		QSettings  settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
+		const bool settingsAreValid = settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
+
+		return settingsAreValid && settings.value( "Version" ).toInt() == Style::LAYOUT_VERSION;
 	}
 
 	void MainWindow::loadLastLayout()
@@ -413,6 +415,8 @@ namespace VTX::UI
 	void MainWindow::saveLayout() const
 	{
 		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
+		settings.setValue( "Version", Style::LAYOUT_VERSION );
+
 		settings.setValue( "Geometry", saveGeometry() );
 		settings.setValue( "WindowState", saveState() );
 	}
