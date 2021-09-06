@@ -21,6 +21,8 @@ namespace VTX::UI::Widget::Scene
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 		void localize() override;
 
+		const std::vector<SceneItemWidget *> & getSceneItemWidgets() const { return _sceneWidgets; }
+
 	  protected:
 		SceneWidget( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;

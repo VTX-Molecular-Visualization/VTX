@@ -296,7 +296,7 @@ namespace VTX::UI
 		}
 	}
 
-	QWidget & MainWindow::_getWidget( const ID::VTX_ID & p_winId ) const
+	QWidget & MainWindow::getWidget( const ID::VTX_ID & p_winId ) const
 	{
 		QWidget * widget = nullptr;
 
@@ -323,7 +323,7 @@ namespace VTX::UI
 
 	void MainWindow::showWidget( const ID::VTX_ID & p_winId, const bool p_show ) const
 	{
-		QWidget & widget = _getWidget( p_winId );
+		QWidget & widget = getWidget( p_winId );
 
 		if ( p_show )
 		{
@@ -337,7 +337,7 @@ namespace VTX::UI
 	}
 	void MainWindow::toggleWidget( const ID::VTX_ID & p_winId ) const
 	{
-		showWidget( p_winId, !_getWidget( p_winId ).isVisible() );
+		showWidget( p_winId, !getWidget( p_winId ).isVisible() );
 	}
 
 	WindowMode MainWindow::getWindowMode() { return _getWindowModeFromWindowState( windowState() ); }
@@ -428,7 +428,7 @@ namespace VTX::UI
 
 	bool MainWindow::getWidgetVisibility( const ID::VTX_ID & p_winId ) const
 	{
-		return _getWidget( p_winId ).isVisible();
+		return getWidget( p_winId ).isVisible();
 	};
 
 	void MainWindow::openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const

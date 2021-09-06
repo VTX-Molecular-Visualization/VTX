@@ -70,6 +70,13 @@ namespace VTX
 			void deleteLayoutSaveFile() const;
 			void restoreDefaultLayout();
 
+			QWidget & getWidget( const ID::VTX_ID & p_winId ) const;
+			template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
+			W & getWidget( const ID::VTX_ID & p_winId ) const
+			{
+				return static_cast<W &>( getWidget( p_winId ) );
+			}
+
 		  protected:
 			void resizeEvent( QResizeEvent * ) override;
 			void showEvent( QShowEvent * ) override;
@@ -98,8 +105,6 @@ namespace VTX
 			void _onDockWindowVisibilityChange( bool p_visible );
 
 			// Functions.
-			QWidget & _getWidget( const ID::VTX_ID & p_winId ) const;
-
 			void _loadStyleSheet( const char * p_stylesheetPath );
 			void _setupSlots();
 

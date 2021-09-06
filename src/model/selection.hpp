@@ -71,7 +71,9 @@ namespace VTX::Model
 		inline MapMoleculeIds &		  getItems() { return _items; }
 
 		void selectMolecule( Molecule &, const bool p_appendToSelection = false );
-		void selectMolecules( const std::vector<Molecule *> &, const bool p_appendToSelection = false );
+		void selectMolecules( const std::vector<Molecule *> &,
+							  const bool			 p_appendToSelection = false,
+							  const Molecule * const p_currentObj		 = nullptr );
 		void unselectMolecule( Molecule & );
 		void unselectMolecules( const std::vector<Molecule *> & );
 		void unselectMoleculesWithCheck( const std::vector<Molecule *> & );
@@ -80,7 +82,9 @@ namespace VTX::Model
 		uint getMoleculeSelectedCount() const;
 
 		void selectChain( Chain &, const bool p_appendToSelection = false );
-		void selectChains( const std::vector<Chain *> &, const bool p_appendToSelection = false );
+		void selectChains( const std::vector<Chain *> &,
+						   const bool		   p_appendToSelection = false,
+						   const Chain * const p_currentObj		   = nullptr );
 		void unselectChain( Chain & );
 		void unselectChains( const std::vector<Chain *> & );
 		void unselectChainsWithCheck( const std::vector<Chain *> & );
@@ -89,7 +93,9 @@ namespace VTX::Model
 		uint getChainSelectedCount() const;
 
 		void selectResidue( Residue &, const bool p_appendToSelection = false );
-		void selectResidues( const std::vector<Residue *> &, const bool p_appendToSelection = false );
+		void selectResidues( const std::vector<Residue *> &,
+							 const bool			   p_appendToSelection = false,
+							 const Residue * const p_currentObj		   = nullptr );
 		void unselectResidue( Residue & );
 		void unselectResidues( const std::vector<Residue *> & );
 		void unselectResiduesWithCheck( const std::vector<Residue *> & );
@@ -98,7 +104,9 @@ namespace VTX::Model
 		uint getResidueSelectedCount() const;
 
 		void selectAtom( Atom &, const bool p_appendToSelection = false );
-		void selectAtoms( const std::vector<Atom *> &, const bool p_appendToSelection = false );
+		void selectAtoms( const std::vector<Atom *> &,
+						  const bool		 p_appendToSelection = false,
+						  const Atom * const p_currentObj		 = nullptr );
 		void unselectAtom( Atom & );
 		void unselectAtoms( const std::vector<Atom *> & );
 		void unselectAtomsWithCheck( const std::vector<Atom *> & );
@@ -107,9 +115,10 @@ namespace VTX::Model
 
 		void selectModels( const std::vector<Model::Molecule *> & p_molecules,
 						   const std::vector<Model::Chain *> &	  p_chains,
-						   const std::vector<Model::Residue *> &  p_residus,
+						   const std::vector<Model::Residue *> &  p_residues,
 						   const std::vector<Model::Atom *> &	  p_atoms,
-						   const bool							  p_appendToSelection = false );
+						   const bool							  p_appendToSelection = false,
+						   const Model::BaseModel * const		  p_currentObj		  = nullptr );
 		void unselectModels( const std::vector<Model::Molecule *> & p_molecules,
 							 const std::vector<Model::Chain *> &	p_chains,
 							 const std::vector<Model::Residue *> &	p_residus,
@@ -120,14 +129,12 @@ namespace VTX::Model
 
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-		void	   getItemTypes( std::set<ID::VTX_ID> & p_types ) const;
-		Math::AABB getAABB() const;
+		void						   getItemTypes( std::set<ID::VTX_ID> & p_types ) const;
+		Math::AABB					   getAABB() const;
+		const Model::BaseModel * const getCurrentObject();
 
 	  protected:
-		Selection() : BaseModel( ID::Model::MODEL_SELECTION )
-		{
-			_registerEvent( Event::MOLECULE_REMOVED );
-		}
+		Selection() : BaseModel( ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
 		~Selection() = default;
 
 		void _notifyDataChanged();
@@ -135,6 +142,7 @@ namespace VTX::Model
 	  private:
 		MapMoleculeIds					_items			  = MapMoleculeIds();
 		std::map<Model::ID, Math::AABB> _mapSelectionAABB = std::map<Model::ID, Math::AABB>();
+		const Model::BaseModel *		_currentObject	  = nullptr;
 
 		void _selectMolecule( const Molecule & );
 		void _unselectMolecule( const Molecule & );
@@ -171,6 +179,9 @@ namespace VTX::Model
 		void _unreferenceAtom( const Atom & p_atom );
 		void _unreferenceFullResidue( const Residue & p_residue );
 		void _unreferenceFullChain( const Chain & p_chain );
+
+		void _setCurrentObject( const Model::BaseModel * const p_model );
+		void _clearCurrentObject();
 	};
 
 } // namespace VTX::Model

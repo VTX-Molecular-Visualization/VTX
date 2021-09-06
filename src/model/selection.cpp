@@ -19,12 +19,15 @@ namespace VTX::Model
 		Tool::Chrono chrono = Tool::Chrono();
 		chrono.start();
 		_selectMolecule( p_molecule );
+		_setCurrentObject( &p_molecule );
 		chrono.stop();
 		VTX_INFO( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
 		p_molecule.refreshSelection( &_items[ p_molecule.getId() ] );
 		_notifyDataChanged();
 	}
-	void Selection::selectMolecules( const std::vector<Molecule *> & p_molecules, const bool p_appendToSelection )
+	void Selection::selectMolecules( const std::vector<Molecule *> & p_molecules,
+									 const bool						 p_appendToSelection,
+									 const Molecule * const			 p_currentObj )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -34,6 +37,12 @@ namespace VTX::Model
 			_selectMolecule( *it );
 			it->refreshSelection( &_items[ it->getId() ] );
 		}
+
+		if ( p_currentObj == nullptr )
+			_setCurrentObject( *p_molecules.crbegin() );
+		else
+			_setCurrentObject( p_currentObj );
+
 		_notifyDataChanged();
 	}
 
@@ -43,10 +52,13 @@ namespace VTX::Model
 			_clearWithoutNotify();
 
 		_selectChain( p_chain );
+		_setCurrentObject( &p_chain );
 		_refreshMoleculeSelection( p_chain.getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::selectChains( const std::vector<Chain *> & p_chains, const bool p_appendToSelection )
+	void Selection::selectChains( const std::vector<Chain *> & p_chains,
+								  const bool				   p_appendToSelection,
+								  const Chain * const		   p_currentObj )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -56,6 +68,11 @@ namespace VTX::Model
 
 		for ( auto it : p_chains )
 			_selectChain( *it );
+
+		if ( p_currentObj == nullptr )
+			_setCurrentObject( *p_chains.crbegin() );
+		else
+			_setCurrentObject( p_currentObj );
 
 		_refreshMoleculeSelection( p_chains[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
@@ -67,10 +84,13 @@ namespace VTX::Model
 			_clearWithoutNotify();
 
 		_selectResidue( p_residue );
+		_setCurrentObject( &p_residue );
 		_refreshMoleculeSelection( p_residue.getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::selectResidues( const std::vector<Residue *> & p_residues, const bool p_appendToSelection )
+	void Selection::selectResidues( const std::vector<Residue *> & p_residues,
+									const bool					   p_appendToSelection,
+									const Residue * const		   p_currentObj )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -80,6 +100,11 @@ namespace VTX::Model
 
 		for ( const auto it : p_residues )
 			_selectResidue( *it );
+
+		if ( p_currentObj == nullptr )
+			_setCurrentObject( *p_residues.crbegin() );
+		else
+			_setCurrentObject( p_currentObj );
 
 		_refreshMoleculeSelection( p_residues[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
@@ -91,10 +116,13 @@ namespace VTX::Model
 			_clearWithoutNotify();
 
 		_selectAtom( p_atom );
+		_setCurrentObject( &p_atom );
 		_refreshMoleculeSelection( p_atom.getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::selectAtoms( const std::vector<Atom *> & p_atoms, const bool p_appendToSelection )
+	void Selection::selectAtoms( const std::vector<Atom *> & p_atoms,
+								 const bool					 p_appendToSelection,
+								 const Atom * const			 p_currentObj )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -104,6 +132,11 @@ namespace VTX::Model
 
 		for ( const auto it : p_atoms )
 			_selectAtom( *it );
+
+		if ( p_currentObj == nullptr )
+			_setCurrentObject( *p_atoms.crbegin() );
+		else
+			_setCurrentObject( p_currentObj );
 
 		_refreshMoleculeSelection( p_atoms[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
@@ -682,9 +715,10 @@ namespace VTX::Model
 
 	void Selection::selectModels( const std::vector<Model::Molecule *> & p_molecules,
 								  const std::vector<Model::Chain *> &	 p_chains,
-								  const std::vector<Model::Residue *> &	 p_residus,
+								  const std::vector<Model::Residue *> &	 p_residues,
 								  const std::vector<Model::Atom *> &	 p_atoms,
-								  const bool							 p_appendToSelection )
+								  const bool							 p_appendToSelection,
+								  const Model::BaseModel * const		 p_currentObj )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -701,7 +735,7 @@ namespace VTX::Model
 			_selectChain( *it );
 			moleculeSet.emplace( it->getMoleculePtr() );
 		}
-		for ( const Model::Residue * const it : p_residus )
+		for ( const Model::Residue * const it : p_residues )
 		{
 			_selectResidue( *it );
 			moleculeSet.emplace( it->getMoleculePtr() );
@@ -714,6 +748,22 @@ namespace VTX::Model
 
 		for ( Model::Molecule * const it : moleculeSet )
 			it->refreshSelection( &_items[ it->getId() ] );
+
+		if ( p_currentObj == nullptr )
+		{
+			if ( p_molecules.size() > 0 )
+				_setCurrentObject( *p_molecules.crbegin() );
+			else if ( p_chains.size() > 0 )
+				_setCurrentObject( *p_chains.crbegin() );
+			else if ( p_residues.size() > 0 )
+				_setCurrentObject( *p_residues.crbegin() );
+			else if ( p_atoms.size() > 0 )
+				_setCurrentObject( *p_atoms.crbegin() );
+		}
+		else
+		{
+			_setCurrentObject( p_currentObj );
+		}
 
 		_notifyDataChanged();
 	}
@@ -770,6 +820,7 @@ namespace VTX::Model
 
 		_items.clear();
 		_mapSelectionAABB.clear();
+		_clearCurrentObject();
 	}
 
 	void Selection::receiveEvent( const Event::VTXEvent & p_event )
@@ -884,5 +935,9 @@ namespace VTX::Model
 			}
 		}
 	}
+	const Model::BaseModel * const Selection::getCurrentObject() { return _currentObject; }
+
+	void Selection::_setCurrentObject( const Model::BaseModel * const p_model ) { _currentObject = p_model; }
+	void Selection::_clearCurrentObject() { _currentObject = nullptr; }
 
 } // namespace VTX::Model
