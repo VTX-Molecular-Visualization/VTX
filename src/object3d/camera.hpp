@@ -120,7 +120,7 @@ namespace VTX
 			float _far			= 1e4f;
 			float _fov			= 60.f;
 
-			Vec3f _position;
+			Vec3f _position = VEC3F_ZERO;
 			Quatf _rotation = QUATF_ID;
 
 			Vec3f _front = CAMERA_FRONT_DEFAULT;

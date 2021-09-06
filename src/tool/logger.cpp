@@ -17,7 +17,7 @@ namespace VTX
 			message.erase( std::remove( message.begin(), message.end(), '\n' ), message.end() );
 			std::string messageToWrite = "[" + date + "] " + "[" + level + "] " + message;
 
-#ifndef _DEBUG
+#ifdef VTX_PRODUCTION
 			if ( p_level == LEVEL::LOG_LVL_DEBUG )
 				return;
 #endif
