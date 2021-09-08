@@ -1,6 +1,7 @@
 #include "menu_toolbutton_widget.hpp"
 #include "style.hpp"
 #include "tool/logger.hpp"
+#include <QKeyEvent>
 #include <QLayout>
 #include <QPalette>
 
@@ -68,12 +69,10 @@ namespace VTX::UI::Widget::MainMenu
 		{
 		case Qt::Orientation::Horizontal:
 			setToolButtonStyle( Qt::ToolButtonStyle::ToolButtonTextBesideIcon );
-			// setIconSize( QSize( 16, 16 ) );
 			setContentsMargins( 2, 2, 2, 2 );
 			break;
 		case Qt::Orientation::Vertical:
 			setToolButtonStyle( Qt::ToolButtonStyle::ToolButtonTextUnderIcon );
-			// setIconSize( QSize( 32, 32 ) );
 			setContentsMargins( 10, 2, 10, 2 );
 			break;
 		default:
@@ -82,6 +81,12 @@ namespace VTX::UI::Widget::MainMenu
 			_updateButtonStyle( Qt::Orientation::Vertical );
 			break;
 		}
+	}
+
+	void MenuToolButtonWidget::keyPressEvent( QKeyEvent * p_event )
+	{
+		if ( !arrowNavigation.keyPressed( p_event ) )
+			BaseManualWidget::keyPressEvent( p_event );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu

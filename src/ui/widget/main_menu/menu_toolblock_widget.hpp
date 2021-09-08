@@ -11,6 +11,8 @@
 
 namespace VTX::UI::Widget::MainMenu
 {
+	class MenuTooltabWidget;
+
 	class MenuToolBlockWidget : public BaseManualWidget<QWidget>
 	{
 		VTX_WIDGET
@@ -30,8 +32,9 @@ namespace VTX::UI::Widget::MainMenu
 			MenuToolButtonWidget * const getButton( const int p_row ) { return _data[ p_row ]; }
 			int							 getRowCount() const { return int( _data.size() ); }
 
-			void setNbRows( const int p_size ) { _forcedSize = p_size; }
-			int	 getNbRowsDisplayed() const { return _forcedSize > 0 ? _forcedSize : int( _data.size() ); }
+			void   setNbRows( const int p_size ) { _forcedSize = p_size; }
+			int	   getNbRowsDisplayed() const { return _forcedSize > 0 ? _forcedSize : int( _data.size() ); }
+			size_t size() { return _data.size(); }
 
 		  private:
 			std::vector<MenuToolButtonWidget *> _data		= std::vector<MenuToolButtonWidget *>();
@@ -41,35 +44,28 @@ namespace VTX::UI::Widget::MainMenu
 		class TmpGridStructure
 		{
 		  public:
-			TmpGridStructure()
-			{
-				_columnsData = std::vector<ColumnData>();
-				_columnsData.reserve( MAX_COLUMN_COUNT );
-			};
+			TmpGridStructure() { _columnsData.reserve( MAX_COLUMN_COUNT ); };
 			~TmpGridStructure();
 
-			const int getNbColumns() { return int( _columnsData.size() ); };
+			const int getNbColumns() const { return int( _columnsData.size() ); };
 			void	  setNbRowsInColumn( const int p_column, const int p_size )
 			{
 				_columnsData[ p_column ].setNbRows( p_size );
 			}
 
-			void pushWidgetInColumn( const int p_column, MenuToolButtonWidget * const p_widget );
-			void fillGridLayout( QGridLayout & p_gridLayout, const int p_startRow = 0 );
+			void   pushWidgetInColumn( const int p_column, MenuToolButtonWidget * const p_widget );
+			void   fillGridLayout( QGridLayout & p_gridLayout, const int p_startRow = 0 );
+			size_t size() { return _columnsData.size() == 0 ? 0 : _columnsData[ 0 ].size(); }
+
+			void clear();
 
 		  private:
 			void					addNewColumn( const size_t p_nbColumns = 1 );
-			std::vector<ColumnData> _columnsData;
+			std::vector<ColumnData> _columnsData = std::vector<ColumnData>();
 		};
 
 	  public:
-		~MenuToolBlockWidget()
-		{
-			if ( _tmpStructure != nullptr )
-				delete _tmpStructure;
-
-			delete _gridLayout;
-		};
+		~MenuToolBlockWidget() { delete _gridLayout; };
 
 		void localize() override;
 
@@ -80,26 +76,41 @@ namespace VTX::UI::Widget::MainMenu
 		int	 pushButtonInNextColumn( MenuToolButtonWidget & p_toolButton );
 		void reset();
 
+		const MenuTooltabWidget * const getTooltab() const { return _linkedTooltab; }
+		void setTooltab( const MenuTooltabWidget * p_tooltab ) { _linkedTooltab = p_tooltab; }
+
 	  protected:
-		MenuToolBlockWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
-		{
-			_tmpStructure = new TmpGridStructure();
-		};
+		MenuToolBlockWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
 		virtual void _setupUi( const QString & p_name ) override;
 		virtual void _setupSlots() override;
 
-		int	 getColumnCount() const { return _tmpStructure->getNbColumns(); }
+		int	 getColumnCount() const { return _tmpStructure.getNbColumns(); }
 		void setRowCountInColumn( const int p_column, const int p_nbRows )
 		{
-			_tmpStructure->setNbRowsInColumn( p_column, p_nbRows );
+			_tmpStructure.setNbRowsInColumn( p_column, p_nbRows );
 		}
+
+		MenuToolButtonWidget * _findPreviousButton( const MenuToolBlockWidget * const p_toolBlock,
+													QLayoutItem * const				  p_item,
+													const int						  p_row ) const;
+		MenuToolButtonWidget * _findNextButton( const MenuToolBlockWidget * const p_toolBlock,
+												QLayoutItem * const				  p_item,
+												const int						  p_row ) const;
 
 	  private:
 		QVBoxLayout * _verticalLayout = nullptr;
 		QGridLayout * _gridLayout	  = nullptr;
 		QLabel *	  _title		  = nullptr;
 
-		TmpGridStructure * _tmpStructure;
+		const MenuTooltabWidget *			_linkedTooltab = nullptr;
+		std::vector<MenuToolButtonWidget *> _buttons	   = std::vector<MenuToolButtonWidget *>();
+
+		TmpGridStructure _tmpStructure = TmpGridStructure();
+
+		void _navigationToLeft() const;
+		void _navigationToRight() const;
+		void _navigationToUp() const;
+		void _navigationToDown() const;
 	};
 } // namespace VTX::UI::Widget::MainMenu
 #endif

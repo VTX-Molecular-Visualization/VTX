@@ -2,6 +2,7 @@
 #define __VTX_UI_WIDGET_BASE_MENUTOOLBUTTON_WIDGET__
 
 #include "ui/widget/base_manual_widget.hpp"
+#include "ui/navigation/arrow_navigation.hpp"
 #include <QToolButton>
 #include <QWidget>
 #include <type_traits>
@@ -31,10 +32,15 @@ namespace VTX::UI::Widget::MainMenu
 		void localize() override;
 		void showActiveFeedback( const bool p_activate );
 
+		const Navigation::ArrowNavigation arrowNavigation = Navigation::ArrowNavigation();
+
+
 	  protected:
 		MenuToolButtonWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
+
+		void keyPressEvent( QKeyEvent * p_event ) override;
 
 		void _updateButtonStyle()
 		{
