@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 namespace VTX::UI::Widget::MainMenu
 {
@@ -17,25 +18,21 @@ namespace VTX::UI::Widget::MainMenu
 	  public:
 		~MenuTooltabWidget();
 
-		template<typename W, typename = std::enable_if<std::is_base_of<W, Widget::BaseManualWidgetInitializer>::value>>
+		template<typename W, typename = std::enable_if<std::is_base_of<MenuToolBlockWidget, W>::value>>
 		W * addToolBlock( const std::string & p_name )
 		{
-			if ( _horizontalLayout->count() > 1 )
-				_addSeparator();
-
 			W * toolblock = WidgetFactory::get().instantiateWidget<W>( this, p_name );
-			_horizontalLayout->insertWidget( _horizontalLayout->count() - 1, toolblock );
+			addToolBlock( toolblock );
 
 			return toolblock;
 		}
-		template<typename W, typename = std::enable_if<std::is_base_of<W, Widget::BaseManualWidgetInitializer>::value>>
-		void addToolBlock( W * const p_widget )
-		{
-			if ( _horizontalLayout->count() > 1 )
-				_addSeparator();
 
-			_horizontalLayout->insertWidget( _horizontalLayout->count() - 1, p_widget );
-		}
+		void addToolBlock( MenuToolBlockWidget * const p_widget );
+
+		const MenuToolBlockWidget * const getPreviousToolBlock( const MenuToolBlockWidget * const p_from,
+																const bool						  p_loop = true ) const;
+		const MenuToolBlockWidget * const getNextToolBlock( const MenuToolBlockWidget * const p_from,
+															const bool						  p_loop = true ) const;
 
 	  protected:
 		MenuTooltabWidget( QWidget * p_parent = nullptr );
@@ -44,6 +41,8 @@ namespace VTX::UI::Widget::MainMenu
 
 	  private:
 		QHBoxLayout * _horizontalLayout = nullptr;
+
+		std::vector<MenuToolBlockWidget *> _toolBlocks = std::vector<MenuToolBlockWidget *>();
 	};
 } // namespace VTX::UI::Widget::MainMenu
 #endif
