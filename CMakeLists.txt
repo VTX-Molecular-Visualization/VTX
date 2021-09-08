@@ -7,7 +7,7 @@ project(VTX)
 # Compiler options.
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CONFIGS "Debug;Release")
+set(CONFIGS "Debug;Release") # Windows only.
 set(CMAKE_CONFIGURATION_TYPES ${CONFIGS} CACHE STRING "" FORCE)
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_AUTOMOC ON)
@@ -15,7 +15,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form" "src/extensions/keyword_editor/forms/")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-#set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#set(CMAKE_INCLUDE_CURRENT_DIR ON) # Useless?
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Create paths.
@@ -180,7 +180,8 @@ add_dependencies(build_external_project ${p_target})
 	execute_process(COMMAND ${CMAKE_COMMAND}
 		-G "${CMAKE_GENERATOR}"
 		-A "${CMAKE_GENERATOR_PLATFORM}"
-		-T "${CMAKE_GENERATOR_TOOLSET}"		
+		-T "${CMAKE_GENERATOR_TOOLSET}"
+		-DCMAKE_BUILD_TYPE=${p_config}
 		..
 		WORKING_DIRECTORY "${TARGET_DIR}/build")
 
@@ -345,4 +346,10 @@ option(DEFINE_PRODUCTION "Enable production mode" OFF)
 if(DEFINE_PRODUCTION)
 	add_definitions(-DVTX_PRODUCTION)
 endif()
-	
+
+# Force _DEBUG preprocessor on linux.
+if(CMAKE_COMPILER_IS_GNUCC)
+	if(${CMAKE_BUILD_TYPE} == "Debug")
+		add_definitions(-D_DEBUG)
+	endif()
+endif()
