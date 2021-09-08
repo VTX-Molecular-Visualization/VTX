@@ -102,8 +102,8 @@ namespace VTX::Renderer::GL
 		{
 			bind();
 			_gl->glDrawArrays( GLenum( p_mode ), p_first, p_count );
-			unbind();
 			VTX_STAT().drawCalls++;
+			unbind();
 		}
 
 		inline void multiDrawArray( const DrawMode		  p_mode,
@@ -114,17 +114,18 @@ namespace VTX::Renderer::GL
 			bind();
 #if VTX_USE_OPENGL_MULTI_DRAW
 			_gl->glMultiDrawArrays( GLenum( p_mode ), p_first, p_count, p_primcount );
+			VTX_STAT().drawCalls++;
 #else
-			for ( uint i = 0; i < p_primcount; i++ )
+			for ( uint i = 0; i < uint( p_primcount ); i++ )
 			{
 				if ( p_count[ i ] > 0 )
 				{
-					glDrawArrays( GLenum( p_mode ), p_first[ i ], p_count[ i ] );
+					_gl->glDrawArrays( GLenum( p_mode ), p_first[ i ], p_count[ i ] );
+					VTX_STAT().drawCalls++;
 				}
 			}
 #endif
 			unbind();
-			VTX_STAT().drawCalls++;
 		}
 
 		inline void drawElement( const DrawMode		  p_mode,
@@ -134,8 +135,8 @@ namespace VTX::Renderer::GL
 		{
 			bind();
 			_gl->glDrawElements( GLenum( p_mode ), p_count, GLenum( p_type ), p_offset );
-			unbind();
 			VTX_STAT().drawCalls++;
+			unbind();
 		}
 
 		inline void multiDrawElement( const DrawMode			   p_mode,
@@ -147,17 +148,18 @@ namespace VTX::Renderer::GL
 			bind();
 #if VTX_USE_OPENGL_MULTI_DRAW
 			_gl->glMultiDrawElements( GLenum( p_mode ), p_count, GLenum( p_type ), p_offset, p_primcount );
+			VTX_STAT().drawCalls++;
 #else
-			for ( uint i = 0; i < p_primcount; i++ )
+			for ( uint i = 0; i < uint( p_primcount ); i++ )
 			{
 				if ( p_count[ i ] > 0 )
 				{
-					glDrawElements( GLenum( p_mode ), p_count[ i ], GLenum( p_type ), p_offset[ i ] );
+					_gl->glDrawElements( GLenum( p_mode ), p_count[ i ], GLenum( p_type ), p_offset[ i ] );
+					VTX_STAT().drawCalls++;
 				}
 			}
 #endif
 			unbind();
-			VTX_STAT().drawCalls++;
 		}
 
 	  private:

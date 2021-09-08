@@ -58,14 +58,16 @@ foreach(SRC IN ITEMS ${SOURCES})
 endforeach()
 
 # Get all resources.
-file(GLOB_RECURSE RESOURCES ${PATH_WINDOWS_RESOURCE}/*.rc)
-foreach(SRC IN ITEMS ${RESOURCES})
-    get_filename_component(SRC_PATH "${SRC}" PATH)
-    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_WINDOWS_RESOURCE}" "${SRC_PATH}")
-    string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
-	# Create group to make visual studio filters.
-    source_group("Resources${GROUP_PATH}" FILES "${SRC}")
-endforeach()
+if(MSVC)
+	file(GLOB_RECURSE RESOURCES ${PATH_WINDOWS_RESOURCE}/*.rc)
+	foreach(SRC IN ITEMS ${RESOURCES})
+		get_filename_component(SRC_PATH "${SRC}" PATH)
+		file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_WINDOWS_RESOURCE}" "${SRC_PATH}")
+		string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
+		# Create group to make visual studio filters.
+		source_group("Resources${GROUP_PATH}" FILES "${SRC}")
+	endforeach()
+endif()
 
 # Get all GLSL sources.
 file(GLOB_RECURSE SHADERS ${PATH_SRC}/*.vert ${PATH_SRC}/*.frag ${PATH_SRC}/*.geom ${PATH_SRC}/*.tesc ${PATH_SRC}/*.tese)
