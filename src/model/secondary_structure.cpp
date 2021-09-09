@@ -41,7 +41,15 @@ namespace VTX
 
 			const Molecule::AtomPositionsFrame & positions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
 
-			float dirFlag = 0.f; // Loop over chains (1 chain = 1 ribbon).
+			// Temporary vectors, merged with buffers is SS is constructed.
+			std::vector<Vec4f>		caPositions;
+			std::vector<Vec3f>		caODirections;
+			std::vector<uint>		ssTypes;
+			std::vector<Color::Rgb> colors;
+			std::vector<uint>		visibilities;
+			std::vector<uint>		residueIndex;
+			float					dirFlag = 0.f; // Loop over chains (1 chain = 1 ribbon).
+
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
 				const Chain * const chain = _molecule->getChain( chainIdx );
@@ -60,17 +68,23 @@ namespace VTX
 					continue;
 				}
 
-				// Temporary vectors, merged with buffers is SS is constructed.
-				std::vector<Vec4f>		caPositions;
-				std::vector<Vec3f>		caODirections;
-				std::vector<uint>		ssTypes;
-				std::vector<Color::Rgb> colors;
-				std::vector<uint>		visibilities;
-				std::vector<uint>		residueIndex;
-
-				uint idxFirstResidue = chain->getIndexFirstResidue();
+				uint			idxFirstResidue = chain->getIndexFirstResidue();
+				bool			createVectors	= true;
+				const Residue * residueLast		= nullptr;
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
+					if ( createVectors )
+					{
+						caPositions	  = std::vector<Vec4f>();
+						caODirections = std::vector<Vec3f>();
+						ssTypes		  = std::vector<uint>();
+						colors		  = std::vector<Color::Rgb>();
+						visibilities  = std::vector<uint>();
+						residueIndex  = std::vector<uint>();
+
+						createVectors = false;
+					}
+
 					const Residue * const residue = _molecule->getResidue( idxFirstResidue + residueIdx );
 
 					if ( residue == nullptr )
@@ -150,47 +164,20 @@ namespace VTX
 
 					visibilities.emplace_back( uint( _molecule->isVisible() && chain->isVisible()
 													 && residue->isVisible() && CA->isVisible() && O->isVisible() ) );
+
+					if ( residueLast != nullptr
+						 && residue->getIndexInOriginalChain() != residueLast->getIndexInOriginalChain() + 1 )
+					{
+						_tryConstruct(
+							chainIdx, residueIndex, caPositions, caODirections, ssTypes, colors, visibilities );
+						createVectors = true;
+					}
+
+					residueLast = residue;
 				}
 
 				// Update buffers and index mapping if SS is constructed.
-				if ( caPositions.size() >= 4 )
-				{
-					const size_t nbControlPoints = caPositions.size();
-
-					_residueToPositions.emplace( residueIndex[ 0 ], uint( _bufferCaPositions.size() ) );
-					_residueToIndices.emplace( residueIndex[ 0 ], uint( _bufferIndices.size() ) );
-
-					const uint offset = uint( _bufferCaPositions.size() );
-
-					// Add segment with duplicate first index to evaluate B-spline at 0-1.
-					_bufferIndices.emplace_back( offset );
-					_bufferIndices.emplace_back( offset );
-					_bufferIndices.emplace_back( offset + 1 );
-					_bufferIndices.emplace_back( offset + 2 );
-
-					for ( uint i = 1; i < nbControlPoints - 2; ++i )
-					{
-						_residueToPositions.emplace( residueIndex[ i ], uint( _bufferCaPositions.size() + i ) );
-						_residueToIndices.emplace( residueIndex[ i ], uint( _bufferIndices.size() ) );
-
-						_bufferIndices.emplace_back( offset + i - 1 );
-						_bufferIndices.emplace_back( offset + i );
-						_bufferIndices.emplace_back( offset + i + 1 );
-						_bufferIndices.emplace_back( offset + i + 2 );
-					}
-
-					/// TODO: better on GPU ?
-					_checkOrientationAndFlip( caODirections );
-
-					// Merge buffers.
-					_data.emplace( chainIdx, residueIndex );
-					_bufferCaPositions.insert( _bufferCaPositions.end(), caPositions.cbegin(), caPositions.cend() );
-					_bufferCaODirections.insert(
-						_bufferCaODirections.end(), caODirections.cbegin(), caODirections.cend() );
-					_bufferSSTypes.insert( _bufferSSTypes.end(), ssTypes.cbegin(), ssTypes.cend() );
-					_bufferColors.insert( _bufferColors.end(), colors.cbegin(), colors.cend() );
-					_bufferVisibilities.insert( _bufferVisibilities.end(), visibilities.cbegin(), visibilities.cend() );
-				}
+				_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, ssTypes, colors, visibilities );
 			}
 
 			// Reverse indices to render the other side.
@@ -208,6 +195,61 @@ namespace VTX
 			if ( p_refreshBuffers )
 			{
 				_fillBuffer();
+			}
+		}
+
+		void SecondaryStructure::_tryConstruct( const uint						p_chainIdx,
+												const std::vector<uint> &		p_residueIndex,
+												const std::vector<Vec4f> &		p_caPositions,
+												std::vector<Vec3f> &			p_caODirections,
+												const std::vector<uint> &		p_ssTypes,
+												const std::vector<Color::Rgb> & p_colors,
+												const std::vector<uint> &		p_visibilities )
+		{
+			if ( p_caPositions.size() >= 4 )
+			{
+				const size_t nbControlPoints = p_caPositions.size();
+
+				_residueToPositions.emplace( p_residueIndex[ 0 ], uint( _bufferCaPositions.size() ) );
+				_residueToIndices.emplace( p_residueIndex[ 0 ], uint( _bufferIndices.size() ) );
+
+				const uint offset = uint( _bufferCaPositions.size() );
+
+				// Add segment with duplicate first index to evaluate B-spline at 0-1.
+				_bufferIndices.emplace_back( offset );
+				_bufferIndices.emplace_back( offset );
+				_bufferIndices.emplace_back( offset + 1 );
+				_bufferIndices.emplace_back( offset + 2 );
+
+				for ( uint i = 1; i < nbControlPoints - 2; ++i )
+				{
+					_residueToPositions.emplace( p_residueIndex[ i ], uint( _bufferCaPositions.size() + i ) );
+					_residueToIndices.emplace( p_residueIndex[ i ], uint( _bufferIndices.size() ) );
+
+					_bufferIndices.emplace_back( offset + i - 1 );
+					_bufferIndices.emplace_back( offset + i );
+					_bufferIndices.emplace_back( offset + i + 1 );
+					_bufferIndices.emplace_back( offset + i + 2 );
+				}
+
+				/// TODO: better on GPU ?
+				_checkOrientationAndFlip( p_caODirections );
+
+				// Merge buffers.
+				auto it = _data.find( p_chainIdx );
+				if ( it == _data.end() )
+				{
+					_data.emplace( p_chainIdx, std::vector<uint>() );
+				}
+				_data[ p_chainIdx ].insert(
+					std::end( _data[ p_chainIdx ] ), std::begin( p_residueIndex ), std::end( p_residueIndex ) );
+
+				_bufferCaPositions.insert( _bufferCaPositions.end(), p_caPositions.cbegin(), p_caPositions.cend() );
+				_bufferCaODirections.insert(
+					_bufferCaODirections.end(), p_caODirections.cbegin(), p_caODirections.cend() );
+				_bufferSSTypes.insert( _bufferSSTypes.end(), p_ssTypes.cbegin(), p_ssTypes.cend() );
+				_bufferColors.insert( _bufferColors.end(), p_colors.cbegin(), p_colors.cend() );
+				_bufferVisibilities.insert( _bufferVisibilities.end(), p_visibilities.cbegin(), p_visibilities.cend() );
 			}
 		}
 

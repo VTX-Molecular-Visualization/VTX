@@ -1,7 +1,7 @@
+/build/
 /data/
 /lib/
 /lib_src/
-/script/build/
-/script/*.exe
 /external_project/
 /_linux/
+/RELEASE/

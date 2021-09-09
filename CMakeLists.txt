@@ -7,7 +7,7 @@ project(VTX)
 # Compiler options.
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CONFIGS "Debug;Release")
+set(CONFIGS "Debug;Release") # Windows only.
 set(CMAKE_CONFIGURATION_TYPES ${CONFIGS} CACHE STRING "" FORCE)
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_AUTOMOC ON)
@@ -15,7 +15,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form" "src/extensions/keyword_editor/forms/")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-#set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#set(CMAKE_INCLUDE_CURRENT_DIR ON) # Useless?
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Create paths.
@@ -23,7 +23,7 @@ set(PATH_SRC "src")
 set(PATH_LIB "lib")
 set(PATH_EXTERNAL_PROJECT "external_project")
 set(PATH_LIB_BIN "lib_bin")
-set(PATH_WINDOWS_RESOURCE "_windows/resource")
+set(PATH_WINDOWS_RESOURCE "asset/windows_resources")
 set(PATH_QT_RESOURCE "asset/qt_resources")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
@@ -180,7 +180,8 @@ add_dependencies(build_external_project ${p_target})
 	execute_process(COMMAND ${CMAKE_COMMAND}
 		-G "${CMAKE_GENERATOR}"
 		-A "${CMAKE_GENERATOR_PLATFORM}"
-		-T "${CMAKE_GENERATOR_TOOLSET}"		
+		-T "${CMAKE_GENERATOR_TOOLSET}"
+		-DCMAKE_BUILD_TYPE=${p_config}
 		..
 		WORKING_DIRECTORY "${TARGET_DIR}/build")
 
@@ -295,7 +296,7 @@ add_dependencies(VTX VTX_SHADERS)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/libraries/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../libraries)
 
 # Copy Data.
-add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/vtx_internal_data ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../data)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/internal_data ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../data)
 
 # Readme, license and changelog.
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/README.md ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../README.md)
@@ -345,4 +346,10 @@ option(DEFINE_PRODUCTION "Enable production mode" OFF)
 if(DEFINE_PRODUCTION)
 	add_definitions(-DVTX_PRODUCTION)
 endif()
-	
+
+# Force _DEBUG preprocessor on linux.
+if(CMAKE_COMPILER_IS_GNUCC)
+	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+		add_definitions(-D_DEBUG)
+	endif()
+endif()

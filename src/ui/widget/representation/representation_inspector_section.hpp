@@ -93,7 +93,7 @@ namespace VTX::UI::Widget::Representation
 		std::unordered_set<const InstantiatedRepresentation *> _representations
 			= std::unordered_set<const InstantiatedRepresentation *>();
 
-		Model::Representation::InstantiatedRepresentation * _dummyRepresentation;
+		Model::Representation::InstantiatedRepresentation * _dummyRepresentation = nullptr;
 		int													_baseRepresentationIndex = -1;
 		bool												_isDirty				 = false;
 

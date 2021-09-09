@@ -83,6 +83,13 @@ namespace VTX
 
 			void _fillBufferSelections( const Model::Selection::MapChainIds * const = nullptr );
 			void _checkOrientationAndFlip( std::vector<Vec3f> & p_directions );
+			void _tryConstruct( const uint						p_chainIdx,
+								const std::vector<uint> &		p_residueIndex,
+								const std::vector<Vec4f> &		p_caPositions,
+								std::vector<Vec3f> &			p_caODirections,
+								const std::vector<uint> &		p_ssTypes,
+								const std::vector<Color::Rgb> & p_colors,
+								const std::vector<uint> &		p_visibilities );
 		};
 
 	} // namespace Model
