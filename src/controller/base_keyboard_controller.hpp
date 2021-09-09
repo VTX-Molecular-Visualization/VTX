@@ -40,7 +40,8 @@ namespace VTX
 				Up		= 328,
 				Down	= 336,
 				Control = 29,
-				Shift	= 42
+				Shift	= 42,
+				Delete	= 339,
 			};
 
 			virtual void receiveEvent( const QKeyEvent & p_event ) override
@@ -55,7 +56,8 @@ namespace VTX
 					// TOFIX: workaround beacause KeyRelease triggered after 1 second.
 					// if ( p_event.isAutoRepeat() == false )
 					//{
-					_handleKeyDownEvent( ScanCode( p_event.nativeScanCode() ) );
+					const quint32 nativeCode = p_event.nativeScanCode();
+					_handleKeyDownEvent( ScanCode( nativeCode ) );
 					//}
 					// else
 					//{

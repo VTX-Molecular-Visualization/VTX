@@ -1,8 +1,12 @@
 #include "render_widget.hpp"
+#include "controller/shortcut.hpp"
 #include "event/event_manager.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
 #include "style.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX::UI::Widget::Render
 {
@@ -50,46 +54,26 @@ namespace VTX::UI::Widget::Render
 
 	void RenderWidget::_setupSlots() {}
 
+	void RenderWidget::focusInEvent( QFocusEvent * p_event )
+	{
+		VTXApp::get()
+			.getStateMachine()
+			.getItem<State::Visualization>( ID::State::VISUALIZATION )
+			->getItem<Controller::Shortcut>( ID::Controller::SHORTCUT )
+			->setGroup( Controller::SHORTCUTGROUP::RENDER );
+	}
+	void RenderWidget::focusOutEvent( QFocusEvent * p_event )
+	{
+		VTXApp::get()
+			.getStateMachine()
+			.getItem<State::Visualization>( ID::State::VISUALIZATION )
+			->getItem<Controller::Shortcut>( ID::Controller::SHORTCUT )
+			->setGroup( Controller::SHORTCUTGROUP::DEFAULT );
+	}
+
 	void RenderWidget::localize()
 	{
 		setWindowTitle( "Render" );
 		// setWindowTitle( QCoreApplication::translate( "RenderWidget", "Render", nullptr ) );
 	}
-
-	void RenderWidget::mouseMoveEvent( QMouseEvent * p_event )
-	{
-		Event::EventManager::get().fireEventMouse( p_event );
-		p_event->accept();
-	}
-
-	void RenderWidget::mousePressEvent( QMouseEvent * p_event )
-	{
-		Event::EventManager::get().fireEventMouse( p_event );
-		p_event->accept();
-	}
-
-	void RenderWidget::mouseReleaseEvent( QMouseEvent * p_event )
-	{
-		Event::EventManager::get().fireEventMouse( p_event );
-		p_event->accept();
-	}
-
-	void RenderWidget::keyPressEvent( QKeyEvent * p_event )
-	{
-		Event::EventManager::get().fireEventKeyboard( p_event );
-		p_event->accept();
-	}
-
-	void RenderWidget::keyReleaseEvent( QKeyEvent * p_event )
-	{
-		Event::EventManager::get().fireEventKeyboard( p_event );
-		p_event->accept();
-	}
-
-	void RenderWidget::wheelEvent( QWheelEvent * p_event )
-	{
-		Event::EventManager::get().fireEventWheel( p_event );
-		p_event->accept();
-	}
-
 } // namespace VTX::UI::Widget::Render

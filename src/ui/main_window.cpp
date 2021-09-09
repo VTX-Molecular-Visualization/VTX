@@ -456,4 +456,40 @@ namespace VTX::UI
 		return res;
 	}
 
+	void MainWindow::mouseMoveEvent( QMouseEvent * p_event )
+	{
+		Event::EventManager::get().fireEventMouse( p_event );
+		p_event->accept();
+	}
+
+	void MainWindow::mousePressEvent( QMouseEvent * p_event )
+	{
+		Event::EventManager::get().fireEventMouse( p_event );
+		p_event->accept();
+	}
+
+	void MainWindow::mouseReleaseEvent( QMouseEvent * p_event )
+	{
+		Event::EventManager::get().fireEventMouse( p_event );
+		p_event->accept();
+	}
+
+	void MainWindow::keyPressEvent( QKeyEvent * p_event )
+	{
+		Event::EventManager::get().fireEventKeyboard( p_event );
+		p_event->accept();
+	}
+
+	void MainWindow::keyReleaseEvent( QKeyEvent * p_event )
+	{
+		Event::EventManager::get().fireEventKeyboard( p_event );
+		p_event->accept();
+	}
+
+	void MainWindow::wheelEvent( QWheelEvent * p_event )
+	{
+		Event::EventManager::get().fireEventWheel( p_event );
+		p_event->accept();
+	}
+
 } // namespace VTX::UI

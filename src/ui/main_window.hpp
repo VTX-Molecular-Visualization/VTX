@@ -85,6 +85,13 @@ namespace VTX
 
 			void closeEvent( QCloseEvent * ) override;
 
+			void mouseMoveEvent( QMouseEvent * ) override;
+			void mousePressEvent( QMouseEvent * ) override;
+			void mouseReleaseEvent( QMouseEvent * ) override;
+			void keyPressEvent( QKeyEvent * ) override;
+			void keyReleaseEvent( QKeyEvent * ) override;
+			void wheelEvent( QWheelEvent * ) override;
+
 		  private:
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
 
