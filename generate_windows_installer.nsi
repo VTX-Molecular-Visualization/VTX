@@ -7,7 +7,7 @@ OutFile VTX_0.1.1_SelfExtractor.exe
 InstallDir $EXEDIR\VTX_0.1.1
 
 # Installer name.
-Name "VTX v0.1.0"
+Name "VTX v0.1.1"
 
 # Meta tags.
 VIProductVersion "0.1.1.0"
@@ -23,7 +23,7 @@ Section
 SetOutPath $INSTDIR
  
 # Add files.
-File /r build\*
+File /r RELEASE\*
  
 # Create shortcut.
 CreateShortCut $INSTDIR\VTX.lnk $INSTDIR\bin\Release\VTX.exe
