@@ -349,7 +349,7 @@ endif()
 
 # Force _DEBUG preprocessor on linux.
 if(CMAKE_COMPILER_IS_GNUCC)
-	if(${CMAKE_BUILD_TYPE} == "Debug")
+	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 		add_definitions(-D_DEBUG)
 	endif()
 endif()
