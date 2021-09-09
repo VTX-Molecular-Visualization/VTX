@@ -1,6 +1,6 @@
-cmake -B build -G -DDEFINE_PRODUCTION=ON .
-cmake --build ../_windows --config Release --clean-first
-robocopy ../_windows/build RELEASE /nfl /ndl /njh /E
+cmake -B build -DDEFINE_PRODUCTION=ON .
+cmake --build build --config Release --clean-first
+robocopy build/build RELEASE /nfl /ndl /njh /E
 rmdir /s /q RELEASE\bin\Debug
 rmdir /s /q RELEASE\bin\RelWithDebInfo
 rmdir /s /q RELEASE\libraries\representations
