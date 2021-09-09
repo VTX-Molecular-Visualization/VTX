@@ -47,7 +47,7 @@ namespace VTX::UI
 				[]( const uint p_code )
 				{
 					if ( p_code )
-						VTXApp::get().quit();
+						VTXApp::get().getQApp().quit();
 				} );
 
 			UI::Dialog::leavingSessionDialog( callback );

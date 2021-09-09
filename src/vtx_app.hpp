@@ -35,7 +35,7 @@ namespace VTX
 	{
 		class MainWindow;
 	}
-	class VTXApp final : public QApplication
+	class VTXApp final : public QObject
 	{
 	  public:
 		inline static VTXApp & get()
@@ -49,6 +49,8 @@ namespace VTX
 		void goToState( const std::string &, void * const = nullptr );
 		void renderScene() const;
 
+		inline QApplication &								  getQApp() { return *_qApp; };
+		inline const QApplication &							  getQApp() const { return *_qApp; };
 		inline IO::ScenePathData &							  getScenePathData() { return *_pathSceneData; };
 		inline const IO::ScenePathData &					  getScenePathData() const { return *_pathSceneData; };
 		inline Object3D::Scene &							  getScene() { return *_scene; }
@@ -78,13 +80,14 @@ namespace VTX
 		float getPixelRatio() const;
 		bool  hasAnyModifications() const;
 
-		bool notify( QObject * const, QEvent * const ) override;
+		// bool notify( QObject * const, QEvent * const ) override;
 
 	  private:
-		QTimer *	  _timer		= nullptr;
-		QElapsedTimer _elapsedTimer = QElapsedTimer();
-		QElapsedTimer _tickTimer	= QElapsedTimer();
-		uint		  _tickCounter	= 0u;
+		QApplication * _qApp		 = nullptr;
+		QTimer *	   _timer		 = nullptr;
+		QElapsedTimer  _elapsedTimer = QElapsedTimer();
+		QElapsedTimer  _tickTimer	 = QElapsedTimer();
+		uint		   _tickCounter	 = 0u;
 
 		Setting										   _setting				  = Setting();
 		Stat										   _stat				  = Stat();

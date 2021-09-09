@@ -30,7 +30,7 @@ int main( int p_argc, char * p_argv[] )
 		VTXApp & app = VTXApp::get();
 		app.start();
 
-		return app.exec();
+		return app.getQApp().exec();
 	}
 	catch ( const std::exception & p_e )
 	{
