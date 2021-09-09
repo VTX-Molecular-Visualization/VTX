@@ -23,7 +23,7 @@ set(PATH_SRC "src")
 set(PATH_LIB "lib")
 set(PATH_EXTERNAL_PROJECT "external_project")
 set(PATH_LIB_BIN "lib_bin")
-set(PATH_WINDOWS_RESOURCE "_windows/resource")
+set(PATH_WINDOWS_RESOURCE "asset/windows_resources")
 set(PATH_QT_RESOURCE "asset/qt_resources")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
@@ -296,7 +296,7 @@ add_dependencies(VTX VTX_SHADERS)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/libraries/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../libraries)
 
 # Copy Data.
-add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/vtx_internal_data ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../data)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/internal_data ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../data)
 
 # Readme, license and changelog.
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/README.md ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../README.md)
