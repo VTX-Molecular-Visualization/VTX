@@ -1,3 +1,4 @@
+@ECHO OFF
 cmake -B build -DDEFINE_PRODUCTION=ON .
 cmake --build build --config Release --clean-first
 robocopy build/build RELEASE /nfl /ndl /njh /E
