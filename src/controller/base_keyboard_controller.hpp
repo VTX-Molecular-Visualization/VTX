@@ -16,32 +16,32 @@ namespace VTX
 			// ScanCode from AZERTY layout.
 			enum class ScanCode : uint
 			{
-				F1		= 59,
-				F2		= 60,
-				F3		= 61,
-				F4		= 62,
-				F5		= 63,
-				F6		= 64,
-				F7		= 65,
-				F8		= 66,
-				F9		= 67,
-				F10		= 68,
-				F11		= 87,
-				Z		= 17,
-				S		= 31,
-				Q		= 30,
-				D		= 32,
-				A		= 16,
-				E		= 18,
-				R		= 19,
-				F		= 33,
-				Left	= 331,
-				Right	= 333,
-				Up		= 328,
-				Down	= 336,
-				Control = 29,
-				Shift	= 42,
-				Delete	= 339,
+				F1			= 59,
+				F2			= 60,
+				F3			= 61,
+				F4			= 62,
+				F5			= 63,
+				F6			= 64,
+				F7			= 65,
+				F8			= 66,
+				F9			= 67,
+				F10			= 68,
+				F11			= 87,
+				Z			= 17,
+				S			= 31,
+				Q			= 30,
+				D			= 32,
+				A			= 16,
+				E			= 18,
+				R			= 19,
+				F			= 33,
+				Left		= 331,
+				Right		= 333,
+				Up			= 328,
+				Down		= 336,
+				LeftControl = 29,
+				LeftShift	= 42,
+				Delete		= 339,
 			};
 
 			virtual void receiveEvent( const QKeyEvent & p_event ) override
@@ -69,6 +69,7 @@ namespace VTX
 				default: break;
 				}
 			}
+			void clear() override { _pressedKeys.clear(); }
 
 		  protected:
 			std::set<ScanCode> _pressedKeys = std::set<ScanCode>();

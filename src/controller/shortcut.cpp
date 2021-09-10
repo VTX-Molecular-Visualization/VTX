@@ -40,6 +40,8 @@ namespace VTX
 		{
 			bool shortcutEaten = false;
 
+			const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
+
 			switch ( p_key )
 			{
 			case ScanCode::F6:
@@ -65,6 +67,48 @@ namespace VTX
 				}
 				shortcutEaten = true;
 				break;
+
+			case ScanCode::S:
+				if ( modifiers == Qt::ControlModifier )
+				{
+					VTX_ACTION( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+					shortcutEaten = true;
+				}
+				else if ( modifiers == ( Qt::ControlModifier | Qt::ShiftModifier ) )
+				{
+					UI::Dialog::openSaveSessionDialog();
+					shortcutEaten = true;
+				}
+				break;
+
+			case ScanCode::A:
+				if ( modifiers == Qt::ControlModifier )
+				{
+					VTX_ACTION( new Action::Selection::SelectAll() );
+					shortcutEaten = true;
+				}
+				break;
+
+			case ScanCode::D:
+				if ( modifiers == Qt::ControlModifier )
+				{
+					Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+					if ( !selectionModel.isEmpty() )
+						VTX_ACTION( new Action::Selection::Copy( selectionModel ) );
+					shortcutEaten = true;
+				}
+				break;
+
+			case ScanCode::E:
+				if ( modifiers & Qt::ControlModifier )
+				{
+					Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+					if ( !selectionModel.isEmpty() )
+						VTX_ACTION( new Action::Selection::Extract( selectionModel ) );
+					shortcutEaten = true;
+				}
+				break;
+
 			default: break;
 			}
 
@@ -124,16 +168,10 @@ namespace VTX
 		{
 			bool shortcutEaten = false;
 
-			switch ( p_key )
+			/*switch ( p_key )
 			{
-			case ScanCode::A:
-				if ( QApplication::keyboardModifiers() & Qt::ControlModifier )
-				{
-					VTX_ACTION( new Action::Selection::SelectAll() );
-					shortcutEaten = true;
-				}
-				break;
-			}
+			default: break;
+			}*/
 
 			return shortcutEaten;
 		}

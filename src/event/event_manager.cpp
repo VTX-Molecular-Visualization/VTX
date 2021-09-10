@@ -187,7 +187,14 @@ namespace VTX
 			}
 		}
 
-		void EventManager::freezeEvent( const bool p_freeze ) { _freeze = p_freeze; }
+		void EventManager::freezeEvent( const bool p_freeze )
+		{
+			_freeze = p_freeze;
+			for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
+			{
+				receiver->clear();
+			}
+		}
 
 	} // namespace Event
 } // namespace VTX
