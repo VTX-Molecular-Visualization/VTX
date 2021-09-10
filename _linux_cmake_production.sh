@@ -1,13 +1,10 @@
 #!/bin/sh
 cmake -B build -DDEFINE_PRODUCTION=ON .
 cmake --build build --config Release --clean-first
-robocopy build/build RELEASE /nfl /ndl /njh /E
-rmdir /s /q RELEASE\bin\Debug
-rmdir /s /q RELEASE\bin\RelWithDebInfo
-rmdir /s /q RELEASE\libraries\representations
-rmdir /s /q RELEASE\snapshots
-rmdir /s /q RELEASE\logs
-del /s /q RELEASE\config.ini
-del /s /q RELEASE\setting.json
-del /s /q RELEASE\libraries\render_effects\Default
-cmake -B build -DDEFINE_PRODUCTION=OFF .
+cp -R build/build RELEASE
+rm -R RELEASE/libraries/representations
+rm -R RELEASE/snapshots
+rm -R RELEASE/logs
+rm RELEASE/config.ini
+rm RELEASE/setting.json
+rm RELEASE/libraries/render_effects/Default
