@@ -59,6 +59,14 @@ namespace VTX
 				shortcutEaten = true;
 				break;
 #endif
+			case ScanCode::F11:
+				if ( VTXApp::get().getMainWindow().windowState() & Qt::WindowStates::enum_type::WindowFullScreen )
+					VTX_ACTION( new Action::Setting::WindowMode( UI::WindowMode::Windowed ) );
+				else
+					VTX_ACTION( new Action::Setting::WindowMode( UI::WindowMode::Fullscreen ) );
+				shortcutEaten = true;
+				break;
+
 			case ScanCode::Delete:
 				if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 				{
@@ -77,6 +85,22 @@ namespace VTX
 				else if ( modifiers == ( Qt::ControlModifier | Qt::ShiftModifier ) )
 				{
 					UI::Dialog::openSaveSessionDialog();
+					shortcutEaten = true;
+				}
+				break;
+
+			case ScanCode::N:
+				if ( modifiers == Qt::ControlModifier )
+				{
+					UI::Dialog::createNewSessionDialog();
+					shortcutEaten = true;
+				}
+				break;
+
+			case ScanCode::O:
+				if ( modifiers == Qt::ControlModifier )
+				{
+					UI::Dialog::openLoadSessionDialog();
 					shortcutEaten = true;
 				}
 				break;
@@ -100,7 +124,7 @@ namespace VTX
 				break;
 
 			case ScanCode::E:
-				if ( modifiers & Qt::ControlModifier )
+				if ( modifiers == Qt::ControlModifier )
 				{
 					Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 					if ( !selectionModel.isEmpty() )
@@ -116,16 +140,17 @@ namespace VTX
 		}
 		bool Shortcut::_handleRenderShortcut( const ScanCode & p_key )
 		{
-			bool shortcutEaten = false;
+			bool						shortcutEaten = false;
+			const Qt::KeyboardModifiers modifiers	  = QApplication::keyboardModifiers();
 
 			switch ( p_key )
 			{
 			case ScanCode::F1:
-				if ( QApplication::keyboardModifiers() & Qt::ControlModifier )
+				if ( modifiers == Qt::ControlModifier )
 				{
 					VTX_ACTION( new Action::Main::ResetCameraController() );
 				}
-				else
+				else if ( modifiers == Qt::NoModifier )
 				{
 					VTX_ACTION( new Action::Main::ToggleCameraController() );
 				}
@@ -160,6 +185,18 @@ namespace VTX
 				shortcutEaten = true;
 				break;
 #endif
+
+			case ScanCode::O:
+				if ( modifiers == Qt::NoModifier )
+				{
+					const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+
+					if ( !selection.isEmpty() )
+						VTX_ACTION( new Action::Selection::Orient( selection ) );
+
+					shortcutEaten = true;
+				}
+				break;
 			}
 
 			return shortcutEaten;

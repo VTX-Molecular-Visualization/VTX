@@ -35,6 +35,8 @@ namespace VTX
 				E			= 18,
 				R			= 19,
 				F			= 33,
+				O			= 24,
+				N			= 49,
 				Left		= 331,
 				Right		= 333,
 				Up			= 328,
