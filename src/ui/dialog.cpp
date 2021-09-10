@@ -242,7 +242,7 @@ namespace VTX::UI
 							   msg.c_str(),
 							   QMessageBox::StandardButton::Ok,
 							   QMessageBox::StandardButton::Ok );
-		VTXApp::get().getQApp().exit( EXIT_FAILURE );
+		VTXApp::get().exit( EXIT_FAILURE );
 	}
 
 } // namespace VTX::UI

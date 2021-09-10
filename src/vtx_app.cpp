@@ -22,14 +22,13 @@
 
 namespace VTX
 {
-	VTXApp::VTXApp()
+	int ZERO = 0;
+	VTXApp::VTXApp() : QApplication( ZERO, nullptr )
 	{
-		int ZERO = 0;
-		_qApp	 = new QApplication( ZERO, nullptr );
-		_qApp->connect( _qApp, &QCoreApplication::aboutToQuit, this, &VTXApp::_stop );
+		connect( this, &QCoreApplication::aboutToQuit, this, &VTXApp::_stop );
 	}
 
-	VTXApp::~VTXApp() { delete _qApp; }
+	VTXApp::~VTXApp() {}
 
 	void VTXApp::start()
 	{
@@ -83,8 +82,8 @@ namespace VTX
 		}
 
 		// Start timers.
-		_timer = new QTimer( _qApp );
-		_qApp->connect( _timer, &QTimer::timeout, this, &VTXApp::_update );
+		_timer = new QTimer( this );
+		connect( _timer, &QTimer::timeout, this, &VTXApp::_update );
 		_timer->start( 0 );
 		_elapsedTimer.start();
 		_tickTimer.start();
@@ -97,11 +96,11 @@ namespace VTX
 
 	void VTXApp::_initQt()
 	{
-		_qApp->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
+		this->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
 
-		QPalette appPalette = _qApp->palette();
+		QPalette appPalette = palette();
 		Style::applyApplicationPaletteInPalette( appPalette );
-		_qApp->setPalette( appPalette );
+		setPalette( appPalette );
 
 #ifdef _DEBUG
 		QLoggingCategory::setFilterRules( QStringLiteral( "qt.gamepad.debug=true" ) );
@@ -200,7 +199,7 @@ namespace VTX
 	float VTXApp::getPixelRatio() const
 	{
 		const QPoint		  globalCenter = _mainWindow->mapToGlobal( _mainWindow->rect().center() );
-		const QScreen * const screenPtr	   = _qApp->screenAt( globalCenter );
+		const QScreen * const screenPtr	   = VTXApp::get().screenAt( globalCenter );
 
 		return screenPtr == nullptr ? 1.f : float( screenPtr->devicePixelRatio() );
 	}
@@ -218,12 +217,11 @@ namespace VTX
 		return Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPreset();
 	}
 
-	/*
 	bool VTXApp::notify( QObject * const receiver, QEvent * const event )
 	{
 		try
 		{
-			return _qApp->notify( receiver, event );
+			return QApplication::notify( receiver, event );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -234,6 +232,5 @@ namespace VTX
 			return true;
 		}
 	}
-	*/
 
 } // namespace VTX

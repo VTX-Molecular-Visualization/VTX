@@ -42,7 +42,7 @@ namespace VTX::Action::Main
 	class Quit : public BaseAction
 	{
 	  public:
-		virtual void execute() override { VTXApp::get().getQApp().closeAllWindows(); };
+		virtual void execute() override { VTXApp::get().closeAllWindows(); };
 	};
 
 	class Open : public BaseAction
