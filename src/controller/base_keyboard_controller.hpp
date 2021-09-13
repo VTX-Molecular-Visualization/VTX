@@ -3,6 +3,7 @@
 
 #include "base_controller.hpp"
 #include "event/base_event_receiver_keyboard.hpp"
+#include "vtx_app.hpp"
 #include <iostream>
 #include <set>
 
@@ -10,42 +11,15 @@ namespace VTX
 {
 	namespace Controller
 	{
+		enum class KeyboardLayout : int
+		{
+			QWERTY,
+			AZERTY
+		};
+
 		class BaseKeyboardController : virtual public BaseController, public Event::BaseEventReceiverKeyboard
 		{
 		  public:
-			// ScanCode from AZERTY layout.
-			enum class ScanCode : uint
-			{
-				F1			= 59,
-				F2			= 60,
-				F3			= 61,
-				F4			= 62,
-				F5			= 63,
-				F6			= 64,
-				F7			= 65,
-				F8			= 66,
-				F9			= 67,
-				F10			= 68,
-				F11			= 87,
-				Z			= 17,
-				S			= 31,
-				Q			= 30,
-				D			= 32,
-				A			= 16,
-				E			= 18,
-				R			= 19,
-				F			= 33,
-				O			= 24,
-				N			= 49,
-				Left		= 331,
-				Right		= 333,
-				Up			= 328,
-				Down		= 336,
-				LeftControl = 29,
-				LeftShift	= 42,
-				Delete		= 339,
-			};
-
 			virtual void receiveEvent( const QKeyEvent & p_event ) override
 			{
 				if ( isActive() == false )
@@ -58,8 +32,8 @@ namespace VTX
 					// TOFIX: workaround beacause KeyRelease triggered after 1 second.
 					// if ( p_event.isAutoRepeat() == false )
 					//{
-					const quint32 nativeCode = p_event.nativeScanCode();
-					_handleKeyDownEvent( ScanCode( nativeCode ) );
+					const Qt::Key key = Qt::Key( p_event.key() );
+					_handleKeyDownEvent( key );
 					//}
 					// else
 					//{
@@ -67,21 +41,32 @@ namespace VTX
 					//}
 					break;
 				}
-				case QEvent::KeyRelease: _handleKeyUpEvent( ScanCode( p_event.nativeScanCode() ) ); break;
+				case QEvent::KeyRelease: _handleKeyUpEvent( Qt::Key( p_event.key() ) ); break;
 				default: break;
 				}
 			}
 			void clear() override { _pressedKeys.clear(); }
 
 		  protected:
-			std::set<ScanCode> _pressedKeys = std::set<ScanCode>();
+			static Qt::KeyboardModifiers keyboardModifiers() { return VTXApp::get().keyboardModifiers(); }
+			static KeyboardLayout		 getKeyboardLayout()
+			{
+				switch ( VTXApp::get().inputMethod()->locale().language() )
+				{
+				case QLocale::France:
+				case QLocale::French: return KeyboardLayout::AZERTY;
+				default: return KeyboardLayout ::QWERTY;
+				}
+			}
 
-			virtual void _handleKeyDownEvent( const ScanCode & p_key ) { _pressedKeys.emplace( p_key ); }
-			virtual void _handleKeyUpEvent( const ScanCode & p_key ) { _pressedKeys.erase( p_key ); }
+			std::set<Qt::Key> _pressedKeys = std::set<Qt::Key>();
 
-			virtual void _handleKeyPressedEvent( const ScanCode & p_key ) {}
+			virtual void _handleKeyDownEvent( const Qt::Key & p_key ) { _pressedKeys.emplace( p_key ); }
+			virtual void _handleKeyUpEvent( const Qt::Key & p_key ) { _pressedKeys.erase( p_key ); }
 
-			bool _isKeyPressed( const ScanCode & p_key ) { return _pressedKeys.find( p_key ) != _pressedKeys.end(); }
+			virtual void _handleKeyPressedEvent( const Qt::Key & p_key ) {}
+
+			bool _isKeyPressed( const Qt::Key & p_key ) { return _pressedKeys.find( p_key ) != _pressedKeys.end(); }
 		};
 	} // namespace Controller
 } // namespace VTX

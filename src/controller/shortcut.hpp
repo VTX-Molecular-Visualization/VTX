@@ -26,14 +26,13 @@ namespace VTX
 			void removeGroup( const SHORTCUTGROUP & p_group ) { _currentGroup = SHORTCUTGROUP::DEFAULT; };
 
 		  protected:
-			void _handleKeyDownEvent( const ScanCode & ) override;
+			void _handleKeyDownEvent( const Qt::Key & ) override;
 			void update( const float & ) override {}
 
 		  private:
-			bool _handleDefaultShortcut( const ScanCode & );
-			bool _handleRenderShortcut( const ScanCode & );
-			bool _handleSceneShortcut( const ScanCode & );
-
+			bool		  _handleDefaultShortcut( const Qt::Key & );
+			bool		  _handleRenderShortcut( const Qt::Key & );
+			bool		  _handleSceneShortcut( const Qt::Key & );
 			SHORTCUTGROUP _currentGroup = SHORTCUTGROUP::DEFAULT;
 		};
 	} // namespace Controller

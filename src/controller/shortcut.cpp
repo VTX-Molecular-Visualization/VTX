@@ -14,12 +14,13 @@
 #include "state/visualization.hpp"
 #include "tool/logger.hpp"
 #include "vtx_app.hpp"
+#include <QLocale>
 
 namespace VTX
 {
 	namespace Controller
 	{
-		void Shortcut::_handleKeyDownEvent( const ScanCode & p_key )
+		void Shortcut::_handleKeyDownEvent( const Qt::Key & p_key )
 		{
 			// TODO: link with action and UI button.
 			bool shortcutEaten = false;
@@ -36,7 +37,7 @@ namespace VTX
 			}
 		}
 
-		bool Shortcut::_handleDefaultShortcut( const ScanCode & p_key )
+		bool Shortcut::_handleDefaultShortcut( const Qt::Key & p_key )
 		{
 			bool shortcutEaten = false;
 
@@ -44,22 +45,22 @@ namespace VTX
 
 			switch ( p_key )
 			{
-			case ScanCode::F6:
+			case Qt::Key::Key_F6:
 				VTX_ACTION( new Action::Setting::RestoreLayout() );
 				shortcutEaten = true;
 				break;
 #ifndef VTX_PRODUCTION
-			case ScanCode::F8:
+			case Qt::Key::Key_F8:
 				VTX_ACTION( new Action::Dev::CompileShaders() );
 				shortcutEaten = true;
 				break;
 
-			case ScanCode::F9:
+			case Qt::Key::Key_F9:
 				VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
 				shortcutEaten = true;
 				break;
 #endif
-			case ScanCode::F11:
+			case Qt::Key::Key_F11:
 				if ( VTXApp::get().getMainWindow().windowState() & Qt::WindowStates::enum_type::WindowFullScreen )
 					VTX_ACTION( new Action::Setting::WindowMode( UI::WindowMode::Windowed ) );
 				else
@@ -67,7 +68,7 @@ namespace VTX
 				shortcutEaten = true;
 				break;
 
-			case ScanCode::Delete:
+			case Qt::Key::Key_Delete:
 				if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 				{
 					VTX_ACTION(
@@ -76,7 +77,7 @@ namespace VTX
 				shortcutEaten = true;
 				break;
 
-			case ScanCode::S:
+			case Qt::Key::Key_S:
 				if ( modifiers == Qt::ControlModifier )
 				{
 					VTX_ACTION( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
@@ -89,7 +90,7 @@ namespace VTX
 				}
 				break;
 
-			case ScanCode::N:
+			case Qt::Key::Key_N:
 				if ( modifiers == Qt::ControlModifier )
 				{
 					UI::Dialog::createNewSessionDialog();
@@ -97,7 +98,7 @@ namespace VTX
 				}
 				break;
 
-			case ScanCode::O:
+			case Qt::Key::Key_O:
 				if ( modifiers == Qt::ControlModifier )
 				{
 					UI::Dialog::openLoadSessionDialog();
@@ -105,15 +106,23 @@ namespace VTX
 				}
 				break;
 
-			case ScanCode::A:
-				if ( modifiers == Qt::ControlModifier )
+			case Qt::Key::Key_Q:
+				if ( getKeyboardLayout() == KeyboardLayout::QWERTY && modifiers == Qt::ControlModifier )
 				{
 					VTX_ACTION( new Action::Selection::SelectAll() );
 					shortcutEaten = true;
 				}
 				break;
 
-			case ScanCode::D:
+			case Qt::Key::Key_A:
+				if ( getKeyboardLayout() == KeyboardLayout::AZERTY && modifiers == Qt::ControlModifier )
+				{
+					VTX_ACTION( new Action::Selection::SelectAll() );
+					shortcutEaten = true;
+				}
+				break;
+
+			case Qt::Key::Key_D:
 				if ( modifiers == Qt::ControlModifier )
 				{
 					Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
@@ -123,7 +132,7 @@ namespace VTX
 				}
 				break;
 
-			case ScanCode::E:
+			case Qt::Key::Key_E:
 				if ( modifiers == Qt::ControlModifier )
 				{
 					Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
@@ -138,14 +147,14 @@ namespace VTX
 
 			return shortcutEaten;
 		}
-		bool Shortcut::_handleRenderShortcut( const ScanCode & p_key )
+		bool Shortcut::_handleRenderShortcut( const Qt::Key & p_key )
 		{
 			bool						shortcutEaten = false;
 			const Qt::KeyboardModifiers modifiers	  = QApplication::keyboardModifiers();
 
 			switch ( p_key )
 			{
-			case ScanCode::F1:
+			case Qt::Key::Key_F1:
 				if ( modifiers == Qt::ControlModifier )
 				{
 					VTX_ACTION( new Action::Main::ResetCameraController() );
@@ -156,20 +165,20 @@ namespace VTX
 				}
 				shortcutEaten = true;
 				break;
-			case ScanCode::F5:
+			case Qt::Key::Key_F5:
 				VTX_ACTION( new Action::Main::Snapshot(
 					Worker::Snapshoter::MODE::GL,
 					Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) ) );
 				shortcutEaten = true;
 				break;
 #ifndef VTX_PRODUCTION
-			case ScanCode::F2:
+			case Qt::Key::Key_F2:
 				VTX_ACTION( new Action::Setting::ChangeDefaultRepresentation(
 					( ( VTX_SETTING().getDefaultRepresentationIndex() + 1 )
 					  % Model::Representation::RepresentationLibrary::get().getRepresentationCount() ) ) );
 				shortcutEaten = true;
 				break;
-			case ScanCode::F3:
+			case Qt::Key::Key_F3:
 				if ( VTXApp::get().getScene().getMolecules().size() > 0 )
 				{
 					Generic::COLOR_MODE colorMode
@@ -179,14 +188,14 @@ namespace VTX
 				}
 				shortcutEaten = true;
 				break;
-			case ScanCode::F4:
+			case Qt::Key::Key_F4:
 				VTX_ACTION( new Action::Setting::ChangeShading( Renderer::SHADING(
 					( (uint)VTX_RENDER_EFFECT().getShading() + 1 ) % (uint)Renderer::SHADING::COUNT ) ) );
 				shortcutEaten = true;
 				break;
 #endif
 
-			case ScanCode::O:
+			case Qt::Key::Key_O:
 				if ( modifiers == Qt::NoModifier )
 				{
 					const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
@@ -201,7 +210,7 @@ namespace VTX
 
 			return shortcutEaten;
 		}
-		bool Shortcut::_handleSceneShortcut( const ScanCode & p_key )
+		bool Shortcut::_handleSceneShortcut( const Qt::Key & p_key )
 		{
 			bool shortcutEaten = false;
 
