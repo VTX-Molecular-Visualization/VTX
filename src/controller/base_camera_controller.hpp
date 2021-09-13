@@ -6,8 +6,6 @@
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
 #include "math/aabb.hpp"
-#include "object3d/camera.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -31,29 +29,7 @@ namespace VTX
 			inline const Vec3f & getOrientStartingPosition() const { return _orientStartingPosition; }
 			inline const Vec3f & getOrientTargetPosition() const { return _orientTargetPosition; }
 
-			void update( const float & p_deltaTime ) override
-			{
-				BaseMouseController::update( p_deltaTime );
-
-				if ( _isOrienting )
-				{
-					_orientTime += p_deltaTime;
-
-					if ( _orientTime >= ORIENT_DURATION )
-					{
-						_updateOrient( 1.f );
-						_isOrienting = false;
-					}
-					else
-					{
-						_updateOrient( _orientTime / ORIENT_DURATION );
-					}
-				}
-				else
-				{
-					_updateInputs( p_deltaTime );
-				}
-			}
+			void update( const float & p_deltaTime ) override;
 
 			virtual void reset() = 0;
 
@@ -77,6 +53,19 @@ namespace VTX
 			virtual void _updateInputs( const float & )						  = 0;
 			virtual void _computeOrientPositions( const Math::AABB & p_aabb ) = 0;
 			virtual void _updateOrient( const float & )						  = 0;
+
+			bool _mouseHoveringRenderWidget() const;
+
+			virtual void _handleMouseButtonDownEvent( const QMouseEvent & p_event ) override
+			{
+				if ( _mouseHoveringRenderWidget() )
+					BaseMouseController::_handleMouseButtonDownEvent( p_event );
+			}
+			virtual void _handleMouseWheelEvent( const QWheelEvent & p_event ) override
+			{
+				if ( _mouseHoveringRenderWidget() )
+					BaseMouseController::_handleMouseWheelEvent( p_event );
+			}
 		};
 	} // namespace Controller
 } // namespace VTX

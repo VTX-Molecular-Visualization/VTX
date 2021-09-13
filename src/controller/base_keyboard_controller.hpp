@@ -16,6 +16,7 @@ namespace VTX
 			// ScanCode from AZERTY layout.
 			enum class ScanCode : uint
 			{
+				Escape		= 1,
 				F1			= 59,
 				F2			= 60,
 				F3			= 61,
