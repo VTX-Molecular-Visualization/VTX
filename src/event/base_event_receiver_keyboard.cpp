@@ -5,9 +5,16 @@ namespace VTX
 {
 	namespace Event
 	{
-		BaseEventReceiverKeyboard ::BaseEventReceiverKeyboard() { EventManager::get().registerEventReceiverKeyboard( this ); }
+		BaseEventReceiverKeyboard::BaseEventReceiverKeyboard()
+		{
+			EventManager::get().registerEventReceiverKeyboard( this );
+		}
+		BaseEventReceiverKeyboard::~BaseEventReceiverKeyboard()
+		{
+			EventManager::get().unregisterEventReceiverKeyboard( this );
+		}
 
-		BaseEventReceiverKeyboard ::~BaseEventReceiverKeyboard() { EventManager::get().unregisterEventReceiverKeyboard( this ); }
+		void BaseEventReceiverKeyboard::clear() {};
 
 	} // namespace Event
 } // namespace VTX

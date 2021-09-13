@@ -3,6 +3,7 @@
 
 #include "opengl_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
+#include <QFocusEvent>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -24,15 +25,11 @@ namespace VTX::UI::Widget::Render
 	  protected:
 		RenderWidget( QWidget * p_parent );
 
+		void focusInEvent( QFocusEvent * p_event ) override;
+		void focusOutEvent( QFocusEvent * p_event ) override;
+
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
-
-		void mouseMoveEvent( QMouseEvent * ) override;
-		void mousePressEvent( QMouseEvent * ) override;
-		void mouseReleaseEvent( QMouseEvent * ) override;
-		void keyPressEvent( QKeyEvent * ) override;
-		void keyReleaseEvent( QKeyEvent * ) override;
-		void wheelEvent( QWheelEvent * ) override;
 
 	  private:
 		OpenGLWidget * _openGLWidget;
