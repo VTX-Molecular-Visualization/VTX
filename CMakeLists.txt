@@ -30,6 +30,17 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 
+# Libs URL and tags.
+set(GIT_URL_CHEMFILES https://github.com/sacraiou/chemfiles.git)
+set(GIT_TAG_CHEMFILES 6e1493793de7f22bcd5db3858081321cbac0fd3f)
+set(GIT_URL_GLM https://github.com/g-truc/glm.git)
+set(GIT_TAG_GLM bf71a834948186f4097caa076cd2663c69a10e1e) #0.9.9.8
+set(GIT_URL_JSON https://github.com/nlohmann/json.git)
+set(GIT_TAG_JSON 626e7d61e44dee32887126c8f437dd077dec09cf) #3.10.2
+set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum.git)
+set(GIT_TAG_MAGIC_ENUM 3d1f6a5a2a3fbcba077e00ad0ccc2dd9fefc2ca7) #0.7.3
+
+# Create output dir.
 if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
 	file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
@@ -108,9 +119,8 @@ include(ExternalProject)
 ExternalProject_Add(
     glm
     PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/g-truc
-    GIT_REPOSITORY https://github.com/g-truc/glm.git
-	#commit hash corresponding to merging of v0.9.9.7
-	GIT_TAG 13724cfae64a8b5313d1cabc9a963d2c9dbeda12
+    GIT_REPOSITORY ${GIT_URL_GLM}
+	GIT_TAG ${GIT_TAG_GLM}
 	CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
@@ -123,9 +133,8 @@ set(GLM_INCLUDE_DIR ${SOURCE_DIR})
 ExternalProject_Add(
     json
     PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/nlohmann
-    GIT_REPOSITORY https://github.com/nlohmann/json.git
-	#commit hash corresponding to merging of v3.8.0
-	GIT_TAG e7452d87783fbf6e9d320d515675e26dfd1271c5
+    GIT_REPOSITORY ${GIT_URL_JSON}
+	GIT_TAG ${GIT_TAG_JSON}
 	CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
@@ -138,9 +147,8 @@ set(JSON_INCLUDE_DIR ${SOURCE_DIR}/include/)
 ExternalProject_Add(
     magic_enum
     PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Neargye
-    GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
-	#commit hash corresponding to merging of v0.6.6
-	GIT_TAG 963ee65e95d878f49fb5622badc6c81b07c717a9
+    GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM}
+	GIT_TAG ${GIT_TAG_MAGIC_ENUM}
 	CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
@@ -201,17 +209,17 @@ if(BUILD_LIB)
 	# For windows(multi conf), build in Debug then in Release, and move .lib after cmake install to the correct folder.
 	# Then, use link_directories to link and and target_include_directories to add include directory.
 	if(MSVC)
-		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 6e1493793de7f22bcd5db3858081321cbac0fd3f chemfiles Debug)
+		BuildExternalProject(${GIT_URL_CHEMFILES} ${GIT_TAG_CHEMFILES} chemfiles Debug)
 		file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/ ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
 		file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/)
-		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 6e1493793de7f22bcd5db3858081321cbac0fd3f chemfiles Release)
+		BuildExternalProject(${GIT_URL_CHEMFILES} ${GIT_TAG_CHEMFILES} chemfiles Release)
 		file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
 		file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/cmake)
 		file(REMOVE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib)
 	elseif(CMAKE_COMPILER_IS_GNUCC)
 	# For Linux (solo conf), juste build in current mode.
 	# Then use find_package to automatically add include folder and link lib. 
-		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 6e1493793de7f22bcd5db3858081321cbac0fd3f chemfiles "${CMAKE_BUILD_TYPE}")
+		BuildExternalProject(${GIT_URL_CHEMFILES} ${GIT_TAG_CHEMFILES} chemfiles "${CMAKE_BUILD_TYPE}")
 	endif()
 endif()
 

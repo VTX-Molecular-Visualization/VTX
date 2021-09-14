@@ -41,18 +41,18 @@ namespace VTX
 		{
 			bool shortcutEaten = false;
 
-			const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
+			const Qt::KeyboardModifiers modifiers = keyboardModifiers();
 
 			switch ( p_key )
 			{
-			case ScanCode::Escape:
+			case Qt::Key::Key_Escape:
 				if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 				{
 					VTX_ACTION( new Action::Selection::ClearSelection(
 						Selection::SelectionManager::get().getSelectionModel() ) );
 				}
 				break;
-			case ScanCode::F6:
+			case Qt::Key::Key_F6:
 				VTX_ACTION( new Action::Setting::RestoreLayout() );
 				shortcutEaten = true;
 				break;
@@ -105,7 +105,7 @@ namespace VTX
 				}
 				break;
 
-			case ScanCode::O:
+			case Qt::Key::Key_O:
 				if ( modifiers == Qt::NoModifier )
 				{
 					const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
@@ -166,7 +166,7 @@ namespace VTX
 		bool Shortcut::_handleRenderShortcut( const Qt::Key & p_key )
 		{
 			bool						shortcutEaten = false;
-			const Qt::KeyboardModifiers modifiers	  = QApplication::keyboardModifiers();
+			const Qt::KeyboardModifiers modifiers	  = keyboardModifiers();
 
 			switch ( p_key )
 			{
