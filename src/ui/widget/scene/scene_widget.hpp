@@ -22,6 +22,8 @@ namespace VTX::UI::Widget::Scene
 		void localize() override;
 
 		const std::vector<SceneItemWidget *> & getSceneItemWidgets() const { return _sceneWidgets; }
+		SceneItemWidget *					   getPreviousSceneItemWidgets( SceneItemWidget * p_item ) const;
+		SceneItemWidget *					   getNextSceneItemWidgets( SceneItemWidget * p_item ) const;
 
 	  protected:
 		SceneWidget( QWidget * p_parent );

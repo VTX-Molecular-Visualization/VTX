@@ -43,6 +43,8 @@ namespace VTX::View::UI::Widget
 
 		virtual void updatePosInSceneHierarchy( const int p_position ) override;
 
+		QTreeWidgetItem * getLastVisibleItem() override;
+
 	  protected:
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
@@ -52,10 +54,12 @@ namespace VTX::View::UI::Widget
 
 		bool		_canDragObjectAtPos( const QPoint & p_position ) override;
 		QMimeData * _getDataForDrag() override;
+		void		_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append = false );
 
 	  private:
 		QMenu *											_contextMenu;
 		const QTreeWidgetItem *							_lastItemClicked = nullptr;
+		QTreeWidgetItem *								_lastItemVisible = nullptr;
 		std::map<Model::ID, QList<QTreeWidgetItem *> *> _mapLoadedItems
 			= std::map<Model::ID, QList<QTreeWidgetItem *> *>();
 		int _enableSignalCounter = 0;

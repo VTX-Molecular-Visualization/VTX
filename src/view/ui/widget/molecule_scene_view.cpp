@@ -13,6 +13,7 @@
 #include "ui/mime_type.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "ui/widget/scene/molecule_selection_model.hpp"
+#include "ui/widget/scene/scene_widget.hpp"
 #include "ui/widget_factory.hpp"
 
 namespace VTX::View::UI::Widget
@@ -119,16 +120,74 @@ namespace VTX::View::UI::Widget
 				openRenameEditor();
 			}
 		}
+		else if ( p_event->key() == Qt::Key::Key_Up && itemFromIndex( currentIndex() ) == _getMoleculeTreeWidgetItem() )
+		{
+			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
+				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
+			SceneItemWidget * const previousTree = sceneWidget.getPreviousSceneItemWidgets( this );
+
+			if ( previousTree != this )
+			{
+				QTreeWidgetItem * const previousTreeWidgetItem = previousTree->getLastVisibleItem();
+
+				const bool appendToSelection = p_event->modifiers() == Qt::KeyboardModifier::ShiftModifier;
+				_selectItemWithArrows( *previousTreeWidgetItem, appendToSelection );
+			}
+		}
+		else if ( p_event->key() == Qt::Key::Key_Down && itemFromIndex( currentIndex() ) == _lastItemVisible )
+		{
+			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
+				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
+			SceneItemWidget * const nextTree = sceneWidget.getNextSceneItemWidgets( this );
+
+			if ( nextTree != this )
+			{
+				QTreeWidgetItem * const nextTreeWidgetItem = nextTree->topLevelItem( 0 );
+
+				const bool appendToSelection = p_event->modifiers() == Qt::KeyboardModifier::ShiftModifier;
+				_selectItemWithArrows( *nextTreeWidgetItem, appendToSelection );
+			}
+		}
 		else
 		{
 			SceneItemWidget::keyPressEvent( p_event );
 		}
 	}
 
+	void MoleculeSceneView::_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append )
+	{
+		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+
+		const Model::ID & itemModel = _getModelIDFromItem( p_itemToSelect );
+		const ID::VTX_ID  itemType	= MVC::MvcManager::get().getModelTypeID( itemModel );
+
+		p_itemToSelect.treeWidget()->setFocus( Qt::FocusReason::TabFocusReason );
+		p_itemToSelect.treeWidget()->setCurrentItem( &p_itemToSelect );
+
+		if ( itemType == ID::Model::MODEL_MOLECULE )
+		{
+			selectionModel.selectMolecule( MVC::MvcManager::get().getModel<Model::Molecule>( itemModel ), p_append );
+		}
+		else if ( itemType == ID::Model::MODEL_CHAIN )
+		{
+			selectionModel.selectChain( MVC::MvcManager::get().getModel<Model::Chain>( itemModel ), p_append );
+		}
+		else if ( itemType == ID::Model::MODEL_RESIDUE )
+		{
+			selectionModel.selectResidue( MVC::MvcManager::get().getModel<Model::Residue>( itemModel ), p_append );
+		}
+		else if ( itemType == ID::Model::MODEL_ATOM )
+		{
+			selectionModel.selectAtom( MVC::MvcManager::get().getModel<Model::Atom>( itemModel ), p_append );
+		}
+	}
+
+	QTreeWidgetItem * MoleculeSceneView::getLastVisibleItem() { return _lastItemVisible; }
+
 	void MoleculeSceneView::_setupUi( const QString & p_name )
 	{
 		SceneItemWidget::_setupUi( p_name );
-		setSelectionModel( new VTX::UI::Widget ::Scene::MoleculeSelectionModel( _model, model(), this ) );
+		setSelectionModel( new VTX::UI::Widget::Scene::MoleculeSelectionModel( _model, model(), this ) );
 		setExpandsOnDoubleClick( false );
 
 		setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
@@ -320,6 +379,7 @@ namespace VTX::View::UI::Widget
 		_refreshItemVisibility( moleculeView, *_model );
 
 		addTopLevelItem( moleculeView );
+		_lastItemVisible = moleculeView;
 	}
 
 	void MoleculeSceneView::_clearLoadedItems()
@@ -406,6 +466,10 @@ namespace VTX::View::UI::Widget
 				nullItem->setHidden( true );
 		}
 
+		QTreeWidgetItem * const lastItemExpanded = *itemsPtr->rbegin();
+		if ( _getModelIDFromItem( *lastItemExpanded ) > _getModelIDFromItem( *_lastItemVisible ) )
+			_lastItemVisible = lastItemExpanded;
+
 		// Update visibility here because it can be modified when the parent is collapsed
 		for ( QTreeWidgetItem * const item : *itemsPtr )
 		{
@@ -483,6 +547,10 @@ namespace VTX::View::UI::Widget
 			for ( QTreeWidgetItem * const nullItem : nullItems )
 				nullItem->setHidden( true );
 		}
+
+		QTreeWidgetItem * const lastItemExpanded = *itemsPtr->rbegin();
+		if ( _getModelIDFromItem( *lastItemExpanded ) > _getModelIDFromItem( *_lastItemVisible ) )
+			_lastItemVisible = lastItemExpanded;
 
 		// Update visibility here because it can be modified when the parent is collapsed
 		for ( QTreeWidgetItem * const item : *itemsPtr )
@@ -562,6 +630,10 @@ namespace VTX::View::UI::Widget
 				nullItem->setHidden( true );
 		}
 
+		QTreeWidgetItem * const lastItemExpanded = *itemsPtr->rbegin();
+		if ( _getModelIDFromItem( *lastItemExpanded ) > _getModelIDFromItem( *_lastItemVisible ) )
+			_lastItemVisible = lastItemExpanded;
+
 		for ( QTreeWidgetItem * const item : *itemsPtr )
 		{
 			if ( item->isHidden() )
@@ -586,6 +658,9 @@ namespace VTX::View::UI::Widget
 		const Model::ID &				 id	   = _getModelIDFromItem( p_item );
 		QList<QTreeWidgetItem *> * const items = new QList( p_item.takeChildren() );
 		_mapLoadedItems.emplace( id, items );
+
+		if ( items->contains( _lastItemVisible ) )
+			_lastItemVisible = &p_item;
 
 		_enableSignals( true );
 	}
