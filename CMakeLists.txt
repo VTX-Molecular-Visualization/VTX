@@ -17,6 +17,7 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form" "src/exten
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 #set(CMAKE_INCLUDE_CURRENT_DIR ON) # Useless?
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_BUILD_RPATH_USE_ORIGIN ON)
 
 # Create paths.
 set(PATH_SRC "src")
