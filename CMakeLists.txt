@@ -201,17 +201,17 @@ if(BUILD_LIB)
 	# For windows(multi conf), build in Debug then in Release, and move .lib after cmake install to the correct folder.
 	# Then, use link_directories to link and and target_include_directories to add include directory.
 	if(MSVC)
-		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 37f799f6d870e3b63d8190721491aba11d8b6a90 chemfiles Debug)
+		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 6e1493793de7f22bcd5db3858081321cbac0fd3f chemfiles Debug)
 		file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/ ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
 		file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/)
-		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 37f799f6d870e3b63d8190721491aba11d8b6a90 chemfiles Release)
+		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 6e1493793de7f22bcd5db3858081321cbac0fd3f chemfiles Release)
 		file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
 		file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/cmake)
 		file(REMOVE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib)
 	elseif(CMAKE_COMPILER_IS_GNUCC)
 	# For Linux (solo conf), juste build in current mode.
 	# Then use find_package to automatically add include folder and link lib. 
-		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 37f799f6d870e3b63d8190721491aba11d8b6a90 chemfiles "${CMAKE_BUILD_TYPE}")
+		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 6e1493793de7f22bcd5db3858081321cbac0fd3f chemfiles "${CMAKE_BUILD_TYPE}")
 	endif()
 endif()
 

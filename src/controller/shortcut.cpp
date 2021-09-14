@@ -45,7 +45,14 @@ namespace VTX
 
 			switch ( p_key )
 			{
-			case Qt::Key::Key_F6:
+			case ScanCode::Escape:
+				if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
+				{
+					VTX_ACTION( new Action::Selection::ClearSelection(
+						Selection::SelectionManager::get().getSelectionModel() ) );
+				}
+				break;
+			case ScanCode::F6:
 				VTX_ACTION( new Action::Setting::RestoreLayout() );
 				shortcutEaten = true;
 				break;
@@ -98,8 +105,17 @@ namespace VTX
 				}
 				break;
 
-			case Qt::Key::Key_O:
-				if ( modifiers == Qt::ControlModifier )
+			case ScanCode::O:
+				if ( modifiers == Qt::NoModifier )
+				{
+					const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+
+					if ( !selection.isEmpty() )
+						VTX_ACTION( new Action::Selection::Orient( selection ) );
+
+					shortcutEaten = true;
+				}
+				else if ( modifiers == Qt::ControlModifier )
 				{
 					UI::Dialog::openLoadSessionDialog();
 					shortcutEaten = true;
@@ -194,18 +210,6 @@ namespace VTX
 				shortcutEaten = true;
 				break;
 #endif
-
-			case Qt::Key::Key_O:
-				if ( modifiers == Qt::NoModifier )
-				{
-					const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
-
-					if ( !selection.isEmpty() )
-						VTX_ACTION( new Action::Selection::Orient( selection ) );
-
-					shortcutEaten = true;
-				}
-				break;
 			}
 
 			return shortcutEaten;

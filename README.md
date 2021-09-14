@@ -28,8 +28,19 @@
 
 - F1: Toggle camera controller
 - CTRL + F1: Reset current camera controller
+- O : Orient
 - F5: Take a snapshot
 - F6: Restore the default layout
+- F11: Toggle fullscreen
+- Escape: Clear the selection
+- Delete : Delete the selection
+- Ctrl + S : Save
+- Ctrl + Shift + S : Save as...
+- Ctrl + N : New session
+- Ctrl + O : Open session
+- Ctrl + A : Select all
+- Ctrl + D : Duplicate selection
+- Ctrl + E : Export selection
 
 ### SNAPSHOTS
 
