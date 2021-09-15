@@ -97,6 +97,8 @@ namespace VTX::UI::Widget::Representation
 		QGridLayout *										   _layout = nullptr;
 		std::unordered_set<const Generic::BaseRepresentable *> _targets
 			= std::unordered_set<const Generic::BaseRepresentable *>();
+
+		void _appendWidgetInLayout( QWidget * const p_label, QWidget * const p_widget );
 	};
 } // namespace VTX::UI::Widget::Representation
 #endif
