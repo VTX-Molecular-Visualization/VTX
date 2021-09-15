@@ -56,11 +56,60 @@ namespace VTX::UI::Widget::Scene
 		}
 	}
 
+	SceneItemWidget * SceneWidget::getPreviousSceneItemWidgets( SceneItemWidget * p_item ) const
+	{
+		SceneItemWidget * res		= nullptr;
+		bool			  itemFound = false;
+
+		for ( std::vector<SceneItemWidget *>::const_iterator it = _sceneWidgets.begin(); it != _sceneWidgets.end();
+			  it++ )
+		{
+			if ( p_item == *it )
+			{
+				if ( res == nullptr )
+					res = *it;
+
+				itemFound = true;
+				break;
+			}
+
+			res = *it;
+		}
+
+		return itemFound ? res : nullptr;
+	}
+	SceneItemWidget * SceneWidget::getNextSceneItemWidgets( SceneItemWidget * p_item ) const
+	{
+		SceneItemWidget * res		= nullptr;
+		bool			  itemFound = false;
+
+		for ( std::vector<SceneItemWidget *>::const_reverse_iterator it = _sceneWidgets.rbegin();
+			  it != _sceneWidgets.rend();
+			  it++ )
+		{
+			if ( p_item == *it )
+			{
+				if ( res == nullptr )
+					res = *it;
+
+				itemFound = true;
+				break;
+			}
+
+			res = *it;
+		}
+
+		return itemFound ? res : nullptr;
+	}
+
 	void SceneWidget::_addWidgetInLayout( SceneItemWidget * const p_sceneItemWidget )
 	{
 		const int posInHierarchy = _layout->count() - 1;
 		_layout->insertWidget( posInHierarchy, p_sceneItemWidget, 1 );
 		p_sceneItemWidget->updatePosInSceneHierarchy( posInHierarchy );
+
+		if ( _sceneWidgets.size() > 0 )
+			setTabOrder( *_sceneWidgets.rbegin(), p_sceneItemWidget );
 
 		_sceneWidgets.emplace_back( p_sceneItemWidget );
 	}

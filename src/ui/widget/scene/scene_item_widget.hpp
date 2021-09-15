@@ -20,6 +20,7 @@ namespace VTX::UI::Widget::Scene
 		virtual void updatePosInSceneHierarchy( const int p_position );
 
 		virtual const Model::ID & getModelID() const = 0;
+		virtual QTreeWidgetItem * getLastVisibleItem();
 
 	  protected:
 		SceneItemWidget( QWidget * p_parent );
