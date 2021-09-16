@@ -48,6 +48,15 @@ namespace VTX::Renderer::GL
 			_id, p_level, p_offsetX, p_offsetY, width, height, GLenum( p_format ), GLenum( p_type ), p_pixels );
 	}
 
+	void Texture2D::getImage( const GLint	p_level,
+							  const Format	p_format,
+							  const Type	p_type,
+							  const GLsizei p_bufSize,
+							  void * const	p_pixels ) const
+	{
+		_gl->glGetTextureImage( _id, p_level, GLenum( p_format ), GLenum( p_type ), p_bufSize, p_pixels );
+	}
+
 	void Texture2D::_create()
 	{
 		_gl->glCreateTextures( GL_TEXTURE_2D, 1, &_id );

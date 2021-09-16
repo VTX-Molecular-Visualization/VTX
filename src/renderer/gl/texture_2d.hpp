@@ -41,6 +41,8 @@ namespace VTX::Renderer::GL
 			RGB				= GL_RGB,
 			BGR				= GL_BGR,
 			BGRA			= GL_BGRA,
+			RGBA			= GL_RGBA,
+			RGBA_INTEGER	= GL_RGBA_INTEGER,
 			DEPTH_COMPONENT = GL_DEPTH_COMPONENT,
 			STENCIL_INDEX	= GL_STENCIL_INDEX
 		};
@@ -84,6 +86,17 @@ namespace VTX::Renderer::GL
 		Texture2D( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 		~Texture2D() { _destroy(); }
 
+		inline int	getId() const { return _id; }
+		inline void bindToUnit( const GLuint p_unit ) const { _gl->glBindTextureUnit( p_unit, _id ); }
+
+		inline void clear( const void * p_data,
+						   const Format p_format,
+						   const Type	p_type,
+						   const GLint	p_level = 0 ) const
+		{
+			_gl->glClearTexImage( _id, p_level, GLenum( p_format ), GLenum( p_type ), p_data );
+		}
+
 		void create( const GLsizei		  p_width,
 					 const GLsizei		  p_height,
 					 const InternalFormat p_format	  = InternalFormat::RGBA32F,
@@ -92,11 +105,7 @@ namespace VTX::Renderer::GL
 					 const Filter		  p_minFilter = Filter::NEAREST_MIPMAP_LINEAR,
 					 const Filter		  p_magFilter = Filter::LINEAR );
 
-		inline int getId() const { return _id; }
-
 		void resize( const GLsizei p_width, const GLsizei p_height );
-
-		inline void bindToUnit( const GLuint p_unit ) const { _gl->glBindTextureUnit( p_unit, _id ); }
 
 		void fill( const void *	 p_pixels,
 				   const Format	 p_format  = Format::RGB,
@@ -107,13 +116,11 @@ namespace VTX::Renderer::GL
 				   const GLsizei p_width   = -1,
 				   const GLsizei p_height  = -1 ) const;
 
-		inline void clear( const void * p_data,
-						   const Format p_format,
-						   const Type	p_type,
-						   const GLint	p_level = 0 ) const
-		{
-			_gl->glClearTexImage( _id, p_level, GLenum( p_format ), GLenum( p_type ), p_data );
-		}
+		void getImage( const GLint	 p_level,
+					   const Format	 p_format,
+					   const Type	 p_type,
+					   const GLsizei p_bufSize,
+					   void * const	 p_pixels ) const;
 
 	  private:
 		void _create();

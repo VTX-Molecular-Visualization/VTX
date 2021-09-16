@@ -1,11 +1,13 @@
 #include "snapshoter.hpp"
 #include "action/action_manager.hpp"
 #include "action/setting.hpp"
+#include "renderer/gl/framebuffer.hpp"
 #include "renderer/gl/gl.hpp"
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
+#include <QOpenGLFramebufferObject>
 #include <QPainter>
 #include <QSvgRenderer>
 #include <vector>
@@ -24,37 +26,81 @@ namespace VTX
 				return;
 			}
 
-			// Force AA and disable coutner.
-			UI::Widget::Render::OpenGLWidget & glWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
-			glWidget.setShowCounter( false );
+			const float						   pixelRatio = VTXApp::get().getPixelRatio();
+			UI::Widget::Render::OpenGLWidget & glWidget	  = VTXApp::get().getMainWindow().getOpenGLWidget();
 
+			glWidget.makeCurrent();
+
+			Renderer::GL::Framebuffer fbo	  = Renderer::GL::Framebuffer( glWidget.getGL() );
+			Renderer::GL::Texture2D	  texture = Renderer::GL::Texture2D( glWidget.getGL() );
+
+			texture.create( _width,
+							_height,
+							Renderer::GL::Texture2D::InternalFormat::RGBA16F,
+							Renderer::GL::Texture2D::Wrapping::CLAMP_TO_EDGE,
+							Renderer::GL::Texture2D::Wrapping::CLAMP_TO_EDGE,
+							Renderer::GL::Texture2D::Filter::LINEAR,
+							Renderer::GL::Texture2D::Filter::LINEAR );
+			fbo.create( Renderer::GL::Framebuffer::Target::FRAMEBUFFER );
+			fbo.attachTexture( texture, Renderer::GL::Framebuffer::Attachment::COLOR0 );
+
+			// Force AA.
 			const bool activeAA = VTX_RENDER_EFFECT().getAA();
 			if ( activeAA == false )
 			{
 				VTX_ACTION( new Action::Setting::ActiveAA( true ) );
 			}
 
-			glWidget.update();
+			VTXApp::get().getScene().getCamera().setScreenSize( _width, _height );
+
+			////////////
+			/*
+			QOpenGLFramebufferObject qfbo
+				= QOpenGLFramebufferObject( _width * pixelRatio,
+											_height * pixelRatio,
+											QOpenGLFramebufferObject::Attachment::NoAttachment,
+											GL_TEXTURE_2D,
+											GL_RGB16F );
+											*/
+			// qfbo.addColorAttachment( _width * pixelRatio, _height * pixelRatio, GL_RGB16F );
+			////////////
+
+			glWidget.getRenderer().resize( _width * pixelRatio, _height * pixelRatio, fbo.getId() );
+			glWidget.getRenderer().renderFrame( VTXApp::get().getScene() );
 
 			// Grab image.
-			QImage render = glWidget.grabFramebuffer();
+			// QImage render = glWidget.grabFramebuffer();
+			// VTX_DEBUG( std::to_string( render.format() ) );
+
+			std::vector<uchar> data = std::vector<uchar>();
+			data.reserve( 64 * _width * _height );
+
+			texture.getImage( 0,
+							  Renderer::GL::Texture2D::Format::RGBA,
+							  Renderer::GL::Texture2D::Type::FLOAT,
+							  64 * _width * _height,
+							  data.data() );
+
+			QImage render = QImage( data.data(), _width, _height, QImage::Format::Format_RGBA64 );
+
+			// QImage render = qfbo.toImage();
 
 			// Restore values.
-			glWidget.setShowCounter( true );
-
 			if ( activeAA == false )
 			{
 				VTX_ACTION( new Action::Setting::ActiveAA( false ) );
 			}
 
-			glWidget.update();
+			glWidget.doneCurrent();
+
+			// fbo.destroy();
 
 			// Add watermark.
-			_addWatermark( render );
+			//_addWatermark( render );
 
 #ifndef VTX_DEBUG_WATERMARK
 			// Save.
-			if ( render.save( _path.qpath(), "png", 0 ) )
+			if ( render.save( _path.qpath(), _path.extension().c_str(), _quality ) )
 			{
 				VTX_INFO( "Snapshot taken: " + _path.filename() );
 			}
@@ -63,6 +109,8 @@ namespace VTX
 				VTX_ERROR( "Snapshot failed" );
 			}
 #endif
+
+			glWidget.resizeGL( glWidget.width(), glWidget.height() );
 		}
 
 		void Snapshoter::_addWatermark( QImage & p_image ) const

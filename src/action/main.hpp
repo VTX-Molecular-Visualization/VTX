@@ -333,7 +333,7 @@ namespace VTX::Action::Main
 
 		virtual void execute() override
 		{
-			Worker::Snapshoter * const worker = new Worker::Snapshoter( _mode, _path );
+			Worker::Snapshoter * const worker = new Worker::Snapshoter( _mode, _path, 1920, 1080 );
 			VTX_WORKER( worker );
 		};
 
