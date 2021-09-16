@@ -17,9 +17,7 @@ namespace VTX
 				GL
 			};
 
-			explicit Snapshoter( const MODE & p_mode, const IO::FilePath & p_path ) : _mode( p_mode ), _path( p_path )
-			{
-			}
+			explicit Snapshoter( const MODE & p_mode, const IO::FilePath & p_path );
 
 			explicit Snapshoter( const MODE &		  p_mode,
 								 const IO::FilePath & p_path,
@@ -48,8 +46,8 @@ namespace VTX
 		  private:
 			const MODE		   _mode;
 			const IO::FilePath _path;
-			const uint		   _width	= 800;
-			const uint		   _height	= 600;
+			const uint		   _width;
+			const uint		   _height;
 			const uint		   _quality = 0;
 		};
 	} // namespace Worker
