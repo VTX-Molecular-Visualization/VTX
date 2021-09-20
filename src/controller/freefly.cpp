@@ -23,15 +23,14 @@ namespace VTX
 										   * ( VTX_SETTING().getYAxisInverted() ? -1.f : 1.f ),
 									   -VTX_SETTING().getRotationSpeed() * _deltaMousePosition.x,
 									   0.f ) );
-				_deltaMousePosition.x = 0;
-				_deltaMousePosition.y = 0;
 			}
 			if ( _mouseRightPressed )
 			{
 				_camera.rotateRoll( VTX_SETTING().getRotationSpeed() * _deltaMousePosition.x );
-				_deltaMousePosition.x = 0;
-				_deltaMousePosition.y = 0;
 			}
+
+			_deltaMousePosition.x = 0;
+			_deltaMousePosition.y = 0;
 
 			// Translation.
 			Vec3f translation = VEC3F_ZERO;
