@@ -91,11 +91,11 @@ namespace VTX::UI::Widget::Sequence
 			}
 		}
 
-		_sequenceLabel->setText( QString::fromStdString( _model->getPdbIdCode() ) );
+		_sequenceLabel->setText( QString::fromStdString( _model->getDisplayName() ) );
 	}
 	void MoleculeSequenceWidget::_updateLabelName( const Model::Chain & p_currentChainDisplayed )
 	{
-		_sequenceLabel->setText( QString::fromStdString( _model->getPdbIdCode() + Style::SEQUENCE_CHAIN_NAME_SEPARATOR
+		_sequenceLabel->setText( QString::fromStdString( _model->getDisplayName() + Style::SEQUENCE_CHAIN_NAME_SEPARATOR
 														 + p_currentChainDisplayed.getName()
 														 + Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
 	}
@@ -312,8 +312,8 @@ namespace VTX::UI::Widget::Sequence
 				else
 					toResidue = _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick );
 
-				if ( !addToSelection )
-					toResidue = _getPreviousResidue( *toResidue, false );
+				if ( !addToSelection ) 
+					toResidue = toResidue == nullptr ? nullptr : _getPreviousResidue( *toResidue, false );
 			}
 			else
 			{
