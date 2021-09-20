@@ -504,11 +504,8 @@ namespace VTX::Model
 		setDisplayName( p_namePrefix + p_molecule.getDefaultName() );
 		setColor( Color::Rgb::randomPastel() );
 
-		if ( p_molecule.hasCustomRepresentation() )
-		{
-			VTX::Representation::RepresentationManager::get().instantiateCopy(
-				p_molecule.getRepresentation(), *this, false, false );
-		}
+		VTX::Representation::RepresentationManager::get().instantiateCopy(
+			p_molecule.getRepresentation(), *this, false, false );
 
 		for ( int i = 0; i < p_molecule.getAtomPositionFrames().size(); i++ )
 		{
@@ -537,7 +534,7 @@ namespace VTX::Model
 		p_chain.setName( p_chainSource.getName() );
 		p_chain.setOriginalChainID( p_chainSource.getOriginalChainID() );
 		p_chain.setIndexFirstResidue( getResidueCount() );
-		p_chain.setColor( Model::Chain::getChainIdColor( p_chain.getName() ) );
+		p_chain.setColor( Model::Chain::getChainIdColor( p_chainSource.getOriginalChainID() ) );
 
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
