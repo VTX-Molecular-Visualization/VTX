@@ -32,6 +32,9 @@ namespace VTX::Model
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
 
+		if ( p_molecules.size() <= 0)
+			return;
+
 		for ( const auto it : p_molecules )
 		{
 			_selectMolecule( *it );
