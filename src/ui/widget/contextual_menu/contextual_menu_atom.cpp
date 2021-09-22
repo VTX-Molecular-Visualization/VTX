@@ -14,7 +14,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Orient", this, &ContextualMenuAtom::_orientAction );
 		addAction( "Show", this, &ContextualMenuAtom::_showAction );
 		addAction( "Hide", this, &ContextualMenuAtom::_hideAction );
-		addAction( "Copy", this, &ContextualMenuAtom::_copyAction );
+		addAction( "Duplicate", this, &ContextualMenuAtom::_copyAction );
 		addAction( "Extract", this, &ContextualMenuAtom::_extractAction );
 		addAction( "Delete", this, &ContextualMenuAtom::_deleteAction );
 	}

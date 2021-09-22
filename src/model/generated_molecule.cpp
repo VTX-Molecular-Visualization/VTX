@@ -342,7 +342,7 @@ namespace VTX::Model
 		_externalBondExtractData.reserve( molecule.getBondCount() );
 		getBufferBonds().reserve( molecule.getBondCount() * 2u );
 
-		_copyMoleculeData( molecule, "extract of " );
+		_copyMoleculeData( molecule, "Extract of " );
 
 		for ( const std::pair<const ID, const Model::Selection::MapResidueIds> & chainData :
 			  p_moleculeSelectionData.second )
@@ -424,7 +424,7 @@ namespace VTX::Model
 		_externalBondExtractData.clear();
 		_externalBondExtractData.reserve( molecule.getBondCount() );
 		getBufferBonds().reserve( molecule.getBondCount() * 2u );
-		_copyMoleculeData( molecule, "extract of " );
+		_copyMoleculeData( molecule, "Extract of " );
 
 		_extractFullChain( molecule, p_chain.getIndex() );
 
@@ -449,7 +449,7 @@ namespace VTX::Model
 		getBufferBonds().reserve( p_residue.getBondCount() * 2u );
 
 		Model::Molecule & molecule = *p_residue.getMoleculePtr();
-		_copyMoleculeData( molecule, "extract of " );
+		_copyMoleculeData( molecule, "Extract of " );
 
 		Model::Chain & generatedChain = addChain();
 		_copyChainData( generatedChain, *p_residue.getChainPtr() );
@@ -474,7 +474,7 @@ namespace VTX::Model
 		chrono.start();
 
 		Model::Molecule & molecule = *p_atom.getMoleculePtr();
-		_copyMoleculeData( molecule, "extract of " );
+		_copyMoleculeData( molecule, "Extract of " );
 
 		const Model::Chain & chain			= *p_atom.getChainPtr();
 		Model::Chain &		 generatedChain = addChain();
