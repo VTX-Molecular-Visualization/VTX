@@ -60,19 +60,16 @@ namespace VTX::Renderer::GL
 
 	void GL::resize( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId )
 	{
-		if ( p_width != _width || p_height != _height )
-		{
-			BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
+		BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
 
-			_passGeometric->resize( _width, _height, *this );
-			_passLinearizeDepth->resize( _width, _height, *this );
-			_passSSAO->resize( _width, _height, *this );
-			_passBlur->resize( _width, _height, *this );
-			_passShading->resize( _width, _height, *this );
-			_passOutline->resize( _width, _height, *this );
-			_passSelection->resize( _width, _height, *this );
-			_passFXAA->resize( _width, _height, *this );
-		}
+		_passGeometric->resize( _width, _height, *this );
+		_passLinearizeDepth->resize( _width, _height, *this );
+		_passSSAO->resize( _width, _height, *this );
+		_passBlur->resize( _width, _height, *this );
+		_passShading->resize( _width, _height, *this );
+		_passOutline->resize( _width, _height, *this );
+		_passSelection->resize( _width, _height, *this );
+		_passFXAA->resize( _width, _height, *this );
 	}
 
 	void GL::_initQuadVAO()

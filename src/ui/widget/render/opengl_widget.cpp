@@ -101,16 +101,13 @@ namespace VTX::UI::Widget::Render
 		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6f;
 
 #ifndef VTX_PRODUCTION
-		if ( _showCounter )
-		{
-			_painter.begin( this );
-			_painter.setPen( Qt::white );
-			_painter.drawText( 0,
-							   10,
-							   QString::fromStdString( "FPS: " + std::to_string( VTX_STAT().FPS )
-													   + " - draw calls: " + std::to_string( VTX_STAT().drawCalls ) ) );
-			_painter.end();
-		}
+		_painter.begin( this );
+		_painter.setPen( Qt::white );
+		_painter.drawText( 0,
+						   10,
+						   QString::fromStdString( "FPS: " + std::to_string( VTX_STAT().FPS )
+												   + " - draw calls: " + std::to_string( VTX_STAT().drawCalls ) ) );
+		_painter.end();
 #endif
 	}
 

@@ -1,11 +1,14 @@
 #include "snapshoter.hpp"
 #include "action/action_manager.hpp"
 #include "action/setting.hpp"
+#include "renderer/gl/framebuffer.hpp"
 #include "renderer/gl/gl.hpp"
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
+#include <QOffscreenSurface>
+#include <QOpenGLFramebufferObject>
 #include <QPainter>
 #include <QSvgRenderer>
 #include <vector>
@@ -16,6 +19,12 @@ namespace VTX
 {
 	namespace Worker
 	{
+		Snapshoter::Snapshoter( const MODE & p_mode, const IO::FilePath & p_path ) :
+			_mode( p_mode ), _path( p_path ), _width( VTXApp::get().getMainWindow().getOpenGLWidget().width() ),
+			_height( VTXApp::get().getMainWindow().getOpenGLWidget().height() )
+		{
+		}
+
 		const void Snapshoter::_takeSnapshotGL() const
 		{
 			if ( _path.exists() )
@@ -24,37 +33,63 @@ namespace VTX
 				return;
 			}
 
-			// Force AA and disable coutner.
-			UI::Widget::Render::OpenGLWidget & glWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
-			glWidget.setShowCounter( false );
+			UI::Widget::Render::OpenGLWidget & glWidget	  = VTXApp::get().getMainWindow().getOpenGLWidget();
+			const float						   pixelRatio = VTXApp::get().getPixelRatio();
 
+			// Create offscreen surface.
+			QOffscreenSurface surface;
+			surface.setFormat( glWidget.format() );
+			surface.create();
+
+			if ( surface.isValid() == false )
+			{
+				VTX_ERROR( "Snapshot failed" );
+				return;
+			}
+
+			// Force AA.
 			const bool activeAA = VTX_RENDER_EFFECT().getAA();
 			if ( activeAA == false )
 			{
 				VTX_ACTION( new Action::Setting::ActiveAA( true ) );
 			}
 
-			glWidget.update();
+			// Make current.
+			glWidget.context()->makeCurrent( &surface );
 
-			// Grab image.
-			QImage render = glWidget.grabFramebuffer();
+			// Create FBO.
+			QOpenGLFramebufferObject fbo = QOpenGLFramebufferObject( _width, _height );
+
+			// Resize renderer and use new FBO as output.
+			VTXApp::get().getScene().getCamera().setScreenSize( _width, _height );
+			glWidget.getRenderer().resize( _width * pixelRatio, _height * pixelRatio, fbo.handle() );
+
+			// Render.
+			glWidget.getGL()->glViewport( 0, 0, _width, _height );
+			glWidget.getRenderer().renderFrame( VTXApp::get().getScene() );
+
+			// Save FBO as image.
+			QImage render = fbo.toImage();
+
+			// Clean.
+			surface.destroy();
+			glWidget.doneCurrent();
+
+			// Resize renderer and reset default surface and FBO.
+			glWidget.resizeGL( glWidget.width(), glWidget.height() );
 
 			// Restore values.
-			glWidget.setShowCounter( true );
-
 			if ( activeAA == false )
 			{
 				VTX_ACTION( new Action::Setting::ActiveAA( false ) );
 			}
-
-			glWidget.update();
 
 			// Add watermark.
 			_addWatermark( render );
 
 #ifndef VTX_DEBUG_WATERMARK
 			// Save.
-			if ( render.save( _path.qpath(), "png", 0 ) )
+			if ( render.save( _path.qpath(), _path.extension().c_str(), _quality ) )
 			{
 				VTX_INFO( "Snapshot taken: " + _path.filename() );
 			}
