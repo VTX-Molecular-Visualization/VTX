@@ -196,5 +196,13 @@ namespace VTX
 			}
 		}
 
+		void EventManager::clearInputEvents()
+		{
+			for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
+			{
+				receiver->clear();
+			}
+		}
+
 	} // namespace Event
 } // namespace VTX

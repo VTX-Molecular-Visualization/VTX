@@ -1056,7 +1056,9 @@ namespace VTX
 		void Molecule::setColor( const Color::Rgb & p_color )
 		{
 			Generic::BaseColorable::setColor( p_color );
-			VTX_EVENT( new Event::VTXEventRef( Event::Global::MOLECULE_COLOR_CHANGE, p_color ) );
+			
+			if ( isInit() )
+				VTX_EVENT( new Event::VTXEventRef( Event::Global::MOLECULE_COLOR_CHANGE, p_color ) );
 		}
 
 	} // namespace Model

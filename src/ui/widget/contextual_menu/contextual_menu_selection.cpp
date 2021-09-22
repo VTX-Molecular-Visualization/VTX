@@ -55,7 +55,8 @@ namespace VTX::UI::Widget::ContextualMenu
 			new ActionData( "Show", TypeMask::AllButAtom, this, &ContextualMenuSelection::_showAction ) );
 		_actions.emplace_back(
 			new ActionData( "Hide", TypeMask::AllButAtom, this, &ContextualMenuSelection::_hideAction ) );
-		_actions.emplace_back( new ActionData( "Copy", TypeMask::All, this, &ContextualMenuSelection::_copyAction ) );
+		_actions.emplace_back(
+			new ActionData( "Duplicate", TypeMask::All, this, &ContextualMenuSelection::_copyAction ) );
 		_actions.emplace_back(
 			new ActionData( "Extract", TypeMask::AllButMolecule, this, &ContextualMenuSelection::_extractAction ) );
 		_actions.emplace_back(

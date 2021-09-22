@@ -40,7 +40,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Orient", this, &ContextualMenuMolecule::_orientAction );
 		addAction( "Show", this, &ContextualMenuMolecule::_showAction );
 		addAction( "Hide", this, &ContextualMenuMolecule::_hideAction );
-		addAction( "Copy", this, &ContextualMenuMolecule::_copyAction );
+		addAction( "Duplicate", this, &ContextualMenuMolecule::_copyAction );
 		addAction( "Delete", this, &ContextualMenuMolecule::_deleteAction );
 
 		addSeparator();

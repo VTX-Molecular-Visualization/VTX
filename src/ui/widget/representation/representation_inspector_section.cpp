@@ -307,6 +307,7 @@ namespace VTX::UI::Widget::Representation
 			else
 			{
 				_dummyRepresentation->setLinkedRepresentation( p_representation.getLinkedRepresentation() );
+				_dummyRepresentation->setTarget( p_representation.getTarget());
 				_dummyRepresentation->applyData(
 					p_representation, p_representation.getOverridedMembersFlag(), false, false );
 			}

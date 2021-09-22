@@ -32,8 +32,10 @@ namespace VTX::Model::Representation
 	  public:
 		virtual void receiveEvent( const Event::VTXEvent & p_event );
 
-		const Generic::BaseRepresentable * const getTarget() const;
+		const Generic::BaseRepresentable * const getConstTarget() const;
+		Generic::BaseRepresentable * const		 getTarget() const;
 		Generic::BaseRepresentable * const		 getTarget();
+
 		void									 setTarget( Generic::BaseRepresentable * p_target );
 
 		void setLinkedRepresentation( const Representation * const p_linkedRepresentation,

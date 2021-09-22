@@ -54,7 +54,7 @@ namespace VTX
 			}
 		}
 
-		bool BaseRepresentable::hasParent() { return _parent != nullptr; }
+		bool BaseRepresentable::hasParent() const { return _parent != nullptr; }
 
 		void BaseRepresentable::setParent( BaseRepresentable * const p_parent ) { _parent = p_parent; }
 

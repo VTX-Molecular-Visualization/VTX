@@ -33,7 +33,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		// Selection actions 1
 		_copy = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "copySelectionButton" );
-		_copy->setData( "Copy", ":/sprite/copy_selection_icon.png", Qt::Orientation::Horizontal );
+		_copy->setData( "Duplicate", ":/sprite/copy_selection_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_copy, 0 );
 
 		_extract = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "extractSelectionButton" );

@@ -72,7 +72,7 @@ namespace VTX::Action::InstantiatedRepresentation
 				  _instantiatedRepresentations )
 			{
 				representation->setColor( _color, false, true );
-				molecules.emplace( representation->getTarget()->getMolecule() );
+				molecules.emplace( representation->getConstTarget()->getMolecule() );
 			}
 
 			for ( Model::Molecule * const molecule : molecules )

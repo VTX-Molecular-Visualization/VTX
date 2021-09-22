@@ -23,47 +23,43 @@ namespace VTX
 										   * ( VTX_SETTING().getYAxisInverted() ? -1.f : 1.f ),
 									   -VTX_SETTING().getRotationSpeed() * _deltaMousePosition.x,
 									   0.f ) );
-				_deltaMousePosition.x = 0;
-				_deltaMousePosition.y = 0;
 			}
 			if ( _mouseRightPressed )
 			{
 				_camera.rotateRoll( VTX_SETTING().getRotationSpeed() * _deltaMousePosition.x );
+			}
+
 				_deltaMousePosition.x = 0;
 				_deltaMousePosition.y = 0;
-			}
 
 			// Translation.
 			Vec3f translation = VEC3F_ZERO;
 
-			if ( ( keyboardModifiers() & Qt::ControlModifier ) == false )
-			{
-				if ( _isKeyPressed( getKeyboardLayout() == KeyboardLayout::QWERTY ? Qt::Key::Key_W : Qt::Key::Key_Z )
+			if ( _isKeyPressed( getKeyboardLayout() == KeyboardLayout::QWERTY ? Qt::Key::Key_W : Qt::Key::Key_Z )
 					 || _isKeyPressed( Qt::Key::Key_Up ) )
-				{
-					translation.z++;
-				}
-				if ( _isKeyPressed( Qt::Key::Key_S ) || _isKeyPressed( Qt::Key::Key_Down ) )
-				{
-					translation.z--;
-				}
-				if ( _isKeyPressed( getKeyboardLayout() == KeyboardLayout::QWERTY ? Qt::Key::Key_A : Qt::Key::Key_Q )
-					 || _isKeyPressed( Qt::Key::Key_Left ) )
-				{
-					translation.x--;
-				}
-				if ( _isKeyPressed( Qt::Key::Key_D ) || _isKeyPressed( Qt::Key::Key_Right ) )
-				{
-					translation.x++;
-				}
-				if ( _isKeyPressed( Qt::Key::Key_R ) )
-				{
-					translation.y++;
-				}
-				if ( _isKeyPressed( Qt::Key::Key_F ) )
-				{
-					translation.y--;
-				}
+			{
+				translation.z++;
+			}
+			if ( _isKeyPressed( Qt::Key::Key_S ) || _isKeyPressed( Qt::Key::Key_Down ) )
+			{
+				translation.z--;
+			}
+			if ( _isKeyPressed( getKeyboardLayout() == KeyboardLayout::QWERTY ? Qt::Key::Key_A : Qt::Key::Key_Q )
+				 || _isKeyPressed( Qt::Key::Key_Left ) )
+			{
+				translation.x--;
+			}
+			if ( _isKeyPressed( Qt::Key::Key_D ) || _isKeyPressed( Qt::Key::Key_Right ) )
+			{
+				translation.x++;
+			}
+			if ( _isKeyPressed( Qt::Key::Key_R ) )
+			{
+				translation.y++;
+			}
+			if ( _isKeyPressed( Qt::Key::Key_F ) )
+			{
+				translation.y--;
 			}
 
 			if ( translation == VEC3F_ZERO )
@@ -74,11 +70,11 @@ namespace VTX
 			translation *= VTX_SETTING().getTranslationSpeed();
 			translation *= p_deltaTime;
 
-			if ( QApplication::keyboardModifiers() == Qt::ShiftModifier )
+			if ( _getExclusiveModifier( ModifierFlag::Shift ) )
 			{
 				translation *= VTX_SETTING().getTranslationSpeedFactor();
 			}
-			if ( QApplication::keyboardModifiers() == Qt::AltModifier )
+			if ( _getExclusiveModifier( ModifierFlag::Alt ) )
 			{
 				translation /= VTX_SETTING().getTranslationSpeedFactor();
 			}

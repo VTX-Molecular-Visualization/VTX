@@ -24,7 +24,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Orient", this, &ContextualMenuChain::_orientAction );
 		addAction( "Show", this, &ContextualMenuChain::_showAction );
 		addAction( "Hide", this, &ContextualMenuChain::_hideAction );
-		addAction( "Copy", this, &ContextualMenuChain::_copyAction );
+		addAction( "Duplicate", this, &ContextualMenuChain::_copyAction );
 		addAction( "Extract", this, &ContextualMenuChain::_extractAction );
 		addAction( "Delete", this, &ContextualMenuChain::_deleteAction );
 

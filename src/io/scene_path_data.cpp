@@ -72,7 +72,11 @@ namespace VTX::IO
 
 	void ScenePathData::setCurrentPath( const IO::FilePath & p_filePath, const bool p_addInRecentPath )
 	{
+		if ( _currentFilePath == p_filePath )
+			return;
+
 		_currentFilePath = p_filePath;
+		
 		if ( p_addInRecentPath )
 			Setting::enqueueNewLoadingPath( p_filePath );
 

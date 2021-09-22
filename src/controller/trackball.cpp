@@ -69,42 +69,39 @@ namespace VTX
 			_deltaMousePosition.y = 0;
 
 			// Keyboard.
-			if ( ( keyboardModifiers() & Qt::ControlModifier ) == false )
-			{
-				if ( _isKeyPressed( getKeyboardLayout() == KeyboardLayout::QWERTY ? Qt::Key::Key_W : Qt::Key::Key_Z )
+			if ( _isKeyPressed( getKeyboardLayout() == KeyboardLayout::QWERTY ? Qt::Key::Key_W : Qt::Key::Key_Z )
 					 || _isKeyPressed( Qt::Key::Key_Up ) )
-				{
-					deltaDistance = 1.5f * p_deltaTime;
-				}
-				if ( _isKeyPressed( Qt::Key::Key_S ) || _isKeyPressed( Qt::Key::Key_Down ) )
-				{
-					deltaDistance = -1.5f * p_deltaTime;
-				}
-				if ( _isKeyPressed( Qt::Key::Key_D ) || _isKeyPressed( Qt::Key::Key_Right ) )
-				{
-					deltaVelocity.x = 1e4f * p_deltaTime;
-				}
-				if ( _isKeyPressed( getKeyboardLayout() == KeyboardLayout::QWERTY ? Qt::Key::Key_A : Qt::Key::Key_Q )
-					 || _isKeyPressed( Qt::Key::Key_Left ) )
-				{
-					deltaVelocity.x = -1e4f * p_deltaTime;
-				}
-				if ( _isKeyPressed( Qt::Key::Key_R ) )
-				{
-					deltaVelocity.y = 1e4f * p_deltaTime;
-				}
-				if ( _isKeyPressed( Qt::Key::Key_F ) )
-				{
-					deltaVelocity.y = -1e4f * p_deltaTime;
-				}
-				if ( _isKeyPressed( Qt::Key::Key_E ) )
-				{
-					deltaVelocity.z = 1e4f * p_deltaTime;
-				}
-				if ( _isKeyPressed( getKeyboardLayout() == KeyboardLayout::QWERTY ? Qt::Key::Key_Q : Qt::Key::Key_A ) )
-				{
-					deltaVelocity.z = -1e4f * p_deltaTime;
-				}
+			{
+				deltaDistance = 1.5f * p_deltaTime;
+			}
+			if ( _isKeyPressed( Qt::Key::Key_S ) || _isKeyPressed( Qt::Key::Key_Down ) )
+			{
+				deltaDistance = -1.5f * p_deltaTime;
+			}
+			if ( _isKeyPressed( Qt::Key::Key_D ) || _isKeyPressed( Qt::Key::Key_Right ) )
+			{
+				deltaVelocity.x = 1e4f * p_deltaTime;
+			}
+			if ( _isKeyPressed( getKeyboardLayout() == KeyboardLayout::QWERTY ? Qt::Key::Key_A : Qt::Key::Key_Q )
+				 || _isKeyPressed( Qt::Key::Key_Left ) )
+			{
+				deltaVelocity.x = -1e4f * p_deltaTime;
+			}
+			if ( _isKeyPressed( Qt::Key::Key_R ) )
+			{
+				deltaVelocity.y = 1e4f * p_deltaTime;
+			}
+			if ( _isKeyPressed( Qt::Key::Key_F ) )
+			{
+				deltaVelocity.y = -1e4f * p_deltaTime;
+			}
+			if ( _isKeyPressed( Qt::Key::Key_E ) )
+			{
+				deltaVelocity.z = 1e4f * p_deltaTime;
+			}
+			if ( _isKeyPressed( getKeyboardLayout() == KeyboardLayout::QWERTY ? Qt::Key::Key_Q : Qt::Key::Key_A ) )
+			{
+				deltaVelocity.z = -1e4f * p_deltaTime;
 			}
 
 			// Set values from settings.
@@ -112,11 +109,11 @@ namespace VTX
 			{
 				deltaDistance *= VTX_SETTING().getTranslationSpeed();
 
-				if ( QApplication::keyboardModifiers() == Qt::ShiftModifier )
+				if ( _getExclusiveModifier( ModifierFlag::Shift ) )
 				{
 					deltaDistance *= VTX_SETTING().getTranslationSpeedFactor();
 				}
-				if ( QApplication::keyboardModifiers() == Qt::AltModifier )
+				if ( _getExclusiveModifier( ModifierFlag::Alt ) )
 				{
 					deltaDistance /= VTX_SETTING().getTranslationSpeedFactor();
 				}

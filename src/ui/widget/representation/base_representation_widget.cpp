@@ -298,7 +298,7 @@ namespace VTX::UI::Widget::Representation
 		}
 		else if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
 		{
-			pair.second = _instantiatedRepresentation->getTarget()->getMolecule()->getColor();
+			pair.second = _instantiatedRepresentation->getConstTarget()->getMolecule()->getColor();
 		}
 
 		_ssColorModeWidget->updateWithNewValue( pair );
