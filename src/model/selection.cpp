@@ -31,8 +31,7 @@ namespace VTX::Model
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
-
-		if ( p_molecules.size() <= 0)
+		else if ( p_molecules.size() > 0 ) // No modifications
 			return;
 
 		for ( const auto it : p_molecules )
@@ -42,9 +41,14 @@ namespace VTX::Model
 		}
 
 		if ( p_currentObj == nullptr )
-			_setCurrentObject( *p_molecules.crbegin() );
+		{
+			if ( p_molecules.size() > 0 )
+				_setCurrentObject( *p_molecules.crbegin() );
+		}
 		else
+		{
 			_setCurrentObject( p_currentObj );
+		}
 
 		_notifyDataChanged();
 	}
@@ -65,18 +69,21 @@ namespace VTX::Model
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
-
-		if ( p_chains.size() == 0 )
+		else if ( p_chains.size() <= 0 )
 			return;
 
 		for ( auto it : p_chains )
 			_selectChain( *it );
 
 		if ( p_currentObj == nullptr )
-			_setCurrentObject( *p_chains.crbegin() );
+		{
+			if ( p_chains.size() > 0 )
+				_setCurrentObject( *p_chains.crbegin() );
+		}
 		else
+		{
 			_setCurrentObject( p_currentObj );
-
+		}
 		_refreshMoleculeSelection( p_chains[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
 	}
@@ -97,6 +104,8 @@ namespace VTX::Model
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
+		else if ( p_residues.size() <= 0 )
+			return;
 
 		if ( p_residues.size() == 0 )
 			return;
@@ -105,9 +114,14 @@ namespace VTX::Model
 			_selectResidue( *it );
 
 		if ( p_currentObj == nullptr )
-			_setCurrentObject( *p_residues.crbegin() );
+		{
+			if ( p_residues.size() > 0 )
+				_setCurrentObject( *p_residues.crbegin() );
+		}
 		else
+		{
 			_setCurrentObject( p_currentObj );
+		}
 
 		_refreshMoleculeSelection( p_residues[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
@@ -129,6 +143,8 @@ namespace VTX::Model
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
+		else if ( p_atoms.size() <= 0 )
+			return;
 
 		if ( p_atoms.size() == 0 )
 			return;
@@ -137,9 +153,14 @@ namespace VTX::Model
 			_selectAtom( *it );
 
 		if ( p_currentObj == nullptr )
-			_setCurrentObject( *p_atoms.crbegin() );
+		{
+			if ( p_atoms.size() > 0 )
+				_setCurrentObject( *p_atoms.crbegin() );
+		}
 		else
+		{
 			_setCurrentObject( p_currentObj );
+		}
 
 		_refreshMoleculeSelection( p_atoms[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
