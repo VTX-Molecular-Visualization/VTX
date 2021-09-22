@@ -233,9 +233,16 @@ namespace VTX
 		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION
 			= VTX::Selection::SelectionType::RESIDUE;
 
-		inline static const QFont TOOL_MENU_BUTTON_FONT = QFont( ":/font/verdana.ttf", 10 );
-		inline static const QFont SEQUENCE_DISPLAY_FONT = QFont( ":/font/courier.ttf", 10 );
-
+		inline static const QFont TOOL_MENU_BUTTON_FONT()
+		{
+			static QFont font = QFont( ":/font/verdana.ttf", 10 );
+			return font;
+		}
+		inline static const QFont SEQUENCE_DISPLAY_FONT()
+		{
+			static QFont font = QFont( ":/font/courier.ttf", 10 );
+			return font;
+		}
 		inline static const bool VIDEO_IN_INFORMATION = true;
 
 		inline static const QColor BLACK_COLOR			  = QColor( 0, 0, 0 );

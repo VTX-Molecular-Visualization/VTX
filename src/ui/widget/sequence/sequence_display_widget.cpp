@@ -16,7 +16,7 @@ namespace VTX::UI::Widget::Sequence
 	SequenceDisplayWidget::SequenceDisplayWidget( QWidget * p_parent ) : QLabel( p_parent )
 	{
 		setTextInteractionFlags( Qt::TextInteractionFlag::NoTextInteraction );
-		setFont( Style::SEQUENCE_DISPLAY_FONT );
+		setFont( Style::SEQUENCE_DISPLAY_FONT() );
 
 		_fontMetrics = new QFontMetricsF( font() );
 	}

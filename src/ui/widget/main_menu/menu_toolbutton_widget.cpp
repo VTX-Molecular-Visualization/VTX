@@ -58,7 +58,7 @@ namespace VTX::UI::Widget::MainMenu
 		BaseManualWidget::_setupUi( p_name );
 
 		setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding );
-		setFont( Style::TOOL_MENU_BUTTON_FONT );
+		setFont( Style::TOOL_MENU_BUTTON_FONT() );
 		setPopupMode( QToolButton::ToolButtonPopupMode::InstantPopup );
 	}
 	void MenuToolButtonWidget::_setupSlots() {}

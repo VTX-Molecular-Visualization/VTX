@@ -32,7 +32,7 @@ namespace VTX::UI::Widget::Sequence
 
 		_sequenceLabel = new QLabel( this );
 		_sequenceLabel->setAlignment( Qt::AlignmentFlag::AlignTop );
-		_sequenceLabel->setFont( Style::SEQUENCE_DISPLAY_FONT );
+		_sequenceLabel->setFont( Style::SEQUENCE_DISPLAY_FONT() );
 
 		_scrollAreaContent = new QWidget();
 		_scrollAreaContent->setContentsMargins( 0, 0, 0, 0 );
@@ -135,7 +135,7 @@ namespace VTX::UI::Widget::Sequence
 
 			QLabel * const chainNameWidget = new QLabel( this );
 			chainNameWidget->setAlignment( Qt::AlignmentFlag::AlignTop );
-			chainNameWidget->setFont( Style::SEQUENCE_DISPLAY_FONT );
+			chainNameWidget->setFont( Style::SEQUENCE_DISPLAY_FONT() );
 			chainNameWidget->setText( QString::fromStdString( Style::SEQUENCE_CHAIN_NAME_SEPARATOR + chain->getName()
 															  + Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
 			_chainLabelWidgets.emplace_back( chainNameWidget );
@@ -312,7 +312,7 @@ namespace VTX::UI::Widget::Sequence
 				else
 					toResidue = _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick );
 
-				if ( !addToSelection ) 
+				if ( !addToSelection )
 					toResidue = toResidue == nullptr ? nullptr : _getPreviousResidue( *toResidue, false );
 			}
 			else
