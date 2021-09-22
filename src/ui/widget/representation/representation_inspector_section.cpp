@@ -49,20 +49,20 @@ namespace VTX::UI::Widget::Representation
 		_titleWidget->setFlat( true );
 		_titleWidget->setIcon( Style::IconConst::get().FOLDED_PIXMAP );
 
-		_representationWidget = new QWidget( this );
-
 		_representationPreset
 			= WidgetFactory::get().instantiateWidget<RepresentationLibraryComboBox>( this, "RepresentationPreset" );
+
+		_representationWidget = new QWidget( this );
 
 		_settingLayout = new QVBoxLayout( _representationWidget );
 		_settingLayout->addWidget( _representationPreset );
 
 		_representationWidget->setVisible( false );
 
-		_revertButton = new QPushButton( this );
-		_revertButton->setText( "Revert" );
 		_applyToChildrenButton = new QPushButton( this );
 		_applyToChildrenButton->setText( "Apply to children" );
+		_revertButton = new QPushButton( this );
+		_revertButton->setText( "Revert" );
 
 		QHBoxLayout * buttonsLayout = new QHBoxLayout();
 		buttonsLayout->addStretch( 1000 );
@@ -307,6 +307,7 @@ namespace VTX::UI::Widget::Representation
 			else
 			{
 				_dummyRepresentation->setLinkedRepresentation( p_representation.getLinkedRepresentation() );
+				_dummyRepresentation->setTarget( p_representation.getTarget());
 				_dummyRepresentation->applyData(
 					p_representation, p_representation.getOverridedMembersFlag(), false, false );
 			}

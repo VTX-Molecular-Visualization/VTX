@@ -247,6 +247,9 @@ namespace VTX::Model
 	void GeneratedMolecule::_computeBonds( const Model::Molecule &					p_source,
 										   const std::map<const uint, const uint> & p_mapAtomIds )
 	{
+		if ( p_source.getBondCount() <= 0 )
+			return;
+
 		// Bonds
 		getBufferBonds().reserve( p_source.getBufferBonds().size() );
 
@@ -339,7 +342,7 @@ namespace VTX::Model
 		_externalBondExtractData.reserve( molecule.getBondCount() );
 		getBufferBonds().reserve( molecule.getBondCount() * 2u );
 
-		_copyMoleculeData( molecule, "extract of " );
+		_copyMoleculeData( molecule, "Extract of " );
 
 		for ( const std::pair<const ID, const Model::Selection::MapResidueIds> & chainData :
 			  p_moleculeSelectionData.second )
@@ -421,7 +424,7 @@ namespace VTX::Model
 		_externalBondExtractData.clear();
 		_externalBondExtractData.reserve( molecule.getBondCount() );
 		getBufferBonds().reserve( molecule.getBondCount() * 2u );
-		_copyMoleculeData( molecule, "extract of " );
+		_copyMoleculeData( molecule, "Extract of " );
 
 		_extractFullChain( molecule, p_chain.getIndex() );
 
@@ -446,7 +449,7 @@ namespace VTX::Model
 		getBufferBonds().reserve( p_residue.getBondCount() * 2u );
 
 		Model::Molecule & molecule = *p_residue.getMoleculePtr();
-		_copyMoleculeData( molecule, "extract of " );
+		_copyMoleculeData( molecule, "Extract of " );
 
 		Model::Chain & generatedChain = addChain();
 		_copyChainData( generatedChain, *p_residue.getChainPtr() );
@@ -471,7 +474,7 @@ namespace VTX::Model
 		chrono.start();
 
 		Model::Molecule & molecule = *p_atom.getMoleculePtr();
-		_copyMoleculeData( molecule, "extract of " );
+		_copyMoleculeData( molecule, "Extract of " );
 
 		const Model::Chain & chain			= *p_atom.getChainPtr();
 		Model::Chain &		 generatedChain = addChain();
@@ -504,11 +507,8 @@ namespace VTX::Model
 		setDisplayName( p_namePrefix + p_molecule.getDefaultName() );
 		setColor( Color::Rgb::randomPastel() );
 
-		if ( p_molecule.hasCustomRepresentation() )
-		{
-			VTX::Representation::RepresentationManager::get().instantiateCopy(
-				p_molecule.getRepresentation(), *this, false, false );
-		}
+		VTX::Representation::RepresentationManager::get().instantiateCopy(
+			p_molecule.getRepresentation(), *this, false, false );
 
 		for ( int i = 0; i < p_molecule.getAtomPositionFrames().size(); i++ )
 		{
@@ -537,7 +537,7 @@ namespace VTX::Model
 		p_chain.setName( p_chainSource.getName() );
 		p_chain.setOriginalChainID( p_chainSource.getOriginalChainID() );
 		p_chain.setIndexFirstResidue( getResidueCount() );
-		p_chain.setColor( Model::Chain::getChainIdColor( p_chain.getName() ) );
+		p_chain.setColor( Model::Chain::getChainIdColor( p_chainSource.getOriginalChainID() ) );
 
 		if ( p_chainSource.hasCustomRepresentation() )
 		{

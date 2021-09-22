@@ -90,9 +90,7 @@ namespace VTX::UI::Widget::Representation
 			this, "sphereWidget" );
 		_sphereWidget->setMinMax( p_min, p_max );
 
-		const int row = _layout->rowCount();
-		_layout->addWidget( _sphereLabel, row, 0 );
-		_layout->addWidget( _sphereWidget, row, 1 );
+		_appendWidgetInLayout( _sphereLabel, _sphereWidget );
 
 		_sphereFlag = p_sphereFlag;
 	}
@@ -107,9 +105,7 @@ namespace VTX::UI::Widget::Representation
 			this, "cylinderWidget" );
 		_cylinderWidget->setMinMax( p_min, p_max );
 
-		const int row = _layout->rowCount();
-		_layout->addWidget( _cylinderLabel, row, 0 );
-		_layout->addWidget( _cylinderWidget, row, 1 );
+		_appendWidgetInLayout( _cylinderLabel, _cylinderWidget );
 	}
 	void BaseRepresentationWidget::_addColorModeInLayout( const QString & p_label )
 	{
@@ -119,9 +115,7 @@ namespace VTX::UI::Widget::Representation
 		_colorModeWidget = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorModeFieldWidget>(
 			this, "colorModeWidget" );
 
-		const int row = _layout->rowCount();
-		_layout->addWidget( _colorModeLabel, row, 0 );
-		_layout->addWidget( _colorModeWidget, row, 1 );
+		_appendWidgetInLayout( _colorModeLabel, _colorModeWidget );
 	}
 	void BaseRepresentationWidget::_addSSColorModeInLayout( const QString & p_label )
 	{
@@ -132,9 +126,14 @@ namespace VTX::UI::Widget::Representation
 			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::SecondaryStructureColorModeFieldWidget>(
 				this, "ssColorModeWidget" );
 
+		_appendWidgetInLayout( _ssColorModeLabel, _ssColorModeWidget );
+	}
+
+	void BaseRepresentationWidget::_appendWidgetInLayout( QWidget * const p_label, QWidget * const p_widget )
+	{
 		const int row = _layout->rowCount();
-		_layout->addWidget( _ssColorModeLabel, row, 0 );
-		_layout->addWidget( _ssColorModeWidget, row, 1 );
+		_layout->addWidget( p_label, row, 0 );
+		_layout->addWidget( p_widget, row, 1 );
 	}
 
 	void BaseRepresentationWidget::_setSphereValue( const float p_value, const bool p_overrided )
@@ -299,7 +298,7 @@ namespace VTX::UI::Widget::Representation
 		}
 		else if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
 		{
-			pair.second = _instantiatedRepresentation->getTarget()->getMolecule()->getColor();
+			pair.second = _instantiatedRepresentation->getConstTarget()->getMolecule()->getColor();
 		}
 
 		_ssColorModeWidget->updateWithNewValue( pair );

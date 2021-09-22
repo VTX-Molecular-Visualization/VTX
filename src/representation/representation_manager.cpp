@@ -115,6 +115,7 @@ namespace VTX::Representation
 		InstantiatedRepresentation * const copy
 			= instantiateRepresentation( p_source->getLinkedRepresentation(), p_target, p_recompute, p_notify );
 		copy->copy( *p_source );
+		copy->setTarget(&p_target);
 
 		return copy;
 	}
@@ -322,7 +323,7 @@ namespace VTX::Representation
 		{
 			for ( InstantiatedRepresentation * const instantiatedRepresentation : storedRepresentation.second )
 			{
-				if ( instantiatedRepresentation->getTarget()->hasParent() )
+				if ( instantiatedRepresentation->getConstTarget()->hasParent() )
 					removeInstantiatedRepresentation( *instantiatedRepresentation->getTarget() );
 				else
 					instantiateDefaultRepresentation( *instantiatedRepresentation->getTarget() );

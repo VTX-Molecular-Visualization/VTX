@@ -109,7 +109,8 @@ namespace VTX::Model::Representation
 			_ribbonData = Generic::OverridableParameter( _linkedRepresentation->getData().getRibbonData() );
 	}
 
-	const Generic::BaseRepresentable * const InstantiatedRepresentation::getTarget() const { return _target; }
+	const Generic::BaseRepresentable * const InstantiatedRepresentation::getConstTarget() const { return _target; }
+	Generic::BaseRepresentable * const		 InstantiatedRepresentation::getTarget() const { return _target; };
 	Generic::BaseRepresentable * const		 InstantiatedRepresentation::getTarget() { return _target; }
 	void InstantiatedRepresentation::setTarget( Generic::BaseRepresentable * p_target ) { _target = p_target; }
 

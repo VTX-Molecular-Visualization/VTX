@@ -31,6 +31,11 @@ namespace VTX::UI::Widget::Scene
 
 	void SceneItemWidget::localize() {}
 
+	QTreeWidgetItem * SceneItemWidget::getLastVisibleItem()
+	{
+		return itemFromIndex( model()->index( model()->rowCount() - 1, model()->columnCount() - 1 ) );
+	}
+
 	void SceneItemWidget::updatePosInSceneHierarchy( const int p_position ) { _refreshSize(); };
 	void SceneItemWidget::mousePressEvent( QMouseEvent * p_event )
 	{

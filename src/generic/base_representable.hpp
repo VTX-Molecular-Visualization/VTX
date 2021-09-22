@@ -43,7 +43,7 @@ namespace VTX
 			{
 				return _representationTargets;
 			}
-			bool hasParent();
+			bool hasParent() const;
 			void setParent( BaseRepresentable * p_parent );
 
 			void computeAllRepresentationData();

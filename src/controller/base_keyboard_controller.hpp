@@ -17,56 +17,40 @@ namespace VTX
 			AZERTY
 		};
 
+		enum ModifierFlag : uint
+		{
+			None	= 0,
+			Control = 1 << 0,
+			Shift	= 1 << 1,
+			Alt		= 1 << 2,
+			AltGr	= 1 << 3,
+		};
+
 		class BaseKeyboardController : virtual public BaseController, public Event::BaseEventReceiverKeyboard
 		{
 		  public:
-			virtual void receiveEvent( const QKeyEvent & p_event ) override
+			virtual void receiveEvent( const QKeyEvent & p_event ) override;
+			void		 clear() override
 			{
-				if ( isActive() == false )
-					return;
-
-				switch ( p_event.type() )
-				{
-				case QEvent::KeyPress:
-				{
-					// TOFIX: workaround beacause KeyRelease triggered after 1 second.
-					// if ( p_event.isAutoRepeat() == false )
-					//{
-					const Qt::Key key = Qt::Key( p_event.key() );
-					_handleKeyDownEvent( key );
-					//}
-					// else
-					//{
-					//	_handleKeyPressedEvent( ScanCode( p_event.nativeScanCode() ) );
-					//}
-					break;
-				}
-				case QEvent::KeyRelease: _handleKeyUpEvent( Qt::Key( p_event.key() ) ); break;
-				default: break;
-				}
+				_pressedKeys.clear();
+				_modifiers = ModifierFlag::None;
 			}
-			void clear() override { _pressedKeys.clear(); }
 
 		  protected:
 			static Qt::KeyboardModifiers keyboardModifiers() { return VTXApp::get().keyboardModifiers(); }
-			static KeyboardLayout		 getKeyboardLayout()
-			{
-				switch ( VTXApp::get().inputMethod()->locale().language() )
-				{
-				case QLocale::France:
-				case QLocale::French: return KeyboardLayout::AZERTY;
-				default: return KeyboardLayout ::QWERTY;
-				}
-			}
+			static KeyboardLayout		 getKeyboardLayout();
 
 			std::set<Qt::Key> _pressedKeys = std::set<Qt::Key>();
+			ModifierFlag	  _modifiers   = ModifierFlag::None;
 
-			virtual void _handleKeyDownEvent( const Qt::Key & p_key ) { _pressedKeys.emplace( p_key ); }
-			virtual void _handleKeyUpEvent( const Qt::Key & p_key ) { _pressedKeys.erase( p_key ); }
+			virtual void _handleKeyDownEvent( const Qt::Key & p_key );
+			virtual void _handleKeyUpEvent( const Qt::Key & p_key );
 
 			virtual void _handleKeyPressedEvent( const Qt::Key & p_key ) {}
 
 			bool _isKeyPressed( const Qt::Key & p_key ) { return _pressedKeys.find( p_key ) != _pressedKeys.end(); }
+			bool _getModifier( const ModifierFlag & p_modifier );
+			bool _getExclusiveModifier( const ModifierFlag & p_modifier );
 		};
 	} // namespace Controller
 } // namespace VTX
