@@ -15,7 +15,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form" "src/extensions/keyword_editor/forms/")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-#set(CMAKE_INCLUDE_CURRENT_DIR ON) # Useless?
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_SKIP_RPATH false)
 set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
