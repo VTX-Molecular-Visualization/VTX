@@ -35,32 +35,29 @@ namespace VTX
 			// Translation.
 			Vec3f translation = VEC3F_ZERO;
 
-			if ( !( QApplication::keyboardModifiers() & Qt::ControlModifier ) )
+			if ( _isKeyPressed( ScanCode::Z ) || _isKeyPressed( ScanCode::Up ) )
 			{
-				if ( _isKeyPressed( ScanCode::Z ) || _isKeyPressed( ScanCode::Up ) )
-				{
-					translation.z++;
-				}
-				if ( _isKeyPressed( ScanCode::S ) || _isKeyPressed( ScanCode::Down ) )
-				{
-					translation.z--;
-				}
-				if ( _isKeyPressed( ScanCode::Q ) || _isKeyPressed( ScanCode::Left ) )
-				{
-					translation.x--;
-				}
-				if ( _isKeyPressed( ScanCode::D ) || _isKeyPressed( ScanCode::Right ) )
-				{
-					translation.x++;
-				}
-				if ( _isKeyPressed( ScanCode::R ) )
-				{
-					translation.y++;
-				}
-				if ( _isKeyPressed( ScanCode::F ) )
-				{
-					translation.y--;
-				}
+				translation.z++;
+			}
+			if ( _isKeyPressed( ScanCode::S ) || _isKeyPressed( ScanCode::Down ) )
+			{
+				translation.z--;
+			}
+			if ( _isKeyPressed( ScanCode::Q ) || _isKeyPressed( ScanCode::Left ) )
+			{
+				translation.x--;
+			}
+			if ( _isKeyPressed( ScanCode::D ) || _isKeyPressed( ScanCode::Right ) )
+			{
+				translation.x++;
+			}
+			if ( _isKeyPressed( ScanCode::R ) )
+			{
+				translation.y++;
+			}
+			if ( _isKeyPressed( ScanCode::F ) )
+			{
+				translation.y--;
 			}
 
 			if ( translation == VEC3F_ZERO )
@@ -71,11 +68,11 @@ namespace VTX
 			translation *= VTX_SETTING().getTranslationSpeed();
 			translation *= p_deltaTime;
 
-			if ( QApplication::keyboardModifiers() == Qt::ShiftModifier )
+			if ( _getExclusiveModifier( ModifierFlag::Shift ) )
 			{
 				translation *= VTX_SETTING().getTranslationSpeedFactor();
 			}
-			if ( QApplication::keyboardModifiers() == Qt::AltModifier )
+			if ( _getExclusiveModifier( ModifierFlag::Alt ) )
 			{
 				translation /= VTX_SETTING().getTranslationSpeedFactor();
 			}

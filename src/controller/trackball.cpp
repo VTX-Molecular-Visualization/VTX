@@ -69,40 +69,37 @@ namespace VTX
 			_deltaMousePosition.y = 0;
 
 			// Keyboard.
-			if ( !( QApplication::keyboardModifiers() & Qt::ControlModifier ) )
+			if ( _isKeyPressed( ScanCode::Z ) || _isKeyPressed( ScanCode::Up ) )
 			{
-				if ( _isKeyPressed( ScanCode::Z ) || _isKeyPressed( ScanCode::Up ) )
-				{
-					deltaDistance = 1.5f * p_deltaTime;
-				}
-				if ( _isKeyPressed( ScanCode::S ) || _isKeyPressed( ScanCode::Down ) )
-				{
-					deltaDistance = -1.5f * p_deltaTime;
-				}
-				if ( _isKeyPressed( ScanCode::D ) || _isKeyPressed( ScanCode::Right ) )
-				{
-					deltaVelocity.x = 1e4f * p_deltaTime;
-				}
-				if ( _isKeyPressed( ScanCode::Q ) || _isKeyPressed( ScanCode::Left ) )
-				{
-					deltaVelocity.x = -1e4f * p_deltaTime;
-				}
-				if ( _isKeyPressed( ScanCode::R ) )
-				{
-					deltaVelocity.y = 1e4f * p_deltaTime;
-				}
-				if ( _isKeyPressed( ScanCode::F ) )
-				{
-					deltaVelocity.y = -1e4f * p_deltaTime;
-				}
-				if ( _isKeyPressed( ScanCode::E ) )
-				{
-					deltaVelocity.z = 1e4f * p_deltaTime;
-				}
-				if ( _isKeyPressed( ScanCode::A ) )
-				{
-					deltaVelocity.z = -1e4f * p_deltaTime;
-				}
+				deltaDistance = 1.5f * p_deltaTime;
+			}
+			if ( _isKeyPressed( ScanCode::S ) || _isKeyPressed( ScanCode::Down ) )
+			{
+				deltaDistance = -1.5f * p_deltaTime;
+			}
+			if ( _isKeyPressed( ScanCode::D ) || _isKeyPressed( ScanCode::Right ) )
+			{
+				deltaVelocity.x = 1e4f * p_deltaTime;
+			}
+			if ( _isKeyPressed( ScanCode::Q ) || _isKeyPressed( ScanCode::Left ) )
+			{
+				deltaVelocity.x = -1e4f * p_deltaTime;
+			}
+			if ( _isKeyPressed( ScanCode::R ) )
+			{
+				deltaVelocity.y = 1e4f * p_deltaTime;
+			}
+			if ( _isKeyPressed( ScanCode::F ) )
+			{
+				deltaVelocity.y = -1e4f * p_deltaTime;
+			}
+			if ( _isKeyPressed( ScanCode::E ) )
+			{
+				deltaVelocity.z = 1e4f * p_deltaTime;
+			}
+			if ( _isKeyPressed( ScanCode::A ) )
+			{
+				deltaVelocity.z = -1e4f * p_deltaTime;
 			}
 
 			// Set values from settings.
@@ -110,11 +107,11 @@ namespace VTX
 			{
 				deltaDistance *= VTX_SETTING().getTranslationSpeed();
 
-				if ( QApplication::keyboardModifiers() == Qt::ShiftModifier )
+				if ( _getExclusiveModifier( ModifierFlag::Shift ) )
 				{
 					deltaDistance *= VTX_SETTING().getTranslationSpeedFactor();
 				}
-				if ( QApplication::keyboardModifiers() == Qt::AltModifier )
+				if ( _getExclusiveModifier( ModifierFlag::Alt ) )
 				{
 					deltaDistance /= VTX_SETTING().getTranslationSpeedFactor();
 				}
