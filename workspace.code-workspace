@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cmake.configureArgs": [
+			"-DCMAKE_PREFIX_PATH=/home/sguionni/Qt_static/lib/cmake"
+		],
+		"editor.formatOnSave": true
+	}
+}

@@ -37,7 +37,7 @@ namespace VTX
 
 			void _finished();
 			void _errorOccured( const QNetworkReply::NetworkError & );
-			void _sslErrors( const QList<QSslError> & );
+			//void _sslErrors( const QList<QSslError> & );
 			void _downloadProgress( const qint64, const qint64 );
 		};
 	} // namespace Network
