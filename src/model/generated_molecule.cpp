@@ -247,6 +247,9 @@ namespace VTX::Model
 	void GeneratedMolecule::_computeBonds( const Model::Molecule &					p_source,
 										   const std::map<const uint, const uint> & p_mapAtomIds )
 	{
+		if ( p_source.getBondCount() <= 0 )
+			return;
+
 		// Bonds
 		getBufferBonds().reserve( p_source.getBufferBonds().size() );
 
