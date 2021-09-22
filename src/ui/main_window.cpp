@@ -495,9 +495,9 @@ namespace VTX::UI
 	void MainWindow::changeEvent( QEvent * p_event )
 	{
 		QMainWindow::changeEvent( p_event );
-		if ( p_event->type() == QEvent::ActivationChange )
+		if ( p_event->type() == QEvent::ActivationChange && !isActiveWindow() )
 		{
-			Event::EventManager::get().freezeEvent( !isActiveWindow() );
+			Event::EventManager::get().clearInputEvents();
 		}
 	}
 } // namespace VTX::UI

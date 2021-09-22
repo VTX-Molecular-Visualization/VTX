@@ -49,6 +49,7 @@ namespace VTX
 			virtual void update( const float & p_deltaTime ) override;
 
 			void freezeEvent( const bool p_freeze );
+			void clearInputEvents();
 
 		  private:
 			// Input events.
