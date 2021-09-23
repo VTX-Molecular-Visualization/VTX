@@ -73,3 +73,17 @@ sudo ./configure -opensource -release -static -prefix /home/sguionni/Qt_static -
 sudo tar -czvf build.tar.gz build
 
 sudo code . --user-data-dir="/home/vscode" --no-sandbox
+
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cmake.configureArgs": [
+			"-DCMAKE_PREFIX_PATH=/home/sguionni/Qt_static/lib/cmake"
+		],
+		"editor.formatOnSave": true
+	}
+}
