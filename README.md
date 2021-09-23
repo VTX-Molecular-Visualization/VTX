@@ -58,3 +58,18 @@
 ## LICENSE
 
 Please look at the license.txt file
+
+## Linux compilation notes
+
+sudo apt-get install build-essential cmake libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb-xinerama0-dev libxkbcommon-dev libxkbcommon-x11-dev mesa-utils
+
+//libpcre2-dev libssl-dev
+
+
+cd Qt/version/Src
+
+sudo ./configure -opensource -release -static -prefix /home/sguionni/Qt_static -nomake tools -nomake tests -nomake examples -bundled-xcb-xinput -no-icu -qt-pcre -openssl-linked
+
+sudo tar -czvf build.tar.gz build
+
+sudo code . --user-data-dir="/home/vscode" --no-sandbox
