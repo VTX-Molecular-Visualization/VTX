@@ -50,6 +50,12 @@ namespace VTX::UI::Widget::CustomWidget
 				 this,
 				 &AutoRotateWidget::_orientationChange );
 
+		connect( _orientationWidget,
+				 &CustomWidget::Vector3Widget::onValueDragged,
+				 this,
+				 &AutoRotateWidget::_orientationDragged );
+		
+
 		connect(
 			_speedWidget, &CustomWidget::FloatFieldSliderWidget::onValueChange, this, &AutoRotateWidget::_speedChange );
 
@@ -92,7 +98,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		VTX_ACTION( new Action::Transformable::SetAutoRotationPlay( _targets, setPlay ) );
 	}
-	void AutoRotateWidget::_speedChange( const float p_speed )
+	void AutoRotateWidget::_speedChange( const float p_speed ) const
 	{
 		bool dataChange = false;
 
@@ -109,7 +115,7 @@ namespace VTX::UI::Widget::CustomWidget
 			VTX_ACTION( new Action::Transformable::SetAutoRotationSpeed( _targets, p_speed ) );
 	}
 
-	void AutoRotateWidget::_orientationChange( const Vec3f & p_orientation )
+	void AutoRotateWidget::_orientationChange( const Vec3f & p_orientation ) const
 	{
 		bool dataChange = false;
 
@@ -125,5 +131,15 @@ namespace VTX::UI::Widget::CustomWidget
 		if ( dataChange )
 			VTX_ACTION( new Action::Transformable::SetAutoRotationOrientation( _targets, p_orientation ) );
 	}
+
+	void AutoRotateWidget::_orientationDragged( const Vec3f & p_delta ) const
+	{
+		if ( p_delta == VEC3F_ZERO )
+			return;
+		
+		VTX_ACTION( new Action::Transformable::AddToAutoRotationOrientation( _targets, p_delta ) );
+	}
+
+	
 
 } // namespace VTX::UI::Widget::CustomWidget
