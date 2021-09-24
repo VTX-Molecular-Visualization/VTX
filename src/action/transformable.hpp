@@ -278,6 +278,29 @@ namespace VTX::Action::Transformable
 		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
 		const Vec3f									  _orientation;
 	};
+	class AddToAutoRotationOrientation : public BaseAction
+	{
+	  public:
+		explicit AddToAutoRotationOrientation(
+			const std::unordered_set<Generic::BaseAutoRotate *> p_autoRotateComponent,
+											 const Vec3f &										 p_delta ) :
+			_autoRotateComponents( p_autoRotateComponent ),
+			_delta( p_delta )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
+
+		virtual void execute() override
+		{
+			for ( Generic::BaseAutoRotate * const autoRotateComponent : _autoRotateComponents ) 
+				autoRotateComponent->setAutoRotationVector( autoRotateComponent->getAutoRotationVector() + _delta);
+		}
+
+	  private:
+		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
+		const Vec3f									  _delta;
+	};
+
 	class SetAutoRotationSpeed : public BaseAction
 	{
 	  public:
