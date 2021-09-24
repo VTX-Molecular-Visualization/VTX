@@ -27,6 +27,11 @@ namespace VTX
 		enum class PlayMode;
 	}
 
+	namespace Worker
+	{
+		enum class SNAPSHOT_RESOLUTION;
+	}
+
 	class Setting
 	{
 	  public:
@@ -55,8 +60,9 @@ namespace VTX
 		static const bool ACTIVE_RENDERER_DEFAULT;
 		static const bool FORCE_RENDERER_DEFAULT;
 
-		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
-		static const float		BACKGROUND_OPACITY_DEFAULT;
+		static const Color::Rgb					 BACKGROUND_COLOR_DEFAULT;
+		static const float						 BACKGROUND_OPACITY_DEFAULT;
+		static const Worker::SNAPSHOT_RESOLUTION SNAPSHOT_RESOLUTION_DEFAULT;
 
 		static const int REPRESENTATION_DEFAULT_INDEX;
 
@@ -199,6 +205,7 @@ namespace VTX
 			FORCE_RENDERER,
 			VSYNC,
 			SNAPSHOT_BACKGROUND_OPACITY,
+			SNAPSHOT_RESOLUTION,
 
 			CONTROLLER_TRANSLATION_SPEED,
 			CONTROLLER_TRANSLATION_SPEED_FACTOR,
@@ -217,16 +224,18 @@ namespace VTX
 			ALL,
 		};
 
-		inline bool	 getWindowFullscreen() const { return windowFullscreen; }
-		void		 setWindowFullscreen( const bool p_fullscreen );
-		inline bool	 getActivateRenderer() const { return activeRenderer; }
-		void		 setActivateRenderer( const bool p_activeRenderer );
-		inline bool	 getForceRenderer() const { return forceRenderer; }
-		void		 setForceRenderer( const bool p_forceRenderer );
-		inline bool	 getVSync() const { return activeVSync; }
-		void		 setVSync( const bool p_activeVSync );
-		inline float getSnapshotBackgroundOpacity() const { return backgroundOpacity; }
-		void		 setSnapshotBackgroundOpacity( const float p_backgroundOpacity );
+		inline bool						   getWindowFullscreen() const { return windowFullscreen; }
+		void							   setWindowFullscreen( const bool p_fullscreen );
+		inline bool						   getActivateRenderer() const { return activeRenderer; }
+		void							   setActivateRenderer( const bool p_activeRenderer );
+		inline bool						   getForceRenderer() const { return forceRenderer; }
+		void							   setForceRenderer( const bool p_forceRenderer );
+		inline bool						   getVSync() const { return activeVSync; }
+		void							   setVSync( const bool p_activeVSync );
+		inline float					   getSnapshotBackgroundOpacity() const { return backgroundOpacity; }
+		void							   setSnapshotBackgroundOpacity( const float p_backgroundOpacity );
+		inline Worker::SNAPSHOT_RESOLUTION getSnapshotResolution() const { return snapshotResolution; }
+		void setSnapshotResolution( const Worker::SNAPSHOT_RESOLUTION & p_snapshotResolution );
 
 		inline float getTranslationSpeed() const { return translationSpeed; }
 		void		 setTranslationSpeed( const float p_translationSpeed );
@@ -296,11 +305,12 @@ namespace VTX
 		Renderer::MODE				mode = MODE_DEFAULT;
 
 	  private:
-		bool  windowFullscreen	= WINDOW_FULLSCREEN_DEFAULT;
-		bool  activeRenderer	= ACTIVE_RENDERER_DEFAULT;
-		bool  forceRenderer		= FORCE_RENDERER_DEFAULT;
-		bool  activeVSync		= ACTIVE_VSYNC_DEFAULT;
-		float backgroundOpacity = BACKGROUND_OPACITY_DEFAULT;
+		bool						windowFullscreen   = WINDOW_FULLSCREEN_DEFAULT;
+		bool						activeRenderer	   = ACTIVE_RENDERER_DEFAULT;
+		bool						forceRenderer	   = FORCE_RENDERER_DEFAULT;
+		bool						activeVSync		   = ACTIVE_VSYNC_DEFAULT;
+		float						backgroundOpacity  = BACKGROUND_OPACITY_DEFAULT;
+		Worker::SNAPSHOT_RESOLUTION snapshotResolution = SNAPSHOT_RESOLUTION_DEFAULT;
 
 		float translationSpeed			 = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
 		float translationFactorSpeed	 = CONTROLLER_TRANSLATION_FACTOR_DEFAULT;

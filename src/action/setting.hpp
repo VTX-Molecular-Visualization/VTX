@@ -16,6 +16,7 @@
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
+#include "worker/snapshoter.hpp"
 #include <QWindow>
 
 namespace VTX::Action::Setting
@@ -143,6 +144,20 @@ namespace VTX::Action::Setting
 
 	  private:
 		const float _opacity;
+	};
+
+	class ChangeSnapshotResolution : public BaseAction
+	{
+	  public:
+		explicit ChangeSnapshotResolution( const Worker::SNAPSHOT_RESOLUTION & p_resolution ) :
+			_resolution( p_resolution )
+		{
+		}
+
+		virtual void execute() override { VTX_SETTING().setSnapshotResolution( _resolution ); };
+
+	  private:
+		const Worker::SNAPSHOT_RESOLUTION _resolution;
 	};
 
 	class ChangeDefaultRepresentation : public BaseAction
@@ -666,6 +681,7 @@ namespace VTX::Action::Setting
 
 			VTX_ACTION( new Action::Setting::ActiveVerticalSync( _setting.getVSync() ) );
 			VTX_ACTION( new Action::Setting::ChangeBackgroundOpacity( _setting.getSnapshotBackgroundOpacity() ) );
+			VTX_ACTION( new Action::Setting::ChangeSnapshotResolution( _setting.getSnapshotResolution() ) );
 
 			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( _setting.getTranslationSpeed() ) );
 			VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed( _setting.getTranslationSpeedFactor() ) );

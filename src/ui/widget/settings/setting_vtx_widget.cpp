@@ -10,6 +10,7 @@
 #include "ui/widget_factory.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
+#include "worker/snapshoter.hpp"
 #include <QLabel>
 
 namespace VTX::UI::Widget::Settings
@@ -59,6 +60,10 @@ namespace VTX::UI::Widget::Settings
 			viewport, "SnapshotBackgroundOpacitySlider" );
 		_snapshotBackgroundOpacitySlider->setMinMax( 0.f, 1.f );
 
+		_snapshotResolutionWidget = new QComboBox( viewport );
+		for ( const std::string & resolutionStr : Worker::SNAPSHOT_RESOLUTION_STR )
+			_snapshotResolutionWidget->addItem( QString::fromStdString( resolutionStr ) );
+
 #ifndef VTX_PRODUCTION
 		_vsyncWidget		 = new QCheckBox( viewport );
 		_forceRendererWidget = new QCheckBox( viewport );
@@ -94,6 +99,8 @@ namespace VTX::UI::Widget::Settings
 
 		_startSection( "Graphic" );
 		_addItemInLayout( _snapshotBackgroundOpacitySlider, "Snapshot background opacity" );
+		_addItemInLayout( _snapshotResolutionWidget, "Snapshot resolution" );
+
 #ifndef VTX_PRODUCTION
 		_addItemInLayout( _vsyncWidget, "VSync" );
 		_addItemInLayout( _forceRendererWidget, "Force render" );
@@ -154,6 +161,11 @@ namespace VTX::UI::Widget::Settings
 				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
 				 this,
 				 &SettingVTXWidget::_changeSnapshotBackgroundOpacity );
+		connect( _snapshotResolutionWidget,
+				 QOverload<int>::of( ( &QComboBox::currentIndexChanged ) ),
+				 this,
+				 &SettingVTXWidget::_changeSnapshotResolution );
+
 #ifndef VTX_PRODUCTION
 		connect( _vsyncWidget, &QCheckBox::stateChanged, this, &SettingVTXWidget::_activeVSyncAction );
 		connect( _forceRendererWidget, &QCheckBox::stateChanged, this, &SettingVTXWidget::_activeForceRendererAction );
@@ -205,6 +217,8 @@ namespace VTX::UI::Widget::Settings
 		_controllerYAxisInvertedWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getYAxisInverted() ) );
 
 		_snapshotBackgroundOpacitySlider->setValue( VTX_SETTING().getSnapshotBackgroundOpacity() );
+		_snapshotResolutionWidget->setCurrentIndex( int( VTX_SETTING().getSnapshotResolution() ) );
+
 #ifndef VTX_PRODUCTION
 		_vsyncWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getVSync() ) );
 		_forceRendererWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getForceRenderer() ) );
@@ -262,6 +276,13 @@ namespace VTX::UI::Widget::Settings
 		if ( VTX_SETTING().getSnapshotBackgroundOpacity() != p_opacity )
 			VTX_ACTION( new Action::Setting::ChangeBackgroundOpacity( p_opacity ) );
 	}
+	void SettingVTXWidget::_changeSnapshotResolution( const int p_resolution )
+	{
+		const Worker::SNAPSHOT_RESOLUTION resolution = Worker::SNAPSHOT_RESOLUTION( p_resolution );
+		if ( VTX_SETTING().getSnapshotResolution() != resolution )
+			VTX_ACTION( new Action::Setting::ChangeSnapshotResolution( resolution ) );
+	}
+
 	void SettingVTXWidget::_activeVSyncAction( const bool p_activate )
 	{
 		if ( VTX_SETTING().getVSync() != p_activate )

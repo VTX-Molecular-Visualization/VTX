@@ -79,7 +79,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 			button->setRenderEffectID( i );
 			button->setData( QString::fromStdString( renderEffectPreset->getName() ),
-							":/sprite/render_effect_preset_icon.png",
+							 ":/sprite/render_effect_preset_icon.png",
 							 Qt::Orientation::Horizontal );
 			pushButton( *button, quickAccessRepresentationCount / MAX_ROW_COUNT );
 			_presetButtons.emplace_back( button );
@@ -93,7 +93,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// Add Preset
 		_createPreset
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "createRenderPresetButton" );
-		_createPreset->setData( "Preset\nSettings", ":/sprite/render_effect_settings_icon.png", Qt::Orientation::Vertical );
+		_createPreset->setData(
+			"Preset\nSettings", ":/sprite/render_effect_settings_icon.png", Qt::Orientation::Vertical );
 		pushButtonInNextColumn( *_createPreset );
 
 		// Fullscreen / snapshot
@@ -125,8 +126,10 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 	void MenuVisualizationRenderEffectsWidget::_takeSnapshotAction() const
 	{
-		VTX_ACTION( new Action::Main::Snapshot(
-			Worker::Snapshoter::MODE::GL, Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) ) );
+		VTX_ACTION(
+			new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+										Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ),
+										VTX_SETTING().getSnapshotResolution() ) );
 	}
 	void MenuVisualizationRenderEffectsWidget::_openPresetSettings() const
 	{
