@@ -21,6 +21,10 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 #set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
 #set(CMAKE_BUILD_RPATH ".")
 
+if(CMAKE_COMPILER_IS_GNUCC)
+	set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+endif()
+
 # Create paths.
 set(PATH_SRC "src")
 set(PATH_LIB "lib")
