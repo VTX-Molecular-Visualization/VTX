@@ -38,8 +38,9 @@ namespace VTX::UI::Widget::CustomWidget
 		std::unordered_set<Generic::BaseAutoRotate *> _targets = std::unordered_set<Generic::BaseAutoRotate *>();
 
 		void _togglePlayAction();
-		void _speedChange( const float p_speed );
-		void _orientationChange( const Vec3f & p_orientation );
+		void _speedChange( const float p_speed ) const;
+		void _orientationChange( const Vec3f & p_orientation ) const;
+		void _orientationDragged( const Vec3f & p_delta ) const;
 	};
 } // namespace VTX::UI::Widget::CustomWidget
 
