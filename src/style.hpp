@@ -235,12 +235,12 @@ namespace VTX
 
 		inline static const QFont TOOL_MENU_BUTTON_FONT()
 		{
-			static QFont font = QFont( ":/font/verdana.ttf", 10 );
+			static QFont font = QFont( "Helvetica", 10 );
 			return font;
 		}
 		inline static const QFont SEQUENCE_DISPLAY_FONT()
 		{
-			static QFont font = QFont( ":/font/courier.ttf", 10 );
+			static QFont font = QFont( "Courier", 10 );
 			return font;
 		}
 		inline static const bool VIDEO_IN_INFORMATION = true;

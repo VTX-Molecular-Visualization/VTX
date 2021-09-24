@@ -1,7 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-	<file>font/courier.ttf</file>
-	<file>font/verdana.ttf</file>
 	<file>sprite/add_icon.png</file>
 	<file>sprite/add_icon_hovered.png</file>
 	<file>sprite/add_preset_icon.png</file>
