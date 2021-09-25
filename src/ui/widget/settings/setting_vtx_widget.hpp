@@ -42,6 +42,7 @@ namespace VTX::UI::Widget::Settings
 
 		// Graphic
 		CustomWidget::FloatFieldSliderWidget * _snapshotBackgroundOpacitySlider = nullptr;
+		QComboBox *							   _snapshotResolutionWidget		= nullptr;
 		QCheckBox *							   _vsyncWidget						= nullptr;
 		QCheckBox *							   _forceRendererWidget				= nullptr;
 		QCheckBox *							   _fullscreenWidget				= nullptr;
@@ -64,6 +65,7 @@ namespace VTX::UI::Widget::Settings
 		void _changeControllerYInversionAction( const bool p_invert );
 
 		void _changeSnapshotBackgroundOpacity( const float p_opacity );
+		void _changeSnapshotResolution( const int p_resolution );
 		void _activeVSyncAction( const bool p_activate );
 		void _activeForceRendererAction( const bool p_activate );
 		void _activeFullscreenAction( const bool p_activate );

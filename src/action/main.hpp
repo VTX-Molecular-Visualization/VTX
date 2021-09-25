@@ -325,15 +325,62 @@ namespace VTX::Action::Main
 
 	class Snapshot : public BaseAction
 	{
+	  private:
+		enum class RESOLUTION_TYPE : short
+		{
+			NONE,
+			ENUM,
+			SIZE
+		};
+		union RESOLUTION
+		{
+			std::pair<int, int>			_size;
+			Worker::SNAPSHOT_RESOLUTION _resolutionEnum;
+
+			RESOLUTION() {};
+			RESOLUTION( const std::pair<int, int> & p_size ) : _size( p_size ) {};
+			RESOLUTION( const Worker::SNAPSHOT_RESOLUTION & p_resolutionEnum ) : _resolutionEnum( p_resolutionEnum ) {};
+		};
+
 	  public:
 		explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const IO::FilePath & p_path ) :
-			_mode( p_mode ), _path( p_path )
+			_mode( p_mode ), _path( p_path ), _resolutionType( RESOLUTION_TYPE::NONE ), _resolutionData()
+		{
+		}
+		explicit Snapshot( const Worker::Snapshoter::MODE	 p_mode,
+						   const IO::FilePath &				 p_path,
+						   const Worker::SNAPSHOT_RESOLUTION p_resolution ) :
+			_mode( p_mode ),
+			_path( p_path ), _resolutionType( RESOLUTION_TYPE::ENUM ), _resolutionData( p_resolution )
+		{
+		}
+		explicit Snapshot( const Worker::Snapshoter::MODE p_mode,
+						   const IO::FilePath &			  p_path,
+						   const int					  p_width,
+						   const int					  p_height ) :
+			_mode( p_mode ),
+			_path( p_path ), _resolutionType( RESOLUTION_TYPE::SIZE ),
+			_resolutionData( std::pair<int, int>( p_width, p_height ) )
 		{
 		}
 
 		virtual void execute() override
 		{
-			Worker::Snapshoter * const worker = new Worker::Snapshoter( _mode, _path );
+			Worker::Snapshoter * worker;
+
+			switch ( _resolutionType )
+			{
+			case RESOLUTION_TYPE::ENUM:
+				worker = new Worker::Snapshoter( _mode, _path, _resolutionData._resolutionEnum );
+				break;
+			case RESOLUTION_TYPE::SIZE:
+				worker
+					= new Worker::Snapshoter( _mode, _path, _resolutionData._size.first, _resolutionData._size.second );
+				break;
+			case RESOLUTION_TYPE::NONE:
+			default: worker = new Worker::Snapshoter( _mode, _path ); break;
+			}
+
 			VTX_WORKER( worker );
 		};
 
@@ -342,6 +389,9 @@ namespace VTX::Action::Main
 	  private:
 		const Worker::Snapshoter::MODE _mode;
 		const IO::FilePath			   _path;
+
+		const RESOLUTION	  _resolutionData;
+		const RESOLUTION_TYPE _resolutionType;
 	};
 
 	class ClearConsoleInterface : public BaseAction

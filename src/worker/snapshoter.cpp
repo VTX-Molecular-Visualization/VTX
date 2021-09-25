@@ -20,8 +20,33 @@ namespace VTX
 	namespace Worker
 	{
 		Snapshoter::Snapshoter( const MODE & p_mode, const IO::FilePath & p_path ) :
-			_mode( p_mode ), _path( p_path ), _width( VTXApp::get().getMainWindow().getOpenGLWidget().width() ),
-			_height( VTXApp::get().getMainWindow().getOpenGLWidget().height() )
+			Snapshoter( p_mode,
+						p_path,
+						VTXApp::get().getMainWindow().getOpenGLWidget().width(),
+						VTXApp::get().getMainWindow().getOpenGLWidget().height() )
+		{
+		}
+
+		Snapshoter::Snapshoter( const MODE &				p_mode,
+								const IO::FilePath &		p_path,
+								const SNAPSHOT_RESOLUTION & p_resolution ) :
+			Snapshoter( p_mode,
+						p_path,
+						( ( p_resolution == SNAPSHOT_RESOLUTION::Free )
+							  ? VTXApp::get().getMainWindow().getOpenGLWidget().width()
+							  : RESOLUTION_SIZE[ int( p_resolution ) ].first ),
+						( ( p_resolution == SNAPSHOT_RESOLUTION::Free )
+							  ? VTXApp::get().getMainWindow().getOpenGLWidget().height()
+							  : RESOLUTION_SIZE[ int( p_resolution ) ].second ) )
+		{
+		}
+
+		Snapshoter::Snapshoter( const MODE &		 p_mode,
+								const IO::FilePath & p_path,
+								const uint			 p_width,
+								const uint			 p_height ) :
+			_mode( p_mode ),
+			_path( p_path ), _width( p_width ), _height( p_height )
 		{
 		}
 
