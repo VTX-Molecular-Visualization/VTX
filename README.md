@@ -61,14 +61,16 @@ Please look at the license.txt file
 
 ## Linux compilation notes
 
-sudo apt-get install build-essential cmake libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb-xinerama0-dev libxkbcommon-dev libxkbcommon-x11-dev mesa-utils
+sudo apt-get install build-essential cmake libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxkbcommon-dev libxkbcommon-x11-dev mesa-utils
 
-//libpcre2-dev libssl-dev
+libx11-xcb-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb-xinerama0-dev
+
+libpcre2-dev libssl-dev
 
 
 cd Qt/version/Src
 
-sudo ./configure -opensource -release -static -prefix /home/sguionni/Qt_static -nomake tools -nomake tests -nomake examples -bundled-xcb-xinput -no-icu -qt-pcre -openssl-linked
+sudo ./configure -opensource -confirm-license -release -static -prefix /home/sguionni/Qt_static -nomake tools -nomake tests -nomake examples -bundled-xcb-xinput -no-icu -qt-pcre -openssl-linked -skip qt3d -skip qtactiveqt -skip qtandroidextras -skip qtcharts -skip qtconnectivity -skip qtdatavis3d -skip qtdeclarative -skip qtdoc -skip qtgamepad -skip qtgraphicaleffects -skip qtlocation -skip qtlottie -skip qtmacextras -skip qtmultimedia -skip qtnetworkauth -skip qtpurchasing -skip qtquick3d -skip qtquickcontrols -skip qtquickcontrols2 -skip qtquicktimeline -skip qtremoteobjects -skip qtscript -skip qtscxml -skip qtsensors -skip qtserialbus -skip qtserialport -skip qtspeech -skip qtsvg -skip qttools -skip qttranslations -skip qtvirtualkeyboard -skip qtwayland -skip qtwebchannel -skip qtwebengine -skip qtwebglplugin -skip qtwebsockets -skip qtwebview -skip qtwinextras -skip qtx11extras -skip qtxmlpatterns 
 
 sudo tar -czvf build.tar.gz build
 
