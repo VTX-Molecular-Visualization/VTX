@@ -21,10 +21,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 #set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
 #set(CMAKE_BUILD_RPATH ".")
 
-if(CMAKE_COMPILER_IS_GNUCC)
-	set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
-endif()
-
 # Create paths.
 set(PATH_SRC "src")
 set(PATH_LIB "lib")
@@ -276,6 +272,9 @@ target_link_libraries(VTX PRIVATE chemfiles)
 if(MSVC)
 	# Add specific libs.
 	target_link_libraries(VTX PRIVATE ws2_32)
+elseif(CMAKE_COMPILER_IS_GNUCC)
+	set(CMAKE_EXE_LINKER_FLAGS " -static")
+	target_link_libraries(VTX -static-libgcc -static-libstdc++)
 endif()
 
 message("Creating post build events...")
