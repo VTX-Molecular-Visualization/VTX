@@ -92,10 +92,12 @@ namespace VTX::Model::Representation
 		callbackView->setCallback( this, &RepresentationLibrary::_onRepresentationChange );
 
 		if ( p_notify )
+		{
 			_notifyDataChanged();
 
-		const int newRepresentationIndex = int( _representations.size() ) - 1;
-		VTX_EVENT( new Event::VTXEventValue<int>( Event::Global::REPRESENTATION_ADDED, newRepresentationIndex ) );
+			const int newRepresentationIndex = int( _representations.size() ) - 1;
+			VTX_EVENT( new Event::VTXEventValue<int>( Event::Global::REPRESENTATION_ADDED, newRepresentationIndex ) );
+		}
 	};
 	void RepresentationLibrary::copyRepresentation( const int p_index, const bool p_notify )
 	{

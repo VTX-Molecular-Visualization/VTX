@@ -13,7 +13,15 @@ namespace VTX::Action::Renderer
 	{
 		Worker::RenderEffectPresetLibraryLoader * libraryLoader
 			= new Worker::RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary::get() );
-		VTX_WORKER( libraryLoader );
+
+		Worker::CallbackWorker * const callback = new Worker::CallbackWorker(
+			[ libraryLoader ]()
+			{
+				Model::Renderer::RenderEffectPresetLibrary::get().applyPreset(
+					VTX_SETTING().getDefaultRenderEffectPresetIndex() );
+			} );
+
+		VTX_WORKER( libraryLoader, callback );
 	};
 
 	void SavePreset::execute()
@@ -50,12 +58,6 @@ namespace VTX::Action::Renderer
 	void ApplyRenderEffectPreset::execute()
 	{
 		Model::Renderer::RenderEffectPresetLibrary::get().applyPreset( _preset );
-
-		VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().setShading();
-		VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeSSAO( _preset.isSSAOEnabled() );
-		VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeOutline( _preset.isOutlineEnabled() );
-		VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeFog( _preset.isFogEnabled() );
-		VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeAA( _preset.getAA() );
 
 		if ( _setAsDefault )
 		{

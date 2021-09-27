@@ -33,6 +33,7 @@ namespace VTX::Model::Renderer
 
 		bool canDeleteItem( RenderEffectPreset * const p_preset ) const;
 
+		void					   setAppliedPreset( const int p_presetIndex );
 		void					   applyPreset( const int p_presetIndex );
 		void					   applyPreset( RenderEffectPreset & p_preset );
 		bool					   isAppliedPreset( const RenderEffectPreset & p_preset ) const;

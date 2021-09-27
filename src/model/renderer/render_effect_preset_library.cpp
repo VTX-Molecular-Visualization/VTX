@@ -4,7 +4,10 @@
 #include "event/event_manager.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "renderer/base_renderer.hpp"
+#include "renderer/gl/gl.hpp"
 #include "setting.hpp"
+#include "ui/main_window.hpp"
+#include "ui/widget/render/opengl_widget.hpp"
 #include "view/callback_view.hpp"
 #include "vtx_app.hpp"
 #include "worker/render_effect_loader.hpp"
@@ -130,6 +133,9 @@ namespace VTX::Model::Renderer
 			}
 
 			_presets.erase( _presets.begin() + p_index );
+
+			VTX_SETTING().setDefaultRenderEffectPresetIndex( getPresetIndex( _appliedPreset ) );
+
 			_notifyDataChanged();
 
 			VTX_EVENT( new Event::VTXEventValue( Event::Global::RENDER_EFFECT_REMOVED, p_index ) );
@@ -179,6 +185,14 @@ namespace VTX::Model::Renderer
 		return _presets.size() > 1;
 	}
 
+	void RenderEffectPresetLibrary::setAppliedPreset( const int p_presetIndex )
+	{
+		if ( 0 <= p_presetIndex && p_presetIndex < _presets.size() )
+			_appliedPreset = _presets[ p_presetIndex ];
+		else
+			_appliedPreset = _presets[ 0 ];
+	}
+
 	void RenderEffectPresetLibrary::applyPreset( const int p_presetIndex )
 	{
 		if ( 0 <= p_presetIndex && p_presetIndex < _presets.size() )
@@ -189,6 +203,15 @@ namespace VTX::Model::Renderer
 	void RenderEffectPresetLibrary::applyPreset( RenderEffectPreset & p_preset )
 	{
 		_appliedPreset = &p_preset;
+
+		VTX::Renderer::GL::GL & gl = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
+
+		gl.setShading();
+		gl.activeSSAO( _appliedPreset->isSSAOEnabled() );
+		gl.activeOutline( _appliedPreset->isOutlineEnabled() );
+		gl.activeFog( _appliedPreset->isFogEnabled() );
+		gl.activeAA( _appliedPreset->getAA() );
+
 		_notifyDataChanged();
 	}
 	bool RenderEffectPresetLibrary::isAppliedPreset( const RenderEffectPreset & p_preset ) const
@@ -242,6 +265,9 @@ namespace VTX::Model::Renderer
 
 	void RenderEffectPresetLibrary::clear( const bool p_notify )
 	{
+		if ( getAppliedPresetIndex() != -1 )
+			_appliedPreset = nullptr;
+
 		while ( _presets.size() > 0 )
 		{
 			MVC::MvcManager::get().deleteModel<RenderEffectPreset>( _presets.back() );
