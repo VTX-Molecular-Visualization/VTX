@@ -28,29 +28,32 @@ namespace VTX
 
 		class BaseKeyboardController : virtual public BaseController, public Event::BaseEventReceiverKeyboard
 		{
+			// STATICS ///////////////////////////////////////////////////////////////////
 		  public:
-			virtual void receiveEvent( const QKeyEvent & p_event ) override;
-			void		 clear() override
-			{
-				_pressedKeys.clear();
-				_modifiers = ModifierFlag::None;
-			}
+			static void			  updateKeyboardBuffer( QKeyEvent & p_event );
+			static void			  clear();
+			static void			  clearKey( const Qt::Key & p_key );
+			static KeyboardLayout getKeyboardLayout();
 
 		  protected:
-			static Qt::KeyboardModifiers keyboardModifiers() { return VTXApp::get().keyboardModifiers(); }
-			static KeyboardLayout		 getKeyboardLayout();
+			static bool _isKeyPressed( const Qt::Key & p_key );
+			static bool _isModifier( const ModifierFlag & p_modifier );
+			static bool _isModifierExclusive( const ModifierFlag & p_modifier );
 
-			std::set<Qt::Key> _pressedKeys = std::set<Qt::Key>();
-			ModifierFlag	  _modifiers   = ModifierFlag::None;
+		  private:
+			static ModifierFlag _getModifierFromKey( const Qt::Key & p_key );
 
-			virtual void _handleKeyDownEvent( const Qt::Key & p_key );
-			virtual void _handleKeyUpEvent( const Qt::Key & p_key );
+			inline static std::set<Qt::Key> _pressedKeys = std::set<Qt::Key>();
+			inline static ModifierFlag		_modifiers	 = ModifierFlag::None;
+			//////////////////////////////////////////////////////////////////////////////
 
-			virtual void _handleKeyPressedEvent( const Qt::Key & p_key ) {}
+		  public:
+			virtual void receiveEvent( const QKeyEvent & p_event ) override;
 
-			bool _isKeyPressed( const Qt::Key & p_key ) { return _pressedKeys.find( p_key ) != _pressedKeys.end(); }
-			bool _getModifier( const ModifierFlag & p_modifier );
-			bool _getExclusiveModifier( const ModifierFlag & p_modifier );
+		  protected:
+			virtual void _handleKeyDownEvent( const Qt::Key & p_key ) {};
+			virtual void _handleKeyUpEvent( const Qt::Key & p_key ) {};
+			// virtual void _handleKeyPressedEvent( const Qt::Key & p_key ) {};
 		};
 	} // namespace Controller
 } // namespace VTX

@@ -49,7 +49,8 @@ namespace VTX
 			virtual void update( const float & p_deltaTime ) override;
 
 			void freezeEvent( const bool p_freeze );
-			void clearInputEvents();
+			void clearKeyboardInputEvents() const;
+			void clearKeyboardInputEvent( const Qt::Key & p_key ) const;
 
 		  private:
 			// Input events.

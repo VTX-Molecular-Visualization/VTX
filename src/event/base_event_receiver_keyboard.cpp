@@ -13,8 +13,5 @@ namespace VTX
 		{
 			EventManager::get().unregisterEventReceiverKeyboard( this );
 		}
-
-		void BaseEventReceiverKeyboard::clear() {};
-
 	} // namespace Event
 } // namespace VTX

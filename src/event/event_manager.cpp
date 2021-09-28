@@ -1,4 +1,5 @@
 #include "event_manager.hpp"
+#include "controller/base_keyboard_controller.hpp"
 #include "tool/logger.hpp"
 #include "vtx_app.hpp"
 
@@ -158,6 +159,7 @@ namespace VTX
 		{
 			if ( !_freeze )
 			{
+				Controller::BaseKeyboardController::updateKeyboardBuffer( *p_event );
 				for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
 				{
 					receiver->receiveEvent( *p_event );
@@ -190,18 +192,13 @@ namespace VTX
 		void EventManager::freezeEvent( const bool p_freeze )
 		{
 			_freeze = p_freeze;
-			for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
-			{
-				receiver->clear();
-			}
+			clearKeyboardInputEvents();
 		}
 
-		void EventManager::clearInputEvents()
+		void EventManager::clearKeyboardInputEvents() const { Controller::BaseKeyboardController::clear(); }
+		void EventManager::clearKeyboardInputEvent( const Qt::Key & p_key ) const
 		{
-			for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
-			{
-				receiver->clear();
-			}
+			Controller::BaseKeyboardController::clearKey( p_key );
 		}
 
 	} // namespace Event

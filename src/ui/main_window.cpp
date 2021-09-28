@@ -474,17 +474,9 @@ namespace VTX::UI
 		p_event->accept();
 	}
 
-	void MainWindow::keyPressEvent( QKeyEvent * p_event )
-	{
-		Event::EventManager::get().fireEventKeyboard( p_event );
-		p_event->accept();
-	}
+	void MainWindow::keyPressEvent( QKeyEvent * p_event ) { Event::EventManager::get().fireEventKeyboard( p_event ); }
 
-	void MainWindow::keyReleaseEvent( QKeyEvent * p_event )
-	{
-		Event::EventManager::get().fireEventKeyboard( p_event );
-		p_event->accept();
-	}
+	void MainWindow::keyReleaseEvent( QKeyEvent * p_event ) { Event::EventManager::get().fireEventKeyboard( p_event ); }
 
 	void MainWindow::wheelEvent( QWheelEvent * p_event )
 	{
@@ -497,7 +489,7 @@ namespace VTX::UI
 		QMainWindow::changeEvent( p_event );
 		if ( p_event->type() == QEvent::ActivationChange && !isActiveWindow() )
 		{
-			Event::EventManager::get().clearInputEvents();
+			Event::EventManager::get().clearKeyboardInputEvents();
 		}
 	}
 } // namespace VTX::UI

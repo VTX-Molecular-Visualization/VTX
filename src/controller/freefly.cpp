@@ -29,14 +29,14 @@ namespace VTX
 				_camera.rotateRoll( VTX_SETTING().getRotationSpeed() * _deltaMousePosition.x );
 			}
 
-				_deltaMousePosition.x = 0;
-				_deltaMousePosition.y = 0;
+			_deltaMousePosition.x = 0;
+			_deltaMousePosition.y = 0;
 
 			// Translation.
 			Vec3f translation = VEC3F_ZERO;
 
 			if ( _isKeyPressed( getKeyboardLayout() == KeyboardLayout::QWERTY ? Qt::Key::Key_W : Qt::Key::Key_Z )
-					 || _isKeyPressed( Qt::Key::Key_Up ) )
+				 || _isKeyPressed( Qt::Key::Key_Up ) )
 			{
 				translation.z++;
 			}
@@ -70,11 +70,11 @@ namespace VTX
 			translation *= VTX_SETTING().getTranslationSpeed();
 			translation *= p_deltaTime;
 
-			if ( _getExclusiveModifier( ModifierFlag::Shift ) )
+			if ( _isModifierExclusive( ModifierFlag::Shift ) )
 			{
 				translation *= VTX_SETTING().getTranslationSpeedFactor();
 			}
-			if ( _getExclusiveModifier( ModifierFlag::Alt ) )
+			if ( _isModifierExclusive( ModifierFlag::Alt ) )
 			{
 				translation /= VTX_SETTING().getTranslationSpeedFactor();
 			}

@@ -70,7 +70,7 @@ namespace VTX
 
 			// Keyboard.
 			if ( _isKeyPressed( getKeyboardLayout() == KeyboardLayout::QWERTY ? Qt::Key::Key_W : Qt::Key::Key_Z )
-					 || _isKeyPressed( Qt::Key::Key_Up ) )
+				 || _isKeyPressed( Qt::Key::Key_Up ) )
 			{
 				deltaDistance = 1.5f * p_deltaTime;
 			}
@@ -109,11 +109,11 @@ namespace VTX
 			{
 				deltaDistance *= VTX_SETTING().getTranslationSpeed();
 
-				if ( _getExclusiveModifier( ModifierFlag::Shift ) )
+				if ( _isModifierExclusive( ModifierFlag::Shift ) )
 				{
 					deltaDistance *= VTX_SETTING().getTranslationSpeedFactor();
 				}
-				if ( _getExclusiveModifier( ModifierFlag::Alt ) )
+				if ( _isModifierExclusive( ModifierFlag::Alt ) )
 				{
 					deltaDistance /= VTX_SETTING().getTranslationSpeedFactor();
 				}

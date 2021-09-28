@@ -13,8 +13,6 @@ namespace VTX
 		  public:
 			BaseEventReceiverKeyboard();
 			virtual ~BaseEventReceiverKeyboard();
-
-			virtual void clear();
 		};
 	} // namespace Event
 } // namespace VTX

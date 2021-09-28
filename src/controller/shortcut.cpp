@@ -33,15 +33,18 @@ namespace VTX
 
 			if ( !shortcutEaten )
 			{
-				_handleDefaultShortcut( p_key );
+				shortcutEaten = _handleDefaultShortcut( p_key );
+			}
+
+			if ( shortcutEaten )
+			{
+				Event::EventManager::get().clearKeyboardInputEvent( p_key );
 			}
 		}
 
 		bool Shortcut::_handleDefaultShortcut( const Qt::Key & p_key )
 		{
 			bool shortcutEaten = false;
-
-			const Qt::KeyboardModifiers modifiers = keyboardModifiers();
 
 			switch ( p_key )
 			{
@@ -85,20 +88,22 @@ namespace VTX
 				break;
 
 			case Qt::Key::Key_S:
-				if ( modifiers == Qt::ControlModifier )
+				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
-					VTX_ACTION( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+					VTX_ACTION_ENQUEUE( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 					shortcutEaten = true;
 				}
-				else if ( modifiers == ( Qt::ControlModifier | Qt::ShiftModifier ) )
+				else if ( _isModifierExclusive( ModifierFlag( ModifierFlag::Control | ModifierFlag::Shift ) ) )
 				{
+					// WORKAROUND : Clear buffer before calling dialog (if not, unwanted movement appear)
+					Event::EventManager::get().clearKeyboardInputEvent( p_key );
 					UI::Dialog::openSaveSessionDialog();
 					shortcutEaten = true;
 				}
 				break;
 
 			case Qt::Key::Key_N:
-				if ( modifiers == Qt::ControlModifier )
+				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					UI::Dialog::createNewSessionDialog();
 					shortcutEaten = true;
@@ -106,7 +111,7 @@ namespace VTX
 				break;
 
 			case Qt::Key::Key_O:
-				if ( modifiers == Qt::NoModifier )
+				if ( _isModifierExclusive( ModifierFlag::None ) )
 				{
 					const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 
@@ -115,7 +120,7 @@ namespace VTX
 
 					shortcutEaten = true;
 				}
-				else if ( modifiers == Qt::ControlModifier )
+				else if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					UI::Dialog::openLoadSessionDialog();
 					shortcutEaten = true;
@@ -123,7 +128,7 @@ namespace VTX
 				break;
 
 			case Qt::Key::Key_Q:
-				if ( getKeyboardLayout() == KeyboardLayout::QWERTY && modifiers == Qt::ControlModifier )
+				if ( getKeyboardLayout() == KeyboardLayout::QWERTY && _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					VTX_ACTION( new Action::Selection::SelectAll() );
 					shortcutEaten = true;
@@ -131,7 +136,7 @@ namespace VTX
 				break;
 
 			case Qt::Key::Key_A:
-				if ( getKeyboardLayout() == KeyboardLayout::AZERTY && modifiers == Qt::ControlModifier )
+				if ( getKeyboardLayout() == KeyboardLayout::AZERTY && _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					VTX_ACTION( new Action::Selection::SelectAll() );
 					shortcutEaten = true;
@@ -139,7 +144,7 @@ namespace VTX
 				break;
 
 			case Qt::Key::Key_D:
-				if ( modifiers == Qt::ControlModifier )
+				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 					if ( !selectionModel.isEmpty() )
@@ -149,7 +154,7 @@ namespace VTX
 				break;
 
 			case Qt::Key::Key_E:
-				if ( modifiers == Qt::ControlModifier )
+				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 					if ( !selectionModel.isEmpty() )
@@ -165,17 +170,16 @@ namespace VTX
 		}
 		bool Shortcut::_handleRenderShortcut( const Qt::Key & p_key )
 		{
-			bool						shortcutEaten = false;
-			const Qt::KeyboardModifiers modifiers	  = keyboardModifiers();
+			bool shortcutEaten = false;
 
 			switch ( p_key )
 			{
 			case Qt::Key::Key_F1:
-				if ( modifiers == Qt::ControlModifier )
+				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					VTX_ACTION( new Action::Main::ResetCameraController() );
 				}
-				else if ( modifiers == Qt::NoModifier )
+				else if ( _isModifierExclusive( ModifierFlag::None ) )
 				{
 					VTX_ACTION( new Action::Main::ToggleCameraController() );
 				}
