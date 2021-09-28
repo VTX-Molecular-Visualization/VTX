@@ -931,31 +931,36 @@ namespace VTX
 
 					if ( bond != nullptr )
 					{
-						const uint bondFirstAtom  = bond->getIndexFirstAtom();
-						const uint bondSecondAtom = bond->getIndexSecondAtom();
+						const uint bondFirstAtomIndex  = bond->getIndexFirstAtom();
+						const uint bondSecondAtomIndex = bond->getIndexSecondAtom();
 
-						if ( bondFirstAtom == p_id || bondSecondAtom == p_id )
+						if ( bondFirstAtomIndex == p_id || bondSecondAtomIndex == p_id )
 						{
+							const Model::Atom * const bondFirstAtom	 = _atoms[ bondFirstAtomIndex ];
+							const Model::Atom * const bondSecondAtom = _atoms[ bondSecondAtomIndex ];
+
 							const Model::Residue * const residueFirstAtomOfBond
-								= _atoms[ bondFirstAtom ]->getResiduePtr();
+								= bondFirstAtom == nullptr ? nullptr : bondFirstAtom->getResiduePtr();
+
 							const Model::Residue * const residueSecondAtomOfBond
-								= _atoms[ bondSecondAtom ]->getResiduePtr();
+								= bondSecondAtom == nullptr ? nullptr : bondSecondAtom->getResiduePtr();
 
 							// If external bond => need to remove the bond of the other residue
-							if ( residueFirstAtomOfBond != residueSecondAtomOfBond )
+							if ( residueFirstAtomOfBond != nullptr && residueSecondAtomOfBond != nullptr
+								 && residueFirstAtomOfBond != residueSecondAtomOfBond )
 							{
 								if ( residueFirstAtomOfBond == parent )
 								{
-									const uint otherBondIndex
-										= residueSecondAtomOfBond->findBondIndex( bondFirstAtom, bondSecondAtom );
+									const uint otherBondIndex = residueSecondAtomOfBond->findBondIndex(
+										bondFirstAtomIndex, bondSecondAtomIndex );
 
 									removeBond( bondIndex, p_delete, false );
 									removeBond( otherBondIndex, p_delete, false );
 								}
 								else
 								{
-									const uint otherBondIndex
-										= residueFirstAtomOfBond->findBondIndex( bondFirstAtom, bondSecondAtom );
+									const uint otherBondIndex = residueFirstAtomOfBond->findBondIndex(
+										bondFirstAtomIndex, bondSecondAtomIndex );
 
 									removeBond( bondIndex, p_delete, false );
 									removeBond( otherBondIndex, p_delete, false );
@@ -969,37 +974,6 @@ namespace VTX
 					}
 				}
 			}
-
-			/*
-			for ( const uint & bondId : parent->getIndexExtraBondStart() )
-			{
-				const Bond * const bond = _bonds[ bondId ];
-				if ( bond != nullptr && bond->getIndexFirstAtom() == p_id )
-				{
-					Model::Residue * const other			  = getAtom( bond->getIndexSecondAtom() )->getResiduePtr();
-					std::vector<uint> &	   otherExtraResidues = other->getIndexExtraBondEnd();
-
-					removeBond( bondId, p_delete, false );
-
-					otherExtraResidues.erase(
-						std::find( otherExtraResidues.begin(), otherExtraResidues.end(), bondId ) );
-				}
-			}
-			for ( const uint & bondId : parent->getIndexExtraBondEnd() )
-			{
-				const Bond * const bond = _bonds[ bondId ];
-				if ( bond != nullptr && bond->getIndexSecondAtom() == p_id )
-				{
-					Model::Residue * const other			  = getAtom( bond->getIndexFirstAtom() )->getResiduePtr();
-					std::vector<uint> &	   otherExtraResidues = other->getIndexExtraBondStart();
-
-					removeBond( bondId, p_delete, false );
-
-					otherExtraResidues.erase(
-						std::find( otherExtraResidues.begin(), otherExtraResidues.end(), bondId ) );
-				}
-			}
-			*/
 
 			// Delete Atom
 			if ( p_delete )
