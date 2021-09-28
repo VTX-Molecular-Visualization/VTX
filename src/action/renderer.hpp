@@ -16,6 +16,13 @@ namespace VTX::Action::Renderer
 		virtual void execute() override;
 	};
 
+	class ResetPresets : public BaseAction
+	{
+	  public:
+		ResetPresets() {};
+		virtual void execute() override;
+	};
+
 	class SavePreset : public BaseAction
 	{
 	  public:

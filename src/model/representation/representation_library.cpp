@@ -159,8 +159,10 @@ namespace VTX::Model::Representation
 	{
 		if ( 0 <= p_representationIndex && p_representationIndex < _representations.size() )
 			_defaultRepresentation = _representations[ p_representationIndex ];
-		else
+		else if ( Setting::REPRESENTATION_DEFAULT_INDEX < _representations.size() )
 			_defaultRepresentation = _representations[ Setting::REPRESENTATION_DEFAULT_INDEX ];
+		else
+			return;
 
 		VTX_SETTING().setDefaultRepresentationIndex( p_representationIndex );
 
@@ -179,6 +181,23 @@ namespace VTX::Model::Representation
 		{
 			deleteRepresentation( int( _representations.size() - 1 ), p_notify );
 		}
+	}
+
+	void RepresentationLibrary::resetToDefault( const bool p_notify )
+	{
+		clear( false );
+		applyDefault( false );
+
+		const std::string & defaultRepresentationName = VTX_SETTING().getTmpRepresentationDefaultName();
+		Representation *	defaultRepresentation	  = getRepresentationByName( defaultRepresentationName );
+
+		if ( defaultRepresentation == nullptr && _representations.size() > 0 )
+			defaultRepresentation = _representations[ 0 ];
+
+		setDefaultRepresentation( getRepresentationIndex( defaultRepresentation ), false );
+
+		if ( p_notify )
+			_notifyDataChanged();
 	}
 
 	std::string RepresentationLibrary::getValidName( const std::string & p_name ) const

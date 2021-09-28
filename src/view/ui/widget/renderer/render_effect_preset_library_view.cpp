@@ -23,7 +23,13 @@ namespace VTX::View::UI::Widget::Renderer
 		_registerEvent( Event::Global::RENDER_EFFECT_REMOVED );
 	}
 
-	void RenderEffectPresetLibraryView::notify( const Event::VTXEvent * const p_event ) {}
+	void RenderEffectPresetLibraryView::notify( const Event::VTXEvent * const p_event )
+	{
+		if ( p_event->name == Event::Model::APPLIED_PRESET_CHANGE )
+		{
+			_presetList->setCurrentIndex( _model->getAppliedPresetIndex() );
+		}
+	}
 
 	void RenderEffectPresetLibraryView::receiveEvent( const Event::VTXEvent & p_event )
 	{
@@ -32,7 +38,6 @@ namespace VTX::View::UI::Widget::Renderer
 			const Event::VTXEventValue<int> & castedEvent = dynamic_cast<const Event::VTXEventValue<int> &>( p_event );
 			const int						  representationIndex = castedEvent.value;
 
-			_presetList->setCurrentIndex( representationIndex );
 			_refreshDeletePresetButton();
 		}
 		else if ( p_event.name == Event::Global::RENDER_EFFECT_REMOVED )
@@ -72,6 +77,8 @@ namespace VTX::View::UI::Widget::Renderer
 		_importPresetButton->setText( "Import" );
 		_reloadButton = new QPushButton( this );
 		_reloadButton->setText( "Reload" );
+		_resetButton = new QPushButton( this );
+		_resetButton->setText( "Reset" );
 
 		headerLayout->addWidget( _presetList, 10 );
 		headerLayout->addWidget( _addPresetButton );
@@ -81,6 +88,7 @@ namespace VTX::View::UI::Widget::Renderer
 		bottomLayout->addStretch( 1000 );
 		bottomLayout->addWidget( _importPresetButton );
 		bottomLayout->addWidget( _reloadButton );
+		bottomLayout->addWidget( _resetButton );
 
 		verticalLayout->addItem( headerLayout );
 		verticalLayout->addWidget( _renderPresetEditor );
@@ -104,6 +112,7 @@ namespace VTX::View::UI::Widget::Renderer
 
 		connect( _importPresetButton, &QPushButton::clicked, this, &RenderEffectPresetLibraryView::_onImportPreset );
 		connect( _reloadButton, &QPushButton::clicked, this, &RenderEffectPresetLibraryView::_onReloadLibrary );
+		connect( _resetButton, &QPushButton::clicked, this, &RenderEffectPresetLibraryView::_onResetToDefaultLibrary );
 	}
 
 	void RenderEffectPresetLibraryView::localize() {}
@@ -119,9 +128,12 @@ namespace VTX::View::UI::Widget::Renderer
 	void RenderEffectPresetLibraryView::_onPresetIndexChanged( const int p_newIndex )
 	{
 		Model::Renderer::RenderEffectPreset * const currentPreset = _model->getPreset( p_newIndex );
-		VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *currentPreset, true ) );
 
-		_refreshPresetDisplayed( false );
+		if ( currentPreset != nullptr )
+		{
+			VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *currentPreset, true ) );
+			_refreshPresetDisplayed( false );
+		}
 	}
 
 	void RenderEffectPresetLibraryView::_onAddPreset() const
@@ -140,12 +152,18 @@ namespace VTX::View::UI::Widget::Renderer
 			"Are you sure to delete this preset ?" );
 	}
 
-	void RenderEffectPresetLibraryView::_onImportPreset() { VTX::UI::Dialog::importRenderEffectPresetDialog(); }
-	void RenderEffectPresetLibraryView::_onReloadLibrary()
+	void RenderEffectPresetLibraryView::_onImportPreset() const { VTX::UI::Dialog::importRenderEffectPresetDialog(); }
+	void RenderEffectPresetLibraryView::_onReloadLibrary() const
 	{
 		VTX::UI::Dialog::confirmActionDialog( new Action::Renderer::ReloadPresets(),
 											  "Confirm",
 											  "Are you sure to reload all presets ? Current changes will be lost." );
+	}
+	void RenderEffectPresetLibraryView::_onResetToDefaultLibrary() const
+	{
+		VTX::UI::Dialog::confirmActionDialog( new Action::Renderer::ResetPresets(),
+											  "Confirm",
+											  "Are you sure to reset the preset library ? All changes will be lost." );
 	}
 
 	void RenderEffectPresetLibraryView::_refreshPresetDisplayed( const bool p_updateRenderer )

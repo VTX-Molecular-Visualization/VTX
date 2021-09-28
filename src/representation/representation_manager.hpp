@@ -121,7 +121,7 @@ namespace VTX::Representation
 
 			_mapRepresentationInstances[ representation ].erase( instantiatedRepresentation );
 
-			if (_mapRepresentationInstances[ representation ].size() == 0)
+			if ( _mapRepresentationInstances[ representation ].size() == 0 )
 				_mapRepresentationInstances.erase( representation );
 
 			p_representable.removeRepresentation( p_notify );
@@ -163,6 +163,8 @@ namespace VTX::Representation
 
 		void storeRepresentations();
 		void restoreRepresentations();
+
+		void resetRepresentations();
 
 	  protected:
 		RepresentationManager();

@@ -34,6 +34,13 @@ namespace VTX::Action::Representation
 		};
 	};
 
+	class ResetPresetsToDefault : public BaseAction
+	{
+	  public:
+		ResetPresetsToDefault() {};
+		virtual void execute() override { VTX::Representation::RepresentationManager::get().resetRepresentations(); };
+	};
+
 	class SavePreset : public BaseAction
 	{
 	  public:

@@ -49,7 +49,7 @@ namespace VTX
 		_representationLibrary
 			= MVC::MvcManager::get().instantiateModel<Model::Representation::RepresentationLibrary>();
 		_renderEffectLibrary = MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
-		_renderEffectLibrary->applyPreset( _setting.getDefaultRenderEffectPresetIndex() );
+		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 
 		// Create scene.
 		_scene = new Object3D::Scene();
@@ -89,7 +89,7 @@ namespace VTX
 		_tickTimer.start();
 
 #ifndef VTX_PRODUCTION
-		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPath( "4hhb.pdb" ) ) );
+		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPath( IO::FilePath( "4hhb.pdb" ) ) ) );
 		VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
 #endif
 	}

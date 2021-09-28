@@ -24,6 +24,8 @@ namespace VTX::Action::Renderer
 		VTX_WORKER( libraryLoader, callback );
 	};
 
+	void ResetPresets::execute() { Model::Renderer::RenderEffectPresetLibrary::get().resetToDefault(); };
+
 	void SavePreset::execute()
 	{
 		if ( _clearDirectory )
@@ -280,11 +282,14 @@ namespace VTX::Action::Renderer
 
 		newRenderEffect->setName( _presetName );
 		Model::Renderer::RenderEffectPresetLibrary::get().addPreset( newRenderEffect );
+		Model::Renderer::RenderEffectPresetLibrary::get().applyPreset( *newRenderEffect );
 	};
 
 	void CopyPresetInLibrary::execute()
 	{
-		Model::Renderer::RenderEffectPresetLibrary::get().copyPreset( _presetIndex );
+		Model::Renderer::RenderEffectPreset * const newPreset
+			= Model::Renderer::RenderEffectPresetLibrary::get().copyPreset( _presetIndex );
+		Model::Renderer::RenderEffectPresetLibrary::get().applyPreset( *newPreset );
 	};
 
 	void DeletePresetInLibrary::execute()

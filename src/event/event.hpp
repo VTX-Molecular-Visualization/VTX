@@ -67,6 +67,7 @@ namespace VTX
 			TRAJECTORY_FRAME_CHANGE,
 			TRAJECTORY_DATA_CHANGE,
 			AUTO_ROTATE_DATA_CHANGE,
+			APPLIED_PRESET_CHANGE,
 		};
 
 		// Base event without args.

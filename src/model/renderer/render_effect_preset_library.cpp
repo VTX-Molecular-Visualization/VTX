@@ -104,7 +104,7 @@ namespace VTX::Model::Renderer
 		VTX_EVENT( new Event::VTXEventValue( Event::Global::RENDER_EFFECT_ADDED, presetAddedIndex ) );
 	};
 
-	void RenderEffectPresetLibrary::copyPreset( const int p_index )
+	RenderEffectPreset * const RenderEffectPresetLibrary::copyPreset( const int p_index )
 	{
 		const RenderEffectPreset * const sourcePreset = _presets[ p_index ];
 		RenderEffectPreset * const		 copiedPreset = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
@@ -114,6 +114,8 @@ namespace VTX::Model::Renderer
 		copiedPreset->setQuickAccess( false );
 
 		addPreset( copiedPreset );
+
+		return copiedPreset;
 	}
 
 	RenderEffectPreset * const RenderEffectPresetLibrary::removePreset( const int p_index )
@@ -212,7 +214,7 @@ namespace VTX::Model::Renderer
 		gl.activeFog( _appliedPreset->isFogEnabled() );
 		gl.activeAA( _appliedPreset->getAA() );
 
-		_notifyDataChanged();
+		_notifyViews( new Event::VTXEvent( Event::Model::APPLIED_PRESET_CHANGE ) );
 	}
 	bool RenderEffectPresetLibrary::isAppliedPreset( const RenderEffectPreset & p_preset ) const
 	{
@@ -277,6 +279,16 @@ namespace VTX::Model::Renderer
 		if ( p_notify )
 			_notifyDataChanged();
 	}
+
+	void RenderEffectPresetLibrary::resetToDefault()
+	{
+		clear( false );
+		_generateDefaultLibrary();
+
+		applyPreset( 0 );
+		_notifyDataChanged();
+	}
+
 	std::string RenderEffectPresetLibrary::getValidName( const std::string & p_name ) const
 	{
 		const std::string & defaultStr = p_name;
@@ -303,10 +315,30 @@ namespace VTX::Model::Renderer
 	void RenderEffectPresetLibrary::_generateDefaultPreset()
 	{
 		// Preset default
-		RenderEffectPreset * const preset0 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
-		preset0->setName( "Default" );
-		setQuickAccessToPreset( *preset0, true );
-		addPreset( preset0, false, false );
+		RenderEffectPreset * const defaultPreset = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
+		defaultPreset->setName( "Default" );
+		setQuickAccessToPreset( *defaultPreset, true );
+		addPreset( defaultPreset, false, false );
+	}
+
+	void RenderEffectPresetLibrary::_generateDefaultLibrary( const bool p_notify )
+	{
+		_generateDefaultPreset();
+
+		// Preset Sketch
+		RenderEffectPreset * const presetSketch = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
+		presetSketch->setName( "Sketch" );
+		presetSketch->setShading( VTX::Renderer::SHADING::FLAT_COLOR );
+		presetSketch->enableSSAO( true );
+		presetSketch->enableOutline( true );
+		presetSketch->setOutlineColor( Color::Rgb::BLACK );
+		presetSketch->enableFog( false );
+		presetSketch->setBackgroundColor( Color::Rgb::WHITE );
+		setQuickAccessToPreset( *presetSketch, true );
+		addPreset( presetSketch, true, false );
+
+		if ( p_notify )
+			forceNotifyDataChanged();
 	}
 
 	void RenderEffectPresetLibrary::_onPresetChange( const Event::VTXEvent * const p_event )

@@ -50,6 +50,8 @@ namespace VTX::View::UI::Widget::Representation
 		_importPresetButton->setText( "Import" );
 		_reloadLibraryButton = new QPushButton( this );
 		_reloadLibraryButton->setText( "Reload" );
+		_resetLibraryButton = new QPushButton( this );
+		_resetLibraryButton->setText( "Reset" );
 
 		headerLayout->addWidget( _presetList, 10 );
 		headerLayout->addWidget( _addPresetButton );
@@ -59,6 +61,7 @@ namespace VTX::View::UI::Widget::Representation
 		bottomLayout->addStretch( 100 );
 		bottomLayout->addWidget( _importPresetButton );
 		bottomLayout->addWidget( _reloadLibraryButton );
+		bottomLayout->addWidget( _resetLibraryButton );
 
 		verticalLayout->addItem( headerLayout );
 		verticalLayout->addWidget( _representationPresetEditor );
@@ -82,6 +85,7 @@ namespace VTX::View::UI::Widget::Representation
 
 		connect( _importPresetButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onImportPreset );
 		connect( _reloadLibraryButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onReloadLibrary );
+		connect( _resetLibraryButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onResetLibrary );
 	}
 
 	void RepresentationLibraryView::receiveEvent( const Event::VTXEvent & p_event )
@@ -117,11 +121,17 @@ namespace VTX::View::UI::Widget::Representation
 			"Are you sure to delete this preset ?" );
 	}
 	void RepresentationLibraryView::_onImportPreset() const { VTX::UI::Dialog::importRepresentationPresetDialog(); }
-	void RepresentationLibraryView::_onReloadLibrary()
+	void RepresentationLibraryView::_onReloadLibrary() const
 	{
 		VTX::UI::Dialog::confirmActionDialog( new Action::Representation::ReloadPresets(),
 											  "Confirm",
 											  "Are you sure to reload all presets ? Current changes will be lost." );
+	}
+	void RepresentationLibraryView::_onResetLibrary() const
+	{
+		VTX::UI::Dialog::confirmActionDialog( new Action::Representation::ResetPresetsToDefault(),
+											  "Confirm",
+											  "Are you sure to reset the preset library ? All changes will be lost." );
 	}
 
 	void RepresentationLibraryView::_refreshPresetDisplayed( const bool p_applyPreset )
