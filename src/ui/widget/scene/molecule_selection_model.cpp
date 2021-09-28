@@ -278,8 +278,7 @@ namespace VTX::UI::Widget::Scene
 
 			for ( const QModelIndex & modelIndex : modelRange.indexes() )
 			{
-				const Model::ID &		 modelId = modelIndex.data( Qt::UserRole ).value<VTX::Model::ID>();
-				const Model::BaseModel & item	 = MVC::MvcManager::get().getModel<Model::BaseModel>( modelId );
+				const Model::ID & modelId = modelIndex.data( Qt::UserRole ).value<VTX::Model::ID>();
 				p_vectorId.emplace_back( modelId );
 			}
 		}

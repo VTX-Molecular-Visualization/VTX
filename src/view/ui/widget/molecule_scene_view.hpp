@@ -103,6 +103,10 @@ namespace VTX::View::UI::Widget
 		void _refreshSymbolDisplayRecursive( QTreeWidgetItem * const			p_item,
 											 const Style::SYMBOL_DISPLAY_MODE & p_displayMode );
 
+		void _updateMoleculeStructure();
+		void _updateChainStructure( const Model::Chain & p_chain, QTreeWidgetItem & p_item );
+		void _updateResidueStructure( const Model::Residue & p_residue, QTreeWidgetItem & p_item );
+
 		QTreeWidgetItem * const _getMoleculeTreeWidgetItem() const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::ID & p_id ) const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Chain & p_chain ) const;

@@ -71,7 +71,8 @@ namespace VTX::View::UI::Widget
 		}
 		else if ( p_event->name == Event::Model::DATA_CHANGE )
 		{
-			_rebuildTree();
+			_clearLoadedItems();
+			_updateMoleculeStructure();
 		}
 		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
 		{
@@ -134,7 +135,7 @@ namespace VTX::View::UI::Widget
 				_selectItemWithArrows( *previousTreeWidgetItem, appendToSelection );
 			}
 		}
-		else if ( p_event->key() == Qt::Key::Key_Down && itemFromIndex( currentIndex() ) == _lastItemVisible )
+		else if ( p_event->key() == Qt::Key::Key_Down && itemFromIndex( currentIndex() ) == getLastVisibleItem() )
 		{
 			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
 				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
@@ -182,7 +183,15 @@ namespace VTX::View::UI::Widget
 		}
 	}
 
-	QTreeWidgetItem * MoleculeSceneView::getLastVisibleItem() { return _lastItemVisible; }
+	QTreeWidgetItem * MoleculeSceneView::getLastVisibleItem()
+	{
+		QTreeWidgetItem * lastItemVisible = _getMoleculeTreeWidgetItem();
+
+		while ( lastItemVisible->childCount() > 0 && lastItemVisible->isExpanded() )
+			lastItemVisible = lastItemVisible->child( lastItemVisible->childCount() - 1 );
+
+		return lastItemVisible;
+	}
 
 	void MoleculeSceneView::_setupUi( const QString & p_name )
 	{
@@ -379,7 +388,146 @@ namespace VTX::View::UI::Widget
 		_refreshItemVisibility( moleculeView, *_model );
 
 		addTopLevelItem( moleculeView );
-		_lastItemVisible = moleculeView;
+	}
+
+	void MoleculeSceneView::_updateMoleculeStructure()
+	{
+		QTreeWidgetItem * const item = _getMoleculeTreeWidgetItem();
+
+		if ( !item->isExpanded() )
+			return;
+
+		uint currentChainIndex = 0;
+		int	 currentChildIndex = 0;
+
+		while ( currentChildIndex < item->childCount() )
+		{
+			QTreeWidgetItem * const currentChainItem = item->child( currentChildIndex );
+
+			if ( currentChainIndex >= _model->getChainCount() )
+			{
+				delete ( item->takeChild( item->childCount() - 1 ) );
+				continue;
+			}
+
+			const Model::ID &		   chainItemID = _getModelIDFromItem( *currentChainItem );
+			const Model::Chain * const chain	   = _model->getChain( currentChainIndex );
+
+			if ( chain == nullptr )
+			{
+				currentChainIndex++;
+			}
+			else if ( chainItemID != chain->getId() )
+			{
+				// Chain index never changes
+				// if ( currentChildIndex == 0 )
+				//{
+				//	delete ( item->takeChild( currentChildIndex ) );
+				//}
+				// else
+				{
+					currentChainItem->setHidden( true );
+					currentChildIndex++;
+				}
+			}
+			else
+			{
+				currentChainIndex++;
+				currentChildIndex++;
+
+				if ( currentChainItem->isExpanded() )
+					_updateChainStructure( *chain, *currentChainItem );
+			}
+		}
+	}
+	void MoleculeSceneView::_updateChainStructure( const Model::Chain & p_chain, QTreeWidgetItem & p_item )
+	{
+		const Model::Molecule & molecule			= *p_chain.getMoleculePtr();
+		uint					currentResidueIndex = 0;
+		int						currentChildIndex	= 0;
+
+		while ( currentChildIndex < p_item.childCount() )
+		{
+			QTreeWidgetItem * const currentResidueItem = p_item.child( currentChildIndex );
+
+			if ( currentResidueIndex >= p_chain.getResidueCount() )
+			{
+				delete ( p_item.takeChild( p_item.childCount() - 1 ) );
+				continue;
+			}
+
+			const Model::ID &			 residueItemID = _getModelIDFromItem( *currentResidueItem );
+			const Model::Residue * const residue
+				= molecule.getResidue( p_chain.getIndexFirstResidue() + currentResidueIndex );
+
+			if ( residue == nullptr )
+			{
+				currentResidueIndex++;
+			}
+			else if ( residueItemID != residue->getId() )
+			{
+				if ( currentChildIndex == 0 )
+				{
+					delete ( p_item.takeChild( currentChildIndex ) );
+				}
+				else
+				{
+					currentResidueItem->setHidden( true );
+					currentChildIndex++;
+				}
+			}
+			else
+			{
+				currentResidueIndex++;
+				currentChildIndex++;
+
+				if ( currentResidueItem->isExpanded() )
+					_updateResidueStructure( *residue, *currentResidueItem );
+			}
+		}
+	}
+	void MoleculeSceneView::_updateResidueStructure( const Model::Residue & p_residue, QTreeWidgetItem & p_item )
+	{
+		Model::Molecule & molecule			= *p_residue.getMoleculePtr();
+		uint			  currentAtomIndex	= 0;
+		int				  currentChildIndex = 0;
+
+		while ( currentChildIndex < p_item.childCount() )
+		{
+			QTreeWidgetItem * const currentAtomItem = p_item.child( currentChildIndex );
+
+			// Delete all items out of range
+			if ( currentAtomIndex >= p_residue.getAtomCount() )
+			{
+				delete ( p_item.takeChild( p_item.childCount() - 1 ) );
+				continue;
+			}
+
+			const Model::ID &		  atomItemID = _getModelIDFromItem( *currentAtomItem );
+			const Model::Atom * const atom		 = molecule.getAtom( p_residue.getIndexFirstAtom() + currentAtomIndex );
+
+			if ( atom == nullptr )
+			{
+				currentAtomIndex++;
+			}
+			else if ( atomItemID != atom->getId() )
+			{
+				if ( currentChildIndex == 0 )
+				{
+					delete ( p_item.takeChild( currentChildIndex ) );
+				}
+				else
+				{
+					currentAtomItem->setHidden( true );
+					currentChildIndex++;
+				}
+			}
+			else
+			{
+				currentAtomIndex++;
+				currentChildIndex++;
+			}
+		}
 	}
 
 	void MoleculeSceneView::_clearLoadedItems()
@@ -467,8 +615,6 @@ namespace VTX::View::UI::Widget
 		}
 
 		QTreeWidgetItem * const lastItemExpanded = *itemsPtr->rbegin();
-		if ( _getModelIDFromItem( *lastItemExpanded ) > _getModelIDFromItem( *_lastItemVisible ) )
-			_lastItemVisible = lastItemExpanded;
 
 		// Update visibility here because it can be modified when the parent is collapsed
 		for ( QTreeWidgetItem * const item : *itemsPtr )
@@ -549,8 +695,6 @@ namespace VTX::View::UI::Widget
 		}
 
 		QTreeWidgetItem * const lastItemExpanded = *itemsPtr->rbegin();
-		if ( _getModelIDFromItem( *lastItemExpanded ) > _getModelIDFromItem( *_lastItemVisible ) )
-			_lastItemVisible = lastItemExpanded;
 
 		// Update visibility here because it can be modified when the parent is collapsed
 		for ( QTreeWidgetItem * const item : *itemsPtr )
@@ -631,8 +775,6 @@ namespace VTX::View::UI::Widget
 		}
 
 		QTreeWidgetItem * const lastItemExpanded = *itemsPtr->rbegin();
-		if ( _getModelIDFromItem( *lastItemExpanded ) > _getModelIDFromItem( *_lastItemVisible ) )
-			_lastItemVisible = lastItemExpanded;
 
 		for ( QTreeWidgetItem * const item : *itemsPtr )
 		{
@@ -658,9 +800,6 @@ namespace VTX::View::UI::Widget
 		const Model::ID &				 id	   = _getModelIDFromItem( p_item );
 		QList<QTreeWidgetItem *> * const items = new QList( p_item.takeChildren() );
 		_mapLoadedItems.emplace( id, items );
-
-		if ( items->contains( _lastItemVisible ) )
-			_lastItemVisible = &p_item;
 
 		_enableSignals( true );
 	}

@@ -841,7 +841,8 @@ namespace VTX
 					  residueIndex < ( _chains[ p_id ]->getIndexFirstResidue() + _chains[ p_id ]->getResidueCount() );
 					  residueIndex++ )
 				{
-					removeResidue( residueIndex, p_delete, p_recursive, false, false );
+					if ( _residues[ residueIndex ] != nullptr )
+						removeResidue( residueIndex, p_delete, p_recursive, false, false );
 				}
 			}
 
@@ -1056,7 +1057,7 @@ namespace VTX
 		void Molecule::setColor( const Color::Rgb & p_color )
 		{
 			Generic::BaseColorable::setColor( p_color );
-			
+
 			if ( isInit() )
 				VTX_EVENT( new Event::VTXEventRef( Event::Global::MOLECULE_COLOR_CHANGE, p_color ) );
 		}
