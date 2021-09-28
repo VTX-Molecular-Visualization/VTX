@@ -115,7 +115,7 @@ namespace VTX::Representation
 		InstantiatedRepresentation * const copy
 			= instantiateRepresentation( p_source->getLinkedRepresentation(), p_target, p_recompute, p_notify );
 		copy->copy( *p_source );
-		copy->setTarget(&p_target);
+		copy->setTarget( &p_target );
 
 		return copy;
 	}
@@ -163,6 +163,10 @@ namespace VTX::Representation
 		}
 
 		const int representationIndex = RepresentationLibrary::get().getRepresentationIndex( p_representation );
+
+		if ( VTX_SETTING().getDefaultRepresentationIndex() == representationIndex )
+			RepresentationLibrary::get().setDefaultRepresentation( representationIndex - 1, false );
+
 		RepresentationLibrary::get().deleteRepresentation( representationIndex );
 	}
 
@@ -331,6 +335,15 @@ namespace VTX::Representation
 		}
 
 		_storedRepresentations.clear();
+	}
+
+	void RepresentationManager::resetRepresentations()
+	{
+		storeRepresentations();
+		clearAllRepresentations( false );
+		RepresentationLibrary::get().resetToDefault( false );
+		restoreRepresentations();
+		RepresentationLibrary::get().forceNotifyDataChanged();
 	}
 
 } // namespace VTX::Representation

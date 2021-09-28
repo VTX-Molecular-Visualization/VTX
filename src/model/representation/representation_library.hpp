@@ -44,6 +44,8 @@ namespace VTX::Model::Representation
 
 		void applyDefault( const bool p_notify = true );
 
+		void resetToDefault( const bool p_notify = false );
+
 	  protected:
 		RepresentationLibrary();
 		~RepresentationLibrary();

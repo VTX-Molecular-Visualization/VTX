@@ -84,7 +84,8 @@ namespace VTX::UI::Widget::Renderer
 
 	void RenderEffectLibraryComboBox::_onLibraryChange( const Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE || p_event->name == Event::Model::DATA_CHANGE )
+		if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE || p_event->name == Event::Model::DATA_CHANGE
+			 || p_event->name == Event::Model::APPLIED_PRESET_CHANGE )
 		{
 			_fillItemList();
 

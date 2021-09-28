@@ -42,7 +42,7 @@ namespace VTX
 	const Color::Rgb				  Setting::BACKGROUND_COLOR_DEFAULT		   = Color::Rgb::BLACK;
 	const float						  Setting::BACKGROUND_OPACITY_DEFAULT	   = 1.0f;
 	const Worker::SNAPSHOT_RESOLUTION Setting::SNAPSHOT_RESOLUTION_DEFAULT	   = Worker::SNAPSHOT_RESOLUTION::Free;
-	const int						  Setting::REPRESENTATION_DEFAULT_INDEX    = 0;
+	const int						  Setting::REPRESENTATION_DEFAULT_INDEX	   = 0;
 	const Generic::REPRESENTATION	  Setting::DEFAULT_REPRESENTATION_TYPE	   = Generic::REPRESENTATION::STICK;
 	const std::string				  Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
 	const float						  Setting::ATOMS_RADIUS_DEFAULT			   = 0.4f;
@@ -75,7 +75,7 @@ namespace VTX
 	const int		 Setting::AO_BLUR_SIZE_MIN			= 1;
 	const int		 Setting::AO_BLUR_SIZE_MAX			= 99;
 	const bool		 Setting::ACTIVE_OUTLINE_DEFAULT	= false;
-	const uint		 Setting::OUTLINE_THICKNESS_DEFAULT = 2;
+	const uint		 Setting::OUTLINE_THICKNESS_DEFAULT = 1;
 	const uint		 Setting::OUTLINE_THICKNESS_MIN		= 1;
 	const uint		 Setting::OUTLINE_THICKNESS_MAX		= 5;
 	const float		 Setting::OUTLINE_SENSIVITY_DEFAULT = 0.4f;
