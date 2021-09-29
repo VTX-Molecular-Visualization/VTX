@@ -1,4 +1,5 @@
 # VTX - High performance molecular visualization software
+[![Gitter](https://badges.gitter.im/VTX_mol/VTX.svg)](https://gitter.im/VTX_mol/VTX?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## USER GUIDE
 
