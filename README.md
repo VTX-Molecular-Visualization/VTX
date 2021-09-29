@@ -2,11 +2,20 @@
 
 ## USER GUIDE
 
+### Installation
+
+#### Windows
+
 - Install [Visual C++](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
 - Download [last release](https://gitlab.com/VTX_mol/VTX/-/releases)
 - Run the installer (it will automatically extract files in the current folder)
-- Launch VTX
-- Report bugs, features, ideas or anything else by [creating a new issue](https://gitlab.com/VTX_mol/VTX/-/issues)
+- Launch VTX shortcut
+
+#### Linux
+
+- Install openssl and xinemara packages
+- Download [last release](https://gitlab.com/VTX_mol/VTX/-/releases)
+- Run bin/VTX
 
 ### CONTROLLERS
 
@@ -49,10 +58,11 @@
 ### RENDER PRESETS
 
 - Render presets are saved in /libraries/render_effects folder
-- You can manually add/remove files (will be updated at the next launch), this allows you to share presets between users.
+- You can manually add/remove files (will be updated at the next launch), this allows you to share presets between users
 
 ### BUGS AND CRASH REPORTS
 
+- Report bugs, features, ideas or anything else by [creating a new issue](https://gitlab.com/VTX_mol/VTX/-/issues)
 - A log file is saved in the /logs folder, please attach this file with your ticket
 
 ## LICENSE
