@@ -30,9 +30,13 @@ namespace VTX
 		}
 		const Math::AABB Atom::getWorldAABB() const
 		{
-			Math::AABB aabb = getAABB();
-			aabb.translate( getMoleculePtr()->getTransform().getTranslationVector() );
-			return aabb;
+			const Math::AABB		aabb	  = getAABB();
+			const Math::Transform & transform = getMoleculePtr()->getTransform();
+
+			const Vec4f worldPosition
+				= transform.get() * Vec4f( aabb.centroid().x, aabb.centroid().y, aabb.centroid().z, 1 );
+
+			return Math::AABB( Vec3f( worldPosition.x, worldPosition.y, worldPosition.z ), aabb.radius() );
 		}
 
 		const std::string Atom::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {

@@ -40,10 +40,7 @@ namespace VTX
 			inline virtual const Math::AABB & getWorldAABB() const
 			{
 				if ( !_worldAabb.isValid() )
-				{
-					_worldAabb = _aabb;
-					_worldAabb.translate( getTransform().getTranslationVector() );
-				}
+					_computeWorldAABB();
 
 				return _worldAabb;
 			}
@@ -149,8 +146,16 @@ namespace VTX
 			};
 
 			virtual void _init() {};
-			virtual void _fillBuffer()		   = 0;
-			virtual void _computeAABB() const  = 0;
+			virtual void _fillBuffer()		  = 0;
+			virtual void _computeAABB() const = 0;
+			virtual void _computeWorldAABB() const
+			{
+				const Vec4f worldAABBPosition
+					= _transform.get() * Vec4f( _aabb.centroid().x, _aabb.centroid().y, _aabb.centroid().z, 1 );
+
+				_worldAabb = Math::AABB( Vec3f( worldAABBPosition.x, worldAABBPosition.y, worldAABBPosition.z ),
+										 _aabb.radius() );
+			};
 			virtual void _instantiate3DViews() = 0;
 			inline void	 _addRenderable( Generic::BaseRenderable * const p_renderable )
 			{

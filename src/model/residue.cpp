@@ -9,13 +9,14 @@ namespace VTX
 {
 	namespace Model
 	{
-		bool Residue::IsStandard( const std::string & p_residueSymbol ) 
-		{ 
+		bool Residue::IsStandard( const std::string & p_residueSymbol )
+		{
 			std::string residueSymbol = p_residueSymbol;
-			std::transform( residueSymbol.begin(), residueSymbol.end(), residueSymbol.begin(), []( unsigned char c ) {
-				return std::toupper( c );
-			} );
-			
+			std::transform( residueSymbol.begin(),
+							residueSymbol.end(),
+							residueSymbol.begin(),
+							[]( unsigned char c ) { return std::toupper( c ); } );
+
 			return std::find( std::begin( SYMBOL_STR ), std::end( SYMBOL_STR ), residueSymbol )
 				   != std::end( SYMBOL_STR );
 		}
@@ -149,9 +150,13 @@ namespace VTX
 
 		const Math::AABB Residue::getWorldAABB() const
 		{
-			Math::AABB aabb = getAABB();
-			aabb.translate( getMoleculePtr()->getTransform().getTranslationVector() );
-			return aabb;
+			const Math::AABB		aabb	  = getAABB();
+			const Math::Transform & transform = getMoleculePtr()->getTransform();
+
+			const Vec4f worldPosition
+				= transform.get() * Vec4f( aabb.centroid().x, aabb.centroid().y, aabb.centroid().z, 1 );
+
+			return Math::AABB( Vec3f( worldPosition.x, worldPosition.y, worldPosition.z ), aabb.radius() );
 		}
 
 		void Residue::_onRepresentationChange()
