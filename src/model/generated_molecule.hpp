@@ -3,6 +3,7 @@
 
 #include "bond.hpp"
 #include "molecule.hpp"
+#include <vector>
 
 namespace VTX::Model
 {
@@ -38,12 +39,27 @@ namespace VTX::Model
 			bool hasToBeExtracted() const { return _firstIndexLinked && _secondIndexLinked; };
 
 		  private:
-			const uint			_previousBondIndex;
-			Model::Bond * const _bond;
-			uint				_newFirstIndex	   = 0;
-			uint				_newSecondIndex	   = 0;
-			bool				_firstIndexLinked  = false;
-			bool				_secondIndexLinked = false;
+			uint		  _previousBondIndex;
+			Model::Bond * _bond;
+			uint		  _newFirstIndex	 = 0;
+			uint		  _newSecondIndex	 = 0;
+			bool		  _firstIndexLinked	 = false;
+			bool		  _secondIndexLinked = false;
+		};
+		struct ExternalBondExtractData : BondExtractData
+		{
+		  public:
+			ExternalBondExtractData( Model::Bond * const p_bond, const uint p_previousBondIndex ) :
+				BondExtractData( p_bond, p_previousBondIndex ) {};
+
+			uint getIndexInExtractedResidue() const { return _indexInExtractedResidue; };
+			void setIndexInExtractedResidue( const uint p_indexInExtractedResidue )
+			{
+				_indexInExtractedResidue = p_indexInExtractedResidue;
+			};
+
+		  private:
+			uint _indexInExtractedResidue = -1;
 		};
 
 	  public:
@@ -71,7 +87,7 @@ namespace VTX::Model
 		void _copyAtomData( Model::Atom & p_atom, const Model::Atom & p_atomSource, Model::Residue * const p_parent );
 
 		void _computeBonds( const Model::Molecule & p_source, const std::map<const uint, const uint> & p_mapAtomIds );
-		void _applyExtraBondsData();
+		void _clearPendingExtractedBonds();
 		void _validateBuffers();
 
 		void			 _copyFullMolecule( const Model::Molecule &			   p_moleculeSource,
@@ -105,12 +121,12 @@ namespace VTX::Model
 									   const std::vector<uint> & p_indexes,
 									   bool						 p_parentFromMolecule );
 
-		void _updateExternalBondsOfResidue( Model::Molecule &	   p_fromMolecule,
-											const Model::Residue & p_fromResidue,
-											const uint			   p_offsetAtomIndex );
 		void _extractBond( const BondExtractData & p_bondData );
 
-		std::vector<BondExtractData> _externalBondExtractData = std::vector<BondExtractData>();
+		std::vector<ExternalBondExtractData>::iterator _findInPendingExternalBond( const Model::Bond & p_bond );
+		void _applyExternalBond( const ExternalBondExtractData & p_externalBondData );
+
+		std::vector<ExternalBondExtractData> _pendingExternalBonds = std::vector<ExternalBondExtractData>();
 	};
 } // namespace VTX::Model
 

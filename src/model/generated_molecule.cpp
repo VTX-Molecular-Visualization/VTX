@@ -338,8 +338,9 @@ namespace VTX::Model
 
 		Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeSelectionData.first );
 
-		_externalBondExtractData.clear();
-		_externalBondExtractData.reserve( molecule.getBondCount() );
+		_pendingExternalBonds.clear();
+		_pendingExternalBonds.reserve( molecule.getResidueCount() );
+		//_extractingBonds.reserve( molecule.getBondCount() );
 		getBufferBonds().reserve( molecule.getBondCount() * 2u );
 
 		_copyMoleculeData( molecule, "Extract of " );
@@ -375,7 +376,7 @@ namespace VTX::Model
 			}
 		}
 
-		_applyExtraBondsData();
+		_clearPendingExtractedBonds();
 		_validateBuffers();
 
 		chrono.stop();
@@ -387,31 +388,14 @@ namespace VTX::Model
 		molecule.computeAllRepresentationData();
 	};
 
-	void GeneratedMolecule::_applyExtraBondsData()
+	void GeneratedMolecule::_clearPendingExtractedBonds()
 	{
-		for ( const BondExtractData & bondData : _externalBondExtractData )
+		for ( const ExternalBondExtractData & bondData : _pendingExternalBonds )
 		{
-			const Model::Bond * const bond = bondData.getBond();
-
-			if ( bondData.hasToBeExtracted() )
-			{
-				const uint newBondID = getBondCount();
-
-				_extractBond( bondData );
-
-				/*
-				Model::Residue * const firstResidue = getAtom( bondData.getFirstIndex() )->getResiduePtr();
-				firstResidue->getIndexExtraBondStart().emplace_back( newBondID );
-				Model::Residue * const secondResidue = getAtom( bondData.getSecondIndex() )->getResiduePtr();
-				secondResidue->getIndexExtraBondEnd().emplace_back( newBondID );
-				*/
-			}
-			else
-			{
-				MVC::MvcManager::get().deleteModel( bond );
-			}
+			removeBond( bondData.getIndexInExtractedResidue(), true, false );
 		}
-		_externalBondExtractData.clear();
+
+		_pendingExternalBonds.clear();
 	}
 
 	void GeneratedMolecule::extractChain( const Model::Chain & p_chain )
@@ -421,14 +405,19 @@ namespace VTX::Model
 
 		Model::Molecule & molecule = *p_chain.getMoleculePtr();
 
-		_externalBondExtractData.clear();
-		_externalBondExtractData.reserve( molecule.getBondCount() );
-		getBufferBonds().reserve( molecule.getBondCount() * 2u );
+		const uint firstBondIndex = molecule.getResidue( p_chain.getIndexFirstResidue() )->getIndexFirstBond();
+		const uint lastBondIndex  = molecule.getResidue( p_chain.getIndexLastResidue() )->getIndexFirstBond()
+								   + molecule.getResidue( p_chain.getIndexLastResidue() )->getBondCount();
+		const uint maxBondsCount = lastBondIndex - firstBondIndex;
+
+		_pendingExternalBonds.clear();
+		_pendingExternalBonds.reserve( p_chain.getResidueCount() );
+		getBufferBonds().reserve( maxBondsCount * 2u );
 		_copyMoleculeData( molecule, "Extract of " );
 
 		_extractFullChain( molecule, p_chain.getIndex() );
 
-		_applyExtraBondsData();
+		_clearPendingExtractedBonds();
 		_validateBuffers();
 
 		chrono.stop();
@@ -444,8 +433,8 @@ namespace VTX::Model
 		Tool::Chrono chrono = Tool::Chrono();
 		chrono.start();
 
-		_externalBondExtractData.clear();
-		_externalBondExtractData.reserve( p_residue.getBondCount() );
+		_pendingExternalBonds.clear();
+		_pendingExternalBonds.reserve( 4 ); // Considering max 4 external bounds for a residue
 		getBufferBonds().reserve( p_residue.getBondCount() * 2u );
 
 		Model::Molecule & molecule = *p_residue.getMoleculePtr();
@@ -457,7 +446,7 @@ namespace VTX::Model
 
 		_extractFullResidue( molecule, p_residue.getIndex(), &generatedChain );
 
-		_applyExtraBondsData();
+		_clearPendingExtractedBonds();
 		_validateBuffers();
 
 		chrono.stop();
@@ -488,6 +477,7 @@ namespace VTX::Model
 
 		_extractAtomsFromResidue( molecule, &generatedResidue, p_atom.getIndex(), 1, false );
 
+		_clearPendingExtractedBonds();
 		_validateBuffers();
 
 		molecule.forceNotifyDataChanged();
@@ -654,12 +644,6 @@ namespace VTX::Model
 			Model::Residue & residue = *getResidue( currentResidueIndex );
 			residue.setIndex( currentResidueIndex );
 			residue.setRepresentableMolecule( this );
-
-			// Clear extra bond, will be filled at end of process
-			/*
-			residue.getIndexExtraBondStart().clear();
-			residue.getIndexExtraBondEnd().clear();
-			*/
 		}
 	}
 
@@ -679,12 +663,6 @@ namespace VTX::Model
 		residue.setIndex( getResidueCount() - 1 );
 		residue.setChainPtr( p_parent );
 		residue.setIndexFirstAtom( indexFirstAtom );
-
-		// Clear extra bond ( will be filled at end of process )
-		/*
-		residue.getIndexExtraBondStart().clear();
-		residue.getIndexExtraBondEnd().clear();
-		*/
 
 		return residue;
 	}
@@ -750,8 +728,6 @@ namespace VTX::Model
 			Model::Residue * const residue = p_fromMolecule.getResidue( i );
 			residue->setIndexFirstAtom( residue->getIndexFirstAtom() - atomOffset );
 			residue->setIndexFirstBond( residue->getIndexFirstBond() - bondOffset );
-
-			_updateExternalBondsOfResidue( p_fromMolecule, *residue, atomOffset );
 		}
 
 		for ( uint i = indexFirstAtom; i < getAtomCount(); i++ )
@@ -782,12 +758,18 @@ namespace VTX::Model
 													  const std::vector<uint> & p_indexes,
 													  bool						p_parentFromMolecule )
 	{
-		const uint bondCount = p_fromMolecule.getAtom( p_indexes[ 0 ] )->getResiduePtr()->getBondCount();
-		std::vector<BondExtractData> internalBonds = std::vector<BondExtractData>();
-		internalBonds.reserve( bondCount );
-
 		const uint indexFirstAtom	 = getAtomCount();
 		const uint newIndexFirstBond = getBondCount();
+
+		const Model::Residue & sourceResidue	  = *p_fromMolecule.getAtom( p_indexes[ 0 ] )->getResiduePtr();
+		const uint			   parentFirstAtom	  = sourceResidue.getIndexFirstAtom();
+		const uint			   parentFirstAtomOut = sourceResidue.getIndexFirstAtom() + sourceResidue.getAtomCount();
+
+		std::vector<BondExtractData> internalBonds = std::vector<BondExtractData>();
+		internalBonds.reserve( sourceResidue.getBondCount() );
+
+		std::vector<ExternalBondExtractData> externalBonds = std::vector<ExternalBondExtractData>();
+		externalBonds.reserve( 4 );
 
 		for ( const uint idAtom : p_indexes )
 		{
@@ -795,8 +777,6 @@ namespace VTX::Model
 			const Model::Residue & fromResidue	= *atom.getResiduePtr();
 			const uint			   newAtomIndex = getAtomCount();
 
-			// Update internal bond data
-			//////////////////////////////////////////////////////////////////////////////////////////
 			for ( uint i = 0; i < internalBonds.size(); i++ )
 			{
 				BondExtractData & bondData = internalBonds[ i ];
@@ -826,66 +806,93 @@ namespace VTX::Model
 
 				if ( bond->getIndexFirstAtom() == idAtom )
 				{
-					BondExtractData bondData = BondExtractData( bond, idBond );
-					bondData.setFirstIndex( newAtomIndex );
-					internalBonds.emplace_back( bondData );
+					const uint otherAtomIndexInParent = bond->getIndexSecondAtom();
+
+					const bool isExternalBond
+						= otherAtomIndexInParent < parentFirstAtom || otherAtomIndexInParent >= parentFirstAtomOut;
+
+					if ( isExternalBond )
+					{
+						ExternalBondExtractData bondData = ExternalBondExtractData( bond, idBond );
+						bondData.setFirstIndex( newAtomIndex );
+
+						externalBonds.emplace_back( bondData );
+					}
+					else
+					{
+						BondExtractData bondData = BondExtractData( bond, idBond );
+						bondData.setFirstIndex( newAtomIndex );
+						internalBonds.emplace_back( bondData );
+					}
 				}
 				else if ( bond->getIndexSecondAtom() == idAtom )
 				{
-					BondExtractData bondData = BondExtractData( bond, idBond );
-					bondData.setSecondIndex( newAtomIndex );
-					internalBonds.emplace_back( bondData );
+					const uint otherAtomIndexInParent = bond->getIndexFirstAtom();
+					const bool isExternalBond
+						= otherAtomIndexInParent < parentFirstAtom || otherAtomIndexInParent >= parentFirstAtomOut;
+
+					if ( isExternalBond )
+					{
+						ExternalBondExtractData bondData = ExternalBondExtractData( bond, idBond );
+						bondData.setSecondIndex( newAtomIndex );
+
+						externalBonds.emplace_back( bondData );
+					}
+					else
+					{
+						BondExtractData bondData = BondExtractData( bond, idBond );
+						bondData.setSecondIndex( newAtomIndex );
+						internalBonds.emplace_back( bondData );
+					}
 				}
 			}
-			//////////////////////////////////////////////////////////////////////////////////////////
-
-			// Update external bond data
-			//////////////////////////////////////////////////////////////////////////////////////////
-			for ( BondExtractData & bondData : _externalBondExtractData )
-			{
-				if ( !bondData.isFirstIndexLinked() && bondData.getBond()->getIndexFirstAtom() == idAtom )
-					bondData.setFirstIndex( newAtomIndex );
-				else if ( !bondData.isSecondIndexLinked() && bondData.getBond()->getIndexSecondAtom() == idAtom )
-					bondData.setSecondIndex( newAtomIndex );
-			}
-			/*
-			for ( uint idBond : fromResidue.getIndexExtraBondStart() )
-			{
-				Model::Bond * const bond = p_fromMolecule.getBond( idBond );
-
-				if ( bond == nullptr )
-					continue;
-
-				if ( bond->getIndexFirstAtom() == idAtom )
-				{
-					BondExtractData bondData = BondExtractData( bond, idBond );
-					bondData.setFirstIndex( newAtomIndex );
-					_externalBondExtractData.emplace_back( bondData );
-					p_fromMolecule.removeBond( idBond, false, false );
-				}
-			}
-			for ( uint idBond : fromResidue.getIndexExtraBondEnd() )
-			{
-				Model::Bond * const bond = p_fromMolecule.getBond( idBond );
-
-				if ( bond == nullptr )
-					continue;
-
-				if ( bond->getIndexSecondAtom() == idAtom )
-				{
-					BondExtractData bondData = BondExtractData( bond, idBond );
-					bondData.setSecondIndex( newAtomIndex );
-					_externalBondExtractData.emplace_back( bondData );
-					p_fromMolecule.removeBond( idBond, false, false );
-				}
-			}
-			*/
 
 			// Only emplace atom currently to not modify it before checking all bonds
 			getAtoms().emplace_back( &atom );
 			getBufferAtomRadius().emplace_back( atom.getVdwRadius() );
 			for ( uint i = 0; i < getAtomPositionFrames().size(); i++ )
 				getAtomPositionFrame( i ).emplace_back( p_fromMolecule.getAtomPositionFrame( i )[ idAtom ] );
+		}
+
+		for ( ExternalBondExtractData & bondData : externalBonds )
+		{
+			std::vector<ExternalBondExtractData>::iterator itExternalBond
+				= _findInPendingExternalBond( *bondData.getBond() );
+
+			if ( itExternalBond != _pendingExternalBonds.end() )
+			{
+				ExternalBondExtractData & pendingExternalBondData = *itExternalBond;
+
+				if ( pendingExternalBondData.isFirstIndexLinked() && bondData.isSecondIndexLinked() )
+				{
+					bondData.setFirstIndex( pendingExternalBondData.getFirstIndex() );
+					pendingExternalBondData.setSecondIndex( bondData.getSecondIndex() );
+				}
+				else if ( pendingExternalBondData.isSecondIndexLinked() && bondData.isFirstIndexLinked() )
+				{
+					pendingExternalBondData.setFirstIndex( bondData.getFirstIndex() );
+					bondData.setSecondIndex( pendingExternalBondData.getSecondIndex() );
+				}
+
+				_applyExternalBond( pendingExternalBondData );
+
+				p_fromMolecule.removeBond( bondData.getPreviousBondIndex(), false, false );
+				_extractBond( bondData );
+
+				_pendingExternalBonds.erase( itExternalBond );
+			}
+			else
+			{
+				// Emplace bonds. Will be removed if external residue not link in extract
+				bondData.setIndexInExtractedResidue( getBondCount() );
+				getBonds().emplace_back( bondData.getBond() );
+				getBufferBonds().emplace_back( -1 );
+				getBufferBonds().emplace_back( -1 );
+
+				p_fromMolecule.removeBond( bondData.getPreviousBondIndex(), false, false );
+
+				_pendingExternalBonds.emplace_back( bondData );
+			}
 		}
 
 		// Clean bonds between previous molecule and new one
@@ -915,72 +922,6 @@ namespace VTX::Model
 		p_parent->setBondCount( getBondCount() - p_parent->getIndexFirstBond() );
 	}
 
-	void GeneratedMolecule::_updateExternalBondsOfResidue( Model::Molecule &	  p_fromMolecule,
-														   const Model::Residue & p_fromResidue,
-														   const uint			  p_offsetAtomIndex )
-	{
-		/*
-		bool externalBondDataExists = false;
-
-		for ( const uint idBond : p_fromResidue.getIndexExtraBondStart() )
-		{
-			const Model::Bond * const bond = p_fromMolecule.getBond( idBond );
-
-			if ( bond == nullptr )
-				continue;
-
-			const uint atomIndex = bond->getIndexFirstAtom();
-
-			externalBondDataExists = false;
-			for ( BondExtractData & bondData : _externalBondExtractData )
-			{
-				if ( bondData.getPreviousBondIndex() == idBond )
-				{
-					bondData.setFirstIndex( atomIndex - p_offsetAtomIndex );
-					externalBondDataExists = true;
-					break;
-				}
-			}
-
-			if ( !externalBondDataExists )
-			{
-				BondExtractData extractData = BondExtractData( p_fromMolecule.getBond( idBond ), idBond );
-				extractData.setFirstIndex( atomIndex - p_offsetAtomIndex );
-				_externalBondExtractData.emplace_back( extractData );
-			}
-		}
-
-
-		for ( const uint idBond : p_fromResidue.getIndexExtraBondEnd() )
-		{
-			const Model::Bond * const bond = p_fromMolecule.getBond( idBond );
-
-			if ( bond == nullptr )
-				continue;
-
-			const uint atomIndex   = bond->getIndexSecondAtom();
-			externalBondDataExists = false;
-
-			for ( BondExtractData & bondData : _externalBondExtractData )
-			{
-				if ( bondData.getBond()->getIndexSecondAtom() == atomIndex )
-				{
-					bondData.setSecondIndex( atomIndex - p_offsetAtomIndex );
-					externalBondDataExists = true;
-					break;
-				}
-			}
-
-			if ( !externalBondDataExists )
-			{
-				BondExtractData extractData = BondExtractData( p_fromMolecule.getBond( idBond ), idBond );
-				extractData.setSecondIndex( atomIndex - p_offsetAtomIndex );
-				_externalBondExtractData.emplace_back( extractData );
-			}
-		}
-		*/
-	}
-
 	void GeneratedMolecule::_extractBond( const BondExtractData & p_bondData )
 	{
 		Model::Bond * const bond = p_bondData.getBond();
@@ -994,5 +935,36 @@ namespace VTX::Model
 		getBonds().emplace_back( bond );
 		getBufferBonds().emplace_back( newFirstIndex );
 		getBufferBonds().emplace_back( newSecondIndex );
+	}
+
+	void GeneratedMolecule::_applyExternalBond( const ExternalBondExtractData & p_externalBondData )
+	{
+		p_externalBondData.getBond()->setIndexFirstAtom( p_externalBondData.getFirstIndex() );
+		p_externalBondData.getBond()->setIndexSecondAtom( p_externalBondData.getSecondIndex() );
+		p_externalBondData.getBond()->setMoleculePtr( this );
+
+		getBufferBonds()[ p_externalBondData.getIndexInExtractedResidue() * 2 ] = p_externalBondData.getFirstIndex();
+		getBufferBonds()[ p_externalBondData.getIndexInExtractedResidue() * 2 + 1 ]
+			= p_externalBondData.getSecondIndex();
+	}
+
+	std::vector<GeneratedMolecule::ExternalBondExtractData>::iterator GeneratedMolecule::_findInPendingExternalBond(
+		const Model::Bond & p_bond )
+	{
+		std::vector<ExternalBondExtractData>::iterator it = _pendingExternalBonds.begin();
+
+		while ( it != _pendingExternalBonds.end() )
+		{
+			ExternalBondExtractData & externalBondData = *it;
+
+			if ( externalBondData.getBond()->getIndexFirstAtom() == p_bond.getIndexFirstAtom()
+				 && externalBondData.getBond()->getIndexFirstAtom() == p_bond.getIndexFirstAtom() )
+			{
+				return it;
+			}
+			it++;
+		}
+
+		return _pendingExternalBonds.end();
 	}
 } // namespace VTX::Model
