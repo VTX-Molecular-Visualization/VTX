@@ -19,6 +19,8 @@ namespace VTX::Model
 
 namespace VTX::UI::Widget::Scene
 {
+	class SceneItemWidget;
+
 	class MoleculeSelectionModel : public QItemSelectionModel
 	{
 	  public:
@@ -60,7 +62,8 @@ namespace VTX::UI::Widget::Scene
 		void _selectAllAtomsTo( std::vector<uint> & p_selection, const Model::Atom & p_itemFrom );
 
 		const Model::Molecule * _getMolecule( const Model::BaseModel * const p_model ) const;
-		Model::BaseModel &		_getModel( const QModelIndex & p_modelIndex ) const;
+		Model::BaseModel *		_getModel( const QModelIndex & p_modelIndex ) const;
+		Model::BaseModel *		_getModel( const SceneItemWidget & p_sceneItem ) const;
 	};
 
 } // namespace VTX::UI::Widget::Scene

@@ -29,10 +29,6 @@ namespace VTX::View::UI::Widget
 		VTX_WIDGET
 		VTX_VIEW
 
-	  protected:
-		inline static const Qt::ItemDataRole MODEL_ID_ROLE	   = Qt::ItemDataRole( Qt::UserRole );
-		inline static const Qt::ItemDataRole EXPAND_STATE_ROLE = Qt::ItemDataRole( Qt::UserRole + 1 );
-
 	  public:
 		void localize() override;
 		void notify( const Event::VTXEvent * const p_event ) override;

@@ -16,6 +16,10 @@ namespace VTX::UI::Widget::Scene
 		VTX_WIDGET
 
 	  public:
+		inline static const Qt::ItemDataRole MODEL_ID_ROLE	   = Qt::ItemDataRole( Qt::UserRole );
+		inline static const Qt::ItemDataRole EXPAND_STATE_ROLE = Qt::ItemDataRole( Qt::UserRole + 1 );
+
+	  public:
 		void		 localize() override;
 		virtual void updatePosInSceneHierarchy( const int p_position );
 

@@ -7,6 +7,7 @@
 #include "model/residue.hpp"
 #include "model/selection.hpp"
 #include "ui/widget/base_manual_widget.hpp"
+#include "ui/widget/scene/scene_item_widget.hpp"
 #include "view/base_view.hpp"
 #include <QPainter>
 #include <QStyleOptionViewItem>
@@ -32,12 +33,11 @@ namespace VTX::View::UI::Widget
 		VTX_WIDGET
 		VTX_VIEW
 
+		using SceneItemWidget = VTX::UI::Widget::Scene::SceneItemWidget;
+
 	  protected:
 		inline static const int NAME_COLUMN_INDEX	= 0;
 		inline static const int REMOVE_COLUMN_INDEX = 1;
-
-		inline static const Qt::ItemDataRole MODEL_ID_ROLE	   = Qt::ItemDataRole( Qt::UserRole );
-		inline static const Qt::ItemDataRole EXPAND_STATE_ROLE = Qt::ItemDataRole( Qt::UserRole + 1 );
 
 	  public:
 		void localize() override;

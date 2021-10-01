@@ -3,6 +3,7 @@
 #include "action/selection.hpp"
 #include "selection/selection_manager.hpp"
 #include "ui/main_window.hpp"
+#include "ui/widget/scene/scene_item_widget.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::UI::Widget::Scene
@@ -25,17 +26,17 @@ namespace VTX::UI::Widget::Scene
 				const SceneWidget & sceneWidget
 					= VTXApp::get().getMainWindow().getWidget<SceneWidget>( ID::UI::Window::SCENE );
 
-				const Model::BaseModel * firstSceneItem
-					= &_getModel( sceneWidget.getSceneItemWidgets()[ 0 ]->rootIndex() );
+				assert( sceneWidget.getSceneItemWidgets().size() > 0 );
 
-				const Model::BaseModel * currentObject = selectionModel.getCurrentObject();
-				if ( currentObject == nullptr )
-					currentObject = firstSceneItem;
+				const Model::BaseModel * firstSceneItem = _getModel( *sceneWidget.getSceneItemWidgets()[ 0 ] );
 
-				const Model::BaseModel * newCurrentSelectedItem = &( _getModel( currentIndex() ) );
-				if ( newCurrentSelectedItem == nullptr )
-					newCurrentSelectedItem = firstSceneItem;
+				const Model::BaseModel * const currentObject
+					= selectionModel.getCurrentObject() == nullptr ? firstSceneItem : selectionModel.getCurrentObject();
 
+				const Model::BaseModel * newCurrentSelectedItem
+					= currentIndex().isValid() ? _getModel( currentIndex() ) : firstSceneItem;
+
+				// TODO manage this to include all SceneItemObjects types
 				const Model::Molecule * const moleculeCurrentObject	   = _getMolecule( currentObject );
 				const Model::Molecule * const moleculeNewCurrentObject = _getMolecule( newCurrentSelectedItem );
 
@@ -95,6 +96,37 @@ namespace VTX::UI::Widget::Scene
 				VTX_ACTION( new Action::Selection::UnselectModels( selectionModel, selectionIds ) );
 			}
 		}
+	}
+	void MoleculeSelectionModel::select( const QModelIndex & index, QItemSelectionModel::SelectionFlags command )
+	{
+		if ( command & QItemSelectionModel::NoUpdate )
+		{
+			QItemSelectionModel::select( index, command );
+		}
+		else
+		{
+			const Model::ID &  modelId		  = index.data( Qt::UserRole ).value<VTX::Model::ID>();
+			Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+			if ( command & QItemSelectionModel::Select )
+			{
+				const bool appendToSelection = !( command & QItemSelectionModel::Clear );
+				_selectModelAction( selectionModel, modelId, appendToSelection );
+			}
+			else if ( command & QItemSelectionModel::Toggle )
+			{
+				_selectModelAction( selectionModel, modelId, true );
+			}
+			else if ( command & QItemSelectionModel::Deselect )
+			{
+				_unselectModelAction( selectionModel, modelId );
+			}
+		}
+	}
+
+	void MoleculeSelectionModel::refreshSelection( const QItemSelection & selection )
+	{
+		QItemSelectionModel::select( selection, QItemSelectionModel::ClearAndSelect );
 	}
 
 	void MoleculeSelectionModel::_selectAllAfterItemInMolecule( std::vector<uint> &			   p_selection,
@@ -231,44 +263,6 @@ namespace VTX::UI::Widget::Scene
 		return res;
 	}
 
-	Model::BaseModel & MoleculeSelectionModel::_getModel( const QModelIndex & p_modelIndex ) const
-	{
-		return MVC::MvcManager::get().getModel<Model::BaseModel>(
-			p_modelIndex.data( Qt::UserRole ).value<VTX::Model::ID>() );
-	}
-
-	void MoleculeSelectionModel::select( const QModelIndex & index, QItemSelectionModel::SelectionFlags command )
-	{
-		if ( command & QItemSelectionModel::NoUpdate )
-		{
-			QItemSelectionModel::select( index, command );
-		}
-		else
-		{
-			const Model::ID &  modelId		  = index.data( Qt::UserRole ).value<VTX::Model::ID>();
-			Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-
-			if ( command & QItemSelectionModel::Select )
-			{
-				const bool appendToSelection = !( command & QItemSelectionModel::Clear );
-				_selectModelAction( selectionModel, modelId, appendToSelection );
-			}
-			else if ( command & QItemSelectionModel::Toggle )
-			{
-				_selectModelAction( selectionModel, modelId, true );
-			}
-			else if ( command & QItemSelectionModel::Deselect )
-			{
-				_unselectModelAction( selectionModel, modelId );
-			}
-		}
-	}
-
-	void MoleculeSelectionModel::refreshSelection( const QItemSelection & selection )
-	{
-		QItemSelectionModel::select( selection, QItemSelectionModel::ClearAndSelect );
-	}
-
 	void MoleculeSelectionModel::_fillVectorWithItemIds( const QItemSelection & p_selection,
 														 std::vector<uint> &	p_vectorId ) const
 	{
@@ -349,6 +343,21 @@ namespace VTX::UI::Widget::Scene
 			Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( p_modelId );
 			VTX_ACTION( new Action::Selection::UnselectAtom( p_selectionModel, model ) );
 		}
+	}
+
+	Model::BaseModel * MoleculeSelectionModel::_getModel( const QModelIndex & p_modelIndex ) const
+	{
+		const VTX::Model::ID & modelId = p_modelIndex.data( SceneItemWidget::MODEL_ID_ROLE ).value<VTX::Model::ID>();
+		Model::BaseModel &	   model   = MVC::MvcManager::get().getModel<Model::BaseModel>( modelId );
+
+		return &model;
+	}
+	Model::BaseModel * MoleculeSelectionModel::_getModel( const SceneItemWidget & p_sceneItem ) const
+	{
+		const VTX::Model::ID & modelId = p_sceneItem.getModelID();
+		Model::BaseModel &	   model   = MVC::MvcManager::get().getModel<Model::BaseModel>( modelId );
+
+		return &model;
 	}
 
 } // namespace VTX::UI::Widget::Scene

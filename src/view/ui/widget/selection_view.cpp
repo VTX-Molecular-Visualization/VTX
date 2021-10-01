@@ -118,7 +118,7 @@ namespace VTX::View::UI::Widget
 		const Model::ID &		   moleculeId = _getModelID( *p_moleculeItem );
 		QList<QTreeWidgetItem *> * itemsPtr;
 
-		p_moleculeItem->setData( 0, EXPAND_STATE_ROLE, true );
+		p_moleculeItem->setData( 0, SceneItemWidget::EXPAND_STATE_ROLE, true );
 
 		if ( _mapLoadedItems.find( moleculeId ) != _mapLoadedItems.end() )
 		{
@@ -179,7 +179,7 @@ namespace VTX::View::UI::Widget
 		const Model::ID &		   chainId = _getModelID( *p_chainItem );
 		QList<QTreeWidgetItem *> * itemsPtr;
 
-		p_chainItem->setData( 0, EXPAND_STATE_ROLE, true );
+		p_chainItem->setData( 0, SceneItemWidget::EXPAND_STATE_ROLE, true );
 
 		if ( _mapLoadedItems.find( chainId ) != _mapLoadedItems.end() )
 		{
@@ -242,7 +242,7 @@ namespace VTX::View::UI::Widget
 
 		const Model::ID & residueId = _getModelID( *p_residueItem );
 
-		p_residueItem->setData( 0, EXPAND_STATE_ROLE, true );
+		p_residueItem->setData( 0, SceneItemWidget::EXPAND_STATE_ROLE, true );
 
 		if ( _mapLoadedItems.find( residueId ) != _mapLoadedItems.end() )
 		{
@@ -294,7 +294,7 @@ namespace VTX::View::UI::Widget
 	{
 		_enableSignals( false );
 
-		p_item.setData( 0, EXPAND_STATE_ROLE, false );
+		p_item.setData( 0, SceneItemWidget::EXPAND_STATE_ROLE, false );
 
 		const Model::ID &				 id	   = _getModelID( p_item );
 		QList<QTreeWidgetItem *> * const items = new QList( p_item.takeChildren() );
@@ -417,7 +417,9 @@ namespace VTX::View::UI::Widget
 												  QTreeWidgetItem &						p_item,
 												  const Model::Selection::MapChainIds & p_children ) const
 	{
-		p_item.setData( NAME_COLUMN_INDEX, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( p_molecule.getId() ) );
+		p_item.setData( NAME_COLUMN_INDEX,
+						SceneItemWidget::MODEL_ID_ROLE,
+						QVariant::fromValue<VTX::Model::ID>( p_molecule.getId() ) );
 		p_item.setText( NAME_COLUMN_INDEX, QString::fromStdString( p_molecule.getDefaultName() ) );
 		p_item.setIcon( NAME_COLUMN_INDEX, *VTX::Style::IconConst::get().getModelSymbol( p_molecule.getTypeId() ) );
 
@@ -431,7 +433,7 @@ namespace VTX::View::UI::Widget
 											   QTreeWidgetItem &					   p_item,
 											   const Model::Selection::MapResidueIds & p_children ) const
 	{
-		p_item.setData( NAME_COLUMN_INDEX, MODEL_ID_ROLE, QVariant::fromValue( p_chain.getId() ) );
+		p_item.setData( NAME_COLUMN_INDEX, SceneItemWidget::MODEL_ID_ROLE, QVariant::fromValue( p_chain.getId() ) );
 		p_item.setText( NAME_COLUMN_INDEX, QString::fromStdString( p_chain.getDefaultName() ) );
 		p_item.setIcon( NAME_COLUMN_INDEX, *VTX::Style::IconConst::get().getModelSymbol( p_chain.getTypeId() ) );
 
@@ -446,7 +448,7 @@ namespace VTX::View::UI::Widget
 												 QTreeWidgetItem &					  p_item,
 												 const Model::Selection::VecAtomIds & p_children ) const
 	{
-		p_item.setData( NAME_COLUMN_INDEX, MODEL_ID_ROLE, QVariant::fromValue( p_residue.getId() ) );
+		p_item.setData( NAME_COLUMN_INDEX, SceneItemWidget::MODEL_ID_ROLE, QVariant::fromValue( p_residue.getId() ) );
 		p_item.setText( NAME_COLUMN_INDEX,
 						QString::fromStdString( p_residue.getSymbolStr() + " "
 												+ std::to_string( p_residue.getIndexInOriginalChain() ) ) );
@@ -461,7 +463,7 @@ namespace VTX::View::UI::Widget
 	}
 	void SelectionView::_applyAtomDataOnItem( const Model::Atom & p_atom, QTreeWidgetItem & p_item ) const
 	{
-		p_item.setData( NAME_COLUMN_INDEX, MODEL_ID_ROLE, QVariant::fromValue( p_atom.getId() ) );
+		p_item.setData( NAME_COLUMN_INDEX, SceneItemWidget::MODEL_ID_ROLE, QVariant::fromValue( p_atom.getId() ) );
 		p_item.setText( NAME_COLUMN_INDEX,
 						QString::fromStdString( p_atom.getSymbolStr() + " " + std::to_string( p_atom.getIndex() ) ) );
 		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_atom.getTypeId() ) );
@@ -470,12 +472,12 @@ namespace VTX::View::UI::Widget
 
 	Model::ID SelectionView::_getModelID( const QTreeWidgetItem & p_item ) const
 	{
-		const QVariant & dataID = p_item.data( NAME_COLUMN_INDEX, MODEL_ID_ROLE );
+		const QVariant & dataID = p_item.data( NAME_COLUMN_INDEX, SceneItemWidget::MODEL_ID_ROLE );
 		return dataID.value<VTX::Model::ID>();
 	}
 	bool SelectionView::_getItemExpandState( const QTreeWidgetItem & p_item ) const
 	{
-		const QVariant & expandState = p_item.data( 0, EXPAND_STATE_ROLE );
+		const QVariant & expandState = p_item.data( 0, SceneItemWidget::EXPAND_STATE_ROLE );
 		return expandState.isValid() && expandState.value<bool>();
 	}
 	void SelectionView::_enableSignals( const bool p_enable )
