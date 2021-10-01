@@ -56,12 +56,12 @@ namespace VTX::UI::Widget::Scene
 						{
 							if ( startAddToSelection )
 							{
-								_selectAllBeforeItemInMolecule( selectionIds, selectionModel.getCurrentObject() );
+								_selectAllBeforeItemInMolecule( selectionIds, currentObject );
 								break;
 							}
 							else
 							{
-								_selectAllAfterItemInMolecule( selectionIds, selectionModel.getCurrentObject() );
+								_selectAllAfterItemInMolecule( selectionIds, currentObject );
 								startAddToSelection = true;
 							}
 						}
