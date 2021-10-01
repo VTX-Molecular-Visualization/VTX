@@ -39,7 +39,7 @@ namespace VTX
 					_scaleWidget = new QLabel();
 					_scaleWidget->setContentsMargins( 0, 0, 0, 0 );
 					_scaleWidget->setSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum );
-					_scaleWidget->setFont( Style::SEQUENCE_DISPLAY_FONT );
+					_scaleWidget->setFont( Style::SEQUENCE_DISPLAY_FONT() );
 					_scaleWidget->setAlignment( Qt::AlignmentFlag::AlignTop );
 
 					_layout->addWidget( _scaleWidget );

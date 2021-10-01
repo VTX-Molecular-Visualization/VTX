@@ -5,7 +5,7 @@
 #include "tool/logger.hpp"
 #include <QDebug>
 #include <QObject>
-#include <QtGamepad/QGamepad>
+//#include <QtGamepad/QGamepad>
 #include <set>
 
 namespace VTX
@@ -32,6 +32,7 @@ namespace VTX
 
 			explicit BaseGamepadController( QObject * p_parent = nullptr ) : QObject( p_parent )
 			{
+				/*
 				connect( QGamepadManager::instance(),
 						 &QGamepadManager::gamepadConnected,
 						 this,
@@ -113,26 +114,33 @@ namespace VTX
 							 this,
 							 [ & ]( double p_value ) { _triggers.y = p_value; } );
 				}
+				*/
 			}
 			~BaseGamepadController()
 			{
+				/*
 				if ( _gamepad != nullptr )
 				{
 					delete _gamepad;
 				}
+				*/
 			}
 
-			inline const bool isGamepadeConnected() const { return _gamepad != nullptr; }
+			inline const bool isGamepadeConnected() const
+			{
+				// return _gamepad != nullptr;
+			}
 
 		  protected:
-			const QGamepad * _gamepad		 = nullptr;
-			std::set<int>	 _pressedButtons = std::set<int>();
-			Vec2f			 _axisLeft		 = Vec2f();
-			Vec2f			 _axisRight		 = Vec2f();
-			Vec2f			 _triggers		 = Vec2f();
+			// const QGamepad * _gamepad		 = nullptr;
+			std::set<int> _pressedButtons = std::set<int>();
+			Vec2f		  _axisLeft		  = Vec2f();
+			Vec2f		  _axisRight	  = Vec2f();
+			Vec2f		  _triggers		  = Vec2f();
 
 			void _setupGamepad()
 			{
+				/*
 				if ( _gamepad != nullptr )
 				{
 					delete _gamepad;
@@ -148,6 +156,7 @@ namespace VTX
 				{
 					VTX_DEBUG( "Gamepad not connected" );
 				}
+				*/
 			}
 
 			virtual void _handleButtonChangeEvent( const BUTTON & p_button, const bool p_pressed )
