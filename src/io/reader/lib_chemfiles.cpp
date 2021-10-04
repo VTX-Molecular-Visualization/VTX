@@ -405,7 +405,7 @@ namespace VTX::IO::Reader
 								   : p_molecule.addUnknownAtomSymbol( atom.type() );
 
 				modelAtom->setName( atom.name() );
-				modelAtom->setColor( Model::Atom::SYMBOL_COLOR[ int( modelAtom->getSymbol() ) ] );
+				// modelAtom->setColor( Model::Atom::SYMBOL_COLOR[ int( modelAtom->getSymbol() ) ] );
 
 				const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 				const chemfiles::Vector3D &					 position  = positions[ atomId ];

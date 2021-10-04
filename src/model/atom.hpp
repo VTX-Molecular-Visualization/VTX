@@ -15,7 +15,7 @@ namespace VTX
 		class Molecule;
 		class Chain;
 		class Residue;
-		class Atom : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
+		class Atom : public BaseModel, public Generic::BaseVisible
 		{
 			VTX_MODEL
 
@@ -164,6 +164,8 @@ namespace VTX
 			Chain * const		   getChainPtr() const;
 			inline Residue * const getResiduePtr() const { return _residuePtr; }
 			inline void			   setResiduePtr( Residue * const p_residue ) { _residuePtr = p_residue; }
+
+			inline const Color::Rgb & getColor() const { return SYMBOL_COLOR[ int( _symbol ) ]; };
 
 			inline const SYMBOL		   getSymbol() const { return _symbol; };
 			inline const std::string & getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; };
