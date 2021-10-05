@@ -22,6 +22,7 @@ namespace VTX
 			}
 
 			void downloadMMTF( const std::string & p_id );
+			void checkUpdate();
 
 		  private:
 			QNetworkAccessManager _networkManager = QNetworkAccessManager();
@@ -33,12 +34,13 @@ namespace VTX
 
 			std::string _id;
 
-			void _get( std::string & );
-
-			void _finished();
+			void _finishedDownloadMMTF();
+			void _finishedCheckUpdate();
 			void _errorOccured( const QNetworkReply::NetworkError & );
 			void _sslErrors( const QList<QSslError> & );
 			void _downloadProgress( const qint64, const qint64 );
+
+			bool _isValidReply( const QNetworkReply * const );
 		};
 	} // namespace Network
 
