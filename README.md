@@ -14,7 +14,7 @@
 
 #### Linux
 
-- Install openssl and xinemara packages
+- Install openssl and xinerama packages
 - Download [last release](https://gitlab.com/VTX_mol/VTX/-/releases)
 - Run bin/VTX
 
