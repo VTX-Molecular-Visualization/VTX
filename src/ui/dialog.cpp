@@ -12,12 +12,10 @@
 
 namespace VTX::UI
 {
-	void Dialog::openInformationDialog( const QString & p_message )
+	void Dialog::openInformationDialog( const QString & p_title, const QString & p_message )
 	{
-		QMessageBox::information( &VTXApp::get().getMainWindow(),
-								  "New version available",
-								  p_message.toUtf8(),
-								  QMessageBox::StandardButton::Ok );
+		QMessageBox::information(
+			&VTXApp::get().getMainWindow(), p_title, p_message.toUtf8(), QMessageBox::StandardButton::Ok );
 	}
 
 	void Dialog::openDownloadMoleculeDialog() { UI::Widget::Dialog::DownloadMoleculeDialog::openDialog(); }

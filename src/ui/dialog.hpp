@@ -11,7 +11,7 @@ namespace VTX::UI
 	class Dialog
 	{
 	  public:
-		static void openInformationDialog( const QString & p_message );
+		static void openInformationDialog( const QString & p_title, const QString & p_message );
 
 		static void openDownloadMoleculeDialog();
 		static void openDownloadMoleculeDialog( const QString & p_pdbCode );

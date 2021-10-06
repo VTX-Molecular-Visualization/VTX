@@ -72,7 +72,7 @@ namespace VTX
 										  + "\nor\n" + VTX_WEBSITE_URL;
 
 					VTX_INFO( message );
-					UI::Dialog::openInformationDialog( QString::fromStdString( message ) );
+					UI::Dialog::openInformationDialog( "New version available", QString::fromStdString( message ) );
 				}
 				else
 				{
