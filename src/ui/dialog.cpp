@@ -12,10 +12,35 @@
 
 namespace VTX::UI
 {
+	void Dialog::confirmActionDialog( Action::BaseAction * const p_action,
+									  const QString &			 p_title,
+									  const QString &			 p_message )
+	{
+		const int res = QMessageBox::warning( &VTXApp::get().getMainWindow(),
+											  p_title,
+											  p_message,
+											  ( QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No ),
+											  QMessageBox::StandardButton::No );
+
+		if ( res == QMessageBox::StandardButton::Yes )
+		{
+			VTX_ACTION( p_action );
+		}
+		else
+		{
+			delete p_action;
+		}
+	}
 	void Dialog::openInformationDialog( const QString & p_title, const QString & p_message )
 	{
-		QMessageBox::information(
-			&VTXApp::get().getMainWindow(), p_title, p_message.toUtf8(), QMessageBox::StandardButton::Ok );
+		QMessageBox information = QMessageBox( QMessageBox::Icon::Information,
+											   p_title,
+											   p_message.toUtf8(),
+											   QMessageBox::StandardButton::Ok,
+											   &VTXApp::get().getMainWindow() );
+		information.setTextFormat( Qt::TextFormat::RichText );
+
+		information.exec();
 	}
 
 	void Dialog::openDownloadMoleculeDialog() { UI::Widget::Dialog::DownloadMoleculeDialog::openDialog(); }
@@ -80,7 +105,6 @@ namespace VTX::UI
 
 		leavingSessionDialog( callback );
 	}
-
 	void Dialog::leavingSessionDialog( Worker::CallbackThread & p_callback )
 	{
 		if ( !VTXApp::get().hasAnyModifications() )
@@ -168,26 +192,6 @@ namespace VTX::UI
 		}
 	}
 
-	void Dialog::confirmActionDialog( Action::BaseAction * const p_action,
-									  const QString &			 p_title,
-									  const QString &			 p_message )
-	{
-		const int res = QMessageBox::warning( &VTXApp::get().getMainWindow(),
-											  p_title,
-											  p_message,
-											  ( QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No ),
-											  QMessageBox::StandardButton::No );
-
-		if ( res == QMessageBox::StandardButton::Yes )
-		{
-			VTX_ACTION( p_action );
-		}
-		else
-		{
-			delete p_action;
-		}
-	}
-
 	void Dialog::importRepresentationPresetDialog()
 	{
 		const QStringList filenames
@@ -236,7 +240,6 @@ namespace VTX::UI
 							   QMessageBox::StandardButton::Ok );
 		std::exit( EXIT_FAILURE );
 	}
-
 	void Dialog::unhandledException()
 	{
 		std::string msg = "An unhandlded error has occured, please open an issue at \n" + VTX_BUG_REPORT_URL

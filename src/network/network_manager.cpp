@@ -61,18 +61,23 @@ namespace VTX
 			{
 				nlohmann::json json = nlohmann::json::parse( replyThis->readAll().toStdString() ).at( "VERSION" );
 
-				int major	 = json.at( "MAJOR" );
-				int minor	 = json.at( "MINOR" );
-				int revision = json.at( "REVISION" );
+				const int major	   = json.at( "MAJOR" );
+				const int minor	   = json.at( "MINOR" );
+				const int revision = json.at( "REVISION" );
 
 				if ( major != VTX_VERSION_MAJOR || minor != VTX_VERSION_MINOR || revision != VTX_VERSION_REVISION )
 				{
-					std::string message = "VTX " + std::to_string( major ) + "." + std::to_string( minor ) + "."
-										  + std::to_string( revision ) + " is available at:\n" + VTX_RELEASES_URL
-										  + "\nor\n" + VTX_WEBSITE_URL;
+					const std::string consoleMessage = "VTX " + std::to_string( major ) + "." + std::to_string( minor )
+													   + "." + std::to_string( revision ) + " is available at:\n"
+													   + VTX_RELEASES_URL + "\nor\n" + VTX_WEBSITE_URL;
 
-					VTX_INFO( message );
-					UI::Dialog::openInformationDialog( "New version available", QString::fromStdString( message ) );
+					const QString dialogMessage
+						= QString::fromStdString( "VTX " + std::to_string( major ) + "." + std::to_string( minor ) + "."
+												  + std::to_string( revision ) + " is available at:\n"
+												  + VTX_RELEASES_CLICKABLE_URL + "\nor\n" + VTX_WEBSITE_CLICKABLE_URL );
+
+					VTX_INFO( consoleMessage );
+					UI::Dialog::openInformationDialog( "New version available", dialogMessage );
 				}
 				else
 				{

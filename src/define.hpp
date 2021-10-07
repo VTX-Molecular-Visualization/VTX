@@ -37,12 +37,15 @@ namespace VTX
 	constexpr int	  VTX_VERSION_MINOR	   = 1;
 	constexpr int	  VTX_VERSION_REVISION = 2;
 
-	const std::string VTX_WEBSITE_URL		= "https://vtx.drugdesign.fr";
-	const std::string VTX_VERSION_URL		= VTX_WEBSITE_URL + "/vtx.json";
-	const std::string VTX_GIT_URL			= "https://gitlab.com/VTX_mol/VTX";
-	const std::string VTX_DOCUMENTATION_URL = "https://gitlab.com/VTX_mol/VTX";
-	const std::string VTX_BUG_REPORT_URL	= "https://gitlab.com/VTX_mol/VTX/-/issues";
-	const std::string VTX_RELEASES_URL		= "https://gitlab.com/VTX_mol/VTX/-/releases";
+	const std::string VTX_WEBSITE_URL			= "https://vtx.drugdesign.fr";
+	const std::string VTX_VERSION_URL			= VTX_WEBSITE_URL + "/vtx.json";
+	const std::string VTX_WEBSITE_CLICKABLE_URL = "<a href=\"" + VTX_WEBSITE_URL + "\">" + VTX_WEBSITE_URL + "</a>";
+
+	const std::string VTX_GIT_URL				 = "https://gitlab.com/VTX_mol/VTX";
+	const std::string VTX_DOCUMENTATION_URL		 = "https://gitlab.com/VTX_mol/VTX";
+	const std::string VTX_BUG_REPORT_URL		 = "https://gitlab.com/VTX_mol/VTX/-/issues";
+	const std::string VTX_RELEASES_URL			 = "https://gitlab.com/VTX_mol/VTX/-/releases";
+	const std::string VTX_RELEASES_CLICKABLE_URL = "<a href=\"" + VTX_RELEASES_URL + "\">" + VTX_RELEASES_URL + "</a>";
 
 	// API.
 	const std::string API_URL_MMTF = "https://mmtf.rcsb.org/v1.0/full/";

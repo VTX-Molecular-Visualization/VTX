@@ -12,6 +12,9 @@ namespace VTX::UI
 	{
 	  public:
 		static void openInformationDialog( const QString & p_title, const QString & p_message );
+		static void confirmActionDialog( Action::BaseAction * const p_action,
+										 const QString &			p_title,
+										 const QString &			p_message );
 
 		static void openDownloadMoleculeDialog();
 		static void openDownloadMoleculeDialog( const QString & p_pdbCode );
@@ -31,10 +34,6 @@ namespace VTX::UI
 
 		static void openGLInitializationFail();
 		static void unhandledException();
-
-		static void confirmActionDialog( Action::BaseAction * const p_action,
-										 const QString &			p_title,
-										 const QString &			p_message );
 	};
 
 } // namespace VTX::UI
