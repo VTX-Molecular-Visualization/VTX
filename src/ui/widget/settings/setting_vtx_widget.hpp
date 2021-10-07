@@ -53,6 +53,7 @@ namespace VTX::UI::Widget::Settings
 
 		// Data
 		QComboBox *	  _symbolDisplayModeWidget = nullptr;
+		QCheckBox *	  _checkVTXUpdateAtLaunch  = nullptr;
 		QPushButton * _restoreLayoutButton	   = nullptr;
 
 		int _currentRow = 0;
@@ -74,6 +75,7 @@ namespace VTX::UI::Widget::Settings
 		void _changeDefaultTrajectoryPlayMode( const int p_playmode );
 
 		void _changeSymbolDisplayMode( const int p_displayMode );
+		void _changeCheckVTXUpdateAtLaunch( const bool p_changeCheckVTXUpdateAtLaunch ) const;
 
 		void _restoreSettingsAction();
 		void _restoreLayoutAction();

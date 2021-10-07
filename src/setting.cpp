@@ -486,10 +486,18 @@ namespace VTX
 		_sendDataChangedEvent( PARAMETER::SYMBOL_DISPLAY_MODE );
 	}
 
+	void Setting::setCheckVTXUpdateAtLaunch( const bool p_checkVTXUpdate )
+	{
+		checkVTXUpdate = p_checkVTXUpdate;
+		_sendDataChangedEvent( PARAMETER::CHECK_VTX_UPDATE );
+	}
+
 	void Setting::restore()
 	{
 		symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
 		windowFullscreen  = WINDOW_FULLSCREEN_DEFAULT;
+
+		checkVTXUpdate = CHECK_VTX_UPDATE_DEFAULT;
 
 		activeRenderer			   = ACTIVE_RENDERER_DEFAULT;
 		forceRenderer			   = FORCE_RENDERER_DEFAULT;

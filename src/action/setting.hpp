@@ -646,6 +646,20 @@ namespace VTX::Action::Setting
 		const Style::SYMBOL_DISPLAY_MODE _displayMode;
 	};
 
+	class ChangeCheckVTXUpdateAtLaunch : public BaseAction
+	{
+	  public:
+		explicit ChangeCheckVTXUpdateAtLaunch( const bool p_checkVtxUpdateAtLaunch ) :
+			_checkVTXUpdateAtLaunch( p_checkVtxUpdateAtLaunch )
+		{
+		}
+
+		virtual void execute() override { VTX_SETTING().setCheckVTXUpdateAtLaunch( _checkVTXUpdateAtLaunch ); };
+
+	  private:
+		const bool _checkVTXUpdateAtLaunch;
+	};
+
 	class ChangeRenderMode : public BaseAction
 	{
 	  public:
@@ -670,6 +684,8 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_ACTION( new Action::Setting::ChangeSymbolDisplayMode( _setting.getSymbolDisplayMode() ) );
+			VTX_ACTION( new Action::Setting::ChangeCheckVTXUpdateAtLaunch( _setting.getCheckVTXUpdateAtLaunch() ) );
+
 			VTX_ACTION( new Action::Setting::WindowMode(
 				_setting.getWindowFullscreen() ? VTX::UI::WindowMode::Fullscreen : VTX::UI::WindowMode::Windowed ) );
 

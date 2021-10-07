@@ -195,6 +195,7 @@ namespace VTX
 		static const int		  CONSOLE_SIZE;
 		static const uint		  ACTION_BUFFER_SIZE; // For undo/redo
 		static const bool		  COMPUTE_BOND_ORDER_ON_CHEMFILE = false;
+		static const bool		  CHECK_VTX_UPDATE_DEFAULT		 = true;
 		inline static const float CELL_LIST_CUBE_SIZE			 = 8.f;
 
 		// Parameters
@@ -219,6 +220,7 @@ namespace VTX
 			AUTO_ROTATION_DEFAULT_SPEED,
 
 			SYMBOL_DISPLAY_MODE,
+			CHECK_VTX_UPDATE,
 
 			COUNT,
 			ALL,
@@ -262,6 +264,9 @@ namespace VTX
 
 		inline const Style::SYMBOL_DISPLAY_MODE getSymbolDisplayMode() const { return symbolDisplayMode; }
 		void setSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE p_symbolDisplayMode );
+
+		inline const bool getCheckVTXUpdateAtLaunch() const { return checkVTXUpdate; }
+		void			  setCheckVTXUpdateAtLaunch( const bool p_checkVTXUpdate );
 
 		static const int					  RECENT_PATH_SAVED_MAX_COUNT;
 		static const int					  RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT;
@@ -329,6 +334,7 @@ namespace VTX
 		Trajectory::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
 
 		Style::SYMBOL_DISPLAY_MODE symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
+		bool					   checkVTXUpdate	 = CHECK_VTX_UPDATE_DEFAULT;
 
 		static QString _getFileInRegisterKey( const QString & p_key, const QString & p_default );
 

@@ -81,7 +81,8 @@ namespace VTX
 			return;
 		}
 
-		VTX_ACTION( new Action::Main::CheckForUpdate() );
+		if ( VTX_SETTING().getCheckVTXUpdateAtLaunch() )
+			VTX_ACTION( new Action::Main::CheckForUpdate() );
 
 		// Start timers.
 		_timer = new QTimer( this );

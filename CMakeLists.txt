@@ -35,7 +35,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 
 # Libs URL and tags.
 set(GIT_URL_CHEMFILES https://github.com/sacraiou/chemfiles.git)
-set(GIT_TAG_CHEMFILES 6e1493793de7f22bcd5db3858081321cbac0fd3f)
+set(GIT_TAG_CHEMFILES d1dad44bb3993a28b824c873b23e4ac8497f19dd)
 set(GIT_URL_GLM https://github.com/g-truc/glm.git)
 set(GIT_TAG_GLM bf71a834948186f4097caa076cd2663c69a10e1e) #0.9.9.8
 set(GIT_URL_JSON https://github.com/nlohmann/json.git)

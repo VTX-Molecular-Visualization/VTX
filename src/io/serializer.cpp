@@ -227,27 +227,29 @@ namespace VTX::IO
 				  .getPreset( p_setting.getDefaultRenderEffectPresetIndex() )
 				  ->getName();
 
-		return { { "SYMBOL_DISPLAY_MODE", p_setting.getSymbolDisplayMode() },
-				 { "WINDOW_FULLSCREEN", p_setting.getWindowFullscreen() },
-				 { "ACTIVE_RENDERER", p_setting.getActivateRenderer() },
-				 { "FORCE_RENDERER", p_setting.getForceRenderer() },
-				 { "REPRESENTATION", defaultRepresentationName },
-				 { "RENDER_EFFECT_DEFAULT", defaultRenderEffectPresetName },
-				 { "ACTIVE_VSYNC", p_setting.getVSync() },
-				 { "BACKGROUND_OPACITY", p_setting.getSnapshotBackgroundOpacity() },
-				 { "BACKGROUND_RESOLUTION", magic_enum::enum_name( p_setting.getSnapshotResolution() ) },
+		return {
+			{ "SYMBOL_DISPLAY_MODE", p_setting.getSymbolDisplayMode() },
+			{ "WINDOW_FULLSCREEN", p_setting.getWindowFullscreen() },
+			{ "ACTIVE_RENDERER", p_setting.getActivateRenderer() },
+			{ "FORCE_RENDERER", p_setting.getForceRenderer() },
+			{ "REPRESENTATION", defaultRepresentationName },
+			{ "RENDER_EFFECT_DEFAULT", defaultRenderEffectPresetName },
+			{ "ACTIVE_VSYNC", p_setting.getVSync() },
+			{ "BACKGROUND_OPACITY", p_setting.getSnapshotBackgroundOpacity() },
+			{ "BACKGROUND_RESOLUTION", magic_enum::enum_name( p_setting.getSnapshotResolution() ) },
 
-				 { "CONTROLLER_TRANSLATION_SPEED", p_setting.getTranslationSpeed() },
-				 { "CONTROLLER_TRANSLATION_FACTOR", p_setting.getTranslationSpeedFactor() },
-				 { "CONTROLLER_ROTATION_SPEED", p_setting.getRotationSpeed() },
-				 { "CONTROLLER_Y_AXIS_INVERTED", p_setting.getYAxisInverted() },
+			{ "CONTROLLER_TRANSLATION_SPEED", p_setting.getTranslationSpeed() },
+			{ "CONTROLLER_TRANSLATION_FACTOR", p_setting.getTranslationSpeedFactor() },
+			{ "CONTROLLER_ROTATION_SPEED", p_setting.getRotationSpeed() },
+			{ "CONTROLLER_Y_AXIS_INVERTED", p_setting.getYAxisInverted() },
 
-				 { "ACTIVE_CONTROLLER_ELASTICITY", p_setting.getControllerElasticityActive() },
-				 { "CONTROLLER_ELASTICITY_FACTOR", p_setting.getControllerElasticityFactor() },
+			{ "ACTIVE_CONTROLLER_ELASTICITY", p_setting.getControllerElasticityActive() },
+			{ "CONTROLLER_ELASTICITY_FACTOR", p_setting.getControllerElasticityFactor() },
 
-				 { "DEFAULT_TRAJECTORY_SPEED", p_setting.getDefaultTrajectorySpeed() },
-				 { "DEFAULT_TRAJECTORY_PLAY_MODE",
-				   magic_enum::enum_name( p_setting.getDefaultTrajectoryPlayMode() ) } };
+			{ "DEFAULT_TRAJECTORY_SPEED", p_setting.getDefaultTrajectorySpeed() },
+			{ "DEFAULT_TRAJECTORY_PLAY_MODE", magic_enum::enum_name( p_setting.getDefaultTrajectoryPlayMode() ) },
+			{ "CHECK_VTX_UPDATE_AT_LAUNCH", p_setting.getCheckVTXUpdateAtLaunch() },
+		};
 	}
 
 	void Serializer::deserialize( const nlohmann::json & p_json, VTXApp & p_app ) const
@@ -643,6 +645,9 @@ namespace VTX::IO
 			_get<int>( p_json, "DEFAULT_TRAJECTORY_SPEED", Setting::DEFAULT_TRAJECTORY_SPEED ) );
 		p_setting.setDefaultTrajectoryPlayMode( _getEnum<Trajectory::PlayMode>(
 			p_json, "DEFAULT_TRAJECTORY_PLAY_MODE", Setting::DEFAULT_TRAJECTORY_PLAY_MODE ) );
+
+		p_setting.setCheckVTXUpdateAtLaunch(
+			_get<bool>( p_json, "CHECK_VTX_UPDATE_AT_LAUNCH", Setting::CHECK_VTX_UPDATE_DEFAULT ) );
 	}
 
 	nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,
