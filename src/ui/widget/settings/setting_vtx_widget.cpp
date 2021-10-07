@@ -85,6 +85,8 @@ namespace VTX::UI::Widget::Settings
 		for ( const std::string & symbolModeStr : Style::SYMBOL_DISPLAY_MODE_STRING )
 			_symbolDisplayModeWidget->addItem( QString::fromStdString( symbolModeStr ) );
 
+		_checkVTXUpdateAtLaunch = new QCheckBox( viewport );
+
 		_restoreLayoutButton   = new QPushButton( this );
 		_restoreSettingsButton = new QPushButton( this );
 
@@ -115,6 +117,8 @@ namespace VTX::UI::Widget::Settings
 
 		_startSection( "Data" );
 		_addItemInLayout( _symbolDisplayModeWidget, "Symbol display mode" );
+		_addItemInLayout( _checkVTXUpdateAtLaunch, "Check updates at launch" );
+
 		_addItemInLayout( _restoreLayoutButton );
 		_finishSection( false );
 
@@ -185,6 +189,10 @@ namespace VTX::UI::Widget::Settings
 				 QOverload<int>::of( ( &QComboBox::currentIndexChanged ) ),
 				 this,
 				 &SettingVTXWidget::_changeSymbolDisplayMode );
+
+		connect(
+			_checkVTXUpdateAtLaunch, &QCheckBox::stateChanged, this, &SettingVTXWidget::_changeCheckVTXUpdateAtLaunch );
+
 		connect( _restoreLayoutButton, &QPushButton::clicked, this, &SettingVTXWidget::_restoreLayoutAction );
 
 		connect( _restoreSettingsButton, &QPushButton::clicked, this, &SettingVTXWidget::_restoreSettingsAction );
@@ -229,6 +237,7 @@ namespace VTX::UI::Widget::Settings
 		_defaultTrajectorySpeedWidget->setValue( VTX_SETTING().getDefaultTrajectorySpeed() );
 
 		_symbolDisplayModeWidget->setCurrentIndex( int( VTX_SETTING().getSymbolDisplayMode() ) );
+		_checkVTXUpdateAtLaunch->setCheckState( Util::UI::getCheckState( VTX_SETTING().getCheckVTXUpdateAtLaunch() ) );
 	}
 
 	void SettingVTXWidget::_activeControllerElasticityAction( const bool p_activate )
@@ -318,6 +327,11 @@ namespace VTX::UI::Widget::Settings
 		const Style::SYMBOL_DISPLAY_MODE displayMode = Style::SYMBOL_DISPLAY_MODE( p_displayMode );
 		if ( VTX_SETTING().getSymbolDisplayMode() != displayMode )
 			VTX_ACTION( new Action::Setting::ChangeSymbolDisplayMode( displayMode ) );
+	}
+	void SettingVTXWidget::_changeCheckVTXUpdateAtLaunch( const bool p_changeCheckVTXUpdateAtLaunch ) const
+	{
+		if ( VTX_SETTING().getCheckVTXUpdateAtLaunch() != p_changeCheckVTXUpdateAtLaunch )
+			VTX_ACTION( new Action::Setting::ChangeCheckVTXUpdateAtLaunch( p_changeCheckVTXUpdateAtLaunch ) );
 	}
 	void SettingVTXWidget::_restoreLayoutAction()
 	{
