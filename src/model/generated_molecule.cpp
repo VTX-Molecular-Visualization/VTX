@@ -564,7 +564,7 @@ namespace VTX::Model
 		p_atom.setResiduePtr( p_parent );
 		p_atom.setSymbol( p_atomSource.getSymbol() );
 		p_atom.setName( p_atomSource.getName() );
-		p_atom.setColor( Model::Atom::SYMBOL_COLOR[ int( p_atomSource.getSymbol() ) ] );
+		// p_atom.setColor( Model::Atom::SYMBOL_COLOR[ int( p_atomSource.getSymbol() ) ] );
 		p_atom.setType( p_atomSource.getType() );
 		getBufferAtomRadius().emplace_back( p_atomSource.getVdwRadius() );
 	}

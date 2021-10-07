@@ -1,4 +1,6 @@
 #include "information_widget.hpp"
+#include "action/action_manager.hpp"
+#include "action/main.hpp"
 #include "define.hpp"
 #include "style.hpp"
 #include "util/filesystem.hpp"
@@ -75,6 +77,8 @@ namespace VTX::UI::Widget::Information
 		_docButton->setText( "Doc" );
 		_bugReportButton = new QPushButton( this );
 		_bugReportButton->setText( "Report bug" );
+		_checkUpdateButton = new QPushButton( this );
+		_checkUpdateButton->setText( "Check for\nupdate" );
 
 		QLabel * libraryTitle = new QLabel( this );
 		libraryTitle->setText( "External libraries:" );
@@ -129,6 +133,7 @@ namespace VTX::UI::Widget::Information
 		buttonsLayout->addWidget( _gitButton );
 		buttonsLayout->addWidget( _docButton );
 		buttonsLayout->addWidget( _bugReportButton );
+		buttonsLayout->addWidget( _checkUpdateButton );
 		buttonsLayout->addStretch( 1000 );
 
 		vtxHeaderLayout->addWidget( vtxTitle );
@@ -163,6 +168,7 @@ namespace VTX::UI::Widget::Information
 		connect( _gitButton, &QPushButton::clicked, this, &InformationWidget::_goToGit );
 		connect( _docButton, &QPushButton::clicked, this, &InformationWidget::_goToDocumentation );
 		connect( _bugReportButton, &QPushButton::clicked, this, &InformationWidget::_goToBugReport );
+		connect( _checkUpdateButton, &QPushButton::clicked, this, &InformationWidget::_checkForUpdate );
 	};
 	void InformationWidget::localize()
 	{
@@ -189,19 +195,24 @@ namespace VTX::UI::Widget::Information
 	{
 		_movie->setPaused( p_frame == _movie->frameCount() - 1 );
 	}
-	void InformationWidget::_displayMovieError( QImageReader::ImageReaderError p_error )
+	void InformationWidget::_displayMovieError( QImageReader::ImageReaderError p_error ) const
 	{
 		VTX_ERROR( "Error when loading video : " + std::to_string( int( p_error ) ) );
 	}
 
-	void InformationWidget::_goToWebsite() { QDesktopServices::openUrl( QString::fromStdString( VTX_WEBSITE_URL ) ); }
-	void InformationWidget::_goToGit() { QDesktopServices::openUrl( QString::fromStdString( VTX_GIT_URL ) ); }
-	void InformationWidget::_goToDocumentation()
+	void InformationWidget::_goToWebsite() const
+	{
+		QDesktopServices::openUrl( QString::fromStdString( VTX_WEBSITE_URL ) );
+	}
+	void InformationWidget::_goToGit() const { QDesktopServices::openUrl( QString::fromStdString( VTX_GIT_URL ) ); }
+	void InformationWidget::_goToDocumentation() const
 	{
 		QDesktopServices::openUrl( QString::fromStdString( VTX_DOCUMENTATION_URL ) );
 	}
-	void InformationWidget::_goToBugReport()
+	void InformationWidget::_goToBugReport() const
 	{
 		QDesktopServices::openUrl( QString::fromStdString( VTX_BUG_REPORT_URL ) );
 	}
+	void InformationWidget::_checkForUpdate() const { VTX_ACTION( new Action::Main::CheckForUpdate() ); }
+
 } // namespace VTX::UI::Widget::Information

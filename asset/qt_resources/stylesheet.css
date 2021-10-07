@@ -1,9 +1,12 @@
 /* For all widgets */
-QWidget
+
+
+/*Debug*/
+/*QWidget
 {
-	/*Debug*/
-	/*border: 1px solid white*/ 
+	border: 1px solid white
 }
+*/
 
 QWidget:disabled
 {
@@ -40,19 +43,28 @@ QDockWidget::close-button, QDockWidget::float-button
 	border: none;
 }
 
+QMenuBar
+{
+	background-color: black;
+}
+
 QTabWidget::pane
 {
 	border-left: 0px;
 	border-right: 0px;
-	
-	padding-top: 0px;
+
+	padding-top: 1ex;
+	background-color: #222222;
 }
 
 QTabBar::tab
 {
 	background: black;
 	border: none;
-	padding: 1.5ex;
+	padding-left: 3ex;
+	padding-right: 3ex;
+	padding-top: 2ex;
+	padding-bottom: 2ex;
 }
 QTabBar::tab:selected, QTabBar::tab:hover
 {

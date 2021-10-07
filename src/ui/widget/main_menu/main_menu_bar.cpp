@@ -9,11 +9,11 @@ namespace VTX::UI::Widget::MainMenu
 	void MainMenuBar::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
-		setFixedHeight( 130 );
+
+		setFixedHeight( 138 );
 
 		_tabWidget = new QTabWidget( this );
 		_tabWidget->setObjectName( "tabWidget" );
-		//_tabWidget->setSizePolicy( QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum );
 		_tabWidget->setFixedSize( size() );
 
 		QFont menuBarFont;
@@ -21,7 +21,7 @@ namespace VTX::UI::Widget::MainMenu
 		_tabWidget->setFont( menuBarFont );
 
 		_mainMenu = WidgetFactory::get().instantiateWidget<Home::MenuHomeWidget>( _tabWidget, "mainMenu" );
-		_tabWidget->addTab( _mainMenu, "Main" );
+		_tabWidget->addTab( _mainMenu, "Home" );
 
 		_viewMenu = WidgetFactory::get().instantiateWidget<Visualization::MenuVisualizationWidget>(
 			_tabWidget, "visualizationMenu" );

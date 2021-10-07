@@ -15,7 +15,7 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
-			enum class ORDER
+			enum class ORDER : char
 			{
 				UNKNOWN	   = 0, ///< Bond order is unknown or unspecified
 				SINGLE	   = 1, ///< Single bond
@@ -50,10 +50,10 @@ namespace VTX
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
 
 		  private:
-			uint	   _indexFirstAtom	= 0;
-			uint	   _indexSecondAtom = 0;
-			ORDER	   _order			= ORDER::UNKNOWN;
+			uint _indexFirstAtom  = 0;
+			uint _indexSecondAtom = 0;
 			Molecule * _moleculePtr		= nullptr;
+			ORDER _order = ORDER::UNKNOWN;
 
 			Bond() : BaseModel( ID::Model::MODEL_BOND ) {};
 		};
