@@ -7,12 +7,15 @@ namespace VTX::Network::Request
 {
 	class DownloadMMTF : public NetworkRequest
 	{
+		VTX_REQUEST
+
 	  public:
 		DownloadMMTF( const std::string & p_id );
-		void success( QNetworkReply * const p_reply ) override;
 
 	  private:
 		std::string _id;
+
+		void _success( QNetworkReply * const p_reply ) override;
 	};
 } // namespace VTX::Network::Request
 #endif

@@ -7,9 +7,14 @@ namespace VTX::Network::Request
 {
 	class CheckUpdate : public NetworkRequest
 	{
+		VTX_REQUEST
+
 	  public:
-		CheckUpdate();
-		void success( QNetworkReply * const p_reply ) override;
+		CheckUpdate( const bool p_showPopupIfNoUpdate );
+
+	  private:
+		bool _showPopupIfNoUpdate;
+		void _success( QNetworkReply * const p_reply ) override;
 	};
 
 } // namespace VTX::Network::Request

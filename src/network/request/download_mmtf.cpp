@@ -10,7 +10,7 @@ namespace VTX::Network::Request
 		VTX_INFO( "Downloading " + p_id + "..." );
 	}
 
-	void DownloadMMTF::success( QNetworkReply * const p_reply )
+	void DownloadMMTF::_success( QNetworkReply * const p_reply )
 	{
 		VTX_INFO( "Downloaded" );
 		std::map<IO::FilePath, std::string *> mapBuffers = std::map<IO::FilePath, std::string *>();

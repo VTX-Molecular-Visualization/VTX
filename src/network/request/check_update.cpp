@@ -5,9 +5,13 @@
 
 namespace VTX::Network::Request
 {
-	CheckUpdate::CheckUpdate() : NetworkRequest( std::string( VTX_VERSION_URL ) ) { VTX_INFO( "Checking for update" ); }
+	CheckUpdate::CheckUpdate( const bool p_showPopupIfNoUpdate ) :
+		NetworkRequest( std::string( VTX_VERSION_URL ) ), _showPopupIfNoUpdate( p_showPopupIfNoUpdate )
+	{
+		VTX_INFO( "Checking for update" );
+	}
 
-	void CheckUpdate::success( QNetworkReply * const p_reply )
+	void CheckUpdate::_success( QNetworkReply * const p_reply )
 	{
 		try
 		{
@@ -32,6 +36,10 @@ namespace VTX::Network::Request
 			}
 			else
 			{
+				if ( _showPopupIfNoUpdate )
+				{
+					UI::Dialog::openInformationDialog( "No update", "You have the latest version" );
+				}
 				VTX_INFO( "No update available" );
 			}
 		}

@@ -23,7 +23,7 @@ namespace VTX
 		{
 			QNetworkReply * const  reply = qobject_cast<QNetworkReply *>( sender() );
 			NetworkRequest * const req	 = _mapReplyRequest[ reply ];
-			req->finished( reply );
+			req->_finished( reply );
 			delete req;
 		}
 
@@ -31,7 +31,7 @@ namespace VTX
 		{
 			QNetworkReply * const  reply = qobject_cast<QNetworkReply *>( sender() );
 			NetworkRequest * const req	 = _mapReplyRequest[ reply ];
-			req->error( reply );
+			req->_error( reply );
 			VTX_DEBUG( "Network error: " + std::to_string( p_error ) );
 		}
 
@@ -39,7 +39,7 @@ namespace VTX
 		{
 			QNetworkReply * const  reply = qobject_cast<QNetworkReply *>( sender() );
 			NetworkRequest * const req	 = _mapReplyRequest[ reply ];
-			req->error( reply );
+			req->_error( reply );
 			VTX_ERROR( QSslSocket::sslLibraryBuildVersionString().toStdString() );
 			VTX_ERROR( QSslSocket::sslLibraryVersionString().toStdString() );
 			for ( int i = 0; i < p_sslErrors.size(); i++ )

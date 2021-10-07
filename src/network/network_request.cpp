@@ -5,9 +5,9 @@ namespace VTX
 {
 	namespace Network
 	{
-		void NetworkRequest::finished( QNetworkReply * const p_reply )
+		void NetworkRequest::_finished( QNetworkReply * const p_reply )
 		{
-			_validateReply( p_reply ) ? success( p_reply ) : error( p_reply );
+			_validateReply( p_reply ) ? _success( p_reply ) : _error( p_reply );
 		}
 
 		bool NetworkRequest::_validateReply( QNetworkReply * const p_reply )

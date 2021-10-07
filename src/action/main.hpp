@@ -417,10 +417,19 @@ namespace VTX::Action::Main
 	class CheckForUpdate : public BaseAction
 	{
 	  public:
-		explicit CheckForUpdate() {}
+		explicit CheckForUpdate( const bool p_showPopupIfNoUpdate = false ) :
+			_showPopupIfNoUpdate( p_showPopupIfNoUpdate )
+		{
+		}
 
-		virtual void execute() override { VTX_NETWORK_MANAGER().sendRequest( new Network::Request::CheckUpdate() ); };
+		virtual void execute() override
+		{
+			VTX_NETWORK_MANAGER().sendRequest( new Network::Request::CheckUpdate( _showPopupIfNoUpdate ) );
+		};
 		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
+
+	  private:
+		bool _showPopupIfNoUpdate;
 	};
 
 } // namespace VTX::Action::Main
