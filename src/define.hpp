@@ -35,12 +35,14 @@ namespace VTX
 	const std::string VTX_PROJECT_NAME	   = "VTX";
 	constexpr int	  VTX_VERSION_MAJOR	   = 0;
 	constexpr int	  VTX_VERSION_MINOR	   = 1;
-	constexpr int	  VTX_VERSION_REVISION = 1;
+	constexpr int	  VTX_VERSION_REVISION = 2;
 
-	const std::string VTX_WEBSITE_URL		= "http://vtx.drugdesign.fr";
+	const std::string VTX_WEBSITE_URL		= "https://vtx.drugdesign.fr";
+	const std::string VTX_VERSION_URL		= VTX_WEBSITE_URL + "/vtx.json";
 	const std::string VTX_GIT_URL			= "https://gitlab.com/VTX_mol/VTX";
 	const std::string VTX_DOCUMENTATION_URL = "https://gitlab.com/VTX_mol/VTX";
 	const std::string VTX_BUG_REPORT_URL	= "https://gitlab.com/VTX_mol/VTX/-/issues";
+	const std::string VTX_RELEASES_URL		= "https://gitlab.com/VTX_mol/VTX/-/releases";
 
 	// API.
 	const std::string API_URL_MMTF = "https://mmtf.rcsb.org/v1.0/full/";

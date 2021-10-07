@@ -81,6 +81,8 @@ namespace VTX
 			return;
 		}
 
+		VTX_ACTION( new Action::Main::CheckForUpdate() );
+
 		// Start timers.
 		_timer = new QTimer( this );
 		connect( _timer, &QTimer::timeout, this, &VTXApp::_update );

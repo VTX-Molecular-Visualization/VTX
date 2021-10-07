@@ -412,5 +412,14 @@ namespace VTX::Action::Main
 		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 	};
 
+	class CheckForUpdate : public BaseAction
+	{
+	  public:
+		explicit CheckForUpdate() {}
+
+		virtual void execute() override { VTX_NETWORK_MANAGER().checkUpdate(); };
+		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
+	};
+
 } // namespace VTX::Action::Main
 #endif
