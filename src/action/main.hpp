@@ -11,6 +11,8 @@
 #include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "network/network_manager.hpp"
+#include "network/request/check_update.hpp"
+#include "network/request/download_mmtf.hpp"
 #include "setting.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
@@ -171,7 +173,7 @@ namespace VTX::Action::Main
 	  public:
 		explicit OpenApi( const std::string & p_id ) : _id( p_id ) {}
 
-		void execute() override { VTX_NETWORK_MANAGER().downloadMMTF( _id ); }
+		void execute() override { VTX_NETWORK_MANAGER().sendRequest( new Network::Request::DownloadMMTF( _id ) ); }
 
 	  private:
 		const std::string _id;
@@ -415,10 +417,19 @@ namespace VTX::Action::Main
 	class CheckForUpdate : public BaseAction
 	{
 	  public:
-		explicit CheckForUpdate() {}
+		explicit CheckForUpdate( const bool p_showPopupIfNoUpdate = false ) :
+			_showPopupIfNoUpdate( p_showPopupIfNoUpdate )
+		{
+		}
 
-		virtual void execute() override { VTX_NETWORK_MANAGER().checkUpdate(); };
+		virtual void execute() override
+		{
+			VTX_NETWORK_MANAGER().sendRequest( new Network::Request::CheckUpdate( _showPopupIfNoUpdate ) );
+		};
 		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
+
+	  private:
+		bool _showPopupIfNoUpdate;
 	};
 
 } // namespace VTX::Action::Main

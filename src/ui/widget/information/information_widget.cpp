@@ -213,6 +213,6 @@ namespace VTX::UI::Widget::Information
 	{
 		QDesktopServices::openUrl( QString::fromStdString( VTX_BUG_REPORT_URL ) );
 	}
-	void InformationWidget::_checkForUpdate() const { VTX_ACTION( new Action::Main::CheckForUpdate() ); }
+	void InformationWidget::_checkForUpdate() const { VTX_ACTION( new Action::Main::CheckForUpdate( true ) ); }
 
 } // namespace VTX::UI::Widget::Information

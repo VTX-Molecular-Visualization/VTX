@@ -273,8 +273,8 @@ if(MSVC)
 	# Add specific libs.
 	target_link_libraries(VTX PRIVATE ws2_32)
 elseif(CMAKE_COMPILER_IS_GNUCC)
-	set(CMAKE_EXE_LINKER_FLAGS " -static")
-	target_link_libraries(VTX -static-libgcc -static-libstdc++)
+#	set(CMAKE_EXE_LINKER_FLAGS " -static")
+#	target_link_libraries(VTX -static-libgcc -static-libstdc++)
 endif()
 
 message("Creating post build events...")

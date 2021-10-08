@@ -8,122 +8,38 @@ namespace VTX
 {
 	namespace Network
 	{
-		void NetworkManager::downloadMMTF( const std::string & p_id )
+		void NetworkManager::sendRequest( NetworkRequest * const p_request )
 		{
-			_id = p_id;
-			VTX_INFO( "Downloading " + p_id + "..." );
+			QNetworkReply * const reply = _networkManager.get( *p_request );
+			_mapReplyRequest.emplace( reply, p_request );
 
-			QNetworkRequest request;
-			request.setUrl( QUrl( std::string( API_URL_MMTF + p_id ).c_str() ) );
-			QNetworkReply * const reply = _networkManager.get( request );
 			connect( reply, &QNetworkReply::errorOccurred, this, &NetworkManager::_errorOccured );
 			connect( reply, &QNetworkReply::sslErrors, this, &NetworkManager::_sslErrors );
 			connect( reply, &QNetworkReply::downloadProgress, this, &NetworkManager::_downloadProgress );
-			connect( reply, &QNetworkReply::finished, this, &NetworkManager::_finishedDownloadMMTF );
+			connect( reply, &QNetworkReply::finished, this, &NetworkManager::_finished );
 		}
 
-		void NetworkManager::checkUpdate()
+		void NetworkManager::_finished()
 		{
-			VTX_INFO( "Checking for update" );
-			QNetworkRequest request;
-			request.setUrl( QUrl( std::string( VTX_VERSION_URL ).c_str() ) );
-			QNetworkReply * const reply = _networkManager.get( request );
-			connect( reply, &QNetworkReply::errorOccurred, this, &NetworkManager::_errorOccured );
-			connect( reply, &QNetworkReply::sslErrors, this, &NetworkManager::_sslErrors );
-			connect( reply, &QNetworkReply::finished, this, &NetworkManager::_finishedCheckUpdate );
-		}
-
-		void NetworkManager::_finishedDownloadMMTF()
-		{
-			QNetworkReply * const replyThis = qobject_cast<QNetworkReply *>( sender() );
-			if ( _isValidReply( replyThis ) == false )
-			{
-				return;
-			}
-
-			VTX_INFO( "Downloaded" );
-
-			std::map<IO::FilePath, std::string *> mapBuffers = std::map<IO::FilePath, std::string *>();
-			mapBuffers.emplace( IO::FilePath( _id + ".mmtf" ), new std::string( replyThis->readAll().toStdString() ) );
-
-			VTX_ACTION( new Action::Main::Open( mapBuffers ) );
-		}
-
-		void NetworkManager::_finishedCheckUpdate()
-		{
-			QNetworkReply * const replyThis = qobject_cast<QNetworkReply *>( sender() );
-			if ( _isValidReply( replyThis ) == false )
-			{
-				return;
-			}
-
-			try
-			{
-				nlohmann::json json = nlohmann::json::parse( replyThis->readAll().toStdString() ).at( "VERSION" );
-
-				const int major	   = json.at( "MAJOR" );
-				const int minor	   = json.at( "MINOR" );
-				const int revision = json.at( "REVISION" );
-
-				if ( major != VTX_VERSION_MAJOR || minor != VTX_VERSION_MINOR || revision != VTX_VERSION_REVISION )
-				{
-					const std::string consoleMessage = "VTX " + std::to_string( major ) + "." + std::to_string( minor )
-													   + "." + std::to_string( revision ) + " is available at:\n"
-													   + VTX_RELEASES_URL + "\nor\n" + VTX_WEBSITE_URL;
-
-					const QString dialogMessage
-						= QString::fromStdString( "VTX " + std::to_string( major ) + "." + std::to_string( minor ) + "."
-												  + std::to_string( revision ) + " is available at:\n"
-												  + VTX_RELEASES_CLICKABLE_URL + "\nor\n" + VTX_WEBSITE_CLICKABLE_URL );
-
-					VTX_INFO( consoleMessage );
-					UI::Dialog::openInformationDialog( "New version available", dialogMessage );
-				}
-				else
-				{
-					VTX_INFO( "No update available" );
-				}
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( p_e.what() );
-			}
-		}
-
-		bool NetworkManager::_isValidReply( const QNetworkReply * const p_reply )
-		{
-			if ( p_reply->error() )
-			{
-				VTX_ERROR( p_reply->errorString().toStdString() );
-				return false;
-			}
-
-			QVariant statusCode = p_reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
-			if ( !statusCode.isValid() )
-			{
-				VTX_ERROR( "Invalid HTTP response" );
-				return false;
-			}
-			int status = statusCode.toInt();
-
-			if ( status != 200 )
-			{
-				VTX_ERROR( "HTTP " + std::to_string( status ) );
-				QString reason = p_reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
-				VTX_ERROR( reason.toStdString() );
-				return false;
-			}
-
-			return true;
+			QNetworkReply * const  reply = qobject_cast<QNetworkReply *>( sender() );
+			NetworkRequest * const req	 = _mapReplyRequest[ reply ];
+			req->_finished( reply );
+			delete req;
 		}
 
 		void NetworkManager::_errorOccured( const QNetworkReply::NetworkError & p_error )
 		{
+			QNetworkReply * const  reply = qobject_cast<QNetworkReply *>( sender() );
+			NetworkRequest * const req	 = _mapReplyRequest[ reply ];
+			req->_error( reply );
 			VTX_DEBUG( "Network error: " + std::to_string( p_error ) );
 		}
 
 		void NetworkManager::_sslErrors( const QList<QSslError> & p_sslErrors )
 		{
+			QNetworkReply * const  reply = qobject_cast<QNetworkReply *>( sender() );
+			NetworkRequest * const req	 = _mapReplyRequest[ reply ];
+			req->_error( reply );
 			VTX_ERROR( QSslSocket::sslLibraryBuildVersionString().toStdString() );
 			VTX_ERROR( QSslSocket::sslLibraryVersionString().toStdString() );
 			for ( int i = 0; i < p_sslErrors.size(); i++ )
