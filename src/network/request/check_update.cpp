@@ -18,7 +18,7 @@ namespace VTX::Network::Request
 			nlohmann::json json = nlohmann::json::parse( p_reply->readAll().toStdString() ).at( "VERSION" );
 
 			const int major	   = json.at( "MAJOR" );
-			const int minor	   = json.at( "MINOR" )+1;
+			const int minor	   = json.at( "MINOR" );
 			const int revision = json.at( "REVISION" );
 
 			if ( major != VTX_VERSION_MAJOR || minor != VTX_VERSION_MINOR || revision != VTX_VERSION_REVISION )
