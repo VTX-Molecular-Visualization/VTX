@@ -53,7 +53,9 @@ namespace VTX
 			void setCurrentPath( const IO::FilePath & p_filePath, const bool p_addInRecentPath = true );
 			void clearCurrentPath();
 
-			Data & getData( const Model::Molecule * const p_molecule );
+			Data &						getData( const Model::Molecule * const p_molecule );
+			const ScenePathData::Data & getData( const Model::Molecule * const p_molecule ) const;
+			IO::FilePath				getFilepath( const Model::Molecule * const p_molecule ) const;
 
 			void	   incrementSceneModifications();
 			void	   decrementSceneModifications();

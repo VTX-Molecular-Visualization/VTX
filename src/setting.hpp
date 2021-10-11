@@ -192,11 +192,12 @@ namespace VTX
 		static const uint		VIDEO_CRF_DEFAULT;
 
 		// Misc.
-		static const int		  CONSOLE_SIZE;
-		static const uint		  ACTION_BUFFER_SIZE; // For undo/redo
-		static const bool		  COMPUTE_BOND_ORDER_ON_CHEMFILE = false;
-		static const bool		  CHECK_VTX_UPDATE_DEFAULT		 = true;
-		inline static const float CELL_LIST_CUBE_SIZE			 = 8.f;
+		static const int   CONSOLE_SIZE;
+		static const uint  ACTION_BUFFER_SIZE; // For undo/redo
+		static const bool  COMPUTE_BOND_ORDER_ON_CHEMFILE;
+		static const bool  CHECK_VTX_UPDATE_DEFAULT;
+		static const bool  PORTABLE_SAVE_ACTIVATED_DEFAULT;
+		static const float CELL_LIST_CUBE_SIZE;
 
 		// Parameters
 		enum class PARAMETER
@@ -221,6 +222,7 @@ namespace VTX
 
 			SYMBOL_DISPLAY_MODE,
 			CHECK_VTX_UPDATE,
+			PORTABLE_SAVE_ACTIVATED,
 
 			COUNT,
 			ALL,
@@ -267,6 +269,9 @@ namespace VTX
 
 		inline const bool getCheckVTXUpdateAtLaunch() const { return checkVTXUpdate; }
 		void			  setCheckVTXUpdateAtLaunch( const bool p_checkVTXUpdate );
+
+		inline const bool isPortableSaveActivated() const { return portableSaveActivated; }
+		void			  activatePortableSave( const bool p_activate );
 
 		static const int					  RECENT_PATH_SAVED_MAX_COUNT;
 		static const int					  RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT;
@@ -333,8 +338,9 @@ namespace VTX
 		int					 defaultTrajectorySpeed	   = DEFAULT_TRAJECTORY_SPEED;
 		Trajectory::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
 
-		Style::SYMBOL_DISPLAY_MODE symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
-		bool					   checkVTXUpdate	 = CHECK_VTX_UPDATE_DEFAULT;
+		Style::SYMBOL_DISPLAY_MODE symbolDisplayMode	 = SYMBOL_DISPLAY_MODE_DEFAULT;
+		bool					   checkVTXUpdate		 = CHECK_VTX_UPDATE_DEFAULT;
+		bool					   portableSaveActivated = PORTABLE_SAVE_ACTIVATED_DEFAULT;
 
 		static QString _getFileInRegisterKey( const QString & p_key, const QString & p_default );
 

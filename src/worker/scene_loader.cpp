@@ -5,6 +5,7 @@
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "io/reader/serialized_object.hpp"
+#include "io/scene_path_data.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -32,6 +33,7 @@ namespace VTX
 
 				try
 				{
+					VTXApp::get().getScenePathData().setCurrentPath( path, false );
 					reader->readFile( path, VTXApp::get() );
 					VTX_INFO( "App loaded " );
 				}

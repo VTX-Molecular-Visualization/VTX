@@ -2,6 +2,7 @@
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "model/molecule.hpp"
+#include "util/filesystem.hpp"
 
 namespace VTX::IO
 {
@@ -12,6 +13,10 @@ namespace VTX::IO
 	ScenePathData::Data & ScenePathData::getData( const Model::Molecule * const p_molecule )
 	{
 		return _mapMoleculePath[ p_molecule ];
+	}
+	const ScenePathData::Data & ScenePathData::getData( const Model::Molecule * const p_molecule ) const
+	{
+		return _mapMoleculePath.at( p_molecule );
 	}
 
 	void				 ScenePathData::Data::registerPath( const IO::FilePath & p_filePath ) { _path = p_filePath; }
@@ -76,7 +81,7 @@ namespace VTX::IO
 			return;
 
 		_currentFilePath = p_filePath;
-		
+
 		if ( p_addInRecentPath )
 			Setting::enqueueNewLoadingPath( p_filePath );
 
@@ -95,6 +100,33 @@ namespace VTX::IO
 		{
 			delete _writer;
 			_writer = nullptr;
+		}
+	}
+
+	IO::FilePath ScenePathData::getFilepath( const Model::Molecule * const p_molecule ) const
+	{
+		IO::FilePath res;
+
+		const IO::FilePath & moleculePath	 = getData( p_molecule ).getFilepath();
+		const std::string	 moleculePathStr = moleculePath.path();
+
+		const IO::FilePath moleculeFolderPath	 = Util::Filesystem::getSceneSaveDirectory( _currentFilePath );
+		const std::string  moleculeFolderPathStr = moleculeFolderPath.path();
+
+		const bool pathCanBeRelative = moleculePathStr._Starts_with( moleculeFolderPathStr );
+
+		if ( pathCanBeRelative )
+		{
+			const size_t firstIndex = moleculeFolderPathStr.length() + 1; // skip last '/'
+			const size_t count		= moleculePathStr.length() - firstIndex;
+
+			const std::string relativePathStr = moleculePathStr.substr( firstIndex, count );
+
+			return IO::FilePath( relativePathStr );
+		}
+		else
+		{
+			return moleculePath;
 		}
 	}
 
