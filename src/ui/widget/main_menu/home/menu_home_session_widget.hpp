@@ -26,6 +26,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 	  private:
 		MenuToolButtonWidget * _newSessionButton		= nullptr;
+		MenuToolButtonWidget * _downloadMoleculeButton	= nullptr;
 		MenuToolButtonWidget * _openSessionButton		= nullptr;
 		MenuToolButtonWidget * _openRecentSessionButton = nullptr;
 		MenuToolButtonWidget * _saveSessionButton		= nullptr;
@@ -34,8 +35,9 @@ namespace VTX::UI::Widget::MainMenu::Home
 		QMenu * _recentSessionMenu = nullptr;
 
 	  private:
-		void _newSession();
-		void _openFile();
+		void _newSession() const;
+		void _downloadMoleculeFile() const;
+		void _openFile() const;
 		void _loadRecentSession( const int & p_ptrSessionIndex ) const;
 		void _saveSession() const;
 		void _saveAsSession() const;

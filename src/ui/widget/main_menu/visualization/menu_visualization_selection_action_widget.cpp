@@ -5,6 +5,7 @@
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
+#include "ui/dialog.hpp"
 #include "ui/widget_factory.hpp"
 
 namespace VTX::UI::Widget::MainMenu::Visualization
@@ -53,6 +54,11 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_hide->setData( "Hide", ":/sprite/hide_selection_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_hide, 1 );
 
+		_exportSelectionButton
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "saveMoleculeButton" );
+		_exportSelectionButton->setData( "Export", ":/sprite/save_molecule_icon.png", Qt::Orientation::Vertical );
+		pushButton( *_exportSelectionButton, 2 );
+
 		_enableButtons( false );
 
 		validate();
@@ -65,6 +71,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		_show->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_showSelection );
 		_hide->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_hideSelection );
+
+		_exportSelectionButton->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_exportSelection );
 	}
 	void MenuVisualizationSelectionActionWidget::localize() { setTitle( "Selection Action" ); }
 
@@ -97,6 +105,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			selectionModel, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
 	}
 
+	void MenuVisualizationSelectionActionWidget::_exportSelection() const { UI::Dialog::openExportMoleculeDialog(); }
+
 	void MenuVisualizationSelectionActionWidget::_enableButtons( const bool p_enable )
 	{
 		_copy->setEnabled( p_enable );
@@ -104,6 +114,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_delete->setEnabled( p_enable );
 		_show->setEnabled( p_enable );
 		_hide->setEnabled( p_enable );
+		_exportSelectionButton->setEnabled( p_enable );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Visualization

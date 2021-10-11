@@ -1,7 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MENU_HOME__
 #define __VTX_UI_WIDGET_MENU_HOME__
 
-#include "menu_home_molecule_widget.hpp"
 #include "menu_home_session_widget.hpp"
 #include "menu_home_windows_widget.hpp"
 #include "ui/widget/main_menu/menu_tooltab_widget.hpp"
@@ -23,9 +22,8 @@ namespace VTX::UI::Widget::MainMenu::Home
 		void _setupSlots() override;
 
 	  private:
-		MenuHomeSessionWidget *	 _session  = nullptr;
-		MenuHomeMoleculeWidget * _molecule = nullptr;
-		MenuHomeWindowsWidget *	 _windows  = nullptr;
+		MenuHomeSessionWidget *									_session		 = nullptr;
+		MenuHomeWindowsWidget *									_windows		 = nullptr;
 	};
 } // namespace VTX::UI::Widget::MainMenu::Home
 #endif
