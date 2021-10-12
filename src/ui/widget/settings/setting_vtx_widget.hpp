@@ -52,9 +52,10 @@ namespace VTX::UI::Widget::Settings
 		CustomWidget::IntegerFieldSliderWidget * _defaultTrajectorySpeedWidget	  = nullptr;
 
 		// Data
-		QComboBox *	  _symbolDisplayModeWidget = nullptr;
-		QCheckBox *	  _checkVTXUpdateAtLaunch  = nullptr;
-		QPushButton * _restoreLayoutButton	   = nullptr;
+		QComboBox *	  _symbolDisplayModeWidget	  = nullptr;
+		QCheckBox *	  _activatePortableSaveWidget = nullptr;
+		QCheckBox *	  _checkVTXUpdateAtLaunch	  = nullptr;
+		QPushButton * _restoreLayoutButton		  = nullptr;
 
 		int _currentRow = 0;
 
@@ -76,6 +77,7 @@ namespace VTX::UI::Widget::Settings
 
 		void _changeSymbolDisplayMode( const int p_displayMode );
 		void _changeCheckVTXUpdateAtLaunch( const bool p_changeCheckVTXUpdateAtLaunch ) const;
+		void _activatePortableSave( const bool p_activate ) const;
 
 		void _restoreSettingsAction();
 		void _restoreLayoutAction();

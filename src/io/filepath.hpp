@@ -17,7 +17,7 @@ namespace VTX
 			FilePath( const std::string & p_path ) : _path( QString::fromStdString( p_path ) ) {}
 
 			inline const std::string path() const { return _path.toStdString(); }
-			inline const QString	 qpath() const { return _path; }
+			inline const QString &	 qpath() const { return _path; }
 
 			inline const std::string filename() const { return QFileInfo( _path ).fileName().toStdString(); }
 

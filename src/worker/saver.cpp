@@ -102,7 +102,15 @@ namespace VTX::Worker
 
 				IO::FilePath filePath = moleculePathData.getFilepath();
 
-				if ( moleculePathData.needToSaveMolecule() )
+				bool needToSaveMolecule = moleculePathData.needToSaveMolecule();
+
+				if ( VTX_SETTING().isPortableSaveActivated() )
+				{
+					const bool pathIsInItemDirectory = filePath.path()._Starts_with( itemDirectory.path() );
+					needToSaveMolecule				 = needToSaveMolecule || !pathIsInItemDirectory;
+				}
+
+				if ( needToSaveMolecule )
 				{
 					IO::Writer::ChemfilesWriter * const moleculeWriter = new IO::Writer::ChemfilesWriter( this );
 

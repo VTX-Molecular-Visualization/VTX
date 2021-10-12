@@ -64,7 +64,8 @@ namespace VTX::IO
 
 	nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
 	{
-		const IO::FilePath moleculePath = VTXApp::get().getScenePathData().getData( &p_molecule ).getFilepath();
+		const IO::FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
+
 		const Writer::ChemfilesWriter * const writer
 			= VTXApp::get().getScenePathData().getData( &p_molecule ).getWriter();
 
@@ -249,6 +250,7 @@ namespace VTX::IO
 			{ "DEFAULT_TRAJECTORY_SPEED", p_setting.getDefaultTrajectorySpeed() },
 			{ "DEFAULT_TRAJECTORY_PLAY_MODE", magic_enum::enum_name( p_setting.getDefaultTrajectoryPlayMode() ) },
 			{ "CHECK_VTX_UPDATE_AT_LAUNCH", p_setting.getCheckVTXUpdateAtLaunch() },
+			{ "PORTABLE_SAVE_ACTIVATED", p_setting.isPortableSaveActivated() },
 		};
 	}
 
@@ -335,7 +337,14 @@ namespace VTX::IO
 			p_molecule.applyTransform( transform );
 		}
 
-		const IO::FilePath molPath = _get<std::string>( p_json, "PATH" );
+		IO::FilePath molPath = _get<std::string>( p_json, "PATH" );
+
+		if ( Util::Filesystem::isRelativePath( molPath ) )
+		{
+			const IO::FilePath sceneFolder
+				= Util::Filesystem::getSceneSaveDirectory( VTXApp::get().getScenePathData().getCurrentPath() );
+			molPath = sceneFolder / molPath;
+		}
 
 		try
 		{
@@ -648,6 +657,9 @@ namespace VTX::IO
 
 		p_setting.setCheckVTXUpdateAtLaunch(
 			_get<bool>( p_json, "CHECK_VTX_UPDATE_AT_LAUNCH", Setting::CHECK_VTX_UPDATE_DEFAULT ) );
+
+		p_setting.activatePortableSave(
+			_get<bool>( p_json, "PORTABLE_SAVE_ACTIVATED", Setting::PORTABLE_SAVE_ACTIVATED_DEFAULT ) );
 	}
 
 	nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,

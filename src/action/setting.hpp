@@ -660,6 +660,17 @@ namespace VTX::Action::Setting
 		const bool _checkVTXUpdateAtLaunch;
 	};
 
+	class ActivatePortableSave : public BaseAction
+	{
+	  public:
+		explicit ActivatePortableSave( const bool p_activate ) : _activate( p_activate ) {}
+
+		virtual void execute() override { VTX_SETTING().activatePortableSave( _activate ); };
+
+	  private:
+		const bool _activate;
+	};
+
 	class ChangeRenderMode : public BaseAction
 	{
 	  public:
@@ -685,6 +696,7 @@ namespace VTX::Action::Setting
 		{
 			VTX_ACTION( new Action::Setting::ChangeSymbolDisplayMode( _setting.getSymbolDisplayMode() ) );
 			VTX_ACTION( new Action::Setting::ChangeCheckVTXUpdateAtLaunch( _setting.getCheckVTXUpdateAtLaunch() ) );
+			VTX_ACTION( new Action::Setting::ActivatePortableSave( _setting.isPortableSaveActivated() ) );
 
 			VTX_ACTION( new Action::Setting::WindowMode(
 				_setting.getWindowFullscreen() ? VTX::UI::WindowMode::Fullscreen : VTX::UI::WindowMode::Windowed ) );

@@ -85,7 +85,8 @@ namespace VTX::UI::Widget::Settings
 		for ( const std::string & symbolModeStr : Style::SYMBOL_DISPLAY_MODE_STRING )
 			_symbolDisplayModeWidget->addItem( QString::fromStdString( symbolModeStr ) );
 
-		_checkVTXUpdateAtLaunch = new QCheckBox( viewport );
+		_checkVTXUpdateAtLaunch		= new QCheckBox( viewport );
+		_activatePortableSaveWidget = new QCheckBox( viewport );
 
 		_restoreLayoutButton   = new QPushButton( this );
 		_restoreSettingsButton = new QPushButton( this );
@@ -117,6 +118,7 @@ namespace VTX::UI::Widget::Settings
 
 		_startSection( "Data" );
 		_addItemInLayout( _symbolDisplayModeWidget, "Symbol display mode" );
+		_addItemInLayout( _activatePortableSaveWidget, "Portable save" );
 		_addItemInLayout( _checkVTXUpdateAtLaunch, "Check updates at launch" );
 
 		_addItemInLayout( _restoreLayoutButton );
@@ -192,6 +194,8 @@ namespace VTX::UI::Widget::Settings
 
 		connect(
 			_checkVTXUpdateAtLaunch, &QCheckBox::stateChanged, this, &SettingVTXWidget::_changeCheckVTXUpdateAtLaunch );
+		connect(
+			_activatePortableSaveWidget, &QCheckBox::stateChanged, this, &SettingVTXWidget::_activatePortableSave );
 
 		connect( _restoreLayoutButton, &QPushButton::clicked, this, &SettingVTXWidget::_restoreLayoutAction );
 
@@ -238,6 +242,8 @@ namespace VTX::UI::Widget::Settings
 
 		_symbolDisplayModeWidget->setCurrentIndex( int( VTX_SETTING().getSymbolDisplayMode() ) );
 		_checkVTXUpdateAtLaunch->setCheckState( Util::UI::getCheckState( VTX_SETTING().getCheckVTXUpdateAtLaunch() ) );
+		_activatePortableSaveWidget->setCheckState(
+			Util::UI::getCheckState( VTX_SETTING().isPortableSaveActivated() ) );
 	}
 
 	void SettingVTXWidget::_activeControllerElasticityAction( const bool p_activate )
@@ -333,6 +339,12 @@ namespace VTX::UI::Widget::Settings
 		if ( VTX_SETTING().getCheckVTXUpdateAtLaunch() != p_changeCheckVTXUpdateAtLaunch )
 			VTX_ACTION( new Action::Setting::ChangeCheckVTXUpdateAtLaunch( p_changeCheckVTXUpdateAtLaunch ) );
 	}
+	void SettingVTXWidget::_activatePortableSave( const bool p_activate ) const
+	{
+		if ( VTX_SETTING().isPortableSaveActivated() != p_activate )
+			VTX_ACTION( new Action::Setting::ActivatePortableSave( p_activate ) );
+	}
+
 	void SettingVTXWidget::_restoreLayoutAction()
 	{
 		VTX_ACTION( new Action::Main::RestoreWindowLayout() );

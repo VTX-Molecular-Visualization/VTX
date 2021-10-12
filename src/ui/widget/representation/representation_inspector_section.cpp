@@ -77,6 +77,8 @@ namespace VTX::UI::Widget::Representation
 		mainLayout->addItem( titleLayout );
 		mainLayout->addWidget( _representationWidget );
 		mainLayout->addItem( buttonsLayout );
+
+		_setSettingDisplay( true );
 	}
 	void RepresentationInspectorSection::_setupSlots()
 	{
@@ -191,11 +193,14 @@ namespace VTX::UI::Widget::Representation
 
 	void RepresentationInspectorSection::_toggleSettingDisplay() const
 	{
-		bool newVisibleState = !_representationWidget->isVisible();
-		_representationWidget->setVisible( newVisibleState );
+		_setSettingDisplay( !_representationWidget->isVisible() );
+	}
 
-		const QIcon & icon
-			= newVisibleState ? Style::IconConst::get().UNFOLDED_PIXMAP : Style::IconConst::get().FOLDED_PIXMAP;
+	void RepresentationInspectorSection::_setSettingDisplay( const bool p_expand ) const
+	{
+		_representationWidget->setVisible( p_expand );
+
+		const QIcon & icon = p_expand ? Style::IconConst::get().UNFOLDED_PIXMAP : Style::IconConst::get().FOLDED_PIXMAP;
 
 		_titleWidget->setIcon( icon );
 	}
@@ -307,7 +312,7 @@ namespace VTX::UI::Widget::Representation
 			else
 			{
 				_dummyRepresentation->setLinkedRepresentation( p_representation.getLinkedRepresentation() );
-				_dummyRepresentation->setTarget( p_representation.getTarget());
+				_dummyRepresentation->setTarget( p_representation.getTarget() );
 				_dummyRepresentation->applyData(
 					p_representation, p_representation.getOverridedMembersFlag(), false, false );
 			}

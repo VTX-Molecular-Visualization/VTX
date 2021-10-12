@@ -148,6 +148,11 @@ namespace VTX
 	const int  Setting::CONSOLE_SIZE	   = 80;
 	const uint Setting::ACTION_BUFFER_SIZE = 10;
 
+	const bool	Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE	 = false;
+	const bool	Setting::CHECK_VTX_UPDATE_DEFAULT		 = true;
+	const bool	Setting::PORTABLE_SAVE_ACTIVATED_DEFAULT = false;
+	const float Setting::CELL_LIST_CUBE_SIZE			 = 8.f;
+
 	// Dev.
 	const Renderer::MODE Setting::MODE_DEFAULT = Renderer::MODE::GL;
 
@@ -492,12 +497,16 @@ namespace VTX
 		_sendDataChangedEvent( PARAMETER::CHECK_VTX_UPDATE );
 	}
 
+	void Setting::activatePortableSave( const bool p_activate )
+	{
+		portableSaveActivated = p_activate;
+		_sendDataChangedEvent( PARAMETER::PORTABLE_SAVE_ACTIVATED );
+	}
+
 	void Setting::restore()
 	{
 		symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
 		windowFullscreen  = WINDOW_FULLSCREEN_DEFAULT;
-
-		checkVTXUpdate = CHECK_VTX_UPDATE_DEFAULT;
 
 		activeRenderer			   = ACTIVE_RENDERER_DEFAULT;
 		forceRenderer			   = FORCE_RENDERER_DEFAULT;
@@ -518,6 +527,9 @@ namespace VTX
 
 		defaultTrajectorySpeed	  = DEFAULT_TRAJECTORY_SPEED;
 		defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
+
+		checkVTXUpdate		  = CHECK_VTX_UPDATE_DEFAULT;
+		portableSaveActivated = PORTABLE_SAVE_ACTIVATED_DEFAULT;
 
 		_sendDataChangedEvent( PARAMETER::ALL );
 	}

@@ -34,12 +34,17 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		MenuToolButtonWidget * _show = nullptr;
 		MenuToolButtonWidget * _hide = nullptr;
 
+		// Export
+		MenuToolButtonWidget * _exportSelectionButton = nullptr;
+
 		void _copySelection() const;
 		void _extractSelection() const;
 		void _deleteSelection() const;
 
 		void _showSelection() const;
 		void _hideSelection() const;
+
+		void _exportSelection() const;
 	};
 } // namespace VTX::UI::Widget::MainMenu::Visualization
 #endif

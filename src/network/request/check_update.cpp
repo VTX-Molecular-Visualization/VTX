@@ -29,7 +29,7 @@ namespace VTX::Network::Request
 
 				const QString dialogMessage = QString::fromStdString(
 					"VTX " + std::to_string( major ) + "." + std::to_string( minor ) + "." + std::to_string( revision )
-					+ " is available at:\n" + VTX_RELEASES_CLICKABLE_URL + "\nor\n" + VTX_WEBSITE_CLICKABLE_URL );
+					+ " is available at: " + VTX_RELEASES_CLICKABLE_URL + "<br>or " + VTX_WEBSITE_CLICKABLE_URL );
 
 				VTX_INFO( consoleMessage );
 				UI::Dialog::openInformationDialog( "New version available", dialogMessage );

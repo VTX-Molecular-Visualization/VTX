@@ -120,7 +120,7 @@ namespace VTX
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
 
 			static const IO::FilePath STYLESHEET_FILE_DEFAULT = IO::FilePath( ":/stylesheet.css" );
-			static const IO::FilePath SCENE_OBJECT_DIR		  = IO::FilePath( "/obj" );
+			static const IO::FilePath SCENE_OBJECT_DIR		  = IO::FilePath( "obj" );
 
 			static const std::string DEFAULT_SCENE_FILENAME	   = "New Scene";
 			static const std::string DEFAULT_MOLECULE_FILENAME = "New Molecule";
@@ -205,6 +205,13 @@ namespace VTX
 			{
 				return getResidueDataDir() / p_residueName.path().substr( 0, 1 );
 			}
+
+			inline bool isAbsolutePath( const IO::FilePath & p_path )
+			{
+				const std::string pathStr = p_path.path();
+				return pathStr.size() >= 3 && pathStr[ 1 ] == ':' && ( pathStr[ 2 ] == '/' || pathStr[ 2 ] == '\\' );
+			}
+			inline bool isRelativePath( const IO::FilePath & p_path ) { return !isAbsolutePath( p_path ); }
 
 		} // namespace Filesystem
 	}	  // namespace Util

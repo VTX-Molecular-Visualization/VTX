@@ -36,6 +36,12 @@ namespace VTX::UI::Widget::MainMenu::Home
 		_newSessionButton->setData( "New", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
 		pushButton( *_newSessionButton, 0 );
 
+		_downloadMoleculeButton
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "downloadMoleculeButton" );
+		_downloadMoleculeButton->setData(
+			"Download", ":/sprite/download_molecule_icon.png", Qt::Orientation::Horizontal );
+		pushButton( *_downloadMoleculeButton, 1 );
+
 		_openSessionButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "openSessionButton" );
 		_openSessionButton->setData( "Open", ":/sprite/open_session_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_openSessionButton, 1 );
@@ -64,6 +70,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 	void MenuHomeSessionWidget::_setupSlots()
 	{
 		_newSessionButton->setTriggerAction( this, &MenuHomeSessionWidget::_newSession );
+		_downloadMoleculeButton->setTriggerAction( this, &MenuHomeSessionWidget::_downloadMoleculeFile );
 		_openSessionButton->setTriggerAction( this, &MenuHomeSessionWidget::_openFile );
 		_saveSessionButton->setTriggerAction( this, &MenuHomeSessionWidget::_saveSession );
 		_saveAsSessionButton->setTriggerAction( this, &MenuHomeSessionWidget::_saveAsSession );
@@ -94,8 +101,9 @@ namespace VTX::UI::Widget::MainMenu::Home
 		_openRecentSessionButton->setEnabled( actionIndex > 0 );
 	}
 
-	void MenuHomeSessionWidget::_newSession() { Dialog::createNewSessionDialog(); }
-	void MenuHomeSessionWidget::_openFile() { Dialog::openLoadSessionDialog(); }
+	void MenuHomeSessionWidget::_newSession() const { Dialog::createNewSessionDialog(); }
+	void MenuHomeSessionWidget::_downloadMoleculeFile() const { UI::Dialog::openDownloadMoleculeDialog(); }
+	void MenuHomeSessionWidget::_openFile() const { Dialog::openLoadSessionDialog(); }
 	void MenuHomeSessionWidget::_saveSession() const
 	{
 		VTX_ACTION( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );

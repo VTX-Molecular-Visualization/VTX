@@ -93,7 +93,7 @@ namespace VTX::UI::Widget::Representation
 		std::unordered_set<const InstantiatedRepresentation *> _representations
 			= std::unordered_set<const InstantiatedRepresentation *>();
 
-		Model::Representation::InstantiatedRepresentation * _dummyRepresentation = nullptr;
+		Model::Representation::InstantiatedRepresentation * _dummyRepresentation	 = nullptr;
 		int													_baseRepresentationIndex = -1;
 		bool												_isDirty				 = false;
 
@@ -101,6 +101,7 @@ namespace VTX::UI::Widget::Representation
 		void _deleteRepresentationSettingWidget();
 
 		void _toggleSettingDisplay() const;
+		void _setSettingDisplay( const bool p_expand ) const;
 		void _representationPresetChange( const int p_resetIndex );
 		void _representationDataChange( const Model::Representation::MEMBER_FLAG & p_flagDataModified );
 		void _representationColorChange( const Color::Rgb & p_color, const bool p_ssColor );
