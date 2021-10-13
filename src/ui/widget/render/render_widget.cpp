@@ -59,7 +59,7 @@ namespace VTX::UI::Widget::Render
 		VTXApp::get()
 			.getStateMachine()
 			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->getItem<Controller::Shortcut>( ID::Controller::SHORTCUT )
+			->getController<Controller::Shortcut>( ID::Controller::SHORTCUT )
 			->setGroup( Controller::SHORTCUTGROUP::RENDER );
 	}
 	void RenderWidget::focusOutEvent( QFocusEvent * p_event )
@@ -67,7 +67,7 @@ namespace VTX::UI::Widget::Render
 		VTXApp::get()
 			.getStateMachine()
 			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->getItem<Controller::Shortcut>( ID::Controller::SHORTCUT )
+			->getController<Controller::Shortcut>( ID::Controller::SHORTCUT )
 			->setGroup( Controller::SHORTCUTGROUP::DEFAULT );
 	}
 

@@ -21,32 +21,33 @@ namespace VTX
 			_registerEvent( Event::Global::MESH_REMOVED );
 
 			// Create controller.
-			addItem( ID::Controller::FREEFLY, new Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
-			addItem( ID::Controller::TRACKBALL,
-					 new Controller::Trackball( VTXApp::get().getScene().getCamera(),
-												VTXApp::get().getScene().getAABB().centroid(),
-												VTXApp::get().getScene().getAABB().diameter() ) );
-			addItem( ID::Controller::SHORTCUT, new Controller::Shortcut() );
+			_controllers.emplace( ID::Controller::FREEFLY,
+								  new Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
+			_controllers.emplace( ID::Controller::TRACKBALL,
+								  new Controller::Trackball( VTXApp::get().getScene().getCamera(),
+															 VTXApp::get().getScene().getAABB().centroid(),
+															 VTXApp::get().getScene().getAABB().diameter() ) );
+			_controllers.emplace( ID::Controller::SHORTCUT, new Controller::Shortcut() );
 		}
 
 		void Visualization::enter( void * const )
 		{
 			if ( _cameraController == ID::Controller::FREEFLY )
 			{
-				getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( false );
-				getItem<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( true );
+				getController<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( false );
+				getController<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( true );
 			}
 			else
 			{
-				getItem<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( false );
-				getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( true );
+				getController<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( false );
+				getController<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( true );
 			}
 		}
 
 		void Visualization::exit()
 		{
-			getItem<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( false );
-			getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( false );
+			getController<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( false );
+			getController<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( false );
 		}
 
 		void Visualization::update( const float & p_deltaTime )
@@ -59,12 +60,12 @@ namespace VTX
 
 		void Visualization::toggleCameraController()
 		{
-			if ( getItem<VTX::Controller::BaseCameraController>( _cameraController )->isOrienting() )
+			if ( getController<VTX::Controller::BaseCameraController>( _cameraController )->isOrienting() )
 			{
 				return;
 			}
 
-			getItem( _cameraController )->setActive( false );
+			_controllers[ _cameraController ]->setActive( false );
 
 			if ( _cameraController == ID::Controller::FREEFLY )
 			{
@@ -74,44 +75,45 @@ namespace VTX
 			{
 				_cameraController = ID::Controller::FREEFLY;
 			}
-			getItem( _cameraController )->setActive( true );
+			_controllers[ _cameraController ]->setActive( true );
 
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::CONTROLLER_CHANGE, &_cameraController ) );
 		}
 		void Visualization::setCameraController( const ID::VTX_ID & p_controllerId )
 		{
-			if ( getItem<VTX::Controller::BaseCameraController>( _cameraController )->isOrienting() )
+			if ( getController<VTX::Controller::BaseCameraController>( _cameraController )->isOrienting() )
 			{
 				return;
 			}
 
 			// Do nothing if id not in collection or already in use
-			if ( !hasItem( p_controllerId ) || _cameraController == p_controllerId )
+			if ( _controllers.find( p_controllerId ) != _controllers.end() || _cameraController == p_controllerId )
 				return;
 
-			getItem( _cameraController )->setActive( false );
+			_controllers[ _cameraController ]->setActive( false );
 			_cameraController = p_controllerId;
-			getItem( _cameraController )->setActive( true );
+			_controllers[ _cameraController ]->setActive( true );
 
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::CONTROLLER_CHANGE, &_cameraController ) );
 		}
 
 		void Visualization::resetCameraController()
 		{
-			getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->reset();
-			getItem<Controller::Freefly>( ID::Controller::FREEFLY )->reset();
+			getController<Controller::Trackball>( ID::Controller::TRACKBALL )->reset();
+			getController<Controller::Freefly>( ID::Controller::FREEFLY )->reset();
 		}
 
 		void Visualization::orientCameraController( const Math::AABB & p_aabb )
 		{
-			getItem<VTX::Controller::BaseCameraController>( _cameraController )->orient( p_aabb );
+			getController<VTX::Controller::BaseCameraController>( _cameraController )->orient( p_aabb );
 			// Override Trackball distance.
 			if ( _cameraController == ID::Controller::FREEFLY )
 			{
-				const Controller::Freefly * const freefly = getItem<Controller::Freefly>( ID::Controller::FREEFLY );
+				const Controller::Freefly * const freefly
+					= getController<Controller::Freefly>( ID::Controller::FREEFLY );
 				if ( freefly->isOrienting() )
 				{
-					getItem<Controller::Trackball>( ID::Controller::TRACKBALL )
+					getController<Controller::Trackball>( ID::Controller::TRACKBALL )
 						->setDistanceForced(
 							Util::Math::distance( p_aabb.centroid(), freefly->getOrientTargetPosition() ) );
 				}

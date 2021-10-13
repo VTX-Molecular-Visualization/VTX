@@ -63,7 +63,7 @@ namespace VTX::UI::Widget::CustomWidget
 			VTXApp::get()
 				.getStateMachine()
 				.getState<State::Visualization>( ID::State::VISUALIZATION )
-				->getItem<Controller::Shortcut>( ID::Controller::SHORTCUT )
+				->getController<Controller::Shortcut>( ID::Controller::SHORTCUT )
 				->setGroup( _focusGroup );
 		}
 		void focusOutEvent( QFocusEvent * p_event ) override
@@ -71,7 +71,7 @@ namespace VTX::UI::Widget::CustomWidget
 			VTXApp::get()
 				.getStateMachine()
 				.getState<State::Visualization>( ID::State::VISUALIZATION )
-				->getItem<Controller::Shortcut>( ID::Controller::SHORTCUT )
+				->getController<Controller::Shortcut>( ID::Controller::SHORTCUT )
 				->removeGroup( _focusGroup );
 		}
 

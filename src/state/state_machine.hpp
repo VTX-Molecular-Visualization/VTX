@@ -17,10 +17,10 @@ namespace VTX
 			StateMachine();
 			~StateMachine();
 
-			template<typename T>
+			template<typename T, typename = std::enable_if<std::is_base_of<BaseState, T>::value>>
 			inline T * const getState( const ID::VTX_ID & p_id )
 			{
-				return static_cast<T * const>( _states[ p_id ] );
+				return dynamic_cast<T * const>( _states[ p_id ] );
 			}
 
 			void goToState( const ID::VTX_ID &, void * const p_arg = nullptr );
