@@ -58,7 +58,7 @@ namespace VTX::UI::Widget::Render
 	{
 		VTXApp::get()
 			.getStateMachine()
-			.getItem<State::Visualization>( ID::State::VISUALIZATION )
+			.getState<State::Visualization>( ID::State::VISUALIZATION )
 			->getItem<Controller::Shortcut>( ID::Controller::SHORTCUT )
 			->setGroup( Controller::SHORTCUTGROUP::RENDER );
 	}
@@ -66,7 +66,7 @@ namespace VTX::UI::Widget::Render
 	{
 		VTXApp::get()
 			.getStateMachine()
-			.getItem<State::Visualization>( ID::State::VISUALIZATION )
+			.getState<State::Visualization>( ID::State::VISUALIZATION )
 			->getItem<Controller::Shortcut>( ID::Controller::SHORTCUT )
 			->setGroup( Controller::SHORTCUTGROUP::DEFAULT );
 	}

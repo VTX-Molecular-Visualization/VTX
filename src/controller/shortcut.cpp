@@ -93,7 +93,7 @@ namespace VTX
 													   VTXApp::get().getScene().getCamera(),
 													   VTXApp::get()
 														   .getStateMachine()
-														   .getItem<State::Visualization>( ID::State::VISUALIZATION )
+														   .getState<State::Visualization>( ID::State::VISUALIZATION )
 														   ->getCurrentCameraController() ) );
 					VTX_INFO( "Viewpoint added" );
 					shortcutEaten = true;

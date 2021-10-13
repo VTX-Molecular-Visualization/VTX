@@ -62,7 +62,7 @@ namespace VTX::UI::Widget::CustomWidget
 		{
 			VTXApp::get()
 				.getStateMachine()
-				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				.getState<State::Visualization>( ID::State::VISUALIZATION )
 				->getItem<Controller::Shortcut>( ID::Controller::SHORTCUT )
 				->setGroup( _focusGroup );
 		}
@@ -70,7 +70,7 @@ namespace VTX::UI::Widget::CustomWidget
 		{
 			VTXApp::get()
 				.getStateMachine()
-				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				.getState<State::Visualization>( ID::State::VISUALIZATION )
 				->getItem<Controller::Shortcut>( ID::Controller::SHORTCUT )
 				->removeGroup( _focusGroup );
 		}

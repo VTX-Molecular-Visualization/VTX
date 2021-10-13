@@ -159,7 +159,7 @@ namespace VTX::Action::Residue
 		{
 			VTXApp::get()
 				.getStateMachine()
-				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				.getState<State::Visualization>( ID::State::VISUALIZATION )
 				->orientCameraController( _residue.getWorldAABB() );
 		}
 
