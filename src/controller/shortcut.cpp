@@ -59,6 +59,7 @@ namespace VTX
 				VTX_ACTION( new Action::Setting::RestoreLayout() );
 				shortcutEaten = true;
 				break;
+
 #ifndef VTX_PRODUCTION
 			case Qt::Key::Key_F8:
 				VTX_ACTION( new Action::Dev::CompileShaders() );
@@ -69,6 +70,36 @@ namespace VTX
 				VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
 				shortcutEaten = true;
 				break;
+
+			case Qt::Key::Key_F10:
+				/*
+				if ( _isModifierExclusive( ModifierFlag::Control ) )
+				{
+					VTXApp::get().getStateMachine().goToState( ID::State::PLAY,
+															   VTXApp::get().getScene().getPaths()[ 0 ] );
+					shortcutEaten = true;
+				}
+				*/
+				if ( _isModifierExclusive( ModifierFlag::Control ) )
+				{
+					VTXApp::get().getStateMachine().goToState( ID::State::EXPORT,
+															   VTXApp::get().getScene().getPaths()[ 0 ] );
+					shortcutEaten = true;
+				}
+				else
+				{
+					VTX_ACTION(
+						new Action::Viewpoint::Create( *VTXApp::get().getScene().getPaths()[ 0 ],
+													   VTXApp::get().getScene().getCamera(),
+													   VTXApp::get()
+														   .getStateMachine()
+														   .getItem<State::Visualization>( ID::State::VISUALIZATION )
+														   ->getCurrentCameraController() ) );
+					VTX_INFO( "Viewpoint added" );
+					shortcutEaten = true;
+				}
+				break;
+
 #endif
 			case Qt::Key::Key_F11:
 				if ( VTXApp::get().getMainWindow().windowState() & Qt::WindowStates::enum_type::WindowFullScreen )

@@ -19,10 +19,7 @@ namespace VTX
 			_registerEvent( Event::Global::MOLECULE_REMOVED );
 			_registerEvent( Event::Global::MESH_ADDED );
 			_registerEvent( Event::Global::MESH_REMOVED );
-		}
 
-		void Visualization::enter( void * const )
-		{
 			// Create controller.
 			addItem( ID::Controller::FREEFLY, new Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
 			addItem( ID::Controller::TRACKBALL,
@@ -30,18 +27,27 @@ namespace VTX
 												VTXApp::get().getScene().getAABB().centroid(),
 												VTXApp::get().getScene().getAABB().diameter() ) );
 			addItem( ID::Controller::SHORTCUT, new Controller::Shortcut() );
+		}
 
+		void Visualization::enter( void * const )
+		{
 			if ( _cameraController == ID::Controller::FREEFLY )
 			{
 				getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( false );
+				getItem<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( true );
 			}
 			else
 			{
 				getItem<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( false );
+				getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( true );
 			}
 		}
 
-		void Visualization::exit() { Generic::HasCollection<Controller::BaseController>::clear(); }
+		void Visualization::exit()
+		{
+			getItem<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( false );
+			getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( false );
+		}
 
 		void Visualization::update( const float & p_deltaTime )
 		{

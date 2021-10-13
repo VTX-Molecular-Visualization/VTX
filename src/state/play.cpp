@@ -15,7 +15,7 @@ namespace VTX
 		void Play::enter( void * const p_arg )
 		{
 			_path = (Model::Path *)p_arg;
-			VTXApp::get().getSetting().backup();
+			// VTXApp::get().getSetting().backup();
 
 			if ( _path->getDuration() == 0.f || _path->getViewpoints().size() < 2 )
 			{
@@ -34,7 +34,7 @@ namespace VTX
 			_path	 = nullptr;
 			_actions = nullptr;
 			_time	 = 0.f;
-			VTXApp::get().getSetting().recover();
+			// VTXApp::get().getSetting().recover();
 		}
 
 		void Play::update( const float & p_deltaTime )
@@ -52,7 +52,7 @@ namespace VTX
 				{
 					_time	 = 0.f;
 					_actions = nullptr;
-					VTXApp::get().getSetting().recover();
+					// VTXApp::get().getSetting().recover();
 				}
 				else
 				{
@@ -84,6 +84,7 @@ namespace VTX
 
 		void Play::_executeActions( const float p_time )
 		{
+			/*
 			if ( _actions != _path->getCurrentActions( p_time ) )
 			{
 				_actions = _path->getCurrentActions( p_time );
@@ -92,6 +93,7 @@ namespace VTX
 					VTX_ACTION( action );
 				}
 			}
+			*/
 		}
 
 	} // namespace State

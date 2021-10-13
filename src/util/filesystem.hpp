@@ -33,6 +33,7 @@ namespace VTX
 			// Directories.
 			inline const IO::FilePath getShadersDir() { return getExecutableDir() + "/shaders"; }
 			inline const IO::FilePath getSnapshotsDir() { return getExecutableDir() + "/snapshots"; }
+			inline const IO::FilePath getVideosDir() { return getExecutableDir() + "/videos"; }
 			inline const IO::FilePath getRendersDir() { return getExecutableDir() + "/renders"; }
 			inline const IO::FilePath getLogsDir() { return getExecutableDir() + "/logs"; }
 			inline const IO::FilePath getLibrariesDir() { return getExecutableDir() + "/libraries"; }
@@ -160,6 +161,12 @@ namespace VTX
 			{
 				createDirectory( getSnapshotsDir() );
 				return IO::FilePath( getSnapshotsDir() / p_filename );
+			}
+
+			inline const IO::FilePath getVideosPath( const IO::FilePath & p_filename )
+			{
+				createDirectory( getVideosDir() );
+				return IO::FilePath( getVideosDir() / p_filename );
 			}
 
 			inline const IO::FilePath getRendersPath( const IO::FilePath & p_filename )

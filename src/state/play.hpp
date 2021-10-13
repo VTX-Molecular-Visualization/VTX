@@ -22,7 +22,7 @@ namespace VTX
 			virtual void update( const float & ) override;
 
 		  private:
-			Model::Path *					 _path	  = nullptr;
+			const Model::Path *				 _path	  = nullptr;
 			const std::vector<std::string> * _actions = nullptr;
 			float							 _time	  = 0.f;
 
