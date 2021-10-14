@@ -34,7 +34,7 @@ namespace VTX
 			virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		  private:
-			ID::VTX_ID _cameraController = ID::Controller::TRACKBALL;
+			ID::VTX_ID _cameraController = Setting::CONTROLLER_MODE_DEFAULT;
 		};
 	} // namespace State
 } // namespace VTX

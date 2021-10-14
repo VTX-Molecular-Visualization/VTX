@@ -72,20 +72,21 @@ namespace VTX
 				break;
 
 			case Qt::Key::Key_F10:
-				/*
+				
 				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					VTXApp::get().getStateMachine().goToState( ID::State::PLAY,
 															   VTXApp::get().getScene().getPaths()[ 0 ] );
 					shortcutEaten = true;
 				}
-				*/
+				/*
 				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					VTXApp::get().getStateMachine().goToState( ID::State::EXPORT,
 															   VTXApp::get().getScene().getPaths()[ 0 ] );
 					shortcutEaten = true;
 				}
+				*/
 				else
 				{
 					VTX_ACTION(

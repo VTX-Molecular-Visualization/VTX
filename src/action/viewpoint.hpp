@@ -24,8 +24,7 @@ namespace VTX
 								 const Object3D::Camera &			p_camera,
 								 Controller::BaseController * const p_controller ) :
 					_path( p_path ),
-					_position( p_camera.getPosition() ), _rotation( p_camera.getRotation() ), _target( VEC3F_ZERO ),
-					_distance( 0.f ), _controller( VTX::Setting::CONTROLLER_MODE_DEFAULT )
+					_rotation( p_camera.getRotation() ), _position( p_camera.getPosition() )
 				{
 					const Controller::Trackball * const trackball
 						= dynamic_cast<Controller::Trackball *>( p_controller );
@@ -34,6 +33,10 @@ namespace VTX
 						_target		= trackball->getTarget();
 						_distance	= Util::Math::distance( _position, _target );
 						_controller = ID::Controller::TRACKBALL;
+					}
+					else
+					{
+						_controller = ID::Controller::FREEFLY;
 					}
 				}
 
@@ -54,9 +57,9 @@ namespace VTX
 				Model::Path & _path;
 				const Vec3f	  _position;
 				const Quatf	  _rotation;
-				Vec3f		  _target;
-				float		  _distance;
-				ID::VTX_ID	  _controller;
+				Vec3f		  _target	  = VEC3F_ZERO;
+				float		  _distance	  = 0.f;
+				ID::VTX_ID	  _controller = VTX::Setting::CONTROLLER_MODE_DEFAULT;
 			};
 
 			class Delete : public BaseAction

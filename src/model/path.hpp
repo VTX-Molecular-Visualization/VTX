@@ -57,7 +57,7 @@ namespace VTX
 		  private:
 			VectorViewpointPtr _viewpoints		  = VectorViewpointPtr();
 			DURATION_MODE	   _modeDuration	  = DURATION_MODE::CONSTANT_SPEED;
-			INTERPOLATION_MODE _modeInterpolation = INTERPOLATION_MODE::LINEAR;
+			INTERPOLATION_MODE _modeInterpolation = INTERPOLATION_MODE::CATMULL_ROM;
 			float			   _duration		  = Setting::PATH_DURATION_DEFAULT;
 			bool			   _isLooping		  = false;
 
