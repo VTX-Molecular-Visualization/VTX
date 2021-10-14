@@ -24,8 +24,8 @@ namespace VTX
 			inline const ID::VTX_ID getController() const { return _controller; }
 			inline const void		setController( const ID::VTX_ID p_controller ) { _controller = p_controller; }
 
-			inline const Vec3f & getPosition() const { return _data._position; }
-			inline const void	 setPosition( const Vec3f & p_position ) { _data._position = p_position; }
+			inline const Vec3f & getPosition() const { return _position; }
+			inline const void	 setPosition( const Vec3f & p_position ) { _position = p_position; }
 			inline const Quatf & getRotation() const { return _rotation; }
 			inline const void	 setRotation( const Quatf & p_rotation ) { _rotation = p_rotation; }
 
@@ -45,6 +45,7 @@ namespace VTX
 			Path * const _path;
 			float		 _duration = 0.f;
 			Quatf		 _rotation = Quatf();
+			Vec3f		 _position = VEC3F_ZERO;
 
 			union
 			{
@@ -53,7 +54,7 @@ namespace VTX
 					Vec3f _target;
 					float _distance;
 				} _target;
-				Vec3f _position = VEC3F_ZERO;
+
 			} _data;
 
 			ID::VTX_ID _controller = Setting::CONTROLLER_MODE_DEFAULT;

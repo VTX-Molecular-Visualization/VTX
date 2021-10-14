@@ -15,8 +15,9 @@ namespace VTX
 			{
 			}
 
-			void setActive( const bool p_active ) override;
-			void reset() override;
+			const ID::VTX_ID getID() const override { return ID::Controller::TRACKBALL; }
+			void			 setActive( const bool p_active ) override;
+			void			 reset() override;
 
 			inline const Vec3f & getTarget() const { return _target; }
 			inline void			 setTarget( const Vec3f & p_target ) { _target = p_target; }
