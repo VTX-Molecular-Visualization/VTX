@@ -62,16 +62,16 @@ namespace VTX::UI::Widget::CustomWidget
 		{
 			VTXApp::get()
 				.getStateMachine()
-				.getItem<State::Visualization>( ID::State::VISUALIZATION )
-				->getItem<Controller::Shortcut>( ID::Controller::SHORTCUT )
+				.getState<State::Visualization>( ID::State::VISUALIZATION )
+				->getController<Controller::Shortcut>( ID::Controller::SHORTCUT )
 				->setGroup( _focusGroup );
 		}
 		void focusOutEvent( QFocusEvent * p_event ) override
 		{
 			VTXApp::get()
 				.getStateMachine()
-				.getItem<State::Visualization>( ID::State::VISUALIZATION )
-				->getItem<Controller::Shortcut>( ID::Controller::SHORTCUT )
+				.getState<State::Visualization>( ID::State::VISUALIZATION )
+				->getController<Controller::Shortcut>( ID::Controller::SHORTCUT )
 				->removeGroup( _focusGroup );
 		}
 

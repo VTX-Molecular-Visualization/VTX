@@ -322,7 +322,7 @@ namespace VTX::IO
 
 		VTXApp::get()
 			.getStateMachine()
-			.getItem<State::Visualization>( ID::State::VISUALIZATION )
+			.getState<State::Visualization>( ID::State::VISUALIZATION )
 			->resetCameraController();
 		p_scene.getCamera().setPosition( cameraPos );
 		p_scene.getCamera().setRotation( cameraRot );

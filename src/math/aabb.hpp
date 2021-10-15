@@ -23,7 +23,11 @@ namespace VTX
 				data.minMax.max = VEC3F_MIN;
 			}
 
-			bool isValid() const { return ( ( data.minMax.min.x <= data.minMax.max.x ) && ( data.minMax.min.y <= data.minMax.max.y ) && ( data.minMax.min.z <= data.minMax.max.z ) ); }
+			bool isValid() const
+			{
+				return ( ( data.minMax.min.x <= data.minMax.max.x ) && ( data.minMax.min.y <= data.minMax.max.y )
+						 && ( data.minMax.min.z <= data.minMax.max.z ) );
+			}
 
 			inline const Vec3f & getMin() const { return data.minMax.min; }
 			inline const Vec3f & getMax() const { return data.minMax.max; }
@@ -82,7 +86,7 @@ namespace VTX
 			static AABB join( const AABB & p_aabb1, const AABB & p_aabb2 );
 			union
 			{
-				struct 
+				struct
 				{
 					Vec3f min;
 					Vec3f max;

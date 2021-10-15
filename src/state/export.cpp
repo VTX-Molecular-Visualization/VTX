@@ -14,16 +14,16 @@ namespace VTX
 		// Action loop
 		void Export::enter( void * const p_arg )
 		{
-			_arg		   = *(Arg *)p_arg;
+			_path		   = (Model::Path *)p_arg;
 			_directoryName = Util::Time::getTimestamp();
 			_directoryName.erase( remove_if( _directoryName.begin(), _directoryName.end(), isspace ),
 								  _directoryName.end() );
-			VTXApp::get().getSetting().backup();
+			// VTXApp::get().getSetting().backup();
 
-			float duration = _arg.path->getDuration();
+			float duration = _path->getDuration();
 			_frameCount	   = uint( Setting::VIDEO_FPS_DEFAULT * duration );
 
-			if ( _frameCount == 0u || _arg.path->getViewpoints().size() < 2 )
+			if ( _frameCount == 0u || _path->getViewpoints().size() < 2 )
 			{
 				VTX_WARNING( "Total time must be > 0" );
 				VTXApp::get().goToState( ID::State::VISUALIZATION );
@@ -39,25 +39,27 @@ namespace VTX
 			_actions	= nullptr;
 			_frame		= 0u;
 			_frameCount = 0u;
-			VTXApp::get().getSetting().recover();
+			// VTXApp::get().getSetting().recover();
 		}
 
 		void Export::update( const float & p_deltaTime )
 		{
 			BaseState::update( p_deltaTime );
 
-			float			 time	   = _frame / Setting::VIDEO_FPS_DEFAULT;
-			Model::Viewpoint viewpoint = _arg.path->getInterpolatedViewpoint( time );
+			float			 time	   = _frame / (float)Setting::VIDEO_FPS_DEFAULT;
+			Model::Viewpoint viewpoint = _path->getInterpolatedViewpoint( time );
 
 			// Action.
-			if ( _actions != _arg.path->getCurrentActions( time ) )
+			/*
+			if ( _actions != _path->getCurrentActions( time ) )
 			{
-				_actions = _arg.path->getCurrentActions( time );
+				_actions = _path->getCurrentActions( time );
 				for ( const std::string & action : *_actions )
 				{
 					VTX_ACTION( action );
 				}
 			}
+			*/
 
 			// Update renderer.
 			if ( viewpoint.getController() == ID::Controller::TRACKBALL )
@@ -69,14 +71,14 @@ namespace VTX
 			{
 				VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
 			}
-			VTXApp::get().getScene().update( 1.f / Setting::VIDEO_FPS_DEFAULT );
+			VTXApp::get().getScene().update( 1.f / (float)Setting::VIDEO_FPS_DEFAULT );
 			VTXApp::get().renderScene();
 
 			std::string counterStr = std::to_string( _frame );
 			std::string fileName   = "frame" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
 
-			// VTX_ACTION( new Action::Main::Snapshot(
-			//	_arg.mode, Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ) );
+			VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+													Util::Filesystem::getVideosPath( fileName + ".png" ) ) );
 
 			VTX_INFO( std::to_string( (uint)( _frame * 100 / _frameCount ) ) + "%" );
 

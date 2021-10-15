@@ -57,15 +57,22 @@ namespace VTX
 				Viewpoint * const p1	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset ) ];
 				float			  value = 1.f - ( ( total - p_time ) / p1->getDuration() );
 
+				ID::VTX_ID controller = p0->getController() == ID::Controller::TRACKBALL
+												&& p1->getController() == ID::Controller::TRACKBALL
+											? ID::Controller::TRACKBALL
+											: ID::Controller::FREEFLY;
+
 				// Lerp.
-				viewpoint.setPosition( Util::Math::linearInterpolation( p0->getPosition(), p1->getPosition(), value ) );
+				viewpoint.setController( controller );
 				viewpoint.setRotation( Util::Math::linearInterpolation( p0->getRotation(), p1->getRotation(), value ) );
-				viewpoint.setTarget( Util::Math::linearInterpolation( p0->getTarget(), p1->getTarget(), value ) );
-				viewpoint.setDistance( Util::Math::linearInterpolation( p0->getDistance(), p1->getDistance(), value ) );
-				viewpoint.setController( p0->getController() == ID::Controller::TRACKBALL
-												 && p1->getController() == ID::Controller::TRACKBALL
-											 ? ID::Controller::TRACKBALL
-											 : ID::Controller::FREEFLY );
+				viewpoint.setPosition( Util::Math::linearInterpolation( p0->getPosition(), p1->getPosition(), value ) );
+
+				if ( controller == ID::Controller::TRACKBALL )
+				{
+					viewpoint.setTarget( Util::Math::linearInterpolation( p0->getTarget(), p1->getTarget(), value ) );
+					viewpoint.setDistance(
+						Util::Math::linearInterpolation( p0->getDistance(), p1->getDistance(), value ) );
+				}
 			}
 			else if ( _modeInterpolation == INTERPOLATION_MODE::CATMULL_ROM )
 			{
@@ -75,18 +82,25 @@ namespace VTX
 				Viewpoint * const p3	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset + 1 ) ];
 				float			  value = 1.f - ( ( total - p_time ) / p2->getDuration() );
 
-				viewpoint.setPosition( Util::Math::catmullRomInterpolation(
-					p0->getPosition(), p1->getPosition(), p2->getPosition(), p3->getPosition(), value ) );
+				ID::VTX_ID controller = p1->getController() == ID::Controller::TRACKBALL
+												&& p2->getController() == ID::Controller::TRACKBALL
+											? ID::Controller::TRACKBALL
+											: ID::Controller::FREEFLY;
+
+				viewpoint.setController( controller );
 				viewpoint.setRotation( Util::Math::catmullRomInterpolation(
 					p0->getRotation(), p1->getRotation(), p2->getRotation(), p3->getRotation(), value ) );
-				viewpoint.setTarget( Util::Math::catmullRomInterpolation(
-					p0->getTarget(), p1->getTarget(), p2->getTarget(), p3->getTarget(), value ) );
-				viewpoint.setDistance( Util::Math::linearInterpolation( p1->getDistance(), p2->getDistance(), value ) );
-				viewpoint.setController( p1->getController() == ID::Controller::TRACKBALL
-												 && p2->getController() == ID::Controller::TRACKBALL
 
-											 ? ID::Controller::TRACKBALL
-											 : ID::Controller::FREEFLY );
+				viewpoint.setPosition( Util::Math::catmullRomInterpolation(
+					p0->getPosition(), p1->getPosition(), p2->getPosition(), p3->getPosition(), value ) );
+
+				if ( controller == ID::Controller::TRACKBALL )
+				{
+					viewpoint.setTarget( Util::Math::catmullRomInterpolation(
+						p0->getTarget(), p1->getTarget(), p2->getTarget(), p3->getTarget(), value ) );
+					viewpoint.setDistance(
+						Util::Math::linearInterpolation( p1->getDistance(), p2->getDistance(), value ) );
+				}
 			}
 			else if ( _modeInterpolation == INTERPOLATION_MODE::CUBIC )
 			{
@@ -96,18 +110,24 @@ namespace VTX
 				Viewpoint * const p3	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset + 1 ) ];
 				float			  value = 1.f - ( ( total - p_time ) / p2->getDuration() );
 
-				viewpoint.setPosition( Util::Math::cubicInterpolation(
-					p0->getPosition(), p1->getPosition(), p2->getPosition(), p3->getPosition(), value ) );
+				ID::VTX_ID controller = p1->getController() == ID::Controller::TRACKBALL
+												&& p2->getController() == ID::Controller::TRACKBALL
+											? ID::Controller::TRACKBALL
+											: ID::Controller::FREEFLY;
+
+				viewpoint.setController( controller );
 				viewpoint.setRotation( Util::Math::cubicInterpolation(
 					p0->getRotation(), p1->getRotation(), p2->getRotation(), p3->getRotation(), value ) );
-				viewpoint.setTarget( Util::Math::cubicInterpolation(
-					p0->getTarget(), p1->getTarget(), p2->getTarget(), p3->getTarget(), value ) );
-				viewpoint.setDistance( Util::Math::linearInterpolation( p1->getDistance(), p2->getDistance(), value ) );
-				viewpoint.setController( p1->getController() == ID::Controller::TRACKBALL
-												 && p2->getController() == ID::Controller::TRACKBALL
+				viewpoint.setPosition( Util::Math::cubicInterpolation(
+					p0->getPosition(), p1->getPosition(), p2->getPosition(), p3->getPosition(), value ) );
 
-											 ? ID::Controller::TRACKBALL
-											 : ID::Controller::FREEFLY );
+				if ( controller == ID::Controller::TRACKBALL )
+				{
+					viewpoint.setTarget( Util::Math::cubicInterpolation(
+						p0->getTarget(), p1->getTarget(), p2->getTarget(), p3->getTarget(), value ) );
+					viewpoint.setDistance(
+						Util::Math::linearInterpolation( p1->getDistance(), p2->getDistance(), value ) );
+				}
 			}
 
 			return viewpoint;

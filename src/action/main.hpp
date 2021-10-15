@@ -287,7 +287,7 @@ namespace VTX::Action::Main
 		{
 			VTXApp::get()
 				.getStateMachine()
-				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				.getState<State::Visualization>( ID::State::VISUALIZATION )
 				->toggleCameraController();
 		};
 	};
@@ -301,7 +301,7 @@ namespace VTX::Action::Main
 		{
 			VTXApp::get()
 				.getStateMachine()
-				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				.getState<State::Visualization>( ID::State::VISUALIZATION )
 				->setCameraController( _id );
 		};
 
@@ -318,7 +318,7 @@ namespace VTX::Action::Main
 		{
 			VTXApp::get()
 				.getStateMachine()
-				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				.getState<State::Visualization>( ID::State::VISUALIZATION )
 				->resetCameraController();
 		};
 

@@ -1,13 +1,12 @@
 #include "state_machine.hpp"
 #include "define.hpp"
 #include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "exception.hpp"
 #include "export.hpp"
-#include "id.hpp"
 #include "play.hpp"
 #include "visualization.hpp"
 #include "vtx_app.hpp"
-#include "event/event_manager.hpp"
 
 namespace VTX
 {
@@ -15,18 +14,27 @@ namespace VTX
 	{
 		StateMachine::StateMachine()
 		{
-			addItem( ID::State::VISUALIZATION, new Visualization() );
-			addItem( ID::State::PLAY, new Play() );
-			addItem( ID::State::EXPORT, new Export() );
+			_states.emplace( ID::State::VISUALIZATION, new Visualization() );
+			_states.emplace( ID::State::PLAY, new Play() );
+			_states.emplace( ID::State::EXPORT, new Export() );
+		}
+
+		StateMachine::~StateMachine()
+		{
+			for ( const std::pair<const ID::VTX_ID, BaseState * const> & pair : _states )
+			{
+				delete pair.second;
+			}
+			_states.clear();
 		}
 
 		void StateMachine::goToState( const ID::VTX_ID & p_name, void * const p_arg )
 		{
 			VTX_DEBUG( "Go to state: " + p_name );
-			if ( hasItem( p_name ) )
+			if ( _states.find( p_name ) != _states.end() )
 			{
 				VTX_EVENT( new Event::VTXEventValue<ID::VTX_ID>( Event::Global::CHANGE_STATE, p_name ) );
-				_switchState( getItem( p_name ), p_arg );
+				_switchState( _states[ p_name ], p_arg );
 			}
 			else
 			{

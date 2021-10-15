@@ -29,10 +29,10 @@ namespace VTX
 			inline const Quatf & getRotation() const { return _rotation; }
 			inline const void	 setRotation( const Quatf & p_rotation ) { _rotation = p_rotation; }
 
-			inline const Vec3f & getTarget() const { return _target; }
-			inline const void	 setTarget( const Vec3f & p_target ) { _target = p_target; }
-			inline const float	 getDistance() const { return _distance; }
-			inline const void	 setDistance( const float p_distance ) { _distance = p_distance; }
+			inline const Vec3f & getTarget() const { return _data._target._target; }
+			inline const void	 setTarget( const Vec3f & p_target ) { _data._target._target = p_target; }
+			inline const float	 getDistance() const { return _data._target._distance; }
+			inline const void	 setDistance( const float p_distance ) { _data._target._distance = p_distance; }
 
 			inline const std::vector<std::string> & getActions() const { return _actions; }
 			inline void addAction( const std::string & p_action ) { _actions.emplace_back( p_action ); }
@@ -44,19 +44,24 @@ namespace VTX
 		  private:
 			Path * const _path;
 			float		 _duration = 0.f;
-			/************************************/
-			Vec3f	   _position   = VEC3F_ZERO;
-			Vec3f	   _target	   = VEC3F_ZERO;
-			float	   _distance   = 0.f;
+			Quatf		 _rotation = Quatf();
+			Vec3f		 _position = VEC3F_ZERO;
+
+			union
+			{
+				struct
+				{
+					Vec3f _target;
+					float _distance;
+				} _target;
+
+			} _data;
+
 			ID::VTX_ID _controller = Setting::CONTROLLER_MODE_DEFAULT;
-			/*************************************/
-			Quatf					 _rotation;
+
 			std::vector<std::string> _actions = std::vector<std::string>();
 
-			explicit Viewpoint( Path * const p_path ) :
-				BaseModel( ID::Model::MODEL_VIEWPOINT ), _path( p_path ), _rotation( Quatf() )
-			{
-			}
+			Viewpoint( Path * const p_path ) : BaseModel( ID::Model::MODEL_VIEWPOINT ), _path( p_path ) {}
 
 		}; // namespace Camera
 	}	   // namespace Model

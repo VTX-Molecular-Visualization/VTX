@@ -77,7 +77,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	{
 		const ID::VTX_ID currentControllerID = VTXApp::get()
 												   .getStateMachine()
-												   .getItem<State::Visualization>( ID::State::VISUALIZATION )
+												   .getState<State::Visualization>( ID::State::VISUALIZATION )
 												   ->getCurrentCameraControllerID();
 
 		_trackball->showActiveFeedback( currentControllerID == ID::Controller::TRACKBALL );

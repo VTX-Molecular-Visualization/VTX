@@ -16,12 +16,6 @@ namespace VTX
 		class Export : public BaseState
 		{
 		  public:
-			struct Arg
-			{
-				Worker::Snapshoter::MODE mode;
-				Model::Path *			 path;
-			};
-
 			Export() = default;
 
 			virtual void enter( void * const ) override;
@@ -30,7 +24,7 @@ namespace VTX
 
 		  private:
 			std::string						 _directoryName;
-			Arg								 _arg;
+			const Model::Path *				 _path;
 			const std::vector<std::string> * _actions	 = nullptr;
 			uint							 _frame		 = 0u;
 			uint							 _frameCount = 0u;

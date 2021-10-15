@@ -694,7 +694,7 @@ namespace VTX::Action::Selection
 			const Math::AABB target = _selection.isEmpty() ? VTXApp::get().getScene().getAABB() : _selection.getAABB();
 			VTXApp::get()
 				.getStateMachine()
-				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				.getState<State::Visualization>( ID::State::VISUALIZATION )
 				->orientCameraController( target );
 		}
 

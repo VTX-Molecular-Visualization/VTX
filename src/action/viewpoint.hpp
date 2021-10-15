@@ -20,20 +20,22 @@ namespace VTX
 			class Create : public BaseAction
 			{
 			  public:
-				explicit Create( Model::Path &						p_path,
-								 const Object3D::Camera &			p_camera,
-								 Controller::BaseController * const p_controller ) :
+				explicit Create( Model::Path &							  p_path,
+								 const Object3D::Camera &				  p_camera,
+								 Controller::BaseCameraController * const p_controller ) :
 					_path( p_path ),
-					_position( p_camera.getPosition() ), _rotation( p_camera.getRotation() ), _target( VEC3F_ZERO ),
-					_distance( 0.f ), _controller( VTX::Setting::CONTROLLER_MODE_DEFAULT )
+					_rotation( p_camera.getRotation() ), _position( p_camera.getPosition() )
 				{
 					const Controller::Trackball * const trackball
-						= dynamic_cast<Controller::Trackball *>( p_controller );
+						= dynamic_cast<Controller::Trackball * const>( p_controller );
 					if ( trackball != nullptr )
 					{
 						_target		= trackball->getTarget();
-						_distance	= Util::Math::distance( _position, _target );
 						_controller = ID::Controller::TRACKBALL;
+					}
+					else
+					{
+						_controller = ID::Controller::FREEFLY;
 					}
 				}
 
@@ -42,10 +44,15 @@ namespace VTX
 					Model::Viewpoint * const viewpoint
 						= MVC::MvcManager::get().instantiateModel<Model::Viewpoint, Model::Path * const>( &_path );
 					viewpoint->setController( _controller );
-					viewpoint->setPosition( _position );
 					viewpoint->setRotation( _rotation );
-					viewpoint->setTarget( _target );
-					viewpoint->setDistance( _distance );
+					viewpoint->setPosition( _position );
+
+					if ( _controller == ID::Controller::TRACKBALL )
+					{
+						viewpoint->setTarget( _target );
+						viewpoint->setDistance( Util::Math::distance( _position, _target ) );
+					}
+
 					_path.addViewpoint( viewpoint );
 					_path.refreshAllDurations();
 				}
@@ -54,9 +61,8 @@ namespace VTX
 				Model::Path & _path;
 				const Vec3f	  _position;
 				const Quatf	  _rotation;
-				Vec3f		  _target;
-				float		  _distance;
-				ID::VTX_ID	  _controller;
+				Vec3f		  _target	  = VEC3F_ZERO;
+				ID::VTX_ID	  _controller = VTX::Setting::CONTROLLER_MODE_DEFAULT;
 			};
 
 			class Delete : public BaseAction

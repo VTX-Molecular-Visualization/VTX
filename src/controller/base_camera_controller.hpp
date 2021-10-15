@@ -5,6 +5,7 @@
 #include "base_gamepad_controller.hpp"
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
+#include "id.hpp"
 #include "math/aabb.hpp"
 
 namespace VTX
@@ -24,6 +25,8 @@ namespace VTX
 		  public:
 			explicit BaseCameraController( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
 			virtual ~BaseCameraController() = default;
+
+			virtual const ID::VTX_ID getID() const = 0;
 
 			inline const bool	 isOrienting() const { return _isOrienting; }
 			inline const Vec3f & getOrientStartingPosition() const { return _orientStartingPosition; }
