@@ -318,8 +318,10 @@ namespace VTX::Util::BondGuessing
 						const size_t indexAtom2 = p_cellList.getCellList()[ neighborCellIndex ][ j ];
 
 						// TODO : Change with frame.sqrDistance when it will be added in chemfiles
-						float interAtomicDist = frame.distance( indexAtom1, indexAtom2 );
-						interAtomicDist *= interAtomicDist;
+						const float interAtomicDist
+							= (frame.positions()[ indexAtom2 ] - frame.positions()[ indexAtom1 ]).sqrNorm();
+						//float interAtomicDist = frame.distance( indexAtom1, indexAtom2 );
+						//interAtomicDist *= interAtomicDist;
 
 						// Perform distance test and ignore atoms with almost the same coordinates
 						if ( ( interAtomicDist > cutoffPow2 ) || ( interAtomicDist < 0.03 ) )
