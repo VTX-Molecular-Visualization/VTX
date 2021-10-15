@@ -14,6 +14,7 @@ namespace VTX
 		Path::Path() : BaseModel( ID::Model::MODEL_PATH ) {};
 		Path::~Path() { MVC::MvcManager::get().deleteAllModels( _viewpoints ); }
 
+		/*
 		const std::vector<std::string> * const Path::getCurrentActions( const float p_time )
 		{
 			uint  size	 = (uint)_viewpoints.size();
@@ -34,6 +35,7 @@ namespace VTX
 			offset--;
 			return &_viewpoints[ offset - 1 ]->getActions();
 		}
+		*/
 
 		Model::Viewpoint Path::getInterpolatedViewpoint( const float p_time ) const
 		{

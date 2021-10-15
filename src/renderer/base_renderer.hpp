@@ -11,6 +11,7 @@ namespace VTX::Renderer
 	enum class MODE : int
 	{
 		GL,
+		RT_CPU,
 		COUNT
 	};
 

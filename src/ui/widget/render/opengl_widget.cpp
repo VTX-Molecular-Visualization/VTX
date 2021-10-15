@@ -141,7 +141,16 @@ namespace VTX::UI::Widget::Render
 			}
 			_renderer = _rendererGL;
 			break;
-
+			/*
+		case Renderer::MODE::RT_CPU:
+			assert( _gl != nullptr );
+			if ( _rendererGL == nullptr )
+			{
+				_rendererGL = new Renderer::GL::GL( _gl );
+			}
+			_renderer = _rendererGL;
+			break;
+			*/
 		default: _renderer = nullptr;
 		}
 	}

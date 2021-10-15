@@ -86,7 +86,8 @@ namespace VTX::IO
 			jsonArray.emplace_back( serialize( *viewpoint ) );
 		}
 
-		return { { "MODE_DURATION", magic_enum::enum_name( p_path.getDurationMode() ) },
+		return { { "NAME", p_path.getName() },
+				 { "MODE_DURATION", magic_enum::enum_name( p_path.getDurationMode() ) },
 				 { "MODE_INTERPOLATION", magic_enum::enum_name( p_path.getInterpolationMode() ) },
 				 { "DURATION", p_path.getDuration() },
 				 { "IS_LOOPING", p_path.isLooping() },
@@ -95,7 +96,8 @@ namespace VTX::IO
 
 	nlohmann::json Serializer::serialize( const Model::Viewpoint & p_viewpoint ) const
 	{
-		nlohmann::json json = { { "DURATION", p_viewpoint.getDuration() },
+		nlohmann::json json = { { "NAME", p_viewpoint.getName() },
+								{ "DURATION", p_viewpoint.getDuration() },
 								{ "POSITION", serialize( p_viewpoint.getPosition() ) },
 								{ "ROTATION", serialize( p_viewpoint.getRotation() ) },
 								{ "CONTROLLER", p_viewpoint.getController() } };
@@ -364,6 +366,7 @@ namespace VTX::IO
 
 	void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const
 	{
+		p_path.setName( _get<std::string>( p_json, "NAME" ) );
 		if ( p_json.contains( "MODE_DURATION" ) )
 		{
 			std::string value	  = p_json.at( "MODE_DURATION" ).get<std::string>();
@@ -403,6 +406,7 @@ namespace VTX::IO
 
 	void Serializer::deserialize( const nlohmann::json & p_json, Model::Viewpoint & p_viewpoint ) const
 	{
+		p_viewpoint.setName( _get<std::string>( p_json, "NAME" ) );
 		p_viewpoint.setController( _get<ID::VTX_ID>( p_json, "CONTROLLER", Setting::CONTROLLER_MODE_DEFAULT ) );
 		p_viewpoint.setDuration( _get<float>( p_json, "DURATION" ) );
 

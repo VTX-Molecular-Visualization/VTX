@@ -39,6 +39,8 @@ namespace VTX
 				_viewpoints.erase( std::find( _viewpoints.begin(), _viewpoints.end(), p_viewpoint ) );
 			}
 
+			inline const std::string &		  getName() const { return _name; }
+			inline void						  setName( const std::string & p_name ) { _name = p_name; }
 			inline VectorViewpointPtr &		  getViewpoints() { return _viewpoints; }
 			inline const VectorViewpointPtr & getViewpoints() const { return _viewpoints; }
 
@@ -55,6 +57,7 @@ namespace VTX
 			const std::vector<std::string> * const getCurrentActions( const float p_time );
 
 		  private:
+			std::string		   _name			  = "";
 			VectorViewpointPtr _viewpoints		  = VectorViewpointPtr();
 			DURATION_MODE	   _modeDuration	  = DURATION_MODE::CONSTANT_SPEED;
 			INTERPOLATION_MODE _modeInterpolation = INTERPOLATION_MODE::CATMULL_ROM;
