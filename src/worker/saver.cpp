@@ -106,7 +106,7 @@ namespace VTX::Worker
 
 				if ( VTX_SETTING().isPortableSaveActivated() )
 				{
-					const bool pathIsInItemDirectory = filePath.path()._Starts_with( itemDirectory.path() );
+					const bool pathIsInItemDirectory = filePath.path().rfind( itemDirectory.path(), 0 ) == 0;
 					needToSaveMolecule				 = needToSaveMolecule || !pathIsInItemDirectory;
 				}
 

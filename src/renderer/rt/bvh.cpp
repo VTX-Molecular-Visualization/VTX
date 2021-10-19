@@ -247,7 +247,8 @@ namespace VTX
 						for ( int i = 0; i < node._nbPrims; ++i )
 						{
 							// TODO: remove Intersection() -> make intersectAny for primitives
-							if ( _primitives[ node._primsOffset + i ]->intersect( p_ray, tMin, tMax, Intersection() ) )
+							Intersection inter = Intersection();
+							if ( _primitives[ node._primsOffset + i ]->intersect( p_ray, tMin, tMax, inter ) )
 							{
 								return true;
 							}
