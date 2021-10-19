@@ -87,7 +87,7 @@ namespace VTX
 			}
 
 			// Do nothing if id not in collection or already in use
-			if ( _controllers.find( p_controllerId ) != _controllers.end() || _cameraController == p_controllerId )
+			if ( _controllers.find( p_controllerId ) == _controllers.end() || _cameraController == p_controllerId )
 				return;
 
 			_controllers[ _cameraController ]->setActive( false );

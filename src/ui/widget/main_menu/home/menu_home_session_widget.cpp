@@ -30,7 +30,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 
-		setTitle( "Session" );
+		setTitle( "File" );
 
 		_newSessionButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "newSessionButton" );
 		_newSessionButton->setData( "New", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
