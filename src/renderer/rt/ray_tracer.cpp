@@ -178,7 +178,7 @@ namespace VTX
 							 GL::Texture2D::Filter::NEAREST,
 							 GL::Texture2D::Filter::NEAREST );
 
-			getOutputFramebuffer().attachTexture( _texture, GL::Framebuffer::Attachment:: );
+			// getOutputFramebuffer().attachTexture( _texture, GL::Framebuffer::Attachment:: );
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
