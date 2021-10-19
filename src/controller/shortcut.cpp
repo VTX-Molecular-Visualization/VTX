@@ -72,7 +72,7 @@ namespace VTX
 				break;
 
 			case Qt::Key::Key_F10:
-				
+
 				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					VTXApp::get().getStateMachine().goToState( ID::State::PLAY,
@@ -244,6 +244,11 @@ namespace VTX
 			case Qt::Key::Key_F4:
 				VTX_ACTION( new Action::Setting::ChangeShading( Renderer::SHADING(
 					( (uint)VTX_RENDER_EFFECT().getShading() + 1 ) % (uint)Renderer::SHADING::COUNT ) ) );
+				shortcutEaten = true;
+				break;
+			case Qt::Key::Key_F7:
+				VTX_ACTION( new Action::Setting::ChangeRenderMode(
+					Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)Renderer::MODE::COUNT ) ) );
 				shortcutEaten = true;
 				break;
 #endif

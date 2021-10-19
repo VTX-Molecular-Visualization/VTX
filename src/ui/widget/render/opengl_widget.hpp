@@ -15,7 +15,8 @@ namespace VTX
 		{
 			class GL;
 		} // namespace GL
-	}	  // namespace Renderer
+		class RayTracer;
+	} // namespace Renderer
 
 	namespace UI::Widget::Render
 	{
@@ -29,13 +30,14 @@ namespace VTX
 			inline const Renderer::BaseRenderer & getRenderer() const { return *_renderer; }
 			inline Renderer::GL::GL &			  getRendererGL() { return *_rendererGL; }
 			inline const Renderer::GL::GL &		  getRendererGL() const { return *_rendererGL; }
+			inline Renderer::RayTracer &		  getRendererRT() { return *_rendererRT; }
+			inline const Renderer::RayTracer &	  getRendererRT() const { return *_rendererRT; }
 
 			void initializeGL() override;
 			void paintGL() override;
 			void resizeGL( int, int ) override;
 
-			void switchRenderer( const Renderer::MODE );
-
+			void setRenderMode() { _renderer = nullptr; }
 			void activeVSync( const bool p_active );
 
 		  private:
@@ -46,6 +48,9 @@ namespace VTX
 
 			Renderer::BaseRenderer * _renderer	 = nullptr;
 			Renderer::GL::GL *		 _rendererGL = nullptr;
+			Renderer::RayTracer *	 _rendererRT = nullptr;
+
+			void _switchRenderer( const Renderer::MODE );
 		};
 	} // namespace UI::Widget::Render
 
