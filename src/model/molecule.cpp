@@ -755,6 +755,22 @@ namespace VTX
 			}
 		}
 
+		Chain * Molecule::getFirstChain()
+		{
+			for ( Model::Chain * const chain : _chains )
+				if ( chain != nullptr )
+					return chain;
+
+			return nullptr;
+		}
+		const Chain * const Molecule::getFirstChain() const
+		{
+			for ( const Model::Chain * const chain : _chains )
+				if ( chain != nullptr )
+					return chain;
+
+			return nullptr;
+		}
 		const Chain * const Molecule::getPreviousChain( const uint p_idBaseChain ) const
 		{
 			if ( p_idBaseChain == 0 )
