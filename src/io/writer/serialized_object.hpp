@@ -6,8 +6,8 @@
 #include "io/serializer.hpp"
 #include "worker/base_thread.hpp"
 #include "worker/base_worker.hpp"
-#include <nlohmann/json.hpp>
 #include <QTextStream>
+#include <nlohmann/json.hpp>
 
 namespace VTX::IO::Writer
 {
