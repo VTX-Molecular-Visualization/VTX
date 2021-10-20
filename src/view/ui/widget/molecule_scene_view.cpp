@@ -15,6 +15,8 @@
 #include "ui/widget/scene/molecule_selection_model.hpp"
 #include "ui/widget/scene/scene_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/string.hpp"
+#include <QScrollBar>
 
 namespace VTX::View::UI::Widget
 {
@@ -224,16 +226,30 @@ namespace VTX::View::UI::Widget
 		setSelectionMode( QAbstractItemView::ExtendedSelection );
 	}
 
-	void MoleculeSceneView::_onItemChanged( const QTreeWidgetItem * const p_item, const int p_column ) const
+	void MoleculeSceneView::_onItemChanged( QTreeWidgetItem * const p_item, const int p_column )
 	{
 		if ( p_column == 0 )
 		{
 			if ( p_item == _getMoleculeTreeWidgetItem() )
 			{
-				const std::string itemTxt = p_item->text( 0 ).toStdString();
+				std::string itemTxt = p_item->text( 0 ).toStdString();
 				if ( itemTxt != _model->getDisplayName() )
 				{
-					VTX_ACTION( new Action::Molecule::Rename( *_model, itemTxt ) );
+					_reformatMoleculeName( itemTxt );
+
+					if ( itemTxt.empty() )
+					{
+						itemTxt = _model->getDisplayName();
+					}
+					else if ( itemTxt != _model->getDisplayName() )
+					{
+						VTX_ACTION( new Action::Molecule::Rename( *_model, itemTxt ) );
+					}
+
+					const bool oldSignalState = blockSignals( true );
+					p_item->setText( 0, QString::fromStdString( itemTxt ) );
+					blockSignals( oldSignalState );
+
 					return;
 				}
 			}
@@ -922,6 +938,20 @@ namespace VTX::View::UI::Widget
 			else
 				VTX_ACTION( new Action::Atom::ChangeVisibility( model, visibilityMode ) );
 		}
+	}
+	void MoleculeSceneView::_reformatMoleculeName( std::string & p_moleculeName ) const
+	{
+		// Trim
+		Util::String::trim( p_moleculeName );
+
+		// Forbid line feed
+		const size_t firstLinefeedIndex = p_moleculeName.find_first_of( '\n' );
+		if ( firstLinefeedIndex != std::string::npos )
+			p_moleculeName.erase( firstLinefeedIndex );
+
+		// Clamp size
+		if ( p_moleculeName.size() > Style::MOLECULE_NAME_MAXIMUM_SIZE )
+			p_moleculeName = p_moleculeName.substr( 0, Style::MOLECULE_NAME_MAXIMUM_SIZE );
 	}
 
 	void MoleculeSceneView::_refreshItemVisibility( QTreeWidgetItem * const		 p_itemWidget,

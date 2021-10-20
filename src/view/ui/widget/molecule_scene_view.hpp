@@ -67,12 +67,13 @@ namespace VTX::View::UI::Widget
 		void _rebuildTree();
 		void _enableSignals( const bool p_enable );
 
-		void _onItemChanged( const QTreeWidgetItem * const, const int ) const;
+		void _onItemChanged( QTreeWidgetItem * const, const int );
 		void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;
 		void _onItemExpanded( QTreeWidgetItem * const ) override;
 		void _onItemCollapsed( QTreeWidgetItem * const ) override;
 		void _onCustomContextMenuCalled( const QPoint & p_clicPos );
 
+		void _reformatMoleculeName( std::string & p_moleculeName ) const;
 		void _doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const;
 
 		void _expandAll( QTreeWidgetItem * const p_from );
