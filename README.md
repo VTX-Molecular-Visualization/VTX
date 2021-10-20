@@ -68,7 +68,7 @@
 - Report bugs, features, ideas or anything else by [creating a new issue](https://gitlab.com/VTX_mol/VTX/-/issues)
 - A log file is saved in the /logs folder, please attach this file with your ticket
 
-## BUILD FROM SOURCE
+## BUILD FROM SOURCE (Available soon)
 
 ### Prerequisites
 
