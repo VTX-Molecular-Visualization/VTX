@@ -5,6 +5,7 @@
 #include "define.hpp"
 #include "io/serializer.hpp"
 #include <nlohmann/json.hpp>
+#include <QTextStream>
 
 namespace VTX::IO::Reader
 {
