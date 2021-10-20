@@ -1,12 +1,11 @@
 #ifndef __VTX_WRITER_SERIALIZED_OBJECT__
-#define __VTX_WRITER_VTX__
+#define __VTX_WRITER_SERIALIZED_OBJECT__
 
 #include "base_writer.hpp"
 #include "define.hpp"
 #include "io/serializer.hpp"
 #include "worker/base_thread.hpp"
 #include "worker/base_worker.hpp"
-#include <fstream>
 #include <nlohmann/json.hpp>
 
 namespace VTX::IO::Writer
@@ -29,9 +28,15 @@ namespace VTX::IO::Writer
 										{ "REVISION", VTX_VERSION_REVISION } } },
 									{ "DATA", serializer.serialize( p_data ) } };
 
-			std::ofstream os( p_path.path() );
-			os << std::setw( 4 ) << json << std::endl;
-			os.close();
+			QFile file( p_path.qpath() );
+			if ( file.open( QIODevice::WriteOnly | QIODevice::Text ) == false )
+			{
+				throw Exception::IOException( "Can not write file: " + p_path.path() );
+			}
+
+			QTextStream out( &file );
+			out << QString::fromStdString( json.dump( 4 ) ) << "\n";
+			file.close();
 		}
 
 	  protected:
