@@ -41,12 +41,14 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 - Use wheel to zoom
 - ADQERF to rotate
 - WS to zoom
+- Hold Shift to speed up translation
 
 #### Freefly
 
 - ZASD or arrows keys to move the camera
 - Hold left mouse button and move to look around
 - Hold right mouse button and move to rotate on the side
+- Hold Shift to speed up translation
 
 ### Shortcuts
 
