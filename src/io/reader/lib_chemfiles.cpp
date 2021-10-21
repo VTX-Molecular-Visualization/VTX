@@ -478,7 +478,7 @@ namespace VTX::IO::Reader
 			bondComputationChrono.start();
 			Util::Chemfiles::recomputeBonds( frame, p_molecule.getAABB() );
 			bondComputationChrono.stop();
-			_logInfo( "recomputeBonds : " + bondComputationChrono.elapsedTimeStr() );
+			_logDebug( "recomputeBonds : " + bondComputationChrono.elapsedTimeStr() );
 		}
 
 		if ( Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
@@ -488,12 +488,12 @@ namespace VTX::IO::Reader
 
 			if ( !allBondsRecomputed )
 			{
-				_logInfo( "recomputeBondOrders with algorithm." );
+				_logDebug( "recomputeBondOrders with algorithm." );
 				Util::Chemfiles::recomputeBondOrders( frame );
 			}
 
 			bondComputationChrono.stop();
-			_logInfo( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
+			_logDebug( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
 		}
 
 		// Bonds.

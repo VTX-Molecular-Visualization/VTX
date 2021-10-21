@@ -12,13 +12,25 @@
 - Install [Visual C++](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
 - Download [last release](https://gitlab.com/VTX_mol/VTX/-/releases)
 - Run the installer (it will automatically extract files in the current folder)
-- Launch VTX shortcut
+- Launch VTX shortcut, or run in command line
 
 #### Linux
 
 - Install openssl and xinerama packages
 - Download [last release](https://gitlab.com/VTX_mol/VTX/-/releases)
 - Run bin/VTX
+
+### Run in command line
+
+Examples:
+- ./VTX
+- ./VTX 4hhb 4v6x
+- ./VTX C:/save.vtx
+- ./VTX C:/mol1.pdb C:/mol2.mmtf C:/mol3.mmcif
+
+### Supported formats
+
+Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 
 ### Controllers
 

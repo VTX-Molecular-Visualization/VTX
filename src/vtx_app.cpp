@@ -30,7 +30,7 @@ namespace VTX
 
 	VTXApp::~VTXApp() {}
 
-	void VTXApp::start()
+	void VTXApp::start( const std::vector<std::string> & p_args )
 	{
 		VTX_INFO( "Starting application: " + Util::Filesystem::getExecutableFile().path() );
 
@@ -91,9 +91,14 @@ namespace VTX
 		_elapsedTimer.start();
 		_tickTimer.start();
 
+		_handleArgs( p_args );
+
 #ifndef VTX_PRODUCTION
-		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPath( IO::FilePath( "4hhb.pdb" ) ) ) );
-		VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
+		if ( p_args.size() == 0 )
+		{
+			// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPath( IO::FilePath( "4hhb.pdb" ) ) ) );
+			VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
+		}
 #endif
 	}
 
@@ -108,6 +113,21 @@ namespace VTX
 #ifdef _DEBUG
 		QLoggingCategory::setFilterRules( QStringLiteral( "qt.gamepad.debug=true" ) );
 #endif
+	}
+
+	void VTXApp::_handleArgs( const std::vector<std::string> & p_args )
+	{
+		for ( const std::string & arg : p_args )
+		{
+			if ( arg.find( "." ) != std::string::npos )
+			{
+				VTX_ACTION( new Action::Main::Open( arg ) );
+			}
+			else
+			{
+				VTX_ACTION( new Action::Main::OpenApi( arg ) );
+			}
+		}
 	}
 
 	void VTXApp::_update()

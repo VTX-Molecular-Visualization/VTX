@@ -3,6 +3,7 @@
 ## [0.1.3] (Open beta) - 2021-XX-XX
 
 - Save and librarie files are now cross-plateform
+- Can open files or download molecules in command line
 
 ## [0.1.2] (Open beta) - 2021-10-20
 
