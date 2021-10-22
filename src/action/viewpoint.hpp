@@ -97,6 +97,7 @@ namespace VTX
 				Model::Viewpoint & _viewpoint;
 			};
 
+			/*
 			class AddAction : public BaseAction
 			{
 			  public:
@@ -128,6 +129,7 @@ namespace VTX
 				Model::Viewpoint &							   _viewpoint;
 				const std::vector<std::string>::const_iterator _action;
 			};
+			*/
 
 			class ChangeDuration : public BaseAction
 			{

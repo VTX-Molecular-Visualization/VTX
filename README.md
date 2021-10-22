@@ -12,13 +12,25 @@
 - Install [Visual C++](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
 - Download [last release](https://gitlab.com/VTX_mol/VTX/-/releases)
 - Run the installer (it will automatically extract files in the current folder)
-- Launch VTX shortcut
+- Launch VTX shortcut, or run in command line
 
 #### Linux
 
 - Install openssl and xinerama packages
 - Download [last release](https://gitlab.com/VTX_mol/VTX/-/releases)
 - Run bin/VTX
+
+### Run in command line
+
+Examples:
+- ./VTX
+- ./VTX 4hhb 4v6x
+- ./VTX C:/save.vtx
+- ./VTX C:/mol1.pdb C:/mol2.mmtf C:/mol3.mmcif
+
+### Supported formats
+
+Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 
 ### Controllers
 
@@ -68,7 +80,7 @@
 - Report bugs, features, ideas or anything else by [creating a new issue](https://gitlab.com/VTX_mol/VTX/-/issues)
 - A log file is saved in the /logs folder, please attach this file with your ticket
 
-## BUILD FROM SOURCE
+## BUILD FROM SOURCE (Available soon)
 
 ### Prerequisites
 
@@ -81,8 +93,8 @@
 
 - Install Visual Studio 2019, or Visual Code, or just MSVC compiler if you don't want to use any IDE
 - Install Qt 5.15.1 with [Qt Online Installer](https://www.qt.io/download-qt-installer) (only "MSVC 219 64-bit" is needed)
-- Add CMake to your "Path" environment variable: <dir>/CMake/bin
-- Create an environment variable "Qt5_DIR" with value: <dir>/Qt/5.15.1/msvc2019_64
+- Add CMake to your "Path" environment variable: \<dir\>/CMake/bin
+- Create an environment variable "Qt5_DIR" with value: \<dir\>/Qt/5.15.1/msvc2019_64
 
 #### Create Visual Studio solution with CMake
 
@@ -95,7 +107,7 @@ cmake -B build .
 It will build external libraries and create the solution in the build folder.
 Others dependencies are downloaded during the first compilation.
 
-#### Build a release in command line
+#### Build in command line
 
 If you don't want to use Visual Studio, you can also build executable from command line:
 

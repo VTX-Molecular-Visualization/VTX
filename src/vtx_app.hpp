@@ -45,7 +45,7 @@ namespace VTX
 		}
 		VTX_MASK MASK = VTX_MASK_NEED_UPDATE;
 
-		void start();
+		void start( const std::vector<std::string> & );
 		void goToState( const std::string &, void * const = nullptr );
 		void renderScene() const;
 
@@ -101,6 +101,7 @@ namespace VTX
 		~VTXApp();
 
 		void _initQt();
+		void _handleArgs( const std::vector<std::string> & );
 		void _update();
 		void _stop();
 	};

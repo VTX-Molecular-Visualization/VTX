@@ -4,8 +4,8 @@
 #include "base_reader.hpp"
 #include "define.hpp"
 #include "io/serializer.hpp"
-#include <fstream>
 #include <nlohmann/json.hpp>
+#include <QTextStream>
 
 namespace VTX::IO::Reader
 {
@@ -16,10 +16,18 @@ namespace VTX::IO::Reader
 		void readFile( const IO::FilePath & p_path, T & p_data ) override
 		{
 			IO::Serializer serializer = IO::Serializer();
-			std::ifstream  is( p_path.path() );
-			nlohmann::json json;
-			is >> json;
+
+			QFile file( p_path.qpath() );
+			if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) == false )
+			{
+				throw Exception::IOException( "Can not read file: " + p_path.path() );
+			}
+
+			QTextStream			 in( &file );
+			const QString		 str  = in.readAll();
+			const nlohmann::json json = nlohmann::json::parse( str.toStdString() );
 			serializer.deserialize( json.at( "DATA" ), p_data );
+			file.close();
 		}
 	};
 } // namespace VTX::IO::Reader

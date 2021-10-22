@@ -26,7 +26,8 @@ namespace VTX
 			_viewpoints.erase( std::find( _viewpoints.begin(), _viewpoints.end(), p_viewpoint ) );
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::VIEWPOINT_REMOVED, p_viewpoint ) );
 		}
-
+		
+		/*
 		const std::vector<std::string> * const Path::getCurrentActions( const float p_time )
 		{
 			uint  size	 = (uint)_viewpoints.size();
@@ -47,6 +48,7 @@ namespace VTX
 			offset--;
 			return &_viewpoints[ offset - 1 ]->getActions();
 		}
+		*/
 
 		Model::Viewpoint Path::getInterpolatedViewpoint( const float p_time ) const
 		{

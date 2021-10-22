@@ -679,7 +679,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_SETTING().mode = _mode;
-			VTXApp::get().getMainWindow().getOpenGLWidget().switchRenderer( _mode );
+			VTXApp::get().getMainWindow().getOpenGLWidget().setRenderMode();
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 

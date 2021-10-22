@@ -45,21 +45,17 @@ namespace VTX::IO
 			jsonArrayMolecules.emplace_back( json );
 		}
 
-		/*
 		nlohmann::json jsonArrayPaths = nlohmann::json::array();
 		for ( const Model::Path * const path : p_scene.getPaths() )
 		{
 			jsonArrayPaths.emplace_back( serialize( *path ) );
 		}
-		*/
 
-		return {
-			{ "CAMERA_POSITION", serialize( p_scene.getCamera().getPosition() ) },
-			{ "CAMERA_ROTATION", serialize( p_scene.getCamera().getRotation() ) },
-			{ "MOLECULE_COUNT", p_scene.getMolecules().size() },
-			{ "MOLECULES", jsonArrayMolecules } /*,
-			{ "PATHS", jsonArrayPaths } */
-		};
+		return { { "CAMERA_POSITION", serialize( p_scene.getCamera().getPosition() ) },
+				 { "CAMERA_ROTATION", serialize( p_scene.getCamera().getRotation() ) },
+				 { "MOLECULE_COUNT", p_scene.getMolecules().size() },
+				 { "MOLECULES", jsonArrayMolecules },
+				 { "PATHS", jsonArrayPaths } };
 	}
 
 	nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
@@ -82,7 +78,6 @@ namespace VTX::IO
 				 { "TRAJECTORY_ISPLAYING", p_molecule.isPlaying() } };
 	}
 
-	/*
 	nlohmann::json Serializer::serialize( const Model::Path & p_path ) const
 	{
 		nlohmann::json jsonArray = nlohmann::json::array();
@@ -91,8 +86,9 @@ namespace VTX::IO
 			jsonArray.emplace_back( serialize( *viewpoint ) );
 		}
 
-		return { { "MODE_DURATION", p_path.getDurationMode() },
-				 { "MODE_INTERPOLATION", p_path.getInterpolationMode() },
+		return { { "NAME", p_path.getName() },
+				 { "MODE_DURATION", magic_enum::enum_name( p_path.getDurationMode() ) },
+				 { "MODE_INTERPOLATION", magic_enum::enum_name( p_path.getInterpolationMode() ) },
 				 { "DURATION", p_path.getDuration() },
 				 { "IS_LOOPING", p_path.isLooping() },
 				 { "VIEWPOINTS", jsonArray } };
@@ -100,22 +96,19 @@ namespace VTX::IO
 
 	nlohmann::json Serializer::serialize( const Model::Viewpoint & p_viewpoint ) const
 	{
-		nlohmann::json jsonArray = nlohmann::json::array();
-		for ( std::string action : p_viewpoint.getActions() )
-		{
-			std::replace( action.begin(), action.end(), ' ', '-' );
-			jsonArray.emplace_back( action );
-		}
+		nlohmann::json json = { { "NAME", p_viewpoint.getDefaultName() },
+								{ "DURATION", p_viewpoint.getDuration() },
+								{ "POSITION", serialize( p_viewpoint.getPosition() ) },
+								{ "ROTATION", serialize( p_viewpoint.getRotation() ) },
+								{ "CONTROLLER", p_viewpoint.getController() } };
 
-		return { { "DURATION", p_viewpoint.getDuration() },
-				 { "POSITION", serialize( p_viewpoint.getPosition() ) },
-				 { "TARGET", serialize( p_viewpoint.getTarget() ) },
-				 { "ROTATION", serialize( p_viewpoint.getRotation() ) },
-				 { "DISTANCE", p_viewpoint.getDistance() },
-				 { "CONTROLLER", p_viewpoint.getController() },
-				 { "ACTIONS", jsonArray } };
+		if ( p_viewpoint.getController() == ID::Controller::TRACKBALL )
+		{
+			json[ "TARGET" ]   = serialize( p_viewpoint.getTarget() );
+			json[ "DISTANCE" ] = p_viewpoint.getDistance();
+		}
+		return json;
 	}
-	*/
 
 	nlohmann::json Serializer::serialize(
 		const Model::Representation::InstantiatedRepresentation & p_representation ) const
@@ -308,7 +301,6 @@ namespace VTX::IO
 			}
 		}
 
-		/*
 		if ( p_json.contains( "PATHS" ) )
 		{
 			for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
@@ -318,7 +310,6 @@ namespace VTX::IO
 				p_scene.addPath( path );
 			}
 		}
-		*/
 
 		VTXApp::get()
 			.getStateMachine()
@@ -373,11 +364,29 @@ namespace VTX::IO
 		p_molecule.setIsPlaying( _get<bool>( p_json, "TRAJECTORY_ISPLAYING" ) );
 	}
 
-	/*
 	void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const
 	{
-		p_path.setDurationMode( _get<Model::Path::DURATION_MODE>( p_json, "MODE_DURATION" ) );
-		p_path.setInterpolationMode( _get<Model::Path::INTERPOLATION_MODE>( p_json, "MODE_INTERPOLATION" ) );
+		p_path.setName( _get<std::string>( p_json, "NAME" ) );
+		if ( p_json.contains( "MODE_DURATION" ) )
+		{
+			std::string value	  = p_json.at( "MODE_DURATION" ).get<std::string>();
+			auto		valueEnum = magic_enum::enum_cast<Model::Path::DURATION_MODE>( value );
+			if ( valueEnum.has_value() )
+			{
+				p_path.setDurationMode( valueEnum.value() );
+			}
+		}
+
+		if ( p_json.contains( "MODE_INTERPOLATION" ) )
+		{
+			std::string value	  = p_json.at( "MODE_INTERPOLATION" ).get<std::string>();
+			auto		valueEnum = magic_enum::enum_cast<Model::Path::INTERPOLATION_MODE>( value );
+			if ( valueEnum.has_value() )
+			{
+				p_path.setInterpolationMode( valueEnum.value() );
+			}
+		}
+
 		p_path.setDuration( _get<float>( p_json, "DURATION", Setting::PATH_DURATION_DEFAULT ) );
 		p_path.setIsLooping( _get<bool>( p_json, "IS_LOOPING" ) );
 
@@ -397,7 +406,10 @@ namespace VTX::IO
 
 	void Serializer::deserialize( const nlohmann::json & p_json, Model::Viewpoint & p_viewpoint ) const
 	{
+		p_viewpoint.setName( _get<std::string>( p_json, "NAME" ) );
+		p_viewpoint.setController( _get<ID::VTX_ID>( p_json, "CONTROLLER", Setting::CONTROLLER_MODE_DEFAULT ) );
 		p_viewpoint.setDuration( _get<float>( p_json, "DURATION" ) );
+
 		if ( p_json.contains( "POSITION" ) )
 		{
 			Vec3f position;
@@ -405,12 +417,6 @@ namespace VTX::IO
 			p_viewpoint.setPosition( position );
 		}
 
-		if ( p_json.contains( "TARGET" ) )
-		{
-			Vec3f target;
-			deserialize( p_json.at( "TARGET" ), target );
-			p_viewpoint.setTarget( target );
-		}
 		if ( p_json.contains( "ROTATION" ) )
 		{
 			Quatf rotation;
@@ -418,20 +424,18 @@ namespace VTX::IO
 			p_viewpoint.setRotation( rotation );
 		}
 
-		p_viewpoint.setDistance( _get<float>( p_json, "DISTANCE" ) );
-		p_viewpoint.setController( _get<ID::VTX_ID>( p_json, "CONTROLLER", Setting::CONTROLLER_MODE_DEFAULT ) );
-
-		if ( p_json.contains( "ACTIONS" ) )
+		if ( p_viewpoint.getController() == ID::Controller::TRACKBALL )
 		{
-			for ( const nlohmann::json & jsonAction : p_json.at( "ACTIONS" ) )
+			if ( p_json.contains( "TARGET" ) )
 			{
-				std::string action = jsonAction.get<std::string>();
-				std::replace( action.begin(), action.end(), '-', ' ' );
-				p_viewpoint.addAction( action );
+				Vec3f target;
+				deserialize( p_json.at( "TARGET" ), target );
+				p_viewpoint.setTarget( target );
 			}
+
+			p_viewpoint.setDistance( _get<float>( p_json, "DISTANCE" ) );
 		}
 	}
-	*/
 
 	void Serializer::deserialize( const nlohmann::json &							  p_json,
 								  Model::Representation::InstantiatedRepresentation & p_representation ) const

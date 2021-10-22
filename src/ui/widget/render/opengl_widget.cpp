@@ -3,6 +3,7 @@
 #include "object3d/scene.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/gl/program_manager.hpp"
+#include "renderer/rt/ray_tracer.hpp"
 #include "ui/dialog.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
@@ -74,18 +75,17 @@ namespace VTX::UI::Widget::Render
 #endif
 
 		VTX_PROGRAM_MANAGER( _gl );
-		switchRenderer( Setting::MODE_DEFAULT );
-
-		const float pixelRatio = VTXApp::get().getPixelRatio();
-		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT * pixelRatio,
-							Setting::WINDOW_HEIGHT_DEFAULT * pixelRatio,
-							defaultFramebufferObject() );
 
 		_frameTimer.start();
 	}
 
 	void OpenGLWidget::paintGL()
 	{
+		if ( _renderer == nullptr )
+		{
+			_switchRenderer( VTX_SETTING().mode );
+		}
+
 		_frameCounter++;
 		if ( _frameTimer.elapsed() >= 1000 )
 		{
@@ -119,15 +119,19 @@ namespace VTX::UI::Widget::Render
 		}
 
 		makeCurrent();
+
 		VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
 
-		const float pixelRatio = VTXApp::get().getPixelRatio();
-		getRenderer().resize( p_width * pixelRatio, p_height * pixelRatio, defaultFramebufferObject() );
+		if ( _renderer != nullptr )
+		{
+			const float pixelRatio = VTXApp::get().getPixelRatio();
+			getRenderer().resize( p_width * pixelRatio, p_height * pixelRatio, defaultFramebufferObject() );
+		}
 
 		doneCurrent();
 	}
 
-	void OpenGLWidget::switchRenderer( const Renderer::MODE p_mode )
+	void OpenGLWidget::_switchRenderer( const Renderer::MODE p_mode )
 	{
 		bool needInit = false;
 
@@ -138,11 +142,28 @@ namespace VTX::UI::Widget::Render
 			if ( _rendererGL == nullptr )
 			{
 				_rendererGL = new Renderer::GL::GL( _gl );
+				needInit	= true;
 			}
 			_renderer = _rendererGL;
 			break;
-
+		case Renderer::MODE::RT_CPU:
+			assert( _gl != nullptr );
+			if ( _rendererRT == nullptr )
+			{
+				_rendererRT = new Renderer::RayTracer( _gl );
+				needInit	= true;
+			}
+			_renderer = _rendererRT;
+			break;
 		default: _renderer = nullptr;
+		}
+
+		if ( needInit )
+		{
+			const float pixelRatio = VTXApp::get().getPixelRatio();
+			getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT * pixelRatio,
+								Setting::WINDOW_HEIGHT_DEFAULT * pixelRatio,
+								defaultFramebufferObject() );
 		}
 	}
 

@@ -949,7 +949,7 @@ namespace VTX::View::UI::Widget
 
 	void MoleculeSceneView::_refreshSelection( const Model::Selection & p_selection )
 	{
-		const Model::Selection::MapMoleculeIds &			   items = p_selection.getItems();
+		const Model::Selection::MapMoleculeIds &			   items = p_selection.getMoleculesMap();
 		const Model::Selection::MapMoleculeIds::const_iterator itMoleculeItem = items.find( _model->getId() );
 
 		_enableSignals( false );

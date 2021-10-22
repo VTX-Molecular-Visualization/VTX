@@ -113,7 +113,7 @@ namespace VTX::IO
 		const IO::FilePath moleculeFolderPath	 = Util::Filesystem::getSceneSaveDirectory( _currentFilePath );
 		const std::string  moleculeFolderPathStr = moleculeFolderPath.path();
 
-		const bool pathCanBeRelative = moleculePathStr._Starts_with( moleculeFolderPathStr );
+		const bool pathCanBeRelative = moleculePathStr.rfind( moleculeFolderPathStr, 0 ) == 0;
 
 		if ( pathCanBeRelative )
 		{
