@@ -60,6 +60,7 @@ namespace VTX
 			const QPixmap RESIDUE_SYMBOL;
 			const QPixmap ATOM_SYMBOL;
 			const QPixmap REPRESENTATION_SYMBOL;
+			const QPixmap VIEWPOINT_SYMBOL;
 
 			const QPixmap REPRESENTATION_STICK_ICON;
 			const QPixmap REPRESENTATION_BALL_AND_STICK_ICON;
@@ -112,6 +113,10 @@ namespace VTX
 					res = &RESIDUE_SYMBOL;
 				else if ( p_id == ID::Model::MODEL_ATOM )
 					res = &ATOM_SYMBOL;
+				else if ( p_id == ID::Model::MODEL_PATH )
+					res = &VIEWPOINT_SYMBOL;
+				else if ( p_id == ID::Model::MODEL_VIEWPOINT )
+					res = &VIEWPOINT_SYMBOL;
 				else
 				{
 					VTX_WARNING( "Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." );
@@ -161,6 +166,7 @@ namespace VTX
 				CHAIN_SYMBOL( QPixmap( ":/sprite/symbol/chain_symbol_icon.png" ) ),
 				RESIDUE_SYMBOL( QPixmap( ":/sprite/symbol/residue_symbol_icon.png" ) ),
 				ATOM_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
+				VIEWPOINT_SYMBOL( QPixmap( ":/sprite/symbol/viewpoint_symbol_icon.png" ) ),
 				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ),
 				REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
 				FULLSCREEN_ICON( QPixmap( ":/sprite/fullscreen_icon.png" ) ),
@@ -211,7 +217,8 @@ namespace VTX
 
 		inline static const int MAIN_MENU_MAX_BUTTON_PRESET_WIDTH = 125;
 
-		inline static const int MOLECULE_NAME_MAXIMUM_SIZE = 32;
+		inline static const int			MOLECULE_NAME_MAXIMUM_SIZE = 32;
+		inline static const std::string VIEWPOINT_GROUP_NAME	   = "Viewpoints";
 
 		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;
 		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;

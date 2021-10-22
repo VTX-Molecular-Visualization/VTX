@@ -58,14 +58,12 @@ namespace VTX::View::UI::Widget
 		QTreeWidgetItem *								_lastItemVisible = nullptr;
 		std::map<Model::ID, QList<QTreeWidgetItem *> *> _mapLoadedItems
 			= std::map<Model::ID, QList<QTreeWidgetItem *> *>();
-		int _enableSignalCounter = 0;
 
 		MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
 		~MoleculeSceneView();
 
 		void _clearLoadedItems();
-		void _rebuildTree();
-		void _enableSignals( const bool p_enable );
+		void _createTopLevelObject() override;
 
 		void _onItemChanged( QTreeWidgetItem * const, const int );
 		void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;
@@ -94,7 +92,6 @@ namespace VTX::View::UI::Widget
 									  QTreeWidgetItem &					 p_item,
 									  const Style::SYMBOL_DISPLAY_MODE & p_symbolDisplayMode ) const;
 
-		void _refreshItemVisibility( QTreeWidgetItem * const p_itemWidget, const Generic::BaseVisible & p_baseVisible );
 		void _refreshSelection( const Model::Selection & p_selection );
 		void _refreshSymbolDisplay( const Style::SYMBOL_DISPLAY_MODE & p_displayMode );
 		void _refreshSymbolDisplayRecursive( QTreeWidgetItem * const			p_item,

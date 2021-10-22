@@ -1,6 +1,9 @@
 #include "scene_item_widget.hpp"
+#include "generic/base_visible.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "tool/logger.hpp"
 #include "ui/mime_type.hpp"
+#include "util/ui.hpp"
 #include "vtx_app.hpp"
 #include <QAbstractItemModel>
 #include <QDrag>
@@ -25,9 +28,19 @@ namespace VTX::UI::Widget::Scene
 
 		setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
 		setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
+
+		setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
+		setEditTriggers( EditTrigger::SelectedClicked );
+		setExpandsOnDoubleClick( false );
+
+		_createTopLevelObject();
 	}
 
-	void SceneItemWidget::_setupSlots() {}
+	void SceneItemWidget::_setupSlots()
+	{
+		connect( this, &QTreeWidget::itemExpanded, this, &SceneItemWidget::_onItemExpanded );
+		connect( this, &QTreeWidget::itemCollapsed, this, &SceneItemWidget::_onItemCollapsed );
+	}
 
 	void SceneItemWidget::localize() {}
 
@@ -76,6 +89,41 @@ namespace VTX::UI::Widget::Scene
 
 	void SceneItemWidget::_onItemExpanded( QTreeWidgetItem * const ) { _refreshSize(); }
 	void SceneItemWidget::_onItemCollapsed( QTreeWidgetItem * const ) { _refreshSize(); }
+
+	void SceneItemWidget::_refreshItemVisibility( QTreeWidgetItem * const p_itemWidget, const bool p_visible )
+	{
+		_enableSignals( false );
+		p_itemWidget->setCheckState( 0, Util::UI::getCheckState( p_visible ) );
+		_enableSignals( true );
+	}
+
+	void SceneItemWidget::_enableSignals( const bool p_enable )
+	{
+		if ( p_enable )
+			_enableSignalCounter--;
+		else
+			_enableSignalCounter++;
+
+		const bool isEnable = _enableSignalCounter == 0;
+		blockSignals( !isEnable );
+		setUpdatesEnabled( isEnable );
+	}
+
+	void SceneItemWidget::_createTopLevelObject()
+	{
+		const Model::BaseModel & model = MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() );
+
+		QTreeWidgetItem * const topLevelItem = new QTreeWidgetItem();
+		topLevelItem->setFlags( topLevelItem->flags() | Qt::ItemFlag::ItemIsEditable );
+
+		topLevelItem->setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( model.getId() ) );
+		topLevelItem->setText( 0, QString::fromStdString( model.getDefaultName() ) );
+		topLevelItem->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( model.getTypeId() ) );
+
+		_refreshItemVisibility( topLevelItem, true );
+
+		addTopLevelItem( topLevelItem );
+	}
 
 	void SceneItemWidget::_refreshSize()
 	{

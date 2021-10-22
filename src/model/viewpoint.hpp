@@ -41,11 +41,17 @@ namespace VTX
 				_actions.erase( p_action );
 			}
 
+			inline void setName( const std::string & p_name ) { _storedName = p_name; }
+
+		  protected:
+			Viewpoint( Path * const p_path );
+
 		  private:
 			Path * const _path;
-			float		 _duration = 0.f;
-			Quatf		 _rotation = Quatf();
-			Vec3f		 _position = VEC3F_ZERO;
+			float		 _duration	 = 0.f;
+			Quatf		 _rotation	 = Quatf();
+			Vec3f		 _position	 = VEC3F_ZERO;
+			std::string	 _storedName = "";
 
 			union
 			{
@@ -60,8 +66,6 @@ namespace VTX
 			ID::VTX_ID _controller = Setting::CONTROLLER_MODE_DEFAULT;
 
 			std::vector<std::string> _actions = std::vector<std::string>();
-
-			Viewpoint( Path * const p_path ) : BaseModel( ID::Model::MODEL_VIEWPOINT ), _path( p_path ) {}
 
 		}; // namespace Camera
 	}	   // namespace Model

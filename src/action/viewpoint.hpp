@@ -168,6 +168,22 @@ namespace VTX
 				const Vec3f		   _position;
 				const Quatf		   _rotation;
 			};
+
+			class Rename : public BaseAction
+			{
+			  public:
+				explicit Rename( Model::Viewpoint & p_viewpoint, const std::string & p_name ) :
+					_name( p_name ), _viewpoint( p_viewpoint )
+				{
+				}
+
+				virtual void execute() override { _viewpoint.setName( _name ); }
+
+			  private:
+				Model::Viewpoint &	_viewpoint;
+				const std::string & _name;
+			};
+
 		} // namespace Viewpoint
 	}	  // namespace Action
 } // namespace VTX

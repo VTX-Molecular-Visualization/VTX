@@ -70,7 +70,17 @@ namespace VTX::Object3D
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
-	void Scene::addPath( PathPtr const p_path ) { _paths.emplace_back( p_path ); }
+	void Scene::addPath( PathPtr const p_path )
+	{
+		_paths.emplace_back( p_path );
+		VTX_EVENT( new Event::VTXEventPtr( Event::Global::PATH_ADDED, p_path ) );
+	}
+
+	void Scene::removePath( PathPtr const p_path )
+	{
+		_paths.erase( std::find( _paths.begin(), _paths.end(), p_path ) );
+		VTX_EVENT( new Event::VTXEventPtr( Event::Global::PATH_REMOVED, p_path ) );
+	}
 
 	void Scene::addMesh( MeshTrianglePtr const p_mesh )
 	{

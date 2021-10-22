@@ -9,6 +9,11 @@
 #include <QMouseEvent>
 #include <QTreeWidget>
 
+namespace VTX::Generic
+{
+	class BaseVisible;
+};
+
 namespace VTX::UI::Widget::Scene
 {
 	class SceneItemWidget : public BaseManualWidget<QTreeWidget>
@@ -29,8 +34,6 @@ namespace VTX::UI::Widget::Scene
 	  protected:
 		SceneItemWidget( QWidget * p_parent );
 
-		virtual bool _canDragObjectAtPos( const QPoint & p_position ) { return true; }
-
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
@@ -41,18 +44,21 @@ namespace VTX::UI::Widget::Scene
 		virtual void _onItemExpanded( QTreeWidgetItem * const );
 		virtual void _onItemCollapsed( QTreeWidgetItem * const );
 
+		virtual void _createTopLevelObject();
+
 		virtual void _refreshSize();
 		virtual int	 _getMinimumHeight() const;
 
-		virtual QMimeData * _getDataForDrag() = 0;
+		void _refreshItemVisibility( QTreeWidgetItem * const p_itemWidget, const bool p_visible );
 
-		const Qt::CheckState _getCheckState( const bool p_enable ) const
-		{
-			return p_enable ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
-		};
+		void _enableSignals( const bool p_enable );
+
+		virtual bool		_canDragObjectAtPos( const QPoint & p_position ) { return true; }
+		virtual QMimeData * _getDataForDrag() = 0;
 
 	  private:
 		QPoint _dragStartPosition;
+		int	   _enableSignalCounter = 0;
 	};
 
 } // namespace VTX::UI::Widget::Scene
