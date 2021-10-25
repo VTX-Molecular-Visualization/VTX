@@ -1,6 +1,7 @@
 #ifndef __VTX_MVC_MANAGER__
 #define __VTX_MVC_MANAGER__
 
+#include "generic/base_lockable.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"
 #include "mvc_data.hpp"
@@ -13,7 +14,7 @@ namespace VTX
 {
 	namespace MVC
 	{
-		class MvcManager final
+		class MvcManager : public Generic::BaseLockable
 		{
 		  public:
 			inline static MvcManager & get()
@@ -29,9 +30,10 @@ namespace VTX
 				M * const		model = new M();
 				MvcData * const mvc	  = new MvcData( model );
 
+				_lock();
 				_container.emplace( model->getId(), mvc );
-
 				model->_instantiateDefaultViews();
+				_unlock();
 
 				return model;
 			}
@@ -42,9 +44,10 @@ namespace VTX
 				M * const		model = new M( p_param1 );
 				MvcData * const mvc	  = new MvcData( model );
 
+				_lock();
 				_container.emplace( model->getId(), mvc );
-
 				model->_instantiateDefaultViews();
+				_unlock();
 
 				return model;
 			}
@@ -55,9 +58,10 @@ namespace VTX
 				M * const		model = new M( p_param1 );
 				MvcData * const mvc	  = new MvcData( model );
 
+				_lock();
 				_container.emplace( model->getId(), mvc );
-
 				model->_instantiateDefaultViews();
+				_unlock();
 
 				return model;
 			}

@@ -1,9 +1,11 @@
 #ifndef __VTX_BASE_OPENGL__
 #define __VTX_BASE_OPENGL__
 
-// To change openGL version: just change these 2 lines.
+// To change openGL version: just change these lines.
 #include <QOpenGLFunctions_4_5_Core>
 using OpenGLFunctions = QOpenGLFunctions_4_5_Core;
+constexpr uint OPENGL_MAJOR_VERSION = 4;
+constexpr uint OPENGL_MINOR_VERSION = 5;
 
 namespace VTX
 {

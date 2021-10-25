@@ -1,8 +1,7 @@
 #ifndef __VTX_BASE_LOCKABLE__
 #define __VTX_BASE_LOCKABLE__
 
-#include <iostream>
-#include <mutex>
+#include <QMutex>
 
 namespace VTX
 {
@@ -11,11 +10,11 @@ namespace VTX
 		class BaseLockable
 		{
 		  protected:
-			std::mutex _mutex;
-
 			inline void _lock() { _mutex.lock(); }
-
 			inline void _unlock() { _mutex.unlock(); }
+
+		  private:
+			QMutex _mutex;
 		};
 	} // namespace Generic
 } // namespace VTX
