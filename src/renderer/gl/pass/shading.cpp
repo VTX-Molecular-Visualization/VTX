@@ -54,7 +54,6 @@ namespace VTX::Renderer::GL::Pass
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
 			const Color::Rgb & bgColor = VTX_RENDER_EFFECT().getBackgroundColor();
-			/// TODO: use a value_ptr ?
 			_currentShading->setVec4f( "uBackgroundColor",
 									   bgColor.getR(),
 									   bgColor.getG(),
@@ -65,12 +64,10 @@ namespace VTX::Renderer::GL::Pass
 			_currentShading->setFloat( "uFogDensity",
 									   VTX_RENDER_EFFECT().isFogEnabled() ? VTX_RENDER_EFFECT().getFogDensity() : 0.f );
 			const Color::Rgb & fogColor = VTX_RENDER_EFFECT().getFogColor();
-			/// TODO: use a value_ptr ?
-			_currentShading->setVec3f( "uFogColor", fogColor.getR(), fogColor.getG(), fogColor.getB() );
+			_currentShading->setVec3f( "uFogColor", fogColor );
 
 			const Color::Rgb & lightColor = VTX_RENDER_EFFECT().getCameraLightColor();
-			/// TODO: use a value_ptr ?
-			_currentShading->setVec3f( "uLightColor", lightColor.getR(), lightColor.getG(), lightColor.getB() );
+			_currentShading->setVec3f( "uLightColor", lightColor );
 		}
 
 		// TODO: no need for flat shading
