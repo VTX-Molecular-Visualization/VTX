@@ -45,6 +45,12 @@ namespace VTX::View::UI::Widget::Renderer
 			_refreshPresetDisplayed( true );
 			_refreshDeletePresetButton();
 		}
+		else if ( p_event.name == Event::Global::RENDER_EFFECT_LIBRARY_CLEARED )
+		{
+			const bool previousSignalState = blockSignals(true);
+			_presetList->setCurrentIndex( -1 );
+			blockSignals( previousSignalState );
+		}
 	}
 
 	void RenderEffectPresetLibraryView::_setupUi( const QString & p_name )
