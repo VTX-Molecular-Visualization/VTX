@@ -15,21 +15,19 @@ namespace VTX::Model
 {
 	GeneratedMolecule::GeneratedMolecule() : Model::Molecule( ID::Model::MODEL_GENERATED_MOLECULE ) {}
 
-	void GeneratedMolecule::copyFromSelection(
-		const std::pair<Model::ID, Model::Selection::MapChainIds> & p_moleculeSelectionData )
+	void GeneratedMolecule::copyFromSelection( const Model::Selection & p_selection, const Model::ID & p_moleculeID )
 	{
 		Tool::Chrono chrono;
 		chrono.start();
 
-		const Model::Molecule & molecule
-			= MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeSelectionData.first );
+		const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeID );
+		const Model::Selection::MapChainIds & moleculeSelectionData = p_selection.getMoleculesMap().at( p_moleculeID );
 
 		_copyMoleculeData( molecule, "Copy of " );
 
 		std::map<const uint, const uint> mapAtomIds = std::map<const uint, const uint>();
 
-		for ( const std::pair<const ID, const Model::Selection::MapResidueIds> & chainData :
-			  p_moleculeSelectionData.second )
+		for ( const std::pair<const ID, const Model::Selection::MapResidueIds> & chainData : moleculeSelectionData )
 		{
 			const Model::Chain & chain			= *molecule.getChain( chainData.first );
 			Model::Chain &		 generatedChain = addChain();
@@ -330,13 +328,13 @@ namespace VTX::Model
 		getBufferBonds().shrink_to_fit();
 	}
 
-	void GeneratedMolecule::extractFromSelection(
-		const std::pair<Model::ID, Model::Selection::MapChainIds> & p_moleculeSelectionData )
+	void GeneratedMolecule::extractFromSelection( const Model::Selection & p_selection, const Model::ID & p_moleculeID )
 	{
 		Tool::Chrono chrono = Tool::Chrono();
 		chrono.start();
 
-		Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeSelectionData.first );
+		Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeID );
+		const Model::Selection::MapChainIds & moleculeSelectionData = p_selection.getMoleculesMap().at( p_moleculeID );
 
 		_pendingExternalBonds.clear();
 		_pendingExternalBonds.reserve( molecule.getResidueCount() );
@@ -345,8 +343,7 @@ namespace VTX::Model
 
 		_copyMoleculeData( molecule, "Extract of " );
 
-		for ( const std::pair<const ID, const Model::Selection::MapResidueIds> & chainData :
-			  p_moleculeSelectionData.second )
+		for ( const std::pair<const ID, const Model::Selection::MapResidueIds> & chainData : moleculeSelectionData )
 		{
 			const Model::Chain * const chain = molecule.getChain( chainData.first );
 

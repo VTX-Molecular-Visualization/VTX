@@ -1,7 +1,7 @@
 #include "menu_visualization_viewpoint.hpp"
 #include "action/action_manager.hpp"
 #include "action/viewpoint.hpp"
-//#include "mvc/mvc_manager.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "model/path.hpp"
 #include "object3d/camera.hpp"
 #include "selection/selection_manager.hpp"
@@ -23,8 +23,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			const Event::VTXEventPtr<Model::Selection> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
 
-			// const bool enableDeleteButton = castedEvent.ptr->hasViewpoint() > 0;
-			// _enableDeleteButtonState( enableDeleteButton );
+			const Model::Selection * const selectionModel = castedEvent.ptr;
+			_enableDeleteButtonState( selectionModel->hasItemOfType( ID::Model::MODEL_VIEWPOINT ) );
 		}
 	}
 
@@ -52,21 +52,31 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_deleteViewpointButton->setTriggerAction( this, &MenuVisualizationViewpointWidget::_deleteViewpointAction );
 	}
 
-	void MenuVisualizationViewpointWidget::localize() { setTitle( "Selection Action" ); }
+	void MenuVisualizationViewpointWidget::localize() { setTitle( "Viewpoints" ); }
 
 	void MenuVisualizationViewpointWidget::_createViewpointAction() const
 	{
-		const Object3D::Camera &				 cam  = VTXApp::get().getScene().getCamera();
-		Model::Path * const						 path = VTXApp::get().getScene().getPaths()[ 0 ];
-		Controller::BaseCameraController * const currentController
-			= VTXApp::get()
-				  .getStateMachine()
-				  .getState<State::Visualization>( ID::State::VISUALIZATION )
-				  ->getCurrentCameraController();
-
-		VTX_ACTION( new Action::Viewpoint::Create( *path, cam, currentController ) );
+		VTX_ACTION( new Action::Viewpoint::Create() );
 	}
-	void MenuVisualizationViewpointWidget::_deleteViewpointAction() const {}
+	void MenuVisualizationViewpointWidget::_deleteViewpointAction() const
+	{
+		std::vector<Model::Viewpoint *> viewpointsInSelection = std::vector<Model::Viewpoint *>();
+		const Model::Selection &		selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+		viewpointsInSelection.reserve( selection.getItems().size() );
+
+		for ( const Model::ID & modelID : selection.getItems() )
+		{
+			const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( modelID );
+			if ( modelTypeID == ID::Model::MODEL_VIEWPOINT )
+			{
+				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
+				viewpointsInSelection.emplace_back( &viewpoint );
+			}
+		}
+
+		VTX_ACTION( new Action::Viewpoint::Delete( viewpointsInSelection ) );
+	}
 
 	void MenuVisualizationViewpointWidget::_enableDeleteButtonState( const bool p_enable )
 	{

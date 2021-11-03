@@ -1,8 +1,13 @@
 #include "scene_item_widget.hpp"
 #include "generic/base_visible.hpp"
+#include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "selection/selection_manager.hpp"
 #include "tool/logger.hpp"
+#include "ui/main_window.hpp"
 #include "ui/mime_type.hpp"
+#include "ui/widget/scene/scene_item_selection_model.hpp"
+#include "ui/widget/scene/scene_widget.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
 #include <QAbstractItemModel>
@@ -11,7 +16,21 @@
 
 namespace VTX::UI::Widget::Scene
 {
-	SceneItemWidget::SceneItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
+	SceneItemWidget::SceneItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
+	{
+		_registerEvent( Event::Global::SELECTION_CHANGE );
+	}
+
+	void SceneItemWidget::receiveEvent( const Event::VTXEvent & p_event )
+	{
+		if ( p_event.name == Event::Global::SELECTION_CHANGE )
+		{
+			const Event::VTXEventPtr<Model::Selection> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+
+			_refreshSelection( *castedEvent.ptr );
+		}
+	}
 
 	void SceneItemWidget::_setupUi( const QString & p_name )
 	{
@@ -33,6 +52,9 @@ namespace VTX::UI::Widget::Scene
 		setEditTriggers( EditTrigger::SelectedClicked );
 		setExpandsOnDoubleClick( false );
 
+		Model::BaseModel & vtxModel = MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() );
+		setSelectionModel( new VTX::UI::Widget::Scene::SceneItemSelectionModel( &vtxModel, model(), this ) );
+
 		_createTopLevelObject();
 	}
 
@@ -40,9 +62,16 @@ namespace VTX::UI::Widget::Scene
 	{
 		connect( this, &QTreeWidget::itemExpanded, this, &SceneItemWidget::_onItemExpanded );
 		connect( this, &QTreeWidget::itemCollapsed, this, &SceneItemWidget::_onItemCollapsed );
+		connect( this, &QTreeWidget::customContextMenuRequested, this, &SceneItemWidget::_onCustomContextMenuCalled );
 	}
 
 	void SceneItemWidget::localize() {}
+
+	void SceneItemWidget::openRenameEditor( const Model::ID & p_modelID )
+	{
+		_openRenameEditor( *_findItemFromModelID( p_modelID ) );
+	}
+	void SceneItemWidget::_openRenameEditor( QTreeWidgetItem & p_target ) { editItem( &p_target ); }
 
 	QTreeWidgetItem * SceneItemWidget::getLastVisibleItem()
 	{
@@ -58,6 +87,58 @@ namespace VTX::UI::Widget::Scene
 			_dragStartPosition = p_event->pos();
 
 		p_event->accept();
+	}
+
+	void SceneItemWidget::keyPressEvent( QKeyEvent * p_event )
+	{
+		// Desactivate expand all (*) shortcut
+		if ( p_event->key() == Qt::Key::Key_Asterisk )
+		{
+			return;
+			// Reimplement expand all action to prevent useless multiple call to refreshSelection
+			//_expandAll( currentItem() );
+		}
+		else if ( p_event->key() == Qt::Key::Key_F2 )
+		{
+			const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+			if ( selection.getItems().size() == 1 && _itemCanBeRenamed( currentItem() ) )
+			{
+				_openRenameEditor( *currentItem() );
+			}
+		}
+		else if ( p_event->key() == Qt::Key::Key_Up && itemFromIndex( currentIndex() ) == topLevelItem( 0 ) )
+		{
+			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
+				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
+			SceneItemWidget * const previousTree = sceneWidget.getPreviousSceneItemWidgets( this );
+
+			if ( previousTree != this )
+			{
+				QTreeWidgetItem * const previousTreeWidgetItem = previousTree->getLastVisibleItem();
+
+				const bool appendToSelection = p_event->modifiers() == Qt::KeyboardModifier::ShiftModifier;
+				_selectItemWithArrows( *previousTreeWidgetItem, appendToSelection );
+			}
+		}
+		else if ( p_event->key() == Qt::Key::Key_Down && itemFromIndex( currentIndex() ) == getLastVisibleItem() )
+		{
+			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
+				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
+			SceneItemWidget * const nextTree = sceneWidget.getNextSceneItemWidgets( this );
+
+			if ( nextTree != this )
+			{
+				QTreeWidgetItem * const nextTreeWidgetItem = nextTree->topLevelItem( 0 );
+
+				const bool appendToSelection = p_event->modifiers() == Qt::KeyboardModifier::ShiftModifier;
+				_selectItemWithArrows( *nextTreeWidgetItem, appendToSelection );
+			}
+		}
+		else
+		{
+			BaseManualWidget::keyPressEvent( p_event );
+		}
 	}
 
 	void SceneItemWidget::dragEnterEvent( QDragEnterEvent * p_event )
@@ -89,6 +170,24 @@ namespace VTX::UI::Widget::Scene
 
 	void SceneItemWidget::_onItemExpanded( QTreeWidgetItem * const ) { _refreshSize(); }
 	void SceneItemWidget::_onItemCollapsed( QTreeWidgetItem * const ) { _refreshSize(); }
+
+	void SceneItemWidget::_onCustomContextMenuCalled( const QPoint & p_clicPos ) {}
+
+	void SceneItemWidget::_refreshSelection( const Model::Selection & p_selection )
+	{
+		_enableSignals( false );
+		QItemSelection selection = QItemSelection();
+		_fillItemSelection( p_selection, selection );
+
+		VTX::UI::Widget::Scene::SceneItemSelectionModel * const selectModel
+			= dynamic_cast<VTX::UI::Widget::Scene::SceneItemSelectionModel * const>( selectionModel() );
+
+		selectModel->refreshSelection( selection );
+
+		_enableSignals( true );
+	}
+	void SceneItemWidget::_fillItemSelection( const Model::Selection & p_selection,
+											  QItemSelection &		   p_itemSelection ) {};
 
 	void SceneItemWidget::_refreshItemVisibility( QTreeWidgetItem * const p_itemWidget, const bool p_visible )
 	{
@@ -123,6 +222,19 @@ namespace VTX::UI::Widget::Scene
 		_refreshItemVisibility( topLevelItem, true );
 
 		addTopLevelItem( topLevelItem );
+	}
+
+	void SceneItemWidget::_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append )
+	{
+		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+		const Model::ID & itemModel = _getModelIDFromItem( p_itemToSelect );
+		const ID::VTX_ID  itemType	= MVC::MvcManager::get().getModelTypeID( itemModel );
+
+		p_itemToSelect.treeWidget()->setFocus( Qt::FocusReason::TabFocusReason );
+		p_itemToSelect.treeWidget()->setCurrentItem( &p_itemToSelect );
+
+		selectionModel.selectModel( MVC::MvcManager::get().getModel<Model::BaseModel>( itemModel ), p_append );
 	}
 
 	void SceneItemWidget::_refreshSize()
@@ -173,6 +285,41 @@ namespace VTX::UI::Widget::Scene
 		}
 
 		return nbItemDisplayed > 3 ? 0 : ( rowHeight( model()->index( 0, 0 ) ) * nbItemDisplayed );
+	}
+
+	bool SceneItemWidget::_itemCanBeRenamed( const QTreeWidgetItem * p_item ) { return true; }
+
+	Model::ID SceneItemWidget::_getModelIDFromItem( const QTreeWidgetItem & p_item ) const
+	{
+		const QVariant & dataID = p_item.data( 0, MODEL_ID_ROLE );
+		return dataID.value<VTX::Model::ID>();
+	}
+	QTreeWidgetItem * SceneItemWidget::_findItemFromModelID( const Model::ID & p_id ) const
+	{
+		return _findItemFromModelIDRecursive( *topLevelItem( 0 ), p_id );
+	}
+	QTreeWidgetItem * SceneItemWidget::_findItemFromModelIDRecursive( QTreeWidgetItem & p_parent,
+																	  const Model::ID & p_id ) const
+	{
+		if ( _getModelIDFromItem( p_parent ) == p_id )
+			return &p_parent;
+
+		for ( int i = 0; i < p_parent.childCount(); i++ )
+		{
+			QTreeWidgetItem * child = p_parent.child( i );
+			QTreeWidgetItem * res	= _findItemFromModelIDRecursive( *child, p_id );
+
+			if ( res != nullptr )
+				return res;
+		}
+
+		return nullptr;
+	}
+
+	bool SceneItemWidget::_getItemExpandState( const QTreeWidgetItem & p_item ) const
+	{
+		const QVariant & expandState = p_item.data( 0, EXPAND_STATE_ROLE );
+		return expandState.isValid() && expandState.value<bool>();
 	}
 
 } // namespace VTX::UI::Widget::Scene

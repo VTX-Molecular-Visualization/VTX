@@ -74,7 +74,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		_exportSelectionButton->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_exportSelection );
 	}
-	void MenuVisualizationSelectionActionWidget::localize() { setTitle( "Selection Action" ); }
+	void MenuVisualizationSelectionActionWidget::localize() { setTitle( "Molecule Action" ); }
 
 	void MenuVisualizationSelectionActionWidget::_copySelection() const
 	{

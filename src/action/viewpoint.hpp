@@ -4,12 +4,16 @@
 #include "base_action.hpp"
 #include "controller/trackball.hpp"
 #include "model/path.hpp"
+#include "model/selection.hpp"
 #include "model/viewpoint.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
+#include "selection/selection_manager.hpp"
 #include "setting.hpp"
 #include "vtx_app.hpp"
+#include <set>
+#include <vector>
 
 namespace VTX
 {
@@ -20,6 +24,15 @@ namespace VTX
 			class Create : public BaseAction
 			{
 			  public:
+				explicit Create() :
+					Create( *VTXApp::get().getScene().getPaths()[ 0 ],
+							VTXApp::get().getScene().getCamera(),
+							VTXApp::get()
+								.getStateMachine()
+								.getState<State::Visualization>( ID::State::VISUALIZATION )
+								->getCurrentCameraController() )
+				{
+				}
 				explicit Create( Model::Path &							  p_path,
 								 const Object3D::Camera &				  p_camera,
 								 Controller::BaseCameraController * const p_controller ) :
@@ -68,33 +81,60 @@ namespace VTX
 			class Delete : public BaseAction
 			{
 			  public:
-				explicit Delete( Model::Viewpoint & p_viewpoint ) : _viewpoint( p_viewpoint ) {}
+				explicit Delete( Model::Viewpoint & p_viewpoint ) : _viewpoints( { &p_viewpoint } ) {}
+				explicit Delete( const std::vector<Model::Viewpoint *> & p_viewpoints ) : _viewpoints( p_viewpoints ) {}
 
 				virtual void execute() override
 				{
-					Model::Path * const path = _viewpoint.getPathPtr();
-					path->removeViewpoint( &_viewpoint );
-					path->refreshAllDurations();
-					delete &_viewpoint;
+					VTX::Selection::SelectionManager::get().getSelectionModel().unselectModels( _viewpoints );
+
+					std::set<Model::Path *> paths = std::set<Model::Path *>();
+					for ( Model::Viewpoint * const viewpoint : _viewpoints )
+					{
+						Model::Path * const path = viewpoint->getPathPtr();
+						path->removeViewpoint( viewpoint );
+						paths.emplace( path );
+
+						MVC::MvcManager::get().deleteModel( viewpoint );
+					}
+
+					for ( Model::Path * const path : paths )
+						path->refreshAllDurations();
 				}
 
 			  private:
-				Model::Viewpoint & _viewpoint;
+				std::vector<Model::Viewpoint *> _viewpoints;
 			};
 
 			class GoTo : public BaseAction
 			{
 			  public:
+				explicit GoTo( Model::Viewpoint & p_viewpoint ) :
+					GoTo( p_viewpoint, VTXApp::get().getScene().getCamera() )
+				{
+				}
 				explicit GoTo( Model::Viewpoint & p_viewpoint, Object3D::Camera & p_camera ) :
-					_viewpoint( p_viewpoint ), _camera( p_camera )
+					_viewpoints { &p_viewpoint }, _camera( p_camera )
+				{
+				}
+				explicit GoTo( std::vector<Model::Viewpoint *> & p_viewpoints ) :
+					GoTo( p_viewpoints, VTXApp::get().getScene().getCamera() )
+				{
+				}
+				explicit GoTo( std::vector<Model::Viewpoint *> & p_viewpoints, Object3D::Camera & p_camera ) :
+					_viewpoints( p_viewpoints ), _camera( p_camera )
 				{
 				}
 
-				virtual void execute() override { _camera.set( _viewpoint.getPosition(), _viewpoint.getRotation() ); }
+				virtual void execute() override
+				{
+					for ( Model::Viewpoint * const viewpoint : _viewpoints )
+						_camera.set( viewpoint->getPosition(), viewpoint->getRotation() );
+				}
 
 			  private:
-				Object3D::Camera & _camera;
-				Model::Viewpoint & _viewpoint;
+				std::vector<Model::Viewpoint *> _viewpoints;
+				Object3D::Camera &				_camera;
 			};
 
 			/*
@@ -150,25 +190,47 @@ namespace VTX
 				const float		   _duration;
 			};
 
-			class Replace : public BaseAction
+			class Relocate : public BaseAction
 			{
 			  public:
-				explicit Replace( Model::Viewpoint & p_viewpoint, const Object3D::Camera & p_camera ) :
-					_viewpoint( p_viewpoint ), _position( p_camera.getPosition() ), _rotation( p_camera.getRotation() )
+				explicit Relocate( Model::Viewpoint & p_viewpoint ) :
+					Relocate( p_viewpoint, VTXApp::get().getScene().getCamera() )
+				{
+				}
+				explicit Relocate( std::vector<Model::Viewpoint *> & p_viewpoints ) :
+					Relocate( p_viewpoints, VTXApp::get().getScene().getCamera() )
+				{
+				}
+				explicit Relocate( Model::Viewpoint & p_viewpoint, const Object3D::Camera & p_camera ) :
+					_viewpoints { &p_viewpoint }, _position( p_camera.getPosition() ),
+					_rotation( p_camera.getRotation() )
+				{
+				}
+				explicit Relocate( std::vector<Model::Viewpoint *> & p_viewpoints, const Object3D::Camera & p_camera ) :
+					_viewpoints( p_viewpoints ), _position( p_camera.getPosition() ),
+					_rotation( p_camera.getRotation() )
 				{
 				}
 
 				virtual void execute() override
 				{
-					_viewpoint.setPosition( _position );
-					_viewpoint.setRotation( _rotation );
-					_viewpoint.getPathPtr()->refreshAllDurations();
+					std::set<Model::Path *> paths = std::set<Model::Path *>();
+
+					for ( Model::Viewpoint * const viewpoint : _viewpoints )
+					{
+						viewpoint->setPosition( _position );
+						viewpoint->setRotation( _rotation );
+						paths.emplace( viewpoint->getPathPtr() );
+					}
+
+					for ( Model::Path * const path : paths )
+						path->refreshAllDurations();
 				}
 
 			  private:
-				Model::Viewpoint & _viewpoint;
-				const Vec3f		   _position;
-				const Quatf		   _rotation;
+				std::vector<Model::Viewpoint *> _viewpoints;
+				const Vec3f						_position;
+				const Quatf						_rotation;
 			};
 
 			class Rename : public BaseAction

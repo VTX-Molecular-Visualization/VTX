@@ -119,7 +119,7 @@ namespace VTX::UI::Widget::Sequence
 		int lastPixelDrawn = -1;
 
 		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & pairMoleculeChains :
-			  selectionModel.getItems() )
+			  selectionModel.getMoleculesMap() )
 		{
 			const Model::ID & moleculeId = pairMoleculeChains.first;
 

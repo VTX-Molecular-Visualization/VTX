@@ -75,7 +75,7 @@ namespace VTX::Representation
 	void RepresentationManager::instantiateRepresentations( const Representation * const p_representation,
 															const Model::Selection &	 p_selection )
 	{
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molData : p_selection.getItems() )
+		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molData : p_selection.getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molData.first );
 			if ( molData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )

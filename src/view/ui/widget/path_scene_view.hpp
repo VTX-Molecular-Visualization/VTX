@@ -33,9 +33,9 @@ namespace VTX::View::UI::Widget
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		const Model::ID & getModelID() const override { return _model->getId(); };
-		void			  openRenameEditor();
 
-		virtual void updatePosInSceneHierarchy( const int p_position ) override;
+		virtual void	  updatePosInSceneHierarchy( const int p_position ) override;
+		QTreeWidgetItem * getLastVisibleItem() override;
 
 	  protected:
 		PathSceneView( Model::Path * const p_model, QWidget * const p_parent );
@@ -44,13 +44,14 @@ namespace VTX::View::UI::Widget
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
 
-		virtual void keyPressEvent( QKeyEvent * p_event ) override;
-		void		 mouseMoveEvent( QMouseEvent * p_event ) override;
+		void mouseMoveEvent( QMouseEvent * p_event ) override;
+		void _onCustomContextMenuCalled( const QPoint & p_clicPos ) override;
 
 		QMimeData * _getDataForDrag() override;
 		void		_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append = false );
 
 		void _createTopLevelObject() override;
+		void _fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection ) override;
 
 	  private:
 		QMenu *					_contextMenu;
@@ -59,9 +60,8 @@ namespace VTX::View::UI::Widget
 
 		void _onItemChanged( QTreeWidgetItem * const, const int );
 		void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;
-		void _onCustomContextMenuCalled( const QPoint & p_clicPos );
 
-		QTreeWidgetItem * itemFromViewpoint( const Model::Viewpoint & p_viewpoint ) const;
+		QTreeWidgetItem * _itemFromViewpoint( const Model::Viewpoint & p_viewpoint ) const;
 		void			  _addViewpoint( const Model::Viewpoint * const p_viewpoint );
 		void			  _removeViewpoint( const Model::Viewpoint * const p_viewpoint );
 

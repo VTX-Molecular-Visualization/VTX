@@ -376,7 +376,7 @@ namespace VTX::UI::Widget::Sequence
 		{
 			if ( residueHovered != nullptr )
 			{
-				Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+				Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 				if ( selection.isResidueSelected( *residueHovered ) )
 				{
 					UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Selection, &selection, globalMousePos );

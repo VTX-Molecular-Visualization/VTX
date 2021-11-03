@@ -123,19 +123,20 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
 		// No selection => check all molecules in scene
-		if ( selection.isEmpty() )
+		if ( selection.hasMolecule() )
 		{
-			for ( const std::pair<Model::Molecule *, float> & molData : VTXApp::get().getScene().getMolecules() )
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData :
+				  selection.getMoleculesMap() )
 			{
-				p_container.emplace( molData.first );
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+				p_container.emplace( &molecule );
 			}
 		}
 		else
 		{
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : selection.getItems() )
+			for ( const std::pair<Model::Molecule *, float> & molData : VTXApp::get().getScene().getMolecules() )
 			{
-				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
-				p_container.emplace( &molecule );
+				p_container.emplace( molData.first );
 			}
 		}
 	}

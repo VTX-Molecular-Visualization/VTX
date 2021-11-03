@@ -9,7 +9,6 @@
 #include "ui/contextual_menu.hpp"
 #include "ui/mime_type.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_selection.hpp"
-#include "ui/widget/scene/molecule_selection_model.hpp"
 #include "ui/widget/scene/scene_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/string.hpp"
@@ -20,7 +19,6 @@ namespace VTX::View::UI::Widget
 	PathSceneView::PathSceneView( Model::Path * const p_model, QWidget * const p_parent ) :
 		View::BaseView<Model::Path>( p_model ), SceneItemWidget( p_parent )
 	{
-		_registerEvent( Event::Global::SELECTION_CHANGE );
 		_registerEvent( Event::Global::VIEWPOINT_ADDED );
 		_registerEvent( Event::Global::VIEWPOINT_REMOVED );
 	}
@@ -36,14 +34,9 @@ namespace VTX::View::UI::Widget
 	}
 	void PathSceneView::receiveEvent( const Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::SELECTION_CHANGE )
-		{
-			const Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+		SceneItemWidget::receiveEvent( p_event );
 
-			_refreshSelection( *castedEvent.ptr );
-		}
-		else if ( p_event.name == Event::Global::VIEWPOINT_ADDED )
+		if ( p_event.name == Event::Global::VIEWPOINT_ADDED )
 		{
 			const Event::VTXEventPtr<Model::Viewpoint> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
@@ -59,51 +52,14 @@ namespace VTX::View::UI::Widget
 		}
 	}
 
-	void PathSceneView::keyPressEvent( QKeyEvent * p_event )
+	QTreeWidgetItem * PathSceneView::getLastVisibleItem()
 	{
-		if ( p_event->key() == Qt::Key::Key_F2 )
-		{
-			const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		QTreeWidgetItem * pathItem = topLevelItem( 0 );
 
-			// TODO
-			// Override rename key binding because multiple selection with molecule make it fail
-			// if ( selection.isViewpointSelected( *_model ) && selection.getItems().size() == 1 )
-			//{
-			//	openRenameEditor();
-			//}
-		}
-		else if ( p_event->key() == Qt::Key::Key_Up )
-		{
-			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
-				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
-			SceneItemWidget * const previousTree = sceneWidget.getPreviousSceneItemWidgets( this );
-
-			if ( previousTree != this )
-			{
-				QTreeWidgetItem * const previousTreeWidgetItem = previousTree->getLastVisibleItem();
-
-				const bool appendToSelection = p_event->modifiers() == Qt::KeyboardModifier::ShiftModifier;
-				_selectItemWithArrows( *previousTreeWidgetItem, appendToSelection );
-			}
-		}
-		else if ( p_event->key() == Qt::Key::Key_Down )
-		{
-			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
-				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
-			SceneItemWidget * const nextTree = sceneWidget.getNextSceneItemWidgets( this );
-
-			if ( nextTree != this )
-			{
-				QTreeWidgetItem * const nextTreeWidgetItem = nextTree->topLevelItem( 0 );
-
-				const bool appendToSelection = p_event->modifiers() == Qt::KeyboardModifier::ShiftModifier;
-				_selectItemWithArrows( *nextTreeWidgetItem, appendToSelection );
-			}
-		}
+		if ( pathItem->isExpanded() )
+			return pathItem->child( pathItem->childCount() - 1 );
 		else
-		{
-			SceneItemWidget::keyPressEvent( p_event );
-		}
+			return pathItem;
 	}
 
 	void PathSceneView::_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append )
@@ -120,7 +76,6 @@ namespace VTX::View::UI::Widget
 
 		connect( this, &QTreeWidget::itemChanged, this, &PathSceneView::_onItemChanged );
 		connect( this, &QTreeWidget::itemDoubleClicked, this, &PathSceneView::_onItemDoubleClicked );
-		connect( this, &QTreeWidget::customContextMenuRequested, this, &PathSceneView::_onCustomContextMenuCalled );
 	}
 	void PathSceneView::localize() { SceneItemWidget::localize(); }
 
@@ -128,6 +83,24 @@ namespace VTX::View::UI::Widget
 	{
 		SceneItemWidget::_createTopLevelObject();
 		topLevelItem( 0 )->setText( 0, QString::fromStdString( Style::VIEWPOINT_GROUP_NAME ) );
+	}
+
+	void PathSceneView::_fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection )
+	{
+		for ( const Model::ID & selectedItemID : p_selection.getItems() )
+		{
+			const ID::VTX_ID & itemTypeID = MVC::MvcManager::get().getModelTypeID( selectedItemID );
+			if ( itemTypeID == ID::Model::MODEL_VIEWPOINT )
+			{
+				const Model::Viewpoint & viewpoint
+					= MVC::MvcManager::get().getModel<Model::Viewpoint>( selectedItemID );
+
+				const QTreeWidgetItem * const viewpointItem	 = _itemFromViewpoint( viewpoint );
+				const QModelIndex			  viewpointIndex = indexFromItem( viewpointItem );
+
+				p_itemSelection.append( QItemSelectionRange( viewpointIndex, viewpointIndex ) );
+			}
+		}
 	}
 
 	void PathSceneView::mouseMoveEvent( QMouseEvent * p_event )
@@ -185,30 +158,35 @@ namespace VTX::View::UI::Widget
 	}
 	void PathSceneView::_onCustomContextMenuCalled( const QPoint & p_clicPos )
 	{
-		// TODO
-
-		/*VTX::UI::ContextualMenu::Menu menuType	   = VTX::UI::ContextualMenu::Menu::COUNT;
+		VTX::UI::ContextualMenu::Menu menuType	   = VTX::UI::ContextualMenu::Menu::COUNT;
 		const QTreeWidgetItem * const targetedItem = itemAt( p_clicPos );
 
 		if ( targetedItem == nullptr )
 			return;
 
+		const Model::ID & itemID = _getModelIDFromItem( *targetedItem );
+
+		if ( MVC::MvcManager::get().getModelTypeID( itemID ) != ID::Model::MODEL_VIEWPOINT )
+			return;
+
+		Model::Viewpoint & viewpointTargeted = MVC::MvcManager::get().getModel<Model::Viewpoint>( itemID );
+
 		const QPoint globalClicPos = mapToGlobal( p_clicPos );
 
 		Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 
-		if ( selection.isViewpointSelected( *_model ) )
+		if ( selection.isModelSelected( viewpointTargeted ) )
 		{
 			VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
 				= VTX::UI::ContextualMenu::getMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuSelection>(
 					VTX::UI::ContextualMenu::Menu::Selection );
-			selectionContextualMenu->setFocusedTarget( _model );
+			selectionContextualMenu->setFocusedTarget( &viewpointTargeted );
 			VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
 		}
 		else
 		{
-			VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Viewpoint, _model, globalClicPos );
-		}*/
+			VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Viewpoint, &viewpointTargeted, globalClicPos );
+		}
 	}
 
 	void PathSceneView::_reformatName( std::string & p_name ) const
@@ -370,7 +348,6 @@ namespace VTX::View::UI::Widget
 
 	QMimeData * PathSceneView::_getDataForDrag() { return VTX::UI::MimeType::generatePathData( *_model ); }
 
-	void PathSceneView::openRenameEditor() { editItem( topLevelItem( 0 ) ); }
 	void PathSceneView::updatePosInSceneHierarchy( const int p_position )
 	{
 		SceneItemWidget::updatePosInSceneHierarchy( p_position );
@@ -379,7 +356,7 @@ namespace VTX::View::UI::Widget
 		//_model->getConfiguration().sceneIndex = p_position;
 	}
 
-	QTreeWidgetItem * PathSceneView::itemFromViewpoint( const Model::Viewpoint & p_viewpoint ) const
+	QTreeWidgetItem * PathSceneView::_itemFromViewpoint( const Model::Viewpoint & p_viewpoint ) const
 	{
 		const Model::ID & viewpointID = p_viewpoint.getId();
 
@@ -409,7 +386,7 @@ namespace VTX::View::UI::Widget
 	}
 	void PathSceneView::_removeViewpoint( const Model::Viewpoint * const p_viewpoint )
 	{
-		QTreeWidgetItem * const viewpointItem = itemFromViewpoint( *p_viewpoint );
+		QTreeWidgetItem * const viewpointItem = _itemFromViewpoint( *p_viewpoint );
 		if ( viewpointItem != nullptr )
 			topLevelItem( 0 )->removeChild( viewpointItem );
 

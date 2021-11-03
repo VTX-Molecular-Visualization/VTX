@@ -131,16 +131,51 @@ namespace VTX::UI::Widget::Scene
 		return itemFound ? res : nullptr;
 	}
 
+	void SceneWidget::openRenameEditor( const Model::ID & p_itemID ) const
+	{
+		for ( SceneItemWidget * const sceneWidget : _sceneWidgets )
+		{
+			if ( sceneWidget->getModelID() == p_itemID )
+			{
+				sceneWidget->openRenameEditor( p_itemID );
+			}
+		}
+	}
+
+	int SceneWidget::_getPositionInHierarchy( SceneItemWidget * const p_sceneItemWidget ) 
+	{
+		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( p_sceneItemWidget->getModelID() );
+		
+		if ( modelTypeId == ID::Model::MODEL_MOLECULE ) 
+		{
+			std::vector<SceneItemWidget *>::const_reverse_iterator it = _sceneWidgets.crbegin();
+			int													   counter = 1;
+
+			for ( it; it != _sceneWidgets.crend() ; it++) 
+			{
+				const ID::VTX_ID & itModelTypeId = MVC::MvcManager::get().getModelTypeID( ( *it )->getModelID() );
+				if ( itModelTypeId == modelTypeId )
+					return _layout->count()  - counter;
+				counter++;
+			}
+
+			return _layout->count() - counter;
+		}
+
+		return _layout->count() - 1;
+	}
+
+
 	void SceneWidget::_addWidgetInLayout( SceneItemWidget * const p_sceneItemWidget )
 	{
-		const int posInHierarchy = _layout->count() - 1;
+		const int posInHierarchy = _getPositionInHierarchy( p_sceneItemWidget );
 		_layout->insertWidget( posInHierarchy, p_sceneItemWidget, 1 );
 		p_sceneItemWidget->updatePosInSceneHierarchy( posInHierarchy );
 
 		if ( _sceneWidgets.size() > 0 )
 			setTabOrder( *_sceneWidgets.rbegin(), p_sceneItemWidget );
 
-		_sceneWidgets.emplace_back( p_sceneItemWidget );
+		_sceneWidgets.insert( _sceneWidgets.begin() + posInHierarchy, p_sceneItemWidget );
 	}
 	void SceneWidget::_removeWidgetInLayout( SceneItemWidget * const p_sceneItemWidget )
 	{

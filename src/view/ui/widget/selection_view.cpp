@@ -58,7 +58,7 @@ namespace VTX::View::UI::Widget
 
 		_mapLoadedItems.clear();
 
-		const Model::Selection::MapMoleculeIds & items = _model->getItems();
+		const Model::Selection::MapMoleculeIds & items = _model->getMoleculesMap();
 		uint									 m	   = 0;
 
 		QList<QTreeWidgetItem *> children = invisibleRootItem()->takeChildren();
@@ -131,7 +131,7 @@ namespace VTX::View::UI::Widget
 			itemsPtr						 = new QList<QTreeWidgetItem *>();
 			QList<QTreeWidgetItem *> & items = *itemsPtr;
 
-			const Model::Selection::MapChainIds & chainIds = _model->getItems().at( moleculeId );
+			const Model::Selection::MapChainIds & chainIds = _model->getMoleculesMap().at( moleculeId );
 			const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeId );
 
 			const uint chainCount = uint( chainIds.size() );
@@ -196,7 +196,8 @@ namespace VTX::View::UI::Widget
 
 			const Model::ID &						moleculeId = chain.getMoleculePtr()->getId();
 			const uint								chainIndex = chain.getIndex();
-			const Model::Selection::MapResidueIds & residueIds = _model->getItems().at( moleculeId ).at( chainIndex );
+			const Model::Selection::MapResidueIds & residueIds
+				= _model->getMoleculesMap().at( moleculeId ).at( chainIndex );
 
 			const uint residueCount = uint( residueIds.size() );
 			items.reserve( residueCount );
@@ -262,7 +263,7 @@ namespace VTX::View::UI::Widget
 			const uint chainIndex	= chain.getIndex();
 
 			const Model::Selection::VecAtomIds & vecAtoms
-				= _model->getItems().at( moleculeId ).at( chainIndex ).at( residueIndex );
+				= _model->getMoleculesMap().at( moleculeId ).at( chainIndex ).at( residueIndex );
 
 			QList<QTreeWidgetItem *> children = p_residueItem->takeChildren();
 

@@ -1,89 +1,107 @@
 #include "contextual_menu_selection.hpp"
 #include "action/action_manager.hpp"
 #include "action/selection.hpp"
+#include "action/viewpoint.hpp"
 #include "action/visible.hpp"
 #include "ui/dialog.hpp"
+#include "ui/main_window.hpp"
+#include "ui/widget/scene/scene_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
+#include "view/ui/widget/path_scene_view.hpp"
 #include <QTimer>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
 	ContextualMenuSelection::ContextualMenuSelection( QWidget * const p_parent ) : ContextualMenuTemplate( p_parent )
 	{
-		_actions.emplace_back(
+		SelectionSubMenu * const moleculeStructureSubmenu = new SelectionSubMenu( this, "Molecule" );
+
+		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Rename", TypeMask::Molecule, this, &ContextualMenuSelection::_renameAction ) );
 
-		_actions.emplace_back( new ActionDataSection( "Representation", TypeMask::AllButAtom, this ) );
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Representation", TypeMask::AllButAtom, this ) );
 		_representationMenu = WidgetFactory::get().instantiateWidget<CustomWidget::SetRepresentationMenu>(
 			this, "SetRepresentationMenu" );
-		_actions.emplace_back( new SubMenuData( "Representation", TypeMask::AllButAtom, this, _representationMenu ) );
-		_actions.emplace_back( new ActionDataSection( "Show/Hide", TypeMask::Molecule, this ) );
+
+		moleculeStructureSubmenu->addItemData(
+			new SubMenuData( "Representation", TypeMask::AllButAtom, this, _representationMenu ) );
+		ActionDataSection * const changeRepresentationAction
+			= new ActionDataSection( "Show/Hide", TypeMask::Molecule, this );
+		moleculeStructureSubmenu->addItemData( changeRepresentationAction );
+		changeRepresentationAction->setRefreshFunction(
+			&ContextualMenuSelection::_updateCurrentRepresentationFeedback );
 
 		ActionData * const toggleWatersAction = new ActionData(
 			"Toggle Waters", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleWaterVisibilityAction );
 		toggleWatersAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleWaterText );
-		_actions.emplace_back( toggleWatersAction );
+		moleculeStructureSubmenu->addItemData( toggleWatersAction );
 
 		ActionData * const toggleHydogensAction = new ActionData(
 			"Toggle Hydrogens", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleHydrogenVisibilityAction );
 		toggleHydogensAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleHydrogenText );
-		_actions.emplace_back( toggleHydogensAction );
+		moleculeStructureSubmenu->addItemData( toggleHydogensAction );
 
 		ActionData * const toggleSolventAction = new ActionData(
 			"Toggle Solvent", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleSolventVisibilityAction );
 		toggleSolventAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleSolventText );
-		_actions.emplace_back( toggleSolventAction );
+		moleculeStructureSubmenu->addItemData( toggleSolventAction );
 
 		ActionData * const toggleIonAction = new ActionData(
 			"Toggle Ions", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleIonVisibilityAction );
 		toggleIonAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleIonText );
-		_actions.emplace_back( toggleIonAction );
+		moleculeStructureSubmenu->addItemData( toggleIonAction );
 
-		_actions.emplace_back( new ActionDataSection( "Trajectory", TypeMask::Molecule, this ) );
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Trajectory", TypeMask::Molecule, this ) );
 		ActionData * const toggleTrajectoryPlayAction = new ActionData(
 			"Toggle Playing", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleTrajectoryPlayingAction );
 
 		toggleTrajectoryPlayAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleTrajectoryPlay );
 		toggleTrajectoryPlayAction->setCheckFunction( &ContextualMenuSelection ::_checkToggleTrajectoryPlayAction );
-		_actions.emplace_back( toggleTrajectoryPlayAction );
+		moleculeStructureSubmenu->addItemData( toggleTrajectoryPlayAction );
 
-		_actions.emplace_back( new ActionDataSection( "Edit", TypeMask::All, this ) );
-		_actions.emplace_back(
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Edit", TypeMask::All, this ) );
+		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Orient", TypeMask::All, this, &ContextualMenuSelection::_orientAction ) );
-		_actions.emplace_back(
+		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Show", TypeMask::AllButAtom, this, &ContextualMenuSelection::_showAction ) );
-		_actions.emplace_back(
+		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Hide", TypeMask::AllButAtom, this, &ContextualMenuSelection::_hideAction ) );
-		_actions.emplace_back(
+		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Duplicate", TypeMask::All, this, &ContextualMenuSelection::_copyAction ) );
-		_actions.emplace_back(
+		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Extract", TypeMask::AllButMolecule, this, &ContextualMenuSelection::_extractAction ) );
-		_actions.emplace_back(
+		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Delete", TypeMask::All, this, &ContextualMenuSelection::_deleteAction ) );
 
-		_actions.emplace_back( new ActionDataSection( "Export", TypeMask::Molecule, this ) );
-		_actions.emplace_back(
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Export", TypeMask::Molecule, this ) );
+		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
-	}
-	ContextualMenuSelection ::~ContextualMenuSelection()
-	{
-		for ( int i = 0; i < _actions.size(); i++ )
-		{
-			delete ( _actions[ i ] );
-		}
 
-		_actions.clear();
+		SelectionSubMenu * const viewpointSubmenu = new SelectionSubMenu( this, "Viewpoint" );
+		viewpointSubmenu->addItemData(
+			new ActionData( "Go to", TypeMask::Viewpoint, this, &ContextualMenuSelection::_gotoViewpointAction ) );
+		viewpointSubmenu->addItemData( new ActionDataSection( "Edit", TypeMask::Viewpoint, this ) );
+		viewpointSubmenu->addItemData(
+			new ActionData( "Rename", TypeMask::Viewpoint, this, &ContextualMenuSelection::_renameAction ) );
+		viewpointSubmenu->addItemData( new ActionData(
+			"Relocate", TypeMask::Viewpoint, this, &ContextualMenuSelection::_relocateViewpointAction ) );
+		viewpointSubmenu->addItemData(
+			new ActionData( "Delete", TypeMask::Viewpoint, this, &ContextualMenuSelection::_deleteViewpointAction ) );
+
+		_submenus[ ID::Model::MODEL_MOLECULE ] = moleculeStructureSubmenu;
+		_submenus[ ID::Model::MODEL_CHAIN ]	   = moleculeStructureSubmenu;
+		_submenus[ ID::Model::MODEL_RESIDUE ]  = moleculeStructureSubmenu;
+		_submenus[ ID::Model::MODEL_ATOM ]	   = moleculeStructureSubmenu;
+
+		_submenus[ ID::Model::MODEL_VIEWPOINT ] = viewpointSubmenu;
+		_submenus[ ID::Model::MODEL_PATH ]		= viewpointSubmenu;
 	}
+	ContextualMenuSelection ::~ContextualMenuSelection() {}
 
 	void ContextualMenuSelection::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
 	void ContextualMenuSelection::_setupSlots()
 	{
-		for ( ItemData * const itemData : _actions )
-		{
-			itemData->appendToMenu( this );
-		}
-
 		connect( _representationMenu,
 				 &CustomWidget::SetRepresentationMenu::onRepresentationChange,
 				 this,
@@ -115,18 +133,29 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		TypeMask selectionTypeMask = _getTypeMaskFromTypeSet( typesInSelection );
 
-		for ( int i = 0; i < _actions.size(); i++ )
+		std::set<SelectionSubMenu *> submenuDisplayed = std::set<SelectionSubMenu *>();
+		for ( const ID::VTX_ID & itemType : typesInSelection )
 		{
-			ItemData * const itemData	   = _actions[ i ];
-			const bool		 actionVisible = bool( itemData->validTypes & selectionTypeMask ) && itemData->check();
-
-			if ( actionVisible )
-				itemData->refresh();
-
-			actions()[ i ]->setVisible( actionVisible );
+			submenuDisplayed.emplace( _submenus[ itemType ] );
 		}
 
-		_updateCurrentRepresentationFeedback();
+		const bool actionsInSubmenu = submenuDisplayed.size() > 1;
+
+		clear();
+
+		for ( SelectionSubMenu * const submenu : submenuDisplayed )
+		{
+			submenu->getMenu()->clear();
+			if ( actionsInSubmenu )
+			{
+				submenu->refreshWithTarget( *_target, selectionTypeMask, submenu->getMenu() );
+				addMenu( submenu->getMenu() );
+			}
+			else
+			{
+				submenu->refreshWithTarget( *_target, selectionTypeMask, this );
+			}
+		}
 	}
 
 	TypeMask ContextualMenuSelection::_getTypeMaskFromTypeSet( const std::set<ID::VTX_ID> & p_typeIds )
@@ -141,20 +170,22 @@ namespace VTX::UI::Widget::ContextualMenu
 			res |= TypeMask::Residue;
 		if ( p_typeIds.find( ID::Model::MODEL_ATOM ) != p_typeIds.end() )
 			res |= TypeMask::Atom;
+		if ( p_typeIds.find( ID::Model::MODEL_VIEWPOINT ) != p_typeIds.end() )
+			res |= TypeMask::Viewpoint;
+		if ( p_typeIds.find( ID::Model::MODEL_PATH ) != p_typeIds.end() )
+			res |= TypeMask::Viewpoint;
 
 		return res;
 	}
 
 	void ContextualMenuSelection::_renameAction()
 	{
-		const Model::ID &		moleculeId = _target->getItems().begin()->first;
-		const Model::Molecule & molecule   = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeId );
+		const Model::ID & modelID = *_target->getItems().begin();
 
-		View::UI::Widget::MoleculeSceneView & moleculeSceneView
-			= *MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSceneView>( &molecule,
-																					ID::View::UI_MOLECULE_STRUCTURE );
+		UI::Widget::Scene::SceneWidget & sceneWidget
+			= VTXApp::get().getMainWindow().getWidget<UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
 
-		moleculeSceneView.openRenameEditor();
+		sceneWidget.openRenameEditor( modelID );
 	}
 
 	void ContextualMenuSelection::_toggleWaterVisibilityAction()
@@ -262,12 +293,12 @@ namespace VTX::UI::Widget::ContextualMenu
 		VTX_ACTION( new Action::Selection::ChangeRepresentationPreset( *_target, p_representationIndex ) );
 	}
 
-	void ContextualMenuSelection::_updateCurrentRepresentationFeedback()
+	void ContextualMenuSelection::_updateCurrentRepresentationFeedback( QAction & _action ) const
 	{
 		bool allSelectionHasSameRepresentation = true;
 		int	 selectionRepresentationIndex	   = -1;
 
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getItems() )
+		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 
@@ -338,7 +369,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleWaterText( QAction & _action ) const
 	{
 		bool displayShowWater = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getItems() )
+		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			displayShowWater		   = displayShowWater && !molecule.showWater();
@@ -350,7 +381,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleHydrogenText( QAction & _action ) const
 	{
 		bool displayShowHydrogen = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getItems() )
+		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			displayShowHydrogen		   = displayShowHydrogen && !molecule.showHydrogen();
@@ -362,7 +393,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleSolventText( QAction & _action ) const
 	{
 		bool displayShowSolvent = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getItems() )
+		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			displayShowSolvent		   = displayShowSolvent && !molecule.showSolvent();
@@ -374,7 +405,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleIonText( QAction & _action ) const
 	{
 		bool displayShowIon = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getItems() )
+		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			displayShowIon			   = displayShowIon && !molecule.showIon();
@@ -387,7 +418,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleTrajectoryPlay( QAction & _action ) const
 	{
 		bool displayPlay = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getItems() )
+		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			if ( molecule.hasTrajectory() )
@@ -400,7 +431,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	bool ContextualMenuSelection::_checkToggleTrajectoryPlayAction() const
 	{
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getItems() )
+		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			if ( molecule.hasTrajectory() )
@@ -408,6 +439,22 @@ namespace VTX::UI::Widget::ContextualMenu
 		}
 
 		return false;
+	}
+
+	void ContextualMenuSelection::_gotoViewpointAction()
+	{
+		VTX_ACTION(
+			new Action::Viewpoint::GoTo( _target->getItemsOfType<Model::Viewpoint>( ID::Model::MODEL_VIEWPOINT ) ) );
+	}
+	void ContextualMenuSelection::_relocateViewpointAction()
+	{
+		VTX_ACTION( new Action::Viewpoint::Relocate(
+			_target->getItemsOfType<Model::Viewpoint>( ID::Model::MODEL_VIEWPOINT ) ) );
+	}
+	void ContextualMenuSelection::_deleteViewpointAction()
+	{
+		VTX_ACTION(
+			new Action::Viewpoint::Delete( _target->getItemsOfType<Model::Viewpoint>( ID::Model::MODEL_VIEWPOINT ) ) );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

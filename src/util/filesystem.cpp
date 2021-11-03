@@ -188,7 +188,7 @@ namespace VTX::Util::Filesystem
 		if ( nbMoleculeInSelection == 1 )
 		{
 			const Model::ID & moleculeID
-				= Selection::SelectionManager::get().getSelectionModel().getItems().begin()->first;
+				= Selection::SelectionManager::get().getSelectionModel().getMoleculesMap().begin()->first;
 			exportedMolecule = &( MVC::MvcManager::get().getModel<Model::Molecule>( moleculeID ) );
 		}
 		else if ( nbMoleculeInSelection == 0 && VTXApp::get().getScene().getMolecules().size() == 1 )
