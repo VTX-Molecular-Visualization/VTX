@@ -30,12 +30,10 @@ namespace VTX::View::UI::Widget
 		VTX_VIEW
 
 	  public:
-		void localize() override;
 		void notify( const Event::VTXEvent * const p_event ) override;
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		const Model::ID & getModelID() const override { return _model->getId(); };
-		void			  openRenameEditor();
 
 		virtual void updatePosInSceneHierarchy( const int p_position ) override;
 
@@ -45,12 +43,15 @@ namespace VTX::View::UI::Widget
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
 
-		virtual void keyPressEvent( QKeyEvent * p_event ) override;
-		void		 mouseMoveEvent( QMouseEvent * p_event ) override;
+		// virtual void keyPressEvent( QKeyEvent * p_event ) override;
+		void mouseMoveEvent( QMouseEvent * p_event ) override;
+		void _onCustomContextMenuCalled( const QPoint & p_clicPos ) override;
 
 		bool		_canDragObjectAtPos( const QPoint & p_position ) override;
 		QMimeData * _getDataForDrag() override;
-		void		_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append = false );
+
+		void _fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection ) override;
+		bool _itemCanBeRenamed( const QTreeWidgetItem * p_item ) override;
 
 	  private:
 		QMenu *											_contextMenu;
@@ -58,21 +59,19 @@ namespace VTX::View::UI::Widget
 		QTreeWidgetItem *								_lastItemVisible = nullptr;
 		std::map<Model::ID, QList<QTreeWidgetItem *> *> _mapLoadedItems
 			= std::map<Model::ID, QList<QTreeWidgetItem *> *>();
-		int _enableSignalCounter = 0;
 
 		MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
 		~MoleculeSceneView();
 
 		void _clearLoadedItems();
-		void _rebuildTree();
-		void _enableSignals( const bool p_enable );
+		void _createTopLevelObject() override;
 
-		void _onItemChanged( const QTreeWidgetItem * const, const int ) const;
+		void _onItemChanged( QTreeWidgetItem * const, const int );
 		void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;
 		void _onItemExpanded( QTreeWidgetItem * const ) override;
 		void _onItemCollapsed( QTreeWidgetItem * const ) override;
-		void _onCustomContextMenuCalled( const QPoint & p_clicPos );
 
+		void _reformatMoleculeName( std::string & p_moleculeName ) const;
 		void _doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const;
 
 		void _expandAll( QTreeWidgetItem * const p_from );
@@ -93,8 +92,6 @@ namespace VTX::View::UI::Widget
 									  QTreeWidgetItem &					 p_item,
 									  const Style::SYMBOL_DISPLAY_MODE & p_symbolDisplayMode ) const;
 
-		void _refreshItemVisibility( QTreeWidgetItem * const p_itemWidget, const Generic::BaseVisible & p_baseVisible );
-		void _refreshSelection( const Model::Selection & p_selection );
 		void _refreshSymbolDisplay( const Style::SYMBOL_DISPLAY_MODE & p_displayMode );
 		void _refreshSymbolDisplayRecursive( QTreeWidgetItem * const			p_item,
 											 const Style::SYMBOL_DISPLAY_MODE & p_displayMode );
@@ -112,9 +109,6 @@ namespace VTX::View::UI::Widget
 		bool _isMoleculeExpanded() const;
 		bool _isChainExpanded( const Model::Chain & p_chain ) const;
 		bool _isResidueExpanded( const Model::Residue & p_residue ) const;
-
-		Model::ID _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;
-		bool	  _getItemExpandState( const QTreeWidgetItem & p_item ) const;
 	};
 
 } // namespace VTX::View::UI::Widget

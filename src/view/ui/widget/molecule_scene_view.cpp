@@ -12,16 +12,17 @@
 #include "ui/contextual_menu.hpp"
 #include "ui/mime_type.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_selection.hpp"
-#include "ui/widget/scene/molecule_selection_model.hpp"
-#include "ui/widget/scene/scene_widget.hpp"
+#include "ui/widget/scene/scene_item_selection_model.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/string.hpp"
+#include "util/ui.hpp"
+#include <QScrollBar>
 
 namespace VTX::View::UI::Widget
 {
 	MoleculeSceneView::MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent ) :
 		View::BaseView<Model::Molecule>( p_model ), SceneItemWidget( p_parent )
 	{
-		_registerEvent( Event::Global::SELECTION_CHANGE );
 		_registerEvent( Event::Global::SETTINGS_CHANGE );
 	}
 
@@ -31,7 +32,7 @@ namespace VTX::View::UI::Widget
 	{
 		if ( p_event->name == Event::Model::MOLECULE_VISIBILITY )
 		{
-			_refreshItemVisibility( _getMoleculeTreeWidgetItem(), *_model );
+			_refreshItemVisibility( _getMoleculeTreeWidgetItem(), _model->isVisible() );
 		}
 		else if ( p_event->name == Event::Model::CHAIN_VISIBILITY )
 		{
@@ -42,7 +43,7 @@ namespace VTX::View::UI::Widget
 
 			// Check if items are visible before refresh it. If not, the will be update when they will appear
 			if ( _isMoleculeExpanded() )
-				_refreshItemVisibility( _getTreeWidgetItem( chain ), chain );
+				_refreshItemVisibility( _getTreeWidgetItem( chain ), chain.isVisible() );
 		}
 		else if ( p_event->name == Event::Model::RESIDUE_VISIBILITY )
 
@@ -55,7 +56,7 @@ namespace VTX::View::UI::Widget
 			// Check if items are visible before refresh it. If not, the will be update when they will appear
 			if ( _isChainExpanded( *residue.getChainPtr() ) )
 			{
-				_refreshItemVisibility( _getTreeWidgetItem( residue ), residue );
+				_refreshItemVisibility( _getTreeWidgetItem( residue ), residue.isVisible() );
 			}
 		}
 		else if ( p_event->name == Event::Model::ATOM_VISIBILITY )
@@ -66,7 +67,7 @@ namespace VTX::View::UI::Widget
 
 			if ( _isResidueExpanded( *atom.getResiduePtr() ) )
 			{
-				_refreshItemVisibility( _getTreeWidgetItem( atom ), atom );
+				_refreshItemVisibility( _getTreeWidgetItem( atom ), atom.isVisible() );
 			}
 		}
 		else if ( p_event->name == Event::Model::DATA_CHANGE )
@@ -82,14 +83,9 @@ namespace VTX::View::UI::Widget
 
 	void MoleculeSceneView::receiveEvent( const Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::SELECTION_CHANGE )
-		{
-			const Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+		SceneItemWidget::receiveEvent( p_event );
 
-			_refreshSelection( *castedEvent.ptr );
-		}
-		else if ( p_event.name == Event::Global::SETTINGS_CHANGE )
+		if ( p_event.name == Event::Global::SETTINGS_CHANGE )
 		{
 			const Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
 				= dynamic_cast<const Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
@@ -98,88 +94,6 @@ namespace VTX::View::UI::Widget
 			{
 				_refreshSymbolDisplay( VTX_SETTING().getSymbolDisplayMode() );
 			}
-		}
-	}
-
-	void MoleculeSceneView::keyPressEvent( QKeyEvent * p_event )
-	{
-		// Desactivate expand all (*) shortcut
-		if ( p_event->key() == Qt::Key::Key_Asterisk )
-		{
-			return;
-			// Reimplement expand all action to prevent useless multiple call to refreshSelection
-			//_expandAll( currentItem() );
-		}
-		else if ( p_event->key() == Qt::Key::Key_F2 )
-		{
-			const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
-
-			// Override rename key binding because multiple selection with molecule make it fail
-			if ( currentItem() == _getMoleculeTreeWidgetItem() && selection.isMoleculeFullySelected( *_model )
-				 && selection.getItems().size() == 1 )
-			{
-				openRenameEditor();
-			}
-		}
-		else if ( p_event->key() == Qt::Key::Key_Up && itemFromIndex( currentIndex() ) == _getMoleculeTreeWidgetItem() )
-		{
-			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
-				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
-			SceneItemWidget * const previousTree = sceneWidget.getPreviousSceneItemWidgets( this );
-
-			if ( previousTree != this )
-			{
-				QTreeWidgetItem * const previousTreeWidgetItem = previousTree->getLastVisibleItem();
-
-				const bool appendToSelection = p_event->modifiers() == Qt::KeyboardModifier::ShiftModifier;
-				_selectItemWithArrows( *previousTreeWidgetItem, appendToSelection );
-			}
-		}
-		else if ( p_event->key() == Qt::Key::Key_Down && itemFromIndex( currentIndex() ) == getLastVisibleItem() )
-		{
-			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
-				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
-			SceneItemWidget * const nextTree = sceneWidget.getNextSceneItemWidgets( this );
-
-			if ( nextTree != this )
-			{
-				QTreeWidgetItem * const nextTreeWidgetItem = nextTree->topLevelItem( 0 );
-
-				const bool appendToSelection = p_event->modifiers() == Qt::KeyboardModifier::ShiftModifier;
-				_selectItemWithArrows( *nextTreeWidgetItem, appendToSelection );
-			}
-		}
-		else
-		{
-			SceneItemWidget::keyPressEvent( p_event );
-		}
-	}
-
-	void MoleculeSceneView::_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append )
-	{
-		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
-
-		const Model::ID & itemModel = _getModelIDFromItem( p_itemToSelect );
-		const ID::VTX_ID  itemType	= MVC::MvcManager::get().getModelTypeID( itemModel );
-
-		p_itemToSelect.treeWidget()->setFocus( Qt::FocusReason::TabFocusReason );
-		p_itemToSelect.treeWidget()->setCurrentItem( &p_itemToSelect );
-
-		if ( itemType == ID::Model::MODEL_MOLECULE )
-		{
-			selectionModel.selectMolecule( MVC::MvcManager::get().getModel<Model::Molecule>( itemModel ), p_append );
-		}
-		else if ( itemType == ID::Model::MODEL_CHAIN )
-		{
-			selectionModel.selectChain( MVC::MvcManager::get().getModel<Model::Chain>( itemModel ), p_append );
-		}
-		else if ( itemType == ID::Model::MODEL_RESIDUE )
-		{
-			selectionModel.selectResidue( MVC::MvcManager::get().getModel<Model::Residue>( itemModel ), p_append );
-		}
-		else if ( itemType == ID::Model::MODEL_ATOM )
-		{
-			selectionModel.selectAtom( MVC::MvcManager::get().getModel<Model::Atom>( itemModel ), p_append );
 		}
 	}
 
@@ -193,29 +107,14 @@ namespace VTX::View::UI::Widget
 		return lastItemVisible;
 	}
 
-	void MoleculeSceneView::_setupUi( const QString & p_name )
-	{
-		SceneItemWidget::_setupUi( p_name );
-		setSelectionModel( new VTX::UI::Widget::Scene::MoleculeSelectionModel( _model, model(), this ) );
-		setExpandsOnDoubleClick( false );
-
-		setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
-		setEditTriggers( EditTrigger::SelectedClicked );
-
-		_rebuildTree();
-	}
+	void MoleculeSceneView::_setupUi( const QString & p_name ) { SceneItemWidget::_setupUi( p_name ); }
 	void MoleculeSceneView::_setupSlots()
 	{
 		SceneItemWidget::_setupSlots();
 
 		connect( this, &QTreeWidget::itemChanged, this, &MoleculeSceneView::_onItemChanged );
 		connect( this, &QTreeWidget::itemDoubleClicked, this, &MoleculeSceneView::_onItemDoubleClicked );
-		connect( this, &QTreeWidget::itemExpanded, this, &MoleculeSceneView::_onItemExpanded );
-		connect( this, &QTreeWidget::itemCollapsed, this, &MoleculeSceneView::_onItemCollapsed );
-
-		connect( this, &QTreeWidget::customContextMenuRequested, this, &MoleculeSceneView::_onCustomContextMenuCalled );
 	}
-	void MoleculeSceneView::localize() { SceneItemWidget::localize(); }
 
 	void MoleculeSceneView::mouseMoveEvent( QMouseEvent * p_event )
 	{
@@ -224,16 +123,30 @@ namespace VTX::View::UI::Widget
 		setSelectionMode( QAbstractItemView::ExtendedSelection );
 	}
 
-	void MoleculeSceneView::_onItemChanged( const QTreeWidgetItem * const p_item, const int p_column ) const
+	void MoleculeSceneView::_onItemChanged( QTreeWidgetItem * const p_item, const int p_column )
 	{
 		if ( p_column == 0 )
 		{
 			if ( p_item == _getMoleculeTreeWidgetItem() )
 			{
-				const std::string itemTxt = p_item->text( 0 ).toStdString();
+				std::string itemTxt = p_item->text( 0 ).toStdString();
 				if ( itemTxt != _model->getDisplayName() )
 				{
-					VTX_ACTION( new Action::Molecule::Rename( *_model, itemTxt ) );
+					_reformatMoleculeName( itemTxt );
+
+					if ( itemTxt.empty() )
+					{
+						itemTxt = _model->getDisplayName();
+					}
+					else if ( itemTxt != _model->getDisplayName() )
+					{
+						VTX_ACTION( new Action::Molecule::Rename( *_model, itemTxt ) );
+					}
+
+					const bool oldSignalState = blockSignals( true );
+					p_item->setText( 0, QString::fromStdString( itemTxt ) );
+					blockSignals( oldSignalState );
+
 					return;
 				}
 			}
@@ -374,20 +287,20 @@ namespace VTX::View::UI::Widget
 		}
 	}
 
-	void MoleculeSceneView::_rebuildTree()
+	void MoleculeSceneView::_createTopLevelObject()
 	{
 		collapseItem( _getMoleculeTreeWidgetItem() );
 
 		clear();
 		_clearLoadedItems();
 
-		QTreeWidgetItem * const moleculeView = new QTreeWidgetItem();
-		moleculeView->setFlags( moleculeView->flags() | Qt::ItemFlag::ItemIsEditable );
+		SceneItemWidget::_createTopLevelObject();
 
-		_applyMoleculeDataOnItem( *_model, *moleculeView );
-		_refreshItemVisibility( moleculeView, *_model );
+		const QTreeWidgetItem::ChildIndicatorPolicy childIndicatorPolicy
+			= _model->getChainCount() > 0 ? QTreeWidgetItem::ChildIndicatorPolicy::ShowIndicator
+										  : QTreeWidgetItem::ChildIndicatorPolicy::DontShowIndicator;
 
-		addTopLevelItem( moleculeView );
+		topLevelItem( 0 )->setChildIndicatorPolicy( childIndicatorPolicy );
 	}
 
 	void MoleculeSceneView::_updateMoleculeStructure()
@@ -625,7 +538,7 @@ namespace VTX::View::UI::Widget
 			const Model::ID &	 chainID = _getModelIDFromItem( *item );
 			const Model::Chain & chain	 = MVC::MvcManager::get().getModel<Model::Chain>( chainID );
 
-			const Qt::CheckState newCheckState = _getCheckState( chain.isVisible() );
+			const Qt::CheckState newCheckState = Util::UI::getCheckState( chain.isVisible() );
 			item->setCheckState( 0, newCheckState );
 
 			if ( p_forceExpandChildren || _getItemExpandState( *item ) )
@@ -705,7 +618,7 @@ namespace VTX::View::UI::Widget
 			const Model::ID &	   residueID = _getModelIDFromItem( *item );
 			const Model::Residue & residue	 = MVC::MvcManager::get().getModel<Model::Residue>( residueID );
 
-			const Qt::CheckState newCheckState = _getCheckState( residue.isVisible() );
+			const Qt::CheckState newCheckState = Util::UI::getCheckState( residue.isVisible() );
 			item->setCheckState( 0, newCheckState );
 
 			if ( p_forceExpandChildren || _getItemExpandState( *item ) )
@@ -784,7 +697,7 @@ namespace VTX::View::UI::Widget
 			const Model::ID &	atomID = _getModelIDFromItem( *item );
 			const Model::Atom & atom   = MVC::MvcManager::get().getModel<Model::Atom>( atomID );
 
-			const Qt::CheckState newCheckState = _getCheckState( atom.isVisible() );
+			const Qt::CheckState newCheckState = Util::UI::getCheckState( atom.isVisible() );
 			item->setCheckState( 0, newCheckState );
 		}
 
@@ -923,30 +836,30 @@ namespace VTX::View::UI::Widget
 				VTX_ACTION( new Action::Atom::ChangeVisibility( model, visibilityMode ) );
 		}
 	}
-
-	void MoleculeSceneView::_refreshItemVisibility( QTreeWidgetItem * const		 p_itemWidget,
-													const Generic::BaseVisible & p_baseVisible )
+	void MoleculeSceneView::_reformatMoleculeName( std::string & p_moleculeName ) const
 	{
-		_enableSignals( false );
+		// Trim
+		Util::String::trim( p_moleculeName );
 
-		const Qt::CheckState newCheckState = _getCheckState( p_baseVisible.isVisible() );
-		p_itemWidget->setCheckState( 0, newCheckState );
+		// Forbid line feed
+		const size_t firstLinefeedIndex = p_moleculeName.find_first_of( '\n' );
+		if ( firstLinefeedIndex != std::string::npos )
+			p_moleculeName.erase( firstLinefeedIndex );
 
-		_enableSignals( true );
+		// Clamp size
+		if ( p_moleculeName.size() > Style::MOLECULE_NAME_MAXIMUM_SIZE )
+			p_moleculeName = p_moleculeName.substr( 0, Style::MOLECULE_NAME_MAXIMUM_SIZE );
 	}
-	void MoleculeSceneView::_refreshSelection( const Model::Selection & p_selection )
+
+	void MoleculeSceneView::_fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection )
 	{
-		const Model::Selection::MapMoleculeIds &			   items = p_selection.getItems();
-		const Model::Selection::MapMoleculeIds::const_iterator itMoleculeItem
-			= p_selection.getItems().find( _model->getId() );
+		const Model::Selection::MapMoleculeIds &			   items		  = p_selection.getMoleculesMap();
+		const Model::Selection::MapMoleculeIds::const_iterator itMoleculeItem = items.find( _model->getId() );
 
-		_enableSignals( false );
-		QItemSelection selection = QItemSelection();
-
-		if ( itMoleculeItem != p_selection.getItems().end() )
+		if ( itMoleculeItem != items.end() )
 		{
 			QTreeWidgetItem * const moleculeItem = _getMoleculeTreeWidgetItem();
-			selection.append( QItemSelectionRange( indexFromItem( moleculeItem ) ) );
+			p_itemSelection.append( QItemSelectionRange( indexFromItem( moleculeItem ) ) );
 
 			if ( moleculeItem->isExpanded() )
 			{
@@ -966,7 +879,7 @@ namespace VTX::View::UI::Widget
 						// if not contiguous, add new range
 						if ( chain.getIndex() != uint( previousChain->getIndex() + 1 ) )
 						{
-							selection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
+							p_itemSelection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
 							topChainItemIndex = indexFromItem( chainItem );
 							topChain		  = &chain;
 						}
@@ -1000,7 +913,8 @@ namespace VTX::View::UI::Widget
 							// if not contiguous, add new range
 							if ( residue.getIndex() != uint( previousResidue->getIndex() + 1 ) )
 							{
-								selection.append( QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
+								p_itemSelection.append(
+									QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
 								topResidueItemIndex = indexFromItem( residueItem );
 								topResidue			= &residue;
 							}
@@ -1034,7 +948,8 @@ namespace VTX::View::UI::Widget
 								// if not contiguous, add new range
 								if ( atom.getIndex() != uint( previousAtom->getIndex() + 1 ) )
 								{
-									selection.append( QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
+									p_itemSelection.append(
+										QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
 									topAtom			 = &atom;
 									topAtomItemIndex = indexFromItem( atomItem );
 								}
@@ -1052,29 +967,22 @@ namespace VTX::View::UI::Widget
 						}
 						if ( topAtomItemIndex.isValid() )
 						{
-							selection.append( QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
+							p_itemSelection.append( QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
 						}
 					}
 
 					if ( topResidueItemIndex.isValid() )
 					{
-						selection.append( QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
+						p_itemSelection.append( QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
 					}
 				}
 
 				if ( topChainItemIndex.isValid() )
 				{
-					selection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
+					p_itemSelection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
 				}
 			}
 		}
-
-		VTX::UI::Widget::Scene::MoleculeSelectionModel * const selectModel
-			= dynamic_cast<VTX::UI::Widget::Scene::MoleculeSelectionModel * const>( selectionModel() );
-
-		selectModel->refreshSelection( selection );
-
-		_enableSignals( true );
 	}
 
 	void MoleculeSceneView::_refreshSymbolDisplay( const Style::SYMBOL_DISPLAY_MODE & p_displayMode )
@@ -1106,29 +1014,6 @@ namespace VTX::View::UI::Widget
 				_refreshSymbolDisplayRecursive( p_item->child( i ), p_displayMode );
 			}
 		}
-	}
-
-	void MoleculeSceneView::_enableSignals( const bool p_enable )
-	{
-		if ( p_enable )
-			_enableSignalCounter--;
-		else
-			_enableSignalCounter++;
-
-		const bool isEnable = _enableSignalCounter == 0;
-		blockSignals( !isEnable );
-		setUpdatesEnabled( isEnable );
-	}
-
-	Model::ID MoleculeSceneView::_getModelIDFromItem( const QTreeWidgetItem & p_item ) const
-	{
-		const QVariant & dataID = p_item.data( 0, MODEL_ID_ROLE );
-		return dataID.value<VTX::Model::ID>();
-	}
-	bool MoleculeSceneView::_getItemExpandState( const QTreeWidgetItem & p_item ) const
-	{
-		const QVariant & expandState = p_item.data( 0, EXPAND_STATE_ROLE );
-		return expandState.isValid() && expandState.value<bool>();
 	}
 
 	QTreeWidgetItem * const MoleculeSceneView::_getMoleculeTreeWidgetItem() const { return topLevelItem( 0 ); }
@@ -1189,11 +1074,16 @@ namespace VTX::View::UI::Widget
 		return itemAt( p_position ) == _getMoleculeTreeWidgetItem();
 	}
 
-	void MoleculeSceneView::openRenameEditor() { editItem( _getMoleculeTreeWidgetItem() ); }
 	void MoleculeSceneView::updatePosInSceneHierarchy( const int p_position )
 	{
 		SceneItemWidget::updatePosInSceneHierarchy( p_position );
 		_model->getConfiguration().sceneIndex = p_position;
+	}
+
+	bool MoleculeSceneView::_itemCanBeRenamed( const QTreeWidgetItem * p_item )
+	{
+		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		return p_item == _getMoleculeTreeWidgetItem() && selection.isMoleculeFullySelected( *_model );
 	}
 
 } // namespace VTX::View::UI::Widget

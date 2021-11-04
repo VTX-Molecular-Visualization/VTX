@@ -5,9 +5,10 @@
 #include "model/base_model.hpp"
 #include "model/selection.hpp"
 #include "ui/widget/custom_widget/set_representation_menu.hpp"
-#include <QMenu>
-#include <vector>
 #include <QHideEvent>
+#include <QMenu>
+#include <map>
+#include <vector>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -18,6 +19,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		Residue		   = 1 << 2,
 		Atom		   = 1 << 3,
 		Representation = 1 << 4,
+		Viewpoint	   = 1 << 5,
 
 		None = 0,
 		All	 = 0xFFFF,
@@ -58,9 +60,10 @@ namespace VTX::UI::Widget::ContextualMenu
 					  const ContextualMenuSelection * const p_linkedMenu ) :
 				_name( p_name ),
 				validTypes( p_validTypes ), _linkedMenu( p_linkedMenu ) {};
+
 			virtual ~ItemData() {};
 
-			virtual void appendToMenu( ContextualMenuSelection * const p_menu ) = 0;
+			virtual void appendToMenu( QMenu * const p_parent ) = 0;
 
 			void setRefreshFunction( void ( ContextualMenuSelection::*p_refreshFunc )( QAction & ) const )
 			{
@@ -82,6 +85,9 @@ namespace VTX::UI::Widget::ContextualMenu
 					return ( _linkedMenu->*_checkFunction )();
 				return true;
 			};
+
+			void setParent( QMenu * const p_parent ) { _action->setParent( p_parent ); };
+			void setVisible( const bool p_visible ) { _action->setVisible( p_visible ); };
 
 			const TypeMask validTypes;
 
@@ -106,9 +112,9 @@ namespace VTX::UI::Widget::ContextualMenu
 
 			ActionData() : ActionData( "-empty-", TypeMask::None, nullptr, nullptr ) {};
 
-			void appendToMenu( ContextualMenuSelection * const p_menu ) override
+			void appendToMenu( QMenu * const p_parent ) override
 			{
-				_action = p_menu->addAction( _name, p_menu, action, shortcut );
+				_action = p_parent->addAction( _name, _linkedMenu, action, shortcut );
 			}
 
 			void ( ContextualMenuSelection::*action )();
@@ -121,10 +127,8 @@ namespace VTX::UI::Widget::ContextualMenu
 							   const TypeMask						 p_validTypes,
 							   const ContextualMenuSelection * const p_linkedMenu ) :
 				ItemData( p_name, p_validTypes, p_linkedMenu ) {};
-			void appendToMenu( ContextualMenuSelection * const p_menu ) override
-			{
-				_action = p_menu->addSection( _name );
-			}
+
+			void appendToMenu( QMenu * const p_parent ) override { _action = p_parent->addSection( _name ); }
 		};
 		class SubMenuData : public ItemData
 		{
@@ -139,9 +143,39 @@ namespace VTX::UI::Widget::ContextualMenu
 				_menu->setTitle( _name );
 			};
 
-			void appendToMenu( ContextualMenuSelection * const p_menu ) override { _action = p_menu->addMenu( _menu ); }
+			void appendToMenu( QMenu * const p_parent ) override { _action = p_parent->addMenu( _menu ); }
 
 			QMenu * const _menu;
+		};
+		class SelectionSubMenu
+		{
+		  public:
+			SelectionSubMenu( QWidget * const p_parent, const QString & p_name )
+			{
+				_groupMenu = new QMenu( p_parent );
+				_groupMenu->setTitle( p_name );
+			};
+
+			void addItemData( ItemData * const _itemData ) { _actions.emplace_back( _itemData ); };
+
+			void refreshWithTarget( const Model::Selection & p_target, const TypeMask & p_mask, QMenu * const p_parent )
+			{
+				for ( ItemData * const action : _actions )
+				{
+					const bool actionVisible = bool( action->validTypes & p_mask ) && action->check();
+
+					if ( actionVisible )
+					{
+						action->appendToMenu( p_parent );
+						action->refresh();
+					}
+				}
+			};
+			QMenu * getMenu() { return _groupMenu; };
+
+		  private:
+			QMenu *					_groupMenu;
+			std::vector<ItemData *> _actions = std::vector<ItemData *>();
 		};
 
 	  public:
@@ -175,18 +209,23 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _extractAction();
 		void _deleteAction();
 
+		void _gotoViewpointAction();
+		void _relocateViewpointAction();
+		void _deleteViewpointAction();
+
 		void _applyRepresentationAction( const int p_representationIndex );
 
 		void _exportAction();
 
 	  private:
-		std::vector<ItemData *>				  _actions = std::vector<ItemData *>();
 		CustomWidget::SetRepresentationMenu * _representationMenu;
+
+		std::map<ID::VTX_ID, SelectionSubMenu *> _submenus;
 
 		Model::BaseModel * _focusedTarget = nullptr;
 
 		TypeMask _getTypeMaskFromTypeSet( const std::set<ID::VTX_ID> & p_typeIds );
-		void	 _updateCurrentRepresentationFeedback();
+		void	 _updateCurrentRepresentationFeedback( QAction & _action ) const;
 
 		void _refreshToggleWaterText( QAction & _action ) const;
 		void _refreshToggleHydrogenText( QAction & _action ) const;

@@ -41,6 +41,7 @@ namespace VTX::Object3D
 		void addMolecule( MoleculePtr const, const bool p_sendEvent = true );
 		void removeMolecule( MoleculePtr const );
 		void addPath( PathPtr const );
+		void removePath( PathPtr const );
 		void addMesh( MeshTrianglePtr const );
 		void removeMesh( MeshTrianglePtr const );
 

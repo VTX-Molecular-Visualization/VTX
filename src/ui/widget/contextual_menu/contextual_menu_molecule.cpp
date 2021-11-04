@@ -79,7 +79,7 @@ namespace VTX::UI::Widget::ContextualMenu
 			= MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSceneView>( _target,
 																				   ID::View::UI_MOLECULE_STRUCTURE );
 
-		molSceneView->openRenameEditor();
+		molSceneView->openRenameEditor( _target->getId() );
 	}
 	void ContextualMenuMolecule::_toggleWatersVisibilityAction()
 	{

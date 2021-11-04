@@ -1,4 +1,6 @@
 #include "path.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "exception.hpp"
 #include "id.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -14,6 +16,17 @@ namespace VTX
 		Path::Path() : BaseModel( ID::Model::MODEL_PATH ) {};
 		Path::~Path() { MVC::MvcManager::get().deleteAllModels( _viewpoints ); }
 
+		void Path::addViewpoint( const ViewpointPtr p_viewpoint )
+		{
+			_viewpoints.emplace_back( p_viewpoint );
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::VIEWPOINT_ADDED, p_viewpoint ) );
+		}
+		void Path::removeViewpoint( const ViewpointPtr p_viewpoint )
+		{
+			_viewpoints.erase( std::find( _viewpoints.begin(), _viewpoints.end(), p_viewpoint ) );
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::VIEWPOINT_REMOVED, p_viewpoint ) );
+		}
+		
 		/*
 		const std::vector<std::string> * const Path::getCurrentActions( const float p_time )
 		{

@@ -2,6 +2,7 @@
 #define __VTX_UI_WIDGET_MOLECULE_SEQUENCE_WIDGET__
 
 #include "chain_sequence_widget.hpp"
+#include "event/event.hpp"
 #include "model/molecule.hpp"
 #include "ui/widget/view_item_widget.hpp"
 #include <QHBoxLayout>
@@ -14,8 +15,9 @@
 
 namespace VTX::Model
 {
+	class Chain;
 	class Residue;
-}
+} // namespace VTX::Model
 namespace VTX::UI::Widget::Sequence
 {
 	class MoleculeSequenceWidget : public ViewItemWidget<Model::Molecule>
@@ -43,6 +45,8 @@ namespace VTX::UI::Widget::Sequence
 		void localize() override;
 		void repaintSelection() const;
 
+		void notify( const Event::VTXEvent * const p_event ) override;
+
 	  protected:
 		MoleculeSequenceWidget( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
@@ -54,8 +58,10 @@ namespace VTX::UI::Widget::Sequence
 
 		void _onScrollBarValueChanged();
 		void _initLabelName();
-		void _updateLabelName( const Model::Chain & p_currentChainDisplayed );
+		void _updateLabelName( const Model::Chain * const p_currentChainDisplayed ) const;
 		void _clear();
+
+		Model::Chain * _getCurrentChain() const;
 
 	  private:
 		QLabel *						   _sequenceLabel	  = nullptr;

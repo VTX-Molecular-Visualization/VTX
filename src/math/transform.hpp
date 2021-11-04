@@ -11,7 +11,16 @@ namespace VTX
 		class Transform
 		{
 		  public:
-			Transform()	 = default;
+			Transform() = default;
+			Transform( const Vec3f & p_position, const Quatf & p_rotation, const Vec3f & p_scale )
+			{
+				setTranslation( p_position );
+				setRotation( p_rotation );
+				setScale( p_scale );
+
+				update();
+			}
+
 			~Transform() = default;
 
 			inline const Mat4f & get() const { return _transform; }
@@ -89,6 +98,11 @@ namespace VTX
 			}
 
 			inline void setRotation( const Vec3f & p_vec ) { setRotation( p_vec.x, p_vec.y, p_vec.z ); }
+
+			inline void setRotation( const Quatf & p_quaternion )
+			{
+				setRotation( Util::Math::getRotation( p_quaternion ) );
+			}
 
 			inline void setRotation( const Mat4f & p_mat )
 			{

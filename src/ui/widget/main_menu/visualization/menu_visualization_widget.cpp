@@ -30,6 +30,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			"renderEffectsBlockWidget" );
 		addToolBlock( _renderEffects );
 
+		_viewpoints		 = addToolBlock<MenuVisualizationViewpointWidget>( "viewpointBlockWidget" );
 		_selectionAction = addToolBlock<MenuVisualizationSelectionActionWidget>( "selectionBlockWidget" );
 		_windows		 = addToolBlock<MenuVisualizationWindowsWidget>( "windowsBlockWidget" );
 	}

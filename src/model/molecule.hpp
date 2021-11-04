@@ -69,6 +69,8 @@ namespace VTX
 			Chain &								addChain();
 			inline Chain * const				getChain( const uint p_idx ) { return _chains[ p_idx ]; }
 			inline const Chain * const			getChain( const uint p_idx ) const { return _chains[ p_idx ]; }
+			Chain *								getFirstChain();
+			const Chain * const					getFirstChain() const;
 			const Chain * const					getPreviousChain( const uint p_idBaseChain ) const;
 			Chain * const						getPreviousChain( const uint p_idBaseChain );
 			const Chain * const					getNextChain( const uint p_idBaseChain ) const;

@@ -13,6 +13,7 @@
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
+#include "view/ui/widget/path_scene_view.hpp"
 #include "vtx_app.hpp"
 #include <QScrollArea>
 #include <algorithm>
@@ -23,6 +24,9 @@ namespace VTX::UI::Widget::Scene
 	{
 		_registerEvent( Event::Global::MOLECULE_ADDED );
 		_registerEvent( Event::Global::MOLECULE_REMOVED );
+
+		_registerEvent( Event::Global::PATH_ADDED );
+		_registerEvent( Event::Global::PATH_REMOVED );
 	}
 
 	void SceneWidget::receiveEvent( const Event::VTXEvent & p_event )
@@ -53,6 +57,31 @@ namespace VTX::UI::Widget::Scene
 
 			MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeSceneView>( molecule,
 																					ID::View::UI_MOLECULE_STRUCTURE );
+		}
+		else if ( p_event.name == Event::Global::PATH_ADDED )
+		{
+			const Event::VTXEventPtr<Model::Path> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Path> &>( p_event );
+
+			// Set no parent to not trigger ItemChange event during init
+			View::UI::Widget::PathSceneView * const pathWidget
+				= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::PathSceneView>(
+					castedEvent.ptr, ID::View::UI_SCENE_PATH, _scrollAreaContent, "pathSceneView" );
+
+			_addWidgetInLayout( pathWidget );
+		}
+		else if ( p_event.name == Event::Global::PATH_REMOVED )
+		{
+			const Event::VTXEventPtr<Model::Path> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Path> &>( p_event );
+			const Model::Path * const path = castedEvent.ptr;
+
+			View::UI::Widget::PathSceneView * const viewpointWidget
+				= MVC::MvcManager::get().getView<View::UI::Widget::PathSceneView>( path, ID::View::UI_SCENE_PATH );
+
+			_removeWidgetInLayout( viewpointWidget );
+
+			MVC::MvcManager::get().deleteView<View::UI::Widget::PathSceneView>( path, ID::View::UI_SCENE_PATH );
 		}
 	}
 
@@ -102,16 +131,51 @@ namespace VTX::UI::Widget::Scene
 		return itemFound ? res : nullptr;
 	}
 
+	void SceneWidget::openRenameEditor( const Model::ID & p_itemID ) const
+	{
+		for ( SceneItemWidget * const sceneWidget : _sceneWidgets )
+		{
+			if ( sceneWidget->getModelID() == p_itemID )
+			{
+				sceneWidget->openRenameEditor( p_itemID );
+			}
+		}
+	}
+
+	int SceneWidget::_getPositionInHierarchy( SceneItemWidget * const p_sceneItemWidget ) 
+	{
+		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( p_sceneItemWidget->getModelID() );
+		
+		if ( modelTypeId == ID::Model::MODEL_MOLECULE ) 
+		{
+			std::vector<SceneItemWidget *>::const_reverse_iterator it = _sceneWidgets.crbegin();
+			int													   counter = 1;
+
+			for ( it; it != _sceneWidgets.crend() ; it++) 
+			{
+				const ID::VTX_ID & itModelTypeId = MVC::MvcManager::get().getModelTypeID( ( *it )->getModelID() );
+				if ( itModelTypeId == modelTypeId )
+					return _layout->count()  - counter;
+				counter++;
+			}
+
+			return _layout->count() - counter;
+		}
+
+		return _layout->count() - 1;
+	}
+
+
 	void SceneWidget::_addWidgetInLayout( SceneItemWidget * const p_sceneItemWidget )
 	{
-		const int posInHierarchy = _layout->count() - 1;
+		const int posInHierarchy = _getPositionInHierarchy( p_sceneItemWidget );
 		_layout->insertWidget( posInHierarchy, p_sceneItemWidget, 1 );
 		p_sceneItemWidget->updatePosInSceneHierarchy( posInHierarchy );
 
 		if ( _sceneWidgets.size() > 0 )
 			setTabOrder( *_sceneWidgets.rbegin(), p_sceneItemWidget );
 
-		_sceneWidgets.emplace_back( p_sceneItemWidget );
+		_sceneWidgets.insert( _sceneWidgets.begin() + posInHierarchy, p_sceneItemWidget );
 	}
 	void SceneWidget::_removeWidgetInLayout( SceneItemWidget * const p_sceneItemWidget )
 	{
@@ -172,6 +236,23 @@ namespace VTX::UI::Widget::Scene
 		setWidget( scrollArea );
 
 		setAcceptDrops( true );
+
+		for ( const std::pair<Model::Molecule *, float> pairMolecule : VTXApp::get().getScene().getMolecules() )
+		{
+			View::UI::Widget::MoleculeSceneView * const moleculeWidget
+				= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::MoleculeSceneView>(
+					pairMolecule.first, ID::View::UI_MOLECULE_STRUCTURE, _scrollAreaContent, "moleculeSceneView" );
+
+			_addWidgetInLayout( moleculeWidget );
+		}
+		for ( Model::Path * const path : VTXApp::get().getScene().getPaths() )
+		{
+			View::UI::Widget::PathSceneView * const pathWidget
+				= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::PathSceneView>(
+					path, ID::View::UI_SCENE_PATH, _scrollAreaContent, "pathSceneView" );
+
+			_addWidgetInLayout( pathWidget );
+		}
 	}
 
 	void SceneWidget::_setupSlots() {}

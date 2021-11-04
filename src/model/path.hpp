@@ -33,11 +33,8 @@ namespace VTX
 				CUBIC
 			};
 
-			void addViewpoint( const ViewpointPtr p_viewpoint ) { _viewpoints.emplace_back( p_viewpoint ); }
-			void removeViewpoint( const ViewpointPtr p_viewpoint )
-			{
-				_viewpoints.erase( std::find( _viewpoints.begin(), _viewpoints.end(), p_viewpoint ) );
-			}
+			void addViewpoint( const ViewpointPtr p_viewpoint );
+			void removeViewpoint( const ViewpointPtr p_viewpoint );
 
 			inline const std::string &		  getName() const { return _name; }
 			inline void						  setName( const std::string & p_name ) { _name = p_name; }

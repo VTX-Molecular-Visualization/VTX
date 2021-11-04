@@ -11,33 +11,33 @@ namespace VTX
 	{
 		class BaseModel;
 	}
-	namespace UI
+
+	namespace UI::Widget
 	{
-		namespace Widget
+		template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
+		class ViewItemWidget : public BaseManualWidget<QWidget>
 		{
-			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
-			class ViewItemWidget : public BaseManualWidget<QWidget>
+			VTX_WIDGET
+
+		  public:
+			ViewItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
+
+			inline M *	getModel() { return _model; }
+			inline void setModel( M * const p_model )
 			{
-				VTX_WIDGET
+				_model = p_model;
+				refresh();
+			}
 
-			  public:
-				ViewItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
+			virtual void notify( const Event::VTXEvent * const p_event ) {};
 
-				inline M *	getModel() { return _model; }
-				inline void setModel( M * const p_model )
-				{
-					_model = p_model;
-					refresh();
-				}
+			virtual void refresh() {}
 
-				virtual void refresh() {}
+		  protected:
+			M * _model = nullptr;
+		};
 
-			  protected:
-				M * _model = nullptr;
-			};
-
-		} // namespace Widget
-	}	  // namespace UI
+	} // namespace UI::Widget
 } // namespace VTX
 
 #endif

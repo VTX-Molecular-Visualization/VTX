@@ -6,6 +6,7 @@
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"
 #include "math/aabb.hpp"
+#include "model/base_model.hpp"
 #include <map>
 #include <set>
 #include <vector>
@@ -67,9 +68,15 @@ namespace VTX::Model
 		};
 		using MapMoleculeIds = std::map<Model::ID, MapChainIds>;
 
-		inline const MapMoleculeIds & getItems() const { return _items; }
-		inline MapMoleculeIds &		  getItems() { return _items; }
+		inline const std::set<Model::ID> & getItems() const { return _items; }
+		inline std::set<Model::ID> &	   getItems() { return _items; }
 
+		inline const MapMoleculeIds & getMoleculesMap() const { return _moleculesMap; }
+		inline MapMoleculeIds &		  getMoleculesMap() { return _moleculesMap; }
+
+		bool hasItemOfType( const ID::VTX_ID & p_id ) const;
+
+		bool hasMolecule() const;
 		void selectMolecule( Molecule &, const bool p_appendToSelection = false );
 		void selectMolecules( const std::vector<Molecule *> &,
 							  const bool			 p_appendToSelection = false,
@@ -124,6 +131,68 @@ namespace VTX::Model
 							 const std::vector<Model::Residue *> &	p_residus,
 							 const std::vector<Model::Atom *> &		p_atoms );
 
+		void selectModel( Model::BaseModel & p_model, const bool p_appendToSelection = false );
+		void unselectModel( const Model::BaseModel & );
+		bool isModelSelected( const Model::BaseModel & ) const;
+
+		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		void selectModels( const std::vector<T *> & p_models, const bool p_appendToSelection = false )
+		{
+			if ( !p_appendToSelection )
+				_clearWithoutNotify();
+
+			if ( p_models.empty() )
+				return;
+
+			for ( T * const model : p_models )
+				_items.emplace( model->getId() );
+
+			_setCurrentObject( *p_models.crbegin() );
+
+			_notifyDataChanged();
+		}
+		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		void unselectModels( const std::vector<T *> & p_models )
+		{
+			if ( p_models.size() == 0 )
+				return;
+
+			for ( const auto it : p_models )
+				_unselectModel( *it );
+
+			_notifyDataChanged();
+		}
+		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		void unselectModelsWithCheck( const std::vector<T *> & p_models )
+		{
+			if ( p_models.size() == 0 )
+				return;
+
+			for ( const auto it : p_models )
+			{
+				if ( isModelSelected( *it ) )
+					_unselectModel( *it );
+			}
+
+			_notifyDataChanged();
+		}
+
+		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		std::vector<T *> getItemsOfType( const ID::VTX_ID & p_modelTypeID )
+		{
+			std::vector<T *> models = std::vector<T *>();
+			for ( const Model::ID & modelID : getItems() )
+			{
+				if ( MVC::MvcManager::get().getModelTypeID( modelID ) == p_modelTypeID )
+				{
+					T & model = MVC::MvcManager::get().getModel<T>( modelID );
+					models.emplace_back( &model );
+				}
+			}
+
+			return models;
+		};
+
 		bool isEmpty() const;
 		void clear();
 
@@ -133,6 +202,19 @@ namespace VTX::Model
 		Math::AABB					   getAABB() const;
 		const Model::BaseModel * const getCurrentObject();
 
+		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		void getItemsOfType( const ID::VTX_ID & p_itemType, std::set<T *> & p_items ) const
+		{
+			for ( const Model::ID & itemID : _items )
+			{
+				if ( MVC::MvcManager::get().getModelTypeID( itemID ) == p_itemType )
+				{
+					T & item = MVC::MvcManager::get().getModel<T>( itemID );
+					p_items.emplace( &item );
+				}
+			}
+		}
+
 	  protected:
 		Selection() : BaseModel( ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
 		~Selection() = default;
@@ -140,7 +222,9 @@ namespace VTX::Model
 		void _notifyDataChanged();
 
 	  private:
-		MapMoleculeIds					_items			  = MapMoleculeIds();
+		std::set<Model::ID> _items		  = std::set<Model::ID>();
+		MapMoleculeIds		_moleculesMap = MapMoleculeIds();
+
 		std::map<Model::ID, Math::AABB> _mapSelectionAABB = std::map<Model::ID, Math::AABB>();
 		const Model::BaseModel *		_currentObject	  = nullptr;
 
@@ -152,6 +236,8 @@ namespace VTX::Model
 		void _unselectResidue( const Residue & );
 		void _selectAtom( const Atom & );
 		void _unselectAtom( const Atom & );
+
+		void _unselectModel( const Model::BaseModel & );
 
 		bool _addMolecule( const Molecule & );
 		bool _addChain( const Chain & );
@@ -179,6 +265,8 @@ namespace VTX::Model
 		void _unreferenceAtom( const Atom & p_atom );
 		void _unreferenceFullResidue( const Residue & p_residue );
 		void _unreferenceFullChain( const Chain & p_chain );
+
+		void _emplaceMolecule( const Molecule & );
 
 		void _setCurrentObject( const Model::BaseModel * const p_model );
 		void _clearCurrentObject();

@@ -25,6 +25,15 @@ namespace VTX::UI::Widget::Sequence
 			repaintSelection();
 	}
 
+	void MoleculeSequenceWidget::notify( const Event::VTXEvent * const p_event )
+	{
+		if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
+		{
+			const Model::Chain * currentChain = _getCurrentChain();
+			_updateLabelName( currentChain );
+		}
+	}
+
 	void MoleculeSequenceWidget::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
@@ -64,8 +73,13 @@ namespace VTX::UI::Widget::Sequence
 
 	void MoleculeSequenceWidget::_onScrollBarValueChanged()
 	{
-		const QScrollBar * const scrollBar = _scrollArea->horizontalScrollBar();
-		const int				 value	   = scrollBar->value();
+		const Model::Chain * currentChain = _getCurrentChain();
+		_updateLabelName( currentChain );
+	}
+
+	Model::Chain * MoleculeSequenceWidget::_getCurrentChain() const
+	{
+		const int value = _scrollArea->horizontalScrollBar()->value();
 
 		// Check first visible
 		for ( auto it = _chainDisplayWidgets.rbegin(); it != _chainDisplayWidgets.rend(); it++ )
@@ -74,30 +88,32 @@ namespace VTX::UI::Widget::Sequence
 
 			if ( pos.x() < value )
 			{
-				_updateLabelName( *( ( *it )->getModel() ) );
-				break;
+				return ( *it )->getModel();
 			}
 		}
+
+		return _model->getFirstChain();
 	}
 
 	void MoleculeSequenceWidget::_initLabelName()
 	{
-		for ( const Model::Chain * const chain : _model->getChains() )
+		const Model::Chain * const chain = _model->getFirstChain();
+		_updateLabelName( chain );
+	}
+	void MoleculeSequenceWidget::_updateLabelName( const Model::Chain * const p_currentChainDisplayed ) const
+	{
+		std::string txt;
+		if ( p_currentChainDisplayed == nullptr )
 		{
-			if ( chain != nullptr )
-			{
-				_updateLabelName( *chain );
-				return;
-			}
+			txt = _model->getDisplayName();
+		}
+		else
+		{
+			txt = _model->getDisplayName() + Style::SEQUENCE_CHAIN_NAME_SEPARATOR + p_currentChainDisplayed->getName()
+				  + Style::SEQUENCE_CHAIN_NAME_SEPARATOR;
 		}
 
-		_sequenceLabel->setText( QString::fromStdString( _model->getDisplayName() ) );
-	}
-	void MoleculeSequenceWidget::_updateLabelName( const Model::Chain & p_currentChainDisplayed )
-	{
-		_sequenceLabel->setText( QString::fromStdString( _model->getDisplayName() + Style::SEQUENCE_CHAIN_NAME_SEPARATOR
-														 + p_currentChainDisplayed.getName()
-														 + Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
+		_sequenceLabel->setText( QString::fromStdString( txt ) );
 	}
 
 	void MoleculeSequenceWidget::localize() {}
@@ -360,7 +376,7 @@ namespace VTX::UI::Widget::Sequence
 		{
 			if ( residueHovered != nullptr )
 			{
-				Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+				Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 				if ( selection.isResidueSelected( *residueHovered ) )
 				{
 					UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Selection, &selection, globalMousePos );

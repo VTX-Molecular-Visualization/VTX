@@ -20,6 +20,7 @@ namespace VTX::UI
 			Atom,
 			Selection,
 			Scene,
+			Viewpoint,
 
 			COUNT
 		};
@@ -30,7 +31,7 @@ namespace VTX::UI
 		template<typename P>
 		static void pop( const Menu & p_menu, P * const p_target, const QPoint & p_worldPos )
 		{
-			return _getInstance().displayMenu<P>( p_menu, p_target, p_worldPos );
+			_getInstance().displayMenu<P>( p_menu, p_target, p_worldPos );
 		}
 
 		template<typename T, typename = std::enable_if<std::is_base_of<QMenu, T>::value>>

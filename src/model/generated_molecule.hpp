@@ -63,14 +63,13 @@ namespace VTX::Model
 		};
 
 	  public:
-		void copyFromSelection( const std::pair<Model::ID, Model::Selection::MapChainIds> & p_moleculeSelectionData );
+		void copyFromSelection( const Model::Selection & p_selection, const Model::ID & p_moleculeID );
 		void copyFromMolecule( const Model::Molecule & p_molecule );
 		void copyFromChain( const Model::Chain & p_chain );
 		void copyFromResidue( const Model::Residue & p_residue );
 		void copyFromAtom( const Model::Atom & p_atom );
 
-		void extractFromSelection(
-			const std::pair<Model::ID, Model::Selection::MapChainIds> & p_moleculeSelectionData );
+		void extractFromSelection( const Model::Selection & p_selection, const Model::ID & p_moleculeID );
 		void extractChain( const Model::Chain & p_chain );
 		void extractResidue( const Model::Residue & p_residue );
 		void extractAtom( const Model::Atom & p_atom );

@@ -2,17 +2,8 @@
 #define __VTX_UI_WIDGET_INSPECTOR__
 
 #include "id.hpp"
-#include "model/atom.hpp"
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
-#include "model/representation/representation.hpp"
-#include "model/residue.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
-#include "ui/widget/inspector/multiple_atom_inspector_widget.hpp"
-#include "ui/widget/inspector/multiple_chain_inspector_widget.hpp"
-#include "ui/widget/inspector/multiple_molecule_inspector_widget.hpp"
-#include "ui/widget/inspector/multiple_residue_inspector_widget.hpp"
 #include "view/ui/widget/base_widget_view.hpp"
 #include <QDockWidget>
 #include <QScrollArea>
@@ -22,6 +13,12 @@
 
 namespace VTX::UI::Widget::Inspector
 {
+	class MultipleMoleculeWidget;
+	class MultipleChainWidget;
+	class MultipleResidueWidget;
+	class MultipleAtomWidget;
+	class MultipleViewpointWidget;
+
 	struct ViewData
 	{
 	  public:
@@ -55,10 +52,11 @@ namespace VTX::UI::Widget::Inspector
 		CustomWidget::DockWindowMainWidget<QScrollArea> * _scrollArea	  = nullptr;
 		QVBoxLayout *									  _verticalLayout = nullptr;
 
-		MultipleMoleculeWidget * _moleculesInspector = nullptr;
-		MultipleChainWidget *	 _chainsInspector	 = nullptr;
-		MultipleResidueWidget *	 _residuesInspector	 = nullptr;
-		MultipleAtomWidget *	 _atomsInspector	 = nullptr;
+		MultipleMoleculeWidget *  _moleculesInspector  = nullptr;
+		MultipleChainWidget *	  _chainsInspector	   = nullptr;
+		MultipleResidueWidget *	  _residuesInspector   = nullptr;
+		MultipleAtomWidget *	  _atomsInspector	   = nullptr;
+		MultipleViewpointWidget * _viewpointsInspector = nullptr;
 
 		std::vector<ViewData> _inspectorViewsData = std::vector<ViewData>();
 	};

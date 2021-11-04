@@ -6,6 +6,7 @@
 #include "menu_visualization_render_effects_widget.hpp"
 #include "menu_visualization_representation_widget.hpp"
 #include "menu_visualization_selection_action_widget.hpp"
+#include "menu_visualization_viewpoint.hpp"
 #include "menu_visualization_windows_widget.hpp"
 #include "ui/widget/main_menu/menu_tooltab_widget.hpp"
 #include <QWidget>
@@ -30,6 +31,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		MenuVisualizationRepresentationWidget *	 _representation  = nullptr;
 		MenuVisualizationObjectDisplayWidget *	 _objectDisplay	  = nullptr;
 		MenuVisualizationRenderEffectsWidget *	 _renderEffects	  = nullptr;
+		MenuVisualizationViewpointWidget *		 _viewpoints	  = nullptr;
 		MenuVisualizationSelectionActionWidget * _selectionAction = nullptr;
 		MenuVisualizationWindowsWidget *		 _windows		  = nullptr;
 	};

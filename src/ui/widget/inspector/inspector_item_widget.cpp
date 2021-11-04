@@ -41,4 +41,9 @@ namespace VTX::UI::Widget::Inspector
 		_contentLayout->insertWidget( _contentLayout->count() - 1, p_section );
 	}
 
+	void InspectorItemWidget::_appendWidget( QWidget * const p_widget )
+	{
+		_contentLayout->insertWidget( _contentLayout->count() - 1, p_widget );
+	}
+
 } // namespace VTX::UI::Widget::Inspector

@@ -31,11 +31,11 @@ namespace VTX::UI::Widget::MainMenu
 	{
 		Model::Representation::Representation * representation
 			= Model::Representation::RepresentationLibrary::get().getRepresentation( _id );
-		const Model::Selection & target = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-		if ( target.getItems().size() > 0 )
+		if ( selection.getMoleculesMap().size() > 0 )
 		{
-			VTX_ACTION( new Action::RepresentableSetRepresentation( &target, representation ) );
+			VTX_ACTION( new Action::RepresentableSetRepresentation( &selection, representation ) );
 		}
 		else
 		{

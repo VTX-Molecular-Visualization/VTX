@@ -9,6 +9,15 @@
 #include <QMouseEvent>
 #include <QTreeWidget>
 
+namespace VTX::Generic
+{
+	class BaseVisible;
+};
+namespace VTX::Model
+{
+	class Selection;
+};
+
 namespace VTX::UI::Widget::Scene
 {
 	class SceneItemWidget : public BaseManualWidget<QTreeWidget>
@@ -20,19 +29,23 @@ namespace VTX::UI::Widget::Scene
 		inline static const Qt::ItemDataRole EXPAND_STATE_ROLE = Qt::ItemDataRole( Qt::UserRole + 1 );
 
 	  public:
-		void		 localize() override;
+		void localize() override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
+
 		virtual void updatePosInSceneHierarchy( const int p_position );
 
 		virtual const Model::ID & getModelID() const = 0;
 		virtual QTreeWidgetItem * getLastVisibleItem();
 
+		void openRenameEditor( const Model::ID & p_modelID );
+
 	  protected:
 		SceneItemWidget( QWidget * p_parent );
 
-		virtual bool _canDragObjectAtPos( const QPoint & p_position ) { return true; }
-
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
+
+		virtual void keyPressEvent( QKeyEvent * p_event ) override;
 
 		virtual void mousePressEvent( QMouseEvent * p_event ) override;
 		virtual void mouseMoveEvent( QMouseEvent * p_event ) override;
@@ -40,19 +53,35 @@ namespace VTX::UI::Widget::Scene
 
 		virtual void _onItemExpanded( QTreeWidgetItem * const );
 		virtual void _onItemCollapsed( QTreeWidgetItem * const );
+		virtual void _onCustomContextMenuCalled( const QPoint & p_clicPos );
+
+		virtual void _createTopLevelObject();
+		void		 _openRenameEditor( QTreeWidgetItem & p_target );
+
+		void		 _refreshSelection( const Model::Selection & p_selection );
+		virtual void _fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection );
 
 		virtual void _refreshSize();
 		virtual int	 _getMinimumHeight() const;
 
-		virtual QMimeData * _getDataForDrag() = 0;
+		void _refreshItemVisibility( QTreeWidgetItem * const p_itemWidget, const bool p_visible );
 
-		const Qt::CheckState _getCheckState( const bool p_enable ) const
-		{
-			return p_enable ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
-		};
+		void _enableSignals( const bool p_enable );
+
+		virtual bool		_canDragObjectAtPos( const QPoint & p_position ) { return true; }
+		virtual QMimeData * _getDataForDrag() = 0;
+		void				_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append = false );
+
+		virtual bool _itemCanBeRenamed( const QTreeWidgetItem * p_item );
+
+		Model::ID				  _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;
+		virtual QTreeWidgetItem * _findItemFromModelID( const Model::ID & p_id ) const;
+		QTreeWidgetItem * _findItemFromModelIDRecursive( QTreeWidgetItem & p_parent, const Model::ID & p_id ) const;
+		bool			  _getItemExpandState( const QTreeWidgetItem & p_item ) const;
 
 	  private:
 		QPoint _dragStartPosition;
+		int	   _enableSignalCounter = 0;
 	};
 
 } // namespace VTX::UI::Widget::Scene

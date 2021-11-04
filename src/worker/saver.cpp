@@ -47,9 +47,9 @@ namespace VTX::Worker
 		try
 		{
 			// if selection is not empty -> export selected structures
-			if ( !VTX::Selection::SelectionManager::get().getSelectionModel().getItems().empty() )
+			if ( !VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculesMap().empty() )
 			{
-				for ( const auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getItems() )
+				for ( const auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculesMap() )
 				{
 					Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( it.first );
 					writer->writeFile( _path, molecule );

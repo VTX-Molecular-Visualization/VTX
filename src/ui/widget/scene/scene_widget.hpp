@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_WIDGET_SCENE__
 #define __VTX_UI_WIDGET_SCENE__
 
+#include "model/base_model.hpp"
 #include "scene_item_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDockWidget>
@@ -25,6 +26,8 @@ namespace VTX::UI::Widget::Scene
 		SceneItemWidget *					   getPreviousSceneItemWidgets( SceneItemWidget * p_item ) const;
 		SceneItemWidget *					   getNextSceneItemWidgets( SceneItemWidget * p_item ) const;
 
+		void openRenameEditor( const Model::ID & p_itemID ) const;
+
 	  protected:
 		SceneWidget( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
@@ -40,6 +43,7 @@ namespace VTX::UI::Widget::Scene
 		QVBoxLayout *				   _layout			  = nullptr;
 		std::vector<SceneItemWidget *> _sceneWidgets	  = std::vector<SceneItemWidget *>();
 
+		int _getPositionInHierarchy( SceneItemWidget * const p_sceneItemWidget );
 		void _addWidgetInLayout( SceneItemWidget * const p_sceneItemWidget );
 		void _removeWidgetInLayout( SceneItemWidget * const p_sceneItemWidget );
 	};

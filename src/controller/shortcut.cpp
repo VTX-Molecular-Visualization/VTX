@@ -89,13 +89,7 @@ namespace VTX
 				*/
 				else
 				{
-					VTX_ACTION(
-						new Action::Viewpoint::Create( *VTXApp::get().getScene().getPaths()[ 0 ],
-													   VTXApp::get().getScene().getCamera(),
-													   VTXApp::get()
-														   .getStateMachine()
-														   .getState<State::Visualization>( ID::State::VISUALIZATION )
-														   ->getCurrentCameraController() ) );
+					VTX_ACTION( new Action::Viewpoint::Create() );
 					VTX_INFO( "Viewpoint added" );
 					shortcutEaten = true;
 				}

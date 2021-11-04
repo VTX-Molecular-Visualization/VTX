@@ -276,14 +276,17 @@ namespace VTX::Model::Renderer
 			_presets.pop_back();
 		}
 
-		if ( p_notify )
+		if ( p_notify ) 
+		{
+			VTX_EVENT( new Event::VTXEvent( Event::Global::RENDER_EFFECT_LIBRARY_CLEARED ) );
 			_notifyDataChanged();
+		}
 	}
 
 	void RenderEffectPresetLibrary::resetToDefault()
 	{
-		clear( false );
-		_generateDefaultLibrary();
+		clear( true );
+		_generateDefaultLibrary( false );
 
 		applyPreset( 0 );
 		_notifyDataChanged();
@@ -338,7 +341,7 @@ namespace VTX::Model::Renderer
 		addPreset( presetSketch, true, false );
 
 		if ( p_notify )
-			forceNotifyDataChanged();
+			_notifyDataChanged();
 	}
 
 	void RenderEffectPresetLibrary::_onPresetChange( const Event::VTXEvent * const p_event )

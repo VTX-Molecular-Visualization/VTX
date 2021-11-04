@@ -53,7 +53,7 @@ namespace VTX::IO::Reader
 		for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )
 		{
 			Model::Molecule::AtomPositionsFrame &		 moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
-			chemfiles::Frame							 frame		   = p_trajectory.read_step( frameIdx );
+			chemfiles::Frame							 frame		   = p_trajectory.read();
 			const chemfiles::span<chemfiles::Vector3D> & positions	   = frame.positions();
 			moleculeFrame.resize( positions.size() );
 			for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )

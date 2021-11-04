@@ -96,7 +96,7 @@ namespace VTX::IO
 
 	nlohmann::json Serializer::serialize( const Model::Viewpoint & p_viewpoint ) const
 	{
-		nlohmann::json json = { { "NAME", p_viewpoint.getName() },
+		nlohmann::json json = { { "NAME", p_viewpoint.getDefaultName() },
 								{ "DURATION", p_viewpoint.getDuration() },
 								{ "POSITION", serialize( p_viewpoint.getPosition() ) },
 								{ "ROTATION", serialize( p_viewpoint.getRotation() ) },

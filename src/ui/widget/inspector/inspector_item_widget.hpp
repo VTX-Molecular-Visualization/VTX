@@ -24,6 +24,7 @@ namespace VTX::UI::Widget::Inspector
 		virtual void _setupSlots() override {};
 
 		void								   _appendSection( InspectorSection * p_section );
+		void								   _appendWidget( QWidget * const p_widget );
 		CustomWidget::CollapsingHeaderWidget * _getHeader() { return _mainWidget; }
 
 	  private:
