@@ -12,27 +12,27 @@ namespace VTX::UI::Widget::CustomWidget
 		QGridLayout * const mainLayout = new QGridLayout( this );
 		mainLayout->setSpacing( 2 );
 
-		QLabel * const positionLabel = new QLabel();
-		positionLabel->setText( "Position" );
+		_positionLabel = new QLabel();
+		_positionLabel->setText( "Position" );
 		_positionWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_position_widget" );
 		_positionWidget->setMinMax( -10000, 10000 );
 
-		QLabel * const rotationLabel = new QLabel();
-		rotationLabel->setText( "Rotation" );
+		_rotationLabel = new QLabel();
+		_rotationLabel->setText( "Rotation" );
 		_rotationWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_rotation_widget" );
 		_rotationWidget->setMinMax( -10000, 10000 );
 
-		QLabel * const scaleLabel = new QLabel();
-		scaleLabel->setText( "Scale" );
+		_scaleLabel = new QLabel();
+		_scaleLabel->setText( "Scale" );
 		_scaleWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_scale_widget" );
 		_scaleWidget->setMinMax( 0.01, 10000 );
 		_scaleWidget->setDragValueFactor( 0.01f );
 
-		mainLayout->addWidget( positionLabel, 0, 0 );
+		mainLayout->addWidget( _positionLabel, 0, 0 );
 		mainLayout->addWidget( _positionWidget, 0, 1 );
-		mainLayout->addWidget( rotationLabel, 1, 0 );
+		mainLayout->addWidget( _rotationLabel, 1, 0 );
 		mainLayout->addWidget( _rotationWidget, 1, 1 );
-		mainLayout->addWidget( scaleLabel, 2, 0 );
+		mainLayout->addWidget( _scaleLabel, 2, 0 );
 		mainLayout->addWidget( _scaleWidget, 2, 1 );
 	}
 
@@ -46,13 +46,32 @@ namespace VTX::UI::Widget::CustomWidget
 		connect( _scaleWidget, &Vector3Widget::onValueDragged, this, &TransformWidget::_onScaleDragged );
 	}
 
+	void TransformWidget::displayPosition( const bool p_display ) const
+	{
+		_positionLabel->setVisible( p_display );
+		_positionWidget->setVisible( p_display );
+	}
+	void TransformWidget::displayRotation( const bool p_display ) const
+	{
+		_rotationLabel->setVisible( p_display );
+		_rotationWidget->setVisible( p_display );
+	}
+	void TransformWidget::displayScale( const bool p_display ) const
+	{
+		_scaleLabel->setVisible( p_display );
+		_scaleWidget->setVisible( p_display );
+	}
+
 	void TransformWidget::_refresh()
 	{
 		const bool oldBlockState = blockSignals( true );
 
-		_positionWidget->setData( _transform.getTranslationVector() );
-		_rotationWidget->setData( _transform.getEulerAngles() );
-		_scaleWidget->setData( _transform.getScaleVector() );
+		if ( _positionWidget->isVisible() )
+			_positionWidget->setData( _transform.getTranslationVector() );
+		if ( _rotationWidget->isVisible() )
+			_rotationWidget->setData( _transform.getEulerAngles() );
+		if ( _scaleWidget->isVisible() )
+			_scaleWidget->setData( _transform.getScaleVector() );
 
 		blockSignals( oldBlockState );
 	}

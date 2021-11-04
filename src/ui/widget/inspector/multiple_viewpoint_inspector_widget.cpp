@@ -18,6 +18,7 @@ namespace VTX::UI::Widget::Inspector
 			this, "inspector_item_section" );
 		_transformWidget = UI::WidgetFactory::get().instantiateWidget<CustomWidget::TransformWidget>(
 			this, "inspector_viewpoint_transform" );
+		_transformWidget->displayScale( false );
 		_transformSection->setBody( _transformWidget );
 
 		_gotoButton = new CustomWidget::QPushButtonMultiField( this );

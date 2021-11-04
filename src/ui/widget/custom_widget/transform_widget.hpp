@@ -32,6 +32,10 @@ namespace VTX::UI::Widget::CustomWidget
 		void updateWithNewValue( const Math::Transform & p_value ) override;
 		//////////////////////////////////////////////////////////////
 
+		void displayPosition( const bool p_display ) const;
+		void displayRotation( const bool p_display ) const;
+		void displayScale( const bool p_display ) const;
+
 	  signals:
 		void onValueChange( const Math::Transform & p_value ) const;
 		void onPositionDragged( const Vec3f & p_delta ) const;
@@ -50,9 +54,13 @@ namespace VTX::UI::Widget::CustomWidget
 		//////////////////////////////////////////////////////////////
 
 	  private:
-		Vector3Widget * _positionWidget;
-		Vector3Widget * _rotationWidget;
-		Vector3Widget * _scaleWidget;
+		Vector3Widget * _positionWidget = nullptr;
+		Vector3Widget * _rotationWidget = nullptr;
+		Vector3Widget * _scaleWidget	= nullptr;
+
+		QLabel * _positionLabel = nullptr;
+		QLabel * _rotationLabel = nullptr;
+		QLabel * _scaleLabel	= nullptr;
 
 		void _onPositionChange( const Vec3f & p_position );
 		void _onRotationChange( const Vec3f & p_euler );
