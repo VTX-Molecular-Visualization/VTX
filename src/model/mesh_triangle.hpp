@@ -43,6 +43,11 @@ namespace VTX
 
 			void print() const;
 
+		  protected:
+			void _computeAABB() const override;
+			void _fillBuffer() override;
+			void _instantiate3DViews() override;
+
 		  private:
 			std::vector<Vec3f>		_vertices;
 			std::vector<Vec3f>		_normals;
@@ -52,10 +57,6 @@ namespace VTX
 
 			MeshTriangle();
 			~MeshTriangle() = default;
-
-			void _computeAABB() const override;
-			void _fillBuffer() override;
-			void _instantiate3DViews() override;
 		};
 	} // namespace Model
 } // namespace VTX

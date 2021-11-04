@@ -172,13 +172,13 @@ namespace VTX
 
 			_texture.create( p_width,
 							 p_height,
-							 GL::Texture2D::InternalFormat::RGBA16F,
+							 GL::Texture2D::InternalFormat::RGB16F,
 							 GL::Texture2D::Wrapping::CLAMP_TO_EDGE,
 							 GL::Texture2D::Wrapping::CLAMP_TO_EDGE,
 							 GL::Texture2D::Filter::NEAREST,
 							 GL::Texture2D::Filter::NEAREST );
 
-			// getOutputFramebuffer().attachTexture( _texture, GL::Framebuffer::Attachment:: );
+			getOutputFramebuffer().attachTexture( _texture, GL::Framebuffer::Attachment::COLOR0 );
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -230,9 +230,10 @@ namespace VTX
 			//_gl->glTextureStorage2D( _texture, 1, GL_RGBA16F, _width, _height );
 			//_gl->glBindTexture( GL_TEXTURE_2D, _texture );
 
+			//_gl->glViewport( 0, 0, _width, _height );
+			_texture.fill( _pixels.data(), GL::Texture2D::Format::RGB, GL::Texture2D::Type::FLOAT );
+
 			getOutputFramebuffer().bind();
-			_gl->glViewport( 0, 0, _width, _height );
-			_texture.fill( _pixels.data(), GL::Texture2D::Format::RGB, GL::Texture2D::Type::UNSIGNED_BYTE );
 			getOutputFramebuffer().setDrawBuffers( { GL::Framebuffer::Attachment::COLOR0 } );
 
 			chrono.stop();
@@ -384,7 +385,7 @@ namespace VTX
 											200.f ) );
 		}
 
-		void RayTracer::_renderTiles( std::vector<uchar> &	   p_image,
+		void RayTracer::_renderTiles( std::vector<float> &	   p_image,
 									  const CameraRayTracing & p_camera,
 									  const uint			   p_nbPixelSamples,
 									  const uint			   p_threadId,
@@ -413,9 +414,9 @@ namespace VTX
 
 						// TODO: fill buffer in the correct order and revert snapshot with stb.
 						const uint pixelId	   = ( x + ( _height - y - 1 ) * _width ) * 3;
-						p_image[ pixelId ]	   = uchar( color.getR() * 255 );
-						p_image[ pixelId + 1 ] = uchar( color.getG() * 255 );
-						p_image[ pixelId + 2 ] = uchar( color.getB() * 255 );
+						p_image[ pixelId ]	   = color.getR(); // * 255.f;
+						p_image[ pixelId + 1 ] = color.getG(); // * 255.f;
+						p_image[ pixelId + 2 ] = color.getB(); // * 255.f;
 					}
 				}
 

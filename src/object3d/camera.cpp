@@ -7,7 +7,6 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		// TODO? (20_05_27): _near, _far, _fov must be initialized in cpp because setting.hpp cannot be included in hpp
 		Camera::Camera() :
 			_near( Util::Math::max( 1e-1f, VTX_RENDER_EFFECT().getCameraNearClip() ) ), // Avoid to little value.
 			_far( Util::Math::max( _near, VTX_RENDER_EFFECT().getCameraFarClip() ) ),
@@ -97,15 +96,7 @@ namespace VTX
 
 		void Camera::_updateProjectionMatrix()
 		{
-			// if ( _isPerspective )
-			//{
 			_projectionMatrix = Util::Math::perspective( Util::Math::radians( _fov ), _aspectRatio, _near, _far );
-			//}
-			// else // Ortho.
-			//{
-			//	// TODO !
-			//}
-
 			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 		}
 

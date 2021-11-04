@@ -95,11 +95,11 @@ namespace VTX
 	const Color::Rgb Setting::LIGHT_COLOR_DEFAULT		= Color::Rgb::WHITE;
 
 	// Camera.
-	const float Setting::CAMERA_NEAR_DEFAULT		= 0.f;
-	const float Setting::CAMERA_NEAR_MIN			= 0.f;
+	const float Setting::CAMERA_NEAR_DEFAULT		= 0.01f;
+	const float Setting::CAMERA_NEAR_MIN			= 0.01f;
 	const float Setting::CAMERA_NEAR_MAX			= 1e4f;
 	const float Setting::CAMERA_FAR_DEFAULT			= 1e4f;
-	const float Setting::CAMERA_FAR_MIN				= 0.f;
+	const float Setting::CAMERA_FAR_MIN				= 0.01f;
 	const float Setting::CAMERA_FAR_MAX				= 1e4f;
 	const float Setting::CAMERA_FOV_DEFAULT			= 45.f;
 	const float Setting::CAMERA_FOV_MIN				= 10.f;

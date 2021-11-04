@@ -3,7 +3,7 @@
 
 namespace VTX::Buffer
 {
-	void Molecule::_generate()
+	void Molecule::generate()
 	{
 		_vboAtomPositions.create();
 		_vboAtomColors.create();
@@ -19,28 +19,24 @@ namespace VTX::Buffer
 		// Position.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_POSITION );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_POSITION, _vboAtomPositions, sizeof( Vec3f ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::ATOM_POSITION, 3, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_POSITION, ATTRIBUTE_LOCATION::ATOM_POSITION );
 
 		// Color.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_COLOR );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_COLOR, _vboAtomColors, sizeof( Color::Rgb ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_COLOR, ATTRIBUTE_LOCATION::ATOM_COLOR );
 
 		// Radius.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_RADIUS );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_RADIUS, _vboAtomRadii, sizeof( float ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::ATOM_RADIUS, 1, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_RADIUS, ATTRIBUTE_LOCATION::ATOM_RADIUS );
 
 		// Visibility.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, _vboAtomVisibilities, sizeof( uint ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat(
 			ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
@@ -48,9 +44,7 @@ namespace VTX::Buffer
 		// Selection.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_SELECTION );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_SELECTION, _vboAtomSelections, sizeof( uint ) );
-		/// TODO: MANDATORY: change namespace hierarchy
-		_vao.setAttributeFormat(
-			ATTRIBUTE_LOCATION::ATOM_SELECTION, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
+		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::ATOM_SELECTION, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_SELECTION, ATTRIBUTE_LOCATION::ATOM_SELECTION );
 	}
 

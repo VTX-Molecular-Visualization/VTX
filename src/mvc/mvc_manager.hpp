@@ -81,7 +81,6 @@ namespace VTX
 
 				delete mvc;
 				delete p_model;
-				
 			}
 
 			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>

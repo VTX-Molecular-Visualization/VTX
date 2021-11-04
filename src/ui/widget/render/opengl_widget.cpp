@@ -12,7 +12,7 @@
 
 namespace VTX::UI::Widget::Render
 {
-	OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : QOpenGLWidget( p_parent ), Generic::BaseOpenGL( nullptr )
+	OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : QOpenGLWidget( p_parent )
 	{
 		QSurfaceFormat format;
 		format.setVersion( OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION );
@@ -74,7 +74,7 @@ namespace VTX::UI::Widget::Render
 		_gl->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
 #endif
 
-		VTX_PROGRAM_MANAGER( _gl );
+		VTX_PROGRAM_MANAGER();
 
 		_frameTimer.start();
 	}
@@ -141,7 +141,7 @@ namespace VTX::UI::Widget::Render
 			assert( _gl != nullptr );
 			if ( _rendererGL == nullptr )
 			{
-				_rendererGL = new Renderer::GL::GL( _gl );
+				_rendererGL = new Renderer::GL::GL();
 				needInit	= true;
 			}
 			_renderer = _rendererGL;
@@ -150,7 +150,7 @@ namespace VTX::UI::Widget::Render
 			assert( _gl != nullptr );
 			if ( _rendererRT == nullptr )
 			{
-				_rendererRT = new Renderer::RayTracer( _gl );
+				_rendererRT = new Renderer::RayTracer();
 				needInit	= true;
 			}
 			_renderer = _rendererRT;

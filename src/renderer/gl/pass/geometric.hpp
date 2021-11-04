@@ -10,11 +10,7 @@ namespace VTX::Renderer::GL::Pass
 	class Geometric : public BasePass
 	{
 	  public:
-		Geometric( OpenGLFunctions * const p_gl ) :
-			BasePass( p_gl ), _fbo( p_gl ), _viewPositionsNormalsCompressedTexture( p_gl ), _colorsTexture( p_gl ),
-			_depthTexture( p_gl )
-		{
-		}
+		Geometric()			 = default;
 		virtual ~Geometric() = default;
 
 		void init( const uint, const uint, const GL & ) override;
@@ -29,10 +25,10 @@ namespace VTX::Renderer::GL::Pass
 		inline const Texture2D & getDepthTexture() const { return _depthTexture; }
 
 	  private:
-		Framebuffer _fbo;
-		Texture2D	_viewPositionsNormalsCompressedTexture;
-		Texture2D	_colorsTexture;
-		Texture2D	_depthTexture;
+		Framebuffer _fbo								   = Framebuffer();
+		Texture2D	_viewPositionsNormalsCompressedTexture = Texture2D();
+		Texture2D	_colorsTexture						   = Texture2D();
+		Texture2D	_depthTexture						   = Texture2D();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

@@ -9,7 +9,7 @@ namespace VTX::Renderer::GL::Pass
 	class FXAA : public BasePass
 	{
 	  public:
-		FXAA( OpenGLFunctions * const p_gl ) : BasePass( p_gl ), _texture( p_gl ) {}
+		FXAA() = default;
 		virtual ~FXAA();
 
 		void init( const uint, const uint, const GL & ) override;
@@ -20,7 +20,7 @@ namespace VTX::Renderer::GL::Pass
 
 	  private:
 		Program * _program = nullptr;
-		Texture2D _texture;
+		Texture2D _texture = Texture2D();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

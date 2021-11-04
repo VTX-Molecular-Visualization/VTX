@@ -18,7 +18,7 @@ namespace VTX::Renderer::GL
 	class GL : public BaseRenderer
 	{
 	  public:
-		GL( OpenGLFunctions * const p_gl );
+		GL();
 		~GL();
 
 		void init( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId ) override;

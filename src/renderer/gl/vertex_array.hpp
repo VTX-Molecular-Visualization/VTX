@@ -43,7 +43,7 @@ namespace VTX::Renderer::GL
 			PATCHES					 = GL_PATCHES
 		};
 
-		VertexArray( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
+		VertexArray() = default;
 		~VertexArray() { _gl->glDeleteVertexArrays( 1, &_id ); }
 
 		inline void create() { _gl->glCreateVertexArrays( 1, &_id ); }

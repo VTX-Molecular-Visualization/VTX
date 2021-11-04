@@ -27,7 +27,7 @@ namespace VTX::Renderer
 	class BaseRenderer : public Generic::BaseOpenGL
 	{
 	  public:
-		BaseRenderer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ), _outputFramebuffer( p_gl ) {}
+		BaseRenderer()			= default;
 		virtual ~BaseRenderer() = default;
 
 		inline const uint			   getWidth() const { return _width; }
@@ -45,16 +45,15 @@ namespace VTX::Renderer
 		virtual void renderFrame( const Object3D::Scene & )		  = 0;
 		virtual void setShading()								  = 0;
 
-		// TODO: why ? because SSAO and AA in RT.
 		virtual void activeSSAO( const bool ) {}
 		virtual void activeOutline( const bool ) {}
 		virtual void activeFog( const bool ) {}
 		virtual void activeAA( const bool ) {}
 
 	  protected:
-		uint			_width	= 0;
-		uint			_height = 0;
-		GL::Framebuffer _outputFramebuffer;
+		uint			_width			   = 0;
+		uint			_height			   = 0;
+		GL::Framebuffer _outputFramebuffer = GL::Framebuffer();
 	};
 } // namespace VTX::Renderer
 

@@ -14,8 +14,8 @@ namespace VTX::View::D3
 	{
 		BaseView3D::render( p_camera );
 
-		_model->getBuffer()->getAABBVao().drawElement( Renderer::GL::VertexArray::DrawMode::LINES,
-													   GLsizei( _model->getBufferAABBIndices().size() ),
-													   Renderer::GL::VertexArray::Type::UNSIGNED_INT );
+		_model->getBuffer()->getVao().drawElement( Renderer::GL::VertexArray::DrawMode::LINES,
+												   GLsizei( _model->getIndices().size() ),
+												   Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 	}
 } // namespace VTX::View::D3

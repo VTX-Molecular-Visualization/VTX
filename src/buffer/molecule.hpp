@@ -14,13 +14,12 @@ namespace VTX
 		class Molecule : public BaseBufferOpenGL
 		{
 		  public:
-			Molecule( OpenGLFunctions * const p_gl ) :
-				BaseBufferOpenGL( p_gl ), _vboAtomPositions( p_gl ), _vboAtomRadii( p_gl ), _vboAtomColors( p_gl ),
-				_vboAtomVisibilities( p_gl ), _vboAtomSelections( p_gl ), _iboBonds( p_gl ), _vao( p_gl ) {};
+			Molecule()	= default;
 			~Molecule() = default;
 
 			const Renderer::GL::VertexArray & getVao() const override { return _vao; }
 
+			void generate() override;
 			void bind() override;
 			void unbind() override;
 
@@ -30,9 +29,6 @@ namespace VTX
 			void setAtomVisibilities( const std::vector<uint> & );
 			void setAtomSelections( const std::vector<uint> & );
 			void setBonds( const std::vector<uint> & );
-
-		  protected:
-			void _generate() override;
 
 		  private:
 			enum ATTRIBUTE_LOCATION
@@ -44,13 +40,13 @@ namespace VTX
 				ATOM_SELECTION	= 4,
 			};
 
-			Renderer::GL::Buffer	  _vboAtomPositions;
-			Renderer::GL::Buffer	  _vboAtomRadii;
-			Renderer::GL::Buffer	  _vboAtomColors;
-			Renderer::GL::Buffer	  _vboAtomVisibilities;
-			Renderer::GL::Buffer	  _vboAtomSelections;
-			Renderer::GL::Buffer	  _iboBonds;
-			Renderer::GL::VertexArray _vao;
+			Renderer::GL::Buffer	  _vboAtomPositions	   = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _vboAtomRadii		   = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _vboAtomColors	   = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _vboAtomVisibilities = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _vboAtomSelections   = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _iboBonds			   = Renderer::GL::Buffer();
+			Renderer::GL::VertexArray _vao				   = Renderer::GL::VertexArray();
 		};
 	} // namespace Buffer
 } // namespace VTX

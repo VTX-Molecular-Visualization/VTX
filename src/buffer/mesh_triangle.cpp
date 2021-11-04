@@ -2,7 +2,7 @@
 
 namespace VTX::Buffer
 {
-	void MeshTriangle::_generate()
+	void MeshTriangle::generate()
 	{
 		_vboPositions.create();
 		_vboNormals.create();
@@ -17,28 +17,24 @@ namespace VTX::Buffer
 		// Position.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_POSITION );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_POSITION, _vboPositions, sizeof( Vec3f ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VERTEX_POSITION, 3, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_POSITION, ATTRIBUTE_LOCATION::VERTEX_POSITION );
 
 		// Normal.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_NORMAL );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_NORMAL, _vboNormals, sizeof( Vec3f ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VERTEX_NORMAL, 3, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_NORMAL, ATTRIBUTE_LOCATION::VERTEX_NORMAL );
 
 		// Color.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_COLOR );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_COLOR, _vboColors, sizeof( Color::Rgb ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VERTEX_COLOR, 3, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_COLOR, ATTRIBUTE_LOCATION::VERTEX_COLOR );
 
 		// Visbility.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, _vboVisibilities, sizeof( uint ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat(
 			ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, Renderer::GL::VertexArray::Type::UNSIGNED_SHORT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );

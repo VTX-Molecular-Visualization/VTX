@@ -65,7 +65,7 @@ namespace VTX::Renderer::GL
 			ALL			= COLOR | DEPTH | STENCIL
 		};
 
-		Framebuffer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
+		Framebuffer() = default;
 
 		~Framebuffer() { destroy(); }
 

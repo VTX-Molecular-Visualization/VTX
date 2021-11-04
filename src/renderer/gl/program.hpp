@@ -12,10 +12,7 @@ namespace VTX::Renderer::GL
 	class Program : public Generic::BaseOpenGL
 	{
 	  public:
-		Program( OpenGLFunctions * const p_gl, const std::vector<IO::FilePath> & p_shaderPaths ) :
-			BaseOpenGL( p_gl ), _shaderPaths( p_shaderPaths )
-		{
-		}
+		Program( const std::vector<IO::FilePath> & p_shaderPaths ) : _shaderPaths( p_shaderPaths ) {}
 		~Program();
 
 		inline const GLuint						 getId() const { return _id; }

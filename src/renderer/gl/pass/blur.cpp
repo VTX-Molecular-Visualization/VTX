@@ -50,7 +50,6 @@ namespace VTX::Renderer::GL::Pass
 
 	void Blur::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
-		// TODO: clean up !!!!!!!!!!!!!!!
 		_fboFirstPass.bind();
 		p_renderer.getPassSSAO().getTexture().bindToUnit( 0 );
 		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 1 );
@@ -62,8 +61,7 @@ namespace VTX::Renderer::GL::Pass
 			_program->setInt( "uBlurSize", VTX_RENDER_EFFECT().getSSAOBlurSize() );
 		}
 
-		/// TODO: rename uInvDirectionTexSize
-		_program->setVec2i( "uInvDirectionTexSize", 1, 0 );
+		_program->setVec2i( "uDirection", 1, 0 );
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 
@@ -72,8 +70,7 @@ namespace VTX::Renderer::GL::Pass
 		_textureFirstPass.bindToUnit( 0 );
 		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 1 );
 
-		/// TODO: rename uInvDirectionTexSize
-		_program->setVec2i( "uInvDirectionTexSize", 0, 1 );
+		_program->setVec2i( "uDirection", 0, 1 );
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 	}

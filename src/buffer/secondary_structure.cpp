@@ -2,7 +2,7 @@
 
 namespace VTX::Buffer
 {
-	void SecondaryStructure::_generate()
+	void SecondaryStructure::generate()
 	{
 		_vboPositions.create();
 		_vboDirections.create();
@@ -19,7 +19,6 @@ namespace VTX::Buffer
 		// Control point position.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, _vboPositions, sizeof( Vec4f ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat(
 			ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, 4, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION,
@@ -28,7 +27,6 @@ namespace VTX::Buffer
 		// Control point direction.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, _vboDirections, sizeof( Vec3f ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat(
 			ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, 3, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION,
@@ -38,7 +36,6 @@ namespace VTX::Buffer
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
 		_vao.setVertexBuffer(
 			ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, _vboSecondaryStructures, sizeof( uint ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat(
 			ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE,
@@ -47,14 +44,12 @@ namespace VTX::Buffer
 		// Control point color.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, _vboColors, sizeof( Color::Rgb ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
 
 		// Control point visibility.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY, _vboVisibilities, sizeof( uint ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat(
 			ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY,
@@ -63,7 +58,6 @@ namespace VTX::Buffer
 		// Control point selection.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, _vboSelections, sizeof( uint ) );
-		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat(
 			ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION,

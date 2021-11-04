@@ -10,7 +10,7 @@ namespace VTX::Renderer::GL::Pass
 	class Outline : public BasePass
 	{
 	  public:
-		Outline( OpenGLFunctions * const p_gl ) : BasePass( p_gl ), _fbo( p_gl ), _texture( p_gl ) {}
+		Outline()		   = default;
 		virtual ~Outline() = default;
 
 		void init( const uint, const uint, const GL & ) override;
@@ -21,9 +21,9 @@ namespace VTX::Renderer::GL::Pass
 		inline const Framebuffer & getFbo() const { return _fbo; }
 
 	  private:
-		Framebuffer _fbo;
-		Texture2D	_texture;
 		Program *	_program = nullptr;
+		Framebuffer _fbo	 = Framebuffer();
+		Texture2D	_texture = Texture2D();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

@@ -14,7 +14,7 @@ namespace VTX
 			inline void _unlock() { _mutex.unlock(); }
 
 		  private:
-			QMutex _mutex;
+			QMutex _mutex = QMutex( QMutex::Recursive );
 		};
 	} // namespace Generic
 } // namespace VTX

@@ -31,9 +31,9 @@ namespace VTX
 			using MapStringToGLuint	  = std::map<std::string, GLuint>;
 			using PairStringToGLuint  = std::pair<const std::string, GLuint>;
 
-			inline static ProgramManager & get( OpenGLFunctions * const p_gl = nullptr )
+			inline static ProgramManager & get()
 			{
-				static ProgramManager instance( p_gl );
+				static ProgramManager instance;
 				return instance;
 			}
 
@@ -52,7 +52,7 @@ namespace VTX
 			MapStringToProgram _programs = MapStringToProgram();
 			MapStringToGLuint  _shaders	 = MapStringToGLuint();
 
-			ProgramManager( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
+			ProgramManager() = default;
 			~ProgramManager();
 
 			GLuint		_createShader( const IO::FilePath & );
@@ -60,10 +60,7 @@ namespace VTX
 		};
 	} // namespace Renderer::GL
 
-	inline Renderer::GL::ProgramManager & VTX_PROGRAM_MANAGER( OpenGLFunctions * const p_gl = nullptr )
-	{
-		return Renderer::GL::ProgramManager::get( p_gl );
-	}
+	inline Renderer::GL::ProgramManager & VTX_PROGRAM_MANAGER() { return Renderer::GL::ProgramManager::get(); }
 } // namespace VTX
 
 #endif

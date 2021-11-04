@@ -22,7 +22,7 @@ namespace VTX
 			class CameraRayTracing;
 
 		  public:
-			RayTracer( OpenGLFunctions * const p_gl ) : BaseRenderer( p_gl ), _texture( p_gl ) {}
+			RayTracer()	 = default;
 			~RayTracer() = default;
 
 			virtual void init( const uint, const uint, const GLuint p_outputFramebufferId ) override;
@@ -30,12 +30,12 @@ namespace VTX
 			virtual void setShading() override;
 			virtual void resize( const uint, const uint, const GLuint ) override;
 
-			const inline std::vector<uchar> & getPixels() const { return _pixels; }
+			const inline std::vector<float> & getPixels() const { return _pixels; }
 
 		  private:
 			void _initScene( const Object3D::Scene & );
 
-			void _renderTiles( std::vector<uchar> &		p_image,
+			void _renderTiles( std::vector<float> &		p_image,
 							   const CameraRayTracing & p_camera,
 							   const uint				p_nbPixelSamples,
 							   const uint				p_threadId,
@@ -55,9 +55,9 @@ namespace VTX
 			BaseIntegrator *  _aoIntegrator = nullptr;
 
 			Scene			   _scene;
-			std::vector<uchar> _pixels = std::vector<uchar>();
+			std::vector<float> _pixels = std::vector<float>();
 
-			GL::Texture2D _texture;
+			GL::Texture2D _texture = GL::Texture2D();
 
 			// TODO: keep gamma as float ?
 			float _gamma = 1.f;
