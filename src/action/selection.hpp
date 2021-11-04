@@ -782,7 +782,9 @@ namespace VTX::Action::Selection
 
 		virtual void execute() override
 		{
-			const Math::AABB target = _selection.isEmpty() ? VTXApp::get().getScene().getAABB() : _selection.getAABB();
+			const Math::AABB target
+				= _selection.hasMolecule() ? _selection.getAABB() : VTXApp::get().getScene().getAABB();
+
 			VTXApp::get()
 				.getStateMachine()
 				.getState<State::Visualization>( ID::State::VISUALIZATION )

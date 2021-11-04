@@ -6,7 +6,7 @@
 namespace VTX::UI::Widget::Inspector
 {
 	MultipleViewpointWidget::MultipleViewpointWidget( QWidget * p_parent ) :
-		MultipleModelInspectorWidget( p_parent, ID::View::UI_INSPECTOR_ATOM ) {};
+		MultipleModelInspectorWidget( p_parent, ID::View::UI_INSPECTOR_VIEWPOINT ) {};
 
 	MultipleViewpointWidget::~MultipleViewpointWidget() {}
 
@@ -64,7 +64,7 @@ namespace VTX::UI::Widget::Inspector
 				= QString::fromStdString( "Viewpoint (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
-			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( ID::Model::MODEL_ATOM );
+			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( ID::Model::MODEL_VIEWPOINT );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
 			for ( const Model::Viewpoint * viewpoint : targets )
