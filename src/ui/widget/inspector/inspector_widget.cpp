@@ -1,10 +1,20 @@
 #include "inspector_widget.hpp"
+#include "model/atom.hpp"
+#include "model/chain.hpp"
+#include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
 #include "model/representation/representation_library.hpp"
+#include "model/residue.hpp"
 #include "model/selection.hpp"
+#include "model/viewpoint.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
+#include "ui/widget/inspector/multiple_atom_inspector_widget.hpp"
+#include "ui/widget/inspector/multiple_chain_inspector_widget.hpp"
+#include "ui/widget/inspector/multiple_molecule_inspector_widget.hpp"
+#include "ui/widget/inspector/multiple_residue_inspector_widget.hpp"
+#include "ui/widget/inspector/multiple_viewpoint_inspector_widget.hpp"
 #include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
@@ -55,11 +65,15 @@ namespace VTX::UI::Widget::Inspector
 		_residuesInspector
 			= WidgetFactory::get().instantiateWidget<MultipleResidueWidget>( this, "multipleResidueInspector" );
 		_atomsInspector = WidgetFactory::get().instantiateWidget<MultipleAtomWidget>( this, "multipleAtomInspector" );
+		_viewpointsInspector
+			= WidgetFactory::get().instantiateWidget<MultipleViewpointWidget>( this, "multipleViewpointInspector" );
 
 		_verticalLayout->addWidget( _moleculesInspector );
 		_verticalLayout->addWidget( _chainsInspector );
 		_verticalLayout->addWidget( _residuesInspector );
 		_verticalLayout->addWidget( _atomsInspector );
+		_verticalLayout->addWidget( _viewpointsInspector );
+
 		_verticalLayout->addStretch( 1000 );
 
 		setWidget( _scrollArea );
@@ -124,6 +138,12 @@ namespace VTX::UI::Widget::Inspector
 					}
 				}
 			}
+			else if ( modelTypeID == ID::Model::MODEL_VIEWPOINT )
+			{
+				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
+				_viewpointsInspector->addTarget( &viewpoint );
+				_viewpointsInspector->setVisible( true );
+			}
 		}
 
 		if ( _moleculesInspector->isVisible() )
@@ -134,6 +154,8 @@ namespace VTX::UI::Widget::Inspector
 			_residuesInspector->refresh();
 		if ( _atomsInspector->isVisible() )
 			_atomsInspector->refresh();
+		if ( _viewpointsInspector->isVisible() )
+			_viewpointsInspector->refresh();
 	}
 
 	void InspectorWidget::clear()
@@ -146,6 +168,8 @@ namespace VTX::UI::Widget::Inspector
 		_residuesInspector->setVisible( false );
 		_atomsInspector->clearTargets();
 		_atomsInspector->setVisible( false );
+		_viewpointsInspector->clearTargets();
+		_viewpointsInspector->setVisible( false );
 
 		_inspectorViewsData.clear();
 	}
