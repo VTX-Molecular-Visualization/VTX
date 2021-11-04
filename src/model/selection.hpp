@@ -202,6 +202,19 @@ namespace VTX::Model
 		Math::AABB					   getAABB() const;
 		const Model::BaseModel * const getCurrentObject();
 
+		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		void getItemsOfType( const ID::VTX_ID & p_itemType, std::set<T *> & p_items ) const
+		{
+			for ( const Model::ID & itemID : _items )
+			{
+				if ( MVC::MvcManager::get().getModelTypeID( itemID ) == p_itemType )
+				{
+					T & item = MVC::MvcManager::get().getModel<T>( itemID );
+					p_items.emplace( &item );
+				}
+			}
+		}
+
 	  protected:
 		Selection() : BaseModel( ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
 		~Selection() = default;
@@ -209,8 +222,8 @@ namespace VTX::Model
 		void _notifyDataChanged();
 
 	  private:
-		std::set<Model::ID> _items = std::set<Model::ID>();
-		MapMoleculeIds _moleculesMap = MapMoleculeIds();
+		std::set<Model::ID> _items		  = std::set<Model::ID>();
+		MapMoleculeIds		_moleculesMap = MapMoleculeIds();
 
 		std::map<Model::ID, Math::AABB> _mapSelectionAABB = std::map<Model::ID, Math::AABB>();
 		const Model::BaseModel *		_currentObject	  = nullptr;

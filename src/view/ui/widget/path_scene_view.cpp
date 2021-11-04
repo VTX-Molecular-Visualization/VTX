@@ -9,6 +9,7 @@
 #include "ui/contextual_menu.hpp"
 #include "ui/mime_type.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_selection.hpp"
+#include "ui/widget/scene/scene_item_selection_model.hpp"
 #include "ui/widget/scene/scene_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/string.hpp"
@@ -87,19 +88,25 @@ namespace VTX::View::UI::Widget
 
 	void PathSceneView::_fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection )
 	{
-		for ( const Model::ID & selectedItemID : p_selection.getItems() )
+		std::set<Model::Viewpoint *> viewpoints = std::set<Model::Viewpoint *>();
+		p_selection.getItemsOfType( ID::Model::MODEL_VIEWPOINT, viewpoints );
+
+		bool pathItemAdded = false;
+
+		for ( Model::Viewpoint * const viewpoint : viewpoints )
 		{
-			const ID::VTX_ID & itemTypeID = MVC::MvcManager::get().getModelTypeID( selectedItemID );
-			if ( itemTypeID == ID::Model::MODEL_VIEWPOINT )
+			if ( viewpoint->getPathPtr() != _model )
+				continue;
+
+			if ( !pathItemAdded )
 			{
-				const Model::Viewpoint & viewpoint
-					= MVC::MvcManager::get().getModel<Model::Viewpoint>( selectedItemID );
-
-				const QTreeWidgetItem * const viewpointItem	 = _itemFromViewpoint( viewpoint );
-				const QModelIndex			  viewpointIndex = indexFromItem( viewpointItem );
-
-				p_itemSelection.append( QItemSelectionRange( viewpointIndex, viewpointIndex ) );
+				QTreeWidgetItem * const pathItem = topLevelItem( 0 );
+				p_itemSelection.append( QItemSelectionRange( indexFromItem( pathItem ) ) );
+				pathItemAdded = true;
 			}
+
+			QTreeWidgetItem * const viewpointItem = _findItemFromModelID( viewpoint->getId() );
+			p_itemSelection.append( QItemSelectionRange( indexFromItem( viewpointItem ) ) );
 		}
 	}
 
@@ -202,148 +209,6 @@ namespace VTX::View::UI::Widget
 		// Clamp size
 		if ( p_name.size() > Style::MOLECULE_NAME_MAXIMUM_SIZE )
 			p_name = p_name.substr( 0, Style::MOLECULE_NAME_MAXIMUM_SIZE );
-	}
-	void PathSceneView::_refreshSelection( const Model::Selection & p_selection )
-	{
-		// const Model::Selection::MapMoleculeIds &			   items = p_selection.getItems();
-		// const Model::Selection::MapMoleculeIds::const_iterator itMoleculeItem
-		//	= p_selection.getItems().find( _model->getId() );
-
-		//_enableSignals( false );
-		// QItemSelection selection = QItemSelection();
-
-		// if ( itMoleculeItem != p_selection.getItems().end() )
-		//{
-		//	QTreeWidgetItem * const moleculeItem = _getMoleculeTreeWidgetItem();
-		//	selection.append( QItemSelectionRange( indexFromItem( moleculeItem ) ) );
-
-		//	if ( moleculeItem->isExpanded() )
-		//	{
-		//		const Model::Chain * topChain			  = nullptr;
-		//		const Model::Chain * previousChain		  = nullptr;
-		//		QModelIndex			 topChainItemIndex	  = QModelIndex();
-		//		QModelIndex			 bottomChainItemIndex = QModelIndex();
-
-		//		for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : itMoleculeItem->second )
-		//		{
-		//			const Model::Chain & chain = *_model->getChain( pairChain.first );
-
-		//			QTreeWidgetItem * const chainItem = moleculeItem->child( chain.getIndex() );
-
-		//			if ( topChainItemIndex.isValid() )
-		//			{
-		//				// if not contiguous, add new range
-		//				if ( chain.getIndex() != uint( previousChain->getIndex() + 1 ) )
-		//				{
-		//					selection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
-		//					topChainItemIndex = indexFromItem( chainItem );
-		//					topChain		  = &chain;
-		//				}
-
-		//				bottomChainItemIndex = indexFromItem( chainItem );
-		//			}
-		//			else
-		//			{
-		//				topChainItemIndex	 = indexFromItem( chainItem );
-		//				topChain			 = &chain;
-		//				bottomChainItemIndex = indexFromItem( chainItem );
-		//			}
-
-		//			previousChain = &chain;
-
-		//			if ( !chainItem->isExpanded() )
-		//				continue;
-
-		//			const Model::Residue * topResidue			  = nullptr;
-		//			const Model::Residue * previousResidue		  = nullptr;
-		//			QModelIndex			   topResidueItemIndex	  = QModelIndex();
-		//			QModelIndex			   bottomResidueItemIndex = QModelIndex();
-		//			for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
-		//			{
-		//				const Model::Residue &	residue = *_model->getResidue( pairResidue.first );
-		//				QTreeWidgetItem * const residueItem
-		//					= chainItem->child( residue.getIndex() - chain.getIndexFirstResidue() );
-
-		//				if ( topResidueItemIndex.isValid() )
-		//				{
-		//					// if not contiguous, add new range
-		//					if ( residue.getIndex() != uint( previousResidue->getIndex() + 1 ) )
-		//					{
-		//						selection.append( QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex )
-		//); 						topResidueItemIndex = indexFromItem( residueItem ); topResidue = &residue;
-		//					}
-
-		//					bottomResidueItemIndex = indexFromItem( residueItem );
-		//				}
-		//				else
-		//				{
-		//					topResidueItemIndex	   = indexFromItem( residueItem );
-		//					topResidue			   = &residue;
-		//					bottomResidueItemIndex = indexFromItem( residueItem );
-		//				}
-
-		//				previousResidue = &residue;
-
-		//				if ( !residueItem->isExpanded() )
-		//					continue;
-
-		//				const Model::Atom * topAtom				= nullptr;
-		//				const Model::Atom * previousAtom		= nullptr;
-		//				QModelIndex			topAtomItemIndex	= QModelIndex();
-		//				QModelIndex			bottomAtomItemIndex = QModelIndex();
-		//				for ( const uint & atomId : pairResidue.second )
-		//				{
-		//					const Model::Atom &		atom = *_model->getAtom( atomId );
-		//					QTreeWidgetItem * const atomItem
-		//						= residueItem->child( atomId - residue.getIndexFirstAtom() );
-
-		//					if ( topAtomItemIndex.isValid() )
-		//					{
-		//						// if not contiguous, add new range
-		//						if ( atom.getIndex() != uint( previousAtom->getIndex() + 1 ) )
-		//						{
-		//							selection.append( QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex )
-		//); 							topAtom			 = &atom; 							topAtomItemIndex =
-		// indexFromItem( atomItem
-		//);
-		//						}
-
-		//						bottomAtomItemIndex = indexFromItem( atomItem );
-		//					}
-		//					else
-		//					{
-		//						topAtomItemIndex	= indexFromItem( atomItem );
-		//						topAtom				= &atom;
-		//						bottomAtomItemIndex = indexFromItem( atomItem );
-		//					}
-
-		//					previousAtom = &atom;
-		//				}
-		//				if ( topAtomItemIndex.isValid() )
-		//				{
-		//					selection.append( QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
-		//				}
-		//			}
-
-		//			if ( topResidueItemIndex.isValid() )
-		//			{
-		//				selection.append( QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
-		//			}
-		//		}
-
-		//		if ( topChainItemIndex.isValid() )
-		//		{
-		//			selection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
-		//		}
-		//	}
-		//}
-
-		// VTX::UI::Widget::Scene::MoleculeSelectionModel * const selectModel
-		//	= dynamic_cast<VTX::UI::Widget::Scene::MoleculeSelectionModel * const>( selectionModel() );
-
-		// selectModel->refreshSelection( selection );
-
-		//_enableSignals( true );
 	}
 
 	QMimeData * PathSceneView::_getDataForDrag() { return VTX::UI::MimeType::generatePathData( *_model ); }

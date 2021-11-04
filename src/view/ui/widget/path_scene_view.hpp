@@ -66,8 +66,6 @@ namespace VTX::View::UI::Widget
 		void			  _removeViewpoint( const Model::Viewpoint * const p_viewpoint );
 
 		void _reformatName( std::string & p_name ) const;
-
-		void _refreshSelection( const Model::Selection & p_selection );
 	};
 
 } // namespace VTX::View::UI::Widget

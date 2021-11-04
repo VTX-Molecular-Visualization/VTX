@@ -102,8 +102,10 @@ namespace VTX::Action::Selection
 				}
 				else if ( modelTypeId == ID::Model::MODEL_PATH )
 				{
-					Model::Path & model = MVC::MvcManager::get().getModel<Model::Path>( modelId );
-					paths.emplace_back( &model );
+					Model::Path & path = MVC::MvcManager::get().getModel<Model::Path>( modelId );
+
+					for ( Model::Viewpoint * const viewpoint : path.getViewpoints() )
+						viewpoints.emplace_back( viewpoint );
 				}
 				else if ( modelTypeId == ID::Model::MODEL_VIEWPOINT )
 				{
@@ -883,7 +885,7 @@ namespace VTX::Action::Selection
 		{
 			std::vector<Model::Molecule *> moleculesToDelete = std::vector<Model::Molecule *>();
 
-			const std::set<Model::ID>		   itemsToDeleteCopy	   = _selection.getItems();
+			const std::set<Model::ID>		 itemsToDeleteCopy		 = _selection.getItems();
 			Model::Selection::MapMoleculeIds moleculeMapToDeleteCopy = _selection.getMoleculesMap();
 			_selection.clear();
 
