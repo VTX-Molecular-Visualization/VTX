@@ -125,6 +125,7 @@ namespace VTX
 			const VTX_ID ORBIT	   = "ORBIT";
 			const VTX_ID SHORTCUT  = "SHORCUT";
 			const VTX_ID VESSEL	   = "VESSEL";
+			const VTX_ID PICKER	   = "PICKER";
 		} // namespace Controller
 	}	  // namespace ID
 

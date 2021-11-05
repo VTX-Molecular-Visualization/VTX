@@ -1,12 +1,4 @@
 #include "base_camera_controller.hpp"
-#include "object3d/camera.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/render/opengl_widget.hpp"
-#include "vtx_app.hpp"
-#include <QCursor>
-#include <QPoint>
-#include <QRect>
-#include <QWidget>
 
 namespace VTX::Controller
 {
@@ -32,14 +24,5 @@ namespace VTX::Controller
 		{
 			_updateInputs( p_deltaTime );
 		}
-	}
-
-	bool BaseCameraController::_mouseHoveringRenderWidget() const
-	{
-		const QWidget & renderWidget  = VTXApp::get().getMainWindow().getOpenGLWidget();
-		const QRect &	renderRect	  = renderWidget.contentsRect();
-		const QPoint	localMousePos = renderWidget.mapFromGlobal( QCursor::pos() );
-
-		return renderRect.contains( localMousePos );
 	}
 } // namespace VTX::Controller

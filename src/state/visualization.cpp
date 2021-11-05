@@ -1,5 +1,6 @@
 #include "visualization.hpp"
 #include "controller/freefly.hpp"
+#include "controller/picker.hpp"
 #include "controller/shortcut.hpp"
 #include "controller/trackball.hpp"
 #include "event/event.hpp"
@@ -28,26 +29,21 @@ namespace VTX
 															 VTXApp::get().getScene().getAABB().centroid(),
 															 VTXApp::get().getScene().getAABB().diameter() ) );
 			_controllers.emplace( ID::Controller::SHORTCUT, new Controller::Shortcut() );
+			_controllers.emplace( ID::Controller::PICKER, new Controller::Picker() );
 		}
 
-		void Visualization::enter( void * const )
+		void Visualization::enter( void * const p_arg )
 		{
+			BaseState::enter( p_arg );
+
 			if ( _cameraController == ID::Controller::FREEFLY )
 			{
 				getController<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( false );
-				getController<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( true );
 			}
 			else
 			{
 				getController<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( false );
-				getController<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( true );
 			}
-		}
-
-		void Visualization::exit()
-		{
-			getController<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( false );
-			getController<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( false );
 		}
 
 		void Visualization::update( const float & p_deltaTime )

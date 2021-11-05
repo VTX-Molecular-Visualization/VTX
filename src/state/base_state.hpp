@@ -30,8 +30,21 @@ namespace VTX
 				return dynamic_cast<T * const>( _controllers[ p_id ] );
 			}
 
-			virtual void enter( void * const ) = 0;
-			virtual void exit()				   = 0;
+			virtual void enter( void * const )
+			{
+				for ( const std::pair<const ID::VTX_ID, Controller::BaseController * const> & pair : _controllers )
+				{
+					pair.second->setActive( true );
+				}
+			}
+
+			virtual void exit()
+			{
+				for ( const std::pair<const ID::VTX_ID, Controller::BaseController * const> & pair : _controllers )
+				{
+					pair.second->setActive( false );
+				}
+			}
 
 			virtual void BaseState::update( const float & p_deltaTime ) override
 			{
