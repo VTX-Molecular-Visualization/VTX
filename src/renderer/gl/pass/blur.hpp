@@ -10,10 +10,7 @@ namespace VTX::Renderer::GL::Pass
 	class Blur : public BasePass
 	{
 	  public:
-		Blur( OpenGLFunctions * const p_gl ) :
-			BasePass( p_gl ), _fboFirstPass( p_gl ), _fbo( p_gl ), _textureFirstPass( p_gl ), _texture( p_gl )
-		{
-		}
+		Blur()			= default;
 		virtual ~Blur() = default;
 
 		void init( const uint, const uint, const GL & ) override;
@@ -25,11 +22,11 @@ namespace VTX::Renderer::GL::Pass
 		void clearTexture();
 
 	  private:
-		Program *	_program = nullptr;
-		Framebuffer _fboFirstPass;
-		Framebuffer _fbo;
-		Texture2D	_textureFirstPass;
-		Texture2D	_texture;
+		Program *	_program		  = nullptr;
+		Framebuffer _fboFirstPass	  = Framebuffer();
+		Framebuffer _fbo			  = Framebuffer();
+		Texture2D	_textureFirstPass = Texture2D();
+		Texture2D	_texture		  = Texture2D();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

@@ -1,6 +1,7 @@
 #ifndef __VTX_MVC_MANAGER__
 #define __VTX_MVC_MANAGER__
 
+#include "generic/base_lockable.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"
 #include "mvc_data.hpp"
@@ -13,7 +14,7 @@ namespace VTX
 {
 	namespace MVC
 	{
-		class MvcManager final
+		class MvcManager : public Generic::BaseLockable
 		{
 		  public:
 			inline static MvcManager & get()
@@ -29,9 +30,10 @@ namespace VTX
 				M * const		model = new M();
 				MvcData * const mvc	  = new MvcData( model );
 
+				_lock();
 				_container.emplace( model->getId(), mvc );
-
 				model->_instantiateDefaultViews();
+				_unlock();
 
 				return model;
 			}
@@ -42,9 +44,10 @@ namespace VTX
 				M * const		model = new M( p_param1 );
 				MvcData * const mvc	  = new MvcData( model );
 
+				_lock();
 				_container.emplace( model->getId(), mvc );
-
 				model->_instantiateDefaultViews();
+				_unlock();
 
 				return model;
 			}
@@ -55,9 +58,10 @@ namespace VTX
 				M * const		model = new M( p_param1 );
 				MvcData * const mvc	  = new MvcData( model );
 
+				_lock();
 				_container.emplace( model->getId(), mvc );
-
 				model->_instantiateDefaultViews();
+				_unlock();
 
 				return model;
 			}
@@ -65,8 +69,10 @@ namespace VTX
 			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			void deleteModel( M * const & p_model )
 			{
+				_lock();
 				const MvcData * const mvc = _container[ p_model->getId() ];
 				_container.erase( p_model->getId() );
+				_unlock();
 
 				for ( const std::pair<ID::VTX_ID, View::BaseView<Model::BaseModel> *> & pair : mvc->getViews() )
 				{
@@ -116,9 +122,11 @@ namespace VTX
 					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
 			inline V * const instantiateView( M * const p_model, const ID::VTX_ID & p_id )
 			{
+				_lock();
 				V * const view = new V( p_model );
-
 				static_cast<MvcData *>( _container[ p_model->getId() ] )->addView<M, V>( p_id, view );
+				_unlock();
+
 				return view;
 			}
 
@@ -130,8 +138,11 @@ namespace VTX
 													const ID::VTX_ID & p_id,
 													QWidget * const	   p_parentWidget = nullptr )
 			{
+				_lock();
 				V * const view = new V( p_model, p_parentWidget );
 				static_cast<MvcData *>( _container[ p_model->getId() ] )->addView<M, V>( p_id, view );
+				_unlock();
+
 				return view;
 			}
 
@@ -150,12 +161,16 @@ namespace VTX
 					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
 			inline void deleteView( const M * const p_model, const ID::VTX_ID & p_id )
 			{
+				_lock();
 				delete static_cast<MvcData *>( _container[ p_model->getId() ] )->removeView<M, V>( p_id );
+				_unlock();
 			}
 
 			inline void deleteView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id )
 			{
+				_lock();
 				delete _container[ p_model->getId() ]->removeView( p_id );
+				_unlock();
 			}
 
 			inline const bool hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id )
@@ -166,7 +181,9 @@ namespace VTX
 
 			inline void notifyViews( const Model::BaseModel * const p_caller, const Event::VTXEvent * const p_event )
 			{
+				_lock();
 				_container[ p_caller->getId() ]->notifyViews( p_event );
+				_unlock();
 			}
 
 		  private:

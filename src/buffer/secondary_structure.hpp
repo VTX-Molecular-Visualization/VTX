@@ -14,14 +14,12 @@ namespace VTX
 		class SecondaryStructure : public BaseBufferOpenGL
 		{
 		  public:
-			SecondaryStructure( OpenGLFunctions * const p_gl ) :
-				BaseBufferOpenGL( p_gl ), _vboPositions( p_gl ), _vboDirections( p_gl ),
-				_vboSecondaryStructures( p_gl ), _vboColors( p_gl ), _vboVisibilities( p_gl ), _vboSelections( p_gl ),
-				_ibo( p_gl ), _vao( p_gl ) {};
+			SecondaryStructure()  = default;
 			~SecondaryStructure() = default;
 
 			const Renderer::GL::VertexArray & getVao() const override { return _vao; }
 
+			void generate() override;
 			void bind() override;
 			void unbind() override;
 
@@ -32,9 +30,6 @@ namespace VTX
 			void setControlPointVisibilities( const std::vector<uint> & );
 			void setControlPointSelections( const std::vector<uint> & );
 			void setIndices( const std::vector<uint> & );
-
-		  protected:
-			void _generate() override;
 
 		  private:
 			enum ATTRIBUTE_LOCATION
@@ -47,14 +42,14 @@ namespace VTX
 				CONTROL_POINT_SELECTION			  = 5,
 			};
 
-			Renderer::GL::Buffer	  _vboPositions;
-			Renderer::GL::Buffer	  _vboDirections;
-			Renderer::GL::Buffer	  _vboSecondaryStructures;
-			Renderer::GL::Buffer	  _vboColors;
-			Renderer::GL::Buffer	  _vboVisibilities;
-			Renderer::GL::Buffer	  _vboSelections;
-			Renderer::GL::Buffer	  _ibo;
-			Renderer::GL::VertexArray _vao;
+			Renderer::GL::Buffer	  _vboPositions			  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _vboDirections		  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _vboSecondaryStructures = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _vboColors			  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _vboVisibilities		  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _vboSelections		  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _ibo					  = Renderer::GL::Buffer();
+			Renderer::GL::VertexArray _vao					  = Renderer::GL::VertexArray();
 		};
 	} // namespace Buffer
 } // namespace VTX

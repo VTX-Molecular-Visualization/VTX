@@ -10,7 +10,7 @@ namespace VTX::Renderer::GL::Pass
 	class Selection : public BasePass
 	{
 	  public:
-		Selection( OpenGLFunctions * const p_gl ) : BasePass( p_gl ), _fbo( p_gl ), _texture( p_gl ) {}
+		Selection()			 = default;
 		virtual ~Selection() = default;
 
 		void init( const uint, const uint, const GL & ) override;
@@ -23,9 +23,9 @@ namespace VTX::Renderer::GL::Pass
 		void updateOutputFBO( const GL & );
 
 	  private:
-		Framebuffer _fbo;
-		Texture2D	_texture;
 		Program *	_program = nullptr;
+		Framebuffer _fbo	 = Framebuffer();
+		Texture2D	_texture = Texture2D();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

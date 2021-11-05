@@ -22,7 +22,7 @@ namespace VTX::Renderer::GL
 			DYNAMIC_READ = GL_DYNAMIC_READ,
 			DYNAMIC_COPY = GL_DYNAMIC_COPY
 		};
-		Buffer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
+		Buffer() = default;
 		~Buffer() { _gl->glDeleteBuffers( 1, &_id ); }
 
 		inline void create() { _gl->glCreateBuffers( 1, &_id ); }

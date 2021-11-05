@@ -35,6 +35,7 @@ namespace VTX
 			{
 				if ( !_aabb.isValid() )
 					_computeAABB();
+
 				return _aabb;
 			}
 			inline virtual const Math::AABB & getWorldAABB() const
@@ -44,11 +45,9 @@ namespace VTX
 
 				return _worldAabb;
 			}
-			inline const B * const			  getBuffer() const { return _buffer; }
-			inline B * const				  getBuffer() { return _buffer; }
-			inline const std::vector<Vec3f> & getBufferAABBCorners() const { return _bufferAABBCorners; }
-			inline const std::vector<uint> &  getBufferAABBIndices() const { return _bufferAABBIndices; }
-			inline bool						  isInit() const { return _isInit; }
+			inline const B * const getBuffer() const { return _buffer; }
+			inline B * const	   getBuffer() { return _buffer; }
+			inline bool			   isInit() const { return _isInit; }
 
 			inline void referenceLinkedAABB( Math::AABB * const p_aabb ) { _linkedAABBs.emplace( p_aabb ); }
 
@@ -84,24 +83,13 @@ namespace VTX
 					renderable->render( p_camera );
 				}
 				_buffer->unbind();
-
-				if ( _viewBox != nullptr )
-				{
-					_buffer->bindAABB();
-					_viewBox->render( p_camera );
-					_buffer->unbindAABB();
-				}
 			}
-			void init( OpenGLFunctions * const p_gl )
+			void init()
 			{
-				_buffer = new B( p_gl );
+				_buffer = new B();
 				_buffer->generate();
 
 				_init();
-
-				_computeAABB();
-				_fillBufferAABB();
-
 				_fillBuffer();
 				_instantiate3DViews();
 
@@ -112,12 +100,9 @@ namespace VTX
 		  protected:
 			mutable Math::AABB					   _aabb;
 			mutable Math::AABB					   _worldAabb;
-			std::vector<Generic::BaseRenderable *> _renderables		  = std::vector<Generic::BaseRenderable *>();
-			B *									   _buffer			  = nullptr;
-			bool								   _isInit			  = false;
-			std::vector<Vec3f>					   _bufferAABBCorners = std::vector<Vec3f>();
-			std::vector<uint>					   _bufferAABBIndices = std::vector<uint>();
-			Generic::BaseRenderable *			   _viewBox			  = nullptr;
+			std::vector<Generic::BaseRenderable *> _renderables = std::vector<Generic::BaseRenderable *>();
+			B *									   _buffer		= nullptr;
+			bool								   _isInit		= false;
 
 			std::unordered_set<Math::AABB *> _linkedAABBs = std::unordered_set<Math::AABB *>();
 
@@ -161,27 +146,6 @@ namespace VTX
 			{
 				p_renderable->init();
 				_renderables.push_back( p_renderable );
-			}
-
-			virtual void _fillBufferAABB()
-			{
-				const Vec3f & min = _aabb.getMin();
-				const Vec3f & max = _aabb.getMax();
-
-				_bufferAABBCorners = std::vector<Vec3f>( { min,
-														   Vec3f( max.x, min.y, min.z ),
-														   Vec3f( max.x, max.y, min.z ),
-														   Vec3f( min.x, max.y, min.z ),
-														   Vec3f( min.x, min.y, max.z ),
-														   Vec3f( max.x, min.y, max.z ),
-														   max,
-														   Vec3f( min.x, max.y, max.z ) } );
-
-				_bufferAABBIndices
-					= std::vector<uint>( { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 } );
-
-				_buffer->setAABBCorners( _bufferAABBCorners );
-				_buffer->setAABBIndices( _bufferAABBIndices );
 			}
 		};
 	} // namespace Model

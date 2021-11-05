@@ -10,9 +10,7 @@ namespace VTX::Renderer::GL::Pass
 	class SSAO : public BasePass
 	{
 	  public:
-		SSAO( OpenGLFunctions * const p_gl ) : BasePass( p_gl ), _fbo( p_gl ), _texture( p_gl ), _noiseTexture( p_gl )
-		{
-		}
+		SSAO()			= default;
 		virtual ~SSAO() = default;
 
 		void init( const uint, const uint, const GL & ) override;
@@ -22,10 +20,10 @@ namespace VTX::Renderer::GL::Pass
 		inline const Texture2D & getTexture() const { return _texture; }
 
 	  private:
-		Program *		   _program = nullptr;
-		Framebuffer		   _fbo;
-		Texture2D		   _texture;
-		Texture2D		   _noiseTexture;
+		Program *		   _program			 = nullptr;
+		Framebuffer		   _fbo				 = Framebuffer();
+		Texture2D		   _texture			 = Texture2D();
+		Texture2D		   _noiseTexture	 = Texture2D();
 		uint			   _kernelSize		 = 16;
 		uint			   _noiseTextureSize = 64;
 		std::vector<Vec3f> _aoKernel;

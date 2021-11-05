@@ -7,7 +7,7 @@ layout( location = 0 ) out float blurred;
 
 uniform int	  uBlurSize;
 uniform int	  uBlurSharpness;
-uniform ivec2 uInvDirectionTexSize; // (1/width, 0) or (0, 1/height).
+uniform ivec2 uDirection;
 
 void main()
 {
@@ -27,7 +27,7 @@ void main()
 	// Compute blur contribution on each side in the given direction.
 	for ( int i = 1; i <= uBlurSize; ++i )
 	{
-		const ivec2 uv			 = texCoord + i * uInvDirectionTexSize;
+		const ivec2 uv			 = texCoord + i * uDirection;
 		const float inputCurrent = texelFetch( inputTexture, uv, 0 ).x;
 		const float depthCurrent = texelFetch( linearDepthTexture, uv, 0 ).x;
 
@@ -40,7 +40,7 @@ void main()
 	}
 	for ( int i = 1; i <= uBlurSize; ++i )
 	{
-		const ivec2 uv			 = texCoord - i * uInvDirectionTexSize;
+		const ivec2 uv			 = texCoord - i * uDirection;
 		const float inputCurrent = texelFetch( inputTexture, uv, 0 ).x;
 		const float depthCurrent = texelFetch( linearDepthTexture, uv, 0 ).x;
 

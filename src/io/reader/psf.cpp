@@ -11,7 +11,6 @@ namespace VTX
 		{
 			void PSF::_readLine( const std::string & p_line, Model::Configuration::Molecule & p_configuration )
 			{
-				// TODO: are PSF files always like this ?
 				if ( p_line.find( "WT", 0 ) != std::string::npos )
 				{
 					p_configuration.solventResidueSymbols.emplace( _readSymbol( p_line ) );

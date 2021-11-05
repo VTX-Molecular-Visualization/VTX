@@ -15,7 +15,7 @@ namespace VTX::Renderer::GL
 		class BasePass : public Generic::BaseOpenGL
 		{
 		  public:
-			BasePass( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
+			BasePass()			= default;
 			virtual ~BasePass() = default;
 
 			virtual void init( const uint, const uint, const GL & )	   = 0;

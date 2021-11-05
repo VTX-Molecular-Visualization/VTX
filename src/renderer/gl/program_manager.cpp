@@ -52,7 +52,7 @@ namespace VTX::Renderer::GL
 
 		if ( _programs.find( p_name ) == _programs.end() )
 		{
-			_programs[ p_name ] = new Program( _gl, p_shaders );
+			_programs[ p_name ] = new Program( p_shaders );
 			Program & program	= *_programs[ p_name ];
 			program.create( p_name );
 

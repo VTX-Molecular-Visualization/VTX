@@ -25,8 +25,7 @@ namespace VTX::Renderer::GL::Pass
 		_program->use();
 
 		const Color::Rgb & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
-		/// TODO: use a value_ptr ?
-		_program->setVec3f( "uLineColor", lineColor.getR(), lineColor.getG(), lineColor.getB() );
+		_program->setVec3f( "uLineColor", lineColor );
 	}
 
 	void Selection::resize( const uint p_width, const uint p_height, const GL & p_renderer )
@@ -64,8 +63,7 @@ namespace VTX::Renderer::GL::Pass
 		{
 			/// TODO: let the user define the line color.
 			const Color::Rgb lineColor = Color::Rgb( 45, 243, 26 );
-			/// TODO: use a value_ptr ?
-			_program->setVec3f( "uLineColor", lineColor.getR(), lineColor.getG(), lineColor.getB() );
+			_program->setVec3f( "uLineColor", lineColor );
 		}
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );

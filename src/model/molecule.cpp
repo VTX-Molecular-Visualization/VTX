@@ -180,6 +180,7 @@ namespace VTX
 			}
 		}
 
+		/*
 		void Molecule::_fillBufferAABB()
 		{
 			uint counter	   = 0;
@@ -215,6 +216,7 @@ namespace VTX
 			_buffer->setAABBCorners( _bufferAABBCorners );
 			_buffer->setAABBIndices( _bufferAABBIndices );
 		}
+		*/
 
 		void Molecule::_instantiate3DViews()
 		{
@@ -730,8 +732,7 @@ namespace VTX
 			}
 
 			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule * const>( this );
-			/// TODO: this is strange
-			_secondaryStructure->init( getBuffer()->getGL() );
+			_secondaryStructure->init();
 			_secondaryStructure->print();
 		}
 

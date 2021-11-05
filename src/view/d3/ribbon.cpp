@@ -38,8 +38,7 @@ namespace VTX::View::D3
 			const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
 			_program->setVec3f( "u_camPosition", cam.getPosition() );
 		}
-		/// TODO: remove
-		//_gl()->glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
 		for ( const std::pair<const Model::Representation::InstantiatedRepresentation *,
 							  VTX::Representation::RepresentationTarget> & representationData :
 			  _model->getMolecule()->getRepresentationData() )
@@ -59,6 +58,5 @@ namespace VTX::View::D3
 																GLsizei( target.indices.size() ) );
 			}
 		}
-		//_gl()->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	}
 } // namespace VTX::View::D3

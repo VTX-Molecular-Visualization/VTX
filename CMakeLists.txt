@@ -367,3 +367,8 @@ if(CMAKE_COMPILER_IS_GNUCC)
 		add_definitions(-D_DEBUG)
 	endif()
 endif()
+
+# Wix configuration.
+if(WIN32)
+	set(CPACK_WIX_UPGRADE_GUID "46ad52f0-a53d-45a1-b170-bfacc26068e2")
+endif()

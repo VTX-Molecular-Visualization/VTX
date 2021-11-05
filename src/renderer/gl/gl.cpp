@@ -7,16 +7,16 @@
 
 namespace VTX::Renderer::GL
 {
-	GL::GL( OpenGLFunctions * const p_gl ) : BaseRenderer( p_gl ), _quadVAO( p_gl ), _quadVBO( p_gl )
+	GL::GL() : BaseRenderer(), _quadVAO(), _quadVBO()
 	{
-		_passGeometric		= new Pass::Geometric( p_gl );
-		_passLinearizeDepth = new Pass::LinearizeDepth( p_gl );
-		_passSSAO			= new Pass::SSAO( p_gl );
-		_passBlur			= new Pass::Blur( p_gl );
-		_passShading		= new Pass::Shading( p_gl );
-		_passOutline		= new Pass::Outline( p_gl );
-		_passSelection		= new Pass::Selection( p_gl );
-		_passFXAA			= new Pass::FXAA( p_gl );
+		_passGeometric		= new Pass::Geometric();
+		_passLinearizeDepth = new Pass::LinearizeDepth();
+		_passSSAO			= new Pass::SSAO();
+		_passBlur			= new Pass::Blur();
+		_passShading		= new Pass::Shading();
+		_passOutline		= new Pass::Outline();
+		_passSelection		= new Pass::Selection();
+		_passFXAA			= new Pass::FXAA();
 	}
 
 	GL::~GL()
@@ -97,19 +97,6 @@ namespace VTX::Renderer::GL
 	void GL::renderFrame( const Object3D::Scene & p_scene )
 	{
 		VTX_STAT().drawCalls = 0u;
-
-		// getGL()->glViewport( 0, 0, _width, _height );
-
-		// TODO: do not change each frame
-		/// TODO2: why this?
-		if ( VTX_RENDER_EFFECT().getCameraNearClip() == 0.f )
-		{
-			enableDepthClamp();
-		}
-		else
-		{
-			disableDepthClamp();
-		}
 
 		enableDepthTest();
 		_passGeometric->render( p_scene, *this );

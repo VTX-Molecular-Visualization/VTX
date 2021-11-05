@@ -1,7 +1,7 @@
-#ifndef __VTX_VIEW_3D_MOLECULE_BOX__
-#define __VTX_VIEW_3D_MOLECULE_BOX__
+#ifndef __VTX_VIEW_3D_BOX__
+#define __VTX_VIEW_3D_BOX__
 
-#include "model/base_model_3d.hpp"
+#include "model/box.hpp"
 #include "view/base_view_3d.hpp"
 
 namespace VTX
@@ -10,7 +10,7 @@ namespace VTX
 	{
 		namespace D3
 		{
-			class Box : public BaseView3D<Model::BaseModel3D<Buffer::BaseBufferOpenGL>>
+			class Box : public BaseView3D<Model::Box>
 			{
 				VTX_VIEW
 
@@ -22,10 +22,10 @@ namespace VTX
 				void						  _init() override;
 
 			  private:
-				explicit Box( Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const );
+				explicit Box( Model::Box * const p_model ) : BaseView3D( p_model ) {}
 			};
 		} // namespace D3
 	}	  // namespace View
 } // namespace VTX
 
-#endif;
+#endif

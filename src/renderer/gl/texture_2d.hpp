@@ -83,7 +83,7 @@ namespace VTX::Renderer::GL
 
 		/// TODO: ca m'emmerde d'avoir ce p_gl dans tous les constructeurs...
 		/// Le faire static dans la base ? Besoin de plusieurs contextes ?
-		Texture2D( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
+		Texture2D() = default;
 		~Texture2D() { _destroy(); }
 
 		inline int	getId() const { return _id; }

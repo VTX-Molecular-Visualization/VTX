@@ -1,5 +1,5 @@
-#ifndef __VTX_RGB__
-#define __VTX_RGB__
+#ifndef __VTXxGB__
+#define __VTXxGB__
 
 #include "util/math.hpp"
 #include <QColor>
@@ -12,32 +12,30 @@ namespace VTX
 {
 	namespace Color
 	{
-		class Rgb
+		class Rgb : public Vec3f
 		{
 		  public:
 			Rgb() = default;
-			explicit Rgb( const float p_r, const float p_g, const float p_b ) : _r( p_r ), _g( p_g ), _b( p_b ) {}
-			Rgb( const int p_r, const int p_g, const int p_b ) : _r( p_r / 255.f ), _g( p_g / 255.f ), _b( p_b / 255.f )
-			{
-			}
-			Rgb( const Rgb & p_c ) : _r( p_c._r ), _g( p_c._g ), _b( p_c._b ) {}
+			explicit Rgb( const float p_r, const float p_g, const float p_b ) : Vec3f( p_r, p_g, p_b ) {}
+			Rgb( const int p_r, const int p_g, const int p_b ) : Vec3f( p_r / 255.f, p_g / 255.f, p_b / 255.f ) {}
+			Rgb( const Rgb & p_c ) : Vec3f( p_c.x, p_c.y, p_c.z ) {}
 			explicit Rgb( const std::vector<float> & p_c )
 			{
 				assert( p_c.size() == 3 );
-				_r = p_c[ 0 ];
-				_g = p_c[ 1 ];
-				_b = p_c[ 2 ];
+				x = p_c[ 0 ];
+				y = p_c[ 1 ];
+				z = p_c[ 2 ];
 			}
 
-			inline std::vector<float> toStdVector() const { return { _r, _g, _b }; }
+			inline std::vector<float> toStdVector() const { return { x, y, z }; }
 			inline std::string		  toHexaString() const
 			{
 				std::stringstream stringstream;
 
 				stringstream << "#";
-				setSingleChannelHexaInStream( _r, stringstream );
-				setSingleChannelHexaInStream( _g, stringstream );
-				setSingleChannelHexaInStream( _b, stringstream );
+				setSingleChannelHexaInStream( x, stringstream );
+				setSingleChannelHexaInStream( y, stringstream );
+				setSingleChannelHexaInStream( z, stringstream );
 
 				return stringstream.str();
 			};
@@ -49,141 +47,141 @@ namespace VTX
 
 			inline Rgb & operator=( const Rgb & p_c )
 			{
-				_r = p_c._r;
-				_g = p_c._g;
-				_b = p_c._b;
+				x = p_c.x;
+				y = p_c.y;
+				z = p_c.z;
 				return *this;
 			}
 			inline Rgb & operator+=( const Rgb & p_c )
 			{
-				_r += p_c._r;
-				_g += p_c._g;
-				_b += p_c._b;
+				x += p_c.x;
+				y += p_c.y;
+				z += p_c.z;
 				return *this;
 			}
 			inline Rgb & operator+=( const float & p_f )
 			{
-				_r += p_f;
-				_g += p_f;
-				_b += p_f;
+				x += p_f;
+				y += p_f;
+				z += p_f;
 				return *this;
 			}
 			inline Rgb & operator-=( const Rgb & p_c )
 			{
-				_r -= p_c._r;
-				_g -= p_c._g;
-				_b -= p_c._b;
+				x -= p_c.x;
+				y -= p_c.y;
+				z -= p_c.z;
 				return *this;
 			}
 			inline Rgb & operator-=( const float & p_f )
 			{
-				_r -= p_f;
-				_g -= p_f;
-				_b -= p_f;
+				x -= p_f;
+				y -= p_f;
+				z -= p_f;
 				return *this;
 			}
 			inline Rgb & operator*=( const Rgb & p_c )
 			{
-				_r *= p_c._r;
-				_g *= p_c._g;
-				_b *= p_c._b;
+				x *= p_c.x;
+				y *= p_c.y;
+				z *= p_c.z;
 				return *this;
 			}
 			inline Rgb & operator*=( const float & p_f )
 			{
-				_r *= p_f;
-				_g *= p_f;
-				_b *= p_f;
+				x *= p_f;
+				y *= p_f;
+				z *= p_f;
 				return *this;
 			}
 			inline Rgb & operator/=( const Rgb & p_c )
 			{
-				assert( p_c._r != 0.f && p_c._g != 0.f && p_c._b != 0.f );
-				_r /= p_c._r;
-				_g /= p_c._g;
-				_b /= p_c._b;
+				assert( p_c.x != 0.f && p_c.y != 0.f && p_c.z != 0.f );
+				x /= p_c.x;
+				y /= p_c.y;
+				z /= p_c.z;
 				return *this;
 			}
 			inline Rgb & operator/=( const float & p_f )
 			{
 				assert( p_f != 0.f );
-				_r /= p_f;
-				_g /= p_f;
-				_b /= p_f;
+				x /= p_f;
+				y /= p_f;
+				z /= p_f;
 				return *this;
 			}
 
 			// TODO: check if better to reuse x= operators...
-			inline Rgb operator+( const Rgb & p_c ) const { return Rgb( _r + p_c._r, _g + p_c._g, _b + p_c._b ); }
-			inline Rgb operator-( const Rgb & p_c ) const { return Rgb( _r - p_c._r, _g - p_c._g, _b - p_c._b ); }
-			inline Rgb operator*( const Rgb & p_c ) const { return Rgb( _r * p_c._r, _g * p_c._g, _b * p_c._b ); }
+			inline Rgb operator+( const Rgb & p_c ) const { return Rgb( x + p_c.x, y + p_c.y, z + p_c.z ); }
+			inline Rgb operator-( const Rgb & p_c ) const { return Rgb( x - p_c.x, y - p_c.y, z - p_c.z ); }
+			inline Rgb operator*( const Rgb & p_c ) const { return Rgb( x * p_c.x, y * p_c.y, z * p_c.z ); }
 			inline Rgb operator/( const Rgb & p_c ) const
 			{
-				assert( p_c._r != 0.f && p_c._g != 0.f && p_c._b != 0.f );
-				return Rgb( _r / p_c._r, _g / p_c._g, _b / p_c._b );
+				assert( p_c.x != 0.f && p_c.y != 0.f && p_c.z != 0.f );
+				return Rgb( x / p_c.x, y / p_c.y, z / p_c.z );
 			}
 
-			inline Rgb operator+( const float & p_f ) const { return Rgb( _r + p_f, _g + p_f, _b + p_f ); }
-			inline Rgb operator-( const float & p_f ) const { return Rgb( _r - p_f, _g - p_f, _b - p_f ); }
-			inline Rgb operator*( const float & p_f ) const { return Rgb( _r * p_f, _g * p_f, _b * p_f ); }
+			inline Rgb operator+( const float & p_f ) const { return Rgb( x + p_f, y + p_f, z + p_f ); }
+			inline Rgb operator-( const float & p_f ) const { return Rgb( x - p_f, y - p_f, z - p_f ); }
+			inline Rgb operator*( const float & p_f ) const { return Rgb( x * p_f, y * p_f, z * p_f ); }
 			inline Rgb operator/( const float & p_f ) const
 			{
 				assert( p_f != 0.f );
-				return Rgb( _r / p_f, _g / p_f, _b / p_f );
+				return Rgb( x / p_f, y / p_f, z / p_f );
 			}
 
 			friend inline Rgb operator+( const float & p_f, const Rgb & p_c )
 			{
-				return Rgb( p_f + p_c._r, p_f + p_c._g, p_f + p_c._b );
+				return Rgb( p_f + p_c.x, p_f + p_c.y, p_f + p_c.z );
 			}
 			friend inline Rgb operator-( const float & p_f, const Rgb & p_c )
 			{
-				return Rgb( p_f - p_c._r, p_f - p_c._g, p_f - p_c._b );
+				return Rgb( p_f - p_c.x, p_f - p_c.y, p_f - p_c.z );
 			}
 			friend inline Rgb operator*( const float & p_f, const Rgb & p_c )
 			{
-				return Rgb( p_f * p_c._r, p_f * p_c._g, p_f * p_c._b );
+				return Rgb( p_f * p_c.x, p_f * p_c.y, p_f * p_c.z );
 			}
 			friend inline Rgb operator/( const float & p_f, const Rgb & p_c )
 			{
-				assert( p_c._r != 0.f && p_c._g != 0.f && p_c._b != 0.f );
-				return Rgb( p_f / p_c._r, p_f / p_c._g, p_f / p_c._b );
+				assert( p_c.x != 0.f && p_c.y != 0.f && p_c.z != 0.f );
+				return Rgb( p_f / p_c.x, p_f / p_c.y, p_f / p_c.z );
 			}
 
-			inline bool operator==( const Rgb & p_c ) const { return _r == p_c._r && _g == p_c._g && _b == p_c._b; }
-			inline bool operator!=( const Rgb & p_c ) const { return _r != p_c._r || _g != p_c._g || _b != p_c._b; }
+			inline bool operator==( const Rgb & p_c ) const { return x == p_c.x && y == p_c.y && z == p_c.z; }
+			inline bool operator!=( const Rgb & p_c ) const { return x != p_c.x || y != p_c.y || z != p_c.z; }
 
-			inline float getR() const { return _r; }
-			inline float getG() const { return _g; }
-			inline float getB() const { return _b; }
-			inline void	 setR( const float p_r ) { _r = p_r; }
-			inline void	 setG( const float p_g ) { _g = p_g; }
-			inline void	 setB( const float p_b ) { _b = p_b; }
+			inline float getR() const { return x; }
+			inline float getG() const { return y; }
+			inline float getB() const { return z; }
+			inline void	 setR( const float p_r ) { x = p_r; }
+			inline void	 setG( const float p_g ) { y = p_g; }
+			inline void	 setB( const float p_b ) { z = p_b; }
 
 			inline void saturate()
 			{
-				_r = Util::Math::clamp( _r, 0.f, 1.f );
-				_g = Util::Math::clamp( _g, 0.f, 1.f );
-				_b = Util::Math::clamp( _b, 0.f, 1.f );
+				x = Util::Math::clamp( x, 0.f, 1.f );
+				y = Util::Math::clamp( y, 0.f, 1.f );
+				z = Util::Math::clamp( z, 0.f, 1.f );
 			}
 
-			inline void applyGamma( const float & p_gamma )
+			inline void applyGamma( const float & pyamma )
 			{
-				_r = powf( _r, p_gamma );
-				_g = powf( _g, p_gamma );
-				_b = powf( _b, p_gamma );
+				x = powf( x, pyamma );
+				y = powf( y, pyamma );
+				z = powf( z, pyamma );
 			}
 
 			inline void oppose()
 			{
-				_r = 1.f - _r;
-				_g = 1.f - _g;
-				_b = 1.f - _b;
+				x = 1.f - x;
+				y = 1.f - y;
+				z = 1.f - z;
 			}
 
-			inline const float brightness() const { return ( _r * 0.299f ) + ( _g * 0.587f ) + ( _b * 0.114f ); }
+			inline const float brightness() const { return ( x * 0.299f ) + ( y * 0.587f ) + ( z * 0.114f ); }
 
-			inline QColor toQColor() const { return QColor( _r * 255, _g * 255, _b * 255 ); }
+			inline QColor toQColor() const { return QColor( x * 255, y * 255, z * 255 ); }
 
 			friend std::ostream & operator<<( std::ostream & p_os, const Rgb & p_c );
 
@@ -203,11 +201,6 @@ namespace VTX
 			}
 
 			static inline Rgb randomPastel() { return random() * 0.5f + 0.5f; }
-
-		  protected:
-			float _r = 0.f;
-			float _g = 0.f;
-			float _b = 0.f;
 		};
 	}; // namespace Color
 } // namespace VTX

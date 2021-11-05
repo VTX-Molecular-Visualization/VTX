@@ -117,16 +117,26 @@ namespace VTX
 
 	void VTXApp::_handleArgs( const std::vector<std::string> & p_args )
 	{
+		std::vector<IO::FilePath> files	 = std::vector<IO::FilePath>();
+		std::vector<std::string>  pdbIds = std::vector<std::string>();
+
 		for ( const std::string & arg : p_args )
 		{
 			if ( arg.find( "." ) != std::string::npos )
 			{
-				VTX_ACTION( new Action::Main::Open( arg ) );
+				files.emplace_back( IO::FilePath( arg ) );
 			}
 			else
 			{
-				VTX_ACTION( new Action::Main::OpenApi( arg ) );
+				pdbIds.emplace_back( arg );
 			}
+		}
+
+		VTX_ACTION( new Action::Main::Open( files ) );
+
+		for ( const std::string & pdbId : pdbIds )
+		{
+			VTX_ACTION( new Action::Main::OpenApi( pdbId ) );
 		}
 	}
 
