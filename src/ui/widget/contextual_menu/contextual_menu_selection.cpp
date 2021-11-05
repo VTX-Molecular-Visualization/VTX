@@ -62,15 +62,15 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Edit", TypeMask::All, this ) );
 		moleculeStructureSubmenu->addItemData(
-			new ActionData( "Orient", TypeMask::All, this, &ContextualMenuSelection::_orientAction ) );
+			new ActionData( "Orient", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_orientAction ) );
 		moleculeStructureSubmenu->addItemData(
-			new ActionData( "Show", TypeMask::AllButAtom, this, &ContextualMenuSelection::_showAction ) );
+			new ActionData( "Show", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_showAction ) );
 		moleculeStructureSubmenu->addItemData(
-			new ActionData( "Hide", TypeMask::AllButAtom, this, &ContextualMenuSelection::_hideAction ) );
+			new ActionData( "Hide", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_hideAction ) );
 		moleculeStructureSubmenu->addItemData(
-			new ActionData( "Solo", TypeMask::AllButAtom, this, &ContextualMenuSelection::_soloAction ) );
+			new ActionData( "Solo", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_soloAction ) );
 		moleculeStructureSubmenu->addItemData(
-			new ActionData( "Duplicate", TypeMask::All, this, &ContextualMenuSelection::_copyAction ) );
+			new ActionData( "Duplicate", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_copyAction ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Extract", TypeMask::AllButMolecule, this, &ContextualMenuSelection::_extractAction ) );
 		moleculeStructureSubmenu->addItemData(
