@@ -54,6 +54,10 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_hide->setData( "Hide", ":/sprite/hide_selection_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_hide, 1 );
 
+		_solo = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "soloSelectionButton" );
+		_solo->setData( "Solo", ":/sprite/solo_selection_icon.png", Qt::Orientation::Horizontal );
+		pushButton( *_solo, 1 );
+
 		_exportSelectionButton
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "saveMoleculeButton" );
 		_exportSelectionButton->setData( "Export", ":/sprite/save_molecule_icon.png", Qt::Orientation::Vertical );
@@ -71,6 +75,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		_show->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_showSelection );
 		_hide->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_hideSelection );
+		_solo->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_soloSelection );
 
 		_exportSelectionButton->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_exportSelection );
 	}
@@ -104,6 +109,12 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		VTX_ACTION( new Action::Selection::ChangeVisibility(
 			selectionModel, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
 	}
+	void MenuVisualizationSelectionActionWidget::_soloSelection() const
+	{
+		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		VTX_ACTION( new Action::Selection::ChangeVisibility(
+			selectionModel, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+	}
 
 	void MenuVisualizationSelectionActionWidget::_exportSelection() const { UI::Dialog::openExportMoleculeDialog(); }
 
@@ -114,6 +125,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_delete->setEnabled( p_enable );
 		_show->setEnabled( p_enable );
 		_hide->setEnabled( p_enable );
+		_solo->setEnabled( p_enable );
 		_exportSelectionButton->setEnabled( p_enable );
 	}
 

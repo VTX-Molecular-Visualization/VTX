@@ -68,6 +68,8 @@ namespace VTX::UI::Widget::ContextualMenu
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Hide", TypeMask::AllButAtom, this, &ContextualMenuSelection::_hideAction ) );
 		moleculeStructureSubmenu->addItemData(
+			new ActionData( "Solo", TypeMask::AllButAtom, this, &ContextualMenuSelection::_soloAction ) );
+		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Duplicate", TypeMask::All, this, &ContextualMenuSelection::_copyAction ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Extract", TypeMask::AllButMolecule, this, &ContextualMenuSelection::_extractAction ) );
@@ -281,6 +283,42 @@ namespace VTX::UI::Widget::ContextualMenu
 		{
 			VTX_ACTION( new Action::Selection::ChangeVisibility(
 				*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+		}
+	}
+	void ContextualMenuSelection::_soloAction()
+	{
+		if ( _focusedTarget != nullptr )
+		{
+			const ID::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
+			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
+
+			if ( focusedModelTypeID == ID::Model::MODEL_MOLECULE )
+				focusedModelBaseVisible = static_cast<Model::Molecule *>( _focusedTarget );
+			else if ( focusedModelTypeID == ID::Model::MODEL_CHAIN )
+				focusedModelBaseVisible = static_cast<Model::Chain *>( _focusedTarget );
+			else if ( focusedModelTypeID == ID::Model::MODEL_RESIDUE )
+				focusedModelBaseVisible = static_cast<Model::Residue *>( _focusedTarget );
+			else if ( focusedModelTypeID == ID::Model::MODEL_ATOM )
+				focusedModelBaseVisible = static_cast<Model::Atom *>( _focusedTarget );
+
+			if ( focusedModelBaseVisible != nullptr )
+			{
+				VTX_ACTION( new Action::Selection::ChangeVisibility(
+					*_target,
+					*focusedModelBaseVisible,
+					focusedModelTypeID,
+					Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+			}
+			else
+			{
+				VTX_ACTION( new Action::Selection::ChangeVisibility(
+					*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+			}
+		}
+		else
+		{
+			VTX_ACTION( new Action::Selection::ChangeVisibility(
+				*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
 		}
 	}
 	void ContextualMenuSelection::_copyAction() { VTX_ACTION( new Action::Selection::Copy( *_target ) ); }

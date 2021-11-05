@@ -14,6 +14,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Orient", this, &ContextualMenuAtom::_orientAction );
 		addAction( "Show", this, &ContextualMenuAtom::_showAction );
 		addAction( "Hide", this, &ContextualMenuAtom::_hideAction );
+		addAction( "Solo", this, &ContextualMenuAtom::_soloAction );
 		addAction( "Duplicate", this, &ContextualMenuAtom::_copyAction );
 		addAction( "Extract", this, &ContextualMenuAtom::_extractAction );
 		addAction( "Delete", this, &ContextualMenuAtom::_deleteAction );
@@ -40,6 +41,12 @@ namespace VTX::UI::Widget::ContextualMenu
 		VTX_ACTION(
 			new Action::Atom::ChangeVisibility( *_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
 	}
+	void ContextualMenuAtom::_soloAction()
+	{
+		VTX_ACTION(
+			new Action::Atom::ChangeVisibility( *_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+	}
+
 	void ContextualMenuAtom::_copyAction() { VTX_ACTION( new Action::Atom::Copy( *_target ) ); }
 	void ContextualMenuAtom::_extractAction() { VTX_ACTION( new Action::Atom::Extract( *_target ) ); }
 	void ContextualMenuAtom::_deleteAction() { VTX_ACTION( new Action::Atom::Delete( *_target ) ); }

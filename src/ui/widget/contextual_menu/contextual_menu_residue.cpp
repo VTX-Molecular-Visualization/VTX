@@ -24,6 +24,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Orient", this, &ContextualMenuResidue::_orientAction );
 		addAction( "Show", this, &ContextualMenuResidue::_showAction );
 		addAction( "Hide", this, &ContextualMenuResidue::_hideAction );
+		addAction( "Solo", this, &ContextualMenuResidue::_soloAction );
 		addAction( "Duplicate", this, &ContextualMenuResidue::_copyAction );
 		addAction( "Extract", this, &ContextualMenuResidue::_extractAction );
 		addAction( "Delete", this, &ContextualMenuResidue::_deleteAction );
@@ -54,6 +55,11 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		VTX_ACTION( new Action::Residue::ChangeVisibility( *_target,
 														   Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+	}
+	void ContextualMenuResidue::_soloAction()
+	{
+		VTX_ACTION( new Action::Residue::ChangeVisibility( *_target,
+														   Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
 	}
 	void ContextualMenuResidue::_copyAction() { VTX_ACTION( new Action::Residue::Copy( *_target ) ); }
 	void ContextualMenuResidue::_extractAction() { VTX_ACTION( new Action::Residue::Extract( *_target ) ); }

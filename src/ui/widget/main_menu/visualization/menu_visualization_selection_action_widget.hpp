@@ -33,6 +33,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// Visibility actions
 		MenuToolButtonWidget * _show = nullptr;
 		MenuToolButtonWidget * _hide = nullptr;
+		MenuToolButtonWidget * _solo = nullptr;
 
 		// Export
 		MenuToolButtonWidget * _exportSelectionButton = nullptr;
@@ -43,6 +44,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		void _showSelection() const;
 		void _hideSelection() const;
+		void _soloSelection() const;
 
 		void _exportSelection() const;
 	};

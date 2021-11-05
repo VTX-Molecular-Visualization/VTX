@@ -36,8 +36,8 @@ namespace VTX::Action::Selection
 
 		virtual void execute() override
 		{
-			const std::map<Model::Molecule *, float> & sceneMolecules = VTXApp::get().getScene().getMolecules();
-			std::vector<Model::Molecule *>			   molecules	  = std::vector<Model::Molecule *>();
+			const Object3D::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
+			std::vector<Model::Molecule *>				 molecules		= std::vector<Model::Molecule *>();
 			molecules.resize( sceneMolecules.size() );
 			int counter = 0;
 
@@ -535,18 +535,30 @@ namespace VTX::Action::Selection
 			Visible::ChangeVisibility( p_mode ),
 			_selection( p_selection ), _objRefTypeId( p_objRefTypeId )
 		{
-			_tag	 = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
-			_visible = _getVisibilityBool( p_objReference );
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		explicit ChangeVisibility( const Model::Selection & p_selection, const VISIBILITY_MODE p_mode ) :
 			Visible::ChangeVisibility( p_mode ), _selection( p_selection ), _objRefTypeId( "" )
 		{
-			_visible = _getVisibilityBool();
 		}
 
 		virtual void execute() override
 		{
+			switch ( _mode )
+			{
+			case VISIBILITY_MODE::SHOW:
+			case VISIBILITY_MODE::HIDE: classicalShowHide(); break;
+			case VISIBILITY_MODE::SOLO: solo(); break;
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+		void classicalShowHide()
+		{
+			bool visible = _getVisibilityBool();
+
 			const bool setVisibiltyOnMolecule = _objRefTypeId == ID::Model::MODEL_MOLECULE;
 			const bool setVisibiltyOnChain	  = setVisibiltyOnMolecule || _objRefTypeId == ID::Model::MODEL_CHAIN;
 
@@ -557,7 +569,7 @@ namespace VTX::Action::Selection
 				if ( setVisibiltyOnMolecule
 					 && molIds.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 				{
-					molecule.setVisible( _visible );
+					molecule.setVisible( visible );
 				}
 				else
 				{
@@ -567,7 +579,7 @@ namespace VTX::Action::Selection
 
 						if ( chainIds.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
 						{
-							chain.setVisible( _visible );
+							chain.setVisible( visible );
 							continue;
 						}
 
@@ -577,14 +589,14 @@ namespace VTX::Action::Selection
 
 							if ( residueIds.second.getFullySelectedChildCount() == residue.getRealAtomCount() )
 							{
-								residue.setVisible( _visible );
+								residue.setVisible( visible );
 								continue;
 							}
 
 							for ( const uint atomId : residueIds.second )
 							{
 								Model::Atom * const atom = molecule.getAtom( atomId );
-								atom->setVisible( _visible );
+								atom->setVisible( visible );
 							}
 						}
 					}
@@ -593,14 +605,120 @@ namespace VTX::Action::Selection
 				molecule.refreshVisibilities();
 				molecule.computeRepresentationTargets();
 			}
+		}
+		void solo()
+		{
+			const Object3D::Scene::MapMoleculePtrFloat & moleculesInScene	  = VTXApp::get().getScene().getMolecules();
+			const Model::Selection::MapMoleculeIds &	 moleculesInSelection = _selection.getMoleculesMap();
 
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+			Object3D::Scene::MapMoleculePtrFloat::const_iterator itScene	 = moleculesInScene.cbegin();
+			Model::Selection::MapMoleculeIds::const_iterator	 itSelection = moleculesInSelection.cbegin();
+
+			while ( itSelection != moleculesInSelection.cend() )
+			{
+				if ( itScene->first->getId() == itSelection->first )
+				{
+					Model::Molecule * const molecule = itScene->first;
+					molecule->setVisible( true );
+
+					// if ( !_selection.isMoleculeFullySelected( *molecule ) )
+					{
+						Model::Selection::MapChainIds::const_iterator itChainSelection = itSelection->second.cbegin();
+
+						for ( uint iChain = 0; iChain < molecule->getChainCount(); iChain++ )
+						{
+							Model::Chain * const chain = molecule->getChain( iChain );
+
+							if ( chain == nullptr )
+								continue;
+
+							if ( itChainSelection != itSelection->second.cend() && iChain == itChainSelection->first )
+							{
+								chain->setVisible( true );
+
+								// if ( !_selection.isChainFullySelected( *chain ) )
+								{
+									Model::Selection::MapResidueIds::const_iterator itResidueSelection
+										= itChainSelection->second.cbegin();
+
+									for ( uint iResidue = chain->getIndexFirstResidue();
+										  iResidue <= chain->getIndexLastResidue();
+										  iResidue++ )
+									{
+										Model::Residue * const residue = molecule->getResidue( iResidue );
+
+										if ( residue == nullptr )
+											continue;
+
+										if ( itResidueSelection != itChainSelection->second.cend()
+											 && iResidue == itResidueSelection->first )
+										{
+											residue->setVisible( true );
+
+											// if ( !_selection.isResidueFullySelected( *residue ) )
+											{
+												Model::Selection::VecAtomIds::const_iterator itAtomSelection
+													= itResidueSelection->second.cbegin();
+
+												for ( uint iAtom = residue->getIndexFirstAtom();
+													  iAtom < residue->getIndexFirstAtom() + residue->getAtomCount();
+													  iAtom++ )
+												{
+													Model::Atom * const atom = molecule->getAtom( iAtom );
+
+													if ( atom == nullptr )
+														continue;
+
+													if ( itAtomSelection != itResidueSelection->second.cend()
+														 && iAtom == *itAtomSelection )
+													{
+														atom->setVisible( true );
+														itAtomSelection++;
+													}
+													else
+													{
+														atom->setVisible( false );
+													}
+												}
+											}
+
+											itResidueSelection++;
+										}
+										else
+										{
+											residue->setVisible( false );
+										}
+									}
+								}
+								itChainSelection++;
+							}
+							else
+							{
+								chain->setVisible( false );
+							}
+						}
+					}
+
+					molecule->refreshVisibilities();
+					molecule->computeRepresentationTargets();
+
+					itSelection++;
+					itScene++;
+				}
+				else
+				{
+					itScene->first->setVisible( false );
+					itScene->first->refreshVisibilities();
+					itScene->first->computeRepresentationTargets();
+
+					itScene++;
+				}
+			}
 		}
 
 	  private:
 		const Model::Selection & _selection;
 		const ID::VTX_ID		 _objRefTypeId;
-		bool					 _visible;
 	};
 
 	class ToggleWatersVisibility : public BaseAction
