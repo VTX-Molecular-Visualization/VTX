@@ -40,7 +40,14 @@ namespace VTX::Object3D
 
 		MVC::MvcManager::get().deleteAllModels( _meshes );
 		_meshes.clear();
-		MVC::MvcManager::get().deleteAllModels( _paths );
+		
+		while ( _paths.size() > 0 )
+		{
+			PathPtr const path = *_paths.begin();
+			removePath( path);
+			MVC::MvcManager::get().deleteModel( path );
+		}
+
 		_paths.clear();
 	}
 
