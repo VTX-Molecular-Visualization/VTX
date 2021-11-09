@@ -887,8 +887,13 @@ namespace VTX::Model
 
 	void Selection::clear()
 	{
+		const Model::BaseModel * const previousCurrentObject = _currentObject;
 		_clearWithoutNotify();
-		this->_notifyDataChanged();
+
+		_notifyDataChanged();
+
+		if ( previousCurrentObject != _currentObject )
+			VTX_EVENT( new Event::VTXEventPtr( Event::CURRENT_ITEM_IN_SELECTION_CHANGE, _currentObject ) );
 	}
 	void Selection::_clearWithoutNotify()
 	{
@@ -901,7 +906,7 @@ namespace VTX::Model
 		_items.clear();
 		_moleculesMap.clear();
 		_mapSelectionAABB.clear();
-		_clearCurrentObject();
+		_clearCurrentObject( false );
 	}
 
 	void Selection::receiveEvent( const Event::VTXEvent & p_event )
@@ -1026,7 +1031,7 @@ namespace VTX::Model
 			}
 		}
 	}
-	const Model::BaseModel * const Selection::getCurrentObject() { return _currentObject; }
+	const Model::BaseModel * const Selection::getCurrentObject() const { return _currentObject; }
 
 	void Selection::_emplaceMolecule( const Molecule & p_molecule )
 	{
@@ -1034,7 +1039,24 @@ namespace VTX::Model
 		_moleculesMap.emplace( p_molecule.getId(), MapChainIds() );
 	}
 
-	void Selection::_setCurrentObject( const Model::BaseModel * const p_model ) { _currentObject = p_model; }
-	void Selection::_clearCurrentObject() { _currentObject = nullptr; }
+	void Selection::_setCurrentObject( const Model::BaseModel * const p_model, const bool p_notify )
+	{
+		if ( _currentObject != p_model )
+		{
+			_currentObject = p_model;
+
+			if ( p_notify )
+				VTX_EVENT( new Event::VTXEventPtr( Event::CURRENT_ITEM_IN_SELECTION_CHANGE, _currentObject ) );
+		}
+	}
+	void Selection::_clearCurrentObject( const bool p_notify )
+	{
+		if ( _currentObject != nullptr )
+		{
+			_currentObject = nullptr;
+			if ( p_notify )
+				VTX_EVENT( new Event::VTXEventPtr( Event::CURRENT_ITEM_IN_SELECTION_CHANGE, _currentObject ) );
+		}
+	}
 
 } // namespace VTX::Model

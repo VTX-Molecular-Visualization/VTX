@@ -10,12 +10,11 @@
 #include "style.hpp"
 #include "ui/contextual_menu.hpp"
 #include "ui/mime_type.hpp"
-#include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 #include "view/ui/widget/path_scene_view.hpp"
 #include "vtx_app.hpp"
-#include <QScrollArea>
+#include <QScrollBar>
 #include <algorithm>
 
 namespace VTX::UI::Widget::Scene
@@ -142,20 +141,42 @@ namespace VTX::UI::Widget::Scene
 		}
 	}
 
-	int SceneWidget::_getPositionInHierarchy( SceneItemWidget * const p_sceneItemWidget ) 
+	void SceneWidget::scrollToItem( const QTreeWidgetItem & p_item )
+	{
+		const QTreeWidget & tree				 = *( p_item.treeWidget() );
+		const QRect			rectItem			 = tree.visualItemRect( &p_item );
+		const QPoint		localRectPos		 = QPoint( rectItem.x(), rectItem.y() );
+		const QPoint		globalRectPos		 = tree.mapToGlobal( localRectPos );
+		const QPoint		localToScrollRectPos = _scrollAreaContent->mapFromGlobal( globalRectPos );
+
+		const int scrollBarPosition = _scrollArea->verticalScrollBar()->sliderPosition();
+		const int viewportHeight	= _scrollArea->viewport()->height();
+
+		if ( localToScrollRectPos.y() < scrollBarPosition )
+		{
+			_scrollArea->verticalScrollBar()->setSliderPosition( localToScrollRectPos.y() );
+		}
+		else if ( localToScrollRectPos.y() > ( scrollBarPosition + viewportHeight - rectItem.height() ) )
+		{
+			_scrollArea->verticalScrollBar()->setSliderPosition( localToScrollRectPos.y() - viewportHeight
+																 + rectItem.height() );
+		}
+	}
+
+	int SceneWidget::_getPositionInHierarchy( SceneItemWidget * const p_sceneItemWidget )
 	{
 		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( p_sceneItemWidget->getModelID() );
-		
-		if ( modelTypeId == ID::Model::MODEL_MOLECULE ) 
+
+		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
 		{
-			std::vector<SceneItemWidget *>::const_reverse_iterator it = _sceneWidgets.crbegin();
+			std::vector<SceneItemWidget *>::const_reverse_iterator it	   = _sceneWidgets.crbegin();
 			int													   counter = 1;
 
-			for ( it; it != _sceneWidgets.crend() ; it++) 
+			for ( it; it != _sceneWidgets.crend(); it++ )
 			{
 				const ID::VTX_ID & itModelTypeId = MVC::MvcManager::get().getModelTypeID( ( *it )->getModelID() );
 				if ( itModelTypeId == modelTypeId )
-					return _layout->count()  - counter;
+					return _layout->count() - counter;
 				counter++;
 			}
 
@@ -216,10 +237,9 @@ namespace VTX::UI::Widget::Scene
 		_layout->addStretch( 1000 );
 		_layout->setContentsMargins( 0, 0, 0, 0 );
 
-		CustomWidget::DockWindowMainWidget<QScrollArea> * const scrollArea
-			= new CustomWidget::DockWindowMainWidget<QScrollArea>(
-				Style::SCENE_PREFERRED_SIZE, Style::SCENE_MINIMUM_SIZE, this );
-		scrollArea->setFocusGroup( Controller::SHORTCUTGROUP::SCENE );
+		_scrollArea = new CustomWidget::DockWindowMainWidget<QScrollArea>(
+			Style::SCENE_PREFERRED_SIZE, Style::SCENE_MINIMUM_SIZE, this );
+		_scrollArea->setFocusGroup( Controller::SHORTCUTGROUP::SCENE );
 
 		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
 											  QSizePolicy::Policy::MinimumExpanding,
@@ -227,13 +247,13 @@ namespace VTX::UI::Widget::Scene
 		sizePolicy.setHorizontalStretch( 10 );
 		sizePolicy.setVerticalStretch( 10 );
 
-		scrollArea->setSizePolicy( sizePolicy );
-		scrollArea->setFrameShape( QFrame::Shape::NoFrame );
-		scrollArea->setWidget( _scrollAreaContent );
-		scrollArea->setWidgetResizable( true );
-		scrollArea->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored );
+		_scrollArea->setSizePolicy( sizePolicy );
+		_scrollArea->setFrameShape( QFrame::Shape::NoFrame );
+		_scrollArea->setWidget( _scrollAreaContent );
+		_scrollArea->setWidgetResizable( true );
+		_scrollArea->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored );
 
-		setWidget( scrollArea );
+		setWidget( _scrollArea );
 
 		setAcceptDrops( true );
 
