@@ -13,6 +13,7 @@ namespace VTX::Controller
 
 	  protected:
 		void _handleMouseButtonDownEvent( const QMouseEvent & ) override;
+		void _handleMouseButtonUpEvent( const QMouseEvent & ) override;
 	};
 } // namespace VTX::Controller
 
