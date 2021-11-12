@@ -172,8 +172,10 @@ namespace VTX
 			inline const std::vector<Color::Rgb> &	 getBufferAtomColors() const { return _bufferAtomColors; }
 			inline std::vector<uint> &				 getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
 			inline const std::vector<uint> & getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
-			inline std::vector<uint> &		 getBufferAtomSelection() { return _bufferAtomSelection; }
-			inline const std::vector<uint> & getBufferAtomSelection() const { return _bufferAtomSelection; }
+			inline std::vector<uint> &		 getBufferAtomSelections() { return _bufferAtomSelections; }
+			inline const std::vector<uint> & getBufferAtomSelections() const { return _bufferAtomSelections; }
+			inline std::vector<uint> &		 getBufferAtomIds() { return _bufferAtomIds; }
+			inline const std::vector<uint> & getBufferAtomIds() const { return _bufferAtomIds; }
 			inline std::vector<uint> &		 getBufferBonds() { return _bufferBonds; }
 			inline const std::vector<uint> & getBufferBonds() const { return _bufferBonds; }
 
@@ -301,7 +303,8 @@ namespace VTX
 			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
 			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
 			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
-			std::vector<uint>		_bufferAtomSelection	= std::vector<uint>();
+			std::vector<uint>		_bufferAtomSelections	= std::vector<uint>();
+			std::vector<uint>		_bufferAtomIds			= std::vector<uint>();
 			std::vector<uint>		_bufferBonds			= std::vector<uint>();
 
 			// Secondary structure.

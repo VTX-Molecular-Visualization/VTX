@@ -5,12 +5,14 @@
 #define ATOM_RADIUS 2
 #define ATOM_VISIBILITY 3
 #define ATOM_SELECTION 4
+#define ATOM_ID 5
 
 layout( location = ATOM_POSITION ) in vec3 aSpherePos;
 layout( location = ATOM_COLOR ) in vec3 aSphereColor;
 layout( location = ATOM_RADIUS ) in float aSphereRadius;
 layout( location = ATOM_VISIBILITY ) in uint aSphereVisible;
-layout( location = ATOM_SELECTION ) in uint sphereSelected;
+layout( location = ATOM_SELECTION ) in uint aSphereSelected;
+layout( location = ATOM_ID ) in uint aSphereId;
 
 uniform mat4  u_MVMatrix;
 uniform mat4  u_projMatrix;
@@ -25,6 +27,7 @@ out VsOut
 	flat float sphereRadius;
 	flat uint  sphereVisible;
 	flat uint  sphereSelected;
+	flat uint  sphereId;
 	flat vec3  vImpU; // Impostor vectors.
 	flat vec3  vImpV;
 	flat float dotViewSpherePos;
@@ -37,7 +40,8 @@ void main()
 	vsOut.sphereColor	 = aSphereColor;
 	vsOut.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : aSphereRadius + u_radiusAdd;
 	vsOut.sphereVisible	 = aSphereVisible;
-	vsOut.sphereSelected = sphereSelected;
+	vsOut.sphereSelected = aSphereSelected;
+	vsOut.sphereId		 = aSphereId;
 
 	// Compute normalized view vector.
 	vsOut.dotViewSpherePos	  = dot( vsOut.viewSpherePos, vsOut.viewSpherePos );

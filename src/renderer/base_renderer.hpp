@@ -50,6 +50,8 @@ namespace VTX::Renderer
 		virtual void activeFog( const bool ) {}
 		virtual void activeAA( const bool ) {}
 
+		virtual const uint getPickingId( const uint, const uint ) const { return 0; }
+
 	  protected:
 		uint			_width			   = 0;
 		uint			_height			   = 0;

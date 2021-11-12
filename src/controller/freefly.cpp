@@ -1,6 +1,5 @@
 #include "freefly.hpp"
 #include "action/action_manager.hpp"
-#include "action/selection.hpp"
 #include "object3d/scene.hpp"
 
 namespace VTX
@@ -9,13 +8,6 @@ namespace VTX
 	{
 		void Freefly::_updateInputs( const float & p_deltaTime )
 		{
-			// Deselect
-			if ( _mouseLeftClick )
-			{
-				VTX_ACTION(
-					new Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
-			}
-
 			// Rotation.
 			if ( _mouseLeftPressed )
 			{

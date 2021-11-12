@@ -102,6 +102,12 @@ namespace VTX::Renderer::GL
 
 			_gl->glBindFramebuffer( GLenum( _target ), _id );
 		}
+		void bind( const Target p_target ) const
+		{
+			assert( _gl->glIsFramebuffer( _id ) );
+
+			_gl->glBindFramebuffer( GLenum( p_target ), _id );
+		}
 		void unbind() const { _gl->glBindFramebuffer( GLenum( _target ), 0 ); }
 
 		void attachTexture( const Texture2D & p_texture, const Attachment p_attachment, const GLint p_level = 0 ) const
@@ -118,6 +124,15 @@ namespace VTX::Renderer::GL
 
 			_gl->glNamedFramebufferDrawBuffers(
 				_id, GLsizei( p_drawBuffers.size() ), (const GLenum *)( p_drawBuffers.data() ) );
+
+			_checkStatus();
+		}
+
+		void setReadBuffer( const Attachment & p_readBuffer ) const
+		{
+			assert( _gl->glIsFramebuffer( _id ) );
+
+			_gl->glNamedFramebufferReadBuffer( _id, GLenum( p_readBuffer ) );
 
 			_checkStatus();
 		}

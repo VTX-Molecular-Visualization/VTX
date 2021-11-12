@@ -28,6 +28,7 @@ namespace VTX
 			void setAtomColors( const std::vector<Color::Rgb> & );
 			void setAtomVisibilities( const std::vector<uint> & );
 			void setAtomSelections( const std::vector<uint> & );
+			void setAtomIds( const std::vector<uint> & );
 			void setBonds( const std::vector<uint> & );
 
 		  private:
@@ -38,6 +39,7 @@ namespace VTX
 				ATOM_RADIUS		= 2,
 				ATOM_VISIBILITY = 3,
 				ATOM_SELECTION	= 4,
+				ATOM_ID			= 5,
 			};
 
 			Renderer::GL::Buffer	  _vboAtomPositions	   = Renderer::GL::Buffer();
@@ -45,6 +47,7 @@ namespace VTX
 			Renderer::GL::Buffer	  _vboAtomColors	   = Renderer::GL::Buffer();
 			Renderer::GL::Buffer	  _vboAtomVisibilities = Renderer::GL::Buffer();
 			Renderer::GL::Buffer	  _vboAtomSelections   = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _vboAtomIds		   = Renderer::GL::Buffer();
 			Renderer::GL::Buffer	  _iboBonds			   = Renderer::GL::Buffer();
 			Renderer::GL::VertexArray _vao				   = Renderer::GL::VertexArray();
 		};

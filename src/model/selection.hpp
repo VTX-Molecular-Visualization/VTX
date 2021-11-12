@@ -200,7 +200,7 @@ namespace VTX::Model
 
 		void						   getItemTypes( std::set<ID::VTX_ID> & p_types ) const;
 		Math::AABB					   getAABB() const;
-		const Model::BaseModel * const getCurrentObject();
+		const Model::BaseModel * const getCurrentObject() const;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
 		void getItemsOfType( const ID::VTX_ID & p_itemType, std::set<T *> & p_items ) const
@@ -268,8 +268,8 @@ namespace VTX::Model
 
 		void _emplaceMolecule( const Molecule & );
 
-		void _setCurrentObject( const Model::BaseModel * const p_model );
-		void _clearCurrentObject();
+		void _setCurrentObject( const Model::BaseModel * const p_model, const bool p_notify = true );
+		void _clearCurrentObject( const bool p_notify = true );
 	};
 
 } // namespace VTX::Model

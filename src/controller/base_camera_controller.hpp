@@ -7,6 +7,7 @@
 #include "base_mouse_controller.hpp"
 #include "id.hpp"
 #include "math/aabb.hpp"
+#include "object3d/camera.hpp"
 
 namespace VTX
 {

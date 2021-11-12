@@ -83,6 +83,7 @@
 	<file>sprite/show_selection_icon.png</file>
 	<file>sprite/show_solvent_icon.png</file>
 	<file>sprite/show_water_icon.png</file>
+	<file>sprite/solo_selection_icon.png</file>
 	<file>sprite/stop_icon.png</file>
 	<file>sprite/stop_icon_hovered.png</file>
 	<file>sprite/symbol/atom_symbol_icon.png</file>

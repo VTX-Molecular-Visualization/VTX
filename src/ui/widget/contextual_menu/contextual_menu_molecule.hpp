@@ -34,6 +34,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _orientAction();
 		void _showAction();
 		void _hideAction();
+		void _soloAction();
 		void _copyAction();
 		void _deleteAction();
 

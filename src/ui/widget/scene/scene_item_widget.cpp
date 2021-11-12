@@ -19,6 +19,7 @@ namespace VTX::UI::Widget::Scene
 	SceneItemWidget::SceneItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
 		_registerEvent( Event::Global::SELECTION_CHANGE );
+		_registerEvent( Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE );
 	}
 
 	void SceneItemWidget::receiveEvent( const Event::VTXEvent & p_event )
@@ -29,6 +30,13 @@ namespace VTX::UI::Widget::Scene
 				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
 
 			_refreshSelection( *castedEvent.ptr );
+		}
+		else if ( p_event.name == Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE )
+		{
+			const Event::VTXEventPtr<const Model::BaseModel> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<const Model::BaseModel> &>( p_event );
+
+			_refreshCurrentItemInSelection( castedEvent.ptr );
 		}
 	}
 
@@ -168,7 +176,13 @@ namespace VTX::UI::Widget::Scene
 		drag->exec( Qt::CopyAction | Qt::MoveAction );
 	}
 
-	void SceneItemWidget::_onItemExpanded( QTreeWidgetItem * const ) { _refreshSize(); }
+	void SceneItemWidget::_onItemExpanded( QTreeWidgetItem * const )
+	{
+		_refreshSize();
+
+		// Add this because if the current object is in the expanded item, Qt auto-scroll on it and break the layout
+		scrollToTop();
+	}
 	void SceneItemWidget::_onItemCollapsed( QTreeWidgetItem * const ) { _refreshSize(); }
 
 	void SceneItemWidget::_onCustomContextMenuCalled( const QPoint & p_clicPos ) {}
@@ -184,6 +198,20 @@ namespace VTX::UI::Widget::Scene
 
 		selectModel->refreshSelection( selection );
 
+		if ( p_selection.getCurrentObject() == nullptr )
+		{
+			selectModel->setCurrentIndex( QModelIndex(), QItemSelectionModel::SelectionFlag::Current );
+		}
+		else
+		{
+			QTreeWidgetItem * const currentItem = _findItemFromModelID( p_selection.getCurrentObject()->getId() );
+
+			if ( currentItem != nullptr )
+			{
+				selectModel->setCurrentIndex( indexFromItem( currentItem ),
+											  QItemSelectionModel::SelectionFlag::Current );
+			}
+		}
 		_enableSignals( true );
 	}
 	void SceneItemWidget::_fillItemSelection( const Model::Selection & p_selection,
@@ -320,6 +348,25 @@ namespace VTX::UI::Widget::Scene
 	{
 		const QVariant & expandState = p_item.data( 0, EXPAND_STATE_ROLE );
 		return expandState.isValid() && expandState.value<bool>();
+	}
+
+	void SceneItemWidget::_refreshCurrentItemInSelection( const Model::BaseModel * const p_obj )
+	{
+		_enableSignals( false );
+		if ( p_obj == nullptr )
+		{
+			selectionModel()->setCurrentIndex( QModelIndex(), QItemSelectionModel::SelectionFlag::NoUpdate );
+		}
+		else
+		{
+			QTreeWidgetItem * const item = _findItemFromModelID( p_obj->getId() );
+			if ( item != nullptr )
+			{
+				selectionModel()->setCurrentIndex( indexFromItem( item ), QItemSelectionModel::SelectionFlag::Current );
+				VTXApp::get().getMainWindow().getWidget<SceneWidget>( ID::UI::Window::SCENE ).scrollToItem( *item );
+			}
+		}
+		_enableSignals( true );
 	}
 
 } // namespace VTX::UI::Widget::Scene

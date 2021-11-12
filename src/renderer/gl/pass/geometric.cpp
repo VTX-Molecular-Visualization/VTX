@@ -36,12 +36,22 @@ namespace VTX::Renderer::GL::Pass
 							  Texture2D::Filter::NEAREST,
 							  Texture2D::Filter::NEAREST );
 
+		_pickingTexture.create( p_width,
+								p_height,
+								Texture2D::InternalFormat::R32UI,
+								Texture2D::Wrapping::CLAMP_TO_EDGE,
+								Texture2D::Wrapping::CLAMP_TO_EDGE,
+								Texture2D::Filter::NEAREST,
+								Texture2D::Filter::NEAREST );
+
 		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
 		_fbo.attachTexture( _viewPositionsNormalsCompressedTexture, Framebuffer::Attachment::COLOR0 );
 		_fbo.attachTexture( _colorsTexture, Framebuffer::Attachment::COLOR1 );
 		_fbo.attachTexture( _depthTexture, Framebuffer::Attachment::DEPTH );
+		_fbo.attachTexture( _pickingTexture, Framebuffer::Attachment::COLOR2 );
 
-		_fbo.setDrawBuffers( { Framebuffer::Attachment::COLOR0, Framebuffer::Attachment::COLOR1 } );
+		_fbo.setDrawBuffers(
+			{ Framebuffer::Attachment::COLOR0, Framebuffer::Attachment::COLOR1, Framebuffer::Attachment::COLOR2 } );
 	}
 
 	void Geometric::resize( const uint p_width, const uint p_height, const GL & )
@@ -49,10 +59,12 @@ namespace VTX::Renderer::GL::Pass
 		_viewPositionsNormalsCompressedTexture.resize( p_width, p_height );
 		_colorsTexture.resize( p_width, p_height );
 		_depthTexture.resize( p_width, p_height );
+		_pickingTexture.resize( p_width, p_height );
 
 		_fbo.attachTexture( _viewPositionsNormalsCompressedTexture, Framebuffer::Attachment::COLOR0 );
 		_fbo.attachTexture( _colorsTexture, Framebuffer::Attachment::COLOR1 );
 		_fbo.attachTexture( _depthTexture, Framebuffer::Attachment::DEPTH );
+		_fbo.attachTexture( _pickingTexture, Framebuffer::Attachment::COLOR2 );
 	}
 
 	void Geometric::render( const Object3D::Scene & p_scene, const GL & p_renderer )

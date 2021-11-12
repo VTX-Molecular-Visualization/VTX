@@ -17,7 +17,8 @@ namespace VTX::Renderer::GL::Pass
 		void resize( const uint, const uint, const GL & ) override;
 		void render( const Object3D::Scene &, const GL & ) override;
 
-		inline const Texture2D & getViewPositionsNormalsCompressedTexture() const
+		inline const Framebuffer & getFbo() const { return _fbo; }
+		inline const Texture2D &   getViewPositionsNormalsCompressedTexture() const
 		{
 			return _viewPositionsNormalsCompressedTexture;
 		}
@@ -29,6 +30,7 @@ namespace VTX::Renderer::GL::Pass
 		Texture2D	_viewPositionsNormalsCompressedTexture = Texture2D();
 		Texture2D	_colorsTexture						   = Texture2D();
 		Texture2D	_depthTexture						   = Texture2D();
+		Texture2D	_pickingTexture						   = Texture2D();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

@@ -180,4 +180,13 @@ namespace VTX::UI::Widget::Render
 		doneCurrent();
 	}
 
+	const uint OpenGLWidget::getPickingId( const uint p_x, const uint p_y )
+	{
+		makeCurrent();
+
+		return _renderer->getPickingId( p_x, height() - p_y );
+
+		doneCurrent();
+	}
+
 } // namespace VTX::UI::Widget::Render

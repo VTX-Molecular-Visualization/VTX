@@ -64,7 +64,7 @@ namespace VTX::Model
 		_computeBonds( molecule, mapAtomIds );
 
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
-		getBufferAtomSelection().resize( getAtomCount(), 0u );
+		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
 		getBufferAtomRadius().shrink_to_fit();
 		for ( AtomPositionsFrame & atomPositions : getAtomPositionFrames() )
@@ -319,7 +319,7 @@ namespace VTX::Model
 	void GeneratedMolecule::_validateBuffers()
 	{
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
-		getBufferAtomSelection().resize( getAtomCount(), 0u );
+		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
 		getBufferAtomRadius().shrink_to_fit();
 		for ( AtomPositionsFrame & atomPositions : getAtomPositionFrames() )

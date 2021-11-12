@@ -74,6 +74,8 @@ namespace VTX::UI::Widget::Scene
 
 		virtual bool _itemCanBeRenamed( const QTreeWidgetItem * p_item );
 
+		void _refreshCurrentItemInSelection( const Model::BaseModel * const p_obj );
+
 		Model::ID				  _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;
 		virtual QTreeWidgetItem * _findItemFromModelID( const Model::ID & p_id ) const;
 		QTreeWidgetItem * _findItemFromModelIDRecursive( QTreeWidgetItem & p_parent, const Model::ID & p_id ) const;

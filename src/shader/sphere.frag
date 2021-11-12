@@ -6,12 +6,13 @@ uniform mat4 u_projMatrix;
 
 in GsOut
 {
-	smooth vec3			viewImpPos;	   // Impostor position in view space.
-	flat vec3			viewSpherePos; // Sphere position in view space.
-	flat vec3			sphereColor;
-	flat float			sphereRadius;
-	flat float			dotViewSpherePos;
-	flat uint sphereSelected;
+	smooth vec3 viewImpPos;	   // Impostor position in view space.
+	flat vec3	viewSpherePos; // Sphere position in view space.
+	flat vec3	sphereColor;
+	flat float	sphereRadius;
+	flat float	dotViewSpherePos;
+	flat uint	sphereSelected;
+	flat uint	sphereId;
 }
 gsIn;
 
@@ -23,6 +24,8 @@ layout( location = 0 ) out uvec4 outViewPositionNormal;
 // 3 32 bits for color.
 // 1 32 bits for specular.
 layout( location = 1 ) out vec4 outColor;
+// 1 32 bits for id.
+layout( location = 2 ) out uint outId;
 
 float computeDepth( const vec3 v )
 {
@@ -60,6 +63,7 @@ void main()
 
 		gl_FragDepth = computeDepth( gsIn.viewImpPos );
 #else
+		outId				  = 0;
 		discard;
 #endif
 	}
@@ -86,5 +90,6 @@ void main()
 		// Output data.
 		outViewPositionNormal = viewPositionNormalCompressed;
 		outColor			  = vec4( gsIn.sphereColor, 32.f ); // w = specular shininess.
+		outId				  = gsIn.sphereId;
 	}
 }

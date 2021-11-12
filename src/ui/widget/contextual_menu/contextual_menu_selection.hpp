@@ -24,8 +24,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		None = 0,
 		All	 = 0xFFFF,
 
-		AllButMolecule = ~Molecule,
-		AllButAtom	   = ~Atom,
+		MoleculeStructure = Molecule | Chain | Residue | Atom,
+		AllButMolecule	  = MoleculeStructure & ~Molecule,
+		AllButAtom		  = MoleculeStructure & ~Atom,
 	};
 
 	inline TypeMask operator&( const TypeMask p_lhs, const TypeMask p_rhs )
@@ -205,6 +206,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _orientAction();
 		void _showAction();
 		void _hideAction();
+		void _soloAction();
 		void _copyAction();
 		void _extractAction();
 		void _deleteAction();

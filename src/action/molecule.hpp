@@ -480,7 +480,7 @@ namespace VTX::Action::Molecule
 	class Orient : public BaseAction
 	{
 	  public:
-		explicit Orient( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
+		explicit Orient( const Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
 
 		virtual void execute() override
 		{
@@ -491,7 +491,7 @@ namespace VTX::Action::Molecule
 		}
 
 	  private:
-		Model::Molecule & _molecule;
+		const Model::Molecule & _molecule;
 	};
 
 	class Copy : public BaseAction

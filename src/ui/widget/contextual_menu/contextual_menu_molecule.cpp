@@ -40,6 +40,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Orient", this, &ContextualMenuMolecule::_orientAction );
 		addAction( "Show", this, &ContextualMenuMolecule::_showAction );
 		addAction( "Hide", this, &ContextualMenuMolecule::_hideAction );
+		addAction( "Solo", this, &ContextualMenuMolecule::_soloAction );
 		addAction( "Duplicate", this, &ContextualMenuMolecule::_copyAction );
 		addAction( "Delete", this, &ContextualMenuMolecule::_deleteAction );
 
@@ -115,6 +116,12 @@ namespace VTX::UI::Widget::ContextualMenu
 		VTX_ACTION( new Action::Molecule::ChangeVisibility(
 			*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
 	}
+	void ContextualMenuMolecule::_soloAction()
+	{
+		VTX_ACTION( new Action::Molecule::ChangeVisibility(
+			*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+	}
+
 	void ContextualMenuMolecule::_copyAction() { VTX_ACTION( new Action::Molecule::Copy( *_target ) ); }
 	void ContextualMenuMolecule::_deleteAction() { VTX_ACTION( new Action::Molecule::Delete( *_target ) ); }
 

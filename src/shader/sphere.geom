@@ -12,6 +12,7 @@ in VsOut
 	flat float sphereRadius;
 	flat uint  sphereVisible;
 	flat uint  sphereSelected;
+	flat uint  sphereId;
 	flat vec3  vImpU; // Impostor vectors.
 	flat vec3  vImpV;
 	flat float dotViewSpherePos;
@@ -26,6 +27,7 @@ out GsOut
 	flat float	sphereRadius;
 	flat float	dotViewSpherePos;
 	flat uint	sphereSelected;
+	flat uint	sphereId;
 }
 gsOut;
 
@@ -64,6 +66,7 @@ void main()
 	gsOut.sphereRadius	   = vsIn[ 0 ].sphereRadius;
 	gsOut.dotViewSpherePos = vsIn[ 0 ].dotViewSpherePos;
 	gsOut.sphereSelected   = vsIn[ 0 ].sphereSelected;
+	gsOut.sphereId		   = vsIn[ 0 ].sphereId;
 
 	// Compute impostors vertices.
 	const vec3 v1 = gl_in[ 0 ].gl_Position.xyz - vsIn[ 0 ].vImpU - vsIn[ 0 ].vImpV;

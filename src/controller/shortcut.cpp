@@ -141,7 +141,7 @@ namespace VTX
 				{
 					const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 
-					if ( !selection.isEmpty() )
+					if ( selection.hasMolecule() )
 						VTX_ACTION( new Action::Selection::Orient( selection ) );
 
 					shortcutEaten = true;
@@ -173,7 +173,7 @@ namespace VTX
 				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
-					if ( !selectionModel.isEmpty() )
+					if ( selectionModel.hasMolecule() )
 						VTX_ACTION( new Action::Selection::Copy( selectionModel ) );
 					shortcutEaten = true;
 				}
@@ -183,7 +183,7 @@ namespace VTX
 				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
-					if ( !selectionModel.isEmpty() )
+					if ( selectionModel.hasMolecule() )
 						VTX_ACTION( new Action::Selection::Extract( selectionModel ) );
 					shortcutEaten = true;
 				}
