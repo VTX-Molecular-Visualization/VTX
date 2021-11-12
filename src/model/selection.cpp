@@ -880,7 +880,16 @@ namespace VTX::Model
 
 	bool Selection::isModelSelected( const Model::BaseModel & p_model ) const
 	{
-		return _items.find( p_model.getId() ) != _items.end();
+		const ID::VTX_ID & modelTypeID = p_model.getTypeId();
+
+		if ( modelTypeID == ID::Model::MODEL_CHAIN )
+			return isChainSelected( static_cast<const Model::Chain&>( p_model ));
+		else if ( modelTypeID == ID::Model::MODEL_RESIDUE)
+			return isResidueSelected( static_cast<const Model::Residue &>( p_model ) );
+		else if ( modelTypeID == ID::Model::MODEL_ATOM )
+			return isAtomSelected( static_cast<const Model::Atom &>( p_model ) );
+		else 
+			return _items.find( p_model.getId() ) != _items.end();
 	}
 
 	bool Selection::isEmpty() const { return _items.size() <= 0; }
