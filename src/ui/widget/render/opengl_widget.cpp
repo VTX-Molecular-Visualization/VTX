@@ -184,7 +184,8 @@ namespace VTX::UI::Widget::Render
 	{
 		makeCurrent();
 
-		return _renderer->getPickingId( p_x, height() - p_y );
+		QPoint pos = mapFrom( (QWidget *)&( VTXApp::get().getMainWindow() ), QPoint( p_x, p_y ) );
+		return _renderer->getPickingId( pos.x(), height() - pos.y() );
 
 		doneCurrent();
 	}
