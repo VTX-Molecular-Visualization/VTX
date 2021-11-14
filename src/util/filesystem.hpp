@@ -4,6 +4,7 @@
 #include "exception.hpp"
 #include "io/filepath.hpp"
 #include "tool/logger.hpp"
+#include "util/time.hpp"
 #include <QCoreApplication>
 #include <QDir>
 #include <QDirIterator>
@@ -49,6 +50,7 @@ namespace VTX
 			inline const IO::FilePath getConfigIniFile() { return getExecutableDir() + "/config.ini"; }
 			inline const IO::FilePath getSettingJsonFile() { return getExecutableDir() + "/setting.json"; }
 			inline const IO::FilePath getLicenseFile() { return getExecutableDir() + "/license.txt"; }
+			inline const IO::FilePath getDefaultSnapshotsDir() { return getExecutableDir() + "/snapshots"; }
 
 			// Dev directories.
 			static const IO::FilePath DATA_DIR				  = IO::FilePath( "../data" );
@@ -101,6 +103,12 @@ namespace VTX
 				  "XTC (*.xtc);;"
 				  "XYZ (*.xyz);;";
 
+			static const QString IMAGE_EXPORT_EXTENSIONS
+				= "PNG (*.png);;"
+				  "JPEG (*.jpg *.jpeg);;"
+				  "BMP (*.bmp);;"
+				  "All (*)";
+
 			static const QString VTX_EXTENSIONS = "VTX file (*.vtx)";
 
 			static const QString LOAD_MOLECULE_FILTERS	 = MOLECULE_EXTENSIONS_READ;
@@ -119,6 +127,8 @@ namespace VTX
 
 			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
+
+			static const QString DEFAULT_IMAGE_EXPORT_FILTER = "PNG (*.png)";
 
 			static const IO::FilePath STYLESHEET_FILE_DEFAULT = IO::FilePath( ":/stylesheet.css" );
 			static const IO::FilePath SCENE_OBJECT_DIR		  = IO::FilePath( "obj" );
@@ -162,11 +172,25 @@ namespace VTX
 				createDirectory( getSnapshotsDir() );
 				return IO::FilePath( getSnapshotsDir() / p_filename );
 			}
+			inline const IO::FilePath getUniqueSnapshotsPath()
+			{
+				const std::string filename = Util::Time::getTimestamp() + ".png";
+				createDirectory( getSnapshotsDir() );
+
+				IO::FilePath path = IO::FilePath( getSnapshotsDir() / filename );
+				generateUniqueFileName( path );
+
+				return path;
+			}
 
 			inline const IO::FilePath getVideosPath( const IO::FilePath & p_filename )
 			{
 				createDirectory( getVideosDir() );
-				return IO::FilePath( getVideosDir() / p_filename );
+
+				IO::FilePath path = IO::FilePath( getVideosDir() / p_filename );
+				generateUniqueFileName( path );
+
+				return path;
 			}
 
 			inline const IO::FilePath getRendersPath( const IO::FilePath & p_filename )

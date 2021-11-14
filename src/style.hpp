@@ -53,6 +53,8 @@ namespace VTX
 			const QPixmap FOLDED_PIXMAP;
 			const QPixmap CLOSE_PIXMAP;
 
+			const QPixmap OPEN_FOLDER_ICON;
+
 			const QPixmap DEFAULT_ITEM;
 
 			const QPixmap MOLECULE_SYMBOL;
@@ -161,6 +163,7 @@ namespace VTX
 				UNFOLDED_PIXMAP( QPixmap( ":/sprite/treeview_unfolded_molecule_icon.png" ) ),
 				FOLDED_PIXMAP( QPixmap( ":/sprite/treeview_folded_molecule_icon.png" ) ),
 				CLOSE_PIXMAP( QPixmap( ":/sprite/close_icon.png" ) ),
+				OPEN_FOLDER_ICON( QPixmap( ":/sprite/open_session_icon.png" ) ),
 				MOLECULE_SYMBOL( QPixmap( ":/sprite/symbol/molecule_symbol_icon.png" ) ),
 				DEFAULT_ITEM( QPixmap( ":/sprite/default_item_icon.png" ) ),
 				CHAIN_SYMBOL( QPixmap( ":/sprite/symbol/chain_symbol_icon.png" ) ),

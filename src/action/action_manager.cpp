@@ -38,9 +38,8 @@ namespace VTX
 
 				if ( command == "snapshot" )
 				{
-					action = new Main::Snapshot(
-						Worker::Snapshoter::MODE::GL,
-						Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) );
+					action = new Main::Snapshot( Worker::Snapshoter::MODE::GL,
+												 Util::Filesystem::getUniqueSnapshotsPath() );
 				}
 				else if ( command == "change_representation" )
 				{

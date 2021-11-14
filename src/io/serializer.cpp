@@ -6,6 +6,8 @@
 #include "event/event_manager.hpp"
 #include "generic/base_colorable.hpp"
 #include "io/reader/lib_chemfiles.hpp"
+#include "io/struct/image_export.hpp"
+#include "io/struct/scene_path_data.hpp"
 #include "model/chain.hpp"
 #include "model/configuration/molecule.hpp"
 #include "model/mesh_triangle.hpp"
@@ -230,6 +232,7 @@ namespace VTX::IO
 			{ "RENDER_EFFECT_DEFAULT", defaultRenderEffectPresetName },
 			{ "ACTIVE_VSYNC", p_setting.getVSync() },
 			{ "BACKGROUND_OPACITY", p_setting.getSnapshotBackgroundOpacity() },
+			{ "SNAPSHOT_QUALITY", p_setting.getSnapshotQuality() },
 			{ "BACKGROUND_RESOLUTION", magic_enum::enum_name( p_setting.getSnapshotResolution() ) },
 
 			{ "CONTROLLER_TRANSLATION_SPEED", p_setting.getTranslationSpeed() },
@@ -637,7 +640,8 @@ namespace VTX::IO
 		p_setting.setVSync( _get<bool>( p_json, "ACTIVE_VSYNC", Setting::ACTIVE_VSYNC_DEFAULT ) );
 		p_setting.setSnapshotBackgroundOpacity(
 			_get<float>( p_json, "BACKGROUND_OPACITY", Setting::BACKGROUND_OPACITY_DEFAULT ) );
-		p_setting.setSnapshotResolution( _getEnum<Worker::SNAPSHOT_RESOLUTION>(
+		p_setting.setSnapshotQuality( _get<float>( p_json, "SNAPSHOT_QUALITY", Setting::SNAPSHOT_QUALITY_DEFAULT ) );
+		p_setting.setSnapshotResolution( _getEnum<IO::Struct::ImageExport::RESOLUTION>(
 			p_json, "BACKGROUND_RESOLUTION", Setting::SNAPSHOT_RESOLUTION_DEFAULT ) );
 
 		p_setting.setTranslationSpeed(

@@ -27,7 +27,7 @@ namespace VTX
 	{
 		class Scene;
 	}
-	namespace IO
+	namespace IO::Struct
 	{
 		class ScenePathData;
 	}
@@ -49,8 +49,8 @@ namespace VTX
 		void goToState( const std::string &, void * const = nullptr );
 		void renderScene() const;
 
-		inline IO::ScenePathData &							  getScenePathData() { return *_pathSceneData; };
-		inline const IO::ScenePathData &					  getScenePathData() const { return *_pathSceneData; };
+		inline IO::Struct::ScenePathData &					  getScenePathData() { return *_pathSceneData; };
+		inline const IO::Struct::ScenePathData &			  getScenePathData() const { return *_pathSceneData; };
 		inline Object3D::Scene &							  getScene() { return *_scene; }
 		inline const Object3D::Scene &						  getScene() const { return *_scene; }
 		inline const UI::MainWindow &						  getMainWindow() const { return *_mainWindow; }
@@ -91,7 +91,7 @@ namespace VTX
 		UI::MainWindow *							   _mainWindow			  = nullptr;
 		State::StateMachine *						   _stateMachine		  = nullptr;
 		Object3D::Scene *							   _scene				  = nullptr;
-		IO::ScenePathData *							   _pathSceneData		  = nullptr;
+		IO::Struct::ScenePathData *					   _pathSceneData		  = nullptr;
 		Model::Representation::RepresentationLibrary * _representationLibrary = nullptr;
 		Model::Renderer::RenderEffectPresetLibrary *   _renderEffectLibrary	  = nullptr;
 

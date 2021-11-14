@@ -1,5 +1,5 @@
 #include "filesystem.hpp"
-#include "io/scene_path_data.hpp"
+#include "io/struct/scene_path_data.hpp"
 #include "model/molecule.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"

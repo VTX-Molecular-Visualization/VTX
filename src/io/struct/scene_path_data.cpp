@@ -4,7 +4,7 @@
 #include "model/molecule.hpp"
 #include "util/filesystem.hpp"
 
-namespace VTX::IO
+namespace VTX::IO::Struct
 {
 	// ScenePathData::Data
 	// /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,4 +174,4 @@ namespace VTX::IO
 			VTX_EVENT( new Event::VTXEventValue<bool>( Event::Global::SCENE_MODIFICATION_STATE_CHANGE, false ) );
 	}
 
-} // namespace VTX::IO
+} // namespace VTX::IO::Struct

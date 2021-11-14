@@ -4,13 +4,13 @@
 #include "event/event_manager.hpp"
 #include "io/reader/serialized_object.hpp"
 #include "io/serializer.hpp"
+#include "io/struct/image_export.hpp"
 #include "io/writer/serialized_object.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "renderer/base_renderer.hpp"
 #include "trajectory/trajectory_enum.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
-#include "worker/snapshoter.hpp"
 #include <QSettings>
 #include <exception>
 #include <string>
@@ -39,22 +39,25 @@ namespace VTX
 #else
 	const bool Setting::FORCE_RENDERER_DEFAULT = true;
 #endif
-	const Color::Rgb				  Setting::BACKGROUND_COLOR_DEFAULT		   = Color::Rgb::BLACK;
-	const float						  Setting::BACKGROUND_OPACITY_DEFAULT	   = 1.0f;
-	const Worker::SNAPSHOT_RESOLUTION Setting::SNAPSHOT_RESOLUTION_DEFAULT	   = Worker::SNAPSHOT_RESOLUTION::Free;
-	const int						  Setting::REPRESENTATION_DEFAULT_INDEX	   = 0;
-	const Generic::REPRESENTATION	  Setting::DEFAULT_REPRESENTATION_TYPE	   = Generic::REPRESENTATION::STICK;
-	const std::string				  Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
-	const float						  Setting::ATOMS_RADIUS_DEFAULT			   = 0.4f;
-	const float						  Setting::ATOMS_RADIUS_MIN				   = 0.01f;
-	const float						  Setting::ATOMS_RADIUS_MAX				   = 1.f;
-	const float						  Setting::BONDS_RADIUS_DEFAULT			   = 0.15f;
-	const float						  Setting::BONDS_RADIUS_MIN				   = 0.01f;
-	const float						  Setting::BONDS_RADIUS_MAX				   = 1.f;
-	const float						  Setting::ATOMS_RADIUS_ADD_DEFAULT		   = 0.f;
-	const float						  Setting::ATOMS_RADIUS_ADD_MIN			   = -1.f;
-	const float						  Setting::ATOMS_RADIUS_ADD_MAX			   = 1.f;
-	const Generic::COLOR_MODE		  Setting::COLOR_MODE_DEFAULT			   = Generic::COLOR_MODE::CHAIN;
+	const Color::Rgb Setting::BACKGROUND_COLOR_DEFAULT	 = Color::Rgb::BLACK;
+	const float		 Setting::BACKGROUND_OPACITY_DEFAULT = 1.0f;
+	const float		 Setting::SNAPSHOT_QUALITY_DEFAULT	 = 1.0f;
+
+	const IO::Struct::ImageExport::RESOLUTION Setting::SNAPSHOT_RESOLUTION_DEFAULT
+		= IO::Struct::ImageExport::RESOLUTION::Free;
+	const int									  Setting::REPRESENTATION_DEFAULT_INDEX = 0;
+	const Generic::REPRESENTATION				  Setting::DEFAULT_REPRESENTATION_TYPE = Generic::REPRESENTATION::STICK;
+	const std::string							  Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
+	const float									  Setting::ATOMS_RADIUS_DEFAULT			   = 0.4f;
+	const float									  Setting::ATOMS_RADIUS_MIN				   = 0.01f;
+	const float									  Setting::ATOMS_RADIUS_MAX				   = 1.f;
+	const float									  Setting::BONDS_RADIUS_DEFAULT			   = 0.15f;
+	const float									  Setting::BONDS_RADIUS_MIN				   = 0.01f;
+	const float									  Setting::BONDS_RADIUS_MAX				   = 1.f;
+	const float									  Setting::ATOMS_RADIUS_ADD_DEFAULT		   = 0.f;
+	const float									  Setting::ATOMS_RADIUS_ADD_MIN			   = -1.f;
+	const float									  Setting::ATOMS_RADIUS_ADD_MAX			   = 1.f;
+	const Generic::COLOR_MODE					  Setting::COLOR_MODE_DEFAULT			   = Generic::COLOR_MODE::CHAIN;
 	const Generic::SECONDARY_STRUCTURE_COLOR_MODE Setting::SS_COLOR_MODE_DEFAULT
 		= Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
 
@@ -351,6 +354,21 @@ namespace VTX
 		settings.setValue( QString::fromStdString( RegisterKey::LAST_EXPORTED_MOLECULE_FOLDER ), p_path );
 	}
 
+	QString Setting::getLastExportedImageFolder()
+	{
+		const QString key = QString::fromStdString( RegisterKey::LAST_EXPORTED_IMAGE_FOLDER );
+		return _getFileInRegisterKey( key, Util::Filesystem::getDefaultSnapshotsDir().qpath() );
+	}
+	void Setting::saveLastExportedImageFolder( const QString & p_path )
+	{
+		QSettings settings( QSettings::Format::NativeFormat,
+							QSettings::Scope::UserScope,
+							QString::fromStdString( VTX_PROJECT_NAME ),
+							QString::fromStdString( VTX_PROJECT_NAME ) );
+
+		settings.setValue( QString::fromStdString( RegisterKey::LAST_EXPORTED_IMAGE_FOLDER ), p_path );
+	}
+
 	QString Setting::_getFileInRegisterKey( const QString & p_key, const QString & p_default )
 	{
 		const QSettings settings( QSettings::Format::NativeFormat,
@@ -418,7 +436,12 @@ namespace VTX
 		backgroundOpacity = Util::Math::clamp( p_backgroundOpacity, 0.f, 1.f );
 		_sendDataChangedEvent( PARAMETER::SNAPSHOT_BACKGROUND_OPACITY );
 	}
-	void Setting::setSnapshotResolution( const Worker::SNAPSHOT_RESOLUTION & p_snapshotResolution )
+	void Setting::setSnapshotQuality( const float p_quality )
+	{
+		snapshotQuality = Util::Math::clamp( p_quality, 0.f, 1.f );
+		_sendDataChangedEvent( PARAMETER::SNAPSHOT_QUALITY );
+	}
+	void Setting::setSnapshotResolution( const IO::Struct::ImageExport::RESOLUTION & p_snapshotResolution )
 	{
 		snapshotResolution = p_snapshotResolution;
 		_sendDataChangedEvent( PARAMETER::SNAPSHOT_RESOLUTION );

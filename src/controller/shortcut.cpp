@@ -212,10 +212,9 @@ namespace VTX
 				shortcutEaten = true;
 				break;
 			case Qt::Key::Key_F5:
-				VTX_ACTION( new Action::Main::Snapshot(
-					Worker::Snapshoter::MODE::GL,
-					Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ),
-					VTX_SETTING().getSnapshotResolution() ) );
+				VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+														Util::Filesystem::getUniqueSnapshotsPath(),
+														VTX_SETTING().getSnapshotResolution() ) );
 				shortcutEaten = true;
 				break;
 #ifndef VTX_PRODUCTION
