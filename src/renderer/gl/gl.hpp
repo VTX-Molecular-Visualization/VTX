@@ -40,6 +40,8 @@ namespace VTX::Renderer::GL
 		inline const VertexArray & getQuadVAO() const { return _quadVAO; }
 		inline const Buffer &	   getQuadVBO() const { return _quadVBO; }
 
+		const uint getPickingId( const uint, const uint ) const override;
+
 	  private:
 		Pass::Geometric *	   _passGeometric	   = nullptr;
 		Pass::LinearizeDepth * _passLinearizeDepth = nullptr;

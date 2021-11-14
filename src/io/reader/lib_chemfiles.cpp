@@ -201,7 +201,8 @@ namespace VTX::IO::Reader
 		p_molecule.getAtoms().resize( frame.size() );
 		p_molecule.getBufferAtomRadius().resize( frame.size() );
 		p_molecule.getBufferAtomVisibilities().resize( frame.size(), 1u );
-		p_molecule.getBufferAtomSelection().resize( frame.size(), 0u );
+		p_molecule.getBufferAtomSelections().resize( frame.size(), 0u );
+		p_molecule.getBufferAtomIds().resize( frame.size() );
 		modelFrame.resize( frame.size() );
 
 		Model::Chain * modelChain;
@@ -448,6 +449,8 @@ namespace VTX::IO::Reader
 
 				// Radius.
 				p_molecule.getBufferAtomRadius()[ atomId ] = modelAtom->getVdwRadius();
+				// Id.
+				p_molecule.getBufferAtomIds()[ atomId ] = modelAtom->getId();
 			}
 
 			// Check residue full of solvent/ion.

@@ -180,4 +180,14 @@ namespace VTX::UI::Widget::Render
 		doneCurrent();
 	}
 
+	const uint OpenGLWidget::getPickingId( const uint p_x, const uint p_y )
+	{
+		makeCurrent();
+
+		QPoint pos = mapFrom( (QWidget *)&( VTXApp::get().getMainWindow() ), QPoint( p_x, p_y ) );
+		return _renderer->getPickingId( pos.x(), height() - pos.y() );
+
+		doneCurrent();
+	}
+
 } // namespace VTX::UI::Widget::Render

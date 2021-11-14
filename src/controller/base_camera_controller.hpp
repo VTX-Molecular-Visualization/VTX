@@ -7,6 +7,7 @@
 #include "base_mouse_controller.hpp"
 #include "id.hpp"
 #include "math/aabb.hpp"
+#include "object3d/camera.hpp"
 
 namespace VTX
 {
@@ -57,13 +58,12 @@ namespace VTX
 			virtual void _computeOrientPositions( const Math::AABB & p_aabb ) = 0;
 			virtual void _updateOrient( const float & )						  = 0;
 
-			bool _mouseHoveringRenderWidget() const;
-
 			virtual void _handleMouseButtonDownEvent( const QMouseEvent & p_event ) override
 			{
 				if ( _mouseHoveringRenderWidget() )
 					BaseMouseController::_handleMouseButtonDownEvent( p_event );
 			}
+
 			virtual void _handleMouseWheelEvent( const QWheelEvent & p_event ) override
 			{
 				if ( _mouseHoveringRenderWidget() )

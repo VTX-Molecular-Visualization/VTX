@@ -63,7 +63,7 @@ namespace VTX::Action::Atom
 	class Orient : public BaseAction
 	{
 	  public:
-		explicit Orient( Model::Atom & p_atom ) : _atom( p_atom ) {}
+		explicit Orient( const Model::Atom & p_atom ) : _atom( p_atom ) {}
 
 		virtual void execute() override
 		{
@@ -74,7 +74,7 @@ namespace VTX::Action::Atom
 		}
 
 	  private:
-		Model::Atom & _atom;
+		const Model::Atom & _atom;
 	};
 
 	class Delete : public BaseAction

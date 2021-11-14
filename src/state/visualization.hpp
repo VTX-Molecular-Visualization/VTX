@@ -14,8 +14,6 @@ namespace VTX
 			Visualization();
 
 			virtual void enter( void * const ) override;
-			virtual void exit() override;
-
 			virtual void update( const float & p_deltaTime ) override;
 
 			// inline const Controller::BaseCameraController * const getCurrentCameraController() const { return
@@ -24,6 +22,7 @@ namespace VTX
 			{
 				return getController<Controller::BaseCameraController>( _cameraController );
 			}
+
 			inline const ID::VTX_ID & getCurrentCameraControllerID() const { return _cameraController; }
 
 			void toggleCameraController();

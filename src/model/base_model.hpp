@@ -40,7 +40,7 @@ namespace VTX
 			inline void forceNotifyDataChanged() { _notifyDataChanged(); }
 
 		  protected:
-			inline static ID				COUNTER		 = 0;
+			inline static ID				COUNTER		 = 1;
 			inline static const std::string DEFAULT_NAME = "Unknown";
 
 			const ID				 _id	  = COUNTER++;

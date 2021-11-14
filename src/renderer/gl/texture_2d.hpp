@@ -37,6 +37,7 @@ namespace VTX::Renderer::GL
 		{
 			// See http://docs.gl/gl4/glTexSubImage2D.
 			RED				= GL_RED,
+			RED_INTEGER		= GL_RED_INTEGER,
 			RG				= GL_RG,
 			RGB				= GL_RGB,
 			BGR				= GL_BGR,
@@ -49,9 +50,10 @@ namespace VTX::Renderer::GL
 		enum class InternalFormat : GLenum
 		{
 			// See http://docs.gl/gl4/glTexStorage2D.
-			R8	 = GL_R8,
-			R16F = GL_R16F,
-			R32F = GL_R32F,
+			R8	  = GL_R8,
+			R32UI = GL_R32UI,
+			R16F  = GL_R16F,
+			R32F  = GL_R32F,
 
 			RGB16F	 = GL_RGB16F,
 			RGBA16F	 = GL_RGBA16F,
@@ -81,8 +83,6 @@ namespace VTX::Renderer::GL
 			LINEAR_MIPMAP_LINEAR   = GL_LINEAR_MIPMAP_NEAREST
 		};
 
-		/// TODO: ca m'emmerde d'avoir ce p_gl dans tous les constructeurs...
-		/// Le faire static dans la base ? Besoin de plusieurs contextes ?
 		Texture2D() = default;
 		~Texture2D() { _destroy(); }
 

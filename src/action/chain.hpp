@@ -187,7 +187,7 @@ namespace VTX::Action::Chain
 	class Orient : public BaseAction
 	{
 	  public:
-		explicit Orient( Model::Chain & p_chain ) : _chain( p_chain ) {}
+		explicit Orient( const Model::Chain & p_chain ) : _chain( p_chain ) {}
 
 		virtual void execute() override
 		{
@@ -198,7 +198,7 @@ namespace VTX::Action::Chain
 		}
 
 	  private:
-		Model::Chain & _chain;
+		const Model::Chain & _chain;
 	};
 
 	class Delete : public BaseAction

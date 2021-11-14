@@ -160,7 +160,8 @@ namespace VTX
 			_buffer->setAtomRadius( _bufferAtomRadius );
 			_fillBufferAtomColors();
 			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
-			_buffer->setAtomSelections( _bufferAtomSelection );
+			_buffer->setAtomSelections( _bufferAtomSelections );
+			_buffer->setAtomIds( _bufferAtomIds );
 			_buffer->setBonds( _bufferBonds );
 		}
 
@@ -367,8 +368,8 @@ namespace VTX
 
 		void Molecule::_fillBufferAtomSelections( const Model::Selection::MapChainIds * const p_selection )
 		{
-			_bufferAtomSelection.clear();
-			_bufferAtomSelection.resize( _atoms.size(), 0u );
+			_bufferAtomSelections.clear();
+			_bufferAtomSelections.resize( _atoms.size(), 0u );
 			if ( p_selection != nullptr )
 			{
 				for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : *p_selection )
@@ -377,13 +378,13 @@ namespace VTX
 					{
 						for ( const uint & atomIndex : pairResidue.second )
 						{
-							_bufferAtomSelection[ atomIndex ] = 1u;
+							_bufferAtomSelections[ atomIndex ] = 1u;
 						}
 					}
 				}
 			}
 
-			_buffer->setAtomSelections( _bufferAtomSelection );
+			_buffer->setAtomSelections( _bufferAtomSelections );
 		}
 
 		void Molecule::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
