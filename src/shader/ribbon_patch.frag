@@ -26,6 +26,7 @@ void main()
 	// TODO: redo it in tessellation shader.
 	if ( teIn.visibility == 0 )
 	{
+		outId = 0;
 		discard;
 	}
 

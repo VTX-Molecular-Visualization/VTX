@@ -169,7 +169,6 @@ namespace VTX
 													 && residue->isVisible() && CA->isVisible() && O->isVisible() ) );
 
 					ids.emplace_back( residue->getId() );
-
 					if ( residueLast != nullptr
 						 && residue->getIndexInOriginalChain() != residueLast->getIndexInOriginalChain() + 1 )
 					{
@@ -273,11 +272,10 @@ namespace VTX
 
 			_buffer->setControlPointPositions( _bufferCaPositions );
 			_buffer->setControlPointDirections( _bufferCaODirections );
-			_buffer->setControlPointSecondaryStructure( _bufferSSTypes );
-			_buffer->setControlPointColors( _bufferColors );
-			_buffer->setControlPointVisibilities( _bufferVisibilities );
-			_buffer->setControlPointIds( _bufferIds );
-
+			_buffer->setSecondaryStructures( _bufferSSTypes );
+			_buffer->setColors( _bufferColors );
+			_buffer->setVisibilities( _bufferVisibilities );
+			_buffer->setIds( _bufferIds );
 			_buffer->setIndices( _bufferIndices );
 
 			refreshSelection();
@@ -336,7 +334,7 @@ namespace VTX
 			}
 
 			_bufferColors.shrink_to_fit();
-			_buffer->setControlPointColors( _bufferColors );
+			_buffer->setColors( _bufferColors );
 		}
 
 		void SecondaryStructure::refreshVisibilities()
@@ -357,7 +355,7 @@ namespace VTX
 			}
 
 			_bufferVisibilities.shrink_to_fit();
-			_buffer->setControlPointVisibilities( _bufferVisibilities );
+			_buffer->setVisibilities( _bufferVisibilities );
 		}
 
 		void SecondaryStructure::_checkOrientationAndFlip( std::vector<Vec3f> & p_directions )
@@ -392,7 +390,7 @@ namespace VTX
 			}
 
 			_bufferSelections.shrink_to_fit();
-			_buffer->setControlPointSelections( _bufferSelections );
+			_buffer->setSelections( _bufferSelections );
 		}
 
 		void SecondaryStructure::print() const

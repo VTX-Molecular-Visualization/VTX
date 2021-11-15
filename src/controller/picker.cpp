@@ -41,26 +41,45 @@ namespace VTX::Controller
 			// If something clicked.
 			if ( id != 0 )
 			{
-				ID::VTX_ID	  typeId = MVC::MvcManager::get().getModelTypeID( id );
-				Model::Atom & atom	 = MVC::MvcManager::get().getModel<Model::Atom>( id );
-
+				ID::VTX_ID typeId = MVC::MvcManager::get().getModelTypeID( id );
 				// Already selected.
-				if ( Selection::SelectionManager::get().getSelectionModel().isAtomSelected( atom ) )
+				if ( Selection::SelectionManager::get().getSelectionModel().isModelSelected(
+						 MVC::MvcManager::get().getModel<Model::BaseModel>( id ) ) )
 				{
 					// Remove from selection.
 					if ( _isModifierExclusive( ModifierFlag::Control ) )
 					{
-						VTX_ACTION( new Action::Selection::UnselectAtom(
-							Selection::SelectionManager::get().getSelectionModel(), atom ) );
+						if ( typeId == ID::Model::MODEL_RESIDUE )
+						{
+							VTX_ACTION( new Action::Selection::UnselectResidue(
+								Selection::SelectionManager::get().getSelectionModel(),
+								MVC::MvcManager::get().getModel<Model::Residue>( id ) ) );
+						}
+						else
+						{
+							VTX_ACTION( new Action::Selection::UnselectAtom(
+								Selection::SelectionManager::get().getSelectionModel(),
+								MVC::MvcManager::get().getModel<Model::Atom>( id ) ) );
+						}
 					}
 				}
 				else
 				{
 					// Add to selection.
-					VTX_ACTION(
-						new Action::Selection::SelectAtom( Selection::SelectionManager::get().getSelectionModel(),
-														   atom,
-														   _isModifierExclusive( ModifierFlag::Control ) ) );
+					if ( typeId == ID::Model::MODEL_RESIDUE )
+					{
+						VTX_ACTION( new Action::Selection::SelectResidue(
+							Selection::SelectionManager::get().getSelectionModel(),
+							MVC::MvcManager::get().getModel<Model::Residue>( id ),
+							_isModifierExclusive( ModifierFlag::Control ) ) );
+					}
+					else
+					{
+						VTX_ACTION(
+							new Action::Selection::SelectAtom( Selection::SelectionManager::get().getSelectionModel(),
+															   MVC::MvcManager::get().getModel<Model::Atom>( id ),
+															   _isModifierExclusive( ModifierFlag::Control ) ) );
+					}
 				}
 			}
 		}
