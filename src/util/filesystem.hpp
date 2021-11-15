@@ -128,8 +128,6 @@ namespace VTX
 			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
 
-			static const QString DEFAULT_IMAGE_EXPORT_FILTER = "PNG (*.png)";
-
 			static const IO::FilePath STYLESHEET_FILE_DEFAULT = IO::FilePath( ":/stylesheet.css" );
 			static const IO::FilePath SCENE_OBJECT_DIR		  = IO::FilePath( "obj" );
 
@@ -172,16 +170,8 @@ namespace VTX
 				createDirectory( getSnapshotsDir() );
 				return IO::FilePath( getSnapshotsDir() / p_filename );
 			}
-			inline const IO::FilePath getUniqueSnapshotsPath()
-			{
-				const std::string filename = Util::Time::getTimestamp() + ".png";
-				createDirectory( getSnapshotsDir() );
-
-				IO::FilePath path = IO::FilePath( getSnapshotsDir() / filename );
-				generateUniqueFileName( path );
-
-				return path;
-			}
+			const IO::FilePath getUniqueSnapshotsPath();
+			std::string		   getImageExportDefaultFilter();
 
 			inline const IO::FilePath getVideosPath( const IO::FilePath & p_filename )
 			{

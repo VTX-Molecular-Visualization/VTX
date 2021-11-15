@@ -5,6 +5,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
+#include "setting.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Util::Filesystem
@@ -216,6 +217,44 @@ namespace VTX::Util::Filesystem
 		generateUniqueFileName( defaultPath );
 
 		return defaultPath;
+	}
+
+	const IO::FilePath getUniqueSnapshotsPath()
+	{
+		std::string extension;
+
+		switch ( VTX_SETTING().getSnapshotFormat() )
+		{
+		case IO::Struct::ImageExport::Format::PNG: extension = "png"; break;
+		case IO::Struct::ImageExport::Format::JPEG: extension = "jpg"; break;
+		case IO::Struct::ImageExport::Format::BMP: extension = "bmp"; break;
+		default:
+			VTX_ERROR( "Unknown format for snapshot (" + std::to_string( int( VTX_SETTING().getSnapshotFormat() ) ) );
+			extension = "";
+			break;
+		}
+
+		const std::string filename = Util::Time::getTimestamp() + '.' + extension;
+		createDirectory( getSnapshotsDir() );
+
+		IO::FilePath path = IO::FilePath( getSnapshotsDir() / filename );
+		generateUniqueFileName( path );
+
+		return path;
+	}
+
+	std::string getImageExportDefaultFilter()
+	{
+		std::string filter;
+		switch ( VTX_SETTING().getSnapshotFormat() )
+		{
+		case IO::Struct::ImageExport::Format::PNG: filter = "PNG (*.png)"; break;
+		case IO::Struct::ImageExport::Format::JPEG: filter = "JPEG (*.jpg *.jpeg)"; break;
+		case IO::Struct::ImageExport::Format::BMP: filter = "BMP (*.bmp)"; break;
+		default: filter = "All (*)"; break;
+		}
+
+		return filter;
 	}
 
 } // namespace VTX::Util::Filesystem

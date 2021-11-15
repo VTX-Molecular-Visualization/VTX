@@ -131,6 +131,17 @@ namespace VTX::Action::Setting
 		const Color::Rgb _color;
 	};
 
+	class ChangeSnapshotFormat : public BaseAction
+	{
+	  public:
+		explicit ChangeSnapshotFormat( const IO::Struct::ImageExport::Format p_format ) : _format( p_format ) {}
+
+		virtual void execute() override { VTX_SETTING().setSnapshotFormat( _format ); };
+
+	  private:
+		const IO::Struct::ImageExport::Format _format;
+	};
+
 	class ChangeBackgroundOpacity : public BaseAction
 	{
 	  public:
@@ -723,6 +734,8 @@ namespace VTX::Action::Setting
 				new Action::Setting::ChangeDefaultRenderEffectPreset( _setting.getDefaultRenderEffectPresetIndex() ) );
 
 			VTX_ACTION( new Action::Setting::ActiveVerticalSync( _setting.getVSync() ) );
+
+			VTX_ACTION( new Action::Setting::ChangeSnapshotFormat( _setting.getSnapshotFormat() ) );
 			VTX_ACTION( new Action::Setting::ChangeBackgroundOpacity( _setting.getSnapshotBackgroundOpacity() ) );
 			VTX_ACTION( new Action::Setting::ChangeSnapshotQuality( _setting.getSnapshotQuality() ) );
 			VTX_ACTION( new Action::Setting::ChangeSnapshotResolution( _setting.getSnapshotResolution() ) );

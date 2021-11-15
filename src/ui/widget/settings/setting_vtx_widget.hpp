@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_WIDGET_SETTINGS_VTX__
 #define __VTX_UI_WIDGET_SETTINGS_VTX__
 
+#include "io/struct/image_export.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"
 #include "ui/widget/custom_widget/integer_field_slider_widget.hpp"
@@ -41,6 +42,7 @@ namespace VTX::UI::Widget::Settings
 		QCheckBox *							   _controllerYAxisInvertedWidget	  = nullptr;
 
 		// Graphic
+		QComboBox *							   _snapshotFormatWidget			= nullptr;
 		CustomWidget::FloatFieldSliderWidget * _snapshotBackgroundOpacitySlider = nullptr;
 		QComboBox *							   _snapshotResolutionWidget		= nullptr;
 		CustomWidget::FloatFieldSliderWidget * _snapshotQualitySlider			= nullptr;
@@ -67,6 +69,7 @@ namespace VTX::UI::Widget::Settings
 		void _changeControllerRotationSpeedAction( const float p_value );
 		void _changeControllerYInversionAction( const bool p_invert );
 
+		void _changeSnapshotFormat( const int p_format );
 		void _changeSnapshotBackgroundOpacity( const float p_opacity );
 		void _changeSnapshotResolution( const int p_resolution );
 		void _changeSnapshotQuality( const float p_quality );
