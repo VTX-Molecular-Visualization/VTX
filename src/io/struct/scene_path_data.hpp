@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_SCENE_PATH_DATA__
-#define __VTX_IO_SCENE_PATH_DATA__
+#ifndef __VTX_IO_STRUCT_SCENE_PATH_DATA__
+#define __VTX_IO_STRUCT_SCENE_PATH_DATA__
 
 #include "define.hpp"
 #include "event/base_event_receiver_vtx.hpp"
@@ -14,7 +14,7 @@ namespace VTX
 		class Molecule;
 	}
 
-	namespace IO
+	namespace IO::Struct
 	{
 		class ScenePathData : Event::BaseEventReceiverVTX
 		{
@@ -70,6 +70,6 @@ namespace VTX
 			int										_sceneModificationsCount = 0;
 			bool									_forceSceneModifications = false;
 		};
-	} // namespace IO
+	} // namespace IO::Struct
 } // namespace VTX
 #endif

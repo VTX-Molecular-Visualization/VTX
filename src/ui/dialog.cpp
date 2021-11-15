@@ -1,9 +1,11 @@
 #include "dialog.hpp"
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
-#include "io/scene_path_data.hpp"
+#include "io/struct/image_export.hpp"
+#include "io/struct/scene_path_data.hpp"
 #include "selection/selection_manager.hpp"
 #include "ui/widget/dialog/download_molecule_dialog.hpp"
+#include "ui/widget/dialog/image_exporter.hpp"
 #include "util/filesystem.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
@@ -190,6 +192,33 @@ namespace VTX::UI
 
 			VTX_ACTION( new Action::Main::Open( filepathes ) );
 		}
+	}
+
+	void Dialog::openAdvancedSettingImageExportDialog() { UI::Widget::Dialog::ImageExporter::openDialog(); }
+	bool Dialog::openExportImageDialog( const IO::Struct::ImageExport & p_exportData )
+	{
+		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_IMAGE_EXPORT_FILTER );
+		const QString	defaultPath	  = Setting::getLastExportedImageFolder();
+
+		const QString filepath = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
+															   "Export image",
+															   defaultPath,
+															   Util::Filesystem::IMAGE_EXPORT_EXTENSIONS,
+															   defaultFilter );
+
+		if ( !filepath.isNull() )
+		{
+			const IO::FilePath path			 = IO::FilePath( filepath.toStdString() );
+			const IO::FilePath directoryPath = Util::Filesystem::getParentDir( path );
+
+			Setting::saveLastExportedImageFolder( directoryPath.qpath() );
+			VTX_ACTION(
+				new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, filepath.toStdString(), p_exportData ) );
+
+			return true;
+		}
+
+		return false;
 	}
 
 	void Dialog::importRepresentationPresetDialog()

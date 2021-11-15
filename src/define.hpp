@@ -103,6 +103,7 @@ namespace VTX
 		const std::string LAST_SAVED_SESSION_FOLDER		= "LastSavedSessionFolder";
 		const std::string LAST_IMPORTED_MOLECULE_FOLDER = "LastImportedMoleculeFolder";
 		const std::string LAST_EXPORTED_MOLECULE_FOLDER = "LastExportedMoleculeFolder";
+		const std::string LAST_EXPORTED_IMAGE_FOLDER	= "LastExportedImageFolder";
 
 	} // namespace RegisterKey
 

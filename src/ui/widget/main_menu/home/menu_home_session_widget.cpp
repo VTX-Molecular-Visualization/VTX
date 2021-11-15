@@ -2,7 +2,7 @@
 #include "action/main.hpp"
 #include "action/setting.hpp"
 #include "define.hpp"
-#include "io/scene_path_data.hpp"
+#include "io/struct/scene_path_data.hpp"
 #include "setting.hpp"
 #include "ui/dialog.hpp"
 #include "ui/widget/custom_widget/indexed_action.hpp"

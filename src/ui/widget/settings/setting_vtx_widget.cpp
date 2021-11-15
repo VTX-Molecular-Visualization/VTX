@@ -2,6 +2,7 @@
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
+#include "io/struct/image_export.hpp"
 #include "setting.hpp"
 #include "style.hpp"
 #include "trajectory/trajectory_enum.hpp"
@@ -10,7 +11,6 @@
 #include "ui/widget_factory.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
-#include "worker/snapshoter.hpp"
 #include <QLabel>
 
 namespace VTX::UI::Widget::Settings
@@ -61,8 +61,12 @@ namespace VTX::UI::Widget::Settings
 		_snapshotBackgroundOpacitySlider->setMinMax( 0.f, 1.f );
 
 		_snapshotResolutionWidget = new QComboBox( viewport );
-		for ( const std::string & resolutionStr : Worker::SNAPSHOT_RESOLUTION_STR )
+		for ( const std::string & resolutionStr : IO::Struct::ImageExport::RESOLUTION_STR )
 			_snapshotResolutionWidget->addItem( QString::fromStdString( resolutionStr ) );
+
+		_snapshotQualitySlider = WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
+			viewport, "SnapshotQualitySlider" );
+		_snapshotQualitySlider->setMinMax( 0.f, 1.f );
 
 #ifndef VTX_PRODUCTION
 		_vsyncWidget		 = new QCheckBox( viewport );
@@ -103,6 +107,7 @@ namespace VTX::UI::Widget::Settings
 		_startSection( "Graphic" );
 		_addItemInLayout( _snapshotBackgroundOpacitySlider, "Snapshot background opacity" );
 		_addItemInLayout( _snapshotResolutionWidget, "Snapshot resolution" );
+		_addItemInLayout( _snapshotQualitySlider, "Snapshot quality" );
 
 #ifndef VTX_PRODUCTION
 		_addItemInLayout( _vsyncWidget, "VSync" );
@@ -171,6 +176,10 @@ namespace VTX::UI::Widget::Settings
 				 QOverload<int>::of( ( &QComboBox::currentIndexChanged ) ),
 				 this,
 				 &SettingVTXWidget::_changeSnapshotResolution );
+		connect( _snapshotQualitySlider,
+				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
+				 this,
+				 &SettingVTXWidget::_changeSnapshotQuality );
 
 #ifndef VTX_PRODUCTION
 		connect( _vsyncWidget, &QCheckBox::stateChanged, this, &SettingVTXWidget::_activeVSyncAction );
@@ -229,6 +238,7 @@ namespace VTX::UI::Widget::Settings
 		_controllerYAxisInvertedWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getYAxisInverted() ) );
 
 		_snapshotBackgroundOpacitySlider->setValue( VTX_SETTING().getSnapshotBackgroundOpacity() );
+		_snapshotQualitySlider->setValue( VTX_SETTING().getSnapshotQuality() );
 		_snapshotResolutionWidget->setCurrentIndex( int( VTX_SETTING().getSnapshotResolution() ) );
 
 #ifndef VTX_PRODUCTION
@@ -293,9 +303,14 @@ namespace VTX::UI::Widget::Settings
 	}
 	void SettingVTXWidget::_changeSnapshotResolution( const int p_resolution )
 	{
-		const Worker::SNAPSHOT_RESOLUTION resolution = Worker::SNAPSHOT_RESOLUTION( p_resolution );
+		const IO::Struct::ImageExport::RESOLUTION resolution = IO::Struct::ImageExport::RESOLUTION( p_resolution );
 		if ( VTX_SETTING().getSnapshotResolution() != resolution )
 			VTX_ACTION( new Action::Setting::ChangeSnapshotResolution( resolution ) );
+	}
+	void SettingVTXWidget::_changeSnapshotQuality( const float p_quality )
+	{
+		if ( VTX_SETTING().getSnapshotQuality() != p_quality )
+			VTX_ACTION( new Action::Setting::ChangeSnapshotQuality( p_quality ) );
 	}
 
 	void SettingVTXWidget::_activeVSyncAction( const bool p_activate )

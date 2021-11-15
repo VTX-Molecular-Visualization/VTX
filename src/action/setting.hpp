@@ -3,6 +3,7 @@
 
 #include "base_action.hpp"
 #include "io/reader/serialized_object.hpp"
+#include "io/struct/image_export.hpp"
 #include "io/writer/serialized_object.hpp"
 #include "model/molecule.hpp"
 #include "model/renderer/render_effect_preset.hpp"
@@ -16,7 +17,6 @@
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
-#include "worker/snapshoter.hpp"
 #include <QWindow>
 
 namespace VTX::Action::Setting
@@ -146,10 +146,25 @@ namespace VTX::Action::Setting
 		const float _opacity;
 	};
 
+	class ChangeSnapshotQuality : public BaseAction
+	{
+	  public:
+		explicit ChangeSnapshotQuality( const float p_quality ) : _quality( p_quality ) {}
+
+		virtual void execute() override
+		{
+			VTX_SETTING().setSnapshotQuality( _quality );
+			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		};
+
+	  private:
+		const float _quality;
+	};
+
 	class ChangeSnapshotResolution : public BaseAction
 	{
 	  public:
-		explicit ChangeSnapshotResolution( const Worker::SNAPSHOT_RESOLUTION & p_resolution ) :
+		explicit ChangeSnapshotResolution( const IO::Struct::ImageExport::RESOLUTION & p_resolution ) :
 			_resolution( p_resolution )
 		{
 		}
@@ -157,7 +172,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override { VTX_SETTING().setSnapshotResolution( _resolution ); };
 
 	  private:
-		const Worker::SNAPSHOT_RESOLUTION _resolution;
+		const IO::Struct::ImageExport::RESOLUTION _resolution;
 	};
 
 	class ChangeDefaultRepresentation : public BaseAction
@@ -709,6 +724,7 @@ namespace VTX::Action::Setting
 
 			VTX_ACTION( new Action::Setting::ActiveVerticalSync( _setting.getVSync() ) );
 			VTX_ACTION( new Action::Setting::ChangeBackgroundOpacity( _setting.getSnapshotBackgroundOpacity() ) );
+			VTX_ACTION( new Action::Setting::ChangeSnapshotQuality( _setting.getSnapshotQuality() ) );
 			VTX_ACTION( new Action::Setting::ChangeSnapshotResolution( _setting.getSnapshotResolution() ) );
 
 			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( _setting.getTranslationSpeed() ) );

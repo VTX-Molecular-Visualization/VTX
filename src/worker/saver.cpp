@@ -1,5 +1,5 @@
 #include "saver.hpp"
-#include "io/scene_path_data.hpp"
+#include "io/struct/scene_path_data.hpp"
 #include "io/writer/serialized_object.hpp"
 #include "io/writer/writer_chemfiles.hpp"
 #include "model/molecule.hpp"
@@ -97,7 +97,7 @@ namespace VTX::Worker
 			// Else if has any modifications => Create / Save file in scene molecule directory.
 			for ( const std::pair<Model::Molecule *, float> & molecule : VTXApp::get().getScene().getMolecules() )
 			{
-				const IO::ScenePathData::Data & moleculePathData
+				const IO::Struct::ScenePathData::Data & moleculePathData
 					= VTXApp::get().getScenePathData().getData( molecule.first );
 
 				IO::FilePath filePath = moleculePathData.getFilepath();

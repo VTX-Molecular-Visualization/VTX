@@ -6,7 +6,8 @@
 #include "define.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
-#include "io/scene_path_data.hpp"
+#include "io/struct/image_export.hpp"
+#include "io/struct/scene_path_data.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -327,62 +328,47 @@ namespace VTX::Action::Main
 
 	class Snapshot : public BaseAction
 	{
-	  private:
-		enum class RESOLUTION_TYPE : short
-		{
-			NONE,
-			ENUM,
-			SIZE
-		};
-		union RESOLUTION
-		{
-			std::pair<int, int>			_size;
-			Worker::SNAPSHOT_RESOLUTION _resolutionEnum;
-
-			RESOLUTION() {};
-			RESOLUTION( const std::pair<int, int> & p_size ) : _size( p_size ) {};
-			RESOLUTION( const Worker::SNAPSHOT_RESOLUTION & p_resolutionEnum ) : _resolutionEnum( p_resolutionEnum ) {};
-		};
-
 	  public:
 		explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const IO::FilePath & p_path ) :
-			_mode( p_mode ), _path( p_path ), _resolutionType( RESOLUTION_TYPE::NONE ), _resolutionData()
+			Snapshot( p_mode,
+					  p_path,
+					  IO::Struct::ImageExport( IO::Struct::ImageExport::RESOLUTION ::Free,
+											   VTX_SETTING().getSnapshotBackgroundOpacity(),
+											   VTX_SETTING().getSnapshotQuality() ) )
 		{
 		}
-		explicit Snapshot( const Worker::Snapshoter::MODE	 p_mode,
-						   const IO::FilePath &				 p_path,
-						   const Worker::SNAPSHOT_RESOLUTION p_resolution ) :
-			_mode( p_mode ),
-			_path( p_path ), _resolutionType( RESOLUTION_TYPE::ENUM ), _resolutionData( p_resolution )
+		explicit Snapshot( const Worker::Snapshoter::MODE			 p_mode,
+						   const IO::FilePath &						 p_path,
+						   const IO::Struct::ImageExport::RESOLUTION p_resolution ) :
+			Snapshot( p_mode,
+					  p_path,
+					  IO::Struct::ImageExport( p_resolution,
+											   VTX_SETTING().getSnapshotBackgroundOpacity(),
+											   VTX_SETTING().getSnapshotQuality() ) )
 		{
 		}
 		explicit Snapshot( const Worker::Snapshoter::MODE p_mode,
 						   const IO::FilePath &			  p_path,
 						   const int					  p_width,
 						   const int					  p_height ) :
+			Snapshot( p_mode,
+					  p_path,
+					  IO::Struct::ImageExport( std::pair<int, int>( p_width, p_height ),
+											   VTX_SETTING().getSnapshotBackgroundOpacity(),
+											   VTX_SETTING().getSnapshotQuality() ) )
+		{
+		}
+		explicit Snapshot( const Worker::Snapshoter::MODE  p_mode,
+						   const IO::FilePath &			   p_path,
+						   const IO::Struct::ImageExport & p_exportData ) :
 			_mode( p_mode ),
-			_path( p_path ), _resolutionType( RESOLUTION_TYPE::SIZE ),
-			_resolutionData( std::pair<int, int>( p_width, p_height ) )
+			_path( p_path ), _exportData( p_exportData )
 		{
 		}
 
 		virtual void execute() override
 		{
-			Worker::Snapshoter * worker;
-
-			switch ( _resolutionType )
-			{
-			case RESOLUTION_TYPE::ENUM:
-				worker = new Worker::Snapshoter( _mode, _path, _resolutionData._resolutionEnum );
-				break;
-			case RESOLUTION_TYPE::SIZE:
-				worker
-					= new Worker::Snapshoter( _mode, _path, _resolutionData._size.first, _resolutionData._size.second );
-				break;
-			case RESOLUTION_TYPE::NONE:
-			default: worker = new Worker::Snapshoter( _mode, _path ); break;
-			}
-
+			Worker::Snapshoter * worker = new Worker::Snapshoter( _mode, _path, _exportData );
 			VTX_WORKER( worker );
 		};
 
@@ -391,9 +377,7 @@ namespace VTX::Action::Main
 	  private:
 		const Worker::Snapshoter::MODE _mode;
 		const IO::FilePath			   _path;
-
-		const RESOLUTION	  _resolutionData;
-		const RESOLUTION_TYPE _resolutionType;
+		const IO::Struct::ImageExport  _exportData;
 	};
 
 	class ClearConsoleInterface : public BaseAction

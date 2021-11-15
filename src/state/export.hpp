@@ -2,7 +2,6 @@
 #define __VTX_STATE_EXPORT__
 
 #include "base_state.hpp"
-#include "worker/snapshoter.hpp"
 
 namespace VTX
 {

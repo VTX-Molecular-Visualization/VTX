@@ -1,7 +1,7 @@
 #include "main_window.hpp"
 #include "action/main.hpp"
 #include "event/event_manager.hpp"
-#include "io/scene_path_data.hpp"
+#include "io/struct/scene_path_data.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "widget_factory.hpp"

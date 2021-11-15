@@ -4,7 +4,7 @@
 #include "action/setting.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
-#include "io/scene_path_data.hpp"
+#include "io/struct/scene_path_data.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
 #include "model/representation/representation_library.hpp"
@@ -55,7 +55,7 @@ namespace VTX
 		_scene = new Object3D::Scene();
 		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
 
-		_pathSceneData = new IO::ScenePathData();
+		_pathSceneData = new IO::Struct::ScenePathData();
 
 		// Create statemachine.
 		_stateMachine = new State::StateMachine();

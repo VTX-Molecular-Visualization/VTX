@@ -3,6 +3,7 @@
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
 #include "style.hpp"
+#include "ui/dialog.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/widget_factory.hpp"
@@ -39,6 +40,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	{
 		_createPreset->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_openPresetSettings );
 		_takeSnapshot->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_takeSnapshotAction );
+		_exportAsImage->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_exportAsImageAction );
 		_fullscreen->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_toggleWindowState );
 	}
 	void MenuVisualizationRenderEffectsWidget::localize() { setTitle( "Render Effects" ); }
@@ -99,13 +101,17 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		// Fullscreen / snapshot
 		_fullscreen = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleFullscreenButton" );
-		_fullscreen->setData( "Fullscreen", ":/sprite/fullscreen_icon.png", Qt::Orientation::Horizontal );
+		_fullscreen->setData( "Fullscreen", ":/sprite/fullscreen_icon.png", Qt::Orientation::Vertical );
 		_updateFullscreenButton( VTXApp::get().getMainWindow().getWindowMode() );
 		const int lastColumn = pushButtonInNextColumn( *_fullscreen );
 
 		_takeSnapshot = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "takeSnapshotButton" );
 		_takeSnapshot->setData( "Snapshot", ":/sprite/screenshot_icon.png", Qt::Orientation::Horizontal );
-		pushButton( *_takeSnapshot, lastColumn );
+		pushButton( *_takeSnapshot, lastColumn + 1 );
+
+		_exportAsImage = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "exportAsImageButton" );
+		_exportAsImage->setData( "Export as Image", ":/sprite/screenshot_icon.png", Qt::Orientation::Horizontal );
+		pushButton( *_exportAsImage, lastColumn + 1 );
 
 		validate();
 	}
@@ -126,11 +132,16 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 	void MenuVisualizationRenderEffectsWidget::_takeSnapshotAction() const
 	{
-		VTX_ACTION(
-			new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-										Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ),
-										VTX_SETTING().getSnapshotResolution() ) );
+		VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+												Util::Filesystem::getUniqueSnapshotsPath(),
+												VTX_SETTING().getSnapshotResolution() ) );
 	}
+
+	void MenuVisualizationRenderEffectsWidget::_exportAsImageAction() const
+	{
+		Dialog::openAdvancedSettingImageExportDialog();
+	}
+
 	void MenuVisualizationRenderEffectsWidget::_openPresetSettings() const
 	{
 		VTXApp::get().getMainWindow().openSettingWindow( UI::Widget::Settings::SETTING_MENU::RENDER_EFFECTS );

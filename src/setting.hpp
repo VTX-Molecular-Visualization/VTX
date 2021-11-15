@@ -4,6 +4,7 @@
 #include "color/rgb.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
+#include "io/struct/image_export.hpp"
 #include "style.hpp"
 #include <QString>
 #include <list>
@@ -25,11 +26,6 @@ namespace VTX
 	namespace Trajectory
 	{
 		enum class PlayMode;
-	}
-
-	namespace Worker
-	{
-		enum class SNAPSHOT_RESOLUTION;
 	}
 
 	class Setting
@@ -60,9 +56,10 @@ namespace VTX
 		static const bool ACTIVE_RENDERER_DEFAULT;
 		static const bool FORCE_RENDERER_DEFAULT;
 
-		static const Color::Rgb					 BACKGROUND_COLOR_DEFAULT;
-		static const float						 BACKGROUND_OPACITY_DEFAULT;
-		static const Worker::SNAPSHOT_RESOLUTION SNAPSHOT_RESOLUTION_DEFAULT;
+		static const Color::Rgb							 BACKGROUND_COLOR_DEFAULT;
+		static const float								 BACKGROUND_OPACITY_DEFAULT;
+		static const float								 SNAPSHOT_QUALITY_DEFAULT;
+		static const IO::Struct::ImageExport::RESOLUTION SNAPSHOT_RESOLUTION_DEFAULT;
 
 		static const int REPRESENTATION_DEFAULT_INDEX;
 
@@ -200,7 +197,7 @@ namespace VTX
 		static const float CELL_LIST_CUBE_SIZE;
 
 		// Parameters
-		enum class PARAMETER
+		enum class PARAMETER : int
 		{
 			WINDOW_FULL_SCREEN,
 			ACTIVATE_RENDERER,
@@ -208,6 +205,7 @@ namespace VTX
 			VSYNC,
 			SNAPSHOT_BACKGROUND_OPACITY,
 			SNAPSHOT_RESOLUTION,
+			SNAPSHOT_QUALITY,
 
 			CONTROLLER_TRANSLATION_SPEED,
 			CONTROLLER_TRANSLATION_SPEED_FACTOR,
@@ -228,18 +226,20 @@ namespace VTX
 			ALL,
 		};
 
-		inline bool						   getWindowFullscreen() const { return windowFullscreen; }
-		void							   setWindowFullscreen( const bool p_fullscreen );
-		inline bool						   getActivateRenderer() const { return activeRenderer; }
-		void							   setActivateRenderer( const bool p_activeRenderer );
-		inline bool						   getForceRenderer() const { return forceRenderer; }
-		void							   setForceRenderer( const bool p_forceRenderer );
-		inline bool						   getVSync() const { return activeVSync; }
-		void							   setVSync( const bool p_activeVSync );
-		inline float					   getSnapshotBackgroundOpacity() const { return backgroundOpacity; }
-		void							   setSnapshotBackgroundOpacity( const float p_backgroundOpacity );
-		inline Worker::SNAPSHOT_RESOLUTION getSnapshotResolution() const { return snapshotResolution; }
-		void setSnapshotResolution( const Worker::SNAPSHOT_RESOLUTION & p_snapshotResolution );
+		inline bool								   getWindowFullscreen() const { return windowFullscreen; }
+		void									   setWindowFullscreen( const bool p_fullscreen );
+		inline bool								   getActivateRenderer() const { return activeRenderer; }
+		void									   setActivateRenderer( const bool p_activeRenderer );
+		inline bool								   getForceRenderer() const { return forceRenderer; }
+		void									   setForceRenderer( const bool p_forceRenderer );
+		inline bool								   getVSync() const { return activeVSync; }
+		void									   setVSync( const bool p_activeVSync );
+		inline float							   getSnapshotBackgroundOpacity() const { return backgroundOpacity; }
+		void									   setSnapshotBackgroundOpacity( const float p_backgroundOpacity );
+		inline float							   getSnapshotQuality() const { return snapshotQuality; }
+		void									   setSnapshotQuality( const float p_snapshotQuality );
+		inline IO::Struct::ImageExport::RESOLUTION getSnapshotResolution() const { return snapshotResolution; }
+		void setSnapshotResolution( const IO::Struct::ImageExport::RESOLUTION & p_snapshotResolution );
 
 		inline float getTranslationSpeed() const { return translationSpeed; }
 		void		 setTranslationSpeed( const float p_translationSpeed );
@@ -305,6 +305,8 @@ namespace VTX
 		static void	   saveLastImportedMoleculeFolder( const QString & p_path );
 		static QString getLastExportedMoleculeFolder();
 		static void	   saveLastExportedMoleculeFolder( const QString & p_path );
+		static QString getLastExportedImageFolder();
+		static void	   saveLastExportedImageFolder( const QString & p_path );
 
 		void backup();
 		void recover();
@@ -315,12 +317,14 @@ namespace VTX
 		Renderer::MODE				mode = MODE_DEFAULT;
 
 	  private:
-		bool						windowFullscreen   = WINDOW_FULLSCREEN_DEFAULT;
-		bool						activeRenderer	   = ACTIVE_RENDERER_DEFAULT;
-		bool						forceRenderer	   = FORCE_RENDERER_DEFAULT;
-		bool						activeVSync		   = ACTIVE_VSYNC_DEFAULT;
-		float						backgroundOpacity  = BACKGROUND_OPACITY_DEFAULT;
-		Worker::SNAPSHOT_RESOLUTION snapshotResolution = SNAPSHOT_RESOLUTION_DEFAULT;
+		bool windowFullscreen = WINDOW_FULLSCREEN_DEFAULT;
+		bool activeRenderer	  = ACTIVE_RENDERER_DEFAULT;
+		bool forceRenderer	  = FORCE_RENDERER_DEFAULT;
+		bool activeVSync	  = ACTIVE_VSYNC_DEFAULT;
+
+		IO::Struct::ImageExport::RESOLUTION snapshotResolution = SNAPSHOT_RESOLUTION_DEFAULT;
+		float								backgroundOpacity  = BACKGROUND_OPACITY_DEFAULT;
+		float								snapshotQuality	   = SNAPSHOT_QUALITY_DEFAULT;
 
 		float translationSpeed			 = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
 		float translationFactorSpeed	 = CONTROLLER_TRANSLATION_FACTOR_DEFAULT;

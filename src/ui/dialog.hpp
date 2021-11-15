@@ -6,36 +6,47 @@
 #include <QString>
 #include <QWidget>
 
-namespace VTX::UI
+namespace VTX
 {
-	class Dialog
+	namespace IO::Struct
 	{
-	  public:
-		static void openInformationDialog( const QString & p_title, const QString & p_message );
-		static void confirmActionDialog( Action::BaseAction * const p_action,
-										 const QString &			p_title,
-										 const QString &			p_message );
+		class ImageExport;
+	}
 
-		static void openDownloadMoleculeDialog();
-		static void openDownloadMoleculeDialog( const QString & p_pdbCode );
+	namespace UI
+	{
+		class Dialog
+		{
+		  public:
+			static void openInformationDialog( const QString & p_title, const QString & p_message );
+			static void confirmActionDialog( Action::BaseAction * const p_action,
+											 const QString &			p_title,
+											 const QString &			p_message );
 
-		static void openLoadMoleculeDialog();
-		static void openExportMoleculeDialog();
+			static void openDownloadMoleculeDialog();
+			static void openDownloadMoleculeDialog( const QString & p_pdbCode );
 
-		static void createNewSessionDialog();
+			static void openLoadMoleculeDialog();
+			static void openExportMoleculeDialog();
 
-		static void leavingSessionDialog( Worker::CallbackThread & p_callbackSucceed );
+			static void createNewSessionDialog();
 
-		static void openLoadSessionDialog();
-		static void openSaveSessionDialog( Worker::CallbackThread * const p_callback = nullptr );
+			static void leavingSessionDialog( Worker::CallbackThread & p_callbackSucceed );
 
-		static void importRepresentationPresetDialog();
-		static void importRenderEffectPresetDialog();
+			static void openLoadSessionDialog();
+			static void openSaveSessionDialog( Worker::CallbackThread * const p_callback = nullptr );
 
-		static void openGLInitializationFail();
-		static void unhandledException();
-	};
+			static void openAdvancedSettingImageExportDialog();
+			static bool openExportImageDialog( const IO::Struct::ImageExport & p_exportData );
 
-} // namespace VTX::UI
+			static void importRepresentationPresetDialog();
+			static void importRenderEffectPresetDialog();
+
+			static void openGLInitializationFail();
+			static void unhandledException();
+		};
+
+	} // namespace UI
+} // namespace VTX
 
 #endif

@@ -47,6 +47,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// Render Feature
 		MenuToolButtonWidget * _fullscreen	 = nullptr;
 		MenuToolButtonWidget * _takeSnapshot = nullptr;
+		MenuToolButtonWidget * _exportAsImage = nullptr;
 
 		void _instantiateUI();
 
@@ -54,6 +55,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		// ACTIONS //
 		void _takeSnapshotAction() const;
+		void _exportAsImageAction() const;
 		void _openPresetSettings() const;
 		void _toggleWindowState() const;
 	};
