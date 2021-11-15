@@ -3,6 +3,7 @@
 
 #include "generic/base_opengl.hpp"
 #include "gl/framebuffer.hpp"
+#include "model/base_model.hpp"
 #include "object3d/scene.hpp"
 #include <vector>
 
@@ -50,7 +51,7 @@ namespace VTX::Renderer
 		virtual void activeFog( const bool ) {}
 		virtual void activeAA( const bool ) {}
 
-		virtual const uint getPickingId( const uint, const uint ) const { return 0; }
+		virtual const Model::ID getPickingId( const uint, const uint ) const { return 0; }
 
 	  protected:
 		uint			_width			   = 0;

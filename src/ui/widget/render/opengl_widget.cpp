@@ -180,7 +180,7 @@ namespace VTX::UI::Widget::Render
 		doneCurrent();
 	}
 
-	const uint OpenGLWidget::getPickingId( const uint p_x, const uint p_y )
+	const Model::ID OpenGLWidget::getPickingId( const uint p_x, const uint p_y )
 	{
 		makeCurrent();
 

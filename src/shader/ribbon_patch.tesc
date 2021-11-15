@@ -17,6 +17,7 @@ in VsOut
 	flat uint ssType;
 	flat uint visibility;
 	flat uint selection;
+	flat uint id;
 }
 vsIn[];
 
@@ -29,6 +30,7 @@ out TcOut
 	flat uint ssType;
 	flat uint visibility;
 	flat uint selection;
+	flat uint id;
 }
 tcOut[];
 
@@ -84,6 +86,7 @@ void main()
 	tcOut[ gl_InvocationID ].visibility = vsIn[ gl_InvocationID ].visibility;
 	tcOut[ gl_InvocationID ].color		= vsIn[ gl_InvocationID ].color;
 	tcOut[ gl_InvocationID ].selection	= vsIn[ gl_InvocationID ].selection;
+	tcOut[ gl_InvocationID ].id			= vsIn[ gl_InvocationID ].id;
 
 	// Normals are known only for the two center controls points.
 	if ( gl_InvocationID == 1 || gl_InvocationID == 2 )

@@ -7,6 +7,7 @@ in TeOut
 	vec3	  color;
 	flat uint visibility;
 	flat uint selection;
+	flat uint id;
 }
 teIn;
 
@@ -17,6 +18,8 @@ layout( location = 0 ) out uvec4 outViewPositionNormal;
 // 3 32 bits for color.
 // 1 32 bits for specular.
 layout( location = 1 ) out vec4 outColor;
+// 1 32 bits for id.
+layout( location = 2 ) out uint outId;
 
 void main()
 {
@@ -43,4 +46,5 @@ void main()
 	// Output data.
 	outViewPositionNormal = viewPositionNormalCompressed;
 	outColor			  = vec4( color, 32.f ); // w = specular shininess.
+	outId				  = teIn.id;
 }

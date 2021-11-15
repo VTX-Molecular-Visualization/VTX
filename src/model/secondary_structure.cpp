@@ -34,6 +34,7 @@ namespace VTX
 			_bufferSSTypes.clear();
 			_bufferColors.clear();
 			_bufferVisibilities.clear();
+			_bufferIds.clear();
 			_bufferIndices.clear();
 			_residueToPositions.clear();
 			_residueToIndices.clear();
@@ -47,6 +48,7 @@ namespace VTX
 			std::vector<uint>		ssTypes;
 			std::vector<Color::Rgb> colors;
 			std::vector<uint>		visibilities;
+			std::vector<Model::ID>	ids;
 			std::vector<uint>		residueIndex;
 			float					dirFlag = 0.f; // Loop over chains (1 chain = 1 ribbon).
 
@@ -80,6 +82,7 @@ namespace VTX
 						ssTypes		  = std::vector<uint>();
 						colors		  = std::vector<Color::Rgb>();
 						visibilities  = std::vector<uint>();
+						ids			  = std::vector<Model::ID>();
 						residueIndex  = std::vector<uint>();
 
 						createVectors = false;
@@ -165,11 +168,13 @@ namespace VTX
 					visibilities.emplace_back( uint( _molecule->isVisible() && chain->isVisible()
 													 && residue->isVisible() && CA->isVisible() && O->isVisible() ) );
 
+					ids.emplace_back( residue->getId() );
+
 					if ( residueLast != nullptr
 						 && residue->getIndexInOriginalChain() != residueLast->getIndexInOriginalChain() + 1 )
 					{
 						_tryConstruct(
-							chainIdx, residueIndex, caPositions, caODirections, ssTypes, colors, visibilities );
+							chainIdx, residueIndex, caPositions, caODirections, ssTypes, colors, visibilities, ids );
 						createVectors = true;
 					}
 
@@ -177,7 +182,7 @@ namespace VTX
 				}
 
 				// Update buffers and index mapping if SS is constructed.
-				_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, ssTypes, colors, visibilities );
+				_tryConstruct( chainIdx, residueIndex, caPositions, caODirections, ssTypes, colors, visibilities, ids );
 			}
 
 			// Reverse indices to render the other side.
@@ -190,6 +195,7 @@ namespace VTX
 			_bufferSSTypes.shrink_to_fit();
 			_bufferColors.shrink_to_fit();
 			_bufferVisibilities.shrink_to_fit();
+			_bufferIds.shrink_to_fit();
 			_bufferIndices.shrink_to_fit();
 
 			if ( p_refreshBuffers )
@@ -204,7 +210,8 @@ namespace VTX
 												std::vector<Vec3f> &			p_caODirections,
 												const std::vector<uint> &		p_ssTypes,
 												const std::vector<Color::Rgb> & p_colors,
-												const std::vector<uint> &		p_visibilities )
+												const std::vector<uint> &		p_visibilities,
+												const std::vector<Model::ID> &	p_ids )
 		{
 			if ( p_caPositions.size() >= 4 )
 			{
@@ -250,6 +257,7 @@ namespace VTX
 				_bufferSSTypes.insert( _bufferSSTypes.end(), p_ssTypes.cbegin(), p_ssTypes.cend() );
 				_bufferColors.insert( _bufferColors.end(), p_colors.cbegin(), p_colors.cend() );
 				_bufferVisibilities.insert( _bufferVisibilities.end(), p_visibilities.cbegin(), p_visibilities.cend() );
+				_bufferIds.insert( _bufferIds.end(), p_ids.cbegin(), p_ids.cend() );
 			}
 		}
 
@@ -261,12 +269,14 @@ namespace VTX
 			assert( _bufferCaPositions.size() == _bufferSSTypes.size() );
 			assert( _bufferCaPositions.size() == _bufferColors.size() );
 			assert( _bufferCaPositions.size() == _bufferVisibilities.size() );
+			assert( _bufferCaPositions.size() == _bufferIds.size() );
 
 			_buffer->setControlPointPositions( _bufferCaPositions );
 			_buffer->setControlPointDirections( _bufferCaODirections );
 			_buffer->setControlPointSecondaryStructure( _bufferSSTypes );
 			_buffer->setControlPointColors( _bufferColors );
 			_buffer->setControlPointVisibilities( _bufferVisibilities );
+			_buffer->setControlPointIds( _bufferIds );
 
 			_buffer->setIndices( _bufferIndices );
 

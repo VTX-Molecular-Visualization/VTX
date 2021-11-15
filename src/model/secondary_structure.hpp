@@ -73,6 +73,7 @@ namespace VTX
 			std::vector<Color::Rgb> _bufferColors		= std::vector<Color::Rgb>();
 			std::vector<uint>		_bufferVisibilities = std::vector<uint>();
 			std::vector<uint>		_bufferSelections	= std::vector<uint>();
+			std::vector<uint>		_bufferIds			= std::vector<Model::ID>();
 			std::vector<uint>		_bufferIndices		= std::vector<uint>();
 
 			std::map<uint, uint> _residueToIndices	 = std::map<uint, uint>();
@@ -89,7 +90,8 @@ namespace VTX
 								std::vector<Vec3f> &			p_caODirections,
 								const std::vector<uint> &		p_ssTypes,
 								const std::vector<Color::Rgb> & p_colors,
-								const std::vector<uint> &		p_visibilities );
+								const std::vector<uint> &		p_visibilities,
+								const std::vector<Model::ID> &	p_ids );
 		};
 
 	} // namespace Model

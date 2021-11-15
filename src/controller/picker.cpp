@@ -10,10 +10,17 @@ namespace VTX::Controller
 {
 	void Picker::update( const float & p_deltaTime ) { BaseMouseController::update( p_deltaTime ); }
 
-	void Picker::_handleMouseButtonDownEvent( const QMouseEvent & p_event ) { _deltaMousePosition = Vec2i(); }
+	void Picker::_handleMouseButtonDownEvent( const QMouseEvent & p_event )
+	{
+		BaseMouseController::_handleMouseButtonDownEvent( p_event );
+
+		_deltaMousePosition = Vec2i();
+	}
 
 	void Picker::_handleMouseButtonUpEvent( const QMouseEvent & p_event )
 	{
+		BaseMouseController::_handleMouseButtonUpEvent( p_event );
+
 		if ( _deltaMousePosition != Vec2i() )
 		{
 			return;
@@ -21,7 +28,7 @@ namespace VTX::Controller
 
 		if ( _mouseHoveringRenderWidget() )
 		{
-			uint id
+			Model::ID id
 				= VTXApp::get().getMainWindow().getOpenGLWidget().getPickingId( p_event.pos().x(), p_event.pos().y() );
 
 			// Clear selection if not CTRL.
@@ -34,16 +41,17 @@ namespace VTX::Controller
 			// If something clicked.
 			if ( id != 0 )
 			{
-				Model::Atom & atom = MVC::MvcManager::get().getModel<Model::Atom>( id );
+				ID::VTX_ID	  typeId = MVC::MvcManager::get().getModelTypeID( id );
+				Model::Atom & atom	 = MVC::MvcManager::get().getModel<Model::Atom>( id );
 
 				// Already selected.
-				if ( Selection::SelectionManager::get().getSelectionModel().isModelSelected( atom ) )
+				if ( Selection::SelectionManager::get().getSelectionModel().isAtomSelected( atom ) )
 				{
 					// Remove from selection.
 					if ( _isModifierExclusive( ModifierFlag::Control ) )
 					{
 						VTX_ACTION( new Action::Selection::UnselectAtom(
-							Selection::SelectionManager::get().getSelectionModel(), atom, true ) );
+							Selection::SelectionManager::get().getSelectionModel(), atom ) );
 					}
 				}
 				else

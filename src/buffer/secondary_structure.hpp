@@ -4,6 +4,7 @@
 #include "base_buffer_opengl.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "model/base_model.hpp"
 #include "renderer/gl/vertex_array.hpp"
 #include <vector>
 
@@ -29,6 +30,7 @@ namespace VTX
 			void setControlPointColors( const std::vector<Color::Rgb> & );
 			void setControlPointVisibilities( const std::vector<uint> & );
 			void setControlPointSelections( const std::vector<uint> & );
+			void setControlPointIds( const std::vector<Model::ID> & );
 			void setIndices( const std::vector<uint> & );
 
 		  private:
@@ -40,6 +42,7 @@ namespace VTX
 				CONTROL_POINT_COLOR				  = 3,
 				CONTROL_POINT_VISIBILITY		  = 4,
 				CONTROL_POINT_SELECTION			  = 5,
+				CONTROL_POINT_ID				  = 6,
 			};
 
 			Renderer::GL::Buffer	  _vboPositions			  = Renderer::GL::Buffer();
@@ -48,6 +51,7 @@ namespace VTX
 			Renderer::GL::Buffer	  _vboColors			  = Renderer::GL::Buffer();
 			Renderer::GL::Buffer	  _vboVisibilities		  = Renderer::GL::Buffer();
 			Renderer::GL::Buffer	  _vboSelections		  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer	  _vboIds				  = Renderer::GL::Buffer();
 			Renderer::GL::Buffer	  _ibo					  = Renderer::GL::Buffer();
 			Renderer::GL::VertexArray _vao					  = Renderer::GL::VertexArray();
 		};

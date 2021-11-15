@@ -62,6 +62,13 @@ namespace VTX::Buffer
 			ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION,
 								  ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
+
+		// Id.
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_ID );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_ID, _vboIds, sizeof( Model::ID ) );
+		_vao.setAttributeFormat(
+			ATTRIBUTE_LOCATION::CONTROL_POINT_ID, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_ID, ATTRIBUTE_LOCATION::CONTROL_POINT_ID );
 	}
 
 	void SecondaryStructure::bind() { _vao.bind(); }
@@ -95,6 +102,11 @@ namespace VTX::Buffer
 	void SecondaryStructure::setControlPointSelections( const std::vector<uint> & p_selections )
 	{
 		_vboSelections.set<uint>( p_selections, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+	}
+
+	void SecondaryStructure::setControlPointIds( const std::vector<Model::ID> & p_ids )
+	{
+		_vboIds.set<Model::ID>( p_ids, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setIndices( const std::vector<uint> & p_indices )
