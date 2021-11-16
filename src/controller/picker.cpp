@@ -10,26 +10,11 @@ namespace VTX::Controller
 {
 	void Picker::update( const float & p_deltaTime ) { BaseMouseController::update( p_deltaTime ); }
 
-	void Picker::_handleMouseButtonDownEvent( const QMouseEvent & p_event )
+	void Picker::_onMouseLeftClick( const uint p_x, const uint p_y )
 	{
-		BaseMouseController::_handleMouseButtonDownEvent( p_event );
-
-		_deltaMousePosition = Vec2i();
-	}
-
-	void Picker::_handleMouseButtonUpEvent( const QMouseEvent & p_event )
-	{
-		BaseMouseController::_handleMouseButtonUpEvent( p_event );
-
-		if ( _deltaMousePosition != Vec2i() )
-		{
-			return;
-		}
-
 		if ( _mouseHoveringRenderWidget() )
 		{
-			Vec2i ids
-				= VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_event.pos().x(), p_event.pos().y() );
+			Vec2i ids = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
 
 			// Clear selection if not CTRL.
 			if ( _isModifierExclusive( ModifierFlag::Control ) == false )
