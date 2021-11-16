@@ -230,6 +230,8 @@ namespace VTX
 			ALL,
 		};
 
+		inline void freezeEvent( const bool p_freeze ) { _freezeEvent = p_freeze; }
+
 		inline bool getWindowFullscreen() const { return windowFullscreen; }
 		void		setWindowFullscreen( const bool p_fullscreen );
 		inline bool getActivateRenderer() const { return activeRenderer; }
@@ -324,6 +326,8 @@ namespace VTX
 		Renderer::MODE				mode = MODE_DEFAULT;
 
 	  private:
+		bool _freezeEvent = false;
+
 		bool windowFullscreen = WINDOW_FULLSCREEN_DEFAULT;
 		bool activeRenderer	  = ACTIVE_RENDERER_DEFAULT;
 		bool forceRenderer	  = FORCE_RENDERER_DEFAULT;

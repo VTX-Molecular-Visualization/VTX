@@ -571,6 +571,9 @@ namespace VTX
 
 	void Setting::_sendDataChangedEvent( const PARAMETER & p_parameter )
 	{
+		if ( _freezeEvent )
+			return;
+
 		std::set<PARAMETER> parameters = std::set<PARAMETER>();
 
 		if ( p_parameter == PARAMETER::ALL )

@@ -242,6 +242,8 @@ namespace VTX
 		inline static const QColor CONSOLE_WARNING_COLOR = QColor( "yellow" );
 		inline static const QColor CONSOLE_ERROR_COLOR	 = QColor( "red" );
 
+		inline static const QSize EXPORT_IMAGE_PREVIEW_SIZE = QSize( 320, 320 );
+
 		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION
 			= VTX::Selection::SelectionType::RESIDUE;
 

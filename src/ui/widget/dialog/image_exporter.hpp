@@ -2,6 +2,7 @@
 #define __VTX_UI_DIALOG_IMAGE_EXPORTER__
 
 #include "ui/widget/base_manual_widget.hpp"
+#include "ui/widget/custom_widget/render_preview_widget.hpp"
 #include "ui/widget/custom_widget/collapsing_groupbox_widget.hpp"
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"
 #include <QComboBox>
@@ -42,10 +43,17 @@ namespace VTX::UI::Widget::Dialog
 		CustomWidget::FloatFieldSliderWidget * _backgroundOpacitySlider = nullptr;
 		CustomWidget::FloatFieldSliderWidget * _qualitySlider			= nullptr;
 
+		CustomWidget::RenderPreviewWidget * _previewWidget = nullptr;
+
 		QDialogButtonBox * _dialogButtons = nullptr;
 
 		void _addWidget( const QString & p_label, QWidget * const p_setting, QGridLayout * const p_layout );
 		void _addWidget( QWidget * const p_setting, QGridLayout * const p_layout );
+		void _refreshPreview();
+
+		void _resolutionChange( const int p_resolutionIndex );
+		void _backgroundOpacityChange( const float p_opacity );
+		void _qualityChange( const float p_quality );
 	};
 } // namespace VTX::UI::Widget::Dialog
 

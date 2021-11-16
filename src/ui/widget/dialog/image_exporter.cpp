@@ -49,12 +49,18 @@ namespace VTX::UI::Widget::Dialog
 		_qualitySlider->setMinMax( 0.f, 1.f );
 		_addWidget( "Quality", _qualitySlider, parametersLayout );
 
+		_previewWidget = WidgetFactory::get().instantiateWidget<CustomWidget::RenderPreviewWidget>(
+			parameters, "PreviewWidget" );
+		_previewWidget->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred );
+
 		_dialogButtons
 			= new QDialogButtonBox( QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Save,
 									Qt::Orientation::Horizontal,
 									this );
 
 		verticalLayout->addWidget( parameters );
+		verticalLayout->addStretch();
+		verticalLayout->addWidget( _previewWidget, 0, Qt::AlignCenter );
 		verticalLayout->addStretch();
 		verticalLayout->addWidget( _dialogButtons );
 
@@ -63,6 +69,19 @@ namespace VTX::UI::Widget::Dialog
 
 	void ImageExporter::_setupSlots()
 	{
+		connect( _resolutionWidget,
+				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
+				 this,
+				 &ImageExporter::_resolutionChange );
+		connect( _backgroundOpacitySlider,
+				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
+				 this,
+				 &ImageExporter::_backgroundOpacityChange );
+		connect( _qualitySlider,
+				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
+				 this,
+				 &ImageExporter::_qualityChange );
+
 		QPushButton * cancelButton = _dialogButtons->button( QDialogButtonBox::StandardButton::Cancel );
 		connect( cancelButton, &QPushButton::clicked, this, &ImageExporter::cancelAction );
 
@@ -84,6 +103,17 @@ namespace VTX::UI::Widget::Dialog
 		_backgroundOpacitySlider->setValue( VTX_SETTING().getSnapshotBackgroundOpacity() );
 		_resolutionWidget->setCurrentIndex( int( VTX_SETTING().getSnapshotResolution() ) );
 		_qualitySlider->setValue( VTX_SETTING().getSnapshotQuality() );
+
+		_refreshPreview();
+	}
+
+	void ImageExporter::_refreshPreview()
+	{
+		const IO::Struct::ImageExport previewExportData
+			= IO::Struct::ImageExport( IO::Struct::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() ),
+									   _backgroundOpacitySlider->getValue(),
+									   _qualitySlider->getValue() );
+		_previewWidget->takeSnapshot( previewExportData );
 	}
 
 	void ImageExporter::_addWidget( const QString & p_label, QWidget * const p_setting, QGridLayout * const p_layout )
@@ -101,6 +131,10 @@ namespace VTX::UI::Widget::Dialog
 		const int row = p_layout->rowCount();
 		p_layout->addWidget( p_setting, row, 0, 1, 2 );
 	}
+
+	void ImageExporter::_resolutionChange( const int p_resolutionIndex ) { _refreshPreview(); }
+	void ImageExporter::_backgroundOpacityChange( const float p_opacity ) { _refreshPreview(); }
+	void ImageExporter::_qualityChange( const float p_quality ) { _refreshPreview(); }
 
 	void ImageExporter::cancelAction() { close(); }
 	void ImageExporter::saveAction()
