@@ -6,6 +6,7 @@ layout( location = 2 ) in uint vao_ssType;
 layout( location = 3 ) in vec3 vao_color;
 layout( location = 4 ) in uint vao_visibility;
 layout( location = 5 ) in uint vao_controlPointSelection;
+layout( location = 6 ) in uint vao_residueId;
 
 out VsOut
 {
@@ -15,6 +16,7 @@ out VsOut
 	flat uint ssType;
 	flat uint visibility;
 	flat uint selection;
+	flat uint id;
 }
 vsOut;
 
@@ -26,4 +28,5 @@ void main()
 	vsOut.ssType	 = vao_ssType;
 	vsOut.visibility = vao_visibility;
 	vsOut.selection	 = vao_controlPointSelection;
+	vsOut.id		 = vao_residueId;
 }

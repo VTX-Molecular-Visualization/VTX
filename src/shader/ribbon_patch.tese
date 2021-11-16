@@ -22,6 +22,7 @@ in TcOut
 	flat uint ssType;
 	flat uint visibility;
 	flat uint selection;
+	flat uint id;
 }
 tcIn[];
 
@@ -32,6 +33,7 @@ out TeOut
 	vec3	  color;
 	flat uint visibility;
 	flat uint selection;
+	flat uint id;
 }
 teOut;
 
@@ -135,6 +137,7 @@ void main()
 	// teOut.color =  tcIn[ 1 ].color;
 	teOut.selection	 = tcIn[ 1 ].selection;
 	teOut.visibility = tcIn[ 1 ].visibility;
+	teOut.id		 = tcIn[ 1 ].id;
 
 	gl_Position = u_projMatrix * vec4( teOut.viewPosition, 1.f );
 }

@@ -7,10 +7,11 @@ uniform float u_cylRad;
 
 in GsOut
 {
-	smooth vec3			viewImpostorPosition; // Impostor position in view space.
-	flat vec3			viewVertices[ 2 ];	  // Cylinder vertices position in view space.
-	flat vec3			colors[ 2 ];
-	flat uint vertexSelected[ 2 ];
+	smooth vec3 viewImpostorPosition; // Impostor position in view space.
+	flat vec3	viewVertices[ 2 ];	  // Cylinder vertices position in view space.
+	flat vec3	colors[ 2 ];
+	flat uint	vertexSelected[ 2 ];
+	flat uint	vertexId[ 2 ];
 }
 gsIn;
 
@@ -22,6 +23,7 @@ layout( location = 0 ) out uvec4 outViewPositionNormal;
 // 3 32 bits for color.
 // 1 32 bits for specular.
 layout( location = 1 ) out vec4 outColor;
+layout( location = 2 ) out uvec2 outId;
 
 float computeDepth( const vec3 v )
 {
@@ -119,6 +121,7 @@ void main()
 			// Output data.
 			outViewPositionNormal = viewPositionNormalCompressed;
 			outColor			  = vec4( color, 32.f ); // w = specular shininess.
+			outId				  = ivec2( gsIn.vertexId[ 0 ], gsIn.vertexId[ 1 ] );
 		}
 	}
 }

@@ -39,6 +39,7 @@ namespace VTX::Renderer::GL
 			RED				= GL_RED,
 			RED_INTEGER		= GL_RED_INTEGER,
 			RG				= GL_RG,
+			RG_INTEGER		= GL_RG_INTEGER,
 			RGB				= GL_RGB,
 			BGR				= GL_BGR,
 			BGRA			= GL_BGRA,
@@ -50,11 +51,11 @@ namespace VTX::Renderer::GL
 		enum class InternalFormat : GLenum
 		{
 			// See http://docs.gl/gl4/glTexStorage2D.
-			R8	  = GL_R8,
-			R32UI = GL_R32UI,
-			R16F  = GL_R16F,
-			R32F  = GL_R32F,
-
+			R8		 = GL_R8,
+			R16F	 = GL_R16F,
+			R32F	 = GL_R32F,
+			R32UI	 = GL_R32UI,
+			RG32UI	 = GL_RG32UI,
 			RGB16F	 = GL_RGB16F,
 			RGBA16F	 = GL_RGBA16F,
 			RGBA32F	 = GL_RGBA32F,

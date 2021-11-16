@@ -4,6 +4,7 @@
 #include "base_buffer_opengl.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "model/base_model.hpp"
 #include "renderer/gl/vertex_array.hpp"
 #include <vector>
 
@@ -28,7 +29,7 @@ namespace VTX
 			void setAtomColors( const std::vector<Color::Rgb> & );
 			void setAtomVisibilities( const std::vector<uint> & );
 			void setAtomSelections( const std::vector<uint> & );
-			void setAtomIds( const std::vector<uint> & );
+			void setAtomIds( const std::vector<Model::ID> & );
 			void setBonds( const std::vector<uint> & );
 
 		  private:

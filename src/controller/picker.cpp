@@ -12,26 +12,100 @@ namespace VTX::Controller
 
 	void Picker::_handleMouseButtonDownEvent( const QMouseEvent & p_event )
 	{
+		BaseMouseController::_handleMouseButtonDownEvent( p_event );
+
+		_deltaMousePosition = Vec2i();
+	}
+
+	void Picker::_handleMouseButtonUpEvent( const QMouseEvent & p_event )
+	{
+		BaseMouseController::_handleMouseButtonUpEvent( p_event );
+
+		if ( _deltaMousePosition != Vec2i() )
+		{
+			return;
+		}
+
 		if ( _mouseHoveringRenderWidget() )
 		{
-			uint id
-				= VTXApp::get().getMainWindow().getOpenGLWidget().getPickingId( p_event.pos().x(), p_event.pos().y() );
-			VTX_DEBUG( std::to_string( id ) );
+			Vec2i ids
+				= VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_event.pos().x(), p_event.pos().y() );
 
-			if ( id == 0 )
+			// Clear selection if not CTRL.
+			if ( _isModifierExclusive( ModifierFlag::Control ) == false )
 			{
-				if ( _isModifierExclusive( ModifierFlag::Control ) == false )
-				{
-					VTX_ACTION( new Action::Selection::ClearSelection(
-						Selection::SelectionManager::get().getSelectionModel() ) );
-				}
+				VTX_ACTION(
+					new Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
 			}
-			else
+
+			// If something clicked.
+			if ( ids.x != Model::ID_UNKNOWN )
 			{
-				Model::Atom & atom = MVC::MvcManager::get().getModel<Model::Atom>( id );
-				VTX_ACTION( new Action::Selection::SelectAtom( Selection::SelectionManager::get().getSelectionModel(),
-															   atom,
+				ID::VTX_ID typeId = MVC::MvcManager::get().getModelTypeID( ids.x );
+				// Already selected.
+				if ( Selection::SelectionManager::get().getSelectionModel().isModelSelected(
+						 MVC::MvcManager::get().getModel<Model::BaseModel>( ids.x ) )
+					 && ( ids.y != Model::ID_UNKNOWN
+							  ? Selection::SelectionManager::get().getSelectionModel().isModelSelected(
+								  MVC::MvcManager::get().getModel<Model::BaseModel>( ids.y ) )
+							  : true ) )
+				{
+					// Remove from selection.
+					if ( _isModifierExclusive( ModifierFlag::Control ) )
+					{
+						// Residue.
+						if ( typeId == ID::Model::MODEL_RESIDUE )
+						{
+							VTX_ACTION( new Action::Selection::UnselectResidue(
+								Selection::SelectionManager::get().getSelectionModel(),
+								MVC::MvcManager::get().getModel<Model::Residue>( ids.x ) ) );
+						}
+						// Bond.
+						else if ( ids.y != Model::ID_UNKNOWN )
+						{
+							VTX_ACTION( new Action::Selection::UnselectAtom(
+								Selection::SelectionManager::get().getSelectionModel(),
+								{ &MVC::MvcManager::get().getModel<Model::Atom>( ids.x ),
+								  &MVC::MvcManager::get().getModel<Model::Atom>( ids.y ) } ) );
+						}
+						// Atom.
+						else
+						{
+							VTX_ACTION( new Action::Selection::UnselectAtom(
+								Selection::SelectionManager::get().getSelectionModel(),
+								MVC::MvcManager::get().getModel<Model::Atom>( ids.x ) ) );
+						}
+					}
+				}
+				// Add to selection.
+				else
+				{
+					// Residue.
+					if ( typeId == ID::Model::MODEL_RESIDUE )
+					{
+						VTX_ACTION( new Action::Selection::SelectResidue(
+							Selection::SelectionManager::get().getSelectionModel(),
+							MVC::MvcManager::get().getModel<Model::Residue>( ids.x ),
+							_isModifierExclusive( ModifierFlag::Control ) ) );
+					}
+					// Bond.
+					else if ( ids.y != Model::ID_UNKNOWN )
+					{
+						VTX_ACTION( new Action::Selection::SelectAtom(
+							Selection::SelectionManager::get().getSelectionModel(),
+							{ &MVC::MvcManager::get().getModel<Model::Atom>( ids.x ),
+							  &MVC::MvcManager::get().getModel<Model::Atom>( ids.y ) },
+							_isModifierExclusive( ModifierFlag::Control ) ) );
+					}
+					// Atom.
+					else
+					{
+						VTX_ACTION(
+							new Action::Selection::SelectAtom( Selection::SelectionManager::get().getSelectionModel(),
+															   MVC::MvcManager::get().getModel<Model::Atom>( ids.x ),
 															   _isModifierExclusive( ModifierFlag::Control ) ) );
+					}
+				}
 			}
 		}
 	}

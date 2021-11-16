@@ -139,15 +139,15 @@ namespace VTX::Renderer::GL
 
 	void GL::activeAA( const bool p_active ) { _passSelection->updateOutputFBO( *this ); }
 
-	const uint GL::getPickingId( const uint p_x, const uint p_y ) const
+	const Vec2i GL::getPickedIds( const uint p_x, const uint p_y ) const
 	{
 		_passGeometric->getFbo().bind( Framebuffer::Target::READ_FRAMEBUFFER );
 		_passGeometric->getFbo().setReadBuffer( Framebuffer::Attachment::COLOR2 );
-		uint id = 0;
-		_gl->glReadPixels( p_x, p_y, 1, 1, GLenum( Texture2D::Format::RED_INTEGER ), GL_UNSIGNED_INT, &id );
+		Vec2i ids = Vec2i( Model::ID_UNKNOWN, Model::ID_UNKNOWN );
+		_gl->glReadPixels( p_x, p_y, 1, 1, GLenum( Texture2D::Format::RG_INTEGER ), GL_UNSIGNED_INT, &ids );
 		_passGeometric->getFbo().unbind();
 
-		return id;
+		return ids;
 	}
 
 } // namespace VTX::Renderer::GL
