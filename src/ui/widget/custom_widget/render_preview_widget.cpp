@@ -20,8 +20,21 @@ namespace VTX::UI::Widget::CustomWidget
 		const std::pair<int, int> exportSize   = snapshotData.getSize();
 		const float				  exportRatio  = exportSize.first / float( exportSize.second );
 
-		snapshotData.setSize( Style::EXPORT_IMAGE_PREVIEW_SIZE.width() * exportRatio,
-							  Style::EXPORT_IMAGE_PREVIEW_SIZE.height() );
+		if ( exportRatio >= 1 )
+		{
+			int snapshotHeight = Style::EXPORT_IMAGE_PREVIEW_SIZE.height() / exportRatio;
+			if ( snapshotHeight <= PREVIEW_MIN_SIZE )
+				snapshotHeight = PREVIEW_MIN_SIZE;
+
+			snapshotData.setSize( Style::EXPORT_IMAGE_PREVIEW_SIZE.width(), snapshotHeight );
+		}
+		else
+		{
+			int snapshotWidth = Style::EXPORT_IMAGE_PREVIEW_SIZE.width() * exportRatio;
+			if ( snapshotWidth <= PREVIEW_MIN_SIZE )
+				snapshotWidth = PREVIEW_MIN_SIZE;
+			snapshotData.setSize( snapshotWidth, Style::EXPORT_IMAGE_PREVIEW_SIZE.height() );
+		}
 
 		Worker::Snapshoter * const snapshoter
 			= new Worker::Snapshoter( Worker::Snapshoter::MODE::GL, &preview, snapshotData );

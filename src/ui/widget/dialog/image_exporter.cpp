@@ -39,6 +39,32 @@ namespace VTX::UI::Widget::Dialog
 			_resolutionWidget->addItem( QString::fromStdString( resolutionStr ) );
 		_addWidget( "Resolution", _resolutionWidget, parametersLayout );
 
+		_customResolutionWidget = new QWidget( parameters );
+
+		_customResolutionLabel = new QLabel( parameters );
+		_customResolutionLabel->setText( "Custom Resolution" );
+		_resolutionWidthWidget = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldDraggableWidget>(
+			_customResolutionWidget, "ResolutionWidth" );
+		_resolutionWidthWidget->setMinMax( IO::Struct::ImageExport::SNAPSHOT_MIN_WIDTH,
+										   IO::Struct::ImageExport::SNAPSHOT_MAX_WIDTH );
+		_resolutionHeightWidget = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldDraggableWidget>(
+			_customResolutionWidget, "ResolutionHeight" );
+		_resolutionHeightWidget->setMinMax( IO::Struct::ImageExport::SNAPSHOT_MIN_HEIGHT,
+											IO::Struct::ImageExport::SNAPSHOT_MAX_HEIGHT );
+
+		QLabel * widthLabel = new QLabel( _customResolutionWidget );
+		widthLabel->setText( "Width" );
+		QLabel * heightLabel = new QLabel( _customResolutionWidget );
+		heightLabel->setText( "Height" );
+
+		QHBoxLayout * resolutionLayout = new QHBoxLayout( _customResolutionWidget );
+		resolutionLayout->addWidget( widthLabel, 1 );
+		resolutionLayout->addWidget( _resolutionWidthWidget, 100 );
+		resolutionLayout->addSpacing( 10 );
+		resolutionLayout->addWidget( heightLabel, 1 );
+		resolutionLayout->addWidget( _resolutionHeightWidget, 100 );
+		_addWidget( _customResolutionLabel, _customResolutionWidget, parametersLayout );
+
 		_backgroundOpacitySlider = WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
 			parameters, "BackgroundOpacitySlider" );
 		_backgroundOpacitySlider->setMinMax( 0.f, 1.f );
@@ -49,8 +75,8 @@ namespace VTX::UI::Widget::Dialog
 		_qualitySlider->setMinMax( 0.f, 1.f );
 		_addWidget( "Quality", _qualitySlider, parametersLayout );
 
-		_previewWidget = WidgetFactory::get().instantiateWidget<CustomWidget::RenderPreviewWidget>(
-			parameters, "PreviewWidget" );
+		_previewWidget
+			= WidgetFactory::get().instantiateWidget<CustomWidget::RenderPreviewWidget>( parameters, "PreviewWidget" );
 		_previewWidget->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred );
 
 		_dialogButtons
@@ -73,6 +99,16 @@ namespace VTX::UI::Widget::Dialog
 				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
 				 this,
 				 &ImageExporter::_resolutionChange );
+
+		connect( _resolutionWidthWidget,
+				 &CustomWidget::IntegerFieldDraggableWidget::onValueChange,
+				 this,
+				 &ImageExporter::_resolutionWidthChange );
+		connect( _resolutionHeightWidget,
+				 &CustomWidget::IntegerFieldDraggableWidget::onValueChange,
+				 this,
+				 &ImageExporter::_resolutionHeightChange );
+
 		connect( _backgroundOpacitySlider,
 				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
 				 this,
@@ -104,15 +140,39 @@ namespace VTX::UI::Widget::Dialog
 		_resolutionWidget->setCurrentIndex( int( VTX_SETTING().getSnapshotResolution() ) );
 		_qualitySlider->setValue( VTX_SETTING().getSnapshotQuality() );
 
+		const bool displayCustomResolution
+			= VTX_SETTING().getSnapshotResolution() == IO::Struct::ImageExport::RESOLUTION::Free;
+		_customResolutionLabel->setVisible( displayCustomResolution );
+		_customResolutionWidget->setVisible( displayCustomResolution );
+
+		std::pair<int, int> freeResolution
+			= IO::Struct::ImageExport::getSize( IO::Struct::ImageExport::RESOLUTION::Free );
+		_resolutionWidthWidget->setValue( freeResolution.first );
+		_resolutionHeightWidget->setValue( freeResolution.second );
+
 		_refreshPreview();
 	}
 
 	void ImageExporter::_refreshPreview()
 	{
-		const IO::Struct::ImageExport previewExportData
-			= IO::Struct::ImageExport( IO::Struct::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() ),
-									   _backgroundOpacitySlider->getValue(),
-									   _qualitySlider->getValue() );
+		const IO::Struct::ImageExport::RESOLUTION resolution
+			= IO::Struct::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() );
+
+		std::pair<int, int> resolutionSize;
+
+		if ( resolution == IO::Struct::ImageExport::RESOLUTION::Free )
+		{
+			resolutionSize.first  = _resolutionWidthWidget->getValue();
+			resolutionSize.second = _resolutionHeightWidget->getValue();
+		}
+		else
+		{
+			resolutionSize = IO::Struct::ImageExport::getSize( resolution );
+		}
+
+		const IO::Struct::ImageExport previewExportData = IO::Struct::ImageExport(
+			resolutionSize, _backgroundOpacitySlider->getValue(), _qualitySlider->getValue() );
+
 		_previewWidget->takeSnapshot( previewExportData );
 	}
 
@@ -121,9 +181,13 @@ namespace VTX::UI::Widget::Dialog
 		QLabel * const labelWidget = new QLabel( p_setting );
 		labelWidget->setText( p_label );
 
+		_addWidget( labelWidget, p_setting, p_layout );
+	}
+	void ImageExporter::_addWidget( QLabel * const p_label, QWidget * const p_setting, QGridLayout * const p_layout )
+	{
 		const int row = p_layout->rowCount();
 
-		p_layout->addWidget( labelWidget, row, 0 );
+		p_layout->addWidget( p_label, row, 0 );
 		p_layout->addWidget( p_setting, row, 1 );
 	}
 	void ImageExporter::_addWidget( QWidget * const p_setting, QGridLayout * const p_layout )
@@ -132,17 +196,41 @@ namespace VTX::UI::Widget::Dialog
 		p_layout->addWidget( p_setting, row, 0, 1, 2 );
 	}
 
-	void ImageExporter::_resolutionChange( const int p_resolutionIndex ) { _refreshPreview(); }
+	void ImageExporter::_resolutionChange( const int p_resolutionIndex )
+	{
+		const IO::Struct::ImageExport::RESOLUTION resolution
+			= IO::Struct::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() );
+
+		const bool displayCustomResolution = resolution == IO::Struct::ImageExport::RESOLUTION::Free;
+		_customResolutionLabel->setVisible( displayCustomResolution );
+		_customResolutionWidget->setVisible( displayCustomResolution );
+
+		_refreshPreview();
+	}
+	void ImageExporter::_resolutionWidthChange( const int p_value ) { _refreshPreview(); }
+	void ImageExporter::_resolutionHeightChange( const int p_value ) { _refreshPreview(); }
 	void ImageExporter::_backgroundOpacityChange( const float p_opacity ) { _refreshPreview(); }
 	void ImageExporter::_qualityChange( const float p_quality ) { _refreshPreview(); }
 
 	void ImageExporter::cancelAction() { close(); }
 	void ImageExporter::saveAction()
 	{
-		const IO::Struct::ImageExport exportData
+		IO::Struct::ImageExport exportData
 			= IO::Struct::ImageExport( IO::Struct::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() ),
 									   _backgroundOpacitySlider->getValue(),
 									   _qualitySlider->getValue() );
+
+		const IO::Struct::ImageExport::RESOLUTION resolution
+			= IO::Struct::ImageExport::RESOLUTION( _resolutionWidget->currentIndex() );
+
+		if ( resolution == IO::Struct::ImageExport::RESOLUTION::Free )
+		{
+			std::pair<int, int> resolutionSize;
+
+			resolutionSize.first  = _resolutionWidthWidget->getValue();
+			resolutionSize.second = _resolutionHeightWidget->getValue();
+			exportData.setSize( resolutionSize );
+		}
 
 		setEnabled( false );
 

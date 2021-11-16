@@ -60,6 +60,11 @@ namespace VTX::IO::Struct
 			{ 2048, 1152 }, { 2560, 1440 }, { 3840, 2160 }, { 7680, 4320 }, { 15360, 8640 }
 		};
 
+		inline static int SNAPSHOT_MIN_WIDTH  = 16;
+		inline static int SNAPSHOT_MIN_HEIGHT = 16;
+		inline static int SNAPSHOT_MAX_WIDTH  = 16000;
+		inline static int SNAPSHOT_MAX_HEIGHT = 16000;
+
 		static std::pair<int, int> getSize( const RESOLUTION & p_resolution );
 
 		ImageExport() : ImageExport( RESOLUTION::Free, 1.f, 1.f ) {};

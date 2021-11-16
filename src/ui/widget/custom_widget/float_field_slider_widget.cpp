@@ -52,9 +52,10 @@ namespace VTX::UI::Widget::CustomWidget
 			setValue( newValue );
 			_emitOnValueChangeSignal();
 		}
-		else if ( newValue == 0.f ) // If value == 0, textfield can contain non valid number chain => de a refresh
-									// to
-									// force valid display of 0.
+
+		if ( newValue == 0.f ) // If value == 0, textfield can contain non valid number chain => de a refresh
+							   // to
+							   // force valid display of 0.
 		{
 			_refresh();
 		}

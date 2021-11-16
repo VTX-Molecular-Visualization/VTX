@@ -4,8 +4,8 @@
 #include "io/struct/image_export.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QLabel>
-#include <QWidget>
 #include <QPixmap>
+#include <QWidget>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -14,9 +14,12 @@ namespace VTX::UI::Widget::CustomWidget
 		VTX_WIDGET
 		Q_OBJECT
 
+	  private:
+		inline static const int PREVIEW_MIN_SIZE = 8;
+
 	  public:
 		void localize() override;
-		void takeSnapshot( const IO::Struct::ImageExport & p_exportData);
+		void takeSnapshot( const IO::Struct::ImageExport & p_exportData );
 
 	  protected:
 		RenderPreviewWidget( QWidget * p_parent = nullptr );
@@ -27,7 +30,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void _setupSlots() override;
 
 	  private:
-		QPixmap								   _previewPixmpap;
+		QPixmap _previewPixmpap;
 	};
 } // namespace VTX::UI::Widget::CustomWidget
 
