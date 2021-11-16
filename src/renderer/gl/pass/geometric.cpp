@@ -38,7 +38,7 @@ namespace VTX::Renderer::GL::Pass
 
 		_pickingTexture.create( p_width,
 								p_height,
-								Texture2D::InternalFormat::R32UI,
+								Texture2D::InternalFormat::RG32UI,
 								Texture2D::Wrapping::CLAMP_TO_EDGE,
 								Texture2D::Wrapping::CLAMP_TO_EDGE,
 								Texture2D::Filter::NEAREST,

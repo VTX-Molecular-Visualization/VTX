@@ -11,6 +11,7 @@ in VsOut
 	flat vec3 vertexColor;
 	flat uint vertexVisible;
 	flat uint vertexSelected;
+	flat uint vertexId;
 }
 vsIn[];
 
@@ -20,6 +21,7 @@ out GsOut
 	flat vec3	viewVertices[ 2 ];	  // Cylinder vertices position in view space.
 	flat vec3	colors[ 2 ];
 	flat uint	vertexSelected[ 2 ];
+	flat uint	vertexId[ 2 ];
 }
 gsOut;
 
@@ -59,6 +61,8 @@ void main()
 	gsOut.colors[ 1 ]		  = vsIn[ 1 ].vertexColor;
 	gsOut.vertexSelected[ 0 ] = vsIn[ 0 ].vertexSelected;
 	gsOut.vertexSelected[ 1 ] = vsIn[ 1 ].vertexSelected;
+	gsOut.vertexId[ 0 ]		  = vsIn[ 0 ].vertexId;
+	gsOut.vertexId[ 1 ]		  = vsIn[ 1 ].vertexId;
 
 	// Flip is vertex 0 is farther than vertex 1.
 	vec3 viewImpPos0, viewImpPos1;

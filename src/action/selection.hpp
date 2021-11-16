@@ -350,20 +350,29 @@ namespace VTX::Action::Selection
 							 Model::Atom &		p_atom,
 							 const bool			p_appendToSelection = false ) :
 			_selection( p_selection ),
-			_atom( p_atom ), _appendToSelection( p_appendToSelection )
+			_appendToSelection( p_appendToSelection )
+		{
+			_atoms.emplace_back( &p_atom );
+		}
+
+		explicit SelectAtom( Model::Selection &					p_selection,
+							 const std::vector<Model::Atom *> & p_atoms,
+							 const bool							p_appendToSelection = false ) :
+			_selection( p_selection ),
+			_atoms( p_atoms ), _appendToSelection( p_appendToSelection )
 		{
 		}
 
 		virtual void execute() override
 		{
-			_selection.selectAtom( _atom, _appendToSelection );
+			_selection.selectAtoms( _atoms, _appendToSelection );
 			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 		}
 
 	  private:
-		Model::Selection & _selection;
-		Model::Atom &	   _atom;
-		const bool		   _appendToSelection;
+		Model::Selection &		   _selection;
+		std::vector<Model::Atom *> _atoms = std::vector<Model::Atom *>();
+		const bool				   _appendToSelection;
 	};
 
 	class UnselectMolecule : public BaseAction
@@ -482,17 +491,13 @@ namespace VTX::Action::Selection
 		{
 			_atoms.emplace_back( &p_atom );
 		}
-		explicit UnselectAtom( Model::Selection &			p_selection,
-							   std::vector<Model::Atom *> & p_atoms,
-							   bool							p_check = false ) :
+		explicit UnselectAtom( Model::Selection &				  p_selection,
+							   const std::vector<Model::Atom *> & p_atoms,
+							   bool								  p_check = false ) :
 			_selection( p_selection ),
-			_check( p_check )
+			_check( p_check ), _atoms( p_atoms )
 		{
-			_atoms.resize( p_atoms.size() );
-			for ( int i = 0; i < p_atoms.size(); i++ )
-				_atoms[ i ] = p_atoms[ i ];
 		}
-
 		virtual void execute() override
 		{
 			if ( _check )

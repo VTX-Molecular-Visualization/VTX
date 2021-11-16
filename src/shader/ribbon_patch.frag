@@ -18,15 +18,13 @@ layout( location = 0 ) out uvec4 outViewPositionNormal;
 // 3 32 bits for color.
 // 1 32 bits for specular.
 layout( location = 1 ) out vec4 outColor;
-// 1 32 bits for id.
-layout( location = 2 ) out uint outId;
+layout( location = 2 ) out uvec2 outId;
 
 void main()
 {
 	// TODO: redo it in tessellation shader.
 	if ( teIn.visibility == 0 )
 	{
-		outId = 0;
 		discard;
 	}
 
@@ -47,5 +45,5 @@ void main()
 	// Output data.
 	outViewPositionNormal = viewPositionNormalCompressed;
 	outColor			  = vec4( color, 32.f ); // w = specular shininess.
-	outId				  = teIn.id;
+	outId				  = uvec2( teIn.id, 0 );
 }

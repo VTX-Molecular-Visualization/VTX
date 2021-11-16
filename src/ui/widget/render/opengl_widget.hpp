@@ -40,7 +40,7 @@ namespace VTX
 			void setRenderMode() { _renderer = nullptr; }
 			void activeVSync( const bool p_active );
 
-			const uint getPickingId( const uint, const uint );
+			const Vec2i getPickedIds( const uint, const uint );
 
 		  private:
 			QElapsedTimer _timer		= QElapsedTimer();

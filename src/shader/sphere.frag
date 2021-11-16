@@ -24,8 +24,7 @@ layout( location = 0 ) out uvec4 outViewPositionNormal;
 // 3 32 bits for color.
 // 1 32 bits for specular.
 layout( location = 1 ) out vec4 outColor;
-// 1 32 bits for id.
-layout( location = 2 ) out uint outId;
+layout( location = 2 ) out uvec2 outId;
 
 float computeDepth( const vec3 v )
 {
@@ -63,7 +62,6 @@ void main()
 
 		gl_FragDepth = computeDepth( gsIn.viewImpPos );
 #else
-		outId				  = 0;
 		discard;
 #endif
 	}
@@ -90,6 +88,6 @@ void main()
 		// Output data.
 		outViewPositionNormal = viewPositionNormalCompressed;
 		outColor			  = vec4( gsIn.sphereColor, 32.f ); // w = specular shininess.
-		outId				  = gsIn.sphereId;
+		outId				  = uvec2( gsIn.sphereId, 0 );
 	}
 }

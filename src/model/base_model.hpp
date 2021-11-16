@@ -17,7 +17,8 @@ namespace VTX
 {
 	namespace Model
 	{
-		using ID = uint;
+		using ID				= uint;
+		constexpr ID ID_UNKNOWN = 0;
 		class BaseModel
 		{
 			VTX_MODEL
