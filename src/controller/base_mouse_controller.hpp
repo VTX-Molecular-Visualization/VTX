@@ -16,8 +16,7 @@ namespace VTX
 			public Event::BaseEventReceiverWheel
 		{
 		  public:
-			inline static const int	  CLICK_SQR_DISTANCE = 25;
-			inline static const float CLICK_TIME		 = 0.275f;
+			inline static const int CLICK_MAX_DISTANCE = 3;
 
 		  public:
 			virtual void receiveEvent( const QMouseEvent & p_event ) override;
@@ -28,8 +27,6 @@ namespace VTX
 			bool _mouseLeftPressed	 = false;
 			bool _mouseRightPressed	 = false;
 			bool _mouseMiddlePressed = false;
-			bool _mouseLeftClick	 = false;
-			bool _mouseRightClick	 = false;
 
 			Vec2i _mousePosition	  = Vec2i();
 			Vec2i _deltaMousePosition = Vec2i();
@@ -37,19 +34,21 @@ namespace VTX
 
 			virtual void _handleMouseButtonDownEvent( const QMouseEvent & p_event );
 			virtual void _handleMouseButtonUpEvent( const QMouseEvent & p_event );
+			virtual void _handleMouseDoubleClickEvent( const QMouseEvent & p_event );
 			virtual void _handleMouseMotionEvent( const QMouseEvent & p_event );
 			virtual void _handleMouseWheelEvent( const QWheelEvent & p_event );
+
+			virtual void _onMouseLeftClick( const uint p_x, const uint p_y ) {}
+			virtual void _onMouseRightClick( const uint p_x, const uint p_y ) {}
+
+			bool _isLeftClickCanceled  = false;
+			bool _isRightClickCanceled = false;
 
 			bool _mouseHoveringRenderWidget() const;
 
 		  private:
 			Vec2i _mouseLeftClickPosition  = Vec2i();
 			Vec2i _mouseRightClickPosition = Vec2i();
-			float _leftClickTimeStamp	   = -1.0f;
-			float _rightClickTimeStamp	   = -1.0f;
-
-			void _updateLeftClick( const float & p_deltaTime );
-			void _updateRightClick( const float & p_deltaTime );
 		};
 	} // namespace Controller
 } // namespace VTX

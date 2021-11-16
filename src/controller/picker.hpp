@@ -12,8 +12,7 @@ namespace VTX::Controller
 		void update( const float & p_deltaTime ) override;
 
 	  protected:
-		void _handleMouseButtonDownEvent( const QMouseEvent & ) override;
-		void _handleMouseButtonUpEvent( const QMouseEvent & ) override;
+		void _onMouseLeftClick( const uint p_x, const uint p_y ) override;
 	};
 } // namespace VTX::Controller
 

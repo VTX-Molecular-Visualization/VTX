@@ -20,6 +20,7 @@ namespace VTX
 			{
 			case QEvent::MouseButtonPress: _handleMouseButtonDownEvent( p_event ); break;
 			case QEvent::MouseButtonRelease: _handleMouseButtonUpEvent( p_event ); break;
+			case QEvent::MouseButtonDblClick: _handleMouseDoubleClickEvent( p_event ); break;
 			case QEvent::MouseMove: _handleMouseMotionEvent( p_event ); break;
 			default: break;
 			}
@@ -37,11 +38,7 @@ namespace VTX
 			}
 		}
 
-		void BaseMouseController::update( const float & p_deltaTime )
-		{
-			_updateLeftClick( p_deltaTime );
-			_updateRightClick( p_deltaTime );
-		}
+		void BaseMouseController::update( const float & p_deltaTime ) {}
 
 		void BaseMouseController::_handleMouseButtonDownEvent( const QMouseEvent & p_event )
 		{
@@ -53,13 +50,21 @@ namespace VTX
 			{
 			case Qt::MouseButton::LeftButton:
 				_mouseLeftPressed		= true;
-				_leftClickTimeStamp		= CLICK_TIME;
+				_isLeftClickCanceled	= false;
 				_mouseLeftClickPosition = _mousePosition;
+				if ( _mouseRightPressed )
+				{
+					_isRightClickCanceled = true;
+				}
 				break;
 			case Qt::MouseButton::RightButton:
 				_mouseRightPressed		 = true;
-				_rightClickTimeStamp	 = CLICK_TIME;
+				_isRightClickCanceled	 = false;
 				_mouseRightClickPosition = _mousePosition;
+				if ( _mouseLeftPressed )
+				{
+					_isLeftClickCanceled = true;
+				}
 				break;
 			case Qt::MouseButton::MiddleButton: _mouseMiddlePressed = true; break;
 			default: break;
@@ -70,12 +75,26 @@ namespace VTX
 		{
 			switch ( p_event.button() )
 			{
-			case Qt::MouseButton::LeftButton: _mouseLeftPressed = false; break;
-			case Qt::MouseButton::RightButton: _mouseRightPressed = false; break;
+			case Qt::MouseButton::LeftButton:
+				_mouseLeftPressed = false;
+				if ( _isLeftClickCanceled == false )
+				{
+					_onMouseLeftClick( p_event.pos().x(), p_event.pos().y() );
+				}
+				break;
+			case Qt::MouseButton::RightButton:
+				_mouseRightPressed = false;
+				if ( _isRightClickCanceled == false )
+				{
+					_onMouseRightClick( p_event.pos().x(), p_event.pos().y() );
+				}
+				break;
 			case Qt::MouseButton::MiddleButton: _mouseMiddlePressed = false; break;
 			default: break;
 			}
 		}
+
+		void BaseMouseController::_handleMouseDoubleClickEvent( const QMouseEvent & p_event ) {}
 
 		void BaseMouseController::_handleMouseMotionEvent( const QMouseEvent & p_event )
 		{
@@ -85,6 +104,23 @@ namespace VTX
 
 			_deltaMousePosition += ( mousePosition - _mousePosition );
 			_mousePosition = mousePosition;
+
+			if ( _mouseLeftPressed )
+			{
+				if ( Util::Math::distance( (Vec2f)mousePosition, (Vec2f)_mouseLeftClickPosition ) > CLICK_MAX_DISTANCE )
+				{
+					_isLeftClickCanceled = true;
+				}
+			}
+
+			if ( _mouseRightPressed )
+			{
+				if ( Util::Math::distance( (Vec2f)mousePosition, (Vec2f)_mouseRightClickPosition )
+					 > CLICK_MAX_DISTANCE )
+				{
+					_isRightClickCanceled = true;
+				}
+			}
 		}
 
 		void BaseMouseController::_handleMouseWheelEvent( const QWheelEvent & p_event )
@@ -99,66 +135,6 @@ namespace VTX
 			const QPoint	localMousePos = renderWidget.mapFromGlobal( QCursor::pos() );
 
 			return renderRect.contains( localMousePos );
-		}
-
-		void BaseMouseController::_updateLeftClick( const float & p_deltaTime )
-		{
-			if ( _leftClickTimeStamp > 0 )
-			{
-				const Vec2i mouseMoveOffset = _mousePosition - _mouseLeftClickPosition;
-				const int	mouseSquareDist
-					= mouseMoveOffset.x * mouseMoveOffset.x + mouseMoveOffset.y * mouseMoveOffset.y;
-
-				if ( mouseSquareDist > CLICK_SQR_DISTANCE )
-				{
-					_mouseLeftClick		= false;
-					_leftClickTimeStamp = 0;
-				}
-				else if ( !_mouseLeftPressed )
-				{
-					_mouseLeftClick		= true;
-					_leftClickTimeStamp = 0;
-				}
-				else
-				{
-					_mouseLeftClick = false;
-				}
-			}
-			else
-			{
-				_mouseLeftClick = false;
-			}
-			_leftClickTimeStamp -= p_deltaTime;
-		}
-		void BaseMouseController::_updateRightClick( const float & p_deltaTime )
-		{
-			if ( _rightClickTimeStamp > 0 )
-			{
-				const Vec2i mouseMoveOffset = _mousePosition - _mouseRightClickPosition;
-				const int	mouseSquareDist
-					= mouseMoveOffset.x * mouseMoveOffset.x + mouseMoveOffset.y * mouseMoveOffset.y;
-
-				if ( mouseSquareDist > CLICK_SQR_DISTANCE )
-				{
-					_mouseRightClick	 = false;
-					_rightClickTimeStamp = 0;
-				}
-				else if ( !_mouseRightPressed )
-				{
-					_mouseRightClick	 = true;
-					_rightClickTimeStamp = 0;
-				}
-				else
-				{
-					_mouseRightClick = false;
-				}
-			}
-			else
-			{
-				_mouseRightClick = false;
-			}
-
-			_rightClickTimeStamp -= p_deltaTime;
 		}
 
 	} // namespace Controller

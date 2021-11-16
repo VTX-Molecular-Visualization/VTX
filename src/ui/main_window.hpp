@@ -88,6 +88,7 @@ namespace VTX
 			void mouseMoveEvent( QMouseEvent * ) override;
 			void mousePressEvent( QMouseEvent * ) override;
 			void mouseReleaseEvent( QMouseEvent * ) override;
+			void mouseDoubleClickEvent( QMouseEvent * ) override;
 			void keyPressEvent( QKeyEvent * ) override;
 			void keyReleaseEvent( QKeyEvent * ) override;
 			void wheelEvent( QWheelEvent * ) override;

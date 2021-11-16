@@ -474,6 +474,12 @@ namespace VTX::UI
 		p_event->accept();
 	}
 
+	void MainWindow::mouseDoubleClickEvent( QMouseEvent * p_event )
+	{
+		Event::EventManager::get().fireEventMouse( p_event );
+		p_event->accept();
+	}
+
 	void MainWindow::keyPressEvent( QKeyEvent * p_event ) { Event::EventManager::get().fireEventKeyboard( p_event ); }
 
 	void MainWindow::keyReleaseEvent( QKeyEvent * p_event ) { Event::EventManager::get().fireEventKeyboard( p_event ); }
