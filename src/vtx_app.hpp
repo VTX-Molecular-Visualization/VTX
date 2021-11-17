@@ -2,6 +2,7 @@
 #define __VTX_APP__
 
 #include "setting.hpp"
+#include "spec.hpp"
 #include "stat.hpp"
 #include <QElapsedTimer>
 #include <QTimer>
@@ -61,6 +62,8 @@ namespace VTX
 		inline const Setting &								  getSetting() const { return _setting; }
 		inline Stat &										  getStat() { return _stat; }
 		inline const Stat &									  getStat() const { return _stat; }
+		inline Spec &										  getSpec() { return _spec; }
+		inline const Spec &									  getSpec() const { return _spec; }
 		inline Model::Representation::RepresentationLibrary & getRepresentationLibrary()
 		{
 			return *_representationLibrary;
@@ -88,6 +91,7 @@ namespace VTX
 
 		Setting										   _setting				  = Setting();
 		Stat										   _stat				  = Stat();
+		Spec										   _spec				  = Spec();
 		UI::MainWindow *							   _mainWindow			  = nullptr;
 		State::StateMachine *						   _stateMachine		  = nullptr;
 		Object3D::Scene *							   _scene				  = nullptr;
@@ -109,6 +113,7 @@ namespace VTX
 	Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT();
 	inline Setting &					  VTX_SETTING() { return VTXApp::get().getSetting(); }
 	inline Stat &						  VTX_STAT() { return VTXApp::get().getStat(); }
+	inline Spec &						  VTX_SPEC() { return VTXApp::get().getSpec(); }
 
 } // namespace VTX
 

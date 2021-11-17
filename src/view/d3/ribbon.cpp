@@ -16,18 +16,7 @@ namespace VTX::View::D3
 													  IO::FilePath( "ribbon_patch.frag" ) } );
 	}
 
-	void Ribbon::_init()
-	{
-		GLint maxPatchVertices = 0;
-		GLint maxTessGenLevel  = 0;
-
-		_gl()->glPatchParameteri( GL_PATCH_VERTICES, 4 );
-		_gl()->glGetIntegerv( GL_MAX_PATCH_VERTICES, &maxPatchVertices );
-		_gl()->glGetIntegerv( GL_MAX_TESS_GEN_LEVEL, &maxTessGenLevel );
-
-		VTX_DEBUG( "Max supported patch vertices: " + std::to_string( maxPatchVertices ) );
-		VTX_DEBUG( "Max supported tessellation levels: " + std::to_string( maxTessGenLevel ) );
-	}
+	void Ribbon::_init() { _gl()->glPatchParameteri( GL_PATCH_VERTICES, 4 ); }
 
 	void Ribbon::render( const Object3D::Camera & p_camera ) const
 	{

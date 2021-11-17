@@ -41,6 +41,8 @@ namespace VTX
 			virtual void _onMouseLeftClick( const uint p_x, const uint p_y ) {}
 			virtual void _onMouseRightClick( const uint p_x, const uint p_y ) {}
 
+			virtual void _onMouseLeftDoubleClick( const uint p_x, const uint p_y ) {}
+
 			bool _isLeftClickCanceled  = false;
 			bool _isRightClickCanceled = false;
 

@@ -64,10 +64,28 @@ namespace VTX::UI::Widget::Render
 		const uchar * glVendor	  = _gl->glGetString( GL_VENDOR );
 		const uchar * glRenderer  = _gl->glGetString( GL_RENDERER );
 
-		VTX_INFO( "GL version: " + std::string( (const char *)glVersion ) );
-		VTX_INFO( "GLSL version: " + std::string( (const char *)glslVersion ) );
-		VTX_INFO( "GL device: " + std::string( (const char *)glVendor ) + " "
-				  + std::string( (const char *)glRenderer ) );
+		GLint glMaxTextureSize;
+		GLint glMaxPatchVertices = 0;
+		GLint glMaxTessGenLevel	 = 0;
+		_gl->glGetIntegerv( GL_MAX_TEXTURE_SIZE, &glMaxTextureSize );
+		_gl->glGetIntegerv( GL_MAX_PATCH_VERTICES, &glMaxPatchVertices );
+		_gl->glGetIntegerv( GL_MAX_TESS_GEN_LEVEL, &glMaxTessGenLevel );
+
+		VTX_SPEC().glVersion		  = std::string( (const char *)glVersion );
+		VTX_SPEC().glslVersion		  = std::string( (const char *)glslVersion );
+		VTX_SPEC().glVendor			  = std::string( (const char *)glVendor );
+		VTX_SPEC().glRenderer		  = std::string( (const char *)glRenderer );
+		VTX_SPEC().glMaxTextureSize	  = glMaxTextureSize;
+		VTX_SPEC().glMaxPatchVertices = glMaxPatchVertices;
+		VTX_SPEC().glMaxTessGenLevel  = glMaxTessGenLevel;
+
+		VTX_INFO( "GL version: " + VTX_SPEC().glVersion );
+		VTX_INFO( "GLSL version: " + VTX_SPEC().glslVersion );
+		VTX_INFO( "GL device: " + VTX_SPEC().glVendor + " " + VTX_SPEC().glRenderer );
+
+		VTX_DEBUG( "Max texture size : " + std::to_string( VTX_SPEC().glMaxTextureSize ) );
+		VTX_DEBUG( "Max patch vertices: " + std::to_string( VTX_SPEC().glMaxPatchVertices ) );
+		VTX_DEBUG( "Max tessellation gen level: " + std::to_string( VTX_SPEC().glMaxTessGenLevel ) );
 
 #ifndef VTX_PRODUCTION
 		_gl->glEnable( GL_DEBUG_OUTPUT );

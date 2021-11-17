@@ -94,7 +94,16 @@ namespace VTX
 			}
 		}
 
-		void BaseMouseController::_handleMouseDoubleClickEvent( const QMouseEvent & p_event ) {}
+		void BaseMouseController::_handleMouseDoubleClickEvent( const QMouseEvent & p_event )
+		{
+			switch ( p_event.button() )
+			{
+			case Qt::MouseButton::LeftButton: _onMouseLeftDoubleClick( p_event.pos().x(), p_event.pos().y() ); break;
+			case Qt::MouseButton::RightButton: break;
+			case Qt::MouseButton::MiddleButton: break;
+			default: break;
+			}
+		}
 
 		void BaseMouseController::_handleMouseMotionEvent( const QMouseEvent & p_event )
 		{
