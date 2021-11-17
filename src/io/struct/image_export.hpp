@@ -9,6 +9,9 @@ namespace VTX::IO::Struct
 {
 	class ImageExport
 	{
+	  private:
+		inline static int SNAPSHOT_MIN_SIZE = 16;
+
 	  public:
 		enum class Format : int
 		{
@@ -60,10 +63,8 @@ namespace VTX::IO::Struct
 			{ 2048, 1152 }, { 2560, 1440 }, { 3840, 2160 }, { 7680, 4320 }, { 15360, 8640 }
 		};
 
-		inline static int SNAPSHOT_MIN_WIDTH  = 16;
-		inline static int SNAPSHOT_MIN_HEIGHT = 16;
-		inline static int SNAPSHOT_MAX_WIDTH  = 16000;
-		inline static int SNAPSHOT_MAX_HEIGHT = 16000;
+		static std::pair<int, int> getSnapshotWidthRange();
+		static std::pair<int, int> getSnapshotHeightRange();
 
 		static std::pair<int, int> getSize( const RESOLUTION & p_resolution );
 

@@ -2,6 +2,7 @@
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
+#include "spec.hpp"
 #include <cctype>
 
 namespace VTX::IO::Struct
@@ -19,6 +20,15 @@ namespace VTX::IO::Struct
 			return Format::BMP;
 		else
 			return Format::UNKNOWN;
+	}
+
+	std::pair<int, int> ImageExport::getSnapshotWidthRange()
+	{
+		return { SNAPSHOT_MIN_SIZE, VTX_SPEC().glMaxTextureSize };
+	}
+	std::pair<int, int> ImageExport::getSnapshotHeightRange()
+	{
+		return { SNAPSHOT_MIN_SIZE, VTX_SPEC().glMaxTextureSize };
 	}
 
 	std::pair<int, int> ImageExport::getSize( const RESOLUTION & p_resolution )

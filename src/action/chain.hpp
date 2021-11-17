@@ -17,6 +17,7 @@
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
+#include "util/molecule.hpp"
 #include "visible.hpp"
 #include <unordered_set>
 
@@ -70,27 +71,21 @@ namespace VTX::Action::Chain
 
 		virtual void execute() override
 		{
+			std::set<Model::Molecule *> molecules = std::set<Model::Molecule *>();
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				bool		   newVisibility = _getVisibilityBool( *visible );
-				Model::Chain & chain		 = *( (Model::Chain *)visible );
+				const bool	   newVisibility = _getVisibilityBool( *visible );
+				Model::Chain * chain		 = static_cast<Model::Chain *>( visible );
 
-				chain.setVisible( newVisibility );
+				Util::Molecule::show( *chain, newVisibility, false );
 
-				if ( _mode == VISIBILITY_MODE::ALL || _mode == VISIBILITY_MODE::SOLO )
-				{
-					for ( Model::Chain * const c : chain.getMoleculePtr()->getChains() )
-					{
-						if ( c == nullptr )
-							continue;
+				molecules.emplace( chain->getMoleculePtr() );
+			}
 
-						c->setVisible( _mode == VISIBILITY_MODE::ALL
-									   || ( _mode == VISIBILITY_MODE::SOLO && c == &chain ) );
-					}
-				}
-
-				chain.getMoleculePtr()->refreshVisibilities();
-				chain.getMoleculePtr()->computeRepresentationTargets();
+			for ( Model::Molecule * const molecule : molecules )
+			{
+				molecule->refreshVisibilities();
+				molecule->computeRepresentationTargets();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

@@ -16,6 +16,7 @@
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
+#include "util/molecule.hpp"
 #include "visible.hpp"
 #include <unordered_set>
 
@@ -69,28 +70,21 @@ namespace VTX::Action::Residue
 
 		virtual void execute() override
 		{
+			std::set<Model::Molecule *> molecules = std::set<Model::Molecule *>();
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				bool			 newVisibility = _getVisibilityBool( *visible );
-				Model::Residue & residue	   = *( static_cast<Model::Residue * const>( visible ) );
+				const bool		 newVisibility = _getVisibilityBool( *visible );
+				Model::Residue * residue	   = static_cast<Model::Residue *>( visible );
 
-				residue.setVisible( newVisibility );
+				Util::Molecule::show( *residue, newVisibility, false );
 
-				if ( _mode == VISIBILITY_MODE::ALL || _mode == VISIBILITY_MODE::SOLO )
-				{
-					for ( uint i = 0; i < residue.getChainPtr()->getResidueCount(); ++i )
-					{
-						residue.getMoleculePtr()
-							->getResidue( residue.getChainPtr()->getIndexFirstResidue() + i )
-							->setVisible(
-								_mode == VISIBILITY_MODE::ALL
-								|| ( _mode == VISIBILITY_MODE::SOLO
-									 && residue.getChainPtr()->getIndexFirstResidue() + i == residue.getIndex() ) );
-					}
-				}
+				molecules.emplace( residue->getMoleculePtr() );
+			}
 
-				residue.getMoleculePtr()->refreshVisibilities();
-				residue.getMoleculePtr()->computeRepresentationTargets();
+			for ( Model::Molecule * const molecule : molecules )
+			{
+				molecule->refreshVisibilities();
+				molecule->computeRepresentationTargets();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

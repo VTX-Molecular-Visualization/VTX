@@ -4,6 +4,7 @@
 #include "setting.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget_factory.hpp"
+#include "spec.hpp"
 #include "vtx_app.hpp"
 #include <QFileDialog>
 #include <QPushButton>
@@ -45,12 +46,12 @@ namespace VTX::UI::Widget::Dialog
 		_customResolutionLabel->setText( "Custom Resolution" );
 		_resolutionWidthWidget = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldDraggableWidget>(
 			_customResolutionWidget, "ResolutionWidth" );
-		_resolutionWidthWidget->setMinMax( IO::Struct::ImageExport::SNAPSHOT_MIN_WIDTH,
-										   IO::Struct::ImageExport::SNAPSHOT_MAX_WIDTH );
+		const std::pair<int, int> widthRange = IO::Struct::ImageExport::getSnapshotWidthRange();
+		_resolutionWidthWidget->setMinMax( widthRange.first, widthRange.second );
 		_resolutionHeightWidget = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldDraggableWidget>(
 			_customResolutionWidget, "ResolutionHeight" );
-		_resolutionHeightWidget->setMinMax( IO::Struct::ImageExport::SNAPSHOT_MIN_HEIGHT,
-											IO::Struct::ImageExport::SNAPSHOT_MAX_HEIGHT );
+		const std::pair<int, int> heightRange = IO::Struct::ImageExport::getSnapshotHeightRange();
+		_resolutionHeightWidget->setMinMax( heightRange.first, heightRange.second );
 
 		QLabel * widthLabel = new QLabel( _customResolutionWidget );
 		widthLabel->setText( "Width" );
