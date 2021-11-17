@@ -23,6 +23,7 @@
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "tool/chrono.hpp"
+#include "util/molecule.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
 #include <vector>
@@ -553,15 +554,15 @@ namespace VTX::Action::Selection
 			switch ( _mode )
 			{
 			case VISIBILITY_MODE::SHOW:
-			case VISIBILITY_MODE::ALL: show(); break;
-			case VISIBILITY_MODE::HIDE: hide(); break;
+			case VISIBILITY_MODE::HIDE:
+			case VISIBILITY_MODE::ALL: show( _getVisibilityBool() ); break;
 			case VISIBILITY_MODE::SOLO: solo(); break;
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
-		void show()
+		void show( const bool p_show )
 		{
 			const bool setVisibiltyOnMolecule = _objRefTypeId == ID::Model::MODEL_MOLECULE;
 			const bool setVisibiltyOnChain	  = setVisibiltyOnMolecule || _objRefTypeId == ID::Model::MODEL_CHAIN;
@@ -570,78 +571,37 @@ namespace VTX::Action::Selection
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 
-				molecule.setVisible( true );
-
-				for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainIds : molIds.second )
+				if ( _selection.isMoleculeFullySelected( molecule ) )
 				{
-					Model::Chain & chain = *molecule.getChain( chainIds.first );
-
-					if ( chainIds.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
-					{
-						chain.setVisible( true );
-					}
-
-					for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueIds : chainIds.second )
-					{
-						Model::Residue & residue = *molecule.getResidue( residueIds.first );
-
-						if ( residueIds.second.getFullySelectedChildCount() == residue.getRealAtomCount() )
-						{
-							residue.setVisible( true );
-						}
-
-						for ( const uint atomId : residueIds.second )
-						{
-							Model::Atom * const atom = molecule.getAtom( atomId );
-							atom->setVisible( true );
-						}
-					}
-				}
-
-				molecule.refreshVisibilities();
-				molecule.computeRepresentationTargets();
-			}
-		}
-		void hide()
-		{
-			const bool setVisibiltyOnMolecule = _objRefTypeId == ID::Model::MODEL_MOLECULE;
-			const bool setVisibiltyOnChain	  = setVisibiltyOnMolecule || _objRefTypeId == ID::Model::MODEL_CHAIN;
-
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getMoleculesMap() )
-			{
-				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
-
-				if ( setVisibiltyOnMolecule
-					 && molIds.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
-				{
-					molecule.setVisible( false );
+					Util::Molecule::show( molecule, p_show, false );
 				}
 				else
 				{
 					for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainIds : molIds.second )
 					{
 						Model::Chain & chain = *molecule.getChain( chainIds.first );
-
-						if ( chainIds.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
+						if ( _selection.isChainFullySelected( chain ) )
 						{
-							chain.setVisible( false );
-							continue;
+							Util::Molecule::show( chain, p_show, false );
 						}
-
-						for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueIds : chainIds.second )
+						else
 						{
-							Model::Residue & residue = *molecule.getResidue( residueIds.first );
-
-							if ( residueIds.second.getFullySelectedChildCount() == residue.getRealAtomCount() )
+							for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueIds :
+								  chainIds.second )
 							{
-								residue.setVisible( false );
-								continue;
-							}
-
-							for ( const uint atomId : residueIds.second )
-							{
-								Model::Atom * const atom = molecule.getAtom( atomId );
-								atom->setVisible( false );
+								Model::Residue & residue = *molecule.getResidue( residueIds.first );
+								if ( _selection.isResidueFullySelected( residue ) )
+								{
+									Util::Molecule::show( residue, p_show, false );
+								}
+								else
+								{
+									for ( const uint atomId : residueIds.second )
+									{
+										Model::Atom * const atom = molecule.getAtom( atomId );
+										atom->setVisible( p_show );
+									}
+								}
 							}
 						}
 					}

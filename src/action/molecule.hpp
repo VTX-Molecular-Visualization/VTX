@@ -16,6 +16,7 @@
 #include "state/visualization.hpp"
 #include "trajectory/trajectory_enum.hpp"
 #include "util/math.hpp"
+#include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
@@ -67,10 +68,9 @@ namespace VTX::Action::Molecule
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
 				const bool		  newVisibility = _getVisibilityBool( *visible );
-				Model::Molecule * molecule		= ( (Model::Molecule *)visible );
-				molecule->setVisible( newVisibility );
-				molecule->refreshVisibilities();
-				molecule->computeRepresentationTargets();
+				Model::Molecule * molecule		= static_cast<Model::Molecule *>( visible );
+
+				Util::Molecule::show( *molecule, newVisibility, true );
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

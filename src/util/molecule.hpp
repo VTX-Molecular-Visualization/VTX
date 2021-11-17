@@ -12,7 +12,9 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-	}
+		class Chain;
+		class Residue;
+	} // namespace Model
 
 	namespace Util::Molecule
 	{
@@ -25,6 +27,10 @@ namespace VTX
 
 		void recomputeBondOrders( Model::Molecule & p_molecule );
 		bool recomputeBondOrdersFromFile( Model::Molecule & p_molecule );
+
+		void show( Model::Molecule & p_molecule, const bool p_show, const bool p_refreshMoleculeVisibility = true );
+		void show( Model::Chain & p_chain, const bool p_show, const bool p_refreshMoleculeVisibility = true );
+		void show( Model::Residue & p_residue, const bool p_show, const bool p_refreshMoleculeVisibility = true );
 
 	} // namespace Util::Molecule
 } // namespace VTX
