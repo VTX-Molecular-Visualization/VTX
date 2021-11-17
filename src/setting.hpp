@@ -56,10 +56,12 @@ namespace VTX
 		static const bool ACTIVE_RENDERER_DEFAULT;
 		static const bool FORCE_RENDERER_DEFAULT;
 
-		static const Color::Rgb							 BACKGROUND_COLOR_DEFAULT;
+		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
+
+		static const IO::Struct::ImageExport::RESOLUTION SNAPSHOT_RESOLUTION_DEFAULT;
+		static const IO::Struct::ImageExport::Format	 SNAPSHOT_FORMAT_DEFAULT;
 		static const float								 BACKGROUND_OPACITY_DEFAULT;
 		static const float								 SNAPSHOT_QUALITY_DEFAULT;
-		static const IO::Struct::ImageExport::RESOLUTION SNAPSHOT_RESOLUTION_DEFAULT;
 
 		static const int REPRESENTATION_DEFAULT_INDEX;
 
@@ -203,6 +205,8 @@ namespace VTX
 			ACTIVATE_RENDERER,
 			FORCE_RENDERER,
 			VSYNC,
+
+			SNAPSHOT_FORMAT,
 			SNAPSHOT_BACKGROUND_OPACITY,
 			SNAPSHOT_RESOLUTION,
 			SNAPSHOT_QUALITY,
@@ -226,14 +230,19 @@ namespace VTX
 			ALL,
 		};
 
-		inline bool								   getWindowFullscreen() const { return windowFullscreen; }
-		void									   setWindowFullscreen( const bool p_fullscreen );
-		inline bool								   getActivateRenderer() const { return activeRenderer; }
-		void									   setActivateRenderer( const bool p_activeRenderer );
-		inline bool								   getForceRenderer() const { return forceRenderer; }
-		void									   setForceRenderer( const bool p_forceRenderer );
-		inline bool								   getVSync() const { return activeVSync; }
-		void									   setVSync( const bool p_activeVSync );
+		inline void freezeEvent( const bool p_freeze ) { _freezeEvent = p_freeze; }
+
+		inline bool getWindowFullscreen() const { return windowFullscreen; }
+		void		setWindowFullscreen( const bool p_fullscreen );
+		inline bool getActivateRenderer() const { return activeRenderer; }
+		void		setActivateRenderer( const bool p_activeRenderer );
+		inline bool getForceRenderer() const { return forceRenderer; }
+		void		setForceRenderer( const bool p_forceRenderer );
+		inline bool getVSync() const { return activeVSync; }
+		void		setVSync( const bool p_activeVSync );
+
+		inline IO::Struct::ImageExport::Format	   getSnapshotFormat() const { return snapshotFormat; }
+		void									   setSnapshotFormat( const IO::Struct::ImageExport::Format p_format );
 		inline float							   getSnapshotBackgroundOpacity() const { return backgroundOpacity; }
 		void									   setSnapshotBackgroundOpacity( const float p_backgroundOpacity );
 		inline float							   getSnapshotQuality() const { return snapshotQuality; }
@@ -317,11 +326,14 @@ namespace VTX
 		Renderer::MODE				mode = MODE_DEFAULT;
 
 	  private:
+		bool _freezeEvent = false;
+
 		bool windowFullscreen = WINDOW_FULLSCREEN_DEFAULT;
 		bool activeRenderer	  = ACTIVE_RENDERER_DEFAULT;
 		bool forceRenderer	  = FORCE_RENDERER_DEFAULT;
 		bool activeVSync	  = ACTIVE_VSYNC_DEFAULT;
 
+		IO::Struct::ImageExport::Format		snapshotFormat	   = SNAPSHOT_FORMAT_DEFAULT;
 		IO::Struct::ImageExport::RESOLUTION snapshotResolution = SNAPSHOT_RESOLUTION_DEFAULT;
 		float								backgroundOpacity  = BACKGROUND_OPACITY_DEFAULT;
 		float								snapshotQuality	   = SNAPSHOT_QUALITY_DEFAULT;

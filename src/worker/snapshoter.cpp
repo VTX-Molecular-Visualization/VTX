@@ -17,36 +17,6 @@
 
 namespace VTX::Worker
 {
-	Snapshoter::Snapshoter( const MODE & p_mode, const IO::FilePath & p_path ) :
-		Snapshoter( p_mode,
-					p_path,
-					VTXApp::get().getMainWindow().getOpenGLWidget().width(),
-					VTXApp::get().getMainWindow().getOpenGLWidget().height() )
-	{
-	}
-
-	Snapshoter::Snapshoter( const MODE &								p_mode,
-							const IO::FilePath &						p_path,
-							const IO::Struct::ImageExport::RESOLUTION & p_resolution ) :
-		Snapshoter( p_mode,
-					p_path,
-					( ( p_resolution == IO::Struct::ImageExport::RESOLUTION::Free )
-						  ? VTXApp::get().getMainWindow().getOpenGLWidget().width()
-						  : IO::Struct::ImageExport::RESOLUTION_SIZE[ int( p_resolution ) ].first ),
-					( ( p_resolution == IO::Struct::ImageExport::RESOLUTION::Free )
-						  ? VTXApp::get().getMainWindow().getOpenGLWidget().height()
-						  : IO::Struct::ImageExport::RESOLUTION_SIZE[ int( p_resolution ) ].second ) )
-	{
-	}
-
-	Snapshoter::Snapshoter( const MODE &		 p_mode,
-							const IO::FilePath & p_path,
-							const uint			 p_width,
-							const uint			 p_height ) :
-		Snapshoter( p_mode, p_path, IO::Struct::ImageExport( std::pair<int, int>( p_width, p_height ), 1.f, 1.f ) )
-	{
-	}
-
 	Snapshoter::Snapshoter( const MODE &					p_mode,
 							const IO::FilePath &			p_path,
 							const IO::Struct::ImageExport & p_exportData ) :
@@ -55,10 +25,18 @@ namespace VTX::Worker
 	{
 	}
 
+	Snapshoter::Snapshoter( const MODE &					p_mode,
+							QImage *						p_imageTarget,
+							const IO::Struct::ImageExport & p_exportData ) :
+		Snapshoter( p_mode, IO::FilePath(), p_exportData )
+	{
+		_imageTarget = p_imageTarget;
+	}
+
 	const void Snapshoter::_takeSnapshotGL() const
 	{
-		UI::Widget::Render::OpenGLWidget & glWidget	  = VTXApp::get().getMainWindow().getOpenGLWidget();
-		const float						   pixelRatio = VTXApp::get().getPixelRatio();
+		UI::Widget::Render::OpenGLWidget & glWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
+		const float pixelRatio									= VTXApp::get().getPixelRatio();
 
 		// Create offscreen surface.
 		QOffscreenSurface surface;
@@ -93,7 +71,14 @@ namespace VTX::Worker
 
 		// Render.
 		glWidget.getGL()->glViewport( 0, 0, width, height );
+
+		// Use Export Data background opacity for the render.
+		const float previousBackgroundOpacity = VTX_SETTING().getSnapshotBackgroundOpacity();
+		VTX_SETTING().freezeEvent( true );
+		VTX_SETTING().setSnapshotBackgroundOpacity( _exportData.getBackgroundOpacity() );
 		glWidget.getRenderer().renderFrame( VTXApp::get().getScene() );
+		VTX_SETTING().setSnapshotBackgroundOpacity( previousBackgroundOpacity );
+		VTX_SETTING().freezeEvent( false );
 
 		// Save FBO as image.
 		QImage render = fbo.toImage();
@@ -115,14 +100,22 @@ namespace VTX::Worker
 		_addWatermark( render );
 
 #ifndef VTX_DEBUG_WATERMARK
-		// Save.
-		if ( render.save( _path.qpath(), _path.extension().c_str(), _exportData.getIntQuality() ) )
+		if ( _imageTarget != nullptr )
 		{
-			VTX_INFO( "Snapshot taken: " + _path.filename() );
+			*_imageTarget = render.copy();
 		}
-		else
+
+		// Save.
+		if ( !_path.empty() )
 		{
-			VTX_ERROR( "Snapshot failed" );
+			if ( render.save( _path.qpath(), _path.extension().c_str(), _exportData.getIntQuality() ) )
+			{
+				VTX_INFO( "Snapshot taken: " + _path.filename() );
+			}
+			else
+			{
+				VTX_ERROR( "Snapshot failed" );
+			}
 		}
 #endif
 	}
@@ -156,8 +149,7 @@ namespace VTX::Worker
 		}
 
 		// Invert color to match background.
-		if ( VTX_RENDER_EFFECT().getBackgroundColor().brightness() < 0.5f
-			 && VTX_SETTING().getSnapshotBackgroundOpacity() > 0.5f )
+		if ( VTX_RENDER_EFFECT().getBackgroundColor().brightness() < 0.5f && _exportData.getBackgroundOpacity() > 0.5f )
 		{
 			watermarkImg.invertPixels( QImage::InvertMode::InvertRgb );
 		}

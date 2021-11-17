@@ -197,7 +197,7 @@ namespace VTX::UI
 	void Dialog::openAdvancedSettingImageExportDialog() { UI::Widget::Dialog::ImageExporter::openDialog(); }
 	bool Dialog::openExportImageDialog( const IO::Struct::ImageExport & p_exportData )
 	{
-		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_IMAGE_EXPORT_FILTER );
+		QString * const defaultFilter = new QString( Util::Filesystem::getImageExportDefaultFilter().c_str() );
 		const QString	defaultPath	  = Setting::getLastExportedImageFolder();
 
 		const QString filepath = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),

@@ -45,6 +45,8 @@ namespace VTX
 
 	const IO::Struct::ImageExport::RESOLUTION Setting::SNAPSHOT_RESOLUTION_DEFAULT
 		= IO::Struct::ImageExport::RESOLUTION::Free;
+	const IO::Struct::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT = IO::Struct::ImageExport::Format::PNG;
+
 	const int									  Setting::REPRESENTATION_DEFAULT_INDEX = 0;
 	const Generic::REPRESENTATION				  Setting::DEFAULT_REPRESENTATION_TYPE = Generic::REPRESENTATION::STICK;
 	const std::string							  Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
@@ -431,6 +433,13 @@ namespace VTX
 		activeVSync = p_activeVSync;
 		_sendDataChangedEvent( PARAMETER::VSYNC );
 	}
+
+	void Setting::setSnapshotFormat( const IO::Struct::ImageExport::Format p_format )
+	{
+		snapshotFormat = p_format;
+		_sendDataChangedEvent( PARAMETER::SNAPSHOT_FORMAT );
+	}
+
 	void Setting::setSnapshotBackgroundOpacity( const float p_backgroundOpacity )
 	{
 		backgroundOpacity = Util::Math::clamp( p_backgroundOpacity, 0.f, 1.f );
@@ -536,8 +545,11 @@ namespace VTX
 		representationDefaultIndex = REPRESENTATION_DEFAULT_INDEX;
 		renderEffectDefaultIndex   = RENDER_EFFECT_DEFAULT_INDEX;
 
-		activeVSync		   = ACTIVE_VSYNC_DEFAULT;
+		activeVSync = ACTIVE_VSYNC_DEFAULT;
+
+		snapshotFormat	   = SNAPSHOT_FORMAT_DEFAULT;
 		backgroundOpacity  = BACKGROUND_OPACITY_DEFAULT;
+		snapshotQuality	   = SNAPSHOT_QUALITY_DEFAULT;
 		snapshotResolution = SNAPSHOT_RESOLUTION_DEFAULT;
 
 		translationSpeed	   = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
@@ -559,6 +571,9 @@ namespace VTX
 
 	void Setting::_sendDataChangedEvent( const PARAMETER & p_parameter )
 	{
+		if ( _freezeEvent )
+			return;
+
 		std::set<PARAMETER> parameters = std::set<PARAMETER>();
 
 		if ( p_parameter == PARAMETER::ALL )

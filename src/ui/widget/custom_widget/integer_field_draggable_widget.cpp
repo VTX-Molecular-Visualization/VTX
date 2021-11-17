@@ -1,22 +1,19 @@
-#include "float_field_draggable_widget.hpp"
+#include "integer_field_draggable_widget.hpp"
 #include "style.hpp"
 #include "util/math.hpp"
 #include <QHBoxLayout>
-#include <cmath>
-#include <iomanip>
-#include <sstream>
 #include <string>
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	FloatFieldDraggableWidget::FloatFieldDraggableWidget( QWidget * p_parent ) :
+	IntegerFieldDraggableWidget::IntegerFieldDraggableWidget( QWidget * p_parent ) :
 		BaseManualWidget( p_parent ), TMultiDataFieldEquatable()
 	{
-		_min = FLOAT_MIN;
-		_max = FLOAT_MAX;
+		_min = INT_MIN;
+		_max = INT_MAX;
 	};
 
-	void FloatFieldDraggableWidget::_setupUi( const QString & p_name )
+	void IntegerFieldDraggableWidget::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
 
@@ -30,6 +27,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		_textField = new QLineEdit( this );
 		_textField->setContentsMargins( 0, 0, 0, 0 );
+		_textField->setInputMethodHints( Qt::InputMethodHint::ImhDigitsOnly );
 
 		mainLayout->addWidget( _label, 1 );
 		mainLayout->addWidget( _textField, 10 );
@@ -37,12 +35,12 @@ namespace VTX::UI::Widget::CustomWidget
 		setMouseTracking( true );
 	}
 
-	void FloatFieldDraggableWidget::_setupSlots()
+	void IntegerFieldDraggableWidget::_setupSlots()
 	{
-		connect( _textField, &QLineEdit::editingFinished, this, &FloatFieldDraggableWidget::_onTextFieldEdited );
+		connect( _textField, &QLineEdit::editingFinished, this, &IntegerFieldDraggableWidget::_onTextFieldEdited );
 	}
 
-	void FloatFieldDraggableWidget::paintEvent( QPaintEvent * event )
+	void IntegerFieldDraggableWidget::paintEvent( QPaintEvent * event )
 	{
 		QWidget::paintEvent( event );
 
@@ -53,7 +51,7 @@ namespace VTX::UI::Widget::CustomWidget
 			unsetCursor();
 		}
 	}
-	void FloatFieldDraggableWidget::mousePressEvent( QMouseEvent * p_event )
+	void IntegerFieldDraggableWidget::mousePressEvent( QMouseEvent * p_event )
 	{
 		const QPoint globalPos = p_event->globalPos();
 		_hasTarget			   = _canDragAtPos( globalPos );
@@ -68,7 +66,7 @@ namespace VTX::UI::Widget::CustomWidget
 		BaseManualWidget::mousePressEvent( p_event );
 	}
 
-	void FloatFieldDraggableWidget::mouseMoveEvent( QMouseEvent * p_event )
+	void IntegerFieldDraggableWidget::mouseMoveEvent( QMouseEvent * p_event )
 	{
 		if ( !_hasTarget )
 		{
@@ -97,7 +95,7 @@ namespace VTX::UI::Widget::CustomWidget
 		BaseManualWidget::mouseMoveEvent( p_event );
 	}
 
-	void FloatFieldDraggableWidget::mouseReleaseEvent( QMouseEvent * p_event )
+	void IntegerFieldDraggableWidget::mouseReleaseEvent( QMouseEvent * p_event )
 	{
 		if ( _hasTarget )
 		{
@@ -114,9 +112,9 @@ namespace VTX::UI::Widget::CustomWidget
 		BaseManualWidget::mouseReleaseEvent( p_event );
 	}
 
-	void FloatFieldDraggableWidget::_onTextFieldEdited()
+	void IntegerFieldDraggableWidget::_onTextFieldEdited()
 	{
-		const float newValue = _textField->text().toFloat();
+		const int newValue = _textField->text().toInt();
 
 		if ( newValue != _value )
 		{
@@ -131,19 +129,19 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 	}
 
-	void FloatFieldDraggableWidget::_onInternalValueChanged( const float p_value )
+	void IntegerFieldDraggableWidget::_onInternalValueChanged( const int p_value )
 	{
-		if ( abs( p_value - _value ) > _epsilon )
+		if ( p_value != _value )
 		{
 			setValue( p_value );
 			emit onValueChange( _value );
 		}
 	}
-	void FloatFieldDraggableWidget::_onValueDragged( const float p_delta )
+	void IntegerFieldDraggableWidget::_onValueDragged( const int p_delta )
 	{
-		if ( abs( p_delta ) > _epsilon )
+		if ( p_delta != 0 )
 		{
-			const float newValue = _value + p_delta;
+			const int newValue = _value + p_delta;
 
 			setValue( newValue );
 
@@ -154,18 +152,16 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 	}
 
-	void FloatFieldDraggableWidget::_refresh()
+	void IntegerFieldDraggableWidget::_refresh()
 	{
-		std::stringstream strStream;
-		strStream << std::fixed << std::setprecision( _nbDecimals ) << _value;
-		_textField->setText( QString::fromStdString( strStream.str() ) );
+		_textField->setText( QString::fromStdString( std::to_string( _value ) ) );
 	}
 
-	void FloatFieldDraggableWidget::localize() {};
+	void IntegerFieldDraggableWidget::localize() {};
 
-	void FloatFieldDraggableWidget::setValue( const float p_value )
+	void IntegerFieldDraggableWidget::setValue( const int p_value )
 	{
-		const float clampedValue = Util::Math::clamp( p_value, _min, _max );
+		const int clampedValue = Util::Math::clamp( p_value, _min, _max );
 		if ( _value != clampedValue )
 		{
 			_value = clampedValue;
@@ -173,28 +169,21 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 	};
 
-	void FloatFieldDraggableWidget::setNbDecimals( const int p_nbDecimals )
-	{
-		_nbDecimals = p_nbDecimals;
-		_epsilon	= float( 1 / std::pow( _nbDecimals, 10 ) );
-		_refresh();
-	}
-
-	void FloatFieldDraggableWidget::setMin( const float p_min )
+	void IntegerFieldDraggableWidget::setMin( const int p_min )
 	{
 		_min = p_min;
 
 		_value = _value < _min ? _min : _value;
 		_refresh();
 	}
-	void FloatFieldDraggableWidget::setMax( const float p_max )
+	void IntegerFieldDraggableWidget::setMax( const int p_max )
 	{
 		_max = p_max;
 
 		_value = _value > _max ? _max : _value;
 		_refresh();
 	}
-	void FloatFieldDraggableWidget::setMinMax( const float p_min, const float p_max )
+	void IntegerFieldDraggableWidget::setMinMax( const int p_min, const int p_max )
 	{
 		_min = p_min;
 		_max = p_max;
@@ -202,31 +191,31 @@ namespace VTX::UI::Widget::CustomWidget
 		_value = Util::Math::clamp( _value, p_min, p_max );
 		_refresh();
 	};
-	void FloatFieldDraggableWidget::setLabel( const QString & p_label ) { _label->setText( p_label ); }
-	void FloatFieldDraggableWidget::setDragValueFactor( const float p_factor ) { _dragValueFactor = p_factor; };
-	void FloatFieldDraggableWidget::setEnabled( const bool p_enable )
+	void IntegerFieldDraggableWidget::setLabel( const QString & p_label ) { _label->setText( p_label ); }
+	void IntegerFieldDraggableWidget::setDragValueFactor( const float p_factor ) { _dragValueFactor = p_factor; };
+	void IntegerFieldDraggableWidget::setEnabled( const bool p_enable )
 	{
 		QWidget::setEnabled( p_enable );
 		_label->setEnabled( p_enable );
 		_textField->setEnabled( p_enable );
 	}
-	void FloatFieldDraggableWidget::separateChangeAndDrag( const bool p_separate )
+	void IntegerFieldDraggableWidget::separateChangeAndDrag( const bool p_separate )
 	{
 		_separateChangeAndDrag = p_separate;
 	}
 
-	bool FloatFieldDraggableWidget::_canDragAtPos( const QPoint & p_globalPos ) const
+	bool IntegerFieldDraggableWidget::_canDragAtPos( const QPoint & p_globalPos ) const
 	{
 		return _label->rect().contains( _label->mapFromGlobal( p_globalPos ) );
 	}
 
-	void FloatFieldDraggableWidget::resetState()
+	void IntegerFieldDraggableWidget::resetState()
 	{
 		TMultiDataFieldEquatable::resetState();
 		_refresh();
 	}
 
-	void FloatFieldDraggableWidget::_displayDifferentsDataFeedback()
+	void IntegerFieldDraggableWidget::_displayDifferentsDataFeedback()
 	{
 		_textField->blockSignals( true );
 		_textField->setText( "-" );

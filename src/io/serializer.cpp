@@ -231,6 +231,7 @@ namespace VTX::IO
 			{ "REPRESENTATION", defaultRepresentationName },
 			{ "RENDER_EFFECT_DEFAULT", defaultRenderEffectPresetName },
 			{ "ACTIVE_VSYNC", p_setting.getVSync() },
+			{ "SNAPSHOT_FORMAT", p_setting.getSnapshotFormat() },
 			{ "BACKGROUND_OPACITY", p_setting.getSnapshotBackgroundOpacity() },
 			{ "SNAPSHOT_QUALITY", p_setting.getSnapshotQuality() },
 			{ "BACKGROUND_RESOLUTION", magic_enum::enum_name( p_setting.getSnapshotResolution() ) },
@@ -638,6 +639,9 @@ namespace VTX::IO
 		p_setting.setTmpRenderEffectPresetDefaultName( _get<std::string>( p_json, "RENDER_EFFECT_DEFAULT" ) );
 
 		p_setting.setVSync( _get<bool>( p_json, "ACTIVE_VSYNC", Setting::ACTIVE_VSYNC_DEFAULT ) );
+
+		p_setting.setSnapshotFormat(
+			_getEnum<IO::Struct::ImageExport::Format>( p_json, "SNAPSHOT_FORMAT", Setting::SNAPSHOT_FORMAT_DEFAULT ) );
 		p_setting.setSnapshotBackgroundOpacity(
 			_get<float>( p_json, "BACKGROUND_OPACITY", Setting::BACKGROUND_OPACITY_DEFAULT ) );
 		p_setting.setSnapshotQuality( _get<float>( p_json, "SNAPSHOT_QUALITY", Setting::SNAPSHOT_QUALITY_DEFAULT ) );

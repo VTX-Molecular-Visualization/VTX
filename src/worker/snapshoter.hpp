@@ -16,17 +16,13 @@ namespace VTX::Worker
 			GL
 		};
 
-		explicit Snapshoter( const MODE & p_mode, const IO::FilePath & p_path );
 		explicit Snapshoter( const MODE &					 p_mode,
 							 const IO::FilePath &			 p_path,
 							 const IO::Struct::ImageExport & p_exportData );
-		explicit Snapshoter( const MODE &								 p_mode,
-							 const IO::FilePath &						 p_path,
-							 const IO::Struct::ImageExport::RESOLUTION & p_resolution );
-		explicit Snapshoter( const MODE &		  p_mode,
-							 const IO::FilePath & p_path,
-							 const uint			  p_width,
-							 const uint			  p_height );
+
+		explicit Snapshoter( const MODE &					 p_mode,
+							 QImage *						 p_imageTarget,
+							 const IO::Struct::ImageExport & p_exportData );
 
 	  protected:
 		void _run() override
@@ -46,8 +42,9 @@ namespace VTX::Worker
 	  private:
 		const MODE		   _mode;
 		const IO::FilePath _path;
+		QImage *		   _imageTarget = nullptr;
 
-		IO::Struct::ImageExport _exportData;
+		const IO::Struct::ImageExport _exportData;
 	};
 } // namespace VTX::Worker
 #endif

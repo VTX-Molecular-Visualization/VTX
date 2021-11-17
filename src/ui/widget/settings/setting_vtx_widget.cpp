@@ -56,6 +56,10 @@ namespace VTX::UI::Widget::Settings
 		_controllerYAxisInvertedWidget = new QCheckBox( viewport );
 
 		// Graphic
+		_snapshotFormatWidget = new QComboBox( viewport );
+		for ( const std::string & formatStr : IO::Struct::ImageExport::FORMAT_STR )
+			_snapshotFormatWidget->addItem( QString::fromStdString( formatStr ) );
+
 		_snapshotBackgroundOpacitySlider = WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
 			viewport, "SnapshotBackgroundOpacitySlider" );
 		_snapshotBackgroundOpacitySlider->setMinMax( 0.f, 1.f );
@@ -105,6 +109,7 @@ namespace VTX::UI::Widget::Settings
 		_finishSection();
 
 		_startSection( "Graphic" );
+		_addItemInLayout( _snapshotFormatWidget, "Snapshot format" );
 		_addItemInLayout( _snapshotBackgroundOpacitySlider, "Snapshot background opacity" );
 		_addItemInLayout( _snapshotResolutionWidget, "Snapshot resolution" );
 		_addItemInLayout( _snapshotQualitySlider, "Snapshot quality" );
@@ -168,6 +173,10 @@ namespace VTX::UI::Widget::Settings
 				 this,
 				 &SettingVTXWidget::_changeControllerYInversionAction );
 
+		connect( _snapshotFormatWidget,
+				 QOverload<int>::of( ( &QComboBox::currentIndexChanged ) ),
+				 this,
+				 &SettingVTXWidget::_changeSnapshotFormat );
 		connect( _snapshotBackgroundOpacitySlider,
 				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
 				 this,
@@ -237,6 +246,7 @@ namespace VTX::UI::Widget::Settings
 		_controllerRotationSpeedWidget->setValue( rotationSpeedValue );
 		_controllerYAxisInvertedWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getYAxisInverted() ) );
 
+		_snapshotFormatWidget->setCurrentIndex( int( VTX_SETTING().getSnapshotFormat() ) );
 		_snapshotBackgroundOpacitySlider->setValue( VTX_SETTING().getSnapshotBackgroundOpacity() );
 		_snapshotQualitySlider->setValue( VTX_SETTING().getSnapshotQuality() );
 		_snapshotResolutionWidget->setCurrentIndex( int( VTX_SETTING().getSnapshotResolution() ) );
@@ -296,6 +306,12 @@ namespace VTX::UI::Widget::Settings
 			VTX_ACTION( new Action::Setting::ActiveYAxisInversion( p_invert ) );
 	}
 
+	void SettingVTXWidget::_changeSnapshotFormat( const int p_format )
+	{
+		IO::Struct::ImageExport::Format format = IO::Struct::ImageExport::Format( p_format );
+		if ( VTX_SETTING().getSnapshotFormat() != format )
+			VTX_ACTION( new Action::Setting::ChangeSnapshotFormat( format ) );
+	}
 	void SettingVTXWidget::_changeSnapshotBackgroundOpacity( const float p_opacity )
 	{
 		if ( VTX_SETTING().getSnapshotBackgroundOpacity() != p_opacity )
