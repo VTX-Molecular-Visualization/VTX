@@ -3,6 +3,7 @@
 
 #include "generic/base_opengl.hpp"
 #include "renderer/base_renderer.hpp"
+#include "ui/widget/base_manual_widget.hpp"
 #include <QElapsedTimer>
 #include <QOpenGLWidget>
 #include <QPainter>
@@ -20,11 +21,14 @@ namespace VTX
 
 	namespace UI::Widget::Render
 	{
-		class OpenGLWidget : public QOpenGLWidget, public Generic::BaseOpenGL
+		class OpenGLWidget : public BaseManualWidget<QOpenGLWidget>, public Generic::BaseOpenGL
 		{
+			VTX_WIDGET
+
 		  public:
-			OpenGLWidget( QWidget * p_parent = 0 );
 			~OpenGLWidget();
+
+			void localize() override {}
 
 			inline Renderer::BaseRenderer &		  getRenderer() { return *_renderer; }
 			inline const Renderer::BaseRenderer & getRenderer() const { return *_renderer; }
@@ -41,6 +45,12 @@ namespace VTX
 			void activeVSync( const bool p_active );
 
 			const Vec2i getPickedIds( const uint, const uint );
+
+		  protected:
+			OpenGLWidget( QWidget * p_parent );
+
+			void _setupUi( const QString & p_name ) override {}
+			void _setupSlots() override {}
 
 		  private:
 			QElapsedTimer _timer		= QElapsedTimer();

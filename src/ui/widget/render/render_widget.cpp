@@ -6,6 +6,7 @@
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "style.hpp"
+#include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::UI::Widget::Render
@@ -40,7 +41,7 @@ namespace VTX::UI::Widget::Render
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_openGLWidget = new OpenGLWidget( this );
+		_openGLWidget = WidgetFactory::get().instantiateWidget<Widget::Render::OpenGLWidget>( this, "openglWidget" );
 
 		setFocusPolicy( Qt::StrongFocus );
 

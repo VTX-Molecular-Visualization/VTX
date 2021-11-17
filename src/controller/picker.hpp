@@ -13,6 +13,7 @@ namespace VTX::Controller
 
 	  protected:
 		void _onMouseLeftClick( const uint p_x, const uint p_y ) override;
+		void _onMouseLeftDoubleClick( const uint p_x, const uint p_y ) override;
 	};
 } // namespace VTX::Controller
 

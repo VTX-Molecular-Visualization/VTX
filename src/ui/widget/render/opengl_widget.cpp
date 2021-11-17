@@ -12,7 +12,7 @@
 
 namespace VTX::UI::Widget::Render
 {
-	OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : QOpenGLWidget( p_parent )
+	OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : BaseManualWidget<QOpenGLWidget>( p_parent )
 	{
 		QSurfaceFormat format;
 		format.setVersion( OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION );

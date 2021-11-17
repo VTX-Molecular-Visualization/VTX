@@ -32,7 +32,7 @@ namespace VTX::UI::Widget::Render
 		void _setupSlots() override;
 
 	  private:
-		OpenGLWidget * _openGLWidget;
+		OpenGLWidget * _openGLWidget = nullptr;
 	};
 } // namespace VTX::UI::Widget::Render
 #endif

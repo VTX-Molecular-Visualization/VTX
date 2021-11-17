@@ -95,4 +95,6 @@ namespace VTX::Controller
 		}
 	}
 
+	void Picker::_onMouseLeftDoubleClick( const uint p_x, const uint p_y ) { VTX_DEBUG( "dbl click" ); }
+
 } // namespace VTX::Controller
