@@ -13,8 +13,10 @@
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
+#include "util/molecule.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
+#include <set>
 
 namespace VTX::Action::Atom
 {
@@ -45,15 +47,32 @@ namespace VTX::Action::Atom
 
 		virtual void execute() override
 		{
-			// _visibles will always has a size of 1, we can perform computeRepresentationTargets in the loop
+			std::map<Model::Molecule *, std::vector<Model::Atom *>> atomsPerMolecules
+				= std::map<Model::Molecule *, std::vector<Model::Atom *>>();
+
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				Model::Atom & atom			= *( (Model::Atom *)visible );
-				const bool	  newVisibility = _getVisibilityBool( atom );
+				Model::Atom * const atom = static_cast<Model::Atom *>( visible );
+				atomsPerMolecules[ atom->getMoleculePtr() ].emplace_back( atom );
+			}
 
-				atom.setVisible( newVisibility );
-				atom.getMoleculePtr()->refreshVisibilities();
-				atom.getMoleculePtr()->computeRepresentationTargets();
+			for ( const std::pair<Model::Molecule *, std::vector<Model::Atom *>> & pair : atomsPerMolecules )
+			{
+				for ( Model::Atom * const atom : pair.second )
+				{
+					switch ( _mode )
+					{
+					case VISIBILITY_MODE::SHOW:
+					case VISIBILITY_MODE::HIDE:
+					case VISIBILITY_MODE::ALL:
+						Util::Molecule::show( *atom, _getVisibilityBool( *atom ), true, false );
+						break;
+					case VISIBILITY_MODE::SOLO: Util::Molecule::solo( *atom, false ); break;
+					}
+				}
+
+				pair.first->refreshVisibilities();
+				pair.first->computeRepresentationTargets();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

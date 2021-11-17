@@ -70,21 +70,32 @@ namespace VTX::Action::Residue
 
 		virtual void execute() override
 		{
-			std::set<Model::Molecule *> molecules = std::set<Model::Molecule *>();
+			std::map<Model::Molecule *, std::vector<Model::Residue *>> residuesPerMolecules
+				= std::map<Model::Molecule *, std::vector<Model::Residue *>>();
+
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				const bool		 newVisibility = _getVisibilityBool( *visible );
-				Model::Residue * residue	   = static_cast<Model::Residue *>( visible );
-
-				Util::Molecule::show( *residue, newVisibility, false );
-
-				molecules.emplace( residue->getMoleculePtr() );
+				Model::Residue * const residue = static_cast<Model::Residue *>( visible );
+				residuesPerMolecules[ residue->getMoleculePtr() ].emplace_back( residue );
 			}
 
-			for ( Model::Molecule * const molecule : molecules )
+			for ( const std::pair<Model::Molecule *, std::vector<Model::Residue *>> & pair : residuesPerMolecules )
 			{
-				molecule->refreshVisibilities();
-				molecule->computeRepresentationTargets();
+				for ( Model::Residue * const residue : pair.second )
+				{
+					switch ( _mode )
+					{
+					case VISIBILITY_MODE::SHOW:
+					case VISIBILITY_MODE::HIDE:
+					case VISIBILITY_MODE::ALL:
+						Util::Molecule::show( *residue, _getVisibilityBool( *residue ), true, false );
+						break;
+					case VISIBILITY_MODE::SOLO: Util::Molecule::solo( *residue, false ); break;
+					}
+				}
+
+				pair.first->refreshVisibilities();
+				pair.first->computeRepresentationTargets();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

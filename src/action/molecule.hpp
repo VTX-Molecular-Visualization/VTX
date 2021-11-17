@@ -67,10 +67,17 @@ namespace VTX::Action::Molecule
 		{
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				const bool		  newVisibility = _getVisibilityBool( *visible );
-				Model::Molecule * molecule		= static_cast<Model::Molecule *>( visible );
+				Model::Molecule * molecule = static_cast<Model::Molecule *>( visible );
 
-				Util::Molecule::show( *molecule, newVisibility, true );
+				switch ( _mode )
+				{
+				case VISIBILITY_MODE::SHOW:
+				case VISIBILITY_MODE::HIDE:
+				case VISIBILITY_MODE::ALL:
+					Util::Molecule::show( *molecule, _getVisibilityBool( *molecule ), true );
+					break;
+				case VISIBILITY_MODE::SOLO: Util::Molecule::solo( *molecule, false ); break;
+				}
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

@@ -71,9 +71,17 @@ namespace VTX::Util::Molecule
 			p_molecule.computeRepresentationTargets();
 		}
 	}
-	void show( Model::Chain & p_chain, const bool p_show, const bool p_refreshMoleculeVisibility )
+	void show( Model::Chain & p_chain,
+			   const bool	  p_show,
+			   const bool	  p_showHierarchy,
+			   const bool	  p_refreshMoleculeVisibility )
 	{
 		p_chain.setVisible( p_show );
+
+		if ( p_show )
+		{
+			p_chain.getMoleculePtr()->setVisible( p_show );
+		}
 
 		Model::Molecule * const molecule = p_chain.getMoleculePtr();
 
@@ -84,7 +92,7 @@ namespace VTX::Util::Molecule
 			if ( residue == nullptr )
 				continue;
 
-			show( *residue, p_show, false );
+			show( *residue, p_show, false, false );
 		}
 
 		if ( p_refreshMoleculeVisibility )
@@ -93,9 +101,18 @@ namespace VTX::Util::Molecule
 			molecule->computeRepresentationTargets();
 		}
 	}
-	void show( Model::Residue & p_residue, const bool p_show, const bool p_refreshMoleculeVisibility )
+	void show( Model::Residue & p_residue,
+			   const bool		p_show,
+			   const bool		p_showHierarchy,
+			   const bool		p_refreshMoleculeVisibility )
 	{
 		p_residue.setVisible( p_show );
+
+		if ( p_show )
+		{
+			p_residue.getChainPtr()->setVisible( p_show );
+			p_residue.getMoleculePtr()->setVisible( p_show );
+		}
 
 		Model::Molecule * const molecule = p_residue.getMoleculePtr();
 
@@ -108,7 +125,7 @@ namespace VTX::Util::Molecule
 			if ( atom == nullptr )
 				continue;
 
-			atom->setVisible( true );
+			show( *atom, p_show, false, false );
 		}
 
 		if ( p_refreshMoleculeVisibility )
@@ -117,5 +134,159 @@ namespace VTX::Util::Molecule
 			molecule->computeRepresentationTargets();
 		}
 	}
+	void show( Model::Atom & p_atom,
+			   const bool	 p_show,
+			   const bool	 p_showHierarchy,
+			   const bool	 p_refreshMoleculeVisibility )
+	{
+		p_atom.setVisible( p_show );
 
+		if ( p_show && p_showHierarchy )
+		{
+			p_atom.getResiduePtr()->setVisible( p_show );
+			p_atom.getChainPtr()->setVisible( p_show );
+			p_atom.getMoleculePtr()->setVisible( p_show );
+		}
+
+		if ( p_refreshMoleculeVisibility )
+		{
+			Model::Molecule * const molecule = p_atom.getMoleculePtr();
+
+			molecule->refreshVisibilities();
+			molecule->computeRepresentationTargets();
+		}
+	}
+
+	void solo( Model::Molecule & p_molecule, const bool p_refreshMoleculeVisibility )
+	{
+		show( p_molecule, true, true );
+
+	} // namespace VTX::Util::Molecule
+	void solo( Model::Chain & p_chain, const bool p_refreshMoleculeVisibility )
+	{
+		Model::Molecule * const molecule = p_chain.getMoleculePtr();
+
+		for ( Model::Chain * const chain : molecule->getChains() )
+		{
+			if ( chain == nullptr )
+				continue;
+
+			if ( chain != &p_chain )
+			{
+				show( *chain, false, false, false );
+			}
+			else
+			{
+				show( *chain, true, true, false );
+			}
+		}
+
+		if ( p_refreshMoleculeVisibility )
+		{
+			molecule->refreshVisibilities();
+			molecule->computeRepresentationTargets();
+		}
+	}
+	void solo( Model::Residue & p_residue, const bool p_refreshMoleculeVisibility )
+	{
+		Model::Chain * const	chainParent = p_residue.getChainPtr();
+		Model::Molecule * const molecule	= chainParent->getMoleculePtr();
+
+		for ( Model::Chain * const chain : molecule->getChains() )
+		{
+			if ( chain == nullptr )
+				continue;
+
+			if ( chain != chainParent )
+			{
+				show( *chain, false, false, false );
+			}
+			else
+			{
+				chainParent->setVisible( true );
+
+				for ( uint residueID = chainParent->getIndexFirstResidue();
+					  residueID <= chainParent->getIndexLastResidue();
+					  residueID++ )
+				{
+					Model::Residue * const residue = molecule->getResidue( residueID );
+
+					if ( residue == nullptr )
+						continue;
+
+					if ( residue == &p_residue )
+					{
+						show( *residue, true, true, false );
+					}
+					else
+					{
+						show( *residue, false, false, false );
+					}
+				}
+			}
+		}
+
+		if ( p_refreshMoleculeVisibility )
+		{
+			molecule->refreshVisibilities();
+			molecule->computeRepresentationTargets();
+		}
+
+	} // namespace VTX::Util::Molecule
+	void solo( Model::Atom & p_atom, const bool p_refreshMoleculeVisibility )
+	{
+		Model::Residue * const	residueParent = p_atom.getResiduePtr();
+		Model::Chain * const	chainParent	  = residueParent->getChainPtr();
+		Model::Molecule * const molecule	  = chainParent->getMoleculePtr();
+
+		for ( Model::Chain * const chain : molecule->getChains() )
+		{
+			if ( chain == nullptr )
+				continue;
+
+			if ( chain != chainParent )
+			{
+				show( *chain, false, false, false );
+			}
+			else
+			{
+				chainParent->setVisible( true );
+
+				for ( uint residueID = chainParent->getIndexFirstResidue();
+					  residueID <= chainParent->getIndexLastResidue();
+					  residueID++ )
+				{
+					Model::Residue * const residue = molecule->getResidue( residueID );
+
+					if ( residue == nullptr )
+						continue;
+
+					if ( residue != residueParent )
+					{
+						show( *residue, false, false, false );
+					}
+					else
+					{
+						for ( uint atomID = residue->getIndexFirstAtom();
+							  atomID < residue->getIndexFirstAtom() + residue->getAtomCount();
+							  atomID++ )
+						{
+							Model::Atom * const atom = molecule->getAtom( atomID );
+
+							if ( atom == nullptr )
+								continue;
+
+							atom->setVisible( atom == &p_atom );
+						}
+					}
+				}
+			}
+		}
+
+		if ( p_refreshMoleculeVisibility )
+		{
+			molecule->refreshVisibilities();
+			molecule->computeRepresentationTargets();
+		}
+	}
 } // namespace VTX::Util::Molecule

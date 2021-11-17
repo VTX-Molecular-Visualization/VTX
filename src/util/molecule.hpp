@@ -14,6 +14,7 @@ namespace VTX
 		class Molecule;
 		class Chain;
 		class Residue;
+		class Atom;
 	} // namespace Model
 
 	namespace Util::Molecule
@@ -29,8 +30,23 @@ namespace VTX
 		bool recomputeBondOrdersFromFile( Model::Molecule & p_molecule );
 
 		void show( Model::Molecule & p_molecule, const bool p_show, const bool p_refreshMoleculeVisibility = true );
-		void show( Model::Chain & p_chain, const bool p_show, const bool p_refreshMoleculeVisibility = true );
-		void show( Model::Residue & p_residue, const bool p_show, const bool p_refreshMoleculeVisibility = true );
+		void show( Model::Chain & p_chain,
+				   const bool	  p_show,
+				   const bool	  p_showHierarchy			  = true,
+				   const bool	  p_refreshMoleculeVisibility = true );
+		void show( Model::Residue & p_residue,
+				   const bool		p_show,
+				   const bool		p_showHierarchy				= true,
+				   const bool		p_refreshMoleculeVisibility = true );
+		void show( Model::Atom & p_atom,
+				   const bool	 p_show,
+				   const bool	 p_showHierarchy			 = true,
+				   const bool	 p_refreshMoleculeVisibility = true );
+
+		void solo( Model::Molecule & p_molecule, const bool p_refreshMoleculeVisibility = true );
+		void solo( Model::Chain & p_chain, const bool p_refreshMoleculeVisibility = true );
+		void solo( Model::Residue & p_residue, const bool p_refreshMoleculeVisibility = true );
+		void solo( Model::Atom & p_atom, const bool p_refreshMoleculeVisibility = true );
 
 	} // namespace Util::Molecule
 } // namespace VTX

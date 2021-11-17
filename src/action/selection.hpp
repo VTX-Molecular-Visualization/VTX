@@ -577,6 +577,7 @@ namespace VTX::Action::Selection
 				}
 				else
 				{
+					molecule.setVisible( true );
 					for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainIds : molIds.second )
 					{
 						Model::Chain & chain = *molecule.getChain( chainIds.first );
@@ -586,6 +587,7 @@ namespace VTX::Action::Selection
 						}
 						else
 						{
+							chain.setVisible( true );
 							for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueIds :
 								  chainIds.second )
 							{
@@ -596,6 +598,7 @@ namespace VTX::Action::Selection
 								}
 								else
 								{
+									residue.setVisible( true );
 									for ( const uint atomId : residueIds.second )
 									{
 										Model::Atom * const atom = molecule.getAtom( atomId );
