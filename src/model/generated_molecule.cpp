@@ -67,6 +67,7 @@ namespace VTX::Model
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
 		getBufferAtomRadius().shrink_to_fit();
+		getBufferAtomIds().shrink_to_fit();
 		for ( AtomPositionsFrame & atomPositions : getAtomPositionFrames() )
 			atomPositions.shrink_to_fit();
 
@@ -322,6 +323,7 @@ namespace VTX::Model
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
 		getBufferAtomRadius().shrink_to_fit();
+		getBufferAtomIds().shrink_to_fit();
 		for ( AtomPositionsFrame & atomPositions : getAtomPositionFrames() )
 			atomPositions.shrink_to_fit();
 
@@ -503,6 +505,7 @@ namespace VTX::Model
 			AtomPositionsFrame &	   generatedAtomPosFrame = addAtomPositionFrame();
 			generatedAtomPosFrame.reserve( atomPosFrame.size() );
 		}
+		
 
 		for ( const UnknownResidueData & unknownSymbol : p_molecule.getUnknownResidueSymbols() )
 			addUnknownResidueSymbol( unknownSymbol );
@@ -510,6 +513,7 @@ namespace VTX::Model
 			addUnknownAtomSymbol( unknownSymbol );
 
 		getBufferAtomRadius().reserve( p_molecule.getAtomCount() );
+		getBufferAtomIds().reserve( p_molecule.getAtomCount() );
 		_transform = p_molecule.getTransform();
 
 		setFPS( p_molecule.getFPS() );
@@ -564,6 +568,7 @@ namespace VTX::Model
 		// p_atom.setColor( Model::Atom::SYMBOL_COLOR[ int( p_atomSource.getSymbol() ) ] );
 		p_atom.setType( p_atomSource.getType() );
 		getBufferAtomRadius().emplace_back( p_atomSource.getVdwRadius() );
+		getBufferAtomIds().emplace_back( p_atom.getId() );
 	}
 
 	Model::Chain & GeneratedMolecule::_extractFullChain( Model::Molecule & p_fromMolecule, const uint p_index )
@@ -731,7 +736,9 @@ namespace VTX::Model
 		{
 			Model::Atom & atom = *getAtom( i );
 			atom.setIndex( i );
+			getBufferAtomIds().emplace_back( i );
 		}
+		
 
 		for ( uint i = p_startIndex; i < p_startIndex + p_count; i++ )
 			p_fromMolecule.removeAtom( i, false, false, false, false );
@@ -847,6 +854,8 @@ namespace VTX::Model
 			// Only emplace atom currently to not modify it before checking all bonds
 			getAtoms().emplace_back( &atom );
 			getBufferAtomRadius().emplace_back( atom.getVdwRadius() );
+			getBufferAtomIds().emplace_back( atom.getId() );
+
 			for ( uint i = 0; i < getAtomPositionFrames().size(); i++ )
 				getAtomPositionFrame( i ).emplace_back( p_fromMolecule.getAtomPositionFrame( i )[ idAtom ] );
 		}
