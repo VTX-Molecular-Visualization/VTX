@@ -45,8 +45,17 @@ namespace VTX
 
 		void solo( Model::Molecule & p_molecule, const bool p_refreshMoleculeVisibility = true );
 		void solo( Model::Chain & p_chain, const bool p_refreshMoleculeVisibility = true );
+		void soloChains( Model::Molecule &		   p_moleculeParent,
+						 const std::vector<uint> & p_chainIndexes,
+						 const bool				   p_refreshMoleculeVisibility = true );
 		void solo( Model::Residue & p_residue, const bool p_refreshMoleculeVisibility = true );
+		void soloResidues( Model::Molecule &		 p_moleculeParent,
+						   const std::vector<uint> & p_residueIndexes,
+						   const bool				 p_refreshMoleculeVisibility = true );
 		void solo( Model::Atom & p_atom, const bool p_refreshMoleculeVisibility = true );
+		void soloAtoms( Model::Molecule &		  p_moleculeParent,
+						const std::vector<uint> & p_atomIndexes,
+						const bool				  p_refreshMoleculeVisibility = true );
 
 	} // namespace Util::Molecule
 } // namespace VTX

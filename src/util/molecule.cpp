@@ -187,6 +187,40 @@ namespace VTX::Util::Molecule
 			molecule->computeRepresentationTargets();
 		}
 	}
+	void soloChains( Model::Molecule &		   p_moleculeParent,
+					 const std::vector<uint> & p_chainIndexes,
+					 const bool				   p_refreshMoleculeVisibility )
+	{
+		p_moleculeParent.setVisible( true );
+
+		std::vector<uint>::const_iterator itChainToSoloize = p_chainIndexes.cbegin();
+		uint							  idChainToSoloize = *itChainToSoloize;
+
+		for ( uint iChain = 0; iChain < p_moleculeParent.getChainCount(); iChain++ )
+		{
+			Model::Chain * const chain = p_moleculeParent.getChain( iChain );
+			if ( iChain == idChainToSoloize )
+			{
+				show( *chain, true, false, false );
+				itChainToSoloize++;
+
+				idChainToSoloize
+					= itChainToSoloize == p_chainIndexes.cend() ? p_moleculeParent.getChainCount() : *itChainToSoloize;
+			}
+			else
+			{
+				if ( chain != nullptr )
+					show( *chain, false, false, false );
+			}
+		}
+
+		if ( p_refreshMoleculeVisibility )
+		{
+			p_moleculeParent.refreshVisibilities();
+			p_moleculeParent.computeRepresentationTargets();
+		}
+	}
+
 	void solo( Model::Residue & p_residue, const bool p_refreshMoleculeVisibility )
 	{
 		Model::Chain * const	chainParent = p_residue.getChainPtr();
@@ -231,8 +265,64 @@ namespace VTX::Util::Molecule
 			molecule->refreshVisibilities();
 			molecule->computeRepresentationTargets();
 		}
+	}
+	void soloResidues( Model::Molecule &		 p_moleculeParent,
+					   const std::vector<uint> & p_residueIndexes,
+					   const bool				 p_refreshMoleculeVisibility )
+	{
+		std::vector<uint>::const_iterator itResidueToSoloize = p_residueIndexes.cbegin();
+		uint							  idResidueToSoloize = *itResidueToSoloize;
+		uint idParentChainToSoloize = p_moleculeParent.getResidue( idResidueToSoloize )->getChainPtr()->getIndex();
 
-	} // namespace VTX::Util::Molecule
+		for ( uint iChain = 0; iChain < p_moleculeParent.getChainCount(); iChain++ )
+		{
+			Model::Chain * const chain = p_moleculeParent.getChain( iChain );
+
+			if ( iChain == idParentChainToSoloize )
+			{
+				chain->setVisible( true );
+				for ( uint iResidue = chain->getIndexFirstResidue(); iResidue <= chain->getIndexLastResidue();
+					  iResidue++ )
+				{
+					Model::Residue * const residue = p_moleculeParent.getResidue( iResidue );
+
+					if ( iResidue == idResidueToSoloize )
+					{
+						show( *residue, true, false, false );
+						itResidueToSoloize++;
+
+						if ( itResidueToSoloize == p_residueIndexes.cend() )
+						{
+							idResidueToSoloize	   = p_moleculeParent.getResidueCount();
+							idParentChainToSoloize = p_moleculeParent.getChainCount();
+						}
+						else
+						{
+							idResidueToSoloize = *itResidueToSoloize;
+							idParentChainToSoloize
+								= p_moleculeParent.getResidue( idResidueToSoloize )->getChainPtr()->getIndex();
+						}
+					}
+					else
+					{
+						if ( residue != nullptr )
+							show( *residue, false, false, false );
+					}
+				}
+			}
+			else
+			{
+				if ( chain != nullptr )
+					show( *chain, false, false, false );
+			}
+		}
+
+		if ( p_refreshMoleculeVisibility )
+		{
+			p_moleculeParent.refreshVisibilities();
+			p_moleculeParent.computeRepresentationTargets();
+		}
+	}
 	void solo( Model::Atom & p_atom, const bool p_refreshMoleculeVisibility )
 	{
 		Model::Residue * const	residueParent = p_atom.getResiduePtr();
@@ -287,6 +377,82 @@ namespace VTX::Util::Molecule
 		{
 			molecule->refreshVisibilities();
 			molecule->computeRepresentationTargets();
+		}
+	}
+	void soloAtoms( Model::Molecule &		  p_moleculeParent,
+					const std::vector<uint> & p_atomIndexes,
+					const bool				  p_refreshMoleculeVisibility )
+	{
+		std::vector<uint>::const_iterator itAtomToSoloize = p_atomIndexes.cbegin();
+		uint							  idAtomToSoloize = *itAtomToSoloize;
+		uint idParentResidueToSoloize = p_moleculeParent.getAtom( idAtomToSoloize )->getResiduePtr()->getIndex();
+		uint idParentChainToSoloize	  = p_moleculeParent.getAtom( idAtomToSoloize )->getChainPtr()->getIndex();
+
+		for ( uint iChain = 0; iChain < p_moleculeParent.getChainCount(); iChain++ )
+		{
+			Model::Chain * const chain = p_moleculeParent.getChain( iChain );
+
+			if ( iChain == idParentChainToSoloize )
+			{
+				chain->setVisible( true );
+				for ( uint iResidue = chain->getIndexFirstResidue(); iResidue <= chain->getIndexLastResidue();
+					  iResidue++ )
+				{
+					Model::Residue * const residue = p_moleculeParent.getResidue( iResidue );
+
+					if ( iResidue == idParentResidueToSoloize )
+					{
+						residue->setVisible( true );
+						for ( uint iAtom = residue->getIndexFirstAtom();
+							  iAtom < residue->getIndexFirstAtom() + residue->getAtomCount();
+							  iAtom++ )
+						{
+							Model::Atom * atom = p_moleculeParent.getAtom( iAtom );
+							if ( iAtom == idAtomToSoloize )
+							{
+								show( *atom, true, false, false );
+								itAtomToSoloize++;
+
+								if ( itAtomToSoloize == p_atomIndexes.cend() )
+								{
+									idAtomToSoloize			 = p_moleculeParent.getAtomCount();
+									idParentResidueToSoloize = p_moleculeParent.getResidueCount();
+									idParentChainToSoloize	 = p_moleculeParent.getChainCount();
+								}
+								else
+								{
+									idAtomToSoloize = *itAtomToSoloize;
+									idParentResidueToSoloize
+										= p_moleculeParent.getAtom( idAtomToSoloize )->getResiduePtr()->getIndex();
+									idParentChainToSoloize
+										= p_moleculeParent.getAtom( idAtomToSoloize )->getChainPtr()->getIndex();
+								}
+							}
+							else
+							{
+								if ( atom != nullptr )
+									show( *atom, false, false, false );
+							}
+						}
+					}
+					else
+					{
+						if ( residue != nullptr )
+							show( *residue, false, false, false );
+					}
+				}
+			}
+			else
+			{
+				if ( chain != nullptr )
+					show( *chain, false, false, false );
+			}
+		}
+
+		if ( p_refreshMoleculeVisibility )
+		{
+			p_moleculeParent.refreshVisibilities();
+			p_moleculeParent.computeRepresentationTargets();
 		}
 	}
 } // namespace VTX::Util::Molecule
