@@ -22,13 +22,13 @@ namespace VTX
 				const VTX_ID SETTINGS	 = "SETTINGS";
 				const VTX_ID INFORMATION = "INFORMATION";
 			} // namespace Window
+			namespace Input
+			{
+				const VTX_ID MAIN_WINDOW   = "MAIN_WINDOW";
+				const VTX_ID OPENGL_WIDGET = "OPENGL_WIDGET";
 
-			const VTX_ID USER_INTERFACE = "USER_INTERFACE";
-			const VTX_ID MENU			= "MENU";
-			const VTX_ID CAMERA_EDITOR	= "CAMERA_EDITOR";
-			const VTX_ID PROGRESS_BAR	= "PROGRESS_BAR";
-			const VTX_ID INSPECTOR_ITEM = "INSPECTOR_ITEM";
-		} // namespace UI
+			} // namespace Input
+		}	  // namespace UI
 
 		namespace Model
 		{

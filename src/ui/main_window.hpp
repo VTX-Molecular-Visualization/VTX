@@ -2,6 +2,7 @@
 #define __VTX_UI_MAIN_WINDOW__
 
 #include "contextual_menu.hpp"
+#include "event/base_event_firerer_input.hpp"
 #include "ui_main_window.h"
 #include "widget/base_widget.hpp"
 #include "widget/console/console_widget.hpp"
@@ -31,7 +32,7 @@ namespace VTX
 			Minimized,
 		};
 
-		class MainWindow : public Widget::BaseWidget<QMainWindow, Ui_MainWindow>
+		class MainWindow : public Widget::BaseWidget<QMainWindow, Ui_MainWindow>, public Event::BaseEventFirererInput
 		{
 			Q_OBJECT
 
@@ -77,21 +78,23 @@ namespace VTX
 				return static_cast<W &>( getWidget( p_winId ) );
 			}
 
+			const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::MAIN_WINDOW; }
+
 		  protected:
+			void mouseMoveEvent( QMouseEvent * p_event ) override { _fireEventInput( p_event ); }
+			void mousePressEvent( QMouseEvent * p_event ) override { _fireEventInput( p_event ); }
+			void mouseReleaseEvent( QMouseEvent * p_event ) override { _fireEventInput( p_event ); }
+			void mouseDoubleClickEvent( QMouseEvent * p_event ) override { _fireEventInput( p_event ); }
+			void keyPressEvent( QKeyEvent * p_event ) override { _fireEventInput( p_event ); }
+			void keyReleaseEvent( QKeyEvent * p_event ) override { _fireEventInput( p_event ); }
+			void wheelEvent( QWheelEvent * p_event ) override { _fireEventInput( p_event ); }
+
 			void resizeEvent( QResizeEvent * ) override;
 			void showEvent( QShowEvent * ) override;
 			void dragEnterEvent( QDragEnterEvent * ) override;
 			void dropEvent( QDropEvent * ) override;
 
 			void closeEvent( QCloseEvent * ) override;
-
-			void mouseMoveEvent( QMouseEvent * ) override;
-			void mousePressEvent( QMouseEvent * ) override;
-			void mouseReleaseEvent( QMouseEvent * ) override;
-			void mouseDoubleClickEvent( QMouseEvent * ) override;
-			void keyPressEvent( QKeyEvent * ) override;
-			void keyReleaseEvent( QKeyEvent * ) override;
-			void wheelEvent( QWheelEvent * ) override;
 
 			void changeEvent( QEvent * p_event ) override;
 
