@@ -3,9 +3,12 @@
 #include "event/event_manager.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
+#include "overlay/visualization_quick_access.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "style.hpp"
+#include "tool/logger.hpp"
+#include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::UI::Widget::Render
@@ -71,9 +74,64 @@ namespace VTX::UI::Widget::Render
 			->setGroup( Controller::SHORTCUTGROUP::DEFAULT );
 	}
 
+	void RenderWidget::resizeEvent( QResizeEvent * p_event )
+	{
+		for ( std::pair<Overlay::OVERLAY, Overlay::BaseOverlay *> overlay : _overlays )
+		{
+			overlay.second->updatePosition( p_event->size() );
+		}
+	}
+
+	void RenderWidget::displayOverlay( const Overlay::OVERLAY &		   p_overlayType,
+									   const Overlay::OVERLAY_ANCHOR & p_anchor )
+	{
+		std::map<Overlay::OVERLAY, Overlay::BaseOverlay *>::iterator itOverlay = _overlays.find( p_overlayType );
+
+		Overlay::BaseOverlay * overlay;
+
+		if ( itOverlay == _overlays.end() )
+		{
+			overlay = _instantiateOverlay( p_overlayType );
+			overlay->setParent( this );
+			_overlays.emplace( p_overlayType, overlay );
+		}
+		else
+		{
+			overlay = itOverlay->second;
+		}
+
+		overlay->setAnchorPosition( p_anchor );
+		overlay->updatePosition( contentsRect().size() );
+	}
+	void RenderWidget::hideOverlay( const Overlay::OVERLAY & p_overlay )
+	{
+		_overlays[ p_overlay ]->setVisible( false );
+	}
+
 	void RenderWidget::localize()
 	{
 		setWindowTitle( "Render" );
 		// setWindowTitle( QCoreApplication::translate( "RenderWidget", "Render", nullptr ) );
 	}
+
+	Overlay::BaseOverlay * RenderWidget::_instantiateOverlay( const Overlay::OVERLAY & p_overlayType )
+	{
+		Overlay::BaseOverlay * res;
+
+		switch ( p_overlayType )
+		{
+		case Overlay::OVERLAY::VISUALIZATION_QUICK_ACCESS:
+			res = WidgetFactory::get().instantiateWidget<Overlay::VisualizationQuickAccess>( this, "" );
+			break;
+
+		default:
+			VTX_ERROR( "Overlay " + std::to_string( int( p_overlayType ) )
+					   + " not managed in RenderWidget::InstantiatedOverlay::instantiateOverlay." );
+			res = nullptr;
+			break;
+		}
+
+		return res;
+	}
+
 } // namespace VTX::UI::Widget::Render

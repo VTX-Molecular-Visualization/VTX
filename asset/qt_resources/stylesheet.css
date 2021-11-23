@@ -194,3 +194,13 @@ VTX--UI--Widget--CustomWidget--RenderPreviewWidget
 {
 	border: 2px solid grey;
 }
+
+VTX--UI--Widget--Render--Overlay--BaseOverlay
+{
+	border: none;
+	background-color: #DD222222;
+}
+VTX--UI--Widget--Render--Overlay--BaseOverlay > QToolButton::menu-indicator
+{
+	image: none;
+}
