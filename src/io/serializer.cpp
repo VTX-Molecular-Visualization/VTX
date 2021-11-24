@@ -248,6 +248,7 @@ namespace VTX::IO
 			{ "DEFAULT_TRAJECTORY_PLAY_MODE", magic_enum::enum_name( p_setting.getDefaultTrajectoryPlayMode() ) },
 			{ "CHECK_VTX_UPDATE_AT_LAUNCH", p_setting.getCheckVTXUpdateAtLaunch() },
 			{ "PORTABLE_SAVE_ACTIVATED", p_setting.isPortableSaveActivated() },
+			{ "SELECTION_GRANULARITY", magic_enum::enum_name( p_setting.getSelectionGranularity() ) },
 		};
 	}
 
@@ -672,6 +673,9 @@ namespace VTX::IO
 
 		p_setting.activatePortableSave(
 			_get<bool>( p_json, "PORTABLE_SAVE_ACTIVATED", Setting::PORTABLE_SAVE_ACTIVATED_DEFAULT ) );
+
+		p_setting.setSelectionGranularity(
+			_getEnum( p_json, "SELECTION_GRANULARITY", Setting::SELECTION_GRANULARITY_DEFAULT ) );
 	}
 
 	nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,

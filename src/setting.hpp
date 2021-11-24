@@ -278,7 +278,7 @@ namespace VTX
 		inline int getDefaultRenderEffectPresetIndex() const { return renderEffectDefaultIndex; }
 		void	   setDefaultRenderEffectPresetIndex( const int p_renderEffectDefaultIndex );
 
-		inline VTX::Selection::SelectionGranularity getSelectionGranularity() { return selectionGranularity; }
+		inline VTX::Selection::SelectionGranularity getSelectionGranularity() const { return selectionGranularity; }
 		void setSelectionGranularity( const VTX::Selection::SelectionGranularity & p_selectionGranularity );
 
 		inline int							getDefaultTrajectorySpeed() const { return defaultTrajectorySpeed; }
