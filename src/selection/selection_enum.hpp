@@ -1,20 +1,22 @@
 #ifndef __VTX_SELECTION_ENUM__
 #define __VTX_SELECTION_ENUM__
 
-namespace VTX
-{
-	namespace Selection
-	{
-		enum class SelectionType : int
-		{
-			MOLECULE = 0,
-			CHAINS,
-			RESIDUE,
-			BOND,
-			ATOM,
+#include <string>
+#include <vector>
 
-			COUNT
-		};
-	} // namespace Selection
-} // namespace VTX
+namespace VTX::Selection
+{
+	enum class SelectionGranularity : int
+	{
+		ATOM = 0,
+		RESIDUE,
+		CHAIN,
+		MOLECULE,
+
+		COUNT
+	};
+
+	inline static std::vector<std::string> SELECTION_GRANULARITY_STR { "Atom", "Residue", "Chain", "Molecule" };
+
+} // namespace VTX::Selection
 #endif

@@ -244,9 +244,6 @@ namespace VTX
 
 		inline static const QSize EXPORT_IMAGE_PREVIEW_SIZE = QSize( 320, 320 );
 
-		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION
-			= VTX::Selection::SelectionType::RESIDUE;
-
 		inline static const QFont TOOL_MENU_BUTTON_FONT()
 		{
 			static QFont font = QFont( "Helvetica", 10 );

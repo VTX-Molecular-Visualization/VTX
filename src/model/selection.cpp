@@ -46,7 +46,8 @@ namespace VTX::Model
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
-		else if ( p_molecules.size() > 0 ) // No modifications
+
+		else if ( p_molecules.size() <= 0 ) // No modifications
 			return;
 
 		for ( const auto it : p_molecules )
@@ -883,12 +884,12 @@ namespace VTX::Model
 		const ID::VTX_ID & modelTypeID = p_model.getTypeId();
 
 		if ( modelTypeID == ID::Model::MODEL_CHAIN )
-			return isChainSelected( static_cast<const Model::Chain&>( p_model ));
-		else if ( modelTypeID == ID::Model::MODEL_RESIDUE)
+			return isChainSelected( static_cast<const Model::Chain &>( p_model ) );
+		else if ( modelTypeID == ID::Model::MODEL_RESIDUE )
 			return isResidueSelected( static_cast<const Model::Residue &>( p_model ) );
 		else if ( modelTypeID == ID::Model::MODEL_ATOM )
 			return isAtomSelected( static_cast<const Model::Atom &>( p_model ) );
-		else 
+		else
 			return _items.find( p_model.getId() ) != _items.end();
 	}
 

@@ -197,7 +197,7 @@ VTX--UI--Widget--CustomWidget--RenderPreviewWidget
 
 VTX--UI--Widget--Render--Overlay--BaseOverlay
 {
-	border: none;
+	border-radius: 10px;
 	background-color: #DD222222;
 }
 VTX--UI--Widget--Render--Overlay--BaseOverlay > QToolButton::menu-indicator

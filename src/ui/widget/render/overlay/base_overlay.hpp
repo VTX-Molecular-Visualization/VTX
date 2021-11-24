@@ -3,11 +3,11 @@
 
 #include "ui/widget/base_manual_widget.hpp"
 #include <QAction>
+#include <QEvent>
 #include <QMenu>
 #include <QObject>
-#include <QEvent>
-#include <QWidget>
 #include <QToolBar>
+#include <QWidget>
 
 namespace VTX::UI::Widget::Render::Overlay
 {
@@ -43,6 +43,8 @@ namespace VTX::UI::Widget::Render::Overlay
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
+
+		void _refreshSize();
 
 	  private:
 		OVERLAY_ANCHOR _anchorPosition = OVERLAY_ANCHOR::NONE;

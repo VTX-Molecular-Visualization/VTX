@@ -8,6 +8,7 @@
 #include "io/writer/serialized_object.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "renderer/base_renderer.hpp"
+#include "selection/selection_enum.hpp"
 #include "trajectory/trajectory_enum.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
@@ -148,6 +149,10 @@ namespace VTX
 	const ID::VTX_ID Setting::CONTROLLER_MODE_DEFAULT = ID::Controller::TRACKBALL;
 	const uint		 Setting::VIDEO_FPS_DEFAULT		  = 60;
 	const uint		 Setting::VIDEO_CRF_DEFAULT		  = 10;
+
+	// Selection
+	const VTX::Selection::SelectionGranularity Setting::SELECTION_GRANULARITY_DEFAULT
+		= VTX::Selection::SelectionGranularity::RESIDUE;
 
 	// Misc.
 	const int  Setting::CONSOLE_SIZE	   = 80;
@@ -503,6 +508,12 @@ namespace VTX
 	void Setting::setDefaultRenderEffectPresetIndex( const int p_renderEffectDefaultIndex )
 	{
 		renderEffectDefaultIndex = p_renderEffectDefaultIndex;
+	}
+
+	void Setting::setSelectionGranularity( const Selection::SelectionGranularity & p_selectionGranularity )
+	{
+		selectionGranularity = p_selectionGranularity;
+		_sendDataChangedEvent( PARAMETER::SELECTION_GRANULARITY );
 	}
 
 	void Setting::setDefaultTrajectorySpeed( const int p_defaultTrajectorySpeed )

@@ -264,9 +264,9 @@ namespace VTX::Action::Selection
 		{
 			_molecules.emplace_back( &p_molecule );
 		}
-		explicit SelectMolecule( Model::Selection &				  p_selection,
-								 std::vector<Model::Molecule *> & p_molecules,
-								 const bool						  p_appendToSelection = false ) :
+		explicit SelectMolecule( Model::Selection &						p_selection,
+								 const std::vector<Model::Molecule *> & p_molecules,
+								 const bool								p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_appendToSelection( p_appendToSelection )
 		{
@@ -294,20 +294,28 @@ namespace VTX::Action::Selection
 							  Model::Chain &	 p_chain,
 							  const bool		 p_appendToSelection = false ) :
 			_selection( p_selection ),
-			_chain( p_chain ), _appendToSelection( p_appendToSelection )
+			_chains { &p_chain }, _appendToSelection( p_appendToSelection )
+		{
+		}
+
+		explicit SelectChain( Model::Selection &				  p_selection,
+							  const std::vector<Model::Chain *> & p_chains,
+							  const bool						  p_appendToSelection = false ) :
+			_selection( p_selection ),
+			_chains( p_chains ), _appendToSelection( p_appendToSelection )
 		{
 		}
 
 		virtual void execute() override
 		{
-			_selection.selectChain( _chain, _appendToSelection );
+			_selection.selectChains( _chains, _appendToSelection );
 			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 		}
 
 	  private:
-		Model::Selection & _selection;
-		Model::Chain &	   _chain;
-		const bool		   _appendToSelection;
+		Model::Selection &			_selection;
+		std::vector<Model::Chain *> _chains;
+		const bool					_appendToSelection;
 	};
 
 	class SelectResidue : public BaseAction
@@ -321,9 +329,9 @@ namespace VTX::Action::Selection
 		{
 			_residues.emplace_back( &p_residue );
 		}
-		explicit SelectResidue( Model::Selection &				p_selection,
-								std::vector<Model::Residue *> & p_residues,
-								const bool						p_appendToSelection = false ) :
+		explicit SelectResidue( Model::Selection &					  p_selection,
+								const std::vector<Model::Residue *> & p_residues,
+								const bool							  p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_appendToSelection( p_appendToSelection )
 		{
@@ -422,9 +430,9 @@ namespace VTX::Action::Selection
 		{
 			_chains.emplace_back( &p_chain );
 		}
-		explicit UnselectChain( Model::Selection &			  p_selection,
-								std::vector<Model::Chain *> & p_chains,
-								bool						  p_check = false ) :
+		explicit UnselectChain( Model::Selection &					p_selection,
+								const std::vector<Model::Chain *> & p_chains,
+								bool								p_check = false ) :
 			_selection( p_selection ),
 			_check( p_check )
 		{
@@ -457,9 +465,9 @@ namespace VTX::Action::Selection
 		{
 			_residues.emplace_back( &p_residue );
 		}
-		explicit UnselectResidue( Model::Selection &			  p_selection,
-								  std::vector<Model::Residue *> & p_residues,
-								  bool							  p_check = false ) :
+		explicit UnselectResidue( Model::Selection &					p_selection,
+								  const std::vector<Model::Residue *> & p_residues,
+								  bool									p_check = false ) :
 			_selection( p_selection ),
 			_check( p_check )
 		{

@@ -1,6 +1,8 @@
 #include "selection_widget.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "selection/selection_enum.hpp"
 #include "selection/selection_manager.hpp"
+#include "setting.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/selection_view.hpp"
@@ -50,11 +52,11 @@ namespace VTX::UI::Widget::Selection
 		_layout				   = new QVBoxLayout( _mainWidget );
 		_selectionTypeComboBox = new QComboBox( this );
 
-		for ( int i = 0; i < (int)VTX::Selection::SelectionType::COUNT; i++ )
+		for ( int i = 0; i < (int)VTX::Selection::SelectionGranularity::COUNT; i++ )
 		{
 			_selectionTypeComboBox->addItem( "" );
 		}
-		_selectionTypeComboBox->setCurrentIndex( (int)Style::SELECTION_WINDOW_DEFAULT_SELECTION );
+		_selectionTypeComboBox->setCurrentIndex( int( Setting::SELECTION_GRANULARITY_DEFAULT ) );
 		_layout->addStretch( 100 );
 		_layout->addWidget( _selectionTypeComboBox );
 
@@ -96,18 +98,18 @@ namespace VTX::UI::Widget::Selection
 
 	void SelectionWidget::_populateItemList()
 	{
-		for ( int i = 0; i < (int)VTX::Selection::SelectionType::COUNT; i++ )
+		for ( int i = 0; i < (int)VTX::Selection::SelectionGranularity::COUNT; i++ )
 		{
-			QString								txt;
-			const VTX::Selection::SelectionType selectionType = (VTX::Selection::SelectionType)i;
+			QString									   txt;
+			const VTX::Selection::SelectionGranularity selectionType = (VTX::Selection::SelectionGranularity)i;
 
 			switch ( selectionType )
 			{
-			case VTX::Selection::SelectionType::ATOM: txt = "Atom"; break;
-			case VTX::Selection::SelectionType::BOND: txt = "Bond"; break;
-			case VTX::Selection::SelectionType::CHAINS: txt = "Chain"; break;
-			case VTX::Selection::SelectionType::MOLECULE: txt = "Molecule"; break;
-			case VTX::Selection::SelectionType::RESIDUE: txt = "Residue"; break;
+			case VTX::Selection::SelectionGranularity::ATOM: txt = "Atom"; break;
+			// case VTX::Selection::SelectionGranularity::BOND: txt = "Bond"; break;
+			case VTX::Selection::SelectionGranularity::CHAIN: txt = "Chain"; break;
+			case VTX::Selection::SelectionGranularity::MOLECULE: txt = "Molecule"; break;
+			case VTX::Selection::SelectionGranularity::RESIDUE: txt = "Residue"; break;
 
 			default:
 				VTX_WARNING( "Selection " + std::to_string( i )

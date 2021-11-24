@@ -49,6 +49,10 @@
 	<file>sprite/open_session_icon.png</file>
 	<file>sprite/pause_icon.png</file>
 	<file>sprite/pause_icon_hovered.png</file>
+	<file>sprite/pick_atom.png</file>
+	<file>sprite/pick_chain.png</file>
+	<file>sprite/pick_molecule.png</file>
+	<file>sprite/pick_residue.png</file>
 	<file>sprite/refresh_icon.png</file>
 	<file>sprite/refresh_icon_hovered.png</file>
 	<file>sprite/remove_icon.png</file>

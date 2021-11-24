@@ -101,6 +101,10 @@ namespace VTX::UI::Widget::Render
 		}
 
 		overlay->setAnchorPosition( p_anchor );
+
+		if ( p_anchor == Overlay::OVERLAY_ANCHOR::BOTTOM_CENTER )
+			overlay->setFixedHeight( 32 );
+
 		overlay->updatePosition( contentsRect().size() );
 	}
 	void RenderWidget::hideOverlay( const Overlay::OVERLAY & p_overlay )

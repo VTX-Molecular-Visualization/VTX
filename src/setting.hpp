@@ -28,6 +28,11 @@ namespace VTX
 		enum class PlayMode;
 	}
 
+	namespace Selection
+	{
+		enum class SelectionGranularity;
+	}
+
 	class Setting
 	{
 	  public:
@@ -190,6 +195,9 @@ namespace VTX
 		static const uint		VIDEO_FPS_DEFAULT;
 		static const uint		VIDEO_CRF_DEFAULT;
 
+		// Selection
+		static const VTX::Selection::SelectionGranularity SELECTION_GRANULARITY_DEFAULT;
+
 		// Misc.
 		static const int   CONSOLE_SIZE;
 		static const uint  ACTION_BUFFER_SIZE; // For undo/redo
@@ -217,6 +225,8 @@ namespace VTX
 			CONTROLLER_ACTIVATE_ELASTICTY,
 			CONTROLLER_ELASTICTY_FACTOR,
 			CONTROLLER_Y_INVERSION,
+
+			SELECTION_GRANULARITY,
 
 			TRAJECTORY_DEFAULT_SPEED,
 			TRAJECTORY_DEFAULT_PLAY_MODE,
@@ -267,6 +277,9 @@ namespace VTX
 		void	   setDefaultRepresentationIndex( const int p_representationDefaultIndex );
 		inline int getDefaultRenderEffectPresetIndex() const { return renderEffectDefaultIndex; }
 		void	   setDefaultRenderEffectPresetIndex( const int p_renderEffectDefaultIndex );
+
+		inline VTX::Selection::SelectionGranularity getSelectionGranularity() { return selectionGranularity; }
+		void setSelectionGranularity( const VTX::Selection::SelectionGranularity & p_selectionGranularity );
 
 		inline int							getDefaultTrajectorySpeed() const { return defaultTrajectorySpeed; }
 		void								setDefaultTrajectorySpeed( const int p_defaultTrajectorySpeed );
@@ -350,6 +363,8 @@ namespace VTX
 
 		std::string _tmpRepresentationDefaultName = "";
 		std::string _tmpRenderEffectDefaultName	  = "";
+
+		VTX::Selection::SelectionGranularity selectionGranularity = SELECTION_GRANULARITY_DEFAULT;
 
 		int					 defaultTrajectorySpeed	   = DEFAULT_TRAJECTORY_SPEED;
 		Trajectory::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
