@@ -13,8 +13,10 @@
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
+#include "util/molecule.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
+#include <set>
 
 namespace VTX::Action::Atom
 {
@@ -45,15 +47,56 @@ namespace VTX::Action::Atom
 
 		virtual void execute() override
 		{
-			// _visibles will always has a size of 1, we can perform computeRepresentationTargets in the loop
-			for ( Generic::BaseVisible * const visible : _visibles )
+			if ( _mode == VISIBILITY_MODE::SOLO )
 			{
-				Model::Atom & atom			= *( (Model::Atom *)visible );
-				const bool	  newVisibility = _getVisibilityBool( atom );
+				std::map<Model::Molecule *, std::vector<uint>> atomIDsPerMolecules
+					= std::map<Model::Molecule *, std::vector<uint>>();
 
-				atom.setVisible( newVisibility );
-				atom.getMoleculePtr()->refreshVisibilities();
-				atom.getMoleculePtr()->computeRepresentationTargets();
+				for ( Generic::BaseVisible * const visible : _visibles )
+				{
+					Model::Atom * const atom = static_cast<Model::Atom *>( visible );
+					atomIDsPerMolecules[ atom->getMoleculePtr() ].emplace_back( atom->getIndex() );
+				}
+
+				for ( const Object3D::Scene::PairMoleculePtrFloat & sceneMolecule :
+					  VTXApp::get().getScene().getMolecules() )
+				{
+					Model::Molecule * const molecule = sceneMolecule.first;
+
+					std::map<Model::Molecule *, std::vector<uint>>::iterator it = atomIDsPerMolecules.find( molecule );
+
+					if ( it != atomIDsPerMolecules.end() )
+					{
+						Util::Molecule::soloAtoms( *molecule, it->second, false );
+					}
+					else
+					{
+						molecule->setVisible( false );
+					}
+
+					molecule->refreshVisibilities();
+					molecule->computeRepresentationTargets();
+				}
+			}
+			else
+			{
+				std::map<Model::Molecule *, std::vector<Model::Atom *>> atomsPerMolecules
+					= std::map<Model::Molecule *, std::vector<Model::Atom *>>();
+
+				for ( Generic::BaseVisible * const visible : _visibles )
+				{
+					Model::Atom * const atom = static_cast<Model::Atom *>( visible );
+					atomsPerMolecules[ atom->getMoleculePtr() ].emplace_back( atom );
+				}
+
+				for ( const std::pair<Model::Molecule *, std::vector<Model::Atom *>> & pair : atomsPerMolecules )
+				{
+					for ( Model::Atom * const atom : pair.second )
+						Util::Molecule::show( *atom, _getVisibilityBool( *atom ), true, false );
+
+					pair.first->refreshVisibilities();
+					pair.first->computeRepresentationTargets();
+				}
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

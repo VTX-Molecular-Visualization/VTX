@@ -577,6 +577,7 @@ namespace VTX::Action::Selection
 				}
 				else
 				{
+					molecule.setVisible( true );
 					for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainIds : molIds.second )
 					{
 						Model::Chain & chain = *molecule.getChain( chainIds.first );
@@ -586,6 +587,7 @@ namespace VTX::Action::Selection
 						}
 						else
 						{
+							chain.setVisible( true );
 							for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueIds :
 								  chainIds.second )
 							{
@@ -596,6 +598,7 @@ namespace VTX::Action::Selection
 								}
 								else
 								{
+									residue.setVisible( true );
 									for ( const uint atomId : residueIds.second )
 									{
 										Model::Atom * const atom = molecule.getAtom( atomId );
@@ -616,108 +619,92 @@ namespace VTX::Action::Selection
 			const Object3D::Scene::MapMoleculePtrFloat & moleculesInScene	  = VTXApp::get().getScene().getMolecules();
 			const Model::Selection::MapMoleculeIds &	 moleculesInSelection = _selection.getMoleculesMap();
 
-			Object3D::Scene::MapMoleculePtrFloat::const_iterator itScene	 = moleculesInScene.cbegin();
-			Model::Selection::MapMoleculeIds::const_iterator	 itSelection = moleculesInSelection.cbegin();
-
-			while ( itSelection != moleculesInSelection.cend() )
+			for ( const Object3D::Scene::PairMoleculePtrFloat & sceneMolecule : moleculesInScene )
 			{
-				if ( itScene->first->getId() == itSelection->first )
+				Model::Molecule * const							 molecule = sceneMolecule.first;
+				Model::Selection::MapMoleculeIds::const_iterator itSelection
+					= moleculesInSelection.find( molecule->getId() );
+
+				if ( itSelection != moleculesInSelection.end() )
 				{
-					Model::Molecule * const molecule = itScene->first;
 					molecule->setVisible( true );
 
-					// if ( !_selection.isMoleculeFullySelected( *molecule ) )
+					Model::Selection::MapChainIds::const_iterator itChainSelection = itSelection->second.cbegin();
+
+					for ( uint iChain = 0; iChain < molecule->getChainCount(); iChain++ )
 					{
-						Model::Selection::MapChainIds::const_iterator itChainSelection = itSelection->second.cbegin();
+						Model::Chain * const chain = molecule->getChain( iChain );
 
-						for ( uint iChain = 0; iChain < molecule->getChainCount(); iChain++ )
+						if ( chain == nullptr )
+							continue;
+
+						if ( itChainSelection != itSelection->second.cend() && iChain == itChainSelection->first )
 						{
-							Model::Chain * const chain = molecule->getChain( iChain );
+							chain->setVisible( true );
 
-							if ( chain == nullptr )
-								continue;
+							Model::Selection::MapResidueIds::const_iterator itResidueSelection
+								= itChainSelection->second.cbegin();
 
-							if ( itChainSelection != itSelection->second.cend() && iChain == itChainSelection->first )
+							for ( uint iResidue = chain->getIndexFirstResidue();
+								  iResidue <= chain->getIndexLastResidue();
+								  iResidue++ )
 							{
-								chain->setVisible( true );
+								Model::Residue * const residue = molecule->getResidue( iResidue );
 
-								// if ( !_selection.isChainFullySelected( *chain ) )
+								if ( residue == nullptr )
+									continue;
+
+								if ( itResidueSelection != itChainSelection->second.cend()
+									 && iResidue == itResidueSelection->first )
 								{
-									Model::Selection::MapResidueIds::const_iterator itResidueSelection
-										= itChainSelection->second.cbegin();
+									residue->setVisible( true );
 
-									for ( uint iResidue = chain->getIndexFirstResidue();
-										  iResidue <= chain->getIndexLastResidue();
-										  iResidue++ )
+									Model::Selection::VecAtomIds::const_iterator itAtomSelection
+										= itResidueSelection->second.cbegin();
+
+									for ( uint iAtom = residue->getIndexFirstAtom();
+										  iAtom < residue->getIndexFirstAtom() + residue->getAtomCount();
+										  iAtom++ )
 									{
-										Model::Residue * const residue = molecule->getResidue( iResidue );
+										Model::Atom * const atom = molecule->getAtom( iAtom );
 
-										if ( residue == nullptr )
+										if ( atom == nullptr )
 											continue;
 
-										if ( itResidueSelection != itChainSelection->second.cend()
-											 && iResidue == itResidueSelection->first )
+										if ( itAtomSelection != itResidueSelection->second.cend()
+											 && iAtom == *itAtomSelection )
 										{
-											residue->setVisible( true );
-
-											// if ( !_selection.isResidueFullySelected( *residue ) )
-											{
-												Model::Selection::VecAtomIds::const_iterator itAtomSelection
-													= itResidueSelection->second.cbegin();
-
-												for ( uint iAtom = residue->getIndexFirstAtom();
-													  iAtom < residue->getIndexFirstAtom() + residue->getAtomCount();
-													  iAtom++ )
-												{
-													Model::Atom * const atom = molecule->getAtom( iAtom );
-
-													if ( atom == nullptr )
-														continue;
-
-													if ( itAtomSelection != itResidueSelection->second.cend()
-														 && iAtom == *itAtomSelection )
-													{
-														atom->setVisible( true );
-														itAtomSelection++;
-													}
-													else
-													{
-														atom->setVisible( false );
-													}
-												}
-											}
-
-											itResidueSelection++;
+											atom->setVisible( true );
+											itAtomSelection++;
 										}
 										else
 										{
-											residue->setVisible( false );
+											atom->setVisible( false );
 										}
 									}
+
+									itResidueSelection++;
 								}
-								itChainSelection++;
+								else
+								{
+									residue->setVisible( false );
+								}
 							}
-							else
-							{
-								chain->setVisible( false );
-							}
+							itChainSelection++;
+						}
+						else
+						{
+							chain->setVisible( false );
 						}
 					}
-
-					molecule->refreshVisibilities();
-					molecule->computeRepresentationTargets();
-
-					itSelection++;
-					itScene++;
 				}
 				else
 				{
-					itScene->first->setVisible( false );
-					itScene->first->refreshVisibilities();
-					itScene->first->computeRepresentationTargets();
-
-					itScene++;
+					molecule->setVisible( false );
 				}
+
+				molecule->refreshVisibilities();
+				molecule->computeRepresentationTargets();
 			}
 		}
 

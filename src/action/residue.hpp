@@ -70,21 +70,57 @@ namespace VTX::Action::Residue
 
 		virtual void execute() override
 		{
-			std::set<Model::Molecule *> molecules = std::set<Model::Molecule *>();
-			for ( Generic::BaseVisible * const visible : _visibles )
+			if ( _mode == VISIBILITY_MODE::SOLO )
 			{
-				const bool		 newVisibility = _getVisibilityBool( *visible );
-				Model::Residue * residue	   = static_cast<Model::Residue *>( visible );
+				std::map<Model::Molecule *, std::vector<uint>> residuesIDsPerMolecules
+					= std::map<Model::Molecule *, std::vector<uint>>();
 
-				Util::Molecule::show( *residue, newVisibility, false );
+				for ( Generic::BaseVisible * const visible : _visibles )
+				{
+					Model::Residue * const residue = static_cast<Model::Residue *>( visible );
+					residuesIDsPerMolecules[ residue->getMoleculePtr() ].emplace_back( residue->getIndex() );
+				}
 
-				molecules.emplace( residue->getMoleculePtr() );
+				for ( const Object3D::Scene::PairMoleculePtrFloat & sceneMolecule :
+					  VTXApp::get().getScene().getMolecules() )
+				{
+					Model::Molecule * const molecule = sceneMolecule.first;
+
+					std::map<Model::Molecule *, std::vector<uint>>::iterator it
+						= residuesIDsPerMolecules.find( molecule );
+
+					if ( it != residuesIDsPerMolecules.end() )
+					{
+						Util::Molecule::soloResidues( *molecule, it->second, false );
+					}
+					else
+					{
+						molecule->setVisible( false );
+					}
+
+					molecule->refreshVisibilities();
+					molecule->computeRepresentationTargets();
+				}
 			}
-
-			for ( Model::Molecule * const molecule : molecules )
+			else
 			{
-				molecule->refreshVisibilities();
-				molecule->computeRepresentationTargets();
+				std::map<Model::Molecule *, std::vector<Model::Residue *>> residuesPerMolecules
+					= std::map<Model::Molecule *, std::vector<Model::Residue *>>();
+
+				for ( Generic::BaseVisible * const visible : _visibles )
+				{
+					Model::Residue * const residue = static_cast<Model::Residue *>( visible );
+					residuesPerMolecules[ residue->getMoleculePtr() ].emplace_back( residue );
+				}
+
+				for ( const std::pair<Model::Molecule *, std::vector<Model::Residue *>> & pair : residuesPerMolecules )
+				{
+					for ( Model::Residue * const residue : pair.second )
+						Util::Molecule::show( *residue, _getVisibilityBool( *residue ), true, false );
+
+					pair.first->refreshVisibilities();
+					pair.first->computeRepresentationTargets();
+				}
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

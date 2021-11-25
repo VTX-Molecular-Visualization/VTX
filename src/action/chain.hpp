@@ -71,21 +71,57 @@ namespace VTX::Action::Chain
 
 		virtual void execute() override
 		{
-			std::set<Model::Molecule *> molecules = std::set<Model::Molecule *>();
-			for ( Generic::BaseVisible * const visible : _visibles )
+			if ( _mode == VISIBILITY_MODE::SOLO )
 			{
-				const bool	   newVisibility = _getVisibilityBool( *visible );
-				Model::Chain * chain		 = static_cast<Model::Chain *>( visible );
+				std::map<Model::Molecule *, std::vector<uint>> chainsIDsPerMolecules
+					= std::map<Model::Molecule *, std::vector<uint>>();
 
-				Util::Molecule::show( *chain, newVisibility, false );
+				for ( Generic::BaseVisible * const visible : _visibles )
+				{
+					Model::Chain * const chain = static_cast<Model::Chain *>( visible );
+					chainsIDsPerMolecules[ chain->getMoleculePtr() ].emplace_back( chain->getIndex() );
+				}
 
-				molecules.emplace( chain->getMoleculePtr() );
+				for ( const Object3D::Scene::PairMoleculePtrFloat & sceneMolecule :
+					  VTXApp::get().getScene().getMolecules() )
+				{
+					Model::Molecule * const molecule = sceneMolecule.first;
+
+					std::map<Model::Molecule *, std::vector<uint>>::iterator it
+						= chainsIDsPerMolecules.find( molecule );
+
+					if ( it != chainsIDsPerMolecules.end() )
+					{
+						Util::Molecule::soloChains( *molecule, it->second, false );
+					}
+					else
+					{
+						molecule->setVisible( false );
+					}
+
+					molecule->refreshVisibilities();
+					molecule->computeRepresentationTargets();
+				}
 			}
-
-			for ( Model::Molecule * const molecule : molecules )
+			else
 			{
-				molecule->refreshVisibilities();
-				molecule->computeRepresentationTargets();
+				std::map<Model::Molecule *, std::vector<Model::Chain *>> chainsPerMolecules
+					= std::map<Model::Molecule *, std::vector<Model::Chain *>>();
+
+				for ( Generic::BaseVisible * const visible : _visibles )
+				{
+					Model::Chain * const chain = static_cast<Model::Chain *>( visible );
+					chainsPerMolecules[ chain->getMoleculePtr() ].emplace_back( chain );
+				}
+
+				for ( const std::pair<Model::Molecule *, std::vector<Model::Chain *>> & pair : chainsPerMolecules )
+				{
+					for ( Model::Chain * const chain : pair.second )
+						Util::Molecule::show( *chain, _getVisibilityBool( *chain ), true, false );
+
+					pair.first->refreshVisibilities();
+					pair.first->computeRepresentationTargets();
+				}
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
