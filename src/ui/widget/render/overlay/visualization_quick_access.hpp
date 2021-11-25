@@ -54,11 +54,11 @@ namespace VTX::UI::Widget::Render::Overlay
 			MenuItemDataRef<ID::VTX_ID>( ID::Controller::FREEFLY, "Freefly", ":/sprite/camera_freefly_mode.png" )
 		};
 
-		inline static std::vector<MenuItemData<VTX::Selection::SelectionGranularity>> SELECTION_GRANULARITY {
-			MenuItemData( VTX::Selection::SelectionGranularity::ATOM, "Pick Atom", ":/sprite/pick_atom.png" ),
-			MenuItemData( VTX::Selection::SelectionGranularity::RESIDUE, "Pick Residue", ":/sprite/pick_residue.png" ),
-			MenuItemData( VTX::Selection::SelectionGranularity::CHAIN, "Pick Chain", ":/sprite/pick_chain.png" ),
-			MenuItemData( VTX::Selection::SelectionGranularity::MOLECULE,
+		inline static std::vector<MenuItemData<VTX::Selection::Granularity>> SELECTION_GRANULARITY {
+			MenuItemData( VTX::Selection::Granularity::ATOM, "Pick Atom", ":/sprite/pick_atom.png" ),
+			MenuItemData( VTX::Selection::Granularity::RESIDUE, "Pick Residue", ":/sprite/pick_residue.png" ),
+			MenuItemData( VTX::Selection::Granularity::CHAIN, "Pick Chain", ":/sprite/pick_chain.png" ),
+			MenuItemData( VTX::Selection::Granularity::MOLECULE,
 						  "Pick Molecule",
 						  ":/sprite/pick_molecule.png" )
 		};

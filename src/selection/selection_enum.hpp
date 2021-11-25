@@ -6,7 +6,7 @@
 
 namespace VTX::Selection
 {
-	enum class SelectionGranularity : int
+	enum class Granularity : int
 	{
 		ATOM = 0,
 		RESIDUE,

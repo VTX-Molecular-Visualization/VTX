@@ -151,8 +151,8 @@ namespace VTX
 	const uint		 Setting::VIDEO_CRF_DEFAULT		  = 10;
 
 	// Selection
-	const VTX::Selection::SelectionGranularity Setting::SELECTION_GRANULARITY_DEFAULT
-		= VTX::Selection::SelectionGranularity::RESIDUE;
+	const VTX::Selection::Granularity Setting::SELECTION_GRANULARITY_DEFAULT
+		= VTX::Selection::Granularity::RESIDUE;
 
 	// Misc.
 	const int  Setting::CONSOLE_SIZE	   = 80;
@@ -510,7 +510,7 @@ namespace VTX
 		renderEffectDefaultIndex = p_renderEffectDefaultIndex;
 	}
 
-	void Setting::setSelectionGranularity( const Selection::SelectionGranularity & p_selectionGranularity )
+	void Setting::setSelectionGranularity( const Selection::Granularity & p_selectionGranularity )
 	{
 		selectionGranularity = p_selectionGranularity;
 		_sendDataChangedEvent( PARAMETER::SELECTION_GRANULARITY );

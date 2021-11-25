@@ -52,7 +52,7 @@ namespace VTX::UI::Widget::Selection
 		_layout				   = new QVBoxLayout( _mainWidget );
 		_selectionTypeComboBox = new QComboBox( this );
 
-		for ( int i = 0; i < (int)VTX::Selection::SelectionGranularity::COUNT; i++ )
+		for ( int i = 0; i < (int)VTX::Selection::Granularity::COUNT; i++ )
 		{
 			_selectionTypeComboBox->addItem( "" );
 		}
@@ -98,18 +98,18 @@ namespace VTX::UI::Widget::Selection
 
 	void SelectionWidget::_populateItemList()
 	{
-		for ( int i = 0; i < (int)VTX::Selection::SelectionGranularity::COUNT; i++ )
+		for ( int i = 0; i < (int)VTX::Selection::Granularity::COUNT; i++ )
 		{
 			QString									   txt;
-			const VTX::Selection::SelectionGranularity selectionType = (VTX::Selection::SelectionGranularity)i;
+			const VTX::Selection::Granularity selectionType = (VTX::Selection::Granularity)i;
 
 			switch ( selectionType )
 			{
-			case VTX::Selection::SelectionGranularity::ATOM: txt = "Atom"; break;
-			// case VTX::Selection::SelectionGranularity::BOND: txt = "Bond"; break;
-			case VTX::Selection::SelectionGranularity::CHAIN: txt = "Chain"; break;
-			case VTX::Selection::SelectionGranularity::MOLECULE: txt = "Molecule"; break;
-			case VTX::Selection::SelectionGranularity::RESIDUE: txt = "Residue"; break;
+			case VTX::Selection::Granularity::ATOM: txt = "Atom"; break;
+			// case VTX::Selection::Granularity::BOND: txt = "Bond"; break;
+			case VTX::Selection::Granularity::CHAIN: txt = "Chain"; break;
+			case VTX::Selection::Granularity::MOLECULE: txt = "Molecule"; break;
+			case VTX::Selection::Granularity::RESIDUE: txt = "Residue"; break;
 
 			default:
 				VTX_WARNING( "Selection " + std::to_string( i )

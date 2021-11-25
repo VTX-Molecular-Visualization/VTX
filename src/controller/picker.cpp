@@ -5,7 +5,9 @@
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
+#include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "selection/selection_manager.hpp"
 #include "tool/logger.hpp"
 #include "ui/main_window.hpp"
 #include "vtx_app.hpp"
@@ -19,75 +21,102 @@ namespace VTX::Controller
 		if ( _mouseHoveringRenderWidget() )
 		{
 			const Vec2i ids = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
+			_performSelection( ids );
+		}
+	}
 
-			// Clear selection if not CTRL.
-			if ( _isModifierExclusive( ModifierFlag::Control ) == false )
+	void Picker::_onMouseRightClick( const uint p_x, const uint p_y )
+	{
+		if ( _mouseHoveringRenderWidget() )
+		{
+			UI::Widget::Render::OpenGLWidget & openGLWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
+			const Vec2i						   ids			= openGLWidget.getPickedIds( p_x, p_y );
+			_performSelection( ids );
+
+			Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+			const QPoint position = VTXApp::get().getMainWindow().mapToGlobal( QPoint( p_x, p_y ));
+
+			if ( selection.isEmpty() )
 			{
-				VTX_ACTION(
-					new Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
+				UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Render, position );
 			}
-
-			// If something clicked.
-			if ( ids.x != Model::ID_UNKNOWN )
+			else
 			{
-				const ID::VTX_ID & typeId = MVC::MvcManager::get().getModelTypeID( ids.x );
+				UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Selection, &selection, position );
+			}
+		}
+	}
 
-				// Already selected.
-				if ( Selection::SelectionManager::get().getSelectionModel().isModelSelected(
-						 MVC::MvcManager::get().getModel<Model::BaseModel>( ids.x ) )
-					 && ( ids.y != Model::ID_UNKNOWN
-							  ? Selection::SelectionManager::get().getSelectionModel().isModelSelected(
-								  MVC::MvcManager::get().getModel<Model::BaseModel>( ids.y ) )
-							  : true ) )
-				{
-					// Remove from selection.
-					if ( _isModifierExclusive( ModifierFlag::Control ) )
-					{
-						// Residue.
-						if ( typeId == ID::Model::MODEL_RESIDUE )
-						{
-							Model::Residue & residuePicked = MVC::MvcManager::get().getModel<Model::Residue>( ids.x );
-							_unselectItem( residuePicked );
-						}
-						// Bond.
-						else if ( ids.y != Model::ID_UNKNOWN )
-						{
-							Model::Atom & atomPicked1 = MVC::MvcManager::get().getModel<Model::Atom>( ids.x );
-							Model::Atom & atomPicked2 = MVC::MvcManager::get().getModel<Model::Atom>( ids.y );
+	void Picker::_performSelection( const Vec2i & p_ids ) const
+	{
+		// Clear selection if not CTRL.
+		if ( _isModifierExclusive( ModifierFlag::Control ) == false )
+		{
+			VTX_ACTION(
+				new Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
+		}
 
-							_unselectItem( atomPicked1, atomPicked2 );
-						}
-						// Atom.
-						else
-						{
-							Model::Atom & atomPicked = MVC::MvcManager::get().getModel<Model::Atom>( ids.x );
-							_unselectItem( atomPicked );
-						}
-					}
-				}
-				// Add to selection.
-				else
+		// If something clicked.
+		if ( p_ids.x != Model::ID_UNKNOWN )
+		{
+			const ID::VTX_ID & typeId = MVC::MvcManager::get().getModelTypeID( p_ids.x );
+
+			// Already selected.
+			if ( Selection::SelectionManager::get().getSelectionModel().isModelSelected(
+					 MVC::MvcManager::get().getModel<Model::BaseModel>( p_ids.x ) )
+				 && ( p_ids.y != Model::ID_UNKNOWN
+						  ? Selection::SelectionManager::get().getSelectionModel().isModelSelected(
+							  MVC::MvcManager::get().getModel<Model::BaseModel>( p_ids.y ) )
+						  : true ) )
+			{
+				// Remove from selection.
+				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					// Residue.
 					if ( typeId == ID::Model::MODEL_RESIDUE )
 					{
-						Model::Residue & residuePicked = MVC::MvcManager::get().getModel<Model::Residue>( ids.x );
-						_selectItem( residuePicked );
+						Model::Residue & residuePicked = MVC::MvcManager::get().getModel<Model::Residue>( p_ids.x );
+						_unselectItem( residuePicked );
 					}
 					// Bond.
-					else if ( ids.y != Model::ID_UNKNOWN )
+					else if ( p_ids.y != Model::ID_UNKNOWN )
 					{
-						Model::Atom & atomPicked1 = MVC::MvcManager::get().getModel<Model::Atom>( ids.x );
-						Model::Atom & atomPicked2 = MVC::MvcManager::get().getModel<Model::Atom>( ids.y );
+						Model::Atom & atomPicked1 = MVC::MvcManager::get().getModel<Model::Atom>( p_ids.x );
+						Model::Atom & atomPicked2 = MVC::MvcManager::get().getModel<Model::Atom>( p_ids.y );
 
-						_selectItem( atomPicked1, atomPicked2 );
+						_unselectItem( atomPicked1, atomPicked2 );
 					}
 					// Atom.
 					else
 					{
-						Model::Atom & atomPicked = MVC::MvcManager::get().getModel<Model::Atom>( ids.x );
-						_selectItem( atomPicked );
+						Model::Atom & atomPicked = MVC::MvcManager::get().getModel<Model::Atom>( p_ids.x );
+						_unselectItem( atomPicked );
 					}
+				}
+			}
+			// Add to selection.
+			else
+			{
+				// Residue.
+				if ( typeId == ID::Model::MODEL_RESIDUE )
+				{
+					Model::Residue & residuePicked = MVC::MvcManager::get().getModel<Model::Residue>( p_ids.x );
+					_selectItem( residuePicked );
+				}
+				// Bond.
+				else if ( p_ids.y != Model::ID_UNKNOWN )
+				{
+					Model::Atom & atomPicked1 = MVC::MvcManager::get().getModel<Model::Atom>( p_ids.x );
+					Model::Atom & atomPicked2 = MVC::MvcManager::get().getModel<Model::Atom>( p_ids.y );
+
+					_selectItem( atomPicked1, atomPicked2 );
+				}
+				// Atom.
+				else
+				{
+					Model::Atom & atomPicked = MVC::MvcManager::get().getModel<Model::Atom>( p_ids.x );
+					_selectItem( atomPicked );
 				}
 			}
 		}
@@ -100,19 +129,19 @@ namespace VTX::Controller
 
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
-		case VTX::Selection::SelectionGranularity::MOLECULE:
+		case VTX::Selection::Granularity::MOLECULE:
 			VTX_ACTION( new Action::Selection::SelectMolecule(
 				selectionModel, *p_atomPicked.getMoleculePtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::SelectionGranularity::CHAIN:
+		case VTX::Selection::Granularity::CHAIN:
 			VTX_ACTION(
 				new Action::Selection::SelectChain( selectionModel, *p_atomPicked.getChainPtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::SelectionGranularity::RESIDUE:
+		case VTX::Selection::Granularity::RESIDUE:
 			VTX_ACTION( new Action::Selection::SelectResidue(
 				selectionModel, *p_atomPicked.getResiduePtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::SelectionGranularity::ATOM:
+		case VTX::Selection::Granularity::ATOM:
 		default:
 			VTX_ACTION( new Action::Selection::SelectAtom( selectionModel, p_atomPicked, appendToSelection ) );
 			break;
@@ -125,7 +154,7 @@ namespace VTX::Controller
 
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
-		case VTX::Selection::SelectionGranularity::MOLECULE:
+		case VTX::Selection::Granularity::MOLECULE:
 		{
 			Model::Molecule * const mol1 = p_atomPicked1.getMoleculePtr();
 			Model::Molecule * const mol2 = p_atomPicked2.getMoleculePtr();
@@ -140,7 +169,7 @@ namespace VTX::Controller
 			}
 			break;
 		}
-		case VTX::Selection::SelectionGranularity::CHAIN:
+		case VTX::Selection::Granularity::CHAIN:
 		{
 			Model::Chain * const chain1 = p_atomPicked1.getChainPtr();
 			Model::Chain * const chain2 = p_atomPicked2.getChainPtr();
@@ -156,7 +185,7 @@ namespace VTX::Controller
 			}
 			break;
 		}
-		case VTX::Selection::SelectionGranularity::RESIDUE:
+		case VTX::Selection::Granularity::RESIDUE:
 		{
 			Model::Residue * const res1 = p_atomPicked1.getResiduePtr();
 			Model::Residue * const res2 = p_atomPicked2.getResiduePtr();
@@ -171,7 +200,7 @@ namespace VTX::Controller
 			}
 			break;
 		}
-		case VTX::Selection::SelectionGranularity::ATOM:
+		case VTX::Selection::Granularity::ATOM:
 		default:
 		{
 			if ( &p_atomPicked1 == &p_atomPicked2 )
@@ -194,16 +223,16 @@ namespace VTX::Controller
 
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
-		case VTX::Selection::SelectionGranularity::MOLECULE:
+		case VTX::Selection::Granularity::MOLECULE:
 			VTX_ACTION( new Action::Selection::SelectMolecule(
 				selectionModel, *p_residuePicked.getMoleculePtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::SelectionGranularity::CHAIN:
+		case VTX::Selection::Granularity::CHAIN:
 			VTX_ACTION( new Action::Selection::SelectChain(
 				selectionModel, *p_residuePicked.getChainPtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::SelectionGranularity::RESIDUE:
-		case VTX::Selection::SelectionGranularity::ATOM:
+		case VTX::Selection::Granularity::RESIDUE:
+		case VTX::Selection::Granularity::ATOM:
 		default:
 			VTX_ACTION( new Action::Selection::SelectResidue( selectionModel, p_residuePicked, appendToSelection ) );
 			break;
@@ -217,19 +246,19 @@ namespace VTX::Controller
 
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
-		case VTX::Selection::SelectionGranularity::MOLECULE:
+		case VTX::Selection::Granularity::MOLECULE:
 			VTX_ACTION( new Action::Selection::UnselectMolecule(
 				selectionModel, *p_atomPicked.getMoleculePtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::SelectionGranularity::CHAIN:
+		case VTX::Selection::Granularity::CHAIN:
 			VTX_ACTION( new Action::Selection::UnselectChain(
 				selectionModel, *p_atomPicked.getChainPtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::SelectionGranularity::RESIDUE:
+		case VTX::Selection::Granularity::RESIDUE:
 			VTX_ACTION( new Action::Selection::UnselectResidue(
 				selectionModel, *p_atomPicked.getResiduePtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::SelectionGranularity::ATOM:
+		case VTX::Selection::Granularity::ATOM:
 		default:
 			VTX_ACTION( new Action::Selection::UnselectAtom( selectionModel, p_atomPicked, appendToSelection ) );
 			break;
@@ -242,7 +271,7 @@ namespace VTX::Controller
 
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
-		case VTX::Selection::SelectionGranularity::MOLECULE:
+		case VTX::Selection::Granularity::MOLECULE:
 		{
 			Model::Molecule * const mol1 = p_atomPicked1.getMoleculePtr();
 			Model::Molecule * const mol2 = p_atomPicked2.getMoleculePtr();
@@ -257,7 +286,7 @@ namespace VTX::Controller
 			}
 			break;
 		}
-		case VTX::Selection::SelectionGranularity::CHAIN:
+		case VTX::Selection::Granularity::CHAIN:
 		{
 			Model::Chain * const chain1 = p_atomPicked1.getChainPtr();
 			Model::Chain * const chain2 = p_atomPicked2.getChainPtr();
@@ -273,7 +302,7 @@ namespace VTX::Controller
 			}
 			break;
 		}
-		case VTX::Selection::SelectionGranularity::RESIDUE:
+		case VTX::Selection::Granularity::RESIDUE:
 		{
 			Model::Residue * const res1 = p_atomPicked1.getResiduePtr();
 			Model::Residue * const res2 = p_atomPicked2.getResiduePtr();
@@ -289,7 +318,7 @@ namespace VTX::Controller
 			}
 		}
 		break;
-		case VTX::Selection::SelectionGranularity::ATOM:
+		case VTX::Selection::Granularity::ATOM:
 		default:
 			if ( &p_atomPicked1 == &p_atomPicked2 )
 			{
@@ -310,16 +339,16 @@ namespace VTX::Controller
 
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
-		case VTX::Selection::SelectionGranularity::MOLECULE:
+		case VTX::Selection::Granularity::MOLECULE:
 			VTX_ACTION( new Action::Selection::UnselectMolecule(
 				selectionModel, *p_residuePicked.getMoleculePtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::SelectionGranularity::CHAIN:
+		case VTX::Selection::Granularity::CHAIN:
 			VTX_ACTION( new Action::Selection::UnselectChain(
 				selectionModel, *p_residuePicked.getChainPtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::SelectionGranularity::RESIDUE:
-		case VTX::Selection::SelectionGranularity::ATOM:
+		case VTX::Selection::Granularity::RESIDUE:
+		case VTX::Selection::Granularity::ATOM:
 		default:
 			VTX_ACTION( new Action::Selection::UnselectResidue( selectionModel, p_residuePicked, appendToSelection ) );
 			break;

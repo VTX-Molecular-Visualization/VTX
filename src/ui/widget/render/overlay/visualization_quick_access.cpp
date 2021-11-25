@@ -1,6 +1,7 @@
 #include "visualization_quick_access.hpp"
 #include "action/action_manager.hpp"
 #include "action/selection.hpp"
+#include "action/setting.hpp"
 #include "model/selection.hpp"
 #include "selection/selection_manager.hpp"
 #include "setting.hpp"
@@ -51,7 +52,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		QMenu * const changeSelectionGranularityMenu = new QMenu( this );
 		for ( int i = 0; i < SELECTION_GRANULARITY.size(); i++ )
 		{
-			const MenuItemData<VTX::Selection::SelectionGranularity> & data = SELECTION_GRANULARITY[ i ];
+			const MenuItemData<VTX::Selection::Granularity> & data = SELECTION_GRANULARITY[ i ];
 			QAction * action = changeSelectionGranularityMenu->addAction( QIcon( data.iconPath ), data.name );
 			action->setProperty( GRANULARITY_PROPERTY_NAME, QVariant( int( data.data ) ) );
 		}
@@ -100,9 +101,9 @@ namespace VTX::UI::Widget::Render::Overlay
 	}
 	void VisualizationQuickAccess::_refreshSelectionGranularity()
 	{
-		const VTX::Selection::SelectionGranularity granularity = VTX_SETTING().getSelectionGranularity();
+		const VTX::Selection::Granularity granularity = VTX_SETTING().getSelectionGranularity();
 
-		for ( const MenuItemData<VTX::Selection::SelectionGranularity> & data : SELECTION_GRANULARITY )
+		for ( const MenuItemData<VTX::Selection::Granularity> & data : SELECTION_GRANULARITY )
 		{
 			if ( data.data == granularity )
 			{
@@ -128,10 +129,10 @@ namespace VTX::UI::Widget::Render::Overlay
 
 	void VisualizationQuickAccess::_changeSelectionGranularityAction( const QAction * const p_action )
 	{
-		const VTX::Selection::SelectionGranularity granularity
-			= VTX::Selection::SelectionGranularity( p_action->property( GRANULARITY_PROPERTY_NAME ).toInt() );
+		const VTX::Selection::Granularity granularity
+			= VTX::Selection::Granularity( p_action->property( GRANULARITY_PROPERTY_NAME ).toInt() );
 
-		VTX_SETTING().setSelectionGranularity( granularity );
+		VTX_ACTION( new Action::Setting::ChangeSelectionGranularity( granularity ) );
 	}
 
 } // namespace VTX::UI::Widget::Render::Overlay

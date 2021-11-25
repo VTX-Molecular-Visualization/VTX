@@ -5,6 +5,7 @@
 #include "ui/widget/contextual_menu/contextual_menu_molecule.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_residue.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_scene.hpp"
+#include "ui/widget/contextual_menu/contextual_menu_render.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_viewpoint.hpp"
 #include "ui/widget_factory.hpp"
@@ -48,6 +49,9 @@ namespace VTX::UI
 		_menus[ int( Menu::Scene ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuScene>(
 				nullptr, "contextualMenuScene" );
+		_menus[ int( Menu::Render ) ]
+			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuRender>(
+				nullptr, "contextualMenuRender" );
 		_menus[ int( Menu::Viewpoint ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuViewpoint>(
 				nullptr, "ContextualMenuViewpoint" );

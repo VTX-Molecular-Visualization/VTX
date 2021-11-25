@@ -21,6 +21,9 @@ namespace VTX
 
 		  protected:
 			void _onMouseLeftClick( const uint p_x, const uint p_y ) override;
+			void _onMouseRightClick( const uint p_x, const uint p_y ) override;
+
+			void _performSelection( const Vec2i & p_ids ) const;
 
 			void _selectItem( Model::Atom & p_atomPicked ) const;
 			void _selectItem( Model::Atom & p_atomPicked1, Model::Atom & p_atomPicked2 ) const;

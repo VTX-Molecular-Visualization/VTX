@@ -20,6 +20,7 @@ namespace VTX::UI
 			Atom,
 			Selection,
 			Scene,
+			Render,
 			Viewpoint,
 
 			COUNT
@@ -32,6 +33,10 @@ namespace VTX::UI
 		static void pop( const Menu & p_menu, P * const p_target, const QPoint & p_worldPos )
 		{
 			_getInstance().displayMenu<P>( p_menu, p_target, p_worldPos );
+		}
+		static void pop( const Menu & p_menu, const QPoint & p_worldPos )
+		{
+			_getInstance().displayMenu( p_menu, p_worldPos );
 		}
 
 		template<typename T, typename = std::enable_if<std::is_base_of<QMenu, T>::value>>
@@ -46,6 +51,12 @@ namespace VTX::UI
 			Widget::ContextualMenu::ContextualMenuTemplate<P> * const menu
 				= dynamic_cast<Widget::ContextualMenu::ContextualMenuTemplate<P> *>( _menus[ int( p_menu ) ] );
 			menu->setTarget( p_target );
+			_menus[ int( p_menu ) ]->popup( p_worldPos );
+		}
+		void displayMenu( const Menu & p_menu, const QPoint & p_worldPos ) const
+		{
+			Widget::ContextualMenu::BaseContextualMenu * const menu
+				= dynamic_cast<Widget::ContextualMenu::BaseContextualMenu *>( _menus[ int( p_menu ) ] );
 			_menus[ int( p_menu ) ]->popup( p_worldPos );
 		}
 

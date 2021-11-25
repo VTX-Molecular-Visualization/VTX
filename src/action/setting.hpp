@@ -13,6 +13,7 @@
 #include "renderer/gl/gl.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
+#include "selection/selection_enum.hpp"
 #include "trajectory/trajectory_enum.hpp"
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
@@ -711,6 +712,20 @@ namespace VTX::Action::Setting
 
 	  private:
 		const VTX::Renderer::MODE _mode;
+	};
+
+	class ChangeSelectionGranularity : public BaseAction
+	{
+	  public:
+		explicit ChangeSelectionGranularity( const Selection::Granularity & p_granularity ) :
+			_granularity( p_granularity )
+		{
+		}
+
+		virtual void execute() override { VTX_SETTING().setSelectionGranularity( _granularity ); };
+
+	  private:
+		const Selection::Granularity _granularity;
 	};
 
 	class ApplyAllSettings : public BaseAction

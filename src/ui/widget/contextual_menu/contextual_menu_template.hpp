@@ -6,8 +6,15 @@
 
 namespace VTX::UI::Widget::ContextualMenu
 {
+	class BaseContextualMenu : public BaseManualWidget<QMenu>
+	{
+		VTX_WIDGET
+
+	  protected:
+		BaseContextualMenu( QWidget * p_parent = nullptr ) : BaseManualWidget( p_parent ) {}
+	};
 	template<typename T>
-	class ContextualMenuTemplate : public BaseManualWidget<QMenu>
+	class ContextualMenuTemplate : public BaseContextualMenu
 	{
 		VTX_WIDGET
 
@@ -15,7 +22,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		virtual void setTarget( T * const p_target ) { _target = p_target; }
 
 	  protected:
-		ContextualMenuTemplate( QWidget * p_parent = nullptr ) : BaseManualWidget( p_parent ) {}
+		ContextualMenuTemplate( QWidget * p_parent = nullptr ) : BaseContextualMenu( p_parent ) {}
 
 	  protected:
 		T * _target = nullptr;
