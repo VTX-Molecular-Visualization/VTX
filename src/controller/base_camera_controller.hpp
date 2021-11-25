@@ -28,6 +28,7 @@ namespace VTX
 			virtual ~BaseCameraController() = default;
 
 			virtual const ID::VTX_ID getID() const = 0;
+			inline ID::VTX_ID		 getTargetWidget() override { return ID::UI::Input::RENDER_WIDGET; }
 
 			inline const bool	 isOrienting() const { return _isOrienting; }
 			inline const Vec3f & getOrientStartingPosition() const { return _orientStartingPosition; }

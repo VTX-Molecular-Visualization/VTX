@@ -22,10 +22,10 @@ namespace VTX
 		{
 			if ( _receiversVTX.find( p_event ) == _receiversVTX.end() )
 			{
-				_receiversVTX.try_emplace( p_event, SetBaseEventReceiverVTXPtr() );
+				_receiversVTX.emplace( p_event, std::set<BaseEventReceiverVTX *>() );
 			}
 
-			_receiversVTX.at( p_event ).emplace( p_receiver );
+			_receiversVTX[ p_event ].emplace( p_receiver );
 		}
 
 		void EventManager::unregisterEventReceiverVTX( const VTX_EVENT &			p_event,
@@ -36,38 +36,33 @@ namespace VTX
 
 		void EventManager::registerEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver )
 		{
-			if ( _receiversKeyboard.find( p_receiver->getTargetWidget() ) == _receiversKeyboard.end() )
-			{
-				_receiversKeyboard.emplace( p_receiver->getTargetWidget(), std::vector<BaseEventReceiverKeyboard *>() );
-			}
-
-			_receiversKeyboard[ p_receiver->getTargetWidget() ].emplace_back( p_receiver );
+			_receiversKeyboard.emplace( p_receiver );
 		}
 
-		void EventManager::unregisterEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver ) {}
+		void EventManager::unregisterEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver )
+		{
+			_receiversKeyboard.erase( p_receiver );
+		}
 
 		void EventManager::registerEventReceiverMouse( BaseEventReceiverMouse * const p_receiver )
 		{
-			if ( _receiversMouse.find( p_receiver->getTargetWidget() ) == _receiversMouse.end() )
-			{
-				_receiversMouse.emplace( p_receiver->getTargetWidget(), std::vector<BaseEventReceiverKeyboard *>() );
-			}
-
-			_receiversMouse[ p_receiver->getTargetWidget() ].emplace_back( p_receiver );
+			_receiversMouse.emplace( p_receiver );
 		}
 
-		void EventManager::unregisterEventReceiverMouse( BaseEventReceiverMouse * const p_receiver ) {}
+		void EventManager::unregisterEventReceiverMouse( BaseEventReceiverMouse * const p_receiver )
+		{
+			_receiversMouse.erase( p_receiver );
+		}
 
 		void EventManager::registerEventReceiverWheel( BaseEventReceiverWheel * const p_receiver )
 		{
-			if ( _receiversWheel.find( p_receiver->getTargetWidget() ) == _receiversWheel.end() )
-			{
-				_receiversWheel.emplace( p_receiver->getTargetWidget(), std::vector<BaseEventReceiverKeyboard *>() );
-			}
-			_receiversWheel[ p_receiver->getTargetWidget() ].emplace_back( p_receiver );
+			_receiversWheel.emplace( p_receiver );
 		}
 
-		void EventManager::unregisterEventReceiverWheel( BaseEventReceiverWheel * const p_receiver ) {}
+		void EventManager::unregisterEventReceiverWheel( BaseEventReceiverWheel * const p_receiver )
+		{
+			_receiversWheel.erase( p_receiver );
+		}
 
 		void EventManager::fireEventVTX( VTXEvent * const p_event )
 		{
@@ -165,10 +160,12 @@ namespace VTX
 		{
 			if ( !_freeze )
 			{
-				Controller::BaseKeyboardController::updateKeyboardBuffer( *p_event );
-				for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
+				for ( BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
 				{
-					receiver->receiveEvent( *p_event );
+					if ( receiver->getTargetWidget() == p_firerer )
+					{
+						receiver->receiveEvent( *p_event );
+					}
 				}
 			}
 		} // namespace Event
@@ -177,9 +174,12 @@ namespace VTX
 		{
 			if ( !_freeze )
 			{
-				for ( Event::BaseEventReceiverMouse * const receiver : _receiversMouse )
+				for ( BaseEventReceiverMouse * const receiver : _receiversMouse )
 				{
-					receiver->receiveEvent( *p_event );
+					if ( receiver->getTargetWidget() == p_firerer )
+					{
+						receiver->receiveEvent( *p_event );
+					}
 				}
 			}
 		}
@@ -188,9 +188,12 @@ namespace VTX
 		{
 			if ( !_freeze )
 			{
-				for ( Event::BaseEventReceiverWheel * const receiver : _receiversWheel )
+				for ( BaseEventReceiverWheel * const receiver : _receiversWheel )
 				{
-					receiver->receiveEvent( *p_event );
+					if ( receiver->getTargetWidget() == p_firerer )
+					{
+						receiver->receiveEvent( *p_event );
+					}
 				}
 			}
 		}

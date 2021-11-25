@@ -3,7 +3,7 @@
 
 namespace VTX::Controller
 {
-	void BaseKeyboardController::updateKeyboardBuffer( QKeyEvent & p_event )
+	void BaseKeyboardController::_updateKeyboardBuffer( const QKeyEvent & p_event )
 	{
 		if ( p_event.isAutoRepeat() )
 			return;
@@ -88,28 +88,7 @@ namespace VTX::Controller
 		if ( isActive() == false )
 			return;
 
-		if ( p_event.isAutoRepeat() )
-			return;
-
-		switch ( p_event.type() )
-		{
-		case QEvent::KeyPress:
-		{
-			// TOFIX: workaround beacause KeyRelease triggered after 1 second.
-			// if ( p_event.isAutoRepeat() == false )
-			//{
-			const Qt::Key key = Qt::Key( p_event.key() );
-			_handleKeyDownEvent( key );
-			//}
-			// else
-			//{
-			//	_handleKeyPressedEvent( ScanCode( p_event.nativeScanCode() ) );
-			//}
-			break;
-		}
-		case QEvent::KeyRelease: _handleKeyUpEvent( Qt::Key( p_event.key() ) ); break;
-		default: break;
-		}
+		_updateKeyboardBuffer( p_event );
 	}
 
 } // namespace VTX::Controller

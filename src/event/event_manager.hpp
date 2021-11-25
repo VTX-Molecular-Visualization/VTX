@@ -27,9 +27,6 @@ namespace VTX
 			friend BaseEventFirererInput;
 
 		  public:
-			using SetBaseEventReceiverVTXPtr			 = std::set<BaseEventReceiverVTX *>;
-			using MapStringVectorBaseEventReceiverVTXPtr = std::map<Event::VTX_EVENT, SetBaseEventReceiverVTXPtr>;
-
 			inline static EventManager & get()
 			{
 				static EventManager instance;
@@ -60,14 +57,11 @@ namespace VTX
 
 		  private:
 			// Input events.
-			MapStringVectorBaseEventReceiverVTXPtr _receiversVTX
-				= MapStringVectorBaseEventReceiverVTXPtr(); // VTX receivers mapped on event ID.
-			std::map<ID::VTX_ID, std::vector<BaseEventReceiverKeyboard *>> _receiversKeyboard
-				= std::map<ID::VTX_ID, std::vector<BaseEventReceiverKeyboard *>>();
-			std::map<ID::VTX_ID, std::vector<BaseEventReceiverMouse *>> _receiversMouse
-				= std::map<ID::VTX_ID, std::vector<BaseEventReceiverMouse *>>();
-			std::map<ID::VTX_ID, std::vector<BaseEventReceiverWheel *>> _receiversWheel
-				= std::map<ID::VTX_ID, std::vector<BaseEventReceiverWheel *>>();
+			std::map<Event::VTX_EVENT, std::set<BaseEventReceiverVTX *>> _receiversVTX
+				= std::map<Event::VTX_EVENT, std::set<BaseEventReceiverVTX *>>(); // VTX receivers mapped on event ID.
+			std::set<BaseEventReceiverKeyboard *> _receiversKeyboard = std::set<BaseEventReceiverKeyboard *>();
+			std::set<BaseEventReceiverMouse *>	  _receiversMouse	 = std::set<BaseEventReceiverMouse *>();
+			std::set<BaseEventReceiverWheel *>	  _receiversWheel	 = std::set<BaseEventReceiverWheel *>();
 
 			// Event queues.
 			std::queue<VTXEvent *> _eventQueueVTX = std::queue<VTXEvent *>();

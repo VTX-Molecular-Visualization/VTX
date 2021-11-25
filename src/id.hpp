@@ -24,8 +24,7 @@ namespace VTX
 			} // namespace Window
 			namespace Input
 			{
-				const VTX_ID MAIN_WINDOW   = "MAIN_WINDOW";
-				const VTX_ID OPENGL_WIDGET = "OPENGL_WIDGET";
+				const VTX_ID RENDER_WIDGET = "OPENGL_WIDGET";
 
 			} // namespace Input
 		}	  // namespace UI

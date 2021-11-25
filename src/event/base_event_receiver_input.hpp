@@ -14,7 +14,7 @@ namespace VTX
 		  public:
 			virtual ~BaseEventReceiverInput() = default;
 
-			virtual ID::VTX_ID getTargetWidget() { return ID::UI::Input::MAIN_WINDOW; }
+			inline virtual ID::VTX_ID getTargetWidget() = 0;
 		};
 	} // namespace Event
 } // namespace VTX

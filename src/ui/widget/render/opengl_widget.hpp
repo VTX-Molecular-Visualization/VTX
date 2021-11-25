@@ -1,7 +1,6 @@
 #ifndef __VTX_UI_WIDGET_OPENGL__
 #define __VTX_UI_WIDGET_OPENGL__
 
-#include "event/base_event_firerer_input.hpp"
 #include "generic/base_opengl.hpp"
 #include "renderer/base_renderer.hpp"
 #include "ui/widget/base_manual_widget.hpp"
@@ -22,10 +21,8 @@ namespace VTX
 
 	namespace UI::Widget::Render
 	{
-		class OpenGLWidget :
-			public BaseManualWidget<QOpenGLWidget>,
-			public Generic::BaseOpenGL,
-			public Event::BaseEventFirererInput
+		class OpenGLWidget : public BaseManualWidget<QOpenGLWidget>, public Generic::BaseOpenGL
+
 		{
 			VTX_WIDGET
 
@@ -50,21 +47,11 @@ namespace VTX
 
 			const Vec2i getPickedIds( const uint, const uint );
 
-			const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::OPENGL_WIDGET; }
-
 		  protected:
 			OpenGLWidget( QWidget * p_parent );
 
 			void _setupUi( const QString & p_name ) override {}
 			void _setupSlots() override {}
-
-			void mouseMoveEvent( QMouseEvent * p_event ) override { _fireEventInput( p_event ); }
-			void mousePressEvent( QMouseEvent * p_event ) override { _fireEventInput( p_event ); }
-			void mouseReleaseEvent( QMouseEvent * p_event ) override { _fireEventInput( p_event ); }
-			void mouseDoubleClickEvent( QMouseEvent * p_event ) override { _fireEventInput( p_event ); }
-			void keyPressEvent( QKeyEvent * p_event ) override { _fireEventInput( p_event ); }
-			void keyReleaseEvent( QKeyEvent * p_event ) override { _fireEventInput( p_event ); }
-			void wheelEvent( QWheelEvent * p_event ) override { _fireEventInput( p_event ); }
 
 		  private:
 			QElapsedTimer _timer		= QElapsedTimer();

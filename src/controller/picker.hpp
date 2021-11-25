@@ -9,7 +9,8 @@ namespace VTX::Controller
 	class Picker : public BaseMouseController, public BaseKeyboardController
 	{
 	  public:
-		void update( const float & p_deltaTime ) override;
+		inline ID::VTX_ID getTargetWidget() override { return ID::UI::Input::RENDER_WIDGET; }
+		void			  update( const float & p_deltaTime ) override;
 
 	  protected:
 		void _onMouseLeftClick( const uint p_x, const uint p_y ) override;

@@ -1,5 +1,8 @@
 #include "main_window.hpp"
+#include "action/dev.hpp"
 #include "action/main.hpp"
+#include "action/selection.hpp"
+#include "controller/base_keyboard_controller.hpp"
 #include "event/event_manager.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "util/filesystem.hpp"
@@ -8,6 +11,7 @@
 #include <QAction>
 #include <QFileDialog>
 #include <QSettings>
+#include <QShortcut>
 #include <QSize>
 #include <iostream>
 
@@ -140,6 +144,144 @@ namespace VTX::UI
 		connect( _consoleWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 		connect( _settingWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 		connect( _sequenceWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+
+		// Shortcuts.
+		connect( new QShortcut( QKeySequence( tr( "Ctrl+N" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutNew );
+		connect( new QShortcut( QKeySequence( tr( "Ctrl+O" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutOpen );
+		connect( new QShortcut( QKeySequence( tr( "Ctrl+S" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutSave );
+		connect( new QShortcut( QKeySequence( tr( "Ctrl+Shift+S" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutSaveAs );
+		connect( new QShortcut( QKeySequence( tr( "F11" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutFullscreen );
+		connect( new QShortcut( QKeySequence( tr( "Esc" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutClearSelection );
+		connect( new QShortcut( QKeySequence( tr( "F6" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutRestoreLayout );
+#ifndef VTX_PRODUCTION
+		connect( new QShortcut( QKeySequence( tr( "F8" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutCompileShaders );
+		connect( new QShortcut( QKeySequence( tr( "F9" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutActiveRenderer );
+#endif
+		connect( new QShortcut( QKeySequence( tr( "Del" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutDelete );
+		connect( new QShortcut( QKeySequence( tr( "O" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutOrient );
+		connect( new QShortcut( QKeySequence( tr( Controller::BaseKeyboardController::getKeyboardLayout()
+														  == Controller::KeyboardLayout::AZERTY
+													  ? "Ctrl+A"
+													  : "Ctrl+Q" ) ),
+								this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutSelectAll );
+		connect( new QShortcut( QKeySequence( tr( "Ctrl+D" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutCopy );
+		connect( new QShortcut( QKeySequence( tr( "Ctrl+E" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutExtract );
+	}
+
+	void MainWindow::_onShortcutNew() { UI::Dialog::createNewSessionDialog(); }
+
+	void MainWindow::_onShortcutOpen() { UI::Dialog::openLoadSessionDialog(); }
+
+	void MainWindow::_onShortcutSave()
+	{
+		VTX_ACTION_ENQUEUE( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+	}
+
+	void MainWindow::_onShortcutSaveAs() { UI::Dialog::openSaveSessionDialog(); }
+
+	void MainWindow::_onShortcutFullscreen()
+	{
+		if ( windowState() & Qt::WindowStates::enum_type::WindowFullScreen )
+		{
+			VTX_ACTION( new Action::Setting::WindowMode( WindowMode::Windowed ) );
+		}
+		else
+		{
+			VTX_ACTION( new Action::Setting::WindowMode( WindowMode::Fullscreen ) );
+		}
+	}
+
+	void MainWindow::_onShortcutClearSelection()
+	{
+		if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
+		{
+			VTX_ACTION(
+				new Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
+		}
+	}
+
+	void MainWindow::_onShortcutRestoreLayout() { VTX_ACTION( new Action::Setting::RestoreLayout() ); }
+
+	void MainWindow::_onShortcutCompileShaders() { VTX_ACTION( new Action::Dev::CompileShaders() ); }
+
+	void MainWindow::_onShortcutActiveRenderer()
+	{
+		VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
+	}
+
+	void MainWindow::_onShortcutDelete()
+	{
+		if ( Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
+		{
+			VTX_ACTION( new Action::Selection::Delete( Selection::SelectionManager::get().getSelectionModel() ) );
+		}
+	}
+
+	void MainWindow::_onShortcutOrient()
+	{
+		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+		if ( selection.hasMolecule() )
+		{
+			VTX_ACTION( new Action::Selection::Orient( selection ) );
+		}
+	}
+
+	void MainWindow::_onShortcutSelectAll() { VTX_ACTION( new Action::Selection::SelectAll() ); }
+
+	void MainWindow::_onShortcutCopy()
+	{
+		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+		if ( selectionModel.hasMolecule() )
+			VTX_ACTION( new Action::Selection::Copy( selectionModel ) );
+	}
+
+	void MainWindow::_onShortcutExtract()
+	{
+		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+		if ( selectionModel.hasMolecule() )
+			VTX_ACTION( new Action::Selection::Extract( selectionModel ) );
 	}
 
 	void MainWindow::refreshWindowTitle()

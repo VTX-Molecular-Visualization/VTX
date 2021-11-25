@@ -1,5 +1,6 @@
 #include "render_widget.hpp"
-#include "controller/shortcut.hpp"
+#include "action/main.hpp"
+#include "action/viewpoint.hpp"
 #include "event/event_manager.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -8,6 +9,7 @@
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
+#include <QShortcut>
 
 namespace VTX::UI::Widget::Render
 {
@@ -53,23 +55,44 @@ namespace VTX::UI::Widget::Render
 		layout->addWidget( _openGLWidget );
 	}
 
-	void RenderWidget::_setupSlots() {}
-
-	void RenderWidget::focusInEvent( QFocusEvent * p_event )
+	void RenderWidget::_setupSlots()
 	{
-		VTXApp::get()
-			.getStateMachine()
-			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->getController<Controller::Shortcut>( ID::Controller::SHORTCUT )
-			->setGroup( Controller::SHORTCUTGROUP::RENDER );
+		QShortcut * shortcut = new QShortcut( QKeySequence( tr( "F1" ) ), this );
+		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
+		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutToggleCameraController );
+		shortcut = new QShortcut( QKeySequence( tr( "Ctrl+F1" ) ), this );
+		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
+		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutResetCameraController );
+		shortcut = new QShortcut( QKeySequence( tr( "F2" ) ), this );
+		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
+		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutAddViewpoint );
+		shortcut = new QShortcut( QKeySequence( tr( "F5" ) ), this );
+		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
+		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutSnapshot );
+#ifndef VTX_PRODUCTION
+		shortcut = new QShortcut( QKeySequence( tr( "F7" ) ), this );
+		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
+		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutChangeRenderMode );
+#endif
 	}
-	void RenderWidget::focusOutEvent( QFocusEvent * p_event )
+
+	void RenderWidget::_onShortcutToggleCameraController() { VTX_ACTION( new Action::Main::ToggleCameraController() ); }
+
+	void RenderWidget::_onShortcutResetCameraController() { VTX_ACTION( new Action::Main::ResetCameraController() ); }
+
+	void RenderWidget::_onShortcutAddViewpoint() { VTX_ACTION( new Action::Viewpoint::Create() ); }
+
+	void RenderWidget::_onShortcutSnapshot()
 	{
-		VTXApp::get()
-			.getStateMachine()
-			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->getController<Controller::Shortcut>( ID::Controller::SHORTCUT )
-			->setGroup( Controller::SHORTCUTGROUP::DEFAULT );
+		VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+												Util::Filesystem::getUniqueSnapshotsPath(),
+												VTX_SETTING().getSnapshotResolution() ) );
+	}
+
+	void RenderWidget::_onShortcutChangeRenderMode()
+	{
+		VTX_ACTION( new Action::Setting::ChangeRenderMode(
+			Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)Renderer::MODE::COUNT ) ) );
 	}
 
 	void RenderWidget::localize()
