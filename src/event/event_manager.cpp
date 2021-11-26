@@ -22,10 +22,10 @@ namespace VTX
 		{
 			if ( _receiversVTX.find( p_event ) == _receiversVTX.end() )
 			{
-				_receiversVTX.try_emplace( p_event, SetBaseEventReceiverVTXPtr() );
+				_receiversVTX.emplace( p_event, std::set<BaseEventReceiverVTX *>() );
 			}
 
-			_receiversVTX.at( p_event ).emplace( p_receiver );
+			_receiversVTX[ p_event ].emplace( p_receiver );
 		}
 
 		void EventManager::unregisterEventReceiverVTX( const VTX_EVENT &			p_event,
@@ -75,35 +75,36 @@ namespace VTX
 #endif
 		}
 
-		void EventManager::fireEventKeyboard( QKeyEvent * const p_event )
+		void EventManager::fireEventKeyboard( QKeyEvent * const p_event, const ID::VTX_ID & p_firerer )
 		{
 #ifdef DELAY_EVENTS_QT
 			_eventQueueKeyboard.emplace( p_event );
 #else
-			_flushEventKeyboard( p_event );
+			_flushEventKeyboard( p_event, p_firerer );
 #endif
 		}
 
-		void EventManager::fireEventMouse( QMouseEvent * const p_event )
+		void EventManager::fireEventMouse( QMouseEvent * const p_event, const ID::VTX_ID & p_firerer )
 		{
 #ifdef DELAY_EVENTS_QT
 			_eventQueueMouse.emplace( p_event );
 #else
-			_flushEventMouse( p_event );
+			_flushEventMouse( p_event, p_firerer );
 #endif
 		}
 
-		void EventManager::fireEventWheel( QWheelEvent * const p_event )
+		void EventManager::fireEventWheel( QWheelEvent * const p_event, const ID::VTX_ID & p_firerer )
 		{
 #ifdef DELAY_EVENTS_QT
 			_eventQueueWheel.emplace( p_event );
 #else
-			_flushEventWheel( p_event );
+			_flushEventWheel( p_event, p_firerer );
 #endif
 		}
 
 		void EventManager::update( const float & p_deltaTime )
 		{
+#ifdef DELAY_EVENTS_QT
 			// Input events.
 			while ( _eventQueueKeyboard.empty() == false )
 			{
@@ -125,7 +126,7 @@ namespace VTX
 				_flushEventWheel( event );
 				_eventQueueWheel.pop();
 			}
-
+#endif
 			// VTX events.
 			while ( _eventQueueVTX.empty() == false )
 			{
@@ -155,36 +156,44 @@ namespace VTX
 			delete p_event;
 		}
 
-		void EventManager::_flushEventKeyboard( QKeyEvent * const p_event )
+		void EventManager::_flushEventKeyboard( QKeyEvent * const p_event, const ID::VTX_ID & p_firerer )
 		{
 			if ( !_freeze )
 			{
-				Controller::BaseKeyboardController::updateKeyboardBuffer( *p_event );
-				for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
+				for ( BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
 				{
-					receiver->receiveEvent( *p_event );
+					if ( receiver->getTargetWidget() == p_firerer )
+					{
+						receiver->receiveEvent( *p_event );
+					}
 				}
 			}
 		} // namespace Event
 
-		void EventManager::_flushEventMouse( QMouseEvent * const p_event )
+		void EventManager::_flushEventMouse( QMouseEvent * const p_event, const ID::VTX_ID & p_firerer )
 		{
 			if ( !_freeze )
 			{
-				for ( Event::BaseEventReceiverMouse * const receiver : _receiversMouse )
+				for ( BaseEventReceiverMouse * const receiver : _receiversMouse )
 				{
-					receiver->receiveEvent( *p_event );
+					if ( receiver->getTargetWidget() == p_firerer )
+					{
+						receiver->receiveEvent( *p_event );
+					}
 				}
 			}
 		}
 
-		void EventManager::_flushEventWheel( QWheelEvent * const p_event )
+		void EventManager::_flushEventWheel( QWheelEvent * const p_event, const ID::VTX_ID & p_firerer )
 		{
 			if ( !_freeze )
 			{
-				for ( Event::BaseEventReceiverWheel * const receiver : _receiversWheel )
+				for ( BaseEventReceiverWheel * const receiver : _receiversWheel )
 				{
-					receiver->receiveEvent( *p_event );
+					if ( receiver->getTargetWidget() == p_firerer )
+					{
+						receiver->receiveEvent( *p_event );
+					}
 				}
 			}
 		}

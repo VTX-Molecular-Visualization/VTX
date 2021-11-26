@@ -1,7 +1,6 @@
 #include "visualization.hpp"
 #include "controller/freefly.hpp"
 #include "controller/picker.hpp"
-#include "controller/shortcut.hpp"
 #include "controller/trackball.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
@@ -28,7 +27,6 @@ namespace VTX
 								  new Controller::Trackball( VTXApp::get().getScene().getCamera(),
 															 VTXApp::get().getScene().getAABB().centroid(),
 															 VTXApp::get().getScene().getAABB().diameter() ) );
-			_controllers.emplace( ID::Controller::SHORTCUT, new Controller::Shortcut() );
 			_controllers.emplace( ID::Controller::PICKER, new Controller::Picker() );
 		}
 

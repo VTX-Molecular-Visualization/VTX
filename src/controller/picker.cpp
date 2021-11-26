@@ -18,33 +18,27 @@ namespace VTX::Controller
 
 	void Picker::_onMouseLeftClick( const uint p_x, const uint p_y )
 	{
-		if ( _mouseHoveringRenderWidget() )
-		{
-			const Vec2i ids = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
-			_performSelection( ids );
-		}
+		const Vec2i ids = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
+		_performSelection( ids );
 	}
 
 	void Picker::_onMouseRightClick( const uint p_x, const uint p_y )
 	{
-		if ( _mouseHoveringRenderWidget() )
+		UI::Widget::Render::OpenGLWidget & openGLWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
+		const Vec2i						   ids			= openGLWidget.getPickedIds( p_x, p_y );
+		_performSelection( ids );
+
+		Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+		const QPoint position = openGLWidget.mapToGlobal( QPoint( p_x, p_y ) );
+
+		if ( selection.isEmpty() )
 		{
-			UI::Widget::Render::OpenGLWidget & openGLWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
-			const Vec2i						   ids			= openGLWidget.getPickedIds( p_x, p_y );
-			_performSelection( ids );
-
-			Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
-
-			const QPoint position = VTXApp::get().getMainWindow().mapToGlobal( QPoint( p_x, p_y ));
-
-			if ( selection.isEmpty() )
-			{
-				UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Render, position );
-			}
-			else
-			{
-				UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Selection, &selection, position );
-			}
+			UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Render, position );
+		}
+		else
+		{
+			UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Selection, &selection, position );
 		}
 	}
 
@@ -354,5 +348,7 @@ namespace VTX::Controller
 			break;
 		}
 	}
+
+	void Picker::_onMouseLeftDoubleClick( const uint p_x, const uint p_y ) { VTX_DEBUG( "dbl click" ); }
 
 } // namespace VTX::Controller

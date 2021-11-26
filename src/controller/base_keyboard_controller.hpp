@@ -28,9 +28,9 @@ namespace VTX
 
 		class BaseKeyboardController : virtual public BaseController, public Event::BaseEventReceiverKeyboard
 		{
-			// STATICS ///////////////////////////////////////////////////////////////////
 		  public:
-			static void			  updateKeyboardBuffer( QKeyEvent & p_event );
+			virtual void receiveEvent( const QKeyEvent & p_event ) override;
+
 			static void			  clear();
 			static void			  clearKey( const Qt::Key & p_key );
 			static KeyboardLayout getKeyboardLayout();
@@ -41,19 +41,11 @@ namespace VTX
 			static bool _isModifierExclusive( const ModifierFlag & p_modifier );
 
 		  private:
-			static ModifierFlag _getModifierFromKey( const Qt::Key & p_key );
-
 			inline static std::set<Qt::Key> _pressedKeys = std::set<Qt::Key>();
 			inline static ModifierFlag		_modifiers	 = ModifierFlag::None;
-			//////////////////////////////////////////////////////////////////////////////
 
-		  public:
-			virtual void receiveEvent( const QKeyEvent & p_event ) override;
-
-		  protected:
-			virtual void _handleKeyDownEvent( const Qt::Key & p_key ) {};
-			virtual void _handleKeyUpEvent( const Qt::Key & p_key ) {};
-			// virtual void _handleKeyPressedEvent( const Qt::Key & p_key ) {};
+			static void			_updateKeyboardBuffer( const QKeyEvent & p_event );
+			static ModifierFlag _getModifierFromKey( const Qt::Key & p_key );
 		};
 	} // namespace Controller
 } // namespace VTX

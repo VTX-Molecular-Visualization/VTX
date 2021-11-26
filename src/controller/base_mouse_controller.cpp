@@ -137,6 +137,7 @@ namespace VTX
 			_deltaMouseWheel = p_event.angleDelta().y();
 		}
 
+		/*
 		bool BaseMouseController::_mouseHoveringRenderWidget() const
 		{
 			const QWidget & renderWidget  = VTXApp::get().getMainWindow().getOpenGLWidget();
@@ -145,6 +146,7 @@ namespace VTX
 
 			return renderRect.contains( localMousePos );
 		}
+		*/
 
 	} // namespace Controller
 } // namespace VTX

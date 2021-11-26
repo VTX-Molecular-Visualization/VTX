@@ -12,7 +12,7 @@
 
 namespace VTX::UI::Widget::Render
 {
-	OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : QOpenGLWidget( p_parent )
+	OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : BaseManualWidget<QOpenGLWidget>( p_parent )
 	{
 		QSurfaceFormat format;
 		format.setVersion( OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION );
@@ -201,10 +201,7 @@ namespace VTX::UI::Widget::Render
 	const Vec2i OpenGLWidget::getPickedIds( const uint p_x, const uint p_y )
 	{
 		makeCurrent();
-
-		QPoint pos = mapFrom( (QWidget *)&( VTXApp::get().getMainWindow() ), QPoint( p_x, p_y ) );
-		return _renderer->getPickedIds( pos.x(), height() - pos.y() );
-
+		return _renderer->getPickedIds( p_x, height() - p_y );
 		doneCurrent();
 	}
 

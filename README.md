@@ -54,6 +54,7 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 
 - F1: Toggle camera controller
 - CTRL + F1: Reset current camera controller
+- F2: Add current viewpoint
 - O : Orient
 - F5: Take a snapshot
 - F6: Restore the default layout

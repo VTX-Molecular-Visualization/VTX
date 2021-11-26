@@ -82,17 +82,7 @@ namespace VTX
 			void showEvent( QShowEvent * ) override;
 			void dragEnterEvent( QDragEnterEvent * ) override;
 			void dropEvent( QDropEvent * ) override;
-
 			void closeEvent( QCloseEvent * ) override;
-
-			void mouseMoveEvent( QMouseEvent * ) override;
-			void mousePressEvent( QMouseEvent * ) override;
-			void mouseReleaseEvent( QMouseEvent * ) override;
-			void mouseDoubleClickEvent( QMouseEvent * ) override;
-			void keyPressEvent( QKeyEvent * ) override;
-			void keyReleaseEvent( QKeyEvent * ) override;
-			void wheelEvent( QWheelEvent * ) override;
-
 			void changeEvent( QEvent * p_event ) override;
 
 		  private:
@@ -117,6 +107,22 @@ namespace VTX
 			// Functions.
 			void _loadStyleSheet( const char * p_stylesheetPath );
 			void _setupSlots();
+
+			// Shortcuts.
+			void _onShortcutNew();
+			void _onShortcutOpen();
+			void _onShortcutSave();
+			void _onShortcutSaveAs();
+			void _onShortcutFullscreen();
+			void _onShortcutClearSelection();
+			void _onShortcutRestoreLayout();
+			void _onShortcutCompileShaders();
+			void _onShortcutActiveRenderer();
+			void _onShortcutDelete();
+			void _onShortcutOrient();
+			void _onShortcutSelectAll();
+			void _onShortcutCopy();
+			void _onShortcutExtract();
 
 			WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
 

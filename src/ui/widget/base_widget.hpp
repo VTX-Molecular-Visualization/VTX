@@ -12,11 +12,11 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			template<typename Q, typename T, typename = std::enable_if<std::is_base_of<QWidget, Q>::value>>
-			class BaseWidget : public Q, public T, public Event::BaseEventReceiverVTX
+			template<typename W, typename T, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
+			class BaseWidget : public W, public T, public Event::BaseEventReceiverVTX
 			{
 			  public:
-				BaseWidget( QWidget * p_parent = 0 ) : Q( p_parent ) { setupUi( this ); }
+				BaseWidget( QWidget * p_parent = 0 ) : W( p_parent ) { setupUi( this ); }
 
 				// Need to override paintEvent to read style on custom widgets
 				inline void paintEvent( QPaintEvent * event ) override
@@ -26,7 +26,7 @@ namespace VTX
 					QPainter p( this );
 					style()->drawPrimitive( QStyle::PE_Widget, &opt, &p, this );
 
-					Q::paintEvent( event );
+					W::paintEvent( event );
 				};
 			};
 		} // namespace Widget

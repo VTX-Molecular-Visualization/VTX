@@ -1,7 +1,6 @@
 #include "scene_widget.hpp"
 #include "action/action_manager.hpp"
 #include "action/selection.hpp"
-#include "controller/shortcut.hpp"
 #include "model/molecule.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -186,7 +185,6 @@ namespace VTX::UI::Widget::Scene
 		return _layout->count() - 1;
 	}
 
-
 	void SceneWidget::_addWidgetInLayout( SceneItemWidget * const p_sceneItemWidget )
 	{
 		const int posInHierarchy = _getPositionInHierarchy( p_sceneItemWidget );
@@ -239,7 +237,6 @@ namespace VTX::UI::Widget::Scene
 
 		_scrollArea = new CustomWidget::DockWindowMainWidget<QScrollArea>(
 			Style::SCENE_PREFERRED_SIZE, Style::SCENE_MINIMUM_SIZE, this );
-		_scrollArea->setFocusGroup( Controller::SHORTCUTGROUP::SCENE );
 
 		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
 											  QSizePolicy::Policy::MinimumExpanding,

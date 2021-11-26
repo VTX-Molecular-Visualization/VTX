@@ -2,16 +2,19 @@
 #define __VTX_BASE_EVENT_RECEIVER__
 
 #include "event.hpp"
-#include <iostream>
 
 namespace VTX
 {
 	namespace Event
 	{
+		class EventManager;
+
 		template<typename T>
 		class BaseEventReceiver
 		{
-		  public:
+			friend EventManager;
+
+		  private:
 			virtual void receiveEvent( const T & p_event ) {}
 		};
 	} // namespace Event

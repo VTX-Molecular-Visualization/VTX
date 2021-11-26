@@ -1,5 +1,6 @@
 #include "render_widget.hpp"
-#include "controller/shortcut.hpp"
+#include "action/main.hpp"
+#include "action/viewpoint.hpp"
 #include "event/event_manager.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -10,6 +11,7 @@
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
+#include <QShortcut>
 
 namespace VTX::UI::Widget::Render
 {
@@ -43,7 +45,7 @@ namespace VTX::UI::Widget::Render
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_openGLWidget = new OpenGLWidget( this );
+		_openGLWidget = WidgetFactory::get().instantiateWidget<Widget::Render::OpenGLWidget>( this, "openglWidget" );
 
 		setFocusPolicy( Qt::StrongFocus );
 
@@ -55,23 +57,25 @@ namespace VTX::UI::Widget::Render
 		layout->addWidget( _openGLWidget );
 	}
 
-	void RenderWidget::_setupSlots() {}
-
-	void RenderWidget::focusInEvent( QFocusEvent * p_event )
+	void RenderWidget::_setupSlots()
 	{
-		VTXApp::get()
-			.getStateMachine()
-			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->getController<Controller::Shortcut>( ID::Controller::SHORTCUT )
-			->setGroup( Controller::SHORTCUTGROUP::RENDER );
-	}
-	void RenderWidget::focusOutEvent( QFocusEvent * p_event )
-	{
-		VTXApp::get()
-			.getStateMachine()
-			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->getController<Controller::Shortcut>( ID::Controller::SHORTCUT )
-			->setGroup( Controller::SHORTCUTGROUP::DEFAULT );
+		QShortcut * shortcut = new QShortcut( QKeySequence( tr( "F1" ) ), this );
+		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
+		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutToggleCameraController );
+		shortcut = new QShortcut( QKeySequence( tr( "Ctrl+F1" ) ), this );
+		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
+		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutResetCameraController );
+		shortcut = new QShortcut( QKeySequence( tr( "F2" ) ), this );
+		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
+		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutAddViewpoint );
+		shortcut = new QShortcut( QKeySequence( tr( "F5" ) ), this );
+		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
+		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutSnapshot );
+#ifndef VTX_PRODUCTION
+		shortcut = new QShortcut( QKeySequence( tr( "F7" ) ), this );
+		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
+		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutChangeRenderMode );
+#endif
 	}
 
 	void RenderWidget::resizeEvent( QResizeEvent * p_event )
@@ -82,6 +86,30 @@ namespace VTX::UI::Widget::Render
 		}
 	}
 
+	void RenderWidget::_onShortcutToggleCameraController() { VTX_ACTION( new Action::Main::ToggleCameraController() ); }
+
+	void RenderWidget::_onShortcutResetCameraController() { VTX_ACTION( new Action::Main::ResetCameraController() ); }
+
+	void RenderWidget::_onShortcutAddViewpoint() { VTX_ACTION( new Action::Viewpoint::Create() ); }
+
+	void RenderWidget::_onShortcutSnapshot()
+	{
+		VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+												Util::Filesystem::getUniqueSnapshotsPath(),
+												VTX_SETTING().getSnapshotResolution() ) );
+	}
+
+	void RenderWidget::_onShortcutChangeRenderMode()
+	{
+		VTX_ACTION( new Action::Setting::ChangeRenderMode(
+			Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)Renderer::MODE::COUNT ) ) );
+	}
+
+	void RenderWidget::localize()
+	{
+		setWindowTitle( "Render" );
+		// setWindowTitle( QCoreApplication::translate( "RenderWidget", "Render", nullptr ) );
+	}
 	void RenderWidget::displayOverlay( const Overlay::OVERLAY &		   p_overlayType,
 									   const Overlay::OVERLAY_ANCHOR & p_anchor )
 	{
@@ -112,12 +140,6 @@ namespace VTX::UI::Widget::Render
 		_overlays[ p_overlay ]->setVisible( false );
 	}
 
-	void RenderWidget::localize()
-	{
-		setWindowTitle( "Render" );
-		// setWindowTitle( QCoreApplication::translate( "RenderWidget", "Render", nullptr ) );
-	}
-
 	Overlay::BaseOverlay * RenderWidget::_instantiateOverlay( const Overlay::OVERLAY & p_overlayType )
 	{
 		Overlay::BaseOverlay * res;
@@ -137,5 +159,4 @@ namespace VTX::UI::Widget::Render
 
 		return res;
 	}
-
 } // namespace VTX::UI::Widget::Render

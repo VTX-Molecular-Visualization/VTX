@@ -28,6 +28,7 @@ namespace VTX
 			virtual ~BaseCameraController() = default;
 
 			virtual const ID::VTX_ID getID() const = 0;
+			inline ID::VTX_ID		 getTargetWidget() override { return ID::UI::Input::RENDER_WIDGET; }
 
 			inline const bool	 isOrienting() const { return _isOrienting; }
 			inline const Vec3f & getOrientStartingPosition() const { return _orientStartingPosition; }
@@ -57,18 +58,6 @@ namespace VTX
 			virtual void _updateInputs( const float & )						  = 0;
 			virtual void _computeOrientPositions( const Math::AABB & p_aabb ) = 0;
 			virtual void _updateOrient( const float & )						  = 0;
-
-			virtual void _handleMouseButtonDownEvent( const QMouseEvent & p_event ) override
-			{
-				if ( _mouseHoveringRenderWidget() )
-					BaseMouseController::_handleMouseButtonDownEvent( p_event );
-			}
-
-			virtual void _handleMouseWheelEvent( const QWheelEvent & p_event ) override
-			{
-				if ( _mouseHoveringRenderWidget() )
-					BaseMouseController::_handleMouseWheelEvent( p_event );
-			}
 		};
 	} // namespace Controller
 } // namespace VTX

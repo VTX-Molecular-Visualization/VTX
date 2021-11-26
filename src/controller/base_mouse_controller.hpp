@@ -46,7 +46,7 @@ namespace VTX
 			bool _isLeftClickCanceled  = false;
 			bool _isRightClickCanceled = false;
 
-			bool _mouseHoveringRenderWidget() const;
+			// bool _mouseHoveringRenderWidget() const;
 
 		  private:
 			Vec2i _mouseLeftClickPosition  = Vec2i();
