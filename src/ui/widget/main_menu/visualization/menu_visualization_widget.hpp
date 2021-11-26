@@ -6,6 +6,7 @@
 #include "menu_visualization_render_effects_widget.hpp"
 #include "menu_visualization_representation_widget.hpp"
 #include "menu_visualization_selection_action_widget.hpp"
+#include "menu_visualization_snapshot.hpp"
 #include "menu_visualization_viewpoint.hpp"
 #include "menu_visualization_windows_widget.hpp"
 #include "ui/widget/main_menu/menu_tooltab_widget.hpp"
@@ -32,6 +33,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		MenuVisualizationObjectDisplayWidget *	 _objectDisplay	  = nullptr;
 		MenuVisualizationRenderEffectsWidget *	 _renderEffects	  = nullptr;
 		MenuVisualizationViewpointWidget *		 _viewpoints	  = nullptr;
+		MenuVisualizationSnapshot *				 _snapshot		  = nullptr;
 		MenuVisualizationSelectionActionWidget * _selectionAction = nullptr;
 		MenuVisualizationWindowsWidget *		 _windows		  = nullptr;
 	};

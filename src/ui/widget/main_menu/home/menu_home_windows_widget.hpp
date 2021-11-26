@@ -10,6 +10,11 @@
 #include <QWidget>
 #include <map>
 
+namespace VTX::UI
+{
+	enum class WindowMode;
+}
+
 namespace VTX::UI::Widget::MainMenu::Home
 {
 	class MenuHomeWindowsWidget : public MenuToolBlockWidget
@@ -28,9 +33,11 @@ namespace VTX::UI::Widget::MainMenu::Home
 		void _setupSlots() override;
 
 		void _refreshButton( const ID::VTX_ID & p_id );
+		void _updateFullscreenButton( const WindowMode & p_mode );
 
 	  private:
 		MenuToolButtonWidget * _windowComboBoxButton = nullptr;
+		MenuToolButtonWidget * _fullscreen			 = nullptr;
 		MenuToolButtonWidget * _settingsButton		 = nullptr;
 		MenuToolButtonWidget * _informationButton	 = nullptr;
 		MenuToolButtonWidget * _quitButton			 = nullptr;
@@ -51,6 +58,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 		// void _toggleSelectionWindow();
 		void _toggleSequenceWindow();
 
+		void _toggleWindowState() const;
 		void _displaySettingsWindow();
 		void _displayInformationWindow();
 		void _quit();

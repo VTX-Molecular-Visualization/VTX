@@ -17,19 +17,9 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		Model::Renderer::RenderEffectPresetLibrary * const _renderEffectLibrary,
 		QWidget *										   p_parent ) :
 		View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( _renderEffectLibrary ),
-		MenuToolBlockWidget( p_parent )
-	{
-		_registerEvent( Event::Global::MAIN_WINDOW_MODE_CHANGE );
-	};
+		MenuToolBlockWidget( p_parent ) {};
 
-	void MenuVisualizationRenderEffectsWidget::receiveEvent( const Event::VTXEvent & p_event )
-	{
-		if ( p_event.name == Event::Global::MAIN_WINDOW_MODE_CHANGE )
-		{
-			const WindowMode mode = dynamic_cast<const Event::VTXEventValue<WindowMode> &>( p_event ).value;
-			_updateFullscreenButton( mode );
-		}
-	}
+	void MenuVisualizationRenderEffectsWidget::receiveEvent( const Event::VTXEvent & p_event ) {}
 
 	void MenuVisualizationRenderEffectsWidget::_setupUi( const QString & p_name )
 	{
@@ -39,9 +29,6 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	void MenuVisualizationRenderEffectsWidget::_setupSlots()
 	{
 		_createPreset->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_openPresetSettings );
-		_takeSnapshot->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_takeSnapshotAction );
-		_exportAsImage->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_exportAsImageAction );
-		_fullscreen->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_toggleWindowState );
 	}
 	void MenuVisualizationRenderEffectsWidget::localize() { setTitle( "Render Effects" ); }
 
@@ -99,35 +86,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			"Preset\nSettings", ":/sprite/render_effect_settings_icon.png", Qt::Orientation::Vertical );
 		pushButtonInNextColumn( *_createPreset );
 
-		// Fullscreen / snapshot
-		_fullscreen = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleFullscreenButton" );
-		_fullscreen->setData( "Fullscreen", ":/sprite/fullscreen_icon.png", Qt::Orientation::Vertical );
-		_updateFullscreenButton( VTXApp::get().getMainWindow().getWindowMode() );
-		const int lastColumn = pushButtonInNextColumn( *_fullscreen );
-
-		_takeSnapshot = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "takeSnapshotButton" );
-		_takeSnapshot->setData( "Snapshot", ":/sprite/screenshot_icon.png", Qt::Orientation::Horizontal );
-		pushButton( *_takeSnapshot, lastColumn + 1 );
-
-		_exportAsImage = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "exportAsImageButton" );
-		_exportAsImage->setData( "Export as Image", ":/sprite/screenshot_icon.png", Qt::Orientation::Horizontal );
-		pushButton( *_exportAsImage, lastColumn + 1 );
-
 		validate();
-	}
-
-	void MenuVisualizationRenderEffectsWidget::_updateFullscreenButton( const WindowMode & p_mode )
-	{
-		if ( p_mode == WindowMode::Fullscreen )
-		{
-			_fullscreen->setIcon( Style::IconConst::get().WINDOWED_ICON );
-			_fullscreen->setText( "Window" );
-		}
-		else
-		{
-			_fullscreen->setIcon( Style::IconConst::get().FULLSCREEN_ICON );
-			_fullscreen->setText( "Fullscreen" );
-		}
 	}
 
 	void MenuVisualizationRenderEffectsWidget::_takeSnapshotAction() const
@@ -145,15 +104,6 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	void MenuVisualizationRenderEffectsWidget::_openPresetSettings() const
 	{
 		VTXApp::get().getMainWindow().openSettingWindow( UI::Widget::Settings::SETTING_MENU::RENDER_EFFECTS );
-	}
-	void MenuVisualizationRenderEffectsWidget::_toggleWindowState() const
-	{
-		const Qt::WindowStates windowState = VTXApp::get().getMainWindow().windowState();
-
-		if ( windowState & Qt::WindowStates::enum_type::WindowFullScreen )
-			VTX_ACTION( new Action::Setting::WindowMode( WindowMode::Windowed ) );
-		else
-			VTX_ACTION( new Action::Setting::WindowMode( WindowMode::Fullscreen ) );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Visualization
