@@ -98,7 +98,10 @@ namespace VTX
 		{
 			switch ( p_event.button() )
 			{
-			case Qt::MouseButton::LeftButton: _onMouseLeftDoubleClick( p_event.pos().x(), p_event.pos().y() ); break;
+			case Qt::MouseButton::LeftButton:
+				_onMouseLeftDoubleClick( p_event.pos().x(), p_event.pos().y() );
+				_isLeftClickCanceled = true;
+				break;
 			case Qt::MouseButton::RightButton: break;
 			case Qt::MouseButton::MiddleButton: break;
 			default: break;

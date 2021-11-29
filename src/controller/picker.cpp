@@ -14,12 +14,14 @@
 
 namespace VTX::Controller
 {
+	Picker::Picker() : _lastClickedIds { Model::ID_UNKNOWN, Model::ID_UNKNOWN } {}
 	void Picker::update( const float & p_deltaTime ) { BaseMouseController::update( p_deltaTime ); }
 
 	void Picker::_onMouseLeftClick( const uint p_x, const uint p_y )
 	{
 		const Vec2i ids = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
 		_performSelection( ids );
+		_lastClickedIds = ids;
 	}
 
 	void Picker::_onMouseRightClick( const uint p_x, const uint p_y )
@@ -27,6 +29,7 @@ namespace VTX::Controller
 		UI::Widget::Render::OpenGLWidget & openGLWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
 		const Vec2i						   ids			= openGLWidget.getPickedIds( p_x, p_y );
 		_performSelection( ids );
+		_lastClickedIds = ids;
 
 		Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
@@ -349,6 +352,21 @@ namespace VTX::Controller
 		}
 	}
 
-	void Picker::_onMouseLeftDoubleClick( const uint p_x, const uint p_y ) { VTX_DEBUG( "dbl click" ); }
+	void Picker::_onMouseLeftDoubleClick( const uint p_x, const uint p_y )
+	{
+		const Vec2i ids = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
+
+		if ( ids.x == Model::ID_UNKNOWN )
+			return;
+
+		if ( _lastClickedIds.x != ids.x || _lastClickedIds.y != ids.y )
+			return;
+
+		if ( _isModifierExclusive( ModifierFlag::None ) )
+		{
+			const Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+			VTX_ACTION( new Action::Selection::Orient( selectionModel ) );
+		}
+	}
 
 } // namespace VTX::Controller
