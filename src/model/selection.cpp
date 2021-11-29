@@ -429,7 +429,7 @@ namespace VTX::Model
 		_addMolecule( p_molecule );
 		_addMoleculeContent( p_molecule );
 
-		_mapSelectionAABB[ p_molecule.getId() ].extend( p_molecule.getAABB() );
+		_mapSelectionAABB[ p_molecule.getId() ].extend( p_molecule.getWorldAABB() );
 	}
 
 	void Selection::_selectChain( const Chain & p_chain )
@@ -439,7 +439,7 @@ namespace VTX::Model
 		_addChain( p_chain );
 		_addChainContent( p_chain );
 
-		_mapSelectionAABB[ parent.getId() ].extend( p_chain.getAABB() );
+		_mapSelectionAABB[ parent.getId() ].extend( p_chain.getWorldAABB() );
 	}
 
 	void Selection::_selectResidue( const Residue & p_residue )
@@ -452,7 +452,7 @@ namespace VTX::Model
 		_addResidue( p_residue );
 		_addResidueContent( p_residue );
 
-		_mapSelectionAABB[ moleculeParent.getId() ].extend( p_residue.getAABB() );
+		_mapSelectionAABB[ moleculeParent.getId() ].extend( p_residue.getWorldAABB() );
 	}
 
 	void Selection::_selectAtom( const Atom & p_atom )
@@ -469,7 +469,7 @@ namespace VTX::Model
 		if ( atomAdded )
 			_referenceAtom( p_atom );
 
-		_mapSelectionAABB[ moleculeParent.getId() ].extend( p_atom.getAABB() );
+		_mapSelectionAABB[ moleculeParent.getId() ].extend( p_atom.getWorldAABB() );
 	}
 
 	void Selection::_referenceAtom( const Atom & p_atom )
@@ -990,8 +990,7 @@ namespace VTX::Model
 		for ( const std::pair<Model::ID, Math::AABB> & pairIdAabb : _mapSelectionAABB )
 		{
 			const Model::Molecule & molecule	= MVC::MvcManager::get().getModel<Model::Molecule>( pairIdAabb.first );
-			Math::AABB				currentAABB = pairIdAabb.second;
-			currentAABB.translate( molecule.getTransform().getTranslationVector() );
+			const Math::AABB &		currentAABB = pairIdAabb.second;
 			res.extend( currentAABB );
 		}
 

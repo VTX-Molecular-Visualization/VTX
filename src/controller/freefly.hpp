@@ -19,6 +19,7 @@ namespace VTX
 			void _updateInputs( const float & ) override;
 			void _updateOrient( const float & ) override;
 			void _computeOrientPositions( const Math::AABB & ) override;
+			void _computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation ) override;
 		};
 	} // namespace Controller
 } // namespace VTX

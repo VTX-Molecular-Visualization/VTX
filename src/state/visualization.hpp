@@ -29,6 +29,7 @@ namespace VTX
 			void setCameraController( const ID::VTX_ID & p_controllerId );
 			void resetCameraController();
 			void orientCameraController( const Math::AABB & );
+			void orientCameraController( const Vec3f & p_position, const Quatf & p_orientation );
 
 			virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 

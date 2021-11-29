@@ -115,6 +115,23 @@ namespace VTX
 				}
 			}
 		}
+		void Visualization::orientCameraController( const Vec3f & p_position, const Quatf & p_orientation )
+		{
+			getController<VTX::Controller::BaseCameraController>( _cameraController )
+				->orient( p_position, p_orientation );
+
+			// Override Trackball distance.
+			if ( _cameraController == ID::Controller::FREEFLY )
+			{
+				const Controller::Freefly * const freefly
+					= getController<Controller::Freefly>( ID::Controller::FREEFLY );
+				if ( freefly->isOrienting() )
+				{
+					getController<Controller::Trackball>( ID::Controller::TRACKBALL )
+						->setDistanceForced( Util::Math::distance( p_position, freefly->getOrientTargetPosition() ) );
+				}
+			}
+		}
 
 		void Visualization::receiveEvent( const Event::VTXEvent & p_event )
 		{

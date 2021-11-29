@@ -244,6 +244,8 @@ namespace VTX
 
 		inline static const QSize EXPORT_IMAGE_PREVIEW_SIZE = QSize( 320, 320 );
 
+		const float ORIENT_ZOOM_FACTOR = 0.666f;
+
 		inline static const QFont TOOL_MENU_BUTTON_FONT()
 		{
 			static QFont font = QFont( "Helvetica", 10 );
