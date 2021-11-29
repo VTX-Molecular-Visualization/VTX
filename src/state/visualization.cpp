@@ -1,5 +1,6 @@
 #include "visualization.hpp"
 #include "controller/freefly.hpp"
+#include "controller/main_window_controller.hpp"
 #include "controller/picker.hpp"
 #include "controller/trackball.hpp"
 #include "event/event.hpp"
@@ -21,6 +22,7 @@ namespace VTX
 			_registerEvent( Event::Global::MESH_REMOVED );
 
 			// Create controller.
+			_controllers.emplace( ID::Controller::MAIN_WINDOW, new Controller::MainWindowController() );
 			_controllers.emplace( ID::Controller::FREEFLY,
 								  new Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
 			_controllers.emplace( ID::Controller::TRACKBALL,

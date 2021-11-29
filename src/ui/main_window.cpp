@@ -609,4 +609,21 @@ namespace VTX::UI
 			Event::EventManager::get().clearKeyboardInputEvents();
 		}
 	}
+
+	bool MainWindow::eventFilter( QObject * const p_watched, QEvent * const p_event )
+	{
+		if ( p_event->type() == QEvent::Type::KeyPress )
+		{
+			keyPressEvent( dynamic_cast<QKeyEvent *>( p_event ) );
+			return true;
+		}
+		else if ( p_event->type() == QEvent::Type::KeyRelease )
+		{
+			keyReleaseEvent( dynamic_cast<QKeyEvent *>( p_event ) );
+			return true;
+		}
+
+		return false;
+	}
+
 } // namespace VTX::UI

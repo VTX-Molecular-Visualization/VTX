@@ -31,7 +31,7 @@ namespace VTX
 			Minimized,
 		};
 
-		class MainWindow : public Widget::BaseWidget<QMainWindow, Ui_MainWindow>
+		class MainWindow : public Widget::BaseWidget<QMainWindow, Ui_MainWindow>, public Event::BaseEventFirererInput
 		{
 			Q_OBJECT
 
@@ -77,6 +77,8 @@ namespace VTX
 				return static_cast<W &>( getWidget( p_winId ) );
 			}
 
+			const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::MAIN_WINDOW; };
+
 		  protected:
 			void resizeEvent( QResizeEvent * ) override;
 			void showEvent( QShowEvent * ) override;
@@ -84,6 +86,11 @@ namespace VTX
 			void dropEvent( QDropEvent * ) override;
 			void closeEvent( QCloseEvent * ) override;
 			void changeEvent( QEvent * p_event ) override;
+
+			void keyPressEvent( QKeyEvent * const p_event ) override { _fireEventInput( p_event ); }
+			void keyReleaseEvent( QKeyEvent * const p_event ) override { _fireEventInput( p_event ); }
+
+			virtual bool eventFilter( QObject * const p_watched, QEvent * const p_event ) override;
 
 		  private:
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;

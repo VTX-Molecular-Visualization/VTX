@@ -3,9 +3,9 @@
 #include "ui/widget/contextual_menu/contextual_menu_atom.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_chain.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_molecule.hpp"
+#include "ui/widget/contextual_menu/contextual_menu_render.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_residue.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_scene.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_render.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_viewpoint.hpp"
 #include "ui/widget_factory.hpp"
@@ -31,30 +31,37 @@ namespace VTX::UI
 	{
 		_menus.resize( int( Menu::COUNT ) );
 
+		QWidget * const parent = &VTXApp::get().getMainWindow();
+
 		_menus[ int( Menu::Molecule ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuMolecule>(
-				nullptr, "contextualMenuMolecule" );
+				parent, "contextualMenuMolecule" );
 		_menus[ int( Menu::Chain ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuChain>(
-				nullptr, "contextualMenuChain" );
+				parent, "contextualMenuChain" );
 		_menus[ int( Menu::Residue ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuResidue>(
-				nullptr, "contextualMenuResidue" );
+				parent, "contextualMenuResidue" );
 		_menus[ int( Menu::Atom ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuAtom>(
-				nullptr, "contextualMenuAtom" );
+				parent, "contextualMenuAtom" );
 		_menus[ int( Menu::Selection ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuSelection>(
-				nullptr, "contextualMenuSelection" );
+				parent, "contextualMenuSelection" );
 		_menus[ int( Menu::Scene ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuScene>(
-				nullptr, "contextualMenuScene" );
+				parent, "contextualMenuScene" );
 		_menus[ int( Menu::Render ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuRender>(
-				nullptr, "contextualMenuRender" );
+				parent, "contextualMenuRender" );
 		_menus[ int( Menu::Viewpoint ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuViewpoint>(
-				nullptr, "ContextualMenuViewpoint" );
+				parent, "ContextualMenuViewpoint" );
+
+		for ( QMenu * const menu : _menus )
+		{
+			menu->installEventFilter( parent );
+		}
 	}
 
 } // namespace VTX::UI
