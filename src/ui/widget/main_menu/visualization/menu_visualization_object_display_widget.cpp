@@ -125,12 +125,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// No selection => check all molecules in scene
 		if ( selection.hasMolecule() )
 		{
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData :
-				  selection.getMoleculesMap() )
-			{
-				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
-				p_container.emplace( &molecule );
-			}
+			selection.getItemsOfType<Model::Molecule>( ID::Model::MODEL_MOLECULE, p_container );
 		}
 		else
 		{

@@ -9,6 +9,7 @@
 #include "model/base_model.hpp"
 #include <map>
 #include <set>
+#include <unordered_set>
 #include <vector>
 
 namespace VTX::Model
@@ -204,6 +205,18 @@ namespace VTX::Model
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
 		void getItemsOfType( const ID::VTX_ID & p_itemType, std::set<T *> & p_items ) const
+		{
+			for ( const Model::ID & itemID : _items )
+			{
+				if ( MVC::MvcManager::get().getModelTypeID( itemID ) == p_itemType )
+				{
+					T & item = MVC::MvcManager::get().getModel<T>( itemID );
+					p_items.emplace( &item );
+				}
+			}
+		}
+		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		void getItemsOfType( const ID::VTX_ID & p_itemType, std::unordered_set<T *> & p_items ) const
 		{
 			for ( const Model::ID & itemID : _items )
 			{
