@@ -74,6 +74,7 @@ namespace VTX::View::UI::Widget
 		{
 			_clearLoadedItems();
 			_updateMoleculeStructure();
+			_refreshSize();
 		}
 		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
 		{

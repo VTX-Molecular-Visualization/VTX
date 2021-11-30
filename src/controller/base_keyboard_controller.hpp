@@ -34,6 +34,7 @@ namespace VTX
 			static void			  clear();
 			static void			  clearKey( const Qt::Key & p_key );
 			static KeyboardLayout getKeyboardLayout();
+			static void			  updateKeyboardBuffer( const QKeyEvent & p_event );
 
 		  protected:
 			static bool _isKeyPressed( const Qt::Key & p_key );
@@ -44,7 +45,6 @@ namespace VTX
 			inline static std::set<Qt::Key> _pressedKeys = std::set<Qt::Key>();
 			inline static ModifierFlag		_modifiers	 = ModifierFlag::None;
 
-			static void			_updateKeyboardBuffer( const QKeyEvent & p_event );
 			static ModifierFlag _getModifierFromKey( const Qt::Key & p_key );
 		};
 	} // namespace Controller

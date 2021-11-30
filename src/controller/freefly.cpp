@@ -1,6 +1,7 @@
 #include "freefly.hpp"
 #include "action/action_manager.hpp"
 #include "object3d/scene.hpp"
+#include "style.hpp"
 
 namespace VTX
 {
@@ -77,7 +78,7 @@ namespace VTX
 		void Freefly::reset()
 		{
 			const Vec3f defaultPos = -CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
-									 / (float)( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+				  / (float)( tan( Util::Math::radians( _camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
 
 			_camera.setPosition( defaultPos );
 			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
@@ -88,8 +89,23 @@ namespace VTX
 		{
 			_orientStartingPosition = _camera.getPosition();
 			const float targetDistance
-				= p_aabb.radius() / (float)( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+				= p_aabb.radius()
+				  / (float)( tan( Util::Math::radians( _camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
 			_orientTargetPosition = p_aabb.centroid() - _camera.getFront() * targetDistance;
+
+			_orientStartingRotation = _camera.getRotation();
+			_orientTargetRotation	= _orientStartingRotation;
+
+			_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
+		}
+		void Freefly::_computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation )
+		{
+			_orientStartingPosition = _camera.getPosition();
+			_orientTargetPosition	= p_position;
+
+			_orientStartingRotation = _camera.getRotation();
+			_orientTargetRotation	= p_orientation;
+
 			_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
 		}
 
@@ -97,6 +113,9 @@ namespace VTX
 		{
 			_camera.setPosition(
 				Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime ) );
+
+			_camera.setRotation( Util::Math::easeInOutInterpolation(
+				_orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
 		}
 
 	} // namespace Controller

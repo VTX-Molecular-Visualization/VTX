@@ -43,6 +43,11 @@ namespace VTX
 				_orientTime = 0.f;
 				_computeOrientPositions( p_aabb );
 			}
+			virtual void orient( const Vec3f & p_position, const Quatf & p_orientation )
+			{
+				_orientTime = 0.f;
+				_computeOrientPositions( p_position, p_orientation );
+			}
 
 		  protected:
 			const float ORIENT_DURATION	 = 0.5f;
@@ -54,10 +59,13 @@ namespace VTX
 			float _orientTime			  = 0.f;
 			Vec3f _orientStartingPosition = VEC3F_ZERO;
 			Vec3f _orientTargetPosition	  = VEC3F_ZERO;
+			Quatf _orientStartingRotation = QUATF_ID;
+			Quatf _orientTargetRotation	  = QUATF_ID;
 
-			virtual void _updateInputs( const float & )						  = 0;
-			virtual void _computeOrientPositions( const Math::AABB & p_aabb ) = 0;
-			virtual void _updateOrient( const float & )						  = 0;
+			virtual void _updateInputs( const float & )													  = 0;
+			virtual void _computeOrientPositions( const Math::AABB & p_aabb )							  = 0;
+			virtual void _computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation ) = 0;
+			virtual void _updateOrient( const float & )													  = 0;
 		};
 	} // namespace Controller
 } // namespace VTX

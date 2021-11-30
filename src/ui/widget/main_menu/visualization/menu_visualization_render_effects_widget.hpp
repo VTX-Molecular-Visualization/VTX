@@ -10,11 +10,6 @@
 #include <QWidget>
 #include <vector>
 
-namespace VTX::UI
-{
-	enum class WindowMode;
-}
-
 namespace VTX::UI::Widget::MainMenu::Visualization
 {
 	class MenuVisualizationRenderEffectsWidget :
@@ -44,20 +39,12 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// Create Preset
 		MenuToolButtonWidget * _createPreset = nullptr;
 
-		// Render Feature
-		MenuToolButtonWidget * _fullscreen	 = nullptr;
-		MenuToolButtonWidget * _takeSnapshot = nullptr;
-		MenuToolButtonWidget * _exportAsImage = nullptr;
-
 		void _instantiateUI();
-
-		void _updateFullscreenButton( const WindowMode & p_mode );
 
 		// ACTIONS //
 		void _takeSnapshotAction() const;
 		void _exportAsImageAction() const;
 		void _openPresetSettings() const;
-		void _toggleWindowState() const;
 	};
 } // namespace VTX::UI::Widget::MainMenu::Visualization
 #endif

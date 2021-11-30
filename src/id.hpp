@@ -24,6 +24,7 @@ namespace VTX
 			} // namespace Window
 			namespace Input
 			{
+				const VTX_ID MAIN_WINDOW   = "MAIN_WINDOW";
 				const VTX_ID RENDER_WIDGET = "OPENGL_WIDGET";
 
 			} // namespace Input
@@ -120,12 +121,13 @@ namespace VTX
 
 		namespace Controller
 		{
-			const VTX_ID FREEFLY   = "FREEFLY";
-			const VTX_ID TRACKBALL = "TRACKBALL";
-			const VTX_ID ORBIT	   = "ORBIT";
-			const VTX_ID SHORTCUT  = "SHORCUT";
-			const VTX_ID VESSEL	   = "VESSEL";
-			const VTX_ID PICKER	   = "PICKER";
+			const VTX_ID FREEFLY	 = "FREEFLY";
+			const VTX_ID TRACKBALL	 = "TRACKBALL";
+			const VTX_ID ORBIT		 = "ORBIT";
+			const VTX_ID SHORTCUT	 = "SHORCUT";
+			const VTX_ID VESSEL		 = "VESSEL";
+			const VTX_ID PICKER		 = "PICKER";
+			const VTX_ID MAIN_WINDOW = "MAIN_WINDOW";
 		} // namespace Controller
 	}	  // namespace ID
 

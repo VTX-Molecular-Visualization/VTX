@@ -162,7 +162,7 @@ namespace VTX
 			{
 				for ( BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
 				{
-					if ( receiver->getTargetWidget() == p_firerer )
+					if ( receiver->readEventFromInput( p_firerer ) )
 					{
 						receiver->receiveEvent( *p_event );
 					}

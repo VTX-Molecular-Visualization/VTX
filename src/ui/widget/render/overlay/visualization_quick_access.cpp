@@ -37,14 +37,14 @@ namespace VTX::UI::Widget::Render::Overlay
 	{
 		BaseOverlay::_setupUi( p_name );
 
-		QAction * orientAction = addAction( QIcon( ":/sprite/camera_orient_icon.png" ), "" );
+		QAction * const orientAction = addAction( QIcon( ":/sprite/camera_orient_icon.png" ), "" );
 		_orientWidget		   = dynamic_cast<QToolButton *>( widgetForAction( orientAction ) );
 
 		QMenu * changeControllerMenu = new QMenu( this );
 		for ( int i = 0; i < CONTROLLERS.size(); i++ )
 		{
 			const MenuItemDataRef<ID::VTX_ID> & data = CONTROLLERS[ i ];
-			QAction * action = changeControllerMenu->addAction( QIcon( data.iconPath ), data.name );
+			QAction * const action = changeControllerMenu->addAction( QIcon( data.iconPath ), data.name );
 			action->setProperty( CONTROLLER_PROPERTY_NAME, QVariant( i ) );
 		}
 		_changeControllerWidget = dynamic_cast<QToolButton *>( widgetForAction( addMenu( changeControllerMenu ) ) );
@@ -53,7 +53,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		for ( int i = 0; i < SELECTION_GRANULARITY.size(); i++ )
 		{
 			const MenuItemData<VTX::Selection::Granularity> & data = SELECTION_GRANULARITY[ i ];
-			QAction * action = changeSelectionGranularityMenu->addAction( QIcon( data.iconPath ), data.name );
+			QAction * const action = changeSelectionGranularityMenu->addAction( QIcon( data.iconPath ), data.name );
 			action->setProperty( GRANULARITY_PROPERTY_NAME, QVariant( int( data.data ) ) );
 		}
 		_changeSelectionGranularityWidget

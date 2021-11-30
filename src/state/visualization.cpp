@@ -1,5 +1,6 @@
 #include "visualization.hpp"
 #include "controller/freefly.hpp"
+#include "controller/main_window_controller.hpp"
 #include "controller/picker.hpp"
 #include "controller/trackball.hpp"
 #include "event/event.hpp"
@@ -21,6 +22,7 @@ namespace VTX
 			_registerEvent( Event::Global::MESH_REMOVED );
 
 			// Create controller.
+			_controllers.emplace( ID::Controller::MAIN_WINDOW, new Controller::MainWindowController() );
 			_controllers.emplace( ID::Controller::FREEFLY,
 								  new Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
 			_controllers.emplace( ID::Controller::TRACKBALL,
@@ -110,6 +112,23 @@ namespace VTX
 					getController<Controller::Trackball>( ID::Controller::TRACKBALL )
 						->setDistanceForced(
 							Util::Math::distance( p_aabb.centroid(), freefly->getOrientTargetPosition() ) );
+				}
+			}
+		}
+		void Visualization::orientCameraController( const Vec3f & p_position, const Quatf & p_orientation )
+		{
+			getController<VTX::Controller::BaseCameraController>( _cameraController )
+				->orient( p_position, p_orientation );
+
+			// Override Trackball distance.
+			if ( _cameraController == ID::Controller::FREEFLY )
+			{
+				const Controller::Freefly * const freefly
+					= getController<Controller::Freefly>( ID::Controller::FREEFLY );
+				if ( freefly->isOrienting() )
+				{
+					getController<Controller::Trackball>( ID::Controller::TRACKBALL )
+						->setDistanceForced( Util::Math::distance( p_position, freefly->getOrientTargetPosition() ) );
 				}
 			}
 		}

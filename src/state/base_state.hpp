@@ -29,6 +29,11 @@ namespace VTX
 			{
 				return dynamic_cast<T * const>( _controllers[ p_id ] );
 			}
+			template<typename T, typename = std::enable_if<std::is_base_of<Controller::BaseController, T>::value>>
+			inline const T * const getController( const ID::VTX_ID & p_id ) const
+			{
+				return dynamic_cast<T * const>( _controllers.at( p_id ) );
+			}
 
 			virtual void enter( void * const )
 			{

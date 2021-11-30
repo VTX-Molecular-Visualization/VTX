@@ -15,6 +15,7 @@ namespace VTX
 			virtual ~BaseEventReceiverInput() = default;
 
 			inline virtual ID::VTX_ID getTargetWidget() = 0;
+			inline virtual bool readEventFromInput( const ID::VTX_ID & p_id ) { return p_id == getTargetWidget(); };
 		};
 	} // namespace Event
 } // namespace VTX

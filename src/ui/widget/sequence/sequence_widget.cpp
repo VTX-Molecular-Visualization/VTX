@@ -3,7 +3,6 @@
 #include "mvc/mvc_manager.hpp"
 #include "view/base_view.hpp"
 #include "view/ui/widget/molecule_sequence_view.hpp"
-#include "view/ui/widget/selection_sequence_view.hpp"
 #include "vtx_app.hpp"
 #include <QLayout>
 #include <QScrollBar>
@@ -15,9 +14,6 @@ namespace VTX::UI::Widget::Sequence
 	{
 		_registerEvent( Event::Global::MOLECULE_ADDED );
 		_registerEvent( Event::Global::MOLECULE_REMOVED );
-		_registerEvent( Event::Global::SELECTION_ADDED );
-		_registerEvent( Event::Global::SELECTION_CHANGE );
-		_registerEvent( Event::Global::SELECTION_REMOVED );
 	}
 
 	void SequenceWidget::receiveEvent( const Event::VTXEvent & p_event )
@@ -43,27 +39,6 @@ namespace VTX::UI::Widget::Sequence
 			_moleculeWidgets.erase( moleculeSequenceView->getWidget() );
 			MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeSequenceView>( castedEvent.ptr,
 																					   ID::View::UI_MOLECULE_SEQUENCE );
-		}
-		else if ( p_event.name == Event::Global::SELECTION_ADDED )
-		{
-			const Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
-			View::UI::Widget::SelectionSequenceView * const selectionSequenceView
-				= MVC::MvcManager::get().instantiateViewWidget<View::UI::Widget::SelectionSequenceView>(
-					castedEvent.ptr, ID::View::UI_SELECTION_SEQUENCE, this );
-			refreshSelection();
-		}
-		else if ( p_event.name == Event::Global::SELECTION_REMOVED )
-		{
-			const Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
-			MVC::MvcManager::get().deleteView<View::UI::Widget::SelectionSequenceView>(
-				castedEvent.ptr, ID::View::UI_SELECTION_SEQUENCE );
-			refreshSelection();
-		}
-		else if ( p_event.name == Event::Global::SELECTION_CHANGE )
-		{
-			refreshSelection();
 		}
 	}
 

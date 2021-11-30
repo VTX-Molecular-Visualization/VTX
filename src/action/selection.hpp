@@ -115,10 +115,7 @@ namespace VTX::Action::Selection
 				}
 			}
 
-			if ( !_appendToSelection )
-				_selection.clear();
-
-			_selection.selectModels( molecules, chains, residues, atoms, true );
+			_selection.selectModels( molecules, chains, residues, atoms, _appendToSelection );
 			_selection.selectModels( paths, true );
 			_selection.selectModels( viewpoints, true );
 

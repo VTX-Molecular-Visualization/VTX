@@ -16,10 +16,7 @@ namespace VTX
 		{
 			namespace Sequence
 			{
-				ChainSequenceWidget::ChainSequenceWidget( QWidget * p_parent ) : ViewItemWidget( p_parent )
-				{
-					_registerEvent( Event::Global::SELECTION_CHANGE );
-				}
+				ChainSequenceWidget::ChainSequenceWidget( QWidget * p_parent ) : ViewItemWidget( p_parent ) {}
 
 				ChainSequenceWidget::~ChainSequenceWidget()
 				{

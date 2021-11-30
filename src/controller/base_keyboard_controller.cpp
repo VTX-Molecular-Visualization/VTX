@@ -3,13 +3,13 @@
 
 namespace VTX::Controller
 {
-	void BaseKeyboardController::_updateKeyboardBuffer( const QKeyEvent & p_event )
+	void BaseKeyboardController::updateKeyboardBuffer( const QKeyEvent & p_event )
 	{
 		if ( p_event.isAutoRepeat() )
 			return;
 
-		const Qt::Key key	   = Qt::Key( p_event.key() );
-		ModifierFlag  modifier = _getModifierFromKey( key );
+		const Qt::Key	   key		= Qt::Key( p_event.key() );
+		const ModifierFlag modifier = _getModifierFromKey( key );
 
 		switch ( p_event.type() )
 		{
@@ -83,12 +83,6 @@ namespace VTX::Controller
 		return modifier;
 	}
 
-	void BaseKeyboardController::receiveEvent( const QKeyEvent & p_event )
-	{
-		if ( isActive() == false )
-			return;
-
-		_updateKeyboardBuffer( p_event );
-	}
+	void BaseKeyboardController::receiveEvent( const QKeyEvent & p_event ) {}
 
 } // namespace VTX::Controller

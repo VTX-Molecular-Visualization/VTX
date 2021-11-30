@@ -130,7 +130,7 @@ namespace VTX::UI::Widget::Inspector
 		if ( _getTargets().size() != 1 )
 			return;
 
-		Model::Viewpoint * viewpoint = *( _getTargets().begin() );
+		const Model::Viewpoint * const viewpoint = *( _getTargets().cbegin() );
 
 		VTX_ACTION( new Action::Viewpoint::GoTo( *viewpoint ) );
 	}

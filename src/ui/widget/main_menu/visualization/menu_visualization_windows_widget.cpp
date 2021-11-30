@@ -11,6 +11,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		MenuToolBlockWidget( p_parent )
 	{
 		_registerEvent( Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
+		_registerEvent( Event::Global::MAIN_WINDOW_MODE_CHANGE );
 	}
 
 	MenuVisualizationWindowsWidget::~MenuVisualizationWindowsWidget() {}
@@ -20,6 +21,11 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		if ( p_event.name == Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
 		{
 			refresh();
+		}
+		else if ( p_event.name == Event::Global::MAIN_WINDOW_MODE_CHANGE )
+		{
+			const WindowMode mode = dynamic_cast<const Event::VTXEventValue<WindowMode> &>( p_event ).value;
+			_updateFullscreenButton( mode );
 		}
 	}
 
@@ -47,6 +53,11 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		_windowComboBoxButton->setMenu( _windowsMenu );
 
+		_fullscreen = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleFullscreenButton" );
+		_fullscreen->setData( "Fullscreen", ":/sprite/fullscreen_icon.png", Qt::Orientation::Vertical );
+		_updateFullscreenButton( VTXApp::get().getMainWindow().getWindowMode() );
+		pushButton( *_fullscreen, 2 );
+
 		// !V0.1
 		//_infoUnderCursor
 		//	= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "showInfoUnderCursorButton" );
@@ -65,6 +76,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 				 &MenuToolButtonWidget::clicked,
 				 this,
 				 &MenuVisualizationWindowsWidget::_displaySettingsWindow );
+		_fullscreen->setTriggerAction( this, &MenuVisualizationWindowsWidget::_toggleWindowState );
 	}
 	void MenuVisualizationWindowsWidget::localize() { setTitle( "Windows" ); }
 	void MenuVisualizationWindowsWidget::refresh()
@@ -101,6 +113,20 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_mapWindowsActions.emplace( &p_id, action );
 	}
 
+	void MenuVisualizationWindowsWidget::_updateFullscreenButton( const WindowMode & p_mode )
+	{
+		if ( p_mode == WindowMode::Fullscreen )
+		{
+			_fullscreen->setIcon( Style::IconConst::get().WINDOWED_ICON );
+			_fullscreen->setText( "Window" );
+		}
+		else
+		{
+			_fullscreen->setIcon( Style::IconConst::get().FULLSCREEN_ICON );
+			_fullscreen->setText( "Fullscreen" );
+		}
+	}
+
 	void MenuVisualizationWindowsWidget::_toggleSceneWindow()
 	{
 		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SCENE );
@@ -130,5 +156,14 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	void MenuVisualizationWindowsWidget::_displaySettingsWindow()
 	{
 		VTXApp::get().getMainWindow().openSettingWindow( Settings::SETTING_MENU::VTX );
+	}
+	void MenuVisualizationWindowsWidget::_toggleWindowState() const
+	{
+		const Qt::WindowStates windowState = VTXApp::get().getMainWindow().windowState();
+
+		if ( windowState & Qt::WindowStates::enum_type::WindowFullScreen )
+			VTX_ACTION( new Action::Setting::WindowMode( WindowMode::Windowed ) );
+		else
+			VTX_ACTION( new Action::Setting::WindowMode( WindowMode::Fullscreen ) );
 	}
 } // namespace VTX::UI::Widget::MainMenu::Visualization

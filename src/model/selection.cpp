@@ -429,7 +429,7 @@ namespace VTX::Model
 		_addMolecule( p_molecule );
 		_addMoleculeContent( p_molecule );
 
-		_mapSelectionAABB[ p_molecule.getId() ].extend( p_molecule.getAABB() );
+		_mapSelectionAABB[ p_molecule.getId() ].extend( p_molecule.getWorldAABB() );
 	}
 
 	void Selection::_selectChain( const Chain & p_chain )
@@ -439,7 +439,7 @@ namespace VTX::Model
 		_addChain( p_chain );
 		_addChainContent( p_chain );
 
-		_mapSelectionAABB[ parent.getId() ].extend( p_chain.getAABB() );
+		_mapSelectionAABB[ parent.getId() ].extend( p_chain.getWorldAABB() );
 	}
 
 	void Selection::_selectResidue( const Residue & p_residue )
@@ -452,7 +452,7 @@ namespace VTX::Model
 		_addResidue( p_residue );
 		_addResidueContent( p_residue );
 
-		_mapSelectionAABB[ moleculeParent.getId() ].extend( p_residue.getAABB() );
+		_mapSelectionAABB[ moleculeParent.getId() ].extend( p_residue.getWorldAABB() );
 	}
 
 	void Selection::_selectAtom( const Atom & p_atom )
@@ -469,7 +469,7 @@ namespace VTX::Model
 		if ( atomAdded )
 			_referenceAtom( p_atom );
 
-		_mapSelectionAABB[ moleculeParent.getId() ].extend( p_atom.getAABB() );
+		_mapSelectionAABB[ moleculeParent.getId() ].extend( p_atom.getWorldAABB() );
 	}
 
 	void Selection::_referenceAtom( const Atom & p_atom )
@@ -576,7 +576,7 @@ namespace VTX::Model
 		const ID &	 moleculeId = p_chain.getMoleculePtr()->getId();
 		const uint & index		= p_chain.getIndex();
 
-		MapChainIds & chainMap = _moleculesMap.at( moleculeId );
+		MapChainIds & chainMap = _moleculesMap[ moleculeId ];
 
 		const bool hasToAddChain = chainMap.find( index ) == chainMap.end();
 
@@ -594,7 +594,7 @@ namespace VTX::Model
 		const uint & chainIndex = p_residue.getChainPtr()->getIndex();
 		const uint & index		= p_residue.getIndex();
 
-		MapResidueIds & residueMap = _moleculesMap.at( moleculeId ).at( chainIndex );
+		MapResidueIds & residueMap = _moleculesMap[ moleculeId ][ chainIndex ];
 
 		const bool hasToAddResidue = residueMap.find( index ) == residueMap.end();
 
@@ -613,7 +613,7 @@ namespace VTX::Model
 		const uint & residueIndex = p_atom.getResiduePtr()->getIndex();
 		const uint & index		  = p_atom.getIndex();
 
-		VecAtomIds & atomVector = _moleculesMap.at( moleculeId ).at( chainIndex ).at( residueIndex );
+		VecAtomIds & atomVector = _moleculesMap[ moleculeId ][ chainIndex ][ residueIndex ];
 
 		const bool hasToAddAtom = std::find( atomVector.begin(), atomVector.end(), index ) == atomVector.end();
 		if ( hasToAddAtom )
@@ -645,6 +645,13 @@ namespace VTX::Model
 		const Molecule & moleculeParent = *p_chain.getMoleculePtr();
 		//_referenceFullChain( p_chain );
 
+		const ID &		moleculeId = moleculeParent.getId();
+		const uint		chainIndex = p_chain.getIndex();
+		MapResidueIds & residueMap = _moleculesMap[ moleculeId ][ chainIndex ];
+
+		if ( residueMap.getFullySelectedChildCount() == p_chain.getRealResidueCount() )
+			return;
+
 		for ( uint i = 0; i < p_chain.getResidueCount(); ++i )
 		{
 			const Residue * const residue = moleculeParent.getResidue( p_chain.getIndexFirstResidue() + i );
@@ -652,7 +659,15 @@ namespace VTX::Model
 			if ( residue == nullptr )
 				continue;
 
-			_addResidue( *residue );
+			//_addResidue( *residue );
+			const uint index		   = residue->getIndex();
+			const bool hasToAddResidue = residueMap.find( index ) == residueMap.end();
+
+			if ( hasToAddResidue )
+			{
+				residueMap.emplace( index, VecAtomIds() );
+			}
+
 			_addResidueContent( *residue );
 		}
 	}
@@ -668,17 +683,36 @@ namespace VTX::Model
 		if ( atoms.getFullySelectedChildCount() >= p_residue.getRealAtomCount() )
 			return;
 
-		atoms._setFullChildrenCount( p_residue.getAtomCount() );
+		atoms._setFullChildrenCount( p_residue.getRealAtomCount() );
 		_referenceFullResidue( p_residue );
 
-		for ( uint i = 0; i < p_residue.getAtomCount(); ++i )
+		size_t nextAtomIndex = atoms.size();
+		atoms.resize( p_residue.getRealAtomCount(), UINT_MAX );
+
+		VecAtomIds::const_iterator itLastAtomFindCheck = atoms.cbegin() + nextAtomIndex;
+
+		const uint firstAtom	 = p_residue.getIndexFirstAtom();
+		const uint nextFirstAtom = firstAtom + p_residue.getAtomCount();
+
+		for ( uint i = firstAtom; i < nextFirstAtom; ++i )
 		{
-			const Atom * const atom = moleculeParent.getAtom( p_residue.getIndexFirstAtom() + i );
+			const Atom * const atom = moleculeParent.getAtom( i );
 
 			if ( atom == nullptr )
 				continue;
 
-			_addAtom( *atom );
+			//_addAtom( *atom );
+
+			const uint atomIndex = atom->getIndex();
+
+			const bool hasToAddAtom
+				= std::find( atoms.cbegin(), itLastAtomFindCheck, atomIndex ) == itLastAtomFindCheck;
+
+			if ( hasToAddAtom )
+			{
+				atoms[ nextAtomIndex ] = atom->getIndex();
+				nextAtomIndex++;
+			}
 		}
 	}
 
@@ -990,8 +1024,7 @@ namespace VTX::Model
 		for ( const std::pair<Model::ID, Math::AABB> & pairIdAabb : _mapSelectionAABB )
 		{
 			const Model::Molecule & molecule	= MVC::MvcManager::get().getModel<Model::Molecule>( pairIdAabb.first );
-			Math::AABB				currentAABB = pairIdAabb.second;
-			currentAABB.translate( molecule.getTransform().getTranslationVector() );
+			const Math::AABB &		currentAABB = pairIdAabb.second;
 			res.extend( currentAABB );
 		}
 
