@@ -372,13 +372,38 @@ namespace VTX
 			_bufferAtomSelections.resize( _atoms.size(), 0u );
 			if ( p_selection != nullptr )
 			{
-				for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : *p_selection )
+				// Optimize buffer writing for full molecule
+				if ( p_selection->getFullySelectedChildCount() == getRealChainCount() )
 				{
-					for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+					std::fill( _bufferAtomSelections.begin(), _bufferAtomSelections.end(), 1u );
+				}
+				else
+				{
+					for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : *p_selection )
 					{
-						for ( const uint & atomIndex : pairResidue.second )
+						// Optimize buffer writing for full chains
+						const Model::Chain * const chain = getChain( pairChain.first );
+						if ( pairChain.second.getFullySelectedChildCount() == chain->getRealResidueCount() )
 						{
-							_bufferAtomSelections[ atomIndex ] = 1u;
+							const uint firstAtomID = getResidue( chain->getIndexFirstResidue() )->getIndexFirstAtom();
+							const Model::Residue * const lastResidue = getResidue( chain->getIndexLastResidue() );
+							const uint firstNextAtomID = lastResidue->getIndexFirstAtom() + lastResidue->getAtomCount();
+
+							std::fill( _bufferAtomSelections.begin() + firstAtomID,
+									   _bufferAtomSelections.begin() + firstNextAtomID,
+									   1u );
+						}
+						else
+						{
+							// Optimization like previously will not works for residues because it will add too much
+							// computation compared to add atoms one by one
+							for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+							{
+								for ( const uint & atomIndex : pairResidue.second )
+								{
+									_bufferAtomSelections[ atomIndex ] = 1u;
+								}
+							}
 						}
 					}
 				}
