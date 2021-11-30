@@ -505,7 +505,6 @@ namespace VTX::Model
 			AtomPositionsFrame &	   generatedAtomPosFrame = addAtomPositionFrame();
 			generatedAtomPosFrame.reserve( atomPosFrame.size() );
 		}
-		
 
 		for ( const UnknownResidueData & unknownSymbol : p_molecule.getUnknownResidueSymbols() )
 			addUnknownResidueSymbol( unknownSymbol );
@@ -547,7 +546,6 @@ namespace VTX::Model
 		p_residue.setSymbol( p_residueSource.getSymbol() );
 		p_residue.setColor( Model::Residue::getResidueColor( p_residueSource ) );
 		p_residue.setType( p_residueSource.getType() );
-		// TODO copy secondary structure
 		p_residue.setSecondaryStructure( p_residueSource.getSecondaryStructure() );
 		p_residue.setAtomType( p_residueSource.getAtomType() );
 
@@ -738,7 +736,6 @@ namespace VTX::Model
 			atom.setIndex( i );
 			getBufferAtomIds().emplace_back( i );
 		}
-		
 
 		for ( uint i = p_startIndex; i < p_startIndex + p_count; i++ )
 			p_fromMolecule.removeAtom( i, false, false, false, false );
