@@ -40,14 +40,14 @@ namespace VTX::UI::Widget::MainMenu::Home
 		_settingsButton->setData( "Settings", ":/sprite/settings_icon.png", Qt::Orientation::Vertical );
 		pushButton( *_settingsButton, 1 );
 
+		_informationButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "informationButton" );
+		_informationButton->setData( "About", ":/sprite/info_button.png", Qt::Orientation::Vertical );
+		pushButton( *_informationButton, 2 );
+
 		_fullscreen = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleFullscreenButton" );
 		_fullscreen->setData( "Fullscreen", ":/sprite/fullscreen_icon.png", Qt::Orientation::Vertical );
 		_updateFullscreenButton( VTXApp::get().getMainWindow().getWindowMode() );
-		pushButton( *_fullscreen, 2 );
-
-		_informationButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "informationButton" );
-		_informationButton->setData( "About", ":/sprite/info_button.png", Qt::Orientation::Vertical );
-		pushButton( *_informationButton, 3 );
+		pushButton( *_fullscreen, 3 );
 
 		_quitButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "quitButton" );
 		_quitButton->setData( "Quit", ":/sprite/exit_icon.png", Qt::Orientation::Vertical );
@@ -83,10 +83,10 @@ namespace VTX::UI::Widget::MainMenu::Home
 				 &MenuToolButtonWidget::clicked,
 				 this,
 				 &MenuHomeWindowsWidget::_displayInformationWindow );
-
 		connect(
 			_settingsButton, &MenuToolButtonWidget::clicked, this, &MenuHomeWindowsWidget::_displaySettingsWindow );
 
+		_fullscreen->setTriggerAction( this, &MenuHomeWindowsWidget::_toggleWindowState );
 		connect( _quitButton, &MenuToolButtonWidget::clicked, this, &MenuHomeWindowsWidget::_quit );
 	}
 	void MenuHomeWindowsWidget::localize() { setTitle( "Windows" ); }
