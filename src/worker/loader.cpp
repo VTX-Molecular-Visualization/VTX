@@ -21,133 +21,189 @@ namespace VTX
 	{
 		uint Loader::_run()
 		{
-			Model::Configuration::Molecule config = Model::Configuration::Molecule();
-
-			// Load PRM or PSF file firstly.
-			std::vector<IO::FilePath>::iterator itPath = _paths.begin();
-			while ( itPath != _paths.end() )
-			{
-				const std::string extension = ( *itPath ).extension();
-				if ( extension == "prm" )
-				{
-					IO::Reader::PRM reader = IO::Reader::PRM();
-					reader.readFile( *itPath, config );
-					itPath = _paths.erase( itPath );
-				}
-				else if ( extension == "psf" )
-				{
-					IO::Reader::PSF reader = IO::Reader::PSF();
-					reader.readFile( *itPath, config );
-					itPath = _paths.erase( itPath );
-				}
-				else
-				{
-					++itPath;
-				}
-			}
+			_fillFilepathPerMode();
 
 			// Load all files.
-			Tool::Chrono chrono;
-			for ( IO::FilePath & path : _paths )
+			_loadSceneFiles();
+			Model::Configuration::Molecule config = Model::Configuration::Molecule();
+			_loadConfigurationFiles( config );
+			_loadMoleculeFiles( config );
+			_loadTrajectoriesFiles( config );
+			_loadMeshFiles();
+
+			// Display errors for unknown files
+			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::UNKNOWN ) ] )
 			{
-				chrono.start();
-				emit logInfo( "Loading " + path.filename() );
-				MODE mode = _getMode( path );
-
-				_pathResult.emplace( path, Result( SOURCE_TYPE::FILE ) );
-
-				if ( mode == MODE::UNKNOWN )
-				{
-					emit logError( "Format not supported" );
-					_pathResult[ path ].state = false;
-				}
-				else if ( mode == MODE::MOLECULE )
-				{
-					// Create reader.
-					IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles( this );
-
-					// Set PRM.
-					Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
-					molecule->setConfiguration( config );
-
-					// Load.
-					try
-					{
-						reader->readFile( path, *molecule );
-						_pathResult[ path ].molecule = molecule;
-						_pathResult[ path ].state	 = true;
-					}
-					catch ( const std::exception & p_e )
-					{
-						emit logError( "Error loading file" );
-						emit logError( p_e.what() );
-						MVC::MvcManager::get().deleteModel( molecule );
-						_pathResult[ path ].state = false;
-					}
-
-					delete reader;
-				}
-				else if ( mode == MODE::MESH )
-				{
-					IO::Reader::LibAssimp * const reader = new IO::Reader::LibAssimp();
-					Model::MeshTriangle * const	  mesh = MVC::MvcManager::get().instantiateModel<Model::MeshTriangle>();
-
-					try
-					{
-						reader->readFile( path, *mesh );
-						_pathResult[ path ].mesh  = mesh;
-						_pathResult[ path ].state = true;
-					}
-					catch ( const std::exception & p_e )
-					{
-						emit logError( "Error loading file" );
-						emit logError( p_e.what() );
-						MVC::MvcManager::get().deleteModel( mesh );
-						_pathResult[ path ].state = false;
-					}
-
-					delete reader;
-				}
-				else if ( mode == MODE::VTX )
-				{
-					IO::Reader::SerializedObject<VTXApp> * const reader = new IO::Reader::SerializedObject<VTXApp>();
-
-					try
-					{
-						reader->readFile( path, VTXApp::get() );
-						emit logInfo( "App loaded " );
-						_pathResult[ path ].state = true;
-					}
-					catch ( const std::exception & p_e )
-					{
-						emit logError( "Cannot load app: " + std::string( p_e.what() ) );
-						_pathResult[ path ].state = false;
-					}
-
-					delete reader;
-				}
-
-				// Path deleted in callback => save path in recent path when loading works
-				// delete path;
-
-				chrono.stop();
-				emit logInfo( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+				emit logError( "Error when loading " + path.path() + " : Format not supported" );
+				_pathResult[ path ].state = false;
 			}
 
 			// Load all buffers.
+			_loadMoleculeBuffers();
+
+			return 1;
+		}
+
+		void Loader::_loadSceneFiles()
+		{
+			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::SCENE ) ] )
+			{
+				_startLoadingFile( path, SOURCE_TYPE::FILE );
+
+				IO::Reader::SerializedObject<VTXApp> * const reader = new IO::Reader::SerializedObject<VTXApp>();
+
+				try
+				{
+					reader->readFile( path, VTXApp::get() );
+					_endLoadingFileSuccess( path );
+				}
+				catch ( const std::exception & p_e )
+				{
+					_endLoadingFileFail( path, p_e.what() );
+				}
+
+				delete reader;
+			}
+		}
+		void Loader::_loadConfigurationFiles( Model::Configuration::Molecule & p_config )
+		{
+			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::CONFIGURATION ) ] )
+			{
+				_startLoadingFile( path, SOURCE_TYPE::FILE );
+				const std::string extension = path.extension();
+
+				try
+				{
+					if ( extension == "prm" )
+					{
+						IO::Reader::PRM reader = IO::Reader::PRM();
+						reader.readFile( path, p_config );
+					}
+					else if ( extension == "psf" )
+					{
+						IO::Reader::PSF reader = IO::Reader::PSF();
+						reader.readFile( path, p_config );
+					}
+
+					_endLoadingFileSuccess( path );
+				}
+				catch ( const std::exception & p_e )
+				{
+					_endLoadingFileFail( path, p_e.what() );
+				}
+			}
+		}
+		void Loader::_loadMoleculeFiles( const Model::Configuration::Molecule & p_config )
+		{
+			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::MOLECULE ) ] )
+			{
+				_startLoadingFile( path, SOURCE_TYPE::FILE );
+
+				// Create reader.
+				IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles( this );
+
+				// Set PRM.
+				Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+				molecule->setConfiguration( p_config );
+
+				// Load.
+				try
+				{
+					reader->readFile( path, *molecule );
+					_pathResult[ path ].molecule = molecule;
+					_moleculeTargetsForDynamics.emplace_back( molecule );
+					_endLoadingFileSuccess( path );
+				}
+				catch ( const std::exception & p_e )
+				{
+					_endLoadingFileFail( path, p_e.what() );
+					MVC::MvcManager::get().deleteModel( molecule );
+				}
+
+				delete reader;
+			}
+		}
+		void Loader::_loadTrajectoriesFiles( const Model::Configuration::Molecule & p_config )
+		{
+			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::TRAJECTORY ) ] )
+			{
+				_startLoadingFile( path, SOURCE_TYPE::FILE );
+
+				// Create reader.
+				IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles( this );
+
+				// Load.
+				try
+				{
+					const bool dynamicAppliedOnTarget = reader->readDynamic( path, _moleculeTargetsForDynamics );
+
+					if ( !dynamicAppliedOnTarget ) // If the dynamic doesn't match any targets, we open it as standalone
+					{
+						Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+						molecule->setConfiguration( p_config );
+
+						// Load.
+						try
+						{
+							reader->readFile( path, *molecule );
+							_pathResult[ path ].molecule = molecule;
+							_endLoadingFileSuccess( path );
+						}
+						catch ( const std::exception & p_e )
+						{
+							_endLoadingFileFail( path, p_e.what() );
+							MVC::MvcManager::get().deleteModel( molecule );
+						}
+					}
+
+					else
+					{
+						_endLoadingFileSuccess( path );
+					}
+				}
+				catch ( const std::exception & p_e )
+				{
+					_endLoadingFileFail( path, p_e.what() );
+				}
+
+				delete reader;
+			}
+		}
+		void Loader::_loadMeshFiles()
+		{
+			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::SCENE ) ] )
+			{
+				_startLoadingFile( path, SOURCE_TYPE::FILE );
+
+				IO::Reader::LibAssimp * const reader = new IO::Reader::LibAssimp();
+				Model::MeshTriangle * const	  mesh	 = MVC::MvcManager::get().instantiateModel<Model::MeshTriangle>();
+
+				try
+				{
+					reader->readFile( path, *mesh );
+					_pathResult[ path ].mesh = mesh;
+
+					_endLoadingFileSuccess( path );
+				}
+				catch ( const std::exception & p_e )
+				{
+					_endLoadingFileFail( path, p_e.what() );
+					MVC::MvcManager::get().deleteModel( mesh );
+				}
+
+				delete reader;
+			}
+		}
+
+		void Loader::_loadMoleculeBuffers()
+		{
 			for ( const std::pair<IO::FilePath, std::string *> & pair : _mapFileNameBuffer )
 			{
-				chrono.start();
-				emit logInfo( "Loading " + pair.first.filename() );
-				MODE mode = _getMode( pair.first );
+				_startLoadingFile( pair.first, SOURCE_TYPE::BUFFER );
 
-				_pathResult.emplace( pair.first, Result( SOURCE_TYPE::BUFFER ) );
+				const MODE bufferType = _getMode( pair.first );
 
-				if ( mode != MODE::MOLECULE )
-				{
-					emit logError( "Format not supported" );
-				}
-				else
+				if ( bufferType == MODE::MOLECULE || bufferType == MODE::TRAJECTORY )
 				{
 					// Create reader.
 					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles( this );
@@ -158,38 +214,51 @@ namespace VTX
 					{
 						reader->readBuffer( *pair.second, pair.first, *molecule );
 						_pathResult[ pair.first ].molecule = molecule;
-						_pathResult[ pair.first ].state	   = true;
+						_endLoadingFileSuccess( pair.first );
 					}
 					catch ( const std::exception & p_e )
 					{
-						emit logError( "Error loading file" );
-						emit logError( p_e.what() );
+						_endLoadingFileFail( pair.first, p_e.what() );
 						MVC::MvcManager::get().deleteModel( molecule );
-						_pathResult[ pair.first ].state = false;
 					}
 
 					delete reader;
 				}
+				else
+				{
+					emit logError( "Format not supported" );
+				}
 
 				delete pair.second;
-
-				chrono.stop();
-				emit logInfo( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
+		}
 
-			return 1;
+		void Loader::_fillFilepathPerMode()
+		{
+			_filepathsPerMode.resize( int( MODE::COUNT ) );
+
+			for ( const IO::FilePath & path : _paths )
+			{
+				MODE filetype = _getMode( path );
+				_filepathsPerMode[ int( filetype ) ].emplace_back( path );
+			}
 		}
 
 		Loader::MODE Loader::_getMode( const IO::FilePath & p_path ) const
 		{
 			std::string extension = p_path.extension();
 
-			if ( extension == "nc" || extension == "cif" || extension == "cml" || extension == "cssr"
-				 || extension == "dcd" || extension == "gro" || extension == "lammpstrj" || extension == "mmcif"
-				 || extension == "mmtf" || extension == "mol2" || extension == "molden" || extension == "pdb"
-				 || extension == "sdf" || extension == "smi" || extension == "arc" || extension == "trr"
-				 || extension == "mmtf" || extension == "xtc" || extension == "tng" || extension == "trj"
-				 || extension == "xyz" )
+			if ( extension == ".vtx" )
+			{
+				return MODE::SCENE;
+			}
+			else if ( extension == "prm" || extension == "psf" )
+			{
+				return MODE::CONFIGURATION;
+			}
+			else if ( extension == "cif" || extension == "cml" || extension == "cssr" || extension == "mmcif"
+					  || extension == "mmtf" || extension == "mol2" || extension == "molden" || extension == "pdb"
+					  || extension == "sdf" || extension == "smi" || extension == "mmtf" || extension == "xyz" )
 			{
 				return MODE::MOLECULE;
 			}
@@ -197,14 +266,48 @@ namespace VTX
 			{
 				return MODE::MESH;
 			}
-			else if ( extension == ".vtx" )
+			else if ( extension == "nc" || extension == "dcd" || extension == "gro" || extension == "lammpstrj"
+					  || extension == "arc" || extension == "trr" || extension == "xtc" || extension == "tng"
+					  || extension == "trj" )
 			{
-				return MODE::VTX;
+				return MODE::TRAJECTORY;
 			}
 			else
 			{
 				return MODE::UNKNOWN;
 			}
+		}
+
+		void Loader::_startLoadingFile( const IO::FilePath & p_path, const SOURCE_TYPE & p_sourceType )
+		{
+			emit logInfo( "Loading " + p_path.filename() );
+			_pathResult.emplace( p_path, Result( p_sourceType ) );
+			_loadingFileChrono.start();
+		}
+		void Loader::_endLoadingFileSuccess( const IO::FilePath & p_path )
+		{
+			_loadingFileChrono.stop();
+			_pathResult[ p_path ].state = true;
+
+			switch ( _pathResult[ p_path ].sourceType )
+			{
+			case SOURCE_TYPE::FILE:
+				emit logInfo( "File " + p_path.filename() + " treated in "
+							  + std::to_string( _loadingFileChrono.elapsedTime() ) + "s" );
+				break;
+			case SOURCE_TYPE::BUFFER:
+				emit logInfo( "Buffer " + p_path.filename() + " treated in "
+							  + std::to_string( _loadingFileChrono.elapsedTime() ) + "s" );
+				break;
+			default: break;
+			}
+		}
+		void Loader::_endLoadingFileFail( const IO::FilePath & p_path, const std::string & p_message )
+		{
+			_loadingFileChrono.stop();
+			_pathResult[ p_path ].state = false;
+
+			emit logError( "Error when loading " + p_path.filename() + " : " + p_message );
 		}
 
 	} // namespace Worker

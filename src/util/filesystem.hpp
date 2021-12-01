@@ -103,6 +103,18 @@ namespace VTX
 				  "XTC (*.xtc);;"
 				  "XYZ (*.xyz);;";
 
+			static const QString TRAJECTORY_EXTENSIONS_READ
+				= "Amber Net CDF (*.nc);;"
+				  "DCD (*.dcd);;"
+				  "GRO (*.gro);;"
+				  "LAMMPS (*.lammpstrj);;"
+				  "Tinker (*.arc *.psf *.prm);;"
+				  "TNG (*.tng);;"
+				  "TRJ (*.trj);;"
+				  "TRR (*.trr);;"
+				  "XTC (*.xtc);;"
+				  "All (*)";
+
 			static const QString IMAGE_EXPORT_EXTENSIONS
 				= "PNG (*.png);;"
 				  "JPEG (*.jpg *.jpeg);;"
@@ -121,6 +133,9 @@ namespace VTX
 			static const QString DEFAULT_MOLECULE_WRITE_EXTENSION = DEFAULT_MOLECULE_WRITE_FILTER.mid(
 				DEFAULT_MOLECULE_WRITE_FILTER.lastIndexOf( '.' ) + 1,
 				DEFAULT_MOLECULE_WRITE_FILTER.size() - DEFAULT_MOLECULE_WRITE_FILTER.lastIndexOf( '.' ) - 2 );
+
+			static const QString LOAD_TRAJECTORY_FILTERS		= TRAJECTORY_EXTENSIONS_READ;
+			static const QString DEFAULT_TRAJECTORY_READ_FILTER = "All (*)";
 
 			static const QString DEFAULT_FILE_READ_FILTER  = "All (*)";
 			static const QString DEFAULT_FILE_WRITE_FILTER = VTX_EXTENSIONS;

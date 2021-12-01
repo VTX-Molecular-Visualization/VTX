@@ -12,6 +12,10 @@ namespace VTX
 	{
 		class ImageExport;
 	}
+	namespace Model
+	{
+		class Molecule;
+	}
 
 	namespace UI
 	{
@@ -28,6 +32,7 @@ namespace VTX
 
 			static void openLoadMoleculeDialog();
 			static void openExportMoleculeDialog();
+			static void openLoadTrajectoryDialog( Model::Molecule & p_target );
 
 			static void createNewSessionDialog();
 

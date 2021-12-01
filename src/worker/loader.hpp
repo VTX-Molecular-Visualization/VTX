@@ -4,6 +4,7 @@
 #include "base_thread.hpp"
 #include "define.hpp"
 #include "io/filepath.hpp"
+#include "tool/chrono.hpp"
 #include <map>
 #include <vector>
 
@@ -11,6 +12,11 @@ namespace VTX
 {
 	namespace Model
 	{
+		namespace Configuration
+		{
+			struct Molecule;
+		}
+
 		class Molecule;
 		class MeshTriangle;
 	} // namespace Model
@@ -27,12 +33,17 @@ namespace VTX
 			Q_OBJECT
 
 		  public:
+			// Order in enum define opening order
 			enum class MODE : int
 			{
+				SCENE,
+				CONFIGURATION,
 				MOLECULE,
+				TRAJECTORY,
 				MESH,
-				VTX,
 				UNKNOWN,
+
+				COUNT
 			};
 
 			enum class SOURCE_TYPE : int
@@ -63,9 +74,21 @@ namespace VTX
 			~Loader() = default;
 
 			inline const std::map<IO::FilePath, Result> & getPathsResult() const { return _pathResult; }
+			inline void									  addDynamicTarget( Model::Molecule * const p_target )
+			{
+				_moleculeTargetsForDynamics.emplace_back( p_target );
+			}
 
 		  protected:
 			uint _run() override;
+
+			void _loadSceneFiles();
+			void _loadConfigurationFiles( Model::Configuration::Molecule & );
+			void _loadMoleculeFiles( const Model::Configuration::Molecule & );
+			void _loadTrajectoriesFiles( const Model::Configuration::Molecule & p_config );
+			void _loadMeshFiles();
+
+			void _loadMoleculeBuffers();
 
 		  private:
 			std::vector<IO::FilePath>			  _paths			 = std::vector<IO::FilePath>();
@@ -73,7 +96,18 @@ namespace VTX
 
 			std::map<IO::FilePath, Result> _pathResult = std::map<IO::FilePath, Result>();
 
+			std::vector<std::vector<IO::FilePath>> _filepathsPerMode = std::vector<std::vector<IO::FilePath>>();
+			std::vector<Model::Molecule *>		   _moleculeTargetsForDynamics = std::vector<Model::Molecule *>();
+
+			Tool::Chrono _loadingFileChrono;
+
+			void _fillFilepathPerMode();
+
 			MODE _getMode( const IO::FilePath & ) const;
+
+			void _startLoadingFile( const IO::FilePath & p_path, const SOURCE_TYPE & p_sourceType );
+			void _endLoadingFileSuccess( const IO::FilePath & p_path );
+			void _endLoadingFileFail( const IO::FilePath & p_path, const std::string & p_message );
 		};
 	} // namespace Worker
 } // namespace VTX
