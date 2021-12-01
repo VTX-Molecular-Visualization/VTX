@@ -5,7 +5,6 @@
 #include <glm/detail/type_quat.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <limits>
 #include <string>
 
 namespace VTX

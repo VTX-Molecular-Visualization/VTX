@@ -11,7 +11,7 @@
 #include <set>
 #include <unordered_set>
 #include <vector>
-
+#include "mvc/mvc_manager.hpp"
 namespace VTX::Model
 {
 	class Molecule;

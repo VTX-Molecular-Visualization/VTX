@@ -24,7 +24,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		class MenuItemData
 		{
 		  public:
-			MenuItemData() : ControllerData( T(), "", "" ) {};
+			MenuItemData() : MenuItemData( T(), "", "" ) {};
 			MenuItemData( const T p_data, const QString & p_name, const QString & p_iconPath ) :
 				data( p_data ), name( p_name ), iconPath( p_iconPath )
 			{
@@ -38,7 +38,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		class MenuItemDataRef
 		{
 		  public:
-			MenuItemDataRef() : ControllerData( T(), "", "" ) {};
+			MenuItemDataRef() : MenuItemDataRef( T(), "", "" ) {};
 			MenuItemDataRef( const T & p_data, const QString & p_name, const QString & p_iconPath ) :
 				data( p_data ), name( p_name ), iconPath( p_iconPath )
 			{

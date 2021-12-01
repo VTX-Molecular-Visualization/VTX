@@ -4,6 +4,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <climits>
 
 namespace VTX::IO::Struct
 {
