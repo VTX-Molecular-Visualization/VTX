@@ -91,15 +91,23 @@ namespace VTX::UI::Widget::ContextualMenu
 		viewpointSubmenu->addItemData(
 			new ActionData( "Delete", TypeMask::Viewpoint, this, &ContextualMenuSelection::_deleteViewpointAction ) );
 
-		_submenus[ ID::Model::MODEL_MOLECULE ] = moleculeStructureSubmenu;
-		_submenus[ ID::Model::MODEL_CHAIN ]	   = moleculeStructureSubmenu;
-		_submenus[ ID::Model::MODEL_RESIDUE ]  = moleculeStructureSubmenu;
-		_submenus[ ID::Model::MODEL_ATOM ]	   = moleculeStructureSubmenu;
+		_submenus.resize( int( SUBMENU_TEMPLATE::COUNT ) );
+		_submenus[ int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE ) ] = moleculeStructureSubmenu;
+		_submenus[ int( SUBMENU_TEMPLATE::VIEWPOINT ) ]			 = viewpointSubmenu;
 
-		_submenus[ ID::Model::MODEL_VIEWPOINT ] = viewpointSubmenu;
-		_submenus[ ID::Model::MODEL_PATH ]		= viewpointSubmenu;
+		_submenusMap[ ID::Model::MODEL_MOLECULE ] = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ ID::Model::MODEL_CHAIN ]	  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ ID::Model::MODEL_RESIDUE ]  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ ID::Model::MODEL_ATOM ]	  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+
+		_submenusMap[ ID::Model::MODEL_VIEWPOINT ] = int( SUBMENU_TEMPLATE::VIEWPOINT );
+		_submenusMap[ ID::Model::MODEL_PATH ]	   = int( SUBMENU_TEMPLATE::VIEWPOINT );
 	}
-	ContextualMenuSelection ::~ContextualMenuSelection() {}
+	ContextualMenuSelection ::~ContextualMenuSelection()
+	{
+		for ( SelectionSubMenu * const submenu : _submenus )
+			delete submenu;
+	}
 
 	void ContextualMenuSelection::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
 	void ContextualMenuSelection::_setupSlots()
@@ -138,7 +146,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		std::set<SelectionSubMenu *> submenuDisplayed = std::set<SelectionSubMenu *>();
 		for ( const ID::VTX_ID & itemType : typesInSelection )
 		{
-			submenuDisplayed.emplace( _submenus[ itemType ] );
+			submenuDisplayed.emplace( _submenus[ _submenusMap[ itemType ] ] );
 		}
 
 		const bool actionsInSubmenu = submenuDisplayed.size() > 1;

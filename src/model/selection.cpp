@@ -1,6 +1,7 @@
 #include "selection.hpp"
 #include "atom.hpp"
 #include "chain.hpp"
+#include "define.hpp"
 #include "event/event_manager.hpp"
 #include "molecule.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -687,7 +688,7 @@ namespace VTX::Model
 		_referenceFullResidue( p_residue );
 
 		size_t nextAtomIndex = atoms.size();
-		atoms.resize( p_residue.getRealAtomCount(), UINT_MAX );
+		atoms.resize( p_residue.getRealAtomCount(), INVALID_ID );
 
 		VecAtomIds::const_iterator itLastAtomFindCheck = atoms.cbegin() + nextAtomIndex;
 
