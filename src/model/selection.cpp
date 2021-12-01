@@ -730,9 +730,9 @@ namespace VTX::Model
 		const ID & moleculeId = p_chain.getMoleculePtr()->getId();
 		const ID & index	  = p_chain.getIndex();
 
-		_moleculesMap.at( moleculeId ).erase( index );
+		_moleculesMap[ moleculeId ].erase( index );
 
-		if ( _moleculesMap.at( moleculeId ).size() == 0 )
+		if ( _moleculesMap[ moleculeId ].size() == 0 )
 		{
 			_removeMolecule( *p_chain.getMoleculePtr() );
 		}
@@ -748,9 +748,9 @@ namespace VTX::Model
 		const ID & chainIndex = p_residue.getChainPtr()->getIndex();
 		const ID & index	  = p_residue.getIndex();
 
-		_moleculesMap.at( moleculeId ).at( chainIndex ).erase( index );
+		_moleculesMap[ moleculeId ][ chainIndex ].erase( index );
 
-		if ( _moleculesMap.at( moleculeId ).at( chainIndex ).size() == 0 )
+		if ( _moleculesMap[ moleculeId ][ chainIndex ].size() == 0 )
 		{
 			_removeChain( *p_residue.getChainPtr() );
 		}
@@ -767,7 +767,7 @@ namespace VTX::Model
 		const ID & residueIndex = p_atom.getResiduePtr()->getIndex();
 		const ID & index		= p_atom.getIndex();
 
-		VecAtomIds & atomVector = _moleculesMap.at( moleculeId ).at( chainIndex ).at( residueIndex );
+		VecAtomIds & atomVector = _moleculesMap[ moleculeId ][ chainIndex ][ residueIndex ];
 
 		atomVector.erase( std::remove( atomVector.begin(), atomVector.end(), index ), atomVector.end() );
 		if ( atomVector.size() == 0 )
