@@ -1,6 +1,7 @@
 #ifndef __VTX_DEFINE__
 #define __VTX_DEFINE__
 
+#include <climits>
 #include <glm/detail/qualifier.hpp>
 #include <glm/detail/type_quat.hpp>
 #include <glm/glm.hpp>

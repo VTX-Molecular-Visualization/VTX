@@ -1,10 +1,10 @@
 #ifndef __VTX_IO_STRUCT_IMAGE_EXPORT__
 #define __VTX_IO_STRUCT_IMAGE_EXPORT__
 
+#include "define.hpp"
 #include <string>
 #include <utility>
 #include <vector>
-#include <climits>
 
 namespace VTX::IO::Struct
 {
