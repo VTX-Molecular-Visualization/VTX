@@ -33,7 +33,6 @@ namespace VTX
 			Q_OBJECT
 
 		  public:
-			// Order in enum define opening order
 			enum class MODE : int
 			{
 				SCENE,
@@ -78,6 +77,10 @@ namespace VTX
 			{
 				_moleculeTargetsForDynamics.emplace_back( p_target );
 			}
+			inline void setOpenTrajectoryAsStandalone( const bool p_openAsStandalone )
+			{
+				_openTrajectoryAsStandalone = p_openAsStandalone;
+			}
 
 		  protected:
 			uint _run() override;
@@ -100,6 +103,7 @@ namespace VTX
 			std::vector<Model::Molecule *>		   _moleculeTargetsForDynamics = std::vector<Model::Molecule *>();
 
 			Tool::Chrono _loadingFileChrono;
+			bool		 _openTrajectoryAsStandalone = true;
 
 			void _fillFilepathPerMode();
 

@@ -62,19 +62,11 @@ namespace VTX::IO::Reader
 		int startingFrame = 1;
 		for ( uint frameIdx = 0; frameIdx < p_trajectory.nsteps() - p_trajectoryFrameStart; ++frameIdx )
 		{
+			chemfiles::Frame frame = p_trajectory.read();
+			fillTrajectoryFrame( frame, p_molecule, p_molFrameStart + frameIdx );
 
-			Model::Molecule::AtomPositionsFrame & moleculeFrame
-				= p_molecule.getAtomPositionFrame( p_molFrameStart + frameIdx );
-			chemfiles::Frame					  frame = p_trajectory.read();
-			const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
-			moleculeFrame.resize( positions.size() );
-			for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
-			{
-				const chemfiles::Vector3D & position = positions[ positionIdx ];
-				moleculeFrame[ positionIdx ]		 = { position[ 0 ], position[ 1 ], position[ 2 ] };
-			}
 #ifdef _DEBUG
-			if ( frameIdx % 100 == 0 )
+			if ( frameIdx > 1 && frameIdx % 100 == 0 )
 			{
 				_logDebug( "Frames from " + std::to_string( startingFrame ) + " to " + std::to_string( frameIdx )
 						   + " read in: " + std::to_string( timeReadingFrames.intervalTime() ) + "s" );
@@ -84,6 +76,20 @@ namespace VTX::IO::Reader
 		}
 		timeReadingFrames.stop();
 		_logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
+	}
+
+	void LibChemfiles::fillTrajectoryFrame( const chemfiles::Frame & p_frame,
+											Model::Molecule &		 p_molecule,
+											const uint				 p_moleculeFrameIndex ) const
+	{
+		Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( p_moleculeFrameIndex );
+		const std::vector<chemfiles::Vector3D> & positions	= p_frame.positions();
+		moleculeFrame.resize( positions.size() );
+		for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
+		{
+			const chemfiles::Vector3D & position = positions[ positionIdx ];
+			moleculeFrame[ positionIdx ]		 = { position[ 0 ], position[ 1 ], position[ 2 ] };
+		}
 	}
 
 	void LibChemfiles::_readTrajectory( chemfiles::Trajectory & p_trajectory,
@@ -620,12 +626,14 @@ namespace VTX::IO::Reader
 		{
 			if ( molecule->getAtomCount() == dynamicAtomCount )
 			{
-				const uint indexFirstNewFrame = molecule->getFrameCount();
+				const uint indexFirstNewFrame = molecule->getFrameCount() == 1 ? 0 : molecule->getFrameCount();
 
 				molecule->getAtomPositionFrames().resize( indexFirstNewFrame + p_dynamicTrajectory.nsteps() );
 				try
 				{
-					fillTrajectoryFrames( p_dynamicTrajectory, *molecule, indexFirstNewFrame, 0 );
+					// First frame already read to know framecount.
+					fillTrajectoryFrame( frame, *molecule, indexFirstNewFrame );
+					fillTrajectoryFrames( p_dynamicTrajectory, *molecule, indexFirstNewFrame + 1, 1 );
 				}
 				catch ( const std::exception & p_e )
 				{
@@ -642,6 +650,7 @@ namespace VTX::IO::Reader
 					}
 				}
 
+				molecule->forceNotifyTrajectoryChanged();
 				res = true;
 			}
 		}

@@ -231,6 +231,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _applyRepresentationAction( const int p_representationIndex );
 
 		void _exportAction();
+		void _loadTrajectoryAction();
 
 	  private:
 		CustomWidget::SetRepresentationMenu * _representationMenu = nullptr;

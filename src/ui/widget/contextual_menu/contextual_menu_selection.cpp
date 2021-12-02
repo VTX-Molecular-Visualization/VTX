@@ -77,6 +77,8 @@ namespace VTX::UI::Widget::ContextualMenu
 			new ActionData( "Delete", TypeMask::All, this, &ContextualMenuSelection::_deleteAction ) );
 
 		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Export", TypeMask::Molecule, this ) );
+		moleculeStructureSubmenu->addItemData( new ActionData(
+			"Load Trajectory", TypeMask::Molecule, this, &ContextualMenuSelection::_loadTrajectoryAction ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
 
@@ -333,6 +335,25 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_extractAction() { VTX_ACTION( new Action::Selection::Extract( *_target ) ); }
 	void ContextualMenuSelection::_deleteAction() { VTX_ACTION( new Action::Selection::Delete( *_target ) ); }
 	void ContextualMenuSelection::_exportAction() { UI::Dialog::openExportMoleculeDialog(); }
+	void ContextualMenuSelection::_loadTrajectoryAction()
+	{
+		Model::Molecule * molecule = nullptr;
+
+		if ( _focusedTarget->getTypeId() == ID::Model::MODEL_MOLECULE )
+		{
+			molecule = static_cast<Model::Molecule *>( _focusedTarget );
+		}
+		else if ( _target->getMoleculesMap().size() > 0 )
+		{
+			const Model::ID & moleculeID = _target->getMoleculesMap().begin()->first;
+			molecule					 = &( MVC::MvcManager::get().getModel<Model::Molecule>( moleculeID ) );
+		}
+
+		if ( molecule != nullptr )
+		{
+			UI::Dialog::openLoadTrajectoryDialog( *molecule );
+		}
+	}
 
 	void ContextualMenuSelection::_applyRepresentationAction( const int p_representationIndex )
 	{

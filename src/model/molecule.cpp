@@ -590,6 +590,10 @@ namespace VTX
 			_dynamicLoopCount = 0;
 			setFrame( frame );
 		}
+		void Molecule::forceNotifyTrajectoryChanged()
+		{
+			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_DATA_CHANGE ) );
+		}
 
 		void Molecule::setShowWater( const bool p_showWater )
 		{

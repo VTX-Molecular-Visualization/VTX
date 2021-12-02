@@ -131,6 +131,8 @@ namespace VTX::Action::Main
 					loader->addDynamicTarget( trajectoryTarget );
 				}
 
+				loader->setOpenTrajectoryAsStandalone( _trajectoryTargets.size() == 0 );
+
 				Worker::CallbackThread * callback = new Worker::CallbackThread(
 					[ loader ]( const uint p_code )
 					{

@@ -222,7 +222,7 @@ namespace VTX
 			void						setPlayMode( const Trajectory::PlayMode & p_playMode );
 
 			void updateTrajectory( const float & p_deltaTime );
-
+			void forceNotifyTrajectoryChanged();
 			bool isAtEndOfTrajectoryPlay();
 			void resetTrajectoryPlay();
 

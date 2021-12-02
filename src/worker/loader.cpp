@@ -139,23 +139,30 @@ namespace VTX
 
 					if ( !dynamicAppliedOnTarget ) // If the dynamic doesn't match any targets, we open it as standalone
 					{
-						Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
-						molecule->setConfiguration( p_config );
+						if ( _openTrajectoryAsStandalone )
+						{
+							Model::Molecule * const molecule
+								= MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+							molecule->setConfiguration( p_config );
 
-						// Load.
-						try
-						{
-							reader->readFile( path, *molecule );
-							_pathResult[ path ].molecule = molecule;
-							_endLoadingFileSuccess( path );
+							// Load.
+							try
+							{
+								reader->readFile( path, *molecule );
+								_pathResult[ path ].molecule = molecule;
+								_endLoadingFileSuccess( path );
+							}
+							catch ( const std::exception & p_e )
+							{
+								_endLoadingFileFail( path, p_e.what() );
+								MVC::MvcManager::get().deleteModel( molecule );
+							}
 						}
-						catch ( const std::exception & p_e )
+						else
 						{
-							_endLoadingFileFail( path, p_e.what() );
-							MVC::MvcManager::get().deleteModel( molecule );
+							_endLoadingFileFail( path, "Trajectory doesn't match any target." );
 						}
 					}
-
 					else
 					{
 						_endLoadingFileSuccess( path );
