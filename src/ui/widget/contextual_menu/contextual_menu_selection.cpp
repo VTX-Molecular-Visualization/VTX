@@ -77,6 +77,8 @@ namespace VTX::UI::Widget::ContextualMenu
 			new ActionData( "Delete", TypeMask::All, this, &ContextualMenuSelection::_deleteAction ) );
 
 		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Export", TypeMask::Molecule, this ) );
+		moleculeStructureSubmenu->addItemData( new ActionData(
+			"Load Trajectory", TypeMask::Molecule, this, &ContextualMenuSelection::_loadTrajectoryAction ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
 
@@ -91,15 +93,23 @@ namespace VTX::UI::Widget::ContextualMenu
 		viewpointSubmenu->addItemData(
 			new ActionData( "Delete", TypeMask::Viewpoint, this, &ContextualMenuSelection::_deleteViewpointAction ) );
 
-		_submenus[ ID::Model::MODEL_MOLECULE ] = moleculeStructureSubmenu;
-		_submenus[ ID::Model::MODEL_CHAIN ]	   = moleculeStructureSubmenu;
-		_submenus[ ID::Model::MODEL_RESIDUE ]  = moleculeStructureSubmenu;
-		_submenus[ ID::Model::MODEL_ATOM ]	   = moleculeStructureSubmenu;
+		_submenus.resize( int( SUBMENU_TEMPLATE::COUNT ) );
+		_submenus[ int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE ) ] = moleculeStructureSubmenu;
+		_submenus[ int( SUBMENU_TEMPLATE::VIEWPOINT ) ]			 = viewpointSubmenu;
 
-		_submenus[ ID::Model::MODEL_VIEWPOINT ] = viewpointSubmenu;
-		_submenus[ ID::Model::MODEL_PATH ]		= viewpointSubmenu;
+		_submenusMap[ ID::Model::MODEL_MOLECULE ] = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ ID::Model::MODEL_CHAIN ]	  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ ID::Model::MODEL_RESIDUE ]  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ ID::Model::MODEL_ATOM ]	  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+
+		_submenusMap[ ID::Model::MODEL_VIEWPOINT ] = int( SUBMENU_TEMPLATE::VIEWPOINT );
+		_submenusMap[ ID::Model::MODEL_PATH ]	   = int( SUBMENU_TEMPLATE::VIEWPOINT );
 	}
-	ContextualMenuSelection ::~ContextualMenuSelection() {}
+	ContextualMenuSelection ::~ContextualMenuSelection()
+	{
+		for ( SelectionSubMenu * const submenu : _submenus )
+			delete submenu;
+	}
 
 	void ContextualMenuSelection::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
 	void ContextualMenuSelection::_setupSlots()
@@ -138,7 +148,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		std::set<SelectionSubMenu *> submenuDisplayed = std::set<SelectionSubMenu *>();
 		for ( const ID::VTX_ID & itemType : typesInSelection )
 		{
-			submenuDisplayed.emplace( _submenus[ itemType ] );
+			submenuDisplayed.emplace( _submenus[ _submenusMap[ itemType ] ] );
 		}
 
 		const bool actionsInSubmenu = submenuDisplayed.size() > 1;
@@ -325,6 +335,25 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_extractAction() { VTX_ACTION( new Action::Selection::Extract( *_target ) ); }
 	void ContextualMenuSelection::_deleteAction() { VTX_ACTION( new Action::Selection::Delete( *_target ) ); }
 	void ContextualMenuSelection::_exportAction() { UI::Dialog::openExportMoleculeDialog(); }
+	void ContextualMenuSelection::_loadTrajectoryAction()
+	{
+		Model::Molecule * molecule = nullptr;
+
+		if ( _focusedTarget->getTypeId() == ID::Model::MODEL_MOLECULE )
+		{
+			molecule = static_cast<Model::Molecule *>( _focusedTarget );
+		}
+		else if ( _target->getMoleculesMap().size() > 0 )
+		{
+			const Model::ID & moleculeID = _target->getMoleculesMap().begin()->first;
+			molecule					 = &( MVC::MvcManager::get().getModel<Model::Molecule>( moleculeID ) );
+		}
+
+		if ( molecule != nullptr )
+		{
+			UI::Dialog::openLoadTrajectoryDialog( *molecule );
+		}
+	}
 
 	void ContextualMenuSelection::_applyRepresentationAction( const int p_representationIndex )
 	{
@@ -336,7 +365,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		bool allSelectionHasSameRepresentation = true;
 		int	 selectionRepresentationIndex	   = -1;
 
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 
@@ -353,7 +382,7 @@ namespace VTX::UI::Widget::ContextualMenu
 			}
 			else
 			{
-				for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainData : moleculeData.second )
+				for ( const Model::Selection::PairChainIds & chainData : moleculeData.second )
 				{
 					Model::Chain * const chain = molecule.getChain( chainData.first );
 
@@ -370,8 +399,7 @@ namespace VTX::UI::Widget::ContextualMenu
 					}
 					else
 					{
-						for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueData :
-							  chainData.second )
+						for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
 						{
 							Model::Residue * const residue = molecule.getResidue( residueData.first );
 
@@ -407,7 +435,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleWaterText( QAction & _action ) const
 	{
 		bool displayShowWater = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			displayShowWater		   = displayShowWater && !molecule.showWater();
@@ -419,7 +447,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleHydrogenText( QAction & _action ) const
 	{
 		bool displayShowHydrogen = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			displayShowHydrogen		   = displayShowHydrogen && !molecule.showHydrogen();
@@ -431,7 +459,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleSolventText( QAction & _action ) const
 	{
 		bool displayShowSolvent = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			displayShowSolvent		   = displayShowSolvent && !molecule.showSolvent();
@@ -443,7 +471,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleIonText( QAction & _action ) const
 	{
 		bool displayShowIon = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			displayShowIon			   = displayShowIon && !molecule.showIon();
@@ -456,7 +484,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleTrajectoryPlay( QAction & _action ) const
 	{
 		bool displayPlay = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			if ( molecule.hasTrajectory() )
@@ -469,7 +497,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	bool ContextualMenuSelection::_checkToggleTrajectoryPlayAction() const
 	{
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			if ( molecule.hasTrajectory() )

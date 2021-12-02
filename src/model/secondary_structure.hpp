@@ -19,6 +19,10 @@ namespace VTX
 		{
 			VTX_MODEL
 
+		  private:
+			using SSDataMap	 = std::map<uint, std::vector<uint>>; // Chain to residues.
+			using SSDataPair = std::pair<const uint, std::vector<uint>>;
+
 		  public:
 			enum class TYPE : int
 			{
@@ -60,8 +64,8 @@ namespace VTX
 			void _instantiate3DViews() override;
 
 		  private:
-			Model::Molecule * const			  _molecule;
-			std::map<uint, std::vector<uint>> _data = std::map<uint, std::vector<uint>>(); // Chain to residues.
+			Model::Molecule * const _molecule;
+			SSDataMap				_data = SSDataMap();
 
 			// Carbon alpha (Ca) positions.
 			// Add an extra float increasing along the backbone (to determine direction for two sided ss).

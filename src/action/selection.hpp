@@ -572,7 +572,7 @@ namespace VTX::Action::Selection
 			const bool setVisibiltyOnMolecule = _objRefTypeId == ID::Model::MODEL_MOLECULE;
 			const bool setVisibiltyOnChain	  = setVisibiltyOnMolecule || _objRefTypeId == ID::Model::MODEL_CHAIN;
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getMoleculesMap() )
+			for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 
@@ -583,7 +583,7 @@ namespace VTX::Action::Selection
 				else
 				{
 					molecule.setVisible( true );
-					for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainIds : molIds.second )
+					for ( const Model::Selection::PairChainIds & chainIds : molIds.second )
 					{
 						Model::Chain & chain = *molecule.getChain( chainIds.first );
 						if ( _selection.isChainFullySelected( chain ) )
@@ -593,8 +593,7 @@ namespace VTX::Action::Selection
 						else
 						{
 							chain.setVisible( true );
-							for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueIds :
-								  chainIds.second )
+							for ( const Model::Selection::PairResidueIds & residueIds : chainIds.second )
 							{
 								Model::Residue & residue = *molecule.getResidue( residueIds.first );
 								if ( _selection.isResidueFullySelected( residue ) )
@@ -727,13 +726,13 @@ namespace VTX::Action::Selection
 		{
 			bool showWater = true;
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getMoleculesMap() )
+			for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 				showWater				   = showWater && !molecule.showWater();
 			}
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getMoleculesMap() )
+			for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 				molecule.setShowWater( showWater );
@@ -755,13 +754,13 @@ namespace VTX::Action::Selection
 		{
 			bool showSolvent = true;
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getMoleculesMap() )
+			for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 				showSolvent				   = showSolvent && !molecule.showSolvent();
 			}
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getMoleculesMap() )
+			for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 				molecule.setShowSolvent( showSolvent );
@@ -783,13 +782,13 @@ namespace VTX::Action::Selection
 		{
 			bool showHydrogen = true;
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getMoleculesMap() )
+			for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 				showHydrogen			   = showHydrogen && !molecule.showHydrogen();
 			}
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getMoleculesMap() )
+			for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 				molecule.setShowHydrogen( showHydrogen );
@@ -811,13 +810,13 @@ namespace VTX::Action::Selection
 		{
 			bool showIons = true;
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getMoleculesMap() )
+			for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 				showIons				   = showIons && !molecule.showIon();
 			}
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getMoleculesMap() )
+			for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 				molecule.setShowIon( showIons );
@@ -839,14 +838,14 @@ namespace VTX::Action::Selection
 		{
 			bool play = true;
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getMoleculesMap() )
+			for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 				if ( molecule.hasTrajectory() )
 					play = play && !molecule.isPlaying();
 			}
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getMoleculesMap() )
+			for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 
@@ -961,8 +960,7 @@ namespace VTX::Action::Selection
 		}
 		virtual void execute() override
 		{
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeSelectionData :
-				  _selection.getMoleculesMap() )
+			for ( const Model::Selection::PairMoleculeIds & moleculeSelectionData : _selection.getMoleculesMap() )
 			{
 				const Model::ID & idMolSource = moleculeSelectionData.first;
 				Model::Molecule & molecule	  = MVC::MvcManager::get().getModel<Model::Molecule>( idMolSource );
@@ -1012,7 +1010,7 @@ namespace VTX::Action::Selection
 
 				if ( modelTypeID == ID::Model::MODEL_MOLECULE )
 				{
-					const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds
+					const Model::Selection::PairMoleculeIds & molIds
 						= *moleculeMapToDeleteCopy.find( selectedObjectID );
 
 					Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
@@ -1023,7 +1021,7 @@ namespace VTX::Action::Selection
 						continue;
 					}
 
-					for ( const std::pair<uint, Model::Selection::MapResidueIds> & chainIds : molIds.second )
+					for ( const Model::Selection::PairChainIds & chainIds : molIds.second )
 					{
 						Model::Chain & chain = *molecule.getChain( chainIds.first );
 
@@ -1033,7 +1031,7 @@ namespace VTX::Action::Selection
 							continue;
 						}
 
-						for ( const std::pair<uint, Model::Selection::VecAtomIds> & residueIds : chainIds.second )
+						for ( const Model::Selection::PairResidueIds & residueIds : chainIds.second )
 						{
 							Model::Residue & residue = *molecule.getResidue( residueIds.first );
 

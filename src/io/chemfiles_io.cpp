@@ -19,7 +19,7 @@ namespace VTX::IO
 	void ChemfilesIO::_logError( const std::string & p_log ) const
 	{
 		if ( _thread != nullptr )
-			emit _thread->logDebug( p_log );
+			emit _thread->logError( p_log );
 		else
 			VTX_ERROR( p_log );
 	}

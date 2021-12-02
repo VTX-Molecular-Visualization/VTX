@@ -210,7 +210,6 @@ namespace VTX::View::UI::Widget
 
 	void MoleculeSceneView::_onCustomContextMenuCalled( const QPoint & p_clicPos )
 	{
-		VTX::UI::ContextualMenu::Menu menuType	   = VTX::UI::ContextualMenu::Menu::COUNT;
 		const QTreeWidgetItem * const targetedItem = itemAt( p_clicPos );
 
 		if ( targetedItem == nullptr )
@@ -220,7 +219,7 @@ namespace VTX::View::UI::Widget
 		const ID::VTX_ID & modelTypeId	 = MVC::MvcManager::get().getModelTypeID( modelId );
 		const QPoint	   globalClicPos = mapToGlobal( p_clicPos );
 
-		Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 
 		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
 		{
@@ -446,7 +445,7 @@ namespace VTX::View::UI::Widget
 
 	void MoleculeSceneView::_clearLoadedItems()
 	{
-		for ( std::pair<Model::ID, QList<QTreeWidgetItem *> *> pair : _mapLoadedItems )
+		for ( const std::pair<const Model::ID, QList<QTreeWidgetItem *> *> & pair : _mapLoadedItems )
 		{
 			QList<QTreeWidgetItem *> * const listItems = pair.second;
 			while ( listItems->size() > 0 )
@@ -869,7 +868,7 @@ namespace VTX::View::UI::Widget
 				QModelIndex			 topChainItemIndex	  = QModelIndex();
 				QModelIndex			 bottomChainItemIndex = QModelIndex();
 
-				for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : itMoleculeItem->second )
+				for ( const Model::Selection::PairChainIds & pairChain : itMoleculeItem->second )
 				{
 					const Model::Chain & chain = *_model->getChain( pairChain.first );
 
@@ -903,7 +902,7 @@ namespace VTX::View::UI::Widget
 					const Model::Residue * previousResidue		  = nullptr;
 					QModelIndex			   topResidueItemIndex	  = QModelIndex();
 					QModelIndex			   bottomResidueItemIndex = QModelIndex();
-					for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+					for ( const Model::Selection::PairResidueIds & pairResidue : pairChain.second )
 					{
 						const Model::Residue &	residue = *_model->getResidue( pairResidue.first );
 						QTreeWidgetItem * const residueItem

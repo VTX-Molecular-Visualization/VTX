@@ -75,7 +75,7 @@ namespace VTX::Representation
 	void RepresentationManager::instantiateRepresentations( const Representation * const p_representation,
 															const Model::Selection &	 p_selection )
 	{
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molData : p_selection.getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & molData : p_selection.getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molData.first );
 			if ( molData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
@@ -84,7 +84,7 @@ namespace VTX::Representation
 			}
 			else
 			{
-				for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainData : molData.second )
+				for ( const Model::Selection::PairChainIds & chainData : molData.second )
 				{
 					Model::Chain & chain = *molecule.getChain( chainData.first );
 					if ( chainData.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
@@ -93,8 +93,7 @@ namespace VTX::Representation
 					}
 					else
 					{
-						for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueData :
-							  chainData.second )
+						for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
 						{
 							Model::Residue & residue = *molecule.getResidue( residueData.first );
 							instantiateRepresentation( p_representation, residue, false, true );
@@ -237,8 +236,7 @@ namespace VTX::Representation
 	{
 		InstantiatedRepresentation * res = nullptr;
 
-		for ( std::pair<InstantiatedRepresentation *, std::unordered_set<Generic::BaseRepresentable *>> item :
-			  _mapRepresentablesLinkedToRepresentation )
+		for ( const PairRepresentationRepresentables & item : _mapRepresentablesLinkedToRepresentation )
 		{
 			if ( item.first->getName().compare( p_representationName ) == 0 )
 			{
@@ -291,9 +289,8 @@ namespace VTX::Representation
 	{
 		_storedRepresentations.clear();
 
-		for ( const std::pair<const Model::Representation::Representation *,
-							  std::unordered_set<InstantiatedRepresentation *>> &
-				  instantiatedRepresentationPerRepresentation : _mapRepresentationInstances )
+		for ( const PairRepresentationInstances & instantiatedRepresentationPerRepresentation :
+			  _mapRepresentationInstances )
 		{
 			_storedRepresentations.emplace( instantiatedRepresentationPerRepresentation.first->getName(),
 											instantiatedRepresentationPerRepresentation.second );
@@ -318,12 +315,11 @@ namespace VTX::Representation
 					instantiatedRepresentation->forceNotifyDataChanged();
 				}
 
-				_storedRepresentations.erase( it );
+				it = _storedRepresentations.erase( it );
 			}
 		}
 
-		for ( const std::pair<std::string, const std::unordered_set<InstantiatedRepresentation *>> &
-				  storedRepresentation : _storedRepresentations )
+		for ( const PairStoredRepresentation & storedRepresentation : _storedRepresentations )
 		{
 			for ( InstantiatedRepresentation * const instantiatedRepresentation : storedRepresentation.second )
 			{

@@ -24,7 +24,7 @@ namespace VTX::Model
 		VTX_MODEL
 
 	  public:
-		class VecAtomIds : public std::vector<unsigned int>
+		class VecAtomIds : public std::vector<uint>
 		{
 			friend Selection;
 
@@ -38,7 +38,7 @@ namespace VTX::Model
 
 			uint _childrenFullySelectedCount = 0;
 		};
-		class MapResidueIds : public std::map<Model::ID, VecAtomIds>
+		class MapResidueIds : public std::map<uint, VecAtomIds>
 		{
 			friend Selection;
 
@@ -53,7 +53,7 @@ namespace VTX::Model
 		  private:
 			uint _childrenFullySelectedCount = 0;
 		};
-		class MapChainIds : public std::map<Model::ID, MapResidueIds>
+		class MapChainIds : public std::map<uint, MapResidueIds>
 		{
 			friend Selection;
 
@@ -68,6 +68,10 @@ namespace VTX::Model
 			uint _childrenFullySelectedCount = 0;
 		};
 		using MapMoleculeIds = std::map<Model::ID, MapChainIds>;
+
+		using PairResidueIds  = std::pair<const uint, VecAtomIds>;
+		using PairChainIds	  = std::pair<const uint, MapResidueIds>;
+		using PairMoleculeIds = std::pair<const Model::ID, MapChainIds>;
 
 		inline const std::set<Model::ID> & getItems() const { return _items; }
 		inline std::set<Model::ID> &	   getItems() { return _items; }

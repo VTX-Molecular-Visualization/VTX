@@ -1,6 +1,7 @@
 #include "selection.hpp"
 #include "atom.hpp"
 #include "chain.hpp"
+#include "define.hpp"
 #include "event/event_manager.hpp"
 #include "molecule.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -35,10 +36,10 @@ namespace VTX::Model
 		chrono.start();
 		_selectMolecule( p_molecule );
 		_setCurrentObject( &p_molecule );
-		chrono.stop();
-		VTX_INFO( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
 		p_molecule.refreshSelection( &_moleculesMap[ p_molecule.getId() ] );
 		_notifyDataChanged();
+		chrono.stop();
+		VTX_DEBUG( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
 	}
 	void Selection::selectMolecules( const std::vector<Molecule *> & p_molecules,
 									 const bool						 p_appendToSelection,
@@ -310,8 +311,8 @@ namespace VTX::Model
 	}
 	bool Selection::isMoleculeFullySelected( const Molecule & p_molecule ) const
 	{
-		const ID &					   id = p_molecule.getId();
-		MapMoleculeIds::const_iterator it = _moleculesMap.find( id );
+		const ID &							 id = p_molecule.getId();
+		const MapMoleculeIds::const_iterator it = _moleculesMap.find( id );
 
 		return _items.find( id ) != _items.end()
 			   && it->second.getFullySelectedChildCount() == p_molecule.getRealChainCount();
@@ -334,8 +335,8 @@ namespace VTX::Model
 		if ( _items.find( moleculeId ) == _items.end() )
 			return false;
 
-		const MapChainIds &			chainMap = _moleculesMap.at( moleculeId );
-		MapChainIds::const_iterator it		 = chainMap.find( p_chain.getIndex() );
+		const MapChainIds &				  chainMap = _moleculesMap.at( moleculeId );
+		const MapChainIds::const_iterator it	   = chainMap.find( p_chain.getIndex() );
 
 		return it != chainMap.end() && it->second.getFullySelectedChildCount() == p_chain.getRealResidueCount();
 	}
@@ -369,8 +370,8 @@ namespace VTX::Model
 		if ( chainMap.find( chainIndex ) == chainMap.end() )
 			return false;
 
-		const MapResidueIds &		  residueMap = chainMap.at( chainIndex );
-		MapResidueIds::const_iterator it		 = residueMap.find( p_residue.getIndex() );
+		const MapResidueIds &				residueMap = chainMap.at( chainIndex );
+		const MapResidueIds::const_iterator it		   = residueMap.find( p_residue.getIndex() );
 
 		return it != residueMap.end() && it->second.getFullySelectedChildCount() == p_residue.getRealAtomCount();
 	}
@@ -687,7 +688,7 @@ namespace VTX::Model
 		_referenceFullResidue( p_residue );
 
 		size_t nextAtomIndex = atoms.size();
-		atoms.resize( p_residue.getRealAtomCount(), UINT_MAX );
+		atoms.resize( p_residue.getRealAtomCount(), INVALID_ID );
 
 		VecAtomIds::const_iterator itLastAtomFindCheck = atoms.cbegin() + nextAtomIndex;
 
@@ -729,9 +730,9 @@ namespace VTX::Model
 		const ID & moleculeId = p_chain.getMoleculePtr()->getId();
 		const ID & index	  = p_chain.getIndex();
 
-		_moleculesMap.at( moleculeId ).erase( index );
+		_moleculesMap[ moleculeId ].erase( index );
 
-		if ( _moleculesMap.at( moleculeId ).size() == 0 )
+		if ( _moleculesMap[ moleculeId ].size() == 0 )
 		{
 			_removeMolecule( *p_chain.getMoleculePtr() );
 		}
@@ -747,9 +748,9 @@ namespace VTX::Model
 		const ID & chainIndex = p_residue.getChainPtr()->getIndex();
 		const ID & index	  = p_residue.getIndex();
 
-		_moleculesMap.at( moleculeId ).at( chainIndex ).erase( index );
+		_moleculesMap[ moleculeId ][ chainIndex ].erase( index );
 
-		if ( _moleculesMap.at( moleculeId ).at( chainIndex ).size() == 0 )
+		if ( _moleculesMap[ moleculeId ][ chainIndex ].size() == 0 )
 		{
 			_removeChain( *p_residue.getChainPtr() );
 		}
@@ -766,7 +767,7 @@ namespace VTX::Model
 		const ID & residueIndex = p_atom.getResiduePtr()->getIndex();
 		const ID & index		= p_atom.getIndex();
 
-		VecAtomIds & atomVector = _moleculesMap.at( moleculeId ).at( chainIndex ).at( residueIndex );
+		VecAtomIds & atomVector = _moleculesMap[ moleculeId ][ chainIndex ][ residueIndex ];
 
 		atomVector.erase( std::remove( atomVector.begin(), atomVector.end(), index ), atomVector.end() );
 		if ( atomVector.size() == 0 )
@@ -798,6 +799,8 @@ namespace VTX::Model
 								  const bool							 p_appendToSelection,
 								  const Model::BaseModel * const		 p_currentObj )
 	{
+		Tool::Chrono chrono = Tool::Chrono();
+		chrono.start();
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
 
@@ -847,6 +850,8 @@ namespace VTX::Model
 		}
 
 		_notifyDataChanged();
+		chrono.stop();
+		VTX_DEBUG( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
 	}
 	void Selection::unselectModels( const std::vector<Model::Molecule *> & p_molecules,
 									const std::vector<Model::Chain *> &	   p_chains,

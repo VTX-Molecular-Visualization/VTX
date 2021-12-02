@@ -76,6 +76,12 @@ namespace VTX::Action::Main
 		explicit Open( const std::vector<IO::FilePath> & p_paths ) : _paths( p_paths ) {}
 		explicit Open( const std::map<IO::FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
 
+		explicit Open( const IO::FilePath & p_trajectoryPath, Model::Molecule & p_target )
+		{
+			_trajectoryTargets.emplace_back( &p_target );
+			_paths.emplace_back( p_trajectoryPath );
+		}
+
 		virtual void execute() override
 		{
 			bool loadScene = false;
@@ -119,6 +125,13 @@ namespace VTX::Action::Main
 				{
 					return;
 				}
+
+				for ( Model::Molecule * const trajectoryTarget : _trajectoryTargets )
+				{
+					loader->addDynamicTarget( trajectoryTarget );
+				}
+
+				loader->setOpenTrajectoryAsStandalone( _trajectoryTargets.size() == 0 );
 
 				Worker::CallbackThread * callback = new Worker::CallbackThread(
 					[ loader ]( const uint p_code )
@@ -167,6 +180,8 @@ namespace VTX::Action::Main
 	  private:
 		std::vector<IO::FilePath>			  _paths = std::vector<IO::FilePath>();
 		std::map<IO::FilePath, std::string *> _buffers;
+
+		std::vector<Model::Molecule *> _trajectoryTargets = std::vector<Model::Molecule *>();
 	};
 
 	class OpenApi : public BaseAction

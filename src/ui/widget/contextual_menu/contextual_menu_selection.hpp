@@ -156,6 +156,11 @@ namespace VTX::UI::Widget::ContextualMenu
 				_groupMenu = new QMenu( p_parent );
 				_groupMenu->setTitle( p_name );
 			};
+			~SelectionSubMenu()
+			{
+				for ( ItemData * action : _actions )
+					delete action;
+			}
 
 			void addItemData( ItemData * const _itemData ) { _actions.emplace_back( _itemData ); };
 
@@ -177,6 +182,14 @@ namespace VTX::UI::Widget::ContextualMenu
 		  private:
 			QMenu *					_groupMenu;
 			std::vector<ItemData *> _actions = std::vector<ItemData *>();
+		};
+
+		enum class SUBMENU_TEMPLATE : int
+		{
+			MOLECULE_STRUCTURE,
+			VIEWPOINT,
+
+			COUNT
 		};
 
 	  public:
@@ -218,11 +231,13 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _applyRepresentationAction( const int p_representationIndex );
 
 		void _exportAction();
+		void _loadTrajectoryAction();
 
 	  private:
-		CustomWidget::SetRepresentationMenu * _representationMenu;
+		CustomWidget::SetRepresentationMenu * _representationMenu = nullptr;
 
-		std::map<ID::VTX_ID, SelectionSubMenu *> _submenus;
+		std::map<ID::VTX_ID, int>		_submenusMap = std::map<ID::VTX_ID, int>();
+		std::vector<SelectionSubMenu *> _submenus	 = std::vector<SelectionSubMenu *>();
 
 		Model::BaseModel * _focusedTarget = nullptr;
 

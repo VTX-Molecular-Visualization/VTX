@@ -45,6 +45,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Delete", this, &ContextualMenuMolecule::_deleteAction );
 
 		addSeparator();
+		addAction( "Load Trajectory", this, &ContextualMenuMolecule::_loadTrajectoryAction );
 		addAction( "Export", this, &ContextualMenuMolecule::_exportAction );
 
 		connect( _representationMenu,
@@ -131,5 +132,6 @@ namespace VTX::UI::Widget::ContextualMenu
 	}
 
 	void ContextualMenuMolecule::_exportAction() { Dialog::openExportMoleculeDialog(); }
+	void ContextualMenuMolecule::_loadTrajectoryAction() { Dialog::openLoadTrajectoryDialog( *_target ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

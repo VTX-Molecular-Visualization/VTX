@@ -44,25 +44,29 @@ namespace VTX::IO::Reader
 		_readTrajectory( trajectory, p_path, p_molecule );
 	}
 
-	void LibChemfiles::fillTrajectoryFrames( chemfiles::Trajectory & p_trajectory, Model::Molecule & p_molecule ) const
+	bool LibChemfiles::readDynamic( const IO::FilePath & p_path, std::vector<Model::Molecule *> p_potentialTargets )
+	{
+		_prepareChemfiles();
+		chemfiles::Trajectory dynamicTrajectory = chemfiles::Trajectory( p_path.path(), 'r', _getFormat( p_path ) );
+		return _tryApplyingDynamicOnTargets( dynamicTrajectory, p_potentialTargets );
+	}
+
+	void LibChemfiles::fillTrajectoryFrames( chemfiles::Trajectory & p_trajectory,
+											 Model::Molecule &		 p_molecule,
+											 const uint				 p_molFrameStart,
+											 const uint				 p_trajectoryFrameStart ) const
 	{
 		// Fill other frames.
 		Tool::Chrono timeReadingFrames;
 		timeReadingFrames.start();
 		int startingFrame = 1;
-		for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )
+		for ( uint frameIdx = 0; frameIdx < p_trajectory.nsteps() - p_trajectoryFrameStart; ++frameIdx )
 		{
-			Model::Molecule::AtomPositionsFrame &		 moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
-			chemfiles::Frame							 frame		   = p_trajectory.read();
-			const chemfiles::span<chemfiles::Vector3D> & positions	   = frame.positions();
-			moleculeFrame.resize( positions.size() );
-			for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
-			{
-				const chemfiles::Vector3D & position = positions[ positionIdx ];
-				moleculeFrame[ positionIdx ]		 = { position[ 0 ], position[ 1 ], position[ 2 ] };
-			}
+			chemfiles::Frame frame = p_trajectory.read();
+			fillTrajectoryFrame( frame, p_molecule, p_molFrameStart + frameIdx );
+
 #ifdef _DEBUG
-			if ( frameIdx % 100 == 0 )
+			if ( frameIdx > 1 && frameIdx % 100 == 0 )
 			{
 				_logDebug( "Frames from " + std::to_string( startingFrame ) + " to " + std::to_string( frameIdx )
 						   + " read in: " + std::to_string( timeReadingFrames.intervalTime() ) + "s" );
@@ -72,6 +76,20 @@ namespace VTX::IO::Reader
 		}
 		timeReadingFrames.stop();
 		_logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
+	}
+
+	void LibChemfiles::fillTrajectoryFrame( const chemfiles::Frame & p_frame,
+											Model::Molecule &		 p_molecule,
+											const uint				 p_moleculeFrameIndex ) const
+	{
+		Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( p_moleculeFrameIndex );
+		const std::vector<chemfiles::Vector3D> & positions	= p_frame.positions();
+		moleculeFrame.resize( positions.size() );
+		for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
+		{
+			const chemfiles::Vector3D & position = positions[ positionIdx ];
+			moleculeFrame[ positionIdx ]		 = { position[ 0 ], position[ 1 ], position[ 2 ] };
+		}
 	}
 
 	void LibChemfiles::_readTrajectory( chemfiles::Trajectory & p_trajectory,
@@ -472,7 +490,7 @@ namespace VTX::IO::Reader
 			// std::thread fillFrames(
 			//	&LibChemfiles::fillTrajectoryFrames, this, std::ref( p_trajectory ), std::ref( p_molecule ) );
 			// fillFrames.detach();
-			fillTrajectoryFrames( p_trajectory, p_molecule );
+			fillTrajectoryFrames( p_trajectory, p_molecule, 1, 1 );
 		}
 
 		Tool::Chrono bondComputationChrono = Tool::Chrono();
@@ -592,6 +610,53 @@ namespace VTX::IO::Reader
 		}
 
 		assert( counter == counterOld );
+	}
+
+	bool LibChemfiles::_tryApplyingDynamicOnTargets( chemfiles::Trajectory &		p_dynamicTrajectory,
+													 std::vector<Model::Molecule *> p_potentialTargets ) const
+	{
+		bool res = false;
+		if ( p_dynamicTrajectory.nsteps() <= 0 )
+			return res;
+
+		const chemfiles::Frame & frame			  = p_dynamicTrajectory.read();
+		const size_t			 dynamicAtomCount = frame.size();
+
+		for ( Model::Molecule * const molecule : p_potentialTargets )
+		{
+			if ( molecule->getAtomCount() == dynamicAtomCount )
+			{
+				const uint indexFirstNewFrame = molecule->getFrameCount() == 1 ? 0 : molecule->getFrameCount();
+
+				molecule->getAtomPositionFrames().resize( indexFirstNewFrame + p_dynamicTrajectory.nsteps() );
+				try
+				{
+					// First frame already read to know framecount.
+					fillTrajectoryFrame( frame, *molecule, indexFirstNewFrame );
+					fillTrajectoryFrames( p_dynamicTrajectory, *molecule, indexFirstNewFrame + 1, 1 );
+				}
+				catch ( const std::exception & p_e )
+				{
+					_logError( "Error when reading trajectory : " + std::string( p_e.what() ) );
+
+					// If an issue happened when reading trajectory, we pop back all non-filled frames
+					std::vector<Model::Molecule::AtomPositionsFrame> & frames = molecule->getAtomPositionFrames();
+					std::vector<Model::Molecule::AtomPositionsFrame>::reverse_iterator itFrame = frames.rbegin();
+
+					while ( itFrame != frames.rend() && itFrame->size() == 0 )
+					{
+						frames.pop_back();
+						itFrame = frames.rbegin();
+					}
+				}
+
+				molecule->forceNotifyTrajectoryChanged();
+				res = true;
+			}
+		}
+
+		// No matching molecule found
+		return res;
 	}
 
 	// http://chemfiles.org/chemfiles/latest/formats.html#list-of-supported-formats

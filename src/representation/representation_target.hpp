@@ -19,6 +19,7 @@ namespace VTX
 		using TargetRangeArrays	  = TargetRange<uint>;
 		using TargetRangeElements = TargetRange<void *>;
 		using TargetRangeMap	  = std::map<uint, uint>;
+		using TargetRangeMapPair  = std::pair<const uint, uint>;
 
 		class RepresentationTarget
 		{

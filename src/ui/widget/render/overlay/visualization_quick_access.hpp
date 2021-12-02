@@ -58,9 +58,7 @@ namespace VTX::UI::Widget::Render::Overlay
 			MenuItemData( VTX::Selection::Granularity::ATOM, "Pick Atom", ":/sprite/pick_atom.png" ),
 			MenuItemData( VTX::Selection::Granularity::RESIDUE, "Pick Residue", ":/sprite/pick_residue.png" ),
 			MenuItemData( VTX::Selection::Granularity::CHAIN, "Pick Chain", ":/sprite/pick_chain.png" ),
-			MenuItemData( VTX::Selection::Granularity::MOLECULE,
-						  "Pick Molecule",
-						  ":/sprite/pick_molecule.png" )
+			MenuItemData( VTX::Selection::Granularity::MOLECULE, "Pick Molecule", ":/sprite/pick_molecule.png" )
 		};
 
 		inline static const char * CONTROLLER_PROPERTY_NAME	 = "CONTROLLER";

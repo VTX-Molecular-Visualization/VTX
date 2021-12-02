@@ -183,18 +183,23 @@ namespace VTX::Util::Filesystem
 	{
 		const IO::FilePath defaultFolder = IO::FilePath( Setting::getLastExportedMoleculeFolder().toStdString() );
 
-		const Model::Molecule * exportedMolecule = nullptr;
-		const int				nbMoleculeInSelection
+		const int nbMoleculeInSelection
 			= Selection::SelectionManager::get().getSelectionModel().getMoleculeSelectedCount();
-		if ( nbMoleculeInSelection == 1 )
+
+		const Model::Molecule * exportedMolecule;
+		if ( nbMoleculeInSelection > 0 )
 		{
 			const Model::ID & moleculeID
 				= Selection::SelectionManager::get().getSelectionModel().getMoleculesMap().begin()->first;
 			exportedMolecule = &( MVC::MvcManager::get().getModel<Model::Molecule>( moleculeID ) );
 		}
-		else if ( nbMoleculeInSelection == 0 && VTXApp::get().getScene().getMolecules().size() == 1 )
+		else if ( VTXApp::get().getScene().getMolecules().size() > 0 )
 		{
 			exportedMolecule = VTXApp::get().getScene().getMolecules().begin()->first;
+		}
+		else
+		{
+			exportedMolecule = nullptr;
 		}
 
 		std::string filename

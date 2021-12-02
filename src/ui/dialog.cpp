@@ -96,6 +96,25 @@ namespace VTX::UI
 		}
 	}
 
+	void Dialog::openLoadTrajectoryDialog( Model::Molecule & p_target )
+	{
+		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
+		QString			defaultPath	  = Setting::getLastImportedMoleculeFolder();
+
+		const QString filename = QFileDialog::getOpenFileName( &VTXApp::get().getMainWindow(),
+															   "Open trajectory",
+															   defaultPath,
+															   Util::Filesystem::LOAD_TRAJECTORY_FILTERS,
+															   defaultFilter );
+		delete defaultFilter;
+
+		if ( !filename.isEmpty() )
+		{
+			Setting::saveLastImportedMoleculeFolder( filename );
+			VTX_ACTION( new Action::Main::Open( IO::FilePath( filename.toStdString() ), p_target ) );
+		}
+	}
+
 	void Dialog::createNewSessionDialog()
 	{
 		Worker::CallbackThread callback = Worker::CallbackThread(

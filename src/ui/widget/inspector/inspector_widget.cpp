@@ -103,7 +103,7 @@ namespace VTX::UI::Widget::Inspector
 				}
 				else
 				{
-					for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainData : moleculeSelection )
+					for ( const Model::Selection::PairChainIds & chainData : moleculeSelection )
 					{
 						Model::Chain * const chain = molecule.getChain( chainData.first );
 
@@ -114,8 +114,7 @@ namespace VTX::UI::Widget::Inspector
 						}
 						else
 						{
-							for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueData :
-								  chainData.second )
+							for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
 							{
 								Model::Residue * const residue = molecule.getResidue( residueData.first );
 

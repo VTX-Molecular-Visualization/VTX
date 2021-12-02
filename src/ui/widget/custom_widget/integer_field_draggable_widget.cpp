@@ -1,4 +1,5 @@
 #include "integer_field_draggable_widget.hpp"
+#include "define.hpp"
 #include "style.hpp"
 #include "util/math.hpp"
 #include <QHBoxLayout>
