@@ -104,83 +104,76 @@ namespace VTX::UI::Widget::Sequence
 	{
 		QLabel::paintEvent( p_paintEvent );
 
-		const Model::Selection::MapMoleculeIds & moleculeMap
-			= VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculesMap();
-
-		const Model::Selection::MapMoleculeIds::const_iterator itMol
-			= moleculeMap.find( _chainData->getMoleculePtr()->getId() );
-
-		if ( itMol != moleculeMap.end() )
+		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		if ( selectionModel.isChainSelected( _chainData->getChain() ) )
 		{
-			const Model::Selection::MapChainIds::const_iterator itChain
-				= itMol->second.find( _chainData->getChainIndex() );
+			// linked chain is in selection => draw selection feedback on selected residues
+			QPainter painter( this );
+			painter.save();
+			painter.setWorldMatrixEnabled( false );
+			painter.setBrush( Qt::NoBrush );
 
-			if ( itChain != itMol->second.end() )
+			const double charSize = double( _fontMetrics->averageCharWidth() );
+
+			int lastPixelDrawn	  = -1;
+			int currentFirstPixel = -1;
+			int currentRectWidth  = 0;
+
+			const Model::Molecule & molecule = *_chainData->getMoleculePtr();
+
+			const Model::Selection::MapResidueIds & mapSelectedResidueID
+				= selectionModel.getMoleculesMap()[ molecule.getId() ][ _chainData->getChainIndex() ];
+
+			for ( const Model::Selection::PairResidueIds & pairResiduesAtoms : mapSelectedResidueID )
 			{
-				// linked chain is in selection => draw selection feedback on selected residues
-				QPainter painter( this );
-				painter.save();
-				painter.setWorldMatrixEnabled( false );
-				painter.setBrush( Qt::NoBrush );
+				const Model::Residue * const residue		  = molecule.getResidue( pairResiduesAtoms.first );
+				const uint					 locaResidueIndex = _getLocalResidueIndexFromResidue( *residue );
 
-				const double charSize = double( _fontMetrics->averageCharWidth() );
+				const int charIndexPaint  = _chainData->getPaintCharIndex( locaResidueIndex );
+				const int charLengthPaint = _chainData->getPaintLength( locaResidueIndex );
 
-				int lastPixelDrawn	  = -1;
-				int currentFirstPixel = -1;
-				int currentRectWidth  = 0;
+				// Trick to prevent double painting on same pixel when charsize is not int
+				int firstPixel = int( floor( charIndexPaint * charSize ) );
+				int rectWidth  = int( ceil( charLengthPaint * charSize ) );
 
-				for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & pairResiduesAtoms : itChain->second )
+				if ( lastPixelDrawn > firstPixel )
 				{
-					const Model::Residue * const residue
-						= _chainData->getMoleculePtr()->getResidue( pairResiduesAtoms.first );
-					const uint locaResidueIndex = _getLocalResidueIndexFromResidue( *residue );
+					firstPixel += 1;
+					rectWidth -= 1;
+				}
 
-					const int charIndexPaint  = _chainData->getPaintCharIndex( locaResidueIndex );
-					const int charLengthPaint = _chainData->getPaintLength( locaResidueIndex );
-
-					// Trick to prevent double painting on same pixel when charsize is not int
-					int firstPixel = int( floor( charIndexPaint * charSize ) );
-					int rectWidth  = int( ceil( charLengthPaint * charSize ) );
-
-					if ( lastPixelDrawn > firstPixel )
+				if ( currentFirstPixel >= 0 )
+				{
+					if ( firstPixel == lastPixelDrawn )
 					{
-						firstPixel += 1;
-						rectWidth -= 1;
-					}
-
-					if ( currentFirstPixel >= 0 )
-					{
-						if ( firstPixel == lastPixelDrawn )
-						{
-							currentRectWidth += rectWidth;
-						}
-						else
-						{
-							const QRect selectionRect = QRect( currentFirstPixel, 0, currentRectWidth, height() );
-							painter.fillRect( selectionRect, Style::SEQUENCE_FOREGROUND_SELECTION_COLOR );
-
-							currentFirstPixel = firstPixel;
-							currentRectWidth  = rectWidth;
-						}
+						currentRectWidth += rectWidth;
 					}
 					else
 					{
+						const QRect selectionRect = QRect( currentFirstPixel, 0, currentRectWidth, height() );
+						painter.fillRect( selectionRect, Style::SEQUENCE_FOREGROUND_SELECTION_COLOR );
+
 						currentFirstPixel = firstPixel;
 						currentRectWidth  = rectWidth;
 					}
-
-					lastPixelDrawn = firstPixel + rectWidth;
 				}
-
-				if ( currentRectWidth > 0 )
+				else
 				{
-					const QRect selectionRect = QRect( currentFirstPixel, 0, currentRectWidth, height() );
-					painter.fillRect( selectionRect, Style::SEQUENCE_FOREGROUND_SELECTION_COLOR );
+					currentFirstPixel = firstPixel;
+					currentRectWidth  = rectWidth;
 				}
 
-				painter.setWorldMatrixEnabled( true );
-				painter.restore();
+				lastPixelDrawn = firstPixel + rectWidth;
 			}
+
+			if ( currentRectWidth > 0 )
+			{
+				const QRect selectionRect = QRect( currentFirstPixel, 0, currentRectWidth, height() );
+				painter.fillRect( selectionRect, Style::SEQUENCE_FOREGROUND_SELECTION_COLOR );
+			}
+
+			painter.setWorldMatrixEnabled( true );
+			painter.restore();
 		}
 	}
 } // namespace VTX::UI::Widget::Sequence

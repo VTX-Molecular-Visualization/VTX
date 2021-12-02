@@ -80,7 +80,7 @@ namespace VTX
 			assert( p_rangeArrays.indices.size() == 0 );
 			assert( p_rangeArrays.counts.size() == 0 );
 
-			for ( const std::pair<uint, uint> & pair : p_map )
+			for ( const TargetRangeMapPair & pair : p_map )
 			{
 				p_rangeArrays.indices.push_back( pair.first );
 				p_rangeArrays.counts.push_back( pair.second );
@@ -94,7 +94,7 @@ namespace VTX
 			assert( p_rangeElements.indices.size() == 0 );
 			assert( p_rangeElements.counts.size() == 0 );
 
-			for ( const std::pair<uint, uint> & pair : p_map )
+			for ( const TargetRangeMapPair & pair : p_map )
 			{
 				p_rangeElements.indices.push_back( (void *)( pair.first * sizeof( uint ) ) );
 				p_rangeElements.counts.push_back( pair.second );

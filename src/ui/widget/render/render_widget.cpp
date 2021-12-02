@@ -80,7 +80,7 @@ namespace VTX::UI::Widget::Render
 
 	void RenderWidget::resizeEvent( QResizeEvent * p_event )
 	{
-		for ( std::pair<Overlay::OVERLAY, Overlay::BaseOverlay *> overlay : _overlays )
+		for ( const std::pair<const Overlay::OVERLAY, Overlay::BaseOverlay *> & overlay : _overlays )
 		{
 			overlay.second->updatePosition( p_event->size() );
 		}

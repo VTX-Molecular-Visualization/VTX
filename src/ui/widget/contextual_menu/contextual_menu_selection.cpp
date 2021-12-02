@@ -365,7 +365,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		bool allSelectionHasSameRepresentation = true;
 		int	 selectionRepresentationIndex	   = -1;
 
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 
@@ -382,7 +382,7 @@ namespace VTX::UI::Widget::ContextualMenu
 			}
 			else
 			{
-				for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainData : moleculeData.second )
+				for ( const Model::Selection::PairChainIds & chainData : moleculeData.second )
 				{
 					Model::Chain * const chain = molecule.getChain( chainData.first );
 
@@ -399,8 +399,7 @@ namespace VTX::UI::Widget::ContextualMenu
 					}
 					else
 					{
-						for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueData :
-							  chainData.second )
+						for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
 						{
 							Model::Residue * const residue = molecule.getResidue( residueData.first );
 
@@ -436,7 +435,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleWaterText( QAction & _action ) const
 	{
 		bool displayShowWater = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			displayShowWater		   = displayShowWater && !molecule.showWater();
@@ -448,7 +447,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleHydrogenText( QAction & _action ) const
 	{
 		bool displayShowHydrogen = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			displayShowHydrogen		   = displayShowHydrogen && !molecule.showHydrogen();
@@ -460,7 +459,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleSolventText( QAction & _action ) const
 	{
 		bool displayShowSolvent = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			displayShowSolvent		   = displayShowSolvent && !molecule.showSolvent();
@@ -472,7 +471,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleIonText( QAction & _action ) const
 	{
 		bool displayShowIon = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			displayShowIon			   = displayShowIon && !molecule.showIon();
@@ -485,7 +484,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleTrajectoryPlay( QAction & _action ) const
 	{
 		bool displayPlay = true;
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			if ( molecule.hasTrajectory() )
@@ -498,7 +497,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	bool ContextualMenuSelection::_checkToggleTrajectoryPlayAction() const
 	{
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getMoleculesMap() )
+		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 			if ( molecule.hasTrajectory() )

@@ -379,7 +379,7 @@ namespace VTX
 				}
 				else
 				{
-					for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : *p_selection )
+					for ( const Model::Selection::PairChainIds & pairChain : *p_selection )
 					{
 						// Optimize buffer writing for full chains
 						const Model::Chain * const chain = getChain( pairChain.first );
@@ -397,7 +397,7 @@ namespace VTX
 						{
 							// Optimization like previously will not works for residues because it will add too much
 							// computation compared to add atoms one by one
-							for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+							for ( const Model::Selection::PairResidueIds & pairResidue : pairChain.second )
 							{
 								for ( const uint & atomIndex : pairResidue.second )
 								{

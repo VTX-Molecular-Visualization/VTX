@@ -300,7 +300,7 @@ namespace VTX
 		{
 			_bufferColors.clear();
 			_bufferColors.reserve( _bufferCaPositions.size() );
-			for ( const std::pair<uint, std::vector<uint>> & pair : _data )
+			for ( const SSDataPair & pair : _data )
 			{
 				const Chain * const chain = _molecule->getChain( pair.first );
 				for ( const uint residueIdx : pair.second )
@@ -341,7 +341,7 @@ namespace VTX
 		{
 			_bufferVisibilities.clear();
 			_bufferVisibilities.reserve( _bufferCaPositions.size() );
-			for ( const std::pair<uint, std::vector<uint>> & pair : _data )
+			for ( const SSDataPair & pair : _data )
 			{
 				const Chain * const chain = _molecule->getChain( pair.first );
 				for ( const uint residueIdx : pair.second )
@@ -377,9 +377,9 @@ namespace VTX
 
 			if ( p_selection != nullptr )
 			{
-				for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : *p_selection )
+				for ( const Model::Selection::PairChainIds & pairChain : *p_selection )
 				{
-					for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+					for ( const Model::Selection::PairResidueIds & pairResidue : pairChain.second )
 					{
 						if ( _residueToPositions.find( pairResidue.first ) != _residueToPositions.end() )
 						{

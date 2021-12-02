@@ -263,12 +263,12 @@ namespace VTX
 			//#define RIBBON_TEST
 
 #ifdef RIBBON_TEST
-			for ( std::pair<const Model::Molecule *, float> pairMol : p_scene.getMolecules() )
+			for ( const std::pair<const Model::Molecule *, float> & pairMol : p_scene.getMolecules() )
 			{
 				_scene.addObject( new TriangleMesh( pairMol.first ) );
 			}
 #else
-			for ( std::pair<const Model::Molecule *, float> pairMol : p_scene.getMolecules() )
+			for ( const std::pair<const Model::Molecule * const, float> & pairMol : p_scene.getMolecules() )
 			{
 				_scene.addObject( new MoleculeRT( pairMol.first ) );
 			}

@@ -27,6 +27,7 @@ namespace VTX::UI::Widget::Sequence
 		inline uint					   getIndexFirstResidue() const { return _chain.getIndexFirstResidue(); };
 		inline Model::Molecule * const getMoleculePtr() const { return _chain.getMoleculePtr(); };
 		inline uint					   getChainIndex() const { return _chain.getIndex(); };
+		inline const Model::Chain &	   getChain() const { return _chain; };
 
 		Model::Residue * const getResidueFromCharIndex( const uint p_charIndex ) const;
 		Model::Residue * const getClosestResidueFromCharIndex( const uint p_charIndex, const bool takeForward ) const;

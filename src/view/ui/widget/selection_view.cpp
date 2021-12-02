@@ -63,7 +63,7 @@ namespace VTX::View::UI::Widget
 
 		QList<QTreeWidgetItem *> children = invisibleRootItem()->takeChildren();
 
-		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & pairMolecule : items )
+		for ( const Model::Selection::PairMoleculeIds & pairMolecule : items )
 		{
 			QTreeWidgetItem * moleculeView = nullptr;
 			const Model::ID & moleculeId   = pairMolecule.first;
@@ -139,7 +139,7 @@ namespace VTX::View::UI::Widget
 
 			QList<QTreeWidgetItem *> children = p_moleculeItem->takeChildren();
 
-			for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : chainIds )
+			for ( const Model::Selection::PairChainIds & pairChain : chainIds )
 			{
 				const Model::Chain & chain = *molecule.getChain( pairChain.first );
 
@@ -205,7 +205,7 @@ namespace VTX::View::UI::Widget
 			QList<QTreeWidgetItem *> children = p_chainItem->takeChildren();
 
 			const Model::Molecule & molecule = *chain.getMoleculePtr();
-			for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : residueIds )
+			for ( const Model::Selection::PairResidueIds & pairResidue : residueIds )
 			{
 				const Model::Residue & residue	   = *molecule.getResidue( pairResidue.first );
 				QTreeWidgetItem *	   residueView = _extractItemFromList( residue.getId(), children );

@@ -36,6 +36,8 @@ namespace VTX::Representation
 
 		using MapRepresentationRepresentables
 			= std::map<InstantiatedRepresentation *, std::unordered_set<Generic::BaseRepresentable *>>;
+		using PairRepresentationRepresentables
+			= std::pair<InstantiatedRepresentation * const, std::unordered_set<Generic::BaseRepresentable *>>;
 
 		inline static RepresentationManager & get()
 		{
@@ -175,9 +177,15 @@ namespace VTX::Representation
 	  private:
 		using MoleculeRepresentationData
 			= std::map<Generic::BaseRepresentable *, std::unordered_set<InstantiatedRepresentation *>>;
+
 		using MapRepresentationInstances
 			= std::map<const Model::Representation::Representation *, std::unordered_set<InstantiatedRepresentation *>>;
+		using PairRepresentationInstances = std::pair<const Model::Representation::Representation * const,
+													  std::unordered_set<InstantiatedRepresentation *>>;
+
 		using MapStoredRepresentation = std::map<std::string, const std::unordered_set<InstantiatedRepresentation *>>;
+		using PairStoredRepresentation
+			= std::pair<const std::string, const std::unordered_set<InstantiatedRepresentation *>>;
 
 		MapRepresentationInstances		_mapRepresentationInstances				 = MapRepresentationInstances();
 		MapRepresentationRepresentables _mapRepresentablesLinkedToRepresentation = MapRepresentationRepresentables();
