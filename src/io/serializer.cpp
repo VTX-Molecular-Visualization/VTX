@@ -2,6 +2,7 @@
 #include "action/main.hpp"
 #include "action/renderer.hpp"
 #include "action/setting.hpp"
+#include "define.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "generic/base_colorable.hpp"
