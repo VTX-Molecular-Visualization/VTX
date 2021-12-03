@@ -78,7 +78,7 @@ namespace VTX::UI::Widget::Information
 		_bugReportButton = new QPushButton( this );
 		_bugReportButton->setText( "Report bug" );
 		_checkUpdateButton = new QPushButton( this );
-		_checkUpdateButton->setText( "Check for\nupdate" );
+		_checkUpdateButton->setText( "Update" );
 
 		QLabel * libraryTitle = new QLabel( this );
 		libraryTitle->setText( "External libraries:" );
@@ -118,6 +118,7 @@ namespace VTX::UI::Widget::Information
 			"<a href = \"https://www.flaticon.com/authors/mavadee\">mavadee</a> - "
 			"<a href = \"https://www.flaticon.com/authors/pixel-perfect\">pixel-perfect</a> - "
 			"<a href = \"https://www.flaticon.com/authors/roundicons\">roundicons</a> - "
+			"<a href = \"https://www.flaticon.com/authors/tempo-doloe\">tempo-doloe</a> - "
 			"<a href = \"https://www.flaticon.com/authors/vectors-market\">vectors-market</a>"
 			"" );
 
