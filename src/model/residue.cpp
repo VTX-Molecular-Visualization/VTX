@@ -21,7 +21,6 @@ namespace VTX
 				   != std::end( SYMBOL_STR );
 		}
 
-
 		Molecule * const Residue::getMoleculePtr() const { return _chainPtr->getMoleculePtr(); };
 		void			 Residue::setChainPtr( Chain * const p_chain )
 		{
@@ -128,6 +127,20 @@ namespace VTX
 				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
 				getMoleculePtr()->propagateEventToViews(
 					new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
+			}
+		}
+
+		void Residue::setVisible( const bool p_visible, const bool p_notify )
+		{
+			if ( isVisible() != p_visible )
+			{
+				BaseVisible ::setVisible( p_visible );
+				if ( p_notify )
+				{
+					_notifyViews( new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
+					getMoleculePtr()->propagateEventToViews(
+						new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
+				}
 			}
 		}
 

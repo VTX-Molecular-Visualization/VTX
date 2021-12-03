@@ -132,6 +132,21 @@ namespace VTX
 			}
 		}
 
+		void Chain::setVisible( const bool p_visible, const bool p_notify )
+		{
+			if ( isVisible() != p_visible )
+			{
+				BaseVisible::setVisible( p_visible );
+
+				if ( p_notify )
+				{
+					_notifyViews( new Event::VTXEventValue<uint>( Event::Model::CHAIN_VISIBILITY, _index ) );
+					_moleculePtr->propagateEventToViews(
+						new Event::VTXEventValue<uint>( Event::Model::CHAIN_VISIBILITY, _index ) );
+				}
+			}
+		}
+
 		const Math::AABB Chain::getAABB() const
 		{
 			Math::AABB aabb = Math::AABB();

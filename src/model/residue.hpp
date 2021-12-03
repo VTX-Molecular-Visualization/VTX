@@ -134,6 +134,7 @@ namespace VTX
 
 			// Mask BaseVisible::setVisible
 			void setVisible( const bool p_visible );
+			void setVisible( const bool p_visible, const bool p_notify );
 
 			const Math::AABB getAABB() const;
 			const Math::AABB getWorldAABB() const;

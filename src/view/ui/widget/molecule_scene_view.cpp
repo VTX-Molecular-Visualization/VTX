@@ -46,7 +46,6 @@ namespace VTX::View::UI::Widget
 				_refreshItemVisibility( _getTreeWidgetItem( chain ), chain.isVisible() );
 		}
 		else if ( p_event->name == Event::Model::RESIDUE_VISIBILITY )
-
 		{
 			const Event::VTXEventValue<uint> * const castedEventData
 				= dynamic_cast<const Event::VTXEventValue<uint> *>( p_event );
@@ -69,6 +68,10 @@ namespace VTX::View::UI::Widget
 			{
 				_refreshItemVisibility( _getTreeWidgetItem( atom ), atom.isVisible() );
 			}
+		}
+		else if ( p_event->name == Event::Model::VISIBILITY )
+		{
+			_refreshItemsVisibility();
 		}
 		else if ( p_event->name == Event::Model::DATA_CHANGE )
 		{
@@ -219,7 +222,7 @@ namespace VTX::View::UI::Widget
 		const ID::VTX_ID & modelTypeId	 = MVC::MvcManager::get().getModelTypeID( modelId );
 		const QPoint	   globalClicPos = mapToGlobal( p_clicPos );
 
-		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+		Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 
 		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
 		{
@@ -230,6 +233,7 @@ namespace VTX::View::UI::Widget
 					= VTX::UI::ContextualMenu::getMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuSelection>(
 						VTX::UI::ContextualMenu::Menu::Selection );
 				selectionContextualMenu->setFocusedTarget( &molecule );
+
 				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
 			}
 			else

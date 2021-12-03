@@ -20,6 +20,19 @@ namespace VTX
 					new Event::VTXEventValue<uint>( Event::Model::ATOM_VISIBILITY, _index ) );
 			}
 		}
+		void Atom::setVisible( const bool p_visible, const bool p_notify )
+		{
+			if ( isVisible() != p_visible )
+			{
+				BaseVisible ::setVisible( p_visible );
+				if ( p_notify )
+				{
+					_notifyViews( new Event::VTXEventValue<uint>( Event::Model::ATOM_VISIBILITY, _index ) );
+					getMoleculePtr()->propagateEventToViews(
+						new Event::VTXEventValue<uint>( Event::Model::ATOM_VISIBILITY, _index ) );
+				}
+			}
+		}
 
 		const Math::AABB Atom::getAABB() const
 		{
