@@ -85,7 +85,7 @@ namespace VTX::Model
 							   Model::Chain * const	  p_parent );
 		void _copyAtomData( Model::Atom & p_atom, const Model::Atom & p_atomSource, Model::Residue * const p_parent );
 
-		void _computeBonds( const Model::Molecule & p_source, const std::map<const uint, const uint> & p_mapAtomIds );
+		void _computeBonds( const Model::Molecule & p_source, std::map<const uint, const uint> & p_mapAtomIds );
 		void _clearPendingExtractedBonds();
 		void _validateBuffers();
 

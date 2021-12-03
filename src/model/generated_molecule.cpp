@@ -243,8 +243,8 @@ namespace VTX::Model
 		return generatedAtom;
 	}
 
-	void GeneratedMolecule::_computeBonds( const Model::Molecule &					p_source,
-										   const std::map<const uint, const uint> & p_mapAtomIds )
+	void GeneratedMolecule::_computeBonds( const Model::Molecule &			  p_source,
+										   std::map<const uint, const uint> & p_mapAtomIds )
 	{
 		if ( p_source.getBondCount() <= 0 )
 			return;
@@ -280,8 +280,8 @@ namespace VTX::Model
 			if ( p_mapAtomIds.find( bond.getIndexFirstAtom() ) != p_mapAtomIds.end()
 				 && p_mapAtomIds.find( bond.getIndexSecondAtom() ) != p_mapAtomIds.end() )
 			{
-				const uint indexFirstAtom  = p_mapAtomIds.at( bond.getIndexFirstAtom() );
-				const uint indexSecondAtom = p_mapAtomIds.at( bond.getIndexSecondAtom() );
+				const uint indexFirstAtom  = p_mapAtomIds[ bond.getIndexFirstAtom() ];
+				const uint indexSecondAtom = p_mapAtomIds[ bond.getIndexSecondAtom() ];
 
 				Model::Bond & generatedBond = addBond();
 
@@ -505,7 +505,6 @@ namespace VTX::Model
 			AtomPositionsFrame &	   generatedAtomPosFrame = addAtomPositionFrame();
 			generatedAtomPosFrame.reserve( atomPosFrame.size() );
 		}
-		
 
 		for ( const UnknownResidueData & unknownSymbol : p_molecule.getUnknownResidueSymbols() )
 			addUnknownResidueSymbol( unknownSymbol );
@@ -738,7 +737,6 @@ namespace VTX::Model
 			atom.setIndex( i );
 			getBufferAtomIds().emplace_back( i );
 		}
-		
 
 		for ( uint i = p_startIndex; i < p_startIndex + p_count; i++ )
 			p_fromMolecule.removeAtom( i, false, false, false, false );

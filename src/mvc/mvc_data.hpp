@@ -10,6 +10,9 @@ namespace VTX::MVC
 	class MvcData
 	{
 	  public:
+		using MapViews	= std::map<ID::VTX_ID, View::BaseView<Model::BaseModel> *>;
+		using PairViews = std::pair<const ID::VTX_ID, View::BaseView<Model::BaseModel> *>;
+
 		MvcData( Model::BaseModel * const p_model ) : _model( p_model ) {}
 		~MvcData() = default;
 
@@ -32,14 +35,14 @@ namespace VTX::MVC
 				 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
 		inline V * const removeView( const ID::VTX_ID & p_id )
 		{
-			V * const view = (V * const)_views.at( p_id );
+			V * const view = (V * const)_views[ p_id ];
 			_views.erase( p_id );
 			return view;
 		}
 
 		inline View::BaseView<Model::BaseModel> * removeView( const ID::VTX_ID & p_id )
 		{
-			View::BaseView<Model::BaseModel> * const view = _views.at( p_id );
+			View::BaseView<Model::BaseModel> * const view = _views[ p_id ];
 			_views.erase( p_id );
 			return view;
 		}
@@ -50,25 +53,24 @@ namespace VTX::MVC
 				 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
 		inline V * const getView( const ID::VTX_ID & p_id )
 		{
-			return (V * const)_views.at( p_id );
+			return (V * const)_views[ p_id ];
 		}
 
-		inline const bool hasView( const ID::VTX_ID & p_id ) const { return _views.find( p_id ) != _views.end(); }
-		inline std::map<ID::VTX_ID, View::BaseView<Model::BaseModel> *> &		getViews() { return _views; }
-		inline const std::map<ID::VTX_ID, View::BaseView<Model::BaseModel> *> & getViews() const { return _views; }
+		inline const bool		hasView( const ID::VTX_ID & p_id ) const { return _views.find( p_id ) != _views.end(); }
+		inline MapViews &		getViews() { return _views; }
+		inline const MapViews & getViews() const { return _views; }
 
 		void notifyViews( const Event::VTXEvent * const p_event ) const
 		{
-			for ( const std::pair<ID::VTX_ID, View::BaseView<Model::BaseModel> *> & pair : _views )
+			for ( const PairViews & pair : _views )
 			{
 				pair.second->notify( p_event );
 			}
 		};
 
 	  private:
-		Model::BaseModel * const								 _model;
-		std::map<ID::VTX_ID, View::BaseView<Model::BaseModel> *> _views
-			= std::map<ID::VTX_ID, View::BaseView<Model::BaseModel> *>();
+		Model::BaseModel * const _model;
+		MapViews				 _views = MapViews();
 	};
 
 } // namespace VTX::MVC

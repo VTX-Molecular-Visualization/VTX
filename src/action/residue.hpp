@@ -113,7 +113,8 @@ namespace VTX::Action::Residue
 					residuesPerMolecules[ residue->getMoleculePtr() ].emplace_back( residue );
 				}
 
-				for ( const std::pair<Model::Molecule *, std::vector<Model::Residue *>> & pair : residuesPerMolecules )
+				for ( const std::pair<Model::Molecule * const, std::vector<Model::Residue *>> & pair :
+					  residuesPerMolecules )
 				{
 					for ( Model::Residue * const residue : pair.second )
 						Util::Molecule::show( *residue, _getVisibilityBool( *residue ), true, false );

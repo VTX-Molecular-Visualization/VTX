@@ -17,7 +17,7 @@ namespace VTX::View::D3
 	{
 		BaseView3D::render( p_camera );
 
-		for ( const std::pair<const Model::Representation::InstantiatedRepresentation *,
+		for ( const std::pair<const Model::Representation::InstantiatedRepresentation * const,
 							  VTX::Representation::RepresentationTarget> & representationData :
 			  _model->getMolecule()->getRepresentationData() )
 		{
