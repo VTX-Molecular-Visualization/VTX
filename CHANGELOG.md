@@ -2,8 +2,16 @@
 
 ## [0.1.3] (Open beta) - 2021-XX-XX
 
-- Save and librarie files are now cross-plateform
+- Picking
+- Advanced image exporter
+- Creation of Viewpoints to record a camera point of view
+- Trajectory can be open directly on a molecule
 - Can open files or download molecules in command line
+- Solo action added to hide everything else than the target
+- Save and library files are now cross-plateform
+- Export and Fullscreen buttons has been relocated in the main menu
+- Library reloading debugged
+- Selection optimized
 
 ## [0.1.2] (Open beta) - 2021-10-20
 
