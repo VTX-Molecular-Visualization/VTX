@@ -734,7 +734,7 @@ namespace VTX::Model
 		{
 			Model::Atom & atom = *getAtom( i );
 			atom.setIndex( i );
-			getBufferAtomIds().emplace_back( i );
+			getBufferAtomIds().emplace_back( atom.getId() );
 		}
 
 		for ( uint i = p_startIndex; i < p_startIndex + p_count; i++ )

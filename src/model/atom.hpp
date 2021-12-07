@@ -196,7 +196,7 @@ namespace VTX
 			// /!\ Names PDB != MMTF (CA and C1 for alpha carbon).
 			std::string _name = "";
 
-			Atom() : BaseModel( ID::Model::MODEL_ATOM ) {}
+			Atom() : BaseModel( VTX::ID::Model::MODEL_ATOM ) {}
 		};
 
 	} // namespace Model

@@ -158,7 +158,7 @@ namespace VTX
 			SecondaryStructure::TYPE _secondaryStructure = SecondaryStructure::TYPE::COIL;
 			char					 _insertionCode		 = ' ';
 
-			Residue() : BaseModel( ID::Model::MODEL_RESIDUE ) {}
+			Residue() : BaseModel( VTX::ID::Model::MODEL_RESIDUE ) {}
 		};
 
 	} // namespace Model

@@ -129,6 +129,7 @@ namespace VTX
 			inline const bool isGamepadeConnected() const
 			{
 				// return _gamepad != nullptr;
+				return false;
 			}
 
 		  protected:

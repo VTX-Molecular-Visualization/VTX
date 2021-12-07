@@ -7,11 +7,11 @@
 #include "event/event.hpp"
 #include "math/aabb.hpp"
 #include "model/base_model.hpp"
+#include "mvc/mvc_manager.hpp"
 #include <map>
 #include <set>
 #include <unordered_set>
 #include <vector>
-#include "mvc/mvc_manager.hpp"
 namespace VTX::Model
 {
 	class Molecule;
@@ -79,7 +79,7 @@ namespace VTX::Model
 		inline const MapMoleculeIds & getMoleculesMap() const { return _moleculesMap; }
 		inline MapMoleculeIds &		  getMoleculesMap() { return _moleculesMap; }
 
-		bool hasItemOfType( const ID::VTX_ID & p_id ) const;
+		bool hasItemOfType( const VTX::ID::VTX_ID & p_id ) const;
 
 		bool hasMolecule() const;
 		void selectMolecule( Molecule &, const bool p_appendToSelection = false );
@@ -183,7 +183,7 @@ namespace VTX::Model
 		}
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		std::vector<T *> getItemsOfType( const ID::VTX_ID & p_modelTypeID )
+		std::vector<T *> getItemsOfType( const VTX::ID::VTX_ID & p_modelTypeID )
 		{
 			std::vector<T *> models = std::vector<T *>();
 			for ( const Model::ID & modelID : getItems() )
@@ -203,12 +203,12 @@ namespace VTX::Model
 
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-		void						   getItemTypes( std::set<ID::VTX_ID> & p_types ) const;
+		void						   getItemTypes( std::set<VTX::ID::VTX_ID> & p_types ) const;
 		Math::AABB					   getAABB() const;
 		const Model::BaseModel * const getCurrentObject() const;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		void getItemsOfType( const ID::VTX_ID & p_itemType, std::set<T *> & p_items ) const
+		void getItemsOfType( const VTX::ID::VTX_ID & p_itemType, std::set<T *> & p_items ) const
 		{
 			for ( const Model::ID & itemID : _items )
 			{
@@ -220,7 +220,7 @@ namespace VTX::Model
 			}
 		}
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		void getItemsOfType( const ID::VTX_ID & p_itemType, std::unordered_set<T *> & p_items ) const
+		void getItemsOfType( const VTX::ID::VTX_ID & p_itemType, std::unordered_set<T *> & p_items ) const
 		{
 			for ( const Model::ID & itemID : _items )
 			{
@@ -233,7 +233,7 @@ namespace VTX::Model
 		}
 
 	  protected:
-		Selection() : BaseModel( ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
+		Selection() : BaseModel( VTX::ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
 		~Selection() = default;
 
 		void _notifyDataChanged();

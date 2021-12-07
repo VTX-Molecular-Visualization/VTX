@@ -51,7 +51,7 @@ namespace VTX
 				}
 			}
 
-			virtual void BaseState::update( const float & p_deltaTime ) override
+			virtual void update( const float & p_deltaTime ) override
 			{
 				for ( const std::pair<const ID::VTX_ID, Controller::BaseController * const> & pair : _controllers )
 				{

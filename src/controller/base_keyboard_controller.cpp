@@ -49,8 +49,7 @@ namespace VTX::Controller
 	{
 		switch ( VTXApp::get().inputMethod()->locale().language() )
 		{
-		case QLocale::France:
-		case QLocale::French: return KeyboardLayout::AZERTY;
+		case QLocale::Language::French: return KeyboardLayout::AZERTY;
 		default: return KeyboardLayout ::QWERTY;
 		}
 	}

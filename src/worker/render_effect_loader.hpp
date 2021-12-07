@@ -25,8 +25,8 @@ namespace VTX
 			}
 			explicit RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary & p_library,
 													  const IO::FilePath						   p_path ) :
-				_library( p_library ),
-				_path( p_path )
+				_path( p_path ),
+				_library( p_library )
 			{
 			}
 

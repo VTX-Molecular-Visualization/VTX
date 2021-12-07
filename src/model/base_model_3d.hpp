@@ -66,7 +66,7 @@ namespace VTX
 				Generic::BaseAutoRotate::setAutoRotationMagnitude( p_speed );
 				_notifyViews( new Event::VTXEvent( Event::Model::AUTO_ROTATE_DATA_CHANGE ) );
 			}
-			void setAutoRotationPlaying( const bool p_play )
+			void setAutoRotationPlaying( const bool p_play ) override
 			{
 				Generic::BaseAutoRotate::setAutoRotationPlaying( p_play );
 				_notifyViews( new Event::VTXEvent( Event::Model::AUTO_ROTATE_DATA_CHANGE ) );
@@ -84,7 +84,7 @@ namespace VTX
 				}
 				_buffer->unbind();
 			}
-			void init()
+			void init() override
 			{
 				_buffer = new B();
 				_buffer->generate();
@@ -106,7 +106,7 @@ namespace VTX
 
 			std::unordered_set<Math::AABB *> _linkedAABBs = std::unordered_set<Math::AABB *>();
 
-			BaseModel3D( const ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {}
+			BaseModel3D( const VTX::ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {}
 			virtual ~BaseModel3D()
 			{
 				_linkedAABBs.clear();

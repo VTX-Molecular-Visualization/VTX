@@ -44,7 +44,7 @@ namespace VTX::Model::Representation
 		Generic::SECONDARY_STRUCTURE_COLOR_MODE &		getSecondaryStructureColorMode();
 		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
 
-		const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const
+		const VTX::Representation::FlagDataTargeted getFlagDataTargeted() const
 		{
 			return VTX::Representation::getFlagDataTargeted( _representationType );
 		};
