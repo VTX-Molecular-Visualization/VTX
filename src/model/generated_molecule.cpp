@@ -546,7 +546,6 @@ namespace VTX::Model
 		p_residue.setSymbol( p_residueSource.getSymbol() );
 		p_residue.setColor( Model::Residue::getResidueColor( p_residueSource ) );
 		p_residue.setType( p_residueSource.getType() );
-		// TODO copy secondary structure
 		p_residue.setSecondaryStructure( p_residueSource.getSecondaryStructure() );
 		p_residue.setAtomType( p_residueSource.getAtomType() );
 
@@ -735,7 +734,7 @@ namespace VTX::Model
 		{
 			Model::Atom & atom = *getAtom( i );
 			atom.setIndex( i );
-			getBufferAtomIds().emplace_back( i );
+			getBufferAtomIds().emplace_back( atom.getId() );
 		}
 
 		for ( uint i = p_startIndex; i < p_startIndex + p_count; i++ )

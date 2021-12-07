@@ -271,7 +271,7 @@ namespace VTX
 			void _onRepresentationChange() override;
 
 			Molecule();
-			Molecule( const ID::VTX_ID & p_typeId );
+			Molecule( const VTX::ID::VTX_ID & p_typeId );
 			~Molecule();
 
 		  private:

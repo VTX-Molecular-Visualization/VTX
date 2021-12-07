@@ -22,16 +22,16 @@ namespace VTX
 			explicit Rgba( const std::vector<float> & p_c )
 			{
 				assert( p_c.size() == 4 );
-				_r = p_c[ 0 ];
-				_g = p_c[ 1 ];
-				_b = p_c[ 2 ];
+				x  = p_c[ 0 ];
+				y  = p_c[ 1 ];
+				z  = p_c[ 2 ];
 				_a = p_c[ 3 ];
 			}
 
 			inline float getA() const { return _a; }
 			inline void	 setA( const float p_a ) { _a = p_a; }
 
-			inline QColor toQColor() const override { return QColor( _r * 255, _g * 255, _b * 255, 255 ); }
+			inline QColor toQColor() const override { return QColor( x * 255, y * 255, z * 255, 255 ); }
 
 		  protected:
 			float _a = 0.f;

@@ -717,7 +717,7 @@ namespace VTX::Action::Setting
 	class ChangeSelectionGranularity : public BaseAction
 	{
 	  public:
-		explicit ChangeSelectionGranularity( const Selection::Granularity & p_granularity ) :
+		explicit ChangeSelectionGranularity( const VTX::Selection::Granularity & p_granularity ) :
 			_granularity( p_granularity )
 		{
 		}
@@ -725,7 +725,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override { VTX_SETTING().setSelectionGranularity( _granularity ); };
 
 	  private:
-		const Selection::Granularity _granularity;
+		const VTX::Selection::Granularity _granularity;
 	};
 
 	class ApplyAllSettings : public BaseAction

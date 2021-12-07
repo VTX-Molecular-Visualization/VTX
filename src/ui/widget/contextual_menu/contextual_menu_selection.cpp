@@ -517,8 +517,10 @@ namespace VTX::UI::Widget::ContextualMenu
 	}
 	void ContextualMenuSelection::_relocateViewpointAction()
 	{
-		VTX_ACTION( new Action::Viewpoint::Relocate(
-			_target->getItemsOfType<Model::Viewpoint>( ID::Model::MODEL_VIEWPOINT ) ) );
+		const std::vector<Model::Viewpoint *> viewpointsInSelection
+			= _target->getItemsOfType<Model::Viewpoint>( ID::Model::MODEL_VIEWPOINT );
+			
+		VTX_ACTION( new Action::Viewpoint::Relocate( **viewpointsInSelection.crbegin() ) );
 	}
 	void ContextualMenuSelection::_deleteViewpointAction()
 	{

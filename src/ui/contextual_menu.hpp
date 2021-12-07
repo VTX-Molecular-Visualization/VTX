@@ -55,8 +55,6 @@ namespace VTX::UI
 		}
 		void displayMenu( const Menu & p_menu, const QPoint & p_worldPos ) const
 		{
-			Widget::ContextualMenu::BaseContextualMenu * const menu
-				= dynamic_cast<Widget::ContextualMenu::BaseContextualMenu *>( _menus[ int( p_menu ) ] );
 			_menus[ int( p_menu ) ]->popup( p_worldPos );
 		}
 
