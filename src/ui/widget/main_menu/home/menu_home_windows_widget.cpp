@@ -92,7 +92,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 	void MenuHomeWindowsWidget::localize() { setTitle( "Windows" ); }
 	void MenuHomeWindowsWidget::refresh()
 	{
-		for ( const std::pair<const ID::VTX_ID *, QAction *> & pair : _mapWindowsActions )
+		for ( const std::pair<const ID::VTX_ID * const, QAction *> & pair : _mapWindowsActions )
 			_refreshButton( *pair.first );
 	}
 	void MenuHomeWindowsWidget::_refreshButton( const ID::VTX_ID & p_id )

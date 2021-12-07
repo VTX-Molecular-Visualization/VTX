@@ -117,15 +117,15 @@ namespace VTX::UI
 	}
 	void MainWindow::initWindowLayout()
 	{
-		if ( VTX_SETTING().getWindowFullscreen() )
-			setWindowMode( WindowMode::Fullscreen );
-		else
-			setWindowMode( WindowMode::Windowed );
-
 		if ( hasValidLayoutSave() )
 			loadLastLayout();
 		else
 			restoreDefaultLayout();
+
+		if ( VTX_SETTING().getWindowFullscreen() )
+			setWindowMode( WindowMode::Fullscreen );
+		else
+			setWindowMode( WindowMode::Windowed );
 	}
 
 	void MainWindow::_loadStyleSheet( const char * p_stylesheetPath )

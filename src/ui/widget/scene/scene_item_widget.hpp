@@ -65,6 +65,8 @@ namespace VTX::UI::Widget::Scene
 		virtual int	 _getMinimumHeight() const;
 
 		void _refreshItemVisibility( QTreeWidgetItem * const p_itemWidget, const bool p_visible );
+		void _refreshItemsVisibility();
+		void _refreshItemsVisibilityRecursive( QTreeWidgetItem & p_parent );
 
 		void _enableSignals( const bool p_enable );
 

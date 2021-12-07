@@ -20,18 +20,13 @@ namespace VTX
 		void EventManager::registerEventReceiverVTX( const VTX_EVENT &			  p_event,
 													 BaseEventReceiverVTX * const p_receiver )
 		{
-			if ( _receiversVTX.find( p_event ) == _receiversVTX.end() )
-			{
-				_receiversVTX.emplace( p_event, std::set<BaseEventReceiverVTX *>() );
-			}
-
 			_receiversVTX[ p_event ].emplace( p_receiver );
 		}
 
 		void EventManager::unregisterEventReceiverVTX( const VTX_EVENT &			p_event,
 													   BaseEventReceiverVTX * const p_receiver )
 		{
-			_receiversVTX.at( p_event ).erase( p_receiver );
+			_receiversVTX[ p_event ].erase( p_receiver );
 		}
 
 		void EventManager::registerEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver )
@@ -146,7 +141,7 @@ namespace VTX
 			{
 				if ( _receiversVTX.find( p_event->name ) != _receiversVTX.end() )
 				{
-					for ( BaseEventReceiverVTX * const receiver : _receiversVTX.at( p_event->name ) )
+					for ( BaseEventReceiverVTX * const receiver : _receiversVTX[ p_event->name ] )
 					{
 						receiver->receiveEvent( *p_event );
 					}

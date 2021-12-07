@@ -329,7 +329,17 @@ namespace VTX
 
 					if ( atom->getChainPtr()->isVisible() == false )
 					{
-						_bufferAtomVisibilities[ i ] = 0u;
+						// If the chain is not visible, we can directly fill all the atom in it
+						const uint			   firstAtomIndexInChain = i;
+						const Model::Residue & lastResidueInChain
+							= *getResidue( atom->getChainPtr()->getIndexLastResidue() );
+						const uint atomIndexInNextChain
+							= lastResidueInChain.getIndexFirstAtom() + lastResidueInChain.getAtomCount();
+
+						const uint count = atomIndexInNextChain - firstAtomIndexInChain;
+
+						std::fill_n( _bufferAtomVisibilities.begin() + firstAtomIndexInChain, count, 0u );
+						i += count - 1;
 					}
 					else if ( atom->getResiduePtr()->isVisible() == false )
 					{
@@ -785,6 +795,15 @@ namespace VTX
 				_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
 			}
 		}
+		void Molecule::setVisible( const bool p_visible, const bool p_notify )
+		{
+			if ( isVisible() != p_visible )
+			{
+				BaseVisible::setVisible( p_visible );
+				if ( p_notify )
+					_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
+			}
+		}
 
 		Chain * Molecule::getFirstChain()
 		{
@@ -1068,6 +1087,8 @@ namespace VTX
 			_notifyDataChanged();
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_STRUCTURE_CHANGE, this ) );
 		}
+
+		void Molecule::notifyVisibilityChange() { _notifyViews( new Event::VTXEvent( Event::Model::VISIBILITY ) ); }
 
 		void Molecule::setDisplayName( const std::string & p_name )
 		{

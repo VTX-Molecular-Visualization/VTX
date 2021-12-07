@@ -48,22 +48,24 @@ namespace VTX::Util::Molecule
 
 	void show( Model::Molecule & p_molecule, const bool p_show, const bool p_refreshMoleculeVisibility )
 	{
-		p_molecule.setVisible( p_show );
+		p_molecule.setVisible( p_show, false );
 		for ( Model::Chain * const chain : p_molecule.getChains() )
 		{
 			if ( chain != nullptr )
-				chain->setVisible( p_show );
+				chain->setVisible( p_show, false );
 		}
 		for ( Model::Residue * const residue : p_molecule.getResidues() )
 		{
 			if ( residue != nullptr )
-				residue->setVisible( p_show );
+				residue->setVisible( p_show, false );
 		}
 		for ( Model::Atom * const atom : p_molecule.getAtoms() )
 		{
 			if ( atom != nullptr )
-				atom->setVisible( p_show );
+				atom->setVisible( p_show, false );
 		}
+
+		p_molecule.notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{

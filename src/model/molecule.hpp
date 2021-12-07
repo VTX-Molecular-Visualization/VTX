@@ -242,6 +242,7 @@ namespace VTX
 			void print() const;
 
 			void setVisible( const bool );
+			void setVisible( const bool p_visible, const bool p_notify );
 			void render( const Object3D::Camera & ) const override;
 
 			bool mergeTopology( const Molecule & );
@@ -256,6 +257,7 @@ namespace VTX
 			// Hide BaseColorable::setColor
 			void setColor( const Color::Rgb & p_color );
 			void notifyStructureChange();
+			void notifyVisibilityChange();
 
 		  protected:
 			void _init() override;

@@ -5,6 +5,7 @@
 #include "id.hpp"
 #include "model/base_model.hpp"
 #include "mvc_data.hpp"
+#include "tool/chrono.hpp"
 #include "view/base_view_3d.hpp"
 #include <type_traits>
 #include <unordered_map>
@@ -96,7 +97,7 @@ namespace VTX
 			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			const M & getModel( const Model::ID & p_id ) const
 			{
-				const Model::BaseModel & model	  = _container.at( p_id )->getModel();
+				const Model::BaseModel & model	  = _container[ p_id ]->getModel();
 				const M &				 modelPtr = static_cast<const M &>( model );
 				return modelPtr;
 			}

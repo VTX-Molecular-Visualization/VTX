@@ -204,7 +204,7 @@ namespace VTX
 
 		void Loader::_loadMoleculeBuffers()
 		{
-			for ( const std::pair<IO::FilePath, std::string *> & pair : _mapFileNameBuffer )
+			for ( const std::pair<const IO::FilePath, std::string *> & pair : _mapFileNameBuffer )
 			{
 				_startLoadingFile( pair.first, SOURCE_TYPE::BUFFER );
 

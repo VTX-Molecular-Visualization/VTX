@@ -224,6 +224,47 @@ namespace VTX::UI::Widget::Scene
 		_enableSignals( true );
 	}
 
+	void SceneItemWidget::_refreshItemsVisibility()
+	{
+		_enableSignals( false );
+		_refreshItemsVisibilityRecursive( *topLevelItem( 0 ) );
+		_enableSignals( true );
+	}
+	void SceneItemWidget::_refreshItemsVisibilityRecursive( QTreeWidgetItem & p_widget )
+	{
+		const Model::ID	   itemID	 = _getModelIDFromItem( p_widget );
+		const ID::VTX_ID & modelType = MVC::MvcManager::get().getModelTypeID( itemID );
+
+		bool visibility;
+		if ( modelType == ID::Model::MODEL_MOLECULE )
+		{
+			visibility = MVC::MvcManager::get().getModel<Model::Molecule>( itemID ).isVisible();
+		}
+		else if ( modelType == ID::Model::MODEL_CHAIN )
+		{
+			visibility = MVC::MvcManager::get().getModel<Model::Chain>( itemID ).isVisible();
+		}
+		else if ( modelType == ID::Model::MODEL_RESIDUE )
+		{
+			visibility = MVC::MvcManager::get().getModel<Model::Residue>( itemID ).isVisible();
+		}
+		else if ( modelType == ID::Model::MODEL_ATOM )
+		{
+			visibility = MVC::MvcManager::get().getModel<Model::Atom>( itemID ).isVisible();
+		}
+		else
+		{
+			visibility = false;
+		}
+
+		p_widget.setCheckState( 0, Util::UI::getCheckState( visibility ) );
+
+		for ( int i = 0; i < p_widget.childCount(); i++ )
+		{
+			_refreshItemsVisibilityRecursive( *p_widget.child( i ) );
+		}
+	}
+
 	void SceneItemWidget::_enableSignals( const bool p_enable )
 	{
 		if ( p_enable )

@@ -114,7 +114,8 @@ namespace VTX::Action::Chain
 					chainsPerMolecules[ chain->getMoleculePtr() ].emplace_back( chain );
 				}
 
-				for ( const std::pair<Model::Molecule *, std::vector<Model::Chain *>> & pair : chainsPerMolecules )
+				for ( const std::pair<Model::Molecule * const, std::vector<Model::Chain *>> & pair :
+					  chainsPerMolecules )
 				{
 					for ( Model::Chain * const chain : pair.second )
 						Util::Molecule::show( *chain, _getVisibilityBool( *chain ), true, false );

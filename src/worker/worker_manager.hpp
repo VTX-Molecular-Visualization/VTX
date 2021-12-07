@@ -62,7 +62,7 @@ namespace VTX
 			void stopAll()
 			{
 				// Stop and delete all running threads.
-				for ( const std::pair<BaseThread *, CallbackThread *> & pair : _workers )
+				for ( const std::pair<BaseThread * const, CallbackThread *> & pair : _workers )
 				{
 					pair.first->quit();
 					pair.first->wait();

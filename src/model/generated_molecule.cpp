@@ -243,8 +243,8 @@ namespace VTX::Model
 		return generatedAtom;
 	}
 
-	void GeneratedMolecule::_computeBonds( const Model::Molecule &					p_source,
-										   const std::map<const uint, const uint> & p_mapAtomIds )
+	void GeneratedMolecule::_computeBonds( const Model::Molecule &			  p_source,
+										   std::map<const uint, const uint> & p_mapAtomIds )
 	{
 		if ( p_source.getBondCount() <= 0 )
 			return;
@@ -280,8 +280,8 @@ namespace VTX::Model
 			if ( p_mapAtomIds.find( bond.getIndexFirstAtom() ) != p_mapAtomIds.end()
 				 && p_mapAtomIds.find( bond.getIndexSecondAtom() ) != p_mapAtomIds.end() )
 			{
-				const uint indexFirstAtom  = p_mapAtomIds.at( bond.getIndexFirstAtom() );
-				const uint indexSecondAtom = p_mapAtomIds.at( bond.getIndexSecondAtom() );
+				const uint indexFirstAtom  = p_mapAtomIds[ bond.getIndexFirstAtom() ];
+				const uint indexSecondAtom = p_mapAtomIds[ bond.getIndexSecondAtom() ];
 
 				Model::Bond & generatedBond = addBond();
 
