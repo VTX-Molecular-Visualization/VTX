@@ -7,6 +7,7 @@
 #include "event/event.hpp"
 #include "math/aabb.hpp"
 #include "model/base_model.hpp"
+#include "mvc/mvc_manager.hpp"
 #include <map>
 #include <set>
 #include <unordered_set>
@@ -38,7 +39,7 @@ namespace VTX::Model
 
 			uint _childrenFullySelectedCount = 0;
 		};
-		class MapResidueIds : public std::map<uint, VecAtomIds>
+		class MapResidueIds : public std::map<VTX::Model::ID, VecAtomIds>
 		{
 			friend Selection;
 
@@ -53,7 +54,7 @@ namespace VTX::Model
 		  private:
 			uint _childrenFullySelectedCount = 0;
 		};
-		class MapChainIds : public std::map<uint, MapResidueIds>
+		class MapChainIds : public std::map<VTX::Model::ID, MapResidueIds>
 		{
 			friend Selection;
 
@@ -67,19 +68,19 @@ namespace VTX::Model
 
 			uint _childrenFullySelectedCount = 0;
 		};
-		using MapMoleculeIds = std::map<Model::ID, MapChainIds>;
+		using MapMoleculeIds = std::map<VTX::Model::ID, MapChainIds>;
 
 		using PairResidueIds  = std::pair<const uint, VecAtomIds>;
 		using PairChainIds	  = std::pair<const uint, MapResidueIds>;
-		using PairMoleculeIds = std::pair<const Model::ID, MapChainIds>;
+		using PairMoleculeIds = std::pair<const VTX::Model::ID, MapChainIds>;
 
-		inline const std::set<Model::ID> & getItems() const { return _items; }
-		inline std::set<Model::ID> &	   getItems() { return _items; }
+		inline const std::set<VTX::Model::ID> & getItems() const { return _items; }
+		inline std::set<VTX::Model::ID> &		getItems() { return _items; }
 
 		inline const MapMoleculeIds & getMoleculesMap() const { return _moleculesMap; }
 		inline MapMoleculeIds &		  getMoleculesMap() { return _moleculesMap; }
 
-		bool hasItemOfType( const ID::VTX_ID & p_id ) const;
+		bool hasItemOfType( const VTX::ID::VTX_ID & p_id ) const;
 
 		bool hasMolecule() const;
 		void selectMolecule( Molecule &, const bool p_appendToSelection = false );
@@ -183,10 +184,10 @@ namespace VTX::Model
 		}
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		std::vector<T *> getItemsOfType( const ID::VTX_ID & p_modelTypeID )
+		std::vector<T *> getItemsOfType( const VTX::ID::VTX_ID & p_modelTypeID )
 		{
 			std::vector<T *> models = std::vector<T *>();
-			for ( const Model::ID & modelID : getItems() )
+			for ( const VTX::Model::ID & modelID : getItems() )
 			{
 				if ( MVC::MvcManager::get().getModelTypeID( modelID ) == p_modelTypeID )
 				{
@@ -203,14 +204,14 @@ namespace VTX::Model
 
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-		void						   getItemTypes( std::set<ID::VTX_ID> & p_types ) const;
+		void						   getItemTypes( std::set<VTX::ID::VTX_ID> & p_types ) const;
 		Math::AABB					   getAABB() const;
 		const Model::BaseModel * const getCurrentObject() const;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		void getItemsOfType( const ID::VTX_ID & p_itemType, std::set<T *> & p_items ) const
+		void getItemsOfType( const VTX::ID::VTX_ID & p_itemType, std::set<T *> & p_items ) const
 		{
-			for ( const Model::ID & itemID : _items )
+			for ( const VTX::Model::ID & itemID : _items )
 			{
 				if ( MVC::MvcManager::get().getModelTypeID( itemID ) == p_itemType )
 				{
@@ -220,9 +221,9 @@ namespace VTX::Model
 			}
 		}
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		void getItemsOfType( const ID::VTX_ID & p_itemType, std::unordered_set<T *> & p_items ) const
+		void getItemsOfType( const VTX::ID::VTX_ID & p_itemType, std::unordered_set<T *> & p_items ) const
 		{
-			for ( const Model::ID & itemID : _items )
+			for ( const VTX::Model::ID & itemID : _items )
 			{
 				if ( MVC::MvcManager::get().getModelTypeID( itemID ) == p_itemType )
 				{
@@ -233,17 +234,17 @@ namespace VTX::Model
 		}
 
 	  protected:
-		Selection() : BaseModel( ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
+		Selection() : BaseModel( VTX::ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
 		~Selection() = default;
 
 		void _notifyDataChanged();
 
 	  private:
-		std::set<Model::ID> _items		  = std::set<Model::ID>();
-		MapMoleculeIds		_moleculesMap = MapMoleculeIds();
+		std::set<VTX::Model::ID> _items		   = std::set<VTX::Model::ID>();
+		MapMoleculeIds			 _moleculesMap = MapMoleculeIds();
 
-		std::map<Model::ID, Math::AABB> _mapSelectionAABB = std::map<Model::ID, Math::AABB>();
-		const Model::BaseModel *		_currentObject	  = nullptr;
+		std::map<VTX::Model::ID, Math::AABB> _mapSelectionAABB = std::map<VTX::Model::ID, Math::AABB>();
+		const Model::BaseModel *			 _currentObject	   = nullptr;
 
 		void _selectMolecule( const Molecule & );
 		void _unselectMolecule( const Molecule & );

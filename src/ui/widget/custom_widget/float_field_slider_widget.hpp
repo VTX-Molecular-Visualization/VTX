@@ -41,9 +41,9 @@ namespace VTX::UI::Widget::CustomWidget
 		void _refresh();
 
 		// MultiDataField Implementation //////////////////////////////
-		void		  _displayDifferentsDataFeedback();
-		const float & _getValue() const { return _value; }
-		void		  _setSingleValue( const float & p_value );
+		void		  _displayDifferentsDataFeedback() override;
+		const float & _getValue() const override { return _value; }
+		void		  _setSingleValue( const float & p_value ) override;
 		//////////////////////////////////////////////////////////////
 
 		void _onTextFieldEdited();

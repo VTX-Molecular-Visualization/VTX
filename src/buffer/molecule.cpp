@@ -10,6 +10,7 @@ namespace VTX::Buffer
 		_vboAtomRadii.create();
 		_vboAtomVisibilities.create();
 		_vboAtomSelections.create();
+		_vboAtomIds.create();
 		_iboBonds.create();
 
 		_vao.create();

@@ -20,6 +20,7 @@ namespace VTX::Controller
 	void Picker::_onMouseLeftClick( const uint p_x, const uint p_y )
 	{
 		const Vec2i ids = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
+		VTX_DEBUG( glm::to_string( ids ) );
 		_performSelection( ids );
 		_lastClickedIds = ids;
 	}
@@ -71,7 +72,7 @@ namespace VTX::Controller
 				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					// Residue.
-					if ( typeId == ID::Model::MODEL_RESIDUE )
+					if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
 					{
 						Model::Residue & residuePicked = MVC::MvcManager::get().getModel<Model::Residue>( p_ids.x );
 						_unselectItem( residuePicked );
@@ -96,7 +97,7 @@ namespace VTX::Controller
 			else
 			{
 				// Residue.
-				if ( typeId == ID::Model::MODEL_RESIDUE )
+				if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
 				{
 					Model::Residue & residuePicked = MVC::MvcManager::get().getModel<Model::Residue>( p_ids.x );
 					_selectItem( residuePicked );

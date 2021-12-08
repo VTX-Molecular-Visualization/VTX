@@ -49,7 +49,7 @@ namespace VTX::UI::Widget::Representation
 		Model::Representation::MEMBER_FLAG _sphereFlag = Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED;
 
 		void		 _setupUi( const QString & p_name ) override;
-		void		 _setupSlots();
+		void		 _setupSlots() override;
 		virtual void _refresh() {};
 
 		// MultiDataField Implementation //////////////////////////////

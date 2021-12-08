@@ -331,13 +331,19 @@ namespace VTX::Action::Viewpoint
 				switch ( _rotationType )
 				{
 				case RotationType::Axis_Angle:
+				{
 					Quatf newRotation = Util::Math::rotate( viewpoint->getRotation(), _angle, _axis );
 					viewpoint->setRotation( newRotation );
 					break;
+				}
 				case RotationType::Euler:
+				{
+
 					Quatf deltaRotation = Util::Math::eulerToQuaternion( _axis );
 					viewpoint->setRotation( viewpoint->getRotation() + deltaRotation );
 					break;
+				}
+				default: break;
 				}
 			}
 

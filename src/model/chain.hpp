@@ -73,7 +73,7 @@ namespace VTX
 			void removeChildrenRepresentations() const;
 
 		  protected:
-			Chain() : BaseModel( ID::Model::MODEL_CHAIN ) {}
+			Chain() : BaseModel( VTX::ID::Model::MODEL_CHAIN ) {}
 
 			void _onRepresentationChange() override;
 

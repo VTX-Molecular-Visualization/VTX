@@ -13,9 +13,10 @@
 
 namespace VTX::Model
 {
-	GeneratedMolecule::GeneratedMolecule() : Model::Molecule( ID::Model::MODEL_GENERATED_MOLECULE ) {}
+	GeneratedMolecule::GeneratedMolecule() : Model::Molecule( VTX::ID::Model::MODEL_GENERATED_MOLECULE ) {}
 
-	void GeneratedMolecule::copyFromSelection( const Model::Selection & p_selection, const Model::ID & p_moleculeID )
+	void GeneratedMolecule::copyFromSelection( const Model::Selection & p_selection,
+											   const VTX::Model::ID &	p_moleculeID )
 	{
 		Tool::Chrono chrono;
 		chrono.start();
@@ -27,7 +28,8 @@ namespace VTX::Model
 
 		std::map<const uint, const uint> mapAtomIds = std::map<const uint, const uint>();
 
-		for ( const std::pair<const ID, const Model::Selection::MapResidueIds> & chainData : moleculeSelectionData )
+		for ( const std::pair<const VTX::Model::ID, Model::Selection::MapResidueIds> & chainData :
+			  moleculeSelectionData )
 		{
 			const Model::Chain & chain			= *molecule.getChain( chainData.first );
 			Model::Chain &		 generatedChain = addChain();
@@ -36,7 +38,7 @@ namespace VTX::Model
 
 			generatedChain.setResidueCount( uint( chainData.second.size() ) );
 
-			for ( const std::pair<const ID, const Model::Selection::VecAtomIds> & residueData : chainData.second )
+			for ( const std::pair<const VTX::Model::ID, Model::Selection::VecAtomIds> & residueData : chainData.second )
 			{
 				const Model::Residue & residue			= *molecule.getResidue( residueData.first );
 				Model::Residue &	   generatedResidue = addResidue();
@@ -178,7 +180,6 @@ namespace VTX::Model
 
 		const uint firstIndex = p_source.getIndexFirstResidue();
 		const uint lastIndex  = p_source.getIndexLastResidue();
-		uint	   atomCount  = 0;
 
 		uint residueCount = 0;
 
@@ -330,7 +331,8 @@ namespace VTX::Model
 		getBufferBonds().shrink_to_fit();
 	}
 
-	void GeneratedMolecule::extractFromSelection( const Model::Selection & p_selection, const Model::ID & p_moleculeID )
+	void GeneratedMolecule::extractFromSelection( const Model::Selection & p_selection,
+												  const VTX::Model::ID &   p_moleculeID )
 	{
 		Tool::Chrono chrono = Tool::Chrono();
 		chrono.start();
@@ -345,7 +347,8 @@ namespace VTX::Model
 
 		_copyMoleculeData( molecule, "Extract of " );
 
-		for ( const std::pair<const ID, const Model::Selection::MapResidueIds> & chainData : moleculeSelectionData )
+		for ( const std::pair<const VTX::Model::ID, Model::Selection::MapResidueIds> & chainData :
+			  moleculeSelectionData )
 		{
 			const Model::Chain * const chain = molecule.getChain( chainData.first );
 
@@ -359,7 +362,7 @@ namespace VTX::Model
 			_copyChainData( generatedChain, *chain );
 			generatedChain.setResidueCount( uint( chainData.second.size() ) );
 
-			for ( const std::pair<const ID, const Model::Selection::VecAtomIds> & residueData : chainData.second )
+			for ( const std::pair<const VTX::Model::ID, Model::Selection::VecAtomIds> & residueData : chainData.second )
 			{
 				const Model::Residue * const residue = molecule.getResidue( residueData.first );
 				if ( residue->getRealAtomCount() == residueData.second.getFullySelectedChildCount() )
@@ -546,7 +549,6 @@ namespace VTX::Model
 		p_residue.setSymbol( p_residueSource.getSymbol() );
 		p_residue.setColor( Model::Residue::getResidueColor( p_residueSource ) );
 		p_residue.setType( p_residueSource.getType() );
-		// TODO copy secondary structure
 		p_residue.setSecondaryStructure( p_residueSource.getSecondaryStructure() );
 		p_residue.setAtomType( p_residueSource.getAtomType() );
 
@@ -735,7 +737,7 @@ namespace VTX::Model
 		{
 			Model::Atom & atom = *getAtom( i );
 			atom.setIndex( i );
-			getBufferAtomIds().emplace_back( i );
+			getBufferAtomIds().emplace_back( atom.getId() );
 		}
 
 		for ( uint i = p_startIndex; i < p_startIndex + p_count; i++ )

@@ -43,9 +43,9 @@ namespace VTX::UI::Widget::CustomWidget
 		void _setupSlots() override;
 		void _refresh();
 
-		void		_displayDifferentsDataFeedback();
-		const int & _getValue() const { return _value; }
-		void		_setSingleValue( const int & p_value );
+		void		_displayDifferentsDataFeedback() override;
+		const int & _getValue() const override { return _value; }
+		void		_setSingleValue( const int & p_value ) override;
 
 		void _onTextFieldEdited();
 		void _onInternalValueChanged( const int p_newValue );

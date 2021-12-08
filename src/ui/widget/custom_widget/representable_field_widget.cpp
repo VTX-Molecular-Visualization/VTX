@@ -45,10 +45,10 @@ namespace VTX
 					Generic::BaseRepresentable * representable = nullptr;
 					const VTX::ID::VTX_ID &		 modelTypeID   = representableModel->getTypeId();
 
-					if ( modelTypeID == ID::Model::MODEL_MOLECULE )
+					if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 						representable = static_cast<Generic::BaseRepresentable *>(
 							static_cast<Model::Molecule *>( representableModel ) );
-					else if ( modelTypeID == ID::Model::MODEL_CHAIN )
+					else if ( modelTypeID == VTX::ID::Model::MODEL_CHAIN )
 						representable = static_cast<Generic::BaseRepresentable *>(
 							static_cast<Model::Chain *>( representableModel ) );
 

@@ -261,7 +261,8 @@ namespace VTX
 					QSettings settings				  = QSettings( "Qubit", moduleNameWithoutSpaces );
 					if ( settings.childGroups().size() != 0 )
 					{
-						settingsWindow->populateSettingsList( &settings.childGroups() );
+						QStringList list = settings.childGroups();
+						settingsWindow->populateSettingsList( &list );
 					}
 					QObject::connect( settingsWindow->ui.pushButtonSaveSettings,
 									  SIGNAL( clicked() ),

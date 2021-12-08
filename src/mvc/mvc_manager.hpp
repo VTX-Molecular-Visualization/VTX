@@ -75,7 +75,7 @@ namespace VTX
 				_container.erase( p_model->getId() );
 				_unlock();
 
-				for ( const std::pair<ID::VTX_ID, View::BaseView<Model::BaseModel> *> & pair : mvc->getViews() )
+				for ( const std::pair<const VTX::ID::VTX_ID, View::BaseView<Model::BaseModel> *> & pair : mvc->getViews() )
 				{
 					delete pair.second;
 				}

@@ -21,7 +21,7 @@ namespace VTX::View::UI::Widget
 
 		virtual void notify( const Event::VTXEvent * const p_event )
 		{
-			BaseView::notify( p_event );
+			View::BaseView<M>::notify( p_event );
 			_widget->notify( p_event );
 		}
 

@@ -50,12 +50,12 @@ namespace VTX
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
 
 		  private:
-			uint _indexFirstAtom  = 0;
-			uint _indexSecondAtom = 0;
+			uint	   _indexFirstAtom	= 0;
+			uint	   _indexSecondAtom = 0;
 			Molecule * _moleculePtr		= nullptr;
-			ORDER _order = ORDER::UNKNOWN;
+			ORDER	   _order			= ORDER::UNKNOWN;
 
-			Bond() : BaseModel( ID::Model::MODEL_BOND ) {};
+			Bond() : BaseModel( VTX::ID::Model::MODEL_BOND ) {};
 		};
 
 	} // namespace Model

@@ -18,7 +18,7 @@ namespace VTX::Model::Renderer
 	RenderEffectPresetLibrary & RenderEffectPresetLibrary::get() { return VTXApp::get().getRenderEffectLibrary(); }
 
 	RenderEffectPresetLibrary::RenderEffectPresetLibrary() :
-		BaseModel( ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET_LIBRARY )
+		BaseModel( VTX::ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET_LIBRARY )
 	{
 		Worker::RenderEffectPresetLibraryLoader * libraryLoader = new Worker::RenderEffectPresetLibraryLoader( *this );
 		libraryLoader->activeNotify( false );
@@ -93,7 +93,7 @@ namespace VTX::Model::Renderer
 
 		View::CallbackView<RenderEffectPreset, RenderEffectPresetLibrary> * const callbackView
 			= MVC::MvcManager::get().instantiateView<View::CallbackView<RenderEffectPreset, RenderEffectPresetLibrary>>(
-				p_preset, ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
+				p_preset, VTX::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
 
 		callbackView->setCallback( this, &RenderEffectPresetLibrary::_onPresetChange );
 
@@ -124,7 +124,7 @@ namespace VTX::Model::Renderer
 
 		if ( 0 <= p_index && p_index < _presets.size() )
 		{
-			MVC::MvcManager::get().deleteView( _presets[ p_index ], ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
+			MVC::MvcManager::get().deleteView( _presets[ p_index ], VTX::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
 
 			removedPreset = _presets[ p_index ];
 
@@ -276,7 +276,7 @@ namespace VTX::Model::Renderer
 			_presets.pop_back();
 		}
 
-		if ( p_notify ) 
+		if ( p_notify )
 		{
 			VTX_EVENT( new Event::VTXEvent( Event::Global::RENDER_EFFECT_LIBRARY_CLEARED ) );
 			_notifyDataChanged();

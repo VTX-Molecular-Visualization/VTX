@@ -1,8 +1,8 @@
 #include "image_export.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
-#include "vtx_app.hpp"
 #include "spec.hpp"
+#include "vtx_app.hpp"
 #include <cctype>
 
 namespace VTX::IO::Struct

@@ -15,7 +15,7 @@ namespace VTX
 	namespace Model
 	{
 		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) :
-			BaseModel3D( ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
+			BaseModel3D( VTX::ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
 		{
 			Tool::Chrono chrono;
 			chrono.start();
@@ -50,7 +50,6 @@ namespace VTX
 			std::vector<uint>		visibilities;
 			std::vector<Model::ID>	ids;
 			std::vector<uint>		residueIndex;
-			float					dirFlag = 0.f; // Loop over chains (1 chain = 1 ribbon).
 
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
@@ -293,7 +292,7 @@ namespace VTX
 		void SecondaryStructure::_instantiate3DViews()
 		{
 			_addRenderable(
-				MVC::MvcManager::get().instantiateView<View::D3::Ribbon>( this, ID::View::D3_RIBBON_PATCH ) );
+				MVC::MvcManager::get().instantiateView<View::D3::Ribbon>( this, VTX::ID::View::D3_RIBBON_PATCH ) );
 		}
 
 		void SecondaryStructure::refreshColors()
@@ -302,7 +301,6 @@ namespace VTX
 			_bufferColors.reserve( _bufferCaPositions.size() );
 			for ( const SSDataPair & pair : _data )
 			{
-				const Chain * const chain = _molecule->getChain( pair.first );
 				for ( const uint residueIdx : pair.second )
 				{
 					const Residue * const residue = _molecule->getResidue( residueIdx );

@@ -95,7 +95,7 @@ namespace VTX::UI::Widget::Inspector
 			const QString headerTitle = QString::fromStdString( "Residue (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
-			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( ID::Model::MODEL_RESIDUE );
+			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( VTX::ID::Model::MODEL_RESIDUE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
 			for ( const Model::Residue * residue : targets )
@@ -244,7 +244,7 @@ namespace VTX::UI::Widget::Inspector
 			const QString secondAtomStr
 				= QString::fromStdString( secondAtom->getSymbolStr() + std::to_string( secondAtom->getIndex() ) );
 
-			QString					linkCountStr;
+			QString					 linkCountStr;
 			const Model::Bond::ORDER bondOrder = bond->getOrder();
 			if ( bondOrder == Model::Bond::ORDER::SINGLE )
 			{

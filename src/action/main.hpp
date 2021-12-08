@@ -136,7 +136,7 @@ namespace VTX::Action::Main
 				Worker::CallbackThread * callback = new Worker::CallbackThread(
 					[ loader ]( const uint p_code )
 					{
-						for ( const std::pair<IO::FilePath, Worker::Loader::Result> & pairFilResult :
+						for ( const std::pair<const IO::FilePath, Worker::Loader::Result> & pairFilResult :
 							  loader->getPathsResult() )
 						{
 							const IO::FilePath &		   filepath = pairFilResult.first;
@@ -244,7 +244,6 @@ namespace VTX::Action::Main
 			if ( _paths.empty() )
 				return;
 
-			bool fileHasBeenImported = false;
 			for ( const IO::FilePath & path : _paths )
 			{
 				IO::FilePath target = Util::Filesystem::getRepresentationPath( path.filename() );
@@ -271,7 +270,6 @@ namespace VTX::Action::Main
 			if ( _paths.empty() )
 				return;
 
-			bool fileHasBeenImported = false;
 			for ( const IO::FilePath & path : _paths )
 			{
 				IO::FilePath target = Util::Filesystem::getRenderEffectPath( path.filename() );
@@ -368,7 +366,7 @@ namespace VTX::Action::Main
 						   const int					  p_height ) :
 			Snapshot( p_mode,
 					  p_path,
-					  IO::Struct::ImageExport( std::pair<int, int>( p_width, p_height ),
+					  IO::Struct::ImageExport( std::pair<const int, int>( p_width, p_height ),
 											   VTX_SETTING().getSnapshotBackgroundOpacity(),
 											   VTX_SETTING().getSnapshotQuality() ) )
 		{

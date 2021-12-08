@@ -27,7 +27,7 @@ namespace VTX::Model::Representation
 	{
 	  public:
 		RepresentationData( const Generic::REPRESENTATION & p_representationType );
-		~RepresentationData();
+		virtual ~RepresentationData();
 
 		void setLinkedRepresentation( Representation * const p_representation )
 		{
@@ -44,7 +44,7 @@ namespace VTX::Model::Representation
 		Generic::SECONDARY_STRUCTURE_COLOR_MODE &		getSecondaryStructureColorMode();
 		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
 
-		const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const
+		const VTX::Representation::FlagDataTargeted getFlagDataTargeted() const
 		{
 			return VTX::Representation::getFlagDataTargeted( _representationType );
 		};

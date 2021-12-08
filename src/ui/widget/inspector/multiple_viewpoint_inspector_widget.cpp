@@ -64,7 +64,7 @@ namespace VTX::UI::Widget::Inspector
 				= QString::fromStdString( "Viewpoint (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
-			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( ID::Model::MODEL_VIEWPOINT );
+			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( VTX::ID::Model::MODEL_VIEWPOINT );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
 			for ( const Model::Viewpoint * viewpoint : targets )

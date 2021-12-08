@@ -27,4 +27,4 @@ namespace VTX
 	}	  // namespace View
 } // namespace VTX
 
-#endif;
+#endif

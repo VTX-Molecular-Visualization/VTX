@@ -60,9 +60,9 @@ namespace VTX::UI::Widget::CustomWidget
 		void _onValueDragged( const float p_delta );
 
 		// MultiDataField Implementation //////////////////////////////
-		void		  _displayDifferentsDataFeedback();
-		const float & _getValue() const { return _value; }
-		void		  _setSingleValue( const float & p_value ) { setValue( p_value ); };
+		void		  _displayDifferentsDataFeedback() override;
+		const float & _getValue() const override { return _value; }
+		void		  _setSingleValue( const float & p_value ) override { setValue( p_value ); };
 		//////////////////////////////////////////////////////////////
 
 	  private:

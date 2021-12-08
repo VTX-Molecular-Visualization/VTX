@@ -13,7 +13,7 @@ namespace VTX
 			AABB()	= default;
 			~AABB() = default;
 
-			explicit AABB( const Vec3f & p_point ) : data { p_point, p_point } {}
+			explicit AABB( const Vec3f & p_point ) : data { { p_point, p_point } } {}
 			AABB( const Vec3f & p_min, const Vec3f & p_max );
 			AABB( const Vec3f & p_center, const float p_radius );
 

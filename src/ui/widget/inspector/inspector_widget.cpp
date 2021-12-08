@@ -90,7 +90,7 @@ namespace VTX::UI::Widget::Inspector
 		{
 			const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( modelID );
 
-			if ( modelTypeID == ID::Model::MODEL_MOLECULE )
+			if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
@@ -137,7 +137,7 @@ namespace VTX::UI::Widget::Inspector
 					}
 				}
 			}
-			else if ( modelTypeID == ID::Model::MODEL_VIEWPOINT )
+			else if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
 				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
 				_viewpointsInspector->addTarget( &viewpoint );

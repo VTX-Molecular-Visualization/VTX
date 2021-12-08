@@ -683,7 +683,7 @@ namespace VTX::IO
 																  const Writer::ChemfilesWriter * p_writer ) const
 	{
 		nlohmann::json jsonArrayRepresentations = nlohmann::json::array();
-		nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", ID::Model::MODEL_MOLECULE },
+		nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", VTX::ID::Model::MODEL_MOLECULE },
 												{ "INDEX", 0 },
 												{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
 		jsonArrayRepresentations.emplace_back( jsonRepresentation );
@@ -695,7 +695,7 @@ namespace VTX::IO
 
 			if ( chain->hasCustomRepresentation() )
 			{
-				jsonRepresentation = { { "TARGET_TYPE", ID::Model::MODEL_CHAIN },
+				jsonRepresentation = { { "TARGET_TYPE", VTX::ID::Model::MODEL_CHAIN },
 									   { "INDEX", chain->getIndex() },
 									   { "REPRESENTATION", serialize( *chain->getRepresentation() ) } };
 				jsonArrayRepresentations.emplace_back( jsonRepresentation );
@@ -713,7 +713,7 @@ namespace VTX::IO
 				{
 					const uint newResidueIndex
 						= p_writer != nullptr ? p_writer->getNewResidueIndex( *residue ) : residue->getIndex();
-					jsonRepresentation = { { "TARGET_TYPE", ID::Model::MODEL_RESIDUE },
+					jsonRepresentation = { { "TARGET_TYPE", VTX::ID::Model::MODEL_RESIDUE },
 										   { "INDEX", newResidueIndex },
 										   { "REPRESENTATION", serialize( *residue->getRepresentation() ) } };
 
@@ -784,9 +784,9 @@ namespace VTX::IO
 			const ID::VTX_ID type  = jsonRepresentations.at( "TARGET_TYPE" ).get<ID::VTX_ID>();
 			const uint		 index = jsonRepresentations.at( "INDEX" ).get<uint>();
 
-			const bool dataValid = ( type == ID::Model::MODEL_MOLECULE )
-								   || ( type == ID::Model::MODEL_CHAIN && index < p_molecule.getChainCount() )
-								   || ( type == ID::Model::MODEL_RESIDUE && index < p_molecule.getResidueCount() );
+			const bool dataValid = ( type == VTX::ID::Model::MODEL_MOLECULE )
+								   || ( type == VTX::ID::Model::MODEL_CHAIN && index < p_molecule.getChainCount() )
+								   || ( type == VTX::ID::Model::MODEL_RESIDUE && index < p_molecule.getResidueCount() );
 
 			// Currently prevent app from crash when lodading out of range (because of deletion)
 			if ( !dataValid )
@@ -796,17 +796,17 @@ namespace VTX::IO
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>();
 			deserialize( jsonRepresentations.at( "REPRESENTATION" ), *representation );
 
-			if ( type == ID::Model::MODEL_MOLECULE )
+			if ( type == VTX::ID::Model::MODEL_MOLECULE )
 			{
 				Representation::RepresentationManager::get().assignRepresentation(
 					representation, p_molecule, false, false );
 			}
-			else if ( type == ID::Model::MODEL_CHAIN )
+			else if ( type == VTX::ID::Model::MODEL_CHAIN )
 			{
 				Representation::RepresentationManager::get().assignRepresentation(
 					representation, *p_molecule.getChain( index ), false, false );
 			}
-			else if ( type == ID::Model::MODEL_RESIDUE )
+			else if ( type == VTX::ID::Model::MODEL_RESIDUE )
 			{
 				Representation::RepresentationManager::get().assignRepresentation(
 					representation, *p_molecule.getResidue( index ), false, false );

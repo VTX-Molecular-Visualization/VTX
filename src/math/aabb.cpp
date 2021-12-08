@@ -5,8 +5,9 @@ namespace VTX
 {
 	namespace Math
 	{
-		AABB::AABB( const Vec3f & p_min, const Vec3f & p_max ) : data { p_min, p_max } {}
-		AABB::AABB( const Vec3f & p_center, const float p_radius ) : data { p_center - p_radius, p_center + p_radius }
+		AABB::AABB( const Vec3f & p_min, const Vec3f & p_max ) : data { { p_min, p_max } } {}
+		AABB::AABB( const Vec3f & p_center, const float p_radius ) :
+			data { { p_center - p_radius, p_center + p_radius } }
 		{
 		}
 
@@ -34,7 +35,11 @@ namespace VTX
 			data.minMax.max += p_translation;
 		}
 
-		bool AABB::intersect( const Vec3f & p_rayPosition, const Vec3f & p_rayInvDir, const Vec3i & p_isDirNeg, const float p_tMin, const float p_tMax ) const
+		bool AABB::intersect( const Vec3f & p_rayPosition,
+							  const Vec3f & p_rayInvDir,
+							  const Vec3i & p_isDirNeg,
+							  const float	p_tMin,
+							  const float	p_tMax ) const
 		{
 			float tMin = ( data.limits[ p_isDirNeg.x ].x - p_rayPosition.x ) * p_rayInvDir.x;
 			float tMax = ( data.limits[ 1 - p_isDirNeg.x ].x - p_rayPosition.x ) * p_rayInvDir.x;
@@ -64,7 +69,8 @@ namespace VTX
 
 		AABB AABB::join( const AABB & p_aabb1, const AABB & p_aabb2 )
 		{
-			return AABB( Util::Math::min( p_aabb1.data.minMax.min, p_aabb2.data.minMax.min ), Util::Math::max( p_aabb1.data.minMax.max, p_aabb2.data.minMax.max ) );
+			return AABB( Util::Math::min( p_aabb1.data.minMax.min, p_aabb2.data.minMax.min ),
+						 Util::Math::max( p_aabb1.data.minMax.max, p_aabb2.data.minMax.max ) );
 		}
 	} // namespace Math
 } // namespace VTX
