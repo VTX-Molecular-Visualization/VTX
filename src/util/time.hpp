@@ -2,7 +2,6 @@
 #define __VTX_UTIL_TIME__
 
 #ifdef _MSC_VER
-#pragma once
 #define __STDC_LIB_EXT1__ 1
 #endif
 
@@ -20,7 +19,7 @@ namespace VTX
 			// inline std::chrono::steady_clock::time_point getNow() { return std::chrono::high_resolution_clock::now();
 			// }
 
-			static std::string getNowString()
+			inline static std::string getNowString()
 			{
 #ifdef __STDC_LIB_EXT1__
 				__time64_t now = std::chrono::system_clock::to_time_t( std::chrono::system_clock::now() );
@@ -36,7 +35,7 @@ namespace VTX
 				return string.substr( 11, string.length() - 17 );
 			}
 
-			static std::string getTimestamp()
+			inline static std::string getTimestamp()
 			{
 				std::time_t result = std::time( nullptr );
 #ifdef __STDC_LIB_EXT1__

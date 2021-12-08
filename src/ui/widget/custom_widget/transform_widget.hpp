@@ -50,7 +50,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void _refresh();
 
 		// MultiDataField Implementation //////////////////////////////
-		void _displayDifferentsDataFeedback();
+		void _displayDifferentsDataFeedback() override;
 		//////////////////////////////////////////////////////////////
 
 	  private:

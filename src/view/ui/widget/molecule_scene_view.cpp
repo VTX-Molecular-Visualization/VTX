@@ -163,22 +163,22 @@ namespace VTX::View::UI::Widget
 		const Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
 		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( modelId );
 
-		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 			VTX_ACTION( new Action::Molecule::Orient( model ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
 			VTX_ACTION( new Action::Chain::Orient( model ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
 			Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
 			VTX_ACTION( new Action::Residue::Orient( model ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
 			Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
 			VTX_ACTION( new Action::Atom::Orient( model ) );
@@ -224,7 +224,7 @@ namespace VTX::View::UI::Widget
 
 		Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 
-		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 			if ( selection.isMoleculeFullySelected( molecule ) )
@@ -241,7 +241,7 @@ namespace VTX::View::UI::Widget
 				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Molecule, &molecule, globalClicPos );
 			}
 		}
-		else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & chain = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
 			if ( selection.isChainFullySelected( chain ) )
@@ -257,7 +257,7 @@ namespace VTX::View::UI::Widget
 				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Chain, &chain, globalClicPos );
 			}
 		}
-		else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
 			Model::Residue & residue = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
 			if ( selection.isResidueFullySelected( residue ) )
@@ -273,7 +273,7 @@ namespace VTX::View::UI::Widget
 				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Residue, &residue, globalClicPos );
 			}
 		}
-		else if ( modelTypeId == ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
 			Model::Atom & atom = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
 			if ( selection.isAtomSelected( atom ) )
@@ -469,11 +469,11 @@ namespace VTX::View::UI::Widget
 
 		_enableSignals( false );
 
-		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 			_expandMolecule( p_from, true );
-		else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 			_expandChain( p_from, true );
-		else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 			_expandResidue( p_from, true );
 
 		_enableSignals( true );
@@ -803,7 +803,7 @@ namespace VTX::View::UI::Widget
 			= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW
 						   : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
 
-		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 
@@ -812,7 +812,7 @@ namespace VTX::View::UI::Widget
 			else
 				VTX_ACTION( new Action::Molecule::ChangeVisibility( model, visibilityMode ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
 
@@ -821,7 +821,7 @@ namespace VTX::View::UI::Widget
 			else
 				VTX_ACTION( new Action::Chain::ChangeVisibility( model, visibilityMode ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
 			Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
 
@@ -830,7 +830,7 @@ namespace VTX::View::UI::Widget
 			else
 				VTX_ACTION( new Action::Residue::ChangeVisibility( model, visibilityMode ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
 			Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
 
@@ -1000,7 +1000,7 @@ namespace VTX::View::UI::Widget
 		const Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
 		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( modelId );
 
-		if ( modelTypeId == ID::Model::MODEL_CHAIN )
+		if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			for ( int i = 0; i < p_item->childCount(); i++ )
 			{
@@ -1027,13 +1027,13 @@ namespace VTX::View::UI::Widget
 
 		const ID::VTX_ID & typeID = MVC::MvcManager::get().getModelTypeID( p_id );
 
-		if ( typeID == ID::Model::MODEL_MOLECULE )
+		if ( typeID == VTX::ID::Model::MODEL_MOLECULE )
 			res = _getMoleculeTreeWidgetItem();
-		else if ( typeID == ID::Model::MODEL_CHAIN )
+		else if ( typeID == VTX::ID::Model::MODEL_CHAIN )
 			res = _getTreeWidgetItem( MVC::MvcManager::get().getModel<Model::Chain>( p_id ) );
-		else if ( typeID == ID::Model::MODEL_RESIDUE )
+		else if ( typeID == VTX::ID::Model::MODEL_RESIDUE )
 			res = _getTreeWidgetItem( MVC::MvcManager::get().getModel<Model::Residue>( p_id ) );
-		else if ( typeID == ID::Model::MODEL_ATOM )
+		else if ( typeID == VTX::ID::Model::MODEL_ATOM )
 			res = _getTreeWidgetItem( MVC::MvcManager::get().getModel<Model::Atom>( p_id ) );
 		else
 			res = nullptr;

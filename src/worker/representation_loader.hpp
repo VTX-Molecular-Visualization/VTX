@@ -25,8 +25,9 @@ namespace VTX
 			}
 			explicit RepresentationLibraryLoader( Model::Representation::RepresentationLibrary & p_library,
 												  const IO::FilePath &							 p_path ) :
-				_library( p_library ),
-				_path( p_path )
+				_path( p_path ),
+				_library( p_library )
+
 			{
 			}
 

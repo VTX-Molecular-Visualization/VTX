@@ -1,8 +1,8 @@
 #include "menu_visualization_viewpoint.hpp"
 #include "action/action_manager.hpp"
 #include "action/viewpoint.hpp"
-#include "mvc/mvc_manager.hpp"
 #include "model/path.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "object3d/camera.hpp"
 #include "selection/selection_manager.hpp"
 #include "ui/widget_factory.hpp"
@@ -24,7 +24,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
 
 			const Model::Selection * const selectionModel = castedEvent.ptr;
-			_enableDeleteButtonState( selectionModel->hasItemOfType( ID::Model::MODEL_VIEWPOINT ) );
+			_enableDeleteButtonState( selectionModel->hasItemOfType( VTX::ID::Model::MODEL_VIEWPOINT ) );
 		}
 	}
 
@@ -68,7 +68,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		for ( const Model::ID & modelID : selection.getItems() )
 		{
 			const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( modelID );
-			if ( modelTypeID == ID::Model::MODEL_VIEWPOINT )
+			if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
 				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
 				viewpointsInSelection.emplace_back( &viewpoint );

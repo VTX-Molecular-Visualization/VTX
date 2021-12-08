@@ -89,7 +89,7 @@ namespace VTX::View::UI::Widget
 	void PathSceneView::_fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection )
 	{
 		std::set<Model::Viewpoint *> viewpoints = std::set<Model::Viewpoint *>();
-		p_selection.getItemsOfType( ID::Model::MODEL_VIEWPOINT, viewpoints );
+		p_selection.getItemsOfType( VTX::ID::Model::MODEL_VIEWPOINT, viewpoints );
 
 		bool pathItemAdded = false;
 
@@ -122,7 +122,7 @@ namespace VTX::View::UI::Widget
 		if ( p_column == 0 )
 		{
 			const Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<Model::ID>();
-			if ( MVC::MvcManager::get().getModelTypeID( idTarget ) == ID::Model::MODEL_VIEWPOINT )
+			if ( MVC::MvcManager::get().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
 				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( idTarget );
 				std::string		   itemTxt	 = p_item->text( 0 ).toStdString();
@@ -154,7 +154,7 @@ namespace VTX::View::UI::Widget
 		if ( p_column == 0 )
 		{
 			const Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<Model::ID>();
-			if ( MVC::MvcManager::get().getModelTypeID( idTarget ) == ID::Model::MODEL_VIEWPOINT )
+			if ( MVC::MvcManager::get().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
 				Model::Viewpoint & viewpoint  = MVC::MvcManager::get().getModel<Model::Viewpoint>( idTarget );
 				Object3D::Camera & mainCamera = VTXApp::get().getScene().getCamera();
@@ -173,7 +173,7 @@ namespace VTX::View::UI::Widget
 
 		const Model::ID & itemID = _getModelIDFromItem( *targetedItem );
 
-		if ( MVC::MvcManager::get().getModelTypeID( itemID ) != ID::Model::MODEL_VIEWPOINT )
+		if ( MVC::MvcManager::get().getModelTypeID( itemID ) != VTX::ID::Model::MODEL_VIEWPOINT )
 			return;
 
 		Model::Viewpoint & viewpointTargeted = MVC::MvcManager::get().getModel<Model::Viewpoint>( itemID );

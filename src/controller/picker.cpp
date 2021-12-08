@@ -72,7 +72,7 @@ namespace VTX::Controller
 				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					// Residue.
-					if ( typeId == ID::Model::MODEL_RESIDUE )
+					if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
 					{
 						Model::Residue & residuePicked = MVC::MvcManager::get().getModel<Model::Residue>( p_ids.x );
 						_unselectItem( residuePicked );
@@ -97,7 +97,7 @@ namespace VTX::Controller
 			else
 			{
 				// Residue.
-				if ( typeId == ID::Model::MODEL_RESIDUE )
+				if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
 				{
 					Model::Residue & residuePicked = MVC::MvcManager::get().getModel<Model::Residue>( p_ids.x );
 					_selectItem( residuePicked );

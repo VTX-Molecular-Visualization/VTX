@@ -134,25 +134,25 @@ namespace VTX::UI::Widget::Scene
 	void SceneItemSelectionModel::_selectAllAfterItemInMolecule( std::vector<uint> &			p_selection,
 																 const Model::BaseModel * const p_itemFrom )
 	{
-		if ( p_itemFrom->getTypeId() == ID::Model::MODEL_MOLECULE )
+		if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			p_selection.emplace_back( p_itemFrom->getId() );
 			return;
 		}
-		else if ( p_itemFrom->getTypeId() == ID::Model::MODEL_CHAIN )
+		else if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
 		{
 			const Model::Chain * const chainFrom = static_cast<const Model::Chain *>( p_itemFrom );
 			p_selection.emplace_back( chainFrom->getId() );
 			_selectAllChainsFrom( p_selection, *chainFrom );
 		}
-		else if ( p_itemFrom->getTypeId() == ID::Model::MODEL_RESIDUE )
+		else if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_RESIDUE )
 		{
 			const Model::Residue * const residueFrom = static_cast<const Model::Residue *>( p_itemFrom );
 			p_selection.emplace_back( residueFrom->getId() );
 			_selectAllResiduesFrom( p_selection, *residueFrom );
 			_selectAllChainsFrom( p_selection, *residueFrom->getChainPtr() );
 		}
-		else if ( p_itemFrom->getTypeId() == ID::Model::MODEL_ATOM )
+		else if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_ATOM )
 		{
 			const Model::Atom * const atomFrom = static_cast<const Model::Atom *>( p_itemFrom );
 			p_selection.emplace_back( atomFrom->getId() );
@@ -195,25 +195,25 @@ namespace VTX::UI::Widget::Scene
 	void SceneItemSelectionModel::_selectAllBeforeItemInMolecule( std::vector<uint> &			 p_selection,
 																  const Model::BaseModel * const p_itemFrom )
 	{
-		if ( p_itemFrom->getTypeId() == ID::Model::MODEL_MOLECULE )
+		if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			p_selection.emplace_back( p_itemFrom->getId() );
 			return;
 		}
-		else if ( p_itemFrom->getTypeId() == ID::Model::MODEL_CHAIN )
+		else if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
 		{
 			const Model::Chain * const chainFrom = static_cast<const Model::Chain *>( p_itemFrom );
 			p_selection.emplace_back( chainFrom->getId() );
 			_selectAllChainsTo( p_selection, *chainFrom );
 		}
-		else if ( p_itemFrom->getTypeId() == ID::Model::MODEL_RESIDUE )
+		else if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_RESIDUE )
 		{
 			const Model::Residue * const residueFrom = static_cast<const Model::Residue *>( p_itemFrom );
 			p_selection.emplace_back( residueFrom->getId() );
 			_selectAllResiduesTo( p_selection, *residueFrom );
 			_selectAllChainsTo( p_selection, *residueFrom->getChainPtr() );
 		}
-		else if ( p_itemFrom->getTypeId() == ID::Model::MODEL_ATOM )
+		else if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_ATOM )
 		{
 			const Model::Atom * const atomFrom = static_cast<const Model::Atom *>( p_itemFrom );
 			p_selection.emplace_back( atomFrom->getId() );
@@ -251,17 +251,17 @@ namespace VTX::UI::Widget::Scene
 	{
 		const Model::BaseModel * res;
 
-		if ( p_model->getTypeId() == ID::Model::MODEL_MOLECULE )
+		if ( p_model->getTypeId() == VTX::ID::Model::MODEL_MOLECULE )
 			res = p_model;
-		else if ( p_model->getTypeId() == ID::Model::MODEL_CHAIN )
+		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
 			res = static_cast<const Model::Chain *>( p_model )->getMoleculePtr();
-		else if ( p_model->getTypeId() == ID::Model::MODEL_RESIDUE )
+		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_RESIDUE )
 			res = static_cast<const Model::Residue *>( p_model )->getMoleculePtr();
-		else if ( p_model->getTypeId() == ID::Model::MODEL_ATOM )
+		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_ATOM )
 			res = static_cast<const Model::Atom *>( p_model )->getMoleculePtr();
-		else if ( p_model->getTypeId() == ID::Model::MODEL_PATH )
+		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_PATH )
 			res = p_model;
-		else if ( p_model->getTypeId() == ID::Model::MODEL_VIEWPOINT )
+		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_VIEWPOINT )
 			res = static_cast<const Model::Viewpoint *>( p_model )->getPathPtr();
 		else
 			res = nullptr;
@@ -290,7 +290,7 @@ namespace VTX::UI::Widget::Scene
 	{
 		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( p_modelId );
 
-		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isMoleculeFullySelected( model ) )
@@ -298,7 +298,7 @@ namespace VTX::UI::Widget::Scene
 			else
 				VTX_ACTION( new Action::Selection::SelectMolecule( p_selectionModel, model, p_appendToSelection ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isChainFullySelected( model ) )
@@ -306,7 +306,7 @@ namespace VTX::UI::Widget::Scene
 			else
 				VTX_ACTION( new Action::Selection::SelectChain( p_selectionModel, model, p_appendToSelection ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
 			Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isResidueFullySelected( model ) )
@@ -314,7 +314,7 @@ namespace VTX::UI::Widget::Scene
 			else
 				VTX_ACTION( new Action::Selection::SelectResidue( p_selectionModel, model, p_appendToSelection ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
 			Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isAtomSelected( model ) )
@@ -329,22 +329,22 @@ namespace VTX::UI::Widget::Scene
 	{
 		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( p_modelId );
 
-		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( p_modelId );
 			VTX_ACTION( new Action::Selection::UnselectMolecule( p_selectionModel, model ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( p_modelId );
 			VTX_ACTION( new Action::Selection::UnselectChain( p_selectionModel, model ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
 			Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( p_modelId );
 			VTX_ACTION( new Action::Selection::UnselectResidue( p_selectionModel, model ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
 			Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( p_modelId );
 			VTX_ACTION( new Action::Selection::UnselectAtom( p_selectionModel, model ) );

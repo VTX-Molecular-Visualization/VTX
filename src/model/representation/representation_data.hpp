@@ -27,7 +27,7 @@ namespace VTX::Model::Representation
 	{
 	  public:
 		RepresentationData( const Generic::REPRESENTATION & p_representationType );
-		~RepresentationData();
+		virtual ~RepresentationData();
 
 		void setLinkedRepresentation( Representation * const p_representation )
 		{

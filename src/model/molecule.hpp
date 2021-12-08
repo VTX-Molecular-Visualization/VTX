@@ -272,7 +272,7 @@ namespace VTX
 
 			Molecule();
 			Molecule( const VTX::ID::VTX_ID & p_typeId );
-			~Molecule();
+			virtual ~Molecule();
 
 		  private:
 			std::string _displayName;

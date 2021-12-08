@@ -244,7 +244,6 @@ namespace VTX::Action::Main
 			if ( _paths.empty() )
 				return;
 
-			bool fileHasBeenImported = false;
 			for ( const IO::FilePath & path : _paths )
 			{
 				IO::FilePath target = Util::Filesystem::getRepresentationPath( path.filename() );

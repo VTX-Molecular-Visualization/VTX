@@ -8,7 +8,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		MeshTriangle::MeshTriangle() : BaseModel3D( ID::Model::MODEL_MESH_TRIANGLE ) {}
+		MeshTriangle::MeshTriangle() : BaseModel3D( VTX::ID::Model::MODEL_MESH_TRIANGLE ) {}
 
 		void MeshTriangle::_fillBuffer()
 		{
@@ -30,7 +30,8 @@ namespace VTX
 
 		void MeshTriangle::_instantiate3DViews()
 		{
-			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Triangle>( this, ID::View::D3_TRIANGLE ) );
+			_addRenderable(
+				MVC::MvcManager::get().instantiateView<View::D3::Triangle>( this, VTX::ID::View::D3_TRIANGLE ) );
 		}
 
 		void MeshTriangle::print() const

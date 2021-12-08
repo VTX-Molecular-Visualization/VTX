@@ -16,7 +16,7 @@ namespace VTX::Model::Representation
 {
 	RepresentationLibrary & RepresentationLibrary::get() { return VTXApp::get().getRepresentationLibrary(); };
 
-	RepresentationLibrary::RepresentationLibrary() : BaseModel( ID::Model::MODEL_REPRESENTATION_LIBRARY )
+	RepresentationLibrary::RepresentationLibrary() : BaseModel( VTX::ID::Model::MODEL_REPRESENTATION_LIBRARY )
 	{
 		Worker::RepresentationLibraryLoader * libraryLoader = new Worker::RepresentationLibraryLoader( *this );
 		libraryLoader->activeNotify( false );
@@ -87,7 +87,7 @@ namespace VTX::Model::Representation
 
 		View::CallbackView<Representation, RepresentationLibrary> * const callbackView
 			= MVC::MvcManager::get().instantiateView<View::CallbackView<Representation, RepresentationLibrary>>(
-				p_representation, ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
+				p_representation, VTX::ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
 
 		callbackView->setCallback( this, &RepresentationLibrary::_onRepresentationChange );
 
@@ -119,7 +119,8 @@ namespace VTX::Model::Representation
 		{
 			removedRepresentation = _representations[ p_index ];
 
-			MVC::MvcManager::get().deleteView( _representations[ p_index ], ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
+			MVC::MvcManager::get().deleteView( _representations[ p_index ],
+											   VTX::ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
 			_representations.erase( _representations.begin() + p_index );
 
 			if ( p_notify )

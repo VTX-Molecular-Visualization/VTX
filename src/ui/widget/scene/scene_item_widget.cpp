@@ -236,19 +236,19 @@ namespace VTX::UI::Widget::Scene
 		const ID::VTX_ID & modelType = MVC::MvcManager::get().getModelTypeID( itemID );
 
 		bool visibility;
-		if ( modelType == ID::Model::MODEL_MOLECULE )
+		if ( modelType == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			visibility = MVC::MvcManager::get().getModel<Model::Molecule>( itemID ).isVisible();
 		}
-		else if ( modelType == ID::Model::MODEL_CHAIN )
+		else if ( modelType == VTX::ID::Model::MODEL_CHAIN )
 		{
 			visibility = MVC::MvcManager::get().getModel<Model::Chain>( itemID ).isVisible();
 		}
-		else if ( modelType == ID::Model::MODEL_RESIDUE )
+		else if ( modelType == VTX::ID::Model::MODEL_RESIDUE )
 		{
 			visibility = MVC::MvcManager::get().getModel<Model::Residue>( itemID ).isVisible();
 		}
-		else if ( modelType == ID::Model::MODEL_ATOM )
+		else if ( modelType == VTX::ID::Model::MODEL_ATOM )
 		{
 			visibility = MVC::MvcManager::get().getModel<Model::Atom>( itemID ).isVisible();
 		}

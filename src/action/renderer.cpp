@@ -15,7 +15,7 @@ namespace VTX::Action::Renderer
 			= new Worker::RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary::get() );
 
 		Worker::CallbackWorker * const callback = new Worker::CallbackWorker(
-			[ libraryLoader ]()
+			[]()
 			{
 				Model::Renderer::RenderEffectPresetLibrary::get().applyPreset(
 					VTX_SETTING().getDefaultRenderEffectPresetIndex() );
@@ -40,8 +40,7 @@ namespace VTX::Action::Renderer
 			{
 				Worker::RenderEffectPresetSaverThread * librarySaver
 					= new Worker::RenderEffectPresetSaverThread( renderEffect );
-				Worker::CallbackThread * callback
-					= new Worker::CallbackThread( [ librarySaver ]( const uint p_code ) {} );
+				Worker::CallbackThread * callback = new Worker::CallbackThread( []( const uint p_code ) {} );
 
 				VTX_THREAD( librarySaver, callback );
 			}

@@ -46,7 +46,7 @@ namespace VTX
 			ALL = 0xFFFF,
 		};
 
-		static FlagDataTargeted getFlagDataTargeted( const Generic::REPRESENTATION & p_representation )
+		inline static FlagDataTargeted getFlagDataTargeted( const Generic::REPRESENTATION & p_representation )
 		{
 			Representation::FlagDataTargeted res = Representation::FlagDataTargeted::NONE;
 
@@ -84,6 +84,7 @@ namespace VTX
 
 			return res;
 		}
+
 	} // namespace Representation
 
 } // namespace VTX

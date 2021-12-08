@@ -117,8 +117,8 @@ namespace VTX::Action::Representation
 		void execute() { _representation->setName( _name ); };
 
 	  private:
-		const std::string							  _name;
 		Model::Representation::Representation * const _representation;
+		const std::string							  _name;
 	};
 	class ChangeQuickAccess : public BaseAction
 	{
@@ -136,8 +136,8 @@ namespace VTX::Action::Representation
 		};
 
 	  private:
-		const bool									  _quickAccess;
 		Model::Representation::Representation * const _representation;
+		const bool									  _quickAccess;
 	};
 
 	class ChangeRepresentation : public BaseAction
@@ -157,8 +157,8 @@ namespace VTX::Action::Representation
 		};
 
 	  private:
-		const Generic::REPRESENTATION				  _representationType;
 		Model::Representation::Representation * const _representation;
+		const Generic::REPRESENTATION				  _representationType;
 	};
 	class ChangeColorMode : public BaseAction
 	{
@@ -177,8 +177,8 @@ namespace VTX::Action::Representation
 		};
 
 	  private:
-		const Generic::COLOR_MODE					  _colorMode;
 		Model::Representation::Representation * const _representation;
+		const Generic::COLOR_MODE					  _colorMode;
 	};
 
 	class ChangeSecondaryStructureColorMode : public BaseAction
@@ -198,8 +198,8 @@ namespace VTX::Action::Representation
 		};
 
 	  private:
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
 		Model::Representation::Representation * const _representation;
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
 	};
 
 	class ChangeColor : public BaseAction
@@ -218,8 +218,8 @@ namespace VTX::Action::Representation
 		};
 
 	  private:
-		const Color::Rgb							  _color;
 		Model::Representation::Representation * const _representation;
+		const Color::Rgb							  _color;
 	};
 
 	class ChangeSphereRadius : public BaseAction
@@ -239,8 +239,8 @@ namespace VTX::Action::Representation
 		};
 
 	  private:
-		const float									  _radius;
 		Model::Representation::Representation * const _representation;
+		const float									  _radius;
 	};
 	class ChangeCylinderRadius : public BaseAction
 	{
@@ -259,8 +259,8 @@ namespace VTX::Action::Representation
 		};
 
 	  private:
-		const float									  _radius;
 		Model::Representation::Representation * const _representation;
+		const float									  _radius;
 	};
 
 	class AddNewPresetInLibrary : public BaseAction

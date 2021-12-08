@@ -224,9 +224,8 @@ namespace VTX::IO::Reader
 		modelFrame.resize( frame.size() );
 
 		Model::Chain * modelChain;
-		std::string	   lastChainName   = "";
-		uint		   chainModelId	   = -1;
-		bool		   chainIsStandard = true;
+		std::string	   lastChainName = "";
+		uint		   chainModelId	 = -1;
 
 		std::map<uint, std::vector<size_t>> mapResidueBonds		 = std::map<uint, std::vector<size_t>>();
 		std::map<uint, std::vector<size_t>> mapResidueExtraBonds = std::map<uint, std::vector<size_t>>();

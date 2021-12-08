@@ -33,9 +33,9 @@ namespace VTX
 									   Model::Molecule &,
 									   const uint p_molFrameStart		 = 0,
 									   const uint p_trajectoryFrameStart = 0 ) const;
-			void LibChemfiles::fillTrajectoryFrame( const chemfiles::Frame & p_frame,
-													Model::Molecule &		 p_molecule,
-													const uint				 p_moleculeFrameIndex ) const;
+			void fillTrajectoryFrame( const chemfiles::Frame & p_frame,
+									  Model::Molecule &		   p_molecule,
+									  const uint			   p_moleculeFrameIndex ) const;
 
 		  private:
 			void			  _readTrajectory( chemfiles::Trajectory &,

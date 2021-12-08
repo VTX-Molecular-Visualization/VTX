@@ -51,7 +51,6 @@ namespace VTX
 			inline void setIsLooping( const bool p_isLooping ) { _isLooping = p_isLooping; }
 			void		refreshAllDurations();
 			Viewpoint	getInterpolatedViewpoint( const float p_time ) const;
-			const std::vector<std::string> * const getCurrentActions( const float p_time );
 
 		  private:
 			std::string		   _name			  = "";

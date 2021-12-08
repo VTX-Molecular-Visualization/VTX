@@ -166,7 +166,7 @@ namespace VTX::UI::Widget::Scene
 	{
 		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( p_sceneItemWidget->getModelID() );
 
-		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			std::vector<SceneItemWidget *>::const_reverse_iterator it	   = _sceneWidgets.crbegin();
 			int													   counter = 1;

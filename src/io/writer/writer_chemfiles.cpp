@@ -112,7 +112,7 @@ namespace VTX::IO::Writer
 										  && residue->getSymbol() != Model::Residue::SYMBOL::UNKNOWN;
 					chemResidue.set( "is_standard_pdb", isStdPdb );
 
-					for ( firstResAtomIdx; firstResAtomIdx < atomCount; ++firstResAtomIdx )
+					for ( ; firstResAtomIdx < atomCount; ++firstResAtomIdx )
 					{
 						const VTX::Model::Atom * const atom = p_molecule.getAtom( firstResAtomIdx );
 
