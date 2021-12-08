@@ -39,8 +39,8 @@ namespace VTX::Model
 			bool hasToBeExtracted() const { return _firstIndexLinked && _secondIndexLinked; };
 
 		  private:
-			uint		  _previousBondIndex;
 			Model::Bond * _bond;
+			uint		  _previousBondIndex;
 			uint		  _newFirstIndex	 = 0;
 			uint		  _newSecondIndex	 = 0;
 			bool		  _firstIndexLinked	 = false;

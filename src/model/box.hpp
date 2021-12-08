@@ -28,7 +28,7 @@ namespace VTX::Model
 		std::vector<Vec3f> _corners;
 		std::vector<uint>  _indices;
 
-		Box()  = default;
+		Box()  = delete;
 		~Box() = default;
 	};
 } // namespace VTX::Model

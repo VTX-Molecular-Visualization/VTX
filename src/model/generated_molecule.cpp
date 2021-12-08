@@ -13,7 +13,7 @@
 
 namespace VTX::Model
 {
-	GeneratedMolecule::GeneratedMolecule() : Model::Molecule( ID::Model::MODEL_GENERATED_MOLECULE ) {}
+	GeneratedMolecule::GeneratedMolecule() : Model::Molecule( VTX::ID::Model::MODEL_GENERATED_MOLECULE ) {}
 
 	void GeneratedMolecule::copyFromSelection( const Model::Selection & p_selection, const Model::ID & p_moleculeID )
 	{

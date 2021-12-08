@@ -38,6 +38,10 @@ namespace VTX
 				return instance;
 			};
 
+			const QPixmap UNFOLDED_PIXMAP;
+			const QPixmap FOLDED_PIXMAP;
+			const QPixmap CLOSE_PIXMAP;
+
 			const QPixmap FULLSCREEN_ICON;
 			const QPixmap WINDOWED_ICON;
 
@@ -48,10 +52,6 @@ namespace VTX
 			const QPixmap SELECTION_WINDOW_ICON;
 			const QPixmap CONSOLE_WINDOW_ICON;
 			const QPixmap SEQUENCE_WINDOW_ICON;
-
-			const QPixmap UNFOLDED_PIXMAP;
-			const QPixmap FOLDED_PIXMAP;
-			const QPixmap CLOSE_PIXMAP;
 
 			const QPixmap OPEN_FOLDER_ICON;
 
@@ -163,17 +163,10 @@ namespace VTX
 				UNFOLDED_PIXMAP( QPixmap( ":/sprite/treeview_unfolded_molecule_icon.png" ) ),
 				FOLDED_PIXMAP( QPixmap( ":/sprite/treeview_folded_molecule_icon.png" ) ),
 				CLOSE_PIXMAP( QPixmap( ":/sprite/close_icon.png" ) ),
-				OPEN_FOLDER_ICON( QPixmap( ":/sprite/open_session_icon.png" ) ),
-				DEFAULT_ITEM( QPixmap( ":/sprite/default_item_icon.png" ) ),
-				MOLECULE_SYMBOL( QPixmap( ":/sprite/symbol/molecule_symbol_icon.png" ) ),
-				CHAIN_SYMBOL( QPixmap( ":/sprite/symbol/chain_symbol_icon.png" ) ),
-				RESIDUE_SYMBOL( QPixmap( ":/sprite/symbol/residue_symbol_icon.png" ) ),
-				ATOM_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
+
 				FULLSCREEN_ICON( QPixmap( ":/sprite/fullscreen_icon.png" ) ),
-				VIEWPOINT_SYMBOL( QPixmap( ":/sprite/symbol/viewpoint_symbol_icon.png" ) ),
-				REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
-				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ),
 				WINDOWED_ICON( QPixmap( ":/sprite/windowed_icon.png" ) ),
+
 				SCENE_WINDOW_ICON( QPixmap( ":/sprite/scene_window_icon.png" ) ),
 				INSPECTOR_WINDOW_ICON( QPixmap( ":/sprite/inspector_window_icon.png" ) ),
 				RENDER_WINDOW_ICON( QPixmap( ":/sprite/render_window_icon.png" ) ),
@@ -181,6 +174,18 @@ namespace VTX
 				SELECTION_WINDOW_ICON( QPixmap( ":/sprite/selection_window_icon.png" ) ),
 				CONSOLE_WINDOW_ICON( QPixmap( ":/sprite/console_window_icon.png" ) ),
 				SEQUENCE_WINDOW_ICON( QPixmap( ":/sprite/sequence_window_icon.png" ) ),
+
+				OPEN_FOLDER_ICON( QPixmap( ":/sprite/open_session_icon.png" ) ),
+
+				DEFAULT_ITEM( QPixmap( ":/sprite/default_item_icon.png" ) ),
+
+				MOLECULE_SYMBOL( QPixmap( ":/sprite/symbol/molecule_symbol_icon.png" ) ),
+				CHAIN_SYMBOL( QPixmap( ":/sprite/symbol/chain_symbol_icon.png" ) ),
+				RESIDUE_SYMBOL( QPixmap( ":/sprite/symbol/residue_symbol_icon.png" ) ),
+				ATOM_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
+				REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
+				VIEWPOINT_SYMBOL( QPixmap( ":/sprite/symbol/viewpoint_symbol_icon.png" ) ),
+
 				REPRESENTATION_STICK_ICON( QPixmap( ":/sprite/representation_stick_icon.png" ) ),
 				REPRESENTATION_BALL_AND_STICK_ICON( QPixmap( ":/sprite/representation_ball_and_stick_icon.png" ) ),
 				REPRESENTATION_VDW_ICON( QPixmap( ":/sprite/representation_van_der_waals_icon.png" ) ),
@@ -190,7 +195,9 @@ namespace VTX
 				REPRESENTATION_BALL_STICK_AND_CARTOON_ICON(
 					QPixmap( ":/sprite/representation_ball_stick_and_cartoon_icon.png" ) ),
 				REPRESENTATION_TRACE_ICON( QPixmap( ":/sprite/representation_stick_icon.png" ) ),
-				REPRESENTATION_SAS_ICON( QPixmap( ":/sprite/representation_sas_icon.png" ) ) {};
+				REPRESENTATION_SAS_ICON( QPixmap( ":/sprite/representation_sas_icon.png" ) ),
+
+				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ) {};
 		};
 
 		namespace WidgetProperty
