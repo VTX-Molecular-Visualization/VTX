@@ -39,7 +39,7 @@ set(GIT_TAG_CHEMFILES 6b5b250785f3fe0b7dd16baf3550f1857280b3c7)
 set(GIT_URL_GLM https://github.com/g-truc/glm.git)
 set(GIT_TAG_GLM bf71a834948186f4097caa076cd2663c69a10e1e) #0.9.9.8
 set(GIT_URL_JSON https://github.com/nlohmann/json.git)
-set(GIT_TAG_JSON 626e7d61e44dee32887126c8f437dd077dec09cf) #3.10.2
+set(GIT_TAG_JSON fec56a1a16c6e1c1b1f4e116a20e79398282626c) #3.10.4
 set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum.git)
 set(GIT_TAG_MAGIC_ENUM 3d1f6a5a2a3fbcba077e00ad0ccc2dd9fefc2ca7) #0.7.3
 
