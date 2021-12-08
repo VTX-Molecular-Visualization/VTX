@@ -75,7 +75,7 @@ namespace VTX::UI::Widget::Settings
 #ifndef VTX_PRODUCTION
 		_vsyncWidget		 = new QCheckBox( viewport );
 		_forceRendererWidget = new QCheckBox( viewport );
-#endif;
+#endif
 
 		_fullscreenWidget = new QCheckBox( viewport );
 
@@ -117,7 +117,7 @@ namespace VTX::UI::Widget::Settings
 #ifndef VTX_PRODUCTION
 		_addItemInLayout( _vsyncWidget, "VSync" );
 		_addItemInLayout( _forceRendererWidget, "Force render" );
-#endif;
+#endif
 		_addItemInLayout( _fullscreenWidget, "Full screen" );
 		_finishSection();
 
@@ -193,7 +193,7 @@ namespace VTX::UI::Widget::Settings
 #ifndef VTX_PRODUCTION
 		connect( _vsyncWidget, &QCheckBox::stateChanged, this, &SettingVTXWidget::_activeVSyncAction );
 		connect( _forceRendererWidget, &QCheckBox::stateChanged, this, &SettingVTXWidget::_activeForceRendererAction );
-#endif;
+#endif
 		connect( _fullscreenWidget, &QCheckBox::stateChanged, this, &SettingVTXWidget::_activeFullscreenAction );
 
 		connect( _defaultTrajectoryPlayModeWidget,

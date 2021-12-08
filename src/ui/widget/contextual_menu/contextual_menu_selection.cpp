@@ -97,13 +97,13 @@ namespace VTX::UI::Widget::ContextualMenu
 		_submenus[ int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE ) ] = moleculeStructureSubmenu;
 		_submenus[ int( SUBMENU_TEMPLATE::VIEWPOINT ) ]			 = viewpointSubmenu;
 
-		_submenusMap[ ID::Model::MODEL_MOLECULE ] = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
-		_submenusMap[ ID::Model::MODEL_CHAIN ]	  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
-		_submenusMap[ ID::Model::MODEL_RESIDUE ]  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
-		_submenusMap[ ID::Model::MODEL_ATOM ]	  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ VTX::ID::Model::MODEL_MOLECULE ] = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ VTX::ID::Model::MODEL_CHAIN ]	   = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ VTX::ID::Model::MODEL_RESIDUE ]  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ VTX::ID::Model::MODEL_ATOM ]	   = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
 
-		_submenusMap[ ID::Model::MODEL_VIEWPOINT ] = int( SUBMENU_TEMPLATE::VIEWPOINT );
-		_submenusMap[ ID::Model::MODEL_PATH ]	   = int( SUBMENU_TEMPLATE::VIEWPOINT );
+		_submenusMap[ VTX::ID::Model::MODEL_VIEWPOINT ] = int( SUBMENU_TEMPLATE::VIEWPOINT );
+		_submenusMap[ VTX::ID::Model::MODEL_PATH ]		= int( SUBMENU_TEMPLATE::VIEWPOINT );
 	}
 	ContextualMenuSelection ::~ContextualMenuSelection()
 	{
@@ -174,17 +174,17 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		TypeMask res = TypeMask::None;
 
-		if ( p_typeIds.find( ID::Model::MODEL_MOLECULE ) != p_typeIds.end() )
+		if ( p_typeIds.find( VTX::ID::Model::MODEL_MOLECULE ) != p_typeIds.end() )
 			res |= TypeMask::Molecule;
-		if ( p_typeIds.find( ID::Model::MODEL_CHAIN ) != p_typeIds.end() )
+		if ( p_typeIds.find( VTX::ID::Model::MODEL_CHAIN ) != p_typeIds.end() )
 			res |= TypeMask::Chain;
-		if ( p_typeIds.find( ID::Model::MODEL_RESIDUE ) != p_typeIds.end() )
+		if ( p_typeIds.find( VTX::ID::Model::MODEL_RESIDUE ) != p_typeIds.end() )
 			res |= TypeMask::Residue;
-		if ( p_typeIds.find( ID::Model::MODEL_ATOM ) != p_typeIds.end() )
+		if ( p_typeIds.find( VTX::ID::Model::MODEL_ATOM ) != p_typeIds.end() )
 			res |= TypeMask::Atom;
-		if ( p_typeIds.find( ID::Model::MODEL_VIEWPOINT ) != p_typeIds.end() )
+		if ( p_typeIds.find( VTX::ID::Model::MODEL_VIEWPOINT ) != p_typeIds.end() )
 			res |= TypeMask::Viewpoint;
-		if ( p_typeIds.find( ID::Model::MODEL_PATH ) != p_typeIds.end() )
+		if ( p_typeIds.find( VTX::ID::Model::MODEL_PATH ) != p_typeIds.end() )
 			res |= TypeMask::Viewpoint;
 
 		return res;
@@ -230,13 +230,13 @@ namespace VTX::UI::Widget::ContextualMenu
 			const ID::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
 			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
-			if ( focusedModelTypeID == ID::Model::MODEL_MOLECULE )
+			if ( focusedModelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<Model::Molecule *>( _focusedTarget );
-			else if ( focusedModelTypeID == ID::Model::MODEL_CHAIN )
+			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CHAIN )
 				focusedModelBaseVisible = static_cast<Model::Chain *>( _focusedTarget );
-			else if ( focusedModelTypeID == ID::Model::MODEL_RESIDUE )
+			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_RESIDUE )
 				focusedModelBaseVisible = static_cast<Model::Residue *>( _focusedTarget );
-			else if ( focusedModelTypeID == ID::Model::MODEL_ATOM )
+			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_ATOM )
 				focusedModelBaseVisible = static_cast<Model::Atom *>( _focusedTarget );
 
 			if ( focusedModelBaseVisible != nullptr )
@@ -266,13 +266,13 @@ namespace VTX::UI::Widget::ContextualMenu
 			const ID::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
 			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
-			if ( focusedModelTypeID == ID::Model::MODEL_MOLECULE )
+			if ( focusedModelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<Model::Molecule *>( _focusedTarget );
-			else if ( focusedModelTypeID == ID::Model::MODEL_CHAIN )
+			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CHAIN )
 				focusedModelBaseVisible = static_cast<Model::Chain *>( _focusedTarget );
-			else if ( focusedModelTypeID == ID::Model::MODEL_RESIDUE )
+			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_RESIDUE )
 				focusedModelBaseVisible = static_cast<Model::Residue *>( _focusedTarget );
-			else if ( focusedModelTypeID == ID::Model::MODEL_ATOM )
+			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_ATOM )
 				focusedModelBaseVisible = static_cast<Model::Atom *>( _focusedTarget );
 
 			if ( focusedModelBaseVisible != nullptr )
@@ -302,13 +302,13 @@ namespace VTX::UI::Widget::ContextualMenu
 			const ID::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
 			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
-			if ( focusedModelTypeID == ID::Model::MODEL_MOLECULE )
+			if ( focusedModelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<Model::Molecule *>( _focusedTarget );
-			else if ( focusedModelTypeID == ID::Model::MODEL_CHAIN )
+			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CHAIN )
 				focusedModelBaseVisible = static_cast<Model::Chain *>( _focusedTarget );
-			else if ( focusedModelTypeID == ID::Model::MODEL_RESIDUE )
+			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_RESIDUE )
 				focusedModelBaseVisible = static_cast<Model::Residue *>( _focusedTarget );
-			else if ( focusedModelTypeID == ID::Model::MODEL_ATOM )
+			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_ATOM )
 				focusedModelBaseVisible = static_cast<Model::Atom *>( _focusedTarget );
 
 			if ( focusedModelBaseVisible != nullptr )
@@ -339,7 +339,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		Model::Molecule * molecule = nullptr;
 
-		if ( _focusedTarget->getTypeId() == ID::Model::MODEL_MOLECULE )
+		if ( _focusedTarget->getTypeId() == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			molecule = static_cast<Model::Molecule *>( _focusedTarget );
 		}
@@ -510,7 +510,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_gotoViewpointAction()
 	{
 		const std::vector<Model::Viewpoint *> viewpointsInSelection
-			= _target->getItemsOfType<Model::Viewpoint>( ID::Model::MODEL_VIEWPOINT );
+			= _target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT );
 
 		if ( viewpointsInSelection.size() > 0 )
 			VTX_ACTION( new Action::Viewpoint::GoTo( **viewpointsInSelection.crbegin() ) );
@@ -518,14 +518,14 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_relocateViewpointAction()
 	{
 		const std::vector<Model::Viewpoint *> viewpointsInSelection
-			= _target->getItemsOfType<Model::Viewpoint>( ID::Model::MODEL_VIEWPOINT );
-			
+			= _target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT );
+
 		VTX_ACTION( new Action::Viewpoint::Relocate( **viewpointsInSelection.crbegin() ) );
 	}
 	void ContextualMenuSelection::_deleteViewpointAction()
 	{
-		VTX_ACTION(
-			new Action::Viewpoint::Delete( _target->getItemsOfType<Model::Viewpoint>( ID::Model::MODEL_VIEWPOINT ) ) );
+		VTX_ACTION( new Action::Viewpoint::Delete(
+			_target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT ) ) );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

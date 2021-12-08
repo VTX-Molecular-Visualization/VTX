@@ -28,7 +28,7 @@ namespace VTX::Model
 
 	void Box::_instantiate3DViews()
 	{
-		_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Box>( this, ID::View::D3_RIBBON_PATCH ) );
+		_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Box>( this, VTX::ID::View::D3_RIBBON_PATCH ) );
 	}
 
 } // namespace VTX::Model

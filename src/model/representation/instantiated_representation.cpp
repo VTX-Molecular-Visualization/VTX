@@ -35,12 +35,13 @@ namespace VTX::Model::Representation
 		_target = p_source._target;
 	}
 
-	InstantiatedRepresentation::InstantiatedRepresentation() : BaseModel( ID::Model::MODEL_INTANTIATED_REPRESENTATION )
+	InstantiatedRepresentation::InstantiatedRepresentation() :
+		BaseModel( VTX::ID::Model::MODEL_INTANTIATED_REPRESENTATION )
 	{
 	}
 
 	InstantiatedRepresentation::InstantiatedRepresentation( const Representation * const p_linkedRepresentation ) :
-		BaseModel( ID::Model::MODEL_INTANTIATED_REPRESENTATION ), _linkedRepresentation( p_linkedRepresentation ),
+		BaseModel( VTX::ID::Model::MODEL_INTANTIATED_REPRESENTATION ), _linkedRepresentation( p_linkedRepresentation ),
 		_color( Generic::OverridableParameter<Color::Rgb>( _linkedRepresentation->getColor() ) ),
 		_colorMode( Generic::OverridableParameter( _linkedRepresentation->getData().getColorMode() ) ),
 		_ssColorMode(
@@ -188,6 +189,9 @@ namespace VTX::Model::Representation
 			// !V0.1
 			// case Generic::REPRESENTATION::TRACE:
 			break;
+
+		case Generic::REPRESENTATION::COUNT:
+		default: break;
 		}
 
 		if ( p_notify && dataChanged )
@@ -228,7 +232,8 @@ namespace VTX::Model::Representation
 
 		case Generic::REPRESENTATION::VAN_DER_WAALS:
 		case Generic::REPRESENTATION::CARTOON:
-		case Generic::REPRESENTATION::SAS: break;
+		case Generic::REPRESENTATION::SAS:
+		case Generic::REPRESENTATION::COUNT: break;
 		}
 
 		if ( p_notify && dataChanged )

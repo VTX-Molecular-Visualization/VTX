@@ -107,17 +107,17 @@ namespace VTX
 			{
 				const QPixmap * res;
 
-				if ( p_id == ID::Model::MODEL_MOLECULE )
+				if ( p_id == VTX::ID::Model::MODEL_MOLECULE )
 					res = &MOLECULE_SYMBOL;
-				else if ( p_id == ID::Model::MODEL_CHAIN )
+				else if ( p_id == VTX::ID::Model::MODEL_CHAIN )
 					res = &CHAIN_SYMBOL;
-				else if ( p_id == ID::Model::MODEL_RESIDUE )
+				else if ( p_id == VTX::ID::Model::MODEL_RESIDUE )
 					res = &RESIDUE_SYMBOL;
-				else if ( p_id == ID::Model::MODEL_ATOM )
+				else if ( p_id == VTX::ID::Model::MODEL_ATOM )
 					res = &ATOM_SYMBOL;
-				else if ( p_id == ID::Model::MODEL_PATH )
+				else if ( p_id == VTX::ID::Model::MODEL_PATH )
 					res = &VIEWPOINT_SYMBOL;
-				else if ( p_id == ID::Model::MODEL_VIEWPOINT )
+				else if ( p_id == VTX::ID::Model::MODEL_VIEWPOINT )
 					res = &VIEWPOINT_SYMBOL;
 				else
 				{

@@ -25,8 +25,8 @@ namespace VTX
 {
 	namespace Model
 	{
-		Molecule::Molecule() : Molecule( ID::Model::MODEL_MOLECULE ) {}
-		Molecule::Molecule( const ID::VTX_ID & p_typeId ) : BaseModel3D( ID::Model::MODEL_MOLECULE )
+		Molecule::Molecule() : Molecule( VTX::ID::Model::MODEL_MOLECULE ) {}
+		Molecule::Molecule( const VTX::ID::VTX_ID & p_typeId ) : BaseModel3D( VTX::ID::Model::MODEL_MOLECULE )
 		{
 			_playMode = VTX_SETTING().getDefaultTrajectoryPlayMode();
 			_fps	  = VTX_SETTING().getDefaultTrajectorySpeed();
@@ -224,8 +224,10 @@ namespace VTX
 			//_viewBox = MVC::MvcManager::get().instantiateView<View::D3::Box>( this, ID::View::D3_BOX );
 			//_viewBox->init();
 
-			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
-			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
+			_addRenderable(
+				MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, VTX::ID::View::D3_SPHERE ) );
+			_addRenderable(
+				MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, VTX::ID::View::D3_CYLINDER ) );
 		}
 
 		void Molecule::refreshBondsBuffer() { _buffer->setBonds( _bufferBonds ); }
@@ -281,6 +283,9 @@ namespace VTX
 					colorCarbon = false;
 					color		= residue->getColor();
 					break;
+
+				case Generic::COLOR_MODE::INHERITED:
+				default: break;
 				}
 
 				for ( uint i = residue->getIndexFirstAtom(); i < residue->getIndexFirstAtom() + residue->getAtomCount();
@@ -525,8 +530,6 @@ namespace VTX
 
 		void Molecule::updateTrajectory( const float & p_deltaTime )
 		{
-			const uint frameCount = getFrameCount();
-
 			if ( !hasTrajectory() || !isPlaying() || getPlayMode() == Trajectory::PlayMode::Stop )
 				return;
 

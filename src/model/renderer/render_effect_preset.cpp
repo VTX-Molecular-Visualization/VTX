@@ -8,7 +8,7 @@
 
 namespace VTX::Model::Renderer
 {
-	RenderEffectPreset::RenderEffectPreset() : BaseModel( ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET )
+	RenderEffectPreset::RenderEffectPreset() : BaseModel( VTX::ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET )
 	{
 		_shading = Setting::SHADING_DEFAULT;
 

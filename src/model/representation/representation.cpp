@@ -12,14 +12,14 @@
 
 namespace VTX::Model::Representation
 {
-	Representation::Representation() : BaseModel( ID::Model::MODEL_REPRESENTATION )
+	Representation::Representation() : BaseModel( VTX::ID::Model::MODEL_REPRESENTATION )
 	{
 		const int randomColorIndex = getId() % int( Model::Residue::SYMBOL::COUNT );
 		_color					   = Model::Residue::SYMBOL_COLOR[ randomColorIndex ];
 	}
 
 	Representation::Representation( const Generic::REPRESENTATION & p_type ) :
-		BaseModel( ID::Model::MODEL_REPRESENTATION )
+		BaseModel( VTX::ID::Model::MODEL_REPRESENTATION )
 	{
 		changeRepresentationType( p_type, false );
 

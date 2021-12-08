@@ -50,6 +50,7 @@ namespace VTX
 			const VTX::ID::VTX_ID * const _typeId;
 
 			BaseModel( const VTX::ID::VTX_ID & p_typeId ) : _typeId( &p_typeId ) {}
+			~BaseModel() {}
 			void		_instantiateDefaultViews() {}
 			void		_notifyViews( const Event::VTXEvent * const p_event );
 			inline void _notifyDataChanged() { _notifyViews( new Event::VTXEvent( Event::Model::DATA_CHANGE ) ); }

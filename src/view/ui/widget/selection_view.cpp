@@ -100,11 +100,11 @@ namespace VTX::View::UI::Widget
 
 		_enableSignals( false );
 
-		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 			_expandMolecule( p_from, true );
-		else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 			_expandChain( p_from, true );
-		else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 			_expandResidue( p_from, true );
 
 		_enableSignals( true );
@@ -333,22 +333,22 @@ namespace VTX::View::UI::Widget
 			ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( modelId );
 			Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-			if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+			if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 			{
 				Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 				VTX_ACTION( new Action::Selection::UnselectMolecule( selectionModel, model ) );
 			}
-			else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+			else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 			{
 				Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
 				VTX_ACTION( new Action::Selection::UnselectChain( selectionModel, model ) );
 			}
-			else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+			else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 			{
 				Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
 				VTX_ACTION( new Action::Selection::UnselectResidue( selectionModel, model ) );
 			}
-			else if ( modelTypeId == ID::Model::MODEL_ATOM )
+			else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 			{
 				Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
 				VTX_ACTION( new Action::Selection::UnselectAtom( selectionModel, model ) );
@@ -360,22 +360,22 @@ namespace VTX::View::UI::Widget
 		const Model::ID &  modelId	   = _getModelID( *p_item );
 		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( modelId );
 
-		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 			VTX_ACTION( new Action::Molecule::Orient( model ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
 			VTX_ACTION( new Action::Chain::Orient( model ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
 			Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
 			VTX_ACTION( new Action::Residue::Orient( model ) );
 		}
-		else if ( modelTypeId == ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
 			Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
 			VTX_ACTION( new Action::Atom::Orient( model ) );

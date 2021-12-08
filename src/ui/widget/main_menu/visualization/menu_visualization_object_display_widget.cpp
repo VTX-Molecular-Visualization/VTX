@@ -125,7 +125,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// No selection => check all molecules in scene
 		if ( selection.hasMolecule() )
 		{
-			selection.getItemsOfType<Model::Molecule>( ID::Model::MODEL_MOLECULE, p_container );
+			selection.getItemsOfType<Model::Molecule>( VTX::ID::Model::MODEL_MOLECULE, p_container );
 		}
 		else
 		{
