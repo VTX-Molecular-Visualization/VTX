@@ -76,6 +76,7 @@ namespace VTX::Worker
 		const float previousBackgroundOpacity = VTX_SETTING().getSnapshotBackgroundOpacity();
 		VTX_SETTING().freezeEvent( true );
 		VTX_SETTING().setSnapshotBackgroundOpacity( _exportData.getBackgroundOpacity() );
+		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		glWidget.getRenderer().renderFrame( VTXApp::get().getScene() );
 		VTX_SETTING().setSnapshotBackgroundOpacity( previousBackgroundOpacity );
 		VTX_SETTING().freezeEvent( false );
@@ -102,7 +103,7 @@ namespace VTX::Worker
 #ifndef VTX_DEBUG_WATERMARK
 		if ( _imageTarget != nullptr )
 		{
-			*_imageTarget = render.copy();
+			*_imageTarget = render;
 		}
 
 		// Save.
