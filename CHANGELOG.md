@@ -1,8 +1,8 @@
 # Change Log
 
-## [0.1.3] (Open beta) - 2021-XX-XX
+## [0.2.0] (beta) - 2021-XX-XX
 
-- Picking
+- Picking (selection in 3D)
 - Advanced image exporter
 - Creation of Viewpoints to record a camera point of view
 - Trajectory can be open directly on a molecule
@@ -12,8 +12,9 @@
 - Export and Fullscreen buttons has been relocated in the main menu
 - Library reloading debugged
 - Selection optimized
+- New UI toolbar overlay
 
-## [0.1.2] (Open beta) - 2021-10-20
+## [0.1.2] (beta) - 2021-10-20
 
 - Check for an available update at startup
 - Read mmCIF assemblies
@@ -21,7 +22,7 @@
 - Portable save option added (the save may be longer but can be shared on different devices)
 - MMCIF parser optimization
 
-## [0.1.1] (Open beta) - 2021-09-29
+## [0.1.1] (beta) - 2021-09-29
 
 The first release of VTX.
 Feel free to give your feedback in the public [issue tracker](https://gitlab.com/VTX_mol/VTX/-/issues).
