@@ -159,11 +159,22 @@ namespace VTX::Model::Representation
 	void RepresentationLibrary::setDefaultRepresentation( const int p_representationIndex, const bool p_notify )
 	{
 		if ( 0 <= p_representationIndex && p_representationIndex < _representations.size() )
+		{
 			_defaultRepresentation = _representations[ p_representationIndex ];
-		else if ( Setting::REPRESENTATION_DEFAULT_INDEX < _representations.size() )
-			_defaultRepresentation = _representations[ Setting::REPRESENTATION_DEFAULT_INDEX ];
+		}
+		else if ( _representations.size() > 0 )
+		{
+			_defaultRepresentation = getRepresentationByName( VTX_SETTING().REPRESENTATION_DEFAULT_NAME );
+
+			if ( _defaultRepresentation == nullptr )
+			{
+				_defaultRepresentation = _representations[ 0 ];
+			}
+		}
 		else
+		{
 			return;
+		}
 
 		VTX_SETTING().setDefaultRepresentationIndex( p_representationIndex );
 

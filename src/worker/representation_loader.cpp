@@ -54,12 +54,18 @@ namespace VTX::Worker
 
 		if ( VTXApp::get().getSetting().getTmpRepresentationDefaultName() != "" )
 		{
-			Model::Representation::Representation * const defaultRepresentation
-				= _library.getRepresentationByName( VTXApp::get().getSetting().getTmpRepresentationDefaultName() );
+			Model::Representation::Representation * defaultRepresentation
+				= _library.getRepresentationByName( VTX_SETTING().getTmpRepresentationDefaultName() );
 
-			const int defaultRepresentationIndex = defaultRepresentation == nullptr
-													   ? Setting::REPRESENTATION_DEFAULT_INDEX
-													   : _library.getRepresentationIndex( defaultRepresentation );
+			if ( defaultRepresentation == nullptr )
+			{
+				defaultRepresentation = _library.getRepresentationByName( VTX_SETTING().REPRESENTATION_DEFAULT_NAME );
+
+				if ( defaultRepresentation == nullptr )
+					defaultRepresentation = _library.getRepresentation( 0 );
+			}
+
+			const int defaultRepresentationIndex = _library.getRepresentationIndex( defaultRepresentation );
 
 			VTX_SETTING().setDefaultRepresentationIndex( defaultRepresentationIndex );
 			_library.setDefaultRepresentation( defaultRepresentationIndex, false );

@@ -232,7 +232,7 @@ namespace VTX::Representation
 	}
 
 	RepresentationManager::InstantiatedRepresentation * const RepresentationManager::getRepresentationByName(
-		const std::string & p_representationName )
+		const std::string & p_representationName ) const
 	{
 		InstantiatedRepresentation * res = nullptr;
 
@@ -331,6 +331,20 @@ namespace VTX::Representation
 		}
 
 		_storedRepresentations.clear();
+	}
+
+	int RepresentationManager::getDefaultRepresentationIndex() const
+	{
+		const Model::Representation::RepresentationLibrary & representations
+			= Model::Representation::RepresentationLibrary::get();
+
+		const RepresentationManager::Representation * const representation
+			= representations.getRepresentationByName( Setting::REPRESENTATION_DEFAULT_NAME );
+
+		if ( representation == nullptr )
+			return 0;
+		else
+			return representations.getRepresentationIndex( representation );
 	}
 
 	void RepresentationManager::resetRepresentations()

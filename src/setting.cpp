@@ -8,6 +8,7 @@
 #include "io/writer/serialized_object.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "renderer/base_renderer.hpp"
+#include "representation/representation_manager.hpp"
 #include "selection/selection_enum.hpp"
 #include "trajectory/trajectory_enum.hpp"
 #include "util/filesystem.hpp"
@@ -48,7 +49,8 @@ namespace VTX
 		= IO::Struct::ImageExport::RESOLUTION::Free;
 	const IO::Struct::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT = IO::Struct::ImageExport::Format::PNG;
 
-	const int									  Setting::REPRESENTATION_DEFAULT_INDEX = 0;
+	const std::string							  Setting::REPRESENTATION_DEFAULT_NAME	= "Stick";
+	const int									  Setting::REPRESENTATION_DEFAULT_INDEX = 3;
 	const Generic::REPRESENTATION				  Setting::DEFAULT_REPRESENTATION_TYPE = Generic::REPRESENTATION::STICK;
 	const std::string							  Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
 	const float									  Setting::ATOMS_RADIUS_DEFAULT			   = 0.4f;
@@ -151,8 +153,7 @@ namespace VTX
 	const uint		 Setting::VIDEO_CRF_DEFAULT		  = 10;
 
 	// Selection
-	const VTX::Selection::Granularity Setting::SELECTION_GRANULARITY_DEFAULT
-		= VTX::Selection::Granularity::RESIDUE;
+	const VTX::Selection::Granularity Setting::SELECTION_GRANULARITY_DEFAULT = VTX::Selection::Granularity::RESIDUE;
 
 	// Misc.
 	const int  Setting::CONSOLE_SIZE	   = 80;
@@ -553,7 +554,7 @@ namespace VTX
 
 		activeRenderer			   = ACTIVE_RENDERER_DEFAULT;
 		forceRenderer			   = FORCE_RENDERER_DEFAULT;
-		representationDefaultIndex = REPRESENTATION_DEFAULT_INDEX;
+		representationDefaultIndex = Representation::RepresentationManager::get().getDefaultRepresentationIndex();
 		renderEffectDefaultIndex   = RENDER_EFFECT_DEFAULT_INDEX;
 
 		activeVSync = ACTIVE_VSYNC_DEFAULT;

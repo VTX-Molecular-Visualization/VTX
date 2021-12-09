@@ -153,7 +153,7 @@ namespace VTX::Representation
 		void deleteRepresentation( const Representation * const p_representation );
 		void setQuickAccessToPreset( Representation * const p_representation, const bool p_quickAccess );
 
-		InstantiatedRepresentation * const getRepresentationByName( const std::string & p_representationName );
+		InstantiatedRepresentation * const getRepresentationByName( const std::string & p_representationName ) const;
 		const std::unordered_set<Generic::BaseRepresentable *> & getTargets(
 			InstantiatedRepresentation * p_representation );
 		const std::unordered_set<InstantiatedRepresentation *> getAllInstantiatedRepresentations(
@@ -166,6 +166,7 @@ namespace VTX::Representation
 		void storeRepresentations();
 		void restoreRepresentations();
 
+		int	 getDefaultRepresentationIndex() const;
 		void resetRepresentations();
 
 	  protected:

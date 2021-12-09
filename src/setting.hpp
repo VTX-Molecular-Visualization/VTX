@@ -68,7 +68,8 @@ namespace VTX
 		static const float								 BACKGROUND_OPACITY_DEFAULT;
 		static const float								 SNAPSHOT_QUALITY_DEFAULT;
 
-		static const int REPRESENTATION_DEFAULT_INDEX;
+		static const std::string REPRESENTATION_DEFAULT_NAME;
+		static const int		 REPRESENTATION_DEFAULT_INDEX;
 
 		static const Generic::REPRESENTATION DEFAULT_REPRESENTATION_TYPE;
 		static const std::string			 NEW_REPRESENTATION_DEFAULT_NAME;
