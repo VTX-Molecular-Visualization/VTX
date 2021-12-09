@@ -75,7 +75,8 @@ namespace VTX
 				_container.erase( p_model->getId() );
 				_unlock();
 
-				for ( const std::pair<const VTX::ID::VTX_ID, View::BaseView<Model::BaseModel> *> & pair : mvc->getViews() )
+				for ( const std::pair<const VTX::ID::VTX_ID, View::BaseView<Model::BaseModel> *> & pair :
+					  mvc->getViews() )
 				{
 					delete pair.second;
 				}
@@ -97,16 +98,24 @@ namespace VTX
 			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			const M & getModel( const Model::ID & p_id ) const
 			{
-				const Model::BaseModel & model	  = _container[ p_id ]->getModel();
-				const M &				 modelPtr = static_cast<const M &>( model );
+#ifdef _MSC_VER
+				const Model::BaseModel & model = _container[ p_id ]->getModel();
+#else
+				const Model::BaseModel & model = _container.at( p_id )->getModel();
+#endif
+				const M & modelPtr = static_cast<const M &>( model );
 				return modelPtr;
 			}
 
 			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			M & getModel( const Model::ID & p_id )
 			{
-				Model::BaseModel & model	= _container[ p_id ]->getModel();
-				M &				   modelPtr = static_cast<M &>( model );
+#ifdef _MSC_VER
+				Model::BaseModel & model = _container[ p_id ]->getModel();
+#else
+				Model::BaseModel &		 model = _container.at( p_id )->getModel();
+#endif
+				M & modelPtr = static_cast<M &>( model );
 				return modelPtr;
 			}
 
@@ -193,7 +202,7 @@ namespace VTX
 			MvcManager & operator=( const MvcManager & ) = delete;
 			~MvcManager() { assert( _container.size() == 0 ); }
 
-			std::unordered_map<uint, MvcData *> _container = std::unordered_map<uint, MvcData *>();
+			std::unordered_map<VTX::Model::ID, MvcData *> _container = std::unordered_map<VTX::Model::ID, MvcData *>();
 		};
 	} // namespace MVC
 } // namespace VTX

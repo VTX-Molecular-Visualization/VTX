@@ -20,7 +20,6 @@ namespace VTX::Controller
 	void Picker::_onMouseLeftClick( const uint p_x, const uint p_y )
 	{
 		const Vec2i ids = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
-		VTX_DEBUG( glm::to_string( ids ) );
 		_performSelection( ids );
 		_lastClickedIds = ids;
 	}

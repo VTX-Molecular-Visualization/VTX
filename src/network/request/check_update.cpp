@@ -21,7 +21,21 @@ namespace VTX::Network::Request
 			const int minor	   = json.at( "MINOR" );
 			const int revision = json.at( "REVISION" );
 
-			if ( major != VTX_VERSION_MAJOR || minor != VTX_VERSION_MINOR || revision != VTX_VERSION_REVISION )
+			bool needUpdate = false;
+			if ( major > VTX_VERSION_MAJOR )
+			{
+				needUpdate = true;
+			}
+			else if ( major == VTX_VERSION_MAJOR && minor > VTX_VERSION_MINOR )
+			{
+				needUpdate = true;
+			}
+			else if ( major == VTX_VERSION_MAJOR && minor == VTX_VERSION_MINOR && revision > VTX_VERSION_REVISION )
+			{
+				needUpdate = true;
+			}
+
+			if ( needUpdate )
 			{
 				const std::string consoleMessage = "VTX " + std::to_string( major ) + "." + std::to_string( minor )
 												   + "." + std::to_string( revision ) + " is available at:\n"
