@@ -20,9 +20,13 @@ namespace VTX::UI::Widget::Inspector
 
 		_infoSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
 			this, "inspector_item_section" );
-		_fullnameLabel = new CustomWidget::QLabelMultiField( this );
-		_fullnameLabel->setWordWrap( true );
-		_infoSection->appendField( "Full Name", _fullnameLabel );
+		_genericNameLabel = new CustomWidget::QLabelMultiField( this );
+		_genericNameLabel->setWordWrap( true );
+		_nameLabel = new CustomWidget::QLabelMultiField( this );
+		_nameLabel->setWordWrap( true );
+
+		_infoSection->appendField( "Name", _nameLabel );
+		_infoSection->appendField( "Full Name", _genericNameLabel );
 
 		_appendSection( _infoSection );
 
@@ -53,8 +57,10 @@ namespace VTX::UI::Widget::Inspector
 			{
 				if ( bool( p_flag & SectionFlag::INFOS ) )
 				{
-					if ( !_fullnameLabel->hasDifferentData() )
-						_fullnameLabel->updateWithNewValue( atom->getSymbolName() );
+					if ( !_nameLabel->hasDifferentData() )
+						_nameLabel->updateWithNewValue( atom->getName() );
+					if ( !_genericNameLabel->hasDifferentData() )
+						_genericNameLabel->updateWithNewValue( atom->getSymbolName() );
 				}
 			}
 		}
@@ -64,7 +70,8 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( bool( p_flag & SectionFlag::INFOS ) )
 		{
-			_fullnameLabel->resetState();
+			_nameLabel->resetState();
+			_genericNameLabel->resetState();
 		}
 	}
 

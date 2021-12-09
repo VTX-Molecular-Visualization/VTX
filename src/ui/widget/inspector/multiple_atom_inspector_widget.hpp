@@ -32,7 +32,8 @@ namespace VTX::UI::Widget::Inspector
 
 	  private:
 		InspectorSectionVLayout *		 _infoSection	= nullptr;
-		CustomWidget::QLabelMultiField * _fullnameLabel = nullptr;
+		CustomWidget::QLabelMultiField * _nameLabel = nullptr;
+		CustomWidget::QLabelMultiField * _genericNameLabel = nullptr;
 
 		void _resetFieldStates( const SectionFlag & p_flag );
 	};

@@ -60,6 +60,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		toggleTrajectoryPlayAction->setCheckFunction( &ContextualMenuSelection ::_checkToggleTrajectoryPlayAction );
 		moleculeStructureSubmenu->addItemData( toggleTrajectoryPlayAction );
 
+		moleculeStructureSubmenu->addItemData( new ActionData(
+			"Load Trajectory", TypeMask::Molecule, this, &ContextualMenuSelection::_loadTrajectoryAction ) );
+
 		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Edit", TypeMask::All, this ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Orient", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_orientAction ) );
@@ -77,8 +80,6 @@ namespace VTX::UI::Widget::ContextualMenu
 			new ActionData( "Delete", TypeMask::All, this, &ContextualMenuSelection::_deleteAction ) );
 
 		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Export", TypeMask::Molecule, this ) );
-		moleculeStructureSubmenu->addItemData( new ActionData(
-			"Load Trajectory", TypeMask::Molecule, this, &ContextualMenuSelection::_loadTrajectoryAction ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
 

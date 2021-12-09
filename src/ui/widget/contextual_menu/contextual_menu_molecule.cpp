@@ -35,6 +35,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		addSeparator();
 		_toggleTrajectoryPlayingAction
 			= addAction( "Toggle Play", this, &ContextualMenuMolecule::_toggleTrajectoryPlayingActions );
+		addAction( "Load Trajectory", this, &ContextualMenuMolecule::_loadTrajectoryAction );
 
 		addSeparator();
 		addAction( "Orient", this, &ContextualMenuMolecule::_orientAction );
@@ -45,7 +46,6 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Delete", this, &ContextualMenuMolecule::_deleteAction );
 
 		addSeparator();
-		addAction( "Load Trajectory", this, &ContextualMenuMolecule::_loadTrajectoryAction );
 		addAction( "Export", this, &ContextualMenuMolecule::_exportAction );
 
 		connect( _representationMenu,
