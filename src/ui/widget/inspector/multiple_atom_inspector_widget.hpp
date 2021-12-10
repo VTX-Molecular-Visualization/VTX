@@ -9,6 +9,7 @@
 #include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include "view/base_view.hpp"
 #include <QWidget>
+#include <QLabel>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
@@ -34,8 +35,10 @@ namespace VTX::UI::Widget::Inspector
 		InspectorSectionVLayout *		 _infoSection	= nullptr;
 		CustomWidget::QLabelMultiField * _nameLabel = nullptr;
 		CustomWidget::QLabelMultiField * _genericNameLabel = nullptr;
+		QLabel * _bondInfoLabel = nullptr;
 
 		void _resetFieldStates( const SectionFlag & p_flag );
+		void _fillBondData();
 	};
 } // namespace VTX::UI::Widget::Inspector
 

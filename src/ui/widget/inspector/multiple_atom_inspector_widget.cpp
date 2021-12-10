@@ -1,11 +1,16 @@
 #include "multiple_atom_inspector_widget.hpp"
 #include "action/action_manager.hpp"
+#include "model/bond.hpp"
+#include "model/molecule.hpp"
+#include "model/residue.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/ui.hpp"
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
 #include <QPixmap>
+#include <set>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -25,8 +30,11 @@ namespace VTX::UI::Widget::Inspector
 		_nameLabel = new CustomWidget::QLabelMultiField( this );
 		_nameLabel->setWordWrap( true );
 
+		_bondInfoLabel = new QLabel( this );
+
 		_infoSection->appendField( "Name", _nameLabel );
 		_infoSection->appendField( "Full Name", _genericNameLabel );
+		_infoSection->appendField( "Bonds", _bondInfoLabel );
 
 		_appendSection( _infoSection );
 
@@ -63,6 +71,8 @@ namespace VTX::UI::Widget::Inspector
 						_genericNameLabel->updateWithNewValue( atom->getSymbolName() );
 				}
 			}
+
+			_fillBondData();
 		}
 	}
 
@@ -72,7 +82,55 @@ namespace VTX::UI::Widget::Inspector
 		{
 			_nameLabel->resetState();
 			_genericNameLabel->resetState();
+			_bondInfoLabel->setText( "" );
 		}
+	}
+
+	void MultipleAtomWidget::_fillBondData()
+	{
+		std::set<uint> pendingBondIDs = std::set<uint>();
+
+		auto comparer = []( const Model::Bond * p_lhs, const Model::Bond * p_rhs )
+		{ return Model::Bond::comparer( *p_lhs, *p_rhs ); };
+
+		std::set<const Model::Bond *, decltype( comparer )> fullBonds( comparer );
+
+		for ( const Model::Atom * const atom : _getTargets() )
+		{
+			const uint					  atomIndex		 = atom->getIndex();
+			const Model::Residue * const  residue		 = atom->getResiduePtr();
+			const Model::Molecule * const moleculeParent = residue->getMoleculePtr();
+
+			for ( uint bondIndex = residue->getIndexFirstBond();
+				  bondIndex < ( residue->getIndexFirstBond() + residue->getBondCount() );
+				  bondIndex++ )
+			{
+				const Model::Bond * const bond = moleculeParent->getBond( bondIndex );
+
+				if ( bond == nullptr )
+					continue;
+
+				if ( bond->getIndexFirstAtom() == atomIndex || bond->getIndexSecondAtom() == atomIndex )
+				{
+					if ( pendingBondIDs.find( bondIndex ) == pendingBondIDs.cend() )
+					{
+						pendingBondIDs.emplace( bondIndex );
+					}
+					else
+					{
+						pendingBondIDs.erase( bondIndex );
+						fullBonds.emplace( bond );
+					}
+				}
+			}
+		}
+
+		QString bondInfoStr;
+		for ( const Model::Bond * const bond : fullBonds )
+		{
+			Util::UI::appendBondInfo( *bond, bondInfoStr );
+		}
+		_bondInfoLabel->setText( bondInfoStr );
 	}
 
 	void MultipleAtomWidget::localize()
