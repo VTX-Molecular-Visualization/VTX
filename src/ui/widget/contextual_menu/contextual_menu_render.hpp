@@ -3,8 +3,8 @@
 
 #include "contextual_menu_template.hpp"
 #include "object3d/scene.hpp"
-#include <QMenu>
 #include <QAction>
+#include <QMenu>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -25,8 +25,9 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		void _loadMoleculeAction() const;
 		void _downloadMoleculeAction() const;
-		
-		void _setSelectionGranularityAction(QAction * p_action) const;
+
+		void _setSelectionGranularityAction( QAction * p_action ) const;
+		void _showAllMoleculesAction() const;
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu

@@ -22,6 +22,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		void _loadMoleculeAction();
 		void _downloadMoleculeAction();
+		void _showAllMoleculesAction() const;
 		void _addViewpointAction();
 
 		void _clearAction();

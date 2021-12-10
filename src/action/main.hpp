@@ -14,6 +14,7 @@
 #include "network/network_manager.hpp"
 #include "network/request/check_update.hpp"
 #include "network/request/download_mmtf.hpp"
+#include "object3d/scene.hpp"
 #include "setting.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
@@ -21,6 +22,7 @@
 #include "ui/dialog.hpp"
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
+#include "util/molecule.hpp"
 #include "vtx_app.hpp"
 #include "worker/loader.hpp"
 #include "worker/render_effect_loader.hpp"
@@ -290,6 +292,18 @@ namespace VTX::Action::Main
 	{
 	  public:
 		virtual void execute() override { VTXApp::get().getScene().reset(); }
+	};
+
+	class ShowAllMolecules : public BaseAction
+	{
+	  public:
+		virtual void execute() override
+		{
+			for ( Object3D::Scene::PairMoleculePtrFloat & pairMol : VTXApp::get().getScene().getMolecules() )
+			{
+				Util::Molecule::show( *pairMol.first, true, true );
+			}
+		}
 	};
 
 	class ToggleCameraController : public BaseAction
