@@ -59,38 +59,21 @@ namespace VTX::IO::Reader
 		// Fill other frames.
 		Tool::Chrono timeReadingFrames;
 		timeReadingFrames.start();
+		int startingFrame = 1;
+		for ( uint frameIdx = 0; frameIdx < p_trajectory.nsteps() - p_trajectoryFrameStart; ++frameIdx )
+		{
+			chemfiles::Frame frame = p_trajectory.read();
+			fillTrajectoryFrame( frame, p_molecule, p_molFrameStart + frameIdx );
 
 #ifdef _DEBUG
-		const uint nbThreads = 1;
-#else
-		const uint nbThreads = std::thread::hardware_concurrency();
-#endif
-
-		std::vector<std::thread> threadPool;
-		threadPool.reserve( nbThreads );
-
-		const uint totalFrame = uint( p_trajectory.nsteps() ) - p_trajectoryFrameStart;
-
-		for ( uint i = 0; i < nbThreads; ++i )
-		{
-			const uint trajectoryFrameStart = 0;
-			const uint trajectoryFrameEnd	= 0;
-			// uint trajectoryFrameStart
-			threadPool.emplace_back( std::thread(
-				[ this, &p_trajectory, &p_molecule, &trajectoryFrameStart, &trajectoryFrameEnd, &p_molFrameStart ]()
-				{
-					for ( uint frameIdx = trajectoryFrameStart; frameIdx < trajectoryFrameEnd; ++frameIdx )
-					{
-						chemfiles::Frame & frame = p_trajectory.read_step( frameIdx );
-						fillTrajectoryFrame( frame, p_molecule, p_molFrameStart + trajectoryFrameStart + frameIdx );
-					}
-				} ) );
+			if ( frameIdx > 1 && frameIdx % 100 == 0 )
+			{
+				_logDebug( "Frames from " + std::to_string( startingFrame ) + " to " + std::to_string( frameIdx )
+						   + " read in: " + std::to_string( timeReadingFrames.intervalTime() ) + "s" );
+				startingFrame = frameIdx;
+			}
+#endif // DEBUG
 		}
-		for ( std::thread & t : threadPool )
-		{
-			t.join();
-		}
-
 		timeReadingFrames.stop();
 		_logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
 	}
