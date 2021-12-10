@@ -7,6 +7,7 @@
 #include "model/molecule.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
+#include "util/ui.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include <QBoxLayout>
@@ -231,58 +232,7 @@ namespace VTX::UI::Widget::Inspector
 			if ( bond == nullptr )
 				continue;
 
-			const Model::Molecule * const moleculePtr = p_residue.getMoleculePtr();
-
-			const Model::Atom * const firstAtom	 = moleculePtr->getAtom( bond->getIndexFirstAtom() );
-			const Model::Atom * const secondAtom = moleculePtr->getAtom( bond->getIndexSecondAtom() );
-
-			if ( firstAtom == nullptr || secondAtom == nullptr )
-				continue;
-
-			const QString firstAtomStr
-				= QString::fromStdString( firstAtom->getSymbolStr() + std::to_string( firstAtom->getIndex() ) );
-			const QString secondAtomStr
-				= QString::fromStdString( secondAtom->getSymbolStr() + std::to_string( secondAtom->getIndex() ) );
-
-			QString					 linkCountStr;
-			const Model::Bond::ORDER bondOrder = bond->getOrder();
-			if ( bondOrder == Model::Bond::ORDER::SINGLE )
-			{
-				linkCountStr = '1';
-			}
-			else if ( bondOrder == Model::Bond::ORDER::DOUBLE )
-			{
-				linkCountStr = '2';
-			}
-			else if ( bondOrder == Model::Bond::ORDER::TRIPLE )
-			{
-				linkCountStr = '3';
-			}
-			else if ( bondOrder == Model::Bond::ORDER::QUADRUPLE )
-			{
-				linkCountStr = '4';
-			}
-			else if ( bondOrder == Model::Bond::ORDER::QUINTUPLET )
-			{
-				linkCountStr = '5';
-			}
-			else if ( bondOrder == Model::Bond::ORDER::AROMATIC )
-			{
-				linkCountStr = 'A';
-			}
-			else // UNKNOWN
-			{
-				linkCountStr = '?';
-			}
-
-			if ( bondInfoStr.isEmpty() )
-			{
-				bondInfoStr.append( firstAtomStr + "--" + linkCountStr + "--" + secondAtomStr );
-			}
-			else
-			{
-				bondInfoStr.append( '\n' + firstAtomStr + "--" + linkCountStr + "--" + secondAtomStr );
-			}
+			Util::UI::appendBondInfo( *bond, bondInfoStr );
 		}
 
 		_bondsLabel->setText( bondInfoStr );

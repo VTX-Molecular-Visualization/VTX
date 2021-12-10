@@ -15,6 +15,8 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Load Molecule", this, &ContextualMenuScene::_loadMoleculeAction );
 		addAction( "Download Molecule", this, &ContextualMenuScene::_downloadMoleculeAction );
 		addSeparator();
+		addAction( "Show All", this, &ContextualMenuScene::_showAllMoleculesAction );
+		addSeparator();
 		addAction( "Add Viewpoint", this, &ContextualMenuScene::_addViewpointAction );
 		addSeparator();
 		addAction( "Clear", this, &ContextualMenuScene::_clearAction );
@@ -24,6 +26,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuScene::_loadMoleculeAction() { UI::Dialog::openLoadMoleculeDialog(); }
 	void ContextualMenuScene::_downloadMoleculeAction() { UI::Dialog::openDownloadMoleculeDialog(); }
+	void ContextualMenuScene::_showAllMoleculesAction() const { VTX_ACTION( new Action::Main::ShowAllMolecules() ); }
 	void ContextualMenuScene::_addViewpointAction() { VTX_ACTION( new Action::Viewpoint::Create() ); }
 	void ContextualMenuScene::_clearAction() { VTX_ACTION( new Action::Main::ResetScene() ); }
 

@@ -9,6 +9,11 @@
 #include <QWidget>
 #include <set>
 
+namespace VTX::Model
+{
+	class Bond;
+}
+
 namespace VTX::Util::UI
 {
 	class EventEater : public QObject
@@ -74,6 +79,9 @@ namespace VTX::Util::UI
 		EventEater * const eater = new EventEater( p_eventTypes, p_widget );
 		p_widget->installEventFilter( eater );
 	}
+
+	void appendBondInfo( const Model::Bond & p_bond, QString & p_str );
+
 } // namespace VTX::Util::UI
 
 #endif
