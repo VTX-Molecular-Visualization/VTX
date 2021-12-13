@@ -7,7 +7,10 @@
 - Creation of Viewpoints to record a camera point of view
 - Trajectory can be open directly on a molecule
 - Can open files or download molecules in command line
-- Solo action added to hide everything else than the target
+- New visibility actions :
+	- "Solo" action to hide everything else than the target
+	- "Show All" action to show every objects in the scene
+- Add atom name in atom's inspector
 - Save and library files are now cross-plateform
 - Export and Fullscreen buttons has been relocated in the main menu
 - Library reloading debugged
