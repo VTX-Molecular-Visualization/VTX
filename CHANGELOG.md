@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.2.0] (beta) - 2021-XX-XX
+## [0.2.0] (beta) - 2021-12-13
 
 - Picking (selection in 3D)
 - Advanced image exporter
