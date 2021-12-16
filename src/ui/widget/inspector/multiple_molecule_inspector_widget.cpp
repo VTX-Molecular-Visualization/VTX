@@ -135,7 +135,7 @@ namespace VTX::UI::Widget::Inspector
 		bool blockSignalState = blockSignals( true );
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<Model::Molecule *> & targets = _getTargets();
+		const std::unordered_set<Model::Molecule *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
@@ -233,7 +233,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new Action::Transformable::ApplyTransform( _getTargets(), p_transform ) );
+			VTX_ACTION( new Action::Transformable::ApplyTransform( getTargets(), p_transform ) );
 		}
 	}
 
@@ -243,9 +243,9 @@ namespace VTX::UI::Widget::Inspector
 		{
 			std::unordered_set<Generic::BaseTransformable *> transformableSet
 				= std::unordered_set<Generic::BaseTransformable *>();
-			transformableSet.reserve( _getTargets().size() );
+			transformableSet.reserve( getTargets().size() );
 
-			for ( Model::Molecule * target : _getTargets() )
+			for ( Model::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 
 			VTX_ACTION( new Action::Transformable::Translate( transformableSet, p_delta ) );
@@ -257,9 +257,9 @@ namespace VTX::UI::Widget::Inspector
 		{
 			std::unordered_set<Generic::BaseTransformable *> transformableSet
 				= std::unordered_set<Generic::BaseTransformable *>();
-			transformableSet.reserve( _getTargets().size() );
+			transformableSet.reserve( getTargets().size() );
 
-			for ( Model::Molecule * target : _getTargets() )
+			for ( Model::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 
 			VTX_ACTION( new Action::Transformable::Rotate( transformableSet, p_delta ) );
@@ -271,9 +271,9 @@ namespace VTX::UI::Widget::Inspector
 		{
 			std::unordered_set<Generic::BaseTransformable *> transformableSet
 				= std::unordered_set<Generic::BaseTransformable *>();
-			transformableSet.reserve( _getTargets().size() );
+			transformableSet.reserve( getTargets().size() );
 
-			for ( Model::Molecule * target : _getTargets() )
+			for ( Model::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 			VTX_ACTION( new Action::Transformable::Scale( transformableSet, p_delta ) );
 		}
@@ -281,7 +281,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_onRepresentationPresetChange( const int p_presetIndex ) const
 	{
-		VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( _getTargets(), p_presetIndex ) );
+		VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
 	void MultipleMoleculeWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
@@ -289,7 +289,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new Action::Molecule::ApplyRepresentation( _getTargets(), p_representation, p_flag ) );
+			VTX_ACTION( new Action::Molecule::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
 		}
 	}
 
@@ -303,11 +303,11 @@ namespace VTX::UI::Widget::Inspector
 			switch ( p_representation.getSecondaryStructureColorMode() )
 			{
 			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-				VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _getTargets(), p_color ) );
+				VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 				break;
 
 			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
-				VTX_ACTION( new Action::Molecule::ChangeColor( _getTargets(), p_color ) );
+				VTX_ACTION( new Action::Molecule::ChangeColor( getTargets(), p_color ) );
 				break;
 
 			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
@@ -327,12 +327,12 @@ namespace VTX::UI::Widget::Inspector
 			{
 			case Generic::COLOR_MODE::ATOM_CUSTOM:
 			case Generic::COLOR_MODE::CUSTOM:
-				VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _getTargets(), p_color ) );
+				VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 				break;
 
 			case Generic::COLOR_MODE::ATOM_PROTEIN:
 			case Generic::COLOR_MODE::PROTEIN:
-				VTX_ACTION( new Action::Molecule::ChangeColor( _getTargets(), p_color ) );
+				VTX_ACTION( new Action::Molecule::ChangeColor( getTargets(), p_color ) );
 				break;
 
 			case Generic::COLOR_MODE::ATOM_CHAIN:
@@ -349,11 +349,11 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_onRevertRepresentation() const
 	{
-		VTX_ACTION( new Action::Molecule::RemoveRepresentation( _getTargets() ) );
+		VTX_ACTION( new Action::Molecule::RemoveRepresentation( getTargets() ) );
 	}
 	void MultipleMoleculeWidget::_onApplyRepresentationToChildren() const
 	{
-		VTX_ACTION( new Action::Molecule::RemoveChildrenRepresentations( _getTargets() ) );
+		VTX_ACTION( new Action::Molecule::RemoveChildrenRepresentations( getTargets() ) );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

@@ -6,6 +6,7 @@
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include "view/ui/widget/base_widget_view.hpp"
 #include <QDockWidget>
+#include <QPushButton>
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -32,6 +33,7 @@ namespace VTX::UI::Widget::Inspector
 
 	class InspectorWidget : public BaseManualWidget<QDockWidget>
 	{
+		Q_OBJECT
 		VTX_WIDGET
 
 	  public:
@@ -41,6 +43,9 @@ namespace VTX::UI::Widget::Inspector
 		void refresh();
 		void clear();
 
+		bool isFreezed() const { return _isFreezed; }
+		void setFreezed( const bool p_freezed );
+
 	  protected:
 		InspectorWidget( QWidget * p_parent );
 
@@ -48,9 +53,11 @@ namespace VTX::UI::Widget::Inspector
 		void _setupSlots() override;
 
 	  private:
-		QWidget *										  _scrollWidget	  = nullptr;
-		CustomWidget::DockWindowMainWidget<QScrollArea> * _scrollArea	  = nullptr;
-		QVBoxLayout *									  _verticalLayout = nullptr;
+		QPushButton * _freezeButton = nullptr;
+
+		QWidget *	  _scrollWidget	  = nullptr;
+		QScrollArea * _scrollArea	  = nullptr;
+		QVBoxLayout * _verticalLayout = nullptr;
 
 		MultipleMoleculeWidget *  _moleculesInspector  = nullptr;
 		MultipleChainWidget *	  _chainsInspector	   = nullptr;
@@ -59,6 +66,10 @@ namespace VTX::UI::Widget::Inspector
 		MultipleViewpointWidget * _viewpointsInspector = nullptr;
 
 		std::vector<ViewData> _inspectorViewsData = std::vector<ViewData>();
+		bool				  _isFreezed		  = false;
+
+		void _toggleFreezeState();
+		void _updateFreezedFeedback();
 	};
 } // namespace VTX::UI::Widget::Inspector
 

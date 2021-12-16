@@ -56,7 +56,7 @@ namespace VTX::UI::Widget::Inspector
 
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<Model::Viewpoint *> & targets = _getTargets();
+		const std::unordered_set<Model::Viewpoint *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
@@ -89,9 +89,9 @@ namespace VTX::UI::Widget::Inspector
 		if ( !signalsBlocked() )
 		{
 			std::vector<Model::Viewpoint *> viewpointsVector = std::vector<Model::Viewpoint *>();
-			viewpointsVector.reserve( _getTargets().size() );
+			viewpointsVector.reserve( getTargets().size() );
 
-			for ( Model::Viewpoint * target : _getTargets() )
+			for ( Model::Viewpoint * target : getTargets() )
 				viewpointsVector.emplace_back( target );
 
 			VTX_ACTION( new Action::Viewpoint::Relocate( viewpointsVector, p_transform ) );
@@ -103,9 +103,9 @@ namespace VTX::UI::Widget::Inspector
 		if ( !signalsBlocked() )
 		{
 			std::vector<Model::Viewpoint *> viewpointsVector = std::vector<Model::Viewpoint *>();
-			viewpointsVector.reserve( _getTargets().size() );
+			viewpointsVector.reserve( getTargets().size() );
 
-			for ( Model::Viewpoint * target : _getTargets() )
+			for ( Model::Viewpoint * target : getTargets() )
 				viewpointsVector.emplace_back( target );
 
 			VTX_ACTION( new Action::Viewpoint::Translate( viewpointsVector, p_delta ) );
@@ -116,9 +116,9 @@ namespace VTX::UI::Widget::Inspector
 		if ( !signalsBlocked() )
 		{
 			std::unordered_set<Model::Viewpoint *> viewpointsVector = std::unordered_set<Model::Viewpoint *>();
-			viewpointsVector.reserve( _getTargets().size() );
+			viewpointsVector.reserve( getTargets().size() );
 
-			for ( Model::Viewpoint * target : _getTargets() )
+			for ( Model::Viewpoint * target : getTargets() )
 				viewpointsVector.emplace( target );
 
 			VTX_ACTION( new Action::Viewpoint::Rotate( viewpointsVector, p_delta ) );
@@ -127,10 +127,10 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleViewpointWidget::_goToAction() const
 	{
-		if ( _getTargets().size() != 1 )
+		if ( getTargets().size() != 1 )
 			return;
 
-		const Model::Viewpoint * const viewpoint = *( _getTargets().cbegin() );
+		const Model::Viewpoint * const viewpoint = *( getTargets().cbegin() );
 
 		VTX_ACTION( new Action::Viewpoint::GoTo( *viewpoint ) );
 	}

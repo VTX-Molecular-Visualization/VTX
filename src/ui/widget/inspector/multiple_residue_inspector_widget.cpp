@@ -7,9 +7,9 @@
 #include "model/molecule.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
-#include "util/ui.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/ui.hpp"
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>
@@ -89,7 +89,7 @@ namespace VTX::UI::Widget::Inspector
 
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<Model::Residue *> & targets = _getTargets();
+		const std::unordered_set<Model::Residue *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
@@ -141,7 +141,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_onRepresentationPresetChange( const int p_presetIndex )
 	{
-		VTX_ACTION( new Action::Residue::ChangeRepresentationPreset( _getTargets(), p_presetIndex ) );
+		VTX_ACTION( new Action::Residue::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
 	void MultipleResidueWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
@@ -149,7 +149,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new Action::Residue::ApplyRepresentation( _getTargets(), p_representation, p_flag ) );
+			VTX_ACTION( new Action::Residue::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
 		}
 	}
 
@@ -165,7 +165,7 @@ namespace VTX::UI::Widget::Inspector
 				switch ( p_representation.getSecondaryStructureColorMode() )
 				{
 				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _getTargets(), p_color ) );
+					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
 				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
@@ -186,7 +186,7 @@ namespace VTX::UI::Widget::Inspector
 				{
 				case Generic::COLOR_MODE::ATOM_CUSTOM:
 				case Generic::COLOR_MODE::CUSTOM:
-					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _getTargets(), p_color ) );
+					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
 				case Generic::COLOR_MODE::ATOM_PROTEIN:
@@ -209,7 +209,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 
-		for ( const Model::Residue * const item : _getTargets() )
+		for ( const Model::Residue * const item : getTargets() )
 		{
 			molecules.emplace( item->getMoleculePtr() );
 		}
@@ -218,7 +218,7 @@ namespace VTX::UI::Widget::Inspector
 	}
 	void MultipleResidueWidget::_onRevertRepresentation() const
 	{
-		VTX_ACTION( new Action::Residue::RemoveRepresentation( _getTargets() ) );
+		VTX_ACTION( new Action::Residue::RemoveRepresentation( getTargets() ) );
 	}
 
 	void MultipleResidueWidget::_appendBondInfo( const Model::Residue & p_residue )

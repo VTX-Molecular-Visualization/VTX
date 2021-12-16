@@ -87,7 +87,7 @@ namespace VTX::UI::Widget::Inspector
 		bool blockSignalState = blockSignals( true );
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<Model::Chain *> & targets = _getTargets();
+		const std::unordered_set<Model::Chain *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
@@ -137,7 +137,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_onRepresentationPresetChange( const int p_presetIndex )
 	{
-		VTX_ACTION( new Action::Chain::ChangeRepresentationPreset( _getTargets(), p_presetIndex ) );
+		VTX_ACTION( new Action::Chain::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
 	void MultipleChainWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
@@ -145,7 +145,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new Action::Chain::ApplyRepresentation( _getTargets(), p_representation, p_flag ) );
+			VTX_ACTION( new Action::Chain::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
 		}
 	}
 
@@ -161,7 +161,7 @@ namespace VTX::UI::Widget::Inspector
 				switch ( p_representation.getSecondaryStructureColorMode() )
 				{
 				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _getTargets(), p_color ) );
+					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
 				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
@@ -182,7 +182,7 @@ namespace VTX::UI::Widget::Inspector
 				{
 				case Generic::COLOR_MODE::ATOM_CUSTOM:
 				case Generic::COLOR_MODE::CUSTOM:
-					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _getTargets(), p_color ) );
+					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
 				case Generic::COLOR_MODE::ATOM_PROTEIN:
@@ -205,7 +205,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 
-		for ( const Model::Chain * const item : _getTargets() )
+		for ( const Model::Chain * const item : getTargets() )
 		{
 			molecules.emplace( item->getMoleculePtr() );
 		}
@@ -215,11 +215,11 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_onRevertRepresentation() const
 	{
-		VTX_ACTION( new Action::Chain::RemoveRepresentation( _getTargets() ) );
+		VTX_ACTION( new Action::Chain::RemoveRepresentation( getTargets() ) );
 	}
 	void MultipleChainWidget::_onApplyRepresentationToChildren() const
 	{
-		VTX_ACTION( new Action::Chain::RemoveChildrenRepresentations( _getTargets() ) );
+		VTX_ACTION( new Action::Chain::RemoveChildrenRepresentations( getTargets() ) );
 	}
 
 } // namespace VTX::UI::Widget::Inspector
