@@ -37,6 +37,7 @@
 	<file>sprite/job_manager.png</file>
 	<file>sprite/keyword_editor.png</file>
 	<file>sprite/load_molecule_icon.png</file>
+	<file>sprite/locked_icon.png</file>
 	<file>sprite/lock_window_icon.png</file>
 	<file>sprite/lock_window_icon_hovered.png</file>
 	<file>sprite/logo.png</file>
@@ -105,6 +106,7 @@
 	<file>sprite/treeview_unfolded_molecule_icon.png</file>
 	<file>sprite/undock_icon.png</file>
 	<file>sprite/undock_icon_hovered.png</file>
+	<file>sprite/unlocked_icon.png</file>
 	<file>sprite/unlock_window_icon.png</file>
 	<file>sprite/unlock_window_icon_hovered.png</file>
 	<file>sprite/windowed_icon.png</file>
