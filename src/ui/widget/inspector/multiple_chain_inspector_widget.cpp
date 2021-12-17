@@ -109,7 +109,7 @@ namespace VTX::UI::Widget::Inspector
 					if ( !_fullnameLabel->hasDifferentData() )
 						_fullnameLabel->updateWithNewValue( chain->getName() );
 					if ( !_nbResiduesLabel->hasDifferentData() )
-						_nbResiduesLabel->updateWithNewValue( std::to_string( chain->getResidueCount() ) );
+						_nbResiduesLabel->updateWithNewValue( std::to_string( chain->getRealResidueCount() ) );
 				}
 			}
 		}

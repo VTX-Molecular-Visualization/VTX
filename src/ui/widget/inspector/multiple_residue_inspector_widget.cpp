@@ -111,7 +111,7 @@ namespace VTX::UI::Widget::Inspector
 					if ( !_fullnameLabel->hasDifferentData() )
 						_fullnameLabel->updateWithNewValue( residue->getSymbolName() );
 					if ( !_nbAtomsLabel->hasDifferentData() )
-						_nbAtomsLabel->updateWithNewValue( std::to_string( residue->getAtomCount() ) );
+						_nbAtomsLabel->updateWithNewValue( std::to_string( residue->getRealAtomCount() ) );
 
 					_appendBondInfo( *residue );
 				}

@@ -897,6 +897,35 @@ namespace VTX
 					return _residues[ i ];
 			return nullptr;
 		}
+		int Molecule::getRealResidueCount() const
+		{
+			int res = 0;
+
+			for ( int chainIdx = 0; chainIdx < _chains.size(); chainIdx++ )
+			{
+				const Model::Chain * const chain = _chains[ chainIdx ];
+				if ( chain == nullptr )
+					continue;
+				res += chain->getRealResidueCount();
+			}
+
+			return res;
+		}
+		int Molecule::getRealAtomCount() const
+		{
+			int res = 0;
+
+			for ( int residueIdx = 0; residueIdx < _residues.size(); residueIdx++ )
+			{
+				const Model::Residue * const residue = _residues[ residueIdx ];
+				if ( residue == nullptr )
+					continue;
+				res += residue->getRealAtomCount();
+			}
+
+			return res;
+		}
+
 
 		void Molecule::removeChain( const uint p_id,
 									const bool p_delete,
