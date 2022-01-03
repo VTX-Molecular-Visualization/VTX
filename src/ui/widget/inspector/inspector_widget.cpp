@@ -28,6 +28,7 @@ namespace VTX::UI::Widget::Inspector
 		_registerEvent( Event::Global::CHAIN_REMOVED );
 		_registerEvent( Event::Global::RESIDUE_REMOVED );
 		_registerEvent( Event::Global::ATOM_REMOVED );
+		_registerEvent( Event::Global::VIEWPOINT_REMOVED );
 	}
 
 	InspectorWidget::~InspectorWidget() {}
@@ -94,6 +95,21 @@ namespace VTX::UI::Widget::Inspector
 
 				if ( _atomsInspector->getTargets().size() <= 0 )
 					_atomsInspector->setVisible( false );
+
+				refresh();
+			}
+		}
+		else if ( p_event.name == Event::Global::VIEWPOINT_REMOVED )
+		{
+			const Event::VTXEventPtr<Model::Viewpoint> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
+
+			if ( _viewpointsInspector->hasTarget( castedEvent.ptr ) )
+			{
+				_viewpointsInspector->removeTarget( castedEvent.ptr );
+
+				if ( _viewpointsInspector->getTargets().size() <= 0 )
+					_viewpointsInspector->setVisible( false );
 
 				refresh();
 			}

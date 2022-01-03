@@ -173,26 +173,31 @@ namespace VTX::View::UI::Widget
 
 		const Model::ID & itemID = _getModelIDFromItem( *targetedItem );
 
-		if ( MVC::MvcManager::get().getModelTypeID( itemID ) != VTX::ID::Model::MODEL_VIEWPOINT )
-			return;
-
-		Model::Viewpoint & viewpointTargeted = MVC::MvcManager::get().getModel<Model::Viewpoint>( itemID );
-
 		const QPoint globalClicPos = mapToGlobal( p_clicPos );
 
-		Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
-
-		if ( selection.isModelSelected( viewpointTargeted ) )
+		if ( MVC::MvcManager::get().getModelTypeID( itemID ) == VTX::ID::Model::MODEL_PATH )
 		{
-			VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
-				= VTX::UI::ContextualMenu::getMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuSelection>(
-					VTX::UI::ContextualMenu::Menu::Selection );
-			selectionContextualMenu->setFocusedTarget( &viewpointTargeted );
-			VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+			Model::Path & pathTargeted = MVC::MvcManager::get().getModel<Model::Path>( itemID );
+			VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Path, &pathTargeted, globalClicPos );
 		}
-		else
+		else if ( MVC::MvcManager::get().getModelTypeID( itemID ) == VTX::ID::Model::MODEL_VIEWPOINT )
 		{
-			VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Viewpoint, &viewpointTargeted, globalClicPos );
+			Model::Viewpoint & viewpointTargeted = MVC::MvcManager::get().getModel<Model::Viewpoint>( itemID );
+			Model::Selection & selection		 = Selection::SelectionManager::get().getSelectionModel();
+
+			if ( selection.isModelSelected( viewpointTargeted ) )
+			{
+				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
+					= VTX::UI::ContextualMenu::getMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuSelection>(
+						VTX::UI::ContextualMenu::Menu::Selection );
+				selectionContextualMenu->setFocusedTarget( &viewpointTargeted );
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+			}
+			else
+			{
+				VTX::UI::ContextualMenu::pop(
+					VTX::UI::ContextualMenu::Menu::Viewpoint, &viewpointTargeted, globalClicPos );
+			}
 		}
 	}
 

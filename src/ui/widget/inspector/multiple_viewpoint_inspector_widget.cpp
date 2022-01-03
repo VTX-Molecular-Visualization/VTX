@@ -21,10 +21,7 @@ namespace VTX::UI::Widget::Inspector
 		_transformWidget->displayScale( false );
 		_transformSection->setBody( _transformWidget );
 
-		_gotoButton = new CustomWidget::QPushButtonMultiField( this );
-
 		_appendWidget( _transformSection );
-		_appendWidget( _gotoButton );
 
 		const bool oldBlockState = blockSignals( true );
 		refresh();
@@ -45,9 +42,6 @@ namespace VTX::UI::Widget::Inspector
 				 &CustomWidget::TransformWidget::onRotationDragged,
 				 this,
 				 &MultipleViewpointWidget::_onRotationDragged );
-
-		connect(
-			_gotoButton, &CustomWidget::QPushButtonMultiField::clicked, this, &MultipleViewpointWidget::_goToAction );
 	};
 
 	void MultipleViewpointWidget::_endOfFrameRefresh( const SectionFlag & p_flag )
@@ -78,9 +72,30 @@ namespace VTX::UI::Widget::Inspector
 						_transformWidget->updateWithNewValue( viewpointTransform );
 					}
 				}
-			}
 
-			_gotoButton->setEnabled( targets.size() == 1 );
+				CustomWidget::EmbeddedDataPushButton * const gotoButton
+					= new CustomWidget::EmbeddedDataPushButton( this );
+				const Model::ID & id = viewpoint->getId();
+				gotoButton->setData( QVariant::fromValue<Model::ID>( id ) );
+
+				QString gotoButtonTxt;
+
+				if ( targets.size() == 1 )
+					gotoButtonTxt = "Go to";
+				else
+					gotoButtonTxt = QString::fromStdString( "Go to " + viewpoint->getDefaultName() );
+
+				gotoButton->setText( gotoButtonTxt );
+
+				connect( gotoButton,
+						 &CustomWidget::EmbeddedDataPushButton::embeddedDataclicked,
+						 this,
+						 &MultipleViewpointWidget::_goToAction );
+
+				_appendWidget( gotoButton );
+
+				_gotoButtons.emplace_back( gotoButton );
+			}
 		}
 	}
 
@@ -125,14 +140,12 @@ namespace VTX::UI::Widget::Inspector
 		}
 	}
 
-	void MultipleViewpointWidget::_goToAction() const
+	void MultipleViewpointWidget::_goToAction( const QVariant & p_viewpointIndex ) const
 	{
-		if ( getTargets().size() != 1 )
-			return;
+		const Model::ID &		 modelID   = p_viewpointIndex.value<Model::ID>();
+		const Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
 
-		const Model::Viewpoint * const viewpoint = *( getTargets().cbegin() );
-
-		VTX_ACTION( new Action::Viewpoint::GoTo( *viewpoint ) );
+		VTX_ACTION( new Action::Viewpoint::GoTo( viewpoint ) );
 	}
 
 	void MultipleViewpointWidget::_resetFieldStates( const SectionFlag & p_flag )
@@ -140,6 +153,12 @@ namespace VTX::UI::Widget::Inspector
 		if ( bool( p_flag & SectionFlag::INFOS ) )
 		{
 			_transformWidget->resetState();
+
+			while ( _gotoButtons.size() > 0 )
+			{
+				delete _gotoButtons.back();
+				_gotoButtons.pop_back();
+			}
 		}
 	}
 
@@ -147,6 +166,5 @@ namespace VTX::UI::Widget::Inspector
 	{
 		_transformSection->setHeaderTitle( "Transform" );
 		_transformSection->localize();
-		_gotoButton->setText( "Go to" );
 	}
 } // namespace VTX::UI::Widget::Inspector

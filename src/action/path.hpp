@@ -3,7 +3,12 @@
 
 #include "base_action.hpp"
 #include "model/path.hpp"
+#include "model/selection.hpp"
+#include "model/viewpoint.hpp"
+#include "mvc/mvc_manager.hpp"
+#include "selection/selection_manager.hpp"
 #include "state/export.hpp"
+#include "vtx_app.hpp"
 #include "worker/snapshoter.hpp"
 
 namespace VTX
@@ -82,6 +87,7 @@ namespace VTX
 				Model::Path * const _path;
 			};
 
+			/*
 			class ExportVideo : public BaseAction
 			{
 			  public:
@@ -103,6 +109,7 @@ namespace VTX
 				const Worker::Snapshoter::MODE _mode;
 				Model::Path * const			   _path;
 			};
+			*/
 
 			class ChangeIsLooping : public BaseAction
 			{
@@ -124,6 +131,32 @@ namespace VTX
 			{
 			  public:
 			  private:
+			};
+
+			class Clear : public BaseAction
+			{
+			  public:
+				explicit Clear( Model::Path & p_path ) : _path( p_path )
+				{
+					_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+				}
+
+				virtual void execute() override
+				{
+					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+					selectionModel.unselectModels( _path.getViewpoints() );
+
+					while ( _path.getViewpoints().size() )
+					{
+						Model::Viewpoint * const viewpointToDelete = _path.getViewpoints().back();
+						_path.removeViewpoint( viewpointToDelete );
+
+						MVC::MvcManager::get().deleteModel( viewpointToDelete );
+					}
+				}
+
+			  private:
+				Model::Path & _path;
 			};
 
 		} // namespace Path

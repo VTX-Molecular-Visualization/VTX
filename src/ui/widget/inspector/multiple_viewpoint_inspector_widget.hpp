@@ -3,6 +3,7 @@
 
 #include "model/viewpoint.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "ui/widget/custom_widget/embedded_data_push_button.hpp"
 #include "ui/widget/custom_widget/qt_multi_data_field.hpp"
 #include "ui/widget/custom_widget/transform_widget.hpp"
 #include "ui/widget/inspector/inspector_section.hpp"
@@ -32,7 +33,8 @@ namespace VTX::UI::Widget::Inspector
 		InspectorSectionVLayout *		_transformSection = nullptr;
 		CustomWidget::TransformWidget * _transformWidget  = nullptr;
 
-		CustomWidget::QPushButtonMultiField * _gotoButton = nullptr;
+		std::vector<CustomWidget::EmbeddedDataPushButton *> _gotoButtons
+			= std::vector<CustomWidget::EmbeddedDataPushButton *>();
 
 		void _resetFieldStates( const SectionFlag & p_flag );
 
@@ -40,7 +42,7 @@ namespace VTX::UI::Widget::Inspector
 		void _onPositionDragged( const Vec3f & ) const;
 		void _onRotationDragged( const Vec3f & ) const;
 
-		void _goToAction() const;
+		void _goToAction( const QVariant & p_viewpointIndex ) const;
 	};
 } // namespace VTX::UI::Widget::Inspector
 
