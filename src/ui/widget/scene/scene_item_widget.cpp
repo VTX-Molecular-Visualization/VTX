@@ -77,7 +77,10 @@ namespace VTX::UI::Widget::Scene
 
 	void SceneItemWidget::openRenameEditor( const Model::ID & p_modelID )
 	{
-		_openRenameEditor( *_findItemFromModelID( p_modelID ) );
+		QTreeWidgetItem * const itemWidget = _findItemFromModelID( p_modelID );
+
+		if ( itemWidget != nullptr )
+			_openRenameEditor( *itemWidget );
 	}
 	void SceneItemWidget::_openRenameEditor( QTreeWidgetItem & p_target ) { editItem( &p_target ); }
 
@@ -372,6 +375,9 @@ namespace VTX::UI::Widget::Scene
 	{
 		if ( _getModelIDFromItem( p_parent ) == p_id )
 			return &p_parent;
+
+		if ( !p_parent.isExpanded() )
+			return nullptr;
 
 		for ( int i = 0; i < p_parent.childCount(); i++ )
 		{

@@ -93,20 +93,22 @@ namespace VTX::View::UI::Widget
 
 		bool pathItemAdded = false;
 
-		for ( Model::Viewpoint * const viewpoint : viewpoints )
+		for ( const Model::Viewpoint * const viewpoint : viewpoints )
 		{
 			if ( viewpoint->getPathPtr() != _model )
 				continue;
 
 			if ( !pathItemAdded )
 			{
-				QTreeWidgetItem * const pathItem = topLevelItem( 0 );
+				const QTreeWidgetItem * const pathItem = topLevelItem( 0 );
 				p_itemSelection.append( QItemSelectionRange( indexFromItem( pathItem ) ) );
 				pathItemAdded = true;
 			}
 
-			QTreeWidgetItem * const viewpointItem = _findItemFromModelID( viewpoint->getId() );
-			p_itemSelection.append( QItemSelectionRange( indexFromItem( viewpointItem ) ) );
+			const QTreeWidgetItem * const viewpointItem = _findItemFromModelID( viewpoint->getId() );
+
+			if ( viewpointItem != nullptr )
+				p_itemSelection.append( QItemSelectionRange( indexFromItem( viewpointItem ) ) );
 		}
 	}
 
