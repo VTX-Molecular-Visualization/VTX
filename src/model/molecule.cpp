@@ -74,6 +74,7 @@ namespace VTX
 		Bond & Molecule::addBond()
 		{
 			Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
+			bond->setMoleculePtr( this );
 			_bonds.emplace_back( bond );
 			return *bond;
 		}
@@ -925,7 +926,6 @@ namespace VTX
 
 			return res;
 		}
-
 
 		void Molecule::removeChain( const uint p_id,
 									const bool p_delete,
