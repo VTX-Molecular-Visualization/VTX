@@ -92,6 +92,7 @@ namespace VTX
 			Residue * const						  getNextResidue( const uint p_idBaseResidue );
 			inline std::vector<Residue *> &		  getResidues() { return _residues; }
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
+			int									  getRealResidueCount() const;
 			void								  removeResidue( const uint p_id,
 																 const bool p_delete			= true,
 																 const bool p_recursive			= true,
@@ -103,6 +104,7 @@ namespace VTX
 			inline const Atom * const		   getAtom( const uint p_idx ) const { return _atoms[ p_idx ]; }
 			inline std::vector<Atom *> &	   getAtoms() { return _atoms; }
 			inline const std::vector<Atom *> & getAtoms() const { return _atoms; }
+			int								   getRealAtomCount() const;
 			void							   removeAtom( const uint p_id,
 														   const bool p_delete			  = true,
 														   const bool p_checkBonds		  = true,

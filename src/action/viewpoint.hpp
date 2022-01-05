@@ -37,8 +37,8 @@ namespace VTX::Action::Viewpoint
 						 const Object3D::Camera &				  p_camera,
 						 Controller::BaseCameraController * const p_controller ) :
 			_path( p_path ),
-			_rotation( p_camera.getRotation() ),
-			_position( p_camera.getPosition() ), _controller (p_controller->getID())
+			_rotation( p_camera.getRotation() ), _position( p_camera.getPosition() ),
+			_controller( p_controller->getID() )
 		{
 			const State::Visualization * const visualizationState
 				= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
@@ -58,11 +58,14 @@ namespace VTX::Action::Viewpoint
 
 		virtual void execute() override
 		{
+			const std::string				 viewpointName = _path.generateNewViewpointName();
 			Model::Viewpoint * const viewpoint
 				= MVC::MvcManager::get().instantiateModel<Model::Viewpoint, Model::Path * const>( &_path );
 			viewpoint->setController( _controller );
 			viewpoint->setRotation( _rotation );
 			viewpoint->setPosition( _position );
+
+			viewpoint->setName( viewpointName );
 
 			viewpoint->setTarget( _target );
 			viewpoint->setDistance( Util::Math::distance( _position, _target ) );
@@ -338,7 +341,6 @@ namespace VTX::Action::Viewpoint
 				}
 				case RotationType::Euler:
 				{
-
 					Quatf deltaRotation = Util::Math::eulerToQuaternion( _axis );
 					viewpoint->setRotation( viewpoint->getRotation() + deltaRotation );
 					break;

@@ -52,6 +52,8 @@ namespace VTX
 			void		refreshAllDurations();
 			Viewpoint	getInterpolatedViewpoint( const float p_time ) const;
 
+			std::string generateNewViewpointName() const;
+
 		  private:
 			std::string		   _name			  = "";
 			VectorViewpointPtr _viewpoints		  = VectorViewpointPtr();

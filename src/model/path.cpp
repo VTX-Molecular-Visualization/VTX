@@ -4,6 +4,7 @@
 #include "exception.hpp"
 #include "id.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "style.hpp"
 #include "viewpoint.hpp"
 #include <algorithm>
 #include <fstream>
@@ -207,7 +208,34 @@ namespace VTX
 					viewpoint->setDuration( _duration * distance / totalDistance );
 				}
 			}
-		} // namespace Model
+		}
+
+		std::string Path::generateNewViewpointName() const
+		{
+			int intSuffix = 1;
+
+			std::string viewpointName;
+			bool		nameIsValid;
+			do
+			{
+				viewpointName = Style::VIEWPOINT_DEFAULT_NAME + ' ' + std::to_string( intSuffix );
+				nameIsValid	  = true;
+
+				for ( const Model::Viewpoint * const viewpoint : _viewpoints )
+				{
+					if ( viewpoint->getDefaultName() == viewpointName )
+					{
+						nameIsValid = false;
+						break;
+					}
+				}
+
+				intSuffix++;
+
+			} while ( !nameIsValid );
+
+			return viewpointName;
+		}
 
 	} // namespace Model
 } // namespace VTX

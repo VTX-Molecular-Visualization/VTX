@@ -229,6 +229,7 @@ namespace VTX
 
 		inline static const int			MOLECULE_NAME_MAXIMUM_SIZE = 32;
 		inline static const std::string VIEWPOINT_GROUP_NAME	   = "Viewpoints";
+		inline static const std::string VIEWPOINT_DEFAULT_NAME	   = "Viewpoint";
 
 		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;
 		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;

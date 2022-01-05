@@ -47,7 +47,8 @@ namespace VTX::UI::Widget::CustomWidget
 
 		const QSize	 imgSize = Style::EXPORT_IMAGE_PREVIEW_SIZE;
 		const QImage scaledPreviewImg
-			= preview.scaled( imgSize.width(), imgSize.height(), Qt::AspectRatioMode::KeepAspectRatio );
+			= preview.scaled( imgSize.width(), imgSize.height(), Qt::AspectRatioMode::KeepAspectRatio )
+				  .convertToFormat( QImage::Format::Format_ARGB32, Qt::ImageConversionFlag::AutoColor );
 
 		_previewPixmpap = QPixmap::fromImage( scaledPreviewImg );
 		setPixmap( _previewPixmpap );

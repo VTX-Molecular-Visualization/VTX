@@ -51,7 +51,7 @@ namespace VTX::UI::Widget::Inspector
 
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<Model::Atom *> & targets = _getTargets();
+		const std::unordered_set<Model::Atom *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
@@ -95,7 +95,7 @@ namespace VTX::UI::Widget::Inspector
 
 		std::set<const Model::Bond *, decltype( comparer )> fullBonds( comparer );
 
-		for ( const Model::Atom * const atom : _getTargets() )
+		for ( const Model::Atom * const atom : getTargets() )
 		{
 			const uint					  atomIndex		 = atom->getIndex();
 			const Model::Residue * const  residue		 = atom->getResiduePtr();

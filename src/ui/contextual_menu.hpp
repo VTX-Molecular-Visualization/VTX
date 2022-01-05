@@ -21,6 +21,7 @@ namespace VTX::UI
 			Selection,
 			Scene,
 			Render,
+			Path,
 			Viewpoint,
 
 			COUNT

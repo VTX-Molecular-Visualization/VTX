@@ -74,6 +74,7 @@ namespace VTX
 		Bond & Molecule::addBond()
 		{
 			Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
+			bond->setMoleculePtr( this );
 			_bonds.emplace_back( bond );
 			return *bond;
 		}
@@ -747,8 +748,8 @@ namespace VTX
 			{
 				addChain();
 				addResidue();
-				Model::Chain & modelChain	= *getChain( getChainCount() - 1 );
-				Model::Residue modelResidue = *getResidue( getResidueCount() - 1 );
+				Model::Chain &	 modelChain	  = *getChain( getChainCount() - 1 );
+				Model::Residue & modelResidue = *getResidue( getResidueCount() - 1 );
 				modelChain.setIndex( getChainCount() - 1 );
 				modelChain.setIndexFirstResidue( getResidueCount() - 1 );
 				modelChain.setResidueCount( 1 );
@@ -897,6 +898,34 @@ namespace VTX
 					return _residues[ i ];
 			return nullptr;
 		}
+		int Molecule::getRealResidueCount() const
+		{
+			int res = 0;
+
+			for ( int chainIdx = 0; chainIdx < _chains.size(); chainIdx++ )
+			{
+				const Model::Chain * const chain = _chains[ chainIdx ];
+				if ( chain == nullptr )
+					continue;
+				res += chain->getRealResidueCount();
+			}
+
+			return res;
+		}
+		int Molecule::getRealAtomCount() const
+		{
+			int res = 0;
+
+			for ( int residueIdx = 0; residueIdx < _residues.size(); residueIdx++ )
+			{
+				const Model::Residue * const residue = _residues[ residueIdx ];
+				if ( residue == nullptr )
+					continue;
+				res += residue->getRealAtomCount();
+			}
+
+			return res;
+		}
 
 		void Molecule::removeChain( const uint p_id,
 									const bool p_delete,
@@ -915,9 +944,7 @@ namespace VTX
 				}
 			}
 
-			// Delete chain
-			if ( p_delete )
-				MVC::MvcManager::get().deleteModel( _chains[ p_id ] );
+			Model::Chain * const chainToDelete = _chains[ p_id ];
 
 			_chains[ p_id ] = nullptr;
 			_realChainCount--;
@@ -927,6 +954,12 @@ namespace VTX
 			// Notify
 			if ( p_notifyViews )
 				notifyStructureChange();
+
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::CHAIN_REMOVED, chainToDelete ) );
+
+			// Delete chain
+			if ( p_delete )
+				MVC::MvcManager::get().deleteModel( chainToDelete );
 		}
 
 		void Molecule::removeResidue( const uint p_id,
@@ -950,11 +983,8 @@ namespace VTX
 			}
 
 			// Register parent before nullify
-			Model::Chain * const parent = _residues[ p_id ]->getChainPtr();
-
-			// Remove Residue
-			if ( p_delete )
-				MVC::MvcManager::get().deleteModel( _residues[ p_id ] );
+			Model::Residue * const residueToDelete = _residues[ p_id ];
+			Model::Chain * const   parent		   = residueToDelete->getChainPtr();
 
 			_residues[ p_id ] = nullptr;
 
@@ -979,6 +1009,12 @@ namespace VTX
 				if ( p_notifyViews )
 					notifyStructureChange();
 			}
+
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::RESIDUE_REMOVED, residueToDelete ) );
+
+			// Remove Residue
+			if ( p_delete )
+				MVC::MvcManager::get().deleteModel( residueToDelete );
 		}
 
 		void Molecule::removeAtom( const uint p_id,
@@ -1044,9 +1080,7 @@ namespace VTX
 				}
 			}
 
-			// Delete Atom
-			if ( p_delete )
-				MVC::MvcManager::get().deleteModel( _atoms[ p_id ] );
+			Model::Atom * const atomToDelete = _atoms[ p_id ];
 
 			_bufferAtomVisibilities[ p_id ] = 0u;
 			_atoms[ p_id ]					= nullptr;
@@ -1069,6 +1103,12 @@ namespace VTX
 				if ( p_notifyViews )
 					notifyStructureChange();
 			}
+
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::ATOM_REMOVED, atomToDelete ) );
+
+			// Delete Atom
+			if ( p_delete )
+				MVC::MvcManager::get().deleteModel( atomToDelete );
 		}
 
 		void Molecule::removeBond( const uint p_id, const bool p_delete, const bool p_notifyViews )

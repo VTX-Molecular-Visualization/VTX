@@ -62,15 +62,17 @@ namespace VTX::UI::Widget::Inspector
 			_sectionToRefresh = SectionFlag::ALL;
 		}
 
+		bool hasTarget( T * const p_target ) const { return _targets.find( p_target ) != _targets.end(); }
+
+		const std::unordered_set<T *> & getTargets() const { return _targets; }
+		std::unordered_set<T *> &		getTargets() { return _targets; }
+
 	  protected:
 		MultipleModelInspectorWidget( QWidget * p_parent, const ID::VTX_ID & p_callbackViewId ) :
 			InspectorItemWidget( p_parent ), _callbackViewId( p_callbackViewId )
 		{
 			_registerEvent( Event::Global::LATE_UPDATE );
 		}
-
-		const std::unordered_set<T *> & _getTargets() const { return _targets; }
-		std::unordered_set<T *> &		_getTargets() { return _targets; }
 
 		virtual void _resetFieldStates( const SectionFlag & p_section ) = 0;
 		virtual void _onTargetChangeEvent( const T * const p_target, const Event::VTXEvent * const p_event )
