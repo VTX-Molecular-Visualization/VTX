@@ -7,7 +7,6 @@
 #include "ui/dialog.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
-#include <QDesktopWidget>
 #include <QMainWindow>
 
 namespace VTX::UI::Widget::Render
@@ -41,7 +40,7 @@ namespace VTX::UI::Widget::Render
 	{
 		VTX_INFO( "Initializing OpenGL..." );
 
-		_gl = context()->versionFunctions<OpenGLFunctions>();
+		_gl = reinterpret_cast<OpenGLFunctions *>( context()->functions() );
 
 		if ( _gl == nullptr )
 		{

@@ -1,7 +1,6 @@
 #ifndef __VTX_UI_WIDGET_OPENGL__
 #define __VTX_UI_WIDGET_OPENGL__
 
-#include "generic/base_opengl.hpp"
 #include "renderer/base_renderer.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QElapsedTimer>

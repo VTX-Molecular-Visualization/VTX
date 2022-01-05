@@ -16,7 +16,7 @@ namespace VTX
 		{
 			// See:
 			// Oren M., Nayar Shree K. (1994)
-			// Generalization of Lambert’s Reflectance Model
+			// Generalization of Lambert's Reflectance Model
 			// Proceedings of the 21st Annual Conference on Computer Graphics and Interactive Techniques
 			namespace OrenNayar
 			{

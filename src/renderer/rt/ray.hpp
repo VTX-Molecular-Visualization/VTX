@@ -27,9 +27,9 @@ namespace VTX
 			const Vec3f & getDirection() const { return _direction; }
 
 			// See:
-			// Wächter C., Binder N. (2019)
+			// Wachter C., Binder N. (2019)
 			// A Fast and Robust Method for Avoiding Self-Intersection.
-			// In: Haines E., Akenine-Möller T. (eds) Ray Tracing Gems. Apress, Berkeley, CA
+			// In: Haines E., Akenine-Moller T. (eds) Ray Tracing Gems. Apress, Berkeley, CA
 			void offset( const Vec3f p_normal )
 			{
 				Vec3i of_i = p_normal * intScale();

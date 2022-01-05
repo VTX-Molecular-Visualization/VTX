@@ -7,7 +7,12 @@ namespace VTX::UI::Widget::CustomWidget
 {
 	RenderPreviewWidget::RenderPreviewWidget( QWidget * p_parent ) : BaseManualWidget<QLabel>( p_parent ) {}
 
-	void RenderPreviewWidget::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
+	void RenderPreviewWidget::_setupUi( const QString & p_name )
+	{
+		BaseManualWidget::_setupUi( p_name );
+		setAttribute( Qt::WA_TranslucentBackground, true );
+		setWindowOpacity( 0.5 );
+	}
 	void RenderPreviewWidget::_setupSlots() {}
 
 	QSize RenderPreviewWidget::sizeHint() const { return _previewPixmpap.size(); }

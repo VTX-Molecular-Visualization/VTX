@@ -1,7 +1,7 @@
 #ifndef __VTX_BASE_LOCKABLE__
 #define __VTX_BASE_LOCKABLE__
 
-#include <QMutex>
+#include <QRecursiveMutex>
 
 namespace VTX
 {
@@ -14,7 +14,7 @@ namespace VTX
 			inline void _unlock() { _mutex.unlock(); }
 
 		  private:
-			QMutex _mutex = QMutex( QMutex::Recursive );
+			QRecursiveMutex _mutex = QRecursiveMutex();
 		};
 	} // namespace Generic
 } // namespace VTX

@@ -38,16 +38,17 @@ namespace VTX
 				// Use Hearn and Baker ray/sphere intersection equation for small spheres
 				// + William et al. more stable quadratic solution
 				// See:
-				// Haines E., Günther J., Akenine-Möller T. (2019)
+				// Haines E., Gunther J., Akenine-Moller T. (2019)
 				// Precision Improvements for Ray/Sphere Intersection.
-				// In: Haines E., Akenine-Möller T. (eds) Ray Tracing Gems. Apress, Berkeley, CA
+				// In: Haines E., Akenine-Moller T. (eds) Ray Tracing Gems. Apress, Berkeley, CA
 				const Vec3f oc	  = o - _center;
 				const float b	  = Util::Math::dot( oc, d );
 				const float r2	  = _radius * _radius;
 				const Vec3f ocd	  = oc - b * d;
 				const float delta = r2 - Util::Math::dot( ocd, ocd );
 
-				if ( delta < 0.f ) return false;
+				if ( delta < 0.f )
+					return false;
 
 				const float sqrtDelta = sqrtf( delta );
 
@@ -56,9 +57,18 @@ namespace VTX
 				const float c = Util::Math::dot( oc, oc ) - r2;
 
 				float t = c / q;
-				if ( t > p_tMax ) { return false; } // first intersection too far
-				if ( t < p_tMin ) { t = q; }		// first intersection too near, check second one
-				if ( t < p_tMin || t > p_tMax ) { return false; }
+				if ( t > p_tMax )
+				{
+					return false;
+				} // first intersection too far
+				if ( t < p_tMin )
+				{
+					t = q;
+				} // first intersection too near, check second one
+				if ( t < p_tMin || t > p_tMax )
+				{
+					return false;
+				}
 
 				p_intersection._point	  = p_ray.getPointAtT( t );
 				const Vec3f normal		  = ( p_intersection._point - _center ) / _radius;

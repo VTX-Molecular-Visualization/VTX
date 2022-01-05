@@ -81,7 +81,7 @@ namespace VTX::UI::Widget::Settings
 		QVBoxLayout * const vboxLayout = new QVBoxLayout();
 
 		_layout = new QGridLayout();
-		_layout->setMargin( 0 );
+		_layout->setContentsMargins( 0, 0, 0, 0 );
 		_layout->setColumnStretch( 0, 1 );
 		_layout->setColumnStretch( 1, 10 );
 		_layout->setVerticalSpacing( Style::DATA_GRID_VERTICAL_SPACE );
