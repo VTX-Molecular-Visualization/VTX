@@ -193,6 +193,7 @@ namespace VTX
 		// Video.
 		static const float		PATH_DURATION_DEFAULT;
 		static const ID::VTX_ID CONTROLLER_MODE_DEFAULT;
+		static const ID::VTX_ID PICKER_MODE_DEFAULT;
 		static const uint		VIDEO_FPS_DEFAULT;
 		static const uint		VIDEO_CRF_DEFAULT;
 

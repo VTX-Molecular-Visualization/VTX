@@ -57,7 +57,7 @@ namespace VTX
 
 						const Model::Atom * C0	= residue0.findFirstAtomByName( "C" );
 						const Model::Atom * N1	= residue1.findFirstAtomByName( "N" );
-						const Model::Atom * CA1 = residue1.findFirstAtomByName( "CA" );
+						const Model::Atom * CA1 = residue1.getAlphaCarbon();
 						const Model::Atom * C1	= residue1.findFirstAtomByName( "C" );
 						const Model::Atom * N2	= residue2.findFirstAtomByName( "N" );
 

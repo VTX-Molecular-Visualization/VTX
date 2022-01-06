@@ -149,6 +149,7 @@ namespace VTX
 	// Video.
 	const float		 Setting::PATH_DURATION_DEFAULT	  = 5.f;
 	const ID::VTX_ID Setting::CONTROLLER_MODE_DEFAULT = ID::Controller::TRACKBALL;
+	const ID::VTX_ID Setting::PICKER_MODE_DEFAULT	  = ID::Controller::PICKER;
 	const uint		 Setting::VIDEO_FPS_DEFAULT		  = 60;
 	const uint		 Setting::VIDEO_CRF_DEFAULT		  = 10;
 

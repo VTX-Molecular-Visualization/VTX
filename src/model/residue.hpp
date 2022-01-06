@@ -132,6 +132,8 @@ namespace VTX
 			const Atom * const findFirstAtomByName( const std::string & ) const;
 			const uint		   findBondIndex( const uint p_firstAtomIndex, const uint p_secondAtomIndex ) const;
 
+			const Atom * const getAlphaCarbon() const;
+
 			// Mask BaseVisible::setVisible
 			void setVisible( const bool p_visible );
 			void setVisible( const bool p_visible, const bool p_notify );

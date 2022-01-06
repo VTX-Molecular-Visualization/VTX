@@ -119,6 +119,8 @@ namespace VTX
 			return UINT_MAX;
 		}
 
+		const Atom * const Residue::getAlphaCarbon() const { return findFirstAtomByName( "CA" ); }
+
 		void Residue::setVisible( const bool p_visible )
 		{
 			if ( isVisible() != p_visible )

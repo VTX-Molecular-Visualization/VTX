@@ -96,7 +96,7 @@ namespace VTX
 
 					// Use backbone to compute spline data.
 					// Find alpha carbon.
-					const Model::Atom * const CA = residue->findFirstAtomByName( "CA" );
+					const Model::Atom * const CA = residue->getAlphaCarbon();
 
 					// Not an amine acid (water, heme, or phosphate groupment).
 					if ( CA == nullptr ) /// TODO: what to do ?
@@ -345,7 +345,7 @@ namespace VTX
 				for ( const uint residueIdx : pair.second )
 				{
 					const Residue * const	  residue = _molecule->getResidue( residueIdx );
-					const Model::Atom * const CA	  = residue->findFirstAtomByName( "CA" );
+					const Model::Atom * const CA	  = residue->getAlphaCarbon();
 					const Model::Atom * const O		  = residue->findFirstAtomByName( "O" );
 					_bufferVisibilities.emplace_back( _molecule->isVisible() && chain->isVisible()
 													  && residue->isVisible() && CA->isVisible() && O->isVisible() );

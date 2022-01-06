@@ -127,6 +127,7 @@ namespace VTX
 			const VTX_ID SHORTCUT	 = "SHORCUT";
 			const VTX_ID VESSEL		 = "VESSEL";
 			const VTX_ID PICKER		 = "PICKER";
+			const VTX_ID MEASUREMENT = "MEASUREMENT";
 			const VTX_ID MAIN_WINDOW = "MAIN_WINDOW";
 		} // namespace Controller
 	}	  // namespace ID

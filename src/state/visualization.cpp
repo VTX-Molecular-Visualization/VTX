@@ -1,6 +1,7 @@
 #include "visualization.hpp"
 #include "controller/freefly.hpp"
 #include "controller/main_window_controller.hpp"
+#include "controller/measurement_picker.hpp"
 #include "controller/picker.hpp"
 #include "controller/trackball.hpp"
 #include "event/event.hpp"
@@ -30,11 +31,16 @@ namespace VTX
 															 VTXApp::get().getScene().getAABB().centroid(),
 															 VTXApp::get().getScene().getAABB().diameter() ) );
 			_controllers.emplace( ID::Controller::PICKER, new Controller::Picker() );
+			_controllers.emplace( ID::Controller::MEASUREMENT, new Controller::MeasurementPicker() );
 		}
 
 		void Visualization::enter( void * const p_arg )
 		{
 			BaseState::enter( p_arg );
+
+			getController<Controller::Picker>( ID::Controller::PICKER )->setActive( true );
+			getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )->setActive( false );
+			_pickerController = ID::Controller::PICKER;
 
 			if ( _cameraController == ID::Controller::FREEFLY )
 			{
@@ -131,6 +137,19 @@ namespace VTX
 						->setDistanceForced( Util::Math::distance( p_position, freefly->getOrientTargetPosition() ) );
 				}
 			}
+		}
+
+		void Visualization::setPickerController( const ID::VTX_ID & p_pickerId )
+		{
+			// Do nothing if id not in collection or already in use
+			if ( _controllers.find( p_pickerId ) == _controllers.end() || _pickerController == p_pickerId )
+				return;
+
+			_controllers[ _pickerController ]->setActive( false );
+			_pickerController = p_pickerId;
+			_controllers[ _pickerController ]->setActive( true );
+
+			VTX_EVENT( new Event::VTXEvent( Event::Global::PICKER_MODE_CHANGE ) );
 		}
 
 		void Visualization::receiveEvent( const Event::VTXEvent & p_event )

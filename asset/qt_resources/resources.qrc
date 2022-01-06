@@ -20,6 +20,7 @@
 	<file>sprite/console_window_icon.png</file>
 	<file>sprite/copy_preset_icon.png</file>
 	<file>sprite/copy_selection_icon.png</file>
+	<file>sprite/cursor/measurement_distance_cursor.png</file>
 	<file>sprite/default_item_icon.png</file>
 	<file>sprite/delete_preset_icon.png</file>
 	<file>sprite/delete_selection_icon.png</file>
