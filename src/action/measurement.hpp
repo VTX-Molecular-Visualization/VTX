@@ -3,7 +3,11 @@
 
 #include "action/base_action.hpp"
 #include "model/atom.hpp"
+#include "model/measurement/distance.hpp"
 #include "model/molecule.hpp"
+#include "mvc/mvc_manager.hpp"
+#include "object3d/scene.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX::Action::Measurement
 {
@@ -17,11 +21,13 @@ namespace VTX::Action::Measurement
 
 		virtual void execute() override
 		{
-			const float distance
-				= Util::Math::distance( _firstAtom.getWorldPosition(), _secondAtom.getWorldPosition() );
+			Model::Measurement::Distance * const distanceModel
+				= MVC::MvcManager::get().instantiateModel<Model::Measurement::Distance>(
+					Model::Measurement::Distance::AtomPair( _firstAtom, _secondAtom ) );
 
-			VTX_INFO( "Distance between " + _firstAtom.getName() + " and " + _secondAtom.getName() + " : "
-					  + std::to_string( distance ) + "Å" );
+			VTXApp::get().getScene().addLabel( distanceModel );
+
+			distanceModel->displayInLog();
 		}
 
 	  private:

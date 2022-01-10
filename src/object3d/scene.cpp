@@ -2,6 +2,7 @@
 #include "action/main.hpp"
 #include "event/event_manager.hpp"
 #include "math/transform.hpp"
+#include "model/label.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
@@ -40,11 +41,14 @@ namespace VTX::Object3D
 
 		MVC::MvcManager::get().deleteAllModels( _meshes );
 		_meshes.clear();
-		
+
+		MVC::MvcManager::get().deleteAllModels( _labels );
+		_labels.clear();
+
 		while ( _paths.size() > 0 )
 		{
 			PathPtr const path = *_paths.begin();
-			removePath( path);
+			removePath( path );
 			MVC::MvcManager::get().deleteModel( path );
 		}
 
@@ -103,6 +107,18 @@ namespace VTX::Object3D
 		_meshes.erase( std::find( _meshes.begin(), _meshes.end(), p_mesh ) );
 		_aabb.invalidate();
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_REMOVED, p_mesh ) );
+		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+	}
+
+	void Scene::addLabel( LabelPtr const p_label )
+	{
+		_labels.emplace_back( p_label );
+		VTX_EVENT( new Event::VTXEventPtr( Event::Global::LABEL_ADDED, p_label ) );
+	}
+	void Scene::removeLabel( LabelPtr const p_label )
+	{
+		_labels.erase( std::find( _labels.begin(), _labels.end(), p_label ) );
+		VTX_EVENT( new Event::VTXEventPtr( Event::Global::LABEL_REMOVED, p_label ) );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 

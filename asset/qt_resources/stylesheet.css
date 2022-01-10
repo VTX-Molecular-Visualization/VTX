@@ -204,3 +204,8 @@ VTX--UI--Widget--Render--Overlay--BaseOverlay > QToolButton::menu-indicator
 {
 	image: none;
 }
+
+QFrame#Inspector_Toolbar
+{
+	border-color : #222222;
+}

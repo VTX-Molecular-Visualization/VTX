@@ -44,6 +44,9 @@ namespace VTX
 
 			void refreshWindowTitle();
 
+			inline const Widget::Render::RenderWidget & getRenderWidget() const { return *_renderWidget; }
+			inline Widget::Render::RenderWidget &		getRenderWidget() { return *_renderWidget; }
+
 			inline const Widget::Render::OpenGLWidget & getOpenGLWidget() const
 			{
 				return _renderWidget->getOpenGLWidget();

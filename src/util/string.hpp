@@ -12,6 +12,7 @@ namespace VTX::Util::String
 	void trimStart( std::string & p_str );
 	void trimEnd( std::string & p_str );
 
+	std::string floatToStr( const float p_value, const int p_nbDecimals );
 } // namespace VTX::Util::String
 
 #endif

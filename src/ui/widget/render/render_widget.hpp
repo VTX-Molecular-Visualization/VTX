@@ -14,6 +14,8 @@
 
 namespace VTX::UI::Widget::Render
 {
+	class BaseIntegratedWidget;
+
 	class RenderWidget : public BaseManualWidget<QWidget>, public Event::BaseEventFirererInput
 	{
 		VTX_WIDGET
@@ -24,6 +26,8 @@ namespace VTX::UI::Widget::Render
 
 		inline const OpenGLWidget & getOpenGLWidget() const { return *_openGLWidget; }
 		inline OpenGLWidget &		getOpenGLWidget() { return *_openGLWidget; }
+
+		void updateRender() const;
 
 		void displayOverlay( const Overlay::OVERLAY & p_overlay, const Overlay::OVERLAY_ANCHOR & p_position );
 		void hideOverlay( const Overlay::OVERLAY & p_overlay );
@@ -51,6 +55,7 @@ namespace VTX::UI::Widget::Render
 		OpenGLWidget *									   _openGLWidget = nullptr;
 		std::map<Overlay::OVERLAY, Overlay::BaseOverlay *> _overlays
 			= std::map<Overlay::OVERLAY, Overlay::BaseOverlay *>();
+		std::vector<BaseIntegratedWidget *> _integratedWidgets = std::vector<BaseIntegratedWidget *>();
 
 		Overlay::BaseOverlay * _instantiateOverlay( const Overlay::OVERLAY & p_overlayType );
 

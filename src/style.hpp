@@ -245,6 +245,8 @@ namespace VTX
 		inline static const int DATA_GRID_VERTICAL_SPACE   = 2;
 		inline static const int DATA_GRID_HORIZONTAL_SPACE = 10;
 
+		inline static const int MEASUREMENT_DISTANCE_NB_DECIMALS = 2;
+
 		inline static const QColor CONSOLE_INFO_COLOR	 = QColor( "white" );
 		inline static const QColor CONSOLE_DEBUG_COLOR	 = QColor( "white" );
 		inline static const QColor CONSOLE_WARNING_COLOR = QColor( "yellow" );
