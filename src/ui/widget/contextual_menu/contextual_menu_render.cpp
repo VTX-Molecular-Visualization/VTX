@@ -12,14 +12,18 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
 	void ContextualMenuRender::_setupSlots()
 	{
+		addSection( "Loading" );
 		addAction( "Load Molecule", this, &ContextualMenuRender::_loadMoleculeAction );
 		addAction( "Download Molecule", this, &ContextualMenuRender::_downloadMoleculeAction );
-		addSeparator();
 
+		addSection( "Mouse Mode" );
+		addAction( "Selection", this, &ContextualMenuRender::_setPickerToSelection );
+		addAction( "Measurement", this, &ContextualMenuRender::_setPickerToMeasurement );
+
+		addSection( "Actions" );
 		addAction( "Show All", this, &ContextualMenuRender::_showAllMoleculesAction );
 
-		addSeparator();
-
+		addSection( "Selection" );
 		QMenu * const selectionGranularityMenu = new QMenu( this );
 		selectionGranularityMenu->setTitle( "Selection target" );
 		selectionGranularityMenu->addAction( "Atom" )->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME,
@@ -34,6 +38,22 @@ namespace VTX::UI::Widget::ContextualMenu
 			selectionGranularityMenu, &QMenu::triggered, this, &ContextualMenuRender::_setSelectionGranularityAction );
 
 		addMenu( selectionGranularityMenu );
+
+		addSection( "Measurement" );
+		QMenu * const measurementModeMenu = new QMenu( this );
+		measurementModeMenu->setTitle( "Measurement" );
+		measurementModeMenu->addAction( "Distance" )
+			->setProperty( MEASUREMENT_MODE_PROPERTY_NAME, int( Controller::MeasurementPicker::Mode::DISTANCE ) );
+		measurementModeMenu->addAction( "Distance to cycle" )
+			->setProperty( MEASUREMENT_MODE_PROPERTY_NAME,
+						   int( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE ) );
+		measurementModeMenu->addAction( "Angle" )->setProperty( MEASUREMENT_MODE_PROPERTY_NAME,
+																int( Controller::MeasurementPicker::Mode::ANGLE ) );
+		measurementModeMenu->addAction( "Dihedral angle" )
+			->setProperty( MEASUREMENT_MODE_PROPERTY_NAME, int( Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE ) );
+		connect( measurementModeMenu, &QMenu::triggered, this, &ContextualMenuRender::_setMeasurementMode );
+
+		addMenu( measurementModeMenu );
 	}
 
 	void ContextualMenuRender::localize() {}
@@ -42,11 +62,27 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_downloadMoleculeAction() const { UI::Dialog::openDownloadMoleculeDialog(); }
 	void ContextualMenuRender::_showAllMoleculesAction() const { VTX_ACTION( new Action::Main::ShowAllMolecules() ); }
 
+	void ContextualMenuRender::_setPickerToSelection() const
+	{
+		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::PICKER ) );
+	}
+	void ContextualMenuRender::_setPickerToMeasurement() const
+	{
+		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT ) );
+	}
+
 	void ContextualMenuRender::_setSelectionGranularityAction( QAction * p_action ) const
 	{
 		const VTX::Selection::Granularity granularity
 			= VTX::Selection::Granularity( p_action->property( SELECTION_GRANULARITY_PROPERTY_NAME ).toInt() );
 		VTX_ACTION( new Action::Setting::ChangeSelectionGranularity( granularity ) );
+	}
+
+	void ContextualMenuRender::_setMeasurementMode( QAction * p_action ) const
+	{
+		const Controller::MeasurementPicker::Mode mode
+			= Controller::MeasurementPicker::Mode( p_action->property( SELECTION_GRANULARITY_PROPERTY_NAME ).toInt() );
+		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( mode ) ) );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

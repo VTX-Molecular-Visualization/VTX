@@ -34,15 +34,9 @@ namespace VTX::Controller
 
 			if ( ids.y != Model::ID_UNKNOWN ) // Bond
 			{
-				if ( atoms.size() == 0 )
-					atoms.emplace_back( ids.x );
-				else
-					atoms[ 0 ] = ids.x;
-
-				if ( atoms.size() == 1 )
-					atoms.emplace_back( ids.y );
-				else
-					atoms[ 1 ] = ids.y;
+				atoms.clear();
+				atoms.emplace_back( ids.x );
+				atoms.emplace_back( ids.y );
 
 				updateDisplay = true;
 			}
@@ -61,21 +55,8 @@ namespace VTX::Controller
 					atomID = ids.x;
 				}
 
-				if ( atoms.size() == 2 )
-				{
-					if ( atoms[ 1 ] != atomID )
-					{
-						atoms[ 0 ] = atoms[ 1 ];
-						atoms[ 1 ] = atomID;
-
-						updateDisplay = true;
-					}
-				}
-				else
-				{
-					atoms.emplace_back( atomID );
-					updateDisplay = true;
-				}
+				atoms.emplace_back( atomID );
+				updateDisplay = true;
 			}
 		}
 		else
@@ -126,7 +107,7 @@ namespace VTX::Controller
 		}
 	}
 
-	void MeasurementPicker::_updateDisplay() const
+	void MeasurementPicker::_updateDisplay()
 	{
 		if ( atoms.size() == 2 )
 		{
@@ -134,6 +115,8 @@ namespace VTX::Controller
 			const Model::Atom & secondAtom = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 1 ] );
 
 			VTX_ACTION( new Action::Measurement::Distance( firstAtom, secondAtom ) );
+
+			atoms.clear();
 		}
 	}
 

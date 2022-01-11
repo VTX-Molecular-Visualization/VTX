@@ -41,7 +41,7 @@ namespace VTX
 			void _onMouseRightClick( const uint p_x, const uint p_y ) override;
 
 		  private:
-			void _updateDisplay() const;
+			void _updateDisplay();
 
 			Vec2i _lastClickedIds;
 

@@ -3,6 +3,7 @@
 #include "action/main.hpp"
 #include "action/selection.hpp"
 #include "controller/base_keyboard_controller.hpp"
+#include "controller/measurement_picker.hpp"
 #include "event/event_manager.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "util/filesystem.hpp"
@@ -218,6 +219,15 @@ namespace VTX::UI
 				 &QShortcut::activated,
 				 this,
 				 &MainWindow::_onShortcutExtract );
+
+		connect( new QShortcut( QKeySequence( tr( "P" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutSetSelectionPicker );
+		connect( new QShortcut( QKeySequence( tr( "M" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutSetMeasurementPicker );
 	}
 
 	void MainWindow::_onShortcutNew() { UI::Dialog::createNewSessionDialog(); }
@@ -292,6 +302,16 @@ namespace VTX::UI
 		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
 			VTX_ACTION( new Action::Selection::Extract( selectionModel ) );
+	}
+
+	void MainWindow::_onShortcutSetSelectionPicker()
+	{
+		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::PICKER ) );
+	}
+	void MainWindow::_onShortcutSetMeasurementPicker()
+	{
+		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT,
+													int( Controller::MeasurementPicker::Mode::DISTANCE ) ) );
 	}
 
 	void MainWindow::refreshWindowTitle()

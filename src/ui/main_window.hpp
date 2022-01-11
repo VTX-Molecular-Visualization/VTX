@@ -138,6 +138,8 @@ namespace VTX
 			void _onShortcutSelectAll();
 			void _onShortcutCopy();
 			void _onShortcutExtract();
+			void _onShortcutSetSelectionPicker();
+			void _onShortcutSetMeasurementPicker();
 
 			WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
 

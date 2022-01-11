@@ -1,5 +1,6 @@
 #include "menu_measurement_distance_widget.hpp"
 #include "action/action_manager.hpp"
+#include "action/main.hpp"
 #include "action/measurement.hpp"
 #include "controller/measurement_picker.hpp"
 #include "id.hpp"
@@ -118,12 +119,7 @@ namespace VTX::UI::Widget::MainMenu::Measurement
 
 		if ( state->getCurrentPickerID() != ID::Controller::MEASUREMENT )
 		{
-			state->setPickerController( ID::Controller::MEASUREMENT );
-
-			Controller::MeasurementPicker * const measurementController
-				= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT );
-
-			measurementController->setCurrentMode( p_measurementMode );
+			VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( p_measurementMode ) ) );
 		}
 		else
 		{
@@ -132,11 +128,11 @@ namespace VTX::UI::Widget::MainMenu::Measurement
 
 			if ( measurementController->getCurrentMode() == p_measurementMode )
 			{
-				state->setPickerController( ID::Controller::PICKER );
+				VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::PICKER ) );
 			}
 			else
 			{
-				measurementController->setCurrentMode( p_measurementMode );
+				VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( p_measurementMode ) ) );
 			}
 		}
 	}

@@ -6,20 +6,36 @@
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/render/base_integrated_widget.hpp"
 #include "view/base_view.hpp"
-#include <QLabel>
+#include <QBrush>
+#include <QFont>
 #include <QPaintEvent>
-//#include <QStaticText>
+#include <QPainterPath>
+#include <QPen>
+#include <QPoint>
+#include <QSize>
 #include <string>
 
 namespace VTX::View::UI::Widget::Measurement
 {
 	class DistanceRenderView :
 		public View::BaseView<VTX::Model::Measurement::Distance>,
-		public VTX::UI::Widget::BaseManualWidget<QLabel>,
+		public VTX::UI::Widget::BaseManualWidget<QWidget>,
 		public VTX::UI::Widget::Render::BaseIntegratedWidget
 	{
 		VTX_WIDGET
 		VTX_VIEW
+
+	  private:
+		class PaintData
+		{
+		  public:
+			QPoint firstAtomScreenPos;
+			QPoint secondAtomScreenPos;
+			QPoint textPosition;
+		};
+
+		static const int POINT_RADIUS	= 2;
+		static const int POINT_DIAMETER = POINT_RADIUS * 2;
 
 	  public:
 		void localize() override;
@@ -30,13 +46,24 @@ namespace VTX::View::UI::Widget::Measurement
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
-		// void paintEvent( QPaintEvent * event ) override;
+		void paintEvent( QPaintEvent * event ) override;
+
+		void _setText( const std::string & p_txt );
 
 		void _refreshText();
 
 	  private:
-		// QStaticText _distanceTxt;
-		Vec3f _worldPosition = VEC3F_ZERO;
+		PaintData	 _paintData;
+		QFont		 _labelFont;
+		QSize		 _textSize;
+		QPainterPath _painterPath = QPainterPath();
+
+		QPen   _labelPen;
+		QBrush _labelBrush;
+		QPen   _linePen;
+		QBrush _lineBrush;
+
+		QPoint worldToScreen( const Vec3f & p_worldPos ) const;
 	};
 
 } // namespace VTX::View::UI::Widget::Measurement

@@ -3,6 +3,7 @@
 
 #include "action/action_manager.hpp"
 #include "base_action.hpp"
+#include "controller/measurement_picker.hpp"
 #include "define.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
@@ -351,6 +352,39 @@ namespace VTX::Action::Main
 		};
 
 	  private:
+	};
+
+	class ChangePicker : public BaseAction
+	{
+	  public:
+		explicit ChangePicker( const ID::VTX_ID & p_pickerController, const int p_mode = -1 ) :
+			_pickerController( p_pickerController ), _mode( p_mode )
+		{
+		}
+
+		virtual void execute() override
+		{
+			State::Visualization * const state
+				= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+
+			if ( state->getCurrentPickerID() != _pickerController )
+				state->setPickerController( _pickerController );
+
+			if ( _mode > -1 )
+			{
+				if ( _pickerController == ID::Controller::MEASUREMENT )
+				{
+					Controller::MeasurementPicker * const measurementController
+						= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT );
+
+					measurementController->setCurrentMode( Controller::MeasurementPicker::Mode( _mode ) );
+				}
+			}
+		};
+
+	  private:
+		const ID::VTX_ID & _pickerController;
+		const int		   _mode;
 	};
 
 	class Snapshot : public BaseAction
