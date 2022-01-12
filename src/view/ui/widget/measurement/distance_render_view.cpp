@@ -14,20 +14,21 @@
 
 namespace VTX::View::UI::Widget::Measurement
 {
+	const int DistanceRenderView::MAX_POINT_DIAMETER
+		= Style::MEASUREMENT_DISTANCE_LABEL_MAX_LINE_THICKNESS + Style::MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS * 2;
+
 	DistanceRenderView::DistanceRenderView( Model::Measurement::Distance * const p_model, QWidget * const p_parent ) :
 		View::BaseView<Model::Measurement::Distance>( p_model ), VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
-		_labelFont = QFont( "Arial", 20, QFont::Weight::Bold, false );
-
-		_labelPen	= QPen( Qt::GlobalColor::black );
-		_labelBrush = QBrush( Qt::GlobalColor::white );
+		_labelPen	= QPen( Style::WORLD_LABEL_OUTLINE_COLOR );
+		_labelBrush = QBrush( Style::WORLD_LABEL_FILL_COLOR );
 		_labelBrush.setStyle( Qt::BrushStyle::SolidPattern );
 
 		_linePen = QPen();
-		_linePen.setColor( Qt::GlobalColor::blue );
-		_linePen.setWidth( 4 );
-		_linePen.setStyle( Qt::PenStyle::DashLine );
-		_lineBrush = QBrush( Qt::BrushStyle::SolidPattern );
+		_linePen.setColor( Style::MEASUREMENT_DISTANCE_LINE_COLOR );
+		_linePen.setStyle( Style::MEASUREMENT_DISTANCE_LINE_STYLE );
+		_lineBrush = QBrush( Qt::BrushStyle::NoBrush );
+		//_lineBrush = QBrush( Qt::BrushStyle::SolidPattern );
 	}
 
 	void DistanceRenderView::_setupUi( const QString & p_name )
@@ -43,25 +44,37 @@ namespace VTX::View::UI::Widget::Measurement
 
 	void DistanceRenderView::updatePosition()
 	{
-		const QPoint firstAtomPos  = worldToScreen( _model->getFirstAtom().getWorldPosition() );
-		const QPoint secondAtomPos = worldToScreen( _model->getSecondAtom().getWorldPosition() );
+		const Vec3f & firstAtomWorldPos	 = _model->getFirstAtom().getWorldPosition();
+		const Vec3f & secondAtomWorldPos = _model->getSecondAtom().getWorldPosition();
 
-		const QPoint centerPos = ( firstAtomPos + secondAtomPos ) / 2;
-		const QSize	 textSize  = _textSize;
+		const bool visible = _isVisibleToCamera( firstAtomWorldPos ) || _isVisibleToCamera( secondAtomWorldPos );
+		setVisible( visible );
+
+		if ( !visible )
+		{
+			return;
+		}
+
+		const Vec3f centerWorldPos = ( firstAtomWorldPos + secondAtomWorldPos ) * 0.5f;
+
+		const QPoint firstAtomPos  = _worldToScreen( firstAtomWorldPos );
+		const QPoint secondAtomPos = _worldToScreen( secondAtomWorldPos );
+
+		const QPoint centerPos = _worldToScreen( centerWorldPos );
 		const QPoint textPos   = centerPos;
 
-		const int minX = std::min( { firstAtomPos.x() - POINT_DIAMETER,
-									 secondAtomPos.x() - POINT_DIAMETER,
-									 ( textPos.x() - textSize.width() / 2 ) } );
-		const int minY = std::min( { firstAtomPos.y() - POINT_DIAMETER,
-									 secondAtomPos.y() - POINT_DIAMETER,
-									 ( textPos.y() - textSize.height() / 2 ) } );
-		const int maxX = std::max( { firstAtomPos.x() + POINT_DIAMETER,
-									 secondAtomPos.x() + POINT_DIAMETER,
-									 ( textPos.x() + ( textSize.width() / 2 ) ) } );
-		const int maxY = std::max( { firstAtomPos.y() + POINT_DIAMETER,
-									 secondAtomPos.y() + POINT_DIAMETER,
-									 ( textPos.y() + ( textSize.height() / 2 ) ) } );
+		const int minX = std::min( { firstAtomPos.x() - MAX_POINT_DIAMETER,
+									 secondAtomPos.x() - MAX_POINT_DIAMETER,
+									 ( textPos.x() - _paintData.textSize.width() / 2 ) } );
+		const int minY = std::min( { firstAtomPos.y() - MAX_POINT_DIAMETER,
+									 secondAtomPos.y() - MAX_POINT_DIAMETER,
+									 ( textPos.y() - _paintData.textSize.height() / 2 ) } );
+		const int maxX = std::max( { firstAtomPos.x() + MAX_POINT_DIAMETER,
+									 secondAtomPos.x() + MAX_POINT_DIAMETER,
+									 ( textPos.x() + ( _paintData.textSize.width() / 2 ) ) } );
+		const int maxY = std::max( { firstAtomPos.y() + MAX_POINT_DIAMETER,
+									 secondAtomPos.y() + MAX_POINT_DIAMETER,
+									 ( textPos.y() + ( _paintData.textSize.height() / 2 ) ) } );
 
 		const QPoint topLeftPos = QPoint( minX, minY );
 		move( topLeftPos );
@@ -69,15 +82,15 @@ namespace VTX::View::UI::Widget::Measurement
 		const QSize size = QSize( maxX - minX, maxY - minY );
 		setFixedSize( size );
 
-		_paintData.firstAtomScreenPos  = firstAtomPos;
-		_paintData.secondAtomScreenPos = secondAtomPos;
-		_paintData.textPosition
-			= QPoint( textPos.x() - ( textSize.width() / 2 ), textPos.y() - ( textSize.height() / 2 ) );
+		_paintData.firstAtomScreenPos	= firstAtomPos;
+		_paintData.secondAtomScreenPos	= secondAtomPos;
+		_paintData.textPosition			= textPos;
+		_paintData.textDistanceToCamera = _distanceToCamera( centerWorldPos );
 
 		repaint();
 	}
 
-	QPoint DistanceRenderView::worldToScreen( const Vec3f & p_worldPos ) const
+	QPoint DistanceRenderView::_worldToScreen( const Vec3f & p_worldPos ) const
 	{
 		const QRect & parentRect = parentWidget()->contentsRect();
 		const QPoint  renderPos	 = QPoint( parentRect.width() / 2, parentRect.height() / 2 );
@@ -92,7 +105,8 @@ namespace VTX::View::UI::Widget::Measurement
 		QPoint screenPointPos;
 		if ( screenPos.w != 0 )
 		{
-			const Vec3f viewportPos = Vec3f( screenPos ) / screenPos.w;
+			const float absW		= screenPos.w < 0 ? -screenPos.w : screenPos.w;
+			const Vec3f viewportPos = Vec3f( screenPos ) / absW;
 			screenPointPos			= QPoint( ( viewportPos.x + 1.f ) * 0.5f * parentRect.width(),
 									  ( -viewportPos.y + 1.f ) * 0.5f * parentRect.height() );
 		}
@@ -102,6 +116,23 @@ namespace VTX::View::UI::Widget::Measurement
 		}
 
 		return screenPointPos;
+	}
+
+	float DistanceRenderView::_distanceToCamera( const Vec3f & p_worldPos ) const
+	{
+		const Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
+		return Util::Math::distance( camera.getPosition(), p_worldPos );
+	}
+
+	bool DistanceRenderView::_isVisibleToCamera( const Vec3f & p_worldPos ) const
+	{
+		const Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
+
+		const Vec3f & cameraForward = camera.getFront();
+		const Vec3f	  clipPos		= camera.getPosition() + cameraForward;
+		const Vec3f	  cameraToPos	= Util::Math::normalize( p_worldPos - clipPos );
+
+		return Util::Math::dot( cameraForward, cameraToPos ) > 0;
 	}
 
 	void DistanceRenderView::_refreshText()
@@ -115,48 +146,77 @@ namespace VTX::View::UI::Widget::Measurement
 	{
 		const QString qstr = QString::fromStdString( p_txt );
 
-		const QFontMetrics labelFontMetric = QFontMetrics( _labelFont );
+		const QFontMetrics labelFontMetric = QFontMetrics( Style::WORLD_LABEL_FONT );
 
-		_textSize = QSize( labelFontMetric.horizontalAdvance( qstr ), labelFontMetric.height() );
+		_paintData.textSize = QSize( labelFontMetric.horizontalAdvance( qstr ), labelFontMetric.height() );
 
 		_painterPath.clear();
-		_painterPath.addText( QPoint( _textSize.width() / 2, _textSize.height() / 2 ), _labelFont, qstr );
+		_painterPath.addText( { 0, 0 }, Style::WORLD_LABEL_FONT, qstr );
 	}
 
 	void DistanceRenderView::paintEvent( QPaintEvent * event )
 	{
 		QWidget::paintEvent( event );
 
-		QPainter painter( this );
-		painter.save();
-		// painter.setWorldMatrixEnabled( false );
+		const float minDist = 20.f;
+		const float maxDist = 150.0f;
 
-		painter.setPen( QPen( Qt::GlobalColor::red ) );
-		// painter.drawRect( rect() );
+		const float ratioScale = 1.f
+								 - std::clamp( ( _paintData.textDistanceToCamera - Style::WORLD_LABEL_NEAR_CLIP )
+												   / ( Style::WORLD_LABEL_FAR_CLIP - Style::WORLD_LABEL_NEAR_CLIP ),
+											   0.f,
+											   1.f );
 
-		// Draw line //////////////////////////////////////////////////////
-		painter.setPen( _linePen );
-		painter.setBrush( _lineBrush );
-		painter.setRenderHint( QPainter::RenderHint::Antialiasing );
+		if ( ratioScale > 0.f )
+		{
+			QPainter painter( this );
+			painter.save();
+			// painter.setWorldMatrixEnabled( false );
 
-		const QPoint firstAtomPos  = _paintData.firstAtomScreenPos - pos();
-		const QPoint secondAtomPos = _paintData.secondAtomScreenPos - pos();
-		painter.drawEllipse( firstAtomPos, POINT_RADIUS, POINT_RADIUS );
-		painter.drawEllipse( secondAtomPos, POINT_RADIUS, POINT_RADIUS );
-		painter.drawLine( firstAtomPos, secondAtomPos );
-		///////////////////////////////////////////////////////////////////
+			// Draw line //////////////////////////////////////////////////////
+			// TODO Sigmoid
+			const int lineSize = Style::MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS
+								 + ( Style::MEASUREMENT_DISTANCE_LABEL_MAX_LINE_THICKNESS
+									 - Style::MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS )
+									   * ratioScale;
 
-		// Draw text //////////////////////////////////////////////////////
-		painter.setBrush( _labelBrush );
-		painter.setPen( _labelPen );
+			_linePen.setWidth( lineSize );
 
-		const QPointF textPosition
-			= _paintData.textPosition - pos() + QPoint( -_textSize.width() / 2, _textSize.height() / 2 );
-		//_painterPath.setElementPositionAt( 0, textPosition.x(), textPosition.y() );
-		painter.drawPath( _painterPath.translated( textPosition ) );
-		///////////////////////////////////////////////////////////////////
+			painter.setPen( _linePen );
+			painter.setBrush( _lineBrush );
+			painter.setRenderHint( QPainter::RenderHint::Antialiasing );
 
-		// painter.setWorldMatrixEnabled( true );
-		painter.restore();
+			const QPoint firstAtomPos  = _paintData.firstAtomScreenPos - pos();
+			const QPoint secondAtomPos = _paintData.secondAtomScreenPos - pos();
+			const int	 pointRadius   = ( lineSize / 2 ) + Style::MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS;
+
+			painter.drawEllipse( firstAtomPos, pointRadius, pointRadius );
+			painter.drawEllipse( secondAtomPos, pointRadius, pointRadius );
+			painter.drawLine( firstAtomPos, secondAtomPos );
+			///////////////////////////////////////////////////////////////////
+
+			// Draw text //////////////////////////////////////////////////////
+
+			painter.setBrush( _labelBrush );
+			painter.setPen( _labelPen );
+
+			const float textScale
+				= Style::WORLD_LABEL_MIN_TEXT_SCALE
+				  + ( Style::WORLD_LABEL_MAX_TEXT_SCALE - Style::WORLD_LABEL_MIN_TEXT_SCALE ) * ratioScale;
+
+			const QPointF textPosition
+				= ( _paintData.textPosition - pos() )
+				  - ( QPoint( _paintData.textSize.width() / 2, -_paintData.textSize.height() / 4 ) * textScale );
+
+			painter.translate( textPosition );
+
+			painter.scale( textScale, textScale );
+			painter.drawPath( _painterPath );
+			painter.resetTransform();
+			///////////////////////////////////////////////////////////////////
+
+			// painter.setWorldMatrixEnabled( true );
+			painter.restore();
+		}
 	}
 } // namespace VTX::View::UI::Widget::Measurement

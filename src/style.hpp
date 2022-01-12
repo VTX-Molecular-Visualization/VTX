@@ -245,7 +245,20 @@ namespace VTX
 		inline static const int DATA_GRID_VERTICAL_SPACE   = 2;
 		inline static const int DATA_GRID_HORIZONTAL_SPACE = 10;
 
-		inline static const int MEASUREMENT_DISTANCE_NB_DECIMALS = 2;
+		inline static const QFont  WORLD_LABEL_FONT			  = QFont( "Arial", 20, QFont::Weight::Bold, false );
+		inline static const float  WORLD_LABEL_NEAR_CLIP	  = 20.f;
+		inline static const float  WORLD_LABEL_FAR_CLIP		  = 150.0f;
+		inline static const QColor WORLD_LABEL_OUTLINE_COLOR  = Qt::GlobalColor::black;
+		inline static const QColor WORLD_LABEL_FILL_COLOR	  = Qt::GlobalColor::white;
+		inline static const float  WORLD_LABEL_MIN_TEXT_SCALE = 0.1f;
+		inline static const float  WORLD_LABEL_MAX_TEXT_SCALE = 1.f;
+
+		inline static const int			 MEASUREMENT_DISTANCE_NB_DECIMALS			   = 2;
+		inline static const int			 MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS	   = 1;
+		inline static const int			 MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS = 1;
+		inline static const int			 MEASUREMENT_DISTANCE_LABEL_MAX_LINE_THICKNESS = 5;
+		inline static const QColor		 MEASUREMENT_DISTANCE_LINE_COLOR			   = Qt::GlobalColor::blue;
+		inline static const Qt::PenStyle MEASUREMENT_DISTANCE_LINE_STYLE			   = Qt::PenStyle::DashLine;
 
 		inline static const QColor CONSOLE_INFO_COLOR	 = QColor( "white" );
 		inline static const QColor CONSOLE_DEBUG_COLOR	 = QColor( "white" );

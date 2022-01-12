@@ -1,6 +1,7 @@
 #ifndef __VTX_VIEW_UI_WIDGET_MEASUREMENT_DISTANCE_RENDER__
 #define __VTX_VIEW_UI_WIDGET_MEASUREMENT_DISTANCE_RENDER__
 
+#include "define.hpp"
 #include "id.hpp"
 #include "model/measurement/distance.hpp"
 #include "ui/widget/base_manual_widget.hpp"
@@ -32,10 +33,11 @@ namespace VTX::View::UI::Widget::Measurement
 			QPoint firstAtomScreenPos;
 			QPoint secondAtomScreenPos;
 			QPoint textPosition;
+			QSize  textSize;
+			float  textDistanceToCamera;
 		};
 
-		static const int POINT_RADIUS	= 2;
-		static const int POINT_DIAMETER = POINT_RADIUS * 2;
+		static const int MAX_POINT_DIAMETER;
 
 	  public:
 		void localize() override;
@@ -49,13 +51,10 @@ namespace VTX::View::UI::Widget::Measurement
 		void paintEvent( QPaintEvent * event ) override;
 
 		void _setText( const std::string & p_txt );
-
 		void _refreshText();
 
 	  private:
 		PaintData	 _paintData;
-		QFont		 _labelFont;
-		QSize		 _textSize;
 		QPainterPath _painterPath = QPainterPath();
 
 		QPen   _labelPen;
@@ -63,7 +62,9 @@ namespace VTX::View::UI::Widget::Measurement
 		QPen   _linePen;
 		QBrush _lineBrush;
 
-		QPoint worldToScreen( const Vec3f & p_worldPos ) const;
+		QPoint _worldToScreen( const Vec3f & p_worldPos ) const;
+		float  _distanceToCamera( const Vec3f & p_worldPos ) const;
+		bool   _isVisibleToCamera( const Vec3f & p_worldPos ) const;
 	};
 
 } // namespace VTX::View::UI::Widget::Measurement
