@@ -55,8 +55,11 @@ namespace VTX::Controller
 					atomID = ids.x;
 				}
 
-				atoms.emplace_back( atomID );
-				updateDisplay = true;
+				if ( std::find( atoms.cbegin(), atoms.cend(), atomID ) == atoms.cend() ) 
+				{
+					atoms.emplace_back( atomID );
+					updateDisplay = true;
+				}
 			}
 		}
 		else
