@@ -42,6 +42,14 @@ namespace VTX::View::UI::Widget::Measurement
 	void DistanceRenderView::_setupSlots() {}
 	void DistanceRenderView::localize() {}
 
+	void DistanceRenderView::_refreshView()
+	{
+		_refreshText();
+		// updatePosition called because it resizing the widget. Maybe resize can be done in a specific function
+		updatePosition();
+		repaint();
+	}
+
 	void DistanceRenderView::updatePosition()
 	{
 		const Vec3f & firstAtomWorldPos	 = _model->getFirstAtom().getWorldPosition();

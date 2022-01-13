@@ -451,6 +451,7 @@ namespace VTX
 				_secondaryStructure->refresh( true );
 
 			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_FRAME_CHANGE ) );
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_TRAJECTORY_FRAME_CHANGE, this ) );
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}

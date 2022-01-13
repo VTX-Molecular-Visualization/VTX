@@ -9,22 +9,33 @@ namespace VTX::Model::Measurement
 {
 	Distance::Distance() : Model::Label( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
 	{
-		_registerEvent( Event::ATOM_REMOVED );
+		_registerEvent( Event::Global::ATOM_REMOVED );
+		_registerEvent( Event::Global::MOLECULE_TRAJECTORY_FRAME_CHANGE );
 	}
 
 	Distance::Distance( const AtomPair & p_pair ) : Distance() { setAtoms( p_pair.first, p_pair.second, false ); }
 
 	void Distance::receiveEvent( const Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::ATOM_REMOVED )
+		if ( p_event.name == Event::Global::ATOM_REMOVED )
 		{
 			const Event::VTXEventPtr<Model::Atom> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Atom> &>( p_event );
 
 			if ( castedEvent.ptr == _firstAtom || castedEvent.ptr == _secondAtom )
 			{
-				VTX_EVENT( new Event::VTXEventPtr( Event::Global::LABEL_REMOVED, this ) );
+				VTX_EVENT( new Event::VTXEventPtr<Model::Label>( Event::Global::LABEL_REMOVED, this ) );
 				MVC::MvcManager::get().deleteModel( this );
+			}
+		}
+		else if ( p_event.name == Event::Global::MOLECULE_TRAJECTORY_FRAME_CHANGE )
+		{
+			const Event::VTXEventPtr<Model::Molecule> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+
+			if ( castedEvent.ptr == _firstAtom->getMoleculePtr() || castedEvent.ptr == _secondAtom->getMoleculePtr() )
+			{
+				_computeDistance( true );
 			}
 		}
 	}

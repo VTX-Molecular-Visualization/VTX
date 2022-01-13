@@ -48,6 +48,8 @@ namespace VTX::View::UI::Widget::Measurement
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
+		void _refreshView() override;
+
 		void paintEvent( QPaintEvent * event ) override;
 
 		void _setText( const std::string & p_txt );
