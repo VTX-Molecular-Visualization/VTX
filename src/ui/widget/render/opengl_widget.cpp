@@ -8,6 +8,7 @@
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
 #include <QMainWindow>
+#include <QOpenGLVersionFunctionsFactory>
 
 namespace VTX::UI::Widget::Render
 {
@@ -40,7 +41,7 @@ namespace VTX::UI::Widget::Render
 	{
 		VTX_INFO( "Initializing OpenGL..." );
 
-		_gl = reinterpret_cast<OpenGLFunctions *>( context()->functions() );
+		_gl = QOpenGLVersionFunctionsFactory::get<OpenGLFunctions>( context() );
 
 		if ( _gl == nullptr )
 		{
