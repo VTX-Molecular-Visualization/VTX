@@ -18,6 +18,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	  public:
 		~ContextualMenuRender();
 		void localize() override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 	  protected:
 		ContextualMenuRender( QWidget * p_parent = nullptr );
@@ -33,6 +34,12 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _setSelectionGranularityAction( QAction * p_action ) const;
 		void _setMeasurementMode( QAction * p_action ) const;
 		void _showAllMoleculesAction() const;
+
+	  private:
+		QAction * _selectionModeAction;
+		QAction * _measurementModeAction;
+
+		void _refreshPickerMode() const;
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu
