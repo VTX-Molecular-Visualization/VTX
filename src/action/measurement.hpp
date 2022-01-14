@@ -21,9 +21,9 @@ namespace VTX::Action::Measurement
 
 		virtual void execute() override
 		{
-			Model::Measurement::Distance * const distanceModel
-				= MVC::MvcManager::get().instantiateModel<Model::Measurement::Distance>(
-					Model::Measurement::Distance::AtomPair( _firstAtom, _secondAtom ) );
+			const Model::Measurement::Distance::AtomPair pair( _firstAtom, _secondAtom );
+			Model::Measurement::Distance * const		 distanceModel
+				= MVC::MvcManager::get().instantiateModel<Model::Measurement::Distance>( pair );
 
 			VTXApp::get().getScene().addLabel( distanceModel );
 

@@ -146,7 +146,7 @@ namespace VTX::View::UI::Widget::Measurement
 	void DistanceRenderView::_refreshText()
 	{
 		const std::string strTxt
-			= Util::String::floatToStr( _model->getDistance(), Style::MEASUREMENT_DISTANCE_NB_DECIMALS ) + "Å";
+			= Util::String::floatToStr( _model->getDistance(), Style::MEASUREMENT_DISTANCE_NB_DECIMALS ) + "\u212B";
 		_setText( strTxt );
 	}
 

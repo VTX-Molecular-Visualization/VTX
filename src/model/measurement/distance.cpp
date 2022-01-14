@@ -58,7 +58,7 @@ namespace VTX::Model::Measurement
 	void Distance::displayInLog() const
 	{
 		VTX_INFO( "Distance between " + _firstAtom->getName() + " and " + _secondAtom->getName() + " : "
-				  + std::to_string( _distance ) + "Å" );
+				  + std::to_string( _distance ) + "\u212B" );
 	}
 
 } // namespace VTX::Model::Measurement
