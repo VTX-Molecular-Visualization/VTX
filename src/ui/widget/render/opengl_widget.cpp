@@ -19,7 +19,7 @@ namespace VTX::UI::Widget::Render
 		format.setProfile( QSurfaceFormat::CoreProfile );
 		format.setRenderableType( QSurfaceFormat::OpenGL );
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
-		format.setSwapInterval( VTX_SETTING().getVSync() );
+		format.setSwapInterval( int( VTX_SETTING().getVSync() ) );
 		QSurfaceFormat::setDefaultFormat( format );
 	}
 
