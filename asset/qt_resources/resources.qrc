@@ -20,6 +20,7 @@
 	<file>sprite/console_window_icon.png</file>
 	<file>sprite/copy_preset_icon.png</file>
 	<file>sprite/copy_selection_icon.png</file>
+	<file>sprite/cursor/measurement_distance_cursor.png</file>
 	<file>sprite/default_item_icon.png</file>
 	<file>sprite/delete_preset_icon.png</file>
 	<file>sprite/delete_selection_icon.png</file>
@@ -45,11 +46,14 @@
 	<file>sprite/logo_vect.svg</file>
 	<file>sprite/logo_vect_no_text.svg</file>
 	<file>sprite/main_menu_separator.png</file>
+	<file>sprite/measurement_distance_icon.png</file>
+	<file>sprite/measurement_picker_icon.png</file>
 	<file>sprite/new_session_icon.png</file>
 	<file>sprite/openrecent_session_icon.png</file>
 	<file>sprite/open_session_icon.png</file>
 	<file>sprite/pause_icon.png</file>
 	<file>sprite/pause_icon_hovered.png</file>
+	<file>sprite/picker_selection_icon.png</file>
 	<file>sprite/pick_atom.png</file>
 	<file>sprite/pick_chain.png</file>
 	<file>sprite/pick_molecule.png</file>

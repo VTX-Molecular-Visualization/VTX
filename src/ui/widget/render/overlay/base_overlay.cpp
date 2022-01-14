@@ -116,11 +116,11 @@ namespace VTX::UI::Widget::Render::Overlay
 		// ( maybe linked to the border-radius of 10 in the stylesheet ? )
 		if ( orientation() == Qt::Orientation::Horizontal )
 		{
-			sizeHint.rwidth() += 10;
+			sizeHint.rwidth() += 14;
 		}
 		else if ( orientation() == Qt::Orientation::Vertical )
 		{
-			sizeHint.rheight() += 10;
+			sizeHint.rheight() += 14;
 		}
 
 		setFixedSize( sizeHint );

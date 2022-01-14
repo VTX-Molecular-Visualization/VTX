@@ -240,7 +240,7 @@ namespace VTX
 	{
 		if ( VTX_SETTING().getActivateRenderer() && MASK )
 		{
-			_mainWindow->getOpenGLWidget().update();
+			_mainWindow->getRenderWidget().updateRender();
 		}
 	}
 

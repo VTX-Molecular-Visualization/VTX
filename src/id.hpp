@@ -60,6 +60,10 @@ namespace VTX
 
 			const VTX_ID MODEL_RENDERER_RENDER_EFFECT_PRESET_LIBRARY = "MODEL_RENDERER_RENDER_EFFECT_PRESET_LIBRARY";
 			const VTX_ID MODEL_RENDERER_RENDER_EFFECT_PRESET		 = "MODEL_RENDERER_RENDER_EFFECT_PRESET";
+
+			const VTX_ID MODEL_LABEL = "LABEL";
+			const VTX_ID MODEL_MEASUREMENT_DISTANCE = "MEASUREMENT_DISTANCE";
+
 		} // namespace Model
 
 		namespace View
@@ -110,6 +114,8 @@ namespace VTX
 			const VTX_ID D3_TRIANGLE	 = "3D_TRIANGLE";
 			const VTX_ID D3_RIBBON_PATCH = "3D_RIBBON_PATCH";
 
+			const VTX_ID UI_RENDER_MEASUREMENT_DISTANCE = "UI_RENDER_MEASUREMENT_DISTANCE";
+
 		} // namespace View
 
 		namespace State
@@ -127,6 +133,7 @@ namespace VTX
 			const VTX_ID SHORTCUT	 = "SHORCUT";
 			const VTX_ID VESSEL		 = "VESSEL";
 			const VTX_ID PICKER		 = "PICKER";
+			const VTX_ID MEASUREMENT = "MEASUREMENT";
 			const VTX_ID MAIN_WINDOW = "MAIN_WINDOW";
 		} // namespace Controller
 	}	  // namespace ID

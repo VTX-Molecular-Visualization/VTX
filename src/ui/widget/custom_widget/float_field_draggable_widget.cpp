@@ -1,10 +1,9 @@
 #include "float_field_draggable_widget.hpp"
 #include "style.hpp"
 #include "util/math.hpp"
+#include "util/string.hpp"
 #include <QHBoxLayout>
 #include <cmath>
-#include <iomanip>
-#include <sstream>
 #include <string>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -156,9 +155,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void FloatFieldDraggableWidget::_refresh()
 	{
-		std::stringstream strStream;
-		strStream << std::fixed << std::setprecision( _nbDecimals ) << _value;
-		_textField->setText( QString::fromStdString( strStream.str() ) );
+		_textField->setText( QString::fromStdString( Util::String::floatToStr( _value, _nbDecimals ) ) );
 	}
 
 	void FloatFieldDraggableWidget::localize() {};

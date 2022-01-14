@@ -1,7 +1,10 @@
 #include "render_widget.hpp"
 #include "action/main.hpp"
 #include "action/viewpoint.hpp"
+#include "base_integrated_widget.hpp"
 #include "event/event_manager.hpp"
+#include "model/label.hpp"
+#include "model/measurement/distance.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "overlay/visualization_quick_access.hpp"
@@ -10,6 +13,7 @@
 #include "style.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
+#include "view/ui/widget/measurement/distance_render_view.hpp"
 #include "vtx_app.hpp"
 #include <QShortcut>
 
@@ -19,6 +23,8 @@ namespace VTX::UI::Widget::Render
 	{
 		_registerEvent( Event::Global::MOLECULE_CREATED );
 		_registerEvent( Event::Global::MESH_CREATED );
+		_registerEvent( Event::Global::LABEL_ADDED );
+		_registerEvent( Event::Global::LABEL_REMOVED );
 	}
 
 	RenderWidget::~RenderWidget() {}
@@ -38,6 +44,40 @@ namespace VTX::UI::Widget::Render
 				= dynamic_cast<const Event::VTXEventPtr<Model::MeshTriangle> &>( p_event );
 			castedEvent.ptr->init();
 		}
+		else if ( p_event.name == Event::Global::LABEL_ADDED )
+		{
+			const Event::VTXEventPtr<Model::Label> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+
+			const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
+
+			if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+			{
+				Model::Measurement::Distance * const distance
+					= static_cast<Model::Measurement::Distance *>( castedEvent.ptr );
+
+				View::UI::Widget::Measurement::DistanceRenderView * const distanceView
+					= WidgetFactory::get()
+						  .instantiateViewWidget<View::UI::Widget::Measurement::DistanceRenderView,
+												 Model::Measurement::Distance>(
+							  distance, ID::View::UI_RENDER_MEASUREMENT_DISTANCE, this, "Distance" );
+
+				_integratedWidgets.emplace_back( distanceView );
+			}
+		}
+		else if ( p_event.name == Event::Global::LABEL_REMOVED )
+		{
+			const Event::VTXEventPtr<Model::Label> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+
+			View::UI::Widget::Measurement::DistanceRenderView * const distanceView
+				= MVC::MvcManager::get().getView<View::UI::Widget::Measurement::DistanceRenderView>(
+					castedEvent.ptr, ID::View::UI_RENDER_MEASUREMENT_DISTANCE );
+
+			_integratedWidgets.erase( std::find( _integratedWidgets.begin(), _integratedWidgets.end(), distanceView ) );
+			MVC::MvcManager::get().deleteView( castedEvent.ptr, ID::View::UI_RENDER_MEASUREMENT_DISTANCE );
+		}
+
 		_openGLWidget->doneCurrent();
 	}
 
@@ -110,6 +150,15 @@ namespace VTX::UI::Widget::Render
 		setWindowTitle( "Render" );
 		// setWindowTitle( QCoreApplication::translate( "RenderWidget", "Render", nullptr ) );
 	}
+
+	void RenderWidget::updateRender() const
+	{
+		_openGLWidget->update();
+
+		for ( BaseIntegratedWidget * const integratedWidget : _integratedWidgets )
+			integratedWidget->updatePosition();
+	}
+
 	void RenderWidget::displayOverlay( const Overlay::OVERLAY &		   p_overlayType,
 									   const Overlay::OVERLAY_ANCHOR & p_anchor )
 	{

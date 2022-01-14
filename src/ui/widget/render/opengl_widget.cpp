@@ -1,4 +1,5 @@
 #include "opengl_widget.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/gl/gl.hpp"
@@ -120,7 +121,9 @@ namespace VTX::UI::Widget::Render
 
 #ifndef VTX_PRODUCTION
 		_painter.begin( this );
-		_painter.setPen( Qt::white );
+		const QColor txtColor = VTX_RENDER_EFFECT().getBackgroundColor().brightness() < 0.5f ? Qt::GlobalColor::white
+																							 : Qt::GlobalColor::black;
+		_painter.setPen( txtColor );
 		_painter.drawText( 0,
 						   10,
 						   QString::fromStdString( "FPS: " + std::to_string( VTX_STAT().FPS )

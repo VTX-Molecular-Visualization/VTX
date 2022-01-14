@@ -5,6 +5,7 @@
 //#include "extensions/menu_extensions_widget.hpp"
 //#include <QLabel>
 #include "home/menu_home_widget.hpp"
+#include "measurement/menu_measurement_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "visualization/menu_visualization_widget.hpp"
 #include <QMenuBar>
@@ -30,9 +31,10 @@ namespace VTX::UI::Widget::MainMenu
 		void _setupSlots() override;
 
 	  private:
-		QTabWidget *							 _tabWidget = nullptr;
-		Home::MenuHomeWidget *					 _mainMenu	= nullptr;
-		Visualization::MenuVisualizationWidget * _viewMenu	= nullptr;
+		QTabWidget *							 _tabWidget		  = nullptr;
+		Home::MenuHomeWidget *					 _mainMenu		  = nullptr;
+		Visualization::MenuVisualizationWidget * _viewMenu		  = nullptr;
+		Measurement::MenuMeasurementWidget *	 _measurementMenu = nullptr;
 		// !V0.1
 		// QLabel *								 _movieMenu		 = nullptr;
 		// Extensions::MenuExtensionsWidget * _extensionsMenu = nullptr;

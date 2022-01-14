@@ -11,6 +11,7 @@ namespace VTX::Model
 	class MeshTriangle;
 	class Molecule;
 	class Path;
+	class Label;
 } // namespace VTX::Model
 
 namespace VTX::Object3D
@@ -22,10 +23,12 @@ namespace VTX::Object3D
 		using MoleculePtr			= Model::Molecule *;
 		using PathPtr				= Model::Path *;
 		using MeshTrianglePtr		= Model::MeshTriangle *;
+		using LabelPtr				= Model::Label *;
 		using MapMoleculePtrFloat	= std::map<MoleculePtr, float>;
 		using PairMoleculePtrFloat	= std::pair<const MoleculePtr, float>;
 		using VectorPathPtr			= std::vector<PathPtr>;
 		using VectorMeshTrianglePtr = std::vector<MeshTrianglePtr>;
+		using VectorLabelPtr		= std::vector<LabelPtr>;
 
 		Scene();
 		~Scene();
@@ -44,6 +47,8 @@ namespace VTX::Object3D
 		void removePath( PathPtr const );
 		void addMesh( MeshTrianglePtr const );
 		void removeMesh( MeshTrianglePtr const );
+		void addLabel( LabelPtr const );
+		void removeLabel( LabelPtr const );
 
 		bool isEmpty() const;
 
@@ -62,6 +67,7 @@ namespace VTX::Object3D
 		MapMoleculePtrFloat	  _molecules = MapMoleculePtrFloat();
 		VectorPathPtr		  _paths	 = VectorPathPtr();
 		VectorMeshTrianglePtr _meshes	 = VectorMeshTrianglePtr();
+		VectorLabelPtr		  _labels	 = VectorLabelPtr();
 	};
 } // namespace VTX::Object3D
 #endif

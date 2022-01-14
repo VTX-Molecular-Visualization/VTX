@@ -2,6 +2,7 @@
 #define __VTX_UI_MAIN_WINDOW__
 
 #include "contextual_menu.hpp"
+#include "cursor_handler.hpp"
 #include "ui_main_window.h"
 #include "widget/base_widget.hpp"
 #include "widget/console/console_widget.hpp"
@@ -43,6 +44,9 @@ namespace VTX
 
 			void refreshWindowTitle();
 
+			inline const Widget::Render::RenderWidget & getRenderWidget() const { return *_renderWidget; }
+			inline Widget::Render::RenderWidget &		getRenderWidget() { return *_renderWidget; }
+
 			inline const Widget::Render::OpenGLWidget & getOpenGLWidget() const
 			{
 				return _renderWidget->getOpenGLWidget();
@@ -52,6 +56,7 @@ namespace VTX
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 			const ContextualMenu & getContextualMenu() { return *_contextualMenu; }
+			CursorHandler &		   getCursorHandler() { return *_cursorHandler; }
 
 			bool getWidgetVisibility( const ID::VTX_ID & p_winId ) const;
 			void showWidget( const ID::VTX_ID & p_winId, const bool p_show ) const;
@@ -105,11 +110,14 @@ namespace VTX
 			Widget::Information::InformationWidget * _informationWidget = nullptr;
 
 			ContextualMenu * _contextualMenu = nullptr;
+			CursorHandler *	 _cursorHandler	 = nullptr;
 
 			Widget::StatusBar::StatusBarWidget * _statusBarWidget = nullptr;
 
 			// Actions.
 			void _onDockWindowVisibilityChange( bool p_visible );
+
+			void _updatePicker() const;
 
 			// Functions.
 			void _loadStyleSheet( const char * p_stylesheetPath );
@@ -130,6 +138,8 @@ namespace VTX
 			void _onShortcutSelectAll();
 			void _onShortcutCopy();
 			void _onShortcutExtract();
+			void _onShortcutSetSelectionPicker();
+			void _onShortcutSetMeasurementPicker();
 
 			WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
 

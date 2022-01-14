@@ -3,6 +3,7 @@
 #include "action/main.hpp"
 #include "action/selection.hpp"
 #include "controller/base_keyboard_controller.hpp"
+#include "controller/measurement_picker.hpp"
 #include "event/event_manager.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "util/filesystem.hpp"
@@ -22,6 +23,8 @@ namespace VTX::UI
 		_registerEvent( Event::Global::CHANGE_STATE );
 		_registerEvent( Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
 		_registerEvent( Event::Global::SCENE_PATH_CHANGE );
+
+		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
 	}
 
 	MainWindow::~MainWindow() { delete _contextualMenu; }
@@ -39,6 +42,10 @@ namespace VTX::UI
 				  || p_event.name == Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
 		{
 			refreshWindowTitle();
+		}
+		else if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		{
+			_updatePicker();
 		}
 	}
 
@@ -105,6 +112,7 @@ namespace VTX::UI
 		setStatusBar( _statusBarWidget );
 
 		_contextualMenu = new ContextualMenu();
+		_cursorHandler	= new CursorHandler();
 
 		_setupSlots();
 
@@ -211,6 +219,15 @@ namespace VTX::UI
 				 &QShortcut::activated,
 				 this,
 				 &MainWindow::_onShortcutExtract );
+
+		connect( new QShortcut( QKeySequence( tr( "P" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutSetSelectionPicker );
+		connect( new QShortcut( QKeySequence( tr( "M" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutSetMeasurementPicker );
 	}
 
 	void MainWindow::_onShortcutNew() { UI::Dialog::createNewSessionDialog(); }
@@ -285,6 +302,16 @@ namespace VTX::UI
 		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
 			VTX_ACTION( new Action::Selection::Extract( selectionModel ) );
+	}
+
+	void MainWindow::_onShortcutSetSelectionPicker()
+	{
+		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::PICKER ) );
+	}
+	void MainWindow::_onShortcutSetMeasurementPicker()
+	{
+		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT,
+													int( Controller::MeasurementPicker::Mode::DISTANCE ) ) );
 	}
 
 	void MainWindow::refreshWindowTitle()
@@ -624,6 +651,37 @@ namespace VTX::UI
 		}
 
 		return false;
+	}
+
+	void MainWindow::_updatePicker() const
+	{
+		const State::Visualization * const visualizationState
+			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+
+		const ID::VTX_ID & pickerID = visualizationState->getCurrentPickerID();
+
+		if ( pickerID == ID::Controller::PICKER )
+		{
+			_cursorHandler->applyCursor(
+				CursorHandler::Cursor::DEFAULT, &getWidget( ID::UI::Window::RENDER ), "Picker" );
+		}
+		else if ( pickerID == ID::Controller::MEASUREMENT )
+		{
+			const Controller::MeasurementPicker * const measurementPicker
+				= visualizationState->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT );
+
+			CursorHandler::Cursor cursor;
+
+			switch ( measurementPicker->getCurrentMode() )
+			{
+			case Controller::MeasurementPicker::Mode::DISTANCE:
+				cursor = CursorHandler::Cursor::MEASUREMENT_DISTANCE;
+				break;
+			default: cursor = CursorHandler::Cursor::DEFAULT; break;
+			}
+
+			_cursorHandler->applyCursor( cursor, &getWidget( ID::UI::Window::RENDER ), "Picker_Measurement" );
+		}
 	}
 
 } // namespace VTX::UI

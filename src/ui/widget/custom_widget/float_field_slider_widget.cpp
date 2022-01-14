@@ -1,5 +1,6 @@
 #include "float_field_slider_widget.hpp"
 #include "util/math.hpp"
+#include "util/string.hpp"
 #include "util/ui.hpp"
 #include <QHBoxLayout>
 #include <cmath>
@@ -80,9 +81,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_slider->setValue( sliderValue );
 		_slider->blockSignals( false );
 
-		std::stringstream strStream;
-		strStream << std::fixed << std::setprecision( _nbDecimals ) << _value;
-		_textField->setText( QString::fromStdString( strStream.str() ) );
+		_textField->setText( QString::fromStdString( Util::String::floatToStr( _value, _nbDecimals ) ) );
 
 		blockSignals( oldBlockState );
 	}

@@ -13,6 +13,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		VTX_WIDGET
 
 		inline static const char * SELECTION_GRANULARITY_PROPERTY_NAME = "GRANULARITY";
+		inline static const char * MEASUREMENT_MODE_PROPERTY_NAME	   = "MEASUREMENT_MODE";
 
 	  public:
 		~ContextualMenuRender();
@@ -26,7 +27,11 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _loadMoleculeAction() const;
 		void _downloadMoleculeAction() const;
 
+		void _setPickerToSelection() const;
+		void _setPickerToMeasurement() const;
+
 		void _setSelectionGranularityAction( QAction * p_action ) const;
+		void _setMeasurementMode( QAction * p_action ) const;
 		void _showAllMoleculesAction() const;
 	};
 

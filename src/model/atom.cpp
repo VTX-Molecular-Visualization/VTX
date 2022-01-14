@@ -34,6 +34,14 @@ namespace VTX
 			}
 		}
 
+		const Vec3f Atom::getWorldPosition() const
+		{
+			Vec3f & position = getMoleculePtr()->getAtomPositionFrame( getMoleculePtr()->getFrame() )[ _index ];
+			const Math::Transform & transform = getMoleculePtr()->getTransform();
+
+			const Vec4f worldPosition = transform.get() * Vec4f( position.x, position.y, position.z, 1 );
+			return Vec3f( worldPosition.x, worldPosition.y, worldPosition.z );
+		}
 		const Math::AABB Atom::getAABB() const
 		{
 			Vec3f &	   position = getMoleculePtr()->getAtomPositionFrame( getMoleculePtr()->getFrame() )[ _index ];

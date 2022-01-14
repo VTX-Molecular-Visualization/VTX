@@ -24,6 +24,7 @@ namespace VTX
 			}
 
 			inline const ID::VTX_ID & getCurrentCameraControllerID() const { return _cameraController; }
+			inline const ID::VTX_ID & getCurrentPickerID() const { return _pickerController; }
 
 			void toggleCameraController();
 			void setCameraController( const ID::VTX_ID & p_controllerId );
@@ -31,10 +32,13 @@ namespace VTX
 			void orientCameraController( const Math::AABB & );
 			void orientCameraController( const Vec3f & p_position, const Quatf & p_orientation );
 
+			void setPickerController( const ID::VTX_ID & p_pickerId );
+
 			virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		  private:
 			ID::VTX_ID _cameraController = Setting::CONTROLLER_MODE_DEFAULT;
+			ID::VTX_ID _pickerController = Setting::PICKER_MODE_DEFAULT;
 		};
 	} // namespace State
 } // namespace VTX
