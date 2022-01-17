@@ -19,6 +19,7 @@ namespace VTX::UI::Widget::Inspector
 	class MultipleResidueWidget;
 	class MultipleAtomWidget;
 	class MultipleViewpointWidget;
+	class MultipleMeasurmentDistanceWidget;
 
 	struct ViewData
 	{
@@ -59,11 +60,12 @@ namespace VTX::UI::Widget::Inspector
 		QScrollArea * _scrollArea	  = nullptr;
 		QVBoxLayout * _verticalLayout = nullptr;
 
-		MultipleMoleculeWidget *  _moleculesInspector  = nullptr;
-		MultipleChainWidget *	  _chainsInspector	   = nullptr;
-		MultipleResidueWidget *	  _residuesInspector   = nullptr;
-		MultipleAtomWidget *	  _atomsInspector	   = nullptr;
-		MultipleViewpointWidget * _viewpointsInspector = nullptr;
+		MultipleMoleculeWidget *		   _moleculesInspector			 = nullptr;
+		MultipleChainWidget *			   _chainsInspector				 = nullptr;
+		MultipleResidueWidget *			   _residuesInspector			 = nullptr;
+		MultipleAtomWidget *			   _atomsInspector				 = nullptr;
+		MultipleViewpointWidget *		   _viewpointsInspector			 = nullptr;
+		MultipleMeasurmentDistanceWidget * _measurementDistanceInspector = nullptr;
 
 		std::vector<ViewData> _inspectorViewsData = std::vector<ViewData>();
 		bool				  _isFreezed		  = false;

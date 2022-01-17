@@ -310,8 +310,7 @@ namespace VTX::UI
 	}
 	void MainWindow::_onShortcutSetMeasurementPicker()
 	{
-		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT,
-													int( Controller::MeasurementPicker::Mode::DISTANCE ) ) );
+		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT ) );
 	}
 
 	void MainWindow::refreshWindowTitle()

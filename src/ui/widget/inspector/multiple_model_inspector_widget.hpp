@@ -80,7 +80,11 @@ namespace VTX::UI::Widget::Inspector
 		virtual void _resetFieldStates( const SectionFlag & p_section ) = 0;
 		virtual void _onTargetChangeEvent( const T * const p_target, const Event::VTXEvent * const p_event )
 		{
-			if ( p_event->name == Event::Model::DATA_CHANGE )
+			if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
+			{
+				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::INFOS );
+			}
+			else if ( p_event->name == Event::Model::DATA_CHANGE )
 			{
 				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::INFOS );
 			}

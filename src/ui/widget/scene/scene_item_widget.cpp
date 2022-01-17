@@ -161,8 +161,14 @@ namespace VTX::UI::Widget::Scene
 	}
 	void SceneItemWidget::mouseMoveEvent( QMouseEvent * p_event )
 	{
+		setSelectionMode( QAbstractItemView::ContiguousSelection );
 		BaseManualWidget::mouseMoveEvent( p_event );
 
+		_tryStartDrag( p_event );
+		setSelectionMode( QAbstractItemView::ExtendedSelection );
+	}
+	void SceneItemWidget::_tryStartDrag( QMouseEvent * p_event )
+	{
 		if ( !( p_event->buttons() & Qt::LeftButton ) )
 			return;
 
@@ -178,6 +184,7 @@ namespace VTX::UI::Widget::Scene
 
 		drag->exec( Qt::CopyAction | Qt::MoveAction );
 	}
+
 
 	void SceneItemWidget::_onItemExpanded( QTreeWidgetItem * const )
 	{

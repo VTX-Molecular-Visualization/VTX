@@ -6,6 +6,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMenu>
+#include <QMimeData>
 #include <QMouseEvent>
 #include <QTreeWidget>
 
@@ -70,8 +71,8 @@ namespace VTX::UI::Widget::Scene
 
 		void _enableSignals( const bool p_enable );
 
-		virtual bool		_canDragObjectAtPos( const QPoint & p_position ) { return true; }
-		virtual QMimeData * _getDataForDrag() = 0;
+		virtual bool		_canDragObjectAtPos( const QPoint & p_position ) const { return true; }
+		virtual QMimeData * _getDataForDrag() const = 0;
 		void				_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append = false );
 
 		virtual bool _itemCanBeRenamed( const QTreeWidgetItem * p_item );
@@ -86,6 +87,9 @@ namespace VTX::UI::Widget::Scene
 	  private:
 		QPoint _dragStartPosition;
 		int	   _enableSignalCounter = 0;
+
+		void _tryStartDrag( QMouseEvent * p_event );
+
 	};
 
 } // namespace VTX::UI::Widget::Scene

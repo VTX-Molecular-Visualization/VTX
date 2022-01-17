@@ -26,13 +26,13 @@ namespace VTX::UI::Widget::Scene
 	{
 	  public:
 		SceneItemSelectionModel( const Model::BaseModel * const p_baseModel,
-								QAbstractItemModel * const	  p_model = nullptr ) :
+								 QAbstractItemModel * const		p_model = nullptr ) :
 			QItemSelectionModel( p_model ),
 			_model( p_baseModel ) {};
 
 		SceneItemSelectionModel( const Model::BaseModel * const p_baseModel,
-								QAbstractItemModel * const	  p_model,
-								QObject * const				  p_parent ) :
+								 QAbstractItemModel * const		p_model,
+								 QObject * const				p_parent ) :
 			QItemSelectionModel( p_model, p_parent ),
 			_model( p_baseModel ) {};
 
@@ -63,8 +63,8 @@ namespace VTX::UI::Widget::Scene
 		void _selectAllAtomsTo( std::vector<uint> & p_selection, const Model::Atom & p_itemFrom );
 
 		const Model::BaseModel * _getTopLevelItem( const Model::BaseModel * const p_model ) const;
-		Model::BaseModel *		_getModel( const QModelIndex & p_modelIndex ) const;
-		Model::BaseModel *		_getModel( const SceneItemWidget & p_sceneItem ) const;
+		Model::BaseModel *		 _getModel( const QModelIndex & p_modelIndex ) const;
+		Model::BaseModel *		 _getModel( const SceneItemWidget & p_sceneItem ) const;
 	};
 
 } // namespace VTX::UI::Widget::Scene

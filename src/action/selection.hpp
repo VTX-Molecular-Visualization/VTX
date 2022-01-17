@@ -9,6 +9,7 @@
 #include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/generated_molecule.hpp"
+#include "model/label.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
 #include "model/representation/instantiated_representation.hpp"
@@ -76,6 +77,7 @@ namespace VTX::Action::Selection
 
 			std::vector<Model::Path *>		paths	   = std::vector<Model::Path *>();
 			std::vector<Model::Viewpoint *> viewpoints = std::vector<Model::Viewpoint *>();
+			std::vector<Model::Label *>		labels	   = std::vector<Model::Label *>();
 
 			for ( const Model::ID modelId : _models )
 			{
@@ -113,11 +115,18 @@ namespace VTX::Action::Selection
 					Model::Viewpoint & model = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelId );
 					viewpoints.emplace_back( &model );
 				}
+				else if ( modelTypeId == VTX::ID::Model::MODEL_LABEL
+						  || modelTypeId == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
+				{
+					Model::Label & model = MVC::MvcManager::get().getModel<Model::Label>( modelId );
+					labels.emplace_back( &model );
+				}
 			}
 
 			_selection.selectModels( molecules, chains, residues, atoms, _appendToSelection );
 			_selection.selectModels( paths, true );
 			_selection.selectModels( viewpoints, true );
+			_selection.selectModels( labels, true );
 
 			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 		}

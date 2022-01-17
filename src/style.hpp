@@ -63,6 +63,7 @@ namespace VTX
 			const QPixmap ATOM_SYMBOL;
 			const QPixmap REPRESENTATION_SYMBOL;
 			const QPixmap VIEWPOINT_SYMBOL;
+			const QPixmap LABEL_SYMBOL;
 
 			const QPixmap REPRESENTATION_STICK_ICON;
 			const QPixmap REPRESENTATION_BALL_AND_STICK_ICON;
@@ -119,6 +120,8 @@ namespace VTX
 					res = &VIEWPOINT_SYMBOL;
 				else if ( p_id == VTX::ID::Model::MODEL_VIEWPOINT )
 					res = &VIEWPOINT_SYMBOL;
+				else if ( p_id == VTX::ID::Model::MODEL_LABEL || p_id == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
+					res = &LABEL_SYMBOL;
 				else
 				{
 					VTX_WARNING( "Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." );
@@ -185,6 +188,7 @@ namespace VTX
 				ATOM_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
 				REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
 				VIEWPOINT_SYMBOL( QPixmap( ":/sprite/symbol/viewpoint_symbol_icon.png" ) ),
+				LABEL_SYMBOL( QPixmap( ":/sprite/symbol/label_symbol_icon.png" ) ),
 
 				REPRESENTATION_STICK_ICON( QPixmap( ":/sprite/representation_stick_icon.png" ) ),
 				REPRESENTATION_BALL_AND_STICK_ICON( QPixmap( ":/sprite/representation_ball_and_stick_icon.png" ) ),

@@ -2,7 +2,7 @@
 #include "model/atom.hpp"
 #include "style.hpp"
 #include "ui/main_window.hpp"
-#include "util/string.hpp"
+#include "util/measurement.hpp"
 #include "vtx_app.hpp"
 #include <QFontMetrics>
 #include <QPainter>
@@ -143,12 +143,7 @@ namespace VTX::View::UI::Widget::Measurement
 		return Util::Math::dot( cameraForward, cameraToPos ) > 0;
 	}
 
-	void DistanceRenderView::_refreshText()
-	{
-		const std::string strTxt
-			= Util::String::floatToStr( _model->getDistance(), Style::MEASUREMENT_DISTANCE_NB_DECIMALS ) + "Å";
-		_setText( strTxt );
-	}
+	void DistanceRenderView::_refreshText() { _setText( Util::Measurement::getDistanceString( *_model ) ); }
 
 	void DistanceRenderView::_setText( const std::string & p_txt )
 	{

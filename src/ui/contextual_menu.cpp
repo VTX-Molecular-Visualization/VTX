@@ -2,6 +2,7 @@
 #include "ui/main_window.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_atom.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_chain.hpp"
+#include "ui/widget/contextual_menu/contextual_menu_label.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_molecule.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_path.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_render.hpp"
@@ -61,6 +62,9 @@ namespace VTX::UI
 		_menus[ int( Menu::Viewpoint ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuViewpoint>(
 				parent, "ContextualMenuViewpoint" );
+		_menus[ int( Menu::Label ) ]
+			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuLabel>(
+				parent, "ContextualMenuLabel" );
 
 		for ( QMenu * const menu : _menus )
 		{

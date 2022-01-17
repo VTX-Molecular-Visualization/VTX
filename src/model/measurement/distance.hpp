@@ -22,18 +22,25 @@ namespace VTX::Model::Measurement
 		using AtomPair = std::pair<const Model::Atom &, const Model::Atom &>;
 
 	  public:
-		void setAtoms( const Model::Atom & p_firstAtom, const Model::Atom & p_secondAtom, const bool p_notify = true );
+		void setAtoms( const Model::Atom & p_firstAtom, const Model::Atom & p_secondAtom );
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
+
+		void _recomputeAABB( Math::AABB & p_aabb ) override;
 
 		const Model::Atom & getFirstAtom() const { return *_firstAtom; }
 		const Model::Atom & getSecondAtom() const { return *_secondAtom; }
 
 		float getDistance() const { return _distance; }
-		void  displayInLog() const;
 
 	  protected:
 		Distance();
 		Distance( const AtomPair & p_pair );
+
+		void _setAtomsInternal( const Model::Atom & p_firstAtom,
+								const Model::Atom & p_secondAtom,
+								const bool			p_notify = true );
+
+		void _performAutoName( const bool p_notify = true ) override;
 
 	  private:
 		const Model::Atom * _firstAtom	= nullptr;

@@ -1,5 +1,6 @@
 #include "contextual_menu_selection.hpp"
 #include "action/action_manager.hpp"
+#include "action/label.hpp"
 #include "action/selection.hpp"
 #include "action/viewpoint.hpp"
 #include "action/visible.hpp"
@@ -83,6 +84,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
 
+		// VIEWPOINTS //////////////////////////////////////////////////////////////////////////////////////////////////
 		SelectionSubMenu * const viewpointSubmenu = new SelectionSubMenu( this, "Viewpoint" );
 		viewpointSubmenu->addItemData(
 			new ActionData( "Go to", TypeMask::Viewpoint, this, &ContextualMenuSelection::_gotoViewpointAction ) );
@@ -93,10 +95,23 @@ namespace VTX::UI::Widget::ContextualMenu
 			"Relocate", TypeMask::Viewpoint, this, &ContextualMenuSelection::_relocateViewpointAction ) );
 		viewpointSubmenu->addItemData(
 			new ActionData( "Delete", TypeMask::Viewpoint, this, &ContextualMenuSelection::_deleteViewpointAction ) );
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		// LABELS //////////////////////////////////////////////////////////////////////////////////////////////////
+		SelectionSubMenu * const labelSubmenu = new SelectionSubMenu( this, "Label" );
+		labelSubmenu->addItemData(
+			new ActionData( "Orient", TypeMask::Label, this, &ContextualMenuSelection::_orientToLabelAction ) );
+		labelSubmenu->addItemData( new ActionDataSection( "Edit", TypeMask::Label, this ) );
+		labelSubmenu->addItemData(
+			new ActionData( "Rename", TypeMask::Label, this, &ContextualMenuSelection::_renameAction ) );
+		labelSubmenu->addItemData(
+			new ActionData( "Delete", TypeMask::Label, this, &ContextualMenuSelection::_deleteLabelAction ) );
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		_submenus.resize( int( SUBMENU_TEMPLATE::COUNT ) );
 		_submenus[ int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE ) ] = moleculeStructureSubmenu;
 		_submenus[ int( SUBMENU_TEMPLATE::VIEWPOINT ) ]			 = viewpointSubmenu;
+		_submenus[ int( SUBMENU_TEMPLATE::LABEL ) ]				 = labelSubmenu;
 
 		_submenusMap[ VTX::ID::Model::MODEL_MOLECULE ] = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
 		_submenusMap[ VTX::ID::Model::MODEL_CHAIN ]	   = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
@@ -105,6 +120,9 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		_submenusMap[ VTX::ID::Model::MODEL_VIEWPOINT ] = int( SUBMENU_TEMPLATE::VIEWPOINT );
 		_submenusMap[ VTX::ID::Model::MODEL_PATH ]		= int( SUBMENU_TEMPLATE::VIEWPOINT );
+
+		_submenusMap[ VTX::ID::Model::MODEL_LABEL ]				   = int( SUBMENU_TEMPLATE::LABEL );
+		_submenusMap[ VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE ] = int( SUBMENU_TEMPLATE::LABEL );
 	}
 	ContextualMenuSelection ::~ContextualMenuSelection()
 	{
@@ -144,7 +162,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		std::set<ID::VTX_ID> typesInSelection = std::set<ID::VTX_ID>();
 		_target->getItemTypes( typesInSelection );
 
-		TypeMask selectionTypeMask = _getTypeMaskFromTypeSet( typesInSelection );
+		const TypeMask selectionTypeMask = _getTypeMaskFromTypeSet( typesInSelection );
 
 		std::set<SelectionSubMenu *> submenuDisplayed = std::set<SelectionSubMenu *>();
 		for ( const ID::VTX_ID & itemType : typesInSelection )
@@ -187,6 +205,10 @@ namespace VTX::UI::Widget::ContextualMenu
 			res |= TypeMask::Viewpoint;
 		if ( p_typeIds.find( VTX::ID::Model::MODEL_PATH ) != p_typeIds.end() )
 			res |= TypeMask::Viewpoint;
+		if ( p_typeIds.find( VTX::ID::Model::MODEL_LABEL ) != p_typeIds.end() )
+			res |= TypeMask::Label;
+		if ( p_typeIds.find( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE ) != p_typeIds.end() )
+			res |= TypeMask::Label;
 
 		return res;
 	}
@@ -527,6 +549,27 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		VTX_ACTION( new Action::Viewpoint::Delete(
 			_target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT ) ) );
+	}
+
+	void ContextualMenuSelection::_orientToLabelAction()
+	{
+		std::unordered_set<Model::Label *> labelsInSelection = std::unordered_set<Model::Label *>();
+
+		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_LABEL, labelsInSelection );
+		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE, labelsInSelection );
+
+		if ( labelsInSelection.size() > 0 )
+			VTX_ACTION( new Action::Label::Orient( labelsInSelection ) );
+	}
+	void ContextualMenuSelection::_deleteLabelAction()
+	{
+		std::unordered_set<Model::Label *> labelsInSelection = std::unordered_set<Model::Label *>();
+
+		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_LABEL, labelsInSelection );
+		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE, labelsInSelection );
+
+		if ( labelsInSelection.size() > 0 )
+			VTX_ACTION( new Action::Label::Delete( labelsInSelection ) );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

@@ -1,6 +1,8 @@
 #include "inspector_widget.hpp"
 #include "model/atom.hpp"
 #include "model/chain.hpp"
+#include "model/label.hpp"
+#include "model/measurement/distance.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
 #include "model/representation/representation_library.hpp"
@@ -12,6 +14,7 @@
 #include "style.hpp"
 #include "ui/widget/inspector/multiple_atom_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_chain_inspector_widget.hpp"
+#include "ui/widget/inspector/multiple_measurement_distance_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_molecule_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_residue_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_viewpoint_inspector_widget.hpp"
@@ -29,6 +32,7 @@ namespace VTX::UI::Widget::Inspector
 		_registerEvent( Event::Global::RESIDUE_REMOVED );
 		_registerEvent( Event::Global::ATOM_REMOVED );
 		_registerEvent( Event::Global::VIEWPOINT_REMOVED );
+		_registerEvent( Event::Global::LABEL_REMOVED );
 	}
 
 	InspectorWidget::~InspectorWidget() {}
@@ -114,6 +118,29 @@ namespace VTX::UI::Widget::Inspector
 				refresh();
 			}
 		}
+		else if ( p_event.name == Event::Global::LABEL_REMOVED )
+		{
+			const Event::VTXEventPtr<Model::Label> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+
+			const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
+
+			if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+			{
+				Model::Measurement::Distance * const distanceModel
+					= dynamic_cast<Model::Measurement::Distance *>( castedEvent.ptr );
+				;
+				if ( _measurementDistanceInspector->hasTarget( distanceModel ) )
+				{
+					_measurementDistanceInspector->removeTarget( distanceModel );
+
+					if ( _measurementDistanceInspector->getTargets().size() <= 0 )
+						_measurementDistanceInspector->setVisible( false );
+
+					refresh();
+				}
+			}
+		}
 	}
 
 	void InspectorWidget::_setupUi( const QString & p_name )
@@ -171,12 +198,15 @@ namespace VTX::UI::Widget::Inspector
 		_atomsInspector = WidgetFactory::get().instantiateWidget<MultipleAtomWidget>( this, "multipleAtomInspector" );
 		_viewpointsInspector
 			= WidgetFactory::get().instantiateWidget<MultipleViewpointWidget>( this, "multipleViewpointInspector" );
+		_measurementDistanceInspector = WidgetFactory::get().instantiateWidget<MultipleMeasurmentDistanceWidget>(
+			this, "multipleMeasurementDistanceInspector" );
 
 		_verticalLayout->addWidget( _moleculesInspector );
 		_verticalLayout->addWidget( _chainsInspector );
 		_verticalLayout->addWidget( _residuesInspector );
 		_verticalLayout->addWidget( _atomsInspector );
 		_verticalLayout->addWidget( _viewpointsInspector );
+		_verticalLayout->addWidget( _measurementDistanceInspector );
 		_verticalLayout->addStretch( 1000 );
 
 		mainLayout->addWidget( _scrollArea, 1000 );
@@ -256,6 +286,13 @@ namespace VTX::UI::Widget::Inspector
 					_viewpointsInspector->addTarget( &viewpoint );
 					_viewpointsInspector->setVisible( true );
 				}
+				else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
+				{
+					Model::Measurement::Distance & distanceModel
+						= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+					_measurementDistanceInspector->addTarget( &distanceModel );
+					_measurementDistanceInspector->setVisible( true );
+				}
 			}
 		}
 
@@ -285,6 +322,11 @@ namespace VTX::UI::Widget::Inspector
 			allInspectorHidden = false;
 			_viewpointsInspector->refresh();
 		}
+		if ( _measurementDistanceInspector->isVisible() )
+		{
+			allInspectorHidden = false;
+			_measurementDistanceInspector->refresh();
+		}
 
 		// Unfreeze Inspector when every frozen items are destroyed
 		if ( allInspectorHidden )
@@ -305,6 +347,8 @@ namespace VTX::UI::Widget::Inspector
 			_atomsInspector->setVisible( false );
 			_viewpointsInspector->clearTargets();
 			_viewpointsInspector->setVisible( false );
+			_measurementDistanceInspector->clearTargets();
+			_measurementDistanceInspector->setVisible( false );
 
 			_inspectorViewsData.clear();
 		}

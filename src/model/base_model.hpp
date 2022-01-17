@@ -51,6 +51,9 @@ namespace VTX
 
 			BaseModel( const VTX::ID::VTX_ID & p_typeId ) : _typeId( &p_typeId ) {}
 			~BaseModel() {}
+
+			const std::string *& _getNamePtr() { return _name; }
+
 			void		_instantiateDefaultViews() {}
 			void		_notifyViews( const Event::VTXEvent * const p_event );
 			inline void _notifyDataChanged() { _notifyViews( new Event::VTXEvent( Event::Model::DATA_CHANGE ) ); }
