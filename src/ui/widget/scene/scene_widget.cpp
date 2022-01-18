@@ -119,7 +119,7 @@ namespace VTX::UI::Widget::Scene
 
 			_removeWidgetInLayout( distanceView );
 
-			MVC::MvcManager::get().deleteView( castedEvent.ptr, ID::View::UI_RENDER_MEASUREMENT_DISTANCE );
+			MVC::MvcManager::get().deleteView( castedEvent.ptr, ID::View::UI_SCENE_DISTANCE_LABEL );
 		}
 	}
 
@@ -207,17 +207,17 @@ namespace VTX::UI::Widget::Scene
 		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( p_sceneItemWidget->getModelID() );
 
 		// TODO : Better management of section in scene view.
-		if ( modelTypeId != VTX::ID::Model::MODEL_PATH ) 
+		if ( modelTypeId != VTX::ID::Model::MODEL_PATH )
 		{
 			const std::vector<SceneItemWidget *>::const_reverse_iterator lastItemIt = _sceneWidgets.crbegin();
 			const ID::VTX_ID & lastItemTypeId = MVC::MvcManager::get().getModelTypeID( ( *lastItemIt )->getModelID() );
 
-			if ( lastItemTypeId == VTX::ID::Model::MODEL_PATH ) 
+			if ( lastItemTypeId == VTX::ID::Model::MODEL_PATH )
 			{
 				return _layout->count() - 2;
 			}
 		}
-		
+
 		return _layout->count() - 1;
 	}
 

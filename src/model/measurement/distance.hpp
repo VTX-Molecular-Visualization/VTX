@@ -2,14 +2,17 @@
 #define __VTX_MODEL_MEASUREMENT_DISTANCE__
 
 #include "event/base_event_receiver_vtx.hpp"
+#include "event/event.hpp"
 #include "id.hpp"
 #include "model/label.hpp"
+#include "view/callback_view.hpp"
 #include <string>
 #include <utility>
 
 namespace VTX::Model
 {
 	class Atom;
+	class Molecule;
 } // namespace VTX::Model
 
 namespace VTX::Model::Measurement
@@ -17,6 +20,9 @@ namespace VTX::Model::Measurement
 	class Distance : public Model::Label, Event::BaseEventReceiverVTX
 	{
 		VTX_MODEL
+
+	  private:
+		using MoleculeView = View::CallbackView<Model::Molecule, Model::Measurement::Distance>;
 
 	  public:
 		using AtomPair = std::pair<const Model::Atom &, const Model::Atom &>;
@@ -31,10 +37,13 @@ namespace VTX::Model::Measurement
 		const Model::Atom & getSecondAtom() const { return *_secondAtom; }
 
 		float getDistance() const { return _distance; }
+		bool  isValid() { return _firstAtom != nullptr && _secondAtom != nullptr; }
 
 	  protected:
 		Distance();
 		Distance( const AtomPair & p_pair );
+
+		~Distance();
 
 		void _setAtomsInternal( const Model::Atom & p_firstAtom,
 								const Model::Atom & p_secondAtom,
@@ -45,10 +54,17 @@ namespace VTX::Model::Measurement
 	  private:
 		const Model::Atom * _firstAtom	= nullptr;
 		const Model::Atom * _secondAtom = nullptr;
+		float				_distance	= 0.f;
 
-		float _distance = 0.f;
+		std::vector<MoleculeView *> _moleculeViews = std::vector<MoleculeView *>();
 
 		void _computeDistance( const bool p_notify = true );
+		void _instantiateViewsOnMolecules();
+		void _cleanViews();
+
+		VTX::ID::VTX_ID getViewID( const int p_atomPos ) const;
+
+		void _onMoleculeChange( const Model::Molecule * const p_molecule, const Event::VTXEvent * const p_event );
 	};
 
 } // namespace VTX::Model::Measurement

@@ -1085,6 +1085,13 @@ namespace VTX::Action::Selection
 
 					path->refreshAllDurations();
 				}
+				else if ( modelTypeID == VTX::ID::Model::MODEL_LABEL
+						  || modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
+				{
+					Model::Label & label = MVC::MvcManager::get().getModel<Model::Label>( selectedObjectID );
+					VTXApp::get().getScene().removeLabel( &label );
+					MVC::MvcManager::get().deleteModel<Model::Label>( &label );
+				}
 			}
 
 			for ( Model::Molecule * const moleculeToDelete : moleculesToDelete )

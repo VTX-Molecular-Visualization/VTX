@@ -52,6 +52,9 @@ namespace VTX::View::UI::Widget::Measurement
 
 	void DistanceRenderView::updatePosition()
 	{
+		if ( !_model->isValid() )
+			return;
+
 		const Vec3f & firstAtomWorldPos	 = _model->getFirstAtom().getWorldPosition();
 		const Vec3f & secondAtomWorldPos = _model->getSecondAtom().getWorldPosition();
 
