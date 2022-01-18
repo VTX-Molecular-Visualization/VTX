@@ -79,7 +79,7 @@ namespace VTX::UI::Widget::Inspector
 		{
 			if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
 			{
-				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::INFOS );
+				_sectionToRefresh |= SectionFlag::INFOS;
 			}
 			else if ( p_event->name == Event::Model::DATA_CHANGE )
 			{
