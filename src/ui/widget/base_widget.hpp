@@ -16,15 +16,15 @@ namespace VTX
 			class BaseWidget : public W, public T, public Event::BaseEventReceiverVTX
 			{
 			  public:
-				BaseWidget( QWidget * p_parent = 0 ) : W( p_parent ) { setupUi( this ); }
+				BaseWidget( QWidget * p_parent = 0 ) : W( p_parent ) { T::setupUi( this ); }
 
 				// Need to override paintEvent to read style on custom widgets
 				inline void paintEvent( QPaintEvent * event ) override
 				{
 					QStyleOption opt;
-					opt.init( this );
+					opt.initFrom( this );
 					QPainter p( this );
-					style()->drawPrimitive( QStyle::PE_Widget, &opt, &p, this );
+					W::style()->drawPrimitive( QStyle::PE_Widget, &opt, &p, this );
 
 					W::paintEvent( event );
 				};

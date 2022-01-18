@@ -23,7 +23,7 @@ namespace VTX::UI
 		virtual bool hasDifferentData() const { return _state == MultiDataField::State::Different; }
 
 	  protected:
-		virtual void _displayDifferentsDataFeedback() = 0;
+		virtual void _displayDifferentsDataFeedback() {};
 
 		MultiDataField::State _state = MultiDataField::State::Uninitialized;
 	};
@@ -52,7 +52,7 @@ namespace VTX::UI
 				if ( !_isEquals( _getValue(), p_value ) )
 				{
 					MultiDataField::_state = MultiDataField::State::Different;
-					_displayDifferentsDataFeedback();
+					MultiDataField::_displayDifferentsDataFeedback();
 				}
 				break;
 

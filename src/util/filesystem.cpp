@@ -51,13 +51,15 @@ namespace VTX::Util::Filesystem
 		p_content = qStrContent.toStdString();
 	}
 
-	const QString readPathQString( const IO::FilePath & p_filePath, const char * p_codecName )
+	const QString readPathQString( const IO::FilePath & p_filePath, const QStringConverter::Encoding & p_codecName )
 	{
 		QString res;
 		readPathQString( p_filePath, res, p_codecName );
 		return res;
 	}
-	void readPathQString( const IO::FilePath & p_filePath, QString & p_content, const char * p_codecName )
+	void readPathQString( const IO::FilePath &				 p_filePath,
+						  QString &							 p_content,
+						  const QStringConverter::Encoding & p_codecName )
 	{
 		QFile file( p_filePath.qpath() );
 		if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) == false )
@@ -68,8 +70,7 @@ namespace VTX::Util::Filesystem
 
 		QTextStream out( &file );
 
-		if ( p_codecName != nullptr )
-			out.setCodec( p_codecName );
+		out.setEncoding( p_codecName );
 
 		p_content = out.readAll();
 		file.close();

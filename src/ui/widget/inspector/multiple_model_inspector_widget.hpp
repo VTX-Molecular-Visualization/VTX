@@ -23,10 +23,7 @@ namespace VTX::UI::Widget::Inspector
 			if ( p_event.name == Event::Global::LATE_UPDATE )
 				_endOfFrameEvent();
 		}
-		void refresh( const SectionFlag & p_flag = SectionFlag::ALL ) override final
-		{
-			_sectionToRefresh = SectionFlag( _sectionToRefresh | p_flag );
-		}
+		void refresh( const SectionFlag & p_flag = SectionFlag::ALL ) override final { _sectionToRefresh |= p_flag; }
 
 		void clearTargets()
 		{
@@ -86,27 +83,27 @@ namespace VTX::UI::Widget::Inspector
 			}
 			else if ( p_event->name == Event::Model::DATA_CHANGE )
 			{
-				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::INFOS );
+				_sectionToRefresh |= SectionFlag::INFOS;
 			}
 			else if ( p_event->name == Event::Model::TRANSFORM_CHANGE )
 			{
-				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::TRANSFORM );
+				_sectionToRefresh |= SectionFlag::TRANSFORM;
 			}
 			else if ( p_event->name == Event::Model::REPRESENTATION_CHANGE )
 			{
-				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::REPRESENTATION );
+				_sectionToRefresh |= SectionFlag::REPRESENTATION;
 			}
 			else if ( p_event->name == Event::Model::TRAJECTORY_DATA_CHANGE )
 			{
-				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::TRAJECTORY );
+				_sectionToRefresh |= SectionFlag::TRAJECTORY;
 			}
 			else if ( p_event->name == Event::Model::TRAJECTORY_FRAME_CHANGE )
 			{
-				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::TRAJECTORY_TIMER );
+				_sectionToRefresh |= SectionFlag::TRAJECTORY_TIMER;
 			}
 			else if ( p_event->name == Event::Model::AUTO_ROTATE_DATA_CHANGE )
 			{
-				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::AUTO_ROTATE );
+				_sectionToRefresh |= SectionFlag::AUTO_ROTATE;
 			}
 		}
 

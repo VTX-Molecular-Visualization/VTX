@@ -20,8 +20,8 @@ namespace VTX::UI::Widget::CustomWidget
 			_sizeHintOverrided( true ), _minimumSizeHint( p_minimumSizeHint ), _minimumSizeHintOverrided( true ),
 			W( p_parent )
 		{
-			setMinimumSize( _minimumSizeHint );
-			setFocusPolicy( Qt::FocusPolicy( Qt::FocusPolicy::ClickFocus | Qt::FocusPolicy::TabFocus ) );
+			W::setMinimumSize( _minimumSizeHint );
+			W::setFocusPolicy( Qt::FocusPolicy( Qt::FocusPolicy::ClickFocus | Qt::FocusPolicy::TabFocus ) );
 		};
 		DockWindowMainWidget( QWidget * p_parent = nullptr ) : W( p_parent ) {};
 
@@ -50,7 +50,7 @@ namespace VTX::UI::Widget::CustomWidget
 		{
 			_minimumSizeHint		  = p_sizeHint;
 			_minimumSizeHintOverrided = true;
-			setMinimumSize( _minimumSizeHint );
+			W::setMinimumSize( _minimumSizeHint );
 		};
 
 	  private:

@@ -8,8 +8,8 @@
 #include "ui/dialog.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
-#include <QDesktopWidget>
 #include <QMainWindow>
+#include <QOpenGLVersionFunctionsFactory>
 
 namespace VTX::UI::Widget::Render
 {
@@ -20,7 +20,7 @@ namespace VTX::UI::Widget::Render
 		format.setProfile( QSurfaceFormat::CoreProfile );
 		format.setRenderableType( QSurfaceFormat::OpenGL );
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
-		format.setSwapInterval( VTX_SETTING().getVSync() );
+		format.setSwapInterval( int( VTX_SETTING().getVSync() ) );
 		QSurfaceFormat::setDefaultFormat( format );
 	}
 
@@ -42,7 +42,7 @@ namespace VTX::UI::Widget::Render
 	{
 		VTX_INFO( "Initializing OpenGL..." );
 
-		_gl = context()->versionFunctions<OpenGLFunctions>();
+		_gl = QOpenGLVersionFunctionsFactory::get<OpenGLFunctions>( context() );
 
 		if ( _gl == nullptr )
 		{

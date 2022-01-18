@@ -13,7 +13,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 	class SequenceDisplayDataset_MissingResidue : public SequenceDisplayDataset
 	{
 		// Use of unbreakable space (U+00A0) instead of normal space because rich text in QLabel
-		inline static const QString TOO_LONG_STR = "   ";
+		inline static const QString TOO_LONG_STR = "\u00A0\u00A0\u00A0";
 
 	  public:
 		SequenceDisplayDataset_MissingResidue( const uint p_startIndexChar,

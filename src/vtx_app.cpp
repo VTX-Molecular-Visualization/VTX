@@ -17,7 +17,6 @@
 #include "worker/worker_manager.hpp"
 #include <QPalette>
 #include <QScreen>
-#include <QtPlatformHeaders/QWindowsWindowFunctions>
 #include <exception>
 
 namespace VTX
@@ -69,7 +68,7 @@ namespace VTX
 
 		// Fix Issue for fullscreen on windows. Need to be called after show and before set fullscreen //////////
 		// https://doc.qt.io/qt-5/windows-issues.html#fullscreen-opengl-based-windows ///////////////////////////
-		QWindowsWindowFunctions::setHasBorderInFullScreen( _mainWindow->windowHandle(), true );
+		// QWindowsWindowFunctions::setHasBorderInFullScreen( _mainWindow->windowHandle(), true );
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		_mainWindow->initWindowLayout();

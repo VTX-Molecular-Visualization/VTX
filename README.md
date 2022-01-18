@@ -90,14 +90,14 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 - C++17 compiler (MSVC or GCC)
 - Git
 - CMake
-- Qt 5.15.1
+- Qt 6.2.2
 
 ### Windows
 
-- Install Visual Studio 2019, or Visual Code, or just MSVC compiler if you don't want to use any IDE
-- Install Qt 5.15.1 with [Qt Online Installer](https://www.qt.io/download-qt-installer) (only "MSVC 219 64-bit" is needed)
+- Install Visual Studio, or Visual Code, or just MSVC compiler if you don't want to use any IDE
+- Install Qt 6.2.2 with [Qt Online Installer](https://www.qt.io/download-qt-installer) (only "MSVC 64-bit" is needed)
 - Add CMake to your "Path" environment variable: \<dir\>/CMake/bin
-- Create an environment variable "Qt5_DIR" with value: \<dir\>/Qt/5.15.1/msvc2019_64
+- Create an environment variable "CMAKE_PREFIX_PATH" with value: \<dir\>/Qt/6.2.2/msvc2019_64/lib/cmake
 
 #### Create Visual Studio solution with CMake
 

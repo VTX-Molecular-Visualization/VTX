@@ -189,7 +189,7 @@ namespace VTX::UI::Widget::Information
 
 	void InformationWidget::_getLicenseText( QString & p_txt ) const
 	{
-		Util::Filesystem::readPathQString( Util::Filesystem::getLicenseFile(), p_txt, "UTF-8" );
+		Util::Filesystem::readPathQString( Util::Filesystem::getLicenseFile(), p_txt );
 	}
 
 	void InformationWidget::_onFrameChange( const int p_frame )

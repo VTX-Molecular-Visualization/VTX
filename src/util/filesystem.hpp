@@ -149,20 +149,22 @@ namespace VTX
 			static const std::string DEFAULT_SCENE_FILENAME	   = "New Scene";
 			static const std::string DEFAULT_MOLECULE_FILENAME = "New Molecule";
 
-			IO::FilePath	  getParentDir( const IO::FilePath & p_path );
-			void			  createDirectory( const IO::FilePath & p_filePath );
-			bool			  copyFile( const IO::FilePath & p_from, const IO::FilePath & p_to );
-			const std::string readPath( const IO::FilePath & p_filePath, const char * p_codecName = nullptr );
-			void			  readPath( const IO::FilePath & p_filePath,
-										std::string &		 p_content,
-										const char *		 p_codecName = nullptr );
-			const QString	  readPathQString( const IO::FilePath & p_filePath, const char * p_codecName = nullptr );
-			void			  readPathQString( const IO::FilePath & p_filePath,
-											   QString &			p_content,
-											   const char *			p_codecName = nullptr );
-			bool			  remove( const IO::FilePath & p_filename );
-			bool			  removeAll( const IO::FilePath & p_directory );
-			void			  copyDir( const IO::FilePath & p_from, const IO::FilePath & p_to );
+			IO::FilePath		   getParentDir( const IO::FilePath & p_path );
+			void				   createDirectory( const IO::FilePath & p_filePath );
+			bool				   copyFile( const IO::FilePath & p_from, const IO::FilePath & p_to );
+			const std::string	   readPath( const IO::FilePath & p_filePath, const char * p_codecName = nullptr );
+			void				   readPath( const IO::FilePath & p_filePath,
+											 std::string &		  p_content,
+											 const char *		  p_codecName = nullptr );
+			const QString		   readPathQString( const IO::FilePath &			   p_filePath,
+													const QStringConverter::Encoding & p_codecName
+													= QStringConverter::Encoding::Utf8 );
+			void				   readPathQString( const IO::FilePath &			   p_filePath,
+													QString &						   p_content,
+													const QStringConverter::Encoding & p_codecName = QStringConverter::Encoding::Utf8 );
+			bool				   remove( const IO::FilePath & p_filename );
+			bool				   removeAll( const IO::FilePath & p_directory );
+			void				   copyDir( const IO::FilePath & p_from, const IO::FilePath & p_to );
 			std::set<IO::FilePath> getFilesInDirectory( const IO::FilePath & p_directory );
 			void				   generateUniqueFileName( IO::FilePath & p_filePath );
 			void				   checkSaveDirectoryHierarchy( const IO::FilePath & p_savePath );

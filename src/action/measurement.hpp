@@ -4,6 +4,7 @@
 #include "action/base_action.hpp"
 #include "model/atom.hpp"
 #include "model/measurement/distance.hpp"
+#include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
@@ -38,10 +39,10 @@ namespace VTX::Action::Measurement
 			//			}
 			//
 			//			return;
-
-			Model::Measurement::Distance * const distanceModel
-				= MVC::MvcManager::get().instantiateModel<Model::Measurement::Distance>(
-					Model::Measurement::Distance::AtomPair( _firstAtom, _secondAtom ) );
+			
+			const Model::Measurement::Distance::AtomPair pair( _firstAtom, _secondAtom );
+			Model::Measurement::Distance * const		 distanceModel
+				= MVC::MvcManager::get().instantiateModel<Model::Measurement::Distance>( pair );
 
 			VTXApp::get().getScene().addLabel( distanceModel );
 		}
@@ -50,6 +51,5 @@ namespace VTX::Action::Measurement
 		const Model::Atom & _firstAtom;
 		const Model::Atom & _secondAtom;
 	};
-
 } // namespace VTX::Action::Measurement
 #endif

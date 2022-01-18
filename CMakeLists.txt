@@ -1,5 +1,5 @@
 # Declare CMAKE required version.
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.16)
 
 # Project name.
 project(VTX)
@@ -25,7 +25,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(PATH_SRC "src")
 set(PATH_LIB "lib")
 set(PATH_EXTERNAL_PROJECT "external_project")
-set(PATH_LIB_BIN "lib_bin")
 set(PATH_WINDOWS_RESOURCE "asset/windows_resources")
 set(PATH_QT_RESOURCE "asset/qt_resources")
 
@@ -236,12 +235,15 @@ elseif(CMAKE_COMPILER_IS_GNUCC)
 endif()
 
 # Find required packages.
-find_package(Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt5 COMPONENTS Gui REQUIRED)
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
-find_package(Qt5 COMPONENTS Network REQUIRED)
-#find_package(Qt5 COMPONENTS Gamepad REQUIRED) 
-find_package(Qt5 COMPONENTS Svg REQUIRED)
+find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Gui REQUIRED)
+find_package(Qt6 COMPONENTS Widgets REQUIRED)
+find_package(Qt6 COMPONENTS OpenGL REQUIRED)
+find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
+find_package(Qt6 COMPONENTS Network REQUIRED)
+find_package(Qt6 COMPONENTS Svg REQUIRED)
+find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
+find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
 
 # Declare executable with source files.
 add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESOURCES})
@@ -261,12 +263,13 @@ if(MSVC)
 endif()
 
 # Link libs.
-target_link_libraries(VTX PRIVATE Qt5::Core)
-target_link_libraries(VTX PRIVATE Qt5::Gui)
-target_link_libraries(VTX PRIVATE Qt5::Widgets)
-target_link_libraries(VTX PRIVATE Qt5::Network)
-#target_link_libraries(VTX PRIVATE Qt5::Gamepad)
-target_link_libraries(VTX PRIVATE Qt5::Svg)
+target_link_libraries(VTX PRIVATE Qt6::Core)
+target_link_libraries(VTX PRIVATE Qt6::Gui)
+target_link_libraries(VTX PRIVATE Qt6::Widgets)
+target_link_libraries(VTX PRIVATE Qt6::OpenGL)
+target_link_libraries(VTX PRIVATE Qt6::OpenGLWidgets)
+target_link_libraries(VTX PRIVATE Qt6::Network)
+target_link_libraries(VTX PRIVATE Qt6::Svg)
 target_link_libraries(VTX PRIVATE chemfiles)
 
 if(MSVC)
@@ -281,24 +284,17 @@ message("Creating post build events...")
 
 # Copy shared libs to output (Windows only).	
 if(MSVC)
-	# Debug specific libs.
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB_BIN}/libcrypto-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/libcrypto-1_1-x64.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB_BIN}/libssl-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/libssl-1_1-x64.dll)
-	# Release specific libs.
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB_BIN}/libcrypto-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/libcrypto-1_1-x64.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB_BIN}/libssl-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/libssl-1_1-x64.dll)
-	
 	# Qt for dynamic link.
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Core> $<TARGET_FILE_DIR:VTX>)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gui> $<TARGET_FILE_DIR:VTX>)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Widgets> $<TARGET_FILE_DIR:VTX>)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Network> $<TARGET_FILE_DIR:VTX>)
-	#add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gamepad> $<TARGET_FILE_DIR:VTX>)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Svg> $<TARGET_FILE_DIR:VTX>)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::QGifPlugin> $<TARGET_FILE_DIR:VTX>/imageformats/$<TARGET_FILE_NAME:Qt5::QGifPlugin>)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::QJpegPlugin> $<TARGET_FILE_DIR:VTX>/imageformats/$<TARGET_FILE_NAME:Qt5::QJpegPlugin>)
-
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::QWindowsIntegrationPlugin> $<TARGET_FILE_DIR:VTX>/platforms/$<TARGET_FILE_NAME:Qt5::QWindowsIntegrationPlugin>)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Core> $<TARGET_FILE_DIR:VTX>)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Gui> $<TARGET_FILE_DIR:VTX>)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Widgets> $<TARGET_FILE_DIR:VTX>)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::OpenGL> $<TARGET_FILE_DIR:VTX>)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::OpenGLWidgets> $<TARGET_FILE_DIR:VTX>)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Network> $<TARGET_FILE_DIR:VTX>)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Svg> $<TARGET_FILE_DIR:VTX>)
+	
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QWindowsIntegrationPlugin> $<TARGET_FILE_DIR:VTX>/platforms/$<TARGET_FILE_NAME:Qt6::QWindowsIntegrationPlugin>)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QSchannelBackendPlugin> $<TARGET_FILE_DIR:VTX>/tls/$<TARGET_FILE_NAME:Qt6::QSchannelBackendPlugin>)
 endif()
 
 # Create custom target for GPU sources that copy files to build directory.
@@ -335,7 +331,8 @@ elseif(MSVC)
 	target_compile_options(VTX PRIVATE "/WX")  # Warnings as errors.
 	target_compile_options(VTX PRIVATE "/MP")  # Multicore compilation.
 	target_compile_options(VTX PRIVATE "/sdl") # SDL check.
-	target_compile_options(VTX PRIVATE "/execution-charset:utf-8") # To display Angstrom symbol for example.
+	
+	target_compile_options(VTX PRIVATE "/utf-8")
 	#target_compile_options(VTX PRIVATE "/DEBUG:FASTLINK") # https://devblogs.microsoft.com/cppblog/debugfastlink-for-vs2015-update-1/
 	
 	# Optimization.
@@ -373,3 +370,6 @@ endif()
 if(WIN32)
 	set(CPACK_WIX_UPGRADE_GUID "46ad52f0-a53d-45a1-b170-bfacc26068e2")
 endif()
+
+# Disable Qt5.
+add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x050F00)

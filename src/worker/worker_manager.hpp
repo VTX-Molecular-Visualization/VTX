@@ -10,8 +10,6 @@
 #include <QThreadPool>
 #include <string>
 
-Q_DECLARE_METATYPE( std::string )
-
 namespace VTX
 {
 	namespace Worker

@@ -1,7 +1,7 @@
 #include "filename_field_widget.hpp"
 #include "util/filesystem.hpp"
-#include <QRegExp>
-#include <QRegExpValidator>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -12,8 +12,8 @@ namespace VTX::UI::Widget::CustomWidget
 		BaseManualWidget::_setupUi( p_name );
 		setMaxLength( Util::Filesystem::MAX_FILE_LENGTH );
 
-		QRegExpValidator * const validator
-			= new QRegExpValidator( QRegExp( Util::Filesystem::REGEX_VALID_FILENAME ), this );
+		QRegularExpressionValidator * const validator
+			= new QRegularExpressionValidator( QRegularExpression( Util::Filesystem::REGEX_VALID_FILENAME ), this );
 		setValidator( validator );
 	}
 	void FilenameFieldWidget::_setupSlots() {}
