@@ -676,6 +676,13 @@ namespace VTX::UI
 			case Controller::MeasurementPicker::Mode::DISTANCE:
 				cursor = CursorHandler::Cursor::MEASUREMENT_DISTANCE;
 				break;
+			case Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE:
+				cursor = CursorHandler::Cursor::MEASUREMENT_DISTANCE_TO_CYCLE;
+				break;
+			case Controller::MeasurementPicker::Mode::ANGLE: cursor = CursorHandler::Cursor::MEASUREMENT_ANGLE; break;
+			case Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE:
+				cursor = CursorHandler::Cursor::MEASUREMENT_DIHEDRAL_ANGLE;
+				break;
 			default: cursor = CursorHandler::Cursor::DEFAULT; break;
 			}
 

@@ -33,23 +33,24 @@ namespace VTX::UI::Widget::MainMenu::Measurement
 
 		_distanceModeButton
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "distanceModeButton" );
-		_distanceModeButton->setData( "Distance", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+		_distanceModeButton->setData(
+			"Distance", ":/sprite/measurement_distance_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_distanceModeButton, 0 );
 
 		_distanceToCycleModeButton
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "distanceToCycleModeButton" );
 		_distanceToCycleModeButton->setData(
-			"Distance to cycle", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+			"Distance\nto cycle", ":/sprite/measurement_distance_to_cycle_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_distanceToCycleModeButton, 0 );
 
 		_angleModeButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "angleModeButton" );
-		_angleModeButton->setData( "Angle", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+		_angleModeButton->setData( "Angle", ":/sprite/measurement_angle_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_angleModeButton, 1 );
 
 		_dihedralAngleModeButton
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "dihedralAngleModeButton" );
 		_dihedralAngleModeButton->setData(
-			"Dihedral angle", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+			"Dihedral\nangle", ":/sprite/measurement_dihedral_angle_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_dihedralAngleModeButton, 1 );
 
 		validate();

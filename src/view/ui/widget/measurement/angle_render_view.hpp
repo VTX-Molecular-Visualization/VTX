@@ -1,9 +1,9 @@
-#ifndef __VTX_VIEW_UI_WIDGET_MEASUREMENT_DISTANCE_RENDER__
-#define __VTX_VIEW_UI_WIDGET_MEASUREMENT_DISTANCE_RENDER__
+#ifndef __VTX_VIEW_UI_WIDGET_MEASUREMENT_ANGLE_RENDER__
+#define __VTX_VIEW_UI_WIDGET_MEASUREMENT_ANGLE_RENDER__
 
 #include "define.hpp"
 #include "id.hpp"
-#include "model/measurement/distance.hpp"
+#include "model/measurement/angle.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/render/base_integrated_widget.hpp"
 #include "view/base_view.hpp"
@@ -18,8 +18,8 @@
 
 namespace VTX::View::UI::Widget::Measurement
 {
-	class DistanceRenderView :
-		public View::BaseView<VTX::Model::Measurement::Distance>,
+	class AngleRenderView :
+		public View::BaseView<VTX::Model::Measurement::Angle>,
 		public VTX::UI::Widget::BaseManualWidget<QWidget>,
 		public VTX::UI::Widget::Render::BaseIntegratedWidget
 	{
@@ -32,9 +32,15 @@ namespace VTX::View::UI::Widget::Measurement
 		  public:
 			QPoint firstAtomScreenPos;
 			QPoint secondAtomScreenPos;
+			QPoint thirdAtomScreenPos;
+
 			QPoint textPosition;
 			QSize  textSize;
 			float  textDistanceToCamera;
+
+			int arcRadius;
+			int startAngle;
+			int angle;
 		};
 
 	  public:
@@ -42,7 +48,7 @@ namespace VTX::View::UI::Widget::Measurement
 		void updatePosition() override;
 
 	  protected:
-		DistanceRenderView( Model::Measurement::Distance * const p_model, QWidget * const p_parent );
+		AngleRenderView( Model::Measurement::Angle * const p_model, QWidget * const p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
@@ -61,10 +67,8 @@ namespace VTX::View::UI::Widget::Measurement
 		QBrush _labelBrush;
 		QPen   _linePen;
 		QBrush _lineBrush;
-
-		QPoint _worldToScreen( const Vec3f & p_worldPos ) const;
-		float  _distanceToCamera( const Vec3f & p_worldPos ) const;
-		bool   _isVisibleToCamera( const Vec3f & p_worldPos ) const;
+		QPen   _arcPen;
+		QBrush _arcBrush;
 	};
 
 } // namespace VTX::View::UI::Widget::Measurement

@@ -21,7 +21,7 @@ namespace VTX::UI::Widget::Inspector
 			this, "inspector_item_section" );
 
 		_positionInfoWidget = UI::WidgetFactory::get().instantiateWidget<CustomWidget::Vector3Widget>(
-			this, "inspector_measurement_distance_vector" );
+			this, "inspector_label_position" );
 		_positionInfoWidget->setEnabled( false );
 		_positionSection->setBody( _positionInfoWidget );
 

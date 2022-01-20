@@ -7,18 +7,19 @@
 #include "object3d/scene.hpp"
 #include "util/math.hpp"
 #include "util/measurement.hpp"
-#include <string>
 
 namespace VTX::Model::Measurement
 {
 	Distance::Distance() : Model::Label( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
 	{
+		_atoms.resize( 2, nullptr );
+		_moleculeViews.resize( 2, nullptr );
+
 		_registerEvent( Event::Global::MOLECULE_REMOVED );
 		_registerEvent( Event::Global::ATOM_REMOVED );
 		_registerEvent( Event::Global::LABEL_REMOVED );
 
 		setAutoNaming( true, false );
-		_moleculeViews.reserve( 2 );
 	}
 
 	Distance::Distance( const AtomPair & p_pair ) : Distance()
@@ -26,13 +27,7 @@ namespace VTX::Model::Measurement
 		_setAtomsInternal( p_pair.first, p_pair.second, false );
 	}
 
-	Distance ::~Distance() {}
-
-	VTX::ID::VTX_ID Distance::getViewID( const int p_atomPos ) const
-	{
-		return VTX::ID::View::MEASUREMENT_DISTANCE_ON_MOLECULE + std::to_string( getId() ) + '_'
-			   + std::to_string( p_atomPos );
-	}
+	Distance::~Distance() {}
 
 	void Distance::receiveEvent( const Event::VTXEvent & p_event )
 	{
@@ -41,7 +36,7 @@ namespace VTX::Model::Measurement
 			const Event::VTXEventPtr<Model::Atom> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Atom> &>( p_event );
 
-			if ( castedEvent.ptr == _firstAtom || castedEvent.ptr == _secondAtom )
+			if ( _isLinkedToAtom( castedEvent.ptr ) )
 			{
 				// TODO : Use a manager instead of managing scene from model
 				VTXApp::get().getScene().removeLabel( this );
@@ -53,7 +48,7 @@ namespace VTX::Model::Measurement
 			const Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
-			if ( castedEvent.ptr == _firstAtom->getMoleculePtr() || castedEvent.ptr == _secondAtom->getMoleculePtr() )
+			if ( _isLinkedToMolecule( castedEvent.ptr ) )
 			{
 				// TODO : Use a manager instead of managing scene from model
 				VTXApp::get().getScene().removeLabel( this );
@@ -82,11 +77,11 @@ namespace VTX::Model::Measurement
 	{
 		_cleanViews();
 
-		_firstAtom	= &p_firstAtom;
-		_secondAtom = &p_secondAtom;
+		_atoms[ 0 ] = &p_firstAtom;
+		_atoms[ 1 ] = &p_secondAtom;
 
 		_invalidateAABB();
-		setPosition( ( _firstAtom->getWorldPosition() + _secondAtom->getWorldPosition() ) * 0.5f );
+		setPosition( ( _atoms[ 0 ]->getWorldPosition() + _atoms[ 1 ]->getWorldPosition() ) * 0.5f );
 
 		_computeDistance( p_notify );
 
@@ -96,10 +91,42 @@ namespace VTX::Model::Measurement
 			_performAutoName( p_notify );
 	}
 
+	bool Distance::isValid() const
+	{
+		for ( const Model::Atom * const atomPtr : _atoms )
+			if ( atomPtr == nullptr )
+				return false;
+
+		return true;
+	}
+
+	bool Distance::_isLinkedToAtom( const Model::Atom * const p_atom ) const
+	{
+		if ( !isValid() )
+			return false;
+
+		for ( const Model::Atom * const linkedAtom : _atoms )
+			if ( linkedAtom == p_atom )
+				return true;
+
+		return false;
+	}
+	bool Distance::_isLinkedToMolecule( const Model::Molecule * const p_molecule ) const
+	{
+		if ( !isValid() )
+			return false;
+
+		for ( const Model::Atom * const linkedAtom : _atoms )
+			if ( linkedAtom->getMoleculePtr() == p_molecule )
+				return true;
+
+		return false;
+	}
+
 	void Distance::_computeDistance( const bool p_notify )
 	{
 		const float newDistance
-			= Util::Math::distance( _firstAtom->getWorldPosition(), _secondAtom->getWorldPosition() );
+			= Util::Math::distance( _atoms[ 0 ]->getWorldPosition(), _atoms[ 1 ]->getWorldPosition() );
 
 		if ( _distance != newDistance )
 		{
@@ -113,21 +140,25 @@ namespace VTX::Model::Measurement
 	void Distance::_recomputeAABB( Math::AABB & p_aabb )
 	{
 		p_aabb = Math::AABB();
-		p_aabb.extend( _firstAtom->getWorldAABB() );
-		p_aabb.extend( _secondAtom->getWorldAABB() );
+
+		for ( const Model::Atom * const atom : _atoms )
+		{
+			if ( atom != nullptr )
+				p_aabb.extend( atom->getWorldAABB() );
+		}
 	}
 
 	void Distance::_instantiateViewsOnMolecules()
 	{
 		MoleculeView * const firstMoleculeView
-			= MVC::MvcManager::get().instantiateView<MoleculeView>( _firstAtom->getMoleculePtr(), getViewID( 0 ) );
+			= MVC::MvcManager::get().instantiateView<MoleculeView>( _atoms[ 0 ]->getMoleculePtr(), getViewID( 0 ) );
 		firstMoleculeView->setCallback( this, &Distance::_onMoleculeChange );
 		_moleculeViews.emplace_back( firstMoleculeView );
 
-		if ( _firstAtom->getMoleculePtr() != _secondAtom->getMoleculePtr() )
+		if ( _atoms[ 0 ]->getMoleculePtr() != _atoms[ 1 ]->getMoleculePtr() )
 		{
 			MoleculeView * const secondMoleculeView
-				= MVC::MvcManager::get().instantiateView<MoleculeView>( _secondAtom->getMoleculePtr(), getViewID( 1 ) );
+				= MVC::MvcManager::get().instantiateView<MoleculeView>( _atoms[ 1 ]->getMoleculePtr(), getViewID( 1 ) );
 			secondMoleculeView->setCallback( this, &Distance::_onMoleculeChange );
 			_moleculeViews.emplace_back( secondMoleculeView );
 		}
@@ -137,12 +168,12 @@ namespace VTX::Model::Measurement
 	{
 		if ( _moleculeViews.size() > 0 )
 		{
-			MVC::MvcManager::get().deleteView( _firstAtom->getMoleculePtr(), getViewID( 0 ) );
+			MVC::MvcManager::get().deleteView( _atoms[ 0 ]->getMoleculePtr(), getViewID( 0 ) );
 		}
 
 		if ( _moleculeViews.size() > 1 )
 		{
-			MVC::MvcManager::get().deleteView( _secondAtom->getMoleculePtr(), getViewID( 1 ) );
+			MVC::MvcManager::get().deleteView( _atoms[ 1 ]->getMoleculePtr(), getViewID( 1 ) );
 		}
 
 		_moleculeViews.clear();
@@ -154,7 +185,7 @@ namespace VTX::Model::Measurement
 		if ( p_event->name == Event::Model::TRANSFORM_CHANGE )
 		{
 			// recompute only if the two atoms aren't in the same molecule
-			recomputeDistance = _firstAtom->getMoleculePtr() != _secondAtom->getMoleculePtr();
+			recomputeDistance = _atoms[ 0 ]->getMoleculePtr() != _atoms[ 1 ]->getMoleculePtr();
 			_invalidateAABB();
 		}
 		else if ( p_event->name == Event::Model::TRAJECTORY_FRAME_CHANGE )
@@ -176,13 +207,13 @@ namespace VTX::Model::Measurement
 	{
 		std::string newName;
 
-		if ( _firstAtom == nullptr || _secondAtom == nullptr )
+		if ( !isValid() )
 		{
 			newName = "...";
 		}
 		else
 		{
-			newName = _firstAtom->getName() + "-" + _secondAtom->getName() + " : "
+			newName = _atoms[ 0 ]->getName() + "-" + _atoms[ 1 ]->getName() + " : "
 					  + Util::Measurement::getDistanceString( *this );
 		}
 
@@ -195,6 +226,12 @@ namespace VTX::Model::Measurement
 			std::string & nameRef = _getName();
 			nameRef				  = newName;
 		}
+	}
+
+	VTX::ID::VTX_ID Distance::getViewID( const int p_atomPos ) const
+	{
+		return MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
+													  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 	}
 
 } // namespace VTX::Model::Measurement
