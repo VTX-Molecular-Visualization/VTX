@@ -34,11 +34,14 @@ namespace VTX::Controller
 
 			if ( ids.y != Model::ID_UNKNOWN ) // Bond
 			{
-				atoms.clear();
-				atoms.emplace_back( ids.x );
-				atoms.emplace_back( ids.y );
+				if ( _currentMode == Mode::DISTANCE )
+				{
+					atoms.clear();
+					atoms.emplace_back( ids.x );
+					atoms.emplace_back( ids.y );
 
-				updateDisplay = true;
+					updateDisplay = true;
+				}
 			}
 			else
 			{
@@ -55,7 +58,7 @@ namespace VTX::Controller
 					atomID = ids.x;
 				}
 
-				if ( std::find( atoms.cbegin(), atoms.cend(), atomID ) == atoms.cend() ) 
+				if ( std::find( atoms.cbegin(), atoms.cend(), atomID ) == atoms.cend() )
 				{
 					atoms.emplace_back( atomID );
 					updateDisplay = true;
@@ -112,21 +115,45 @@ namespace VTX::Controller
 
 	void MeasurementPicker::_updateDisplay()
 	{
-		if ( atoms.size() == 2 )
+		bool hasInstantiatedLabel = false;
+		switch ( _currentMode )
 		{
-			const Model::Atom & firstAtom  = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 0 ] );
-			const Model::Atom & secondAtom = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 1 ] );
+		case Mode::DISTANCE:
+			if ( atoms.size() == 2 )
+			{
+				const Model::Atom & firstAtom  = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 0 ] );
+				const Model::Atom & secondAtom = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 1 ] );
 
-			VTX_ACTION( new Action::Measurement::Distance( firstAtom, secondAtom ) );
+				VTX_ACTION( new Action::Measurement::InstantiateDistanceLabel( firstAtom, secondAtom ) );
+				hasInstantiatedLabel = true;
+			}
+			break;
 
-			atoms.clear();
+		case Mode::ANGLE:
+			if ( atoms.size() == 3 )
+			{
+				const Model::Atom & firstAtom  = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 0 ] );
+				const Model::Atom & secondAtom = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 1 ] );
+				const Model::Atom & thirdAtom  = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 2 ] );
+
+				VTX_ACTION( new Action::Measurement::InstantiateAngleLabel( firstAtom, secondAtom, thirdAtom ) );
+				hasInstantiatedLabel = true;
+			}
+			break;
 		}
+
+		if ( hasInstantiatedLabel )
+			atoms.clear();
 	}
 
 	void MeasurementPicker::setCurrentMode( const Mode & p_mode )
 	{
-		_currentMode = p_mode;
-		VTX_EVENT( new Event::VTXEvent( Event::Global::PICKER_MODE_CHANGE ) );
-	}
+		if ( _currentMode != p_mode )
+		{
+			atoms.clear();
+			_currentMode = p_mode;
 
+			VTX_EVENT( new Event::VTXEvent( Event::Global::PICKER_MODE_CHANGE ) );
+		}
+	}
 } // namespace VTX::Controller

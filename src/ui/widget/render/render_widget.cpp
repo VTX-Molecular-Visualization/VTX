@@ -4,6 +4,7 @@
 #include "base_integrated_widget.hpp"
 #include "event/event_manager.hpp"
 #include "model/label.hpp"
+#include "model/measurement/angle.hpp"
 #include "model/measurement/distance.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -13,6 +14,7 @@
 #include "style.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
+#include "view/ui/widget/measurement/angle_render_view.hpp"
 #include "view/ui/widget/measurement/distance_render_view.hpp"
 #include "vtx_app.hpp"
 #include <QShortcut>
@@ -51,19 +53,31 @@ namespace VTX::UI::Widget::Render
 
 			const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
 
+			BaseIntegratedWidget * integratedWidget = nullptr;
+
 			if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 			{
-				Model::Measurement::Distance * const distance
+				Model::Measurement::Distance * const distanceModel
 					= static_cast<Model::Measurement::Distance *>( castedEvent.ptr );
 
-				View::UI::Widget::Measurement::DistanceRenderView * const distanceView
-					= WidgetFactory::get()
-						  .instantiateViewWidget<View::UI::Widget::Measurement::DistanceRenderView,
-												 Model::Measurement::Distance>(
-							  distance, ID::View::UI_RENDER_MEASUREMENT_DISTANCE, this, "Distance" );
-
-				_integratedWidgets.emplace_back( distanceView );
+				integratedWidget = WidgetFactory::get()
+									   .instantiateViewWidget<View::UI::Widget::Measurement::DistanceRenderView,
+															  Model::Measurement::Distance>(
+										   distanceModel, ID::View::UI_RENDER_MEASUREMENT_DISTANCE, this, "Distance" );
 			}
+			if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
+			{
+				Model::Measurement::Angle * const angleModel
+					= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
+
+				integratedWidget = WidgetFactory::get()
+									   .instantiateViewWidget<View::UI::Widget::Measurement::AngleRenderView,
+															  Model::Measurement::Angle>(
+										   angleModel, ID::View::UI_RENDER_MEASUREMENT_ANGLE, this, "Distance" );
+			}
+
+			if ( integratedWidget != nullptr )
+				_integratedWidgets.emplace_back( integratedWidget );
 		}
 		else if ( p_event.name == Event::Global::LABEL_REMOVED )
 		{

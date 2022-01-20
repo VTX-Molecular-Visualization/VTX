@@ -8,7 +8,13 @@
 #include <QHideEvent>
 #include <QMenu>
 #include <map>
+#include <unordered_set>
 #include <vector>
+
+namespace VTX::Model
+{
+	class Label;
+}
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -256,6 +262,8 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		void _refreshToggleTrajectoryPlay( QAction & _action ) const;
 		bool _checkToggleTrajectoryPlayAction() const;
+
+		void _getAllLabelTypes( std::unordered_set<Model::Label *> & p_labels ) const;
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu

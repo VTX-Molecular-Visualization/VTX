@@ -14,9 +14,6 @@
 
 namespace VTX::View::UI::Widget::Measurement
 {
-	const int DistanceRenderView::MAX_POINT_DIAMETER
-		= Style::MEASUREMENT_DISTANCE_LABEL_MAX_LINE_THICKNESS + Style::MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS * 2;
-
 	DistanceRenderView::DistanceRenderView( Model::Measurement::Distance * const p_model, QWidget * const p_parent ) :
 		View::BaseView<Model::Measurement::Distance>( p_model ), VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
@@ -25,8 +22,8 @@ namespace VTX::View::UI::Widget::Measurement
 		_labelBrush.setStyle( Qt::BrushStyle::SolidPattern );
 
 		_linePen = QPen();
-		_linePen.setColor( Style::MEASUREMENT_DISTANCE_LINE_COLOR );
-		_linePen.setStyle( Style::MEASUREMENT_DISTANCE_LINE_STYLE );
+		_linePen.setColor( Style::MEASUREMENT_DISTANCE_LABEL_LINE_COLOR );
+		_linePen.setStyle( Style::MEASUREMENT_DISTANCE_LABEL_LINE_STYLE );
 		_lineBrush = QBrush( Qt::BrushStyle::NoBrush );
 		//_lineBrush = QBrush( Qt::BrushStyle::SolidPattern );
 	}
@@ -74,17 +71,17 @@ namespace VTX::View::UI::Widget::Measurement
 		const QPoint centerPos = _worldToScreen( centerWorldPos );
 		const QPoint textPos   = centerPos;
 
-		const int minX = std::min( { firstAtomPos.x() - MAX_POINT_DIAMETER,
-									 secondAtomPos.x() - MAX_POINT_DIAMETER,
+		const int minX = std::min( { firstAtomPos.x() - Style::LABEL_RENDER_POINT_MAX_DIAMETER,
+									 secondAtomPos.x() - Style::LABEL_RENDER_POINT_MAX_DIAMETER,
 									 ( textPos.x() - _paintData.textSize.width() / 2 ) } );
-		const int minY = std::min( { firstAtomPos.y() - MAX_POINT_DIAMETER,
-									 secondAtomPos.y() - MAX_POINT_DIAMETER,
+		const int minY = std::min( { firstAtomPos.y() - Style::LABEL_RENDER_POINT_MAX_DIAMETER,
+									 secondAtomPos.y() - Style::LABEL_RENDER_POINT_MAX_DIAMETER,
 									 ( textPos.y() - _paintData.textSize.height() / 2 ) } );
-		const int maxX = std::max( { firstAtomPos.x() + MAX_POINT_DIAMETER,
-									 secondAtomPos.x() + MAX_POINT_DIAMETER,
+		const int maxX = std::max( { firstAtomPos.x() + Style::LABEL_RENDER_POINT_MAX_DIAMETER,
+									 secondAtomPos.x() + Style::LABEL_RENDER_POINT_MAX_DIAMETER,
 									 ( textPos.x() + ( _paintData.textSize.width() / 2 ) ) } );
-		const int maxY = std::max( { firstAtomPos.y() + MAX_POINT_DIAMETER,
-									 secondAtomPos.y() + MAX_POINT_DIAMETER,
+		const int maxY = std::max( { firstAtomPos.y() + Style::LABEL_RENDER_POINT_MAX_DIAMETER,
+									 secondAtomPos.y() + Style::LABEL_RENDER_POINT_MAX_DIAMETER,
 									 ( textPos.y() + ( _paintData.textSize.height() / 2 ) ) } );
 
 		const QPoint topLeftPos = QPoint( minX, minY );

@@ -2,6 +2,8 @@
 #define __VTX_UI_WIDGET_INSPECTOR__
 
 #include "id.hpp"
+#include "inspector_item_widget.hpp"
+#include "multiple_model_inspector_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include "view/ui/widget/base_widget_view.hpp"
@@ -20,6 +22,7 @@ namespace VTX::UI::Widget::Inspector
 	class MultipleAtomWidget;
 	class MultipleViewpointWidget;
 	class MultipleMeasurmentDistanceWidget;
+	class MultipleMeasurmentAngleWidget;
 
 	struct ViewData
 	{
@@ -36,6 +39,20 @@ namespace VTX::UI::Widget::Inspector
 	{
 		Q_OBJECT
 		VTX_WIDGET
+
+	  private:
+		enum class INSPECTOR_TYPE : int
+		{
+			MOLECULE,
+			CHAIN,
+			RESIDUE,
+			ATOM,
+			VIEWPOINT,
+			MEASURE_DISTANCE,
+			MEASURE_ANGLE,
+
+			COUNT
+		};
 
 	  public:
 		~InspectorWidget();
@@ -60,15 +77,54 @@ namespace VTX::UI::Widget::Inspector
 		QScrollArea * _scrollArea	  = nullptr;
 		QVBoxLayout * _verticalLayout = nullptr;
 
-		MultipleMoleculeWidget *		   _moleculesInspector			 = nullptr;
-		MultipleChainWidget *			   _chainsInspector				 = nullptr;
-		MultipleResidueWidget *			   _residuesInspector			 = nullptr;
-		MultipleAtomWidget *			   _atomsInspector				 = nullptr;
-		MultipleViewpointWidget *		   _viewpointsInspector			 = nullptr;
-		MultipleMeasurmentDistanceWidget * _measurementDistanceInspector = nullptr;
+		std::vector<InspectorItemWidget *> _inspectors;
 
 		std::vector<ViewData> _inspectorViewsData = std::vector<ViewData>();
 		bool				  _isFreezed		  = false;
+
+		template<typename I, typename = std::enable_if<std::is_base_of<InspectorItemWidget, I>::value>>
+		I & _getInspector( const INSPECTOR_TYPE & p_inspectorType )
+		{
+			return *( dynamic_cast<I *>( _inspectors[ int( p_inspectorType ) ] ) );
+		}
+		template<typename I, typename = std::enable_if<std::is_base_of<InspectorItemWidget, I>::value>>
+		const I & _getInspector( const INSPECTOR_TYPE & p_inspectorType ) const
+		{
+			return *( dynamic_cast<I *>( _inspectors[ int( p_inspectorType ) ] ) );
+		}
+
+		template<typename I,
+				 typename M,
+				 typename = std::enable_if<std::is_base_of<MultipleModelInspectorWidget<M>, I>::value>>
+		void _addTargetToInspector( const INSPECTOR_TYPE & p_inspectorType, M * const p_target )
+		{
+			MultipleModelInspectorWidget<M> & inspector
+				= _getInspector<MultipleModelInspectorWidget<M>>( p_inspectorType );
+			inspector.addTarget( p_target );
+			inspector.setVisible( true );
+		}
+
+		template<typename I,
+				 typename M,
+				 typename = std::enable_if<std::is_base_of<MultipleModelInspectorWidget<M>, I>::value>>
+		void _removeTargetToInspector( const INSPECTOR_TYPE & p_inspectorType,
+									   M * const			  p_target,
+									   const bool			  p_refresh = true )
+		{
+			MultipleModelInspectorWidget<M> & inspector
+				= _getInspector<MultipleModelInspectorWidget<M>>( p_inspectorType );
+
+			if ( inspector.hasTarget( p_target ) )
+			{
+				inspector.removeTarget( p_target );
+
+				if ( inspector.getTargets().size() <= 0 )
+					inspector.setVisible( false );
+
+				if ( p_refresh )
+					refresh();
+			}
+		}
 
 		void _toggleFreezeState();
 		void _updateFreezedFeedback();

@@ -121,8 +121,11 @@ namespace VTX::UI::Widget::ContextualMenu
 		_submenusMap[ VTX::ID::Model::MODEL_VIEWPOINT ] = int( SUBMENU_TEMPLATE::VIEWPOINT );
 		_submenusMap[ VTX::ID::Model::MODEL_PATH ]		= int( SUBMENU_TEMPLATE::VIEWPOINT );
 
-		_submenusMap[ VTX::ID::Model::MODEL_LABEL ]				   = int( SUBMENU_TEMPLATE::LABEL );
-		_submenusMap[ VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE ] = int( SUBMENU_TEMPLATE::LABEL );
+		_submenusMap[ VTX::ID::Model::MODEL_LABEL ]							= int( SUBMENU_TEMPLATE::LABEL );
+		_submenusMap[ VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE ]			= int( SUBMENU_TEMPLATE::LABEL );
+		_submenusMap[ VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE ] = int( SUBMENU_TEMPLATE::LABEL );
+		_submenusMap[ VTX::ID::Model::MODEL_MEASUREMENT_ANGLE ]				= int( SUBMENU_TEMPLATE::LABEL );
+		_submenusMap[ VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE ]	= int( SUBMENU_TEMPLATE::LABEL );
 	}
 	ContextualMenuSelection ::~ContextualMenuSelection()
 	{
@@ -208,6 +211,12 @@ namespace VTX::UI::Widget::ContextualMenu
 		if ( p_typeIds.find( VTX::ID::Model::MODEL_LABEL ) != p_typeIds.end() )
 			res |= TypeMask::Label;
 		if ( p_typeIds.find( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE ) != p_typeIds.end() )
+			res |= TypeMask::Label;
+		if ( p_typeIds.find( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE ) != p_typeIds.end() )
+			res |= TypeMask::Label;
+		if ( p_typeIds.find( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE ) != p_typeIds.end() )
+			res |= TypeMask::Label;
+		if ( p_typeIds.find( VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE ) != p_typeIds.end() )
 			res |= TypeMask::Label;
 
 		return res;
@@ -554,9 +563,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_orientToLabelAction()
 	{
 		std::unordered_set<Model::Label *> labelsInSelection = std::unordered_set<Model::Label *>();
-
-		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_LABEL, labelsInSelection );
-		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE, labelsInSelection );
+		_getAllLabelTypes( labelsInSelection );
 
 		if ( labelsInSelection.size() > 0 )
 			VTX_ACTION( new Action::Label::Orient( labelsInSelection ) );
@@ -564,12 +571,19 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_deleteLabelAction()
 	{
 		std::unordered_set<Model::Label *> labelsInSelection = std::unordered_set<Model::Label *>();
-
-		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_LABEL, labelsInSelection );
-		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE, labelsInSelection );
+		_getAllLabelTypes( labelsInSelection );
 
 		if ( labelsInSelection.size() > 0 )
 			VTX_ACTION( new Action::Label::Delete( labelsInSelection ) );
+	}
+
+	void ContextualMenuSelection::_getAllLabelTypes( std::unordered_set<Model::Label *> & p_labels ) const
+	{
+		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_LABEL, p_labels );
+		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE, p_labels );
+		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE, p_labels );
+		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE, p_labels );
+		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE, p_labels );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

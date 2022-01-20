@@ -196,6 +196,11 @@ namespace VTX
 				_unlock();
 			}
 
+			inline ID::VTX_ID generateViewID( const ID::VTX_ID & p_baseID, const std::string & p_suffix )
+			{
+				return p_baseID + '_' + p_suffix;
+			}
+
 		  private:
 			MvcManager()					 = default;
 			MvcManager( const MvcManager & ) = delete;

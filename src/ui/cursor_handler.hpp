@@ -16,6 +16,9 @@ namespace VTX::UI
 		{
 			DEFAULT,
 			MEASUREMENT_DISTANCE,
+			MEASUREMENT_DISTANCE_TO_CYCLE,
+			MEASUREMENT_ANGLE,
+			MEASUREMENT_DIHEDRAL_ANGLE,
 
 			COUNT
 		};
@@ -41,6 +44,12 @@ namespace VTX::UI
 			_cursorPixmaps[ int( Cursor::DEFAULT ) ] = QCursor( Qt::CursorShape::ArrowCursor );
 			_cursorPixmaps[ int( Cursor::MEASUREMENT_DISTANCE ) ]
 				= QCursor( QPixmap( ":/sprite/cursor/measurement_distance_cursor.png" ), 1, 1 );
+			_cursorPixmaps[ int( Cursor::MEASUREMENT_DISTANCE_TO_CYCLE ) ]
+				= QCursor( QPixmap( ":/sprite/cursor/measurement_distance_to_cycle_cursor.png" ), 1, 1 );
+			_cursorPixmaps[ int( Cursor::MEASUREMENT_ANGLE ) ]
+				= QCursor( QPixmap( ":/sprite/cursor/measurement_angle_cursor.png" ), 1, 1 );
+			_cursorPixmaps[ int( Cursor::MEASUREMENT_DIHEDRAL_ANGLE ) ]
+				= QCursor( QPixmap( ":/sprite/cursor/measurement_dihedral_angle_cursor.png" ), 1, 1 );
 		}
 		~CursorHandler();
 

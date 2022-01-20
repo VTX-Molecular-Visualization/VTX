@@ -1,5 +1,5 @@
-#ifndef __VTX_MODEL_MEASUREMENT_DISTANCE__
-#define __VTX_MODEL_MEASUREMENT_DISTANCE__
+#ifndef __VTX_MODEL_MEASUREMENT_ANGLE__
+#define __VTX_MODEL_MEASUREMENT_ANGLE__
 
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"
@@ -7,7 +7,7 @@
 #include "model/label.hpp"
 #include "view/callback_view.hpp"
 #include <string>
-#include <utility>
+#include <tuple>
 #include <vector>
 
 namespace VTX::Model
@@ -18,36 +18,42 @@ namespace VTX::Model
 
 namespace VTX::Model::Measurement
 {
-	class Distance : public Model::Label, Event::BaseEventReceiverVTX
+	class Angle : public Model::Label, Event::BaseEventReceiverVTX
 	{
 		VTX_MODEL
 
 	  private:
-		using MoleculeView = View::CallbackView<Model::Molecule, Model::Measurement::Distance>;
+		using MoleculeView = View::CallbackView<Model::Molecule, Model::Measurement::Angle>;
 
 	  public:
-		using AtomPair = std::pair<const Model::Atom &, const Model::Atom &>;
+		using AtomTriplet = std::tuple<const Model::Atom &, const Model::Atom &, const Model::Atom &>;
 
 	  public:
-		void setAtoms( const Model::Atom & p_firstAtom, const Model::Atom & p_secondAtom );
+		void setAtoms( const Model::Atom & p_firstAtom,
+					   const Model::Atom & p_secondAtom,
+					   const Model::Atom & p_thirdAtom );
+
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		void _recomputeAABB( Math::AABB & p_aabb ) override;
 
-		const Model::Atom & getFirstAtom() const { return *_atoms[ 0 ]; }
-		const Model::Atom & getSecondAtom() const { return *_atoms[ 1 ]; }
+		const std::vector<const Model::Atom *> getAtoms() const { return _atoms; };
+		const Model::Atom &					   getFirstAtom() const { return *_atoms[ 0 ]; }
+		const Model::Atom &					   getSecondAtom() const { return *_atoms[ 1 ]; }
+		const Model::Atom &					   getThirdAtom() const { return *_atoms[ 2 ]; }
 
-		float getDistance() const { return _distance; }
+		float getAngle() const { return _angle; }
 		bool  isValid() const;
 
 	  protected:
-		Distance();
-		Distance( const AtomPair & p_pair );
+		Angle();
+		Angle( const AtomTriplet & p_triplet );
 
-		~Distance();
+		~Angle();
 
 		void _setAtomsInternal( const Model::Atom & p_firstAtom,
 								const Model::Atom & p_secondAtom,
+								const Model::Atom & p_thirdAtom,
 								const bool			p_notify = true );
 
 		void _performAutoName( const bool p_notify = true ) override;
@@ -59,9 +65,10 @@ namespace VTX::Model::Measurement
 		std::vector<const Model::Atom *> _atoms			= std::vector<const Model::Atom *>();
 		std::vector<MoleculeView *>		 _moleculeViews = std::vector<MoleculeView *>();
 
-		float _distance = 0.f;
+		float _angle					= 0.f;
+		bool  _isAllAtomsOnSameMolecule = false;
 
-		void _computeDistance( const bool p_notify = true );
+		void _computeAngle( const bool p_notify = true );
 		void _instantiateViewsOnMolecules();
 		void _cleanViews();
 

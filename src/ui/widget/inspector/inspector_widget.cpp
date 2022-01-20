@@ -14,6 +14,7 @@
 #include "style.hpp"
 #include "ui/widget/inspector/multiple_atom_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_chain_inspector_widget.hpp"
+#include "ui/widget/inspector/multiple_measurement_angle_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_measurement_distance_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_molecule_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_residue_inspector_widget.hpp"
@@ -48,75 +49,35 @@ namespace VTX::UI::Widget::Inspector
 			const Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
-			if ( _moleculesInspector->hasTarget( castedEvent.ptr ) )
-			{
-				_moleculesInspector->removeTarget( castedEvent.ptr );
-
-				if ( _moleculesInspector->getTargets().size() <= 0 )
-					_moleculesInspector->setVisible( false );
-
-				refresh();
-			}
+			_removeTargetToInspector<MultipleMoleculeWidget>( INSPECTOR_TYPE::MOLECULE, castedEvent.ptr );
 		}
 		else if ( p_event.name == Event::Global::CHAIN_REMOVED )
 		{
 			const Event::VTXEventPtr<Model::Chain> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Chain> &>( p_event );
 
-			if ( _chainsInspector->hasTarget( castedEvent.ptr ) )
-			{
-				_chainsInspector->removeTarget( castedEvent.ptr );
-
-				if ( _chainsInspector->getTargets().size() <= 0 )
-					_chainsInspector->setVisible( false );
-
-				refresh();
-			}
+			_removeTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::CHAIN, castedEvent.ptr );
 		}
 		else if ( p_event.name == Event::Global::RESIDUE_REMOVED )
 		{
 			const Event::VTXEventPtr<Model::Residue> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Residue> &>( p_event );
 
-			if ( _residuesInspector->hasTarget( castedEvent.ptr ) )
-			{
-				_residuesInspector->removeTarget( castedEvent.ptr );
-
-				if ( _residuesInspector->getTargets().size() <= 0 )
-					_residuesInspector->setVisible( false );
-
-				refresh();
-			}
+			_removeTargetToInspector<MultipleResidueWidget>( INSPECTOR_TYPE::RESIDUE, castedEvent.ptr );
 		}
 		else if ( p_event.name == Event::Global::ATOM_REMOVED )
 		{
 			const Event::VTXEventPtr<Model::Atom> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Atom> &>( p_event );
 
-			if ( _atomsInspector->hasTarget( castedEvent.ptr ) )
-			{
-				_atomsInspector->removeTarget( castedEvent.ptr );
-
-				if ( _atomsInspector->getTargets().size() <= 0 )
-					_atomsInspector->setVisible( false );
-
-				refresh();
-			}
+			_removeTargetToInspector<MultipleAtomWidget>( INSPECTOR_TYPE::ATOM, castedEvent.ptr );
 		}
 		else if ( p_event.name == Event::Global::VIEWPOINT_REMOVED )
 		{
 			const Event::VTXEventPtr<Model::Viewpoint> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
 
-			if ( _viewpointsInspector->hasTarget( castedEvent.ptr ) )
-			{
-				_viewpointsInspector->removeTarget( castedEvent.ptr );
-
-				if ( _viewpointsInspector->getTargets().size() <= 0 )
-					_viewpointsInspector->setVisible( false );
-
-				refresh();
-			}
+			_removeTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, castedEvent.ptr );
 		}
 		else if ( p_event.name == Event::Global::LABEL_REMOVED )
 		{
@@ -124,21 +85,18 @@ namespace VTX::UI::Widget::Inspector
 				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
 
 			const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
-
 			if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 			{
 				Model::Measurement::Distance * const distanceModel
 					= dynamic_cast<Model::Measurement::Distance *>( castedEvent.ptr );
-				;
-				if ( _measurementDistanceInspector->hasTarget( distanceModel ) )
-				{
-					_measurementDistanceInspector->removeTarget( distanceModel );
-
-					if ( _measurementDistanceInspector->getTargets().size() <= 0 )
-						_measurementDistanceInspector->setVisible( false );
-
-					refresh();
-				}
+				_removeTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
+																			distanceModel );
+			}
+			else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
+			{
+				Model::Measurement::Angle * const angleModel
+					= dynamic_cast<Model::Measurement::Angle *>( castedEvent.ptr );
+				_removeTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, angleModel );
 			}
 		}
 	}
@@ -189,26 +147,30 @@ namespace VTX::UI::Widget::Inspector
 		_scrollArea->setWidgetResizable( true );
 		_scrollArea->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored );
 
-		_moleculesInspector
+		_inspectors.resize( int( INSPECTOR_TYPE::COUNT ) );
+
+		_inspectors[ int( INSPECTOR_TYPE::MOLECULE ) ]
 			= WidgetFactory::get().instantiateWidget<MultipleMoleculeWidget>( this, "multipleMoleculeInspector" );
-		_chainsInspector
+		_inspectors[ int( INSPECTOR_TYPE::CHAIN ) ]
 			= WidgetFactory::get().instantiateWidget<MultipleChainWidget>( this, "multipleChainInspector" );
-		_residuesInspector
+		_inspectors[ int( INSPECTOR_TYPE::RESIDUE ) ]
 			= WidgetFactory::get().instantiateWidget<MultipleResidueWidget>( this, "multipleResidueInspector" );
-		_atomsInspector = WidgetFactory::get().instantiateWidget<MultipleAtomWidget>( this, "multipleAtomInspector" );
-		_viewpointsInspector
+		_inspectors[ int( INSPECTOR_TYPE::ATOM ) ]
+			= WidgetFactory::get().instantiateWidget<MultipleAtomWidget>( this, "multipleAtomInspector" );
+		_inspectors[ int( INSPECTOR_TYPE::VIEWPOINT ) ]
 			= WidgetFactory::get().instantiateWidget<MultipleViewpointWidget>( this, "multipleViewpointInspector" );
-		_measurementDistanceInspector = WidgetFactory::get().instantiateWidget<MultipleMeasurmentDistanceWidget>(
-			this, "multipleMeasurementDistanceInspector" );
+		_inspectors[ int( INSPECTOR_TYPE::MEASURE_DISTANCE ) ]
+			= WidgetFactory::get().instantiateWidget<MultipleMeasurmentDistanceWidget>(
+				this, "multipleMeasurementDistanceInspector" );
+		_inspectors[ int( INSPECTOR_TYPE::MEASURE_ANGLE ) ]
+			= WidgetFactory::get().instantiateWidget<MultipleMeasurmentAngleWidget>(
+				this, "multipleMeasurementAngleInspector" );
 
-		_verticalLayout->addWidget( _moleculesInspector );
-		_verticalLayout->addWidget( _chainsInspector );
-		_verticalLayout->addWidget( _residuesInspector );
-		_verticalLayout->addWidget( _atomsInspector );
-		_verticalLayout->addWidget( _viewpointsInspector );
-		_verticalLayout->addWidget( _measurementDistanceInspector );
+		for ( InspectorItemWidget * const inspector : _inspectors )
+		{
+			_verticalLayout->addWidget( inspector );
+		}
 		_verticalLayout->addStretch( 1000 );
-
 		mainLayout->addWidget( _scrollArea, 1000 );
 		mainLayout->addWidget( toolbar );
 
@@ -240,8 +202,7 @@ namespace VTX::UI::Widget::Inspector
 
 					if ( moleculeSelection.getFullySelectedChildCount() == molecule.getRealChainCount() )
 					{
-						_moleculesInspector->addTarget( &molecule );
-						_moleculesInspector->setVisible( true );
+						_addTargetToInspector<MultipleMoleculeWidget>( INSPECTOR_TYPE::MOLECULE, &molecule );
 					}
 					else
 					{
@@ -251,8 +212,7 @@ namespace VTX::UI::Widget::Inspector
 
 							if ( chainData.second.getFullySelectedChildCount() == chain->getRealResidueCount() )
 							{
-								_chainsInspector->addTarget( chain );
-								_chainsInspector->setVisible( true );
+								_addTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::CHAIN, chain );
 							}
 							else
 							{
@@ -263,16 +223,14 @@ namespace VTX::UI::Widget::Inspector
 									if ( residueData.second.getFullySelectedChildCount()
 										 == residue->getRealAtomCount() )
 									{
-										_residuesInspector->addTarget( residue );
-										_residuesInspector->setVisible( true );
+										_addTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::RESIDUE, residue );
 									}
 									else
 									{
 										for ( const uint & atomID : residueData.second )
 										{
 											Model::Atom * const atom = molecule.getAtom( atomID );
-											_atomsInspector->addTarget( atom );
-											_atomsInspector->setVisible( true );
+											_addTargetToInspector<MultipleAtomWidget>( INSPECTOR_TYPE::ATOM, atom );
 										}
 									}
 								}
@@ -283,49 +241,32 @@ namespace VTX::UI::Widget::Inspector
 				else if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
 				{
 					Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
-					_viewpointsInspector->addTarget( &viewpoint );
-					_viewpointsInspector->setVisible( true );
+					_addTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, &viewpoint );
 				}
 				else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
 				{
 					Model::Measurement::Distance & distanceModel
 						= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
-					_measurementDistanceInspector->addTarget( &distanceModel );
-					_measurementDistanceInspector->setVisible( true );
+					_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
+																			 &distanceModel );
+				}
+				else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_ANGLE )
+				{
+					Model::Measurement::Angle & angleModel
+						= MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
+					_addTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, &angleModel );
 				}
 			}
 		}
 
 		bool allInspectorHidden = true;
-		if ( _moleculesInspector->isVisible() )
+		for ( InspectorItemWidget * inspector : _inspectors )
 		{
-			allInspectorHidden = false;
-			_moleculesInspector->refresh();
-		}
-		if ( _chainsInspector->isVisible() )
-		{
-			allInspectorHidden = false;
-			_chainsInspector->refresh();
-		}
-		if ( _residuesInspector->isVisible() )
-		{
-			allInspectorHidden = false;
-			_residuesInspector->refresh();
-		}
-		if ( _atomsInspector->isVisible() )
-		{
-			allInspectorHidden = false;
-			_atomsInspector->refresh();
-		}
-		if ( _viewpointsInspector->isVisible() )
-		{
-			allInspectorHidden = false;
-			_viewpointsInspector->refresh();
-		}
-		if ( _measurementDistanceInspector->isVisible() )
-		{
-			allInspectorHidden = false;
-			_measurementDistanceInspector->refresh();
+			const bool inspectorIsVisible = inspector->isVisible();
+			allInspectorHidden			  = allInspectorHidden && !inspectorIsVisible;
+
+			if ( inspectorIsVisible )
+				inspector->refresh();
 		}
 
 		// Unfreeze Inspector when every frozen items are destroyed
@@ -337,18 +278,11 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !isFreezed() )
 		{
-			_moleculesInspector->clearTargets();
-			_moleculesInspector->setVisible( false );
-			_chainsInspector->clearTargets();
-			_chainsInspector->setVisible( false );
-			_residuesInspector->clearTargets();
-			_residuesInspector->setVisible( false );
-			_atomsInspector->clearTargets();
-			_atomsInspector->setVisible( false );
-			_viewpointsInspector->clearTargets();
-			_viewpointsInspector->setVisible( false );
-			_measurementDistanceInspector->clearTargets();
-			_measurementDistanceInspector->setVisible( false );
+			for ( InspectorItemWidget * inspector : _inspectors )
+			{
+				inspector->clearTargets();
+				inspector->setVisible( false );
+			}
 
 			_inspectorViewsData.clear();
 		}

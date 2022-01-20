@@ -24,6 +24,7 @@
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "tool/chrono.hpp"
+#include "util/label.hpp"
 #include "util/molecule.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
@@ -115,8 +116,7 @@ namespace VTX::Action::Selection
 					Model::Viewpoint & model = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelId );
 					viewpoints.emplace_back( &model );
 				}
-				else if ( modelTypeId == VTX::ID::Model::MODEL_LABEL
-						  || modelTypeId == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
+				else if ( Util::Label::isLabelType( modelTypeId ) )
 				{
 					Model::Label & model = MVC::MvcManager::get().getModel<Model::Label>( modelId );
 					labels.emplace_back( &model );
@@ -1085,8 +1085,7 @@ namespace VTX::Action::Selection
 
 					path->refreshAllDurations();
 				}
-				else if ( modelTypeID == VTX::ID::Model::MODEL_LABEL
-						  || modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
+				else if ( Util::Label::isLabelType( modelTypeID ) )
 				{
 					Model::Label & label = MVC::MvcManager::get().getModel<Model::Label>( selectedObjectID );
 					VTXApp::get().getScene().removeLabel( &label );
