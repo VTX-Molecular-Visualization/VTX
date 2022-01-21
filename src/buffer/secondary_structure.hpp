@@ -41,14 +41,14 @@ namespace VTX
 				RESIDUE_ID					= 6,
 			};
 
-			Renderer::GL::Buffer _vboPositions			 = Renderer::GL::Buffer();
-			Renderer::GL::Buffer _vboDirections			 = Renderer::GL::Buffer();
-			Renderer::GL::Buffer _vboSecondaryStructures = Renderer::GL::Buffer();
-			Renderer::GL::Buffer _vboColors				 = Renderer::GL::Buffer();
-			Renderer::GL::Buffer _vboVisibilities		 = Renderer::GL::Buffer();
-			Renderer::GL::Buffer _vboSelections			 = Renderer::GL::Buffer();
-			Renderer::GL::Buffer _vboIds				 = Renderer::GL::Buffer();
-			Renderer::GL::Buffer _ibo					 = Renderer::GL::Buffer();
+			Renderer::GL::BufferData _vboPositions			 = Renderer::GL::BufferData();
+			Renderer::GL::BufferData _vboDirections			 = Renderer::GL::BufferData();
+			Renderer::GL::BufferData _vboSecondaryStructures = Renderer::GL::BufferData();
+			Renderer::GL::BufferData _vboColors				 = Renderer::GL::BufferData();
+			Renderer::GL::BufferData _vboVisibilities		 = Renderer::GL::BufferData();
+			Renderer::GL::BufferData _vboSelections			 = Renderer::GL::BufferData();
+			Renderer::GL::BufferData _vboIds				 = Renderer::GL::BufferData();
+			Renderer::GL::BufferData _ibo					 = Renderer::GL::BufferData();
 		};
 	} // namespace Buffer
 } // namespace VTX

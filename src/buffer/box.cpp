@@ -19,12 +19,12 @@ namespace VTX::Buffer
 
 	void Box::setCorners( const std::vector<Vec3f> & p_positions )
 	{
-		_vbo.set<Vec3f>( p_positions, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vbo.set<Vec3f>( p_positions, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void Box::setIndices( const std::vector<uint> & p_indices )
 	{
-		_ibo.set<uint>( p_indices, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_ibo.set<uint>( p_indices, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 } // namespace VTX::Buffer

@@ -57,37 +57,37 @@ namespace VTX::Buffer
 
 	void Molecule::setAtomPositions( const std::vector<Vec3f> & p_positions )
 	{
-		_vboAtomPositions.set<Vec3f>( p_positions, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboAtomPositions.set<Vec3f>( p_positions, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void Molecule::setAtomRadius( const std::vector<float> & p_radius )
 	{
-		_vboAtomRadii.set<float>( p_radius, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboAtomRadii.set<float>( p_radius, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void Molecule::setAtomColors( const std::vector<Color::Rgb> & p_colors )
 	{
-		_vboAtomColors.set<Color::Rgb>( p_colors, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboAtomColors.set<Color::Rgb>( p_colors, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void Molecule::setAtomVisibilities( const std::vector<uint> & p_visibilities )
 	{
-		_vboAtomVisibilities.set<uint>( p_visibilities, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboAtomVisibilities.set<uint>( p_visibilities, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void Molecule::setAtomSelections( const std::vector<uint> & p_selections )
 	{
-		_vboAtomSelections.set<uint>( p_selections, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboAtomSelections.set<uint>( p_selections, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void Molecule::setAtomIds( const std::vector<Model::ID> & p_ids )
 	{
-		_vboAtomIds.set<Model::ID>( p_ids, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboAtomIds.set<Model::ID>( p_ids, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void Molecule::setBonds( const std::vector<uint> & p_bonds )
 	{
-		_iboBonds.set<uint>( p_bonds, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_iboBonds.set<uint>( p_bonds, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 } // namespace VTX::Buffer

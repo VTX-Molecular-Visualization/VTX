@@ -6,7 +6,7 @@
 
 namespace VTX::Renderer::GL
 {
-	class BufferObject : public Generic::BaseOpenGL
+	class BufferStorage : public Generic::BaseOpenGL
 	{
 	  public:
 		// See https://docs.gl/gl4/glBufferStorage.
@@ -39,9 +39,9 @@ namespace VTX::Renderer::GL
 			CLIENT_STORAGE_BIT	= GL_CLIENT_STORAGE_BIT
 		};
 
-		BufferObject() = default;
+		BufferStorage() = default;
 
-		~BufferObject() { destroy(); }
+		~BufferStorage() { destroy(); }
 
 		void create( const Target & p_target ) { _gl->glCreateBuffers( 1, &_id ); }
 
