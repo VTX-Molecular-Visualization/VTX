@@ -14,7 +14,6 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-
 		class SecondaryStructure : public BaseModel3D<Buffer::SecondaryStructure>
 		{
 			VTX_MODEL

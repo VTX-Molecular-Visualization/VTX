@@ -1,5 +1,5 @@
-#ifndef __VTX_SNAPSHOTER__
-#define __VTX_SNAPSHOTER__
+#ifndef __VTX_WORKER_SNAPSHOTER__
+#define __VTX_WORKER_SNAPSHOTER__
 
 #include "base_worker.hpp"
 #include "io/filepath.hpp"
@@ -25,14 +25,7 @@ namespace VTX::Worker
 							 const IO::Struct::ImageExport & p_exportData );
 
 	  protected:
-		void _run() override
-		{
-			switch ( _mode )
-			{
-			case MODE::GL: _takeSnapshotGL(); break;
-			default: break;
-			}
-		}
+		void _run() override;
 
 	  private:
 		const void _takeSnapshotGL() const;

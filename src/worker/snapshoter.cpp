@@ -33,10 +33,19 @@ namespace VTX::Worker
 		_imageTarget = p_imageTarget;
 	}
 
+	void Snapshoter::_run()
+	{
+		switch ( _mode )
+		{
+		case MODE::GL: _takeSnapshotGL(); break;
+		default: break;
+		}
+	}
+
 	const void Snapshoter::_takeSnapshotGL() const
 	{
-		UI::Widget::Render::OpenGLWidget & glWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
-		const float pixelRatio									= VTXApp::get().getPixelRatio();
+		UI::Widget::Render::OpenGLWidget & glWidget	  = VTXApp::get().getMainWindow().getOpenGLWidget();
+		const float						   pixelRatio = VTXApp::get().getPixelRatio();
 
 		// Create offscreen surface.
 		QOffscreenSurface surface;

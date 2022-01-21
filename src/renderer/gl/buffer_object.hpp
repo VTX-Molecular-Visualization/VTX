@@ -72,7 +72,7 @@ namespace VTX::Renderer::GL
 		void unbind() const { _gl->glBindBuffer( GLenum( _target ), 0 ); }
 
 		template<typename T>
-		inline void set( const std::vector<T> & p_vector, const Flags & p_flags ) const
+		inline void set( const std::vector<T> & p_vector, const Flags & p_flags = 0 ) const
 		{
 			_gl->glNamedBufferStorage( _id, sizeof( T ) * GLsizei( p_vector.size() ), p_vector.data(), p_flags );
 		}

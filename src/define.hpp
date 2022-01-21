@@ -54,6 +54,7 @@ namespace VTX
 	constexpr float FLOAT_MIN = std::numeric_limits<float>::lowest();
 	constexpr float FLOAT_MAX = std::numeric_limits<float>::max();
 	constexpr float FLOAT_INF = std::numeric_limits<float>::infinity();
+	constexpr float EPSILON	  = 1e-4f;
 
 	constexpr float PIf		 = glm::pi<float>();
 	constexpr float PI_2f	 = glm::half_pi<float>();
