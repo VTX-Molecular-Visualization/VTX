@@ -40,9 +40,6 @@ namespace VTX::Buffer
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
 	}
 
-	void MeshTriangle::bind() { _vao.bind(); }
-	void MeshTriangle::unbind() { _vao.unbind(); }
-
 	void MeshTriangle::setPositions( const std::vector<Vec3f> & p_positions )
 	{
 		_vboPositions.set<Vec3f>( p_positions, Renderer::GL::Buffer::Usage::STATIC_DRAW );

@@ -17,9 +17,6 @@ namespace VTX::Buffer
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::AABB_CORNER, ATTRIBUTE_LOCATION::AABB_CORNER );
 	}
 
-	void Box::bind() { _vao.bind(); }
-	void Box::unbind() { _vao.unbind(); }
-
 	void Box::setCorners( const std::vector<Vec3f> & p_positions )
 	{
 		_vbo.set<Vec3f>( p_positions, Renderer::GL::Buffer::Usage::STATIC_DRAW );

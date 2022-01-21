@@ -55,9 +55,6 @@ namespace VTX::Buffer
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_ID, ATTRIBUTE_LOCATION::ATOM_ID );
 	}
 
-	void Molecule::bind() { _vao.bind(); }
-	void Molecule::unbind() { _vao.unbind(); }
-
 	void Molecule::setAtomPositions( const std::vector<Vec3f> & p_positions )
 	{
 		_vboAtomPositions.set<Vec3f>( p_positions, Renderer::GL::Buffer::Usage::STATIC_DRAW );

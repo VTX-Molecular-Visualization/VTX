@@ -15,11 +15,15 @@ namespace VTX
 			BaseBufferOpenGL()			= default;
 			virtual ~BaseBufferOpenGL() = default;
 
-			virtual const Renderer::GL::VertexArray & getVao() const = 0;
+			virtual const Renderer::GL::VertexArray & getVao() const { return _vao; }
 
 			virtual void generate() = 0;
-			virtual void bind()		= 0;
-			virtual void unbind()	= 0;
+
+			virtual void bind() { _vao.bind(); }
+			virtual void unbind() { _vao.unbind(); }
+
+		  protected:
+			Renderer::GL::VertexArray _vao = Renderer::GL::VertexArray();
 		};
 	} // namespace Buffer
 } // namespace VTX

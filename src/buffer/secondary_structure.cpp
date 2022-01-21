@@ -69,9 +69,6 @@ namespace VTX::Buffer
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::RESIDUE_ID, ATTRIBUTE_LOCATION::RESIDUE_ID );
 	}
 
-	void SecondaryStructure::bind() { _vao.bind(); }
-	void SecondaryStructure::unbind() { _vao.unbind(); }
-
 	void SecondaryStructure::setControlPointPositions( const std::vector<Vec4f> & p_positions )
 	{
 		_vboPositions.set<Vec4f>( p_positions, Renderer::GL::Buffer::Usage::STATIC_DRAW );

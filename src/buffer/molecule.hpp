@@ -18,11 +18,7 @@ namespace VTX
 			Molecule()	= default;
 			~Molecule() = default;
 
-			const Renderer::GL::VertexArray & getVao() const override { return _vao; }
-
 			void generate() override;
-			void bind() override;
-			void unbind() override;
 
 			void setAtomPositions( const std::vector<Vec3f> & );
 			void setAtomRadius( const std::vector<float> & );
@@ -43,14 +39,13 @@ namespace VTX
 				ATOM_ID			= 5,
 			};
 
-			Renderer::GL::Buffer	  _vboAtomPositions	   = Renderer::GL::Buffer();
-			Renderer::GL::Buffer	  _vboAtomRadii		   = Renderer::GL::Buffer();
-			Renderer::GL::Buffer	  _vboAtomColors	   = Renderer::GL::Buffer();
-			Renderer::GL::Buffer	  _vboAtomVisibilities = Renderer::GL::Buffer();
-			Renderer::GL::Buffer	  _vboAtomSelections   = Renderer::GL::Buffer();
-			Renderer::GL::Buffer	  _vboAtomIds		   = Renderer::GL::Buffer();
-			Renderer::GL::Buffer	  _iboBonds			   = Renderer::GL::Buffer();
-			Renderer::GL::VertexArray _vao				   = Renderer::GL::VertexArray();
+			Renderer::GL::Buffer _vboAtomPositions	  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _vboAtomRadii		  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _vboAtomColors		  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _vboAtomVisibilities = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _vboAtomSelections	  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _vboAtomIds		  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _iboBonds			  = Renderer::GL::Buffer();
 		};
 	} // namespace Buffer
 } // namespace VTX
