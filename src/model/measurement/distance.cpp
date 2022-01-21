@@ -153,30 +153,29 @@ namespace VTX::Model::Measurement
 		MoleculeView * const firstMoleculeView
 			= MVC::MvcManager::get().instantiateView<MoleculeView>( _atoms[ 0 ]->getMoleculePtr(), getViewID( 0 ) );
 		firstMoleculeView->setCallback( this, &Distance::_onMoleculeChange );
-		_moleculeViews.emplace_back( firstMoleculeView );
+		_moleculeViews[ 0 ] = firstMoleculeView;
 
 		if ( _atoms[ 0 ]->getMoleculePtr() != _atoms[ 1 ]->getMoleculePtr() )
 		{
 			MoleculeView * const secondMoleculeView
 				= MVC::MvcManager::get().instantiateView<MoleculeView>( _atoms[ 1 ]->getMoleculePtr(), getViewID( 1 ) );
 			secondMoleculeView->setCallback( this, &Distance::_onMoleculeChange );
-			_moleculeViews.emplace_back( secondMoleculeView );
+			_moleculeViews[ 1 ] = firstMoleculeView;
 		}
 	}
 
 	void Distance::_cleanViews()
 	{
-		if ( _moleculeViews.size() > 0 )
+		for ( int i = 0; i < _moleculeViews.size(); i++ )
 		{
-			MVC::MvcManager::get().deleteView( _atoms[ 0 ]->getMoleculePtr(), getViewID( 0 ) );
-		}
+			MoleculeView * const view = _moleculeViews[ i ];
 
-		if ( _moleculeViews.size() > 1 )
-		{
-			MVC::MvcManager::get().deleteView( _atoms[ 1 ]->getMoleculePtr(), getViewID( 1 ) );
+			if ( view != nullptr )
+			{
+				MVC::MvcManager::get().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
+				_moleculeViews[ i ] = nullptr;
+			}
 		}
-
-		_moleculeViews.clear();
 	}
 
 	void Distance::_onMoleculeChange( const Model::Molecule * const p_molecule, const Event::VTXEvent * const p_event )

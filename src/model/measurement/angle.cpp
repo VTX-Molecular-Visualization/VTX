@@ -172,14 +172,28 @@ namespace VTX::Model::Measurement
 
 	void Angle::_instantiateViewsOnMolecules()
 	{
+		std::vector<Model::Molecule *> viewedMolecules = std::vector<Model::Molecule *>();
+		viewedMolecules.reserve( _moleculeViews.size() );
+
 		for ( int i = 0; i < _atoms.size(); i++ )
 		{
 			if ( _atoms[ i ] != nullptr )
 			{
-				MoleculeView * const moleculeView = MVC::MvcManager::get().instantiateView<MoleculeView>(
-					_atoms[ i ]->getMoleculePtr(), getViewID( i ) );
-				moleculeView->setCallback( this, &Angle::_onMoleculeChange );
-				_moleculeViews[ i ] = moleculeView;
+				Model::Molecule * const molecule = _atoms[ i ]->getMoleculePtr();
+
+				if ( std::find( viewedMolecules.begin(), viewedMolecules.end(), molecule ) == viewedMolecules.end() )
+				{
+					MoleculeView * const moleculeView
+						= MVC::MvcManager::get().instantiateView<MoleculeView>( molecule, getViewID( i ) );
+
+					moleculeView->setCallback( this, &Angle::_onMoleculeChange );
+					_moleculeViews[ i ] = moleculeView;
+					viewedMolecules.emplace_back( molecule );
+				}
+			}
+			else
+			{
+				_moleculeViews[ i ] = nullptr;
 			}
 		}
 	}

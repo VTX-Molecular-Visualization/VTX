@@ -5,6 +5,7 @@
 #include "event/event_manager.hpp"
 #include "model/label.hpp"
 #include "model/measurement/angle.hpp"
+#include "model/measurement/dihedral_angle.hpp"
 #include "model/measurement/distance.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -15,6 +16,7 @@
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/measurement/angle_render_view.hpp"
+#include "view/ui/widget/measurement/dihedral_angle_render_view.hpp"
 #include "view/ui/widget/measurement/distance_render_view.hpp"
 #include "vtx_app.hpp"
 #include <QShortcut>
@@ -65,7 +67,7 @@ namespace VTX::UI::Widget::Render
 															  Model::Measurement::Distance>(
 										   distanceModel, ID::View::UI_RENDER_MEASUREMENT_DISTANCE, this, "Distance" );
 			}
-			if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
+			else if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
 			{
 				Model::Measurement::Angle * const angleModel
 					= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
@@ -73,7 +75,20 @@ namespace VTX::UI::Widget::Render
 				integratedWidget = WidgetFactory::get()
 									   .instantiateViewWidget<View::UI::Widget::Measurement::AngleRenderView,
 															  Model::Measurement::Angle>(
-										   angleModel, ID::View::UI_RENDER_MEASUREMENT_ANGLE, this, "Distance" );
+										   angleModel, ID::View::UI_RENDER_MEASUREMENT_ANGLE, this, "Angle" );
+			}
+			else if ( labeltype == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+			{
+				Model::Measurement::DihedralAngle * const dihedralAngleModel
+					= static_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
+
+				integratedWidget = WidgetFactory::get()
+									   .instantiateViewWidget<View::UI::Widget::Measurement::DihedralAngleRenderView,
+															  Model::Measurement::DihedralAngle>(
+										   dihedralAngleModel,
+										   ID::View::UI_RENDER_MEASUREMENT_DIHEDRAL_ANGLE,
+										   this,
+										   "DihedralAngle" );
 			}
 
 			if ( integratedWidget != nullptr )
@@ -84,12 +99,31 @@ namespace VTX::UI::Widget::Render
 			const Event::VTXEventPtr<Model::Label> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
 
-			View::UI::Widget::Measurement::DistanceRenderView * const distanceView
-				= MVC::MvcManager::get().getView<View::UI::Widget::Measurement::DistanceRenderView>(
-					castedEvent.ptr, ID::View::UI_RENDER_MEASUREMENT_DISTANCE );
+			const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
 
-			_integratedWidgets.erase( std::find( _integratedWidgets.begin(), _integratedWidgets.end(), distanceView ) );
-			MVC::MvcManager::get().deleteView( castedEvent.ptr, ID::View::UI_RENDER_MEASUREMENT_DISTANCE );
+			if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+			{
+				const Model::Measurement::Distance * const model
+					= dynamic_cast<const Model::Measurement::Distance *>( castedEvent.ptr );
+				_removeViewIntegratedWidget<View::UI::Widget::Measurement::DistanceRenderView,
+											Model::Measurement::Distance>( model,
+																		   ID::View::UI_RENDER_MEASUREMENT_DISTANCE );
+			}
+			else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
+			{
+				const Model::Measurement::Angle * const model
+					= dynamic_cast<const Model::Measurement::Angle *>( castedEvent.ptr );
+				_removeViewIntegratedWidget<View::UI::Widget::Measurement::AngleRenderView, Model::Measurement::Angle>(
+					model, ID::View::UI_RENDER_MEASUREMENT_ANGLE );
+			}
+			else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+			{
+				const Model::Measurement::DihedralAngle * const model
+					= dynamic_cast<const Model::Measurement::DihedralAngle *>( castedEvent.ptr );
+				_removeViewIntegratedWidget<View::UI::Widget::Measurement::DihedralAngleRenderView,
+											Model::Measurement::DihedralAngle>(
+					model, ID::View::UI_RENDER_MEASUREMENT_DIHEDRAL_ANGLE );
+			}
 		}
 
 		_openGLWidget->doneCurrent();

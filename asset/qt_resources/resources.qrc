@@ -68,6 +68,7 @@
 	<file>sprite/refresh_icon_hovered.png</file>
 	<file>sprite/remove_icon.png</file>
 	<file>sprite/remove_icon_hovered.png</file>
+	<file>sprite/render/dihedral_angle_icon.png</file>
 	<file>sprite/render_effect_preset_icon.png</file>
 	<file>sprite/render_effect_settings_icon.png</file>
 	<file>sprite/representation_ball_and_stick_icon.png</file>

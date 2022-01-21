@@ -2,7 +2,10 @@
 #include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/label.hpp"
+#include "model/measurement/angle.hpp"
+#include "model/measurement/dihedral_angle.hpp"
 #include "model/measurement/distance.hpp"
+#include "model/measurement/distance_to_cycle.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
 #include "model/representation/representation_library.hpp"
@@ -15,7 +18,9 @@
 #include "ui/widget/inspector/multiple_atom_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_chain_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_measurement_angle_inspector_widget.hpp"
+#include "ui/widget/inspector/multiple_measurement_dihedral_angle_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_measurement_distance_inspector_widget.hpp"
+#include "ui/widget/inspector/multiple_measurement_distance_to_cycle_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_molecule_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_residue_inspector_widget.hpp"
 #include "ui/widget/inspector/multiple_viewpoint_inspector_widget.hpp"
@@ -92,11 +97,25 @@ namespace VTX::UI::Widget::Inspector
 				_removeTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
 																			distanceModel );
 			}
+			// else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+			//{
+			//	Model::Measurement::DistanceToCycle * const angleModel
+			//		= dynamic_cast<Model::Measurement::DistanceToCycle *>( castedEvent.ptr );
+			//	_removeTargetToInspector<MultipleMeasurmentDistanceToCycleWidget>(
+			//		INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE, angleModel );
+			//}
 			else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
 			{
 				Model::Measurement::Angle * const angleModel
 					= dynamic_cast<Model::Measurement::Angle *>( castedEvent.ptr );
 				_removeTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, angleModel );
+			}
+			else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+			{
+				Model::Measurement::DihedralAngle * const angleModel
+					= dynamic_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
+				_removeTargetToInspector<MultipleMeasurmentDihedralAngleWidget>( INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE,
+																				 angleModel );
 			}
 		}
 	}
@@ -162,8 +181,14 @@ namespace VTX::UI::Widget::Inspector
 		_inspectors[ int( INSPECTOR_TYPE::MEASURE_DISTANCE ) ]
 			= WidgetFactory::get().instantiateWidget<MultipleMeasurmentDistanceWidget>(
 				this, "multipleMeasurementDistanceInspector" );
+		_inspectors[ int( INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE) ]
+			= WidgetFactory::get().instantiateWidget<MultipleMeasurmentDistanceWidget>(
+				this, "multipleMeasurementAngleInspector" );
 		_inspectors[ int( INSPECTOR_TYPE::MEASURE_ANGLE ) ]
 			= WidgetFactory::get().instantiateWidget<MultipleMeasurmentAngleWidget>(
+				this, "multipleMeasurementAngleInspector" );
+		_inspectors[ int( INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE ) ]
+			= WidgetFactory::get().instantiateWidget<MultipleMeasurmentDihedralAngleWidget>(
 				this, "multipleMeasurementAngleInspector" );
 
 		for ( InspectorItemWidget * const inspector : _inspectors )
@@ -255,6 +280,19 @@ namespace VTX::UI::Widget::Inspector
 					Model::Measurement::Angle & angleModel
 						= MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
 					_addTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, &angleModel );
+				}
+				else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+				{
+					Model::Measurement::DihedralAngle & dihedralAngleModel
+						= MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
+					_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>( INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE, &dihedralAngleModel );
+				}
+				else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+				{
+					Model::Measurement::Distance & distanceModel
+						= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+					_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
+																			 &distanceModel );
 				}
 			}
 		}
