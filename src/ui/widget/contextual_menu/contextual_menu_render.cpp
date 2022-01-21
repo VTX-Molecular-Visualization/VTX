@@ -2,12 +2,25 @@
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
+#include "state/visualization.hpp"
 #include "ui/dialog.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX::UI::Widget::ContextualMenu
 {
-	ContextualMenuRender::ContextualMenuRender( QWidget * const p_parent ) : BaseContextualMenu( p_parent ) {}
+	ContextualMenuRender::ContextualMenuRender( QWidget * const p_parent ) : BaseContextualMenu( p_parent )
+	{
+		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
+	}
 	ContextualMenuRender ::~ContextualMenuRender() {}
+
+	void ContextualMenuRender ::receiveEvent( const Event::VTXEvent & p_event )
+	{
+		if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		{
+			_refreshPickerMode();
+		}
+	}
 
 	void ContextualMenuRender::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
 	void ContextualMenuRender::_setupSlots()
@@ -17,8 +30,10 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Download Molecule", this, &ContextualMenuRender::_downloadMoleculeAction );
 
 		addSection( "Mouse Mode" );
-		addAction( "Selection", this, &ContextualMenuRender::_setPickerToSelection );
-		addAction( "Measurement", this, &ContextualMenuRender::_setPickerToMeasurement );
+		_selectionModeAction = addAction( "Selection", this, &ContextualMenuRender::_setPickerToSelection );
+		_selectionModeAction->setCheckable( true );
+		_measurementModeAction = addAction( "Measurement", this, &ContextualMenuRender::_setPickerToMeasurement );
+		_measurementModeAction->setCheckable( true );
 
 		addSection( "Actions" );
 		addAction( "Show All", this, &ContextualMenuRender::_showAllMoleculesAction );
@@ -54,9 +69,22 @@ namespace VTX::UI::Widget::ContextualMenu
 		connect( measurementModeMenu, &QMenu::triggered, this, &ContextualMenuRender::_setMeasurementMode );
 
 		addMenu( measurementModeMenu );
+
+		_refreshPickerMode();
 	}
 
 	void ContextualMenuRender::localize() {}
+
+	void ContextualMenuRender::_refreshPickerMode() const
+	{
+		const ID::VTX_ID & pickerID = VTXApp::get()
+										  .getStateMachine()
+										  .getState<State::Visualization>( ID::State::VISUALIZATION )
+										  ->getCurrentPickerID();
+
+		_selectionModeAction->setChecked( pickerID == ID::Controller::PICKER );
+		_measurementModeAction->setChecked( pickerID == ID::Controller::MEASUREMENT );
+	}
 
 	void ContextualMenuRender::_loadMoleculeAction() const { UI::Dialog::openLoadMoleculeDialog(); }
 	void ContextualMenuRender::_downloadMoleculeAction() const { UI::Dialog::openDownloadMoleculeDialog(); }

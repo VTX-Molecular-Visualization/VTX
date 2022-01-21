@@ -75,13 +75,11 @@ namespace VTX::UI::Widget::Render::Overlay
 						  ":/sprite/measurement_distance_icon.png" ),
 			MenuItemData( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE,
 						  "Distance to cycle",
-						  ":/sprite/measurement_distance_icon.png" ),
-			MenuItemData( Controller::MeasurementPicker::Mode::ANGLE,
-						  "Angle",
-						  ":/sprite/measurement_distance_icon.png" ),
+						  ":/sprite/measurement_distance_to_cycle_icon.png" ),
+			MenuItemData( Controller::MeasurementPicker::Mode::ANGLE, "Angle", ":/sprite/measurement_angle_icon.png" ),
 			MenuItemData( Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE,
 						  "Dihedral angle",
-						  ":/sprite/measurement_distance_icon.png" ),
+						  ":/sprite/measurement_dihedral_angle_icon.png" ),
 		};
 
 		inline static const char * CAMERA_CONTROLLER_PROPERTY_NAME = "CAMERA_CONTROLLER";

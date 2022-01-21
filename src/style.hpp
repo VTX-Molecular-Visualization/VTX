@@ -5,6 +5,7 @@
 #include "model/representation/representation_enum.hpp"
 #include "selection/selection_enum.hpp"
 #include "tool/logger.hpp"
+#include "util/label.hpp"
 #include <QChar>
 #include <QColor>
 #include <QFont>
@@ -63,6 +64,7 @@ namespace VTX
 			const QPixmap ATOM_SYMBOL;
 			const QPixmap REPRESENTATION_SYMBOL;
 			const QPixmap VIEWPOINT_SYMBOL;
+			const QPixmap LABEL_SYMBOL;
 
 			const QPixmap REPRESENTATION_STICK_ICON;
 			const QPixmap REPRESENTATION_BALL_AND_STICK_ICON;
@@ -119,6 +121,10 @@ namespace VTX
 					res = &VIEWPOINT_SYMBOL;
 				else if ( p_id == VTX::ID::Model::MODEL_VIEWPOINT )
 					res = &VIEWPOINT_SYMBOL;
+				else if ( Util::Label::isLabelType( p_id ) )
+				{
+					res = &LABEL_SYMBOL;
+				}
 				else
 				{
 					VTX_WARNING( "Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." );
@@ -185,6 +191,7 @@ namespace VTX
 				ATOM_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
 				REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
 				VIEWPOINT_SYMBOL( QPixmap( ":/sprite/symbol/viewpoint_symbol_icon.png" ) ),
+				LABEL_SYMBOL( QPixmap( ":/sprite/symbol/label_symbol_icon.png" ) ),
 
 				REPRESENTATION_STICK_ICON( QPixmap( ":/sprite/representation_stick_icon.png" ) ),
 				REPRESENTATION_BALL_AND_STICK_ICON( QPixmap( ":/sprite/representation_ball_and_stick_icon.png" ) ),
@@ -253,12 +260,30 @@ namespace VTX
 		inline static const float  WORLD_LABEL_MIN_TEXT_SCALE = 0.1f;
 		inline static const float  WORLD_LABEL_MAX_TEXT_SCALE = 1.f;
 
-		inline static const int			 MEASUREMENT_DISTANCE_NB_DECIMALS			   = 2;
-		inline static const int			 MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS	   = 1;
-		inline static const int			 MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS = 1;
-		inline static const int			 MEASUREMENT_DISTANCE_LABEL_MAX_LINE_THICKNESS = 5;
-		inline static const QColor		 MEASUREMENT_DISTANCE_LINE_COLOR			   = Qt::GlobalColor::blue;
-		inline static const Qt::PenStyle MEASUREMENT_DISTANCE_LINE_STYLE			   = Qt::PenStyle::DashLine;
+		inline static const int MEASUREMENT_DISTANCE_NB_DECIMALS = 2;
+
+		inline static const int LABEL_RENDER_POINT_RADIUS		= 1;
+		inline static const int LABEL_RENDER_MIN_LINE_THICKNESS = 1;
+		inline static const int LABEL_RENDER_MAX_LINE_THICKNESS = 5;
+		inline static const int LABEL_RENDER_POINT_MAX_DIAMETER
+			= LABEL_RENDER_MAX_LINE_THICKNESS + LABEL_RENDER_POINT_RADIUS * 2;
+		inline static const QColor LABEL_RENDER_COLOR = Qt::GlobalColor::blue;
+
+		inline static const int	   MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS		 = LABEL_RENDER_POINT_RADIUS;
+		inline static const int	   MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS = LABEL_RENDER_MIN_LINE_THICKNESS;
+		inline static const int	   MEASUREMENT_DISTANCE_LABEL_MAX_LINE_THICKNESS = LABEL_RENDER_MAX_LINE_THICKNESS;
+		inline static const QColor MEASUREMENT_DISTANCE_LABEL_LINE_COLOR		 = LABEL_RENDER_COLOR;
+		inline static const Qt::PenStyle MEASUREMENT_DISTANCE_LABEL_LINE_STYLE	 = Qt::PenStyle::DashLine;
+
+		inline static const int			 MEASUREMENT_ANGLE_LABEL_POINT_RADIUS		= LABEL_RENDER_POINT_RADIUS;
+		inline static const int			 MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS = LABEL_RENDER_MIN_LINE_THICKNESS;
+		inline static const int			 MEASUREMENT_ANGLE_LABEL_MAX_LINE_THICKNESS = LABEL_RENDER_MAX_LINE_THICKNESS;
+		inline static const int			 MEASUREMENT_ANGLE_LABEL_TEXT_OFFSET		= 20;
+		inline static const QColor		 MEASUREMENT_ANGLE_LINE_COLOR				= Qt::GlobalColor::blue;
+		inline static const Qt::PenStyle MEASUREMENT_ANGLE_LINE_STYLE				= Qt::PenStyle::DashLine;
+		inline static const int			 MEASUREMENT_ANGLE_ARC_RADIUS				= 50;
+		inline static const QColor		 MEASUREMENT_ANGLE_ARC_COLOR				= Qt::GlobalColor::blue;
+		inline static const Qt::PenStyle MEASUREMENT_ANGLE_ARC_STYLE				= Qt::PenStyle::SolidLine;
 
 		inline static const QColor CONSOLE_INFO_COLOR	 = QColor( "white" );
 		inline static const QColor CONSOLE_DEBUG_COLOR	 = QColor( "white" );

@@ -14,6 +14,7 @@ namespace VTX
 		class Molecule;
 		class Path;
 		class Viewpoint;
+		class Label;
 		namespace Representation
 		{
 			class InstantiatedRepresentation;
@@ -26,7 +27,7 @@ namespace VTX
 		class MimeType
 		{
 		  public:
-			enum class ApplicationMimeType
+			enum class ApplicationMimeType : int
 			{
 				REPRESENTABLE,
 				MOLECULE,
@@ -35,6 +36,7 @@ namespace VTX
 				BASE_MODEL,
 				PATH,
 				VIEWPOINT,
+				LABEL,
 			};
 
 			static const QString applicationMimeTypes[];
@@ -49,6 +51,7 @@ namespace VTX
 				const Model::Representation::InstantiatedRepresentation & p_representation );
 			static QMimeData * const generateViewpointData( const Model::Viewpoint & p_viewpoint );
 			static QMimeData * const generatePathData( const Model::Path & p_path );
+			static QMimeData * const generateLabelData( const Model::Label & p_label );
 		};
 
 	} // namespace UI

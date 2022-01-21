@@ -14,7 +14,6 @@
 #include <QKeyEvent>
 #include <QList>
 #include <QMenu>
-#include <QMimeData>
 #include <QString>
 #include <QTreeWidgetItem>
 #include <QWidget>
@@ -44,10 +43,9 @@ namespace VTX::View::UI::Widget
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
 
-		void mouseMoveEvent( QMouseEvent * p_event ) override;
 		void _onCustomContextMenuCalled( const QPoint & p_clicPos ) override;
 
-		QMimeData * _getDataForDrag() override;
+		QMimeData * _getDataForDrag() const override;
 		void		_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append = false );
 
 		void _createTopLevelObject() override;

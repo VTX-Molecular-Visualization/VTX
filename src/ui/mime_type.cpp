@@ -1,4 +1,5 @@
 #include "mime_type.hpp"
+#include "model/label.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
 #include "model/representation/instantiated_representation.hpp"
@@ -13,7 +14,9 @@ namespace VTX::UI
 		"application/vtx-instantiatedrepresentation",
 		"application/application/vtx-sceneitem",
 		"application/vtx-basemodel",
+		"application/vtx-path",
 		"application/vtx-viewpoint",
+		"application/vtx-label",
 	};
 
 	QMimeData * const MimeType::generateMoleculeData( const Model::Molecule & p_molecule )
@@ -54,6 +57,20 @@ namespace VTX::UI
 
 		mimeData->setData( getQStringMimeType( ApplicationMimeType::BASE_MODEL ), byteData );
 		mimeData->setData( getQStringMimeType( ApplicationMimeType::VIEWPOINT ), byteData );
+		mimeData->setData( getQStringMimeType( ApplicationMimeType::SCENE_ITEM ), byteData );
+
+		return mimeData;
+	}
+
+	QMimeData * const MimeType::generateLabelData( const Model::Label & p_label )
+	{
+		QMimeData * const mimeData	 = new QMimeData();
+		const std::string modelIdStr = std::to_string( p_label.getId() );
+		QByteArray		  byteData	 = QByteArray();
+		byteData.push_back( modelIdStr.c_str() );
+
+		mimeData->setData( getQStringMimeType( ApplicationMimeType::BASE_MODEL ), byteData );
+		mimeData->setData( getQStringMimeType( ApplicationMimeType::LABEL ), byteData );
 		mimeData->setData( getQStringMimeType( ApplicationMimeType::SCENE_ITEM ), byteData );
 
 		return mimeData;

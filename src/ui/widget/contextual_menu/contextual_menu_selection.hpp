@@ -8,7 +8,13 @@
 #include <QHideEvent>
 #include <QMenu>
 #include <map>
+#include <unordered_set>
 #include <vector>
+
+namespace VTX::Model
+{
+	class Label;
+}
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -20,6 +26,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		Atom		   = 1 << 3,
 		Representation = 1 << 4,
 		Viewpoint	   = 1 << 5,
+		Label		   = 1 << 6,
 
 		None = 0,
 		All	 = 0xFFFF,
@@ -188,6 +195,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		{
 			MOLECULE_STRUCTURE,
 			VIEWPOINT,
+			LABEL,
 
 			COUNT
 		};
@@ -228,6 +236,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _relocateViewpointAction();
 		void _deleteViewpointAction();
 
+		void _deleteLabelAction();
+		void _orientToLabelAction();
+
 		void _applyRepresentationAction( const int p_representationIndex );
 
 		void _exportAction();
@@ -251,6 +262,8 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		void _refreshToggleTrajectoryPlay( QAction & _action ) const;
 		bool _checkToggleTrajectoryPlayAction() const;
+
+		void _getAllLabelTypes( std::unordered_set<Model::Label *> & p_labels ) const;
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu

@@ -32,57 +32,59 @@ namespace VTX::UI::Widget::Scene
 
 				const Model::BaseModel * firstSceneItem = _getModel( *sceneWidget.getSceneItemWidgets()[ 0 ] );
 
-				const Model::BaseModel * const currentObject
-					= selectionModel.getCurrentObject() == nullptr ? firstSceneItem : selectionModel.getCurrentObject();
-
-				const Model::BaseModel * newCurrentSelectedItem
-					= currentIndex().isValid() ? _getModel( currentIndex() ) : firstSceneItem;
-
-				// TODO manage this to include all SceneItemObjects types
-				const Model::BaseModel * const moleculeCurrentObject	= _getTopLevelItem( currentObject );
-				const Model::BaseModel * const moleculeNewCurrentObject = _getTopLevelItem( newCurrentSelectedItem );
-
-				const Model::ID & firstMoleculeId  = moleculeCurrentObject->getId();
-				const Model::ID & secondMoleculeId = moleculeNewCurrentObject->getId();
-
-				if ( firstMoleculeId != secondMoleculeId )
+				if ( selectionModel.getCurrentObject() != nullptr )
 				{
-					selectionIds.clear();
+					const Model::BaseModel * const currentObject = selectionModel.getCurrentObject();
+					const Model::BaseModel *	   newCurrentSelectedItem
+						= currentIndex().isValid() ? _getModel( currentIndex() ) : firstSceneItem;
 
-					bool startAddToSelection = false;
-					for ( const SceneItemWidget * const sceneWidget : sceneWidget.getSceneItemWidgets() )
+					// TODO manage this to include all SceneItemObjects types
+					const Model::BaseModel * const moleculeCurrentObject = _getTopLevelItem( currentObject );
+					const Model::BaseModel * const moleculeNewCurrentObject
+						= _getTopLevelItem( newCurrentSelectedItem );
+
+					const Model::ID & firstMoleculeId  = moleculeCurrentObject->getId();
+					const Model::ID & secondMoleculeId = moleculeNewCurrentObject->getId();
+
+					if ( firstMoleculeId != secondMoleculeId )
 					{
-						const Model::ID & itemId = sceneWidget->getModelID();
+						selectionIds.clear();
 
-						if ( itemId == firstMoleculeId )
+						bool startAddToSelection = false;
+						for ( const SceneItemWidget * const sceneWidget : sceneWidget.getSceneItemWidgets() )
 						{
-							if ( startAddToSelection )
+							const Model::ID & itemId = sceneWidget->getModelID();
+
+							if ( itemId == firstMoleculeId )
 							{
-								_selectAllBeforeItemInMolecule( selectionIds, currentObject );
-								break;
+								if ( startAddToSelection )
+								{
+									_selectAllBeforeItemInMolecule( selectionIds, currentObject );
+									break;
+								}
+								else
+								{
+									_selectAllAfterItemInMolecule( selectionIds, currentObject );
+									startAddToSelection = true;
+								}
 							}
-							else
+							else if ( itemId == secondMoleculeId )
 							{
-								_selectAllAfterItemInMolecule( selectionIds, currentObject );
-								startAddToSelection = true;
+								if ( startAddToSelection )
+								{
+									_selectAllBeforeItemInMolecule( selectionIds, newCurrentSelectedItem );
+									break;
+								}
+								else
+								{
+									_selectAllAfterItemInMolecule( selectionIds, newCurrentSelectedItem );
+									startAddToSelection = true;
+								}
 							}
-						}
-						else if ( itemId == secondMoleculeId )
-						{
-							if ( startAddToSelection )
+							else if ( startAddToSelection )
 							{
-								_selectAllBeforeItemInMolecule( selectionIds, newCurrentSelectedItem );
-								break;
+								selectionIds.emplace_back( itemId );
 							}
-							else
-							{
-								_selectAllAfterItemInMolecule( selectionIds, newCurrentSelectedItem );
-								startAddToSelection = true;
-							}
-						}
-						else if ( startAddToSelection )
-						{
-							selectionIds.emplace_back( itemId );
 						}
 					}
 				}
@@ -134,12 +136,7 @@ namespace VTX::UI::Widget::Scene
 	void SceneItemSelectionModel::_selectAllAfterItemInMolecule( std::vector<uint> &			p_selection,
 																 const Model::BaseModel * const p_itemFrom )
 	{
-		if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_MOLECULE )
-		{
-			p_selection.emplace_back( p_itemFrom->getId() );
-			return;
-		}
-		else if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
+		if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
 		{
 			const Model::Chain * const chainFrom = static_cast<const Model::Chain *>( p_itemFrom );
 			p_selection.emplace_back( chainFrom->getId() );
@@ -159,6 +156,10 @@ namespace VTX::UI::Widget::Scene
 			_selectAllAtomsFrom( p_selection, *atomFrom );
 			_selectAllResiduesFrom( p_selection, *atomFrom->getResiduePtr() );
 			_selectAllChainsFrom( p_selection, *atomFrom->getChainPtr() );
+		}
+		else // Molecule and others
+		{
+			p_selection.emplace_back( p_itemFrom->getId() );
 		}
 	}
 	void SceneItemSelectionModel::_selectAllChainsFrom( std::vector<uint> &	 p_selection,
@@ -195,12 +196,7 @@ namespace VTX::UI::Widget::Scene
 	void SceneItemSelectionModel::_selectAllBeforeItemInMolecule( std::vector<uint> &			 p_selection,
 																  const Model::BaseModel * const p_itemFrom )
 	{
-		if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_MOLECULE )
-		{
-			p_selection.emplace_back( p_itemFrom->getId() );
-			return;
-		}
-		else if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
+		if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
 		{
 			const Model::Chain * const chainFrom = static_cast<const Model::Chain *>( p_itemFrom );
 			p_selection.emplace_back( chainFrom->getId() );
@@ -220,6 +216,10 @@ namespace VTX::UI::Widget::Scene
 			_selectAllAtomsTo( p_selection, *atomFrom );
 			_selectAllResiduesTo( p_selection, *atomFrom->getResiduePtr() );
 			_selectAllChainsTo( p_selection, *atomFrom->getChainPtr() );
+		}
+		else
+		{
+			p_selection.emplace_back( p_itemFrom->getId() );
 		}
 	}
 	void SceneItemSelectionModel::_selectAllChainsTo( std::vector<uint> & p_selection, const Model::Chain & p_itemFrom )
@@ -251,9 +251,7 @@ namespace VTX::UI::Widget::Scene
 	{
 		const Model::BaseModel * res;
 
-		if ( p_model->getTypeId() == VTX::ID::Model::MODEL_MOLECULE )
-			res = p_model;
-		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
+		if ( p_model->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
 			res = static_cast<const Model::Chain *>( p_model )->getMoleculePtr();
 		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_RESIDUE )
 			res = static_cast<const Model::Residue *>( p_model )->getMoleculePtr();
@@ -263,8 +261,8 @@ namespace VTX::UI::Widget::Scene
 			res = p_model;
 		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_VIEWPOINT )
 			res = static_cast<const Model::Viewpoint *>( p_model )->getPathPtr();
-		else
-			res = nullptr;
+		else // Molecule / Labels, etc
+			res = p_model;
 
 		return res;
 	}

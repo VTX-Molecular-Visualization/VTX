@@ -120,13 +120,6 @@ namespace VTX::View::UI::Widget
 		connect( this, &QTreeWidget::itemDoubleClicked, this, &MoleculeSceneView::_onItemDoubleClicked );
 	}
 
-	void MoleculeSceneView::mouseMoveEvent( QMouseEvent * p_event )
-	{
-		setSelectionMode( QAbstractItemView::ContiguousSelection );
-		SceneItemWidget::mouseMoveEvent( p_event );
-		setSelectionMode( QAbstractItemView::ExtendedSelection );
-	}
-
 	void MoleculeSceneView::_onItemChanged( QTreeWidgetItem * const p_item, const int p_column )
 	{
 		if ( p_column == 0 )
@@ -1071,8 +1064,11 @@ namespace VTX::View::UI::Widget
 		return _isChainExpanded( *chain ) && _getTreeWidgetItem( p_residue )->childCount() > 0;
 	}
 
-	QMimeData * MoleculeSceneView::_getDataForDrag() { return VTX::UI::MimeType::generateMoleculeData( *_model ); }
-	bool		MoleculeSceneView::_canDragObjectAtPos( const QPoint & p_position )
+	QMimeData * MoleculeSceneView::_getDataForDrag() const
+	{
+		return VTX::UI::MimeType::generateMoleculeData( *_model );
+	}
+	bool MoleculeSceneView::_canDragObjectAtPos( const QPoint & p_position ) const
 	{
 		// Can only drag from the molecule
 		return itemAt( p_position ) == _getMoleculeTreeWidgetItem();

@@ -23,6 +23,7 @@ namespace VTX::UI
 			Render,
 			Path,
 			Viewpoint,
+			Label,
 
 			COUNT
 		};

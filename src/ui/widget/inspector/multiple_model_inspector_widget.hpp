@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_WIDGET_MULTIPLE_OBJECT_INSPECTOR__
-#define __VTX_UI_WIDGET_MULTIPLE_OBJECT_INSPECTOR__
+#ifndef __VTX_UI_WIDGET_MULTIPLE_MODEL_INSPECTOR__
+#define __VTX_UI_WIDGET_MULTIPLE_MODEL_INSPECTOR__
 
 #include "event/event.hpp"
 #include "inspector_item_widget.hpp"
@@ -25,7 +25,7 @@ namespace VTX::UI::Widget::Inspector
 		}
 		void refresh( const SectionFlag & p_flag = SectionFlag::ALL ) override final { _sectionToRefresh |= p_flag; }
 
-		void clearTargets()
+		void clearTargets() override
 		{
 			if ( _targets.size() > 0 )
 			{
@@ -77,7 +77,11 @@ namespace VTX::UI::Widget::Inspector
 		virtual void _resetFieldStates( const SectionFlag & p_section ) = 0;
 		virtual void _onTargetChangeEvent( const T * const p_target, const Event::VTXEvent * const p_event )
 		{
-			if ( p_event->name == Event::Model::DATA_CHANGE )
+			if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
+			{
+				_sectionToRefresh |= SectionFlag::INFOS;
+			}
+			else if ( p_event->name == Event::Model::DATA_CHANGE )
 			{
 				_sectionToRefresh |= SectionFlag::INFOS;
 			}

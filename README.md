@@ -61,6 +61,8 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 - F11: Toggle fullscreen
 - Escape: Clear the selection
 - Delete : Delete the selection
+- P : Switch to selection Picker mode
+- M : Switch to Measure mode
 - Ctrl + S : Save
 - Ctrl + Shift + S : Save as...
 - Ctrl + N : New session

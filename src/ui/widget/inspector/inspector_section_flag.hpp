@@ -5,12 +5,13 @@ namespace VTX::UI::Widget::Inspector
 {
 	enum class SectionFlag : int
 	{
-		TRANSFORM		 = 1 << 0,
-		REPRESENTATION	 = 1 << 1,
-		TRAJECTORY		 = 1 << 2,
-		TRAJECTORY_TIMER = 1 << 3,
-		AUTO_ROTATE		 = 1 << 3,
-		INFOS			 = 1 << 4,
+		NAME			 = 1 << 0,
+		TRANSFORM		 = 1 << 1,
+		REPRESENTATION	 = 1 << 2,
+		TRAJECTORY		 = 1 << 3,
+		TRAJECTORY_TIMER = 1 << 4,
+		AUTO_ROTATE		 = 1 << 5,
+		INFOS			 = 1 << 6,
 
 		NONE = 0,
 		ALL	 = 0xFFFF

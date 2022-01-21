@@ -20,7 +20,10 @@
 	<file>sprite/console_window_icon.png</file>
 	<file>sprite/copy_preset_icon.png</file>
 	<file>sprite/copy_selection_icon.png</file>
+	<file>sprite/cursor/measurement_angle_cursor.png</file>
+	<file>sprite/cursor/measurement_dihedral_angle_cursor.png</file>
 	<file>sprite/cursor/measurement_distance_cursor.png</file>
+	<file>sprite/cursor/measurement_distance_to_cycle_cursor.png</file>
 	<file>sprite/default_item_icon.png</file>
 	<file>sprite/delete_preset_icon.png</file>
 	<file>sprite/delete_selection_icon.png</file>
@@ -46,7 +49,10 @@
 	<file>sprite/logo_vect.svg</file>
 	<file>sprite/logo_vect_no_text.svg</file>
 	<file>sprite/main_menu_separator.png</file>
+	<file>sprite/measurement_angle_icon.png</file>
+	<file>sprite/measurement_dihedral_angle_icon.png</file>
 	<file>sprite/measurement_distance_icon.png</file>
+	<file>sprite/measurement_distance_to_cycle_icon.png</file>
 	<file>sprite/measurement_picker_icon.png</file>
 	<file>sprite/new_session_icon.png</file>
 	<file>sprite/openrecent_session_icon.png</file>
@@ -97,6 +103,7 @@
 	<file>sprite/stop_icon_hovered.png</file>
 	<file>sprite/symbol/atom_symbol_icon.png</file>
 	<file>sprite/symbol/chain_symbol_icon.png</file>
+	<file>sprite/symbol/label_symbol_icon.png</file>
 	<file>sprite/symbol/molecule_symbol_icon.png</file>
 	<file>sprite/symbol/residue_symbol_icon.png</file>
 	<file>sprite/symbol/viewpoint_symbol_icon.png</file>

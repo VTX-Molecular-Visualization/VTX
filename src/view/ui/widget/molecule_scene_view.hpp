@@ -44,11 +44,10 @@ namespace VTX::View::UI::Widget
 		void _setupSlots() override;
 
 		// virtual void keyPressEvent( QKeyEvent * p_event ) override;
-		void mouseMoveEvent( QMouseEvent * p_event ) override;
 		void _onCustomContextMenuCalled( const QPoint & p_clicPos ) override;
 
-		bool		_canDragObjectAtPos( const QPoint & p_position ) override;
-		QMimeData * _getDataForDrag() override;
+		bool		_canDragObjectAtPos( const QPoint & p_position ) const override;
+		QMimeData * _getDataForDrag() const override;
 
 		void _fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection ) override;
 		bool _itemCanBeRenamed( const QTreeWidgetItem * p_item ) override;

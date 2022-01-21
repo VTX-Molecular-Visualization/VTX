@@ -37,8 +37,6 @@ namespace VTX::View::UI::Widget::Measurement
 			float  textDistanceToCamera;
 		};
 
-		static const int MAX_POINT_DIAMETER;
-
 	  public:
 		void localize() override;
 		void updatePosition() override;

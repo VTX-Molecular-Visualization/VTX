@@ -15,7 +15,8 @@ namespace VTX::UI::Widget::Inspector
 		virtual void localize() override {};
 		virtual void refresh( const SectionFlag & p_flag = SectionFlag::ALL ) {};
 
-		void setExpanded( const bool p_expanded );
+		void		 setExpanded( const bool p_expanded );
+		virtual void clearTargets() {};
 
 	  protected:
 		InspectorItemWidget( QWidget * p_parent = nullptr ) : BaseManualWidget( p_parent ) {};

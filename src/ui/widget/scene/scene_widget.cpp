@@ -1,6 +1,9 @@
 #include "scene_widget.hpp"
 #include "action/action_manager.hpp"
 #include "action/selection.hpp"
+#include "model/label.hpp"
+#include "model/measurement/angle.hpp"
+#include "model/measurement/distance.hpp"
 #include "model/molecule.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -10,6 +13,8 @@
 #include "ui/contextual_menu.hpp"
 #include "ui/mime_type.hpp"
 #include "ui/widget_factory.hpp"
+#include "view/ui/widget/measurement/angle_scene_view.hpp"
+#include "view/ui/widget/measurement/distance_scene_view.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 #include "view/ui/widget/path_scene_view.hpp"
 #include "vtx_app.hpp"
@@ -25,6 +30,9 @@ namespace VTX::UI::Widget::Scene
 
 		_registerEvent( Event::Global::PATH_ADDED );
 		_registerEvent( Event::Global::PATH_REMOVED );
+
+		_registerEvent( Event::Global::LABEL_ADDED );
+		_registerEvent( Event::Global::LABEL_REMOVED );
 	}
 
 	void SceneWidget::receiveEvent( const Event::VTXEvent & p_event )
@@ -34,52 +42,77 @@ namespace VTX::UI::Widget::Scene
 			const Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
-			// Set no parent to not trigger ItemChange event during init
-			View::UI::Widget::MoleculeSceneView * const moleculeWidget
-				= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::MoleculeSceneView>(
-					castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, _scrollAreaContent, "moleculeSceneView" );
-
-			_addWidgetInLayout( moleculeWidget );
+			instantiateSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>(
+				castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, "moleculeSceneView" );
 		}
 		else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 		{
 			const Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-			const Model::Molecule * const molecule = castedEvent.ptr;
 
-			View::UI::Widget::MoleculeSceneView * const moleculeWidget
-				= MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSceneView>(
-					molecule, ID::View::UI_MOLECULE_STRUCTURE );
-
-			_removeWidgetInLayout( moleculeWidget );
-
-			MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeSceneView>( molecule,
-																					ID::View::UI_MOLECULE_STRUCTURE );
+			deleteSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>( castedEvent.ptr,
+																				   ID::View::UI_MOLECULE_STRUCTURE );
 		}
 		else if ( p_event.name == Event::Global::PATH_ADDED )
 		{
 			const Event::VTXEventPtr<Model::Path> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Path> &>( p_event );
 
-			// Set no parent to not trigger ItemChange event during init
-			View::UI::Widget::PathSceneView * const pathWidget
-				= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::PathSceneView>(
-					castedEvent.ptr, ID::View::UI_SCENE_PATH, _scrollAreaContent, "pathSceneView" );
-
-			_addWidgetInLayout( pathWidget );
+			instantiateSceneItem<View::UI::Widget::PathSceneView, Model::Path>(
+				castedEvent.ptr, ID::View::UI_SCENE_PATH, "pathSceneView" );
 		}
 		else if ( p_event.name == Event::Global::PATH_REMOVED )
 		{
 			const Event::VTXEventPtr<Model::Path> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Path> &>( p_event );
-			const Model::Path * const path = castedEvent.ptr;
 
-			View::UI::Widget::PathSceneView * const viewpointWidget
-				= MVC::MvcManager::get().getView<View::UI::Widget::PathSceneView>( path, ID::View::UI_SCENE_PATH );
+			deleteSceneItem<View::UI::Widget::PathSceneView, Model::Path>( castedEvent.ptr, ID::View::UI_SCENE_PATH );
+		}
+		else if ( p_event.name == Event::Global::LABEL_ADDED )
+		{
+			const Event::VTXEventPtr<Model::Label> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
 
-			_removeWidgetInLayout( viewpointWidget );
+			const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
+			if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+			{
+				Model::Measurement::Distance * const distanceModel
+					= static_cast<Model::Measurement::Distance *>( castedEvent.ptr );
 
-			MVC::MvcManager::get().deleteView<View::UI::Widget::PathSceneView>( path, ID::View::UI_SCENE_PATH );
+				instantiateSceneItem<View::UI::Widget::Measurement::DistanceSceneView, Model::Measurement::Distance>(
+					distanceModel, ID::View::UI_SCENE_DISTANCE_LABEL, "distanceSceneView" );
+			}
+			else if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
+			{
+				Model::Measurement::Angle * const angleModel
+					= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
+
+				instantiateSceneItem<View::UI::Widget::Measurement::AngleSceneView, Model::Measurement::Angle>(
+					angleModel, ID::View::UI_SCENE_ANGLE_LABEL, "angleSceneView" );
+			}
+		}
+		else if ( p_event.name == Event::Global::LABEL_REMOVED )
+		{
+			const Event::VTXEventPtr<Model::Label> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+
+			const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
+			if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+			{
+				Model::Measurement::Distance * const distanceModel
+					= static_cast<Model::Measurement::Distance *>( castedEvent.ptr );
+
+				deleteSceneItem<View::UI::Widget::Measurement::DistanceSceneView>( distanceModel,
+																				   ID::View::UI_SCENE_DISTANCE_LABEL );
+			}
+			else if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
+			{
+				Model::Measurement::Angle * const angleModel
+					= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
+
+				deleteSceneItem<View::UI::Widget::Measurement::AngleSceneView>( angleModel,
+																				ID::View::UI_SCENE_DISTANCE_LABEL );
+			}
 		}
 	}
 
@@ -166,20 +199,16 @@ namespace VTX::UI::Widget::Scene
 	{
 		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( p_sceneItemWidget->getModelID() );
 
-		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
+		// TODO : Better management of section in scene view.
+		if ( modelTypeId != VTX::ID::Model::MODEL_PATH )
 		{
-			std::vector<SceneItemWidget *>::const_reverse_iterator it	   = _sceneWidgets.crbegin();
-			int													   counter = 1;
+			const std::vector<SceneItemWidget *>::const_reverse_iterator lastItemIt = _sceneWidgets.crbegin();
+			const ID::VTX_ID & lastItemTypeId = MVC::MvcManager::get().getModelTypeID( ( *lastItemIt )->getModelID() );
 
-			for ( it; it != _sceneWidgets.crend(); it++ )
+			if ( lastItemTypeId == VTX::ID::Model::MODEL_PATH )
 			{
-				const ID::VTX_ID & itModelTypeId = MVC::MvcManager::get().getModelTypeID( ( *it )->getModelID() );
-				if ( itModelTypeId == modelTypeId )
-					return _layout->count() - counter;
-				counter++;
+				return _layout->count() - 2;
 			}
-
-			return _layout->count() - counter;
 		}
 
 		return _layout->count() - 1;

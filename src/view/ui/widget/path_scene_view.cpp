@@ -112,13 +112,6 @@ namespace VTX::View::UI::Widget
 		}
 	}
 
-	void PathSceneView::mouseMoveEvent( QMouseEvent * p_event )
-	{
-		setSelectionMode( QAbstractItemView::ContiguousSelection );
-		SceneItemWidget::mouseMoveEvent( p_event );
-		setSelectionMode( QAbstractItemView::ExtendedSelection );
-	}
-
 	void PathSceneView::_onItemChanged( QTreeWidgetItem * const p_item, const int p_column )
 	{
 		if ( p_column == 0 )
@@ -218,7 +211,7 @@ namespace VTX::View::UI::Widget
 			p_name = p_name.substr( 0, Style::MOLECULE_NAME_MAXIMUM_SIZE );
 	}
 
-	QMimeData * PathSceneView::_getDataForDrag() { return VTX::UI::MimeType::generatePathData( *_model ); }
+	QMimeData * PathSceneView::_getDataForDrag() const { return VTX::UI::MimeType::generatePathData( *_model ); }
 
 	void PathSceneView::updatePosInSceneHierarchy( const int p_position )
 	{

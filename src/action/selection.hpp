@@ -9,6 +9,7 @@
 #include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/generated_molecule.hpp"
+#include "model/label.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
 #include "model/representation/instantiated_representation.hpp"
@@ -23,6 +24,7 @@
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "tool/chrono.hpp"
+#include "util/label.hpp"
 #include "util/molecule.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
@@ -76,6 +78,7 @@ namespace VTX::Action::Selection
 
 			std::vector<Model::Path *>		paths	   = std::vector<Model::Path *>();
 			std::vector<Model::Viewpoint *> viewpoints = std::vector<Model::Viewpoint *>();
+			std::vector<Model::Label *>		labels	   = std::vector<Model::Label *>();
 
 			for ( const Model::ID modelId : _models )
 			{
@@ -113,11 +116,17 @@ namespace VTX::Action::Selection
 					Model::Viewpoint & model = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelId );
 					viewpoints.emplace_back( &model );
 				}
+				else if ( Util::Label::isLabelType( modelTypeId ) )
+				{
+					Model::Label & model = MVC::MvcManager::get().getModel<Model::Label>( modelId );
+					labels.emplace_back( &model );
+				}
 			}
 
 			_selection.selectModels( molecules, chains, residues, atoms, _appendToSelection );
 			_selection.selectModels( paths, true );
 			_selection.selectModels( viewpoints, true );
+			_selection.selectModels( labels, true );
 
 			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 		}
@@ -1075,6 +1084,12 @@ namespace VTX::Action::Selection
 					MVC::MvcManager::get().deleteModel( &viewpoint );
 
 					path->refreshAllDurations();
+				}
+				else if ( Util::Label::isLabelType( modelTypeID ) )
+				{
+					Model::Label & label = MVC::MvcManager::get().getModel<Model::Label>( selectedObjectID );
+					VTXApp::get().getScene().removeLabel( &label );
+					MVC::MvcManager::get().deleteModel<Model::Label>( &label );
 				}
 			}
 
