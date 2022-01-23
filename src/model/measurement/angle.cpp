@@ -41,7 +41,8 @@ namespace VTX::Model::Measurement
 			{
 				// TODO : Use a manager instead of managing scene from model
 				VTXApp::get().getScene().removeLabel( this );
-				MVC::MvcManager::get().deleteModel( this );
+				_invalidate();
+				VTXApp::get().deleteAtEndOfFrame( this );
 			}
 		}
 		else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
@@ -53,7 +54,8 @@ namespace VTX::Model::Measurement
 			{
 				// TODO : Use a manager instead of managing scene from model
 				VTXApp::get().getScene().removeLabel( this );
-				MVC::MvcManager::get().deleteModel( this );
+				_invalidate();
+				VTXApp::get().deleteAtEndOfFrame( this );
 			}
 		}
 		else if ( p_event.name == Event::Global::LABEL_REMOVED )
@@ -81,6 +83,12 @@ namespace VTX::Model::Measurement
 				return false;
 
 		return true;
+	}
+
+	void Angle::_invalidate()
+	{
+		for ( int i = 0; i < _atoms.size(); i++ )
+			_atoms[ i ] = nullptr;
 	}
 
 	void Angle::_setAtomsInternal( const Model::Atom & p_firstAtom,
@@ -263,5 +271,7 @@ namespace VTX::Model::Measurement
 		return MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
 													  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 	}
+
+	void Angle::autoDelete() const { MVC::MvcManager::get().deleteModel( this ); }
 
 } // namespace VTX::Model::Measurement

@@ -3,6 +3,7 @@
 
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"
+#include "generic/base_auto_delete.hpp"
 #include "id.hpp"
 #include "model/label.hpp"
 #include "view/callback_view.hpp"
@@ -17,7 +18,7 @@ namespace VTX::Model
 
 namespace VTX::Model::Measurement
 {
-	class DihedralAngle : public Model::Label, Event::BaseEventReceiverVTX
+	class DihedralAngle : public Model::Label, Event::BaseEventReceiverVTX, Generic::BaseAutoDelete
 	{
 		VTX_MODEL
 
@@ -47,6 +48,8 @@ namespace VTX::Model::Measurement
 		float getAngle() const { return _dihedralAngle; }
 		bool  isValid() const;
 
+		void autoDelete() const override;
+
 	  protected:
 		DihedralAngle();
 		DihedralAngle( const AtomQuadruplet & p_pair );
@@ -63,6 +66,8 @@ namespace VTX::Model::Measurement
 
 		bool _isLinkedToAtom( const Model::Atom * const p_atom ) const;
 		bool _isLinkedToMolecule( const Model::Molecule * const p_atom ) const;
+
+		void _invalidate();
 
 	  private:
 		std::vector<const Model::Atom *> _atoms			= std::vector<const Model::Atom *>();

@@ -154,6 +154,8 @@ namespace VTX
 		// Action manager.
 		Action::ActionManager::get().update( elapsed );
 
+		_applyEndOfFrameDeletes();
+
 		// Call late update event for processes at end of frame
 		VTX_EVENT( new Event::VTXEvent( Event::Global::LATE_UPDATE ) );
 
@@ -242,6 +244,18 @@ namespace VTX
 		{
 			_mainWindow->getRenderWidget().updateRender();
 		}
+	}
+
+	void VTXApp::deleteAtEndOfFrame( const Generic::BaseAutoDelete * const p_object )
+	{
+		_deleteAtEndOfFrameObjects.emplace_back( p_object );
+	}
+	void VTXApp::_applyEndOfFrameDeletes()
+	{
+		for ( const Generic::BaseAutoDelete * const p_object : _deleteAtEndOfFrameObjects )
+			p_object->autoDelete();
+
+		_deleteAtEndOfFrameObjects.clear();
 	}
 
 	Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT()

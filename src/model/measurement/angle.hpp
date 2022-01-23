@@ -3,6 +3,7 @@
 
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"
+#include "generic/base_auto_delete.hpp"
 #include "id.hpp"
 #include "model/label.hpp"
 #include "view/callback_view.hpp"
@@ -18,7 +19,7 @@ namespace VTX::Model
 
 namespace VTX::Model::Measurement
 {
-	class Angle : public Model::Label, Event::BaseEventReceiverVTX
+	class Angle : public Model::Label, Event::BaseEventReceiverVTX, Generic::BaseAutoDelete
 	{
 		VTX_MODEL
 
@@ -44,6 +45,10 @@ namespace VTX::Model::Measurement
 
 		float getAngle() const { return _angle; }
 		bool  isValid() const;
+
+		void autoDelete() const override;
+
+		void _invalidate();
 
 	  protected:
 		Angle();

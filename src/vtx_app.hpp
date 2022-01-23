@@ -1,6 +1,7 @@
 #ifndef __VTX_APP__
 #define __VTX_APP__
 
+#include "generic/base_auto_delete.hpp"
 #include "setting.hpp"
 #include "spec.hpp"
 #include "stat.hpp"
@@ -81,6 +82,8 @@ namespace VTX
 		float getPixelRatio() const;
 		bool  hasAnyModifications() const;
 
+		void deleteAtEndOfFrame( const Generic::BaseAutoDelete * const p_object );
+
 		bool notify( QObject * const, QEvent * const ) override;
 
 	  private:
@@ -99,6 +102,9 @@ namespace VTX
 		Model::Representation::RepresentationLibrary * _representationLibrary = nullptr;
 		Model::Renderer::RenderEffectPresetLibrary *   _renderEffectLibrary	  = nullptr;
 
+		std::vector<const Generic::BaseAutoDelete *> _deleteAtEndOfFrameObjects
+			= std::vector<const Generic::BaseAutoDelete *>();
+
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;
 		VTXApp & operator=( const VTXApp & ) = delete;
@@ -108,6 +114,8 @@ namespace VTX
 		void _handleArgs( const std::vector<std::string> & );
 		void _update();
 		void _stop();
+
+		void _applyEndOfFrameDeletes();
 	};
 
 	Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT();
