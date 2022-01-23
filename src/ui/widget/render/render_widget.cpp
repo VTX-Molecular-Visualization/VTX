@@ -35,18 +35,24 @@ namespace VTX::UI::Widget::Render
 
 	void RenderWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
-		_openGLWidget->makeCurrent();
 		if ( p_event.name == Event::Global::MOLECULE_CREATED )
 		{
+			_openGLWidget->makeCurrent();
+
 			const Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 			castedEvent.ptr->init();
+
+			_openGLWidget->doneCurrent();
 		}
 		else if ( p_event.name == Event::Global::MESH_CREATED )
 		{
+			_openGLWidget->makeCurrent();
 			const Event::VTXEventPtr<Model::MeshTriangle> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::MeshTriangle> &>( p_event );
 			castedEvent.ptr->init();
+
+			_openGLWidget->doneCurrent();
 		}
 		else if ( p_event.name == Event::Global::LABEL_ADDED )
 		{
@@ -125,8 +131,6 @@ namespace VTX::UI::Widget::Render
 					model, ID::View::UI_RENDER_MEASUREMENT_DIHEDRAL_ANGLE );
 			}
 		}
-
-		_openGLWidget->doneCurrent();
 	}
 
 	void RenderWidget::_setupUi( const QString & p_name )
