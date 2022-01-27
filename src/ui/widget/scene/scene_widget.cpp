@@ -3,6 +3,7 @@
 #include "action/selection.hpp"
 #include "model/label.hpp"
 #include "model/measurement/angle.hpp"
+#include "model/measurement/dihedral_angle.hpp"
 #include "model/measurement/distance.hpp"
 #include "model/molecule.hpp"
 #include "model/selection.hpp"
@@ -14,6 +15,7 @@
 #include "ui/mime_type.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/measurement/angle_scene_view.hpp"
+#include "view/ui/widget/measurement/dihedral_angle_scene_view.hpp"
 #include "view/ui/widget/measurement/distance_scene_view.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 #include "view/ui/widget/path_scene_view.hpp"
@@ -90,6 +92,15 @@ namespace VTX::UI::Widget::Scene
 				instantiateSceneItem<View::UI::Widget::Measurement::AngleSceneView, Model::Measurement::Angle>(
 					angleModel, ID::View::UI_SCENE_ANGLE_LABEL, "angleSceneView" );
 			}
+			else if ( labeltype == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+			{
+				Model::Measurement::DihedralAngle * const angleModel
+					= static_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
+
+				instantiateSceneItem<View::UI::Widget::Measurement::DihedralAngleSceneView,
+									 Model::Measurement::DihedralAngle>(
+					angleModel, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL, "dihedralAngleSceneView" );
+			}
 		}
 		else if ( p_event.name == Event::Global::LABEL_REMOVED )
 		{
@@ -111,7 +122,15 @@ namespace VTX::UI::Widget::Scene
 					= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
 
 				deleteSceneItem<View::UI::Widget::Measurement::AngleSceneView>( angleModel,
-																				ID::View::UI_SCENE_DISTANCE_LABEL );
+																				ID::View::UI_SCENE_ANGLE_LABEL );
+			}
+			else if ( labeltype == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+			{
+				Model::Measurement::DihedralAngle * const dihedralAngleModel
+					= static_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
+
+				deleteSceneItem<View::UI::Widget::Measurement::DihedralAngleSceneView>(
+					dihedralAngleModel, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL );
 			}
 		}
 	}

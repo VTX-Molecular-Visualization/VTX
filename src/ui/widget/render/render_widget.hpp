@@ -1,11 +1,15 @@
 #ifndef __VTX_UI_WIDGET_RENDER__
 #define __VTX_UI_WIDGET_RENDER__
 
+#include "base_integrated_widget.hpp"
 #include "event/base_event_firerer_input.hpp"
+#include "model/base_model.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "opengl_widget.hpp"
 #include "overlay/base_overlay.hpp"
 #include "overlay/visualization_quick_access.hpp"
 #include "ui/widget/base_manual_widget.hpp"
+#include "view/base_view.hpp"
 #include <QFocusEvent>
 #include <QResizeEvent>
 #include <QVBoxLayout>
@@ -14,8 +18,6 @@
 
 namespace VTX::UI::Widget::Render
 {
-	class BaseIntegratedWidget;
-
 	class RenderWidget : public BaseManualWidget<QWidget>, public Event::BaseEventFirererInput
 	{
 		VTX_WIDGET
@@ -58,6 +60,21 @@ namespace VTX::UI::Widget::Render
 		std::vector<BaseIntegratedWidget *> _integratedWidgets = std::vector<BaseIntegratedWidget *>();
 
 		Overlay::BaseOverlay * _instantiateOverlay( const Overlay::OVERLAY & p_overlayType );
+
+		template<typename V,
+				 typename M,
+				 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
+				 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>,
+				 typename = std::enable_if<std::is_base_of<BaseIntegratedWidget, V>::value>>
+		void _removeViewIntegratedWidget( const M * const p_model, const ID::VTX_ID & p_viewName )
+		{
+			V * const integratedWidgetView = MVC::MvcManager::get().getView<V>( p_model, p_viewName );
+
+			_integratedWidgets.erase(
+				std::find( _integratedWidgets.begin(), _integratedWidgets.end(), integratedWidgetView ) );
+
+			MVC::MvcManager::get().deleteView( p_model, p_viewName );
+		}
 
 		// Shortcuts.
 		void _onShortcutToggleCameraController();

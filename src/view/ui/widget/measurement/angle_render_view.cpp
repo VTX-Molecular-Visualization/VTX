@@ -121,38 +121,51 @@ namespace VTX::View::UI::Widget::Measurement
 		const QSize size = QSize( maxX - minX, maxY - minY );
 		setFixedSize( size );
 
-		const Vec2f left = Vec2f( 1, 0 );
-		const Vec2f vec1 = Util::Math::normalize( Vec2f( pointPositions[ 0 ].x() - pointPositions[ 1 ].x(),
-														 pointPositions[ 0 ].y() - pointPositions[ 1 ].y() ) );
-		const Vec2f vec2 = Util::Math::normalize( Vec2f( pointPositions[ 2 ].x() - pointPositions[ 1 ].x(),
-														 pointPositions[ 2 ].y() - pointPositions[ 1 ].y() ) );
-
-		const int angle = Util::Math::degrees( Util::Math::angle( vec1, vec2 ) );
-
-		const int startAngle1		  = Util::Math::degrees( Util::Math::angle( left, vec1 ) );
-		const int startAngle2		  = Util::Math::degrees( Util::Math::angle( left, vec2 ) );
-		const int orientedStartAngle1 = vec1.y < 0 ? startAngle1 : 360 - startAngle1;
-		const int orientedStartAngle2 = vec2.y < 0 ? startAngle2 : 360 - startAngle2;
-
-		const int orientedAngle = orientedStartAngle2 > orientedStartAngle1
-									  ? ( orientedStartAngle2 - orientedStartAngle1 )
-									  : ( orientedStartAngle1 - orientedStartAngle2 );
-
-		int startAngle;
-		if ( orientedAngle < 180 )
-			startAngle = orientedStartAngle1 < orientedStartAngle2 ? orientedStartAngle1 : orientedStartAngle2;
-		else
-			startAngle = orientedStartAngle1 > orientedStartAngle2 ? orientedStartAngle1 : orientedStartAngle2;
-
 		_paintData.firstAtomScreenPos	= pointPositions[ 0 ];
 		_paintData.secondAtomScreenPos	= pointPositions[ 1 ];
 		_paintData.thirdAtomScreenPos	= pointPositions[ 2 ];
 		_paintData.textPosition			= textPos;
 		_paintData.textDistanceToCamera = Util::UIRender::distanceToCamera( camera, centerWorldPos );
 
-		_paintData.arcRadius  = arcRadius;
-		_paintData.angle	  = angle;
-		_paintData.startAngle = startAngle;
+		// Prevent perfect alignement of two points which can cause issue during normalization
+		const bool canDrawArc = pointPositions[ 0 ] != pointPositions[ 1 ] && pointPositions[ 1 ] != pointPositions[ 2 ]
+								&& pointPositions[ 2 ] != pointPositions[ 0 ];
+
+		if ( canDrawArc )
+		{
+			const Vec2f left = Vec2f( 1, 0 );
+			const Vec2f vec1 = Util::Math::normalize( Vec2f( pointPositions[ 0 ].x() - pointPositions[ 1 ].x(),
+															 pointPositions[ 0 ].y() - pointPositions[ 1 ].y() ) );
+			const Vec2f vec2 = Util::Math::normalize( Vec2f( pointPositions[ 2 ].x() - pointPositions[ 1 ].x(),
+															 pointPositions[ 2 ].y() - pointPositions[ 1 ].y() ) );
+
+			const int angle = Util::Math::degrees( Util::Math::angle( vec1, vec2 ) );
+
+			const int startAngle1		  = Util::Math::degrees( Util::Math::angle( left, vec1 ) );
+			const int startAngle2		  = Util::Math::degrees( Util::Math::angle( left, vec2 ) );
+			const int orientedStartAngle1 = vec1.y < 0 ? startAngle1 : 360 - startAngle1;
+			const int orientedStartAngle2 = vec2.y < 0 ? startAngle2 : 360 - startAngle2;
+
+			const int orientedAngle = orientedStartAngle2 > orientedStartAngle1
+										  ? ( orientedStartAngle2 - orientedStartAngle1 )
+										  : ( orientedStartAngle1 - orientedStartAngle2 );
+
+			int startAngle;
+			if ( orientedAngle < 180 )
+				startAngle = orientedStartAngle1 < orientedStartAngle2 ? orientedStartAngle1 : orientedStartAngle2;
+			else
+				startAngle = orientedStartAngle1 > orientedStartAngle2 ? orientedStartAngle1 : orientedStartAngle2;
+
+			_paintData.arcRadius  = arcRadius;
+			_paintData.angle	  = angle;
+			_paintData.startAngle = startAngle;
+		}
+		else
+		{
+			_paintData.arcRadius  = 0;
+			_paintData.angle	  = 0;
+			_paintData.startAngle = 0;
+		}
 
 		repaint();
 	}
@@ -218,15 +231,16 @@ namespace VTX::View::UI::Widget::Measurement
 			painter.setPen( _arcPen );
 			painter.setBrush( _arcBrush );
 
-			int firstLineLength	 = QVector2D( firstAtomPos - secondAtomPos ).length();
-			int secondLineLength = QVector2D( thirdAtomPos - secondAtomPos ).length();
-
-			painter.drawArc( QRect( secondAtomPos.x() - _paintData.arcRadius,
-									secondAtomPos.y() - _paintData.arcRadius,
-									_paintData.arcRadius * 2,
-									_paintData.arcRadius * 2 ),
-							 _paintData.startAngle * 16,
-							 _paintData.angle * 16 );
+			// Don't draw arc when angle == 0
+			if ( _paintData.angle > 0 )
+			{
+				painter.drawArc( QRect( secondAtomPos.x() - _paintData.arcRadius,
+										secondAtomPos.y() - _paintData.arcRadius,
+										_paintData.arcRadius * 2,
+										_paintData.arcRadius * 2 ),
+								 _paintData.startAngle * 16,
+								 _paintData.angle * 16 );
+			}
 			///////////////////////////////////////////////////////////////////
 
 			// Draw text //////////////////////////////////////////////////////

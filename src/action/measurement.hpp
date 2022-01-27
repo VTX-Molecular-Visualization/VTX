@@ -4,6 +4,7 @@
 #include "action/base_action.hpp"
 #include "model/atom.hpp"
 #include "model/measurement/angle.hpp"
+#include "model/measurement/dihedral_angle.hpp"
 #include "model/measurement/distance.hpp"
 #include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -52,6 +53,7 @@ namespace VTX::Action::Measurement
 		const Model::Atom & _firstAtom;
 		const Model::Atom & _secondAtom;
 	};
+
 	class InstantiateAngleLabel : public BaseAction
 	{
 	  public:
@@ -77,5 +79,36 @@ namespace VTX::Action::Measurement
 		const Model::Atom & _secondAtom;
 		const Model::Atom & _thirdAtom;
 	};
+
+	class InstantiateDihedralAngleLabel : public BaseAction
+	{
+	  public:
+		explicit InstantiateDihedralAngleLabel( const Model::Atom & p_firstAtom,
+												const Model::Atom & p_secondAtom,
+												const Model::Atom & p_thirdAtom,
+												const Model::Atom & p_fourthAtom ) :
+			_firstAtom( p_firstAtom ),
+			_secondAtom( p_secondAtom ), _thirdAtom( p_thirdAtom ), _fourthAtom( p_fourthAtom )
+		{
+		}
+
+		virtual void execute() override
+		{
+			const Model::Measurement::DihedralAngle::AtomQuadruplet quadruplet(
+				_firstAtom, _secondAtom, _thirdAtom, _fourthAtom );
+
+			Model::Measurement::DihedralAngle * const dihedralAngleModel
+				= MVC::MvcManager::get().instantiateModel<Model::Measurement::DihedralAngle>( quadruplet );
+
+			VTXApp::get().getScene().addLabel( dihedralAngleModel );
+		}
+
+	  private:
+		const Model::Atom & _firstAtom;
+		const Model::Atom & _secondAtom;
+		const Model::Atom & _thirdAtom;
+		const Model::Atom & _fourthAtom;
+	};
+
 } // namespace VTX::Action::Measurement
 #endif

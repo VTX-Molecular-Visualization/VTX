@@ -1,5 +1,6 @@
 #include "util/measurement.hpp"
 #include "model/measurement/angle.hpp"
+#include "model/measurement/dihedral_angle.hpp"
 #include "model/measurement/distance.hpp"
 #include "style.hpp"
 #include "util/string.hpp"
@@ -17,4 +18,10 @@ namespace VTX::Util::Measurement
 	{
 		return std::to_string( int( p_angleModel.getAngle() ) ) + "\u00B0";
 	}
+
+	std::string getDihedralAngleString( const Model::Measurement::DihedralAngle & p_dihedralAngleModel )
+	{
+		return std::to_string( int( p_dihedralAngleModel.getAngle() ) ) + "\u00B0";
+	}
+
 } // namespace VTX::Util::Measurement

@@ -140,6 +140,20 @@ namespace VTX::Controller
 				hasInstantiatedLabel = true;
 			}
 			break;
+
+		case Mode::DIHEDRAL_ANGLE:
+			if ( atoms.size() == 4 )
+			{
+				const Model::Atom & firstAtom  = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 0 ] );
+				const Model::Atom & secondAtom = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 1 ] );
+				const Model::Atom & thirdAtom  = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 2 ] );
+				const Model::Atom & fourthAtom = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 3 ] );
+
+				VTX_ACTION( new Action::Measurement::InstantiateDihedralAngleLabel(
+					firstAtom, secondAtom, thirdAtom, fourthAtom ) );
+				hasInstantiatedLabel = true;
+			}
+			break;
 		}
 
 		if ( hasInstantiatedLabel )

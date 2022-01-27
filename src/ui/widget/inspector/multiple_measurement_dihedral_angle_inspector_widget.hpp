@@ -14,37 +14,42 @@ namespace VTX::UI::Widget::Inspector
 {
 	class MultipleMeasurmentDihedralAngleWidget : public MultipleModelInspectorWidget<Model::Measurement::DihedralAngle>
 	{
-		// VTX_WIDGET
+		VTX_WIDGET
 
-		// public:
-		//~MultipleMeasurmentDihedralAngleWidget();
+	  public:
+		~MultipleMeasurmentDihedralAngleWidget();
 
-		// void localize() override;
+		void localize() override;
 
-		// protected:
-		// MultipleMeasurmentDihedralAngleWidget( QWidget * p_parent = nullptr );
+	  protected:
+		MultipleMeasurmentDihedralAngleWidget( QWidget * p_parent = nullptr );
 
-		// void		 _setupUi( const QString & p_name ) override;
-		// virtual void _setupSlots() override;
+		void		 _setupUi( const QString & p_name ) override;
+		virtual void _setupSlots() override;
 
-		// void _endOfFrameRefresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
+		void _endOfFrameRefresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
 
-		// private:
-		// InspectorSectionVLayout *			_positionSection		  = nullptr;
-		// CustomWidget::Vector3Widget *		_positionInfoWidget		  = nullptr;
-		// InspectorSectionVLayout *			_infoSection			  = nullptr;
-		// CustomWidget::QLineEditMultiField * _nameWidget				  = nullptr;
-		// QPushButton *						_setAutoNameWidget		  = nullptr;
-		// CustomWidget::QLabelMultiField *	_dihedralAngleLabelWidget = nullptr;
-		// QPushButton *						_goToFirstAtom			  = nullptr;
-		// QPushButton *						_goToSecondAtom			  = nullptr;
+	  private:
+		InspectorSectionVLayout *			_positionSection		  = nullptr;
+		CustomWidget::Vector3Widget *		_positionInfoWidget		  = nullptr;
+		InspectorSectionVLayout *			_infoSection			  = nullptr;
+		CustomWidget::QLineEditMultiField * _nameWidget				  = nullptr;
+		QPushButton *						_setAutoNameWidget		  = nullptr;
+		CustomWidget::QLabelMultiField *	_dihedralAngleLabelWidget = nullptr;
+		QPushButton *						_goToFirstAtom			  = nullptr;
+		QPushButton *						_goToSecondAtom			  = nullptr;
+		QPushButton *						_goToThirdAtom			  = nullptr;
+		QPushButton *						_goToFourthAtom			  = nullptr;
 
-		// void _resetFieldStates( const SectionFlag & p_flag );
+		void _resetFieldStates( const SectionFlag & p_flag );
 
-		// void _setAutoNameAction() const;
-		// void _renameAction() const;
-		// void _orientOnFirstAtom() const;
-		// void _orientOnSecondAtom() const;
+		void _setAutoNameAction() const;
+		void _renameAction() const;
+
+		void _orientOnFirstAtom() const;
+		void _orientOnSecondAtom() const;
+		void _orientOnThirdAtom() const;
+		void _orientOnFourthAtom() const;
 	};
 } // namespace VTX::UI::Widget::Inspector
 

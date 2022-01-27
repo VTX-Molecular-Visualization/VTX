@@ -40,7 +40,8 @@ namespace VTX::Model::Measurement
 			{
 				// TODO : Use a manager instead of managing scene from model
 				VTXApp::get().getScene().removeLabel( this );
-				MVC::MvcManager::get().deleteModel( this );
+				_invalidate();
+				VTXApp::get().deleteAtEndOfFrame( this );
 			}
 		}
 		else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
@@ -52,7 +53,8 @@ namespace VTX::Model::Measurement
 			{
 				// TODO : Use a manager instead of managing scene from model
 				VTXApp::get().getScene().removeLabel( this );
-				MVC::MvcManager::get().deleteModel( this );
+				_invalidate();
+				VTXApp::get().deleteAtEndOfFrame( this );
 			}
 		}
 		else if ( p_event.name == Event::Global::LABEL_REMOVED )
@@ -98,6 +100,12 @@ namespace VTX::Model::Measurement
 				return false;
 
 		return true;
+	}
+
+	void Distance::_invalidate()
+	{
+		for ( int i = 0; i < _atoms.size(); i++ )
+			_atoms[ i ] = nullptr;
 	}
 
 	bool Distance::_isLinkedToAtom( const Model::Atom * const p_atom ) const
@@ -153,30 +161,29 @@ namespace VTX::Model::Measurement
 		MoleculeView * const firstMoleculeView
 			= MVC::MvcManager::get().instantiateView<MoleculeView>( _atoms[ 0 ]->getMoleculePtr(), getViewID( 0 ) );
 		firstMoleculeView->setCallback( this, &Distance::_onMoleculeChange );
-		_moleculeViews.emplace_back( firstMoleculeView );
+		_moleculeViews[ 0 ] = firstMoleculeView;
 
 		if ( _atoms[ 0 ]->getMoleculePtr() != _atoms[ 1 ]->getMoleculePtr() )
 		{
 			MoleculeView * const secondMoleculeView
 				= MVC::MvcManager::get().instantiateView<MoleculeView>( _atoms[ 1 ]->getMoleculePtr(), getViewID( 1 ) );
 			secondMoleculeView->setCallback( this, &Distance::_onMoleculeChange );
-			_moleculeViews.emplace_back( secondMoleculeView );
+			_moleculeViews[ 1 ] = firstMoleculeView;
 		}
 	}
 
 	void Distance::_cleanViews()
 	{
-		if ( _moleculeViews.size() > 0 )
+		for ( int i = 0; i < _moleculeViews.size(); i++ )
 		{
-			MVC::MvcManager::get().deleteView( _atoms[ 0 ]->getMoleculePtr(), getViewID( 0 ) );
-		}
+			MoleculeView * const view = _moleculeViews[ i ];
 
-		if ( _moleculeViews.size() > 1 )
-		{
-			MVC::MvcManager::get().deleteView( _atoms[ 1 ]->getMoleculePtr(), getViewID( 1 ) );
+			if ( view != nullptr )
+			{
+				MVC::MvcManager::get().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
+				_moleculeViews[ i ] = nullptr;
+			}
 		}
-
-		_moleculeViews.clear();
 	}
 
 	void Distance::_onMoleculeChange( const Model::Molecule * const p_molecule, const Event::VTXEvent * const p_event )
@@ -233,5 +240,7 @@ namespace VTX::Model::Measurement
 		return MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
 													  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 	}
+
+	void Distance::autoDelete() const { MVC::MvcManager::get().deleteModel( this ); }
 
 } // namespace VTX::Model::Measurement

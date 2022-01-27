@@ -28,6 +28,12 @@ namespace VTX::Util::UIRender
 
 	float distanceToCamera( const Object3D::Camera & p_camera, const Vec3f & p_worldPos );
 
+	template<typename T>
+	inline T linearInterpolation( const T & p_min, const T & p_max, const float p_ratio )
+	{
+		return p_min + ( p_max - p_min ) * p_ratio;
+	}
+
 } // namespace VTX::Util::UIRender
 
 #endif

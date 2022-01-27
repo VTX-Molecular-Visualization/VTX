@@ -75,6 +75,8 @@ namespace VTX
 			const QPixmap REPRESENTATION_TRACE_ICON;
 			const QPixmap REPRESENTATION_SAS_ICON;
 
+			const QPixmap DIHEDRAL_ANGLE_RENDER_ICON;
+
 			const QPixmap TOOLTAB_SEPARATOR;
 
 			const QPixmap * const getWindowIcon( const ID::VTX_ID & p_id ) const
@@ -204,7 +206,9 @@ namespace VTX
 				REPRESENTATION_TRACE_ICON( QPixmap( ":/sprite/representation_stick_icon.png" ) ),
 				REPRESENTATION_SAS_ICON( QPixmap( ":/sprite/representation_sas_icon.png" ) ),
 
-				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ) {};
+				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ),
+
+				DIHEDRAL_ANGLE_RENDER_ICON( QPixmap( ":/sprite/render/dihedral_angle_icon.png" ) ) {};
 		};
 
 		namespace WidgetProperty
@@ -284,6 +288,15 @@ namespace VTX
 		inline static const int			 MEASUREMENT_ANGLE_ARC_RADIUS				= 50;
 		inline static const QColor		 MEASUREMENT_ANGLE_ARC_COLOR				= Qt::GlobalColor::blue;
 		inline static const Qt::PenStyle MEASUREMENT_ANGLE_ARC_STYLE				= Qt::PenStyle::SolidLine;
+
+		inline static const int MEASUREMENT_DIHEDRAL_ANGLE_LABEL_POINT_RADIUS		= LABEL_RENDER_POINT_RADIUS;
+		inline static const int MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MIN_LINE_THICKNESS = LABEL_RENDER_MIN_LINE_THICKNESS;
+		inline static const int MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MAX_LINE_THICKNESS = LABEL_RENDER_MAX_LINE_THICKNESS;
+		inline static const int MEASUREMENT_DIHEDRAL_ANGLE_LABEL_TEXT_OFFSET		= 2;
+		inline static const QColor		 MEASUREMENT_DIHEDRAL_ANGLE_LINE_COLOR		= Qt::GlobalColor::blue;
+		inline static const Qt::PenStyle MEASUREMENT_DIHEDRAL_ANGLE_LINE_STYLE		= Qt::PenStyle::DashLine;
+		inline static const int			 MEASUREMENT_DIHEDRAL_ANGLE_ICON_MIN_SIZE	= 10;
+		inline static const int			 MEASUREMENT_DIHEDRAL_ANGLE_ICON_MAX_SIZE	= 48;
 
 		inline static const QColor CONSOLE_INFO_COLOR	 = QColor( "white" );
 		inline static const QColor CONSOLE_DEBUG_COLOR	 = QColor( "white" );
