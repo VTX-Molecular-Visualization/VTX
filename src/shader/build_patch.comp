@@ -1,0 +1,185 @@
+#version 450
+
+#ifndef LOCAL_SIZE_X 
+#define LOCAL_SIZE_X 256
+#endif 
+
+layout (local_size_x = LOCAL_SIZE_X) in;
+
+struct AtomInformation
+{
+	vec3  position;
+	float radius;
+	uint  startCircleIdx;
+	uint  neighborNumber;
+	uint  gridHash;
+};
+
+struct CircleIntersection 
+{
+	vec3 center;
+	float radius;
+	uint atomId;
+	uint neighboorAtomId;
+	uint startProbeIdx;
+	uint probeNb;
+};
+
+struct ProbePosition
+{
+	vec3 position;
+	uint atomIndex;
+};
+
+struct TorusPatch
+{
+	vec4 torusPosition;		// Vec3 Torus Position   + float Torus Radius
+	vec4 torusAxis;			// Vec3 Torus Axis       + float Probe Radius
+	vec4 visibilitySphere;	// Vec3 VSphere Position + float VSphere Radius
+};
+
+struct SphericalTrianglePatch
+{
+	vec4 probePosition; // + Probe radius
+	vec4 v1;			// + probeHash
+	vec4 v2;			// + probeIntersectionNb
+	vec4 v3;			// + probeGridHash
+};
+
+layout (std140, binding = 0) readonly buffer AtomPositions
+{ 
+	uint atomNumber;
+	AtomInformation atomsInformation[];
+};
+
+layout (std140, binding = 1) readonly buffer Circles
+{ 
+	uint circleNb;
+	CircleIntersection circles[];
+};
+
+layout (std140, binding = 2) readonly buffer CirclesProbes
+{ 
+	uint probesNb;
+	ProbePosition probes[];
+};
+
+layout (std140, binding = 3) writeonly buffer TorusPatches
+{ 
+	TorusPatch toruses[];
+};
+
+layout (std140, binding = 4) writeonly  buffer SphericalTrianglePatches
+{ 
+	uint spTriangleNb;
+	SphericalTrianglePatch spTriangles[];
+};
+
+layout(location = 0) uniform float uProbeRadius;
+layout(location = 1) uniform ivec3 uGridSize;
+layout(location = 2) uniform vec3  uCellSize;
+layout(location = 3) uniform vec3  uWorldOrigin;
+
+const float Pif     = 3.141592;
+const float TWO_PIf = 6.283185;
+
+// https://www.geeks3d.com/20141201/how-to-rotate-a-vertex-by-a-quaternion-in-glsl/
+vec4 quatFromAxis(float angle, vec3 axis) 
+{
+	const float halfAngle = angle / 2.;
+	return vec4(
+		axis.x * sin(halfAngle),
+		axis.y * sin(halfAngle),
+		axis.z * sin(halfAngle),
+		cos(halfAngle)
+	);
+}
+
+// Based on GLM implementation
+vec3 quatMult(vec4 quat, vec3 point)
+{
+	const vec3 quatVector = vec3(quat.x, quat.y, quat.z);
+	const vec3 uv = cross(quatVector, point);
+	const vec3 uuv = cross(quatVector, uv);
+
+	return point + ((uv * quat.w) + uuv) * 2;
+}
+
+vec3 computeProbPosition ( vec3 atomPos, vec3 direction, float startAngle, float radius )
+{
+	vec4 rotQuat = quatFromAxis( -startAngle, normalize( direction ) );
+	vec3 xAxis   = cross( direction, vec3( 0., 1., 0. ) );
+	if ( abs( dot( xAxis, xAxis ) ) < 1e-4f )
+	{
+		xAxis = cross( direction, vec3( 1., 0., 0. ) );
+	}
+	xAxis = normalize( xAxis );
+
+	const vec3 circledirection = quatMult( rotQuat, xAxis ) * ( radius );
+	return ( atomPos + direction ) + circledirection;
+}
+
+ivec3 computeGridPosition(const vec3 position) 
+{
+	return ivec3 (
+		floor(position - uWorldOrigin) / uCellSize
+	);
+}
+
+uint computeGridHash( ivec3 gridPosition ) 
+{
+	gridPosition.x = gridPosition.x & ( uGridSize.x - 1 ); // wrap grid, assumes size is power of 2
+	gridPosition.y = gridPosition.y & ( uGridSize.y - 1 );
+	gridPosition.z = gridPosition.z & ( uGridSize.z - 1 );
+	return ( ( gridPosition.z * uGridSize.y ) * uGridSize.x ) + ( gridPosition.y * uGridSize.x ) + gridPosition.x;
+}
+
+void main() 
+{
+	uint circleId = uint(dot(gl_GlobalInvocationID, vec3(1, gl_NumWorkGroups.x, gl_NumWorkGroups.y * gl_NumWorkGroups.x)));
+
+	if(circleId >= circleNb) return;
+
+	CircleIntersection currentCircle = circles[circleId];
+	if (currentCircle.atomId == 0 && currentCircle.neighboorAtomId == 0) return;
+
+	AtomInformation ithAtom = atomsInformation[currentCircle.atomId];
+	float ithExtendedRadius = ithAtom.radius + uProbeRadius;
+	AtomInformation jthAtom = atomsInformation[currentCircle.neighboorAtomId];
+	
+	for(uint probe = 0; probe < currentCircle.probeNb; probe++) 
+	{
+		uint currentProbeId = currentCircle.startProbeIdx + probe;
+		ProbePosition currentProbe = probes[currentProbeId];
+		AtomInformation kthAtom = atomsInformation[currentProbe.atomIndex];
+
+		const ivec3 gridPos = computeGridPosition( currentProbe.position );
+		const float gridHash = float(computeGridHash( gridPos ));
+
+		spTriangles[currentProbeId] = SphericalTrianglePatch(
+			vec4(currentProbe.position, uProbeRadius),
+			vec4(ithAtom.position - currentProbe.position, float(currentProbeId)),
+			vec4(jthAtom.position - currentProbe.position, -1.),
+			vec4(kthAtom.position - currentProbe.position, gridHash)
+		);
+
+		atomicAdd(spTriangleNb, 1);
+	}
+
+	vec3 torusAxis = currentCircle.center;
+	torusAxis = normalize(torusAxis);
+
+	const vec3 torusCenter = currentCircle.center + ithAtom.position;
+	const vec3 ortho	   = normalize( cross( torusAxis, vec3( 0., 0., 1. ) ) );
+
+	const vec3 p = torusCenter + ( ortho * currentCircle.radius );
+	const vec3 x = normalize( p - ithAtom.position ) * ithAtom.radius;
+
+	vec3 c = ( distance( p, ithAtom.position ) / ( distance( p, jthAtom.position ) + distance( p, ithAtom.position) ) ) 
+			* ( jthAtom.position - ithAtom.position );
+
+	const float dist = distance( x, c );
+	c				 = ( c + ithAtom.position ) - torusCenter;
+
+	toruses[circleId] = TorusPatch( vec4( torusCenter, currentCircle.radius ), vec4( torusAxis, uProbeRadius ), vec4( c, dist ) );
+}

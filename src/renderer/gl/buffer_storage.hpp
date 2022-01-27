@@ -39,11 +39,11 @@ namespace VTX::Renderer::GL
 			CLIENT_STORAGE_BIT	= GL_CLIENT_STORAGE_BIT
 		};
 
-		BufferStorage() = default;
+		BufferStorage( const Target & p_target = Target::UNIFORM_BUFFER ) : _target( p_target ) {}
 
 		~BufferStorage() { destroy(); }
 
-		void create( const Target & p_target ) { _gl->glCreateBuffers( 1, &_id ); }
+		void create() { _gl->glCreateBuffers( 1, &_id ); }
 
 		void destroy()
 		{
@@ -78,8 +78,8 @@ namespace VTX::Renderer::GL
 		}
 
 	  private:
-		GLuint _id	   = GL_INVALID_INDEX;
-		Target _target = Target::UNIFORM_BUFFER;
+		GLuint		 _id = GL_INVALID_INDEX;
+		const Target _target;
 	};
 } // namespace VTX::Renderer::GL
 

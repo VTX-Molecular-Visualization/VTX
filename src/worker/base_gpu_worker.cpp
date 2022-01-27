@@ -1,11 +1,12 @@
-#include "gpu_runner.hpp"
+#include "base_gpu_worker.hpp"
 
 namespace VTX::Worker
 {
-	void GpuRunner::_run()
+	void BaseGpuWorker::_run()
 	{
 		_program->use();
-		// TODO: uniforms!
+
+		_setUniforms();
 
 		_gl->glDispatchCompute( _size.x, _size.y, _size.z );
 		_gl->glMemoryBarrier( _barrier );

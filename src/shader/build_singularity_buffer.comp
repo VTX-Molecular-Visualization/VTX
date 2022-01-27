@@ -1,0 +1,124 @@
+#version 450
+
+#ifndef LOCAL_SIZE_X 
+#define LOCAL_SIZE_X 256
+#endif 
+
+layout (local_size_x = LOCAL_SIZE_X) in;
+
+struct SphericalTrianglePatch
+{
+	vec4 probePosition; // + Probe radius
+	vec4 v1;			// + probeHash
+	vec4 v2;			// + probeIntersectionNb
+	vec4 v3;			// + probeGridHash
+};
+
+struct CellInfo
+{
+	int start;
+	int end;
+};
+
+layout (std140, binding = 0) buffer SphericalTrianglePatches
+{ 
+	uint spTriangleNb;
+	SphericalTrianglePatch spTriangles[];
+};
+
+layout(std140, binding = 1) writeonly buffer IntersectionBuffer 
+{
+	vec4 neighborsBuffer[];
+};
+
+layout (std140, binding = 2) readonly buffer AccelerationStructure
+{
+	CellInfo cellsInformation[];
+};
+
+layout(location = 0) uniform float uProbeRadius;
+layout(location = 1) uniform int   uMaxProbeNeighborNb;
+layout(location = 2) uniform ivec3 uGridSize;
+layout(location = 3) uniform vec3  uCellSize;
+layout(location = 4) uniform vec3  uWorldOrigin;
+
+ivec3 computeGridPosition(const vec3 position) 
+{
+	return ivec3 (
+		floor(position - uWorldOrigin) / uCellSize
+	);
+}
+
+uint computeGridHash( ivec3 gridPosition ) 
+{
+	gridPosition.x = gridPosition.x & ( uGridSize.x - 1 ); // wrap grid, assumes size is power of 2
+	gridPosition.y = gridPosition.y & ( uGridSize.y - 1 );
+	gridPosition.z = gridPosition.z & ( uGridSize.z - 1 );
+	return ( ( gridPosition.z * uGridSize.y ) * uGridSize.x ) + ( gridPosition.y * uGridSize.x ) + gridPosition.x;
+}
+
+void findProbeNeighborsInCell ( const ivec3 gridPos, const vec4 probePos, const float probeHash, inout uint intersectionNb )
+{
+	const uint gridHash = computeGridHash( gridPos );
+	if ( cellsInformation[ gridHash ].start < 0 )
+		return;
+
+	const int start = cellsInformation[ gridHash ].start;
+	const int end	= cellsInformation[ gridHash ].end;
+
+	// Find all ith's neighboors
+	for ( uint j = start; j <= end; j++ )
+	{
+		SphericalTrianglePatch otherProbe = spTriangles[j];
+		if(probeHash == otherProbe.v1.w) continue;
+		if ( distance( otherProbe.probePosition.xyz, probePos.xyz ) < 2. * uProbeRadius )
+		{
+			neighborsBuffer[uint(probeHash * uMaxProbeNeighborNb + intersectionNb)] = otherProbe.probePosition;
+			intersectionNb++;
+			if ( intersectionNb == uMaxProbeNeighborNb )
+				return;
+		}
+	}
+};
+
+void main() 
+{
+	uint probeId = uint(dot(gl_GlobalInvocationID, vec3(1, gl_NumWorkGroups.x, gl_NumWorkGroups.y * gl_NumWorkGroups.x))); 
+	if(probeId >= spTriangleNb) return;
+	
+	SphericalTrianglePatch currentProbe = spTriangles[probeId];
+	uint intersectionNb = 0;
+
+	const uint baseCoordinates = uint( currentProbe.v1.w * uMaxProbeNeighborNb );
+	const vec4 probePos		   = currentProbe.probePosition;
+	const float probeHash	   = spTriangles[ probeId ].v1.w;
+	const float gridCellRange  = 2. * uProbeRadius;
+
+	const ivec3 cellsInRange = max( ivec3( ceil( gridCellRange / uCellSize ) ), ivec3(2));
+	const ivec3 gridPos = computeGridPosition( probePos.xyz );
+
+	ivec3 start = max(gridPos - cellsInRange, ivec3(0));
+	ivec3 end = min(gridPos + cellsInRange, uGridSize);
+
+	for ( int z = start.z; z < end.z; z++ )
+	{
+		for ( int y = start.y; y < end.y; y++ )
+		{
+			for ( int x = start.x; x < end.x; x++ )
+			{
+				ivec3 currentGridPos = ivec3( x, y, z );
+				findProbeNeighborsInCell( currentGridPos, probePos, probeHash, intersectionNb );
+
+				if ( intersectionNb == uMaxProbeNeighborNb )
+				{
+					// full break
+					y = end.y;
+					z = end.z;
+					break;
+				}
+			}
+		}
+	}
+
+	spTriangles[probeId].v2.w = float(intersectionNb);
+}
