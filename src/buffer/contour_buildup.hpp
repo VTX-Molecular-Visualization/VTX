@@ -14,6 +14,16 @@ namespace VTX
 			ContourBuildup()  = default;
 			~ContourBuildup() = default;
 
+			inline const Renderer::GL::BufferStorage & getSsboTorusPatches() const { return _ssboTorusPatches; }
+			inline const Renderer::GL::BufferStorage & getSsboSphericalTrianglePatches() const
+			{
+				return _ssboSphericalTrianglePatches;
+			}
+			inline const Renderer::GL::BufferStorage & getSsboProbeIntersection() const
+			{
+				return _ssboProbeIntersection;
+			}
+
 			void generate() override;
 
 		  private:

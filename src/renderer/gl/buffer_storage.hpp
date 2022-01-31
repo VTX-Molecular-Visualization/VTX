@@ -31,21 +31,27 @@ namespace VTX::Renderer::GL
 		// See https://docs.gl/gl4/glBufferStorage.
 		enum Flags : GLbitfield
 		{
+			NONE				= 0,
 			DYNAMIC_STORAGE_BIT = GL_DYNAMIC_STORAGE_BIT,
 			MAP_READ_BIT		= GL_MAP_READ_BIT,
 			MAP_WRITE_BIT		= GL_MAP_WRITE_BIT,
 			MAP_PERSISTENT_BIT	= GL_MAP_PERSISTENT_BIT,
 			MAP_COHERENT_BIT	= GL_MAP_COHERENT_BIT,
-			CLIENT_STORAGE_BIT	= GL_CLIENT_STORAGE_BIT
+			CLIENT_STORAGE_BIT	= GL_CLIENT_STORAGE_BIT,
+			// Optionals.
+			MAP_INVALIDATE_RANGE_BIT  = GL_MAP_INVALIDATE_RANGE_BIT,
+			MAP_INVALIDATE_BUFFER_BIT = GL_MAP_INVALIDATE_BUFFER_BIT,
+			MAP_FLUSH_EXPLICIT_BIT	  = GL_MAP_FLUSH_EXPLICIT_BIT,
+			MAP_UNSYNCHRONIZED_BIT	  = GL_MAP_UNSYNCHRONIZED_BIT
 		};
 
-		BufferStorage( const Target & p_target = Target::UNIFORM_BUFFER ) : _target( p_target ) {}
+		BufferStorage( const Target & p_target ) : _target( p_target ) {}
 
 		~BufferStorage() { destroy(); }
 
-		void create() { _gl->glCreateBuffers( 1, &_id ); }
+		inline void create() { _gl->glCreateBuffers( 1, &_id ); }
 
-		void destroy()
+		inline void destroy()
 		{
 			if ( _id != GL_INVALID_VALUE )
 			{
@@ -55,27 +61,36 @@ namespace VTX::Renderer::GL
 
 		inline GLuint getId() const { return _id; }
 
-		void bind() const
+		inline void bind() const
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
 			_gl->glBindBuffer( GLenum( _target ), _id );
 		}
 
-		void bind( const uint p_index ) const
+		inline void bind( const uint p_index ) const
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
 			_gl->glBindBufferBase( GLenum( _target ), p_index, _id );
 		}
 
-		void unbind() const { _gl->glBindBuffer( GLenum( _target ), 0 ); }
+		inline void unbind() const { _gl->glBindBuffer( GLenum( _target ), 0 ); }
 
 		template<typename T>
-		inline void set( const std::vector<T> & p_vector, const Flags & p_flags = 0 ) const
+		inline void set( const std::vector<T> & p_vector, const Flags & p_flags = Flags::NONE ) const
 		{
 			_gl->glNamedBufferStorage( _id, sizeof( T ) * GLsizei( p_vector.size() ), p_vector.data(), p_flags );
 		}
+
+		template<typename T>
+		inline T * const map( const uint p_offset, const uint p_length, const Flags & p_access = Flags::NONE )
+		{
+			return static_cast<T *>(
+				_gl->glMapNamedBufferRange( _id, GLintptr( p_offset ), GLsizeiptr( p_length ), p_access ) );
+		}
+
+		inline void unmap() { _gl->glUnmapNamedBuffer( _id ); }
 
 	  private:
 		GLuint		 _id = GL_INVALID_INDEX;
