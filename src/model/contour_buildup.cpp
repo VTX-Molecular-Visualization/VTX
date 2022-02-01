@@ -35,7 +35,9 @@ namespace VTX
 
 		void ContourBuildup::print() const {}
 
-		void ContourBuildup::_init() { _computeGPU(); }
+		void ContourBuildup::_init()
+		{ // _computeGPU();
+		}
 
 		void ContourBuildup::_fillBuffer() {}
 
@@ -78,36 +80,36 @@ namespace VTX
 				const uint				 paddedSize		 = Util::Math::nextPowerOfTwoValue( uint( atoms.size() ) );
 
 				// Bitonic sorter lambda.
-				const auto bitonicSort = []( const IO::FilePath & sortingProgramPath,
-											 const uint			  arraySize,
-											 const uint			  MaxWorkGroupSize = 512 )
+				const auto bitonicSort = []( const IO::FilePath & p_sortingProgramPath,
+											 const uint			  p_arraySize,
+											 const uint			  p_maxWorkGroupSize = 512 )
 				{
-					assert( arraySize % 2 == 0 );
-					if ( arraySize < 2 )
+					assert( p_arraySize % 2 == 0 );
+					if ( p_arraySize < 2 )
 						return;
 
 					uint workGroupWidth = 1;
-					if ( arraySize < MaxWorkGroupSize * 2 )
+					if ( p_arraySize < p_maxWorkGroupSize * 2 )
 					{
-						workGroupWidth = arraySize / 2;
+						workGroupWidth = p_arraySize / 2;
 					}
 					else
 					{
-						workGroupWidth = MaxWorkGroupSize;
+						workGroupWidth = p_maxWorkGroupSize;
 					}
 
 					VTX::Worker::GpuComputer bitonicSort = VTX::Worker::GpuComputer(
-						sortingProgramPath, Vec3i( workGroupWidth, 1, 1 ), GL_SHADER_STORAGE_BARRIER_BIT, false );
+						p_sortingProgramPath, Vec3i( workGroupWidth, 1, 1 ), GL_SHADER_STORAGE_BARRIER_BIT, false );
 
-					const uint32_t workgroup_count = uint32_t( arraySize / ( workGroupWidth * 2 ) );
+					const uint32_t workgroup_count = uint32_t( p_arraySize / ( workGroupWidth * 2 ) );
 					uint32_t	   h			   = uint32_t( workGroupWidth ) * 2;
 
-					assert( h <= arraySize );
+					assert( h <= p_arraySize );
 					assert( h % 2 == 0 );
 
 					// Local Bms
 					bitonicSort.getProgram().use();
-					bitonicSort.getProgram().setUInt( "n", arraySize );
+					bitonicSort.getProgram().setUInt( "n", p_arraySize );
 					bitonicSort.getProgram().setUInt( "h", h );
 					bitonicSort.getProgram().setUInt( "algorithm", 0u );
 					bitonicSort.start();
@@ -115,7 +117,7 @@ namespace VTX
 					// we must now double h, as this happens before every flip
 					h *= 2;
 
-					for ( ; h <= arraySize; h *= 2 )
+					for ( ; h <= p_arraySize; h *= 2 )
 					{
 						// big_flip
 						bitonicSort.getProgram().use();

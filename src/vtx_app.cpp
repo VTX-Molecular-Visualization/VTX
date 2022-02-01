@@ -96,7 +96,7 @@ namespace VTX
 		if ( p_args.size() == 0 )
 		{
 			// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPath( IO::FilePath( "4hhb.pdb" ) ) ) );
-			VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
+			VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
 		}
 #endif
 	}

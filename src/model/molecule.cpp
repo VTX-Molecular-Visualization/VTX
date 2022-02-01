@@ -42,6 +42,8 @@ namespace VTX
 
 			if ( _secondaryStructure != nullptr )
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
+			if ( _contourBuildup != nullptr )
+				MVC::MvcManager::get().deleteModel( _contourBuildup );
 		}
 
 		void Molecule::setPdbIdCode( const std::string & p_pdbId ) { _pdbIdCode = p_pdbId; }
