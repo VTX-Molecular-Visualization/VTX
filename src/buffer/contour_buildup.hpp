@@ -11,6 +11,21 @@ namespace VTX
 		class ContourBuildup : public BaseBufferOpenGL
 		{
 		  public:
+			struct TorusPatch
+			{
+				Vec4f torusPosition;	// Vec3 Torus Position   + float Torus Radius
+				Vec4f torusAxis;		// Vec3 Torus Axis		 + float Probe Radius
+				Vec4f visibilitySphere; // Vec3 VSphere Position + float VSphere Radius
+			};
+
+			struct SphericalTrianglePatch
+			{
+				Vec4f probePosition; // Vec3 probePosition + Probe radius
+				Vec4f v1;			 // Vec3 vertex1	   + probeHash
+				Vec4f v2;			 // Vec3 vertex2	   + probeIntersectionNb
+				Vec4f v3;			 // Vec3 vertex3	   + probeGridHash
+			};
+
 			ContourBuildup()  = default;
 			~ContourBuildup() = default;
 

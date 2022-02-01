@@ -29,9 +29,10 @@ namespace VTX
 
 		  private:
 			// ??
-			const uint MaxAtomNeighborNb  = 64;
-			const uint MaxProbePerCircle  = 64;
-			const uint MaxProbeNeighborNb = 64;
+			const uint	MaxAtomNeighborNb  = 64;
+			const uint	MaxProbePerCircle  = 64;
+			const uint	MaxProbeNeighborNb = 64;
+			const float ProbeRadius		   = 1.4f;
 
 			struct GridCellInfo
 			{
@@ -60,14 +61,18 @@ namespace VTX
 				uint  probeNb;
 			};
 
-			Model::Molecule * const _molecule;
-			const float				_probeRadius;
-			Math::Grid				_accelerationGrid = Math::Grid();
+			struct ProbePosition
+			{
+				Vec3f position;
+				uint  atomIndex;
+			};
 
-			std::vector<AtomInformation> _atomsInformations = std::vector<AtomInformation>();
+			Model::Molecule * const _molecule;
 
 			ContourBuildup( Molecule * const );
 			~ContourBuildup() = default;
+
+			void _computeGPU();
 		};
 	} // namespace Model
 } // namespace VTX

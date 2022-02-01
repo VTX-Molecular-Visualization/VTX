@@ -39,6 +39,10 @@ namespace VTX::Renderer::GL
 
 		// ===================================== Uniform setters.
 		// =============== Scalars.
+		inline void setUInt( const std::string & p_name, const GLuint p_value ) const
+		{
+			_gl->glUniform1ui( getUniformLocation( p_name ), p_value );
+		}
 		inline void setInt( const std::string & p_name, const GLint p_value ) const
 		{
 			_gl->glUniform1i( getUniformLocation( p_name ), p_value );

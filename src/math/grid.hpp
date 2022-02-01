@@ -9,8 +9,9 @@ namespace VTX
 	{
 		struct Grid
 		{
-			Grid()	= default;
-			~Grid() = default;
+			Vec3f worldOrigin;
+			Vec3f cellSize;
+			Vec3i size;
 
 			Vec3i gridPosition( const Vec3f & p_position ) const
 			{
@@ -21,15 +22,11 @@ namespace VTX
 			{
 				Vec3i pos = p_gridPosition;
 
-				pos.x = pos.x & ( size.x - 1 );
-				pos.y = pos.y & ( size.y - 1 );
-				pos.z = pos.z & ( size.z - 1 );
+				pos.x &= ( size.x - 1 );
+				pos.y &= ( size.y - 1 );
+				pos.z &= ( size.z - 1 );
 				return ( ( pos.z * size.y ) * size.x ) + ( pos.y * size.x ) + pos.x;
 			}
-
-			Vec3f worldOrigin;
-			Vec3f cellSize;
-			Vec3i size;
 		};
 	} // namespace Math
 } // namespace VTX

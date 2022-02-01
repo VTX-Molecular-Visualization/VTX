@@ -13,21 +13,71 @@ namespace VTX
 	namespace Model
 	{
 		ContourBuildup::ContourBuildup( Molecule * const p_molecule ) :
-			BaseModel3D( VTX::ID::Model::MODEL_CONTOUR_BUILDUP ), _molecule( p_molecule ),
-			// ??
-			_probeRadius( 0 )
+			BaseModel3D( VTX::ID::Model::MODEL_CONTOUR_BUILDUP ), _molecule( p_molecule )
+		{
+		}
+
+		void ContourBuildup::render( const Object3D::Camera & p_camera ) const
+		{
+			if ( _buffer == nullptr )
+				return;
+
+			_buffer->bind();
+			_buffer->getSsboTorusPatches().bind( 0 );
+			MVC::MvcManager::get().getView<View::D3::Torus>( this, VTX::ID::View::D3_TORUS_PATCH )->render( p_camera );
+			_buffer->getSsboSphericalTrianglePatches().bind( 0 );
+			_buffer->getSsboProbeIntersection().bind( 1 );
+			MVC::MvcManager::get()
+				.getView<View::D3::SphericalTriangle>( this, VTX::ID::View::D3_SPHERICAL_TRIANGLE_PATCH )
+				->render( p_camera );
+			_buffer->unbind();
+		}
+
+		void ContourBuildup::print() const {}
+
+		void ContourBuildup::_init() { _computeGPU(); }
+
+		void ContourBuildup::_fillBuffer() {}
+
+		void ContourBuildup::_computeAABB() const {}
+
+		void ContourBuildup::_instantiate3DViews()
+		{
+			_addRenderable(
+				MVC::MvcManager::get().instantiateView<View::D3::Torus>( this, VTX::ID::View::D3_TORUS_PATCH ) );
+			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::SphericalTriangle>(
+				this, VTX::ID::View::D3_SPHERICAL_TRIANGLE_PATCH ) );
+		}
+
+		void ContourBuildup::_computeGPU()
 		{
 			Tool::Chrono chrono;
 			chrono.start();
 			VTX_INFO( "Creating contour buildup structure..." );
 
 			{
+				// Setup acceleration grid.
+				Math::Grid		   accelerationGrid = Math::Grid();
+				const Math::AABB & molAABB			= _molecule->getAABB();
+				const float		   maxVdwRadius		= *std::max_element(
+					   Atom::SYMBOL_VDW_RADIUS, Atom::SYMBOL_VDW_RADIUS + std::size( Atom::SYMBOL_VDW_RADIUS ) );
+
+				accelerationGrid.worldOrigin = molAABB.getMin() - maxVdwRadius - ProbeRadius;
+				const Vec3f worldSize
+					= glm::abs( molAABB.getMax() + maxVdwRadius + ProbeRadius - accelerationGrid.worldOrigin );
+
+				const std::size_t gridSize = Util::Math::nextPowerOfTwoValue(
+					Util::Math::nextPowerOfTwoExponent( _molecule->getAtomCount() ) );
+				accelerationGrid.size	  = Vec3i( int( gridSize ) );
+				accelerationGrid.cellSize = Vec3f( worldSize / Vec3f( accelerationGrid.size ) );
+
 				// The following code is based on the Megamol implementation
 				// https://github.com/UniStuttgart-VISUS/megamol/blob/master/plugins/protein_cuda/src/MoleculeCBCudaRenderer.cpp#L901
-				const auto &			 atoms			= _molecule->getAtoms();
-				const std::vector<Vec3f> atomsPositions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
-				const uint				 paddedSize		= Util::Math::nextPowerOfTwoValue( uint( atoms.size() ) );
+				const std::vector<Model::Atom *> & atoms = _molecule->getAtoms();
+				const std::vector<Vec3f> atomsPositions	 = _molecule->getAtomPositionFrame( _molecule->getFrame() );
+				const uint				 paddedSize		 = Util::Math::nextPowerOfTwoValue( uint( atoms.size() ) );
 
+				// Bitonic sorter lambda.
 				const auto bitonicSort = []( const IO::FilePath & sortingProgramPath,
 											 const uint			  arraySize,
 											 const uint			  MaxWorkGroupSize = 512 )
@@ -56,10 +106,10 @@ namespace VTX
 					assert( h % 2 == 0 );
 
 					// Local Bms
-
-					bitonicSort.getProgram().setInt( "n", uint( arraySize ) );
-					bitonicSort.getProgram().setInt( "h", h );
-					bitonicSort.getProgram().setInt( "algorithm", 0u );
+					bitonicSort.getProgram().use();
+					bitonicSort.getProgram().setUInt( "n", arraySize );
+					bitonicSort.getProgram().setUInt( "h", h );
+					bitonicSort.getProgram().setUInt( "algorithm", 0u );
 					bitonicSort.start();
 
 					// we must now double h, as this happens before every flip
@@ -68,8 +118,9 @@ namespace VTX
 					for ( ; h <= arraySize; h *= 2 )
 					{
 						// big_flip
-						bitonicSort.getProgram().setInt( "h", h );
-						bitonicSort.getProgram().setInt( "algorithm", 2u );
+						bitonicSort.getProgram().use();
+						bitonicSort.getProgram().setUInt( "h", h );
+						bitonicSort.getProgram().setUInt( "algorithm", 2u );
 						bitonicSort.start();
 
 						for ( uint32_t hh = h / 2; hh > 1; hh /= 2 )
@@ -80,8 +131,9 @@ namespace VTX
 								// We can fit all elements for a disperse operation into continuous shader
 								// workgroup local memory, which means we can complete the rest of the
 								// cascade using a single shader invocation.
-								bitonicSort.getProgram().setInt( "h", hh );
-								bitonicSort.getProgram().setInt( "algorithm", 1u );
+								bitonicSort.getProgram().use();
+								bitonicSort.getProgram().setUInt( "h", hh );
+								bitonicSort.getProgram().setUInt( "algorithm", 1u );
 								bitonicSort.start();
 
 								break;
@@ -89,8 +141,9 @@ namespace VTX
 							else
 							{
 								// big_disperse
-								bitonicSort.getProgram().setInt( "h", hh );
-								bitonicSort.getProgram().setInt( "algorithm", 3u );
+								bitonicSort.getProgram().use();
+								bitonicSort.getProgram().setUInt( "h", hh );
+								bitonicSort.getProgram().setUInt( "algorithm", 3u );
 								bitonicSort.start();
 							}
 						}
@@ -100,30 +153,32 @@ namespace VTX
 				VTX::Renderer::GL::BufferStorage ssboAtomPosition = VTX::Renderer::GL::BufferStorage(
 					VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER );
 				ssboAtomPosition.create();
-				_atomsInformations.reserve( _molecule->getAtomCount() );
+
+				std::vector<AtomInformation> atomsInformations = std::vector<AtomInformation>();
+				atomsInformations.reserve( _molecule->getAtomCount() );
 				for ( uint i = 0; i < atoms.size(); i++ )
 				{
-					const auto & currentPosition = atomsPositions[ i ];
-					const Vec3i	 gridPos		 = _accelerationGrid.gridPosition( currentPosition );
-					const uint	 hash			 = _accelerationGrid.gridHash( gridPos );
+					const Vec3f & currentPosition = atomsPositions[ i ];
+					const Vec3i	  gridPos		  = accelerationGrid.gridPosition( currentPosition );
+					const uint	  hash			  = accelerationGrid.gridHash( gridPos );
 
-					_atomsInformations.emplace_back(
+					atomsInformations.emplace_back(
 						AtomInformation { currentPosition, atoms[ i ]->getVdwRadius(), 0, 0, hash } );
 				}
 
 				for ( uint i = uint( atoms.size() ); i < paddedSize; i++ )
 				{
-					_atomsInformations.emplace_back(
+					atomsInformations.emplace_back(
 						AtomInformation { Vec3f( 0.f ), 0, 0, 0, std::numeric_limits<VTX::uint>::max() } );
 				}
 
 				std::vector<uint8_t> atomPositionData = std::vector<uint8_t>(
-					sizeof( uint ) + /* padding */ 12 + _atomsInformations.size() * sizeof( AtomInformation ) );
+					sizeof( uint ) + /* padding */ 12 + atomsInformations.size() * sizeof( AtomInformation ) );
 				const uint atomNb = uint( atoms.size() );
 				std::memcpy( atomPositionData.data(), &atomNb, sizeof( uint ) );
 				std::memcpy( atomPositionData.data() + sizeof( uint ) + 12,
-							 _atomsInformations.data(),
-							 _atomsInformations.size() * sizeof( AtomInformation ) );
+							 atomsInformations.data(),
+							 atomsInformations.size() * sizeof( AtomInformation ) );
 				ssboAtomPosition.set( atomPositionData );
 
 				ssboAtomPosition.bind( 0 );
@@ -133,11 +188,11 @@ namespace VTX
 				// workerBuildGrid.
 				VTX::Worker::GpuComputer workerBuildGrid
 					= VTX::Worker::GpuComputer( IO::FilePath( "build_atoms_grid.comp" ),
-												uint( _atomsInformations.size() ),
+												uint( atomsInformations.size() ),
 												GL_SHADER_STORAGE_BARRIER_BIT );
 
 				std::vector<GridCellInfo> atomGridIndices = std::vector<GridCellInfo>(
-					_accelerationGrid.size.x * _accelerationGrid.size.y * _accelerationGrid.size.z,
+					accelerationGrid.size.x * accelerationGrid.size.y * accelerationGrid.size.z,
 					GridCellInfo { -1, -1 } );
 				VTX::Renderer::GL::BufferStorage ssboAtomCellInfo = VTX::Renderer::GL::BufferStorage(
 					VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER );
@@ -159,16 +214,16 @@ namespace VTX
 				VTX::Renderer::GL::BufferStorage ssboCircles = VTX::Renderer::GL::BufferStorage(
 					VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER );
 				ssboCircles.create();
-				ssboCircles.set( std::vector<uint8_t>( circlePreAllocationSize, 0u ) );
+				ssboCircles.set( std::vector<uint8_t>( circlePreAllocationSize, 0u ),
+								 VTX::Renderer::GL::BufferStorage::Flags::MAP_READ_BIT );
 
+				workerNeighborsCount.getProgram().use();
 				workerNeighborsCount.getProgram().setInt( "uMaxNeighborsNb", MaxAtomNeighborNb );
-				workerNeighborsCount.getProgram().setInt( "uProbeRadius", _probeRadius );
-				workerNeighborsCount.getProgram().setVec3i( "uGridSize", _accelerationGrid.size );
-				workerNeighborsCount.getProgram().setVec3f( "uCellSize", _accelerationGrid.cellSize );
-				workerNeighborsCount.getProgram().setVec3f( "uWorldOrigin", _accelerationGrid.worldOrigin );
-				const float maxVdwRadius = *std::max_element(
-					Atom::SYMBOL_VDW_RADIUS, Atom::SYMBOL_VDW_RADIUS + std::size( Atom::SYMBOL_VDW_RADIUS ) );
-				workerNeighborsCount.getProgram().setInt( "uMaxVdwRadius", maxVdwRadius );
+				workerNeighborsCount.getProgram().setFloat( "uProbeRadius", ProbeRadius );
+				workerNeighborsCount.getProgram().setVec3i( "uGridSize", accelerationGrid.size );
+				workerNeighborsCount.getProgram().setVec3f( "uCellSize", accelerationGrid.cellSize );
+				workerNeighborsCount.getProgram().setVec3f( "uWorldOrigin", accelerationGrid.worldOrigin );
+				workerNeighborsCount.getProgram().setFloat( "uMaxVdwRadius", maxVdwRadius );
 
 				ssboAtomPosition.bind( 0 );
 				ssboCircles.bind( 1 );
@@ -181,157 +236,151 @@ namespace VTX
 				ssboCircles.bind();
 				const uint * const realCircleNb
 					= ssboCircles.map<uint>( 0, sizeof( uint ), VTX::Renderer::GL::BufferStorage::Flags::MAP_READ_BIT );
-				auto torusPatchNb = uint( *realCircleNb );
+				assert( realCircleNb != nullptr );
+				const uint torusPatchNb = uint( *realCircleNb );
+				assert( torusPatchNb > 0 );
 				ssboCircles.unmap();
 				ssboCircles.unbind();
 
-				/*
 				const uint circleProbePreAllocationSize
-					= sizeof( uint ) + 12 + sizeof( ProbePosition ) * _torusPatchNb * MaxProbePerCircle;
+					= sizeof( uint ) + 12 + sizeof( ProbePosition ) * torusPatchNb * MaxProbePerCircle;
 
-				std::unique_ptr<GpuBuffer> ssboCirclesProbes = std::make_unique<GpuBuffer>(
-					circleProbePreAllocationSize, Renderer::BufferType::SSBO, Renderer::BufferAuthorization::READ );
+				VTX::Renderer::GL::BufferStorage ssboCirclesProbes = VTX::Renderer::GL::BufferStorage(
+					VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER );
+				ssboCirclesProbes.create();
+				ssboCirclesProbes.set( std::vector<uint8_t>( circlePreAllocationSize, 0u ),
+									   VTX::Renderer::GL::BufferStorage::Flags::MAP_READ_BIT );
 
-				_contourBuildupWorker->getUniformManager().addValue( "uMaxNeighborsNb",
-																	 static_cast<GLint>( MaxAtomNeighborNb ) );
-				_contourBuildupWorker->getUniformManager().addValue( "uProbeRadius", _probeRadius );
-				_contourBuildupWorker->getUniformManager().addValue( "uMaxProbePerCircle",
-																	 static_cast<GLint>( MaxProbePerCircle ) );
+				// workerContourBuildup.
+				VTX::Worker::GpuComputer workerContourBuildup = VTX::Worker::GpuComputer(
+					IO::FilePath( "contour_buildup.comp" ), torusPatchNb, GL_SHADER_STORAGE_BARRIER_BIT );
+				workerContourBuildup.getProgram().use();
+				workerContourBuildup.getProgram().setInt( "uMaxNeighborsNb", MaxAtomNeighborNb );
+				workerContourBuildup.getProgram().setFloat( "uProbeRadius", ProbeRadius );
+				workerContourBuildup.getProgram().setInt( "uMaxProbePerCircle", MaxProbePerCircle );
 
-				ssboAtomPosition->bind( 0 );
-				ssboCircles->bind( 1 );
-				ssboCirclesProbes->bind( 2 );
+				ssboAtomPosition.bind( 0 );
+				ssboCircles.bind( 1 );
+				ssboCirclesProbes.bind( 2 );
 
 				// Start a thread per circle
-				_contourBuildupWorker->start( _torusPatchNb, { GL_SHADER_STORAGE_BARRIER_BIT } );
+				workerContourBuildup.start();
 
-				ssboAtomPosition->unbind();
-				ssboCircles->unbind();
-				ssboCirclesProbes->unbind();
+				ssboAtomPosition.unbind();
+				ssboCircles.unbind();
+				ssboCirclesProbes.unbind();
 
-				const uint * const probeNb
-					= ssboCirclesProbes->map<uint>( 0, sizeof( uint ), Renderer::BufferAuthorization::READ );
-				_trianglePatchNb = uint( *probeNb );
-				ssboCirclesProbes->unmap();
+				ssboCirclesProbes.bind();
+				const uint * const probeNb = ssboCirclesProbes.map<uint>(
+					0, sizeof( uint ), VTX::Renderer::GL::BufferStorage::Flags::MAP_READ_BIT );
+				assert( probeNb != nullptr );
+				const uint trianglePatchNb = uint( *probeNb );
+				assert( trianglePatchNb > 0 );
+				ssboCirclesProbes.unmap();
+				ssboCirclesProbes.unbind();
 
-				_ssboTorusPatches		  = std::make_unique<GpuBuffer>( sizeof( TorusPatch ) * _torusPatchNb );
-				uint paddedNbOfSpTriangle = Util::Math::nextPowerOfTwoValue( _trianglePatchNb );
+				const VTX::Renderer::GL::BufferStorage & ssboTorusPatches = _buffer->getSsboTorusPatches();
+				ssboTorusPatches.set(
+					std::vector<uint8_t>( sizeof( Buffer::ContourBuildup::TorusPatch ) * torusPatchNb, 0u ) );
+				uint paddedNbOfSpTriangle = Util::Math::nextPowerOfTwoValue( trianglePatchNb );
 
-				auto trianglePatchesInit = std::vector<uint8_t>(
-					sizeof( uint ) +  12 + sizeof( SphericalTrianglePatch ) * paddedNbOfSpTriangle );
-				{
-					const auto trianglesPatchesDefault = std::vector<SphericalTrianglePatch>(
+				std::vector<uint8_t> trianglePatchesInit = std::vector<uint8_t>(
+					sizeof( uint ) + 12
+					+ sizeof( Buffer::ContourBuildup::SphericalTrianglePatch ) * paddedNbOfSpTriangle );
+
+				const std::vector<Buffer::ContourBuildup::SphericalTrianglePatch> trianglesPatchesDefault
+					= std::vector<Buffer::ContourBuildup::SphericalTrianglePatch>(
 						paddedNbOfSpTriangle,
-						SphericalTrianglePatch {
+						Buffer::ContourBuildup::SphericalTrianglePatch {
 							Vec4f( 0.f ),
 							Vec4f( 0.f ),
 							Vec4f( 0.f ),
 							Vec4f( 0.f, 0.f, 0.f, static_cast<float>( std::numeric_limits<uint>::max() ) ) } );
-					std::memcpy( trianglePatchesInit.data() + sizeof( uint ) + 12,
-								 trianglesPatchesDefault.data(),
-								 sizeof( SphericalTrianglePatch ) * paddedNbOfSpTriangle );
-				}
-				_ssboSpTrianglePatches = std::make_unique<GpuBuffer>( trianglePatchesInit );
+				std::memcpy( trianglePatchesInit.data() + sizeof( uint ) + 12,
+							 trianglesPatchesDefault.data(),
+							 sizeof( Buffer::ContourBuildup::SphericalTrianglePatch ) * paddedNbOfSpTriangle );
 
-				_buildPatchWorker->getUniformManager().addValue( "uProbeRadius", _probeRadius );
-				_buildPatchWorker->getUniformManager().addValue( "uGridSize", _accelerationGrid.size );
-				_buildPatchWorker->getUniformManager().addValue( "uCellSize", _accelerationGrid.cellSize );
-				_buildPatchWorker->getUniformManager().addValue( "uWorldOrigin", _accelerationGrid.worldOrigin );
+				const VTX::Renderer::GL::BufferStorage & ssboSphericalTrianglePatches
+					= _buffer->getSsboSphericalTrianglePatches();
+				ssboSphericalTrianglePatches.set( trianglePatchesInit );
 
-				ssboAtomPosition->bind( 0 );
-				ssboCircles->bind( 1 );
-				ssboCirclesProbes->bind( 2 );
-				_ssboTorusPatches->bind( 3 );
-				_ssboSpTrianglePatches->bind( 4 );
+				// workerBuildPatch.
+				VTX::Worker::GpuComputer workerBuildPatch = VTX::Worker::GpuComputer(
+					IO::FilePath( "build_patch.comp" ), torusPatchNb, GL_SHADER_STORAGE_BARRIER_BIT );
+				workerBuildPatch.getProgram().use();
+				workerBuildPatch.getProgram().setFloat( "uProbeRadius", ProbeRadius );
+				workerBuildPatch.getProgram().setVec3i( "uGridSize", accelerationGrid.size );
+				workerBuildPatch.getProgram().setVec3f( "uCellSize", accelerationGrid.cellSize );
+				workerBuildPatch.getProgram().setVec3f( "uWorldOrigin", accelerationGrid.worldOrigin );
+
+				ssboAtomPosition.bind( 0 );
+				ssboCircles.bind( 1 );
+				ssboCirclesProbes.bind( 2 );
+				ssboTorusPatches.bind( 3 );
+				ssboSphericalTrianglePatches.bind( 4 );
 
 				// Start a thread per circle
-				_buildPatchWorker->start( _torusPatchNb, { GL_SHADER_STORAGE_BARRIER_BIT } );
+				workerBuildPatch.start();
 
-				ssboAtomPosition->unbind();
-				ssboCircles->unbind();
-				ssboCirclesProbes->unbind();
-				_ssboTorusPatches->unbind();
-				_ssboSpTrianglePatches->unbind();
+				ssboAtomPosition.unbind();
+				ssboCircles.unbind();
+				ssboCirclesProbes.unbind();
+				ssboTorusPatches.unbind();
+				ssboSphericalTrianglePatches.unbind();
 
-				// We no longer needs those buffers
-				ssboAtomPosition.reset();
-				ssboCircles.reset();
-				ssboCirclesProbes.reset();
+				ssboSphericalTrianglePatches.bind( 0 );
+				bitonicSort( IO::FilePath( "sort_probes.comp" ), paddedNbOfSpTriangle, 256 );
+				ssboSphericalTrianglePatches.unbind();
 
-				_ssboSpTrianglePatches->bind( 0 );
-				bitonicSort( "contourbuildup/compute/sort_probes.comp", paddedNbOfSpTriangle, 256 );
-				_ssboSpTrianglePatches->unbind();
-
-				auto probesGridIndices = std::vector<GridCellInfo>(
-					uint( _accelerationGrid.size.x ) * _accelerationGrid.size.y * _accelerationGrid.size.z,
+				std::vector<GridCellInfo> probesGridIndices = std::vector<GridCellInfo>(
+					uint( accelerationGrid.size.x ) * accelerationGrid.size.y * accelerationGrid.size.z,
 					GridCellInfo { -1, -1 } );
-				auto ssboProbesCellInfo = std::make_unique<GpuBuffer>( probesGridIndices );
 
-				_ssboSpTrianglePatches->bind( 0 );
-				ssboProbesCellInfo->bind( 2 );
-				_buildProbesGridWorker->start( _trianglePatchNb, { GL_SHADER_STORAGE_BARRIER_BIT } );
-				ssboProbesCellInfo->unbind();
-				_ssboSpTrianglePatches->unbind();
+				VTX::Renderer::GL::BufferStorage ssboProbesCellInfo = VTX::Renderer::GL::BufferStorage(
+					VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER );
+				ssboProbesCellInfo.create();
+				ssboProbesCellInfo.set( probesGridIndices );
 
-				_ssboProbeIntersection
-					= std::make_unique<GpuBuffer>( sizeof( Vec4f ) * _trianglePatchNb * MaxProbeNeighborNb );
+				// workerBuildPatch.
+				VTX::Worker::GpuComputer workerBuildProbesGrid = VTX::Worker::GpuComputer(
+					IO::FilePath( "build_probes_grid.comp" ), trianglePatchNb, GL_SHADER_STORAGE_BARRIER_BIT );
+
+				ssboSphericalTrianglePatches.bind( 0 );
+				ssboProbesCellInfo.bind( 2 );
+				workerBuildProbesGrid.start();
+				ssboProbesCellInfo.unbind();
+				ssboSphericalTrianglePatches.unbind();
+
+				const VTX::Renderer::GL::BufferStorage & ssboProbeIntersection = _buffer->getSsboProbeIntersection();
+				ssboProbeIntersection.set(
+					std::vector<uint8_t>( sizeof( Vec4f ) * trianglePatchNb * MaxProbeNeighborNb, 0u ) );
+
+				// workerBuildSingularityBuffer.
+				VTX::Worker::GpuComputer workerBuildSingularityBuffer = VTX::Worker::GpuComputer(
+					IO::FilePath( "build_singularity_buffer.comp" ), trianglePatchNb, GL_SHADER_STORAGE_BARRIER_BIT );
 
 				// Fill intersection texture
-				_buildSingularityBufferWorker->getUniformManager().addValue( "uProbeRadius", _probeRadius );
-				_buildSingularityBufferWorker->getUniformManager().addValue( "uMaxProbeNeighborNb",
-																			 static_cast<int>( MaxProbeNeighborNb ) );
-				_buildSingularityBufferWorker->getUniformManager().addValue( "uGridSize", _accelerationGrid.size );
-				_buildSingularityBufferWorker->getUniformManager().addValue( "uCellSize", _accelerationGrid.cellSize );
-				_buildSingularityBufferWorker->getUniformManager().addValue( "uWorldOrigin",
-																			 _accelerationGrid.worldOrigin );
+				workerBuildSingularityBuffer.getProgram().use();
+				workerBuildSingularityBuffer.getProgram().setFloat( "uProbeRadius", ProbeRadius );
+				workerBuildSingularityBuffer.getProgram().setUInt( "uMaxProbeNeighborNb", MaxProbeNeighborNb );
+				workerBuildSingularityBuffer.getProgram().setVec3i( "uGridSize", accelerationGrid.size );
+				workerBuildSingularityBuffer.getProgram().setVec3f( "uCellSize", accelerationGrid.cellSize );
+				workerBuildSingularityBuffer.getProgram().setVec3f( "uWorldOrigin", accelerationGrid.worldOrigin );
 
-				_ssboSpTrianglePatches->bind( 0 );
-				_ssboProbeIntersection->bind( 1 );
-				ssboProbesCellInfo->bind( 2 );
+				ssboSphericalTrianglePatches.bind( 0 );
+				ssboProbeIntersection.bind( 1 );
+				ssboProbesCellInfo.bind( 2 );
 
 				// Start a thread per circle
-				_buildSingularityBufferWorker->start( _trianglePatchNb, { GL_SHADER_STORAGE_BARRIER_BIT } );
+				workerBuildSingularityBuffer.start();
 
-				_ssboSpTrianglePatches->unbind();
-				_ssboProbeIntersection->unbind();
-				ssboProbesCellInfo->unbind();
-				*/
+				ssboSphericalTrianglePatches.unbind();
+				ssboProbeIntersection.unbind();
+				ssboProbesCellInfo.unbind();
 			}
 
 			chrono.stop();
 			VTX_INFO( "Contour buildup structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
-		}
-
-		void ContourBuildup::render( const Object3D::Camera & p_camera ) const
-		{
-			if ( _buffer == nullptr )
-				return;
-
-			_buffer->bind();
-			_buffer->getSsboTorusPatches().bind( 0 );
-			MVC::MvcManager::get().getView<View::D3::Torus>( this, VTX::ID::View::D3_TORUS_PATCH )->render( p_camera );
-			_buffer->getSsboSphericalTrianglePatches().bind( 0 );
-			_buffer->getSsboProbeIntersection().bind( 1 );
-			MVC::MvcManager::get()
-				.getView<View::D3::SphericalTriangle>( this, VTX::ID::View::D3_SPHERICAL_TRIANGLE_PATCH )
-				->render( p_camera );
-			_buffer->unbind();
-		}
-
-		void ContourBuildup::print() const {}
-
-		void ContourBuildup::_init() {}
-
-		void ContourBuildup::_fillBuffer() {}
-
-		void ContourBuildup::_computeAABB() const {}
-
-		void ContourBuildup::_instantiate3DViews()
-		{
-			_addRenderable(
-				MVC::MvcManager::get().instantiateView<View::D3::Torus>( this, VTX::ID::View::D3_TORUS_PATCH ) );
-			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::SphericalTriangle>(
-				this, VTX::ID::View::D3_SPHERICAL_TRIANGLE_PATCH ) );
 		}
 	} // namespace Model
 } // namespace VTX

@@ -32,18 +32,18 @@ namespace VTX::Worker
 
 		virtual ~GpuComputer() = default;
 
-		inline const Renderer::GL::Program & getProgram() const { return *_program; }
-		inline void							 setSize( const Vec3i & p_size ) { _size = p_size; }
-		inline void setTaskCount( const uint p_taskCount ) { _size = _computeSize( p_taskCount ); }
-		inline void setBarrier( const GLbitfield p_barrier ) { _barrier = p_barrier; }
-		inline void setForce( const bool p_force ) { _force = p_force; }
+		inline Renderer::GL::Program & getProgram() { return *_program; }
+		inline void					   setSize( const Vec3i & p_size ) { _size = p_size; }
+		inline void					   setTaskCount( const uint p_taskCount ) { _size = _computeSize( p_taskCount ); }
+		inline void					   setBarrier( const GLbitfield p_barrier ) { _barrier = p_barrier; }
+		inline void					   setForce( const bool p_force ) { _force = p_force; }
 
 		void start();
 
 	  protected:
 		Renderer::GL::Program * const _program;
 		Vec3i						  _size;
-		GLbitfield					  _barrier = 0;
+		GLbitfield					  _barrier;
 		bool						  _force;
 
 		virtual void _run() override;
