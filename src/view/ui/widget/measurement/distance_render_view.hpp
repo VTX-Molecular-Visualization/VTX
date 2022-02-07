@@ -20,8 +20,7 @@ namespace VTX::View::UI::Widget::Measurement
 {
 	class DistanceRenderView :
 		public View::BaseView<VTX::Model::Measurement::Distance>,
-		public VTX::UI::Widget::BaseManualWidget<QWidget>,
-		public VTX::UI::Widget::Render::BaseIntegratedWidget
+		public VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>
 	{
 		VTX_WIDGET
 		VTX_VIEW

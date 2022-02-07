@@ -16,7 +16,8 @@
 namespace VTX::View::UI::Widget::Measurement
 {
 	AngleRenderView::AngleRenderView( Model::Measurement::Angle * const p_model, QWidget * const p_parent ) :
-		View::BaseView<Model::Measurement::Angle>( p_model ), VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
+		View::BaseView<Model::Measurement::Angle>( p_model ),
+		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>( p_parent )
 	{
 		_labelPen	= QPen( Style::WORLD_LABEL_OUTLINE_COLOR );
 		_labelBrush = QBrush( Style::WORLD_LABEL_FILL_COLOR );
@@ -35,7 +36,7 @@ namespace VTX::View::UI::Widget::Measurement
 
 	void AngleRenderView::_setupUi( const QString & p_name )
 	{
-		BaseManualWidget ::_setupUi( p_name );
+		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>::_setupUi( p_name );
 
 		_refreshText();
 		updatePosition();

@@ -7,6 +7,7 @@
 #include "model/measurement/angle.hpp"
 #include "model/measurement/dihedral_angle.hpp"
 #include "model/measurement/distance.hpp"
+#include "model/measurement/measure_in_progress.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "overlay/visualization_quick_access.hpp"
@@ -18,6 +19,7 @@
 #include "view/ui/widget/measurement/angle_render_view.hpp"
 #include "view/ui/widget/measurement/dihedral_angle_render_view.hpp"
 #include "view/ui/widget/measurement/distance_render_view.hpp"
+#include "view/ui/widget/measurement/measure_in_progress_render_view.hpp"
 #include "vtx_app.hpp"
 #include <QShortcut>
 
@@ -29,6 +31,7 @@ namespace VTX::UI::Widget::Render
 		_registerEvent( Event::Global::MESH_CREATED );
 		_registerEvent( Event::Global::LABEL_ADDED );
 		_registerEvent( Event::Global::LABEL_REMOVED );
+		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
 	}
 
 	RenderWidget::~RenderWidget() {}
@@ -98,7 +101,9 @@ namespace VTX::UI::Widget::Render
 			}
 
 			if ( integratedWidget != nullptr )
-				_integratedWidgets.emplace_back( integratedWidget );
+			{
+				_addIntegratedWidget( integratedWidget );
+			}
 		}
 		else if ( p_event.name == Event::Global::LABEL_REMOVED )
 		{
@@ -131,6 +136,43 @@ namespace VTX::UI::Widget::Render
 					model, ID::View::UI_RENDER_MEASUREMENT_DIHEDRAL_ANGLE );
 			}
 		}
+		else if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		{
+			State::Visualization * const state
+				= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+
+			Model::Measurement::MeasureInProgress & measureInProgressModel
+				= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )
+					  ->getMeasureInProgressModel();
+
+			if ( state->getCurrentPickerID() == ID::Controller::PICKER )
+			{
+				if ( MVC::MvcManager::get().hasView( &measureInProgressModel,
+													 ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS ) )
+				{
+					_removeViewIntegratedWidget<View::UI::Widget::Measurement::MeasureInProgressRenderView,
+												Model::Measurement::MeasureInProgress>(
+						&measureInProgressModel, ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS );
+				}
+			}
+			else if ( state->getCurrentPickerID() == ID::Controller::MEASUREMENT )
+			{
+				if ( !MVC::MvcManager::get().hasView( &measureInProgressModel,
+													  ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS ) )
+				{
+					UI::Widget::Render::BaseIntegratedWidget * const measureInProgressView
+						= WidgetFactory::get()
+							  .instantiateViewWidget<View::UI::Widget::Measurement::MeasureInProgressRenderView,
+													 Model::Measurement::MeasureInProgress>(
+								  &measureInProgressModel,
+								  ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS,
+								  this,
+								  "MeasureInProgress" );
+
+					_addIntegratedWidget( measureInProgressView );
+				}
+			}
+		}
 	}
 
 	void RenderWidget::_setupUi( const QString & p_name )
@@ -147,6 +189,8 @@ namespace VTX::UI::Widget::Render
 		_openGLWidget->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred );
 
 		layout->addWidget( _openGLWidget );
+		setMouseTracking( true );
+		_openGLWidget->setMouseTracking( true );
 	}
 
 	void RenderWidget::_setupSlots()
@@ -201,6 +245,11 @@ namespace VTX::UI::Widget::Render
 	{
 		setWindowTitle( "Render" );
 		// setWindowTitle( QCoreApplication::translate( "RenderWidget", "Render", nullptr ) );
+	}
+
+	void RenderWidget::_addIntegratedWidget( BaseIntegratedWidget * const p_widget )
+	{
+		_integratedWidgets.emplace_back( p_widget );
 	}
 
 	void RenderWidget::updateRender() const

@@ -1,16 +1,15 @@
-#ifndef __VTX_VIEW_UI_WIDGET_MEASUREMENT_ANGLE_RENDER__
-#define __VTX_VIEW_UI_WIDGET_MEASUREMENT_ANGLE_RENDER__
+#ifndef __VTX_VIEW_UI_WIDGET_MEASUREMENT_MEASURE_IN_PROGRESS_RENDER__
+#define __VTX_VIEW_UI_WIDGET_MEASUREMENT_MEASURE_IN_PROGRESS_RENDER__
 
 #include "define.hpp"
 #include "id.hpp"
-#include "model/measurement/angle.hpp"
+#include "model/measurement/measure_in_progress.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/render/base_integrated_widget.hpp"
 #include "view/base_view.hpp"
 #include <QBrush>
 #include <QFont>
 #include <QPaintEvent>
-#include <QPainterPath>
 #include <QPen>
 #include <QPoint>
 #include <QSize>
@@ -18,8 +17,8 @@
 
 namespace VTX::View::UI::Widget::Measurement
 {
-	class AngleRenderView :
-		public View::BaseView<VTX::Model::Measurement::Angle>,
+	class MeasureInProgressRenderView :
+		public View::BaseView<VTX::Model::Measurement::MeasureInProgress>,
 		public VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>
 	{
 		VTX_WIDGET
@@ -29,17 +28,12 @@ namespace VTX::View::UI::Widget::Measurement
 		class PaintData
 		{
 		  public:
-			QPoint firstAtomScreenPos;
-			QPoint secondAtomScreenPos;
-			QPoint thirdAtomScreenPos;
+			std::vector<QPoint> points;
 
-			QPoint textPosition;
-			QSize  textSize;
-			float  textDistanceToCamera;
+			float distanceToCamera;
 
-			int arcRadius;
-			int startAngle;
-			int angle;
+			float lineSize;
+			float pointSize;
 		};
 
 	  public:
@@ -47,7 +41,7 @@ namespace VTX::View::UI::Widget::Measurement
 		void updatePosition() override;
 
 	  protected:
-		AngleRenderView( Model::Measurement::Angle * const p_model, QWidget * const p_parent );
+		MeasureInProgressRenderView( Model::Measurement::MeasureInProgress * const p_model, QWidget * const p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
@@ -55,19 +49,11 @@ namespace VTX::View::UI::Widget::Measurement
 
 		void paintEvent( QPaintEvent * event ) override;
 
-		void _setText( const std::string & p_txt );
-		void _refreshText();
-
 	  private:
-		PaintData	 _paintData;
-		QPainterPath _painterPath = QPainterPath();
+		PaintData _paintData;
 
-		QPen   _labelPen;
-		QBrush _labelBrush;
 		QPen   _linePen;
 		QBrush _lineBrush;
-		QPen   _arcPen;
-		QBrush _arcBrush;
 	};
 
 } // namespace VTX::View::UI::Widget::Measurement

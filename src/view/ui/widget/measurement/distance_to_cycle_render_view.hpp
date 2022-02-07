@@ -20,8 +20,7 @@
 //{
 //	class DistanceToCycleRenderView :
 //		public View::BaseView<VTX::Model::Measurement::DistanceToCycle>,
-//		public VTX::UI::Widget::BaseManualWidget<QWidget>,
-//		public VTX::UI::Widget::Render::BaseIntegratedWidget
+//		public VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>
 //	{
 //		VTX_WIDGET
 //		VTX_VIEW
