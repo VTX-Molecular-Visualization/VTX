@@ -41,6 +41,8 @@ namespace VTX
 			const Mode & getCurrentMode() const { return _currentMode; }
 			void		 setCurrentMode( const Mode & p_mode );
 
+			void update( const float & p_deltaTime ) override;
+
 			Model::Measurement::MeasureInProgress & getMeasureInProgressModel() { return *_currentMeasureModel; }
 
 		  protected:

@@ -35,6 +35,8 @@ namespace VTX::Controller
 		}
 	}
 
+	void MeasurementPicker::update( const float & p_deltaTime ) { BaseMouseController::update( p_deltaTime ); }
+
 	void MeasurementPicker::_onMouseRightClick( const uint p_x, const uint p_y )
 	{
 		const UI::Widget::Render::OpenGLWidget & openGLWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
@@ -155,21 +157,26 @@ namespace VTX::Controller
 		switch ( _currentMode )
 		{
 		case Mode::DISTANCE:
+		{
 			const Model::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
 			const Model::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
 
 			VTX_ACTION( new Action::Measurement::InstantiateDistanceLabel( *firstAtom, *secondAtom ) );
-			break;
+		}
+		break;
 
 		case Mode::ANGLE:
+		{
 			const Model::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
 			const Model::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
 			const Model::Atom * const thirdAtom	 = _currentMeasureModel->getAtom( 2 );
 
 			VTX_ACTION( new Action::Measurement::InstantiateAngleLabel( *firstAtom, *secondAtom, *thirdAtom ) );
-			break;
+		}
+		break;
 
 		case Mode::DIHEDRAL_ANGLE:
+		{
 			const Model::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
 			const Model::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
 			const Model::Atom * const thirdAtom	 = _currentMeasureModel->getAtom( 2 );
@@ -177,7 +184,8 @@ namespace VTX::Controller
 
 			VTX_ACTION( new Action::Measurement::InstantiateDihedralAngleLabel(
 				*firstAtom, *secondAtom, *thirdAtom, *fourthAtom ) );
-			break;
+		}
+		break;
 		}
 
 		_currentMeasureModel->clearAtoms();
