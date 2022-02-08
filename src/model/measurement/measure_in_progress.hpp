@@ -70,8 +70,6 @@ namespace VTX::Model::Measurement
 		};
 
 	  public:
-		bool applyPotentialTarget();
-
 		void addAtom( const Model::Atom & p_atom );
 		void removeAtom( const Model::Atom & p_atom );
 		void clearAtoms();
@@ -92,6 +90,7 @@ namespace VTX::Model::Measurement
 		void setPotentialNextTarget( const Model::Atom & p_firstAtom, const Model::Atom & p_secondAtom );
 		void setPotentialNextTarget( const QPoint & p_position );
 
+		bool applyPotentialTarget();
 		void clearPotentialTarget();
 
 		void receiveEvent( const Event::VTXEvent & p_event ) override;

@@ -53,9 +53,8 @@ namespace VTX::Model::Measurement
 			if ( _isLinkedToAtom( castedEvent.ptr ) )
 			{
 				// TODO : Use a manager instead of managing scene from model
-				VTXApp::get().getScene().removeLabel( this );
-				_invalidate();
-				VTXApp::get().deleteAtEndOfFrame( this );
+				clearPotentialTarget();
+				clearAtoms();
 			}
 		}
 		else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
@@ -66,9 +65,8 @@ namespace VTX::Model::Measurement
 			if ( _isLinkedToMolecule( castedEvent.ptr ) )
 			{
 				// TODO : Use a manager instead of managing scene from model
-				VTXApp::get().getScene().removeLabel( this );
-				_invalidate();
-				VTXApp::get().deleteAtEndOfFrame( this );
+				clearPotentialTarget();
+				clearAtoms();
 			}
 		}
 		else if ( p_event.name == Event::Global::LABEL_REMOVED )
