@@ -43,7 +43,7 @@ namespace VTX::Util::UIRender
 
 	Vec3f getCenter( const std::vector<Vec3f> & p_worldPositions )
 	{
-		const float factor = 1 / p_worldPositions.size();
+		const float factor = 1 / float(p_worldPositions.size());
 		Vec3f		res	   = VEC3F_ZERO;
 
 		for ( const Vec3f & pos : p_worldPositions )
