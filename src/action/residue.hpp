@@ -268,6 +268,8 @@ namespace VTX::Action::Residue
 		}
 		virtual void execute() override
 		{
+			VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+
 			Model::GeneratedMolecule * const generatedMolecule
 				= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
@@ -277,7 +279,7 @@ namespace VTX::Action::Residue
 
 			VTXApp::get().getScene().addMolecule( generatedMolecule );
 
-			VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+			VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );
 		}
 
 	  private:

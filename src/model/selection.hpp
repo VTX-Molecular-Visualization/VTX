@@ -202,6 +202,8 @@ namespace VTX::Model
 		bool isEmpty() const;
 		void clear();
 
+		void moveDataTo( Selection & p_target );
+
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		void						   getItemTypes( std::set<VTX::ID::VTX_ID> & p_types ) const;

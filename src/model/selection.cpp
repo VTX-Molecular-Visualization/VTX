@@ -958,6 +958,29 @@ namespace VTX::Model
 		_clearCurrentObject( false );
 	}
 
+	void Selection::moveDataTo( Selection & p_target )
+	{
+		for ( const std::pair<const VTX::Model::ID, MapChainIds> & item : _moleculesMap )
+		{
+			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( item.first );
+			molecule.refreshSelection( nullptr );
+		}
+
+		for ( const VTX::Model::ID & item : _items )
+			p_target._items.emplace( item );
+
+		_items.clear();
+
+		p_target._moleculesMap = _moleculesMap;
+
+		// std::move( _moleculesMap.begin(), _moleculesMap.end(), p_target._moleculesMap.begin() );
+		_moleculesMap.clear();
+
+		p_target._currentObject = _currentObject;
+
+		clear();
+	}
+
 	void Selection::receiveEvent( const Event::VTXEvent & p_event )
 	{
 		if ( p_event.name == Event::MOLECULE_REMOVED )
