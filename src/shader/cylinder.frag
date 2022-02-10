@@ -121,7 +121,14 @@ void main()
 			// Output data.
 			outViewPositionNormal = viewPositionNormalCompressed;
 			outColor			  = vec4( color, 32.f ); // w = specular shininess.
-			outId				  = ivec2( gsIn.vertexId[ 0 ], gsIn.vertexId[ 1 ] );
+
+			const int selectAtom0 = 1 - int(floor(0.85f + (y / d0)) );
+			const int selectAtom1 = int(ceil((y / d0) - 0.85f));
+
+			const uint id0 = selectAtom0 * gsIn.vertexId[ 0 ] + selectAtom1 * gsIn.vertexId[ 1 ] + (1-(selectAtom0 + selectAtom1)) *gsIn.vertexId[ 0 ];
+			const uint id1 = (1-(selectAtom0 + selectAtom1)) *gsIn.vertexId[ 1 ]; 
+
+			outId				  = ivec2( id0, id1 );
 		}
 	}
 }
