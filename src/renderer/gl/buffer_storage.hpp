@@ -45,11 +45,43 @@ namespace VTX::Renderer::GL
 			MAP_UNSYNCHRONIZED_BIT	  = GL_MAP_UNSYNCHRONIZED_BIT
 		};
 
-		BufferStorage( const Target & p_target ) : _target( p_target ) {}
+		BufferStorage() = default;
+
+		template<typename T>
+		BufferStorage( const Target & p_target, const std::vector<T> & p_vector, const Flags & p_flags = Flags::NONE )
+		{
+			create( p_target );
+			set<T>( p_vector, p_flags );
+		}
+
+		template<typename T>
+		BufferStorage( const Target & p_target,
+					   const uint	  p_size,
+					   const T &	  p_data,
+					   const Flags &  p_flags = Flags::NONE )
+		{
+			create( p_target );
+			set<T>( p_size, p_data, p_flags );
+		}
+
+		BufferStorage( const Target & p_target, const uint p_size, const Flags & p_flags = Flags::NONE )
+		{
+			create( p_target );
+			const std::vector<uint> data = std::vector<uint>( p_size, 0u );
+			set<uint>( data, p_flags );
+		}
 
 		~BufferStorage() { destroy(); }
 
-		inline void create() { _gl->glCreateBuffers( 1, &_id ); }
+		inline void create( const Target & p_target )
+		{
+			assert( _id == GL_INVALID_INDEX );
+
+			_target = p_target;
+			_gl->glCreateBuffers( 1, &_id );
+
+			assert( _gl->glIsBuffer( _id ) );
+		}
 
 		inline void destroy()
 		{
@@ -68,11 +100,25 @@ namespace VTX::Renderer::GL
 			_gl->glBindBuffer( GLenum( _target ), _id );
 		}
 
+		inline void bind( const Target & p_target ) const
+		{
+			assert( _gl->glIsBuffer( _id ) );
+
+			_gl->glBindBuffer( GLenum( p_target ), _id );
+		}
+
 		inline void bind( const uint p_index ) const
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
 			_gl->glBindBufferBase( GLenum( _target ), p_index, _id );
+		}
+
+		inline void bind( const uint p_index, const Target & p_target ) const
+		{
+			assert( _gl->glIsBuffer( _id ) );
+
+			_gl->glBindBufferBase( GLenum( p_target ), p_index, _id );
 		}
 
 		inline void unbind() const { _gl->glBindBuffer( GLenum( _target ), 0 ); }
@@ -81,6 +127,12 @@ namespace VTX::Renderer::GL
 		inline void set( const std::vector<T> & p_vector, const Flags & p_flags = Flags::NONE ) const
 		{
 			_gl->glNamedBufferStorage( _id, sizeof( T ) * GLsizei( p_vector.size() ), p_vector.data(), p_flags );
+		}
+
+		template<typename T>
+		inline void set( const uint p_size, const T & p_data, const Flags & p_flags = Flags::NONE ) const
+		{
+			_gl->glNamedBufferStorage( _id, GLsizei( p_size ), &p_data, p_flags );
 		}
 
 		template<typename T>
@@ -93,8 +145,8 @@ namespace VTX::Renderer::GL
 		inline void unmap() { _gl->glUnmapNamedBuffer( _id ); }
 
 	  private:
-		GLuint		 _id = GL_INVALID_INDEX;
-		const Target _target;
+		GLuint _id = GL_INVALID_INDEX;
+		Target _target;
 	};
 } // namespace VTX::Renderer::GL
 

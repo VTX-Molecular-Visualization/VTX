@@ -4,9 +4,9 @@ namespace VTX::Buffer
 {
 	void ContourBuildup::generate()
 	{
-		_ssboTorusPatches.create();
-		_ssboSphericalTrianglePatches.create();
-		_ssboProbeIntersection.create();
+		_ssboTorusPatches.create( Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER );
+		_ssboSphericalTrianglePatches.create( Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER );
+		_ssboProbeIntersection.create( Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER );
 
 		_vao.create();
 	}

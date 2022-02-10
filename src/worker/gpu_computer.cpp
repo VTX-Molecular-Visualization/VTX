@@ -24,6 +24,20 @@ namespace VTX::Worker
 		}
 	}
 
+	void GpuComputer::start( const Vec3i & p_size, const GLbitfield p_barrier )
+	{
+		setSize( p_size );
+		setBarrier( p_barrier );
+		start();
+	}
+
+	void GpuComputer::start( const uint p_taskCount, const GLbitfield p_barrier )
+	{
+		setSize( _computeSize( p_taskCount ) );
+		setBarrier( p_barrier );
+		start();
+	}
+
 	const Vec3i GpuComputer::_computeSize( const uint p_taskCount ) const
 	{
 		// ??

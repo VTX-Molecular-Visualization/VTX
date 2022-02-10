@@ -14,7 +14,7 @@ namespace VTX::Worker
 	{
 	  public:
 		explicit GpuComputer( const IO::FilePath & p_shader,
-							  const Vec3i &		   p_size,
+							  const Vec3i &		   p_size	 = Vec3i( 64, 1, 1 ),
 							  const GLbitfield	   p_barrier = 0,
 							  const bool		   p_force	 = false ) :
 			_size( p_size ),
@@ -39,6 +39,8 @@ namespace VTX::Worker
 		inline void					   setForce( const bool p_force ) { _force = p_force; }
 
 		void start();
+		void start( const Vec3i &, const GLbitfield = 0 );
+		void start( const uint, const GLbitfield = 0 );
 
 	  protected:
 		Renderer::GL::Program * const _program;

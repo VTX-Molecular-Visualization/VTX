@@ -42,12 +42,9 @@ namespace VTX
 			void generate() override;
 
 		  private:
-			Renderer::GL::BufferStorage _ssboTorusPatches
-				= Renderer::GL::BufferStorage( Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER );
-			Renderer::GL::BufferStorage _ssboSphericalTrianglePatches
-				= Renderer::GL::BufferStorage( Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER );
-			Renderer::GL::BufferStorage _ssboProbeIntersection
-				= Renderer::GL::BufferStorage( Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER );
+			Renderer::GL::BufferStorage _ssboTorusPatches			  = Renderer::GL::BufferStorage();
+			Renderer::GL::BufferStorage _ssboSphericalTrianglePatches = Renderer::GL::BufferStorage();
+			Renderer::GL::BufferStorage _ssboProbeIntersection		  = Renderer::GL::BufferStorage();
 		};
 	} // namespace Buffer
 } // namespace VTX

@@ -25,7 +25,14 @@ namespace VTX::Renderer::GL
 		BufferData() = default;
 		~BufferData() { _gl->glDeleteBuffers( 1, &_id ); }
 
-		inline void create() { _gl->glCreateBuffers( 1, &_id ); }
+		inline void create()
+		{
+			assert( _id == GL_INVALID_INDEX );
+
+			_gl->glCreateBuffers( 1, &_id );
+
+			assert( _gl->glIsBuffer( _id ) );
+		}
 
 		inline GLuint getId() const { return _id; }
 
