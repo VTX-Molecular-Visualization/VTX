@@ -87,11 +87,6 @@ namespace VTX::Model::Measurement
 		{
 		case PotentialTargetType::NONE:
 		case PotentialTargetType::POSITION:
-			if ( getAtomCount() > 0 )
-			{
-				clearAtoms();
-				updated = true;
-			};
 			break;
 
 		case PotentialTargetType::ATOM:

@@ -132,10 +132,12 @@ namespace VTX::Controller
 		if ( currentTargetType == Model::Measurement::MeasureInProgress::PotentialTargetType::NONE
 			 || currentTargetType == Model::Measurement::MeasureInProgress::PotentialTargetType::POSITION )
 		{
-			VTXApp::get()
-				.getStateMachine()
-				.getState<State::Visualization>( ID::State::VISUALIZATION )
-				->setPickerController( ID::Controller::PICKER );
+			_currentMeasureModel->clearAtoms();
+
+			//VTXApp::get()
+			//	.getStateMachine()
+			//	.getState<State::Visualization>( ID::State::VISUALIZATION )
+			//	->setPickerController( ID::Controller::PICKER );
 		}
 	}
 
