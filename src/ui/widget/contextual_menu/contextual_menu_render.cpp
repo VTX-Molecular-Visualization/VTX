@@ -59,9 +59,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		measurementModeMenu->setTitle( "Measurement" );
 		measurementModeMenu->addAction( "Distance" )
 			->setProperty( MEASUREMENT_MODE_PROPERTY_NAME, int( Controller::MeasurementPicker::Mode::DISTANCE ) );
-		measurementModeMenu->addAction( "Distance to cycle" )
-			->setProperty( MEASUREMENT_MODE_PROPERTY_NAME,
-						   int( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE ) );
+		// measurementModeMenu->addAction( "Distance to cycle" )
+		//	->setProperty( MEASUREMENT_MODE_PROPERTY_NAME,
+		//				   int( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE ) );
 		measurementModeMenu->addAction( "Angle" )->setProperty( MEASUREMENT_MODE_PROPERTY_NAME,
 																int( Controller::MeasurementPicker::Mode::ANGLE ) );
 		measurementModeMenu->addAction( "Dihedral angle" )

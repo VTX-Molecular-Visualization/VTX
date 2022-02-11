@@ -51,6 +51,8 @@ namespace VTX
 			void _onMouseRightClick( const uint p_x, const uint p_y ) override;
 			void _handleMouseMotionEvent( const QMouseEvent & p_event ) override;
 
+			void receiveEvent( const QKeyEvent & p_event ) override;
+
 		  private:
 			bool _canCreateLabel() const;
 			void _createLabel();

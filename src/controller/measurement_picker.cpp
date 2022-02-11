@@ -123,8 +123,6 @@ namespace VTX::Controller
 
 	void MeasurementPicker::_onMouseLeftDoubleClick( const uint p_x, const uint p_y )
 	{
-		const Vec2i ids = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
-
 		const Model::Measurement::MeasureInProgress::PotentialTargetType currentTargetType
 			= _currentMeasureModel->getPotentialNextTargetType();
 
@@ -134,10 +132,35 @@ namespace VTX::Controller
 		{
 			_currentMeasureModel->clearAtoms();
 
-			//VTXApp::get()
+			// VTXApp::get()
 			//	.getStateMachine()
 			//	.getState<State::Visualization>( ID::State::VISUALIZATION )
 			//	->setPickerController( ID::Controller::PICKER );
+		}
+	}
+
+	void MeasurementPicker::receiveEvent( const QKeyEvent & p_event )
+	{
+		if ( p_event.key() == Qt::Key::Key_Escape )
+		{
+			const Model::Measurement::MeasureInProgress::PotentialTargetType currentTargetType
+				= _currentMeasureModel->getPotentialNextTargetType();
+
+			if ( currentTargetType == Model::Measurement::MeasureInProgress::PotentialTargetType::NONE
+				 || currentTargetType == Model::Measurement::MeasureInProgress::PotentialTargetType::POSITION )
+			{
+				if ( _currentMeasureModel->getAtomCount() > 0 )
+				{
+					_currentMeasureModel->clearAtoms();
+				}
+				else
+				{
+					VTXApp::get()
+						.getStateMachine()
+						.getState<State::Visualization>( ID::State::VISUALIZATION )
+						->setPickerController( ID::Controller::PICKER );
+				}
+			}
 		}
 	}
 

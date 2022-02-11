@@ -41,19 +41,19 @@ namespace VTX::UI::Widget::Inspector
 		_dihedralAngleLabelWidget = new CustomWidget::QLabelMultiField( this );
 
 		QWidget * const goToAtomButtons = new QWidget( this );
-		QHBoxLayout *	goToAtomLayout	= new QHBoxLayout( goToAtomButtons );
+		QVBoxLayout *	goToAtomLayout	= new QVBoxLayout( goToAtomButtons );
 
 		_goToFirstAtom	= new QPushButton( goToAtomButtons );
 		_goToSecondAtom = new QPushButton( goToAtomButtons );
-		_goToThirdAtom = new QPushButton( goToAtomButtons );
+		_goToThirdAtom	= new QPushButton( goToAtomButtons );
 		_goToFourthAtom = new QPushButton( goToAtomButtons );
 
 		goToAtomLayout->addWidget( _goToFirstAtom );
-		goToAtomLayout->addSpacing( 10 );
+		// goToAtomLayout->addSpacing( 10 );
 		goToAtomLayout->addWidget( _goToSecondAtom );
-		goToAtomLayout->addSpacing( 10 );
+		// goToAtomLayout->addSpacing( 10 );
 		goToAtomLayout->addWidget( _goToThirdAtom );
-		goToAtomLayout->addSpacing( 10 );
+		// goToAtomLayout->addSpacing( 10 );
 		goToAtomLayout->addWidget( _goToFourthAtom );
 
 		_infoSection->appendField( "Name", fullNameWidget );
