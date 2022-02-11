@@ -72,49 +72,86 @@ namespace VTX::View::UI::Widget::Measurement
 		if ( !visible )
 			return;
 
-		const Vec3f centerWorldPos = Util::UIRender::getCenter( atomPositions );
+		const Vec3f centerWorldPos		= Util::UIRender::getCenter( atomPositions );
+		_paintData.textDistanceToCamera = Util::UIRender::distanceToCamera( camera, centerWorldPos );
 
-		const QRect renderRect = parentWidget()->rect();
+		const float ratioScale = 1.f
+								 - std::clamp( ( _paintData.textDistanceToCamera - Style::WORLD_LABEL_NEAR_CLIP )
+												   / ( Style::WORLD_LABEL_FAR_CLIP - Style::WORLD_LABEL_NEAR_CLIP ),
+											   0.f,
+											   1.f );
 
-		std::vector<QPoint> pointPositions = std::vector<QPoint>();
-		Util::UIRender::fillScreenPositions( atomPositions, pointPositions, camera, renderRect );
+		if ( ratioScale == 0.f )
+			return;
 
-		const int firstLineLength  = QVector2D( pointPositions[ 0 ] - pointPositions[ 1 ] ).length();
-		const int secondLineLength = QVector2D( pointPositions[ 2 ] - pointPositions[ 1 ] ).length();
+		const QRect		   renderRect	  = parentWidget()->rect();
+		std::vector<Vec3f> vec3fPositions = std::vector<Vec3f>();
+		Util::UIRender::fillScreenPositions( atomPositions, vec3fPositions, camera, renderRect );
 
-		const int arcRadius = std::min(
-			{ int( firstLineLength * 0.8f ), int( secondLineLength * 0.8f ), Style::MEASUREMENT_ANGLE_ARC_RADIUS } );
+		std::vector<QPoint> qPointPositions = std::vector<QPoint>();
+		qPointPositions.reserve( vec3fPositions.size() );
+		for ( const Vec3f & vec : vec3fPositions )
+			qPointPositions.emplace_back( Util::UIRender::vec3fToQPoint( vec ) );
 
-		const QPoint	centerPos	   = Util::UIRender::worldToScreen( centerWorldPos, camera, renderRect );
-		const QVector2D screenBisector = ( QVector2D( pointPositions[ 0 ] - pointPositions[ 1 ] ).normalized()
-										   + QVector2D( pointPositions[ 2 ] - pointPositions[ 1 ] ).normalized() )
-											 .normalized();
-		const QPoint textPos
-			= pointPositions[ 1 ]
-			  + QPoint( screenBisector.x() * ( arcRadius + Style::MEASUREMENT_ANGLE_LABEL_TEXT_OFFSET ),
-						screenBisector.y() * ( arcRadius + Style::MEASUREMENT_ANGLE_LABEL_TEXT_OFFSET ) );
+		_paintData.lineSize = Style::MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS
+							  + ( Style::MEASUREMENT_ANGLE_LABEL_MAX_LINE_THICKNESS
+								  - Style::MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS )
+									* ratioScale;
+
+		_paintData.pointRadius = ( _paintData.lineSize / 2 ) + Style::LABEL_RENDER_POINT_RADIUS;
 
 		int minX, maxX, minY, maxY;
-		Util::UIRender::getMinMax( pointPositions, minX, maxX, minY, maxY );
-		minX -= Style::LABEL_RENDER_POINT_MAX_DIAMETER;
-		maxX += Style::LABEL_RENDER_POINT_MAX_DIAMETER;
-		minY -= Style::LABEL_RENDER_POINT_MAX_DIAMETER;
-		maxY += Style::LABEL_RENDER_POINT_MAX_DIAMETER;
+		Util::UIRender::getMinMax( qPointPositions, minX, maxX, minY, maxY );
+		minX -= _paintData.pointRadius;
+		maxX += _paintData.pointRadius;
+		minY -= _paintData.pointRadius;
+		maxY += _paintData.pointRadius;
 
-		const int minXText = textPos.x() - _paintData.textSize.width() / 2;
-		const int maxXText = textPos.x() + _paintData.textSize.width() / 2;
-		const int minYText = textPos.y() - _paintData.textSize.height() / 2;
-		const int maxYText = textPos.y() + _paintData.textSize.height() / 2;
+		const bool displayArc = vec3fPositions[ 1 ].z >= 0;
 
-		const int minXAngle = pointPositions[ 1 ].x() - arcRadius;
-		const int maxXAngle = pointPositions[ 1 ].x() + arcRadius;
-		const int minYAngle = pointPositions[ 1 ].y() - arcRadius;
-		const int maxYAngle = pointPositions[ 1 ].y() + arcRadius;
+		if ( displayArc )
+		{
+			const QPoint anglePoint = Util::UIRender::vec3fToQPoint( vec3fPositions[ 1 ] );
 
-		minX = std::min( { minX, minXText, minXAngle } );
-		maxX = std::max( { maxX, maxXText, maxXAngle } );
-		minY = std::min( { minY, minYText, minYAngle } );
-		maxY = std::max( { maxY, maxYText, maxYAngle } );
+			const QVector2D vec1 = Util::UIRender::vec3fToQVector2D( vec3fPositions[ 0 ] - vec3fPositions[ 1 ] );
+			const QVector2D vec2 = Util::UIRender::vec3fToQVector2D( vec3fPositions[ 2 ] - vec3fPositions[ 1 ] );
+
+			const int		firstLineLength	 = vec1.length();
+			const int		secondLineLength = vec2.length();
+			const QVector2D screenBisector	 = ( vec1.normalized() + vec2.normalized() ).normalized();
+
+			const int arcRadius = std::min( { int( firstLineLength * 0.8f ),
+											  int( secondLineLength * 0.8f ),
+											  Style::MEASUREMENT_ANGLE_ARC_RADIUS } );
+
+			const QPoint textPos
+				= anglePoint
+				  + QPoint( screenBisector.x() * ( arcRadius + Style::MEASUREMENT_ANGLE_LABEL_TEXT_OFFSET ),
+							screenBisector.y() * ( arcRadius + Style::MEASUREMENT_ANGLE_LABEL_TEXT_OFFSET ) );
+
+			const float textScale
+				= Style::WORLD_LABEL_MIN_TEXT_SCALE
+				  + ( Style::WORLD_LABEL_MAX_TEXT_SCALE - Style::WORLD_LABEL_MIN_TEXT_SCALE ) * ratioScale;
+
+			const int minXText = textPos.x() - ( _paintData.textSize.width() * textScale ) / 2;
+			const int maxXText = textPos.x() + ( _paintData.textSize.width() * textScale ) / 2;
+			const int minYText = textPos.y() - ( _paintData.textSize.height() * textScale ) / 2;
+			const int maxYText = textPos.y() + ( _paintData.textSize.height() * textScale ) / 2;
+
+			const int minXAngle = anglePoint.x() - arcRadius;
+			const int maxXAngle = anglePoint.x() + arcRadius;
+			const int minYAngle = anglePoint.y() - arcRadius;
+			const int maxYAngle = anglePoint.y() + arcRadius;
+
+			minX = std::min( { minX, minXText, minXAngle } );
+			maxX = std::max( { maxX, maxXText, maxXAngle } );
+			minY = std::min( { minY, minYText, minYAngle } );
+			maxY = std::max( { maxY, maxYText, maxYAngle } );
+
+			_paintData.textScale	= textScale;
+			_paintData.textPosition = textPos;
+			_paintData.arcRadius	= arcRadius;
+		}
 
 		const QPoint topLeftPos = QPoint( minX, minY );
 		move( topLeftPos );
@@ -122,23 +159,23 @@ namespace VTX::View::UI::Widget::Measurement
 		const QSize size = QSize( maxX - minX, maxY - minY );
 		setFixedSize( size );
 
-		_paintData.firstAtomScreenPos	= pointPositions[ 0 ];
-		_paintData.secondAtomScreenPos	= pointPositions[ 1 ];
-		_paintData.thirdAtomScreenPos	= pointPositions[ 2 ];
-		_paintData.textPosition			= textPos;
-		_paintData.textDistanceToCamera = Util::UIRender::distanceToCamera( camera, centerWorldPos );
+		_paintData.drawText = displayArc;
+
+		_paintData.firstAtomScreenPos  = vec3fPositions[ 0 ];
+		_paintData.secondAtomScreenPos = vec3fPositions[ 1 ];
+		_paintData.thirdAtomScreenPos  = vec3fPositions[ 2 ];
 
 		// Prevent perfect alignement of two points which can cause issue during normalization
-		const bool canDrawArc = pointPositions[ 0 ] != pointPositions[ 1 ] && pointPositions[ 1 ] != pointPositions[ 2 ]
-								&& pointPositions[ 2 ] != pointPositions[ 0 ];
+		const bool canDrawArc = vec3fPositions[ 0 ] != vec3fPositions[ 1 ] && vec3fPositions[ 1 ] != vec3fPositions[ 2 ]
+								&& vec3fPositions[ 2 ] != vec3fPositions[ 0 ];
 
-		if ( canDrawArc )
+		if ( displayArc && canDrawArc )
 		{
 			const Vec2f left = Vec2f( 1, 0 );
-			const Vec2f vec1 = Util::Math::normalize( Vec2f( pointPositions[ 0 ].x() - pointPositions[ 1 ].x(),
-															 pointPositions[ 0 ].y() - pointPositions[ 1 ].y() ) );
-			const Vec2f vec2 = Util::Math::normalize( Vec2f( pointPositions[ 2 ].x() - pointPositions[ 1 ].x(),
-															 pointPositions[ 2 ].y() - pointPositions[ 1 ].y() ) );
+			const Vec2f vec1 = Util::Math::normalize(
+				Vec2f( vec3fPositions[ 0 ].x - vec3fPositions[ 1 ].x, vec3fPositions[ 0 ].y - vec3fPositions[ 1 ].y ) );
+			const Vec2f vec2 = Util::Math::normalize(
+				Vec2f( vec3fPositions[ 2 ].x - vec3fPositions[ 1 ].x, vec3fPositions[ 2 ].y - vec3fPositions[ 1 ].y ) );
 
 			const int angle = Util::Math::degrees( Util::Math::angle( vec1, vec2 ) );
 
@@ -157,7 +194,6 @@ namespace VTX::View::UI::Widget::Measurement
 			else
 				startAngle = orientedStartAngle1 > orientedStartAngle2 ? orientedStartAngle1 : orientedStartAngle2;
 
-			_paintData.arcRadius  = arcRadius;
 			_paintData.angle	  = angle;
 			_paintData.startAngle = startAngle;
 		}
@@ -189,16 +225,7 @@ namespace VTX::View::UI::Widget::Measurement
 	{
 		QWidget::paintEvent( event );
 
-		const float minDist = 20.f;
-		const float maxDist = 150.0f;
-
-		const float ratioScale = 1.f
-								 - std::clamp( ( _paintData.textDistanceToCamera - Style::WORLD_LABEL_NEAR_CLIP )
-												   / ( Style::WORLD_LABEL_FAR_CLIP - Style::WORLD_LABEL_NEAR_CLIP ),
-											   0.f,
-											   1.f );
-
-		if ( ratioScale > 0.f )
+		if ( _paintData.textDistanceToCamera < Style::WORLD_LABEL_FAR_CLIP )
 		{
 			QPainter painter( this );
 			painter.save();
@@ -206,28 +233,35 @@ namespace VTX::View::UI::Widget::Measurement
 
 			// Draw line //////////////////////////////////////////////////////
 			// TODO Sigmoid
-			const int lineSize = Style::MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS
-								 + ( Style::MEASUREMENT_ANGLE_LABEL_MAX_LINE_THICKNESS
-									 - Style::MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS )
-									   * ratioScale;
 
-			_linePen.setWidth( lineSize );
-			_arcPen.setWidth( lineSize );
+			_linePen.setWidth( _paintData.lineSize );
+			_arcPen.setWidth( _paintData.lineSize );
 
 			painter.setPen( _linePen );
 			painter.setBrush( _lineBrush );
 			painter.setRenderHint( QPainter::RenderHint::Antialiasing );
 
-			const QPoint firstAtomPos  = _paintData.firstAtomScreenPos - pos();
-			const QPoint secondAtomPos = _paintData.secondAtomScreenPos - pos();
-			const QPoint thirdAtomPos  = _paintData.thirdAtomScreenPos - pos();
-			const int	 pointRadius   = ( lineSize / 2 ) + Style::LABEL_RENDER_POINT_RADIUS;
+			const Vec3f vec3fPos = Vec3f( pos().x(), pos().y(), 0 );
 
-			painter.drawEllipse( firstAtomPos, pointRadius, pointRadius );
-			painter.drawEllipse( secondAtomPos, pointRadius, pointRadius );
-			painter.drawEllipse( thirdAtomPos, pointRadius, pointRadius );
-			painter.drawLine( secondAtomPos, firstAtomPos );
-			painter.drawLine( secondAtomPos, thirdAtomPos );
+			const Vec3f relativeFirstAtomPos  = _paintData.firstAtomScreenPos - vec3fPos;
+			const Vec3f relativeSecondAtomPos = _paintData.secondAtomScreenPos - vec3fPos;
+			const Vec3f relativeThirdAtomPos  = _paintData.thirdAtomScreenPos - vec3fPos;
+
+			if ( _paintData.firstAtomScreenPos.z >= 0 )
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeFirstAtomPos ),
+									 _paintData.pointRadius,
+									 _paintData.pointRadius );
+			if ( _paintData.secondAtomScreenPos.z >= 0 )
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeSecondAtomPos ),
+									 _paintData.pointRadius,
+									 _paintData.pointRadius );
+			if ( _paintData.thirdAtomScreenPos.z >= 0 )
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeThirdAtomPos ),
+									 _paintData.pointRadius,
+									 _paintData.pointRadius );
+
+			painter.drawLine( Util::UIRender::getScreenLine( relativeSecondAtomPos, relativeFirstAtomPos ) );
+			painter.drawLine( Util::UIRender::getScreenLine( relativeSecondAtomPos, relativeThirdAtomPos ) );
 
 			painter.setPen( _arcPen );
 			painter.setBrush( _arcBrush );
@@ -235,6 +269,7 @@ namespace VTX::View::UI::Widget::Measurement
 			// Don't draw arc when angle == 0
 			if ( _paintData.angle > 0 )
 			{
+				QPoint secondAtomPos = Util::UIRender::vec3fToQPoint( relativeSecondAtomPos );
 				painter.drawArc( QRect( secondAtomPos.x() - _paintData.arcRadius,
 										secondAtomPos.y() - _paintData.arcRadius,
 										_paintData.arcRadius * 2,
@@ -245,22 +280,22 @@ namespace VTX::View::UI::Widget::Measurement
 			///////////////////////////////////////////////////////////////////
 
 			// Draw text //////////////////////////////////////////////////////
-			painter.setBrush( _labelBrush );
-			painter.setPen( _labelPen );
+			if ( _paintData.drawText )
+			{
+				painter.setBrush( _labelBrush );
+				painter.setPen( _labelPen );
 
-			const float textScale
-				= Style::WORLD_LABEL_MIN_TEXT_SCALE
-				  + ( Style::WORLD_LABEL_MAX_TEXT_SCALE - Style::WORLD_LABEL_MIN_TEXT_SCALE ) * ratioScale;
+				const QPointF textPosition
+					= ( _paintData.textPosition - pos() )
+					  - ( QPoint( _paintData.textSize.width() / 2, -_paintData.textSize.height() / 2 )
+						  * _paintData.textScale );
 
-			const QPointF textPosition
-				= ( _paintData.textPosition - pos() )
-				  - ( QPoint( _paintData.textSize.width() / 2, -_paintData.textSize.height() / 2 ) * textScale );
+				painter.translate( textPosition );
 
-			painter.translate( textPosition );
-
-			painter.scale( textScale, textScale );
-			painter.drawPath( _painterPath );
-			painter.resetTransform();
+				painter.scale( _paintData.textScale, _paintData.textScale );
+				painter.drawPath( _painterPath );
+				painter.resetTransform();
+			}
 			///////////////////////////////////////////////////////////////////
 
 			// painter.setWorldMatrixEnabled( true );

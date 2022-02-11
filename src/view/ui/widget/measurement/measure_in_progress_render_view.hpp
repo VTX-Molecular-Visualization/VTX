@@ -28,12 +28,12 @@ namespace VTX::View::UI::Widget::Measurement
 		class PaintData
 		{
 		  public:
-			std::vector<QPoint> points;
+			std::vector<Vec3f> points;
 
 			float distanceToCamera;
 
-			float lineSize;
-			float pointSize;
+			int lineSize;
+			int pointRadius;
 		};
 
 	  public:

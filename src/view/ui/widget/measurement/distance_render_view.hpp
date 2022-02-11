@@ -29,11 +29,15 @@ namespace VTX::View::UI::Widget::Measurement
 		class PaintData
 		{
 		  public:
-			QPoint firstAtomScreenPos;
-			QPoint secondAtomScreenPos;
-			QPoint textPosition;
-			QSize  textSize;
-			float  textDistanceToCamera;
+			Vec3f firstAtomScreenPos;
+			Vec3f secondAtomScreenPos;
+			
+			int	  lineSize;
+			
+			QSize textSize;
+			float textScale;
+			Vec3f textPosition;
+			float textDistanceToCamera;
 		};
 
 	  public:
@@ -60,10 +64,6 @@ namespace VTX::View::UI::Widget::Measurement
 		QBrush _labelBrush;
 		QPen   _linePen;
 		QBrush _lineBrush;
-
-		QPoint _worldToScreen( const Vec3f & p_worldPos ) const;
-		float  _distanceToCamera( const Vec3f & p_worldPos ) const;
-		bool   _isVisibleToCamera( const Vec3f & p_worldPos ) const;
 	};
 
 } // namespace VTX::View::UI::Widget::Measurement

@@ -29,12 +29,17 @@ namespace VTX::View::UI::Widget::Measurement
 		class PaintData
 		{
 		  public:
-			QPoint firstAtomScreenPos;
-			QPoint secondAtomScreenPos;
-			QPoint thirdAtomScreenPos;
+			Vec3f firstAtomScreenPos;
+			Vec3f secondAtomScreenPos;
+			Vec3f thirdAtomScreenPos;
 
+			int	  pointRadius;
+			float lineSize;
+
+			bool   drawText;
 			QPoint textPosition;
 			QSize  textSize;
+			float  textScale;
 			float  textDistanceToCamera;
 
 			int arcRadius;
