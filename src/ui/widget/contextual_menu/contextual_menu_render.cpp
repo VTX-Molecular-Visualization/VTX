@@ -109,7 +109,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_setMeasurementMode( QAction * p_action ) const
 	{
 		const Controller::MeasurementPicker::Mode mode
-			= Controller::MeasurementPicker::Mode( p_action->property( SELECTION_GRANULARITY_PROPERTY_NAME ).toInt() );
+			= Controller::MeasurementPicker::Mode( p_action->property( MEASUREMENT_MODE_PROPERTY_NAME ).toInt() );
 		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( mode ) ) );
 	}
 
