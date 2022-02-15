@@ -12,17 +12,34 @@ namespace VTX::UI::Widget::Scene
 	void SceneItemSelectionModel::select( const QItemSelection &			  selection,
 										  QItemSelectionModel::SelectionFlags command )
 	{
-		if ( command & QItemSelectionModel::NoUpdate )
+		std::vector<Model::ID> selectionIds = std::vector<Model::ID>();
+		_fillVectorWithItemIds( selection, selectionIds );
+
+		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+		if ( command == QItemSelectionModel::NoUpdate )
 		{
-			QItemSelectionModel::select( selection, QItemSelectionModel::NoUpdate );
+			std::vector<Model::ID>::const_iterator it = selectionIds.begin();
+
+			while ( it != selectionIds.end() )
+			{
+				if ( selectionModel.isModelSelected( *it ) )
+					it = selectionIds.erase( it );
+				else
+					it++;
+			}
+
+			if ( selectionIds.size() > 0 )
+			{
+				VTX_ACTION( new Action::Selection::SelectModels( selectionModel, selectionIds, false ) );
+			}
+			else
+			{
+				QItemSelectionModel::select( selection, QItemSelectionModel::NoUpdate );
+			}
 		}
 		else
 		{
-			std::vector<uint> selectionIds = std::vector<uint>();
-			_fillVectorWithItemIds( selection, selectionIds );
-
-			Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-
 			if ( command & QItemSelectionModel::Current )
 			{
 				const SceneWidget & sceneWidget
@@ -103,7 +120,7 @@ namespace VTX::UI::Widget::Scene
 	}
 	void SceneItemSelectionModel::select( const QModelIndex & index, QItemSelectionModel::SelectionFlags command )
 	{
-		if ( command & QItemSelectionModel::NoUpdate )
+		if ( command == QItemSelectionModel::NoUpdate )
 		{
 			QItemSelectionModel::select( index, command );
 		}
