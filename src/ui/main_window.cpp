@@ -282,10 +282,7 @@ namespace VTX::UI
 	void MainWindow::_onShortcutOrient()
 	{
 		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
-		if ( selection.hasMolecule() )
-		{
-			VTX_ACTION( new Action::Selection::Orient( selection ) );
-		}
+		VTX_ACTION( new Action::Selection::Orient( selection ) );
 	}
 
 	void MainWindow::_onShortcutSelectAll() { VTX_ACTION( new Action::Selection::SelectAll() ); }
