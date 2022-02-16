@@ -13,15 +13,16 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		MenuTooltabWidget::_setupUi( p_name );
 
 		_cameraAction = addToolBlock<MenuVisualizationCameraActionWidget>( "cameraActionBlockWidget" );
+		_viewpoints		= addToolBlock<MenuVisualizationViewpointWidget>( "viewpointBlockWidget" );
 
+		_objectDisplay = addToolBlock<MenuVisualizationObjectDisplayWidget>( "objectDisplayBlockWidget" );
+		_selectionAction = addToolBlock<MenuVisualizationSelectionActionWidget>( "selectionBlockWidget" );
 		_representation = WidgetFactory::get().instantiateViewWidget<MenuVisualizationRepresentationWidget>(
 			&Model::Representation::RepresentationLibrary::get(),
 			ID::View::UI_MENU_VISUALIZATION_REPRESENTATION_LIBRARY,
 			this,
 			"RepresentationBlockWidget" );
 		addToolBlock( _representation );
-
-		_objectDisplay = addToolBlock<MenuVisualizationObjectDisplayWidget>( "objectDisplayBlockWidget" );
 
 		_renderEffects = WidgetFactory::get().instantiateViewWidget<MenuVisualizationRenderEffectsWidget>(
 			&Model::Renderer::RenderEffectPresetLibrary::get(),
@@ -31,8 +32,6 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		addToolBlock( _renderEffects );
 
 		_snapshot		 = addToolBlock<MenuVisualizationSnapshot>( "snapshot" );
-		_viewpoints		 = addToolBlock<MenuVisualizationViewpointWidget>( "viewpointBlockWidget" );
-		_selectionAction = addToolBlock<MenuVisualizationSelectionActionWidget>( "selectionBlockWidget" );
 		_windows		 = addToolBlock<MenuVisualizationWindowsWidget>( "windowsBlockWidget" );
 	}
 	void MenuVisualizationWidget::_setupSlots() {}
