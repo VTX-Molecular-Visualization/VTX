@@ -1,5 +1,6 @@
 #include "molecule.hpp"
 #include "color/rgb.hpp"
+#include "contour_buildup.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "id.hpp"
@@ -41,6 +42,8 @@ namespace VTX
 
 			if ( _secondaryStructure != nullptr )
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
+			if ( _contourBuildup != nullptr )
+				MVC::MvcManager::get().deleteModel( _contourBuildup );
 		}
 
 		void Molecule::setPdbIdCode( const std::string & p_pdbId ) { _pdbIdCode = p_pdbId; }
@@ -108,6 +111,10 @@ namespace VTX
 
 				// Create secondary structure mesh.
 				createSecondaryStructure();
+
+				// Create contourbuildup mesh.
+				// TODO: build at first display?
+				createContourBuildup();
 
 				setRepresentableMolecule( this );
 
@@ -790,6 +797,20 @@ namespace VTX
 
 			_secondaryStructure->refresh();
 		}
+
+		void Molecule::createContourBuildup()
+		{
+			if ( _contourBuildup != nullptr )
+			{
+				MVC::MvcManager::get().deleteModel( _contourBuildup );
+			}
+
+			_contourBuildup = MVC::MvcManager::get().instantiateModel<ContourBuildup, Molecule * const>( this );
+			_contourBuildup->init();
+			_contourBuildup->print();
+		}
+
+		void Molecule::refreshContourBuildup() {}
 
 		void Molecule::setVisible( const bool p_visible )
 		{

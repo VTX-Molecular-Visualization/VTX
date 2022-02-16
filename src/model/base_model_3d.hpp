@@ -72,7 +72,7 @@ namespace VTX
 				_notifyViews( new Event::VTXEvent( Event::Model::AUTO_ROTATE_DATA_CHANGE ) );
 			}
 
-			void render( const Object3D::Camera & p_camera ) const override
+			virtual void render( const Object3D::Camera & p_camera ) const override
 			{
 				if ( _buffer == nullptr )
 					return;

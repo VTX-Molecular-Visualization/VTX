@@ -63,6 +63,7 @@ namespace VTX
 			Renderer::RayTracer *	 _rendererRT = nullptr;
 
 			void _switchRenderer( const Renderer::MODE );
+			void _retrieveSpec() const;
 		};
 	} // namespace UI::Widget::Render
 

@@ -5,6 +5,7 @@
 #include "renderer/gl/gl.hpp"
 #include "renderer/gl/program_manager.hpp"
 #include "renderer/rt/ray_tracer.hpp"
+#include "spec.hpp"
 #include "ui/dialog.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
@@ -60,33 +61,8 @@ namespace VTX::UI::Widget::Render
 			return;
 		}
 
-		const uchar * glVersion	  = _gl->glGetString( GL_VERSION );
-		const uchar * glslVersion = _gl->glGetString( GL_SHADING_LANGUAGE_VERSION );
-		const uchar * glVendor	  = _gl->glGetString( GL_VENDOR );
-		const uchar * glRenderer  = _gl->glGetString( GL_RENDERER );
-
-		GLint glMaxTextureSize;
-		GLint glMaxPatchVertices = 0;
-		GLint glMaxTessGenLevel	 = 0;
-		_gl->glGetIntegerv( GL_MAX_TEXTURE_SIZE, &glMaxTextureSize );
-		_gl->glGetIntegerv( GL_MAX_PATCH_VERTICES, &glMaxPatchVertices );
-		_gl->glGetIntegerv( GL_MAX_TESS_GEN_LEVEL, &glMaxTessGenLevel );
-
-		VTX_SPEC().glVersion		  = std::string( (const char *)glVersion );
-		VTX_SPEC().glslVersion		  = std::string( (const char *)glslVersion );
-		VTX_SPEC().glVendor			  = std::string( (const char *)glVendor );
-		VTX_SPEC().glRenderer		  = std::string( (const char *)glRenderer );
-		VTX_SPEC().glMaxTextureSize	  = glMaxTextureSize;
-		VTX_SPEC().glMaxPatchVertices = glMaxPatchVertices;
-		VTX_SPEC().glMaxTessGenLevel  = glMaxTessGenLevel;
-
-		VTX_INFO( "GL version: " + VTX_SPEC().glVersion );
-		VTX_INFO( "GLSL version: " + VTX_SPEC().glslVersion );
-		VTX_INFO( "GL device: " + VTX_SPEC().glVendor + " " + VTX_SPEC().glRenderer );
-
-		VTX_DEBUG( "Max texture size : " + std::to_string( VTX_SPEC().glMaxTextureSize ) );
-		VTX_DEBUG( "Max patch vertices: " + std::to_string( VTX_SPEC().glMaxPatchVertices ) );
-		VTX_DEBUG( "Max tessellation gen level: " + std::to_string( VTX_SPEC().glMaxTessGenLevel ) );
+		_retrieveSpec();
+		VTX_SPEC().print();
 
 #ifndef VTX_PRODUCTION
 		_gl->glEnable( GL_DEBUG_OUTPUT );
@@ -152,6 +128,26 @@ namespace VTX::UI::Widget::Render
 		doneCurrent();
 	}
 
+	void OpenGLWidget::activeVSync( const bool p_active )
+	{
+		makeCurrent();
+		/*
+		QFunctionPointer func = context()->getProcAddress( "GLX_EXT_swap_control" );
+		if ( func == nullptr )
+		{
+			VTX_DEBUG( "NULL" );
+		}
+		*/
+		doneCurrent();
+	}
+
+	const Vec2i OpenGLWidget::getPickedIds( const uint p_x, const uint p_y )
+	{
+		makeCurrent();
+		return _renderer->getPickedIds( p_x, height() - p_y );
+		doneCurrent();
+	}
+
 	void OpenGLWidget::_switchRenderer( const Renderer::MODE p_mode )
 	{
 		bool needInit = false;
@@ -188,24 +184,45 @@ namespace VTX::UI::Widget::Render
 		}
 	}
 
-	void OpenGLWidget::activeVSync( const bool p_active )
+	void OpenGLWidget::_retrieveSpec() const
 	{
-		makeCurrent();
-		/*
-		QFunctionPointer func = context()->getProcAddress( "GLX_EXT_swap_control" );
-		if ( func == nullptr )
-		{
-			VTX_DEBUG( "NULL" );
-		}
-		*/
-		doneCurrent();
-	}
+		const uchar * glVendor	  = _gl->glGetString( GL_VENDOR );
+		const uchar * glRenderer  = _gl->glGetString( GL_RENDERER );
+		const uchar * glVersion	  = _gl->glGetString( GL_VERSION );
+		const uchar * glslVersion = _gl->glGetString( GL_SHADING_LANGUAGE_VERSION );
 
-	const Vec2i OpenGLWidget::getPickedIds( const uint p_x, const uint p_y )
-	{
-		makeCurrent();
-		return _renderer->getPickedIds( p_x, height() - p_y );
-		doneCurrent();
+		GLint glMaxTextureSize;
+		GLint glMaxPatchVertices;
+		GLint glMaxTessGenLevel;
+		GLint glMaxComputeWorkGroupCount[ 3 ];
+		GLint glMaxComputeWorkGroupSize[ 3 ];
+		GLint glMaxComputeWorkGroupInvocations;
+
+		_gl->glGetIntegerv( GL_MAX_TEXTURE_SIZE, &glMaxTextureSize );
+		_gl->glGetIntegerv( GL_MAX_PATCH_VERTICES, &glMaxPatchVertices );
+		_gl->glGetIntegerv( GL_MAX_TESS_GEN_LEVEL, &glMaxTessGenLevel );
+		_gl->glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &glMaxComputeWorkGroupCount[ 0 ] );
+		_gl->glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &glMaxComputeWorkGroupCount[ 1 ] );
+		_gl->glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &glMaxComputeWorkGroupCount[ 2 ] );
+		_gl->glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &glMaxComputeWorkGroupSize[ 0 ] );
+		_gl->glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &glMaxComputeWorkGroupSize[ 1 ] );
+		_gl->glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &glMaxComputeWorkGroupSize[ 2 ] );
+		_gl->glGetIntegerv( GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &glMaxComputeWorkGroupInvocations );
+
+		VTX_SPEC().glVendor							= std::string( (const char *)glVendor );
+		VTX_SPEC().glRenderer						= std::string( (const char *)glRenderer );
+		VTX_SPEC().glVersion						= std::string( (const char *)glVersion );
+		VTX_SPEC().glslVersion						= std::string( (const char *)glslVersion );
+		VTX_SPEC().glMaxTextureSize					= glMaxTextureSize;
+		VTX_SPEC().glMaxPatchVertices				= glMaxPatchVertices;
+		VTX_SPEC().glMaxTessGenLevel				= glMaxTessGenLevel;
+		VTX_SPEC().glMaxComputeWorkGroupCount[ 0 ]	= glMaxComputeWorkGroupCount[ 0 ];
+		VTX_SPEC().glMaxComputeWorkGroupCount[ 1 ]	= glMaxComputeWorkGroupCount[ 1 ];
+		VTX_SPEC().glMaxComputeWorkGroupCount[ 2 ]	= glMaxComputeWorkGroupCount[ 2 ];
+		VTX_SPEC().glMaxComputeWorkGroupSize[ 0 ]	= glMaxComputeWorkGroupSize[ 0 ];
+		VTX_SPEC().glMaxComputeWorkGroupSize[ 1 ]	= glMaxComputeWorkGroupSize[ 1 ];
+		VTX_SPEC().glMaxComputeWorkGroupSize[ 2 ]	= glMaxComputeWorkGroupSize[ 2 ];
+		VTX_SPEC().glMaxComputeWorkGroupInvocations = glMaxComputeWorkGroupInvocations;
 	}
 
 } // namespace VTX::UI::Widget::Render

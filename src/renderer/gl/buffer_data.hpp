@@ -6,7 +6,7 @@
 
 namespace VTX::Renderer::GL
 {
-	class Buffer : public Generic::BaseOpenGL
+	class BufferData : public Generic::BaseOpenGL
 	{
 	  public:
 		enum class Usage : GLenum
@@ -22,10 +22,17 @@ namespace VTX::Renderer::GL
 			DYNAMIC_READ = GL_DYNAMIC_READ,
 			DYNAMIC_COPY = GL_DYNAMIC_COPY
 		};
-		Buffer() = default;
-		~Buffer() { _gl->glDeleteBuffers( 1, &_id ); }
+		BufferData() = default;
+		~BufferData() { _gl->glDeleteBuffers( 1, &_id ); }
 
-		inline void create() { _gl->glCreateBuffers( 1, &_id ); }
+		inline void create()
+		{
+			assert( _id == GL_INVALID_INDEX );
+
+			_gl->glCreateBuffers( 1, &_id );
+
+			assert( _gl->glIsBuffer( _id ) );
+		}
 
 		inline GLuint getId() const { return _id; }
 

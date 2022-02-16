@@ -17,11 +17,7 @@ namespace VTX
 			MeshTriangle()	= default;
 			~MeshTriangle() = default;
 
-			const Renderer::GL::VertexArray & getVao() const override { return _vao; }
-
 			void generate() override;
-			void bind() override;
-			void unbind() override;
 
 			void setPositions( const std::vector<Vec3f> & );
 			void setNormals( const std::vector<Vec3f> & );
@@ -38,12 +34,11 @@ namespace VTX
 				VERTEX_VISIBILITY = 3,
 			};
 
-			Renderer::GL::Buffer	  _vboPositions	   = Renderer::GL::Buffer();
-			Renderer::GL::Buffer	  _vboNormals	   = Renderer::GL::Buffer();
-			Renderer::GL::Buffer	  _vboColors	   = Renderer::GL::Buffer();
-			Renderer::GL::Buffer	  _vboVisibilities = Renderer::GL::Buffer();
-			Renderer::GL::Buffer	  _ibo			   = Renderer::GL::Buffer();
-			Renderer::GL::VertexArray _vao			   = Renderer::GL::VertexArray();
+			Renderer::GL::BufferData _vboPositions	  = Renderer::GL::BufferData();
+			Renderer::GL::BufferData _vboNormals	  = Renderer::GL::BufferData();
+			Renderer::GL::BufferData _vboColors		  = Renderer::GL::BufferData();
+			Renderer::GL::BufferData _vboVisibilities = Renderer::GL::BufferData();
+			Renderer::GL::BufferData _ibo			  = Renderer::GL::BufferData();
 		};
 	} // namespace Buffer
 } // namespace VTX

@@ -1,5 +1,5 @@
-#ifndef __VTX__AABB__
-#define __VTX__AABB__
+#ifndef __VTX_MATH_AABB__
+#define __VTX_MATH_AABB__
 
 #include "define.hpp"
 #include "util/math.hpp"

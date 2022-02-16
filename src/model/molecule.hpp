@@ -36,6 +36,7 @@ namespace VTX
 		class Atom;
 		class Bond;
 		class SecondaryStructure;
+		class ContourBuildup;
 		class Molecule :
 			public BaseModel3D<Buffer::Molecule>,
 			public Generic::BaseColorable,
@@ -120,6 +121,8 @@ namespace VTX
 
 			inline const SecondaryStructure & getSecondaryStructure() const { return *_secondaryStructure; }
 			inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
+			inline const ContourBuildup &	  getContourBuildup() const { return *_contourBuildup; }
+			inline ContourBuildup &			  getContourBuildup() { return *_contourBuildup; }
 
 			bool isEmpty();
 
@@ -204,6 +207,7 @@ namespace VTX
 				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 				refreshBondsBuffer();
 				refreshSecondaryStructure();
+				refreshContourBuildup();
 			}
 
 			void refreshSelection( const Selection::MapChainIds * const );
@@ -249,8 +253,14 @@ namespace VTX
 
 			bool mergeTopology( const Molecule & );
 
+			// Secondary structure.
 			void createSecondaryStructure();
 			void refreshSecondaryStructure();
+
+			// SES.
+			void createContourBuildup();
+			void refreshContourBuildup();
+
 			void propagateEventToViews( const Event::VTXEvent * const p_event ) { _notifyViews( p_event ); }
 
 			const std::string & getDisplayName() const { return _displayName; };
@@ -313,6 +323,8 @@ namespace VTX
 
 			// Secondary structure.
 			SecondaryStructure * _secondaryStructure = nullptr;
+			// SES.
+			ContourBuildup * _contourBuildup = nullptr;
 
 			// Trajectory
 			uint				 _currentFrame	   = 0u;

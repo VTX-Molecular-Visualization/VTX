@@ -1,0 +1,206 @@
+#version 450 core
+
+// By Tim Gfrerer
+// Ref : https://poniesandlight.co.uk/reflect/bitonic_merge_sort/
+
+// This shader implements a sorting network for 1024 elements.
+//
+// It is follows the alternative notation for bitonic sorting networks, as given at:
+// https://en.m.wikipedia.org/wiki/Bitonic_sorter#Alternative_representation
+
+#ifndef LOCAL_SIZE_X 
+#define LOCAL_SIZE_X 32
+#endif 
+
+// Note that there exist hardware limits - 
+// Look these up for your GPU via https://vulkan.gpuinfo.org/
+//
+// sizeof(local_value[LOCAL_SIZE_X]) : Must be <= maxComputeSharedMemorySize
+// LOCAL_SIZE_X/2  		             : Must be <= maxComputeWorkGroupInvocations
+
+// ENUM for uniform::Parameters.algorithm:
+#define eLocalBms      0
+#define eLocalDisperse 1
+#define eBigFlip       2
+#define eBigDisperse   3
+
+layout (local_size_x = LOCAL_SIZE_X ) in; // Note hardware limit mentioned above!
+
+struct SphericalTrianglePatch
+{
+	vec4 probePosition; // + Probe radius
+	vec4 v1;			// + probeHash
+	vec4 v2;			// + probeIntersectionNb
+	vec4 v3;			// + probeGridHash
+};
+
+layout (std140, binding = 0) buffer SphericalTrianglePatches
+{ 
+	uint spTriangleNb;
+	SphericalTrianglePatch spTriangles[];
+};
+
+// Note: These parameters are currently unused.
+layout(location = 0) uniform uint n;
+layout(location = 1) uniform uint h;
+layout(location = 2) uniform uint algorithm;
+
+// Workgroup local memory. We use this to minimise round-trips to global memory.
+// It allows us to evaluate a sorting network of up to 1024 with one shader invocation.
+shared SphericalTrianglePatch local_value[LOCAL_SIZE_X * 2];
+
+void global_compare_and_swap(ivec2 idx){
+	if (spTriangles[idx.x].v3.w > spTriangles[idx.y].v3.w) {
+		SphericalTrianglePatch tmp = spTriangles[idx.x];
+		spTriangles[idx.x] = spTriangles[idx.y];
+		spTriangles[idx.y] = tmp;
+	}
+}
+
+void big_flip( in uint n, in uint h) {
+
+	//	uint n                  // total number of sortable elements
+	//	uint h                  // flip height
+	//	uint gl_WorkGroupSize.x // number of threads in block/workgroup: 
+                                // each thread deals with two sortable elements
+
+	if ( gl_WorkGroupSize.x  * 2 > h ) {
+		return;
+	}
+
+	uint t_prime = gl_GlobalInvocationID.x;
+	uint half_h = h >> 1; // Note: h >> 1 is equivalent to h / 2 
+
+	uint q       = ((2 * t_prime) / h) * h;
+	uint x       = q     + (t_prime % half_h);
+	uint y       = q + h - (t_prime % half_h) - 1; 
+
+
+	global_compare_and_swap(ivec2(x,y));
+}
+
+
+void big_disperse( in uint n, in uint h ) {
+
+	//	uint n                  // total number of sortable elements
+	//	uint h                  // disperse height
+	//	uint gl_WorkGroupSize.x // number of threads in block/workgroup: 
+                                // each thread deals with two sortable elements
+
+	if ( gl_WorkGroupSize.x * 2 > h ) {
+		return;
+	};
+
+	uint t_prime = gl_GlobalInvocationID.x;
+
+	uint half_h = h >> 1; // Note: h >> 1 is equivalent to h / 2 
+
+	uint q       = ((2 * t_prime) / h) * h;
+	uint x       = q + (t_prime % (half_h));
+	uint y       = q + (t_prime % (half_h)) + half_h;
+
+	global_compare_and_swap(ivec2(x,y));
+
+}
+
+// Performs compare-and-swap over elements held in shared,
+// workgroup-local memory
+void local_compare_and_swap(ivec2 idx){
+	if (local_value[idx.x].v3.w > local_value[idx.y].v3.w) {
+		SphericalTrianglePatch tmp = local_value[idx.x];
+		local_value[idx.x] = local_value[idx.y];
+		local_value[idx.y] = tmp;
+	}
+}
+
+// Performs full-height flip (h height) over locally available indices.
+void local_flip(in uint h){
+		uint t = gl_LocalInvocationID.x;
+		barrier();
+
+		uint half_h = h >> 1; // Note: h >> 1 is equivalent to h / 2 
+		ivec2 indices = 
+			ivec2( h * ( ( 2 * t ) / h ) ) +
+			ivec2( t % half_h, h - 1 - ( t % half_h ) );
+
+		local_compare_and_swap(indices);
+}
+
+// Performs progressively diminishing disperse operations (starting with height h)
+// on locally available indices: e.g. h==8 -> 8 : 4 : 2.
+// One disperse operation for every time we can half h.
+void local_disperse(in uint h){
+	uint t = gl_LocalInvocationID.x;
+	for ( ; h > 1 ; h /= 2 ) {
+		
+		barrier();
+
+		uint half_h = h >> 1; // Note: h >> 1 is equivalent to h / 2 
+		ivec2 indices = 
+			ivec2( h * ( ( 2 * t ) / h ) ) +
+			ivec2( t % half_h, half_h + ( t % half_h ) );
+
+		local_compare_and_swap(indices);
+	}
+}
+
+// Perform binary merge sort for local elements, up to a maximum number 
+// of elements h.
+void local_bms(uint h){
+	uint t = gl_LocalInvocationID.x;
+	for ( uint hh = 2; hh <= h; hh <<= 1 ) {  // note:  h <<= 1 is same as h *= 2
+		local_flip( hh);
+		local_disperse( hh/2 );
+	}
+}
+
+void main(){
+
+	// this shader can be called in four different modes:
+	// 1. local flip+disperse (up to n == local_size_x * 2) 
+	// 2. big flip
+	// 3. big disperse
+	// 4. local disperse 
+	// the total number of elements 
+
+	uint t = gl_LocalInvocationID.x;
+
+    // Calculate global offset for local workgroup
+    //
+	uint offset = gl_WorkGroupSize.x * 2 * gl_WorkGroupID.x; 
+
+	if (algorithm <= eLocalDisperse){
+		// pull to local memory
+	    // Each local worker must save two elements to local memory, as there
+	    // are twice as many elments as workers.
+		local_value[t*2]   = spTriangles[offset+t*2];
+		local_value[t*2+1] = spTriangles[offset+t*2+1];
+	}
+
+	// check which one of these does not work properly...
+	// it could also be a synchronisation problem!!!
+
+	switch (algorithm){
+		case eLocalBms:
+			local_bms(h);
+		break;
+		case eLocalDisperse:
+			local_disperse(h);
+		break;
+		case eBigFlip:
+			big_flip(n, h);
+		break;
+		case eBigDisperse:
+			big_disperse(n, h);
+		break;
+	}
+
+	// Write local memory back to buffer
+
+	if (algorithm <= eLocalDisperse){
+		barrier();
+		// push to global memory
+		spTriangles[offset+t*2]   = local_value[t*2];
+		spTriangles[offset+t*2+1] = local_value[t*2+1];
+	}
+}

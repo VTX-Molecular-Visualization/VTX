@@ -451,21 +451,6 @@ namespace VTX::Action::Molecule
 		const bool									_showHydrogen;
 	};
 
-	class ComputeSecondaryStructure : public BaseAction
-	{
-	  public:
-		explicit ComputeSecondaryStructure( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
-
-		virtual void execute() override
-		{
-			Util::SecondaryStructure::computeSecondaryStructure( _molecule );
-			_molecule.createSecondaryStructure();
-		}
-
-	  private:
-		Model::Molecule & _molecule;
-	};
-
 	class Delete : public BaseAction
 	{
 	  public:

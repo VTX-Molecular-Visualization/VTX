@@ -1,0 +1,318 @@
+#version 450
+
+#ifndef LOCAL_SIZE_X 
+#define LOCAL_SIZE_X 256
+#endif 
+
+layout (local_size_x = LOCAL_SIZE_X) in;
+
+struct AtomInformation
+{
+	vec3  position;
+	float radius;
+	uint  startCircleIdx;
+	uint  neighborNumber;
+	uint  gridHash;
+};
+
+struct CircleIntersection
+{
+	vec3 center;
+	float radius;
+	uint atomId;
+	uint neighboorAtomId;
+	uint startProbeIdx;
+	uint probeNb;
+};
+
+struct CellInfo
+{
+	int start;
+	int end;
+};
+
+layout (std140, binding = 0) buffer AtomPositions
+{ 
+	uint atomNumber;
+	AtomInformation atomsInformation[];
+};
+
+layout (std140, binding = 1) writeonly buffer Circles
+{ 
+	uint circleNb;
+	CircleIntersection circles[];
+};
+
+layout (std140, binding = 2) readonly buffer AccelerationStructure
+{
+	CellInfo cellsInformation[];
+};
+
+layout(location = 0) uniform int   uMaxNeighborsNb;
+layout(location = 1) uniform float uProbeRadius;
+layout(location = 2) uniform ivec3 uGridSize;
+layout(location = 3) uniform vec3  uCellSize;
+layout(location = 4) uniform vec3  uWorldOrigin;
+layout(location = 5) uniform float uMaxVdwRadius;
+
+const uint MaxTempCircleNb = 256;
+
+ivec3 computeGridPosition(const vec3 position) 
+{
+	return ivec3 (
+		floor(position - uWorldOrigin) / uCellSize
+	);
+}
+
+uint computeGridHash(ivec3 gridPosition) 
+{
+	gridPosition.x = gridPosition.x & ( uGridSize.x - 1 ); // wrap grid, assumes size is power of 2
+	gridPosition.y = gridPosition.y & ( uGridSize.y - 1 );
+	gridPosition.z = gridPosition.z & ( uGridSize.z - 1 );
+	return ( ( gridPosition.z * uGridSize.y ) * uGridSize.x ) + ( gridPosition.y * uGridSize.x ) + gridPosition.x;
+}
+
+vec3 computeIntersectionDirection( vec3 circleCenter, vec3 arcCenter )
+{
+	const float vjvk  = dot( circleCenter, arcCenter );
+	const float denom = dot( circleCenter, circleCenter ) * dot( arcCenter, arcCenter ) - vjvk * vjvk;
+
+	const float leftVec  = dot( circleCenter, circleCenter - arcCenter ) * dot( arcCenter, arcCenter );
+	const float rightVec = dot( arcCenter - circleCenter, arcCenter ) * dot( circleCenter, circleCenter );
+
+	return ( circleCenter * leftVec / denom ) + ( arcCenter * rightVec / denom );
+};
+
+// Ref: https://www.geeksforgeeks.org/iterative-quick-sort/
+int partitionArray(inout CircleIntersection arr[MaxTempCircleNb], int l, int h)
+{
+    CircleIntersection x = arr[h];
+    int i = (int(l) - 1);
+ 
+    for (int j = l; j <= h - 1; j++) {
+        if (length(arr[j].center) < length(x.center)) {
+            i++;
+			CircleIntersection temp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = temp;
+        }
+    }
+	CircleIntersection temp = arr[i + 1];
+	arr[i + 1] = arr[h];
+	arr[h] = temp;
+    return (i + 1);
+}
+
+// Ref: https://www.geeksforgeeks.org/iterative-quick-sort/
+void quicksort(inout CircleIntersection arr[MaxTempCircleNb], uint low, uint high)
+{
+	// Create an auxiliary stack
+    int stack[MaxTempCircleNb];
+ 
+    // initialize top of stack
+    int top = -1;
+ 
+    // push initial values of l and h to stack
+    stack[++top] = int(low);
+    stack[++top] = int(high);
+ 
+    // Keep popping from stack while is not empty
+    while (top >= 0) {
+        // Pop h and l
+        int h = stack[top--];
+        int l = stack[top--];
+ 
+        // Set pivot element at its correct position
+        // in sorted array
+        int p = partitionArray(arr, l, h);
+ 
+        // If there are elements on left side of pivot,
+        // then push left side to stack
+        if (p - 1 > l) {
+            stack[++top] = l;
+            stack[++top] = p - 1;
+        }
+ 
+        // If there are elements on right side of pivot,
+        // then push right side to stack
+        if (p + 1 < h) {
+            stack[++top] = p + 1;
+            stack[++top] = h;
+        }
+    }
+}
+
+void addCircle(inout CircleIntersection tempCircles[MaxTempCircleNb], inout uint neighborNumber, const CircleIntersection toAdd) {
+	if(neighborNumber + 1 < MaxTempCircleNb) {
+		tempCircles[neighborNumber] = toAdd;
+		neighborNumber++;
+	} else {
+		quicksort(tempCircles, 0, neighborNumber - 1);
+		const float newNeighborDistance = length(toAdd.center);
+
+		if( length(tempCircles[neighborNumber - 1].center) > newNeighborDistance ) 
+		{
+			tempCircles[neighborNumber - 1] = toAdd;
+		}
+	}
+}
+
+void findNeighborsInCell ( const ivec3 gridPos, const uint i, const vec3 ithPos, const float ithExtendedRadius, 
+	inout CircleIntersection tempCircles[MaxTempCircleNb], inout uint neighborNumber )
+{
+	const uint gridHash = computeGridHash( gridPos );
+
+	const CellInfo currentCell = cellsInformation[ gridHash ];
+
+	if ( currentCell.start < 0 )
+		return; 
+
+	// Find all ith's neighboors
+	for ( uint j = currentCell.start; j <= currentCell.end; j++ )
+	{
+		if ( i == j )
+			continue;
+
+		const float maxVdwDistance
+			= atomsInformation[ i ].radius + atomsInformation[ j ].radius + 2. * uProbeRadius;
+		const vec3 jthPos				 = atomsInformation[ j ].position;
+		vec3		iToJ				 = jthPos - ithPos;
+		const float distanceBetweenAtoms = length( iToJ );
+
+		if ( distanceBetweenAtoms > maxVdwDistance )
+			continue;
+
+		const float jthExtendedRadius = atomsInformation[ j ].radius + uProbeRadius;
+		const float distanceToCircleCenter
+			= ( ( ithExtendedRadius * ithExtendedRadius ) + distanceBetweenAtoms * distanceBetweenAtoms
+				- ( jthExtendedRadius * jthExtendedRadius ) )
+				/ ( 2.f * distanceBetweenAtoms * distanceBetweenAtoms );
+		iToJ *= distanceToCircleCenter;
+
+		const float smallCircleRadius
+			= sqrt( ithExtendedRadius * ithExtendedRadius - dot( iToJ, iToJ ) );
+
+		addCircle(tempCircles, neighborNumber, CircleIntersection(iToJ, smallCircleRadius, i, j, 0, 0));
+	}
+}
+
+void main() 
+{
+	uint id = uint(dot(gl_GlobalInvocationID, vec3(1, gl_NumWorkGroups.x, gl_NumWorkGroups.y * gl_NumWorkGroups.x)));
+	if(id >= atomNumber) return;
+
+	AtomInformation currentAtom = atomsInformation[id];
+	const float ithExtendedRadius = currentAtom.radius + uProbeRadius;
+	const float ithSEradius = ithExtendedRadius * ithExtendedRadius;
+	const vec3 ithPos = atomsInformation[ id ].position;
+
+	uint neighborNumber = 0;
+	CircleIntersection tempCircles[MaxTempCircleNb];
+
+	const float gridCellRange = currentAtom.radius + uMaxVdwRadius + 2. * uProbeRadius + 1.;
+
+	const ivec3 cellsInRange = max( ivec3( ceil( gridCellRange / uCellSize ) ), ivec3(2));
+	const ivec3 gridPos = computeGridPosition( ithPos );
+
+	ivec3 start = max(gridPos - cellsInRange, ivec3(0));
+	ivec3 end = min(gridPos + cellsInRange, uGridSize);
+
+
+	for ( int z = start.z; z < end.z; z++ )
+	{
+		for ( int y = start.y; y < end.y; y++ )
+		{
+			for ( int x = start.x; x < end.x; x++ )
+			{
+				findNeighborsInCell( ivec3( x, y, z ), id, ithPos, ithExtendedRadius, tempCircles, neighborNumber );
+			}
+		}
+	}
+
+	for(int j = 0; j < neighborNumber; j++) 
+	{
+		const CircleIntersection currentCircle = tempCircles[ j ];
+		const vec3 jthPos = atomsInformation[currentCircle.neighboorAtomId].position;
+		bool keepJ = true;
+
+		for(int k = 0; k < neighborNumber; k++)
+		{
+			if(j == k) continue;
+
+			const CircleIntersection kThCircle = tempCircles[ k ];
+			const vec3 kthPos = atomsInformation[kThCircle.neighboorAtomId].position;
+
+			const vec3 intersectionDir = computeIntersectionDirection(currentCircle.center, kThCircle.center);
+			const vec3 jThNormal = normalize( currentAtom.position - jthPos );
+			const vec3 kThNormal = normalize( currentAtom.position - kthPos );
+			const vec3 q = kThCircle.center - currentCircle.center;
+
+			// If normals are colinear
+			if ( abs( dot( jThNormal, kThNormal ) - 1. ) < 1e-4 )
+			{
+				if ( dot( jThNormal, kThNormal ) > 0. )
+				{
+					if ( dot( jThNormal, q ) > 0. )
+					{
+						// Circle K cuts J, we can remove J
+						keepJ = false;
+						break;
+					}
+				}
+			}
+			else if ( length( intersectionDir ) > ithExtendedRadius )
+			{
+				const vec3 mJ = currentCircle.center - intersectionDir;
+				const vec3 mK = kThCircle.center - intersectionDir;
+				const float mJdotMk = dot( mJ, mK );
+
+				if ( dot( jThNormal, kThNormal ) > 0. )
+				{
+					// Circle K cuts J, we can remove J
+					if ( mJdotMk > 0. && dot( jThNormal, q ) > 0. )
+					{
+						keepJ = false;
+						break;
+					}
+				}
+				else
+				{
+					// Atom i has no surface
+					if ( mJdotMk > 0. && dot( jThNormal, q ) < 0. )
+					{
+						neighborNumber = 0;
+						keepJ = false;
+						break;
+					}
+				}
+			}
+		}
+
+		if(!keepJ && neighborNumber > 0) 
+		{
+			for(int t = j; t < neighborNumber - 1; t++) 
+			{
+				tempCircles[ t ] = tempCircles[ t + 1 ];
+			}
+
+			j--;
+			neighborNumber--;
+		}
+	}
+
+	quicksort(tempCircles, 0, neighborNumber-1);
+
+	if(neighborNumber > 0)
+	{
+		neighborNumber = min(uMaxNeighborsNb, neighborNumber);
+
+		const uint baseCoordinates = atomicAdd(circleNb, neighborNumber);
+		atomsInformation[id].startCircleIdx = baseCoordinates;
+		atomsInformation[id].neighborNumber = neighborNumber;
+
+		for( uint t = 0; t < neighborNumber; t++) 
+		{
+			circles[baseCoordinates + t] = tempCircles[t];
+		}
+	}
+}

@@ -69,47 +69,44 @@ namespace VTX::Buffer
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::RESIDUE_ID, ATTRIBUTE_LOCATION::RESIDUE_ID );
 	}
 
-	void SecondaryStructure::bind() { _vao.bind(); }
-	void SecondaryStructure::unbind() { _vao.unbind(); }
-
 	void SecondaryStructure::setControlPointPositions( const std::vector<Vec4f> & p_positions )
 	{
-		_vboPositions.set<Vec4f>( p_positions, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboPositions.set<Vec4f>( p_positions, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setControlPointDirections( const std::vector<Vec3f> & p_directions )
 	{
-		_vboDirections.set<Vec3f>( p_directions, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboDirections.set<Vec3f>( p_directions, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setSecondaryStructures( const std::vector<uint> & p_ss )
 	{
-		_vboSecondaryStructures.set<uint>( p_ss, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboSecondaryStructures.set<uint>( p_ss, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setColors( const std::vector<Color::Rgb> & p_colors )
 	{
-		_vboColors.set<Color::Rgb>( p_colors, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboColors.set<Color::Rgb>( p_colors, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setVisibilities( const std::vector<uint> & p_visibilities )
 	{
-		_vboVisibilities.set<uint>( p_visibilities, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboVisibilities.set<uint>( p_visibilities, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setSelections( const std::vector<uint> & p_selections )
 	{
-		_vboSelections.set<uint>( p_selections, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboSelections.set<uint>( p_selections, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setIds( const std::vector<Model::ID> & p_ids )
 	{
-		_vboIds.set<Model::ID>( p_ids, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboIds.set<Model::ID>( p_ids, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setIndices( const std::vector<uint> & p_indices )
 	{
-		_ibo.set<uint>( p_indices, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_ibo.set<uint>( p_indices, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 } // namespace VTX::Buffer
