@@ -6,15 +6,14 @@ namespace VTX::Worker
 	void GpuComputer::_run()
 	{
 		_program->use();
-
 		_setUniforms();
-
 		start();
 	}
 
 	void GpuComputer::start()
 	{
-		_gl->glDispatchCompute( _size.x, _size.y, _size.z );
+		VTX_DEBUG( "Starting gpu work: " + Util::Math::to_string( _sizeComputed ) );
+		_gl->glDispatchCompute( _sizeComputed.x, _sizeComputed.y, _sizeComputed.z );
 		_gl->glMemoryBarrier( _barrier );
 
 		if ( _force )
@@ -26,29 +25,30 @@ namespace VTX::Worker
 
 	void GpuComputer::start( const Vec3i & p_size, const GLbitfield p_barrier )
 	{
-		setSize( p_size );
+		_sizeComputed = p_size;
 		setBarrier( p_barrier );
 		start();
 	}
 
 	void GpuComputer::start( const uint p_taskCount, const GLbitfield p_barrier )
 	{
-		setSize( _computeSize( p_taskCount ) );
+		_sizeComputed = _computeSize( p_taskCount );
 		setBarrier( p_barrier );
 		start();
 	}
 
 	const Vec3i GpuComputer::_computeSize( const uint p_taskCount ) const
 	{
-		// ??
-		Vec3i size = Vec3i( 64, 1, 1 );
+		const int workGroupNeeded = static_cast<int>(
+			std::ceil( ( p_taskCount % _size != 0 ) ? ( p_taskCount / static_cast<float>( _size + 1 ) )
+													: ( p_taskCount / static_cast<float>( _size ) ) ) );
 
-		const uint workGroupNeeded
-			= ( p_taskCount % size.x != 0 ) ? ( p_taskCount / size.x + 1 ) : ( p_taskCount / size.x );
+		const int xDimension = std::min( workGroupNeeded, VTX_SPEC().glMaxComputeWorkGroupCount[ 0 ] );
+		const int yDimension = static_cast<int>( std::max(
+			std::ceil( xDimension / static_cast<float>( float( VTX_SPEC().glMaxComputeWorkGroupCount[ 1 ] ) ) ) + 1,
+			1.f ) );
 
-		const uint xDimension = Util::Math::min( workGroupNeeded, uint( VTX_SPEC().glMaxComputeWorkGroupCount[ 0 ] ) );
-		const uint yDimension
-			= uint( Util::Math::max( workGroupNeeded / float( VTX_SPEC().glMaxComputeWorkGroupCount[ 0 ] ), 1.f ) );
-		return Vec3i( xDimension, yDimension, 1 );
+		const int zDimension = 1;
+		return { xDimension, yDimension, zDimension };
 	}
 } // namespace VTX::Worker

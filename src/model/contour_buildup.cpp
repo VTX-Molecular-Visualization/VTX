@@ -18,7 +18,7 @@ namespace VTX
 
 		ContourBuildup::ContourBuildup( Molecule * const p_molecule ) :
 			BaseModel3D( VTX::ID::Model::MODEL_CONTOUR_BUILDUP ), _molecule( p_molecule ),
-			_workgroupLocalSize( { 256, 1, 1 } ), _probeRadius( 1.4f )
+			_workgroupLocalSize( { 512, 2, 1 } ), _probeRadius( 1.4f )
 		{
 		}
 
@@ -42,12 +42,11 @@ namespace VTX
 
 		void ContourBuildup::_init()
 		{
+			return;
 			Tool::Chrono chrono;
 			chrono.start();
 			VTX_INFO( "Creating SES..." );
-
 			_computeGPU();
-
 			chrono.stop();
 			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
@@ -80,60 +79,26 @@ namespace VTX
 			_accelerationGrid.size	   = Vec3i( static_cast<int>( gridSize ) );
 			_accelerationGrid.cellSize = Vec3f( worldSize / Vec3f( _accelerationGrid.size ) );
 
-			CBSizes startSize = { _molecule->getAtomCount() };
-
-			// SSBO.
-			_ssboSizeBuffer
-				= new VTX::Renderer::GL::BufferStorage( VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER,
-														sizeof( CBSizes ),
-														startSize,
-														VTX::Renderer::GL::BufferStorage::Flags::MAP_READ_BIT );
-
 			_paddedAtomNb = Util::Math::nextPowerOfTwoValue( _molecule->getAtomCount() );
-
-			const auto atomGridIndices
-				= std::vector<GridCellInfo>( static_cast<std::size_t>( _accelerationGrid.size.x )
-												 * _accelerationGrid.size.y * _accelerationGrid.size.z,
-											 GridCellInfo { -1, -1 } );
-			_ssboAtomCellInfo = new VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, atomGridIndices );
-
-			const std::size_t circleMaximumNb = _molecule->getAtomCount() * _maxAtomNeighborNb;
-			_ssboCircles
-				= new VTX::Renderer::GL::BufferStorage( VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER,
-														uint( sizeof( CircleIntersection ) * circleMaximumNb ) );
-
-			_ssboCirclesProbes = new VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER,
-				uint( sizeof( ProbePosition ) * circleMaximumNb * _maxProbePerCircle ) );
 
 			_paddedNbOfSpTriangle = Util::Math::nextPowerOfTwoValue( _molecule->getAtomCount() * _maxAtomNeighborNb
 																	 * _maxProbePerCircle );
 
 			auto trianglePatchesInit = std::vector<uint8_t>( sizeof( Buffer::ContourBuildup::SphericalTrianglePatch )
 															 * _paddedNbOfSpTriangle );
-			{
-				const auto trianglesPatchesDefault = std::vector<Buffer::ContourBuildup::SphericalTrianglePatch>(
-					_paddedNbOfSpTriangle,
-					Buffer::ContourBuildup::SphericalTrianglePatch {
-						Vec4f( 0.f ),
-						Vec4f( 0.f ),
-						Vec4f( 0.f ),
-						Vec4f( 0.f, 0.f, 0.f, static_cast<float>( std::numeric_limits<uint>::max() ) ) } );
-				std::memcpy( trianglePatchesInit.data(),
-							 trianglesPatchesDefault.data(),
-							 sizeof( Buffer::ContourBuildup::SphericalTrianglePatch ) * _paddedNbOfSpTriangle );
-			}
-			_buffer->getSsboSphericalTrianglePatches().set( trianglePatchesInit );
 
-			auto probesGridIndices
-				= std::vector<GridCellInfo>( static_cast<std::size_t>( _accelerationGrid.size.x )
-												 * _accelerationGrid.size.y * _accelerationGrid.size.z,
-											 GridCellInfo { -1, -1 } );
-			_ssboProbesCellInfo = new VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, probesGridIndices );
+			const auto trianglesPatchesDefault = std::vector<Buffer::ContourBuildup::SphericalTrianglePatch>(
+				_paddedNbOfSpTriangle,
+				Buffer::ContourBuildup::SphericalTrianglePatch {
+					Vec4f( 0.f ),
+					Vec4f( 0.f ),
+					Vec4f( 0.f ),
+					Vec4f( 0.f, 0.f, 0.f, static_cast<float>( std::numeric_limits<uint>::max() ) ) } );
+			std::memcpy( trianglePatchesInit.data(),
+						 trianglesPatchesDefault.data(),
+						 sizeof( Buffer::ContourBuildup::SphericalTrianglePatch ) * _paddedNbOfSpTriangle );
 
-			// Workers.
+			// Create workers.
 			_sortAtomWorker	 = new VTX::Worker::GpuComputer( IO::FilePath( "sort_atoms.comp" ) );
 			_buildGridWorker = new VTX::Worker::GpuComputer( IO::FilePath( "build_atoms_grid.comp" ) );
 			_countNeighborsWorker
@@ -146,20 +111,20 @@ namespace VTX
 				= new VTX::Worker::GpuComputer( IO::FilePath( "build_singularity_buffer.comp" ), _workgroupLocalSize );
 			_sortProbesWorker = new VTX::Worker::GpuComputer( IO::FilePath( "sort_probes.comp" ) );
 
-			_atomsInformation = {};
-			{
-				const auto &			   atoms		  = _molecule->getAtoms();
-				const std::vector<Vec3f> & atomsPositions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
-				_atomsInformation.reserve( _molecule->getAtomCount() );
-				for ( std::size_t i = 0; i < atoms.size(); i++ )
-				{
-					const auto & currentPosition = atomsPositions[ i ];
-					const Vec3i	 gridPos		 = _accelerationGrid.gridPosition( currentPosition );
-					const uint	 hash			 = _accelerationGrid.gridHash( gridPos );
+			// Compute atom informations.
+			_atomsInformation						  = {};
+			const auto &			   atoms		  = _molecule->getAtoms();
+			const std::vector<Vec3f> & atomsPositions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
 
-					_atomsInformation.emplace_back(
-						AtomInformation { currentPosition, atoms[ i ]->getVdwRadius(), 0, 0, hash } );
-				}
+			_atomsInformation.reserve( _molecule->getAtomCount() );
+			for ( std::size_t i = 0; i < atoms.size(); i++ )
+			{
+				const auto & currentPosition = atomsPositions[ i ];
+				const Vec3i	 gridPos		 = _accelerationGrid.gridPosition( currentPosition );
+				const uint	 hash			 = _accelerationGrid.gridHash( gridPos );
+
+				_atomsInformation.emplace_back(
+					AtomInformation { currentPosition, atoms[ i ]->getVdwRadius(), 0, 0, hash } );
 			}
 
 			for ( std::size_t i = _atomsInformation.size(); i < _paddedAtomNb; i++ )
@@ -168,18 +133,56 @@ namespace VTX
 					AtomInformation { Vec3f( 0.f ), 0, 0, 0, std::numeric_limits<VTX::uint>::max() } );
 			}
 
-			{
-				std::vector<uint8_t> atomPositionData
-					= std::vector<uint8_t>( _atomsInformation.size() * sizeof( AtomInformation ) );
-				const uint atomNb = static_cast<uint>( _molecule->getAtomCount() );
-				std::memcpy( atomPositionData.data(), &atomNb, sizeof( uint ) );
-				std::memcpy( atomPositionData.data(),
-							 _atomsInformation.data(),
-							 _atomsInformation.size() * sizeof( AtomInformation ) );
-				_ssboAtomPosition = new VTX::Renderer::GL::BufferStorage(
-					VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, atomPositionData );
-			}
+			// Compute atom positions.
+			std::vector<uint8_t> atomPositionData
+				= std::vector<uint8_t>( _atomsInformation.size() * sizeof( AtomInformation ) );
+			const uint atomNb = static_cast<uint>( _molecule->getAtomCount() );
+			std::memcpy( atomPositionData.data(), &atomNb, sizeof( uint ) );
+			std::memcpy( atomPositionData.data(),
+						 _atomsInformation.data(),
+						 _atomsInformation.size() * sizeof( AtomInformation ) );
 
+			// SSBO atom position.
+			_ssboAtomPosition = new VTX::Renderer::GL::BufferStorage(
+				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, atomPositionData );
+
+			// SSBO atom cell info.
+			const auto atomGridIndices
+				= std::vector<GridCellInfo>( static_cast<std::size_t>( _accelerationGrid.size.x )
+												 * _accelerationGrid.size.y * _accelerationGrid.size.z,
+											 GridCellInfo { -1, -1 } );
+			_ssboAtomCellInfo = new VTX::Renderer::GL::BufferStorage(
+				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, atomGridIndices );
+
+			// SSBO size buffer.
+			CBSizes startSize = { _molecule->getAtomCount() };
+			_ssboSizeBuffer
+				= new VTX::Renderer::GL::BufferStorage( VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER,
+														sizeof( CBSizes ),
+														startSize,
+														VTX::Renderer::GL::BufferStorage::Flags::MAP_READ_BIT );
+
+			// SSBO probes cell info.
+			auto probesGridIndices
+				= std::vector<GridCellInfo>( static_cast<std::size_t>( _accelerationGrid.size.x )
+												 * _accelerationGrid.size.y * _accelerationGrid.size.z,
+											 GridCellInfo { -1, -1 } );
+
+			_ssboProbesCellInfo = new VTX::Renderer::GL::BufferStorage(
+				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, probesGridIndices );
+
+			// SSBO circles.
+			const std::size_t circleMaximumNb = _molecule->getAtomCount() * _maxAtomNeighborNb;
+			_ssboCircles
+				= new VTX::Renderer::GL::BufferStorage( VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER,
+														uint( sizeof( CircleIntersection ) * circleMaximumNb ) );
+
+			// SSBO circle probes.
+			_ssboCirclesProbes = new VTX::Renderer::GL::BufferStorage(
+				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER,
+				uint( sizeof( ProbePosition ) * circleMaximumNb * _maxProbePerCircle ) );
+
+			// Size reader.
 			auto readSize = []( VTX::Renderer::GL::BufferStorage * const sizeBuffer, std::size_t idx ) -> std::size_t
 			{
 				const uint * const sizeData
@@ -192,14 +195,22 @@ namespace VTX
 				return size;
 			};
 
+			// Sort atom positions.
 			_ssboAtomPosition->bind( 0 );
 			_bitonicSort( _sortAtomWorker, _paddedAtomNb );
 
+			// Build grid.
 			_ssboSizeBuffer->bind( 0 );
 			_ssboAtomPosition->bind( 1 );
 			_ssboAtomCellInfo->bind( 2 );
+			_buildGridWorker->getProgram().use();
 			_buildGridWorker->start( uint( _atomsInformation.size() ), GL_SHADER_STORAGE_BARRIER_BIT );
 
+			// Count neighbors.
+			_ssboSizeBuffer->bind( 0 );
+			_ssboAtomPosition->bind( 1 );
+			_ssboCircles->bind( 2 );
+			_ssboAtomCellInfo->bind( 3 );
 			_countNeighborsWorker->getProgram().use();
 			_countNeighborsWorker->getProgram().setInt( "uMaxNeighborsNb", static_cast<int>( _maxAtomNeighborNb ) );
 			_countNeighborsWorker->getProgram().setFloat( "uProbeRadius", _probeRadius );
@@ -207,18 +218,7 @@ namespace VTX
 			_countNeighborsWorker->getProgram().setVec3f( "uCellSize", _accelerationGrid.cellSize );
 			_countNeighborsWorker->getProgram().setVec3f( "uWorldOrigin", _accelerationGrid.worldOrigin );
 			_countNeighborsWorker->getProgram().setFloat( "uMaxVdwRadius", maxVdwRadius );
-
-			_ssboSizeBuffer->bind( 0 );
-			_ssboAtomPosition->bind( 1 );
-			_ssboCircles->bind( 2 );
-			_ssboAtomCellInfo->bind( 3 );
 			_countNeighborsWorker->start( _molecule->getAtomCount(), GL_SHADER_STORAGE_BARRIER_BIT );
-
-			_contourBuildupWorker->getProgram().use();
-			_contourBuildupWorker->getProgram().setInt( "uMaxNeighborsNb", static_cast<GLint>( _maxAtomNeighborNb ) );
-			_contourBuildupWorker->getProgram().setFloat( "uProbeRadius", _probeRadius );
-			_contourBuildupWorker->getProgram().setInt( "uMaxProbePerCircle",
-														static_cast<GLint>( _maxProbePerCircle ) );
 
 			_torusPatchNb = readSize( _ssboSizeBuffer, 1 );
 
@@ -226,18 +226,15 @@ namespace VTX
 			_ssboAtomPosition->bind( 1 );
 			_ssboCircles->bind( 2 );
 			_ssboCirclesProbes->bind( 3 );
-
-			// Start a thread per circle
+			_contourBuildupWorker->getProgram().use();
+			_contourBuildupWorker->getProgram().setInt( "uMaxNeighborsNb", static_cast<GLint>( _maxAtomNeighborNb ) );
+			_contourBuildupWorker->getProgram().setFloat( "uProbeRadius", _probeRadius );
+			_contourBuildupWorker->getProgram().setInt( "uMaxProbePerCircle",
+														static_cast<GLint>( _maxProbePerCircle ) );
 			_contourBuildupWorker->start( uint( _torusPatchNb ), GL_SHADER_STORAGE_BARRIER_BIT );
 
 			_buffer->getSsboTorusPatches().set(
 				std::vector<uint>( sizeof( Buffer::ContourBuildup::TorusPatch ) * _torusPatchNb, 0u ) );
-
-			_buildPatchWorker->getProgram().use();
-			_buildPatchWorker->getProgram().setFloat( "uProbeRadius", _probeRadius );
-			_buildPatchWorker->getProgram().setVec3i( "uGridSize", _accelerationGrid.size );
-			_buildPatchWorker->getProgram().setVec3f( "uCellSize", _accelerationGrid.cellSize );
-			_buildPatchWorker->getProgram().setVec3f( "uWorldOrigin", _accelerationGrid.worldOrigin );
 
 			_ssboSizeBuffer->bind( 0 );
 			_ssboAtomPosition->bind( 1 );
@@ -245,36 +242,41 @@ namespace VTX
 			_ssboCirclesProbes->bind( 3 );
 			_buffer->getSsboTorusPatches().bind( 4 );
 			_buffer->getSsboSphericalTrianglePatches().bind( 5 );
-
+			_buildPatchWorker->getProgram().use();
+			_buildPatchWorker->getProgram().setFloat( "uProbeRadius", _probeRadius );
+			_buildPatchWorker->getProgram().setVec3i( "uGridSize", _accelerationGrid.size );
+			_buildPatchWorker->getProgram().setVec3f( "uCellSize", _accelerationGrid.cellSize );
+			_buildPatchWorker->getProgram().setVec3f( "uWorldOrigin", _accelerationGrid.worldOrigin );
 			// Start a thread per circle
 			_buildPatchWorker->start( uint( _torusPatchNb ), GL_SHADER_STORAGE_BARRIER_BIT );
 
 			_trianglePatchNb = readSize( _ssboSizeBuffer, 3 );
 
+			_buffer->getSsboSphericalTrianglePatches().set( trianglePatchesInit );
 			_buffer->getSsboSphericalTrianglePatches().bind( 0 );
 			_bitonicSort( _sortProbesWorker, _paddedNbOfSpTriangle );
 
 			_ssboSizeBuffer->bind( 0 );
 			_buffer->getSsboSphericalTrianglePatches().bind( 1 );
 			_ssboProbesCellInfo->bind( 2 );
+			_buildProbesGridWorker->getProgram().use();
 			_buildProbesGridWorker->start( uint( _trianglePatchNb ), GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Fill intersection texture
 			_buffer->getSsboProbeIntersection().set(
 				std::vector( sizeof( Vec4f ) * _trianglePatchNb * _maxProbeNeighborNb, 0u ) );
 
+			_ssboSizeBuffer->bind( 0 );
+			_buffer->getSsboSphericalTrianglePatches().bind( 1 );
+			_buffer->getSsboProbeIntersection().bind( 2 );
+			_ssboProbesCellInfo->bind( 3 );
+			_buildSingularityBufferWorker->getProgram().use();
 			_buildSingularityBufferWorker->getProgram().setFloat( "uProbeRadius", _probeRadius );
 			_buildSingularityBufferWorker->getProgram().setInt( "uMaxProbeNeighborNb",
 																static_cast<int>( _maxProbeNeighborNb ) );
 			_buildSingularityBufferWorker->getProgram().setVec3i( "uGridSize", _accelerationGrid.size );
 			_buildSingularityBufferWorker->getProgram().setVec3f( "uCellSize", _accelerationGrid.cellSize );
 			_buildSingularityBufferWorker->getProgram().setVec3f( "uWorldOrigin", _accelerationGrid.worldOrigin );
-
-			_ssboSizeBuffer->bind( 0 );
-			_buffer->getSsboSphericalTrianglePatches().bind( 1 );
-			_buffer->getSsboProbeIntersection().bind( 2 );
-			_ssboProbesCellInfo->bind( 3 );
-
 			// Start a thread per circle
 			_buildSingularityBufferWorker->start( uint( _trianglePatchNb ), GL_SHADER_STORAGE_BARRIER_BIT );
 		}
@@ -343,7 +345,7 @@ namespace VTX
 					}
 				}
 			}
-		};
+		}
 
 	} // namespace Model
 } // namespace VTX

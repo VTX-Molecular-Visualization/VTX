@@ -17,24 +17,15 @@ namespace VTX::Worker
 							  const Vec3i &		   p_size	 = Vec3i( 64, 1, 1 ),
 							  const GLbitfield	   p_barrier = 0,
 							  const bool		   p_force	 = false ) :
-			_size( p_size ),
-			_barrier( p_barrier ), _force( p_force ),
+			_sizeComputed( p_size ),
+			_size( p_size.x * p_size.y * p_size.z ), _barrier( p_barrier ), _force( p_force ),
 			_program( VTX_PROGRAM_MANAGER().createProgram( p_shader.filenameWithoutExtension(), { p_shader } ) )
-		{
-		}
-		explicit GpuComputer( const IO::FilePath & p_shader,
-							  const uint		   p_taskCount,
-							  const GLbitfield	   p_barrier = 0,
-							  const bool		   p_force	 = false ) :
-			GpuComputer( p_shader, _computeSize( p_taskCount ), p_barrier, p_force )
 		{
 		}
 
 		virtual ~GpuComputer() = default;
 
 		inline Renderer::GL::Program & getProgram() { return *_program; }
-		inline void					   setSize( const Vec3i & p_size ) { _size = p_size; }
-		inline void					   setTaskCount( const uint p_taskCount ) { _size = _computeSize( p_taskCount ); }
 		inline void					   setBarrier( const GLbitfield p_barrier ) { _barrier = p_barrier; }
 		inline void					   setForce( const bool p_force ) { _force = p_force; }
 
@@ -44,7 +35,8 @@ namespace VTX::Worker
 
 	  protected:
 		Renderer::GL::Program * const _program;
-		Vec3i						  _size;
+		Vec3i						  _sizeComputed;
+		uint						  _size;
 		GLbitfield					  _barrier;
 		bool						  _force;
 

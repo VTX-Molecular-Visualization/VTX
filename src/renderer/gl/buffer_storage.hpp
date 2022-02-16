@@ -138,7 +138,7 @@ namespace VTX::Renderer::GL
 		template<typename T>
 		inline T * const map( const uint p_offset, const uint p_length, const Flags & p_access = Flags::NONE )
 		{
-			return static_cast<T *>(
+			return reinterpret_cast<T *>(
 				_gl->glMapNamedBufferRange( _id, GLintptr( p_offset ), GLsizeiptr( p_length ), p_access ) );
 		}
 
