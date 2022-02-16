@@ -51,7 +51,7 @@ namespace VTX::View::UI::Widget::Measurement
 
 	void DistanceRenderView::updatePosition()
 	{
-		if ( !_model->isValid() )
+		if ( !_model->isValid() || !_model->isEnable() )
 			return;
 
 		const Vec3f & firstAtomWorldPos	 = _model->getFirstAtom().getWorldPosition();
@@ -152,6 +152,9 @@ namespace VTX::View::UI::Widget::Measurement
 	void DistanceRenderView::paintEvent( QPaintEvent * event )
 	{
 		QWidget::paintEvent( event );
+
+		if ( !_model->isValid() || !_model->isEnable() )
+			return;
 
 		if ( _paintData.textDistanceToCamera < Style::WORLD_LABEL_FAR_CLIP )
 		{

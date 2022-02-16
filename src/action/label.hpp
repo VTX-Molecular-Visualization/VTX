@@ -16,6 +16,29 @@
 
 namespace VTX::Action::Label
 {
+	class SetEnable : public BaseAction
+	{
+	  public:
+		explicit SetEnable( Model::Label & p_label, const bool p_enabled ) :
+			_labels( { &p_label } ), _enabled( p_enabled )
+		{
+		}
+		explicit SetEnable( const std::unordered_set<Model::Label *> & p_labels, const bool p_enabled ) :
+			_labels( p_labels ), _enabled( p_enabled )
+		{
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Label * label : _labels )
+				label->setEnable( _enabled );
+		}
+
+	  private:
+		const bool						   _enabled;
+		std::unordered_set<Model::Label *> _labels;
+	};
+
 	class Orient : public BaseAction
 	{
 	  public:
@@ -26,7 +49,7 @@ namespace VTX::Action::Label
 		{
 			Math::AABB aabb = Math::AABB();
 
-			for ( Model::Label * label : _labels )
+			for ( Model::Label * const label : _labels )
 				aabb.extend( label->getAABB() );
 
 			VTXApp::get()

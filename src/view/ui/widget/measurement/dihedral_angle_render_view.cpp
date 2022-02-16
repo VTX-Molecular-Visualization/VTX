@@ -51,7 +51,7 @@ namespace VTX::View::UI::Widget::Measurement
 
 	void DihedralAngleRenderView::updatePosition()
 	{
-		if ( !_model->isValid() )
+		if ( !_model->isValid() || !_model->isEnable())
 			return;
 
 		const std::vector<const Model::Atom *> & atoms		   = _model->getAtoms();
@@ -179,6 +179,9 @@ namespace VTX::View::UI::Widget::Measurement
 	void DihedralAngleRenderView::paintEvent( QPaintEvent * event )
 	{
 		QWidget::paintEvent( event );
+
+		if ( !_model->isValid() || !_model->isEnable())
+			return;
 
 		if ( _paintData.textDistanceToCamera < Style::WORLD_LABEL_FAR_CLIP )
 		{
