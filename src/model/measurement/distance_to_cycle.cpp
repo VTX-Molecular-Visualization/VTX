@@ -39,7 +39,8 @@
 //			{
 //				// TODO : Use a manager instead of managing scene from model
 //				VTXApp::get().getScene().removeLabel( this );
-//				MVC::MvcManager::get().deleteModel( this );
+//				_invalidate();
+//				VTXApp::get().deleteAtEndOfFrame( this );
 //			}
 //		}
 //		else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
@@ -51,7 +52,8 @@
 //			{
 //				// TODO : Use a manager instead of managing scene from model
 //				VTXApp::get().getScene().removeLabel( this );
-//				MVC::MvcManager::get().deleteModel( this );
+//				_invalidate();
+//				VTXApp::get().deleteAtEndOfFrame( this );
 //			}
 //		}
 //		else if ( p_event.name == Event::Global::LABEL_REMOVED )
@@ -197,5 +199,7 @@
 //		return MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
 //													  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 //	}
+//
+//	void DistanceToCycle::autoDelete() const { MVC::MvcManager::get().deleteModel( this ); }
 //
 //} // namespace VTX::Model::Measurement

@@ -3,6 +3,7 @@
 
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"
+#include "generic/base_auto_delete.hpp"
 #include "id.hpp"
 #include "model/label.hpp"
 #include "view/callback_view.hpp"
@@ -17,7 +18,7 @@ namespace VTX::Model
 
 namespace VTX::Model::Measurement
 {
-	class DistanceToCycle : public Model::Label, Event::BaseEventReceiverVTX
+	class DistanceToCycle : public Model::Label, Event::BaseEventReceiverVTX, Generic::BaseAutoDelete
 	{
 		VTX_MODEL
 		//
@@ -39,6 +40,8 @@ namespace VTX::Model::Measurement
 		//		float getDistance() const { return _distance; }
 		//		bool  isValid() { return _firstAtom != nullptr && _secondAtom != nullptr; }
 		//
+		//		void autoDelete() const override;
+		//
 		//	  protected:
 		//		DistanceToCycle();
 		//		DistanceToCycle( const AtomPair & p_pair );
@@ -50,6 +53,8 @@ namespace VTX::Model::Measurement
 		//								const bool			p_notify = true );
 		//
 		//		void _performAutoName( const bool p_notify = true ) override;
+		//
+		//		void _invalidate();
 		//
 		//	  private:
 		//		const Model::Atom * _firstAtom	= nullptr;

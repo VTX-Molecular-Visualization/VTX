@@ -33,15 +33,14 @@ namespace VTX::UI::Widget::MainMenu::Measurement
 
 		_distanceModeButton
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "distanceModeButton" );
-		_distanceModeButton->setData(
-			"Distance", ":/sprite/measurement_distance_icon.png", Qt::Orientation::Horizontal );
+		_distanceModeButton->setData( "Distance", ":/sprite/measurement_distance_icon.png", Qt::Orientation::Vertical );
 		pushButton( *_distanceModeButton, 0 );
 
-		_distanceToCycleModeButton
+		/*_distanceToCycleModeButton
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "distanceToCycleModeButton" );
 		_distanceToCycleModeButton->setData(
 			"Distance\nto cycle", ":/sprite/measurement_distance_to_cycle_icon.png", Qt::Orientation::Horizontal );
-		pushButton( *_distanceToCycleModeButton, 0 );
+		pushButton( *_distanceToCycleModeButton, 0 );*/
 
 		_angleModeButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "angleModeButton" );
 		_angleModeButton->setData( "Angle", ":/sprite/measurement_angle_icon.png", Qt::Orientation::Horizontal );
@@ -60,8 +59,8 @@ namespace VTX::UI::Widget::MainMenu::Measurement
 	void MenuMeasurementDistanceWidget::_setupSlots()
 	{
 		_distanceModeButton->setTriggerAction( this, &MenuMeasurementDistanceWidget::_applyDistanceModeAction );
-		_distanceToCycleModeButton->setTriggerAction( this,
-													  &MenuMeasurementDistanceWidget::_applyDistanceToCycleModeAction );
+		//_distanceToCycleModeButton->setTriggerAction( this,
+		//											  &MenuMeasurementDistanceWidget::_applyDistanceToCycleModeAction );
 		_angleModeButton->setTriggerAction( this, &MenuMeasurementDistanceWidget::_applyAngleModeAction );
 		_dihedralAngleModeButton->setTriggerAction( this,
 													&MenuMeasurementDistanceWidget::_applyDihedralAngleModeAction );
@@ -81,8 +80,8 @@ namespace VTX::UI::Widget::MainMenu::Measurement
 			const Controller::MeasurementPicker::Mode & mode = measurementController->getCurrentMode();
 
 			_distanceModeButton->showActiveFeedback( mode == Controller::MeasurementPicker::Mode::DISTANCE );
-			_distanceToCycleModeButton->showActiveFeedback( mode
-															== Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE );
+			//_distanceToCycleModeButton->showActiveFeedback( mode
+			//												== Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE );
 			_angleModeButton->showActiveFeedback( mode == Controller::MeasurementPicker::Mode::ANGLE );
 			_dihedralAngleModeButton->showActiveFeedback( mode == Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE );
 		}

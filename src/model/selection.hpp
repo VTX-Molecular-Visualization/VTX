@@ -140,6 +140,7 @@ namespace VTX::Model
 		void selectModel( Model::BaseModel & p_model, const bool p_appendToSelection = false );
 		void unselectModel( const Model::BaseModel & );
 		bool isModelSelected( const Model::BaseModel & ) const;
+		bool isModelSelected( const Model::ID & ) const;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
 		void selectModels( const std::vector<T *> & p_models, const bool p_appendToSelection = false )
@@ -201,6 +202,8 @@ namespace VTX::Model
 
 		bool isEmpty() const;
 		void clear();
+
+		void moveDataTo( Selection & p_target );
 
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 

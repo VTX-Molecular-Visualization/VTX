@@ -918,14 +918,22 @@ namespace VTX::Model
 	}
 	void Selection::_unselectModel( const Model::BaseModel & p_model ) { _items.erase( p_model.getId() ); }
 
+	bool Selection::isModelSelected( const Model::ID & p_id ) const
+	{
+		const Model::BaseModel & model = MVC::MvcManager::get().getModel<Model::BaseModel>( p_id );
+		return isModelSelected( model );
+	}
+
 	bool Selection::isModelSelected( const Model::BaseModel & p_model ) const
 	{
 		const VTX::ID::VTX_ID & modelTypeID = p_model.getTypeId();
 
-		if ( modelTypeID == VTX::ID::Model::MODEL_CHAIN )
-			return isChainSelected( static_cast<const Model::Chain &>( p_model ) );
+		if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
+			return isMoleculeFullySelected( static_cast<const Model::Molecule &>( p_model ) );
+		else if ( modelTypeID == VTX::ID::Model::MODEL_CHAIN )
+			return isChainFullySelected( static_cast<const Model::Chain &>( p_model ) );
 		else if ( modelTypeID == VTX::ID::Model::MODEL_RESIDUE )
-			return isResidueSelected( static_cast<const Model::Residue &>( p_model ) );
+			return isResidueFullySelected( static_cast<const Model::Residue &>( p_model ) );
 		else if ( modelTypeID == VTX::ID::Model::MODEL_ATOM )
 			return isAtomSelected( static_cast<const Model::Atom &>( p_model ) );
 		else
@@ -956,6 +964,29 @@ namespace VTX::Model
 		_moleculesMap.clear();
 		_mapSelectionAABB.clear();
 		_clearCurrentObject( false );
+	}
+
+	void Selection::moveDataTo( Selection & p_target )
+	{
+		for ( const std::pair<const VTX::Model::ID, MapChainIds> & item : _moleculesMap )
+		{
+			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( item.first );
+			molecule.refreshSelection( nullptr );
+		}
+
+		for ( const VTX::Model::ID & item : _items )
+			p_target._items.emplace( item );
+
+		_items.clear();
+
+		p_target._moleculesMap = _moleculesMap;
+
+		// std::move( _moleculesMap.begin(), _moleculesMap.end(), p_target._moleculesMap.begin() );
+		_moleculesMap.clear();
+
+		p_target._currentObject = _currentObject;
+
+		clear();
 	}
 
 	void Selection::receiveEvent( const Event::VTXEvent & p_event )

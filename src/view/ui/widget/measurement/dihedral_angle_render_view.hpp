@@ -20,8 +20,7 @@ namespace VTX::View::UI::Widget::Measurement
 {
 	class DihedralAngleRenderView :
 		public View::BaseView<VTX::Model::Measurement::DihedralAngle>,
-		public VTX::UI::Widget::BaseManualWidget<QWidget>,
-		public VTX::UI::Widget::Render::BaseIntegratedWidget
+		public VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>
 	{
 		VTX_WIDGET
 		VTX_VIEW
@@ -30,20 +29,22 @@ namespace VTX::View::UI::Widget::Measurement
 		class PaintData
 		{
 		  public:
-			QPoint firstAtomScreenPos;
-			QPoint secondAtomScreenPos;
-			QPoint thirdAtomScreenPos;
-			QPoint fourthAtomScreenPos;
+			Vec3f firstAtomScreenPos;
+			Vec3f secondAtomScreenPos;
+			Vec3f thirdAtomScreenPos;
+			Vec3f fourthAtomScreenPos;
 
 			float lineSize;
 
-			QPoint textPosition;
-			QSize  textSize;
-			float  textScale;
-			float  textDistanceToCamera;
+			bool drawTextAndIcon;
 
-			QPoint dihedralIconPosition;
-			float  iconSize;
+			Vec3f textPosition;
+			QSize textSize;
+			float textScale;
+			float textDistanceToCamera;
+
+			Vec3f dihedralIconPosition;
+			float iconSize;
 		};
 
 	  public:

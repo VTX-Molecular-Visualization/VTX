@@ -88,7 +88,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	}
 	void MenuVisualizationSelectionActionWidget::_extractSelection() const
 	{
-		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Selection::Extract( selectionModel ) );
 	}
 	void MenuVisualizationSelectionActionWidget::_deleteSelection() const

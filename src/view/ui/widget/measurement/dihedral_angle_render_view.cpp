@@ -18,7 +18,7 @@ namespace VTX::View::UI::Widget::Measurement
 	DihedralAngleRenderView::DihedralAngleRenderView( Model::Measurement::DihedralAngle * const p_model,
 													  QWidget * const							p_parent ) :
 		View::BaseView<Model::Measurement::DihedralAngle>( p_model ),
-		VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
+		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>( p_parent )
 	{
 		_labelPen	= QPen( Style::WORLD_LABEL_OUTLINE_COLOR );
 		_labelBrush = QBrush( Style::WORLD_LABEL_FILL_COLOR );
@@ -32,7 +32,7 @@ namespace VTX::View::UI::Widget::Measurement
 
 	void DihedralAngleRenderView::_setupUi( const QString & p_name )
 	{
-		BaseManualWidget ::_setupUi( p_name );
+		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>::_setupUi( p_name );
 
 		_refreshText();
 		updatePosition();
@@ -80,49 +80,66 @@ namespace VTX::View::UI::Widget::Measurement
 		if ( ratioScale == 0.f )
 			return;
 
-		const QRect			renderRect	   = parentWidget()->rect();
-		std::vector<QPoint> pointPositions = std::vector<QPoint>();
-		Util::UIRender::fillScreenPositions( atomPositions, pointPositions, camera, renderRect );
+		const QRect		   renderRect	  = parentWidget()->rect();
+		std::vector<Vec3f> vec3fPositions = std::vector<Vec3f>();
+		Util::UIRender::fillScreenPositions( atomPositions, vec3fPositions, camera, renderRect );
 
-		const float pixmapSizeScaled
-			= Util::UIRender::linearInterpolation( Style::MEASUREMENT_DIHEDRAL_ANGLE_ICON_MIN_SIZE,
-												   Style::MEASUREMENT_DIHEDRAL_ANGLE_ICON_MAX_SIZE,
-												   ratioScale );
-
-		const QPixmap & pixmap = Style::IconConst::get().DIHEDRAL_ANGLE_RENDER_ICON;
-
-		const QPoint iconPos = ( pointPositions[ 1 ] + pointPositions[ 2 ] ) * 0.5f;
-
-		const float textScale = Util::UIRender::linearInterpolation(
-			Style::WORLD_LABEL_MIN_TEXT_SCALE, Style::WORLD_LABEL_MAX_TEXT_SCALE, ratioScale );
-
-		const int textYOffset
-			= ( ( _paintData.textSize.height() / 2 ) + Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_TEXT_OFFSET ) * textScale
-			  + ( pixmapSizeScaled / 2 );
-
-		const QPoint textPos = iconPos + QPoint( 0, -textYOffset );
+		std::vector<QPoint> qPointPositions = std::vector<QPoint>();
+		qPointPositions.reserve( vec3fPositions.size() );
+		for ( const Vec3f & vec : vec3fPositions )
+			qPointPositions.emplace_back( Util::UIRender::vec3fToQPoint( vec ) );
 
 		int minX, maxX, minY, maxY;
-		Util::UIRender::getMinMax( pointPositions, minX, maxX, minY, maxY );
+		Util::UIRender::getMinMax( qPointPositions, minX, maxX, minY, maxY );
 		minX -= Style::LABEL_RENDER_POINT_MAX_DIAMETER;
 		maxX += Style::LABEL_RENDER_POINT_MAX_DIAMETER;
 		minY -= Style::LABEL_RENDER_POINT_MAX_DIAMETER;
 		maxY += Style::LABEL_RENDER_POINT_MAX_DIAMETER;
 
-		const int minXText = textPos.x() - ( _paintData.textSize.width() * ratioScale ) / 2;
-		const int maxXText = textPos.x() + ( _paintData.textSize.width() * ratioScale ) / 2;
-		const int minYText = textPos.y() - ( _paintData.textSize.height() * ratioScale ) / 2;
-		const int maxYText = textPos.y() + ( _paintData.textSize.height() * ratioScale ) / 2;
+		const Vec3f iconVec3Pos = ( vec3fPositions[ 1 ] + vec3fPositions[ 2 ] ) * 0.5f;
 
-		const int minXIcon = iconPos.x() - ( pixmapSizeScaled / 2 );
-		const int maxXIcon = iconPos.x() + ( pixmapSizeScaled / 2 );
-		const int minYIcon = iconPos.y() - ( pixmapSizeScaled / 2 );
-		const int maxYIcon = iconPos.y() + ( pixmapSizeScaled / 2 );
+		const bool drawTextAndIcon = iconVec3Pos.z >= 0;
 
-		minX = std::min( { minX, minXText, minXIcon } );
-		maxX = std::max( { maxX, maxXText, maxXIcon } );
-		minY = std::min( { minY, minYText, minYIcon } );
-		maxY = std::max( { maxY, maxYText, maxYIcon } );
+		if ( drawTextAndIcon )
+		{
+			const QPoint iconPos = Util::UIRender::vec3fToQPoint( iconVec3Pos );
+			const float	 pixmapSizeScaled
+				= Util::UIRender::linearInterpolation( Style::MEASUREMENT_DIHEDRAL_ANGLE_ICON_MIN_SIZE,
+													   Style::MEASUREMENT_DIHEDRAL_ANGLE_ICON_MAX_SIZE,
+													   ratioScale );
+
+			const float textScale = Util::UIRender::linearInterpolation(
+				Style::WORLD_LABEL_MIN_TEXT_SCALE, Style::WORLD_LABEL_MAX_TEXT_SCALE, ratioScale );
+
+			const int textYOffset
+				= ( ( _paintData.textSize.height() / 2 ) + Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_TEXT_OFFSET )
+					  * textScale
+				  + ( pixmapSizeScaled / 2 );
+
+			const Vec3f	 textVec3fPos = iconVec3Pos + Vec3f( 0, -textYOffset, 0 );
+			const QPoint textPos	  = Util::UIRender::vec3fToQPoint( textVec3fPos );
+
+			const int minXIcon = iconPos.x() - ( pixmapSizeScaled / 2 );
+			const int maxXIcon = iconPos.x() + ( pixmapSizeScaled / 2 );
+			const int minYIcon = iconPos.y() - ( pixmapSizeScaled / 2 );
+			const int maxYIcon = iconPos.y() + ( pixmapSizeScaled / 2 );
+
+			const int minXText = textPos.x() - ( _paintData.textSize.width() * ratioScale ) / 2;
+			const int maxXText = textPos.x() + ( _paintData.textSize.width() * ratioScale ) / 2;
+			const int minYText = textPos.y() - ( _paintData.textSize.height() * ratioScale ) / 2;
+			const int maxYText = textPos.y() + ( _paintData.textSize.height() * ratioScale ) / 2;
+
+			minX = std::min( { minX, minXText, minXIcon } );
+			maxX = std::max( { maxX, maxXText, maxXIcon } );
+			minY = std::min( { minY, minYText, minYIcon } );
+			maxY = std::max( { maxY, maxYText, maxYIcon } );
+
+			_paintData.textPosition = textVec3fPos;
+			_paintData.textScale	= textScale;
+
+			_paintData.dihedralIconPosition = iconVec3Pos;
+			_paintData.iconSize				= pixmapSizeScaled;
+		}
 
 		const QPoint topLeftPos = QPoint( minX, minY );
 		move( topLeftPos );
@@ -135,16 +152,12 @@ namespace VTX::View::UI::Widget::Measurement
 												   Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MAX_LINE_THICKNESS,
 												   ratioScale );
 
-		_paintData.firstAtomScreenPos  = pointPositions[ 0 ];
-		_paintData.secondAtomScreenPos = pointPositions[ 1 ];
-		_paintData.thirdAtomScreenPos  = pointPositions[ 2 ];
-		_paintData.fourthAtomScreenPos = pointPositions[ 3 ];
+		_paintData.drawTextAndIcon = drawTextAndIcon;
 
-		_paintData.textPosition = textPos;
-		_paintData.textScale	= textScale;
-
-		_paintData.dihedralIconPosition = iconPos;
-		_paintData.iconSize				= pixmapSizeScaled;
+		_paintData.firstAtomScreenPos  = vec3fPositions[ 0 ];
+		_paintData.secondAtomScreenPos = vec3fPositions[ 1 ];
+		_paintData.thirdAtomScreenPos  = vec3fPositions[ 2 ];
+		_paintData.fourthAtomScreenPos = vec3fPositions[ 3 ];
 
 		repaint();
 	}
@@ -167,8 +180,7 @@ namespace VTX::View::UI::Widget::Measurement
 	{
 		QWidget::paintEvent( event );
 
-		if ( Style::WORLD_LABEL_NEAR_CLIP < _paintData.textDistanceToCamera
-			 && _paintData.textDistanceToCamera < Style::WORLD_LABEL_FAR_CLIP )
+		if ( _paintData.textDistanceToCamera < Style::WORLD_LABEL_FAR_CLIP )
 		{
 			QPainter painter( this );
 			painter.save();
@@ -181,40 +193,56 @@ namespace VTX::View::UI::Widget::Measurement
 			painter.setBrush( _lineBrush );
 			painter.setRenderHint( QPainter::RenderHint::Antialiasing );
 
-			const QPoint firstAtomPos  = _paintData.firstAtomScreenPos - pos();
-			const QPoint secondAtomPos = _paintData.secondAtomScreenPos - pos();
-			const QPoint thirdAtomPos  = _paintData.thirdAtomScreenPos - pos();
-			const QPoint fourthAtomPos = _paintData.fourthAtomScreenPos - pos();
-			const int	 pointRadius   = ( _paintData.lineSize / 2 ) + Style::LABEL_RENDER_POINT_RADIUS;
+			const Vec3f vec3fPos = Vec3f( pos().x(), pos().y(), 0 );
 
-			painter.drawEllipse( firstAtomPos, pointRadius, pointRadius );
-			painter.drawEllipse( secondAtomPos, pointRadius, pointRadius );
-			painter.drawEllipse( thirdAtomPos, pointRadius, pointRadius );
-			painter.drawEllipse( fourthAtomPos, pointRadius, pointRadius );
-			painter.drawLine( firstAtomPos, secondAtomPos );
-			painter.drawLine( secondAtomPos, thirdAtomPos );
-			painter.drawLine( thirdAtomPos, fourthAtomPos );
+			const Vec3f relativeFirstAtomPos  = _paintData.firstAtomScreenPos - vec3fPos;
+			const Vec3f relativeSecondAtomPos = _paintData.secondAtomScreenPos - vec3fPos;
+			const Vec3f relativeThirdAtomPos  = _paintData.thirdAtomScreenPos - vec3fPos;
+			const Vec3f relativeFourthAtomPos = _paintData.fourthAtomScreenPos - vec3fPos;
+			const int	pointRadius			  = ( _paintData.lineSize / 2 ) + Style::LABEL_RENDER_POINT_RADIUS;
 
-			const QPixmap & pixmap = Style::IconConst::get().DIHEDRAL_ANGLE_RENDER_ICON;
-			const QPoint	imageTopLeftPosition
-				= _paintData.dihedralIconPosition - pos() - QPoint( _paintData.iconSize / 2, _paintData.iconSize / 2 );
-			painter.drawPixmap(
-				imageTopLeftPosition.x(), imageTopLeftPosition.y(), _paintData.iconSize, _paintData.iconSize, pixmap );
+			if ( _paintData.firstAtomScreenPos.z >= 0 )
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeFirstAtomPos ), pointRadius, pointRadius );
+			if ( _paintData.secondAtomScreenPos.z >= 0 )
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeSecondAtomPos ), pointRadius, pointRadius );
+			if ( _paintData.thirdAtomScreenPos.z >= 0 )
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeThirdAtomPos ), pointRadius, pointRadius );
+			if ( _paintData.fourthAtomScreenPos.z >= 0 )
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeFourthAtomPos ), pointRadius, pointRadius );
+
+			painter.drawLine( Util::UIRender::getScreenLine( relativeFirstAtomPos, relativeSecondAtomPos ) );
+			painter.drawLine( Util::UIRender::getScreenLine( relativeSecondAtomPos, relativeThirdAtomPos ) );
+			painter.drawLine( Util::UIRender::getScreenLine( relativeThirdAtomPos, relativeFourthAtomPos ) );
 			///////////////////////////////////////////////////////////////////
 
-			// Draw text //////////////////////////////////////////////////////
-			const QPointF textTopLeftPosition
-				= _paintData.textPosition - pos()
-				  - ( QPoint( _paintData.textSize.width() / 2, -_paintData.textSize.height() / 2 )
-					  * _paintData.textScale );
+			// Draw text & Pixmap /////////////////////////////////////////////
+			if ( _paintData.textPosition.z >= 0 )
+			{
+				const QPoint iconPos = Util::UIRender::vec3fToQPoint( _paintData.dihedralIconPosition );
+				const QPoint textPos = Util::UIRender::vec3fToQPoint( _paintData.textPosition );
 
-			painter.setBrush( _labelBrush );
-			painter.setPen( _labelPen );
-			painter.translate( textTopLeftPosition );
+				const QPixmap & pixmap = Style::IconConst::get().DIHEDRAL_ANGLE_RENDER_ICON;
+				const QPoint	imageTopLeftPosition
+					= iconPos - pos() - QPoint( _paintData.iconSize / 2, _paintData.iconSize / 2 );
+				painter.drawPixmap( imageTopLeftPosition.x(),
+									imageTopLeftPosition.y(),
+									_paintData.iconSize,
+									_paintData.iconSize,
+									pixmap );
 
-			painter.scale( _paintData.textScale, _paintData.textScale );
-			painter.drawPath( _painterPath );
-			painter.resetTransform();
+				const QPointF textTopLeftPosition
+					= textPos - pos()
+					  - ( QPoint( _paintData.textSize.width() / 2, -_paintData.textSize.height() / 2 )
+						  * _paintData.textScale );
+
+				painter.setBrush( _labelBrush );
+				painter.setPen( _labelPen );
+				painter.translate( textTopLeftPosition );
+
+				painter.scale( _paintData.textScale, _paintData.textScale );
+				painter.drawPath( _painterPath );
+				painter.resetTransform();
+			}
 			///////////////////////////////////////////////////////////////////
 
 			// painter.setWorldMatrixEnabled( true );

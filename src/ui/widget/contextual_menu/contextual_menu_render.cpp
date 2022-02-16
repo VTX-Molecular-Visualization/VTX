@@ -59,9 +59,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		measurementModeMenu->setTitle( "Measurement" );
 		measurementModeMenu->addAction( "Distance" )
 			->setProperty( MEASUREMENT_MODE_PROPERTY_NAME, int( Controller::MeasurementPicker::Mode::DISTANCE ) );
-		measurementModeMenu->addAction( "Distance to cycle" )
-			->setProperty( MEASUREMENT_MODE_PROPERTY_NAME,
-						   int( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE ) );
+		// measurementModeMenu->addAction( "Distance to cycle" )
+		//	->setProperty( MEASUREMENT_MODE_PROPERTY_NAME,
+		//				   int( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE ) );
 		measurementModeMenu->addAction( "Angle" )->setProperty( MEASUREMENT_MODE_PROPERTY_NAME,
 																int( Controller::MeasurementPicker::Mode::ANGLE ) );
 		measurementModeMenu->addAction( "Dihedral angle" )
@@ -109,7 +109,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_setMeasurementMode( QAction * p_action ) const
 	{
 		const Controller::MeasurementPicker::Mode mode
-			= Controller::MeasurementPicker::Mode( p_action->property( SELECTION_GRANULARITY_PROPERTY_NAME ).toInt() );
+			= Controller::MeasurementPicker::Mode( p_action->property( MEASUREMENT_MODE_PROPERTY_NAME ).toInt() );
 		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( mode ) ) );
 	}
 

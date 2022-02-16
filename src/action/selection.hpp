@@ -961,39 +961,49 @@ namespace VTX::Action::Selection
 	class Extract : public BaseAction
 	{
 	  public:
-		explicit Extract( const Model::Selection & p_source ) : _selection( p_source )
+		explicit Extract( Model::Selection & p_source ) : _selection( p_source )
 		{
 			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override
 		{
-			for ( const Model::Selection::PairMoleculeIds & moleculeSelectionData : _selection.getMoleculesMap() )
+			Model::Selection * const tmpSelection = MVC::MvcManager::get().instantiateModel<Model::Selection>();
+			_selection.moveDataTo( *tmpSelection );
+			VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+
+			std::vector<Model::Molecule *> generatedMolecules = std::vector<Model::Molecule *>();
+			generatedMolecules.reserve( tmpSelection->getMoleculesMap().size() );
+
+			for ( const Model::Selection::PairMoleculeIds & moleculeSelectionData : tmpSelection->getMoleculesMap() )
 			{
 				const Model::ID & idMolSource = moleculeSelectionData.first;
 				Model::Molecule & molecule	  = MVC::MvcManager::get().getModel<Model::Molecule>( idMolSource );
 
-				if ( _selection.isMoleculeFullySelected( molecule ) )
+				if ( tmpSelection->isMoleculeFullySelected( molecule ) )
 					continue;
 
 				Model::GeneratedMolecule * const generatedMolecule
 					= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
-				generatedMolecule->extractFromSelection( _selection, idMolSource );
+				generatedMolecule->extractFromSelection( *tmpSelection, idMolSource );
 
 				VTX_EVENT(
 					new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
 
 				VTXApp::get().getScene().addMolecule( generatedMolecule );
+				generatedMolecules.emplace_back( generatedMolecule );
 			}
 
-			VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+			MVC::MvcManager::get().deleteModel( tmpSelection );
+
+			VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecules( generatedMolecules );
 
 			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
-		const Model::Selection & _selection;
+		Model::Selection & _selection;
 	};
 	class Delete : public BaseAction
 	{

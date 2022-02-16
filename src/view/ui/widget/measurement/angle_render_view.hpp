@@ -20,8 +20,7 @@ namespace VTX::View::UI::Widget::Measurement
 {
 	class AngleRenderView :
 		public View::BaseView<VTX::Model::Measurement::Angle>,
-		public VTX::UI::Widget::BaseManualWidget<QWidget>,
-		public VTX::UI::Widget::Render::BaseIntegratedWidget
+		public VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>
 	{
 		VTX_WIDGET
 		VTX_VIEW
@@ -30,12 +29,17 @@ namespace VTX::View::UI::Widget::Measurement
 		class PaintData
 		{
 		  public:
-			QPoint firstAtomScreenPos;
-			QPoint secondAtomScreenPos;
-			QPoint thirdAtomScreenPos;
+			Vec3f firstAtomScreenPos;
+			Vec3f secondAtomScreenPos;
+			Vec3f thirdAtomScreenPos;
 
+			int	  pointRadius;
+			float lineSize;
+
+			bool   drawText;
 			QPoint textPosition;
 			QSize  textSize;
+			float  textScale;
 			float  textDistanceToCamera;
 
 			int arcRadius;

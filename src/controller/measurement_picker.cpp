@@ -4,6 +4,7 @@
 #include "action/selection.hpp"
 #include "event/event_manager.hpp"
 #include "model/atom.hpp"
+#include "model/measurement/measure_in_progress.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "model/selection.hpp"
@@ -16,36 +17,82 @@
 #include "ui/main_window.hpp"
 #include "util/math.hpp"
 #include "vtx_app.hpp"
+#include <QPoint>
 
 namespace VTX::Controller
 {
-	MeasurementPicker::MeasurementPicker() : _lastClickedIds { Model::ID_UNKNOWN, Model::ID_UNKNOWN } {}
-	void MeasurementPicker::update( const float & p_deltaTime ) { BaseMouseController::update( p_deltaTime ); }
+	MeasurementPicker::MeasurementPicker()
+	{
+		_currentMeasureModel = MVC::MvcManager::get().instantiateModel<Model::Measurement::MeasureInProgress>();
+	}
+	MeasurementPicker::~MeasurementPicker() { MVC::MvcManager::get().deleteModel( _currentMeasureModel ); }
 
 	void MeasurementPicker::_onMouseLeftClick( const uint p_x, const uint p_y )
 	{
-		const Vec2i ids			  = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
-		bool		updateDisplay = false;
+		if ( _currentMeasureModel->applyPotentialTarget() && _canCreateLabel() )
+		{
+			_createLabel();
+		}
+	}
 
-		// If something clicked.
+	void MeasurementPicker::update( const float & p_deltaTime ) { BaseMouseController::update( p_deltaTime ); }
+
+	void MeasurementPicker::_onMouseRightClick( const uint p_x, const uint p_y )
+	{
+		const UI::Widget::Render::OpenGLWidget & openGLWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
+		const QPoint							 position	  = openGLWidget.mapToGlobal( QPoint( p_x, p_y ) );
+
+		Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+		if ( selection.isEmpty() )
+		{
+			UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Render, position );
+		}
+		else
+		{
+			UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Selection, &selection, position );
+		}
+	}
+
+	void MeasurementPicker::_handleMouseMotionEvent( const QMouseEvent & p_event )
+	{
+		BaseMouseController::_handleMouseMotionEvent( p_event );
+
+		// If the user is doing an action, we hide the potential next measure
+		if ( _mouseLeftPressed || _mouseMiddlePressed || _mouseRightPressed )
+		{
+			if ( _currentMeasureModel->getPotentialNextTargetType()
+				 != Model::Measurement::MeasureInProgress::PotentialTargetType::NONE )
+			{
+				_currentMeasureModel->clearPotentialTarget();
+			}
+
+			return;
+		}
+
+		bool hasFindTarget = false;
+
+		const Vec2i ids
+			= VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_event.pos().x(), p_event.pos().y() );
+
 		if ( ids.x != Model::ID_UNKNOWN )
 		{
-			const ID::VTX_ID & typeId = MVC::MvcManager::get().getModelTypeID( ids.x );
-
-			if ( ids.y != Model::ID_UNKNOWN ) // Bond
+			if ( ids.y != Model::ID_UNKNOWN )
 			{
-				if ( _currentMode == Mode::DISTANCE )
+				// Bond clicked => set atom pair to next target
+				if ( _currentMode == Mode::DISTANCE && _currentMeasureModel->getAtomCount() == 0 )
 				{
-					atoms.clear();
-					atoms.emplace_back( ids.x );
-					atoms.emplace_back( ids.y );
+					const Model::Atom & firstAtom  = MVC::MvcManager::get().getModel<Model::Atom>( ids.x );
+					const Model::Atom & secondAtom = MVC::MvcManager::get().getModel<Model::Atom>( ids.y );
 
-					updateDisplay = true;
+					_currentMeasureModel->setPotentialNextTarget( firstAtom, secondAtom );
+					hasFindTarget = true;
 				}
 			}
 			else
 			{
-				Model::ID atomID;
+				const ID::VTX_ID & typeId = MVC::MvcManager::get().getModelTypeID( ids.x );
+				Model::ID		   atomID;
 
 				// If residue => select alpha carbon
 				if ( typeId == ID::Model::MODEL_RESIDUE )
@@ -58,113 +105,122 @@ namespace VTX::Controller
 					atomID = ids.x;
 				}
 
-				if ( std::find( atoms.cbegin(), atoms.cend(), atomID ) == atoms.cend() )
+				// Atom picked
+				const Model::Atom & atom = MVC::MvcManager::get().getModel<Model::Atom>( atomID );
+				if ( !_currentMeasureModel->contains( atom ) )
 				{
-					atoms.emplace_back( atomID );
-					updateDisplay = true;
+					_currentMeasureModel->setPotentialNextTarget( atom );
+					hasFindTarget = true;
 				}
 			}
 		}
-		else
+
+		if ( !hasFindTarget )
 		{
-			if ( atoms.size() > 0 )
-			{
-				atoms.clear();
-				updateDisplay = true;
-			}
-		}
-
-		if ( updateDisplay )
-			_updateDisplay();
-
-		_lastClickedIds = ids;
-	}
-
-	void MeasurementPicker::_onMouseRightClick( const uint p_x, const uint p_y )
-	{
-		UI::Widget::Render::OpenGLWidget & openGLWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
-		_lastClickedIds									= openGLWidget.getPickedIds( p_x, p_y );
-
-		Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
-
-		const QPoint position = openGLWidget.mapToGlobal( QPoint( p_x, p_y ) );
-
-		if ( selection.isEmpty() )
-		{
-			UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Render, position );
-		}
-		else
-		{
-			UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Selection, &selection, position );
+			_currentMeasureModel->setPotentialNextTarget( p_event.globalPos() );
 		}
 	}
 
 	void MeasurementPicker::_onMouseLeftDoubleClick( const uint p_x, const uint p_y )
 	{
-		const Vec2i ids = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
+		const Model::Measurement::MeasureInProgress::PotentialTargetType currentTargetType
+			= _currentMeasureModel->getPotentialNextTargetType();
 
 		// If double click on void => reset to selection picker
-		if ( ids.x == Model::ID_UNKNOWN )
+		if ( currentTargetType == Model::Measurement::MeasureInProgress::PotentialTargetType::NONE
+			 || currentTargetType == Model::Measurement::MeasureInProgress::PotentialTargetType::POSITION )
 		{
-			VTXApp::get()
-				.getStateMachine()
-				.getState<State::Visualization>( ID::State::VISUALIZATION )
-				->setPickerController( ID::Controller::PICKER );
+			_currentMeasureModel->clearAtoms();
+
+			// VTXApp::get()
+			//	.getStateMachine()
+			//	.getState<State::Visualization>( ID::State::VISUALIZATION )
+			//	->setPickerController( ID::Controller::PICKER );
 		}
 	}
 
-	void MeasurementPicker::_updateDisplay()
+	void MeasurementPicker::receiveEvent( const QKeyEvent & p_event )
 	{
-		bool hasInstantiatedLabel = false;
+		if ( p_event.key() == Qt::Key::Key_Escape )
+		{
+			const Model::Measurement::MeasureInProgress::PotentialTargetType currentTargetType
+				= _currentMeasureModel->getPotentialNextTargetType();
+
+			if ( currentTargetType == Model::Measurement::MeasureInProgress::PotentialTargetType::NONE
+				 || currentTargetType == Model::Measurement::MeasureInProgress::PotentialTargetType::POSITION )
+			{
+				if ( _currentMeasureModel->getAtomCount() > 0 )
+				{
+					_currentMeasureModel->clearAtoms();
+				}
+				else
+				{
+					VTXApp::get()
+						.getStateMachine()
+						.getState<State::Visualization>( ID::State::VISUALIZATION )
+						->setPickerController( ID::Controller::PICKER );
+				}
+			}
+		}
+	}
+
+	bool MeasurementPicker::_canCreateLabel() const
+	{
+		bool res = false;
+
+		switch ( _currentMode )
+		{
+		case Mode::DISTANCE: res = _currentMeasureModel->getAtomCount() == 2; break;
+		case Mode::ANGLE: res = _currentMeasureModel->getAtomCount() == 3; break;
+		case Mode::DIHEDRAL_ANGLE: res = _currentMeasureModel->getAtomCount() == 4; break;
+		}
+
+		return res;
+	}
+	void MeasurementPicker::_createLabel()
+	{
 		switch ( _currentMode )
 		{
 		case Mode::DISTANCE:
-			if ( atoms.size() == 2 )
-			{
-				const Model::Atom & firstAtom  = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 0 ] );
-				const Model::Atom & secondAtom = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 1 ] );
+		{
+			const Model::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
+			const Model::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
 
-				VTX_ACTION( new Action::Measurement::InstantiateDistanceLabel( firstAtom, secondAtom ) );
-				hasInstantiatedLabel = true;
-			}
-			break;
+			VTX_ACTION( new Action::Measurement::InstantiateDistanceLabel( *firstAtom, *secondAtom ) );
+		}
+		break;
 
 		case Mode::ANGLE:
-			if ( atoms.size() == 3 )
-			{
-				const Model::Atom & firstAtom  = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 0 ] );
-				const Model::Atom & secondAtom = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 1 ] );
-				const Model::Atom & thirdAtom  = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 2 ] );
+		{
+			const Model::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
+			const Model::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
+			const Model::Atom * const thirdAtom	 = _currentMeasureModel->getAtom( 2 );
 
-				VTX_ACTION( new Action::Measurement::InstantiateAngleLabel( firstAtom, secondAtom, thirdAtom ) );
-				hasInstantiatedLabel = true;
-			}
-			break;
+			VTX_ACTION( new Action::Measurement::InstantiateAngleLabel( *firstAtom, *secondAtom, *thirdAtom ) );
+		}
+		break;
 
 		case Mode::DIHEDRAL_ANGLE:
-			if ( atoms.size() == 4 )
-			{
-				const Model::Atom & firstAtom  = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 0 ] );
-				const Model::Atom & secondAtom = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 1 ] );
-				const Model::Atom & thirdAtom  = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 2 ] );
-				const Model::Atom & fourthAtom = MVC::MvcManager::get().getModel<Model::Atom>( atoms[ 3 ] );
+		{
+			const Model::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
+			const Model::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
+			const Model::Atom * const thirdAtom	 = _currentMeasureModel->getAtom( 2 );
+			const Model::Atom * const fourthAtom = _currentMeasureModel->getAtom( 3 );
 
-				VTX_ACTION( new Action::Measurement::InstantiateDihedralAngleLabel(
-					firstAtom, secondAtom, thirdAtom, fourthAtom ) );
-				hasInstantiatedLabel = true;
-			}
-			break;
+			VTX_ACTION( new Action::Measurement::InstantiateDihedralAngleLabel(
+				*firstAtom, *secondAtom, *thirdAtom, *fourthAtom ) );
+		}
+		break;
 		}
 
-		if ( hasInstantiatedLabel )
-			atoms.clear();
+		_currentMeasureModel->clearAtoms();
 	}
 
 	void MeasurementPicker::setCurrentMode( const Mode & p_mode )
 	{
 		if ( _currentMode != p_mode )
 		{
-			atoms.clear();
+			_currentMeasureModel->clearAtoms();
 			_currentMode = p_mode;
 
 			VTX_EVENT( new Event::VTXEvent( Event::Global::PICKER_MODE_CHANGE ) );

@@ -12,6 +12,11 @@ namespace VTX
 	{
 		class Atom;
 		class Residue;
+
+		namespace Measurement
+		{
+			class MeasureInProgress;
+		}
 	} // namespace Model
 
 	namespace Controller
@@ -27,26 +32,34 @@ namespace VTX
 				DIHEDRAL_ANGLE
 			};
 
+		  public:
 			MeasurementPicker();
+			~MeasurementPicker();
 
 			inline ID::VTX_ID getTargetWidget() override { return ID::UI::Input::RENDER_WIDGET; }
-			void			  update( const float & p_deltaTime ) override;
 
 			const Mode & getCurrentMode() const { return _currentMode; }
 			void		 setCurrentMode( const Mode & p_mode );
+
+			void update( const float & p_deltaTime ) override;
+
+			Model::Measurement::MeasureInProgress & getMeasureInProgressModel() { return *_currentMeasureModel; }
 
 		  protected:
 			void _onMouseLeftClick( const uint p_x, const uint p_y ) override;
 			void _onMouseLeftDoubleClick( const uint p_x, const uint p_y ) override;
 			void _onMouseRightClick( const uint p_x, const uint p_y ) override;
+			void _handleMouseMotionEvent( const QMouseEvent & p_event ) override;
+
+			void receiveEvent( const QKeyEvent & p_event ) override;
 
 		  private:
-			void _updateDisplay();
+			bool _canCreateLabel() const;
+			void _createLabel();
 
-			Vec2i _lastClickedIds;
+			Mode _currentMode = Mode::DISTANCE;
 
-			Mode				   _currentMode = Mode::DISTANCE;
-			std::vector<Model::ID> atoms		= std::vector<Model::ID>();
+			Model::Measurement::MeasureInProgress * _currentMeasureModel = nullptr;
 		};
 	} // namespace Controller
 
