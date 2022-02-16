@@ -64,6 +64,7 @@ namespace VTX::UI::Widget::Settings
 																							   "ColorButtonWidget" );
 		QCheckBox * const	quickAccess		 = new QCheckBox( _viewport );
 		QPushButton * const setDefaultButton = new QPushButton( _viewport );
+		setDefaultButton->setIcon( Style::IconConst::get().DEFAULT_ITEM );
 		setDefaultButton->setText( "Set As Default" );
 
 		QHBoxLayout * const hboxLayout = new QHBoxLayout( _viewport );
