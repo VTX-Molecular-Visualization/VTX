@@ -21,6 +21,11 @@ namespace VTX
 			CUSTOM,
 			INHERITED
 		};
+		enum class COLOR_TRANSITION_MODE : int
+		{
+			FLAT,
+			GRADIENT
+		};
 		static const std::vector<std::string> COLOR_MODE_STRING { "Atom-Chain", "Atom-Object", "Atom-Custom",
 																  "Residue",	"Chain",	   "Object",
 																  "Custom",		"Inherited" };
@@ -38,6 +43,8 @@ namespace VTX
 																							 "Chain",
 																							 "Residue",
 																							 "Custom" };
+
+		inline static const std::vector<std::string> TRANSITION_COLOR_MODE_STRING { "Flat", "Gradient" };
 
 		inline static const Color::Rgb COLORS_JMOL[] = { Color::Rgb( 1.f, 0.f, 0.5f ),	 // HELIX_ALPHA_RIGHT
 														 Color::Rgb( 1.f, 0.f, 0.5f ),	 // HELIX_ALPHA_LEFT

@@ -7,6 +7,7 @@
 #include "ui/widget/custom_widget/colormode_field_widget.hpp"
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"
 #include "ui/widget/custom_widget/secondary_structure_colormode_field_widget.hpp"
+#include "ui/widget/custom_widget/transition_color_mode_field_widget.hpp"
 #include <QWidget>
 #include <unordered_set>
 
@@ -76,17 +77,20 @@ namespace VTX::UI::Widget::Representation
 		void _addColorModeValue( const InstantiatedRepresentation & p_representation );
 		void _addSSColorModeValue( const InstantiatedRepresentation & p_representation );
 
+		// TODO: rename
 		virtual void _onSphereRadiusChange( const float p_newRadius );
 		virtual void _onCylinderRadiusChange( const float p_newRadius );
 		virtual void _colorModeChanged( const Generic::COLOR_MODE & p_colorMode );
 		virtual void _ssColorModeChanged( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
 		void		 _colorChanged( const Color::Rgb & p_color );
 		void		 _ssColorChanged( const Color::Rgb & p_color );
+		virtual void _colorTransitionChanged( const Generic::COLOR_TRANSITION_MODE & p_colorTransitionMode );
 
-		CustomWidget::FloatFieldSliderWidget *				   _sphereWidget	  = nullptr;
-		CustomWidget::FloatFieldSliderWidget *				   _cylinderWidget	  = nullptr;
-		CustomWidget::ColorModeFieldWidget *				   _colorModeWidget	  = nullptr;
-		CustomWidget::SecondaryStructureColorModeFieldWidget * _ssColorModeWidget = nullptr;
+		CustomWidget::FloatFieldSliderWidget *				   _sphereWidget			  = nullptr;
+		CustomWidget::FloatFieldSliderWidget *				   _cylinderWidget			  = nullptr;
+		CustomWidget::ColorModeFieldWidget *				   _colorModeWidget			  = nullptr;
+		CustomWidget::SecondaryStructureColorModeFieldWidget * _ssColorModeWidget		  = nullptr;
+		CustomWidget::TransitionColorModeFieldWidget *		   _transitionColorModeWidget = nullptr;
 
 		QLabel * _sphereLabel	   = nullptr;
 		QLabel * _cylinderLabel	   = nullptr;

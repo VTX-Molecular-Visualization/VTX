@@ -354,6 +354,16 @@ namespace VTX::UI::Widget::Representation
 
 		emit onColorChange( p_color, true );
 	}
+	void BaseRepresentationWidget::_colorTransitionChanged(
+		const Generic::COLOR_TRANSITION_MODE & p_colorTransitionMode )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		_instantiatedRepresentation->setTransitionColorMode( p_colorTransitionMode, false );
+
+		emit onDataChange( Model::Representation::MEMBER_FLAG::COLOR_TRANSITION_MODE );
+	}
 
 	void BaseRepresentationWidget::resetState()
 	{

@@ -3,6 +3,7 @@
 
 namespace VTX::Model::Representation
 {
+
 	class SphereData
 	{
 	  public:

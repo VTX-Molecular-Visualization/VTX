@@ -159,6 +159,20 @@ namespace VTX::Model::Representation
 			_notifyDataChanged();
 	}
 
+	const Generic::COLOR_TRANSITION_MODE & InstantiatedRepresentation::getTransitionColorMode() const
+	{
+		return _colorTransitionMode.getValue();
+	}
+	void InstantiatedRepresentation::setTransitionColorMode( const Generic::COLOR_TRANSITION_MODE & p_colorMode,
+															 const bool								p_recomputeBuffers,
+															 const bool								p_notify )
+	{
+		_colorTransitionMode.setValue( p_colorMode );
+
+		if ( p_notify )
+			_notifyDataChanged();
+	}
+
 	void InstantiatedRepresentation::setSphereRadius( const float p_radius, const bool p_notify )
 	{
 		bool dataChanged = false;

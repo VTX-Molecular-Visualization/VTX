@@ -47,6 +47,17 @@ namespace VTX::Model::Representation
 		notifyRepresentationDataChange();
 	}
 
+	const Generic::COLOR_TRANSITION_MODE & RepresentationData::getTransitionColorMode() const
+	{
+		return _colorTransitionMode;
+	}
+	Generic::COLOR_TRANSITION_MODE & RepresentationData::getTransitionColorMode() { return _colorTransitionMode; }
+	void RepresentationData::setTransitionColorMode( const Generic::COLOR_TRANSITION_MODE & p_colorTransitionMode )
+	{
+		_colorTransitionMode = p_colorTransitionMode;
+		notifyRepresentationDataChange();
+	}
+
 	void RepresentationData::setSphereRadius( float p_radius )
 	{
 		if ( _sphereData != nullptr )

@@ -46,4 +46,15 @@ namespace VTX::UI::Widget::Representation
 												| Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
 	}
 
+	void StickRepresentationWidget::_colorTransitionChanged( const Generic::COLOR_TRANSITION_MODE & p_mode )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		_instantiatedRepresentation->setTransitionColorMode( p_mode );
+
+		emit onDataChange(
+			Model::Representation::MEMBER_FLAG( Model::Representation::MEMBER_FLAG::COLOR_TRANSITION_MODE ) );
+	}
+
 } // namespace VTX::UI::Widget::Representation

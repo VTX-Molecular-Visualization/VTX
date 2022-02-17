@@ -19,6 +19,7 @@ namespace VTX::UI::Widget::Representation
 		void _refresh() override;
 
 		void _onCylinderRadiusChange( const float p_newRadius ) override;
+		void _colorTransitionChanged( const Generic::COLOR_TRANSITION_MODE & p_colorTransitionMode ) override;
 	};
 } // namespace VTX::UI::Widget::Representation
 #endif
