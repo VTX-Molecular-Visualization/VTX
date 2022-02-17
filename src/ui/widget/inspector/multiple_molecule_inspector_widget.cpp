@@ -222,7 +222,7 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleMoleculeWidget::localize()
 	{
 		_transformSection->setHeaderTitle( "Transform" );
-		_representationSection->setHeaderTitle( "Representations" );
+		_representationSection->setHeaderTitle( "Representation" );
 		_trajectorySection->setHeaderTitle( "Trajectory" );
 		_autoRotateSection->setHeaderTitle( "Auto rotation" );
 		_infoSection->setHeaderTitle( "Infos" );
