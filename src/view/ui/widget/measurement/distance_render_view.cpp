@@ -79,7 +79,10 @@ namespace VTX::View::UI::Widget::Measurement
 											   1.f );
 
 		if ( ratioScale == 0.f )
+		{
+			repaint();
 			return;
+		}
 
 		_paintData.lineSize = Style::MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS
 							  + ( Style::MEASUREMENT_DISTANCE_LABEL_MAX_LINE_THICKNESS
@@ -131,8 +134,6 @@ namespace VTX::View::UI::Widget::Measurement
 		_paintData.firstAtomScreenPos  = firstAtomScreenVec3Pos;
 		_paintData.secondAtomScreenPos = secondAtomScreenVec3Pos;
 		_paintData.textPosition		   = textScreenVec3fPos;
-
-		repaint();
 	}
 
 	void DistanceRenderView::_refreshText() { _setText( Util::Measurement::getDistanceString( *_model ) ); }
