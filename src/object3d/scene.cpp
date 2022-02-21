@@ -7,6 +7,7 @@
 #include "model/molecule.hpp"
 #include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
+#include <algorithm>
 
 namespace VTX::Object3D
 {
@@ -64,6 +65,9 @@ namespace VTX::Object3D
 	void Scene::addMolecule( MoleculePtr const p_molecule, const bool p_sendEvent )
 	{
 		_molecules.emplace( p_molecule, 0.f );
+		_itemOrder.emplace_back( p_molecule );
+		_applySceneID( *p_molecule );
+
 		_aabb.extend( p_molecule->getAABB() );
 		p_molecule->referenceLinkedAABB( &_aabb );
 
@@ -76,6 +80,7 @@ namespace VTX::Object3D
 	void Scene::removeMolecule( MoleculePtr const p_molecule )
 	{
 		_molecules.erase( p_molecule );
+		_itemOrder.erase( std::find( _itemOrder.begin(), _itemOrder.end(), p_molecule ) );
 		_aabb.invalidate();
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_REMOVED, p_molecule ) );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
@@ -83,19 +88,19 @@ namespace VTX::Object3D
 
 	void Scene::addPath( PathPtr const p_path )
 	{
-		_paths.emplace_back( p_path );
+		_add( p_path, _paths );
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::PATH_ADDED, p_path ) );
 	}
 
 	void Scene::removePath( PathPtr const p_path )
 	{
-		_paths.erase( std::find( _paths.begin(), _paths.end(), p_path ) );
+		_remove( p_path, _paths );
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::PATH_REMOVED, p_path ) );
 	}
 
 	void Scene::addMesh( MeshTrianglePtr const p_mesh )
 	{
-		_meshes.emplace_back( p_mesh );
+		_add( p_mesh, _meshes );
 		_aabb.extend( p_mesh->getAABB() );
 		p_mesh->referenceLinkedAABB( &_aabb );
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_ADDED, p_mesh ) );
@@ -104,7 +109,7 @@ namespace VTX::Object3D
 
 	void Scene::removeMesh( MeshTrianglePtr const p_mesh )
 	{
-		_meshes.erase( std::find( _meshes.begin(), _meshes.end(), p_mesh ) );
+		_remove( p_mesh, _meshes );
 		_aabb.invalidate();
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_REMOVED, p_mesh ) );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
@@ -112,14 +117,70 @@ namespace VTX::Object3D
 
 	void Scene::addLabel( LabelPtr const p_label )
 	{
-		_labels.emplace_back( p_label );
+		_add( p_label, _labels );
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::LABEL_ADDED, p_label ) );
 	}
 	void Scene::removeLabel( LabelPtr const p_label )
 	{
-		_labels.erase( std::find( _labels.begin(), _labels.end(), p_label ) );
+		_remove( p_label, _labels );
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::LABEL_REMOVED, p_label ) );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+	}
+
+	const Generic::BaseSceneItem * const Scene::getItemAtPosition( const int p_index ) const
+	{
+		if ( 0 <= p_index && p_index < _itemOrder.size() )
+			return _itemOrder[ p_index ];
+		return nullptr;
+	}
+	int Scene::getItemPosition( const Generic::BaseSceneItem & p_item ) const
+	{
+		for ( int i = 0; i < _itemOrder.size(); i++ )
+		{
+			if ( &p_item == _itemOrder[ i ] )
+				return i;
+		}
+		return -1;
+	}
+	void Scene::changeModelPosition( const Generic::BaseSceneItem & p_item, const int p_position )
+	{
+		const Generic::BaseSceneItem * itemPtr = &p_item;
+
+		if ( _itemOrder[ p_position ] == itemPtr )
+			return;
+
+		bool changeHasStarted = false;
+
+		for ( size_t i = 0; i < p_position; i++ )
+		{
+			if ( _itemOrder[ i ] == itemPtr )
+				changeHasStarted = true;
+
+			if ( changeHasStarted )
+			{
+				_itemOrder[ i ] = _itemOrder[ i + 1 ];
+			}
+		}
+
+		if ( changeHasStarted )
+		{
+			_itemOrder[ p_position ] = itemPtr;
+		}
+		else
+		{
+			for ( int i = int( _itemOrder.size() - 1 ); i > p_position; i-- )
+			{
+				if ( _itemOrder[ i ] == itemPtr )
+					changeHasStarted = true;
+
+				if ( changeHasStarted )
+					_itemOrder[ i ] = _itemOrder[ i - 1 ];
+			}
+
+			_itemOrder[ p_position ] = itemPtr;
+		}
+
+		VTX_EVENT( new Event::VTXEventPtr( Event::Global::SCENE_ITEM_INDEX_CHANGE, &p_item ) );
 	}
 
 	const Math::AABB & Scene::getAABB()
@@ -174,6 +235,20 @@ namespace VTX::Object3D
 				mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().z, VEC3F_Z );
 				VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 			}
+		}
+	}
+
+	void Scene::_applySceneID( Generic::BaseSceneItem & p_item )
+	{
+		if ( p_item.hasPersistentSceneID() )
+		{
+			_persistentIDCounter = _persistentIDCounter > p_item.getPersistentSceneID()
+									   ? _persistentIDCounter
+									   : p_item.getPersistentSceneID() + 1;
+		}
+		else
+		{
+			p_item.setPersistentSceneID( _persistentIDCounter++ );
 		}
 	}
 

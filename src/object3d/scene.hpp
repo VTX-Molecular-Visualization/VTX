@@ -1,9 +1,11 @@
 #ifndef __VTX_SCENE__
 #define __VTX_SCENE__
 
+#include "generic/base_scene_item.hpp"
 #include "generic/base_updatable.hpp"
 #include "math/aabb.hpp"
 #include <map>
+#include <type_traits>
 #include <vector>
 
 namespace VTX::Model
@@ -39,7 +41,9 @@ namespace VTX::Object3D
 		inline const MapMoleculePtrFloat &	 getMolecules() const { return _molecules; };
 		inline const VectorPathPtr &		 getPaths() const { return _paths; };
 		inline const VectorMeshTrianglePtr & getMeshes() const { return _meshes; };
-		const Math::AABB &					 getAABB();
+		inline const VectorLabelPtr &		 getLabels() const { return _labels; };
+
+		const Math::AABB & getAABB();
 
 		void addMolecule( MoleculePtr const, const bool p_sendEvent = true );
 		void removeMolecule( MoleculePtr const );
@@ -50,6 +54,10 @@ namespace VTX::Object3D
 		void addLabel( LabelPtr const );
 		void removeLabel( LabelPtr const );
 
+		const Generic::BaseSceneItem * const getItemAtPosition( const int p_index ) const;
+		int									 getItemPosition( const Generic::BaseSceneItem & p_item ) const;
+		void changeModelPosition( const Generic::BaseSceneItem & p_item, const int p_position );
+
 		bool isEmpty() const;
 
 		void clear();
@@ -58,8 +66,25 @@ namespace VTX::Object3D
 		virtual void update( const float & ) override;
 
 	  private:
+		int _persistentIDCounter = 0;
+
 		void _computeAABB();
 		void _createDefaultPath();
+
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseSceneItem, T>::value>>
+		void _add( T * p_item, std::vector<T *> & p_container )
+		{
+			p_container.emplace_back( p_item );
+			_itemOrder.emplace_back( p_item );
+			_applySceneID( *p_item );
+		}
+
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseSceneItem, T>::value>>
+		void _remove( T * p_item, std::vector<T *> & p_container )
+		{
+			_itemOrder.erase( std::find( _itemOrder.begin(), _itemOrder.end(), p_item ) );
+			p_container.erase( std::find( p_container.begin(), p_container.end(), p_item ) );
+		}
 
 	  private:
 		Camera *			  _camera = nullptr;
@@ -68,6 +93,9 @@ namespace VTX::Object3D
 		VectorPathPtr		  _paths	 = VectorPathPtr();
 		VectorMeshTrianglePtr _meshes	 = VectorMeshTrianglePtr();
 		VectorLabelPtr		  _labels	 = VectorLabelPtr();
+
+		std::vector<const Generic::BaseSceneItem *> _itemOrder = std::vector<const Generic::BaseSceneItem *>();
+		void										_applySceneID( Generic::BaseSceneItem & p_item );
 	};
 } // namespace VTX::Object3D
 #endif

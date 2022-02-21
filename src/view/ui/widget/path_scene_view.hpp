@@ -31,9 +31,9 @@ namespace VTX::View::UI::Widget
 		void notify( const Event::VTXEvent * const p_event ) override;
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-		const Model::ID & getModelID() const override { return _model->getId(); };
+		const Model::ID &			   getModelID() const override { return _model->getId(); };
+		const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };
 
-		virtual void	  updatePosInSceneHierarchy( const int p_position ) override;
 		QTreeWidgetItem * getLastVisibleItem() override;
 
 	  protected:

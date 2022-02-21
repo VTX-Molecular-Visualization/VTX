@@ -3,6 +3,7 @@
 
 #include "io/writer/writer_chemfiles.hpp"
 #include "math/transform.hpp"
+#include "model/base_model.hpp"
 #include "util/math.hpp"
 #include <magic_enum.hpp>
 #include <nlohmann/json.hpp>
@@ -26,6 +27,8 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
+		class Atom;
+		class Label;
 		class Path;
 		class Viewpoint;
 		namespace Representation
@@ -37,7 +40,15 @@ namespace VTX
 		{
 			class RenderEffectPreset;
 		} // namespace Renderer
-	}	  // namespace Model
+		namespace Measurement
+		{
+			class Distance;
+			class DistanceToCycle;
+			class Angle;
+			class DihedralAngle;
+		} // namespace Measurement
+
+	} // namespace Model
 
 	namespace Color
 	{
@@ -57,6 +68,11 @@ namespace VTX
 			nlohmann::json serialize( const Model::Path & ) const;
 			nlohmann::json serialize( const Model::Viewpoint & ) const;
 			nlohmann::json serialize( const Model::Representation::InstantiatedRepresentation & ) const;
+			nlohmann::json serialize( const Model::Label & ) const;
+			nlohmann::json serialize( const Model::Measurement::Distance & ) const;
+			nlohmann::json serialize( const Model::Measurement::DistanceToCycle & ) const;
+			nlohmann::json serialize( const Model::Measurement::Angle & ) const;
+			nlohmann::json serialize( const Model::Measurement::DihedralAngle & ) const;
 
 			nlohmann::json serialize( const Model::Representation::Representation & ) const;
 			nlohmann::json serialize( const Model::Renderer::RenderEffectPreset & ) const;
@@ -73,12 +89,18 @@ namespace VTX
 			nlohmann::json serialize( const glm::qua<T, Q> & ) const;
 			nlohmann::json serialize( const Setting & ) const;
 
+			nlohmann::json serialize_atom_reference( const Model::Atom & ) const;
+
 			void deserialize( const nlohmann::json &, VTXApp & ) const;
 			void deserialize( const nlohmann::json &, Object3D::Scene & ) const;
 			void deserialize( const nlohmann::json &, Model::Molecule & ) const;
 			void deserialize( const nlohmann::json &, Model::Path & ) const;
 			void deserialize( const nlohmann::json &, Model::Viewpoint & ) const;
 			void deserialize( const nlohmann::json &, Model::Representation::InstantiatedRepresentation & ) const;
+			void deserialize( const nlohmann::json &, Model::Measurement::Distance & ) const;
+			void deserialize( const nlohmann::json &, Model::Measurement::DistanceToCycle & ) const;
+			void deserialize( const nlohmann::json &, Model::Measurement::Angle & ) const;
+			void deserialize( const nlohmann::json &, Model::Measurement::DihedralAngle & ) const;
 
 			void deserialize( const nlohmann::json &, Model::Representation::Representation & ) const;
 			void deserialize( const nlohmann::json &, Model::Renderer::RenderEffectPreset & ) const;
@@ -94,6 +116,26 @@ namespace VTX
 			template<typename T, glm::qualifier Q>
 			void deserialize( const nlohmann::json &, glm::qua<T, Q> & ) const;
 			void deserialize( const nlohmann::json &, Setting & ) const;
+
+			const Model::Atom * deserialize_atom_reference( const nlohmann::json & ) const;
+
+			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
+			M * tryDeserializeModel( const nlohmann::json & p_json ) const
+			{
+				M * const model = MVC::MvcManager::get().instantiateModel<M>();
+
+				try
+				{
+					deserialize( p_json, *model );
+				}
+				catch ( std::exception e )
+				{
+					MVC::MvcManager::get().deleteModel( model );
+					throw e;
+				}
+
+				return model;
+			}
 
 		  private:
 			nlohmann::json _serializeMoleculeRepresentations( const Model::Molecule &,

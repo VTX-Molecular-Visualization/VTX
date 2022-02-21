@@ -1,5 +1,6 @@
 #include "scene_widget.hpp"
 #include "action/action_manager.hpp"
+#include "action/scene.hpp"
 #include "action/selection.hpp"
 #include "model/label.hpp"
 #include "model/measurement/angle.hpp"
@@ -27,6 +28,8 @@ namespace VTX::UI::Widget::Scene
 {
 	SceneWidget::SceneWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
+		_registerEvent( Event::Global::SCENE_ITEM_INDEX_CHANGE );
+
 		_registerEvent( Event::Global::MOLECULE_ADDED );
 		_registerEvent( Event::Global::MOLECULE_REMOVED );
 
@@ -44,8 +47,13 @@ namespace VTX::UI::Widget::Scene
 			const Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
+			const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_MOLECULE );
+
 			instantiateSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>(
 				castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, "moleculeSceneView" );
+
+			Object3D::Scene & scene = VTXApp::get().getScene();
+			scene.changeModelPosition( *castedEvent.ptr, defaultPosition );
 		}
 		else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 		{
@@ -60,8 +68,13 @@ namespace VTX::UI::Widget::Scene
 			const Event::VTXEventPtr<Model::Path> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Path> &>( p_event );
 
+			const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_PATH );
+
 			instantiateSceneItem<View::UI::Widget::PathSceneView, Model::Path>(
 				castedEvent.ptr, ID::View::UI_SCENE_PATH, "pathSceneView" );
+
+			Object3D::Scene & scene = VTXApp::get().getScene();
+			scene.changeModelPosition( *castedEvent.ptr, defaultPosition );
 		}
 		else if ( p_event.name == Event::Global::PATH_REMOVED )
 		{
@@ -74,6 +87,8 @@ namespace VTX::UI::Widget::Scene
 		{
 			const Event::VTXEventPtr<Model::Label> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+
+			const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_LABEL );
 
 			const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
 			if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
@@ -101,6 +116,9 @@ namespace VTX::UI::Widget::Scene
 									 Model::Measurement::DihedralAngle>(
 					angleModel, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL, "dihedralAngleSceneView" );
 			}
+
+			Object3D::Scene & scene = VTXApp::get().getScene();
+			scene.changeModelPosition( *castedEvent.ptr, defaultPosition );
 		}
 		else if ( p_event.name == Event::Global::LABEL_REMOVED )
 		{
@@ -133,6 +151,58 @@ namespace VTX::UI::Widget::Scene
 					dihedralAngleModel, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL );
 			}
 		}
+		else if ( p_event.name == Event::Global::SCENE_ITEM_INDEX_CHANGE )
+		{
+			_refreshItemIndex();
+		}
+	}
+
+	void SceneWidget::_refreshItemIndex()
+	{
+		const Object3D::Scene & scene = VTXApp::get().getScene();
+
+		for ( int i = 0; i < _sceneWidgets.size(); i++ )
+		{
+			const Generic::BaseSceneItem * item = scene.getItemAtPosition( i );
+			if ( _sceneWidgets[ i ]->getModelID() != item->getModelID() )
+			{
+				const int previousItemIndex = _findItemIndex( item->getModelID(), i + 1 );
+				_swapItems( i, previousItemIndex );
+			}
+		}
+	}
+
+	int SceneWidget::_findItemIndex( const Model::ID & p_modelID, const int p_startIndex ) const
+	{
+		for ( int i = p_startIndex; i < _sceneWidgets.size(); i++ )
+		{
+			if ( _sceneWidgets[ i ]->getModelID() == p_modelID )
+				return i;
+		}
+		return -1;
+	}
+	void SceneWidget::_swapItems( const int p_index1, const int p_index2 )
+	{
+		SceneItemWidget * const tmp = _sceneWidgets[ p_index1 ];
+		_sceneWidgets[ p_index1 ]	= _sceneWidgets[ p_index2 ];
+		_sceneWidgets[ p_index2 ]	= tmp;
+
+		_layout->removeWidget( _sceneWidgets[ p_index1 ] );
+		_layout->removeWidget( _sceneWidgets[ p_index2 ] );
+
+		if ( p_index1 < p_index2 )
+		{
+			_addWidgetInLayout( _sceneWidgets[ p_index1 ], p_index1 );
+			_addWidgetInLayout( _sceneWidgets[ p_index2 ], p_index2 );
+		}
+		else
+		{
+			_addWidgetInLayout( _sceneWidgets[ p_index2 ], p_index2 );
+			_addWidgetInLayout( _sceneWidgets[ p_index1 ], p_index1 );
+		}
+
+		_sceneWidgets[ p_index1 ]->updatePosInSceneHierarchy( p_index1 );
+		_sceneWidgets[ p_index2 ]->updatePosInSceneHierarchy( p_index2 );
 	}
 
 	SceneItemWidget * SceneWidget::getPreviousSceneItemWidgets( SceneItemWidget * p_item ) const
@@ -214,35 +284,32 @@ namespace VTX::UI::Widget::Scene
 		}
 	}
 
-	int SceneWidget::_getPositionInHierarchy( SceneItemWidget * const p_sceneItemWidget )
+	int SceneWidget::_getDefaultIndex( const ID::VTX_ID & p_itemTypeID ) const
 	{
-		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( p_sceneItemWidget->getModelID() );
+		if ( _sceneWidgets.size() == 0 )
+			return 0;
 
 		// TODO : Better management of section in scene view.
-		if ( modelTypeId != VTX::ID::Model::MODEL_PATH )
+		if ( p_itemTypeID != VTX::ID::Model::MODEL_PATH )
 		{
 			const std::vector<SceneItemWidget *>::const_reverse_iterator lastItemIt = _sceneWidgets.crbegin();
 			const ID::VTX_ID & lastItemTypeId = MVC::MvcManager::get().getModelTypeID( ( *lastItemIt )->getModelID() );
 
 			if ( lastItemTypeId == VTX::ID::Model::MODEL_PATH )
 			{
-				return _layout->count() - 2;
+				return int( _sceneWidgets.size() - 1 );
 			}
 		}
 
-		return _layout->count() - 1;
+		return int( _sceneWidgets.size() );
 	}
 
-	void SceneWidget::_addWidgetInLayout( SceneItemWidget * const p_sceneItemWidget )
+	void SceneWidget::_addWidgetInLayout( QWidget * const p_widget, const int p_index )
 	{
-		const int posInHierarchy = _getPositionInHierarchy( p_sceneItemWidget );
-		_layout->insertWidget( posInHierarchy, p_sceneItemWidget, 1 );
-		p_sceneItemWidget->updatePosInSceneHierarchy( posInHierarchy );
+		_layout->insertWidget( p_index, p_widget, 1 );
 
 		if ( _sceneWidgets.size() > 0 )
-			setTabOrder( *_sceneWidgets.rbegin(), p_sceneItemWidget );
-
-		_sceneWidgets.insert( _sceneWidgets.begin() + posInHierarchy, p_sceneItemWidget );
+			setTabOrder( *_sceneWidgets.rbegin(), p_widget );
 	}
 	void SceneWidget::_removeWidgetInLayout( SceneItemWidget * const p_sceneItemWidget )
 	{
@@ -304,19 +371,13 @@ namespace VTX::UI::Widget::Scene
 
 		for ( const std::pair<Model::Molecule *, float> pairMolecule : VTXApp::get().getScene().getMolecules() )
 		{
-			View::UI::Widget::MoleculeSceneView * const moleculeWidget
-				= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::MoleculeSceneView>(
-					pairMolecule.first, ID::View::UI_MOLECULE_STRUCTURE, _scrollAreaContent, "moleculeSceneView" );
-
-			_addWidgetInLayout( moleculeWidget );
+			instantiateSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>(
+				pairMolecule.first, ID::View::UI_MOLECULE_STRUCTURE, "moleculeSceneView" );
 		}
 		for ( Model::Path * const path : VTXApp::get().getScene().getPaths() )
 		{
-			View::UI::Widget::PathSceneView * const pathWidget
-				= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::PathSceneView>(
-					path, ID::View::UI_SCENE_PATH, _scrollAreaContent, "pathSceneView" );
-
-			_addWidgetInLayout( pathWidget );
+			instantiateSceneItem<View::UI::Widget::PathSceneView, Model::Path>(
+				path, ID::View::UI_SCENE_PATH, "pathSceneView" );
 		}
 	}
 
@@ -401,18 +462,7 @@ namespace VTX::UI::Widget::Scene
 
 		p_event->acceptProposedAction();
 
-		SceneItemWidget * tmp = _sceneWidgets[ previousIndex ];
-		_sceneWidgets.erase( _sceneWidgets.begin() + previousIndex );
-		_sceneWidgets.insert( _sceneWidgets.begin() + newIndex, tmp );
-
-		_layout->insertWidget( newIndex, sceneItemWidget, 1 );
-
-		int iMinIndex = previousIndex < newIndex ? previousIndex : newIndex;
-		int iMaxIndex = previousIndex > newIndex ? previousIndex : newIndex;
-		for ( int i = iMinIndex; i <= iMaxIndex; i++ )
-		{
-			_sceneWidgets[ i ]->updatePosInSceneHierarchy( i );
-		}
+		const Generic::BaseSceneItem & sceneItem = _sceneWidgets[ previousIndex ]->getBaseSceneItem();
+		VTX_ACTION( new Action::Scene::ChangeItemIndex( sceneItem, newIndex ) );
 	}
-
 } // namespace VTX::UI::Widget::Scene

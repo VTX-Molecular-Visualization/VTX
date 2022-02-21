@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_WIDGET_SCENE__
 #define __VTX_UI_WIDGET_SCENE__
 
+#include "generic/base_scene_item.hpp"
 #include "model/base_model.hpp"
 #include "scene_item_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
@@ -48,13 +49,19 @@ namespace VTX::UI::Widget::Scene
 		QVBoxLayout *									  _layout			 = nullptr;
 		std::vector<SceneItemWidget *>					  _sceneWidgets		 = std::vector<SceneItemWidget *>();
 
-		int	 _getPositionInHierarchy( SceneItemWidget * const p_sceneItemWidget );
-		void _addWidgetInLayout( SceneItemWidget * const p_sceneItemWidget );
+		int	 _getDefaultIndex( const ID::VTX_ID & p_itemTypeID ) const;
+		void _addWidgetInLayout( QWidget * const p_sceneItemWidget, const int p_index );
+
 		void _removeWidgetInLayout( SceneItemWidget * const p_sceneItemWidget );
+		void _refreshItemIndex();
+
+		int	 _findItemIndex( const Model::ID & p_modelID, const int p_startIndex = 0 ) const;
+		void _swapItems( const int p_lhs, const int p_rhs );
 
 		template<typename V,
 				 typename M,
 				 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
+				 typename = std::enable_if<std::is_base_of<Generic::BaseSceneItem, M>::value>,
 				 typename = std::enable_if<std::is_base_of<SceneItemWidget, V>::value>,
 				 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
 		void instantiateSceneItem( M * const		   p_model,
@@ -65,7 +72,10 @@ namespace VTX::UI::Widget::Scene
 			V * const sceneItemWidget
 				= WidgetFactory::get().instantiateViewWidget<V>( p_model, p_viewID, _scrollAreaContent, p_widgetName );
 
-			_addWidgetInLayout( sceneItemWidget );
+			const int index = int( _sceneWidgets.size() );
+			_addWidgetInLayout( sceneItemWidget, index );
+			_sceneWidgets.emplace_back( sceneItemWidget );
+			sceneItemWidget->updatePosInSceneHierarchy( index );
 		}
 
 		template<typename V,

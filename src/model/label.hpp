@@ -2,17 +2,21 @@
 #define __VTX_MODEL_LABEL__
 
 #include "define.hpp"
+#include "generic/base_scene_item.hpp"
 #include "id.hpp"
 #include "math/aabb.hpp"
 #include "model/base_model.hpp"
 
 namespace VTX::Model
 {
-	class Label : public BaseModel
+	class Label : public BaseModel, public Generic::BaseSceneItem
 	{
 		VTX_MODEL
 
 	  public:
+		// BaseSceneItem
+		const Model::ID & getModelID() const override { return getId(); }
+
 		void		  setName( const std::string & p_name );
 		const Vec3f & getPosition() const;
 		void		  setPosition( const Vec3f & p_position );

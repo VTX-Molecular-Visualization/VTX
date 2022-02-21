@@ -26,6 +26,8 @@ namespace VTX
 				return QFileInfo( _path ).baseName().toStdString();
 			}
 
+			inline const std::string absolute() const { return QFileInfo( _path ).absoluteFilePath().toStdString(); }
+
 			inline const std::string extension() const { return QFileInfo( _path ).suffix().toStdString(); }
 
 			inline const bool exists() const { return QFile::exists( _path ); }

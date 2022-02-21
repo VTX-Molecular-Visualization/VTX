@@ -18,7 +18,8 @@ namespace VTX::View::UI::Widget::Measurement
 		VTX_MODEL
 
 	  public:
-		virtual const Model::ID & getModelID() const { return _model->getId(); };
+		virtual const Model::ID &			   getModelID() const { return _model->getId(); };
+		virtual const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };
 
 		void notify( const Event::VTXEvent * const p_event ) override;
 
