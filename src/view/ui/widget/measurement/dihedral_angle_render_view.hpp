@@ -34,7 +34,8 @@ namespace VTX::View::UI::Widget::Measurement
 			Vec3f thirdAtomScreenPos;
 			Vec3f fourthAtomScreenPos;
 
-			float lineSize;
+			int lineSize;
+			int pointRadius;
 
 			bool drawTextAndIcon;
 

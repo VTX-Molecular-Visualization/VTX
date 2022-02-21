@@ -78,7 +78,10 @@ namespace VTX::View::UI::Widget::Measurement
 											   1.f );
 
 		if ( ratioScale == 0.f )
+		{
+			repaint();
 			return;
+		}
 
 		const QRect		   renderRect	  = parentWidget()->rect();
 		std::vector<Vec3f> vec3fPositions = std::vector<Vec3f>();
@@ -89,12 +92,19 @@ namespace VTX::View::UI::Widget::Measurement
 		for ( const Vec3f & vec : vec3fPositions )
 			qPointPositions.emplace_back( Util::UIRender::vec3fToQPoint( vec ) );
 
+		_paintData.lineSize
+			= Util::UIRender::linearInterpolation( Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MIN_LINE_THICKNESS,
+												   Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MAX_LINE_THICKNESS,
+												   ratioScale );
+		_paintData.pointRadius	= ( _paintData.lineSize / 2 ) + Style::LABEL_RENDER_POINT_RADIUS;
+		const int pointDiameter = _paintData.pointRadius * 2;
+
 		int minX, maxX, minY, maxY;
 		Util::UIRender::getMinMax( qPointPositions, minX, maxX, minY, maxY );
-		minX -= Style::LABEL_RENDER_POINT_MAX_DIAMETER;
-		maxX += Style::LABEL_RENDER_POINT_MAX_DIAMETER;
-		minY -= Style::LABEL_RENDER_POINT_MAX_DIAMETER;
-		maxY += Style::LABEL_RENDER_POINT_MAX_DIAMETER;
+		minX -= pointDiameter;
+		maxX += pointDiameter;
+		minY -= pointDiameter;
+		maxY += pointDiameter;
 
 		const Vec3f iconVec3Pos = ( vec3fPositions[ 1 ] + vec3fPositions[ 2 ] ) * 0.5f;
 
@@ -202,16 +212,31 @@ namespace VTX::View::UI::Widget::Measurement
 			const Vec3f relativeSecondAtomPos = _paintData.secondAtomScreenPos - vec3fPos;
 			const Vec3f relativeThirdAtomPos  = _paintData.thirdAtomScreenPos - vec3fPos;
 			const Vec3f relativeFourthAtomPos = _paintData.fourthAtomScreenPos - vec3fPos;
-			const int	pointRadius			  = ( _paintData.lineSize / 2 ) + Style::LABEL_RENDER_POINT_RADIUS;
 
 			if ( _paintData.firstAtomScreenPos.z >= 0 )
-				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeFirstAtomPos ), pointRadius, pointRadius );
+			{
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeFirstAtomPos ),
+									 _paintData.pointRadius,
+									 _paintData.pointRadius );
+			}
 			if ( _paintData.secondAtomScreenPos.z >= 0 )
-				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeSecondAtomPos ), pointRadius, pointRadius );
+			{
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeSecondAtomPos ),
+									 _paintData.pointRadius,
+									 _paintData.pointRadius );
+			}
 			if ( _paintData.thirdAtomScreenPos.z >= 0 )
-				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeThirdAtomPos ), pointRadius, pointRadius );
+			{
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeThirdAtomPos ),
+									 _paintData.pointRadius,
+									 _paintData.pointRadius );
+			}
 			if ( _paintData.fourthAtomScreenPos.z >= 0 )
-				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeFourthAtomPos ), pointRadius, pointRadius );
+			{
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeFourthAtomPos ),
+									 _paintData.pointRadius,
+									 _paintData.pointRadius );
+			}
 
 			painter.drawLine( Util::UIRender::getScreenLine( relativeFirstAtomPos, relativeSecondAtomPos ) );
 			painter.drawLine( Util::UIRender::getScreenLine( relativeSecondAtomPos, relativeThirdAtomPos ) );
