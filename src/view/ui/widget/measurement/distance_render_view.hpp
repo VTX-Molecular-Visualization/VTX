@@ -31,9 +31,10 @@ namespace VTX::View::UI::Widget::Measurement
 		  public:
 			Vec3f firstAtomScreenPos;
 			Vec3f secondAtomScreenPos;
-			
-			int	  lineSize;
-			
+
+			int lineSize;
+			int pointRadius;
+
 			QSize textSize;
 			float textScale;
 			Vec3f textPosition;
@@ -64,6 +65,10 @@ namespace VTX::View::UI::Widget::Measurement
 		QBrush _labelBrush;
 		QPen   _linePen;
 		QBrush _lineBrush;
+		QPen   _underlinePen;
+		QBrush _underlineBrush;
+		QPen   _pointPen;
+		QBrush _pointBrush;
 	};
 
 } // namespace VTX::View::UI::Widget::Measurement

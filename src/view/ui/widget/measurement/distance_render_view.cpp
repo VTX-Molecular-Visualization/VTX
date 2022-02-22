@@ -89,6 +89,9 @@ namespace VTX::View::UI::Widget::Measurement
 								  - Style::MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS )
 									* ratioScale;
 
+		_paintData.pointRadius	= ( _paintData.lineSize / 2 ) + Style::MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS + 2;
+		const int pointDiameter = _paintData.pointRadius * 2;
+
 		const QRect renderRect = parentWidget()->rect();
 
 		const Vec3f firstAtomScreenVec3Pos
@@ -101,14 +104,14 @@ namespace VTX::View::UI::Widget::Measurement
 
 		const Vec3f textScreenVec3fPos = Util::UIRender::worldToScreenVec3f( centerWorldPos, camera, renderRect );
 
-		int minX = std::min( { firstAtomScreenPointPos.x() - Style::LABEL_RENDER_POINT_MAX_DIAMETER,
-							   secondAtomScreenPointPos.x() - Style::LABEL_RENDER_POINT_MAX_DIAMETER } );
-		int minY = std::min( { firstAtomScreenPointPos.y() - Style::LABEL_RENDER_POINT_MAX_DIAMETER,
-							   secondAtomScreenPointPos.y() - Style::LABEL_RENDER_POINT_MAX_DIAMETER } );
-		int maxX = std::max( { firstAtomScreenPointPos.x() + Style::LABEL_RENDER_POINT_MAX_DIAMETER,
-							   secondAtomScreenPointPos.x() + Style::LABEL_RENDER_POINT_MAX_DIAMETER } );
-		int maxY = std::max( { firstAtomScreenPointPos.y() + Style::LABEL_RENDER_POINT_MAX_DIAMETER,
-							   secondAtomScreenPointPos.y() + Style::LABEL_RENDER_POINT_MAX_DIAMETER } );
+		int minX
+			= std::min( { firstAtomScreenPointPos.x() - pointDiameter, secondAtomScreenPointPos.x() - pointDiameter } );
+		int minY
+			= std::min( { firstAtomScreenPointPos.y() - pointDiameter, secondAtomScreenPointPos.y() - pointDiameter } );
+		int maxX
+			= std::max( { firstAtomScreenPointPos.x() + pointDiameter, secondAtomScreenPointPos.x() + pointDiameter } );
+		int maxY
+			= std::max( { firstAtomScreenPointPos.y() + pointDiameter, secondAtomScreenPointPos.y() + pointDiameter } );
 
 		if ( textScreenVec3fPos.z > 0 )
 		{
@@ -134,6 +137,8 @@ namespace VTX::View::UI::Widget::Measurement
 		_paintData.firstAtomScreenPos  = firstAtomScreenVec3Pos;
 		_paintData.secondAtomScreenPos = secondAtomScreenVec3Pos;
 		_paintData.textPosition		   = textScreenVec3fPos;
+
+		repaint();
 	}
 
 	void DistanceRenderView::_refreshText() { _setText( Util::Measurement::getDistanceString( *_model ) ); }
@@ -176,9 +181,15 @@ namespace VTX::View::UI::Widget::Measurement
 			const int	pointRadius	  = ( _paintData.lineSize / 2 ) + Style::MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS;
 
 			if ( firstAtomPos.z >= 0 )
-				painter.drawEllipse( Util::UIRender::vec3fToQPoint( firstAtomPos ), pointRadius, pointRadius );
+			{
+				painter.drawEllipse(
+					Util::UIRender::vec3fToQPoint( firstAtomPos ), _paintData.pointRadius, _paintData.pointRadius );
+			}
 			if ( secondAtomPos.z >= 0 )
-				painter.drawEllipse( Util::UIRender::vec3fToQPoint( secondAtomPos ), pointRadius, pointRadius );
+			{
+				painter.drawEllipse(
+					Util::UIRender::vec3fToQPoint( secondAtomPos ), _paintData.pointRadius, _paintData.pointRadius );
+			}
 
 			painter.drawLine( Util::UIRender::getScreenLine( firstAtomPos, secondAtomPos ) );
 			///////////////////////////////////////////////////////////////////
