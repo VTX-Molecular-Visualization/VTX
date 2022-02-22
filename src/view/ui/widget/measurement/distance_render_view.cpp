@@ -3,6 +3,7 @@
 #include "style.hpp"
 #include "ui/main_window.hpp"
 #include "util/measurement.hpp"
+#include "util/ui.hpp"
 #include "util/ui_render.hpp"
 #include "vtx_app.hpp"
 #include <QFontMetrics>
@@ -24,9 +25,8 @@ namespace VTX::View::UI::Widget::Measurement
 		_labelBrush.setStyle( Qt::BrushStyle::SolidPattern );
 
 		_linePen = QPen();
-		_linePen.setColor( Style::MEASUREMENT_DISTANCE_LABEL_LINE_COLOR );
 		_linePen.setStyle( Style::MEASUREMENT_DISTANCE_LABEL_LINE_STYLE );
-		_lineBrush = QBrush( Qt::BrushStyle::NoBrush );
+		_lineBrush = QBrush( Qt::BrushStyle::SolidPattern );
 		//_lineBrush = QBrush( Qt::BrushStyle::SolidPattern );
 	}
 
@@ -35,15 +35,19 @@ namespace VTX::View::UI::Widget::Measurement
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>::_setupUi( p_name );
 
 		_refreshText();
+		_refreshColor();
 		updatePosition();
 		setVisible( true );
 	}
 	void DistanceRenderView::_setupSlots() {}
 	void DistanceRenderView::localize() {}
 
+
 	void DistanceRenderView::_refreshView()
 	{
 		_refreshText();
+		_refreshColor();
+
 		// updatePosition called because it resizing the widget. Maybe resize can be done in a specific function
 		updatePosition();
 		repaint();
@@ -142,6 +146,12 @@ namespace VTX::View::UI::Widget::Measurement
 	}
 
 	void DistanceRenderView::_refreshText() { _setText( Util::Measurement::getDistanceString( *_model ) ); }
+	void DistanceRenderView::_refreshColor()
+	{
+		const QColor lineColor = Util::UI::RgbToQColor( _model->getColor() );
+		_linePen.setColor( lineColor );
+		_lineBrush.setColor( lineColor );
+	}
 
 	void DistanceRenderView::_setText( const std::string & p_txt )
 	{

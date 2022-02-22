@@ -2,6 +2,7 @@
 #define __VTX_ACTION_LABEL__
 
 #include "action/base_action.hpp"
+#include "color/rgb.hpp"
 #include "math/aabb.hpp"
 #include "model/label.hpp"
 #include "model/selection.hpp"
@@ -135,5 +136,31 @@ namespace VTX::Action::Label
 		const std::unordered_set<Model::Label *> _labels;
 		const std::string						 _name;
 	};
+
+	class ChangeColor : public BaseAction
+	{
+	  public:
+		explicit ChangeColor( Model::Label & p_label, const Color::Rgb & p_color ) :
+			_labels( { &p_label } ), _color( p_color )
+		{
+		}
+		explicit ChangeColor( const std::unordered_set<Model::Label *> & p_labels, const Color::Rgb & p_color ) :
+			_labels( p_labels ), _color( p_color )
+		{
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Label * const label : _labels )
+			{
+				label->setColor( _color );
+			}
+		}
+
+	  private:
+		const std::unordered_set<Model::Label *> _labels;
+		const Color::Rgb &						 _color;
+	};
+
 } // namespace VTX::Action::Label
 #endif

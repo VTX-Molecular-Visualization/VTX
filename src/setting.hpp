@@ -197,6 +197,9 @@ namespace VTX
 		static const uint		VIDEO_FPS_DEFAULT;
 		static const uint		VIDEO_CRF_DEFAULT;
 
+		// Measurement
+		static const Color::Rgb DEFAULT_LABEL_COLOR;
+
 		// Selection
 		static const VTX::Selection::Granularity SELECTION_GRANULARITY_DEFAULT;
 

@@ -153,6 +153,9 @@ namespace VTX
 	const uint		 Setting::VIDEO_FPS_DEFAULT		  = 60;
 	const uint		 Setting::VIDEO_CRF_DEFAULT		  = 10;
 
+	// Measurement
+	const Color::Rgb Setting::DEFAULT_LABEL_COLOR = Color::Rgb( 0.f, 0.f, 1.f );
+
 	// Selection
 	const VTX::Selection::Granularity Setting::SELECTION_GRANULARITY_DEFAULT = VTX::Selection::Granularity::RESIDUE;
 

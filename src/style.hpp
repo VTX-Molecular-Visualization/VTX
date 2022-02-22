@@ -6,6 +6,8 @@
 #include "selection/selection_enum.hpp"
 #include "tool/logger.hpp"
 #include "util/label.hpp"
+#include "util/ui.hpp"
+#include <QBitmap>
 #include <QChar>
 #include <QColor>
 #include <QFont>
@@ -75,7 +77,7 @@ namespace VTX
 			const QPixmap REPRESENTATION_TRACE_ICON;
 			const QPixmap REPRESENTATION_SAS_ICON;
 
-			const QPixmap DIHEDRAL_ANGLE_RENDER_ICON;
+			const QBitmap DIHEDRAL_ANGLE_RENDER_ICON_MASK;
 
 			const QPixmap TOOLTAB_SEPARATOR;
 
@@ -208,7 +210,8 @@ namespace VTX
 
 				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ),
 
-				DIHEDRAL_ANGLE_RENDER_ICON( QPixmap( ":/sprite/render/dihedral_angle_icon.png" ) ) {};
+				DIHEDRAL_ANGLE_RENDER_ICON_MASK(
+					Util::UI::generateAlphaMask( ":/sprite/render/dihedral_angle_icon.png" ) ) {};
 		};
 
 		namespace WidgetProperty

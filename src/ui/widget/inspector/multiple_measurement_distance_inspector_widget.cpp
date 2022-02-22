@@ -46,6 +46,12 @@ namespace VTX::UI::Widget::Inspector
 		_goToFirstAtom	= new QPushButton( goToAtomButtons );
 		_goToSecondAtom = new QPushButton( goToAtomButtons );
 
+		_displaySection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
+			this, "inspector_item_section" );
+
+		_colorWidget
+			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorFieldButton>( this, "colorWidget" );
+
 		goToAtomLayout->addWidget( _goToFirstAtom );
 		goToAtomLayout->addSpacing( 10 );
 		goToAtomLayout->addWidget( _goToSecondAtom );
@@ -54,7 +60,10 @@ namespace VTX::UI::Widget::Inspector
 		_infoSection->appendField( "Atoms", goToAtomButtons );
 		_infoSection->appendField( "Distance", _distanceLabelWidget );
 
+		_displaySection->appendField( "Color", _colorWidget );
+
 		_appendWidget( _positionSection );
+		_appendWidget( _displaySection );
 		_appendWidget( _infoSection );
 
 		const bool oldBlockState = blockSignals( true );
@@ -74,6 +83,11 @@ namespace VTX::UI::Widget::Inspector
 
 		connect( _goToFirstAtom, &QPushButton::clicked, this, &MultipleMeasurmentDistanceWidget::_orientOnFirstAtom );
 		connect( _goToSecondAtom, &QPushButton::clicked, this, &MultipleMeasurmentDistanceWidget::_orientOnSecondAtom );
+
+		connect( _colorWidget,
+				 &CustomWidget::ColorFieldButton::onValueChange,
+				 this,
+				 &MultipleMeasurmentDistanceWidget::_setLabelColor );
 	};
 
 	void MultipleMeasurmentDistanceWidget::_endOfFrameRefresh( const SectionFlag & p_flag )
@@ -108,6 +122,7 @@ namespace VTX::UI::Widget::Inspector
 					_nameWidget->updateWithNewValue( distanceModel->getDefaultName() );
 					const std::string distanceStr = Util::Measurement::getDistanceString( *distanceModel );
 					_distanceLabelWidget->updateWithNewValue( distanceStr );
+					_colorWidget->updateWithNewValue( distanceModel->getColor() );
 
 					if ( distanceModel->getTypeId() == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 					{
@@ -150,6 +165,15 @@ namespace VTX::UI::Widget::Inspector
 		VTX_ACTION( new Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
 	}
 
+	void MultipleMeasurmentDistanceWidget::_setLabelColor( const Color::Rgb & p_color ) const
+	{
+		std::unordered_set<Model::Label *> labelTargets = std::unordered_set<Model::Label *>();
+		for ( Model::Measurement::Distance * const targetDistance : getTargets() )
+			labelTargets.emplace( targetDistance );
+
+		VTX_ACTION( new Action::Label::ChangeColor( labelTargets, p_color ) );
+	}
+
 	void MultipleMeasurmentDistanceWidget::_setAutoNameAction() const
 	{
 		std::unordered_set<Model::Label *> labelTargets = std::unordered_set<Model::Label *>();
@@ -166,6 +190,8 @@ namespace VTX::UI::Widget::Inspector
 			_positionInfoWidget->resetState();
 			_nameWidget->resetState();
 			_distanceLabelWidget->resetState();
+			_colorWidget->resetState();
+
 			_goToFirstAtom->setVisible( false );
 			_goToSecondAtom->setVisible( false );
 		}
@@ -174,8 +200,10 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleMeasurmentDistanceWidget::localize()
 	{
 		_positionSection->setHeaderTitle( "Position" );
+		_displaySection->setHeaderTitle( "Display" );
 		_infoSection->setHeaderTitle( "Informations" );
 		_positionSection->localize();
 		_infoSection->localize();
+		_displaySection->localize();
 	}
 } // namespace VTX::UI::Widget::Inspector

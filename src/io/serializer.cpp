@@ -119,6 +119,7 @@ namespace VTX::IO
 		return { { "TYPE_ID", p_distanceLabel.getTypeId() },
 				 { "NAME", p_distanceLabel.getDefaultName() },
 				 { "ENABLED", p_distanceLabel.isEnable() },
+				 { "COLOR", serialize( p_distanceLabel.getColor() ) },
 				 { "ATOM_1_ID", serialize_atom_reference( p_distanceLabel.getFirstAtom() ) },
 				 { "ATOM_2_ID", serialize_atom_reference( p_distanceLabel.getSecondAtom() ) },
 				 { "AUTO_NAMING", p_distanceLabel.hasAutoNaming() },
@@ -130,6 +131,7 @@ namespace VTX::IO
 		return { { "TYPE_ID", p_angleLabel.getTypeId() },
 				 { "NAME", p_angleLabel.getDefaultName() },
 				 { "ENABLED", p_angleLabel.isEnable() },
+				 { "COLOR", serialize( p_angleLabel.getColor() ) },
 				 { "ATOM_1_ID", serialize_atom_reference( p_angleLabel.getFirstAtom() ) },
 				 { "ATOM_2_ID", serialize_atom_reference( p_angleLabel.getSecondAtom() ) },
 				 { "ATOM_3_ID", serialize_atom_reference( p_angleLabel.getThirdAtom() ) },
@@ -141,6 +143,7 @@ namespace VTX::IO
 		return { { "TYPE_ID", p_angleLabel.getTypeId() },
 				 { "NAME", p_angleLabel.getDefaultName() },
 				 { "ENABLED", p_angleLabel.isEnable() },
+				 { "COLOR", serialize( p_angleLabel.getColor() ) },
 				 { "ATOM_1_ID", serialize_atom_reference( p_angleLabel.getFirstAtom() ) },
 				 { "ATOM_2_ID", serialize_atom_reference( p_angleLabel.getSecondAtom() ) },
 				 { "ATOM_3_ID", serialize_atom_reference( p_angleLabel.getThirdAtom() ) },
@@ -642,6 +645,13 @@ namespace VTX::IO
 		if ( p_json.contains( "ENABLED" ) )
 			p_distanceLabel.setEnable( p_json.at( "ENABLED" ).get<bool>() );
 
+		if ( p_json.contains( "COLOR" ) )
+		{
+			Color::Rgb color;
+			deserialize( p_json.at( "COLOR" ), color );
+			p_distanceLabel.setColor( color );
+		}
+
 		if ( p_json.contains( "ATOM_1_ID" ) && p_json.contains( "ATOM_2_ID" ) )
 		{
 			const Model::Atom * atom1 = deserialize_atom_reference( p_json.at( "ATOM_1_ID" ) );
@@ -665,6 +675,13 @@ namespace VTX::IO
 
 		if ( p_json.contains( "ENABLED" ) )
 			p_angleLabel.setEnable( p_json.at( "ENABLED" ).get<bool>() );
+
+		if ( p_json.contains( "COLOR" ) )
+		{
+			Color::Rgb color;
+			deserialize( p_json.at( "COLOR" ), color );
+			p_angleLabel.setColor( color );
+		}
 
 		if ( p_json.contains( "ATOM_1_ID" ) && p_json.contains( "ATOM_2_ID" ) && p_json.contains( "ATOM_3_ID" ) )
 		{
@@ -690,6 +707,13 @@ namespace VTX::IO
 
 		if ( p_json.contains( "ENABLED" ) )
 			p_angleLabel.setEnable( p_json.at( "ENABLED" ).get<bool>() );
+
+		if ( p_json.contains( "COLOR" ) )
+		{
+			Color::Rgb color;
+			deserialize( p_json.at( "COLOR" ), color );
+			p_angleLabel.setColor( color );
+		}
 
 		if ( p_json.contains( "ATOM_1_ID" ) && p_json.contains( "ATOM_2_ID" ) && p_json.contains( "ATOM_3_ID" )
 			 && p_json.contains( "ATOM_4_ID" ) )

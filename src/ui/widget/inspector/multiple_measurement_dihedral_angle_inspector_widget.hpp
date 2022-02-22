@@ -1,8 +1,10 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_MEASUREMENT_DIHEDRAL_ANGLE__
 #define __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_MEASUREMENT_DIHEDRAL_ANGLE__
 
+#include "color/rgb.hpp"
 #include "model/measurement/dihedral_angle.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "ui/widget/custom_widget/color_field_button.hpp"
 #include "ui/widget/custom_widget/qt_multi_data_field.hpp"
 #include "ui/widget/custom_widget/vector3_widget.hpp"
 #include "ui/widget/inspector/inspector_section.hpp"
@@ -30,8 +32,12 @@ namespace VTX::UI::Widget::Inspector
 		void _endOfFrameRefresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
 
 	  private:
-		InspectorSectionVLayout *			_positionSection		  = nullptr;
-		CustomWidget::Vector3Widget *		_positionInfoWidget		  = nullptr;
+		InspectorSectionVLayout *	  _positionSection	  = nullptr;
+		CustomWidget::Vector3Widget * _positionInfoWidget = nullptr;
+
+		InspectorSectionVLayout *		 _displaySection = nullptr;
+		CustomWidget::ColorFieldButton * _colorWidget	 = nullptr;
+
 		InspectorSectionVLayout *			_infoSection			  = nullptr;
 		CustomWidget::QLineEditMultiField * _nameWidget				  = nullptr;
 		QPushButton *						_setAutoNameWidget		  = nullptr;
@@ -45,6 +51,7 @@ namespace VTX::UI::Widget::Inspector
 
 		void _setAutoNameAction() const;
 		void _renameAction() const;
+		void _setLabelColor( const Color::Rgb & p_color ) const;
 
 		void _orientOnFirstAtom() const;
 		void _orientOnSecondAtom() const;

@@ -62,6 +62,7 @@ namespace VTX::View::UI::Widget::Measurement
 
 		void _setText( const std::string & p_txt );
 		void _refreshText();
+		void _refreshColor();
 
 	  private:
 		PaintData	 _paintData;

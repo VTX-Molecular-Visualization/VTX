@@ -12,6 +12,7 @@
 #include <QPaintEvent>
 #include <QPainterPath>
 #include <QPen>
+#include <QPixmap>
 #include <QPoint>
 #include <QSize>
 #include <string>
@@ -29,6 +30,8 @@ namespace VTX::View::UI::Widget::Measurement
 		class PaintData
 		{
 		  public:
+			QPixmap pixmap;
+
 			Vec3f firstAtomScreenPos;
 			Vec3f secondAtomScreenPos;
 			Vec3f thirdAtomScreenPos;
@@ -63,6 +66,7 @@ namespace VTX::View::UI::Widget::Measurement
 
 		void _setText( const std::string & p_txt );
 		void _refreshText();
+		void _refreshColor();
 
 	  private:
 		PaintData	 _paintData;
