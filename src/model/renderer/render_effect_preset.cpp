@@ -136,12 +136,12 @@ namespace VTX::Model::Renderer
 	}
 	void RenderEffectPreset::setCameraNearClip( const float p_cameraNearClip )
 	{
-		_cameraNearClip = p_cameraNearClip;
+		_cameraNearClip = p_cameraNearClip <= _cameraFarClip ? p_cameraNearClip : _cameraFarClip;
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setCameraFarClip( const float p_cameraFarClip )
 	{
-		_cameraFarClip = p_cameraFarClip;
+		_cameraFarClip = p_cameraFarClip >= _cameraNearClip ? p_cameraFarClip : _cameraNearClip;
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setAA( const bool p_antiAliasing )

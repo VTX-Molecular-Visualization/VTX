@@ -33,12 +33,32 @@ namespace VTX::UI::Widget::CustomWidget
 		mainLayout->addWidget( _label, 1 );
 		mainLayout->addWidget( _textField, 10 );
 
+		_label->installEventFilter( this );
+
 		setMouseTracking( true );
 	}
 
 	void FloatFieldDraggableWidget::_setupSlots()
 	{
 		connect( _textField, &QLineEdit::editingFinished, this, &FloatFieldDraggableWidget::_onTextFieldEdited );
+	}
+
+	bool FloatFieldDraggableWidget::eventFilter( QObject * p_obj, QEvent * p_event )
+	{
+		if ( p_event->type() == QEvent::MouseMove )
+		{
+			labelMouseMoveEvent( static_cast<QMouseEvent *>( p_event ) );
+		}
+		else if ( p_event->type() == QEvent::MouseButtonPress )
+		{
+			labelMousePressEvent( static_cast<QMouseEvent *>( p_event ) );
+		}
+		else if ( p_event->type() == QEvent::MouseButtonRelease )
+		{
+			labelMouseReleaseEvent( static_cast<QMouseEvent *>( p_event ) );
+		}
+
+		return QObject::eventFilter( p_obj, p_event );
 	}
 
 	void FloatFieldDraggableWidget::paintEvent( QPaintEvent * event )
@@ -49,10 +69,10 @@ namespace VTX::UI::Widget::CustomWidget
 		if ( !isActiveWindow() && _hasTarget )
 		{
 			_hasTarget = false;
-			unsetCursor();
+			_label->unsetCursor();
 		}
 	}
-	void FloatFieldDraggableWidget::mousePressEvent( QMouseEvent * p_event )
+	void FloatFieldDraggableWidget::labelMousePressEvent( QMouseEvent * p_event )
 	{
 		const QPoint globalPos = p_event->globalPos();
 		_hasTarget			   = _canDragAtPos( globalPos );
@@ -61,22 +81,20 @@ namespace VTX::UI::Widget::CustomWidget
 		{
 			p_event->accept();
 			_mousePressPos = globalPos;
-			setCursor( Qt::CursorShape::BlankCursor );
+			_label->setCursor( Qt::CursorShape::BlankCursor );
 		}
-
-		BaseManualWidget::mousePressEvent( p_event );
 	}
 
-	void FloatFieldDraggableWidget::mouseMoveEvent( QMouseEvent * p_event )
+	void FloatFieldDraggableWidget::labelMouseMoveEvent( QMouseEvent * p_event )
 	{
 		if ( !_hasTarget )
 		{
 			const bool isHoverDragArea = _canDragAtPos( p_event->globalPos() );
 
 			if ( isHoverDragArea )
-				setCursor( Qt::CursorShape::SizeHorCursor );
+				_label->setCursor( Qt::CursorShape::SizeHorCursor );
 			else
-				unsetCursor();
+				_label->unsetCursor();
 		}
 		else
 		{
@@ -92,11 +110,9 @@ namespace VTX::UI::Widget::CustomWidget
 
 			p_event->accept();
 		}
-
-		BaseManualWidget::mouseMoveEvent( p_event );
 	}
 
-	void FloatFieldDraggableWidget::mouseReleaseEvent( QMouseEvent * p_event )
+	void FloatFieldDraggableWidget::labelMouseReleaseEvent( QMouseEvent * p_event )
 	{
 		if ( _hasTarget )
 		{
@@ -105,12 +121,10 @@ namespace VTX::UI::Widget::CustomWidget
 			const bool isHoverDragArea = _canDragAtPos( p_event->globalPos() );
 
 			if ( isHoverDragArea )
-				setCursor( Qt::CursorShape::SizeHorCursor );
+				_label->setCursor( Qt::CursorShape::SizeHorCursor );
 			else
-				unsetCursor();
+				_label->unsetCursor();
 		}
-
-		BaseManualWidget::mouseReleaseEvent( p_event );
 	}
 
 	void FloatFieldDraggableWidget::_onTextFieldEdited()
