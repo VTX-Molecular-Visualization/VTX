@@ -47,14 +47,29 @@ namespace VTX::Model::Representation
 		notifyRepresentationDataChange();
 	}
 
-	const Generic::COLOR_TRANSITION_MODE & RepresentationData::getTransitionColorMode() const
+	const Generic::TRANSITION_COLOR_MODE & RepresentationData::getTransitionColorMode() const
 	{
 		return _colorTransitionMode;
 	}
-	Generic::COLOR_TRANSITION_MODE & RepresentationData::getTransitionColorMode() { return _colorTransitionMode; }
-	void RepresentationData::setTransitionColorMode( const Generic::COLOR_TRANSITION_MODE & p_colorTransitionMode )
+	Generic::TRANSITION_COLOR_MODE & RepresentationData::getTransitionColorMode() { return _colorTransitionMode; }
+	void RepresentationData::setTransitionColorMode( const Generic::TRANSITION_COLOR_MODE & p_colorTransitionMode )
 	{
 		_colorTransitionMode = p_colorTransitionMode;
+		notifyRepresentationDataChange();
+	}
+
+	const Generic::TRANSITION_COLOR_MODE & RepresentationData::getSecondaryStructureTransitionColorMode() const
+	{
+		return _ssColorTransitionMode;
+	}
+	Generic::TRANSITION_COLOR_MODE & RepresentationData::getSecondaryStructureTransitionColorMode()
+	{
+		return _ssColorTransitionMode;
+	}
+	void RepresentationData::setSecondaryStructureTransitionColorMode(
+		const Generic::TRANSITION_COLOR_MODE & p_colorTransitionMode )
+	{
+		_ssColorTransitionMode = p_colorTransitionMode;
 		notifyRepresentationDataChange();
 	}
 
@@ -86,8 +101,10 @@ namespace VTX::Model::Representation
 		if ( _cylinderData != nullptr && p_source._cylinderData != nullptr )
 			_cylinderData->_radius = p_source._cylinderData->_radius;
 
-		_colorMode	 = p_source._colorMode;
-		_ssColorMode = p_source._ssColorMode;
+		_colorMode			   = p_source._colorMode;
+		_ssColorMode		   = p_source._ssColorMode;
+		_colorTransitionMode   = p_source._colorTransitionMode;
+		_ssColorTransitionMode = p_source._ssColorTransitionMode;
 	}
 
 	void RepresentationData::notifyRepresentationDataChange() { _linkedRepresentation->forceNotifyDataChanged(); }

@@ -7,8 +7,7 @@ namespace VTX::Model::Representation
 	class SphereData
 	{
 	  public:
-		SphereData() {};
-
+		SphereData() {}
 		float _radiusFixed	 = 1.0f;
 		float _radiusAdd	 = 0.f;
 		bool  _isRadiusFixed = true;
@@ -17,14 +16,14 @@ namespace VTX::Model::Representation
 	class CylinderData
 	{
 	  public:
-		CylinderData() {};
+		CylinderData() {}
 		float _radius = 1.0f;
 	};
 
 	class RibbonData
 	{
 	  public:
-		RibbonData() {};
+		RibbonData() {}
 	};
 
 } // namespace VTX::Model::Representation

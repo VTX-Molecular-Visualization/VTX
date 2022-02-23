@@ -14,7 +14,9 @@
 namespace VTX::UI::Widget::Representation
 {
 	BaseRepresentationWidget::BaseRepresentationWidget( QWidget * p_parent ) :
-		BaseManualWidget( p_parent ), TMultiDataField() {};
+		BaseManualWidget( p_parent ), TMultiDataField()
+	{
+	}
 
 	void BaseRepresentationWidget::_setupUi( const QString & p_name )
 	{
@@ -62,6 +64,22 @@ namespace VTX::UI::Widget::Representation
 					 &CustomWidget::SecondaryStructureColorModeFieldWidget::colorChanged,
 					 this,
 					 &BaseRepresentationWidget::_ssColorChanged );
+		}
+
+		if ( _transitionColorModeWidget != nullptr )
+		{
+			connect( _transitionColorModeWidget,
+					 QOverload<int>::of( &QComboBox::currentIndexChanged ),
+					 this,
+					 &BaseRepresentationWidget::_transitionColorModeChanged );
+		}
+
+		if ( _ssTransitionColorModeWidget != nullptr )
+		{
+			connect( _ssTransitionColorModeWidget,
+					 QOverload<int>::of( &QComboBox::currentIndexChanged ),
+					 this,
+					 &BaseRepresentationWidget::_ssTransitionColorModeChanged );
 		}
 	}
 
@@ -128,7 +146,24 @@ namespace VTX::UI::Widget::Representation
 
 		_appendWidgetInLayout( _ssColorModeLabel, _ssColorModeWidget );
 	}
+	void BaseRepresentationWidget::_addTransitionColorModeInLayout( const QString & p_label )
+	{
+		_transitionColorModeLabel = new QLabel( this );
+		_transitionColorModeLabel->setText( p_label );
 
+		_transitionColorModeWidget = new CustomWidget::QComboBoxMultiField( this );
+
+		_appendWidgetInLayout( _transitionColorModeLabel, _transitionColorModeWidget );
+	}
+	void BaseRepresentationWidget::_addSSTransitionColorModeInLayout( const QString & p_label )
+	{
+		_ssTransitionColorModeLabel = new QLabel( this );
+		_ssTransitionColorModeLabel->setText( p_label );
+
+		_ssTransitionColorModeWidget = new CustomWidget::QComboBoxMultiField( this );
+
+		_appendWidgetInLayout( _colorModeLabel, _colorModeWidget );
+	}
 	void BaseRepresentationWidget::_appendWidgetInLayout( QWidget * const p_label, QWidget * const p_widget )
 	{
 		const int row = _layout->rowCount();
@@ -354,15 +389,24 @@ namespace VTX::UI::Widget::Representation
 
 		emit onColorChange( p_color, true );
 	}
-	void BaseRepresentationWidget::_colorTransitionChanged(
-		const Generic::COLOR_TRANSITION_MODE & p_colorTransitionMode )
+	void BaseRepresentationWidget::_transitionColorModeChanged( const int p_index )
 	{
 		if ( signalsBlocked() )
 			return;
 
-		_instantiatedRepresentation->setTransitionColorMode( p_colorTransitionMode, false );
+		_instantiatedRepresentation->setTransitionColorMode( (Generic::TRANSITION_COLOR_MODE)p_index, false );
 
-		emit onDataChange( Model::Representation::MEMBER_FLAG::COLOR_TRANSITION_MODE );
+		emit onDataChange( Model::Representation::MEMBER_FLAG::TRANSITION_COLOR_MODE );
+	}
+
+	void BaseRepresentationWidget::_ssTransitionColorModeChanged( const int p_index )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		_instantiatedRepresentation->setSSTransitionColorMode( (Generic::TRANSITION_COLOR_MODE)p_index, false );
+
+		emit onDataChange( Model::Representation::MEMBER_FLAG::SS_TRANSITION_COLOR_MODE );
 	}
 
 	void BaseRepresentationWidget::resetState()
@@ -386,6 +430,17 @@ namespace VTX::UI::Widget::Representation
 		{
 			Util::UI::setDynamicProperty( _ssColorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
 			_ssColorModeWidget->resetState();
+		}
+		if ( _transitionColorModeWidget != nullptr )
+		{
+			Util::UI::setDynamicProperty( _transitionColorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
+			_transitionColorModeWidget->resetState();
+		}
+		if ( _ssTransitionColorModeWidget != nullptr )
+		{
+			Util::UI::setDynamicProperty(
+				_ssTransitionColorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
+			_ssTransitionColorModeWidget->resetState();
 		}
 
 		_targets.clear();

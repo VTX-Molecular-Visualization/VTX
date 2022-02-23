@@ -37,6 +37,8 @@ namespace VTX::View::D3
 				continue;
 			}
 
+			_program->setUInt( "u_transitionColorMode", uint( representationData.first->getSSTransitionColorMode() ) );
+
 			const Representation::TargetRange<void *> & target = representationData.second.getRibbons();
 			if ( target.indices.size() > 0 )
 			{

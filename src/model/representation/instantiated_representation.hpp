@@ -55,10 +55,11 @@ namespace VTX::Model::Representation
 											 const bool										 p_recomputeBuffers = true,
 											 const bool										 p_notify = true );
 
-		const Generic::COLOR_TRANSITION_MODE & getTransitionColorMode() const;
-		void setTransitionColorMode( const Generic::COLOR_TRANSITION_MODE & p_colorMode,
-									 const bool								p_recomputeBuffers = true,
-									 const bool								p_notify		   = true );
+		const Generic::TRANSITION_COLOR_MODE & getTransitionColorMode() const;
+		void setTransitionColorMode( const Generic::TRANSITION_COLOR_MODE & p_colorMode, const bool p_notify = true );
+
+		const Generic::TRANSITION_COLOR_MODE & getSSTransitionColorMode() const;
+		void setSSTransitionColorMode( const Generic::TRANSITION_COLOR_MODE & p_colorMode, const bool p_notify = true );
 
 		VTX::Representation::FlagDataTargeted getFlagDataTargeted() const
 		{
@@ -105,7 +106,8 @@ namespace VTX::Model::Representation
 		Generic::OverridableParameter<Color::Rgb>							   _color;
 		Generic::OverridableParameter<Generic::COLOR_MODE>					   _colorMode;
 		Generic::OverridableParameter<Generic::SECONDARY_STRUCTURE_COLOR_MODE> _ssColorMode;
-		Generic::OverridableParameter<Generic::COLOR_TRANSITION_MODE>		   _colorTransitionMode;
+		Generic::OverridableParameter<Generic::TRANSITION_COLOR_MODE>		   _transitionColorMode;
+		Generic::OverridableParameter<Generic::TRANSITION_COLOR_MODE>		   _ssTransitionColorMode;
 
 		Generic::OverridableParameter<SphereData>	_sphereData;
 		Generic::OverridableParameter<CylinderData> _cylinderData;

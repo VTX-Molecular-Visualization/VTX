@@ -135,6 +135,10 @@ namespace VTX::IO
 			json[ "SS_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getSecondaryStructureColorMode() );
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::COLOR ) )
 			json[ "COLOR" ] = serialize( p_representation.getColor() );
+		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::TRANSITION_COLOR_MODE ) )
+			json[ "TRANSITION_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getTransitionColorMode() );
+		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SS_TRANSITION_COLOR_MODE ) )
+			json[ "SS_TRANSITION_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getSSTransitionColorMode() );
 
 		return json;
 	}
@@ -149,6 +153,9 @@ namespace VTX::IO
 			{ "CYLINDER_RADIUS", p_representation.getData().getCylinderRadius() },
 			{ "COLOR_MODE", magic_enum::enum_name( p_representation.getData().getColorMode() ) },
 			{ "SS_COLOR_MODE", magic_enum::enum_name( p_representation.getData().getSecondaryStructureColorMode() ) },
+			{ "TRANSITION_COLOR_MODE", magic_enum::enum_name( p_representation.getData().getTransitionColorMode() ) },
+			{ "SS_TRANSITION_COLOR_MODE",
+			  magic_enum::enum_name( p_representation.getData().getSecondaryStructureTransitionColorMode() ) },
 		};
 	}
 	nlohmann::json Serializer::serialize( const Model::Renderer::RenderEffectPreset & p_preset ) const

@@ -21,7 +21,7 @@ namespace VTX
 			CUSTOM,
 			INHERITED
 		};
-		enum class COLOR_TRANSITION_MODE : int
+		enum class TRANSITION_COLOR_MODE : int
 		{
 			FLAT,
 			GRADIENT

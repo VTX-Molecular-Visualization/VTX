@@ -159,15 +159,27 @@ namespace VTX::Model::Representation
 			_notifyDataChanged();
 	}
 
-	const Generic::COLOR_TRANSITION_MODE & InstantiatedRepresentation::getTransitionColorMode() const
+	const Generic::TRANSITION_COLOR_MODE & InstantiatedRepresentation::getTransitionColorMode() const
 	{
-		return _colorTransitionMode.getValue();
+		return _transitionColorMode.getValue();
 	}
-	void InstantiatedRepresentation::setTransitionColorMode( const Generic::COLOR_TRANSITION_MODE & p_colorMode,
-															 const bool								p_recomputeBuffers,
+	void InstantiatedRepresentation::setTransitionColorMode( const Generic::TRANSITION_COLOR_MODE & p_colorMode,
 															 const bool								p_notify )
 	{
-		_colorTransitionMode.setValue( p_colorMode );
+		_transitionColorMode.setValue( p_colorMode );
+
+		if ( p_notify )
+			_notifyDataChanged();
+	}
+
+	const Generic::TRANSITION_COLOR_MODE & InstantiatedRepresentation::getSSTransitionColorMode() const
+	{
+		return _ssTransitionColorMode.getValue();
+	}
+	void InstantiatedRepresentation::setSSTransitionColorMode( const Generic::TRANSITION_COLOR_MODE & p_colorMode,
+															   const bool							  p_notify )
+	{
+		_ssTransitionColorMode.setValue( p_colorMode );
 
 		if ( p_notify )
 			_notifyDataChanged();
@@ -277,6 +289,12 @@ namespace VTX::Model::Representation
 		if ( p_flag & MEMBER_FLAG::COLOR )
 			setColor( p_source.getColor(), p_recomputeBuffers, false );
 
+		if ( p_flag & MEMBER_FLAG::TRANSITION_COLOR_MODE )
+			setTransitionColorMode( p_source.getTransitionColorMode(), false );
+
+		if ( p_flag & MEMBER_FLAG::SS_TRANSITION_COLOR_MODE )
+			setSSTransitionColorMode( p_source.getSSTransitionColorMode(), false );
+
 		if ( p_notify )
 			_notifyDataChanged();
 	}
@@ -303,6 +321,12 @@ namespace VTX::Model::Representation
 		if ( _color.isOverrided() )
 			res = MEMBER_FLAG( res | MEMBER_FLAG::COLOR );
 
+		if ( _transitionColorMode.isOverrided() )
+			res = MEMBER_FLAG( res | MEMBER_FLAG::TRANSITION_COLOR_MODE );
+
+		if ( _ssTransitionColorMode.isOverrided() )
+			res = MEMBER_FLAG( res | MEMBER_FLAG::SS_TRANSITION_COLOR_MODE );
+
 		return res;
 	}
 	bool InstantiatedRepresentation::isMemberOverrided( const MEMBER_FLAG & p_member ) const
@@ -315,6 +339,8 @@ namespace VTX::Model::Representation
 		case COLOR: return _color.isOverrided(); break;
 		case COLOR_MODE: return _colorMode.isOverrided(); break;
 		case SS_COLOR_MODE: return _ssColorMode.isOverrided(); break;
+		case TRANSITION_COLOR_MODE: return _transitionColorMode.isOverrided(); break;
+		case SS_TRANSITION_COLOR_MODE: return _ssTransitionColorMode.isOverrided(); break;
 		default:
 			VTX_WARNING( "MEMBER_FLAG " + std::to_string( int( p_member ) )
 						 + " not managed in InstantiatedRepresentation::isMemberOverrided." );

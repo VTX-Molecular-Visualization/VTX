@@ -19,7 +19,6 @@ namespace VTX::UI::Widget::Representation
 		void _refresh() override;
 
 		void _onCylinderRadiusChange( const float p_newRadius ) override;
-
 	};
 } // namespace VTX::UI::Widget::Representation
 #endif

@@ -10,13 +10,14 @@ namespace VTX::Model::Representation
 {
 	enum MEMBER_FLAG
 	{
-		SPHERE_RADIUS_FIXED	  = 1 << 0,
-		SPHERE_RADIUS_ADD	  = 1 << 1,
-		CYLINDER_RADIUS		  = 1 << 2,
-		COLOR				  = 1 << 3,
-		COLOR_MODE			  = 1 << 4,
-		SS_COLOR_MODE		  = 1 << 5,
-		COLOR_TRANSITION_MODE = 1 << 6,
+		SPHERE_RADIUS_FIXED		 = 1 << 0,
+		SPHERE_RADIUS_ADD		 = 1 << 1,
+		CYLINDER_RADIUS			 = 1 << 2,
+		COLOR					 = 1 << 3,
+		COLOR_MODE				 = 1 << 4,
+		SS_COLOR_MODE			 = 1 << 5,
+		TRANSITION_COLOR_MODE	 = 1 << 6,
+		SS_TRANSITION_COLOR_MODE = 1 << 7,
 
 		NONE = 0,
 		ALL	 = 0xFFFF
@@ -45,9 +46,13 @@ namespace VTX::Model::Representation
 		Generic::SECONDARY_STRUCTURE_COLOR_MODE &		getSecondaryStructureColorMode();
 		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
 
-		const Generic::COLOR_TRANSITION_MODE & getTransitionColorMode() const;
-		Generic::COLOR_TRANSITION_MODE &	   getTransitionColorMode();
-		void setTransitionColorMode( const Generic::COLOR_TRANSITION_MODE & p_colorMode );
+		const Generic::TRANSITION_COLOR_MODE & getTransitionColorMode() const;
+		Generic::TRANSITION_COLOR_MODE &	   getTransitionColorMode();
+		void setTransitionColorMode( const Generic::TRANSITION_COLOR_MODE & p_colorMode );
+
+		const Generic::TRANSITION_COLOR_MODE & getSecondaryStructureTransitionColorMode() const;
+		Generic::TRANSITION_COLOR_MODE &	   getSecondaryStructureTransitionColorMode();
+		void setSecondaryStructureTransitionColorMode( const Generic::TRANSITION_COLOR_MODE & p_colorMode );
 
 		const VTX::Representation::FlagDataTargeted getFlagDataTargeted() const
 		{
@@ -79,9 +84,10 @@ namespace VTX::Model::Representation
 		CylinderData * _cylinderData = nullptr;
 		RibbonData *   _ribbonData	 = nullptr;
 
-		Generic::COLOR_MODE						_colorMode			 = Generic::COLOR_MODE::ATOM_CHAIN;
-		Generic::SECONDARY_STRUCTURE_COLOR_MODE _ssColorMode		 = Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
-		Generic::COLOR_TRANSITION_MODE			_colorTransitionMode = Generic::COLOR_TRANSITION_MODE::FLAT;
+		Generic::COLOR_MODE						_colorMode			   = Generic::COLOR_MODE::ATOM_CHAIN;
+		Generic::SECONDARY_STRUCTURE_COLOR_MODE _ssColorMode		   = Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
+		Generic::TRANSITION_COLOR_MODE			_colorTransitionMode   = Generic::TRANSITION_COLOR_MODE::FLAT;
+		Generic::TRANSITION_COLOR_MODE			_ssColorTransitionMode = Generic::TRANSITION_COLOR_MODE::FLAT;
 
 		void notifyRepresentationDataChange();
 

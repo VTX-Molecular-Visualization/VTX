@@ -4,6 +4,7 @@
 
 uniform mat4  u_projMatrix;
 uniform float u_cylRad;
+uniform uint  u_transitionColorMode;
 
 in GsOut
 {
@@ -107,8 +108,12 @@ void main()
 			// Fill depth buffer.
 			gl_FragDepth = computeDepth( hit );
 
-			// Color with good color extremity.
-			const vec3 color = gsIn.colors[ int( y > d0 * 0.5f ) ];
+			// Color with good color extremity.			
+			vec3 color = gsIn.colors[ int( y > d0 * 0.5f ) ];			
+			if( u_transitionColorMode == 1 ) // Gradient.
+			{
+				color = mix( gsIn.colors[0], gsIn.colors[1], y / d0 );
+			}
 
 			// Compress position and normal.
 			uvec4 viewPositionNormalCompressed;

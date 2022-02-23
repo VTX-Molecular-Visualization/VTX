@@ -14,6 +14,14 @@ namespace VTX::UI::Widget::Representation
 
 		_addCylinderWidgetInLayout( "Sticks radius", Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
 		_addColorModeInLayout( "Color mode" );
+
+		_addTransitionColorModeInLayout( "Transition color mode" );
+		QStringList colorModeList = QStringList();
+		for ( const std::string colorModeStrings : Generic::TRANSITION_COLOR_MODE_STRING )
+		{
+			colorModeList.append( QString::fromStdString( colorModeStrings ) );
+		}
+		_transitionColorModeWidget->addItems( colorModeList );
 	};
 
 	void StickRepresentationWidget::_refresh()
@@ -44,17 +52,6 @@ namespace VTX::UI::Widget::Representation
 		emit onDataChange(
 			Model::Representation::MEMBER_FLAG( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS
 												| Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
-	}
-
-	void StickRepresentationWidget::_colorTransitionChanged( const Generic::COLOR_TRANSITION_MODE & p_mode )
-	{
-		if ( signalsBlocked() )
-			return;
-
-		_instantiatedRepresentation->setTransitionColorMode( p_mode );
-
-		emit onDataChange(
-			Model::Representation::MEMBER_FLAG( Model::Representation::MEMBER_FLAG::COLOR_TRANSITION_MODE ) );
 	}
 
 } // namespace VTX::UI::Widget::Representation
