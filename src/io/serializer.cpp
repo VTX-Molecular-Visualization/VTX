@@ -91,6 +91,7 @@ namespace VTX::IO
 				 { "NAME", p_molecule.getName() },
 				 { "PDB_ID", p_molecule.getPdbIdCode() },
 				 { "DISPLAY_NAME", p_molecule.getDisplayName() },
+				 { "COLOR", serialize( p_molecule.getColor() ) },
 				 { "CURRENT_FRAME", p_molecule.getFrame() },
 				 { "TRAJECTORY_FPS", p_molecule.getFPS() },
 				 { "TRAJECTORY_PLAYMODE", magic_enum::enum_name( p_molecule.getPlayMode() ) },
@@ -505,6 +506,14 @@ namespace VTX::IO
 		p_molecule.setName( _get<std::string>( p_json, "NAME" ) );
 		p_molecule.setPdbIdCode( _get<std::string>( p_json, "PDB_ID" ) );
 		p_molecule.setDisplayName( _get<std::string>( p_json, "DISPLAY_NAME" ) );
+
+		if ( p_json.contains( "COLOR" ) )
+		{
+			Color::Rgb color;
+			deserialize( p_json.at( "COLOR" ), color );
+
+			p_molecule.setColor( color );
+		}
 
 		p_molecule.setFrame( _get<uint>( p_json, "CURRENT_FRAME" ) );
 		p_molecule.setFPS( _get<uint>( p_json, "TRAJECTORY_FPS" ) );

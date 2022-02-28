@@ -33,14 +33,19 @@ namespace VTX::UI::Widget::Inspector
 			this, "inspector_molecule_transform" );
 		_transformSection->setBody( _transformWidget );
 
-		_representationSection
-			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
+		_representationSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
+			this, "inspector_item_section" );
 		_representationWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::RepresentationInspectorSection>(
 				this, "inspector_instantiated_representation" );
 		_representationWidget->setActionButtonVisibility(
 			Representation::RepresentationInspectorSection::ActionButtons::All );
-		_representationSection->setBody( _representationWidget );
+
+		_moleculeColor
+			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorFieldButton>( this, "molecule_color" );
+
+		_representationSection->appendField( _representationWidget );
+		_representationSection->appendField( "Molecule color", _moleculeColor );
 
 		_trajectorySection
 			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
@@ -126,6 +131,11 @@ namespace VTX::UI::Widget::Inspector
 				 &Representation::RepresentationInspectorSection::onApplyRepresentationToChildren,
 				 this,
 				 &MultipleMoleculeWidget::_onApplyRepresentationToChildren );
+
+		connect( _moleculeColor,
+				 &CustomWidget::ColorFieldButton::onValueChange,
+				 this,
+				 &MultipleMoleculeWidget::_onMoleculeColorChange );
 	};
 
 	void MultipleMoleculeWidget::_endOfFrameRefresh( const SectionFlag & p_flag )
@@ -154,6 +164,7 @@ namespace VTX::UI::Widget::Inspector
 
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
+					_moleculeColor->updateWithNewValue( molecule->getColor() );
 					_representationWidget->updateWithNewValue( *molecule->getRepresentation() );
 				}
 
@@ -197,7 +208,10 @@ namespace VTX::UI::Widget::Inspector
 			_transformWidget->resetState();
 
 		if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
+		{
+			_moleculeColor->resetState();
 			_representationWidget->resetState();
+		}
 
 		if ( bool( p_flag & SectionFlag::TRAJECTORY ) )
 		{
@@ -354,6 +368,10 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleMoleculeWidget::_onApplyRepresentationToChildren() const
 	{
 		VTX_ACTION( new Action::Molecule::RemoveChildrenRepresentations( getTargets() ) );
+	}
+	void MultipleMoleculeWidget::_onMoleculeColorChange( const Color::Rgb & p_color ) const
+	{
+		VTX_ACTION( new Action::Molecule::ChangeColor( getTargets(), p_color ) );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

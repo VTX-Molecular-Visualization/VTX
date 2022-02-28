@@ -5,6 +5,7 @@
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include <QGridLayout>
+#include <QLabel>
 #include <QString>
 
 namespace VTX::UI::Widget::Inspector
@@ -26,7 +27,9 @@ namespace VTX::UI::Widget::Inspector
 		VTX_WIDGET
 
 	  public:
+		void appendField( QWidget * const p_widget );
 		void appendField( const std::string & p_label, QWidget * const p_widget );
+		void appendField( QLabel * const p_label, QWidget * const p_widget );
 
 	  protected:
 		InspectorSectionVLayout( QWidget * p_parent ) : InspectorSection( p_parent ) {};

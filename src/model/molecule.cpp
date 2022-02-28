@@ -1165,7 +1165,10 @@ namespace VTX
 			Generic::BaseColorable::setColor( p_color );
 
 			if ( isInit() )
+			{
+				_notifyViews( new Event::VTXEvent( Event::Model::COLOR_CHANGE ) );
 				VTX_EVENT( new Event::VTXEventRef( Event::Global::MOLECULE_COLOR_CHANGE, p_color ) );
+			}
 		}
 
 	} // namespace Model
