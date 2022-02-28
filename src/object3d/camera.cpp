@@ -15,6 +15,30 @@ namespace VTX
 			_updateRotation();
 		}
 
+		void Camera::setNear( const float p_near )
+		{
+			// Avoid too little value.
+			_near = Util::Math::max( 1e-1f, p_near );
+			_updateProjectionMatrix();
+		}
+		void Camera::setFar( const float p_far )
+		{
+			// Avoid too little value.
+			_far = Util::Math::max( 1e-1f, p_far );
+			_updateProjectionMatrix();
+		}
+		void Camera::setFov( const float p_fov )
+		{
+			_fov = p_fov;
+			_updateProjectionMatrix();
+		}
+
+		void Camera::setPerspective( const bool p_perspective )
+		{
+			_isPerspective = p_perspective;
+			_updateProjectionMatrix();
+		}
+
 		void Camera::move( const Vec3f & p_delta )
 		{
 			_position += _right * p_delta.x;
@@ -62,6 +86,13 @@ namespace VTX
 		void Camera::rotateRoll( const float p_delta )
 		{
 			_rotation = _rotation * Util::Math::eulerToQuaternion( Vec3f( 0.f, 0.f, p_delta ) );
+			_updateRotation();
+		}
+
+		void Camera::setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance )
+		{
+			_rotation = Util::Math::normalize( p_rotation );
+			_position = _rotation * Vec3f( 0.f, 0.f, p_distance ) + p_target;
 			_updateRotation();
 		}
 

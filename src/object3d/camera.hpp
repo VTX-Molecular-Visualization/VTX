@@ -63,32 +63,10 @@ namespace VTX
 				setRotation( p_rotation );
 			}
 
-			inline void setNear( const float p_near )
-			{
-				// Avoid too little value.
-				_near = Util::Math::max( 1e-1f, p_near );
-				_updateProjectionMatrix();
-			}
-
-			inline void setFar( const float p_far )
-			{
-				// Avoid too little value.
-				_far = Util::Math::max( 1e-1f, p_far );
-				_updateProjectionMatrix();
-			}
-
-			inline void setFov( const float p_fov )
-			{
-				_fov = p_fov;
-				_updateProjectionMatrix();
-			}
-
-			inline void setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance )
-			{
-				_rotation = Util::Math::normalize( p_rotation );
-				_position = _rotation * Vec3f( 0.f, 0.f, p_distance ) + p_target;
-				_updateRotation();
-			}
+			void setNear( const float p_near );
+			void setFar( const float p_far );
+			void setFov( const float p_fov );
+			void setPerspective( const bool p_perspective );
 
 			void move( const Vec3f & );
 			void moveFront( const float );
@@ -100,15 +78,9 @@ namespace VTX
 			void rotateYaw( const float );
 			void rotateRoll( const float );
 
+			void setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance );
 			void rotateAround( const Quatf &, const Vec3f &, const float );
-
 			void lookAt( const Vec3f &, const Vec3f & );
-
-			void setPerspective( const bool p_perspective )
-			{
-				_isPerspective = p_perspective;
-				_updateProjectionMatrix();
-			}
 
 			void print() const;
 
