@@ -174,7 +174,7 @@ An action is a class inherited from BaseAction and composed by at least 2 functi
 The constructor where you can set the parameters needed for the action.
 An override of the `void execute()` method to call your functionality.
 
-```
+```cpp
 class MyNewAction : public BaseAction
 {
   public:
@@ -212,14 +212,14 @@ First, you have to decide where you want to add your functionality. The main men
 - Tools for actions linked to molecule analysis or other works on molecules.
   - Various tools.
   
-Once you decide in which block you want to add your button, you will found the block class at "src/ui/widget/main_menu/tab/block.hpp".
+Once you decide in which block you want to add your button, you will found the right class at "src/ui/widget/main_menu/[tab]/[block].hpp" with [tab] and [block] corresponding to the tab name and the block name from the list above.
 
-In the block.hpp file, you will have to declare your button `MenuToolButtonWidget * _functionalityButton	 = nullptr`
+In the [block].hpp file, you will have to declare your button `MenuToolButtonWidget * _functionalityButton	 = nullptr;`
 and the method called when your button will be clicked `void _functionalityAction() const;`
 
-In the block.cpp file, you will need to :
+In the [block].cpp file, you will need to :
 Go to the "_setupUi" method to instantiate your button and add it in the layout :
-``` 
+```cpp
 // Instantiate your button. The given name is for debug only
 _functionalityButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "buttonName" );
 
@@ -230,13 +230,13 @@ _functionalityButton->setData( "DisplayedActionName", ":/sprite/action_icon.png"
 pushButton( *_functionalityButton, columnPos );
 ```
 
-Then you have to connect the "click" action of the button to the _functionalityAction() method :
-```
+Then you have to connect the "trigger" action of the button to the _functionalityAction() method :
+```cpp
 _functionalityButton->setTriggerAction( this, &BlockWidget::_functionalityAction );
 ```
 
 And you have to implement the _functionalityAction to call the Action you create :
-```
+```cpp
 void BlockWidget::_functionalityAction() const
 {
 	VTX_ACTION( new Action::Namespace::MyNewAction( params ) );
@@ -249,12 +249,12 @@ Shortcuts which can be triggered from everywhere in the software are called from
 
 First you have to add the method which will call your action :
 src/ui/main_window.hpp
-```
+```cpp
 void _onShortcutFunctionality() const;
 ```
 
 src/ui/main_window.cpp
-```
+```cpp
 void MainWindow::_onShortcutFunctionality() const
 {
 	VTX_ACTION( new Action::Namespace::MyNewAction(params) ); 
@@ -262,11 +262,13 @@ void MainWindow::_onShortcutFunctionality() const
 ```
 
 Then you can add a your shortcut in the _setupSlots() method like that :
-```
+```cpp
 // Replace Ctrl+N by your own shortcut
 // the "tr" function is a qt function which will translate the text in parameter.
 connect( new QShortcut( QKeySequence( tr( "Ctrl+N" ) ), this ),
 				 &QShortcut::activated,
 				 this,
-				 &MainWindow::_onShortcutFunctionality();
+				 &MainWindow::_onShortcutFunctionality;
 ```
+
+See Userguide/shortcut to check the shortcuts already used in VTX.
