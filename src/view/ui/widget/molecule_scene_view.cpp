@@ -1074,12 +1074,6 @@ namespace VTX::View::UI::Widget
 		return itemAt( p_position ) == _getMoleculeTreeWidgetItem();
 	}
 
-	void MoleculeSceneView::updatePosInSceneHierarchy( const int p_position )
-	{
-		SceneItemWidget::updatePosInSceneHierarchy( p_position );
-		_model->getConfiguration().sceneIndex = p_position;
-	}
-
 	bool MoleculeSceneView::_itemCanBeRenamed( const QTreeWidgetItem * p_item )
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();

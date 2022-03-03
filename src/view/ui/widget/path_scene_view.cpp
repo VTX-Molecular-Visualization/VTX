@@ -213,14 +213,6 @@ namespace VTX::View::UI::Widget
 
 	QMimeData * PathSceneView::_getDataForDrag() const { return VTX::UI::MimeType::generatePathData( *_model ); }
 
-	void PathSceneView::updatePosInSceneHierarchy( const int p_position )
-	{
-		SceneItemWidget::updatePosInSceneHierarchy( p_position );
-
-		// TODO Manage item scene position
-		//_model->getConfiguration().sceneIndex = p_position;
-	}
-
 	QTreeWidgetItem * PathSceneView::_itemFromViewpoint( const Model::Viewpoint & p_viewpoint ) const
 	{
 		const Model::ID & viewpointID = p_viewpoint.getId();

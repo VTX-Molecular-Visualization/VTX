@@ -8,6 +8,7 @@
 #include "ui/mime_type.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_label.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_selection.hpp"
+#include "util/ui.hpp"
 
 namespace VTX::View::UI::Widget::Measurement
 {
@@ -44,6 +45,11 @@ namespace VTX::View::UI::Widget::Measurement
 			if ( newName != _model->getDefaultName() )
 			{
 				VTX_ACTION( new Action::Label::Rename( *_model, newName ) );
+			}
+			else
+			{
+				const bool enableState = Util::UI::getCheckState( p_item->checkState( 0 ) );
+				VTX_ACTION( new Action::Label::SetEnable( *_model, enableState ) );
 			}
 		}
 	}

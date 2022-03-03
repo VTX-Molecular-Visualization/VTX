@@ -1,6 +1,7 @@
 #include "contextual_menu_render.hpp"
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
+#include "action/scene.hpp"
 #include "action/setting.hpp"
 #include "state/visualization.hpp"
 #include "ui/dialog.hpp"
@@ -88,7 +89,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuRender::_loadMoleculeAction() const { UI::Dialog::openLoadMoleculeDialog(); }
 	void ContextualMenuRender::_downloadMoleculeAction() const { UI::Dialog::openDownloadMoleculeDialog(); }
-	void ContextualMenuRender::_showAllMoleculesAction() const { VTX_ACTION( new Action::Main::ShowAllMolecules() ); }
+	void ContextualMenuRender::_showAllMoleculesAction() const { VTX_ACTION( new Action::Scene::ShowAllMolecules() ); }
 
 	void ContextualMenuRender::_setPickerToSelection() const
 	{

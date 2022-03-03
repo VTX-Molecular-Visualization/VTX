@@ -17,8 +17,6 @@ namespace VTX
 				std::set<std::string> solventResidueSymbols				 = std::set<std::string>();
 				std::set<std::string> ionResidueSymbols					 = std::set<std::string>();
 				bool				  isSecondaryStructureLoadedFromFile = false;
-
-				int sceneIndex = 0;
 			};
 
 		} // namespace Configuration

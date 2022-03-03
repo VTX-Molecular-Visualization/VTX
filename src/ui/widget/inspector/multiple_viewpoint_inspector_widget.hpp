@@ -8,6 +8,7 @@
 #include "ui/widget/custom_widget/transform_widget.hpp"
 #include "ui/widget/inspector/inspector_section.hpp"
 #include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
+#include <QPushButton>
 #include <QWidget>
 
 namespace VTX::UI::Widget::Inspector
@@ -33,6 +34,11 @@ namespace VTX::UI::Widget::Inspector
 		InspectorSectionVLayout *		_transformSection = nullptr;
 		CustomWidget::TransformWidget * _transformWidget  = nullptr;
 
+		QWidget *				  _actionContainer = nullptr;
+		InspectorSectionVLayout * _actionSection   = nullptr;
+
+		QPushButton * _relocateButton = nullptr;
+
 		std::vector<CustomWidget::EmbeddedDataPushButton *> _gotoButtons
 			= std::vector<CustomWidget::EmbeddedDataPushButton *>();
 
@@ -43,6 +49,7 @@ namespace VTX::UI::Widget::Inspector
 		void _onRotationDragged( const Vec3f & ) const;
 
 		void _goToAction( const QVariant & p_viewpointIndex ) const;
+		void _relocateAction() const;
 	};
 } // namespace VTX::UI::Widget::Inspector
 

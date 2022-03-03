@@ -5,17 +5,21 @@
 #include "buffer/mesh_triangle.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "generic/base_scene_item.hpp"
 #include <vector>
 
 namespace VTX
 {
 	namespace Model
 	{
-		class MeshTriangle : public BaseModel3D<Buffer::MeshTriangle>
+		class MeshTriangle : public BaseModel3D<Buffer::MeshTriangle>, public Generic::BaseSceneItem
 		{
 			VTX_MODEL
 
 		  public:
+			// BaseSceneItem
+			const Model::ID & getModelID() const override { return getId(); }
+
 			inline const std::vector<Vec3f> & getVertices() const { return _vertices; }
 			inline std::vector<Vec3f> &		  getVertices() { return _vertices; }
 			inline const Vec3f &			  getVertice( const uint p_idx ) const { return _vertices[ p_idx ]; }

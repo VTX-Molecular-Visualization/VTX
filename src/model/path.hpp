@@ -3,6 +3,7 @@
 
 #include "base_model.hpp"
 #include "define.hpp"
+#include "generic/base_scene_item.hpp"
 #include "setting.hpp"
 #include <vector>
 
@@ -11,7 +12,7 @@ namespace VTX
 	namespace Model
 	{
 		class Viewpoint;
-		class Path : public BaseModel
+		class Path : public BaseModel, public Generic::BaseSceneItem
 		{
 			VTX_MODEL
 
@@ -32,6 +33,9 @@ namespace VTX
 				CATMULL_ROM,
 				CUBIC
 			};
+
+			// BaseSceneItem
+			const Model::ID & getModelID() const override { return getId(); }
 
 			void addViewpoint( const ViewpointPtr p_viewpoint );
 			void removeViewpoint( const ViewpointPtr p_viewpoint );

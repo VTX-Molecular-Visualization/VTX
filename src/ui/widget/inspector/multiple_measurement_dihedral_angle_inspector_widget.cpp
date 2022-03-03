@@ -40,6 +40,12 @@ namespace VTX::UI::Widget::Inspector
 
 		_dihedralAngleLabelWidget = new CustomWidget::QLabelMultiField( this );
 
+		_displaySection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
+			this, "inspector_item_section" );
+
+		_colorWidget
+			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorFieldButton>( this, "colorWidget" );
+
 		QWidget * const goToAtomButtons = new QWidget( this );
 		QVBoxLayout *	goToAtomLayout	= new QVBoxLayout( goToAtomButtons );
 
@@ -60,7 +66,10 @@ namespace VTX::UI::Widget::Inspector
 		_infoSection->appendField( "Atoms", goToAtomButtons );
 		_infoSection->appendField( "Dihedral angle", _dihedralAngleLabelWidget );
 
+		_displaySection->appendField( "Color", _colorWidget );
+
 		_appendWidget( _positionSection );
+		_appendWidget( _displaySection );
 		_appendWidget( _infoSection );
 
 		const bool oldBlockState = blockSignals( true );
@@ -88,6 +97,11 @@ namespace VTX::UI::Widget::Inspector
 			_goToThirdAtom, &QPushButton::clicked, this, &MultipleMeasurmentDihedralAngleWidget::_orientOnThirdAtom );
 		connect(
 			_goToFourthAtom, &QPushButton::clicked, this, &MultipleMeasurmentDihedralAngleWidget::_orientOnFourthAtom );
+		
+		connect( _colorWidget,
+				 &CustomWidget::ColorFieldButton::onValueChange,
+				 this,
+				 &MultipleMeasurmentDihedralAngleWidget::_setLabelColor );
 	};
 
 	void MultipleMeasurmentDihedralAngleWidget::_endOfFrameRefresh( const SectionFlag & p_flag )
@@ -126,6 +140,7 @@ namespace VTX::UI::Widget::Inspector
 					const std::string dihedralAngleStr
 						= Util::Measurement::getDihedralAngleString( *dihedralAngleModel );
 					_dihedralAngleLabelWidget->updateWithNewValue( dihedralAngleStr );
+					_colorWidget->updateWithNewValue( dihedralAngleModel->getColor() );
 
 					if ( dihedralAngleModel->getTypeId() == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
 					{
@@ -187,6 +202,15 @@ namespace VTX::UI::Widget::Inspector
 
 		VTX_ACTION( new Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
 	}
+	
+	void MultipleMeasurmentDihedralAngleWidget::_setLabelColor( const Color::Rgb & p_color ) const
+	{
+		std::unordered_set<Model::Label *> labelTargets = std::unordered_set<Model::Label *>();
+		for ( Model::Measurement::DihedralAngle * const targetDistance : getTargets() )
+			labelTargets.emplace( targetDistance );
+
+		VTX_ACTION( new Action::Label::ChangeColor( labelTargets, p_color ) );
+	}
 
 	void MultipleMeasurmentDihedralAngleWidget::_setAutoNameAction() const
 	{
@@ -204,6 +228,7 @@ namespace VTX::UI::Widget::Inspector
 			_positionInfoWidget->resetState();
 			_nameWidget->resetState();
 			_dihedralAngleLabelWidget->resetState();
+			_colorWidget->resetState();
 			_goToFirstAtom->setVisible( false );
 			_goToSecondAtom->setVisible( false );
 			_goToThirdAtom->setVisible( false );
@@ -214,6 +239,7 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleMeasurmentDihedralAngleWidget::localize()
 	{
 		_positionSection->setHeaderTitle( "Position" );
+		_displaySection->setHeaderTitle( "Display" );
 		_infoSection->setHeaderTitle( "Informations" );
 		_positionSection->localize();
 		_infoSection->localize();

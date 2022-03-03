@@ -6,11 +6,17 @@
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "generic/base_colorable.hpp"
+#include "generic/base_scene_item.hpp"
 #include "io/reader/lib_chemfiles.hpp"
 #include "io/struct/image_export.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "model/chain.hpp"
 #include "model/configuration/molecule.hpp"
+#include "model/label.hpp"
+#include "model/measurement/angle.hpp"
+#include "model/measurement/dihedral_angle.hpp"
+#include "model/measurement/distance.hpp"
+#include "model/measurement/distance_to_cycle.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
@@ -27,6 +33,7 @@
 #include "worker/base_thread.hpp"
 #include <algorithm>
 #include <magic_enum.hpp>
+#include <map>
 
 namespace VTX::IO
 {
@@ -43,22 +50,31 @@ namespace VTX::IO
 		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 		{
 			nlohmann::json json
-				= { { "INDEX", pair.first->getConfiguration().sceneIndex }, { "MOLECULE", serialize( *pair.first ) } };
+				= { { "INDEX", p_scene.getItemPosition( *pair.first ) }, { "MOLECULE", serialize( *pair.first ) } };
 
 			jsonArrayMolecules.emplace_back( json );
+		}
+
+		nlohmann::json jsonArrayLabels = nlohmann::json::array();
+		for ( const Model::Label * const label : p_scene.getLabels() )
+		{
+			nlohmann::json json = { { "INDEX", p_scene.getItemPosition( *label ) }, { "LABEL", serialize( *label ) } };
+			jsonArrayLabels.emplace_back( json );
 		}
 
 		nlohmann::json jsonArrayPaths = nlohmann::json::array();
 		for ( const Model::Path * const path : p_scene.getPaths() )
 		{
-			jsonArrayPaths.emplace_back( serialize( *path ) );
+			nlohmann::json json = { { "INDEX", p_scene.getItemPosition( *path ) }, { "PATH", serialize( *path ) } };
+			jsonArrayPaths.emplace_back( json );
 		}
 
 		return { { "CAMERA_POSITION", serialize( p_scene.getCamera().getPosition() ) },
 				 { "CAMERA_ROTATION", serialize( p_scene.getCamera().getRotation() ) },
 				 { "MOLECULE_COUNT", p_scene.getMolecules().size() },
 				 { "MOLECULES", jsonArrayMolecules },
-				 { "PATHS", jsonArrayPaths } };
+				 { "PATHS", jsonArrayPaths },
+				 { "LABELS", jsonArrayLabels } };
 	}
 
 	nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
@@ -75,10 +91,66 @@ namespace VTX::IO
 				 { "NAME", p_molecule.getName() },
 				 { "PDB_ID", p_molecule.getPdbIdCode() },
 				 { "DISPLAY_NAME", p_molecule.getDisplayName() },
+				 { "COLOR", serialize( p_molecule.getColor() ) },
 				 { "CURRENT_FRAME", p_molecule.getFrame() },
 				 { "TRAJECTORY_FPS", p_molecule.getFPS() },
 				 { "TRAJECTORY_PLAYMODE", magic_enum::enum_name( p_molecule.getPlayMode() ) },
-				 { "TRAJECTORY_ISPLAYING", p_molecule.isPlaying() } };
+				 { "TRAJECTORY_ISPLAYING", p_molecule.isPlaying() },
+				 { "PERSISTENT_SCENE_ID", p_molecule.getPersistentSceneID() } };
+	}
+
+	nlohmann::json Serializer::serialize( const Model::Label & p_label ) const
+	{
+		const ID::VTX_ID & labelTypeID = p_label.getTypeId();
+
+		if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+			return serialize( dynamic_cast<const Model::Measurement::Distance &>( p_label ) );
+		else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+			return serialize( dynamic_cast<const Model::Measurement::DistanceToCycle &>( p_label ) );
+		else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
+			return serialize( dynamic_cast<const Model::Measurement::Angle &>( p_label ) );
+		else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+			return serialize( dynamic_cast<const Model::Measurement::DihedralAngle &>( p_label ) );
+		else
+			return {};
+	}
+
+	nlohmann::json Serializer::serialize( const Model::Measurement::Distance & p_distanceLabel ) const
+	{
+		return { { "TYPE_ID", p_distanceLabel.getTypeId() },
+				 { "NAME", p_distanceLabel.getDefaultName() },
+				 { "ENABLED", p_distanceLabel.isEnable() },
+				 { "COLOR", serialize( p_distanceLabel.getColor() ) },
+				 { "ATOM_1_ID", serialize_atom_reference( p_distanceLabel.getFirstAtom() ) },
+				 { "ATOM_2_ID", serialize_atom_reference( p_distanceLabel.getSecondAtom() ) },
+				 { "AUTO_NAMING", p_distanceLabel.hasAutoNaming() },
+				 { "PERSISTENT_SCENE_ID", p_distanceLabel.getPersistentSceneID() } };
+	}
+	nlohmann::json Serializer::serialize( const Model::Measurement::DistanceToCycle & ) const { return {}; }
+	nlohmann::json Serializer::serialize( const Model::Measurement::Angle & p_angleLabel ) const
+	{
+		return { { "TYPE_ID", p_angleLabel.getTypeId() },
+				 { "NAME", p_angleLabel.getDefaultName() },
+				 { "ENABLED", p_angleLabel.isEnable() },
+				 { "COLOR", serialize( p_angleLabel.getColor() ) },
+				 { "ATOM_1_ID", serialize_atom_reference( p_angleLabel.getFirstAtom() ) },
+				 { "ATOM_2_ID", serialize_atom_reference( p_angleLabel.getSecondAtom() ) },
+				 { "ATOM_3_ID", serialize_atom_reference( p_angleLabel.getThirdAtom() ) },
+				 { "AUTO_NAMING", p_angleLabel.hasAutoNaming() },
+				 { "PERSISTENT_SCENE_ID", p_angleLabel.getPersistentSceneID() } };
+	}
+	nlohmann::json Serializer::serialize( const Model::Measurement::DihedralAngle & p_angleLabel ) const
+	{
+		return { { "TYPE_ID", p_angleLabel.getTypeId() },
+				 { "NAME", p_angleLabel.getDefaultName() },
+				 { "ENABLED", p_angleLabel.isEnable() },
+				 { "COLOR", serialize( p_angleLabel.getColor() ) },
+				 { "ATOM_1_ID", serialize_atom_reference( p_angleLabel.getFirstAtom() ) },
+				 { "ATOM_2_ID", serialize_atom_reference( p_angleLabel.getSecondAtom() ) },
+				 { "ATOM_3_ID", serialize_atom_reference( p_angleLabel.getThirdAtom() ) },
+				 { "ATOM_4_ID", serialize_atom_reference( p_angleLabel.getFourthAtom() ) },
+				 { "AUTO_NAMING", p_angleLabel.hasAutoNaming() },
+				 { "PERSISTENT_SCENE_ID", p_angleLabel.getPersistentSceneID() } };
 	}
 
 	nlohmann::json Serializer::serialize( const Model::Path & p_path ) const
@@ -94,7 +166,8 @@ namespace VTX::IO
 				 { "MODE_INTERPOLATION", magic_enum::enum_name( p_path.getInterpolationMode() ) },
 				 { "DURATION", p_path.getDuration() },
 				 { "IS_LOOPING", p_path.isLooping() },
-				 { "VIEWPOINTS", jsonArray } };
+				 { "VIEWPOINTS", jsonArray },
+				 { "PERSISTENT_SCENE_ID", p_path.getPersistentSceneID() } };
 	}
 
 	nlohmann::json Serializer::serialize( const Model::Viewpoint & p_viewpoint ) const
@@ -264,6 +337,12 @@ namespace VTX::IO
 		};
 	}
 
+	nlohmann::json Serializer::serialize_atom_reference( const Model::Atom & p_atom ) const
+	{
+		return nlohmann::json(
+			{ { "M", p_atom.getMoleculePtr()->getPersistentSceneID() }, { "A", p_atom.getIndex() } } );
+	}
+
 	void Serializer::deserialize( const nlohmann::json & p_json, VTXApp & p_app ) const
 	{
 		deserialize( p_json.at( "SCENE" ), p_app.getScene() );
@@ -279,10 +358,10 @@ namespace VTX::IO
 		if ( p_json.contains( "CAMERA_ROTATION" ) )
 			deserialize( p_json.at( "CAMERA_ROTATION" ), cameraRot );
 
-		std::vector<Model::Molecule *> molecules = std::vector<Model::Molecule *>();
+		std::vector<Model::Molecule *>			molecules		= std::vector<Model::Molecule *>();
+		std::map<int, Generic::BaseSceneItem *> itemPositionMap = std::map<int, Generic::BaseSceneItem *>();
 
-		const int moleculeCount = _get<int>( p_json, "MOLECULE_COUNT" );
-		molecules.resize( moleculeCount );
+		int lastItemIndex = -1;
 
 		if ( p_json.contains( "MOLECULES" ) )
 		{
@@ -302,19 +381,17 @@ namespace VTX::IO
 						throw e;
 					}
 
-					molecule->getConfiguration().sceneIndex				 = _get<int>( jsonMolecule, "INDEX", INT_MAX );
-					molecules[ molecule->getConfiguration().sceneIndex ] = molecule;
+					if ( jsonMolecule.contains( "INDEX" ) )
+					{
+						const int itemPosition			= _get<int>( jsonMolecule, "INDEX" );
+						lastItemIndex					= lastItemIndex > itemPosition ? lastItemIndex : itemPosition;
+						itemPositionMap[ itemPosition ] = molecule;
+					}
+
+					molecule->refreshVisibilities( false );
+					VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
+					p_scene.addMolecule( molecule );
 				}
-			}
-
-			for ( Model::Molecule * const molecule : molecules )
-			{
-				if ( molecule == nullptr )
-					continue;
-
-				molecule->refreshVisibilities( false );
-				VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
-				p_scene.addMolecule( molecule );
 			}
 		}
 
@@ -322,9 +399,75 @@ namespace VTX::IO
 		{
 			for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
 			{
-				Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
-				deserialize( jsonPath, *path );
-				p_scene.addPath( path );
+				Model::Path * path;
+				if ( jsonPath.contains( "PATH" ) )
+				{
+					path = tryDeserializeModel<Model::Path>( jsonPath.at( "PATH" ) );
+				}
+				else
+				{
+					path = nullptr;
+				}
+
+				if ( path != nullptr )
+				{
+					if ( jsonPath.contains( "INDEX" ) )
+					{
+						const int itemPosition = _get<int>( jsonPath, "INDEX" );
+
+						lastItemIndex					= lastItemIndex > itemPosition ? lastItemIndex : itemPosition;
+						itemPositionMap[ itemPosition ] = path;
+					}
+
+					p_scene.addPath( path );
+				}
+			}
+		}
+
+		if ( p_json.contains( "LABELS" ) )
+		{
+			for ( const nlohmann::json & jsonLabel : p_json.at( "LABELS" ) )
+			{
+				if ( jsonLabel.contains( "LABEL" ) )
+				{
+					Model::Label *		   label		 = nullptr;
+					const nlohmann::json & jsonLabelData = jsonLabel.at( "LABEL" );
+
+					if ( jsonLabelData.contains( "TYPE_ID" ) )
+					{
+						ID::VTX_ID typeID = jsonLabelData.at( "TYPE_ID" ).get<ID::VTX_ID>();
+
+						if ( typeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+							label = tryDeserializeModel<Model::Measurement::Distance>( jsonLabelData );
+						// else if ( typeID == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+						//	label = tryDeserializeModel<Model::Measurement::DistanceToCycle>(
+						//		jsonLabelData.at( "LABEL" ) );
+						else if ( typeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
+							label = tryDeserializeModel<Model::Measurement::Angle>( jsonLabelData );
+						else if ( typeID == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+							label = tryDeserializeModel<Model::Measurement::DihedralAngle>( jsonLabelData );
+					}
+
+					if ( label != nullptr )
+					{
+						if ( jsonLabel.contains( "INDEX" ) )
+						{
+							const int itemPosition = _get<int>( jsonLabel, "INDEX" );
+							lastItemIndex		   = lastItemIndex > itemPosition ? lastItemIndex : itemPosition;
+							itemPositionMap[ itemPosition ] = label;
+						}
+						p_scene.addLabel( label );
+					}
+				}
+			}
+		}
+
+		for ( int i = 0; i <= lastItemIndex; i++ )
+		{
+			std::map<int, Generic::BaseSceneItem *>::iterator it = itemPositionMap.find( i );
+			if ( it != itemPositionMap.end() )
+			{
+				p_scene.changeModelPosition( *( it->second ), it->first );
 			}
 		}
 
@@ -375,10 +518,19 @@ namespace VTX::IO
 		p_molecule.setPdbIdCode( _get<std::string>( p_json, "PDB_ID" ) );
 		p_molecule.setDisplayName( _get<std::string>( p_json, "DISPLAY_NAME" ) );
 
+		if ( p_json.contains( "COLOR" ) )
+		{
+			Color::Rgb color;
+			deserialize( p_json.at( "COLOR" ), color );
+
+			p_molecule.setColor( color );
+		}
+
 		p_molecule.setFrame( _get<uint>( p_json, "CURRENT_FRAME" ) );
 		p_molecule.setFPS( _get<uint>( p_json, "TRAJECTORY_FPS" ) );
 		p_molecule.setPlayMode( _getEnum<Trajectory::PlayMode>( p_json, "TRAJECTORY_PLAYMODE" ) );
 		p_molecule.setIsPlaying( _get<bool>( p_json, "TRAJECTORY_ISPLAYING" ) );
+		p_molecule.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
 	}
 
 	void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const
@@ -406,6 +558,7 @@ namespace VTX::IO
 
 		p_path.setDuration( _get<float>( p_json, "DURATION", Setting::PATH_DURATION_DEFAULT ) );
 		p_path.setIsLooping( _get<bool>( p_json, "IS_LOOPING" ) );
+		p_path.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
 
 		if ( p_json.contains( "VIEWPOINTS" ) )
 		{
@@ -517,6 +670,103 @@ namespace VTX::IO
 			deserialize( p_json.at( "COLOR" ), color );
 			p_representation.setColor( color );
 		}
+	}
+
+	void Serializer::deserialize( const nlohmann::json & p_json, Model::Measurement::Distance & p_distanceLabel ) const
+	{
+		if ( p_json.contains( "AUTO_NAMING" ) )
+			p_distanceLabel.setAutoNaming( p_json.at( "AUTO_NAMING" ).get<bool>() );
+
+		if ( !p_distanceLabel.hasAutoNaming() && p_json.contains( "NAME" ) )
+			p_distanceLabel.setName( p_json.at( "NAME" ).get<std::string>() );
+
+		if ( p_json.contains( "ENABLED" ) )
+			p_distanceLabel.setEnable( p_json.at( "ENABLED" ).get<bool>() );
+
+		if ( p_json.contains( "COLOR" ) )
+		{
+			Color::Rgb color;
+			deserialize( p_json.at( "COLOR" ), color );
+			p_distanceLabel.setColor( color );
+		}
+
+		if ( p_json.contains( "ATOM_1_ID" ) && p_json.contains( "ATOM_2_ID" ) )
+		{
+			const Model::Atom * atom1 = deserialize_atom_reference( p_json.at( "ATOM_1_ID" ) );
+			const Model::Atom * atom2 = deserialize_atom_reference( p_json.at( "ATOM_2_ID" ) );
+
+			if ( atom1 != nullptr && atom2 != nullptr )
+				p_distanceLabel.setAtoms( *atom1, *atom2 );
+		}
+
+		if ( p_json.contains( "PERSISTENT_SCENE_ID" ) )
+			p_distanceLabel.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
+	}
+	void Serializer::deserialize( const nlohmann::json &, Model::Measurement::DistanceToCycle & ) const {}
+	void Serializer::deserialize( const nlohmann::json & p_json, Model::Measurement::Angle & p_angleLabel ) const
+	{
+		if ( p_json.contains( "AUTO_NAMING" ) )
+			p_angleLabel.setAutoNaming( p_json.at( "AUTO_NAMING" ).get<bool>() );
+
+		if ( !p_angleLabel.hasAutoNaming() && p_json.contains( "NAME" ) )
+			p_angleLabel.setName( p_json.at( "NAME" ).get<std::string>() );
+
+		if ( p_json.contains( "ENABLED" ) )
+			p_angleLabel.setEnable( p_json.at( "ENABLED" ).get<bool>() );
+
+		if ( p_json.contains( "COLOR" ) )
+		{
+			Color::Rgb color;
+			deserialize( p_json.at( "COLOR" ), color );
+			p_angleLabel.setColor( color );
+		}
+
+		if ( p_json.contains( "ATOM_1_ID" ) && p_json.contains( "ATOM_2_ID" ) && p_json.contains( "ATOM_3_ID" ) )
+		{
+			const Model::Atom * atom1 = deserialize_atom_reference( p_json.at( "ATOM_1_ID" ) );
+			const Model::Atom * atom2 = deserialize_atom_reference( p_json.at( "ATOM_2_ID" ) );
+			const Model::Atom * atom3 = deserialize_atom_reference( p_json.at( "ATOM_3_ID" ) );
+
+			if ( atom1 != nullptr && atom2 != nullptr && atom3 != nullptr )
+				p_angleLabel.setAtoms( *atom1, *atom2, *atom3 );
+		}
+
+		if ( p_json.contains( "PERSISTENT_SCENE_ID" ) )
+			p_angleLabel.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
+	}
+	void Serializer::deserialize( const nlohmann::json &			  p_json,
+								  Model::Measurement::DihedralAngle & p_angleLabel ) const
+	{
+		if ( p_json.contains( "AUTO_NAMING" ) )
+			p_angleLabel.setAutoNaming( p_json.at( "AUTO_NAMING" ).get<bool>() );
+
+		if ( !p_angleLabel.hasAutoNaming() && p_json.contains( "NAME" ) )
+			p_angleLabel.setName( p_json.at( "NAME" ).get<std::string>() );
+
+		if ( p_json.contains( "ENABLED" ) )
+			p_angleLabel.setEnable( p_json.at( "ENABLED" ).get<bool>() );
+
+		if ( p_json.contains( "COLOR" ) )
+		{
+			Color::Rgb color;
+			deserialize( p_json.at( "COLOR" ), color );
+			p_angleLabel.setColor( color );
+		}
+
+		if ( p_json.contains( "ATOM_1_ID" ) && p_json.contains( "ATOM_2_ID" ) && p_json.contains( "ATOM_3_ID" )
+			 && p_json.contains( "ATOM_4_ID" ) )
+		{
+			const Model::Atom * atom1 = deserialize_atom_reference( p_json.at( "ATOM_1_ID" ) );
+			const Model::Atom * atom2 = deserialize_atom_reference( p_json.at( "ATOM_2_ID" ) );
+			const Model::Atom * atom3 = deserialize_atom_reference( p_json.at( "ATOM_3_ID" ) );
+			const Model::Atom * atom4 = deserialize_atom_reference( p_json.at( "ATOM_4_ID" ) );
+
+			if ( atom1 != nullptr && atom2 != nullptr && atom3 != nullptr && atom4 != nullptr )
+				p_angleLabel.setAtoms( *atom1, *atom2, *atom3, *atom4 );
+		}
+
+		if ( p_json.contains( "PERSISTENT_SCENE_ID" ) )
+			p_angleLabel.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
 	}
 
 	void Serializer::deserialize( const nlohmann::json &				  p_json,
@@ -710,6 +960,32 @@ namespace VTX::IO
 
 		p_setting.setSelectionGranularity(
 			_getEnum( p_json, "SELECTION_GRANULARITY", Setting::SELECTION_GRANULARITY_DEFAULT ) );
+	}
+
+	const Model::Atom * Serializer::deserialize_atom_reference( const nlohmann::json & p_json ) const
+	{
+		if ( !p_json.contains( "M" ) || !p_json.contains( "A" ) )
+			return nullptr;
+
+		const int moleculePersistentSceneID = p_json.at( "M" ).get<int>();
+
+		const Object3D::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
+
+		const Model::Molecule * linkedMolecule = nullptr;
+		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : sceneMolecules )
+		{
+			if ( pair.first->getPersistentSceneID() == moleculePersistentSceneID )
+			{
+				linkedMolecule = pair.first;
+				break;
+			}
+		}
+
+		if ( linkedMolecule == nullptr )
+			return nullptr;
+
+		const uint atomIndex = p_json.at( "A" ).get<uint>();
+		return linkedMolecule->getAtom( atomIndex );
 	}
 
 	nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,

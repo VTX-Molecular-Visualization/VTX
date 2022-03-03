@@ -289,24 +289,6 @@ namespace VTX::Action::Main
 		std::vector<IO::FilePath> _paths = std::vector<IO::FilePath>();
 	};
 
-	class ResetScene : public BaseAction
-	{
-	  public:
-		virtual void execute() override { VTXApp::get().getScene().reset(); }
-	};
-
-	class ShowAllMolecules : public BaseAction
-	{
-	  public:
-		virtual void execute() override
-		{
-			for ( Object3D::Scene::PairMoleculePtrFloat & pairMol : VTXApp::get().getScene().getMolecules() )
-			{
-				Util::Molecule::show( *pairMol.first, true, true );
-			}
-		}
-	};
-
 	class ToggleCameraController : public BaseAction
 	{
 	  public:

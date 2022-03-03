@@ -6,6 +6,7 @@
 #include "color/rgb.hpp"
 #include "define.hpp"
 #include "generic/base_representable.hpp"
+#include "generic/base_scene_item.hpp"
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
@@ -40,7 +41,8 @@ namespace VTX
 		class Molecule :
 			public BaseModel3D<Buffer::Molecule>,
 			public Generic::BaseColorable,
-			public Generic::BaseRepresentable
+			public Generic::BaseRepresentable,
+			public Generic::BaseSceneItem
 		{
 			VTX_MODEL
 
@@ -53,6 +55,9 @@ namespace VTX
 			inline const Configuration::Molecule & getConfiguration() const { return _configuration; }
 			inline Configuration::Molecule &	   getConfiguration() { return _configuration; }
 			inline void setConfiguration( const Configuration::Molecule & p_config ) { _configuration = p_config; }
+
+			// BaseSceneItem
+			const Model::ID & getModelID() const override { return getId(); }
 
 			// Representation.
 			inline const RepresentationState & getRepresentationState() const { return _representationState; }

@@ -1,18 +1,23 @@
 #ifndef __VTX_MODEL_LABEL__
 #define __VTX_MODEL_LABEL__
 
+#include "color/rgb.hpp"
 #include "define.hpp"
+#include "generic/base_scene_item.hpp"
 #include "id.hpp"
 #include "math/aabb.hpp"
 #include "model/base_model.hpp"
 
 namespace VTX::Model
 {
-	class Label : public BaseModel
+	class Label : public BaseModel, public Generic::BaseSceneItem
 	{
 		VTX_MODEL
 
 	  public:
+		// BaseSceneItem
+		const Model::ID & getModelID() const override { return getId(); }
+
 		void		  setName( const std::string & p_name );
 		const Vec3f & getPosition() const;
 		void		  setPosition( const Vec3f & p_position );
@@ -23,6 +28,9 @@ namespace VTX::Model
 		void setAutoNaming( const bool p_autoNaming, const bool p_notify = true );
 
 		virtual Vec2f getSize() const;
+
+		const Color::Rgb & getColor() const { return _color; }
+		void			   setColor( const Color::Rgb & p_color );
 
 	  protected:
 		Label();
@@ -37,8 +45,9 @@ namespace VTX::Model
 		virtual void _recomputeAABB( Math::AABB & p_aabb );
 
 	  private:
-		std::string _name		   = "";
-		bool		_autoNaming	   = false;
+		std::string _name		= "";
+		bool		_autoNaming = false;
+		Color::Rgb	_color;
 		Vec3f		_worldPosition = VEC3F_ZERO;
 
 		Math::AABB _aabb = Math::AABB();

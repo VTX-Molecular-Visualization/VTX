@@ -3,9 +3,11 @@
 
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
+#include <QEvent>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMouseEvent>
+#include <QObject>
 #include <QPaintEvent>
 #include <QWidget>
 
@@ -29,7 +31,8 @@ namespace VTX::UI::Widget::CustomWidget
 		void setMax( const float p_max );
 		void setMinMax( const float p_min, const float p_max );
 
-		void setLabel( const QString & p_label );
+		QLabel * getLabelWidget() { return _label; }
+		void	 setLabel( const QString & p_label );
 
 		void setDragValueFactor( const float p_factor );
 		void setEnabled( const bool p_enable );
@@ -50,10 +53,12 @@ namespace VTX::UI::Widget::CustomWidget
 		void _setupSlots() override;
 		void _refresh();
 
+		bool eventFilter( QObject * p_obj, QEvent * p_event ) override;
+
 		void paintEvent( QPaintEvent * event ) override;
-		void mousePressEvent( QMouseEvent * p_event ) override;
-		void mouseMoveEvent( QMouseEvent * p_event ) override;
-		void mouseReleaseEvent( QMouseEvent * p_event ) override;
+		void labelMousePressEvent( QMouseEvent * p_event );
+		void labelMouseMoveEvent( QMouseEvent * p_event );
+		void labelMouseReleaseEvent( QMouseEvent * p_event );
 
 		void _onTextFieldEdited();
 		void _onInternalValueChanged( const float p_newValue );

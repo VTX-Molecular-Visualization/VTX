@@ -3,6 +3,7 @@
 #include "style.hpp"
 #include "ui/main_window.hpp"
 #include "util/measurement.hpp"
+#include "util/ui.hpp"
 #include "util/ui_render.hpp"
 #include "vtx_app.hpp"
 #include <QFontMetrics>
@@ -24,9 +25,8 @@ namespace VTX::View::UI::Widget::Measurement
 		_labelBrush.setStyle( Qt::BrushStyle::SolidPattern );
 
 		_linePen = QPen();
-		_linePen.setColor( Style::MEASUREMENT_DISTANCE_LABEL_LINE_COLOR );
 		_linePen.setStyle( Style::MEASUREMENT_DISTANCE_LABEL_LINE_STYLE );
-		_lineBrush = QBrush( Qt::BrushStyle::NoBrush );
+		_lineBrush = QBrush( Qt::BrushStyle::SolidPattern );
 		//_lineBrush = QBrush( Qt::BrushStyle::SolidPattern );
 	}
 
@@ -35,15 +35,19 @@ namespace VTX::View::UI::Widget::Measurement
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>::_setupUi( p_name );
 
 		_refreshText();
+		_refreshColor();
 		updatePosition();
 		setVisible( true );
 	}
 	void DistanceRenderView::_setupSlots() {}
 	void DistanceRenderView::localize() {}
 
+
 	void DistanceRenderView::_refreshView()
 	{
 		_refreshText();
+		_refreshColor();
+
 		// updatePosition called because it resizing the widget. Maybe resize can be done in a specific function
 		updatePosition();
 		repaint();
@@ -51,7 +55,7 @@ namespace VTX::View::UI::Widget::Measurement
 
 	void DistanceRenderView::updatePosition()
 	{
-		if ( !_model->isValid() )
+		if ( !_model->isValid() || !_model->isEnable() )
 			return;
 
 		const Vec3f & firstAtomWorldPos	 = _model->getFirstAtom().getWorldPosition();
@@ -79,12 +83,18 @@ namespace VTX::View::UI::Widget::Measurement
 											   1.f );
 
 		if ( ratioScale == 0.f )
+		{
+			repaint();
 			return;
+		}
 
 		_paintData.lineSize = Style::MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS
 							  + ( Style::MEASUREMENT_DISTANCE_LABEL_MAX_LINE_THICKNESS
 								  - Style::MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS )
 									* ratioScale;
+
+		_paintData.pointRadius	= ( _paintData.lineSize / 2 ) + Style::MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS + 2;
+		const int pointDiameter = _paintData.pointRadius * 2;
 
 		const QRect renderRect = parentWidget()->rect();
 
@@ -98,14 +108,14 @@ namespace VTX::View::UI::Widget::Measurement
 
 		const Vec3f textScreenVec3fPos = Util::UIRender::worldToScreenVec3f( centerWorldPos, camera, renderRect );
 
-		int minX = std::min( { firstAtomScreenPointPos.x() - Style::LABEL_RENDER_POINT_MAX_DIAMETER,
-							   secondAtomScreenPointPos.x() - Style::LABEL_RENDER_POINT_MAX_DIAMETER } );
-		int minY = std::min( { firstAtomScreenPointPos.y() - Style::LABEL_RENDER_POINT_MAX_DIAMETER,
-							   secondAtomScreenPointPos.y() - Style::LABEL_RENDER_POINT_MAX_DIAMETER } );
-		int maxX = std::max( { firstAtomScreenPointPos.x() + Style::LABEL_RENDER_POINT_MAX_DIAMETER,
-							   secondAtomScreenPointPos.x() + Style::LABEL_RENDER_POINT_MAX_DIAMETER } );
-		int maxY = std::max( { firstAtomScreenPointPos.y() + Style::LABEL_RENDER_POINT_MAX_DIAMETER,
-							   secondAtomScreenPointPos.y() + Style::LABEL_RENDER_POINT_MAX_DIAMETER } );
+		int minX
+			= std::min( { firstAtomScreenPointPos.x() - pointDiameter, secondAtomScreenPointPos.x() - pointDiameter } );
+		int minY
+			= std::min( { firstAtomScreenPointPos.y() - pointDiameter, secondAtomScreenPointPos.y() - pointDiameter } );
+		int maxX
+			= std::max( { firstAtomScreenPointPos.x() + pointDiameter, secondAtomScreenPointPos.x() + pointDiameter } );
+		int maxY
+			= std::max( { firstAtomScreenPointPos.y() + pointDiameter, secondAtomScreenPointPos.y() + pointDiameter } );
 
 		if ( textScreenVec3fPos.z > 0 )
 		{
@@ -136,6 +146,12 @@ namespace VTX::View::UI::Widget::Measurement
 	}
 
 	void DistanceRenderView::_refreshText() { _setText( Util::Measurement::getDistanceString( *_model ) ); }
+	void DistanceRenderView::_refreshColor()
+	{
+		const QColor lineColor = Util::UI::RgbToQColor( _model->getColor() );
+		_linePen.setColor( lineColor );
+		_lineBrush.setColor( lineColor );
+	}
 
 	void DistanceRenderView::_setText( const std::string & p_txt )
 	{
@@ -152,6 +168,9 @@ namespace VTX::View::UI::Widget::Measurement
 	void DistanceRenderView::paintEvent( QPaintEvent * event )
 	{
 		QWidget::paintEvent( event );
+
+		if ( !_model->isValid() || !_model->isEnable() )
+			return;
 
 		if ( _paintData.textDistanceToCamera < Style::WORLD_LABEL_FAR_CLIP )
 		{
@@ -172,9 +191,15 @@ namespace VTX::View::UI::Widget::Measurement
 			const int	pointRadius	  = ( _paintData.lineSize / 2 ) + Style::MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS;
 
 			if ( firstAtomPos.z >= 0 )
-				painter.drawEllipse( Util::UIRender::vec3fToQPoint( firstAtomPos ), pointRadius, pointRadius );
+			{
+				painter.drawEllipse(
+					Util::UIRender::vec3fToQPoint( firstAtomPos ), _paintData.pointRadius, _paintData.pointRadius );
+			}
 			if ( secondAtomPos.z >= 0 )
-				painter.drawEllipse( Util::UIRender::vec3fToQPoint( secondAtomPos ), pointRadius, pointRadius );
+			{
+				painter.drawEllipse(
+					Util::UIRender::vec3fToQPoint( secondAtomPos ), _paintData.pointRadius, _paintData.pointRadius );
+			}
 
 			painter.drawLine( Util::UIRender::getScreenLine( firstAtomPos, secondAtomPos ) );
 			///////////////////////////////////////////////////////////////////

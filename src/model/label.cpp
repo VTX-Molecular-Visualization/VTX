@@ -1,4 +1,6 @@
 #include "label.hpp"
+#include "setting.hpp"
+#include "style.hpp"
 
 namespace VTX::Model
 {
@@ -6,6 +8,7 @@ namespace VTX::Model
 	{
 		const std::string *& namePtr = _getNamePtr();
 		namePtr						 = &_name;
+		_color						 = Setting::DEFAULT_LABEL_COLOR;
 	};
 	Label::Label() : Label( VTX::ID::Model::MODEL_LABEL ) {};
 
@@ -21,6 +24,15 @@ namespace VTX::Model
 
 		if ( _autoNaming )
 			_performAutoName( p_notify );
+	}
+
+	void Label::setColor( const Color::Rgb & p_color )
+	{
+		if ( _color != p_color )
+		{
+			_color = p_color;
+			_notifyDataChanged();
+		}
 	}
 
 	const Math::AABB & Label::getAABB()

@@ -2,6 +2,7 @@
 #define __VTX_ACTION_LABEL__
 
 #include "action/base_action.hpp"
+#include "color/rgb.hpp"
 #include "math/aabb.hpp"
 #include "model/label.hpp"
 #include "model/selection.hpp"
@@ -16,6 +17,29 @@
 
 namespace VTX::Action::Label
 {
+	class SetEnable : public BaseAction
+	{
+	  public:
+		explicit SetEnable( Model::Label & p_label, const bool p_enabled ) :
+			_labels( { &p_label } ), _enabled( p_enabled )
+		{
+		}
+		explicit SetEnable( const std::unordered_set<Model::Label *> & p_labels, const bool p_enabled ) :
+			_labels( p_labels ), _enabled( p_enabled )
+		{
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Label * label : _labels )
+				label->setEnable( _enabled );
+		}
+
+	  private:
+		const bool						   _enabled;
+		std::unordered_set<Model::Label *> _labels;
+	};
+
 	class Orient : public BaseAction
 	{
 	  public:
@@ -26,7 +50,7 @@ namespace VTX::Action::Label
 		{
 			Math::AABB aabb = Math::AABB();
 
-			for ( Model::Label * label : _labels )
+			for ( Model::Label * const label : _labels )
 				aabb.extend( label->getAABB() );
 
 			VTXApp::get()
@@ -112,5 +136,31 @@ namespace VTX::Action::Label
 		const std::unordered_set<Model::Label *> _labels;
 		const std::string						 _name;
 	};
+
+	class ChangeColor : public BaseAction
+	{
+	  public:
+		explicit ChangeColor( Model::Label & p_label, const Color::Rgb & p_color ) :
+			_labels( { &p_label } ), _color( p_color )
+		{
+		}
+		explicit ChangeColor( const std::unordered_set<Model::Label *> & p_labels, const Color::Rgb & p_color ) :
+			_labels( p_labels ), _color( p_color )
+		{
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Label * const label : _labels )
+			{
+				label->setColor( _color );
+			}
+		}
+
+	  private:
+		const std::unordered_set<Model::Label *> _labels;
+		const Color::Rgb &						 _color;
+	};
+
 } // namespace VTX::Action::Label
 #endif

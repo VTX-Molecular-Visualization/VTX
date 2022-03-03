@@ -2,7 +2,11 @@
 #define __VTX_UTIL_UI__
 
 #include "color/rgb.hpp"
+#include <QBitmap>
+#include <QColor>
 #include <QEvent>
+#include <QImage>
+#include <QPixmap>
 #include <QString>
 #include <QStyle>
 #include <QVariant>
@@ -78,6 +82,16 @@ namespace VTX::Util::UI
 	{
 		EventEater * const eater = new EventEater( p_eventTypes, p_widget );
 		p_widget->installEventFilter( eater );
+	}
+
+	static QColor RgbToQColor( const Color::Rgb & p_rgb )
+	{
+		return QColor( p_rgb.r * 255, p_rgb.g * 255, p_rgb.b * 255 );
+	}
+
+	static QBitmap generateAlphaMask( const QString & p_filepath )
+	{
+		return QBitmap( QPixmap::fromImage( QImage( ":/sprite/render/dihedral_angle_icon.png" ).createAlphaMask() ) );
 	}
 
 	void appendBondInfo( const Model::Bond & p_bond, QString & p_str );

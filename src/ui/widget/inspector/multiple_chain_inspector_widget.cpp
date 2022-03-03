@@ -130,7 +130,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::localize()
 	{
-		_representationSection->setHeaderTitle( "Representations" );
+		_representationSection->setHeaderTitle( "Representation" );
 		_infoSection->setHeaderTitle( "Infos" );
 		_infoSection->localize();
 	}

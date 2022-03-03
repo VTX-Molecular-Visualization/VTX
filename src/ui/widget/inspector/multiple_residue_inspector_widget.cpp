@@ -134,7 +134,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::localize()
 	{
-		_representationSection->setHeaderTitle( "Representations" );
+		_representationSection->setHeaderTitle( "Representation" );
 		_infoSection->setHeaderTitle( "Infos" );
 		_infoSection->localize();
 	}

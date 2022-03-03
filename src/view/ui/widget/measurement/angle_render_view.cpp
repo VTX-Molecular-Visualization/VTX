@@ -3,6 +3,7 @@
 #include "style.hpp"
 #include "ui/main_window.hpp"
 #include "util/measurement.hpp"
+#include "util/ui.hpp"
 #include "util/ui_render.hpp"
 #include "vtx_app.hpp"
 #include <QFontMetrics>
@@ -24,12 +25,10 @@ namespace VTX::View::UI::Widget::Measurement
 		_labelBrush.setStyle( Qt::BrushStyle::SolidPattern );
 
 		_linePen = QPen();
-		_linePen.setColor( Style::MEASUREMENT_ANGLE_LINE_COLOR );
 		_linePen.setStyle( Style::MEASUREMENT_ANGLE_LINE_STYLE );
 		_lineBrush = QBrush( Qt::BrushStyle::NoBrush );
 
 		_arcPen = QPen();
-		_arcPen.setColor( Style::MEASUREMENT_ANGLE_ARC_COLOR );
 		_arcPen.setStyle( Style::MEASUREMENT_ANGLE_ARC_STYLE );
 		_arcBrush = QBrush( Qt::BrushStyle::NoBrush );
 	}
@@ -39,6 +38,7 @@ namespace VTX::View::UI::Widget::Measurement
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>::_setupUi( p_name );
 
 		_refreshText();
+		_refreshColor();
 		updatePosition();
 		setVisible( true );
 	}
@@ -48,6 +48,7 @@ namespace VTX::View::UI::Widget::Measurement
 	void AngleRenderView::_refreshView()
 	{
 		_refreshText();
+		_refreshColor();
 		// updatePosition called because it resizing the widget. Maybe resize can be done in a specific function
 		updatePosition();
 		repaint();
@@ -55,7 +56,7 @@ namespace VTX::View::UI::Widget::Measurement
 
 	void AngleRenderView::updatePosition()
 	{
-		if ( !_model->isValid() )
+		if ( !_model->isValid() || !_model->isEnable() )
 			return;
 
 		const std::vector<const Model::Atom *> & atoms		   = _model->getAtoms();
@@ -208,6 +209,13 @@ namespace VTX::View::UI::Widget::Measurement
 	}
 
 	void AngleRenderView::_refreshText() { _setText( Util::Measurement::getAngleString( *_model ) ); }
+	void AngleRenderView::_refreshColor()
+	{
+		const QColor lineColor = Util::UI::RgbToQColor( _model->getColor() );
+		_linePen.setColor( lineColor );
+		_lineBrush.setColor( lineColor );
+		_arcPen.setColor( lineColor );
+	}
 
 	void AngleRenderView::_setText( const std::string & p_txt )
 	{
@@ -224,6 +232,9 @@ namespace VTX::View::UI::Widget::Measurement
 	void AngleRenderView::paintEvent( QPaintEvent * event )
 	{
 		QWidget::paintEvent( event );
+
+		if ( !_model->isValid() || !_model->isEnable() )
+			return;
 
 		if ( _paintData.textDistanceToCamera < Style::WORLD_LABEL_FAR_CLIP )
 		{

@@ -6,7 +6,9 @@
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/color_field_button.hpp"
 #include "ui/widget/custom_widget/filename_field_widget.hpp"
+#include "ui/widget/custom_widget/float_field_draggable_widget.hpp"
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"
+#include "ui/widget/custom_widget/integer_field_draggable_widget.hpp"
 #include "ui/widget/custom_widget/integer_field_slider_widget.hpp"
 #include "view/base_view.hpp"
 #include "view/ui/editor_view.hpp"
@@ -26,9 +28,11 @@ namespace VTX::UI::Widget::Settings
 		VTX_WIDGET
 
 	  private:
-		using IntegerFieldSliderWidget	 = VTX::UI::Widget::CustomWidget::IntegerFieldSliderWidget;
-		using FloatFieldSliderWidget = VTX::UI::Widget::CustomWidget::FloatFieldSliderWidget;
-		using ColorFieldButton		 = VTX::UI::Widget::CustomWidget::ColorFieldButton;
+		using IntegerFieldSliderWidget	  = VTX::UI::Widget::CustomWidget::IntegerFieldSliderWidget;
+		using IntegerFieldDraggableWidget = VTX::UI::Widget::CustomWidget::IntegerFieldDraggableWidget;
+		using FloatFieldSliderWidget	  = VTX::UI::Widget::CustomWidget::FloatFieldSliderWidget;
+		using FloatFieldDraggableWidget	  = VTX::UI::Widget::CustomWidget::FloatFieldDraggableWidget;
+		using ColorFieldButton			  = VTX::UI::Widget::CustomWidget::ColorFieldButton;
 
 		inline static const QStringList SHADING = { "Diffuse", "Glossy", "Toon", "Flat Color" };
 
@@ -60,67 +64,68 @@ namespace VTX::UI::Widget::Settings
 
 		QComboBox * _shading = nullptr;
 
-		QCheckBox *			 _enableSSAO	= nullptr;
+		QCheckBox *				   _enableSSAO	  = nullptr;
 		IntegerFieldSliderWidget * _ssaoIntensity = nullptr;
-		IntegerFieldSliderWidget * _ssaoBlurSize	= nullptr;
+		IntegerFieldSliderWidget * _ssaoBlurSize  = nullptr;
 
-		QCheckBox *				 _enableOutline	   = nullptr;
-		IntegerFieldSliderWidget *	 _outlineThickness = nullptr;
-		FloatFieldSliderWidget * _outlineSensivity = nullptr;
-		ColorFieldButton *		 _outlineColor	   = nullptr;
+		QCheckBox *				   _enableOutline	 = nullptr;
+		IntegerFieldSliderWidget * _outlineThickness = nullptr;
+		FloatFieldSliderWidget *   _outlineSensivity = nullptr;
+		ColorFieldButton *		   _outlineColor	 = nullptr;
 
 		QCheckBox * _enableFog = nullptr;
 		// TODO RangeScrollBar
 		// CustomWidget::QRangeScrollBar * const _nearFarRangeFog = nullptr;
-		QSpinBox *				 _nearFog	 = nullptr;
-		QSpinBox *				 _farFog	 = nullptr;
-		FloatFieldSliderWidget * _fogDensity = nullptr;
-		ColorFieldButton *		 _fogColor	 = nullptr;
+		IntegerFieldDraggableWidget * _nearFog	  = nullptr;
+		IntegerFieldDraggableWidget * _farFog	  = nullptr;
+		FloatFieldSliderWidget *	  _fogDensity = nullptr;
+		ColorFieldButton *			  _fogColor	  = nullptr;
 
-		ColorFieldButton *		 _backgroundColor	= nullptr;
-		FloatFieldSliderWidget * _backgroundOpacity = nullptr;
-		ColorFieldButton *		 _cameraLightColor	= nullptr;
-		FloatFieldSliderWidget * _cameraFOV			= nullptr;
-		QSpinBox *				 _cameraNear		= nullptr;
-		QSpinBox *				 _cameraFar			= nullptr;
-		QCheckBox *				 _antialiasing		= nullptr;
+		ColorFieldButton *			_backgroundColor   = nullptr;
+		FloatFieldSliderWidget *	_backgroundOpacity = nullptr;
+		ColorFieldButton *			_cameraLightColor  = nullptr;
+		FloatFieldSliderWidget *	_cameraFOV		   = nullptr;
+		FloatFieldDraggableWidget * _cameraNear		   = nullptr;
+		FloatFieldDraggableWidget * _cameraFar		   = nullptr;
+		QCheckBox *					_antialiasing	   = nullptr;
 
 		// !V0.1
 		// QCheckBox *				 _perspective		= nullptr;
 
 		void _addItem( QWidget * const p_widget );
 		void _addItem( QWidget * const p_widget, const QString & p_label );
+		void _addItem( QWidget * const p_widget, QLabel * const p_labelWidget );
 		void _addSpace( const int p_space = 10 );
 
 		void _fillShaderComboBox();
 
-		void _onNameChanged();
-		void _onQuickAccessChanged( const bool p_quickAccess );
+		void _onNameChanged() const;
+		void _onQuickAccessChanged( const bool p_quickAccess ) const;
 
-		void _onShadingChange( const int p_newIndex );
+		void _onShadingChange( const int p_newIndex ) const;
 
-		void _onSSAOStateChanged( const int p_state );
-		void _onSSAOIntensityChanged( const int p_value );
-		void _onSSAOBlurSizeChanged( const int p_value );
+		void _onSSAOStateChanged( const int p_state ) const;
+		void _onSSAOIntensityChanged( const int p_value ) const;
+		void _onSSAOBlurSizeChanged( const int p_value ) const;
 
-		void _onOutlineStateChanged( const int p_state );
-		void _onOutlineThicknessChanged( const uint p_value );
-		void _onOutlineSensivityChanged( const float p_value );
-		void _onOutlineColorChanged( const Color::Rgb & p_color );
+		void _onOutlineStateChanged( const int p_state ) const;
+		void _onOutlineThicknessChanged( const uint p_value ) const;
+		void _onOutlineSensivityChanged( const float p_value ) const;
+		void _onOutlineColorChanged( const Color::Rgb & p_color ) const;
 
-		void _onFogStateChanged( const int p_state );
-		void _onFogNearChanged();
-		void _onFogFarChanged();
-		void _onFogDensityChanged( const float p_value );
-		void _onFogColorChanged( const Color::Rgb & p_color );
+		void _onFogStateChanged( const int p_state ) const;
+		void _onFogNearChanged( const int p_value ) const;
+		void _onFogFarChanged( const int p_value ) const;
+		void _onFogDensityChanged( const float p_value ) const;
+		void _onFogColorChanged( const Color::Rgb & p_color ) const;
 
-		void _onBackgroundColorChanged( const Color::Rgb & p_color );
-		void _onCameraLightColorChanged( const Color::Rgb & p_color );
-		void _onCameraFOVChanged( const float p_value );
-		void _onCameraNearChanged( const float p_value );
-		void _onCameraFarChanged( const float p_value );
-		void _onAntialiasingChanged( const int p_state );
-		void _onPerspectiveChanged( const int p_state );
+		void _onBackgroundColorChanged( const Color::Rgb & p_color ) const;
+		void _onCameraLightColorChanged( const Color::Rgb & p_color ) const;
+		void _onCameraFOVChanged( const float p_value ) const;
+		void _onCameraNearChanged( const float p_value ) const;
+		void _onCameraFarChanged( const float p_value ) const;
+		void _onAntialiasingChanged( const int p_state ) const;
+		void _onPerspectiveChanged( const int p_state ) const;
 	};
 
 } // namespace VTX::UI::Widget::Settings

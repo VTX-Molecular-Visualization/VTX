@@ -124,22 +124,22 @@ namespace VTX
 			void _setupSlots();
 
 			// Shortcuts.
-			void _onShortcutNew();
-			void _onShortcutOpen();
-			void _onShortcutSave();
-			void _onShortcutSaveAs();
-			void _onShortcutFullscreen();
-			void _onShortcutClearSelection();
-			void _onShortcutRestoreLayout();
-			void _onShortcutCompileShaders();
-			void _onShortcutActiveRenderer();
-			void _onShortcutDelete();
-			void _onShortcutOrient();
-			void _onShortcutSelectAll();
-			void _onShortcutCopy();
-			void _onShortcutExtract();
-			void _onShortcutSetSelectionPicker();
-			void _onShortcutSetMeasurementPicker();
+			void _onShortcutNew() const;
+			void _onShortcutOpen() const;
+			void _onShortcutSave() const;
+			void _onShortcutSaveAs() const;
+			void _onShortcutFullscreen() const;
+			void _onShortcutClearSelection() const;
+			void _onShortcutRestoreLayout() const;
+			void _onShortcutCompileShaders() const;
+			void _onShortcutActiveRenderer() const;
+			void _onShortcutDelete() const;
+			void _onShortcutOrient() const;
+			void _onShortcutSelectAll() const;
+			void _onShortcutCopy() const;
+			void _onShortcutExtract() const;
+			void _onShortcutSetSelectionPicker() const;
+			void _onShortcutSetMeasurementPicker() const;
 
 			WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
 

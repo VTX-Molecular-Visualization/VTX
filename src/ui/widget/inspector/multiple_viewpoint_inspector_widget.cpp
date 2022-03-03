@@ -21,7 +21,20 @@ namespace VTX::UI::Widget::Inspector
 		_transformWidget->displayScale( false );
 		_transformSection->setBody( _transformWidget );
 
+		_actionSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
+			this, "inspector_item_section" );
+
+		_actionContainer		   = new QWidget( this );
+		QVBoxLayout * actionLayout = new QVBoxLayout( _actionContainer );
+
+		_relocateButton = new QPushButton( this );
+		_relocateButton->setText( "Relocate" );
+		actionLayout->addWidget( _relocateButton );
+
+		_actionSection->setBody( _actionContainer );
+
 		_appendWidget( _transformSection );
+		_appendWidget( _actionSection );
 
 		const bool oldBlockState = blockSignals( true );
 		refresh();
@@ -42,6 +55,8 @@ namespace VTX::UI::Widget::Inspector
 				 &CustomWidget::TransformWidget::onRotationDragged,
 				 this,
 				 &MultipleViewpointWidget::_onRotationDragged );
+
+		connect( _relocateButton, &QPushButton::clicked, this, &MultipleViewpointWidget::_relocateAction );
 	};
 
 	void MultipleViewpointWidget::_endOfFrameRefresh( const SectionFlag & p_flag )
@@ -92,7 +107,7 @@ namespace VTX::UI::Widget::Inspector
 						 this,
 						 &MultipleViewpointWidget::_goToAction );
 
-				_appendWidget( gotoButton );
+				_actionContainer->layout()->addWidget( gotoButton );
 
 				_gotoButtons.emplace_back( gotoButton );
 			}
@@ -148,6 +163,20 @@ namespace VTX::UI::Widget::Inspector
 		VTX_ACTION( new Action::Viewpoint::GoTo( viewpoint ) );
 	}
 
+	void MultipleViewpointWidget::_relocateAction() const
+	{
+		if ( !signalsBlocked() )
+		{
+			std::vector<Model::Viewpoint *> viewpointsVector = std::vector<Model::Viewpoint *>();
+			viewpointsVector.reserve( getTargets().size() );
+
+			for ( Model::Viewpoint * target : getTargets() )
+				viewpointsVector.emplace_back( target );
+
+			VTX_ACTION( new Action::Viewpoint::Relocate( viewpointsVector ) );
+		}
+	}
+
 	void MultipleViewpointWidget::_resetFieldStates( const SectionFlag & p_flag )
 	{
 		if ( bool( p_flag & SectionFlag::INFOS ) )
@@ -156,6 +185,8 @@ namespace VTX::UI::Widget::Inspector
 
 			while ( _gotoButtons.size() > 0 )
 			{
+				_actionContainer->layout()->removeWidget( _gotoButtons.back() );
+
 				delete _gotoButtons.back();
 				_gotoButtons.pop_back();
 			}
@@ -165,6 +196,7 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleViewpointWidget::localize()
 	{
 		_transformSection->setHeaderTitle( "Transform" );
+		_actionSection->setHeaderTitle( "Action" );
 		_transformSection->localize();
 	}
 } // namespace VTX::UI::Widget::Inspector

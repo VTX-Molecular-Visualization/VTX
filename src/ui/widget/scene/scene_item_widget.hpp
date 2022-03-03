@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_WIDGET_SCENE_ITEM__
 #define __VTX_UI_WIDGET_SCENE_ITEM__
 
+#include "generic/base_scene_item.hpp"
 #include "model/base_model.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDragEnterEvent>
@@ -35,8 +36,9 @@ namespace VTX::UI::Widget::Scene
 
 		virtual void updatePosInSceneHierarchy( const int p_position );
 
-		virtual const Model::ID & getModelID() const = 0;
-		virtual QTreeWidgetItem * getLastVisibleItem();
+		virtual const Model::ID &			   getModelID() const		= 0;
+		virtual const Generic::BaseSceneItem & getBaseSceneItem() const = 0;
+		virtual QTreeWidgetItem *			   getLastVisibleItem();
 
 		void openRenameEditor( const Model::ID & p_modelID );
 
@@ -89,7 +91,6 @@ namespace VTX::UI::Widget::Scene
 		int	   _enableSignalCounter = 0;
 
 		void _tryStartDrag( QMouseEvent * p_event );
-
 	};
 
 } // namespace VTX::UI::Widget::Scene

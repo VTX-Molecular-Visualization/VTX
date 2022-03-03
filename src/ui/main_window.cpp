@@ -230,18 +230,18 @@ namespace VTX::UI
 				 &MainWindow::_onShortcutSetMeasurementPicker );
 	}
 
-	void MainWindow::_onShortcutNew() { UI::Dialog::createNewSessionDialog(); }
+	void MainWindow::_onShortcutNew() const { UI::Dialog::createNewSessionDialog(); }
 
-	void MainWindow::_onShortcutOpen() { UI::Dialog::openLoadSessionDialog(); }
+	void MainWindow::_onShortcutOpen() const { UI::Dialog::openLoadSessionDialog(); }
 
-	void MainWindow::_onShortcutSave()
+	void MainWindow::_onShortcutSave() const
 	{
 		VTX_ACTION_ENQUEUE( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 
-	void MainWindow::_onShortcutSaveAs() { UI::Dialog::openSaveSessionDialog(); }
+	void MainWindow::_onShortcutSaveAs() const { UI::Dialog::openSaveSessionDialog(); }
 
-	void MainWindow::_onShortcutFullscreen()
+	void MainWindow::_onShortcutFullscreen() const
 	{
 		if ( windowState() & Qt::WindowStates::enum_type::WindowFullScreen )
 		{
@@ -253,7 +253,7 @@ namespace VTX::UI
 		}
 	}
 
-	void MainWindow::_onShortcutClearSelection()
+	void MainWindow::_onShortcutClearSelection() const
 	{
 		if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 		{
@@ -262,16 +262,16 @@ namespace VTX::UI
 		}
 	}
 
-	void MainWindow::_onShortcutRestoreLayout() { VTX_ACTION( new Action::Setting::RestoreLayout() ); }
+	void MainWindow::_onShortcutRestoreLayout() const { VTX_ACTION( new Action::Setting::RestoreLayout() ); }
 
-	void MainWindow::_onShortcutCompileShaders() { VTX_ACTION( new Action::Dev::CompileShaders() ); }
+	void MainWindow::_onShortcutCompileShaders() const { VTX_ACTION( new Action::Dev::CompileShaders() ); }
 
-	void MainWindow::_onShortcutActiveRenderer()
+	void MainWindow::_onShortcutActiveRenderer() const
 	{
 		VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
 	}
 
-	void MainWindow::_onShortcutDelete()
+	void MainWindow::_onShortcutDelete() const
 	{
 		if ( Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
 		{
@@ -279,33 +279,33 @@ namespace VTX::UI
 		}
 	}
 
-	void MainWindow::_onShortcutOrient()
+	void MainWindow::_onShortcutOrient() const
 	{
 		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Selection::Orient( selection ) );
 	}
 
-	void MainWindow::_onShortcutSelectAll() { VTX_ACTION( new Action::Selection::SelectAll() ); }
+	void MainWindow::_onShortcutSelectAll() const { VTX_ACTION( new Action::Selection::SelectAll() ); }
 
-	void MainWindow::_onShortcutCopy()
+	void MainWindow::_onShortcutCopy() const
 	{
 		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
 			VTX_ACTION( new Action::Selection::Copy( selectionModel ) );
 	}
 
-	void MainWindow::_onShortcutExtract()
+	void MainWindow::_onShortcutExtract() const
 	{
 		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
 			VTX_ACTION( new Action::Selection::Extract( selectionModel ) );
 	}
 
-	void MainWindow::_onShortcutSetSelectionPicker()
+	void MainWindow::_onShortcutSetSelectionPicker() const
 	{
 		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::PICKER ) );
 	}
-	void MainWindow::_onShortcutSetMeasurementPicker()
+	void MainWindow::_onShortcutSetMeasurementPicker() const
 	{
 		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT ) );
 	}

@@ -24,15 +24,26 @@ namespace VTX::UI::Widget::Inspector
 
 		setBody( content );
 	};
-	void InspectorSectionVLayout::appendField( const std::string & p_label, QWidget * const p_widget )
+	void InspectorSectionVLayout::appendField( QWidget * const p_widget )
 	{
 		p_widget->setParent( this );
 
+		const int row = _gridLayout->rowCount();
+		_gridLayout->addWidget( p_widget, row, 0, 1, 2 );
+	};
+	void InspectorSectionVLayout::appendField( const std::string & p_label, QWidget * const p_widget )
+	{
 		QLabel * const label = new QLabel( this );
 		label->setText( QString::fromStdString( p_label ) );
 
+		appendField( label, p_widget );
+	};
+	void InspectorSectionVLayout::appendField( QLabel * const p_labelWidget, QWidget * const p_widget )
+	{
+		p_widget->setParent( this );
+
 		const int row = _gridLayout->rowCount();
-		_gridLayout->addWidget( label, row, 0 );
+		_gridLayout->addWidget( p_labelWidget, row, 0 );
 		_gridLayout->addWidget( p_widget, row, 1 );
 	};
 } // namespace VTX::UI::Widget::Inspector

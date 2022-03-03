@@ -1,6 +1,6 @@
 #include "contextual_menu_scene.hpp"
 #include "action/action_manager.hpp"
-#include "action/main.hpp"
+#include "action/scene.hpp"
 #include "action/viewpoint.hpp"
 #include "ui/dialog.hpp"
 
@@ -26,8 +26,8 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuScene::_loadMoleculeAction() { UI::Dialog::openLoadMoleculeDialog(); }
 	void ContextualMenuScene::_downloadMoleculeAction() { UI::Dialog::openDownloadMoleculeDialog(); }
-	void ContextualMenuScene::_showAllMoleculesAction() const { VTX_ACTION( new Action::Main::ShowAllMolecules() ); }
+	void ContextualMenuScene::_showAllMoleculesAction() const { VTX_ACTION( new Action::Scene::ShowAllMolecules() ); }
 	void ContextualMenuScene::_addViewpointAction() { VTX_ACTION( new Action::Viewpoint::Create() ); }
-	void ContextualMenuScene::_clearAction() { VTX_ACTION( new Action::Main::ResetScene() ); }
+	void ContextualMenuScene::_clearAction() { VTX_ACTION( new Action::Scene::ResetScene() ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

@@ -95,7 +95,7 @@ namespace VTX::Worker
 			// for each molecule check if :
 			// If not saved on computer => Create file in scene molecule directory
 			// Else if has any modifications => Create / Save file in scene molecule directory.
-			for ( const std::pair<Model::Molecule *, float> & molecule : VTXApp::get().getScene().getMolecules() )
+			for ( const Object3D::Scene::PairMoleculePtrFloat & molecule : VTXApp::get().getScene().getMolecules() )
 			{
 				const IO::Struct::ScenePathData::Data & moleculePathData
 					= VTXApp::get().getScenePathData().getData( molecule.first );
@@ -130,7 +130,7 @@ namespace VTX::Worker
 
 			writer->writeFile( _path, VTXApp::get() );
 
-			for ( const std::pair<Model::Molecule *, float> & molecule : VTXApp::get().getScene().getMolecules() )
+			for ( const Object3D::Scene::PairMoleculePtrFloat & molecule : VTXApp::get().getScene().getMolecules() )
 			{
 				VTXApp::get().getScenePathData().getData( molecule.first ).deleteWriter();
 				VTXApp::get().getScenePathData().getData( molecule.first ).setHasChanged( false );

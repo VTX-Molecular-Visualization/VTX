@@ -3,6 +3,8 @@
 #include "action/renderer.hpp"
 #include "event/event_manager.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "object3d/camera.hpp"
+#include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
 #include "renderer/gl/gl.hpp"
 #include "setting.hpp"
@@ -206,13 +208,19 @@ namespace VTX::Model::Renderer
 	{
 		_appliedPreset = &p_preset;
 
-		VTX::Renderer::GL::GL & gl = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
+		VTX::Renderer::GL::GL & gl	   = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
+		VTX::Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
 
 		gl.setShading();
 		gl.activeSSAO( _appliedPreset->isSSAOEnabled() );
 		gl.activeOutline( _appliedPreset->isOutlineEnabled() );
 		gl.activeFog( _appliedPreset->isFogEnabled() );
 		gl.activeAA( _appliedPreset->getAA() );
+
+		camera.setNear( _appliedPreset->getCameraNearClip() );
+		camera.setFar( _appliedPreset->getCameraFarClip() );
+		camera.setFov( _appliedPreset->getCameraFOV() );
+		camera.setPerspective( _appliedPreset->isPerspectiveProjection() );
 
 		_notifyViews( new Event::VTXEvent( Event::Model::APPLIED_PRESET_CHANGE ) );
 	}

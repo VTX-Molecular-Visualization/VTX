@@ -105,8 +105,8 @@ namespace VTX
 	const Color::Rgb Setting::LIGHT_COLOR_DEFAULT		= Color::Rgb::WHITE;
 
 	// Camera.
-	const float Setting::CAMERA_NEAR_DEFAULT		= 0.01f;
-	const float Setting::CAMERA_NEAR_MIN			= 0.01f;
+	const float Setting::CAMERA_NEAR_DEFAULT		= 0.00f;
+	const float Setting::CAMERA_NEAR_MIN			= 0.00f;
 	const float Setting::CAMERA_NEAR_MAX			= 1e4f;
 	const float Setting::CAMERA_FAR_DEFAULT			= 1e4f;
 	const float Setting::CAMERA_FAR_MIN				= 0.01f;
@@ -154,6 +154,9 @@ namespace VTX
 	const ID::VTX_ID Setting::PICKER_MODE_DEFAULT	  = ID::Controller::PICKER;
 	const uint		 Setting::VIDEO_FPS_DEFAULT		  = 60;
 	const uint		 Setting::VIDEO_CRF_DEFAULT		  = 10;
+
+	// Measurement
+	const Color::Rgb Setting::DEFAULT_LABEL_COLOR = Color::Rgb( 0.f, 0.f, 1.f );
 
 	// Selection
 	const VTX::Selection::Granularity Setting::SELECTION_GRANULARITY_DEFAULT = VTX::Selection::Granularity::RESIDUE;

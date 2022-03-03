@@ -40,6 +40,12 @@ namespace VTX::UI::Widget::Inspector
 
 		_angleLabelWidget = new CustomWidget::QLabelMultiField( this );
 
+		_displaySection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
+			this, "inspector_item_section" );
+
+		_colorWidget
+			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorFieldButton>( this, "colorWidget" );
+
 		QWidget * const goToAtomButtons = new QWidget( this );
 		QVBoxLayout *	goToAtomLayout	= new QVBoxLayout( goToAtomButtons );
 
@@ -55,7 +61,10 @@ namespace VTX::UI::Widget::Inspector
 		_infoSection->appendField( "Atoms", goToAtomButtons );
 		_infoSection->appendField( "Angle", _angleLabelWidget );
 
+		_displaySection->appendField( "Color", _colorWidget );
+
 		_appendWidget( _positionSection );
+		_appendWidget( _displaySection );
 		_appendWidget( _infoSection );
 
 		const bool oldBlockState = blockSignals( true );
@@ -75,6 +84,11 @@ namespace VTX::UI::Widget::Inspector
 		connect( _goToFirstAtom, &QPushButton::clicked, this, &MultipleMeasurmentAngleWidget::_orientOnFirstAtom );
 		connect( _goToSecondAtom, &QPushButton::clicked, this, &MultipleMeasurmentAngleWidget::_orientOnSecondAtom );
 		connect( _goToThirdAtom, &QPushButton::clicked, this, &MultipleMeasurmentAngleWidget::_orientOnThirdAtom );
+
+		connect( _colorWidget,
+				 &CustomWidget::ColorFieldButton::onValueChange,
+				 this,
+				 &MultipleMeasurmentAngleWidget::_setLabelColor );
 	};
 
 	void MultipleMeasurmentAngleWidget::_endOfFrameRefresh( const SectionFlag & p_flag )
@@ -110,6 +124,7 @@ namespace VTX::UI::Widget::Inspector
 					_nameWidget->updateWithNewValue( angleModel->getDefaultName() );
 					const std::string angleStr = Util::Measurement::getAngleString( *angleModel );
 					_angleLabelWidget->updateWithNewValue( angleStr );
+					_colorWidget->updateWithNewValue( angleModel->getColor() );
 
 					if ( angleModel->getTypeId() == ID::Model::MODEL_MEASUREMENT_ANGLE )
 					{
@@ -161,6 +176,16 @@ namespace VTX::UI::Widget::Inspector
 
 		VTX_ACTION( new Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
 	}
+	
+
+	void MultipleMeasurmentAngleWidget::_setLabelColor( const Color::Rgb & p_color ) const
+	{
+		std::unordered_set<Model::Label *> labelTargets = std::unordered_set<Model::Label *>();
+		for ( Model::Measurement::Angle * const targetDistance : getTargets() )
+			labelTargets.emplace( targetDistance );
+
+		VTX_ACTION( new Action::Label::ChangeColor( labelTargets, p_color ) );
+	}
 
 	void MultipleMeasurmentAngleWidget::_setAutoNameAction() const
 	{
@@ -178,6 +203,7 @@ namespace VTX::UI::Widget::Inspector
 			_positionInfoWidget->resetState();
 			_nameWidget->resetState();
 			_angleLabelWidget->resetState();
+			_colorWidget->resetState();
 			_goToFirstAtom->setVisible( false );
 			_goToSecondAtom->setVisible( false );
 			_goToThirdAtom->setVisible( false );
@@ -187,6 +213,7 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleMeasurmentAngleWidget::localize()
 	{
 		_positionSection->setHeaderTitle( "Position" );
+		_displaySection->setHeaderTitle( "Display" );
 		_infoSection->setHeaderTitle( "Informations" );
 		_positionSection->localize();
 		_infoSection->localize();

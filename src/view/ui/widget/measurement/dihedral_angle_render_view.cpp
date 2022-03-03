@@ -3,6 +3,7 @@
 #include "style.hpp"
 #include "ui/main_window.hpp"
 #include "util/measurement.hpp"
+#include "util/ui.hpp"
 #include "util/ui_render.hpp"
 #include "vtx_app.hpp"
 #include <QFontMetrics>
@@ -25,7 +26,6 @@ namespace VTX::View::UI::Widget::Measurement
 		_labelBrush.setStyle( Qt::BrushStyle::SolidPattern );
 
 		_linePen = QPen();
-		_linePen.setColor( Style::MEASUREMENT_DIHEDRAL_ANGLE_LINE_COLOR );
 		_linePen.setStyle( Style::MEASUREMENT_DIHEDRAL_ANGLE_LINE_STYLE );
 		_lineBrush = QBrush( Qt::BrushStyle::NoBrush );
 	}
@@ -34,7 +34,10 @@ namespace VTX::View::UI::Widget::Measurement
 	{
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>::_setupUi( p_name );
 
+		_paintData.pixmap = QPixmap( Style::IconConst::get().DIHEDRAL_ANGLE_RENDER_ICON_MASK.size() );
+
 		_refreshText();
+		_refreshColor();
 		updatePosition();
 		setVisible( true );
 	}
@@ -44,6 +47,7 @@ namespace VTX::View::UI::Widget::Measurement
 	void DihedralAngleRenderView::_refreshView()
 	{
 		_refreshText();
+		_refreshColor();
 		// updatePosition called because it resizing the widget. Maybe resize can be done in a specific function
 		updatePosition();
 		repaint();
@@ -51,7 +55,7 @@ namespace VTX::View::UI::Widget::Measurement
 
 	void DihedralAngleRenderView::updatePosition()
 	{
-		if ( !_model->isValid() )
+		if ( !_model->isValid() || !_model->isEnable() )
 			return;
 
 		const std::vector<const Model::Atom *> & atoms		   = _model->getAtoms();
@@ -78,7 +82,10 @@ namespace VTX::View::UI::Widget::Measurement
 											   1.f );
 
 		if ( ratioScale == 0.f )
+		{
+			repaint();
 			return;
+		}
 
 		const QRect		   renderRect	  = parentWidget()->rect();
 		std::vector<Vec3f> vec3fPositions = std::vector<Vec3f>();
@@ -89,12 +96,19 @@ namespace VTX::View::UI::Widget::Measurement
 		for ( const Vec3f & vec : vec3fPositions )
 			qPointPositions.emplace_back( Util::UIRender::vec3fToQPoint( vec ) );
 
+		_paintData.lineSize
+			= Util::UIRender::linearInterpolation( Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MIN_LINE_THICKNESS,
+												   Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MAX_LINE_THICKNESS,
+												   ratioScale );
+		_paintData.pointRadius	= ( _paintData.lineSize / 2 ) + Style::LABEL_RENDER_POINT_RADIUS;
+		const int pointDiameter = _paintData.pointRadius * 2;
+
 		int minX, maxX, minY, maxY;
 		Util::UIRender::getMinMax( qPointPositions, minX, maxX, minY, maxY );
-		minX -= Style::LABEL_RENDER_POINT_MAX_DIAMETER;
-		maxX += Style::LABEL_RENDER_POINT_MAX_DIAMETER;
-		minY -= Style::LABEL_RENDER_POINT_MAX_DIAMETER;
-		maxY += Style::LABEL_RENDER_POINT_MAX_DIAMETER;
+		minX -= pointDiameter;
+		maxX += pointDiameter;
+		minY -= pointDiameter;
+		maxY += pointDiameter;
 
 		const Vec3f iconVec3Pos = ( vec3fPositions[ 1 ] + vec3fPositions[ 2 ] ) * 0.5f;
 
@@ -163,6 +177,15 @@ namespace VTX::View::UI::Widget::Measurement
 	}
 
 	void DihedralAngleRenderView::_refreshText() { _setText( Util::Measurement::getDihedralAngleString( *_model ) ); }
+	void DihedralAngleRenderView::_refreshColor()
+	{
+		const QColor lineColor = Util::UI::RgbToQColor( _model->getColor() );
+		_linePen.setColor( lineColor );
+		_lineBrush.setColor( lineColor );
+
+		_paintData.pixmap.fill( Util::UI::RgbToQColor( _model->getColor() ) );
+		_paintData.pixmap.setMask( Style::IconConst::get().DIHEDRAL_ANGLE_RENDER_ICON_MASK );
+	}
 
 	void DihedralAngleRenderView::_setText( const std::string & p_txt )
 	{
@@ -179,6 +202,9 @@ namespace VTX::View::UI::Widget::Measurement
 	void DihedralAngleRenderView::paintEvent( QPaintEvent * event )
 	{
 		QWidget::paintEvent( event );
+
+		if ( !_model->isValid() || !_model->isEnable() )
+			return;
 
 		if ( _paintData.textDistanceToCamera < Style::WORLD_LABEL_FAR_CLIP )
 		{
@@ -199,16 +225,31 @@ namespace VTX::View::UI::Widget::Measurement
 			const Vec3f relativeSecondAtomPos = _paintData.secondAtomScreenPos - vec3fPos;
 			const Vec3f relativeThirdAtomPos  = _paintData.thirdAtomScreenPos - vec3fPos;
 			const Vec3f relativeFourthAtomPos = _paintData.fourthAtomScreenPos - vec3fPos;
-			const int	pointRadius			  = ( _paintData.lineSize / 2 ) + Style::LABEL_RENDER_POINT_RADIUS;
 
 			if ( _paintData.firstAtomScreenPos.z >= 0 )
-				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeFirstAtomPos ), pointRadius, pointRadius );
+			{
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeFirstAtomPos ),
+									 _paintData.pointRadius,
+									 _paintData.pointRadius );
+			}
 			if ( _paintData.secondAtomScreenPos.z >= 0 )
-				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeSecondAtomPos ), pointRadius, pointRadius );
+			{
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeSecondAtomPos ),
+									 _paintData.pointRadius,
+									 _paintData.pointRadius );
+			}
 			if ( _paintData.thirdAtomScreenPos.z >= 0 )
-				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeThirdAtomPos ), pointRadius, pointRadius );
+			{
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeThirdAtomPos ),
+									 _paintData.pointRadius,
+									 _paintData.pointRadius );
+			}
 			if ( _paintData.fourthAtomScreenPos.z >= 0 )
-				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeFourthAtomPos ), pointRadius, pointRadius );
+			{
+				painter.drawEllipse( Util::UIRender::vec3fToQPoint( relativeFourthAtomPos ),
+									 _paintData.pointRadius,
+									 _paintData.pointRadius );
+			}
 
 			painter.drawLine( Util::UIRender::getScreenLine( relativeFirstAtomPos, relativeSecondAtomPos ) );
 			painter.drawLine( Util::UIRender::getScreenLine( relativeSecondAtomPos, relativeThirdAtomPos ) );
@@ -221,14 +262,13 @@ namespace VTX::View::UI::Widget::Measurement
 				const QPoint iconPos = Util::UIRender::vec3fToQPoint( _paintData.dihedralIconPosition );
 				const QPoint textPos = Util::UIRender::vec3fToQPoint( _paintData.textPosition );
 
-				const QPixmap & pixmap = Style::IconConst::get().DIHEDRAL_ANGLE_RENDER_ICON;
-				const QPoint	imageTopLeftPosition
+				const QPoint imageTopLeftPosition
 					= iconPos - pos() - QPoint( _paintData.iconSize / 2, _paintData.iconSize / 2 );
 				painter.drawPixmap( imageTopLeftPosition.x(),
 									imageTopLeftPosition.y(),
 									_paintData.iconSize,
 									_paintData.iconSize,
-									pixmap );
+									_paintData.pixmap );
 
 				const QPointF textTopLeftPosition
 					= textPos - pos()

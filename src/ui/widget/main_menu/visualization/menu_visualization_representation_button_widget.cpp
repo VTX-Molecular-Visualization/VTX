@@ -40,10 +40,10 @@ namespace VTX::UI::Widget::MainMenu
 		else
 		{
 			Object3D::Scene::MapMoleculePtrFloat & mapMolFloat = VTXApp::get().getScene().getMolecules();
-			if ( mapMolFloat.size() > 0 )
+
+			for ( const Object3D::Scene::PairMoleculePtrFloat & pair : mapMolFloat )
 			{
-				Model::Molecule & molecule = *mapMolFloat.begin()->first;
-				VTX_ACTION( new Action::RepresentableSetRepresentation( molecule, representation ) );
+				VTX_ACTION( new Action::RepresentableSetRepresentation( *pair.first, representation ) );
 			}
 		}
 	};
