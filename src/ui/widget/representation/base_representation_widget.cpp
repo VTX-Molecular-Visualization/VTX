@@ -29,17 +29,45 @@ namespace VTX::UI::Widget::Representation
 		if ( _sphereWidget != nullptr )
 		{
 			connect( _sphereWidget,
-					 &CustomWidget::FloatFieldSliderWidget::onValueChange,
+					 &View::SphereWidget::onRadiusChange,
 					 this,
 					 &BaseRepresentationWidget::_onSphereRadiusChange );
+
+			connect( _sphereWidget,
+					 &View::SphereWidget::onRadiusOffsetChange,
+					 this,
+					 &BaseRepresentationWidget::_onSphereRadiusOffsetChange );
 		}
 
 		if ( _cylinderWidget != nullptr )
 		{
 			connect( _cylinderWidget,
-					 &CustomWidget::FloatFieldSliderWidget::onValueChange,
+					 &View::CylinderWidget::onRadiusChange,
 					 this,
 					 &BaseRepresentationWidget::_onCylinderRadiusChange );
+
+			connect( _cylinderWidget,
+					 &View::CylinderWidget::onColorBlendingModeChange,
+					 this,
+					 &BaseRepresentationWidget::_onCylinderColorBlendingModeChange );
+		}
+
+		if ( _ribbonWidget != nullptr )
+		{
+			connect( _ribbonWidget,
+					 &View::RibbonWidget::onColorChange,
+					 this,
+					 &BaseRepresentationWidget::_onRibbonColorChange );
+
+			connect( _ribbonWidget,
+					 &View::RibbonWidget::onColorModeChange,
+					 this,
+					 &BaseRepresentationWidget::_onRibbonColorModeChange );
+
+			connect( _ribbonWidget,
+					 &View::RibbonWidget::onColorBlendingModeChange,
+					 this,
+					 &BaseRepresentationWidget::_onRibbonColorBlendingModeChange );
 		}
 
 		if ( _colorModeWidget != nullptr )
@@ -47,46 +75,38 @@ namespace VTX::UI::Widget::Representation
 			connect( _colorModeWidget,
 					 &CustomWidget::ColorModeFieldWidget::colorModeChanged,
 					 this,
-					 &BaseRepresentationWidget::_colorModeChanged );
+					 &BaseRepresentationWidget::_onColorModeChange );
 			connect( _colorModeWidget,
 					 &CustomWidget::ColorModeFieldWidget::colorChanged,
 					 this,
-					 &BaseRepresentationWidget::_colorChanged );
-		}
-
-		if ( _ssColorModeWidget != nullptr )
-		{
-			connect( _ssColorModeWidget,
-					 &CustomWidget::SecondaryStructureColorModeFieldWidget::colorModeChanged,
-					 this,
-					 &BaseRepresentationWidget::_ssColorModeChanged );
-			connect( _ssColorModeWidget,
-					 &CustomWidget::SecondaryStructureColorModeFieldWidget::colorChanged,
-					 this,
-					 &BaseRepresentationWidget::_ssColorChanged );
-		}
-
-		if ( _transitionColorModeWidget != nullptr )
-		{
-			connect( _transitionColorModeWidget,
-					 QOverload<int>::of( &QComboBox::currentIndexChanged ),
-					 this,
-					 &BaseRepresentationWidget::_transitionColorModeChanged );
-		}
-
-		if ( _ssTransitionColorModeWidget != nullptr )
-		{
-			connect( _ssTransitionColorModeWidget,
-					 QOverload<int>::of( &QComboBox::currentIndexChanged ),
-					 this,
-					 &BaseRepresentationWidget::_ssTransitionColorModeChanged );
+					 &BaseRepresentationWidget::_onColorChange );
 		}
 	}
 
 	void BaseRepresentationWidget::refresh()
 	{
 		const bool oldBlockState = blockSignals( true );
-		_refresh();
+
+		if ( _sphereWidget != nullptr )
+		{
+			_sphereWidget->refresh( *_instantiatedRepresentation, _targets );
+		}
+
+		if ( _cylinderWidget != nullptr )
+		{
+			_cylinderWidget->refresh( *_instantiatedRepresentation, _targets );
+		}
+
+		if ( _ribbonWidget != nullptr )
+		{
+			_ribbonWidget->refresh( *_instantiatedRepresentation, _targets );
+		}
+
+		if ( _colorModeWidget != nullptr )
+		{
+			_refreshColorModeWidget();
+		}
+
 		blockSignals( oldBlockState );
 	}
 
@@ -96,106 +116,83 @@ namespace VTX::UI::Widget::Representation
 		refresh();
 	}
 
-	void BaseRepresentationWidget::_addSphereWidgetInLayout( const QString &						  p_label,
-															 const float							  p_min,
-															 const float							  p_max,
-															 const Model::Representation::MEMBER_FLAG p_sphereFlag )
+	void BaseRepresentationWidget::updateWithNewValue(
+		const Model::Representation::InstantiatedRepresentation & p_value )
 	{
-		_sphereLabel = new QLabel( this );
-		_sphereLabel->setText( p_label );
+		if ( _sphereWidget != nullptr )
+		{
+			_sphereWidget->updateWithNewValue( p_value, _targets );
+		}
 
-		_sphereWidget = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
-			this, "sphereWidget" );
-		_sphereWidget->setMinMax( p_min, p_max );
+		if ( _cylinderWidget != nullptr )
+		{
+			_cylinderWidget->updateWithNewValue( p_value, _targets );
+		}
 
-		_appendWidgetInLayout( _sphereLabel, _sphereWidget );
+		if ( _ribbonWidget != nullptr )
+		{
+			_ribbonWidget->updateWithNewValue( p_value, _targets );
+		}
 
-		_sphereFlag = p_sphereFlag;
+		if ( _colorModeWidget != nullptr )
+		{
+			_addColorModeValue( p_value );
+		}
 	}
-	void BaseRepresentationWidget::_addCylinderWidgetInLayout( const QString & p_label,
-															   const float	   p_min,
-															   const float	   p_max )
+
+	void BaseRepresentationWidget::resetState()
 	{
-		_cylinderLabel = new QLabel( this );
-		_cylinderLabel->setText( p_label );
+		if ( _sphereWidget != nullptr )
+		{
+			_sphereWidget->resetState();
+		}
+		if ( _cylinderWidget != nullptr )
+		{
+			_cylinderWidget->resetState();
+		}
+		if ( _ribbonWidget != nullptr )
+		{
+			_cylinderWidget->resetState();
+		}
+		if ( _colorModeWidget != nullptr )
+		{
+			Util::UI::setDynamicProperty( _colorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
+			_colorModeWidget->resetState();
+		}
 
-		_cylinderWidget = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
-			this, "cylinderWidget" );
-		_cylinderWidget->setMinMax( p_min, p_max );
-
-		_appendWidgetInLayout( _cylinderLabel, _cylinderWidget );
+		_targets.clear();
 	}
-	void BaseRepresentationWidget::_addColorModeInLayout( const QString & p_label )
+
+	void BaseRepresentationWidget::_addSphereWidgetInLayout()
+	{
+		_sphereWidget = VTX::UI::WidgetFactory::get().instantiateWidget<View::SphereWidget>( this, "sphereWidget" );
+	}
+
+	void BaseRepresentationWidget::_addCylinderWidgetInLayout()
+	{
+		_cylinderWidget
+			= VTX::UI::WidgetFactory::get().instantiateWidget<View::CylinderWidget>( this, "cylinderWidget" );
+	}
+
+	void BaseRepresentationWidget::_addRibbonWidgetInLayout()
+	{
+		_ribbonWidget = VTX::UI::WidgetFactory::get().instantiateWidget<View::RibbonWidget>( this, "ribbonWidget" );
+	}
+
+	void BaseRepresentationWidget::_addColorModeWidgetInLayout()
 	{
 		_colorModeLabel = new QLabel( this );
-		_colorModeLabel->setText( p_label );
-
+		_colorModeLabel->setText( "Color mode" );
 		_colorModeWidget = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorModeFieldWidget>(
 			this, "colorModeWidget" );
-
 		_appendWidgetInLayout( _colorModeLabel, _colorModeWidget );
 	}
-	void BaseRepresentationWidget::_addSSColorModeInLayout( const QString & p_label )
-	{
-		_ssColorModeLabel = new QLabel( this );
-		_ssColorModeLabel->setText( p_label );
 
-		_ssColorModeWidget
-			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::SecondaryStructureColorModeFieldWidget>(
-				this, "ssColorModeWidget" );
-
-		_appendWidgetInLayout( _ssColorModeLabel, _ssColorModeWidget );
-	}
-	void BaseRepresentationWidget::_addTransitionColorModeInLayout( const QString & p_label )
-	{
-		_transitionColorModeLabel = new QLabel( this );
-		_transitionColorModeLabel->setText( p_label );
-
-		_transitionColorModeWidget = new CustomWidget::QComboBoxMultiField( this );
-
-		_appendWidgetInLayout( _transitionColorModeLabel, _transitionColorModeWidget );
-	}
-	void BaseRepresentationWidget::_addSSTransitionColorModeInLayout( const QString & p_label )
-	{
-		_ssTransitionColorModeLabel = new QLabel( this );
-		_ssTransitionColorModeLabel->setText( p_label );
-
-		_ssTransitionColorModeWidget = new CustomWidget::QComboBoxMultiField( this );
-
-		_appendWidgetInLayout( _colorModeLabel, _colorModeWidget );
-	}
 	void BaseRepresentationWidget::_appendWidgetInLayout( QWidget * const p_label, QWidget * const p_widget )
 	{
 		const int row = _layout->rowCount();
 		_layout->addWidget( p_label, row, 0 );
 		_layout->addWidget( p_widget, row, 1 );
-	}
-
-	void BaseRepresentationWidget::_setSphereValue( const float p_value, const bool p_overrided )
-	{
-		Util::UI::setDynamicProperty( _sphereLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, p_overrided );
-		_sphereWidget->setValue( p_value );
-	}
-	void BaseRepresentationWidget::_addSphereValue( const float p_value, const bool p_overrided )
-	{
-		// Display Overrided feedback only when all members are overridden
-		if ( _sphereLabel->property( Style::WidgetProperty::OVERIDDEN_PARAMETER ).toBool() && !p_overrided )
-			Util::UI::setDynamicProperty( _sphereLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, p_overrided );
-
-		_sphereWidget->updateWithNewValue( p_value );
-	}
-	void BaseRepresentationWidget::_setCylinderValue( const float p_value, const bool p_overrided )
-	{
-		Util::UI::setDynamicProperty( _cylinderLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, p_overrided );
-		_cylinderWidget->setValue( p_value );
-	}
-	void BaseRepresentationWidget::_addCylinderValue( const float p_value, const bool p_overrided )
-	{
-		// Display Overrided feedback only when all members are overridden
-		if ( _cylinderLabel->property( Style::WidgetProperty::OVERIDDEN_PARAMETER ).toBool() && !p_overrided )
-			Util::UI::setDynamicProperty( _cylinderLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, p_overrided );
-
-		_cylinderWidget->updateWithNewValue( p_value );
 	}
 
 	void BaseRepresentationWidget::_refreshColorModeWidget()
@@ -224,80 +221,6 @@ namespace VTX::UI::Widget::Representation
 			}
 		}
 	}
-	void BaseRepresentationWidget::_refreshColorModeWidget( const InstantiatedRepresentation & p_representation )
-	{
-		const bool overriden = _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::COLOR_MODE );
-
-		// Display Overrided feedback only when all members are overridden
-		if ( _colorModeLabel->property( Style::WidgetProperty::OVERIDDEN_PARAMETER ).toBool() && !overriden )
-			Util::UI::setDynamicProperty( _colorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, overriden );
-
-		const Generic::COLOR_MODE & colorMode = p_representation.getColorMode();
-
-		if ( colorMode != _colorModeWidget->getColorMode() )
-			_colorModeWidget->setColorMode( colorMode );
-
-		if ( colorMode == Generic::COLOR_MODE::ATOM_CUSTOM || colorMode == Generic::COLOR_MODE::CUSTOM )
-		{
-			_colorModeWidget->setColor( p_representation.getColor() );
-		}
-		else if ( colorMode == Generic::COLOR_MODE::ATOM_PROTEIN || colorMode == Generic::COLOR_MODE::PROTEIN )
-		{
-			_colorModeWidget->resetState();
-			for ( const Generic::BaseRepresentable * const target : _targets )
-				_colorModeWidget->updateWithNewValue( std::pair( colorMode, target->getMolecule()->getColor() ) );
-		}
-	}
-	void BaseRepresentationWidget::_refreshSSColorModeWidget()
-	{
-		_ssColorModeWidget->resetState();
-
-		const bool overriden = _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::SS_COLOR_MODE );
-
-		Util::UI::setDynamicProperty( _ssColorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, overriden );
-
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode
-			= _instantiatedRepresentation->getSecondaryStructureColorMode();
-
-		_ssColorModeWidget->setColorMode( colorMode );
-
-		if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM )
-		{
-			_ssColorModeWidget->setColor( _instantiatedRepresentation->getColor() );
-		}
-		else if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
-		{
-			_ssColorModeWidget->resetState();
-			for ( const Generic::BaseRepresentable * const target : _targets )
-			{
-				_ssColorModeWidget->updateWithNewValue( std::pair( colorMode, target->getMolecule()->getColor() ) );
-			}
-		}
-	}
-	void BaseRepresentationWidget::_refreshSSColorModeWidget( const InstantiatedRepresentation & p_representation )
-	{
-		const bool overriden = _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::SS_COLOR_MODE );
-
-		// Display Overrided feedback only when all members are overridden
-		if ( _ssColorModeLabel->property( Style::WidgetProperty::OVERIDDEN_PARAMETER ).toBool() && !overriden )
-			Util::UI::setDynamicProperty( _ssColorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, overriden );
-
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getSecondaryStructureColorMode();
-		_ssColorModeWidget->setColorMode( colorMode );
-
-		if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM )
-		{
-			_ssColorModeWidget->setColor( p_representation.getColor() );
-		}
-		else if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
-		{
-			_ssColorModeWidget->resetState();
-			for ( const Generic::BaseRepresentable * const target : _targets )
-			{
-				_ssColorModeWidget->updateWithNewValue( std::pair( colorMode, target->getMolecule()->getColor() ) );
-			}
-		}
-	}
 
 	void BaseRepresentationWidget::_addColorModeValue( const InstantiatedRepresentation & p_representation )
 	{
@@ -317,27 +240,6 @@ namespace VTX::UI::Widget::Representation
 
 		_colorModeWidget->updateWithNewValue( pair );
 	}
-	void BaseRepresentationWidget::_addSSColorModeValue( const InstantiatedRepresentation & p_representation )
-	{
-		std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgb> pair
-			= std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgb>();
-
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode
-			= _instantiatedRepresentation->getSecondaryStructureColorMode();
-
-		pair.first = colorMode;
-
-		if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM )
-		{
-			pair.second = _instantiatedRepresentation->getColor();
-		}
-		else if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
-		{
-			pair.second = _instantiatedRepresentation->getConstTarget()->getMolecule()->getColor();
-		}
-
-		_ssColorModeWidget->updateWithNewValue( pair );
-	}
 
 	void BaseRepresentationWidget::_onSphereRadiusChange( const float p_newRadius )
 	{
@@ -346,8 +248,19 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setSphereRadius( p_newRadius );
 
-		emit onDataChange( _sphereFlag );
+		emit onDataChange( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED );
 	}
+
+	void BaseRepresentationWidget::_onSphereRadiusOffsetChange( const float p_newRadius )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		_instantiatedRepresentation->setSphereRadius( p_newRadius );
+
+		emit onDataChange( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_ADD );
+	}
+
 	void BaseRepresentationWidget::_onCylinderRadiusChange( const float p_newRadius )
 	{
 		if ( signalsBlocked() )
@@ -357,7 +270,56 @@ namespace VTX::UI::Widget::Representation
 
 		emit onDataChange( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS );
 	}
-	void BaseRepresentationWidget::_colorModeChanged( const Generic::COLOR_MODE & p_colorMode )
+
+	void BaseRepresentationWidget::_onCylinderColorBlendingModeChange(
+		const Generic::COLOR_BLENDING_MODE & p_colorBlendindrMode )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		_instantiatedRepresentation->setCylinderColorBlendingMode( p_colorBlendindrMode );
+
+		emit onDataChange( Model::Representation::MEMBER_FLAG::CYLINDER_COLOR_BLENDING_MODE );
+	}
+
+	void BaseRepresentationWidget::_onRibbonColorChange( const Color::Rgb & p_color )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		emit onColorChange( p_color, true );
+	}
+
+	void BaseRepresentationWidget::_onRibbonColorModeChange(
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		_instantiatedRepresentation->setRibbonColorMode( p_colorMode, false );
+
+		emit onDataChange( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_MODE );
+	}
+
+	void BaseRepresentationWidget::_onRibbonColorBlendingModeChange( const Generic::COLOR_BLENDING_MODE & p_mode )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		_instantiatedRepresentation->setRibbonColorBlendingMode( p_mode, false );
+
+		emit onDataChange( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE );
+	}
+
+	void BaseRepresentationWidget::_onColorChange( const Color::Rgb & p_color )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		emit onColorChange( p_color, false );
+	}
+
+	void BaseRepresentationWidget::_onColorModeChange( const Generic::COLOR_MODE & p_colorMode )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -366,91 +328,6 @@ namespace VTX::UI::Widget::Representation
 
 		emit onDataChange( Model::Representation::MEMBER_FLAG::COLOR_MODE );
 	}
-	void BaseRepresentationWidget::_ssColorModeChanged( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
-	{
-		if ( signalsBlocked() )
-			return;
-
-		_instantiatedRepresentation->setSecondaryStructureColorMode( p_colorMode, false );
-
-		emit onDataChange( Model::Representation::MEMBER_FLAG::SS_COLOR_MODE );
-	}
-	void BaseRepresentationWidget::_colorChanged( const Color::Rgb & p_color )
-	{
-		if ( signalsBlocked() )
-			return;
-
-		emit onColorChange( p_color, false );
-	}
-	void BaseRepresentationWidget::_ssColorChanged( const Color::Rgb & p_color )
-	{
-		if ( signalsBlocked() )
-			return;
-
-		emit onColorChange( p_color, true );
-	}
-	void BaseRepresentationWidget::_transitionColorModeChanged( const int p_index )
-	{
-		if ( signalsBlocked() )
-			return;
-
-		_instantiatedRepresentation->setTransitionColorMode( (Generic::TRANSITION_COLOR_MODE)p_index, false );
-
-		emit onDataChange( Model::Representation::MEMBER_FLAG::TRANSITION_COLOR_MODE );
-	}
-
-	void BaseRepresentationWidget::_ssTransitionColorModeChanged( const int p_index )
-	{
-		if ( signalsBlocked() )
-			return;
-
-		_instantiatedRepresentation->setSSTransitionColorMode( (Generic::TRANSITION_COLOR_MODE)p_index, false );
-
-		emit onDataChange( Model::Representation::MEMBER_FLAG::SS_TRANSITION_COLOR_MODE );
-	}
-
-	void BaseRepresentationWidget::resetState()
-	{
-		if ( _sphereWidget != nullptr )
-		{
-			Util::UI::setDynamicProperty( _sphereLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
-			_sphereWidget->resetState();
-		}
-		if ( _cylinderWidget != nullptr )
-		{
-			Util::UI::setDynamicProperty( _cylinderLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
-			_cylinderWidget->resetState();
-		}
-		if ( _colorModeWidget != nullptr )
-		{
-			Util::UI::setDynamicProperty( _colorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
-			_colorModeWidget->resetState();
-		}
-		if ( _ssColorModeWidget != nullptr )
-		{
-			Util::UI::setDynamicProperty( _ssColorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
-			_ssColorModeWidget->resetState();
-		}
-		if ( _transitionColorModeWidget != nullptr )
-		{
-			Util::UI::setDynamicProperty( _transitionColorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
-			_transitionColorModeWidget->resetState();
-		}
-		if ( _ssTransitionColorModeWidget != nullptr )
-		{
-			Util::UI::setDynamicProperty(
-				_ssTransitionColorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
-			_ssTransitionColorModeWidget->resetState();
-		}
-
-		_targets.clear();
-	}
-
-	void BaseRepresentationWidget::updateWithNewValue(
-		const Model::Representation::InstantiatedRepresentation & p_value )
-	{
-		_targets.emplace( p_value.getTarget() );
-	};
 
 	void BaseRepresentationWidget::_displayDifferentsDataFeedback() {}
 

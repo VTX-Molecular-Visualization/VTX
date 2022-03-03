@@ -20,9 +20,6 @@ namespace VTX::Model::Representation
 		if ( p_source._colorMode.isOverrided() )
 			_colorMode.setValue( p_source._colorMode.getValue() );
 
-		if ( p_source._ssColorMode.isOverrided() )
-			_ssColorMode.setValue( p_source._ssColorMode.getValue() );
-
 		if ( p_source._sphereData.isOverrided() )
 			_sphereData.setValue( p_source._sphereData.getValue() );
 
@@ -44,8 +41,6 @@ namespace VTX::Model::Representation
 		BaseModel( VTX::ID::Model::MODEL_INTANTIATED_REPRESENTATION ), _linkedRepresentation( p_linkedRepresentation ),
 		_color( Generic::OverridableParameter<Color::Rgb>( _linkedRepresentation->getColor() ) ),
 		_colorMode( Generic::OverridableParameter( _linkedRepresentation->getData().getColorMode() ) ),
-		_ssColorMode(
-			Generic::OverridableParameter( _linkedRepresentation->getData().getSecondaryStructureColorMode() ) ),
 		_sphereData( Generic::OverridableParameter( _linkedRepresentation->getData().getSphereData() ) ),
 		_cylinderData( Generic::OverridableParameter( _linkedRepresentation->getData().getCylinderData() ) ),
 		_ribbonData( Generic::OverridableParameter( _linkedRepresentation->getData().getRibbonData() ) )
@@ -73,7 +68,7 @@ namespace VTX::Model::Representation
 			const bool useMoleculeColor
 				= _colorMode.getValue() == Generic::COLOR_MODE::ATOM_PROTEIN
 				  || _colorMode.getValue() == Generic::COLOR_MODE::PROTEIN
-				  || _ssColorMode.getValue() == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN;
+				  || _ribbonData.getValue()._colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN;
 
 			if ( useMoleculeColor )
 				_notifyDataChanged();
@@ -84,7 +79,6 @@ namespace VTX::Model::Representation
 	{
 		_color.resetSource( &_linkedRepresentation->getColor() );
 		_colorMode.resetSource( &_linkedRepresentation->getData().getColorMode() );
-		_ssColorMode.resetSource( &_linkedRepresentation->getData().getSecondaryStructureColorMode() );
 		_sphereData.resetSource( &_linkedRepresentation->getData().getSphereData() );
 		_cylinderData.resetSource( &_linkedRepresentation->getData().getCylinderData() );
 		_ribbonData.resetSource( &_linkedRepresentation->getData().getRibbonData() );
@@ -99,9 +93,6 @@ namespace VTX::Model::Representation
 			_color = Generic::OverridableParameter<Color::Rgb>( _linkedRepresentation->getColor() );
 		if ( p_eraseOverride || !_colorMode.isOverrided() )
 			_colorMode = Generic::OverridableParameter( _linkedRepresentation->getData().getColorMode() );
-		if ( p_eraseOverride || !_ssColorMode.isOverrided() )
-			_ssColorMode
-				= Generic::OverridableParameter( _linkedRepresentation->getData().getSecondaryStructureColorMode() );
 		if ( p_eraseOverride || !_sphereData.isOverrided() )
 			_sphereData = Generic::OverridableParameter( _linkedRepresentation->getData().getSphereData() );
 		if ( p_eraseOverride || !_cylinderData.isOverrided() )
@@ -136,50 +127,6 @@ namespace VTX::Model::Representation
 
 		if ( p_recomputeBuffers )
 			_updateTarget( VTX::Representation::MoleculeComputationFlag::ColorBuffer );
-
-		if ( p_notify )
-			_notifyDataChanged();
-	}
-
-	const Generic::SECONDARY_STRUCTURE_COLOR_MODE & InstantiatedRepresentation::getSecondaryStructureColorMode() const
-	{
-		return _ssColorMode.getValue();
-	}
-	void InstantiatedRepresentation::setSecondaryStructureColorMode(
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode,
-		const bool										p_recomputeBuffers,
-		const bool										p_notify )
-	{
-		_ssColorMode.setValue( p_colorMode );
-
-		if ( p_recomputeBuffers )
-			_updateTarget( VTX::Representation::MoleculeComputationFlag::SecondaryStructure );
-
-		if ( p_notify )
-			_notifyDataChanged();
-	}
-
-	const Generic::TRANSITION_COLOR_MODE & InstantiatedRepresentation::getTransitionColorMode() const
-	{
-		return _transitionColorMode.getValue();
-	}
-	void InstantiatedRepresentation::setTransitionColorMode( const Generic::TRANSITION_COLOR_MODE & p_colorMode,
-															 const bool								p_notify )
-	{
-		_transitionColorMode.setValue( p_colorMode );
-
-		if ( p_notify )
-			_notifyDataChanged();
-	}
-
-	const Generic::TRANSITION_COLOR_MODE & InstantiatedRepresentation::getSSTransitionColorMode() const
-	{
-		return _ssTransitionColorMode.getValue();
-	}
-	void InstantiatedRepresentation::setSSTransitionColorMode( const Generic::TRANSITION_COLOR_MODE & p_colorMode,
-															   const bool							  p_notify )
-	{
-		_ssTransitionColorMode.setValue( p_colorMode );
 
 		if ( p_notify )
 			_notifyDataChanged();
@@ -266,6 +213,41 @@ namespace VTX::Model::Representation
 			_notifyDataChanged();
 	}
 
+	void InstantiatedRepresentation::setCylinderColorBlendingMode(
+		const Generic::COLOR_BLENDING_MODE & p_colorBlendingMode,
+		const bool							 p_notify )
+	{
+		_cylinderData.getValue()._colorBlendingMode = p_colorBlendingMode;
+
+		if ( p_notify )
+		{
+			_notifyDataChanged();
+		}
+	}
+
+	void InstantiatedRepresentation::setRibbonColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode,
+														 const bool										 p_notify )
+	{
+		_ribbonData.getValue()._colorMode = p_colorMode;
+
+		if ( p_notify )
+		{
+			_notifyDataChanged();
+		}
+	}
+
+	void InstantiatedRepresentation::setRibbonColorBlendingMode(
+		const Generic::COLOR_BLENDING_MODE & p_colorBlendingMode,
+		const bool							 p_notify )
+	{
+		_ribbonData.getValue()._colorBlendingMode = p_colorBlendingMode;
+
+		if ( p_notify )
+		{
+			_notifyDataChanged();
+		}
+	}
+
 	void InstantiatedRepresentation::applyData( const InstantiatedRepresentation & p_source,
 												const MEMBER_FLAG &				   p_flag,
 												const bool						   p_recomputeBuffers,
@@ -280,20 +262,20 @@ namespace VTX::Model::Representation
 		if ( p_flag & MEMBER_FLAG::CYLINDER_RADIUS && p_source.hasToDrawCylinder() )
 			_cylinderData.getValue()._radius = p_source.getCylinderData()._radius;
 
+		if ( p_flag & MEMBER_FLAG::CYLINDER_COLOR_BLENDING_MODE && p_source.hasToDrawCylinder() )
+			_cylinderData.getValue()._colorBlendingMode = p_source.getCylinderData()._colorBlendingMode;
+
+		if ( p_flag & MEMBER_FLAG::RIBBON_COLOR_MODE && p_source.hasToDrawRibbon() )
+			_ribbonData.getValue()._colorMode = p_source.getRibbonData()._colorMode;
+
+		if ( p_flag & MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE && p_source.hasToDrawRibbon() )
+			_ribbonData.getValue()._colorBlendingMode = p_source.getRibbonData()._colorBlendingMode;
+
 		if ( p_flag & MEMBER_FLAG::COLOR_MODE )
 			setColorMode( p_source.getColorMode(), p_recomputeBuffers, false );
 
-		if ( p_flag & MEMBER_FLAG::SS_COLOR_MODE )
-			setSecondaryStructureColorMode( p_source.getSecondaryStructureColorMode(), p_recomputeBuffers, false );
-
 		if ( p_flag & MEMBER_FLAG::COLOR )
 			setColor( p_source.getColor(), p_recomputeBuffers, false );
-
-		if ( p_flag & MEMBER_FLAG::TRANSITION_COLOR_MODE )
-			setTransitionColorMode( p_source.getTransitionColorMode(), false );
-
-		if ( p_flag & MEMBER_FLAG::SS_TRANSITION_COLOR_MODE )
-			setSSTransitionColorMode( p_source.getSSTransitionColorMode(), false );
 
 		if ( p_notify )
 			_notifyDataChanged();
@@ -310,22 +292,26 @@ namespace VTX::Model::Representation
 		}
 
 		if ( hasToDrawCylinder() && _cylinderData.isOverrided() )
+		{
 			res = MEMBER_FLAG( res | MEMBER_FLAG::CYLINDER_RADIUS );
+			res = MEMBER_FLAG( res | MEMBER_FLAG::CYLINDER_COLOR_BLENDING_MODE );
+		}
+
+		if ( hasToDrawRibbon() && _ribbonData.isOverrided() )
+		{
+			res = MEMBER_FLAG( res | MEMBER_FLAG::RIBBON_COLOR_MODE );
+			res = MEMBER_FLAG( res | MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE );
+		}
 
 		if ( _colorMode.isOverrided() )
+		{
 			res = MEMBER_FLAG( res | MEMBER_FLAG::COLOR_MODE );
-
-		if ( _ssColorMode.isOverrided() )
-			res = MEMBER_FLAG( res | MEMBER_FLAG::SS_COLOR_MODE );
+		}
 
 		if ( _color.isOverrided() )
+		{
 			res = MEMBER_FLAG( res | MEMBER_FLAG::COLOR );
-
-		if ( _transitionColorMode.isOverrided() )
-			res = MEMBER_FLAG( res | MEMBER_FLAG::TRANSITION_COLOR_MODE );
-
-		if ( _ssTransitionColorMode.isOverrided() )
-			res = MEMBER_FLAG( res | MEMBER_FLAG::SS_TRANSITION_COLOR_MODE );
+		}
 
 		return res;
 	}
@@ -336,11 +322,12 @@ namespace VTX::Model::Representation
 		case SPHERE_RADIUS_FIXED: return _sphereData.isOverrided(); break;
 		case SPHERE_RADIUS_ADD: return _sphereData.isOverrided(); break;
 		case CYLINDER_RADIUS: return _cylinderData.isOverrided(); break;
+		case CYLINDER_COLOR_BLENDING_MODE: return _cylinderData.isOverrided(); break;
+		case RIBBON_COLOR_MODE: return _ribbonData.isOverrided(); break;
+		case RIBBON_COLOR_BLENDING_MODE: return _ribbonData.isOverrided(); break;
 		case COLOR: return _color.isOverrided(); break;
 		case COLOR_MODE: return _colorMode.isOverrided(); break;
-		case SS_COLOR_MODE: return _ssColorMode.isOverrided(); break;
-		case TRANSITION_COLOR_MODE: return _transitionColorMode.isOverrided(); break;
-		case SS_TRANSITION_COLOR_MODE: return _ssTransitionColorMode.isOverrided(); break;
+
 		default:
 			VTX_WARNING( "MEMBER_FLAG " + std::to_string( int( p_member ) )
 						 + " not managed in InstantiatedRepresentation::isMemberOverrided." );

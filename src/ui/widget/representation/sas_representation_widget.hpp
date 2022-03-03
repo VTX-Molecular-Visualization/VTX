@@ -13,12 +13,10 @@ namespace VTX::UI::Widget::Representation
 
 	  public:
 		void localize() override;
-		void updateWithNewValue( const InstantiatedRepresentation & p_value ) override;
 
 	  protected:
 		SasRepresentationWidget( QWidget * p_parent = nullptr ) : BaseRepresentationWidget( p_parent ) {};
 		void _setupUi( const QString & p_name ) override;
-		void _refresh() override;
 	};
 } // namespace VTX::UI::Widget::Representation
 #endif

@@ -8,29 +8,12 @@ namespace VTX::UI::Widget::Representation
 	{
 		BaseRepresentationWidget::_setupUi( p_name );
 
-		_addCylinderWidgetInLayout( "Stick radius", Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
-		_addColorModeInLayout( "Color mode" );
-		_addSSColorModeInLayout( "Cartoon color mode" );
-	};
-	void StickAndCartoonRepresentationWidget::localize() {};
-
-	void StickAndCartoonRepresentationWidget::_refresh()
-	{
-		_setCylinderValue( _instantiatedRepresentation->getCylinderData()._radius,
-						   _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::CYLINDER_RADIUS ) );
-		_refreshColorModeWidget();
-		_refreshSSColorModeWidget();
+		_addCylinderWidgetInLayout();
+		_addColorModeWidgetInLayout();
+		_addRibbonWidgetInLayout();
 	}
 
-	void StickAndCartoonRepresentationWidget::updateWithNewValue( const InstantiatedRepresentation & p_representation )
-	{
-		BaseRepresentationWidget::updateWithNewValue( p_representation );
-
-		_addCylinderValue( p_representation.getCylinderData()._radius,
-						   p_representation.isMemberOverrided( MEMBER_FLAG::CYLINDER_RADIUS ) );
-		_addColorModeValue( p_representation );
-		_addSSColorModeValue( p_representation );
-	}
+	void StickAndCartoonRepresentationWidget::localize() {}
 
 	void StickAndCartoonRepresentationWidget::_onCylinderRadiusChange( const float p_newRadius )
 	{

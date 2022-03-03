@@ -50,17 +50,6 @@ namespace VTX::Model::Representation
 												  const bool				  p_recomputeBuffers = true,
 												  const bool				  p_notify			 = true );
 
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & getSecondaryStructureColorMode() const;
-		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode,
-											 const bool										 p_recomputeBuffers = true,
-											 const bool										 p_notify = true );
-
-		const Generic::TRANSITION_COLOR_MODE & getTransitionColorMode() const;
-		void setTransitionColorMode( const Generic::TRANSITION_COLOR_MODE & p_colorMode, const bool p_notify = true );
-
-		const Generic::TRANSITION_COLOR_MODE & getSSTransitionColorMode() const;
-		void setSSTransitionColorMode( const Generic::TRANSITION_COLOR_MODE & p_colorMode, const bool p_notify = true );
-
 		VTX::Representation::FlagDataTargeted getFlagDataTargeted() const
 		{
 			return VTX::Representation::getFlagDataTargeted( _linkedRepresentation->getRepresentationType() );
@@ -73,9 +62,15 @@ namespace VTX::Model::Representation
 		bool				 hasToDrawCylinder() const { return _linkedRepresentation->getData().hasToDrawCylinder(); };
 		const CylinderData & getCylinderData() const { return _cylinderData.getValue(); };
 		void				 setCylinderRadius( const float p_radius, const bool p_notify = true );
+		void				 setCylinderColorBlendingMode( const Generic::COLOR_BLENDING_MODE & p_colorBlendingMode,
+														   const bool							p_notify = true );
 
 		bool			   hasToDrawRibbon() const { return _linkedRepresentation->getData().hasToDrawRibbon(); };
 		const RibbonData & getRibbonData() const { return _ribbonData.getValue(); };
+		void			   setRibbonColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode,
+											   const bool									   p_notify = true );
+		void			   setRibbonColorBlendingMode( const Generic::COLOR_BLENDING_MODE & p_colorBlendingMode,
+													   const bool							p_notify = true );
 
 		void applyData( const InstantiatedRepresentation & p_source,
 						const MEMBER_FLAG &				   p_flag,
@@ -103,11 +98,8 @@ namespace VTX::Model::Representation
 
 		Generic::BaseRepresentable * _target = nullptr;
 
-		Generic::OverridableParameter<Color::Rgb>							   _color;
-		Generic::OverridableParameter<Generic::COLOR_MODE>					   _colorMode;
-		Generic::OverridableParameter<Generic::SECONDARY_STRUCTURE_COLOR_MODE> _ssColorMode;
-		Generic::OverridableParameter<Generic::TRANSITION_COLOR_MODE>		   _transitionColorMode;
-		Generic::OverridableParameter<Generic::TRANSITION_COLOR_MODE>		   _ssTransitionColorMode;
+		Generic::OverridableParameter<Color::Rgb>		   _color;
+		Generic::OverridableParameter<Generic::COLOR_MODE> _colorMode;
 
 		Generic::OverridableParameter<SphereData>	_sphereData;
 		Generic::OverridableParameter<CylinderData> _cylinderData;

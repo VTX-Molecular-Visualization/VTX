@@ -1,4 +1,4 @@
-#include "colormode_field_widget.hpp"
+#include "color_mode_field_widget.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/settings/setting_widget.hpp"
 #include "ui/widget_factory.hpp"

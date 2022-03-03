@@ -225,9 +225,9 @@ namespace VTX::UI::Widget::Representation
 		if ( signalsBlocked() )
 			return;
 
-		bool changeRepresentationColor = p_ssColor
-										 && _dummyRepresentation->getSecondaryStructureColorMode()
-												== Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM;
+		bool changeRepresentationColor
+			= p_ssColor
+			  && _dummyRepresentation->getRibbonData()._colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM;
 
 		changeRepresentationColor
 			= changeRepresentationColor
@@ -300,11 +300,11 @@ namespace VTX::UI::Widget::Representation
 				_dummyRepresentation
 					= VTX::Representation::RepresentationManager::get().instantiateDummy( p_representation );
 
-				View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection> * const
+				VTX::View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection> * const
 					representationView
 					= MVC::MvcManager::get()
 						  .instantiateView<
-							  View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection>>(
+							  VTX::View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection>>(
 							  _dummyRepresentation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
 
 				representationView->setCallback( this, &RepresentationInspectorSection::_onDummyChange );
@@ -346,11 +346,11 @@ namespace VTX::UI::Widget::Representation
 		{
 			if ( _representations.find( &p_representation ) == _representations.end() )
 			{
-				View::CallbackView<const InstantiatedRepresentation, RepresentationInspectorSection> * const
+				VTX::View::CallbackView<const InstantiatedRepresentation, RepresentationInspectorSection> * const
 					viewOnRepresentation
 					= MVC::MvcManager::get()
-						  .instantiateView<
-							  View::CallbackView<const InstantiatedRepresentation, RepresentationInspectorSection>>(
+						  .instantiateView<VTX::View::CallbackView<const InstantiatedRepresentation,
+																   RepresentationInspectorSection>>(
 							  &p_representation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
 
 				viewOnRepresentation->setCallback( this,

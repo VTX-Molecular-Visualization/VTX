@@ -4,9 +4,10 @@
 #include "model/representation/instantiated_representation.hpp"
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/colormode_field_widget.hpp"
-#include "ui/widget/custom_widget/float_field_slider_widget.hpp"
-#include "ui/widget/custom_widget/secondary_structure_colormode_field_widget.hpp"
+#include "ui/widget/custom_widget/color_mode_field_widget.hpp"
+#include "view/cylinder_widget.hpp"
+#include "view/ribbon_widget.hpp"
+#include "view/sphere_widget.hpp"
 #include <QWidget>
 #include <unordered_set>
 
@@ -26,16 +27,15 @@ namespace VTX::UI::Widget::Representation
 
 	  public:
 		using InstantiatedRepresentation	 = Model::Representation::InstantiatedRepresentation;
-		using InstantiatedRepresentationView = View::UI::Widget::Representation::InstantiatedRepresentationView;
+		using InstantiatedRepresentationView = VTX::View::UI::Widget::Representation::InstantiatedRepresentationView;
 		using MEMBER_FLAG					 = Model::Representation::MEMBER_FLAG;
 
 		void refresh();
-
 		void setRepresentation( InstantiatedRepresentation * const p_representation );
 
 		// MultiDataField Implementation //////////////////////////////
-		virtual void updateWithNewValue( const Model::Representation::InstantiatedRepresentation & p_value ) override;
-		void		 resetState() override;
+		void updateWithNewValue( const Model::Representation::InstantiatedRepresentation & p_value ) override;
+		void resetState() override;
 		//////////////////////////////////////////////////////////////
 
 	  signals:
@@ -45,61 +45,39 @@ namespace VTX::UI::Widget::Representation
 	  protected:
 		BaseRepresentationWidget( QWidget * p_parent = nullptr );
 
-		InstantiatedRepresentation *	   _instantiatedRepresentation = nullptr;
-		Model::Representation::MEMBER_FLAG _sphereFlag = Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED;
+		InstantiatedRepresentation * _instantiatedRepresentation = nullptr;
 
-		void		 _setupUi( const QString & p_name ) override;
-		void		 _setupSlots() override;
-		virtual void _refresh() {};
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 
 		// MultiDataField Implementation //////////////////////////////
 		void _displayDifferentsDataFeedback() override;
 		//////////////////////////////////////////////////////////////
 
-		void _addSphereWidgetInLayout( const QString &							p_label,
-									   const float								p_min,
-									   const float								p_max,
-									   const Model::Representation::MEMBER_FLAG p_sphereFlag );
-		void _addCylinderWidgetInLayout( const QString & p_label, const float p_min, const float p_max );
-		void _addColorModeInLayout( const QString & p_label );
-		void _addSSColorModeInLayout( const QString & p_label );
-		void _addTransitionColorModeInLayout( const QString & p_label );
-		void _addSSTransitionColorModeInLayout( const QString & p_label );
-
-		void _setSphereValue( const float p_value, const bool p_overrided );
-		void _addSphereValue( const float p_value, const bool p_overrided );
-		void _setCylinderValue( const float p_value, const bool p_overrided );
-		void _addCylinderValue( const float p_value, const bool p_overrided );
+		void _addSphereWidgetInLayout();
+		void _addCylinderWidgetInLayout();
+		void _addRibbonWidgetInLayout();
+		void _addColorModeWidgetInLayout();
 
 		void _refreshColorModeWidget();
-		void _refreshSSColorModeWidget();
-		void _refreshColorModeWidget( const InstantiatedRepresentation & p_representation );
-		void _refreshSSColorModeWidget( const InstantiatedRepresentation & p_representation );
 		void _addColorModeValue( const InstantiatedRepresentation & p_representation );
-		void _addSSColorModeValue( const InstantiatedRepresentation & p_representation );
 
 		virtual void _onSphereRadiusChange( const float p_newRadius );
+		virtual void _onSphereRadiusOffsetChange( const float p_newRadius );
 		virtual void _onCylinderRadiusChange( const float p_newRadius );
-		virtual void _colorModeChanged( const Generic::COLOR_MODE & p_colorMode );
-		virtual void _ssColorModeChanged( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
-		void		 _colorChanged( const Color::Rgb & p_color );
-		void		 _ssColorChanged( const Color::Rgb & p_color );
-		virtual void _transitionColorModeChanged( const int p_colorTransitionMode );
-		virtual void _ssTransitionColorModeChanged( const int p_ssColorTransitionMode );
+		virtual void _onCylinderColorBlendingModeChange( const Generic::COLOR_BLENDING_MODE & p_colorBlendindrMode );
+		virtual void _onRibbonColorChange( const Color::Rgb & p_color );
+		virtual void _onRibbonColorModeChange( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
+		virtual void _onRibbonColorBlendingModeChange( const Generic::COLOR_BLENDING_MODE & p_colorBlendindrMode );
+		virtual void _onColorChange( const Color::Rgb & p_color );
+		virtual void _onColorModeChange( const Generic::COLOR_MODE & p_colorMode );
 
-		CustomWidget::FloatFieldSliderWidget *				   _sphereWidget				= nullptr;
-		CustomWidget::FloatFieldSliderWidget *				   _cylinderWidget				= nullptr;
-		CustomWidget::ColorModeFieldWidget *				   _colorModeWidget				= nullptr;
-		CustomWidget::SecondaryStructureColorModeFieldWidget * _ssColorModeWidget			= nullptr;
-		CustomWidget::QComboBoxMultiField *					   _transitionColorModeWidget	= nullptr;
-		CustomWidget::QComboBoxMultiField *					   _ssTransitionColorModeWidget = nullptr;
+		Representation::View::SphereWidget *   _sphereWidget   = nullptr;
+		Representation::View::CylinderWidget * _cylinderWidget = nullptr;
+		Representation::View::RibbonWidget *   _ribbonWidget   = nullptr;
 
-		QLabel * _sphereLabel				 = nullptr;
-		QLabel * _cylinderLabel				 = nullptr;
-		QLabel * _colorModeLabel			 = nullptr;
-		QLabel * _ssColorModeLabel			 = nullptr;
-		QLabel * _transitionColorModeLabel	 = nullptr;
-		QLabel * _ssTransitionColorModeLabel = nullptr;
+		QLabel *							 _colorModeLabel  = nullptr;
+		CustomWidget::ColorModeFieldWidget * _colorModeWidget = nullptr;
 
 	  private:
 		QGridLayout *										   _layout = nullptr;

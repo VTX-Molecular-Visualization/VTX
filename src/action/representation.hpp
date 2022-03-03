@@ -181,27 +181,6 @@ namespace VTX::Action::Representation
 		const Generic::COLOR_MODE					  _colorMode;
 	};
 
-	class ChangeSecondaryStructureColorMode : public BaseAction
-	{
-	  public:
-		explicit ChangeSecondaryStructureColorMode( Model::Representation::Representation * const p_representation,
-													Generic::SECONDARY_STRUCTURE_COLOR_MODE &	  p_colorMode ) :
-			_representation( p_representation ),
-			_colorMode( p_colorMode )
-		{
-		}
-
-		void execute()
-		{
-			_representation->getData().setSecondaryStructureColorMode( _colorMode );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		};
-
-	  private:
-		Model::Representation::Representation * const _representation;
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
-	};
-
 	class ChangeColor : public BaseAction
 	{
 	  public:
@@ -242,6 +221,7 @@ namespace VTX::Action::Representation
 		Model::Representation::Representation * const _representation;
 		const float									  _radius;
 	};
+
 	class ChangeCylinderRadius : public BaseAction
 	{
 	  public:
@@ -261,6 +241,69 @@ namespace VTX::Action::Representation
 	  private:
 		Model::Representation::Representation * const _representation;
 		const float									  _radius;
+	};
+
+	class ChangeCylinderColorBendingMode : public BaseAction
+	{
+	  public:
+		explicit ChangeCylinderColorBendingMode( Model::Representation::Representation * const p_representation,
+												 const Generic::COLOR_BLENDING_MODE &		   p_colorBendingMode ) :
+			_representation( p_representation ),
+			_colorBendingMode( p_colorBendingMode )
+		{
+		}
+
+		void execute()
+		{
+			_representation->getData().setCylinderColorBlendingMode( _colorBendingMode );
+			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		};
+
+	  private:
+		Model::Representation::Representation * const _representation;
+		const Generic::COLOR_BLENDING_MODE			  _colorBendingMode;
+	};
+
+	class ChangeRibbonColorMode : public BaseAction
+	{
+	  public:
+		explicit ChangeRibbonColorMode( Model::Representation::Representation * const p_representation,
+										Generic::SECONDARY_STRUCTURE_COLOR_MODE &	  p_colorMode ) :
+			_representation( p_representation ),
+			_colorMode( p_colorMode )
+		{
+		}
+
+		void execute()
+		{
+			_representation->getData().setRibbonColorMode( _colorMode );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		};
+
+	  private:
+		Model::Representation::Representation * const _representation;
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
+	};
+
+	class ChangeRibbonColorBendingMode : public BaseAction
+	{
+	  public:
+		explicit ChangeRibbonColorBendingMode( Model::Representation::Representation * const p_representation,
+											   const Generic::COLOR_BLENDING_MODE &			 p_colorBendingMode ) :
+			_representation( p_representation ),
+			_colorBendingMode( p_colorBendingMode )
+		{
+		}
+
+		void execute()
+		{
+			_representation->getData().setRibbonColorBlendingMode( _colorBendingMode );
+			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		};
+
+	  private:
+		Model::Representation::Representation * const _representation;
+		const Generic::COLOR_BLENDING_MODE			  _colorBendingMode;
 	};
 
 	class AddNewPresetInLibrary : public BaseAction

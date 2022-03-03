@@ -1,4 +1,4 @@
-#include "secondary_structure_colormode_field_widget.hpp"
+#include "ribbon_color_mode_field_widget.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/settings/setting_widget.hpp"
 #include "ui/widget_factory.hpp"
@@ -7,7 +7,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	void SecondaryStructureColorModeFieldWidget::_setupUi( const QString & p_name )
+	void RibbonColorModeFieldWidget::_setupUi( const QString & p_name )
 	{
 		setObjectName( p_name );
 		setAcceptDrops( true );
@@ -38,16 +38,16 @@ namespace VTX::UI::Widget::CustomWidget
 		//_layout->addWidget( _openColorSettingsButton );
 	}
 
-	void SecondaryStructureColorModeFieldWidget::_setupSlots()
+	void RibbonColorModeFieldWidget::_setupSlots()
 	{
 		connect( _colorModeComboBox,
 				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
 				 this,
-				 &SecondaryStructureColorModeFieldWidget::_colorModeChange );
+				 &RibbonColorModeFieldWidget::_colorModeChange );
 		connect( _colorSetButton,
 				 QOverload<const Color::Rgb &>::of( &ColorFieldButton::onValueChange ),
 				 this,
-				 &SecondaryStructureColorModeFieldWidget::_applyColor );
+				 &RibbonColorModeFieldWidget::_applyColor );
 		// !V0.1
 		// connect( _openColorSettingsButton,
 		//		 &QPushButton::clicked,
@@ -55,7 +55,7 @@ namespace VTX::UI::Widget::CustomWidget
 		//		 &SecondaryStructureColorModeFieldWidget::_openColorSettings );
 	}
 
-	void SecondaryStructureColorModeFieldWidget::_refresh()
+	void RibbonColorModeFieldWidget::_refresh()
 	{
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE currentColorMode
 			= Generic::SECONDARY_STRUCTURE_COLOR_MODE( _colorModeComboBox->currentIndex() );
@@ -76,8 +76,7 @@ namespace VTX::UI::Widget::CustomWidget
 		//	_openColorSettingsButton->hide();
 	}
 
-	void SecondaryStructureColorModeFieldWidget::setColorMode(
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
+	void RibbonColorModeFieldWidget::setColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
 	{
 		_colorMode = p_colorMode;
 		_colorModeComboBox->setCurrentIndex( int( _colorMode ) );
@@ -87,7 +86,7 @@ namespace VTX::UI::Widget::CustomWidget
 		emit colorModeChanged( _colorMode );
 	}
 
-	void SecondaryStructureColorModeFieldWidget::setColor( const Color::Rgb & p_color )
+	void RibbonColorModeFieldWidget::setColor( const Color::Rgb & p_color )
 	{
 		_color = p_color;
 		_colorSetButton->setColor( p_color );
@@ -99,20 +98,20 @@ namespace VTX::UI::Widget::CustomWidget
 	//	VTXApp::get().getMainWindow().openSettingWindow( Widget::Settings::SETTING_MENU::COLORS );
 	//}
 
-	void SecondaryStructureColorModeFieldWidget::_colorModeChange( int p_index )
+	void RibbonColorModeFieldWidget::_colorModeChange( int p_index )
 	{
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode = Generic::SECONDARY_STRUCTURE_COLOR_MODE( p_index );
 		setColorMode( colorMode );
 	}
-	void SecondaryStructureColorModeFieldWidget::_applyColor( const Color::Rgb & p_color )
+	void RibbonColorModeFieldWidget::_applyColor( const Color::Rgb & p_color )
 	{
 		_color = p_color;
 		emit colorChanged( _color );
 	}
 
-	void SecondaryStructureColorModeFieldWidget::localize() {};
+	void RibbonColorModeFieldWidget::localize() {};
 
-	void SecondaryStructureColorModeFieldWidget::updateWithNewValue(
+	void RibbonColorModeFieldWidget::updateWithNewValue(
 		const std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgb> & p_value )
 	{
 		_colorModeComboBox->updateWithNewValue( int( p_value.first ) );
@@ -120,11 +119,11 @@ namespace VTX::UI::Widget::CustomWidget
 
 		_refresh();
 	}
-	void SecondaryStructureColorModeFieldWidget::resetState()
+	void RibbonColorModeFieldWidget::resetState()
 	{
 		_colorModeComboBox->resetState();
 		_colorSetButton->resetState();
 	}
-	void SecondaryStructureColorModeFieldWidget::_displayDifferentsDataFeedback() {}
+	void RibbonColorModeFieldWidget::_displayDifferentsDataFeedback() {}
 
 } // namespace VTX::UI::Widget::CustomWidget

@@ -158,7 +158,7 @@ namespace VTX::UI::Widget::Inspector
 		{
 			if ( p_ssColor )
 			{
-				switch ( p_representation.getSecondaryStructureColorMode() )
+				switch ( p_representation.getRibbonData()._colorMode )
 				{
 				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
 					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
@@ -171,7 +171,7 @@ namespace VTX::UI::Widget::Inspector
 
 				default:
 					VTX_WARNING( "SECONDARY_STRUCTURE_COLOR_MODE "
-								 + std::to_string( int( p_representation.getSecondaryStructureColorMode() ) )
+								 + std::to_string( int( p_representation.getRibbonData()._colorMode ) )
 								 + " not managed in MultipleChainWidget::_onRepresentationColorChange." );
 					break;
 				}

@@ -12,34 +12,8 @@ namespace VTX::UI::Widget::Representation
 	{
 		BaseRepresentationWidget::_setupUi( p_name );
 
-		_addCylinderWidgetInLayout( "Sticks radius", Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
-		_addColorModeInLayout( "Color mode" );
-
-		_addTransitionColorModeInLayout( "Transition color mode" );
-		QStringList colorModeList = QStringList();
-		for ( const std::string colorModeStrings : Generic::TRANSITION_COLOR_MODE_STRING )
-		{
-			colorModeList.append( QString::fromStdString( colorModeStrings ) );
-		}
-		_transitionColorModeWidget->addItems( colorModeList );
-	};
-
-	void StickRepresentationWidget::_refresh()
-	{
-		_setCylinderValue( _instantiatedRepresentation->getCylinderData()._radius,
-						   _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::CYLINDER_RADIUS ) );
-
-		_refreshColorModeWidget();
-	}
-
-	void StickRepresentationWidget::updateWithNewValue( const InstantiatedRepresentation & p_representation )
-	{
-		BaseRepresentationWidget::updateWithNewValue( p_representation );
-
-		_addCylinderValue( p_representation.getCylinderData()._radius,
-						   p_representation.isMemberOverrided( MEMBER_FLAG::CYLINDER_RADIUS ) );
-
-		_addColorModeValue( p_representation );
+		_addCylinderWidgetInLayout();
+		_addColorModeWidgetInLayout();
 	}
 
 	void StickRepresentationWidget::_onCylinderRadiusChange( const float p_newRadius )

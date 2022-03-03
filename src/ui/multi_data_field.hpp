@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QWidget>
 #include <type_traits>
+#include <unordered_set>
 
 namespace VTX::UI
 {
@@ -33,6 +34,14 @@ namespace VTX::UI
 	{
 	  public:
 		virtual void updateWithNewValue( T & p_value ) = 0;
+	};
+
+	template<typename T, typename Q>
+	class TMultiDataTargetField : public MultiDataField
+	{
+	  public:
+		virtual void refresh( const T & p_value, const std::unordered_set<const Q *> & p_targets )			  = 0;
+		virtual void updateWithNewValue( const T & p_value, const std::unordered_set<const Q *> & p_targets ) = 0;
 	};
 
 	template<typename T>

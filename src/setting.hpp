@@ -14,7 +14,7 @@ namespace VTX
 	namespace Generic
 	{
 		enum class COLOR_MODE;
-		enum class TRANSITION_COLOR_MODE;
+		enum class COLOR_BLENDING_MODE;
 		enum class REPRESENTATION;
 	} // namespace Generic
 
@@ -79,18 +79,19 @@ namespace VTX
 		static const float ATOMS_RADIUS_MIN;
 		static const float ATOMS_RADIUS_MAX;
 
-		static const float BONDS_RADIUS_DEFAULT;
-		static const float BONDS_RADIUS_MIN;
-		static const float BONDS_RADIUS_MAX;
+		static const float						  BONDS_RADIUS_DEFAULT;
+		static const float						  BONDS_RADIUS_MIN;
+		static const float						  BONDS_RADIUS_MAX;
+		static const Generic::COLOR_BLENDING_MODE BONDS_COLOR_BLENDING_MODE_DEFAULT;
 
 		static const float ATOMS_RADIUS_ADD_DEFAULT;
 		static const float ATOMS_RADIUS_ADD_MIN;
 		static const float ATOMS_RADIUS_ADD_MAX;
 
-		static const Generic::COLOR_MODE					 COLOR_MODE_DEFAULT;
 		static const Generic::SECONDARY_STRUCTURE_COLOR_MODE SS_COLOR_MODE_DEFAULT;
-		static const Generic::TRANSITION_COLOR_MODE			 COLOR_TRANSITION_MODE_DEFAULT;
-		static const Generic::TRANSITION_COLOR_MODE			 SS_COLOR_TRANSITION_MODE_DEFAULT;
+		static const Generic::COLOR_BLENDING_MODE			 SS_COLOR_BLENDING_MODE_DEFAULT;
+
+		static const Generic::COLOR_MODE COLOR_MODE_DEFAULT;
 
 		static const std::string NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME;
 		static const int		 RENDER_EFFECT_DEFAULT_INDEX;

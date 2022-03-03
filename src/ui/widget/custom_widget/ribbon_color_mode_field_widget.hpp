@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_WIDGET_SECONDARY_STRUCTURE_COLORMODE_FIELD_WIDGET__
-#define __VTX_UI_WIDGET_SECONDARY_STRUCTURE_COLORMODE_FIELD_WIDGET__
+#ifndef __VTX_UI_WIDGET_RIBBON_COLOR_MODE_FIELD_WIDGET__
+#define __VTX_UI_WIDGET_RIBBON_COLOR_MODE_FIELD_WIDGET__
 
 #include "color/rgb.hpp"
 #include "color_field_button.hpp"
@@ -15,7 +15,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class SecondaryStructureColorModeFieldWidget :
+	class RibbonColorModeFieldWidget :
 		public BaseManualWidget<QWidget>,
 		public TMultiDataField<const std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgb>>
 	{
@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::CustomWidget
 		VTX_WIDGET
 
 	  public:
-		~SecondaryStructureColorModeFieldWidget() {};
+		~RibbonColorModeFieldWidget() {};
 		void localize() override;
 
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & getColorMode() const { return _colorMode; };
@@ -41,8 +41,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void colorChanged( const Color::Rgb & p_color );
 
 	  protected:
-		SecondaryStructureColorModeFieldWidget( QWidget * p_parent ) :
-			BaseManualWidget( p_parent ), TMultiDataField() {};
+		RibbonColorModeFieldWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ), TMultiDataField() {};
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;

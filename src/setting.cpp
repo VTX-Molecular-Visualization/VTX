@@ -49,25 +49,24 @@ namespace VTX
 		= IO::Struct::ImageExport::RESOLUTION::Free;
 	const IO::Struct::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT = IO::Struct::ImageExport::Format::PNG;
 
-	const std::string							  Setting::REPRESENTATION_DEFAULT_NAME	= "Stick";
-	const int									  Setting::REPRESENTATION_DEFAULT_INDEX = 3;
-	const Generic::REPRESENTATION				  Setting::DEFAULT_REPRESENTATION_TYPE = Generic::REPRESENTATION::STICK;
-	const std::string							  Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
-	const float									  Setting::ATOMS_RADIUS_DEFAULT			   = 0.4f;
-	const float									  Setting::ATOMS_RADIUS_MIN				   = 0.01f;
-	const float									  Setting::ATOMS_RADIUS_MAX				   = 1.f;
-	const float									  Setting::BONDS_RADIUS_DEFAULT			   = 0.15f;
-	const float									  Setting::BONDS_RADIUS_MIN				   = 0.01f;
-	const float									  Setting::BONDS_RADIUS_MAX				   = 1.f;
-	const float									  Setting::ATOMS_RADIUS_ADD_DEFAULT		   = 0.f;
-	const float									  Setting::ATOMS_RADIUS_ADD_MIN			   = -1.f;
-	const float									  Setting::ATOMS_RADIUS_ADD_MAX			   = 1.f;
-	const Generic::COLOR_MODE					  Setting::COLOR_MODE_DEFAULT			   = Generic::COLOR_MODE::CHAIN;
+	const std::string				   Setting::REPRESENTATION_DEFAULT_NAME		  = "Stick";
+	const int						   Setting::REPRESENTATION_DEFAULT_INDEX	  = 3;
+	const Generic::REPRESENTATION	   Setting::DEFAULT_REPRESENTATION_TYPE		  = Generic::REPRESENTATION::STICK;
+	const std::string				   Setting::NEW_REPRESENTATION_DEFAULT_NAME	  = "New representation";
+	const float						   Setting::ATOMS_RADIUS_DEFAULT			  = 0.4f;
+	const float						   Setting::ATOMS_RADIUS_MIN				  = 0.01f;
+	const float						   Setting::ATOMS_RADIUS_MAX				  = 1.f;
+	const float						   Setting::BONDS_RADIUS_DEFAULT			  = 0.15f;
+	const float						   Setting::BONDS_RADIUS_MIN				  = 0.01f;
+	const float						   Setting::BONDS_RADIUS_MAX				  = 1.f;
+	const Generic::COLOR_BLENDING_MODE Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT = Generic::COLOR_BLENDING_MODE::HARD;
+	const float						   Setting::ATOMS_RADIUS_ADD_DEFAULT		  = 0.f;
+	const float						   Setting::ATOMS_RADIUS_ADD_MIN			  = -1.f;
+	const float						   Setting::ATOMS_RADIUS_ADD_MAX			  = 1.f;
 	const Generic::SECONDARY_STRUCTURE_COLOR_MODE Setting::SS_COLOR_MODE_DEFAULT
 		= Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
-	const Generic::TRANSITION_COLOR_MODE Setting::COLOR_TRANSITION_MODE_DEFAULT = Generic::TRANSITION_COLOR_MODE::FLAT;
-	const Generic::TRANSITION_COLOR_MODE Setting::SS_COLOR_TRANSITION_MODE_DEFAULT
-		= Generic::TRANSITION_COLOR_MODE::FLAT;
+	const Generic::COLOR_BLENDING_MODE Setting::SS_COLOR_BLENDING_MODE_DEFAULT = Generic::COLOR_BLENDING_MODE::HARD;
+	const Generic::COLOR_MODE		   Setting::COLOR_MODE_DEFAULT			   = Generic::COLOR_MODE::CHAIN;
 
 	const std::string Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME = "New render preset";
 	const int		  Setting::RENDER_EFFECT_DEFAULT_INDEX			 = 0;

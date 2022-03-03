@@ -30,8 +30,10 @@ namespace VTX::UI::Widget::Settings
 			NAME,
 			SPHERE_RADIUS,
 			CYLINDER_RADIUS,
+			CYLINDER_COLOR_BLENDING_MODE,
+			RIBBON_COLOR_MODE,
+			RIBBON_COLOR_BLENDING_MODE,
 			COLOR_MODE,
-			SS_COLOR_MODE,
 			COLOR,
 			QUICK_ACCESS,
 			SET_DEFAULT,
@@ -113,9 +115,11 @@ namespace VTX::UI::Widget::Settings
 		void _onRepresentationTypeChange( const int p_newIndex );
 		void _onSphereRadiusChanged( const float p_value );
 		void _onCylinderRadiusChanged( const float p_value );
+		void _onCylinderColorBendingModeChanged( const int p_index );
+		void _onRibbonColorModeChanged( const int p_index );
+		void _onRibbonColorBlendingModeChanged( const int p_index );
 		void _onColorModeChanged( const int p_index );
 		void _onColorChanged( const Color::Rgb & p_color );
-		void _onSSColorModeChanged( const int p_index );
 		void _onSetDefault();
 	};
 

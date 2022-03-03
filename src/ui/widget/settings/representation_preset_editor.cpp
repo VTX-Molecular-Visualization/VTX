@@ -77,13 +77,17 @@ namespace VTX::UI::Widget::Settings
 		_layout->setColumnStretch( 1, 10 );
 
 		_addParameter( PARAMETER::NAME, nameWidget, QString( "Name" ) );
-		_addParameter( PARAMETER::QUICK_ACCESS, quickAccess, QString( "Quick Access" ) );
+		_addParameter( PARAMETER::QUICK_ACCESS, quickAccess, QString( "Quick access" ) );
 		_addSpace();
 		_addParameter( PARAMETER::TYPE, representationTypeWidget, QString( "Type" ) );
-		_addParameter( PARAMETER::SPHERE_RADIUS, sphereRadiusWidget, QString( "Sphere Radius" ) );
-		_addParameter( PARAMETER::CYLINDER_RADIUS, cylinderRadiusWidget, QString( "Cylinder Radius" ) );
-		_addParameter( PARAMETER::COLOR_MODE, colorModeWidget, QString( "Color Mode" ) );
-		_addParameter( PARAMETER::SS_COLOR_MODE, ssColorModeWidget, QString( "SS Color Mode" ) );
+		_addParameter( PARAMETER::SPHERE_RADIUS, sphereRadiusWidget, QString( "Sphere radius" ) );
+		_addParameter( PARAMETER::CYLINDER_RADIUS, cylinderRadiusWidget, QString( "Cylinder radius" ) );
+		_addParameter(
+			PARAMETER::CYLINDER_COLOR_BLENDING_MODE, cylinderRadiusWidget, QString( "Cylinder bending color mode" ) );
+		_addParameter( PARAMETER::RIBBON_COLOR_MODE, ssColorModeWidget, QString( "Ribbon color mode" ) );
+		_addParameter(
+			PARAMETER::RIBBON_COLOR_BLENDING_MODE, ssColorModeWidget, QString( "Ribbon color blending mode" ) );
+		_addParameter( PARAMETER::COLOR_MODE, colorModeWidget, QString( "Color mode" ) );
 		_addParameter( PARAMETER::COLOR, colorButtonWidget, QString( "Custom color" ) );
 		_addSpace( 30 );
 		_addParameter( PARAMETER::SET_DEFAULT, setDefaultButton );
@@ -116,20 +120,31 @@ namespace VTX::UI::Widget::Settings
 				 &Widget::CustomWidget::FloatFieldSliderWidget::onValueChange,
 				 this,
 				 &RepresentationPresetEditor::_onSphereRadiusChanged );
+
 		connect( _getParameter<CustomWidget::FloatFieldSliderWidget>( PARAMETER::CYLINDER_RADIUS ),
 				 &Widget::CustomWidget::FloatFieldSliderWidget::onValueChange,
 				 this,
 				 &RepresentationPresetEditor::_onCylinderRadiusChanged );
+
+		connect( _getParameter<QComboBox>( PARAMETER::CYLINDER_COLOR_BLENDING_MODE ),
+				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
+				 this,
+				 &RepresentationPresetEditor::_onCylinderColorBendingModeChanged );
 
 		connect( _getParameter<QComboBox>( PARAMETER::COLOR_MODE ),
 				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
 				 this,
 				 &RepresentationPresetEditor::_onColorModeChanged );
 
-		connect( _getParameter<QComboBox>( PARAMETER::SS_COLOR_MODE ),
+		connect( _getParameter<QComboBox>( PARAMETER::RIBBON_COLOR_MODE ),
 				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
 				 this,
-				 &RepresentationPresetEditor::_onSSColorModeChanged );
+				 &RepresentationPresetEditor::_onRibbonColorModeChanged );
+
+		connect( _getParameter<QComboBox>( PARAMETER::RIBBON_COLOR_BLENDING_MODE ),
+				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
+				 this,
+				 &RepresentationPresetEditor::_onRibbonColorBlendingModeChanged );
 
 		connect( _getParameter<CustomWidget::ColorFieldButton>( PARAMETER::COLOR ),
 				 &Widget::CustomWidget::ColorFieldButton::onValueChange,
@@ -187,9 +202,13 @@ namespace VTX::UI::Widget::Settings
 		cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
 		cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
 
+		_getParameter<QComboBox>( PARAMETER::CYLINDER_COLOR_BLENDING_MODE )
+			->setCurrentIndex( int( _preset->getData().getCylinderColorBlendingMode() ) );
+
 		_getParameter<QComboBox>( PARAMETER::COLOR_MODE )->setCurrentIndex( int( _preset->getData().getColorMode() ) );
 
-		_setParameterVisibility( PARAMETER::SS_COLOR_MODE, false );
+		_setParameterVisibility( PARAMETER::RIBBON_COLOR_MODE, false );
+		_setParameterVisibility( PARAMETER::RIBBON_COLOR_BLENDING_MODE, false );
 	}
 	void RepresentationPresetEditor::_refreshBallStickAndCartoonRepresentation()
 	{
@@ -203,10 +222,13 @@ namespace VTX::UI::Widget::Settings
 		cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
 		cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
 
+		_getParameter<QComboBox>( PARAMETER::CYLINDER_COLOR_BLENDING_MODE )
+			->setCurrentIndex( int( _preset->getData().getCylinderColorBlendingMode() ) );
 		_getParameter<QComboBox>( PARAMETER::COLOR_MODE )->setCurrentIndex( int( _preset->getData().getColorMode() ) );
-
-		_getParameter<QComboBox>( PARAMETER::SS_COLOR_MODE )
-			->setCurrentIndex( int( _preset->getData().getSecondaryStructureColorMode() ) );
+		_getParameter<QComboBox>( PARAMETER::RIBBON_COLOR_MODE )
+			->setCurrentIndex( int( _preset->getData().getRibbonColorMode() ) );
+		_getParameter<QComboBox>( PARAMETER::RIBBON_COLOR_BLENDING_MODE )
+			->setCurrentIndex( int( _preset->getData().getRibbonColorBlendingMode() ) );
 	}
 	void RepresentationPresetEditor::_refreshStickRepresentation()
 	{
@@ -216,9 +238,11 @@ namespace VTX::UI::Widget::Settings
 			= _getParameter<CustomWidget::FloatFieldSliderWidget>( PARAMETER::CYLINDER_RADIUS );
 		cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
 		cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
-
+		_getParameter<QComboBox>( PARAMETER::CYLINDER_COLOR_BLENDING_MODE )
+			->setCurrentIndex( int( _preset->getData().getCylinderColorBlendingMode() ) );
 		_getParameter<QComboBox>( PARAMETER::COLOR_MODE )->setCurrentIndex( int( _preset->getData().getColorMode() ) );
-		_setParameterVisibility( PARAMETER::SS_COLOR_MODE, false );
+		_setParameterVisibility( PARAMETER::RIBBON_COLOR_MODE, false );
+		_setParameterVisibility( PARAMETER::RIBBON_COLOR_BLENDING_MODE, false );
 	}
 	void RepresentationPresetEditor::_refreshStickAndCartoonRepresentation()
 	{
@@ -229,9 +253,13 @@ namespace VTX::UI::Widget::Settings
 		cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
 		cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
 
+		_getParameter<QComboBox>( PARAMETER::CYLINDER_COLOR_BLENDING_MODE )
+			->setCurrentIndex( int( _preset->getData().getCylinderColorBlendingMode() ) );
 		_getParameter<QComboBox>( PARAMETER::COLOR_MODE )->setCurrentIndex( int( _preset->getData().getColorMode() ) );
-		_getParameter<QComboBox>( PARAMETER::SS_COLOR_MODE )
-			->setCurrentIndex( int( _preset->getData().getSecondaryStructureColorMode() ) );
+		_getParameter<QComboBox>( PARAMETER::RIBBON_COLOR_MODE )
+			->setCurrentIndex( int( _preset->getData().getRibbonColorMode() ) );
+		_getParameter<QComboBox>( PARAMETER::RIBBON_COLOR_BLENDING_MODE )
+			->setCurrentIndex( int( _preset->getData().getRibbonColorBlendingMode() ) );
 	}
 	void RepresentationPresetEditor::_refreshVanDerWaalsRepresentation()
 	{
@@ -241,8 +269,10 @@ namespace VTX::UI::Widget::Settings
 		sphereRadiusWidget->setMinMax( Setting::ATOMS_RADIUS_ADD_MIN, Setting::ATOMS_RADIUS_ADD_MAX );
 
 		_setParameterVisibility( PARAMETER::CYLINDER_RADIUS, false );
+		_setParameterVisibility( PARAMETER::CYLINDER_COLOR_BLENDING_MODE, false );
 		_getParameter<QComboBox>( PARAMETER::COLOR_MODE )->setCurrentIndex( int( _preset->getData().getColorMode() ) );
-		_setParameterVisibility( PARAMETER::SS_COLOR_MODE, false );
+		_setParameterVisibility( PARAMETER::RIBBON_COLOR_MODE, false );
+		_setParameterVisibility( PARAMETER::RIBBON_COLOR_BLENDING_MODE, false );
 	}
 	void RepresentationPresetEditor::_refreshTraceRepresentation()
 	{
@@ -252,25 +282,30 @@ namespace VTX::UI::Widget::Settings
 			= _getParameter<CustomWidget::FloatFieldSliderWidget>( PARAMETER::CYLINDER_RADIUS );
 		cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
 		cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
-
+		_setParameterVisibility( PARAMETER::CYLINDER_COLOR_BLENDING_MODE, false );
 		_getParameter<QComboBox>( PARAMETER::COLOR_MODE )->setCurrentIndex( int( _preset->getData().getColorMode() ) );
-		_setParameterVisibility( PARAMETER::SS_COLOR_MODE, false );
+		_setParameterVisibility( PARAMETER::RIBBON_COLOR_MODE, false );
+		_setParameterVisibility( PARAMETER::RIBBON_COLOR_BLENDING_MODE, false );
 	}
 	void RepresentationPresetEditor::_refreshSASRepresentation()
 	{
 		_setParameterVisibility( PARAMETER::SPHERE_RADIUS, false );
 		_setParameterVisibility( PARAMETER::CYLINDER_RADIUS, false );
+		_setParameterVisibility( PARAMETER::CYLINDER_COLOR_BLENDING_MODE, false );
 		_getParameter<QComboBox>( PARAMETER::COLOR_MODE )->setCurrentIndex( int( _preset->getData().getColorMode() ) );
-		_setParameterVisibility( PARAMETER::SS_COLOR_MODE, false );
+		_setParameterVisibility( PARAMETER::RIBBON_COLOR_MODE, false );
+		_setParameterVisibility( PARAMETER::RIBBON_COLOR_BLENDING_MODE, false );
 	}
 	void RepresentationPresetEditor::_refreshCartoonRepresentation()
 	{
 		_setParameterVisibility( PARAMETER::SPHERE_RADIUS, false );
 		_setParameterVisibility( PARAMETER::CYLINDER_RADIUS, false );
+		_setParameterVisibility( PARAMETER::CYLINDER_COLOR_BLENDING_MODE, false );
 		_setParameterVisibility( PARAMETER::COLOR_MODE, false );
-
-		_getParameter<QComboBox>( PARAMETER::SS_COLOR_MODE )
-			->setCurrentIndex( int( _preset->getData().getSecondaryStructureColorMode() ) );
+		_getParameter<QComboBox>( PARAMETER::RIBBON_COLOR_MODE )
+			->setCurrentIndex( int( _preset->getData().getRibbonColorMode() ) );
+		_getParameter<QComboBox>( PARAMETER::RIBBON_COLOR_BLENDING_MODE )
+			->setCurrentIndex( int( _preset->getData().getRibbonColorBlendingMode() ) );
 	}
 
 	void RepresentationPresetEditor::setPreset( Model::Representation::Representation * const p_model,
@@ -328,6 +363,13 @@ namespace VTX::UI::Widget::Settings
 		if ( !signalsBlocked() )
 			VTX_ACTION( new Action::Representation::ChangeCylinderRadius( _preset, p_radius ) );
 	}
+	void RepresentationPresetEditor::_onCylinderColorBendingModeChanged( const int p_colorMode )
+	{
+		Generic::COLOR_BLENDING_MODE colorMode = Generic::COLOR_BLENDING_MODE( p_colorMode );
+
+		if ( !signalsBlocked() && colorMode != _preset->getData().getCylinderColorBlendingMode() )
+			VTX_ACTION( new Action::Representation::ChangeCylinderColorBendingMode( _preset, colorMode ) );
+	}
 	void RepresentationPresetEditor::_onColorModeChanged( const int p_colorMode )
 	{
 		Generic::COLOR_MODE colorMode = Generic::COLOR_MODE( p_colorMode );
@@ -335,12 +377,19 @@ namespace VTX::UI::Widget::Settings
 		if ( !signalsBlocked() && colorMode != _preset->getData().getColorMode() )
 			VTX_ACTION( new Action::Representation::ChangeColorMode( _preset, colorMode ) );
 	}
-	void RepresentationPresetEditor::_onSSColorModeChanged( const int p_colorMode )
+	void RepresentationPresetEditor::_onRibbonColorModeChanged( const int p_colorMode )
 	{
 		Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode = Generic::SECONDARY_STRUCTURE_COLOR_MODE( p_colorMode );
 
-		if ( !signalsBlocked() && colorMode != _preset->getData().getSecondaryStructureColorMode() )
-			VTX_ACTION( new Action::Representation::ChangeSecondaryStructureColorMode( _preset, colorMode ) );
+		if ( !signalsBlocked() && colorMode != _preset->getData().getRibbonColorMode() )
+			VTX_ACTION( new Action::Representation::ChangeRibbonColorMode( _preset, colorMode ) );
+	}
+	void RepresentationPresetEditor::_onRibbonColorBlendingModeChanged( const int p_colorMode )
+	{
+		Generic::COLOR_BLENDING_MODE colorMode = Generic::COLOR_BLENDING_MODE( p_colorMode );
+
+		if ( !signalsBlocked() && colorMode != _preset->getData().getRibbonColorBlendingMode() )
+			VTX_ACTION( new Action::Representation::ChangeRibbonColorBendingMode( _preset, colorMode ) );
 	}
 	void RepresentationPresetEditor::_onColorChanged( const Color::Rgb & p_color )
 	{

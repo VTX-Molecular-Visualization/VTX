@@ -129,16 +129,18 @@ namespace VTX::IO
 			json[ "SPHERE_RADIUS_FIXED" ] = p_representation.getSphereData()._radiusFixed;
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS ) )
 			json[ "CYLINDER_RADIUS" ] = p_representation.getCylinderData()._radius;
+		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_COLOR_BLENDING_MODE ) )
+			json[ "CYLINDER_COLOR_BLENDING_MODE" ]
+				= magic_enum::enum_name( p_representation.getCylinderData()._colorBlendingMode );
+		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_MODE ) )
+			json[ "RIBBON_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getRibbonData()._colorMode );
+		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE ) )
+			json[ "RIBBON_COLOR_BLENDING_MODE" ]
+				= magic_enum::enum_name( p_representation.getRibbonData()._colorBlendingMode );
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::COLOR_MODE ) )
 			json[ "COLOR_MODE" ] = magic_enum::enum_name( p_representation.getColorMode() );
-		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SS_COLOR_MODE ) )
-			json[ "SS_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getSecondaryStructureColorMode() );
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::COLOR ) )
 			json[ "COLOR" ] = serialize( p_representation.getColor() );
-		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::TRANSITION_COLOR_MODE ) )
-			json[ "TRANSITION_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getTransitionColorMode() );
-		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SS_TRANSITION_COLOR_MODE ) )
-			json[ "SS_TRANSITION_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getSSTransitionColorMode() );
 
 		return json;
 	}
@@ -146,16 +148,18 @@ namespace VTX::IO
 	nlohmann::json Serializer::serialize( const Model::Representation::Representation & p_representation ) const
 	{
 		return {
-			{ "COLOR", serialize( p_representation.getColor() ) },
 			{ "QUICK_ACCESS", p_representation.hasQuickAccess() },
 			{ "TYPE", magic_enum::enum_name( p_representation.getRepresentationType() ) },
 			{ "SPHERE_RADIUS", p_representation.getData().getSphereRadius() },
 			{ "CYLINDER_RADIUS", p_representation.getData().getCylinderRadius() },
+			{ "CYLINDER_COLOR_BLENDING_MODE",
+			  magic_enum::enum_name( p_representation.getData().getCylinderColorBlendingMode() ) },
+			{ "RIBBON_COLOR_MODE", magic_enum::enum_name( p_representation.getData().getRibbonColorMode() ) },
+			{ "RIBBON_COLOR_BLENDING_MODE",
+			  magic_enum::enum_name( p_representation.getData().getRibbonColorBlendingMode() ) },
 			{ "COLOR_MODE", magic_enum::enum_name( p_representation.getData().getColorMode() ) },
-			{ "SS_COLOR_MODE", magic_enum::enum_name( p_representation.getData().getSecondaryStructureColorMode() ) },
-			{ "TRANSITION_COLOR_MODE", magic_enum::enum_name( p_representation.getData().getTransitionColorMode() ) },
-			{ "SS_TRANSITION_COLOR_MODE",
-			  magic_enum::enum_name( p_representation.getData().getSecondaryStructureTransitionColorMode() ) },
+			{ "COLOR", serialize( p_representation.getColor() ) },
+
 		};
 	}
 	nlohmann::json Serializer::serialize( const Model::Renderer::RenderEffectPreset & p_preset ) const
@@ -471,6 +475,33 @@ namespace VTX::IO
 		{
 			p_representation.setCylinderRadius( p_json.at( "CYLINDER_RADIUS" ).get<float>() );
 		}
+		if ( p_json.contains( "CYLINDER_COLOR_BLENDING_MODE" ) )
+		{
+			std::string value	  = p_json.at( "CYLINDER_COLOR_BLENDING_MODE" ).get<std::string>();
+			auto		valueEnum = magic_enum::enum_cast<Generic::COLOR_BLENDING_MODE>( value );
+			if ( valueEnum.has_value() )
+			{
+				p_representation.setCylinderColorBlendingMode( valueEnum.value() );
+			}
+		}
+		if ( p_json.contains( "RIBBON_COLOR_MODE" ) )
+		{
+			std::string value	  = p_json.at( "RIBBON_COLOR_MODE" ).get<std::string>();
+			auto		valueEnum = magic_enum::enum_cast<Generic::SECONDARY_STRUCTURE_COLOR_MODE>( value );
+			if ( valueEnum.has_value() )
+			{
+				p_representation.setRibbonColorMode( valueEnum.value() );
+			}
+		}
+		if ( p_json.contains( "RIBBON_COLOR_BLENDING_MODE" ) )
+		{
+			std::string value	  = p_json.at( "RIBBON_COLOR_BLENDING_MODE" ).get<std::string>();
+			auto		valueEnum = magic_enum::enum_cast<Generic::COLOR_BLENDING_MODE>( value );
+			if ( valueEnum.has_value() )
+			{
+				p_representation.setRibbonColorBlendingMode( valueEnum.value() );
+			}
+		}
 		if ( p_json.contains( "COLOR_MODE" ) )
 		{
 			std::string value	  = p_json.at( "COLOR_MODE" ).get<std::string>();
@@ -478,15 +509,6 @@ namespace VTX::IO
 			if ( valueEnum.has_value() )
 			{
 				p_representation.setColorMode( valueEnum.value() );
-			}
-		}
-		if ( p_json.contains( "SS_COLOR_MODE" ) )
-		{
-			std::string value	  = p_json.at( "SS_COLOR_MODE" ).get<std::string>();
-			auto		valueEnum = magic_enum::enum_cast<Generic::SECONDARY_STRUCTURE_COLOR_MODE>( value );
-			if ( valueEnum.has_value() )
-			{
-				p_representation.setSecondaryStructureColorMode( valueEnum.value() );
 			}
 		}
 		if ( p_json.contains( "COLOR" ) )
@@ -515,10 +537,14 @@ namespace VTX::IO
 			_get<float>( p_json, "SPHERE_RADIUS", Setting::ATOMS_RADIUS_DEFAULT ) );
 		p_representation.getData().setCylinderRadius(
 			_get<float>( p_json, "CYLINDER_RADIUS", Setting::BONDS_RADIUS_DEFAULT ) );
+		p_representation.getData().setCylinderColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
+			p_json, "CYLINDER_COLOR_BLENDING_MODE", Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
+		p_representation.getData().setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
+			p_json, "RIBBON_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
+		p_representation.getData().setRibbonColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
+			p_json, "RIBBON_COLOR_BLENDING_MODE", Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
 		p_representation.getData().setColorMode(
 			_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Setting::COLOR_MODE_DEFAULT ) );
-		p_representation.getData().setSecondaryStructureColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-			p_json, "SS_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
 	}
 	void Serializer::deserialize( const nlohmann::json & p_json, Model::Renderer::RenderEffectPreset & p_preset ) const
 	{
