@@ -220,21 +220,31 @@ namespace VTX::IO
 
 	nlohmann::json Serializer::serialize( const Model::Representation::Representation & p_representation ) const
 	{
-		return {
-			{ "QUICK_ACCESS", p_representation.hasQuickAccess() },
-			{ "TYPE", magic_enum::enum_name( p_representation.getRepresentationType() ) },
-			{ "SPHERE_RADIUS", p_representation.getData().getSphereRadius() },
-			{ "CYLINDER_RADIUS", p_representation.getData().getCylinderRadius() },
-			{ "CYLINDER_COLOR_BLENDING_MODE",
-			  magic_enum::enum_name( p_representation.getData().getCylinderColorBlendingMode() ) },
-			{ "RIBBON_COLOR_MODE", magic_enum::enum_name( p_representation.getData().getRibbonColorMode() ) },
-			{ "RIBBON_COLOR_BLENDING_MODE",
-			  magic_enum::enum_name( p_representation.getData().getRibbonColorBlendingMode() ) },
-			{ "COLOR_MODE", magic_enum::enum_name( p_representation.getData().getColorMode() ) },
-			{ "COLOR", serialize( p_representation.getColor() ) },
+		nlohmann::json json = { { "QUICK_ACCESS", p_representation.hasQuickAccess() },
+								{ "TYPE", magic_enum::enum_name( p_representation.getRepresentationType() ) },
+								{ "COLOR_MODE", magic_enum::enum_name( p_representation.getData().getColorMode() ) },
+								{ "COLOR", serialize( p_representation.getColor() ) } };
 
-		};
+		if ( p_representation.getData().hasToDrawSphere() )
+		{
+			json += { { "SPHERE_RADIUS", p_representation.getData().getSphereRadius() } };
+		}
+		if ( p_representation.getData().hasToDrawCylinder() )
+		{
+			json += { { "CYLINDER_RADIUS", p_representation.getData().getCylinderRadius() },
+					  { "CYLINDER_COLOR_BLENDING_MODE",
+						magic_enum::enum_name( p_representation.getData().getCylinderColorBlendingMode() ) } };
+		}
+		if ( p_representation.getData().hasToDrawRibbon() )
+		{
+			json += { { "RIBBON_COLOR_MODE", magic_enum::enum_name( p_representation.getData().getRibbonColorMode() ) },
+					  { "RIBBON_COLOR_BLENDING_MODE",
+						magic_enum::enum_name( p_representation.getData().getRibbonColorBlendingMode() ) } };
+		}
+
+		return json;
 	}
+
 	nlohmann::json Serializer::serialize( const Model::Renderer::RenderEffectPreset & p_preset ) const
 	{
 		return {

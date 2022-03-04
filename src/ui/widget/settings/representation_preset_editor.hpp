@@ -96,6 +96,7 @@ namespace VTX::UI::Widget::Settings
 		template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
 		W * _getParameter( const PARAMETER & p_parameter )
 		{
+			assert( _parameterWidgets.find( p_parameter ) != _parameterWidgets.end() );
 			_parameterWidgets[ p_parameter ]->setVisible( true );
 			return _parameterWidgets[ p_parameter ]->getWidget<W>();
 		}

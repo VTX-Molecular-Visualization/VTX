@@ -46,6 +46,11 @@ namespace VTX::UI::Widget::Settings
 		CustomWidget::FloatFieldSliderWidget * const cylinderRadiusWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
 				_viewport, "CylinderRadiusWidget" );
+		QComboBox * const cylinderColorBlendingMode = new QComboBox( _viewport );
+		for ( const std::string & colorModeStr : Generic::COLOR_BLENDING_MODE_STRING )
+		{
+			cylinderColorBlendingMode->addItem( QString::fromStdString( colorModeStr ) );
+		}
 
 		QComboBox * const colorModeWidget = new QComboBox( _viewport );
 		for ( const std::string & colorModeStr : Generic::COLOR_MODE_STRING )
@@ -53,10 +58,15 @@ namespace VTX::UI::Widget::Settings
 			colorModeWidget->addItem( QString::fromStdString( colorModeStr ) );
 		}
 
-		QComboBox * const ssColorModeWidget = new QComboBox( _viewport );
+		QComboBox * const ribbonColorModeWidget = new QComboBox( _viewport );
 		for ( const std::string & colorModeStr : Generic::SECONDARY_STRUCTURE_COLOR_MODE_STRING )
 		{
-			ssColorModeWidget->addItem( QString::fromStdString( colorModeStr ) );
+			ribbonColorModeWidget->addItem( QString::fromStdString( colorModeStr ) );
+		}
+		QComboBox * const ribbonColorBlendingMode = new QComboBox( _viewport );
+		for ( const std::string & colorModeStr : Generic::COLOR_BLENDING_MODE_STRING )
+		{
+			ribbonColorBlendingMode->addItem( QString::fromStdString( colorModeStr ) );
 		}
 
 		CustomWidget::ColorFieldButton * const colorButtonWidget
@@ -83,11 +93,12 @@ namespace VTX::UI::Widget::Settings
 		_addParameter( PARAMETER::TYPE, representationTypeWidget, QString( "Type" ) );
 		_addParameter( PARAMETER::SPHERE_RADIUS, sphereRadiusWidget, QString( "Sphere radius" ) );
 		_addParameter( PARAMETER::CYLINDER_RADIUS, cylinderRadiusWidget, QString( "Cylinder radius" ) );
+		_addParameter( PARAMETER::CYLINDER_COLOR_BLENDING_MODE,
+					   cylinderColorBlendingMode,
+					   QString( "Cylinder color blending mode" ) );
+		_addParameter( PARAMETER::RIBBON_COLOR_MODE, ribbonColorModeWidget, QString( "Ribbon color mode" ) );
 		_addParameter(
-			PARAMETER::CYLINDER_COLOR_BLENDING_MODE, cylinderRadiusWidget, QString( "Cylinder bending color mode" ) );
-		_addParameter( PARAMETER::RIBBON_COLOR_MODE, ssColorModeWidget, QString( "Ribbon color mode" ) );
-		_addParameter(
-			PARAMETER::RIBBON_COLOR_BLENDING_MODE, ssColorModeWidget, QString( "Ribbon color blending mode" ) );
+			PARAMETER::RIBBON_COLOR_BLENDING_MODE, ribbonColorBlendingMode, QString( "Ribbon color blending mode" ) );
 		_addParameter( PARAMETER::COLOR_MODE, colorModeWidget, QString( "Color mode" ) );
 		_addParameter( PARAMETER::COLOR, colorButtonWidget, QString( "Custom color" ) );
 		_addSpace( 30 );

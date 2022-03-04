@@ -20,8 +20,9 @@ namespace VTX::Model::Representation
 		_sphereData->_radiusAdd		= 0;
 		_sphereData->_isRadiusFixed = true;
 
-		_cylinderData		   = new CylinderData();
-		_cylinderData->_radius = Setting::BONDS_RADIUS_DEFAULT;
+		_cylinderData					  = new CylinderData();
+		_cylinderData->_radius			  = Setting::BONDS_RADIUS_DEFAULT;
+		_cylinderData->_colorBlendingMode = Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT;
 	}
 
 	RepresentationData_Sticks::RepresentationData_Sticks() : RepresentationData( Generic::REPRESENTATION::STICK )
@@ -31,8 +32,9 @@ namespace VTX::Model::Representation
 		_sphereData->_radiusAdd		= 0;
 		_sphereData->_isRadiusFixed = true;
 
-		_cylinderData		   = new CylinderData();
-		_cylinderData->_radius = Setting::BONDS_RADIUS_DEFAULT;
+		_cylinderData					  = new CylinderData();
+		_cylinderData->_radius			  = Setting::BONDS_RADIUS_DEFAULT;
+		_cylinderData->_colorBlendingMode = Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT;
 	}
 
 	// !V0.1
@@ -56,7 +58,8 @@ namespace VTX::Model::Representation
 
 	RepresentationData_Cartoon::RepresentationData_Cartoon() : RepresentationData( Generic::REPRESENTATION::CARTOON )
 	{
-		_ribbonData = new RibbonData();
+		_ribbonData						= new RibbonData();
+		_ribbonData->_colorBlendingMode = Setting::SS_COLOR_BLENDING_MODE_DEFAULT;
 	}
 
 	RepresentationData_BallStickAndCartoon::RepresentationData_BallStickAndCartoon() :
@@ -67,10 +70,12 @@ namespace VTX::Model::Representation
 		_sphereData->_radiusAdd		= 0;
 		_sphereData->_isRadiusFixed = true;
 
-		_cylinderData		   = new CylinderData();
-		_cylinderData->_radius = Setting::BONDS_RADIUS_DEFAULT;
+		_cylinderData					  = new CylinderData();
+		_cylinderData->_radius			  = Setting::BONDS_RADIUS_DEFAULT;
+		_cylinderData->_colorBlendingMode = Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT;
 
-		_ribbonData = new RibbonData();
+		_ribbonData						= new RibbonData();
+		_ribbonData->_colorBlendingMode = Setting::SS_COLOR_BLENDING_MODE_DEFAULT;
 	}
 
 	RepresentationData_StickAndCartoon::RepresentationData_StickAndCartoon() :
@@ -81,10 +86,12 @@ namespace VTX::Model::Representation
 		_sphereData->_radiusAdd		= 0;
 		_sphereData->_isRadiusFixed = true;
 
-		_cylinderData		   = new CylinderData();
-		_cylinderData->_radius = Setting::BONDS_RADIUS_DEFAULT;
+		_cylinderData					  = new CylinderData();
+		_cylinderData->_radius			  = Setting::BONDS_RADIUS_DEFAULT;
+		_cylinderData->_colorBlendingMode = Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT;
 
-		_ribbonData = new RibbonData();
+		_ribbonData						= new RibbonData();
+		_ribbonData->_colorBlendingMode = Setting::SS_COLOR_BLENDING_MODE_DEFAULT;
 	}
 
 } // namespace VTX::Model::Representation
