@@ -9,26 +9,26 @@ namespace VTX::Model::Representation
 	class SphereData
 	{
 	  public:
-		SphereData() {}
-		float _radiusFixed	 = 1.0f;
-		float _radiusAdd	 = 0.f;
-		bool  _isRadiusFixed = true;
+		SphereData();
+		float _radiusFixed;
+		float _radiusAdd;
+		bool  _isRadiusFixed;
 	};
 
 	class CylinderData
 	{
 	  public:
-		CylinderData() {}
-		float						 _radius			= 1.0f;
-		Generic::COLOR_BLENDING_MODE _colorBlendingMode = Generic::COLOR_BLENDING_MODE::HARD;
+		CylinderData();
+		float						 _radius;
+		Generic::COLOR_BLENDING_MODE _colorBlendingMode;
 	};
 
 	class RibbonData
 	{
 	  public:
-		RibbonData() {}
-		Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode		   = Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
-		Generic::COLOR_BLENDING_MODE			_colorBlendingMode = Generic::COLOR_BLENDING_MODE::HARD;
+		RibbonData();
+		Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
+		Generic::COLOR_BLENDING_MODE			_colorBlendingMode;
 	};
 
 } // namespace VTX::Model::Representation

@@ -88,6 +88,8 @@ namespace VTX
 		static const float ATOMS_RADIUS_ADD_MIN;
 		static const float ATOMS_RADIUS_ADD_MAX;
 
+		static const bool ATOMS_IS_RADIUS_FIXED;
+
 		static const Generic::SECONDARY_STRUCTURE_COLOR_MODE SS_COLOR_MODE_DEFAULT;
 		static const Generic::COLOR_BLENDING_MODE			 SS_COLOR_BLENDING_MODE_DEFAULT;
 
