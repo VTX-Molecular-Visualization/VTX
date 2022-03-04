@@ -68,7 +68,7 @@ namespace VTX::Model::Representation
 			const bool useMoleculeColor
 				= _colorMode.getValue() == Generic::COLOR_MODE::ATOM_PROTEIN
 				  || _colorMode.getValue() == Generic::COLOR_MODE::PROTEIN
-				  || _ribbonData.getValue()._colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN;
+				  || _ribbonData.getValue().colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN;
 
 			if ( useMoleculeColor )
 				_notifyDataChanged();
@@ -140,11 +140,11 @@ namespace VTX::Model::Representation
 		{
 		case Generic::REPRESENTATION::BALL_AND_STICK:
 		case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON:
-			if ( _sphereData.getValue()._radiusFixed != p_radius )
+			if ( _sphereData.getValue().radiusFixed != p_radius )
 			{
-				_sphereData.getValue()._radiusFixed = p_radius;
-				if ( p_radius < _cylinderData.getValue()._radius )
-					_cylinderData.getValue()._radius = p_radius;
+				_sphereData.getValue().radiusFixed = p_radius;
+				if ( p_radius < _cylinderData.getValue().radius )
+					_cylinderData.getValue().radius = p_radius;
 
 				dataChanged = true;
 			}
@@ -152,8 +152,8 @@ namespace VTX::Model::Representation
 
 		case Generic::REPRESENTATION::SAS:
 		case Generic::REPRESENTATION::VAN_DER_WAALS:
-			dataChanged						  = _sphereData.getValue()._radiusAdd != p_radius;
-			_sphereData.getValue()._radiusAdd = p_radius;
+			dataChanged						 = _sphereData.getValue().radiusAdd != p_radius;
+			_sphereData.getValue().radiusAdd = p_radius;
 			break;
 
 		case Generic::REPRESENTATION::STICK:
@@ -179,11 +179,11 @@ namespace VTX::Model::Representation
 		{
 		case Generic::REPRESENTATION::BALL_AND_STICK:
 		case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON:
-			if ( _cylinderData.getValue()._radius != p_radius )
+			if ( _cylinderData.getValue().radius != p_radius )
 			{
-				_cylinderData.getValue()._radius = p_radius;
-				if ( p_radius > getSphereData()._radiusFixed )
-					_sphereData.getValue()._radiusFixed = p_radius;
+				_cylinderData.getValue().radius = p_radius;
+				if ( p_radius > getSphereData().radiusFixed )
+					_sphereData.getValue().radiusFixed = p_radius;
 
 				dataChanged = true;
 			}
@@ -194,10 +194,10 @@ namespace VTX::Model::Representation
 		case Generic::REPRESENTATION::STICK_AND_CARTOON:
 			// !V0.1
 			// case Generic::REPRESENTATION::TRACE:
-			if ( _cylinderData.getValue()._radius != p_radius )
+			if ( _cylinderData.getValue().radius != p_radius )
 			{
-				_sphereData.getValue()._radiusFixed = p_radius;
-				_cylinderData.getValue()._radius	= p_radius;
+				_sphereData.getValue().radiusFixed = p_radius;
+				_cylinderData.getValue().radius	   = p_radius;
 
 				dataChanged = true;
 			}
@@ -217,7 +217,7 @@ namespace VTX::Model::Representation
 		const Generic::COLOR_BLENDING_MODE & p_colorBlendingMode,
 		const bool							 p_notify )
 	{
-		_cylinderData.getValue()._colorBlendingMode = p_colorBlendingMode;
+		_cylinderData.getValue().colorBlendingMode = p_colorBlendingMode;
 
 		if ( p_notify )
 		{
@@ -228,7 +228,7 @@ namespace VTX::Model::Representation
 	void InstantiatedRepresentation::setRibbonColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode,
 														 const bool										 p_notify )
 	{
-		_ribbonData.getValue()._colorMode = p_colorMode;
+		_ribbonData.getValue().colorMode = p_colorMode;
 
 		if ( p_notify )
 		{
@@ -240,7 +240,7 @@ namespace VTX::Model::Representation
 		const Generic::COLOR_BLENDING_MODE & p_colorBlendingMode,
 		const bool							 p_notify )
 	{
-		_ribbonData.getValue()._colorBlendingMode = p_colorBlendingMode;
+		_ribbonData.getValue().colorBlendingMode = p_colorBlendingMode;
 
 		if ( p_notify )
 		{
@@ -254,22 +254,22 @@ namespace VTX::Model::Representation
 												const bool						   p_notify )
 	{
 		if ( p_flag & MEMBER_FLAG::SPHERE_RADIUS_FIXED && p_source.hasToDrawSphere() )
-			_sphereData.getValue()._radiusFixed = p_source.getSphereData()._radiusFixed;
+			_sphereData.getValue().radiusFixed = p_source.getSphereData().radiusFixed;
 
 		if ( p_flag & MEMBER_FLAG::SPHERE_RADIUS_ADD && p_source.hasToDrawSphere() )
-			_sphereData.getValue()._radiusAdd = p_source.getSphereData()._radiusAdd;
+			_sphereData.getValue().radiusAdd = p_source.getSphereData().radiusAdd;
 
 		if ( p_flag & MEMBER_FLAG::CYLINDER_RADIUS && p_source.hasToDrawCylinder() )
-			_cylinderData.getValue()._radius = p_source.getCylinderData()._radius;
+			_cylinderData.getValue().radius = p_source.getCylinderData().radius;
 
 		if ( p_flag & MEMBER_FLAG::CYLINDER_COLOR_BLENDING_MODE && p_source.hasToDrawCylinder() )
-			_cylinderData.getValue()._colorBlendingMode = p_source.getCylinderData()._colorBlendingMode;
+			_cylinderData.getValue().colorBlendingMode = p_source.getCylinderData().colorBlendingMode;
 
 		if ( p_flag & MEMBER_FLAG::RIBBON_COLOR_MODE && p_source.hasToDrawRibbon() )
-			_ribbonData.getValue()._colorMode = p_source.getRibbonData()._colorMode;
+			_ribbonData.getValue().colorMode = p_source.getRibbonData().colorMode;
 
 		if ( p_flag & MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE && p_source.hasToDrawRibbon() )
-			_ribbonData.getValue()._colorBlendingMode = p_source.getRibbonData()._colorBlendingMode;
+			_ribbonData.getValue().colorBlendingMode = p_source.getRibbonData().colorBlendingMode;
 
 		if ( p_flag & MEMBER_FLAG::COLOR_MODE )
 			setColorMode( p_source.getColorMode(), p_recomputeBuffers, false );

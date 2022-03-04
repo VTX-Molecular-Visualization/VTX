@@ -227,7 +227,7 @@ namespace VTX::UI::Widget::Representation
 
 		bool changeRepresentationColor
 			= p_ssColor
-			  && _dummyRepresentation->getRibbonData()._colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM;
+			  && _dummyRepresentation->getRibbonData().colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM;
 
 		changeRepresentationColor
 			= changeRepresentationColor

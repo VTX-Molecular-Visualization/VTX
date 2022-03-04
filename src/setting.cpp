@@ -63,7 +63,7 @@ namespace VTX
 	const float						   Setting::ATOMS_RADIUS_ADD_DEFAULT		  = 0.f;
 	const float						   Setting::ATOMS_RADIUS_ADD_MIN			  = -1.f;
 	const float						   Setting::ATOMS_RADIUS_ADD_MAX			  = 1.f;
-	const bool						   Setting::ATOMS_IS_RADIUS_FIXED			  = true;
+	const bool						   Setting::ATOMS_IS_RADIUS_FIXED_DEFAULT	  = true;
 	const Generic::SECONDARY_STRUCTURE_COLOR_MODE Setting::SS_COLOR_MODE_DEFAULT
 		= Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
 	const Generic::COLOR_BLENDING_MODE Setting::SS_COLOR_BLENDING_MODE_DEFAULT = Generic::COLOR_BLENDING_MODE::HARD;

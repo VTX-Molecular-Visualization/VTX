@@ -6,29 +6,26 @@
 namespace VTX::Model::Representation
 {
 
-	class SphereData
+	struct SphereData
 	{
-	  public:
 		SphereData();
-		float _radiusFixed;
-		float _radiusAdd;
-		bool  _isRadiusFixed;
+		float radiusFixed;
+		float radiusAdd;
+		bool  isRadiusFixed;
 	};
 
-	class CylinderData
+	struct CylinderData
 	{
-	  public:
 		CylinderData();
-		float						 _radius;
-		Generic::COLOR_BLENDING_MODE _colorBlendingMode;
+		float						 radius;
+		Generic::COLOR_BLENDING_MODE colorBlendingMode;
 	};
 
-	class RibbonData
+	struct RibbonData
 	{
-	  public:
 		RibbonData();
-		Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
-		Generic::COLOR_BLENDING_MODE			_colorBlendingMode;
+		Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode;
+		Generic::COLOR_BLENDING_MODE			colorBlendingMode;
 	};
 
 } // namespace VTX::Model::Representation

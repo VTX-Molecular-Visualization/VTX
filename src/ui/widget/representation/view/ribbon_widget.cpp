@@ -45,7 +45,7 @@ namespace VTX::UI::Widget::Representation::View
 			Style::WidgetProperty::OVERIDDEN_PARAMETER,
 			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE ) );
 
-		_colorBlendingModeWidget->setCurrentIndex( int( p_representation.getRibbonData()._colorBlendingMode ) );
+		_colorBlendingModeWidget->setCurrentIndex( int( p_representation.getRibbonData().colorBlendingMode ) );
 
 		// Color mode widget.
 		_colorModeWidget->resetState();
@@ -55,7 +55,7 @@ namespace VTX::UI::Widget::Representation::View
 
 		Util::UI::setDynamicProperty( _colorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, overriden );
 
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getRibbonData()._colorMode;
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getRibbonData().colorMode;
 
 		_colorModeWidget->setColorMode( colorMode );
 
@@ -80,13 +80,13 @@ namespace VTX::UI::Widget::Representation::View
 			_colorBlendingModeLabel,
 			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE ) );
 
-		_colorBlendingModeWidget->setCurrentIndex( int( p_representation.getRibbonData()._colorBlendingMode ) );
+		_colorBlendingModeWidget->setCurrentIndex( int( p_representation.getRibbonData().colorBlendingMode ) );
 
 		// Color mode widget.
 		std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgb> pair
 			= std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgb>();
 
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getRibbonData()._colorMode;
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getRibbonData().colorMode;
 
 		pair.first = colorMode;
 

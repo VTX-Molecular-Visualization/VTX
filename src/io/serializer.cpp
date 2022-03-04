@@ -197,19 +197,19 @@ namespace VTX::IO
 		json[ "REPRESENTATION_PRESET_INDEX" ] = presetIndex;
 
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_ADD ) )
-			json[ "SPHERE_RADIUS_ADD" ] = p_representation.getSphereData()._radiusAdd;
+			json[ "SPHERE_RADIUS_ADD" ] = p_representation.getSphereData().radiusAdd;
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) )
-			json[ "SPHERE_RADIUS_FIXED" ] = p_representation.getSphereData()._radiusFixed;
+			json[ "SPHERE_RADIUS_FIXED" ] = p_representation.getSphereData().radiusFixed;
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS ) )
-			json[ "CYLINDER_RADIUS" ] = p_representation.getCylinderData()._radius;
+			json[ "CYLINDER_RADIUS" ] = p_representation.getCylinderData().radius;
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_COLOR_BLENDING_MODE ) )
 			json[ "CYLINDER_COLOR_BLENDING_MODE" ]
-				= magic_enum::enum_name( p_representation.getCylinderData()._colorBlendingMode );
+				= magic_enum::enum_name( p_representation.getCylinderData().colorBlendingMode );
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_MODE ) )
-			json[ "RIBBON_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getRibbonData()._colorMode );
+			json[ "RIBBON_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getRibbonData().colorMode );
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE ) )
 			json[ "RIBBON_COLOR_BLENDING_MODE" ]
-				= magic_enum::enum_name( p_representation.getRibbonData()._colorBlendingMode );
+				= magic_enum::enum_name( p_representation.getRibbonData().colorBlendingMode );
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::COLOR_MODE ) )
 			json[ "COLOR_MODE" ] = magic_enum::enum_name( p_representation.getColorMode() );
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::COLOR ) )
@@ -626,11 +626,11 @@ namespace VTX::IO
 
 		p_representation.setLinkedRepresentation( sourceRepresentation );
 
-		if ( p_json.contains( "SPHERE_RADIUS_ADD" ) && !p_representation.getSphereData()._isRadiusFixed )
+		if ( p_json.contains( "SPHERE_RADIUS_ADD" ) && !p_representation.getSphereData().isRadiusFixed )
 		{
 			p_representation.setSphereRadius( p_json.at( "SPHERE_RADIUS_ADD" ).get<float>() );
 		}
-		if ( p_json.contains( "SPHERE_RADIUS_FIXED" ) && p_representation.getSphereData()._isRadiusFixed )
+		if ( p_json.contains( "SPHERE_RADIUS_FIXED" ) && p_representation.getSphereData().isRadiusFixed )
 		{
 			p_representation.setSphereRadius( p_json.at( "SPHERE_RADIUS_FIXED" ).get<float>() );
 		}

@@ -36,14 +36,14 @@ namespace VTX::Model::Representation
 	{
 		assert( _sphereData != nullptr );
 
-		_sphereData->_radiusFixed = p_radius;
+		_sphereData->radiusFixed = p_radius;
 		notifyRepresentationDataChange();
 	}
 	void RepresentationData::setCylinderRadius( float p_radius )
 	{
 		assert( _cylinderData != nullptr );
 
-		_cylinderData->_radius = p_radius;
+		_cylinderData->radius = p_radius;
 		notifyRepresentationDataChange();
 	}
 
@@ -51,7 +51,7 @@ namespace VTX::Model::Representation
 	{
 		assert( _cylinderData != nullptr );
 
-		_cylinderData->_colorBlendingMode = p_colorBlendingMode;
+		_cylinderData->colorBlendingMode = p_colorBlendingMode;
 		notifyRepresentationDataChange();
 	}
 
@@ -59,7 +59,7 @@ namespace VTX::Model::Representation
 	{
 		assert( _ribbonData != nullptr );
 
-		_ribbonData->_colorMode = p_colorMode;
+		_ribbonData->colorMode = p_colorMode;
 		notifyRepresentationDataChange();
 	}
 
@@ -67,7 +67,7 @@ namespace VTX::Model::Representation
 	{
 		assert( _ribbonData != nullptr );
 
-		_ribbonData->_colorBlendingMode = p_colorBlendingMode;
+		_ribbonData->colorBlendingMode = p_colorBlendingMode;
 		notifyRepresentationDataChange();
 	}
 
@@ -75,20 +75,20 @@ namespace VTX::Model::Representation
 	{
 		if ( _sphereData != nullptr && p_source._sphereData != nullptr )
 		{
-			_sphereData->_radiusAdd	  = p_source._sphereData->_radiusAdd;
-			_sphereData->_radiusFixed = p_source._sphereData->_radiusFixed;
+			_sphereData->radiusAdd	 = p_source._sphereData->radiusAdd;
+			_sphereData->radiusFixed = p_source._sphereData->radiusFixed;
 		}
 
 		if ( _cylinderData != nullptr && p_source._cylinderData != nullptr )
 		{
-			_cylinderData->_radius			  = p_source._cylinderData->_radius;
-			_cylinderData->_colorBlendingMode = p_source._cylinderData->_colorBlendingMode;
+			_cylinderData->radius			 = p_source._cylinderData->radius;
+			_cylinderData->colorBlendingMode = p_source._cylinderData->colorBlendingMode;
 		}
 
 		if ( _ribbonData != nullptr && p_source._ribbonData != nullptr )
 		{
-			_ribbonData->_colorMode			= p_source._ribbonData->_colorMode;
-			_ribbonData->_colorBlendingMode = p_source._ribbonData->_colorBlendingMode;
+			_ribbonData->colorMode		   = p_source._ribbonData->colorMode;
+			_ribbonData->colorBlendingMode = p_source._ribbonData->colorBlendingMode;
 		}
 
 		_colorMode = p_source._colorMode;

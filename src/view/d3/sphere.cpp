@@ -26,9 +26,9 @@ namespace VTX::View::D3
 				const Model::Representation::SphereData & sphereData = representationData.first->getSphereData();
 
 				/// TODO: put a mask
-				_program->setFloat( "u_radiusFixed", sphereData._radiusFixed );
-				_program->setFloat( "u_radiusAdd", sphereData._radiusAdd );
-				_program->setBool( "u_isRadiusFixed", sphereData._isRadiusFixed );
+				_program->setFloat( "u_radiusFixed", sphereData.radiusFixed );
+				_program->setFloat( "u_radiusAdd", sphereData.radiusAdd );
+				_program->setBool( "u_isRadiusFixed", sphereData.isRadiusFixed );
 
 				const Representation::TargetRange<uint> & target = representationData.second.getAtoms();
 				if ( target.counts.size() > 0 )

@@ -12,19 +12,19 @@ namespace VTX::Model::Representation
 
 		void setSphereRadius( float p_radius ) override
 		{
-			_sphereData->_radiusFixed = p_radius;
+			_sphereData->radiusFixed = p_radius;
 
-			if ( _sphereData->_radiusFixed < _cylinderData->_radius )
-				_cylinderData->_radius = p_radius;
+			if ( _sphereData->radiusFixed < _cylinderData->radius )
+				_cylinderData->radius = p_radius;
 
 			notifyRepresentationDataChange();
 		}
 		void setCylinderRadius( float p_radius ) override
 		{
-			_cylinderData->_radius = p_radius;
+			_cylinderData->radius = p_radius;
 
-			if ( _cylinderData->_radius > _sphereData->_radiusFixed )
-				_sphereData->_radiusFixed = p_radius;
+			if ( _cylinderData->radius > _sphereData->radiusFixed )
+				_sphereData->radiusFixed = p_radius;
 
 			notifyRepresentationDataChange();
 		}
@@ -37,19 +37,19 @@ namespace VTX::Model::Representation
 
 		void setSphereRadius( float p_radius ) override
 		{
-			_sphereData->_radiusFixed = p_radius;
+			_sphereData->radiusFixed = p_radius;
 
-			if ( _sphereData->_radiusFixed < _cylinderData->_radius )
-				_cylinderData->_radius = p_radius;
+			if ( _sphereData->radiusFixed < _cylinderData->radius )
+				_cylinderData->radius = p_radius;
 
 			notifyRepresentationDataChange();
 		}
 		void setCylinderRadius( float p_radius ) override
 		{
-			_cylinderData->_radius = p_radius;
+			_cylinderData->radius = p_radius;
 
-			if ( _cylinderData->_radius > _sphereData->_radiusFixed )
-				_sphereData->_radiusFixed = p_radius;
+			if ( _cylinderData->radius > _sphereData->radiusFixed )
+				_sphereData->radiusFixed = p_radius;
 
 			notifyRepresentationDataChange();
 		}
@@ -59,10 +59,10 @@ namespace VTX::Model::Representation
 	  public:
 		RepresentationData_VanDerWaals();
 
-		float getSphereRadius() const override { return _sphereData->_radiusAdd; }
+		float getSphereRadius() const override { return _sphereData->radiusAdd; }
 		void  setSphereRadius( float p_radius ) override
 		{
-			_sphereData->_radiusAdd = p_radius;
+			_sphereData->radiusAdd = p_radius;
 			notifyRepresentationDataChange();
 		}
 	};
@@ -73,14 +73,14 @@ namespace VTX::Model::Representation
 
 		void setSphereRadius( float p_radius ) override
 		{
-			_sphereData->_radiusFixed = p_radius;
-			_cylinderData->_radius	  = p_radius;
+			_sphereData->radiusFixed = p_radius;
+			_cylinderData->radius	 = p_radius;
 			notifyRepresentationDataChange();
 		}
 		void setCylinderRadius( float p_radius ) override
 		{
-			_sphereData->_radiusFixed = p_radius;
-			_cylinderData->_radius	  = p_radius;
+			_sphereData->radiusFixed = p_radius;
+			_cylinderData->radius	 = p_radius;
 			notifyRepresentationDataChange();
 		}
 	};
@@ -122,14 +122,14 @@ namespace VTX::Model::Representation
 
 		void setSphereRadius( float p_radius ) override
 		{
-			_sphereData->_radiusFixed = p_radius;
-			_cylinderData->_radius	  = p_radius;
+			_sphereData->radiusFixed = p_radius;
+			_cylinderData->radius	 = p_radius;
 			notifyRepresentationDataChange();
 		}
 		void setCylinderRadius( float p_radius ) override
 		{
-			_sphereData->_radiusFixed = p_radius;
-			_cylinderData->_radius	  = p_radius;
+			_sphereData->radiusFixed = p_radius;
+			_cylinderData->radius	 = p_radius;
 			notifyRepresentationDataChange();
 		}
 	};

@@ -46,8 +46,8 @@ namespace VTX::UI::Widget::Representation::View
 			Style::WidgetProperty::OVERIDDEN_PARAMETER,
 			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_ADD ) );
 
-		_radiusWidget->setValue( p_representation.getSphereData()._radiusFixed );
-		_radiusOffsetWidget->setValue( p_representation.getSphereData()._radiusAdd );
+		_radiusWidget->setValue( p_representation.getSphereData().radiusFixed );
+		_radiusOffsetWidget->setValue( p_representation.getSphereData().radiusAdd );
 	}
 
 	void SphereWidget::updateWithNewValue( const Model::Representation::InstantiatedRepresentation & p_representation,
@@ -60,8 +60,8 @@ namespace VTX::UI::Widget::Representation::View
 			_radiusOffsetLabel,
 			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_ADD ) );
 
-		_radiusWidget->setValue( p_representation.getSphereData()._radiusFixed );
-		_radiusOffsetWidget->setValue( p_representation.getSphereData()._radiusAdd );
+		_radiusWidget->setValue( p_representation.getSphereData().radiusFixed );
+		_radiusOffsetWidget->setValue( p_representation.getSphereData().radiusAdd );
 	}
 
 	void SphereWidget::resetState()

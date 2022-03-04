@@ -38,7 +38,7 @@ namespace VTX::View::D3
 			}
 
 			_program->setUInt( "u_transitionColorMode",
-							   uint( representationData.first->getRibbonData()._colorBlendingMode ) );
+							   uint( representationData.first->getRibbonData().colorBlendingMode ) );
 
 			const Representation::TargetRange<void *> & target = representationData.second.getRibbons();
 			if ( target.indices.size() > 0 )

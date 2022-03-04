@@ -52,7 +52,7 @@ namespace VTX::Model::Representation
 		virtual float	   getSphereRadius() const
 		{
 			assert( _sphereData != nullptr );
-			return _sphereData->_radiusFixed;
+			return _sphereData->radiusFixed;
 		};
 		virtual void setSphereRadius( float p_radius );
 
@@ -62,13 +62,13 @@ namespace VTX::Model::Representation
 		virtual float		 getCylinderRadius() const
 		{
 			assert( _cylinderData != nullptr );
-			return _cylinderData->_radius;
+			return _cylinderData->radius;
 		};
 		virtual void						 setCylinderRadius( float p_radius );
 		const Generic::COLOR_BLENDING_MODE & getCylinderColorBlendingMode() const
 		{
 			assert( _cylinderData != nullptr );
-			return _cylinderData->_colorBlendingMode;
+			return _cylinderData->colorBlendingMode;
 		}
 		virtual void setCylinderColorBlendingMode( const Generic::COLOR_BLENDING_MODE & );
 
@@ -78,13 +78,13 @@ namespace VTX::Model::Representation
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & getRibbonColorMode() const
 		{
 			assert( _ribbonData != nullptr );
-			return _ribbonData->_colorMode;
+			return _ribbonData->colorMode;
 		}
 		virtual void						 setRibbonColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & );
 		const Generic::COLOR_BLENDING_MODE & getRibbonColorBlendingMode() const
 		{
 			assert( _ribbonData != nullptr );
-			return _ribbonData->_colorBlendingMode;
+			return _ribbonData->colorBlendingMode;
 		}
 		virtual void setRibbonColorBlendingMode( const Generic::COLOR_BLENDING_MODE & );
 

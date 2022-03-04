@@ -24,8 +24,8 @@ namespace VTX::View::D3
 				const Model::Representation::CylinderData & cylinderData = representationData.first->getCylinderData();
 
 				/// TODO: put a mask
-				_program->setFloat( "u_cylRad", cylinderData._radius );
-				_program->setUInt( "u_transitionColorMode", uint( cylinderData._colorBlendingMode ) );
+				_program->setFloat( "u_cylRad", cylinderData.radius );
+				_program->setUInt( "u_transitionColorMode", uint( cylinderData.colorBlendingMode ) );
 
 				const Representation::TargetRange<void *> & target = representationData.second.getBonds();
 				/// TODO: use glDrawRangeElements?

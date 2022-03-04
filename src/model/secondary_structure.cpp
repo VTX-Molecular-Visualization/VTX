@@ -139,7 +139,7 @@ namespace VTX
 					// Add color.
 					if ( residue->getRepresentation() != nullptr )
 					{
-						switch ( residue->getRepresentation()->getRibbonData()._colorMode )
+						switch ( residue->getRepresentation()->getRibbonData().colorMode )
 						{
 						case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
 							colors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
@@ -311,7 +311,7 @@ namespace VTX
 					Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode = Setting::SS_COLOR_MODE_DEFAULT;
 					if ( residue->getRepresentation()->hasToDrawRibbon() )
 					{
-						colorMode = residue->getRepresentation()->getRibbonData()._colorMode;
+						colorMode = residue->getRepresentation()->getRibbonData().colorMode;
 					}
 					switch ( colorMode )
 					{
