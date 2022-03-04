@@ -36,7 +36,7 @@ namespace VTX
 
 			void update( const float & p_deltaTime ) override;
 
-			virtual void reset() = 0;
+			virtual void reset() { _isOrienting = false; }
 
 			virtual void orient( const Math::AABB & p_aabb )
 			{

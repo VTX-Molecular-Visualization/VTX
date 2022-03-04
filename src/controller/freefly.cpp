@@ -75,16 +75,6 @@ namespace VTX
 			_camera.move( translation );
 		}
 
-		void Freefly::reset()
-		{
-			const Vec3f defaultPos = -CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
-				  / (float)( tan( Util::Math::radians( _camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
-
-			_camera.setPosition( defaultPos );
-			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
-			_isOrienting = false;
-		}
-
 		void Freefly::_computeOrientPositions( const Math::AABB & p_aabb )
 		{
 			_orientStartingPosition = _camera.getPosition();
@@ -114,8 +104,8 @@ namespace VTX
 			_camera.setPosition(
 				Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime ) );
 
-			_camera.setRotation( Util::Math::easeInOutInterpolation(
-				_orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
+			_camera.setRotation(
+				Util::Math::easeInOutInterpolation( _orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
 		}
 
 	} // namespace Controller

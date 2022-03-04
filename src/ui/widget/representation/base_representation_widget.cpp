@@ -152,7 +152,7 @@ namespace VTX::UI::Widget::Representation
 		}
 		if ( _ribbonWidget != nullptr )
 		{
-			_cylinderWidget->resetState();
+			_ribbonWidget->resetState();
 		}
 		if ( _colorModeWidget != nullptr )
 		{

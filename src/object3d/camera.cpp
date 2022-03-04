@@ -109,6 +109,13 @@ namespace VTX
 			_updateRotation();
 		}
 
+		void Camera::reset( const Vec3f & p_defaultPosition )
+		{
+			_position = p_defaultPosition;
+			_rotation = QUATF_ID;
+			_updateRotation();
+		}
+
 		void Camera::_updateRotation()
 		{
 			Mat3f rotation = Util::Math::castMat3( _rotation );

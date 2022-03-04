@@ -13,7 +13,6 @@ namespace VTX
 			explicit Freefly( Object3D::Camera & p_camera ) : BaseCameraController( p_camera ) {}
 
 			const ID::VTX_ID getID() const override { return ID::Controller::FREEFLY; }
-			void			 reset() override;
 
 		  protected:
 			void _updateInputs( const float & ) override;

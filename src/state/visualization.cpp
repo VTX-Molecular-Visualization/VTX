@@ -101,6 +101,14 @@ namespace VTX
 
 		void Visualization::resetCameraController()
 		{
+			// Reset camera.
+			Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
+			const Vec3f		   defaultPos
+				= -CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
+				  / (float)( tan( Util::Math::radians( camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
+			camera.reset( defaultPos );
+
+			// Reset controllers.
 			getController<Controller::Trackball>( ID::Controller::TRACKBALL )->reset();
 			getController<Controller::Freefly>( ID::Controller::FREEFLY )->reset();
 		}

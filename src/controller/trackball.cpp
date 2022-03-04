@@ -2,9 +2,9 @@
 #include "action/action_manager.hpp"
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
+#include "style.hpp"
 #include "tool/logger.hpp"
 #include "util/math.hpp"
-#include "style.hpp"
 
 namespace VTX
 {
@@ -15,7 +15,7 @@ namespace VTX
 			BaseController::setActive( p_active );
 			if ( p_active )
 			{
-				_target = targetSimulationFromCamera(_camera);
+				_target = targetSimulationFromCamera( _camera );
 			}
 			else
 			{
@@ -143,8 +143,9 @@ namespace VTX
 					distance = Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 				}
 
-				const Quatf rotation = Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z )
-										* ( VTX_SETTING().getControllerElasticityActive() ? p_deltaTime : 0.2f ) );
+				const Quatf rotation
+					= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z )
+							 * ( VTX_SETTING().getControllerElasticityActive() ? p_deltaTime : 0.2f ) );
 				_camera.rotateAround( rotation, _target, distance );
 				// float d = Util::Math::distance( _camera.getPosition(), _target );
 				// VTX_LOG_FILE( std::to_string( p_deltaTime ) + " / " + std::to_string( distance ) + " / "
@@ -181,14 +182,11 @@ namespace VTX
 
 		void Trackball::reset()
 		{
-			_needUpdate			   = true;
-			const Vec3f defaultPos = -CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
-				  / (float)( tan( Util::Math::radians( _camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
-			_camera.setPosition( defaultPos );
-			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
-			_target		 = VTXApp::get().getScene().getAABB().centroid();
-			_velocity	 = VEC3F_ZERO;
-			_isOrienting = false;
+			BaseCameraController::reset();
+
+			_needUpdate = true;
+			_target		= VTXApp::get().getScene().getAABB().centroid();
+			_velocity	= VEC3F_ZERO;
 		}
 
 		void Trackball::_computeOrientPositions( const Math::AABB & p_aabb )
@@ -196,7 +194,7 @@ namespace VTX
 			_orientStartingPosition = _target;
 			_orientTargetPosition	= p_aabb.centroid();
 			_velocity				= VEC3F_ZERO;
-			
+
 			_orientStartingRotation = _camera.getRotation();
 			_orientTargetRotation	= _camera.getRotation();
 

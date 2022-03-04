@@ -82,6 +82,8 @@ namespace VTX
 			void rotateAround( const Quatf &, const Vec3f &, const float );
 			void lookAt( const Vec3f &, const Vec3f & );
 
+			void reset( const Vec3f & p_defaultPosition = VEC3F_ZERO );
+
 			void print() const;
 
 		  private:

@@ -793,16 +793,25 @@ namespace VTX::IO
 
 		p_representation.changeRepresentationType(
 			_getEnum<Generic::REPRESENTATION>( p_json, "TYPE", Setting::DEFAULT_REPRESENTATION_TYPE ), false );
-		p_representation.getData().setSphereRadius(
-			_get<float>( p_json, "SPHERE_RADIUS", Setting::ATOMS_RADIUS_DEFAULT ) );
-		p_representation.getData().setCylinderRadius(
-			_get<float>( p_json, "CYLINDER_RADIUS", Setting::BONDS_RADIUS_DEFAULT ) );
-		p_representation.getData().setCylinderColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
-			p_json, "CYLINDER_COLOR_BLENDING_MODE", Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
-		p_representation.getData().setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-			p_json, "RIBBON_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
-		p_representation.getData().setRibbonColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
-			p_json, "RIBBON_COLOR_BLENDING_MODE", Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
+		if ( p_representation.getData().hasToDrawSphere() )
+		{
+			p_representation.getData().setSphereRadius(
+				_get<float>( p_json, "SPHERE_RADIUS", Setting::ATOMS_RADIUS_DEFAULT ) );
+		}
+		if ( p_representation.getData().hasToDrawCylinder() )
+		{
+			p_representation.getData().setCylinderRadius(
+				_get<float>( p_json, "CYLINDER_RADIUS", Setting::BONDS_RADIUS_DEFAULT ) );
+			p_representation.getData().setCylinderColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
+				p_json, "CYLINDER_COLOR_BLENDING_MODE", Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
+		}
+		if ( p_representation.getData().hasToDrawRibbon() )
+		{
+			p_representation.getData().setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
+				p_json, "RIBBON_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
+			p_representation.getData().setRibbonColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
+				p_json, "RIBBON_COLOR_BLENDING_MODE", Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
+		}
 		p_representation.getData().setColorMode(
 			_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Setting::COLOR_MODE_DEFAULT ) );
 	}
