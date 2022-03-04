@@ -211,6 +211,9 @@ namespace VTX::UI::Widget::Render
 		shortcut = new QShortcut( QKeySequence( tr( "F7" ) ), this );
 		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
 		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutChangeRenderMode );
+		shortcut = new QShortcut( QKeySequence( tr( "Space" ) ), this );
+		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
+		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutPrintCameraInfos );
 #endif
 	}
 
@@ -240,6 +243,8 @@ namespace VTX::UI::Widget::Render
 		VTX_ACTION( new Action::Setting::ChangeRenderMode(
 			Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)Renderer::MODE::COUNT ) ) );
 	}
+
+	void RenderWidget::_onShortcutPrintCameraInfos() { VTXApp::get().getScene().getCamera().print(); }
 
 	void RenderWidget::localize()
 	{

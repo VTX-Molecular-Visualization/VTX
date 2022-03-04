@@ -84,6 +84,7 @@ namespace VTX::UI::Widget::Render
 		void _onShortcutAddViewpoint();
 		void _onShortcutSnapshot();
 		void _onShortcutChangeRenderMode();
+		void _onShortcutPrintCameraInfos();
 	};
 } // namespace VTX::UI::Widget::Render
 #endif

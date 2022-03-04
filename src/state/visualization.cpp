@@ -104,8 +104,9 @@ namespace VTX
 			// Reset camera.
 			Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
 			const Vec3f		   defaultPos
-				= -CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
-				  / (float)( tan( Util::Math::radians( camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
+				= VTXApp::get().getScene().getAABB().centroid()
+				  - CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
+						/ (float)( tan( Util::Math::radians( camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
 			camera.reset( defaultPos );
 
 			// Reset controllers.
