@@ -227,19 +227,19 @@ namespace VTX::IO
 
 		if ( p_representation.getData().hasToDrawSphere() )
 		{
-			json += { { "SPHERE_RADIUS", p_representation.getData().getSphereRadius() } };
+			json[ "SPHERE_RADIUS" ] = p_representation.getData().getSphereRadius();
 		}
 		if ( p_representation.getData().hasToDrawCylinder() )
 		{
-			json += { { "CYLINDER_RADIUS", p_representation.getData().getCylinderRadius() },
-					  { "CYLINDER_COLOR_BLENDING_MODE",
-						magic_enum::enum_name( p_representation.getData().getCylinderColorBlendingMode() ) } };
+			json[ "CYLINDER_RADIUS" ] = p_representation.getData().getCylinderRadius();
+			json[ "CYLINDER_COLOR_BLENDING_MODE" ]
+				= magic_enum::enum_name( p_representation.getData().getCylinderColorBlendingMode() );
 		}
 		if ( p_representation.getData().hasToDrawRibbon() )
 		{
-			json += { { "RIBBON_COLOR_MODE", magic_enum::enum_name( p_representation.getData().getRibbonColorMode() ) },
-					  { "RIBBON_COLOR_BLENDING_MODE",
-						magic_enum::enum_name( p_representation.getData().getRibbonColorBlendingMode() ) } };
+			json[ "RIBBON_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getData().getRibbonColorMode() );
+			json[ "RIBBON_COLOR_BLENDING_MODE" ]
+				= magic_enum::enum_name( p_representation.getData().getRibbonColorBlendingMode() );
 		}
 
 		return json;
