@@ -79,7 +79,6 @@ namespace VTX
 			return *_renderEffectLibrary;
 		}
 
-		float getPixelRatio() const;
 		bool  hasAnyModifications() const;
 
 		void deleteAtEndOfFrame( const Generic::BaseAutoDelete * const p_object );

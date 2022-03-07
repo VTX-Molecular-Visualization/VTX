@@ -8,6 +8,7 @@
 #include "spec.hpp"
 #include "ui/dialog.hpp"
 #include "util/opengl.hpp"
+#include <QScreen>
 #include "vtx_app.hpp"
 #include <QMainWindow>
 #include <QOpenGLVersionFunctionsFactory>
@@ -121,7 +122,7 @@ namespace VTX::UI::Widget::Render
 
 		if ( _renderer != nullptr )
 		{
-			const float pixelRatio = VTXApp::get().getPixelRatio();
+			const float pixelRatio = getScreenPixelRatio();
 			getRenderer().resize( p_width * pixelRatio, p_height * pixelRatio, defaultFramebufferObject() );
 		}
 
@@ -141,10 +142,17 @@ namespace VTX::UI::Widget::Render
 		doneCurrent();
 	}
 
+	const float OpenGLWidget::getScreenPixelRatio() const 
+	{ 
+		return screen()->devicePixelRatio();
+	}
+
+
 	const Vec2i OpenGLWidget::getPickedIds( const uint p_x, const uint p_y )
 	{
+		const float pixelRatio = getScreenPixelRatio();
 		makeCurrent();
-		return _renderer->getPickedIds( p_x, height() - p_y );
+		return _renderer->getPickedIds( p_x * pixelRatio, ( height() - p_y ) * pixelRatio );
 		doneCurrent();
 	}
 
@@ -177,7 +185,7 @@ namespace VTX::UI::Widget::Render
 
 		if ( needInit )
 		{
-			const float pixelRatio = VTXApp::get().getPixelRatio();
+			const float pixelRatio = getScreenPixelRatio();
 			getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT * pixelRatio,
 								Setting::WINDOW_HEIGHT_DEFAULT * pixelRatio,
 								defaultFramebufferObject() );
