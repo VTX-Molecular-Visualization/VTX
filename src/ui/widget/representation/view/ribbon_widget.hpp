@@ -37,7 +37,7 @@ namespace VTX::UI::Widget::Representation::View
 		CustomWidget::QComboBoxMultiField *		   _colorBlendingModeWidget = nullptr;
 
 		void _onColorChange( const Color::Rgb & p_color );
-		void _onColorModeChange( const int p_newMode );
+		void _onColorModeChange( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode );
 		void _onColorBlendingModeChange( const int p_newMode );
 	};
 } // namespace VTX::UI::Widget::Representation::View
