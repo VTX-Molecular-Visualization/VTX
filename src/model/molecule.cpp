@@ -782,7 +782,7 @@ namespace VTX
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
 			}
 
-			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule * const>( this );
+			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule>( this );
 			_secondaryStructure->init();
 			_secondaryStructure->print();
 		}
@@ -805,7 +805,7 @@ namespace VTX
 				MVC::MvcManager::get().deleteModel( _contourBuildup );
 			}
 
-			_contourBuildup = MVC::MvcManager::get().instantiateModel<ContourBuildup, Molecule * const>( this );
+			_contourBuildup = MVC::MvcManager::get().instantiateModel<ContourBuildup, Molecule>( this );
 			_contourBuildup->init();
 			_contourBuildup->print();
 		}

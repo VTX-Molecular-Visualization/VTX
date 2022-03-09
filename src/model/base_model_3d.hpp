@@ -130,9 +130,9 @@ namespace VTX
 					aabb->invalidate();
 			};
 
-			virtual void _init() {};
-			virtual void _fillBuffer()		  = 0;
-			virtual void _computeAABB() const = 0;
+			virtual void _init() {}
+			virtual void _fillBuffer() = 0;
+			virtual void _computeAABB() const {}
 			virtual void _computeWorldAABB() const
 			{
 				const Vec4f worldAABBPosition

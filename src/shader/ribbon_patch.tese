@@ -12,7 +12,7 @@ uniform mat4 u_projMatrix;
 uniform mat4 u_normalMatrix;
 uniform uint u_maxIndice;
 uniform vec3 u_camPosition;
-uniform uint u_transitionColorMode;
+uniform uint u_colorBlendingMode;
 
 in TcOut
 {
@@ -135,7 +135,7 @@ void main()
 	teOut.viewPosition = vec3( u_MVMatrix * vec4( position, 1.f ) );
 	teOut.normal	   = vec3( u_normalMatrix * vec4( normal, 1.f ) );
 	teOut.color =  tcIn[ 1 ].color;
-	if(u_transitionColorMode == 1) // Gradient.
+	if(u_colorBlendingMode == 1) // Gradient.
 	{
 		teOut.color		   = mix( tcIn[ 1 ].color, tcIn[ 2 ].color, gl_TessCoord.x );
 	}

@@ -8,7 +8,7 @@ namespace VTX::View::D3
 													{ IO::FilePath( "line.vert" ), IO::FilePath( "line.frag" ) } );
 	}
 
-	void Box::_init() { _gl()->glLineWidth( 1.f ); }
+	void Box::_init() { _gl()->glLineWidth( 2.f ); }
 
 	void Box::render( const Object3D::Camera & p_camera ) const
 	{

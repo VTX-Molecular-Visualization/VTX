@@ -14,6 +14,7 @@ namespace VTX::Model
 	class Molecule;
 	class Path;
 	class Label;
+	class Box;
 } // namespace VTX::Model
 
 namespace VTX::Object3D
@@ -26,11 +27,13 @@ namespace VTX::Object3D
 		using PathPtr				= Model::Path *;
 		using MeshTrianglePtr		= Model::MeshTriangle *;
 		using LabelPtr				= Model::Label *;
+		using BoxPtr				= Model::Box *;
 		using MapMoleculePtrFloat	= std::map<MoleculePtr, float>;
 		using PairMoleculePtrFloat	= std::pair<const MoleculePtr, float>;
 		using VectorPathPtr			= std::vector<PathPtr>;
 		using VectorMeshTrianglePtr = std::vector<MeshTrianglePtr>;
 		using VectorLabelPtr		= std::vector<LabelPtr>;
+		using VectorBoxPtr			= std::vector<BoxPtr>;
 
 		Scene();
 		~Scene();
@@ -42,6 +45,7 @@ namespace VTX::Object3D
 		inline const VectorPathPtr &		 getPaths() const { return _paths; };
 		inline const VectorMeshTrianglePtr & getMeshes() const { return _meshes; };
 		inline const VectorLabelPtr &		 getLabels() const { return _labels; };
+		inline const VectorBoxPtr &			 getBoxes() const { return _boxes; };
 
 		const Math::AABB & getAABB();
 
@@ -53,6 +57,8 @@ namespace VTX::Object3D
 		void removeMesh( MeshTrianglePtr const );
 		void addLabel( LabelPtr const );
 		void removeLabel( LabelPtr const );
+		void addBox( BoxPtr const );
+		void removeBox( BoxPtr const );
 
 		const Generic::BaseSceneItem * const getItemAtPosition( const int p_index ) const;
 		int									 getItemPosition( const Generic::BaseSceneItem & p_item ) const;
@@ -93,6 +99,7 @@ namespace VTX::Object3D
 		VectorPathPtr		  _paths	 = VectorPathPtr();
 		VectorMeshTrianglePtr _meshes	 = VectorMeshTrianglePtr();
 		VectorLabelPtr		  _labels	 = VectorLabelPtr();
+		VectorBoxPtr		  _boxes	 = VectorBoxPtr();
 
 		std::vector<const Generic::BaseSceneItem *> _itemOrder = std::vector<const Generic::BaseSceneItem *>();
 		void										_applySceneID( Generic::BaseSceneItem & p_item );
