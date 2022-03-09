@@ -4,8 +4,8 @@
 #include "base_reader.hpp"
 #include "define.hpp"
 #include "io/serializer.hpp"
-#include <nlohmann/json.hpp>
 #include <QTextStream>
+#include <nlohmann/json.hpp>
 
 namespace VTX::IO::Reader
 {
@@ -26,7 +26,11 @@ namespace VTX::IO::Reader
 			QTextStream			 in( &file );
 			const QString		 str  = in.readAll();
 			const nlohmann::json json = nlohmann::json::parse( str.toStdString() );
-			serializer.deserialize( json.at( "DATA" ), p_data );
+			serializer.deserialize( json.at( "DATA" ),
+									std::make_tuple( json.at( "_VERSION" ).at( "MAJOR" ),
+													 json.at( "_VERSION" ).at( "MINOR" ),
+													 json.at( "_VERSION" ).at( "REVISION" ) ),
+									p_data );
 			file.close();
 		}
 	};

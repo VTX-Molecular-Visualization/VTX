@@ -121,8 +121,8 @@ namespace VTX::IO
 				 { "NAME", p_distanceLabel.getDefaultName() },
 				 { "ENABLED", p_distanceLabel.isEnable() },
 				 { "COLOR", serialize( p_distanceLabel.getColor() ) },
-				 { "ATOM_1_ID", serialize_atom_reference( p_distanceLabel.getFirstAtom() ) },
-				 { "ATOM_2_ID", serialize_atom_reference( p_distanceLabel.getSecondAtom() ) },
+				 { "ATOM_1_ID", serializeAtomReference( p_distanceLabel.getFirstAtom() ) },
+				 { "ATOM_2_ID", serializeAtomReference( p_distanceLabel.getSecondAtom() ) },
 				 { "AUTO_NAMING", p_distanceLabel.hasAutoNaming() },
 				 { "PERSISTENT_SCENE_ID", p_distanceLabel.getPersistentSceneID() } };
 	}
@@ -133,9 +133,9 @@ namespace VTX::IO
 				 { "NAME", p_angleLabel.getDefaultName() },
 				 { "ENABLED", p_angleLabel.isEnable() },
 				 { "COLOR", serialize( p_angleLabel.getColor() ) },
-				 { "ATOM_1_ID", serialize_atom_reference( p_angleLabel.getFirstAtom() ) },
-				 { "ATOM_2_ID", serialize_atom_reference( p_angleLabel.getSecondAtom() ) },
-				 { "ATOM_3_ID", serialize_atom_reference( p_angleLabel.getThirdAtom() ) },
+				 { "ATOM_1_ID", serializeAtomReference( p_angleLabel.getFirstAtom() ) },
+				 { "ATOM_2_ID", serializeAtomReference( p_angleLabel.getSecondAtom() ) },
+				 { "ATOM_3_ID", serializeAtomReference( p_angleLabel.getThirdAtom() ) },
 				 { "AUTO_NAMING", p_angleLabel.hasAutoNaming() },
 				 { "PERSISTENT_SCENE_ID", p_angleLabel.getPersistentSceneID() } };
 	}
@@ -145,10 +145,10 @@ namespace VTX::IO
 				 { "NAME", p_angleLabel.getDefaultName() },
 				 { "ENABLED", p_angleLabel.isEnable() },
 				 { "COLOR", serialize( p_angleLabel.getColor() ) },
-				 { "ATOM_1_ID", serialize_atom_reference( p_angleLabel.getFirstAtom() ) },
-				 { "ATOM_2_ID", serialize_atom_reference( p_angleLabel.getSecondAtom() ) },
-				 { "ATOM_3_ID", serialize_atom_reference( p_angleLabel.getThirdAtom() ) },
-				 { "ATOM_4_ID", serialize_atom_reference( p_angleLabel.getFourthAtom() ) },
+				 { "ATOM_1_ID", serializeAtomReference( p_angleLabel.getFirstAtom() ) },
+				 { "ATOM_2_ID", serializeAtomReference( p_angleLabel.getSecondAtom() ) },
+				 { "ATOM_3_ID", serializeAtomReference( p_angleLabel.getThirdAtom() ) },
+				 { "ATOM_4_ID", serializeAtomReference( p_angleLabel.getFourthAtom() ) },
 				 { "AUTO_NAMING", p_angleLabel.hasAutoNaming() },
 				 { "PERSISTENT_SCENE_ID", p_angleLabel.getPersistentSceneID() } };
 	}
@@ -347,18 +347,22 @@ namespace VTX::IO
 		};
 	}
 
-	nlohmann::json Serializer::serialize_atom_reference( const Model::Atom & p_atom ) const
+	nlohmann::json Serializer::serializeAtomReference( const Model::Atom & p_atom ) const
 	{
 		return nlohmann::json(
 			{ { "M", p_atom.getMoleculePtr()->getPersistentSceneID() }, { "A", p_atom.getIndex() } } );
 	}
 
-	void Serializer::deserialize( const nlohmann::json & p_json, VTXApp & p_app ) const
+	void Serializer::deserialize( const nlohmann::json &			   p_json,
+								  const std::tuple<uint, uint, uint> & p_version,
+								  VTXApp &							   p_app ) const
 	{
-		deserialize( p_json.at( "SCENE" ), p_app.getScene() );
+		deserialize( p_json.at( "SCENE" ), p_version, p_app.getScene() );
 	}
 
-	void Serializer::deserialize( const nlohmann::json & p_json, Object3D::Scene & p_scene ) const
+	void Serializer::deserialize( const nlohmann::json &			   p_json,
+								  const std::tuple<uint, uint, uint> & p_version,
+								  Object3D::Scene &					   p_scene ) const
 	{
 		Vec3f cameraPos;
 		if ( p_json.contains( "CAMERA_POSITION" ) )
@@ -383,7 +387,7 @@ namespace VTX::IO
 
 					try
 					{
-						deserialize( jsonMolecule.at( "MOLECULE" ), *molecule );
+						deserialize( jsonMolecule.at( "MOLECULE" ), p_version, *molecule );
 					}
 					catch ( std::exception e )
 					{
@@ -489,7 +493,9 @@ namespace VTX::IO
 		p_scene.getCamera().setRotation( cameraRot );
 	}
 
-	void Serializer::deserialize( const nlohmann::json & p_json, Model::Molecule & p_molecule ) const
+	void Serializer::deserialize( const nlohmann::json &			   p_json,
+								  const std::tuple<uint, uint, uint> & p_version,
+								  Model::Molecule &					   p_molecule ) const
 	{
 		if ( p_json.contains( "TRANSFORM" ) )
 		{
@@ -520,7 +526,7 @@ namespace VTX::IO
 		}
 
 		if ( p_json.contains( "REPRESENTATIONS" ) )
-			_deserializeMoleculeRepresentations( p_json.at( "REPRESENTATIONS" ), p_molecule );
+			_deserializeMoleculeRepresentations( p_json.at( "REPRESENTATIONS" ), p_version, p_molecule );
 		if ( p_json.contains( "VISIBILITIES" ) )
 			_deserializeMoleculeVisibilities( p_json.at( "VISIBILITIES" ), p_molecule );
 
@@ -546,25 +552,12 @@ namespace VTX::IO
 	void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const
 	{
 		p_path.setName( _get<std::string>( p_json, "NAME" ) );
-		if ( p_json.contains( "MODE_DURATION" ) )
-		{
-			std::string value	  = p_json.at( "MODE_DURATION" ).get<std::string>();
-			auto		valueEnum = magic_enum::enum_cast<Model::Path::DURATION_MODE>( value );
-			if ( valueEnum.has_value() )
-			{
-				p_path.setDurationMode( valueEnum.value() );
-			}
-		}
 
-		if ( p_json.contains( "MODE_INTERPOLATION" ) )
-		{
-			std::string value	  = p_json.at( "MODE_INTERPOLATION" ).get<std::string>();
-			auto		valueEnum = magic_enum::enum_cast<Model::Path::INTERPOLATION_MODE>( value );
-			if ( valueEnum.has_value() )
-			{
-				p_path.setInterpolationMode( valueEnum.value() );
-			}
-		}
+		p_path.setDurationMode(
+			_getEnum<Model::Path::DURATION_MODE>( p_json, "MODE_DURATION", Model::Path::DURATION_MODE_DEFAULT ) );
+
+		p_path.setInterpolationMode( _getEnum<Model::Path::INTERPOLATION_MODE>(
+			p_json, "MODE_DURATION", Model::Path::INTERPOLATION_MODE_DEFAULT ) );
 
 		p_path.setDuration( _get<float>( p_json, "DURATION", Setting::PATH_DURATION_DEFAULT ) );
 		p_path.setIsLooping( _get<bool>( p_json, "IS_LOOPING" ) );
@@ -618,6 +611,7 @@ namespace VTX::IO
 	}
 
 	void Serializer::deserialize( const nlohmann::json &							  p_json,
+								  const std::tuple<uint, uint, uint> &				  p_version,
 								  Model::Representation::InstantiatedRepresentation & p_representation ) const
 	{
 		const int representationPresetIndex = p_json.at( "REPRESENTATION_PRESET_INDEX" ).get<int>();
@@ -640,39 +634,23 @@ namespace VTX::IO
 		}
 		if ( p_json.contains( "CYLINDER_COLOR_BLENDING_MODE" ) )
 		{
-			std::string value	  = p_json.at( "CYLINDER_COLOR_BLENDING_MODE" ).get<std::string>();
-			auto		valueEnum = magic_enum::enum_cast<Generic::COLOR_BLENDING_MODE>( value );
-			if ( valueEnum.has_value() )
-			{
-				p_representation.setCylinderColorBlendingMode( valueEnum.value() );
-			}
+			p_representation.setCylinderColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
+				p_json, "CYLINDER_COLOR_BLENDING_MODE", Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
-		if ( p_json.contains( "RIBBON_COLOR_MODE" ) )
+		if ( p_json.contains( "SS_COLOR_MODE" ) )
 		{
-			std::string value	  = p_json.at( "RIBBON_COLOR_MODE" ).get<std::string>();
-			auto		valueEnum = magic_enum::enum_cast<Generic::SECONDARY_STRUCTURE_COLOR_MODE>( value );
-			if ( valueEnum.has_value() )
-			{
-				p_representation.setRibbonColorMode( valueEnum.value() );
-			}
+			p_representation.setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
+				p_json, "SS_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "RIBBON_COLOR_BLENDING_MODE" ) )
 		{
-			std::string value	  = p_json.at( "RIBBON_COLOR_BLENDING_MODE" ).get<std::string>();
-			auto		valueEnum = magic_enum::enum_cast<Generic::COLOR_BLENDING_MODE>( value );
-			if ( valueEnum.has_value() )
-			{
-				p_representation.setRibbonColorBlendingMode( valueEnum.value() );
-			}
+			p_representation.setRibbonColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
+				p_json, "RIBBON_COLOR_BLENDING_MODE", Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "COLOR_MODE" ) )
 		{
-			std::string value	  = p_json.at( "COLOR_MODE" ).get<std::string>();
-			auto		valueEnum = magic_enum::enum_cast<Generic::COLOR_MODE>( value );
-			if ( valueEnum.has_value() )
-			{
-				p_representation.setColorMode( valueEnum.value() );
-			}
+			p_representation.setColorMode(
+				_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Setting::COLOR_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "COLOR" ) )
 		{
@@ -680,6 +658,8 @@ namespace VTX::IO
 			deserialize( p_json.at( "COLOR" ), color );
 			p_representation.setColor( color );
 		}
+
+		_migrate( p_json, p_version, p_representation );
 	}
 
 	void Serializer::deserialize( const nlohmann::json & p_json, Model::Measurement::Distance & p_distanceLabel ) const
@@ -702,8 +682,8 @@ namespace VTX::IO
 
 		if ( p_json.contains( "ATOM_1_ID" ) && p_json.contains( "ATOM_2_ID" ) )
 		{
-			const Model::Atom * atom1 = deserialize_atom_reference( p_json.at( "ATOM_1_ID" ) );
-			const Model::Atom * atom2 = deserialize_atom_reference( p_json.at( "ATOM_2_ID" ) );
+			const Model::Atom * atom1 = deserializeAtomReference( p_json.at( "ATOM_1_ID" ) );
+			const Model::Atom * atom2 = deserializeAtomReference( p_json.at( "ATOM_2_ID" ) );
 
 			if ( atom1 != nullptr && atom2 != nullptr )
 				p_distanceLabel.setAtoms( *atom1, *atom2 );
@@ -733,9 +713,9 @@ namespace VTX::IO
 
 		if ( p_json.contains( "ATOM_1_ID" ) && p_json.contains( "ATOM_2_ID" ) && p_json.contains( "ATOM_3_ID" ) )
 		{
-			const Model::Atom * atom1 = deserialize_atom_reference( p_json.at( "ATOM_1_ID" ) );
-			const Model::Atom * atom2 = deserialize_atom_reference( p_json.at( "ATOM_2_ID" ) );
-			const Model::Atom * atom3 = deserialize_atom_reference( p_json.at( "ATOM_3_ID" ) );
+			const Model::Atom * atom1 = deserializeAtomReference( p_json.at( "ATOM_1_ID" ) );
+			const Model::Atom * atom2 = deserializeAtomReference( p_json.at( "ATOM_2_ID" ) );
+			const Model::Atom * atom3 = deserializeAtomReference( p_json.at( "ATOM_3_ID" ) );
 
 			if ( atom1 != nullptr && atom2 != nullptr && atom3 != nullptr )
 				p_angleLabel.setAtoms( *atom1, *atom2, *atom3 );
@@ -766,10 +746,10 @@ namespace VTX::IO
 		if ( p_json.contains( "ATOM_1_ID" ) && p_json.contains( "ATOM_2_ID" ) && p_json.contains( "ATOM_3_ID" )
 			 && p_json.contains( "ATOM_4_ID" ) )
 		{
-			const Model::Atom * atom1 = deserialize_atom_reference( p_json.at( "ATOM_1_ID" ) );
-			const Model::Atom * atom2 = deserialize_atom_reference( p_json.at( "ATOM_2_ID" ) );
-			const Model::Atom * atom3 = deserialize_atom_reference( p_json.at( "ATOM_3_ID" ) );
-			const Model::Atom * atom4 = deserialize_atom_reference( p_json.at( "ATOM_4_ID" ) );
+			const Model::Atom * atom1 = deserializeAtomReference( p_json.at( "ATOM_1_ID" ) );
+			const Model::Atom * atom2 = deserializeAtomReference( p_json.at( "ATOM_2_ID" ) );
+			const Model::Atom * atom3 = deserializeAtomReference( p_json.at( "ATOM_3_ID" ) );
+			const Model::Atom * atom4 = deserializeAtomReference( p_json.at( "ATOM_4_ID" ) );
 
 			if ( atom1 != nullptr && atom2 != nullptr && atom3 != nullptr && atom4 != nullptr )
 				p_angleLabel.setAtoms( *atom1, *atom2, *atom3, *atom4 );
@@ -780,6 +760,7 @@ namespace VTX::IO
 	}
 
 	void Serializer::deserialize( const nlohmann::json &				  p_json,
+								  const std::tuple<uint, uint, uint> &	  p_version,
 								  Model::Representation::Representation & p_representation ) const
 	{
 		Color::Rgb color;
@@ -814,8 +795,12 @@ namespace VTX::IO
 		}
 		p_representation.getData().setColorMode(
 			_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Setting::COLOR_MODE_DEFAULT ) );
+
+		_migrate( p_json, p_version, p_representation );
 	}
-	void Serializer::deserialize( const nlohmann::json & p_json, Model::Renderer::RenderEffectPreset & p_preset ) const
+	void Serializer::deserialize( const nlohmann::json &				p_json,
+								  const std::tuple<uint, uint, uint> &	p_version,
+								  Model::Renderer::RenderEffectPreset & p_preset ) const
 	{
 		Color::Rgb color;
 
@@ -927,7 +912,9 @@ namespace VTX::IO
 		p_quat.w = _get<T>( p_json, "W" );
 	}
 
-	void Serializer::deserialize( const nlohmann::json & p_json, Setting & p_setting ) const
+	void Serializer::deserialize( const nlohmann::json &			   p_json,
+								  const std::tuple<uint, uint, uint> & p_version,
+								  Setting &							   p_setting ) const
 	{
 		const Style::SYMBOL_DISPLAY_MODE symbolDisplayMode
 			= _get<Style::SYMBOL_DISPLAY_MODE>( p_json, "SYMBOL_DISPLAY_MODE", Setting::SYMBOL_DISPLAY_MODE_DEFAULT );
@@ -981,7 +968,7 @@ namespace VTX::IO
 			_getEnum( p_json, "SELECTION_GRANULARITY", Setting::SELECTION_GRANULARITY_DEFAULT ) );
 	}
 
-	const Model::Atom * Serializer::deserialize_atom_reference( const nlohmann::json & p_json ) const
+	const Model::Atom * Serializer::deserializeAtomReference( const nlohmann::json & p_json ) const
 	{
 		if ( !p_json.contains( "M" ) || !p_json.contains( "A" ) )
 			return nullptr;
@@ -1052,6 +1039,34 @@ namespace VTX::IO
 
 		return jsonArrayRepresentations;
 	}
+
+	void Serializer::_migrate( const nlohmann::json &							   p_json,
+							   const std::tuple<uint, uint, uint> &				   p_version,
+							   Model::Representation::InstantiatedRepresentation & p_representation ) const
+	{
+		// 0.2.0 -> 0.3.0
+		if ( std::get<1>( p_version ) < 3 )
+		{
+			p_representation.setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
+				p_json, "SS_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
+		}
+	}
+
+	void Serializer::_migrate( const nlohmann::json &				   p_json,
+							   const std::tuple<uint, uint, uint> &	   p_version,
+							   Model::Representation::Representation & p_representation ) const
+	{
+		// 0.2.0 -> 0.3.0
+		if ( std::get<1>( p_version ) < 3 )
+		{
+			if ( p_representation.getData().hasToDrawRibbon() )
+			{
+				p_representation.getData().setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
+					p_json, "SS_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
+			}
+		}
+	}
+
 	nlohmann::json Serializer::_serializeMoleculeVisibilities( const Model::Molecule &		   p_molecule,
 															   const Writer::ChemfilesWriter * p_writer ) const
 	{
@@ -1101,8 +1116,9 @@ namespace VTX::IO
 				 { "ATOMS", jsonAtomVisibilitiesArray } };
 	}
 
-	void Serializer::_deserializeMoleculeRepresentations( const nlohmann::json & p_json,
-														  Model::Molecule &		 p_molecule ) const
+	void Serializer::_deserializeMoleculeRepresentations( const nlohmann::json &			   p_json,
+														  const std::tuple<uint, uint, uint> & p_version,
+														  Model::Molecule &					   p_molecule ) const
 	{
 		for ( const nlohmann::json & jsonRepresentations : p_json )
 		{
@@ -1122,7 +1138,7 @@ namespace VTX::IO
 
 			Model::Representation::InstantiatedRepresentation * const representation
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>();
-			deserialize( jsonRepresentations.at( "REPRESENTATION" ), *representation );
+			deserialize( jsonRepresentations.at( "REPRESENTATION" ), p_version, *representation );
 
 			if ( type == VTX::ID::Model::MODEL_MOLECULE )
 			{

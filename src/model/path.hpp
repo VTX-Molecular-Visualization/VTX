@@ -26,6 +26,7 @@ namespace VTX
 				PATH,
 				VIEWPOINT
 			};
+			static const DURATION_MODE DURATION_MODE_DEFAULT = DURATION_MODE::CONSTANT_SPEED;
 
 			enum class INTERPOLATION_MODE : int
 			{
@@ -33,6 +34,7 @@ namespace VTX
 				CATMULL_ROM,
 				CUBIC
 			};
+			static const INTERPOLATION_MODE INTERPOLATION_MODE_DEFAULT = INTERPOLATION_MODE::CATMULL_ROM;
 
 			// BaseSceneItem
 			const Model::ID & getModelID() const override { return getId(); }
@@ -61,8 +63,8 @@ namespace VTX
 		  private:
 			std::string		   _name			  = "";
 			VectorViewpointPtr _viewpoints		  = VectorViewpointPtr();
-			DURATION_MODE	   _modeDuration	  = DURATION_MODE::CONSTANT_SPEED;
-			INTERPOLATION_MODE _modeInterpolation = INTERPOLATION_MODE::CATMULL_ROM;
+			DURATION_MODE	   _modeDuration	  = DURATION_MODE_DEFAULT;
+			INTERPOLATION_MODE _modeInterpolation = INTERPOLATION_MODE_DEFAULT;
 			float			   _duration		  = Setting::PATH_DURATION_DEFAULT;
 			bool			   _isLooping		  = false;
 
