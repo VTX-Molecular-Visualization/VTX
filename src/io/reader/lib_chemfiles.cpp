@@ -76,6 +76,17 @@ namespace VTX::IO::Reader
 		}
 		timeReadingFrames.stop();
 		_logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
+
+		// Erase supernumeraries frames
+		if ( p_molecule.getFrames().back().size() == 0 ) 
+		{
+			do
+			{
+				p_molecule.getFrames().pop_back();
+			} while ( p_molecule.getFrames().back().size() == 0 );
+
+			p_molecule.getFrames().shrink_to_fit();
+		}
 	}
 
 	void LibChemfiles::fillTrajectoryFrame( const chemfiles::Frame & p_frame,

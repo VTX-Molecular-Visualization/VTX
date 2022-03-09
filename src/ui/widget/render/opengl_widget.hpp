@@ -44,6 +44,7 @@ namespace VTX
 			void setRenderMode() { _renderer = nullptr; }
 			void activeVSync( const bool p_active );
 
+			const float getScreenPixelRatio() const;
 			const Vec2i getPickedIds( const uint, const uint );
 
 		  protected:
