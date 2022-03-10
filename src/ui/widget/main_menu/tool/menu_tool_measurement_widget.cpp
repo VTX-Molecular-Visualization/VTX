@@ -1,4 +1,4 @@
-#include "menu_measurement_distance_widget.hpp"
+#include "menu_tool_measurement_widget.hpp"
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "action/measurement.hpp"
@@ -10,22 +10,22 @@
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 
-namespace VTX::UI::Widget::MainMenu::Measurement
+namespace VTX::UI::Widget::MainMenu::Tool
 {
-	MenuMeasurementDistanceWidget::MenuMeasurementDistanceWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
+	MenuToolMeasurementWidget::MenuToolMeasurementWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
 		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
 	}
 
-	MenuMeasurementDistanceWidget::~MenuMeasurementDistanceWidget() {}
+	MenuToolMeasurementWidget::~MenuToolMeasurementWidget() {}
 
-	void MenuMeasurementDistanceWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void MenuToolMeasurementWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
 		if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
 			_refreshButtons();
 	}
 
-	void MenuMeasurementDistanceWidget::_setupUi( const QString & p_name )
+	void MenuToolMeasurementWidget::_setupUi( const QString & p_name )
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 
@@ -56,18 +56,18 @@ namespace VTX::UI::Widget::MainMenu::Measurement
 
 		_refreshButtons();
 	}
-	void MenuMeasurementDistanceWidget::_setupSlots()
+	void MenuToolMeasurementWidget::_setupSlots()
 	{
-		_distanceModeButton->setTriggerAction( this, &MenuMeasurementDistanceWidget::_applyDistanceModeAction );
+		_distanceModeButton->setTriggerAction( this, &MenuToolMeasurementWidget::_applyDistanceModeAction );
 		//_distanceToCycleModeButton->setTriggerAction( this,
-		//											  &MenuMeasurementDistanceWidget::_applyDistanceToCycleModeAction );
-		_angleModeButton->setTriggerAction( this, &MenuMeasurementDistanceWidget::_applyAngleModeAction );
+		//											  &MenuToolMeasurementWidget::_applyDistanceToCycleModeAction );
+		_angleModeButton->setTriggerAction( this, &MenuToolMeasurementWidget::_applyAngleModeAction );
 		_dihedralAngleModeButton->setTriggerAction( this,
-													&MenuMeasurementDistanceWidget::_applyDihedralAngleModeAction );
+													&MenuToolMeasurementWidget::_applyDihedralAngleModeAction );
 	}
-	void MenuMeasurementDistanceWidget::localize() {}
+	void MenuToolMeasurementWidget::localize() {}
 
-	void MenuMeasurementDistanceWidget::_refreshButtons() const
+	void MenuToolMeasurementWidget::_refreshButtons() const
 	{
 		const State::Visualization * const state
 			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
@@ -94,24 +94,24 @@ namespace VTX::UI::Widget::MainMenu::Measurement
 		}
 	}
 
-	void MenuMeasurementDistanceWidget::_applyDistanceModeAction() const
+	void MenuToolMeasurementWidget::_applyDistanceModeAction() const
 	{
 		_togglePickerState( Controller::MeasurementPicker::Mode::DISTANCE );
 	}
-	void MenuMeasurementDistanceWidget::_applyDistanceToCycleModeAction() const
+	void MenuToolMeasurementWidget::_applyDistanceToCycleModeAction() const
 	{
 		_togglePickerState( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE );
 	}
-	void MenuMeasurementDistanceWidget::_applyAngleModeAction() const
+	void MenuToolMeasurementWidget::_applyAngleModeAction() const
 	{
 		_togglePickerState( Controller::MeasurementPicker::Mode::ANGLE );
 	}
-	void MenuMeasurementDistanceWidget::_applyDihedralAngleModeAction() const
+	void MenuToolMeasurementWidget::_applyDihedralAngleModeAction() const
 	{
 		_togglePickerState( Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE );
 	}
 
-	void MenuMeasurementDistanceWidget::_togglePickerState(
+	void MenuToolMeasurementWidget::_togglePickerState(
 		const Controller::MeasurementPicker::Mode & p_measurementMode ) const
 	{
 		State::Visualization * const state

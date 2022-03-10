@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_WIDGET_MENU_MEASUREMENT_DISTANCE__
-#define __VTX_UI_WIDGET_MENU_MEASUREMENT_DISTANCE__
+#ifndef __VTX_UI_WIDGET_MENU_TOOL_MEASUREMENT__
+#define __VTX_UI_WIDGET_MENU_TOOL_MEASUREMENT__
 
 #include "controller/measurement_picker.hpp"
 #include "event/event.hpp"
@@ -8,20 +8,20 @@
 #include <QMenu>
 #include <QWidget>
 
-namespace VTX::UI::Widget::MainMenu::Measurement
+namespace VTX::UI::Widget::MainMenu::Tool
 {
-	class MenuMeasurementDistanceWidget : public MenuToolBlockWidget
+	class MenuToolMeasurementWidget : public MenuToolBlockWidget
 	{
 		VTX_WIDGET
 
 	  public:
-		~MenuMeasurementDistanceWidget();
+		~MenuToolMeasurementWidget();
 
 		void localize() override;
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 	  protected:
-		MenuMeasurementDistanceWidget( QWidget * p_parent );
+		MenuToolMeasurementWidget( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 

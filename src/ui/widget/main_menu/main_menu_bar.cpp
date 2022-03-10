@@ -27,9 +27,9 @@ namespace VTX::UI::Widget::MainMenu
 			_tabWidget, "visualizationMenu" );
 		_tabWidget->addTab( _viewMenu, "Visualization" );
 
-		_measurementMenu = WidgetFactory::get().instantiateWidget<Measurement::MenuMeasurementWidget>(
-			_tabWidget, "measurementMenu" );
-		_tabWidget->addTab( _measurementMenu, "Tools" );
+		_toolMenu = WidgetFactory::get().instantiateWidget<Tool::MenuToolWidget>(
+			_tabWidget, "toolMenu" );
+		_tabWidget->addTab( _toolMenu, "Tools" );
 
 		// !V0.1
 		//_movieMenu = new QLabel( "movieMenu", this );
