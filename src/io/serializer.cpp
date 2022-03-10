@@ -1045,10 +1045,14 @@ namespace VTX::IO
 							   Model::Representation::InstantiatedRepresentation & p_representation ) const
 	{
 		// 0.2.0 -> 0.3.0
+		// SS_COLOR_MODE -> RIBBON_COLOR_MODE
 		if ( std::get<1>( p_version ) < 3 )
 		{
-			p_representation.setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-				p_json, "SS_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
+			if ( p_representation.hasToDrawRibbon() )
+			{
+				p_representation.setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
+					p_json, "SS_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
+			}
 		}
 	}
 
