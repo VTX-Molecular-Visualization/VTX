@@ -16,6 +16,8 @@ namespace VTX::UI::Widget::Representation::View
 		void updateWithNewValue( const Model::Representation::InstantiatedRepresentation &		p_representation,
 								 const std::unordered_set<const Generic::BaseRepresentable *> & p_targets ) override;
 		void resetState() override;
+		void setRadiusWidgetVisible( const bool );
+		void setRadiusOffsetWidgetVisible( const bool );
 
 	  signals:
 		void onRadiusChange( const float p_newRadius );
