@@ -10,7 +10,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		MenuTooltabWidget::_setupUi( p_name );
 
 		_measurement = addToolBlock<MenuToolMeasurementWidget>( "measurementBlockWidget" );
-		_structuralAlignment = addToolBlock<MenuToolStructuralAlignmentWidget>( "structuralAlignmentBlockWidget" );
+		//_structuralAlignment = addToolBlock<MenuToolStructuralAlignmentWidget>( "structuralAlignmentBlockWidget" );
 		
 	}
 	void MenuToolWidget::_setupSlots() {}
