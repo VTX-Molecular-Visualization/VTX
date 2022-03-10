@@ -73,4 +73,18 @@ namespace VTX::UI::Widget::Representation::View
 		_radiusOffsetWidget->resetState();
 	}
 
+	void SphereWidget::setRadiusWidgetVisible( const bool p_visible )
+	{
+		_radiusWidget->setDisabled( !p_visible );
+		_radiusWidget->setVisible( p_visible );
+		_radiusLabel->setVisible( p_visible );
+	}
+
+	void SphereWidget::setRadiusOffsetWidgetVisible( const bool p_visible )
+	{
+		_radiusOffsetWidget->setDisabled( !p_visible );
+		_radiusOffsetWidget->setVisible( p_visible );
+		_radiusOffsetLabel->setVisible( p_visible );
+	}
+
 } // namespace VTX::UI::Widget::Representation::View

@@ -13,6 +13,7 @@ namespace VTX::UI::Widget::Representation
 		BaseRepresentationWidget::_setupUi( p_name );
 
 		_addSphereWidgetInLayout();
+		_sphereWidget->setRadiusOffsetWidgetVisible( false );
 		_addCylinderWidgetInLayout();
 		_addColorModeWidgetInLayout();
 		_addRibbonWidgetInLayout();

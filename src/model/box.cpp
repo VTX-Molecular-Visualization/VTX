@@ -4,31 +4,35 @@
 
 namespace VTX::Model
 {
-	void Box::_init() {}
+	Box::Box( Math::AABB & p_aabb ) : BaseModel3D( VTX::ID::Model::MODEL_BOX ) { _aabb = p_aabb; }
 
 	void Box::_fillBuffer()
 	{
-		const Vec3f & min = _aabb->getMin();
-		const Vec3f & max = _aabb->getMax();
-
-		_corners = std::vector<Vec3f>( { min,
-										 Vec3f( max.x, min.y, min.z ),
-										 Vec3f( max.x, max.y, min.z ),
-										 Vec3f( min.x, max.y, min.z ),
-										 Vec3f( min.x, min.y, max.z ),
-										 Vec3f( max.x, min.y, max.z ),
-										 max,
-										 Vec3f( min.x, max.y, max.z ) } );
-
 		_indices = std::vector<uint>( { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 } );
+		_buffer->setIndices( _indices );
+
+		refresh();
+	}
+
+	void Box::refresh()
+	{
+		const Vec3f & min = _aabb.getMin();
+		const Vec3f & max = _aabb.getMax();
+		_corners		  = std::vector<Vec3f>( { min,
+										  Vec3f( max.x, min.y, min.z ),
+										  Vec3f( max.x, max.y, min.z ),
+										  Vec3f( min.x, max.y, min.z ),
+										  Vec3f( min.x, min.y, max.z ),
+										  Vec3f( max.x, min.y, max.z ),
+										  max,
+										  Vec3f( min.x, max.y, max.z ) } );
 
 		_buffer->setCorners( _corners );
-		_buffer->setIndices( _indices );
 	}
 
 	void Box::_instantiate3DViews()
 	{
-		_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Box>( this, VTX::ID::View::D3_RIBBON_PATCH ) );
+		_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Box>( this, VTX::ID::View::D3_BOX ) );
 	}
 
 } // namespace VTX::Model

@@ -4,7 +4,7 @@
 
 uniform mat4  u_projMatrix;
 uniform float u_cylRad;
-uniform uint  u_transitionColorMode;
+uniform uint  u_colorBlendingMode;
 
 in GsOut
 {
@@ -110,7 +110,7 @@ void main()
 
 			// Color with good color extremity.			
 			vec3 color = gsIn.colors[ int( y > d0 * 0.5f ) ];			
-			if( u_transitionColorMode == 1 ) // Gradient.
+			if( u_colorBlendingMode == 1 ) // Gradient.
 			{
 				color = mix( gsIn.colors[0], gsIn.colors[1], y / d0 );
 			}

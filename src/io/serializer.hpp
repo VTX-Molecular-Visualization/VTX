@@ -8,6 +8,7 @@
 #include <magic_enum.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <tuple>
 
 namespace VTX
 {
@@ -89,21 +90,27 @@ namespace VTX
 			nlohmann::json serialize( const glm::qua<T, Q> & ) const;
 			nlohmann::json serialize( const Setting & ) const;
 
-			nlohmann::json serialize_atom_reference( const Model::Atom & ) const;
+			nlohmann::json serializeAtomReference( const Model::Atom & ) const;
 
-			void deserialize( const nlohmann::json &, VTXApp & ) const;
-			void deserialize( const nlohmann::json &, Object3D::Scene & ) const;
-			void deserialize( const nlohmann::json &, Model::Molecule & ) const;
+			void deserialize( const nlohmann::json &, const std::tuple<uint, uint, uint> &, VTXApp & ) const;
+			void deserialize( const nlohmann::json &, const std::tuple<uint, uint, uint> &, Object3D::Scene & ) const;
+			void deserialize( const nlohmann::json &, const std::tuple<uint, uint, uint> &, Model::Molecule & ) const;
 			void deserialize( const nlohmann::json &, Model::Path & ) const;
 			void deserialize( const nlohmann::json &, Model::Viewpoint & ) const;
-			void deserialize( const nlohmann::json &, Model::Representation::InstantiatedRepresentation & ) const;
+			void deserialize( const nlohmann::json &,
+							  const std::tuple<uint, uint, uint> &,
+							  Model::Representation::InstantiatedRepresentation & ) const;
 			void deserialize( const nlohmann::json &, Model::Measurement::Distance & ) const;
 			void deserialize( const nlohmann::json &, Model::Measurement::DistanceToCycle & ) const;
 			void deserialize( const nlohmann::json &, Model::Measurement::Angle & ) const;
 			void deserialize( const nlohmann::json &, Model::Measurement::DihedralAngle & ) const;
 
-			void deserialize( const nlohmann::json &, Model::Representation::Representation & ) const;
-			void deserialize( const nlohmann::json &, Model::Renderer::RenderEffectPreset & ) const;
+			void deserialize( const nlohmann::json &,
+							  const std::tuple<uint, uint, uint> &,
+							  Model::Representation::Representation & ) const;
+			void deserialize( const nlohmann::json &,
+							  const std::tuple<uint, uint, uint> &,
+							  Model::Renderer::RenderEffectPreset & ) const;
 
 			void deserialize( const nlohmann::json &, Color::Rgb & ) const;
 			void deserialize( const nlohmann::json &, Math::Transform & ) const;
@@ -115,9 +122,9 @@ namespace VTX
 			void deserialize( const nlohmann::json &, glm::vec<4, T, Q> & ) const;
 			template<typename T, glm::qualifier Q>
 			void deserialize( const nlohmann::json &, glm::qua<T, Q> & ) const;
-			void deserialize( const nlohmann::json &, Setting & ) const;
+			void deserialize( const nlohmann::json &, const std::tuple<uint, uint, uint> &, Setting & ) const;
 
-			const Model::Atom * deserialize_atom_reference( const nlohmann::json & ) const;
+			const Model::Atom * deserializeAtomReference( const nlohmann::json & ) const;
 
 			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			M * tryDeserializeModel( const nlohmann::json & p_json ) const
@@ -138,12 +145,21 @@ namespace VTX
 			}
 
 		  private:
+			void _migrate( const nlohmann::json &,
+						   const std::tuple<uint, uint, uint> &,
+						   Model::Representation::InstantiatedRepresentation & ) const;
+			void _migrate( const nlohmann::json &,
+						   const std::tuple<uint, uint, uint> &,
+						   Model::Representation::Representation & ) const;
+
 			nlohmann::json _serializeMoleculeRepresentations( const Model::Molecule &,
 															  const VTX::IO::Writer::ChemfilesWriter * ) const;
 			nlohmann::json _serializeMoleculeVisibilities( const Model::Molecule &,
 														   const VTX::IO::Writer::ChemfilesWriter * ) const;
 
-			void _deserializeMoleculeRepresentations( const nlohmann::json &, Model::Molecule & ) const;
+			void _deserializeMoleculeRepresentations( const nlohmann::json &,
+													  const std::tuple<uint, uint, uint> &,
+													  Model::Molecule & ) const;
 			void _deserializeMoleculeVisibilities( const nlohmann::json &, Model::Molecule & ) const;
 
 			template<typename T>

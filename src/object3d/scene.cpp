@@ -2,6 +2,7 @@
 #include "action/main.hpp"
 #include "event/event_manager.hpp"
 #include "math/transform.hpp"
+#include "model/box.hpp"
 #include "model/label.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -46,6 +47,9 @@ namespace VTX::Object3D
 		MVC::MvcManager::get().deleteAllModels( _labels );
 		_labels.clear();
 
+		MVC::MvcManager::get().deleteAllModels( _boxes );
+		_boxes.clear();
+
 		while ( _paths.size() > 0 )
 		{
 			PathPtr const path = *_paths.begin();
@@ -70,6 +74,10 @@ namespace VTX::Object3D
 
 		_aabb.extend( p_molecule->getAABB() );
 		p_molecule->referenceLinkedAABB( &_aabb );
+
+		Model::Box * const box = MVC::MvcManager::get().instantiateModel<Model::Box, Math::AABB>( _aabb );
+		VTX_EVENT( new Event::VTXEventPtr( Event::Global::BOX_CREATED, box ) );
+		VTXApp::get().getScene().addBox( box );
 
 		if ( p_sendEvent )
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, p_molecule ) );
@@ -124,6 +132,19 @@ namespace VTX::Object3D
 	{
 		_remove( p_label, _labels );
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::LABEL_REMOVED, p_label ) );
+		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+	}
+
+	void Scene::addBox( BoxPtr const p_box )
+	{
+		_add( p_box, _boxes );
+		VTX_EVENT( new Event::VTXEventPtr( Event::Global::BOX_ADDED, p_box ) );
+	}
+
+	void Scene::removeBox( BoxPtr const p_box )
+	{
+		_remove( p_box, _boxes );
+		VTX_EVENT( new Event::VTXEventPtr( Event::Global::BOX_REMOVED, p_box ) );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 

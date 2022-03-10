@@ -21,6 +21,14 @@ namespace VTX::UI::Widget::Representation::View
 
 	void RibbonWidget::_setupSlots()
 	{
+		connect( _colorModeWidget,
+				 &CustomWidget::RibbonColorModeFieldWidget::colorChanged,
+				 this,
+				 &RibbonWidget::_onColorChange );
+		connect( _colorModeWidget,
+				 &CustomWidget::RibbonColorModeFieldWidget::colorModeChanged,
+				 this,
+				 &RibbonWidget::_onColorModeChange );
 		connect( _colorBlendingModeWidget,
 				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
 				 this,
@@ -28,7 +36,7 @@ namespace VTX::UI::Widget::Representation::View
 	}
 
 	void RibbonWidget::_onColorChange( const Color::Rgb & p_color ) { emit onColorChange( p_color ); }
-	void RibbonWidget::_onColorModeChange( const int p_newMode )
+	void RibbonWidget::_onColorModeChange( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode )
 	{
 		emit onColorModeChange( Generic::SECONDARY_STRUCTURE_COLOR_MODE( p_newMode ) );
 	}

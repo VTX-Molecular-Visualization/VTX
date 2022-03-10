@@ -137,7 +137,7 @@ namespace VTX
 					ssTypes.emplace_back( uint( residue->getSecondaryStructure() ) );
 
 					// Add color.
-					if ( residue->getRepresentation() != nullptr )
+					if ( residue->getRepresentation() != nullptr && residue->getRepresentation()->hasToDrawRibbon() )
 					{
 						switch ( residue->getRepresentation()->getRibbonData().colorMode )
 						{

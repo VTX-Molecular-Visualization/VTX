@@ -33,9 +33,9 @@ namespace VTX
 
 	// VTX.
 	const std::string VTX_PROJECT_NAME	   = "VTX";
-	constexpr int	  VTX_VERSION_MAJOR	   = 0;
-	constexpr int	  VTX_VERSION_MINOR	   = 3;
-	constexpr int	  VTX_VERSION_REVISION = 0;
+	constexpr uint	  VTX_VERSION_MAJOR	   = 0;
+	constexpr uint	  VTX_VERSION_MINOR	   = 3;
+	constexpr uint	  VTX_VERSION_REVISION = 0;
 
 	const std::string VTX_WEBSITE_URL			= "https://vtx.drugdesign.fr";
 	const std::string VTX_VERSION_URL			= VTX_WEBSITE_URL + "/vtx.json";

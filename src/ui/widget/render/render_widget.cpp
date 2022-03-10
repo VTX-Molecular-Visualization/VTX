@@ -3,6 +3,7 @@
 #include "action/viewpoint.hpp"
 #include "base_integrated_widget.hpp"
 #include "event/event_manager.hpp"
+#include "model/box.hpp"
 #include "model/label.hpp"
 #include "model/measurement/angle.hpp"
 #include "model/measurement/dihedral_angle.hpp"
@@ -29,6 +30,7 @@ namespace VTX::UI::Widget::Render
 	{
 		_registerEvent( Event::Global::MOLECULE_CREATED );
 		_registerEvent( Event::Global::MESH_CREATED );
+		_registerEvent( Event::Global::BOX_CREATED );
 		_registerEvent( Event::Global::LABEL_ADDED );
 		_registerEvent( Event::Global::LABEL_REMOVED );
 		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
@@ -41,11 +43,9 @@ namespace VTX::UI::Widget::Render
 		if ( p_event.name == Event::Global::MOLECULE_CREATED )
 		{
 			_openGLWidget->makeCurrent();
-
 			const Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 			castedEvent.ptr->init();
-
 			_openGLWidget->doneCurrent();
 		}
 		else if ( p_event.name == Event::Global::MESH_CREATED )
@@ -54,7 +54,14 @@ namespace VTX::UI::Widget::Render
 			const Event::VTXEventPtr<Model::MeshTriangle> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::MeshTriangle> &>( p_event );
 			castedEvent.ptr->init();
-
+			_openGLWidget->doneCurrent();
+		}
+		else if ( p_event.name == Event::Global::BOX_CREATED )
+		{
+			_openGLWidget->makeCurrent();
+			const Event::VTXEventPtr<Model::Box> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Box> &>( p_event );
+			castedEvent.ptr->init();
 			_openGLWidget->doneCurrent();
 		}
 		else if ( p_event.name == Event::Global::LABEL_ADDED )
