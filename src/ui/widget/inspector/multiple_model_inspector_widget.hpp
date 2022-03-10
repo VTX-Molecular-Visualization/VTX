@@ -91,7 +91,7 @@ namespace VTX::UI::Widget::Inspector
 			}
 			else if ( p_event->name == Event::Model::COLOR_CHANGE )
 			{
-				_sectionToRefresh |= SectionFlag::REPRESENTATION;
+				_sectionToRefresh |= SectionFlag::INFOS;
 			}
 			else if ( p_event->name == Event::Model::REPRESENTATION_CHANGE )
 			{

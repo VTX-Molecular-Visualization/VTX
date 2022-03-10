@@ -164,7 +164,6 @@ namespace VTX::UI::Widget::Inspector
 
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
-					_moleculeColor->updateWithNewValue( molecule->getColor() );
 					_representationWidget->updateWithNewValue( *molecule->getRepresentation() );
 				}
 
@@ -188,6 +187,9 @@ namespace VTX::UI::Widget::Inspector
 
 				if ( bool( p_flag & SectionFlag::INFOS ) )
 				{
+					if ( !_moleculeColor->hasDifferentData() )
+						_moleculeColor->updateWithNewValue( molecule->getColor() );
+
 					if ( !_fullnameLabel->hasDifferentData() )
 						_fullnameLabel->updateWithNewValue( molecule->getName() );
 					if ( !_nbChainsLabel->hasDifferentData() )
@@ -209,7 +211,6 @@ namespace VTX::UI::Widget::Inspector
 
 		if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 		{
-			_moleculeColor->resetState();
 			_representationWidget->resetState();
 		}
 
@@ -226,6 +227,7 @@ namespace VTX::UI::Widget::Inspector
 
 		if ( bool( p_flag & SectionFlag::INFOS ) )
 		{
+			_moleculeColor->resetState();
 			_fullnameLabel->resetState();
 			_nbChainsLabel->resetState();
 			_nbResiduesLabel->resetState();
