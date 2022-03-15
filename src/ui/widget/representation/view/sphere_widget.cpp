@@ -2,7 +2,6 @@
 
 namespace VTX::UI::Widget::Representation::View
 {
-
 	void SphereWidget::_setupUi( const QString & p_name )
 	{
 		BaseRepresentationViewWidget::_setupUi( p_name );
@@ -60,8 +59,8 @@ namespace VTX::UI::Widget::Representation::View
 			_radiusOffsetLabel,
 			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_ADD ) );
 
-		_radiusWidget->setValue( p_representation.getSphereData().radiusFixed );
-		_radiusOffsetWidget->setValue( p_representation.getSphereData().radiusAdd );
+		_radiusWidget->updateWithNewValue( p_representation.getSphereData().radiusFixed );
+		_radiusOffsetWidget->updateWithNewValue( p_representation.getSphereData().radiusAdd );
 	}
 
 	void SphereWidget::resetState()

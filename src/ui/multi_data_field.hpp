@@ -42,13 +42,14 @@ namespace VTX::UI
 	  public:
 		virtual void refresh( const T & p_value, const std::unordered_set<const Q *> & p_targets )			  = 0;
 		virtual void updateWithNewValue( const T & p_value, const std::unordered_set<const Q *> & p_targets ) = 0;
+		virtual void _displayDifferentsDataFeedback() override {};
 	};
 
 	template<typename T>
 	class TMultiDataFieldEquatable : public TMultiDataField<T>
 	{
 	  public:
-		virtual void updateWithNewValue( T & p_value )
+		virtual void updateWithNewValue( T & p_value ) override
 		{
 			switch ( MultiDataField::_state )
 			{
@@ -61,13 +62,14 @@ namespace VTX::UI
 				if ( !_isEquals( _getValue(), p_value ) )
 				{
 					MultiDataField::_state = MultiDataField::State::Different;
-					MultiDataField::_displayDifferentsDataFeedback();
+					_displayDifferentsDataFeedback();
 				}
 				break;
 
 			case MultiDataField::State::Different: break;
 			}
 		}
+		virtual void _displayDifferentsDataFeedback() override {};
 
 	  protected:
 		virtual const T & _getValue() const					   = 0;

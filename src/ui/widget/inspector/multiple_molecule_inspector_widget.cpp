@@ -187,17 +187,12 @@ namespace VTX::UI::Widget::Inspector
 
 				if ( bool( p_flag & SectionFlag::INFOS ) )
 				{
-					if ( !_moleculeColor->hasDifferentData() )
-						_moleculeColor->updateWithNewValue( molecule->getColor() );
+					_moleculeColor->updateWithNewValue( molecule->getColor() );
 
-					if ( !_fullnameLabel->hasDifferentData() )
-						_fullnameLabel->updateWithNewValue( molecule->getName() );
-					if ( !_nbChainsLabel->hasDifferentData() )
-						_nbChainsLabel->updateWithNewValue( std::to_string( molecule->getRealChainCount() ) );
-					if ( !_nbResiduesLabel->hasDifferentData() )
-						_nbResiduesLabel->updateWithNewValue( std::to_string( molecule->getRealResidueCount() ) );
-					if ( !_nbAtomsLabel->hasDifferentData() )
-						_nbAtomsLabel->updateWithNewValue( std::to_string( molecule->getRealAtomCount() ) );
+					_fullnameLabel->updateWithNewValue( molecule->getName() );
+					_nbChainsLabel->updateWithNewValue( std::to_string( molecule->getRealChainCount() ) );
+					_nbResiduesLabel->updateWithNewValue( std::to_string( molecule->getRealResidueCount() ) );
+					_nbAtomsLabel->updateWithNewValue( std::to_string( molecule->getRealAtomCount() ) );
 				}
 			}
 		}

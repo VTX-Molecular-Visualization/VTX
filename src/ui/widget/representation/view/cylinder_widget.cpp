@@ -61,8 +61,8 @@ namespace VTX::UI::Widget::Representation::View
 			_colorBlendingModeLabel,
 			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_COLOR_BLENDING_MODE ) );
 
-		_radiusWidget->setValue( p_representation.getCylinderData().radius );
-		_colorBlendingModeWidget->setCurrentIndex( int( p_representation.getCylinderData().colorBlendingMode ) );
+		_radiusWidget->updateWithNewValue( p_representation.getCylinderData().radius );
+		_colorBlendingModeWidget->updateWithNewValue( int( p_representation.getCylinderData().colorBlendingMode ) );
 	}
 
 	void CylinderWidget::resetState()

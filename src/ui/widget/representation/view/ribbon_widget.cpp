@@ -88,7 +88,7 @@ namespace VTX::UI::Widget::Representation::View
 			_colorBlendingModeLabel,
 			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE ) );
 
-		_colorBlendingModeWidget->setCurrentIndex( int( p_representation.getRibbonData().colorBlendingMode ) );
+		_colorBlendingModeWidget->updateWithNewValue( int( p_representation.getRibbonData().colorBlendingMode ) );
 
 		// Color mode widget.
 		std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgb> pair
