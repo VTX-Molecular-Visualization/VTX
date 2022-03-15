@@ -1,5 +1,33 @@
 # Change Log
 
+## [0.3.0] (beta) - 2021-03-18
+
+### New features
+
+- Measure tool.
+- Freeze inspector button.
+- Add color blending mode in representations.
+- Add contextual menu on viewpoint container.
+- Manage "Go to" function of viewpoints with multiple selection.
+
+### Debug
+
+- Debug preview opacity when exporting an image.
+- Debug chain / residue / atom count update in molecule inspector after a modification in the molecule structure.
+- Improve stability after an extract.
+- Debug orient shortcut without selection.
+- Applying a representation without selection apply it on every molecule instead of the first one only.
+- Debug camera clip refresh after a reset.
+- Debug picking on scaled screens.
+- Debug negative scale using drag on transform widget.
+
+### Other
+
+- Upgrade interface library to Qt6.
+- Rearrange visualization buttons in main menu.
+- Improve widget to set fog clip and camera clip in render effects.
+
+
 ## [0.2.0] (beta) - 2021-12-13
 
 - Picking (selection in 3D)
