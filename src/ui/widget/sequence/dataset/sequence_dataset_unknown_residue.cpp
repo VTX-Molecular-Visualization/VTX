@@ -62,7 +62,10 @@ namespace VTX::UI::Widget::Sequence::Dataset
 
 	uint SequenceDisplayDataset_UnknownResidue::getLastScaleCharIndex() const
 	{
-		return uint( std::to_string( _residue->getIndexInOriginalChain() ).size() );
+		const uint residueSize = uint( std::to_string( _residue->getIndexInOriginalChain() ).size() );
+		const uint offset	   = _spaceBefore ? 1 : 0;
+
+		return residueSize + offset;
 	}
 
 } // namespace VTX::UI::Widget::Sequence::Dataset
