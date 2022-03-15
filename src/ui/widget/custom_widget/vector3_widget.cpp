@@ -57,17 +57,35 @@ namespace VTX::UI::Widget::CustomWidget
 		_widgetY->setMin( p_min );
 		_widgetZ->setMin( p_min );
 	};
+	void Vector3Widget::setMin( const Vec3f p_min )
+	{
+		_widgetX->setMin( p_min.x );
+		_widgetY->setMin( p_min.y );
+		_widgetZ->setMin( p_min.z );
+	};
 	void Vector3Widget::setMax( const float p_max )
 	{
 		_widgetX->setMax( p_max );
 		_widgetY->setMax( p_max );
 		_widgetZ->setMax( p_max );
 	};
+	void Vector3Widget::setMax( const Vec3f p_min )
+	{
+		_widgetX->setMax( p_min.x );
+		_widgetY->setMax( p_min.y );
+		_widgetZ->setMax( p_min.z );
+	};
 	void Vector3Widget::setMinMax( const float p_min, const float p_max )
 	{
 		_widgetX->setMinMax( p_min, p_max );
 		_widgetY->setMinMax( p_min, p_max );
 		_widgetZ->setMinMax( p_min, p_max );
+	}
+	void Vector3Widget::setMinMax( const Vec3f p_min, const Vec3f p_max )
+	{
+		_widgetX->setMinMax( p_min.x, p_max.x );
+		_widgetY->setMinMax( p_min.y, p_max.y );
+		_widgetZ->setMinMax( p_min.z, p_max.z );
 	}
 
 	void Vector3Widget::setDragValueFactor( const float p_factor )

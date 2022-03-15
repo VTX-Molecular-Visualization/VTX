@@ -15,17 +15,17 @@ namespace VTX::UI::Widget::CustomWidget
 		_positionLabel = new QLabel();
 		_positionLabel->setText( "Position" );
 		_positionWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_position_widget" );
-		_positionWidget->setMinMax( -10000, 10000 );
+		_positionWidget->setMinMax( Setting::MIN_SCENE_POS, Setting::MAX_SCENE_POS );
 
 		_rotationLabel = new QLabel();
 		_rotationLabel->setText( "Rotation" );
 		_rotationWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_rotation_widget" );
-		_rotationWidget->setMinMax( -10000, 10000 );
+		_rotationWidget->setMinMax( Setting::MIN_EULER, Setting::MAX_EULER );
 
 		_scaleLabel = new QLabel();
 		_scaleLabel->setText( "Scale" );
 		_scaleWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_scale_widget" );
-		_scaleWidget->setMinMax( 0.01, 10000 );
+		_scaleWidget->setMinMax( Setting::MIN_SCALE, Setting::MAX_SCALE );
 		_scaleWidget->setDragValueFactor( 0.01f );
 
 		mainLayout->addWidget( _positionLabel, 0, 0 );

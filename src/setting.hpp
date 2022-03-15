@@ -143,6 +143,10 @@ namespace VTX
 
 		static const Color::Rgb LIGHT_COLOR_DEFAULT;
 
+		// Scene.
+		static const Vec3f MIN_SCENE_POS;
+		static const Vec3f MAX_SCENE_POS;
+
 		// Camera.
 		static const float CAMERA_NEAR_DEFAULT;
 		static const float CAMERA_NEAR_MIN;
@@ -189,6 +193,16 @@ namespace VTX
 		static const int				  MAX_TRAJECTORY_SPEED;
 		static const int				  DEFAULT_TRAJECTORY_SPEED;
 		static const Trajectory::PlayMode DEFAULT_TRAJECTORY_PLAY_MODE;
+
+		// Transform
+		static const float MIN_EULER;
+		static const float MAX_EULER;
+		static const Vec3f MIN_EULER_VEC;
+		static const Vec3f MAX_EULER_VEC;
+		static const float MIN_SCALE;
+		static const float MAX_SCALE;
+		static const Vec3f MIN_SCALE_VEC;
+		static const Vec3f MAX_SCALE_VEC;
 
 		// Auto rotate.
 		static const float AUTO_ROTATE_SPEED_DEFAULT;

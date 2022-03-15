@@ -105,6 +105,10 @@ namespace VTX
 	const bool		 Setting::ACTIVE_AA_DEFAULT			= true;
 	const Color::Rgb Setting::LIGHT_COLOR_DEFAULT		= Color::Rgb::WHITE;
 
+	// Scene.
+	const Vec3f Setting::MIN_SCENE_POS = Vec3f( -10000, -10000, -10000 );
+	const Vec3f Setting::MAX_SCENE_POS = Vec3f( 10000, 10000, 10000 );
+
 	// Camera.
 	const float Setting::CAMERA_NEAR_DEFAULT		= 0.00f;
 	const float Setting::CAMERA_NEAR_MIN			= 0.00f;
@@ -142,6 +146,16 @@ namespace VTX
 	const int				   Setting::MAX_TRAJECTORY_SPEED		 = 60;
 	const int				   Setting::DEFAULT_TRAJECTORY_SPEED	 = 5;
 	const Trajectory::PlayMode Setting::DEFAULT_TRAJECTORY_PLAY_MODE = Trajectory::PlayMode::Loop;
+
+	// Transform
+	const float Setting::MIN_EULER	   = -10000.f;
+	const float Setting::MAX_EULER	   = 10000.f;
+	const Vec3f Setting::MIN_EULER_VEC = Vec3f( MIN_EULER, MIN_EULER, MIN_EULER );
+	const Vec3f Setting::MAX_EULER_VEC = Vec3f( MAX_EULER, MAX_EULER, MAX_EULER );
+	const float Setting::MIN_SCALE	   = 0.01f;
+	const float Setting::MAX_SCALE	   = 10000.f;
+	const Vec3f Setting::MIN_SCALE_VEC = Vec3f( MIN_SCALE, MIN_SCALE, MIN_SCALE );
+	const Vec3f Setting::MAX_SCALE_VEC = Vec3f( MAX_SCALE, MAX_SCALE, MAX_SCALE );
 
 	// Auto rotate.
 	const float Setting::AUTO_ROTATE_SPEED_DEFAULT		 = 2.0f;

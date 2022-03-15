@@ -27,8 +27,11 @@ namespace VTX::UI::Widget::CustomWidget
 		void localize() override;
 
 		void setMin( const float p_min );
+		void setMin( const Vec3f p_min );
 		void setMax( const float p_max );
+		void setMax( const Vec3f p_max );
 		void setMinMax( const float p_min, const float p_max );
+		void setMinMax( const Vec3f p_min, const Vec3f p_max );
 
 		void setDragValueFactor( const float p_factor );
 

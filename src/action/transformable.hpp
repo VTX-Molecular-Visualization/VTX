@@ -59,7 +59,9 @@ namespace VTX::Action::Transformable
 		{
 			for ( Generic::BaseTransformable * transformable : _transformables )
 			{
-				transformable->setTranslation( transformable->getTransform().getTranslationVector() + _delta );
+				Vec3f newPos = transformable->getTransform().getTranslationVector() + _delta;
+				newPos		 = Util::Math::clamp( newPos, VTX::Setting::MIN_SCENE_POS, VTX::Setting::MAX_SCENE_POS );
+				transformable->setTranslation( newPos );
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
@@ -143,7 +145,9 @@ namespace VTX::Action::Transformable
 				{
 				case RotationType::Axis_Angle: transformable->rotate( _angle, _axis ); break;
 				case RotationType::Euler:
-					transformable->setRotation( transformable->getTransform().getEulerAngles() + _axis );
+					Vec3f newEuler = transformable->getTransform().getEulerAngles() + _axis;
+					newEuler = Util::Math::clamp( newEuler, VTX::Setting::MIN_EULER_VEC, VTX::Setting::MAX_EULER_VEC );
+					transformable->setRotation( newEuler );
 					break;
 				}
 			}
@@ -202,7 +206,10 @@ namespace VTX::Action::Transformable
 		{
 			for ( Generic::BaseTransformable * transformable : _transformables )
 			{
-				transformable->setScale( transformable->getTransform().getScaleVector() + _delta );
+				Vec3f newScale = transformable->getTransform().getScaleVector() + _delta;
+				newScale = Util::Math::clamp( newScale, VTX::Setting::MIN_SCALE_VEC, VTX::Setting::MAX_SCALE_VEC );
+
+				transformable->setScale( newScale );
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
@@ -283,7 +290,7 @@ namespace VTX::Action::Transformable
 	  public:
 		explicit AddToAutoRotationOrientation(
 			const std::unordered_set<Generic::BaseAutoRotate *> p_autoRotateComponent,
-											 const Vec3f &										 p_delta ) :
+			const Vec3f &										p_delta ) :
 			_autoRotateComponents( p_autoRotateComponent ),
 			_delta( p_delta )
 		{
@@ -292,8 +299,8 @@ namespace VTX::Action::Transformable
 
 		virtual void execute() override
 		{
-			for ( Generic::BaseAutoRotate * const autoRotateComponent : _autoRotateComponents ) 
-				autoRotateComponent->setAutoRotationVector( autoRotateComponent->getAutoRotationVector() + _delta);
+			for ( Generic::BaseAutoRotate * const autoRotateComponent : _autoRotateComponents )
+				autoRotateComponent->setAutoRotationVector( autoRotateComponent->getAutoRotationVector() + _delta );
 		}
 
 	  private:
