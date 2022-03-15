@@ -5,7 +5,7 @@
 #include "style.hpp"
 #include <QPoint>
 #include <QString>
-#include <cmath>
+#include <string>
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {
@@ -37,43 +37,19 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		virtual uint getPaintCharIndex( const uint p_charIndex ) const { return getCharIndexOfResidue( p_charIndex ); };
 		virtual uint getPaintLength( const uint p_charIndex ) const { return 0; };
 		uint		 getLastCharIndex() const { return _startIndexChar + _charCount - 1; };
+		virtual uint getLastScaleCharIndex() const { return _charCount; };
 
 	  protected:
 		uint	_startIndexChar;
 		uint	_charCount;
 		QString _str;
 
-		inline uint _drawInScale( QString &			  p_scale,
-								  const std::string & p_label,
-								  const uint		  p_charIndex,
-								  const bool		  p_center ) const
-		{
-			const uint indexTxtSize = (uint)p_label.size();
-			const uint indexOffset	= p_center ? ( indexTxtSize - 1 ) / 2 : 0;
+		uint _drawInScale( QString &		   p_scale,
+						   const std::string & p_label,
+						   const uint		   p_charIndex,
+						   const bool		   p_center ) const;
 
-			for ( uint j = 0; j < indexTxtSize; j++ )
-			{
-				const uint index = p_charIndex + j - indexOffset;
-				p_scale[ index ] = p_label[ j ];
-			}
-
-			return p_charIndex - indexOffset + indexTxtSize - 1;
-		}
-
-		inline uint _getStepToNextValidIndex( const int p_originalIndex ) const
-		{
-			const int moduloStep = p_originalIndex % Style::SEQUENCE_CHAIN_SCALE_STEP;
-
-			uint step;
-			if ( moduloStep < 0 )
-				step = std::abs( moduloStep );
-			else if ( moduloStep > 0 )
-				step = Style::SEQUENCE_CHAIN_SCALE_STEP - moduloStep;
-			else
-				step = 0;
-
-			return step;
-		};
+		uint _getStepToNextValidIndex( const int p_originalIndex ) const;
 	};
 
 } // namespace VTX::UI::Widget::Sequence::Dataset

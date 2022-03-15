@@ -172,12 +172,18 @@ namespace VTX::UI::Widget::Sequence
 		const std::string firstResidueIndexStr = std::to_string( firstResidueIndex );
 		const std::string lastResidueIndexStr  = std::to_string( lastResidueIndex );
 
-		const uint lastResidueOffset
-			= ( uint )( sequenceLength < Style::SEQUENCE_CHAIN_SCALE_STEP ? lastResidueIndexStr.size()
-																		  : ( lastResidueIndexStr.size() / 2 ) );
-		uint scaleLength = sequenceLength - ( lastResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) + lastResidueOffset;
+		const uint lastResidueOffset = uint( lastResidueIndexStr.size() - 1 );
 
-		scaleLength = sequenceLength < scaleLength ? scaleLength : sequenceLength;
+		// Take last relevent data
+		auto it = _dataset.crbegin();
+		while ( it != _dataset.crend() && ( *it )->getStringSize() == 0 )
+		{
+			it++;
+		}
+
+		const int scaleOffset = ( *it )->getLastScaleCharIndex() - ( *it )->getStringSize();
+
+		const uint scaleLength = scaleOffset > 0 ? sequenceLength + scaleOffset : sequenceLength;
 
 		_strScale = QString( scaleLength, ' ' );
 

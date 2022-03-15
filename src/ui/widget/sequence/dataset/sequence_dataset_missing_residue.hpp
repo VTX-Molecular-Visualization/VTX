@@ -30,6 +30,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		void appendToScale( QString & p_scale, uint & p_lastIndexCharWritten, const bool p_startBloc ) const override;
 
 		const bool isFinishingBlock( bool p_startBlock ) const override { return _isTooLong; };
+		uint	   getLastScaleCharIndex() const override;
 
 	  private:
 		const bool _isTooLong;

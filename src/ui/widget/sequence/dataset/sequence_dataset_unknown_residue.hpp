@@ -33,6 +33,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		{
 			return _startIndexChar + ( _spaceBefore ? 1 : 0 );
 		};
+		uint getLastScaleCharIndex() const override;
 
 	  private:
 		Model::Residue * const _residue;

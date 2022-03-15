@@ -60,4 +60,9 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		return _residue;
 	}
 
+	uint SequenceDisplayDataset_UnknownResidue::getLastScaleCharIndex() const
+	{
+		return uint( std::to_string( _residue->getIndexInOriginalChain() ).size() );
+	}
+
 } // namespace VTX::UI::Widget::Sequence::Dataset

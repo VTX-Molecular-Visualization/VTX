@@ -95,4 +95,15 @@ namespace VTX::UI::Widget::Sequence::Dataset
 	{
 		return _startIndexChar + p_residueIndex - _startResidueIndex;
 	}
+
+	uint SequenceDisplayDataset_ResidueWithSameId::getLastScaleCharIndex() const
+	{
+		const uint		  lastResidueIndex = getLastResidue()->getIndexInOriginalChain();
+		const std::string lastIndexStr	   = std::to_string( lastResidueIndex );
+		const uint lastIndexOffset = _charCount < Style::SEQUENCE_CHAIN_SCALE_STEP ? uint( lastIndexStr.length() )
+																				   : uint( lastIndexStr.length() / 2 );
+
+		return _charCount - ( lastResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) + lastIndexOffset;
+	}
+
 } // namespace VTX::UI::Widget::Sequence::Dataset

@@ -32,6 +32,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		};
 
 		uint getPaintLength( const uint p_charIndex ) const override { return 1; };
+		uint getLastScaleCharIndex() const override;
 
 	  private:
 		const Model::Chain & _linkedChain;
