@@ -5,9 +5,9 @@ namespace VTX::View::D3
 	Renderer::GL::Program * const Torus::_createProgram()
 	{
 		return VTX_PROGRAM_MANAGER().createProgram( "Torus",
-													{ IO::FilePath( "torus_patch.vert" ),
-													  IO::FilePath( "torus_patch.geom" ),
-													  IO::FilePath( "torus_patch.frag" ) } );
+													{ IO::FilePath( "contour_buildup/torus_patch.vert" ),
+													  IO::FilePath( "contour_buildup/torus_patch.geom" ),
+													  IO::FilePath( "contour_buildup/torus_patch.frag" ) } );
 	}
 
 	void Torus::_init() {}

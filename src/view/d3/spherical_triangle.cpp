@@ -4,10 +4,11 @@ namespace VTX::View::D3
 {
 	Renderer::GL::Program * const SphericalTriangle::_createProgram()
 	{
-		return VTX_PROGRAM_MANAGER().createProgram( "SphericalTriangle",
-													{ IO::FilePath( "spherical_triangle_patch.vert" ),
-													  IO::FilePath( "spherical_triangle_patch.geom" ),
-													  IO::FilePath( "spherical_triangle_patch.frag" ) } );
+		return VTX_PROGRAM_MANAGER().createProgram(
+			"SphericalTriangle",
+			{ IO::FilePath( "contour_buildup/spherical_triangle_patch.vert" ),
+			  IO::FilePath( "contour_buildup/spherical_triangle_patch.geom" ),
+			  IO::FilePath( "contour_buildup/spherical_triangle_patch.frag" ) } );
 	}
 
 	void SphericalTriangle::_init() {}

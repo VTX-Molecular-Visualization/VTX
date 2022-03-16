@@ -7,8 +7,10 @@ namespace VTX::View::D3
 {
 	Renderer::GL::Program * const Sphere::_createProgram()
 	{
-		return VTX_PROGRAM_MANAGER().createProgram(
-			"Sphere", { IO::FilePath( "sphere.vert" ), IO::FilePath( "sphere.geom" ), IO::FilePath( "sphere.frag" ) } );
+		return VTX_PROGRAM_MANAGER().createProgram( "Sphere",
+													{ IO::FilePath( "sphere/sphere.vert" ),
+													  IO::FilePath( "sphere/sphere.geom" ),
+													  IO::FilePath( "sphere/sphere.frag" ) } );
 	}
 
 	void Sphere::_init() {}

@@ -1,56 +1,49 @@
 #version 450
 
-struct SphericalTrianglePatch
-{
-	vec4 probePosition; // + Probe radius
-	vec4 v1;			// + probeHash
-	vec4 v2;			// + probeIntersectionNb
-	vec4 v3;			// + padding
-};
-
-layout (std140, binding = 0) readonly buffer SphericalTrianglePatches
+layout (std140, binding = 0) readonly buffer ProbesData
 { 
-	uint spTriangleNb;
-	SphericalTrianglePatch spTriangles[];
+	vec4 probesData[];
 };
 
-layout(std140, binding = 1) buffer IntersectionBuffer {
-	vec4 neighborsBuffer[];
+layout(std140) uniform SphericalTrianglePatchSettings
+{
+	mat4 uMVMatrix;
+	mat4 uProjMatrix;
+	uint uProbeNb;
+	uint uMaxProbeNeighborNb;
 };
-
-uniform mat4 uMVMatrix;
-uniform mat4 uProjMatrix;
-uniform uint uMaxProbeNeighborNb;
 
 out VERT_OUT 
 {
 	flat vec3  impU;
 	flat vec3  impV;
 	flat float dotViewSpherePos;
+	flat vec3  wsProbePos;
 	flat vec4  probePos;
-	flat int   probeHash;
+	flat int   probeId;
 	flat float probeIntersectionNumber;
 	flat vec3  vert1;
 	flat vec3  vert2;
 	flat vec3  vert3;
 } outData;
 
-void main() {
-	const SphericalTrianglePatch aSpTrianglePatch = spTriangles[gl_VertexID];
-	const vec4 aProbePos = aSpTrianglePatch.probePosition;
-	const vec4 aVert1 = aSpTrianglePatch.v1;
-	const vec4 aVert2 = aSpTrianglePatch.v2;
-	const vec4 aVert3 = aSpTrianglePatch.v3;
+void main() 
+{
+	outData.probeId		= gl_VertexID;
+	const vec4 probePos = probesData[uProbeNb * 0 + gl_VertexID /* Position */ ];
+	outData.wsProbePos  = probePos.xyz;
+	const vec4 aVert1   = probesData[uProbeNb * 1 + gl_VertexID /* Vec 1    */ ];
+	const vec4 aVert2   = probesData[uProbeNb * 2 + gl_VertexID /* Vec 2    */ ];
+	const vec4 aVert3   = probesData[uProbeNb * 3 + gl_VertexID /* Vec 3    */ ];
 
-    outData.probeIntersectionNumber = aVert2.w;
-    outData.probeHash = int(aVert1.w);
+    outData.probeIntersectionNumber = aVert1.w;
 
-    outData.probePos.xyz = (uMVMatrix * vec4(aProbePos.xyz, 1.)).xyz;
-	outData.probePos.w   = aProbePos.w;
+    outData.probePos.xyz = (uMVMatrix * vec4(outData.wsProbePos.xyz, 1.)).xyz;
+	outData.probePos.w   = probePos.w;
 
-	outData.vert1 = (uMVMatrix * vec4(aVert1.xyz + aProbePos.xyz, 1.)).xyz - outData.probePos.xyz;
-    outData.vert2 = (uMVMatrix * vec4(aVert2.xyz + aProbePos.xyz, 1.)).xyz - outData.probePos.xyz;
-    outData.vert3 = (uMVMatrix * vec4(aVert3.xyz + aProbePos.xyz, 1.)).xyz - outData.probePos.xyz;
+	outData.vert1 = (uMVMatrix * vec4(aVert1.xyz + outData.wsProbePos.xyz, 1.)).xyz - outData.probePos.xyz;
+    outData.vert2 = (uMVMatrix * vec4(aVert2.xyz + outData.wsProbePos.xyz, 1.)).xyz - outData.probePos.xyz;
+    outData.vert3 = (uMVMatrix * vec4(aVert3.xyz + outData.wsProbePos.xyz, 1.)).xyz - outData.probePos.xyz;
 
 	// Compute normalized view vector.
 	outData.dotViewSpherePos  = dot(outData.probePos.xyz, outData.probePos.xyz);
