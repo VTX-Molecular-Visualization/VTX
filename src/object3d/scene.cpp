@@ -75,10 +75,6 @@ namespace VTX::Object3D
 		_aabb.extend( p_molecule->getAABB() );
 		p_molecule->referenceLinkedAABB( &_aabb );
 
-		Model::Box * const box = MVC::MvcManager::get().instantiateModel<Model::Box, Math::AABB>( _aabb );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::BOX_CREATED, box ) );
-		VTXApp::get().getScene().addBox( box );
-
 		if ( p_sendEvent )
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, p_molecule ) );
 

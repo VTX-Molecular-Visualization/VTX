@@ -12,7 +12,7 @@ namespace VTX::Buffer
 		_vao.bindElementBuffer( _ibo );
 
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::AABB_CORNER );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::AABB_CORNER, _vbo, 0, sizeof( Vec3f ) );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::AABB_CORNER, _vbo, sizeof( Vec3f ) );
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::AABB_CORNER, 3, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::AABB_CORNER, ATTRIBUTE_LOCATION::AABB_CORNER );
 	}
