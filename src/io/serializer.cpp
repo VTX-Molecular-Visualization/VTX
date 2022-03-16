@@ -93,6 +93,8 @@ namespace VTX::IO
 				 { "DISPLAY_NAME", p_molecule.getDisplayName() },
 				 { "COLOR", serialize( p_molecule.getColor() ) },
 				 { "CURRENT_FRAME", p_molecule.getFrame() },
+				 { "AUTO_ROTATE_ORIENTATION", serialize( p_molecule.getAutoRotationVector() ) },
+				 { "AUTO_ROTATE_PLAYING_STATE", p_molecule.isAutoRotationPlaying() },
 				 { "TRAJECTORY_FPS", p_molecule.getFPS() },
 				 { "TRAJECTORY_PLAYMODE", magic_enum::enum_name( p_molecule.getPlayMode() ) },
 				 { "TRAJECTORY_ISPLAYING", p_molecule.isPlaying() },
@@ -542,6 +544,18 @@ namespace VTX::IO
 			p_molecule.setColor( color );
 		}
 
+		if ( p_json.contains( "AUTO_ROTATE_ORIENTATION" ) )
+		{
+			Vec3f autoRotationOrientation;
+			deserialize( p_json.at( "AUTO_ROTATE_ORIENTATION" ), autoRotationOrientation );
+			p_molecule.setAutoRotationVector( autoRotationOrientation );
+		}
+
+		if ( p_json.contains( "AUTO_ROTATE_PLAYING_STATE" ) )
+			p_molecule.setAutoRotationPlaying( _get<bool>( p_json, "AUTO_ROTATE_PLAYING_STATE" ) );
+
+		_deserializeMoleculeRepresentations( p_json.at( "REPRESENTATIONS" ), p_version, p_molecule );
+
 		p_molecule.setFrame( _get<uint>( p_json, "CURRENT_FRAME" ) );
 		p_molecule.setFPS( _get<uint>( p_json, "TRAJECTORY_FPS" ) );
 		p_molecule.setPlayMode( _getEnum<Trajectory::PlayMode>( p_json, "TRAJECTORY_PLAYMODE" ) );
@@ -637,10 +651,10 @@ namespace VTX::IO
 			p_representation.setCylinderColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
 				p_json, "CYLINDER_COLOR_BLENDING_MODE", Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
-		if ( p_json.contains( "SS_COLOR_MODE" ) )
+		if ( p_json.contains( "RIBBON_COLOR_MODE" ) )
 		{
 			p_representation.setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-				p_json, "SS_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
+				p_json, "RIBBON_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "RIBBON_COLOR_BLENDING_MODE" ) )
 		{

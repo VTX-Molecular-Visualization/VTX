@@ -70,7 +70,13 @@ namespace VTX::View::UI::Widget
 		// selectionModel.selectViewpoint( *_model );
 	}
 
-	void PathSceneView::_setupUi( const QString & p_name ) { SceneItemWidget::_setupUi( p_name ); }
+	void PathSceneView::_setupUi( const QString & p_name )
+	{
+		SceneItemWidget::_setupUi( p_name );
+
+		for ( const Model::Viewpoint * const viewpoint : _model->getViewpoints() )
+			_addViewpoint( viewpoint );
+	}
 	void PathSceneView::_setupSlots()
 	{
 		SceneItemWidget::_setupSlots();
