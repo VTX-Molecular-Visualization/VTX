@@ -12,7 +12,7 @@ namespace VTX::UI::Widget::Representation::View
 			"sphereRadiusWidget", _radiusLabel, Setting::ATOMS_RADIUS_MIN, Setting::ATOMS_RADIUS_MAX );
 
 		_radiusOffsetLabel = new QLabel( this );
-		_radiusOffsetLabel->setText( "Atom offet" );
+		_radiusOffsetLabel->setText( "Atom offset" );
 		_radiusOffsetWidget = _addFloatFieldSliderWidgetInLayout( "sphereRadiusOffsetWidget",
 																  _radiusOffsetLabel,
 																  Setting::ATOMS_RADIUS_ADD_MIN,
