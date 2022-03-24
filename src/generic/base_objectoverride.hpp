@@ -66,6 +66,8 @@ namespace VTX
 					delete _override;
 			};
 
+			const bool isValid() { return _source != nullptr; }
+
 			const T & getValue() const { return _override != nullptr ? *_override : *_source; }
 			T &		  getValue()
 			{
