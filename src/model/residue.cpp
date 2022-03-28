@@ -168,10 +168,16 @@ namespace VTX
 			const Math::AABB		aabb	  = getAABB();
 			const Math::Transform & transform = getMoleculePtr()->getTransform();
 
-			const Vec4f worldPosition
-				= transform.get() * Vec4f( aabb.centroid().x, aabb.centroid().y, aabb.centroid().z, 1 );
+			Math::AABB		   worldAabb   = Math::AABB();
+			std::vector<Vec3f> aabbSummits = aabb.getSummits();
 
-			return Math::AABB( Vec3f( worldPosition.x, worldPosition.y, worldPosition.z ), aabb.radius() );
+			for ( const Vec3f & summit : aabbSummits )
+			{
+				const Vec4f worldSummit = transform.get() * Vec4f( summit, 1 );
+				worldAabb.extend( worldSummit );
+			}
+
+			return worldAabb;
 		}
 
 		void Residue::_onRepresentationChange()

@@ -32,6 +32,20 @@ namespace VTX
 			inline const Vec3f & getMin() const { return data.minMax.min; }
 			inline const Vec3f & getMax() const { return data.minMax.max; }
 
+			inline std::vector<Vec3f> getSummits() const
+			{
+				return {
+					{ data.minMax.min.x, data.minMax.min.y, data.minMax.min.z },
+					{ data.minMax.min.x, data.minMax.min.y, data.minMax.max.z },
+					{ data.minMax.min.x, data.minMax.max.y, data.minMax.min.z },
+					{ data.minMax.min.x, data.minMax.max.y, data.minMax.max.z },
+					{ data.minMax.max.x, data.minMax.min.y, data.minMax.min.z },
+					{ data.minMax.max.x, data.minMax.min.y, data.minMax.max.z },
+					{ data.minMax.max.x, data.minMax.max.y, data.minMax.min.z },
+					{ data.minMax.max.x, data.minMax.max.y, data.minMax.max.z }
+				};
+			}
+
 			void extend( const Vec3f & p_point );
 			void extend( const AABB & p_aabb );
 			void extend( const Vec3f & p_center, const float p_radius );

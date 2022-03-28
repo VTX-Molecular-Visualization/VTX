@@ -135,11 +135,14 @@ namespace VTX
 			virtual void _computeAABB() const {}
 			virtual void _computeWorldAABB() const
 			{
-				const Vec4f worldAABBPosition
-					= _transform.get() * Vec4f( _aabb.centroid().x, _aabb.centroid().y, _aabb.centroid().z, 1 );
+				std::vector<Vec3f> aabbSummits = getAABB().getSummits();
 
-				_worldAabb = Math::AABB( Vec3f( worldAABBPosition.x, worldAABBPosition.y, worldAABBPosition.z ),
-										 _aabb.radius() );
+				_worldAabb = Math::AABB();
+				for ( const Vec3f & summit : aabbSummits )
+				{
+					const Vec4f worldSummit = _transform.get() * Vec4f( summit, 1 );
+					_worldAabb.extend( worldSummit );
+				}
 			};
 			virtual void _instantiate3DViews() = 0;
 			inline void	 _addRenderable( Generic::BaseRenderable * const p_renderable )
