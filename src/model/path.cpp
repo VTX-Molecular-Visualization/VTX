@@ -66,7 +66,7 @@ namespace VTX
 			}
 			offset--;
 
-			if ( _modeInterpolation == INTERPOLATION_MODE::LINEAR )
+			if ( _modeInterpolation == VTX::Path::INTERPOLATION_MODE::LINEAR )
 			{
 				// Computes value.
 				Viewpoint * const p0	= _viewpoints[ offset - 1 ];
@@ -90,7 +90,7 @@ namespace VTX
 						Util::Math::linearInterpolation( p0->getDistance(), p1->getDistance(), value ) );
 				}
 			}
-			else if ( _modeInterpolation == INTERPOLATION_MODE::CATMULL_ROM )
+			else if ( _modeInterpolation == VTX::Path::INTERPOLATION_MODE::CATMULL_ROM )
 			{
 				Viewpoint * const p0	= _viewpoints[ Util::Math::max<int>( 0, (int)offset - 2 ) ];
 				Viewpoint * const p1	= _viewpoints[ offset - 1 ];
@@ -118,7 +118,7 @@ namespace VTX
 						Util::Math::linearInterpolation( p1->getDistance(), p2->getDistance(), value ) );
 				}
 			}
-			else if ( _modeInterpolation == INTERPOLATION_MODE::CUBIC )
+			else if ( _modeInterpolation == VTX::Path::INTERPOLATION_MODE::CUBIC )
 			{
 				Viewpoint * const p0	= _viewpoints[ Util::Math::max<int>( 0, (int)offset - 2 ) ];
 				Viewpoint * const p1	= _viewpoints[ offset - 1 ];
@@ -158,7 +158,7 @@ namespace VTX
 			}
 
 			// Set same duration for each viewpoint.
-			if ( _modeDuration == DURATION_MODE::PATH )
+			if ( _modeDuration == VTX::Path::DURATION_MODE::PATH )
 			{
 				float duration = 0.f;
 				if ( _viewpoints.size() >= 2 )
@@ -173,7 +173,7 @@ namespace VTX
 				}
 			}
 			// Set the path duration from viewpoint durations.
-			else if ( _modeDuration == DURATION_MODE::VIEWPOINT )
+			else if ( _modeDuration == VTX::Path::DURATION_MODE::VIEWPOINT )
 			{
 				_duration = 0.f;
 				for ( uint i = 1; i < _viewpoints.size(); ++i )
@@ -183,7 +183,7 @@ namespace VTX
 				}
 			}
 			// Set viewport duration from path duration/distance.
-			else if ( _modeDuration == DURATION_MODE::CONSTANT_SPEED )
+			else if ( _modeDuration == VTX::Path::DURATION_MODE::CONSTANT_SPEED )
 			{
 				// Compute total distance.
 				float totalDistance = 0.f;

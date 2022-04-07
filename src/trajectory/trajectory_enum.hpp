@@ -1,6 +1,8 @@
 #ifndef __VTX_TRAJECTORY_ENUM__
 #define __VTX_TRAJECTORY_ENUM__
 
+#include <string>
+
 namespace VTX::Trajectory
 {
 	enum class PlayMode
