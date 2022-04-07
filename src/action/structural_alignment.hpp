@@ -34,7 +34,7 @@ namespace VTX::Action::StructuralAlignment
 				rmsd += Util::Math::distance( frame1[ i ], frame2[ i ] ) / minAtomLength;
 			}
 
-			rmsd = std::sqrtf( rmsd );
+			rmsd = sqrtf( rmsd );
 
 			VTX_INFO( "RMSD : " + std::to_string( rmsd ));
 		}

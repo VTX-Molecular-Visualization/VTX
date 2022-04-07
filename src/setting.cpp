@@ -8,6 +8,7 @@
 #include "io/writer/serialized_object.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "renderer/base_renderer.hpp"
+#include "path/path_enum.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_enum.hpp"
 #include "trajectory/trajectory_enum.hpp"
@@ -140,6 +141,10 @@ namespace VTX
 
 	// Molecule
 	const float Setting::COPIED_MOLECULE_OFFSET = 5.0f;
+
+	//Path
+	const Path::DURATION_MODE Setting::DEFAULT_PATH_DURATION_MODE = VTX::Path::DURATION_MODE::CONSTANT_SPEED;
+	const Path::INTERPOLATION_MODE Setting::DEFAULT_PATH_INTERPOLATION_MODE = Path::INTERPOLATION_MODE::CATMULL_ROM;
 
 	// Trajectory
 	const int				   Setting::MIN_TRAJECTORY_SPEED		 = 1;

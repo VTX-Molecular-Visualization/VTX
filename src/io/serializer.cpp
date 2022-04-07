@@ -568,10 +568,10 @@ namespace VTX::IO
 		p_path.setName( _get<std::string>( p_json, "NAME" ) );
 
 		p_path.setDurationMode(
-			_getEnum<Model::Path::DURATION_MODE>( p_json, "MODE_DURATION", Model::Path::DURATION_MODE_DEFAULT ) );
+			_getEnum<VTX::Path::DURATION_MODE>( p_json, "MODE_DURATION", Setting::DEFAULT_PATH_DURATION_MODE ) );
 
-		p_path.setInterpolationMode( _getEnum<Model::Path::INTERPOLATION_MODE>(
-			p_json, "MODE_DURATION", Model::Path::INTERPOLATION_MODE_DEFAULT ) );
+		p_path.setInterpolationMode( _getEnum<VTX::Path::INTERPOLATION_MODE>(
+			p_json, "MODE_DURATION", Setting::DEFAULT_PATH_INTERPOLATION_MODE ) );
 
 		p_path.setDuration( _get<float>( p_json, "DURATION", Setting::PATH_DURATION_DEFAULT ) );
 		p_path.setIsLooping( _get<bool>( p_json, "IS_LOOPING" ) );
