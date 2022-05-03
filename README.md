@@ -16,8 +16,24 @@
 
 #### Linux
 
-- Install openssl and xinerama packages
+Requirements :
+
+* Ubuntu 20.04
+
+* GLIBC 2.29
+
+* GLIBCXX 3.4.28
+
+Needed packages :
+
+build-essential libgl1-mesa-dev libopengl0 libfreetype6-dev libfontconfig1-dev libxkbcommon-dev libxkbcommon-x11-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-render-util0-dev libxcb-shape0-dev libxcb-randr0-dev libdbus-1-3 libsm-dev libpcre2-dev libjpeg-dev libtiff-dev
+
+Step by step :
+
+- Install all the needed packages
+
 - Download [last release](https://gitlab.com/VTX_mol/VTX/-/releases)
+
 - Run bin/VTX
 
 ### Run in command line
