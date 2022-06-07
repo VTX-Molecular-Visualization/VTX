@@ -62,8 +62,8 @@ namespace VTX::IO::Writer
 
 	void ChemfilesWriter::_writeTrajectory( chemfiles::Trajectory & p_trajectory, const Model::Molecule & p_molecule )
 	{
-		_vecNewAtomIndexes.resize( p_molecule.getAtomCount() );
-		_vecNewResidueIndexes.resize( p_molecule.getResidueCount() );
+		_vecNewAtomIndexes.resize( p_molecule.getAtomCount(), UINT_MAX );
+		_vecNewResidueIndexes.resize( p_molecule.getResidueCount(), UINT_MAX );
 
 		for ( uint i = 0; i < p_molecule.getFrameCount(); i++ )
 		{
@@ -145,9 +145,13 @@ namespace VTX::IO::Writer
 				if ( bnd == nullptr )
 					continue;
 
-				frame.add_bond( _vecNewAtomIndexes[ bnd->getIndexFirstAtom() ],
-								_vecNewAtomIndexes[ bnd->getIndexSecondAtom() ],
-								chemfiles::Bond::BondOrder( int( bnd->getOrder() ) ) );
+				const uint firstAtomIndex  = _vecNewAtomIndexes[ bnd->getIndexFirstAtom() ];
+				const uint secondAtomIndex = _vecNewAtomIndexes[ bnd->getIndexSecondAtom() ];
+
+				if ( firstAtomIndex == UINT_MAX || secondAtomIndex == UINT_MAX )
+					continue;
+
+				frame.add_bond( firstAtomIndex, secondAtomIndex, chemfiles::Bond::BondOrder( int( bnd->getOrder() ) ) );
 			}
 			p_trajectory.write( frame );
 		}

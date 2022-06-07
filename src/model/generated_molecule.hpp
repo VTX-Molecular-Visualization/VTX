@@ -17,7 +17,8 @@ namespace VTX::Model
 		{
 		  public:
 			BondExtractData( Model::Bond * const p_bond, const uint p_previousBondIndex ) :
-				_bond( p_bond ), _previousBondIndex( p_previousBondIndex ) {};
+				_bond( p_bond ), _previousBondIndex( p_previousBondIndex ), _sourceMolecule( p_bond->getMoleculePtr() ),
+				_sourceFirstIndex( p_bond->getIndexFirstAtom() ), _sourceSecondIndex( p_bond->getIndexSecondAtom() ) {};
 
 			Model::Bond * const getBond() const { return _bond; };
 			const uint			getPreviousBondIndex() const { return _previousBondIndex; };
@@ -36,11 +37,20 @@ namespace VTX::Model
 			uint getSecondIndex() const { return _newSecondIndex; };
 			bool isFirstIndexLinked() const { return _firstIndexLinked; };
 			bool isSecondIndexLinked() const { return _secondIndexLinked; };
+
+			uint getSourceFirstIndex() const { return _sourceFirstIndex; };
+			uint getSourceSecondIndex() const { return _sourceSecondIndex; };
+
 			bool hasToBeExtracted() const { return _firstIndexLinked && _secondIndexLinked; };
+			Model::Molecule * const getSourceMolecule() const { return _sourceMolecule; };
 
 		  private:
-			Model::Bond * _bond;
+			Model::Molecule * _sourceMolecule = nullptr;
+			Model::Bond *	  _bond			  = nullptr;
 			uint		  _previousBondIndex;
+			uint			  _sourceFirstIndex	 = -1;
+			uint			  _sourceSecondIndex = -1;
+
 			uint		  _newFirstIndex	 = 0;
 			uint		  _newSecondIndex	 = 0;
 			bool		  _firstIndexLinked	 = false;

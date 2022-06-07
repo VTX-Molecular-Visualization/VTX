@@ -394,6 +394,36 @@ namespace VTX::Model
 	{
 		for ( const ExternalBondExtractData & bondData : _pendingExternalBonds )
 		{
+			// Remove external bond of other residue
+			const uint sourceFirstAtomIndex	 = bondData.getSourceFirstIndex();
+			const uint sourceSecondAtomIndex = bondData.getSourceSecondIndex();
+
+			const Model::Atom * const sourceFirstAtom  = bondData.getSourceMolecule()->getAtom( sourceFirstAtomIndex );
+			const Model::Atom * const sourceSecondAtom = bondData.getSourceMolecule()->getAtom( sourceSecondAtomIndex );
+
+			if ( sourceFirstAtom != nullptr )
+			{
+				const uint previousIndex
+					= sourceFirstAtom->getResiduePtr()->findBondIndex( sourceFirstAtomIndex, sourceSecondAtomIndex );
+
+				if ( previousIndex != UINT_MAX )
+				{
+					bondData.getSourceMolecule()->removeBond( previousIndex, true, false );
+				}
+			}
+
+			if ( sourceSecondAtom != nullptr )
+			{
+				const uint previousIndex
+					= sourceSecondAtom->getResiduePtr()->findBondIndex( sourceFirstAtomIndex, sourceSecondAtomIndex );
+
+				if ( previousIndex != UINT_MAX )
+				{
+					bondData.getSourceMolecule()->removeBond( previousIndex, true, false );
+				}
+			}
+
+			// Remove uncomplete residue in extracted residue
 			removeBond( bondData.getIndexInExtractedResidue(), true, false );
 		}
 
@@ -718,10 +748,69 @@ namespace VTX::Model
 			if ( getBond( i ) == nullptr )
 				continue;
 
+			const uint			fromBondIndex = bondOffset + i;
+			Model::Bond * const fromBond	  = p_fromMolecule.getBonds()[ bondOffset + i ];
+
+			const bool bondFirstAtomInAtomRange = p_startIndex <= fromBond->getIndexFirstAtom()
+												  && fromBond->getIndexFirstAtom() <= ( p_startIndex + p_count );
+
+			const bool bondSecondAtomInAtomRange = p_startIndex <= fromBond->getIndexSecondAtom()
+												   && fromBond->getIndexSecondAtom() <= ( p_startIndex + p_count );
+
+			if ( !bondFirstAtomInAtomRange || !bondSecondAtomInAtomRange )
+			{
+				std::vector<ExternalBondExtractData>::iterator itExternalBond = _findInPendingExternalBond( *fromBond );
+
+				if ( itExternalBond == _pendingExternalBonds.end() )
+				{
+					ExternalBondExtractData externalBondsData = ExternalBondExtractData( fromBond, i + bondOffset );
+
+					if ( bondFirstAtomInAtomRange )
+					{
+						const uint newIndexFirstAtom = getBond( i )->getIndexFirstAtom() - atomOffset;
+						externalBondsData.setFirstIndex( newIndexFirstAtom );
+					}
+					else if ( !bondSecondAtomInAtomRange )
+					{
+						const uint newIndexSecondAtom = getBond( i )->getIndexSecondAtom() - atomOffset;
+						externalBondsData.setSecondIndex( newIndexSecondAtom );
+					}
+
+					externalBondsData.setIndexInExtractedResidue( i );
+					_pendingExternalBonds.emplace_back( externalBondsData );
+				}
+				else
+				{
+					ExternalBondExtractData & pendingExternalBondData = *itExternalBond;
+
+					if ( bondFirstAtomInAtomRange )
+					{
+						const uint newIndexFirstAtom = getBond( i )->getIndexFirstAtom() - atomOffset;
+						pendingExternalBondData.setFirstIndex( newIndexFirstAtom );
+					}
+					else if ( bondSecondAtomInAtomRange )
+					{
+						const uint newIndexSecondAtom = getBond( i )->getIndexSecondAtom() - atomOffset;
+						pendingExternalBondData.setSecondIndex( newIndexSecondAtom );
+					}
+
+					_applyExternalBond( pendingExternalBondData );
+					_pendingExternalBonds.erase( itExternalBond );
+
+					// Add second bond of external bonds
+					getBond( i )->setIndexFirstAtom( pendingExternalBondData.getFirstIndex() );
+					getBond( i )->setIndexSecondAtom( pendingExternalBondData.getSecondIndex() );
+					getBufferBonds()[ i * 2u ]		= pendingExternalBondData.getFirstIndex();
+					getBufferBonds()[ i * 2u + 1u ] = pendingExternalBondData.getSecondIndex();
+				}
+			}
+			else
+			{
 			getBond( i )->setIndexFirstAtom( getBond( i )->getIndexFirstAtom() - atomOffset );
 			getBond( i )->setIndexSecondAtom( getBond( i )->getIndexSecondAtom() - atomOffset );
 			getBufferBonds()[ i * 2u ] -= atomOffset;
 			getBufferBonds()[ i * 2u + 1u ] -= atomOffset;
+			}
 
 			p_fromMolecule.getBonds()[ bondOffset + i ] = nullptr;
 		}

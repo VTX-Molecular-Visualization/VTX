@@ -107,10 +107,16 @@ namespace VTX::UI::Widget::Sequence::Dataset
 	{
 		const uint		  lastResidueIndex = getLastResidue()->getIndexInOriginalChain();
 		const std::string lastIndexStr	   = std::to_string( lastResidueIndex );
-		const uint lastIndexOffset = _charCount < Style::SEQUENCE_CHAIN_SCALE_STEP ? uint( lastIndexStr.length() )
-																				   : uint( lastIndexStr.length() / 2 );
 
+		if ( _charCount < Style::SEQUENCE_CHAIN_SCALE_STEP )
+		{
+			return uint( lastIndexStr.length() );
+		}
+		else
+		{
+			const uint lastIndexOffset = uint( lastIndexStr.length() / 2 );
 		return _charCount - ( lastResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) + lastIndexOffset;
+		}
 	}
 
 } // namespace VTX::UI::Widget::Sequence::Dataset
