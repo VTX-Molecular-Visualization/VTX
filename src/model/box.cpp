@@ -4,7 +4,7 @@
 
 namespace VTX::Model
 {
-	Box::Box( Math::AABB & p_aabb ) : BaseModel3D( VTX::ID::Model::MODEL_BOX ) { _aabb = p_aabb; }
+	Box::Box( const Math::AABB & p_aabb ) : BaseModel3D( VTX::ID::Model::MODEL_BOX ) { _aabb = p_aabb; }
 
 	void Box::_fillBuffer()
 	{

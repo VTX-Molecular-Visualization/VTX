@@ -6,85 +6,83 @@
 #include "generic/base_auto_delete.hpp"
 #include "id.hpp"
 #include "model/label.hpp"
-#include "model/molecule.hpp"
 #include "view/callback_view.hpp"
 #include <string>
 #include <utility>
 
-
 namespace VTX::Model
 {
 	class Atom;
-	//class Molecule;
-	
-	namespace Measurement
+	class Molecule;
+} // namespace VTX::Model
+
+namespace VTX::Model::Measurement
+{
+	class DihedralAngle : public Model::Label, Event::BaseEventReceiverVTX, Generic::BaseAutoDelete
 	{
-		class DihedralAngle : public Model::Label, Event::BaseEventReceiverVTX, Generic::BaseAutoDelete
-		{
-			VTX_MODEL
+		VTX_MODEL
 
-		private:
-			using MoleculeView = View::CallbackView<Model::Molecule, Model::Measurement::DihedralAngle>;
+	  private:
+		using MoleculeView = View::CallbackView<Model::Molecule, Model::Measurement::DihedralAngle>;
 
-		public:
-			using AtomQuadruplet
-				= std::tuple<const Model::Atom &, const Model::Atom &, const Model::Atom &, const Model::Atom &>;
+	  public:
+		using AtomQuadruplet
+			= std::tuple<const Model::Atom &, const Model::Atom &, const Model::Atom &, const Model::Atom &>;
 
-		public:
-			void setAtoms( const Model::Atom & p_firstAtom,
-						const Model::Atom & p_secondAtom,
-						const Model::Atom & p_thirdAtom,
-						const Model::Atom & p_fourthAtom );
+	  public:
+		void setAtoms( const Model::Atom & p_firstAtom,
+					   const Model::Atom & p_secondAtom,
+					   const Model::Atom & p_thirdAtom,
+					   const Model::Atom & p_fourthAtom );
 
-			void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-			void _recomputeAABB( Math::AABB & p_aabb ) override;
+		void _recomputeAABB( Math::AABB & p_aabb ) override;
 
-			const std::vector<const Model::Atom *> getAtoms() const { return _atoms; };
-			const Model::Atom &					   getFirstAtom() const { return *_atoms[ 0 ]; }
-			const Model::Atom &					   getSecondAtom() const { return *_atoms[ 1 ]; }
-			const Model::Atom &					   getThirdAtom() const { return *_atoms[ 2 ]; }
-			const Model::Atom &					   getFourthAtom() const { return *_atoms[ 3 ]; }
+		const std::vector<const Model::Atom *> getAtoms() const { return _atoms; };
+		const Model::Atom &					   getFirstAtom() const { return *_atoms[ 0 ]; }
+		const Model::Atom &					   getSecondAtom() const { return *_atoms[ 1 ]; }
+		const Model::Atom &					   getThirdAtom() const { return *_atoms[ 2 ]; }
+		const Model::Atom &					   getFourthAtom() const { return *_atoms[ 3 ]; }
 
-			float getAngle() const { return _dihedralAngle; }
-			bool  isValid() const;
+		float getAngle() const { return _dihedralAngle; }
+		bool  isValid() const;
 
-			void autoDelete() const override;
+		void autoDelete() const override;
 
-		protected:
-			DihedralAngle();
-			DihedralAngle( const AtomQuadruplet & p_pair );
+	  protected:
+		DihedralAngle();
+		DihedralAngle( const AtomQuadruplet & p_pair );
 
-			~DihedralAngle();
+		~DihedralAngle();
 
-			void _setAtomsInternal( const Model::Atom & p_firstAtom,
-									const Model::Atom & p_secondAtom,
-									const Model::Atom & p_thirAtom,
-									const Model::Atom & p_fourthAtom,
-									const bool			p_notify = true );
+		void _setAtomsInternal( const Model::Atom & p_firstAtom,
+								const Model::Atom & p_secondAtom,
+								const Model::Atom & p_thirAtom,
+								const Model::Atom & p_fourthAtom,
+								const bool			p_notify = true );
 
-			void _performAutoName( const bool p_notify = true ) override;
+		void _performAutoName( const bool p_notify = true ) override;
 
-			bool _isLinkedToAtom( const Model::Atom * const p_atom ) const;
-			bool _isLinkedToMolecule( const Model::Molecule * const p_atom ) const;
+		bool _isLinkedToAtom( const Model::Atom * const p_atom ) const;
+		bool _isLinkedToMolecule( const Model::Molecule * const p_atom ) const;
 
-			void _invalidate();
+		void _invalidate();
 
-		private:
-			std::vector<const Model::Atom *> _atoms			= std::vector<const Model::Atom *>();
-			std::vector<MoleculeView *>		 _moleculeViews = std::vector<MoleculeView *>();
+	  private:
+		std::vector<const Model::Atom *> _atoms			= std::vector<const Model::Atom *>();
+		std::vector<MoleculeView *>		 _moleculeViews = std::vector<MoleculeView *>();
 
-			bool  _isAllAtomsOnSameMolecule = false;
-			float _dihedralAngle			= 0.f;
+		bool  _isAllAtomsOnSameMolecule = false;
+		float _dihedralAngle			= 0.f;
 
-			void _computeDihedralAngle( const bool p_notify = true );
-			void _instantiateViewsOnMolecules();
-			void _cleanViews();
+		void _computeDihedralAngle( const bool p_notify = true );
+		void _instantiateViewsOnMolecules();
+		void _cleanViews();
 
-			VTX::ID::VTX_ID getViewID( const int p_atomPos ) const;
+		VTX::ID::VTX_ID getViewID( const int p_atomPos ) const;
 
-			void _onMoleculeChange( const Model::Molecule * const p_molecule, const Event::VTXEvent * const p_event );
-		};
-	}
+		void _onMoleculeChange( const Model::Molecule * const p_molecule, const Event::VTXEvent * const p_event );
+	};
 } // namespace VTX::Model::Measurement
 #endif

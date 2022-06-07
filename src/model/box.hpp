@@ -33,7 +33,7 @@ namespace VTX::Model
 		std::vector<Vec3f> _corners;
 		std::vector<uint>  _indices;
 
-		Box( Math::AABB & p_aabb );
+		Box( const Math::AABB & p_aabb );
 		~Box() = default;
 	};
 } // namespace VTX::Model
