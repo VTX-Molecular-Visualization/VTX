@@ -3,6 +3,7 @@
 
 #include "base_action.hpp"
 #include "model/path.hpp"
+#include "path/path_enum.hpp"
 #include "model/selection.hpp"
 #include "model/viewpoint.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -40,7 +41,7 @@ namespace VTX
 			class ChangeDurationMode : public BaseAction
 			{
 			  public:
-				explicit ChangeDurationMode( Model::Path & p_path, const Model::Path::DURATION_MODE p_mode ) :
+				explicit ChangeDurationMode( Model::Path & p_path, const VTX::Path::DURATION_MODE p_mode ) :
 					_path( p_path ), _mode( p_mode )
 				{
 					_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
@@ -54,13 +55,13 @@ namespace VTX
 
 			  private:
 				Model::Path &					 _path;
-				const Model::Path::DURATION_MODE _mode;
+				const VTX::Path::DURATION_MODE _mode;
 			};
 
 			class ChangeInterpolationMode : public BaseAction
 			{
 			  public:
-				explicit ChangeInterpolationMode( Model::Path & p_path, const Model::Path::INTERPOLATION_MODE p_mode ) :
+				explicit ChangeInterpolationMode( Model::Path & p_path, const VTX::Path::INTERPOLATION_MODE p_mode ) :
 					_path( p_path ), _mode( p_mode )
 				{
 					_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
@@ -74,7 +75,7 @@ namespace VTX
 
 			  private:
 				Model::Path &						  _path;
-				const Model::Path::INTERPOLATION_MODE _mode;
+				const VTX::Path::INTERPOLATION_MODE _mode;
 			};
 
 			class Play : public BaseAction

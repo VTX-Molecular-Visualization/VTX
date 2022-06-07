@@ -29,6 +29,12 @@ namespace VTX
 		enum class PlayMode;
 	}
 
+	namespace Path
+	{
+		enum class DURATION_MODE;
+		enum class INTERPOLATION_MODE;
+	}
+
 	namespace Selection
 	{
 		enum class Granularity;
@@ -187,6 +193,10 @@ namespace VTX
 
 		// Molecules
 		static const float COPIED_MOLECULE_OFFSET;
+
+		// Path
+		static const Path::DURATION_MODE DEFAULT_PATH_DURATION_MODE;
+		static const Path::INTERPOLATION_MODE DEFAULT_PATH_INTERPOLATION_MODE;
 
 		// Trajectory
 		static const int				  MIN_TRAJECTORY_SPEED;

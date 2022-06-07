@@ -2,6 +2,7 @@
 #define __VTX_MODEL_PATH__
 
 #include "base_model.hpp"
+#include "path/path_enum.hpp"
 #include "define.hpp"
 #include "generic/base_scene_item.hpp"
 #include "setting.hpp"
@@ -20,22 +21,7 @@ namespace VTX
 			using ViewpointPtr		 = Viewpoint *;
 			using VectorViewpointPtr = std::vector<ViewpointPtr>;
 
-			enum class DURATION_MODE : int
-			{
-				CONSTANT_SPEED,
-				PATH,
-				VIEWPOINT
-			};
-			static const DURATION_MODE DURATION_MODE_DEFAULT = DURATION_MODE::CONSTANT_SPEED;
-
-			enum class INTERPOLATION_MODE : int
-			{
-				LINEAR,
-				CATMULL_ROM,
-				CUBIC
-			};
-			static const INTERPOLATION_MODE INTERPOLATION_MODE_DEFAULT = INTERPOLATION_MODE::CATMULL_ROM;
-
+			
 			// BaseSceneItem
 			const Model::ID & getModelID() const override { return getId(); }
 
@@ -49,10 +35,10 @@ namespace VTX
 
 			inline float			  getDuration() const { return _duration; }
 			inline void				  setDuration( const float p_duration ) { _duration = p_duration; }
-			inline DURATION_MODE	  getDurationMode() const { return _modeDuration; }
-			inline void				  setDurationMode( const DURATION_MODE p_mode ) { _modeDuration = p_mode; }
-			inline INTERPOLATION_MODE getInterpolationMode() const { return _modeInterpolation; }
-			inline void setInterpolationMode( const INTERPOLATION_MODE p_mode ) { _modeInterpolation = p_mode; }
+			inline VTX::Path::DURATION_MODE	  getDurationMode() const { return _modeDuration; }
+			inline void				  setDurationMode( const VTX::Path::DURATION_MODE p_mode ) { _modeDuration = p_mode; }
+			inline VTX::Path::INTERPOLATION_MODE getInterpolationMode() const { return _modeInterpolation; }
+			inline void setInterpolationMode( const VTX::Path::INTERPOLATION_MODE p_mode ) { _modeInterpolation = p_mode; }
 			inline bool isLooping() const { return _isLooping; }
 			inline void setIsLooping( const bool p_isLooping ) { _isLooping = p_isLooping; }
 			void		refreshAllDurations();
@@ -63,8 +49,8 @@ namespace VTX
 		  private:
 			std::string		   _name			  = "";
 			VectorViewpointPtr _viewpoints		  = VectorViewpointPtr();
-			DURATION_MODE	   _modeDuration	  = DURATION_MODE_DEFAULT;
-			INTERPOLATION_MODE _modeInterpolation = INTERPOLATION_MODE_DEFAULT;
+			VTX::Path::DURATION_MODE	   _modeDuration	  = Setting::DEFAULT_PATH_DURATION_MODE;
+			VTX::Path::INTERPOLATION_MODE _modeInterpolation = Setting::DEFAULT_PATH_INTERPOLATION_MODE;
 			float			   _duration		  = Setting::PATH_DURATION_DEFAULT;
 			bool			   _isLooping		  = false;
 
