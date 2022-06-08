@@ -8,23 +8,14 @@
 #include "spec.hpp"
 #include "ui/dialog.hpp"
 #include "util/opengl.hpp"
-#include <QScreen>
 #include "vtx_app.hpp"
 #include <QMainWindow>
 #include <QOpenGLVersionFunctionsFactory>
+#include <QScreen>
 
 namespace VTX::UI::Widget::Render
 {
-	OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : BaseManualWidget<QOpenGLWidget>( p_parent )
-	{
-		QSurfaceFormat format;
-		format.setVersion( OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION );
-		format.setProfile( QSurfaceFormat::CoreProfile );
-		format.setRenderableType( QSurfaceFormat::OpenGL );
-		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
-		format.setSwapInterval( int( VTX_SETTING().getVSync() ) );
-		QSurfaceFormat::setDefaultFormat( format );
-	}
+	OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : BaseManualWidget<QOpenGLWidget>( p_parent ) {}
 
 	OpenGLWidget::~OpenGLWidget()
 	{
@@ -132,28 +123,50 @@ namespace VTX::UI::Widget::Render
 	void OpenGLWidget::activeVSync( const bool p_active )
 	{
 		makeCurrent();
-		/*
-		QFunctionPointer func = context()->getProcAddress( "GLX_EXT_swap_control" );
-		if ( func == nullptr )
+
+		format().setSwapInterval( uint( p_active ) );
+
+#ifdef _WIN32
+		QFunctionPointer func = context()->getProcAddress( "wglSwapIntervalEXT" );
+#else
+		QFunctionPointer func = context()->getProcAddress( "glXSwapIntervalEXT" );
+#endif
+		if ( func != nullptr )
 		{
-			VTX_DEBUG( "NULL" );
+			( (bool ( * )( int ))func )( uint( p_active ) );
 		}
-		*/
+		else
+		{
+			VTX_ERROR( "SwapIntervalEXT not supported" );
+		}
+
+#ifdef _WIN32
+		func = context()->getProcAddress( "wglGetSwapIntervalEXT" );
+#else
+		func				  = context()->getProcAddress( "glXGetSwapIntervalEXT" );
+#endif
+		if ( func != nullptr )
+		{
+			VTX_DEBUG( std::to_string( ( (uint( * )())func )() ) );
+		}
+		else
+		{
+			VTX_ERROR( "GetSwapIntervalEXT not supported" );
+		}
+
 		doneCurrent();
 	}
 
-	const float OpenGLWidget::getScreenPixelRatio() const 
-	{ 
-		return screen()->devicePixelRatio();
-	}
-
+	const float OpenGLWidget::getScreenPixelRatio() const { return screen()->devicePixelRatio(); }
 
 	const Vec2i OpenGLWidget::getPickedIds( const uint p_x, const uint p_y )
 	{
 		const float pixelRatio = getScreenPixelRatio();
 		makeCurrent();
-		return _renderer->getPickedIds( p_x * pixelRatio, ( height() - p_y ) * pixelRatio );
+		Vec2i pickedIds = _renderer->getPickedIds( p_x * pixelRatio, ( height() - p_y ) * pixelRatio );
 		doneCurrent();
+
+		return pickedIds;
 	}
 
 	void OpenGLWidget::_switchRenderer( const Renderer::MODE p_mode )
