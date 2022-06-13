@@ -26,35 +26,37 @@
 
 layout (local_size_x = LOCAL_SIZE_X ) in; // Note hardware limit mentioned above!
 
-struct AtomInformation
+layout(std140, binding = 0) restrict readonly buffer Uniforms
 {
-	vec3  position;
-	float radius;
-	uint  startCircleIdx;
-	uint  neighborNumber;
-	uint  gridHash;
+	uint n;
+	uint h;
+	uint algorithm;
 };
 
-layout (std140, binding = 0) buffer AtomPositions
+layout (std430, binding = 1) buffer Keys
 { 
-	uint atomNumber;
-	AtomInformation atomsInformation[];
+	uint keys[];
 };
 
-// Note: These parameters are currently unused.
-layout(location = 0) uniform uint n;
-layout(location = 1) uniform uint h;
-layout(location = 2) uniform uint algorithm;
+layout (std430, binding = 2) buffer Indices
+{ 
+	uint indices[];
+};
 
 // Workgroup local memory. We use this to minimise round-trips to global memory.
 // It allows us to evaluate a sorting network of up to 1024 with one shader invocation.
-shared AtomInformation local_value[LOCAL_SIZE_X * 2];
+shared uint local_indices[LOCAL_SIZE_X * 2];
+shared uint local_keys[LOCAL_SIZE_X * 2];
 
 void global_compare_and_swap(ivec2 idx){
-	if (atomsInformation[idx.x].gridHash > atomsInformation[idx.y].gridHash) {
-		AtomInformation tmp = atomsInformation[idx.x];
-		atomsInformation[idx.x] = atomsInformation[idx.y];
-		atomsInformation[idx.y] = tmp;
+	if ( keys[idx.x] > keys[idx.y] ) {
+		const uint tmpKey = keys[idx.x];
+		keys[idx.x] = keys[idx.y];
+		keys[idx.y] = tmpKey;
+
+		const uint tmpIdx = indices[idx.x];
+		indices[idx.x] = indices[idx.y];
+		indices[idx.y] = tmpIdx;
 	}
 }
 
@@ -108,10 +110,14 @@ void big_disperse( in uint n, in uint h ) {
 // Performs compare-and-swap over elements held in shared,
 // workgroup-local memory
 void local_compare_and_swap(ivec2 idx){
-	if (local_value[idx.x].gridHash > local_value[idx.y].gridHash) {
-		AtomInformation tmp = local_value[idx.x];
-		local_value[idx.x] = local_value[idx.y];
-		local_value[idx.y] = tmp;
+	if ( local_keys[idx.x] > local_keys[idx.y] ) {
+		const uint tmpKey = local_keys[idx.x];
+		local_keys[idx.x] = local_keys[idx.y];
+		local_keys[idx.y] = tmpKey;
+
+		const uint tmpIdx = local_indices[idx.x];
+		local_indices[idx.x] = local_indices[idx.y];
+		local_indices[idx.y] = tmpIdx;
 	}
 }
 
@@ -175,8 +181,11 @@ void main(){
 		// pull to local memory
 	    // Each local worker must save two elements to local memory, as there
 	    // are twice as many elments as workers.
-		local_value[t*2]   = atomsInformation[offset+t*2];
-		local_value[t*2+1] = atomsInformation[offset+t*2+1];
+		local_keys[t*2]	  = keys[offset+t*2];
+		local_keys[t*2+1] = keys[offset+t*2+1];
+
+		local_indices[t*2]   = indices[offset+t*2];
+		local_indices[t*2+1] = indices[offset+t*2+1];
 	}
 
 	// check which one of these does not work properly...
@@ -202,8 +211,10 @@ void main(){
 	if (algorithm <= eLocalDisperse){
 		barrier();
 		// push to global memory
-		atomsInformation[offset+t*2]   = local_value[t*2];
-		atomsInformation[offset+t*2+1] = local_value[t*2+1];
-	}
+		keys[offset+t*2]   = local_keys[t*2];
+		keys[offset+t*2+1] = local_keys[t*2+1];
 
+		indices[offset+t*2]   = local_indices[t*2];
+		indices[offset+t*2+1] = local_indices[t*2+1];
+	}
 }

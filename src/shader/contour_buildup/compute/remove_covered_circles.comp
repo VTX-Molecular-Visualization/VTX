@@ -1,0 +1,136 @@
+#version 450
+
+#ifndef LOCAL_SIZE_X 
+#define LOCAL_SIZE_X 256
+#endif 
+
+#ifndef LOCAL_SIZE_Y 
+#define LOCAL_SIZE_Y 1
+#endif 
+
+layout (local_size_x = LOCAL_SIZE_X, local_size_y = LOCAL_SIZE_Y) in;
+
+
+layout(std140, binding = 0) restrict readonly buffer Uniforms
+{
+	uint  uAtomNb;
+	uint  uMaxNeighborsNb;
+	float uProbeRadius;
+};
+
+layout (std140, binding = 1) restrict readonly buffer Atoms
+{ 
+	vec4 atoms[];
+};
+
+layout (std430, binding = 2) restrict readonly buffer Neighbors
+{ 
+	uint atomsNeighbors[];
+};
+
+layout (std430, binding = 3) restrict buffer NeighborsCount
+{ 
+	uint neighborsCount[];
+};
+
+layout (std140, binding = 4) restrict buffer Circles
+{ 
+	vec4 circles[];
+};
+
+layout (std430, binding = 5) restrict writeonly buffer CirclesVisibilityStatus
+{
+	uint circlesVisibilityStatus[]; // 0: invisible, 1: visible
+};
+
+
+const float Pif     = 3.14159265358979;
+const float TWO_PIf = 6.28318530717958;
+
+void main() 
+{
+	const uint jId	  = gl_WorkGroupID.x * gl_WorkGroupSize.x + gl_LocalInvocationID.x;
+	const uint atomId = gl_WorkGroupID.y * gl_WorkGroupSize.y + gl_LocalInvocationID.y;
+	
+	if ( atomId >= uAtomNb ) return;
+	if ( jId >= uMaxNeighborsNb ) return;
+
+	circlesVisibilityStatus[atomId * uMaxNeighborsNb + jId] = 0;
+
+	const uint numNeighbors = neighborsCount[atomId];
+	if( jId >= numNeighbors ) return;
+	
+	const vec4 ithAtom = atoms[atomId];
+
+	const uint curentCircleIdx = atomId * uMaxNeighborsNb + jId;
+	const vec4 currentCircle   = circles[curentCircleIdx];
+	const uint j			   = atomsNeighbors[curentCircleIdx];
+	const vec4 jAtom		   = atoms[j];
+
+	bool keepJ = true;
+	for(uint kId = 0; kId < numNeighbors; kId++)
+	{
+		if(jId == kId) continue;
+		
+		const uint k		 = atomsNeighbors[atomId * uMaxNeighborsNb + kId];
+		const vec4 kthCircle = circles[atomId * uMaxNeighborsNb + kId];
+		const vec4 kAtom	 = atoms[k];
+			
+		const vec3 vj = currentCircle.xyz;
+		const vec3 vk = kthCircle.xyz;
+
+		const float vjvk  = dot( vj, vk );
+		const float denom = dot( vj, vj ) * dot( vk, vk ) - vjvk * vjvk;
+
+		const float leftVec  = dot( vj, vj - vk ) * dot( vk, vk );
+		const float rightVec = dot( vk - vj, vk ) * dot( vj, vj );
+
+		const vec3 h =  ( vj * leftVec / denom ) + ( vk * rightVec / denom );
+
+		const vec3 jThNormal = normalize( ithAtom.xyz - jAtom.xyz );
+		const vec3 kThNormal = normalize( ithAtom.xyz - kAtom.xyz );
+
+		const vec3 q = kthCircle.xyz - currentCircle.xyz;
+
+		// If normals are colinear
+		if ( abs( dot( jThNormal, kThNormal ) - 1. ) < 1e-4 )
+		{
+			if ( dot( jThNormal, kThNormal ) > 0. )
+			{
+				if ( dot( jThNormal, q ) > 0. )
+				{
+					// Circle K cuts J, we can remove J
+					keepJ = false;
+				}
+			}
+		}
+		else if ( length( h ) > ithAtom.w + uProbeRadius )
+		{
+			const vec3 mJ = vj - h;
+			const vec3 mK = vk - h;
+			const float mJdotMk = dot( mJ, mK );
+
+			if ( dot( jThNormal, kThNormal ) > 0. )
+			{
+				// Circle K cuts J, we can remove J
+				if ( mJdotMk > 0. && dot( jThNormal, q ) > 0. )
+				{
+					keepJ = false;
+				}
+			}
+			else
+			{
+				// Atom i has no surface
+				if ( mJdotMk > 0. && dot( jThNormal, q ) < 0. )
+				{
+					neighborsCount[atomId] = 0;
+				}
+			}
+		}
+	}
+
+	if(!keepJ) 
+	{
+		circles[atomId * uMaxNeighborsNb + jId].w = -1.;
+	}
+}

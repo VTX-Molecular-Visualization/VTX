@@ -126,23 +126,34 @@ namespace VTX::Renderer::GL
 		template<typename T>
 		inline void set( const std::vector<T> & p_vector, const Flags & p_flags = Flags::NONE ) const
 		{
+			assert( _gl->glIsBuffer( _id ) );
+
 			_gl->glNamedBufferStorage( _id, sizeof( T ) * GLsizei( p_vector.size() ), p_vector.data(), p_flags );
 		}
 
 		template<typename T>
 		inline void set( const uint p_size, const T & p_data, const Flags & p_flags = Flags::NONE ) const
 		{
+			assert( _gl->glIsBuffer( _id ) );
+
 			_gl->glNamedBufferStorage( _id, GLsizei( p_size ), &p_data, p_flags );
 		}
 
 		template<typename T>
 		inline T * const map( const uint p_offset, const uint p_length, const Flags & p_access = Flags::NONE )
 		{
+			assert( _gl->glIsBuffer( _id ) );
+
 			return reinterpret_cast<T *>(
 				_gl->glMapNamedBufferRange( _id, GLintptr( p_offset ), GLsizeiptr( p_length ), p_access ) );
 		}
 
-		inline void unmap() { _gl->glUnmapNamedBuffer( _id ); }
+		inline void unmap()
+		{
+			assert( _gl->glIsBuffer( _id ) );
+
+			_gl->glUnmapNamedBuffer( _id );
+		}
 
 	  private:
 		GLuint _id = GL_INVALID_INDEX;

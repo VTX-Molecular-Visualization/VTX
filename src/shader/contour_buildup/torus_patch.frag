@@ -4,7 +4,12 @@
 
 layout (depth_greater) out float gl_FragDepth;
 
-uniform mat4  uProjMatrix;
+layout(std140) uniform TorusPatchSettings
+{
+	mat4 uMVMatrix;
+	mat4 uProjMatrix;
+	uint uTorusNb;
+};
 
 in GEOM_OUT 
 {

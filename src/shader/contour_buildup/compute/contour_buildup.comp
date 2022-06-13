@@ -1,0 +1,462 @@
+#version 450
+
+#ifndef LOCAL_SIZE_X 
+#define LOCAL_SIZE_X 256
+#endif 
+
+#ifndef LOCAL_SIZE_Y 
+#define LOCAL_SIZE_Y 1
+#endif 
+
+layout (local_size_x = LOCAL_SIZE_X, local_size_y = LOCAL_SIZE_Y) in;
+
+layout(std140, binding = 0) restrict readonly buffer Uniforms
+{
+	uint  uAtomNb;
+	uint  uMaxNeighborsNb;
+	float uProbeRadius;
+};
+
+layout (std140, binding = 1) readonly restrict buffer Atoms
+{ 
+	vec4 atoms[];
+};
+
+layout (std430, binding = 2) restrict readonly buffer Neighbors
+{ 
+	uint atomsNeighbors[];
+};
+
+layout (std430, binding = 3) restrict readonly buffer NeighborsCount
+{ 
+	uint neighborsCount[];
+};
+
+layout (std140, binding = 4) restrict buffer Circles
+{ 
+	vec4 circles[];
+};
+
+layout (std430, binding = 5) writeonly restrict buffer CirclesVisibilityStatus
+{
+	uint circlesVisibilityStatus[]; // 0: invisible, 1: visible
+};
+
+layout (std140, binding = 6) writeonly restrict buffer Arcs
+{
+	vec4 arcs[];
+};
+
+layout (std430, binding = 7) writeonly restrict buffer ArcCount
+{
+	uint arcCounts[];
+};
+
+const float Pif     = 3.14159265358979;
+const float TWO_PIf = 6.28318530717958;
+
+struct Angle {
+	float start;
+	float end;
+};
+
+struct KIndex {
+	uint start;
+	uint end;
+};
+
+// https://www.geeks3d.com/20141201/how-to-rotate-a-vertex-by-a-quaternion-in-glsl/
+vec4 quatFromAxis(float angle, vec3 axis) 
+{
+	const float halfAngle = angle / 2.;
+	return vec4(
+		axis.x * sin(halfAngle),
+		axis.y * sin(halfAngle),
+		axis.z * sin(halfAngle),
+		cos(halfAngle)
+	);
+}
+
+vec4 quat_conj(vec4 q)
+{ 
+  return vec4(-q.x, -q.y, -q.z, q.w); 
+}
+
+vec4 quatMult(vec4 q1, vec4 q2)
+{ 
+  vec4 qr;
+  qr.x = (q1.w * q2.x) + (q1.x * q2.w) + (q1.y * q2.z) - (q1.z * q2.y);
+  qr.y = (q1.w * q2.y) - (q1.x * q2.z) + (q1.y * q2.w) + (q1.z * q2.x);
+  qr.z = (q1.w * q2.z) + (q1.x * q2.y) - (q1.y * q2.x) + (q1.z * q2.w);
+  qr.w = (q1.w * q2.w) - (q1.x * q2.x) - (q1.y * q2.y) - (q1.z * q2.z);
+  return qr;
+}
+
+vec3 quatMult(vec4 q, vec3 v)
+{
+	vec4 qr_conj = quat_conj(q);
+	vec4 q_pos = vec4(v.x, v.y, v.z, 0);
+	
+	vec4 q_tmp = quatMult(q, q_pos);
+	q = quatMult(q_tmp, qr_conj);
+	
+	return vec3(q.x, q.y, q.z);
+}
+
+// https://developer.download.nvidia.com/cg/fmod.html
+float fmod(float a, float b)
+{
+  float c = fract(abs(a/b))*abs(b);
+  return (a < 0.) ? -c : c;   /* if ( a < 0 ) c = 0-c */
+}
+
+void swap(inout vec3 x1, inout vec3 x2) 
+{
+	vec3 temp = x1;
+	x1 = x2;
+	x2 = temp;
+}
+
+void main() 
+{
+	const uint jId	  = gl_WorkGroupID.x * gl_WorkGroupSize.x + gl_LocalInvocationID.x;
+	const uint atomId = gl_WorkGroupID.y * gl_WorkGroupSize.y + gl_LocalInvocationID.y;
+	
+	if ( atomId >= uAtomNb )		return;
+	if ( jId    >= uMaxNeighborsNb) return;
+	
+	const uint neighborCount = neighborsCount[atomId];
+	if( jId >= neighborCount ) return;
+
+	const vec4 ithAtom = atoms[atomId];
+	const float ithExtendedRadius = ithAtom.w + uProbeRadius;
+
+	const vec4 currentCircle = circles[atomId * uMaxNeighborsNb + jId];
+	if( currentCircle.w < 0. )
+		return;
+
+	const uint j  = atomsNeighbors[atomId * uMaxNeighborsNb + jId];
+	const vec3 vj = currentCircle.xyz;
+
+	Angle arcAngles[64];
+	KIndex kIndices[64];
+	bool arcValid[64];
+	arcAngles[0] = Angle(0, TWO_PIf);
+	kIndices[0]  = KIndex(0, 0);
+	arcValid[0] = true;
+	uint arcNb = 1;
+
+	uint tempArcNb = 0;
+	Angle tempArcAngles[16];
+	KIndex tempKIndices[16];
+	
+	// Compute axes of local coordinate system
+	vec3 xAxis = cross( vj, vec3( 0., 1., 0. ) );
+	if ( abs( dot( xAxis, xAxis ) ) < 1e-4 )
+	{
+		xAxis = cross( vj, vec3( 1., 0., 0. ) );
+	}
+	xAxis			 = normalize( xAxis );
+	const vec3 yAxis = normalize(cross( xAxis, vj ));
+
+	for(uint kId = 0; kId < neighborCount; kId++) 
+	{
+		if ( jId == kId ) continue;
+		
+		const uint k		 = atomsNeighbors[atomId * uMaxNeighborsNb + kId];
+		const vec4 kthCircle = circles[       atomId * uMaxNeighborsNb + kId];
+
+		if( kthCircle.w < 0. ) 
+			continue;
+
+		const vec4 kthAtom = atoms[k];
+		const vec3 vk = kthCircle.xyz;
+		
+		const float vjvk = dot( vj, vk );
+		// denominator
+		const float denom = dot( vj, vj ) * dot( vk, vk ) - vjvk * vjvk;
+		// point on straight line (intersection of small circle planes)
+		const vec3 h = vj * ( dot( vj, vj - vk ) * dot( vk, vk ) ) / denom + vk * ( dot( vk - vj, vk ) * dot( vj, vj ) ) / denom;
+
+		if ( length( h ) > ithExtendedRadius ) continue;
+
+		const float  root = sqrt( ( ithExtendedRadius * ithExtendedRadius - dot( h, h ) ) / dot( cross( vk, vj ), cross( vk, vj ) ) );
+
+		vec3 x1 = h + cross( vk, vj ) * root;
+		vec3 x2 = h - cross( vk, vj ) * root;
+		if ( dot( vk, ( kthAtom.xyz - ithAtom.xyz ) ) < 0. )
+		{
+			swap( x1, x2 );
+		}
+
+		// transform x1 and x2 to small circle coordinate system
+		const float xX1 = dot( x1 - vj, xAxis );
+		const float yX1 = dot( x1 - vj, yAxis );
+		const float xX2 = dot( x2 - vj, xAxis );
+		const float yX2 = dot( x2 - vj, yAxis );
+
+		float angleX1 = atan( yX1, xX1 );
+		float angleX2 = atan( yX2, xX2 );
+
+		// limit angles to 0..2*PI
+		if ( angleX1 > TWO_PIf )
+		{
+			angleX1 = fmod( angleX1, TWO_PIf );
+			angleX2 = fmod( angleX2, TWO_PIf );
+		}
+
+		// angle of x2 has to be larger than angle of x1 (add 2 PI)
+		if ( angleX2 < angleX1 )
+		{
+			angleX2 += TWO_PIf;
+		}
+
+		// make all angles positive (add 2 PI)
+		if ( angleX1 < 0. )
+		{
+			angleX1 += TWO_PIf;
+			angleX2 += TWO_PIf;
+		}
+
+		for (int a = 0; a < arcNb; a++) 
+		{
+			if( !arcValid[a] )
+				continue;
+
+			const Angle angle = arcAngles[a];
+			const KIndex index = kIndices[a];
+
+			if ( angleX1 < angle.start )
+			{
+				// case (1) & (10)
+				if ( ( angle.start - angleX1 ) > ( angleX2 - angleX1 ) )
+				{
+					if ( ( ( angle.start - angleX1 ) + ( angle.end - angle.start ) ) > TWO_PIf )
+					{
+						if ( ( ( angle.start - angleX1 ) + ( angle.end - angle.start ) )
+								< ( TWO_PIf + angleX2 - angleX1 ) )
+						{
+							// case (10)
+							arcAngles[ a ]		 = Angle(angleX1, fmod( angle.end, TWO_PIf ));
+							kIndices[ a ].start	 = k;
+
+							// second angle check
+							if ( arcAngles[ a ].end < arcAngles[ a ].start )
+								arcAngles[ a ].end += TWO_PIf;
+						}
+						else
+						{
+							arcAngles[ a ] = Angle( angleX1, fmod(angleX2, TWO_PIf) );
+							kIndices[ a ]  = KIndex( k, k );
+
+							// second angle check
+							if ( arcAngles[ a ].end < arcAngles[ a ].start )
+								arcAngles[ a ].end += TWO_PIf;
+						}
+					}
+					else
+					{
+						// case (1)
+						arcValid[a] = false;
+					}
+				}
+				else
+				{
+					if ( ( ( angle.start - angleX1 ) + ( angle.end - angle.start ) )
+							> ( angleX2 - angleX1 ) )
+					{
+						// case (5)
+						arcAngles[ a ].end = fmod( angleX2, TWO_PIf );
+						kIndices[ a ].end  = k;
+
+						// second angle check
+						if ( arcAngles[ a ].end < arcAngles[ a ].start )
+							arcAngles[ a ].end += TWO_PIf;
+
+						if ( ( ( angle.start - angleX1 ) + ( angle.end - angle.start ) ) > TWO_PIf )
+						{
+							// case (6)
+							tempArcAngles[tempArcNb] = Angle( angleX1, fmod( angle.end, TWO_PIf ) );
+							tempKIndices[tempArcNb] = KIndex( k, index.end );
+
+							// second angle check
+							if ( tempArcAngles[tempArcNb].end < tempArcAngles[tempArcNb].start )
+								tempArcAngles[tempArcNb].end += TWO_PIf;
+							tempArcNb++;
+						}
+					}
+				} // case (4): Do nothing!
+			}
+			else
+			{ // angleX1 > s
+				// case (2) & (9)
+				if ( ( angleX1 - angle.start ) > ( angle.end - angle.start) )
+				{
+					if ( ( ( angleX1 - angle.start ) + ( angleX2 - angleX1 ) ) > TWO_PIf )
+					{
+						if ( ( ( angleX1 - angle.start ) + ( angleX2 - angleX1 ) )
+								< ( TWO_PIf + angle.end - angle.start ) )
+						{
+							// case (9)
+							arcAngles[ a ].end = fmod( angleX2, TWO_PIf );
+							kIndices[ a ].end  = k;
+
+							// second angle check
+							if ( arcAngles[ a ].end < arcAngles[ a ].start )
+								arcAngles[ a ].end += TWO_PIf;
+						}
+					}
+					else
+					{
+						// case (2)
+						arcValid[a] = false;
+					}
+				}
+				else
+				{
+					if ( ( ( angleX1 - angle.start ) + ( angleX2 - angleX1 ) )
+							> ( angle.end - angle.start ) )
+					{
+						// case (7)
+						arcAngles[ a ]		 = Angle( angleX1, fmod( arcAngles[ a ].end, TWO_PIf ) );
+						kIndices[ a ].start	 = k;
+
+						// second angle check
+						if ( arcAngles[ a ].end < arcAngles[ a ].start )
+							arcAngles[ a ].end += TWO_PIf;
+
+						if ( ( ( angleX1 - angle.start ) + ( angleX2 - angleX1 ) ) > TWO_PIf )
+						{
+							// case (8)
+							tempArcAngles[tempArcNb] = Angle(angle.start, fmod( angleX2, TWO_PIf ) );
+							tempKIndices[tempArcNb]  = KIndex( index.start, k );
+
+							// second angle check
+							if ( tempArcAngles[tempArcNb].end < tempArcAngles[tempArcNb].start)
+								tempArcAngles[tempArcNb].end += TWO_PIf;
+							tempArcNb++;
+						}
+					}
+					else
+					{
+						// case (3)
+						arcAngles[ a ] = Angle( angleX1, fmod( angleX2, TWO_PIf ) );
+						kIndices[ a ]  = KIndex( k, k );
+
+						// second angle check
+						if ( arcAngles[ a ].end < arcAngles[ a ].start )
+							arcAngles[ a ].end += TWO_PIf;
+					}
+				}
+			}
+		}
+
+		// add new arcs from temporary array to arcs array
+		for ( uint t = 0; t < tempArcNb; t++ )
+		{
+			arcAngles[ arcNb + t ] = tempArcAngles[t];
+			kIndices[  arcNb + t ] = tempKIndices[t];
+			arcValid[  arcNb + t ] = true;
+		}
+
+		arcNb += tempArcNb;
+		tempArcNb = 0;
+		
+		// fill gaps (overwrite invalid arcs)
+		uint counter = 0;
+		for( uint t = 0; t < arcNb; t++ ) 
+		{
+			if( arcValid[t] ) 
+			{
+				kIndices[t - counter]  = kIndices[t];
+				arcAngles[t - counter] = arcAngles[t];
+				arcValid[t - counter]  = arcValid[t];
+			} 
+			else 
+			{
+				counter++;
+			}
+		}
+		
+		// subtract number of invalid arcs from total number of arcs
+		arcNb -= counter;
+	}
+
+	// merge arcs if arc with angle 0 and arc with angle 2*PI exist
+	int idx0   = -1;
+	int idx2pi = -1;
+	for ( int aCnt = 0; aCnt < arcNb; aCnt++ )
+	{
+		if ( arcAngles[ aCnt ].start < 1e-4 )
+		{
+			idx0 = aCnt;
+		}
+		else if ( abs( arcAngles[ aCnt ].end - TWO_PIf ) < 1e-4 )
+		{
+			idx2pi = aCnt;
+		}
+	}
+
+	if ( idx0 >= 0 && idx2pi >= 0 )
+	{
+		arcAngles[ idx0 ] = Angle( arcAngles[ idx2pi ].start, fmod( arcAngles[ idx0 ].end, TWO_PIf ) );
+		kIndices[ idx0 ].start  = kIndices[ idx2pi ].start;
+
+		// second angle check
+		if ( arcAngles[ idx0 ].end < arcAngles[ idx0 ].start )
+			arcAngles[ idx0 ].end += TWO_PIf;
+
+		for( int t = idx2pi; t < arcNb - 1; t++ )
+		{
+			arcAngles[ t ] = arcAngles[ t + 1 ];
+			kIndices[ t ]  = kIndices[ t + 1 ];
+			arcValid[ t ]  = true;
+		}
+
+		arcNb--;
+	}
+
+	const vec3 worldSpaceCircleCenter = ithAtom.xyz + currentCircle.xyz;
+	const vec3 torusAxis = normalize( currentCircle.xyz );
+
+	uint probeNb = 0;
+	for ( int aCnt = 0; aCnt < arcNb; aCnt++ )
+	{
+		if( atomId < j ) 
+		{
+			vec4 rotQuat = quatFromAxis( -arcAngles[ aCnt ].start, torusAxis);
+			vec3 circleDirection = quatMult( rotQuat, xAxis ) * currentCircle.w;
+			if ( j < kIndices[ aCnt ].start )
+			{
+				const uint currentIdx = atomId * uMaxNeighborsNb * uMaxNeighborsNb + jId * uMaxNeighborsNb + probeNb;
+				arcs[currentIdx] = vec4 ( 
+					( ithAtom.xyz + currentCircle.xyz ) + circleDirection, 
+					kIndices[ aCnt ].start 
+				);
+
+				probeNb++;
+			}
+
+			if ( j < kIndices[ aCnt ].end )
+			{			
+				rotQuat = quatFromAxis( -arcAngles[ aCnt ].end, torusAxis );
+				circleDirection = quatMult( rotQuat, xAxis ) * currentCircle.w;
+
+				const uint currentIdx = atomId * uMaxNeighborsNb * uMaxNeighborsNb + jId * uMaxNeighborsNb + probeNb;
+				arcs[currentIdx] = vec4 ( 
+					( ithAtom.xyz + currentCircle.xyz ) + circleDirection, 
+					kIndices[ aCnt ].end 
+				);
+
+				probeNb++;
+			}
+		}
+	}
+	
+	arcCounts[atomId * uMaxNeighborsNb + jId] = probeNb;
+	
+	if( atomId < j && arcNb > 0 )
+	{
+		circlesVisibilityStatus[atomId * uMaxNeighborsNb + jId] = 1;
+	}
+}

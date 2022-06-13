@@ -1,0 +1,125 @@
+#version 450
+
+#ifndef LOCAL_SIZE_X 
+#define LOCAL_SIZE_X 256
+#endif 
+
+#ifndef LOCAL_SIZE_Y 
+#define LOCAL_SIZE_Y 1
+#endif 
+
+layout (local_size_x = LOCAL_SIZE_X, local_size_y = LOCAL_SIZE_Y) in;
+
+struct CellInfo
+{
+	int start;
+	int end;
+};
+
+layout (std140, binding = 0) readonly buffer Uniforms
+{
+	uint  uProbeNb;
+	float uProbeRadius;
+	uint  uMaxProbeNeighborNb;
+	ivec3 uGridSize;
+	vec3  uCellSize;
+	vec3  uWorldOrigin;
+};
+
+layout (std140, binding = 1) restrict readonly buffer SortedProbePositions
+{
+	vec4 sortedProbesPositions[];
+};
+
+layout (std430, binding = 2) restrict readonly buffer Indices
+{ 
+	uint indices[];
+};
+
+layout (std140, binding = 3) restrict readonly buffer AccelerationStructure
+{
+	CellInfo cellsInformation[];
+};
+
+layout (std140, binding = 4) writeonly buffer ProbesData
+{
+	vec4 probesData[];
+};
+
+layout(std140, binding = 5) writeonly buffer IntersectionBuffer 
+{
+	vec4 neighborsBuffer[];
+};
+
+ivec3 computeGridPosition(const vec3 position) 
+{
+    ivec3 gridPos;
+    gridPos.x = int(floor((position.x - uWorldOrigin.x) / uCellSize.x));
+    gridPos.y = int(floor((position.y - uWorldOrigin.y) / uCellSize.y));
+    gridPos.z = int(floor((position.z - uWorldOrigin.z) / uCellSize.z));
+    return gridPos;
+}
+
+uint computeGridHash(ivec3 gridPosition) 
+{
+	gridPosition.x = gridPosition.x & ( uGridSize.x - 1 ); // wrap grid, assumes size is power of 2
+	gridPosition.y = gridPosition.y & ( uGridSize.y - 1 );
+	gridPosition.z = gridPosition.z & ( uGridSize.z - 1 );
+	return ( ( gridPosition.z * uGridSize.y ) * uGridSize.x ) + ( gridPosition.y * uGridSize.x ) + gridPosition.x;
+}
+
+uint findProbeNeighborsInCell ( const uint gridHash, const uint sortedProbeId, const uint nonSortedProbeId, const vec4 probe, const uint neighborNb )
+{
+	CellInfo currentCell = cellsInformation[ gridHash ];
+	if ( currentCell.start < 0 )
+		return 0;
+
+	uint count = 0;
+	for ( uint j = currentCell.start; j <= currentCell.end; j++ )
+	{
+		if( sortedProbeId == j ) continue;
+		
+		const vec4 otherProbe = sortedProbesPositions[j];
+		if ( distance( otherProbe.xyz, probe.xyz ) < 2. * uProbeRadius )
+		{
+			neighborsBuffer[nonSortedProbeId * uMaxProbeNeighborNb + neighborNb + count] = otherProbe;
+			count++;
+			
+			if ( neighborNb + count >= uMaxProbeNeighborNb )
+				return count;
+		}
+	}
+	return count;
+};
+
+void main() 
+{
+    const uvec3 GlobalSize = gl_WorkGroupSize * gl_NumWorkGroups;
+	uint probeId = uint(dot(gl_GlobalInvocationID, vec3(1, GlobalSize.x, GlobalSize.y * GlobalSize.x)));
+	if(probeId >= uProbeNb) return;
+	
+	const uint nonSortedIdx = indices[probeId];
+	const vec4 probe = sortedProbesPositions[probeId];
+
+	const float gridCellRange = 2. * uProbeRadius;
+	const ivec3 cellsInRange  = max( ivec3( ceil( gridCellRange / uCellSize ) ), ivec3(2));
+	
+	const ivec3 gridPos = computeGridPosition( probe.xyz );
+	ivec3 start			= max(gridPos - cellsInRange, ivec3(0));
+	ivec3 end			= min(gridPos + cellsInRange, uGridSize);
+
+	uint count = 0;
+	for ( int z = start.z; z <= end.z; z++ )
+	{
+		for ( int y = start.y; y <= end.y; y++ )
+		{
+			for ( int x = start.x; x <= end.x; x++ )
+			{
+				const uint gridHash = computeGridHash( ivec3( x, y, z ) );
+				count += findProbeNeighborsInCell( gridHash, probeId, nonSortedIdx, probe, count);
+			}
+		}
+	}
+
+	probesData[uProbeNb * 1 + nonSortedIdx].w = float(count);
+}

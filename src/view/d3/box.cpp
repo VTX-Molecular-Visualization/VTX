@@ -4,8 +4,8 @@ namespace VTX::View::D3
 {
 	Renderer::GL::Program * const Box::_createProgram()
 	{
-		return VTX_PROGRAM_MANAGER().createProgram( "LineShader",
-													{ IO::FilePath( "line.vert" ), IO::FilePath( "line.frag" ) } );
+		return VTX_PROGRAM_MANAGER().createProgram(
+			"LineShader", { IO::FilePath( "line/line.vert" ), IO::FilePath( "line/line.frag" ) } );
 	}
 
 	void Box::_init() { _gl()->glLineWidth( 2.f ); }

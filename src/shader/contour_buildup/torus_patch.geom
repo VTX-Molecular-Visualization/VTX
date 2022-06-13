@@ -3,32 +3,32 @@
 layout( points ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
 
-uniform mat4 uProjMatrix;
+layout(std140) uniform TorusPatchSettings
+{
+	mat4 uMVMatrix;
+	mat4 uProjMatrix;
+	uint uTorusNb;
+};
 
-in VERT_OUT {
+in VERT_OUT 
+{
 	flat vec3  impU;
 	flat vec3  impV;
-	flat float dotViewSpherePos;
-	flat vec4  probePos;
-	flat int   probeHash;
-	flat float probeIntersectionNumber;
-	flat vec3  vert1;
-	flat vec3  vert2;
-	flat vec3  vert3;
+	flat vec3  torusPosition;
+	flat vec4  radii;
+	flat mat3  torusRotationMatrix; 
+	flat vec4  osVisibilitySphere; 
 } inData[];
 
 out GEOM_OUT 
 {
-	smooth vec3  viewImpPos;	  // Impostor position in view space.
-	flat   float dotViewSpherePos;
-	flat   vec4  probePos;
-	flat   int	 probeHash;
-	flat   float probeIntersectionNumber;
-	flat   vec3  vert1;
-	flat   vec3  vert2;
-	flat   vec3  vert3;
+	smooth vec3  viewImpPos;
+	flat   vec3  viewTorusPosition;
+	flat   vec4  radii;
+	flat   mat3  viewTorusRotationMatrix; 
+	flat   vec4  osVisibilitySphere; 
 } outData;
-	   
+
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
 	outData.viewImpPos	= v1;
@@ -53,13 +53,10 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 void main()
 {
 	// Output data.
-	outData.dotViewSpherePos		= inData[ 0 ].dotViewSpherePos;
-	outData.probePos				= inData[ 0 ].probePos;
-	outData.probeHash			    = inData[ 0 ].probeHash;
-	outData.probeIntersectionNumber = inData[ 0 ].probeIntersectionNumber;
-	outData.vert1					= inData[ 0 ].vert1;
-	outData.vert2					= inData[ 0 ].vert2;
-	outData.vert3					= inData[ 0 ].vert3;
+	outData.viewTorusPosition		= inData[ 0 ].torusPosition;
+	outData.radii					= inData[ 0 ].radii;
+	outData.viewTorusRotationMatrix = inData[ 0 ].torusRotationMatrix;
+	outData.osVisibilitySphere      = inData[ 0 ].osVisibilitySphere;
 
 	// Compute impostors vertices.
 	const vec3 v1 = gl_in[ 0 ].gl_Position.xyz - inData[ 0 ].impU - inData[ 0 ].impV;

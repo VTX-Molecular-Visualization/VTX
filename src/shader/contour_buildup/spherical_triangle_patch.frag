@@ -8,16 +8,21 @@ layout(std140, binding = 1) readonly buffer IntersectionBuffer {
 	vec4 neighborsBuffer[];
 };
 
-uniform mat4 uMVMatrix;
-uniform mat4 uProjMatrix;
-uniform uint uMaxProbeNeighborNb;
+layout(std140) uniform SphericalTrianglePatchSettings
+{
+	mat4 uMVMatrix;
+	mat4 uProjMatrix;
+	uint uProbeNb;
+	uint uMaxProbeNeighborNb;
+};
 
 in GEOM_OUT 
 {
 	smooth vec3  viewImpPos;	  // Impostor position in view space.
 	flat   float dotViewSpherePos;
+	flat   vec3  wsProbePos;
 	flat   vec4  probePos;
-	flat   int	 probeHash;
+	flat   int	 probeId;
 	flat   float probeIntersectionNumber;
 	flat   vec3  vert1;
 	flat   vec3  vert2;
@@ -63,7 +68,7 @@ void main()
 	// But '-' is useless since 'b' is squared for 'delta'.
 	// So for 't', '-' is also removed.
 	const float b	  = dot( inData.viewImpPos, inData.probePos.xyz );
-	const float c	  = inData.dotViewSpherePos - inData.probePos.w * inData.probePos.w;
+	const float c	  = inData.dotViewSpherePos - squaredRadius;
 	const float delta = b * b - a * c;
 
     if (delta < -EPSILON) 
@@ -101,13 +106,14 @@ void main()
         if(planeIntersect(inData.vert1, inData.vert2, inData.vert3, inData.probePos.xyz, hit)) { discard; } 
 
         if( inData.probeIntersectionNumber > 0. ) {
-            const uint baseCoordinates = inData.probeHash * uMaxProbeNeighborNb;
+            const mat4 invMVMatrix = inverse(uMVMatrix);
+            const vec3 vHit = (invMVMatrix * vec4(hit.xyz, 1.)).xyz;
+
+            const uint baseCoordinates = inData.probeId * uMaxProbeNeighborNb;
             for(int i = 0; i < inData.probeIntersectionNumber; i++ ) {
                 vec3 otherProbe = neighborsBuffer[ baseCoordinates + i ].xyz;
-
-                otherProbe = (uMVMatrix * vec4(otherProbe, 1.)).xyz;
-                if( dot1( otherProbe - inData.probePos.xyz ) > EPSILON && 
-                    dot1( hit - otherProbe ) - squaredRadius < -EPSILON) { discard; }
+                if( dot1( otherProbe - inData.wsProbePos ) > 0.1 && 
+                    dot1( vHit - otherProbe ) < squaredRadius) { discard; }
             }
         }
 
