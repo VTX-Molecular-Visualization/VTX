@@ -124,8 +124,6 @@ namespace VTX::UI::Widget::Render
 	{
 		makeCurrent();
 
-		format().setSwapInterval( uint( p_active ) );
-
 #ifdef _WIN32
 		QFunctionPointer func = context()->getProcAddress( "wglSwapIntervalEXT" );
 #else
@@ -153,6 +151,8 @@ namespace VTX::UI::Widget::Render
 		{
 			VTX_ERROR( "GetSwapIntervalEXT not supported" );
 		}
+
+		format().setSwapInterval( uint( p_active ) );
 
 		doneCurrent();
 	}
@@ -218,6 +218,7 @@ namespace VTX::UI::Widget::Render
 		GLint glMaxComputeWorkGroupCount[ 3 ];
 		GLint glMaxComputeWorkGroupSize[ 3 ];
 		GLint glMaxComputeWorkGroupInvocations;
+		GLint glNumExtensions;
 
 		_gl->glGetIntegerv( GL_MAX_TEXTURE_SIZE, &glMaxTextureSize );
 		_gl->glGetIntegerv( GL_MAX_PATCH_VERTICES, &glMaxPatchVertices );
@@ -229,11 +230,20 @@ namespace VTX::UI::Widget::Render
 		_gl->glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &glMaxComputeWorkGroupSize[ 1 ] );
 		_gl->glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &glMaxComputeWorkGroupSize[ 2 ] );
 		_gl->glGetIntegerv( GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &glMaxComputeWorkGroupInvocations );
+		_gl->glGetIntegerv( GL_NUM_EXTENSIONS, &glNumExtensions );
 
-		VTX_SPEC().glVendor							= std::string( (const char *)glVendor );
-		VTX_SPEC().glRenderer						= std::string( (const char *)glRenderer );
-		VTX_SPEC().glVersion						= std::string( (const char *)glVersion );
-		VTX_SPEC().glslVersion						= std::string( (const char *)glslVersion );
+		std::string glExtensions = "";
+		for ( uint i = 0; i < uint( glNumExtensions ); i++ )
+		{
+			const uchar * extension = _gl->glGetStringi( GL_EXTENSIONS, i );
+			glExtensions += std::string( (const char *)extension ) + " ";
+		}
+
+		VTX_SPEC().glVendor	   = std::string( (const char *)glVendor );
+		VTX_SPEC().glRenderer  = std::string( (const char *)glRenderer );
+		VTX_SPEC().glVersion   = std::string( (const char *)glVersion );
+		VTX_SPEC().glslVersion = std::string( (const char *)glslVersion );
+
 		VTX_SPEC().glMaxTextureSize					= glMaxTextureSize;
 		VTX_SPEC().glMaxPatchVertices				= glMaxPatchVertices;
 		VTX_SPEC().glMaxTessGenLevel				= glMaxTessGenLevel;
@@ -244,6 +254,7 @@ namespace VTX::UI::Widget::Render
 		VTX_SPEC().glMaxComputeWorkGroupSize[ 1 ]	= glMaxComputeWorkGroupSize[ 1 ];
 		VTX_SPEC().glMaxComputeWorkGroupSize[ 2 ]	= glMaxComputeWorkGroupSize[ 2 ];
 		VTX_SPEC().glMaxComputeWorkGroupInvocations = glMaxComputeWorkGroupInvocations;
+		VTX_SPEC().glExtensions						= glExtensions;
 	}
 
 } // namespace VTX::UI::Widget::Render

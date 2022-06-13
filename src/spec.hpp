@@ -11,6 +11,7 @@ namespace VTX
 		std::string glRenderer;
 		std::string glVersion;
 		std::string glslVersion;
+		std::string glExtensions;
 
 		int glMaxTextureSize;
 		int glMaxPatchVertices;
@@ -24,6 +25,7 @@ namespace VTX
 			VTX_INFO( "GL device: " + glVendor + " " + glRenderer );
 			VTX_INFO( "GL version: " + glVersion );
 			VTX_INFO( "GLSL version: " + glslVersion );
+			// VTX_INFO( "GL extensions: " + glExtensions );
 
 			VTX_DEBUG( "Max texture size : " + std::to_string( glMaxTextureSize ) );
 			VTX_DEBUG( "Max patch vertices: " + std::to_string( glMaxPatchVertices ) );
