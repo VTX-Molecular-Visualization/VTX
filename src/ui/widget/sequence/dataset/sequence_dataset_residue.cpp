@@ -115,7 +115,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		else
 		{
 			const uint lastIndexOffset = uint( lastIndexStr.length() / 2 );
-		return _charCount - ( lastResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) + lastIndexOffset;
+			return _charCount + lastIndexOffset;
 		}
 	}
 
