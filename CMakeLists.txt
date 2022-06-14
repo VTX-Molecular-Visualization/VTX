@@ -14,7 +14,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form" "src/extensions/keyword_editor/forms/")
-set(CMAKE_AUTOGEN_TARGETS_FOLDER "autogen")
+#set(CMAKE_AUTOGEN_TARGETS_FOLDER "autogen")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -50,7 +50,7 @@ foreach(SRC IN ITEMS ${HEADERS})
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
-    source_group("Header Files${GROUP_PATH}" FILES "${SRC}")
+    source_group("Header${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
 # Get all sources.
@@ -60,7 +60,7 @@ foreach(SRC IN ITEMS ${SOURCES})
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
-    source_group("Source Files${GROUP_PATH}" FILES "${SRC}")
+    source_group("Source${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
 # Get all resources.
@@ -82,7 +82,7 @@ foreach(SRC IN ITEMS ${SHADERS})
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
-    source_group("Source Files" FILES "${SRC}")
+    source_group("Source" FILES "${SRC}")
 endforeach()
 
 # Get all QT forms.

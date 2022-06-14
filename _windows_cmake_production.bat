@@ -1,5 +1,5 @@
 @ECHO OFF
-cmake -B build -DDEFINE_PRODUCTION=ON .
+cmake -B build -DDEFINE_PRODUCTION=ON -Wno-dev .
 cmake --build build --config Release --clean-first
 robocopy build/build RELEASE /nfl /ndl /njh /E
 rmdir /s /q RELEASE\bin\Debug
