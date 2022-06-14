@@ -14,35 +14,28 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form" "src/extensions/keyword_editor/forms/")
+set(CMAKE_AUTOGEN_TARGETS_FOLDER "autogen")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-#set(CMAKE_SKIP_RPATH false)
-#set(CMAKE_BUILD_RPATH_USE_ORIGIN true)
-#set(CMAKE_BUILD_RPATH ".")
 
 # Create paths.
 set(PATH_SRC "src")
-set(PATH_LIB "lib")
-set(PATH_EXTERNAL_PROJECT "external_project")
 set(PATH_WINDOWS_RESOURCE "asset/windows_resources")
 set(PATH_QT_RESOURCE "asset/qt_resources")
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
-
 # Libs URL and tags.
 set(GIT_URL_CHEMFILES https://github.com/sacraiou/chemfiles.git)
-set(GIT_TAG_CHEMFILES 6b5b250785f3fe0b7dd16baf3550f1857280b3c7)
+set(GIT_TAG_CHEMFILES e1f48fa)
 set(GIT_URL_GLM https://github.com/g-truc/glm.git)
-set(GIT_TAG_GLM bf71a834948186f4097caa076cd2663c69a10e1e) #0.9.9.8
+set(GIT_TAG_GLM bf71a83) #0.9.9.8
 set(GIT_URL_JSON https://github.com/nlohmann/json.git)
-set(GIT_TAG_JSON fec56a1a16c6e1c1b1f4e116a20e79398282626c) #3.10.4
+set(GIT_TAG_JSON v3.10.5) #3.10.5
 set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum.git)
-set(GIT_TAG_MAGIC_ENUM 3d1f6a5a2a3fbcba077e00ad0ccc2dd9fefc2ca7) #0.7.3
+set(GIT_TAG_MAGIC_ENUM v0.8.0) #0.8.0
 
 # Create output dir.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
 	file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
@@ -57,7 +50,7 @@ foreach(SRC IN ITEMS ${HEADERS})
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
-    source_group("Headers${GROUP_PATH}" FILES "${SRC}")
+    source_group("Header Files${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
 # Get all sources.
@@ -67,7 +60,7 @@ foreach(SRC IN ITEMS ${SOURCES})
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
-    source_group("Sources${GROUP_PATH}" FILES "${SRC}")
+    source_group("Source Files${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
 # Get all resources.
@@ -89,7 +82,7 @@ foreach(SRC IN ITEMS ${SHADERS})
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
-    source_group("Sources" FILES "${SRC}")
+    source_group("Source Files" FILES "${SRC}")
 endforeach()
 
 # Get all QT forms.
@@ -109,130 +102,51 @@ foreach(SRC IN ITEMS ${QT_RESOURCES})
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_QT_RESOURCE}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
-    source_group("QtResources" FILES "${SRC}")
+    source_group("Resources" FILES "${SRC}")
 endforeach()
 
-# Adding required libs.
-message("Adding external dependencies...")
+# Download dependencies.
+message("Downloading dependencies...")
 
-include(ExternalProject)
+include(FetchContent)
+
+# Chemfiles.
+FetchContent_Declare(
+  chemfiles
+  GIT_REPOSITORY ${GIT_URL_CHEMFILES}
+  GIT_TAG ${GIT_TAG_CHEMFILES}
+)
+FetchContent_MakeAvailable(chemfiles)
+message("${chemfiles_SOURCE_DIR}")
 
 # Glm.
-ExternalProject_Add(
-    glm
-    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/g-truc
-    GIT_REPOSITORY ${GIT_URL_GLM}
-	GIT_TAG ${GIT_TAG_GLM}
-	CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
-    )
-ExternalProject_Get_Property(glm SOURCE_DIR)
-set(GLM_INCLUDE_DIR ${SOURCE_DIR})
+FetchContent_Declare(
+  glm
+  GIT_REPOSITORY ${GIT_URL_GLM}
+  GIT_TAG ${GIT_TAG_GLM}
+)
+FetchContent_MakeAvailable(glm)
+message("${glm_SOURCE_DIR}")
 
 # Json.
-ExternalProject_Add(
-    json
-    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/nlohmann
-    GIT_REPOSITORY ${GIT_URL_JSON}
-	GIT_TAG ${GIT_TAG_JSON}
-	CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
-    )
-ExternalProject_Get_Property(json SOURCE_DIR)
-set(JSON_INCLUDE_DIR ${SOURCE_DIR}/include/)
+FetchContent_Declare(
+  json
+  GIT_REPOSITORY ${GIT_URL_JSON}
+  GIT_TAG ${GIT_TAG_JSON}
+)
+FetchContent_MakeAvailable(json)
+message("${json_SOURCE_DIR}")
 
 # Magic Enum.
-ExternalProject_Add(
-    magic_enum
-    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Neargye
-    GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM}
-	GIT_TAG ${GIT_TAG_MAGIC_ENUM}
-	CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
-    )
-ExternalProject_Get_Property(magic_enum SOURCE_DIR)
-set(MAGIC_ENUM_INCLUDE_DIR ${SOURCE_DIR}/include)
-
-# Custom function to build external projects.
-function (BuildExternalProject p_url p_tag p_target p_config)
-
-# Write another CMakeLists.txt.
-set(CMAKELIST_CONTENT "
-cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
-project(build_external_project)
-include(ExternalProject)
-ExternalProject_add(
-	${p_target}
-	GIT_REPOSITORY ${p_url}
-	GIT_TAG ${p_tag}
-	LOG_DOWNLOAD ON
-	CMAKE_GENERATOR \"${CMAKE_GENERATOR}\"
-	CMAKE_GENERATOR_PLATFORM \"${CMAKE_GENERATOR_PLATFORM}\"
-	CMAKE_GENERATOR_TOOLSET \"${CMAKE_GENERATOR_TOOLSET}\"
-	CMAKE_GENERATOR_INSTANCE \"${CMAKE_GENERATOR_INSTANCE}\"
-	CMAKE_ARGS -D CMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/${PATH_LIB}/${p_target}
+FetchContent_Declare(
+  magic_enum
+  GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM}
+  GIT_TAG ${GIT_TAG_MAGIC_ENUM}
 )
-add_custom_target(build_external_project)
-add_dependencies(build_external_project ${p_target})
-")
-
-	set(TARGET_DIR "${CMAKE_SOURCE_DIR}/${PATH_EXTERNAL_PROJECT}/${p_target}")
-	file(WRITE "${TARGET_DIR}/CMakeLists.txt" "${CMAKELIST_CONTENT}")
-	file(MAKE_DIRECTORY "${TARGET_DIR}" "${TARGET_DIR}/build")
-	
-	# Run lib cmake.
-	execute_process(COMMAND ${CMAKE_COMMAND}
-		-G "${CMAKE_GENERATOR}"
-		-A "${CMAKE_GENERATOR_PLATFORM}"
-		-T "${CMAKE_GENERATOR_TOOLSET}"
-		-DCMAKE_BUILD_TYPE=${p_config}
-		..
-		WORKING_DIRECTORY "${TARGET_DIR}/build")
-
-	# Build lib.
-	execute_process(COMMAND ${CMAKE_COMMAND}
-		--build .
-		--config ${p_config}
-		WORKING_DIRECTORY "${TARGET_DIR}/build")
-
-endfunction()
-
-message("Building external projects...")
-
-option(BUILD_LIB "Build libs" ON)
-if(BUILD_LIB)
-	# Chemfiles.
-	# For windows(multi conf), build in Debug then in Release, and move .lib after cmake install to the correct folder.
-	# Then, use link_directories to link and and target_include_directories to add include directory.
-	if(MSVC)
-		BuildExternalProject(${GIT_URL_CHEMFILES} ${GIT_TAG_CHEMFILES} chemfiles Debug)
-		file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/ ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
-		file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/)
-		BuildExternalProject(${GIT_URL_CHEMFILES} ${GIT_TAG_CHEMFILES} chemfiles Release)
-		file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
-		file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/cmake)
-		file(REMOVE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib)
-	elseif(CMAKE_COMPILER_IS_GNUCC)
-	# For Linux (solo conf), juste build in current mode.
-	# Then use find_package to automatically add include folder and link lib. 
-		BuildExternalProject(${GIT_URL_CHEMFILES} ${GIT_TAG_CHEMFILES} chemfiles "${CMAKE_BUILD_TYPE}")
-	endif()
-endif()
+FetchContent_MakeAvailable(magic_enum)
+message("${magic_enum_SOURCE_DIR}")
 
 message("Looking for dependencies...")
-
-# Set link directories.
-if(MSVC)
-	link_directories(${PATH_LIB}/chemfiles/lib)
-elseif(CMAKE_COMPILER_IS_GNUCC)
-	find_package(chemfiles REQUIRED PATHS "${CMAKE_SOURCE_DIR}/lib/chemfiles" NO_DEFAULT_PATH)
-endif()
 
 # Find required packages.
 find_package(Qt6 COMPONENTS Core REQUIRED)
@@ -250,19 +164,8 @@ find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
 # Declare executable with source files.
 add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESOURCES})
 
-# Make project waiting for dependencies download/build.
-add_dependencies(VTX glm)
-add_dependencies(VTX json)
-add_dependencies(VTX magic_enum)
-
 # Includes directories.
 target_include_directories(VTX PRIVATE ${PATH_SRC})
-target_include_directories(VTX PRIVATE ${GLM_INCLUDE_DIR})
-target_include_directories(VTX PRIVATE ${JSON_INCLUDE_DIR})
-target_include_directories(VTX PRIVATE ${MAGIC_ENUM_INCLUDE_DIR})
-if(MSVC)
-	target_include_directories(VTX PRIVATE ${PATH_LIB}/chemfiles/include)
-endif()
 
 # Link libs.
 target_link_libraries(VTX PRIVATE Qt6::Core)
@@ -273,13 +176,14 @@ target_link_libraries(VTX PRIVATE Qt6::OpenGLWidgets)
 target_link_libraries(VTX PRIVATE Qt6::Network)
 target_link_libraries(VTX PRIVATE Qt6::Svg)
 target_link_libraries(VTX PRIVATE chemfiles)
+target_link_libraries(VTX PRIVATE glm::glm)
+target_link_libraries(VTX PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(VTX PRIVATE magic_enum::magic_enum)
+target_link_libraries(VTX PRIVATE fmt)
 
 if(MSVC)
 	# Add specific libs.
 	target_link_libraries(VTX PRIVATE ws2_32)
-elseif(CMAKE_COMPILER_IS_GNUCC)
-#	set(CMAKE_EXE_LINKER_FLAGS " -static")
-#	target_link_libraries(VTX -static-libgcc -static-libstdc++)
 endif()
 
 message("Creating post build events...")

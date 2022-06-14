@@ -3,6 +3,7 @@
 #include "tool/logger.hpp"
 #include "worker/base_thread.hpp"
 #include "worker/base_worker.hpp"
+#include <chemfiles.hpp>
 
 namespace VTX::IO
 {

@@ -3,6 +3,7 @@
 
 #include "io/writer/log.hpp"
 #include "util/time.hpp"
+#include <fmt/format.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -41,23 +42,49 @@ namespace VTX
 		  private:
 			IO::Writer::Log _writer = IO::Writer::Log( Util::Time::getTimestamp() );
 
-			Logger()				 = default;
-			Logger( const Logger & ) = delete;
+			Logger()							 = default;
+			Logger( const Logger & )			 = delete;
 			Logger & operator=( const Logger & ) = delete;
 			~Logger()							 = default;
 		};
 	} // namespace Tool
 
-	inline void VTX_DEBUG( const std::string & p_str ) { Tool::Logger::get().logDebug( p_str ); }
-	inline void VTX_INFO( const std::string & p_str ) { Tool::Logger::get().logInfo( p_str ); }
-	inline void VTX_WARNING( const std::string & p_str ) { Tool::Logger::get().logWarning( p_str ); }
-	inline void VTX_ERROR( const std::string & p_str ) { Tool::Logger::get().logError( p_str ); }
-	inline void VTX_CONSOLE( const std::string & p_str ) { std::cout << p_str << std::endl; }
-	inline void VTX_LOG_FILE( const std::string & p_str ) { Tool::Logger::get().logInFile( p_str ); }
-	inline void VTX_LOG( const Tool::Logger::LEVEL & p_level, const std::string & p_str )
+	template<typename... T>
+	inline void VTX_DEBUG( const std::string p_str, const T &&... p_args )
 	{
-		Tool::Logger::get().log( p_level, p_str );
+		Tool::Logger::get().logDebug( fmt::format( p_str, p_args... ) );
 	}
+	template<typename... T>
+	inline void VTX_INFO( const std::string p_str, const T &&... p_args )
+	{
+		Tool::Logger::get().logInfo( fmt::format( p_str, p_args... ) );
+	}
+	template<typename... T>
+	inline void VTX_WARNING( const std::string p_str, const T &&... p_args )
+	{
+		Tool::Logger::get().logWarning( fmt::format( p_str, p_args... ) );
+	}
+	template<typename... T>
+	inline void VTX_ERROR( const std::string p_str, const T &&... p_args )
+	{
+		Tool::Logger::get().logError( fmt::format( p_str, p_args... ) );
+	}
+	template<typename... T>
+	inline void VTX_CONSOLE( const std::string p_str, const T &&... p_args )
+	{
+		std::cout << fmt::format( p_str, p_args... ) << std::endl;
+	}
+	template<typename... T>
+	inline void VTX_LOG_FILE( const std::string & p_str, const T &&... p_args )
+	{
+		Tool::Logger::get().logInFile( fmt::format( p_str, p_args... ) );
+	}
+	template<typename... T>
+	inline void VTX_LOG( const Tool::Logger::LEVEL & p_level, const std::string & p_str, const T &&... p_args )
+	{
+		Tool::Logger::get().log( p_level, fmt::format( p_str, p_args... ) );
+	}
+
 } // namespace VTX
 
 #endif

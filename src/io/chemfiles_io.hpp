@@ -1,9 +1,6 @@
 #ifndef __VTX_IO_CHEMFILES__
 #define __VTX_IO_CHEMFILES__
 
-#pragma warning( push, 0 )
-#include <chemfiles.hpp>
-#pragma warning( pop )
 #include <string>
 
 namespace VTX
