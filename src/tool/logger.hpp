@@ -50,37 +50,37 @@ namespace VTX
 	} // namespace Tool
 
 	template<typename... T>
-	inline void VTX_DEBUG( const std::string p_str, const T &&... p_args )
+	inline void VTX_DEBUG( const std::string p_str, T &&... p_args )
 	{
 		Tool::Logger::get().logDebug( fmt::format( p_str, p_args... ) );
 	}
 	template<typename... T>
-	inline void VTX_INFO( const std::string p_str, const T &&... p_args )
+	inline void VTX_INFO( const std::string p_str, T &&... p_args )
 	{
 		Tool::Logger::get().logInfo( fmt::format( p_str, p_args... ) );
 	}
 	template<typename... T>
-	inline void VTX_WARNING( const std::string p_str, const T &&... p_args )
+	inline void VTX_WARNING( const std::string p_str, T &&... p_args )
 	{
 		Tool::Logger::get().logWarning( fmt::format( p_str, p_args... ) );
 	}
 	template<typename... T>
-	inline void VTX_ERROR( const std::string p_str, const T &&... p_args )
+	inline void VTX_ERROR( const std::string p_str, T &&... p_args )
 	{
 		Tool::Logger::get().logError( fmt::format( p_str, p_args... ) );
 	}
 	template<typename... T>
-	inline void VTX_CONSOLE( const std::string p_str, const T &&... p_args )
+	inline void VTX_CONSOLE( const std::string p_str, T &&... p_args )
 	{
 		std::cout << fmt::format( p_str, p_args... ) << std::endl;
 	}
 	template<typename... T>
-	inline void VTX_LOG_FILE( const std::string & p_str, const T &&... p_args )
+	inline void VTX_LOG_FILE( const std::string & p_str, T &&... p_args )
 	{
 		Tool::Logger::get().logInFile( fmt::format( p_str, p_args... ) );
 	}
 	template<typename... T>
-	inline void VTX_LOG( const Tool::Logger::LEVEL & p_level, const std::string & p_str, const T &&... p_args )
+	inline void VTX_LOG( const Tool::Logger::LEVEL & p_level, const std::string & p_str, T &&... p_args )
 	{
 		Tool::Logger::get().log( p_level, fmt::format( p_str, p_args... ) );
 	}
