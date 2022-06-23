@@ -1,6 +1,5 @@
 #include "molecule.hpp"
 #include "color/rgb.hpp"
-#include "contour_buildup.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "id.hpp"
@@ -13,6 +12,7 @@
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
+#include "solvent_excluded_surface.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/secondary_structure.hpp"
@@ -42,8 +42,8 @@ namespace VTX
 
 			if ( _secondaryStructure != nullptr )
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
-			if ( _contourBuildup != nullptr )
-				MVC::MvcManager::get().deleteModel( _contourBuildup );
+			if ( _solventExcludedSurface != nullptr )
+				MVC::MvcManager::get().deleteModel( _solventExcludedSurface );
 		}
 
 		void Molecule::setPdbIdCode( const std::string & p_pdbId ) { _pdbIdCode = p_pdbId; }
@@ -800,14 +800,14 @@ namespace VTX
 
 		void Molecule::createContourBuildup()
 		{
-			if ( _contourBuildup != nullptr )
+			if ( _solventExcludedSurface != nullptr )
 			{
-				MVC::MvcManager::get().deleteModel( _contourBuildup );
+				MVC::MvcManager::get().deleteModel( _solventExcludedSurface );
 			}
 
-			_contourBuildup = MVC::MvcManager::get().instantiateModel<ContourBuildup, Molecule>( this );
-			_contourBuildup->init();
-			_contourBuildup->print();
+			_solventExcludedSurface = MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Molecule>( this );
+			_solventExcludedSurface->init();
+			_solventExcludedSurface->print();
 		}
 
 		void Molecule::refreshContourBuildup() {}

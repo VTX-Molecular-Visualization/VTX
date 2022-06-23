@@ -37,7 +37,7 @@ namespace VTX
 		class Atom;
 		class Bond;
 		class SecondaryStructure;
-		class ContourBuildup;
+		class SolventExcludedSurface;
 		class Molecule :
 			public BaseModel3D<Buffer::Molecule>,
 			public Generic::BaseColorable,
@@ -124,10 +124,10 @@ namespace VTX
 			inline const std::vector<Bond *> & getBonds() const { return _bonds; }
 			void removeBond( const uint p_id, const bool p_delete = true, const bool p_notifyViews = true );
 
-			inline const SecondaryStructure & getSecondaryStructure() const { return *_secondaryStructure; }
-			inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
-			inline const ContourBuildup &	  getContourBuildup() const { return *_contourBuildup; }
-			inline ContourBuildup &			  getContourBuildup() { return *_contourBuildup; }
+			inline const SecondaryStructure &	  getSecondaryStructure() const { return *_secondaryStructure; }
+			inline SecondaryStructure &			  getSecondaryStructure() { return *_secondaryStructure; }
+			inline const SolventExcludedSurface & getSolventExcludedSurface() const { return *_solventExcludedSurface; }
+			inline SolventExcludedSurface &		  getSolventExcludedSurface() { return *_solventExcludedSurface; }
 
 			bool isEmpty();
 
@@ -328,8 +328,8 @@ namespace VTX
 
 			// Secondary structure.
 			SecondaryStructure * _secondaryStructure = nullptr;
-			// SES.
-			ContourBuildup * _contourBuildup = nullptr;
+			// Solvent excluded surface.
+			SolventExcludedSurface * _solventExcludedSurface = nullptr;
 
 			// Trajectory
 			uint				 _currentFrame	   = 0u;
