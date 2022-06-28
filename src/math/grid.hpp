@@ -2,6 +2,7 @@
 #define __VTX_MATH_GRID__
 
 #include "define.hpp"
+#include "util/math.hpp"
 
 namespace VTX
 {
@@ -15,7 +16,7 @@ namespace VTX
 
 			Vec3i gridPosition( const Vec3f & p_position ) const
 			{
-				return Vec3i( glm::floor( ( p_position - worldOrigin ) / cellSize ) );
+				return Vec3i( Util::Math::floor( ( p_position - worldOrigin ) / cellSize ) );
 			}
 
 			uint gridHash( const Vec3i & p_gridPosition ) const
