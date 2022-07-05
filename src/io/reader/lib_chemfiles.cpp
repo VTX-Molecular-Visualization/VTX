@@ -78,7 +78,7 @@ namespace VTX::IO::Reader
 		_logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
 
 		// Erase supernumeraries frames
-		if ( p_molecule.getFrames().back().size() == 0 ) 
+		if ( p_molecule.getFrames().back().size() == 0 )
 		{
 			do
 			{
@@ -186,14 +186,21 @@ namespace VTX::IO::Reader
 		// Check properties, same for all atoms/residues?
 		if ( frame.size() > 0 )
 		{
-			std::string propAtom = std::to_string( frame[ 0 ].properties().size() ) + " properties in atoms:";
-			for ( chemfiles::property_map::const_iterator it = frame[ 0 ].properties().begin();
-				  it != frame[ 0 ].properties().end();
-				  ++it )
+			if ( frame[ 0 ].properties() )
 			{
-				propAtom += " " + it->first;
+				std::string propAtom = std::to_string( frame[ 0 ].properties()->size() ) + " properties in atoms:";
+				for ( chemfiles::property_map::const_iterator it = frame[ 0 ].properties()->begin();
+					  it != frame[ 0 ].properties()->end();
+					  ++it )
+				{
+					propAtom += " " + it->first;
+				}
+				_logDebug( propAtom );
 			}
-			_logDebug( propAtom );
+			else
+			{
+				_logDebug( "No properties in atoms." );
+			}
 		}
 
 		if ( residues.size() > 0 )
@@ -412,7 +419,11 @@ namespace VTX::IO::Reader
 				const uint				atomId = uint( *it );
 				const chemfiles::Atom & atom   = topology[ atomId ];
 				uint					atomType;
-				atomType = uint( atom.properties().get( "atom_type" ).value_or( -1 ).as_double() );
+				atomType = uint( atom.properties()
+									 .value_or( chemfiles::property_map() )
+									 .get( "atom_type" )
+									 .value_or( -1 )
+									 .as_double() );
 
 				// Create atom.
 				Model::Atom * modelAtom			= MVC::MvcManager::get().instantiateModel<Model::Atom>();
