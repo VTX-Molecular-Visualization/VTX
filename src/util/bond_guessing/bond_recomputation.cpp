@@ -210,7 +210,7 @@ namespace VTX::Util::BondGuessing
 		}
 	}
 
-	void BondRecomputation::recomputeBonds( chemfiles::Frame & p_frame, const VTX::Math::AABB & p_aabb )
+	void BondRecomputation::recomputeBonds( chemfiles::Frame & p_frame, const VTX::Object3D::Helper::AABB & p_aabb )
 	{
 		CellList cellList = CellList( p_aabb, Setting::CELL_LIST_CUBE_SIZE );
 
@@ -319,9 +319,9 @@ namespace VTX::Util::BondGuessing
 
 						// TODO : Change with frame.sqrDistance when it will be added in chemfiles
 						const float interAtomicDist
-							= (frame.positions()[ indexAtom2 ] - frame.positions()[ indexAtom1 ]).sqrNorm();
-						//float interAtomicDist = frame.distance( indexAtom1, indexAtom2 );
-						//interAtomicDist *= interAtomicDist;
+							= ( frame.positions()[ indexAtom2 ] - frame.positions()[ indexAtom1 ] ).sqrNorm();
+						// float interAtomicDist = frame.distance( indexAtom1, indexAtom2 );
+						// interAtomicDist *= interAtomicDist;
 
 						// Perform distance test and ignore atoms with almost the same coordinates
 						if ( ( interAtomicDist > cutoffPow2 ) || ( interAtomicDist < 0.03 ) )

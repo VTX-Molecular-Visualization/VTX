@@ -8,8 +8,8 @@
 #include "generic/base_representable.hpp"
 #include "generic/base_visible.hpp"
 #include "id.hpp"
-#include "math/aabb.hpp"
 #include "model/secondary_structure.hpp"
+#include "object3d/helper/aabb.hpp"
 #include <map>
 
 namespace VTX
@@ -138,8 +138,8 @@ namespace VTX
 			void setVisible( const bool p_visible );
 			void setVisible( const bool p_visible, const bool p_notify );
 
-			const Math::AABB getAABB() const;
-			const Math::AABB getWorldAABB() const;
+			const Object3D::Helper::AABB getAABB() const;
+			const Object3D::Helper::AABB getWorldAABB() const;
 
 		  protected:
 			void _onRepresentationChange() override;

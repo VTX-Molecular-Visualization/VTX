@@ -7,7 +7,7 @@
 
 #include "../intersection.hpp"
 #include "../ray.hpp"
-#include "math/aabb.hpp"
+#include "object3d/helper/aabb.hpp"
 
 namespace VTX
 {
@@ -19,7 +19,7 @@ namespace VTX
 			BaseObject3D()			= default;
 			virtual ~BaseObject3D() = default;
 
-			const Math::AABB & getAABB() const { return _aabb; }
+			const Object3D::Helper::AABB & getAABB() const { return _aabb; }
 
 			virtual bool intersect( const Ray &	   p_ray,
 									const float	   p_tMin,
@@ -29,7 +29,7 @@ namespace VTX
 			virtual bool intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const = 0;
 
 		  protected:
-			Math::AABB _aabb;
+			Object3D::Helper::AABB _aabb;
 
 		  private:
 			virtual void _computeAABB() = 0;

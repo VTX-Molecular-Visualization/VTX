@@ -6,8 +6,8 @@
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
 #include "id.hpp"
-#include "math/aabb.hpp"
 #include "object3d/camera.hpp"
+#include "object3d/helper/aabb.hpp"
 
 namespace VTX
 {
@@ -38,7 +38,7 @@ namespace VTX
 
 			virtual void reset() { _isOrienting = false; }
 
-			virtual void orient( const Math::AABB & p_aabb )
+			virtual void orient( const Object3D::Helper::AABB & p_aabb )
 			{
 				_orientTime = 0.f;
 				_computeOrientPositions( p_aabb );
@@ -63,7 +63,7 @@ namespace VTX
 			Quatf _orientTargetRotation	  = QUATF_ID;
 
 			virtual void _updateInputs( const float & )													  = 0;
-			virtual void _computeOrientPositions( const Math::AABB & p_aabb )							  = 0;
+			virtual void _computeOrientPositions( const Object3D::Helper::AABB & p_aabb )				  = 0;
 			virtual void _computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation ) = 0;
 			virtual void _updateOrient( const float & )													  = 0;
 		};

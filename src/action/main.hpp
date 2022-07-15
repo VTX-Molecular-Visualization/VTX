@@ -165,6 +165,7 @@ namespace VTX::Action::Main
 								result.molecule->print();
 								VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, result.molecule ) );
 								VTXApp::get().getScene().addMolecule( result.molecule );
+								VTXApp::get().getScene().addHelper( &( result.molecule->getAABB() ) );
 							}
 							else if ( result.mesh != nullptr )
 							{

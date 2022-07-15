@@ -86,8 +86,7 @@ namespace VTX::Model::Measurement
 		switch ( _potentialNextTarget.getTargetType() )
 		{
 		case PotentialTargetType::NONE:
-		case PotentialTargetType::POSITION:
-			break;
+		case PotentialTargetType::POSITION: break;
 
 		case PotentialTargetType::ATOM:
 			addAtom( *_potentialNextTarget.getAtom() );
@@ -228,9 +227,9 @@ namespace VTX::Model::Measurement
 		return false;
 	}
 
-	void MeasureInProgress::_recomputeAABB( Math::AABB & p_aabb )
+	void MeasureInProgress::_recomputeAABB( Object3D::Helper::AABB & p_aabb )
 	{
-		p_aabb = Math::AABB();
+		p_aabb = Object3D::Helper::AABB();
 
 		for ( const Model::Atom * const atom : _atoms )
 		{

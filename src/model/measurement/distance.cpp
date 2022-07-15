@@ -145,9 +145,9 @@ namespace VTX::Model::Measurement
 		}
 	}
 
-	void Distance::_recomputeAABB( Math::AABB & p_aabb )
+	void Distance::_recomputeAABB( Object3D::Helper::AABB & p_aabb )
 	{
-		p_aabb = Math::AABB();
+		p_aabb = Object3D::Helper::AABB();
 
 		for ( const Model::Atom * const atom : _atoms )
 		{

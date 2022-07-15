@@ -2,7 +2,6 @@
 #include "action/main.hpp"
 #include "event/event_manager.hpp"
 #include "math/transform.hpp"
-#include "model/box.hpp"
 #include "model/label.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -47,8 +46,7 @@ namespace VTX::Object3D
 		MVC::MvcManager::get().deleteAllModels( _labels );
 		_labels.clear();
 
-		MVC::MvcManager::get().deleteAllModels( _boxes );
-		_boxes.clear();
+		_helpers.clear();
 
 		while ( _paths.size() > 0 )
 		{
@@ -131,16 +129,17 @@ namespace VTX::Object3D
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
-	void Scene::addBox( BoxPtr const p_box )
+	void Scene::addHelper( HelperPtr const p_helper )
 	{
-		_add( p_box, _boxes );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::BOX_ADDED, p_box ) );
+		_helpers.emplace_back( p_helper );
+		VTX_EVENT( new Event::VTXEventPtr( Event::Global::HELPER_ADDED, p_helper ) );
+		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
-	void Scene::removeBox( BoxPtr const p_box )
+	void Scene::removeHelper( HelperPtr const p_helper )
 	{
-		_remove( p_box, _boxes );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::BOX_REMOVED, p_box ) );
+		_helpers.erase( std::find( _helpers.begin(), _helpers.end(), p_helper ) );
+		VTX_EVENT( new Event::VTXEventPtr( Event::Global::HELPER_REMOVED, p_helper ) );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
@@ -200,7 +199,7 @@ namespace VTX::Object3D
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::SCENE_ITEM_INDEX_CHANGE, &p_item ) );
 	}
 
-	const Math::AABB & Scene::getAABB()
+	const Object3D::Helper::AABB & Scene::getAABB()
 	{
 		if ( !_aabb.isValid() )
 			_computeAABB();

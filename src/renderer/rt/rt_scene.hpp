@@ -75,7 +75,10 @@ namespace VTX
 			{
 				for ( BaseObject3D * object : _objects )
 				{
-					if ( object->intersectAny( p_ray, p_tMin, p_tMax ) ) { return true; }
+					if ( object->intersectAny( p_ray, p_tMin, p_tMax ) )
+					{
+						return true;
+					}
 				}
 				return false;
 			}
@@ -91,7 +94,7 @@ namespace VTX
 		  private:
 			std::vector<BaseObject3D *> _objects;
 			std::vector<BaseLight *>	_lights;
-			Math::AABB					_aabb;
+			Object3D::Helper::AABB		_aabb;
 		};
 	} // namespace Renderer
 } // namespace VTX

@@ -24,7 +24,7 @@ namespace VTX
 
 		struct LBVHNode
 		{
-			Math::AABB _aabb;
+			Object3D::Helper::AABB _aabb;
 			union
 			{
 				uint _primsOffset = 0;	 // if leaf
@@ -46,8 +46,8 @@ namespace VTX
 			BVH()  = default;
 			~BVH() = default;
 
-			const bool		   isBuilt() const { return _isBuilt; }
-			const Math::AABB & getAABB() const { return _nodes[ 0 ]._aabb; }
+			const bool					   isBuilt() const { return _isBuilt; }
+			const Object3D::Helper::AABB & getAABB() const { return _nodes[ 0 ]._aabb; }
 
 			void build( const std::vector<BasePrimitive *> & p_prims,
 						const uint							 p_maxPrimsLeaf,

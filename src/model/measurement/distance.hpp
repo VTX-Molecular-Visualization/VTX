@@ -12,11 +12,10 @@
 #include <utility>
 #include <vector>
 
-
 namespace VTX::Model
 {
 	class Atom;
-	//class Molecule;
+	// class Molecule;
 
 	namespace Measurement
 	{
@@ -24,17 +23,17 @@ namespace VTX::Model
 		{
 			VTX_MODEL
 
-		private:
+		  private:
 			using MoleculeView = View::CallbackView<Model::Molecule, Model::Measurement::Distance>;
 
-		public:
+		  public:
 			using AtomPair = std::pair<const Model::Atom &, const Model::Atom &>;
 
-		public:
+		  public:
 			void setAtoms( const Model::Atom & p_firstAtom, const Model::Atom & p_secondAtom );
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-			void _recomputeAABB( Math::AABB & p_aabb ) override;
+			void _recomputeAABB( Object3D::Helper::AABB & p_aabb ) override;
 
 			const Model::Atom & getFirstAtom() const { return *_atoms[ 0 ]; }
 			const Model::Atom & getSecondAtom() const { return *_atoms[ 1 ]; }
@@ -44,7 +43,7 @@ namespace VTX::Model
 
 			void autoDelete() const override;
 
-		protected:
+		  protected:
 			Distance();
 			Distance( const AtomPair & p_pair );
 
@@ -61,7 +60,7 @@ namespace VTX::Model
 
 			void _invalidate();
 
-		private:
+		  private:
 			std::vector<const Model::Atom *> _atoms			= std::vector<const Model::Atom *>();
 			std::vector<MoleculeView *>		 _moleculeViews = std::vector<MoleculeView *>();
 
@@ -75,6 +74,6 @@ namespace VTX::Model
 
 			void _onMoleculeChange( const Model::Molecule * const p_molecule, const Event::VTXEvent * const p_event );
 		};
-	}
-} // namespace VTX::Model::Measurement
+	} // namespace Measurement
+} // namespace VTX::Model
 #endif

@@ -1,5 +1,4 @@
 #include "geometric.hpp"
-#include "model/box.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "renderer/gl/gl.hpp"
@@ -81,9 +80,9 @@ namespace VTX::Renderer::GL::Pass
 		{
 			mesh->render( p_scene.getCamera() );
 		}
-		for ( const Object3D::Scene::BoxPtr & box : p_scene.getBoxes() )
+		for ( const Object3D::Scene::HelperPtr & helper : p_scene.getHelpers() )
 		{
-			box->render( p_scene.getCamera() );
+			helper->render( p_scene.getCamera() );
 		}
 	}
 

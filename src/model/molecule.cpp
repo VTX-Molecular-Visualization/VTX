@@ -16,7 +16,6 @@
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/secondary_structure.hpp"
-#include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
 #include "vtx_app.hpp"
@@ -197,7 +196,7 @@ namespace VTX
 			_bufferAABBIndices = std::vector<uint>();
 			for ( const Residue * const elem : _residues )
 			{
-				const Math::AABB & aabb = elem->getWorldAABB();
+				const Object3D::Helper::AABB & aabb = elem->getWorldAABB();
 
 				const Vec3f & min = aabb.getMin();
 				const Vec3f & max = aabb.getMax();

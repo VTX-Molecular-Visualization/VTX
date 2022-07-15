@@ -29,7 +29,7 @@ namespace VTX
 			void toggleCameraController();
 			void setCameraController( const ID::VTX_ID & p_controllerId );
 			void resetCameraController();
-			void orientCameraController( const Math::AABB & );
+			void orientCameraController( const Object3D::Helper::AABB & );
 			void orientCameraController( const Vec3f & p_position, const Quatf & p_orientation );
 
 			void setPickerController( const ID::VTX_ID & p_pickerId );

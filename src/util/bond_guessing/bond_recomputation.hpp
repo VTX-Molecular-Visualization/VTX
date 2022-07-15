@@ -1,8 +1,8 @@
 #ifndef __VTX_UTIL_BOND_GUESSING_RECOMPUTATION__
 #define __VTX_UTIL_BOND_GUESSING_RECOMPUTATION__
 
-#include "math/aabb.hpp"
 #include "model/molecule.hpp"
+#include "object3d/helper/aabb.hpp"
 #include "util/filesystem.hpp"
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
@@ -19,7 +19,7 @@ namespace VTX::Util::BondGuessing
 		struct CellList
 		{
 		  public:
-			CellList( const VTX::Math::AABB & p_aabb, const float p_cubeSize ) :
+			CellList( const VTX::Object3D::Helper::AABB & p_aabb, const float p_cubeSize ) :
 				_cubeSize( p_cubeSize ), _xStart( p_aabb.getMin().x ), _yStart( p_aabb.getMin().y ),
 				_zStart( p_aabb.getMin().z ),
 				_width( int( ( p_aabb.getMax().x - p_aabb.getMin().x ) / p_cubeSize ) + 1 ),
@@ -74,7 +74,7 @@ namespace VTX::Util::BondGuessing
 		};
 
 	  public:
-		static void recomputeBonds( chemfiles::Frame & p_frame, const VTX::Math::AABB & p_aabb );
+		static void recomputeBonds( chemfiles::Frame & p_frame, const VTX::Object3D::Helper::AABB & p_aabb );
 
 	  private:
 		static void _recomputeBondsOfNonStandardResidues( chemfiles::Frame & frame, const CellList & p_cellList );

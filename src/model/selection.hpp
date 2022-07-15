@@ -5,9 +5,9 @@
 #include "define.hpp"
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"
-#include "math/aabb.hpp"
 #include "model/base_model.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "object3d/helper/aabb.hpp"
 #include <map>
 #include <set>
 #include <unordered_set>
@@ -208,7 +208,7 @@ namespace VTX::Model
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		void						   getItemTypes( std::set<VTX::ID::VTX_ID> & p_types ) const;
-		Math::AABB					   getAABB() const;
+		Object3D::Helper::AABB		   getAABB() const;
 		const Model::BaseModel * const getCurrentObject() const;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
@@ -246,8 +246,9 @@ namespace VTX::Model
 		std::set<VTX::Model::ID> _items		   = std::set<VTX::Model::ID>();
 		MapMoleculeIds			 _moleculesMap = MapMoleculeIds();
 
-		std::map<VTX::Model::ID, Math::AABB> _mapSelectionAABB = std::map<VTX::Model::ID, Math::AABB>();
-		const Model::BaseModel *			 _currentObject	   = nullptr;
+		std::map<VTX::Model::ID, Object3D::Helper::AABB> _mapSelectionAABB
+			= std::map<VTX::Model::ID, Object3D::Helper::AABB>();
+		const Model::BaseModel * _currentObject = nullptr;
 
 		void _selectMolecule( const Molecule & );
 		void _unselectMolecule( const Molecule & );

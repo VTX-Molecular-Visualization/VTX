@@ -1053,13 +1053,13 @@ namespace VTX::Model
 		}
 	}
 
-	Math::AABB Selection::getAABB() const
+	Object3D::Helper::AABB Selection::getAABB() const
 	{
-		Math::AABB res = Math::AABB();
+		Object3D::Helper::AABB res = Object3D::Helper::AABB();
 
-		for ( const std::pair<const VTX::Model::ID, Math::AABB> & pairIdAabb : _mapSelectionAABB )
+		for ( const std::pair<const VTX::Model::ID, Object3D::Helper::AABB> & pairIdAabb : _mapSelectionAABB )
 		{
-			const Math::AABB & currentAABB = pairIdAabb.second;
+			const Object3D::Helper::AABB & currentAABB = pairIdAabb.second;
 			res.extend( currentAABB );
 		}
 
@@ -1073,7 +1073,7 @@ namespace VTX::Model
 		for ( const std::pair<const VTX::Model::ID, MapChainIds> & mapMol : _moleculesMap )
 		{
 			const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( mapMol.first );
-			Math::AABB				aabb	 = Math::AABB();
+			Object3D::Helper::AABB	aabb	 = Object3D::Helper::AABB();
 			_mapSelectionAABB.emplace( molecule.getId(), aabb );
 
 			if ( molecule.getChainCount() == mapMol.second.size() )

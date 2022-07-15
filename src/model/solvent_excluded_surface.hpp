@@ -3,7 +3,6 @@
 
 #include "base_model_3d.hpp"
 #include "buffer/solvent_excluded_surface.hpp"
-#include "math/grid.hpp"
 
 namespace VTX
 {

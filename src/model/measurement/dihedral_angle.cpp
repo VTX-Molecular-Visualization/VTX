@@ -168,9 +168,9 @@ namespace VTX::Model::Measurement
 		}
 	}
 
-	void DihedralAngle::_recomputeAABB( Math::AABB & p_aabb )
+	void DihedralAngle::_recomputeAABB( Object3D::Helper::AABB & p_aabb )
 	{
-		p_aabb = Math::AABB();
+		p_aabb = Object3D::Helper::AABB();
 
 		for ( const Model::Atom * const atom : _atoms )
 		{

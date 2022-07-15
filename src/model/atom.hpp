@@ -6,7 +6,7 @@
 #include "generic/base_colorable.hpp"
 #include "generic/base_visible.hpp"
 #include "id.hpp"
-#include "math/aabb.hpp"
+#include "object3d/helper/aabb.hpp"
 
 namespace VTX
 {
@@ -186,9 +186,9 @@ namespace VTX
 			void setVisible( const bool p_visible );
 			void setVisible( const bool p_visible, const bool p_notify );
 
-			const Vec3f		 getWorldPosition() const;
-			const Math::AABB getAABB() const;
-			const Math::AABB getWorldAABB() const;
+			const Vec3f					 getWorldPosition() const;
+			const Object3D::Helper::AABB getAABB() const;
+			const Object3D::Helper::AABB getWorldAABB() const;
 
 		  private:
 			uint	  _index	  = 0;

@@ -3,10 +3,10 @@
 
 #include "action/base_action.hpp"
 #include "color/rgb.hpp"
-#include "math/aabb.hpp"
 #include "model/label.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "object3d/helper/aabb.hpp"
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
@@ -48,7 +48,7 @@ namespace VTX::Action::Label
 
 		virtual void execute() override
 		{
-			Math::AABB aabb = Math::AABB();
+			Object3D::Helper::AABB aabb = Object3D::Helper::AABB();
 
 			for ( Model::Label * const label : _labels )
 				aabb.extend( label->getAABB() );

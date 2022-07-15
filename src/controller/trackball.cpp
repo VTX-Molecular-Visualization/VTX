@@ -189,7 +189,7 @@ namespace VTX
 			_velocity	= VEC3F_ZERO;
 		}
 
-		void Trackball::_computeOrientPositions( const Math::AABB & p_aabb )
+		void Trackball::_computeOrientPositions( const Object3D::Helper::AABB & p_aabb )
 		{
 			_orientStartingPosition = _target;
 			_orientTargetPosition	= p_aabb.centroid();

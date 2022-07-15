@@ -35,7 +35,7 @@ namespace VTX::Model
 		}
 	}
 
-	const Math::AABB & Label::getAABB()
+	const Object3D::Helper::AABB & Label::getAABB()
 	{
 		if ( !_aabb.isValid() )
 			_recomputeAABB( _aabb );
@@ -43,7 +43,7 @@ namespace VTX::Model
 		return _aabb;
 	}
 
-	void Label::_recomputeAABB( Math::AABB & p_aabb ) { p_aabb = Math::AABB(); }
+	void Label::_recomputeAABB( Object3D::Helper::AABB & p_aabb ) { p_aabb = Object3D::Helper::AABB(); }
 
 	Vec2f Label::getSize() const { return Vec2f( 0, 0 ); }
 

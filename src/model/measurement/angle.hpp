@@ -15,28 +15,28 @@
 namespace VTX::Model
 {
 	class Atom;
-	//class Molecule;
-	
+	// class Molecule;
+
 	namespace Measurement
 	{
 		class Angle : public Model::Label, Event::BaseEventReceiverVTX, Generic::BaseAutoDelete
 		{
 			VTX_MODEL
 
-		private:
+		  private:
 			using MoleculeView = View::CallbackView<Model::Molecule, Model::Measurement::Angle>;
 
-		public:
+		  public:
 			using AtomTriplet = std::tuple<const Model::Atom &, const Model::Atom &, const Model::Atom &>;
 
-		public:
+		  public:
 			void setAtoms( const Model::Atom & p_firstAtom,
-						const Model::Atom & p_secondAtom,
-						const Model::Atom & p_thirdAtom );
+						   const Model::Atom & p_secondAtom,
+						   const Model::Atom & p_thirdAtom );
 
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-			void _recomputeAABB( Math::AABB & p_aabb ) override;
+			void _recomputeAABB( Object3D::Helper::AABB & p_aabb ) override;
 
 			const std::vector<const Model::Atom *> getAtoms() const { return _atoms; };
 			const Model::Atom &					   getFirstAtom() const { return *_atoms[ 0 ]; }
@@ -50,7 +50,7 @@ namespace VTX::Model
 
 			void _invalidate();
 
-		protected:
+		  protected:
 			Angle();
 			Angle( const AtomTriplet & p_triplet );
 
@@ -66,7 +66,7 @@ namespace VTX::Model
 			bool _isLinkedToAtom( const Model::Atom * const p_atom ) const;
 			bool _isLinkedToMolecule( const Model::Molecule * const p_atom ) const;
 
-		private:
+		  private:
 			std::vector<const Model::Atom *> _atoms			= std::vector<const Model::Atom *>();
 			std::vector<MoleculeView *>		 _moleculeViews = std::vector<MoleculeView *>();
 
@@ -81,7 +81,7 @@ namespace VTX::Model
 
 			void _onMoleculeChange( const Model::Molecule * const p_molecule, const Event::VTXEvent * const p_event );
 		};
-	}
-} // namespace VTX::Model::Measurement
+	} // namespace Measurement
+} // namespace VTX::Model
 
 #endif

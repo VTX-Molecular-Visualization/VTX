@@ -903,7 +903,7 @@ namespace VTX::Action::Selection
 
 		virtual void execute() override
 		{
-			const Math::AABB target
+			const Object3D::Helper::AABB target
 				= _selection.hasMolecule() ? _selection.getAABB() : VTXApp::get().getScene().getAABB();
 
 			VTXApp::get()

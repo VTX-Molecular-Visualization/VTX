@@ -106,9 +106,9 @@
 //		}
 //	}
 //
-//	void DistanceToCycle::_recomputeAABB( Math::AABB & p_aabb )
+//	void DistanceToCycle::_recomputeAABB( Object3D::Helper::AABB & p_aabb )
 //	{
-//		p_aabb = Math::AABB();
+//		p_aabb = Object3D::Helper::AABB();
 //		p_aabb.extend( _firstAtom->getWorldAABB() );
 //		p_aabb.extend( _secondAtom->getWorldAABB() );
 //	}

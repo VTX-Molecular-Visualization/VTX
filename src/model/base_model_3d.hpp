@@ -9,8 +9,8 @@
 #include "generic/base_transformable.hpp"
 #include "generic/base_visible.hpp"
 #include "id.hpp"
-#include "math/aabb.hpp"
 #include "model/base_model.hpp"
+#include "object3d/helper/aabb.hpp"
 #include "tool/logger.hpp"
 #include "util/math.hpp"
 #include <unordered_set>
@@ -31,14 +31,14 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
-			inline virtual const Math::AABB & getAABB() const
+			inline virtual const Object3D::Helper::AABB & getAABB() const
 			{
 				if ( !_aabb.isValid() )
 					_computeAABB();
 
 				return _aabb;
 			}
-			inline virtual const Math::AABB & getWorldAABB() const
+			inline virtual const Object3D::Helper::AABB & getWorldAABB() const
 			{
 				if ( !_worldAabb.isValid() )
 					_computeWorldAABB();
@@ -49,7 +49,7 @@ namespace VTX
 			inline B * const	   getBuffer() { return _buffer; }
 			inline bool			   isInit() const { return _isInit; }
 
-			inline void referenceLinkedAABB( Math::AABB * const p_aabb ) { _linkedAABBs.emplace( p_aabb ); }
+			inline void referenceLinkedAABB( Object3D::Helper::AABB * const p_aabb ) { _linkedAABBs.emplace( p_aabb ); }
 
 			void setAutoRotationVector( const Vec3f p_value ) override
 			{
@@ -98,13 +98,13 @@ namespace VTX
 			}
 
 		  protected:
-			mutable Math::AABB					   _aabb;
-			mutable Math::AABB					   _worldAabb;
+			mutable Object3D::Helper::AABB		   _aabb;
+			mutable Object3D::Helper::AABB		   _worldAabb;
 			std::vector<Generic::BaseRenderable *> _renderables = std::vector<Generic::BaseRenderable *>();
 			B *									   _buffer		= nullptr;
 			bool								   _isInit		= false;
 
-			std::unordered_set<Math::AABB *> _linkedAABBs = std::unordered_set<Math::AABB *>();
+			std::unordered_set<Object3D::Helper::AABB *> _linkedAABBs = std::unordered_set<Object3D::Helper::AABB *>();
 
 			BaseModel3D( const VTX::ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {}
 			virtual ~BaseModel3D()
@@ -126,7 +126,7 @@ namespace VTX
 			{
 				_worldAabb.invalidate();
 
-				for ( Math::AABB * const aabb : _linkedAABBs )
+				for ( Object3D::Helper::AABB * const aabb : _linkedAABBs )
 					aabb->invalidate();
 			};
 
@@ -137,7 +137,7 @@ namespace VTX
 			{
 				std::vector<Vec3f> aabbSummits = getAABB().getSummits();
 
-				_worldAabb = Math::AABB();
+				_worldAabb = Object3D::Helper::AABB();
 				for ( const Vec3f & summit : aabbSummits )
 				{
 					const Vec4f worldSummit = _transform.get() * Vec4f( summit, 1 );

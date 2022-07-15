@@ -20,8 +20,8 @@ namespace VTX
 			BasePrimitive( BaseMaterial * const p_mtl ) : _material( p_mtl ) {}
 			virtual ~BasePrimitive() = default;
 
-			const BaseMaterial * getMaterial() const { return _material; }
-			const Math::AABB &	 getAABB() const { return _aabb; }
+			const BaseMaterial *		   getMaterial() const { return _material; }
+			const Object3D::Helper::AABB & getAABB() const { return _aabb; }
 
 			virtual bool intersect( const Ray &	   p_ray,
 									const float	   p_tMin,

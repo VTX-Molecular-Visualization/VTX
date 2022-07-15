@@ -5,8 +5,8 @@
 #include "define.hpp"
 #include "generic/base_scene_item.hpp"
 #include "id.hpp"
-#include "math/aabb.hpp"
 #include "model/base_model.hpp"
+#include "object3d/helper/aabb.hpp"
 
 namespace VTX::Model
 {
@@ -22,7 +22,7 @@ namespace VTX::Model
 		const Vec3f & getPosition() const;
 		void		  setPosition( const Vec3f & p_position );
 
-		const Math::AABB & getAABB();
+		const Object3D::Helper::AABB & getAABB();
 
 		bool hasAutoNaming() const { return _autoNaming; };
 		void setAutoNaming( const bool p_autoNaming, const bool p_notify = true );
@@ -42,7 +42,7 @@ namespace VTX::Model
 		std::string & _getName() { return _name; }
 
 		void		 _invalidateAABB() { _aabb.invalidate(); }
-		virtual void _recomputeAABB( Math::AABB & p_aabb );
+		virtual void _recomputeAABB( Object3D::Helper::AABB & p_aabb );
 
 	  private:
 		std::string _name		= "";
@@ -50,7 +50,7 @@ namespace VTX::Model
 		Color::Rgb	_color;
 		Vec3f		_worldPosition = VEC3F_ZERO;
 
-		Math::AABB _aabb = Math::AABB();
+		Object3D::Helper::AABB _aabb = Object3D::Helper::AABB();
 	};
 
 } // namespace VTX::Model

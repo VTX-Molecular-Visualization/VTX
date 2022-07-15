@@ -21,10 +21,10 @@ namespace VTX
 			{
 				_computeAABB();
 			}
-			Cylinder( const Cylinder & p_node ) = default;			  // copy constructor
-			Cylinder( Cylinder && p_ray )		= default;			  // move constructor
+			Cylinder( const Cylinder & p_node )			   = default; // copy constructor
+			Cylinder( Cylinder && p_ray )				   = default; // move constructor
 			Cylinder & operator=( const Cylinder & p_ray ) = default; // = copy
-			Cylinder & operator=( Cylinder && p_ray ) = default;	  // = move
+			Cylinder & operator=( Cylinder && p_ray )	   = default; // = move
 
 			const float radius() const { return _radius; }
 
@@ -48,13 +48,22 @@ namespace VTX
 
 				const float h = b * b - a * c;
 
-				if ( h < 0.f ) { return false; }
+				if ( h < 0.f )
+				{
+					return false;
+				}
 
 				float t = ( -b - sqrt( h ) ) / a;
-				if ( t < p_tMin || t > p_tMax ) { return false; }
+				if ( t < p_tMin || t > p_tMax )
+				{
+					return false;
+				}
 
 				const float y = d2 + t * d1;
-				if ( y < 0.f || y > d0 ) { return false; }
+				if ( y < 0.f || y > d0 )
+				{
+					return false;
+				}
 
 				p_intersection._point	  = p_ray.getPointAtT( t );
 				const Vec3f normal		  = ( ov0 + t * d - v * y / d0 ) / _radius;
@@ -71,7 +80,8 @@ namespace VTX
 				const Vec3f v = _v1 - _v0;
 				const Vec3f e = _radius * sqrt( 1.f - v * v / dot( v, v ) );
 
-				_aabb = Math::AABB( Util::Math::min( _v0 - e, _v1 - e ), Util::Math::max( _v0 + e, _v1 + e ) );
+				_aabb = Object3D::Helper::AABB( Util::Math::min( _v0 - e, _v1 - e ),
+												Util::Math::max( _v0 + e, _v1 + e ) );
 			}
 
 		  private:

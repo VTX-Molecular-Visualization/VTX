@@ -11,13 +11,12 @@
 #include <string>
 #include <utility>
 
-
 namespace VTX::Model
 {
-	
+
 	class Atom;
-	//class Molecule;
-	
+	// class Molecule;
+
 	namespace Measurement
 	{
 		class DistanceToCycle : public Model::Label, Event::BaseEventReceiverVTX, Generic::BaseAutoDelete
@@ -34,7 +33,7 @@ namespace VTX::Model
 			//		void setAtoms( const Model::Atom & p_firstAtom, const Model::Atom & p_secondAtom );
 			//		void receiveEvent( const Event::VTXEvent & p_event ) override;
 			//
-			//		void _recomputeAABB( Math::AABB & p_aabb ) override;
+			//		void _recomputeAABB( Object3D::Helper::AABB & p_aabb ) override;
 			//
 			//		const Model::Atom & getFirstAtom() const { return *_firstAtom; }
 			//		const Model::Atom & getSecondAtom() const { return *_secondAtom; }
@@ -71,9 +70,10 @@ namespace VTX::Model
 			//
 			//		VTX::ID::VTX_ID getViewID( const int p_atomPos ) const;
 			//
-			//		void _onMoleculeChange( const Model::Molecule * const p_molecule, const Event::VTXEvent * const p_event
+			//		void _onMoleculeChange( const Model::Molecule * const p_molecule, const Event::VTXEvent * const
+			//p_event
 			//);
 		};
-}
-} // namespace VTX::Model::Measurement
+	} // namespace Measurement
+} // namespace VTX::Model
 #endif

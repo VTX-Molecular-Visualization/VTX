@@ -114,7 +114,7 @@ namespace VTX
 			getController<Controller::Freefly>( ID::Controller::FREEFLY )->reset();
 		}
 
-		void Visualization::orientCameraController( const Math::AABB & p_aabb )
+		void Visualization::orientCameraController( const Object3D::Helper::AABB & p_aabb )
 		{
 			getController<VTX::Controller::BaseCameraController>( _cameraController )->orient( p_aabb );
 			// Override Trackball distance.

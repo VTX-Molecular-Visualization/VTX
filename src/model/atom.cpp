@@ -42,21 +42,21 @@ namespace VTX
 			const Vec4f worldPosition = transform.get() * Vec4f( position.x, position.y, position.z, 1 );
 			return Vec3f( worldPosition.x, worldPosition.y, worldPosition.z );
 		}
-		const Math::AABB Atom::getAABB() const
+		const Object3D::Helper::AABB Atom::getAABB() const
 		{
-			Vec3f &	   position = getMoleculePtr()->getAtomPositionFrame( getMoleculePtr()->getFrame() )[ _index ];
-			Math::AABB aabb		= Math::AABB( position, getVdwRadius() );
+			Vec3f & position = getMoleculePtr()->getAtomPositionFrame( getMoleculePtr()->getFrame() )[ _index ];
+			Object3D::Helper::AABB aabb = Object3D::Helper::AABB( position, getVdwRadius() );
 
 			return aabb;
 		}
-		const Math::AABB Atom::getWorldAABB() const
+		const Object3D::Helper::AABB Atom::getWorldAABB() const
 		{
-			const Math::AABB		aabb	  = getAABB();
-			const Math::Transform & transform = getMoleculePtr()->getTransform();
+			const Object3D::Helper::AABB aabb	   = getAABB();
+			const Math::Transform &		 transform = getMoleculePtr()->getTransform();
 
 			const Vec4f worldPosition = transform.get() * Vec4f( aabb.centroid(), 1 );
 
-			return Math::AABB( Vec3f( worldPosition ), getVdwRadius() );
+			return Object3D::Helper::AABB( Vec3f( worldPosition ), getVdwRadius() );
 		}
 
 		const std::string Atom::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {

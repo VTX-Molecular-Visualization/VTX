@@ -75,7 +75,7 @@ namespace VTX
 			_camera.move( translation );
 		}
 
-		void Freefly::_computeOrientPositions( const Math::AABB & p_aabb )
+		void Freefly::_computeOrientPositions( const Object3D::Helper::AABB & p_aabb )
 		{
 			_orientStartingPosition = _camera.getPosition();
 			const float targetDistance

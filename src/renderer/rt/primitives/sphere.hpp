@@ -80,7 +80,7 @@ namespace VTX
 			}
 
 		  private:
-			void _computeAABB() override { _aabb = Math::AABB( getVecMin(), getVecMax() ); }
+			void _computeAABB() override { _aabb = Object3D::Helper::AABB( getVecMin(), getVecMax() ); }
 
 		  private:
 			Vec3f _center = VEC3F_ZERO;
