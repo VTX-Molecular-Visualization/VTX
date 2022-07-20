@@ -58,7 +58,10 @@ namespace VTX
 
 				switch ( p_severity )
 				{
-				case GL_DEBUG_SEVERITY_HIGH: throw Exception::GLException( message ); break;
+				case GL_DEBUG_SEVERITY_HIGH:
+					std::cerr << message << std::endl;
+					throw Exception::GLException( message );
+					break;
 				case GL_DEBUG_SEVERITY_MEDIUM:
 				case GL_DEBUG_SEVERITY_LOW: std::cout << message << std::endl;
 				default: break;

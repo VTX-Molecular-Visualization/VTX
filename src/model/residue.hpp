@@ -138,8 +138,8 @@ namespace VTX
 			void setVisible( const bool p_visible );
 			void setVisible( const bool p_visible, const bool p_notify );
 
-			const Object3D::Helper::AABB getAABB() const;
-			const Object3D::Helper::AABB getWorldAABB() const;
+			Object3D::Helper::AABB getAABB() const;
+			Object3D::Helper::AABB getWorldAABB() const;
 
 		  protected:
 			void _onRepresentationChange() override;

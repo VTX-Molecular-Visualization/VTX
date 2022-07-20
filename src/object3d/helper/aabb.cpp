@@ -109,7 +109,7 @@ namespace VTX::Object3D::Helper
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::AABB_CORNER, 3, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::AABB_CORNER, ATTRIBUTE_LOCATION::AABB_CORNER );
 
-		_gl->glLineWidth( 2.f );
+		refresh();
 	}
 
 	void AABB::render( const Object3D::Camera & p_camera ) const

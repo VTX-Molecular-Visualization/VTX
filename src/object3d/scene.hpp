@@ -14,11 +14,15 @@ namespace VTX::Model
 	class Molecule;
 	class Path;
 	class Label;
-	class BaseHelper;
 } // namespace VTX::Model
 
 namespace VTX::Object3D
 {
+	namespace Helper
+	{
+		class BaseHelper;
+	}
+
 	class Camera;
 	class Scene : public Generic::BaseUpdatable
 	{

@@ -280,7 +280,7 @@ namespace VTX
 			refreshSelection();
 		}
 
-		const Object3D::Helper::AABB & SecondaryStructure::getAABB() const { return _molecule->getAABB(); }
+		Object3D::Helper::AABB & SecondaryStructure::getAABB() const { return _molecule->getAABB(); }
 
 		const Math::Transform & SecondaryStructure::getTransform() const { return _molecule->getTransform(); };
 

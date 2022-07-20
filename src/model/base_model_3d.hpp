@@ -31,14 +31,14 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
-			inline virtual const Object3D::Helper::AABB & getAABB() const
+			inline virtual Object3D::Helper::AABB & getAABB() const
 			{
 				if ( !_aabb.isValid() )
 					_computeAABB();
 
 				return _aabb;
 			}
-			inline virtual const Object3D::Helper::AABB & getWorldAABB() const
+			inline virtual Object3D::Helper::AABB & getWorldAABB() const
 			{
 				if ( !_worldAabb.isValid() )
 					_computeWorldAABB();

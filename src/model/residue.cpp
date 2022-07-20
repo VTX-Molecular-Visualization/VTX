@@ -146,7 +146,7 @@ namespace VTX
 			}
 		}
 
-		const Object3D::Helper::AABB Residue::getAABB() const
+		Object3D::Helper::AABB Residue::getAABB() const
 		{
 			Object3D::Helper::AABB aabb = Object3D::Helper::AABB();
 
@@ -163,7 +163,7 @@ namespace VTX
 			return aabb;
 		}
 
-		const Object3D::Helper::AABB Residue::getWorldAABB() const
+		Object3D::Helper::AABB Residue::getWorldAABB() const
 		{
 			const Object3D::Helper::AABB aabb	   = getAABB();
 			const Math::Transform &		 transform = getMoleculePtr()->getTransform();

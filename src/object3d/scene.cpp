@@ -7,6 +7,7 @@
 #include "model/molecule.hpp"
 #include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "object3d/helper/base_helper.hpp"
 #include <algorithm>
 
 namespace VTX::Object3D
