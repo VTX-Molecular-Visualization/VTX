@@ -11,6 +11,8 @@
 #include "io/struct/scene_path_data.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
+#include "model/secondary_structure.hpp"
+#include "model/solvent_excluded_surface.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "network/network_manager.hpp"
 #include "network/request/check_update.hpp"
@@ -166,6 +168,8 @@ namespace VTX::Action::Main
 								VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, result.molecule ) );
 								VTXApp::get().getScene().addMolecule( result.molecule );
 								VTXApp::get().getScene().addHelper( &( result.molecule->getAABB() ) );
+								VTXApp::get().getScene().addHelper(
+									&( result.molecule->getSolventExcludedSurface().getGrid() ) );
 							}
 							else if ( result.mesh != nullptr )
 							{

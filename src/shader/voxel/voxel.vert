@@ -1,19 +1,26 @@
-#version 420
+#version 450
 
-layout( location = 0 ) in vec3 aVoxelMin;
-layout( location = 1 ) in vec3 aVoxelMax;
+#define VOXEL_MIN 0
+#define VOXEL_MAX 1
 
-flat out vec3 vVoxelSize;
+layout( location = VOXEL_MIN ) in vec3 aVoxelMin;
+layout( location = VOXEL_MAX ) in vec3 aVoxelMax;
 
-layout(std140) uniform VoxelSettings
+uniform mat4 u_MVMatrix;
+uniform mat4 u_projMatrix;
+uniform mat4 u_normalMatrix;
+
+out VsOut
 {
-	mat4 uMVPMatrix;
-	vec4 uColor;
-};
+	flat vec3 voxelSize;
+	flat vec3 center;
+}
+vsOut;
 
 void main()
 {
 	vec3 center = (aVoxelMin + aVoxelMax) / 2.;
-	vVoxelSize = center - aVoxelMin;
-	gl_Position = uMVPMatrix * vec4(center, 1.);
+	vsOut.center = center;
+	vsOut.voxelSize = aVoxelMax - aVoxelMin;		
+	gl_Position = u_projMatrix * u_MVMatrix * vec4(center, 1.f);
 }

@@ -212,7 +212,7 @@ namespace VTX
 				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 				refreshBondsBuffer();
 				refreshSecondaryStructure();
-				refreshContourBuildup();
+				refreshSolventExcludedSurface();
 			}
 
 			void refreshSelection( const Selection::MapChainIds * const );
@@ -262,9 +262,9 @@ namespace VTX
 			void createSecondaryStructure();
 			void refreshSecondaryStructure();
 
-			// SES.
-			void createContourBuildup();
-			void refreshContourBuildup();
+			// Solvent excluded surface.
+			void createSolventExcludedSurface();
+			void refreshSolventExcludedSurface();
 
 			void propagateEventToViews( const Event::VTXEvent * const p_event ) { _notifyViews( p_event ); }
 
@@ -280,7 +280,6 @@ namespace VTX
 			void _init() override;
 			void _fillBuffer() override;
 			void _computeAABB() const override;
-			// void _fillBufferAABB() override;
 			void _instantiate3DViews() override;
 
 			void _addChain( Model::Chain * const p_chain );

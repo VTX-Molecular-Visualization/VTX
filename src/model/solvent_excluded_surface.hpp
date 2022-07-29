@@ -3,6 +3,7 @@
 
 #include "base_model_3d.hpp"
 #include "buffer/solvent_excluded_surface.hpp"
+#include "object3d/helper/grid.hpp"
 
 namespace VTX
 {
@@ -14,7 +15,8 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
-			inline Model::Molecule * const getMolecule() { return _molecule; }
+			inline Model::Molecule * const	getMolecule() { return _molecule; }
+			inline Object3D::Helper::Grid & getGrid() { return _grid; }
 
 			void print() const;
 
@@ -26,6 +28,7 @@ namespace VTX
 
 		  private:
 			Model::Molecule * const _molecule;
+			Object3D::Helper::Grid	_grid = Object3D::Helper::Grid();
 
 			SolventExcludedSurface( Molecule * const );
 			~SolventExcludedSurface() = default;

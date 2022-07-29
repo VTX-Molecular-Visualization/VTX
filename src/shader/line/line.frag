@@ -25,5 +25,5 @@ void main()
 	viewPositionNormalCompressed.w = 0; // Padding.
 
 	outViewPositionNormal = viewPositionNormalCompressed;
-	outColor			  = vec4( 0.9f, 0.9f, 0.9f, 32.f );
+	outColor			  = vec4( 1.f, 1.f, 1.f, 32.f );
 }

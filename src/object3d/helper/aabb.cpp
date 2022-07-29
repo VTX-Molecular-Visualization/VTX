@@ -85,16 +85,18 @@ namespace VTX::Object3D::Helper
 														   max,
 														   Vec3f( min.x, max.y, max.z ) } );
 
-		_indices = std::vector<uint>( { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 } );
+		std::vector<uint> indices
+			= std::vector<uint>( { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 } );
 
 		_vbo.set<Vec3f>( corners, Renderer::GL::BufferData::Usage::STATIC_DRAW );
-		_ibo.set<uint>( _indices, Renderer::GL::BufferData::Usage::STATIC_DRAW );
+		_ibo.set<uint>( indices, Renderer::GL::BufferData::Usage::STATIC_DRAW );
+		_iboSize = uint( indices.size() );
 	}
 
 	void AABB::generate()
 	{
 		_program = VTX_PROGRAM_MANAGER().createProgram(
-			"LineShader", { IO::FilePath( "line/line.vert" ), IO::FilePath( "line/line.frag" ) } );
+			"Line", { IO::FilePath( "line/line.vert" ), IO::FilePath( "line/line.frag" ) } );
 		assert( _program != nullptr );
 
 		_vbo.create();
@@ -123,7 +125,7 @@ namespace VTX::Object3D::Helper
 
 		_vao.bind();
 		_vao.drawElement( Renderer::GL::VertexArray::DrawMode::LINES,
-						  GLsizei( _indices.size() ),
+						  GLsizei( _iboSize ),
 						  Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.unbind();
 	}

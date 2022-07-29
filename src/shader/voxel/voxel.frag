@@ -1,10 +1,4 @@
-#version 420 core
-
-layout(std140) uniform VoxelSettings
-{
-	mat4 uMVPMatrix;
-	vec4 uColor;
-};
+#version 450
 
 // 3 16 bits for position.
 // 3 16 bits for normal.
@@ -14,14 +8,26 @@ layout( location = 0 ) out uvec4 outViewPositionNormal;
 // 1 32 bits for specular.
 layout( location = 1 ) out vec4 outColor;
 
+uniform mat4 u_MVMatrix;
+uniform mat4 u_projMatrix;
+uniform mat4 u_normalMatrix;
+
+in GsOut
+{	
+	flat vec3 center;
+}
+gsIn;
+
 void main()
 {
+	vec3 viewPosition = vec3( u_MVMatrix * vec4( gsIn.center, 1.f ) );
+	vec3	normal	   = normalize( vec3( u_normalMatrix * vec4( gsIn.center, 1.f )) );
 	uvec4 viewPositionNormalCompressed;
-	viewPositionNormalCompressed.x = packHalf2x16( vec2( 100000.f) );
-	viewPositionNormalCompressed.y = packHalf2x16( vec2( 10000.f, 0.f ) );
-	viewPositionNormalCompressed.z = packHalf2x16( vec2(0.f, 0.f) );
+	viewPositionNormalCompressed.x = packHalf2x16( viewPosition.xy );
+	viewPositionNormalCompressed.y = packHalf2x16( vec2( viewPosition.z, normal.x ) );
+	viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
 	viewPositionNormalCompressed.w = 0; // Padding.
+	
 	outViewPositionNormal = viewPositionNormalCompressed;
-
-	outColor = vec4( uColor.rgb, 0.f ); // w = specular shininess.
+	outColor = vec4( 0.5f, 0.5f, 0.5f, 32.f );
 }

@@ -111,9 +111,8 @@ namespace VTX
 				// Create secondary structure mesh.
 				createSecondaryStructure();
 
-				// Create contourbuildup mesh.
-				// TODO: build at first display?
-				createContourBuildup();
+				// Create solvent extructed surface.
+				createSolventExcludedSurface();
 
 				setRepresentableMolecule( this );
 
@@ -188,49 +187,8 @@ namespace VTX
 			}
 		}
 
-		/*
-		void Molecule::_fillBufferAABB()
-		{
-			uint counter	   = 0;
-			_bufferAABBCorners = std::vector<Vec3f>();
-			_bufferAABBIndices = std::vector<uint>();
-			for ( const Residue * const elem : _residues )
-			{
-				const Object3D::Helper::AABB & aabb = elem->getWorldAABB();
-
-				const Vec3f & min = aabb.getMin();
-				const Vec3f & max = aabb.getMax();
-
-				_bufferAABBCorners.insert( _bufferAABBCorners.end(),
-										   { min,
-											 Vec3f( max.x, min.y, min.z ),
-											 Vec3f( max.x, max.y, min.z ),
-											 Vec3f( min.x, max.y, min.z ),
-											 Vec3f( min.x, min.y, max.z ),
-											 Vec3f( max.x, min.y, max.z ),
-											 max,
-											 Vec3f( min.x, max.y, max.z ) } );
-
-				_bufferAABBIndices.insert(
-					_bufferAABBIndices.end(),
-					{ counter + 0, counter + 1, counter + 1, counter + 2, counter + 2, counter + 3,
-					  counter + 3, counter + 0, counter + 4, counter + 5, counter + 5, counter + 6,
-					  counter + 6, counter + 7, counter + 7, counter + 4, counter + 0, counter + 4,
-					  counter + 1, counter + 5, counter + 2, counter + 6, counter + 3, counter + 7 } );
-
-				counter += 8u;
-			}
-
-			_buffer->setAABBCorners( _bufferAABBCorners );
-			_buffer->setAABBIndices( _bufferAABBIndices );
-		}
-		*/
-
 		void Molecule::_instantiate3DViews()
 		{
-			//_viewBox = MVC::MvcManager::get().instantiateView<View::D3::Box>( this, ID::View::D3_BOX );
-			//_viewBox->init();
-
 			_addRenderable(
 				MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, VTX::ID::View::D3_SPHERE ) );
 			_addRenderable(
@@ -797,7 +755,7 @@ namespace VTX
 			_secondaryStructure->refresh();
 		}
 
-		void Molecule::createContourBuildup()
+		void Molecule::createSolventExcludedSurface()
 		{
 			if ( _solventExcludedSurface != nullptr )
 			{
@@ -809,7 +767,16 @@ namespace VTX
 			_solventExcludedSurface->print();
 		}
 
-		void Molecule::refreshContourBuildup() {}
+		void Molecule::refreshSolventExcludedSurface()
+		{
+			if ( _solventExcludedSurface == nullptr )
+			{
+				VTX_ERROR( "No solvent excluded surface" );
+				return;
+			}
+
+			//_solventExcludedSurface->refresh();
+		}
 
 		void Molecule::setVisible( const bool p_visible )
 		{
