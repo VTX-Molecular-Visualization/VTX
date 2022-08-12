@@ -1,6 +1,6 @@
 #include "menu_tool_structural_alignment_widget.hpp"
 #include "action/action_manager.hpp"
-#include "action/structural_alignment.hpp"
+#include "action/analysis.hpp"
 #include "id.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -36,8 +36,14 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		_structuralAlignmentButton
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "structuralAlignmentButton" );
 		_structuralAlignmentButton->setData(
-			"Structural\nAlignment", ":/sprite/measurement_distance_icon.png", Qt::Orientation::Vertical );
+			"Structural\nAlignment", ":/sprite/measurement_distance_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_structuralAlignmentButton, 1 );
+
+		_structuralAlignmentPymolButton
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "structuralAlignmentPymolButton" );
+		_structuralAlignmentPymolButton->setData(
+			"Pymol\nAlignment", ":/sprite/measurement_distance_icon.png", Qt::Orientation::Horizontal );
+		pushButton( *_structuralAlignmentPymolButton, 1 );
 
 		validate();
 
@@ -46,8 +52,12 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	void MenuToolStructuralAlignmentWidget::_setupSlots()
 	{
 		_rmsdButton->setTriggerAction( this, &MenuToolStructuralAlignmentWidget::_computeRMSDAction );
+
 		_structuralAlignmentButton->setTriggerAction(
 			this, &MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction );
+
+		_structuralAlignmentPymolButton->setTriggerAction(
+			this, &MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentPymolAction );
 	}
 	void MenuToolStructuralAlignmentWidget::localize() {}
 
@@ -66,6 +76,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	{
 		_rmsdButton->setEnabled( _checkRMSDEnableSate() );
 		_structuralAlignmentButton->setEnabled( _checkStructuralAlignmentEnableSate() );
+		_structuralAlignmentPymolButton->setEnabled( _checkStructuralAlignmentEnableSate() );
 	}
 
 	void MenuToolStructuralAlignmentWidget::_computeRMSDAction() const
@@ -73,28 +84,46 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
 		Model::Selection::MapMoleculeIds::const_iterator it = selection.getMoleculesMap().cbegin();
-		
 
-		const Model::ID & firstMoleculeID  = it->first;
+		const Model::ID & firstMoleculeID = it->first;
 		it++;
 		const Model::ID & secondMoleculeID = it->first;
 
 		const Model::Molecule & firstMolecule  = MVC::MvcManager::get().getModel<Model::Molecule>( firstMoleculeID );
 		const Model::Molecule & secondMolecule = MVC::MvcManager::get().getModel<Model::Molecule>( secondMoleculeID );
 
-		VTX_ACTION( new Action::StructuralAlignment::ComputeRMSD( firstMolecule, secondMolecule ) );
+		VTX_ACTION( new Action::Analysis::ComputeRMSD( firstMolecule, secondMolecule ) );
 	}
 	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction() const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-		const Model::ID & firstMoleculeID  = selection.getMoleculesMap().begin()->first;
-		const Model::ID & secondMoleculeID = ( selection.getMoleculesMap().begin()++ )->first;
+		Model::Selection::MapMoleculeIds::const_iterator it = selection.getMoleculesMap().begin();
+
+		const Model::ID & firstMoleculeID = it->first;
+		it++;
+		const Model::ID & secondMoleculeID = it->first;
 
 		const Model::Molecule & firstMolecule  = MVC::MvcManager::get().getModel<Model::Molecule>( firstMoleculeID );
-		const Model::Molecule & secondMolecule = MVC::MvcManager::get().getModel<Model::Molecule>( secondMoleculeID );
+		Model::Molecule &		secondMolecule = MVC::MvcManager::get().getModel<Model::Molecule>( secondMoleculeID );
 
-		VTX_ACTION( new Action::StructuralAlignment::ComputeStructuralAlignment( firstMolecule, secondMolecule ) );
+		VTX_ACTION( new Action::Analysis::ComputeStructuralAlignment( &firstMolecule, &secondMolecule ) );
+	}
+
+	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentPymolAction() const
+	{
+		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+		Model::Selection::MapMoleculeIds::const_iterator it = selection.getMoleculesMap().begin();
+
+		const Model::ID & firstMoleculeID = it->first;
+		it++;
+		const Model::ID & secondMoleculeID = it->first;
+
+		const Model::Molecule & firstMolecule  = MVC::MvcManager::get().getModel<Model::Molecule>( firstMoleculeID );
+		Model::Molecule &		secondMolecule = MVC::MvcManager::get().getModel<Model::Molecule>( secondMoleculeID );
+
+		VTX_ACTION( new Action::Analysis::ComputePymolStructuralAlignment( &firstMolecule, &secondMolecule ) );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Tool

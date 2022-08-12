@@ -163,6 +163,11 @@ namespace VTX
 				_atomPositionsFrames.clear();
 				_atomPositionsFrames = p_frame;
 			}
+			inline const AtomPositionsFrame & getCurrentAtomPositionFrame() const
+			{
+				return _atomPositionsFrames[ _currentFrame ];
+			}
+			inline AtomPositionsFrame & getCurrentAtomPositionFrame() { return _atomPositionsFrames[ _currentFrame ]; }
 			inline const AtomPositionsFrame & getAtomPositionFrame( const uint p_frame ) const
 			{
 				return _atomPositionsFrames[ p_frame ];

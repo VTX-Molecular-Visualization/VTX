@@ -4,8 +4,8 @@
 #include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
-#include <QWidget>
 #include <QString>
+#include <QWidget>
 
 namespace VTX::UI::Widget::MainMenu::Tool
 {
@@ -25,16 +25,18 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		void _setupSlots() override;
 
 	  private:
-		MenuToolButtonWidget * _rmsdButton		  = nullptr;
-		MenuToolButtonWidget * _structuralAlignmentButton = nullptr;
+		MenuToolButtonWidget * _rmsdButton					   = nullptr;
+		MenuToolButtonWidget * _structuralAlignmentButton	   = nullptr;
+		MenuToolButtonWidget * _structuralAlignmentPymolButton = nullptr;
 
 		bool _checkRMSDEnableSate() const;
 		bool _checkStructuralAlignmentEnableSate() const;
 
 		void _computeRMSDAction() const;
 		void _computeStructuralAlignmentAction() const;
+		void _computeStructuralAlignmentPymolAction() const;
 
 		void _refreshButtons() const;
 	};
-} // namespace VTX::UI::Widget::MainMenu::Measurement
+} // namespace VTX::UI::Widget::MainMenu::Tool
 #endif

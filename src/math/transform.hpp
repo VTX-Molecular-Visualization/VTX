@@ -12,6 +12,33 @@ namespace VTX
 		{
 		  public:
 			Transform() = default;
+			Transform( const Mat4f & p_transformationMatrix )
+			{
+				_translation[ 3 ][ 0 ] = p_transformationMatrix[ 3 ][ 0 ];
+				_translation[ 3 ][ 1 ] = p_transformationMatrix[ 3 ][ 1 ];
+				_translation[ 3 ][ 2 ] = p_transformationMatrix[ 3 ][ 2 ];
+
+				_rotation[ 0 ][ 0 ] = p_transformationMatrix[ 0 ][ 0 ];
+				_rotation[ 0 ][ 1 ] = p_transformationMatrix[ 0 ][ 1 ];
+				_rotation[ 0 ][ 2 ] = p_transformationMatrix[ 0 ][ 2 ];
+				_rotation[ 1 ][ 0 ] = p_transformationMatrix[ 1 ][ 0 ];
+				_rotation[ 1 ][ 1 ] = p_transformationMatrix[ 1 ][ 1 ];
+				_rotation[ 1 ][ 2 ] = p_transformationMatrix[ 1 ][ 2 ];
+				_rotation[ 2 ][ 0 ] = p_transformationMatrix[ 2 ][ 0 ];
+				_rotation[ 2 ][ 1 ] = p_transformationMatrix[ 2 ][ 1 ];
+				_rotation[ 2 ][ 2 ] = p_transformationMatrix[ 2 ][ 2 ];
+
+				_internalEulerCache.x = std::nanf( "" );
+
+				//_scale[ 0 ][ 0 ] = 1.f;
+				//_scale[ 1 ][ 1 ] = 1.f;
+				//_scale[ 2 ][ 2 ] = 1.f;
+
+				//_transform = p_transformationMatrix;
+
+				update();
+			}
+
 			Transform( const Vec3f & p_position, const Quatf & p_rotation, const Vec3f & p_scale )
 			{
 				setTranslation( p_position );
