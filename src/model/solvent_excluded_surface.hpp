@@ -16,7 +16,8 @@ namespace VTX
 
 		  public:
 			inline Model::Molecule * const	getMolecule() { return _molecule; }
-			inline Object3D::Helper::Grid & getGrid() { return _grid; }
+			inline Object3D::Helper::Grid & getGridAtoms() { return _gridAtoms; }
+			inline Object3D::Helper::Grid & getGridSES() { return _gridSES; }
 
 			void print() const;
 
@@ -28,7 +29,8 @@ namespace VTX
 
 		  private:
 			Model::Molecule * const _molecule;
-			Object3D::Helper::Grid	_grid = Object3D::Helper::Grid();
+			Object3D::Helper::Grid	_gridAtoms;
+			Object3D::Helper::Grid	_gridSES;
 
 			SolventExcludedSurface( Molecule * const );
 			~SolventExcludedSurface() = default;

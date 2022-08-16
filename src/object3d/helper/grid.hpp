@@ -9,32 +9,28 @@ namespace VTX::Object3D::Helper
 	class Grid : public BaseHelper
 	{
 	  public:
-		Grid()	= default;
+		Grid() = default;
+		Grid( const Vec3f & p_worldOrigin, const Vec3f & p_cellSize, const Vec3i & p_size ) :
+			worldOrigin( p_worldOrigin ), cellSize( p_cellSize ), size( p_size )
+		{
+		}
 		~Grid() = default;
 
 		Vec3f worldOrigin;
 		Vec3f cellSize;
 		Vec3i size;
 
-		Vec3i gridPosition( const Vec3f & p_position ) const
-		{
-			VTX::Vec3i gridPos;
-			gridPos.x = static_cast<int>( std::floor( ( p_position.x - worldOrigin.x ) / cellSize.x ) );
-			gridPos.y = static_cast<int>( std::floor( ( p_position.y - worldOrigin.y ) / cellSize.y ) );
-			gridPos.z = static_cast<int>( std::floor( ( p_position.z - worldOrigin.z ) / cellSize.z ) );
-			return gridPos;
-		};
+		Vec3f worldPosition( const Vec3i & p_gridPosition ) const;
+		Vec3f worldPosition( const uint p_hash ) const;
+		Vec3i gridPosition( const Vec3f & p_worldPosition ) const;
+		Vec3i gridPosition( const uint p_hash ) const;
+		uint  gridHash( const Vec3f & p_worldPosition ) const;
+		uint  gridHash( const Vec3i & p_gridPosition ) const;
 
-		uint gridHash( Vec3i p_gridPosition ) const
-		{
-			p_gridPosition.x = p_gridPosition.x & ( size.x - 1 );
-			p_gridPosition.y = p_gridPosition.y & ( size.y - 1 );
-			p_gridPosition.z = p_gridPosition.z & ( size.z - 1 );
-			return ( ( p_gridPosition.z * size.y ) * size.x ) + ( p_gridPosition.y * size.x ) + p_gridPosition.x;
-		};
+		inline const uint getCellCount() const { return size.x * size.y * size.z; }
 
 		void generate() override;
-		void refresh();
+		void refresh() override;
 		void render( const Object3D::Camera & ) const override;
 
 		struct Voxel
@@ -50,9 +46,8 @@ namespace VTX::Object3D::Helper
 			VOXEL_MAX = 1
 		};
 
-		Renderer::GL::BufferData _vbo = Renderer::GL::BufferData();
-		// Renderer::GL::BufferData _ibo = Renderer::GL::BufferData();
-		uint _size = 0;
+		Renderer::GL::BufferData _vbo  = Renderer::GL::BufferData();
+		uint					 _size = 0;
 
 		Renderer::GL::Program * _program = nullptr;
 	};

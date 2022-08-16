@@ -54,6 +54,12 @@ namespace VTX
 				return glm::floor( p_value );
 			}
 
+			template<typename T1>
+			inline T1 ceil( const T1 & p_value )
+			{
+				return glm::ceil( p_value );
+			}
+
 			template<typename T1, typename T2>
 			inline T1 clamp( const T1 & p_value, const T2 & p_min, const T2 & p_max )
 			{

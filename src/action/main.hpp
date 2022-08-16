@@ -168,8 +168,8 @@ namespace VTX::Action::Main
 								VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, result.molecule ) );
 								VTXApp::get().getScene().addMolecule( result.molecule );
 								VTXApp::get().getScene().addHelper( &( result.molecule->getAABB() ) );
-								VTXApp::get().getScene().addHelper(
-									&( result.molecule->getSolventExcludedSurface().getGrid() ) );
+								// VTXApp::get().getScene().addHelper(
+								//	&( result.molecule->getSolventExcludedSurface().getGridAtoms() ) );
 							}
 							else if ( result.mesh != nullptr )
 							{

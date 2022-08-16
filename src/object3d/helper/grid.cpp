@@ -3,6 +3,41 @@
 
 namespace VTX::Object3D::Helper
 {
+	Vec3f Grid::worldPosition( const Vec3i & p_gridPosition ) const
+	{
+		VTX::Vec3f position = worldOrigin;
+		position += ( Vec3f( p_gridPosition ) + 0.5f ) * cellSize;
+		return position;
+	}
+
+	Vec3f Grid::worldPosition( const uint p_hash ) const { return worldPosition( gridPosition( p_hash ) ); }
+
+	Vec3i Grid::gridPosition( const Vec3f & p_worldPosition ) const
+	{
+		VTX::Vec3i gridPos;
+		gridPos.x = std::floor( ( p_worldPosition.x - worldOrigin.x ) / cellSize.x );
+		gridPos.y = std::floor( ( p_worldPosition.y - worldOrigin.y ) / cellSize.y );
+		gridPos.z = std::floor( ( p_worldPosition.z - worldOrigin.z ) / cellSize.z );
+		return gridPos;
+	}
+
+	Vec3i Grid::gridPosition( const uint p_hash ) const
+	{
+		const uint x = p_hash / ( size.y * size.z );
+		uint	   r = p_hash % ( size.y * size.z );
+		const uint y = r / size.z;
+		const uint z = r % size.z;
+
+		return Vec3i( x, y, z );
+	}
+
+	uint Grid::gridHash( const Vec3f & p_worldPosition ) const { return gridHash( gridPosition( p_worldPosition ) ); }
+
+	uint Grid::gridHash( const Vec3i & p_gridPosition ) const
+	{
+		return ( p_gridPosition.x * size.y * size.z ) + ( p_gridPosition.y * size.z ) + p_gridPosition.z;
+	}
+
 	void Grid::refresh()
 	{
 		std::vector<Voxel> voxels;
@@ -32,11 +67,7 @@ namespace VTX::Object3D::Helper
 		assert( _program != nullptr );
 
 		_vbo.create();
-		//_ibo.create();
-
 		_vao.create();
-
-		//_vao.bindElementBuffer( _ibo );
 
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VOXEL_MIN );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VOXEL_MIN, _vbo, sizeof( Voxel ) );

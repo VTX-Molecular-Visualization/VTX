@@ -16,6 +16,8 @@ namespace VTX::Object3D::Helper
 		virtual void render( const Object3D::Camera & ) const override {}
 		// BaseBufferOpenGL.
 		virtual void generate() override {}
+
+		virtual void refresh() {}
 	};
 
 } // namespace VTX::Object3D::Helper

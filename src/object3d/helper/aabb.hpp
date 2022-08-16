@@ -105,7 +105,7 @@ namespace VTX::Object3D::Helper
 			Vec3f limits[ 2 ] = { VEC3F_MAX, VEC3F_MIN };
 		} data;
 
-		void refresh();
+		void refresh() override;
 
 		void generate() override;
 		void render( const Object3D::Camera & ) const override;
