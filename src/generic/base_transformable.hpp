@@ -31,6 +31,7 @@ namespace VTX
 				SCALE_VECTOR = SCALE_X | SCALE_Y | SCALE_Z,
 
 				TRANSFORM = TRANSLATE_VECTOR | EULER_VECTOR | SCALE_VECTOR,
+				NONE	  = 0,
 			};
 
 			inline virtual const Math::Transform & getTransform() const { return _transform; };

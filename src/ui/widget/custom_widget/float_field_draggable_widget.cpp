@@ -45,17 +45,20 @@ namespace VTX::UI::Widget::CustomWidget
 
 	bool FloatFieldDraggableWidget::eventFilter( QObject * p_obj, QEvent * p_event )
 	{
-		if ( p_event->type() == QEvent::MouseMove )
+		if ( p_obj == _label )
 		{
-			labelMouseMoveEvent( static_cast<QMouseEvent *>( p_event ) );
-		}
-		else if ( p_event->type() == QEvent::MouseButtonPress )
-		{
-			labelMousePressEvent( static_cast<QMouseEvent *>( p_event ) );
-		}
-		else if ( p_event->type() == QEvent::MouseButtonRelease )
-		{
-			labelMouseReleaseEvent( static_cast<QMouseEvent *>( p_event ) );
+			if ( p_event->type() == QEvent::MouseMove )
+			{
+				labelMouseMoveEvent( static_cast<QMouseEvent *>( p_event ) );
+			}
+			else if ( p_event->type() == QEvent::MouseButtonPress )
+			{
+				labelMousePressEvent( static_cast<QMouseEvent *>( p_event ) );
+			}
+			else if ( p_event->type() == QEvent::MouseButtonRelease )
+			{
+				labelMouseReleaseEvent( static_cast<QMouseEvent *>( p_event ) );
+			}
 		}
 
 		return QObject::eventFilter( p_obj, p_event );
@@ -129,16 +132,20 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void FloatFieldDraggableWidget::_onTextFieldEdited()
 	{
+		const QString previousText = _textField->text();
+
 		const float newValue = _textField->text().toFloat();
 
-		if ( newValue != _value )
+		if ( newValue != _value || hasDifferentData() )
 		{
 			setValue( newValue );
 			emit onValueChange( _value );
 		}
 
-		if ( newValue == 0.f ) // If value == 0, textfield can contain non valid number chain => de a refresh to
-							   // force valid display of 0.
+		const QString newText = getDisplayedText( newValue );
+
+		if ( previousText != newText ) // Force text update to normalize display (for example 1 == 1.00, but the display
+									   // must be 1.00 and not 1)
 		{
 			_refresh();
 		}
@@ -169,7 +176,10 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void FloatFieldDraggableWidget::_refresh()
 	{
-		_textField->setText( QString::fromStdString( Util::String::floatToStr( _value, _nbDecimals ) ) );
+		const QString value = getDisplayedText( _value );
+
+		if ( value != _textField->text() )
+			_textField->setText( value );
 	}
 
 	void FloatFieldDraggableWidget::localize() {};
@@ -183,6 +193,11 @@ namespace VTX::UI::Widget::CustomWidget
 			_refresh();
 		}
 	};
+
+	QString FloatFieldDraggableWidget::getDisplayedText( const float p_value ) const
+	{
+		return QString::fromStdString( Util::String::floatToStr( p_value, _nbDecimals ) );
+	}
 
 	void FloatFieldDraggableWidget::setNbDecimals( const int p_nbDecimals )
 	{

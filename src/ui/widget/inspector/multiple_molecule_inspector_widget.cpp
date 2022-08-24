@@ -240,11 +240,13 @@ namespace VTX::UI::Widget::Inspector
 		_infoSection->localize();
 	}
 
-	void MultipleMoleculeWidget::_onTransformChange( const Math::Transform & p_transform ) const
+	void MultipleMoleculeWidget::_onTransformChange(
+		const Math::Transform &									   p_transform,
+		const Generic::BaseTransformable::TransformComposantMask & p_mask ) const
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new Action::Transformable::ApplyTransform( getTargets(), p_transform ) );
+			VTX_ACTION( new Action::Transformable::ApplyTransform( getTargets(), p_transform, p_mask ) );
 		}
 	}
 

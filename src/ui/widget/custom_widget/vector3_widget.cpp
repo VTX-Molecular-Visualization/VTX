@@ -98,17 +98,17 @@ namespace VTX::UI::Widget::CustomWidget
 	void Vector3Widget::_onInternalValueXChanged( const float p_newValue )
 	{
 		_data.x = p_newValue;
-		emit onValueChange( _data );
+		emit onValueChange( _data, AxisMask::X );
 	}
 	void Vector3Widget::_onInternalValueYChanged( const float p_newValue )
 	{
 		_data.y = p_newValue;
-		emit onValueChange( _data );
+		emit onValueChange( _data, AxisMask::Y );
 	}
 	void Vector3Widget::_onInternalValueZChanged( const float p_newValue )
 	{
 		_data.z = p_newValue;
-		emit onValueChange( _data );
+		emit onValueChange( _data, AxisMask::Z );
 	}
 
 	void Vector3Widget::_onInternalValueXDragged( const float p_delta )

@@ -64,6 +64,8 @@ namespace VTX::UI::Widget::CustomWidget
 		void _onInternalValueChanged( const float p_newValue );
 		void _onValueDragged( const float p_delta );
 
+		QString getDisplayedText( const float p_value ) const;
+
 		// MultiDataField Implementation //////////////////////////////
 		void		  _displayDifferentsDataFeedback() override;
 		const float & _getValue() const override { return _value; }
