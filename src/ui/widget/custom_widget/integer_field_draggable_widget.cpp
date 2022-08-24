@@ -136,8 +136,10 @@ namespace VTX::UI::Widget::CustomWidget
 			emit onValueChange( _value );
 		}
 
-		if ( newValue == 0.f ) // If value == 0, textfield can contain non valid number chain => de a refresh to
-							   // force valid display of 0.
+		const QString previousText = _textField->text();
+		const QString newText	   = getDisplayedText( newValue );
+
+		if ( previousText != newText )
 		{
 			_refresh();
 		}
@@ -168,10 +170,18 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void IntegerFieldDraggableWidget::_refresh()
 	{
-		_textField->setText( QString::fromStdString( std::to_string( _value ) ) );
+		const QString newText = getDisplayedText( _value );
+
+		if ( newText != _textField->text() )
+			_textField->setText( newText );
 	}
 
 	void IntegerFieldDraggableWidget::localize() {};
+
+	QString IntegerFieldDraggableWidget::getDisplayedText( const int p_value ) const
+	{
+		return QString::fromStdString( std::to_string( p_value ) );
+	}
 
 	void IntegerFieldDraggableWidget::setValue( const int p_value )
 	{

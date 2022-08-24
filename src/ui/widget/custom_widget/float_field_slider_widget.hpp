@@ -5,6 +5,7 @@
 #include "ui/widget/base_manual_widget.hpp"
 #include <QLineEdit>
 #include <QSlider>
+#include <QString>
 #include <QWidget>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -39,6 +40,8 @@ namespace VTX::UI::Widget::CustomWidget
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();
+
+		QString getDisplayedText( const float p_value ) const;
 
 		// MultiDataField Implementation //////////////////////////////
 		void		  _displayDifferentsDataFeedback() override;

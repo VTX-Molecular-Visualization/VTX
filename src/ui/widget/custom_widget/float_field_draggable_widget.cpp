@@ -132,8 +132,6 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void FloatFieldDraggableWidget::_onTextFieldEdited()
 	{
-		const QString previousText = _textField->text();
-
 		const float newValue = _textField->text().toFloat();
 
 		if ( newValue != _value || hasDifferentData() )
@@ -142,7 +140,8 @@ namespace VTX::UI::Widget::CustomWidget
 			emit onValueChange( _value );
 		}
 
-		const QString newText = getDisplayedText( newValue );
+		const QString previousText = _textField->text();
+		const QString newText	   = getDisplayedText( newValue );
 
 		if ( previousText != newText ) // Force text update to normalize display (for example 1 == 1.00, but the display
 									   // must be 1.00 and not 1)
@@ -176,10 +175,10 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void FloatFieldDraggableWidget::_refresh()
 	{
-		const QString value = getDisplayedText( _value );
+		const QString newText = getDisplayedText( _value );
 
-		if ( value != _textField->text() )
-			_textField->setText( value );
+		if ( newText != _textField->text() )
+			_textField->setText( newText );
 	}
 
 	void FloatFieldDraggableWidget::localize() {};

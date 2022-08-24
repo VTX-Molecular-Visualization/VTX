@@ -54,9 +54,11 @@ namespace VTX::UI::Widget::CustomWidget
 			_emitOnValueChangeSignal();
 		}
 
-		if ( newValue == 0.f ) // If value == 0, textfield can contain non valid number chain => de a refresh
-							   // to
-							   // force valid display of 0.
+		const QString previousText = _textField->text();
+		const QString newText	   = getDisplayedText( newValue );
+
+		if ( previousText != newText ) // Force text update to normalize display (for example 1 == 1.00, but the display
+									   // must be 1.00 and not 1)
 		{
 			_refresh();
 		}
@@ -81,7 +83,10 @@ namespace VTX::UI::Widget::CustomWidget
 		_slider->setValue( sliderValue );
 		_slider->blockSignals( false );
 
-		_textField->setText( QString::fromStdString( Util::String::floatToStr( _value, _nbDecimals ) ) );
+		const QString newText = getDisplayedText( _value );
+
+		if ( newText != _textField->text() )
+			_textField->setText( newText );
 
 		blockSignals( oldBlockState );
 	}
@@ -146,6 +151,11 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		if ( !signalsBlocked() )
 			emit onValueChange( _value );
+	}
+
+	QString FloatFieldSliderWidget::getDisplayedText( const float p_value ) const
+	{
+		return QString::fromStdString( Util::String::floatToStr( p_value, _nbDecimals ) );
 	}
 
 	void FloatFieldSliderWidget::resetState()

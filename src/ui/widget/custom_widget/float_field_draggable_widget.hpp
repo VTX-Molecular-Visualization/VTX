@@ -9,6 +9,7 @@
 #include <QMouseEvent>
 #include <QObject>
 #include <QPaintEvent>
+#include <QString>
 #include <QWidget>
 
 namespace VTX::UI::Widget::CustomWidget
