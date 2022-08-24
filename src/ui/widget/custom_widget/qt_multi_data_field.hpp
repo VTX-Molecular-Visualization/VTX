@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_QT_MUTLI_DATA_FIELD__
 #define __VTX_UI_WIDGET_CUSTOM_QT_MUTLI_DATA_FIELD__
 
+#include "style.hpp"
 #include "ui/multi_data_field.hpp"
 #include <QComboBox>
 #include <QLabel>
@@ -30,7 +31,7 @@ namespace VTX::UI::Widget::CustomWidget
 			setText( QString::fromStdString( p_value ) );
 			_value = p_value;
 		}
-		void _displayDifferentsDataFeedback() override { setText( "-" ); }
+		void _displayDifferentsDataFeedback() override { setText( Style::DIFFERENT_MULTIPLE_DATA_STRING ); }
 
 	  private:
 		std::string _value;
@@ -57,7 +58,7 @@ namespace VTX::UI::Widget::CustomWidget
 			_value = p_value;
 		}
 
-		virtual void _displayDifferentsDataFeedback() override { setText( "-" ); }
+		virtual void _displayDifferentsDataFeedback() override { setText( Style::DIFFERENT_MULTIPLE_DATA_STRING ); }
 
 	  private:
 		std::string _value;
@@ -87,7 +88,7 @@ namespace VTX::UI::Widget::CustomWidget
 		{
 			const bool previousSignalState = blockSignals( true );
 			setCurrentIndex( -1 );
-			setCurrentText( "-" );
+			setCurrentText( Style::DIFFERENT_MULTIPLE_DATA_STRING );
 			blockSignals( previousSignalState );
 		}
 

@@ -128,6 +128,10 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void IntegerFieldDraggableWidget::_onTextFieldEdited()
 	{
+		// Protect data erasment when unselect field with multiple data
+		if ( hasDifferentData() && _textField->text() == Style::DIFFERENT_MULTIPLE_DATA_STRING )
+			return;
+
 		const int newValue = _textField->text().toInt();
 
 		if ( newValue != _value )
@@ -242,7 +246,7 @@ namespace VTX::UI::Widget::CustomWidget
 	void IntegerFieldDraggableWidget::_displayDifferentsDataFeedback()
 	{
 		_textField->blockSignals( true );
-		_textField->setText( "-" );
+		_textField->setText( Style::DIFFERENT_MULTIPLE_DATA_STRING );
 		_textField->blockSignals( false );
 	}
 

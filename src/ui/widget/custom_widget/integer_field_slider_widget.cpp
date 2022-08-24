@@ -1,4 +1,5 @@
 #include "integer_field_slider_widget.hpp"
+#include "style.hpp"
 #include "util/math.hpp"
 #include "util/ui.hpp"
 #include <QHBoxLayout>
@@ -43,6 +44,10 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void IntegerFieldSliderWidget::_onTextFieldEdited()
 	{
+		// Protect data erasment when unselect field with multiple data
+		if ( hasDifferentData() && _textField->text() == Style::DIFFERENT_MULTIPLE_DATA_STRING )
+			return;
+
 		const int newValue = _textField->text().toInt();
 		if ( newValue != _value )
 		{
@@ -151,6 +156,9 @@ namespace VTX::UI::Widget::CustomWidget
 		blockSignals( oldBlockState );
 	}
 
-	void IntegerFieldSliderWidget::_displayDifferentsDataFeedback() { _textField->setText( "-" ); }
+	void IntegerFieldSliderWidget::_displayDifferentsDataFeedback()
+	{
+		_textField->setText( Style::DIFFERENT_MULTIPLE_DATA_STRING );
+	}
 
 } // namespace VTX::UI::Widget::CustomWidget

@@ -14,6 +14,7 @@
 #include <QPalette>
 #include <QPixmap>
 #include <QSize>
+#include <QString>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -305,6 +306,8 @@ namespace VTX
 		inline static const QColor CONSOLE_DEBUG_COLOR	 = QColor( "white" );
 		inline static const QColor CONSOLE_WARNING_COLOR = QColor( "yellow" );
 		inline static const QColor CONSOLE_ERROR_COLOR	 = QColor( "red" );
+
+		inline static const QString DIFFERENT_MULTIPLE_DATA_STRING = "-";
 
 		inline static const QSize EXPORT_IMAGE_PREVIEW_SIZE = QSize( 320, 320 );
 

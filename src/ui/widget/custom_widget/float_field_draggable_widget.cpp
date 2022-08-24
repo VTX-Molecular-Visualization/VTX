@@ -132,6 +132,10 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void FloatFieldDraggableWidget::_onTextFieldEdited()
 	{
+		// Protect data erasment when unselect field with multiple data
+		if ( hasDifferentData() && _textField->text() == Style::DIFFERENT_MULTIPLE_DATA_STRING )
+			return;
+
 		const float newValue = _textField->text().toFloat();
 
 		if ( newValue != _value || hasDifferentData() )
@@ -254,7 +258,7 @@ namespace VTX::UI::Widget::CustomWidget
 	void FloatFieldDraggableWidget::_displayDifferentsDataFeedback()
 	{
 		_textField->blockSignals( true );
-		_textField->setText( "-" );
+		_textField->setText( Style::DIFFERENT_MULTIPLE_DATA_STRING );
 		_textField->blockSignals( false );
 	}
 
