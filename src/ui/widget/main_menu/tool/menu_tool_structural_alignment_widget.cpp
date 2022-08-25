@@ -4,6 +4,7 @@
 #include "id.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
 #include "ui/widget_factory.hpp"
 
@@ -64,12 +65,12 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	bool MenuToolStructuralAlignmentWidget::_checkRMSDEnableSate() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		return selectionModel.getMoleculeSelectedCount() == 2;
+		return selectionModel.getMoleculeSelectedCount() >= 2;
 	}
 	bool MenuToolStructuralAlignmentWidget::_checkStructuralAlignmentEnableSate() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		return selectionModel.getMoleculeSelectedCount() == 2;
+		return selectionModel.getMoleculeSelectedCount() >= 2;
 	}
 
 	void MenuToolStructuralAlignmentWidget::_refreshButtons() const
@@ -83,47 +84,83 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-		Model::Selection::MapMoleculeIds::const_iterator it = selection.getMoleculesMap().cbegin();
+		const Model::Molecule *		   target;
+		std::vector<Model::Molecule *> comparers;
+		_prepareTargetAndComparerForComparison( selection, target, comparers );
 
-		const Model::ID & firstMoleculeID = it->first;
-		it++;
-		const Model::ID & secondMoleculeID = it->first;
+		std::vector<const Model::Molecule *> comparersConst = std::vector<const Model::Molecule *>();
+		comparersConst.resize( comparers.size() );
+		std::move( comparers.begin(), comparers.end(), comparersConst.begin() );
 
-		const Model::Molecule & firstMolecule  = MVC::MvcManager::get().getModel<Model::Molecule>( firstMoleculeID );
-		const Model::Molecule & secondMolecule = MVC::MvcManager::get().getModel<Model::Molecule>( secondMoleculeID );
-
-		VTX_ACTION( new Action::Analysis::ComputeRMSD( firstMolecule, secondMolecule ) );
+		VTX_ACTION( new Action::Analysis::ComputeRMSD( target, comparersConst ) );
 	}
+
 	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction() const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-		Model::Selection::MapMoleculeIds::const_iterator it = selection.getMoleculesMap().begin();
+		const Model::Molecule *		   staticMolecule;
+		std::vector<Model::Molecule *> mobileMolecules;
+		_prepareTargetAndComparerForComparison( selection, staticMolecule, mobileMolecules );
 
-		const Model::ID & firstMoleculeID = it->first;
-		it++;
-		const Model::ID & secondMoleculeID = it->first;
-
-		const Model::Molecule & firstMolecule  = MVC::MvcManager::get().getModel<Model::Molecule>( firstMoleculeID );
-		Model::Molecule &		secondMolecule = MVC::MvcManager::get().getModel<Model::Molecule>( secondMoleculeID );
-
-		VTX_ACTION( new Action::Analysis::ComputeStructuralAlignment( &firstMolecule, &secondMolecule ) );
+		VTX_ACTION( new Action::Analysis::ComputeStructuralAlignment( staticMolecule, mobileMolecules ) );
 	}
 
 	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentPymolAction() const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-		Model::Selection::MapMoleculeIds::const_iterator it = selection.getMoleculesMap().begin();
+		const Model::Molecule *		   staticMolecule;
+		std::vector<Model::Molecule *> mobileMolecules;
+		_prepareTargetAndComparerForComparison( selection, staticMolecule, mobileMolecules );
 
-		const Model::ID & firstMoleculeID = it->first;
-		it++;
-		const Model::ID & secondMoleculeID = it->first;
+		VTX_ACTION( new Action::Analysis::ComputePymolStructuralAlignment( staticMolecule, *mobileMolecules.begin() ) );
+	}
 
-		const Model::Molecule & firstMolecule  = MVC::MvcManager::get().getModel<Model::Molecule>( firstMoleculeID );
-		Model::Molecule &		secondMolecule = MVC::MvcManager::get().getModel<Model::Molecule>( secondMoleculeID );
+	void MenuToolStructuralAlignmentWidget::_prepareTargetAndComparerForComparison(
+		const Model::Selection &		 p_selection,
+		const Model::Molecule *&		 p_target,
+		std::vector<Model::Molecule *> & p_comparers ) const
+	{
+		Model::Selection::MapMoleculeIds::const_iterator it = p_selection.getMoleculesMap().begin();
 
-		VTX_ACTION( new Action::Analysis::ComputePymolStructuralAlignment( &firstMolecule, &secondMolecule ) );
+		std::list<Model::Molecule *> sortedMolecules = std::list<Model::Molecule *>();
+
+		for ( const Model::Selection::PairMoleculeIds & pairMoleculeID : p_selection.getMoleculesMap() )
+		{
+			Model::Molecule * const currentMolecule
+				= &MVC::MvcManager::get().getModel<Model::Molecule>( pairMoleculeID.first );
+
+			const int currentMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( *currentMolecule );
+
+			bool inserted = false;
+
+			for ( std::list<Model::Molecule *>::const_iterator it = sortedMolecules.begin();
+				  it != sortedMolecules.end();
+				  it++ )
+			{
+				const int sortedMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( **it );
+
+				if ( currentMoleculeSceneIndex < sortedMoleculeSceneIndex )
+				{
+					sortedMolecules.insert( it, currentMolecule );
+
+					inserted = true;
+					break;
+				}
+			}
+
+			if ( !inserted )
+			{
+				sortedMolecules.push_back( currentMolecule );
+			}
+		}
+
+		p_target	= *sortedMolecules.begin();
+		p_comparers = std::vector<Model::Molecule *>();
+		p_comparers.resize( sortedMolecules.size() - 1 );
+
+		std::move( ++sortedMolecules.begin(), sortedMolecules.end(), p_comparers.begin() );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Tool

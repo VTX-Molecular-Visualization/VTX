@@ -26,6 +26,14 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 
 		const CustomParameters & castedParameters = reinterpret_cast<const CustomParameters &>( p_parameters );
 
+		// Ensure good value for windowSize
+		CustomParameters correctedParameters = CustomParameters( castedParameters );
+
+		const int minMolSize		   = p_staticMolecule.getResidueCount() < p_mobileMolecule.getResidueCount()
+											 ? p_staticMolecule.getResidueCount()
+											 : p_mobileMolecule.getResidueCount();
+		correctedParameters.windowSize = std::min( castedParameters.windowSize, int( sqrt( minMolSize ) ) );
+
 		chrono.start();
 		std::vector<Vec3f> staticMoleculeResiduePositions = _generateResiduePositionsVector( p_staticMolecule );
 		std::vector<Vec3f> mobileMoleculeResiduePositions = _generateResiduePositionsVector( p_mobileMolecule );
@@ -42,22 +50,22 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		// Calculate CE similarities
 		chrono.start();
 		const Math::Matrix<float> scoreMatrix
-			= _computeScoreMatrix( distanceMatrixStaticMol, distanceMatrixMobileMol, castedParameters );
+			= _computeScoreMatrix( distanceMatrixStaticMol, distanceMatrixMobileMol, correctedParameters );
 		chrono.stop();
 		VTX_DEBUG( "Calculate score matrix : " + chrono.elapsedTimeStr() );
 
 		// Calculate Top N Paths
 		chrono.start();
 		const std::vector<Path> bestPaths
-			= _findPath( scoreMatrix, distanceMatrixStaticMol, distanceMatrixMobileMol, castedParameters );
+			= _findPath( scoreMatrix, distanceMatrixStaticMol, distanceMatrixMobileMol, correctedParameters );
 		chrono.stop();
 		VTX_DEBUG( "Find Paths : " + chrono.elapsedTimeStr() );
 
 		VTX_INFO( "Better chain size : " + std::to_string( bestPaths.begin()->size() ) );
 
 		chrono.start();
-		const BestPathResult bestPath
-			= _pickBest( staticMoleculeResiduePositions, mobileMoleculeResiduePositions, bestPaths, castedParameters );
+		const BestPathResult bestPath = _pickBest(
+			staticMoleculeResiduePositions, mobileMoleculeResiduePositions, bestPaths, correctedParameters );
 		chrono.stop();
 		VTX_DEBUG( "Pick Best : " + chrono.elapsedTimeStr() );
 

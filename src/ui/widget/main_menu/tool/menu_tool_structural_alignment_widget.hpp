@@ -6,37 +6,51 @@
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QString>
 #include <QWidget>
+#include <vector>
 
-namespace VTX::UI::Widget::MainMenu::Tool
+namespace VTX
 {
-	class MenuToolStructuralAlignmentWidget : public MenuToolBlockWidget
+	namespace Model
 	{
-		VTX_WIDGET
+		class Molecule;
+		class Selection;
+	} // namespace Model
 
-	  public:
-		~MenuToolStructuralAlignmentWidget();
+	namespace UI::Widget::MainMenu::Tool
+	{
+		class MenuToolStructuralAlignmentWidget : public MenuToolBlockWidget
+		{
+			VTX_WIDGET
 
-		void localize() override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		  public:
+			~MenuToolStructuralAlignmentWidget();
 
-	  protected:
-		MenuToolStructuralAlignmentWidget( QWidget * p_parent );
-		void _setupUi( const QString & p_name ) override;
-		void _setupSlots() override;
+			void localize() override;
+			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-	  private:
-		MenuToolButtonWidget * _rmsdButton					   = nullptr;
-		MenuToolButtonWidget * _structuralAlignmentButton	   = nullptr;
-		MenuToolButtonWidget * _structuralAlignmentPymolButton = nullptr;
+		  protected:
+			MenuToolStructuralAlignmentWidget( QWidget * p_parent );
+			void _setupUi( const QString & p_name ) override;
+			void _setupSlots() override;
 
-		bool _checkRMSDEnableSate() const;
-		bool _checkStructuralAlignmentEnableSate() const;
+		  private:
+			MenuToolButtonWidget * _rmsdButton					   = nullptr;
+			MenuToolButtonWidget * _structuralAlignmentButton	   = nullptr;
+			MenuToolButtonWidget * _structuralAlignmentPymolButton = nullptr;
 
-		void _computeRMSDAction() const;
-		void _computeStructuralAlignmentAction() const;
-		void _computeStructuralAlignmentPymolAction() const;
+			bool _checkRMSDEnableSate() const;
+			bool _checkStructuralAlignmentEnableSate() const;
 
-		void _refreshButtons() const;
-	};
-} // namespace VTX::UI::Widget::MainMenu::Tool
+			void _computeRMSDAction() const;
+			void _computeStructuralAlignmentAction() const;
+			void _computeStructuralAlignmentPymolAction() const;
+
+			void _refreshButtons() const;
+
+			void _prepareTargetAndComparerForComparison( const Model::Selection &		  selection,
+														 const Model::Molecule *&		  p_target,
+														 std::vector<Model::Molecule *> & p_comparers ) const;
+		};
+	} // namespace UI::Widget::MainMenu::Tool
+} // namespace VTX
 #endif
