@@ -59,7 +59,9 @@ namespace VTX::Analysis
 				chrono.stop();
 				VTX_DEBUG( "Alignment computed in " + chrono.elapsedTimeStr() );
 
-				const Math::Transform transform = Math::Transform( result.transformationMatrix );
+				const Math::Transform transform
+					= Math::Transform( p_staticMolecule.getTransform().get() * result.transformationMatrix );
+
 				mobileMolecule->applyTransform( transform );
 
 				const float rmsd = result.rmsd == -1
