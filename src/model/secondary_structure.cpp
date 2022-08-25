@@ -259,7 +259,12 @@ namespace VTX
 			}
 		}
 
-		void SecondaryStructure::_init() {}
+		void SecondaryStructure::_init()
+		{
+			// Resize selection buffer
+			_bufferSelections.resize( _bufferCaPositions.size(), 0 );
+			_buffer->setSelections( _bufferSelections );
+		}
 
 		void SecondaryStructure::_fillBuffer()
 		{
@@ -276,8 +281,6 @@ namespace VTX
 			_buffer->setVisibilities( _bufferVisibilities );
 			_buffer->setIds( _bufferIds );
 			_buffer->setIndices( _bufferIndices );
-
-			refreshSelection();
 		}
 
 		const Math::AABB & SecondaryStructure::getAABB() const { return _molecule->getAABB(); }
