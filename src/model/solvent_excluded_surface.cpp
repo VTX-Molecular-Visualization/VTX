@@ -1,5 +1,6 @@
 #include "solvent_excluded_surface.hpp"
 #include "atom.hpp"
+#include "math/marching_cube.hpp"
 #include "molecule.hpp"
 #include "object3d/helper/aabb.hpp"
 #include "object3d/scene.hpp"
@@ -9,11 +10,9 @@ namespace VTX
 	namespace Model
 	{
 		SolventExcludedSurface::SolventExcludedSurface( Molecule * const p_molecule ) :
-			BaseModel3D( VTX::ID::Model::MODEL_SOLVENT_EXCLUDED_SURFACE ), _molecule( p_molecule )
+			MeshTriangle(), _molecule( p_molecule )
 		{
 		}
-
-		void SolventExcludedSurface::print() const { VTX_DEBUG( "ICI" ); }
 
 		void SolventExcludedSurface::_init()
 		{
@@ -21,7 +20,7 @@ namespace VTX
 			chrono.start();
 			VTX_INFO( "Creating SES..." );
 
-			//// Step 1: sort atoms in grid.
+			// Sort atoms in acceleration grid.
 			const float probeRadius	 = 1.4f;
 			const float maxVdWRadius = *std::max_element(
 				Atom::SYMBOL_VDW_RADIUS, Atom::SYMBOL_VDW_RADIUS + std::size( Atom::SYMBOL_VDW_RADIUS ) );
@@ -50,8 +49,7 @@ namespace VTX
 				atomData[ hash ].emplace_back( AtomData { int( i ) } );
 			}
 
-			//// Step 2: compute SES grid and classiy points.
-
+			// Compute SES grid and compute SDF.
 			const float voxelSize	= 0.5f;
 			Vec3i		sesGridSize = Vec3i( Util::Math::ceil( size / voxelSize ) );
 
@@ -69,7 +67,7 @@ namespace VTX
 			// Store boundary references.
 			std::vector<uint> sesGridDataBoundary = std::vector<uint>();
 
-			// Loop over cells.
+			// Loop over cells
 			for ( uint x = 0; x < uint( _gridSES.size.x ); ++x )
 			{
 				for ( uint y = 0; y < uint( _gridSES.size.y ); ++y )
@@ -87,11 +85,11 @@ namespace VTX
 
 						// Loop over the 27 cells to visit.
 						bool found = false;
-						for ( uint ox = -1; ox <= 1 && !found; ++ox )
+						for ( int ox = -1; ox <= 1 && !found; ++ox )
 						{
-							for ( uint oy = -1; oy <= 1 && !found; ++oy )
+							for ( int oy = -1; oy <= 1 && !found; ++oy )
 							{
-								for ( uint oz = -1; oz <= 1 && !found; ++oz )
+								for ( int oz = -1; oz <= 1 && !found; ++oz )
 								{
 									Vec3i offset			  = Vec3i( ox, oy, oz );
 									Vec3i gridPositionToVisit = atomGridPosition + offset;
@@ -106,7 +104,7 @@ namespace VTX
 
 									uint hashToVisit = _gridAtoms.gridHash( gridPositionToVisit );
 
-									// Compute distance field.
+									// Compute SDF.
 									for ( const AtomData & atom : atomData[ hashToVisit ] )
 									{
 										const uint distance
@@ -138,33 +136,102 @@ namespace VTX
 				}
 			}
 
-			// Distance field refinement
-			const uint cellsToVisitCount = Util::Math::ceil( probeRadius / probeRadius );
+			// SDF refinement.
+			const int cellsToVisitCount = Util::Math::ceil( probeRadius / probeRadius );
+			VTX_INFO( "{} / {}", sesGridDataBoundary.size(), sesGridData.size() );
 			for ( const uint sesGridHash : sesGridDataBoundary )
 			{
-				const Vec3i sesGridPosition = _gridSES.gridPosition( sesGridHash );
-				for ( uint ox = -cellsToVisitCount; ox <= cellsToVisitCount; ++ox )
+				const Vec3i	  sesGridPosition			  = _gridSES.gridPosition( sesGridHash );
+				const Vec3f	  sesWorldPosition			  = _gridSES.worldPosition( sesGridPosition );
+				SESGridData & gridDataToVisit			  = sesGridData[ sesGridHash ];
+				float		  minDistanceWithOutsidePoint = FLOAT_MAX;
+				bool		  found						  = false;
+				for ( int ox = -cellsToVisitCount; ox <= cellsToVisitCount; ++ox )
 				{
-					for ( uint oy = -cellsToVisitCount; oy <= cellsToVisitCount; ++oy )
+					for ( int oy = -cellsToVisitCount; oy <= cellsToVisitCount; ++oy )
 					{
-						for ( uint oz = -cellsToVisitCount; oz <= cellsToVisitCount; ++oz )
+						for ( int oz = -cellsToVisitCount; oz <= cellsToVisitCount; ++oz )
 						{
 							const Vec3i gridPositionToVisit = sesGridPosition + Vec3i( ox, oy, oz );
-							uint		hashToVisit			= _gridSES.gridHash( gridPositionToVisit );
+							if ( gridPositionToVisit.x < 0 || gridPositionToVisit.y < 0 || gridPositionToVisit.z < 0
+								 || gridPositionToVisit.x >= _gridSES.size.x || gridPositionToVisit.y >= _gridSES.size.y
+								 || gridPositionToVisit.z >= _gridSES.size.z )
+							{
+								continue;
+							}
+
+							// VTX_INFO( "{}", glm::to_string( gridPositionToVisit ) );
+
+							const uint	  hashToVisit		   = _gridSES.gridHash( gridPositionToVisit );
+							const Vec3f	  worldPositionToVisit = _gridSES.worldPosition( gridPositionToVisit );
+							SESGridData & gridDataToVisit	   = sesGridData[ hashToVisit ];
+
+							// If outside.
+							if ( gridDataToVisit.sdf == probeRadius )
+							{
+								float distance = ( worldPositionToVisit - sesWorldPosition ).length();
+								if ( distance < minDistanceWithOutsidePoint )
+								{
+									minDistanceWithOutsidePoint = distance;
+								}
+								found = true;
+							}
+						}
+					}
+				}
+
+				if ( found )
+				{
+					gridDataToVisit.sdf = probeRadius - minDistanceWithOutsidePoint;
+				}
+			}
+
+			// Marching cube to extract mesh.
+			const Math::MarchingCube marchingCube = Math::MarchingCube();
+			for ( uint x = 0; x < uint( _gridSES.size.x ) - 1; ++x )
+			{
+				for ( uint y = 0; y < uint( _gridSES.size.y ) - 1; ++y )
+				{
+					for ( uint z = 0; z < uint( _gridSES.size.z ) - 1; ++z )
+					{
+						Math::MarchingCube::GridCell cell
+							= { { _gridSES.worldPosition( Vec3i( x, y, z ) ),
+								  { _gridSES.worldPosition( Vec3i( x + 1, y, z ) ) },
+								  { _gridSES.worldPosition( Vec3i( x + 1, y, z + 1 ) ) },
+								  { _gridSES.worldPosition( Vec3i( x, y, z + 1 ) ) },
+								  { _gridSES.worldPosition( Vec3i( x, y + 1, z ) ) },
+								  { _gridSES.worldPosition( Vec3i( x + 1, y + 1, z ) ) },
+								  { _gridSES.worldPosition( Vec3i( x + 1, y + 1, z + 1 ) ) },
+								  { _gridSES.worldPosition( Vec3i( x, y + 1, z + 1 ) ) } },
+								{ sesGridData[ _gridSES.gridHash( Vec3i( x, y, z ) ) ].sdf,
+								  sesGridData[ _gridSES.gridHash( Vec3i( x + 1, y, z ) ) ].sdf,
+								  sesGridData[ _gridSES.gridHash( Vec3i( x + 1, y, z + 1 ) ) ].sdf,
+								  sesGridData[ _gridSES.gridHash( Vec3i( x, y, z + 1 ) ) ].sdf,
+								  sesGridData[ _gridSES.gridHash( Vec3i( x, y + 1, z ) ) ].sdf,
+								  sesGridData[ _gridSES.gridHash( Vec3i( x + 1, y + 1, z ) ) ].sdf,
+								  sesGridData[ _gridSES.gridHash( Vec3i( x + 1, y + 1, z + 1 ) ) ].sdf,
+								  sesGridData[ _gridSES.gridHash( Vec3i( x, y + 1, z + 1 ) ) ].sdf } };
+
+						std::vector<std::vector<Vec3f>> cellTriangles = marchingCube.triangulateCell( cell, 0.1f );
+						for ( uint i = 0; i < uint( cellTriangles.size() ); ++i )
+						{
+							assert( cellTriangles[ i ].size() == 3 );
+							_indices.insert( _indices.end(),
+											 { uint( _vertices.size() ),
+											   uint( _vertices.size() ) + 1,
+											   uint( _vertices.size() ) + 2 } );
+							_vertices.insert( _vertices.end(), cellTriangles[ i ].begin(), cellTriangles[ i ].end() );
 						}
 					}
 				}
 			}
 
+			_normals	  = std::vector( _vertices.size(), Vec3f( 1.f, 1.f, 1.f ) );
+			_colors		  = std::vector( _vertices.size(), Color::Rgb( 1.f, 1.f, 1.f ) );
+			_visibilities = std::vector<uint>( _vertices.size(), 1 );
+
 			chrono.stop();
 			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
-
-		void SolventExcludedSurface::_fillBuffer() {}
-
-		void SolventExcludedSurface::_computeAABB() const {}
-
-		void SolventExcludedSurface::_instantiate3DViews() {}
-
 	} // namespace Model
 } // namespace VTX

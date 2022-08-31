@@ -48,19 +48,18 @@ namespace VTX
 			void print() const;
 
 		  protected:
+			MeshTriangle();
+			~MeshTriangle() = default;
+
 			void _computeAABB() const override;
 			void _fillBuffer() override;
 			void _instantiate3DViews() override;
 
-		  private:
 			std::vector<Vec3f>		_vertices;
 			std::vector<Vec3f>		_normals;
 			std::vector<Color::Rgb> _colors;
 			std::vector<uint>		_visibilities;
 			std::vector<uint>		_indices;
-
-			MeshTriangle();
-			~MeshTriangle() = default;
 		};
 	} // namespace Model
 } // namespace VTX

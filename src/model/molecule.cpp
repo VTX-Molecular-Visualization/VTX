@@ -641,7 +641,13 @@ namespace VTX
 			BaseModel3D::render( p_camera );
 
 			if ( _secondaryStructure != nullptr )
+			{
 				_secondaryStructure->render( p_camera );
+			}
+			if ( _solventExcludedSurface != nullptr )
+			{
+				_solventExcludedSurface->render( p_camera );
+			}
 		}
 
 		bool Molecule::mergeTopology( const Molecule & p_molecule )

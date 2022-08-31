@@ -1,8 +1,8 @@
 #ifndef __VTX_MODEL_SOLVENT_EXCLUDED_SURFACE__
 #define __VTX_MODEL_SOLVENT_EXCLUDED_SURFACE__
 
-#include "base_model_3d.hpp"
 #include "buffer/solvent_excluded_surface.hpp"
+#include "mesh_triangle.hpp"
 #include "object3d/helper/grid.hpp"
 
 namespace VTX
@@ -10,7 +10,7 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class SolventExcludedSurface : public BaseModel3D<Buffer::SolventExcludedSurface>
+		class SolventExcludedSurface : public MeshTriangle
 		{
 			VTX_MODEL
 
@@ -19,13 +19,8 @@ namespace VTX
 			inline Object3D::Helper::Grid & getGridAtoms() { return _gridAtoms; }
 			inline Object3D::Helper::Grid & getGridSES() { return _gridSES; }
 
-			void print() const;
-
 		  protected:
 			void _init() override;
-			void _fillBuffer() override;
-			void _computeAABB() const override;
-			void _instantiate3DViews() override;
 
 		  private:
 			Model::Molecule * const _molecule;
