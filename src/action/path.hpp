@@ -3,10 +3,10 @@
 
 #include "base_action.hpp"
 #include "model/path.hpp"
-#include "path/path_enum.hpp"
 #include "model/selection.hpp"
 #include "model/viewpoint.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "path/path_enum.hpp"
 #include "selection/selection_manager.hpp"
 #include "state/export.hpp"
 #include "vtx_app.hpp"
@@ -54,7 +54,7 @@ namespace VTX
 				}
 
 			  private:
-				Model::Path &					 _path;
+				Model::Path &				   _path;
 				const VTX::Path::DURATION_MODE _mode;
 			};
 
@@ -74,7 +74,7 @@ namespace VTX
 				}
 
 			  private:
-				Model::Path &						  _path;
+				Model::Path &						_path;
 				const VTX::Path::INTERPOLATION_MODE _mode;
 			};
 

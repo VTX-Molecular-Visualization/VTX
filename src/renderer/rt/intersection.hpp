@@ -24,10 +24,10 @@ namespace VTX
 				_normal( p_normal ), _distance( p_distance ), _primitive( p_prim )
 			{
 			}
-			Intersection( const Intersection & p_intersection ) = default;			   // copy constructor
-			Intersection( Intersection && p_intersection )		= default;			   // move constructor
+			Intersection( const Intersection & p_intersection )				= default; // copy constructor
+			Intersection( Intersection && p_intersection )					= default; // move constructor
 			Intersection & operator=( const Intersection & p_intersection ) = default; // = copy
-			Intersection & operator=( Intersection && p_intersection ) = default;	   // = move
+			Intersection & operator=( Intersection && p_intersection )		= default; // = move
 
 			Vec3f				  _point	 = VEC3F_ZERO;
 			Vec3f				  _normal	 = VEC3F_ZERO;

@@ -33,7 +33,7 @@ namespace VTX
 	{
 		enum class DURATION_MODE;
 		enum class INTERPOLATION_MODE;
-	}
+	} // namespace Path
 
 	namespace Selection
 	{
@@ -195,7 +195,7 @@ namespace VTX
 		static const float COPIED_MOLECULE_OFFSET;
 
 		// Path
-		static const Path::DURATION_MODE DEFAULT_PATH_DURATION_MODE;
+		static const Path::DURATION_MODE	  DEFAULT_PATH_DURATION_MODE;
 		static const Path::INTERPOLATION_MODE DEFAULT_PATH_INTERPOLATION_MODE;
 
 		// Trajectory

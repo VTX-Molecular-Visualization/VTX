@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_WIDGET_BASE_MENUTOOLBUTTON_WIDGET__
 #define __VTX_UI_WIDGET_BASE_MENUTOOLBUTTON_WIDGET__
 
-#include "ui/widget/base_manual_widget.hpp"
 #include "ui/navigation/arrow_navigation.hpp"
+#include "ui/widget/base_manual_widget.hpp"
 #include <QToolButton>
 #include <QWidget>
 #include <type_traits>
@@ -33,7 +33,6 @@ namespace VTX::UI::Widget::MainMenu
 		void showActiveFeedback( const bool p_activate );
 
 		const Navigation::ArrowNavigation arrowNavigation = Navigation::ArrowNavigation();
-
 
 	  protected:
 		MenuToolButtonWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};

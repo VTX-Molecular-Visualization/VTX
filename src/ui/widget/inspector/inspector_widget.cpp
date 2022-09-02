@@ -181,7 +181,7 @@ namespace VTX::UI::Widget::Inspector
 		_inspectors[ int( INSPECTOR_TYPE::MEASURE_DISTANCE ) ]
 			= WidgetFactory::get().instantiateWidget<MultipleMeasurmentDistanceWidget>(
 				this, "multipleMeasurementDistanceInspector" );
-		_inspectors[ int( INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE) ]
+		_inspectors[ int( INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE ) ]
 			= WidgetFactory::get().instantiateWidget<MultipleMeasurmentDistanceWidget>(
 				this, "multipleMeasurementAngleInspector" );
 		_inspectors[ int( INSPECTOR_TYPE::MEASURE_ANGLE ) ]
@@ -285,7 +285,8 @@ namespace VTX::UI::Widget::Inspector
 				{
 					Model::Measurement::DihedralAngle & dihedralAngleModel
 						= MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
-					_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>( INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE, &dihedralAngleModel );
+					_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>(
+						INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE, &dihedralAngleModel );
 				}
 				else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
 				{

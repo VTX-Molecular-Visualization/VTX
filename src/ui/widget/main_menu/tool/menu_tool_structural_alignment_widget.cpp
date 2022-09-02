@@ -73,9 +73,8 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
 		Model::Selection::MapMoleculeIds::const_iterator it = selection.getMoleculesMap().cbegin();
-		
 
-		const Model::ID & firstMoleculeID  = it->first;
+		const Model::ID & firstMoleculeID = it->first;
 		it++;
 		const Model::ID & secondMoleculeID = it->first;
 

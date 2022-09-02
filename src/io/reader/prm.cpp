@@ -1,7 +1,7 @@
 #include "prm.hpp"
+#include "model/configuration/molecule.hpp"
 #include <fstream>
 #include <sstream>
-#include "model/configuration/molecule.hpp"
 
 namespace VTX
 {

@@ -40,8 +40,8 @@ namespace VTX
 			ListActionUndonablePtr _bufferRedo	= ListActionUndonablePtr();
 			QueueVTXActionPtr	   _actionQueue = QueueVTXActionPtr();
 
-			ActionManager()						   = default;
-			ActionManager( const ActionManager & ) = delete;
+			ActionManager()									   = default;
+			ActionManager( const ActionManager & )			   = delete;
 			ActionManager & operator=( const ActionManager & ) = delete;
 			~ActionManager()								   = default;
 

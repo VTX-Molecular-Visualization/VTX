@@ -31,10 +31,10 @@ namespace VTX::UI::Widget::MainMenu
 		void _setupSlots() override;
 
 	  private:
-		QTabWidget *							 _tabWidget		  = nullptr;
-		Home::MenuHomeWidget *					 _mainMenu		  = nullptr;
-		Visualization::MenuVisualizationWidget * _viewMenu		  = nullptr;
-		Tool::MenuToolWidget *					 _toolMenu = nullptr;
+		QTabWidget *							 _tabWidget = nullptr;
+		Home::MenuHomeWidget *					 _mainMenu	= nullptr;
+		Visualization::MenuVisualizationWidget * _viewMenu	= nullptr;
+		Tool::MenuToolWidget *					 _toolMenu	= nullptr;
 		// !V0.1
 		// QLabel *								 _movieMenu		 = nullptr;
 		// Extensions::MenuExtensionsWidget * _extensionsMenu = nullptr;

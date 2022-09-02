@@ -74,7 +74,7 @@ namespace VTX
 
 		  private:
 			WorkerManager() { qRegisterMetaType<std::string>(); }
-			WorkerManager( const WorkerManager & ) = delete;
+			WorkerManager( const WorkerManager & )			   = delete;
 			WorkerManager & operator=( const WorkerManager & ) = delete;
 			~WorkerManager() { stopAll(); }
 

@@ -4,8 +4,8 @@
 #include "action/base_action.hpp"
 #include "model/molecule.hpp"
 #include "tool/logger.hpp"
-#include <string>
 #include <cmath>
+#include <string>
 
 namespace VTX::Action::StructuralAlignment
 {
@@ -17,7 +17,7 @@ namespace VTX::Action::StructuralAlignment
 		{
 		}
 
-		virtual void execute() override 
+		virtual void execute() override
 		{
 			const size_t minAtomLength = _firstMolecule.getAtomCount() < _secondMolecule.getAtomCount()
 											 ? _firstMolecule.getAtomCount()
@@ -28,7 +28,6 @@ namespace VTX::Action::StructuralAlignment
 			const Model::Molecule::AtomPositionsFrame & frame1 = _firstMolecule.getAtomPositionFrame( 0 );
 			const Model::Molecule::AtomPositionsFrame & frame2 = _secondMolecule.getAtomPositionFrame( 0 );
 
-
 			for ( uint i = 0; i < minAtomLength; i++ )
 			{
 				rmsd += Util::Math::distance( frame1[ i ], frame2[ i ] ) / minAtomLength;
@@ -36,7 +35,7 @@ namespace VTX::Action::StructuralAlignment
 
 			rmsd = sqrtf( rmsd );
 
-			VTX_INFO( "RMSD : " + std::to_string( rmsd ));
+			VTX_INFO( "RMSD : " + std::to_string( rmsd ) );
 		}
 
 	  private:

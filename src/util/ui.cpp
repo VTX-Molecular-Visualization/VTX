@@ -1,6 +1,6 @@
 #include "util/ui.hpp"
-#include "model/bond.hpp"
 #include "model/atom.hpp"
+#include "model/bond.hpp"
 #include "model/molecule.hpp"
 
 namespace VTX::Util::UI

@@ -171,7 +171,7 @@ namespace VTX::Representation
 
 	  protected:
 		RepresentationManager();
-		RepresentationManager( const RepresentationManager & ) = delete;
+		RepresentationManager( const RepresentationManager & )			   = delete;
 		RepresentationManager & operator=( const RepresentationManager & ) = delete;
 		~RepresentationManager() {};
 

@@ -27,8 +27,7 @@ namespace VTX::UI::Widget::MainMenu
 			_tabWidget, "visualizationMenu" );
 		_tabWidget->addTab( _viewMenu, "Visualization" );
 
-		_toolMenu = WidgetFactory::get().instantiateWidget<Tool::MenuToolWidget>(
-			_tabWidget, "toolMenu" );
+		_toolMenu = WidgetFactory::get().instantiateWidget<Tool::MenuToolWidget>( _tabWidget, "toolMenu" );
 		_tabWidget->addTab( _toolMenu, "Tools" );
 
 		// !V0.1

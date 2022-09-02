@@ -35,7 +35,9 @@ namespace VTX
 						const float cosTheta = Util::Math::max( 0.f, Util::Math::dot( intersection._normal, ls._dir ) );
 
 						if ( !p_scene.intersectAny( shadowRay, SHADOW_EPS, ls._distance - SHADOW_EPS ) )
-						{ lightContrib += mtl->shade( p_ray, intersection, ls ) * ls._radiance * cosTheta; }
+						{
+							lightContrib += mtl->shade( p_ray, intersection, ls ) * ls._radiance * cosTheta;
+						}
 					}
 					Li += /*0.9f **/ lightContrib / float( nbLightSamples );
 				}

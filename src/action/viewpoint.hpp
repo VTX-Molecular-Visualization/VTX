@@ -58,7 +58,7 @@ namespace VTX::Action::Viewpoint
 
 		virtual void execute() override
 		{
-			const std::string				 viewpointName = _path.generateNewViewpointName();
+			const std::string		 viewpointName = _path.generateNewViewpointName();
 			Model::Viewpoint * const viewpoint
 				= MVC::MvcManager::get().instantiateModel<Model::Viewpoint, Model::Path * const>( &_path );
 			viewpoint->setController( _controller );

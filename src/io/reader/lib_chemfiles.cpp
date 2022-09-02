@@ -78,7 +78,7 @@ namespace VTX::IO::Reader
 		_logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
 
 		// Erase supernumeraries frames
-		if ( p_molecule.getFrames().back().size() == 0 ) 
+		if ( p_molecule.getFrames().back().size() == 0 )
 		{
 			do
 			{

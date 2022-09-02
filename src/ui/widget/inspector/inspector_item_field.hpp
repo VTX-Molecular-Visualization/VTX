@@ -41,7 +41,10 @@ namespace VTX
 						p_grid.addWidget( _valueWidget, p_row, 1 );
 					};
 					inline void localize() { _labelWidget->setText( _label ); };
-					inline void setValue( const std::string & p_value ) { _valueWidget->setText( QString::fromStdString( p_value ) ); };
+					inline void setValue( const std::string & p_value )
+					{
+						_valueWidget->setText( QString::fromStdString( p_value ) );
+					};
 
 				  private:
 					QLabel * _labelWidget;

@@ -32,7 +32,7 @@ namespace VTX
 			Model::Selection * _selectionModel;
 
 			SelectionManager();
-			SelectionManager( const SelectionManager & ) = delete;
+			SelectionManager( const SelectionManager & )			 = delete;
 			SelectionManager & operator=( const SelectionManager & ) = delete;
 			~SelectionManager();
 		};

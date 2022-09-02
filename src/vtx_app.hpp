@@ -79,7 +79,7 @@ namespace VTX
 			return *_renderEffectLibrary;
 		}
 
-		bool  hasAnyModifications() const;
+		bool hasAnyModifications() const;
 
 		void deleteAtEndOfFrame( const Generic::BaseAutoDelete * const p_object );
 
@@ -105,7 +105,7 @@ namespace VTX
 			= std::vector<const Generic::BaseAutoDelete *>();
 
 		VTXApp();
-		VTXApp( const VTXApp & ) = delete;
+		VTXApp( const VTXApp & )			 = delete;
 		VTXApp & operator=( const VTXApp & ) = delete;
 		~VTXApp();
 

@@ -22,8 +22,8 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		void _setupSlots() override;
 
 	  private:
-		MenuToolMeasurementWidget * _measurement = nullptr;
+		MenuToolMeasurementWidget *			_measurement		 = nullptr;
 		MenuToolStructuralAlignmentWidget * _structuralAlignment = nullptr;
 	};
-} // namespace VTX::UI::Widget::MainMenu::Measurement
+} // namespace VTX::UI::Widget::MainMenu::Tool
 #endif

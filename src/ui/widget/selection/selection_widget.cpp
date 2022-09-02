@@ -100,7 +100,7 @@ namespace VTX::UI::Widget::Selection
 	{
 		for ( int i = 0; i < (int)VTX::Selection::Granularity::COUNT; i++ )
 		{
-			QString									   txt;
+			QString							  txt;
 			const VTX::Selection::Granularity selectionType = (VTX::Selection::Granularity)i;
 
 			switch ( selectionType )

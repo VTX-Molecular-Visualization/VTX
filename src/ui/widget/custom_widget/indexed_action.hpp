@@ -17,7 +17,8 @@ namespace VTX
 					Q_OBJECT
 
 				  public:
-					IndexedAction( const int p_index, QWidget * const p_parent ) : QAction( p_parent ), _index( p_index )
+					IndexedAction( const int p_index, QWidget * const p_parent ) :
+						QAction( p_parent ), _index( p_index )
 					{
 						connect( this, &QAction::triggered, this, &IndexedAction::_sendTriggeredWithData );
 					};

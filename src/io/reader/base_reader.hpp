@@ -1,8 +1,8 @@
 #ifndef __VTX_BASE_READER__
 #define __VTX_BASE_READER__
 
-#include "io/filepath.hpp"
 #include "exception.hpp"
+#include "io/filepath.hpp"
 
 namespace VTX
 {

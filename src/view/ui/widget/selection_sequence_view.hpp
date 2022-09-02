@@ -24,7 +24,9 @@ namespace VTX
 					const VTX::UI::Widget::Sequence::SequenceWidget * const _linkedSequenceWidget;
 
 					SelectionSequenceView( Model::Selection * const p_model, QWidget * const p_sequenceWidget ) :
-						View::BaseView<Model::Selection>( p_model ), _linkedSequenceWidget( dynamic_cast<VTX::UI::Widget::Sequence::SequenceWidget * const>( p_sequenceWidget ) )
+						View::BaseView<Model::Selection>( p_model ),
+						_linkedSequenceWidget(
+							dynamic_cast<VTX::UI::Widget::Sequence::SequenceWidget * const>( p_sequenceWidget ) )
 					{
 					}
 				};

@@ -185,7 +185,6 @@ namespace VTX::UI::Widget::Scene
 		drag->exec( Qt::CopyAction | Qt::MoveAction );
 	}
 
-
 	void SceneItemWidget::_onItemExpanded( QTreeWidgetItem * const )
 	{
 		_refreshSize();

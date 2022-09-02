@@ -18,7 +18,7 @@ namespace VTX
 		uint MarchingCube::_computeCubeIndex( const GridCell & p_gridCell, const float p_isovalue ) const
 		{
 			uint cubeIndex = 0;
-			for ( uint i = 0; i < 8; i++ )
+			for ( uint i = 0; i < 8; ++i )
 			{
 				if ( p_gridCell.value[ i ] < p_isovalue )
 				{
@@ -57,7 +57,8 @@ namespace VTX
 			{
 				if ( intersectionsKey & 1 )
 				{
-					const uint	v1 = _EDGE_TO_VERTICES[ idx ].first, v2 = _EDGE_TO_VERTICES[ idx ].second;
+					const uint	v1				  = _EDGE_TO_VERTICES[ idx ].first;
+					const uint	v2				  = _EDGE_TO_VERTICES[ idx ].second;
 					const Vec3f intersectionPoint = _interpolate( p_gridCell.vertex[ v1 ],
 																  p_gridCell.value[ v1 ],
 																  p_gridCell.vertex[ v2 ],
@@ -79,7 +80,7 @@ namespace VTX
 			for ( uint i = 0; _TRIANGLE_TABLE[ p_cubeIndex ][ i ] != -1; i += 3 )
 			{
 				std::vector<Vec3f> triangle( 3 );
-				for ( uint j = 0; j < 3; j++ )
+				for ( uint j = 0; j < 3; ++j )
 				{
 					triangle[ j ] = p_intersections[ _TRIANGLE_TABLE[ p_cubeIndex ][ i + j ] ];
 				}

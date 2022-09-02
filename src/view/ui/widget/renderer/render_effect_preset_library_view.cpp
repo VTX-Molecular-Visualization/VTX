@@ -47,7 +47,7 @@ namespace VTX::View::UI::Widget::Renderer
 		}
 		else if ( p_event.name == Event::Global::RENDER_EFFECT_LIBRARY_CLEARED )
 		{
-			const bool previousSignalState = blockSignals(true);
+			const bool previousSignalState = blockSignals( true );
 			_presetList->setCurrentIndex( -1 );
 			blockSignals( previousSignalState );
 		}

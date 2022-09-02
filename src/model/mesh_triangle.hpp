@@ -45,6 +45,8 @@ namespace VTX
 			inline const uint &				 getIndice( const uint p_idx ) const { return _indices[ p_idx ]; }
 			inline uint &					 getIndice( const uint p_idx ) { return _indices[ p_idx ]; }
 
+			void recomputeNormals();
+
 			void print() const;
 
 		  protected:

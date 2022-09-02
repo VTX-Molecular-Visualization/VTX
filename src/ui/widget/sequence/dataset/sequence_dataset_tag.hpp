@@ -17,7 +17,8 @@ namespace VTX
 					class SequenceDisplayDataset_HtmlTag : public SequenceDisplayDataset
 					{
 					  public:
-						SequenceDisplayDataset_HtmlTag( const uint p_charIndex ) : SequenceDisplayDataset( p_charIndex, 0 ) {};
+						SequenceDisplayDataset_HtmlTag( const uint p_charIndex ) :
+							SequenceDisplayDataset( p_charIndex, 0 ) {};
 
 						int	 getStringSize() const override { return 0; };
 						bool isCharIndexInScope( const uint p_charIndex ) override { return false; }
@@ -44,7 +45,8 @@ namespace VTX
 					class SequenceDisplayDataset_EndHtmlColorTag : public SequenceDisplayDataset_HtmlTag
 					{
 					  public:
-						SequenceDisplayDataset_EndHtmlColorTag( const uint p_charIndex ) : SequenceDisplayDataset_HtmlTag( p_charIndex ) {};
+						SequenceDisplayDataset_EndHtmlColorTag( const uint p_charIndex ) :
+							SequenceDisplayDataset_HtmlTag( p_charIndex ) {};
 						void appendToSequence( QString & p_sequenceString ) const override
 						{
 							QString tag = QString();

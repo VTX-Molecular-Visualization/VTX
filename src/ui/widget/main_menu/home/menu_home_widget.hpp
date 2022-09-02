@@ -22,8 +22,8 @@ namespace VTX::UI::Widget::MainMenu::Home
 		void _setupSlots() override;
 
 	  private:
-		MenuHomeSessionWidget *									_session		 = nullptr;
-		MenuHomeWindowsWidget *									_windows		 = nullptr;
+		MenuHomeSessionWidget * _session = nullptr;
+		MenuHomeWindowsWidget * _windows = nullptr;
 	};
 } // namespace VTX::UI::Widget::MainMenu::Home
 #endif

@@ -13,12 +13,14 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class MoleculeSequenceView : public BaseWidgetView<Model::Molecule, VTX::UI::Widget::Sequence::MoleculeSequenceWidget>
+				class MoleculeSequenceView :
+					public BaseWidgetView<Model::Molecule, VTX::UI::Widget::Sequence::MoleculeSequenceWidget>
 				{
 					VTX_VIEW
 
 				  private:
-					MoleculeSequenceView( Model::Molecule * const p_molecule, QWidget * p_parent ) : BaseWidgetView( p_molecule, "MoleculeSequence", p_parent ) {};
+					MoleculeSequenceView( Model::Molecule * const p_molecule, QWidget * p_parent ) :
+						BaseWidgetView( p_molecule, "MoleculeSequence", p_parent ) {};
 				};
 
 			} // namespace Widget

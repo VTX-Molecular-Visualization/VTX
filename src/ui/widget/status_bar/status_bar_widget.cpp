@@ -10,7 +10,10 @@ namespace VTX
 		{
 			namespace StatusBar
 			{
-				StatusBarWidget::StatusBarWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) { _registerEvent( Event::Global::UPDATE_PROGRESS_BAR ); }
+				StatusBarWidget::StatusBarWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
+				{
+					_registerEvent( Event::Global::UPDATE_PROGRESS_BAR );
+				}
 
 				void StatusBarWidget ::receiveEvent( const Event::VTXEvent & p_event )
 				{

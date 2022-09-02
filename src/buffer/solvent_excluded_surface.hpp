@@ -11,8 +11,8 @@ namespace VTX
 		class SolventExcludedSurface : public BaseBufferOpenGL
 		{
 		  public:
-			SolventExcludedSurface() = default;
-			~SolventExcludedSurface() = default;			
+			SolventExcludedSurface()  = default;
+			~SolventExcludedSurface() = default;
 
 			void generate() override;
 

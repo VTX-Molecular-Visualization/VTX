@@ -72,6 +72,7 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.bind();
 		_fbo.clear( Framebuffer::ClearBuffer::COLOR_DEPTH );
 
+		//_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 		{
 			pair.first->render( p_scene.getCamera() );
@@ -84,6 +85,7 @@ namespace VTX::Renderer::GL::Pass
 		{
 			helper->render( p_scene.getCamera() );
 		}
+		//_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	}
 
 } // namespace VTX::Renderer::GL::Pass

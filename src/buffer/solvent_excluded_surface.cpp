@@ -2,8 +2,5 @@
 
 namespace VTX::Buffer
 {
-	void SolventExcludedSurface::generate()
-	{
-		_vao.create();
-	}
+	void SolventExcludedSurface::generate() { _vao.create(); }
 } // namespace VTX::Buffer

@@ -40,5 +40,5 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 		void _refreshButtons() const;
 	};
-} // namespace VTX::UI::Widget::MainMenu::Measurement
+} // namespace VTX::UI::Widget::MainMenu::Tool
 #endif

@@ -107,8 +107,8 @@ namespace VTX
 									// Compute SDF.
 									for ( const AtomData & atom : atomData[ hashToVisit ] )
 									{
-										const uint distance
-											= ( atomPositions[ atom.index ] - sesGridCellWorldPosition ).length();
+										const float distance = Util::Math::distance( atomPositions[ atom.index ],
+																					 sesGridCellWorldPosition );
 
 										// Inside.
 										if ( distance < voxelSize )
@@ -118,10 +118,9 @@ namespace VTX
 											break;
 										}
 										// Boundary.
-										else if ( int distanceWithProbe
-												  = distance - probeRadius
-														- _molecule->getAtom( atom.index )->getVdwRadius()
-													< 0 )
+										else if ( distance - probeRadius
+													  - _molecule->getAtom( atom.index )->getVdwRadius()
+												  < 0 )
 										{
 											sesGridDataBoundary.push_back( sesGridHash );
 											gridData.sdf = -voxelSize;
@@ -137,30 +136,33 @@ namespace VTX
 			}
 
 			// SDF refinement.
-			const int cellsToVisitCount = Util::Math::ceil( probeRadius / probeRadius );
-			VTX_INFO( "{} / {}", sesGridDataBoundary.size(), sesGridData.size() );
+			const Vec3i cellsToVisitCount = Util::Math::ceil( cellSize / Vec3f( probeRadius + voxelSize ) );
+
+			// VTX_DEBUG( "{}", glm::to_string( cellsToVisitCount ) );
+			// VTX_INFO( "{} / {}", sesGridDataBoundary.size(), sesGridData.size() );
 			for ( const uint sesGridHash : sesGridDataBoundary )
 			{
+				// VTX_DEBUG( "{}", sesGridHash );
 				const Vec3i	  sesGridPosition			  = _gridSES.gridPosition( sesGridHash );
 				const Vec3f	  sesWorldPosition			  = _gridSES.worldPosition( sesGridPosition );
 				SESGridData & gridDataToVisit			  = sesGridData[ sesGridHash ];
 				float		  minDistanceWithOutsidePoint = FLOAT_MAX;
 				bool		  found						  = false;
-				for ( int ox = -cellsToVisitCount; ox <= cellsToVisitCount; ++ox )
+				for ( int ox = -cellsToVisitCount.x; ox <= cellsToVisitCount.x; ++ox )
 				{
-					for ( int oy = -cellsToVisitCount; oy <= cellsToVisitCount; ++oy )
+					for ( int oy = -cellsToVisitCount.y; oy <= cellsToVisitCount.y; ++oy )
 					{
-						for ( int oz = -cellsToVisitCount; oz <= cellsToVisitCount; ++oz )
+						for ( int oz = -cellsToVisitCount.z; oz <= cellsToVisitCount.z; ++oz )
 						{
 							const Vec3i gridPositionToVisit = sesGridPosition + Vec3i( ox, oy, oz );
+							// VTX_INFO( "{}", glm::to_string( gridPositionToVisit ) );
+
 							if ( gridPositionToVisit.x < 0 || gridPositionToVisit.y < 0 || gridPositionToVisit.z < 0
 								 || gridPositionToVisit.x >= _gridSES.size.x || gridPositionToVisit.y >= _gridSES.size.y
 								 || gridPositionToVisit.z >= _gridSES.size.z )
 							{
 								continue;
 							}
-
-							// VTX_INFO( "{}", glm::to_string( gridPositionToVisit ) );
 
 							const uint	  hashToVisit		   = _gridSES.gridHash( gridPositionToVisit );
 							const Vec3f	  worldPositionToVisit = _gridSES.worldPosition( gridPositionToVisit );
@@ -169,7 +171,7 @@ namespace VTX
 							// If outside.
 							if ( gridDataToVisit.sdf == probeRadius )
 							{
-								float distance = ( worldPositionToVisit - sesWorldPosition ).length();
+								const float distance = Util::Math::distance( worldPositionToVisit, sesWorldPosition );
 								if ( distance < minDistanceWithOutsidePoint )
 								{
 									minDistanceWithOutsidePoint = distance;
@@ -212,7 +214,7 @@ namespace VTX
 								  sesGridData[ _gridSES.gridHash( Vec3i( x + 1, y + 1, z + 1 ) ) ].sdf,
 								  sesGridData[ _gridSES.gridHash( Vec3i( x, y + 1, z + 1 ) ) ].sdf } };
 
-						std::vector<std::vector<Vec3f>> cellTriangles = marchingCube.triangulateCell( cell, 0.1f );
+						std::vector<std::vector<Vec3f>> cellTriangles = marchingCube.triangulateCell( cell, 0 );
 						for ( uint i = 0; i < uint( cellTriangles.size() ); ++i )
 						{
 							assert( cellTriangles[ i ].size() == 3 );
@@ -226,7 +228,7 @@ namespace VTX
 				}
 			}
 
-			_normals	  = std::vector( _vertices.size(), Vec3f( 1.f, 1.f, 1.f ) );
+			recomputeNormals();
 			_colors		  = std::vector( _vertices.size(), Color::Rgb( 1.f, 1.f, 1.f ) );
 			_visibilities = std::vector<uint>( _vertices.size(), 1 );
 

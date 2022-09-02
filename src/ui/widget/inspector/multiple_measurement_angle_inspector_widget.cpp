@@ -176,7 +176,6 @@ namespace VTX::UI::Widget::Inspector
 
 		VTX_ACTION( new Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
 	}
-	
 
 	void MultipleMeasurmentAngleWidget::_setLabelColor( const Color::Rgb & p_color ) const
 	{

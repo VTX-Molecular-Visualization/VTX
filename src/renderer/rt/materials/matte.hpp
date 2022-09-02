@@ -30,7 +30,9 @@ namespace VTX
 			{
 				// TODO: always use OrenNayar ?
 				if ( _roughness == 0.f )
-				{ return BRDF::Lambert::fr( p_hit, -p_ray.getDirection(), p_lightSample._dir, _kd ); }
+				{
+					return BRDF::Lambert::fr( p_hit, -p_ray.getDirection(), p_lightSample._dir, _kd );
+				}
 				else
 				{
 					return BRDF::OrenNayar::fr( p_hit, -p_ray.getDirection(), p_lightSample._dir, _kd, _roughness );

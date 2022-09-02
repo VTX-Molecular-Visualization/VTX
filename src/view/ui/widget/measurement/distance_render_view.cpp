@@ -42,7 +42,6 @@ namespace VTX::View::UI::Widget::Measurement
 	void DistanceRenderView::_setupSlots() {}
 	void DistanceRenderView::localize() {}
 
-
 	void DistanceRenderView::_refreshView()
 	{
 		_refreshText();

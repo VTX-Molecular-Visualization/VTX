@@ -53,9 +53,9 @@ namespace VTX::View::UI::Widget::Representation
 		QPushButton * _copyPresetButton	  = nullptr;
 		QPushButton * _deletePresetButton = nullptr;
 
-		QPushButton * _importPresetButton	= nullptr;
-		QPushButton * _reloadLibraryButton	= nullptr;
-		QPushButton * _resetLibraryButton = nullptr;
+		QPushButton * _importPresetButton  = nullptr;
+		QPushButton * _reloadLibraryButton = nullptr;
+		QPushButton * _resetLibraryButton  = nullptr;
 	};
 } // namespace VTX::View::UI::Widget::Representation
 #endif

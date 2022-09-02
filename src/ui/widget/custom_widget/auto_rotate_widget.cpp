@@ -54,7 +54,6 @@ namespace VTX::UI::Widget::CustomWidget
 				 &CustomWidget::Vector3Widget::onValueDragged,
 				 this,
 				 &AutoRotateWidget::_orientationDragged );
-		
 
 		connect(
 			_speedWidget, &CustomWidget::FloatFieldSliderWidget::onValueChange, this, &AutoRotateWidget::_speedChange );
@@ -136,10 +135,8 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		if ( p_delta == VEC3F_ZERO )
 			return;
-		
+
 		VTX_ACTION( new Action::Transformable::AddToAutoRotationOrientation( _targets, p_delta ) );
 	}
-
-	
 
 } // namespace VTX::UI::Widget::CustomWidget

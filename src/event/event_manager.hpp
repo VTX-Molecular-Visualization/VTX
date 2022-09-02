@@ -72,8 +72,8 @@ namespace VTX
 
 			bool _freeze = false;
 
-			EventManager()						 = default;
-			EventManager( const EventManager & ) = delete;
+			EventManager()									 = default;
+			EventManager( const EventManager & )			 = delete;
 			EventManager & operator=( const EventManager & ) = delete;
 			~EventManager();
 

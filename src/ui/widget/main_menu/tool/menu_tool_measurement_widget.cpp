@@ -62,8 +62,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		//_distanceToCycleModeButton->setTriggerAction( this,
 		//											  &MenuToolMeasurementWidget::_applyDistanceToCycleModeAction );
 		_angleModeButton->setTriggerAction( this, &MenuToolMeasurementWidget::_applyAngleModeAction );
-		_dihedralAngleModeButton->setTriggerAction( this,
-													&MenuToolMeasurementWidget::_applyDihedralAngleModeAction );
+		_dihedralAngleModeButton->setTriggerAction( this, &MenuToolMeasurementWidget::_applyDihedralAngleModeAction );
 	}
 	void MenuToolMeasurementWidget::localize() {}
 
@@ -137,4 +136,4 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		}
 	}
 
-} // namespace VTX::UI::Widget::MainMenu::Measurement
+} // namespace VTX::UI::Widget::MainMenu::Tool

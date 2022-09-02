@@ -71,7 +71,7 @@ namespace VTX::Model
 			//		VTX::ID::VTX_ID getViewID( const int p_atomPos ) const;
 			//
 			//		void _onMoleculeChange( const Model::Molecule * const p_molecule, const Event::VTXEvent * const
-			//p_event
+			// p_event
 			//);
 		};
 	} // namespace Measurement

@@ -34,6 +34,29 @@ namespace VTX
 				MVC::MvcManager::get().instantiateView<View::D3::Triangle>( this, VTX::ID::View::D3_TRIANGLE ) );
 		}
 
+		void MeshTriangle::recomputeNormals()
+		{
+			if ( _indices.size() < 3 )
+			{
+				return;
+			}
+
+			_normals.resize( _vertices.size() );
+			for ( uint i = 0; i < _indices.size() - 2; i += 3 )
+			{
+				Vec3f normal = Util::Math::cross( _vertices[ _indices[ i + 1 ] ] - _vertices[ _indices[ i + 2 ] ],
+												  _vertices[ _indices[ i + 1 ] ] - _vertices[ _indices[ i + 0 ] ] );
+
+				assert( Util::Math::length( normal ) != 0.f );
+
+				Util::Math::normalizeSelf( normal );
+
+				_normals[ _indices[ i + 0 ] ] = normal;
+				_normals[ _indices[ i + 1 ] ] = normal;
+				_normals[ _indices[ i + 2 ] ] = normal;
+			}
+		}
+
 		void MeshTriangle::print() const
 		{
 			VTX_INFO( "Faces: " + std::to_string( _indices.size() / 3 ) + " / Vertices: "

@@ -8,8 +8,8 @@
 #include "ui/widget/inspector/inspector_section.hpp"
 #include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include "view/base_view.hpp"
-#include <QWidget>
 #include <QLabel>
+#include <QWidget>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
@@ -32,10 +32,10 @@ namespace VTX::UI::Widget::Inspector
 		void _endOfFrameRefresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
 
 	  private:
-		InspectorSectionVLayout *		 _infoSection	= nullptr;
-		CustomWidget::QLabelMultiField * _nameLabel = nullptr;
+		InspectorSectionVLayout *		 _infoSection	   = nullptr;
+		CustomWidget::QLabelMultiField * _nameLabel		   = nullptr;
 		CustomWidget::QLabelMultiField * _genericNameLabel = nullptr;
-		QLabel * _bondInfoLabel = nullptr;
+		QLabel *						 _bondInfoLabel	   = nullptr;
 
 		void _resetFieldStates( const SectionFlag & p_flag );
 		void _fillBondData();

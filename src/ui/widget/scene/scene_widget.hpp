@@ -6,8 +6,8 @@
 #include "scene_item_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
-#include "view/base_view.hpp"
 #include "ui/widget_factory.hpp"
+#include "view/base_view.hpp"
 #include <QDockWidget>
 #include <QDragEnterEvent>
 #include <QDropEvent>

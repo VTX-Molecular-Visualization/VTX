@@ -67,7 +67,7 @@ namespace VTX::Model::Representation
 		{
 			bool useMoleculeColor = false;
 
-			if ( _colorMode .isValid())
+			if ( _colorMode.isValid() )
 			{
 				useMoleculeColor = useMoleculeColor || _colorMode.getValue() == Generic::COLOR_MODE::ATOM_PROTEIN
 								   || _colorMode.getValue() == Generic::COLOR_MODE::PROTEIN;
@@ -79,7 +79,6 @@ namespace VTX::Model::Representation
 					= useMoleculeColor
 					  || _ribbonData.getValue().colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN;
 			}
-				  
 
 			if ( useMoleculeColor )
 				_notifyDataChanged();

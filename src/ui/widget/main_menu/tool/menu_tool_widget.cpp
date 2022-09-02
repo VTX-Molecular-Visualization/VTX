@@ -11,8 +11,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 		_measurement = addToolBlock<MenuToolMeasurementWidget>( "measurementBlockWidget" );
 		//_structuralAlignment = addToolBlock<MenuToolStructuralAlignmentWidget>( "structuralAlignmentBlockWidget" );
-		
 	}
 	void MenuToolWidget::_setupSlots() {}
 	void MenuToolWidget::localize() {}
-} // namespace VTX::UI::Widget::MainMenu::Measurement
+} // namespace VTX::UI::Widget::MainMenu::Tool

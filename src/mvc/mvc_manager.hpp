@@ -202,8 +202,8 @@ namespace VTX
 			}
 
 		  private:
-			MvcManager()					 = default;
-			MvcManager( const MvcManager & ) = delete;
+			MvcManager()								 = default;
+			MvcManager( const MvcManager & )			 = delete;
 			MvcManager & operator=( const MvcManager & ) = delete;
 			~MvcManager() { assert( _container.size() == 0 ); }
 

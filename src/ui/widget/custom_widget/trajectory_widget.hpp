@@ -41,7 +41,7 @@ namespace VTX::UI::Widget::CustomWidget
 		QPushButton * _nextFrameButton	   = nullptr;
 		QPushButton * _goToEndButton	   = nullptr;
 
-		CustomWidget::QComboBoxMultiField * _playModeWidget = nullptr;
+		CustomWidget::QComboBoxMultiField *		 _playModeWidget = nullptr;
 		CustomWidget::IntegerFieldSliderWidget * _speedWidget	 = nullptr;
 		// CustomWidget::IntegerRangeWidget *	_playRangeWidget= nullptr;
 

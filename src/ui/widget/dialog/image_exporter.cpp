@@ -2,9 +2,9 @@
 #include "action/main.hpp"
 #include "io/struct/image_export.hpp"
 #include "setting.hpp"
+#include "spec.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget_factory.hpp"
-#include "spec.hpp"
 #include "vtx_app.hpp"
 #include <QFileDialog>
 #include <QPushButton>

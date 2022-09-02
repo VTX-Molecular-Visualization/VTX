@@ -15,7 +15,7 @@ namespace VTX::Worker
 		Tool::Chrono chrono;
 
 		chrono.start();
-		emit		   logInfo( "Saving " + _preset->getName() );
+		emit			   logInfo( "Saving " + _preset->getName() );
 		const IO::FilePath path = Util::Filesystem::getRenderEffectPath( _preset->getName() );
 
 		IO::Writer::SerializedObject<Model::Renderer::RenderEffectPreset> * writer

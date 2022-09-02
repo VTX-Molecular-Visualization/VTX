@@ -4,18 +4,18 @@
 namespace VTX::Path
 {
 	enum class DURATION_MODE : int
-    {
-        CONSTANT_SPEED,
-        PATH,
-        VIEWPOINT
-    };
+	{
+		CONSTANT_SPEED,
+		PATH,
+		VIEWPOINT
+	};
 
-    enum class INTERPOLATION_MODE : int
-    {
-        LINEAR,
-        CATMULL_ROM,
-        CUBIC
-    };
+	enum class INTERPOLATION_MODE : int
+	{
+		LINEAR,
+		CATMULL_ROM,
+		CUBIC
+	};
 
-} // namespace VTX::Trajectory
+} // namespace VTX::Path
 #endif

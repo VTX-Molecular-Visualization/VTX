@@ -34,8 +34,8 @@ namespace VTX::UI::Widget::CustomWidget
 	void ColorFieldButton::_onClickButton()
 	{
 		_colorOnDialogOpen = _color;
-		
-		const bool signalState = _colorDialog->blockSignals(true);
+
+		const bool signalState = _colorDialog->blockSignals( true );
 		_colorDialog->setCurrentColor( _getQColorFromRgbColor( _color ) );
 		_colorDialog->open();
 		_colorDialog->blockSignals( signalState );
