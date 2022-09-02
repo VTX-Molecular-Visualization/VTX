@@ -41,7 +41,8 @@ namespace VTX
 		  private:
 			void _computeAABB() override
 			{
-				if ( _bvh.isBuilt() ) _aabb = _bvh.getAABB();
+				if ( _bvh.isBuilt() )
+					_aabb = _bvh.getAABB();
 			}
 
 		  private:

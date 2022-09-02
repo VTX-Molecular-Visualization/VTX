@@ -42,7 +42,8 @@ namespace VTX
 
 			std::vector<std::vector<AtomData>> atomData
 				= std::vector<std::vector<AtomData>>( _gridAtoms.getCellCount(), std::vector<AtomData>() );
-			const std::vector<Vec3f> & atomPositions = _molecule->getAtomPositionFrame( 0 );
+			const std::vector<Vec3f> &		atomPositions = _molecule->getAtomPositionFrame( 0 );
+
 			for ( uint i = 0; i < atomPositions.size(); ++i )
 			{
 				const uint hash = _gridAtoms.gridHash( atomPositions[ i ] );
@@ -57,15 +58,16 @@ namespace VTX
 
 			struct SESGridData
 			{
-				float sdf;
+				float	   sdf;
+				Color::Rgb color;
 			};
 
 			// SES grid data.
-			std::vector<SESGridData> sesGridData
-				= std::vector<SESGridData>( _gridSES.getCellCount(), SESGridData { probeRadius } );
+			std::vector<SESGridData> sesGridData = std::vector<SESGridData>(
+				_gridSES.getCellCount(), SESGridData { probeRadius, Color::Rgb::WHITE } );
 
 			// Store boundary references.
-			std::vector<uint> sesGridDataBoundary = std::vector<uint>();
+			std::set<uint> sesGridDataBoundary = std::set<uint>();
 
 			// Loop over cells
 			for ( uint x = 0; x < uint( _gridSES.size.x ); ++x )
@@ -84,7 +86,8 @@ namespace VTX
 						const Vec3i atomGridPosition		 = _gridAtoms.gridPosition( sesGridCellWorldPosition );
 
 						// Loop over the 27 cells to visit.
-						bool found = false;
+						float minDistance = FLOAT_MAX;
+						bool  found		  = false;
 						for ( int ox = -1; ox <= 1 && !found; ++ox )
 						{
 							for ( int oy = -1; oy <= 1 && !found; ++oy )
@@ -107,25 +110,32 @@ namespace VTX
 									// Compute SDF.
 									for ( const AtomData & atom : atomData[ hashToVisit ] )
 									{
-										const float distance = Util::Math::distance( atomPositions[ atom.index ],
-																					 sesGridCellWorldPosition );
+										float distance = Util::Math::distance( atomPositions[ atom.index ],
+																			   sesGridCellWorldPosition );
 
 										// Inside.
 										if ( distance < voxelSize )
 										{
 											gridData.sdf = -voxelSize;
+											gridData.color = Color::Rgb::WHITE;
 											found		 = true;
+											// Don't need to loop over other cells.
 											break;
 										}
 										// Boundary.
-										else if ( distance - probeRadius
-													  - _molecule->getAtom( atom.index )->getVdwRadius()
-												  < 0 )
+										else
 										{
-											sesGridDataBoundary.push_back( sesGridHash );
-											gridData.sdf = -voxelSize;
-											found		 = true;
-											break;
+											distance -= (probeRadius + _molecule->getAtom(atom.index)->getVdwRadius());
+											if (distance < 0.f)
+											{
+												sesGridDataBoundary.insert(sesGridHash);
+												gridData.sdf = -voxelSize;
+												if (distance < minDistance)
+												{
+													minDistance = distance;
+													gridData.color = _molecule->getAtom(atom.index)->getColor();
+												}
+											}
 										}
 									}
 								}
@@ -223,13 +233,16 @@ namespace VTX
 											   uint( _vertices.size() ) + 1,
 											   uint( _vertices.size() ) + 2 } );
 							_vertices.insert( _vertices.end(), cellTriangles[ i ].begin(), cellTriangles[ i ].end() );
+							_colors.insert( _colors.end(),
+											{ sesGridData[ _gridSES.gridHash( Vec3i( x, y, z ) ) ].color,
+											  sesGridData[ _gridSES.gridHash( Vec3i( x, y, z ) ) ].color,
+											  sesGridData[ _gridSES.gridHash( Vec3i( x, y, z ) ) ].color } );
 						}
 					}
 				}
 			}
 
 			recomputeNormals();
-			_colors		  = std::vector( _vertices.size(), Color::Rgb( 1.f, 1.f, 1.f ) );
 			_visibilities = std::vector<uint>( _vertices.size(), 1 );
 
 			chrono.stop();
