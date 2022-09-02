@@ -4,6 +4,8 @@
 #include "molecule.hpp"
 #include "object3d/helper/aabb.hpp"
 #include "object3d/scene.hpp"
+#include "residue.hpp"
+#include "chain.hpp"
 
 namespace VTX
 {
@@ -51,7 +53,7 @@ namespace VTX
 			}
 
 			// Compute SES grid and compute SDF.
-			const float voxelSize	= 0.5f;
+			const float voxelSize	= 0.4f;
 			Vec3i		sesGridSize = Vec3i( Util::Math::ceil( size / voxelSize ) );
 
 			_gridSES = Object3D::Helper::Grid( min, Vec3f( voxelSize ), sesGridSize );
@@ -133,7 +135,7 @@ namespace VTX
 												if (distance < minDistance)
 												{
 													minDistance = distance;
-													gridData.color = _molecule->getAtom(atom.index)->getColor();
+													gridData.color = _molecule->getAtom(atom.index)->getResiduePtr()->getColor();
 												}
 											}
 										}
