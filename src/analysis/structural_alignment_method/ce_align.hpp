@@ -5,7 +5,7 @@
 #include "analysis/structural_alignment.hpp"
 #include "define.hpp"
 #include "math/matrix.hpp"
-#include "tmp_external_libraries/Eigen/Geometry"
+#include <Eigen/Geometry>
 #include <utility>
 #include <vector>
 

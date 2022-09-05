@@ -4,7 +4,7 @@
 #include "define.hpp"
 #include "math/matrix.hpp"
 #include "struct/residue_center_of_mass_data_set.hpp"
-#include "tmp_external_libraries/Eigen/Geometry"
+#include <Eigen/Geometry>
 #include <utility>
 #include <vector>
 

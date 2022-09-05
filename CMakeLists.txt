@@ -41,6 +41,8 @@ set(GIT_URL_JSON https://github.com/nlohmann/json.git)
 set(GIT_TAG_JSON fec56a1a16c6e1c1b1f4e116a20e79398282626c) #3.10.4
 set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum.git)
 set(GIT_TAG_MAGIC_ENUM 3d1f6a5a2a3fbcba077e00ad0ccc2dd9fefc2ca7) #0.7.3
+set(GIT_URL_EIGEN https://gitlab.com/libeigen/eigen.git)
+set(GIT_TAG_EIGEN 3147391d946bb4b6c68edd901f2add6ac1f31f8c) #3.4.0
 
 # Create output dir.
 if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
@@ -159,6 +161,20 @@ ExternalProject_Add(
 ExternalProject_Get_Property(magic_enum SOURCE_DIR)
 set(MAGIC_ENUM_INCLUDE_DIR ${SOURCE_DIR}/include)
 
+# Eigen.
+ExternalProject_Add(
+    eigen
+    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Eigen
+    GIT_REPOSITORY ${GIT_URL_EIGEN}
+	GIT_TAG ${GIT_TAG_EIGEN}
+	CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+    )
+ExternalProject_Get_Property(eigen SOURCE_DIR)
+set(EIGEN_INCLUDE_DIR ${SOURCE_DIR}/)
+
 # Custom function to build external projects.
 function (BuildExternalProject p_url p_tag p_target p_config)
 
@@ -254,12 +270,14 @@ add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESO
 add_dependencies(VTX glm)
 add_dependencies(VTX json)
 add_dependencies(VTX magic_enum)
+add_dependencies(VTX eigen)
 
 # Includes directories.
 target_include_directories(VTX PRIVATE ${PATH_SRC})
 target_include_directories(VTX PRIVATE ${GLM_INCLUDE_DIR})
 target_include_directories(VTX PRIVATE ${JSON_INCLUDE_DIR})
 target_include_directories(VTX PRIVATE ${MAGIC_ENUM_INCLUDE_DIR})
+target_include_directories(VTX PRIVATE ${EIGEN_INCLUDE_DIR})
 if(MSVC)
 	target_include_directories(VTX PRIVATE ${PATH_LIB}/chemfiles/include)
 endif()
