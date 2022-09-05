@@ -2,7 +2,6 @@
 #include "model/molecule.hpp"
 #include "rmsd.hpp"
 #include "structural_alignment_method/ce_align.hpp"
-#include "structural_alignment_method/ce_align_pymol.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include <string>
@@ -25,9 +24,6 @@ namespace VTX::Analysis
 		switch ( p_methodEnum )
 		{
 		case AlignmentMethodEnum::CEAlign: return new StructuralAlignmentMethod::CEAlign::CustomParameters(); break;
-		case AlignmentMethodEnum::CEAlign_Pymol:
-			return new StructuralAlignmentMethod::CEAlignPymol::CustomParameters();
-			break;
 
 		default:
 			VTX_ERROR( "Not implemented method" );
@@ -47,7 +43,6 @@ namespace VTX::Analysis
 		switch ( p_parameters.method )
 		{
 		case AlignmentMethodEnum::CEAlign: method = new StructuralAlignmentMethod::CEAlign(); break;
-		case AlignmentMethodEnum::CEAlign_Pymol: method = new StructuralAlignmentMethod::CEAlignPymol(); break;
 
 		default: VTX_ERROR( "Not Implemented" ); return;
 		}

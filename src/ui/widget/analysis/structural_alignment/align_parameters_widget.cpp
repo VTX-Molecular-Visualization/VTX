@@ -1,6 +1,5 @@
 #include "align_parameters_widget.hpp"
 #include "analysis/structural_alignment_method/ce_align.hpp"
-#include "analysis/structural_alignment_method/ce_align_pymol.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
 #include <QHBoxLayout>
@@ -137,19 +136,6 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		}
 		break;
 
-		case VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign_Pymol:
-		{
-			const VTX::Analysis::StructuralAlignmentMethod::CEAlignPymol::CustomParameters castedParameters
-				= dynamic_cast<const VTX::Analysis::StructuralAlignmentMethod::CEAlignPymol::CustomParameters &>(
-					p_alignParameter );
-
-			_attributeLayout->setAttributeVisibility( _d0Widget, true );
-			_d0Widget->setValue( castedParameters.D0 );
-			_attributeLayout->setAttributeVisibility( _d1Widget, true );
-			_d1Widget->setValue( castedParameters.D1 );
-		}
-		break;
-
 		default:
 			VTX_ERROR( "Alignment method " + std::to_string( int( p_alignParameter.method ) )
 					   + " not managed in AlignParametersWidget::applyParameter." );
@@ -170,9 +156,6 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 			parameters = _generateCEAlignParameter();
 			break;
 
-		case VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign_Pymol:
-			parameters = _generateCEAlignPymolParameter();
-			break;
 		default:
 			VTX_ERROR( "Alignment method " + std::to_string( int( method ) )
 					   + " not managed in AlignParametersWidget::generateParameters." );
@@ -196,17 +179,6 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		parameters->d0 = _d0Widget->getValue();
 		parameters->d1 = _d1Widget->getValue();
-
-		return parameters;
-	}
-
-	AlignParametersWidget::AlignmentParameters * AlignParametersWidget::_generateCEAlignPymolParameter() const
-	{
-		VTX::Analysis::StructuralAlignmentMethod::CEAlignPymol::CustomParameters * const parameters
-			= new VTX::Analysis::StructuralAlignmentMethod::CEAlignPymol::CustomParameters();
-
-		parameters->D0 = _d0Widget->getValue();
-		parameters->D1 = _d1Widget->getValue();
 
 		return parameters;
 	}

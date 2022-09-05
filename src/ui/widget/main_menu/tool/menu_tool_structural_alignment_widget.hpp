@@ -36,8 +36,8 @@ namespace VTX
 			void _setupSlots() override;
 
 		  private:
-			MenuToolButtonWidget *		  _rmsdButton				 = nullptr;
-			MenuToolButtonSubmenuWidget * _structuralAlignmentButton = nullptr;
+			MenuToolButtonWidget *		  _rmsdButton						 = nullptr;
+			MenuToolButtonSubmenuWidget * _structuralAlignmentButton		 = nullptr;
 			MenuToolButtonWidget *		  _structuralAlignmentAdvancedButton = nullptr;
 
 			VTX::Analysis::StructuralAlignment::AlignmentParameters * _alignmentParameter = nullptr;
@@ -47,7 +47,6 @@ namespace VTX
 
 			void _computeRMSDAction() const;
 			void _computeStructuralAlignmentAction();
-			void _computeStructuralAlignmentPymolAction();
 			void _launchStructuralAlignmentAction() const;
 
 			void _openStructuralAlignmentWindow() const;

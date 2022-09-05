@@ -4,8 +4,6 @@
 #include "action/base_action.hpp"
 #include "analysis/rmsd.hpp"
 #include "analysis/structural_alignment.hpp"
-#include "analysis/structural_alignment_method/ce_align.hpp"
-#include "analysis/structural_alignment_method/ce_align_pymol.hpp"
 #include "model/molecule.hpp"
 #include "tool/logger.hpp"
 #include <cmath>

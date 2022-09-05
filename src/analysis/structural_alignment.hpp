@@ -21,12 +21,11 @@ namespace VTX::Analysis
 		enum class AlignmentMethodEnum
 		{
 			CEAlign,
-			CEAlign_Pymol,
 
 			COUNT,
 			Unknown,
 		};
-		inline static const std::vector<std::string> ALIGNMENT_METHOD_STRING = { "CE Align", "CE Align Pymol" };
+		inline static const std::vector<std::string> ALIGNMENT_METHOD_STRING = { "CE Align" };
 
 		class AlignmentParameters
 		{
@@ -36,9 +35,9 @@ namespace VTX::Analysis
 			virtual ~AlignmentParameters() = default;
 
 			const AlignmentMethodEnum method	 = AlignmentMethodEnum::Unknown;
-			int					windowSize = 8;
-			int					gapMax	   = 30;
-			int					maxPath	   = 20;
+			int						  windowSize = 8;
+			int						  gapMax	 = 30;
+			int						  maxPath	 = 20;
 		};
 
 		class AlignmentResult

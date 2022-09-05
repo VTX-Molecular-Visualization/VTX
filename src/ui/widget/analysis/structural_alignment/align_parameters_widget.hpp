@@ -33,7 +33,6 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		void _setupSlots() override;
 
 		AlignmentParameters * _generateCEAlignParameter() const;
-		AlignmentParameters * _generateCEAlignPymolParameter() const;
 
 		void _toggleSectionVisibility() const;
 		void _methodHasChanged( const int p_methodIndex );
