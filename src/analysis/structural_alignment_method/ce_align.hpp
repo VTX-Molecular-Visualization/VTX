@@ -24,8 +24,8 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		  public:
 			CustomParameters();
 
-			float D0 = 3.f;
-			float D1 = 4.f;
+			float d0 = 3.f;
+			float d1 = 4.f;
 		};
 
 	  private:

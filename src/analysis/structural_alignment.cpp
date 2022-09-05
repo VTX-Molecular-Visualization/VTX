@@ -9,6 +9,9 @@
 
 namespace VTX::Analysis
 {
+	StructuralAlignment::AlignmentParameters::AlignmentParameters() :
+		AlignmentParameters( AlignmentMethodEnum ::Unknown ) {};
+
 	StructuralAlignment::AlignmentParameters::AlignmentParameters( const AlignmentMethodEnum & p_method ) :
 		method( p_method )
 	{

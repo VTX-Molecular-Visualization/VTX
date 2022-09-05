@@ -23,20 +23,22 @@ namespace VTX::Analysis
 			CEAlign,
 			CEAlign_Pymol,
 
+			COUNT,
 			Unknown,
 		};
+		inline static const std::vector<std::string> ALIGNMENT_METHOD_STRING = { "CE Align", "CE Align Pymol" };
 
 		class AlignmentParameters
 		{
 		  public:
-			AlignmentParameters() : AlignmentParameters( AlignmentMethodEnum ::Unknown ) {};
+			AlignmentParameters();
 			AlignmentParameters( const AlignmentMethodEnum & p_method );
 			virtual ~AlignmentParameters() = default;
 
-			const AlignmentMethodEnum method;
-			int						  windowSize = 8;
-			int						  gapMax	 = 30;
-			int						  maxPath	 = 20;
+			const AlignmentMethodEnum method	 = AlignmentMethodEnum::Unknown;
+			int					windowSize = 8;
+			int					gapMax	   = 30;
+			int					maxPath	   = 20;
 		};
 
 		class AlignmentResult

@@ -6,7 +6,11 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
+#include "ui/main_window.hpp"
 #include "ui/widget_factory.hpp"
+#include "vtx_app.hpp"
+#include <QAction>
+#include <QMenu>
 
 namespace VTX::UI::Widget::MainMenu::Tool
 {
@@ -16,7 +20,11 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		_registerEvent( Event::Global::SELECTION_CHANGE );
 	}
 
-	MenuToolStructuralAlignmentWidget::~MenuToolStructuralAlignmentWidget() {}
+	MenuToolStructuralAlignmentWidget::~MenuToolStructuralAlignmentWidget()
+	{
+		if ( _alignmentParameter != nullptr )
+			delete _alignmentParameter;
+	}
 
 	void MenuToolStructuralAlignmentWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
@@ -35,16 +43,16 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		pushButton( *_rmsdButton, 0 );
 
 		_structuralAlignmentButton
-			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "structuralAlignmentButton" );
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonSubmenuWidget>( this, "structuralAlignmentButton" );
 		_structuralAlignmentButton->setData(
-			"Structural\nAlignment", ":/sprite/measurement_distance_icon.png", Qt::Orientation::Horizontal );
+			"Structural alignment", ":/sprite/measurement_distance_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_structuralAlignmentButton, 1 );
 
-		_structuralAlignmentPymolButton
-			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "structuralAlignmentPymolButton" );
-		_structuralAlignmentPymolButton->setData(
-			"Pymol\nAlignment", ":/sprite/measurement_distance_icon.png", Qt::Orientation::Horizontal );
-		pushButton( *_structuralAlignmentPymolButton, 1 );
+		_structuralAlignmentAdvancedButton
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "structuralAlignmentAdvancedButton" );
+		_structuralAlignmentAdvancedButton->setData(
+			"Alignment settings", ":/sprite/settings_icon.png", Qt::Orientation::Horizontal );
+		pushButton( *_structuralAlignmentAdvancedButton, 1 );
 
 		validate();
 
@@ -54,11 +62,13 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	{
 		_rmsdButton->setTriggerAction( this, &MenuToolStructuralAlignmentWidget::_computeRMSDAction );
 
-		_structuralAlignmentButton->setTriggerAction(
-			this, &MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction );
+		_structuralAlignmentButton->addAction(
+			"CE Align", this, &MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction, true );
+		_structuralAlignmentButton->addAction(
+			"Pymol\nCE Align", this, &MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction );
 
-		_structuralAlignmentPymolButton->setTriggerAction(
-			this, &MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentPymolAction );
+		_structuralAlignmentAdvancedButton->setTriggerAction(
+			this, &MenuToolStructuralAlignmentWidget::_openStructuralAlignmentWindow );
 	}
 	void MenuToolStructuralAlignmentWidget::localize() {}
 
@@ -77,7 +87,6 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	{
 		_rmsdButton->setEnabled( _checkRMSDEnableSate() );
 		_structuralAlignmentButton->setEnabled( _checkStructuralAlignmentEnableSate() );
-		_structuralAlignmentPymolButton->setEnabled( _checkStructuralAlignmentEnableSate() );
 	}
 
 	void MenuToolStructuralAlignmentWidget::_computeRMSDAction() const
@@ -95,18 +104,28 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		VTX_ACTION( new Action::Analysis::ComputeRMSD( target, comparersConst ) );
 	}
 
-	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction() const
+	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction()
 	{
-		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		if ( _alignmentParameter != nullptr )
+			delete _alignmentParameter;
 
-		const Model::Molecule *		   staticMolecule;
-		std::vector<Model::Molecule *> mobileMolecules;
-		_prepareTargetAndComparerForComparison( selection, staticMolecule, mobileMolecules );
+		_alignmentParameter = VTX::Analysis::StructuralAlignment::instantiateDefaultParameters(
+			VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign );
 
-		VTX_ACTION( new Action::Analysis::ComputeStructuralAlignment( staticMolecule, mobileMolecules ) );
+		_launchStructuralAlignmentAction();
 	}
 
-	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentPymolAction() const
+	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentPymolAction()
+	{
+		if ( _alignmentParameter != nullptr )
+			delete _alignmentParameter;
+
+		_alignmentParameter = VTX::Analysis::StructuralAlignment::instantiateDefaultParameters(
+			VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign_Pymol );
+
+		_launchStructuralAlignmentAction();
+	}
+	void MenuToolStructuralAlignmentWidget::_launchStructuralAlignmentAction() const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
@@ -114,7 +133,13 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		std::vector<Model::Molecule *> mobileMolecules;
 		_prepareTargetAndComparerForComparison( selection, staticMolecule, mobileMolecules );
 
-		VTX_ACTION( new Action::Analysis::ComputePymolStructuralAlignment( staticMolecule, *mobileMolecules.begin() ) );
+		VTX_ACTION(
+			new Action::Analysis::ComputeStructuralAlignment( staticMolecule, mobileMolecules, _alignmentParameter ) );
+	}
+
+	void MenuToolStructuralAlignmentWidget::_openStructuralAlignmentWindow() const
+	{
+		VTXApp::get().getMainWindow().showWidget( ID::UI::Window::STRUCTURAL_ALIGNMENT, true );
 	}
 
 	void MenuToolStructuralAlignmentWidget::_prepareTargetAndComparerForComparison(

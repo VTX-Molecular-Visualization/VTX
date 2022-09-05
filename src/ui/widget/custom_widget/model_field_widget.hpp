@@ -1,13 +1,9 @@
 #ifndef __VTX_UI_WIDGET_MODEL_FIELD_WIDGET__
 #define __VTX_UI_WIDGET_MODEL_FIELD_WIDGET__
 
-#include "ui/widget/base_manual_widget.hpp"
-#include <QBoxLayout>
-#include <QDragEnterEvent>
+#include "id.hpp"
+#include "ui/widget/custom_widget/model_drop_area.hpp"
 #include <QLabel>
-#include <QMouseEvent>
-#include <QPixmap>
-#include <QPushButton>
 #include <QWidget>
 
 namespace VTX
@@ -17,40 +13,35 @@ namespace VTX
 		class BaseModel;
 	}
 
-	namespace UI
+	namespace UI::Widget::CustomWidget
 	{
-		namespace Widget
+		class ModelFieldWidget : public CustomWidget::ModelDropArea
 		{
-			namespace CustomWidget
-			{
-				class ModelFieldWidget : public BaseManualWidget<QFrame>
-				{
-					Q_OBJECT
-					VTX_WIDGET
+			Q_OBJECT
+			VTX_WIDGET
 
-				  public:
-					~ModelFieldWidget() {};
-					void localize() override;
+		  public:
+			~ModelFieldWidget() {};
+			void localize() override;
 
-					inline Model::BaseModel * const		  getModel() { return _model; };
-					inline const Model::BaseModel * const getModel() const { return _model; };
+			void refresh();
 
-				  signals:
-					void dataChanged();
+		  signals:
+			void onModelChanged( Model::BaseModel * const p_model );
 
-				  protected:
-					ModelFieldWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
-					void _setupUi( const QString & p_name ) override;
-					void _setupSlots() override;
+		  protected:
+			ModelFieldWidget( QWidget * p_parent ) : CustomWidget::ModelDropArea( p_parent ) {};
+			void _setupUi( const QString & p_name ) override;
+			void _setupSlots() override;
 
-					void dragEnterEvent( QDragEnterEvent * event ) override;
-					void dropEvent( QDropEvent * event ) override;
+			void _onModelDropped();
 
-				  private:
-					Model::BaseModel * _model = nullptr;
-				};
-			} // namespace CustomWidget
-		}	  // namespace Widget
-	}		  // namespace UI
+		  private:
+			QLabel * _label				  = nullptr;
+			QLabel * _modelTypeIconWidget = nullptr;
+
+			QString _placeholder = "Drag a model here";
+		};
+	} // namespace UI::Widget::CustomWidget
 } // namespace VTX
 #endif

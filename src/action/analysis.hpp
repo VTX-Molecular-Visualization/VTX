@@ -45,10 +45,12 @@ namespace VTX::Action::Analysis
 	class ComputeStructuralAlignment : public BaseAction
 	{
 	  public:
-		explicit ComputeStructuralAlignment( const Model::Molecule * const			p_staticMolecule,
-											 const std::vector<Model::Molecule *> & p_mobileMolecules ) :
+		explicit ComputeStructuralAlignment(
+			const Model::Molecule * const										  p_staticMolecule,
+			const std::vector<Model::Molecule *> &								  p_mobileMolecules,
+			const VTX::Analysis::StructuralAlignment::AlignmentParameters * const p_parameters ) :
 			_staticMolecule( p_staticMolecule ),
-			_mobileMolecules( p_mobileMolecules )
+			_mobileMolecules( p_mobileMolecules ), _parameters( p_parameters )
 		{
 		}
 
@@ -56,81 +58,26 @@ namespace VTX::Action::Analysis
 		{
 			Tool::Chrono chrono = Tool::Chrono();
 			chrono.start();
-			VTX::Analysis::StructuralAlignment::AlignmentParameters * const ceParameters
-				= VTX::Analysis::StructuralAlignment::instantiateDefaultParameters(
-					VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign );
 			try
 			{
 				VTX::Analysis::StructuralAlignment::computeAlignment(
-					*_staticMolecule, _mobileMolecules, *ceParameters );
+					*_staticMolecule, _mobileMolecules, *_parameters );
 			}
 			catch ( std::exception & e )
 			{
-				delete ceParameters;
 				chrono.stop();
 				throw e;
 			}
 
 			chrono.stop();
-			delete ceParameters;
 
 			VTX_INFO( "elpased time : " + chrono.elapsedTimeStr() );
 		}
 
 	  private:
-		const Model::Molecule * const		 _staticMolecule;
-		const std::vector<Model::Molecule *> _mobileMolecules;
-	};
-
-	class ComputePymolStructuralAlignment : public BaseAction
-	{
-	  public:
-		explicit ComputePymolStructuralAlignment( const Model::Molecule * const p_firstMolecule,
-												  Model::Molecule * const		p_secondMolecule ) :
-			_firstMolecule( p_firstMolecule ),
-			_secondMolecule( p_secondMolecule )
-		{
-		}
-
-		virtual void execute() override
-		{
-			VTX_INFO( "Compute Structural alignment" );
-
-			Tool::Chrono chrono = Tool::Chrono();
-			chrono.start();
-			VTX::Analysis::StructuralAlignment::AlignmentParameters * ceParameters
-				= VTX::Analysis::StructuralAlignment::instantiateDefaultParameters(
-					VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign_Pymol );
-			try
-			{
-				const int minMolSize = _firstMolecule->getResidueCount() < _secondMolecule->getResidueCount()
-										   ? _firstMolecule->getResidueCount()
-										   : _secondMolecule->getResidueCount();
-
-				ceParameters->windowSize = std::min( 8, int( sqrt( minMolSize ) ) );
-
-				std::vector<Model::Molecule *> mobilesMolecules = std::vector<Model::Molecule *>();
-				mobilesMolecules.emplace_back( _secondMolecule );
-
-				VTX::Analysis::StructuralAlignment::computeAlignment(
-					*_firstMolecule, mobilesMolecules, *ceParameters );
-			}
-			catch ( std::exception & e )
-			{
-				delete ceParameters;
-				chrono.stop();
-				throw e;
-			}
-
-			chrono.stop();
-			delete ceParameters;
-
-			VTX_INFO( "elpased time : " + chrono.elapsedTimeStr() );
-		}
-
-	  private:
-		const Model::Molecule * const _firstMolecule;
-		Model::Molecule * const		  _secondMolecule;
+		const Model::Molecule * const										  _staticMolecule;
+		const std::vector<Model::Molecule *>								  _mobileMolecules;
+		const VTX::Analysis::StructuralAlignment::AlignmentParameters * const _parameters;
 	};
 } // namespace VTX::Action::Analysis
 #endif

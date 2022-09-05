@@ -7,8 +7,8 @@
 #include "io/struct/image_export.hpp"
 #include "io/writer/serialized_object.hpp"
 #include "model/representation/representation_enum.hpp"
-#include "renderer/base_renderer.hpp"
 #include "path/path_enum.hpp"
+#include "renderer/base_renderer.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_enum.hpp"
 #include "trajectory/trajectory_enum.hpp"
@@ -142,8 +142,8 @@ namespace VTX
 	// Molecule
 	const float Setting::COPIED_MOLECULE_OFFSET = 5.0f;
 
-	//Path
-	const Path::DURATION_MODE Setting::DEFAULT_PATH_DURATION_MODE = VTX::Path::DURATION_MODE::CONSTANT_SPEED;
+	// Path
+	const Path::DURATION_MODE	   Setting::DEFAULT_PATH_DURATION_MODE		= VTX::Path::DURATION_MODE::CONSTANT_SPEED;
 	const Path::INTERPOLATION_MODE Setting::DEFAULT_PATH_INTERPOLATION_MODE = Path::INTERPOLATION_MODE::CATMULL_ROM;
 
 	// Trajectory
@@ -180,6 +180,13 @@ namespace VTX
 
 	// Selection
 	const VTX::Selection::Granularity Setting::SELECTION_GRANULARITY_DEFAULT = VTX::Selection::Granularity::RESIDUE;
+
+	// Structural Alignment
+	const int	Setting::CE_ALIGN_WIN_SIZE_DEFAULT = 8;
+	const int	Setting::CE_ALIGN_GAP_MAX_DEFAULT  = 30;
+	const int	Setting::CE_ALIGN_MAX_PATH_DEFAULT = 20;
+	const float Setting::CE_ALIGN_D0_DEFAULT	   = 3.f;
+	const float Setting::CE_ALIGN_D1_DEFAULT	   = 4.f;
 
 	// Misc.
 	const int  Setting::CONSOLE_SIZE	   = 80;

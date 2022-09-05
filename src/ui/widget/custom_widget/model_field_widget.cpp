@@ -1,47 +1,65 @@
 #include "model_field_widget.hpp"
-#include "id.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "ui/mime_type.hpp"
+#include "ui/widget_factory.hpp"
+#include <QHBoxLayout>
 
-namespace VTX
+namespace VTX::UI::Widget::CustomWidget
 {
-	namespace UI
+	void ModelFieldWidget::_setupUi( const QString & p_name )
 	{
-		namespace Widget
+		CustomWidget::ModelDropArea::_setupUi( p_name );
+
+		setSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding );
+		setFrameShape( QFrame::Shape::Box );
+		setFrameShadow( QFrame::Shadow::Sunken );
+
+		_label				 = new QLabel( this );
+		_modelTypeIconWidget = new QLabel( this );
+
+		QHBoxLayout * const horizontalLayout = new QHBoxLayout( this );
+
+		horizontalLayout->addWidget( _modelTypeIconWidget );
+		horizontalLayout->addWidget( _label, 10 );
+		horizontalLayout->addStretch( 1000 );
+
+		setLayout( horizontalLayout );
+		refresh();
+	}
+
+	void ModelFieldWidget::_setupSlots()
+	{
+		CustomWidget::ModelDropArea::_setupSlots( );
+
+		connect( this, &CustomWidget::ModelDropArea::onModelChanged, this, &ModelFieldWidget::_onModelDropped );
+	}
+
+	void ModelFieldWidget::localize() { CustomWidget::ModelDropArea::localize(); };
+
+	void ModelFieldWidget::refresh()
+	{
+		const Model::BaseModel * const model = getModel();
+
+		if ( model == nullptr )
 		{
-			namespace CustomWidget
-			{
-				void ModelFieldWidget::_setupUi( const QString & p_name )
-				{
-					setObjectName( p_name );
-					setAcceptDrops( true );
-				}
+			_label->setDisabled( true );
+			_label->setText( _placeholder );
+			_modelTypeIconWidget->setVisible( false );
+		}
+		else
+		{
+			_label->setDisabled( false );
+			_label->setText( QString::fromStdString( model->getDefaultName() ) );
+			_modelTypeIconWidget->setVisible( true );
+			_modelTypeIconWidget->setPixmap( *Style::IconConst::get().getModelSymbol( model->getTypeId() ) );
+		}
 
-				void ModelFieldWidget::_setupSlots() {}
+		adjustSize();
+	}
 
-				void ModelFieldWidget::localize() {};
+	void ModelFieldWidget::_onModelDropped()
+	{
+		refresh();
+	}
 
-				void ModelFieldWidget::dragEnterEvent( QDragEnterEvent * event )
-				{
-					if ( event->mimeData()->hasFormat( UI::MimeType::getQStringMimeType( UI::MimeType::ApplicationMimeType::BASE_MODEL ) ) )
-						event->acceptProposedAction();
-				}
-				void ModelFieldWidget::dropEvent( QDropEvent * event )
-				{
-					const QByteArray byteData		 = event->mimeData()->data( UI::MimeType::getQStringMimeType( UI::MimeType::ApplicationMimeType::BASE_MODEL ) );
-					const Model::ID	 idDroppedObject = std::atoi( byteData.data() );
-
-					Model::BaseModel & model = MVC::MvcManager::get().getModel<Model::BaseModel>( idDroppedObject );
-
-					event->acceptProposedAction();
-
-					if ( _model != &model )
-					{
-						_model = &model;
-						emit dataChanged();
-					}
-				}
-			} // namespace CustomWidget
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+} // namespace VTX::UI::Widget::CustomWidget

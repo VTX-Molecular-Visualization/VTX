@@ -1,8 +1,10 @@
 #ifndef __VTX_UI_WIDGET_MENU_TOOL_STRUCTURAL_ALIGNMENT__
 #define __VTX_UI_WIDGET_MENU_TOOL_STRUCTURAL_ALIGNMENT__
 
+#include "analysis/structural_alignment.hpp"
 #include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
+#include "ui/widget/main_menu/menu_toolbutton_submenu_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QString>
 #include <QWidget>
@@ -34,16 +36,21 @@ namespace VTX
 			void _setupSlots() override;
 
 		  private:
-			MenuToolButtonWidget * _rmsdButton					   = nullptr;
-			MenuToolButtonWidget * _structuralAlignmentButton	   = nullptr;
-			MenuToolButtonWidget * _structuralAlignmentPymolButton = nullptr;
+			MenuToolButtonWidget *		  _rmsdButton				 = nullptr;
+			MenuToolButtonSubmenuWidget * _structuralAlignmentButton = nullptr;
+			MenuToolButtonWidget *		  _structuralAlignmentAdvancedButton = nullptr;
+
+			VTX::Analysis::StructuralAlignment::AlignmentParameters * _alignmentParameter = nullptr;
 
 			bool _checkRMSDEnableSate() const;
 			bool _checkStructuralAlignmentEnableSate() const;
 
 			void _computeRMSDAction() const;
-			void _computeStructuralAlignmentAction() const;
-			void _computeStructuralAlignmentPymolAction() const;
+			void _computeStructuralAlignmentAction();
+			void _computeStructuralAlignmentPymolAction();
+			void _launchStructuralAlignmentAction() const;
+
+			void _openStructuralAlignmentWindow() const;
 
 			void _refreshButtons() const;
 

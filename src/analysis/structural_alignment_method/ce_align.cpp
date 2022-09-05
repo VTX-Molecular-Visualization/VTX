@@ -15,6 +15,11 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 	CEAlign::CustomParameters::CustomParameters() :
 		AlignmentParameters::AlignmentParameters( StructuralAlignment::AlignmentMethodEnum::CEAlign )
 	{
+		windowSize = Setting::CE_ALIGN_WIN_SIZE_DEFAULT;
+		gapMax	   = Setting::CE_ALIGN_GAP_MAX_DEFAULT;
+		maxPath	   = Setting::CE_ALIGN_MAX_PATH_DEFAULT;
+		d0		   = Setting::CE_ALIGN_D0_DEFAULT;
+		d1		   = Setting::CE_ALIGN_D1_DEFAULT;
 	}
 
 	StructuralAlignment::AlignmentResult CEAlign::compute(
@@ -156,8 +161,8 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 												   const Math::Matrix<float> & p_distanceMatrixB,
 												   const CustomParameters &	   p_parameters )
 	{
-		const float D0		= p_parameters.D0;
-		const float D1		= p_parameters.D1;
+		const float d0		= p_parameters.d0;
+		const float d1		= p_parameters.d1;
 		const int	winSize = p_parameters.windowSize;
 		const int	gapMax	= p_parameters.gapMax;
 
@@ -205,7 +210,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 
 			for ( size_t iB = 0; iB < lengthB; iB++ )
 			{
-				if ( p_scoreMatrix.get( iA, iB ) >= D0 )
+				if ( p_scoreMatrix.get( iA, iB ) >= d0 )
 					continue;
 
 				if ( p_scoreMatrix.get( iA, iB ) == -1.0 )
@@ -250,7 +255,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 							continue;
 						}
 						// 2nd: If this gapped octapeptide is bad, ignore it.
-						if ( p_scoreMatrix.get( jA, jB ) > D0 )
+						if ( p_scoreMatrix.get( jA, jB ) > d0 )
 							continue;
 						// 3rd: if too close to end, ignore it.
 						if ( p_scoreMatrix.get( jA, jB ) == -1.0 )
@@ -278,7 +283,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 
 						currentScore /= float( winSize ) * float( curPathLength );
 
-						if ( currentScore >= D1 )
+						if ( currentScore >= d1 )
 						{
 							continue;
 						}
@@ -329,7 +334,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 						curTotalScore = score2;
 
 						// heuristic -- path is getting sloppy, stop looking
-						if ( curTotalScore > D1 )
+						if ( curTotalScore > d1 )
 						{
 							done		 = 1;
 							gapBestIndex = -1;

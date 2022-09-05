@@ -4,6 +4,7 @@
 #include "contextual_menu.hpp"
 #include "cursor_handler.hpp"
 #include "ui_main_window.h"
+#include "widget/analysis/structural_alignment/structural_alignment_widget.hpp"
 #include "widget/base_widget.hpp"
 #include "widget/console/console_widget.hpp"
 #include "widget/information/information_widget.hpp"
@@ -18,6 +19,7 @@
 #include "widget/settings/setting_widget_enum.hpp"
 #include "widget/status_bar/status_bar_widget.hpp"
 #include <QCloseEvent>
+#include <QDockWidget>
 #include <QMainWindow>
 
 namespace VTX
@@ -109,6 +111,8 @@ namespace VTX
 			Widget::Settings::SettingWidget *		 _settingWidget		= nullptr;
 			Widget::Information::InformationWidget * _informationWidget = nullptr;
 
+			Widget::Analysis::StructuralAlignment::StructuralAlignmentWidget * _structuralAlignmentWidget = nullptr;
+
 			ContextualMenu * _contextualMenu = nullptr;
 			CursorHandler *	 _cursorHandler	 = nullptr;
 
@@ -122,6 +126,18 @@ namespace VTX
 			// Functions.
 			void _loadStyleSheet( const char * p_stylesheetPath );
 			void _setupSlots();
+			void _restoreDockWidget( QDockWidget * const p_dockWidget );
+			void _addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
+										   Qt::DockWidgetArea  p_area,
+										   Qt::Orientation	   p_orientation,
+										   const bool		   p_visible = true );
+			void _addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
+										   QDockWidget * const p_neighbour,
+										   Qt::Orientation	   p_orientation,
+										   const bool		   p_visible );
+			void _addDockWidgetAsFloating( QDockWidget * const p_dockWidget,
+										   const QSize &	   p_size,
+										   const bool		   p_visible );
 
 			// Shortcuts.
 			void _onShortcutNew() const;

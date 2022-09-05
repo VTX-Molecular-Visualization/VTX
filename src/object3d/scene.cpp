@@ -200,6 +200,29 @@ namespace VTX::Object3D
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::SCENE_ITEM_INDEX_CHANGE, &p_item ) );
 	}
 
+	void Scene::sortMoleculesBySceneIndex( std::vector<Model::Molecule *> & p_molecules ) const
+	{
+		for ( int i = 0; i < p_molecules.size(); i++ )
+		{
+			int smallerIndexInScene = getItemPosition( *p_molecules[ i ] );
+			int indexInVector		= i;
+
+			for ( int j = i + 1; j < p_molecules.size(); j++ )
+			{
+				const int currentIndexInScene = getItemPosition( *p_molecules[ j ] );
+				if ( currentIndexInScene < smallerIndexInScene )
+				{
+					smallerIndexInScene = currentIndexInScene;
+					indexInVector		= j;
+				}
+			}
+
+			Model::Molecule * const tmp	 = p_molecules[ i ];
+			p_molecules[ i ]			 = p_molecules[ indexInVector ];
+			p_molecules[ indexInVector ] = tmp;
+		}
+	}
+
 	const Math::AABB & Scene::getAABB()
 	{
 		if ( !_aabb.isValid() )

@@ -225,20 +225,22 @@ namespace VTX
 
 		inline static const int LAYOUT_VERSION = 1;
 
-		static const QSize INSPECTOR_PREFERRED_SIZE = QSize( 300, 100 );
-		static const QSize INSPECTOR_MINIMUM_SIZE	= QSize( 1, 1 );
-		static const QSize RENDER_PREFERRED_SIZE	= QSize( 1000, 1000 );
-		static const QSize RENDER_MINIMUM_SIZE		= QSize( 1, 1 );
-		static const QSize SCENE_PREFERRED_SIZE		= QSize( 200, 100 );
-		static const QSize SCENE_MINIMUM_SIZE		= QSize( 1, 1 );
-		static const QSize CONSOLE_PREFERRED_SIZE	= QSize( 100, 80 );
-		static const QSize CONSOLE_MINIMUM_SIZE		= QSize( 1, 1 );
-		static const QSize SEQUENCE_PREFERRED_SIZE	= QSize( 100, 70 );
-		static const QSize SEQUENCE_MINIMUM_SIZE	= QSize( 1, 1 );
-		static const QSize SELECTION_PREFERRED_SIZE = QSize( 100, 150 );
-		static const QSize SELECTION_MINIMUM_SIZE	= QSize( 1, 1 );
-		static const QSize SETTINGS_PREFERRED_SIZE	= QSize( 550, 600 );
-		static const QSize SETTINGS_MINIMUM_SIZE	= QSize( 1, 1 );
+		static const QSize INSPECTOR_PREFERRED_SIZE			   = QSize( 300, 100 );
+		static const QSize INSPECTOR_MINIMUM_SIZE			   = QSize( 1, 1 );
+		static const QSize RENDER_PREFERRED_SIZE			   = QSize( 1000, 1000 );
+		static const QSize RENDER_MINIMUM_SIZE				   = QSize( 1, 1 );
+		static const QSize SCENE_PREFERRED_SIZE				   = QSize( 200, 100 );
+		static const QSize SCENE_MINIMUM_SIZE				   = QSize( 1, 1 );
+		static const QSize CONSOLE_PREFERRED_SIZE			   = QSize( 100, 80 );
+		static const QSize CONSOLE_MINIMUM_SIZE				   = QSize( 1, 1 );
+		static const QSize SEQUENCE_PREFERRED_SIZE			   = QSize( 100, 70 );
+		static const QSize SEQUENCE_MINIMUM_SIZE			   = QSize( 1, 1 );
+		static const QSize SELECTION_PREFERRED_SIZE			   = QSize( 100, 150 );
+		static const QSize SELECTION_MINIMUM_SIZE			   = QSize( 1, 1 );
+		static const QSize SETTINGS_PREFERRED_SIZE			   = QSize( 550, 600 );
+		static const QSize SETTINGS_MINIMUM_SIZE			   = QSize( 1, 1 );
+		static const QSize STRUCTURAL_ALIGNMENT_PREFERRED_SIZE = QSize( 550, 600 );
+		static const QSize STRUCTURAL_ALIGNMENT_MINIMUM_SIZE   = QSize( 1, 1 );
 
 		inline static const int MAIN_MENU_MAX_BUTTON_PRESET_WIDTH = 125;
 
@@ -259,6 +261,9 @@ namespace VTX
 		inline static const int SCENE_SPACE_BETWEEN_ITEMS  = 4;
 		inline static const int DATA_GRID_VERTICAL_SPACE   = 2;
 		inline static const int DATA_GRID_HORIZONTAL_SPACE = 10;
+
+		inline static const int ATTRIBUTE_LIST_LAYOUT_SPACER_HEIGHT = 30;
+
 
 		inline static const QFont  WORLD_LABEL_FONT			  = QFont( "Arial", 20, QFont::Weight::Bold, false );
 		inline static const float  WORLD_LABEL_NEAR_CLIP	  = 20.f;

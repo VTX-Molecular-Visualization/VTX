@@ -33,7 +33,7 @@ namespace VTX
 	{
 		enum class DURATION_MODE;
 		enum class INTERPOLATION_MODE;
-	}
+	} // namespace Path
 
 	namespace Selection
 	{
@@ -195,7 +195,7 @@ namespace VTX
 		static const float COPIED_MOLECULE_OFFSET;
 
 		// Path
-		static const Path::DURATION_MODE DEFAULT_PATH_DURATION_MODE;
+		static const Path::DURATION_MODE	  DEFAULT_PATH_DURATION_MODE;
 		static const Path::INTERPOLATION_MODE DEFAULT_PATH_INTERPOLATION_MODE;
 
 		// Trajectory
@@ -232,6 +232,13 @@ namespace VTX
 
 		// Selection
 		static const VTX::Selection::Granularity SELECTION_GRANULARITY_DEFAULT;
+
+		// Structural Alignment
+		static const int   CE_ALIGN_WIN_SIZE_DEFAULT;
+		static const int   CE_ALIGN_GAP_MAX_DEFAULT;
+		static const int   CE_ALIGN_MAX_PATH_DEFAULT;
+		static const float CE_ALIGN_D0_DEFAULT;
+		static const float CE_ALIGN_D1_DEFAULT;
 
 		// Misc.
 		static const int   CONSOLE_SIZE;

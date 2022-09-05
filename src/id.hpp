@@ -12,6 +12,7 @@ namespace VTX
 		{
 			namespace Window
 			{
+				// Base
 				const VTX_ID SCENE	   = "SCENE";
 				const VTX_ID RENDER	   = "RENDER";
 				const VTX_ID INSPECTOR = "INSPECTOR";
@@ -21,6 +22,10 @@ namespace VTX
 				// const VTX_ID SELECTION	 = "SELECTION";
 				const VTX_ID SETTINGS	 = "SETTINGS";
 				const VTX_ID INFORMATION = "INFORMATION";
+
+				// Tools
+				const VTX_ID STRUCTURAL_ALIGNMENT = "STRUCTURAL_ALIGNMENT";
+
 			} // namespace Window
 			namespace Input
 			{
