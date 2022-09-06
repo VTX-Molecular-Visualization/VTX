@@ -76,7 +76,7 @@ if(MSVC)
 endif()
 
 # Get all GLSL sources.
-file(GLOB_RECURSE SHADERS ${PATH_SRC}/*.vert ${PATH_SRC}/*.frag ${PATH_SRC}/*.geom ${PATH_SRC}/*.tesc ${PATH_SRC}/*.tese)
+file(GLOB_RECURSE SHADERS ${PATH_SRC}/*.vert ${PATH_SRC}/*.frag ${PATH_SRC}/*.geom ${PATH_SRC}/*.tesc ${PATH_SRC}/*.tese ${PATH_SRC}/*.comp)
 foreach(SRC IN ITEMS ${SHADERS})
     get_filename_component(SRC_PATH "${SRC}" PATH)
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
