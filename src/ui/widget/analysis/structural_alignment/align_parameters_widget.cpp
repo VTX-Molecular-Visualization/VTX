@@ -15,9 +15,9 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		QHBoxLayout * const mainLayout = new QHBoxLayout( this );
 		mainLayout->setContentsMargins( 0, 0, 0, 0 );
-		QVBoxLayout * const verticalLayout = new QVBoxLayout( this );
+		QVBoxLayout * const verticalLayout = new QVBoxLayout();
 		verticalLayout->setContentsMargins( 0, 0, 0, 0 );
-		QHBoxLayout * const foldButtonHLayout = new QHBoxLayout( this );
+		QHBoxLayout * const foldButtonHLayout = new QHBoxLayout();
 		foldButtonHLayout->setContentsMargins( 0, 0, 0, 0 );
 
 		_foldedParent	= new QWidget( this );
