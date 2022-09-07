@@ -5,6 +5,8 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
+	ModelDropArea::ModelDropArea( QWidget * p_parent ) : BaseManualWidget( p_parent ), DraggableItem( this ) {};
+
 	void ModelDropArea::_setupUi( const QString & p_name )
 	{
 		setObjectName( p_name );
@@ -19,8 +21,8 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		if ( _model != p_model )
 		{
+			emit onModelChanged( p_model );
 			_model = p_model;
-			emit onModelChanged( _model );
 		}
 	}
 
@@ -44,4 +46,13 @@ namespace VTX::UI::Widget::CustomWidget
 
 		setModel( &model );
 	}
+
+	QMimeData * ModelDropArea::_getDataForDrag() const
+	{
+		if ( _model == nullptr )
+			return nullptr;
+
+		return VTX::UI::MimeType::generateModelData( *_model );
+	}
+
 } // namespace VTX::UI::Widget::CustomWidget

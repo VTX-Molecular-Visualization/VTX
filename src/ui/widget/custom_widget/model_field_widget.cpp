@@ -29,7 +29,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void ModelFieldWidget::_setupSlots()
 	{
-		CustomWidget::ModelDropArea::_setupSlots( );
+		CustomWidget::ModelDropArea::_setupSlots();
 
 		connect( this, &CustomWidget::ModelDropArea::onModelChanged, this, &ModelFieldWidget::_onModelDropped );
 	}
@@ -39,8 +39,12 @@ namespace VTX::UI::Widget::CustomWidget
 	void ModelFieldWidget::refresh()
 	{
 		const Model::BaseModel * const model = getModel();
+		_refresh( model );
+	}
 
-		if ( model == nullptr )
+	void ModelFieldWidget::_refresh( const Model::BaseModel * const p_model )
+	{
+		if ( p_model == nullptr )
 		{
 			_label->setDisabled( true );
 			_label->setText( _placeholder );
@@ -49,17 +53,14 @@ namespace VTX::UI::Widget::CustomWidget
 		else
 		{
 			_label->setDisabled( false );
-			_label->setText( QString::fromStdString( model->getDefaultName() ) );
+			_label->setText( QString::fromStdString( p_model->getDefaultName() ) );
 			_modelTypeIconWidget->setVisible( true );
-			_modelTypeIconWidget->setPixmap( *Style::IconConst::get().getModelSymbol( model->getTypeId() ) );
+			_modelTypeIconWidget->setPixmap( *Style::IconConst::get().getModelSymbol( p_model->getTypeId() ) );
 		}
 
 		adjustSize();
 	}
 
-	void ModelFieldWidget::_onModelDropped()
-	{
-		refresh();
-	}
+	void ModelFieldWidget::_onModelDropped( const Model::BaseModel * const p_model ) { _refresh( p_model ); }
 
 } // namespace VTX::UI::Widget::CustomWidget

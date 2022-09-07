@@ -11,6 +11,7 @@ namespace VTX
 {
 	namespace Model
 	{
+		class BaseModel;
 		class Molecule;
 		class Path;
 		class Viewpoint;
@@ -45,6 +46,8 @@ namespace VTX
 			{
 				return applicationMimeTypes[ int( _mimeTypeID ) ];
 			}
+
+			static QMimeData * const generateModelData( const Model::BaseModel & p_model );
 
 			static QMimeData * const generateMoleculeData( const Model::Molecule & _molecule );
 			static QMimeData * const generateInstantiatedRepresentationData(

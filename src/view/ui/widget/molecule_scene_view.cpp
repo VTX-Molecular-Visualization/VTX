@@ -1068,7 +1068,7 @@ namespace VTX::View::UI::Widget
 	{
 		return VTX::UI::MimeType::generateMoleculeData( *_model );
 	}
-	bool MoleculeSceneView::_canDragObjectAtPos( const QPoint & p_position ) const
+	bool MoleculeSceneView::_canDragAtPos( const QPoint & p_position ) const
 	{
 		// Can only drag from the molecule
 		return itemAt( p_position ) == _getMoleculeTreeWidgetItem();

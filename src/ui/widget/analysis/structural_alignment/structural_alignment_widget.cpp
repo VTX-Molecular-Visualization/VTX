@@ -46,8 +46,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 			attributeWidget, "staticMoleculeField" );
 		_mobileMoleculeField = WidgetFactory::get().instantiateWidget<CustomWidget::ModelFieldWidget>(
 			attributeWidget, "mobileMoleculeField" );
-		_alignmentParametersWidget
-			= WidgetFactory::get().instantiateWidget<AlignParametersWidget>( attributeWidget, "mobileMoleculeField" );
+		_alignmentParametersWidget = WidgetFactory::get().instantiateWidget<AlignParametersWidget>(
+			attributeWidget, "alignmentParametersWidget" );
 		_alignmentParametersWidget->displayAsFoldable( true );
 
 		const VTX::Analysis::StructuralAlignment::AlignmentParameters * const defaultParameters
@@ -76,6 +76,15 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 	}
 	void StructuralAlignmentWidget::_setupSlots()
 	{
+		connect( _staticMoleculeField,
+				 &CustomWidget::ModelFieldWidget::onModelChanged,
+				 this,
+				 &StructuralAlignmentWidget::_checkNewStaticMolecule );
+		connect( _mobileMoleculeField,
+				 &CustomWidget::ModelFieldWidget::onModelChanged,
+				 this,
+				 &StructuralAlignmentWidget::_checkNewMobileMolecule );
+
 		connect( _alignButton, &QPushButton::clicked, this, &StructuralAlignmentWidget::_computeAlign );
 	}
 
@@ -110,6 +119,40 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		_staticMoleculeField->setModel( staticMolecule );
 		_mobileMoleculeField->setModel( mobileMolecule );
 	}
+
+	void StructuralAlignmentWidget::_checkNewStaticMolecule( Model::BaseModel * const p_model )
+	{
+		Model::Molecule * const molecule = static_cast<Model::Molecule *>( p_model );
+
+		if ( molecule == nullptr )
+			return;
+
+		// Swap molecules
+		if ( _mobileMoleculeField->getModel() == molecule )
+		{
+			const bool previousSignalState = _mobileMoleculeField->blockSignals( true );
+			_mobileMoleculeField->setModel( _staticMoleculeField->getModel() );
+			_mobileMoleculeField->refresh();
+			_mobileMoleculeField->blockSignals( previousSignalState );
+		}
+	}
+	void StructuralAlignmentWidget::_checkNewMobileMolecule( Model::BaseModel * const p_model )
+	{
+		Model::Molecule * const molecule = static_cast<Model::Molecule *>( p_model );
+
+		if ( molecule == nullptr )
+			return;
+
+		// Swap molecules
+		if ( _staticMoleculeField->getModel() == molecule )
+		{
+			const bool previousSignalState = _staticMoleculeField->blockSignals( true );
+			_staticMoleculeField->setModel( _mobileMoleculeField->getModel() );
+			_staticMoleculeField->refresh();
+			_staticMoleculeField->blockSignals( previousSignalState );
+		}
+	}
+
 	void StructuralAlignmentWidget::_computeAlign() const
 	{
 		const Model::Molecule * const staticMolecule = _staticMoleculeField->getModel<Model::Molecule>();

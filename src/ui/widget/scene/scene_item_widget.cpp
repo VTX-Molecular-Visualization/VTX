@@ -16,7 +16,7 @@
 
 namespace VTX::UI::Widget::Scene
 {
-	SceneItemWidget::SceneItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
+	SceneItemWidget::SceneItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ), DraggableItem( this )
 	{
 		_registerEvent( Event::Global::SELECTION_CHANGE );
 		_registerEvent( Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE );
@@ -90,15 +90,6 @@ namespace VTX::UI::Widget::Scene
 	}
 
 	void SceneItemWidget::updatePosInSceneHierarchy( const int p_position ) { _refreshSize(); };
-	void SceneItemWidget::mousePressEvent( QMouseEvent * p_event )
-	{
-		QTreeWidget::mousePressEvent( p_event );
-
-		if ( p_event->button() == Qt::LeftButton )
-			_dragStartPosition = p_event->pos();
-
-		p_event->accept();
-	}
 
 	void SceneItemWidget::keyPressEvent( QKeyEvent * p_event )
 	{
@@ -159,32 +150,25 @@ namespace VTX::UI::Widget::Scene
 				 VTX::UI::MimeType::getQStringMimeType( VTX::UI::MimeType::ApplicationMimeType::SCENE_ITEM ) ) )
 			p_event->acceptProposedAction();
 	}
+
+	void SceneItemWidget::mousePressEvent( QMouseEvent * p_event )
+	{
+		BaseManualWidget::mouseMoveEvent( p_event );
+
+		// Ignore event to allow eventfilter of DraggableItem to receive mousePressEvent.
+		p_event->ignore();
+	}
+
 	void SceneItemWidget::mouseMoveEvent( QMouseEvent * p_event )
 	{
 		setSelectionMode( QAbstractItemView::ContiguousSelection );
 		BaseManualWidget::mouseMoveEvent( p_event );
 
-		_tryStartDrag( p_event );
 		setSelectionMode( QAbstractItemView::ExtendedSelection );
+
+		// Ignore event to allow eventfilter of DraggableItem to receive mouseMoveEvent.
+		p_event->ignore();
 	}
-	void SceneItemWidget::_tryStartDrag( QMouseEvent * p_event )
-	{
-		if ( !( p_event->buttons() & Qt::LeftButton ) )
-			return;
-
-		if ( !_canDragObjectAtPos( _dragStartPosition ) )
-			return;
-
-		if ( ( p_event->pos() - _dragStartPosition ).manhattanLength() < QApplication::startDragDistance() )
-			return;
-
-		QDrag *		drag	 = new QDrag( this );
-		QMimeData * mimeData = _getDataForDrag();
-		drag->setMimeData( mimeData );
-
-		drag->exec( Qt::CopyAction | Qt::MoveAction );
-	}
-
 
 	void SceneItemWidget::_onItemExpanded( QTreeWidgetItem * const )
 	{

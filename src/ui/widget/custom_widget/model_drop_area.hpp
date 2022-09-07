@@ -2,14 +2,15 @@
 #define __VTX_UI_WIDGET_MODEL_DROP_AREA__
 
 #include "id.hpp"
+#include "ui/draggable_item.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QFrame>
 #include <QString>
 #include <QWidget>
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 namespace VTX
 {
@@ -20,7 +21,7 @@ namespace VTX
 
 	namespace UI::Widget::CustomWidget
 	{
-		class ModelDropArea : public BaseManualWidget<QFrame>
+		class ModelDropArea : public BaseManualWidget<QFrame>, public DraggableItem
 		{
 			Q_OBJECT
 			VTX_WIDGET
@@ -51,12 +52,15 @@ namespace VTX
 			void onModelChanged( Model::BaseModel * const p_model );
 
 		  protected:
-			ModelDropArea( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
+			ModelDropArea( QWidget * p_parent );
+
 			void _setupUi( const QString & p_name ) override;
 			void _setupSlots() override;
 
 			void dragEnterEvent( QDragEnterEvent * event ) override;
 			void dropEvent( QDropEvent * event ) override;
+
+			QMimeData * _getDataForDrag() const override;
 
 		  private:
 			Model::BaseModel * _model = nullptr;

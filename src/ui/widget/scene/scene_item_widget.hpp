@@ -3,6 +3,7 @@
 
 #include "generic/base_scene_item.hpp"
 #include "model/base_model.hpp"
+#include "ui/draggable_item.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -22,7 +23,7 @@ namespace VTX::Model
 
 namespace VTX::UI::Widget::Scene
 {
-	class SceneItemWidget : public BaseManualWidget<QTreeWidget>
+	class SceneItemWidget : public BaseManualWidget<QTreeWidget>, public DraggableItem
 	{
 		VTX_WIDGET
 
@@ -73,9 +74,7 @@ namespace VTX::UI::Widget::Scene
 
 		void _enableSignals( const bool p_enable );
 
-		virtual bool		_canDragObjectAtPos( const QPoint & p_position ) const { return true; }
-		virtual QMimeData * _getDataForDrag() const = 0;
-		void				_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append = false );
+		void _selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append = false );
 
 		virtual bool _itemCanBeRenamed( const QTreeWidgetItem * p_item );
 
@@ -87,10 +86,7 @@ namespace VTX::UI::Widget::Scene
 		bool			  _getItemExpandState( const QTreeWidgetItem & p_item ) const;
 
 	  private:
-		QPoint _dragStartPosition;
-		int	   _enableSignalCounter = 0;
-
-		void _tryStartDrag( QMouseEvent * p_event );
+		int _enableSignalCounter = 0;
 	};
 
 } // namespace VTX::UI::Widget::Scene

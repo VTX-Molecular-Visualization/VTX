@@ -19,6 +19,7 @@ namespace VTX
 {
 	namespace Model
 	{
+		class BaseModel;
 		class Molecule;
 		class Selection;
 	} // namespace Model
@@ -45,12 +46,15 @@ namespace VTX
 			void _updateTargetedMoleculesWithSelection( const Model::Selection & p_selection );
 			void _computeAlign() const;
 
+			void _checkNewStaticMolecule( Model::BaseModel * const p_model );
+			void _checkNewMobileMolecule( Model::BaseModel * const p_model );
+
 		  private:
 			CustomWidget::DockWindowMainWidget<QWidget> * _mainWidget = nullptr;
 
 			CustomWidget::ModelFieldWidget * _staticMoleculeField		= nullptr;
 			CustomWidget::ModelFieldWidget * _mobileMoleculeField		= nullptr;
-			AlignParametersWidget *	 _alignmentParametersWidget = nullptr;
+			AlignParametersWidget *			 _alignmentParametersWidget = nullptr;
 
 			QPushButton * _alignButton = nullptr;
 

@@ -1,4 +1,5 @@
 #include "mime_type.hpp"
+#include "model/base_model.hpp"
 #include "model/label.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
@@ -18,6 +19,40 @@ namespace VTX::UI
 		"application/vtx-viewpoint",
 		"application/vtx-label",
 	};
+
+	QMimeData * const MimeType::generateModelData( const Model::BaseModel & p_model )
+	{
+		const VTX::ID::VTX_ID & modelTypeID = p_model.getTypeId();
+		QMimeData *				res;
+
+		if ( modelTypeID == ID::Model::MODEL_MOLECULE || modelTypeID == ID::Model::MODEL_GENERATED_MOLECULE )
+		{
+			res = generateMoleculeData( static_cast<const Model::Molecule &>( p_model ) );
+		}
+		else if ( modelTypeID == ID::Model::MODEL_PATH )
+		{
+			res = generatePathData( static_cast<const Model::Path &>( p_model ) );
+		}
+		else if ( modelTypeID == ID::Model::MODEL_VIEWPOINT )
+		{
+			res = generateViewpointData( static_cast<const Model::Viewpoint &>( p_model ) );
+		}
+		else if ( modelTypeID == ID::Model::MODEL_LABEL )
+		{
+			res = generateLabelData( static_cast<const Model::Label &>( p_model ) );
+		}
+		else if ( modelTypeID == ID::Model::MODEL_INTANTIATED_REPRESENTATION )
+		{
+			res = generateInstantiatedRepresentationData(
+				static_cast<const Model::Representation::InstantiatedRepresentation &>( p_model ) );
+		}
+		else
+		{
+			res = nullptr;
+		}
+
+		return res;
+	}
 
 	QMimeData * const MimeType::generateMoleculeData( const Model::Molecule & p_molecule )
 	{

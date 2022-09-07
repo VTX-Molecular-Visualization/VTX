@@ -26,15 +26,13 @@ namespace VTX
 
 			void refresh();
 
-		  signals:
-			void onModelChanged( Model::BaseModel * const p_model );
-
 		  protected:
 			ModelFieldWidget( QWidget * p_parent ) : CustomWidget::ModelDropArea( p_parent ) {};
 			void _setupUi( const QString & p_name ) override;
 			void _setupSlots() override;
+			void _refresh( const Model::BaseModel * const p_model );
 
-			void _onModelDropped();
+			void _onModelDropped( const Model::BaseModel * const p_model );
 
 		  private:
 			QLabel * _label				  = nullptr;
