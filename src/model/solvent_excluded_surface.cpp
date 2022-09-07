@@ -1,11 +1,11 @@
 #include "solvent_excluded_surface.hpp"
 #include "atom.hpp"
+#include "chain.hpp"
 #include "math/marching_cube.hpp"
 #include "molecule.hpp"
 #include "object3d/helper/aabb.hpp"
 #include "object3d/scene.hpp"
 #include "residue.hpp"
-#include "chain.hpp"
 
 namespace VTX
 {
@@ -18,8 +18,24 @@ namespace VTX
 
 		void SolventExcludedSurface::_init()
 		{
-			Tool::Chrono chrono;
+			switch ( _mode )
+			{
+			case SolventExcludedSurface::Mode::CPU: _initCPU(); break;
+			case SolventExcludedSurface::Mode::GPU: _initGPU(); break;
+			default: break;
+			}
+		}
+
+		void SolventExcludedSurface::_initGPU()
+		{
+			// Sort atoms in acceleration grid.
+		}
+
+		void SolventExcludedSurface::_initCPU()
+		{
+			Tool::Chrono chrono, chrono2;
 			chrono.start();
+			chrono2.start();
 			VTX_INFO( "Creating SES..." );
 
 			// Sort atoms in acceleration grid.
@@ -44,7 +60,7 @@ namespace VTX
 
 			std::vector<std::vector<AtomData>> atomData
 				= std::vector<std::vector<AtomData>>( _gridAtoms.getCellCount(), std::vector<AtomData>() );
-			const std::vector<Vec3f> &		atomPositions = _molecule->getAtomPositionFrame( 0 );
+			const std::vector<Vec3f> & atomPositions = _molecule->getAtomPositionFrame( 0 );
 
 			for ( uint i = 0; i < atomPositions.size(); ++i )
 			{
@@ -52,8 +68,12 @@ namespace VTX
 				atomData[ hash ].emplace_back( AtomData { int( i ) } );
 			}
 
+			chrono2.stop();
+			VTX_INFO( "Atoms sorted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
+
 			// Compute SES grid and compute SDF.
-			const float voxelSize	= 0.4f;
+			const float voxelSize	= 0.5f;
 			Vec3i		sesGridSize = Vec3i( Util::Math::ceil( size / voxelSize ) );
 
 			_gridSES = Object3D::Helper::Grid( min, Vec3f( voxelSize ), sesGridSize );
@@ -65,8 +85,8 @@ namespace VTX
 			};
 
 			// SES grid data.
-			std::vector<SESGridData> sesGridData = std::vector<SESGridData>(
-				_gridSES.getCellCount(), SESGridData { probeRadius, Color::Rgb::WHITE } );
+			std::vector<SESGridData> sesGridData
+				= std::vector<SESGridData>( _gridSES.getCellCount(), SESGridData { probeRadius, Color::Rgb::WHITE } );
 
 			// Store boundary references.
 			std::set<uint> sesGridDataBoundary = std::set<uint>();
@@ -118,24 +138,26 @@ namespace VTX
 										// Inside.
 										if ( distance < voxelSize )
 										{
-											gridData.sdf = -voxelSize;
+											gridData.sdf   = -voxelSize;
 											gridData.color = Color::Rgb::WHITE;
-											found		 = true;
+											found		   = true;
 											// Don't need to loop over other cells.
 											break;
 										}
 										// Boundary.
 										else
 										{
-											distance -= (probeRadius + _molecule->getAtom(atom.index)->getVdwRadius());
-											if (distance < 0.f)
+											distance
+												-= ( probeRadius + _molecule->getAtom( atom.index )->getVdwRadius() );
+											if ( distance < 0.f )
 											{
-												sesGridDataBoundary.insert(sesGridHash);
+												sesGridDataBoundary.insert( sesGridHash );
 												gridData.sdf = -voxelSize;
-												if (distance < minDistance)
+												if ( distance < minDistance )
 												{
 													minDistance = distance;
-													gridData.color = _molecule->getAtom(atom.index)->getResiduePtr()->getColor();
+													gridData.color
+														= _molecule->getAtom( atom.index )->getResiduePtr()->getColor();
 												}
 											}
 										}
@@ -146,6 +168,10 @@ namespace VTX
 					}
 				}
 			}
+
+			chrono2.stop();
+			VTX_INFO( "SDF created " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
 
 			// SDF refinement.
 			const Vec3i cellsToVisitCount = Util::Math::ceil( cellSize / Vec3f( probeRadius + voxelSize ) );
@@ -200,6 +226,10 @@ namespace VTX
 				}
 			}
 
+			chrono2.stop();
+			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
+
 			// Marching cube to extract mesh.
 			const Math::MarchingCube marchingCube = Math::MarchingCube();
 			for ( uint x = 0; x < uint( _gridSES.size.x ) - 1; ++x )
@@ -244,7 +274,14 @@ namespace VTX
 				}
 			}
 
+			chrono2.stop();
+			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
+
 			recomputeNormals();
+			chrono2.stop();
+			VTX_INFO( "Normals computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+
 			_visibilities = std::vector<uint>( _vertices.size(), 1 );
 
 			chrono.stop();

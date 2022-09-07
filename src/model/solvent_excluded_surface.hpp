@@ -23,9 +23,22 @@ namespace VTX
 			void _init() override;
 
 		  private:
+			  enum class Mode {
+				  CPU,
+				  GPU
+			  };
+
+			  Mode _mode = Mode::CPU;
+
+			  // CPU.
 			Model::Molecule * const _molecule;
 			Object3D::Helper::Grid	_gridAtoms;
 			Object3D::Helper::Grid	_gridSES;
+
+			void _initCPU();
+
+			// GPU.
+			void _initGPU();
 
 			SolventExcludedSurface( Molecule * const );
 			~SolventExcludedSurface() = default;
