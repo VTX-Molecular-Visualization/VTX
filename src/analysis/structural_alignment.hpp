@@ -38,6 +38,9 @@ namespace VTX::Analysis
 			int						  windowSize = 8;
 			int						  gapMax	 = 30;
 			int						  maxPath	 = 20;
+
+			bool considerWater		   = false;
+			bool considerHiddenResidue = false;
 		};
 
 		class AlignmentResult

@@ -6,6 +6,7 @@
 #include "ui/layout/attribute_list_layout.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
+#include "ui/widget/custom_widget/model_field_list_widget.hpp"
 #include "ui/widget/custom_widget/model_field_widget.hpp"
 #include <QDockWidget>
 #include <QPushButton>
@@ -46,15 +47,13 @@ namespace VTX
 			void _updateTargetedMoleculesWithSelection( const Model::Selection & p_selection );
 			void _computeAlign() const;
 
-			void _checkNewStaticMolecule( Model::BaseModel * const p_model );
-			void _checkNewMobileMolecule( Model::BaseModel * const p_model );
+			void _onModelListChange();
 
 		  private:
 			CustomWidget::DockWindowMainWidget<QWidget> * _mainWidget = nullptr;
 
-			CustomWidget::ModelFieldWidget * _staticMoleculeField		= nullptr;
-			CustomWidget::ModelFieldWidget * _mobileMoleculeField		= nullptr;
-			AlignParametersWidget *			 _alignmentParametersWidget = nullptr;
+			CustomWidget::ModelFieldListWidget * _moleculesField			= nullptr;
+			AlignParametersWidget *				 _alignmentParametersWidget = nullptr;
 
 			QPushButton * _alignButton = nullptr;
 

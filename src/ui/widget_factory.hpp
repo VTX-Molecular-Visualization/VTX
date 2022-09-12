@@ -28,15 +28,21 @@ namespace VTX
 					 typename = std::enable_if<std::is_base_of<Widget::BaseManualWidgetInitializer, W>::value>>
 			W * const instantiateWidget( QWidget * const p_parent, const std::string & p_name ) const
 			{
-				QString qstringName = QString::fromStdString( p_name );
-
 				W * const res = new W( p_parent );
 
-				res->blockSignals( true );
-				res->setUpdatesEnabled( false );
-				res->_setup( qstringName );
-				res->setUpdatesEnabled( true );
-				res->blockSignals( false );
+				_initManualWidget<W>( res, p_name );
+
+				return res;
+			}
+
+			template<typename W,
+					 typename P1,
+					 typename = std::enable_if<std::is_base_of<Widget::BaseManualWidgetInitializer, W>::value>>
+			W * const instantiateWidget( QWidget * const p_parent, P1 p_param1, const std::string & p_name ) const
+			{
+				W * const res = new W( p_parent, p_param1 );
+
+				_initManualWidget<W>( res, p_name );
 
 				return res;
 			}
@@ -51,21 +57,27 @@ namespace VTX
 											 QWidget * const	 p_parent,
 											 const std::string & p_name ) const
 			{
-				QString qstringName = QString::fromStdString( p_name );
-
 				V * const res = MVC::MvcManager::get().instantiateViewWidget<V>( p_model, p_id, p_parent );
 
-				res->blockSignals( true );
-				res->setUpdatesEnabled( false );
-				res->_setup( qstringName );
-				res->setUpdatesEnabled( true );
-				res->blockSignals( false );
+				_initManualWidget<V>( res, p_name );
 
 				return res;
 			}
 
 		  private:
 			WidgetFactory() = default;
+
+			template<typename W>
+			void _initManualWidget( W * const p_widget, const std::string & p_name ) const
+			{
+				const QString qstringName = QString::fromStdString( p_name );
+
+				p_widget->blockSignals( true );
+				p_widget->setUpdatesEnabled( false );
+				p_widget->_setup( qstringName );
+				p_widget->setUpdatesEnabled( true );
+				p_widget->blockSignals( false );
+			}
 		};
 	} // namespace UI
 } // namespace VTX

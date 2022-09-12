@@ -5,9 +5,10 @@
 #include "ui/layout/attribute_list_layout.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"
+#include "ui/widget/custom_widget/folding_button.hpp"
 #include "ui/widget/custom_widget/integer_field_slider_widget.hpp"
+#include <QCheckBox>
 #include <QComboBox>
-#include <QPushButton>
 #include <QString>
 #include <QWidget>
 
@@ -25,8 +26,6 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		AlignmentParameters * generateParameters() const;
 		void				  applyParameter( const AlignmentParameters & p_alignParameter );
 
-		void displayAsFoldable( const bool p_foldable );
-
 	  protected:
 		AlignParametersWidget( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
@@ -34,18 +33,10 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		AlignmentParameters * _generateCEAlignParameter() const;
 
-		void _toggleSectionVisibility() const;
 		void _methodHasChanged( const int p_methodIndex );
-		void _setFoldableSectionDisplay( const bool p_expand ) const;
 
 	  private:
 		QComboBox * _methodWidget = nullptr;
-
-		QWidget * _foldedParent	  = nullptr;
-		QWidget * _unfoldedParent = nullptr;
-
-		QPushButton * _foldButton  = nullptr;
-		QWidget *	  _foldSection = nullptr;
 
 		Layout::AttributeListLayout * _attributeLayout = nullptr;
 
@@ -55,6 +46,9 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		CustomWidget::FloatFieldSliderWidget * _d0Widget = nullptr;
 		CustomWidget::FloatFieldSliderWidget * _d1Widget = nullptr;
+
+		QCheckBox * _considerHiddenResiduesButton = nullptr;
+		QCheckBox * _considerWaterButton		  = nullptr;
 	};
 
 } // namespace VTX::UI::Widget::Analysis::StructuralAlignment

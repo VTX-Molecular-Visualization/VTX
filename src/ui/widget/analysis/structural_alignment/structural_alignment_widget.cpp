@@ -42,13 +42,16 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		Layout::AttributeListLayout * const attributesLayout = new Layout::AttributeListLayout();
 
-		_staticMoleculeField = WidgetFactory::get().instantiateWidget<CustomWidget::ModelFieldWidget>(
-			attributeWidget, "staticMoleculeField" );
-		_mobileMoleculeField = WidgetFactory::get().instantiateWidget<CustomWidget::ModelFieldWidget>(
-			attributeWidget, "mobileMoleculeField" );
+		_moleculesField = WidgetFactory::get().instantiateWidget<CustomWidget::ModelFieldListWidget>(
+			attributeWidget, "mobilesMoleculeField" );
+		_moleculesField->setTitle( "Molecules" );
 		_alignmentParametersWidget = WidgetFactory::get().instantiateWidget<AlignParametersWidget>(
 			attributeWidget, "alignmentParametersWidget" );
-		_alignmentParametersWidget->displayAsFoldable( true );
+
+		CustomWidget::FoldingButton * const parametersFoldingButton
+			= WidgetFactory::get().instantiateWidget<CustomWidget::FoldingButton>(
+				attributeWidget, _alignmentParametersWidget, "foldButton" );
+		parametersFoldingButton->setTitle( "Parameters" );
 
 		const VTX::Analysis::StructuralAlignment::AlignmentParameters * const defaultParameters
 			= VTX::Analysis::StructuralAlignment::instantiateDefaultParameters(
@@ -61,9 +64,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		_alignButton = new QPushButton( this );
 		_alignButton->setText( "Align" );
 
-		attributesLayout->addAttribute( _staticMoleculeField, "Static molecule" );
-		attributesLayout->addAttribute( _mobileMoleculeField, "Mobile molecule" );
-		attributesLayout->addAttribute( _alignmentParametersWidget );
+		attributesLayout->addAttribute( _moleculesField );
+		attributesLayout->addAttribute( parametersFoldingButton );
 
 		attributeVLayout->addLayout( attributesLayout );
 		attributeVLayout->addStretch( 1000 );
@@ -76,17 +78,14 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 	}
 	void StructuralAlignmentWidget::_setupSlots()
 	{
-		connect( _staticMoleculeField,
-				 &CustomWidget::ModelFieldWidget::onModelChanged,
-				 this,
-				 &StructuralAlignmentWidget::_checkNewStaticMolecule );
-		connect( _mobileMoleculeField,
-				 &CustomWidget::ModelFieldWidget::onModelChanged,
-				 this,
-				 &StructuralAlignmentWidget::_checkNewMobileMolecule );
-
 		connect( _alignButton, &QPushButton::clicked, this, &StructuralAlignmentWidget::_computeAlign );
+		connect( _moleculesField,
+				 &CustomWidget::ModelFieldListWidget::onModelListChange,
+				 this,
+				 &StructuralAlignmentWidget::_onModelListChange );
 	}
+
+	void StructuralAlignmentWidget::_onModelListChange() { refresh(); }
 
 	void StructuralAlignmentWidget::localize() { setWindowTitle( "Structural Alignment" ); }
 
@@ -98,7 +97,11 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		refresh();
 	}
 
-	void StructuralAlignmentWidget::refresh() {}
+	void StructuralAlignmentWidget::refresh()
+	{
+		const bool alignButtonEnabled = _moleculesField->getModelCount() >= 2;
+		_alignButton->setEnabled( alignButtonEnabled );
+	}
 
 	void StructuralAlignmentWidget::_updateTargetedMoleculesWithSelection( const Model::Selection & p_selection )
 	{
@@ -113,60 +116,23 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		VTXApp::get().getScene().sortMoleculesBySceneIndex( selectedMolecules );
 
-		Model::Molecule * const staticMolecule = selectedMolecules.size() > 0 ? selectedMolecules[ 0 ] : nullptr;
-		Model::Molecule * const mobileMolecule = selectedMolecules.size() >= 2 ? selectedMolecules[ 1 ] : nullptr;
-
-		_staticMoleculeField->setModel( staticMolecule );
-		_mobileMoleculeField->setModel( mobileMolecule );
-	}
-
-	void StructuralAlignmentWidget::_checkNewStaticMolecule( Model::BaseModel * const p_model )
-	{
-		Model::Molecule * const molecule = static_cast<Model::Molecule *>( p_model );
-
-		if ( molecule == nullptr )
-			return;
-
-		// Swap molecules
-		if ( _mobileMoleculeField->getModel() == molecule )
-		{
-			const bool previousSignalState = _mobileMoleculeField->blockSignals( true );
-			_mobileMoleculeField->setModel( _staticMoleculeField->getModel() );
-			_mobileMoleculeField->refresh();
-			_mobileMoleculeField->blockSignals( previousSignalState );
-		}
-	}
-	void StructuralAlignmentWidget::_checkNewMobileMolecule( Model::BaseModel * const p_model )
-	{
-		Model::Molecule * const molecule = static_cast<Model::Molecule *>( p_model );
-
-		if ( molecule == nullptr )
-			return;
-
-		// Swap molecules
-		if ( _staticMoleculeField->getModel() == molecule )
-		{
-			const bool previousSignalState = _staticMoleculeField->blockSignals( true );
-			_staticMoleculeField->setModel( _mobileMoleculeField->getModel() );
-			_staticMoleculeField->refresh();
-			_staticMoleculeField->blockSignals( previousSignalState );
-		}
+		for ( int i = 0; i < selectedMolecules.size(); i++ )
+			_moleculesField->addModel( selectedMolecules[ i ] );
 	}
 
 	void StructuralAlignmentWidget::_computeAlign() const
 	{
-		const Model::Molecule * const staticMolecule = _staticMoleculeField->getModel<Model::Molecule>();
-		Model::Molecule * const		  mobileMolecule = _mobileMoleculeField->getModel<Model::Molecule>();
+		const Model::Molecule * const  staticMolecule	= _moleculesField->getTickedModel<Model::Molecule>();
+		std::vector<Model::Molecule *> mobilesMolecules = _moleculesField->getNotTickedModels<Model::Molecule>();
 
 		// TODO : Display error message here (red text under empty field ?)
-		if ( staticMolecule == nullptr || mobileMolecule == nullptr )
+		if ( staticMolecule == nullptr || mobilesMolecules.size() == 0 )
 			return;
 
 		const VTX::Analysis::StructuralAlignment::AlignmentParameters * const parameters
 			= _alignmentParametersWidget->generateParameters();
 
-		VTX_ACTION(
-			new Action::Analysis::ComputeStructuralAlignment( staticMolecule, { mobileMolecule }, parameters ) );
+		VTX_ACTION( new Action::Analysis::ComputeStructuralAlignment( staticMolecule, mobilesMolecules, parameters ) );
 
 		delete parameters;
 	}

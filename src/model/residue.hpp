@@ -92,6 +92,11 @@ namespace VTX
 			{
 				return int( SYMBOL::ALA ) <= _symbol && _symbol <= int( SYMBOL::PYL );
 			}
+			inline bool isWater() const
+			{
+				return ( _symbol == int( SYMBOL::WAT ) ) || ( _symbol == int( SYMBOL::HOH ) );
+			}
+
 			inline TYPE			 getType() const { return _type; }
 			inline void			 setType( const TYPE p_type ) { _type = p_type; }
 			inline uint			 getIndex() const { return _index; };

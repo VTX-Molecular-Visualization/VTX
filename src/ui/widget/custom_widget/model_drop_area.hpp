@@ -2,14 +2,12 @@
 #define __VTX_UI_WIDGET_MODEL_DROP_AREA__
 
 #include "id.hpp"
-#include "ui/draggable_item.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QFrame>
 #include <QString>
 #include <QWidget>
-#include <type_traits>
 #include <vector>
 
 namespace VTX
@@ -21,7 +19,7 @@ namespace VTX
 
 	namespace UI::Widget::CustomWidget
 	{
-		class ModelDropArea : public BaseManualWidget<QFrame>, public DraggableItem
+		class ModelDropArea : public BaseManualWidget<QFrame>
 		{
 			Q_OBJECT
 			VTX_WIDGET
@@ -30,26 +28,10 @@ namespace VTX
 			~ModelDropArea() {};
 			void localize() override;
 
-			inline Model::BaseModel * const		  getModel() { return _model; };
-			inline const Model::BaseModel * const getModel() const { return _model; };
-
-			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
-			M * const getModel()
-			{
-				return static_cast<M *>( getModel() );
-			}
-			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
-			const M * const getModel() const
-			{
-				return static_cast<M *>( getModel() );
-			}
-
-			void setModel( Model::BaseModel * const p_model );
-
 			void addTypeFilter( const VTX::ID::VTX_ID & p_modelID );
 
 		  signals:
-			void onModelChanged( Model::BaseModel * const p_model );
+			void onModelDropped( Model::BaseModel * const p_model );
 
 		  protected:
 			ModelDropArea( QWidget * p_parent );
@@ -60,11 +42,7 @@ namespace VTX
 			void dragEnterEvent( QDragEnterEvent * event ) override;
 			void dropEvent( QDropEvent * event ) override;
 
-			QMimeData * _getDataForDrag() const override;
-
 		  private:
-			Model::BaseModel * _model = nullptr;
-
 			std::vector<VTX::ID::VTX_ID> _filters = std::vector<VTX::ID::VTX_ID>();
 		};
 	} // namespace UI::Widget::CustomWidget

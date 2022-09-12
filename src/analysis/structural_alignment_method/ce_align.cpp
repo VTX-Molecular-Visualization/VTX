@@ -40,8 +40,10 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		correctedParameters.windowSize = std::min( castedParameters.windowSize, int( sqrt( minMolSize ) ) );
 
 		chrono.start();
-		std::vector<Vec3f> staticMoleculeResiduePositions = _generateResiduePositionsVector( p_staticMolecule );
-		std::vector<Vec3f> mobileMoleculeResiduePositions = _generateResiduePositionsVector( p_mobileMolecule );
+		std::vector<Vec3f> staticMoleculeResiduePositions
+			= _generateResiduePositionsVector( p_staticMolecule, castedParameters );
+		std::vector<Vec3f> mobileMoleculeResiduePositions
+			= _generateResiduePositionsVector( p_mobileMolecule, castedParameters );
 		chrono.stop();
 		VTX_DEBUG( "Residue position generation : " + chrono.elapsedTimeStr() );
 
@@ -81,23 +83,33 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		return result;
 	}
 
-	std::vector<Vec3f> CEAlign::_generateResiduePositionsVector( const Model::Molecule & p_molecule )
+	std::vector<Vec3f> CEAlign::_generateResiduePositionsVector( const Model::Molecule &  p_molecule,
+																 const CustomParameters & p_parameters )
 	{
 		std::vector<Vec3f> residuePositionsVector = std::vector<Vec3f>();
 		residuePositionsVector.resize( p_molecule.getResidueCount() );
+		// residuePositionsVector.reserve( p_molecule.getResidueCount() );
+
+		size_t index = 0;
 
 		for ( uint iResidue = 0; iResidue < p_molecule.getResidueCount(); iResidue++ )
 		{
 			const Model::Residue * const residuePtr = p_molecule.getResidue( iResidue );
-			if ( residuePtr == nullptr )
+
+			bool considerResidue = residuePtr != nullptr;
+			considerResidue		 = considerResidue && ( p_parameters.considerWater || !residuePtr->isWater() );
+			considerResidue		 = considerResidue && ( p_parameters.considerHiddenResidue || residuePtr->isVisible() );
+
+			if ( considerResidue )
 			{
-				residuePositionsVector[ iResidue ] = VEC3F_ZERO;
-			}
-			else
-			{
-				residuePositionsVector[ iResidue ] = _residuePositionsDataSet.getPositionInMolecule( *residuePtr );
+				residuePositionsVector[ index ] = _residuePositionsDataSet.getPositionInMolecule( *residuePtr );
+				index++;
+				// residuePositionsVector.emplace_back( _residuePositionsDataSet.getPositionInMolecule( *residuePtr ) );
 			}
 		}
+
+		// residuePositionsVector.shrink_to_fit();
+		residuePositionsVector.resize( index );
 
 		return residuePositionsVector;
 	}

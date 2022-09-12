@@ -46,6 +46,8 @@ namespace VTX
 			const QPixmap FOLDED_PIXMAP;
 			const QPixmap CLOSE_PIXMAP;
 
+			const QPixmap REMOVE_LINE_ICON;
+
 			const QPixmap FULLSCREEN_ICON;
 			const QPixmap WINDOWED_ICON;
 
@@ -175,6 +177,8 @@ namespace VTX
 				FOLDED_PIXMAP( QPixmap( ":/sprite/treeview_folded_molecule_icon.png" ) ),
 				CLOSE_PIXMAP( QPixmap( ":/sprite/close_icon.png" ) ),
 
+				REMOVE_LINE_ICON( QPixmap( ":/sprite/remove_line_icon.png" ) ),
+
 				FULLSCREEN_ICON( QPixmap( ":/sprite/fullscreen_icon.png" ) ),
 				WINDOWED_ICON( QPixmap( ":/sprite/windowed_icon.png" ) ),
 
@@ -263,7 +267,6 @@ namespace VTX
 		inline static const int DATA_GRID_HORIZONTAL_SPACE = 10;
 
 		inline static const int ATTRIBUTE_LIST_LAYOUT_SPACER_HEIGHT = 30;
-
 
 		inline static const QFont  WORLD_LABEL_FONT			  = QFont( "Arial", 20, QFont::Weight::Bold, false );
 		inline static const float  WORLD_LABEL_NEAR_CLIP	  = 20.f;

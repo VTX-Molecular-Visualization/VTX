@@ -51,7 +51,8 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 
 	  private:
 		// OK
-		static std::vector<Vec3f> _generateResiduePositionsVector( const Model::Molecule & p_molecule );
+		static std::vector<Vec3f> _generateResiduePositionsVector( const Model::Molecule &	p_molecule,
+																   const CustomParameters & p_parameters );
 
 		// OK
 		static Math::Matrix<float> _computeDistanceMatrix( const std::vector<Vec3f> & p_atomPositions );
