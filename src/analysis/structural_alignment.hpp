@@ -40,7 +40,7 @@ namespace VTX::Analysis
 			int						  maxPath	 = 20;
 
 			bool considerWater		   = false;
-			bool considerHiddenResidue = false;
+			bool considerHiddenResidue = true;
 		};
 
 		class AlignmentResult
