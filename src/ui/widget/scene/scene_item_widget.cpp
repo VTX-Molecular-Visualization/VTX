@@ -153,7 +153,7 @@ namespace VTX::UI::Widget::Scene
 
 	void SceneItemWidget::mousePressEvent( QMouseEvent * p_event )
 	{
-		BaseManualWidget::mouseMoveEvent( p_event );
+		BaseManualWidget::mousePressEvent( p_event );
 
 		// Ignore event to allow eventfilter of DraggableItem to receive mousePressEvent.
 		p_event->ignore();
