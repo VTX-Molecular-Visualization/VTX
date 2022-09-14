@@ -9,6 +9,8 @@ namespace VTX
 {
 	namespace Model
 	{
+		using namespace VTX::Renderer::GL;
+
 		class Molecule;
 		class SolventExcludedSurface : public MeshTriangle
 		{
@@ -23,14 +25,15 @@ namespace VTX
 			void _init() override;
 
 		  private:
-			  enum class Mode {
-				  CPU,
-				  GPU
-			  };
+			enum class Mode
+			{
+				CPU,
+				GPU
+			};
 
-			  Mode _mode = Mode::CPU;
+			Mode _mode = Mode::GPU;
 
-			  // CPU.
+			// CPU.
 			Model::Molecule * const _molecule;
 			Object3D::Helper::Grid	_gridAtoms;
 			Object3D::Helper::Grid	_gridSES;
