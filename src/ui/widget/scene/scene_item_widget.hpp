@@ -85,6 +85,8 @@ namespace VTX::UI::Widget::Scene
 		QTreeWidgetItem * _findItemFromModelIDRecursive( QTreeWidgetItem & p_parent, const Model::ID & p_id ) const;
 		bool			  _getItemExpandState( const QTreeWidgetItem & p_item ) const;
 
+		QMimeData * _getDataForDrag() const override;
+
 	  private:
 		int _enableSignalCounter = 0;
 	};

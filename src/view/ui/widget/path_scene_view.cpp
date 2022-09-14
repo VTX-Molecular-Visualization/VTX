@@ -217,8 +217,6 @@ namespace VTX::View::UI::Widget
 			p_name = p_name.substr( 0, Style::MOLECULE_NAME_MAXIMUM_SIZE );
 	}
 
-	QMimeData * PathSceneView::_getDataForDrag() const { return VTX::UI::MimeType::generatePathData( *_model ); }
-
 	QTreeWidgetItem * PathSceneView::_itemFromViewpoint( const Model::Viewpoint & p_viewpoint ) const
 	{
 		const Model::ID & viewpointID = p_viewpoint.getId();

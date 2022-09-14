@@ -63,6 +63,7 @@ namespace VTX::Object3D
 		const Generic::BaseSceneItem * const getItemAtPosition( const int p_index ) const;
 		int									 getItemPosition( const Generic::BaseSceneItem & p_item ) const;
 		void changeModelPosition( const Generic::BaseSceneItem & p_item, const int p_position );
+		void changeModelsPosition( const std::vector<const Generic::BaseSceneItem *> & p_items, const int p_position );
 		void sortMoleculesBySceneIndex( std::vector<Model::Molecule *> & p_molecules ) const;
 
 		bool isEmpty() const;

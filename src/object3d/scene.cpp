@@ -197,7 +197,74 @@ namespace VTX::Object3D
 			_itemOrder[ p_position ] = itemPtr;
 		}
 
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::SCENE_ITEM_INDEX_CHANGE, &p_item ) );
+		VTX_EVENT( new Event::VTXEvent( Event::Global::SCENE_ITEM_INDEXES_CHANGE ) );
+	}
+
+	void Scene::changeModelsPosition( const std::vector<const Generic::BaseSceneItem *> & p_items,
+									  const int											  p_position )
+	{
+		std::vector<const Generic::BaseSceneItem *> movedItems = std::vector<const Generic::BaseSceneItem *>();
+		movedItems.resize( p_items.size() );
+
+		size_t indexMovedItemsBeforePosition = 0;
+
+		for ( size_t i = 0; i < p_position; i++ )
+		{
+			const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemOrder[ i ] ) != p_items.end();
+
+			if ( hasToMoveItem )
+			{
+				movedItems[ indexMovedItemsBeforePosition ] = _itemOrder[ i ];
+				indexMovedItemsBeforePosition++;
+
+				_itemOrder[ i ] = nullptr;
+			}
+			else if ( indexMovedItemsBeforePosition > 0 )
+			{
+				_itemOrder[ i - indexMovedItemsBeforePosition ] = _itemOrder[ i ];
+			}
+		}
+
+		size_t itemMovedCounter = 0;
+
+		for ( int i = int( _itemOrder.size() ) - 1; i > p_position; i-- )
+		{
+			const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemOrder[ i ] ) != p_items.end();
+
+			if ( hasToMoveItem )
+			{
+				const size_t movedItemsIndex  = movedItems.size() - 1 - itemMovedCounter;
+				movedItems[ movedItemsIndex ] = _itemOrder[ i ];
+				itemMovedCounter++;
+				_itemOrder[ i ] = nullptr;
+			}
+			else if ( itemMovedCounter > 0 )
+			{
+				_itemOrder[ i + itemMovedCounter ] = _itemOrder[ i ];
+			}
+		}
+
+		if ( p_position < _itemOrder.size() )
+		{
+			const bool hasToMoveItem
+				= std::find( p_items.begin(), p_items.end(), _itemOrder[ p_position ] ) != p_items.end();
+			if ( hasToMoveItem )
+			{
+				movedItems[ indexMovedItemsBeforePosition ] = _itemOrder[ p_position ];
+				_itemOrder[ p_position ]					= nullptr;
+			}
+			else
+			{
+				_itemOrder[ p_position + itemMovedCounter ] = _itemOrder[ p_position ];
+			}
+		}
+
+		for ( size_t i = 0; i < movedItems.size(); i++ )
+		{
+			_itemOrder[ p_position - indexMovedItemsBeforePosition + i ] = movedItems[ i ];
+		}
+
+		VTX_EVENT( new Event::VTXEvent( Event::Global::SCENE_ITEM_INDEXES_CHANGE ) );
 	}
 
 	void Scene::sortMoleculesBySceneIndex( std::vector<Model::Molecule *> & p_molecules ) const

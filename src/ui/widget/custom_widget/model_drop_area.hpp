@@ -28,10 +28,17 @@ namespace VTX
 			~ModelDropArea() {};
 			void localize() override;
 
+			bool isAcceptingGroup() const { return _acceptGroup; }
+			void setAcceptGroup( const bool p_accept );
+
 			void addTypeFilter( const VTX::ID::VTX_ID & p_modelID );
+			bool _hasFiltersToCheck() const;
+			bool matchFilter( const VTX::ID::VTX_ID & p_type ) const;
+			bool matchFilter( const Model::BaseModel & p_model ) const;
 
 		  signals:
 			void onModelDropped( Model::BaseModel * const p_model );
+			void onModelsDropped( std::vector<Model::BaseModel *> p_models );
 
 		  protected:
 			ModelDropArea( QWidget * p_parent );
@@ -43,7 +50,8 @@ namespace VTX
 			void dropEvent( QDropEvent * event ) override;
 
 		  private:
-			std::vector<VTX::ID::VTX_ID> _filters = std::vector<VTX::ID::VTX_ID>();
+			std::vector<VTX::ID::VTX_ID> _filters	  = std::vector<VTX::ID::VTX_ID>();
+			bool						 _acceptGroup = false;
 		};
 	} // namespace UI::Widget::CustomWidget
 } // namespace VTX

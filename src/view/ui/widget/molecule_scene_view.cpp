@@ -1064,10 +1064,6 @@ namespace VTX::View::UI::Widget
 		return _isChainExpanded( *chain ) && _getTreeWidgetItem( p_residue )->childCount() > 0;
 	}
 
-	QMimeData * MoleculeSceneView::_getDataForDrag() const
-	{
-		return VTX::UI::MimeType::generateMoleculeData( *_model );
-	}
 	bool MoleculeSceneView::_canDragAtPos( const QPoint & p_position ) const
 	{
 		// Can only drag from the molecule

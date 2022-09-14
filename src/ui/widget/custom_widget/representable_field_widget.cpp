@@ -27,20 +27,32 @@ namespace VTX
 
 				void RepresentableFieldWidget::localize() {};
 
-				void RepresentableFieldWidget::dragEnterEvent( QDragEnterEvent * event )
+				void RepresentableFieldWidget::dragEnterEvent( QDragEnterEvent * p_event )
 				{
-					if ( event->mimeData()->hasFormat(
-							 UI::MimeType::getQStringMimeType( UI::MimeType::ApplicationMimeType::REPRESENTABLE ) ) )
-						event->acceptProposedAction();
+					const bool draggedObjectIsModel = UI::MimeType::checkApplicationDataType(
+						p_event->mimeData(), UI::MimeType::ApplicationMimeType::MODEL );
+
+					if ( draggedObjectIsModel )
+					{
+						const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
+
+						const bool isRepresentable = ( modelData.getTypeID() == ID::Model::MODEL_ATOM )
+													 || ( modelData.getTypeID() == ID::Model::MODEL_RESIDUE )
+													 || ( modelData.getTypeID() == ID::Model::MODEL_CHAIN )
+													 || ( modelData.getTypeID() == ID::Model::MODEL_MOLECULE );
+
+						if ( isRepresentable )
+						{
+							p_event->acceptProposedAction();
+						}
+					}
 				}
-				void RepresentableFieldWidget::dropEvent( QDropEvent * event )
+				void RepresentableFieldWidget::dropEvent( QDropEvent * p_event )
 				{
-					const QByteArray byteData = event->mimeData()->data(
-						UI::MimeType::getQStringMimeType( UI::MimeType::ApplicationMimeType::REPRESENTABLE ) );
-					const Model::ID idDroppedObject = std::atoi( byteData.data() );
+					const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
 
 					Model::BaseModel * const representableModel
-						= &( MVC::MvcManager::get().getModel<Model::BaseModel>( idDroppedObject ) );
+						= &( MVC::MvcManager::get().getModel<Model::BaseModel>( modelData.getModelID() ) );
 
 					Generic::BaseRepresentable * representable = nullptr;
 					const VTX::ID::VTX_ID &		 modelTypeID   = representableModel->getTypeId();
@@ -52,7 +64,7 @@ namespace VTX
 						representable = static_cast<Generic::BaseRepresentable *>(
 							static_cast<Model::Chain *>( representableModel ) );
 
-					event->acceptProposedAction();
+					p_event->acceptProposedAction();
 
 					setValue( representable );
 				}

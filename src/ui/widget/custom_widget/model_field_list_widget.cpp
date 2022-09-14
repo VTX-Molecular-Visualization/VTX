@@ -21,6 +21,8 @@ namespace VTX::UI::Widget::CustomWidget
 		connect( _removeButton, &QPushButton::clicked, this, &ModelFieldLine::_callRemoveAction );
 
 		_modelField = WidgetFactory::get().instantiateWidget<CustomWidget::ModelFieldWidget>( _owner, "modelField" );
+		connect(
+			_modelField, &CustomWidget::ModelFieldWidget::onModelChanged, this, &ModelFieldLine::_checkModelChange );
 	}
 
 	ModelFieldListWidget::ModelFieldLine::~ModelFieldLine() {}
@@ -60,6 +62,11 @@ namespace VTX::UI::Widget::CustomWidget
 		Model::BaseModel * const model = _modelField->getModel();
 		_owner->removeModel( model );
 	}
+	void ModelFieldListWidget::ModelFieldLine::_checkModelChange( Model::BaseModel * const p_model )
+	{
+		if ( _owner->getContainsOnlyUniqueModel() && _owner->hasModel( p_model ) )
+			_owner->swapModels( _modelField->getModel(), p_model );
+	}
 
 	ModelFieldListWidget::ModelFieldListWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 	ModelFieldListWidget::~ModelFieldListWidget() {}
@@ -76,6 +83,8 @@ namespace VTX::UI::Widget::CustomWidget
 		_dropArea->setSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum );
 		_dropArea->setFixedHeight( 32 );
 		_dropArea->setFrameShadow( QFrame::Shadow::Sunken );
+		_dropArea->addTypeFilter( ID::Model::MODEL_MOLECULE );
+		_dropArea->setAcceptGroup( true );
 
 		_foldButton = WidgetFactory::get().instantiateWidget<CustomWidget::FoldingButton>(
 			this, modelListWidget, "foldButton" );
@@ -105,10 +114,24 @@ namespace VTX::UI::Widget::CustomWidget
 	void ModelFieldListWidget::_setupSlots()
 	{
 		connect(
-			_dropArea, &CustomWidget::ModelDropArea::onModelDropped, this, &ModelFieldListWidget::_onModelDropped );
+			_dropArea, &CustomWidget::ModelDropArea::onModelsDropped, this, &ModelFieldListWidget::_onModelsDropped );
 	}
 
 	void ModelFieldListWidget::localize() {};
+
+	void ModelFieldListWidget::setContainsOnlyUniqueModel( const bool p_containsOnlyUniqueModel )
+	{
+		_containsOnlyUniqueModel = p_containsOnlyUniqueModel;
+	}
+
+	bool ModelFieldListWidget::hasModel( const Model::BaseModel * const p_model ) const
+	{
+		for ( const ModelFieldLine * const line : _lines )
+			if ( line->getModel() == p_model )
+				return true;
+
+		return false;
+	}
 
 	int								ModelFieldListWidget::getModelCount() const { return int( _lines.size() ); }
 	std::vector<Model::BaseModel *> ModelFieldListWidget::getModels() const
@@ -161,6 +184,41 @@ namespace VTX::UI::Widget::CustomWidget
 			}
 
 			it++;
+		}
+	}
+
+	void ModelFieldListWidget::swapModels( Model::BaseModel * const p_model1, Model::BaseModel * const p_model2 ) const
+	{
+		bool firstSwapDone = false;
+
+		for ( const ModelFieldLine * const line : _lines )
+		{
+			if ( line->getModel() == p_model1 )
+			{
+				CustomWidget::ModelFieldWidget * const modelField = line->getModelField();
+
+				const bool oldSignalState = modelField->blockSignals( true );
+				modelField->setModel( p_model2 );
+				modelField->blockSignals( oldSignalState );
+
+				if ( firstSwapDone )
+					break;
+				else
+					firstSwapDone = true;
+			}
+			else if ( line->getModel() == p_model2 )
+			{
+				CustomWidget::ModelFieldWidget * const modelField = line->getModelField();
+
+				const bool oldSignalState = modelField->blockSignals( true );
+				modelField->setModel( p_model1 );
+				modelField->blockSignals( oldSignalState );
+
+				if ( firstSwapDone )
+					break;
+				else
+					firstSwapDone = true;
+			}
 		}
 	}
 
@@ -249,9 +307,11 @@ namespace VTX::UI::Widget::CustomWidget
 		_lines.emplace_back( newLine );
 	}
 
-	void ModelFieldListWidget::_onModelDropped( Model::BaseModel * const p_model )
+	void ModelFieldListWidget::_onModelsDropped( std::vector<Model::BaseModel *> p_models )
 	{
-		addModel( p_model );
+		for ( Model::BaseModel * const model : p_models )
+			addModel( model );
+
 		_foldButton->setFoldState( true );
 	}
 

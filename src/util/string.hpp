@@ -1,8 +1,10 @@
 #ifndef __VTX_UTIL_STRING__
 #define __VTX_UTIL_STRING__
 
+#include "define.hpp"
 #include <algorithm>
 #include <string>
+#include <vector>
 
 namespace VTX::Util::String
 {
@@ -12,7 +14,10 @@ namespace VTX::Util::String
 	void trimStart( std::string & p_str );
 	void trimEnd( std::string & p_str );
 
+	std::vector<std::string> split( const std::string & p_str, const char p_separator );
+
 	std::string floatToStr( const float p_value, const int p_nbDecimals );
+	uint		strToUint( const std::string & p_str );
 } // namespace VTX::Util::String
 
 #endif

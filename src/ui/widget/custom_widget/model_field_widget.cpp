@@ -81,7 +81,7 @@ namespace VTX::UI::Widget::CustomWidget
 		if ( _model == nullptr )
 			return nullptr;
 
-		return VTX::UI::MimeType::generateModelData( *_model );
+		return VTX::UI::MimeType::generateMimeDataFromModel( *_model, UI::MimeType::DragSource::MODEL_FIELD );
 	}
 
 } // namespace VTX::UI::Widget::CustomWidget

@@ -104,6 +104,4 @@ namespace VTX::View::UI::Widget::Measurement
 		}
 	}
 
-	QMimeData * AngleSceneView::_getDataForDrag() const { return VTX::UI::MimeType::generateLabelData( *_model ); }
-
 } // namespace VTX::View::UI::Widget::Measurement

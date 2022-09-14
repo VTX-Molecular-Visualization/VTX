@@ -106,10 +106,4 @@ namespace VTX::View::UI::Widget::Measurement
 			VTX::UI::ContextualMenu::pop<Model::Label>( VTX::UI::ContextualMenu::Menu::Label, _model, globalClicPos );
 		}
 	}
-
-	QMimeData * DihedralAngleSceneView::_getDataForDrag() const
-	{
-		return VTX::UI::MimeType::generateLabelData( *_model );
-	}
-
 } // namespace VTX::View::UI::Widget::Measurement

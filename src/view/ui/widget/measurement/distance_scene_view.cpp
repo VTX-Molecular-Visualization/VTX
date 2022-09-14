@@ -6,9 +6,9 @@
 #include "selection/selection_manager.hpp"
 #include "ui/contextual_menu.hpp"
 #include "ui/mime_type.hpp"
-#include "util/ui.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_label.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_selection.hpp"
+#include "util/ui.hpp"
 
 namespace VTX::View::UI::Widget::Measurement
 {
@@ -46,8 +46,8 @@ namespace VTX::View::UI::Widget::Measurement
 			}
 			else
 			{
-				const bool enableState = Util::UI::getCheckState(p_item->checkState( 0 ));
-				VTX_ACTION( new Action::Label::SetEnable( *_model, enableState) );
+				const bool enableState = Util::UI::getCheckState( p_item->checkState( 0 ) );
+				VTX_ACTION( new Action::Label::SetEnable( *_model, enableState ) );
 			}
 		}
 	}
@@ -103,7 +103,5 @@ namespace VTX::View::UI::Widget::Measurement
 			VTX::UI::ContextualMenu::pop<Model::Label>( VTX::UI::ContextualMenu::Menu::Label, _model, globalClicPos );
 		}
 	}
-
-	QMimeData * DistanceSceneView::_getDataForDrag() const { return VTX::UI::MimeType::generateLabelData( *_model ); }
 
 } // namespace VTX::View::UI::Widget::Measurement

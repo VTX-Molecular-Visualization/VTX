@@ -146,9 +146,19 @@ namespace VTX::UI::Widget::Scene
 	void SceneItemWidget::dragEnterEvent( QDragEnterEvent * p_event )
 	{
 		BaseManualWidget::dragEnterEvent( p_event );
-		if ( p_event->mimeData()->hasFormat(
-				 VTX::UI::MimeType::getQStringMimeType( VTX::UI::MimeType::ApplicationMimeType::SCENE_ITEM ) ) )
-			p_event->acceptProposedAction();
+
+		const bool draggedObjectIsModel
+			= UI::MimeType::checkApplicationDataType( p_event->mimeData(), UI::MimeType::ApplicationMimeType::MODEL );
+
+		if ( draggedObjectIsModel )
+		{
+			const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
+
+			if ( modelData.getDragSource() == UI::MimeType::DragSource::SCENE_VIEW )
+			{
+				p_event->acceptProposedAction();
+			}
+		}
 	}
 
 	void SceneItemWidget::mousePressEvent( QMouseEvent * p_event )
@@ -386,6 +396,18 @@ namespace VTX::UI::Widget::Scene
 	{
 		const QVariant & expandState = p_item.data( 0, EXPAND_STATE_ROLE );
 		return expandState.isValid() && expandState.value<bool>();
+	}
+
+	QMimeData * SceneItemWidget::_getDataForDrag() const
+	{
+		const Model::Selection & selectionModel	 = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const bool				 isModelSelected = selectionModel.isModelSelected( getModelID() );
+
+		const Model::BaseModel * const modelDragged
+			= isModelSelected ? &( selectionModel )
+							  : &( MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() ) );
+
+		return VTX::UI::MimeType::generateMimeDataFromModel( *modelDragged, UI::MimeType::DragSource::SCENE_VIEW );
 	}
 
 	void SceneItemWidget::_refreshCurrentItemInSelection( const Model::BaseModel * const p_obj )

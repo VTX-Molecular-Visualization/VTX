@@ -27,8 +27,6 @@ namespace VTX::View::UI::Widget::Measurement
 		DihedralAngleSceneView( Model::Measurement::DihedralAngle * const p_model, QWidget * const p_parent );
 		void _setupSlots() override;
 
-		QMimeData * _getDataForDrag() const override;
-
 		void _fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection ) override;
 
 		void _onItemChanged( QTreeWidgetItem * const, const int );

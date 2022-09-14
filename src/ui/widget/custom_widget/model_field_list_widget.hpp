@@ -50,6 +50,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		  protected:
 			void _callRemoveAction();
+			void _checkModelChange( Model::BaseModel * const p_model );
 
 		  private:
 			ModelFieldListWidget * const _owner = nullptr;
@@ -64,12 +65,18 @@ namespace VTX::UI::Widget::CustomWidget
 		~ModelFieldListWidget();
 		void localize() override;
 
+		bool getContainsOnlyUniqueModel() const { return _containsOnlyUniqueModel; }
+		void setContainsOnlyUniqueModel( const bool p_containsOnlyUniqueModel );
+
 		void addModel( Model::BaseModel * const p_model );
 		void insertModel( Model::BaseModel * const p_model, const int p_position );
 		void removeModel( Model::BaseModel * const p_model );
 
+		bool							hasModel( const Model::BaseModel * const p_model ) const;
 		int								getModelCount() const;
 		std::vector<Model::BaseModel *> getModels() const;
+
+		void swapModels( Model::BaseModel * const p_model1, Model::BaseModel * const p_model2 ) const;
 
 		Model::BaseModel * const getTickedModel() const;
 		template<typename T>
@@ -123,14 +130,15 @@ namespace VTX::UI::Widget::CustomWidget
 		ModelFieldLine * _findLineFromModel( Model::BaseModel * const p_model ) const;
 		ModelFieldLine * _findNextLine( const ModelFieldLine * const p_from ) const;
 
-		void _onModelDropped( Model::BaseModel * const p_model );
+		void _onModelsDropped( std::vector<Model::BaseModel *> p_models );
 
 	  private:
 		CustomWidget::FoldingButton * _foldButton	   = nullptr;
 		QGridLayout *				  _modelListLayout = nullptr;
 		CustomWidget::ModelDropArea * _dropArea		   = nullptr;
 
-		std::vector<ModelFieldLine *> _lines = std::vector<ModelFieldLine *>();
+		std::vector<ModelFieldLine *> _lines				   = std::vector<ModelFieldLine *>();
+		bool						  _containsOnlyUniqueModel = true;
 	};
 } // namespace VTX::UI::Widget::CustomWidget
 #endif

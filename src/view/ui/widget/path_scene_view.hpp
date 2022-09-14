@@ -45,8 +45,7 @@ namespace VTX::View::UI::Widget
 
 		void _onCustomContextMenuCalled( const QPoint & p_clicPos ) override;
 
-		QMimeData * _getDataForDrag() const override;
-		void		_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append = false );
+		void _selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append = false );
 
 		void _createTopLevelObject() override;
 		void _fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection ) override;
