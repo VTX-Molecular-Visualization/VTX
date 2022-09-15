@@ -11,7 +11,8 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void ModelDropArea::_setupUi( const QString & p_name )
 	{
-		setObjectName( p_name );
+		BaseManualWidget::_setupUi( p_name );
+
 		setAcceptDrops( true );
 	}
 

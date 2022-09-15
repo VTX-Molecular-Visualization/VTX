@@ -6,6 +6,7 @@
 #include "ui/widget/custom_widget/folding_button.hpp"
 #include "ui/widget/custom_widget/model_drop_area.hpp"
 #include "ui/widget/custom_widget/model_field_widget.hpp"
+#include "ui/widget/custom_widget/textual_model_drop_area.hpp"
 #include <QGridLayout>
 #include <QPushButton>
 #include <QRadioButton>
@@ -14,8 +15,6 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class ModelFieldLine;
-
 	class ModelFieldListWidget : public BaseManualWidget<QWidget>
 	{
 		Q_OBJECT
@@ -133,9 +132,9 @@ namespace VTX::UI::Widget::CustomWidget
 		void _onModelsDropped( std::vector<Model::BaseModel *> p_models );
 
 	  private:
-		CustomWidget::FoldingButton * _foldButton	   = nullptr;
-		QGridLayout *				  _modelListLayout = nullptr;
-		CustomWidget::ModelDropArea * _dropArea		   = nullptr;
+		CustomWidget::FoldingButton *		 _foldButton	  = nullptr;
+		QGridLayout *						 _modelListLayout = nullptr;
+		CustomWidget::TextualModelDropArea * _dropArea		  = nullptr;
 
 		std::vector<ModelFieldLine *> _lines				   = std::vector<ModelFieldLine *>();
 		bool						  _containsOnlyUniqueModel = true;

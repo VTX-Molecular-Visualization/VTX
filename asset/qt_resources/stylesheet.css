@@ -209,3 +209,17 @@ QFrame#Inspector_Toolbar
 {
 	border-color : #222222;
 }
+
+VTX--UI--Widget--CustomWidget--TextualModelDropArea
+{
+	border: 2px dashed grey;
+}
+VTX--UI--Widget--CustomWidget--TextualModelDropArea > QLabel
+{
+	color: grey;
+}
+
+VTX--UI--Widget--CustomWidget--ModelFieldWidget
+{
+	border: 1px solid grey;
+}

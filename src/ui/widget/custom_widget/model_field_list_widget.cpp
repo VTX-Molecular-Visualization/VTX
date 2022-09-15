@@ -79,10 +79,9 @@ namespace VTX::UI::Widget::CustomWidget
 		mainLayout->setContentsMargins( 0, 0, 0, 0 );
 		QWidget * const modelListWidget = new QWidget( this );
 
-		_dropArea = WidgetFactory::get().instantiateWidget<CustomWidget::ModelDropArea>( this, "dropArea" );
-		_dropArea->setSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum );
-		_dropArea->setFixedHeight( 32 );
-		_dropArea->setFrameShadow( QFrame::Shadow::Sunken );
+		_dropArea = WidgetFactory::get().instantiateWidget<CustomWidget::TextualModelDropArea>( this, "dropArea" );
+		_dropArea->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Fixed );
+		_dropArea->setFixedHeight( 36 );
 		_dropArea->addTypeFilter( ID::Model::MODEL_MOLECULE );
 		_dropArea->setAcceptGroup( true );
 
