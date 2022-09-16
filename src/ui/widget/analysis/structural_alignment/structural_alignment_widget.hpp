@@ -50,8 +50,6 @@ namespace VTX
 			void _onModelListChange();
 
 		  private:
-			CustomWidget::DockWindowMainWidget<QWidget> * _mainWidget = nullptr;
-
 			CustomWidget::ModelFieldListWidget * _moleculesField			= nullptr;
 			AlignParametersWidget *				 _alignmentParametersWidget = nullptr;
 

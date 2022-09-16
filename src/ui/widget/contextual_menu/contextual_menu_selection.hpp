@@ -244,6 +244,10 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _exportAction();
 		void _loadTrajectoryAction();
 
+		void _applyComputeRMSDAction();
+		void _applyAlignmentAction();
+		void _openAlignmentWindowAction();
+
 	  private:
 		CustomWidget::SetRepresentationMenu * _representationMenu = nullptr;
 
@@ -262,6 +266,9 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		void _refreshToggleTrajectoryPlay( QAction & _action ) const;
 		bool _checkToggleTrajectoryPlayAction() const;
+
+		bool _checkApplyAlignementAction() const;
+		bool _checkComputeRMSDAction() const;
 
 		void _getAllLabelTypes( std::unordered_set<Model::Label *> & p_labels ) const;
 	};

@@ -18,13 +18,14 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_mainWidget = new CustomWidget::DockWindowMainWidget<QWidget>(
-			Style::SETTINGS_PREFERRED_SIZE, Style::SETTINGS_MINIMUM_SIZE, this );
+		CustomWidget::DockWindowMainWidget<QWidget> * const mainWidget
+			= new CustomWidget::DockWindowMainWidget<QWidget>(
+				Style::SETTINGS_PREFERRED_SIZE, Style::SETTINGS_MINIMUM_SIZE, this );
 
-		QVBoxLayout * const mainLayout		= new QVBoxLayout( _mainWidget );
-		QWidget * const		attributeWidget = new QWidget( this );
+		QVBoxLayout * const mainLayout	   = new QVBoxLayout( mainWidget );
+		QWidget * const		scrollAreaBody = new QWidget( this );
 
-		QScrollArea * const scrollArea = new QScrollArea( _mainWidget );
+		QScrollArea * const scrollArea = new QScrollArea( mainWidget );
 		QSizePolicy			sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
 											  QSizePolicy::Policy::MinimumExpanding,
 											  QSizePolicy::ControlType::Frame );
@@ -33,20 +34,22 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		scrollArea->setSizePolicy( sizePolicy );
 
 		scrollArea->setFrameShape( QFrame::Shape::NoFrame );
-		scrollArea->setWidget( attributeWidget );
+		scrollArea->setWidget( scrollAreaBody );
 		scrollArea->setWidgetResizable( true );
 		scrollArea->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored );
 
-		QVBoxLayout * const attributeVLayout = new QVBoxLayout( attributeWidget );
+		QVBoxLayout * const attributeVLayout = new QVBoxLayout( scrollAreaBody );
 		attributeVLayout->setContentsMargins( 0, 0, 0, 0 );
 
-		Layout::AttributeListLayout * const attributesLayout = new Layout::AttributeListLayout();
+		QWidget * const						attributeWidget	 = new QWidget( scrollAreaBody );
+		Layout::AttributeListLayout * const attributesLayout = new Layout::AttributeListLayout( attributeWidget );
 
-		_moleculesField = WidgetFactory::get().instantiateWidget<CustomWidget::ModelFieldListWidget>(
-			attributeWidget, "mobilesMoleculeField" );
+		_moleculesField = WidgetFactory::get().instantiateWidget<CustomWidget::ModelFieldListWidget>( attributeWidget,
+																									  "moleculeField" );
 		_moleculesField->setTitle( "Molecules" );
 		_alignmentParametersWidget = WidgetFactory::get().instantiateWidget<AlignParametersWidget>(
 			attributeWidget, "alignmentParametersWidget" );
+		_moleculesField->setFoldState( true );
 
 		CustomWidget::FoldingButton * const parametersFoldingButton
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FoldingButton>(
@@ -67,13 +70,13 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		attributesLayout->addAttribute( _moleculesField );
 		attributesLayout->addAttribute( parametersFoldingButton );
 
-		attributeVLayout->addLayout( attributesLayout );
+		attributeVLayout->addWidget( attributeWidget );
 		attributeVLayout->addStretch( 1000 );
 
 		mainLayout->addWidget( scrollArea, 1000 );
 		mainLayout->addWidget( _alignButton );
 
-		setWidget( _mainWidget );
+		setWidget( mainWidget );
 		refresh();
 	}
 	void StructuralAlignmentWidget::_setupSlots()

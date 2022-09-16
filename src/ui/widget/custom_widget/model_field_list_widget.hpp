@@ -116,6 +116,7 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 
 		void setTitle( const QString & p_title ) const;
+		void setFoldState( const bool p_expanded ) const;
 
 		const ModelDropArea * getDropArea() const { return _dropArea; }
 

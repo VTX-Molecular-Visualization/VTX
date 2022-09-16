@@ -160,6 +160,7 @@ namespace VTX::UI::Widget::CustomWidget
 	}
 
 	void ModelFieldListWidget::setTitle( const QString & p_title ) const { _foldButton->setTitle( p_title ); }
+	void ModelFieldListWidget::setFoldState( const bool p_expanded ) const { _foldButton->setFoldState( p_expanded ); }
 
 	void ModelFieldListWidget::addModel( Model::BaseModel * const p_model )
 	{

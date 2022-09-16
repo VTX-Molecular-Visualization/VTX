@@ -1,5 +1,6 @@
 #include "contextual_menu_selection.hpp"
 #include "action/action_manager.hpp"
+#include "action/analysis.hpp"
 #include "action/label.hpp"
 #include "action/selection.hpp"
 #include "action/viewpoint.hpp"
@@ -83,6 +84,18 @@ namespace VTX::UI::Widget::ContextualMenu
 		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Export", TypeMask::Molecule, this ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
+
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Analysis", TypeMask::Molecule, this ) );
+		ActionData * const applyComputeRMSDAction
+			= new ActionData( "RMSD", TypeMask::Molecule, this, &ContextualMenuSelection::_applyComputeRMSDAction );
+		applyComputeRMSDAction->setCheckFunction( &ContextualMenuSelection::_checkComputeRMSDAction );
+		moleculeStructureSubmenu->addItemData( applyComputeRMSDAction );
+		ActionData * const applyAlignmentAction
+			= new ActionData( "Align", TypeMask::Molecule, this, &ContextualMenuSelection::_applyAlignmentAction );
+		applyAlignmentAction->setCheckFunction( &ContextualMenuSelection::_checkApplyAlignementAction );
+		moleculeStructureSubmenu->addItemData( applyAlignmentAction );
+		moleculeStructureSubmenu->addItemData( new ActionData(
+			"Alignment settings", TypeMask::Molecule, this, &ContextualMenuSelection::_openAlignmentWindowAction ) );
 
 		// VIEWPOINTS //////////////////////////////////////////////////////////////////////////////////////////////////
 		SelectionSubMenu * const viewpointSubmenu = new SelectionSubMenu( this, "Viewpoint" );
@@ -584,6 +597,36 @@ namespace VTX::UI::Widget::ContextualMenu
 		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE, p_labels );
 		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE, p_labels );
 		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE, p_labels );
+	}
+
+	bool ContextualMenuSelection::_checkComputeRMSDAction() const
+	{
+		std::vector<Model::Molecule *> molecules
+			= _target->getItemsOfType<Model::Molecule>( ID::Model::MODEL_MOLECULE );
+
+		return molecules.size() >= 2;
+	}
+	bool ContextualMenuSelection::_checkApplyAlignementAction() const
+	{
+		std::vector<Model::Molecule *> molecules
+			= _target->getItemsOfType<Model::Molecule>( ID::Model::MODEL_MOLECULE );
+
+		return molecules.size() >= 2;
+	}
+
+	void ContextualMenuSelection::_applyComputeRMSDAction()
+	{
+		VTX_ACTION( new Action::Analysis::ComputeRMSD( *_target ) );
+	}
+
+	void ContextualMenuSelection::_applyAlignmentAction()
+	{
+		VTX_ACTION( new Action::Analysis::ComputeStructuralAlignment( *_target ) );
+	}
+
+	void ContextualMenuSelection::_openAlignmentWindowAction()
+	{
+		VTXApp::get().getMainWindow().showWidget( ID::UI::Window::STRUCTURAL_ALIGNMENT, true );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

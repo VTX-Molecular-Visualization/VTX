@@ -52,10 +52,6 @@ namespace VTX
 			void _openStructuralAlignmentWindow() const;
 
 			void _refreshButtons() const;
-
-			void _prepareTargetAndComparerForComparison( const Model::Selection &		  selection,
-														 const Model::Molecule *&		  p_target,
-														 std::vector<Model::Molecule *> & p_comparers ) const;
 		};
 	} // namespace UI::Widget::MainMenu::Tool
 } // namespace VTX

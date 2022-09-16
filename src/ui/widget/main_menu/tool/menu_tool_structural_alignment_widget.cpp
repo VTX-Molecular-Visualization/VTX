@@ -8,6 +8,7 @@
 #include "selection/selection_manager.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/analysis.hpp"
 #include "vtx_app.hpp"
 #include <QAction>
 #include <QMenu>
@@ -91,9 +92,9 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-		const Model::Molecule *		   target;
-		std::vector<Model::Molecule *> comparers;
-		_prepareTargetAndComparerForComparison( selection, target, comparers );
+		const Model::Molecule *				 target;
+		std::vector<const Model::Molecule *> comparers;
+		Util::Analysis::pickTargetAndComparersFromSelection( selection, target, comparers );
 
 		std::vector<const Model::Molecule *> comparersConst = std::vector<const Model::Molecule *>();
 		comparersConst.resize( comparers.size() );
@@ -119,7 +120,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 		const Model::Molecule *		   staticMolecule;
 		std::vector<Model::Molecule *> mobileMolecules;
-		_prepareTargetAndComparerForComparison( selection, staticMolecule, mobileMolecules );
+		Util::Analysis::pickTargetAndComparersFromSelection( selection, staticMolecule, mobileMolecules );
 
 		VTX_ACTION(
 			new Action::Analysis::ComputeStructuralAlignment( staticMolecule, mobileMolecules, _alignmentParameter ) );
@@ -128,52 +129,6 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	void MenuToolStructuralAlignmentWidget::_openStructuralAlignmentWindow() const
 	{
 		VTXApp::get().getMainWindow().showWidget( ID::UI::Window::STRUCTURAL_ALIGNMENT, true );
-	}
-
-	void MenuToolStructuralAlignmentWidget::_prepareTargetAndComparerForComparison(
-		const Model::Selection &		 p_selection,
-		const Model::Molecule *&		 p_target,
-		std::vector<Model::Molecule *> & p_comparers ) const
-	{
-		Model::Selection::MapMoleculeIds::const_iterator it = p_selection.getMoleculesMap().begin();
-
-		std::list<Model::Molecule *> sortedMolecules = std::list<Model::Molecule *>();
-
-		for ( const Model::Selection::PairMoleculeIds & pairMoleculeID : p_selection.getMoleculesMap() )
-		{
-			Model::Molecule * const currentMolecule
-				= &MVC::MvcManager::get().getModel<Model::Molecule>( pairMoleculeID.first );
-
-			const int currentMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( *currentMolecule );
-
-			bool inserted = false;
-
-			for ( std::list<Model::Molecule *>::const_iterator it = sortedMolecules.begin();
-				  it != sortedMolecules.end();
-				  it++ )
-			{
-				const int sortedMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( **it );
-
-				if ( currentMoleculeSceneIndex < sortedMoleculeSceneIndex )
-				{
-					sortedMolecules.insert( it, currentMolecule );
-
-					inserted = true;
-					break;
-				}
-			}
-
-			if ( !inserted )
-			{
-				sortedMolecules.push_back( currentMolecule );
-			}
-		}
-
-		p_target	= *sortedMolecules.begin();
-		p_comparers = std::vector<Model::Molecule *>();
-		p_comparers.resize( sortedMolecules.size() - 1 );
-
-		std::move( ++sortedMolecules.begin(), sortedMolecules.end(), p_comparers.begin() );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Tool
