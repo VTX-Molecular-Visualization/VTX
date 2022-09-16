@@ -51,7 +51,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		_structuralAlignmentAdvancedButton
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "structuralAlignmentAdvancedButton" );
 		_structuralAlignmentAdvancedButton->setData(
-			"Alignment settings", ":/sprite/settings_icon.png", Qt::Orientation::Horizontal );
+			"Alignment...", ":/sprite/settings_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_structuralAlignmentAdvancedButton, 1 );
 
 		validate();

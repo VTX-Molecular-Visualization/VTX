@@ -25,6 +25,9 @@ namespace VTX
 			VTX_WIDGET
 
 		  public:
+			static void copyTypeFilters( const ModelDropArea & p_from, ModelDropArea & p_to );
+
+		  public:
 			~ModelDropArea() {};
 			void localize() override;
 
@@ -32,7 +35,6 @@ namespace VTX
 			void setAcceptGroup( const bool p_accept );
 
 			void addTypeFilter( const VTX::ID::VTX_ID & p_modelID );
-			bool _hasFiltersToCheck() const;
 			bool matchFilter( const VTX::ID::VTX_ID & p_type ) const;
 			bool matchFilter( const Model::BaseModel & p_model ) const;
 
@@ -45,6 +47,8 @@ namespace VTX
 
 			void _setupUi( const QString & p_name ) override;
 			void _setupSlots() override;
+
+			bool _hasFiltersToCheck() const;
 
 			void dragEnterEvent( QDragEnterEvent * event ) override;
 			void dropEvent( QDropEvent * event ) override;

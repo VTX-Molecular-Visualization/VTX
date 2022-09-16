@@ -62,6 +62,8 @@ namespace VTX::UI::Widget::CustomWidget
 
 	  public:
 		~ModelFieldListWidget();
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
+
 		void localize() override;
 
 		bool getContainsOnlyUniqueModel() const { return _containsOnlyUniqueModel; }
@@ -114,6 +116,8 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 
 		void setTitle( const QString & p_title ) const;
+
+		const ModelDropArea * getDropArea() const { return _dropArea; }
 
 	  signals:
 		void onModelListChange();

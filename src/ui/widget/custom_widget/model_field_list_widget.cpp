@@ -21,6 +21,7 @@ namespace VTX::UI::Widget::CustomWidget
 		connect( _removeButton, &QPushButton::clicked, this, &ModelFieldLine::_callRemoveAction );
 
 		_modelField = WidgetFactory::get().instantiateWidget<CustomWidget::ModelFieldWidget>( _owner, "modelField" );
+		ModelDropArea::copyTypeFilters( *( _owner->getDropArea() ), *_modelField );
 		connect(
 			_modelField, &CustomWidget::ModelFieldWidget::onModelChanged, this, &ModelFieldLine::_checkModelChange );
 	}
@@ -68,8 +69,22 @@ namespace VTX::UI::Widget::CustomWidget
 			_owner->swapModels( _modelField->getModel(), p_model );
 	}
 
-	ModelFieldListWidget::ModelFieldListWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
+	ModelFieldListWidget::ModelFieldListWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
+	{
+		_registerEvent( Event::Global::MODEL_REMOVED );
+	}
 	ModelFieldListWidget::~ModelFieldListWidget() {}
+
+	void ModelFieldListWidget::receiveEvent( const Event::VTXEvent & p_event )
+	{
+		if ( p_event.name == Event::Global::MODEL_REMOVED )
+		{
+			const Event::VTXEventPtr<Model::BaseModel> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::BaseModel> &>( p_event );
+
+			removeModel( castedEvent.ptr );
+		}
+	}
 
 	void ModelFieldListWidget::_setupUi( const QString & p_name )
 	{

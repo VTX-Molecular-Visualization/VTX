@@ -7,7 +7,22 @@
 namespace VTX::UI::Widget::CustomWidget
 {
 	ModelFieldWidget::ModelFieldWidget( QWidget * p_parent ) :
-		CustomWidget::ModelDropArea( p_parent ), DraggableItem( this ) {};
+		CustomWidget::ModelDropArea( p_parent ), DraggableItem( this )
+	{
+		_registerEvent( Event::Global::MODEL_REMOVED );
+	}
+
+	void ModelFieldWidget::receiveEvent( const Event::VTXEvent & p_event )
+	{
+		if ( p_event.name == Event::Global::MODEL_REMOVED )
+		{
+			const Event::VTXEventPtr<Model::BaseModel> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::BaseModel> &>( p_event );
+
+			if ( castedEvent.ptr == _model )
+				setModel( nullptr );
+		}
+	}
 
 	void ModelFieldWidget::_setupUi( const QString & p_name )
 	{

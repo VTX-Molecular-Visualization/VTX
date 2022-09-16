@@ -1,6 +1,5 @@
 #include "scene.hpp"
 #include "action/main.hpp"
-#include "event/event_manager.hpp"
 #include "math/transform.hpp"
 #include "model/box.hpp"
 #include "model/label.hpp"
@@ -83,11 +82,7 @@ namespace VTX::Object3D
 
 	void Scene::removeMolecule( MoleculePtr const p_molecule )
 	{
-		_molecules.erase( p_molecule );
-		_itemOrder.erase( std::find( _itemOrder.begin(), _itemOrder.end(), p_molecule ) );
-		_aabb.invalidate();
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_REMOVED, p_molecule ) );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		_remove( p_molecule, _molecules, Event::Global::MOLECULE_REMOVED, ModelCharacteristicsFlag::MOLECULE );
 	}
 
 	void Scene::addPath( PathPtr const p_path )
@@ -98,8 +93,7 @@ namespace VTX::Object3D
 
 	void Scene::removePath( PathPtr const p_path )
 	{
-		_remove( p_path, _paths );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::PATH_REMOVED, p_path ) );
+		_remove( p_path, _paths, Event::Global::PATH_REMOVED, ModelCharacteristicsFlag::NONE );
 	}
 
 	void Scene::addMesh( MeshTrianglePtr const p_mesh )
@@ -113,10 +107,7 @@ namespace VTX::Object3D
 
 	void Scene::removeMesh( MeshTrianglePtr const p_mesh )
 	{
-		_remove( p_mesh, _meshes );
-		_aabb.invalidate();
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_REMOVED, p_mesh ) );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		_remove( p_mesh, _meshes, Event::Global::MESH_REMOVED, ModelCharacteristicsFlag::MESH );
 	}
 
 	void Scene::addLabel( LabelPtr const p_label )
@@ -126,9 +117,7 @@ namespace VTX::Object3D
 	}
 	void Scene::removeLabel( LabelPtr const p_label )
 	{
-		_remove( p_label, _labels );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::LABEL_REMOVED, p_label ) );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		_remove( p_label, _labels, Event::Global::LABEL_REMOVED, ModelCharacteristicsFlag::LABEL );
 	}
 
 	void Scene::addBox( BoxPtr const p_box )
@@ -139,10 +128,10 @@ namespace VTX::Object3D
 
 	void Scene::removeBox( BoxPtr const p_box )
 	{
-		_remove( p_box, _boxes );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::BOX_REMOVED, p_box ) );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		_remove( p_box, _boxes, Event::Global::BOX_REMOVED, ModelCharacteristicsFlag::BOX );
 	}
+
+	void Scene::_updateGraphicMask() const { VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE; }
 
 	const Generic::BaseSceneItem * const Scene::getItemAtPosition( const int p_index ) const
 	{

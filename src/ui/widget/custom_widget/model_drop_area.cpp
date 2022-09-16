@@ -7,6 +7,14 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
+	void ModelDropArea::copyTypeFilters( const ModelDropArea & p_from, ModelDropArea & p_to )
+	{
+		for ( const ID::VTX_ID & id : p_from._filters )
+		{
+			p_to.addTypeFilter( id );
+		}
+	}
+
 	ModelDropArea::ModelDropArea( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
 
 	void ModelDropArea::_setupUi( const QString & p_name )

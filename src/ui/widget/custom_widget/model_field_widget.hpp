@@ -24,6 +24,7 @@ namespace VTX
 
 		  public:
 			~ModelFieldWidget() {};
+			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 			void localize() override;
 			void refresh();
