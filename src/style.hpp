@@ -310,6 +310,8 @@ namespace VTX
 		inline static const int			 MEASUREMENT_DIHEDRAL_ANGLE_ICON_MIN_SIZE	= 10;
 		inline static const int			 MEASUREMENT_DIHEDRAL_ANGLE_ICON_MAX_SIZE	= 48;
 
+		inline static const QString ALIGNMENT_WINDOW_UNKNOWN_RMSD = "-";
+
 		inline static const QColor CONSOLE_INFO_COLOR	 = QColor( "white" );
 		inline static const QColor CONSOLE_DEBUG_COLOR	 = QColor( "white" );
 		inline static const QColor CONSOLE_WARNING_COLOR = QColor( "yellow" );

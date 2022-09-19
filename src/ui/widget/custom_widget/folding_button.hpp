@@ -24,7 +24,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void onFoldStateChange( const bool p_folded );
 
 	  protected:
-		FoldingButton( QWidget * p_parent, QWidget * p_content );
+		FoldingButton( QWidget * p_content, QWidget * p_parent = nullptr );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 

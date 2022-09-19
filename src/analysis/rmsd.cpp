@@ -1,13 +1,25 @@
 #include "rmsd.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "model/molecule.hpp"
 #include <cmath>
 
 namespace VTX::Analysis
 {
-	double RMSD::computeRMSD( const std::vector<Vec3f> & p_vectorPositionsA,
-							  const std::vector<Vec3f> & p_vectorPositionsB,
-							  const Mat4f &				 p_transformA,
-							  const Mat4f &				 p_transformB )
+	void RMSD::computeRMSD( const Model::Molecule * const p_firstMolecule,
+							const Model::Molecule * const p_secondMolecule,
+							const bool					  p_considerTransform )
+	{
+		const double rmsd = internalRMSD( *p_firstMolecule, *p_secondMolecule, p_considerTransform );
+
+		const RMSDData data = RMSDData( p_firstMolecule, p_secondMolecule, rmsd );
+		VTX_EVENT( new Event::VTXEventRef( Event::Global::RMSD_COMPUTED, data ) );
+	}
+
+	double RMSD::internalRMSD( const std::vector<Vec3f> & p_vectorPositionsA,
+							   const std::vector<Vec3f> & p_vectorPositionsB,
+							   const Mat4f &			  p_transformA,
+							   const Mat4f &			  p_transformB )
 	{
 		const size_t minAtomLength = p_vectorPositionsA.size() < p_vectorPositionsB.size() ? p_vectorPositionsA.size()
 																						   : p_vectorPositionsB.size();
@@ -30,9 +42,9 @@ namespace VTX::Analysis
 		return rmsd;
 	}
 
-	double RMSD::computeRMSD( const Model::Molecule & p_firstMolecule,
-							  const Model::Molecule & p_secondMolecule,
-							  const bool			  p_considerTransform )
+	double RMSD::internalRMSD( const Model::Molecule & p_firstMolecule,
+							   const Model::Molecule & p_secondMolecule,
+							   const bool			   p_considerTransform )
 	{
 		const size_t minAtomLength = p_firstMolecule.getAtomCount() < p_secondMolecule.getAtomCount()
 										 ? p_firstMolecule.getAtomCount()

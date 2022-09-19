@@ -65,7 +65,7 @@ namespace VTX::Analysis
 
 	  public:
 		static AlignmentParameters * instantiateDefaultParameters( const AlignmentMethodEnum & p_methodEnum );
-		static void					 computeAlignment( const Model::Molecule &				  p_staticMolecule,
+		static void					 computeAlignment( const Model::Molecule * const		  p_staticMolecule,
 													   const std::vector<Model::Molecule *> & p_mobilesMolecules,
 													   const AlignmentParameters &			  p_parameters );
 	};

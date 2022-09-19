@@ -2,6 +2,7 @@
 #include "action/dev.hpp"
 #include "action/main.hpp"
 #include "action/selection.hpp"
+#include "analysis/rmsd.hpp"
 #include "controller/base_keyboard_controller.hpp"
 #include "controller/measurement_picker.hpp"
 #include "event/event_manager.hpp"
@@ -25,6 +26,8 @@ namespace VTX::UI
 		_registerEvent( Event::Global::SCENE_PATH_CHANGE );
 
 		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
+
+		_registerEvent( Event::Global::RMSD_COMPUTED );
 	}
 
 	MainWindow::~MainWindow()
@@ -50,6 +53,15 @@ namespace VTX::UI
 		else if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
 		{
 			_updatePicker();
+		}
+		else if ( p_event.name == Event::Global::RMSD_COMPUTED )
+		{
+			const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> & castedEvent
+				= dynamic_cast<const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> &>( p_event );
+
+			VTX_INFO( "RMSD between " + castedEvent.ref.firstMolecule->getDisplayName() + " and "
+					  + castedEvent.ref.secondMolecule->getDisplayName() + ": "
+					  + std::to_string( castedEvent.ref.rmsd ) );
 		}
 	}
 

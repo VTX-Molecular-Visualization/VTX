@@ -574,7 +574,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 													  1. );
 
 			const float rmsd = float(
-				Analysis::RMSD::computeRMSD( residuePositionsA, residuePositionsB, MAT4F_ID, rotationMatrix ) );
+				Analysis::RMSD::internalRMSD( residuePositionsA, residuePositionsB, MAT4F_ID, rotationMatrix ) );
 
 			if ( !result.isValid() || rmsd < result.rmsd
 				 || ( rmsd == result.rmsd && positionsCount > result.positionsCount ) )

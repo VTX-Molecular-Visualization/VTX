@@ -33,9 +33,7 @@ namespace VTX::Action::Analysis
 		{
 			for ( const Model::Molecule * const molecule : _others )
 			{
-				const float rmsdResult = VTX::Analysis::RMSD::computeRMSD( *_target, *molecule, _considerTransform );
-				VTX_INFO( "RMSD between " + _target->getDisplayName() + " and " + molecule->getDisplayName() + ": "
-						  + std::to_string( rmsdResult ) );
+				VTX::Analysis::RMSD::computeRMSD( _target, molecule, _considerTransform );
 			}
 		}
 
@@ -72,8 +70,7 @@ namespace VTX::Action::Analysis
 			chrono.start();
 			try
 			{
-				VTX::Analysis::StructuralAlignment::computeAlignment(
-					*_staticMolecule, _mobileMolecules, *_parameters );
+				VTX::Analysis::StructuralAlignment::computeAlignment( _staticMolecule, _mobileMolecules, *_parameters );
 			}
 			catch ( std::exception & e )
 			{

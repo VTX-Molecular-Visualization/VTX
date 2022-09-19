@@ -5,7 +5,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	FoldingButton::FoldingButton( QWidget * p_parent, QWidget * p_content ) :
+	FoldingButton::FoldingButton( QWidget * p_content, QWidget * p_parent ) :
 		BaseManualWidget( p_parent ), _content( p_content ) {};
 
 	void FoldingButton::_setupUi( const QString & p_name )

@@ -40,7 +40,8 @@ namespace VTX
 					 typename = std::enable_if<std::is_base_of<Widget::BaseManualWidgetInitializer, W>::value>>
 			W * const instantiateWidget( QWidget * const p_parent, P1 p_param1, const std::string & p_name ) const
 			{
-				W * const res = new W( p_parent, p_param1 );
+				// Parent can be optional in most of widget, so we reference it at the end of the params
+				W * const res = new W( p_param1, p_parent );
 
 				_initManualWidget<W>( res, p_name );
 

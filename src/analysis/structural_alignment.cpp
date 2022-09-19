@@ -32,7 +32,7 @@ namespace VTX::Analysis
 		}
 	}
 
-	void StructuralAlignment::computeAlignment( const Model::Molecule &				   p_staticMolecule,
+	void StructuralAlignment::computeAlignment( const Model::Molecule * const		   p_staticMolecule,
 												const std::vector<Model::Molecule *> & p_mobilesMolecules,
 												const AlignmentParameters &			   p_parameters )
 	{
@@ -53,20 +53,16 @@ namespace VTX::Analysis
 			{
 				Tool::Chrono chrono = Tool::Chrono();
 				chrono.start();
-				const AlignmentResult result = method->compute( p_staticMolecule, *mobileMolecule, p_parameters );
+				const AlignmentResult result = method->compute( *p_staticMolecule, *mobileMolecule, p_parameters );
 				chrono.stop();
-				VTX_DEBUG( "Alignment computed in " + chrono.elapsedTimeStr() );
+				VTX_INFO( "Alignment computed in " + chrono.elapsedTimeStr() );
 
 				const Math::Transform transform
-					= Math::Transform( p_staticMolecule.getTransform().get() * result.transformationMatrix );
+					= Math::Transform( p_staticMolecule->getTransform().get() * result.transformationMatrix );
 
 				mobileMolecule->applyTransform( transform );
 
-				const float rmsd = result.rmsd == -1
-									   ? float( Analysis::RMSD::computeRMSD( p_staticMolecule, *mobileMolecule, true ) )
-									   : result.rmsd;
-
-				VTX_DEBUG( "RMSD : " + std::to_string( rmsd ) );
+				Analysis::RMSD::computeRMSD( p_staticMolecule, mobileMolecule, true );
 			}
 		}
 		catch ( const std::exception & e )

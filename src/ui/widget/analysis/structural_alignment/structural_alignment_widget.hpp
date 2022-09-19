@@ -4,10 +4,10 @@
 #include "align_parameters_widget.hpp"
 #include "generic/base_scene_item.hpp"
 #include "ui/layout/attribute_list_layout.hpp"
+#include "ui/widget/analysis/structural_alignment/structural_alignment_model_list_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
-#include "ui/widget/custom_widget/model_field_list_widget.hpp"
-#include "ui/widget/custom_widget/model_field_widget.hpp"
+#include "ui/widget/custom_widget/model_list_component.hpp"
 #include <QDockWidget>
 #include <QPushButton>
 #include <QScrollArea>
@@ -31,6 +31,9 @@ namespace VTX
 		{
 			VTX_WIDGET
 
+			using StructuralAlignmentModelListWidget
+				= UI::Widget::Analysis::StructuralAlignment::StructuralAlignmentModelListWidget;
+
 		  public:
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 			void localize() override;
@@ -50,13 +53,11 @@ namespace VTX
 			void _onModelListChange();
 
 		  private:
-			CustomWidget::ModelFieldListWidget * _moleculesField			= nullptr;
+			StructuralAlignmentModelListWidget * _moleculeList				= nullptr;
+			CustomWidget::ModelListComponent *	 _moleculesComponent		= nullptr;
 			AlignParametersWidget *				 _alignmentParametersWidget = nullptr;
 
 			QPushButton * _alignButton = nullptr;
-
-			Model::Molecule *			   _staticMolecule	= nullptr;
-			std::vector<Model::Molecule *> _mobileMolecules = std::vector<Model::Molecule *>();
 		};
 
 	} // namespace UI::Widget::Analysis::StructuralAlignment
