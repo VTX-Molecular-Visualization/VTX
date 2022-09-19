@@ -56,17 +56,34 @@ namespace VTX::UI::Widget::CustomWidget
 				const ID::VTX_ID &			  typeId	= modelData.getTypeID();
 
 				// For a selection, accept drop only if all models of the selection are accepted by the filter
-				if ( _acceptGroup && typeId == ID::Model::MODEL_SELECTION )
+				if ( typeId == ID::Model::MODEL_SELECTION )
 				{
 					const Model::Selection & selection
 						= MVC::MvcManager::get().getModel<Model::Selection>( modelData.getModelID() );
 
-					std::set<ID::VTX_ID> selectionTypeIDs = std::set<ID::VTX_ID>();
-					selection.getItemTypes( selectionTypeIDs );
-
-					for ( const ID::VTX_ID & typeId : selectionTypeIDs )
+					if ( _acceptGroup )
 					{
-						accept = accept && matchFilter( typeId );
+						std::set<ID::VTX_ID> selectionTypeIDs = std::set<ID::VTX_ID>();
+						selection.getItemTypes( selectionTypeIDs );
+
+						for ( const ID::VTX_ID & typeId : selectionTypeIDs )
+						{
+							accept = accept && matchFilter( typeId );
+						}
+					}
+					else if ( selection.getItems().size() == 1 )
+					{
+						std::set<ID::VTX_ID> selectionTypeIDs = std::set<ID::VTX_ID>();
+						selection.getItemTypes( selectionTypeIDs );
+
+						for ( const ID::VTX_ID & typeId : selectionTypeIDs )
+						{
+							accept = accept && matchFilter( typeId );
+						}
+					}
+					else
+					{
+						accept = false;
 					}
 				}
 				else
