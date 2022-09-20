@@ -18,10 +18,7 @@ namespace VTX
 		{
 		}
 
-		void SolventExcludedSurface::_init()
-		{
-			refresh();
-		}
+		void SolventExcludedSurface::_init() { refresh(); }
 
 		void SolventExcludedSurface::refresh()
 		{
@@ -305,6 +302,7 @@ namespace VTX
 
 			refreshColors();
 			refreshVisibilities();
+			refreshSelection();
 
 			chrono.stop();
 			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
@@ -312,7 +310,8 @@ namespace VTX
 
 		void SolventExcludedSurface::refreshColors()
 		{
-			_colors = std::vector<Color::Rgb>( _vertices.size() );
+			_colors.clear();
+			_colors.resize( _vertices.size() );
 
 			for ( uint atomIdx = 0; atomIdx < _atomToTriangles.size(); ++atomIdx )
 			{
@@ -330,7 +329,8 @@ namespace VTX
 
 		void SolventExcludedSurface::refreshVisibilities()
 		{
-			_visibilities = std::vector<uint>( _vertices.size(), 1 );
+			_visibilities.clear();
+			_visibilities.resize( _vertices.size(), 1 );
 			for ( uint atomIdx = 0; atomIdx < _atomToTriangles.size(); ++atomIdx )
 			{
 				const Atom * const	  atom	  = _molecule->getAtom( atomIdx );
@@ -351,6 +351,41 @@ namespace VTX
 
 			_visibilities.shrink_to_fit();
 			_buffer->setVisibilities( _visibilities );
+		}
+
+		void SolventExcludedSurface::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
+		{
+			_selections.clear();
+			_selections.resize( _vertices.size(), 0 );
+
+			if ( p_selection != nullptr )
+			{
+				if ( p_selection->getFullySelectedChildCount() == _molecule->getRealChainCount() )
+				{
+					std::fill( _selections.begin(), _selections.end(), 1u );
+				}
+				else
+				{
+					for ( const Model::Selection::PairChainIds & pairChain : *p_selection )
+					{						
+						for ( const Model::Selection::PairResidueIds & pairResidue : pairChain.second )
+						{
+							for ( const uint & atomIndex : pairResidue.second )
+							{
+								for (const uint triangleFirstVertice : _atomToTriangles[atomIndex])
+								{
+									_selections[triangleFirstVertice + 0] = 1;
+									_selections[triangleFirstVertice + 1] = 1;
+									_selections[triangleFirstVertice + 2] = 1;
+								}								
+							}
+						}
+					}
+				}
+			}
+
+			_selections.shrink_to_fit();
+			_buffer->setSelections( _selections );
 		}
 	} // namespace Model
 } // namespace VTX

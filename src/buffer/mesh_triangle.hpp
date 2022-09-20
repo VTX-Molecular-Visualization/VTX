@@ -23,6 +23,7 @@ namespace VTX
 			void setNormals( const std::vector<Vec3f> & );
 			void setColors( const std::vector<Color::Rgb> & );
 			void setVisibilities( const std::vector<uint> & );
+			void setSelections( const std::vector<uint> & );
 			void setIndices( const std::vector<uint> & );
 
 		  private:
@@ -32,12 +33,15 @@ namespace VTX
 				VERTEX_NORMAL	  = 1,
 				VERTEX_COLOR	  = 2,
 				VERTEX_VISIBILITY = 3,
+				VERTEX_SELECTION  = 4,
+				VERTEX_ID = 5,
 			};
 
 			Renderer::GL::BufferData _vboPositions	  = Renderer::GL::BufferData();
 			Renderer::GL::BufferData _vboNormals	  = Renderer::GL::BufferData();
 			Renderer::GL::BufferData _vboColors		  = Renderer::GL::BufferData();
 			Renderer::GL::BufferData _vboVisibilities = Renderer::GL::BufferData();
+			Renderer::GL::BufferData _vboSelections	  = Renderer::GL::BufferData();
 			Renderer::GL::BufferData _ibo			  = Renderer::GL::BufferData();
 		};
 	} // namespace Buffer

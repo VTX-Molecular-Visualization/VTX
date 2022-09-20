@@ -391,7 +391,10 @@ namespace VTX
 		void Molecule::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
 		{
 			_fillBufferAtomSelections( p_selection );
-			_secondaryStructure->refreshSelection( p_selection );
+			if ( _secondaryStructure != nullptr )
+				_secondaryStructure->refreshSelection( p_selection );
+			if (_solventExcludedSurface != nullptr)
+				_solventExcludedSurface->refreshSelection(p_selection);
 		}
 
 		void Molecule::setFrame( const uint p_frameIdx )

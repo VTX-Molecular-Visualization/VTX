@@ -4,6 +4,7 @@
 #include "buffer/solvent_excluded_surface.hpp"
 #include "mesh_triangle.hpp"
 #include "object3d/helper/grid.hpp"
+#include "model/selection.hpp"
 
 namespace VTX
 {
@@ -24,6 +25,7 @@ namespace VTX
 			void refresh();
 			void refreshColors();
 			void refreshVisibilities();
+			void refreshSelection(const Model::Selection::MapChainIds * const p_selection = nullptr );
 
 		  protected:
 			void _init() override;
