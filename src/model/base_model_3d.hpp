@@ -90,7 +90,6 @@ namespace VTX
 				_buffer->generate();
 
 				_init();
-				_fillBuffer();
 				_instantiate3DViews();
 
 				_isInit = true;
@@ -131,7 +130,6 @@ namespace VTX
 			};
 
 			virtual void _init() {}
-			virtual void _fillBuffer() = 0;
 			virtual void _computeAABB() const {}
 			virtual void _computeWorldAABB() const
 			{

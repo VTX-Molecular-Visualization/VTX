@@ -38,7 +38,7 @@ namespace VTX
 
 			inline Model::Molecule * const getMolecule() { return _molecule; }
 
-			void refresh( const bool p_refreshBuffers = true );
+			void refresh();
 			void refreshColors();
 			void refreshVisibilities();
 
@@ -58,7 +58,6 @@ namespace VTX
 
 		  protected:
 			void _init() override;
-			void _fillBuffer() override;
 			void _computeAABB() const override;
 			void _instantiate3DViews() override;
 

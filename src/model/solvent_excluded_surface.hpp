@@ -21,6 +21,10 @@ namespace VTX
 			inline Object3D::Helper::Grid & getGridAtoms() { return _gridAtoms; }
 			inline Object3D::Helper::Grid & getGridSES() { return _gridSES; }
 
+			void refresh();
+			void refreshColors();
+			void refreshVisibilities();
+
 		  protected:
 			void _init() override;
 
@@ -31,12 +35,25 @@ namespace VTX
 				GPU
 			};
 
-			Mode _mode = Mode::GPU;
+			struct AtomData
+			{
+				int index;
+			};
+
+			struct SESGridData
+			{
+				float	   sdf;
+				int nearestAtom;
+			};
+
+			Mode _mode = Mode::CPU;
 
 			// CPU.
 			Model::Molecule * const _molecule;
 			Object3D::Helper::Grid	_gridAtoms;
 			Object3D::Helper::Grid	_gridSES;
+			std::vector<SESGridData> _sesGridData;
+			std::vector<std::vector<uint>> _atomToTriangles;
 
 			void _initCPU();
 

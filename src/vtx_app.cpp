@@ -96,7 +96,8 @@ namespace VTX
 		{
 			// VTX_ACTION(
 			//	 new Action::Main::Open( Util::Filesystem::getDataPath( IO::FilePath( "4hhb.pdb" ) ).absolute() ) );
-			VTX_ACTION( new Action::Main::OpenApi( "1aon" ) );
+			//VTX_ACTION( new Action::Main::OpenApi( "1aon" ) );
+			VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
 		}
 #endif
 	}

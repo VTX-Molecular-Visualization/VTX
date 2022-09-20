@@ -10,7 +10,9 @@
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "model/configuration/molecule.hpp"
+#include "model/secondary_structure.hpp"
 #include "model/selection.hpp"
+#include "model/solvent_excluded_surface.hpp"
 #include "object3d/helper/aabb.hpp"
 #include "representation/instantiated_representation.hpp"
 #include "representation/representation_target.hpp"
@@ -36,8 +38,6 @@ namespace VTX
 		class Residue;
 		class Atom;
 		class Bond;
-		class SecondaryStructure;
-		class SolventExcludedSurface;
 		class Molecule :
 			public BaseModel3D<Buffer::Molecule>,
 			public Generic::BaseColorable,
@@ -199,13 +199,18 @@ namespace VTX
 			inline void refreshColors()
 			{
 				_fillBufferAtomColors();
-				_secondaryStructure->refreshColors();
+				if ( _secondaryStructure != nullptr )
+					_secondaryStructure->refreshColors();
+				if ( _solventExcludedSurface != nullptr )
+					_solventExcludedSurface->refreshColors();
 			}
 			inline void refreshVisibilities( const bool p_applyBuffer = true )
 			{
 				_fillBufferAtomVisibilities( p_applyBuffer );
 				if ( _secondaryStructure != nullptr )
 					_secondaryStructure->refreshVisibilities();
+				if ( _solventExcludedSurface != nullptr )
+					_solventExcludedSurface->refreshVisibilities();
 			}
 			inline void refreshStructure()
 			{
@@ -278,7 +283,6 @@ namespace VTX
 
 		  protected:
 			void _init() override;
-			void _fillBuffer() override;
 			void _computeAABB() const override;
 			void _instantiate3DViews() override;
 

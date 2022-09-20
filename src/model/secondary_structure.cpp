@@ -17,17 +17,9 @@ namespace VTX
 		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) :
 			BaseModel3D( VTX::ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
 		{
-			Tool::Chrono chrono;
-			chrono.start();
-			VTX_INFO( "Creating secondary structure..." );
-
-			refresh( false );
-
-			chrono.stop();
-			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
-		void SecondaryStructure::refresh( const bool p_refreshBuffers )
+		void SecondaryStructure::refresh()
 		{
 			_bufferCaPositions.clear();
 			_bufferCaODirections.clear();
@@ -196,10 +188,24 @@ namespace VTX
 			_bufferIds.shrink_to_fit();
 			_bufferIndices.shrink_to_fit();
 
-			if ( p_refreshBuffers )
-			{
-				_fillBuffer();
-			}
+			
+			assert(_bufferCaPositions.size() == _bufferCaODirections.size());
+			assert(_bufferCaPositions.size() == _bufferSSTypes.size());
+			assert(_bufferCaPositions.size() == _bufferColors.size());
+			assert(_bufferCaPositions.size() == _bufferVisibilities.size());
+			assert(_bufferCaPositions.size() == _bufferIds.size());
+
+			_buffer->setControlPointPositions(_bufferCaPositions);
+			_buffer->setControlPointDirections(_bufferCaODirections);
+			_buffer->setSecondaryStructures(_bufferSSTypes);
+			_buffer->setColors(_bufferColors);
+			_buffer->setVisibilities(_bufferVisibilities);
+			_buffer->setIds(_bufferIds);
+			_buffer->setIndices(_bufferIndices);
+
+			refreshSelection();		
+
+			
 		}
 
 		void SecondaryStructure::_tryConstruct( const uint						p_chainIdx,
@@ -257,27 +263,6 @@ namespace VTX
 				_bufferVisibilities.insert( _bufferVisibilities.end(), p_visibilities.cbegin(), p_visibilities.cend() );
 				_bufferIds.insert( _bufferIds.end(), p_ids.cbegin(), p_ids.cend() );
 			}
-		}
-
-		void SecondaryStructure::_init() {}
-
-		void SecondaryStructure::_fillBuffer()
-		{
-			assert( _bufferCaPositions.size() == _bufferCaODirections.size() );
-			assert( _bufferCaPositions.size() == _bufferSSTypes.size() );
-			assert( _bufferCaPositions.size() == _bufferColors.size() );
-			assert( _bufferCaPositions.size() == _bufferVisibilities.size() );
-			assert( _bufferCaPositions.size() == _bufferIds.size() );
-
-			_buffer->setControlPointPositions( _bufferCaPositions );
-			_buffer->setControlPointDirections( _bufferCaODirections );
-			_buffer->setSecondaryStructures( _bufferSSTypes );
-			_buffer->setColors( _bufferColors );
-			_buffer->setVisibilities( _bufferVisibilities );
-			_buffer->setIds( _bufferIds );
-			_buffer->setIndices( _bufferIndices );
-
-			refreshSelection();
 		}
 
 		Object3D::Helper::AABB & SecondaryStructure::getAABB() const { return _molecule->getAABB(); }
@@ -394,6 +379,18 @@ namespace VTX
 
 			_bufferSelections.shrink_to_fit();
 			_buffer->setSelections( _bufferSelections );
+		}
+
+		void SecondaryStructure::_init()
+		{
+			Tool::Chrono chrono;
+			chrono.start();
+			VTX_INFO("Creating secondary structure...");
+
+			refresh();
+
+			chrono.stop();
+			VTX_INFO("Secondary structure created in " + std::to_string(chrono.elapsedTime()) + "s");
 		}
 
 		void SecondaryStructure::print() const

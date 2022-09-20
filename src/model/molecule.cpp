@@ -8,7 +8,6 @@
 #include "model/chain.hpp"
 #include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
-#include "model/secondary_structure.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
@@ -108,12 +107,6 @@ namespace VTX
 					Util::SecondaryStructure::computeSecondaryStructure( *this );
 				}
 
-				// Create secondary structure mesh.
-				createSecondaryStructure();
-
-				// Create solvent extructed surface.
-				createSolventExcludedSurface();
-
 				setRepresentableMolecule( this );
 
 				if ( hasCustomRepresentation() )
@@ -125,6 +118,20 @@ namespace VTX
 					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation(
 						*this, true, false );
 				}
+
+				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
+				_buffer->setAtomRadius( _bufferAtomRadius );
+				_fillBufferAtomColors();
+				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
+				_buffer->setAtomSelections( _bufferAtomSelections );
+				_buffer->setAtomIds( _bufferAtomIds );
+				_buffer->setBonds( _bufferBonds );
+
+				// Create secondary structure mesh.
+				createSecondaryStructure();
+
+				// Create solvent extructed surface.
+				createSolventExcludedSurface();
 			}
 		}
 
@@ -158,17 +165,6 @@ namespace VTX
 		void Molecule::_onRepresentationChange()
 		{
 			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
-		}
-
-		void Molecule::_fillBuffer()
-		{
-			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
-			_buffer->setAtomRadius( _bufferAtomRadius );
-			_fillBufferAtomColors();
-			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
-			_buffer->setAtomSelections( _bufferAtomSelections );
-			_buffer->setAtomIds( _bufferAtomIds );
-			_buffer->setBonds( _bufferBonds );
 		}
 
 		void Molecule::_computeAABB() const
@@ -412,7 +408,10 @@ namespace VTX
 				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
 
 			if ( _secondaryStructure != nullptr )
-				_secondaryStructure->refresh( true );
+				_secondaryStructure->refresh();
+
+			if (_solventExcludedSurface != nullptr)
+				_solventExcludedSurface->refresh();
 
 			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_FRAME_CHANGE ) );
 

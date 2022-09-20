@@ -10,7 +10,7 @@ namespace VTX
 	{
 		MeshTriangle::MeshTriangle() : BaseModel3D( VTX::ID::Model::MODEL_MESH_TRIANGLE ) {}
 
-		void MeshTriangle::_fillBuffer()
+		void MeshTriangle::_init()
 		{
 			_buffer->setPositions( _vertices );
 			_buffer->setNormals( _normals );
