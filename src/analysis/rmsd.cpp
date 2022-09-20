@@ -52,8 +52,10 @@ namespace VTX::Analysis
 
 		double rmsd = 0;
 
-		const Model::Molecule::AtomPositionsFrame & frame1 = p_firstMolecule.getAtomPositionFrame( 0 );
-		const Model::Molecule::AtomPositionsFrame & frame2 = p_secondMolecule.getAtomPositionFrame( 0 );
+		const Model::Molecule::AtomPositionsFrame & frame1
+			= p_firstMolecule.getAtomPositionFrame( p_firstMolecule.getFrame() );
+		const Model::Molecule::AtomPositionsFrame & frame2
+			= p_secondMolecule.getAtomPositionFrame( p_secondMolecule.getFrame() );
 
 		if ( p_considerTransform )
 		{
