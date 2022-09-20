@@ -5,13 +5,16 @@
 #include "action/selection.hpp"
 #include "action/viewpoint.hpp"
 #include "action/visible.hpp"
+#include "model/generated_molecule.hpp"
 #include "ui/dialog.hpp"
 #include "ui/main_window.hpp"
+#include "ui/ui_action/self_referenced_action.hpp"
 #include "ui/widget/scene/scene_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 #include "view/ui/widget/path_scene_view.hpp"
 #include <QTimer>
+#include <string>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -76,6 +79,19 @@ namespace VTX::UI::Widget::ContextualMenu
 			new ActionData( "Solo", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_soloAction ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Duplicate", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_copyAction ) );
+
+		_frameListMenu
+			= WidgetFactory::get().instantiateWidget<CustomWidget::TrajectoryFramesMenu>( this, "frameListMenu" );
+		_frameListMenu->setDisplayAllFramesOption( true );
+		connect( _frameListMenu,
+				 &CustomWidget::TrajectoryFramesMenu::onFrameSelected,
+				 this,
+				 &ContextualMenuSelection::_copyFrameAction );
+		SubMenuData * const duplicateFrameSubmenu
+			= new SubMenuData( "Duplicate Frame", TypeMask::MoleculeStructure, this, _frameListMenu );
+		duplicateFrameSubmenu->setRefreshFunction( &ContextualMenuSelection::_refreshFrameListMenuItems );
+		moleculeStructureSubmenu->addItemData( duplicateFrameSubmenu );
+
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Extract", TypeMask::AllButMolecule, this, &ContextualMenuSelection::_extractAction ) );
 		moleculeStructureSubmenu->addItemData(
@@ -377,6 +393,11 @@ namespace VTX::UI::Widget::ContextualMenu
 		}
 	}
 	void ContextualMenuSelection::_copyAction() { VTX_ACTION( new Action::Selection::Copy( *_target ) ); }
+	void ContextualMenuSelection::_copyFrameAction( const int p_frame )
+	{
+		VTX_ACTION( new Action::Selection::Copy( *_target, p_frame ) );
+	}
+
 	void ContextualMenuSelection::_extractAction() { VTX_ACTION( new Action::Selection::Extract( *_target ) ); }
 	void ContextualMenuSelection::_deleteAction() { VTX_ACTION( new Action::Selection::Delete( *_target ) ); }
 	void ContextualMenuSelection::_exportAction() { UI::Dialog::openExportMoleculeDialog(); }
@@ -524,6 +545,12 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		QString text = displayShowIon ? "Show ions" : "Hide ions";
 		_action.setText( text );
+	}
+
+	void ContextualMenuSelection::_refreshFrameListMenuItems( QAction & _action ) const
+	{
+		_frameListMenu->updateFrames( *_target );
+		_action.setVisible( _frameListMenu->getFrameCount() >= 2 );
 	}
 
 	void ContextualMenuSelection::_refreshToggleTrajectoryPlay( QAction & _action ) const

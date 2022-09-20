@@ -44,12 +44,13 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _loadTrajectoryAction();
 
 	  private:
-		CustomWidget::SetRepresentationMenu * _representationMenu;
-		QAction *							  _toggleWaterAction;
-		QAction *							  _toggleHydrogenAction;
-		QAction *							  _toggleSolventAction;
-		QAction *							  _toggleIonAction;
-		QAction *							  _toggleTrajectoryPlayingAction;
+		CustomWidget::SetRepresentationMenu * _representationMenu = nullptr;
+
+		QAction * _toggleWaterAction			 = nullptr;
+		QAction * _toggleHydrogenAction			 = nullptr;
+		QAction * _toggleSolventAction			 = nullptr;
+		QAction * _toggleIonAction				 = nullptr;
+		QAction * _toggleTrajectoryPlayingAction = nullptr;
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu

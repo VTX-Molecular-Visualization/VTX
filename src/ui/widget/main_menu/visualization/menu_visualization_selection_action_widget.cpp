@@ -25,6 +25,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 			const bool enableSelection = castedEvent.ptr->getMoleculeSelectedCount() > 0;
 			_enableButtons( enableSelection );
+
+			_copyFrameSubmenu->updateFrames( *castedEvent.ptr );
 		}
 	}
 
@@ -32,8 +34,13 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 
+		_copyFrameSubmenu
+			= WidgetFactory::get().instantiateWidget<CustomWidget::TrajectoryFramesMenu>( this, "copyFrameSubmenu" );
+		_copyFrameSubmenu->setDisplayAllFramesOption( true );
+
 		// Selection actions 1
-		_copy = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "copySelectionButton" );
+		_copy = WidgetFactory::get().instantiateWidget<MenuToolButtonSubmenuWidget>( this, "copySelectionButton" );
+		_copy->setSubmenu( _copyFrameSubmenu );
 		_copy->setData( "Duplicate", ":/sprite/copy_selection_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_copy, 0 );
 
@@ -78,6 +85,11 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_solo->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_soloSelection );
 
 		_exportSelectionButton->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_exportSelection );
+
+		connect( _copyFrameSubmenu,
+				 &CustomWidget::TrajectoryFramesMenu::onFrameSelected,
+				 this,
+				 &MenuVisualizationSelectionActionWidget::_copyFrameSelection );
 	}
 	void MenuVisualizationSelectionActionWidget::localize() { setTitle( "Molecule Action" ); }
 
@@ -86,6 +98,12 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Selection::Copy( selectionModel ) );
 	}
+	void MenuVisualizationSelectionActionWidget::_copyFrameSelection( const int p_frame ) const
+	{
+		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		VTX_ACTION( new Action::Selection::Copy( selectionModel, p_frame ) );
+	}
+
 	void MenuVisualizationSelectionActionWidget::_extractSelection() const
 	{
 		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();

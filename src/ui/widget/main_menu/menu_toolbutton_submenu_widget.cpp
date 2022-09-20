@@ -2,7 +2,6 @@
 
 namespace VTX::UI::Widget::MainMenu
 {
-	void MenuToolButtonSubmenuWidget::addAction( QAction * const p_action ) { _submenu->addAction( p_action ); }
 	void MenuToolButtonSubmenuWidget::_setupUi( const QString & p_name )
 	{
 		_submenu = new QMenu( this );
@@ -12,6 +11,19 @@ namespace VTX::UI::Widget::MainMenu
 	void MenuToolButtonSubmenuWidget::_setupSlots()
 	{
 		setTriggerAction( this, &MenuToolButtonSubmenuWidget::_triggerDefaultAction );
+	}
+
+	void MenuToolButtonSubmenuWidget::addAction( QAction * const p_action ) { _submenu->addAction( p_action ); }
+
+	void MenuToolButtonSubmenuWidget::setDefaultAction( QAction * const p_defaultAction )
+	{
+		_setDefaultAction( p_defaultAction );
+	}
+	void MenuToolButtonSubmenuWidget::setSubmenu( QMenu * const p_submenu )
+	{
+		setMenu( p_submenu );
+		delete _submenu;
+		_submenu = p_submenu;
 	}
 
 	void MenuToolButtonSubmenuWidget::_setDefaultAction( QAction * const p_action )

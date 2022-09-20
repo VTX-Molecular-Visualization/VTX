@@ -16,7 +16,8 @@ namespace VTX::Model
 	GeneratedMolecule::GeneratedMolecule() : Model::Molecule( VTX::ID::Model::MODEL_GENERATED_MOLECULE ) {}
 
 	void GeneratedMolecule::copyFromSelection( const Model::Selection & p_selection,
-											   const VTX::Model::ID &	p_moleculeID )
+											   const VTX::Model::ID &	p_moleculeID,
+											   const int				p_frame )
 	{
 		Tool::Chrono chrono;
 		chrono.start();
@@ -24,9 +25,12 @@ namespace VTX::Model
 		const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeID );
 		const Model::Selection::MapChainIds & moleculeSelectionData = p_selection.getMoleculesMap().at( p_moleculeID );
 
-		_copyMoleculeData( molecule, "Copy of " );
+		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
+		const std::string suffix = p_frame == ALL_FRAMES_INDEX ? COPY_SUFFIX : _getFrameCopySuffix( p_frame );
 
-		std::map<const uint, const uint> mapAtomIds = std::map<const uint, const uint>();
+		_copyMoleculeData( molecule, p_frame, prefix, suffix );
+
+		_mapAtomIds = std::map<const uint, const uint>();
 
 		for ( const std::pair<const VTX::Model::ID, Model::Selection::MapResidueIds> & chainData :
 			  moleculeSelectionData )
@@ -54,16 +58,27 @@ namespace VTX::Model
 
 					_copyAtomData( generatedAtom, atom, &generatedResidue );
 
-					mapAtomIds.emplace( atom.getIndex(), generatedAtom.getIndex() );
+					_mapAtomIds.emplace( atom.getIndex(), generatedAtom.getIndex() );
 
-					// Copy atom position for each frame
-					for ( int i = 0; i < getAtomPositionFrames().size(); i++ )
-						getAtomPositionFrame( i ).emplace_back( molecule.getAtomPositionFrame( i )[ atom.getIndex() ] );
+					if ( p_frame == ALL_FRAMES_INDEX )
+					{
+						// Copy atom position for each frame
+						for ( int i = 0; i < getAtomPositionFrames().size(); i++ )
+						{
+							getAtomPositionFrame( i ).emplace_back(
+								molecule.getAtomPositionFrame( i )[ atom.getIndex() ] );
+						}
+					}
+					else
+					{
+						getAtomPositionFrame( 0 ).emplace_back(
+							molecule.getAtomPositionFrame( p_frame )[ atom.getIndex() ] );
+					}
 				}
 			}
 		}
 
-		_computeBonds( molecule, mapAtomIds );
+		_computeBonds( molecule );
 
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
@@ -77,66 +92,82 @@ namespace VTX::Model
 		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
 
-	void GeneratedMolecule::copyFromMolecule( const Model::Molecule & p_molecule )
+	void GeneratedMolecule::copyFromMolecule( const Model::Molecule & p_molecule, const int p_frame )
 	{
 		Tool::Chrono chrono;
 		chrono.start();
 
-		std::map<const uint, const uint> mapAtomIds = std::map<const uint, const uint>();
-		_copyFullMolecule( p_molecule, mapAtomIds );
+		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
+		const std::string suffix = p_frame == ALL_FRAMES_INDEX ? COPY_SUFFIX : _getFrameCopySuffix( p_frame );
 
-		_computeBonds( p_molecule, mapAtomIds );
+		_copyFullMolecule( p_molecule, p_frame, prefix, suffix );
+
+		_computeBonds( p_molecule );
 		_validateBuffers();
 
 		chrono.stop();
 		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
-	void GeneratedMolecule::copyFromChain( const Model::Chain & p_chain )
+	void GeneratedMolecule::copyFromChain( const Model::Chain & p_chain, const int p_frame )
 	{
 		Tool::Chrono chrono;
 		chrono.start();
 
 		const Model::Molecule & molecule = *p_chain.getMoleculePtr();
-		_copyMoleculeData( molecule, "Copy of " );
 
-		std::map<const uint, const uint> mapAtomIds = std::map<const uint, const uint>();
-		_copyFullChain( p_chain, molecule, mapAtomIds );
+		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
+		const std::string suffix = p_frame == ALL_FRAMES_INDEX ? COPY_SUFFIX : _getFrameCopySuffix( p_frame );
 
-		_computeBonds( molecule, mapAtomIds );
+		_copyMoleculeData( molecule, p_frame, prefix, suffix );
+
+		_mapAtomIds = std::map<const uint, const uint>();
+		_copyFullChain( p_chain, molecule );
+
+		_computeBonds( molecule );
 		_validateBuffers();
 
 		chrono.stop();
 		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
-	void GeneratedMolecule::copyFromResidue( const Model::Residue & p_residue )
+	void GeneratedMolecule::copyFromResidue( const Model::Residue & p_residue, const int p_frame )
 	{
 		Tool::Chrono chrono;
 		chrono.start();
 
 		const Model::Molecule & molecule = *p_residue.getMoleculePtr();
-		_copyMoleculeData( molecule, "Copy of " );
+
+		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
+		const std::string suffix = p_frame == ALL_FRAMES_INDEX ? COPY_SUFFIX : _getFrameCopySuffix( p_frame );
+
+		_copyMoleculeData( molecule, p_frame, prefix, suffix );
 
 		const Model::Chain & chain			= *p_residue.getChainPtr();
 		Model::Chain &		 generatedChain = addChain();
 		_copyChainData( generatedChain, chain );
 		generatedChain.setResidueCount( 1 );
 
-		std::map<const uint, const uint> mapAtomIds = std::map<const uint, const uint>();
-		_copyFullResidue( p_residue, molecule, &generatedChain, mapAtomIds );
+		_mapAtomIds = std::map<const uint, const uint>();
+		_copyFullResidue( p_residue, molecule, &generatedChain );
 
-		_computeBonds( molecule, mapAtomIds );
+		_computeBonds( molecule );
 		_validateBuffers();
+
+		_mapAtomIds.clear();
 
 		chrono.stop();
 		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
-	void GeneratedMolecule::copyFromAtom( const Model::Atom & p_atom )
+	void GeneratedMolecule::copyFromAtom( const Model::Atom & p_atom, const int p_frame )
 	{
 		Tool::Chrono chrono;
 		chrono.start();
 
 		const Model::Molecule & molecule = *p_atom.getMoleculePtr();
-		_copyMoleculeData( molecule, "Copy of " );
+
+		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
+		const std::string suffix = p_frame == ALL_FRAMES_INDEX ? COPY_SUFFIX : _getFrameCopySuffix( p_frame );
+
+		_copyMoleculeData( molecule, p_frame, prefix, suffix );
 
 		const Model::Chain & chain			= *p_atom.getChainPtr();
 		Model::Chain &		 generatedChain = addChain();
@@ -156,10 +187,12 @@ namespace VTX::Model
 		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
 
-	void GeneratedMolecule::_copyFullMolecule( const Model::Molecule &			  p_moleculeSource,
-											   std::map<const uint, const uint> & p_mapAtomIds )
+	void GeneratedMolecule::_copyFullMolecule( const Model::Molecule & p_moleculeSource,
+											   const int			   p_frame,
+											   const std::string &	   p_prefix,
+											   const std::string &	   p_suffix )
 	{
-		_copyMoleculeData( p_moleculeSource, "Copy of " );
+		_copyMoleculeData( p_moleculeSource, p_frame, p_prefix, p_suffix );
 
 		for ( uint i = 0; i < p_moleculeSource.getChainCount(); i++ )
 		{
@@ -168,12 +201,12 @@ namespace VTX::Model
 			if ( chain == nullptr )
 				continue;
 
-			_copyFullChain( *chain, p_moleculeSource, p_mapAtomIds );
+			_copyFullChain( *chain, p_moleculeSource, p_frame );
 		}
 	}
-	Model::Chain & GeneratedMolecule::_copyFullChain( const Model::Chain &				 p_source,
-													  const Model::Molecule &			 p_moleculeSource,
-													  std::map<const uint, const uint> & p_mapAtomIds )
+	Model::Chain & GeneratedMolecule::_copyFullChain( const Model::Chain &	  p_source,
+													  const Model::Molecule & p_moleculeSource,
+													  const int				  p_frame )
 	{
 		Model::Chain & generatedChain = addChain();
 		_copyChainData( generatedChain, p_source );
@@ -190,7 +223,7 @@ namespace VTX::Model
 			if ( residue == nullptr )
 				continue;
 
-			_copyFullResidue( *residue, p_moleculeSource, &generatedChain, p_mapAtomIds );
+			_copyFullResidue( *residue, p_moleculeSource, &generatedChain, p_frame );
 			residueCount++;
 		}
 
@@ -198,10 +231,10 @@ namespace VTX::Model
 		return generatedChain;
 	}
 
-	Model::Residue & GeneratedMolecule::_copyFullResidue( const Model::Residue &			 p_source,
-														  const Model::Molecule &			 p_moleculeSource,
-														  Model::Chain * const				 p_parent,
-														  std::map<const uint, const uint> & p_mapAtomIds )
+	Model::Residue & GeneratedMolecule::_copyFullResidue( const Model::Residue &  p_source,
+														  const Model::Molecule & p_moleculeSource,
+														  Model::Chain * const	  p_parent,
+														  const int				  p_frame )
 	{
 		Model::Residue & generatedResidue = addResidue();
 		_copyResidueData( generatedResidue, p_source, p_parent );
@@ -217,8 +250,8 @@ namespace VTX::Model
 			if ( atom == nullptr )
 				continue;
 
-			Model::Atom & generatedAtom = _copyAtom( *atom, p_moleculeSource, &generatedResidue );
-			p_mapAtomIds.emplace( atom->getIndex(), generatedAtom.getIndex() );
+			Model::Atom & generatedAtom = _copyAtom( *atom, p_moleculeSource, &generatedResidue, p_frame );
+			_mapAtomIds.emplace( atom->getIndex(), generatedAtom.getIndex() );
 
 			atomCount++;
 		}
@@ -229,23 +262,32 @@ namespace VTX::Model
 	}
 	Model::Atom & GeneratedMolecule::_copyAtom( const Model::Atom &		p_source,
 												const Model::Molecule & p_moleculeSource,
-												Model::Residue * const	p_parent )
+												Model::Residue * const	p_parent,
+												const int				p_frame )
 	{
 		Model::Atom & generatedAtom = addAtom();
 		generatedAtom.setResiduePtr( p_parent );
 		_copyAtomData( generatedAtom, p_source, p_parent );
 
 		// Copy atom position for each frame
-		for ( int i = 0; i < getAtomPositionFrames().size(); i++ )
+		if ( p_frame == -1 )
 		{
-			getAtomPositionFrame( i ).emplace_back( p_moleculeSource.getAtomPositionFrame( i )[ p_source.getIndex() ] );
+			for ( int i = 0; i < getAtomPositionFrames().size(); i++ )
+			{
+				getAtomPositionFrame( i ).emplace_back(
+					p_moleculeSource.getAtomPositionFrame( i )[ p_source.getIndex() ] );
+			}
+		}
+		else
+		{
+			getAtomPositionFrame( p_frame ).emplace_back(
+				p_moleculeSource.getAtomPositionFrame( p_frame )[ p_source.getIndex() ] );
 		}
 
 		return generatedAtom;
 	}
 
-	void GeneratedMolecule::_computeBonds( const Model::Molecule &			  p_source,
-										   std::map<const uint, const uint> & p_mapAtomIds )
+	void GeneratedMolecule::_computeBonds( const Model::Molecule & p_source )
 	{
 		if ( p_source.getBondCount() <= 0 )
 			return;
@@ -278,11 +320,11 @@ namespace VTX::Model
 
 			const Model::Bond & bond = *bondPtr;
 
-			if ( p_mapAtomIds.find( bond.getIndexFirstAtom() ) != p_mapAtomIds.end()
-				 && p_mapAtomIds.find( bond.getIndexSecondAtom() ) != p_mapAtomIds.end() )
+			if ( _mapAtomIds.find( bond.getIndexFirstAtom() ) != _mapAtomIds.end()
+				 && _mapAtomIds.find( bond.getIndexSecondAtom() ) != _mapAtomIds.end() )
 			{
-				const uint indexFirstAtom  = p_mapAtomIds[ bond.getIndexFirstAtom() ];
-				const uint indexSecondAtom = p_mapAtomIds[ bond.getIndexSecondAtom() ];
+				const uint indexFirstAtom  = _mapAtomIds[ bond.getIndexFirstAtom() ];
+				const uint indexSecondAtom = _mapAtomIds[ bond.getIndexSecondAtom() ];
 
 				Model::Bond & generatedBond = addBond();
 
@@ -345,7 +387,7 @@ namespace VTX::Model
 		//_extractingBonds.reserve( molecule.getBondCount() );
 		getBufferBonds().reserve( molecule.getBondCount() * 2u );
 
-		_copyMoleculeData( molecule, "Extract of " );
+		_copyMoleculeData( molecule, ALL_FRAMES_INDEX, EXTRACT_PREFIX, EXTRACT_SUFFIX );
 
 		for ( const std::pair<const VTX::Model::ID, Model::Selection::MapResidueIds> & chainData :
 			  moleculeSelectionData )
@@ -445,7 +487,7 @@ namespace VTX::Model
 		_pendingExternalBonds.clear();
 		_pendingExternalBonds.reserve( p_chain.getResidueCount() );
 		getBufferBonds().reserve( maxBondsCount * 2u );
-		_copyMoleculeData( molecule, "Extract of " );
+		_copyMoleculeData( molecule, ALL_FRAMES_INDEX, EXTRACT_PREFIX, EXTRACT_SUFFIX );
 
 		_extractFullChain( molecule, p_chain.getIndex() );
 
@@ -470,7 +512,7 @@ namespace VTX::Model
 		getBufferBonds().reserve( p_residue.getBondCount() * 2u );
 
 		Model::Molecule & molecule = *p_residue.getMoleculePtr();
-		_copyMoleculeData( molecule, "Extract of " );
+		_copyMoleculeData( molecule, ALL_FRAMES_INDEX, EXTRACT_PREFIX, EXTRACT_SUFFIX );
 
 		Model::Chain & generatedChain = addChain();
 		_copyChainData( generatedChain, *p_residue.getChainPtr() );
@@ -495,7 +537,7 @@ namespace VTX::Model
 		chrono.start();
 
 		Model::Molecule & molecule = *p_atom.getMoleculePtr();
-		_copyMoleculeData( molecule, "Extract of " );
+		_copyMoleculeData( molecule, ALL_FRAMES_INDEX, EXTRACT_PREFIX, EXTRACT_SUFFIX );
 
 		const Model::Chain & chain			= *p_atom.getChainPtr();
 		Model::Chain &		 generatedChain = addChain();
@@ -521,20 +563,32 @@ namespace VTX::Model
 		VTX_INFO( "Extract done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
 
-	void GeneratedMolecule::_copyMoleculeData( const Model::Molecule & p_molecule, const std::string & p_namePrefix )
+	void GeneratedMolecule::_copyMoleculeData( const Model::Molecule & p_molecule,
+											   const int			   p_frame,
+											   const std::string &	   p_namePrefix,
+											   const std::string &	   p_nameSuffix )
 	{
 		// Copy molecule properties.
-		setName( p_namePrefix + p_molecule.getName() );
+		setName( p_namePrefix + p_molecule.getName() + p_nameSuffix );
 		setPdbIdCode( "none" );
-		setDisplayName( p_namePrefix + p_molecule.getDefaultName() );
+		setDisplayName( p_namePrefix + p_molecule.getDefaultName() + p_nameSuffix );
 		setColor( Color::Rgb::randomPastel() );
 
 		VTX::Representation::RepresentationManager::get().instantiateCopy(
 			p_molecule.getRepresentation(), *this, false, false );
 
-		for ( int i = 0; i < p_molecule.getAtomPositionFrames().size(); i++ )
+		if ( p_frame == ALL_FRAMES_INDEX )
 		{
-			const AtomPositionsFrame & atomPosFrame			 = p_molecule.getAtomPositionFrames()[ i ];
+			for ( int i = 0; i < p_molecule.getAtomPositionFrames().size(); i++ )
+			{
+				const AtomPositionsFrame & atomPosFrame			 = p_molecule.getAtomPositionFrames()[ i ];
+				AtomPositionsFrame &	   generatedAtomPosFrame = addAtomPositionFrame();
+				generatedAtomPosFrame.reserve( atomPosFrame.size() );
+			}
+		}
+		else
+		{
+			const AtomPositionsFrame & atomPosFrame			 = p_molecule.getAtomPositionFrames()[ p_frame ];
 			AtomPositionsFrame &	   generatedAtomPosFrame = addAtomPositionFrame();
 			generatedAtomPosFrame.reserve( atomPosFrame.size() );
 		}
@@ -806,10 +860,10 @@ namespace VTX::Model
 			}
 			else
 			{
-			getBond( i )->setIndexFirstAtom( getBond( i )->getIndexFirstAtom() - atomOffset );
-			getBond( i )->setIndexSecondAtom( getBond( i )->getIndexSecondAtom() - atomOffset );
-			getBufferBonds()[ i * 2u ] -= atomOffset;
-			getBufferBonds()[ i * 2u + 1u ] -= atomOffset;
+				getBond( i )->setIndexFirstAtom( getBond( i )->getIndexFirstAtom() - atomOffset );
+				getBond( i )->setIndexSecondAtom( getBond( i )->getIndexSecondAtom() - atomOffset );
+				getBufferBonds()[ i * 2u ] -= atomOffset;
+				getBufferBonds()[ i * 2u + 1u ] -= atomOffset;
 			}
 
 			p_fromMolecule.getBonds()[ bondOffset + i ] = nullptr;
@@ -1062,4 +1116,11 @@ namespace VTX::Model
 
 		return _pendingExternalBonds.end();
 	}
+
+	std::string GeneratedMolecule::_getFrameCopyPrefix( const int p_frame ) const { return ""; }
+	std::string GeneratedMolecule::_getFrameCopySuffix( const int p_frame ) const
+	{
+		return "[Frame " + std::to_string( p_frame ) + ']';
+	}
+
 } // namespace VTX::Model
