@@ -6,6 +6,7 @@ in VsOut
 	smooth vec3 normal;
 	flat vec3	color;
 	flat uint   selected;
+	flat uint   id;
 }
 fsIn;
 
@@ -30,4 +31,5 @@ void main()
 	// Output data.
 	outViewPositionNormal = viewPositionNormalCompressed;
 	outColor			  = vec4( fsIn.color, 32.f ); // w = specular shininess.
+	outId				  = uvec2( fsIn.id, 0 );
 }

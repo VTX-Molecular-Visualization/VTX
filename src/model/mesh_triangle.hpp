@@ -45,6 +45,7 @@ namespace VTX
 			inline const uint &				 getSelection( const uint p_idx ) const { return _selections[ p_idx ]; }
 			inline uint &					 getSelection( const uint p_idx ) { return _selections[ p_idx ]; }
 
+
 			inline const std::vector<uint> & getIndices() const { return _indices; }
 			inline std::vector<uint> &		 getIndices() { return _indices; }
 			inline const uint &				 getIndice( const uint p_idx ) const { return _indices[ p_idx ]; }
@@ -67,6 +68,7 @@ namespace VTX
 			std::vector<Color::Rgb> _colors;
 			std::vector<uint>		_visibilities;
 			std::vector<uint>		_selections;
+			std::vector<Model::ID>	_ids;
 			std::vector<uint>		_indices;
 		};
 	} // namespace Model

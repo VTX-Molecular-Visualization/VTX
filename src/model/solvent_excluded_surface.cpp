@@ -286,8 +286,12 @@ namespace VTX
 
 							_atomToTriangles[ gridData[ closestVertex ].nearestAtom ].push_back(
 								uint( _vertices.size() ) - 3 );
+
+							_ids.insert( _ids.end(),
+										 { Model::ID( gridData[ closestVertex ].nearestAtom ),
+										   Model::ID( gridData[ closestVertex ].nearestAtom ),
+										   Model::ID( gridData[ closestVertex ].nearestAtom ) } );
 						}
-						// TODO: find a way to map triangles with closest ses grid point.
 					}
 				}
 			}
@@ -367,17 +371,17 @@ namespace VTX
 				else
 				{
 					for ( const Model::Selection::PairChainIds & pairChain : *p_selection )
-					{						
+					{
 						for ( const Model::Selection::PairResidueIds & pairResidue : pairChain.second )
 						{
 							for ( const uint & atomIndex : pairResidue.second )
 							{
-								for (const uint triangleFirstVertice : _atomToTriangles[atomIndex])
+								for ( const uint triangleFirstVertice : _atomToTriangles[ atomIndex ] )
 								{
-									_selections[triangleFirstVertice + 0] = 1;
-									_selections[triangleFirstVertice + 1] = 1;
-									_selections[triangleFirstVertice + 2] = 1;
-								}								
+									_selections[ triangleFirstVertice + 0 ] = 1;
+									_selections[ triangleFirstVertice + 1 ] = 1;
+									_selections[ triangleFirstVertice + 2 ] = 1;
+								}
 							}
 						}
 					}

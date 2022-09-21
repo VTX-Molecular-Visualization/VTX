@@ -1,7 +1,6 @@
 #ifndef __VTX_MODEL_SOLVENT_EXCLUDED_SURFACE__
 #define __VTX_MODEL_SOLVENT_EXCLUDED_SURFACE__
 
-#include "buffer/solvent_excluded_surface.hpp"
 #include "mesh_triangle.hpp"
 #include "object3d/helper/grid.hpp"
 #include "model/selection.hpp"

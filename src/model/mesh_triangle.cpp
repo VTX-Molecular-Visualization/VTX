@@ -16,6 +16,7 @@ namespace VTX
 			_buffer->setNormals( _normals );
 			_buffer->setColors( _colors );
 			_buffer->setVisibilities( _visibilities );
+			_buffer->setIds( _ids );
 			_buffer->setIndices( _indices );
 		}
 
