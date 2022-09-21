@@ -13,8 +13,8 @@
 #include <queue>
 #include <set>
 
-//#define DELAY_EVENTS
-//#define DELAY_EVENTS_QT
+// #define DELAY_EVENTS
+// #define DELAY_EVENTS_QT
 
 namespace VTX
 {

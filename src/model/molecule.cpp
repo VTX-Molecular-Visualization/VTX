@@ -393,8 +393,8 @@ namespace VTX
 			_fillBufferAtomSelections( p_selection );
 			if ( _secondaryStructure != nullptr )
 				_secondaryStructure->refreshSelection( p_selection );
-			if (_solventExcludedSurface != nullptr)
-				_solventExcludedSurface->refreshSelection(p_selection);
+			if ( _solventExcludedSurface != nullptr )
+				_solventExcludedSurface->refreshSelection( p_selection );
 		}
 
 		void Molecule::setFrame( const uint p_frameIdx )
@@ -413,7 +413,7 @@ namespace VTX
 			if ( _secondaryStructure != nullptr )
 				_secondaryStructure->refresh();
 
-			if (_solventExcludedSurface != nullptr)
+			if ( _solventExcludedSurface != nullptr )
 				_solventExcludedSurface->refresh();
 
 			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_FRAME_CHANGE ) );

@@ -2,8 +2,8 @@
 #define __VTX_UI_WIDGET_MAIN_MENU_BAR__
 
 // !V0.1
-//#include "extensions/menu_extensions_widget.hpp"
-//#include <QLabel>
+// #include "extensions/menu_extensions_widget.hpp"
+// #include <QLabel>
 #include "home/menu_home_widget.hpp"
 #include "tool/menu_tool_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"

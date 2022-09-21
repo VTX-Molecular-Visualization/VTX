@@ -1,22 +1,22 @@
-//#ifndef __VTX_VIEW_UI_WIDGET_MEASUREMENT_DISTANCE_TO_CYCLE_RENDER__
-//#define __VTX_VIEW_UI_WIDGET_MEASUREMENT_DISTANCE_TO_CYCLE_RENDER__
+// #ifndef __VTX_VIEW_UI_WIDGET_MEASUREMENT_DISTANCE_TO_CYCLE_RENDER__
+// #define __VTX_VIEW_UI_WIDGET_MEASUREMENT_DISTANCE_TO_CYCLE_RENDER__
 //
-//#include "define.hpp"
-//#include "id.hpp"
-//#include "model/measurement/distance_to_cycle.hpp"
-//#include "ui/widget/base_manual_widget.hpp"
-//#include "ui/widget/render/base_integrated_widget.hpp"
-//#include "view/base_view.hpp"
-//#include <QBrush>
-//#include <QFont>
-//#include <QPaintEvent>
-//#include <QPainterPath>
-//#include <QPen>
-//#include <QPoint>
-//#include <QSize>
-//#include <string>
+// #include "define.hpp"
+// #include "id.hpp"
+// #include "model/measurement/distance_to_cycle.hpp"
+// #include "ui/widget/base_manual_widget.hpp"
+// #include "ui/widget/render/base_integrated_widget.hpp"
+// #include "view/base_view.hpp"
+// #include <QBrush>
+// #include <QFont>
+// #include <QPaintEvent>
+// #include <QPainterPath>
+// #include <QPen>
+// #include <QPoint>
+// #include <QSize>
+// #include <string>
 //
-// namespace VTX::View::UI::Widget::Measurement
+//  namespace VTX::View::UI::Widget::Measurement
 //{
 //	class DistanceToCycleRenderView :
 //		public View::BaseView<VTX::Model::Measurement::DistanceToCycle>,
@@ -66,5 +66,5 @@
 //		bool   _isVisibleToCamera( const Vec3f & p_worldPos ) const;
 //	};
 //
-//} // namespace VTX::View::UI::Widget::Measurement
-//#endif
+// } // namespace VTX::View::UI::Widget::Measurement
+// #endif

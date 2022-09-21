@@ -5,7 +5,7 @@
 #include "tool/logger.hpp"
 #include <QDebug>
 #include <QObject>
-//#include <QtGamepad/QGamepad>
+// #include <QtGamepad/QGamepad>
 #include <set>
 
 namespace VTX

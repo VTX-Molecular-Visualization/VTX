@@ -24,7 +24,8 @@ namespace VTX
 
 			virtual Color::Rgb shade( const Ray &		   p_ray,
 									  const Intersection & p_hit,
-									  const LightSample &  p_lightDirSample ) const = 0;
+									  const LightSample &  p_lightDirSample ) const
+				= 0;
 		};
 	} // namespace Renderer
 } // namespace VTX

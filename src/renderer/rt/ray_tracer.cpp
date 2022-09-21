@@ -260,7 +260,7 @@ namespace VTX
 			_scene.clean();
 			//_scene.addObject( new TriangleMesh( DATA_DIR + "Bunny.obj" ) );
 
-			//#define RIBBON_TEST
+			// #define RIBBON_TEST
 
 #ifdef RIBBON_TEST
 			for ( const std::pair<const Model::Molecule *, float> & pairMol : p_scene.getMolecules() )

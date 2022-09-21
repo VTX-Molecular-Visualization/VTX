@@ -5,7 +5,7 @@
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/integer_field_slider_widget.hpp"
-//#include "ui/widget/custom_widget/integer_range_widget.hpp"
+// #include "ui/widget/custom_widget/integer_range_widget.hpp"
 #include "ui/widget/custom_widget/qt_multi_data_field.hpp"
 #include <QWidget>
 #include <unordered_set>

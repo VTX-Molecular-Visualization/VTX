@@ -39,7 +39,7 @@ namespace VTX::Buffer
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, _vboAtomVisibilities, sizeof( uint ) );
 		_vao.setAttributeFormat(
-			ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT);
+			ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
 
 		// Selection.

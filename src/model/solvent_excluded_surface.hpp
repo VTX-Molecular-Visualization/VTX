@@ -2,8 +2,8 @@
 #define __VTX_MODEL_SOLVENT_EXCLUDED_SURFACE__
 
 #include "mesh_triangle.hpp"
-#include "object3d/helper/grid.hpp"
 #include "model/selection.hpp"
+#include "object3d/helper/grid.hpp"
 
 namespace VTX
 {
@@ -24,7 +24,7 @@ namespace VTX
 			void refresh();
 			void refreshColors();
 			void refreshVisibilities();
-			void refreshSelection(const Model::Selection::MapChainIds * const p_selection = nullptr );
+			void refreshSelection( const Model::Selection::MapChainIds * const p_selection = nullptr );
 
 		  protected:
 			void _init() override;
@@ -43,17 +43,17 @@ namespace VTX
 
 			struct SESGridData
 			{
-				float	   sdf;
-				int nearestAtom;
+				float sdf;
+				int	  nearestAtom;
 			};
 
 			Mode _mode = Mode::CPU;
 
 			// CPU.
-			Model::Molecule * const _molecule;
-			Object3D::Helper::Grid	_gridAtoms;
-			Object3D::Helper::Grid	_gridSES;
-			std::vector<SESGridData> _sesGridData;
+			Model::Molecule * const		   _molecule;
+			Object3D::Helper::Grid		   _gridAtoms;
+			Object3D::Helper::Grid		   _gridSES;
+			std::vector<SESGridData>	   _sesGridData;
 			std::vector<std::vector<uint>> _atomToTriangles;
 
 			void _initCPU();

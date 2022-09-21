@@ -7,9 +7,9 @@
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
-//#include <assimp/Importer.hpp>
-//#include <assimp/postprocess.h>
-//#include <assimp/scene.h>
+// #include <assimp/Importer.hpp>
+// #include <assimp/postprocess.h>
+// #include <assimp/scene.h>
 
 namespace VTX
 {

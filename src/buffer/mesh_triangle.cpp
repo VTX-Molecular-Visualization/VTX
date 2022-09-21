@@ -35,25 +35,24 @@ namespace VTX::Buffer
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_COLOR, ATTRIBUTE_LOCATION::VERTEX_COLOR );
 
 		// Visbility.
-		_vao.enableAttribute(ATTRIBUTE_LOCATION::VERTEX_VISIBILITY);
-		_vao.setVertexBuffer(ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, _vboVisibilities, sizeof(uint));
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, _vboVisibilities, sizeof( uint ) );
 		_vao.setAttributeFormat(
-			ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT);
-		_vao.setAttributeBinding(ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY);
+			ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
 
 		// Selection.
-		_vao.enableAttribute(ATTRIBUTE_LOCATION::VERTEX_SELECTION);
-		_vao.setVertexBuffer(ATTRIBUTE_LOCATION::VERTEX_SELECTION, _vboSelections, sizeof(uint));
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_SELECTION );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_SELECTION, _vboSelections, sizeof( uint ) );
 		_vao.setAttributeFormat(
-			ATTRIBUTE_LOCATION::VERTEX_SELECTION, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT);
-		_vao.setAttributeBinding(ATTRIBUTE_LOCATION::VERTEX_SELECTION, ATTRIBUTE_LOCATION::VERTEX_SELECTION);
+			ATTRIBUTE_LOCATION::VERTEX_SELECTION, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_SELECTION, ATTRIBUTE_LOCATION::VERTEX_SELECTION );
 
 		// Id.
-		_vao.enableAttribute(ATTRIBUTE_LOCATION::VERTEX_ID);
-		_vao.setVertexBuffer(ATTRIBUTE_LOCATION::VERTEX_ID, _vboIds, sizeof(uint));
-		_vao.setAttributeFormat(
-			ATTRIBUTE_LOCATION::VERTEX_ID, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT);
-		_vao.setAttributeBinding(ATTRIBUTE_LOCATION::VERTEX_ID, ATTRIBUTE_LOCATION::VERTEX_ID);
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_ID );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_ID, _vboIds, sizeof( uint ) );
+		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VERTEX_ID, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_ID, ATTRIBUTE_LOCATION::VERTEX_ID );
 	}
 
 	void MeshTriangle::setPositions( const std::vector<Vec3f> & p_positions )
@@ -76,14 +75,14 @@ namespace VTX::Buffer
 		_vboVisibilities.set<uint>( p_visibilities, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
-	void MeshTriangle::setSelections(const std::vector<uint>& p_selections)
+	void MeshTriangle::setSelections( const std::vector<uint> & p_selections )
 	{
-		_vboSelections.set<uint>(p_selections, Renderer::GL::BufferData::Usage::STATIC_DRAW);
+		_vboSelections.set<uint>( p_selections, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
-	void MeshTriangle::setIds(const std::vector<Model::ID>& p_ids)
+	void MeshTriangle::setIds( const std::vector<Model::ID> & p_ids )
 	{
-		_vboIds.set<Model::ID>(p_ids, Renderer::GL::BufferData::Usage::STATIC_DRAW);
+		_vboIds.set<Model::ID>( p_ids, Renderer::GL::BufferData::Usage::STATIC_DRAW );
 	}
 
 	void MeshTriangle::setIndices( const std::vector<uint> & p_indices )

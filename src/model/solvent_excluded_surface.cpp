@@ -268,7 +268,7 @@ namespace VTX
 							_vertices.insert(
 								_vertices.end(), cellTriangles[ triangle ].begin(), cellTriangles[ triangle ].end() );
 
-							// Get closest point to store corresponding residue.
+							// Get closest atom.
 							float closestDistance = FLOAT_MAX;
 							uint  closestVertex	  = 0;
 							Vec3f centroid = Vec3f( cellTriangles[ triangle ][ 0 ] + cellTriangles[ triangle ][ 1 ]
@@ -284,6 +284,7 @@ namespace VTX
 								}
 							}
 
+							// Map id of first vertice with nearest atom.
 							_atomToTriangles[ gridData[ closestVertex ].nearestAtom ].push_back(
 								uint( _vertices.size() ) - 3 );
 

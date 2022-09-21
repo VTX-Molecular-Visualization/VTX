@@ -13,7 +13,7 @@
 #include <QSvgRenderer>
 #include <vector>
 
-//#define VTX_DEBUG_WATERMARK
+// #define VTX_DEBUG_WATERMARK
 
 namespace VTX::Worker
 {

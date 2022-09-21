@@ -45,7 +45,6 @@ namespace VTX
 			inline const uint &				 getSelection( const uint p_idx ) const { return _selections[ p_idx ]; }
 			inline uint &					 getSelection( const uint p_idx ) { return _selections[ p_idx ]; }
 
-
 			inline const std::vector<uint> & getIndices() const { return _indices; }
 			inline std::vector<uint> &		 getIndices() { return _indices; }
 			inline const uint &				 getIndice( const uint p_idx ) const { return _indices[ p_idx ]; }

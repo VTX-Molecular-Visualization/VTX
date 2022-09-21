@@ -1,15 +1,15 @@
-//#include "distance_to_cycle.hpp"
-//#include "event/event.hpp"
-//#include "event/event_manager.hpp"
-//#include "model/atom.hpp"
-//#include "model/molecule.hpp"
-//#include "mvc/mvc_manager.hpp"
-//#include "object3d/scene.hpp"
-//#include "util/math.hpp"
-//#include "util/measurement.hpp"
-//#include <string>
+// #include "distance_to_cycle.hpp"
+// #include "event/event.hpp"
+// #include "event/event_manager.hpp"
+// #include "model/atom.hpp"
+// #include "model/molecule.hpp"
+// #include "mvc/mvc_manager.hpp"
+// #include "object3d/scene.hpp"
+// #include "util/math.hpp"
+// #include "util/measurement.hpp"
+// #include <string>
 //
-// namespace VTX::Model::Measurement
+//  namespace VTX::Model::Measurement
 //{
 //	DistanceToCycle::DistanceToCycle() : Model::Label( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
 //	{
@@ -202,4 +202,4 @@
 //
 //	void DistanceToCycle::autoDelete() const { MVC::MvcManager::get().deleteModel( this ); }
 //
-//} // namespace VTX::Model::Measurement
+// } // namespace VTX::Model::Measurement

@@ -188,24 +188,21 @@ namespace VTX
 			_bufferIds.shrink_to_fit();
 			_bufferIndices.shrink_to_fit();
 
-			
-			assert(_bufferCaPositions.size() == _bufferCaODirections.size());
-			assert(_bufferCaPositions.size() == _bufferSSTypes.size());
-			assert(_bufferCaPositions.size() == _bufferColors.size());
-			assert(_bufferCaPositions.size() == _bufferVisibilities.size());
-			assert(_bufferCaPositions.size() == _bufferIds.size());
+			assert( _bufferCaPositions.size() == _bufferCaODirections.size() );
+			assert( _bufferCaPositions.size() == _bufferSSTypes.size() );
+			assert( _bufferCaPositions.size() == _bufferColors.size() );
+			assert( _bufferCaPositions.size() == _bufferVisibilities.size() );
+			assert( _bufferCaPositions.size() == _bufferIds.size() );
 
-			_buffer->setControlPointPositions(_bufferCaPositions);
-			_buffer->setControlPointDirections(_bufferCaODirections);
-			_buffer->setSecondaryStructures(_bufferSSTypes);
-			_buffer->setColors(_bufferColors);
-			_buffer->setVisibilities(_bufferVisibilities);
-			_buffer->setIds(_bufferIds);
-			_buffer->setIndices(_bufferIndices);
+			_buffer->setControlPointPositions( _bufferCaPositions );
+			_buffer->setControlPointDirections( _bufferCaODirections );
+			_buffer->setSecondaryStructures( _bufferSSTypes );
+			_buffer->setColors( _bufferColors );
+			_buffer->setVisibilities( _bufferVisibilities );
+			_buffer->setIds( _bufferIds );
+			_buffer->setIndices( _bufferIndices );
 
-			refreshSelection();		
-
-			
+			refreshSelection();
 		}
 
 		void SecondaryStructure::_tryConstruct( const uint						p_chainIdx,
@@ -385,12 +382,12 @@ namespace VTX
 		{
 			Tool::Chrono chrono;
 			chrono.start();
-			VTX_INFO("Creating secondary structure...");
+			VTX_INFO( "Creating secondary structure..." );
 
 			refresh();
 
 			chrono.stop();
-			VTX_INFO("Secondary structure created in " + std::to_string(chrono.elapsedTime()) + "s");
+			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
 		void SecondaryStructure::print() const
