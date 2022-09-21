@@ -32,6 +32,23 @@ namespace VTX::Util::String
 		return splittedStr;
 	}
 
+	std::string & replaceAll( std::string & p_str, const std::string & p_toReplace, const std::string & p_replacement )
+	{
+		size_t		 currentIndex				 = p_str.find( p_toReplace, 0 );
+		const size_t toReplaceLength			 = p_toReplace.length();
+		const size_t indexOffsetAfterReplacement = p_replacement.length() - toReplaceLength;
+
+		while ( currentIndex < p_str.length() )
+		{
+			p_str.replace( currentIndex, toReplaceLength, p_replacement );
+			currentIndex += indexOffsetAfterReplacement;
+
+			currentIndex = p_str.find( p_toReplace, currentIndex );
+		}
+
+		return p_str;
+	}
+
 	std::string floatToStr( const float p_value, const int p_nbDecimals )
 	{
 		std::stringstream strStream;

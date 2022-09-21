@@ -5,6 +5,8 @@
 #include "ui/widget/base_manual_widget.hpp"
 #include <QAction>
 #include <QMenu>
+#include <QString>
+#include <string>
 
 namespace VTX
 {
@@ -28,6 +30,13 @@ namespace VTX
 
 			uint getFrameCount() const;
 
+			/// <summary>
+			/// Set the chain to display the frame
+			/// </summary>
+			/// <param name="p_str">template string. Any '#' character will be replaced by the frame index.</param>
+			void setFrameDisplayString( const std::string & p_str );
+			void setDisplayAllOptionName( const std::string & p_name );
+
 			void updateFrames( const Model::Molecule & p_molecule );
 			void updateFrames( const Model::Selection & p_selection );
 
@@ -42,7 +51,10 @@ namespace VTX
 			void _setupUi( const QString & p_name ) override;
 			void _setupSlots() override;
 
-			void _adjustFrameActions( const uint p_newFrameCount );
+			void	_adjustFrameActions( const uint p_newFrameCount );
+			void	_updateFrameNames();
+			void	_updateFrameName( QAction * const p_action );
+			QString _getFrameDisplayName( const int p_frame ) const;
 
 			void _onFrameSelected( const QAction * const p_action );
 
@@ -50,7 +62,8 @@ namespace VTX
 			UIAction::SelfReferencedAction * _allFramesAction = nullptr;
 			bool							 _allFramesOption = false;
 
-			uint _frameCount = 0;
+			uint		_frameCount			 = 0;
+			std::string _frameDisplayNameStr = "#";
 		};
 	} // namespace UI::Widget::CustomWidget
 } // namespace VTX

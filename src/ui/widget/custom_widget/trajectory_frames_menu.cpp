@@ -4,6 +4,7 @@
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "util/string.hpp"
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -33,6 +34,12 @@ namespace VTX::UI::Widget::CustomWidget
 
 	uint TrajectoryFramesMenu::getFrameCount() const { return _frameCount; }
 
+	void TrajectoryFramesMenu::setFrameDisplayString( const std::string & p_str )
+	{
+		_frameDisplayNameStr = p_str;
+		_updateFrameNames();
+	}
+
 	void TrajectoryFramesMenu::updateFrames( const Model::Molecule & p_molecule )
 	{
 		_adjustFrameActions( p_molecule.getFrameCount() );
@@ -56,7 +63,7 @@ namespace VTX::UI::Widget::CustomWidget
 		{
 			for ( uint i = _frameCount; i < p_newFrameCount; i++ )
 			{
-				const QString						   actionTitle = QString::fromStdString( std::to_string( i ) );
+				const QString						   actionTitle = _getFrameDisplayName( i );
 				UIAction::SelfReferencedAction * const action = new UIAction::SelfReferencedAction( actionTitle, this );
 				action->setData( QVariant( int( i ) ) );
 
@@ -79,6 +86,41 @@ namespace VTX::UI::Widget::CustomWidget
 				_frameCount--;
 			}
 		}
+	}
+
+	void TrajectoryFramesMenu::_updateFrameNames()
+	{
+		if ( actions().size() == 0 )
+			return;
+
+		const QList<QAction *> allActions  = actions();
+		int					   actionIndex = 0;
+
+		if ( allActions[ actionIndex ] == _allFramesAction )
+			actionIndex++;
+
+		while ( actionIndex < allActions.size() )
+		{
+			_updateFrameName( allActions[ actionIndex ] );
+			actionIndex++;
+		}
+	}
+	void TrajectoryFramesMenu::_updateFrameName( QAction * const p_action )
+	{
+		const int frameIndex = p_action->data().toInt();
+		p_action->setText( _getFrameDisplayName( frameIndex ) );
+	}
+	QString TrajectoryFramesMenu::_getFrameDisplayName( const int p_frameIndex ) const
+	{
+		std::string frameName = _frameDisplayNameStr;
+		Util::String::replaceAll( frameName, "#", std::to_string( p_frameIndex ) );
+
+		return QString::fromStdString( frameName );
+	}
+
+	void TrajectoryFramesMenu::setDisplayAllOptionName( const std::string & p_name )
+	{
+		_allFramesAction->setText( QString::fromStdString( p_name ) );
 	}
 
 	void TrajectoryFramesMenu::setDisplayAllFramesOption( const bool p_displayAllFramesOption )

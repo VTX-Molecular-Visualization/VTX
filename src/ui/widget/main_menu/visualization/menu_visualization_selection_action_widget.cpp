@@ -36,7 +36,9 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		_copyFrameSubmenu
 			= WidgetFactory::get().instantiateWidget<CustomWidget::TrajectoryFramesMenu>( this, "copyFrameSubmenu" );
+		_copyFrameSubmenu->setFrameDisplayString( "Frame #" );
 		_copyFrameSubmenu->setDisplayAllFramesOption( true );
+		_copyFrameSubmenu->setDisplayAllOptionName( "All frames" );
 
 		// Selection actions 1
 		_copy = WidgetFactory::get().instantiateWidget<MenuToolButtonSubmenuWidget>( this, "copySelectionButton" );
