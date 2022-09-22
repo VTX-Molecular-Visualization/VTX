@@ -502,9 +502,7 @@ namespace VTX::Action::Molecule
 
 			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
 
-			const float offset = generatedMolecule->getAABB().radius() + _target.getAABB().radius()
-								 + VTX::Setting::COPIED_MOLECULE_OFFSET;
-			generatedMolecule->setTranslation( VTX::Vec3f( offset, 0, 0 ) );
+			generatedMolecule->applyTransform( _target.getTransform() );
 
 			VTXApp::get().getScene().addMolecule( generatedMolecule );
 		}

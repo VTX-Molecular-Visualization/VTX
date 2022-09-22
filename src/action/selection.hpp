@@ -928,8 +928,6 @@ namespace VTX::Action::Selection
 		}
 		virtual void execute() override
 		{
-			Tool::Chrono chrono;
-
 			for ( const Model::ID & selectedObjectID : _selection.getItems() )
 			{
 				const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( selectedObjectID );
@@ -944,49 +942,36 @@ namespace VTX::Action::Selection
 					{
 						for ( int iFrame = 0; iFrame < nbFrames; iFrame++ )
 						{
-							Model::GeneratedMolecule * generatedMolecule
-								= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
-
-							generatedMolecule->copyFromSelection( _selection, selectedObjectID, iFrame );
-
-							chrono.start();
-							VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED,
-																				generatedMolecule ) );
-
-							const float offset = generatedMolecule->getAABB().radius() + _selection.getAABB().radius()
-												 + VTX::Setting::COPIED_MOLECULE_OFFSET;
-
-							generatedMolecule->setTranslation( VTX::Vec3f( offset, 0, 0 ) );
-							VTXApp::get().getScene().addMolecule( generatedMolecule );
-							chrono.stop();
-							VTX_DEBUG( "Molecule " + generatedMolecule->getDisplayName() + " copied in "
-									   + chrono.elapsedTimeStr() );
+							_copyFrame( source, _selection, iFrame );
 						}
 					}
 					// Duplicate only if the molecule has multiple frame and if the frame is under the molecule frame
 					// count (test for multiple selection)
 					else if ( nbFrames > 0 && _frame < nbFrames )
 					{
-						Model::GeneratedMolecule * generatedMolecule
-							= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
-
-						generatedMolecule->copyFromSelection( _selection, selectedObjectID, _frame );
-
-						chrono.start();
-						VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED,
-																			generatedMolecule ) );
-
-						const float offset = generatedMolecule->getAABB().radius() + _selection.getAABB().radius()
-											 + VTX::Setting::COPIED_MOLECULE_OFFSET;
-
-						generatedMolecule->setTranslation( VTX::Vec3f( offset, 0, 0 ) );
-						VTXApp::get().getScene().addMolecule( generatedMolecule );
-						chrono.stop();
-						VTX_DEBUG( "Molecule " + generatedMolecule->getDisplayName() + " copied in "
-								   + chrono.elapsedTimeStr() );
+						_copyFrame( source, _selection, _frame );
 					}
 				}
 			}
+		}
+
+	  protected:
+		void _copyFrame( const Model::Molecule & p_source, const Model::Selection & p_selection, const int p_frame )
+		{
+			Model::GeneratedMolecule * generatedMolecule
+				= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+
+			generatedMolecule->copyFromSelection( _selection, p_source.getId(), p_frame );
+
+			Tool::Chrono chrono;
+			chrono.start();
+			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+
+			generatedMolecule->applyTransform( p_source.getTransform() );
+
+			VTXApp::get().getScene().addMolecule( generatedMolecule );
+			chrono.stop();
+			VTX_DEBUG( "Molecule " + generatedMolecule->getDisplayName() + " copied in " + chrono.elapsedTimeStr() );
 		}
 
 	  private:
