@@ -14,6 +14,7 @@
 #include <QPalette>
 #include <QPixmap>
 #include <QSize>
+#include <QString>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -44,6 +45,8 @@ namespace VTX
 			const QPixmap UNFOLDED_PIXMAP;
 			const QPixmap FOLDED_PIXMAP;
 			const QPixmap CLOSE_PIXMAP;
+
+			const QPixmap REMOVE_LINE_ICON;
 
 			const QPixmap FULLSCREEN_ICON;
 			const QPixmap WINDOWED_ICON;
@@ -174,6 +177,8 @@ namespace VTX
 				FOLDED_PIXMAP( QPixmap( ":/sprite/treeview_folded_molecule_icon.png" ) ),
 				CLOSE_PIXMAP( QPixmap( ":/sprite/close_icon.png" ) ),
 
+				REMOVE_LINE_ICON( QPixmap( ":/sprite/remove_line_icon.png" ) ),
+
 				FULLSCREEN_ICON( QPixmap( ":/sprite/fullscreen_icon.png" ) ),
 				WINDOWED_ICON( QPixmap( ":/sprite/windowed_icon.png" ) ),
 
@@ -224,20 +229,22 @@ namespace VTX
 
 		inline static const int LAYOUT_VERSION = 1;
 
-		static const QSize INSPECTOR_PREFERRED_SIZE = QSize( 300, 100 );
-		static const QSize INSPECTOR_MINIMUM_SIZE	= QSize( 1, 1 );
-		static const QSize RENDER_PREFERRED_SIZE	= QSize( 1000, 1000 );
-		static const QSize RENDER_MINIMUM_SIZE		= QSize( 1, 1 );
-		static const QSize SCENE_PREFERRED_SIZE		= QSize( 200, 100 );
-		static const QSize SCENE_MINIMUM_SIZE		= QSize( 1, 1 );
-		static const QSize CONSOLE_PREFERRED_SIZE	= QSize( 100, 80 );
-		static const QSize CONSOLE_MINIMUM_SIZE		= QSize( 1, 1 );
-		static const QSize SEQUENCE_PREFERRED_SIZE	= QSize( 100, 70 );
-		static const QSize SEQUENCE_MINIMUM_SIZE	= QSize( 1, 1 );
-		static const QSize SELECTION_PREFERRED_SIZE = QSize( 100, 150 );
-		static const QSize SELECTION_MINIMUM_SIZE	= QSize( 1, 1 );
-		static const QSize SETTINGS_PREFERRED_SIZE	= QSize( 550, 600 );
-		static const QSize SETTINGS_MINIMUM_SIZE	= QSize( 1, 1 );
+		static const QSize INSPECTOR_PREFERRED_SIZE			   = QSize( 300, 100 );
+		static const QSize INSPECTOR_MINIMUM_SIZE			   = QSize( 1, 1 );
+		static const QSize RENDER_PREFERRED_SIZE			   = QSize( 1000, 1000 );
+		static const QSize RENDER_MINIMUM_SIZE				   = QSize( 1, 1 );
+		static const QSize SCENE_PREFERRED_SIZE				   = QSize( 200, 100 );
+		static const QSize SCENE_MINIMUM_SIZE				   = QSize( 1, 1 );
+		static const QSize CONSOLE_PREFERRED_SIZE			   = QSize( 100, 80 );
+		static const QSize CONSOLE_MINIMUM_SIZE				   = QSize( 1, 1 );
+		static const QSize SEQUENCE_PREFERRED_SIZE			   = QSize( 100, 70 );
+		static const QSize SEQUENCE_MINIMUM_SIZE			   = QSize( 1, 1 );
+		static const QSize SELECTION_PREFERRED_SIZE			   = QSize( 100, 150 );
+		static const QSize SELECTION_MINIMUM_SIZE			   = QSize( 1, 1 );
+		static const QSize SETTINGS_PREFERRED_SIZE			   = QSize( 550, 600 );
+		static const QSize SETTINGS_MINIMUM_SIZE			   = QSize( 1, 1 );
+		static const QSize STRUCTURAL_ALIGNMENT_PREFERRED_SIZE = QSize( 550, 600 );
+		static const QSize STRUCTURAL_ALIGNMENT_MINIMUM_SIZE   = QSize( 1, 1 );
 
 		inline static const int MAIN_MENU_MAX_BUTTON_PRESET_WIDTH = 125;
 
@@ -258,6 +265,8 @@ namespace VTX
 		inline static const int SCENE_SPACE_BETWEEN_ITEMS  = 4;
 		inline static const int DATA_GRID_VERTICAL_SPACE   = 2;
 		inline static const int DATA_GRID_HORIZONTAL_SPACE = 10;
+
+		inline static const int ATTRIBUTE_LIST_LAYOUT_SPACER_HEIGHT = 30;
 
 		inline static const QFont  WORLD_LABEL_FONT			  = QFont( "Arial", 20, QFont::Weight::Bold, false );
 		inline static const float  WORLD_LABEL_NEAR_CLIP	  = 20.f;
@@ -301,10 +310,14 @@ namespace VTX
 		inline static const int			 MEASUREMENT_DIHEDRAL_ANGLE_ICON_MIN_SIZE	= 10;
 		inline static const int			 MEASUREMENT_DIHEDRAL_ANGLE_ICON_MAX_SIZE	= 48;
 
+		inline static const QString ALIGNMENT_WINDOW_UNKNOWN_RMSD = "-";
+
 		inline static const QColor CONSOLE_INFO_COLOR	 = QColor( "white" );
 		inline static const QColor CONSOLE_DEBUG_COLOR	 = QColor( "white" );
 		inline static const QColor CONSOLE_WARNING_COLOR = QColor( "yellow" );
 		inline static const QColor CONSOLE_ERROR_COLOR	 = QColor( "red" );
+
+		inline static const QString DIFFERENT_MULTIPLE_DATA_STRING = "-";
 
 		inline static const QSize EXPORT_IMAGE_PREVIEW_SIZE = QSize( 320, 320 );
 

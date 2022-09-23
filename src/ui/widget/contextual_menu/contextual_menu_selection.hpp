@@ -5,6 +5,7 @@
 #include "model/base_model.hpp"
 #include "model/selection.hpp"
 #include "ui/widget/custom_widget/set_representation_menu.hpp"
+#include "ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include <QHideEvent>
 #include <QMenu>
 #include <map>
@@ -229,6 +230,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _hideAction();
 		void _soloAction();
 		void _copyAction();
+		void _copyFrameAction( const int p_frame );
 		void _extractAction();
 		void _deleteAction();
 
@@ -244,8 +246,13 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _exportAction();
 		void _loadTrajectoryAction();
 
+		void _applyComputeRMSDAction();
+		void _applyAlignmentAction();
+		void _openAlignmentWindowAction();
+
 	  private:
 		CustomWidget::SetRepresentationMenu * _representationMenu = nullptr;
+		CustomWidget::TrajectoryFramesMenu *  _frameListMenu	  = nullptr;
 
 		std::map<ID::VTX_ID, int>		_submenusMap = std::map<ID::VTX_ID, int>();
 		std::vector<SelectionSubMenu *> _submenus	 = std::vector<SelectionSubMenu *>();
@@ -260,8 +267,13 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _refreshToggleSolventText( QAction & _action ) const;
 		void _refreshToggleIonText( QAction & _action ) const;
 
+		void _refreshFrameListMenuItems( QAction & _action ) const;
+
 		void _refreshToggleTrajectoryPlay( QAction & _action ) const;
 		bool _checkToggleTrajectoryPlayAction() const;
+
+		bool _checkApplyAlignementAction() const;
+		bool _checkComputeRMSDAction() const;
 
 		void _getAllLabelTypes( std::unordered_set<Model::Label *> & p_labels ) const;
 	};

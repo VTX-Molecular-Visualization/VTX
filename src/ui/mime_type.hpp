@@ -2,59 +2,64 @@
 #define __VTX_UI_MIME_TYPE__
 
 #include "id.hpp"
+#include "model/base_model.hpp"
 #include <QByteArray>
 #include <QMimeData>
 #include <QString>
-#include <string>
 
-namespace VTX
+namespace VTX::UI
 {
-	namespace Model
+	class MimeType
 	{
-		class Molecule;
-		class Path;
-		class Viewpoint;
-		class Label;
-		namespace Representation
+	  private:
+		inline static const char DATA_SEPARATOR = ';';
+
+	  public:
+		enum class ApplicationMimeType : int
 		{
-			class InstantiatedRepresentation;
-		}
+			MODEL,
+			FILE,
+		};
+		inline static const QString applicationMimeTypes[] = { "application/vtx-model", "application/vtx-file" };
 
-	} // namespace Model
-
-	namespace UI
-	{
-		class MimeType
+		enum class DragSource : int
 		{
-		  public:
-			enum class ApplicationMimeType : int
-			{
-				REPRESENTABLE,
-				MOLECULE,
-				INSTANTIATED_REPRESENTATION,
-				SCENE_ITEM,
-				BASE_MODEL,
-				PATH,
-				VIEWPOINT,
-				LABEL,
-			};
-
-			static const QString applicationMimeTypes[];
-
-			static QString getQStringMimeType( const ApplicationMimeType & _mimeTypeID )
-			{
-				return applicationMimeTypes[ int( _mimeTypeID ) ];
-			}
-
-			static QMimeData * const generateMoleculeData( const Model::Molecule & _molecule );
-			static QMimeData * const generateInstantiatedRepresentationData(
-				const Model::Representation::InstantiatedRepresentation & p_representation );
-			static QMimeData * const generateViewpointData( const Model::Viewpoint & p_viewpoint );
-			static QMimeData * const generatePathData( const Model::Path & p_path );
-			static QMimeData * const generateLabelData( const Model::Label & p_label );
+			SCENE_VIEW,
+			MODEL_FIELD,
 		};
 
-	} // namespace UI
-} // namespace VTX
+		class ModelData
+		{
+		  public:
+			ModelData( const Model::BaseModel & p_model, const DragSource & p_dragSource );
+			ModelData( const QByteArray & p_data );
+
+			void fillByteArray( QByteArray & p_byteArray ) const;
+
+			const Model::ID &  getModelID() const { return _modelID; };
+			const ID::VTX_ID & getTypeID() const { return _typeID; };
+			const DragSource & getDragSource() const { return _dragSource; };
+
+		  private:
+			Model::ID  _modelID;
+			ID::VTX_ID _typeID;
+			DragSource _dragSource;
+		};
+
+		static const QString & getStrMimeType( const ApplicationMimeType & _mimeTypeID )
+		{
+			return applicationMimeTypes[ int( _mimeTypeID ) ];
+		}
+
+		static QMimeData * const generateMimeDataFromModel( const Model::BaseModel & p_model,
+															const DragSource &		 p_dragSource );
+
+		static bool checkApplicationDataType( const QMimeData * const	  p_mimeData,
+											  const ApplicationMimeType & p_dataType );
+
+		static ModelData getModelData( const QMimeData * const p_mimeData );
+	};
+
+} // namespace VTX::UI
 
 #endif

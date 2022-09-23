@@ -2,7 +2,9 @@
 #define __VTX_UI_WIDGET_MENU_VISUALIZATION_SELECTION_ACTION__
 
 #include "event/event.hpp"
+#include "ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
+#include "ui/widget/main_menu/menu_toolbutton_submenu_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
 
@@ -26,9 +28,9 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 	  private:
 		// Selection actions 1
-		MenuToolButtonWidget * _extract = nullptr;
-		MenuToolButtonWidget * _copy	= nullptr;
-		MenuToolButtonWidget * _delete	= nullptr;
+		MenuToolButtonWidget *		  _extract = nullptr;
+		MenuToolButtonSubmenuWidget * _copy	   = nullptr;
+		MenuToolButtonWidget *		  _delete  = nullptr;
 
 		// Visibility actions
 		MenuToolButtonWidget * _show = nullptr;
@@ -38,7 +40,11 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// Export
 		MenuToolButtonWidget * _exportSelectionButton = nullptr;
 
+		// Copy submenu
+		CustomWidget::TrajectoryFramesMenu * _copyFrameSubmenu = nullptr;
+
 		void _copySelection() const;
+		void _copyFrameSelection( const int p_frame ) const;
 		void _extractSelection() const;
 		void _deleteSelection() const;
 

@@ -5,6 +5,7 @@
 #include "ui/widget/base_manual_widget.hpp"
 #include <QLineEdit>
 #include <QSlider>
+#include <QString>
 #include <QValidator>
 #include <QWidget>
 
@@ -42,6 +43,8 @@ namespace VTX::UI::Widget::CustomWidget
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();
+
+		QString getDisplayedText( const int p_value ) const;
 
 		void		_displayDifferentsDataFeedback() override;
 		const int & _getValue() const override { return _value; }

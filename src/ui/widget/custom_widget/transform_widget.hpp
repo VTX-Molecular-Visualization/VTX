@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_TRANSFORM__
 #define __VTX_UI_WIDGET_CUSTOM_TRANSFORM__
 
+#include "generic/base_transformable.hpp"
 #include "math/transform.hpp"
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
@@ -15,6 +16,14 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		VTX_WIDGET
 		Q_OBJECT
+
+	  protected:
+		enum class Field
+		{
+			Position,
+			Euler,
+			Scale
+		};
 
 	  public:
 		~TransformWidget() {};
@@ -37,7 +46,8 @@ namespace VTX::UI::Widget::CustomWidget
 		void displayScale( const bool p_display ) const;
 
 	  signals:
-		void onValueChange( const Math::Transform & p_value ) const;
+		void onValueChange( const Math::Transform & p_value,
+							const Generic::BaseTransformable::TransformComposantMask & ) const;
 		void onPositionDragged( const Vec3f & p_delta ) const;
 		void onRotationDragged( const Vec3f & p_delta ) const;
 		void onScaleDragged( const Vec3f & p_delta ) const;
@@ -62,13 +72,21 @@ namespace VTX::UI::Widget::CustomWidget
 		QLabel * _rotationLabel = nullptr;
 		QLabel * _scaleLabel	= nullptr;
 
-		void _onPositionChange( const Vec3f & p_position );
-		void _onRotationChange( const Vec3f & p_euler );
-		void _onScaleChange( const Vec3f & p_scale );
+		void _onPositionChange( const Vec3f & p_position, const Vector3Widget::AxisMask & p_axisMask );
+		void _onRotationChange( const Vec3f & p_euler, const Vector3Widget::AxisMask & p_axisMask );
+		void _onScaleChange( const Vec3f & p_scale, const Vector3Widget::AxisMask & p_axisMask );
 
 		void _onPositionDragged( const Vec3f & p_delta );
 		void _onRotationDragged( const Vec3f & p_delta );
 		void _onScaleDragged( const Vec3f & p_delta );
+
+		Vec3f _applyVectorWithMask( const Vec3f &					p_base,
+									const Vec3f &					p_vector,
+									const Vector3Widget::AxisMask & p_mask );
+
+		Generic::BaseTransformable::TransformComposantMask _generateTransformMask(
+			const Field &					p_field,
+			const Vector3Widget::AxisMask & p_axis );
 
 		Math::Transform _transform = Math::Transform();
 	};

@@ -1,16 +1,20 @@
 #include "contextual_menu_selection.hpp"
 #include "action/action_manager.hpp"
+#include "action/analysis.hpp"
 #include "action/label.hpp"
 #include "action/selection.hpp"
 #include "action/viewpoint.hpp"
 #include "action/visible.hpp"
+#include "model/generated_molecule.hpp"
 #include "ui/dialog.hpp"
 #include "ui/main_window.hpp"
+#include "ui/ui_action/self_referenced_action.hpp"
 #include "ui/widget/scene/scene_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 #include "view/ui/widget/path_scene_view.hpp"
 #include <QTimer>
+#include <string>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -75,6 +79,19 @@ namespace VTX::UI::Widget::ContextualMenu
 			new ActionData( "Solo", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_soloAction ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Duplicate", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_copyAction ) );
+
+		_frameListMenu
+			= WidgetFactory::get().instantiateWidget<CustomWidget::TrajectoryFramesMenu>( this, "frameListMenu" );
+		_frameListMenu->setDisplayAllFramesOption( true );
+		connect( _frameListMenu,
+				 &CustomWidget::TrajectoryFramesMenu::onFrameSelected,
+				 this,
+				 &ContextualMenuSelection::_copyFrameAction );
+		SubMenuData * const duplicateFrameSubmenu
+			= new SubMenuData( "Duplicate Frame", TypeMask::MoleculeStructure, this, _frameListMenu );
+		duplicateFrameSubmenu->setRefreshFunction( &ContextualMenuSelection::_refreshFrameListMenuItems );
+		moleculeStructureSubmenu->addItemData( duplicateFrameSubmenu );
+
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Extract", TypeMask::AllButMolecule, this, &ContextualMenuSelection::_extractAction ) );
 		moleculeStructureSubmenu->addItemData(
@@ -83,6 +100,18 @@ namespace VTX::UI::Widget::ContextualMenu
 		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Export", TypeMask::Molecule, this ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
+
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Analysis", TypeMask::Molecule, this ) );
+		ActionData * const applyComputeRMSDAction
+			= new ActionData( "RMSD", TypeMask::Molecule, this, &ContextualMenuSelection::_applyComputeRMSDAction );
+		applyComputeRMSDAction->setCheckFunction( &ContextualMenuSelection::_checkComputeRMSDAction );
+		moleculeStructureSubmenu->addItemData( applyComputeRMSDAction );
+		ActionData * const applyAlignmentAction
+			= new ActionData( "Align", TypeMask::Molecule, this, &ContextualMenuSelection::_applyAlignmentAction );
+		applyAlignmentAction->setCheckFunction( &ContextualMenuSelection::_checkApplyAlignementAction );
+		moleculeStructureSubmenu->addItemData( applyAlignmentAction );
+		moleculeStructureSubmenu->addItemData( new ActionData(
+			"Alignment settings", TypeMask::Molecule, this, &ContextualMenuSelection::_openAlignmentWindowAction ) );
 
 		// VIEWPOINTS //////////////////////////////////////////////////////////////////////////////////////////////////
 		SelectionSubMenu * const viewpointSubmenu = new SelectionSubMenu( this, "Viewpoint" );
@@ -364,6 +393,11 @@ namespace VTX::UI::Widget::ContextualMenu
 		}
 	}
 	void ContextualMenuSelection::_copyAction() { VTX_ACTION( new Action::Selection::Copy( *_target ) ); }
+	void ContextualMenuSelection::_copyFrameAction( const int p_frame )
+	{
+		VTX_ACTION( new Action::Selection::Copy( *_target, p_frame ) );
+	}
+
 	void ContextualMenuSelection::_extractAction() { VTX_ACTION( new Action::Selection::Extract( *_target ) ); }
 	void ContextualMenuSelection::_deleteAction() { VTX_ACTION( new Action::Selection::Delete( *_target ) ); }
 	void ContextualMenuSelection::_exportAction() { UI::Dialog::openExportMoleculeDialog(); }
@@ -513,6 +547,12 @@ namespace VTX::UI::Widget::ContextualMenu
 		_action.setText( text );
 	}
 
+	void ContextualMenuSelection::_refreshFrameListMenuItems( QAction & _action ) const
+	{
+		_frameListMenu->updateFrames( *_target );
+		_action.setVisible( _frameListMenu->getFrameCount() >= 2 );
+	}
+
 	void ContextualMenuSelection::_refreshToggleTrajectoryPlay( QAction & _action ) const
 	{
 		bool displayPlay = true;
@@ -584,6 +624,36 @@ namespace VTX::UI::Widget::ContextualMenu
 		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE, p_labels );
 		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE, p_labels );
 		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE, p_labels );
+	}
+
+	bool ContextualMenuSelection::_checkComputeRMSDAction() const
+	{
+		std::vector<Model::Molecule *> molecules
+			= _target->getItemsOfType<Model::Molecule>( ID::Model::MODEL_MOLECULE );
+
+		return molecules.size() >= 2;
+	}
+	bool ContextualMenuSelection::_checkApplyAlignementAction() const
+	{
+		std::vector<Model::Molecule *> molecules
+			= _target->getItemsOfType<Model::Molecule>( ID::Model::MODEL_MOLECULE );
+
+		return molecules.size() >= 2;
+	}
+
+	void ContextualMenuSelection::_applyComputeRMSDAction()
+	{
+		VTX_ACTION( new Action::Analysis::ComputeRMSD( *_target ) );
+	}
+
+	void ContextualMenuSelection::_applyAlignmentAction()
+	{
+		VTX_ACTION( new Action::Analysis::ComputeStructuralAlignment( *_target ) );
+	}
+
+	void ContextualMenuSelection::_openAlignmentWindowAction()
+	{
+		VTXApp::get().getMainWindow().showWidget( ID::UI::Window::STRUCTURAL_ALIGNMENT, true );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

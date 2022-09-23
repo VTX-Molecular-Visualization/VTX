@@ -1,6 +1,7 @@
 #ifndef __VTX_SCENE__
 #define __VTX_SCENE__
 
+#include "event/event_manager.hpp"
 #include "generic/base_scene_item.hpp"
 #include "generic/base_updatable.hpp"
 #include "object3d/helper/aabb.hpp"
@@ -26,6 +27,22 @@ namespace VTX::Object3D
 	class Camera;
 	class Scene : public Generic::BaseUpdatable
 	{
+	  private:
+		enum class ModelCharacteristicsFlag
+		{
+			AABB	= 1 << 0,
+			GRAPHIC = 1 << 1,
+
+			NONE = 0,
+
+			MOLECULE = AABB | GRAPHIC,
+			PATH	 = NONE,
+			MESH	 = AABB | GRAPHIC,
+			LABEL	 = GRAPHIC,
+			BOX		 = GRAPHIC,
+
+		};
+
 	  public:
 		using MoleculePtr			= Model::Molecule *;
 		using PathPtr				= Model::Path *;
@@ -68,6 +85,8 @@ namespace VTX::Object3D
 		const Generic::BaseSceneItem * const getItemAtPosition( const int p_index ) const;
 		int									 getItemPosition( const Generic::BaseSceneItem & p_item ) const;
 		void changeModelPosition( const Generic::BaseSceneItem & p_item, const int p_position );
+		void changeModelsPosition( const std::vector<const Generic::BaseSceneItem *> & p_items, const int p_position );
+		void sortMoleculesBySceneIndex( std::vector<Model::Molecule *> & p_molecules ) const;
 
 		bool isEmpty() const;
 
@@ -90,11 +109,45 @@ namespace VTX::Object3D
 			_applySceneID( *p_item );
 		}
 
+		void _updateGraphicMask() const;
+
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseSceneItem, T>::value>>
-		void _remove( T * p_item, std::vector<T *> & p_container )
+		void _remove( T *							   p_item,
+					  std::vector<T *> &			   p_container,
+					  const VTX::Event::Global &	   p_removeEvent,
+					  const ModelCharacteristicsFlag & p_flag )
 		{
 			_itemOrder.erase( std::find( _itemOrder.begin(), _itemOrder.end(), p_item ) );
 			p_container.erase( std::find( p_container.begin(), p_container.end(), p_item ) );
+
+			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::AABB ) ) != 0 )
+				_aabb.invalidate();
+
+			VTX_EVENT( new Event::VTXEventPtr<Model::BaseModel>( Event::Global::MODEL_REMOVED, p_item ) );
+			VTX_EVENT( new Event::VTXEventPtr<T>( p_removeEvent, p_item ) );
+
+			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::GRAPHIC ) ) != 0 )
+				_updateGraphicMask();
+		}
+		template<typename T1,
+				 typename T2,
+				 typename = std::enable_if<std::is_base_of<Generic::BaseSceneItem, T1>::value>>
+		void _remove( T1 *							   p_item,
+					  std::map<T1 *, T2> &			   p_container,
+					  const VTX::Event::Global &	   p_removeEvent,
+					  const ModelCharacteristicsFlag & p_flag )
+		{
+			_itemOrder.erase( std::find( _itemOrder.begin(), _itemOrder.end(), p_item ) );
+			p_container.erase( p_item );
+
+			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::AABB ) ) != 0 )
+				_aabb.invalidate();
+
+			VTX_EVENT( new Event::VTXEventPtr<Model::BaseModel>( Event::Global::MODEL_REMOVED, p_item ) );
+			VTX_EVENT( new Event::VTXEventPtr<T1>( p_removeEvent, p_item ) );
+
+			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::GRAPHIC ) ) != 0 )
+				_updateGraphicMask();
 		}
 
 	  private:

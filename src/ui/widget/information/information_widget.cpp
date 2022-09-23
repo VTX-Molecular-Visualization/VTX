@@ -90,8 +90,8 @@ namespace VTX::UI::Widget::Information
 		libraryDesc->setFrameShape( QFrame::Shape::Panel );
 		libraryDesc->setFrameShadow( QFrame::Shadow::Sunken );
 		libraryDesc->setText(
-			"<a href = \"http://assimp.org/\">Assimp</a> - "
 			"<a href =\"https://chemfiles.org/\">Chemfiles</a> - "
+			"<a href =\"https://eigen.tuxfamily.org/\">Eigen</a> - "
 			"<a href =\"https://www.opengl.org/sdk/libs/GLM/\">GLM</a> - "
 			"<a href =\"https://github.com/Neargye/magic_enum\">Magic enum</a> - "
 			"<a href =\"https://github.com/nlohmann/json\">nlohmann</a> - "

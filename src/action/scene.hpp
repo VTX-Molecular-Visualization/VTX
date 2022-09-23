@@ -7,6 +7,7 @@
 #include "object3d/scene.hpp"
 #include "util/molecule.hpp"
 #include "vtx_app.hpp"
+#include <vector>
 
 namespace VTX::Action::Scene
 {
@@ -20,16 +21,20 @@ namespace VTX::Action::Scene
 	{
 	  public:
 		explicit ChangeItemIndex( const Generic::BaseSceneItem & p_item, const int p_position ) :
-			_item( p_item ), _position( p_position )
+			ChangeItemIndex( { &p_item }, p_position )
+		{
+		}
+		explicit ChangeItemIndex( const std::vector<const Generic::BaseSceneItem *> & p_items, const int p_position ) :
+			_items( p_items ), _position( p_position )
 		{
 			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override { VTXApp::get().getScene().changeModelPosition( _item, _position ); }
+		virtual void execute() override { VTXApp::get().getScene().changeModelsPosition( _items, _position ); }
 
 	  private:
-		const Generic::BaseSceneItem & _item;
-		const int					   _position;
+		const std::vector<const Generic::BaseSceneItem *> _items;
+		const int										  _position;
 	};
 
 	class ShowAllMolecules : public BaseAction

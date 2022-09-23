@@ -233,6 +233,13 @@ namespace VTX
 		// Selection
 		static const VTX::Selection::Granularity SELECTION_GRANULARITY_DEFAULT;
 
+		// Structural Alignment
+		static const int   CE_ALIGN_WIN_SIZE_DEFAULT;
+		static const int   CE_ALIGN_GAP_MAX_DEFAULT;
+		static const int   CE_ALIGN_MAX_PATH_DEFAULT;
+		static const float CE_ALIGN_D0_DEFAULT;
+		static const float CE_ALIGN_D1_DEFAULT;
+
 		// Misc.
 		static const int   CONSOLE_SIZE;
 		static const uint  ACTION_BUFFER_SIZE; // For undo/redo

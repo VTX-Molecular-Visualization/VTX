@@ -181,6 +181,13 @@ namespace VTX
 	// Selection
 	const VTX::Selection::Granularity Setting::SELECTION_GRANULARITY_DEFAULT = VTX::Selection::Granularity::RESIDUE;
 
+	// Structural Alignment
+	const int	Setting::CE_ALIGN_WIN_SIZE_DEFAULT = 8;
+	const int	Setting::CE_ALIGN_GAP_MAX_DEFAULT  = 30;
+	const int	Setting::CE_ALIGN_MAX_PATH_DEFAULT = 20;
+	const float Setting::CE_ALIGN_D0_DEFAULT	   = 3.f;
+	const float Setting::CE_ALIGN_D1_DEFAULT	   = 4.f;
+
 	// Misc.
 	const int  Setting::CONSOLE_SIZE	   = 80;
 	const uint Setting::ACTION_BUFFER_SIZE = 10;

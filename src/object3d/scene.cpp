@@ -1,6 +1,5 @@
 #include "scene.hpp"
 #include "action/main.hpp"
-#include "event/event_manager.hpp"
 #include "math/transform.hpp"
 #include "model/label.hpp"
 #include "model/mesh_triangle.hpp"
@@ -82,11 +81,7 @@ namespace VTX::Object3D
 
 	void Scene::removeMolecule( MoleculePtr const p_molecule )
 	{
-		_molecules.erase( p_molecule );
-		_itemOrder.erase( std::find( _itemOrder.begin(), _itemOrder.end(), p_molecule ) );
-		_aabb.invalidate();
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_REMOVED, p_molecule ) );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		_remove( p_molecule, _molecules, Event::Global::MOLECULE_REMOVED, ModelCharacteristicsFlag::MOLECULE );
 	}
 
 	void Scene::addPath( PathPtr const p_path )
@@ -97,8 +92,7 @@ namespace VTX::Object3D
 
 	void Scene::removePath( PathPtr const p_path )
 	{
-		_remove( p_path, _paths );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::PATH_REMOVED, p_path ) );
+		_remove( p_path, _paths, Event::Global::PATH_REMOVED, ModelCharacteristicsFlag::NONE );
 	}
 
 	void Scene::addMesh( MeshTrianglePtr const p_mesh )
@@ -112,10 +106,7 @@ namespace VTX::Object3D
 
 	void Scene::removeMesh( MeshTrianglePtr const p_mesh )
 	{
-		_remove( p_mesh, _meshes );
-		_aabb.invalidate();
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_REMOVED, p_mesh ) );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		_remove( p_mesh, _meshes, Event::Global::MESH_REMOVED, ModelCharacteristicsFlag::MESH );
 	}
 
 	void Scene::addLabel( LabelPtr const p_label )
@@ -125,9 +116,7 @@ namespace VTX::Object3D
 	}
 	void Scene::removeLabel( LabelPtr const p_label )
 	{
-		_remove( p_label, _labels );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::LABEL_REMOVED, p_label ) );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		_remove( p_label, _labels, Event::Global::LABEL_REMOVED, ModelCharacteristicsFlag::LABEL );
 	}
 
 	void Scene::addHelper( HelperPtr const p_helper )
@@ -143,6 +132,8 @@ namespace VTX::Object3D
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::HELPER_REMOVED, p_helper ) );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
+
+	void Scene::_updateGraphicMask() const { VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE; }
 
 	const Generic::BaseSceneItem * const Scene::getItemAtPosition( const int p_index ) const
 	{
@@ -197,7 +188,97 @@ namespace VTX::Object3D
 			_itemOrder[ p_position ] = itemPtr;
 		}
 
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::SCENE_ITEM_INDEX_CHANGE, &p_item ) );
+		VTX_EVENT( new Event::VTXEvent( Event::Global::SCENE_ITEM_INDEXES_CHANGE ) );
+	}
+
+	void Scene::changeModelsPosition( const std::vector<const Generic::BaseSceneItem *> & p_items,
+									  const int											  p_position )
+	{
+		std::vector<const Generic::BaseSceneItem *> movedItems = std::vector<const Generic::BaseSceneItem *>();
+		movedItems.resize( p_items.size() );
+
+		size_t indexMovedItemsBeforePosition = 0;
+
+		for ( size_t i = 0; i < p_position; i++ )
+		{
+			const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemOrder[ i ] ) != p_items.end();
+
+			if ( hasToMoveItem )
+			{
+				movedItems[ indexMovedItemsBeforePosition ] = _itemOrder[ i ];
+				indexMovedItemsBeforePosition++;
+
+				_itemOrder[ i ] = nullptr;
+			}
+			else if ( indexMovedItemsBeforePosition > 0 )
+			{
+				_itemOrder[ i - indexMovedItemsBeforePosition ] = _itemOrder[ i ];
+			}
+		}
+
+		size_t itemMovedCounter = 0;
+
+		for ( int i = int( _itemOrder.size() ) - 1; i > p_position; i-- )
+		{
+			const bool hasToMoveItem = std::find( p_items.begin(), p_items.end(), _itemOrder[ i ] ) != p_items.end();
+
+			if ( hasToMoveItem )
+			{
+				const size_t movedItemsIndex  = movedItems.size() - 1 - itemMovedCounter;
+				movedItems[ movedItemsIndex ] = _itemOrder[ i ];
+				itemMovedCounter++;
+				_itemOrder[ i ] = nullptr;
+			}
+			else if ( itemMovedCounter > 0 )
+			{
+				_itemOrder[ i + itemMovedCounter ] = _itemOrder[ i ];
+			}
+		}
+
+		if ( p_position < _itemOrder.size() )
+		{
+			const bool hasToMoveItem
+				= std::find( p_items.begin(), p_items.end(), _itemOrder[ p_position ] ) != p_items.end();
+			if ( hasToMoveItem )
+			{
+				movedItems[ indexMovedItemsBeforePosition ] = _itemOrder[ p_position ];
+				_itemOrder[ p_position ]					= nullptr;
+			}
+			else
+			{
+				_itemOrder[ p_position + itemMovedCounter ] = _itemOrder[ p_position ];
+			}
+		}
+
+		for ( size_t i = 0; i < movedItems.size(); i++ )
+		{
+			_itemOrder[ p_position - indexMovedItemsBeforePosition + i ] = movedItems[ i ];
+		}
+
+		VTX_EVENT( new Event::VTXEvent( Event::Global::SCENE_ITEM_INDEXES_CHANGE ) );
+	}
+
+	void Scene::sortMoleculesBySceneIndex( std::vector<Model::Molecule *> & p_molecules ) const
+	{
+		for ( int i = 0; i < p_molecules.size(); i++ )
+		{
+			int smallerIndexInScene = getItemPosition( *p_molecules[ i ] );
+			int indexInVector		= i;
+
+			for ( int j = i + 1; j < p_molecules.size(); j++ )
+			{
+				const int currentIndexInScene = getItemPosition( *p_molecules[ j ] );
+				if ( currentIndexInScene < smallerIndexInScene )
+				{
+					smallerIndexInScene = currentIndexInScene;
+					indexInVector		= j;
+				}
+			}
+
+			Model::Molecule * const tmp	 = p_molecules[ i ];
+			p_molecules[ i ]			 = p_molecules[ indexInVector ];
+			p_molecules[ indexInVector ] = tmp;
+		}
 	}
 
 	const Object3D::Helper::AABB & Scene::getAABB()

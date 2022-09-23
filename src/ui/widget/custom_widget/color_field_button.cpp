@@ -1,4 +1,5 @@
 #include "color_field_button.hpp"
+#include "style.hpp"
 #include <QPainter>
 #include <QRect>
 #include <string>
@@ -122,7 +123,7 @@ namespace VTX::UI::Widget::CustomWidget
 	void ColorFieldButton::_displayDifferentsDataFeedback()
 	{
 		setColor( Color::Rgb::BLACK );
-		setText( "-" );
+		setText( Style::DIFFERENT_MULTIPLE_DATA_STRING );
 	}
 
 } // namespace VTX::UI::Widget::CustomWidget

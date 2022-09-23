@@ -19,6 +19,21 @@ namespace VTX::UI::Widget::CustomWidget
 		Q_OBJECT
 
 	  public:
+		enum AxisMask : int
+		{
+			NONE = 0,
+
+			X = 1 << 0,
+			Y = 1 << 1,
+			Z = 1 << 2,
+
+			XY = X | Y,
+			XZ = X | Z,
+			YZ = Y | Z,
+
+			XYZ = X | Y | Z,
+		};
+
 		~Vector3Widget() {};
 
 		const Vec3f & getData() const;
@@ -41,7 +56,7 @@ namespace VTX::UI::Widget::CustomWidget
 		//////////////////////////////////////////////////////////////
 
 	  signals:
-		void onValueChange( const Vec3f & p_value );
+		void onValueChange( const Vec3f & p_value, const AxisMask & p_mask );
 		void onValueDragged( const Vec3f & p_delta );
 
 	  protected:

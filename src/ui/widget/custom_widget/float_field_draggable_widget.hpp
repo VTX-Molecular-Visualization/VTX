@@ -9,6 +9,7 @@
 #include <QMouseEvent>
 #include <QObject>
 #include <QPaintEvent>
+#include <QString>
 #include <QWidget>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -63,6 +64,8 @@ namespace VTX::UI::Widget::CustomWidget
 		void _onTextFieldEdited();
 		void _onInternalValueChanged( const float p_newValue );
 		void _onValueDragged( const float p_delta );
+
+		QString getDisplayedText( const float p_value ) const;
 
 		// MultiDataField Implementation //////////////////////////////
 		void		  _displayDifferentsDataFeedback() override;

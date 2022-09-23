@@ -28,7 +28,7 @@ namespace VTX::UI::Widget::Scene
 {
 	SceneWidget::SceneWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( Event::Global::SCENE_ITEM_INDEX_CHANGE );
+		_registerEvent( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 
 		_registerEvent( Event::Global::MOLECULE_ADDED );
 		_registerEvent( Event::Global::MOLECULE_REMOVED );
@@ -151,7 +151,7 @@ namespace VTX::UI::Widget::Scene
 					dihedralAngleModel, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL );
 			}
 		}
-		else if ( p_event.name == Event::Global::SCENE_ITEM_INDEX_CHANGE )
+		else if ( p_event.name == Event::Global::SCENE_ITEM_INDEXES_CHANGE )
 		{
 			_refreshItemIndex();
 		}
@@ -419,9 +419,19 @@ namespace VTX::UI::Widget::Scene
 	void SceneWidget::dragEnterEvent( QDragEnterEvent * p_event )
 	{
 		BaseManualWidget::dragEnterEvent( p_event );
-		if ( p_event->mimeData()->hasFormat(
-				 VTX::UI::MimeType::getQStringMimeType( VTX::UI::MimeType::ApplicationMimeType::SCENE_ITEM ) ) )
-			p_event->acceptProposedAction();
+
+		const bool draggedObjectIsModel
+			= UI::MimeType::checkApplicationDataType( p_event->mimeData(), UI::MimeType::ApplicationMimeType::MODEL );
+
+		if ( draggedObjectIsModel )
+		{
+			const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
+
+			if ( modelData.getDragSource() == UI::MimeType::DragSource::SCENE_VIEW )
+			{
+				p_event->acceptProposedAction();
+			}
+		}
 	}
 	void SceneWidget::mouseMoveEvent( QMouseEvent * p_event ) { BaseManualWidget::mouseMoveEvent( p_event ); }
 
@@ -429,40 +439,63 @@ namespace VTX::UI::Widget::Scene
 	{
 		BaseManualWidget::dropEvent( p_event );
 
-		const QByteArray byteData = p_event->mimeData()->data(
-			UI::MimeType::getQStringMimeType( UI::MimeType::ApplicationMimeType::SCENE_ITEM ) );
-		const Model::ID idDroppedObject = std::atoi( byteData.data() );
+		const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
 
-		SceneItemWidget * sceneItemWidget = nullptr;
-		int				  previousIndex	  = 0;
-		for ( SceneItemWidget * const item : _sceneWidgets )
+		std::vector<Model::ID> droppedModelIDs = std::vector<Model::ID>();
+
+		if ( modelData.getTypeID() == ID::Model::MODEL_SELECTION )
 		{
-			if ( item->getModelID() == idDroppedObject )
+			const Model::Selection & selection
+				= MVC::MvcManager::get().getModel<Model::Selection>( modelData.getModelID() );
+
+			droppedModelIDs.reserve( selection.getItems().size() );
+			for ( const Model::ID & id : selection.getItems() )
 			{
-				sceneItemWidget = item;
-				break;
+				droppedModelIDs.emplace_back( id );
 			}
-			previousIndex++;
+		}
+		else
+		{
+			droppedModelIDs.resize( 1 );
+			droppedModelIDs[ 0 ] = modelData.getModelID();
 		}
 
-		const int eventPosY				 = _scrollAreaContent->mapFrom( this, p_event->pos() ).y();
-		int		  newIndex				 = (int)_sceneWidgets.size() - 1;
-		bool	  draggedAfterCurrentPos = false;
-		for ( int i = 0; i < _sceneWidgets.size(); i++ )
+		std::vector<const Generic::BaseSceneItem *> droppedItems = std::vector<const Generic::BaseSceneItem *>();
+		droppedItems.reserve( droppedModelIDs.size() );
+
+		for ( const Model::ID & droppedModelId : droppedModelIDs )
 		{
-			const int itemPosY = _sceneWidgets[ i ]->pos().y();
-			if ( itemPosY > eventPosY )
+			SceneItemWidget * sceneItemWidget = nullptr;
+			int				  sceneItemIndex  = 0;
+			for ( SceneItemWidget * const item : _sceneWidgets )
 			{
-				newIndex = i - ( draggedAfterCurrentPos ? 1 : 0 );
-				break;
+				if ( item->getModelID() == droppedModelId )
+				{
+					sceneItemWidget = item;
+					break;
+				}
+				sceneItemIndex++;
 			}
 
-			draggedAfterCurrentPos = draggedAfterCurrentPos || _sceneWidgets[ i ] == sceneItemWidget;
+			const Generic::BaseSceneItem & sceneItem = _sceneWidgets[ sceneItemIndex ]->getBaseSceneItem();
+			droppedItems.emplace_back( &sceneItem );
+		}
+
+		const int eventPosY = _scrollAreaContent->mapFrom( this, p_event->pos() ).y();
+		int		  newIndex	= (int)_sceneWidgets.size();
+
+		for ( int i = 0; i < _sceneWidgets.size(); i++ )
+		{
+			const int itemPosY = _sceneWidgets[ i ]->pos().y() + ( _sceneWidgets[ i ]->height() / 2 );
+			if ( itemPosY > eventPosY )
+			{
+				newIndex = i;
+				break;
+			}
 		}
 
 		p_event->acceptProposedAction();
 
-		const Generic::BaseSceneItem & sceneItem = _sceneWidgets[ previousIndex ]->getBaseSceneItem();
-		VTX_ACTION( new Action::Scene::ChangeItemIndex( sceneItem, newIndex ) );
+		VTX_ACTION( new Action::Scene::ChangeItemIndex( droppedItems, newIndex ) );
 	}
 } // namespace VTX::UI::Widget::Scene

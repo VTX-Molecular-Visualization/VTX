@@ -1,14 +1,12 @@
 #ifndef __VTX_UI_WIDGET_MODEL_FIELD_WIDGET__
 #define __VTX_UI_WIDGET_MODEL_FIELD_WIDGET__
 
-#include "ui/widget/base_manual_widget.hpp"
-#include <QBoxLayout>
-#include <QDragEnterEvent>
+#include "id.hpp"
+#include "ui/draggable_item.hpp"
+#include "ui/widget/custom_widget/model_drop_area.hpp"
 #include <QLabel>
-#include <QMouseEvent>
-#include <QPixmap>
-#include <QPushButton>
 #include <QWidget>
+#include <type_traits>
 
 namespace VTX
 {
@@ -17,40 +15,56 @@ namespace VTX
 		class BaseModel;
 	}
 
-	namespace UI
+	namespace UI::Widget::CustomWidget
 	{
-		namespace Widget
+		class ModelFieldWidget : public CustomWidget::ModelDropArea, public DraggableItem
 		{
-			namespace CustomWidget
+			Q_OBJECT
+			VTX_WIDGET
+
+		  public:
+			~ModelFieldWidget() {};
+			void receiveEvent( const Event::VTXEvent & p_event ) override;
+
+			void localize() override;
+			void refresh();
+
+			inline Model::BaseModel * const		  getModel() { return _model; };
+			inline const Model::BaseModel * const getModel() const { return _model; };
+			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
+			M * const getModel()
 			{
-				class ModelFieldWidget : public BaseManualWidget<QFrame>
-				{
-					Q_OBJECT
-					VTX_WIDGET
+				return static_cast<M *>( getModel() );
+			}
+			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
+			const M * const getModel() const
+			{
+				return static_cast<M *>( getModel() );
+			}
 
-				  public:
-					~ModelFieldWidget() {};
-					void localize() override;
+			void setModel( Model::BaseModel * const p_model );
 
-					inline Model::BaseModel * const		  getModel() { return _model; };
-					inline const Model::BaseModel * const getModel() const { return _model; };
+		  signals:
+			void onModelChanged( Model::BaseModel * const p_model );
 
-				  signals:
-					void dataChanged();
+		  protected:
+			ModelFieldWidget( QWidget * p_parent );
 
-				  protected:
-					ModelFieldWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
-					void _setupUi( const QString & p_name ) override;
-					void _setupSlots() override;
+			void _setupUi( const QString & p_name ) override;
+			void _setupSlots() override;
 
-					void dragEnterEvent( QDragEnterEvent * event ) override;
-					void dropEvent( QDropEvent * event ) override;
+			void _onModelDropped( Model::BaseModel * const p_model );
 
-				  private:
-					Model::BaseModel * _model = nullptr;
-				};
-			} // namespace CustomWidget
-		}	  // namespace Widget
-	}		  // namespace UI
+			QMimeData * _getDataForDrag() const override;
+
+		  private:
+			Model::BaseModel * _model = nullptr;
+
+			QLabel * _label				  = nullptr;
+			QLabel * _modelTypeIconWidget = nullptr;
+
+			QString _placeholder = "Drag a model here";
+		};
+	} // namespace UI::Widget::CustomWidget
 } // namespace VTX
 #endif

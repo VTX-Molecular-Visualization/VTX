@@ -78,20 +78,32 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void TransformWidget::localize() {};
 
-	void TransformWidget::_onPositionChange( const Vec3f & p_position )
+	void TransformWidget::_onPositionChange( const Vec3f & p_position, const Vector3Widget::AxisMask & p_axisMask )
 	{
-		_transform.setTranslation( p_position );
-		emit onValueChange( _transform );
+		Vec3f newPosition = _applyVectorWithMask( _transform.getTranslationVector(), p_position, p_axisMask );
+
+		_transform.setTranslation( newPosition );
+		const Generic::BaseTransformable::TransformComposantMask mask
+			= _generateTransformMask( Field::Position, p_axisMask );
+		emit onValueChange( _transform, mask );
 	}
-	void TransformWidget::_onRotationChange( const Vec3f & p_euler )
+	void TransformWidget::_onRotationChange( const Vec3f & p_euler, const Vector3Widget::AxisMask & p_axisMask )
 	{
-		_transform.setRotation( p_euler );
-		emit onValueChange( _transform );
+		Vec3f newEuler = _applyVectorWithMask( _transform.getTranslationVector(), p_euler, p_axisMask );
+
+		_transform.setRotation( newEuler );
+		const Generic::BaseTransformable::TransformComposantMask mask
+			= _generateTransformMask( Field::Euler, p_axisMask );
+		emit onValueChange( _transform, mask );
 	}
-	void TransformWidget::_onScaleChange( const Vec3f & p_scale )
+	void TransformWidget::_onScaleChange( const Vec3f & p_scale, const Vector3Widget::AxisMask & p_axisMask )
 	{
-		_transform.setScale( p_scale );
-		emit onValueChange( _transform );
+		Vec3f newScale = _applyVectorWithMask( _transform.getTranslationVector(), p_scale, p_axisMask );
+
+		_transform.setScale( newScale );
+		const Generic::BaseTransformable::TransformComposantMask mask
+			= _generateTransformMask( Field::Scale, p_axisMask );
+		emit onValueChange( _transform, mask );
 	}
 
 	void TransformWidget::_onPositionDragged( const Vec3f & p_delta )
@@ -135,5 +147,96 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 	}
 	void TransformWidget::_displayDifferentsDataFeedback() {}
+
+	Vec3f TransformWidget::_applyVectorWithMask( const Vec3f &					 p_base,
+												 const Vec3f &					 p_vector,
+												 const Vector3Widget::AxisMask & p_mask )
+	{
+		Vec3f res = p_base;
+
+		if ( p_mask & Vector3Widget::AxisMask::X )
+			res.x = p_vector.x;
+		if ( p_mask & Vector3Widget::AxisMask::Y )
+			res.y = p_vector.y;
+		if ( p_mask & Vector3Widget::AxisMask::Z )
+			res.z = p_vector.z;
+
+		return res;
+	}
+
+	Generic::BaseTransformable::TransformComposantMask TransformWidget::_generateTransformMask(
+		const Field &					p_field,
+		const Vector3Widget::AxisMask & p_axis )
+	{
+		Generic::BaseTransformable::TransformComposantMask res
+			= Generic::BaseTransformable::TransformComposantMask::NONE;
+
+		switch ( p_field )
+		{
+		case Field::Position:
+			if ( p_axis & Vector3Widget::AxisMask::X )
+			{
+				res = Generic::BaseTransformable::TransformComposantMask(
+					res | Generic::BaseTransformable::TransformComposantMask::TRANSLATE_X );
+			}
+			if ( p_axis & Vector3Widget::AxisMask::Y )
+			{
+				res = Generic::BaseTransformable::TransformComposantMask(
+					res | Generic::BaseTransformable::TransformComposantMask::TRANSLATE_Y );
+			}
+			if ( p_axis & Vector3Widget::AxisMask::Z )
+			{
+				res = Generic::BaseTransformable::TransformComposantMask(
+					res | Generic::BaseTransformable::TransformComposantMask::TRANSLATE_Z );
+			}
+
+			break;
+
+		case Field::Euler:
+			if ( p_axis & Vector3Widget::AxisMask::X )
+			{
+				res = Generic::BaseTransformable::TransformComposantMask(
+					res | Generic::BaseTransformable::TransformComposantMask::EULER_X );
+			}
+			if ( p_axis & Vector3Widget::AxisMask::Y )
+			{
+				res = Generic::BaseTransformable::TransformComposantMask(
+					res | Generic::BaseTransformable::TransformComposantMask::EULER_Y );
+			}
+			if ( p_axis & Vector3Widget::AxisMask::Z )
+			{
+				res = Generic::BaseTransformable::TransformComposantMask(
+					res | Generic::BaseTransformable::TransformComposantMask::EULER_Z );
+			}
+
+			break;
+
+		case Field::Scale:
+			if ( p_axis & Vector3Widget::AxisMask::X )
+			{
+				res = Generic::BaseTransformable::TransformComposantMask(
+					res | Generic::BaseTransformable::TransformComposantMask::SCALE_X );
+			}
+			if ( p_axis & Vector3Widget::AxisMask::Y )
+			{
+				res = Generic::BaseTransformable::TransformComposantMask(
+					res | Generic::BaseTransformable::TransformComposantMask::SCALE_Y );
+			}
+			if ( p_axis & Vector3Widget::AxisMask::Z )
+			{
+				res = Generic::BaseTransformable::TransformComposantMask(
+					res | Generic::BaseTransformable::TransformComposantMask::SCALE_Z );
+			}
+
+			break;
+
+		default:
+			VTX_ERROR( "Unknown transform mask in TransformWidget::_generateTransformMask ("
+					   + std::to_string( int( p_field ) ) + ")." );
+			break;
+		}
+
+		return res;
+	}
 
 } // namespace VTX::UI::Widget::CustomWidget

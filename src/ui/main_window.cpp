@@ -2,6 +2,7 @@
 #include "action/dev.hpp"
 #include "action/main.hpp"
 #include "action/selection.hpp"
+#include "analysis/rmsd.hpp"
 #include "controller/base_keyboard_controller.hpp"
 #include "controller/measurement_picker.hpp"
 #include "event/event_manager.hpp"
@@ -25,9 +26,15 @@ namespace VTX::UI
 		_registerEvent( Event::Global::SCENE_PATH_CHANGE );
 
 		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
+
+		_registerEvent( Event::Global::RMSD_COMPUTED );
 	}
 
-	MainWindow::~MainWindow() { delete _contextualMenu; }
+	MainWindow::~MainWindow()
+	{
+		delete _contextualMenu;
+		delete _cursorHandler;
+	}
 
 	void MainWindow::receiveEvent( const Event::VTXEvent & p_event )
 	{
@@ -46,6 +53,15 @@ namespace VTX::UI
 		else if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
 		{
 			_updatePicker();
+		}
+		else if ( p_event.name == Event::Global::RMSD_COMPUTED )
+		{
+			const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> & castedEvent
+				= dynamic_cast<const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> &>( p_event );
+
+			VTX_INFO( "RMSD between " + castedEvent.ref.firstMolecule->getDisplayName() + " and "
+					  + castedEvent.ref.secondMolecule->getDisplayName() + ": "
+					  + std::to_string( castedEvent.ref.rmsd ) );
 		}
 	}
 
@@ -97,6 +113,10 @@ namespace VTX::UI
 
 		_informationWidget = WidgetFactory::get().instantiateWidget<Widget::Information::InformationWidget>(
 			this, "informationWidget" );
+
+		_structuralAlignmentWidget
+			= WidgetFactory::get().instantiateWidget<Widget::Analysis::StructuralAlignment::StructuralAlignmentWidget>(
+				this, "structuralAlignmentWidget" );
 
 		_renderWidget->displayOverlay( Widget::Render::Overlay::OVERLAY::VISUALIZATION_QUICK_ACCESS,
 									   Widget::Render::Overlay::OVERLAY_ANCHOR::BOTTOM_CENTER );
@@ -155,6 +175,11 @@ namespace VTX::UI
 		connect( _consoleWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 		connect( _settingWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 		connect( _sequenceWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+
+		connect( _structuralAlignmentWidget,
+				 &QDockWidget::visibilityChanged,
+				 this,
+				 &MainWindow::_onDockWindowVisibilityChange );
 
 		// Shortcuts.
 		connect( new QShortcut( QKeySequence( tr( "Ctrl+N" ) ), this ),
@@ -340,75 +365,81 @@ namespace VTX::UI
 
 	void MainWindow::restoreDefaultLayout()
 	{
-		if ( dockWidgetArea( _sceneWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
-		{
-			removeDockWidget( _sceneWidget );
-			restoreDockWidget( _sceneWidget );
-			_sceneWidget->setFloating( false );
-		}
-
+		_restoreDockWidget( _sceneWidget );
 		// !V0.1
-		// if ( dockWidgetArea( _selectionWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
-		//{
-		//	removeDockWidget( _selectionWidget );
-		//	restoreDockWidget( _selectionWidget );
-		//	_selectionWidget->setFloating( false );
-		//}
-		if ( dockWidgetArea( _sequenceWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
-		{
-			removeDockWidget( _sequenceWidget );
-			restoreDockWidget( _sequenceWidget );
-			_sequenceWidget->setFloating( false );
-		}
-		if ( dockWidgetArea( _inspectorWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
-		{
-			removeDockWidget( _inspectorWidget );
-			restoreDockWidget( _inspectorWidget );
-			_inspectorWidget->setFloating( false );
-		}
-		if ( dockWidgetArea( _consoleWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
-		{
-			removeDockWidget( _consoleWidget );
-			restoreDockWidget( _consoleWidget );
-			_consoleWidget->setFloating( false );
-		}
-		if ( dockWidgetArea( _settingWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
-		{
-			removeDockWidget( _settingWidget );
-			restoreDockWidget( _settingWidget );
-			_settingWidget->setFloating( false );
-		}
+		//_restoreDockWidget( _selectionWidget );
+		_restoreDockWidget( _sequenceWidget );
+		_restoreDockWidget( _inspectorWidget );
+		_restoreDockWidget( _consoleWidget );
+		_restoreDockWidget( _settingWidget );
+		_restoreDockWidget( _structuralAlignmentWidget );
 
-		addDockWidget( Qt::DockWidgetArea::LeftDockWidgetArea, _sceneWidget, Qt::Orientation::Horizontal );
+		_addDockWidgetAsTabified( _sceneWidget, Qt::DockWidgetArea::LeftDockWidgetArea, Qt::Orientation::Horizontal );
+		_addDockWidgetAsTabified( _sequenceWidget, Qt::DockWidgetArea::TopDockWidgetArea, Qt::Orientation::Horizontal );
 		// !V0.1
-		// splitDockWidget( _sceneWidget, _selectionWidget, Qt::Orientation::Vertical );
-		addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _sequenceWidget, Qt::Orientation::Horizontal );
-		addDockWidget( Qt::DockWidgetArea::RightDockWidgetArea, _inspectorWidget, Qt::Orientation::Horizontal );
-		addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _consoleWidget, Qt::Orientation::Vertical );
+		// _addDockWidgetAsTabified( _selectionWidget, _sceneWidget, Qt::Orientation::Vertical, false );
+		_addDockWidgetAsTabified( _sequenceWidget, Qt::DockWidgetArea::TopDockWidgetArea, Qt::Orientation::Horizontal );
+		_addDockWidgetAsTabified(
+			_inspectorWidget, Qt::DockWidgetArea::RightDockWidgetArea, Qt::Orientation::Horizontal );
+		_addDockWidgetAsTabified( _consoleWidget, Qt::DockWidgetArea::BottomDockWidgetArea, Qt::Orientation::Vertical );
 
-		// Create an emplacement for the widget before setting it floating to prevent warning
-		// TODO check https://bugreports.qt.io/browse/QTBUG-88157 to remove useless tabifyDockWidget
-		tabifyDockWidget( _inspectorWidget, _settingWidget );
-		_settingWidget->setFloating( true );
-		_settingWidget->resize( Style::SETTINGS_PREFERRED_SIZE );
-
-		if ( !_sceneWidget->isVisible() )
-			_sceneWidget->show();
-		// !V0.1
-		// if ( !_selectionWidget->isVisible() )
-		//	_selectionWidget->show();
-		if ( !_sequenceWidget->isVisible() )
-			_sequenceWidget->show();
-		if ( !_inspectorWidget->isVisible() )
-			_inspectorWidget->show();
-		if ( !_consoleWidget->isVisible() )
-			_consoleWidget->show();
-
-		if ( _settingWidget->isVisible() )
-			_settingWidget->hide();
+		_addDockWidgetAsFloating( _settingWidget, Style::SETTINGS_PREFERRED_SIZE, false );
+		_addDockWidgetAsFloating( _structuralAlignmentWidget, Style::SETTINGS_PREFERRED_SIZE, false );
 
 		if ( _informationWidget->isVisible() )
 			_informationWidget->hide();
+	}
+
+	void MainWindow::_restoreDockWidget( QDockWidget * const p_dockWidget )
+	{
+		if ( dockWidgetArea( p_dockWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
+		{
+			removeDockWidget( p_dockWidget );
+			restoreDockWidget( p_dockWidget );
+			p_dockWidget->setFloating( false );
+		}
+	}
+
+	void MainWindow::_addDockWidgetAsTabified( QDockWidget * const		p_dockWidget,
+											   const Qt::DockWidgetArea p_area,
+											   const Qt::Orientation	p_orientation,
+											   const bool				p_visible )
+	{
+		addDockWidget( p_area, p_dockWidget, p_orientation );
+
+		if ( !p_dockWidget->isVisible() && p_visible )
+			p_dockWidget->show();
+		else if ( p_dockWidget->isVisible() && !p_visible )
+			p_dockWidget->hide();
+	}
+
+	void MainWindow::_addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
+											   QDockWidget * const p_neighbour,
+											   Qt::Orientation	   p_orientation,
+											   const bool		   p_visible )
+	{
+		splitDockWidget( p_neighbour, p_dockWidget, p_orientation );
+
+		if ( !p_dockWidget->isVisible() && p_visible )
+			p_dockWidget->show();
+		else if ( p_dockWidget->isVisible() && !p_visible )
+			p_dockWidget->hide();
+	}
+	void MainWindow::_addDockWidgetAsFloating( QDockWidget * const p_dockWidget,
+											   const QSize &	   p_size,
+											   const bool		   p_visible )
+	{
+		// Create an emplacement for the widget before setting it floating to prevent warning
+		// TODO check https://bugreports.qt.io/browse/QTBUG-88157 to remove useless tabifyDockWidget
+		tabifyDockWidget( _inspectorWidget, p_dockWidget );
+
+		p_dockWidget->setFloating( true );
+		p_dockWidget->resize( p_size );
+
+		if ( !p_dockWidget->isVisible() && p_visible )
+			p_dockWidget->show();
+		else if ( p_dockWidget->isVisible() && !p_visible )
+			p_dockWidget->hide();
 	}
 
 	void MainWindow::_onDockWindowVisibilityChange( const bool p_visible )
@@ -485,6 +516,8 @@ namespace VTX::UI
 			widget = _settingWidget;
 		else if ( p_winId == ID::UI::Window::INFORMATION )
 			widget = _informationWidget;
+		else if ( p_winId == ID::UI::Window::STRUCTURAL_ALIGNMENT )
+			widget = _structuralAlignmentWidget;
 
 		return *widget;
 	}
@@ -565,6 +598,7 @@ namespace VTX::UI
 		_inspectorWidget->hide();
 		//_selectionWidget->hide();
 		_settingWidget->hide();
+		_structuralAlignmentWidget->hide();
 
 		_restoreStateTimer = new QTimer( this );
 		_restoreStateTimer->setSingleShot( true );

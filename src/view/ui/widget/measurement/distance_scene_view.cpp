@@ -104,6 +104,4 @@ namespace VTX::View::UI::Widget::Measurement
 		}
 	}
 
-	QMimeData * DistanceSceneView::_getDataForDrag() const { return VTX::UI::MimeType::generateLabelData( *_model ); }
-
 } // namespace VTX::View::UI::Widget::Measurement

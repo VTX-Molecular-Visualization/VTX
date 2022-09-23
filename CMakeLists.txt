@@ -26,13 +26,15 @@ set(PATH_QT_RESOURCE "asset/qt_resources")
 
 # Libs URL and tags.
 set(GIT_URL_CHEMFILES https://github.com/sacraiou/chemfiles.git)
-set(GIT_TAG_CHEMFILES e1f48fa)
+set(GIT_TAG_CHEMFILES e032e4dbaaf2a665857a533c4396eaf82df1c04d)
 set(GIT_URL_GLM https://github.com/g-truc/glm.git)
 set(GIT_TAG_GLM bf71a83) #0.9.9.8
 set(GIT_URL_JSON https://github.com/nlohmann/json.git)
 set(GIT_TAG_JSON v3.10.5) #3.10.5
 set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum.git)
 set(GIT_TAG_MAGIC_ENUM v0.8.0) #0.8.0
+set(GIT_URL_EIGEN https://gitlab.com/libeigen/eigen.git)
+set(GIT_TAG_EIGEN 3147391d946bb4b6c68edd901f2add6ac1f31f8c) #3.4.0
 
 # Create output dir.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
@@ -145,6 +147,15 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(magic_enum)
 message("${magic_enum_SOURCE_DIR}")
+
+# Eigen.
+FetchContent_Declare(
+  eigen
+  GIT_REPOSITORY ${GIT_URL_EIGEN}
+  GIT_TAG ${GIT_TAG_EIGEN}
+)
+FetchContent_MakeAvailable(eigen)
+message("${eigen_SOURCE_DIR}")
 
 message("Looking for dependencies...")
 

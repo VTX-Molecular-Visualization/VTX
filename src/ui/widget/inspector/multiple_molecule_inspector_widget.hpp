@@ -2,6 +2,7 @@
 #define __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_MOLECULE__
 
 #include "color/rgb.hpp"
+#include "generic/base_transformable.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/instantiated_representation.hpp"
 #include "model/representation/representation.hpp"
@@ -56,7 +57,8 @@ namespace VTX::UI::Widget::Inspector
 		CustomWidget::QLabelMultiField * _nbResiduesLabel = nullptr;
 		CustomWidget::QLabelMultiField * _nbAtomsLabel	  = nullptr;
 
-		void _onTransformChange( const Math::Transform & ) const;
+		void _onTransformChange( const Math::Transform &,
+								 const Generic::BaseTransformable::TransformComposantMask & ) const;
 		void _onPositionDragged( const Vec3f & ) const;
 		void _onRotationDragged( const Vec3f & ) const;
 		void _onScaleDragged( const Vec3f & ) const;

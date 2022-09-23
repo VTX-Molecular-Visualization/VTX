@@ -1,40 +1,58 @@
 #ifndef __VTX_UI_WIDGET_MENU_TOOL_STRUCTURAL_ALIGNMENT__
 #define __VTX_UI_WIDGET_MENU_TOOL_STRUCTURAL_ALIGNMENT__
 
+#include "analysis/structural_alignment.hpp"
 #include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
+#include "ui/widget/main_menu/menu_toolbutton_submenu_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QString>
 #include <QWidget>
+#include <vector>
 
-namespace VTX::UI::Widget::MainMenu::Tool
+namespace VTX
 {
-	class MenuToolStructuralAlignmentWidget : public MenuToolBlockWidget
+	namespace Model
 	{
-		VTX_WIDGET
+		class Molecule;
+		class Selection;
+	} // namespace Model
 
-	  public:
-		~MenuToolStructuralAlignmentWidget();
+	namespace UI::Widget::MainMenu::Tool
+	{
+		class MenuToolStructuralAlignmentWidget : public MenuToolBlockWidget
+		{
+			VTX_WIDGET
 
-		void localize() override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		  public:
+			~MenuToolStructuralAlignmentWidget();
 
-	  protected:
-		MenuToolStructuralAlignmentWidget( QWidget * p_parent );
-		void _setupUi( const QString & p_name ) override;
-		void _setupSlots() override;
+			void localize() override;
+			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-	  private:
-		MenuToolButtonWidget * _rmsdButton				  = nullptr;
-		MenuToolButtonWidget * _structuralAlignmentButton = nullptr;
+		  protected:
+			MenuToolStructuralAlignmentWidget( QWidget * p_parent );
+			void _setupUi( const QString & p_name ) override;
+			void _setupSlots() override;
 
-		bool _checkRMSDEnableSate() const;
-		bool _checkStructuralAlignmentEnableSate() const;
+		  private:
+			MenuToolButtonWidget *		  _rmsdButton						 = nullptr;
+			MenuToolButtonSubmenuWidget * _structuralAlignmentButton		 = nullptr;
+			MenuToolButtonWidget *		  _structuralAlignmentAdvancedButton = nullptr;
 
-		void _computeRMSDAction() const;
-		void _computeStructuralAlignmentAction() const;
+			VTX::Analysis::StructuralAlignment::AlignmentParameters * _alignmentParameter = nullptr;
 
-		void _refreshButtons() const;
-	};
-} // namespace VTX::UI::Widget::MainMenu::Tool
+			bool _checkRMSDEnableSate() const;
+			bool _checkStructuralAlignmentEnableSate() const;
+
+			void _computeRMSDAction() const;
+			void _computeStructuralAlignmentAction();
+			void _launchStructuralAlignmentAction() const;
+
+			void _openStructuralAlignmentWindow() const;
+
+			void _refreshButtons() const;
+		};
+	} // namespace UI::Widget::MainMenu::Tool
+} // namespace VTX
 #endif

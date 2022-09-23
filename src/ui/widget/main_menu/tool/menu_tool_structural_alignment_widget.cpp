@@ -1,11 +1,17 @@
 #include "menu_tool_structural_alignment_widget.hpp"
 #include "action/action_manager.hpp"
-#include "action/structural_alignment.hpp"
+#include "action/analysis.hpp"
 #include "id.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
+#include "ui/main_window.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/analysis.hpp"
+#include "vtx_app.hpp"
+#include <QAction>
+#include <QMenu>
 
 namespace VTX::UI::Widget::MainMenu::Tool
 {
@@ -15,7 +21,11 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		_registerEvent( Event::Global::SELECTION_CHANGE );
 	}
 
-	MenuToolStructuralAlignmentWidget::~MenuToolStructuralAlignmentWidget() {}
+	MenuToolStructuralAlignmentWidget::~MenuToolStructuralAlignmentWidget()
+	{
+		if ( _alignmentParameter != nullptr )
+			delete _alignmentParameter;
+	}
 
 	void MenuToolStructuralAlignmentWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
@@ -34,10 +44,16 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		pushButton( *_rmsdButton, 0 );
 
 		_structuralAlignmentButton
-			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "structuralAlignmentButton" );
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonSubmenuWidget>( this, "structuralAlignmentButton" );
 		_structuralAlignmentButton->setData(
-			"Structural\nAlignment", ":/sprite/measurement_distance_icon.png", Qt::Orientation::Vertical );
+			"Structural alignment", ":/sprite/measurement_distance_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_structuralAlignmentButton, 1 );
+
+		_structuralAlignmentAdvancedButton
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "structuralAlignmentAdvancedButton" );
+		_structuralAlignmentAdvancedButton->setData(
+			"Alignment...", ":/sprite/settings_icon.png", Qt::Orientation::Horizontal );
+		pushButton( *_structuralAlignmentAdvancedButton, 1 );
 
 		validate();
 
@@ -46,20 +62,24 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	void MenuToolStructuralAlignmentWidget::_setupSlots()
 	{
 		_rmsdButton->setTriggerAction( this, &MenuToolStructuralAlignmentWidget::_computeRMSDAction );
-		_structuralAlignmentButton->setTriggerAction(
-			this, &MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction );
+
+		_structuralAlignmentButton->addAction(
+			"CE Align", this, &MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction, true );
+
+		_structuralAlignmentAdvancedButton->setTriggerAction(
+			this, &MenuToolStructuralAlignmentWidget::_openStructuralAlignmentWindow );
 	}
 	void MenuToolStructuralAlignmentWidget::localize() {}
 
 	bool MenuToolStructuralAlignmentWidget::_checkRMSDEnableSate() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		return selectionModel.getMoleculeSelectedCount() == 2;
+		return selectionModel.getMoleculeSelectedCount() >= 2;
 	}
 	bool MenuToolStructuralAlignmentWidget::_checkStructuralAlignmentEnableSate() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		return selectionModel.getMoleculeSelectedCount() == 2;
+		return selectionModel.getMoleculeSelectedCount() >= 2;
 	}
 
 	void MenuToolStructuralAlignmentWidget::_refreshButtons() const
@@ -72,28 +92,43 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-		Model::Selection::MapMoleculeIds::const_iterator it = selection.getMoleculesMap().cbegin();
+		const Model::Molecule *				 target;
+		std::vector<const Model::Molecule *> comparers;
+		Util::Analysis::pickTargetAndComparersFromSelection( selection, target, comparers );
 
-		const Model::ID & firstMoleculeID = it->first;
-		it++;
-		const Model::ID & secondMoleculeID = it->first;
+		std::vector<const Model::Molecule *> comparersConst = std::vector<const Model::Molecule *>();
+		comparersConst.resize( comparers.size() );
+		std::move( comparers.begin(), comparers.end(), comparersConst.begin() );
 
-		const Model::Molecule & firstMolecule  = MVC::MvcManager::get().getModel<Model::Molecule>( firstMoleculeID );
-		const Model::Molecule & secondMolecule = MVC::MvcManager::get().getModel<Model::Molecule>( secondMoleculeID );
-
-		VTX_ACTION( new Action::StructuralAlignment::ComputeRMSD( firstMolecule, secondMolecule ) );
+		VTX_ACTION( new Action::Analysis::ComputeRMSD( target, comparersConst ) );
 	}
-	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction() const
+
+	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction()
+	{
+		if ( _alignmentParameter != nullptr )
+			delete _alignmentParameter;
+
+		_alignmentParameter = VTX::Analysis::StructuralAlignment::instantiateDefaultParameters(
+			VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign );
+
+		_launchStructuralAlignmentAction();
+	}
+
+	void MenuToolStructuralAlignmentWidget::_launchStructuralAlignmentAction() const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-		const Model::ID & firstMoleculeID  = selection.getMoleculesMap().begin()->first;
-		const Model::ID & secondMoleculeID = ( selection.getMoleculesMap().begin()++ )->first;
+		const Model::Molecule *		   staticMolecule;
+		std::vector<Model::Molecule *> mobileMolecules;
+		Util::Analysis::pickTargetAndComparersFromSelection( selection, staticMolecule, mobileMolecules );
 
-		const Model::Molecule & firstMolecule  = MVC::MvcManager::get().getModel<Model::Molecule>( firstMoleculeID );
-		const Model::Molecule & secondMolecule = MVC::MvcManager::get().getModel<Model::Molecule>( secondMoleculeID );
+		VTX_ACTION(
+			new Action::Analysis::ComputeStructuralAlignment( staticMolecule, mobileMolecules, _alignmentParameter ) );
+	}
 
-		VTX_ACTION( new Action::StructuralAlignment::ComputeStructuralAlignment( firstMolecule, secondMolecule ) );
+	void MenuToolStructuralAlignmentWidget::_openStructuralAlignmentWindow() const
+	{
+		VTXApp::get().getMainWindow().showWidget( ID::UI::Window::STRUCTURAL_ALIGNMENT, true );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Tool

@@ -170,9 +170,7 @@ namespace VTX::Action::Atom
 
 			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
 
-			const float offset = generatedMolecule->getAABB().radius() + _target.getAABB().radius()
-								 + VTX::Setting::COPIED_MOLECULE_OFFSET;
-			generatedMolecule->setTranslation( VTX::Vec3f( offset, 0, 0 ) );
+			generatedMolecule->applyTransform( _target.getMoleculePtr()->getTransform() );
 
 			VTXApp::get().getScene().addMolecule( generatedMolecule );
 		}

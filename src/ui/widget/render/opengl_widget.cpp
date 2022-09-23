@@ -145,7 +145,7 @@ namespace VTX::UI::Widget::Render
 #endif
 		if ( func != nullptr )
 		{
-			VTX_DEBUG( std::to_string( ( (uint( * )())func )() ) );
+			VTX_DEBUG( std::to_string( ((uint( * )())func)() ) );
 		}
 		else
 		{
@@ -162,9 +162,9 @@ namespace VTX::UI::Widget::Render
 	const Vec2i OpenGLWidget::getPickedIds( const uint p_x, const uint p_y )
 	{
 		const float pixelRatio = getScreenPixelRatio();
-		makeCurrent();
+		// makeCurrent();
 		Vec2i pickedIds = _renderer->getPickedIds( p_x * pixelRatio, ( height() - p_y ) * pixelRatio );
-		doneCurrent();
+		// doneCurrent();
 
 		return pickedIds;
 	}
