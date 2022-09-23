@@ -26,7 +26,7 @@ set(PATH_QT_RESOURCE "asset/qt_resources")
 
 # Libs URL and tags.
 set(GIT_URL_CHEMFILES https://github.com/sacraiou/chemfiles.git)
-set(GIT_TAG_CHEMFILES e032e4dbaaf2a665857a533c4396eaf82df1c04d)
+set(GIT_TAG_CHEMFILES a6d59c3b900dc585619236c5b335d960607ba41d)
 set(GIT_URL_GLM https://github.com/g-truc/glm.git)
 set(GIT_TAG_GLM bf71a83) #0.9.9.8
 set(GIT_URL_JSON https://github.com/nlohmann/json.git)
@@ -191,6 +191,7 @@ target_link_libraries(VTX PRIVATE glm::glm)
 target_link_libraries(VTX PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(VTX PRIVATE magic_enum::magic_enum)
 target_link_libraries(VTX PRIVATE fmt)
+target_link_libraries(VTX PRIVATE eigen)
 
 if(MSVC)
 	# Add specific libs.
@@ -282,11 +283,6 @@ if(CMAKE_COMPILER_IS_GNUCC)
 	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 		add_definitions(-D_DEBUG)
 	endif()
-endif()
-
-# Wix configuration.
-if(WIN32)
-	set(CPACK_WIX_UPGRADE_GUID "46ad52f0-a53d-45a1-b170-bfacc26068e2")
 endif()
 
 # Disable Qt5.

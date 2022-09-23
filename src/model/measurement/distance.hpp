@@ -33,7 +33,7 @@ namespace VTX::Model::Measurement
 		void setAtoms( const Model::Atom & p_firstAtom, const Model::Atom & p_secondAtom );
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-		void _recomputeAABB( Math::AABB & p_aabb ) override;
+		void _recomputeAABB( Object3D::Helper::AABB & p_aabb ) override;
 
 		const Model::Atom & getFirstAtom() const { return *_atoms[ 0 ]; }
 		const Model::Atom & getSecondAtom() const { return *_atoms[ 1 ]; }
