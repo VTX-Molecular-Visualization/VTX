@@ -18,6 +18,7 @@ namespace VTX
 			CARTOON,
 			BALL_AND_STICK_AND_CARTOON,
 			STICK_AND_CARTOON,
+			SES,
 			COUNT
 		};
 
@@ -35,6 +36,7 @@ namespace VTX
 			ATOM   = 1 << 0,
 			BOND   = 1 << 1,
 			RIBBON = 1 << 2,
+			SES	   = 1 << 3,
 		};
 
 		enum MoleculeComputationFlag
@@ -74,6 +76,10 @@ namespace VTX
 				res = Representation::FlagDataTargeted( Representation::FlagDataTargeted::ATOM
 														| Representation::FlagDataTargeted::BOND
 														| Representation::FlagDataTargeted::RIBBON );
+				break;
+
+			case Generic::REPRESENTATION::SES:
+				res = Representation::FlagDataTargeted( Representation::FlagDataTargeted::SES );
 				break;
 
 			default:

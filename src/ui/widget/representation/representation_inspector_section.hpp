@@ -18,6 +18,7 @@
 #include "ui/widget/representation/stick_representation_widget.hpp"
 #include "ui/widget/representation/trace_representation_widget.hpp"
 #include "ui/widget/representation/vdw_representation_widget.hpp"
+#include "ui/widget/representation/ses_representation_widget.hpp"
 #include "view/base_view.hpp"
 #include <QComboBox>
 #include <QDoubleSpinBox>

@@ -20,6 +20,10 @@ namespace VTX::Model::Representation
 		if ( _ribbonData != nullptr )
 			delete _ribbonData;
 		_ribbonData = nullptr;
+
+		if (_sesData != nullptr)
+			delete _sesData;
+		_sesData = nullptr;
 	}
 
 	const Generic::REPRESENTATION & RepresentationData::getRepresentationType() const { return _representationType; }
@@ -71,6 +75,14 @@ namespace VTX::Model::Representation
 		notifyRepresentationDataChange();
 	}
 
+	void RepresentationData::setSESResolution( const float p_resolution )
+	{
+		assert( _sesData != nullptr );
+
+		_sesData->resolution = p_resolution;
+		notifyRepresentationDataChange();
+	}
+
 	void RepresentationData::copyData( const RepresentationData & p_source )
 	{
 		if ( _sphereData != nullptr && p_source._sphereData != nullptr )
@@ -89,6 +101,11 @@ namespace VTX::Model::Representation
 		{
 			_ribbonData->colorMode		   = p_source._ribbonData->colorMode;
 			_ribbonData->colorBlendingMode = p_source._ribbonData->colorBlendingMode;
+		}
+
+		if ( _sesData != nullptr && p_source._sesData != nullptr )
+		{
+			_sesData->resolution = p_source._sesData->resolution;
 		}
 
 		_colorMode = p_source._colorMode;

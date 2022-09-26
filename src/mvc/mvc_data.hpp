@@ -64,6 +64,7 @@ namespace VTX::MVC
 		{
 			for ( const PairViews & pair : _views )
 			{
+				VTX_DEBUG("{}", pair.first);
 				pair.second->notify( p_event );
 			}
 		};

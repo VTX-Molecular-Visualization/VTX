@@ -770,10 +770,9 @@ namespace VTX
 				MVC::MvcManager::get().deleteModel( _solventExcludedSurface );
 			}
 
-			// TODO: create on demand.
-			//_solventExcludedSurface = MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Molecule>( this );
-			//_solventExcludedSurface->init();
-			//_solventExcludedSurface->print();
+			_solventExcludedSurface = MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Molecule>( this );
+			_solventExcludedSurface->init();
+			_solventExcludedSurface->print();
 		}
 
 		void Molecule::refreshSolventExcludedSurface()

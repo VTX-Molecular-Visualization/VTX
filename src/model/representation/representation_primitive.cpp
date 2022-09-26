@@ -19,4 +19,6 @@ namespace VTX::Model::Representation
 		colorMode( Setting::SS_COLOR_MODE_DEFAULT ), colorBlendingMode( Setting::SS_COLOR_BLENDING_MODE_DEFAULT )
 	{
 	}
+
+	SESData::SESData() : resolution( Setting::SES_RESOLUTION_DEFAULT ) {}
 } // namespace VTX::Model::Representation

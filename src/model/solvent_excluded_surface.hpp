@@ -21,6 +21,8 @@ namespace VTX
 			inline Object3D::Helper::Grid & getGridAtoms() { return _gridAtoms; }
 			inline Object3D::Helper::Grid & getGridSES() { return _gridSES; }
 
+			const Math::Transform& getTransform() const override;
+
 			void refresh();
 			void refreshColors();
 			void refreshVisibilities();

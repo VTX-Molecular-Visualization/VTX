@@ -71,6 +71,7 @@ namespace VTX::Model::Representation
 			// !V0.1
 			// case Generic::REPRESENTATION::TRACE: newData = new RepresentationData_Trace(); break;
 		case Generic::REPRESENTATION::CARTOON: newData = new RepresentationData_Cartoon(); break;
+		case Generic::REPRESENTATION::SES: newData = new RepresentationData_Ses(); break;
 		default:
 			VTX_WARNING( "Type " + std::to_string( int( p_newType ) )
 						 + " not managed in Representation::changeRepresentationType." );

@@ -29,6 +29,9 @@ namespace VTX::Model::Representation
 		if ( p_source._ribbonData.isOverrided() )
 			_ribbonData.setValue( p_source._ribbonData.getValue() );
 
+		if ( p_source._sesData.isOverrided() )
+			_sesData.setValue( p_source._sesData.getValue() );
+
 		_target = p_source._target;
 	}
 
@@ -43,7 +46,8 @@ namespace VTX::Model::Representation
 		_colorMode( Generic::OverridableParameter( _linkedRepresentation->getData().getColorMode() ) ),
 		_sphereData( Generic::OverridableParameter( _linkedRepresentation->getData().getSphereData() ) ),
 		_cylinderData( Generic::OverridableParameter( _linkedRepresentation->getData().getCylinderData() ) ),
-		_ribbonData( Generic::OverridableParameter( _linkedRepresentation->getData().getRibbonData() ) )
+		_ribbonData( Generic::OverridableParameter( _linkedRepresentation->getData().getRibbonData() ) ),
+		_sesData( Generic::OverridableParameter( _linkedRepresentation->getData().getSESData() ) )
 	{
 		_registerEvent( Event::Global::MOLECULE_COLOR_CHANGE );
 	}
@@ -92,6 +96,7 @@ namespace VTX::Model::Representation
 		_sphereData.resetSource( &_linkedRepresentation->getData().getSphereData() );
 		_cylinderData.resetSource( &_linkedRepresentation->getData().getCylinderData() );
 		_ribbonData.resetSource( &_linkedRepresentation->getData().getRibbonData() );
+		_sesData.resetSource( &_linkedRepresentation->getData().getSESData() );
 	}
 
 	void InstantiatedRepresentation::setLinkedRepresentation( const Representation * const p_linkedRepresentation,
@@ -109,6 +114,8 @@ namespace VTX::Model::Representation
 			_cylinderData = Generic::OverridableParameter( _linkedRepresentation->getData().getCylinderData() );
 		if ( p_eraseOverride || !_ribbonData.isOverrided() )
 			_ribbonData = Generic::OverridableParameter( _linkedRepresentation->getData().getRibbonData() );
+		if ( p_eraseOverride || !_sesData.isOverrided() )
+			_sesData = Generic::OverridableParameter( _linkedRepresentation->getData().getSESData() );
 	}
 
 	const Generic::BaseRepresentable * const InstantiatedRepresentation::getConstTarget() const { return _target; }
@@ -169,6 +176,7 @@ namespace VTX::Model::Representation
 		case Generic::REPRESENTATION::STICK:
 		case Generic::REPRESENTATION::STICK_AND_CARTOON:
 		case Generic::REPRESENTATION::CARTOON:
+		case Generic::REPRESENTATION::SES:
 			// !V0.1
 			// case Generic::REPRESENTATION::TRACE:
 			break;
@@ -216,6 +224,7 @@ namespace VTX::Model::Representation
 		case Generic::REPRESENTATION::VAN_DER_WAALS:
 		case Generic::REPRESENTATION::CARTOON:
 		case Generic::REPRESENTATION::SAS:
+		case Generic::REPRESENTATION::SES:
 		case Generic::REPRESENTATION::COUNT: break;
 		}
 
@@ -258,6 +267,16 @@ namespace VTX::Model::Representation
 		}
 	}
 
+	void InstantiatedRepresentation::setSESResolution( const float p_resolution, const bool p_notify )
+	{
+		_sesData.getValue().resolution = p_resolution;
+
+		if ( p_notify )
+		{
+			_notifyDataChanged();
+		}
+	}
+
 	void InstantiatedRepresentation::applyData( const InstantiatedRepresentation & p_source,
 												const MEMBER_FLAG &				   p_flag,
 												const bool						   p_recomputeBuffers,
@@ -280,6 +299,9 @@ namespace VTX::Model::Representation
 
 		if ( p_flag & MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE && p_source.hasToDrawRibbon() )
 			_ribbonData.getValue().colorBlendingMode = p_source.getRibbonData().colorBlendingMode;
+
+		if (p_flag & MEMBER_FLAG::SES_RESOLUTION && p_source.hasToDrawSES())
+			_sesData.getValue().resolution = p_source.getSESData().resolution;
 
 		if ( p_flag & MEMBER_FLAG::COLOR_MODE )
 			setColorMode( p_source.getColorMode(), p_recomputeBuffers, false );
@@ -313,6 +335,11 @@ namespace VTX::Model::Representation
 			res = MEMBER_FLAG( res | MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE );
 		}
 
+		if (hasToDrawSES() && _sesData.isOverrided())
+		{
+			res = MEMBER_FLAG(res | MEMBER_FLAG::SES_RESOLUTION);
+		}
+
 		if ( _colorMode.isOverrided() )
 		{
 			res = MEMBER_FLAG( res | MEMBER_FLAG::COLOR_MODE );
@@ -335,6 +362,7 @@ namespace VTX::Model::Representation
 		case CYLINDER_COLOR_BLENDING_MODE: return _cylinderData.isOverrided(); break;
 		case RIBBON_COLOR_MODE: return _ribbonData.isOverrided(); break;
 		case RIBBON_COLOR_BLENDING_MODE: return _ribbonData.isOverrided(); break;
+		case SES_RESOLUTION: return _sesData.isOverrided(); break;
 		case COLOR: return _color.isOverrided(); break;
 		case COLOR_MODE: return _colorMode.isOverrided(); break;
 
@@ -352,17 +380,17 @@ namespace VTX::Model::Representation
 			return;
 		}
 
-		if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::Targets ) != 0 )
+		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::Targets ) != 0 )
 		{
 			_target->getMolecule()->computeRepresentationTargets();
 		}
 
-		if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::ColorBuffer ) != 0 )
+		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::ColorBuffer ) != 0 )
 		{
 			_target->getMolecule()->refreshColors();
 		}
-
-		if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::SecondaryStructure ) != 0 )
+		
+		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::SecondaryStructure ) != 0 )
 		{
 			_target->getMolecule()->getSecondaryStructure().refreshColors();
 		}
