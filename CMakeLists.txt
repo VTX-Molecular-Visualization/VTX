@@ -21,12 +21,13 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Create paths.
 set(PATH_SRC "src")
+set(PATH_LIB "lib")
 set(PATH_WINDOWS_RESOURCE "asset/windows_resources")
 set(PATH_QT_RESOURCE "asset/qt_resources")
 
 # Libs URL and tags.
 set(GIT_URL_CHEMFILES https://github.com/sacraiou/chemfiles.git)
-set(GIT_TAG_CHEMFILES a6d59c3b900dc585619236c5b335d960607ba41d)
+set(GIT_TAG_CHEMFILES 87cfdcd874838b08797536f9686c4a71a645a67c)
 set(GIT_URL_GLM https://github.com/g-truc/glm.git)
 set(GIT_TAG_GLM bf71a83) #0.9.9.8
 set(GIT_URL_JSON https://github.com/nlohmann/json.git)
@@ -111,6 +112,7 @@ endforeach()
 message("Downloading dependencies...")
 
 include(FetchContent)
+include(ExternalProject)
 
 # Chemfiles.
 FetchContent_Declare(
@@ -119,43 +121,62 @@ FetchContent_Declare(
   GIT_TAG ${GIT_TAG_CHEMFILES}
 )
 FetchContent_MakeAvailable(chemfiles)
-message("${chemfiles_SOURCE_DIR}")
 
 # Glm.
-FetchContent_Declare(
-  glm
-  GIT_REPOSITORY ${GIT_URL_GLM}
-  GIT_TAG ${GIT_TAG_GLM}
-)
-FetchContent_MakeAvailable(glm)
-message("${glm_SOURCE_DIR}")
+ExternalProject_Add(
+    glm
+    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/g-truc
+    GIT_REPOSITORY ${GIT_URL_GLM}
+	GIT_TAG ${GIT_TAG_GLM}
+	CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+    )
+ExternalProject_Get_Property(glm SOURCE_DIR)
+set(GLM_INCLUDE_DIR ${SOURCE_DIR})
 
 # Json.
-FetchContent_Declare(
-  json
-  GIT_REPOSITORY ${GIT_URL_JSON}
-  GIT_TAG ${GIT_TAG_JSON}
-)
-FetchContent_MakeAvailable(json)
-message("${json_SOURCE_DIR}")
+ExternalProject_Add(
+    json
+    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/nlohmann
+    GIT_REPOSITORY ${GIT_URL_JSON}
+	GIT_TAG ${GIT_TAG_JSON}
+	CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+    )
+ExternalProject_Get_Property(json SOURCE_DIR)
+set(JSON_INCLUDE_DIR ${SOURCE_DIR}/include/)
 
 # Magic Enum.
-FetchContent_Declare(
-  magic_enum
-  GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM}
-  GIT_TAG ${GIT_TAG_MAGIC_ENUM}
-)
-FetchContent_MakeAvailable(magic_enum)
-message("${magic_enum_SOURCE_DIR}")
+ExternalProject_Add(
+    magic_enum
+    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Neargye
+    GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM}
+	GIT_TAG ${GIT_TAG_MAGIC_ENUM}
+	CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+    )
+ExternalProject_Get_Property(magic_enum SOURCE_DIR)
+set(MAGIC_ENUM_INCLUDE_DIR ${SOURCE_DIR}/include)
 
 # Eigen.
-FetchContent_Declare(
-  eigen
-  GIT_REPOSITORY ${GIT_URL_EIGEN}
-  GIT_TAG ${GIT_TAG_EIGEN}
-)
-FetchContent_MakeAvailable(eigen)
-message("${eigen_SOURCE_DIR}")
+ExternalProject_Add(
+    eigen
+    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Eigen
+    GIT_REPOSITORY ${GIT_URL_EIGEN}
+	GIT_TAG ${GIT_TAG_EIGEN}
+	CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+    )
+ExternalProject_Get_Property(eigen SOURCE_DIR)
+set(EIGEN_INCLUDE_DIR ${SOURCE_DIR}/)
 
 message("Looking for dependencies...")
 
@@ -177,6 +198,10 @@ add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESO
 
 # Includes directories.
 target_include_directories(VTX PRIVATE ${PATH_SRC})
+target_include_directories(VTX PRIVATE ${GLM_INCLUDE_DIR})
+target_include_directories(VTX PRIVATE ${JSON_INCLUDE_DIR})
+target_include_directories(VTX PRIVATE ${MAGIC_ENUM_INCLUDE_DIR})
+target_include_directories(VTX PRIVATE ${EIGEN_INCLUDE_DIR})
 
 # Link libs.
 target_link_libraries(VTX PRIVATE Qt6::Core)
@@ -187,11 +212,7 @@ target_link_libraries(VTX PRIVATE Qt6::OpenGLWidgets)
 target_link_libraries(VTX PRIVATE Qt6::Network)
 target_link_libraries(VTX PRIVATE Qt6::Svg)
 target_link_libraries(VTX PRIVATE chemfiles)
-target_link_libraries(VTX PRIVATE glm::glm)
-target_link_libraries(VTX PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(VTX PRIVATE magic_enum::magic_enum)
 target_link_libraries(VTX PRIVATE fmt)
-target_link_libraries(VTX PRIVATE eigen)
 
 if(MSVC)
 	# Add specific libs.

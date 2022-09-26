@@ -1,9 +1,6 @@
 /build/
 /data/
 /lib/
-/lib_src/
-/external_project/
-/_linux/
 /RELEASE/
 /.vscode/
 *.code-workspace
