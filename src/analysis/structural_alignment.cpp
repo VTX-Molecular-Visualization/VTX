@@ -56,12 +56,13 @@ namespace VTX::Analysis
 				const AlignmentResult result = method->compute( *p_staticMolecule, *mobileMolecule, p_parameters );
 				chrono.stop();
 				VTX_INFO( "Alignment computed in " + chrono.elapsedTimeStr() );
+				VTX_INFO( "Internal RMSD computed : " + std::to_string( result.rmsd ) );
 
 				const Math::Transform transform
 					= Math::Transform( p_staticMolecule->getTransform().get() * result.transformationMatrix );
 
 				mobileMolecule->applyTransform( transform );
-
+				
 				Analysis::RMSD::computeRMSD( p_staticMolecule, mobileMolecule, true );
 			}
 		}

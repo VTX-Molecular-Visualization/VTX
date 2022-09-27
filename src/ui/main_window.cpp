@@ -384,7 +384,7 @@ namespace VTX::UI
 		_addDockWidgetAsTabified( _consoleWidget, Qt::DockWidgetArea::BottomDockWidgetArea, Qt::Orientation::Vertical );
 
 		_addDockWidgetAsFloating( _settingWidget, Style::SETTINGS_PREFERRED_SIZE, false );
-		_addDockWidgetAsFloating( _structuralAlignmentWidget, Style::SETTINGS_PREFERRED_SIZE, false );
+		_addDockWidgetAsFloating( _structuralAlignmentWidget, Style::STRUCTURAL_ALIGNMENT_PREFERRED_SIZE, false );
 
 		if ( _informationWidget->isVisible() )
 			_informationWidget->hide();
