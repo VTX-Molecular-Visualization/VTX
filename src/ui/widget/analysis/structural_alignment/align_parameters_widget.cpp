@@ -1,5 +1,6 @@
 #include "align_parameters_widget.hpp"
 #include "analysis/structural_alignment_method/ce_align.hpp"
+#include "analysis/structural_alignment_method/ce_align_pymol.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
 #include <QHBoxLayout>
@@ -95,6 +96,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		switch ( p_alignParameter.method )
 		{
 		case VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign:
+		case VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign_Pymol:
 		{
 			const VTX::Analysis::StructuralAlignmentMethod::CEAlign::CustomParameters castedParameters
 				= dynamic_cast<const VTX::Analysis::StructuralAlignmentMethod::CEAlign::CustomParameters &>(
@@ -105,6 +107,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 			_d1Widget->setValue( castedParameters.d1 );
 		}
 		break;
+			break;
 
 		default:
 			VTX_ERROR( "Alignment method " + std::to_string( int( p_alignParameter.method ) )
@@ -123,6 +126,10 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		switch ( method )
 		{
 		case VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign:
+			parameters = _generateCEAlignParameter();
+			break;
+
+		case VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign_Pymol:
 			parameters = _generateCEAlignParameter();
 			break;
 
@@ -156,6 +163,24 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		parameters->d0 = _d0Widget->getValue();
 		parameters->d1 = _d1Widget->getValue();
+
+		return parameters;
+	}
+
+	AlignParametersWidget::AlignmentParameters * AlignParametersWidget::_generateCEAlignPymolParameter() const
+	{
+		VTX::Analysis::StructuralAlignmentMethod::CEAlignPymol::CustomParameters * const parameters
+			= new VTX::Analysis::StructuralAlignmentMethod::CEAlignPymol::CustomParameters();
+
+		parameters->windowSize = _windowSizeWidget->getValue();
+		parameters->gapMax	   = _gapMaxWidget->getValue();
+		parameters->maxPath	   = _maxPathWidget->getValue();
+
+		parameters->considerHiddenResidue = _considerHiddenResiduesButton->checkState() == Qt::CheckState::Checked;
+		parameters->considerWater		  = _considerWaterButton->checkState() == Qt::CheckState::Checked;
+
+		parameters->D0 = _d0Widget->getValue();
+		parameters->D1 = _d1Widget->getValue();
 
 		return parameters;
 	}

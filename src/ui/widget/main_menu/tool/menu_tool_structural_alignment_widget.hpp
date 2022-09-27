@@ -47,6 +47,8 @@ namespace VTX
 
 			void _computeRMSDAction() const;
 			void _computeStructuralAlignmentAction();
+			void _computeCEAlignPymolAction();
+
 			void _launchStructuralAlignmentAction() const;
 
 			void _openStructuralAlignmentWindow() const;

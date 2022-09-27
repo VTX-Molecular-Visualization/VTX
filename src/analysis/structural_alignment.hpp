@@ -21,11 +21,12 @@ namespace VTX::Analysis
 		enum class AlignmentMethodEnum
 		{
 			CEAlign,
+			CEAlign_Pymol,
 
 			COUNT,
 			Unknown,
 		};
-		inline static const std::vector<std::string> ALIGNMENT_METHOD_STRING = { "CE Align" };
+		inline static const std::vector<std::string> ALIGNMENT_METHOD_STRING = { "CE Align", "CE Align Pymol" };
 
 		class AlignmentParameters
 		{

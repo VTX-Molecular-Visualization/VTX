@@ -2,6 +2,7 @@
 #include "model/molecule.hpp"
 #include "rmsd.hpp"
 #include "structural_alignment_method/ce_align.hpp"
+#include "structural_alignment_method/ce_align_pymol.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include <string>
@@ -24,6 +25,9 @@ namespace VTX::Analysis
 		switch ( p_methodEnum )
 		{
 		case AlignmentMethodEnum::CEAlign: return new StructuralAlignmentMethod::CEAlign::CustomParameters(); break;
+		case AlignmentMethodEnum::CEAlign_Pymol:
+			return new StructuralAlignmentMethod::CEAlignPymol::CustomParameters();
+			break;
 
 		default:
 			VTX_ERROR( "Not implemented method" );
@@ -43,6 +47,7 @@ namespace VTX::Analysis
 		switch ( p_parameters.method )
 		{
 		case AlignmentMethodEnum::CEAlign: method = new StructuralAlignmentMethod::CEAlign(); break;
+		case AlignmentMethodEnum::CEAlign_Pymol: method = new StructuralAlignmentMethod::CEAlignPymol(); break;
 
 		default: VTX_ERROR( "Not Implemented" ); return;
 		}
@@ -51,16 +56,22 @@ namespace VTX::Analysis
 		{
 			for ( Model::Molecule * const mobileMolecule : p_mobilesMolecules )
 			{
-				Tool::Chrono chrono = Tool::Chrono();
-				chrono.start();
-				const AlignmentResult result = method->compute( *p_staticMolecule, *mobileMolecule, p_parameters );
-				chrono.stop();
-				VTX_INFO( "Alignment computed in " + chrono.elapsedTimeStr() );
+				VTX_ERROR( "START TEST" );
 
-				const Math::Transform transform
-					= Math::Transform( p_staticMolecule->getTransform().get() * result.transformationMatrix );
+				// for ( int i = 0; i < 10; i++ )
+				{
+					Tool::Chrono chrono = Tool::Chrono();
+					chrono.start();
+					const AlignmentResult result = method->compute( *p_staticMolecule, *mobileMolecule, p_parameters );
+					chrono.stop();
+					VTX_INFO( "Alignment computed in " + chrono.elapsedTimeStr() );
+					VTX_INFO( "Internal RMSD computed : " + std::to_string( result.rmsd ) );
 
-				mobileMolecule->applyTransform( transform );
+					const Math::Transform transform
+						= Math::Transform( p_staticMolecule->getTransform().get() * result.transformationMatrix );
+
+					mobileMolecule->applyTransform( transform );
+				}
 
 				Analysis::RMSD::computeRMSD( p_staticMolecule, mobileMolecule, true );
 			}

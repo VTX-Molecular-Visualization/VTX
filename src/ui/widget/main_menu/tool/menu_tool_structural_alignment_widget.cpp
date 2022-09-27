@@ -65,6 +65,8 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 		_structuralAlignmentButton->addAction(
 			"CE Align", this, &MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction, true );
+		_structuralAlignmentButton->addAction(
+			"CE Align Pymol", this, &MenuToolStructuralAlignmentWidget::_computeCEAlignPymolAction );
 
 		_structuralAlignmentAdvancedButton->setTriggerAction(
 			this, &MenuToolStructuralAlignmentWidget::_openStructuralAlignmentWindow );
@@ -110,6 +112,16 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 		_alignmentParameter = VTX::Analysis::StructuralAlignment::instantiateDefaultParameters(
 			VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign );
+
+		_launchStructuralAlignmentAction();
+	}
+	void MenuToolStructuralAlignmentWidget::_computeCEAlignPymolAction()
+	{
+		if ( _alignmentParameter != nullptr )
+			delete _alignmentParameter;
+
+		_alignmentParameter = VTX::Analysis::StructuralAlignment::instantiateDefaultParameters(
+			VTX::Analysis::StructuralAlignment::AlignmentMethodEnum::CEAlign_Pymol );
 
 		_launchStructuralAlignmentAction();
 	}

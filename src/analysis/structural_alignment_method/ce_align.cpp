@@ -68,17 +68,25 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		chrono.stop();
 		VTX_DEBUG( "Find Paths : " + chrono.elapsedTimeStr() );
 
-		VTX_INFO( "Better chain size : " + std::to_string( bestPaths.begin()->size() ) );
-
 		chrono.start();
-		const BestPathResult bestPath = _pickBest(
+		const BestPathResult bestPathResult = _pickBest(
 			staticMoleculeResiduePositions, mobileMoleculeResiduePositions, bestPaths, correctedParameters );
 		chrono.stop();
 		VTX_DEBUG( "Pick Best : " + chrono.elapsedTimeStr() );
 
+		const double atomRmsdOnPath = _computeRMSDOnAtomOfPath( p_staticMolecule,
+																p_mobileMolecule,
+																bestPaths[ bestPathResult.pathIndex ],
+																p_parameters.windowSize,
+																bestPathResult.transformationMatrix );
+
 		StructuralAlignment::AlignmentResult result = StructuralAlignment::AlignmentResult();
-		result.transformationMatrix					= bestPath.transformationMatrix;
-		result.rmsd									= bestPath.rmsd;
+		result.transformationMatrix					= bestPathResult.transformationMatrix;
+		result.rmsd									= bestPathResult.rmsd;
+
+		VTX_INFO( "RMSD : " + std::to_string( atomRmsdOnPath ) + " over "
+				  + std::to_string( bestPaths[ bestPathResult.pathIndex ].size() * p_parameters.windowSize )
+				  + " residues." );
 
 		return result;
 	}
@@ -88,7 +96,6 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 	{
 		std::vector<Vec3f> residuePositionsVector = std::vector<Vec3f>();
 		residuePositionsVector.resize( p_molecule.getResidueCount() );
-		// residuePositionsVector.reserve( p_molecule.getResidueCount() );
 
 		size_t index = 0;
 
@@ -102,16 +109,36 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 
 			if ( considerResidue )
 			{
-				residuePositionsVector[ index ] = _residuePositionsDataSet.getPositionInMolecule( *residuePtr );
+				residuePositionsVector[ index ] = _computeResidueCenterOfMass( *residuePtr );
+				// residuePositionsVector[ index ] = _residuePositionsDataSet.getPositionInMolecule( *residuePtr );
 				index++;
-				// residuePositionsVector.emplace_back( _residuePositionsDataSet.getPositionInMolecule( *residuePtr ) );
 			}
 		}
 
-		// residuePositionsVector.shrink_to_fit();
 		residuePositionsVector.resize( index );
 
 		return residuePositionsVector;
+	}
+
+	Vec3f CEAlign::_computeResidueCenterOfMass( const Model::Residue & p_residue )
+	{
+		// return _residuePositionsDataSet.getPositionInMolecule( p_residue );
+
+		const Model::Molecule &						molecule = *( p_residue.getMoleculePtr() );
+		const Model::Molecule::AtomPositionsFrame & atomPositions
+			= molecule.getAtomPositionFrame( molecule.getFrame() );
+
+		Vec3f res = VEC3F_ZERO;
+
+		for ( uint i = p_residue.getIndexFirstAtom(); i < p_residue.getIndexFirstAtom() + p_residue.getAtomCount();
+			  i++ )
+		{
+			res += atomPositions[ i ];
+		}
+
+		res /= p_residue.getAtomCount();
+
+		return res;
 	}
 
 	Math::Matrix<float> CEAlign::_computeDistanceMatrix( const std::vector<Vec3f> & p_positions )
@@ -173,6 +200,9 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 												   const Math::Matrix<float> & p_distanceMatrixB,
 												   const CustomParameters &	   p_parameters )
 	{
+		Tool::Chrono chrono = Tool::Chrono();
+		chrono.start();
+
 		const float d0		= p_parameters.d0;
 		const float d1		= p_parameters.d1;
 		const int	winSize = p_parameters.windowSize;
@@ -180,6 +210,8 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 
 		const size_t lengthA = p_distanceMatrixA.getRowCount();
 		const size_t lengthB = p_distanceMatrixB.getRowCount();
+
+		const size_t winSizeMinus1 = size_t( winSize - 1 );
 
 		// Length of longest possible alignment
 		const size_t longestAlignmentLength = ( lengthA < lengthB ) ? lengthA : lengthB;
@@ -214,7 +246,16 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		float  newBestPathScore	 = 0;
 		Path   newBestPath		 = Path();
 		newBestPath.resize( longestAlignmentLength, { -1, -1 } );
+		chrono.stop();
+		VTX_DEBUG( "Initialization : " + chrono.elapsedTimeStr() );
 
+		Tool::Chrono	   chronoIntermediaire = Tool::Chrono();
+		std::vector<float> timers			   = std::vector<float>();
+		timers.resize( 50 );
+
+		size_t counter = 0;
+
+		chrono.start();
 		for ( size_t iA = 0; iA < lengthA; iA++ )
 		{
 			if ( iA > lengthA - winSize * ( bestPathLength - 1 ) )
@@ -273,19 +314,21 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 						if ( p_scoreMatrix.get( jA, jB ) == -1.0 )
 							continue;
 
+						chronoIntermediaire.start();
+
+						counter++;
 						float currentScore = 0.0;
 						for ( int s = 0; s < curPathLength; s++ )
 						{
 							currentScore += abs( p_distanceMatrixA.get( currentPath[ s ].first, jA )
 												 - p_distanceMatrixB.get( currentPath[ s ].second, jB ) );
 
-							const size_t winSizeMinus1 = size_t( winSize ) - 1;
-
 							currentScore += abs(
 								p_distanceMatrixA.get( currentPath[ s ].first + winSizeMinus1, jA + winSizeMinus1 )
 								- p_distanceMatrixB.get( currentPath[ s ].second + winSizeMinus1,
 														 jB + winSizeMinus1 ) );
-							for ( int k = 1; k < winSize - 1; k++ )
+
+							for ( int k = 1; k < winSizeMinus1; k++ )
 							{
 								currentScore += abs(
 									p_distanceMatrixA.get( currentPath[ s ].first + k, jA + winSizeMinus1 - k )
@@ -294,6 +337,8 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 						}
 
 						currentScore /= float( winSize ) * float( curPathLength );
+						chronoIntermediaire.stop();
+						timers[ 0 ] += chronoIntermediaire.elapsedTime();
 
 						if ( currentScore >= d1 )
 						{
@@ -385,7 +430,6 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 				}
 
 				// At this point, we've found the best path starting at iA, iB.
-
 				if ( newBestPathLength == 0 )
 					continue;
 
@@ -469,10 +513,18 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 				}
 			}
 		}
+		chrono.stop();
 
+		VTX_DEBUG( "Path computation count : " + std::to_string( counter ) );
+
+		VTX_DEBUG( "Loop : " + chrono.elapsedTimeStr() );
+
+		chrono.start();
 		std::vector<CEAlign::Path> res = std::vector<CEAlign::Path>();
 		res.resize( pathResults.size() );
 		std::move( pathResults.begin(), pathResults.end(), res.begin() );
+		chrono.stop();
+		VTX_DEBUG( "End : " + chrono.elapsedTimeStr() );
 
 		return res;
 	}
@@ -587,6 +639,56 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		}
 
 		return result;
+	}
+
+	float CEAlign::_computeRMSDOnAtomOfPath( const Model::Molecule & p_staticMolecule,
+											 const Model::Molecule & p_mobileMolecule,
+											 const Path &			 p_path,
+											 const int				 p_windowSize,
+											 const Mat4f &			 p_transfoMatrix )
+	{
+		const size_t	   pathSize				 = p_path.size();
+		std::vector<Vec3f> residuePositionsPath1 = std::vector<Vec3f>();
+		residuePositionsPath1.reserve( p_staticMolecule.getAtomCount() );
+		std::vector<Vec3f> residuePositionsPath2 = std::vector<Vec3f>();
+		residuePositionsPath2.reserve( p_mobileMolecule.getAtomCount() );
+
+		for ( int i = 0; i < pathSize; i++ )
+		{
+			for ( int iWinSize = 0; iWinSize < p_windowSize; iWinSize++ )
+			{
+				const uint iResidue1 = uint( p_path[ i ].first + iWinSize );
+				const uint iResidue2 = uint( p_path[ i ].second + iWinSize );
+
+				if ( iResidue1 >= p_staticMolecule.getResidueCount()
+					 || iResidue2 >= p_mobileMolecule.getResidueCount() )
+				{
+					break;
+				}
+
+				const Model::Residue * const residue1 = p_staticMolecule.getResidue( iResidue1 );
+				const Model::Residue * const residue2 = p_mobileMolecule.getResidue( iResidue2 );
+
+				if ( residue1 == nullptr || residue2 == nullptr )
+					continue;
+
+				for ( uint i = residue1->getIndexFirstAtom();
+					  i < residue1->getIndexFirstAtom() + residue1->getAtomCount();
+					  i++ )
+				{
+					residuePositionsPath1.emplace_back( p_staticMolecule.getCurrentAtomPositionFrame()[ i ] );
+				}
+
+				for ( uint i = residue2->getIndexFirstAtom();
+					  i < residue2->getIndexFirstAtom() + residue2->getAtomCount();
+					  i++ )
+				{
+					residuePositionsPath2.emplace_back( p_mobileMolecule.getCurrentAtomPositionFrame()[ i ] );
+				}
+			}
+		}
+
+		return Analysis::RMSD::internalRMSD( residuePositionsPath1, residuePositionsPath2, MAT4F_ID, p_transfoMatrix );
 	}
 
 	// Given two sets of 3D points, find the rotation + translation + scale
