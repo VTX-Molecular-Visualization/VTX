@@ -157,9 +157,8 @@ namespace VTX::UI::Widget::Representation
 				_representationWidget, "vdw_representation_widget" );
 			break;
 		case Generic::REPRESENTATION::SES:
-			_representationSettingWidget
-				= VTX::UI::WidgetFactory::get().instantiateWidget<SesRepresentationWidget>(
-					_representationWidget, "ses_representation_widget");
+			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<SesRepresentationWidget>(
+				_representationWidget, "ses_representation_widget" );
 			break;
 		default:
 			VTX_WARNING( "Widget setting for representation " + std::to_string( int( p_representation ) )

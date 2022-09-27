@@ -18,7 +18,7 @@ namespace VTX
 		{
 		}
 
-		const Math::Transform& SolventExcludedSurface::getTransform() const { return _molecule->getTransform(); }
+		const Math::Transform & SolventExcludedSurface::getTransform() const { return _molecule->getTransform(); }
 
 		void SolventExcludedSurface::_init() { refresh(); }
 

@@ -192,7 +192,6 @@ namespace VTX
 			inline void notifyViews( const Model::BaseModel * const p_caller, const Event::VTXEvent * const p_event )
 			{
 				_lock();
-				VTX_DEBUG("{}", p_caller->getId());
 				_container[ p_caller->getId() ]->notifyViews( p_event );
 				_unlock();
 			}

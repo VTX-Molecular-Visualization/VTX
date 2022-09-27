@@ -284,11 +284,11 @@ namespace VTX::Model::Representation
 		vdw->getData().setSphereRadius( 0 );
 		addRepresentation( vdw, p_notify );
 
-		representationType = Generic::REPRESENTATION::SES;
-		Representation* const ses = MVC::MvcManager::get().instantiateModel<Representation>(representationType);
-		sas->setName("SES");
-		sas->setQuickAccess(true);
-		addRepresentation(ses, p_notify);
+		representationType		   = Generic::REPRESENTATION::SES;
+		Representation * const ses = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+		ses->setName( "SES" );
+		ses->setQuickAccess( true );
+		addRepresentation( ses, p_notify );
 	}
 
 	void RepresentationLibrary::_onRepresentationChange( const Event::VTXEvent * const p_event )

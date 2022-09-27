@@ -300,7 +300,7 @@ namespace VTX::Model::Representation
 		if ( p_flag & MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE && p_source.hasToDrawRibbon() )
 			_ribbonData.getValue().colorBlendingMode = p_source.getRibbonData().colorBlendingMode;
 
-		if (p_flag & MEMBER_FLAG::SES_RESOLUTION && p_source.hasToDrawSES())
+		if ( p_flag & MEMBER_FLAG::SES_RESOLUTION && p_source.hasToDrawSES() )
 			_sesData.getValue().resolution = p_source.getSESData().resolution;
 
 		if ( p_flag & MEMBER_FLAG::COLOR_MODE )
@@ -335,9 +335,9 @@ namespace VTX::Model::Representation
 			res = MEMBER_FLAG( res | MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE );
 		}
 
-		if (hasToDrawSES() && _sesData.isOverrided())
+		if ( hasToDrawSES() && _sesData.isOverrided() )
 		{
-			res = MEMBER_FLAG(res | MEMBER_FLAG::SES_RESOLUTION);
+			res = MEMBER_FLAG( res | MEMBER_FLAG::SES_RESOLUTION );
 		}
 
 		if ( _colorMode.isOverrided() )
@@ -389,7 +389,7 @@ namespace VTX::Model::Representation
 		{
 			_target->getMolecule()->refreshColors();
 		}
-		
+
 		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::SecondaryStructure ) != 0 )
 		{
 			_target->getMolecule()->getSecondaryStructure().refreshColors();

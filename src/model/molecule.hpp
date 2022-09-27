@@ -124,8 +124,10 @@ namespace VTX
 			inline const std::vector<Bond *> & getBonds() const { return _bonds; }
 			void removeBond( const uint p_id, const bool p_delete = true, const bool p_notifyViews = true );
 
-			inline const SecondaryStructure &	  getSecondaryStructure() const { return *_secondaryStructure; }
-			inline SecondaryStructure &			  getSecondaryStructure() { return *_secondaryStructure; }
+			inline const bool				  hasSecondaryStructure() const { return _secondaryStructure != nullptr; }
+			inline const SecondaryStructure & getSecondaryStructure() const { return *_secondaryStructure; }
+			inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
+			inline const bool hasSolventExcludedSurface() const { return _solventExcludedSurface != nullptr; }
 			inline const SolventExcludedSurface & getSolventExcludedSurface() const { return *_solventExcludedSurface; }
 			inline SolventExcludedSurface &		  getSolventExcludedSurface() { return *_solventExcludedSurface; }
 

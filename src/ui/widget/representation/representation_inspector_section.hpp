@@ -14,11 +14,11 @@
 #include "ui/widget/representation/cartoon_representation_widget.hpp"
 #include "ui/widget/representation/representation_library_combo_box.hpp"
 #include "ui/widget/representation/sas_representation_widget.hpp"
+#include "ui/widget/representation/ses_representation_widget.hpp"
 #include "ui/widget/representation/stick_and_cartoon_representation_widget.hpp"
 #include "ui/widget/representation/stick_representation_widget.hpp"
 #include "ui/widget/representation/trace_representation_widget.hpp"
 #include "ui/widget/representation/vdw_representation_widget.hpp"
-#include "ui/widget/representation/ses_representation_widget.hpp"
 #include "view/base_view.hpp"
 #include <QComboBox>
 #include <QDoubleSpinBox>

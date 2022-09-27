@@ -93,9 +93,6 @@ namespace VTX
 		{
 			_molecule->_representationTargets.clear();
 
-			Model::SecondaryStructure & secondaryStructure		= _molecule->getSecondaryStructure();
-			std::map<uint, uint> & residueToControlPointIndices = secondaryStructure.getResidueToControlPointIndice();
-
 			for ( Model::Residue * const residue : _molecule->getResidues() )
 			{
 				// Skip hidden items.
@@ -125,6 +122,13 @@ namespace VTX
 				}
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::RIBBON ) )
 				{
+					if ( _molecule->hasSecondaryStructure() == false )
+					{
+						_molecule->createSecondaryStructure();
+					}
+					Model::SecondaryStructure & secondaryStructure = _molecule->getSecondaryStructure();
+					std::map<uint, uint> &		residueToControlPointIndices
+						= secondaryStructure.getResidueToControlPointIndice();
 					if ( residueToControlPointIndices.find( residue->getIndex() )
 						 != residueToControlPointIndices.end() )
 					{

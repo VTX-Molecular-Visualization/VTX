@@ -380,6 +380,7 @@ namespace VTX
 
 		void SecondaryStructure::_init()
 		{
+			VTX_DEBUG("INIT");
 			Tool::Chrono chrono;
 			chrono.start();
 			VTX_INFO( "Creating secondary structure..." );

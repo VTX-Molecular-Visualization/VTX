@@ -126,12 +126,6 @@ namespace VTX
 				_buffer->setAtomSelections( _bufferAtomSelections );
 				_buffer->setAtomIds( _bufferAtomIds );
 				_buffer->setBonds( _bufferBonds );
-
-				// Create secondary structure mesh.
-				createSecondaryStructure();
-
-				// Create solvent extructed surface.
-				createSolventExcludedSurface();
 			}
 		}
 
@@ -756,7 +750,6 @@ namespace VTX
 		{
 			if ( _secondaryStructure == nullptr )
 			{
-				VTX_ERROR( "No secondary structure" );
 				return;
 			}
 
@@ -779,7 +772,6 @@ namespace VTX
 		{
 			if ( _solventExcludedSurface == nullptr )
 			{
-				VTX_ERROR( "No solvent excluded surface" );
 				return;
 			}
 

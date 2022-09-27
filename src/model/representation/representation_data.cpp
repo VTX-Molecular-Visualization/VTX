@@ -21,7 +21,7 @@ namespace VTX::Model::Representation
 			delete _ribbonData;
 		_ribbonData = nullptr;
 
-		if (_sesData != nullptr)
+		if ( _sesData != nullptr )
 			delete _sesData;
 		_sesData = nullptr;
 	}

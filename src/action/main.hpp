@@ -166,7 +166,7 @@ namespace VTX::Action::Main
 								result.molecule->setDisplayName( filepath.filenameWithoutExtension() );
 								result.molecule->print();
 								VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, result.molecule ) );
-								VTXApp::get().getScene().addMolecule( result.molecule );								
+								VTXApp::get().getScene().addMolecule( result.molecule );
 							}
 							else if ( result.mesh != nullptr )
 							{

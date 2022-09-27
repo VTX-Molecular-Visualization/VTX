@@ -7,6 +7,7 @@ namespace VTX::UI::Widget::Representation
 	void SesRepresentationWidget::_setupUi( const QString & p_name )
 	{
 		BaseRepresentationWidget::_setupUi( p_name );
+		_addColorModeWidgetInLayout();
 	}
 
 } // namespace VTX::UI::Widget::Representation
