@@ -2,6 +2,8 @@
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "model/molecule.hpp"
+#include "model/selection.hpp"
+#include "util/analysis.hpp"
 #include <cmath>
 
 namespace VTX::Analysis
@@ -14,6 +16,36 @@ namespace VTX::Analysis
 
 		const RMSDData data = RMSDData( p_firstMolecule, p_secondMolecule, rmsd );
 		VTX_EVENT( new Event::VTXEventRef( Event::Global::RMSD_COMPUTED, data ) );
+	}
+
+	void RMSD::computeRMSD( const Model::Selection & p_selection, const bool p_considerTransform )
+	{
+		const Model::Selection::MapMoleculeIds & selectedMolecules = p_selection.getMoleculesMap();
+
+		const Model::Molecule *				 targetMolecule = nullptr;
+		std::vector<const Model::Molecule *> otherMolecules = std::vector<const Model::Molecule *>();
+		otherMolecules.reserve( p_selection.getMoleculeSelectedCount() - 1 );
+
+		Util::Analysis::pickTargetAndComparersFromSelection( p_selection, targetMolecule, otherMolecules );
+
+		std::vector<Vec3f> targetAtomPositions = std::vector<Vec3f>();
+		Util::Analysis::getAtomPositions( p_selection, targetMolecule, targetAtomPositions );
+
+		const Mat4f targetTransform = p_considerTransform ? targetMolecule->getTransform().get() : MAT4F_ID;
+
+		for ( const Model::Molecule * otherMolecule : otherMolecules )
+		{
+			std::vector<Vec3f> otherAtomPositions = std::vector<Vec3f>();
+			Util::Analysis::getAtomPositions( p_selection, otherMolecule, otherAtomPositions );
+
+			const Mat4f otherTransform = p_considerTransform ? otherMolecule->getTransform().get() : MAT4F_ID;
+
+			const double rmsd
+				= internalRMSD( targetAtomPositions, otherAtomPositions, targetTransform, otherTransform );
+
+			const RMSDData data = RMSDData( targetMolecule, targetMolecule, rmsd );
+			VTX_EVENT( new Event::VTXEventRef( Event::Global::RMSD_COMPUTED, data ) );
+		}
 	}
 
 	double RMSD::internalRMSD( const std::vector<Vec3f> & p_vectorPositionsA,

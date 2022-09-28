@@ -1,6 +1,7 @@
 #ifndef __VTX_UTIL_ANALYSIS__
 #define __VTX_UTIL_ANALYSIS__
 
+#include "define.hpp"
 #include <vector>
 
 namespace VTX
@@ -19,6 +20,10 @@ namespace VTX
 		void pickTargetAndComparersFromSelection( const Model::Selection &				 p_selection,
 												  const Model::Molecule *&				 p_target,
 												  std::vector<const Model::Molecule *> & p_comparers );
+
+		void getAtomPositions( const Model::Selection & p_selection,
+							   const Model::Molecule *	p_target,
+							   std::vector<Vec3f> &		p_positions );
 	} // namespace Util::Analysis
 
 } // namespace VTX

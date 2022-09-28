@@ -7,7 +7,8 @@
 namespace VTX::Model
 {
 	class Molecule;
-}
+	class Selection;
+} // namespace VTX::Model
 
 namespace VTX::Analysis
 {
@@ -34,6 +35,8 @@ namespace VTX::Analysis
 		static void computeRMSD( const Model::Molecule * const p_firstMolecule,
 								 const Model::Molecule * const p_secondMolecule,
 								 const bool					   p_considerTransform = true );
+
+		static void computeRMSD( const Model::Selection & p_selection, const bool p_considerTransform = true );
 
 		static double internalRMSD( const Model::Molecule & p_firstMolecule,
 									const Model::Molecule & p_secondMolecule,

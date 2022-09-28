@@ -101,9 +101,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
 
-		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Analysis", TypeMask::Molecule, this ) );
-		ActionData * const applyComputeRMSDAction
-			= new ActionData( "RMSD", TypeMask::Molecule, this, &ContextualMenuSelection::_applyComputeRMSDAction );
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Analysis", TypeMask::MoleculeStructure, this ) );
+		ActionData * const applyComputeRMSDAction = new ActionData(
+			"RMSD", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_applyComputeRMSDAction );
 		applyComputeRMSDAction->setCheckFunction( &ContextualMenuSelection::_checkComputeRMSDAction );
 		moleculeStructureSubmenu->addItemData( applyComputeRMSDAction );
 		ActionData * const applyAlignmentAction

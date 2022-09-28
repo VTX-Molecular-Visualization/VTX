@@ -91,16 +91,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	void MenuToolStructuralAlignmentWidget::_computeRMSDAction() const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
-
-		const Model::Molecule *				 target;
-		std::vector<const Model::Molecule *> comparers;
-		Util::Analysis::pickTargetAndComparersFromSelection( selection, target, comparers );
-
-		std::vector<const Model::Molecule *> comparersConst = std::vector<const Model::Molecule *>();
-		comparersConst.resize( comparers.size() );
-		std::move( comparers.begin(), comparers.end(), comparersConst.begin() );
-
-		VTX_ACTION( new Action::Analysis::ComputeRMSD( target, comparersConst ) );
+		VTX_ACTION( new Action::Analysis::ComputeRMSD( selection ) );
 	}
 
 	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction()

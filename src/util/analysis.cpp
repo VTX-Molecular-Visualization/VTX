@@ -96,4 +96,29 @@ namespace VTX::Util::Analysis
 		std::move( ++sortedMolecules.begin(), sortedMolecules.end(), p_comparers.begin() );
 	}
 
+	void getAtomPositions( const Model::Selection & p_selection,
+						   const Model::Molecule *	p_target,
+						   std::vector<Vec3f> &		p_positions )
+	{
+		const Model::Molecule::AtomPositionsFrame & atomPositionFrame = p_target->getCurrentAtomPositionFrame();
+		const Model::Selection::MapChainIds &		chainMap = p_selection.getMoleculesMap().at( p_target->getId() );
+
+		p_positions.resize( p_target->getAtomCount() );
+		size_t counter = 0;
+
+		for ( const Model::Selection::PairChainIds & chainPair : chainMap )
+		{
+			for ( const Model::Selection::PairResidueIds & residuePair : chainPair.second )
+			{
+				for ( const Model::ID & atomIndex : residuePair.second )
+				{
+					p_positions[ counter ] = atomPositionFrame[ atomIndex ];
+					counter++;
+				}
+			}
+		}
+
+		p_positions.resize( counter );
+	}
+
 } // namespace VTX::Util::Analysis
