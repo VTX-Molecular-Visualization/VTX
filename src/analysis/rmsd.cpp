@@ -8,17 +8,22 @@
 
 namespace VTX::Analysis
 {
-	void RMSD::computeRMSD( const Model::Molecule * const p_firstMolecule,
-							const Model::Molecule * const p_secondMolecule,
-							const bool					  p_considerTransform )
+	void RMSD::callRMSDComputation( const Model::Molecule * const p_firstMolecule,
+									const Model::Molecule * const p_secondMolecule,
+									const bool					  p_considerTransform )
 	{
-		const double rmsd = internalRMSD( *p_firstMolecule, *p_secondMolecule, p_considerTransform );
+		const double rmsd = computeRMSD( *p_firstMolecule, *p_secondMolecule, p_considerTransform );
 
-		const RMSDData data = RMSDData( p_firstMolecule, p_secondMolecule, rmsd );
-		VTX_EVENT( new Event::VTXEventRef( Event::Global::RMSD_COMPUTED, data ) );
+		RMSDData data = RMSDData();
+
+		data.setFirstMolecule( p_firstMolecule );
+		data.setSecondMolecule( p_secondMolecule );
+		data.setRMSD( rmsd );
+
+		VTX_EVENT( new Event::VTXEventRef<const RMSDData>( Event::Global::RMSD_COMPUTED, data ) );
 	}
 
-	void RMSD::computeRMSD( const Model::Selection & p_selection, const bool p_considerTransform )
+	void RMSD::callRMSDComputation( const Model::Selection & p_selection, const bool p_considerTransform )
 	{
 		const Model::Selection::MapMoleculeIds & selectedMolecules = p_selection.getMoleculesMap();
 
@@ -40,18 +45,22 @@ namespace VTX::Analysis
 
 			const Mat4f otherTransform = p_considerTransform ? otherMolecule->getTransform().get() : MAT4F_ID;
 
-			const double rmsd
-				= internalRMSD( targetAtomPositions, otherAtomPositions, targetTransform, otherTransform );
+			const double rmsd = computeRMSD( targetAtomPositions, otherAtomPositions, targetTransform, otherTransform );
 
-			const RMSDData data = RMSDData( targetMolecule, targetMolecule, rmsd );
-			VTX_EVENT( new Event::VTXEventRef( Event::Global::RMSD_COMPUTED, data ) );
+			RMSDData data = RMSDData();
+
+			data.setFirstMolecule( targetMolecule );
+			data.setSecondMolecule( otherMolecule );
+			data.setRMSD( rmsd );
+
+			VTX_EVENT( new Event::VTXEventRef<const RMSDData>( Event::Global::RMSD_COMPUTED, data ) );
 		}
 	}
 
-	double RMSD::internalRMSD( const std::vector<Vec3f> & p_vectorPositionsA,
-							   const std::vector<Vec3f> & p_vectorPositionsB,
-							   const Mat4f &			  p_transformA,
-							   const Mat4f &			  p_transformB )
+	double RMSD::computeRMSD( const std::vector<Vec3f> & p_vectorPositionsA,
+							  const std::vector<Vec3f> & p_vectorPositionsB,
+							  const Mat4f &				 p_transformA,
+							  const Mat4f &				 p_transformB )
 	{
 		const size_t minAtomLength = p_vectorPositionsA.size() < p_vectorPositionsB.size() ? p_vectorPositionsA.size()
 																						   : p_vectorPositionsB.size();
@@ -74,9 +83,9 @@ namespace VTX::Analysis
 		return rmsd;
 	}
 
-	double RMSD::internalRMSD( const Model::Molecule & p_firstMolecule,
-							   const Model::Molecule & p_secondMolecule,
-							   const bool			   p_considerTransform )
+	double RMSD::computeRMSD( const Model::Molecule & p_firstMolecule,
+							  const Model::Molecule & p_secondMolecule,
+							  const bool			  p_considerTransform )
 	{
 		const size_t minAtomLength = p_firstMolecule.getAtomCount() < p_secondMolecule.getAtomCount()
 										 ? p_firstMolecule.getAtomCount()

@@ -1,4 +1,6 @@
 #include "structural_alignment.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "model/molecule.hpp"
 #include "rmsd.hpp"
 #include "structural_alignment_method/ce_align.hpp"
@@ -16,7 +18,12 @@ namespace VTX::Analysis
 	{
 	}
 	StructuralAlignment::AlignmentMethod::AlignmentMethod() {}
-	StructuralAlignment::AlignmentResult::AlignmentResult() {}
+	StructuralAlignment::AlignmentResult::AlignmentResult( const Model::Molecule * const p_staticMolecule,
+														   const Model::Molecule * const p_mobileMolecule ) :
+		staticMolecule( p_staticMolecule ),
+		mobileMolecule( p_mobileMolecule )
+	{
+	}
 
 	StructuralAlignment::AlignmentParameters * StructuralAlignment::instantiateDefaultParameters(
 		const AlignmentMethodEnum & p_methodEnum )
@@ -56,14 +63,14 @@ namespace VTX::Analysis
 				const AlignmentResult result = method->compute( *p_staticMolecule, *mobileMolecule, p_parameters );
 				chrono.stop();
 				VTX_INFO( "Alignment computed in " + chrono.elapsedTimeStr() );
-				VTX_INFO( "Internal RMSD computed : " + std::to_string( result.rmsd ) );
 
 				const Math::Transform transform
 					= Math::Transform( p_staticMolecule->getTransform().get() * result.transformationMatrix );
 
 				mobileMolecule->applyTransform( transform );
-				
-				Analysis::RMSD::computeRMSD( p_staticMolecule, mobileMolecule, true );
+
+				VTX_EVENT( new Event::VTXEventRef<const AlignmentResult>( Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED,
+																		  result ) );
 			}
 		}
 		catch ( const std::exception & e )

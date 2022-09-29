@@ -58,21 +58,23 @@ namespace VTX::Action::Analysis
 			{
 				for ( const Model::Molecule * const molecule : _target.moleculeData.second )
 				{
-					VTX::Analysis::RMSD::computeRMSD( _target.moleculeData.first, molecule, _considerTransform );
+					VTX::Analysis::RMSD::callRMSDComputation(
+						_target.moleculeData.first, molecule, _considerTransform );
 				}
 			}
 			break;
 
 			case MODE::SELECTION:
 			{
-				VTX::Analysis::RMSD::computeRMSD( *_target.selectionData, _considerTransform );
+				VTX::Analysis::RMSD::callRMSDComputation( *_target.selectionData, _considerTransform );
 			}
 			break;
 			}
 		}
 
 	  private:
-		const MODE			   _mode;
+		const MODE _mode;
+
 		const union RMSDTarget _target;
 		const bool			   _considerTransform;
 	};
@@ -112,8 +114,6 @@ namespace VTX::Action::Analysis
 			}
 
 			chrono.stop();
-
-			VTX_INFO( "elpased time : " + chrono.elapsedTimeStr() );
 		}
 
 	  private:

@@ -1,4 +1,5 @@
 #include "analysis.hpp"
+#include "analysis/rmsd.hpp"
 #include "model/molecule.hpp"
 #include "model/selection.hpp"
 #include "object3d/scene.hpp"
@@ -119,6 +120,26 @@ namespace VTX::Util::Analysis
 		}
 
 		p_positions.resize( counter );
+	}
+
+	std::string getRMSDLog( const VTX::Analysis::RMSD::RMSDData & p_data )
+	{
+		std::string log = "RMSD between " + p_data.getFirstMolecule()->getDisplayName() + " and "
+						  + p_data.getSecondMolecule()->getDisplayName();
+
+
+		if ( p_data.hasResidueCount() )
+		{
+			log += " (over " + std::to_string( p_data.getResidueCount() ) + " residues)";
+		}
+		else if ( p_data.hasAtomCount() )
+		{
+			log += " (over " + std::to_string( p_data.getAtomCount() ) + " atoms)";
+		}
+
+		log += " : " + std::to_string( p_data.getRMSD() );
+
+		return log;
 	}
 
 } // namespace VTX::Util::Analysis

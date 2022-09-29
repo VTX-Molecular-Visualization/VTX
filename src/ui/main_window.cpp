@@ -7,6 +7,7 @@
 #include "controller/measurement_picker.hpp"
 #include "event/event_manager.hpp"
 #include "io/struct/scene_path_data.hpp"
+#include "util/analysis.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "widget_factory.hpp"
@@ -59,9 +60,9 @@ namespace VTX::UI
 			const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> & castedEvent
 				= dynamic_cast<const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> &>( p_event );
 
-			VTX_INFO( "RMSD between " + castedEvent.ref.firstMolecule->getDisplayName() + " and "
-					  + castedEvent.ref.secondMolecule->getDisplayName() + ": "
-					  + std::to_string( castedEvent.ref.rmsd ) );
+			const std::string log = Util::Analysis::getRMSDLog( castedEvent.ref );
+
+			VTX_INFO( log );
 		}
 	}
 

@@ -62,13 +62,12 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 																p_parameters.windowSize,
 																bestPathResult.transformationMatrix );
 
-		StructuralAlignment::AlignmentResult result = StructuralAlignment::AlignmentResult();
-		result.transformationMatrix					= bestPathResult.transformationMatrix;
-		result.rmsd									= bestPathResult.rmsd;
+		StructuralAlignment::AlignmentResult result
+			= StructuralAlignment::AlignmentResult( &p_staticMolecule, &p_mobileMolecule );
 
-		VTX_INFO( "RMSD : " + std::to_string( atomRmsdOnPath ) + " over "
-				  + std::to_string( bestPaths[ bestPathResult.pathIndex ].size() * p_parameters.windowSize )
-				  + " residues." );
+		result.transformationMatrix = bestPathResult.transformationMatrix;
+		result.alignedResiduesRMSD	= atomRmsdOnPath;
+		result.alignedResidueCount	= bestPathResult.positionsCount;
 
 		return result;
 	}
@@ -189,7 +188,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		const size_t lengthA = p_distanceMatrixA.getRowCount();
 		const size_t lengthB = p_distanceMatrixB.getRowCount();
 
-		const size_t winSizeMinus1 = size_t( winSize - 1);
+		const size_t winSizeMinus1 = size_t( winSize - 1 );
 
 		// Length of longest possible alignment
 		const size_t longestAlignmentLength = ( lengthA < lengthB ) ? lengthA : lengthB;
@@ -583,7 +582,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 													  1. );
 
 			const float rmsd = float(
-				Analysis::RMSD::internalRMSD( residuePositionsA, residuePositionsB, MAT4F_ID, rotationMatrix ) );
+				Analysis::RMSD::computeRMSD( residuePositionsA, residuePositionsB, MAT4F_ID, rotationMatrix ) );
 
 			if ( !result.isValid() || rmsd < result.rmsd
 				 || ( rmsd == result.rmsd && positionsCount > result.positionsCount ) )
@@ -645,7 +644,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 			}
 		}
 
-		return Analysis::RMSD::internalRMSD( residuePositionsPath1, residuePositionsPath2, MAT4F_ID, p_transfoMatrix );
+		return Analysis::RMSD::computeRMSD( residuePositionsPath1, residuePositionsPath2, MAT4F_ID, p_transfoMatrix );
 	}
 
 	// Given two sets of 3D points, find the rotation + translation + scale

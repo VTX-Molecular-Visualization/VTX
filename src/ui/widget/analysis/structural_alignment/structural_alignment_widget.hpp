@@ -49,6 +49,7 @@ namespace VTX
 
 			void _updateTargetedMoleculesWithSelection( const Model::Selection & p_selection );
 			void _computeAlign() const;
+			bool _isConcernedByAlignment( const VTX::Analysis::StructuralAlignment::AlignmentResult & p_result ) const;
 
 			void _onModelListChange();
 
