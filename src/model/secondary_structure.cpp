@@ -201,8 +201,6 @@ namespace VTX
 			_buffer->setVisibilities( _bufferVisibilities );
 			_buffer->setIds( _bufferIds );
 			_buffer->setIndices( _bufferIndices );
-
-			refreshSelection();
 		}
 
 		void SecondaryStructure::_tryConstruct( const uint						p_chainIdx,
@@ -343,19 +341,7 @@ namespace VTX
 			_buffer->setVisibilities( _bufferVisibilities );
 		}
 
-		void SecondaryStructure::_checkOrientationAndFlip( std::vector<Vec3f> & p_directions )
-		{
-			size_t i;
-			for ( i = 1; i < p_directions.size(); ++i )
-			{
-				if ( Util::Math::dot( p_directions[ i ], p_directions[ i - 1 ] ) < 0.f )
-				{
-					p_directions[ i ] = -p_directions[ i ];
-				}
-			}
-		}
-
-		void SecondaryStructure::_fillBufferSelections( const Model::Selection::MapChainIds * const p_selection )
+		void SecondaryStructure::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
 		{
 			_bufferSelections.clear();
 			_bufferSelections.resize( _bufferCaPositions.size(), 0 );
@@ -378,14 +364,26 @@ namespace VTX
 			_buffer->setSelections( _bufferSelections );
 		}
 
+		void SecondaryStructure::_checkOrientationAndFlip( std::vector<Vec3f> & p_directions )
+		{
+			size_t i;
+			for ( i = 1; i < p_directions.size(); ++i )
+			{
+				if ( Util::Math::dot( p_directions[ i ], p_directions[ i - 1 ] ) < 0.f )
+				{
+					p_directions[ i ] = -p_directions[ i ];
+				}
+			}
+		}
 		void SecondaryStructure::_init()
 		{
-			VTX_DEBUG("INIT");
+			VTX_DEBUG( "INIT" );
 			Tool::Chrono chrono;
 			chrono.start();
 			VTX_INFO( "Creating secondary structure..." );
 
 			refresh();
+			refreshSelection();
 
 			chrono.stop();
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
