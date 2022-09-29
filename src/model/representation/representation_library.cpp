@@ -235,60 +235,95 @@ namespace VTX::Model::Representation
 		return true;
 	}
 
+	bool RepresentationLibrary::isExistingName( const std::string & p_name ) const
+	{
+		return getRepresentationByName( p_name ) != nullptr;
+	}
+
 	void RepresentationLibrary::applyDefault( const bool p_notify )
 	{
 		Generic::REPRESENTATION representationType;
+		std::string				name;
 
 		representationType = Generic::REPRESENTATION::BALL_AND_STICK;
-		Representation * const ballsAndsticks
-			= MVC::MvcManager::get().instantiateModel<Representation>( representationType );
-		ballsAndsticks->setName( "Ball And Stick" );
-		ballsAndsticks->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
-		addRepresentation( ballsAndsticks, p_notify );
+		name			   = "Ball And Stick";
+		if ( isExistingName( name ) == false )
+		{
+			Representation * const ballsAndsticks
+				= MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+			ballsAndsticks->setName( name );
+			ballsAndsticks->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
+			addRepresentation( ballsAndsticks, p_notify );
+		}
 
-		representationType			   = Generic::REPRESENTATION::CARTOON;
-		Representation * const cartoon = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
-		cartoon->setName( "Cartoon" );
-		cartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
-		cartoon->setQuickAccess( true );
-		addRepresentation( cartoon, p_notify );
+		representationType = Generic::REPRESENTATION::CARTOON;
+		name			   = "Cartoon";
+		if ( isExistingName( name ) == false )
+		{
+			Representation * const cartoon
+				= MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+			cartoon->setName( name );
+			cartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
+			cartoon->setQuickAccess( true );
+			addRepresentation( cartoon, p_notify );
+		}
 
-		representationType		   = Generic::REPRESENTATION::SAS;
-		Representation * const sas = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
-		sas->setName( "SAS" );
-		sas->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
-		sas->setQuickAccess( true );
-		addRepresentation( sas, p_notify );
+		representationType = Generic::REPRESENTATION::SAS;
+		name			   = "SAS";
+		if ( isExistingName( name ) == false )
+		{
+			Representation * const sas = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+			sas->setName( name );
+			sas->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
+			sas->setQuickAccess( true );
+			addRepresentation( sas, p_notify );
+		}
 
 		representationType = Generic::REPRESENTATION::STICK;
-		Representation * const stick
-			= MVC::MvcManager::get().instantiateModel<Representation, Generic::REPRESENTATION>( representationType );
-		stick->setName( "Stick" );
-		stick->getData().setCylinderRadius( 0.15f );
-		stick->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
-		stick->setQuickAccess( true );
-		addRepresentation( stick, p_notify );
+		name			   = "Stick";
+		if ( isExistingName( name ) == false )
+		{
+			Representation * const stick
+				= MVC::MvcManager::get().instantiateModel<Representation, Generic::REPRESENTATION>(
+					representationType );
+			stick->setName( name );
+			stick->getData().setCylinderRadius( 0.15f );
+			stick->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
+			stick->setQuickAccess( true );
+			addRepresentation( stick, p_notify );
+		}
 
 		representationType = Generic::REPRESENTATION::STICK_AND_CARTOON;
-		Representation * const stickAndCartoon
-			= MVC::MvcManager::get().instantiateModel<Representation>( representationType );
-		stickAndCartoon->setName( "Stick + Cartoon" );
-		stickAndCartoon->getData().setCylinderRadius( 0.15f );
-		stickAndCartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
-		addRepresentation( stickAndCartoon, p_notify );
+		name			   = "Stick + Cartoon";
+		if ( isExistingName( name ) == false )
+		{
+			Representation * const stickAndCartoon
+				= MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+			stickAndCartoon->setName( name );
+			stickAndCartoon->getData().setCylinderRadius( 0.15f );
+			stickAndCartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
+			addRepresentation( stickAndCartoon, p_notify );
+		}
 
-		representationType		   = Generic::REPRESENTATION::VAN_DER_WAALS;
-		Representation * const vdw = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
-		vdw->setName( "VdW" );
-		vdw->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
-		vdw->getData().setSphereRadius( 0 );
-		addRepresentation( vdw, p_notify );
+		representationType = Generic::REPRESENTATION::VAN_DER_WAALS;
+		name			   = "VdW";
+		if ( isExistingName( name ) == false )
+		{
+			Representation * const vdw = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+			vdw->setName( name );
+			vdw->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
+			vdw->getData().setSphereRadius( 0 );
+			addRepresentation( vdw, p_notify );
+		}
 
-		representationType		   = Generic::REPRESENTATION::SES;
-		Representation * const ses = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
-		ses->setName( "SES" );
-		ses->setQuickAccess( true );
-		addRepresentation( ses, p_notify );
+		representationType = Generic::REPRESENTATION::SES;
+		name			   = "SES";
+		if ( isExistingName( name ) == false )
+		{
+			Representation * const ses = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+			ses->setName( name );
+			addRepresentation( ses, p_notify );
+		}
 	}
 
 	void RepresentationLibrary::_onRepresentationChange( const Event::VTXEvent * const p_event )
