@@ -52,6 +52,9 @@ namespace VTX::Analysis
 			data.setFirstMolecule( targetMolecule );
 			data.setSecondMolecule( otherMolecule );
 			data.setRMSD( rmsd );
+			const uint atomCount = uint(targetAtomPositions.size() < otherAtomPositions.size()
+				? targetAtomPositions.size() : otherAtomPositions.size());
+			data.setAtomCount( atomCount );
 
 			VTX_EVENT( new Event::VTXEventRef<const RMSDData>( Event::Global::RMSD_COMPUTED, data ) );
 		}
