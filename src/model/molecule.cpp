@@ -742,7 +742,7 @@ namespace VTX
 			}
 
 			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule>( this );
-			_secondaryStructure->init();
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SECONDARY_STRUCTURE_CREATED, _secondaryStructure ) );
 			_secondaryStructure->print();
 		}
 
@@ -764,7 +764,8 @@ namespace VTX
 			}
 
 			_solventExcludedSurface = MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Molecule>( this );
-			_solventExcludedSurface->init();
+			VTX_EVENT(
+				new Event::VTXEventPtr( Event::Global::SOLVENT_EXTRUDED_SURFACE_CREATED, _solventExcludedSurface ) );
 			_solventExcludedSurface->print();
 		}
 

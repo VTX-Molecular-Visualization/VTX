@@ -135,6 +135,13 @@ namespace VTX
 						representationTargets.appendRibbons( residueToControlPointIndices[ residue->getIndex() ], 4 );
 					}
 				}
+				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::SES ) )
+				{
+					if ( _molecule->hasSolventExcludedSurface() == false )
+					{
+						_molecule->createSolventExcludedSurface();
+					}
+				}
 			}
 
 			// Compile all targets for gl draw calls.
