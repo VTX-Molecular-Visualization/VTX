@@ -60,7 +60,7 @@ namespace VTX
 
 			void _init() override;
 			void _computeAABB() const override;
-			void _instantiate3DViews() override;
+			virtual void _instantiate3DViews() override;
 
 			std::vector<Vec3f>		_vertices;
 			std::vector<Vec3f>		_normals;

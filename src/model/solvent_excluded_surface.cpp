@@ -7,6 +7,7 @@
 #include "object3d/scene.hpp"
 #include "renderer/gl/buffer_storage.hpp"
 #include "residue.hpp"
+#include "view/d3/triangle.hpp"
 #include "worker/gpu_computer.hpp"
 
 namespace VTX
@@ -58,14 +59,14 @@ namespace VTX
 
 			_gridAtoms = Object3D::Helper::Grid( min, Vec3f( cellSize ), gridSize );
 
-			std::vector<std::vector<AtomData>> atomData
-				= std::vector<std::vector<AtomData>>( _gridAtoms.getCellCount(), std::vector<AtomData>() );
+			std::vector<std::vector<AtomGridData>> atomGridData
+				= std::vector<std::vector<AtomGridData>>( _gridAtoms.getCellCount(), std::vector<AtomGridData>() );
 			const std::vector<Vec3f> & atomPositions = _molecule->getAtomPositionFrame( 0 );
 
 			for ( uint i = 0; i < atomPositions.size(); ++i )
 			{
 				const uint hash = _gridAtoms.gridHash( atomPositions[ i ] );
-				atomData[ hash ].emplace_back( AtomData { int( i ) } );
+				atomGridData[ hash ].emplace_back( AtomGridData { int( i ) } );
 			}
 
 			chrono2.stop();
@@ -123,7 +124,7 @@ namespace VTX
 									uint hashToVisit = _gridAtoms.gridHash( gridPositionToVisit );
 
 									// Compute SDF.
-									for ( const AtomData & atom : atomData[ hashToVisit ] )
+									for ( const AtomGridData & atom : atomGridData[ hashToVisit ] )
 									{
 										float distance = Util::Math::distance( atomPositions[ atom.index ],
 																			   sesGridCellWorldPosition );
@@ -393,6 +394,12 @@ namespace VTX
 
 			_selections.shrink_to_fit();
 			_buffer->setSelections( _selections );
+		}
+
+		void SolventExcludedSurface::_instantiate3DViews()
+		{
+			_addRenderable(
+				MVC::MvcManager::get().instantiateView<View::D3::TriangleSES>( this, VTX::ID::View::D3_TRIANGLE_SES ) );
 		}
 	} // namespace Model
 } // namespace VTX

@@ -141,6 +141,7 @@ namespace VTX
 					{
 						_molecule->createSolventExcludedSurface();
 					}
+					const Model::SolventExcludedSurface & ses = _molecule->getSolventExcludedSurface();
 				}
 			}
 
