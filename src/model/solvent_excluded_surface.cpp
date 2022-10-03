@@ -396,3 +396,9 @@ namespace VTX
 		}
 	} // namespace Model
 } // namespace VTX
+
+// multi rep
+// fix selection
+// fix extraction
+// check ss construction
+// check ss visu

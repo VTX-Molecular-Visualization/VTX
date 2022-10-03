@@ -17,11 +17,11 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
-			inline Model::Molecule * const	getMolecule() { return _molecule; }
-			inline Object3D::Helper::Grid & getGridAtoms() { return _gridAtoms; }
-			inline Object3D::Helper::Grid & getGridSES() { return _gridSES; }
-
-			const Math::Transform & getTransform() const override;
+			inline Model::Molecule * const				  getMolecule() { return _molecule; }
+			inline Object3D::Helper::Grid &				  getGridAtoms() { return _gridAtoms; }
+			inline Object3D::Helper::Grid &				  getGridSES() { return _gridSES; }
+			inline const std::vector<std::vector<uint>> & getAtomToTriangles() const { return _atomToTriangles; }
+			const Math::Transform &						  getTransform() const override;
 
 			void refresh();
 			void refreshColors();

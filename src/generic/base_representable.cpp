@@ -5,6 +5,7 @@
 #include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
 #include "model/secondary_structure.hpp"
+#include "model/solvent_excluded_surface.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
@@ -141,6 +142,8 @@ namespace VTX
 					{
 						_molecule->createSolventExcludedSurface();
 					}
+					Model::SolventExcludedSurface &		   ses			   = _molecule->getSolventExcludedSurface();
+					const std::vector<std::vector<uint>> & atomToTriangles = ses.getAtomToTriangles();
 				}
 			}
 
