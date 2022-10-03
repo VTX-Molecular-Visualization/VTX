@@ -18,6 +18,10 @@ namespace VTX
 			{
 				delete _ribbonsMap;
 			}
+			if ( _trianglesSESMap == nullptr )
+			{
+				delete _trianglesSESMap;
+			}
 		}
 
 		void RepresentationTarget::compile()
@@ -25,14 +29,17 @@ namespace VTX
 			_mapToRangeArrays( *_atomsMap, _atoms );
 			_mapToRangeElements( *_bondsMap, _bonds );
 			_mapToRangeElements( *_ribbonsMap, _ribbons );
+			_mapToRangeElements( *_trianglesSESMap, _trianglesSES );
 
 			delete _atomsMap;
 			delete _bondsMap;
 			delete _ribbonsMap;
+			delete _trianglesSESMap;
 
-			_atomsMap	= nullptr;
-			_bondsMap	= nullptr;
-			_ribbonsMap = nullptr;
+			_atomsMap		 = nullptr;
+			_bondsMap		 = nullptr;
+			_ribbonsMap		 = nullptr;
+			_trianglesSESMap = nullptr;
 		}
 
 		void RepresentationTarget::_append( TargetRangeMap & p_range, const uint p_indice, const uint p_count )

@@ -42,6 +42,11 @@ namespace VTX
 				assert( _ribbonsMap == nullptr ); // Ensure compiled.
 				return _ribbons;
 			};
+			inline const TargetRangeElements & getTrianglesSES() const
+			{
+				assert( _trianglesSESMap == nullptr ); // Ensure compiled.
+				return _trianglesSES;
+			};
 
 			inline void appendAtoms( const uint p_indice, const uint p_count )
 			{
@@ -55,17 +60,23 @@ namespace VTX
 			{
 				_append( *_ribbonsMap, p_indice, p_count );
 			}
+			inline void appendTrianglesSES( const uint p_indice, const uint p_count )
+			{
+				_append( *_trianglesSESMap, p_indice, p_count );
+			}
 
 			void compile();
 
 		  private:
-			TargetRangeArrays	_atoms	 = TargetRangeArrays();
-			TargetRangeElements _bonds	 = TargetRangeElements();
-			TargetRangeElements _ribbons = TargetRangeElements();
+			TargetRangeArrays	_atoms		  = TargetRangeArrays();
+			TargetRangeElements _bonds		  = TargetRangeElements();
+			TargetRangeElements _ribbons	  = TargetRangeElements();
+			TargetRangeElements _trianglesSES = TargetRangeElements();
 
-			TargetRangeMap * _atomsMap	 = new TargetRangeMap();
-			TargetRangeMap * _bondsMap	 = new TargetRangeMap();
-			TargetRangeMap * _ribbonsMap = new TargetRangeMap();
+			TargetRangeMap * _atomsMap		  = new TargetRangeMap();
+			TargetRangeMap * _bondsMap		  = new TargetRangeMap();
+			TargetRangeMap * _ribbonsMap	  = new TargetRangeMap();
+			TargetRangeMap * _trianglesSESMap = new TargetRangeMap();
 
 			void _append( TargetRangeMap & p_range, const uint p_indice, const uint p_count );
 

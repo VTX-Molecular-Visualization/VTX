@@ -30,6 +30,7 @@ namespace VTX
 
 		  protected:
 			void _init() override;
+			void _instantiate3DViews() override;
 
 		  private:
 			enum class Mode
@@ -38,7 +39,7 @@ namespace VTX
 				GPU
 			};
 
-			struct AtomData
+			struct AtomGridData
 			{
 				int index;
 			};
