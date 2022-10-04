@@ -29,14 +29,13 @@ namespace VTX::UI::Widget::ContextualMenu
 		_representationMenu = WidgetFactory::get().instantiateWidget<CustomWidget::SetRepresentationMenu>(
 			this, "SetRepresentationMenu" );
 
-		moleculeStructureSubmenu->addItemData(
-			new SubMenuData( "Representation", TypeMask::AllButAtom, this, _representationMenu ) );
-		ActionDataSection * const changeRepresentationAction
-			= new ActionDataSection( "Show/Hide", TypeMask::Molecule, this );
-		moleculeStructureSubmenu->addItemData( changeRepresentationAction );
-		changeRepresentationAction->setRefreshFunction(
+		SubMenuData * const changeRepresentationSubmenuData
+			= new SubMenuData( "Representation", TypeMask::AllButAtom, this, _representationMenu );
+		changeRepresentationSubmenuData->setRefreshFunction(
 			&ContextualMenuSelection::_updateCurrentRepresentationFeedback );
+		moleculeStructureSubmenu->addItemData( changeRepresentationSubmenuData );
 
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Show/Hide", TypeMask::Molecule, this ) );
 		ActionData * const toggleWatersAction = new ActionData(
 			"Toggle Waters", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleWaterVisibilityAction );
 		toggleWatersAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleWaterText );
@@ -101,9 +100,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
 
-		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Analysis", TypeMask::Molecule, this ) );
-		ActionData * const applyComputeRMSDAction
-			= new ActionData( "RMSD", TypeMask::Molecule, this, &ContextualMenuSelection::_applyComputeRMSDAction );
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Analysis", TypeMask::MoleculeStructure, this ) );
+		ActionData * const applyComputeRMSDAction = new ActionData(
+			"RMSD", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_applyComputeRMSDAction );
 		applyComputeRMSDAction->setCheckFunction( &ContextualMenuSelection::_checkComputeRMSDAction );
 		moleculeStructureSubmenu->addItemData( applyComputeRMSDAction );
 		ActionData * const applyAlignmentAction

@@ -4,12 +4,15 @@ namespace VTX::UI::Widget::MainMenu
 {
 	void MenuToolButtonSubmenuWidget::_setupUi( const QString & p_name )
 	{
+		MenuToolButtonWidget::_setupUi( p_name );
+
 		_submenu = new QMenu( this );
-		setPopupMode( QToolButton::ToolButtonPopupMode::DelayedPopup );
+		setPopupMode( QToolButton::ToolButtonPopupMode::MenuButtonPopup );
 		setMenu( _submenu );
 	}
 	void MenuToolButtonSubmenuWidget::_setupSlots()
 	{
+		MenuToolButtonWidget::_setupSlots();
 		setTriggerAction( this, &MenuToolButtonSubmenuWidget::_triggerDefaultAction );
 	}
 

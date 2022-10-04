@@ -70,9 +70,10 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 	{
 		_tickButton->setChecked( p_ticked );
 	}
-	void StructuralAlignmentModelListWidget::ModelFieldLine::setRMSD( const float p_rmsd )
+	void StructuralAlignmentModelListWidget::ModelFieldLine::setRMSD( const float p_rmsd, const size_t p_residueCount )
 	{
-		_rmsdLabel->setText( QString::fromStdString( std::to_string( p_rmsd ) ) );
+		_rmsdLabel->setText( QString::fromStdString( std::to_string( p_rmsd ) + " (over "
+													 + std::to_string( p_residueCount ) + " residues)" ) );
 	}
 	void StructuralAlignmentModelListWidget::ModelFieldLine::resetRMSD()
 	{
@@ -106,8 +107,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		_initColumn( GRID_LAYOUT_COLUMN::TICK, "Static", 0 );
 		_initColumn( GRID_LAYOUT_COLUMN::MODEL, "Molecule", 1000 );
-		_initColumn( GRID_LAYOUT_COLUMN::REMOVE_BUTTON, "", 0 );
 		_initColumn( GRID_LAYOUT_COLUMN::RMSD, "RMSD", 0 );
+		_initColumn( GRID_LAYOUT_COLUMN::REMOVE_BUTTON, "", 0 );
 	}
 	void StructuralAlignmentModelListWidget::_setupSlots() {}
 	void StructuralAlignmentModelListWidget::localize() {}
@@ -249,9 +250,11 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		return res;
 	}
 
-	void StructuralAlignmentModelListWidget::setRMSD( const Model::BaseModel * const p_model, const float p_rmsd ) const
+	void StructuralAlignmentModelListWidget::setRMSD( const Model::BaseModel * const p_model,
+													  const float					 p_rmsd,
+													  const size_t					 p_residueCount ) const
 	{
-		_findLineFromModel( p_model )->setRMSD( p_rmsd );
+		_findLineFromModel( p_model )->setRMSD( p_rmsd, p_residueCount );
 	}
 	void StructuralAlignmentModelListWidget::resetRMSD( const Model::BaseModel * const p_model ) const
 	{

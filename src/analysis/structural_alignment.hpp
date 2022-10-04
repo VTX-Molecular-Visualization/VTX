@@ -46,9 +46,14 @@ namespace VTX::Analysis
 		class AlignmentResult
 		{
 		  public:
-			AlignmentResult();
-			float rmsd				   = -1.f;
-			Mat4f transformationMatrix = MAT4F_ID;
+			AlignmentResult( const Model::Molecule * const p_staticMolecule,
+							 const Model::Molecule * const p_mobileMolecule );
+
+			const Model::Molecule * const staticMolecule = nullptr;
+			const Model::Molecule * const mobileMolecule = nullptr;
+			float						  alignedResidueCount;
+			float						  alignedResiduesRMSD  = -1.f;
+			Mat4f						  transformationMatrix = MAT4F_ID;
 		};
 
 		class AlignmentMethod

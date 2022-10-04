@@ -12,7 +12,8 @@
 namespace VTX::Model
 {
 	class Molecule;
-}
+	class Residue;
+} // namespace VTX::Model
 
 namespace VTX::Analysis::StructuralAlignmentMethod
 {
@@ -79,6 +80,14 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 
 		Eigen::Matrix3d _mat3fToEigenMat3d( const Mat3f & _mat );
 		Mat3f			_eigenMat3dToMat3f( const Eigen::Matrix3d & _eigenMat );
+
+		static Vec3f _computeResidueCenterOfMass( const Model::Residue & p_residue );
+
+		static float _computeRMSDOnAtomOfPath( const Model::Molecule & p_staticMolecule,
+											   const Model::Molecule & p_mobileMolecule,
+											   const Path &			   p_path,
+											   const int			   p_windowSize,
+											   const Mat4f &		   transformationMatrix = MAT4F_ID );
 
 		static Struct::ResidueCenterOfMassDataSet _residuePositionsDataSet;
 	};

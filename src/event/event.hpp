@@ -65,8 +65,8 @@ namespace VTX
 			SCENE_SAVED,
 			SCENE_MODIFICATION_STATE_CHANGE,
 			SCENE_PATH_CHANGE,
-
 			RMSD_COMPUTED,
+			STRUCTURAL_ALIGNMENT_COMPUTED,
 		};
 
 		// Model events for notifier pattern (model->views)[1-n].

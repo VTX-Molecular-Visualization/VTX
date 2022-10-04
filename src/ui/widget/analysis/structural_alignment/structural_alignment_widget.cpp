@@ -15,31 +15,43 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 {
 	StructuralAlignmentWidget::StructuralAlignmentWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( Event::Global::RMSD_COMPUTED );
+		_registerEvent( Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED );
 	}
 	void StructuralAlignmentWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::RMSD_COMPUTED )
+		if ( p_event.name == Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED )
 		{
-			const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> & castedEvent
-				= dynamic_cast<const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> &>( p_event );
+			const Event::VTXEventRef<const VTX::Analysis::StructuralAlignment::AlignmentResult> & castedEvent
+				= dynamic_cast<const Event::VTXEventRef<const VTX::Analysis::StructuralAlignment::AlignmentResult> &>(
+					p_event );
 
-			const VTX::Analysis::RMSD::RMSDData & rmsdData = castedEvent.ref;
+			VTX::Analysis::StructuralAlignment::AlignmentResult alignmentResult = castedEvent.ref;
 
-			const Model::Molecule * const		 staticMolecule	 = _moleculeList->getTickedModel<Model::Molecule>();
-			const std::vector<Model::Molecule *> mobileMolecules = _moleculeList->getNotTickedModels<Model::Molecule>();
+			VTX_INFO( "RMSD : {} over {} residues",
+					  alignmentResult.alignedResiduesRMSD,
+					  alignmentResult.alignedResidueCount );
 
-			const bool isConcernedByRMSD
-				= rmsdData.firstMolecule == staticMolecule
-				  && ( std::find( mobileMolecules.begin(), mobileMolecules.end(), rmsdData.secondMolecule )
-					   != mobileMolecules.end() );
-
-			if ( isConcernedByRMSD )
+			if ( _isConcernedByAlignment( alignmentResult ) )
 			{
-				_moleculeList->resetRMSD( rmsdData.firstMolecule );
-				_moleculeList->setRMSD( rmsdData.secondMolecule, rmsdData.rmsd );
+				_moleculeList->resetRMSD( alignmentResult.staticMolecule );
+				_moleculeList->setRMSD( alignmentResult.mobileMolecule,
+										alignmentResult.alignedResiduesRMSD,
+										alignmentResult.alignedResidueCount );
 			}
 		}
+	}
+
+	bool StructuralAlignmentWidget::_isConcernedByAlignment(
+		const VTX::Analysis::StructuralAlignment::AlignmentResult & p_result ) const
+	{
+		bool staticMoleculeIsTicked = _moleculeList->getTickedModel() == p_result.staticMolecule;
+
+		const std::vector<Model::BaseModel *> notTickedModels = _moleculeList->getNotTickedModels();
+		bool								  mobileMoleculeIsInList
+			= std::find( notTickedModels.begin(), notTickedModels.end(), p_result.mobileMolecule )
+			  != notTickedModels.end();
+
+		return staticMoleculeIsTicked && mobileMoleculeIsInList;
 	}
 
 	void StructuralAlignmentWidget::_setupUi( const QString & p_name )

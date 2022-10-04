@@ -20,8 +20,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		{
 			TICK		  = 0,
 			MODEL		  = 1,
-			REMOVE_BUTTON = 2,
-			RMSD		  = 3,
+			RMSD		  = 2,
+			REMOVE_BUTTON = 3,
 		};
 
 		class ModelFieldLine : public QObject
@@ -44,7 +44,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 			bool isTicked() const;
 			void setTickState( const bool p_ticked ) const;
 
-			void setRMSD( const float p_rmsd );
+			void setRMSD( const float p_rmsd, const size_t p_residueCount );
 			void resetRMSD();
 
 		  protected:
@@ -96,7 +96,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 			return res;
 		}
 
-		void setRMSD( const Model::BaseModel * const p_model, const float p_rmsd ) const;
+		void setRMSD( const Model::BaseModel * const p_model, const float p_rmsd, const size_t p_residueCount ) const;
 		void resetRMSD( const Model::BaseModel * const p_model ) const;
 
 	  protected:

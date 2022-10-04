@@ -46,7 +46,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		_structuralAlignmentButton
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonSubmenuWidget>( this, "structuralAlignmentButton" );
 		_structuralAlignmentButton->setData(
-			"Structural alignment", ":/sprite/measurement_distance_icon.png", Qt::Orientation::Horizontal );
+			"Structural alignment", ":/sprite/structural_alignment_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_structuralAlignmentButton, 1 );
 
 		_structuralAlignmentAdvancedButton
@@ -91,16 +91,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	void MenuToolStructuralAlignmentWidget::_computeRMSDAction() const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
-
-		const Model::Molecule *				 target;
-		std::vector<const Model::Molecule *> comparers;
-		Util::Analysis::pickTargetAndComparersFromSelection( selection, target, comparers );
-
-		std::vector<const Model::Molecule *> comparersConst = std::vector<const Model::Molecule *>();
-		comparersConst.resize( comparers.size() );
-		std::move( comparers.begin(), comparers.end(), comparersConst.begin() );
-
-		VTX_ACTION( new Action::Analysis::ComputeRMSD( target, comparersConst ) );
+		VTX_ACTION( new Action::Analysis::ComputeRMSD( selection ) );
 	}
 
 	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction()

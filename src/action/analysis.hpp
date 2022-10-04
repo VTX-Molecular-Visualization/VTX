@@ -16,32 +16,67 @@ namespace VTX::Action::Analysis
 {
 	class ComputeRMSD : public BaseAction
 	{
+	  private:
+		enum class MODE : int
+		{
+			MOLECULE,
+			SELECTION
+		};
+
+		union RMSDTarget
+		{
+			RMSDTarget() {};
+			RMSDTarget( const Model::Molecule * p_target, std::vector<const Model::Molecule *> p_others ) :
+				moleculeData { p_target, p_others }
+			{
+			}
+			RMSDTarget( const Model::Selection * const p_selection ) : selectionData( p_selection ) {}
+			~RMSDTarget() {};
+
+			const std::pair<const Model::Molecule *, std::vector<const Model::Molecule *>> moleculeData;
+			const Model::Selection * const												   selectionData;
+		};
+
 	  public:
 		explicit ComputeRMSD( const Model::Molecule * const			 p_target,
 							  std::vector<const Model::Molecule *> & p_others,
 							  const bool							 p_considerTransform = true ) :
-			_target( p_target ),
-			_others( p_others ), _considerTransform( p_considerTransform )
+			_mode( MODE::MOLECULE ),
+			_target( p_target, p_others ), _considerTransform( p_considerTransform )
 		{
 		}
-		explicit ComputeRMSD( const Model::Selection & p_selection ) : _considerTransform( false )
+		explicit ComputeRMSD( const Model::Selection & p_selection, const bool p_considerTransform = true ) :
+			_mode( MODE::SELECTION ), _target( &p_selection ), _considerTransform( p_considerTransform )
 		{
-			Util::Analysis::pickTargetAndComparersFromSelection( p_selection, _target, _others );
 		}
 
 		virtual void execute() override
 		{
-			for ( const Model::Molecule * const molecule : _others )
+			switch ( _mode )
 			{
-				VTX::Analysis::RMSD::computeRMSD( _target, molecule, _considerTransform );
+			case MODE::MOLECULE:
+			{
+				for ( const Model::Molecule * const molecule : _target.moleculeData.second )
+				{
+					VTX::Analysis::RMSD::callRMSDComputation(
+						_target.moleculeData.first, molecule, _considerTransform );
+				}
+			}
+			break;
+
+			case MODE::SELECTION:
+			{
+				VTX::Analysis::RMSD::callRMSDComputation( *_target.selectionData, _considerTransform );
+			}
+			break;
 			}
 		}
 
 	  private:
-		const Model::Molecule *				 _target;
-		std::vector<const Model::Molecule *> _others;
+		const MODE _mode;
 
-		const bool _considerTransform;
+		const union RMSDTarget _target;
+		const bool			   _considerTransform;
 	};
 
 	class ComputeStructuralAlignment : public BaseAction
@@ -79,8 +114,6 @@ namespace VTX::Action::Analysis
 			}
 
 			chrono.stop();
-
-			VTX_INFO( "elpased time : " + chrono.elapsedTimeStr() );
 		}
 
 	  private:
