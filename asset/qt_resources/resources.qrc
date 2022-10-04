@@ -4,6 +4,7 @@
 	<file>sprite/add_icon_hovered.png</file>
 	<file>sprite/add_preset_icon.png</file>
 	<file>sprite/add_viewpoint.png</file>
+	<file>sprite/analysis_compute_rmsd_icon.png</file>
 	<file>sprite/camera_focus_icon.png</file>
 	<file>sprite/camera_freefly_mode.png</file>
 	<file>sprite/camera_orient_icon.png</file>
