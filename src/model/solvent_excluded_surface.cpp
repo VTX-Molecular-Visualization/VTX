@@ -223,7 +223,8 @@ namespace VTX
 			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
-			_atomToTriangles = std::vector<std::vector<uint>>( atomPositions.size(), std::vector<uint>() );
+			std::vector<std::vector<Vec3f>> atomsToTriangles
+				= std::vector<std::vector<Vec3f>>( atomPositions.size(), std::vector<Vec3f>() );
 
 			// Marching cube to extract mesh.
 			const Math::MarchingCube marchingCube = Math::MarchingCube();
@@ -264,12 +265,6 @@ namespace VTX
 						for ( uint triangle = 0; triangle < uint( cellTriangles.size() ); ++triangle )
 						{
 							assert( cellTriangles[ triangle ].size() == 3 );
-							_indices.insert( _indices.end(),
-											 { uint( _vertices.size() ),
-											   uint( _vertices.size() ) + 1,
-											   uint( _vertices.size() ) + 2 } );
-							_vertices.insert(
-								_vertices.end(), cellTriangles[ triangle ].begin(), cellTriangles[ triangle ].end() );
 
 							// Get closest atom.
 							float closestDistance = FLOAT_MAX;
@@ -287,14 +282,10 @@ namespace VTX
 								}
 							}
 
-							// Map id of first vertice with nearest atom.
-							_atomToTriangles[ gridData[ closestVertex ].nearestAtom ].push_back(
-								uint( _vertices.size() ) - 3 );
-
-							_ids.insert( _ids.end(),
-										 { Model::ID( gridData[ closestVertex ].nearestAtom ),
-										   Model::ID( gridData[ closestVertex ].nearestAtom ),
-										   Model::ID( gridData[ closestVertex ].nearestAtom ) } );
+							// Map atoms with triangle points.
+							std::vector<Vec3f> & triangles = atomsToTriangles[ gridData[ closestVertex ].nearestAtom ];
+							triangles.insert(
+								triangles.end(), cellTriangles[ triangle ].begin(), cellTriangles[ triangle ].end() );
 						}
 					}
 				}
@@ -302,6 +293,34 @@ namespace VTX
 
 			chrono2.stop();
 			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
+
+			// Fill buffers with sorted values and store data as triangle range per atoms.
+			_atomsToTriangles = std::vector<std::pair<uint, uint>>( atomPositions.size(), std::pair<uint, uint>() );
+			for ( uint i = 0; i < atomsToTriangles.size(); ++i )
+			{
+				const std::vector<Vec3f> & trianglePoints = atomsToTriangles[ i ];
+				_atomsToTriangles[ i ].first			  = uint( _vertices.size() );
+				_atomsToTriangles[ i ].second			  = uint( trianglePoints.size() );
+
+				std::vector<uint> indices = std::vector<uint>( trianglePoints.size() );
+				int				  index	  = int( _vertices.size() );
+				std::iota( indices.begin(), indices.end(), index );
+				_indices.insert( _indices.end(), indices.begin(), indices.end() );
+
+				_vertices.insert( _vertices.end(), trianglePoints.begin(), trianglePoints.end() );
+
+				std::vector<uint> ids = std::vector<uint>( trianglePoints.size() );
+				std::fill( ids.begin(), ids.end(), i );
+				_ids.insert( _ids.end(), ids.begin(), ids.end() );
+			}
+
+			_vertices.shrink_to_fit();
+			_indices.shrink_to_fit();
+			_ids.shrink_to_fit();
+
+			chrono2.stop();
+			VTX_INFO( "Triangles sorting done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			recomputeNormals();
@@ -319,16 +338,14 @@ namespace VTX
 		void SolventExcludedSurface::refreshColors()
 		{
 			_colors.clear();
-			_colors.resize( _vertices.size() );
+			_colors.resize( _vertices.size(), Color::Rgb::WHITE );
 
-			for ( uint atomIdx = 0; atomIdx < _atomToTriangles.size(); ++atomIdx )
+			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
-				for ( const uint triangleFirstVertice : _atomToTriangles[ atomIdx ] )
-				{
-					_colors[ triangleFirstVertice + 0 ] = _molecule->getAtomColor( atomIdx );
-					_colors[ triangleFirstVertice + 1 ] = _molecule->getAtomColor( atomIdx );
-					_colors[ triangleFirstVertice + 2 ] = _molecule->getAtomColor( atomIdx );
-				}
+				const Color::Rgb & color = _molecule->getAtomColor( atomIdx );
+				std::fill( _colors.begin() + _atomsToTriangles[ atomIdx ].first,
+						   _colors.begin() + _atomsToTriangles[ atomIdx ].first + _atomsToTriangles[ atomIdx ].second,
+						   color );
 			}
 
 			_colors.shrink_to_fit();
@@ -339,7 +356,8 @@ namespace VTX
 		{
 			_visibilities.clear();
 			_visibilities.resize( _vertices.size(), 1 );
-			for ( uint atomIdx = 0; atomIdx < _atomToTriangles.size(); ++atomIdx )
+
+			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
 				const Atom * const	  atom	  = _molecule->getAtom( atomIdx );
 				const Residue * const residue = atom->getResiduePtr();
@@ -348,12 +366,10 @@ namespace VTX
 
 				if ( visible == 0 )
 				{
-					for ( const uint triangleFirstVertice : _atomToTriangles[ atomIdx ] )
-					{
-						_visibilities[ triangleFirstVertice + 0 ] = 0;
-						_visibilities[ triangleFirstVertice + 1 ] = 0;
-						_visibilities[ triangleFirstVertice + 2 ] = 0;
-					}
+					std::fill( _visibilities.begin() + _atomsToTriangles[ atomIdx ].first,
+							   _visibilities.begin() + _atomsToTriangles[ atomIdx ].first
+								   + _atomsToTriangles[ atomIdx ].second,
+							   0 );
 				}
 			}
 
@@ -370,7 +386,7 @@ namespace VTX
 			{
 				if ( p_selection->getFullySelectedChildCount() == _molecule->getRealChainCount() )
 				{
-					std::fill( _selections.begin(), _selections.end(), 1u );
+					std::fill( _selections.begin(), _selections.end(), 1 );
 				}
 				else
 				{
@@ -378,14 +394,12 @@ namespace VTX
 					{
 						for ( const Model::Selection::PairResidueIds & pairResidue : pairChain.second )
 						{
-							for ( const uint & atomIndex : pairResidue.second )
+							for ( const uint & atomIdx : pairResidue.second )
 							{
-								for ( const uint triangleFirstVertice : _atomToTriangles[ atomIndex ] )
-								{
-									_selections[ triangleFirstVertice + 0 ] = 1;
-									_selections[ triangleFirstVertice + 1 ] = 1;
-									_selections[ triangleFirstVertice + 2 ] = 1;
-								}
+								std::fill( _selections.begin() + _atomsToTriangles[ atomIdx ].first,
+										   _selections.begin() + _atomsToTriangles[ atomIdx ].first
+											   + _atomsToTriangles[ atomIdx ].second,
+										   1 );
 							}
 						}
 					}

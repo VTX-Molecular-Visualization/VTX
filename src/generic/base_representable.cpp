@@ -142,8 +142,16 @@ namespace VTX
 					{
 						_molecule->createSolventExcludedSurface();
 					}
-					Model::SolventExcludedSurface &		   ses			   = _molecule->getSolventExcludedSurface();
-					const std::vector<std::vector<uint>> & atomToTriangles = ses.getAtomToTriangles();
+					Model::SolventExcludedSurface & ses = _molecule->getSolventExcludedSurface();
+
+					const std::vector<std::pair<uint, uint>> & atomsToTriangles = ses.getAtomsToTriangles();
+					for ( uint atomIdx = residue->getIndexFirstAtom();
+						  atomIdx < residue->getIndexFirstAtom() + residue->getAtomCount();
+						  ++atomIdx )
+					{
+						representationTargets.appendTrianglesSES( atomsToTriangles[ atomIdx ].first,
+																  atomsToTriangles[ atomIdx ].second );
+					}
 				}
 			}
 

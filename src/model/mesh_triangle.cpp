@@ -37,8 +37,9 @@ namespace VTX
 
 		void MeshTriangle::recomputeNormals()
 		{
-			if ( _indices.size() < 3 )
+			if ( _indices.size() % 3 != 0 )
 			{
+				assert( false );
 				return;
 			}
 
