@@ -300,8 +300,9 @@ namespace VTX
 			for ( uint i = 0; i < atomsToTriangles.size(); ++i )
 			{
 				const std::vector<Vec3f> & trianglePoints = atomsToTriangles[ i ];
-				_atomsToTriangles[ i ].first			  = uint( _vertices.size() );
-				_atomsToTriangles[ i ].second			  = uint( trianglePoints.size() );
+
+				_atomsToTriangles[ i ].first  = uint( _vertices.size() );
+				_atomsToTriangles[ i ].second = uint( trianglePoints.size() );
 
 				std::vector<uint> indices = std::vector<uint>( trianglePoints.size() );
 				int				  index	  = int( _vertices.size() );
@@ -311,7 +312,7 @@ namespace VTX
 				_vertices.insert( _vertices.end(), trianglePoints.begin(), trianglePoints.end() );
 
 				std::vector<uint> ids = std::vector<uint>( trianglePoints.size() );
-				std::fill( ids.begin(), ids.end(), i );
+				std::fill( ids.begin(), ids.end(), _molecule->getAtom( i )->getId() );
 				_ids.insert( _ids.end(), ids.begin(), ids.end() );
 			}
 
@@ -330,6 +331,13 @@ namespace VTX
 			refreshColors();
 			refreshVisibilities();
 			refreshSelection();
+
+			assert( _vertices.size() == _indices.size() );
+			assert( _vertices.size() == _normals.size() );
+			assert( _vertices.size() == _ids.size() );
+			assert( _vertices.size() == _colors.size() );
+			assert( _vertices.size() == _visibilities.size() );
+			assert( _vertices.size() == _selections.size() );
 
 			chrono.stop();
 			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
