@@ -105,6 +105,7 @@
 	<file>sprite/stop_icon.png</file>
 	<file>sprite/stop_icon_hovered.png</file>
 	<file>sprite/structural_alignment_icon.png</file>
+	<file>sprite/structural_alignment_settings_icon.png</file>
 	<file>sprite/symbol/atom_symbol_icon.png</file>
 	<file>sprite/symbol/chain_symbol_icon.png</file>
 	<file>sprite/symbol/label_symbol_icon.png</file>
