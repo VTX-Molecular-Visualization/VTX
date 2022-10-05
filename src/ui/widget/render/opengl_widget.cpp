@@ -145,7 +145,7 @@ namespace VTX::UI::Widget::Render
 #endif
 		if ( func != nullptr )
 		{
-			VTX_DEBUG( std::to_string( ((uint( * )())func)() ) );
+			VTX_DEBUG( std::to_string( ( (uint( * )())func )() ) );
 		}
 		else
 		{

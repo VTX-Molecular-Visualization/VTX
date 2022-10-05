@@ -39,6 +39,7 @@ namespace VTX::Model::Representation
 
 		std::string getValidName( const std::string & p_name ) const;
 		bool		isValidName( const std::string & p_name ) const;
+		bool		isExistingName( const std::string & p_name ) const;
 
 		void clear( const bool p_notify = true );
 

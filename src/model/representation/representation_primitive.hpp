@@ -28,5 +28,11 @@ namespace VTX::Model::Representation
 		Generic::COLOR_BLENDING_MODE			colorBlendingMode;
 	};
 
+	struct SESData
+	{
+		SESData();
+		float resolution;
+	};
+
 } // namespace VTX::Model::Representation
 #endif

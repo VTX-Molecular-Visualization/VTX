@@ -5,6 +5,7 @@
 #include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
 #include "model/secondary_structure.hpp"
+#include "model/solvent_excluded_surface.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
@@ -93,9 +94,6 @@ namespace VTX
 		{
 			_molecule->_representationTargets.clear();
 
-			Model::SecondaryStructure & secondaryStructure		= _molecule->getSecondaryStructure();
-			std::map<uint, uint> & residueToControlPointIndices = secondaryStructure.getResidueToControlPointIndice();
-
 			for ( Model::Residue * const residue : _molecule->getResidues() )
 			{
 				// Skip hidden items.
@@ -125,10 +123,34 @@ namespace VTX
 				}
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::RIBBON ) )
 				{
+					if ( _molecule->hasSecondaryStructure() == false )
+					{
+						_molecule->createSecondaryStructure();
+					}
+					Model::SecondaryStructure & secondaryStructure = _molecule->getSecondaryStructure();
+					std::map<uint, uint> &		residueToControlPointIndices
+						= secondaryStructure.getResidueToControlPointIndice();
 					if ( residueToControlPointIndices.find( residue->getIndex() )
 						 != residueToControlPointIndices.end() )
 					{
 						representationTargets.appendRibbons( residueToControlPointIndices[ residue->getIndex() ], 4 );
+					}
+				}
+				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::SES ) )
+				{
+					if ( _molecule->hasSolventExcludedSurface() == false )
+					{
+						_molecule->createSolventExcludedSurface();
+					}
+					Model::SolventExcludedSurface & ses = _molecule->getSolventExcludedSurface();
+
+					const std::vector<std::pair<uint, uint>> & atomsToTriangles = ses.getAtomsToTriangles();
+					for ( uint atomIdx = residue->getIndexFirstAtom();
+						  atomIdx < residue->getIndexFirstAtom() + residue->getAtomCount();
+						  ++atomIdx )
+					{
+						representationTargets.appendTrianglesSES( atomsToTriangles[ atomIdx ].first,
+																  atomsToTriangles[ atomIdx ].second );
 					}
 				}
 			}

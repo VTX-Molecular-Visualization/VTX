@@ -99,6 +99,10 @@ namespace VTX
 		static const Generic::SECONDARY_STRUCTURE_COLOR_MODE SS_COLOR_MODE_DEFAULT;
 		static const Generic::COLOR_BLENDING_MODE			 SS_COLOR_BLENDING_MODE_DEFAULT;
 
+		static const float SES_RESOLUTION_DEFAULT;
+		static const float SES_RESOLUTION_MIN;
+		static const float SES_RESOLUTION_MAX;
+
 		static const Generic::COLOR_MODE COLOR_MODE_DEFAULT;
 
 		static const std::string NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME;

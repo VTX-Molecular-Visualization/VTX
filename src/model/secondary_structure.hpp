@@ -41,15 +41,11 @@ namespace VTX
 			void refresh();
 			void refreshColors();
 			void refreshVisibilities();
+			void refreshSelection( const Model::Selection::MapChainIds * const p_selection = nullptr );
 
 			inline const std::vector<uint> &	getIndices() const { return _bufferIndices; }
 			inline const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToIndices; }
 			inline std::map<uint, uint> &		getResidueToControlPointIndice() { return _residueToIndices; }
-
-			inline void refreshSelection( const Model::Selection::MapChainIds * const p_selection = nullptr )
-			{
-				_fillBufferSelections( p_selection );
-			}
 
 			void print() const;
 
@@ -84,7 +80,6 @@ namespace VTX
 			SecondaryStructure( Molecule * const );
 			~SecondaryStructure() = default;
 
-			void _fillBufferSelections( const Model::Selection::MapChainIds * const = nullptr );
 			void _checkOrientationAndFlip( std::vector<Vec3f> & p_directions );
 			void _tryConstruct( const uint						p_chainIdx,
 								const std::vector<uint> &		p_residueIndex,

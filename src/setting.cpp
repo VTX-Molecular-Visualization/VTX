@@ -68,6 +68,9 @@ namespace VTX
 	const Generic::SECONDARY_STRUCTURE_COLOR_MODE Setting::SS_COLOR_MODE_DEFAULT
 		= Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
 	const Generic::COLOR_BLENDING_MODE Setting::SS_COLOR_BLENDING_MODE_DEFAULT = Generic::COLOR_BLENDING_MODE::HARD;
+	const float						   Setting::SES_RESOLUTION_DEFAULT		   = 0.5f;
+	const float						   Setting::SES_RESOLUTION_MIN			   = 0.3f;
+	const float						   Setting::SES_RESOLUTION_MAX			   = 1.f;
 	const Generic::COLOR_MODE		   Setting::COLOR_MODE_DEFAULT			   = Generic::COLOR_MODE::CHAIN;
 
 	const std::string Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME = "New render preset";

@@ -94,4 +94,10 @@ namespace VTX::Model::Representation
 		_ribbonData->colorBlendingMode = Setting::SS_COLOR_BLENDING_MODE_DEFAULT;
 	}
 
+	RepresentationData_Ses::RepresentationData_Ses() : RepresentationData( Generic::REPRESENTATION::SES )
+	{
+		_sesData			 = new SESData();
+		_sesData->resolution = Setting::SES_RESOLUTION_DEFAULT;
+	}
+
 } // namespace VTX::Model::Representation

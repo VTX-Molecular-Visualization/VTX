@@ -72,6 +72,10 @@ namespace VTX::Model::Representation
 		void			   setRibbonColorBlendingMode( const Generic::COLOR_BLENDING_MODE & p_colorBlendingMode,
 													   const bool							p_notify = true );
 
+		bool			hasToDrawSES() const { return _linkedRepresentation->getData().hasToDrawSES(); };
+		const SESData & getSESData() const { return _sesData.getValue(); };
+		void			setSESResolution( const float, const bool p_notify = true );
+
 		void applyData( const InstantiatedRepresentation & p_source,
 						const MEMBER_FLAG &				   p_flag,
 						const bool						   p_recomputeBuffers = true,
@@ -104,6 +108,7 @@ namespace VTX::Model::Representation
 		Generic::OverridableParameter<SphereData>	_sphereData;
 		Generic::OverridableParameter<CylinderData> _cylinderData;
 		Generic::OverridableParameter<RibbonData>	_ribbonData;
+		Generic::OverridableParameter<SESData>		_sesData;
 
 		virtual void _onDataChange() {}
 

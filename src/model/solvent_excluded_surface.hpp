@@ -17,9 +17,11 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
-			inline Model::Molecule * const	getMolecule() { return _molecule; }
-			inline Object3D::Helper::Grid & getGridAtoms() { return _gridAtoms; }
-			inline Object3D::Helper::Grid & getGridSES() { return _gridSES; }
+			inline Model::Molecule * const					  getMolecule() { return _molecule; }
+			inline Object3D::Helper::Grid &					  getGridAtoms() { return _gridAtoms; }
+			inline Object3D::Helper::Grid &					  getGridSES() { return _gridSES; }
+			inline const std::vector<std::pair<uint, uint>> & getAtomsToTriangles() const { return _atomsToTriangles; }
+			const Math::Transform &							  getTransform() const override;
 
 			void refresh();
 			void refreshColors();
@@ -28,6 +30,7 @@ namespace VTX
 
 		  protected:
 			void _init() override;
+			void _instantiate3DViews() override;
 
 		  private:
 			enum class Mode
@@ -36,7 +39,7 @@ namespace VTX
 				GPU
 			};
 
-			struct AtomData
+			struct AtomGridData
 			{
 				int index;
 			};
@@ -50,11 +53,11 @@ namespace VTX
 			Mode _mode = Mode::CPU;
 
 			// CPU.
-			Model::Molecule * const		   _molecule;
-			Object3D::Helper::Grid		   _gridAtoms;
-			Object3D::Helper::Grid		   _gridSES;
-			std::vector<SESGridData>	   _sesGridData;
-			std::vector<std::vector<uint>> _atomToTriangles;
+			Model::Molecule * const			   _molecule;
+			Object3D::Helper::Grid			   _gridAtoms;
+			Object3D::Helper::Grid			   _gridSES;
+			std::vector<SESGridData>		   _sesGridData;
+			std::vector<std::pair<uint, uint>> _atomsToTriangles;
 
 			void _initCPU();
 

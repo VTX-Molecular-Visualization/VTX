@@ -18,6 +18,7 @@ namespace VTX::Model::Representation
 		RIBBON_COLOR_BLENDING_MODE	 = 1 << 5,
 		COLOR						 = 1 << 6,
 		COLOR_MODE					 = 1 << 7,
+		SES_RESOLUTION				 = 1 << 8,
 
 		NONE = 0,
 		ALL	 = 0xFFFF
@@ -88,6 +89,16 @@ namespace VTX::Model::Representation
 		}
 		virtual void setRibbonColorBlendingMode( const Generic::COLOR_BLENDING_MODE & );
 
+		bool			hasToDrawSES() const { return _sesData != nullptr; };
+		const SESData & getSESData() const { return *_sesData; };
+		SESData &		getSESData() { return *_sesData; };
+		const float		getSESResolution() const
+		{
+			assert( _sesData != nullptr );
+			return _sesData->resolution;
+		}
+		virtual void setSESResolution( const float );
+
 		void copyData( const RepresentationData & p_source );
 
 	  protected:
@@ -96,6 +107,7 @@ namespace VTX::Model::Representation
 		SphereData *   _sphereData	 = nullptr;
 		CylinderData * _cylinderData = nullptr;
 		RibbonData *   _ribbonData	 = nullptr;
+		SESData *	   _sesData		 = nullptr;
 
 		Generic::COLOR_MODE _colorMode = Generic::COLOR_MODE::ATOM_CHAIN;
 

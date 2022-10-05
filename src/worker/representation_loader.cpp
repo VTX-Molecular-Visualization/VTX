@@ -47,10 +47,7 @@ namespace VTX::Worker
 
 		delete reader;
 
-		if ( _library.getRepresentationCount() <= 0 )
-		{
-			_library.applyDefault( _notify );
-		}
+		_library.applyDefault( _notify );
 
 		if ( VTXApp::get().getSetting().getTmpRepresentationDefaultName() != "" )
 		{

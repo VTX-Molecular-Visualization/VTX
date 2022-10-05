@@ -126,12 +126,6 @@ namespace VTX
 				_buffer->setAtomSelections( _bufferAtomSelections );
 				_buffer->setAtomIds( _bufferAtomIds );
 				_buffer->setBonds( _bufferBonds );
-
-				// Create secondary structure mesh.
-				createSecondaryStructure();
-
-				// Create solvent extructed surface.
-				createSolventExcludedSurface();
 			}
 		}
 
@@ -748,7 +742,7 @@ namespace VTX
 			}
 
 			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule>( this );
-			_secondaryStructure->init();
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SECONDARY_STRUCTURE_CREATED, _secondaryStructure ) );
 			_secondaryStructure->print();
 		}
 
@@ -756,7 +750,6 @@ namespace VTX
 		{
 			if ( _secondaryStructure == nullptr )
 			{
-				VTX_ERROR( "No secondary structure" );
 				return;
 			}
 
@@ -770,21 +763,20 @@ namespace VTX
 				MVC::MvcManager::get().deleteModel( _solventExcludedSurface );
 			}
 
-			// TODO: create on demand.
-			//_solventExcludedSurface = MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Molecule>( this );
-			//_solventExcludedSurface->init();
-			//_solventExcludedSurface->print();
+			_solventExcludedSurface = MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Molecule>( this );
+			VTX_EVENT(
+				new Event::VTXEventPtr( Event::Global::SOLVENT_EXTRUDED_SURFACE_CREATED, _solventExcludedSurface ) );
+			_solventExcludedSurface->print();
 		}
 
 		void Molecule::refreshSolventExcludedSurface()
 		{
 			if ( _solventExcludedSurface == nullptr )
 			{
-				VTX_ERROR( "No solvent excluded surface" );
 				return;
 			}
 
-			//_solventExcludedSurface->refresh();
+			_solventExcludedSurface->refresh();
 		}
 
 		void Molecule::setVisible( const bool p_visible )

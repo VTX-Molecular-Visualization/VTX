@@ -133,5 +133,11 @@ namespace VTX::Model::Representation
 			notifyRepresentationDataChange();
 		}
 	};
+
+	class RepresentationData_Ses : public RepresentationData
+	{
+	  public:
+		RepresentationData_Ses();
+	};
 } // namespace VTX::Model::Representation
 #endif
