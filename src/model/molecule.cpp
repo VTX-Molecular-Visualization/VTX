@@ -776,7 +776,7 @@ namespace VTX
 				return;
 			}
 
-			//_solventExcludedSurface->refresh();
+			_solventExcludedSurface->refresh();
 		}
 
 		void Molecule::setVisible( const bool p_visible )

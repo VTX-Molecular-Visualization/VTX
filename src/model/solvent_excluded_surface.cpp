@@ -126,6 +126,11 @@ namespace VTX
 									// Compute SDF.
 									for ( const AtomGridData & atom : atomGridData[ hashToVisit ] )
 									{
+										if ( _molecule->getAtom( atom.index ) == nullptr )
+										{
+											continue;
+										}
+
 										float distance = Util::Math::distance( atomPositions[ atom.index ],
 																			   sesGridCellWorldPosition );
 
@@ -299,6 +304,11 @@ namespace VTX
 			_atomsToTriangles = std::vector<std::pair<uint, uint>>( atomPositions.size(), std::pair<uint, uint>() );
 			for ( uint i = 0; i < atomsToTriangles.size(); ++i )
 			{
+				if ( _molecule->getAtom( i ) == nullptr )
+				{
+					continue;
+				}
+
 				const std::vector<Vec3f> & trianglePoints = atomsToTriangles[ i ];
 
 				_atomsToTriangles[ i ].first  = uint( _vertices.size() );
@@ -350,6 +360,12 @@ namespace VTX
 
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
+				const Atom * const atom = _molecule->getAtom( atomIdx );
+				if (atom == nullptr)
+				{
+					continue;
+				}
+
 				const Color::Rgb & color = _molecule->getAtomColor( atomIdx );
 				std::fill( _colors.begin() + _atomsToTriangles[ atomIdx ].first,
 						   _colors.begin() + _atomsToTriangles[ atomIdx ].first + _atomsToTriangles[ atomIdx ].second,
@@ -367,7 +383,12 @@ namespace VTX
 
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
-				const Atom * const	  atom	  = _molecule->getAtom( atomIdx );
+				const Atom * const atom = _molecule->getAtom( atomIdx );
+				if ( atom == nullptr )
+				{
+					continue;
+				}
+
 				const Residue * const residue = atom->getResiduePtr();
 				const Chain * const	  chain	  = residue->getChainPtr();
 				const uint			  visible = _molecule->isVisible() && chain->isVisible() && residue->isVisible();
