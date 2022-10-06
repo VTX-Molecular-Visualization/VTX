@@ -44,6 +44,10 @@ namespace VTX
 			chrono2.start();
 			VTX_INFO( "Creating SES..." );
 
+			_vertices.clear();
+			_indices.clear();
+			_ids.clear();
+
 			// Sort atoms in acceleration grid.
 			const float probeRadius	 = 1.4f;
 			const float maxVdWRadius = *std::max_element(
@@ -61,7 +65,7 @@ namespace VTX
 
 			std::vector<std::vector<AtomGridData>> atomGridData
 				= std::vector<std::vector<AtomGridData>>( _gridAtoms.getCellCount(), std::vector<AtomGridData>() );
-			const std::vector<Vec3f> & atomPositions = _molecule->getAtomPositionFrame( 0 );
+			const std::vector<Vec3f> & atomPositions = _molecule->getCurrentAtomPositionFrame();
 
 			for ( uint i = 0; i < atomPositions.size(); ++i )
 			{
@@ -361,7 +365,7 @@ namespace VTX
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
 				const Atom * const atom = _molecule->getAtom( atomIdx );
-				if (atom == nullptr)
+				if ( atom == nullptr )
 				{
 					continue;
 				}
