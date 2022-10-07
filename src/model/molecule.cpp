@@ -116,7 +116,7 @@ namespace VTX
 				else
 				{
 					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation(
-						*this, true, false );
+						*this, false, false );
 				}
 
 				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
@@ -183,6 +183,15 @@ namespace VTX
 				MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, VTX::ID::View::D3_SPHERE ) );
 			_addRenderable(
 				MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, VTX::ID::View::D3_CYLINDER ) );
+		}
+
+		void Molecule::resizeBuffers()
+		{
+			_bufferAtomRadius.resize( _atoms.size() );
+			_bufferAtomVisibilities.resize( _atoms.size(), 1u );
+			_bufferAtomColors.resize( _atoms.size(), Color::Rgb::BLUE );
+			_bufferAtomSelections.resize( _atoms.size(), 0u );
+			_bufferAtomIds.resize( _atoms.size() );
 		}
 
 		void Molecule::refreshBondsBuffer() { _buffer->setBonds( _bufferBonds ); }

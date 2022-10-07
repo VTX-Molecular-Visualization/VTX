@@ -47,6 +47,7 @@ namespace VTX::UI::Widget::Render
 			const Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 			castedEvent.ptr->init();
+			castedEvent.ptr->computeAllRepresentationData();
 			_openGLWidget->doneCurrent();
 		}
 		else if ( p_event.name == Event::Global::MESH_CREATED )

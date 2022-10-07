@@ -196,6 +196,8 @@ namespace VTX
 			inline std::vector<uint> &		 getBufferBonds() { return _bufferBonds; }
 			inline const std::vector<uint> & getBufferBonds() const { return _bufferBonds; }
 
+			void resizeBuffers();
+
 			inline const uint getChainCount() const { return uint( _chains.size() ); }
 			inline const uint getResidueCount() const { return uint( _residues.size() ); }
 			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
