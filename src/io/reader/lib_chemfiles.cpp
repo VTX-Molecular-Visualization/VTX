@@ -232,13 +232,10 @@ namespace VTX::IO::Reader
 
 		// Create models.
 		p_molecule.getFrames().resize( p_trajectory.nsteps() );
-		Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 		p_molecule.getResidues().resize( topology.residues().size() );
 		p_molecule.getAtoms().resize( frame.size() );
-		p_molecule.getBufferAtomRadius().resize( frame.size() );
-		p_molecule.getBufferAtomVisibilities().resize( frame.size(), 1u );
-		p_molecule.getBufferAtomSelections().resize( frame.size(), 0u );
-		p_molecule.getBufferAtomIds().resize( frame.size() );
+		p_molecule.resizeBuffers();
+		Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 		modelFrame.resize( frame.size() );
 
 		Model::Chain * modelChain;

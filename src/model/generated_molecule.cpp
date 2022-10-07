@@ -80,6 +80,7 @@ namespace VTX::Model
 
 		_computeBonds( molecule );
 
+		getBufferAtomColors().resize( getAtomCount(), Color::Rgb::BLUE );
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
@@ -362,6 +363,7 @@ namespace VTX::Model
 
 	void GeneratedMolecule::_validateBuffers()
 	{
+		getBufferAtomColors().resize( getAtomCount(), Color::Rgb::BLUE );
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
