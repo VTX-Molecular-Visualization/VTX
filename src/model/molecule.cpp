@@ -419,8 +419,6 @@ namespace VTX
 			if ( _solventExcludedSurface != nullptr )
 				_solventExcludedSurface->refresh();
 
-			computeAllRepresentationData();
-
 			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_FRAME_CHANGE ) );
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

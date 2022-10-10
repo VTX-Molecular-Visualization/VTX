@@ -227,7 +227,6 @@ namespace VTX
 				refreshBondsBuffer();
 				refreshSecondaryStructure();
 				refreshSolventExcludedSurface();
-				computeAllRepresentationData();
 			}
 
 			void refreshSelection( const Selection::MapChainIds * const );
