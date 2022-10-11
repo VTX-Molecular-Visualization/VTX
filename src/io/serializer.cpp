@@ -1013,8 +1013,8 @@ namespace VTX::IO
 	{
 		nlohmann::json jsonArrayRepresentations = nlohmann::json::array();
 		nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", VTX::ID::Model::MODEL_MOLECULE },
-													{ "INDEX", 0 },
-													{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
+												{ "INDEX", 0 },
+												{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
 		jsonArrayRepresentations.emplace_back( jsonRepresentation );
 
 		for ( const Model::Chain * const chain : p_molecule.getChains() )
@@ -1099,7 +1099,9 @@ namespace VTX::IO
 
 			if ( !chain->isVisible() )
 			{
-				jsonChainVisibilitiesArray.emplace_back( chain->getIndex() );
+				const uint newChainIndex
+					= p_writer != nullptr ? p_writer->getNewChainIndex( *chain ) : chain->getIndex();
+				jsonChainVisibilitiesArray.emplace_back( newChainIndex );
 			}
 		}
 

@@ -64,6 +64,7 @@ namespace VTX::IO::Writer
 	{
 		_vecNewAtomIndexes.resize( p_molecule.getAtomCount(), UINT_MAX );
 		_vecNewResidueIndexes.resize( p_molecule.getResidueCount(), UINT_MAX );
+		_vecNewChainIndexes.resize( p_molecule.getChainCount(), UINT_MAX );
 
 		for ( uint i = 0; i < p_molecule.getFrameCount(); i++ )
 		{
@@ -76,6 +77,7 @@ namespace VTX::IO::Writer
 
 			uint currentExportedAtomIndex	 = 0;
 			uint currentExportedResidueIndex = 0;
+			uint currentExportedChainIndex	 = 0;
 
 			for ( const Model::Chain * const chain : p_molecule.getChains() )
 			{
@@ -135,6 +137,9 @@ namespace VTX::IO::Writer
 
 					currentExportedResidueIndex++;
 				}
+
+				_vecNewChainIndexes[ chain->getIndex() ] = currentExportedChainIndex;
+				currentExportedChainIndex++;
 			}
 
 			// add bonds
@@ -157,6 +162,10 @@ namespace VTX::IO::Writer
 		}
 	}
 
+	uint ChemfilesWriter::getNewChainIndex( const Model::Chain & p_chain ) const
+	{
+		return _vecNewChainIndexes[ p_chain.getIndex() ];
+	}
 	uint ChemfilesWriter::getNewResidueIndex( const Model::Residue & p_residue ) const
 	{
 		return _vecNewResidueIndexes[ p_residue.getIndex() ];
