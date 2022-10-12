@@ -17,6 +17,9 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
+			inline const static float PROBE_RADIUS = 1.4f;
+			inline const static float VOXEL_SIZE   = 0.4f;
+
 			inline Model::Molecule * const					  getMolecule() { return _molecule; }
 			inline const std::vector<std::pair<uint, uint>> & getAtomsToTriangles() const { return _atomsToTriangles; }
 			const Math::Transform &							  getTransform() const override;
@@ -54,10 +57,10 @@ namespace VTX
 			Model::Molecule * const			   _molecule;
 			std::vector<std::pair<uint, uint>> _atomsToTriangles;
 
-			void _initCPU();
+			void _refreshCPU();
 
 			// GPU.
-			void _initGPU();
+			void _refreshGPU();
 
 			SolventExcludedSurface( Molecule * const );
 			~SolventExcludedSurface() = default;
