@@ -158,7 +158,58 @@ namespace VTX
 			// Compile all targets for gl draw calls.
 			for ( auto & pair : _molecule->_representationTargets )
 			{
-				pair.second.compile();
+				pair.second.generate();
+			}
+		}
+
+		void BaseRepresentable::refreshRepresentationTargets()
+		{
+			for ( auto representationTargetPair : _molecule->_representationTargets )
+			{
+				const VTX::Representation::FlagDataTargeted dataFlag
+					= representationTargetPair.first->getFlagDataTargeted();
+
+				// SES need to recompute the mapping between atoms and triangles
+				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::SES ) )
+				{
+					RepresentationTarget & representationTargets
+						= _molecule->_representationTargets[ representationTargetPair.first ];
+					representationTargets.resetTriangleSES();
+				}
+			}
+
+			// TODO finish that (/!\ triangleSESMap is clear at the end of computation. Find a way to manage that
+			for ( const Model::Residue * const residue : _molecule->getResidues() )
+			{
+				// Skip hidden items.
+				if ( residue == nullptr || !_isResidueVisible( *residue ) )
+				{
+					continue;
+				}
+
+				const InstantiatedRepresentation * const representation = residue->getRepresentation();
+				RepresentationTarget & representationTargets = _molecule->_representationTargets[ representation ];
+				const VTX::Representation::FlagDataTargeted dataFlag = representation->getFlagDataTargeted();
+
+				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::SES ) )
+				{
+					const Model::SolventExcludedSurface & ses = _molecule->getSolventExcludedSurface();
+
+					const std::vector<std::pair<uint, uint>> & atomsToTriangles = ses.getAtomsToTriangles();
+					for ( uint atomIdx = residue->getIndexFirstAtom();
+						  atomIdx < residue->getIndexFirstAtom() + residue->getAtomCount();
+						  ++atomIdx )
+					{
+						representationTargets.appendTrianglesSES( atomsToTriangles[ atomIdx ].first,
+																  atomsToTriangles[ atomIdx ].second );
+					}
+				}
+			}
+
+			for ( auto representationTargetPair : _molecule->_representationTargets )
+			{
+				// Generate does nothing if the TargetRange has not been reset before.
+				_molecule->_representationTargets[ representationTargetPair.first ].generate();
 			}
 		}
 
