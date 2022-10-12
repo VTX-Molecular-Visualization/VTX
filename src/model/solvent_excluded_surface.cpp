@@ -61,15 +61,15 @@ namespace VTX
 			const Vec3f size	 = max - min;
 			Vec3i		gridSize = Vec3i( Util::Math::ceil( size / cellSize ) );
 
-			_gridAtoms = Object3D::Helper::Grid( min, Vec3f( cellSize ), gridSize );
+			Object3D::Helper::Grid gridAtoms = Object3D::Helper::Grid( min, Vec3f( cellSize ), gridSize );
 
 			std::vector<std::vector<AtomGridData>> atomGridData
-				= std::vector<std::vector<AtomGridData>>( _gridAtoms.getCellCount(), std::vector<AtomGridData>() );
+				= std::vector<std::vector<AtomGridData>>( gridAtoms.getCellCount(), std::vector<AtomGridData>() );
 			const std::vector<Vec3f> & atomPositions = _molecule->getCurrentAtomPositionFrame();
 
 			for ( uint i = 0; i < atomPositions.size(); ++i )
 			{
-				const uint hash = _gridAtoms.gridHash( atomPositions[ i ] );
+				const uint hash = gridAtoms.gridHash( atomPositions[ i ] );
 				atomGridData[ hash ].emplace_back( AtomGridData { int( i ) } );
 			}
 
@@ -81,29 +81,30 @@ namespace VTX
 			const float voxelSize	= 0.5f;
 			Vec3i		sesGridSize = Vec3i( Util::Math::ceil( size / voxelSize ) );
 
-			_gridSES = Object3D::Helper::Grid( min, Vec3f( voxelSize ), sesGridSize );
+			Object3D::Helper::Grid gridSES = Object3D::Helper::Grid( min, Vec3f( voxelSize ), sesGridSize );
 
 			// SES grid data.
-			_sesGridData = std::vector<SESGridData>( _gridSES.getCellCount(), SESGridData { probeRadius, -1 } );
+			std::vector<SESGridData> sesGridData
+				= std::vector<SESGridData>( gridSES.getCellCount(), SESGridData { probeRadius, -1 } );
 
 			// Store boundary references.
 			std::set<uint> sesGridDataBoundary = std::set<uint>();
 
 			// Loop over cells
-			for ( uint x = 0; x < uint( _gridSES.size.x ); ++x )
+			for ( uint x = 0; x < uint( gridSES.size.x ); ++x )
 			{
-				for ( uint y = 0; y < uint( _gridSES.size.y ); ++y )
+				for ( uint y = 0; y < uint( gridSES.size.y ); ++y )
 				{
-					for ( uint z = 0; z < uint( _gridSES.size.z ); ++z )
+					for ( uint z = 0; z < uint( gridSES.size.z ); ++z )
 					{
 						// Get corresponding ses grid data.
 						const Vec3i	  sesGridPosition = Vec3i( x, y, z );
-						const uint	  sesGridHash	  = _gridSES.gridHash( sesGridPosition );
-						SESGridData & gridData		  = _sesGridData[ sesGridHash ];
+						const uint	  sesGridHash	  = gridSES.gridHash( sesGridPosition );
+						SESGridData & gridData		  = sesGridData[ sesGridHash ];
 
 						// Get corresponding acceleration grid cell hash.
-						const Vec3f sesGridCellWorldPosition = _gridSES.worldPosition( sesGridPosition );
-						const Vec3i atomGridPosition		 = _gridAtoms.gridPosition( sesGridCellWorldPosition );
+						const Vec3f sesGridCellWorldPosition = gridSES.worldPosition( sesGridPosition );
+						const Vec3i atomGridPosition		 = gridAtoms.gridPosition( sesGridCellWorldPosition );
 
 						// Loop over the 27 cells to visit.
 						float minDistance = FLOAT_MAX;
@@ -118,14 +119,14 @@ namespace VTX
 									Vec3i gridPositionToVisit = atomGridPosition + offset;
 
 									if ( gridPositionToVisit.x < 0 || gridPositionToVisit.y < 0
-										 || gridPositionToVisit.z < 0 || gridPositionToVisit.x >= _gridAtoms.size.x
-										 || gridPositionToVisit.y >= _gridAtoms.size.y
-										 || gridPositionToVisit.z >= _gridAtoms.size.z )
+										 || gridPositionToVisit.z < 0 || gridPositionToVisit.x >= gridAtoms.size.x
+										 || gridPositionToVisit.y >= gridAtoms.size.y
+										 || gridPositionToVisit.z >= gridAtoms.size.z )
 									{
 										continue;
 									}
 
-									uint hashToVisit = _gridAtoms.gridHash( gridPositionToVisit );
+									uint hashToVisit = gridAtoms.gridHash( gridPositionToVisit );
 
 									// Compute SDF.
 									for ( const AtomGridData & atom : atomGridData[ hashToVisit ] )
@@ -183,9 +184,9 @@ namespace VTX
 			for ( const uint sesGridHash : sesGridDataBoundary )
 			{
 				// VTX_DEBUG( "{}", sesGridHash );
-				const Vec3i	  sesGridPosition			  = _gridSES.gridPosition( sesGridHash );
-				const Vec3f	  sesWorldPosition			  = _gridSES.worldPosition( sesGridPosition );
-				SESGridData & gridDataToVisit			  = _sesGridData[ sesGridHash ];
+				const Vec3i	  sesGridPosition			  = gridSES.gridPosition( sesGridHash );
+				const Vec3f	  sesWorldPosition			  = gridSES.worldPosition( sesGridPosition );
+				SESGridData & gridDataToVisit			  = sesGridData[ sesGridHash ];
 				float		  minDistanceWithOutsidePoint = FLOAT_MAX;
 				bool		  found						  = false;
 				for ( int ox = -cellsToVisitCount.x; ox <= cellsToVisitCount.x; ++ox )
@@ -198,15 +199,15 @@ namespace VTX
 							// VTX_INFO( "{}", glm::to_string( gridPositionToVisit ) );
 
 							if ( gridPositionToVisit.x < 0 || gridPositionToVisit.y < 0 || gridPositionToVisit.z < 0
-								 || gridPositionToVisit.x >= _gridSES.size.x || gridPositionToVisit.y >= _gridSES.size.y
-								 || gridPositionToVisit.z >= _gridSES.size.z )
+								 || gridPositionToVisit.x >= gridSES.size.x || gridPositionToVisit.y >= gridSES.size.y
+								 || gridPositionToVisit.z >= gridSES.size.z )
 							{
 								continue;
 							}
 
-							const uint	  hashToVisit		   = _gridSES.gridHash( gridPositionToVisit );
-							const Vec3f	  worldPositionToVisit = _gridSES.worldPosition( gridPositionToVisit );
-							SESGridData & gridDataToVisit	   = _sesGridData[ hashToVisit ];
+							const uint	  hashToVisit		   = gridSES.gridHash( gridPositionToVisit );
+							const Vec3f	  worldPositionToVisit = gridSES.worldPosition( gridPositionToVisit );
+							SESGridData & gridDataToVisit	   = sesGridData[ hashToVisit ];
 
 							// If outside.
 							if ( gridDataToVisit.sdf == probeRadius )
@@ -237,30 +238,30 @@ namespace VTX
 
 			// Marching cube to extract mesh.
 			const Math::MarchingCube marchingCube = Math::MarchingCube();
-			for ( uint x = 0; x < uint( _gridSES.size.x ) - 1; ++x )
+			for ( uint x = 0; x < uint( gridSES.size.x ) - 1; ++x )
 			{
-				for ( uint y = 0; y < uint( _gridSES.size.y ) - 1; ++y )
+				for ( uint y = 0; y < uint( gridSES.size.y ) - 1; ++y )
 				{
-					for ( uint z = 0; z < uint( _gridSES.size.z ) - 1; ++z )
+					for ( uint z = 0; z < uint( gridSES.size.z ) - 1; ++z )
 					{
-						SESGridData gridData[ 8 ] = { _sesGridData[ _gridSES.gridHash( Vec3i( x, y, z ) ) ],
-													  _sesGridData[ _gridSES.gridHash( Vec3i( x + 1, y, z ) ) ],
-													  _sesGridData[ _gridSES.gridHash( Vec3i( x + 1, y, z + 1 ) ) ],
-													  _sesGridData[ _gridSES.gridHash( Vec3i( x, y, z + 1 ) ) ],
-													  _sesGridData[ _gridSES.gridHash( Vec3i( x, y + 1, z ) ) ],
-													  _sesGridData[ _gridSES.gridHash( Vec3i( x + 1, y + 1, z ) ) ],
-													  _sesGridData[ _gridSES.gridHash( Vec3i( x + 1, y + 1, z + 1 ) ) ],
-													  _sesGridData[ _gridSES.gridHash( Vec3i( x, y + 1, z + 1 ) ) ] };
+						SESGridData gridData[ 8 ] = { sesGridData[ gridSES.gridHash( Vec3i( x, y, z ) ) ],
+													  sesGridData[ gridSES.gridHash( Vec3i( x + 1, y, z ) ) ],
+													  sesGridData[ gridSES.gridHash( Vec3i( x + 1, y, z + 1 ) ) ],
+													  sesGridData[ gridSES.gridHash( Vec3i( x, y, z + 1 ) ) ],
+													  sesGridData[ gridSES.gridHash( Vec3i( x, y + 1, z ) ) ],
+													  sesGridData[ gridSES.gridHash( Vec3i( x + 1, y + 1, z ) ) ],
+													  sesGridData[ gridSES.gridHash( Vec3i( x + 1, y + 1, z + 1 ) ) ],
+													  sesGridData[ gridSES.gridHash( Vec3i( x, y + 1, z + 1 ) ) ] };
 
 						Math::MarchingCube::GridCell cell
-							= { { _gridSES.worldPosition( Vec3i( x, y, z ) ),
-								  { _gridSES.worldPosition( Vec3i( x + 1, y, z ) ) },
-								  { _gridSES.worldPosition( Vec3i( x + 1, y, z + 1 ) ) },
-								  { _gridSES.worldPosition( Vec3i( x, y, z + 1 ) ) },
-								  { _gridSES.worldPosition( Vec3i( x, y + 1, z ) ) },
-								  { _gridSES.worldPosition( Vec3i( x + 1, y + 1, z ) ) },
-								  { _gridSES.worldPosition( Vec3i( x + 1, y + 1, z + 1 ) ) },
-								  { _gridSES.worldPosition( Vec3i( x, y + 1, z + 1 ) ) } },
+							= { { gridSES.worldPosition( Vec3i( x, y, z ) ),
+								  { gridSES.worldPosition( Vec3i( x + 1, y, z ) ) },
+								  { gridSES.worldPosition( Vec3i( x + 1, y, z + 1 ) ) },
+								  { gridSES.worldPosition( Vec3i( x, y, z + 1 ) ) },
+								  { gridSES.worldPosition( Vec3i( x, y + 1, z ) ) },
+								  { gridSES.worldPosition( Vec3i( x + 1, y + 1, z ) ) },
+								  { gridSES.worldPosition( Vec3i( x + 1, y + 1, z + 1 ) ) },
+								  { gridSES.worldPosition( Vec3i( x, y + 1, z + 1 ) ) } },
 								{ gridData[ 0 ].sdf,
 								  gridData[ 1 ].sdf,
 								  gridData[ 2 ].sdf,

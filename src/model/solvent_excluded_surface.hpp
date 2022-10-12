@@ -18,8 +18,6 @@ namespace VTX
 
 		  public:
 			inline Model::Molecule * const					  getMolecule() { return _molecule; }
-			inline Object3D::Helper::Grid &					  getGridAtoms() { return _gridAtoms; }
-			inline Object3D::Helper::Grid &					  getGridSES() { return _gridSES; }
 			inline const std::vector<std::pair<uint, uint>> & getAtomsToTriangles() const { return _atomsToTriangles; }
 			const Math::Transform &							  getTransform() const override;
 
@@ -54,9 +52,6 @@ namespace VTX
 
 			// CPU.
 			Model::Molecule * const			   _molecule;
-			Object3D::Helper::Grid			   _gridAtoms;
-			Object3D::Helper::Grid			   _gridSES;
-			std::vector<SESGridData>		   _sesGridData;
 			std::vector<std::pair<uint, uint>> _atomsToTriangles;
 
 			void _initCPU();
