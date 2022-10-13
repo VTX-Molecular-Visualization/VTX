@@ -24,22 +24,38 @@ namespace VTX
 			}
 		}
 
-		void RepresentationTarget::compile()
+		void RepresentationTarget::generate()
 		{
-			_mapToRangeArrays( *_atomsMap, _atoms );
-			_mapToRangeElements( *_bondsMap, _bonds );
-			_mapToRangeElements( *_ribbonsMap, _ribbons );
-			_mapToRangeElements( *_trianglesSESMap, _trianglesSES );
+			_generateArrays( (const TargetRangeMap **)( &_atomsMap ), _atoms );
+			_generateElements( (const TargetRangeMap **)( &_bondsMap ), _bonds );
+			_generateElements( (const TargetRangeMap **)( &_ribbonsMap ), _ribbons );
+			_generateElements( (const TargetRangeMap **)( &_trianglesSESMap ), _trianglesSES );
+		}
 
-			delete _atomsMap;
-			delete _bondsMap;
-			delete _ribbonsMap;
-			delete _trianglesSESMap;
+		void RepresentationTarget::_generateArrays( const TargetRangeMap ** const p_mapPtrPtr,
+													TargetRangeArrays &			  p_rangeArrays )
+		{
+			const TargetRangeMap *& mapPtr = *p_mapPtrPtr;
 
-			_atomsMap		 = nullptr;
-			_bondsMap		 = nullptr;
-			_ribbonsMap		 = nullptr;
-			_trianglesSESMap = nullptr;
+			if ( mapPtr != nullptr )
+			{
+				_mapToRangeArrays( *mapPtr, p_rangeArrays );
+				delete mapPtr;
+				mapPtr = nullptr;
+			}
+		}
+
+		void RepresentationTarget::_generateElements( const TargetRangeMap ** const p_mapPtrPtr,
+													  TargetRangeElements &			p_rangeElements )
+		{
+			const TargetRangeMap *& mapPtr = *p_mapPtrPtr;
+
+			if ( mapPtr != nullptr )
+			{
+				_mapToRangeElements( *mapPtr, p_rangeElements );
+				delete mapPtr;
+				mapPtr = nullptr;
+			}
 		}
 
 		void RepresentationTarget::_append( TargetRangeMap & p_range, const uint p_indice, const uint p_count )

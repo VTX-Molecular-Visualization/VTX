@@ -48,6 +48,7 @@ namespace VTX
 
 			void computeAllRepresentationData();
 			void computeRepresentationTargets();
+			void refreshRepresentationTargets();
 
 			inline const Representation::TargetRangeArrays & getRepresentationAtoms(
 				const InstantiatedRepresentation * const p_representation ) const

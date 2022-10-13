@@ -64,8 +64,15 @@ namespace VTX
 			{
 				_append( *_trianglesSESMap, p_indice, p_count );
 			}
+			inline void resetTriangleSES()
+			{
+				_trianglesSES.indices.clear();
+				_trianglesSES.counts.clear();
 
-			void compile();
+				_trianglesSESMap = new TargetRangeMap();
+			}
+
+			void generate();
 
 		  private:
 			TargetRangeArrays	_atoms		  = TargetRangeArrays();
@@ -79,6 +86,9 @@ namespace VTX
 			TargetRangeMap * _trianglesSESMap = new TargetRangeMap();
 
 			void _append( TargetRangeMap & p_range, const uint p_indice, const uint p_count );
+
+			void _generateArrays( const TargetRangeMap ** const p_map, TargetRangeArrays & p_rangeArrays );
+			void _generateElements( const TargetRangeMap ** const p_map, TargetRangeElements & p_rangeElements );
 
 			void _mapToRangeArrays( const TargetRangeMap & p_map, TargetRangeArrays & p_rangeArrays );
 			void _mapToRangeElements( const TargetRangeMap & p_map, TargetRangeElements & p_rangeElements );
