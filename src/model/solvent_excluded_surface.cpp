@@ -7,6 +7,7 @@
 #include "object3d/scene.hpp"
 #include "renderer/gl/buffer_storage.hpp"
 #include "residue.hpp"
+#include "selection/selection_manager.hpp"
 #include "view/d3/triangle.hpp"
 #include "worker/gpu_computer.hpp"
 
@@ -21,7 +22,12 @@ namespace VTX
 
 		const Math::Transform & SolventExcludedSurface::getTransform() const { return _molecule->getTransform(); }
 
-		void SolventExcludedSurface::_init() { refresh(); }
+		void SolventExcludedSurface::_init()
+		{
+			refresh();
+			refreshSelection(
+				VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculeMap( *_molecule ) );
+		}
 
 		void SolventExcludedSurface::refresh()
 		{
@@ -351,14 +357,12 @@ namespace VTX
 
 			refreshColors();
 			refreshVisibilities();
-			refreshSelection();
 
 			assert( _vertices.size() == _indices.size() );
 			assert( _vertices.size() == _normals.size() );
 			assert( _vertices.size() == _ids.size() );
 			assert( _vertices.size() == _colors.size() );
 			assert( _vertices.size() == _visibilities.size() );
-			assert( _vertices.size() == _selections.size() );
 
 			chrono.stop();
 			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );

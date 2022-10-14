@@ -747,10 +747,7 @@ namespace VTX
 
 		void Molecule::createSecondaryStructure()
 		{
-			if ( _secondaryStructure != nullptr )
-			{
-				MVC::MvcManager::get().deleteModel( _secondaryStructure );
-			}
+			assert( _secondaryStructure == nullptr );
 
 			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule>( this );
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SECONDARY_STRUCTURE_CREATED, _secondaryStructure ) );
@@ -769,10 +766,7 @@ namespace VTX
 
 		void Molecule::createSolventExcludedSurface()
 		{
-			if ( _solventExcludedSurface != nullptr )
-			{
-				MVC::MvcManager::get().deleteModel( _solventExcludedSurface );
-			}
+			assert( _solventExcludedSurface == nullptr );
 
 			_solventExcludedSurface = MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Molecule>( this );
 			VTX_EVENT(
