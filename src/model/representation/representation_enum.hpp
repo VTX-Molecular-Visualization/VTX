@@ -24,7 +24,7 @@ namespace VTX
 
 		inline static const std::vector<std::string> REPRESENTATION_STRING
 			= { "Ball and Stick", "Van Der Waals",			"Stick" /* !V0.1, "Trace" */, "SAS",
-				"Cartoon",		  "Ball Stick and Cartoon", "Stick and Cartoon" };
+				"Cartoon",		  "Ball Stick and Cartoon", "Stick and Cartoon",		  "SES" };
 
 	} // namespace Generic
 
@@ -43,7 +43,7 @@ namespace VTX
 		{
 			Targets			   = 1 << 0,
 			ColorBuffer		   = 1 << 1,
-			SecondaryStructure = 1 << 2,
+			SecondaryStructureColorBuffer = 1 << 2,
 
 			ALL = 0xFFFF,
 		};
