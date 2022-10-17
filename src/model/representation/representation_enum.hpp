@@ -41,9 +41,8 @@ namespace VTX
 
 		enum MoleculeComputationFlag
 		{
-			Targets			   = 1 << 0,
-			ColorBuffer		   = 1 << 1,
-			SecondaryStructureColorBuffer = 1 << 2,
+			Targets		= 1 << 0,
+			ColorBuffer = 1 << 1,
 
 			ALL = 0xFFFF,
 		};

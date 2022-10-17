@@ -389,14 +389,6 @@ namespace VTX::Model::Representation
 		{
 			_target->getMolecule()->refreshColors();
 		}
-
-		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::SecondaryStructureColorBuffer ) != 0 )
-		{
-			if ( _target->getMolecule()->hasSecondaryStructure() )
-			{
-				_target->getMolecule()->getSecondaryStructure().refreshColors();
-			}
-		}
 	}
 
 } // namespace VTX::Model::Representation
