@@ -79,6 +79,7 @@ namespace VTX::Model
 
 		inline const MapMoleculeIds & getMoleculesMap() const { return _moleculesMap; }
 		inline MapMoleculeIds &		  getMoleculesMap() { return _moleculesMap; }
+		const MapChainIds * const	  getMoleculeMap( const Molecule & );
 
 		bool hasItemOfType( const VTX::ID::VTX_ID & p_id ) const;
 

@@ -390,16 +390,20 @@ namespace VTX::Model::Representation
 			_target->getMolecule()->refreshColors();
 		}
 
-		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::SecondaryStructure ) != 0 )
+		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::SecondaryStructureColorBuffer ) != 0 )
 		{
-			if (_target->getMolecule()->hasSecondaryStructure())
+			if ( _target->getMolecule()->hasSecondaryStructure() )
+			{
 				_target->getMolecule()->getSecondaryStructure().refreshColors();
+			}
 		}
 
-		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::Ses ) != 0 )
+		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::SesColorBuffer ) != 0 )
 		{
-			if (_target->getMolecule()->hasSolventExcludedSurface())
+			if ( _target->getMolecule()->hasSolventExcludedSurface() )
+			{
 				_target->getMolecule()->getSolventExcludedSurface().refreshColors();
+			}
 		}
 	}
 

@@ -25,6 +25,18 @@ namespace VTX::Model
 		return false;
 	}
 
+	const Selection::MapChainIds * const Selection::getMoleculeMap( const Molecule & p_molecule )
+	{
+		if ( _moleculesMap.find( p_molecule.getId() ) != _moleculesMap.end() )
+		{
+			return &_moleculesMap[ p_molecule.getId() ];
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
 	bool Selection::hasMolecule() const { return _moleculesMap.size() > 0; }
 
 	void Selection::selectMolecule( Molecule & p_molecule, const bool p_appendToSelection )

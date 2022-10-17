@@ -6,6 +6,7 @@
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
+#include "selection/selection_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "view/d3/ribbon.hpp"
@@ -17,6 +18,21 @@ namespace VTX
 		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) :
 			BaseModel3D( VTX::ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
 		{
+		}
+
+		void SecondaryStructure::_init()
+		{
+			VTX_DEBUG( "INIT" );
+			Tool::Chrono chrono;
+			chrono.start();
+			VTX_INFO( "Creating secondary structure..." );
+
+			refresh();
+			refreshSelection(
+				VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculeMap( *_molecule ) );
+
+			chrono.stop();
+			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
 		void SecondaryStructure::refresh()
@@ -374,19 +390,6 @@ namespace VTX
 					p_directions[ i ] = -p_directions[ i ];
 				}
 			}
-		}
-		void SecondaryStructure::_init()
-		{
-			VTX_DEBUG( "INIT" );
-			Tool::Chrono chrono;
-			chrono.start();
-			VTX_INFO( "Creating secondary structure..." );
-
-			refresh();
-			refreshSelection();
-
-			chrono.stop();
-			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
 		void SecondaryStructure::print() const

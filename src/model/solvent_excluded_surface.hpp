@@ -17,9 +17,10 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
+			inline const static float PROBE_RADIUS = 1.4f;
+			inline const static float VOXEL_SIZE   = 0.4f;
+
 			inline Model::Molecule * const					  getMolecule() { return _molecule; }
-			inline Object3D::Helper::Grid &					  getGridAtoms() { return _gridAtoms; }
-			inline Object3D::Helper::Grid &					  getGridSES() { return _gridSES; }
 			inline const std::vector<std::pair<uint, uint>> & getAtomsToTriangles() const { return _atomsToTriangles; }
 			const Math::Transform &							  getTransform() const override;
 
@@ -54,15 +55,12 @@ namespace VTX
 
 			// CPU.
 			Model::Molecule * const			   _molecule;
-			Object3D::Helper::Grid			   _gridAtoms;
-			Object3D::Helper::Grid			   _gridSES;
-			std::vector<SESGridData>		   _sesGridData;
 			std::vector<std::pair<uint, uint>> _atomsToTriangles;
 
-			void _initCPU();
+			void _refreshCPU();
 
 			// GPU.
-			void _initGPU();
+			void _refreshGPU();
 
 			SolventExcludedSurface( Molecule * const );
 			~SolventExcludedSurface() = default;
