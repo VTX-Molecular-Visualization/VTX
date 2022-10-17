@@ -392,7 +392,14 @@ namespace VTX::Model::Representation
 
 		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::SecondaryStructure ) != 0 )
 		{
-			_target->getMolecule()->getSecondaryStructure().refreshColors();
+			if (_target->getMolecule()->hasSecondaryStructure())
+				_target->getMolecule()->getSecondaryStructure().refreshColors();
+		}
+
+		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::Ses ) != 0 )
+		{
+			if (_target->getMolecule()->hasSolventExcludedSurface())
+				_target->getMolecule()->getSolventExcludedSurface().refreshColors();
 		}
 	}
 
