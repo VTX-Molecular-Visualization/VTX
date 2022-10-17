@@ -205,30 +205,9 @@ namespace VTX
 
 			void removeChildrenRepresentations() const;
 
-			inline void refreshColors()
-			{
-				_fillBufferAtomColors();
-				if ( _secondaryStructure != nullptr )
-					_secondaryStructure->refreshColors();
-				if ( _solventExcludedSurface != nullptr )
-					_solventExcludedSurface->refreshColors();
-			}
-			inline void refreshVisibilities( const bool p_applyBuffer = true )
-			{
-				_fillBufferAtomVisibilities( p_applyBuffer );
-				if ( _secondaryStructure != nullptr )
-					_secondaryStructure->refreshVisibilities();
-				if ( _solventExcludedSurface != nullptr )
-					_solventExcludedSurface->refreshVisibilities();
-			}
-			inline void refreshStructure()
-			{
-				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
-				refreshBondsBuffer();
-				refreshSecondaryStructure();
-				refreshSolventExcludedSurface();
-			}
-
+			void refreshStructure();
+			void refreshColors();
+			void refreshVisibilities( const bool p_applyBuffer = true );
 			void refreshSelection( const Selection::MapChainIds * const );
 			void refreshBondsBuffer();
 

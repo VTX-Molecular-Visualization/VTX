@@ -10,6 +10,7 @@
 #include "overlay/visualization_quick_access.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "view/base_view.hpp"
+#include "worker/snapshoter.hpp"
 #include <QFocusEvent>
 #include <QResizeEvent>
 #include <QVBoxLayout>
@@ -22,14 +23,18 @@ namespace VTX::UI::Widget::Render
 	{
 		VTX_WIDGET
 
+		friend Worker::Snapshoter;
+
 	  public:
 		~RenderWidget();
 		void localize() override;
 
-		inline const OpenGLWidget & getOpenGLWidget() const { return *_openGLWidget; }
-		inline OpenGLWidget &		getOpenGLWidget() { return *_openGLWidget; }
-
-		void updateRender() const;
+		bool		isOpenGLValid() const { return _openGLWidget->isValid(); }
+		void		updateRender() const;
+		inline void updateRenderSetting( const Renderer::RENDER_SETTING p_setting )
+		{
+			_openGLWidget->updateRenderSetting( p_setting );
+		}
 
 		void displayOverlay( const Overlay::OVERLAY & p_overlay, const Overlay::OVERLAY_ANCHOR & p_position );
 		void hideOverlay( const Overlay::OVERLAY & p_overlay );

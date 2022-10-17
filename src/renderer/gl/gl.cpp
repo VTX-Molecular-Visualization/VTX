@@ -127,17 +127,22 @@ namespace VTX::Renderer::GL
 		VTXApp::get().MASK = VTX_SETTING().getForceRenderer() ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
 	};
 
-	void GL::setShading() { _passShading->set(); }
-
-	void GL::activeSSAO( const bool p_active )
+	void GL::updateRenderSetting( const RENDER_SETTING p_renderSetting )
 	{
-		if ( p_active == false )
+		switch ( p_renderSetting )
 		{
-			_passBlur->clearTexture();
+		case RENDER_SETTING::SHADING: _passShading->set(); break;
+		case RENDER_SETTING::SSAO:
+			if ( VTX_RENDER_EFFECT().isSSAOEnabled() == false )
+			{
+				_passBlur->clearTexture();
+			}
+			break;
+		case RENDER_SETTING::OUTLINE: break;
+		case RENDER_SETTING::FOG: break;
+		case RENDER_SETTING::AA: _passSelection->updateOutputFBO( *this ); break;
 		}
 	}
-
-	void GL::activeAA( const bool p_active ) { _passSelection->updateOutputFBO( *this ); }
 
 	const Vec2i GL::getPickedIds( const uint p_x, const uint p_y ) const
 	{

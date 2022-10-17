@@ -25,10 +25,11 @@ namespace VTX
 			RayTracer()	 = default;
 			~RayTracer() = default;
 
-			virtual void init( const uint, const uint, const GLuint p_outputFramebufferId ) override;
-			virtual void renderFrame( const Object3D::Scene & ) override;
-			virtual void setShading() override;
-			virtual void resize( const uint, const uint, const GLuint ) override;
+			void init( const uint, const uint, const GLuint p_outputFramebufferId ) override;
+			void renderFrame( const Object3D::Scene & ) override;
+			void updateRenderSetting( const RENDER_SETTING ) override {}
+
+			void resize( const uint, const uint, const GLuint ) override;
 
 			const inline std::vector<float> & getPixels() const { return _pixels; }
 

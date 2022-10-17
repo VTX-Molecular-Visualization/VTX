@@ -23,9 +23,7 @@ namespace VTX::Renderer::GL
 
 		void init( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId ) override;
 		void renderFrame( const Object3D::Scene & ) override;
-		void setShading() override;
-		void activeSSAO( const bool ) override;
-		void activeAA( const bool ) override;
+		void updateRenderSetting( const RENDER_SETTING ) override;
 		void resize( const uint, const uint, const GLuint ) override;
 
 		inline const Pass::Geometric &		getPassGeometric() const { return *_passGeometric; }

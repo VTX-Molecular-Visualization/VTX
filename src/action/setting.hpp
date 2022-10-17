@@ -282,7 +282,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_RENDER_EFFECT().setShading( _shading );
-			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().setShading();
+			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
@@ -300,7 +300,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_SETTING().setVSync( _active );
-			VTXApp::get().getMainWindow().getOpenGLWidget().activeVSync( _active );
+			// TODO: find a way to update VSync at runtime.
 		};
 
 	  private:
@@ -315,8 +315,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_RENDER_EFFECT().enableSSAO( _active );
-			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeSSAO( _active );
-
+			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
@@ -362,7 +361,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_RENDER_EFFECT().enableOutline( _active );
-			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeOutline( _active );
+			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::OUTLINE );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
@@ -423,7 +422,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_RENDER_EFFECT().enableFog( _active );
-			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeFog( _active );
+			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
@@ -499,7 +498,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_RENDER_EFFECT().setAA( _active );
-			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeAA( _active );
+			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
@@ -706,7 +705,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_SETTING().mode = _mode;
-			VTXApp::get().getMainWindow().getOpenGLWidget().setRenderMode();
+			// TODO
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 

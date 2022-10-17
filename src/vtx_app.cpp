@@ -237,7 +237,7 @@ namespace VTX
 	{
 		if ( VTX_SETTING().getActivateRenderer() && MASK )
 		{
-			_mainWindow->getRenderWidget().updateRender();
+			_mainWindow->updateRender();
 		}
 	}
 

@@ -46,14 +46,11 @@ namespace VTX
 
 			void refreshWindowTitle();
 
-			inline const Widget::Render::RenderWidget & getRenderWidget() const { return *_renderWidget; }
-			inline Widget::Render::RenderWidget &		getRenderWidget() { return *_renderWidget; }
-
-			inline const Widget::Render::OpenGLWidget & getOpenGLWidget() const
+			inline void updateRender() const { _renderWidget->updateRender(); }
+			inline void updateRenderSetting( const Renderer::RENDER_SETTING p_setting )
 			{
-				return _renderWidget->getOpenGLWidget();
+				_renderWidget->updateRenderSetting( p_setting );
 			}
-			inline Widget::Render::OpenGLWidget & getOpenGLWidget() { return _renderWidget->getOpenGLWidget(); }
 
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 

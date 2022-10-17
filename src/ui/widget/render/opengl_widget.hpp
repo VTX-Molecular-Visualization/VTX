@@ -26,6 +26,14 @@ namespace VTX
 			VTX_WIDGET
 
 		  public:
+			enum RenderSettingFlag
+			{
+				Targets		= 1 << 0,
+				ColorBuffer = 1 << 1,
+
+				ALL = 0xFFFF,
+			};
+
 			~OpenGLWidget();
 
 			void localize() override {}
@@ -37,12 +45,13 @@ namespace VTX
 			inline Renderer::RayTracer &		  getRendererRT() { return *_rendererRT; }
 			inline const Renderer::RayTracer &	  getRendererRT() const { return *_rendererRT; }
 
-			void initializeGL() override;
-			void paintGL() override;
-			void resizeGL( int, int ) override;
-
-			void setRenderMode() { _renderer = nullptr; }
-			void activeVSync( const bool p_active );
+			void		initializeGL() override;
+			void		paintGL() override;
+			void		resizeGL( int, int ) override;
+			inline void updateRenderSetting( const Renderer::RENDER_SETTING p_setting )
+			{
+				_renderer->updateRenderSetting( p_setting );
+			}
 
 			const float getScreenPixelRatio() const;
 			const Vec2i getPickedIds( const uint, const uint );

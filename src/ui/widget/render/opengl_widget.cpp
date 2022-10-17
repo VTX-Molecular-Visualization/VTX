@@ -120,43 +120,6 @@ namespace VTX::UI::Widget::Render
 		doneCurrent();
 	}
 
-	void OpenGLWidget::activeVSync( const bool p_active )
-	{
-		makeCurrent();
-
-#ifdef _WIN32
-		QFunctionPointer func = context()->getProcAddress( "wglSwapIntervalEXT" );
-#else
-		QFunctionPointer func = context()->getProcAddress( "glXSwapIntervalEXT" );
-#endif
-		if ( func != nullptr )
-		{
-			( (bool ( * )( int ))func )( uint( p_active ) );
-		}
-		else
-		{
-			VTX_ERROR( "SwapIntervalEXT not supported" );
-		}
-
-#ifdef _WIN32
-		func = context()->getProcAddress( "wglGetSwapIntervalEXT" );
-#else
-		func				  = context()->getProcAddress( "glXGetSwapIntervalEXT" );
-#endif
-		if ( func != nullptr )
-		{
-			VTX_DEBUG( std::to_string( ( (uint( * )())func )() ) );
-		}
-		else
-		{
-			VTX_ERROR( "GetSwapIntervalEXT not supported" );
-		}
-
-		format().setSwapInterval( uint( p_active ) );
-
-		doneCurrent();
-	}
-
 	const float OpenGLWidget::getScreenPixelRatio() const { return screen()->devicePixelRatio(); }
 
 	const Vec2i OpenGLWidget::getPickedIds( const uint p_x, const uint p_y )

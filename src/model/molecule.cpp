@@ -189,7 +189,7 @@ namespace VTX
 		{
 			_bufferAtomRadius.resize( _atoms.size() );
 			_bufferAtomVisibilities.resize( _atoms.size(), 1u );
-			_bufferAtomColors.resize( _atoms.size(), Color::Rgb::BLUE );
+			_bufferAtomColors.resize( _atoms.size(), Color::Rgb::WHITE );
 			_bufferAtomSelections.resize( _atoms.size(), 0u );
 			_bufferAtomIds.resize( _atoms.size() );
 		}
@@ -389,6 +389,40 @@ namespace VTX
 			}
 
 			_buffer->setAtomSelections( _bufferAtomSelections );
+		}
+
+		void Molecule::refreshStructure()
+		{
+			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
+			refreshBondsBuffer();
+			refreshSecondaryStructure();
+			refreshSolventExcludedSurface();
+		}
+
+		void Molecule::refreshColors()
+		{
+			_fillBufferAtomColors();
+			if ( _secondaryStructure != nullptr )
+			{
+				_secondaryStructure->refreshColors();
+			}
+			if ( _solventExcludedSurface != nullptr )
+			{
+				_solventExcludedSurface->refreshColors();
+			}
+		}
+
+		void Molecule::refreshVisibilities( const bool p_applyBuffer )
+		{
+			_fillBufferAtomVisibilities( p_applyBuffer );
+			if ( _secondaryStructure != nullptr )
+			{
+				_secondaryStructure->refreshVisibilities();
+			}
+			if ( _solventExcludedSurface != nullptr )
+			{
+				_solventExcludedSurface->refreshVisibilities();
+			}
 		}
 
 		void Molecule::refreshSelection( const Model::Selection::MapChainIds * const p_selection )

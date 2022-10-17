@@ -44,8 +44,12 @@ namespace VTX::Worker
 
 	const void Snapshoter::_takeSnapshotGL() const
 	{
-		UI::Widget::Render::OpenGLWidget & glWidget	  = VTXApp::get().getMainWindow().getOpenGLWidget();
-		const float						   pixelRatio = glWidget.getScreenPixelRatio();
+		const UI::Widget::Render::RenderWidget & renderWidget
+			= VTXApp::get().getMainWindow().getWidget<UI::Widget::Render::RenderWidget>( ID::UI::Window::RENDER );
+
+		UI::Widget::Render::OpenGLWidget & glWidget = *renderWidget._openGLWidget;
+
+		const float pixelRatio = glWidget.getScreenPixelRatio();
 
 		// Create offscreen surface.
 		QOffscreenSurface surface;

@@ -84,7 +84,7 @@ namespace VTX::Action::Renderer
 
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
-			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().setShading();
+			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 	};
@@ -94,7 +94,7 @@ namespace VTX::Action::Renderer
 		_preset.enableSSAO( _enable );
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
-			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeSSAO( _enable );
+			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 	};
@@ -123,7 +123,7 @@ namespace VTX::Action::Renderer
 
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
-			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeOutline( _enable );
+			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::OUTLINE );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 	};
@@ -160,7 +160,7 @@ namespace VTX::Action::Renderer
 		_preset.enableFog( _enable );
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
-			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeFog( _enable );
+			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 	};
@@ -259,7 +259,7 @@ namespace VTX::Action::Renderer
 
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
-			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeAA( _enable );
+			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 	};

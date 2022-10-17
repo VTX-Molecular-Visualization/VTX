@@ -463,7 +463,7 @@ namespace VTX::UI
 	{
 		QMainWindow::showEvent( p_event );
 
-		if ( !_renderWidget->getOpenGLWidget().isValid() )
+		if ( !_renderWidget->isOpenGLValid() )
 		{
 			_renderWidget->show();
 			_renderWidget->hide();
@@ -641,7 +641,7 @@ namespace VTX::UI
 		_settingWidget->raise();
 	}
 
-	bool MainWindow::isOpenGLValid() const { return _renderWidget->getOpenGLWidget().isValid(); }
+	bool MainWindow::isOpenGLValid() const { return _renderWidget->isOpenGLValid(); }
 
 	WindowMode MainWindow::_getWindowModeFromWindowState( const Qt::WindowStates & p_state )
 	{

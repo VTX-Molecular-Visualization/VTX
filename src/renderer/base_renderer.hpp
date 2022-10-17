@@ -25,6 +25,15 @@ namespace VTX::Renderer
 		COUNT
 	};
 
+	enum class RENDER_SETTING : int
+	{
+		SHADING = 0,
+		SSAO,
+		OUTLINE,
+		FOG,
+		AA
+	};
+
 	class BaseRenderer : public Generic::BaseOpenGL
 	{
 	  public:
@@ -44,12 +53,8 @@ namespace VTX::Renderer
 
 		virtual void init( const uint, const uint, const GLuint ) = 0;
 		virtual void renderFrame( const Object3D::Scene & )		  = 0;
-		virtual void setShading()								  = 0;
 
-		virtual void activeSSAO( const bool ) {}
-		virtual void activeOutline( const bool ) {}
-		virtual void activeFog( const bool ) {}
-		virtual void activeAA( const bool ) {}
+		virtual void updateRenderSetting( const RENDER_SETTING ) {}
 
 		virtual const Vec2i getPickedIds( const uint, const uint ) const
 		{

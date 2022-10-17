@@ -253,8 +253,6 @@ namespace VTX
 			_texture.resize( p_width, p_height );
 		}
 
-		void RayTracer::setShading() {}
-
 		void RayTracer::_initScene( const Object3D::Scene & p_scene )
 		{
 			_scene.clean();
