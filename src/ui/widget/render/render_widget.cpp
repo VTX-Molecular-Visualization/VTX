@@ -285,9 +285,18 @@ namespace VTX::UI::Widget::Render
 	void RenderWidget::updateRender() const
 	{
 		_openGLWidget->update();
-
 		for ( BaseIntegratedWidget * const integratedWidget : _integratedWidgets )
 			integratedWidget->updatePosition();
+	}
+
+	void RenderWidget::updateRenderSetting( const Renderer::RENDER_SETTING p_setting )
+	{
+		_openGLWidget->updateRenderSetting( p_setting );
+	}
+
+	const Vec2i RenderWidget::getPickedIds( const uint p_x, const uint p_y )
+	{
+		return _openGLWidget->getPickedIds( p_x, p_y );
 	}
 
 	void RenderWidget::displayOverlay( const Overlay::OVERLAY &		   p_overlayType,

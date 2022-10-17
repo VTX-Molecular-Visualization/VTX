@@ -29,12 +29,10 @@ namespace VTX::UI::Widget::Render
 		~RenderWidget();
 		void localize() override;
 
-		bool		isOpenGLValid() const { return _openGLWidget->isValid(); }
+		inline bool isOpenGLValid() const { return _openGLWidget->isValid(); }
 		void		updateRender() const;
-		inline void updateRenderSetting( const Renderer::RENDER_SETTING p_setting )
-		{
-			_openGLWidget->updateRenderSetting( p_setting );
-		}
+		void		updateRenderSetting( const Renderer::RENDER_SETTING );
+		const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
 		void displayOverlay( const Overlay::OVERLAY & p_overlay, const Overlay::OVERLAY_ANCHOR & p_position );
 		void hideOverlay( const Overlay::OVERLAY & p_overlay );

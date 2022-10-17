@@ -9,7 +9,6 @@
 #include "renderer/gl/gl.hpp"
 #include "setting.hpp"
 #include "ui/main_window.hpp"
-#include "ui/widget/render/opengl_widget.hpp"
 #include "view/callback_view.hpp"
 #include "vtx_app.hpp"
 #include "worker/render_effect_loader.hpp"
@@ -208,14 +207,14 @@ namespace VTX::Model::Renderer
 	{
 		_appliedPreset = &p_preset;
 
-		VTX::Renderer::GL::GL & gl	   = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
+		VTX::UI::MainWindow &	mw	   = VTXApp::get().getMainWindow();
 		VTX::Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
 
-		gl.setShading();
-		gl.activeSSAO( _appliedPreset->isSSAOEnabled() );
-		gl.activeOutline( _appliedPreset->isOutlineEnabled() );
-		gl.activeFog( _appliedPreset->isFogEnabled() );
-		gl.activeAA( _appliedPreset->getAA() );
+		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
+		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
+		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::OUTLINE );
+		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
+		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
 
 		camera.setNear( _appliedPreset->getCameraNearClip() );
 		camera.setFar( _appliedPreset->getCameraFarClip() );

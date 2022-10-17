@@ -46,11 +46,10 @@ namespace VTX
 
 			void refreshWindowTitle();
 
+			inline bool isOpenGLValid() const { return _renderWidget->isOpenGLValid(); }
 			inline void updateRender() const { _renderWidget->updateRender(); }
-			inline void updateRenderSetting( const Renderer::RENDER_SETTING p_setting )
-			{
-				_renderWidget->updateRenderSetting( p_setting );
-			}
+			void		updateRenderSetting( const Renderer::RENDER_SETTING );
+			const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
@@ -61,8 +60,6 @@ namespace VTX
 			void showWidget( const ID::VTX_ID & p_winId, const bool p_show ) const;
 			void toggleWidget( const ID::VTX_ID & p_winId ) const;
 			void openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const;
-
-			bool isOpenGLValid() const;
 
 			WindowMode getWindowMode();
 			void	   setWindowMode( const WindowMode & p_mode );

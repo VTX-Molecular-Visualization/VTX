@@ -641,7 +641,14 @@ namespace VTX::UI
 		_settingWidget->raise();
 	}
 
-	bool MainWindow::isOpenGLValid() const { return _renderWidget->isOpenGLValid(); }
+	void MainWindow::updateRenderSetting( const Renderer::RENDER_SETTING p_setting )
+	{
+		_renderWidget->updateRenderSetting( p_setting );
+	}
+	const Vec2i MainWindow::getPickedIds( const uint p_x, const uint p_y )
+	{
+		return _renderWidget->getPickedIds( p_x, p_y );
+	}
 
 	WindowMode MainWindow::_getWindowModeFromWindowState( const Qt::WindowStates & p_state )
 	{

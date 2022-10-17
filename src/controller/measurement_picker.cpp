@@ -39,8 +39,11 @@ namespace VTX::Controller
 
 	void MeasurementPicker::_onMouseRightClick( const uint p_x, const uint p_y )
 	{
-		const UI::Widget::Render::OpenGLWidget & openGLWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
-		const QPoint							 position	  = openGLWidget.mapToGlobal( QPoint( p_x, p_y ) );
+		UI::MainWindow &						 mw = VTXApp::get().getMainWindow();
+		const UI::Widget::Render::RenderWidget & renderWidget
+			= mw.getWidget<UI::Widget::Render::RenderWidget>( ID::UI::Window::RENDER );
+
+		const QPoint position = renderWidget.mapToGlobal( QPoint( p_x, p_y ) );
 
 		Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
@@ -72,8 +75,7 @@ namespace VTX::Controller
 
 		bool hasFindTarget = false;
 
-		const Vec2i ids
-			= VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_event.pos().x(), p_event.pos().y() );
+		const Vec2i ids = VTXApp::get().getMainWindow().getPickedIds( p_event.pos().x(), p_event.pos().y() );
 
 		if ( ids.x != Model::ID_UNKNOWN )
 		{

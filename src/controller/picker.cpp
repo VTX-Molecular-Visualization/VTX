@@ -19,21 +19,24 @@ namespace VTX::Controller
 
 	void Picker::_onMouseLeftClick( const uint p_x, const uint p_y )
 	{
-		const Vec2i ids = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
+		const Vec2i ids = VTXApp::get().getMainWindow().getPickedIds( p_x, p_y );
 		_performSelection( ids );
 		_lastClickedIds = ids;
 	}
 
 	void Picker::_onMouseRightClick( const uint p_x, const uint p_y )
 	{
-		UI::Widget::Render::OpenGLWidget & openGLWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
-		const Vec2i						   ids			= openGLWidget.getPickedIds( p_x, p_y );
+		UI::MainWindow &						 mw = VTXApp::get().getMainWindow();
+		const UI::Widget::Render::RenderWidget & renderWidget
+			= mw.getWidget<UI::Widget::Render::RenderWidget>( ID::UI::Window::RENDER );
+
+		const Vec2i ids = mw.getPickedIds( p_x, p_y );
 		_performSelection( ids );
 		_lastClickedIds = ids;
 
 		Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-		const QPoint position = openGLWidget.mapToGlobal( QPoint( p_x, p_y ) );
+		const QPoint position = renderWidget.mapToGlobal( QPoint( p_x, p_y ) );
 
 		if ( selection.isEmpty() )
 		{
@@ -354,7 +357,7 @@ namespace VTX::Controller
 
 	void Picker::_onMouseLeftDoubleClick( const uint p_x, const uint p_y )
 	{
-		const Vec2i ids = VTXApp::get().getMainWindow().getOpenGLWidget().getPickedIds( p_x, p_y );
+		const Vec2i ids = VTXApp::get().getMainWindow().getPickedIds( p_x, p_y );
 
 		if ( ids.x == Model::ID_UNKNOWN )
 			return;
