@@ -110,6 +110,7 @@ namespace VTX::UI::Widget::Settings
 		void _refreshTraceRepresentation();
 		void _refreshSASRepresentation();
 		void _refreshCartoonRepresentation();
+		void _refreshSESRepresentation();
 
 		void _onRepresentationNameChange();
 		void _onQuickAccessChange( const int p_state );

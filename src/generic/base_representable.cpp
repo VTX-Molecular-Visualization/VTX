@@ -127,6 +127,7 @@ namespace VTX
 					{
 						_molecule->createSecondaryStructure();
 					}
+
 					Model::SecondaryStructure & secondaryStructure = _molecule->getSecondaryStructure();
 					std::map<uint, uint> &		residueToControlPointIndices
 						= secondaryStructure.getResidueToControlPointIndice();
@@ -142,8 +143,8 @@ namespace VTX
 					{
 						_molecule->createSolventExcludedSurface();
 					}
-					Model::SolventExcludedSurface & ses = _molecule->getSolventExcludedSurface();
 
+					const Model::SolventExcludedSurface &	   ses = _molecule->getSolventExcludedSurface();
 					const std::vector<std::pair<uint, uint>> & atomsToTriangles = ses.getAtomsToTriangles();
 					for ( uint atomIdx = residue->getIndexFirstAtom();
 						  atomIdx < residue->getIndexFirstAtom() + residue->getAtomCount();
@@ -164,6 +165,9 @@ namespace VTX
 
 		void BaseRepresentable::refreshRepresentationTargets()
 		{
+			if ( _molecule == nullptr )
+				return;
+
 			for ( auto representationTargetPair : _molecule->_representationTargets )
 			{
 				const VTX::Representation::FlagDataTargeted dataFlag

@@ -43,7 +43,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		const std::string residueIndexStr  = indexInitialized ? std::to_string( _residueIndex ) : "?";
 
 		const bool center		   = !p_startBloc;
-		uint	   charIndexOffset = center ? ( (uint)_residue->getSymbolStr().length() / 2 ) : 0;
+		uint	   charIndexOffset = center ? uint( ( _residue->getSymbolStr().length() - 1 ) / 2 ) : 0;
 		charIndexOffset += _spaceBefore ? 1 : 0;
 
 		const uint firstIndexPosition = _startIndexChar + charIndexOffset - ( int( residueIndexStr.size() ) / 2 );

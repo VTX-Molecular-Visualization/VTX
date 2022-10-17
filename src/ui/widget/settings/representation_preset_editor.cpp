@@ -200,6 +200,7 @@ namespace VTX::UI::Widget::Settings
 		// case Generic::REPRESENTATION::TRACE: _refreshTraceRepresentation(); break;
 		case Generic::REPRESENTATION::SAS: _refreshSASRepresentation(); break;
 		case Generic::REPRESENTATION::CARTOON: _refreshCartoonRepresentation(); break;
+		case Generic::REPRESENTATION::SES: _refreshSESRepresentation(); break;
 		}
 	}
 	void RepresentationPresetEditor::_refreshBallAndStickRepresentation()
@@ -300,6 +301,15 @@ namespace VTX::UI::Widget::Settings
 		_setParameterVisibility( PARAMETER::RIBBON_COLOR_BLENDING_MODE, false );
 	}
 	void RepresentationPresetEditor::_refreshSASRepresentation()
+	{
+		_setParameterVisibility( PARAMETER::SPHERE_RADIUS, false );
+		_setParameterVisibility( PARAMETER::CYLINDER_RADIUS, false );
+		_setParameterVisibility( PARAMETER::CYLINDER_COLOR_BLENDING_MODE, false );
+		_getParameter<QComboBox>( PARAMETER::COLOR_MODE )->setCurrentIndex( int( _preset->getData().getColorMode() ) );
+		_setParameterVisibility( PARAMETER::RIBBON_COLOR_MODE, false );
+		_setParameterVisibility( PARAMETER::RIBBON_COLOR_BLENDING_MODE, false );
+	}
+	void RepresentationPresetEditor::_refreshSESRepresentation()
 	{
 		_setParameterVisibility( PARAMETER::SPHERE_RADIUS, false );
 		_setParameterVisibility( PARAMETER::CYLINDER_RADIUS, false );
