@@ -389,22 +389,6 @@ namespace VTX::Model::Representation
 		{
 			_target->getMolecule()->refreshColors();
 		}
-
-		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::SecondaryStructureColorBuffer ) != 0 )
-		{
-			if ( _target->getMolecule()->hasSecondaryStructure() )
-			{
-				_target->getMolecule()->getSecondaryStructure().refreshColors();
-			}
-		}
-
-		if ( ( p_flag & VTX::Representation::MoleculeComputationFlag::SesColorBuffer ) != 0 )
-		{
-			if ( _target->getMolecule()->hasSolventExcludedSurface() )
-			{
-				_target->getMolecule()->getSolventExcludedSurface().refreshColors();
-			}
-		}
 	}
 
 } // namespace VTX::Model::Representation
