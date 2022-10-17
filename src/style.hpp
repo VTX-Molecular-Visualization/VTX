@@ -79,6 +79,7 @@ namespace VTX
 			const QPixmap REPRESENTATION_BALL_STICK_AND_CARTOON_ICON;
 			const QPixmap REPRESENTATION_TRACE_ICON;
 			const QPixmap REPRESENTATION_SAS_ICON;
+			const QPixmap REPRESENTATION_SES_ICON;
 
 			const QBitmap DIHEDRAL_ANGLE_RENDER_ICON_MASK;
 
@@ -154,9 +155,11 @@ namespace VTX
 				case Generic::REPRESENTATION::CARTOON: res = &REPRESENTATION_CARTOON_ICON; break;
 				case Generic::REPRESENTATION::SAS: res = &REPRESENTATION_SAS_ICON; break;
 				case Generic::REPRESENTATION::STICK: res = &REPRESENTATION_STICK_ICON; break;
-				case Generic::REPRESENTATION::STICK_AND_CARTOON:
-					res = &REPRESENTATION_STICK_AND_CARTOON_ICON;
+				case Generic::REPRESENTATION::STICK_AND_CARTOON: res = &REPRESENTATION_STICK_AND_CARTOON_ICON; break;
+				case Generic::REPRESENTATION::SES:
+					res = &REPRESENTATION_SES_ICON;
 					break;
+
 					// !V0.1
 					// case Generic::REPRESENTATION::TRACE: res = &REPRESENTATION_TRACE_ICON; break;
 				case Generic::REPRESENTATION::VAN_DER_WAALS: res = &REPRESENTATION_VDW_ICON; break;
@@ -212,6 +215,7 @@ namespace VTX
 					QPixmap( ":/sprite/representation_ball_stick_and_cartoon_icon.png" ) ),
 				REPRESENTATION_TRACE_ICON( QPixmap( ":/sprite/representation_stick_icon.png" ) ),
 				REPRESENTATION_SAS_ICON( QPixmap( ":/sprite/representation_sas_icon.png" ) ),
+				REPRESENTATION_SES_ICON( QPixmap( ":/sprite/representation_ses_icon.png" ) ),
 
 				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ),
 
