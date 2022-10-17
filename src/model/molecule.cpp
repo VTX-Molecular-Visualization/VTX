@@ -108,16 +108,13 @@ namespace VTX
 				}
 
 				setRepresentableMolecule( this );
+				if ( !hasCustomRepresentation() )
 
-				if ( hasCustomRepresentation() )
-				{
-					computeAllRepresentationData();
-				}
-				else
 				{
 					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation(
 						*this, false, false );
 				}
+				computeAllRepresentationData();
 
 				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
 				_buffer->setAtomRadius( _bufferAtomRadius );
@@ -401,6 +398,7 @@ namespace VTX
 
 		void Molecule::refreshColors()
 		{
+			VTX_DEBUG( "Molecule::refreshColors()" );
 			_fillBufferAtomColors();
 			if ( _secondaryStructure != nullptr )
 			{
@@ -804,7 +802,7 @@ namespace VTX
 
 			_solventExcludedSurface = MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Molecule>( this );
 			VTX_EVENT(
-				new Event::VTXEventPtr( Event::Global::SOLVENT_EXTRUDED_SURFACE_CREATED, _solventExcludedSurface ) );
+				new Event::VTXEventPtr( Event::Global::SOLVENT_EXCLUDED_SURFACE_CREATED, _solventExcludedSurface ) );
 			_solventExcludedSurface->print();
 		}
 

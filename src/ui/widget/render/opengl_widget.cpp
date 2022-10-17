@@ -107,8 +107,6 @@ namespace VTX::UI::Widget::Render
 			return;
 		}
 
-		makeCurrent();
-
 		VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
 
 		if ( _renderer != nullptr )
@@ -116,8 +114,6 @@ namespace VTX::UI::Widget::Render
 			const float pixelRatio = getScreenPixelRatio();
 			getRenderer().resize( p_width * pixelRatio, p_height * pixelRatio, defaultFramebufferObject() );
 		}
-
-		doneCurrent();
 	}
 
 	const float OpenGLWidget::getScreenPixelRatio() const { return screen()->devicePixelRatio(); }
@@ -125,9 +121,7 @@ namespace VTX::UI::Widget::Render
 	const Vec2i OpenGLWidget::getPickedIds( const uint p_x, const uint p_y )
 	{
 		const float pixelRatio = getScreenPixelRatio();
-		// makeCurrent();
-		Vec2i pickedIds = _renderer->getPickedIds( p_x * pixelRatio, ( height() - p_y ) * pixelRatio );
-		// doneCurrent();
+		Vec2i		pickedIds  = _renderer->getPickedIds( p_x * pixelRatio, ( height() - p_y ) * pixelRatio );
 
 		return pickedIds;
 	}

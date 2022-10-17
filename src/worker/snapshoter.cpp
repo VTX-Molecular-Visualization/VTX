@@ -44,10 +44,10 @@ namespace VTX::Worker
 
 	const void Snapshoter::_takeSnapshotGL() const
 	{
-		const UI::Widget::Render::RenderWidget & renderWidget
+		UI::Widget::Render::RenderWidget & renderWidget
 			= VTXApp::get().getMainWindow().getWidget<UI::Widget::Render::RenderWidget>( ID::UI::Window::RENDER );
 
-		UI::Widget::Render::OpenGLWidget & glWidget = *renderWidget._openGLWidget;
+		UI::Widget::Render::OpenGLWidget & glWidget = renderWidget.getOpenGLWidget();
 
 		const float pixelRatio = glWidget.getScreenPixelRatio();
 

@@ -29,7 +29,7 @@ namespace VTX::UI::Widget::Render
 	{
 		_registerEvent( Event::Global::MOLECULE_CREATED );
 		_registerEvent( Event::Global::SECONDARY_STRUCTURE_CREATED );
-		_registerEvent( Event::Global::SOLVENT_EXTRUDED_SURFACE_CREATED );
+		_registerEvent( Event::Global::SOLVENT_EXCLUDED_SURFACE_CREATED );
 		_registerEvent( Event::Global::MESH_CREATED );
 		_registerEvent( Event::Global::HELPER_ADDED );
 		_registerEvent( Event::Global::LABEL_ADDED );
@@ -41,46 +41,36 @@ namespace VTX::UI::Widget::Render
 
 	void RenderWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
+		_openGLWidget->makeCurrent();
 		if ( p_event.name == Event::Global::MOLECULE_CREATED )
 		{
-			_openGLWidget->makeCurrent();
 			const Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 			castedEvent.ptr->init();
-			castedEvent.ptr->computeAllRepresentationData();
-			_openGLWidget->doneCurrent();
 		}
 		else if ( p_event.name == Event::Global::MESH_CREATED )
 		{
-			_openGLWidget->makeCurrent();
 			const Event::VTXEventPtr<Model::MeshTriangle> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::MeshTriangle> &>( p_event );
 			castedEvent.ptr->init();
-			_openGLWidget->doneCurrent();
 		}
 		else if ( p_event.name == Event::Global::SECONDARY_STRUCTURE_CREATED )
 		{
-			_openGLWidget->makeCurrent();
 			const Event::VTXEventPtr<Model::SecondaryStructure> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::SecondaryStructure> &>( p_event );
 			castedEvent.ptr->init();
-			_openGLWidget->doneCurrent();
 		}
-		else if ( p_event.name == Event::Global::SOLVENT_EXTRUDED_SURFACE_CREATED )
+		else if ( p_event.name == Event::Global::SOLVENT_EXCLUDED_SURFACE_CREATED )
 		{
-			_openGLWidget->makeCurrent();
 			const Event::VTXEventPtr<Model::SolventExcludedSurface> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::SolventExcludedSurface> &>( p_event );
 			castedEvent.ptr->init();
-			_openGLWidget->doneCurrent();
 		}
 		else if ( p_event.name == Event::Global::HELPER_ADDED )
 		{
-			_openGLWidget->makeCurrent();
 			const Event::VTXEventPtr<Object3D::Helper::BaseHelper> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Object3D::Helper::BaseHelper> &>( p_event );
 			castedEvent.ptr->generate();
-			_openGLWidget->doneCurrent();
 		}
 		else if ( p_event.name == Event::Global::LABEL_ADDED )
 		{

@@ -62,6 +62,12 @@ namespace VTX::UI::Widget::Render
 			= std::map<Overlay::OVERLAY, Overlay::BaseOverlay *>();
 		std::vector<BaseIntegratedWidget *> _integratedWidgets = std::vector<BaseIntegratedWidget *>();
 
+		inline OpenGLWidget & getOpenGLWidget()
+		{
+			assert( _openGLWidget != nullptr );
+			return *_openGLWidget;
+		}
+
 		void _addIntegratedWidget( BaseIntegratedWidget * const p_widget );
 
 		Overlay::BaseOverlay * _instantiateOverlay( const Overlay::OVERLAY & p_overlayType );
