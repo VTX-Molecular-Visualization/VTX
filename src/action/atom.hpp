@@ -167,11 +167,7 @@ namespace VTX::Action::Atom
 				= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
 			generatedMolecule->copyFromAtom( _target );
-
-			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
-
 			generatedMolecule->applyTransform( _target.getMoleculePtr()->getTransform() );
-
 			VTXApp::get().getScene().addMolecule( generatedMolecule );
 		}
 
@@ -194,9 +190,6 @@ namespace VTX::Action::Atom
 				= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
 			generatedMolecule->extractAtom( _target );
-
-			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
-
 			VTXApp::get().getScene().addMolecule( generatedMolecule );
 
 			VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );

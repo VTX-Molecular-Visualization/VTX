@@ -107,8 +107,10 @@ namespace VTX::Object3D::Helper
 
 		void refresh() override;
 
-		void generate() override;
 		void render( const Object3D::Camera & ) const override;
+
+	  protected:
+		void _generate() override;
 
 	  private:
 		enum ATTRIBUTE_LOCATION

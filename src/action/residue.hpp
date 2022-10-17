@@ -245,9 +245,6 @@ namespace VTX::Action::Residue
 				= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
 			generatedMolecule->copyFromResidue( _target );
-
-			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
-
 			generatedMolecule->applyTransform( _target.getMoleculePtr()->getTransform() );
 
 			VTXApp::get().getScene().addMolecule( generatedMolecule );
@@ -272,9 +269,6 @@ namespace VTX::Action::Residue
 				= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
 			generatedMolecule->extractResidue( _target );
-
-			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
-
 			VTXApp::get().getScene().addMolecule( generatedMolecule );
 
 			VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );

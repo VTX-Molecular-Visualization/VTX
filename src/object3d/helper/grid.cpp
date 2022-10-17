@@ -58,7 +58,7 @@ namespace VTX::Object3D::Helper
 		_size = uint( voxels.size() );
 	}
 
-	void Grid::generate()
+	void Grid::_generate()
 	{
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Voxel",
 														{ IO::FilePath( "voxel/voxel.vert" ),

@@ -53,6 +53,8 @@ namespace VTX::UI::Widget::Render
 			return;
 		}
 
+		_widget = this;
+
 		_retrieveSpec();
 		VTX_SPEC().print();
 
@@ -62,6 +64,9 @@ namespace VTX::UI::Widget::Render
 #endif
 
 		VTX_PROGRAM_MANAGER();
+
+		assert( _gl != nullptr );
+		assert( _widget != nullptr );
 
 		_frameTimer.start();
 	}
@@ -120,8 +125,12 @@ namespace VTX::UI::Widget::Render
 
 	const Vec2i OpenGLWidget::getPickedIds( const uint p_x, const uint p_y )
 	{
+		makeCurrent();
+
 		const float pixelRatio = getScreenPixelRatio();
 		Vec2i		pickedIds  = _renderer->getPickedIds( p_x * pixelRatio, ( height() - p_y ) * pixelRatio );
+
+		doneCurrent();
 
 		return pickedIds;
 	}

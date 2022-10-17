@@ -93,7 +93,7 @@ namespace VTX::Object3D::Helper
 		_iboSize = uint( indices.size() );
 	}
 
-	void AABB::generate()
+	void AABB::_generate()
 	{
 		_program = VTX_PROGRAM_MANAGER().createProgram(
 			"Line", { IO::FilePath( "line/line.vert" ), IO::FilePath( "line/line.frag" ) } );

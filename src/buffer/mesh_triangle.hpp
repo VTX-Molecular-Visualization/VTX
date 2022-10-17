@@ -18,8 +18,6 @@ namespace VTX
 			MeshTriangle()	= default;
 			~MeshTriangle() = default;
 
-			void generate() override;
-
 			void setPositions( const std::vector<Vec3f> & );
 			void setNormals( const std::vector<Vec3f> & );
 			void setColors( const std::vector<Color::Rgb> & );
@@ -27,6 +25,9 @@ namespace VTX
 			void setSelections( const std::vector<uint> & );
 			void setIds( const std::vector<Model::ID> & );
 			void setIndices( const std::vector<uint> & );
+
+		  protected:
+			void _generate() override;
 
 		  private:
 			enum ATTRIBUTE_LOCATION

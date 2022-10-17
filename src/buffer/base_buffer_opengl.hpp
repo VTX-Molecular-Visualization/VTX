@@ -17,13 +17,31 @@ namespace VTX
 
 			virtual const Renderer::GL::VertexArray & getVao() const { return _vao; }
 
-			virtual void generate() = 0;
+			inline void generate()
+			{
+				_widget->makeCurrent();
+				_generate();
+				_widget->doneCurrent();
+			}
 
 			virtual void bind() { _vao.bind(); }
 			virtual void unbind() { _vao.unbind(); }
 
 		  protected:
 			Renderer::GL::VertexArray _vao = Renderer::GL::VertexArray();
+
+			virtual void _generate() = 0;
+
+			template<typename T>
+			inline void _updateBuffer( Renderer::GL::BufferData &	   p_buffer,
+									   const std::vector<T> &		   p_vector,
+									   Renderer::GL::BufferData::Usage p_usage
+									   = Renderer::GL::BufferData::Usage::STATIC_DRAW )
+			{
+				_widget->makeCurrent();
+				p_buffer.set( p_vector, p_usage );
+				_widget->doneCurrent();
+			}
 		};
 	} // namespace Buffer
 } // namespace VTX

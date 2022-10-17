@@ -66,6 +66,8 @@ namespace VTX::Object3D
 
 	void Scene::addMolecule( MoleculePtr const p_molecule, const bool p_sendEvent )
 	{
+		p_molecule->init();
+		p_molecule->print();
 		_molecules.emplace( p_molecule, 0.f );
 		_itemOrder.emplace_back( p_molecule );
 		_applySceneID( *p_molecule );
@@ -97,6 +99,8 @@ namespace VTX::Object3D
 
 	void Scene::addMesh( MeshTrianglePtr const p_mesh )
 	{
+		p_mesh->init();
+		p_mesh->print();
 		_add( p_mesh, _meshes );
 		_aabb.extend( p_mesh->getAABB() );
 		p_mesh->referenceLinkedAABB( &_aabb );
@@ -121,15 +125,14 @@ namespace VTX::Object3D
 
 	void Scene::addHelper( HelperPtr const p_helper )
 	{
+		p_helper->generate();
 		_helpers.emplace_back( p_helper );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::HELPER_ADDED, p_helper ) );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
 	void Scene::removeHelper( HelperPtr const p_helper )
 	{
 		_helpers.erase( std::find( _helpers.begin(), _helpers.end(), p_helper ) );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::HELPER_REMOVED, p_helper ) );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 

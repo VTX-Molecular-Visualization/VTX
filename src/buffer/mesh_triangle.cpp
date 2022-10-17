@@ -2,7 +2,7 @@
 
 namespace VTX::Buffer
 {
-	void MeshTriangle::generate()
+	void MeshTriangle::_generate()
 	{
 		_vboPositions.create();
 		_vboNormals.create();
@@ -57,37 +57,25 @@ namespace VTX::Buffer
 
 	void MeshTriangle::setPositions( const std::vector<Vec3f> & p_positions )
 	{
-		_vboPositions.set<Vec3f>( p_positions, Renderer::GL::BufferData::Usage::STATIC_DRAW );
+		_updateBuffer( _vboPositions, p_positions );
 	}
 
-	void MeshTriangle::setNormals( const std::vector<Vec3f> & p_normals )
-	{
-		_vboNormals.set<Vec3f>( p_normals, Renderer::GL::BufferData::Usage::STATIC_DRAW );
-	}
+	void MeshTriangle::setNormals( const std::vector<Vec3f> & p_normals ) { _updateBuffer( _vboNormals, p_normals ); }
 
-	void MeshTriangle::setColors( const std::vector<Color::Rgb> & p_colors )
-	{
-		_vboColors.set<Color::Rgb>( p_colors, Renderer::GL::BufferData::Usage::STATIC_DRAW );
-	}
+	void MeshTriangle::setColors( const std::vector<Color::Rgb> & p_colors ) { _updateBuffer( _vboColors, p_colors ); }
 
 	void MeshTriangle::setVisibilities( const std::vector<uint> & p_visibilities )
 	{
-		_vboVisibilities.set<uint>( p_visibilities, Renderer::GL::BufferData::Usage::STATIC_DRAW );
+		_updateBuffer( _vboVisibilities, p_visibilities );
 	}
 
 	void MeshTriangle::setSelections( const std::vector<uint> & p_selections )
 	{
-		_vboSelections.set<uint>( p_selections, Renderer::GL::BufferData::Usage::STATIC_DRAW );
+		_updateBuffer( _vboSelections, p_selections );
 	}
 
-	void MeshTriangle::setIds( const std::vector<Model::ID> & p_ids )
-	{
-		_vboIds.set<Model::ID>( p_ids, Renderer::GL::BufferData::Usage::STATIC_DRAW );
-	}
+	void MeshTriangle::setIds( const std::vector<Model::ID> & p_ids ) { _updateBuffer( _vboIds, p_ids ); }
 
-	void MeshTriangle::setIndices( const std::vector<uint> & p_indices )
-	{
-		_ibo.set<uint>( p_indices, Renderer::GL::BufferData::Usage::STATIC_DRAW );
-	}
+	void MeshTriangle::setIndices( const std::vector<uint> & p_indices ) { _updateBuffer( _ibo, p_indices ); }
 
 } // namespace VTX::Buffer

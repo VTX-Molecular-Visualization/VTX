@@ -2,13 +2,14 @@
 #define __VTX_WORKER_SNAPSHOTER__
 
 #include "base_worker.hpp"
+#include "generic/base_opengl.hpp"
 #include "io/filepath.hpp"
 #include "io/struct/image_export.hpp"
 #include <QImage>
 
 namespace VTX::Worker
 {
-	class Snapshoter : public Worker::BaseWorker
+	class Snapshoter : public Worker::BaseWorker, public Generic::BaseOpenGL
 	{
 	  public:
 		enum class MODE : int

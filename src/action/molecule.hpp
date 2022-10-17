@@ -499,9 +499,6 @@ namespace VTX::Action::Molecule
 				= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
 			generatedMolecule->copyFromMolecule( _target );
-
-			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
-
 			generatedMolecule->applyTransform( _target.getTransform() );
 
 			VTXApp::get().getScene().addMolecule( generatedMolecule );

@@ -18,8 +18,6 @@ namespace VTX
 			SecondaryStructure()  = default;
 			~SecondaryStructure() = default;
 
-			void generate() override;
-
 			void setControlPointPositions( const std::vector<Vec4f> & );
 			void setControlPointDirections( const std::vector<Vec3f> & );
 			void setSecondaryStructures( const std::vector<uint> & );
@@ -28,6 +26,9 @@ namespace VTX
 			void setSelections( const std::vector<uint> & );
 			void setIds( const std::vector<Model::ID> & );
 			void setIndices( const std::vector<uint> & );
+
+		  protected:
+			void _generate() override;
 
 		  private:
 			enum ATTRIBUTE_LOCATION

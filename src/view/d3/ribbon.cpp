@@ -16,7 +16,7 @@ namespace VTX::View::D3
 													  IO::FilePath( "ribbon/ribbon_patch.frag" ) } );
 	}
 
-	void Ribbon::_init() { _gl()->glPatchParameteri( GL_PATCH_VERTICES, 4 ); }
+	void Ribbon::_init() { _gl->glPatchParameteri( GL_PATCH_VERTICES, 4 ); }
 
 	void Ribbon::render( const Object3D::Camera & p_camera ) const
 	{

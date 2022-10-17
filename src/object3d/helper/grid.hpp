@@ -29,7 +29,6 @@ namespace VTX::Object3D::Helper
 
 		inline const uint getCellCount() const { return size.x * size.y * size.z; }
 
-		void generate() override;
 		void refresh() override;
 		void render( const Object3D::Camera & ) const override;
 
@@ -38,6 +37,9 @@ namespace VTX::Object3D::Helper
 			Vec3f min;
 			Vec3f max;
 		};
+
+	  protected:
+		void _generate() override;
 
 	  private:
 		enum ATTRIBUTE_LOCATION

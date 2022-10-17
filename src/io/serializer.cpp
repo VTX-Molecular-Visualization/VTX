@@ -405,7 +405,6 @@ namespace VTX::IO
 					}
 
 					molecule->refreshVisibilities( false );
-					VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
 					p_scene.addMolecule( molecule );
 				}
 			}
@@ -1013,8 +1012,8 @@ namespace VTX::IO
 	{
 		nlohmann::json jsonArrayRepresentations = nlohmann::json::array();
 		nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", VTX::ID::Model::MODEL_MOLECULE },
-												{ "INDEX", 0 },
-												{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
+													{ "INDEX", 0 },
+													{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
 		jsonArrayRepresentations.emplace_back( jsonRepresentation );
 
 		for ( const Model::Chain * const chain : p_molecule.getChains() )

@@ -398,7 +398,6 @@ namespace VTX
 
 		void Molecule::refreshColors()
 		{
-			VTX_DEBUG( "Molecule::refreshColors()" );
 			_fillBufferAtomColors();
 			if ( _secondaryStructure != nullptr )
 			{
@@ -782,7 +781,7 @@ namespace VTX
 			assert( _secondaryStructure == nullptr );
 
 			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule>( this );
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SECONDARY_STRUCTURE_CREATED, _secondaryStructure ) );
+			_secondaryStructure->init();
 			_secondaryStructure->print();
 		}
 
@@ -801,8 +800,7 @@ namespace VTX
 			assert( _solventExcludedSurface == nullptr );
 
 			_solventExcludedSurface = MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Molecule>( this );
-			VTX_EVENT(
-				new Event::VTXEventPtr( Event::Global::SOLVENT_EXCLUDED_SURFACE_CREATED, _solventExcludedSurface ) );
+			_solventExcludedSurface->init();
 			_solventExcludedSurface->print();
 		}
 

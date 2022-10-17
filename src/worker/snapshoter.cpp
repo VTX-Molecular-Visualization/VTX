@@ -83,7 +83,7 @@ namespace VTX::Worker
 		glWidget.getRenderer().resize( width * pixelRatio, height * pixelRatio, fbo.handle() );
 
 		// Render.
-		glWidget.getGL()->glViewport( 0, 0, width, height );
+		_gl->glViewport( 0, 0, width, height );
 
 		// Use Export Data background opacity for the render.
 		const float previousBackgroundOpacity = VTX_SETTING().getSnapshotBackgroundOpacity();

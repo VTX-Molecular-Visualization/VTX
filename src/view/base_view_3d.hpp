@@ -13,7 +13,7 @@ namespace VTX::View
 {
 	template<typename T,
 			 typename = std::enable_if<std::is_base_of<Model::BaseModel3D<Buffer::BaseBufferOpenGL>, T>::value>>
-	class BaseView3D : public BaseView<T>, public Generic::BaseRenderable
+	class BaseView3D : public BaseView<T>, public Generic::BaseRenderable, public Generic::BaseOpenGL
 	{
 		VTX_VIEW
 
@@ -37,11 +37,12 @@ namespace VTX::View
 
 		virtual void init() override
 		{
+			_widget->makeCurrent();
 			// Create program.
 			_program = _createProgram();
 			assert( _program != nullptr );
-
 			_init();
+			_widget->doneCurrent();
 		}
 
 	  protected:
@@ -49,8 +50,6 @@ namespace VTX::View
 
 		explicit BaseView3D( T * const p_model ) : BaseView<T>( p_model ) {}
 		virtual ~BaseView3D() = default;
-
-		inline OpenGLFunctions * const _gl() const { return this->_model->getBuffer()->getGL(); }
 
 		virtual Renderer::GL::Program * const _createProgram() = 0;
 		virtual void						  _init() {}

@@ -27,11 +27,6 @@ namespace VTX::UI::Widget::Render
 {
 	RenderWidget::RenderWidget( QWidget * p_parent ) : BaseManualWidget<QWidget>( p_parent )
 	{
-		_registerEvent( Event::Global::MOLECULE_CREATED );
-		_registerEvent( Event::Global::SECONDARY_STRUCTURE_CREATED );
-		_registerEvent( Event::Global::SOLVENT_EXCLUDED_SURFACE_CREATED );
-		_registerEvent( Event::Global::MESH_CREATED );
-		_registerEvent( Event::Global::HELPER_ADDED );
 		_registerEvent( Event::Global::LABEL_ADDED );
 		_registerEvent( Event::Global::LABEL_REMOVED );
 		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
@@ -41,38 +36,7 @@ namespace VTX::UI::Widget::Render
 
 	void RenderWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
-		_openGLWidget->makeCurrent();
-		if ( p_event.name == Event::Global::MOLECULE_CREATED )
-		{
-			const Event::VTXEventPtr<Model::Molecule> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-			castedEvent.ptr->init();
-		}
-		else if ( p_event.name == Event::Global::MESH_CREATED )
-		{
-			const Event::VTXEventPtr<Model::MeshTriangle> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::MeshTriangle> &>( p_event );
-			castedEvent.ptr->init();
-		}
-		else if ( p_event.name == Event::Global::SECONDARY_STRUCTURE_CREATED )
-		{
-			const Event::VTXEventPtr<Model::SecondaryStructure> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::SecondaryStructure> &>( p_event );
-			castedEvent.ptr->init();
-		}
-		else if ( p_event.name == Event::Global::SOLVENT_EXCLUDED_SURFACE_CREATED )
-		{
-			const Event::VTXEventPtr<Model::SolventExcludedSurface> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::SolventExcludedSurface> &>( p_event );
-			castedEvent.ptr->init();
-		}
-		else if ( p_event.name == Event::Global::HELPER_ADDED )
-		{
-			const Event::VTXEventPtr<Object3D::Helper::BaseHelper> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Object3D::Helper::BaseHelper> &>( p_event );
-			castedEvent.ptr->generate();
-		}
-		else if ( p_event.name == Event::Global::LABEL_ADDED )
+		if ( p_event.name == Event::Global::LABEL_ADDED )
 		{
 			const Event::VTXEventPtr<Model::Label> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );

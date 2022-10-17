@@ -18,8 +18,6 @@ namespace VTX
 			Molecule()	= default;
 			~Molecule() = default;
 
-			void generate() override;
-
 			void setAtomPositions( const std::vector<Vec3f> & );
 			void setAtomRadius( const std::vector<float> & );
 			void setAtomColors( const std::vector<Color::Rgb> & );
@@ -27,6 +25,9 @@ namespace VTX
 			void setAtomSelections( const std::vector<uint> & );
 			void setAtomIds( const std::vector<Model::ID> & );
 			void setBonds( const std::vector<uint> & );
+
+		  protected:
+			void _generate() override;
 
 		  private:
 			enum ATTRIBUTE_LOCATION

@@ -1,8 +1,6 @@
 #include "generic/base_opengl.hpp"
-#include "io/writer/writer_exception.hpp"
 #include "tool/logger.hpp"
 #include "ui/dialog.hpp"
-#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include <QSurfaceFormat>
 #ifdef _WIN32
@@ -30,6 +28,7 @@ int main( int p_argc, char * p_argv[] )
 	{
 		// Setup some Qt static configuration.
 		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+		QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
 		QSurfaceFormat format;
 		format.setVersion( OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION );
 		format.setProfile( QSurfaceFormat::CoreProfile );

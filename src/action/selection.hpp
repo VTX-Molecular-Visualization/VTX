@@ -964,12 +964,12 @@ namespace VTX::Action::Selection
 			generatedMolecule->copyFromSelection( _selection, p_source.getId(), p_frame );
 
 			Tool::Chrono chrono;
+
 			chrono.start();
-			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
 
 			generatedMolecule->applyTransform( p_source.getTransform() );
-
 			VTXApp::get().getScene().addMolecule( generatedMolecule );
+
 			chrono.stop();
 			VTX_DEBUG( "Molecule " + generatedMolecule->getDisplayName() + " copied in " + chrono.elapsedTimeStr() );
 		}
@@ -1007,10 +1007,6 @@ namespace VTX::Action::Selection
 					= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
 				generatedMolecule->extractFromSelection( *tmpSelection, idMolSource );
-
-				VTX_EVENT(
-					new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
-
 				VTXApp::get().getScene().addMolecule( generatedMolecule );
 				generatedMolecules.emplace_back( generatedMolecule );
 			}

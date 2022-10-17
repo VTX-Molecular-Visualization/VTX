@@ -81,7 +81,9 @@ namespace VTX
 		}
 
 		if ( VTX_SETTING().getCheckVTXUpdateAtLaunch() )
+		{
 			VTX_ACTION( new Action::Main::CheckForUpdate() );
+		}
 
 		// Start timers.
 		_timer = new QTimer( this );
@@ -151,11 +153,12 @@ namespace VTX
 		// State machine.
 		_stateMachine->update( elapsed );
 
+		// Useless: nothing is delayed.
 		// Event manager.
-		Event::EventManager::get().update( elapsed );
+		// Event::EventManager::get().update( elapsed );
 
 		// Action manager.
-		Action::ActionManager::get().update( elapsed );
+		// Action::ActionManager::get().update( elapsed );
 
 		_applyEndOfFrameDeletes();
 
