@@ -37,12 +37,12 @@ namespace VTX::View
 
 		virtual void init() override
 		{
-			_widget->makeCurrent();
+			_makeCurrent();
 			// Create program.
 			_program = _createProgram();
 			assert( _program != nullptr );
 			_init();
-			_widget->doneCurrent();
+			_doneCurrent();
 		}
 
 	  protected:

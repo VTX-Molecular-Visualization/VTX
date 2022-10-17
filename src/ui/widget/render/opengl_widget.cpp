@@ -53,7 +53,8 @@ namespace VTX::UI::Widget::Render
 			return;
 		}
 
-		_widget = this;
+		_context = context();
+		_surface = context()->surface();
 
 		_retrieveSpec();
 		VTX_SPEC().print();
@@ -66,7 +67,8 @@ namespace VTX::UI::Widget::Render
 		VTX_PROGRAM_MANAGER();
 
 		assert( _gl != nullptr );
-		assert( _widget != nullptr );
+		assert( _context != nullptr );
+		assert( _surface != nullptr );
 
 		_frameTimer.start();
 	}

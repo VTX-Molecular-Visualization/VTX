@@ -30,8 +30,12 @@ namespace VTX
 			inline void disableDepthTest() const { _gl->glDisable( GL_DEPTH_TEST ); }
 
 		  protected:
-			static inline OpenGLFunctions * _gl		= nullptr;
-			static inline OpenGLWidget *	_widget = nullptr;
+			static inline OpenGLFunctions * _gl		 = nullptr;
+			static inline OpenGLContext *	_context = nullptr;
+			static inline OpenGLSurface *	_surface = nullptr;
+
+			inline void _makeCurrent() { _context->makeCurrent( _surface ); }
+			inline void _doneCurrent() { _context->doneCurrent(); }
 		};
 	} // namespace Generic
 } // namespace VTX
