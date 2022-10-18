@@ -285,7 +285,7 @@ namespace VTX::Model::Representation
 		{
 			Representation * const ses = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 			ses->setName( name );
-			ses->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
+			ses->getData().setColorMode( Generic::COLOR_MODE::PROTEIN );
 			ses->setQuickAccess( true );
 			addRepresentation( ses, p_notify );
 		}
