@@ -97,12 +97,12 @@ namespace VTX::Worker
 		// Save FBO as image.
 		QImage render = fbo.toImage();
 
+		// Resize renderer and reset default surface and FBO.
+		glWidget.resizeGL( glWidget.width(), glWidget.height() );
+
 		// Clean.
 		surface.destroy();
 		glWidget.doneCurrent();
-
-		// Resize renderer and reset default surface and FBO.
-		glWidget.resizeGL( glWidget.width(), glWidget.height() );
 
 		// Restore values.
 		if ( activeAA == false )
