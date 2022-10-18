@@ -410,7 +410,7 @@ namespace VTX
 
 		void Molecule::refreshVisibilities()
 		{
-			_fillBufferAtomVisibilities( p_applyBuffer );
+			_fillBufferAtomVisibilities();
 			if ( _secondaryStructure != nullptr )
 			{
 				_secondaryStructure->refreshVisibilities();
@@ -425,9 +425,13 @@ namespace VTX
 		{
 			_fillBufferAtomSelections( p_selection );
 			if ( _secondaryStructure != nullptr )
+			{
 				_secondaryStructure->refreshSelection( p_selection );
+			}
 			if ( _solventExcludedSurface != nullptr )
+			{
 				_solventExcludedSurface->refreshSelection( p_selection );
+			}
 		}
 
 		void Molecule::setFrame( const uint p_frameIdx )
