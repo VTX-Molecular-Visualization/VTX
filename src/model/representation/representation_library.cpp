@@ -275,8 +275,19 @@ namespace VTX::Model::Representation
 			Representation * const sas = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 			sas->setName( name );
 			sas->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
-			sas->setQuickAccess( true );
+			sas->setQuickAccess( false );
 			addRepresentation( sas, p_notify );
+		}
+
+		representationType = Generic::REPRESENTATION::SES;
+		name			   = "SES";
+		if ( isExistingName( name ) == false )
+		{
+			Representation * const ses = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+			ses->setName( name );
+			ses->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
+			ses->setQuickAccess( true );
+			addRepresentation( ses, p_notify );
 		}
 
 		representationType = Generic::REPRESENTATION::STICK;
@@ -314,15 +325,6 @@ namespace VTX::Model::Representation
 			vdw->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
 			vdw->getData().setSphereRadius( 0 );
 			addRepresentation( vdw, p_notify );
-		}
-
-		representationType = Generic::REPRESENTATION::SES;
-		name			   = "SES";
-		if ( isExistingName( name ) == false )
-		{
-			Representation * const ses = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
-			ses->setName( name );
-			addRepresentation( ses, p_notify );
 		}
 	}
 
