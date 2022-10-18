@@ -207,7 +207,7 @@ namespace VTX
 
 			void refreshStructure();
 			void refreshColors();
-			void refreshVisibilities( const bool p_applyBuffer = true );
+			void refreshVisibilities();
 			void refreshSelection( const Selection::MapChainIds * const );
 			void refreshBondsBuffer();
 
@@ -337,7 +337,7 @@ namespace VTX
 			bool _showIon	   = true;
 
 			void _fillBufferAtomColors();
-			void _fillBufferAtomVisibilities( const bool p_applyToBuffer = true );
+			void _fillBufferAtomVisibilities();
 			void _fillBufferAtomSelections( const Selection::MapChainIds * const = nullptr );
 
 #ifdef _DEBUG

@@ -271,7 +271,7 @@ namespace VTX
 			_buffer->setAtomColors( _bufferAtomColors );
 		}
 
-		void Molecule::_fillBufferAtomVisibilities( const bool p_applyToBuffer )
+		void Molecule::_fillBufferAtomVisibilities()
 		{
 			_bufferAtomVisibilities.clear();
 
@@ -338,8 +338,7 @@ namespace VTX
 				}
 			}
 
-			if ( p_applyToBuffer )
-				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
+			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 		}
 
 		void Molecule::_fillBufferAtomSelections( const Model::Selection::MapChainIds * const p_selection )
@@ -409,7 +408,7 @@ namespace VTX
 			}
 		}
 
-		void Molecule::refreshVisibilities( const bool p_applyBuffer )
+		void Molecule::refreshVisibilities()
 		{
 			_fillBufferAtomVisibilities( p_applyBuffer );
 			if ( _secondaryStructure != nullptr )

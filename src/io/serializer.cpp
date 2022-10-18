@@ -404,7 +404,6 @@ namespace VTX::IO
 						itemPositionMap[ itemPosition ] = molecule;
 					}
 
-					molecule->refreshVisibilities( false );
 					p_scene.addMolecule( molecule );
 				}
 			}
