@@ -29,8 +29,6 @@ namespace VTX::UI::Widget::Inspector
 		{
 			if ( _targets.size() > 0 )
 			{
-				_resetFieldStates( SectionFlag::ALL );
-
 				for ( T * const target : _targets )
 				{
 					if ( MVC::MvcManager::get().hasView( target, _callbackViewId ) )
@@ -38,7 +36,7 @@ namespace VTX::UI::Widget::Inspector
 				}
 				_targets.clear();
 
-				_sectionToRefresh = SectionFlag::ALL;
+				_clearFlag = true;
 			}
 		}
 
@@ -113,6 +111,14 @@ namespace VTX::UI::Widget::Inspector
 
 		virtual void _endOfFrameEvent()
 		{
+			if ( _clearFlag )
+			{
+				_resetFieldStates( SectionFlag::ALL );
+				_sectionToRefresh = SectionFlag::ALL;
+
+				_clearFlag = false;
+			}
+
 			if ( _sectionToRefresh != SectionFlag::NONE )
 			{
 				_endOfFrameRefresh( _sectionToRefresh );
@@ -128,6 +134,7 @@ namespace VTX::UI::Widget::Inspector
 		std::unordered_set<T *> _targets = std::unordered_set<T *>();
 
 		SectionFlag		 _sectionToRefresh = SectionFlag::NONE;
+		bool			 _clearFlag		   = false;
 		const ID::VTX_ID _callbackViewId;
 	};
 
