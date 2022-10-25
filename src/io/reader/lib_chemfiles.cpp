@@ -2,6 +2,7 @@
 #include "color/rgb.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
+#include "model/category_enum.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
@@ -245,7 +246,10 @@ namespace VTX::IO::Reader
 		std::map<uint, std::vector<size_t>> mapResidueBonds		 = std::map<uint, std::vector<size_t>>();
 		std::map<uint, std::vector<size_t>> mapResidueExtraBonds = std::map<uint, std::vector<size_t>>();
 
-		int oldIndexInChain = INT_MIN;
+		int			  oldIndexInChain			= INT_MIN;
+		CATEGORY_ENUM lastResidueCategory		= CATEGORY_ENUM::UNKNOWN;
+		uint		  residueCategoryFirstIndex = 0;
+
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 		{
 			const chemfiles::Residue & residue = residues[ residueIdx ];
@@ -323,6 +327,22 @@ namespace VTX::IO::Reader
 			const std::string insertionCodeStr
 				= residue.properties().get( "insertion_code" ).value_or( " " ).as_string();
 			modelResidue->setInsertionCode( insertionCodeStr[ 0 ] );
+
+			// Residue Category
+			const CATEGORY_ENUM residueCategory = Util::Molecule::getResidueCategory( residueSymbol );
+
+			if ( lastResidueCategory != residueCategory )
+			{
+				const uint residueCountInCategory = residueIdx - residueCategoryFirstIndex;
+
+				if ( residueCountInCategory > 0 )
+				{
+					p_molecule.addToCategory( lastResidueCategory, residueCategoryFirstIndex, residueCountInCategory );
+				}
+
+				residueCategoryFirstIndex = residueIdx;
+				lastResidueCategory		  = residueCategory;
+			}
 
 			oldIndexInChain = indexInChain;
 
@@ -500,6 +520,12 @@ namespace VTX::IO::Reader
 			{
 				modelResidue->setAtomType( Model::Atom::TYPE::ION );
 			}
+		}
+
+		const uint residueCountInLastCategory = p_molecule.getResidueCount() - residueCategoryFirstIndex;
+		if ( residueCountInLastCategory > 0 )
+		{
+			p_molecule.addToCategory( lastResidueCategory, residueCategoryFirstIndex, residueCountInLastCategory );
 		}
 
 		if ( p_trajectory.nsteps() > 1 )

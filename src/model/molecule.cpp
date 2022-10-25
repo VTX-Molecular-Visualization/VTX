@@ -5,6 +5,7 @@
 #include "id.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
+#include "model/category.hpp"
 #include "model/chain.hpp"
 #include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
@@ -27,6 +28,15 @@ namespace VTX
 		Molecule::Molecule() : Molecule( VTX::ID::Model::MODEL_MOLECULE ) {}
 		Molecule::Molecule( const VTX::ID::VTX_ID & p_typeId ) : BaseModel3D( VTX::ID::Model::MODEL_MOLECULE )
 		{
+			_categories.resize( int( CATEGORY_ENUM::COUNT ) );
+
+			for ( int i = 0; i < int( CATEGORY_ENUM::COUNT ); i++ )
+			{
+				_categories[ i ] = MVC::MvcManager::get().instantiateModel<Model::Category>();
+				_categories[ i ]->setMoleculePtr( this );
+				_categories[ i ]->setCategoryEnum( CATEGORY_ENUM( i ) );
+			}
+
 			_playMode = VTX_SETTING().getDefaultTrajectoryPlayMode();
 			_fps	  = VTX_SETTING().getDefaultTrajectorySpeed();
 		}
@@ -37,6 +47,7 @@ namespace VTX
 			MVC::MvcManager::get().deleteAllModels( _bonds );
 			MVC::MvcManager::get().deleteAllModels( _residues );
 			MVC::MvcManager::get().deleteAllModels( _chains );
+			MVC::MvcManager::get().deleteAllModels( _categories );
 
 			if ( _secondaryStructure != nullptr )
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
@@ -816,6 +827,45 @@ namespace VTX
 
 			_solventExcludedSurface->refresh();
 		}
+
+		void Molecule::addToCategory( const CATEGORY_ENUM p_category, const uint p_from, const uint p_count )
+		{
+			_categories[ int( p_category ) ]->addResidueRange( p_from, p_count );
+		};
+		const std::vector<Struct::Range> & Molecule::getRangesFromCategory( const CATEGORY_ENUM p_category ) const
+		{
+			return _categories[ int( p_category ) ]->getRanges();
+		};
+		const std::vector<Model::Chain *> Molecule::getChainsInCategory( const CATEGORY_ENUM p_category ) const
+		{
+			return _categories[ int( p_category ) ]->getChains();
+		};
+		bool Molecule::hasResidueInCategory( const CATEGORY_ENUM p_category ) const
+		{
+			return !_categories[ int( p_category ) ]->isEmpty();
+		};
+		std::vector<Model::Category *> Molecule::getFilledCategories() const
+		{
+			std::vector<Model::Category *> res = std::vector<Model::Category *>();
+			res.reserve( int( CATEGORY_ENUM::COUNT ) );
+
+			for ( Model::Category * const category : _categories )
+			{
+				if ( !category->isEmpty() )
+					res.emplace_back( category );
+			}
+
+			return res;
+		};
+		CATEGORY_ENUM Molecule::getResidueCategory( const uint p_residueIndex ) const
+		{
+			for ( const Model::Category * const category : _categories )
+			{
+				if ( category->contains( p_residueIndex ) )
+					return category->getCategoryEnum();
+			}
+			return CATEGORY_ENUM::UNKNOWN;
+		};
 
 		void Molecule::setVisible( const bool p_visible )
 		{

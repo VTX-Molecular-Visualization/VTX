@@ -2,6 +2,8 @@
 #define __VTX_UTIL_MOLECULE__
 
 #include "io/reader/residue_data_reader.hpp"
+#include "model/category_enum.hpp"
+#include "model/molecule.hpp"
 #include "setting.hpp"
 #include <map>
 #include <string>
@@ -11,9 +13,8 @@ namespace VTX
 {
 	namespace Model
 	{
-		class Molecule;
-		class Chain;
 		class Residue;
+		class Chain;
 		class Atom;
 	} // namespace Model
 
@@ -25,6 +26,7 @@ namespace VTX
 		void									  loadResidueData( const std::string & p_residueSymbol );
 		const std::string &						  getResidueFullName( const std::string & p_residueSymbol );
 		const std::vector<IO::Reader::BondData> & getResidueBonds( const std::string & p_residueSymbol );
+		CATEGORY_ENUM							  getResidueCategory( const std::string & p_residueSymbol );
 
 		void recomputeBondOrders( Model::Molecule & p_molecule );
 		bool recomputeBondOrdersFromFile( Model::Molecule & p_molecule );

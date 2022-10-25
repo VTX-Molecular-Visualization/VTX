@@ -3,6 +3,7 @@
 #include "action/instantiated_representation.hpp"
 #include "action/molecule.hpp"
 #include "action/transformable.hpp"
+#include "model/category_enum.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
@@ -76,6 +77,10 @@ namespace VTX::UI::Widget::Inspector
 		_nbAtomsLabel = new CustomWidget::QLabelMultiField( this );
 		_nbAtomsLabel->setWordWrap( true );
 		_infoSection->appendField( "Nb Atoms", _nbAtomsLabel );
+
+		_categoriesLabel = new CustomWidget::QLabelMultiField( this );
+		_categoriesLabel->setWordWrap( true );
+		_infoSection->appendField( "Categories", _categoriesLabel );
 
 		_appendSection( _transformSection );
 		_appendSection( _representationSection );
@@ -193,6 +198,36 @@ namespace VTX::UI::Widget::Inspector
 					_nbChainsLabel->updateWithNewValue( std::to_string( molecule->getRealChainCount() ) );
 					_nbResiduesLabel->updateWithNewValue( std::to_string( molecule->getRealResidueCount() ) );
 					_nbAtomsLabel->updateWithNewValue( std::to_string( molecule->getRealAtomCount() ) );
+					std::string categoriesStr;
+
+					for ( int i = 0; i < int( CATEGORY_ENUM::COUNT ); i++ )
+					{
+						const auto & categoryRanges = molecule->getRangesFromCategory( CATEGORY_ENUM( i ) );
+
+						if ( categoryRanges.size() == 0 )
+							continue;
+
+						categoriesStr += CATEGORY_ENUM_STR[ i ] + " :";
+
+						for ( const Struct::Range & range : categoryRanges )
+						{
+							if ( range.getCount() == 1 )
+							{
+								categoriesStr
+									+= " " + std::to_string( molecule->getResidue( range.getFirst() )->getIndex() );
+							}
+							else
+							{
+								categoriesStr
+									+= " [" + std::to_string( molecule->getResidue( range.getFirst() )->getIndex() )
+									   + " - " + std::to_string( molecule->getResidue( range.getLast() )->getIndex() )
+									   + "]";
+							}
+						}
+						categoriesStr += '\n';
+					}
+
+					_categoriesLabel->updateWithNewValue( categoriesStr );
 				}
 			}
 		}
@@ -227,6 +262,7 @@ namespace VTX::UI::Widget::Inspector
 			_nbChainsLabel->resetState();
 			_nbResiduesLabel->resetState();
 			_nbAtomsLabel->resetState();
+			_categoriesLabel->resetState();
 		}
 	}
 

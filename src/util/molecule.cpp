@@ -2,7 +2,6 @@
 #include "model/atom.hpp"
 #include "model/bond.hpp"
 #include "model/chain.hpp"
-#include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "util/bond_guessing/bond_order_guessing.hpp"
 #include <sstream>
@@ -34,6 +33,14 @@ namespace VTX::Util::Molecule
 			loadResidueData( p_residueSymbol );
 
 		return mapLoadedResidueData[ p_residueSymbol ].bondData;
+	}
+
+	CATEGORY_ENUM getResidueCategory( const std::string & p_residueSymbol )
+	{
+		if ( mapLoadedResidueData.find( p_residueSymbol ) == mapLoadedResidueData.end() )
+			loadResidueData( p_residueSymbol );
+
+		return mapLoadedResidueData[ p_residueSymbol ].category;
 	}
 
 	void recomputeBondOrders( Model::Molecule & p_molecule )

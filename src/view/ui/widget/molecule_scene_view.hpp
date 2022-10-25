@@ -5,6 +5,8 @@
 #include "generic/base_visible.hpp"
 #include "id.hpp"
 #include "model/atom.hpp"
+#include "model/category.hpp"
+#include "model/category_enum.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
@@ -30,6 +32,9 @@ namespace VTX::View::UI::Widget
 		VTX_VIEW
 
 	  public:
+		inline static const Qt::ItemDataRole CATEGORY_ROLE = CHILD_FIRST_ROLE;
+
+	  public:
 		void notify( const Event::VTXEvent * const p_event ) override;
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
@@ -51,11 +56,11 @@ namespace VTX::View::UI::Widget
 		bool _itemCanBeRenamed( const QTreeWidgetItem * p_item ) override;
 
 	  private:
-		QMenu *											_contextMenu;
-		const QTreeWidgetItem *							_lastItemClicked = nullptr;
-		QTreeWidgetItem *								_lastItemVisible = nullptr;
-		std::map<Model::ID, QList<QTreeWidgetItem *> *> _mapLoadedItems
-			= std::map<Model::ID, QList<QTreeWidgetItem *> *>();
+		QMenu *													_contextMenu;
+		const QTreeWidgetItem *									_lastItemClicked = nullptr;
+		QTreeWidgetItem *										_lastItemVisible = nullptr;
+		std::map<QTreeWidgetItem *, QList<QTreeWidgetItem *> *> _mapLoadedItems
+			= std::map<QTreeWidgetItem *, QList<QTreeWidgetItem *> *>();
 
 		MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
 		~MoleculeSceneView();
@@ -73,6 +78,7 @@ namespace VTX::View::UI::Widget
 
 		void _expandAll( QTreeWidgetItem * const p_from );
 		void _expandMolecule( QTreeWidgetItem * const, const bool p_forceExpandChildren = false );
+		void _expandCategory( QTreeWidgetItem * const p_from, const bool p_forceExpandChildren = false );
 		void _expandChain( QTreeWidgetItem * const, const bool p_forceExpandChildren = false );
 		void _expandResidue( QTreeWidgetItem * const, const bool p_forceExpandChildren = false );
 
@@ -81,7 +87,10 @@ namespace VTX::View::UI::Widget
 		void _fillListWithItemChildren( const QTreeWidgetItem & p_parent, QList<QTreeWidgetItem *> & p_list ) const;
 
 		void _applyMoleculeDataOnItem( const Model::Molecule & p_molecule, QTreeWidgetItem & p_item ) const;
-		void _applyChainDataOnItem( const Model::Chain & p_molecule, QTreeWidgetItem & p_item ) const;
+		void _applyCategoryDataOnItem( const Model::Category & p_category, QTreeWidgetItem & p_item ) const;
+		void _applyChainDataOnItem( const Model::Chain & p_molecule,
+									QTreeWidgetItem &	 p_item,
+									const CATEGORY_ENUM	 p_category ) const;
 		void _applyResidueDataOnItem( const Model::Residue & p_molecule, QTreeWidgetItem & p_item ) const;
 		void _applyAtomDataOnItem( const Model::Atom & p_molecule, QTreeWidgetItem & p_item ) const;
 
@@ -99,6 +108,7 @@ namespace VTX::View::UI::Widget
 
 		QTreeWidgetItem * const _getMoleculeTreeWidgetItem() const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::ID & p_id ) const;
+		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Category & p_category ) const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Chain & p_chain ) const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Residue & p_residue ) const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Atom & p_atom ) const;
@@ -106,6 +116,8 @@ namespace VTX::View::UI::Widget
 		bool _isMoleculeExpanded() const;
 		bool _isChainExpanded( const Model::Chain & p_chain ) const;
 		bool _isResidueExpanded( const Model::Residue & p_residue ) const;
+
+		CATEGORY_ENUM _getCategoryFromItem( const QTreeWidgetItem & p_item ) const;
 	};
 
 } // namespace VTX::View::UI::Widget

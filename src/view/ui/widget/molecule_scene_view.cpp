@@ -7,6 +7,7 @@
 #include "action/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
+#include "struct/range.hpp"
 #include "style.hpp"
 #include "tool/logger.hpp"
 #include "ui/contextual_menu.hpp"
@@ -185,6 +186,10 @@ namespace VTX::View::UI::Widget
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			_expandMolecule( p_item );
+		}
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+		{
+			_expandCategory( p_item );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
@@ -442,7 +447,7 @@ namespace VTX::View::UI::Widget
 
 	void MoleculeSceneView::_clearLoadedItems()
 	{
-		for ( const std::pair<const Model::ID, QList<QTreeWidgetItem *> *> & pair : _mapLoadedItems )
+		for ( const std::pair<QTreeWidgetItem *, QList<QTreeWidgetItem *> *> & pair : _mapLoadedItems )
 		{
 			QList<QTreeWidgetItem *> * const listItems = pair.second;
 			while ( listItems->size() > 0 )
@@ -477,7 +482,6 @@ namespace VTX::View::UI::Widget
 	{
 		_enableSignals( false );
 
-		const Model::ID &		   id = _getModelIDFromItem( *p_moleculeItem );
 		QList<QTreeWidgetItem *> * itemsPtr;
 
 		if ( p_moleculeItem->childCount() > 0 )
@@ -485,11 +489,11 @@ namespace VTX::View::UI::Widget
 			itemsPtr = new QList<QTreeWidgetItem *>();
 			_fillListWithItemChildren( *p_moleculeItem, *itemsPtr );
 		}
-		else if ( _mapLoadedItems.find( id ) != _mapLoadedItems.end() )
+		else if ( _mapLoadedItems.find( p_moleculeItem ) != _mapLoadedItems.end() )
 		{
-			itemsPtr = _mapLoadedItems[ id ];
+			itemsPtr = _mapLoadedItems[ p_moleculeItem ];
 			p_moleculeItem->addChildren( *itemsPtr );
-			_mapLoadedItems.erase( id );
+			_mapLoadedItems.erase( p_moleculeItem );
 		}
 		else
 		{
@@ -497,24 +501,27 @@ namespace VTX::View::UI::Widget
 			QList<QTreeWidgetItem *> &	   items	 = *itemsPtr;
 			std::vector<QTreeWidgetItem *> nullItems = std::vector<QTreeWidgetItem *>();
 
-			const uint chainCount = _model->getChainCount();
-			nullItems.reserve( chainCount );
-			items.reserve( chainCount );
+			const std::vector<Model::Category *> categories	   = _model->getFilledCategories();
+			const size_t						 categoryCount = categories.size();
+			items.reserve( categoryCount );
+			nullItems.reserve( categoryCount );
 
-			for ( const Model::Chain * const chainPtr : _model->getChains() )
+			for ( int i = 0; i < int( CATEGORY_ENUM::COUNT ); i++ )
 			{
-				QTreeWidgetItem * const chainView = new QTreeWidgetItem();
+				const Model::Category & category = _model->getCategory( CATEGORY_ENUM( i ) );
 
-				if ( chainPtr == nullptr )
+				QTreeWidgetItem * const categoryView = new QTreeWidgetItem();
+
+				if ( category.isEmpty() )
 				{
-					nullItems.emplace_back( chainView );
+					nullItems.emplace_back( categoryView );
 				}
 				else
 				{
-					_applyChainDataOnItem( *chainPtr, *chainView );
+					_applyCategoryDataOnItem( category, *categoryView );
 				}
 
-				items.append( chainView );
+				items.append( categoryView );
 			}
 
 			p_moleculeItem->addChildren( items );
@@ -524,7 +531,83 @@ namespace VTX::View::UI::Widget
 				nullItem->setHidden( true );
 		}
 
-		QTreeWidgetItem * const lastItemExpanded = *itemsPtr->rbegin();
+		// Update visibility here because it can be modified when the parent is collapsed
+		for ( QTreeWidgetItem * const item : *itemsPtr )
+		{
+			if ( item->isHidden() )
+				continue;
+
+			const Model::ID &		categoryID = _getModelIDFromItem( *item );
+			const Model::Category & category   = MVC::MvcManager::get().getModel<Model::Category>( categoryID );
+
+			const Qt::CheckState newCheckState = Util::UI::getCheckState( category.isVisible() );
+			item->setCheckState( 0, newCheckState );
+
+			if ( p_forceExpandChildren || _getItemExpandState( *item ) )
+			{
+				item->setExpanded( true );
+				_expandCategory( item, p_forceExpandChildren );
+			}
+		}
+
+		delete itemsPtr;
+
+		_enableSignals( true );
+	}
+	void MoleculeSceneView::_expandCategory( QTreeWidgetItem * const p_categoryItem, const bool p_forceExpandChildren )
+	{
+		_enableSignals( false );
+
+		QList<QTreeWidgetItem *> * itemsPtr;
+
+		if ( p_categoryItem->childCount() > 0 )
+		{
+			itemsPtr = new QList<QTreeWidgetItem *>();
+			_fillListWithItemChildren( *p_categoryItem, *itemsPtr );
+		}
+		else if ( _mapLoadedItems.find( p_categoryItem ) != _mapLoadedItems.end() )
+		{
+			itemsPtr = _mapLoadedItems[ p_categoryItem ];
+			p_categoryItem->addChildren( *itemsPtr );
+			_mapLoadedItems.erase( p_categoryItem );
+		}
+		else
+		{
+			itemsPtr								 = new QList<QTreeWidgetItem *>();
+			QList<QTreeWidgetItem *> &	   items	 = *itemsPtr;
+			std::vector<QTreeWidgetItem *> nullItems = std::vector<QTreeWidgetItem *>();
+
+			const Model::ID &		categoryId = _getModelIDFromItem( *p_categoryItem );
+			const Model::Category & category   = MVC::MvcManager::get().getModel<Model::Category>( categoryId );
+
+			const std::vector<Model::Chain *> & chains = category.getChains();
+
+			const size_t chainCount = chains.size();
+			nullItems.reserve( chainCount );
+			items.reserve( chainCount );
+
+			for ( const Model::Chain * const chainPtr : chains )
+			{
+				QTreeWidgetItem * const chainView = new QTreeWidgetItem();
+
+				if ( chainPtr == nullptr )
+				{
+					nullItems.emplace_back( chainView );
+				}
+				else
+				{
+					_applyChainDataOnItem( *chainPtr, *chainView, category.getCategoryEnum() );
+				}
+
+				items.append( chainView );
+			}
+
+			p_categoryItem->addChildren( items );
+
+			// setHidden Need to be called after adding items in view
+			for ( QTreeWidgetItem * const nullItem : nullItems )
+				nullItem->setHidden( true );
+		}
 
 		// Update visibility here because it can be modified when the parent is collapsed
 		for ( QTreeWidgetItem * const item : *itemsPtr )
@@ -553,7 +636,6 @@ namespace VTX::View::UI::Widget
 	{
 		_enableSignals( false );
 
-		const Model::ID &		   chainId = _getModelIDFromItem( *p_chainItem );
 		QList<QTreeWidgetItem *> * itemsPtr;
 
 		p_chainItem->setData( 0, EXPAND_STATE_ROLE, true );
@@ -563,11 +645,11 @@ namespace VTX::View::UI::Widget
 			itemsPtr = new QList<QTreeWidgetItem *>();
 			_fillListWithItemChildren( *p_chainItem, *itemsPtr );
 		}
-		else if ( _mapLoadedItems.find( chainId ) != _mapLoadedItems.end() )
+		else if ( _mapLoadedItems.find( p_chainItem ) != _mapLoadedItems.end() )
 		{
-			itemsPtr = _mapLoadedItems[ chainId ];
+			itemsPtr = _mapLoadedItems[ p_chainItem ];
 			p_chainItem->addChildren( *itemsPtr );
-			_mapLoadedItems.erase( chainId );
+			_mapLoadedItems.erase( p_chainItem );
 		}
 		else
 		{
@@ -575,26 +657,81 @@ namespace VTX::View::UI::Widget
 			QList<QTreeWidgetItem *> &	   items	 = *itemsPtr;
 			std::vector<QTreeWidgetItem *> nullItems = std::vector<QTreeWidgetItem *>();
 
+			const Model::ID &	 chainId	  = _getModelIDFromItem( *p_chainItem );
 			const Model::Chain & chain		  = MVC::MvcManager::get().getModel<Model::Chain>( chainId );
 			const uint			 residueCount = chain.getResidueCount();
 			nullItems.reserve( residueCount );
 			items.reserve( residueCount );
 
-			for ( uint i = chain.getIndexFirstResidue(); i < chain.getIndexFirstResidue() + residueCount; i++ )
+			const uint indexFirstResidue = chain.getIndexFirstResidue();
+			const uint indexLastResidue	 = chain.getIndexFirstResidue() + residueCount - 1;
+
+			const CATEGORY_ENUM category = _getCategoryFromItem( *p_chainItem );
+
+			const std::vector<Struct::Range> & ranges = _model->getRangesFromCategory( category );
+
+			for ( const Struct::Range & range : ranges )
 			{
-				const Model::Residue * const residuePtr	 = _model->getResidue( i );
-				QTreeWidgetItem * const		 residueView = new QTreeWidgetItem();
-
-				if ( residuePtr == nullptr )
+				if ( range.getFirst() <= indexFirstResidue && indexFirstResidue <= range.getLast() )
 				{
-					nullItems.emplace_back( residueView );
-				}
-				else
-				{
-					_applyResidueDataOnItem( *residuePtr, *residueView );
-				}
+					const uint lastValidResidueIndexInRange
+						= indexLastResidue < range.getLast() ? indexLastResidue : range.getLast();
 
-				items.append( residueView );
+					for ( uint i = indexFirstResidue; i <= lastValidResidueIndexInRange; i++ )
+					{
+						const Model::Residue * const residuePtr	 = _model->getResidue( i );
+						QTreeWidgetItem * const		 residueView = new QTreeWidgetItem();
+
+						if ( residuePtr == nullptr )
+						{
+							nullItems.emplace_back( residueView );
+						}
+						else
+						{
+							_applyResidueDataOnItem( *residuePtr, *residueView );
+						}
+
+						items.append( residueView );
+					}
+				}
+				else if ( range.getFirst() <= indexLastResidue && indexLastResidue <= range.getLast() )
+				{
+					for ( uint i = range.getFirst(); i <= indexLastResidue; i++ )
+					{
+						const Model::Residue * const residuePtr	 = _model->getResidue( i );
+						QTreeWidgetItem * const		 residueView = new QTreeWidgetItem();
+
+						if ( residuePtr == nullptr )
+						{
+							nullItems.emplace_back( residueView );
+						}
+						else
+						{
+							_applyResidueDataOnItem( *residuePtr, *residueView );
+						}
+
+						items.append( residueView );
+					}
+				}
+				else if ( indexFirstResidue <= range.getFirst() && range.getLast() <= indexLastResidue )
+				{
+					for ( uint i = range.getFirst(); i <= range.getLast(); i++ )
+					{
+						const Model::Residue * const residuePtr	 = _model->getResidue( i );
+						QTreeWidgetItem * const		 residueView = new QTreeWidgetItem();
+
+						if ( residuePtr == nullptr )
+						{
+							nullItems.emplace_back( residueView );
+						}
+						else
+						{
+							_applyResidueDataOnItem( *residuePtr, *residueView );
+						}
+
+						items.append( residueView );
+					}
+				}
 			}
 
 			p_chainItem->addChildren( items );
@@ -603,8 +740,6 @@ namespace VTX::View::UI::Widget
 			for ( QTreeWidgetItem * const nullItem : nullItems )
 				nullItem->setHidden( true );
 		}
-
-		QTreeWidgetItem * const lastItemExpanded = *itemsPtr->rbegin();
 
 		// Update visibility here because it can be modified when the parent is collapsed
 		for ( QTreeWidgetItem * const item : *itemsPtr )
@@ -633,7 +768,6 @@ namespace VTX::View::UI::Widget
 	{
 		_enableSignals( false );
 
-		const Model::ID &		   residueId = _getModelIDFromItem( *p_residueItem );
 		QList<QTreeWidgetItem *> * itemsPtr;
 
 		p_residueItem->setData( 0, EXPAND_STATE_ROLE, true );
@@ -643,11 +777,11 @@ namespace VTX::View::UI::Widget
 			itemsPtr = new QList<QTreeWidgetItem *>();
 			_fillListWithItemChildren( *p_residueItem, *itemsPtr );
 		}
-		else if ( _mapLoadedItems.find( residueId ) != _mapLoadedItems.end() )
+		else if ( _mapLoadedItems.find( p_residueItem ) != _mapLoadedItems.end() )
 		{
-			itemsPtr = _mapLoadedItems[ residueId ];
+			itemsPtr = _mapLoadedItems[ p_residueItem ];
 			p_residueItem->addChildren( *itemsPtr );
-			_mapLoadedItems.erase( residueId );
+			_mapLoadedItems.erase( p_residueItem );
 		}
 		else
 		{
@@ -655,6 +789,7 @@ namespace VTX::View::UI::Widget
 			QList<QTreeWidgetItem *> &	   items	 = *itemsPtr;
 			std::vector<QTreeWidgetItem *> nullItems = std::vector<QTreeWidgetItem *>();
 
+			const Model::ID &	   residueId = _getModelIDFromItem( *p_residueItem );
 			const Model::Residue & residue	 = MVC::MvcManager::get().getModel<Model::Residue>( residueId );
 			const uint			   atomCount = residue.getAtomCount();
 			nullItems.reserve( atomCount );
@@ -684,8 +819,6 @@ namespace VTX::View::UI::Widget
 				nullItem->setHidden( true );
 		}
 
-		QTreeWidgetItem * const lastItemExpanded = *itemsPtr->rbegin();
-
 		for ( QTreeWidgetItem * const item : *itemsPtr )
 		{
 			if ( item->isHidden() )
@@ -707,9 +840,8 @@ namespace VTX::View::UI::Widget
 
 		p_item.setData( 0, EXPAND_STATE_ROLE, false );
 
-		const Model::ID &				 id	   = _getModelIDFromItem( p_item );
 		QList<QTreeWidgetItem *> * const items = new QList( p_item.takeChildren() );
-		_mapLoadedItems.emplace( id, items );
+		_mapLoadedItems.emplace( &p_item, items );
 
 		_enableSignals( true );
 	}
@@ -736,13 +868,27 @@ namespace VTX::View::UI::Widget
 
 		p_item.setChildIndicatorPolicy( childIndicatorPolicy );
 	}
-	void MoleculeSceneView::_applyChainDataOnItem( const Model::Chain & p_chain, QTreeWidgetItem & p_item ) const
+	void MoleculeSceneView::_applyCategoryDataOnItem( const Model::Category & p_category,
+													  QTreeWidgetItem &		  p_item ) const
+	{
+		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue( p_category.getId() ) );
+		p_item.setData( 0, CATEGORY_ROLE, QVariant::fromValue( int( p_category.getCategoryEnum() ) ) );
+		p_item.setText( 0, QString::fromStdString( p_category.getName() ) );
+		p_item.setIcon( 0, *VTX::Style::IconConst::get().getResidueCategorySymbol( p_category.getCategoryEnum() ) );
+
+		// Always show indicator, if the category has no child, it is remove from the molecule
+		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::ShowIndicator );
+	}
+	void MoleculeSceneView::_applyChainDataOnItem( const Model::Chain & p_chain,
+												   QTreeWidgetItem &	p_item,
+												   const CATEGORY_ENUM	p_category ) const
 	{
 		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue( p_chain.getId() ) );
+		p_item.setData( 0, CATEGORY_ROLE, QVariant::fromValue( int( p_category ) ) );
 		p_item.setText( 0, QString::fromStdString( p_chain.getDefaultName() ) );
 		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_chain.getTypeId() ) );
 
-		// Always show indicator, if cbain has no child, it is remove from the molecule
+		// Always show indicator, if chain has no child, it is remove from the molecule
 		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::ShowIndicator );
 	}
 	void MoleculeSceneView::_applyResidueDataOnItem( const Model::Residue & p_residue, QTreeWidgetItem & p_item ) const
@@ -850,6 +996,9 @@ namespace VTX::View::UI::Widget
 
 	void MoleculeSceneView::_fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection )
 	{
+		// TMP bloc selection feedback while category is not finished
+		return;
+
 		const Model::Selection::MapMoleculeIds &			   items		  = p_selection.getMoleculesMap();
 		const Model::Selection::MapMoleculeIds::const_iterator itMoleculeItem = items.find( _model->getId() );
 
@@ -1022,6 +1171,8 @@ namespace VTX::View::UI::Widget
 
 		if ( typeID == VTX::ID::Model::MODEL_MOLECULE )
 			res = _getMoleculeTreeWidgetItem();
+		else if ( typeID == VTX::ID::Model::MODEL_CATEGORY )
+			res = _getTreeWidgetItem( MVC::MvcManager::get().getModel<Model::Category>( p_id ) );
 		else if ( typeID == VTX::ID::Model::MODEL_CHAIN )
 			res = _getTreeWidgetItem( MVC::MvcManager::get().getModel<Model::Chain>( p_id ) );
 		else if ( typeID == VTX::ID::Model::MODEL_RESIDUE )
@@ -1034,6 +1185,10 @@ namespace VTX::View::UI::Widget
 		return res;
 	}
 
+	QTreeWidgetItem * const MoleculeSceneView::_getTreeWidgetItem( const Model::Category & p_category ) const
+	{
+		return topLevelItem( 0 )->child( int( p_category.getCategoryEnum() ) );
+	}
 	QTreeWidgetItem * const MoleculeSceneView::_getTreeWidgetItem( const Model::Chain & p_chain ) const
 	{
 		return topLevelItem( 0 )->child( p_chain.getIndex() );
@@ -1074,6 +1229,12 @@ namespace VTX::View::UI::Widget
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 		return p_item == _getMoleculeTreeWidgetItem() && selection.isMoleculeFullySelected( *_model );
+	}
+
+	CATEGORY_ENUM MoleculeSceneView::_getCategoryFromItem( const QTreeWidgetItem & p_item ) const
+	{
+		const QVariant & dataID = p_item.data( 0, CATEGORY_ROLE );
+		return CATEGORY_ENUM( dataID.value<int>() );
 	}
 
 } // namespace VTX::View::UI::Widget

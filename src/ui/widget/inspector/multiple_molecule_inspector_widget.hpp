@@ -56,6 +56,7 @@ namespace VTX::UI::Widget::Inspector
 		CustomWidget::QLabelMultiField * _nbChainsLabel	  = nullptr;
 		CustomWidget::QLabelMultiField * _nbResiduesLabel = nullptr;
 		CustomWidget::QLabelMultiField * _nbAtomsLabel	  = nullptr;
+		CustomWidget::QLabelMultiField * _categoriesLabel = nullptr;
 
 		void _onTransformChange( const Math::Transform &,
 								 const Generic::BaseTransformable::TransformComposantMask & ) const;

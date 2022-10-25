@@ -31,6 +31,9 @@ namespace VTX::UI::Widget::Scene
 		inline static const Qt::ItemDataRole MODEL_ID_ROLE	   = Qt::ItemDataRole( Qt::UserRole );
 		inline static const Qt::ItemDataRole EXPAND_STATE_ROLE = Qt::ItemDataRole( Qt::UserRole + 1 );
 
+	  protected:
+		inline static const Qt::ItemDataRole CHILD_FIRST_ROLE = Qt::ItemDataRole( Qt::UserRole + 2 );
+
 	  public:
 		void localize() override;
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
@@ -80,7 +83,7 @@ namespace VTX::UI::Widget::Scene
 
 		void _refreshCurrentItemInSelection( const Model::BaseModel * const p_obj );
 
-		Model::ID				  _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;
+		Model::ID _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;
 		virtual QTreeWidgetItem * _findItemFromModelID( const Model::ID & p_id ) const;
 		QTreeWidgetItem * _findItemFromModelIDRecursive( QTreeWidgetItem & p_parent, const Model::ID & p_id ) const;
 		bool			  _getItemExpandState( const QTreeWidgetItem & p_item ) const;

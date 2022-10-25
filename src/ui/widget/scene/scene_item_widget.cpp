@@ -1,5 +1,6 @@
 #include "scene_item_widget.hpp"
 #include "generic/base_visible.hpp"
+#include "model/category.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
@@ -223,6 +224,10 @@ namespace VTX::UI::Widget::Scene
 
 	void SceneItemWidget::_refreshItemVisibility( QTreeWidgetItem * const p_itemWidget, const bool p_visible )
 	{
+		// TMP add null check while category is not finished
+		if ( p_itemWidget == nullptr )
+			return;
+
 		_enableSignals( false );
 		p_itemWidget->setCheckState( 0, Util::UI::getCheckState( p_visible ) );
 		_enableSignals( true );
@@ -243,6 +248,10 @@ namespace VTX::UI::Widget::Scene
 		if ( modelType == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			visibility = MVC::MvcManager::get().getModel<Model::Molecule>( itemID ).isVisible();
+		}
+		else if ( modelType == VTX::ID::Model::MODEL_CATEGORY )
+		{
+			visibility = MVC::MvcManager::get().getModel<Model::Category>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_CHAIN )
 		{

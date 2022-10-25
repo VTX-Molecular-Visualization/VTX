@@ -38,6 +38,7 @@ namespace VTX
 		namespace Model
 		{
 			const VTX_ID MODEL_MOLECULE					= "MODEL_MOLECULE";
+			const VTX_ID MODEL_CATEGORY					= "MODEL_CATEGORY";
 			const VTX_ID MODEL_CHAIN					= "MODEL_CHAIN";
 			const VTX_ID MODEL_RESIDUE					= "MODEL_RESIDUE";
 			const VTX_ID MODEL_ATOM						= "MODEL_ATOM";

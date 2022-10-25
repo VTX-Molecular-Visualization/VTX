@@ -2,6 +2,7 @@
 #define __VTX_STYLE__
 
 #include "id.hpp"
+#include "model/category_enum.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "selection/selection_enum.hpp"
 #include "tool/logger.hpp"
@@ -80,6 +81,8 @@ namespace VTX
 			const QPixmap REPRESENTATION_TRACE_ICON;
 			const QPixmap REPRESENTATION_SAS_ICON;
 			const QPixmap REPRESENTATION_SES_ICON;
+
+			const QPixmap RESIDUE_CATEGORY_ICON;
 
 			const QBitmap DIHEDRAL_ANGLE_RENDER_ICON_MASK;
 
@@ -174,6 +177,11 @@ namespace VTX
 				return res;
 			}
 
+			const QPixmap * const getResidueCategorySymbol( const CATEGORY_ENUM & p_category ) const
+			{
+				return &RESIDUE_CATEGORY_ICON;
+			}
+
 		  private:
 			IconConst() :
 				UNFOLDED_PIXMAP( QPixmap( ":/sprite/treeview_unfolded_molecule_icon.png" ) ),
@@ -216,6 +224,8 @@ namespace VTX
 				REPRESENTATION_TRACE_ICON( QPixmap( ":/sprite/representation_stick_icon.png" ) ),
 				REPRESENTATION_SAS_ICON( QPixmap( ":/sprite/representation_sas_icon.png" ) ),
 				REPRESENTATION_SES_ICON( QPixmap( ":/sprite/representation_ses_icon.png" ) ),
+
+				RESIDUE_CATEGORY_ICON( QPixmap( ":/sprite/residue_category_icon.png" ) ),
 
 				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ),
 

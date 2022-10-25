@@ -3,6 +3,7 @@
 
 #include "base_reader.hpp"
 #include "model/bond.hpp"
+#include "model/category_enum.hpp"
 #include <map>
 #include <sstream>
 #include <string>
@@ -27,6 +28,7 @@ namespace VTX::IO::Reader
 			fullname( p_fullname ), bondData( p_bondData ) {};
 
 		std::string			  fullname;
+		CATEGORY_ENUM		  category;
 		std::vector<BondData> bondData;
 	};
 
