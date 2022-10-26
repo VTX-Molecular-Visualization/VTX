@@ -45,13 +45,19 @@ namespace VTX
 				int index;
 			};
 
+			struct AtomGridDataSorted
+			{
+				int first;
+				int count;
+			};
+
 			struct SESGridData
 			{
 				float sdf;
 				int	  nearestAtom;
 			};
 
-			Mode _mode = Mode::CPU;
+			Mode _mode = Mode::GPU;
 
 			// CPU.
 			Model::Molecule * const			   _molecule;

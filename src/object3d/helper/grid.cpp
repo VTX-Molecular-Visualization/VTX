@@ -38,18 +38,23 @@ namespace VTX::Object3D::Helper
 		return ( p_gridPosition.x * size.y * size.z ) + ( p_gridPosition.y * size.z ) + p_gridPosition.z;
 	}
 
+	uint Grid::gridHash( const uint p_x, const uint p_y, const uint p_z ) const
+	{
+		return ( p_x * size.y * size.z ) + ( p_y * size.z ) + p_z;
+	}
+
 	void Grid::refresh()
 	{
 		std::vector<Voxel> voxels;
-		voxels.reserve( size.x * size.y * size.z );
-		for ( std::size_t x = 0; x < size.x; x++ )
+		voxels.resize( size.x * size.y * size.z );
+		for ( int x = 0; x < size.x; x++ )
 		{
-			for ( std::size_t y = 0; y < size.y; y++ )
+			for ( int y = 0; y < size.y; y++ )
 			{
-				for ( std::size_t z = 0; z < size.z; z++ )
+				for ( int z = 0; z < size.z; z++ )
 				{
-					const VTX::Vec3f min = ( Vec3f( x, y, z ) * cellSize ) + worldOrigin;
-					voxels.emplace_back( Voxel { min, min + cellSize } );
+					const VTX::Vec3f min		  = ( Vec3f( x, y, z ) * cellSize ) + worldOrigin;
+					voxels[ gridHash( x, y, z ) ] = Voxel { min, min + cellSize };
 				}
 			}
 		}
