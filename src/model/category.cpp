@@ -1,35 +1,13 @@
 #include "category.hpp"
+#include "event/event.hpp"
+#include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
-#include "representation/representation_manager.hpp"
+#include <algorithm>
 
 namespace VTX::Model
 {
-	void Category::Iterator::_next()
-	{
-		_currentIndex++;
-		_currentResidue = _getResidueAtIndex();
-	}
-	Model::Residue * Category::Iterator::_getResidueAtIndex()
-	{
-		_currentIndex++;
-
-		const std::vector<Struct::Range> & ranges = _linkedCategory.getRanges();
-
-		uint seekIndex	  = _currentIndex;
-		uint residueIndex = 0;
-
-		for ( const Struct::Range & range : ranges )
-		{
-			if ( range.getCount() > seekIndex )
-				seekIndex -= range.getCount();
-			else
-				residueIndex = range.getFirst() + seekIndex;
-		}
-
-		return _linkedCategory.getMolecule()->getResidue( residueIndex );
-	}
 	void Category::setMoleculePtr( Molecule * const p_molecule )
 	{
 		_moleculePtr = p_molecule;
@@ -37,51 +15,57 @@ namespace VTX::Model
 		setParent( p_molecule );
 		setRepresentableMolecule( p_molecule );
 	}
-	void Category::addResidueRange( const uint p_from, const uint p_count )
+
+	void Category::addChain( const uint p_chainIndex ) { _linkedChains.emplace_back( p_chainIndex ); };
+	const std::vector<uint> & Category::getChains() const { return _linkedChains; };
+
+	bool Category::isEmpty() const
 	{
-		_ranges.emplace_back( Struct::Range( p_from, p_count ) );
+		for ( const uint chainIndex : _linkedChains )
+		{
+			const Model::Chain * const chain = _moleculePtr->getChain( chainIndex );
+
+			if ( chain == nullptr )
+				continue;
+
+			if ( chain->getRealResidueCount() > 0 )
+				return false;
+		}
+
+		return true;
 	};
-	const std::vector<Struct::Range> & Category::getRanges() const { return _ranges; };
-	bool							   Category::isEmpty() const { return _ranges.size() == 0; };
-	std::vector<Model::Chain *>		   Category::getChains() const
+	bool Category::hasChain( const uint p_chainIndex ) const
 	{
-		std::vector<Model::Chain *> res = std::vector<Model::Chain *>();
-		res.reserve( _moleculePtr->getChainCount() );
-
-		uint   iChain = 0;
-		size_t iRange = 0;
-
-		while ( iChain < _moleculePtr->getChainCount() && iRange < _ranges.size() )
-		{
-			Model::Chain * const  currentChain = _moleculePtr->getChain( iChain );
-			const Struct::Range & currentRange = _ranges[ iRange ];
-
-			if ( currentChain->getIndexLastResidue() < currentRange.getFirst() )
-			{
-				iChain++;
-			}
-			else if ( currentChain->getIndexFirstResidue() > currentRange.getLast() )
-			{
-				iRange++;
-			}
-			else
-			{
-				res.emplace_back( currentChain );
-				iChain++;
-			}
-		}
-
-		return res;
+		return std::find( _linkedChains.begin(), _linkedChains.end(), p_chainIndex ) != _linkedChains.end();
 	}
-	bool Category::contains( const uint p_residueIndex ) const
+	bool Category::hasResidue( const uint p_residueIndex ) const
 	{
-		for ( const Struct::Range & range : _ranges )
+		const Model::Residue * const residue = _moleculePtr->getResidue( p_residueIndex );
+
+		if ( residue == nullptr )
+			return false;
+
+		return hasChain( residue->getChainPtr()->getIndex() );
+	}
+	bool Category::hasAtom( const uint p_atomIndex ) const
+	{
+		const Model::Atom * const atom = _moleculePtr->getAtom( p_atomIndex );
+
+		if ( atom == nullptr )
+			return false;
+
+		return hasChain( atom->getChainPtr()->getIndex() );
+	}
+
+	int Category::getChainInnerIndex( const uint p_chainIndex ) const
+	{
+		for ( uint i = 0; i < _linkedChains.size(); i++ )
 		{
-			if ( range.getFirst() <= p_residueIndex && p_residueIndex <= range.getLast() )
-				return true;
+			if ( _linkedChains[ i ] == p_chainIndex )
+				return i;
 		}
 
-		return false;
+		return -1;
 	}
 
 	void Category::setVisible( const bool p_visible )
@@ -110,8 +94,42 @@ namespace VTX::Model
 		}
 	}
 
+	const Object3D::Helper::AABB Category::getAABB() const
+	{
+		Object3D::Helper::AABB aabb = Object3D::Helper::AABB();
+
+		for ( const uint chainIndex : _linkedChains )
+		{
+			const Model::Chain * const chain = _moleculePtr->getChain( chainIndex );
+
+			if ( chain == nullptr )
+				continue;
+
+			aabb.extend( chain->getAABB() );
+		}
+
+		return aabb;
+	}
+	const Object3D::Helper::AABB Category::getWorldAABB() const
+	{
+		const Object3D::Helper::AABB aabb	   = getAABB();
+		const Math::Transform &		 transform = getMoleculePtr()->getTransform();
+
+		Object3D::Helper::AABB worldAabb   = Object3D::Helper::AABB();
+		std::vector<Vec3f>	   aabbSummits = aabb.getSummits();
+
+		for ( const Vec3f & summit : aabbSummits )
+		{
+			const Vec4f worldSummit = transform.get() * Vec4f( summit, 1 );
+			worldAabb.extend( worldSummit );
+		}
+
+		return worldAabb;
+	}
+
 	void Category::_onRepresentationChange()
 	{
 		_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 	}
+
 } // namespace VTX::Model

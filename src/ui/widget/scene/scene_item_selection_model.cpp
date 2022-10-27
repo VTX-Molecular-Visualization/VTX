@@ -313,6 +313,14 @@ namespace VTX::UI::Widget::Scene
 			else
 				VTX_ACTION( new Action::Selection::SelectMolecule( p_selectionModel, model, p_appendToSelection ) );
 		}
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+		{
+			Model::Category & model = MVC::MvcManager::get().getModel<Model::Category>( p_modelId );
+			if ( p_appendToSelection && p_selectionModel.isCategoryFullySelected( model ) )
+				VTX_ACTION( new Action::Selection::UnselectCategory( p_selectionModel, model ) );
+			else
+				VTX_ACTION( new Action::Selection::SelectCategory( p_selectionModel, model, p_appendToSelection ) );
+		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( p_modelId );
@@ -348,6 +356,11 @@ namespace VTX::UI::Widget::Scene
 		{
 			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( p_modelId );
 			VTX_ACTION( new Action::Selection::UnselectMolecule( p_selectionModel, model ) );
+		}
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+		{
+			Model::Category & model = MVC::MvcManager::get().getModel<Model::Category>( p_modelId );
+			VTX_ACTION( new Action::Selection::UnselectCategory( p_selectionModel, model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{

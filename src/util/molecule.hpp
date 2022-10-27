@@ -13,6 +13,7 @@ namespace VTX
 {
 	namespace Model
 	{
+		class Category;
 		class Residue;
 		class Chain;
 		class Atom;
@@ -32,6 +33,10 @@ namespace VTX
 		bool recomputeBondOrdersFromFile( Model::Molecule & p_molecule );
 
 		void show( Model::Molecule & p_molecule, const bool p_show, const bool p_refreshMoleculeVisibility = true );
+		void show( Model::Category & p_category,
+				   const bool	  p_show,
+				   const bool	  p_showHierarchy			  = true,
+				   const bool	  p_refreshMoleculeVisibility = true );
 		void show( Model::Chain & p_chain,
 				   const bool	  p_show,
 				   const bool	  p_showHierarchy			  = true,
@@ -46,6 +51,10 @@ namespace VTX
 				   const bool	 p_refreshMoleculeVisibility = true );
 
 		void solo( Model::Molecule & p_molecule, const bool p_refreshMoleculeVisibility = true );
+		void solo( Model::Category & p_category, const bool p_refreshMoleculeVisibility = true );
+		void soloCategories( Model::Molecule &		   p_moleculeParent,
+						 const std::vector<CATEGORY_ENUM> & p_categories,
+						 const bool				   p_refreshMoleculeVisibility = true );
 		void solo( Model::Chain & p_chain, const bool p_refreshMoleculeVisibility = true );
 		void soloChains( Model::Molecule &		   p_moleculeParent,
 						 const std::vector<uint> & p_chainIndexes,

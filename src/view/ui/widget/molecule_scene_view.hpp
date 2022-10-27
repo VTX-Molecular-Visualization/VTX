@@ -103,17 +103,18 @@ namespace VTX::View::UI::Widget
 											 const Style::SYMBOL_DISPLAY_MODE & p_displayMode );
 
 		void _updateMoleculeStructure();
+		void _updateCategoryStructure( const Model::Category & p_category, QTreeWidgetItem & p_item );
 		void _updateChainStructure( const Model::Chain & p_chain, QTreeWidgetItem & p_item );
 		void _updateResidueStructure( const Model::Residue & p_residue, QTreeWidgetItem & p_item );
 
 		QTreeWidgetItem * const _getMoleculeTreeWidgetItem() const;
-		QTreeWidgetItem * const _getTreeWidgetItem( const Model::ID & p_id ) const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Category & p_category ) const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Chain & p_chain ) const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Residue & p_residue ) const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Atom & p_atom ) const;
 
 		bool _isMoleculeExpanded() const;
+		bool _isCategoryExpanded( const Model::Category & p_category ) const;
 		bool _isChainExpanded( const Model::Chain & p_chain ) const;
 		bool _isResidueExpanded( const Model::Residue & p_residue ) const;
 

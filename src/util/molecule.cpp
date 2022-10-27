@@ -1,6 +1,7 @@
 #include "molecule.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
+#include "model/category.hpp"
 #include "model/chain.hpp"
 #include "model/residue.hpp"
 #include "util/bond_guessing/bond_order_guessing.hpp"
@@ -78,6 +79,36 @@ namespace VTX::Util::Molecule
 		{
 			p_molecule.refreshVisibilities();
 			p_molecule.computeRepresentationTargets();
+		}
+	}
+	void show( Model::Category & p_category,
+			   const bool		 p_show,
+			   const bool		 p_showHierarchy,
+			   const bool		 p_refreshMoleculeVisibility )
+	{
+		p_category.setVisible( p_show );
+
+		if ( p_show )
+		{
+			p_category.getMoleculePtr()->setVisible( p_show );
+		}
+
+		Model::Molecule * const molecule = p_category.getMoleculePtr();
+
+		for ( const uint chainIndex : p_category.getChains() )
+		{
+			Model::Chain * const chain = molecule->getChain( chainIndex );
+
+			if ( chain == nullptr )
+				continue;
+
+			show( *chain, p_show, false, false );
+		}
+
+		if ( p_refreshMoleculeVisibility )
+		{
+			molecule->refreshVisibilities();
+			molecule->computeRepresentationTargets();
 		}
 	}
 	void show( Model::Chain & p_chain,
@@ -169,8 +200,62 @@ namespace VTX::Util::Molecule
 	void solo( Model::Molecule & p_molecule, const bool p_refreshMoleculeVisibility )
 	{
 		show( p_molecule, true, true );
+	}
 
-	} // namespace VTX::Util::Molecule
+	void solo( Model::Category & p_category, const bool p_refreshMoleculeVisibility )
+	{
+		Model::Molecule * const molecule = p_category.getMoleculePtr();
+
+		for ( Model::Category * const category : molecule->getFilledCategories() )
+		{
+			if ( category != &p_category )
+			{
+				show( *category, false, false, false );
+			}
+			else
+			{
+				show( *category, true, true, false );
+			}
+		}
+
+		if ( p_refreshMoleculeVisibility )
+		{
+			molecule->refreshVisibilities();
+			molecule->computeRepresentationTargets();
+		}
+	}
+	void soloCategories( Model::Molecule &					p_moleculeParent,
+						 const std::vector<CATEGORY_ENUM> & p_categories,
+						 const bool							p_refreshMoleculeVisibility )
+	{
+		p_moleculeParent.setVisible( true );
+
+		std::vector<CATEGORY_ENUM>::const_iterator itCategoryToSoloize	 = p_categories.cbegin();
+		CATEGORY_ENUM							   categoryEnumToSoloize = *itCategoryToSoloize;
+
+		for ( Model::Category * const category : p_moleculeParent.getFilledCategories() )
+		{
+			if ( category->getCategoryEnum() == categoryEnumToSoloize )
+			{
+				show( *category, true, false, false );
+				itCategoryToSoloize++;
+
+				categoryEnumToSoloize
+					= itCategoryToSoloize == p_categories.cend() ? CATEGORY_ENUM::COUNT : *itCategoryToSoloize;
+			}
+			else
+			{
+				show( *category, false, false, false );
+			}
+		}
+
+		if ( p_refreshMoleculeVisibility )
+		{
+			p_moleculeParent.refreshVisibilities();
+			p_moleculeParent.computeRepresentationTargets();
+		}
+	}
+
 	void solo( Model::Chain & p_chain, const bool p_refreshMoleculeVisibility )
 	{
 		Model::Molecule * const molecule = p_chain.getMoleculePtr();

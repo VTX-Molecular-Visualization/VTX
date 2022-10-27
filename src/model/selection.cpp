@@ -1,11 +1,12 @@
 #include "selection.hpp"
-#include "atom.hpp"
-#include "chain.hpp"
 #include "define.hpp"
 #include "event/event_manager.hpp"
-#include "molecule.hpp"
+#include "model/atom.hpp"
+#include "model/category.hpp"
+#include "model/chain.hpp"
+#include "model/molecule.hpp"
+#include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
-#include "residue.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include <unordered_set>
@@ -82,7 +83,34 @@ namespace VTX::Model
 
 		_notifyDataChanged();
 	}
+	void Selection::selectCategory( Category & p_category, const bool p_appendToSelection )
+	{
+		if ( !p_appendToSelection )
+			_clearWithoutNotify();
 
+		_selectCategory( p_category );
+		_setCurrentObject( &p_category );
+		_refreshMoleculeSelection( p_category.getMoleculePtr() );
+		_notifyDataChanged();
+	}
+	void Selection::selectCategories( const std::vector<Category *> & p_categories,
+									  const bool					  p_appendToSelection,
+									  const Category * const		  p_currentObj )
+	{
+		if ( !p_appendToSelection )
+			_clearWithoutNotify();
+		else if ( p_categories.size() <= 0 )
+			return;
+
+		for ( Category * const categoryPtr : p_categories )
+			_selectCategory( *categoryPtr );
+
+		const Model::Category * const currentObj = p_currentObj != nullptr ? p_currentObj : *p_categories.crbegin();
+		_setCurrentObject( currentObj );
+
+		_refreshMoleculeSelection( p_categories[ 0 ]->getMoleculePtr() );
+		_notifyDataChanged();
+	}
 	void Selection::selectChain( Chain & p_chain, const bool p_appendToSelection )
 	{
 		if ( !p_appendToSelection )
@@ -230,6 +258,37 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
+	void Selection::unselectCategory( Category & p_category )
+	{
+		_unselectCategory( p_category );
+		_refreshMoleculeSelection( p_category.getMoleculePtr() );
+		_notifyDataChanged();
+	}
+	void Selection::unselectCategories( const std::vector<Category *> & p_categories )
+	{
+		if ( p_categories.size() == 0 )
+			return;
+
+		for ( const Model::Category * const it : p_categories )
+			_unselectCategory( *it );
+
+		_refreshMoleculeSelection( p_categories[ 0 ]->getMoleculePtr() );
+		_notifyDataChanged();
+	}
+	void Selection::unselectCategoriesWithCheck( const std::vector<Category *> & p_categories )
+	{
+		if ( p_categories.size() == 0 )
+			return;
+
+		for ( const Model::Category * const it : p_categories )
+		{
+			if ( isCategorySelected( *it ) )
+				_unselectCategory( *it );
+		}
+
+		_refreshMoleculeSelection( p_categories[ 0 ]->getMoleculePtr() );
+		_notifyDataChanged();
+	}
 	void Selection::unselectChain( Chain & p_chain )
 	{
 		_unselectChain( p_chain );
@@ -445,6 +504,21 @@ namespace VTX::Model
 		_mapSelectionAABB[ p_molecule.getId() ].extend( p_molecule.getWorldAABB() );
 	}
 
+	void Selection::_selectCategory( const Category & p_category )
+	{
+		Model::Molecule * const molecule = p_category.getMoleculePtr();
+
+		for ( const uint chainIndex : p_category.getChains() )
+		{
+			const Model::Chain * const chain = molecule->getChain( chainIndex );
+
+			if ( chain == nullptr )
+				continue;
+
+			_selectChain( *chain );
+		}
+	}
+
 	void Selection::_selectChain( const Chain & p_chain )
 	{
 		const Molecule & parent = *p_chain.getMoleculePtr();
@@ -550,6 +624,23 @@ namespace VTX::Model
 	void Selection::_unselectMolecule( const Molecule & p_molecule )
 	{
 		_removeMolecule( p_molecule );
+		_recomputeAABB();
+	}
+
+	void Selection::_unselectCategory( const Category & p_category )
+	{
+		Model::Molecule * const molecule = p_category.getMoleculePtr();
+
+		for ( const uint chainIndex : p_category.getChains() )
+		{
+			const Model::Chain * const chain = molecule->getChain( chainIndex );
+
+			if ( chain == nullptr )
+				continue;
+
+			_removeChain( *chain );
+		}
+
 		_recomputeAABB();
 	}
 
@@ -805,6 +896,7 @@ namespace VTX::Model
 	}
 
 	void Selection::selectModels( const std::vector<Model::Molecule *> & p_molecules,
+								  const std::vector<Model::Category *> & p_categories,
 								  const std::vector<Model::Chain *> &	 p_chains,
 								  const std::vector<Model::Residue *> &	 p_residues,
 								  const std::vector<Model::Atom *> &	 p_atoms,
@@ -823,6 +915,11 @@ namespace VTX::Model
 			_selectMolecule( *it );
 			moleculeSet.emplace( it );
 		}
+		for ( const Model::Category * const it : p_categories )
+		{
+			_selectCategory( *it );
+			moleculeSet.emplace( it->getMoleculePtr() );
+		}
 		for ( const Model::Chain * const it : p_chains )
 		{
 			_selectChain( *it );
@@ -839,10 +936,10 @@ namespace VTX::Model
 			moleculeSet.emplace( it->getMoleculePtr() );
 		}
 
-		for ( Model::Molecule * const it : moleculeSet )
+		for ( Model::Molecule * const moleculePtr : moleculeSet )
 		{
-			_emplaceMolecule( *it );
-			it->refreshSelection( &_moleculesMap[ it->getId() ] );
+			_emplaceMolecule( *moleculePtr );
+			moleculePtr->refreshSelection( &_moleculesMap[ moleculePtr->getId() ] );
 		}
 
 		if ( p_currentObj == nullptr )
@@ -866,6 +963,7 @@ namespace VTX::Model
 		VTX_DEBUG( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
 	}
 	void Selection::unselectModels( const std::vector<Model::Molecule *> & p_molecules,
+									const std::vector<Model::Category *> & p_categories,
 									const std::vector<Model::Chain *> &	   p_chains,
 									const std::vector<Model::Residue *> &  p_residus,
 									const std::vector<Model::Atom *> &	   p_atoms )
@@ -876,6 +974,11 @@ namespace VTX::Model
 		{
 			_unselectMolecule( *it );
 			moleculeSet.emplace( it );
+		}
+		for ( const Model::Category * const it : p_categories )
+		{
+			_unselectCategory( *it );
+			moleculeSet.emplace( it->getMoleculePtr() );
 		}
 		for ( const Model::Chain * const it : p_chains )
 		{
@@ -893,9 +996,9 @@ namespace VTX::Model
 			moleculeSet.emplace( it->getMoleculePtr() );
 		}
 
-		for ( Model::Molecule * const it : moleculeSet )
+		for ( Model::Molecule * const moleculePtr : moleculeSet )
 		{
-			_refreshMoleculeSelection( it );
+			_refreshMoleculeSelection( moleculePtr );
 		}
 
 		_notifyDataChanged();
@@ -929,6 +1032,50 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 	void Selection::_unselectModel( const Model::BaseModel & p_model ) { _items.erase( p_model.getId() ); }
+
+	bool Selection::isCategorySelected( const Model::Category & p_category ) const
+	{
+		bool res = false;
+
+		for ( const uint chainIndex : p_category.getChains() )
+		{
+			const Model::Chain * const chain = p_category.getMoleculePtr()->getChain( chainIndex );
+
+			if ( chain == nullptr )
+				continue;
+
+			if ( isChainSelected( *chain ) )
+			{
+				res = true;
+				break;
+			}
+		}
+
+		return res;
+	}
+	bool Selection::isCategoryFullySelected( const Model::Category & p_category ) const
+	{
+		if ( p_category.isEmpty() )
+			return false;
+
+		bool res = true;
+
+		for ( const uint chainIndex : p_category.getChains() )
+		{
+			const Model::Chain * const chain = p_category.getMoleculePtr()->getChain( chainIndex );
+
+			if ( chain == nullptr )
+				continue;
+
+			if ( !isChainFullySelected( *chain ) )
+			{
+				res = false;
+				break;
+			}
+		}
+
+		return res;
+	}
 
 	bool Selection::isModelSelected( const Model::ID & p_id ) const
 	{

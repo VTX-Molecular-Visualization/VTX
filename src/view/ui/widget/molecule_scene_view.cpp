@@ -1,6 +1,7 @@
 #include "molecule_scene_view.hpp"
 #include "action/action_manager.hpp"
 #include "action/atom.hpp"
+#include "action/category.hpp"
 #include "action/chain.hpp"
 #include "action/molecule.hpp"
 #include "action/residue.hpp"
@@ -35,16 +36,31 @@ namespace VTX::View::UI::Widget
 		{
 			_refreshItemVisibility( _getMoleculeTreeWidgetItem(), _model->isVisible() );
 		}
+		else if ( p_event->name == Event::Model::CATEGORY_VISIBILITY )
+		{
+			const Event::VTXEventValue<CATEGORY_ENUM> * const castedEventData
+				= dynamic_cast<const Event::VTXEventValue<CATEGORY_ENUM> *>( p_event );
+			const Model::Category & category = _model->getCategory( castedEventData->value );
+
+			if ( _isMoleculeExpanded() )
+			{
+				_refreshItemVisibility( _getTreeWidgetItem( category ), category.isVisible() );
+			}
+		}
 		else if ( p_event->name == Event::Model::CHAIN_VISIBILITY )
 		{
 			const Event::VTXEventValue<uint> * const castedEventData
 				= dynamic_cast<const Event::VTXEventValue<uint> *>( p_event );
-			const uint			 index = castedEventData->value;
-			const Model::Chain & chain = *_model->getChain( index );
+			const uint				index	 = castedEventData->value;
+			const Model::Chain &	chain	 = *_model->getChain( index );
+			const Model::Category & category = *( _model->getCategoryFromChain( chain ) );
 
 			// Check if items are visible before refresh it. If not, the will be update when they will appear
-			if ( _isMoleculeExpanded() )
+
+			if ( _isCategoryExpanded( category ) )
+			{
 				_refreshItemVisibility( _getTreeWidgetItem( chain ), chain.isVisible() );
+			}
 		}
 		else if ( p_event->name == Event::Model::RESIDUE_VISIBILITY )
 		{
@@ -161,6 +177,11 @@ namespace VTX::View::UI::Widget
 		{
 			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 			VTX_ACTION( new Action::Molecule::Orient( model ) );
+		}
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+		{
+			Model::Category & model = MVC::MvcManager::get().getModel<Model::Category>( modelId );
+			VTX_ACTION( new Action::Category::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
@@ -312,25 +333,48 @@ namespace VTX::View::UI::Widget
 		if ( !item->isExpanded() )
 			return;
 
-		uint currentChainIndex = 0;
-		int	 currentChildIndex = 0;
-
-		while ( currentChildIndex < item->childCount() )
+		for ( int i = 0; i < int( CATEGORY_ENUM::COUNT ); i++ )
 		{
-			QTreeWidgetItem * const currentChainItem = item->child( currentChildIndex );
+			QTreeWidgetItem * const currentCategoryItem = item->child( i );
 
-			if ( currentChainIndex >= _model->getChainCount() )
+			const Model::Category & category = _model->getCategory( CATEGORY_ENUM( i ) );
+
+			if ( category.isEmpty() )
 			{
-				delete ( item->takeChild( item->childCount() - 1 ) );
+				currentCategoryItem->setHidden( true );
+			}
+			else if ( currentCategoryItem->isExpanded() )
+			{
+				_updateCategoryStructure( category, *currentCategoryItem );
+			}
+		}
+	}
+	void MoleculeSceneView::_updateCategoryStructure( const Model::Category & p_category, QTreeWidgetItem & p_item )
+	{
+		const Model::Molecule & molecule	 = *p_category.getMoleculePtr();
+		std::vector<uint>		chainIndexes = p_category.getChains();
+
+		uint currentChainIndexInCategory = 0;
+		int	 currentChildIndex			 = 0;
+
+		while ( currentChildIndex < p_item.childCount() )
+		{
+			QTreeWidgetItem * const currentChainItem = p_item.child( currentChildIndex );
+
+			if ( currentChainIndexInCategory >= chainIndexes.size() )
+			{
+				delete ( p_item.takeChild( p_item.childCount() - 1 ) );
 				continue;
 			}
 
+			const uint chainIndex = chainIndexes[ currentChainIndexInCategory ];
+
 			const Model::ID &		   chainItemID = _getModelIDFromItem( *currentChainItem );
-			const Model::Chain * const chain	   = _model->getChain( currentChainIndex );
+			const Model::Chain * const chain	   = _model->getChain( chainIndex );
 
 			if ( chain == nullptr )
 			{
-				currentChainIndex++;
+				currentChainIndexInCategory++;
 			}
 			else if ( chainItemID != chain->getId() )
 			{
@@ -347,7 +391,7 @@ namespace VTX::View::UI::Widget
 			}
 			else
 			{
-				currentChainIndex++;
+				currentChainIndexInCategory++;
 				currentChildIndex++;
 
 				if ( currentChainItem->isExpanded() )
@@ -512,14 +556,10 @@ namespace VTX::View::UI::Widget
 
 				QTreeWidgetItem * const categoryView = new QTreeWidgetItem();
 
+				_applyCategoryDataOnItem( category, *categoryView );
+
 				if ( category.isEmpty() )
-				{
 					nullItems.emplace_back( categoryView );
-				}
-				else
-				{
-					_applyCategoryDataOnItem( category, *categoryView );
-				}
 
 				items.append( categoryView );
 			}
@@ -580,15 +620,16 @@ namespace VTX::View::UI::Widget
 			const Model::ID &		categoryId = _getModelIDFromItem( *p_categoryItem );
 			const Model::Category & category   = MVC::MvcManager::get().getModel<Model::Category>( categoryId );
 
-			const std::vector<Model::Chain *> & chains = category.getChains();
+			const std::vector<uint> & chains = category.getChains();
 
 			const size_t chainCount = chains.size();
 			nullItems.reserve( chainCount );
 			items.reserve( chainCount );
 
-			for ( const Model::Chain * const chainPtr : chains )
+			for ( uint chainIndex : chains )
 			{
-				QTreeWidgetItem * const chainView = new QTreeWidgetItem();
+				const Model::Chain * const chainPtr	 = _model->getChain( chainIndex );
+				QTreeWidgetItem * const	   chainView = new QTreeWidgetItem();
 
 				if ( chainPtr == nullptr )
 				{
@@ -666,72 +707,21 @@ namespace VTX::View::UI::Widget
 			const uint indexFirstResidue = chain.getIndexFirstResidue();
 			const uint indexLastResidue	 = chain.getIndexFirstResidue() + residueCount - 1;
 
-			const CATEGORY_ENUM category = _getCategoryFromItem( *p_chainItem );
-
-			const std::vector<Struct::Range> & ranges = _model->getRangesFromCategory( category );
-
-			for ( const Struct::Range & range : ranges )
+			for ( uint i = chain.getIndexFirstResidue(); i < chain.getIndexFirstResidue() + residueCount; i++ )
 			{
-				if ( range.getFirst() <= indexFirstResidue && indexFirstResidue <= range.getLast() )
+				const Model::Residue * const residuePtr	 = _model->getResidue( i );
+				QTreeWidgetItem * const		 residueView = new QTreeWidgetItem();
+
+				if ( residuePtr == nullptr )
 				{
-					const uint lastValidResidueIndexInRange
-						= indexLastResidue < range.getLast() ? indexLastResidue : range.getLast();
-
-					for ( uint i = indexFirstResidue; i <= lastValidResidueIndexInRange; i++ )
-					{
-						const Model::Residue * const residuePtr	 = _model->getResidue( i );
-						QTreeWidgetItem * const		 residueView = new QTreeWidgetItem();
-
-						if ( residuePtr == nullptr )
-						{
-							nullItems.emplace_back( residueView );
-						}
-						else
-						{
-							_applyResidueDataOnItem( *residuePtr, *residueView );
-						}
-
-						items.append( residueView );
-					}
+					nullItems.emplace_back( residueView );
 				}
-				else if ( range.getFirst() <= indexLastResidue && indexLastResidue <= range.getLast() )
+				else
 				{
-					for ( uint i = range.getFirst(); i <= indexLastResidue; i++ )
-					{
-						const Model::Residue * const residuePtr	 = _model->getResidue( i );
-						QTreeWidgetItem * const		 residueView = new QTreeWidgetItem();
-
-						if ( residuePtr == nullptr )
-						{
-							nullItems.emplace_back( residueView );
-						}
-						else
-						{
-							_applyResidueDataOnItem( *residuePtr, *residueView );
-						}
-
-						items.append( residueView );
-					}
+					_applyResidueDataOnItem( *residuePtr, *residueView );
 				}
-				else if ( indexFirstResidue <= range.getFirst() && range.getLast() <= indexLastResidue )
-				{
-					for ( uint i = range.getFirst(); i <= range.getLast(); i++ )
-					{
-						const Model::Residue * const residuePtr	 = _model->getResidue( i );
-						QTreeWidgetItem * const		 residueView = new QTreeWidgetItem();
 
-						if ( residuePtr == nullptr )
-						{
-							nullItems.emplace_back( residueView );
-						}
-						else
-						{
-							_applyResidueDataOnItem( *residuePtr, *residueView );
-						}
-
-						items.append( residueView );
-					}
-				}
+				items.append( residueView );
 			}
 
 			p_chainItem->addChildren( items );
@@ -951,6 +941,15 @@ namespace VTX::View::UI::Widget
 			else
 				VTX_ACTION( new Action::Molecule::ChangeVisibility( model, visibilityMode ) );
 		}
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+		{
+			Model::Category & model = MVC::MvcManager::get().getModel<Model::Category>( modelId );
+
+			if ( selection.isCategoryFullySelected( model ) )
+				VTX_ACTION( new Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+			else
+				VTX_ACTION( new Action::Category::ChangeVisibility( model, visibilityMode ) );
+		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
@@ -996,9 +995,6 @@ namespace VTX::View::UI::Widget
 
 	void MoleculeSceneView::_fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection )
 	{
-		// TMP bloc selection feedback while category is not finished
-		return;
-
 		const Model::Selection::MapMoleculeIds &			   items		  = p_selection.getMoleculesMap();
 		const Model::Selection::MapMoleculeIds::const_iterator itMoleculeItem = items.find( _model->getId() );
 
@@ -1009,123 +1005,199 @@ namespace VTX::View::UI::Widget
 
 			if ( moleculeItem->isExpanded() )
 			{
-				const Model::Chain * topChain			  = nullptr;
-				const Model::Chain * previousChain		  = nullptr;
-				QModelIndex			 topChainItemIndex	  = QModelIndex();
-				QModelIndex			 bottomChainItemIndex = QModelIndex();
+				const Model::Category * topCategory				= nullptr;
+				const Model::Category * previousCategory		= nullptr;
+				QModelIndex				topCategoryItemIndex	= QModelIndex();
+				QModelIndex				bottomCategoryItemIndex = QModelIndex();
 
-				for ( const Model::Selection::PairChainIds & pairChain : itMoleculeItem->second )
+				for ( const Model::Category * const category : _model->getCategories() )
 				{
-					const Model::Chain & chain = *_model->getChain( pairChain.first );
-
-					QTreeWidgetItem * const chainItem = moleculeItem->child( chain.getIndex() );
-
-					if ( topChainItemIndex.isValid() )
+					if ( category->isEmpty() )
 					{
-						// if not contiguous, add new range
-						if ( chain.getIndex() != uint( previousChain->getIndex() + 1 ) )
-						{
-							p_itemSelection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
-							topChainItemIndex = indexFromItem( chainItem );
-							topChain		  = &chain;
-						}
-
-						bottomChainItemIndex = indexFromItem( chainItem );
-					}
-					else
-					{
-						topChainItemIndex	 = indexFromItem( chainItem );
-						topChain			 = &chain;
-						bottomChainItemIndex = indexFromItem( chainItem );
-					}
-
-					previousChain = &chain;
-
-					if ( !chainItem->isExpanded() )
 						continue;
+					}
 
-					const Model::Residue * topResidue			  = nullptr;
-					const Model::Residue * previousResidue		  = nullptr;
-					QModelIndex			   topResidueItemIndex	  = QModelIndex();
-					QModelIndex			   bottomResidueItemIndex = QModelIndex();
-					for ( const Model::Selection::PairResidueIds & pairResidue : pairChain.second )
+					QTreeWidgetItem * const categoryItem = moleculeItem->child( int( category->getCategoryEnum() ) );
+
+					if ( p_selection.isCategorySelected( *category ) )
 					{
-						const Model::Residue &	residue = *_model->getResidue( pairResidue.first );
-						QTreeWidgetItem * const residueItem
-							= chainItem->child( residue.getIndex() - chain.getIndexFirstResidue() );
-
-						if ( topResidueItemIndex.isValid() )
+						if ( topCategoryItemIndex.isValid() )
 						{
 							// if not contiguous, add new range
-							if ( residue.getIndex() != uint( previousResidue->getIndex() + 1 ) )
+							if ( int( category->getCategoryEnum() )
+								 != ( int( previousCategory->getCategoryEnum() ) + 1 ) )
 							{
 								p_itemSelection.append(
-									QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
-								topResidueItemIndex = indexFromItem( residueItem );
-								topResidue			= &residue;
+									QItemSelectionRange( topCategoryItemIndex, bottomCategoryItemIndex ) );
+								topCategoryItemIndex = indexFromItem( categoryItem );
+								topCategory			 = previousCategory;
 							}
 
-							bottomResidueItemIndex = indexFromItem( residueItem );
+							bottomCategoryItemIndex = indexFromItem( categoryItem );
 						}
 						else
 						{
-							topResidueItemIndex	   = indexFromItem( residueItem );
-							topResidue			   = &residue;
-							bottomResidueItemIndex = indexFromItem( residueItem );
+							topCategoryItemIndex	= indexFromItem( categoryItem );
+							topCategory				= category;
+							bottomCategoryItemIndex = indexFromItem( categoryItem );
 						}
 
-						previousResidue = &residue;
+						previousCategory = category;
+					}
+					else
+					{
+						if ( topCategoryItemIndex.isValid() )
+						{
+							// if not contiguous, add new range
+							if ( int( category->getCategoryEnum() )
+								 != ( int( previousCategory->getCategoryEnum() ) + 1 ) )
+							{
+								p_itemSelection.append(
+									QItemSelectionRange( topCategoryItemIndex, bottomCategoryItemIndex ) );
+								topCategoryItemIndex = indexFromItem( categoryItem );
+								topCategory			 = previousCategory;
+							}
 
-						if ( !residueItem->isExpanded() )
+							bottomCategoryItemIndex = indexFromItem( categoryItem );
+						}
+
+						// Invalidate
+						topCategoryItemIndex = QModelIndex();
+					}
+
+					if ( !categoryItem->isExpanded() )
+						continue;
+
+					const Model::Chain * topChain			  = nullptr;
+					const Model::Chain * previousChain		  = nullptr;
+					QModelIndex			 topChainItemIndex	  = QModelIndex();
+					QModelIndex			 bottomChainItemIndex = QModelIndex();
+
+					for ( const Model::Selection::PairChainIds & pairChain : itMoleculeItem->second )
+					{
+						const Model::Chain & chain			= *_model->getChain( pairChain.first );
+						const int			 chainItemIndex = category->getChainInnerIndex( chain.getIndex() );
+
+						// TODO Better management of chains not in current category
+						if ( chainItemIndex == -1 )
 							continue;
 
-						const Model::Atom * topAtom				= nullptr;
-						const Model::Atom * previousAtom		= nullptr;
-						QModelIndex			topAtomItemIndex	= QModelIndex();
-						QModelIndex			bottomAtomItemIndex = QModelIndex();
-						for ( const uint & atomId : pairResidue.second )
-						{
-							const Model::Atom &		atom = *_model->getAtom( atomId );
-							QTreeWidgetItem * const atomItem
-								= residueItem->child( atomId - residue.getIndexFirstAtom() );
+						QTreeWidgetItem * const chainItem = categoryItem->child( chainItemIndex );
 
-							if ( topAtomItemIndex.isValid() )
+						if ( topChainItemIndex.isValid() )
+						{
+							// if not contiguous, add new range
+							if ( chain.getIndex() != uint( previousChain->getIndex() + 1 ) )
+							{
+								p_itemSelection.append(
+									QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
+								topChainItemIndex = indexFromItem( chainItem );
+								topChain		  = &chain;
+							}
+
+							bottomChainItemIndex = indexFromItem( chainItem );
+						}
+						else
+						{
+							topChainItemIndex	 = indexFromItem( chainItem );
+							topChain			 = &chain;
+							bottomChainItemIndex = indexFromItem( chainItem );
+						}
+
+						previousChain = &chain;
+
+						if ( !chainItem->isExpanded() )
+							continue;
+
+						const Model::Residue * topResidue			  = nullptr;
+						const Model::Residue * previousResidue		  = nullptr;
+						QModelIndex			   topResidueItemIndex	  = QModelIndex();
+						QModelIndex			   bottomResidueItemIndex = QModelIndex();
+						for ( const Model::Selection::PairResidueIds & pairResidue : pairChain.second )
+						{
+							const Model::Residue &	residue = *_model->getResidue( pairResidue.first );
+							QTreeWidgetItem * const residueItem
+								= chainItem->child( residue.getIndex() - chain.getIndexFirstResidue() );
+
+							if ( topResidueItemIndex.isValid() )
 							{
 								// if not contiguous, add new range
-								if ( atom.getIndex() != uint( previousAtom->getIndex() + 1 ) )
+								if ( residue.getIndex() != uint( previousResidue->getIndex() + 1 ) )
 								{
 									p_itemSelection.append(
-										QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
-									topAtom			 = &atom;
-									topAtomItemIndex = indexFromItem( atomItem );
+										QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
+									topResidueItemIndex = indexFromItem( residueItem );
+									topResidue			= &residue;
 								}
 
-								bottomAtomItemIndex = indexFromItem( atomItem );
+								bottomResidueItemIndex = indexFromItem( residueItem );
 							}
 							else
 							{
-								topAtomItemIndex	= indexFromItem( atomItem );
-								topAtom				= &atom;
-								bottomAtomItemIndex = indexFromItem( atomItem );
+								topResidueItemIndex	   = indexFromItem( residueItem );
+								topResidue			   = &residue;
+								bottomResidueItemIndex = indexFromItem( residueItem );
 							}
 
-							previousAtom = &atom;
+							previousResidue = &residue;
+
+							if ( !residueItem->isExpanded() )
+								continue;
+
+							const Model::Atom * topAtom				= nullptr;
+							const Model::Atom * previousAtom		= nullptr;
+							QModelIndex			topAtomItemIndex	= QModelIndex();
+							QModelIndex			bottomAtomItemIndex = QModelIndex();
+							for ( const uint & atomId : pairResidue.second )
+							{
+								const Model::Atom &		atom = *_model->getAtom( atomId );
+								QTreeWidgetItem * const atomItem
+									= residueItem->child( atomId - residue.getIndexFirstAtom() );
+
+								if ( topAtomItemIndex.isValid() )
+								{
+									// if not contiguous, add new range
+									if ( atom.getIndex() != uint( previousAtom->getIndex() + 1 ) )
+									{
+										p_itemSelection.append(
+											QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
+										topAtom			 = &atom;
+										topAtomItemIndex = indexFromItem( atomItem );
+									}
+
+									bottomAtomItemIndex = indexFromItem( atomItem );
+								}
+								else
+								{
+									topAtomItemIndex	= indexFromItem( atomItem );
+									topAtom				= &atom;
+									bottomAtomItemIndex = indexFromItem( atomItem );
+								}
+
+								previousAtom = &atom;
+							}
+							if ( topAtomItemIndex.isValid() )
+							{
+								p_itemSelection.append( QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
+							}
 						}
-						if ( topAtomItemIndex.isValid() )
+
+						if ( topResidueItemIndex.isValid() )
 						{
-							p_itemSelection.append( QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
+							p_itemSelection.append(
+								QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
 						}
 					}
 
-					if ( topResidueItemIndex.isValid() )
+					if ( topChainItemIndex.isValid() )
 					{
-						p_itemSelection.append( QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
+						p_itemSelection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
 					}
 				}
 
-				if ( topChainItemIndex.isValid() )
+				if ( topCategoryItemIndex.isValid() )
 				{
-					p_itemSelection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
+					p_itemSelection.append( QItemSelectionRange( topCategoryItemIndex, bottomCategoryItemIndex ) );
 				}
 			}
 		}
@@ -1163,27 +1235,6 @@ namespace VTX::View::UI::Widget
 	}
 
 	QTreeWidgetItem * const MoleculeSceneView::_getMoleculeTreeWidgetItem() const { return topLevelItem( 0 ); }
-	QTreeWidgetItem * const MoleculeSceneView::_getTreeWidgetItem( const Model::ID & p_id ) const
-	{
-		QTreeWidgetItem * res;
-
-		const ID::VTX_ID & typeID = MVC::MvcManager::get().getModelTypeID( p_id );
-
-		if ( typeID == VTX::ID::Model::MODEL_MOLECULE )
-			res = _getMoleculeTreeWidgetItem();
-		else if ( typeID == VTX::ID::Model::MODEL_CATEGORY )
-			res = _getTreeWidgetItem( MVC::MvcManager::get().getModel<Model::Category>( p_id ) );
-		else if ( typeID == VTX::ID::Model::MODEL_CHAIN )
-			res = _getTreeWidgetItem( MVC::MvcManager::get().getModel<Model::Chain>( p_id ) );
-		else if ( typeID == VTX::ID::Model::MODEL_RESIDUE )
-			res = _getTreeWidgetItem( MVC::MvcManager::get().getModel<Model::Residue>( p_id ) );
-		else if ( typeID == VTX::ID::Model::MODEL_ATOM )
-			res = _getTreeWidgetItem( MVC::MvcManager::get().getModel<Model::Atom>( p_id ) );
-		else
-			res = nullptr;
-
-		return res;
-	}
 
 	QTreeWidgetItem * const MoleculeSceneView::_getTreeWidgetItem( const Model::Category & p_category ) const
 	{
@@ -1191,7 +1242,10 @@ namespace VTX::View::UI::Widget
 	}
 	QTreeWidgetItem * const MoleculeSceneView::_getTreeWidgetItem( const Model::Chain & p_chain ) const
 	{
-		return topLevelItem( 0 )->child( p_chain.getIndex() );
+		const Model::Category * const category	 = _model->getCategoryFromChain( p_chain );
+		const int					  childIndex = category->getChainInnerIndex( p_chain.getIndex() );
+
+		return _getTreeWidgetItem( *category )->child( childIndex );
 	}
 	QTreeWidgetItem * const MoleculeSceneView::_getTreeWidgetItem( const Model::Residue & p_residue ) const
 	{
@@ -1209,9 +1263,14 @@ namespace VTX::View::UI::Widget
 	}
 
 	bool MoleculeSceneView::_isMoleculeExpanded() const { return _getMoleculeTreeWidgetItem()->childCount() > 0; }
+	bool MoleculeSceneView::_isCategoryExpanded( const Model::Category & p_category ) const
+	{
+		return _getTreeWidgetItem( p_category )->childCount() > 0;
+	}
 	bool MoleculeSceneView::_isChainExpanded( const Model::Chain & p_chain ) const
 	{
-		return _isMoleculeExpanded() && _getTreeWidgetItem( p_chain )->childCount() > 0;
+		const Model::Category * const category = _model->getCategoryFromChain( p_chain );
+		return _isCategoryExpanded( *category ) && _getTreeWidgetItem( p_chain )->childCount() > 0;
 	}
 	bool MoleculeSceneView::_isResidueExpanded( const Model::Residue & p_residue ) const
 	{

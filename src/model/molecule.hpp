@@ -134,10 +134,17 @@ namespace VTX
 			inline const SolventExcludedSurface & getSolventExcludedSurface() const { return *_solventExcludedSurface; }
 			inline SolventExcludedSurface &		  getSolventExcludedSurface() { return *_solventExcludedSurface; }
 
-			const Model::Category & getCategory( CATEGORY_ENUM p_categoryEnum ) const
+			inline const Model::Category & getCategory( CATEGORY_ENUM p_categoryEnum ) const
 			{
 				return *( _categories[ int( p_categoryEnum ) ] );
 			}
+			inline Model::Category & getCategory( CATEGORY_ENUM p_categoryEnum )
+			{
+				return *( _categories[ int( p_categoryEnum ) ] );
+			}
+			inline const std::vector<Model::Category *> & getCategories() const { return _categories; }
+			Model::Category *							  getCategoryFromChain( const Model::Chain & p_chain );
+			const Model::Category *						  getCategoryFromChain( const Model::Chain & p_chain ) const;
 
 			bool isEmpty();
 
@@ -268,12 +275,7 @@ namespace VTX
 			void refreshSolventExcludedSurface();
 
 			// Categorization
-			void addToCategory( const CATEGORY_ENUM p_category, const uint p_from, const uint p_count );
-			const std::vector<Struct::Range> & getRangesFromCategory( const CATEGORY_ENUM p_category ) const;
-			bool							   hasResidueInCategory( const CATEGORY_ENUM p_category ) const;
-			const std::vector<Model::Chain *>  getChainsInCategory( const CATEGORY_ENUM p_category ) const;
-			std::vector<Model::Category *>	   getFilledCategories() const;
-			CATEGORY_ENUM					   getResidueCategory( const uint p_residueIndex ) const;
+			std::vector<Model::Category *> getFilledCategories() const;
 
 			void propagateEventToViews( const Event::VTXEvent * const p_event ) { _notifyViews( p_event ); }
 

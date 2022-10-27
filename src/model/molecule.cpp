@@ -828,22 +828,6 @@ namespace VTX
 			_solventExcludedSurface->refresh();
 		}
 
-		void Molecule::addToCategory( const CATEGORY_ENUM p_category, const uint p_from, const uint p_count )
-		{
-			_categories[ int( p_category ) ]->addResidueRange( p_from, p_count );
-		};
-		const std::vector<Struct::Range> & Molecule::getRangesFromCategory( const CATEGORY_ENUM p_category ) const
-		{
-			return _categories[ int( p_category ) ]->getRanges();
-		};
-		const std::vector<Model::Chain *> Molecule::getChainsInCategory( const CATEGORY_ENUM p_category ) const
-		{
-			return _categories[ int( p_category ) ]->getChains();
-		};
-		bool Molecule::hasResidueInCategory( const CATEGORY_ENUM p_category ) const
-		{
-			return !_categories[ int( p_category ) ]->isEmpty();
-		};
 		std::vector<Model::Category *> Molecule::getFilledCategories() const
 		{
 			std::vector<Model::Category *> res = std::vector<Model::Category *>();
@@ -857,15 +841,26 @@ namespace VTX
 
 			return res;
 		};
-		CATEGORY_ENUM Molecule::getResidueCategory( const uint p_residueIndex ) const
+		Model::Category * Molecule::getCategoryFromChain( const Model::Chain & p_chain )
 		{
-			for ( const Model::Category * const category : _categories )
+			for ( Model::Category * const category : _categories )
 			{
-				if ( category->contains( p_residueIndex ) )
-					return category->getCategoryEnum();
+				if ( category->hasChain( p_chain.getIndex() ) )
+					return category;
 			}
-			return CATEGORY_ENUM::UNKNOWN;
-		};
+
+			return nullptr;
+		}
+		const Model::Category * Molecule::getCategoryFromChain( const Model::Chain & p_chain ) const
+		{
+			for ( Model::Category * const category : _categories )
+			{
+				if ( category->hasChain( p_chain.getIndex() ) )
+					return category;
+			}
+
+			return nullptr;
+		}
 
 		void Molecule::setVisible( const bool p_visible )
 		{

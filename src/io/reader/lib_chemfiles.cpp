@@ -2,6 +2,7 @@
 #include "color/rgb.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
+#include "model/category.hpp"
 #include "model/category_enum.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
@@ -247,7 +248,7 @@ namespace VTX::IO::Reader
 		std::map<uint, std::vector<size_t>> mapResidueExtraBonds = std::map<uint, std::vector<size_t>>();
 
 		int			  oldIndexInChain			= INT_MIN;
-		CATEGORY_ENUM lastResidueCategory		= CATEGORY_ENUM::UNKNOWN;
+		CATEGORY_ENUM lastCategoryEnum			= CATEGORY_ENUM::UNKNOWN;
 		uint		  residueCategoryFirstIndex = 0;
 
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
@@ -255,10 +256,17 @@ namespace VTX::IO::Reader
 			const chemfiles::Residue & residue = residues[ residueIdx ];
 
 			// Check if chain name changed.
-			const std::string chainName = residue.properties().get( "chainname" ).value_or( "" ).as_string();
-			const std::string chainId	= residue.properties().get( "chainid" ).value_or( "" ).as_string();
+			const std::string chainName		= residue.properties().get( "chainname" ).value_or( "" ).as_string();
+			const std::string chainId		= residue.properties().get( "chainid" ).value_or( "" ).as_string();
+			std::string		  residueSymbol = residue.name();
 
-			if ( chainName != lastChainName || p_molecule.getChainCount() == 0 )
+			const CATEGORY_ENUM categoryEnum = Util::Molecule::getResidueCategory( residueSymbol );
+
+			const bool createNewChain = p_molecule.getChainCount() == 0 || // No chain created
+										chainName != lastChainName ||	   // New chain ID
+										categoryEnum != lastCategoryEnum;  // New category
+
+			if ( createNewChain )
 			{
 				// Create chain.
 				p_molecule.addChain();
@@ -274,8 +282,12 @@ namespace VTX::IO::Reader
 				modelChain->setResidueCount( 0 );
 				modelChain->setOriginalChainID( chainId );
 				modelChain->setColor( Model::Chain::getChainIdColor( chainId ) );
-				lastChainName	= chainName;
-				oldIndexInChain = INT_MIN;
+
+				p_molecule.getCategory( categoryEnum ).addChain( chainModelId );
+
+				lastChainName	 = chainName;
+				lastCategoryEnum = categoryEnum;
+				oldIndexInChain	 = INT_MIN;
 			}
 
 			modelChain = p_molecule.getChain( chainModelId );
@@ -289,7 +301,6 @@ namespace VTX::IO::Reader
 			modelResidue->setChainPtr( modelChain );
 			modelResidue->setIndexFirstAtom( uint( *residue.begin() ) );
 			modelResidue->setAtomCount( uint( residue.size() ) );
-			std::string residueSymbol = residue.name();
 			std::transform( residueSymbol.begin(),
 							residueSymbol.end(),
 							residueSymbol.begin(),
@@ -327,22 +338,6 @@ namespace VTX::IO::Reader
 			const std::string insertionCodeStr
 				= residue.properties().get( "insertion_code" ).value_or( " " ).as_string();
 			modelResidue->setInsertionCode( insertionCodeStr[ 0 ] );
-
-			// Residue Category
-			const CATEGORY_ENUM residueCategory = Util::Molecule::getResidueCategory( residueSymbol );
-
-			if ( lastResidueCategory != residueCategory )
-			{
-				const uint residueCountInCategory = residueIdx - residueCategoryFirstIndex;
-
-				if ( residueCountInCategory > 0 )
-				{
-					p_molecule.addToCategory( lastResidueCategory, residueCategoryFirstIndex, residueCountInCategory );
-				}
-
-				residueCategoryFirstIndex = residueIdx;
-				lastResidueCategory		  = residueCategory;
-			}
 
 			oldIndexInChain = indexInChain;
 
@@ -520,12 +515,6 @@ namespace VTX::IO::Reader
 			{
 				modelResidue->setAtomType( Model::Atom::TYPE::ION );
 			}
-		}
-
-		const uint residueCountInLastCategory = p_molecule.getResidueCount() - residueCategoryFirstIndex;
-		if ( residueCountInLastCategory > 0 )
-		{
-			p_molecule.addToCategory( lastResidueCategory, residueCategoryFirstIndex, residueCountInLastCategory );
 		}
 
 		if ( p_trajectory.nsteps() > 1 )

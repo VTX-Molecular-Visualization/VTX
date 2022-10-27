@@ -6,6 +6,7 @@
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"
 #include "model/base_model.hpp"
+#include "model/category_enum.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "object3d/helper/aabb.hpp"
 #include <map>
@@ -16,6 +17,7 @@
 namespace VTX::Model
 {
 	class Molecule;
+	class Category;
 	class Chain;
 	class Residue;
 	class Atom;
@@ -127,13 +129,25 @@ namespace VTX::Model
 		bool isAtomSelected( const Atom & ) const;
 		uint getAtomSelectedCount() const;
 
+		void selectCategory( Category &, const bool p_appendToSelection = false );
+		void selectCategories( const std::vector<Category *> &,
+							   const bool			  p_appendToSelection = false,
+							   const Category * const p_currentObj		  = nullptr );
+		void unselectCategory( Category & );
+		void unselectCategories( const std::vector<Category *> & );
+		void unselectCategoriesWithCheck( const std::vector<Category *> & );
+		bool isCategorySelected( const Model::Category & ) const;
+		bool isCategoryFullySelected( const Model::Category & ) const;
+
 		void selectModels( const std::vector<Model::Molecule *> & p_molecules,
+						   const std::vector<Model::Category *> & p_categories,
 						   const std::vector<Model::Chain *> &	  p_chains,
 						   const std::vector<Model::Residue *> &  p_residues,
 						   const std::vector<Model::Atom *> &	  p_atoms,
 						   const bool							  p_appendToSelection = false,
 						   const Model::BaseModel * const		  p_currentObj		  = nullptr );
 		void unselectModels( const std::vector<Model::Molecule *> & p_molecules,
+							 const std::vector<Model::Category *> & p_categories,
 							 const std::vector<Model::Chain *> &	p_chains,
 							 const std::vector<Model::Residue *> &	p_residus,
 							 const std::vector<Model::Atom *> &		p_atoms );
@@ -253,6 +267,8 @@ namespace VTX::Model
 
 		void _selectMolecule( const Molecule & );
 		void _unselectMolecule( const Molecule & );
+		void _selectCategory( const Category & );
+		void _unselectCategory( const Category & );
 		void _selectChain( const Chain & );
 		void _unselectChain( const Chain & );
 		void _selectResidue( const Residue & );
