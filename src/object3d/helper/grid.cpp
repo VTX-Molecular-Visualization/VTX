@@ -23,10 +23,10 @@ namespace VTX::Object3D::Helper
 
 	Vec3i Grid::gridPosition( const uint p_hash ) const
 	{
-		const uint x = p_hash / ( size.y * size.z );
-		uint	   r = p_hash % ( size.y * size.z );
-		const uint y = r / size.z;
-		const uint z = r % size.z;
+		const uint z = p_hash / ( size.x * size.y );
+		uint	   r = p_hash % ( size.x * size.y );
+		const uint y = r / size.x;
+		const uint x = r % size.x;
 
 		return Vec3i( x, y, z );
 	}
@@ -35,12 +35,12 @@ namespace VTX::Object3D::Helper
 
 	uint Grid::gridHash( const Vec3i & p_gridPosition ) const
 	{
-		return ( p_gridPosition.x * size.y * size.z ) + ( p_gridPosition.y * size.z ) + p_gridPosition.z;
+		return ( p_gridPosition.z * size.x * size.y ) + ( p_gridPosition.y * size.x ) + p_gridPosition.x;
 	}
 
 	uint Grid::gridHash( const uint p_x, const uint p_y, const uint p_z ) const
 	{
-		return ( p_x * size.y * size.z ) + ( p_y * size.z ) + p_z;
+		return ( p_z * size.x * size.y ) + ( p_y * size.x ) + p_x;
 	}
 
 	void Grid::refresh()

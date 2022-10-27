@@ -31,10 +31,14 @@ namespace VTX
 
 		void SolventExcludedSurface::refresh()
 		{
-			/*
+			_mode = Mode::GPU;
+
 			switch ( _mode )
 			{
-			case SolventExcludedSurface::Mode::CPU: _refreshCPU(); break;
+			case SolventExcludedSurface::Mode::CPU:
+				_refreshCPU();
+				MeshTriangle::_init();
+				break;
 			case SolventExcludedSurface::Mode::GPU:
 			{
 				_buffer->makeContextCurrent();
@@ -44,12 +48,6 @@ namespace VTX
 			}
 			default: return;
 			}
-			*/
-
-			_buffer->makeContextCurrent();
-			_refreshGPU();
-			_buffer->doneContextCurrent();
-			MeshTriangle::_init();
 		}
 
 		void SolventExcludedSurface::_refreshGPU()
@@ -95,15 +93,16 @@ namespace VTX
 			}
 
 			// Linerize data in 1D arrays.
-			std::vector<AtomGridDataSorted> atomGridDataSorted = std::vector<AtomGridDataSorted>();
-			std::vector<uint>				atomIndexSorted	   = std::vector<uint>();
+			std::vector<AtomGridDataSorted> atomGridDataSorted
+				= std::vector<AtomGridDataSorted>( gridAtoms.getCellCount(), AtomGridDataSorted { 0, 0 } );
+			std::vector<uint> atomIndexSorted = std::vector<uint>();
 
-			for ( const std::vector<uint> & data : atomGridDataTmp )
+			for ( uint i = 0; i < atomGridDataTmp.size(); ++i )
 			{
+				const std::vector<uint> & data = atomGridDataTmp[ i ];
 				if ( data.size() > 0 )
 				{
-					atomGridDataSorted.emplace_back(
-						AtomGridDataSorted { int( atomIndexSorted.size() ), int( data.size() ) } );
+					atomGridDataSorted[ i ] = AtomGridDataSorted { int( atomIndexSorted.size() ), int( data.size() ) };
 					atomIndexSorted.insert( atomIndexSorted.end(), data.begin(), data.end() );
 				}
 			}
@@ -167,6 +166,9 @@ namespace VTX
 			//	gridSES.getCellCount() * sizeof( SESGridData ),
 			//	VTX::Renderer::GL::BufferStorage::Flags::MAP_READ_BIT );
 
+			VTX_DEBUG( "SES grid size: {}", gridSES.getCellCount() );
+			// worker.setBarrier( GL_ALL_BARRIER_BITS );
+			// worker.setForce( true );
 			worker.start( gridSES.size );
 
 			ssboSesGridData.getData( 0, gridSES.getCellCount() * sizeof( SESGridData ), &sesGridData[ 0 ] );
