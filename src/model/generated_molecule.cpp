@@ -1,12 +1,13 @@
 #include "generated_molecule.hpp"
-#include "atom.hpp"
-#include "chain.hpp"
 #include "id.hpp"
+#include "model/atom.hpp"
 #include "model/bond.hpp"
+#include "model/category.hpp"
+#include "model/chain.hpp"
+#include "model/residue.hpp"
+#include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
-#include "residue.hpp"
-#include "selection.hpp"
 #include "selection/selection_manager.hpp"
 #include "tool/chrono.hpp"
 #include <map>
@@ -618,6 +619,10 @@ namespace VTX::Model
 		p_chain.setIndexFirstResidue( getResidueCount() );
 		p_chain.setColor( Model::Chain::getChainIdColor( p_chainSource.getOriginalChainID() ) );
 
+		const Model::Category * const chainCategory
+			= p_chainSource.getMoleculePtr()->getCategoryFromChain( p_chainSource );
+		getCategory( chainCategory->getCategoryEnum() ).addChain( p_chain.getIndex() );
+
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
 			VTX::Representation::RepresentationManager::get().instantiateCopy(
@@ -660,9 +665,10 @@ namespace VTX::Model
 
 	Model::Chain & GeneratedMolecule::_extractFullChain( Model::Molecule & p_fromMolecule, const uint p_index )
 	{
-		Model::Chain & chain					 = *p_fromMolecule.getChain( p_index );
-		const uint	   previousFirstResidueIndex = chain.getIndexFirstResidue();
-		const uint	   indexFirstResidue		 = getResidueCount();
+		Model::Chain &				  chain						= *p_fromMolecule.getChain( p_index );
+		const Model::Category * const chainCategory				= p_fromMolecule.getCategoryFromChain( chain );
+		const uint					  previousFirstResidueIndex = chain.getIndexFirstResidue();
+		const uint					  indexFirstResidue			= getResidueCount();
 
 		_addChain( &chain );
 
@@ -697,6 +703,8 @@ namespace VTX::Model
 		chain.setMoleculePtr( this );
 		chain.setIndex( getChainCount() - 1 );
 		chain.setIndexFirstResidue( indexFirstResidue );
+
+		getCategory( chainCategory->getCategoryEnum() ).addChain( chain.getIndex() );
 
 		p_fromMolecule.removeChain( p_index, false, false, false );
 
