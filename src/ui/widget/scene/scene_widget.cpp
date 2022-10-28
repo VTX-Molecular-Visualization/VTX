@@ -251,6 +251,17 @@ namespace VTX::UI::Widget::Scene
 		return itemFound ? res : nullptr;
 	}
 
+	SceneItemWidget * SceneWidget::getSceneItemWidgetFromModel( const Model::BaseModel & p_model ) const
+	{
+		for ( SceneItemWidget * const sceneItem : _sceneWidgets )
+		{
+			if ( sceneItem->containsModel( p_model ) )
+				return sceneItem;
+		}
+
+		return nullptr;
+	}
+
 	void SceneWidget::openRenameEditor( const Model::ID & p_itemID ) const
 	{
 		for ( SceneItemWidget * const sceneWidget : _sceneWidgets )

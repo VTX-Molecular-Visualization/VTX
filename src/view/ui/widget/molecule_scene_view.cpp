@@ -118,6 +118,110 @@ namespace VTX::View::UI::Widget
 		}
 	}
 
+	bool MoleculeSceneView::containsModel( const Model::BaseModel & p_model ) const
+	{
+		const VTX::ID::VTX_ID & modelTypeID = p_model.getTypeId();
+		const Model::Molecule * linkedMolecule;
+
+		if ( modelTypeID == ID::Model::MODEL_MOLECULE )
+			linkedMolecule = static_cast<const Model::Molecule *>( &p_model );
+		else if ( modelTypeID == ID::Model::MODEL_CATEGORY )
+			linkedMolecule = static_cast<const Model::Category &>( p_model ).getMoleculePtr();
+		else if ( modelTypeID == ID::Model::MODEL_CHAIN )
+			linkedMolecule = static_cast<const Model::Chain &>( p_model ).getMoleculePtr();
+		else if ( modelTypeID == ID::Model::MODEL_RESIDUE )
+			linkedMolecule = static_cast<const Model::Residue &>( p_model ).getMoleculePtr();
+		else if ( modelTypeID == ID::Model::MODEL_ATOM )
+			linkedMolecule = static_cast<const Model::Atom &>( p_model ).getMoleculePtr();
+		else // Not a valid type. Return false.
+			return false;
+
+		return linkedMolecule == _model;
+	}
+
+	std::vector<Model::ID> MoleculeSceneView::getAllItemsFrom( const Model::BaseModel & p_model ) const
+	{
+		const ID::VTX_ID & typeID = p_model.getTypeId();
+
+		if ( typeID == VTX::ID::Model::MODEL_MOLECULE )
+		{
+			return SceneItemWidget::getAllItemsFrom( p_model );
+		}
+
+		std::vector<Model::ID> res;
+
+		if ( typeID == VTX::ID::Model::MODEL_CATEGORY )
+		{
+			const Model::Category & category = static_cast<const Model::Category &>( p_model );
+			res.emplace_back( category.getId() );
+			_selectAllCategoriesFrom( res, category );
+		}
+		else if ( typeID == VTX::ID::Model::MODEL_CHAIN )
+		{
+			const Model::Chain & chain = static_cast<const Model::Chain &>( p_model );
+			res.emplace_back( chain.getId() );
+			_selectAllChainsFrom( res, chain );
+		}
+		else if ( typeID == VTX::ID::Model::MODEL_RESIDUE )
+		{
+			const Model::Residue & residue = static_cast<const Model::Residue &>( p_model );
+			res.emplace_back( residue.getId() );
+			_selectAllResiduesFrom( res, residue );
+			_selectAllChainsFrom( res, *residue.getChainPtr() );
+		}
+		else if ( typeID == VTX::ID::Model::MODEL_ATOM )
+		{
+			const Model::Atom & atom = static_cast<const Model::Atom &>( p_model );
+			res.emplace_back( atom.getId() );
+			_selectAllAtomsFrom( res, atom );
+			_selectAllResiduesFrom( res, *atom.getResiduePtr() );
+			_selectAllChainsFrom( res, *atom.getChainPtr() );
+		}
+
+		return res;
+	}
+	std::vector<Model::ID> MoleculeSceneView::getAllItemsTo( const Model::BaseModel & p_model ) const
+	{
+		const ID::VTX_ID & typeID = p_model.getTypeId();
+
+		if ( typeID == VTX::ID::Model::MODEL_MOLECULE )
+		{
+			return SceneItemWidget::getAllItemsTo( p_model );
+		}
+
+		std::vector<Model::ID> res;
+
+		if ( typeID == VTX::ID::Model::MODEL_CATEGORY )
+		{
+			const Model::Category & category = static_cast<const Model::Category &>( p_model );
+			res.emplace_back( category.getId() );
+			_selectAllCategoriesTo( res, category );
+		}
+		else if ( typeID == VTX::ID::Model::MODEL_CHAIN )
+		{
+			const Model::Chain & chain = static_cast<const Model::Chain &>( p_model );
+			res.emplace_back( chain.getId() );
+			_selectAllChainsTo( res, chain );
+		}
+		else if ( typeID == VTX::ID::Model::MODEL_RESIDUE )
+		{
+			const Model::Residue & residue = static_cast<const Model::Residue &>( p_model );
+			res.emplace_back( residue.getId() );
+			_selectAllResiduesFrom( res, residue );
+			_selectAllChainsTo( res, *residue.getChainPtr() );
+		}
+		else if ( typeID == VTX::ID::Model::MODEL_ATOM )
+		{
+			const Model::Atom & atom = static_cast<const Model::Atom &>( p_model );
+			res.emplace_back( atom.getId() );
+			_selectAllAtomsFrom( res, atom );
+			_selectAllResiduesFrom( res, *atom.getResiduePtr() );
+			_selectAllChainsTo( res, *atom.getChainPtr() );
+		}
+
+		return res;
+	}
+
 	QTreeWidgetItem * MoleculeSceneView::getLastVisibleItem()
 	{
 		QTreeWidgetItem * lastItemVisible = _getMoleculeTreeWidgetItem();
@@ -1282,6 +1386,77 @@ namespace VTX::View::UI::Widget
 	{
 		const QVariant & dataID = p_item.data( 0, CATEGORY_ROLE );
 		return CATEGORY_ENUM( dataID.value<int>() );
+	}
+
+	void MoleculeSceneView::_selectAllCategoriesFrom( std::vector<Model::ID> & p_selection,
+													  const Model::Category &  p_itemFrom ) const
+	{
+		const std::vector<Model::Category *> & categories = _model->getCategories();
+
+		for ( int iCategory = int( p_itemFrom.getCategoryEnum() ) + 1; iCategory < categories.size(); iCategory++ )
+		{
+			p_selection.emplace_back( _model->getCategory( CATEGORY_ENUM( iCategory ) ).getId() );
+		}
+	}
+	void MoleculeSceneView::_selectAllChainsFrom( std::vector<Model::ID> & p_selection,
+												  const Model::Chain &	   p_itemFrom ) const
+	{
+		for ( uint iChain = p_itemFrom.getIndex() + 1; iChain < _model->getChainCount(); iChain++ )
+			p_selection.emplace_back( _model->getChain( iChain )->getId() );
+	}
+	void MoleculeSceneView::_selectAllResiduesFrom( std::vector<Model::ID> & p_selection,
+													const Model::Residue &	 p_itemFrom ) const
+	{
+		const Model::Chain & chain = *( p_itemFrom.getChainPtr() );
+
+		for ( uint iResidue = p_itemFrom.getIndex() + 1; iResidue <= chain.getIndexLastResidue(); iResidue++ )
+		{
+			p_selection.emplace_back( _model->getResidue( iResidue )->getId() );
+		}
+	}
+	void MoleculeSceneView::_selectAllAtomsFrom( std::vector<Model::ID> & p_selection,
+												 const Model::Atom &	  p_itemFrom ) const
+	{
+		const Model::Residue & residue = *( p_itemFrom.getResiduePtr() );
+
+		for ( uint iAtom = p_itemFrom.getIndex() + 1; iAtom < residue.getIndexFirstAtom() + residue.getAtomCount();
+			  iAtom++ )
+		{
+			p_selection.emplace_back( _model->getAtom( iAtom )->getId() );
+		}
+	}
+
+	void MoleculeSceneView::_selectAllCategoriesTo( std::vector<Model::ID> & p_selection,
+													const Model::Category &	 p_itemFrom ) const
+	{
+		const std::vector<Model::Category *> & categories = _model->getCategories();
+
+		for ( int iCategory = 0; iCategory < int( p_itemFrom.getCategoryEnum() ); iCategory++ )
+		{
+			p_selection.emplace_back( _model->getCategory( CATEGORY_ENUM( iCategory ) ).getId() );
+		}
+	}
+	void MoleculeSceneView::_selectAllChainsTo( std::vector<Model::ID> & p_selection,
+												const Model::Chain &	 p_itemFrom ) const
+	{
+		for ( uint iChain = 0; iChain < p_itemFrom.getIndex(); iChain++ )
+			p_selection.emplace_back( _model->getChain( iChain )->getId() );
+	}
+	void MoleculeSceneView::_selectAllResiduesTo( std::vector<Model::ID> & p_selection,
+												  const Model::Residue &   p_itemFrom ) const
+	{
+		const Model::Chain & chain = *( p_itemFrom.getChainPtr() );
+
+		for ( uint iResidue = chain.getIndexFirstResidue(); iResidue < p_itemFrom.getIndex(); iResidue++ )
+			p_selection.emplace_back( _model->getResidue( iResidue )->getId() );
+	}
+	void MoleculeSceneView::_selectAllAtomsTo( std::vector<Model::ID> & p_selection,
+											   const Model::Atom &		p_itemFrom ) const
+	{
+		const Model::Residue & residue = *( p_itemFrom.getResiduePtr() );
+
+		for ( uint iAtom = residue.getIndexFirstAtom(); iAtom < p_itemFrom.getIndex(); iAtom++ )
+			p_selection.emplace_back( _model->getAtom( iAtom )->getId() );
 	}
 
 } // namespace VTX::View::UI::Widget

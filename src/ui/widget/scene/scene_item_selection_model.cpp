@@ -55,15 +55,15 @@ namespace VTX::UI::Widget::Scene
 					const Model::BaseModel *	   newCurrentSelectedItem
 						= currentIndex().isValid() ? _getModel( currentIndex() ) : firstSceneItem;
 
-					// TODO manage this to include all SceneItemObjects types
-					const Model::BaseModel * const moleculeCurrentObject = _getTopLevelItem( currentObject );
-					const Model::BaseModel * const moleculeNewCurrentObject
-						= _getTopLevelItem( newCurrentSelectedItem );
+					const SceneItemWidget * const currentSceneItemObject
+						= sceneWidget.getSceneItemWidgetFromModel( *currentObject );
+					const SceneItemWidget * const newSceneItemObject
+						= sceneWidget.getSceneItemWidgetFromModel( *newCurrentSelectedItem );
 
-					const Model::ID & firstMoleculeId  = moleculeCurrentObject->getId();
-					const Model::ID & secondMoleculeId = moleculeNewCurrentObject->getId();
+					const Model::ID & firstObjectId	 = currentSceneItemObject->getModelID();
+					const Model::ID & secondObjectId = newSceneItemObject->getModelID();
 
-					if ( firstMoleculeId != secondMoleculeId )
+					if ( firstObjectId != secondObjectId )
 					{
 						selectionIds.clear();
 
@@ -72,29 +72,33 @@ namespace VTX::UI::Widget::Scene
 						{
 							const Model::ID & itemId = sceneWidget->getModelID();
 
-							if ( itemId == firstMoleculeId )
+							if ( itemId == firstObjectId )
 							{
 								if ( startAddToSelection )
 								{
-									_selectAllBeforeItemInMolecule( selectionIds, currentObject );
+									_appendAllSubitemsBeforeObjectInSelectionVector(
+										*currentSceneItemObject, *currentObject, selectionIds );
 									break;
 								}
 								else
 								{
-									_selectAllAfterItemInMolecule( selectionIds, currentObject );
+									_appendAllSubitemsAfterObjectInSelectionVector(
+										*currentSceneItemObject, *currentObject, selectionIds );
 									startAddToSelection = true;
 								}
 							}
-							else if ( itemId == secondMoleculeId )
+							else if ( itemId == secondObjectId )
 							{
 								if ( startAddToSelection )
 								{
-									_selectAllBeforeItemInMolecule( selectionIds, newCurrentSelectedItem );
+									_appendAllSubitemsBeforeObjectInSelectionVector(
+										*newSceneItemObject, *newCurrentSelectedItem, selectionIds );
 									break;
 								}
 								else
 								{
-									_selectAllAfterItemInMolecule( selectionIds, newCurrentSelectedItem );
+									_appendAllSubitemsAfterObjectInSelectionVector(
+										*newSceneItemObject, *newCurrentSelectedItem, selectionIds );
 									startAddToSelection = true;
 								}
 							}
@@ -150,144 +154,32 @@ namespace VTX::UI::Widget::Scene
 		QItemSelectionModel::select( selection, QItemSelectionModel::ClearAndSelect );
 	}
 
-	void SceneItemSelectionModel::_selectAllAfterItemInMolecule( std::vector<uint> &			p_selection,
-																 const Model::BaseModel * const p_itemFrom )
+	void SceneItemSelectionModel::_appendAllSubitemsBeforeObjectInSelectionVector(
+		const SceneItemWidget &	 p_sceneItemWidget,
+		const Model::BaseModel & p_itemFrom,
+		std::vector<Model::ID> & p_selectionVector ) const
 	{
-		if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
-		{
-			const Model::Chain * const chainFrom = static_cast<const Model::Chain *>( p_itemFrom );
-			p_selection.emplace_back( chainFrom->getId() );
-			_selectAllChainsFrom( p_selection, *chainFrom );
-		}
-		else if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_RESIDUE )
-		{
-			const Model::Residue * const residueFrom = static_cast<const Model::Residue *>( p_itemFrom );
-			p_selection.emplace_back( residueFrom->getId() );
-			_selectAllResiduesFrom( p_selection, *residueFrom );
-			_selectAllChainsFrom( p_selection, *residueFrom->getChainPtr() );
-		}
-		else if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_ATOM )
-		{
-			const Model::Atom * const atomFrom = static_cast<const Model::Atom *>( p_itemFrom );
-			p_selection.emplace_back( atomFrom->getId() );
-			_selectAllAtomsFrom( p_selection, *atomFrom );
-			_selectAllResiduesFrom( p_selection, *atomFrom->getResiduePtr() );
-			_selectAllChainsFrom( p_selection, *atomFrom->getChainPtr() );
-		}
-		else // Molecule and others
-		{
-			p_selection.emplace_back( p_itemFrom->getId() );
-		}
-	}
-	void SceneItemSelectionModel::_selectAllChainsFrom( std::vector<uint> &	 p_selection,
-														const Model::Chain & p_itemFrom )
-	{
-		const Model::Molecule & molecule = *( p_itemFrom.getMoleculePtr() );
+		const std::vector<Model::ID> newItems = p_sceneItemWidget.getAllItemsTo( p_itemFrom );
 
-		for ( uint iChain = p_itemFrom.getIndex() + 1; iChain < molecule.getChainCount(); iChain++ )
-			p_selection.emplace_back( molecule.getChain( iChain )->getId() );
-	}
-	void SceneItemSelectionModel::_selectAllResiduesFrom( std::vector<uint> &	 p_selection,
-														  const Model::Residue & p_itemFrom )
-	{
-		const Model::Chain &	chain	 = *( p_itemFrom.getChainPtr() );
-		const Model::Molecule & molecule = *( chain.getMoleculePtr() );
-
-		for ( uint iResidue = p_itemFrom.getIndex() + 1; iResidue <= chain.getIndexLastResidue(); iResidue++ )
-		{
-			p_selection.emplace_back( molecule.getResidue( iResidue )->getId() );
-		}
-	}
-	void SceneItemSelectionModel::_selectAllAtomsFrom( std::vector<uint> & p_selection, const Model::Atom & p_itemFrom )
-	{
-		const Model::Residue &	residue	 = *( p_itemFrom.getResiduePtr() );
-		const Model::Molecule & molecule = *( residue.getMoleculePtr() );
-
-		for ( uint iAtom = p_itemFrom.getIndex() + 1; iAtom < residue.getIndexFirstAtom() + residue.getAtomCount();
-			  iAtom++ )
-		{
-			p_selection.emplace_back( molecule.getAtom( iAtom )->getId() );
-		}
+		const size_t startIndex = p_selectionVector.size();
+		p_selectionVector.resize( p_selectionVector.size() + newItems.size() );
+		std::move( newItems.begin(), newItems.end(), p_selectionVector.begin() + startIndex );
 	}
 
-	void SceneItemSelectionModel::_selectAllBeforeItemInMolecule( std::vector<uint> &			 p_selection,
-																  const Model::BaseModel * const p_itemFrom )
+	void SceneItemSelectionModel::_appendAllSubitemsAfterObjectInSelectionVector(
+		const SceneItemWidget &	 p_sceneItemWidget,
+		const Model::BaseModel & p_itemFrom,
+		std::vector<Model::ID> & p_selectionVector ) const
 	{
-		if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
-		{
-			const Model::Chain * const chainFrom = static_cast<const Model::Chain *>( p_itemFrom );
-			p_selection.emplace_back( chainFrom->getId() );
-			_selectAllChainsTo( p_selection, *chainFrom );
-		}
-		else if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_RESIDUE )
-		{
-			const Model::Residue * const residueFrom = static_cast<const Model::Residue *>( p_itemFrom );
-			p_selection.emplace_back( residueFrom->getId() );
-			_selectAllResiduesTo( p_selection, *residueFrom );
-			_selectAllChainsTo( p_selection, *residueFrom->getChainPtr() );
-		}
-		else if ( p_itemFrom->getTypeId() == VTX::ID::Model::MODEL_ATOM )
-		{
-			const Model::Atom * const atomFrom = static_cast<const Model::Atom *>( p_itemFrom );
-			p_selection.emplace_back( atomFrom->getId() );
-			_selectAllAtomsTo( p_selection, *atomFrom );
-			_selectAllResiduesTo( p_selection, *atomFrom->getResiduePtr() );
-			_selectAllChainsTo( p_selection, *atomFrom->getChainPtr() );
-		}
-		else
-		{
-			p_selection.emplace_back( p_itemFrom->getId() );
-		}
-	}
-	void SceneItemSelectionModel::_selectAllChainsTo( std::vector<uint> & p_selection, const Model::Chain & p_itemFrom )
-	{
-		const Model::Molecule & molecule = *( p_itemFrom.getMoleculePtr() );
+		const std::vector<Model::ID> newItems = p_sceneItemWidget.getAllItemsFrom( p_itemFrom );
 
-		for ( uint iChain = 0; iChain < p_itemFrom.getIndex(); iChain++ )
-			p_selection.emplace_back( molecule.getChain( iChain )->getId() );
-	}
-	void SceneItemSelectionModel::_selectAllResiduesTo( std::vector<uint> &	   p_selection,
-														const Model::Residue & p_itemFrom )
-	{
-		const Model::Chain &	chain	 = *( p_itemFrom.getChainPtr() );
-		const Model::Molecule & molecule = *( chain.getMoleculePtr() );
-
-		for ( uint iResidue = chain.getIndexFirstResidue(); iResidue < p_itemFrom.getIndex(); iResidue++ )
-			p_selection.emplace_back( molecule.getResidue( iResidue )->getId() );
-	}
-	void SceneItemSelectionModel::_selectAllAtomsTo( std::vector<uint> & p_selection, const Model::Atom & p_itemFrom )
-	{
-		const Model::Residue &	residue	 = *( p_itemFrom.getResiduePtr() );
-		const Model::Molecule & molecule = *( residue.getMoleculePtr() );
-
-		for ( uint iAtom = residue.getIndexFirstAtom(); iAtom < p_itemFrom.getIndex(); iAtom++ )
-			p_selection.emplace_back( molecule.getAtom( iAtom )->getId() );
+		const size_t startIndex = p_selectionVector.size();
+		p_selectionVector.resize( p_selectionVector.size() + newItems.size() );
+		std::move( newItems.begin(), newItems.end(), p_selectionVector.begin() + startIndex );
 	}
 
-	const Model::BaseModel * SceneItemSelectionModel::_getTopLevelItem( const Model::BaseModel * const p_model ) const
-	{
-		const Model::BaseModel * res;
-
-		if ( p_model->getTypeId() == VTX::ID::Model::MODEL_CATEGORY )
-			res = static_cast<const Model::Category *>( p_model )->getMoleculePtr();
-		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
-			res = static_cast<const Model::Chain *>( p_model )->getMoleculePtr();
-		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_RESIDUE )
-			res = static_cast<const Model::Residue *>( p_model )->getMoleculePtr();
-		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_ATOM )
-			res = static_cast<const Model::Atom *>( p_model )->getMoleculePtr();
-		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_PATH )
-			res = p_model;
-		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_VIEWPOINT )
-			res = static_cast<const Model::Viewpoint *>( p_model )->getPathPtr();
-		else // Molecule / Labels, etc
-			res = p_model;
-
-		return res;
-	}
-
-	void SceneItemSelectionModel::_fillVectorWithItemIds( const QItemSelection & p_selection,
-														  std::vector<uint> &	 p_vectorId ) const
+	void SceneItemSelectionModel::_fillVectorWithItemIds( const QItemSelection &   p_selection,
+														  std::vector<Model::ID> & p_vectorId ) const
 	{
 		for ( const QItemSelectionRange & modelRange : p_selection )
 		{

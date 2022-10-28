@@ -85,6 +85,17 @@ namespace VTX::UI::Widget::Scene
 	}
 	void SceneItemWidget::_openRenameEditor( QTreeWidgetItem & p_target ) { editItem( &p_target ); }
 
+	std::vector<Model::ID> SceneItemWidget::getAllItemsFrom( const Model::BaseModel & p_model ) const
+	{
+		// Default return for scene item without subitems
+		return { getModelID() };
+	}
+	std::vector<Model::ID> SceneItemWidget::getAllItemsTo( const Model::BaseModel & p_model ) const
+	{
+		// Default return for scene item without subitems
+		return { getModelID() };
+	}
+
 	QTreeWidgetItem * SceneItemWidget::getLastVisibleItem()
 	{
 		return itemFromIndex( model()->index( model()->rowCount() - 1, model()->columnCount() - 1 ) );

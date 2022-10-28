@@ -41,6 +41,10 @@ namespace VTX::View::UI::Widget
 		const Model::ID &					   getModelID() const override { return _model->getId(); };
 		virtual const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };
 
+		bool						   containsModel( const Model::BaseModel & p_model ) const override;
+		virtual std::vector<Model::ID> getAllItemsFrom( const Model::BaseModel & p_model ) const override;
+		virtual std::vector<Model::ID> getAllItemsTo( const Model::BaseModel & p_model ) const override;
+
 		QTreeWidgetItem * getLastVisibleItem() override;
 
 	  protected:
@@ -54,6 +58,16 @@ namespace VTX::View::UI::Widget
 
 		void _fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection ) override;
 		bool _itemCanBeRenamed( const QTreeWidgetItem * p_item ) override;
+
+		void _selectAllCategoriesFrom( std::vector<Model::ID> & p_selection, const Model::Category & p_itemFrom ) const;
+		void _selectAllChainsFrom( std::vector<Model::ID> & p_selection, const Model::Chain & p_itemFrom ) const;
+		void _selectAllResiduesFrom( std::vector<Model::ID> & p_selection, const Model::Residue & p_itemFrom ) const;
+		void _selectAllAtomsFrom( std::vector<Model::ID> & p_selection, const Model::Atom & p_itemFrom ) const;
+
+		void _selectAllCategoriesTo( std::vector<Model::ID> & p_selection, const Model::Category & p_itemFrom ) const;
+		void _selectAllChainsTo( std::vector<Model::ID> & p_selection, const Model::Chain & p_itemFrom ) const;
+		void _selectAllResiduesTo( std::vector<Model::ID> & p_selection, const Model::Residue & p_itemFrom ) const;
+		void _selectAllAtomsTo( std::vector<Model::ID> & p_selection, const Model::Atom & p_itemFrom ) const;
 
 	  private:
 		QMenu *													_contextMenu;

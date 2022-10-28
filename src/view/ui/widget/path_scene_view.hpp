@@ -33,6 +33,9 @@ namespace VTX::View::UI::Widget
 
 		const Model::ID &			   getModelID() const override { return _model->getId(); };
 		const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };
+		virtual bool				   containsModel( const Model::BaseModel & p_model ) const override;
+		virtual std::vector<Model::ID> getAllItemsFrom( const Model::BaseModel & p_model ) const override;
+		virtual std::vector<Model::ID> getAllItemsTo( const Model::BaseModel & p_model ) const override;
 
 		QTreeWidgetItem * getLastVisibleItem() override;
 
