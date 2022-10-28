@@ -70,9 +70,11 @@ namespace VTX::Model
 
 	void Category::setVisible( const bool p_visible )
 	{
+		const bool previousVisibleState = isVisible();
+
 		BaseVisible::setVisible( p_visible );
 
-		if ( isVisible() != p_visible )
+		if ( previousVisibleState != p_visible )
 		{
 			_notifyViews( new Event::VTXEventValue<CATEGORY_ENUM>( Event::Model::CATEGORY_VISIBILITY, _category ) );
 			_moleculePtr->propagateEventToViews(

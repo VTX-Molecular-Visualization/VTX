@@ -946,6 +946,8 @@ namespace VTX::Model
 		{
 			if ( p_molecules.size() > 0 )
 				_setCurrentObject( *p_molecules.crbegin() );
+			else if ( p_categories.size() > 0 )
+				_setCurrentObject( *p_categories.crbegin() );
 			else if ( p_chains.size() > 0 )
 				_setCurrentObject( *p_chains.crbegin() );
 			else if ( p_residues.size() > 0 )

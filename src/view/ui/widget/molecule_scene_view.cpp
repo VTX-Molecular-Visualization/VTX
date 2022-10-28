@@ -1048,21 +1048,9 @@ namespace VTX::View::UI::Widget
 					{
 						if ( topCategoryItemIndex.isValid() )
 						{
-							// if not contiguous, add new range
-							if ( int( category->getCategoryEnum() )
-								 != ( int( previousCategory->getCategoryEnum() ) + 1 ) )
-							{
-								p_itemSelection.append(
-									QItemSelectionRange( topCategoryItemIndex, bottomCategoryItemIndex ) );
-								topCategoryItemIndex = indexFromItem( categoryItem );
-								topCategory			 = previousCategory;
-							}
-
-							bottomCategoryItemIndex = indexFromItem( categoryItem );
+							p_itemSelection.append(
+								QItemSelectionRange( topCategoryItemIndex, bottomCategoryItemIndex ) );
 						}
-
-						// Invalidate
-						topCategoryItemIndex = QModelIndex();
 					}
 
 					if ( !categoryItem->isExpanded() )

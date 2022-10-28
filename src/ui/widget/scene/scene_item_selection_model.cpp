@@ -268,7 +268,9 @@ namespace VTX::UI::Widget::Scene
 	{
 		const Model::BaseModel * res;
 
-		if ( p_model->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
+		if ( p_model->getTypeId() == VTX::ID::Model::MODEL_CATEGORY )
+			res = static_cast<const Model::Category *>( p_model )->getMoleculePtr();
+		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_CHAIN )
 			res = static_cast<const Model::Chain *>( p_model )->getMoleculePtr();
 		else if ( p_model->getTypeId() == VTX::ID::Model::MODEL_RESIDUE )
 			res = static_cast<const Model::Residue *>( p_model )->getMoleculePtr();

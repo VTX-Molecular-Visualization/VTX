@@ -57,6 +57,11 @@ namespace VTX::Util::Molecule
 	void show( Model::Molecule & p_molecule, const bool p_show, const bool p_refreshMoleculeVisibility )
 	{
 		p_molecule.setVisible( p_show, false );
+		for ( Model::Category * const category : p_molecule.getCategories() )
+		{
+			if ( category != nullptr )
+				category->setVisible( p_show, false );
+		}
 		for ( Model::Chain * const chain : p_molecule.getChains() )
 		{
 			if ( chain != nullptr )
@@ -88,7 +93,7 @@ namespace VTX::Util::Molecule
 	{
 		p_category.setVisible( p_show );
 
-		if ( p_show )
+		if ( p_showHierarchy && p_show )
 		{
 			p_category.getMoleculePtr()->setVisible( p_show );
 		}
@@ -118,9 +123,11 @@ namespace VTX::Util::Molecule
 	{
 		p_chain.setVisible( p_show );
 
-		if ( p_show )
+		// Force visibility of parents when shown
+		if ( p_showHierarchy && p_show )
 		{
 			p_chain.getMoleculePtr()->setVisible( p_show );
+			p_chain.getMoleculePtr()->getCategoryFromChain( p_chain )->setVisible( p_show );
 		}
 
 		Model::Molecule * const molecule = p_chain.getMoleculePtr();
@@ -148,9 +155,10 @@ namespace VTX::Util::Molecule
 	{
 		p_residue.setVisible( p_show );
 
-		if ( p_show )
+		if ( p_showHierarchy && p_show )
 		{
 			p_residue.getChainPtr()->setVisible( p_show );
+			p_residue.getMoleculePtr()->getCategoryFromChain( *p_residue.getChainPtr() )->setVisible( p_show );
 			p_residue.getMoleculePtr()->setVisible( p_show );
 		}
 
@@ -181,10 +189,11 @@ namespace VTX::Util::Molecule
 	{
 		p_atom.setVisible( p_show );
 
-		if ( p_show && p_showHierarchy )
+		if ( p_showHierarchy && p_show )
 		{
 			p_atom.getResiduePtr()->setVisible( p_show );
 			p_atom.getChainPtr()->setVisible( p_show );
+			p_atom.getMoleculePtr()->getCategoryFromChain( *p_atom.getChainPtr() )->setVisible( p_show );
 			p_atom.getMoleculePtr()->setVisible( p_show );
 		}
 
