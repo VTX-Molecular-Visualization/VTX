@@ -393,15 +393,32 @@ namespace VTX
 			Object3D::Helper::Grid gridAtoms
 				= Object3D::Helper::Grid( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
 
-			std::vector<std::vector<AtomGridData>> atomGridData
-				= std::vector<std::vector<AtomGridData>>( gridAtoms.getCellCount(), std::vector<AtomGridData>() );
-
 			const std::vector<Vec3f> & atomPositions = _molecule->getCurrentAtomPositionFrame();
 
+			std::vector<std::vector<uint>> atomGridDataTmp
+				= std::vector<std::vector<uint>>( gridAtoms.getCellCount(), std::vector<uint>() );
+
+			// Store atom indices in acceleration grid.
+			// TODO: remove this loop and create directly 1D arrays?
 			for ( uint i = 0; i < atomPositions.size(); ++i )
 			{
 				const uint hash = gridAtoms.gridHash( atomPositions[ i ] );
-				atomGridData[ hash ].emplace_back( AtomGridData { int( i ) } );
+				atomGridDataTmp[ hash ].emplace_back( i );
+			}
+
+			// Linerize data in 1D arrays.
+			std::vector<AtomGridDataSorted> atomGridDataSorted
+				= std::vector<AtomGridDataSorted>( gridAtoms.getCellCount(), AtomGridDataSorted { 0, 0 } );
+			std::vector<uint> atomIndexSorted = std::vector<uint>();
+
+			for ( uint i = 0; i < atomGridDataTmp.size(); ++i )
+			{
+				const std::vector<uint> & data = atomGridDataTmp[ i ];
+				if ( data.size() > 0 )
+				{
+					atomGridDataSorted[ i ] = AtomGridDataSorted { int( atomIndexSorted.size() ), int( data.size() ) };
+					atomIndexSorted.insert( atomIndexSorted.end(), data.begin(), data.end() );
+				}
 			}
 
 			chrono2.stop();
@@ -459,18 +476,21 @@ namespace VTX
 									}
 
 									uint hashToVisit = gridAtoms.gridHash( gridPositionToVisit );
+									uint first		 = atomGridDataSorted[ hashToVisit ].first;
+									uint count		 = atomGridDataSorted[ hashToVisit ].count;
 
 									// Compute SDF.
-									for ( const AtomGridData & atom : atomGridData[ hashToVisit ] )
+									for ( uint i = first; i < first + count; ++i )
 
 									{
-										if ( _molecule->getAtom( atom.index ) == nullptr )
+										uint index = atomIndexSorted[ i ];
+										if ( _molecule->getAtom( index ) == nullptr )
 										{
 											continue;
 										}
 
-										float distance = Util::Math::distance( atomPositions[ atom.index ],
-																			   sesGridCellWorldPosition );
+										float distance
+											= Util::Math::distance( atomPositions[ index ], sesGridCellWorldPosition );
 
 										// Inside.
 										if ( distance < VOXEL_SIZE )
@@ -484,8 +504,7 @@ namespace VTX
 										// Boundary.
 										else
 										{
-											distance
-												-= ( PROBE_RADIUS + _molecule->getAtom( atom.index )->getVdwRadius() );
+											distance -= ( PROBE_RADIUS + _molecule->getAtom( index )->getVdwRadius() );
 											if ( distance < 0.f )
 											{
 												sesGridDataBoundary.insert( sesGridHash );
@@ -493,7 +512,7 @@ namespace VTX
 												if ( distance < minDistance )
 												{
 													minDistance			 = distance;
-													gridData.nearestAtom = atom.index;
+													gridData.nearestAtom = index;
 												}
 											}
 										}
