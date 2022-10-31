@@ -364,6 +364,18 @@ namespace VTX::View::UI::Widget
 				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Molecule, &molecule, globalClicPos );
 			}
 		}
+		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+		{
+			Model::Category & category = MVC::MvcManager::get().getModel<Model::Category>( modelId );
+			if ( selection.isCategoryFullySelected( category ) )
+			{
+				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
+					= VTX::UI::ContextualMenu::getMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuSelection>(
+						VTX::UI::ContextualMenu::Menu::Selection );
+				selectionContextualMenu->setFocusedTarget( &category );
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+			}
+		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & chain = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
@@ -1357,7 +1369,7 @@ namespace VTX::View::UI::Widget
 	bool MoleculeSceneView::_isMoleculeExpanded() const { return _getMoleculeTreeWidgetItem()->childCount() > 0; }
 	bool MoleculeSceneView::_isCategoryExpanded( const Model::Category & p_category ) const
 	{
-		return _getTreeWidgetItem( p_category )->childCount() > 0;
+		return _isMoleculeExpanded() && _getTreeWidgetItem( p_category )->childCount() > 0;
 	}
 	bool MoleculeSceneView::_isChainExpanded( const Model::Chain & p_chain ) const
 	{

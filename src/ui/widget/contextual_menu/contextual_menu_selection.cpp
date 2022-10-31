@@ -292,6 +292,8 @@ namespace VTX::UI::Widget::ContextualMenu
 
 			if ( focusedModelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<Model::Molecule *>( _focusedTarget );
+			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CATEGORY )
+				focusedModelBaseVisible = static_cast<Model::Category *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CHAIN )
 				focusedModelBaseVisible = static_cast<Model::Chain *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_RESIDUE )
@@ -328,6 +330,8 @@ namespace VTX::UI::Widget::ContextualMenu
 
 			if ( focusedModelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<Model::Molecule *>( _focusedTarget );
+			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CATEGORY )
+				focusedModelBaseVisible = static_cast<Model::Category *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CHAIN )
 				focusedModelBaseVisible = static_cast<Model::Chain *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_RESIDUE )
@@ -364,6 +368,8 @@ namespace VTX::UI::Widget::ContextualMenu
 
 			if ( focusedModelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<Model::Molecule *>( _focusedTarget );
+			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CATEGORY )
+				focusedModelBaseVisible = static_cast<Model::Category *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CHAIN )
 				focusedModelBaseVisible = static_cast<Model::Chain *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_RESIDUE )

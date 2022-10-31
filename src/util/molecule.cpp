@@ -377,13 +377,21 @@ namespace VTX::Util::Molecule
 		uint							  idResidueToSoloize = *itResidueToSoloize;
 		uint idParentChainToSoloize = p_moleculeParent.getResidue( idResidueToSoloize )->getChainPtr()->getIndex();
 
+		std::set<Model::Category *> categoryToHide = std::set<Model::Category *>();
+		for ( Model::Category * category : p_moleculeParent.getCategories() )
+			categoryToHide.emplace( category );
+
 		for ( uint iChain = 0; iChain < p_moleculeParent.getChainCount(); iChain++ )
 		{
-			Model::Chain * const chain = p_moleculeParent.getChain( iChain );
+			Model::Chain * const	chain	 = p_moleculeParent.getChain( iChain );
+			Model::Category * const category = p_moleculeParent.getCategoryFromChain( *chain );
 
 			if ( iChain == idParentChainToSoloize )
 			{
+				category->setVisible( true );
 				chain->setVisible( true );
+				categoryToHide.erase( category );
+
 				for ( uint iResidue = chain->getIndexFirstResidue(); iResidue <= chain->getIndexLastResidue();
 					  iResidue++ )
 				{
@@ -416,9 +424,14 @@ namespace VTX::Util::Molecule
 			else
 			{
 				if ( chain != nullptr )
+				{
 					show( *chain, false, false, false );
+				}
 			}
 		}
+
+		for ( Model::Category * category : categoryToHide )
+			category->setVisible( false );
 
 		if ( p_refreshMoleculeVisibility )
 		{
