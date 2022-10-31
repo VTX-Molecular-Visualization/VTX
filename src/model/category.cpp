@@ -96,6 +96,25 @@ namespace VTX::Model
 		}
 	}
 
+	void Category::updateVisibilityState()
+	{
+		for ( const uint chainIndex : _linkedChains )
+		{
+			const Model::Chain * const chain = _moleculePtr->getChain( chainIndex );
+
+			if ( chain == nullptr )
+				continue;
+
+			if ( chain->isVisible() )
+			{
+				setVisible( true );
+				return;
+			}
+		}
+
+		setVisible( false );
+	}
+
 	const Object3D::Helper::AABB Category::getAABB() const
 	{
 		Object3D::Helper::AABB aabb = Object3D::Helper::AABB();

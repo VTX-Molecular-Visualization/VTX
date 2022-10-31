@@ -740,12 +740,9 @@ namespace VTX::Action::Selection
 						if ( chain == nullptr )
 							continue;
 
-						Model::Category * const category = molecule->getCategoryFromChain( *chain );
-
 						if ( itChainSelection != itSelection->second.cend() && iChain == itChainSelection->first )
 						{
 							chain->setVisible( true );
-							category->setVisible( true );
 
 							Model::Selection::MapResidueIds::const_iterator itResidueSelection
 								= itChainSelection->second.cbegin();
@@ -800,7 +797,6 @@ namespace VTX::Action::Selection
 						else
 						{
 							chain->setVisible( false );
-							category->setVisible( false );
 						}
 					}
 				}
@@ -808,6 +804,9 @@ namespace VTX::Action::Selection
 				{
 					molecule->setVisible( false );
 				}
+
+				for ( Model::Category * const category : molecule->getCategories() )
+					category->updateVisibilityState();
 
 				molecule->refreshVisibilities();
 				molecule->computeRepresentationTargets();
