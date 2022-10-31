@@ -315,9 +315,9 @@ namespace VTX::IO::Reader
 			}
 			else
 			{
-				Model::UnknownResidueData unknownResidueData = Model::UnknownResidueData();
-				unknownResidueData.symbolStr				 = residueSymbol;
-				unknownResidueData.symbolName				 = Util::Molecule::getResidueFullName( residueSymbol );
+				Model::UnknownResidueData * const unknownResidueData = new Model::UnknownResidueData();
+				unknownResidueData->symbolStr						 = residueSymbol;
+				unknownResidueData->symbolName = Util::Molecule::getResidueFullName( residueSymbol );
 
 				symbolValue
 					= int( Model::Residue::SYMBOL::COUNT ) + p_molecule.addUnknownResidueSymbol( unknownResidueData );

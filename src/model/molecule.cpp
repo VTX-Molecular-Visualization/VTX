@@ -49,6 +49,9 @@ namespace VTX
 			MVC::MvcManager::get().deleteAllModels( _chains );
 			MVC::MvcManager::get().deleteAllModels( _categories );
 
+			for ( const UnknownResidueData * const unknownResidueSymbol : _unknownResidueSymbol )
+				delete unknownResidueSymbol;
+
 			if ( _secondaryStructure != nullptr )
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
 			if ( _solventExcludedSurface != nullptr )
@@ -91,13 +94,13 @@ namespace VTX
 			return *bond;
 		}
 
-		int Molecule::addUnknownResidueSymbol( const UnknownResidueData & p_residueData )
+		int Molecule::addUnknownResidueSymbol( UnknownResidueData * const p_residueData )
 		{
 			int residueIndex;
 
 			for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
 			{
-				if ( _unknownResidueSymbol[ residueIndex ].symbolStr == p_residueData.symbolStr )
+				if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_residueData->symbolStr )
 					return residueIndex;
 			}
 
@@ -659,13 +662,13 @@ namespace VTX
 					  + " / Bonds: " + std::to_string( _bonds.size() ) );
 
 			// Display unknown symbols.
-			const std::vector<UnknownResidueData> & unknownResidueSymbols = getUnknownResidueSymbols();
+			const std::vector<UnknownResidueData *> & unknownResidueSymbols = getUnknownResidueSymbols();
 			if ( unknownResidueSymbols.empty() == false )
 			{
 				std::string unknownResidueSymbolsStr = "";
-				for ( UnknownResidueData unknownResidueData : unknownResidueSymbols )
+				for ( const UnknownResidueData * const unknownResidueData : unknownResidueSymbols )
 				{
-					unknownResidueSymbolsStr += unknownResidueData.symbolStr + " ";
+					unknownResidueSymbolsStr += unknownResidueData->symbolStr + " ";
 				}
 				VTX_INFO( "Unknown residue symbols : " + unknownResidueSymbolsStr );
 			}

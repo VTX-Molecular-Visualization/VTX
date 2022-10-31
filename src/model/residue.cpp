@@ -34,14 +34,15 @@ namespace VTX
 		{
 			return _symbol < SYMBOL_COUNT
 					   ? SYMBOL_STR[ _symbol ]
-					   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ].symbolStr;
+					   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ]->symbolStr;
 		}
 		const std::string & Residue::getSymbolName() const
 		{
 			return _symbol < SYMBOL_COUNT
 					   ? SYMBOL_NAME[ _symbol ]
-					   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ].symbolName;
+					   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ]->symbolName;
 		}
+
 		const std::string & Residue::getSymbolShort() const
 		{
 			return _symbol < SYMBOL_COUNT ? SYMBOL_SHORT_STR[ _symbol ] : SYMBOL_SHORT_STR[ int( SYMBOL::UNKNOWN ) ];
