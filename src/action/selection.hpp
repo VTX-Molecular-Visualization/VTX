@@ -675,7 +675,7 @@ namespace VTX::Action::Selection
 
 					for ( const Model::Selection::PairChainIds & chainIds : molIds.second )
 					{
-						Model::Chain &	  chain	   = *molecule.getChain( chainIds.first );
+						Model::Chain & chain = *molecule.getChain( chainIds.first );
 						if ( _selection.isChainFullySelected( chain ) )
 						{
 							Util::Molecule::show( chain, p_show, false, false, false );
@@ -725,7 +725,7 @@ namespace VTX::Action::Selection
 
 				if ( itSelection != moleculesInSelection.end() )
 				{
-					molecule->setVisible( true );
+					molecule->setVisible( true, false );
 
 					Model::Selection::MapChainIds::const_iterator itChainSelection = itSelection->second.cbegin();
 
@@ -738,7 +738,7 @@ namespace VTX::Action::Selection
 
 						if ( itChainSelection != itSelection->second.cend() && iChain == itChainSelection->first )
 						{
-							chain->setVisible( true );
+							chain->setVisible( true, false );
 
 							Model::Selection::MapResidueIds::const_iterator itResidueSelection
 								= itChainSelection->second.cbegin();
@@ -755,7 +755,7 @@ namespace VTX::Action::Selection
 								if ( itResidueSelection != itChainSelection->second.cend()
 									 && iResidue == itResidueSelection->first )
 								{
-									residue->setVisible( true );
+									residue->setVisible( true, false );
 
 									Model::Selection::VecAtomIds::const_iterator itAtomSelection
 										= itResidueSelection->second.cbegin();
@@ -772,12 +772,12 @@ namespace VTX::Action::Selection
 										if ( itAtomSelection != itResidueSelection->second.cend()
 											 && iAtom == *itAtomSelection )
 										{
-											atom->setVisible( true );
+											atom->setVisible( true, false );
 											itAtomSelection++;
 										}
 										else
 										{
-											atom->setVisible( false );
+											atom->setVisible( false, false );
 										}
 									}
 
@@ -785,25 +785,26 @@ namespace VTX::Action::Selection
 								}
 								else
 								{
-									residue->setVisible( false );
+									residue->setVisible( false, false );
 								}
 							}
 							itChainSelection++;
 						}
 						else
 						{
-							chain->setVisible( false );
+							chain->setVisible( false, false );
 						}
 					}
 				}
 				else
 				{
-					molecule->setVisible( false );
+					molecule->setVisible( false, false );
 				}
 
 				for ( Model::Category * const category : molecule->getCategories() )
 					category->updateVisibilityState();
 
+				molecule->notifyVisibilityChange();
 				molecule->refreshVisibilities();
 				molecule->computeRepresentationTargets();
 			}
