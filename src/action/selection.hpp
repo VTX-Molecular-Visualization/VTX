@@ -667,26 +667,18 @@ namespace VTX::Action::Selection
 
 				if ( _selection.isMoleculeFullySelected( molecule ) )
 				{
-					Util::Molecule::show( molecule, p_show, false );
+					Util::Molecule::show( molecule, p_show, false, true );
 				}
 				else
 				{
 					molecule.setVisible( true );
 
-					for ( Model::Category * const category : molecule.getCategories() )
-					{
-						if ( _selection.isCategoryFullySelected( *category ) )
-						{
-							Util::Molecule::show( *category, p_show, false, false );
-						}
-					}
-
 					for ( const Model::Selection::PairChainIds & chainIds : molIds.second )
 					{
-						Model::Chain & chain = *molecule.getChain( chainIds.first );
+						Model::Chain &	  chain	   = *molecule.getChain( chainIds.first );
 						if ( _selection.isChainFullySelected( chain ) )
 						{
-							Util::Molecule::show( chain, p_show, false, false );
+							Util::Molecule::show( chain, p_show, false, false, false );
 						}
 						else
 						{
@@ -696,7 +688,7 @@ namespace VTX::Action::Selection
 								Model::Residue & residue = *molecule.getResidue( residueIds.first );
 								if ( _selection.isResidueFullySelected( residue ) )
 								{
-									Util::Molecule::show( residue, p_show, false, false );
+									Util::Molecule::show( residue, p_show, false, false, false );
 								}
 								else
 								{
@@ -704,7 +696,7 @@ namespace VTX::Action::Selection
 									for ( const uint atomId : residueIds.second )
 									{
 										Model::Atom * const atom = molecule.getAtom( atomId );
-										atom->setVisible( p_show );
+										atom->setVisible( p_show, false );
 									}
 								}
 							}
@@ -712,6 +704,10 @@ namespace VTX::Action::Selection
 					}
 				}
 
+				for ( Model::Category * const category : molecule.getCategories() )
+					category->updateVisibilityState();
+
+				molecule.notifyVisibilityChange();
 				molecule.refreshVisibilities();
 				molecule.computeRepresentationTargets();
 			}

@@ -17,6 +17,15 @@ namespace VTX::Model
 	}
 
 	void Category::addChain( const uint p_chainIndex ) { _linkedChains.emplace_back( p_chainIndex ); };
+	void Category::removeChain( const uint p_chainIndex )
+	{
+		const std::vector<uint>::const_iterator it
+			= std::find( _linkedChains.begin(), _linkedChains.end(), p_chainIndex );
+
+		if ( it != _linkedChains.end() )
+			_linkedChains.erase( it );
+	};
+
 	const std::vector<uint> & Category::getChains() const { return _linkedChains; };
 
 	bool Category::isEmpty() const
@@ -83,9 +92,11 @@ namespace VTX::Model
 	}
 	void Category::setVisible( const bool p_visible, const bool p_notify )
 	{
+		const bool previousVisibleState = isVisible();
+
 		BaseVisible::setVisible( p_visible );
 
-		if ( isVisible() != p_visible )
+		if ( previousVisibleState != p_visible )
 		{
 			if ( p_notify )
 			{

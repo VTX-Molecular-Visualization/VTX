@@ -118,8 +118,9 @@ namespace VTX::Action::Chain
 					  chainsPerMolecules )
 				{
 					for ( Model::Chain * const chain : pair.second )
-						Util::Molecule::show( *chain, _getVisibilityBool( *chain ), true, false );
+						Util::Molecule::show( *chain, _getVisibilityBool( *chain ), true, false, false );
 
+					pair.first->notifyVisibilityChange();
 					pair.first->refreshVisibilities();
 					pair.first->computeRepresentationTargets();
 				}

@@ -1,4 +1,5 @@
 #include "chain.hpp"
+#include "model/category.hpp"
 #include "molecule.hpp"
 #include "representation/representation_manager.hpp"
 #include "residue.hpp"
@@ -121,11 +122,28 @@ namespace VTX
 			return p_isHetAtm ? Chain::CHAIN_ID_COLOR_HETATM[ id ] : Chain::CHAIN_ID_COLOR_ATOM[ id ];
 		}
 
+		void Chain::setCategoryEnum( const CATEGORY_ENUM & p_categoryEnum )
+		{
+			if ( _categoryEnum != p_categoryEnum )
+			{
+				Model::Molecule * const moleculePtr = getMoleculePtr();
+				if ( moleculePtr != nullptr )
+				{
+					moleculePtr->getCategory( _categoryEnum ).removeChain( _index );
+					_categoryEnum = p_categoryEnum;
+					moleculePtr->getCategory( _categoryEnum ).addChain( _index );
+				}
+			}
+		}
+
 		void Chain::setVisible( const bool p_visible )
 		{
-			if ( isVisible() != p_visible )
+			const bool previousVisibleState = isVisible();
+
+			BaseVisible::setVisible( p_visible );
+
+			if ( previousVisibleState != p_visible )
 			{
-				BaseVisible::setVisible( p_visible );
 				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::CHAIN_VISIBILITY, _index ) );
 				_moleculePtr->propagateEventToViews(
 					new Event::VTXEventValue<uint>( Event::Model::CHAIN_VISIBILITY, _index ) );
@@ -134,10 +152,12 @@ namespace VTX
 
 		void Chain::setVisible( const bool p_visible, const bool p_notify )
 		{
-			if ( isVisible() != p_visible )
-			{
-				BaseVisible::setVisible( p_visible );
+			const bool previousVisibleState = isVisible();
 
+			BaseVisible::setVisible( p_visible );
+
+			if ( previousVisibleState != p_visible )
+			{
 				if ( p_notify )
 				{
 					_notifyViews( new Event::VTXEventValue<uint>( Event::Model::CHAIN_VISIBILITY, _index ) );

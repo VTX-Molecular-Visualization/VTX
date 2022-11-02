@@ -124,9 +124,12 @@ namespace VTX
 
 		void Residue::setVisible( const bool p_visible )
 		{
-			if ( isVisible() != p_visible )
+			const bool previousVisibleState = isVisible();
+
+			BaseVisible::setVisible( p_visible );
+
+			if ( previousVisibleState != p_visible )
 			{
-				BaseVisible ::setVisible( p_visible );
 				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
 				getMoleculePtr()->propagateEventToViews(
 					new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
@@ -135,9 +138,12 @@ namespace VTX
 
 		void Residue::setVisible( const bool p_visible, const bool p_notify )
 		{
-			if ( isVisible() != p_visible )
+			const bool previousVisibleState = isVisible();
+
+			BaseVisible::setVisible( p_visible );
+
+			if ( previousVisibleState != p_visible )
 			{
-				BaseVisible ::setVisible( p_visible );
 				if ( p_notify )
 				{
 					_notifyViews( new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );

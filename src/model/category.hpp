@@ -33,6 +33,7 @@ namespace VTX::Model
 		inline const std::string & getName() const { return CATEGORY_ENUM_STR[ int( _category ) ]; };
 
 		void					  addChain( const uint p_chainIndex );
+		void					  removeChain( const uint p_chainIndex );
 		const std::vector<uint> & getChains() const;
 		bool					  isEmpty() const;
 

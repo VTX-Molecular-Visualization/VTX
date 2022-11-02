@@ -54,7 +54,10 @@ namespace VTX::Util::Molecule
 		return Util::BondGuessing::BondOrderGuessing::recomputeBondOrdersFromFile( p_molecule );
 	}
 
-	void show( Model::Molecule & p_molecule, const bool p_show, const bool p_refreshMoleculeVisibility )
+	void show( Model::Molecule & p_molecule,
+			   const bool		 p_show,
+			   const bool		 p_refreshMoleculeVisibility,
+			   const bool		 p_notify )
 	{
 		p_molecule.setVisible( p_show, false );
 		for ( Model::Category * const category : p_molecule.getCategories() )
@@ -78,7 +81,8 @@ namespace VTX::Util::Molecule
 				atom->setVisible( p_show, false );
 		}
 
-		p_molecule.notifyVisibilityChange();
+		if ( p_notify )
+			p_molecule.notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{
@@ -89,13 +93,14 @@ namespace VTX::Util::Molecule
 	void show( Model::Category & p_category,
 			   const bool		 p_show,
 			   const bool		 p_showHierarchy,
-			   const bool		 p_refreshMoleculeVisibility )
+			   const bool		 p_refreshMoleculeVisibility,
+			   const bool		 p_notify )
 	{
-		p_category.setVisible( p_show );
+		p_category.setVisible( p_show, false );
 
 		if ( p_showHierarchy && p_show )
 		{
-			p_category.getMoleculePtr()->setVisible( p_show );
+			p_category.getMoleculePtr()->setVisible( p_show, false );
 		}
 
 		Model::Molecule * const molecule = p_category.getMoleculePtr();
@@ -107,8 +112,11 @@ namespace VTX::Util::Molecule
 			if ( chain == nullptr )
 				continue;
 
-			show( *chain, p_show, false, false );
+			show( *chain, p_show, false, false, false );
 		}
+
+		if ( p_notify )
+			molecule->notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{
@@ -119,15 +127,16 @@ namespace VTX::Util::Molecule
 	void show( Model::Chain & p_chain,
 			   const bool	  p_show,
 			   const bool	  p_showHierarchy,
-			   const bool	  p_refreshMoleculeVisibility )
+			   const bool	  p_refreshMoleculeVisibility,
+			   const bool	  p_notify )
 	{
-		p_chain.setVisible( p_show );
+		p_chain.setVisible( p_show, false );
 
 		// Force visibility of parents when shown
 		if ( p_showHierarchy && p_show )
 		{
-			p_chain.getMoleculePtr()->setVisible( p_show );
-			p_chain.getMoleculePtr()->getCategoryFromChain( p_chain )->setVisible( p_show );
+			p_chain.getMoleculePtr()->setVisible( p_show, false );
+			p_chain.getMoleculePtr()->getCategoryFromChain( p_chain )->setVisible( p_show, false );
 		}
 
 		Model::Molecule * const molecule = p_chain.getMoleculePtr();
@@ -139,8 +148,11 @@ namespace VTX::Util::Molecule
 			if ( residue == nullptr )
 				continue;
 
-			show( *residue, p_show, false, false );
+			show( *residue, p_show, false, false, false );
 		}
+
+		if ( p_notify )
+			molecule->notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{
@@ -151,15 +163,16 @@ namespace VTX::Util::Molecule
 	void show( Model::Residue & p_residue,
 			   const bool		p_show,
 			   const bool		p_showHierarchy,
-			   const bool		p_refreshMoleculeVisibility )
+			   const bool		p_refreshMoleculeVisibility,
+			   const bool		p_notify )
 	{
-		p_residue.setVisible( p_show );
+		p_residue.setVisible( p_show, false );
 
 		if ( p_showHierarchy && p_show )
 		{
-			p_residue.getChainPtr()->setVisible( p_show );
-			p_residue.getMoleculePtr()->getCategoryFromChain( *p_residue.getChainPtr() )->setVisible( p_show );
-			p_residue.getMoleculePtr()->setVisible( p_show );
+			p_residue.getChainPtr()->setVisible( p_show, false );
+			p_residue.getMoleculePtr()->getCategoryFromChain( *p_residue.getChainPtr() )->setVisible( p_show, false );
+			p_residue.getMoleculePtr()->setVisible( p_show, false );
 		}
 
 		Model::Molecule * const molecule = p_residue.getMoleculePtr();
@@ -173,8 +186,11 @@ namespace VTX::Util::Molecule
 			if ( atom == nullptr )
 				continue;
 
-			show( *atom, p_show, false, false );
+			show( *atom, p_show, false, false, false );
 		}
+
+		if ( p_notify )
+			molecule->notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{
@@ -185,17 +201,21 @@ namespace VTX::Util::Molecule
 	void show( Model::Atom & p_atom,
 			   const bool	 p_show,
 			   const bool	 p_showHierarchy,
-			   const bool	 p_refreshMoleculeVisibility )
+			   const bool	 p_refreshMoleculeVisibility,
+			   const bool	 p_notify )
 	{
-		p_atom.setVisible( p_show );
+		p_atom.setVisible( p_show, false );
 
 		if ( p_showHierarchy && p_show )
 		{
-			p_atom.getResiduePtr()->setVisible( p_show );
-			p_atom.getChainPtr()->setVisible( p_show );
-			p_atom.getMoleculePtr()->getCategoryFromChain( *p_atom.getChainPtr() )->setVisible( p_show );
-			p_atom.getMoleculePtr()->setVisible( p_show );
+			p_atom.getResiduePtr()->setVisible( p_show, false );
+			p_atom.getChainPtr()->setVisible( p_show, false );
+			p_atom.getMoleculePtr()->getCategoryFromChain( *p_atom.getChainPtr() )->setVisible( p_show, false );
+			p_atom.getMoleculePtr()->setVisible( p_show, false );
 		}
+
+		if ( p_notify )
+			p_atom.getMoleculePtr()->notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{
@@ -208,7 +228,7 @@ namespace VTX::Util::Molecule
 
 	void solo( Model::Molecule & p_molecule, const bool p_refreshMoleculeVisibility )
 	{
-		show( p_molecule, true, true );
+		show( p_molecule, true, true, true );
 	}
 
 	void solo( Model::Category & p_category, const bool p_refreshMoleculeVisibility )
@@ -219,13 +239,15 @@ namespace VTX::Util::Molecule
 		{
 			if ( category != &p_category )
 			{
-				show( *category, false, false, false );
+				show( *category, false, false, false, false );
 			}
 			else
 			{
-				show( *category, true, true, false );
+				show( *category, true, true, false, false );
 			}
 		}
+
+		molecule->notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{
@@ -237,7 +259,7 @@ namespace VTX::Util::Molecule
 						 const std::vector<CATEGORY_ENUM> & p_categories,
 						 const bool							p_refreshMoleculeVisibility )
 	{
-		p_moleculeParent.setVisible( true );
+		p_moleculeParent.setVisible( true, false );
 
 		std::vector<CATEGORY_ENUM>::const_iterator itCategoryToSoloize	 = p_categories.cbegin();
 		CATEGORY_ENUM							   categoryEnumToSoloize = *itCategoryToSoloize;
@@ -246,7 +268,7 @@ namespace VTX::Util::Molecule
 		{
 			if ( category->getCategoryEnum() == categoryEnumToSoloize )
 			{
-				show( *category, true, false, false );
+				show( *category, true, false, false, false );
 				itCategoryToSoloize++;
 
 				categoryEnumToSoloize
@@ -254,9 +276,11 @@ namespace VTX::Util::Molecule
 			}
 			else
 			{
-				show( *category, false, false, false );
+				show( *category, false, false, false, false );
 			}
 		}
+
+		p_moleculeParent.notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{
@@ -276,13 +300,15 @@ namespace VTX::Util::Molecule
 
 			if ( chain != &p_chain )
 			{
-				show( *chain, false, false, false );
+				show( *chain, false, false, false, false );
 			}
 			else
 			{
-				show( *chain, true, true, false );
+				show( *chain, true, true, false, false );
 			}
 		}
+
+		molecule->notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{
@@ -294,7 +320,7 @@ namespace VTX::Util::Molecule
 					 const std::vector<uint> & p_chainIndexes,
 					 const bool				   p_refreshMoleculeVisibility )
 	{
-		p_moleculeParent.setVisible( true );
+		p_moleculeParent.setVisible( true, false );
 
 		std::vector<uint>::const_iterator itChainToSoloize = p_chainIndexes.cbegin();
 		uint							  idChainToSoloize = *itChainToSoloize;
@@ -304,7 +330,7 @@ namespace VTX::Util::Molecule
 			Model::Chain * const chain = p_moleculeParent.getChain( iChain );
 			if ( iChain == idChainToSoloize )
 			{
-				show( *chain, true, false, false );
+				show( *chain, true, false, false, false );
 				itChainToSoloize++;
 
 				idChainToSoloize
@@ -313,9 +339,11 @@ namespace VTX::Util::Molecule
 			else
 			{
 				if ( chain != nullptr )
-					show( *chain, false, false, false );
+					show( *chain, false, false, false, false );
 			}
 		}
+
+		p_moleculeParent.notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{
@@ -353,15 +381,17 @@ namespace VTX::Util::Molecule
 
 					if ( residue == &p_residue )
 					{
-						show( *residue, true, true, false );
+						show( *residue, true, true, false, false );
 					}
 					else
 					{
-						show( *residue, false, false, false );
+						show( *residue, false, false, false, false );
 					}
 				}
 			}
 		}
+
+		molecule->notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{
@@ -381,6 +411,8 @@ namespace VTX::Util::Molecule
 		for ( Model::Category * category : p_moleculeParent.getCategories() )
 			categoryToHide.emplace( category );
 
+		p_moleculeParent.setVisible( true, false );
+
 		for ( uint iChain = 0; iChain < p_moleculeParent.getChainCount(); iChain++ )
 		{
 			Model::Chain * const	chain	 = p_moleculeParent.getChain( iChain );
@@ -388,8 +420,8 @@ namespace VTX::Util::Molecule
 
 			if ( iChain == idParentChainToSoloize )
 			{
-				category->setVisible( true );
-				chain->setVisible( true );
+				category->setVisible( true, false );
+				chain->setVisible( true, false );
 				categoryToHide.erase( category );
 
 				for ( uint iResidue = chain->getIndexFirstResidue(); iResidue <= chain->getIndexLastResidue();
@@ -399,7 +431,7 @@ namespace VTX::Util::Molecule
 
 					if ( iResidue == idResidueToSoloize )
 					{
-						show( *residue, true, false, false );
+						show( *residue, true, false, false, false );
 						itResidueToSoloize++;
 
 						if ( itResidueToSoloize == p_residueIndexes.cend() )
@@ -417,7 +449,7 @@ namespace VTX::Util::Molecule
 					else
 					{
 						if ( residue != nullptr )
-							show( *residue, false, false, false );
+							show( *residue, false, false, false, false );
 					}
 				}
 			}
@@ -425,13 +457,15 @@ namespace VTX::Util::Molecule
 			{
 				if ( chain != nullptr )
 				{
-					show( *chain, false, false, false );
+					show( *chain, false, false, false, false );
 				}
 			}
 		}
 
 		for ( Model::Category * category : categoryToHide )
-			category->setVisible( false );
+			category->setVisible( false, false );
+
+		p_moleculeParent.notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{
@@ -439,6 +473,7 @@ namespace VTX::Util::Molecule
 			p_moleculeParent.computeRepresentationTargets();
 		}
 	}
+
 	void solo( Model::Atom & p_atom, const bool p_refreshMoleculeVisibility )
 	{
 		Model::Residue * const	residueParent = p_atom.getResiduePtr();
@@ -452,7 +487,7 @@ namespace VTX::Util::Molecule
 
 			if ( chain != chainParent )
 			{
-				show( *chain, false, false, false );
+				show( *chain, false, false, false, false );
 			}
 			else
 			{
@@ -469,7 +504,7 @@ namespace VTX::Util::Molecule
 
 					if ( residue != residueParent )
 					{
-						show( *residue, false, false, false );
+						show( *residue, false, false, false, false );
 					}
 					else
 					{
@@ -482,12 +517,14 @@ namespace VTX::Util::Molecule
 							if ( atom == nullptr )
 								continue;
 
-							atom->setVisible( atom == &p_atom );
+							atom->setVisible( atom == &p_atom, false );
 						}
 					}
 				}
 			}
 		}
+
+		molecule->notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{
@@ -504,13 +541,15 @@ namespace VTX::Util::Molecule
 		uint idParentResidueToSoloize = p_moleculeParent.getAtom( idAtomToSoloize )->getResiduePtr()->getIndex();
 		uint idParentChainToSoloize	  = p_moleculeParent.getAtom( idAtomToSoloize )->getChainPtr()->getIndex();
 
+		p_moleculeParent.setVisible( true, false );
+
 		for ( uint iChain = 0; iChain < p_moleculeParent.getChainCount(); iChain++ )
 		{
 			Model::Chain * const chain = p_moleculeParent.getChain( iChain );
 
 			if ( iChain == idParentChainToSoloize )
 			{
-				chain->setVisible( true );
+				chain->setVisible( true, false );
 				for ( uint iResidue = chain->getIndexFirstResidue(); iResidue <= chain->getIndexLastResidue();
 					  iResidue++ )
 				{
@@ -518,7 +557,7 @@ namespace VTX::Util::Molecule
 
 					if ( iResidue == idParentResidueToSoloize )
 					{
-						residue->setVisible( true );
+						residue->setVisible( true, false );
 						for ( uint iAtom = residue->getIndexFirstAtom();
 							  iAtom < residue->getIndexFirstAtom() + residue->getAtomCount();
 							  iAtom++ )
@@ -526,7 +565,7 @@ namespace VTX::Util::Molecule
 							Model::Atom * atom = p_moleculeParent.getAtom( iAtom );
 							if ( iAtom == idAtomToSoloize )
 							{
-								show( *atom, true, false, false );
+								show( *atom, true, false, false, false );
 								itAtomToSoloize++;
 
 								if ( itAtomToSoloize == p_atomIndexes.cend() )
@@ -547,23 +586,25 @@ namespace VTX::Util::Molecule
 							else
 							{
 								if ( atom != nullptr )
-									show( *atom, false, false, false );
+									show( *atom, false, false, false, false );
 							}
 						}
 					}
 					else
 					{
 						if ( residue != nullptr )
-							show( *residue, false, false, false );
+							show( *residue, false, false, false, false );
 					}
 				}
 			}
 			else
 			{
 				if ( chain != nullptr )
-					show( *chain, false, false, false );
+					show( *chain, false, false, false, false );
 			}
 		}
+
+		p_moleculeParent.notifyVisibilityChange();
 
 		if ( p_refreshMoleculeVisibility )
 		{

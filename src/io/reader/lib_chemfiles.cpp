@@ -247,9 +247,8 @@ namespace VTX::IO::Reader
 		std::map<uint, std::vector<size_t>> mapResidueBonds		 = std::map<uint, std::vector<size_t>>();
 		std::map<uint, std::vector<size_t>> mapResidueExtraBonds = std::map<uint, std::vector<size_t>>();
 
-		int			  oldIndexInChain			= INT_MIN;
-		CATEGORY_ENUM lastCategoryEnum			= CATEGORY_ENUM::UNKNOWN;
-		uint		  residueCategoryFirstIndex = 0;
+		int			  oldIndexInChain  = INT_MIN;
+		CATEGORY_ENUM lastCategoryEnum = CATEGORY_ENUM::UNKNOWN;
 
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 		{
@@ -269,9 +268,8 @@ namespace VTX::IO::Reader
 			if ( createNewChain )
 			{
 				// Create chain.
-				p_molecule.addChain();
+				modelChain = &p_molecule.addChain();
 				chainModelId++;
-				modelChain = p_molecule.getChain( chainModelId );
 				modelChain->setIndex( chainModelId );
 				if ( chainName != "" )
 				{
@@ -282,8 +280,7 @@ namespace VTX::IO::Reader
 				modelChain->setResidueCount( 0 );
 				modelChain->setOriginalChainID( chainId );
 				modelChain->setColor( Model::Chain::getChainIdColor( chainId ) );
-
-				p_molecule.getCategory( categoryEnum ).addChain( chainModelId );
+				modelChain->setCategoryEnum( categoryEnum );
 
 				lastChainName	 = chainName;
 				lastCategoryEnum = categoryEnum;

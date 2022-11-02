@@ -119,9 +119,10 @@ namespace VTX::Action::Category
 				for ( const std::pair<Model::Molecule * const, std::vector<Model::Category *>> & pair :
 					  categoriesPerMolecules )
 				{
-					for ( Model::Category * const chain : pair.second )
-						Util::Molecule::show( *chain, _getVisibilityBool( *chain ), true, false );
+					for ( Model::Category * const category : pair.second )
+						Util::Molecule::show( *category, _getVisibilityBool( *category ), true, false, false );
 
+					pair.first->notifyVisibilityChange();
 					pair.first->refreshVisibilities();
 					pair.first->computeRepresentationTargets();
 				}

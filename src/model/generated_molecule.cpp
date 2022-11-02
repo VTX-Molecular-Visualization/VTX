@@ -619,9 +619,8 @@ namespace VTX::Model
 		p_chain.setIndexFirstResidue( getResidueCount() );
 		p_chain.setColor( Model::Chain::getChainIdColor( p_chainSource.getOriginalChainID() ) );
 
-		const Model::Category * const chainCategory
-			= p_chainSource.getMoleculePtr()->getCategoryFromChain( p_chainSource );
-		getCategory( chainCategory->getCategoryEnum() ).addChain( p_chain.getIndex() );
+		const CATEGORY_ENUM & chainCategoryEnum = p_chainSource.getCategoryEnum();
+		getCategory( chainCategoryEnum ).addChain( p_chain.getIndex() );
 
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
@@ -665,10 +664,10 @@ namespace VTX::Model
 
 	Model::Chain & GeneratedMolecule::_extractFullChain( Model::Molecule & p_fromMolecule, const uint p_index )
 	{
-		Model::Chain &				  chain						= *p_fromMolecule.getChain( p_index );
-		const Model::Category * const chainCategory				= p_fromMolecule.getCategoryFromChain( chain );
-		const uint					  previousFirstResidueIndex = chain.getIndexFirstResidue();
-		const uint					  indexFirstResidue			= getResidueCount();
+		Model::Chain &		  chain						= *p_fromMolecule.getChain( p_index );
+		const CATEGORY_ENUM & chainCategoryEnum			= chain.getCategoryEnum();
+		const uint			  previousFirstResidueIndex = chain.getIndexFirstResidue();
+		const uint			  indexFirstResidue			= getResidueCount();
 
 		_addChain( &chain );
 
@@ -704,7 +703,7 @@ namespace VTX::Model
 		chain.setIndex( getChainCount() - 1 );
 		chain.setIndexFirstResidue( indexFirstResidue );
 
-		getCategory( chainCategory->getCategoryEnum() ).addChain( chain.getIndex() );
+		getCategory( chain.getCategoryEnum() ).addChain( chain.getIndex() );
 
 		p_fromMolecule.removeChain( p_index, false, false, false );
 

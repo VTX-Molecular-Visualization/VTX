@@ -846,38 +846,32 @@ namespace VTX
 		};
 		Model::Category * Molecule::getCategoryFromChain( const Model::Chain & p_chain )
 		{
-			for ( Model::Category * const category : _categories )
-			{
-				if ( category->hasChain( p_chain.getIndex() ) )
-					return category;
-			}
-
-			return nullptr;
+			return _categories[ int( p_chain.getCategoryEnum() ) ];
 		}
 		const Model::Category * Molecule::getCategoryFromChain( const Model::Chain & p_chain ) const
 		{
-			for ( Model::Category * const category : _categories )
-			{
-				if ( category->hasChain( p_chain.getIndex() ) )
-					return category;
-			}
-
-			return nullptr;
+			return _categories[ int( p_chain.getCategoryEnum() ) ];
 		}
 
 		void Molecule::setVisible( const bool p_visible )
 		{
-			if ( isVisible() != p_visible )
+			const bool previousVisibleState = isVisible();
+
+			BaseVisible::setVisible( p_visible );
+
+			if ( previousVisibleState != p_visible )
 			{
-				BaseVisible::setVisible( p_visible );
 				_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
 			}
 		}
 		void Molecule::setVisible( const bool p_visible, const bool p_notify )
 		{
-			if ( isVisible() != p_visible )
+			const bool previousVisibleState = isVisible();
+
+			BaseVisible::setVisible( p_visible );
+
+			if ( previousVisibleState != p_visible )
 			{
-				BaseVisible::setVisible( p_visible );
 				if ( p_notify )
 					_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
 			}

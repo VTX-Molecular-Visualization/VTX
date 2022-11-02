@@ -2,6 +2,7 @@
 #define __VTX_MODEL_CHAIN__
 
 #include "base_model.hpp"
+#include "category_enum.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
@@ -64,6 +65,10 @@ namespace VTX
 			inline uint getIndexLastResidue() const { return _indexFirstResidue + _residueCount - 1; };
 
 			// Mask BaseVisible::setVisible
+			const CATEGORY_ENUM & getCategoryEnum() const { return _categoryEnum; }
+			void				  setCategoryEnum( const CATEGORY_ENUM & p_categoryEnum );
+
+			// Mask BaseVisible::setVisible
 			void setVisible( const bool p_visible );
 			void setVisible( const bool p_visible, const bool p_notify );
 
@@ -79,6 +84,8 @@ namespace VTX
 
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;
+			CATEGORY_ENUM _categoryEnum = CATEGORY_ENUM::UNKNOWN;
+
 			uint		_index			 = 0;
 			Molecule *	_moleculePtr	 = nullptr;
 			std::string _originalChainID = "";
