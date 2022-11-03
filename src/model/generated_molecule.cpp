@@ -596,7 +596,7 @@ namespace VTX::Model
 			generatedAtomPosFrame.reserve( atomPosFrame.size() );
 		}
 
-		for ( const UnknownResidueData * const unknownSymbolPtr : p_molecule.getUnknownResidueSymbols() ) 
+		for ( const UnknownResidueData * const unknownSymbolPtr : p_molecule.getUnknownResidueSymbols() )
 		{
 			UnknownResidueData * const unknownSymbolCopy = new UnknownResidueData( *unknownSymbolPtr );
 			addUnknownResidueSymbol( unknownSymbolCopy );
@@ -629,7 +629,7 @@ namespace VTX::Model
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
 			VTX::Representation::RepresentationManager::get().instantiateCopy(
-				p_chainSource.getRepresentation(), *this, false, false );
+				p_chainSource.getRepresentation(), p_chain, false, false );
 		}
 	}
 	void GeneratedMolecule::_copyResidueData( Model::Residue &		 p_residue,
@@ -649,7 +649,7 @@ namespace VTX::Model
 		if ( p_residueSource.hasCustomRepresentation() )
 		{
 			VTX::Representation::RepresentationManager::get().instantiateCopy(
-				p_residueSource.getRepresentation(), *this, false, false );
+				p_residueSource.getRepresentation(), p_residue, false, false );
 		}
 	}
 	void GeneratedMolecule::_copyAtomData( Model::Atom &		  p_atom,
