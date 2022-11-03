@@ -75,20 +75,20 @@ namespace VTX
 	const Generic::COLOR_MODE		   Setting::COLOR_MODE_DEFAULT			   = Generic::COLOR_MODE::CHAIN;
 
 	const std::vector<std::string> Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_NAME = {
-		"Cartoon", // POLYMER
-		"Cartoon", // CARBOHYDRATE
-		"Stick",   // LIGAND
-		"VdW",	   // ION
-		"VdW",	   // SOLVENT
-		"Stick",   // WATER
-		"Stick",   // UNKNOWN
+		"Stick", // POLYMER
+		"Stick", // CARBOHYDRATE
+		"Stick", // LIGAND
+		"VdW",	 // ION
+		"Stick", // SOLVENT
+		"Stick", // WATER
+		"Stick", // UNKNOWN
 	};
 	const std::vector<int> Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_INDEX = {
-		1, // POLYMER
-		1, // CARBOHYDRATE
+		4, // POLYMER
+		4, // CARBOHYDRATE
 		4, // LIGAND
 		6, // ION
-		6, // SOLVENT
+		4, // SOLVENT
 		4, // WATER
 		4, // UNKNOWN
 	};
