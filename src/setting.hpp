@@ -11,6 +11,8 @@
 
 namespace VTX
 {
+	enum class CATEGORY_ENUM;
+
 	namespace Generic
 	{
 		enum class COLOR_MODE;
@@ -104,6 +106,9 @@ namespace VTX
 		static const float SES_RESOLUTION_MAX;
 
 		static const Generic::COLOR_MODE COLOR_MODE_DEFAULT;
+
+		static const std::vector<std::string> DEFAULT_REPRESENTATION_PER_CATEGORY_NAME;
+		static const std::vector<int>		  DEFAULT_REPRESENTATION_PER_CATEGORY_INDEX;
 
 		static const std::string NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME;
 		static const int		 RENDER_EFFECT_DEFAULT_INDEX;
@@ -282,6 +287,8 @@ namespace VTX
 			CHECK_VTX_UPDATE,
 			PORTABLE_SAVE_ACTIVATED,
 
+			DEFAULT_REPRESENTATION_PER_CATEGORY,
+
 			COUNT,
 			ALL,
 		};
@@ -323,6 +330,13 @@ namespace VTX
 		void	   setDefaultRepresentationIndex( const int p_representationDefaultIndex );
 		inline int getDefaultRenderEffectPresetIndex() const { return renderEffectDefaultIndex; }
 		void	   setDefaultRenderEffectPresetIndex( const int p_renderEffectDefaultIndex );
+
+		int					getDefaultRepresentationIndexPerCategory( const CATEGORY_ENUM & p_categoryEnum ) const;
+		void				setDefaultRepresentationIndexPerCategory( const CATEGORY_ENUM & p_categoryEnum,
+																	  const int				p_representationDefaultIndex );
+		const std::string & getTmpDefaultRepresentationNamePerCategory( const CATEGORY_ENUM & p_categoryEnum );
+		void				setTmpDefaultRepresentationNamePerCategory( const CATEGORY_ENUM & p_categoryEnum,
+																		const std::string &	  p_representationDefaultName );
 
 		inline VTX::Selection::Granularity getSelectionGranularity() const { return selectionGranularity; }
 		void setSelectionGranularity( const VTX::Selection::Granularity & p_selectionGranularity );
@@ -376,6 +390,8 @@ namespace VTX
 		static QString getLastExportedImageFolder();
 		static void	   saveLastExportedImageFolder( const QString & p_path );
 
+		void restoreDefaultRepresentationPerCategory();
+
 		void backup();
 		void recover();
 		void restore();
@@ -407,8 +423,12 @@ namespace VTX
 		int representationDefaultIndex = REPRESENTATION_DEFAULT_INDEX;
 		int renderEffectDefaultIndex   = RENDER_EFFECT_DEFAULT_INDEX;
 
+		std::vector<int> representationPerCategory = DEFAULT_REPRESENTATION_PER_CATEGORY_INDEX;
+
 		std::string _tmpRepresentationDefaultName = "";
 		std::string _tmpRenderEffectDefaultName	  = "";
+
+		std::vector<std::string> _tmpRepresentationPerCategory = DEFAULT_REPRESENTATION_PER_CATEGORY_NAME;
 
 		VTX::Selection::Granularity selectionGranularity = SELECTION_GRANULARITY_DEFAULT;
 

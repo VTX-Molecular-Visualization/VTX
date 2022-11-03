@@ -127,6 +127,27 @@ namespace VTX
 				{
 					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation(
 						*this, false, false );
+
+					for ( Model::Category * const category : getCategories() )
+					{
+						if ( category->isEmpty() )
+							continue;
+
+						const Model::Representation::Representation * const defaultRepresentation
+							= VTXApp::get().getRepresentationLibrary().getDefaultRepresentation(
+								category->getCategoryEnum() );
+
+						for ( const uint chainIndex : category->getChains() )
+						{
+							Model::Chain * const chain = getChain( chainIndex );
+
+							if ( chain == nullptr )
+								continue;
+
+							VTX::Representation::RepresentationManager::get().instantiateRepresentation(
+								defaultRepresentation, *chain, false, false );
+						}
+					}
 				}
 				computeAllRepresentationData();
 

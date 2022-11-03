@@ -72,6 +72,32 @@ namespace VTX::Worker
 			_library.setDefaultRepresentation( VTX_SETTING().getDefaultRepresentationIndex(), false );
 		}
 
+		for ( int i = 0; i < int( CATEGORY_ENUM::COUNT ); i++ )
+		{
+			const CATEGORY_ENUM categoryEnum = CATEGORY_ENUM( i );
+			const std::string & representationName
+				= VTXApp::get().getSetting().getTmpDefaultRepresentationNamePerCategory( categoryEnum );
+
+			if ( representationName.empty() )
+				continue;
+
+			Model::Representation::Representation * defaultRepresentation
+				= _library.getRepresentationByName( representationName );
+
+			if ( defaultRepresentation == nullptr )
+			{
+				defaultRepresentation
+					= _library.getRepresentationByName( VTX_SETTING().DEFAULT_REPRESENTATION_PER_CATEGORY_NAME[ i ] );
+
+				if ( defaultRepresentation == nullptr )
+					defaultRepresentation = _library.getRepresentation( 0 );
+			}
+
+			const int defaultRepresentationIndex = _library.getRepresentationIndex( defaultRepresentation );
+
+			VTX_SETTING().setDefaultRepresentationIndexPerCategory( categoryEnum, defaultRepresentationIndex );
+		}
+
 		if ( _restore )
 			Representation::RepresentationManager::get().restoreRepresentations();
 
