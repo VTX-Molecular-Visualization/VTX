@@ -327,9 +327,13 @@ namespace VTX::IO
 		for ( int i = 0; i < int( CATEGORY_ENUM::COUNT ); i++ )
 		{
 			const int representationIndex = p_setting.getDefaultRepresentationIndexPerCategory( CATEGORY_ENUM( i ) );
-			defaultRepresentationNamePerCategory[ i ] = Model::Representation::RepresentationLibrary::get()
-															.getRepresentation( representationIndex )
-															->getName();
+			const Model::Representation::Representation * representation
+				= Model::Representation::RepresentationLibrary::get().getRepresentation( representationIndex );
+
+			if ( representation == nullptr )
+				representation = Model::Representation::RepresentationLibrary::get().getDefaultRepresentation();
+
+			defaultRepresentationNamePerCategory[ i ] = representation->getName();
 		}
 
 		return {
@@ -360,7 +364,6 @@ namespace VTX::IO
 			{ "SELECTION_GRANULARITY", magic_enum::enum_name( p_setting.getSelectionGranularity() ) },
 
 			{ "DEFAULT_REPRESENTATION_PER_CATEGORY", defaultRepresentationNamePerCategory },
-
 		};
 	}
 
