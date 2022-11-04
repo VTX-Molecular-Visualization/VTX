@@ -245,14 +245,14 @@ namespace VTX
 			bool isAtEndOfTrajectoryPlay();
 			void resetTrajectoryPlay();
 
-			inline bool showWater() const { return _showWater; }
-			void		setShowWater( const bool p_showWater );
-			inline bool showHydrogen() const { return _showHydrogen; }
-			void		setShowHydrogen( const bool p_showHydrogen );
-			inline bool showSolvent() const { return _showSolvent; }
-			void		setShowSolvent( const bool p_showSolvent );
-			inline bool showIon() const { return _showIon; }
-			void		setShowIon( const bool p_showIon );
+			bool showWater() const;
+			void setShowWater( const bool p_showWater );
+			bool showHydrogen() const;
+			void setShowHydrogen( const bool p_showHydrogen );
+			bool showSolvent() const;
+			void setShowSolvent( const bool p_showSolvent );
+			bool showIon() const;
+			void setShowIon( const bool p_showIon );
 
 			// At least one residue
 			inline bool hasTopology() const { return getResidueCount() > 1; }

@@ -15,6 +15,7 @@
 #include "solvent_excluded_surface.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
@@ -350,23 +351,7 @@ namespace VTX
 					{
 						_bufferAtomVisibilities[ i ] = 0u;
 					}
-					// Solvent hidden.
-					else if ( _showSolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
-					{
-						_bufferAtomVisibilities[ i ] = 0u;
-					}
-					// Ion hidden.
-					else if ( _showIon == false && atom->getType() == Atom::TYPE::ION )
-					{
-						_bufferAtomVisibilities[ i ] = 0u;
-					}
 					else if ( _showHydrogen == false && atom->getSymbol() == Atom::SYMBOL::A_H )
-					{
-						_bufferAtomVisibilities[ i ] = 0u;
-					}
-					else if ( _showWater == false
-							  && ( atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::HOH
-								   || atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::WAT ) )
 					{
 						_bufferAtomVisibilities[ i ] = 0u;
 					}
@@ -649,27 +634,31 @@ namespace VTX
 			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_DATA_CHANGE ) );
 		}
 
+		bool Molecule::showWater() const { return getCategory( CATEGORY_ENUM::WATER ).isVisible(); }
 		void Molecule::setShowWater( const bool p_showWater )
 		{
-			_showWater = p_showWater;
+			Util::Molecule::show( getCategory( CATEGORY_ENUM::WATER ), p_showWater );
 			_fillBufferAtomVisibilities();
 			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
 		}
+		bool Molecule::showHydrogen() const { return _showHydrogen; }
 		void Molecule::setShowHydrogen( const bool p_showHydrogen )
 		{
 			_showHydrogen = p_showHydrogen;
 			_fillBufferAtomVisibilities();
 			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
 		}
+		bool Molecule::showSolvent() const { return getCategory( CATEGORY_ENUM::SOLVENT ).isVisible(); }
 		void Molecule::setShowSolvent( const bool p_showSolvent )
 		{
-			_showSolvent = p_showSolvent;
+			Util::Molecule::show( getCategory( CATEGORY_ENUM::SOLVENT ), p_showSolvent );
 			_fillBufferAtomVisibilities();
 			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
 		}
+		bool Molecule::showIon() const { return getCategory( CATEGORY_ENUM::ION ).isVisible(); }
 		void Molecule::setShowIon( const bool p_showIon )
 		{
-			_showIon = p_showIon;
+			Util::Molecule::show( getCategory( CATEGORY_ENUM::ION ), p_showIon );
 			_fillBufferAtomVisibilities();
 			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
 		}
