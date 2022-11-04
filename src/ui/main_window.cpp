@@ -7,6 +7,7 @@
 #include "controller/measurement_picker.hpp"
 #include "event/event_manager.hpp"
 #include "io/struct/scene_path_data.hpp"
+#include "style.hpp"
 #include "util/analysis.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
@@ -88,7 +89,7 @@ namespace VTX::UI
 
 	void MainWindow::setupUi()
 	{
-		const QSize winsize = QSize( VTX_SETTING().WINDOW_WIDTH_DEFAULT, VTX_SETTING().WINDOW_HEIGHT_DEFAULT );
+		const QSize winsize = QSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
 		resize( winsize );
 		setWindowState( Qt::WindowState::WindowNoState );
 		refreshWindowTitle();

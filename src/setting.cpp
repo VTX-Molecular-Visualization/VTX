@@ -23,18 +23,7 @@ namespace VTX
 {
 	// UI.
 	const Style::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT = Style::SYMBOL_DISPLAY_MODE::SHORT;
-	const int						 Setting::WINDOW_WIDTH_DEFAULT		  = 1280;
-	const int						 Setting::WINDOW_HEIGHT_DEFAULT		  = 720;
 	const bool						 Setting::WINDOW_FULLSCREEN_DEFAULT	  = false;
-
-	const int Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT  = 200;
-	const int Setting::SCENE_WIDGET_WIDTH_DEFAULT	  = 50;
-	const int Setting::INSPECTOR_WIDGET_WIDTH_DEFAULT = 50;
-	const int Setting::RENDER_WIDGET_HEIGHT_DEFAULT
-		= Setting::WINDOW_HEIGHT_DEFAULT - Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT;
-
-	const int Setting::STATUS_PROGRESS_BAR_CHUNKS = 10;
-	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;
 
 	// Rendering.
 	const bool Setting::ACTIVE_RENDERER_DEFAULT = true;
@@ -212,7 +201,6 @@ namespace VTX
 	const float Setting::CE_ALIGN_D1_DEFAULT	   = 4.f;
 
 	// Misc.
-	const int  Setting::CONSOLE_SIZE	   = 80;
 	const uint Setting::ACTION_BUFFER_SIZE = 10;
 
 	const bool	Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE	 = false;

@@ -27,7 +27,7 @@ namespace VTX
 						}
 						else
 						{
-							int progressBarValue = (int)( progress * VTX_SETTING().STATUS_PROGRESS_BAR_CHUNKS );
+							int progressBarValue = (int)( progress * Style::STATUS_PROGRESS_BAR_CHUNKS );
 							_progressBar->setValue( progressBarValue );
 							_progressBar->show();
 						}
@@ -44,9 +44,9 @@ namespace VTX
 
 					_progressBar = new QProgressBar( this );
 					_progressBar->setMinimum( 0 );
-					_progressBar->setMaximum( VTX_SETTING().STATUS_PROGRESS_BAR_CHUNKS );
+					_progressBar->setMaximum( Style::STATUS_PROGRESS_BAR_CHUNKS );
 					_progressBar->setTextVisible( false );
-					_progressBar->setFixedWidth( VTX_SETTING().STATUS_PROGRESS_BAR_WIDTH );
+					_progressBar->setFixedWidth( Style::STATUS_PROGRESS_BAR_WIDTH );
 					_progressBar->hide();
 					this->addWidget( _progressBar );
 				}

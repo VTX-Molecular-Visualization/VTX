@@ -243,6 +243,12 @@ namespace VTX
 
 		inline static const int LAYOUT_VERSION = 1;
 
+		inline static const int WINDOW_WIDTH_DEFAULT  = 1280;
+		inline static const int WINDOW_HEIGHT_DEFAULT = 720;
+
+		inline static const int STATUS_PROGRESS_BAR_CHUNKS = 10;
+		inline static const int STATUS_PROGRESS_BAR_WIDTH  = 100;
+
 		static const QSize INSPECTOR_PREFERRED_SIZE			   = QSize( 300, 100 );
 		static const QSize INSPECTOR_MINIMUM_SIZE			   = QSize( 1, 1 );
 		static const QSize RENDER_PREFERRED_SIZE			   = QSize( 1000, 1000 );

@@ -47,24 +47,7 @@ namespace VTX
 	  public:
 		// UI.
 		static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
-
-		static const int  WINDOW_WIDTH_DEFAULT;
-		static const int  WINDOW_HEIGHT_DEFAULT;
-		static const bool WINDOW_FULLSCREEN_DEFAULT;
-
-		static const int CONSOLE_WIDGET_HEIGHT_DEFAULT;
-		static const int SCENE_WIDGET_WIDTH_DEFAULT;
-		static const int INSPECTOR_WIDGET_WIDTH_DEFAULT;
-		static const int RENDER_WIDGET_HEIGHT_DEFAULT;
-
-		static const int STATUS_PROGRESS_BAR_CHUNKS;
-		static const int STATUS_PROGRESS_BAR_WIDTH;
-
-		static const QString MOLECULE_EXTENSIONS;
-		static const QString VTX_EXTENSIONS;
-		static const QString MOLECULE_FILE_FILTERS;
-		static const QString OPEN_FILE_FILTERS;
-		static const QString SAVE_FILE_FILTERS;
+		static const bool						WINDOW_FULLSCREEN_DEFAULT;
 
 		// Rendering.
 		static const bool ACTIVE_RENDERER_DEFAULT;

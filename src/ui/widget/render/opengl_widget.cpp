@@ -167,8 +167,8 @@ namespace VTX::UI::Widget::Render
 		if ( needInit )
 		{
 			const float pixelRatio = getScreenPixelRatio();
-			getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT * pixelRatio,
-								Setting::WINDOW_HEIGHT_DEFAULT * pixelRatio,
+			getRenderer().init( Style::WINDOW_WIDTH_DEFAULT * pixelRatio,
+								Style::WINDOW_HEIGHT_DEFAULT * pixelRatio,
 								defaultFramebufferObject() );
 		}
 	}
