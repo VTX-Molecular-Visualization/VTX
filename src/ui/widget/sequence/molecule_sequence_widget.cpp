@@ -1,6 +1,7 @@
 #include "molecule_sequence_widget.hpp"
 #include "action/action_manager.hpp"
 #include "action/selection.hpp"
+#include "model/category_enum.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
@@ -110,6 +111,7 @@ namespace VTX::UI::Widget::Sequence
 		else
 		{
 			txt = _model->getDisplayName() + Style::SEQUENCE_CHAIN_NAME_SEPARATOR + p_currentChainDisplayed->getName()
+				  + "-" + CATEGORY_ENUM_STR[ int( p_currentChainDisplayed->getCategoryEnum() ) ]
 				  + Style::SEQUENCE_CHAIN_NAME_SEPARATOR;
 		}
 
@@ -152,8 +154,9 @@ namespace VTX::UI::Widget::Sequence
 			QLabel * const chainNameWidget = new QLabel( this );
 			chainNameWidget->setAlignment( Qt::AlignmentFlag::AlignTop );
 			chainNameWidget->setFont( Style::SEQUENCE_DISPLAY_FONT() );
-			chainNameWidget->setText( QString::fromStdString( Style::SEQUENCE_CHAIN_NAME_SEPARATOR + chain->getName()
-															  + Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
+			chainNameWidget->setText( QString::fromStdString(
+				Style::SEQUENCE_CHAIN_NAME_SEPARATOR + chain->getName() + "-"
+				+ CATEGORY_ENUM_STR[ int( chain->getCategoryEnum() ) ] + Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
 			_chainLabelWidgets.emplace_back( chainNameWidget );
 
 			ChainSequenceWidget * const chainSequenceDisplay
