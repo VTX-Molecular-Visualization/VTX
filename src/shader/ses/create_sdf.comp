@@ -111,10 +111,10 @@ void main()
 		{		
 			for ( int oz = -uCellsToVisitCount.z; oz <= uCellsToVisitCount.z && !found; ++oz )
 			{	
-				ivec3 offset = ivec3( ox, oy, oz );
-				ivec3 gridPositionToVisit = atomGridPosition + offset;				
+				vec3 offset = vec3( ox, oy, oz );
+				vec3 gridPositionToVisit = atomGridPosition + offset;				
 				
-				/*
+				
 				if ( gridPositionToVisit.x < 0 || gridPositionToVisit.y < 0
 					|| gridPositionToVisit.z < 0 || gridPositionToVisit.x >= uGridAtomSize.x
 					|| gridPositionToVisit.y >= uGridAtomSize.y
@@ -122,12 +122,16 @@ void main()
 				{
 					continue;
 				}
-				*/
-				
-				uint hashToVisit = gridHash( gridPositionToVisit, uGridAtomSize );
+
+				uint hashToVisit = gridHash( ivec3(gridPositionToVisit), uGridAtomSize );
 				uint first = atomGridData[ hashToVisit ].first;
 				uint count = atomGridData[ hashToVisit ].count;					
 							
+				sesGridData[sesGridHash].sdf = int(first);
+				sesGridData[sesGridHash].nearestAtom = int(count);
+
+				return;
+
 				// Compute SDF.
 				for ( uint i = first; i < first + count; ++i )
 				{		

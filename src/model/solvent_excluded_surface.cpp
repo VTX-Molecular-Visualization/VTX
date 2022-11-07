@@ -31,7 +31,7 @@ namespace VTX
 
 		void SolventExcludedSurface::refresh()
 		{
-			_mode = Mode::GPU;
+			_mode = Mode::CPU;
 
 			switch ( _mode )
 			{
@@ -185,6 +185,8 @@ namespace VTX
 			std::ofstream outFile( "GPU_DATA.txt" );
 			for ( const auto & e : sesGridData )
 				outFile << std::to_string( e.sdf ) + " " + std::to_string( e.nearestAtom ) << "\n";
+			// for ( const auto & e : atomGridDataSorted )
+			// outFile << std::to_string( e.first ) + " " + std::to_string( e.count ) << "\n";
 			outFile.close();
 
 			// chrono2.start();
@@ -457,6 +459,15 @@ namespace VTX
 						// Loop over the 27 cells to visit.
 						float minDistance = FLOAT_MAX;
 						bool  found		  = false;
+
+						////////////////////////////////////
+						uint hashToVisit					   = gridAtoms.gridHash( atomGridPosition );
+						uint first							   = atomGridDataSorted[ hashToVisit ].first;
+						uint count							   = atomGridDataSorted[ hashToVisit ].count;
+						sesGridData[ sesGridHash ].sdf		   = int( first );
+						sesGridData[ sesGridHash ].nearestAtom = int( count );
+						break;
+						////////////////////////////////////
 
 						for ( int ox = -cellsToVisitCount.x; ox <= cellsToVisitCount.x && !found; ++ox )
 						{
