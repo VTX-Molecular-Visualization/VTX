@@ -52,7 +52,7 @@ namespace VTX
 
 		// Create scene.
 		_scene = new Object3D::Scene();
-		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
+		_scene->getCamera().setScreenSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
 
 		_pathSceneData = new IO::Struct::ScenePathData();
 
