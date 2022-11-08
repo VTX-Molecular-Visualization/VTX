@@ -186,6 +186,7 @@ namespace VTX
 			void setVisible( const bool p_visible );
 			void setVisible( const bool p_visible, const bool p_notify );
 
+			const Vec3f &				 getLocalPosition() const;
 			const Vec3f					 getWorldPosition() const;
 			const Object3D::Helper::AABB getAABB() const;
 			const Object3D::Helper::AABB getWorldAABB() const;
