@@ -642,8 +642,8 @@ namespace VTX::IO::Reader
 		assert( counter == counterOld );
 	}
 
-	bool LibChemfiles::_tryApplyingDynamicOnTargets( chemfiles::Trajectory &		p_dynamicTrajectory,
-													 std::vector<Model::Molecule *> p_potentialTargets ) const
+	bool LibChemfiles::_tryApplyingDynamicOnTargets( chemfiles::Trajectory &				p_dynamicTrajectory,
+													 const std::vector<Model::Molecule *> & p_potentialTargets ) const
 	{
 		bool res = false;
 		if ( p_dynamicTrajectory.nsteps() <= 0 )

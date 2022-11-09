@@ -77,9 +77,9 @@ namespace VTX
 			{
 				_moleculeTargetsForDynamics.emplace_back( p_target );
 			}
-			inline void setOpenTrajectoryAsStandalone( const bool p_openAsStandalone )
+			inline void setOpenTrajectoryAsMoleculeIfTargetFail( const bool p_openAsMolecule )
 			{
-				_openTrajectoryAsStandalone = p_openAsStandalone;
+				_openTrajectoryAsMolecule = p_openAsMolecule;
 			}
 
 		  protected:
@@ -103,7 +103,7 @@ namespace VTX
 			std::vector<Model::Molecule *>		   _moleculeTargetsForDynamics = std::vector<Model::Molecule *>();
 
 			Tool::Chrono _loadingFileChrono;
-			bool		 _openTrajectoryAsStandalone = true;
+			bool		 _openTrajectoryAsMolecule = true;
 
 			void _fillFilepathPerMode();
 

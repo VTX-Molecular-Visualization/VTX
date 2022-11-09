@@ -139,7 +139,7 @@ namespace VTX
 
 					if ( !dynamicAppliedOnTarget ) // If the dynamic doesn't match any targets, we open it as standalone
 					{
-						if ( _openTrajectoryAsStandalone )
+						if ( _openTrajectoryAsMolecule )
 						{
 							Model::Molecule * const molecule
 								= MVC::MvcManager::get().instantiateModel<Model::Molecule>();
@@ -263,9 +263,10 @@ namespace VTX
 			{
 				return MODE::CONFIGURATION;
 			}
-			else if ( extension == "cif" || extension == "cml" || extension == "cssr" || extension == "mmcif"
-					  || extension == "mmtf" || extension == "mol2" || extension == "molden" || extension == "pdb"
-					  || extension == "sdf" || extension == "smi" || extension == "mmtf" || extension == "xyz" )
+			else if ( extension == "cif" || extension == "cml" || extension == "cssr" || extension == "gro"
+					  || extension == "mmcif" || extension == "mmtf" || extension == "mol2" || extension == "molden"
+					  || extension == "pdb" || extension == "sdf" || extension == "smi" || extension == "mmtf"
+					  || extension == "xyz" )
 			{
 				return MODE::MOLECULE;
 			}
@@ -273,9 +274,8 @@ namespace VTX
 			{
 				return MODE::MESH;
 			}
-			else if ( extension == "nc" || extension == "dcd" || extension == "gro" || extension == "lammpstrj"
-					  || extension == "arc" || extension == "trr" || extension == "xtc" || extension == "tng"
-					  || extension == "trj" )
+			else if ( extension == "nc" || extension == "dcd" || extension == "lammpstrj" || extension == "arc"
+					  || extension == "trr" || extension == "xtc" || extension == "tng" || extension == "trj" )
 			{
 				return MODE::TRAJECTORY;
 			}

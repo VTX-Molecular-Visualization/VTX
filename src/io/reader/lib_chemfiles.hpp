@@ -45,8 +45,8 @@ namespace VTX
 			const std::string _getFormat( const IO::FilePath & );
 			const bool		  _needToRecomputeBonds( const std::string & p_format ) const;
 
-			bool _tryApplyingDynamicOnTargets( chemfiles::Trajectory &		  p_dynamicTrajectory,
-											   std::vector<Model::Molecule *> p_potentialTargets ) const;
+			bool _tryApplyingDynamicOnTargets( chemfiles::Trajectory &				  p_dynamicTrajectory,
+											   const std::vector<Model::Molecule *> & p_potentialTargets ) const;
 		};
 	} // namespace IO::Reader
 } // namespace VTX

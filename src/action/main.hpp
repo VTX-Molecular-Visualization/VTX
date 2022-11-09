@@ -131,12 +131,25 @@ namespace VTX::Action::Main
 					return;
 				}
 
-				for ( Model::Molecule * const trajectoryTarget : _trajectoryTargets )
+				const bool trajectoryTargetsForced = _trajectoryTargets.size() > 0;
+
+				if ( trajectoryTargetsForced )
 				{
-					loader->addDynamicTarget( trajectoryTarget );
+					for ( Model::Molecule * const trajectoryTarget : _trajectoryTargets )
+					{
+						loader->addDynamicTarget( trajectoryTarget );
+					}
+				}
+				else
+				{
+					for ( const Object3D::Scene::PairMoleculePtrFloat & molPair :
+						  VTXApp::get().getScene().getMolecules() )
+					{
+						loader->addDynamicTarget( molPair.first );
+					}
 				}
 
-				loader->setOpenTrajectoryAsStandalone( _trajectoryTargets.size() == 0 );
+				loader->setOpenTrajectoryAsMoleculeIfTargetFail( !trajectoryTargetsForced );
 
 				Worker::CallbackThread * callback = new Worker::CallbackThread(
 					[ loader ]( const uint p_code )
