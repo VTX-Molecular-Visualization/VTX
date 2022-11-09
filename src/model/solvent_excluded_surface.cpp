@@ -157,6 +157,7 @@ namespace VTX
 			worker.getProgram().setVec3i( "uGridSESSize", gridSES.size );
 			worker.getProgram().setVec3f( "uGridAtomCellSize", gridAtoms.cellSize );
 			worker.getProgram().setVec3f( "uGridSESCellSize", gridSES.cellSize );
+			worker.getProgram().setUInt( "uGridAtomCellCount", gridAtoms.getCellCount() );
 			worker.getProgram().setVec3i( "uCellsToVisitCount", cellsToVisitCount );
 			worker.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
 			worker.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
@@ -460,35 +461,30 @@ namespace VTX
 						float minDistance = FLOAT_MAX;
 						bool  found		  = false;
 
-						////////////////////////////////////
-						uint hashToVisit					   = gridAtoms.gridHash( atomGridPosition );
-						uint first							   = atomGridDataSorted[ hashToVisit ].first;
-						uint count							   = atomGridDataSorted[ hashToVisit ].count;
-						sesGridData[ sesGridHash ].sdf		   = int( first );
-						sesGridData[ sesGridHash ].nearestAtom = int( count );
-						break;
-						////////////////////////////////////
-
 						for ( int ox = -cellsToVisitCount.x; ox <= cellsToVisitCount.x && !found; ++ox )
 						{
 							for ( int oy = -cellsToVisitCount.y; oy <= cellsToVisitCount.y && !found; ++oy )
 							{
 								for ( int oz = -cellsToVisitCount.z; oz <= cellsToVisitCount.z && !found; ++oz )
 								{
-									Vec3i offset			  = Vec3i( ox, oy, oz );
-									Vec3i gridPositionToVisit = atomGridPosition + offset;
+									Vec3f offset			  = Vec3f( ox, oy, oz );
+									Vec3i gridPositionToVisit = Vec3i( Vec3f( atomGridPosition ) + offset );
+									uint  hashToVisit		  = gridAtoms.gridHash( Vec3i( gridPositionToVisit ) );
 
-									if ( gridPositionToVisit.x < 0 || gridPositionToVisit.y < 0
-										 || gridPositionToVisit.z < 0 || gridPositionToVisit.x >= gridAtoms.size.x
-										 || gridPositionToVisit.y >= gridAtoms.size.y
-										 || gridPositionToVisit.z >= gridAtoms.size.z )
+									if ( hashToVisit >= atomGridDataSorted.size() )
 									{
 										continue;
 									}
 
-									uint hashToVisit = gridAtoms.gridHash( gridPositionToVisit );
-									uint first		 = atomGridDataSorted[ hashToVisit ].first;
-									uint count		 = atomGridDataSorted[ hashToVisit ].count;
+									uint first = atomGridDataSorted[ hashToVisit ].first;
+									uint count = atomGridDataSorted[ hashToVisit ].count;
+
+									////////////////////////////////////////////
+									sesGridData[ sesGridHash ].sdf		   = hashToVisit;
+									sesGridData[ sesGridHash ].nearestAtom = int( sesGridHash );
+									found								   = true;
+									break;
+									////////////////////////////////////////////
 
 									// Compute SDF.
 									for ( uint i = first; i < first + count; ++i )

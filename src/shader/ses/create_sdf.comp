@@ -11,6 +11,7 @@ uniform ivec3	uGridAtomSize;
 uniform ivec3	uGridSESSize;
 uniform vec3	uGridAtomCellSize;
 uniform vec3	uGridSESCellSize;
+uniform uint	uGridAtomCellCount;
 uniform ivec3	uCellsToVisitCount;
 uniform float	uProbeRadius;
 uniform float	uVoxelSize;
@@ -59,9 +60,15 @@ layout (std430, binding = 4) writeonly buffer SESGridData
 // Grid functions.
 ivec3 gridPosition( vec3 p_worldPosition, vec3 p_worldOrigin, vec3 p_cellSize )
 {	
-	return ivec3( int( floor( ( p_worldPosition.x - p_worldOrigin.x ) / p_cellSize.x ) ),
-				  int( floor( ( p_worldPosition.y - p_worldOrigin.y ) / p_cellSize.y ) ),
-				  int( floor( ( p_worldPosition.z - p_worldOrigin.z ) / p_cellSize.z ) ) );
+	ivec3 gridPos = ivec3(floor(( p_worldPosition - p_worldOrigin ) / p_cellSize));
+
+	/*
+	gridPos.x = int( floor( ( p_worldPosition.x - p_worldOrigin.x ) / p_cellSize.x ) );
+	gridPos.y = int( floor( ( p_worldPosition.y - p_worldOrigin.y ) / p_cellSize.y ) );
+	gridPos.z = int( floor( ( p_worldPosition.z - p_worldOrigin.z ) / p_cellSize.z ) );
+	*/
+	
+	return gridPos;
 }
 
 ivec3 gridPosition( uint p_hash, ivec3 p_size )
@@ -73,7 +80,9 @@ ivec3 gridPosition( uint p_hash, ivec3 p_size )
 
 vec3 worldPosition( ivec3 p_gridPosition, vec3 p_worldOrigin, vec3 p_cellSize )
 {
-	return p_worldOrigin + ( vec3( p_gridPosition ) + 0.5f ) * p_cellSize;
+	vec3 position = p_worldOrigin;
+	position +=  ( vec3( p_gridPosition ) + 0.5f ) * p_cellSize;
+	return position;
 }
 
 vec3 worldPosition( uint p_hash, ivec3 p_size, vec3 p_worldOrigin, vec3 p_cellSize )
@@ -98,13 +107,13 @@ void main()
 	uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
 	
 	// Get corresponding acceleration grid data.
-	vec3 sesGridCellWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESSize );
-	ivec3 atomGridPosition = gridPosition( sesGridCellWorldPosition, uGridAtomWorldOrigin, uGridAtomSize);
+	vec3 sesGridCellWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize);
+	ivec3 atomGridPosition = gridPosition( sesGridCellWorldPosition, uGridAtomWorldOrigin, uGridAtomCellSize);
 
 	// Loop over the cells to visit.
 	float minDistance = FLT_MAX;
 	bool found	= false;
-
+	
 	for ( int ox = -uCellsToVisitCount.x; ox <= uCellsToVisitCount.x && !found; ++ox )
 	{
 		for ( int oy = -uCellsToVisitCount.y; oy <= uCellsToVisitCount.y && !found; ++oy )
@@ -112,31 +121,30 @@ void main()
 			for ( int oz = -uCellsToVisitCount.z; oz <= uCellsToVisitCount.z && !found; ++oz )
 			{	
 				vec3 offset = vec3( ox, oy, oz );
-				vec3 gridPositionToVisit = atomGridPosition + offset;				
+				ivec3 gridPositionToVisit = ivec3( atomGridPosition + offset );	
+				uint hashToVisit = gridHash( gridPositionToVisit, uGridAtomSize );	
 				
-				
-				if ( gridPositionToVisit.x < 0 || gridPositionToVisit.y < 0
-					|| gridPositionToVisit.z < 0 || gridPositionToVisit.x >= uGridAtomSize.x
-					|| gridPositionToVisit.y >= uGridAtomSize.y
-					|| gridPositionToVisit.z >= uGridAtomSize.z )
+				if ( hashToVisit >= uGridAtomCellCount )
 				{
 					continue;
-				}
+				}	
 
-				uint hashToVisit = gridHash( ivec3(gridPositionToVisit), uGridAtomSize );
 				uint first = atomGridData[ hashToVisit ].first;
-				uint count = atomGridData[ hashToVisit ].count;					
-							
-				sesGridData[sesGridHash].sdf = int(first);
-				sesGridData[sesGridHash].nearestAtom = int(count);
+				uint count = atomGridData[ hashToVisit ].count;
 
+				////////////////////////////////////////////
+				sesGridData[sesGridHash].sdf = hashToVisit;
+				sesGridData[sesGridHash].nearestAtom = int(sesGridHash);
 				return;
-
+				////////////////////////////////////////////
+				
 				// Compute SDF.
 				for ( uint i = first; i < first + count; ++i )
 				{		
 					uint index = atomIndex[i];					
 					float d = distance( atomPosition[ index ], sesGridCellWorldPosition );
+					
+					sesGridData[sesGridHash].sdf = d;
 					
 					// Inside.
 					if ( d < uVoxelSize )
