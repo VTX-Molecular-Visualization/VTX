@@ -6,6 +6,7 @@
 #include "selection/selection_manager.hpp"
 #include "ui/widget/dialog/download_molecule_dialog.hpp"
 #include "ui/widget/dialog/image_exporter.hpp"
+#include "ui/widget/dialog/set_trajectory_target_dialog.hpp"
 #include "util/filesystem.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
@@ -113,6 +114,15 @@ namespace VTX::UI
 			Setting::saveLastImportedMoleculeFolder( filename );
 			VTX_ACTION( new Action::Main::Open( IO::FilePath( filename.toStdString() ), p_target ) );
 		}
+	}
+
+	void Dialog::openSetTrajectoryTargetsDialog( const IO::FilePath & p_trajectoryFilePath )
+	{
+		UI::Widget::Dialog::SetTrajectoryTargetDialog::openDialog( p_trajectoryFilePath );
+	}
+	void Dialog::openSetTrajectoryTargetsDialog( const std::vector<IO::FilePath> & p_trajectoryFilePaths )
+	{
+		UI::Widget::Dialog::SetTrajectoryTargetDialog::openDialog( *p_trajectoryFilePaths.begin() );
 	}
 
 	void Dialog::createNewSessionDialog()

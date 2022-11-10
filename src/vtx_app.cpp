@@ -136,7 +136,8 @@ namespace VTX
 			}
 		}
 
-		VTX_ACTION( new Action::Main::Open( files ) );
+		if ( files.size() > 0 )
+			VTX_ACTION( new Action::Main::Open( files ) );
 
 		for ( const std::string & pdbId : pdbIds )
 		{

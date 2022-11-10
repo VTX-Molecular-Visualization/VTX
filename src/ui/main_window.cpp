@@ -8,6 +8,7 @@
 #include "event/event_manager.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "style.hpp"
+#include "ui/mime_type.hpp"
 #include "util/analysis.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
@@ -473,7 +474,9 @@ namespace VTX::UI
 
 	void MainWindow::dragEnterEvent( QDragEnterEvent * p_event )
 	{
-		// if ( p_event->mimeData()->hasFormat( "text/plain" ) )
+		const QMimeData * const mimeData = p_event->mimeData();
+
+		if ( UI::MimeType::getMimeTypeEnum( mimeData ) == UI::MimeType::ApplicationMimeType::FILE )
 		{
 			p_event->acceptProposedAction();
 		}
@@ -483,17 +486,25 @@ namespace VTX::UI
 	{
 		const QMimeData * const mimeData = p_event->mimeData();
 
-		if ( mimeData->hasUrls() )
+		if ( UI::MimeType::getMimeTypeEnum( mimeData ) == UI::MimeType::ApplicationMimeType::FILE )
 		{
-			std::vector<IO::FilePath> _paths  = std::vector<IO::FilePath>();
-			const QList<QUrl> &		  urlList = mimeData->urls();
+			const QList<QUrl> &					   urlList = mimeData->urls();
+			const std::vector<IO::FilePath>		   paths   = Util::Filesystem::getFilePathVectorFromQUrlList( urlList );
+			std::vector<std::vector<IO::FilePath>> pathPerFileTypes = std::vector<std::vector<IO::FilePath>>();
+			Util::Filesystem::fillFilepathPerMode( paths, pathPerFileTypes );
 
-			for ( const QUrl & url : urlList )
+			const std::vector<IO::FilePath> & trajectoryPaths
+				= pathPerFileTypes[ int( Util::Filesystem::FILE_TYPE_ENUM::TRAJECTORY ) ];
+
+			// If drop contains only trajectory path, open the specific window
+			if ( trajectoryPaths.size() == paths.size() )
 			{
-				_paths.emplace_back( IO::FilePath( url.toLocalFile().toStdString() ) );
+				UI::Dialog::openSetTrajectoryTargetsDialog( trajectoryPaths );
 			}
-
-			VTX_ACTION( new Action::Main::Open( _paths ) );
+			else // Else regular Open function called
+			{
+				VTX_ACTION( new Action::Main::Open( paths ) );
+			}
 		}
 	}
 

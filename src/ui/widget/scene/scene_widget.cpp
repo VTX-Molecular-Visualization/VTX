@@ -431,16 +431,21 @@ namespace VTX::UI::Widget::Scene
 	{
 		BaseManualWidget::dragEnterEvent( p_event );
 
-		const bool draggedObjectIsModel
-			= UI::MimeType::checkApplicationDataType( p_event->mimeData(), UI::MimeType::ApplicationMimeType::MODEL );
+		const UI::MimeType::ApplicationMimeType mimeType = UI::MimeType::getMimeTypeEnum( p_event->mimeData() );
 
-		if ( draggedObjectIsModel )
+		if ( mimeType == UI::MimeType::ApplicationMimeType::MODEL )
 		{
-			const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
+			const bool draggedObjectIsModel = UI::MimeType::checkApplicationDataType(
+				p_event->mimeData(), UI::MimeType::ApplicationMimeType::MODEL );
 
-			if ( modelData.getDragSource() == UI::MimeType::DragSource::SCENE_VIEW )
+			if ( draggedObjectIsModel )
 			{
-				p_event->acceptProposedAction();
+				const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
+
+				if ( modelData.getDragSource() == UI::MimeType::DragSource::SCENE_VIEW )
+				{
+					p_event->acceptProposedAction();
+				}
 			}
 		}
 	}

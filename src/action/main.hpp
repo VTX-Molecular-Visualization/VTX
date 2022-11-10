@@ -80,10 +80,15 @@ namespace VTX::Action::Main
 		explicit Open( const IO::FilePath & p_path ) { _paths.emplace_back( p_path ); }
 		explicit Open( const std::vector<IO::FilePath> & p_paths ) : _paths( p_paths ) {}
 		explicit Open( const std::map<IO::FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
-
 		explicit Open( const IO::FilePath & p_trajectoryPath, Model::Molecule & p_target )
 		{
 			_trajectoryTargets.emplace_back( &p_target );
+			_paths.emplace_back( p_trajectoryPath );
+		}
+		explicit Open( const IO::FilePath & p_trajectoryPath, const std::vector<Model::Molecule *> & p_targets )
+		{
+			_trajectoryTargets.resize( p_targets.size() );
+			std::copy( p_targets.begin(), p_targets.end(), _trajectoryTargets.begin() );
 			_paths.emplace_back( p_trajectoryPath );
 		}
 

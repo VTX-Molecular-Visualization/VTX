@@ -12,8 +12,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 {
 	StructuralAlignmentModelListWidget::ModelFieldLine::ModelFieldLine(
 		StructuralAlignmentModelListWidget * const p_owner ) :
-		_owner( p_owner ),
-		QObject( p_owner )
+		BaseModelFieldLine( p_owner ),
+		_owner( p_owner )
 	{
 		_tickButton = new QRadioButton( _owner );
 
@@ -34,9 +34,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		_rmsdLabel = new QLabel( _owner );
 		resetRMSD();
 	}
-	StructuralAlignmentModelListWidget::ModelFieldLine::~ModelFieldLine() {}
-
-	void StructuralAlignmentModelListWidget::ModelFieldLine::destroyWidgets()
+	StructuralAlignmentModelListWidget::ModelFieldLine::~ModelFieldLine()
 	{
 		if ( _tickButton != nullptr )
 			delete _tickButton;
@@ -98,152 +96,41 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 	{
 	}
 
-	void StructuralAlignmentModelListWidget::_setupUi( const QString & p_name )
+	void StructuralAlignmentModelListWidget::_onLineWillBeRemoved( CustomWidget::BaseModelFieldLine * const p_line )
 	{
-		_layout = new QGridLayout( this );
-
-		_layout->setContentsMargins( 0, 0, 0, 0 );
-		_layout->setSpacing( 10 );
-
-		_initColumn( GRID_LAYOUT_COLUMN::TICK, "Static", 0 );
-		_initColumn( GRID_LAYOUT_COLUMN::MODEL, "Molecule", 1000 );
-		_initColumn( GRID_LAYOUT_COLUMN::RMSD, "RMSD", 0 );
-		_initColumn( GRID_LAYOUT_COLUMN::REMOVE_BUTTON, "", 0 );
-	}
-	void StructuralAlignmentModelListWidget::_setupSlots() {}
-	void StructuralAlignmentModelListWidget::localize() {}
-
-	void StructuralAlignmentModelListWidget::addModel( Model::BaseModel * const p_model )
-	{
-		if ( getContainsOnlyUniqueModel() && _isModelAlreadyInList( p_model ) )
-			return;
-
-		_addModelInLayout( p_model, getModelCount() );
-
-		emit onModelListChange();
-	}
-	void StructuralAlignmentModelListWidget::insertModel( Model::BaseModel * const p_model, const int p_row )
-	{
-		bool listHasChanged = false;
-
-		if ( getContainsOnlyUniqueModel() && _isModelAlreadyInList( p_model ) )
+		ModelFieldLine * castedLine = dynamic_cast<ModelFieldLine *>( p_line );
+		if ( castedLine->isTicked() )
 		{
-			// TODO
-			//_modelListWidget->moveModel( p_model, p_position );
+			CustomWidget::BaseModelFieldLine * const lineToCheck = _findNextLine( p_line );
+
+			ModelFieldLine * const castedLineToCheck = dynamic_cast<ModelFieldLine * const>( lineToCheck );
+			if ( castedLineToCheck != nullptr )
+				castedLineToCheck->setTickState( true );
 		}
-		else
-		{
-			_addModelInLayout( p_model, getModelCount() );
-			listHasChanged = true;
-		}
-
-		if ( listHasChanged )
-			emit onModelListChange();
-	}
-	void StructuralAlignmentModelListWidget::removeModel( Model::BaseModel * const p_model )
-	{
-		std::vector<ModelFieldLine *>::const_iterator it = _lines.begin();
-
-		while ( it != _lines.end() )
-		{
-			if ( ( *it )->getModel() == p_model )
-			{
-				ModelFieldLine * const lineToDestroy = *it;
-				if ( lineToDestroy->isTicked() )
-				{
-					ModelFieldLine * const lineToCheck = _findNextLine( lineToDestroy );
-					if ( lineToCheck != nullptr )
-						lineToCheck->setTickState( true );
-				}
-
-				lineToDestroy->destroyWidgets();
-
-				delete lineToDestroy;
-				it = _lines.erase( it );
-
-				emit onModelListChange();
-				// break;
-			}
-			else
-			{
-				it++;
-			}
-		}
-	}
-	void StructuralAlignmentModelListWidget::swapModels( Model::BaseModel * const p_model1,
-														 Model::BaseModel * const p_model2 ) const
-	{
-		bool firstSwapDone = false;
-
-		for ( ModelFieldLine * const line : _lines )
-		{
-			if ( line->getModel() == p_model1 )
-			{
-				CustomWidget::ModelFieldWidget * const modelField = line->getModelField();
-
-				const bool oldSignalState = modelField->blockSignals( true );
-				modelField->setModel( p_model2 );
-				modelField->blockSignals( oldSignalState );
-				line->resetRMSD();
-
-				if ( firstSwapDone )
-					break;
-				else
-					firstSwapDone = true;
-			}
-			else if ( line->getModel() == p_model2 )
-			{
-				CustomWidget::ModelFieldWidget * const modelField = line->getModelField();
-
-				const bool oldSignalState = modelField->blockSignals( true );
-				modelField->setModel( p_model1 );
-				modelField->blockSignals( oldSignalState );
-				line->resetRMSD();
-
-				if ( firstSwapDone )
-					break;
-				else
-					firstSwapDone = true;
-			}
-		}
-	}
-
-	bool StructuralAlignmentModelListWidget::hasModel( const Model::BaseModel * const p_model ) const
-	{
-		for ( const ModelFieldLine * const line : _lines )
-			if ( line->getModel() == p_model )
-				return true;
-
-		return false;
-	}
-	int StructuralAlignmentModelListWidget::getModelCount() const { return int( _lines.size() ); }
-	std::vector<Model::BaseModel *> StructuralAlignmentModelListWidget::getModels() const
-	{
-		std::vector<Model::BaseModel *> res = std::vector<Model::BaseModel *>();
-		res.reserve( _lines.size() );
-
-		for ( const ModelFieldLine * const line : _lines )
-			res.emplace_back( line->getModel() );
-
-		return res;
 	}
 
 	Model::BaseModel * const StructuralAlignmentModelListWidget::getTickedModel() const
 	{
-		for ( ModelFieldLine * const line : _lines )
-			if ( line->isTicked() )
-				return line->getModel();
+		for ( CustomWidget::BaseModelFieldLine * const line : _getLines() )
+		{
+			ModelFieldLine * const castedLine = dynamic_cast<ModelFieldLine * const>( line );
+			if ( castedLine->isTicked() )
+				return castedLine->getModel();
+		}
 
 		return nullptr;
 	}
 	std::vector<Model::BaseModel *> StructuralAlignmentModelListWidget::getNotTickedModels() const
 	{
 		std::vector<Model::BaseModel *> res = std::vector<Model::BaseModel *>();
-		res.reserve( _lines.size() );
+		res.reserve( _getLines().size() );
 
-		for ( ModelFieldLine * const line : _lines )
-			if ( !line->isTicked() )
-				res.emplace_back( line->getModel() );
+		for ( CustomWidget::BaseModelFieldLine * const line : _getLines() )
+		{
+			ModelFieldLine * const castedLine = dynamic_cast<ModelFieldLine * const>( line );
+			if ( !castedLine->isTicked() )
+				res.emplace_back( castedLine->getModel() );
+		}
 
 		res.shrink_to_fit();
 
@@ -254,90 +141,42 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 													  const float					 p_rmsd,
 													  const size_t					 p_residueCount ) const
 	{
-		_findLineFromModel( p_model )->setRMSD( p_rmsd, p_residueCount );
+		_findLineFromModel<ModelFieldLine>( p_model )->setRMSD( p_rmsd, p_residueCount );
 	}
 	void StructuralAlignmentModelListWidget::resetRMSD( const Model::BaseModel * const p_model ) const
 	{
-		_findLineFromModel( p_model )->resetRMSD();
+		_findLineFromModel<ModelFieldLine>( p_model )->resetRMSD();
 	}
 
-	void StructuralAlignmentModelListWidget::_initColumn( const GRID_LAYOUT_COLUMN p_column,
-														  const std::string		   p_title,
-														  const int				   p_stretch )
+	void StructuralAlignmentModelListWidget::_initColumns()
 	{
-		const int columnIndex = int( p_column );
-		_layout->setColumnStretch( columnIndex, p_stretch );
-
-		if ( !p_title.empty() )
-		{
-			QLabel * const titleLabel = new QLabel( this );
-			titleLabel->setText( QString::fromStdString( p_title ) );
-
-			_layout->addWidget( titleLabel, 0, columnIndex );
-		}
+		_initColumn( int( GRID_LAYOUT_COLUMN::TICK ), "Static", 0 );
+		_initColumn( int( GRID_LAYOUT_COLUMN::MODEL ), "Molecule", 1000 );
+		_initColumn( int( GRID_LAYOUT_COLUMN::RMSD ), "RMSD", 0 );
+		_initColumn( int( GRID_LAYOUT_COLUMN::REMOVE_BUTTON ), "", 0 );
 	}
-	void StructuralAlignmentModelListWidget::_addModelInLayout( Model::BaseModel * const p_model, const int p_row )
+
+	CustomWidget::BaseModelFieldLine * const StructuralAlignmentModelListWidget::_instantiateLine()
 	{
 		ModelFieldLine * const newLine = new ModelFieldLine( this );
-
-		const int realRow = p_row + 1;
-
-		_layout->addWidget( newLine->getTickButton(), realRow, int( GRID_LAYOUT_COLUMN::TICK ) );
-		_layout->addWidget( newLine->getModelField(), realRow, int( GRID_LAYOUT_COLUMN::MODEL ) );
-		_layout->addWidget( newLine->getRemoveButton(), realRow, int( GRID_LAYOUT_COLUMN::REMOVE_BUTTON ) );
-		_layout->addWidget( newLine->getRMSDLabel(), realRow, int( GRID_LAYOUT_COLUMN::RMSD ) );
-
-		newLine->setModel( p_model );
-		newLine->setTickState( getModelCount() == 0 );
-
-		_lines.emplace_back( newLine );
+		return newLine;
 	}
-
-	bool StructuralAlignmentModelListWidget::_isModelAlreadyInList( const Model::BaseModel * const p_model ) const
+	void StructuralAlignmentModelListWidget::_initLine( CustomWidget::BaseModelFieldLine * const p_line,
+														Model::BaseModel * const				 p_model ) const
 	{
-		for ( const ModelFieldLine * const line : _lines )
-			if ( line->getModel() == p_model )
-				return true;
+		CustomWidget::BaseModelListWidget::_initLine( p_line, p_model );
 
-		return false;
+		ModelFieldLine * const castedLine = dynamic_cast<ModelFieldLine * const>( p_line );
+		castedLine->setTickState( getModelCount() == 0 );
 	}
-
-	StructuralAlignmentModelListWidget::ModelFieldLine * StructuralAlignmentModelListWidget::_findLineFromModel(
-		const Model::BaseModel * const p_model ) const
+	void StructuralAlignmentModelListWidget::_addLineInLayout( CustomWidget::BaseModelFieldLine * const p_line,
+															   const int								p_row )
 	{
-		for ( ModelFieldLine * const line : _lines )
-			if ( line->getModel() == p_model )
-				return line;
+		const ModelFieldLine * const castedLine = dynamic_cast<ModelFieldLine * const>( p_line );
 
-		return nullptr;
+		_addWidgetInColumn( castedLine->getTickButton(), p_row, int( GRID_LAYOUT_COLUMN::TICK ) );
+		_addWidgetInColumn( castedLine->getModelField(), p_row, int( GRID_LAYOUT_COLUMN::MODEL ) );
+		_addWidgetInColumn( castedLine->getRemoveButton(), p_row, int( GRID_LAYOUT_COLUMN::REMOVE_BUTTON ) );
+		_addWidgetInColumn( castedLine->getRMSDLabel(), p_row, int( GRID_LAYOUT_COLUMN::RMSD ) );
 	}
-	StructuralAlignmentModelListWidget::ModelFieldLine * StructuralAlignmentModelListWidget::_findNextLine(
-		const ModelFieldLine * const p_from ) const
-	{
-		ModelFieldLine * lineToCheck = nullptr;
-
-		for ( int i = 0; i < _lines.size(); i++ )
-		{
-			if ( _lines[ i ] == p_from )
-			{
-				if ( i < _lines.size() - 1 )
-				{
-					lineToCheck = _lines[ i + 1 ];
-				}
-				else if ( i > 0 )
-				{
-					lineToCheck = _lines[ i - 1 ];
-				}
-				else
-				{
-					lineToCheck = nullptr;
-				}
-
-				break;
-			}
-		}
-
-		return lineToCheck;
-	}
-
 } // namespace VTX::UI::Widget::Analysis::StructuralAlignment

@@ -33,18 +33,6 @@ namespace VTX
 			Q_OBJECT
 
 		  public:
-			enum class MODE : int
-			{
-				SCENE,
-				CONFIGURATION,
-				MOLECULE,
-				TRAJECTORY,
-				MESH,
-				UNKNOWN,
-
-				COUNT
-			};
-
 			enum class SOURCE_TYPE : int
 			{
 				FILE,
@@ -104,10 +92,6 @@ namespace VTX
 
 			Tool::Chrono _loadingFileChrono;
 			bool		 _openTrajectoryAsMolecule = true;
-
-			void _fillFilepathPerMode();
-
-			MODE _getMode( const IO::FilePath & ) const;
 
 			void _startLoadingFile( const IO::FilePath & p_path, const SOURCE_TYPE & p_sourceType );
 			void _endLoadingFileSuccess( const IO::FilePath & p_path );

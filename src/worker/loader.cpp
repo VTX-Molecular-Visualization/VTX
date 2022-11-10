@@ -21,7 +21,7 @@ namespace VTX
 	{
 		uint Loader::_run()
 		{
-			_fillFilepathPerMode();
+			Util::Filesystem::fillFilepathPerMode( _paths, _filepathsPerMode );
 
 			// Load all files.
 			_loadSceneFiles();
@@ -32,7 +32,7 @@ namespace VTX
 			_loadMeshFiles();
 
 			// Display errors for unknown files
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::UNKNOWN ) ] )
+			for ( const IO::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::UNKNOWN ) ] )
 			{
 				emit logError( "Error when loading " + path.path() + " : Format not supported" );
 				_pathResult[ path ].state = false;
@@ -46,7 +46,7 @@ namespace VTX
 
 		void Loader::_loadSceneFiles()
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::SCENE ) ] )
+			for ( const IO::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::SCENE ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -67,7 +67,8 @@ namespace VTX
 		}
 		void Loader::_loadConfigurationFiles( Model::Configuration::Molecule & p_config )
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::CONFIGURATION ) ] )
+			for ( const IO::FilePath & path :
+				  _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::CONFIGURATION ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 				const std::string extension = path.extension();
@@ -95,7 +96,7 @@ namespace VTX
 		}
 		void Loader::_loadMoleculeFiles( const Model::Configuration::Molecule & p_config )
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::MOLECULE ) ] )
+			for ( const IO::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::MOLECULE ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -125,7 +126,7 @@ namespace VTX
 		}
 		void Loader::_loadTrajectoriesFiles( const Model::Configuration::Molecule & p_config )
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::TRAJECTORY ) ] )
+			for ( const IO::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::TRAJECTORY ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -178,7 +179,7 @@ namespace VTX
 		}
 		void Loader::_loadMeshFiles()
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::SCENE ) ] )
+			for ( const IO::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::MESH ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -208,9 +209,10 @@ namespace VTX
 			{
 				_startLoadingFile( pair.first, SOURCE_TYPE::BUFFER );
 
-				const MODE bufferType = _getMode( pair.first );
+				const Util::Filesystem::FILE_TYPE_ENUM bufferType = Util::Filesystem::getFileTypeEnum( pair.first );
 
-				if ( bufferType == MODE::MOLECULE || bufferType == MODE::TRAJECTORY )
+				if ( bufferType == Util::Filesystem::FILE_TYPE_ENUM::MOLECULE
+					 || bufferType == Util::Filesystem::FILE_TYPE_ENUM::TRAJECTORY )
 				{
 					// Create reader.
 					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles( this );
@@ -237,51 +239,6 @@ namespace VTX
 				}
 
 				delete pair.second;
-			}
-		}
-
-		void Loader::_fillFilepathPerMode()
-		{
-			_filepathsPerMode.resize( int( MODE::COUNT ) );
-
-			for ( const IO::FilePath & path : _paths )
-			{
-				MODE filetype = _getMode( path );
-				_filepathsPerMode[ int( filetype ) ].emplace_back( path );
-			}
-		}
-
-		Loader::MODE Loader::_getMode( const IO::FilePath & p_path ) const
-		{
-			std::string extension = p_path.extension();
-
-			if ( extension == ".vtx" )
-			{
-				return MODE::SCENE;
-			}
-			else if ( extension == "prm" || extension == "psf" )
-			{
-				return MODE::CONFIGURATION;
-			}
-			else if ( extension == "cif" || extension == "cml" || extension == "cssr" || extension == "gro"
-					  || extension == "mmcif" || extension == "mmtf" || extension == "mol2" || extension == "molden"
-					  || extension == "pdb" || extension == "sdf" || extension == "smi" || extension == "mmtf"
-					  || extension == "xyz" )
-			{
-				return MODE::MOLECULE;
-			}
-			else if ( extension == ".obj" )
-			{
-				return MODE::MESH;
-			}
-			else if ( extension == "nc" || extension == "dcd" || extension == "lammpstrj" || extension == "arc"
-					  || extension == "trr" || extension == "xtc" || extension == "tng" || extension == "trj" )
-			{
-				return MODE::TRAJECTORY;
-			}
-			else
-			{
-				return MODE::UNKNOWN;
 			}
 		}
 
