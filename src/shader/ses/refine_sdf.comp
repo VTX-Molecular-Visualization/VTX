@@ -1,5 +1,7 @@
 #version 450
 
+#define FLT_MAX 3.402823466e+38
+
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 // Uniforms.
@@ -9,7 +11,6 @@ uniform vec3	uGridSESCellSize;
 uniform uint	uGridSESCellCount;
 uniform ivec3	uCellsToVisitCount;
 uniform float	uProbeRadius;
-uniform float	uVoxelSize;
 
 // Data struct.
 struct SESGridDataStruct
@@ -19,23 +20,6 @@ struct SESGridDataStruct
 };
 
 // SSBO.
-// Input.
-layout (std140, binding = 1) readonly buffer AtomIndex
-{ 
-	uint[] atomIndex;
-};
-
-layout (std140, binding = 2) readonly buffer AtomPosition
-{ 
-	vec3[] atomPosition;
-};
-
-layout (std140, binding = 3) readonly buffer AtomVdwRadius
-{ 
-	float[] atomVdwRadius;
-};
-
-// Output.
 layout (std430, binding = 4) buffer SESGridData
 {
 	SESGridDataStruct[] sesGridData;
@@ -79,7 +63,11 @@ void main()
 	// Get corresponding ses grid data.
 	uvec3 sesGridPosition = gl_GlobalInvocationID;
 	uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
-
+	vec3 sesWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize );
+	
+	float minDistanceWithOutsidePoint = FLT_MAX;
+	bool  found						  = false;
+	
 	for ( int ox = -uCellsToVisitCount.x; ox <= uCellsToVisitCount.x; ++ox )
 	{
 		for ( int oy = -uCellsToVisitCount.y; oy <= uCellsToVisitCount.y; ++oy )
@@ -94,7 +82,25 @@ void main()
 				{				
 					continue;
 				}	
+
+				vec3 worldPositionToVisit = worldPosition( gridPositionToVisit, uGridSESWorldOrigin, uGridSESCellSize );
+
+				// If outside.
+				if ( sesGridData[ hashToVisit ].sdf == uProbeRadius )
+				{
+					const float d = distance( worldPositionToVisit, sesWorldPosition );
+					if ( d < minDistanceWithOutsidePoint )
+					{
+						minDistanceWithOutsidePoint = d;
+					}
+					found = true;
+				}
 			}
 		}
-	}	
+	}
+	
+	if ( found )
+	{
+		sesGridData[ sesGridHash ].sdf = uProbeRadius - minDistanceWithOutsidePoint;
+	}
 }
