@@ -21,6 +21,7 @@ namespace VTX
 	using Vec3f = glm::vec3;
 	using Vec3d = glm::dvec3;
 	using Vec3i = glm::ivec3;
+	using Vec3u = glm::uvec3;
 	using Vec4f = glm::vec4;
 	using Vec4i = glm::ivec4;
 

@@ -7,20 +7,19 @@ layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 // Uniforms.
 uniform vec3	uGridAtomWorldOrigin;
 uniform vec3	uGridSESWorldOrigin;
-uniform ivec3	uGridAtomSize;
-uniform ivec3	uGridSESSize;
+uniform uvec3	uGridAtomSize;
+uniform uvec3	uGridSESSize;
 uniform vec3	uGridAtomCellSize;
 uniform vec3	uGridSESCellSize;
 uniform uint	uGridAtomCellCount;
-uniform ivec3	uCellsToVisitCount;
 uniform float	uProbeRadius;
 uniform float	uVoxelSize;
 
 // Data struct.
 struct AtomGridDataSortedStruct
 {
-	int first;
-	int count;
+	uint first;
+	uint count;
 };
 
 struct SESGridDataStruct
@@ -31,7 +30,7 @@ struct SESGridDataStruct
 
 // SSBO.
 // Input.
-layout (std140, binding = 0) readonly buffer AtomGridData
+layout (std430, binding = 0) readonly buffer AtomGridData
 { 
 	AtomGridDataSortedStruct[] atomGridData;
 };
@@ -58,44 +57,34 @@ layout (std430, binding = 4) writeonly buffer SESGridData
 };
 
 // Grid functions.
-ivec3 gridPosition( vec3 p_worldPosition, vec3 p_worldOrigin, vec3 p_cellSize )
+uvec3 gridPosition( vec3 p_worldPosition, vec3 p_worldOrigin, vec3 p_cellSize )
 {	
-	ivec3 gridPos = ivec3(floor(( p_worldPosition - p_worldOrigin ) / p_cellSize));
-
-	/*
-	gridPos.x = int( floor( ( p_worldPosition.x - p_worldOrigin.x ) / p_cellSize.x ) );
-	gridPos.y = int( floor( ( p_worldPosition.y - p_worldOrigin.y ) / p_cellSize.y ) );
-	gridPos.z = int( floor( ( p_worldPosition.z - p_worldOrigin.z ) / p_cellSize.z ) );
-	*/
-	
-	return gridPos;
+	return uvec3( floor( ( p_worldPosition - p_worldOrigin ) / p_cellSize) );
 }
 
-ivec3 gridPosition( uint p_hash, ivec3 p_size )
+uvec3 gridPosition( uint p_hash, uvec3 p_size )
 {
 	uint z = p_hash / ( p_size.x * p_size.y );
 	uint r = p_hash % ( p_size.x * p_size.y );
-	return ivec3( r % p_size.x , r / p_size.x, z);
+	return uvec3( r % p_size.x , r / p_size.x, z );
 }
 
-vec3 worldPosition( ivec3 p_gridPosition, vec3 p_worldOrigin, vec3 p_cellSize )
+vec3 worldPosition( uvec3 p_gridPosition, vec3 p_worldOrigin, vec3 p_cellSize )
 {
-	vec3 position = p_worldOrigin;
-	position +=  ( vec3( p_gridPosition ) + 0.5f ) * p_cellSize;
-	return position;
+	return p_worldOrigin +  ( ( vec3( p_gridPosition ) + 0.5f ) * p_cellSize );
 }
 
-vec3 worldPosition( uint p_hash, ivec3 p_size, vec3 p_worldOrigin, vec3 p_cellSize )
+vec3 worldPosition( uint p_hash, uvec3 p_size, vec3 p_worldOrigin, vec3 p_cellSize )
 { 
 	return worldPosition( gridPosition( p_hash, p_size ), p_worldOrigin, p_cellSize );
 }
 
-uint gridHash( ivec3 p_gridPosition, ivec3 p_size )
+uint gridHash( uvec3 p_gridPosition, uvec3 p_size )
 {
 	return ( p_gridPosition.z * p_size.x * p_size.y ) + ( p_gridPosition.y * p_size.x ) + p_gridPosition.x;
 }
 
-uint gridHash( vec3 p_worldPosition, ivec3 p_size, vec3 p_worldOrigin, vec3 p_cellSize )
+uint gridHash( vec3 p_worldPosition, uvec3 p_size, vec3 p_worldOrigin, vec3 p_cellSize )
 {
 	return gridHash( gridPosition( p_worldPosition, p_worldOrigin, p_cellSize ), p_size );
 }
@@ -103,40 +92,33 @@ uint gridHash( vec3 p_worldPosition, ivec3 p_size, vec3 p_worldOrigin, vec3 p_ce
 void main()
 {
 	// Get corresponding ses grid data.
-	ivec3 sesGridPosition = ivec3( gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, gl_GlobalInvocationID.z );
+	uvec3 sesGridPosition = gl_GlobalInvocationID;
 	uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
 	
 	// Get corresponding acceleration grid data.
 	vec3 sesGridCellWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize);
-	ivec3 atomGridPosition = gridPosition( sesGridCellWorldPosition, uGridAtomWorldOrigin, uGridAtomCellSize);
+	uvec3 atomGridPosition = gridPosition( sesGridCellWorldPosition, uGridAtomWorldOrigin, uGridAtomCellSize);
 
 	// Loop over the cells to visit.
 	float minDistance = FLT_MAX;
-	bool found	= false;
 	
-	for ( int ox = -uCellsToVisitCount.x; ox <= uCellsToVisitCount.x && !found; ++ox )
+	for ( int ox = -1; ox <= 1; ++ox )
 	{
-		for ( int oy = -uCellsToVisitCount.y; oy <= uCellsToVisitCount.y && !found; ++oy )
+		for ( int oy = -1; oy <= 1; ++oy )
 		{		
-			for ( int oz = -uCellsToVisitCount.z; oz <= uCellsToVisitCount.z && !found; ++oz )
+			for ( int oz = -1; oz <= 1; ++oz )
 			{	
 				vec3 offset = vec3( ox, oy, oz );
-				ivec3 gridPositionToVisit = ivec3( atomGridPosition + offset );	
-				uint hashToVisit = gridHash( gridPositionToVisit, uGridAtomSize );	
+				uvec3 gridPositionToVisit = uvec3( atomGridPosition + offset );	
+				uint hashToVisit = gridHash( gridPositionToVisit, uGridAtomSize );					
 				
 				if ( hashToVisit >= uGridAtomCellCount )
-				{
+				{				
 					continue;
 				}	
-
+				
 				uint first = atomGridData[ hashToVisit ].first;
 				uint count = atomGridData[ hashToVisit ].count;
-
-				////////////////////////////////////////////
-				sesGridData[sesGridHash].sdf = hashToVisit;
-				sesGridData[sesGridHash].nearestAtom = int(sesGridHash);
-				return;
-				////////////////////////////////////////////
 				
 				// Compute SDF.
 				for ( uint i = first; i < first + count; ++i )
@@ -144,16 +126,13 @@ void main()
 					uint index = atomIndex[i];					
 					float d = distance( atomPosition[ index ], sesGridCellWorldPosition );
 					
-					sesGridData[sesGridHash].sdf = d;
-					
 					// Inside.
 					if ( d < uVoxelSize )
 					{
 						sesGridData[sesGridHash].sdf = -uVoxelSize;	
-						sesGridData[sesGridHash].nearestAtom = -1;
-						found = true;
+						sesGridData[sesGridHash].nearestAtom = -1;						
 						// Don't need to loop over other cells.
-						break;
+						return;
 					}
 					// Boundary.
 					else
@@ -161,7 +140,6 @@ void main()
 						d -= ( uProbeRadius + atomVdwRadius[index] );
 						if ( d < 0.f )
 						{
-							//sesGridDataBoundary.insert( sesGridHash );
 							sesGridData[sesGridHash].sdf = -uVoxelSize;
 							if ( d < minDistance )
 							{

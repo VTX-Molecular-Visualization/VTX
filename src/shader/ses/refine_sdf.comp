@@ -1,0 +1,100 @@
+#version 450
+
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+// Uniforms.
+uniform vec3	uGridSESWorldOrigin;
+uniform uvec3	uGridSESSize;
+uniform vec3	uGridSESCellSize;
+uniform uint	uGridSESCellCount;
+uniform ivec3	uCellsToVisitCount;
+uniform float	uProbeRadius;
+uniform float	uVoxelSize;
+
+// Data struct.
+struct SESGridDataStruct
+{
+	float sdf;
+	int	  nearestAtom;
+};
+
+// SSBO.
+// Input.
+layout (std140, binding = 1) readonly buffer AtomIndex
+{ 
+	uint[] atomIndex;
+};
+
+layout (std140, binding = 2) readonly buffer AtomPosition
+{ 
+	vec3[] atomPosition;
+};
+
+layout (std140, binding = 3) readonly buffer AtomVdwRadius
+{ 
+	float[] atomVdwRadius;
+};
+
+// Output.
+layout (std430, binding = 4) buffer SESGridData
+{
+	SESGridDataStruct[] sesGridData;
+};
+
+// Grid functions.
+uvec3 gridPosition( vec3 p_worldPosition, vec3 p_worldOrigin, vec3 p_cellSize )
+{	
+	return uvec3( floor( ( p_worldPosition - p_worldOrigin ) / p_cellSize) );
+}
+
+uvec3 gridPosition( uint p_hash, uvec3 p_size )
+{
+	uint z = p_hash / ( p_size.x * p_size.y );
+	uint r = p_hash % ( p_size.x * p_size.y );
+	return uvec3( r % p_size.x , r / p_size.x, z );
+}
+
+vec3 worldPosition( uvec3 p_gridPosition, vec3 p_worldOrigin, vec3 p_cellSize )
+{
+	return p_worldOrigin +  ( ( vec3( p_gridPosition ) + 0.5f ) * p_cellSize );
+}
+
+vec3 worldPosition( uint p_hash, uvec3 p_size, vec3 p_worldOrigin, vec3 p_cellSize )
+{ 
+	return worldPosition( gridPosition( p_hash, p_size ), p_worldOrigin, p_cellSize );
+}
+
+uint gridHash( uvec3 p_gridPosition, uvec3 p_size )
+{
+	return ( p_gridPosition.z * p_size.x * p_size.y ) + ( p_gridPosition.y * p_size.x ) + p_gridPosition.x;
+}
+
+uint gridHash( vec3 p_worldPosition, uvec3 p_size, vec3 p_worldOrigin, vec3 p_cellSize )
+{
+	return gridHash( gridPosition( p_worldPosition, p_worldOrigin, p_cellSize ), p_size );
+}
+
+void main()
+{
+	// Get corresponding ses grid data.
+	uvec3 sesGridPosition = gl_GlobalInvocationID;
+	uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
+
+	for ( int ox = -uCellsToVisitCount.x; ox <= uCellsToVisitCount.x; ++ox )
+	{
+		for ( int oy = -uCellsToVisitCount.y; oy <= uCellsToVisitCount.y; ++oy )
+		{		
+			for ( int oz = -uCellsToVisitCount.z; oz <= uCellsToVisitCount.z; ++oz )
+			{	
+				vec3 offset = vec3( ox, oy, oz );
+				uvec3 gridPositionToVisit = uvec3( sesGridPosition + offset );					
+				uint hashToVisit = gridHash( gridPositionToVisit, uGridSESSize );					
+				
+				if ( hashToVisit >= uGridSESCellCount )
+				{				
+					continue;
+				}	
+			}
+		}
+	}	
+}

@@ -102,7 +102,8 @@ namespace VTX
 				const std::vector<uint> & data = atomGridDataTmp[ i ];
 				if ( data.size() > 0 )
 				{
-					atomGridDataSorted[ i ] = AtomGridDataSorted { int( atomIndexSorted.size() ), int( data.size() ) };
+					atomGridDataSorted[ i ]
+						= AtomGridDataSorted { uint( atomIndexSorted.size() ), uint( data.size() ) };
 					atomIndexSorted.insert( atomIndexSorted.end(), data.begin(), data.end() );
 				}
 			}
@@ -117,14 +118,14 @@ namespace VTX
 			// Compute SES grid and compute SDF.
 			Vec3i				   sesGridSize = Vec3i( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
 			Object3D::Helper::Grid gridSES	   = Object3D::Helper::Grid( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
-			Vec3i cellsToVisitCount = Util::Math::ceil( atomGridCellSize / Vec3f( PROBE_RADIUS + maxVdWRadius ) );
 
 			// SES grid data.
 			std::vector<SESGridData> sesGridData
 				= std::vector<SESGridData>( gridSES.getCellCount(), SESGridData { PROBE_RADIUS, -1 } );
 
-			// Create GPU worker.
-			Worker::GpuComputer worker( IO::FilePath( "ses/create_sdf.comp" ) );
+			// Create GPU workers.
+			Worker::GpuComputer workerCreateSDF( IO::FilePath( "ses/create_sdf.comp" ) );
+			Worker::GpuComputer workerRefineSDF( IO::FilePath( "ses/refine_sdf.comp" ) );
 
 			// Create SSBOs.
 			// Input.
@@ -149,28 +150,35 @@ namespace VTX
 			ssboSesGridData.bind( 4 );
 
 			// Set uniforms.
-			worker.getProgram().use();
+			workerCreateSDF.getProgram().use();
 
-			worker.getProgram().setVec3f( "uGridAtomWorldOrigin", gridAtoms.worldOrigin );
-			worker.getProgram().setVec3f( "uGridSESWorldOrigin", gridSES.worldOrigin );
-			worker.getProgram().setVec3i( "uGridAtomSize", gridAtoms.size );
-			worker.getProgram().setVec3i( "uGridSESSize", gridSES.size );
-			worker.getProgram().setVec3f( "uGridAtomCellSize", gridAtoms.cellSize );
-			worker.getProgram().setVec3f( "uGridSESCellSize", gridSES.cellSize );
-			worker.getProgram().setUInt( "uGridAtomCellCount", gridAtoms.getCellCount() );
-			worker.getProgram().setVec3i( "uCellsToVisitCount", cellsToVisitCount );
-			worker.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
-			worker.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
+			workerCreateSDF.getProgram().setVec3f( "uGridAtomWorldOrigin", gridAtoms.worldOrigin );
+			workerCreateSDF.getProgram().setVec3f( "uGridSESWorldOrigin", gridSES.worldOrigin );
+			workerCreateSDF.getProgram().setVec3u( "uGridAtomSize", Vec3u( gridAtoms.size ) );
+			workerCreateSDF.getProgram().setVec3u( "uGridSESSize", Vec3u( gridSES.size ) );
+			workerCreateSDF.getProgram().setVec3f( "uGridAtomCellSize", gridAtoms.cellSize );
+			workerCreateSDF.getProgram().setVec3f( "uGridSESCellSize", gridSES.cellSize );
+			workerCreateSDF.getProgram().setUInt( "uGridAtomCellCount", gridAtoms.getCellCount() );
+			workerCreateSDF.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
+			workerCreateSDF.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
 
-			// std::vector<SESGridData> * const sesGridData2 = ssboSesGridData.map<std::vector<SESGridData>>(
-			//	0,
-			//	gridSES.getCellCount() * sizeof( SESGridData ),
-			//	VTX::Renderer::GL::BufferStorage::Flags::MAP_READ_BIT );
+			// Start.
+			workerCreateSDF.start( gridSES.size );
 
-			VTX_DEBUG( "SES grid size: {}", gridSES.getCellCount() );
-			// worker.setBarrier( GL_ALL_BARRIER_BITS );
-			// worker.setForce( true );
-			worker.start( gridSES.size );
+			workerRefineSDF.getProgram().use();
+
+			Vec3i cellsToVisitCount = Util::Math::ceil( Vec3f( PROBE_RADIUS + VOXEL_SIZE ) / gridSES.cellSize );
+
+			workerRefineSDF.getProgram().setVec3f( "uGridSESWorldOrigin", gridSES.worldOrigin );
+			workerRefineSDF.getProgram().setVec3u( "uGridSESSize", Vec3u( gridSES.size ) );
+			workerRefineSDF.getProgram().setVec3f( "uGridSESCellSize", gridSES.cellSize );
+			workerRefineSDF.getProgram().setUInt( "uGridSESCellCount", gridSES.getCellCount() );
+			workerRefineSDF.getProgram().setVec3i( "uCellsToVisitCount", cellsToVisitCount );
+			workerRefineSDF.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
+			workerRefineSDF.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
+
+			// Start
+			workerRefineSDF.start( gridSES.size );
 
 			ssboSesGridData.getData( 0, gridSES.getCellCount() * sizeof( SESGridData ), &sesGridData[ 0 ] );
 
@@ -186,188 +194,7 @@ namespace VTX
 			std::ofstream outFile( "GPU_DATA.txt" );
 			for ( const auto & e : sesGridData )
 				outFile << std::to_string( e.sdf ) + " " + std::to_string( e.nearestAtom ) << "\n";
-			// for ( const auto & e : atomGridDataSorted )
-			// outFile << std::to_string( e.first ) + " " + std::to_string( e.count ) << "\n";
 			outFile.close();
-
-			// chrono2.start();
-
-			/*
-			// SDF refinement.
-			cellsToVisitCount = Util::Math::ceil( atomGridCellSize / Vec3f( PROBE_RADIUS + VOXEL_SIZE ) );
-
-			for ( const uint sesGridHash : sesGridDataBoundary )
-			{
-				const Vec3i	  sesGridPosition			  = gridSES.gridPosition( sesGridHash );
-				const Vec3f	  sesWorldPosition			  = gridSES.worldPosition( sesGridPosition );
-				SESGridData & gridDataToVisit			  = sesGridData[ sesGridHash ];
-				float		  minDistanceWithOutsidePoint = FLOAT_MAX;
-				bool		  found						  = false;
-				for ( int ox = -cellsToVisitCount.x; ox <= cellsToVisitCount.x; ++ox )
-				{
-					for ( int oy = -cellsToVisitCount.y; oy <= cellsToVisitCount.y; ++oy )
-					{
-						for ( int oz = -cellsToVisitCount.z; oz <= cellsToVisitCount.z; ++oz )
-						{
-							const Vec3i gridPositionToVisit = sesGridPosition + Vec3i( ox, oy, oz );
-
-							if ( gridPositionToVisit.x < 0 || gridPositionToVisit.y < 0 || gridPositionToVisit.z < 0
-								 || gridPositionToVisit.x >= gridSES.size.x || gridPositionToVisit.y >= gridSES.size.y
-								 || gridPositionToVisit.z >= gridSES.size.z )
-							{
-								continue;
-							}
-
-							const uint	  hashToVisit		   = gridSES.gridHash( gridPositionToVisit );
-							const Vec3f	  worldPositionToVisit = gridSES.worldPosition( gridPositionToVisit );
-							SESGridData & gridDataToVisit	   = sesGridData[ hashToVisit ];
-
-							// If outside.
-							if ( gridDataToVisit.sdf == PROBE_RADIUS )
-							{
-								const float distance = Util::Math::distance( worldPositionToVisit, sesWorldPosition );
-								if ( distance < minDistanceWithOutsidePoint )
-								{
-									minDistanceWithOutsidePoint = distance;
-								}
-								found = true;
-							}
-						}
-					}
-				}
-
-				if ( found )
-				{
-					gridDataToVisit.sdf = PROBE_RADIUS - minDistanceWithOutsidePoint;
-				}
-			}
-
-			chrono2.stop();
-			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
-			chrono2.start();
-
-			std::vector<std::vector<Vec3f>> atomsToTriangles
-				= std::vector<std::vector<Vec3f>>( atomPositions.size(), std::vector<Vec3f>() );
-
-			// Marching cube to extract mesh.
-			const Math::MarchingCube marchingCube = Math::MarchingCube();
-			for ( uint x = 0; x < uint( gridSES.size.x ) - 1; ++x )
-			{
-				for ( uint y = 0; y < uint( gridSES.size.y ) - 1; ++y )
-				{
-					for ( uint z = 0; z < uint( gridSES.size.z ) - 1; ++z )
-					{
-						SESGridData gridData[ 8 ] = { sesGridData[ gridSES.gridHash( Vec3i( x, y, z ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x + 1, y, z ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x + 1, y, z + 1 ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x, y, z + 1 ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x, y + 1, z ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x + 1, y + 1, z ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x + 1, y + 1, z + 1 ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x, y + 1, z + 1 ) ) ] };
-
-						Math::MarchingCube::GridCell cell
-							= { { gridSES.worldPosition( Vec3i( x, y, z ) ),
-								  { gridSES.worldPosition( Vec3i( x + 1, y, z ) ) },
-								  { gridSES.worldPosition( Vec3i( x + 1, y, z + 1 ) ) },
-								  { gridSES.worldPosition( Vec3i( x, y, z + 1 ) ) },
-								  { gridSES.worldPosition( Vec3i( x, y + 1, z ) ) },
-								  { gridSES.worldPosition( Vec3i( x + 1, y + 1, z ) ) },
-								  { gridSES.worldPosition( Vec3i( x + 1, y + 1, z + 1 ) ) },
-								  { gridSES.worldPosition( Vec3i( x, y + 1, z + 1 ) ) } },
-								{ gridData[ 0 ].sdf,
-								  gridData[ 1 ].sdf,
-								  gridData[ 2 ].sdf,
-								  gridData[ 3 ].sdf,
-								  gridData[ 4 ].sdf,
-								  gridData[ 5 ].sdf,
-								  gridData[ 6 ].sdf,
-								  gridData[ 7 ].sdf } };
-
-						std::vector<std::vector<Vec3f>> cellTriangles = marchingCube.triangulateCell( cell, 0 );
-						for ( uint triangle = 0; triangle < uint( cellTriangles.size() ); ++triangle )
-						{
-							assert( cellTriangles[ triangle ].size() == 3 );
-
-							// Get closest atom.
-							float closestDistance = FLOAT_MAX;
-							uint  closestVertex	  = 0;
-							Vec3f centroid = Vec3f( cellTriangles[ triangle ][ 0 ] + cellTriangles[ triangle ][ 1 ]
-													+ cellTriangles[ triangle ][ 2 ] )
-											 / 3.f;
-							for ( uint vertex = 0; vertex < 8; ++vertex )
-							{
-								float distance = Util::Math::distance( centroid, cell.vertex[ vertex ] );
-								if ( distance < closestDistance )
-								{
-									closestVertex	= vertex;
-									closestDistance = distance;
-								}
-							}
-
-							// Map atoms with triangle points.
-							std::vector<Vec3f> & triangles = atomsToTriangles[ gridData[ closestVertex ].nearestAtom ];
-							triangles.insert(
-								triangles.end(), cellTriangles[ triangle ].begin(), cellTriangles[ triangle ].end() );
-						}
-					}
-				}
-			}
-
-			chrono2.stop();
-			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
-			chrono2.start();
-
-			// Fill buffers with sorted values and store data as triangle range per atoms.
-			_atomsToTriangles = std::vector<std::pair<uint, uint>>( atomPositions.size(), std::pair<uint, uint>() );
-			for ( uint i = 0; i < atomsToTriangles.size(); ++i )
-			{
-				if ( _molecule->getAtom( i ) == nullptr )
-				{
-					continue;
-				}
-
-				const std::vector<Vec3f> & trianglePoints = atomsToTriangles[ i ];
-
-				_atomsToTriangles[ i ].first  = uint( _vertices.size() );
-				_atomsToTriangles[ i ].second = uint( trianglePoints.size() );
-
-				std::vector<uint> indices = std::vector<uint>( trianglePoints.size() );
-				int				  index	  = int( _vertices.size() );
-				std::iota( indices.begin(), indices.end(), index );
-				_indices.insert( _indices.end(), indices.begin(), indices.end() );
-
-				_vertices.insert( _vertices.end(), trianglePoints.begin(), trianglePoints.end() );
-
-				std::vector<uint> ids = std::vector<uint>( trianglePoints.size() );
-				std::fill( ids.begin(), ids.end(), _molecule->getAtom( i )->getId() );
-				_ids.insert( _ids.end(), ids.begin(), ids.end() );
-			}
-
-			_vertices.shrink_to_fit();
-			_indices.shrink_to_fit();
-			_ids.shrink_to_fit();
-
-			chrono2.stop();
-			VTX_INFO( "Triangles sorting done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
-			chrono2.start();
-
-			recomputeNormals();
-			chrono2.stop();
-			VTX_INFO( "Normals computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
-
-			refreshColors();
-			refreshVisibilities();
-
-			assert( _vertices.size() == _indices.size() );
-			assert( _vertices.size() == _normals.size() );
-			assert( _vertices.size() == _ids.size() );
-			assert( _vertices.size() == _colors.size() );
-			assert( _vertices.size() == _visibilities.size() );
-
-			chrono.stop();
-			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
-			*/
 		}
 
 		void SolventExcludedSurface::_refreshCPU()
@@ -419,7 +246,8 @@ namespace VTX
 				const std::vector<uint> & data = atomGridDataTmp[ i ];
 				if ( data.size() > 0 )
 				{
-					atomGridDataSorted[ i ] = AtomGridDataSorted { int( atomIndexSorted.size() ), int( data.size() ) };
+					atomGridDataSorted[ i ]
+						= AtomGridDataSorted { uint( atomIndexSorted.size() ), uint( data.size() ) };
 					atomIndexSorted.insert( atomIndexSorted.end(), data.begin(), data.end() );
 				}
 			}
@@ -437,91 +265,72 @@ namespace VTX
 			std::vector<SESGridData> sesGridData
 				= std::vector<SESGridData>( gridSES.getCellCount(), SESGridData { PROBE_RADIUS, -1 } );
 
-			// Store boundary references.
-			std::set<uint> sesGridDataBoundary = std::set<uint>();
-
-			// Loop over cells
-			Vec3f cellsToVisitCount = Util::Math::ceil( atomGridCellSize / Vec3f( PROBE_RADIUS + maxVdWRadius ) );
-			for ( uint x = 0; x < uint( gridSES.size.x ); ++x )
+			// Loop over cells.
+			for ( uint sesGridHash = 0; sesGridHash < gridSES.getCellCount(); ++sesGridHash )
 			{
-				for ( uint y = 0; y < uint( gridSES.size.y ); ++y )
+				// Get corresponding ses grid data.
+				const Vec3i	  sesGridPosition = gridSES.gridPosition( sesGridHash );
+				SESGridData & gridData		  = sesGridData[ sesGridHash ];
+
+				// Get corresponding acceleration grid cell hash.
+				const Vec3f sesGridCellWorldPosition = gridSES.worldPosition( sesGridPosition );
+				const Vec3i atomGridPosition		 = gridAtoms.gridPosition( sesGridCellWorldPosition );
+
+				// Loop over the 27 cells to visit.
+				float minDistance = FLOAT_MAX;
+				bool  found		  = false;
+
+				for ( int ox = -1; ox <= 1 && !found; ++ox )
 				{
-					for ( uint z = 0; z < uint( gridSES.size.z ); ++z )
+					for ( int oy = -1; oy <= 1 && !found; ++oy )
 					{
-						// Get corresponding ses grid data.
-						const Vec3i	  sesGridPosition = Vec3i( x, y, z );
-						const uint	  sesGridHash	  = gridSES.gridHash( sesGridPosition );
-						SESGridData & gridData		  = sesGridData[ sesGridHash ];
-
-						// Get corresponding acceleration grid cell hash.
-						const Vec3f sesGridCellWorldPosition = gridSES.worldPosition( sesGridPosition );
-						const Vec3i atomGridPosition		 = gridAtoms.gridPosition( sesGridCellWorldPosition );
-
-						// Loop over the 27 cells to visit.
-						float minDistance = FLOAT_MAX;
-						bool  found		  = false;
-
-						for ( int ox = -cellsToVisitCount.x; ox <= cellsToVisitCount.x && !found; ++ox )
+						for ( int oz = -1; oz <= 1 && !found; ++oz )
 						{
-							for ( int oy = -cellsToVisitCount.y; oy <= cellsToVisitCount.y && !found; ++oy )
+							Vec3f offset			  = Vec3f( ox, oy, oz );
+							Vec3i gridPositionToVisit = Vec3i( Vec3f( atomGridPosition ) + offset );
+							uint  hashToVisit		  = gridAtoms.gridHash( Vec3i( gridPositionToVisit ) );
+
+							if ( hashToVisit >= atomGridDataSorted.size() )
 							{
-								for ( int oz = -cellsToVisitCount.z; oz <= cellsToVisitCount.z && !found; ++oz )
+								continue;
+							}
+
+							uint first = atomGridDataSorted[ hashToVisit ].first;
+							uint count = atomGridDataSorted[ hashToVisit ].count;
+
+							// Compute SDF.
+							for ( uint i = first; i < first + count; ++i )
+
+							{
+								uint index = atomIndexSorted[ i ];
+								if ( _molecule->getAtom( index ) == nullptr )
 								{
-									Vec3f offset			  = Vec3f( ox, oy, oz );
-									Vec3i gridPositionToVisit = Vec3i( Vec3f( atomGridPosition ) + offset );
-									uint  hashToVisit		  = gridAtoms.gridHash( Vec3i( gridPositionToVisit ) );
+									continue;
+								}
 
-									if ( hashToVisit >= atomGridDataSorted.size() )
-									{
-										continue;
-									}
+								float distance
+									= Util::Math::distance( atomPositions[ index ], sesGridCellWorldPosition );
 
-									uint first = atomGridDataSorted[ hashToVisit ].first;
-									uint count = atomGridDataSorted[ hashToVisit ].count;
-
-									////////////////////////////////////////////
-									sesGridData[ sesGridHash ].sdf		   = hashToVisit;
-									sesGridData[ sesGridHash ].nearestAtom = int( sesGridHash );
-									found								   = true;
+								// Inside.
+								if ( distance < VOXEL_SIZE )
+								{
+									gridData.sdf		 = -VOXEL_SIZE;
+									gridData.nearestAtom = -1;
+									found				 = true;
+									// Don't need to loop over other cells.
 									break;
-									////////////////////////////////////////////
-
-									// Compute SDF.
-									for ( uint i = first; i < first + count; ++i )
-
+								}
+								// Boundary.
+								else
+								{
+									distance -= ( PROBE_RADIUS + _molecule->getAtom( index )->getVdwRadius() );
+									if ( distance < 0.f )
 									{
-										uint index = atomIndexSorted[ i ];
-										if ( _molecule->getAtom( index ) == nullptr )
+										gridData.sdf = -VOXEL_SIZE;
+										if ( distance < minDistance )
 										{
-											continue;
-										}
-
-										float distance
-											= Util::Math::distance( atomPositions[ index ], sesGridCellWorldPosition );
-
-										// Inside.
-										if ( distance < VOXEL_SIZE )
-										{
-											gridData.sdf		 = -VOXEL_SIZE;
-											gridData.nearestAtom = -1;
-											found				 = true;
-											// Don't need to loop over other cells.
-											break;
-										}
-										// Boundary.
-										else
-										{
-											distance -= ( PROBE_RADIUS + _molecule->getAtom( index )->getVdwRadius() );
-											if ( distance < 0.f )
-											{
-												sesGridDataBoundary.insert( sesGridHash );
-												gridData.sdf = -VOXEL_SIZE;
-												if ( distance < minDistance )
-												{
-													minDistance			 = distance;
-													gridData.nearestAtom = index;
-												}
-											}
+											minDistance			 = distance;
+											gridData.nearestAtom = index;
 										}
 									}
 								}
@@ -534,38 +343,42 @@ namespace VTX
 			chrono2.stop();
 			VTX_INFO( "SDF created " + std::to_string( chrono2.elapsedTime() ) + "s" );
 
-			std::ofstream outFile( "CPU_DATA.txt" );
-			for ( const auto & e : sesGridData )
-				outFile << std::to_string( e.sdf ) + " " + std::to_string( e.nearestAtom ) << "\n";
-			outFile.close();
 			chrono2.start();
 
 			// SDF refinement.
-			cellsToVisitCount = Util::Math::ceil( atomGridCellSize / Vec3f( PROBE_RADIUS + VOXEL_SIZE ) );
+			Vec3i cellsToVisitCount = Util::Math::ceil( Vec3f( PROBE_RADIUS + VOXEL_SIZE ) / gridSES.cellSize );
 
-			for ( const uint sesGridHash : sesGridDataBoundary )
+			for ( uint sesGridHash = 0; sesGridHash < gridSES.getCellCount(); ++sesGridHash )
 			{
-				const Vec3i	  sesGridPosition			  = gridSES.gridPosition( sesGridHash );
-				const Vec3f	  sesWorldPosition			  = gridSES.worldPosition( sesGridPosition );
-				SESGridData & gridDataToVisit			  = sesGridData[ sesGridHash ];
-				float		  minDistanceWithOutsidePoint = FLOAT_MAX;
-				bool		  found						  = false;
+				// Get corresponding ses grid data.
+				const Vec3i	  sesGridPosition = gridSES.gridPosition( sesGridHash );
+				SESGridData & gridData		  = sesGridData[ sesGridHash ];
+
+				// Not in boundary.
+				if ( gridData.nearestAtom == -1 )
+				{
+					continue;
+				}
+
+				const Vec3f sesWorldPosition = gridSES.worldPosition( sesGridPosition );
+
+				float minDistanceWithOutsidePoint = FLOAT_MAX;
+				bool  found						  = false;
 				for ( int ox = -cellsToVisitCount.x; ox <= cellsToVisitCount.x; ++ox )
 				{
 					for ( int oy = -cellsToVisitCount.y; oy <= cellsToVisitCount.y; ++oy )
 					{
 						for ( int oz = -cellsToVisitCount.z; oz <= cellsToVisitCount.z; ++oz )
 						{
-							const Vec3i gridPositionToVisit = sesGridPosition + Vec3i( ox, oy, oz );
+							Vec3f		offset				= Vec3f( ox, oy, oz );
+							const Vec3i gridPositionToVisit = Vec3i( Vec3f( sesGridPosition ) + offset );
+							const uint	hashToVisit			= gridSES.gridHash( gridPositionToVisit );
 
-							if ( gridPositionToVisit.x < 0 || gridPositionToVisit.y < 0 || gridPositionToVisit.z < 0
-								 || gridPositionToVisit.x >= gridSES.size.x || gridPositionToVisit.y >= gridSES.size.y
-								 || gridPositionToVisit.z >= gridSES.size.z )
+							if ( hashToVisit >= sesGridData.size() )
 							{
 								continue;
 							}
 
-							const uint	  hashToVisit		   = gridSES.gridHash( gridPositionToVisit );
 							const Vec3f	  worldPositionToVisit = gridSES.worldPosition( gridPositionToVisit );
 							SESGridData & gridDataToVisit	   = sesGridData[ hashToVisit ];
 
@@ -585,11 +398,17 @@ namespace VTX
 
 				if ( found )
 				{
-					gridDataToVisit.sdf = PROBE_RADIUS - minDistanceWithOutsidePoint;
+					gridData.sdf = PROBE_RADIUS - minDistanceWithOutsidePoint;
 				}
 			}
 
 			chrono2.stop();
+
+			std::ofstream outFile( "CPU_DATA.txt" );
+			for ( const auto & e : sesGridData )
+				outFile << std::to_string( e.sdf ) + " " + std::to_string( e.nearestAtom ) << "\n";
+			outFile.close();
+
 			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 

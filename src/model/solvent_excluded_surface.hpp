@@ -47,8 +47,8 @@ namespace VTX
 
 			struct AtomGridDataSorted
 			{
-				int first;
-				int count;
+				uint first;
+				uint count;
 			};
 
 			struct SESGridData

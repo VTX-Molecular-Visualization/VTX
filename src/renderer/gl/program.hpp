@@ -97,6 +97,10 @@ namespace VTX::Renderer::GL
 		{
 			_gl->glUniform3iv( getUniformLocation( p_name ), 1, Util::Math::value_ptr( p_value ) );
 		}
+		inline void setVec3u( const std::string & p_name, const Vec3u & p_value ) const
+		{
+			_gl->glUniform3uiv( getUniformLocation( p_name ), 1, Util::Math::value_ptr( p_value ) );
+		}
 		inline void setVec4i( const std::string & p_name, const Vec4i & p_value ) const
 		{
 			_gl->glUniform4iv( getUniformLocation( p_name ), 1, Util::Math::value_ptr( p_value ) );
