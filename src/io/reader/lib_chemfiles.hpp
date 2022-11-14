@@ -2,7 +2,9 @@
 #define __VTX_READER_LIB_CHEMFILES__
 
 #include "base_reader.hpp"
+#include "define.hpp"
 #include "io/chemfiles_io.hpp"
+#include <utility>
 #include <vector>
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
@@ -29,13 +31,10 @@ namespace VTX
 			void readBuffer( const std::string &, const IO::FilePath &, Model::Molecule & ) override;
 			bool readDynamic( const IO::FilePath &, std::vector<Model::Molecule *> p_potentialTargets );
 
-			void fillTrajectoryFrames( chemfiles::Trajectory & p_trajectory,
-									   Model::Molecule &,
-									   const uint p_molFrameStart		 = 0,
-									   const uint p_trajectoryFrameStart = 0 ) const;
-			void fillTrajectoryFrame( const chemfiles::Frame & p_frame,
-									  Model::Molecule &		   p_molecule,
-									  const uint			   p_moleculeFrameIndex ) const;
+			std::vector<Vec3f> readTrajectoryFrame( chemfiles::Trajectory & p_trajectory ) const;
+			void			   fillTrajectoryFrame( Model::Molecule &		   p_molecule,
+													const uint				   p_moleculeFrameIndex,
+													const std::vector<Vec3f> & p_atomPositions ) const;
 
 		  private:
 			void			  _readTrajectory( chemfiles::Trajectory &,
@@ -47,6 +46,9 @@ namespace VTX
 
 			bool _tryApplyingDynamicOnTargets( chemfiles::Trajectory &				  p_dynamicTrajectory,
 											   const std::vector<Model::Molecule *> & p_potentialTargets ) const;
+			void _readTrajectoryFrames( chemfiles::Trajectory &									p_trajectory,
+										const std::vector<std::pair<Model::Molecule *, uint>> & p_targets,
+										const uint p_trajectoryFrameStart = 0 ) const;
 		};
 	} // namespace IO::Reader
 } // namespace VTX
