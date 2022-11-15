@@ -611,6 +611,9 @@ namespace VTX::UI
 	{
 		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
+
+		_checkUnknownFloatableWindows();
+
 		delete _restoreStateTimer;
 		_restoreStateTimer = nullptr;
 		show();
@@ -727,6 +730,19 @@ namespace VTX::UI
 			}
 
 			_cursorHandler->applyCursor( cursor, &getWidget( ID::UI::Window::RENDER ), "Picker_Measurement" );
+		}
+	}
+
+	void MainWindow::_checkUnknownFloatableWindows()
+	{
+		_checkUnknownFloatableWindow( _settingWidget, Style::SETTINGS_PREFERRED_SIZE );
+		_checkUnknownFloatableWindow( _structuralAlignmentWidget, Style::STRUCTURAL_ALIGNMENT_PREFERRED_SIZE );
+	}
+	void MainWindow::_checkUnknownFloatableWindow( QDockWidget * const p_widget, const QSize & p_defaultSize )
+	{
+		if ( p_widget->widget()->size().height() == QT_UNKNOWN_WIDGET_DEFAULT_LAYOUT_HEIGHT )
+		{
+			_addDockWidgetAsFloating( p_widget, p_defaultSize, p_widget->isVisible() );
 		}
 	}
 
