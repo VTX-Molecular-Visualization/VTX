@@ -268,6 +268,12 @@ namespace VTX::View::UI::Widget
 		}
 	}
 
+	void PathSceneView::_onItemExpanded( QTreeWidgetItem * const p_item )
+	{
+		_refreshSelection( Selection::SelectionManager::get().getSelectionModel() );
+		SceneItemWidget::_onItemExpanded( p_item );
+	}
+
 	void PathSceneView::_reformatName( std::string & p_name ) const
 	{
 		// Trim
