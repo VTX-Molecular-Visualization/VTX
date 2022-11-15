@@ -114,13 +114,33 @@ namespace VTX::Renderer::GL
 		GLuint shaderId = getShader( name );
 		if ( shaderId == GL_INVALID_INDEX )
 		{
-			shaderId			   = _gl->glCreateShader( (int)type );
-			IO::FilePath	  path = Util::Filesystem::getShadersPath( p_path );
-			const std::string src  = Util::Filesystem::readPath( path );
+			shaderId		  = _gl->glCreateShader( (int)type );
+			IO::FilePath path = Util::Filesystem::getShadersPath( p_path );
+			std::string	 src  = Util::Filesystem::readPath( path );
 			if ( src.empty() )
 			{
 				_gl->glDeleteShader( shaderId );
 				return GL_INVALID_INDEX;
+			}
+
+			// Handle #include.
+			while ( true )
+			{
+				size_t startPosInclude = src.find( "#include" );
+				if ( startPosInclude == std::string::npos )
+				{
+					break;
+				}
+
+				size_t		endPosInclude		= src.find( "\n", startPosInclude );
+				std::string includeRelativePath = src.substr( startPosInclude, endPosInclude - startPosInclude );
+				size_t		startPosPath		= includeRelativePath.find( '"' );
+				size_t		endPosPath			= includeRelativePath.find( '"', startPosPath + 1 );
+				includeRelativePath = includeRelativePath.substr( startPosPath + 1, endPosPath - startPosPath - 1 );
+				IO::FilePath includeAbsolutePath = path.dirpath();
+				includeAbsolutePath /= includeRelativePath;
+				const std::string srcInclude = Util::Filesystem::readPath( includeAbsolutePath );
+				src.replace( startPosInclude, endPosInclude - startPosInclude, srcInclude );
 			}
 
 			const GLchar * shaderCode = src.c_str();
