@@ -17,12 +17,18 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
+			struct Range
+			{
+				uint first;
+				uint count;
+			};
+
 			inline const static float PROBE_RADIUS = 1.4f;
 			inline const static float VOXEL_SIZE   = 0.4f;
 
-			inline Model::Molecule * const					  getMolecule() { return _molecule; }
-			inline const std::vector<std::pair<uint, uint>> & getAtomsToTriangles() const { return _atomsToTriangles; }
-			const Math::Transform &							  getTransform() const override;
+			inline Model::Molecule * const	  getMolecule() { return _molecule; }
+			inline const std::vector<Range> & getAtomsToTriangles() const { return _atomsToTriangles; }
+			const Math::Transform &			  getTransform() const override;
 
 			void refresh();
 			void refreshColors();
@@ -45,12 +51,6 @@ namespace VTX
 				int index;
 			};
 
-			struct AtomGridDataSorted
-			{
-				uint first;
-				uint count;
-			};
-
 			struct SESGridData
 			{
 				float sdf;
@@ -59,13 +59,10 @@ namespace VTX
 
 			Mode _mode = Mode::GPU;
 
-			// CPU.
-			Model::Molecule * const			   _molecule;
-			std::vector<std::pair<uint, uint>> _atomsToTriangles;
+			Model::Molecule * const _molecule;
+			std::vector<Range>		_atomsToTriangles;
 
 			void _refreshCPU();
-
-			// GPU.
 			void _refreshGPU();
 
 			SolventExcludedSurface( Molecule * const );

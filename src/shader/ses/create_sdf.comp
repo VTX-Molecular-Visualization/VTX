@@ -1,5 +1,5 @@
 #version 450
-
+#include "include/grid.glsl"
 #define FLT_MAX 3.402823466e+38
 
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
@@ -12,11 +12,12 @@ uniform uvec3	uGridSESSize;
 uniform vec3	uGridAtomCellSize;
 uniform vec3	uGridSESCellSize;
 uniform uint	uGridAtomCellCount;
+uniform uint	uGridSESCellCount;
 uniform float	uProbeRadius;
 uniform float	uVoxelSize;
 
 // Data struct.
-struct AtomGridDataSortedStruct
+struct Range
 {
 	uint first;
 	uint count;
@@ -29,65 +30,30 @@ struct SESGridDataStruct
 };
 
 // SSBO.
-// Input.
-layout (std430, binding = 0) readonly buffer AtomGridData
-{ 
-	AtomGridDataSortedStruct[] atomGridData;
-};
-
-layout (std140, binding = 1) readonly buffer AtomIndex
-{ 
-	uint[] atomIndex;
-};
-
-layout (std140, binding = 2) readonly buffer AtomPosition
-{ 
-	vec3[] atomPosition;
-};
-
-layout (std140, binding = 3) readonly buffer AtomVdwRadius
-{ 
-	float[] atomVdwRadius;
-};
-
-// Output.
-layout (std430, binding = 4) writeonly buffer SESGridData
+layout (std430, binding = 0) writeonly buffer SESGridData
 {
 	SESGridDataStruct[] sesGridData;
 };
 
-// Grid functions.
-uvec3 gridPosition( vec3 p_worldPosition, vec3 p_worldOrigin, vec3 p_cellSize )
-{	
-	return uvec3( floor( ( p_worldPosition - p_worldOrigin ) / p_cellSize) );
-}
-
-uvec3 gridPosition( uint p_hash, uvec3 p_size )
-{
-	uint z = p_hash / ( p_size.x * p_size.y );
-	uint r = p_hash % ( p_size.x * p_size.y );
-	return uvec3( r % p_size.x , r / p_size.x, z );
-}
-
-vec3 worldPosition( uvec3 p_gridPosition, vec3 p_worldOrigin, vec3 p_cellSize )
-{
-	return p_worldOrigin +  ( ( vec3( p_gridPosition ) + 0.5f ) * p_cellSize );
-}
-
-vec3 worldPosition( uint p_hash, uvec3 p_size, vec3 p_worldOrigin, vec3 p_cellSize )
+layout (std430, binding = 1) readonly buffer AtomGridData
 { 
-	return worldPosition( gridPosition( p_hash, p_size ), p_worldOrigin, p_cellSize );
-}
+	Range[] atomGridData;
+};
 
-uint gridHash( uvec3 p_gridPosition, uvec3 p_size )
-{
-	return ( p_gridPosition.z * p_size.x * p_size.y ) + ( p_gridPosition.y * p_size.x ) + p_gridPosition.x;
-}
+layout (std430, binding = 2) readonly buffer AtomIndex
+{ 
+	uint[] atomIndex;
+};
 
-uint gridHash( vec3 p_worldPosition, uvec3 p_size, vec3 p_worldOrigin, vec3 p_cellSize )
-{
-	return gridHash( gridPosition( p_worldPosition, p_worldOrigin, p_cellSize ), p_size );
-}
+layout (std430, binding = 3) readonly buffer AtomPosition
+{ 
+	vec3[] atomPosition;
+};
+
+layout (std430, binding = 4) readonly buffer AtomVdwRadius
+{ 
+	float[] atomVdwRadius;
+};
 
 void main()
 {
@@ -95,6 +61,12 @@ void main()
 	uvec3 sesGridPosition = gl_GlobalInvocationID;
 	uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
 	
+	// Not in grid.
+	if ( sesGridHash >= uGridSESCellCount )
+	{				
+		return;
+	}
+				
 	// Get corresponding acceleration grid data.
 	vec3 sesGridCellWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize);
 	uvec3 atomGridPosition = gridPosition( sesGridCellWorldPosition, uGridAtomWorldOrigin, uGridAtomCellSize);

@@ -144,14 +144,15 @@ namespace VTX
 						_molecule->createSolventExcludedSurface();
 					}
 
-					const Model::SolventExcludedSurface &	   ses = _molecule->getSolventExcludedSurface();
-					const std::vector<std::pair<uint, uint>> & atomsToTriangles = ses.getAtomsToTriangles();
+					const Model::SolventExcludedSurface & ses = _molecule->getSolventExcludedSurface();
+					const std::vector<Model::SolventExcludedSurface::Range> & atomsToTriangles
+						= ses.getAtomsToTriangles();
 					for ( uint atomIdx = residue->getIndexFirstAtom();
 						  atomIdx < residue->getIndexFirstAtom() + residue->getAtomCount();
 						  ++atomIdx )
 					{
 						representationTargets.appendTrianglesSES( atomsToTriangles[ atomIdx ].first,
-																  atomsToTriangles[ atomIdx ].second );
+																  atomsToTriangles[ atomIdx ].count );
 					}
 				}
 			}
@@ -199,13 +200,14 @@ namespace VTX
 				{
 					const Model::SolventExcludedSurface & ses = _molecule->getSolventExcludedSurface();
 
-					const std::vector<std::pair<uint, uint>> & atomsToTriangles = ses.getAtomsToTriangles();
+					const std::vector<Model::SolventExcludedSurface::Range> & atomsToTriangles
+						= ses.getAtomsToTriangles();
 					for ( uint atomIdx = residue->getIndexFirstAtom();
 						  atomIdx < residue->getIndexFirstAtom() + residue->getAtomCount();
 						  ++atomIdx )
 					{
 						representationTargets.appendTrianglesSES( atomsToTriangles[ atomIdx ].first,
-																  atomsToTriangles[ atomIdx ].second );
+																  atomsToTriangles[ atomIdx ].count );
 					}
 				}
 			}
