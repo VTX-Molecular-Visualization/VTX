@@ -3,6 +3,7 @@
 
 #include "event/event.hpp"
 #include "model/base_model.hpp"
+#include "model/category_enum.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "representation.hpp"
 #include <vector>
@@ -36,6 +37,7 @@ namespace VTX::Model::Representation
 		void			 setDefaultRepresentation( const int p_representationIndex, const bool p_notify = true );
 		int				 getDefaultRepresentationIndex() const;
 		Representation * getDefaultRepresentation();
+		Representation * getDefaultRepresentation( const CATEGORY_ENUM & p_categoryEnum );
 
 		std::string getValidName( const std::string & p_name ) const;
 		bool		isValidName( const std::string & p_name ) const;

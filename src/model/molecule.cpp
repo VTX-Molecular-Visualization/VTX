@@ -5,6 +5,7 @@
 #include "id.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
+#include "model/category.hpp"
 #include "model/chain.hpp"
 #include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
@@ -14,6 +15,7 @@
 #include "solvent_excluded_surface.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
@@ -27,6 +29,15 @@ namespace VTX
 		Molecule::Molecule() : Molecule( VTX::ID::Model::MODEL_MOLECULE ) {}
 		Molecule::Molecule( const VTX::ID::VTX_ID & p_typeId ) : BaseModel3D( VTX::ID::Model::MODEL_MOLECULE )
 		{
+			_categories.resize( int( CATEGORY_ENUM::COUNT ) );
+
+			for ( int i = 0; i < int( CATEGORY_ENUM::COUNT ); i++ )
+			{
+				_categories[ i ] = MVC::MvcManager::get().instantiateModel<Model::Category>();
+				_categories[ i ]->setMoleculePtr( this );
+				_categories[ i ]->setCategoryEnum( CATEGORY_ENUM( i ) );
+			}
+
 			_playMode = VTX_SETTING().getDefaultTrajectoryPlayMode();
 			_fps	  = VTX_SETTING().getDefaultTrajectorySpeed();
 		}
@@ -37,6 +48,10 @@ namespace VTX
 			MVC::MvcManager::get().deleteAllModels( _bonds );
 			MVC::MvcManager::get().deleteAllModels( _residues );
 			MVC::MvcManager::get().deleteAllModels( _chains );
+			MVC::MvcManager::get().deleteAllModels( _categories );
+
+			for ( const UnknownResidueData * const unknownResidueSymbol : _unknownResidueSymbol )
+				delete unknownResidueSymbol;
 
 			if ( _secondaryStructure != nullptr )
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
@@ -80,13 +95,13 @@ namespace VTX
 			return *bond;
 		}
 
-		int Molecule::addUnknownResidueSymbol( const UnknownResidueData & p_residueData )
+		int Molecule::addUnknownResidueSymbol( UnknownResidueData * const p_residueData )
 		{
 			int residueIndex;
 
 			for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
 			{
-				if ( _unknownResidueSymbol[ residueIndex ].symbolStr == p_residueData.symbolStr )
+				if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_residueData->symbolStr )
 					return residueIndex;
 			}
 
@@ -113,6 +128,27 @@ namespace VTX
 				{
 					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation(
 						*this, false, false );
+
+					for ( Model::Category * const category : getCategories() )
+					{
+						if ( category->isEmpty() )
+							continue;
+
+						const Model::Representation::Representation * const defaultRepresentation
+							= VTXApp::get().getRepresentationLibrary().getDefaultRepresentation(
+								category->getCategoryEnum() );
+
+						for ( const uint chainIndex : category->getChains() )
+						{
+							Model::Chain * const chain = getChain( chainIndex );
+
+							if ( chain == nullptr )
+								continue;
+
+							VTX::Representation::RepresentationManager::get().instantiateRepresentation(
+								defaultRepresentation, *chain, false, false );
+						}
+					}
 				}
 				computeAllRepresentationData();
 
@@ -315,23 +351,7 @@ namespace VTX
 					{
 						_bufferAtomVisibilities[ i ] = 0u;
 					}
-					// Solvent hidden.
-					else if ( _showSolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
-					{
-						_bufferAtomVisibilities[ i ] = 0u;
-					}
-					// Ion hidden.
-					else if ( _showIon == false && atom->getType() == Atom::TYPE::ION )
-					{
-						_bufferAtomVisibilities[ i ] = 0u;
-					}
 					else if ( _showHydrogen == false && atom->getSymbol() == Atom::SYMBOL::A_H )
-					{
-						_bufferAtomVisibilities[ i ] = 0u;
-					}
-					else if ( _showWater == false
-							  && ( atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::HOH
-								   || atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::WAT ) )
 					{
 						_bufferAtomVisibilities[ i ] = 0u;
 					}
@@ -614,27 +634,31 @@ namespace VTX
 			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_DATA_CHANGE ) );
 		}
 
+		bool Molecule::showWater() const { return getCategory( CATEGORY_ENUM::WATER ).isVisible(); }
 		void Molecule::setShowWater( const bool p_showWater )
 		{
-			_showWater = p_showWater;
+			Util::Molecule::show( getCategory( CATEGORY_ENUM::WATER ), p_showWater );
 			_fillBufferAtomVisibilities();
 			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
 		}
+		bool Molecule::showHydrogen() const { return _showHydrogen; }
 		void Molecule::setShowHydrogen( const bool p_showHydrogen )
 		{
 			_showHydrogen = p_showHydrogen;
 			_fillBufferAtomVisibilities();
 			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
 		}
+		bool Molecule::showSolvent() const { return getCategory( CATEGORY_ENUM::SOLVENT ).isVisible(); }
 		void Molecule::setShowSolvent( const bool p_showSolvent )
 		{
-			_showSolvent = p_showSolvent;
+			Util::Molecule::show( getCategory( CATEGORY_ENUM::SOLVENT ), p_showSolvent );
 			_fillBufferAtomVisibilities();
 			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
 		}
+		bool Molecule::showIon() const { return getCategory( CATEGORY_ENUM::ION ).isVisible(); }
 		void Molecule::setShowIon( const bool p_showIon )
 		{
-			_showIon = p_showIon;
+			Util::Molecule::show( getCategory( CATEGORY_ENUM::ION ), p_showIon );
 			_fillBufferAtomVisibilities();
 			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
 		}
@@ -648,13 +672,13 @@ namespace VTX
 					  + " / Bonds: " + std::to_string( _bonds.size() ) );
 
 			// Display unknown symbols.
-			const std::vector<UnknownResidueData> & unknownResidueSymbols = getUnknownResidueSymbols();
+			const std::vector<UnknownResidueData *> & unknownResidueSymbols = getUnknownResidueSymbols();
 			if ( unknownResidueSymbols.empty() == false )
 			{
 				std::string unknownResidueSymbolsStr = "";
-				for ( UnknownResidueData unknownResidueData : unknownResidueSymbols )
+				for ( const UnknownResidueData * const unknownResidueData : unknownResidueSymbols )
 				{
-					unknownResidueSymbolsStr += unknownResidueData.symbolStr + " ";
+					unknownResidueSymbolsStr += unknownResidueData->symbolStr + " ";
 				}
 				VTX_INFO( "Unknown residue symbols : " + unknownResidueSymbolsStr );
 			}
@@ -817,19 +841,47 @@ namespace VTX
 			_solventExcludedSurface->refresh();
 		}
 
+		std::vector<Model::Category *> Molecule::getFilledCategories() const
+		{
+			std::vector<Model::Category *> res = std::vector<Model::Category *>();
+			res.reserve( int( CATEGORY_ENUM::COUNT ) );
+
+			for ( Model::Category * const category : _categories )
+			{
+				if ( !category->isEmpty() )
+					res.emplace_back( category );
+			}
+
+			return res;
+		};
+		Model::Category * Molecule::getCategoryFromChain( const Model::Chain & p_chain )
+		{
+			return _categories[ int( p_chain.getCategoryEnum() ) ];
+		}
+		const Model::Category * Molecule::getCategoryFromChain( const Model::Chain & p_chain ) const
+		{
+			return _categories[ int( p_chain.getCategoryEnum() ) ];
+		}
+
 		void Molecule::setVisible( const bool p_visible )
 		{
-			if ( isVisible() != p_visible )
+			const bool previousVisibleState = isVisible();
+
+			BaseVisible::setVisible( p_visible );
+
+			if ( previousVisibleState != p_visible )
 			{
-				BaseVisible::setVisible( p_visible );
 				_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
 			}
 		}
 		void Molecule::setVisible( const bool p_visible, const bool p_notify )
 		{
-			if ( isVisible() != p_visible )
+			const bool previousVisibleState = isVisible();
+
+			BaseVisible::setVisible( p_visible );
+
+			if ( previousVisibleState != p_visible )
 			{
-				BaseVisible::setVisible( p_visible );
 				if ( p_notify )
 					_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
 			}

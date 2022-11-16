@@ -92,8 +92,9 @@ namespace VTX::Action::Atom
 				for ( const std::pair<Model::Molecule *, std::vector<Model::Atom *>> & pair : atomsPerMolecules )
 				{
 					for ( Model::Atom * const atom : pair.second )
-						Util::Molecule::show( *atom, _getVisibilityBool( *atom ), true, false );
+						Util::Molecule::show( *atom, _getVisibilityBool( *atom ), true, false, false );
 
+					pair.first->notifyVisibilityChange();
 					pair.first->refreshVisibilities();
 					pair.first->computeRepresentationTargets();
 				}

@@ -11,6 +11,7 @@
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QTreeWidget>
+#include <vector>
 
 namespace VTX::Generic
 {
@@ -31,6 +32,9 @@ namespace VTX::UI::Widget::Scene
 		inline static const Qt::ItemDataRole MODEL_ID_ROLE	   = Qt::ItemDataRole( Qt::UserRole );
 		inline static const Qt::ItemDataRole EXPAND_STATE_ROLE = Qt::ItemDataRole( Qt::UserRole + 1 );
 
+	  protected:
+		inline static const Qt::ItemDataRole CHILD_FIRST_ROLE = Qt::ItemDataRole( Qt::UserRole + 2 );
+
 	  public:
 		void localize() override;
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
@@ -40,6 +44,10 @@ namespace VTX::UI::Widget::Scene
 		virtual const Model::ID &			   getModelID() const		= 0;
 		virtual const Generic::BaseSceneItem & getBaseSceneItem() const = 0;
 		virtual QTreeWidgetItem *			   getLastVisibleItem();
+
+		virtual bool containsModel( const Model::BaseModel & p_model ) const { return p_model.getId() == getModelID(); }
+		virtual std::vector<Model::ID> getAllItemsFrom( const Model::BaseModel & p_model ) const;
+		virtual std::vector<Model::ID> getAllItemsTo( const Model::BaseModel & p_model ) const;
 
 		void openRenameEditor( const Model::ID & p_modelID );
 

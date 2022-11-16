@@ -1,12 +1,13 @@
 #include "generated_molecule.hpp"
-#include "atom.hpp"
-#include "chain.hpp"
 #include "id.hpp"
+#include "model/atom.hpp"
 #include "model/bond.hpp"
+#include "model/category.hpp"
+#include "model/chain.hpp"
+#include "model/residue.hpp"
+#include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
-#include "residue.hpp"
-#include "selection.hpp"
 #include "selection/selection_manager.hpp"
 #include "tool/chrono.hpp"
 #include <map>
@@ -595,8 +596,12 @@ namespace VTX::Model
 			generatedAtomPosFrame.reserve( atomPosFrame.size() );
 		}
 
-		for ( const UnknownResidueData & unknownSymbol : p_molecule.getUnknownResidueSymbols() )
-			addUnknownResidueSymbol( unknownSymbol );
+		for ( const UnknownResidueData * const unknownSymbolPtr : p_molecule.getUnknownResidueSymbols() )
+		{
+			UnknownResidueData * const unknownSymbolCopy = new UnknownResidueData( *unknownSymbolPtr );
+			addUnknownResidueSymbol( unknownSymbolCopy );
+		}
+
 		for ( const std::string & unknownSymbol : p_molecule.getUnknownAtomSymbols() )
 			addUnknownAtomSymbol( unknownSymbol );
 
@@ -618,10 +623,13 @@ namespace VTX::Model
 		p_chain.setIndexFirstResidue( getResidueCount() );
 		p_chain.setColor( Model::Chain::getChainIdColor( p_chainSource.getOriginalChainID() ) );
 
+		const CATEGORY_ENUM & chainCategoryEnum = p_chainSource.getCategoryEnum();
+		getCategory( chainCategoryEnum ).addChain( p_chain.getIndex() );
+
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
 			VTX::Representation::RepresentationManager::get().instantiateCopy(
-				p_chainSource.getRepresentation(), *this, false, false );
+				p_chainSource.getRepresentation(), p_chain, false, false );
 		}
 	}
 	void GeneratedMolecule::_copyResidueData( Model::Residue &		 p_residue,
@@ -641,7 +649,7 @@ namespace VTX::Model
 		if ( p_residueSource.hasCustomRepresentation() )
 		{
 			VTX::Representation::RepresentationManager::get().instantiateCopy(
-				p_residueSource.getRepresentation(), *this, false, false );
+				p_residueSource.getRepresentation(), p_residue, false, false );
 		}
 	}
 	void GeneratedMolecule::_copyAtomData( Model::Atom &		  p_atom,
@@ -660,9 +668,10 @@ namespace VTX::Model
 
 	Model::Chain & GeneratedMolecule::_extractFullChain( Model::Molecule & p_fromMolecule, const uint p_index )
 	{
-		Model::Chain & chain					 = *p_fromMolecule.getChain( p_index );
-		const uint	   previousFirstResidueIndex = chain.getIndexFirstResidue();
-		const uint	   indexFirstResidue		 = getResidueCount();
+		Model::Chain &		  chain						= *p_fromMolecule.getChain( p_index );
+		const CATEGORY_ENUM & chainCategoryEnum			= chain.getCategoryEnum();
+		const uint			  previousFirstResidueIndex = chain.getIndexFirstResidue();
+		const uint			  indexFirstResidue			= getResidueCount();
 
 		_addChain( &chain );
 
@@ -697,6 +706,8 @@ namespace VTX::Model
 		chain.setMoleculePtr( this );
 		chain.setIndex( getChainCount() - 1 );
 		chain.setIndexFirstResidue( indexFirstResidue );
+
+		getCategory( chain.getCategoryEnum() ).addChain( chain.getIndex() );
 
 		p_fromMolecule.removeChain( p_index, false, false, false );
 

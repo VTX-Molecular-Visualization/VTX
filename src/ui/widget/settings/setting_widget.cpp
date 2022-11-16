@@ -1,6 +1,7 @@
 #include "setting_widget.hpp"
 #include "setting_color_widget.hpp"
 #include "setting_menu_item.hpp"
+#include "setting_molecule_widget.hpp"
 #include "setting_render_effect_widget.hpp"
 #include "setting_representation_widget.hpp"
 #include "setting_vtx_widget.hpp"
@@ -56,6 +57,10 @@ namespace VTX::UI::Widget::Settings
 		//_addItem( WidgetFactory::get().instantiateWidget<SettingColorWidget>( _menu, "settingMenuButton" ),
 		//		  SETTING_MENU::COLORS,
 		//		  "Colors" );
+
+		_addItem( WidgetFactory::get().instantiateWidget<SettingMoleculeWidget>( _menu, "settingMenuButton" ),
+				  SETTING_MENU::MOLECULE,
+				  "Molecule" );
 		_addItem( WidgetFactory::get().instantiateWidget<SettingVTXWidget>( _menu, "settingMenuButton" ),
 				  SETTING_MENU::VTX,
 				  "VTX" );

@@ -7,6 +7,7 @@
 #include "event/event_manager.hpp"
 #include "id.hpp"
 #include "model/atom.hpp"
+#include "model/category.hpp"
 #include "model/chain.hpp"
 #include "model/generated_molecule.hpp"
 #include "model/label.hpp"
@@ -71,10 +72,11 @@ namespace VTX::Action::Selection
 
 		virtual void execute() override
 		{
-			std::vector<Model::Molecule *> molecules = std::vector<Model::Molecule *>();
-			std::vector<Model::Chain *>	   chains	 = std::vector<Model::Chain *>();
-			std::vector<Model::Residue *>  residues	 = std::vector<Model::Residue *>();
-			std::vector<Model::Atom *>	   atoms	 = std::vector<Model::Atom *>();
+			std::vector<Model::Molecule *> molecules  = std::vector<Model::Molecule *>();
+			std::vector<Model::Category *> categories = std::vector<Model::Category *>();
+			std::vector<Model::Chain *>	   chains	  = std::vector<Model::Chain *>();
+			std::vector<Model::Residue *>  residues	  = std::vector<Model::Residue *>();
+			std::vector<Model::Atom *>	   atoms	  = std::vector<Model::Atom *>();
 
 			std::vector<Model::Path *>		paths	   = std::vector<Model::Path *>();
 			std::vector<Model::Viewpoint *> viewpoints = std::vector<Model::Viewpoint *>();
@@ -88,6 +90,11 @@ namespace VTX::Action::Selection
 				{
 					Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 					molecules.emplace_back( &model );
+				}
+				else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+				{
+					Model::Category & model = MVC::MvcManager::get().getModel<Model::Category>( modelId );
+					categories.emplace_back( &model );
 				}
 				else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 				{
@@ -123,7 +130,7 @@ namespace VTX::Action::Selection
 				}
 			}
 
-			_selection.selectModels( molecules, chains, residues, atoms, _appendToSelection );
+			_selection.selectModels( molecules, categories, chains, residues, atoms, _appendToSelection );
 			_selection.selectModels( paths, true );
 			_selection.selectModels( viewpoints, true );
 			_selection.selectModels( labels, true );
@@ -149,10 +156,11 @@ namespace VTX::Action::Selection
 
 		virtual void execute() override
 		{
-			std::vector<Model::Molecule *> molecules = std::vector<Model::Molecule *>();
-			std::vector<Model::Chain *>	   chains	 = std::vector<Model::Chain *>();
-			std::vector<Model::Residue *>  residues	 = std::vector<Model::Residue *>();
-			std::vector<Model::Atom *>	   atoms	 = std::vector<Model::Atom *>();
+			std::vector<Model::Molecule *> molecules  = std::vector<Model::Molecule *>();
+			std::vector<Model::Category *> categories = std::vector<Model::Category *>();
+			std::vector<Model::Chain *>	   chains	  = std::vector<Model::Chain *>();
+			std::vector<Model::Residue *>  residues	  = std::vector<Model::Residue *>();
+			std::vector<Model::Atom *>	   atoms	  = std::vector<Model::Atom *>();
 
 			for ( const Model::ID modelId : _models )
 			{
@@ -162,6 +170,11 @@ namespace VTX::Action::Selection
 				{
 					Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 					molecules.emplace_back( &model );
+				}
+				else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+				{
+					Model::Category & model = MVC::MvcManager::get().getModel<Model::Category>( modelId );
+					categories.emplace_back( &model );
 				}
 				else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 				{
@@ -180,7 +193,7 @@ namespace VTX::Action::Selection
 				}
 			}
 
-			_selection.unselectModels( molecules, chains, residues, atoms );
+			_selection.unselectModels( molecules, categories, chains, residues, atoms );
 
 			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 		}
@@ -290,6 +303,37 @@ namespace VTX::Action::Selection
 	  private:
 		Model::Selection &			   _selection;
 		std::vector<Model::Molecule *> _molecules = std::vector<Model::Molecule *>();
+		const bool					   _appendToSelection;
+	};
+
+	class SelectCategory : public BaseAction
+	{
+	  public:
+		explicit SelectCategory( Model::Selection & p_selection,
+								 Model::Category &	p_category,
+								 const bool			p_appendToSelection = false ) :
+			_selection( p_selection ),
+			_categories { &p_category }, _appendToSelection( p_appendToSelection )
+		{
+		}
+
+		explicit SelectCategory( Model::Selection &						p_selection,
+								 const std::vector<Model::Category *> & p_categories,
+								 const bool								p_appendToSelection = false ) :
+			_selection( p_selection ),
+			_categories( p_categories ), _appendToSelection( p_appendToSelection )
+		{
+		}
+
+		virtual void execute() override
+		{
+			_selection.selectCategories( _categories, _appendToSelection );
+			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+		}
+
+	  private:
+		Model::Selection &			   _selection;
+		std::vector<Model::Category *> _categories;
 		const bool					   _appendToSelection;
 	};
 
@@ -425,6 +469,44 @@ namespace VTX::Action::Selection
 	  private:
 		Model::Selection &			   _selection;
 		std::vector<Model::Molecule *> _molecules = std::vector<Model::Molecule *>();
+		const bool					   _check;
+	};
+
+	class UnselectCategory : public BaseAction
+	{
+	  public:
+		explicit UnselectCategory( Model::Selection & p_selection,
+								   Model::Category &  p_category,
+								   bool				  p_check = false ) :
+			_selection( p_selection ),
+			_check( p_check )
+		{
+			_categories.emplace_back( &p_category );
+		}
+		explicit UnselectCategory( Model::Selection &					  p_selection,
+								   const std::vector<Model::Category *> & p_categories,
+								   bool									  p_check = false ) :
+			_selection( p_selection ),
+			_check( p_check )
+		{
+			_categories.resize( p_categories.size() );
+			for ( int i = 0; i < p_categories.size(); i++ )
+				_categories[ i ] = p_categories[ i ];
+		}
+
+		virtual void execute() override
+		{
+			if ( _check )
+				_selection.unselectCategories( _categories );
+			else
+				_selection.unselectCategoriesWithCheck( _categories );
+
+			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+		}
+
+	  private:
+		Model::Selection &			   _selection;
+		std::vector<Model::Category *> _categories = std::vector<Model::Category *>();
 		const bool					   _check;
 	};
 
@@ -585,17 +667,18 @@ namespace VTX::Action::Selection
 
 				if ( _selection.isMoleculeFullySelected( molecule ) )
 				{
-					Util::Molecule::show( molecule, p_show, false );
+					Util::Molecule::show( molecule, p_show, false, true );
 				}
 				else
 				{
 					molecule.setVisible( true );
+
 					for ( const Model::Selection::PairChainIds & chainIds : molIds.second )
 					{
 						Model::Chain & chain = *molecule.getChain( chainIds.first );
 						if ( _selection.isChainFullySelected( chain ) )
 						{
-							Util::Molecule::show( chain, p_show, false );
+							Util::Molecule::show( chain, p_show, false, false, false );
 						}
 						else
 						{
@@ -605,7 +688,7 @@ namespace VTX::Action::Selection
 								Model::Residue & residue = *molecule.getResidue( residueIds.first );
 								if ( _selection.isResidueFullySelected( residue ) )
 								{
-									Util::Molecule::show( residue, p_show, false );
+									Util::Molecule::show( residue, p_show, false, false, false );
 								}
 								else
 								{
@@ -613,7 +696,7 @@ namespace VTX::Action::Selection
 									for ( const uint atomId : residueIds.second )
 									{
 										Model::Atom * const atom = molecule.getAtom( atomId );
-										atom->setVisible( p_show );
+										atom->setVisible( p_show, false );
 									}
 								}
 							}
@@ -621,6 +704,10 @@ namespace VTX::Action::Selection
 					}
 				}
 
+				for ( Model::Category * const category : molecule.getCategories() )
+					category->updateVisibilityState();
+
+				molecule.notifyVisibilityChange();
 				molecule.refreshVisibilities();
 				molecule.computeRepresentationTargets();
 			}
@@ -638,7 +725,7 @@ namespace VTX::Action::Selection
 
 				if ( itSelection != moleculesInSelection.end() )
 				{
-					molecule->setVisible( true );
+					molecule->setVisible( true, false );
 
 					Model::Selection::MapChainIds::const_iterator itChainSelection = itSelection->second.cbegin();
 
@@ -651,7 +738,7 @@ namespace VTX::Action::Selection
 
 						if ( itChainSelection != itSelection->second.cend() && iChain == itChainSelection->first )
 						{
-							chain->setVisible( true );
+							chain->setVisible( true, false );
 
 							Model::Selection::MapResidueIds::const_iterator itResidueSelection
 								= itChainSelection->second.cbegin();
@@ -668,7 +755,7 @@ namespace VTX::Action::Selection
 								if ( itResidueSelection != itChainSelection->second.cend()
 									 && iResidue == itResidueSelection->first )
 								{
-									residue->setVisible( true );
+									residue->setVisible( true, false );
 
 									Model::Selection::VecAtomIds::const_iterator itAtomSelection
 										= itResidueSelection->second.cbegin();
@@ -685,12 +772,12 @@ namespace VTX::Action::Selection
 										if ( itAtomSelection != itResidueSelection->second.cend()
 											 && iAtom == *itAtomSelection )
 										{
-											atom->setVisible( true );
+											atom->setVisible( true, false );
 											itAtomSelection++;
 										}
 										else
 										{
-											atom->setVisible( false );
+											atom->setVisible( false, false );
 										}
 									}
 
@@ -698,22 +785,26 @@ namespace VTX::Action::Selection
 								}
 								else
 								{
-									residue->setVisible( false );
+									residue->setVisible( false, false );
 								}
 							}
 							itChainSelection++;
 						}
 						else
 						{
-							chain->setVisible( false );
+							chain->setVisible( false, false );
 						}
 					}
 				}
 				else
 				{
-					molecule->setVisible( false );
+					molecule->setVisible( false, false );
 				}
 
+				for ( Model::Category * const category : molecule->getCategories() )
+					category->updateVisibilityState();
+
+				molecule->notifyVisibilityChange();
 				molecule->refreshVisibilities();
 				molecule->computeRepresentationTargets();
 			}

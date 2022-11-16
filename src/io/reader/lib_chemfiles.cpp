@@ -2,6 +2,8 @@
 #include "color/rgb.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
+#include "model/category.hpp"
+#include "model/category_enum.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
@@ -245,21 +247,29 @@ namespace VTX::IO::Reader
 		std::map<uint, std::vector<size_t>> mapResidueBonds		 = std::map<uint, std::vector<size_t>>();
 		std::map<uint, std::vector<size_t>> mapResidueExtraBonds = std::map<uint, std::vector<size_t>>();
 
-		int oldIndexInChain = INT_MIN;
+		int			  oldIndexInChain  = INT_MIN;
+		CATEGORY_ENUM lastCategoryEnum = CATEGORY_ENUM::UNKNOWN;
+
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 		{
 			const chemfiles::Residue & residue = residues[ residueIdx ];
 
 			// Check if chain name changed.
-			const std::string chainName = residue.properties().get( "chainname" ).value_or( "" ).as_string();
-			const std::string chainId	= residue.properties().get( "chainid" ).value_or( "" ).as_string();
+			const std::string chainName		= residue.properties().get( "chainname" ).value_or( "" ).as_string();
+			const std::string chainId		= residue.properties().get( "chainid" ).value_or( "" ).as_string();
+			std::string		  residueSymbol = residue.name();
 
-			if ( chainName != lastChainName || p_molecule.getChainCount() == 0 )
+			const CATEGORY_ENUM categoryEnum = Util::Molecule::getResidueCategory( residueSymbol );
+
+			const bool createNewChain = p_molecule.getChainCount() == 0 || // No chain created
+										chainName != lastChainName ||	   // New chain ID
+										categoryEnum != lastCategoryEnum;  // New category
+
+			if ( createNewChain )
 			{
 				// Create chain.
-				p_molecule.addChain();
+				modelChain = &p_molecule.addChain();
 				chainModelId++;
-				modelChain = p_molecule.getChain( chainModelId );
 				modelChain->setIndex( chainModelId );
 				if ( chainName != "" )
 				{
@@ -270,8 +280,11 @@ namespace VTX::IO::Reader
 				modelChain->setResidueCount( 0 );
 				modelChain->setOriginalChainID( chainId );
 				modelChain->setColor( Model::Chain::getChainIdColor( chainId ) );
-				lastChainName	= chainName;
-				oldIndexInChain = INT_MIN;
+				modelChain->setCategoryEnum( categoryEnum );
+
+				lastChainName	 = chainName;
+				lastCategoryEnum = categoryEnum;
+				oldIndexInChain	 = INT_MIN;
 			}
 
 			modelChain = p_molecule.getChain( chainModelId );
@@ -285,7 +298,6 @@ namespace VTX::IO::Reader
 			modelResidue->setChainPtr( modelChain );
 			modelResidue->setIndexFirstAtom( uint( *residue.begin() ) );
 			modelResidue->setAtomCount( uint( residue.size() ) );
-			std::string residueSymbol = residue.name();
 			std::transform( residueSymbol.begin(),
 							residueSymbol.end(),
 							residueSymbol.begin(),
@@ -300,9 +312,9 @@ namespace VTX::IO::Reader
 			}
 			else
 			{
-				Model::UnknownResidueData unknownResidueData = Model::UnknownResidueData();
-				unknownResidueData.symbolStr				 = residueSymbol;
-				unknownResidueData.symbolName				 = Util::Molecule::getResidueFullName( residueSymbol );
+				Model::UnknownResidueData * const unknownResidueData = new Model::UnknownResidueData();
+				unknownResidueData->symbolStr						 = residueSymbol;
+				unknownResidueData->symbolName = Util::Molecule::getResidueFullName( residueSymbol );
 
 				symbolValue
 					= int( Model::Residue::SYMBOL::COUNT ) + p_molecule.addUnknownResidueSymbol( unknownResidueData );

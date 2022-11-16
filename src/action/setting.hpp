@@ -5,6 +5,7 @@
 #include "io/reader/serialized_object.hpp"
 #include "io/struct/image_export.hpp"
 #include "io/writer/serialized_object.hpp"
+#include "model/category_enum.hpp"
 #include "model/molecule.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/representation/representation_library.hpp"
@@ -727,6 +728,26 @@ namespace VTX::Action::Setting
 		const VTX::Selection::Granularity _granularity;
 	};
 
+	class ChangeDefaultRepresentationPerCategory : public BaseAction
+	{
+	  public:
+		explicit ChangeDefaultRepresentationPerCategory( const CATEGORY_ENUM & p_categoryEnum,
+														 const int			   p_representationIndex ) :
+			_categoryEnum( p_categoryEnum ),
+			_representationIndex( p_representationIndex )
+		{
+		}
+
+		virtual void execute() override
+		{
+			VTX_SETTING().setDefaultRepresentationIndexPerCategory( _categoryEnum, _representationIndex );
+		};
+
+	  private:
+		const CATEGORY_ENUM _categoryEnum;
+		const int			_representationIndex;
+	};
+
 	class ApplyAllSettings : public BaseAction
 	{
 	  public:
@@ -793,6 +814,14 @@ namespace VTX::Action::Setting
 			VTX_SETTING().restore();
 			VTX_ACTION( new Action::Setting::ApplyAllSettings( VTX_SETTING() ) );
 		}
+	};
+
+	class RestoreDefaultRepresentationPerCategory : public BaseAction
+	{
+	  public:
+		explicit RestoreDefaultRepresentationPerCategory() {}
+
+		virtual void execute() override { VTX_SETTING().restoreDefaultRepresentationPerCategory(); };
 	};
 } // namespace VTX::Action::Setting
 

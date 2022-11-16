@@ -34,14 +34,15 @@ namespace VTX
 		{
 			return _symbol < SYMBOL_COUNT
 					   ? SYMBOL_STR[ _symbol ]
-					   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ].symbolStr;
+					   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ]->symbolStr;
 		}
 		const std::string & Residue::getSymbolName() const
 		{
 			return _symbol < SYMBOL_COUNT
 					   ? SYMBOL_NAME[ _symbol ]
-					   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ].symbolName;
+					   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ]->symbolName;
 		}
+
 		const std::string & Residue::getSymbolShort() const
 		{
 			return _symbol < SYMBOL_COUNT ? SYMBOL_SHORT_STR[ _symbol ] : SYMBOL_SHORT_STR[ int( SYMBOL::UNKNOWN ) ];
@@ -123,9 +124,12 @@ namespace VTX
 
 		void Residue::setVisible( const bool p_visible )
 		{
-			if ( isVisible() != p_visible )
+			const bool previousVisibleState = isVisible();
+
+			BaseVisible::setVisible( p_visible );
+
+			if ( previousVisibleState != p_visible )
 			{
-				BaseVisible ::setVisible( p_visible );
 				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
 				getMoleculePtr()->propagateEventToViews(
 					new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
@@ -134,9 +138,12 @@ namespace VTX
 
 		void Residue::setVisible( const bool p_visible, const bool p_notify )
 		{
-			if ( isVisible() != p_visible )
+			const bool previousVisibleState = isVisible();
+
+			BaseVisible::setVisible( p_visible );
+
+			if ( previousVisibleState != p_visible )
 			{
-				BaseVisible ::setVisible( p_visible );
 				if ( p_notify )
 				{
 					_notifyViews( new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );

@@ -74,7 +74,7 @@ namespace VTX::Action::Molecule
 				case VISIBILITY_MODE::SHOW:
 				case VISIBILITY_MODE::HIDE:
 				case VISIBILITY_MODE::ALL:
-					Util::Molecule::show( *molecule, _getVisibilityBool( *molecule ), true );
+					Util::Molecule::show( *molecule, _getVisibilityBool( *molecule ), true, true );
 					break;
 				case VISIBILITY_MODE::SOLO: Util::Molecule::solo( *molecule, false ); break;
 				}

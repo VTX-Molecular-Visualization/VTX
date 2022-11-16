@@ -6,6 +6,7 @@
 #include "io/serializer.hpp"
 #include "io/struct/image_export.hpp"
 #include "io/writer/serialized_object.hpp"
+#include "model/category_enum.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "path/path_enum.hpp"
 #include "renderer/base_renderer.hpp"
@@ -22,18 +23,7 @@ namespace VTX
 {
 	// UI.
 	const Style::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT = Style::SYMBOL_DISPLAY_MODE::SHORT;
-	const int						 Setting::WINDOW_WIDTH_DEFAULT		  = 1280;
-	const int						 Setting::WINDOW_HEIGHT_DEFAULT		  = 720;
 	const bool						 Setting::WINDOW_FULLSCREEN_DEFAULT	  = false;
-
-	const int Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT  = 200;
-	const int Setting::SCENE_WIDGET_WIDTH_DEFAULT	  = 50;
-	const int Setting::INSPECTOR_WIDGET_WIDTH_DEFAULT = 50;
-	const int Setting::RENDER_WIDGET_HEIGHT_DEFAULT
-		= Setting::WINDOW_HEIGHT_DEFAULT - Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT;
-
-	const int Setting::STATUS_PROGRESS_BAR_CHUNKS = 10;
-	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;
 
 	// Rendering.
 	const bool Setting::ACTIVE_RENDERER_DEFAULT = true;
@@ -72,6 +62,25 @@ namespace VTX
 	const float						   Setting::SES_RESOLUTION_MIN			   = 0.3f;
 	const float						   Setting::SES_RESOLUTION_MAX			   = 1.f;
 	const Generic::COLOR_MODE		   Setting::COLOR_MODE_DEFAULT			   = Generic::COLOR_MODE::CHAIN;
+
+	const std::vector<std::string> Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_NAME = {
+		"Stick", // POLYMER
+		"Stick", // CARBOHYDRATE
+		"Stick", // LIGAND
+		"VdW",	 // ION
+		"Stick", // SOLVENT
+		"Stick", // WATER
+		"Stick", // UNKNOWN
+	};
+	const std::vector<int> Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_INDEX = {
+		4, // POLYMER
+		4, // CARBOHYDRATE
+		4, // LIGAND
+		6, // ION
+		4, // SOLVENT
+		4, // WATER
+		4, // UNKNOWN
+	};
 
 	const std::string Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME = "New render preset";
 	const int		  Setting::RENDER_EFFECT_DEFAULT_INDEX			 = 0;
@@ -192,7 +201,6 @@ namespace VTX
 	const float Setting::CE_ALIGN_D1_DEFAULT	   = 4.f;
 
 	// Misc.
-	const int  Setting::CONSOLE_SIZE	   = 80;
 	const uint Setting::ACTION_BUFFER_SIZE = 10;
 
 	const bool	Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE	 = false;
@@ -428,6 +436,12 @@ namespace VTX
 		return path.qpath();
 	}
 
+	void Setting::restoreDefaultRepresentationPerCategory()
+	{
+		representationPerCategory = DEFAULT_REPRESENTATION_PER_CATEGORY_INDEX;
+		_sendDataChangedEvent( PARAMETER::DEFAULT_REPRESENTATION_PER_CATEGORY );
+	}
+
 	void Setting::backup()
 	{
 		IO::Writer::SerializedObject<VTX::Setting> writer = IO::Writer::SerializedObject<VTX::Setting>();
@@ -547,6 +561,27 @@ namespace VTX
 		renderEffectDefaultIndex = p_renderEffectDefaultIndex;
 	}
 
+	int Setting::getDefaultRepresentationIndexPerCategory( const CATEGORY_ENUM & p_categoryEnum ) const
+	{
+		return representationPerCategory[ int( p_categoryEnum ) ];
+	}
+	void Setting::setDefaultRepresentationIndexPerCategory( const CATEGORY_ENUM & p_categoryEnum,
+															const int			  p_representationDefaultIndex )
+	{
+		representationPerCategory[ int( p_categoryEnum ) ] = p_representationDefaultIndex;
+		_sendDataChangedEvent( PARAMETER::DEFAULT_REPRESENTATION_PER_CATEGORY );
+	}
+	const std::string & Setting::getTmpDefaultRepresentationNamePerCategory( const CATEGORY_ENUM & p_categoryEnum )
+	{
+		return _tmpRepresentationPerCategory[ int( p_categoryEnum ) ];
+	}
+
+	void Setting::setTmpDefaultRepresentationNamePerCategory( const CATEGORY_ENUM & p_categoryEnum,
+															  const std::string &	p_representationDefaultName )
+	{
+		_tmpRepresentationPerCategory[ int( p_categoryEnum ) ] = p_representationDefaultName;
+	}
+
 	void Setting::setSelectionGranularity( const Selection::Granularity & p_selectionGranularity )
 	{
 		selectionGranularity = p_selectionGranularity;
@@ -613,6 +648,8 @@ namespace VTX
 
 		checkVTXUpdate		  = CHECK_VTX_UPDATE_DEFAULT;
 		portableSaveActivated = PORTABLE_SAVE_ACTIVATED_DEFAULT;
+
+		representationPerCategory = DEFAULT_REPRESENTATION_PER_CATEGORY_INDEX;
 
 		_sendDataChangedEvent( PARAMETER::ALL );
 	}

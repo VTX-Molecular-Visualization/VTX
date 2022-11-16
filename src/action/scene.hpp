@@ -45,7 +45,7 @@ namespace VTX::Action::Scene
 		{
 			for ( Object3D::Scene::PairMoleculePtrFloat & pairMol : VTXApp::get().getScene().getMolecules() )
 			{
-				Util::Molecule::show( *pairMol.first, true, true );
+				Util::Molecule::show( *pairMol.first, true, true, true );
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

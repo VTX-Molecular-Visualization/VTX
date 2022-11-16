@@ -187,6 +187,18 @@ namespace VTX::Model::Representation
 	}
 	Representation * RepresentationLibrary::getDefaultRepresentation() { return _defaultRepresentation; }
 
+	Representation * RepresentationLibrary::getDefaultRepresentation( const CATEGORY_ENUM & p_categoryEnum )
+	{
+		const int representationIndex = VTX_SETTING().getDefaultRepresentationIndexPerCategory( p_categoryEnum );
+
+		Representation * res = getRepresentation( representationIndex );
+
+		if ( res == nullptr )
+			res = getDefaultRepresentation();
+
+		return res;
+	}
+
 	void RepresentationLibrary::clear( const bool p_notify )
 	{
 		while ( _representations.size() > 0 )
@@ -285,7 +297,7 @@ namespace VTX::Model::Representation
 		{
 			Representation * const ses = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 			ses->setName( name );
-			ses->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
+			ses->getData().setColorMode( Generic::COLOR_MODE::PROTEIN );
 			ses->setQuickAccess( true );
 			addRepresentation( ses, p_notify );
 		}

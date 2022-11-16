@@ -48,23 +48,16 @@ namespace VTX::UI::Widget::Scene
 								 const bool			p_appendToSelection ) const;
 		void _unselectModelAction( Model::Selection & p_selectionModel, const Model::ID & p_modelId ) const;
 
-		void _fillVectorWithItemIds( const QItemSelection & p_selection, std::vector<uint> & p_vectorId ) const;
-		void _selectAllBeforeItemInMolecule( std::vector<uint> &			p_selection,
-											 const Model::BaseModel * const p_itemFrom );
-		void _selectAllAfterItemInMolecule( std::vector<uint> &			   p_selection,
-											const Model::BaseModel * const p_itemFrom );
+		void _fillVectorWithItemIds( const QItemSelection & p_selection, std::vector<Model::ID> & p_vectorId ) const;
+		void _appendAllSubitemsBeforeObjectInSelectionVector( const SceneItemWidget &  p_sceneItemWidget,
+															  const Model::BaseModel & p_itemFrom,
+															  std::vector<Model::ID> & p_selectionVector ) const;
+		void _appendAllSubitemsAfterObjectInSelectionVector( const SceneItemWidget &  p_sceneItemWidget,
+															 const Model::BaseModel & p_itemFrom,
+															 std::vector<Model::ID> & p_selectionVector ) const;
 
-		void _selectAllChainsFrom( std::vector<uint> & p_selection, const Model::Chain & p_itemFrom );
-		void _selectAllResiduesFrom( std::vector<uint> & p_selection, const Model::Residue & p_itemFrom );
-		void _selectAllAtomsFrom( std::vector<uint> & p_selection, const Model::Atom & p_itemFrom );
-
-		void _selectAllChainsTo( std::vector<uint> & p_selection, const Model::Chain & p_itemFrom );
-		void _selectAllResiduesTo( std::vector<uint> & p_selection, const Model::Residue & p_itemFrom );
-		void _selectAllAtomsTo( std::vector<uint> & p_selection, const Model::Atom & p_itemFrom );
-
-		const Model::BaseModel * _getTopLevelItem( const Model::BaseModel * const p_model ) const;
-		Model::BaseModel *		 _getModel( const QModelIndex & p_modelIndex ) const;
-		Model::BaseModel *		 _getModel( const SceneItemWidget & p_sceneItem ) const;
+		Model::BaseModel * _getModel( const QModelIndex & p_modelIndex ) const;
+		Model::BaseModel * _getModel( const SceneItemWidget & p_sceneItem ) const;
 	};
 
 } // namespace VTX::UI::Widget::Scene

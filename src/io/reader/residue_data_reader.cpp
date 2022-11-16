@@ -1,4 +1,5 @@
 #include "residue_data_reader.hpp"
+#include "model/residue.hpp"
 #include "util/filesystem.hpp"
 
 namespace VTX::IO::Reader
@@ -20,6 +21,10 @@ namespace VTX::IO::Reader
 		_goToResidue( stream, p_residueSymbol );
 
 		std::getline( stream, p_residueData.fullname, '\n' );
+		std::string categoryStr;
+		std::getline( stream, categoryStr, '\n' );
+
+		p_residueData.category = CATEGORY_ENUM( std::atoi( categoryStr.c_str() ) );
 
 		std::string line;
 		while ( std::getline( stream, line ) )

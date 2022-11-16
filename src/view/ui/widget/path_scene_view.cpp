@@ -53,6 +53,72 @@ namespace VTX::View::UI::Widget
 		}
 	}
 
+	bool PathSceneView::containsModel( const Model::BaseModel & p_model ) const
+	{
+		const VTX::ID::VTX_ID & modelTypeID = p_model.getTypeId();
+		const Model::Path *		linkedPath;
+
+		if ( modelTypeID == ID::Model::MODEL_PATH )
+			linkedPath = static_cast<const Model::Path *>( &p_model );
+		else if ( modelTypeID == ID::Model::MODEL_VIEWPOINT )
+			linkedPath = static_cast<const Model::Viewpoint *>( &p_model )->getPathPtr();
+		else // Not a valid type. Return false.
+			return false;
+
+		return linkedPath == _model;
+	}
+
+	std::vector<Model::ID> PathSceneView::getAllItemsFrom( const Model::BaseModel & p_model ) const
+	{
+		const ID::VTX_ID & typeID = p_model.getTypeId();
+
+		if ( typeID == VTX::ID::Model::MODEL_PATH )
+		{
+			return SceneItemWidget::getAllItemsFrom( p_model );
+		}
+
+		std::vector<Model::ID> res;
+
+		if ( p_model.getTypeId() == VTX::ID::Model::MODEL_VIEWPOINT )
+		{
+			for ( size_t i = _model->getViewpoints().size() - 1; i <= 0; i-- )
+			{
+				const Model::Viewpoint * const viewpoint = _model->getViewpoints()[ i ];
+				res.emplace_back( viewpoint->getId() );
+
+				if ( viewpoint->getId() == p_model.getId() )
+					break;
+			}
+		}
+
+		return res;
+	}
+	std::vector<Model::ID> PathSceneView::getAllItemsTo( const Model::BaseModel & p_model ) const
+	{
+		const ID::VTX_ID & typeID = p_model.getTypeId();
+
+		if ( typeID == VTX::ID::Model::MODEL_PATH )
+		{
+			return SceneItemWidget::getAllItemsFrom( p_model );
+		}
+
+		std::vector<Model::ID> res;
+
+		if ( p_model.getTypeId() == VTX::ID::Model::MODEL_VIEWPOINT )
+		{
+			for ( int i = 0; i < _model->getViewpoints().size(); i++ )
+			{
+				const Model::Viewpoint * const viewpoint = _model->getViewpoints()[ i ];
+				res.emplace_back( viewpoint->getId() );
+
+				if ( viewpoint->getId() == p_model.getId() )
+					break;
+			}
+		}
+
+		return res;
+	}
+
 	QTreeWidgetItem * PathSceneView::getLastVisibleItem()
 	{
 		QTreeWidgetItem * pathItem = topLevelItem( 0 );

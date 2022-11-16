@@ -22,7 +22,7 @@ namespace VTX
 			INHERITED
 		};
 		static const std::vector<std::string> COLOR_MODE_STRING { "Atom-Chain", "Atom-Object", "Atom-Custom",
-																  "Residue",	"Chain",	   "Object",
+																  "Residue",	"Chain",	   "Molecule",
 																  "Custom",		"Inherited" };
 		enum class COLOR_BLENDING_MODE : int
 		{
@@ -39,7 +39,7 @@ namespace VTX
 			CUSTOM
 		};
 		inline static const std::vector<std::string> SECONDARY_STRUCTURE_COLOR_MODE_STRING { "JMOL",
-																							 "Object",
+																							 "Molecule",
 																							 "Chain",
 																							 "Residue",
 																							 "Custom" };

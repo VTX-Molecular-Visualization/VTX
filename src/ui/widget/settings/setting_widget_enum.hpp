@@ -9,6 +9,7 @@ namespace VTX::UI::Widget::Settings
 		RENDER_EFFECTS,
 		//! V0.1
 		// COLORS,
+		MOLECULE,
 		VTX,
 		COLORS,
 

@@ -10,6 +10,7 @@
 #include "io/reader/lib_chemfiles.hpp"
 #include "io/struct/image_export.hpp"
 #include "io/struct/scene_path_data.hpp"
+#include "model/category_enum.hpp"
 #include "model/chain.hpp"
 #include "model/configuration/molecule.hpp"
 #include "model/label.hpp"
@@ -320,6 +321,21 @@ namespace VTX::IO
 				  .getPreset( p_setting.getDefaultRenderEffectPresetIndex() )
 				  ->getName();
 
+		std::vector<std::string> defaultRepresentationNamePerCategory = std::vector<std::string>();
+		defaultRepresentationNamePerCategory.resize( int( CATEGORY_ENUM::COUNT ) );
+
+		for ( int i = 0; i < int( CATEGORY_ENUM::COUNT ); i++ )
+		{
+			const int representationIndex = p_setting.getDefaultRepresentationIndexPerCategory( CATEGORY_ENUM( i ) );
+			const Model::Representation::Representation * representation
+				= Model::Representation::RepresentationLibrary::get().getRepresentation( representationIndex );
+
+			if ( representation == nullptr )
+				representation = Model::Representation::RepresentationLibrary::get().getDefaultRepresentation();
+
+			defaultRepresentationNamePerCategory[ i ] = representation->getName();
+		}
+
 		return {
 			{ "SYMBOL_DISPLAY_MODE", p_setting.getSymbolDisplayMode() },
 			{ "WINDOW_FULLSCREEN", p_setting.getWindowFullscreen() },
@@ -346,6 +362,8 @@ namespace VTX::IO
 			{ "CHECK_VTX_UPDATE_AT_LAUNCH", p_setting.getCheckVTXUpdateAtLaunch() },
 			{ "PORTABLE_SAVE_ACTIVATED", p_setting.isPortableSaveActivated() },
 			{ "SELECTION_GRANULARITY", magic_enum::enum_name( p_setting.getSelectionGranularity() ) },
+
+			{ "DEFAULT_REPRESENTATION_PER_CATEGORY", defaultRepresentationNamePerCategory },
 		};
 	}
 
@@ -978,6 +996,19 @@ namespace VTX::IO
 
 		p_setting.setSelectionGranularity(
 			_getEnum( p_json, "SELECTION_GRANULARITY", Setting::SELECTION_GRANULARITY_DEFAULT ) );
+
+		const std::vector<std::string> representationNamePerCategory = _get<std::vector<std::string>>(
+			p_json, "DEFAULT_REPRESENTATION_PER_CATEGORY", Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_NAME );
+
+		const int categoryCount = int( CATEGORY_ENUM::COUNT );
+		if ( representationNamePerCategory.size() == categoryCount )
+		{
+			for ( int i = 0; i < categoryCount; i++ )
+			{
+				p_setting.setTmpDefaultRepresentationNamePerCategory( CATEGORY_ENUM( i ),
+																	  representationNamePerCategory[ i ] );
+			}
+		}
 	}
 
 	const Model::Atom * Serializer::deserializeAtomReference( const nlohmann::json & p_json ) const
@@ -1011,8 +1042,8 @@ namespace VTX::IO
 	{
 		nlohmann::json jsonArrayRepresentations = nlohmann::json::array();
 		nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", VTX::ID::Model::MODEL_MOLECULE },
-													{ "INDEX", 0 },
-													{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
+												{ "INDEX", 0 },
+												{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
 		jsonArrayRepresentations.emplace_back( jsonRepresentation );
 
 		for ( const Model::Chain * const chain : p_molecule.getChains() )

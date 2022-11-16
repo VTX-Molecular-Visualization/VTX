@@ -31,6 +31,8 @@ namespace VTX::UI::Widget::Scene
 		SceneItemWidget *					   getPreviousSceneItemWidgets( SceneItemWidget * p_item ) const;
 		SceneItemWidget *					   getNextSceneItemWidgets( SceneItemWidget * p_item ) const;
 
+		SceneItemWidget * getSceneItemWidgetFromModel( const Model::BaseModel & p_model ) const;
+
 		void openRenameEditor( const Model::ID & p_itemID ) const;
 		void scrollToItem( const QTreeWidgetItem & p_item );
 

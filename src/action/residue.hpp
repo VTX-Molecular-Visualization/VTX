@@ -117,8 +117,9 @@ namespace VTX::Action::Residue
 					  residuesPerMolecules )
 				{
 					for ( Model::Residue * const residue : pair.second )
-						Util::Molecule::show( *residue, _getVisibilityBool( *residue ), true, false );
+						Util::Molecule::show( *residue, _getVisibilityBool( *residue ), true, false, false );
 
+					pair.first->notifyVisibilityChange();
 					pair.first->refreshVisibilities();
 					pair.first->computeRepresentationTargets();
 				}

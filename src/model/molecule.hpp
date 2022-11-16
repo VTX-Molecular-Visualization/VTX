@@ -9,6 +9,7 @@
 #include "generic/base_scene_item.hpp"
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
+#include "model/category_enum.hpp"
 #include "model/configuration/molecule.hpp"
 #include "model/secondary_structure.hpp"
 #include "model/selection.hpp"
@@ -16,6 +17,7 @@
 #include "object3d/helper/aabb.hpp"
 #include "representation/instantiated_representation.hpp"
 #include "representation/representation_target.hpp"
+#include "struct/range.hpp"
 #include "trajectory/trajectory_enum.hpp"
 #include <iostream>
 #include <map>
@@ -34,6 +36,7 @@ namespace VTX
 			std::string symbolName;
 		};
 
+		class Category;
 		class Chain;
 		class Residue;
 		class Atom;
@@ -131,6 +134,18 @@ namespace VTX
 			inline const SolventExcludedSurface & getSolventExcludedSurface() const { return *_solventExcludedSurface; }
 			inline SolventExcludedSurface &		  getSolventExcludedSurface() { return *_solventExcludedSurface; }
 
+			inline const Model::Category & getCategory( CATEGORY_ENUM p_categoryEnum ) const
+			{
+				return *( _categories[ int( p_categoryEnum ) ] );
+			}
+			inline Model::Category & getCategory( CATEGORY_ENUM p_categoryEnum )
+			{
+				return *( _categories[ int( p_categoryEnum ) ] );
+			}
+			inline const std::vector<Model::Category *> & getCategories() const { return _categories; }
+			Model::Category *							  getCategoryFromChain( const Model::Chain & p_chain );
+			const Model::Category *						  getCategoryFromChain( const Model::Chain & p_chain ) const;
+
 			bool isEmpty();
 
 			inline const bool isAtomVisible( const uint p_idx ) const
@@ -141,13 +156,13 @@ namespace VTX
 			inline const float &	  getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
 			inline const Color::Rgb & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 
-			inline const std::vector<UnknownResidueData> & getUnknownResidueSymbols() const
+			inline const std::vector<UnknownResidueData *> & getUnknownResidueSymbols() const
 			{
 				return _unknownResidueSymbol;
 			}
 			inline const std::unordered_set<std::string> & getUnknownAtomSymbols() const { return _unknownAtomSymbol; }
 
-			int			addUnknownResidueSymbol( const UnknownResidueData & p_data );
+			int			addUnknownResidueSymbol( UnknownResidueData * const p_data );
 			inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
 
 			inline AtomPositionsFrame & addAtomPositionFrame()
@@ -230,14 +245,14 @@ namespace VTX
 			bool isAtEndOfTrajectoryPlay();
 			void resetTrajectoryPlay();
 
-			inline bool showWater() const { return _showWater; }
-			void		setShowWater( const bool p_showWater );
-			inline bool showHydrogen() const { return _showHydrogen; }
-			void		setShowHydrogen( const bool p_showHydrogen );
-			inline bool showSolvent() const { return _showSolvent; }
-			void		setShowSolvent( const bool p_showSolvent );
-			inline bool showIon() const { return _showIon; }
-			void		setShowIon( const bool p_showIon );
+			bool showWater() const;
+			void setShowWater( const bool p_showWater );
+			bool showHydrogen() const;
+			void setShowHydrogen( const bool p_showHydrogen );
+			bool showSolvent() const;
+			void setShowSolvent( const bool p_showSolvent );
+			bool showIon() const;
+			void setShowIon( const bool p_showIon );
 
 			// At least one residue
 			inline bool hasTopology() const { return getResidueCount() > 1; }
@@ -258,6 +273,9 @@ namespace VTX
 			// Solvent excluded surface.
 			void createSolventExcludedSurface();
 			void refreshSolventExcludedSurface();
+
+			// Categorization
+			std::vector<Model::Category *> getFilledCategories() const;
 
 			void propagateEventToViews( const Event::VTXEvent * const p_event ) { _notifyViews( p_event ); }
 
@@ -307,9 +325,10 @@ namespace VTX
 			Generic::COLOR_MODE _colorMode = Generic::COLOR_MODE::INHERITED;
 
 			// Missing symbols.
-			std::vector<UnknownResidueData> _unknownResidueSymbol = std::vector<UnknownResidueData>();
-			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
+			std::vector<UnknownResidueData *> _unknownResidueSymbol = std::vector<UnknownResidueData *>();
+			std::unordered_set<std::string>	  _unknownAtomSymbol	= std::unordered_set<std::string>();
 
+			// Buffers.
 			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
 			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
 			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
@@ -321,6 +340,9 @@ namespace VTX
 			SecondaryStructure * _secondaryStructure = nullptr;
 			// Solvent excluded surface.
 			SolventExcludedSurface * _solventExcludedSurface = nullptr;
+
+			// Categories
+			std::vector<Model::Category *> _categories;
 
 			// Trajectory
 			uint				 _currentFrame	   = 0u;
@@ -336,6 +358,7 @@ namespace VTX
 			bool _showHydrogen = true;
 			bool _showIon	   = true;
 
+			// Fill Buffers Functions
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();
 			void _fillBufferAtomSelections( const Selection::MapChainIds * const = nullptr );
