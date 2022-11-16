@@ -10,6 +10,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CONFIGS "Debug;Release") # Windows only.
 set(CMAKE_CONFIGURATION_TYPES ${CONFIGS} CACHE STRING "" FORCE)
 set(CMAKE_SUPPRESS_REGENERATION true)
+
+# Create output dir.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
+
+if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
+	file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+endif()
+
+# Add libraries.
+set(PATH_LIB "lib")
+add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/util/)
+
+# Configure Qt.
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
@@ -21,7 +34,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Create paths.
 set(PATH_SRC "src")
-set(PATH_LIB "lib")
+set(PATH_EXTERNAL_PROJECT "external_project")
 set(PATH_WINDOWS_RESOURCE "asset/windows_resources")
 set(PATH_QT_RESOURCE "asset/qt_resources")
 
@@ -37,11 +50,7 @@ set(GIT_TAG_MAGIC_ENUM v0.8.0) #0.8.0
 set(GIT_URL_EIGEN https://gitlab.com/libeigen/eigen.git)
 set(GIT_TAG_EIGEN 3147391d946bb4b6c68edd901f2add6ac1f31f8c) #3.4.0
 
-# Create output dir.
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
-if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
-	file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-endif()
+
 
 # Copy all sources.
 message("Copying all sources...")
@@ -108,6 +117,9 @@ foreach(SRC IN ITEMS ${QT_RESOURCES})
     source_group("Resources" FILES "${SRC}")
 endforeach()
 
+# Declare executable with source files.
+add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESOURCES})
+
 # Download dependencies.
 message("Downloading dependencies...")
 
@@ -125,7 +137,7 @@ FetchContent_MakeAvailable(chemfiles)
 # Glm.
 ExternalProject_Add(
     glm
-    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/g-truc
+    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_EXTERNAL_PROJECT}/g-truc
     GIT_REPOSITORY ${GIT_URL_GLM}
 	GIT_TAG ${GIT_TAG_GLM}
 	CONFIGURE_COMMAND ""
@@ -139,7 +151,7 @@ set(GLM_INCLUDE_DIR ${SOURCE_DIR})
 # Json.
 ExternalProject_Add(
     json
-    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/nlohmann
+    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_EXTERNAL_PROJECT}/nlohmann
     GIT_REPOSITORY ${GIT_URL_JSON}
 	GIT_TAG ${GIT_TAG_JSON}
 	CONFIGURE_COMMAND ""
@@ -153,7 +165,7 @@ set(JSON_INCLUDE_DIR ${SOURCE_DIR}/include/)
 # Magic Enum.
 ExternalProject_Add(
     magic_enum
-    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Neargye
+    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_EXTERNAL_PROJECT}/Neargye
     GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM}
 	GIT_TAG ${GIT_TAG_MAGIC_ENUM}
 	CONFIGURE_COMMAND ""
@@ -167,7 +179,7 @@ set(MAGIC_ENUM_INCLUDE_DIR ${SOURCE_DIR}/include)
 # Eigen.
 ExternalProject_Add(
     eigen
-    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Eigen
+    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_EXTERNAL_PROJECT}/Eigen
     GIT_REPOSITORY ${GIT_URL_EIGEN}
 	GIT_TAG ${GIT_TAG_EIGEN}
 	CONFIGURE_COMMAND ""
@@ -193,9 +205,6 @@ find_package(Qt6QJpegPlugin PATHS ${Qt6Gui_DIR}) # Workaround
 find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
 find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
 
-# Declare executable with source files.
-add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESOURCES})
-
 # Includes directories.
 target_include_directories(VTX PRIVATE ${PATH_SRC})
 target_include_directories(VTX PRIVATE ${GLM_INCLUDE_DIR})
@@ -204,6 +213,10 @@ target_include_directories(VTX PRIVATE ${MAGIC_ENUM_INCLUDE_DIR})
 target_include_directories(VTX PRIVATE ${EIGEN_INCLUDE_DIR})
 
 # Link libs.
+# Custom.
+target_link_libraries(VTX LINK_PUBLIC VTX_UTIL)
+
+# Third parties.
 target_link_libraries(VTX PRIVATE Qt6::Core)
 target_link_libraries(VTX PRIVATE Qt6::Gui)
 target_link_libraries(VTX PRIVATE Qt6::Widgets)
@@ -213,6 +226,7 @@ target_link_libraries(VTX PRIVATE Qt6::Network)
 target_link_libraries(VTX PRIVATE Qt6::Svg)
 target_link_libraries(VTX PRIVATE chemfiles)
 target_link_libraries(VTX PRIVATE fmt)
+
 
 if(MSVC)
 	# Add specific libs.

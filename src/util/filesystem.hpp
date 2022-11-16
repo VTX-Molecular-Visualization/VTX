@@ -2,7 +2,7 @@
 #define __VTX_UTIL_FILESYSTEM__
 
 #include "exception.hpp"
-#include "io/filepath.hpp"
+#include <lib/util/src/filepath.hpp>
 #include "tool/logger.hpp"
 #include "util/time.hpp"
 #include <QCoreApplication>

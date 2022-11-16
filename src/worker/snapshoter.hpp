@@ -3,7 +3,7 @@
 
 #include "base_worker.hpp"
 #include "generic/base_opengl.hpp"
-#include "io/filepath.hpp"
+#include <lib/util/src/filepath.hpp>
 #include "io/struct/image_export.hpp"
 #include <QImage>
 

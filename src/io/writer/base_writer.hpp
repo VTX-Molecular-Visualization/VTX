@@ -2,7 +2,7 @@
 #define __VTX_BASE_WRITER__
 
 #include "exception.hpp"
-#include "io/filepath.hpp"
+#include <lib/util/src/filepath.hpp>
 
 namespace VTX
 {

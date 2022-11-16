@@ -1,6 +1,7 @@
 #ifndef __VTX_IO_FILEPATH__
 #define __VTX_IO_FILEPATH__
 
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <iostream>
@@ -19,8 +20,9 @@ namespace VTX
 			inline const std::string path() const { return _path.toStdString(); }
 			inline const QString &	 qpath() const { return _path; }
 
+			inline const std::string dirpath() const { return QFileInfo( _path ).dir().path().toStdString(); }
+			inline const std::string dirname() const { return QFileInfo( _path ).dir().dirName().toStdString(); }
 			inline const std::string filename() const { return QFileInfo( _path ).fileName().toStdString(); }
-
 			inline const std::string filenameWithoutExtension() const
 			{
 				return QFileInfo( _path ).baseName().toStdString();

@@ -3,7 +3,7 @@
 
 #include "base_thread.hpp"
 #include "base_worker.hpp"
-#include "io/filepath.hpp"
+#include <lib/util/src/filepath.hpp>
 
 namespace VTX
 {
