@@ -5,7 +5,7 @@
 #include "renderer/gl/gl.hpp"
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
-#include "util/time.hpp"
+#include <lib/util/src/time.hpp>
 #include "vtx_app.hpp"
 #include <QOffscreenSurface>
 #include <QOpenGLFramebufferObject>
@@ -18,7 +18,7 @@
 namespace VTX::Worker
 {
 	Snapshoter::Snapshoter( const MODE &					p_mode,
-							const IO::FilePath &			p_path,
+							const Util::FilePath &			p_path,
 							const IO::Struct::ImageExport & p_exportData ) :
 		_mode( p_mode ),
 		_path( p_path ), _exportData( p_exportData )
@@ -28,7 +28,7 @@ namespace VTX::Worker
 	Snapshoter::Snapshoter( const MODE &					p_mode,
 							QImage *						p_imageTarget,
 							const IO::Struct::ImageExport & p_exportData ) :
-		Snapshoter( p_mode, IO::FilePath(), p_exportData )
+		Snapshoter( p_mode, Util::FilePath(), p_exportData )
 	{
 		_imageTarget = p_imageTarget;
 	}

@@ -85,7 +85,7 @@ namespace VTX::Action::Representation
 				else
 				*/
 				{
-					IO::FilePath path = Util::Filesystem::getRepresentationPath( representation->getName() );
+					Util::FilePath path = Util::Filesystem::getRepresentationPath( representation->getName() );
 					Util::Filesystem::generateUniqueFileName( path );
 
 					Worker::RepresentationSaver * librarySaver

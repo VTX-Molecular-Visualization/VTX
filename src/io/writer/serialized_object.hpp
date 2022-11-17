@@ -19,7 +19,7 @@ namespace VTX::IO::Writer
 		SerializedObject( const Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
 		SerializedObject( const Worker::BaseWorker * const p_worker ) : _thread( nullptr ) {}
 
-		void writeFile( const IO::FilePath & p_path, const T & p_data ) override
+		void writeFile( const Util::FilePath & p_path, const T & p_data ) override
 		{
 			IO::Serializer serializer = IO::Serializer( _thread );
 

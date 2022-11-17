@@ -16,8 +16,8 @@ namespace VTX
 			  public:
 				virtual ~BaseReader() = default;
 
-				virtual void readFile( const IO::FilePath &, T & ) = 0;
-				virtual void readBuffer( const std::string & p_buffer, const IO::FilePath &, T & )
+				virtual void readFile( const Util::FilePath &, T & ) = 0;
+				virtual void readBuffer( const std::string & p_buffer, const Util::FilePath &, T & )
 				{
 					throw Exception::NotImplementedException();
 				}

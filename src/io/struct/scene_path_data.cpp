@@ -8,8 +8,8 @@ namespace VTX::IO::Struct
 {
 	// ScenePathData::Data
 	// /////////////////////////////////////////////////////////////////////////////////////////////////////////
-	ScenePathData::Data::Data() : _path( IO::FilePath() ) {}
-	ScenePathData::Data::Data( const IO::FilePath & p_path ) : _path( p_path ) {}
+	ScenePathData::Data::Data() : _path( Util::FilePath() ) {}
+	ScenePathData::Data::Data( const Util::FilePath & p_path ) : _path( p_path ) {}
 	ScenePathData::Data & ScenePathData::getData( const Model::Molecule * const p_molecule )
 	{
 		return _mapMoleculePath[ p_molecule ];
@@ -19,9 +19,9 @@ namespace VTX::IO::Struct
 		return _mapMoleculePath.at( p_molecule );
 	}
 
-	void				 ScenePathData::Data::registerPath( const IO::FilePath & p_filePath ) { _path = p_filePath; }
-	bool				 ScenePathData::Data::hasFilepath() const { return _path != IO::FilePath(); }
-	const IO::FilePath & ScenePathData::Data::getFilepath() const { return _path; }
+	void ScenePathData::Data::registerPath( const Util::FilePath & p_filePath ) { _path = p_filePath; }
+	bool ScenePathData::Data::hasFilepath() const { return _path != Util::FilePath(); }
+	const Util::FilePath & ScenePathData::Data::getFilepath() const { return _path; }
 
 	bool ScenePathData::Data::hasChanged() const { return _hasChanged; }
 	void ScenePathData::Data::setHasChanged( const bool p_hasChanged ) { _hasChanged = p_hasChanged; };
@@ -67,7 +67,7 @@ namespace VTX::IO::Struct
 		}
 	}
 
-	void ScenePathData::registerLoading( const Model::Molecule * const p_molecule, const IO::FilePath & p_filepath )
+	void ScenePathData::registerLoading( const Model::Molecule * const p_molecule, const Util::FilePath & p_filepath )
 	{
 		if ( _mapMoleculePath.find( p_molecule ) == _mapMoleculePath.end() )
 			_mapMoleculePath[ p_molecule ] = Data( p_filepath );
@@ -75,7 +75,7 @@ namespace VTX::IO::Struct
 			_mapMoleculePath[ p_molecule ] = Data();
 	}
 
-	void ScenePathData::setCurrentPath( const IO::FilePath & p_filePath, const bool p_addInRecentPath )
+	void ScenePathData::setCurrentPath( const Util::FilePath & p_filePath, const bool p_addInRecentPath )
 	{
 		if ( _currentFilePath == p_filePath )
 			return;
@@ -85,12 +85,12 @@ namespace VTX::IO::Struct
 		if ( p_addInRecentPath )
 			Setting::enqueueNewLoadingPath( p_filePath );
 
-		VTX_EVENT( new Event::VTXEventRef<const IO::FilePath>( Event::Global::SCENE_PATH_CHANGE, _currentFilePath ) );
+		VTX_EVENT( new Event::VTXEventRef<const Util::FilePath>( Event::Global::SCENE_PATH_CHANGE, _currentFilePath ) );
 	}
 	void ScenePathData::clearCurrentPath()
 	{
-		_currentFilePath = IO::FilePath();
-		VTX_EVENT( new Event::VTXEventRef<const IO::FilePath>( Event::Global::SCENE_PATH_CHANGE, _currentFilePath ) );
+		_currentFilePath = Util::FilePath();
+		VTX_EVENT( new Event::VTXEventRef<const Util::FilePath>( Event::Global::SCENE_PATH_CHANGE, _currentFilePath ) );
 	}
 
 	Writer::ChemfilesWriter * const ScenePathData::Data::getWriter() { return _writer; }
@@ -103,15 +103,15 @@ namespace VTX::IO::Struct
 		}
 	}
 
-	IO::FilePath ScenePathData::getFilepath( const Model::Molecule * const p_molecule ) const
+	Util::FilePath ScenePathData::getFilepath( const Model::Molecule * const p_molecule ) const
 	{
-		IO::FilePath res;
+		Util::FilePath res;
 
-		const IO::FilePath & moleculePath	 = getData( p_molecule ).getFilepath();
-		const std::string	 moleculePathStr = moleculePath.path();
+		const Util::FilePath & moleculePath	   = getData( p_molecule ).getFilepath();
+		const std::string	   moleculePathStr = moleculePath.path();
 
-		const IO::FilePath moleculeFolderPath	 = Util::Filesystem::getSceneSaveDirectory( _currentFilePath );
-		const std::string  moleculeFolderPathStr = moleculeFolderPath.path();
+		const Util::FilePath moleculeFolderPath	   = Util::Filesystem::getSceneSaveDirectory( _currentFilePath );
+		const std::string	 moleculeFolderPathStr = moleculeFolderPath.path();
 
 		const bool pathCanBeRelative = moleculePathStr.rfind( moleculeFolderPathStr, 0 ) == 0;
 
@@ -122,7 +122,7 @@ namespace VTX::IO::Struct
 
 			const std::string relativePathStr = moleculePathStr.substr( firstIndex, count );
 
-			return IO::FilePath( relativePathStr );
+			return Util::FilePath( relativePathStr );
 		}
 		else
 		{
@@ -130,7 +130,7 @@ namespace VTX::IO::Struct
 		}
 	}
 
-	bool ScenePathData::Data::needToSaveMolecule() const { return _path == FilePath() || _hasChanged; }
+	bool ScenePathData::Data::needToSaveMolecule() const { return _path == Util::FilePath() || _hasChanged; }
 
 	void ScenePathData::incrementSceneModifications()
 	{

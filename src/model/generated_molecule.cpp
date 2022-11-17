@@ -9,7 +9,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
-#include "tool/chrono.hpp"
+#include<lib/util/src/chrono.hpp>
 #include <map>
 
 namespace VTX::Model
@@ -20,7 +20,7 @@ namespace VTX::Model
 											   const VTX::Model::ID &	p_moleculeID,
 											   const int				p_frame )
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 		chrono.start();
 
 		const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeID );
@@ -96,7 +96,7 @@ namespace VTX::Model
 
 	void GeneratedMolecule::copyFromMolecule( const Model::Molecule & p_molecule, const int p_frame )
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 		chrono.start();
 
 		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
@@ -112,7 +112,7 @@ namespace VTX::Model
 	}
 	void GeneratedMolecule::copyFromChain( const Model::Chain & p_chain, const int p_frame )
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 		chrono.start();
 
 		const Model::Molecule & molecule = *p_chain.getMoleculePtr();
@@ -133,7 +133,7 @@ namespace VTX::Model
 	}
 	void GeneratedMolecule::copyFromResidue( const Model::Residue & p_residue, const int p_frame )
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 		chrono.start();
 
 		const Model::Molecule & molecule = *p_residue.getMoleculePtr();
@@ -161,7 +161,7 @@ namespace VTX::Model
 	}
 	void GeneratedMolecule::copyFromAtom( const Model::Atom & p_atom, const int p_frame )
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 		chrono.start();
 
 		const Model::Molecule & molecule = *p_atom.getMoleculePtr();
@@ -379,7 +379,7 @@ namespace VTX::Model
 	void GeneratedMolecule::extractFromSelection( const Model::Selection & p_selection,
 												  const VTX::Model::ID &   p_moleculeID )
 	{
-		Tool::Chrono chrono = Tool::Chrono();
+		Util::Chrono chrono = Util::Chrono();
 		chrono.start();
 
 		Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeID );
@@ -477,7 +477,7 @@ namespace VTX::Model
 
 	void GeneratedMolecule::extractChain( const Model::Chain & p_chain )
 	{
-		Tool::Chrono chrono = Tool::Chrono();
+		Util::Chrono chrono = Util::Chrono();
 		chrono.start();
 
 		Model::Molecule & molecule = *p_chain.getMoleculePtr();
@@ -507,7 +507,7 @@ namespace VTX::Model
 	}
 	void GeneratedMolecule::extractResidue( const Model::Residue & p_residue )
 	{
-		Tool::Chrono chrono = Tool::Chrono();
+		Util::Chrono chrono = Util::Chrono();
 		chrono.start();
 
 		_pendingExternalBonds.clear();
@@ -536,7 +536,7 @@ namespace VTX::Model
 	}
 	void GeneratedMolecule::extractAtom( const Model::Atom & p_atom )
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 		chrono.start();
 
 		Model::Molecule & molecule = *p_atom.getMoleculePtr();

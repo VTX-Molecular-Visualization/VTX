@@ -18,7 +18,7 @@ namespace VTX::Worker
 		};
 
 		explicit Snapshoter( const MODE &					 p_mode,
-							 const IO::FilePath &			 p_path,
+							 const Util::FilePath &			 p_path,
 							 const IO::Struct::ImageExport & p_exportData );
 
 		explicit Snapshoter( const MODE &					 p_mode,
@@ -35,7 +35,7 @@ namespace VTX::Worker
 
 	  private:
 		const MODE		   _mode;
-		const IO::FilePath _path;
+		const Util::FilePath _path;
 		QImage *		   _imageTarget = nullptr;
 
 		const IO::Struct::ImageExport _exportData;

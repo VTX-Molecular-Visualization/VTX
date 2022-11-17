@@ -45,7 +45,7 @@ namespace VTX
 
 		void SolventExcludedSurface::_refreshCPU()
 		{
-			Tool::Chrono chrono, chrono2;
+			Util::Chrono chrono, chrono2;
 			chrono.start();
 			chrono2.start();
 			VTX_INFO( "Creating SES..." );

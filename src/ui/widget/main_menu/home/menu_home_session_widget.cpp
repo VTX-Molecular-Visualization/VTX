@@ -83,7 +83,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 		int actionIndex = 0;
 
-		for ( const IO::FilePath & recentFile : Setting::recentLoadingPath )
+		for ( const Util::FilePath & recentFile : Setting::recentLoadingPath )
 		{
 			CustomWidget::IndexedAction * const action
 				= new CustomWidget::IndexedAction( actionIndex, _recentSessionMenu );
@@ -112,7 +112,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 	void MenuHomeSessionWidget::_loadRecentSession( const int & p_ptrSessionIndex ) const
 	{
-		const IO::FilePath * const recentPath = Setting::getRecentLoadingPath( p_ptrSessionIndex );
+		const Util::FilePath * const recentPath = Setting::getRecentLoadingPath( p_ptrSessionIndex );
 
 		if ( recentPath == nullptr )
 		{

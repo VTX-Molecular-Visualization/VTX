@@ -3,8 +3,8 @@
 
 #include "base_thread.hpp"
 #include "define.hpp"
+#include <lib/util/src/chrono.hpp>
 #include <lib/util/src/filepath.hpp>
-#include "tool/chrono.hpp"
 #include <map>
 #include <vector>
 
@@ -65,15 +65,16 @@ namespace VTX
 				SOURCE_TYPE sourceType = SOURCE_TYPE::UNKNOWN;
 			};
 
-			explicit Loader( const IO::FilePath & p_path ) { _paths.emplace_back( p_path ); }
-			explicit Loader( const std::vector<IO::FilePath> & p_paths ) : _paths( p_paths ) {}
-			explicit Loader( const std::map<IO::FilePath, std::string *> & p_buffers ) : _mapFileNameBuffer( p_buffers )
+			explicit Loader( const Util::FilePath & p_path ) { _paths.emplace_back( p_path ); }
+			explicit Loader( const std::vector<Util::FilePath> & p_paths ) : _paths( p_paths ) {}
+			explicit Loader( const std::map<Util::FilePath, std::string *> & p_buffers ) :
+				_mapFileNameBuffer( p_buffers )
 			{
 			}
 			~Loader() = default;
 
-			inline const std::map<IO::FilePath, Result> & getPathsResult() const { return _pathResult; }
-			inline void									  addDynamicTarget( Model::Molecule * const p_target )
+			inline const std::map<Util::FilePath, Result> & getPathsResult() const { return _pathResult; }
+			inline void										addDynamicTarget( Model::Molecule * const p_target )
 			{
 				_moleculeTargetsForDynamics.emplace_back( p_target );
 			}
@@ -94,24 +95,24 @@ namespace VTX
 			void _loadMoleculeBuffers();
 
 		  private:
-			std::vector<IO::FilePath>			  _paths			 = std::vector<IO::FilePath>();
-			std::map<IO::FilePath, std::string *> _mapFileNameBuffer = std::map<IO::FilePath, std::string *>();
+			std::vector<Util::FilePath>				_paths			   = std::vector<Util::FilePath>();
+			std::map<Util::FilePath, std::string *> _mapFileNameBuffer = std::map<Util::FilePath, std::string *>();
 
-			std::map<IO::FilePath, Result> _pathResult = std::map<IO::FilePath, Result>();
+			std::map<Util::FilePath, Result> _pathResult = std::map<Util::FilePath, Result>();
 
-			std::vector<std::vector<IO::FilePath>> _filepathsPerMode = std::vector<std::vector<IO::FilePath>>();
-			std::vector<Model::Molecule *>		   _moleculeTargetsForDynamics = std::vector<Model::Molecule *>();
+			std::vector<std::vector<Util::FilePath>> _filepathsPerMode = std::vector<std::vector<Util::FilePath>>();
+			std::vector<Model::Molecule *>			 _moleculeTargetsForDynamics = std::vector<Model::Molecule *>();
 
-			Tool::Chrono _loadingFileChrono;
+			Util::Chrono _loadingFileChrono;
 			bool		 _openTrajectoryAsStandalone = true;
 
 			void _fillFilepathPerMode();
 
-			MODE _getMode( const IO::FilePath & ) const;
+			MODE _getMode( const Util::FilePath & ) const;
 
-			void _startLoadingFile( const IO::FilePath & p_path, const SOURCE_TYPE & p_sourceType );
-			void _endLoadingFileSuccess( const IO::FilePath & p_path );
-			void _endLoadingFileFail( const IO::FilePath & p_path, const std::string & p_message );
+			void _startLoadingFile( const Util::FilePath & p_path, const SOURCE_TYPE & p_sourceType );
+			void _endLoadingFileSuccess( const Util::FilePath & p_path );
+			void _endLoadingFileFail( const Util::FilePath & p_path, const std::string & p_message );
 		};
 	} // namespace Worker
 } // namespace VTX

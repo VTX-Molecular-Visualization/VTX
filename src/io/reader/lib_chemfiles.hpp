@@ -25,9 +25,9 @@ namespace VTX
 		  public:
 			LibChemfiles( const Worker::BaseThread * const p_loader );
 
-			void readFile( const IO::FilePath &, Model::Molecule & ) override;
-			void readBuffer( const std::string &, const IO::FilePath &, Model::Molecule & ) override;
-			bool readDynamic( const IO::FilePath &, std::vector<Model::Molecule *> p_potentialTargets );
+			void readFile( const Util::FilePath &, Model::Molecule & ) override;
+			void readBuffer( const std::string &, const Util::FilePath &, Model::Molecule & ) override;
+			bool readDynamic( const Util::FilePath &, std::vector<Model::Molecule *> p_potentialTargets );
 
 			void fillTrajectoryFrames( chemfiles::Trajectory & p_trajectory,
 									   Model::Molecule &,
@@ -39,10 +39,10 @@ namespace VTX
 
 		  private:
 			void			  _readTrajectory( chemfiles::Trajectory &,
-											   const IO::FilePath &,
+											   const Util::FilePath &,
 											   Model::Molecule &,
 											   const bool p_recomputeBonds = false ) const;
-			const std::string _getFormat( const IO::FilePath & );
+			const std::string _getFormat( const Util::FilePath & );
 			const bool		  _needToRecomputeBonds( const std::string & p_format ) const;
 
 			bool _tryApplyingDynamicOnTargets( chemfiles::Trajectory &		  p_dynamicTrajectory,

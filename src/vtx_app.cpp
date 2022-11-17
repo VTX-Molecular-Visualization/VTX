@@ -98,7 +98,7 @@ namespace VTX
 		if ( p_args.size() == 0 )
 		{
 			// VTX_ACTION(
-			//	 new Action::Main::Open( Util::Filesystem::getDataPath( IO::FilePath( "4hhb.pdb" ) ).absolute() ) );
+			//	 new Action::Main::Open( Util::Filesystem::getDataPath( Util::FilePath( "4hhb.pdb" ) ).absolute() ) );
 			// VTX_ACTION( new Action::Main::OpenApi( "1aon" ) );
 			// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
 			VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
@@ -121,14 +121,14 @@ namespace VTX
 
 	void VTXApp::_handleArgs( const std::vector<std::string> & p_args )
 	{
-		std::vector<IO::FilePath> files	 = std::vector<IO::FilePath>();
+		std::vector<Util::FilePath> files	 = std::vector<Util::FilePath>();
 		std::vector<std::string>  pdbIds = std::vector<std::string>();
 
 		for ( const std::string & arg : p_args )
 		{
 			if ( arg.find( "." ) != std::string::npos )
 			{
-				files.emplace_back( IO::FilePath( arg ) );
+				files.emplace_back( Util::FilePath( arg ) );
 			}
 			else
 			{

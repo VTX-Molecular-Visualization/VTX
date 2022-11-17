@@ -10,7 +10,6 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
-#include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
@@ -32,7 +31,7 @@ namespace VTX
 			_loadMeshFiles();
 
 			// Display errors for unknown files
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::UNKNOWN ) ] )
+			for ( const Util::FilePath & path : _filepathsPerMode[ int( MODE::UNKNOWN ) ] )
 			{
 				emit logError( "Error when loading " + path.path() + " : Format not supported" );
 				_pathResult[ path ].state = false;
@@ -46,7 +45,7 @@ namespace VTX
 
 		void Loader::_loadSceneFiles()
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::SCENE ) ] )
+			for ( const Util::FilePath & path : _filepathsPerMode[ int( MODE::SCENE ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -67,7 +66,7 @@ namespace VTX
 		}
 		void Loader::_loadConfigurationFiles( Model::Configuration::Molecule & p_config )
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::CONFIGURATION ) ] )
+			for ( const Util::FilePath & path : _filepathsPerMode[ int( MODE::CONFIGURATION ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 				const std::string extension = path.extension();
@@ -95,7 +94,7 @@ namespace VTX
 		}
 		void Loader::_loadMoleculeFiles( const Model::Configuration::Molecule & p_config )
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::MOLECULE ) ] )
+			for ( const Util::FilePath & path : _filepathsPerMode[ int( MODE::MOLECULE ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -125,7 +124,7 @@ namespace VTX
 		}
 		void Loader::_loadTrajectoriesFiles( const Model::Configuration::Molecule & p_config )
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::TRAJECTORY ) ] )
+			for ( const Util::FilePath & path : _filepathsPerMode[ int( MODE::TRAJECTORY ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -178,7 +177,7 @@ namespace VTX
 		}
 		void Loader::_loadMeshFiles()
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( MODE::SCENE ) ] )
+			for ( const Util::FilePath & path : _filepathsPerMode[ int( MODE::SCENE ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -204,7 +203,7 @@ namespace VTX
 
 		void Loader::_loadMoleculeBuffers()
 		{
-			for ( const std::pair<const IO::FilePath, std::string *> & pair : _mapFileNameBuffer )
+			for ( const std::pair<const Util::FilePath, std::string *> & pair : _mapFileNameBuffer )
 			{
 				_startLoadingFile( pair.first, SOURCE_TYPE::BUFFER );
 
@@ -244,14 +243,14 @@ namespace VTX
 		{
 			_filepathsPerMode.resize( int( MODE::COUNT ) );
 
-			for ( const IO::FilePath & path : _paths )
+			for ( const Util::FilePath & path : _paths )
 			{
 				MODE filetype = _getMode( path );
 				_filepathsPerMode[ int( filetype ) ].emplace_back( path );
 			}
 		}
 
-		Loader::MODE Loader::_getMode( const IO::FilePath & p_path ) const
+		Loader::MODE Loader::_getMode( const Util::FilePath & p_path ) const
 		{
 			std::string extension = p_path.extension();
 
@@ -285,13 +284,13 @@ namespace VTX
 			}
 		}
 
-		void Loader::_startLoadingFile( const IO::FilePath & p_path, const SOURCE_TYPE & p_sourceType )
+		void Loader::_startLoadingFile( const Util::FilePath & p_path, const SOURCE_TYPE & p_sourceType )
 		{
 			emit logInfo( "Loading " + p_path.filename() );
 			_pathResult.emplace( p_path, Result( p_sourceType ) );
 			_loadingFileChrono.start();
 		}
-		void Loader::_endLoadingFileSuccess( const IO::FilePath & p_path )
+		void Loader::_endLoadingFileSuccess( const Util::FilePath & p_path )
 		{
 			_loadingFileChrono.stop();
 			_pathResult[ p_path ].state = true;
@@ -309,7 +308,7 @@ namespace VTX
 			default: break;
 			}
 		}
-		void Loader::_endLoadingFileFail( const IO::FilePath & p_path, const std::string & p_message )
+		void Loader::_endLoadingFileFail( const Util::FilePath & p_path, const std::string & p_message )
 		{
 			_loadingFileChrono.stop();
 			_pathResult[ p_path ].state = false;

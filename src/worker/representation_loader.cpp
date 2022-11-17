@@ -2,7 +2,7 @@
 #include "io/reader/serialized_object.hpp"
 #include "model/representation/representation_library.hpp"
 #include "representation/representation_manager.hpp"
-#include "tool/chrono.hpp"
+#include <lib/util/src/chrono.hpp>
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 
@@ -10,7 +10,7 @@ namespace VTX::Worker
 {
 	void RepresentationLibraryLoader::_run()
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 
 		IO::Reader::SerializedObject<Model::Representation::Representation> * const reader
 			= new IO::Reader::SerializedObject<Model::Representation::Representation>();
@@ -23,9 +23,9 @@ namespace VTX::Worker
 			Representation::RepresentationManager::get().clearAllRepresentations( false );
 		}
 
-		std::set<IO::FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
+		std::set<Util::FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
 
-		for ( const IO::FilePath & file : files )
+		for ( const Util::FilePath & file : files )
 		{
 			Model::Representation::Representation * const representation
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
@@ -111,14 +111,14 @@ namespace VTX::Worker
 
 	void RepresentationLoader::_run()
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 
 		IO::Reader::SerializedObject<Model::Representation::Representation> * const reader
 			= new IO::Reader::SerializedObject<Model::Representation::Representation>();
 
 		chrono.start();
 
-		for ( const IO::FilePath & path : _paths )
+		for ( const Util::FilePath & path : _paths )
 		{
 			Model::Representation::Representation * const representation
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();

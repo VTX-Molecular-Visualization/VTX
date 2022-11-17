@@ -1,4 +1,4 @@
-#include "util/string.hpp"
+#include "string.hpp"
 #include <iomanip>
 #include <sstream>
 
@@ -56,6 +56,6 @@ namespace VTX::Util::String
 		return strStream.str();
 	}
 
-	uint strToUint( const std::string & p_str ) { return atoi( p_str.c_str() ); }
+	unsigned int strToUint( const std::string & p_str ) { return atoi( p_str.c_str() ); }
 
 } // namespace VTX::Util::String

@@ -10,7 +10,7 @@ Adapted from PBRTv3 BVHAccel : https://github.com/mmp/pbrt-v3
 #endif
 
 #include "bvh.hpp"
-#include "tool/chrono.hpp"
+#include<lib/util/src/chrono.hpp>
 #include "tool/logger.hpp"
 #include "util/math.hpp"
 #include <algorithm>
@@ -109,7 +109,7 @@ namespace VTX
 			_maxPrimLeaf = p_maxPrimsLeaf;
 			_splitMethod = p_splitMethod;
 
-			Tool::Chrono chrono;
+			Util::Chrono chrono;
 			chrono.start();
 			std::vector<BVHPrimInfo> primsInfo( _primitives.size() );
 			for ( uint i = 0; i < _primitives.size(); ++i )

@@ -9,7 +9,6 @@
 #include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "setting.hpp"
-#include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "util/bond_guessing/bond_order_guessing.hpp"
 #include "util/chemfiles.hpp"
@@ -19,6 +18,7 @@
 #include <QFileInfo>
 #include <algorithm>
 #include <iostream>
+#include <lib/util/src/chrono.hpp>
 #include <magic_enum.hpp>
 #include <thread>
 #include <unordered_map>
@@ -28,7 +28,7 @@ namespace VTX::IO::Reader
 {
 	LibChemfiles::LibChemfiles( const Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
 
-	void LibChemfiles::readFile( const IO::FilePath & p_path, Model::Molecule & p_molecule )
+	void LibChemfiles::readFile( const Util::FilePath & p_path, Model::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
 		chemfiles::Trajectory trajectory	 = chemfiles::Trajectory( p_path.path(), 'r', _getFormat( p_path ) );
@@ -36,9 +36,9 @@ namespace VTX::IO::Reader
 		_readTrajectory( trajectory, p_path, p_molecule, recomputeBonds );
 	}
 
-	void LibChemfiles::readBuffer( const std::string &	p_buffer,
-								   const IO::FilePath & p_path,
-								   Model::Molecule &	p_molecule )
+	void LibChemfiles::readBuffer( const std::string &	  p_buffer,
+								   const Util::FilePath & p_path,
+								   Model::Molecule &	  p_molecule )
 	{
 		_prepareChemfiles();
 		chemfiles::Trajectory trajectory
@@ -46,7 +46,7 @@ namespace VTX::IO::Reader
 		_readTrajectory( trajectory, p_path, p_molecule );
 	}
 
-	bool LibChemfiles::readDynamic( const IO::FilePath & p_path, std::vector<Model::Molecule *> p_potentialTargets )
+	bool LibChemfiles::readDynamic( const Util::FilePath & p_path, std::vector<Model::Molecule *> p_potentialTargets )
 	{
 		_prepareChemfiles();
 		chemfiles::Trajectory dynamicTrajectory = chemfiles::Trajectory( p_path.path(), 'r', _getFormat( p_path ) );
@@ -59,7 +59,7 @@ namespace VTX::IO::Reader
 											 const uint				 p_trajectoryFrameStart ) const
 	{
 		// Fill other frames.
-		Tool::Chrono timeReadingFrames;
+		Util::Chrono timeReadingFrames;
 		timeReadingFrames.start();
 		int startingFrame = 1;
 		for ( uint frameIdx = 0; frameIdx < p_trajectory.nsteps() - p_trajectoryFrameStart; ++frameIdx )
@@ -106,7 +106,7 @@ namespace VTX::IO::Reader
 	}
 
 	void LibChemfiles::_readTrajectory( chemfiles::Trajectory & p_trajectory,
-										const IO::FilePath &	p_path,
+										const Util::FilePath &	p_path,
 										Model::Molecule &		p_molecule,
 										const bool				p_recomputeBonds ) const
 	{
@@ -143,7 +143,7 @@ namespace VTX::IO::Reader
 			}
 		}
 
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 		chrono.start();
 		chemfiles::Frame frame = p_trajectory.read();
 		chrono.stop();
@@ -523,7 +523,7 @@ namespace VTX::IO::Reader
 			fillTrajectoryFrames( p_trajectory, p_molecule, 1, 1 );
 		}
 
-		Tool::Chrono bondComputationChrono = Tool::Chrono();
+		Util::Chrono bondComputationChrono = Util::Chrono();
 		if ( p_recomputeBonds )
 		{
 			bondComputationChrono.start();
@@ -690,7 +690,7 @@ namespace VTX::IO::Reader
 	}
 
 	// http://chemfiles.org/chemfiles/latest/formats.html#list-of-supported-formats
-	const std::string LibChemfiles::_getFormat( const IO::FilePath & p_path )
+	const std::string LibChemfiles::_getFormat( const Util::FilePath & p_path )
 	{
 		std::string extension = p_path.extension();
 		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );

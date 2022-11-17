@@ -13,7 +13,7 @@ namespace VTX::IO::Reader
 	class SerializedObject : public BaseReader<T>
 	{
 	  public:
-		void readFile( const IO::FilePath & p_path, T & p_data ) override
+		void readFile( const Util::FilePath & p_path, T & p_data ) override
 		{
 			IO::Serializer serializer = IO::Serializer();
 

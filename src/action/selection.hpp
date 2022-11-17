@@ -24,7 +24,7 @@
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
-#include "tool/chrono.hpp"
+#include<lib/util/src/chrono.hpp>
 #include "util/label.hpp"
 #include "util/molecule.hpp"
 #include "visible.hpp"
@@ -1054,7 +1054,7 @@ namespace VTX::Action::Selection
 
 			generatedMolecule->copyFromSelection( _selection, p_source.getId(), p_frame );
 
-			Tool::Chrono chrono;
+			Util::Chrono chrono;
 
 			chrono.start();
 

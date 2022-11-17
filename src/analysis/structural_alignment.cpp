@@ -4,7 +4,7 @@
 #include "model/molecule.hpp"
 #include "rmsd.hpp"
 #include "structural_alignment_method/ce_align.hpp"
-#include "tool/chrono.hpp"
+#include<lib/util/src/chrono.hpp>
 #include "tool/logger.hpp"
 #include <string>
 
@@ -43,7 +43,7 @@ namespace VTX::Analysis
 												const std::vector<Model::Molecule *> & p_mobilesMolecules,
 												const AlignmentParameters &			   p_parameters )
 	{
-		Tool::Chrono chrono = Tool::Chrono();
+		Util::Chrono chrono = Util::Chrono();
 
 		AlignmentMethod * method;
 
@@ -58,7 +58,7 @@ namespace VTX::Analysis
 		{
 			for ( Model::Molecule * const mobileMolecule : p_mobilesMolecules )
 			{
-				Tool::Chrono chrono = Tool::Chrono();
+				Util::Chrono chrono = Util::Chrono();
 				chrono.start();
 				const AlignmentResult result = method->compute( *p_staticMolecule, *mobileMolecule, p_parameters );
 				chrono.stop();

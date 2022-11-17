@@ -350,7 +350,7 @@ namespace VTX::UI
 		title += " - RELEASE";
 #endif
 #endif
-		const IO::FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
+		const Util::FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
 
 		if ( !currentSessionFilepath.empty() )
 		{
@@ -485,12 +485,12 @@ namespace VTX::UI
 
 		if ( mimeData->hasUrls() )
 		{
-			std::vector<IO::FilePath> _paths  = std::vector<IO::FilePath>();
+			std::vector<Util::FilePath> _paths  = std::vector<Util::FilePath>();
 			const QList<QUrl> &		  urlList = mimeData->urls();
 
 			for ( const QUrl & url : urlList )
 			{
-				_paths.emplace_back( IO::FilePath( url.toLocalFile().toStdString() ) );
+				_paths.emplace_back( Util::FilePath( url.toLocalFile().toStdString() ) );
 			}
 
 			VTX_ACTION( new Action::Main::Open( _paths ) );

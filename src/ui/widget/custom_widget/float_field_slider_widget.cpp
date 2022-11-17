@@ -1,7 +1,7 @@
 #include "float_field_slider_widget.hpp"
 #include "style.hpp"
 #include "util/math.hpp"
-#include "util/string.hpp"
+#include <lib/util/src/string.hpp>
 #include "util/ui.hpp"
 #include <QHBoxLayout>
 #include <cmath>

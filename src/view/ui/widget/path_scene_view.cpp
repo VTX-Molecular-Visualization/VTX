@@ -12,7 +12,7 @@
 #include "ui/widget/scene/scene_item_selection_model.hpp"
 #include "ui/widget/scene/scene_widget.hpp"
 #include "ui/widget_factory.hpp"
-#include "util/string.hpp"
+#include <lib/util/src/string.hpp>
 #include <QScrollBar>
 
 namespace VTX::View::UI::Widget

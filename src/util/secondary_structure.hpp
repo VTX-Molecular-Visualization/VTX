@@ -3,7 +3,7 @@
 
 #include "model/molecule.hpp"
 #include "model/secondary_structure.hpp"
-#include "tool/chrono.hpp"
+#include<lib/util/src/chrono.hpp>
 #include "tool/logger.hpp"
 
 namespace VTX
@@ -186,7 +186,7 @@ namespace VTX
 
 			static void computeSecondaryStructure( Model::Molecule & p_molecule )
 			{
-				Tool::Chrono chrono;
+				Util::Chrono chrono;
 				chrono.start();
 				VTX_INFO( "Computing secondary structure..." );
 

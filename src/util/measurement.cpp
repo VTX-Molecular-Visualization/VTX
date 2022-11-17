@@ -3,7 +3,7 @@
 #include "model/measurement/dihedral_angle.hpp"
 #include "model/measurement/distance.hpp"
 #include "style.hpp"
-#include "util/string.hpp"
+#include <lib/util/src/string.hpp>
 #include <string>
 
 namespace VTX::Util::Measurement

@@ -13,7 +13,7 @@ namespace VTX::Worker
 	class GpuComputer : public Worker::BaseWorker, public Generic::BaseOpenGL
 	{
 	  public:
-		explicit GpuComputer( const IO::FilePath & p_shader,
+		explicit GpuComputer( const Util::FilePath & p_shader,
 							  const Vec3i &		   p_size	 = Vec3i( 64, 1, 1 ),
 							  const GLbitfield	   p_barrier = 0,
 							  const bool		   p_force	 = false ) :

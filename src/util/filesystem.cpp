@@ -10,14 +10,14 @@
 
 namespace VTX::Util::Filesystem
 {
-	IO::FilePath getParentDir( const IO::FilePath & p_path )
+	Util::FilePath getParentDir( const Util::FilePath & p_path )
 	{
 		QDir dir( p_path.qpath() );
 		dir.cdUp();
 		return dir.path().toStdString();
 	}
 
-	void createDirectory( const IO::FilePath & p_filePath )
+	void createDirectory( const Util::FilePath & p_filePath )
 	{
 		if ( QDir( p_filePath.qpath() ).exists() == false )
 		{
@@ -25,7 +25,7 @@ namespace VTX::Util::Filesystem
 		}
 	}
 
-	bool copyFile( const IO::FilePath & p_from, const IO::FilePath & p_to )
+	bool copyFile( const Util::FilePath & p_from, const Util::FilePath & p_to )
 	{
 		try
 		{
@@ -38,26 +38,26 @@ namespace VTX::Util::Filesystem
 		}
 	}
 
-	const std::string readPath( const IO::FilePath & p_filePath, const char * p_codecName )
+	const std::string readPath( const Util::FilePath & p_filePath, const char * p_codecName )
 	{
 		QString qStrContent;
 		readPathQString( p_filePath, qStrContent );
 		return qStrContent.toStdString();
 	}
-	void readPath( const IO::FilePath & p_filePath, std::string & p_content, const char * p_codecName )
+	void readPath( const Util::FilePath & p_filePath, std::string & p_content, const char * p_codecName )
 	{
 		QString qStrContent;
 		readPathQString( p_filePath, qStrContent );
 		p_content = qStrContent.toStdString();
 	}
 
-	const QString readPathQString( const IO::FilePath & p_filePath, const QStringConverter::Encoding & p_codecName )
+	const QString readPathQString( const Util::FilePath & p_filePath, const QStringConverter::Encoding & p_codecName )
 	{
 		QString res;
 		readPathQString( p_filePath, res, p_codecName );
 		return res;
 	}
-	void readPathQString( const IO::FilePath &				 p_filePath,
+	void readPathQString( const Util::FilePath &				 p_filePath,
 						  QString &							 p_content,
 						  const QStringConverter::Encoding & p_codecName )
 	{
@@ -76,7 +76,7 @@ namespace VTX::Util::Filesystem
 		file.close();
 	}
 
-	bool remove( const IO::FilePath & p_filename )
+	bool remove( const Util::FilePath & p_filename )
 	{
 		try
 		{
@@ -89,7 +89,7 @@ namespace VTX::Util::Filesystem
 		}
 	}
 
-	bool removeAll( const IO::FilePath & p_directory )
+	bool removeAll( const Util::FilePath & p_directory )
 	{
 		try
 		{
@@ -103,7 +103,7 @@ namespace VTX::Util::Filesystem
 		}
 	}
 
-	void copyDir( const IO::FilePath & p_from, const IO::FilePath & p_to )
+	void copyDir( const Util::FilePath & p_from, const Util::FilePath & p_to )
 	{
 		createDirectory( p_to );
 
@@ -112,8 +112,8 @@ namespace VTX::Util::Filesystem
 
 		for ( const QString & entry : list )
 		{
-			IO::FilePath pathFrom = p_from / IO::FilePath( entry.toStdString() );
-			IO::FilePath pathTo	  = p_to / IO::FilePath( entry.toStdString() );
+			Util::FilePath pathFrom = p_from / Util::FilePath( entry.toStdString() );
+			Util::FilePath pathTo	  = p_to / Util::FilePath( entry.toStdString() );
 
 			QFileInfo fi( pathFrom.qpath() );
 
@@ -128,37 +128,37 @@ namespace VTX::Util::Filesystem
 		}
 	}
 
-	std::set<IO::FilePath> getFilesInDirectory( const IO::FilePath & p_directory )
+	std::set<Util::FilePath> getFilesInDirectory( const Util::FilePath & p_directory )
 	{
-		std::set<IO::FilePath> result = std::set<IO::FilePath>();
+		std::set<Util::FilePath> result = std::set<Util::FilePath>();
 		QDir				   dir( p_directory.qpath() );
 		QStringList			   list = dir.entryList( QDir::Files );
 
 		for ( const QString & entry : list )
 		{
-			IO::FilePath path = p_directory / IO::FilePath( entry.toStdString() );
+			Util::FilePath path = p_directory / Util::FilePath( entry.toStdString() );
 			result.emplace( path );
 		}
 
 		return result;
 	}
 
-	void checkSaveDirectoryHierarchy( const IO::FilePath & p_savePath )
+	void checkSaveDirectoryHierarchy( const Util::FilePath & p_savePath )
 	{
-		const IO::FilePath projectDirectory = getSceneSaveDirectory( p_savePath );
+		const Util::FilePath projectDirectory = getSceneSaveDirectory( p_savePath );
 		if ( projectDirectory.exists() == false )
 		{
 			createDirectory( projectDirectory );
 		}
 
-		const IO::FilePath objectsPath = getSceneObjectsSaveDirectory( p_savePath );
+		const Util::FilePath objectsPath = getSceneObjectsSaveDirectory( p_savePath );
 		if ( objectsPath.exists() == false )
 		{
 			createDirectory( objectsPath );
 		}
 	}
 
-	void generateUniqueFileName( IO::FilePath & p_filePath )
+	void generateUniqueFileName( Util::FilePath & p_filePath )
 	{
 		uint counter = 2;
 
@@ -180,9 +180,9 @@ namespace VTX::Util::Filesystem
 		}
 	}
 
-	IO::FilePath getDefaultMoleculeExportPath()
+	Util::FilePath getDefaultMoleculeExportPath()
 	{
-		const IO::FilePath defaultFolder = IO::FilePath( Setting::getLastExportedMoleculeFolder().toStdString() );
+		const Util::FilePath defaultFolder = Util::FilePath( Setting::getLastExportedMoleculeFolder().toStdString() );
 
 		const int nbMoleculeInSelection
 			= Selection::SelectionManager::get().getSelectionModel().getMoleculeSelectedCount();
@@ -210,22 +210,22 @@ namespace VTX::Util::Filesystem
 		return defaultFolder / filename;
 	}
 
-	IO::FilePath getDefaultSceneSavePath()
+	Util::FilePath getDefaultSceneSavePath()
 	{
 		if ( !VTXApp::get().getScenePathData().getCurrentPath().empty() )
 		{
 			return VTXApp::get().getScenePathData().getCurrentPath();
 		}
 
-		const IO::FilePath defaultFolder = IO::FilePath( Setting::getLastSavedSessionFolder().toStdString() );
-		IO::FilePath	   defaultPath	 = defaultFolder / ( DEFAULT_SCENE_FILENAME + ".vtx" );
+		const Util::FilePath defaultFolder = Util::FilePath( Setting::getLastSavedSessionFolder().toStdString() );
+		Util::FilePath	   defaultPath	 = defaultFolder / ( DEFAULT_SCENE_FILENAME + ".vtx" );
 
 		generateUniqueFileName( defaultPath );
 
 		return defaultPath;
 	}
 
-	const IO::FilePath getUniqueSnapshotsPath()
+	const Util::FilePath getUniqueSnapshotsPath()
 	{
 		std::string extension;
 
@@ -243,7 +243,7 @@ namespace VTX::Util::Filesystem
 		const std::string filename = Util::Time::getTimestamp() + '.' + extension;
 		createDirectory( getSnapshotsDir() );
 
-		IO::FilePath path = IO::FilePath( getSnapshotsDir() / filename );
+		Util::FilePath path = Util::FilePath( getSnapshotsDir() / filename );
 		generateUniqueFileName( path );
 
 		return path;

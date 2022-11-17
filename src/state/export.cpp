@@ -3,7 +3,7 @@
 #include "model/path.hpp"
 #include "model/viewpoint.hpp"
 #include "util/filesystem.hpp"
-#include "util/time.hpp"
+#include <lib/util/src/time.hpp>
 #include "vtx_app.hpp"
 #include "worker/program_launcher.hpp"
 

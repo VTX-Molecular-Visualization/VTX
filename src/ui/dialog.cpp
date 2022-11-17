@@ -67,9 +67,9 @@ namespace VTX::UI
 		{
 			Setting::saveLastImportedMoleculeFolder( filenames[ filenames.size() - 1 ] );
 
-			std::vector<IO::FilePath> filepathes = std::vector<IO::FilePath>();
+			std::vector<Util::FilePath> filepathes = std::vector<Util::FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( IO::FilePath( qstr.toStdString() ) );
+				filepathes.emplace_back( Util::FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::Open( filepathes ) );
 		}
@@ -88,8 +88,8 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			const IO::FilePath path			 = IO::FilePath( filename.toStdString() );
-			const IO::FilePath directoryPath = Util::Filesystem::getParentDir( path );
+			const Util::FilePath path			 = Util::FilePath( filename.toStdString() );
+			const Util::FilePath directoryPath = Util::Filesystem::getParentDir( path );
 
 			Setting::saveLastExportedMoleculeFolder( directoryPath.qpath() );
 			VTX_ACTION( new Action::Main::Save( path ) );
@@ -111,7 +111,7 @@ namespace VTX::UI
 		if ( !filename.isEmpty() )
 		{
 			Setting::saveLastImportedMoleculeFolder( filename );
-			VTX_ACTION( new Action::Main::Open( IO::FilePath( filename.toStdString() ), p_target ) );
+			VTX_ACTION( new Action::Main::Open( Util::FilePath( filename.toStdString() ), p_target ) );
 		}
 	}
 
@@ -143,7 +143,7 @@ namespace VTX::UI
 
 		if ( res == QMessageBox::StandardButton::Save )
 		{
-			const IO::FilePath & filepath = VTXApp::get().getScenePathData().getCurrentPath();
+			const Util::FilePath & filepath = VTXApp::get().getScenePathData().getCurrentPath();
 
 			Worker::CallbackThread * threadCallback = new Worker::CallbackThread( p_callback );
 
@@ -153,7 +153,7 @@ namespace VTX::UI
 			}
 			else
 			{
-				VTX_ACTION( new Action::Main::Save( IO::FilePath( filepath ), threadCallback ) );
+				VTX_ACTION( new Action::Main::Save( Util::FilePath( filepath ), threadCallback ) );
 			}
 		}
 		else if ( res == QMessageBox::StandardButton::Discard )
@@ -181,8 +181,8 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			const IO::FilePath path			 = IO::FilePath( filename.toStdString() );
-			const IO::FilePath directoryPath = Util::Filesystem::getParentDir( path );
+			const Util::FilePath path			 = Util::FilePath( filename.toStdString() );
+			const Util::FilePath directoryPath = Util::Filesystem::getParentDir( path );
 
 			Setting::saveLastSavedSessionFolder( directoryPath.qpath() );
 			VTX_ACTION( new Action::Main::Save( path, p_callback ) );
@@ -205,9 +205,9 @@ namespace VTX::UI
 		{
 			Setting::saveLastLoadedSessionFolder( filenames[ filenames.size() - 1 ] );
 
-			std::vector<IO::FilePath> filepathes = std::vector<IO::FilePath>();
+			std::vector<Util::FilePath> filepathes = std::vector<Util::FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( IO::FilePath( qstr.toStdString() ) );
+				filepathes.emplace_back( Util::FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::Open( filepathes ) );
 		}
@@ -227,8 +227,8 @@ namespace VTX::UI
 
 		if ( !filepath.isNull() )
 		{
-			const IO::FilePath path			 = IO::FilePath( filepath.toStdString() );
-			const IO::FilePath directoryPath = Util::Filesystem::getParentDir( path );
+			const Util::FilePath path			 = Util::FilePath( filepath.toStdString() );
+			const Util::FilePath directoryPath = Util::Filesystem::getParentDir( path );
 
 			Setting::saveLastExportedImageFolder( directoryPath.qpath() );
 			VTX_ACTION(
@@ -250,9 +250,9 @@ namespace VTX::UI
 
 		if ( !filenames.isEmpty() )
 		{
-			std::vector<IO::FilePath> filepathes = std::vector<IO::FilePath>();
+			std::vector<Util::FilePath> filepathes = std::vector<Util::FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( IO::FilePath( qstr.toStdString() ) );
+				filepathes.emplace_back( Util::FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::ImportRepresentationPreset( filepathes ) );
 		}
@@ -267,9 +267,9 @@ namespace VTX::UI
 
 		if ( !filenames.isEmpty() )
 		{
-			std::vector<IO::FilePath> filepathes = std::vector<IO::FilePath>();
+			std::vector<Util::FilePath> filepathes = std::vector<Util::FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( IO::FilePath( qstr.toStdString() ) );
+				filepathes.emplace_back( Util::FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::ImportRenderEffectPreset( filepathes ) );
 		}
