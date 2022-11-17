@@ -87,7 +87,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 		{
 			CustomWidget::IndexedAction * const action
 				= new CustomWidget::IndexedAction( actionIndex, _recentSessionMenu );
-			action->setText( recentFile.qpath() );
+			action->setText( QString::fromStdString( recentFile.path() ) );
 
 			connect( action,
 					 &CustomWidget::IndexedAction::triggeredWithIndex,

@@ -485,8 +485,8 @@ namespace VTX::UI
 
 		if ( mimeData->hasUrls() )
 		{
-			std::vector<Util::FilePath> _paths  = std::vector<Util::FilePath>();
-			const QList<QUrl> &		  urlList = mimeData->urls();
+			std::vector<Util::FilePath> _paths	= std::vector<Util::FilePath>();
+			const QList<QUrl> &			urlList = mimeData->urls();
 
 			for ( const QUrl & url : urlList )
 			{
@@ -575,7 +575,8 @@ namespace VTX::UI
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings  settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
+		QSettings  settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
+							 QSettings::IniFormat );
 		const bool settingsAreValid = settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 
 		return settingsAreValid && settings.value( "Version" ).toInt() == Style::LAYOUT_VERSION;
@@ -583,7 +584,8 @@ namespace VTX::UI
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
+							QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
 		// Delayed restore state because all widgets grows when restore in maximized (sizes are stored when maximized,
@@ -609,7 +611,8 @@ namespace VTX::UI
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
+							QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 
 		_checkUnknownFloatableWindows();
@@ -621,7 +624,8 @@ namespace VTX::UI
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
+							QSettings::IniFormat );
 		settings.setValue( "Version", Style::LAYOUT_VERSION );
 
 		settings.setValue( "Geometry", saveGeometry() );
@@ -629,7 +633,8 @@ namespace VTX::UI
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
+							QSettings::IniFormat );
 		settings.clear();
 	}
 

@@ -77,7 +77,7 @@ namespace VTX::UI
 	void Dialog::openExportMoleculeDialog()
 	{
 		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_MOLECULE_WRITE_FILTER );
-		const QString	defaultPath	  = Util::Filesystem::getDefaultMoleculeExportPath().qpath();
+		const QString	defaultPath = QString::fromStdString( Util::Filesystem::getDefaultMoleculeExportPath().path() );
 
 		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
 															   "Export molecule",
@@ -88,10 +88,10 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			const Util::FilePath path			 = Util::FilePath( filename.toStdString() );
+			const Util::FilePath path		   = Util::FilePath( filename.toStdString() );
 			const Util::FilePath directoryPath = Util::Filesystem::getParentDir( path );
 
-			Setting::saveLastExportedMoleculeFolder( directoryPath.qpath() );
+			Setting::saveLastExportedMoleculeFolder( QString::fromStdString( directoryPath.path() ) );
 			VTX_ACTION( new Action::Main::Save( path ) );
 		}
 	}
@@ -169,7 +169,7 @@ namespace VTX::UI
 	void Dialog::openSaveSessionDialog( Worker::CallbackThread * const p_callback )
 	{
 		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_FILE_WRITE_FILTER );
-		const QString	defaultPath	  = Util::Filesystem::getDefaultSceneSavePath().qpath();
+		const QString	defaultPath	  = QString::fromStdString( Util::Filesystem::getDefaultSceneSavePath().path() );
 
 		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
 															   "Save session",
@@ -181,10 +181,10 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			const Util::FilePath path			 = Util::FilePath( filename.toStdString() );
+			const Util::FilePath path		   = Util::FilePath( filename.toStdString() );
 			const Util::FilePath directoryPath = Util::Filesystem::getParentDir( path );
 
-			Setting::saveLastSavedSessionFolder( directoryPath.qpath() );
+			Setting::saveLastSavedSessionFolder( QString::fromStdString( directoryPath.path() ) );
 			VTX_ACTION( new Action::Main::Save( path, p_callback ) );
 		}
 	}
@@ -227,10 +227,10 @@ namespace VTX::UI
 
 		if ( !filepath.isNull() )
 		{
-			const Util::FilePath path			 = Util::FilePath( filepath.toStdString() );
+			const Util::FilePath path		   = Util::FilePath( filepath.toStdString() );
 			const Util::FilePath directoryPath = Util::Filesystem::getParentDir( path );
 
-			Setting::saveLastExportedImageFolder( directoryPath.qpath() );
+			Setting::saveLastExportedImageFolder( QString::fromStdString( directoryPath.path() ) );
 			VTX_ACTION(
 				new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, filepath.toStdString(), p_exportData ) );
 
@@ -245,7 +245,7 @@ namespace VTX::UI
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
 											 "Import representation preset",
-											 Util::Filesystem::getExecutableDir().qpath(),
+											 QString::fromStdString( Util::Filesystem::getExecutableDir().path() ),
 											 Util::Filesystem::REPRESENTATION_PRESET_FILE_FILTERS );
 
 		if ( !filenames.isEmpty() )
@@ -262,7 +262,7 @@ namespace VTX::UI
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
 											 "Import render effect preset",
-											 Util::Filesystem::getExecutableDir().qpath(),
+											 QString::fromStdString( Util::Filesystem::getExecutableDir().path() ),
 											 Util::Filesystem::RENDER_EFFECT_PRESET_FILE_FILTERS );
 
 		if ( !filenames.isEmpty() )

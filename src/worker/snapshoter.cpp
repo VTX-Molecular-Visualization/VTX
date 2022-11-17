@@ -5,12 +5,12 @@
 #include "renderer/gl/gl.hpp"
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
-#include <lib/util/src/time.hpp>
 #include "vtx_app.hpp"
 #include <QOffscreenSurface>
 #include <QOpenGLFramebufferObject>
 #include <QPainter>
 #include <QSvgRenderer>
+#include <lib/util/src/time.hpp>
 #include <vector>
 
 // #define VTX_DEBUG_WATERMARK
@@ -122,7 +122,8 @@ namespace VTX::Worker
 		// Save.
 		if ( !_path.empty() )
 		{
-			if ( render.save( _path.qpath(), _path.extension().c_str(), _exportData.getIntQuality() ) )
+			if ( render.save(
+					 QString::fromStdString( _path.path() ), _path.extension().c_str(), _exportData.getIntQuality() ) )
 			{
 				VTX_INFO( "Snapshot taken: " + _path.filename() );
 			}

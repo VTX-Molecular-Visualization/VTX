@@ -12,16 +12,16 @@ namespace VTX::Util::Filesystem
 {
 	Util::FilePath getParentDir( const Util::FilePath & p_path )
 	{
-		QDir dir( p_path.qpath() );
+		QDir dir( QString::fromStdString( p_path.path() ) );
 		dir.cdUp();
 		return dir.path().toStdString();
 	}
 
 	void createDirectory( const Util::FilePath & p_filePath )
 	{
-		if ( QDir( p_filePath.qpath() ).exists() == false )
+		if ( QDir( QString::fromStdString( p_filePath.path() ) ).exists() == false )
 		{
-			QDir().mkpath( p_filePath.qpath() );
+			QDir().mkpath( QString::fromStdString( p_filePath.path() ) );
 		}
 	}
 
@@ -29,7 +29,7 @@ namespace VTX::Util::Filesystem
 	{
 		try
 		{
-			return QFile::copy( p_from.qpath(), p_to.qpath() );
+			return QFile::copy( QString::fromStdString( p_from.path() ), QString::fromStdString( p_to.path() ) );
 		}
 		catch ( std::exception p_e )
 		{
@@ -57,11 +57,11 @@ namespace VTX::Util::Filesystem
 		readPathQString( p_filePath, res, p_codecName );
 		return res;
 	}
-	void readPathQString( const Util::FilePath &				 p_filePath,
+	void readPathQString( const Util::FilePath &			 p_filePath,
 						  QString &							 p_content,
 						  const QStringConverter::Encoding & p_codecName )
 	{
-		QFile file( p_filePath.qpath() );
+		QFile file( QString::fromStdString( p_filePath.path() ) );
 		if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) == false )
 		{
 			throw Exception::IOException( "Cannot open file " + p_filePath.path() + " : "
@@ -80,7 +80,7 @@ namespace VTX::Util::Filesystem
 	{
 		try
 		{
-			return QFile::remove( p_filename.qpath() );
+			return QFile::remove( QString::fromStdString( p_filename.path() ) );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -93,7 +93,7 @@ namespace VTX::Util::Filesystem
 	{
 		try
 		{
-			QDir dir( p_directory.qpath() );
+			QDir dir( QString::fromStdString( p_directory.path() ) );
 			return dir.removeRecursively();
 		}
 		catch ( const std::exception & p_e )
@@ -107,15 +107,15 @@ namespace VTX::Util::Filesystem
 	{
 		createDirectory( p_to );
 
-		QDir		dir( p_from.qpath() );
+		QDir		dir( QString::fromStdString( p_from.path() ) );
 		QStringList list = dir.entryList( QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot );
 
 		for ( const QString & entry : list )
 		{
 			Util::FilePath pathFrom = p_from / Util::FilePath( entry.toStdString() );
-			Util::FilePath pathTo	  = p_to / Util::FilePath( entry.toStdString() );
+			Util::FilePath pathTo	= p_to / Util::FilePath( entry.toStdString() );
 
-			QFileInfo fi( pathFrom.qpath() );
+			QFileInfo fi( QString::fromStdString( pathFrom.path() ) );
 
 			if ( fi.isFile() )
 			{
@@ -131,8 +131,8 @@ namespace VTX::Util::Filesystem
 	std::set<Util::FilePath> getFilesInDirectory( const Util::FilePath & p_directory )
 	{
 		std::set<Util::FilePath> result = std::set<Util::FilePath>();
-		QDir				   dir( p_directory.qpath() );
-		QStringList			   list = dir.entryList( QDir::Files );
+		QDir					 dir( QString::fromStdString( p_directory.path() ) );
+		QStringList				 list = dir.entryList( QDir::Files );
 
 		for ( const QString & entry : list )
 		{
@@ -165,10 +165,10 @@ namespace VTX::Util::Filesystem
 		const std::string defaultFileName = p_filePath.filenameWithoutExtension();
 		const std::string extension		  = p_filePath.extension();
 
-		QDir dir = QDir( p_filePath.qpath() );
+		QDir dir = QDir( QString::fromStdString( p_filePath.path() ) );
 		dir.cdUp();
 
-		while ( QFileInfo( p_filePath.qpath() ).exists() )
+		while ( QFileInfo( QString::fromStdString( p_filePath.path() ) ).exists() )
 		{
 			std::string newPath = defaultFileName + " " + std::to_string( counter );
 
@@ -218,7 +218,7 @@ namespace VTX::Util::Filesystem
 		}
 
 		const Util::FilePath defaultFolder = Util::FilePath( Setting::getLastSavedSessionFolder().toStdString() );
-		Util::FilePath	   defaultPath	 = defaultFolder / ( DEFAULT_SCENE_FILENAME + ".vtx" );
+		Util::FilePath		 defaultPath   = defaultFolder / ( DEFAULT_SCENE_FILENAME + ".vtx" );
 
 		generateUniqueFileName( defaultPath );
 

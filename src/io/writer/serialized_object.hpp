@@ -6,6 +6,8 @@
 #include "io/serializer.hpp"
 #include "worker/base_thread.hpp"
 #include "worker/base_worker.hpp"
+#include <QFile>
+#include <QString>
 #include <QTextStream>
 #include <nlohmann/json.hpp>
 
@@ -29,7 +31,7 @@ namespace VTX::IO::Writer
 										{ "REVISION", VTX_VERSION_REVISION } } },
 									{ "DATA", serializer.serialize( p_data ) } };
 
-			QFile file( p_path.qpath() );
+			QFile file( QString::fromStdString( p_path.path() ) );
 			if ( file.open( QIODevice::WriteOnly | QIODevice::Text ) == false )
 			{
 				throw Exception::IOException( "Can not write file: " + p_path.path() );

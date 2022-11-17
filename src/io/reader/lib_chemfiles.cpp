@@ -16,6 +16,7 @@
 #include "worker/base_thread.hpp"
 #include <QDir>
 #include <QFileInfo>
+#include <QString>
 #include <algorithm>
 #include <iostream>
 #include <lib/util/src/chrono.hpp>
@@ -118,7 +119,7 @@ namespace VTX::IO::Reader
 		}
 
 		// if opening a DCD file check if a topology file is present in the same folder
-		QFileInfo fileInfo( p_path.qpath() );
+		QFileInfo fileInfo = QFileInfo( QString::fromStdString( p_path.path() ) );
 		if ( fileInfo.suffix().toStdString() == "dcd" )
 		{
 			const std::string filePathWithoutExt

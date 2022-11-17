@@ -4,6 +4,7 @@
 #include "base_reader.hpp"
 #include "define.hpp"
 #include "io/serializer.hpp"
+#include <QFile>
 #include <QTextStream>
 #include <nlohmann/json.hpp>
 
@@ -17,7 +18,7 @@ namespace VTX::IO::Reader
 		{
 			IO::Serializer serializer = IO::Serializer();
 
-			QFile file( p_path.qpath() );
+			QFile file( QString::fromStdString( p_path.path() ) );
 			if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) == false )
 			{
 				throw Exception::IOException( "Can not read file: " + p_path.path() );

@@ -14,6 +14,12 @@ set(CMAKE_SUPPRESS_REGENERATION true)
 # Create output dir.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 
+# Create paths.
+set(PATH_SRC "src")
+set(PATH_EXTERNAL_PROJECT "external_project")
+set(PATH_WINDOWS_RESOURCE "asset/windows_resources")
+set(PATH_QT_RESOURCE "asset/qt_resources")
+
 if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
 	file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
@@ -21,6 +27,7 @@ endif()
 # Add libraries.
 set(PATH_LIB "lib")
 add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/util/)
+add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/renderer/)
 
 # Configure Qt.
 set(CMAKE_AUTOMOC ON)
@@ -30,27 +37,17 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form" "src/exten
 #set(CMAKE_AUTOGEN_TARGETS_FOLDER "autogen")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-# Create paths.
-set(PATH_SRC "src")
-set(PATH_EXTERNAL_PROJECT "external_project")
-set(PATH_WINDOWS_RESOURCE "asset/windows_resources")
-set(PATH_QT_RESOURCE "asset/qt_resources")
+#set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Libs URL and tags.
 set(GIT_URL_CHEMFILES https://github.com/sacraiou/chemfiles.git)
 set(GIT_TAG_CHEMFILES e6177423c015ac6ff1a0307b3c3a67c7850d0fe2)
-set(GIT_URL_GLM https://github.com/g-truc/glm.git)
-set(GIT_TAG_GLM bf71a83) #0.9.9.8
 set(GIT_URL_JSON https://github.com/nlohmann/json.git)
 set(GIT_TAG_JSON v3.10.5) #3.10.5
 set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum.git)
 set(GIT_TAG_MAGIC_ENUM v0.8.0) #0.8.0
 set(GIT_URL_EIGEN https://gitlab.com/libeigen/eigen.git)
 set(GIT_TAG_EIGEN 3147391d946bb4b6c68edd901f2add6ac1f31f8c) #3.4.0
-
-
 
 # Copy all sources.
 message("Copying all sources...")
@@ -134,20 +131,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(chemfiles)
 
-# Glm.
-ExternalProject_Add(
-    glm
-    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_EXTERNAL_PROJECT}/g-truc
-    GIT_REPOSITORY ${GIT_URL_GLM}
-	GIT_TAG ${GIT_TAG_GLM}
-	CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
-    )
-ExternalProject_Get_Property(glm SOURCE_DIR)
-set(GLM_INCLUDE_DIR ${SOURCE_DIR})
-
 # Json.
 ExternalProject_Add(
     json
@@ -207,14 +190,14 @@ find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
 
 # Includes directories.
 target_include_directories(VTX PRIVATE ${PATH_SRC})
-target_include_directories(VTX PRIVATE ${GLM_INCLUDE_DIR})
 target_include_directories(VTX PRIVATE ${JSON_INCLUDE_DIR})
 target_include_directories(VTX PRIVATE ${MAGIC_ENUM_INCLUDE_DIR})
 target_include_directories(VTX PRIVATE ${EIGEN_INCLUDE_DIR})
 
 # Link libs.
 # Custom.
-target_link_libraries(VTX LINK_PUBLIC VTX_UTIL)
+target_link_libraries(VTX PRIVATE VTX_UTIL)
+target_link_libraries(VTX PRIVATE VTX_RENDERER)
 
 # Third parties.
 target_link_libraries(VTX PRIVATE Qt6::Core)

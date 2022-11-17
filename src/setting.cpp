@@ -330,7 +330,7 @@ namespace VTX
 		{
 			const QString key
 				= QString::fromStdString( RegisterKey::RECENT_LOADED_PATH_PREFIX + std::to_string( counter ) );
-			settings.setValue( key, path.qpath() );
+			settings.setValue( key, QString::fromStdString( path.path() ) );
 
 			counter++;
 		}
@@ -349,7 +349,7 @@ namespace VTX
 	QString Setting::getLastLoadedSessionFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_OPEN_SESSION_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_SAVE_FOLDER.qpath() );
+		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_SAVE_FOLDER.path() ) );
 	}
 	void Setting::saveLastLoadedSessionFolder( const QString & p_path )
 	{
@@ -364,7 +364,7 @@ namespace VTX
 	QString Setting::getLastSavedSessionFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_SAVED_SESSION_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_SAVE_FOLDER.qpath() );
+		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_SAVE_FOLDER.path() ) );
 	}
 	void Setting::saveLastSavedSessionFolder( const QString & p_path )
 	{
@@ -379,7 +379,7 @@ namespace VTX
 	QString Setting::getLastImportedMoleculeFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_IMPORTED_MOLECULE_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_MOLECULE_FOLDER.qpath() );
+		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_MOLECULE_FOLDER.path() ) );
 	}
 	void Setting::saveLastImportedMoleculeFolder( const QString & p_path )
 	{
@@ -394,7 +394,7 @@ namespace VTX
 	QString Setting::getLastExportedMoleculeFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_EXPORTED_MOLECULE_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_MOLECULE_FOLDER.qpath() );
+		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_MOLECULE_FOLDER.path() ) );
 	}
 	void Setting::saveLastExportedMoleculeFolder( const QString & p_path )
 	{
@@ -409,7 +409,8 @@ namespace VTX
 	QString Setting::getLastExportedImageFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_EXPORTED_IMAGE_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::getDefaultSnapshotsDir().qpath() );
+		return _getFileInRegisterKey( key,
+									  QString::fromStdString( Util::Filesystem::getDefaultSnapshotsDir().path() ) );
 	}
 	void Setting::saveLastExportedImageFolder( const QString & p_path )
 	{
@@ -433,7 +434,7 @@ namespace VTX
 		if ( path.empty() || path.exists() == false )
 			return p_default;
 
-		return path.qpath();
+		return QString::fromStdString( path.path() );
 	}
 
 	void Setting::restoreDefaultRepresentationPerCategory()

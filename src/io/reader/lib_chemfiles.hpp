@@ -7,6 +7,7 @@
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
 #pragma warning( pop )
+#include "define.hpp"
 
 namespace VTX
 {
