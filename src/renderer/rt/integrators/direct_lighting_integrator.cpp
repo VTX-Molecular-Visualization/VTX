@@ -1,6 +1,5 @@
 #include "direct_lighting_integrator.hpp"
-#include "util/math.hpp"
-#include "util/sampler.hpp"
+#include <util/math.hpp>
 
 namespace VTX
 {

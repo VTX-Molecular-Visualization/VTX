@@ -2,7 +2,7 @@
 #define __VTX_BASE_READER__
 
 #include "exception.hpp"
-#include <lib/util/src/filepath.hpp>
+#include <util/filepath.hpp>
 
 namespace VTX
 {

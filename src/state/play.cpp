@@ -4,9 +4,9 @@
 #include "model/viewpoint.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
-#include<lib/util/src/chrono.hpp>
 #include "util/math.hpp"
 #include "vtx_app.hpp"
+#include <util/chrono.hpp>
 
 namespace VTX
 {

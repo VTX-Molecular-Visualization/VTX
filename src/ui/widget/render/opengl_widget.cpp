@@ -7,7 +7,6 @@
 #include "renderer/rt/ray_tracer.hpp"
 #include "spec.hpp"
 #include "ui/dialog.hpp"
-#include "util/opengl.hpp"
 #include "vtx_app.hpp"
 #include <QMainWindow>
 #include <QOpenGLVersionFunctionsFactory>
@@ -61,7 +60,7 @@ namespace VTX::UI::Widget::Render
 
 #ifndef VTX_PRODUCTION
 		_gl->glEnable( GL_DEBUG_OUTPUT );
-		_gl->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
+		//_gl->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
 #endif
 
 		VTX_PROGRAM_MANAGER();

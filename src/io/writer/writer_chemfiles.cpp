@@ -4,8 +4,8 @@
 #include "model/chain.hpp"
 #include "model/residue.hpp"
 #include "util/secondary_structure.hpp"
-#include <lib/util/src/chrono.hpp>
 #include <string>
+#include <util/chrono.hpp>
 
 namespace VTX::IO::Writer
 {

@@ -10,7 +10,7 @@
 #include <QOpenGLFramebufferObject>
 #include <QPainter>
 #include <QSvgRenderer>
-#include <lib/util/src/time.hpp>
+#include <util/time.hpp>
 #include <vector>
 
 // #define VTX_DEBUG_WATERMARK

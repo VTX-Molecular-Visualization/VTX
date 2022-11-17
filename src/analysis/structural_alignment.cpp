@@ -4,9 +4,9 @@
 #include "model/molecule.hpp"
 #include "rmsd.hpp"
 #include "structural_alignment_method/ce_align.hpp"
-#include<lib/util/src/chrono.hpp>
 #include "tool/logger.hpp"
 #include <string>
+#include <util/chrono.hpp>
 
 namespace VTX::Analysis
 {

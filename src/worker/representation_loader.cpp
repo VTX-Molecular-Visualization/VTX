@@ -2,9 +2,9 @@
 #include "io/reader/serialized_object.hpp"
 #include "model/representation/representation_library.hpp"
 #include "representation/representation_manager.hpp"
-#include <lib/util/src/chrono.hpp>
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
+#include <util/chrono.hpp>
 
 namespace VTX::Worker
 {

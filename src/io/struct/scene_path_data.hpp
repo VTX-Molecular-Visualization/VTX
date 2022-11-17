@@ -5,7 +5,7 @@
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"
 #include "io/writer/writer_chemfiles.hpp"
-#include <lib/util/src/filepath.hpp>
+#include <util/filepath.hpp>
 #include <map>
 
 namespace VTX

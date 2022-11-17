@@ -7,9 +7,9 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QTextStream>
-#include <lib/util/src/filepath.hpp>
-#include <lib/util/src/time.hpp>
 #include <set>
+#include <util/filepath.hpp>
+#include <util/time.hpp>
 
 namespace VTX
 {

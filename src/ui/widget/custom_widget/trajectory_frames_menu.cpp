@@ -4,7 +4,7 @@
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
-#include <lib/util/src/string.hpp>
+#include <util/string.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {

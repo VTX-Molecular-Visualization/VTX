@@ -11,7 +11,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
-#include <lib/util/src/chrono.hpp>
+#include <util/chrono.hpp>
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"

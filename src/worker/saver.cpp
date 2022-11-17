@@ -6,7 +6,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
-#include <lib/util/src/chrono.hpp>
+#include <util/chrono.hpp>
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include <set>

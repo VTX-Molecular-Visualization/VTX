@@ -2,7 +2,7 @@
 #include "io/writer/serialized_object.hpp"
 #include "model/representation/representation.hpp"
 #include "mvc/mvc_manager.hpp"
-#include <lib/util/src/chrono.hpp>
+#include <util/chrono.hpp>
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include <exception>

@@ -3,9 +3,9 @@
 #include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/gl/program_manager.hpp"
-#include "util/sampler.hpp"
 #include "vtx_app.hpp"
 #include <random>
+#include <util/math.hpp>
 
 namespace VTX::Renderer::GL::Pass
 {
@@ -30,7 +30,7 @@ namespace VTX::Renderer::GL::Pass
 		for ( uint i = 0; i < _kernelSize; i++ )
 		{
 			// sample on unit hemisphere
-			Vec3f v = Util::Sampler::cosineWeightedHemisphere( Util::Math::randomFloat(), Util::Math::randomFloat() );
+			Vec3f v = Util::Math::cosineWeightedHemisphere( Util::Math::randomFloat(), Util::Math::randomFloat() );
 
 			// scale sample within the hemisphere
 			v *= Util::Math::randomFloat();

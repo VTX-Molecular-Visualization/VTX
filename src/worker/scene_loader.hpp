@@ -2,7 +2,7 @@
 #define __VTX_SCENE_LOADER__
 
 #include "base_worker.hpp"
-#include <lib/util/src/filepath.hpp>
+#include <util/filepath.hpp>
 #include <map>
 #include <vector>
 

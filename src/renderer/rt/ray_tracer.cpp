@@ -13,11 +13,11 @@
 #include "primitives/plane.hpp"
 #include "primitives/sphere.hpp"
 #include "primitives/triangle_mesh.hpp"
-#include<lib/util/src/chrono.hpp>
-#include "util/sampler.hpp"
 #include "vtx_app.hpp"
 #include <atomic>
 #include <thread>
+#include <util/chrono.hpp>
+#include <util/math.hpp>
 
 namespace VTX
 {

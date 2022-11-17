@@ -2,7 +2,7 @@
 #include "io/reader/serialized_object.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
-#include <lib/util/src/chrono.hpp>
+#include <util/chrono.hpp>
 #include "tool/logger.hpp"
 
 namespace VTX::Worker

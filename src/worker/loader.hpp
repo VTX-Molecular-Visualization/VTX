@@ -3,9 +3,9 @@
 
 #include "base_thread.hpp"
 #include "define.hpp"
-#include <lib/util/src/chrono.hpp>
-#include <lib/util/src/filepath.hpp>
 #include <map>
+#include <util/chrono.hpp>
+#include <util/filepath.hpp>
 #include <vector>
 
 namespace VTX

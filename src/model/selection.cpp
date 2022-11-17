@@ -7,7 +7,7 @@
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
-#include<lib/util/src/chrono.hpp>
+#include<util/chrono.hpp>
 #include "tool/logger.hpp"
 #include <unordered_set>
 

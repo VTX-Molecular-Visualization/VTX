@@ -1,6 +1,5 @@
 #include "mime_type.hpp"
-#include <lib/util/src/string.hpp>
-#include <string>
+#include <util/string.hpp>
 
 namespace VTX::UI
 {

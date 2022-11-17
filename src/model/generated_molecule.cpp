@@ -9,8 +9,8 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
-#include<lib/util/src/chrono.hpp>
 #include <map>
+#include <util/chrono.hpp>
 
 namespace VTX::Model
 {

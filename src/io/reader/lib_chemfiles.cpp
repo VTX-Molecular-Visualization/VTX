@@ -19,10 +19,10 @@
 #include <QString>
 #include <algorithm>
 #include <iostream>
-#include <lib/util/src/chrono.hpp>
 #include <magic_enum.hpp>
 #include <thread>
 #include <unordered_map>
+#include <util/chrono.hpp>
 #include <vector>
 
 namespace VTX::IO::Reader

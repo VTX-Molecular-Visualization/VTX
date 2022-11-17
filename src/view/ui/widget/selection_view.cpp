@@ -8,7 +8,7 @@
 #include "id.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "style.hpp"
-#include<lib/util/src/chrono.hpp>
+#include<util/chrono.hpp>
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
 #include <QHeaderView>

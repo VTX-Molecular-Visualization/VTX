@@ -27,7 +27,7 @@ endif()
 # Add libraries.
 set(PATH_LIB "lib")
 add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/util/)
-add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/renderer/)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/renderer/)
 
 # Configure Qt.
 set(CMAKE_AUTOMOC ON)

@@ -6,9 +6,9 @@
 #include "model/base_model.hpp"
 #include "mvc_data.hpp"
 #include "view/base_view.hpp"
-#include <lib/util/src/chrono.hpp>
 #include <type_traits>
 #include <unordered_map>
+#include <util/chrono.hpp>
 #include <vector>
 
 namespace VTX

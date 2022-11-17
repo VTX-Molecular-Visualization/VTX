@@ -3,8 +3,8 @@
 
 #include "model/molecule.hpp"
 #include "model/secondary_structure.hpp"
-#include<lib/util/src/chrono.hpp>
 #include "tool/logger.hpp"
+#include <util/chrono.hpp>
 
 namespace VTX
 {
