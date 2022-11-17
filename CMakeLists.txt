@@ -197,7 +197,7 @@ target_include_directories(VTX PRIVATE ${EIGEN_INCLUDE_DIR})
 # Link libs.
 # Custom.
 target_link_libraries(VTX PRIVATE VTX_UTIL)
-target_link_libraries(VTX PRIVATE VTX_RENDERER)
+#target_link_libraries(VTX PRIVATE VTX_RENDERER)
 
 # Third parties.
 target_link_libraries(VTX PRIVATE Qt6::Core)
