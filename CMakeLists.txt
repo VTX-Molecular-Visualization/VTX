@@ -28,6 +28,7 @@ endif()
 set(PATH_LIB "lib")
 add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/util/)
 #add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/renderer/)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/core/)
 
 # Configure Qt.
 set(CMAKE_AUTOMOC ON)
@@ -198,6 +199,7 @@ target_include_directories(VTX PRIVATE ${EIGEN_INCLUDE_DIR})
 # Custom.
 target_link_libraries(VTX PRIVATE VTX_UTIL)
 #target_link_libraries(VTX PRIVATE VTX_RENDERER)
+#target_link_libraries(VTX PRIVATE VTX_CORE)
 
 # Third parties.
 target_link_libraries(VTX PRIVATE Qt6::Core)
