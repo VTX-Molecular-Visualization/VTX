@@ -38,6 +38,9 @@ namespace VTX
 		{
 			Q_OBJECT
 
+		  private:
+			inline static const int QT_UNKNOWN_WIDGET_DEFAULT_LAYOUT_HEIGHT = 10;
+
 		  public:
 			MainWindow( QWidget * = 0 );
 			~MainWindow();
@@ -153,8 +156,15 @@ namespace VTX
 
 			WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
 
-			void	 _delayRestoreState();
-			void	 _restoreStateDelayedAction();
+			void _delayRestoreState();
+			void _restoreStateDelayedAction();
+
+			// When we restore a layout where a windows has not been set (new feature since the last launch ?), the
+			// window has a default size of 0. This function will check that and display it at the preferred size of the
+			// window.
+			void _checkUnknownFloatableWindows();
+			void _checkUnknownFloatableWindow( QDockWidget * const p_widget, const QSize & p_defaultSize );
+
 			QTimer * _restoreStateTimer;
 		};
 
