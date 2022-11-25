@@ -126,18 +126,17 @@ namespace VTX
 			Worker::GpuComputer workerCreateSDF( IO::FilePath( "ses/create_sdf.comp" ) );
 
 			// Create SSBOs.
+			using VTX::Renderer::GL::BufferStorage;
 			// // Output.
-			VTX::Renderer::GL::BufferStorage ssboSesGridData = VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, sesGridData );
+			BufferStorage ssboSesGridData( VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER,
+										   sesGridData );
 			// Input.
-			const VTX::Renderer::GL::BufferStorage ssboAtomGridDataSorted = VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, atomGridDataSorted );
-			const VTX::Renderer::GL::BufferStorage ssboAtomIndexSorted = VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, atomIndexSorted );
-			const VTX::Renderer::GL::BufferStorage ssboAtomPosition = VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, atomPositions );
-			const VTX::Renderer::GL::BufferStorage ssboAtomVdwRadius = VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, atomVdwRadius );
+
+			const BufferStorage ssboAtomGridDataSorted( BufferStorage::Target::SHADER_STORAGE_BUFFER,
+														atomGridDataSorted );
+			const BufferStorage ssboAtomIndexSorted( BufferStorage::Target::SHADER_STORAGE_BUFFER, atomIndexSorted );
+			const BufferStorage ssboAtomPosition( BufferStorage::Target::SHADER_STORAGE_BUFFER, atomPositions );
+			const BufferStorage ssboAtomVdwRadius( BufferStorage::Target::SHADER_STORAGE_BUFFER, atomVdwRadius );
 
 			// TODO: clear CPU buffers?
 			// Bind.
@@ -169,6 +168,12 @@ namespace VTX
 			ssboAtomIndexSorted.unbind();
 			ssboAtomPosition.unbind();
 			ssboAtomVdwRadius.unbind();
+
+			ssboSesGridData.getData( 0, uint( sesGridData.size() ) * sizeof( SESGridData ), &sesGridData[ 0 ] );
+			std::ofstream outFile( "GPU_DATA.txt" );
+			for ( const auto & e : sesGridData )
+				outFile << std::to_string( e.sdf ) + " " + std::to_string( e.nearestAtom ) << "\n";
+			outFile.close();
 
 			chrono2.stop();
 			VTX_INFO( "SDF created " + std::to_string( chrono2.elapsedTime() ) + "s" );
@@ -205,22 +210,17 @@ namespace VTX
 			_ids			  = std::vector<uint>( _vertices.size(), 0 );
 			_atomsToTriangles = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
 
-			VTX::Renderer::GL::BufferStorage ssboTrianglePositions = VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, _vertices );
-			VTX::Renderer::GL::BufferStorage ssboTriangleIndices = VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, _indices );
-			VTX::Renderer::GL::BufferStorage ssboTriangleNormals = VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, _normals );
-			VTX::Renderer::GL::BufferStorage ssboTriangleAtomIds = VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, _ids );
-			VTX::Renderer::GL::BufferStorage ssboAtomToTriangles = VTX::Renderer::GL::BufferStorage(
-				VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER, _atomsToTriangles );
+			BufferStorage ssboTrianglePositions( BufferStorage::Target::SHADER_STORAGE_BUFFER, _vertices );
+			BufferStorage ssboTriangleIndices( BufferStorage::Target::SHADER_STORAGE_BUFFER, _indices );
+			BufferStorage ssboTriangleNormals( BufferStorage::Target::SHADER_STORAGE_BUFFER, _normals );
+			BufferStorage ssboTriangleAtomIds( BufferStorage::Target::SHADER_STORAGE_BUFFER, _ids );
+			BufferStorage ssboAtomToTriangles( BufferStorage::Target::SHADER_STORAGE_BUFFER, _atomsToTriangles );
 
 			// Input.
-			VTX::Renderer::GL::BufferStorage ssboTriangleTable
-				= VTX::Renderer::GL::BufferStorage( VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER,
-													256 * 16 * sizeof( int ),
-													Math::MarchingCube::TRIANGLE_TABLE );
+			const BufferStorage ssboTriangleTable( VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER,
+												   256 * 16 * sizeof( int ),
+												   Math::MarchingCube::TRIANGLE_TABLE,
+												   VTX::Renderer::GL::BufferStorage::Flags::DYNAMIC_STORAGE_BIT );
 
 			ssboTrianglePositions.bind( 1 );
 			ssboTriangleIndices.bind( 2 );
@@ -234,9 +234,6 @@ namespace VTX
 			workerMarchingCube.getProgram().setVec3f( "uGridSESWorldOrigin", gridSES.worldOrigin );
 			workerMarchingCube.getProgram().setVec3u( "uGridSESSize", Vec3u( gridSES.size ) );
 			workerMarchingCube.getProgram().setVec3f( "uGridSESCellSize", gridSES.cellSize );
-			workerMarchingCube.getProgram().setUInt( "uGridSESCellCount", gridSES.getCellCount() );
-			workerMarchingCube.getProgram().setVec3i( "uCellsToVisitCount", cellsToVisitCount );
-			workerMarchingCube.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
 
 			// Start
 			workerMarchingCube.start( gridSES.size );
@@ -245,24 +242,20 @@ namespace VTX
 			ssboTriangleIndices.getData( 0, uint( _indices.size() ) * sizeof( uint ), &_indices[ 0 ] );
 			ssboTriangleNormals.getData( 0, uint( _normals.size() ) * sizeof( Vec3f ), &_normals[ 0 ] );
 			ssboTriangleAtomIds.getData( 0, uint( _ids.size() ) * sizeof( uint ), &_ids[ 0 ] );
-			ssboAtomToTriangles.getData(
-				0, uint( _atomsToTriangles.size() ) * sizeof( Range ), &_atomsToTriangles[ 0 ] );
+			//  ssboAtomToTriangles.getData(
+			//	0, uint( _atomsToTriangles.size() ) * sizeof( Range ), &_atomsToTriangles[ 0 ] );
 
 			//////////////////////
-
-			for ( uint i = 0; i < _atomsToTriangles.size(); ++i )
-			{
-				_atomsToTriangles[ i ].first = 15 * i;
-				_atomsToTriangles[ i ].count = 15;
-			}
-
+			_atomsToTriangles[ _atomsToTriangles.size() - 1 ] = Range { 0, uint( _vertices.size() / 3 ) };
 			//////////////////////
 			//
 			//////////////////////
-			std::ofstream outFile( "GPU_DATA.txt" );
-			for ( const auto & e : _vertices )
-				outFile << std::to_string( e.x ) + " " + std::to_string( e.y ) << " " << std::to_string( e.z ) << "\n";
-			outFile.close();
+			// std::ofstream outFile( "GPU_DATA.txt" );
+			//  for ( const auto & e : _vertices )
+			//  outFile << std::to_string( e.x ) + " " + std::to_string( e.y ) << " " << std::to_string( e.z ) << "\n";
+			//  for ( const auto & e : _indices )
+			//	outFile << std::to_string( e ) << "\n";
+			// outFile.close();
 			//////////////////////
 
 			// Unbind.
@@ -278,6 +271,7 @@ namespace VTX
 			_indices.shrink_to_fit();
 			_normals.shrink_to_fit();
 			_ids.shrink_to_fit();
+			_atomsToTriangles.shrink_to_fit();
 
 			refreshColors();
 			refreshVisibilities();
@@ -436,6 +430,11 @@ namespace VTX
 				}
 			}
 
+			std::ofstream outFile( "CPU_DATA.txt" );
+			for ( const auto & e : sesGridData )
+				outFile << std::to_string( e.sdf ) + " " + std::to_string( e.nearestAtom ) << "\n";
+			outFile.close();
+
 			chrono2.stop();
 			VTX_INFO( "SDF created " + std::to_string( chrono2.elapsedTime() ) + "s" );
 
@@ -499,11 +498,6 @@ namespace VTX
 			}
 
 			chrono2.stop();
-
-			std::ofstream outFile( "CPU_DATA.txt" );
-			for ( const auto & e : sesGridData )
-				outFile << std::to_string( e.sdf ) + " " + std::to_string( e.nearestAtom ) << "\n";
-			outFile.close();
 
 			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
@@ -633,7 +627,6 @@ namespace VTX
 			_colors.clear();
 			_colors.resize( _vertices.size(), Color::Rgb::WHITE );
 
-			return;
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
 				const Atom * const atom = _molecule->getAtom( atomIdx );
@@ -657,7 +650,6 @@ namespace VTX
 			_visibilities.clear();
 			_visibilities.resize( _vertices.size(), 1 );
 
-			return;
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
 				const Atom * const atom = _molecule->getAtom( atomIdx );

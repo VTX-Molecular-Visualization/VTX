@@ -9,8 +9,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		using namespace VTX::Renderer::GL;
-
 		class Molecule;
 		class SolventExcludedSurface : public MeshTriangle
 		{

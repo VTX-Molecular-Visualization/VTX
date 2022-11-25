@@ -3,7 +3,7 @@ uvec3 gridPosition( const vec3 p_worldPosition, const vec3 p_worldOrigin, const 
 	return uvec3( floor( ( p_worldPosition - p_worldOrigin ) / p_cellSize) );
 }
 
-uvec3 gridPosition( uint p_hash, uvec3 p_size )
+uvec3 gridPosition( const uint p_hash, const uvec3 p_size )
 {
 	uint z = p_hash / ( p_size.x * p_size.y );
 	uint r = p_hash % ( p_size.x * p_size.y );

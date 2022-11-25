@@ -26,7 +26,7 @@ struct Range
 struct SESGridDataStruct
 {
 	float sdf;
-	int	  nearestAtom;
+	int	nearestAtom;
 };
 
 // SSBO.
@@ -58,8 +58,8 @@ layout (std430, binding = 4) readonly buffer AtomVdwRadius
 void main()
 {
 	// Get corresponding ses grid data.
-	uvec3 sesGridPosition = gl_GlobalInvocationID;
-	uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
+	const uvec3 sesGridPosition = gl_GlobalInvocationID;
+	const uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
 	
 	// Not in grid.
 	if ( sesGridHash >= uGridSESCellCount )
@@ -68,8 +68,8 @@ void main()
 	}
 				
 	// Get corresponding acceleration grid data.
-	vec3 sesGridCellWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize);
-	uvec3 atomGridPosition = gridPosition( sesGridCellWorldPosition, uGridAtomWorldOrigin, uGridAtomCellSize);
+	const vec3 sesGridCellWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize);
+	const uvec3 atomGridPosition = gridPosition( sesGridCellWorldPosition, uGridAtomWorldOrigin, uGridAtomCellSize);
 
 	// Loop over the cells to visit.
 	float minDistance = FLT_MAX;
@@ -80,29 +80,29 @@ void main()
 		{		
 			for ( int oz = -1; oz <= 1; ++oz )
 			{	
-				vec3 offset = vec3( ox, oy, oz );
-				uvec3 gridPositionToVisit = uvec3( atomGridPosition + offset );	
-				uint hashToVisit = gridHash( gridPositionToVisit, uGridAtomSize );					
+				const vec3 offset = vec3( ox, oy, oz );
+				const uvec3 gridPositionToVisit = uvec3( atomGridPosition + offset );	
+				const uint hashToVisit = gridHash( gridPositionToVisit, uGridAtomSize );					
 				
 				if ( hashToVisit >= uGridAtomCellCount )
 				{				
 					continue;
 				}	
 				
-				uint first = atomGridData[ hashToVisit ].first;
-				uint count = atomGridData[ hashToVisit ].count;
+				const uint first = atomGridData[ hashToVisit ].first;
+				const uint count = atomGridData[ hashToVisit ].count;
 				
 				// Compute SDF.
 				for ( uint i = first; i < first + count; ++i )
 				{		
-					uint index = atomIndex[i];					
+					const uint index = atomIndex[ i ];					
 					float d = distance( atomPosition[ index ], sesGridCellWorldPosition );
 					
 					// Inside.
 					if ( d < uVoxelSize )
 					{
-						sesGridData[sesGridHash].sdf = -uVoxelSize;	
-						sesGridData[sesGridHash].nearestAtom = -1;						
+						sesGridData[ sesGridHash ].sdf = -uVoxelSize;	
+						sesGridData[ sesGridHash ].nearestAtom = -1;						
 						// Don't need to loop over other cells.
 						return;
 					}
@@ -112,7 +112,7 @@ void main()
 						d -= ( uProbeRadius + atomVdwRadius[index] );
 						if ( d < 0.f )
 						{
-							sesGridData[sesGridHash].sdf = -uVoxelSize;
+							sesGridData[ sesGridHash ].sdf = -uVoxelSize;
 							if ( d < minDistance )
 							{
 								minDistance	= d;

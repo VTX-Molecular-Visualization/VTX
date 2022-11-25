@@ -28,8 +28,8 @@ layout (std430, binding = 0) buffer SESGridData
 void main()
 {
 	// Get corresponding ses grid data.
-	uvec3 sesGridPosition = gl_GlobalInvocationID;
-	uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
+	const uvec3 sesGridPosition = gl_GlobalInvocationID;
+	const uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
 	
 	// Not in grid.
 	if ( sesGridHash >= uGridSESCellCount )
@@ -43,7 +43,7 @@ void main()
 		return;
 	}
 	
-	vec3 sesWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize );
+	const vec3 sesWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize );
 	
 	float minDistanceWithOutsidePoint = FLT_MAX;
 	bool  found						  = false;
@@ -54,16 +54,16 @@ void main()
 		{		
 			for ( int oz = -uCellsToVisitCount.z; oz <= uCellsToVisitCount.z; ++oz )
 			{	
-				vec3 offset = vec3( ox, oy, oz );
-				uvec3 gridPositionToVisit = uvec3( sesGridPosition + offset );					
-				uint hashToVisit = gridHash( gridPositionToVisit, uGridSESSize );					
+				const vec3 offset = vec3( ox, oy, oz );
+				const uvec3 gridPositionToVisit = uvec3( sesGridPosition + offset );					
+				const uint hashToVisit = gridHash( gridPositionToVisit, uGridSESSize );					
 				
 				if ( hashToVisit >= uGridSESCellCount )
 				{				
 					continue;
 				}	
 
-				vec3 worldPositionToVisit = worldPosition( gridPositionToVisit, uGridSESWorldOrigin, uGridSESCellSize );
+				const vec3 worldPositionToVisit = worldPosition( gridPositionToVisit, uGridSESWorldOrigin, uGridSESCellSize );
 
 				// If outside.
 				if ( sesGridData[ hashToVisit ].sdf == uProbeRadius )

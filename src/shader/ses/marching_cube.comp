@@ -32,9 +32,6 @@ const uint[ 256 ] _EDGE_TABLE
 uniform vec3	uGridSESWorldOrigin;
 uniform uvec3	uGridSESSize;
 uniform vec3	uGridSESCellSize;
-uniform uint	uGridSESCellCount;
-uniform ivec3	uCellsToVisitCount;
-uniform float	uVoxelSize;
 uniform float	uIsovalue;
 
 // Data struct.
@@ -76,14 +73,14 @@ layout (std430, binding = 4) writeonly buffer TriangleAtomIds
 	uint[] triangleAtomIds;
 };
 
-layout (std430, binding = 5) writeonly buffer TriangleAtomRange
+layout (std430, binding = 5) writeonly buffer TriangleAtomRanges
 {
-	Range[] triangleAtomRange;
+	Range[] triangleAtomRanges;
 };
 
 layout (std430, binding = 6) readonly buffer TriangleTable
 {
-	int[ 256 ][ 16 ] triangleTable;
+	int[] triangleTable;
 };
 
 
@@ -95,8 +92,8 @@ layout (std430, binding = 6) readonly buffer TriangleTable
 void main()
 {
 	// Get corresponding ses grid data.
-	uvec3 sesGridPosition = gl_GlobalInvocationID;
-	uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
+	const uvec3 sesGridPosition = gl_GlobalInvocationID;
+	const uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
 	
 	// Not in grid.
 	if ( sesGridPosition.x >= uGridSESSize.x || sesGridPosition.y >= uGridSESSize.y || sesGridPosition.z >= uGridSESSize.z )
@@ -105,24 +102,26 @@ void main()
 	}
 	
 	// Create cell with neightbors.
-	uint[8] voxelHash = {	
-		sesGridHash, 
-		gridHash( sesGridPosition + uvec3( 1, 0, 0 ), uGridSESSize ), 
-		gridHash( sesGridPosition + uvec3( 1, 0, 1 ), uGridSESSize ), 
-		gridHash( sesGridPosition + uvec3( 0, 0, 1 ), uGridSESSize ), 
-		gridHash( sesGridPosition + uvec3( 0, 1, 0 ), uGridSESSize ), 
-		gridHash( sesGridPosition + uvec3( 1, 1, 0 ), uGridSESSize ), 
-		gridHash( sesGridPosition + uvec3( 1, 1, 1 ), uGridSESSize ), 
-		gridHash( sesGridPosition + uvec3( 0, 1, 1 ), uGridSESSize )
+	const uvec3[ 8 ] voxelGridPositions = {
+		sesGridPosition,
+		sesGridPosition + uvec3( 1, 0, 0 ),
+		sesGridPosition + uvec3( 1, 0, 1 ),
+		sesGridPosition + uvec3( 0, 0, 1 ),
+		sesGridPosition + uvec3( 0, 1, 0 ),
+		sesGridPosition + uvec3( 1, 1, 0 ),
+		sesGridPosition + uvec3( 1, 1, 1 ),
+		sesGridPosition + uvec3( 0, 1, 1 )
 	};
-
-	vec3[8] voxelWorldPosition;
-	float[8] voxelSDF;
 	
-	for(uint i = 0 ; i < 8; ++i)
+	uint[ 8 ]	voxelHash;	
+	float[ 8 ]	voxelSDF;
+	vec3[ 8	]	voxelWorldPosition;
+	
+	for( uint i = 0 ; i < 8; ++i )
 	{
-		voxelWorldPosition[i] = worldPosition(voxelHash[ i ], uGridSESSize, uGridSESWorldOrigin, uGridSESCellSize);
-		voxelSDF[i] = sesGridData[ voxelHash[ i ] ].sdf;
+		voxelHash[ i ] = gridHash( voxelGridPositions[ i ], uGridSESSize );
+		voxelSDF[ i ] = sesGridData[ voxelHash[ i ] ].sdf;
+		voxelWorldPosition[ i ] = worldPosition( voxelGridPositions[ i ], uGridSESWorldOrigin, uGridSESCellSize);
 	}
 
 	// Compute cube index.
@@ -142,35 +141,32 @@ void main()
 	uint idx = 0;
 	while ( intersectionsKey != 0)
 	{
-		if ( bool( intersectionsKey & 1 ) )
+		if (  bool( intersectionsKey & 1 ) )
 		{
 			const uint	v1 = _EDGE_TO_VERTICES[ idx ][ 0 ];
-			const uint	v2 = _EDGE_TO_VERTICES[ idx ][ 1 ];
+			const uint	v2 = _EDGE_TO_VERTICES[ idx ][ 1 ];			
 			
-			vec3 interpolated;
 			const float mu = ( uIsovalue - voxelSDF[ v1 ] ) / ( voxelSDF[ v2 ] - voxelSDF[ v1 ] );
 
-			interpolated.x = mu * ( voxelWorldPosition[ v2 ].x - voxelWorldPosition[ v1 ].x ) + voxelWorldPosition[ v1 ].x;
-			interpolated.y = mu * ( voxelWorldPosition[ v2 ].y - voxelWorldPosition[ v1 ].y ) + voxelWorldPosition[ v1 ].y;
-			interpolated.z = mu * ( voxelWorldPosition[ v2 ].z - voxelWorldPosition[ v1 ].z ) + voxelWorldPosition[ v1 ].z;
-
-			intersections[ idx ] = interpolated;
+			intersections[ idx ].x = mu * ( voxelWorldPosition[ v2 ].x - voxelWorldPosition[ v1 ].x ) + voxelWorldPosition[ v1 ].x;
+			intersections[ idx ].y = mu * ( voxelWorldPosition[ v2 ].y - voxelWorldPosition[ v1 ].y ) + voxelWorldPosition[ v1 ].y;
+			intersections[ idx ].z = mu * ( voxelWorldPosition[ v2 ].z - voxelWorldPosition[ v1 ].z ) + voxelWorldPosition[ v1 ].z;
 		}
 		idx++;
 		intersectionsKey >>= 1;
 	}
 
 	// Get triangles.
-	for ( uint i = 0; triangleTable[ cubeIndex ][ i ] != -1; i += 3 )
+	for ( uint i = 0; triangleTable[ cubeIndex * 16 + i * 3] != -1; i += 3 )
 	{
 		for ( uint j = 0; j < 3; ++j )
 		{
-			vec3 vertices = intersections[ triangleTable[ cubeIndex ][ i + j ] ];
+			const vec3 vertice = intersections[ triangleTable[ cubeIndex * 16 + i * 3 + j ] ];
 
 			// Position.
-			trianglePositions[ sesGridHash * 15 + i + j ].x = vertices.x;
-			trianglePositions[ sesGridHash * 15 + i + j ].y = vertices.y;
-			trianglePositions[ sesGridHash * 15 + i + j ].z = vertices.z;
+			trianglePositions[ sesGridHash * 15 + i + j ].x = vertice.x;
+			trianglePositions[ sesGridHash * 15 + i + j ].y = vertice.y;
+			trianglePositions[ sesGridHash * 15 + i + j ].z = vertice.z;
 
 			// Indice.
 			triangleIndices[ sesGridHash * 15 + i + j ] = sesGridHash * 15 + i + j;
@@ -180,10 +176,12 @@ void main()
 
 			// TODO: Atom id.
 			// Can be negative, need to filter on cpu maybe?
-			triangleAtomIds[ sesGridHash * 15 + i + j ] = 0;
+			//triangleAtomIds[ sesGridHash * 15 + i + j ] = 0;
 
 			// TODO: Atom range.
-			atomicAdd(triangleAtomRange[ sesGridData[ sesGridHash ].nearestAtom ].count, 1);
+			//atomicAdd(triangleAtomRange[ sesGridData[ sesGridHash ].nearestAtom ].count, 1);
 		}
-	}	
+	}
+	//triangleAtomRange[ sesGridData[ sesGridHash ].nearestAtom ].first =  * 15;
+	//triangleAtomRange[ sesGridData[ sesGridHash ].nearestAtom ].count = 15;
 }
