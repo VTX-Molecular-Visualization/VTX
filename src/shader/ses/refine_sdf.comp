@@ -38,7 +38,7 @@ void main()
 	}
 	
 	// Not in boundary.
-	if( sesGridData[sesGridHash].nearestAtom != -1 )
+	if( sesGridData[sesGridHash].nearestAtom == -1 )
 	{
 		return;
 	}
@@ -66,7 +66,8 @@ void main()
 				const vec3 worldPositionToVisit = worldPosition( gridPositionToVisit, uGridSESWorldOrigin, uGridSESCellSize );
 
 				// If outside.
-				if ( sesGridData[ hashToVisit ].sdf == uProbeRadius )
+				if ( abs( sesGridData[ hashToVisit ].sdf - uProbeRadius ) < 1e-4 )
+				//if ( sesGridData[ hashToVisit ].sdf == uProbeRadius )
 				{
 					const float d = distance( worldPositionToVisit, sesWorldPosition );
 					if ( d < minDistanceWithOutsidePoint )

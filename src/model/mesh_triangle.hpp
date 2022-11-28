@@ -58,8 +58,8 @@ namespace VTX
 			MeshTriangle();
 			~MeshTriangle() = default;
 
-			void _init() override;
-			void _computeAABB() const override;
+			void		 _init() override;
+			void		 _computeAABB() const override;
 			virtual void _instantiate3DViews() override;
 
 			std::vector<Vec3f>		_vertices;

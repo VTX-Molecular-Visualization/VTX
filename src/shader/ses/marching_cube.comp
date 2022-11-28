@@ -53,9 +53,9 @@ layout (std430, binding = 0) readonly buffer SESGridData
 	SESGridDataStruct[] sesGridData;
 };
 
-layout (std430, binding = 1) writeonly buffer TrianglePositions
+layout (std140, binding = 1) writeonly buffer TrianglePositions
 {
-	vec3[] trianglePositions;
+	vec4[] trianglePositions;
 };
 
 layout (std430, binding = 2) writeonly buffer TriangleIndices
@@ -63,9 +63,9 @@ layout (std430, binding = 2) writeonly buffer TriangleIndices
 	uint[] triangleIndices;
 };
 
-layout (std430, binding = 3) writeonly buffer TriangleNormals
+layout (std140, binding = 3) writeonly buffer TriangleNormals
 {
-	vec3[] triangleNormals;
+	vec4[] triangleNormals;
 };
 
 layout (std430, binding = 4) writeonly buffer TriangleAtomIds
@@ -172,7 +172,7 @@ void main()
 			triangleIndices[ sesGridHash * 15 + i + j ] = sesGridHash * 15 + i + j;
 			
 			// TODO: Normal.
-			triangleNormals[ sesGridHash * 15 + i + j ] = vec3( 1.f, 0.f, 0.f );
+			triangleNormals[ sesGridHash * 15 + i + j ] = vec4( 1.f, 0.f, 0.f, 0.f );
 
 			// TODO: Atom id.
 			// Can be negative, need to filter on cpu maybe?

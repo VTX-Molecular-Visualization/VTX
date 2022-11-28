@@ -1,6 +1,8 @@
 #ifndef __VTX__UTIL_MATH__
 #define __VTX__UTIL_MATH__
 
+#define GLM_FORCE_INLINE
+
 #include "define.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <cmath>
