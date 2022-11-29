@@ -164,15 +164,10 @@ void main()
 			const vec3 vertice = intersections[ triangleTable[ cubeIndex * 16 + i * 3 + j ] ];
 
 			// Position.
-			trianglePositions[ sesGridHash * 15 + i + j ].x = vertice.x;
-			trianglePositions[ sesGridHash * 15 + i + j ].y = vertice.y;
-			trianglePositions[ sesGridHash * 15 + i + j ].z = vertice.z;
+			trianglePositions[ sesGridHash * 15 + i + j ] = vec4( vertice, 0.f );
 
 			// Indice.
 			triangleIndices[ sesGridHash * 15 + i + j ] = sesGridHash * 15 + i + j;
-			
-			// TODO: Normal.
-			triangleNormals[ sesGridHash * 15 + i + j ] = vec4( 1.f, 0.f, 0.f, 0.f );
 
 			// TODO: Atom id.
 			// Can be negative, need to filter on cpu maybe?
@@ -181,6 +176,15 @@ void main()
 			// TODO: Atom range.
 			//atomicAdd(triangleAtomRange[ sesGridData[ sesGridHash ].nearestAtom ].count, 1);
 		}
+		const vec4 normal = vec4(
+		normalize( 
+			cross(	intersections[ triangleTable[ cubeIndex * 16 + i * 3 + 1 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i * 3 ] ],
+					intersections[ triangleTable[ cubeIndex * 16 + i * 3 + 2 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i * 3 ] ] ) )
+					, 0.f );
+		
+		triangleNormals[ sesGridHash * 15 + i + 0 ] = normal;
+		triangleNormals[ sesGridHash * 15 + i + 1 ] = normal;
+		triangleNormals[ sesGridHash * 15 + i + 2 ] = normal;
 	}
 	//triangleAtomRange[ sesGridData[ sesGridHash ].nearestAtom ].first =  * 15;
 	//triangleAtomRange[ sesGridData[ sesGridHash ].nearestAtom ].count = 15;
