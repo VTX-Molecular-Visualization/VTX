@@ -31,23 +31,19 @@ namespace VTX
 
 		void SolventExcludedSurface::refresh()
 		{
-			_mode = Mode::GPU;
+			_mode = Mode::CPU;
 
 			switch ( _mode )
 			{
-			case SolventExcludedSurface::Mode::CPU:
-				_refreshCPU();
-				MeshTriangle::_init();
-				break;
+			case SolventExcludedSurface::Mode::CPU: _refreshCPU(); break;
 			case SolventExcludedSurface::Mode::GPU:
 			{
 				_buffer->makeContextCurrent();
 				_refreshGPU();
-				MeshTriangle::_init();
 				_buffer->doneContextCurrent();
 				break;
 			}
-			default: return;
+			default: break;
 			}
 		}
 
@@ -57,10 +53,6 @@ namespace VTX
 			chrono.start();
 			chrono2.start();
 			VTX_INFO( "Creating SES..." );
-
-			_vertices.clear();
-			_indices.clear();
-			_ids.clear();
 
 			// Sort atoms in acceleration grid.
 			const float maxVdWRadius = *std::max_element(
@@ -279,21 +271,39 @@ namespace VTX
 			ssboAtomToTriangles.unbind();
 			ssboTriangleTable.unbind();
 
-			_vertices.shrink_to_fit();
-			_indices.shrink_to_fit();
-			_normals.shrink_to_fit();
-			_ids.shrink_to_fit();
-			_atomsToTriangles.shrink_to_fit();
-
-			// refreshColors();
-			_colors.resize( _vertices.size(), Color::Rgb::WHITE );
-			refreshVisibilities();
-
 			assert( _vertices.size() == _indices.size() );
 			assert( _vertices.size() == _normals.size() );
 			assert( _vertices.size() == _ids.size() );
-			assert( _vertices.size() == _colors.size() );
-			assert( _vertices.size() == _visibilities.size() );
+
+			_indiceCount = uint( _indices.size() );
+
+			// refreshColors();
+			_colors.resize( _indiceCount, Color::Rgb::WHITE );
+			// refreshVisibilities();
+			_visibilities.resize( _indiceCount, 1 );
+
+			_buffer->setPositions( _vertices );
+			_buffer->setNormals( _normals );
+			_buffer->setColors( _colors );
+			_buffer->setVisibilities( _visibilities );
+			_buffer->setIds( _ids );
+			_buffer->setIndices( _indices );
+
+			_vertices.clear();
+			_normals.clear();
+			_colors.clear();
+			_visibilities.clear();
+			_ids.clear();
+			_indices.clear();
+
+			_vertices.shrink_to_fit();
+			_normals.shrink_to_fit();
+			_colors.shrink_to_fit();
+			_visibilities.shrink_to_fit();
+			_ids.shrink_to_fit();
+			_indices.shrink_to_fit();
+
+			_atomsToTriangles.shrink_to_fit();
 
 			chrono2.stop();
 			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
@@ -622,14 +632,27 @@ namespace VTX
 			chrono2.stop();
 			VTX_INFO( "Normals computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 
+			_indiceCount = uint( _indices.size() );
+
 			refreshColors();
 			refreshVisibilities();
 
-			assert( _vertices.size() == _indices.size() );
-			assert( _vertices.size() == _normals.size() );
-			assert( _vertices.size() == _ids.size() );
-			assert( _vertices.size() == _colors.size() );
-			assert( _vertices.size() == _visibilities.size() );
+			_buffer->setPositions( _vertices );
+			_buffer->setNormals( _normals );
+			_buffer->setIds( _ids );
+			_buffer->setIndices( _indices );
+
+			_vertices.clear();
+			_normals.clear();
+			_ids.clear();
+			_indices.clear();
+
+			_vertices.shrink_to_fit();
+			_normals.shrink_to_fit();
+			_ids.shrink_to_fit();
+			_indices.shrink_to_fit();
+
+			_atomsToTriangles.shrink_to_fit();
 
 			chrono.stop();
 			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
@@ -637,8 +660,7 @@ namespace VTX
 
 		void SolventExcludedSurface::refreshColors()
 		{
-			_colors.clear();
-			_colors.resize( _vertices.size(), Color::Rgb::WHITE );
+			_colors.resize( _indiceCount, Color::Rgb::WHITE );
 
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
@@ -654,14 +676,14 @@ namespace VTX
 						   color );
 			}
 
-			_colors.shrink_to_fit();
 			_buffer->setColors( _colors );
+			_colors.clear();
+			_colors.shrink_to_fit();
 		}
 
 		void SolventExcludedSurface::refreshVisibilities()
 		{
-			_visibilities.clear();
-			_visibilities.resize( _vertices.size(), 1 );
+			_visibilities.resize( _indiceCount, 1 );
 
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
@@ -684,14 +706,14 @@ namespace VTX
 				}
 			}
 
-			_visibilities.shrink_to_fit();
 			_buffer->setVisibilities( _visibilities );
+			_visibilities.clear();
+			_visibilities.shrink_to_fit();
 		}
 
 		void SolventExcludedSurface::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
 		{
-			_selections.clear();
-			_selections.resize( _vertices.size(), 0 );
+			_selections.resize( _indiceCount, 0 );
 
 			if ( p_selection != nullptr )
 			{
@@ -717,8 +739,9 @@ namespace VTX
 				}
 			}
 
-			_selections.shrink_to_fit();
 			_buffer->setSelections( _selections );
+			_selections.clear();
+			_selections.shrink_to_fit();
 		}
 
 		void SolventExcludedSurface::_instantiate3DViews()

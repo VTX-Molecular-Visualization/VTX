@@ -1,6 +1,7 @@
 #version 450
 #include "include/grid.glsl"
 #define FLT_MAX 3.402823466e+38
+#define EPSILON  1e-4
 
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
@@ -46,7 +47,6 @@ void main()
 	const vec3 sesWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize );
 	
 	float minDistanceWithOutsidePoint = FLT_MAX;
-	bool  found						  = false;
 	
 	for ( int ox = -uCellsToVisitCount.x; ox <= uCellsToVisitCount.x; ++ox )
 	{
@@ -66,22 +66,17 @@ void main()
 				const vec3 worldPositionToVisit = worldPosition( gridPositionToVisit, uGridSESWorldOrigin, uGridSESCellSize );
 
 				// If outside.
-				if ( abs( sesGridData[ hashToVisit ].sdf - uProbeRadius ) < 1e-4 )
+				if ( abs( sesGridData[ hashToVisit ].sdf - uProbeRadius ) < EPSILON )
 				//if ( sesGridData[ hashToVisit ].sdf == uProbeRadius )
 				{
 					const float d = distance( worldPositionToVisit, sesWorldPosition );
 					if ( d < minDistanceWithOutsidePoint )
 					{
 						minDistanceWithOutsidePoint = d;
+						sesGridData[ sesGridHash ].sdf = uProbeRadius - minDistanceWithOutsidePoint;
 					}
-					found = true;
 				}
 			}
 		}
-	}
-	
-	if ( found )
-	{
-		sesGridData[ sesGridHash ].sdf = uProbeRadius - minDistanceWithOutsidePoint;
 	}
 }

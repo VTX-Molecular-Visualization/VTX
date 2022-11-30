@@ -59,6 +59,8 @@ namespace VTX
 
 			Model::Molecule * const _molecule;
 			std::vector<Range>		_atomsToTriangles;
+			// Move to base class?
+			uint _indiceCount = 0;
 
 			void _refreshCPU();
 			void _refreshGPU();
