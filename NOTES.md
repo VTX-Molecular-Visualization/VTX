@@ -3,31 +3,36 @@
 # Intro
 
 Le but de la nouvelle architecture est de décomposer l'architecture actuelle en plusieurs partie pour assurer plus de modularité (Interface / Rendu), tout en conservant une exécution optimale du rendu.
-Pour ce faire, nous comptons diviser le projet actuel en plusieurs sous-projet afin d'assurer cette modularité. La découpe en plusieurs projets devrait aussi améliorer le temps de compilation du logiciel.
+Pour ce faire, nous comptons diviser le projet actuel en plusieurs parties afin d'assurer cette modularité. La découpe en plusieurs projets devrait aussi améliorer le temps de compilation du logiciel.
 
-Pour coller à ces principes (modularité et optimisation), nous allons diviser le code en 4 sous-projets principaux.
+Pour coller à ces principes (modularité et optimisation), nous allons diviser le code en 7 sous-projets.
 
-- **VTX_CORE** qui contiendra les structures de données pour la description d'une molécule.
+- **VTX_CORE** (ou VTX_DATASTRUCT) qui contiendra les structures de données pour la description d'une molécule.
+
 - **VTX_RENDER** qui s'occupera de la partie rendue.
-- **VTX_APP** qui reliera Core et Render, assurera la cohérence des données dans les structures de **VTX_CORE** et fournira toutes les autres classes et actions permettant l’exécution de fonctionnalités dans VTX
-- **VTX_UI** qui fera le lien entre les actions de l'utilisateur et les fonctionnalités de VTX_APP
 
-**VTX_RENDER** et **VTX_UI** pourront être étendue pour intégrer de nouvelles bibliothèques graphiques (Vulkan, Metal (? MoltenVK suffisant ?) et différentes interfaces (Bash, Light, Heavy, Custom)
+- **VTX_APP** (ou VTX_API) qui reliera **VTX_CORE** et **VTX_RENDER**, assurera la cohérence des données dans les structures de **VTX_CORE** et fournira toutes les autres classes et actions permettant l’exécution de fonctionnalités dans VTX
 
-À ces 4 modules pourront être ajouté 3 modules annexes :
+- **VTX_UI** qui fera le lien entre les actions de l'utilisateur et les fonctionnalités de **VTX_APP**
 
-- **VTX_UTIL** (ou VTX_SHARED ?) contiendra un set de structure et de fonctionnalité commun à tous les modules dans le but d'optimiser la communication entre eux (notamment entre **VTX_CORE** et **VTX_RENDER**).
-- **VTX_TOOLS** pourra être ajouté et contiendra les différents outils d'analyse, de vidéo et de manipulation dans VTX qui pourront être intégrer (ou non) dans les différentes versions de VTX.
+- **VTX_UTIL** (ou VTX_SHARED ?) contiendra un set de structure et de fonctionnalités commun à tous les modules dans le but d'optimiser la communication entre eux (notamment entre **VTX_CORE** et **VTX_RENDER**).
+
+- **VTX_TOOLS** contiendra les différents outils d'analyse, de vidéo et de manipulation de molécule dans VTX qui pourront être intégrer (ou non) dans les différentes versions de VTX.
+
 - **VTX_BUILDER** (?) permettra de builder une version de VTX à partir d'un fichier de config définissant le moteur de rendu, le type d'interface et les outils présent dans la build. (Projet séparé ou intégré dans **VTX_UI** ? Ça ne me semble pas terrible car cela implique une inter-dépendance **VTX_UI** et **VTX_TOOLS**)
+
+
+**VTX_RENDER** et **VTX_UI** pourront être étendus pour intégrer de nouvelles bibliothèques graphiques (Vulkan, Metal (? MoltenVK suffisant ?) et différentes interfaces (Bash, Light, Heavy, Custom)
+
 
 # Modules
 
-## VTX_CORE
+## VTX_CORE (ou VTX_DATASTRUCT)
 
 ### Description
 
-**VTX_CORE** est composé des structures de données minimales nécessaire pour l'affichage d'une molécule.
-Elle contiendra la structure logique des molécules, chaînes, résidus, atomes et liaisons.
+**VTX_CORE** est composé des structures de données minimales nécessaires pour l'affichage d'une molécule.
+Elle contient la structure logique des molécules, chaînes, résidus, atomes et liaisons.
 Ces structures doivent être simplifiées au maximum et optimisées pour le render (concaténation en mémoire, ...) .
 
 Liste et détail des classes :
@@ -38,21 +43,21 @@ Liste et détail des classes :
 
 	- std::vector\<Atom> _atoms
 
-	- std::vector\<std::vector\<Vec3f>> _atomPositionsFrames ¤ (Pour le moment ici. Concatène les positions en mémoire pour optimisation GPU.)
+	- std::vector\<std::vector\<Vec3f>> _atomPositionsFrames ¤ *(Pour le moment ici. Concaténation des positions en mémoire pour optimisation GPU.)*
 	
 	- std::vector\<Bond> _bonds
 
-	- Mat4f _transform (?) (Présent ici ou dans VTX_APP ?)
+	- Mat4f _transform (?) *(Ici ou dans VTX_APP ?)*
 
 - Chain
-	- Molecule* _moleculePtr (?) (Présent ici ou dans VTX_APP ?)
+	- Molecule* _moleculePtr (?) *(Ici ou dans VTX_APP ?)*
 
 	- uint _firstResidueIndex
 
 	- uint _residueCount
 	
 - Residue
-	- Chain * _chainIndex (?) (Présent ici ou dans VTX_APP ?)
+	- Chain * _chainIndex (?) *(Ici ou dans VTX_APP ?)*
 
 	- uint _firstAtomIndex
 
@@ -63,36 +68,40 @@ Liste et détail des classes :
 	- uint _bondCount
 
 - Atom
-	- Residue * _residuePtr (?) (Présent ici ou dans VTX_APP ?)
+	- Residue * _residuePtr (?) *(Ici ou dans VTX_APP ?)*
 
 	- uint _index (?)
 
 	- SYMBOL (enum int) _symbol
 	
-	- Vec4f _positionAndRadius (?) ¤ (Position+radius présent en tant qu'attribut d'atome ou directement dans Molecule ?)
+	- Vec4f _positionAndRadius (?) ¤ *(Position+radius présent en tant qu'attribut d'atome ou directement dans Molecule ?)*
 	
 - Bond
-	- Molecule* _moleculePtr (?) (Présent ici ou dans VTX_APP ?)
+	- Molecule* _moleculePtr (?) *(Ici ou dans VTX_APP ?)*
 
 	- uint _firstAtom
 
 	- uint _secondAtom
 
-	- BOND_ORDER (enum int) _bondOrder (BOND_ORDER pourrait être enum char si opti car contient peu de valeurs différentes (12))
+	- BOND_ORDER (enum int) _bondOrder *(BOND_ORDER pourrait être enum char si opti car contient peu de valeurs différentes (12))*
 
 ### ¤ Notes
 
-- *Molecule::_atomPositionsFrames* pourrait être simplement un vecteur de Vec3f et les différentes frames pourraient définies avec un vecteur d'index (ou index, count).
-
-- *Molecule::_atomPositionsFrames* pourrait contenir des Vec4f au lieu de Vec3f pour intégrer le radius de l'atome (opti GPU ?)
-
 - Comment stocker efficacement les frames d'animation (opti mémoire & opti render) ?
+
+	- *Molecule::_atomPositionsFrames* pourrait être simplement un vecteur de Vec3f et les différentes frames pourraient définies avec un vecteur d'index (ou index, count).
+
+	- *Molecule::_atomPositionsFrames* pourrait contenir des Vec4f au lieu de Vec3f pour intégrer le radius de l'atome (opti GPU ?)
+
+	- Autre ?
 
 - Stocker un identifiant unique pour chaque objet pour le picking ou gérer ça dans VTX_APP ?
 
+- Enregistrement des couleurs ici ?
+
 ### Dépendances
 
-**VTX_CORE** ne dépend que de **VTX_UTIL** pour des soucis d'optimisations (partage de structures avec **VTX_RENDER** pour éviter les conversions Vec3f, Vec4f, Mat4f).
+**VTX_CORE** ne dépend que de **VTX_UTIL** pour des soucis d'optimisations (partage de structures avec **VTX_RENDER** pour éviter les conversions Vec3f, Vec4f, Mat4f, uint).
 
 ## VTX_RENDER
 
@@ -100,7 +109,21 @@ Liste et détail des classes :
 
 **VTX_RENDER** fourni une structure de donnée appropriée pour produire un rendu de molécule et fait l'affichage de celle-ci via la bibliothèque de rendu souhaitée.
 
-**VTX_RENDER** devra exposer une liste de fonction relativement abstraite (à définir à quel point on peut être abstrait) pour pouvoir produire un rendu, produire un snapshot (penser à la watermark) et récupérer une information dans les buffers (ie picking).
+**VTX_RENDER** devra exposer une liste de fonctionnalité relativement abstraite (définir à quel point) permettant de gérer les besoins au niveau du rendu.
+
+Liste des fonctionnalités de **VTX_RENDER** :
+- Produire un rendu
+
+- Gérer les paramètres de la caméra (near clip, far clip, FOV, background color) *(Ici ?)*
+
+- Gestion des render effects (SSAO, Outline, Fog) *(Ici ?)*
+
+- Gestion des Lights (Global, point lights) *(Ici ?)*
+
+- Générer un Snapshot
+
+- Récupération de donnée dans un buffer (ie Picking)
+
 
 Structure de rendu :
 
@@ -113,6 +136,9 @@ Structure de rendu :
 
 - Structure Secondary SES (?)
 
+- Structure Render Effects (?)
+
+
 ### ¤ Idées
 
 - Possibilité d'optimiser les données du buffer dans un Vec4f avec la couleur en Vec3f, et le dernier float lu comme un BitArray (Selection, Visibility, autre ?).
@@ -121,21 +147,19 @@ Structure de rendu :
 
 	- Un premier tableau de Vec4f avec position & info complémentaire pour chaque atomes
 
-	- Un second tableau avec le symbol de l'atome pour pouvoir récupérer les informations relative au type d'atome stocké dans une table à part (radius, default_Color, (...) ).
+	- Un second tableau d'int contenant le symbol de l'atome pour pouvoir récupérer les informations relative au type d'atome stocké dans une table à part (radius, default_Color, (...) ).
 
 ### ¤ Notes
 
-- Gestion des "Render Effects" ? (SSAO, Outline, Fog)
+- Gestion des "Render Effects" dépendant du moteur ?
 
-- Gestion des paramètres de la caméra (Near clip & Far clip, Background Color) ?
-
-- Gestion des lights (Global & Spotlights) ?
+- Comment gérer les tools ayant besoin de fonctionnalités custom sur le moteur de rendu ?
 
 ### Dépendances
 
 **VTX_RENDER** ne dépend que de **VTX_UTIL** pour des soucis d'optimisations (partage de structures avec **VTX_CORE** pour éviter des conversions).
 
-## VTX_APP
+## VTX_APP (ou VTX_API)
 
 ### Description
 
@@ -195,7 +219,7 @@ La communication entre ces deux modules se fera par le biais d'actions et d'even
 
 L'interface graphique devra définir une partie abstraite pour gérer le layout, et une partie implémentation avec la librairie UI de notre choix (Par exemple Qt).
 
-**VTX_UI** doit exposer tout un set de fonctions pour composer son interface (décrit par un fichier JSON depuis **VTX_BUILDER**) afin de générer des interfaces customisées selon les cas d'utilisation .
+**VTX_UI** doit exposer tout un set de fonctions pour composer son interface (qui seront appelées selon les valeurs décrites par un fichier JSON depuis **VTX_BUILDER**) afin de générer des interfaces customisées selon les cas d'utilisation .
 
 Dans cette optique, chaque élément d'interface intégré dans ce module doit être implémenté comme le seront les tools qui pourront venir se greffer à l'interface.
 
@@ -235,6 +259,8 @@ Les éléments intégrés d'office à **VTX_UI** sont :
 
 - La création de ces différentes interfaces pourrait être faite via un fichier de configuration (en JSON) qui décrirait les différentes fonctionnalités qu'on souhaiterait intégrer dans notre build de VTX. Ce fichier de config est géré dans **VTX_BUILDER** pour pouvoir aussi gérer les tools.
 
+- Bien penser à rendre configurable les fenêtre par défaut (Scene, Inspector, Contextual Menu) pour les tools externes.
+
 ### Dépendances
 
 **VTX_UI** dépend de **VTX_APP** pour pouvoir appeler les différentes fonctionnalités exposées par ce dernier.
@@ -249,7 +275,7 @@ Liste des classes de VTX_UTIL :
 - Exception : Définition des exceptions spécifiques à VTX (? Ici ou dans VTX_APP ?)
 
 - Math
- 	- Structures
+ 	- Types
 		- uint
 
 		- Vec3f
@@ -262,12 +288,19 @@ Liste des classes de VTX_UTIL :
 
 		- (...)
 
-	- Constant :  Contient diverses constantes mathématiques utiles (Pi, VEC3F_ZERO, etc)
+	- Constants *: Contient diverses constantes mathématiques utiles (Pi, VEC3F_ZERO, etc)*
 
-	- Util :  Contient diverses fonctions mathématiques avec les structures précédentes
+- Util
+	- Math *: Contient diverses fonctions mathématiques avec les structures dans Math*
+	
+	- String *: Contient diverses fonctions de manipulation de std::string*
+
+- FilePath
+
+- Time
 
 - Tool
-	- Logger
+	- Logger (?) *(Ici ou dans VTX_APP ?)*
 
 	- Chrono
 	
@@ -278,13 +311,13 @@ Par nature, ce module ne doit donc dépendre d'aucun autre module de VTX.
 	
 ## VTX_TOOLS
 
-**VTX_TOOLS** va contenir l'ensemble des outils annexe qui pourront être greffés à VTX via **VTX_UI**.
+**VTX_TOOLS** va contenir l'ensemble des outils annexes qui pourront être greffés à VTX via **VTX_UI**.
 
-Afin de limiter le nombre de projet dans la solution VTX, nous allons intégrer l'ensemble des tools dans un même module **VTX_TOOLS**. Il faudra bien partitionner les tools dans des namespaces séparés.
+Afin de limiter le nombre de projet dans la solution VTX, nous allons intégrer l'ensemble des tools dans un même module **VTX_TOOLS**. Il faudra bien partitionner les tools dans des namespaces séparés. Peut-être ajouter une séparation intermédiaire par métier (Illustration, Video, Analyse, Simulation, etc)
 
-La dépendance entre pourra être envisagée mais il faudra trouvé un bon moyen de gérer ça. (par exemple le tool Measurement qui récupère des données du tool Label, etc).
+La dépendance entre tools pourra être envisagée mais il faudra trouver un bon moyen de gérer ça. (par exemple le tool Measurement qui récupère des données du tool Label, etc).
 
-Pour bien faire, un tool devra être scinder en 2 partie, la partie APP qui contient les données et les fonctions nécessaires au tool, et la partie UI qui implémentera son interface (CommandLine, Qt, ImGUI (?)).
+Pour bien faire, un tool devra être scinder en 2 parties, la partie APP qui contient les données et les fonctions nécessaires au tool, et la partie UI qui implémentera son interface (CommandLine, Qt, ImGUI (?)).
 
 Liste des tools existants:
 - Analysis
@@ -315,6 +348,11 @@ Liste des tools à venir :
 
 	- Hydrophobic area
 
+- Simulation
+	- UDock
+
+	- Tinker
+
 - Video
 	- Path
 
@@ -333,7 +371,7 @@ Liste des tools à venir :
 (Module à part entière ?) **VTX_BUILDER** est un module qui doit pouvoir builder une version de VTX à partir d'un fichier de config.
 Il dépend de tout. C'est la pièce la plus haut niveau du logiciel.
 
-Le fichier de config doit spécifier la plateforme cible (PC, Mac, Linux) (? Défini quand on build plutôt ?), la bibliothèque de rendu à utiliser (choisi automatiquement selon plateforme cible ?), l'interface (CommandLine, Qt, ImGUI), les différents tools présents.
+Le fichier de config doit spécifier la / les bibliothèque de rendu à utiliser (choisi automatiquement selon plateforme cible ?), l'interface (CommandLine, Qt, ImGUI) et les différents tools externes à greffer à l'interface.
 Ce doit être le point d'entrée de l’exécutable et le projet courant par défaut dans Visual Studio.
 
 Prévoir plusieurs fichier de config par défaut :
@@ -350,6 +388,7 @@ Autres fichiers de config probable :
 
 ### Note 
 
+- Selon la plateforme cible de la build, VTX_BUILDER pourrait activer (ou non) les moteurs de rendus adaptés à cette plateforme (Windows => OpenGL & Vulkan ; Mac => Vulkan & Metal ; Linux => OpenGL & Vulkan)
 
 ### Dépendances
 
@@ -390,7 +429,7 @@ Autres fichiers de config probable :
 
 ## Rendre une molécule
 
-Nous allons voir ici plus en détail comment se déroule le rendu d'une molécule.
+Nous allons détailler ici comment se déroule le rendu d'une molécule.
 
 ### Détail des classes en jeu
 
@@ -417,9 +456,6 @@ class MoleculeCore
 
 abstract class AbstractRenderer
 {
-	geometry
-	--
-	buffers
 }
 class MoleculeRenderer
 {
@@ -429,7 +465,7 @@ class MoleculeRenderer
 }
 
 class RenderingEngine{
-	void render(MoleculeRenderer molecule)
+	void render(AbstractRenderer p_renderer)
 }
 
 AbstractRenderer <|-- MoleculeRenderer
@@ -512,11 +548,11 @@ AbstractRenderer <|-- MoleculeRenderer
 	Renderer <|-- MoleculeRendererComponent
 
 	Scene o-- SceneItem
-	Scene *-- Camera
+	Scene o-right- Camera
 
 	MoleculeApp *-- MoleculeCore
 
-	MoleculeRendererComponent o-- RepresentationArchetype
+	MoleculeRendererComponent *-- RepresentationArchetype
 	MoleculeRendererComponent *-- MoleculeRenderer
 
 	RepresentationArchetype <|-- BondCylinder
@@ -545,18 +581,17 @@ entity MoleculeEntity
 entity SceneEntity
 entity CameraEntity
 
+
 SceneEntity -- Scene
 Scene o-- SceneItem
 Scene o-- Camera
 
 CameraEntity -- Camera
 
-
 MoleculeEntity -- MoleculeRendererComponent : Mandatory
 MoleculeEntity -- MoleculeApp : Mandatory
 MoleculeEntity -- SceneItem : Mandatory
 MoleculeEntity .. Stick : Optional
-
 @enduml
 ```
 
@@ -565,9 +600,9 @@ MoleculeEntity .. Stick : Optional
 Pour générer un rendu dans VTX nous allons avoir besoin de plusieurs éléments :
 - VTXEngine, une classe de **VTX_APP** qui va permettre de lancer un rendu sur **VTX_RENDER**.
 
-- Scene, une entité qui va stocker les différents éléments qui peuvent être rendus.
+- SceneEntity, une entité possedant un composant (Scene) qui va stocker les différents éléments qui peuvent être rendus.
 
-- Molecule, une entité qui va contenir les données de la molécule et ses représentations
+- MoleculeEntity, une entité qui va contenir les données de la molécule et ses représentations
 
 - Un composant de représentation (par exemple Stick)
 
@@ -604,7 +639,7 @@ Note : On peut imaginer passer par une factory qui s'occupe d'instancier et d'aj
 
 #### Ajouter une représentation à la molécule
 
-L'ajout d'une représentation se fait en ajoutant un component héritant Representation à une entité possedant un component héritant de Renderable. Par exemple on peut ajouter le component Stick à l'entité Molecule qui possède forcément un component MoleculeRenderable (qui hérite de Renderable) :
+L'ajout d'une représentation se fait en ajoutant un component héritant de Representation à une entité possedant un component héritant de Renderable. Par exemple on peut ajouter le component Stick à l'entité Molecule qui possède forcément un component MoleculeRenderable (héritant de Renderable) :
 
 ```c++
 moleculeEntity.addComponent<Stick>();
@@ -622,9 +657,11 @@ void Stick::refresh()
 
 La representation Stick connait les archetypes sur lesquels elle doit agir et affecte les données qui la concerne dedans.
 
+Note : La molecule peut instancier les archetype lorsqu'ils sont appelé la première fois, et garder une trace des représentations ayant besoin de ces archetypes afin de les supprimer si la dernière représentation accédant à un archetype de représentation est supprimée.
+
 #### Mise à jour des buffers
 
-La classe VTXEngine est appelé régulièrement pour généré un rendu. Lors de sa boucle de rendu, elle va dans un premier temps mettre à jour les buffers des différents objets à afficher puis envoyer les différents objets à rendre au moteur de rendu.
+La classe VTXEngine est appelée régulièrement pour générer un rendu. Lors de sa boucle de rendu, elle va dans un premier temps mettre à jour les buffers des différents objets à afficher puis envoyer les différents objets à rendre au moteur de rendu.
 
 Mise à jour des buffers :
 ```c++
@@ -644,21 +681,21 @@ void MoleculeRenderable::refreshBuffers()
 
 void BondCylinder::fillBuffers(VTX_RENDER::MoleculeRenderer & p_renderClass)
 {
-	// Ici je reprend ce qu'il y a dans View::Cylinder. Ce sera sûrement à adapter.
+	// Ici je reprend ce qu'il y a dans View::Cylinder. Ce sera sûrement à adapter. C'est pour donner une idée du contenu de la fonction
 	_program->setFloat( "u_cylRad", _cylinderData.radius );
 	_program->setUInt( "u_colorBlendingMode", uint( _cylinderData.colorBlendingMode ) );
 
 	p_renderClass.getBuffer()->getVao().multiDrawElement( 
 		Renderer::GL::VertexArray::DrawMode::LINES,
-		(GLsizei *)( &target.counts[ 0 ] ),
+		(GLsizei *)( &_target.counts[ 0 ] ),
 		Renderer::GL::VertexArray::Type::UNSIGNED_INT,
-		(GLvoid **)( &target.indices[ 0 ] ),
-		GLsizei( target.indices.size() ) );
+		(GLvoid **)( &t_arget.indices[ 0 ] ),
+		GLsizei( _target.indices.size() ) );
 }
 ```
-Note : On peut imaginer que les RepresentationArchetype possède un flag pour ne rien faire si aucune modification n'a été faite dessus.
+Note : On peut imaginer que les RepresentationArchetype possèdent un flag pour ne rien faire si aucune modification n'a été faite dessus.
 
-Les RepresentationArchetype vont directement accéder aux buffers de AbstractRenderer liés au composant Renderable.
+Les RepresentationArchetype vont directement accéder aux buffers d'AbstractRenderer liés au composant Renderable.
 
 Rendu :
 ```c++
@@ -673,3 +710,4 @@ void VTXEngine::render(const Scene & p_scene)
 
 # Test
 
+La modularité va nous permettre de faciliter les tests de non-regressions en testant certains inputs et en s'assurant que la sortie est conforme à notre attente.
