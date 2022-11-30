@@ -83,9 +83,6 @@ layout (std430, binding = 6) readonly buffer TriangleTable
 	int[] triangleTable;
 };
 
-
-
-// TODO: normals
 // TODO: neareset atom index
 
 // Marching cube.
@@ -96,7 +93,9 @@ void main()
 	const uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
 	
 	// Not in grid.
-	if ( sesGridPosition.x >= uGridSESSize.x || sesGridPosition.y >= uGridSESSize.y || sesGridPosition.z >= uGridSESSize.z )
+	if (	sesGridPosition.x >= uGridSESSize.x ||
+			sesGridPosition.y >= uGridSESSize.y ||
+			sesGridPosition.z >= uGridSESSize.z )
 	{
 		return;
 	}
@@ -141,7 +140,7 @@ void main()
 	uint idx = 0;
 	while ( intersectionsKey != 0)
 	{
-		if (  bool( intersectionsKey & 1 ) )
+		if ( bool( intersectionsKey & 1 ) )
 		{
 			const uint	v1 = _EDGE_TO_VERTICES[ idx ][ 0 ];
 			const uint	v2 = _EDGE_TO_VERTICES[ idx ][ 1 ];			
@@ -157,11 +156,11 @@ void main()
 	}
 
 	// Get triangles.
-	for ( uint i = 0; triangleTable[ cubeIndex * 16 + i * 3] != -1; i += 3 )
+	for ( uint i = 0; triangleTable[ cubeIndex * 16 + i ] != -1; i += 3 )
 	{
 		for ( uint j = 0; j < 3; ++j )
 		{
-			const vec3 vertice = intersections[ triangleTable[ cubeIndex * 16 + i * 3 + j ] ];
+			const vec3 vertice = intersections[ triangleTable[ cubeIndex * 16 + i + j ] ];
 
 			// Position.
 			trianglePositions[ sesGridHash * 15 + i + j ] = vec4( vertice, 0.f );
@@ -178,14 +177,12 @@ void main()
 		}
 		const vec4 normal = vec4(
 		normalize( 
-			cross(	intersections[ triangleTable[ cubeIndex * 16 + i * 3 + 1 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i * 3 ] ],
-					intersections[ triangleTable[ cubeIndex * 16 + i * 3 + 2 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i * 3 ] ] ) )
+			cross(	intersections[ triangleTable[ cubeIndex * 16 + i + 1 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ],
+					intersections[ triangleTable[ cubeIndex * 16 + i + 2 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ] ) )
 					, 0.f );
 		
 		triangleNormals[ sesGridHash * 15 + i + 0 ] = normal;
 		triangleNormals[ sesGridHash * 15 + i + 1 ] = normal;
 		triangleNormals[ sesGridHash * 15 + i + 2 ] = normal;
 	}
-	//triangleAtomRange[ sesGridData[ sesGridHash ].nearestAtom ].first =  * 15;
-	//triangleAtomRange[ sesGridData[ sesGridHash ].nearestAtom ].count = 15;
 }

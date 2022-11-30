@@ -81,18 +81,16 @@ namespace VTX
 				= std::vector<std::vector<uint>>( gridAtoms.getCellCount(), std::vector<uint>() );
 
 			const std::vector<Vec3f> & atomPositions = _molecule->getCurrentAtomPositionFrame();
-			// std::vector<float>		   atomVdwRadius = std::vector<float>();
-			// atomVdwRadius.resize( atomPositions.size() );
 
 			// Store atom indices in acceleration grid.
 			// TODO: remove this loop and create directly 1D arrays?
+			// vec4( position.xyz, vdwRadius )
 			std::vector<Vec4f> atomPositionsVdW = std::vector<Vec4f>( atomPositions.size() );
 			for ( uint i = 0; i < atomPositions.size(); ++i )
 			{
 				const uint hash = gridAtoms.gridHash( atomPositions[ i ] );
 				atomGridDataTmp[ hash ].emplace_back( i );
 				atomPositionsVdW[ i ] = Vec4f( atomPositions[ i ], _molecule->getAtom( i )->getVdwRadius() );
-				// atomVdwRadius[ i ] = _molecule->getAtom( i )->getVdwRadius();
 			}
 
 			// Linerize data in 1D arrays.
@@ -260,7 +258,7 @@ namespace VTX
 			//_normals.emplace_back( normals.begin(), normals.end() );
 
 			//////////////////////
-			_atomsToTriangles[ _atomsToTriangles.size() - 1 ] = Range { 0, uint( _vertices.size() / 3 ) };
+			_atomsToTriangles[ _atomsToTriangles.size() - 1 ] = Range { 0, uint( _indices.size() ) };
 			//////////////////////
 			//
 			//////////////////////
