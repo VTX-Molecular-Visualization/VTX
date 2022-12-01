@@ -66,11 +66,6 @@ namespace VTX
 		_mainWindow->setupUi();
 		_mainWindow->show();
 
-		// Fix Issue for fullscreen on windows. Need to be called after show and before set fullscreen //////////
-		// https://doc.qt.io/qt-5/windows-issues.html#fullscreen-opengl-based-windows ///////////////////////////
-		// QWindowsWindowFunctions::setHasBorderInFullScreen( _mainWindow->windowHandle(), true );
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 		_mainWindow->initWindowLayout();
 		VTX_INFO( "Application started" );
 
@@ -136,7 +131,8 @@ namespace VTX
 			}
 		}
 
-		VTX_ACTION( new Action::Main::Open( files ) );
+		if ( files.size() > 0 )
+			VTX_ACTION( new Action::Main::Open( files ) );
 
 		for ( const std::string & pdbId : pdbIds )
 		{

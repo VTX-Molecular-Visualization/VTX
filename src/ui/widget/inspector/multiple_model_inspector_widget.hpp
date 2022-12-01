@@ -25,7 +25,7 @@ namespace VTX::UI::Widget::Inspector
 		}
 		void refresh( const SectionFlag & p_flag = SectionFlag::ALL ) override final { _sectionToRefresh |= p_flag; }
 
-		void clearTargets() override
+		virtual void clearTargets() override
 		{
 			if ( _targets.size() > 0 )
 			{
@@ -40,7 +40,7 @@ namespace VTX::UI::Widget::Inspector
 			}
 		}
 
-		void addTarget( T * const p_target )
+		virtual void addTarget( T * const p_target )
 		{
 			_targets.emplace( p_target );
 
@@ -50,7 +50,7 @@ namespace VTX::UI::Widget::Inspector
 
 			_sectionToRefresh = SectionFlag::ALL;
 		}
-		void removeTarget( T * const p_target )
+		virtual void removeTarget( T * const p_target )
 		{
 			_targets.erase( p_target );
 

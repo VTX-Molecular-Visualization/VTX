@@ -19,6 +19,7 @@ namespace VTX::UI
 		{
 			MODEL,
 			FILE,
+			UNKNOWN,
 		};
 		inline static const QString applicationMimeTypes[] = { "application/vtx-model", "application/vtx-file" };
 
@@ -53,6 +54,8 @@ namespace VTX::UI
 
 		static QMimeData * const generateMimeDataFromModel( const Model::BaseModel & p_model,
 															const DragSource &		 p_dragSource );
+
+		static ApplicationMimeType getMimeTypeEnum( const QMimeData * const p_mimeData );
 
 		static bool checkApplicationDataType( const QMimeData * const	  p_mimeData,
 											  const ApplicationMimeType & p_dataType );

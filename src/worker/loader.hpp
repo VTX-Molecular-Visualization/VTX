@@ -33,18 +33,6 @@ namespace VTX
 			Q_OBJECT
 
 		  public:
-			enum class MODE : int
-			{
-				SCENE,
-				CONFIGURATION,
-				MOLECULE,
-				TRAJECTORY,
-				MESH,
-				UNKNOWN,
-
-				COUNT
-			};
-
 			enum class SOURCE_TYPE : int
 			{
 				FILE,
@@ -77,9 +65,9 @@ namespace VTX
 			{
 				_moleculeTargetsForDynamics.emplace_back( p_target );
 			}
-			inline void setOpenTrajectoryAsStandalone( const bool p_openAsStandalone )
+			inline void setOpenTrajectoryAsMoleculeIfTargetFail( const bool p_openAsMolecule )
 			{
-				_openTrajectoryAsStandalone = p_openAsStandalone;
+				_openTrajectoryAsMolecule = p_openAsMolecule;
 			}
 
 		  protected:
@@ -103,11 +91,7 @@ namespace VTX
 			std::vector<Model::Molecule *>		   _moleculeTargetsForDynamics = std::vector<Model::Molecule *>();
 
 			Tool::Chrono _loadingFileChrono;
-			bool		 _openTrajectoryAsStandalone = true;
-
-			void _fillFilepathPerMode();
-
-			MODE _getMode( const IO::FilePath & ) const;
+			bool		 _openTrajectoryAsMolecule = true;
 
 			void _startLoadingFile( const IO::FilePath & p_path, const SOURCE_TYPE & p_sourceType );
 			void _endLoadingFileSuccess( const IO::FilePath & p_path );

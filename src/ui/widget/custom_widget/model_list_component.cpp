@@ -9,13 +9,6 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	void BaseModelListWidget::setContainsOnlyUniqueModel( const bool p_containsOnlyUniqueModel )
-	{
-		_containsOnlyUniqueModel = p_containsOnlyUniqueModel;
-	}
-
-	void BaseModelListWidget::addTypeFilter( const ID::VTX_ID & p_typeID ) { _filters.emplace_back( p_typeID ); }
-
 	ModelListComponent::ModelListComponent( BaseModelListWidget * const p_modelList, QWidget * p_parent ) :
 		BaseManualWidget( p_parent ), _modelListWidget( p_modelList )
 	{

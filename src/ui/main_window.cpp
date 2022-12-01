@@ -8,6 +8,7 @@
 #include "event/event_manager.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "style.hpp"
+#include "ui/mime_type.hpp"
 #include "util/analysis.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
@@ -473,7 +474,9 @@ namespace VTX::UI
 
 	void MainWindow::dragEnterEvent( QDragEnterEvent * p_event )
 	{
-		// if ( p_event->mimeData()->hasFormat( "text/plain" ) )
+		const QMimeData * const mimeData = p_event->mimeData();
+
+		if ( UI::MimeType::getMimeTypeEnum( mimeData ) == UI::MimeType::ApplicationMimeType::FILE )
 		{
 			p_event->acceptProposedAction();
 		}
@@ -483,17 +486,25 @@ namespace VTX::UI
 	{
 		const QMimeData * const mimeData = p_event->mimeData();
 
-		if ( mimeData->hasUrls() )
+		if ( UI::MimeType::getMimeTypeEnum( mimeData ) == UI::MimeType::ApplicationMimeType::FILE )
 		{
-			std::vector<IO::FilePath> _paths  = std::vector<IO::FilePath>();
-			const QList<QUrl> &		  urlList = mimeData->urls();
+			const QList<QUrl> &					   urlList = mimeData->urls();
+			const std::vector<IO::FilePath>		   paths   = Util::Filesystem::getFilePathVectorFromQUrlList( urlList );
+			std::vector<std::vector<IO::FilePath>> pathPerFileTypes = std::vector<std::vector<IO::FilePath>>();
+			Util::Filesystem::fillFilepathPerMode( paths, pathPerFileTypes );
 
-			for ( const QUrl & url : urlList )
+			const std::vector<IO::FilePath> & trajectoryPaths
+				= pathPerFileTypes[ int( Util::Filesystem::FILE_TYPE_ENUM::TRAJECTORY ) ];
+
+			// If drop contains only trajectory path, open the specific window
+			if ( trajectoryPaths.size() == paths.size() )
 			{
-				_paths.emplace_back( IO::FilePath( url.toLocalFile().toStdString() ) );
+				UI::Dialog::openSetTrajectoryTargetsDialog( trajectoryPaths );
 			}
-
-			VTX_ACTION( new Action::Main::Open( _paths ) );
+			else // Else regular Open function called
+			{
+				VTX_ACTION( new Action::Main::Open( paths ) );
+			}
 		}
 	}
 
@@ -551,7 +562,16 @@ namespace VTX::UI
 
 		switch ( p_mode )
 		{
-		case WindowMode::Fullscreen: setWindowState( windowState() | Qt::WindowState::WindowFullScreen ); break;
+		case WindowMode::Fullscreen:
+		{
+				setWindowState( windowState() | Qt::WindowState::WindowFullScreen ); 
+#if defined( Q_OS_WIN )
+				HWND handle = reinterpret_cast<HWND>( windowHandle()->winId() );
+				SetWindowLongPtr( handle, GWL_STYLE, GetWindowLongPtr( handle, GWL_STYLE ) | WS_BORDER );
+#endif
+		}
+
+			break;
 		case WindowMode::Minimized: setWindowState( windowState() | Qt::WindowState::WindowMinimized ); break;
 		case WindowMode::Maximized: setWindowState( windowState() | Qt::WindowState::WindowMaximized ); break;
 		case WindowMode::Windowed:
@@ -611,6 +631,9 @@ namespace VTX::UI
 	{
 		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
+
+		_checkUnknownFloatableWindows();
+
 		delete _restoreStateTimer;
 		_restoreStateTimer = nullptr;
 		show();
@@ -727,6 +750,19 @@ namespace VTX::UI
 			}
 
 			_cursorHandler->applyCursor( cursor, &getWidget( ID::UI::Window::RENDER ), "Picker_Measurement" );
+		}
+	}
+
+	void MainWindow::_checkUnknownFloatableWindows()
+	{
+		_checkUnknownFloatableWindow( _settingWidget, Style::SETTINGS_PREFERRED_SIZE );
+		_checkUnknownFloatableWindow( _structuralAlignmentWidget, Style::STRUCTURAL_ALIGNMENT_PREFERRED_SIZE );
+	}
+	void MainWindow::_checkUnknownFloatableWindow( QDockWidget * const p_widget, const QSize & p_defaultSize )
+	{
+		if ( p_widget->widget()->size().height() == QT_UNKNOWN_WIDGET_DEFAULT_LAYOUT_HEIGHT )
+		{
+			_addDockWidgetAsFloating( p_widget, p_defaultSize, p_widget->isVisible() );
 		}
 	}
 

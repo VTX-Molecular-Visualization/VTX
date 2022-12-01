@@ -42,16 +42,35 @@ namespace VTX::Action::Selection
 		{
 			const Object3D::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
 			std::vector<Model::Molecule *>				 molecules		= std::vector<Model::Molecule *>();
-			molecules.resize( sceneMolecules.size() );
-			int counter = 0;
+			molecules.reserve( sceneMolecules.size() );
 
-			for ( const std::pair<Model::Molecule * const, float> & sceneMolecule : sceneMolecules )
+			for ( const std::pair<Model::Molecule * const, float> & moleculePair : sceneMolecules )
 			{
-				molecules[ counter ] = sceneMolecule.first;
-				counter++;
+				molecules.emplace_back( moleculePair.first );
 			}
 
-			VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecules( molecules );
+			const Object3D::Scene::VectorPathPtr & paths		  = VTXApp::get().getScene().getPaths();
+			size_t								   viewpointCount = 0;
+			for ( const Model::Path * const path : paths )
+				viewpointCount += path->getViewpoints().size();
+
+			std::vector<Model::Viewpoint *> viewpoints = std::vector<Model::Viewpoint *>();
+			viewpoints.reserve( viewpointCount );
+			for ( Model::Path * const path : paths )
+			{
+				for ( Model::Viewpoint * const viewpoint : path->getViewpoints() )
+				{
+					viewpoints.emplace_back( viewpoint );
+				}
+			}
+
+			const Object3D::Scene::VectorMeshTrianglePtr & meshes = VTXApp::get().getScene().getMeshes();
+			const Object3D::Scene::VectorLabelPtr &		   labels = VTXApp::get().getScene().getLabels();
+
+			VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecules( molecules, false );
+			VTX::Selection::SelectionManager::get().getSelectionModel().selectModels( viewpoints, true );
+			VTX::Selection::SelectionManager::get().getSelectionModel().selectModels( meshes, true );
+			VTX::Selection::SelectionManager::get().getSelectionModel().selectModels( labels, true );
 
 			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 		}

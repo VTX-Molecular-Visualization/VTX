@@ -8,8 +8,11 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QDirIterator>
+#include <QList>
 #include <QTextStream>
+#include <QUrl>
 #include <set>
+#include <vector>
 
 namespace VTX
 {
@@ -17,6 +20,78 @@ namespace VTX
 	{
 		namespace Filesystem
 		{
+			enum class FILE_TYPE_ENUM : int
+			{
+				SCENE,
+				CONFIGURATION,
+				MOLECULE,
+				TRAJECTORY,
+				MESH,
+				UNKNOWN,
+
+				COUNT
+			};
+
+			inline FILE_TYPE_ENUM getFileTypeEnum( const IO::FilePath & p_path )
+			{
+				const std::string extension = p_path.extension();
+
+				if ( extension == ".vtx" )
+				{
+					return FILE_TYPE_ENUM::SCENE;
+				}
+				else if ( extension == "prm" || extension == "psf" )
+				{
+					return FILE_TYPE_ENUM::CONFIGURATION;
+				}
+				else if ( extension == "cif" || extension == "cml" || extension == "cssr" || extension == "gro"
+						  || extension == "mmcif" || extension == "mmtf" || extension == "mol2" || extension == "molden"
+						  || extension == "pdb" || extension == "sdf" || extension == "smi" || extension == "mmtf"
+						  || extension == "xyz" )
+				{
+					return FILE_TYPE_ENUM::MOLECULE;
+				}
+				else if ( extension == ".obj" )
+				{
+					return FILE_TYPE_ENUM::MESH;
+				}
+				else if ( extension == "nc" || extension == "dcd" || extension == "lammpstrj" || extension == "arc"
+						  || extension == "trr" || extension == "xtc" || extension == "tng" || extension == "trj" )
+				{
+					return FILE_TYPE_ENUM::TRAJECTORY;
+				}
+				else
+				{
+					return FILE_TYPE_ENUM::UNKNOWN;
+				}
+			}
+			inline void fillFilepathPerMode( std::vector<IO::FilePath>				  p_filepaths,
+											 std::vector<std::vector<IO::FilePath>> & p_filepathPerMode )
+			{
+				p_filepathPerMode.resize( int( FILE_TYPE_ENUM::COUNT ) );
+
+				for ( const IO::FilePath & path : p_filepaths )
+				{
+					const FILE_TYPE_ENUM filetype = getFileTypeEnum( path );
+					p_filepathPerMode[ int( filetype ) ].emplace_back( path );
+				}
+			}
+
+			inline static IO::FilePath getFilePathFromQUrl( const QUrl & p_url )
+			{
+				return IO::FilePath( p_url.toLocalFile().toStdString() );
+			}
+			inline static std::vector<IO::FilePath> getFilePathVectorFromQUrlList( const QList<QUrl> & p_urls )
+			{
+				std::vector<IO::FilePath> res = std::vector<IO::FilePath>();
+				res.reserve( p_urls.size() );
+
+				for ( const QUrl & url : p_urls )
+					res.emplace_back( getFilePathFromQUrl( url ) );
+
+				return res;
+			}
+
 			inline const IO::FilePath getExecutableFile()
 			{
 				return QCoreApplication::applicationFilePath().toStdString();
