@@ -562,7 +562,16 @@ namespace VTX::UI
 
 		switch ( p_mode )
 		{
-		case WindowMode::Fullscreen: setWindowState( windowState() | Qt::WindowState::WindowFullScreen ); break;
+		case WindowMode::Fullscreen:
+		{
+				setWindowState( windowState() | Qt::WindowState::WindowFullScreen ); 
+#if defined( Q_OS_WIN )
+				HWND handle = reinterpret_cast<HWND>( windowHandle()->winId() );
+				SetWindowLongPtr( handle, GWL_STYLE, GetWindowLongPtr( handle, GWL_STYLE ) | WS_BORDER );
+#endif
+		}
+
+			break;
 		case WindowMode::Minimized: setWindowState( windowState() | Qt::WindowState::WindowMinimized ); break;
 		case WindowMode::Maximized: setWindowState( windowState() | Qt::WindowState::WindowMaximized ); break;
 		case WindowMode::Windowed:
