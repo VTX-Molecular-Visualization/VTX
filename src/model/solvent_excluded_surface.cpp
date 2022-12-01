@@ -239,9 +239,9 @@ namespace VTX
 			// Start
 			workerMarchingCube.start( gridSES.size );
 
-			ssboTrianglePositions.getData( 0, uint( vertices.size() ) * sizeof( Vec3f ), &vertices[ 0 ] );
+			ssboTrianglePositions.getData( 0, uint( vertices.size() ) * sizeof( Vec4f ), &vertices[ 0 ] );
 			ssboTriangleIndices.getData( 0, uint( _indices.size() ) * sizeof( uint ), &_indices[ 0 ] );
-			ssboTriangleNormals.getData( 0, uint( normals.size() ) * sizeof( Vec3f ), &normals[ 0 ] );
+			ssboTriangleNormals.getData( 0, uint( normals.size() ) * sizeof( Vec4f ), &normals[ 0 ] );
 			ssboTriangleAtomIds.getData( 0, uint( _ids.size() ) * sizeof( uint ), &_ids[ 0 ] );
 			//  ssboAtomToTriangles.getData(
 			//	0, uint( _atomsToTriangles.size() ) * sizeof( Range ), &_atomsToTriangles[ 0 ] );
