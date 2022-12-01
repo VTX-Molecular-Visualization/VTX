@@ -83,7 +83,10 @@ layout (std430, binding = 6) readonly buffer TriangleTable
 	int[] triangleTable;
 };
 
-// TODO: neareset atom index
+layout (std430, binding = 7) writeonly buffer Debug
+{
+	uint[] debug;
+};
 
 // Marching cube.
 void main()
@@ -168,6 +171,8 @@ void main()
 			// Indice.
 			triangleIndices[ sesGridHash * 15 + i + j ] = sesGridHash * 15 + i + j;
 
+			//debug[ sesGridHash * 15 + i + j ] = sesGridHash * 15 + i + j;
+			
 			// TODO: Atom id.
 			// Can be negative, need to filter on cpu maybe?
 			//triangleAtomIds[ sesGridHash * 15 + i + j ] = 0;
@@ -176,10 +181,10 @@ void main()
 			//atomicAdd(triangleAtomRange[ sesGridData[ sesGridHash ].nearestAtom ].count, 1);
 		}
 		const vec4 normal = vec4(
-		normalize( 
-			cross(	intersections[ triangleTable[ cubeIndex * 16 + i + 1 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ],
-					intersections[ triangleTable[ cubeIndex * 16 + i + 2 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ] ) )
-					, 0.f );
+			normalize( 
+				cross(	intersections[ triangleTable[ cubeIndex * 16 + i + 1 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ],
+						intersections[ triangleTable[ cubeIndex * 16 + i + 2 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ] ) )
+						, 0.f );
 		
 		triangleNormals[ sesGridHash * 15 + i + 0 ] = normal;
 		triangleNormals[ sesGridHash * 15 + i + 1 ] = normal;

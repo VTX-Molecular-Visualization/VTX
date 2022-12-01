@@ -104,14 +104,14 @@ void main()
 					// Boundary.
 					else
 					{					
-						d -= ( uProbeRadius + atomPosition[index].w );
+						d -= ( uProbeRadius + atomPosition[ index ].w );
 						if ( d < 0.f )
 						{
 							sesGridData[ sesGridHash ].sdf = -uVoxelSize;
 							if ( d < minDistance )
 							{
 								minDistance	= d;
-								sesGridData[sesGridHash].nearestAtom = int(index);
+								sesGridData[ sesGridHash ].nearestAtom = int( index );
 							}
 						}						
 					}

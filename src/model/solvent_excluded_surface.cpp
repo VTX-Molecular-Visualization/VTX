@@ -31,7 +31,7 @@ namespace VTX
 
 		void SolventExcludedSurface::refresh()
 		{
-			_mode = Mode::CPU;
+			_mode = Mode::GPU;
 
 			switch ( _mode )
 			{
@@ -202,7 +202,9 @@ namespace VTX
 			_ids			  = std::vector<uint>( _vertices.size(), 0 );
 			_atomsToTriangles = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
 
-			std::vector<Vec4f> vertices( gridSES.getCellCount() * 5 * 3, Vec4f() );
+			std::vector<uint> debug = std::vector<uint>( _vertices.size(), uint( _vertices.size() ) );
+
+			std::vector<Vec4f> vertices( _vertices.size(), Vec4f() );
 			std::vector<Vec4f> normals( _vertices.size(), Vec4f() );
 
 			BufferStorage ssboTrianglePositions( BufferStorage::Target::SHADER_STORAGE_BUFFER, vertices );
@@ -210,6 +212,8 @@ namespace VTX
 			BufferStorage ssboTriangleNormals( BufferStorage::Target::SHADER_STORAGE_BUFFER, normals );
 			BufferStorage ssboTriangleAtomIds( BufferStorage::Target::SHADER_STORAGE_BUFFER, _ids );
 			BufferStorage ssboAtomToTriangles( BufferStorage::Target::SHADER_STORAGE_BUFFER, _atomsToTriangles );
+
+			BufferStorage ssboDebug( BufferStorage::Target::SHADER_STORAGE_BUFFER, debug );
 
 			// Input.
 			const BufferStorage ssboTriangleTable( VTX::Renderer::GL::BufferStorage::Target::SHADER_STORAGE_BUFFER,
@@ -223,6 +227,8 @@ namespace VTX
 			ssboTriangleAtomIds.bind( 4 );
 			ssboAtomToTriangles.bind( 5 );
 			ssboTriangleTable.bind( 6 );
+
+			ssboDebug.bind( 7 );
 
 			workerMarchingCube.getProgram().use();
 
@@ -240,6 +246,8 @@ namespace VTX
 			//  ssboAtomToTriangles.getData(
 			//	0, uint( _atomsToTriangles.size() ) * sizeof( Range ), &_atomsToTriangles[ 0 ] );
 
+			// ssboDebug.getData( 0, uint( debug.size() ) * sizeof( uint ), &debug[ 0 ] );
+
 			for ( uint i = 0; i < _vertices.size(); ++i )
 			{
 				_vertices[ i ] = Vec3f( vertices[ i ] );
@@ -255,9 +263,9 @@ namespace VTX
 			//
 			//////////////////////
 			// std::ofstream outFile( "GPU_DATA.txt" );
-			//  for ( const auto & e : _vertices )
-			//  outFile << std::to_string( e.x ) + " " + std::to_string( e.y ) << " " << std::to_string( e.z ) << "\n";
-			//  for ( const auto & e : _indices )
+			// for ( const auto & e : debug )
+			//	outFile << std::to_string( e ) << "\n";
+			//   for ( const auto & e : _indices )
 			//	outFile << std::to_string( e ) << "\n";
 			// outFile.close();
 			//////////////////////
@@ -270,6 +278,8 @@ namespace VTX
 			ssboTriangleAtomIds.unbind();
 			ssboAtomToTriangles.unbind();
 			ssboTriangleTable.unbind();
+
+			ssboDebug.unbind();
 
 			assert( _vertices.size() == _indices.size() );
 			assert( _vertices.size() == _normals.size() );
