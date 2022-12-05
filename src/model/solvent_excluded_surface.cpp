@@ -352,16 +352,14 @@ namespace VTX
 			const Vec3f gridMin			 = molAABB.getMin() - atomGridCellSize;
 			const Vec3f gridMax			 = molAABB.getMax() + atomGridCellSize;
 
-			const Vec3f gridSize	 = gridMax - gridMin;
-			Vec3i		atomGridSize = Vec3i( Util::Math::ceil( gridSize / atomGridCellSize ) );
+			const Vec3f gridSize = gridMax - gridMin;
+			Vec3i		atomGridSize( Util::Math::ceil( gridSize / atomGridCellSize ) );
 
-			Object3D::Helper::Grid gridAtoms
-				= Object3D::Helper::Grid( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
+			Object3D::Helper::Grid gridAtoms( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
 
 			const std::vector<Vec3f> & atomPositions = _category->getMoleculePtr()->getCurrentAtomPositionFrame();
 
-			std::vector<std::vector<uint>> atomGridData2D
-				= std::vector<std::vector<uint>>( gridAtoms.getCellCount(), std::vector<uint>() );
+			std::vector<std::vector<uint>> atomGridData2D( gridAtoms.getCellCount(), std::vector<uint>() );
 
 			// Store atom indices in acceleration grid.
 			for ( uint i : atomsIdx )
@@ -370,37 +368,20 @@ namespace VTX
 				atomGridData2D[ hash ].emplace_back( i );
 			}
 
-			// Not opti on CPU, only to test same algo as GPU.
-			// Linerize data in 1D arrays.
-			/*
-			std::vector<Range> atomGridDataSorted = std::vector<Range>( gridAtoms.getCellCount(), Range { 0, 0 } );
-			std::vector<uint>  atomIndexSorted	  = std::vector<uint>();
-
-			for ( uint i = 0; i < atomGridData2D.size(); ++i )
-			{
-				const std::vector<uint> & data = atomGridData2D[ i ];
-				if ( data.empty() == false )
-				{
-					atomGridDataSorted[ i ] = Range { uint( atomIndexSorted.size() ), uint( data.size() ) };
-					atomIndexSorted.insert( atomIndexSorted.end(), data.begin(), data.end() );
-				}
-			}
-			*/
-
 			chrono2.stop();
 			VTX_INFO( "Atoms sorted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			// Compute SES grid and compute SDF.
-			Vec3i sesGridSize = Vec3i( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
+			Vec3i sesGridSize( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
 
-			Object3D::Helper::Grid gridSES = Object3D::Helper::Grid( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
+			Object3D::Helper::Grid gridSES( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
 
 			// SES grid data.
-			std::vector<SESGridData> sesGridData
-				= std::vector<SESGridData>( gridSES.getCellCount(), SESGridData { PROBE_RADIUS, -1 } );
+			std::vector<SESGridData> sesGridData( gridSES.getCellCount(), SESGridData { PROBE_RADIUS, -1 } );
 
 			// Loop over cells.
+			std::vector<uint> boundaryIndex = std::vector<uint>();
 			for ( uint sesGridHash = 0; sesGridHash < gridSES.getCellCount(); ++sesGridHash )
 			{
 				// Get corresponding ses grid data.
@@ -414,6 +395,7 @@ namespace VTX
 				// Loop over the 27 cells to visit.
 				float minDistance = FLOAT_MAX;
 				bool  found		  = false;
+				// bool  addedToBoundary = false;
 
 				for ( int ox = -1; ox <= 1 && !found; ++ox )
 				{
@@ -421,23 +403,18 @@ namespace VTX
 					{
 						for ( int oz = -1; oz <= 1 && !found; ++oz )
 						{
-							Vec3f offset			  = Vec3f( ox, oy, oz );
-							Vec3i gridPositionToVisit = Vec3i( Vec3f( atomGridPosition ) + offset );
-							uint  hashToVisit		  = gridAtoms.gridHash( Vec3i( gridPositionToVisit ) );
+							Vec3f offset( ox, oy, oz );
+							Vec3i gridPositionToVisit( Vec3f( atomGridPosition ) + offset );
+							uint  hashToVisit = gridAtoms.gridHash( Vec3i( gridPositionToVisit ) );
 
 							if ( hashToVisit >= atomGridData2D.size() )
 							{
 								continue;
 							}
 
-							// uint first = atomGridDataSorted[ hashToVisit ].first;
-							// uint count = atomGridDataSorted[ hashToVisit ].count;
-
 							// Compute SDF.
-							// for ( uint i = first; i < first + count; ++i )
 							for ( const uint index : atomGridData2D[ hashToVisit ] )
 							{
-								// uint index = atomIndexSorted[ i ];
 								if ( _category->getMoleculePtr()->getAtom( index ) == nullptr )
 								{
 									continue;
@@ -458,6 +435,14 @@ namespace VTX
 								// Boundary.
 								else
 								{
+									/*
+									if ( addedToBoundary == false )
+									{
+										boundaryIndex.emplace_back( sesGridHash );
+										addedToBoundary = true;
+									}
+									*/
+
 									distance -= ( PROBE_RADIUS
 												  + _category->getMoleculePtr()->getAtom( index )->getVdwRadius() );
 									if ( distance < 0.f )
@@ -484,6 +469,7 @@ namespace VTX
 			// SDF refinement.
 			Vec3i cellsToVisitCount = Util::Math::ceil( Vec3f( PROBE_RADIUS + VOXEL_SIZE ) / gridSES.cellSize );
 
+			// for ( uint sesGridHash : boundaryIndex ) // Why this is slower?
 			for ( uint sesGridHash = 0; sesGridHash < gridSES.getCellCount(); ++sesGridHash )
 			{
 				// Get corresponding ses grid data.
@@ -548,8 +534,7 @@ namespace VTX
 			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
-			std::vector<std::vector<Vec3f>> atomsToTriangles
-				= std::vector<std::vector<Vec3f>>( atomPositions.size(), std::vector<Vec3f>() );
+			std::vector<std::vector<Vec3f>> atomsToTriangles( atomPositions.size(), std::vector<Vec3f>() );
 
 			// Marching cube to extract mesh.
 			const Math::MarchingCube marchingCube = Math::MarchingCube();
@@ -642,10 +627,6 @@ namespace VTX
 				std::fill( ids.begin(), ids.end(), _category->getMoleculePtr()->getAtom( i )->getId() );
 				_ids.insert( _ids.end(), ids.begin(), ids.end() );
 			}
-
-			_vertices.shrink_to_fit();
-			_indices.shrink_to_fit();
-			_ids.shrink_to_fit();
 
 			chrono2.stop();
 			VTX_INFO( "Triangles sorting done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
