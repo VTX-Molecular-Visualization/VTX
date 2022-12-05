@@ -360,30 +360,32 @@ namespace VTX
 
 			const std::vector<Vec3f> & atomPositions = _category->getMoleculePtr()->getCurrentAtomPositionFrame();
 
-			std::vector<std::vector<uint>> atomGridDataTmp
+			std::vector<std::vector<uint>> atomGridData2D
 				= std::vector<std::vector<uint>>( gridAtoms.getCellCount(), std::vector<uint>() );
 
 			// Store atom indices in acceleration grid.
-			// TODO: remove this loop and create directly 1D arrays?
 			for ( uint i : atomsIdx )
 			{
 				const uint hash = gridAtoms.gridHash( atomPositions[ i ] );
-				atomGridDataTmp[ hash ].emplace_back( i );
+				atomGridData2D[ hash ].emplace_back( i );
 			}
 
+			// Not opti on CPU, only to test same algo as GPU.
 			// Linerize data in 1D arrays.
+			/*
 			std::vector<Range> atomGridDataSorted = std::vector<Range>( gridAtoms.getCellCount(), Range { 0, 0 } );
 			std::vector<uint>  atomIndexSorted	  = std::vector<uint>();
 
-			for ( uint i = 0; i < atomGridDataTmp.size(); ++i )
+			for ( uint i = 0; i < atomGridData2D.size(); ++i )
 			{
-				const std::vector<uint> & data = atomGridDataTmp[ i ];
+				const std::vector<uint> & data = atomGridData2D[ i ];
 				if ( data.empty() == false )
 				{
 					atomGridDataSorted[ i ] = Range { uint( atomIndexSorted.size() ), uint( data.size() ) };
 					atomIndexSorted.insert( atomIndexSorted.end(), data.begin(), data.end() );
 				}
 			}
+			*/
 
 			chrono2.stop();
 			VTX_INFO( "Atoms sorted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
@@ -423,19 +425,19 @@ namespace VTX
 							Vec3i gridPositionToVisit = Vec3i( Vec3f( atomGridPosition ) + offset );
 							uint  hashToVisit		  = gridAtoms.gridHash( Vec3i( gridPositionToVisit ) );
 
-							if ( hashToVisit >= atomGridDataSorted.size() )
+							if ( hashToVisit >= atomGridData2D.size() )
 							{
 								continue;
 							}
 
-							uint first = atomGridDataSorted[ hashToVisit ].first;
-							uint count = atomGridDataSorted[ hashToVisit ].count;
+							// uint first = atomGridDataSorted[ hashToVisit ].first;
+							// uint count = atomGridDataSorted[ hashToVisit ].count;
 
 							// Compute SDF.
-							for ( uint i = first; i < first + count; ++i )
-
+							// for ( uint i = first; i < first + count; ++i )
+							for ( const uint index : atomGridData2D[ hashToVisit ] )
 							{
-								uint index = atomIndexSorted[ i ];
+								// uint index = atomIndexSorted[ i ];
 								if ( _category->getMoleculePtr()->getAtom( index ) == nullptr )
 								{
 									continue;
