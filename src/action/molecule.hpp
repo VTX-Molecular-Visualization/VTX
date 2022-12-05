@@ -105,6 +105,9 @@ namespace VTX::Action::Molecule
 			Model::Representation::Representation * const preset
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
+			for ( Model::Molecule * const molecule : _molecules )
+				molecule->clearDefaultRepresentations();
+
 			Representation::RepresentationManager::get().instantiateRepresentations( preset, _molecules );
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}

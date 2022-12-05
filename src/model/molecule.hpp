@@ -218,6 +218,7 @@ namespace VTX
 			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
 			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
+			void clearDefaultRepresentations();
 			void removeChildrenRepresentations() const;
 
 			void refreshStructure();
@@ -357,6 +358,8 @@ namespace VTX
 			bool _showSolvent  = true;
 			bool _showHydrogen = true;
 			bool _showIon	   = true;
+
+			std::vector<Model::ID> _defaultRepresentationIDs = std::vector<Model::ID>();
 
 			// Fill Buffers Functions
 			void _fillBufferAtomColors();
