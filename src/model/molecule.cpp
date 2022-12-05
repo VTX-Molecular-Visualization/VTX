@@ -55,8 +55,11 @@ namespace VTX
 
 			if ( _secondaryStructure != nullptr )
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
-			if ( _solventExcludedSurface != nullptr )
-				MVC::MvcManager::get().deleteModel( _solventExcludedSurface );
+
+			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
+			{
+				MVC::MvcManager::get().deleteModel( val );
+			}
 		}
 
 		void Molecule::setPdbIdCode( const std::string & p_pdbId ) { _pdbIdCode = p_pdbId; }
@@ -412,7 +415,7 @@ namespace VTX
 			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 			refreshBondsBuffer();
 			refreshSecondaryStructure();
-			refreshSolventExcludedSurface();
+			refreshSolventExcludedSurfaces();
 		}
 
 		void Molecule::refreshColors()
@@ -422,9 +425,9 @@ namespace VTX
 			{
 				_secondaryStructure->refreshColors();
 			}
-			if ( _solventExcludedSurface != nullptr )
+			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
 			{
-				_solventExcludedSurface->refreshColors();
+				val->refreshColors();
 			}
 		}
 
@@ -435,9 +438,9 @@ namespace VTX
 			{
 				_secondaryStructure->refreshVisibilities();
 			}
-			if ( _solventExcludedSurface != nullptr )
+			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
 			{
-				_solventExcludedSurface->refreshVisibilities();
+				val->refreshVisibilities();
 			}
 		}
 
@@ -448,9 +451,9 @@ namespace VTX
 			{
 				_secondaryStructure->refreshSelection( p_selection );
 			}
-			if ( _solventExcludedSurface != nullptr )
+			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
 			{
-				_solventExcludedSurface->refreshSelection( p_selection );
+				val->refreshSelection( p_selection );
 			}
 		}
 
@@ -470,8 +473,10 @@ namespace VTX
 			if ( _secondaryStructure != nullptr )
 				_secondaryStructure->refresh();
 
-			if ( _solventExcludedSurface != nullptr )
-				_solventExcludedSurface->refresh();
+			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
+			{
+				val->refresh();
+			}
 
 			refreshRepresentationTargets();
 
@@ -709,9 +714,9 @@ namespace VTX
 			{
 				_secondaryStructure->render( p_camera );
 			}
-			if ( _solventExcludedSurface != nullptr )
+			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
 			{
-				_solventExcludedSurface->render( p_camera );
+				val->render( p_camera );
 			}
 		}
 
@@ -822,23 +827,45 @@ namespace VTX
 			_secondaryStructure->refresh();
 		}
 
-		void Molecule::createSolventExcludedSurface()
+		bool Molecule::hasSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum ) const
 		{
-			assert( _solventExcludedSurface == nullptr );
-
-			_solventExcludedSurface = MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Molecule>( this );
-			_solventExcludedSurface->init();
-			_solventExcludedSurface->print();
+			return _solventExcludedSurfaces.find( p_categoryEnum ) != _solventExcludedSurfaces.end();
 		}
 
-		void Molecule::refreshSolventExcludedSurface()
+		SolventExcludedSurface & Molecule::getSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum )
 		{
-			if ( _solventExcludedSurface == nullptr )
-			{
-				return;
-			}
+			assert( hasSolventExcludedSurface( p_categoryEnum ) );
 
-			_solventExcludedSurface->refresh();
+			return *_solventExcludedSurfaces[ p_categoryEnum ];
+		}
+
+		void Molecule::createSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum )
+		{
+			assert( hasSolventExcludedSurface( p_categoryEnum ) == false );
+
+			assert( getCategory( p_categoryEnum ).isEmpty() == false );
+
+			SolventExcludedSurface * const ses
+				= MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Category>(
+					&getCategory( p_categoryEnum ) );
+			_solventExcludedSurfaces.emplace( p_categoryEnum, ses );
+			ses->init();
+			ses->print();
+		}
+
+		void Molecule::refreshSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum )
+		{
+			assert( hasSolventExcludedSurface( p_categoryEnum ) );
+
+			_solventExcludedSurfaces[ p_categoryEnum ]->refresh();
+		}
+
+		void Molecule::refreshSolventExcludedSurfaces()
+		{
+			for ( const auto & [ key, val ] : _solventExcludedSurfaces )
+			{
+				val->refresh();
+			}
 		}
 
 		std::vector<Model::Category *> Molecule::getFilledCategories() const

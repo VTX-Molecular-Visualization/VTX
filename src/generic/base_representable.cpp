@@ -1,5 +1,6 @@
 #include "base_representable.hpp"
 #include "model/atom.hpp"
+#include "model/category.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/representation_library.hpp"
@@ -139,20 +140,27 @@ namespace VTX
 				}
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::SES ) )
 				{
-					if ( _molecule->hasSolventExcludedSurface() == false )
-					{
-						_molecule->createSolventExcludedSurface();
-					}
+					const Model::Category * const category = _molecule->getCategoryFromChain( *residue->getChainPtr() );
+					const CATEGORY_ENUM			  categoryEnum = category->getCategoryEnum();
 
-					const Model::SolventExcludedSurface & ses = _molecule->getSolventExcludedSurface();
-					const std::vector<Model::SolventExcludedSurface::Range> & atomsToTriangles
-						= ses.getAtomsToTriangles();
-					for ( uint atomIdx = residue->getIndexFirstAtom();
-						  atomIdx < residue->getIndexFirstAtom() + residue->getAtomCount();
-						  ++atomIdx )
+					if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
 					{
-						representationTargets.appendTrianglesSES( atomsToTriangles[ atomIdx ].first,
-																  atomsToTriangles[ atomIdx ].count );
+						if ( _molecule->hasSolventExcludedSurface( categoryEnum ) == false )
+						{
+							_molecule->createSolventExcludedSurface( categoryEnum );
+						}
+
+						const Model::SolventExcludedSurface & ses
+							= _molecule->getSolventExcludedSurface( categoryEnum );
+						const std::vector<Model::SolventExcludedSurface::Range> & atomsToTriangles
+							= ses.getAtomsToTriangles();
+						for ( uint atomIdx = residue->getIndexFirstAtom();
+							  atomIdx < residue->getIndexFirstAtom() + residue->getAtomCount();
+							  ++atomIdx )
+						{
+							// representationTargets.appendTrianglesSES( atomsToTriangles[ atomIdx ].first,
+							//										  atomsToTriangles[ atomIdx ].count );
+						}
 					}
 				}
 			}
@@ -169,7 +177,7 @@ namespace VTX
 			if ( _molecule == nullptr )
 				return;
 
-			for ( auto representationTargetPair : _molecule->_representationTargets )
+			for ( const auto & representationTargetPair : _molecule->_representationTargets )
 			{
 				const VTX::Representation::FlagDataTargeted dataFlag
 					= representationTargetPair.first->getFlagDataTargeted();
@@ -198,6 +206,10 @@ namespace VTX
 
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::SES ) )
 				{
+					const Model::Category * const category = _molecule->getCategoryFromChain( *residue->getChainPtr() );
+					const CATEGORY_ENUM			  categoryEnum = category->getCategoryEnum();
+
+					/*
 					const Model::SolventExcludedSurface & ses = _molecule->getSolventExcludedSurface();
 
 					const std::vector<Model::SolventExcludedSurface::Range> & atomsToTriangles
@@ -209,10 +221,11 @@ namespace VTX
 						representationTargets.appendTrianglesSES( atomsToTriangles[ atomIdx ].first,
 																  atomsToTriangles[ atomIdx ].count );
 					}
+					*/
 				}
 			}
 
-			for ( auto representationTargetPair : _molecule->_representationTargets )
+			for ( const auto & representationTargetPair : _molecule->_representationTargets )
 			{
 				// Generate does nothing if the TargetRange has not been reset before.
 				_molecule->_representationTargets[ representationTargetPair.first ].generate();

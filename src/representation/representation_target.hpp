@@ -2,6 +2,7 @@
 #define __VTX_REPRESENTATION_TARGET__
 
 #include "define.hpp"
+#include "model/category_enum.hpp"
 #include <map>
 #include <vector>
 
@@ -24,74 +25,77 @@ namespace VTX
 		class RepresentationTarget
 		{
 		  public:
-			RepresentationTarget() = default;
-			~RepresentationTarget();
+			RepresentationTarget()	= default;
+			~RepresentationTarget() = default;
 
 			inline const TargetRangeArrays & getAtoms() const
 			{
-				assert( _atomsMap == nullptr ); // Ensure compiled.
+				assert( _isGenerated );
 				return _atoms;
-			};
+			}
+
 			inline const TargetRangeElements & getBonds() const
 			{
-				assert( _bondsMap == nullptr ); // Ensure compiled.
+				assert( _isGenerated );
 				return _bonds;
-			};
+			}
+
 			inline const TargetRangeElements & getRibbons() const
 			{
-				assert( _ribbonsMap == nullptr ); // Ensure compiled.
+				assert( _isGenerated );
 				return _ribbons;
-			};
-			inline const TargetRangeElements & getTrianglesSES() const
+			}
+
+			inline const TargetRangeElements & getTrianglesSES( const CATEGORY_ENUM p_category ) const
 			{
-				assert( _trianglesSESMap == nullptr ); // Ensure compiled.
-				return _trianglesSES;
-			};
+				assert( _isGenerated );
+				// TODO: use [].
+				return _trianglesSES.at( p_category );
+			}
 
 			inline void appendAtoms( const uint p_indice, const uint p_count )
 			{
-				_append( *_atomsMap, p_indice, p_count );
+				_append( _atomsMap, p_indice, p_count );
 			}
+
 			inline void appendBonds( const uint p_indice, const uint p_count )
 			{
-				_append( *_bondsMap, p_indice, p_count );
+				_append( _bondsMap, p_indice, p_count );
 			}
+
 			inline void appendRibbons( const uint p_indice, const uint p_count )
 			{
-				_append( *_ribbonsMap, p_indice, p_count );
+				_append( _ribbonsMap, p_indice, p_count );
 			}
-			inline void appendTrianglesSES( const uint p_indice, const uint p_count )
-			{
-				_append( *_trianglesSESMap, p_indice, p_count );
-			}
-			inline void resetTriangleSES()
-			{
-				_trianglesSES.indices.clear();
-				_trianglesSES.counts.clear();
 
-				_trianglesSESMap = new TargetRangeMap();
+			inline void appendTrianglesSES( const CATEGORY_ENUM p_category, const uint p_indice, const uint p_count )
+			{
+				assert( _trianglesSESMap.find( p_category ) != _trianglesSESMap.end() );
+				_append( _trianglesSESMap[ p_category ], p_indice, p_count );
 			}
+
+			inline void resetTriangleSES() { _trianglesSES.clear(); }
 
 			void generate();
 
 		  private:
-			TargetRangeArrays	_atoms		  = TargetRangeArrays();
-			TargetRangeElements _bonds		  = TargetRangeElements();
-			TargetRangeElements _ribbons	  = TargetRangeElements();
-			TargetRangeElements _trianglesSES = TargetRangeElements();
+			TargetRangeArrays								   _atoms	= TargetRangeArrays();
+			TargetRangeElements								   _bonds	= TargetRangeElements();
+			TargetRangeElements								   _ribbons = TargetRangeElements();
+			std::map<const CATEGORY_ENUM, TargetRangeElements> _trianglesSES
+				= std::map<const CATEGORY_ENUM, TargetRangeElements>();
 
-			TargetRangeMap * _atomsMap		  = new TargetRangeMap();
-			TargetRangeMap * _bondsMap		  = new TargetRangeMap();
-			TargetRangeMap * _ribbonsMap	  = new TargetRangeMap();
-			TargetRangeMap * _trianglesSESMap = new TargetRangeMap();
+			TargetRangeMap								  _atomsMap	  = TargetRangeMap();
+			TargetRangeMap								  _bondsMap	  = TargetRangeMap();
+			TargetRangeMap								  _ribbonsMap = TargetRangeMap();
+			std::map<const CATEGORY_ENUM, TargetRangeMap> _trianglesSESMap
+				= std::map<const CATEGORY_ENUM, TargetRangeMap>();
 
+			bool _isGenerated = false;
 			void _append( TargetRangeMap & p_range, const uint p_indice, const uint p_count );
 
-			void _generateArrays( const TargetRangeMap ** const p_map, TargetRangeArrays & p_rangeArrays );
-			void _generateElements( const TargetRangeMap ** const p_map, TargetRangeElements & p_rangeElements );
-
-			void _mapToRangeArrays( const TargetRangeMap & p_map, TargetRangeArrays & p_rangeArrays );
-			void _mapToRangeElements( const TargetRangeMap & p_map, TargetRangeElements & p_rangeElements );
+			void _mapToRangeArrays( TargetRangeMap & p_map, TargetRangeArrays & p_rangeArrays );
+			void _mapToRangeElements( TargetRangeMap & p_map, TargetRangeElements & p_rangeElements );
 		};
 	} // namespace Representation
 } // namespace VTX

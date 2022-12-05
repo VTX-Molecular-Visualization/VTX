@@ -1,5 +1,6 @@
 #include "solvent_excluded_surface.hpp"
 #include "atom.hpp"
+#include "category.hpp"
 #include "chain.hpp"
 #include "math/marching_cube.hpp"
 #include "molecule.hpp"
@@ -15,23 +16,26 @@ namespace VTX
 {
 	namespace Model
 	{
-		SolventExcludedSurface::SolventExcludedSurface( Molecule * const p_molecule ) :
-			MeshTriangle(), _molecule( p_molecule )
+		SolventExcludedSurface::SolventExcludedSurface( const Category * const p_category ) :
+			MeshTriangle(), _category( p_category )
 		{
 		}
 
-		const Math::Transform & SolventExcludedSurface::getTransform() const { return _molecule->getTransform(); }
+		const Math::Transform & SolventExcludedSurface::getTransform() const
+		{
+			return _category->getMoleculePtr()->getTransform();
+		}
 
 		void SolventExcludedSurface::_init()
 		{
 			refresh();
-			refreshSelection(
-				VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculeMap( *_molecule ) );
+			refreshSelection( VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculeMap(
+				*_category->getMoleculePtr() ) );
 		}
 
 		void SolventExcludedSurface::refresh()
 		{
-			_mode = Mode::GPU;
+			_mode = Mode::CPU;
 
 			switch ( _mode )
 			{
@@ -54,10 +58,12 @@ namespace VTX
 			chrono2.start();
 			VTX_INFO( "Creating SES..." );
 
+			const std::vector<uint> atomsIdx = _category->generateAtomIndexList();
+
 			// Sort atoms in acceleration grid.
 			const float maxVdWRadius = *std::max_element(
 				Atom::SYMBOL_VDW_RADIUS, Atom::SYMBOL_VDW_RADIUS + std::size( Atom::SYMBOL_VDW_RADIUS ) );
-			const Object3D::Helper::AABB & molAABB = _molecule->getAABB();
+			const Object3D::Helper::AABB & molAABB = _category->getMoleculePtr()->getAABB();
 
 			const float atomGridCellSize = PROBE_RADIUS + maxVdWRadius;
 			const Vec3f gridMin			 = molAABB.getMin() - atomGridCellSize;
@@ -72,17 +78,18 @@ namespace VTX
 			std::vector<std::vector<uint>> atomGridDataTmp
 				= std::vector<std::vector<uint>>( gridAtoms.getCellCount(), std::vector<uint>() );
 
-			const std::vector<Vec3f> & atomPositions = _molecule->getCurrentAtomPositionFrame();
+			const std::vector<Vec3f> & atomPositions = _category->getMoleculePtr()->getCurrentAtomPositionFrame();
 
 			// Store atom indices in acceleration grid.
 			// TODO: remove this loop and create directly 1D arrays?
 			// vec4( position.xyz, vdwRadius )
 			std::vector<Vec4f> atomPositionsVdW = std::vector<Vec4f>( atomPositions.size() );
-			for ( uint i = 0; i < atomPositions.size(); ++i )
+			for ( uint idx : atomsIdx )
 			{
-				const uint hash = gridAtoms.gridHash( atomPositions[ i ] );
-				atomGridDataTmp[ hash ].emplace_back( i );
-				atomPositionsVdW[ i ] = Vec4f( atomPositions[ i ], _molecule->getAtom( i )->getVdwRadius() );
+				const uint hash = gridAtoms.gridHash( atomPositions[ idx ] );
+				atomGridDataTmp[ hash ].emplace_back( idx );
+				atomPositionsVdW[ idx ]
+					= Vec4f( atomPositions[ idx ], _category->getMoleculePtr()->getAtom( idx )->getVdwRadius() );
 			}
 
 			// Linerize data in 1D arrays.
@@ -236,7 +243,7 @@ namespace VTX
 			workerMarchingCube.getProgram().setVec3u( "uGridSESSize", Vec3u( gridSES.size ) );
 			workerMarchingCube.getProgram().setVec3f( "uGridSESCellSize", gridSES.cellSize );
 
-			// Start
+			// Start.
 			workerMarchingCube.start( gridSES.size );
 
 			ssboTrianglePositions.getData( 0, uint( vertices.size() ) * sizeof( Vec4f ), &vertices[ 0 ] );
@@ -333,10 +340,12 @@ namespace VTX
 			_indices.clear();
 			_ids.clear();
 
+			const std::vector<uint> atomsIdx = _category->generateAtomIndexList();
+
 			// Sort atoms in acceleration grid.
 			const float maxVdWRadius = *std::max_element(
 				Atom::SYMBOL_VDW_RADIUS, Atom::SYMBOL_VDW_RADIUS + std::size( Atom::SYMBOL_VDW_RADIUS ) );
-			const Object3D::Helper::AABB & molAABB = _molecule->getAABB();
+			const Object3D::Helper::AABB & molAABB = _category->getAABB();
 
 			const float atomGridCellSize = PROBE_RADIUS + maxVdWRadius;
 			const Vec3f gridMin			 = molAABB.getMin() - atomGridCellSize;
@@ -348,14 +357,14 @@ namespace VTX
 			Object3D::Helper::Grid gridAtoms
 				= Object3D::Helper::Grid( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
 
-			const std::vector<Vec3f> & atomPositions = _molecule->getCurrentAtomPositionFrame();
+			const std::vector<Vec3f> & atomPositions = _category->getMoleculePtr()->getCurrentAtomPositionFrame();
 
 			std::vector<std::vector<uint>> atomGridDataTmp
 				= std::vector<std::vector<uint>>( gridAtoms.getCellCount(), std::vector<uint>() );
 
 			// Store atom indices in acceleration grid.
 			// TODO: remove this loop and create directly 1D arrays?
-			for ( uint i = 0; i < atomPositions.size(); ++i )
+			for ( uint i : atomsIdx )
 			{
 				const uint hash = gridAtoms.gridHash( atomPositions[ i ] );
 				atomGridDataTmp[ hash ].emplace_back( i );
@@ -426,7 +435,7 @@ namespace VTX
 
 							{
 								uint index = atomIndexSorted[ i ];
-								if ( _molecule->getAtom( index ) == nullptr )
+								if ( _category->getMoleculePtr()->getAtom( index ) == nullptr )
 								{
 									continue;
 								}
@@ -446,7 +455,8 @@ namespace VTX
 								// Boundary.
 								else
 								{
-									distance -= ( PROBE_RADIUS + _molecule->getAtom( index )->getVdwRadius() );
+									distance -= ( PROBE_RADIUS
+												  + _category->getMoleculePtr()->getAtom( index )->getVdwRadius() );
 									if ( distance < 0.f )
 									{
 										gridData.sdf = -VOXEL_SIZE;
@@ -608,7 +618,7 @@ namespace VTX
 			_atomsToTriangles = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
 			for ( uint i = 0; i < atomsToTriangles.size(); ++i )
 			{
-				if ( _molecule->getAtom( i ) == nullptr )
+				if ( _category->getMoleculePtr()->getAtom( i ) == nullptr )
 				{
 					continue;
 				}
@@ -626,7 +636,7 @@ namespace VTX
 				_vertices.insert( _vertices.end(), trianglePoints.begin(), trianglePoints.end() );
 
 				std::vector<uint> ids = std::vector<uint>( trianglePoints.size() );
-				std::fill( ids.begin(), ids.end(), _molecule->getAtom( i )->getId() );
+				std::fill( ids.begin(), ids.end(), _category->getMoleculePtr()->getAtom( i )->getId() );
 				_ids.insert( _ids.end(), ids.begin(), ids.end() );
 			}
 
@@ -674,13 +684,13 @@ namespace VTX
 
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
-				const Atom * const atom = _molecule->getAtom( atomIdx );
+				const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
 				if ( atom == nullptr )
 				{
 					continue;
 				}
 
-				const Color::Rgb & color = _molecule->getAtomColor( atomIdx );
+				const Color::Rgb & color = _category->getMoleculePtr()->getAtomColor( atomIdx );
 				std::fill( _colors.begin() + _atomsToTriangles[ atomIdx ].first,
 						   _colors.begin() + _atomsToTriangles[ atomIdx ].first + _atomsToTriangles[ atomIdx ].count,
 						   color );
@@ -697,7 +707,7 @@ namespace VTX
 
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
-				const Atom * const atom = _molecule->getAtom( atomIdx );
+				const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
 				if ( atom == nullptr )
 				{
 					continue;
@@ -705,7 +715,8 @@ namespace VTX
 
 				const Residue * const residue = atom->getResiduePtr();
 				const Chain * const	  chain	  = residue->getChainPtr();
-				const uint			  visible = _molecule->isVisible() && chain->isVisible() && residue->isVisible();
+				const uint			  visible
+					= _category->getMoleculePtr()->isVisible() && chain->isVisible() && residue->isVisible();
 
 				if ( visible == 0 )
 				{
@@ -727,7 +738,7 @@ namespace VTX
 
 			if ( p_selection != nullptr )
 			{
-				if ( p_selection->getFullySelectedChildCount() == _molecule->getRealChainCount() )
+				if ( p_selection->getFullySelectedChildCount() == _category->getMoleculePtr()->getRealChainCount() )
 				{
 					std::fill( _selections.begin(), _selections.end(), 1 );
 				}

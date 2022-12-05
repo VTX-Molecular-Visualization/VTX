@@ -10,6 +10,7 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
+		class Category;
 		class SolventExcludedSurface : public MeshTriangle
 		{
 			VTX_MODEL
@@ -24,9 +25,9 @@ namespace VTX
 			inline const static float PROBE_RADIUS = 1.4f;
 			inline const static float VOXEL_SIZE   = 0.4f;
 
-			inline Model::Molecule * const	  getMolecule() { return _molecule; }
-			inline const std::vector<Range> & getAtomsToTriangles() const { return _atomsToTriangles; }
-			const Math::Transform &			  getTransform() const override;
+			inline const Model::Category * const getCategory() const { return _category; }
+			inline const std::vector<Range> &	 getAtomsToTriangles() const { return _atomsToTriangles; }
+			const Math::Transform &				 getTransform() const override;
 
 			void refresh();
 			void refreshColors();
@@ -55,17 +56,17 @@ namespace VTX
 				int	  nearestAtom;
 			};
 
-			Mode _mode = Mode::GPU;
+			Mode						  _mode = Mode::GPU;
+			const Model::Category * const _category;
 
-			Model::Molecule * const _molecule;
-			std::vector<Range>		_atomsToTriangles;
+			std::vector<Range> _atomsToTriangles;
 			// Move to base class?
 			uint _indiceCount = 0;
 
 			void _refreshCPU();
 			void _refreshGPU();
 
-			SolventExcludedSurface( Molecule * const );
+			SolventExcludedSurface( const Category * const );
 			~SolventExcludedSurface() = default;
 		};
 	} // namespace Model

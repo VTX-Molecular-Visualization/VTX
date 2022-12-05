@@ -130,15 +130,16 @@ namespace VTX
 			inline const bool				  hasSecondaryStructure() const { return _secondaryStructure != nullptr; }
 			inline const SecondaryStructure & getSecondaryStructure() const { return *_secondaryStructure; }
 			inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
-			inline const bool hasSolventExcludedSurface() const { return _solventExcludedSurface != nullptr; }
-			inline const SolventExcludedSurface & getSolventExcludedSurface() const { return *_solventExcludedSurface; }
-			inline SolventExcludedSurface &		  getSolventExcludedSurface() { return *_solventExcludedSurface; }
+			inline const bool hasSolventExcludedSurface() const { return _solventExcludedSurfaces.empty() == false; }
 
-			inline const Model::Category & getCategory( CATEGORY_ENUM p_categoryEnum ) const
+			bool					 hasSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum ) const;
+			SolventExcludedSurface & getSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum );
+
+			inline const Model::Category & getCategory( const CATEGORY_ENUM & p_categoryEnum ) const
 			{
 				return *( _categories[ int( p_categoryEnum ) ] );
 			}
-			inline Model::Category & getCategory( CATEGORY_ENUM p_categoryEnum )
+			inline Model::Category & getCategory( const CATEGORY_ENUM & p_categoryEnum )
 			{
 				return *( _categories[ int( p_categoryEnum ) ] );
 			}
@@ -271,8 +272,9 @@ namespace VTX
 			void refreshSecondaryStructure();
 
 			// Solvent excluded surface.
-			void createSolventExcludedSurface();
-			void refreshSolventExcludedSurface();
+			void createSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum );
+			void refreshSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum );
+			void refreshSolventExcludedSurfaces();
 
 			// Categorization
 			std::vector<Model::Category *> getFilledCategories() const;
@@ -339,7 +341,8 @@ namespace VTX
 			// Secondary structure.
 			SecondaryStructure * _secondaryStructure = nullptr;
 			// Solvent excluded surface.
-			SolventExcludedSurface * _solventExcludedSurface = nullptr;
+			std::map<CATEGORY_ENUM, SolventExcludedSurface *> _solventExcludedSurfaces
+				= std::map<CATEGORY_ENUM, SolventExcludedSurface *>();
 
 			// Categories
 			std::vector<Model::Category *> _categories;
