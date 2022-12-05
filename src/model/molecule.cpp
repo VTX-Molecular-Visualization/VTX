@@ -127,11 +127,11 @@ namespace VTX
 
 				setRepresentableMolecule( this );
 				if ( !hasCustomRepresentation() )
-
 				{
 					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation(
 						*this, false, false );
 
+					_defaultRepresentationIDs.reserve( getCategories().size() );
 					for ( Model::Category * const category : getCategories() )
 					{
 						if ( category->isEmpty() )
@@ -148,10 +148,14 @@ namespace VTX
 							if ( chain == nullptr )
 								continue;
 
-							VTX::Representation::RepresentationManager::get().instantiateRepresentation(
-								defaultRepresentation, *chain, false, false );
+							const Representation::InstantiatedRepresentation * const defaultInstantiatedRepresentation
+								= VTX::Representation::RepresentationManager::get().instantiateRepresentation(
+									defaultRepresentation, *chain, false, false );
+
+							_defaultRepresentationIDs.emplace_back( defaultInstantiatedRepresentation->getId() );
 						}
 					}
+					_defaultRepresentationIDs.shrink_to_fit();
 				}
 				computeAllRepresentationData();
 
@@ -176,6 +180,28 @@ namespace VTX
 			}
 
 			return true;
+		}
+
+		void Molecule::clearDefaultRepresentations()
+		{
+			if ( _defaultRepresentationIDs.size() <= 0 )
+				return;
+
+			for ( const Model::ID & instantiatedRepresentationID : _defaultRepresentationIDs )
+			{
+				if ( !MVC::MvcManager::get().doesModelExists( instantiatedRepresentationID ) )
+					continue;
+
+				Model::Representation::InstantiatedRepresentation & instantiatedRepresentation
+					= MVC::MvcManager::get().getModel<Model::Representation::InstantiatedRepresentation>(
+						instantiatedRepresentationID );
+
+				VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
+					*instantiatedRepresentation.getTarget(), false, false );
+			}
+
+			_defaultRepresentationIDs.clear();
+			_defaultRepresentationIDs.shrink_to_fit();
 		}
 
 		void Molecule::removeChildrenRepresentations() const
