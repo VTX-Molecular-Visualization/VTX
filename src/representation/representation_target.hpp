@@ -70,11 +70,19 @@ namespace VTX
 
 			inline void appendTrianglesSES( const CATEGORY_ENUM p_category, const uint p_indice, const uint p_count )
 			{
-				assert( _trianglesSESMap.find( p_category ) != _trianglesSESMap.end() );
+				if ( _trianglesSESMap.find( p_category ) == _trianglesSESMap.end() )
+				{
+					_trianglesSESMap.emplace( p_category, TargetRangeMap() );
+				}
+
 				_append( _trianglesSESMap[ p_category ], p_indice, p_count );
 			}
 
-			inline void resetTriangleSES() { _trianglesSES.clear(); }
+			inline void resetTriangleSES()
+			{
+				_trianglesSES.clear();
+				_isGenerated = false;
+			}
 
 			void generate();
 

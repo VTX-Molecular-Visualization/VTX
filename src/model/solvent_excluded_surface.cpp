@@ -35,6 +35,7 @@ namespace VTX
 
 		void SolventExcludedSurface::refresh()
 		{
+			// Force CPU.
 			_mode = Mode::CPU;
 
 			switch ( _mode )
