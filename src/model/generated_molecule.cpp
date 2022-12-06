@@ -625,7 +625,7 @@ namespace VTX::Model
 		p_chain.setColor( Model::Chain::getChainIdColor( p_chainSource.getOriginalChainID() ) );
 
 		const CATEGORY_ENUM & chainCategoryEnum = p_chainSource.getCategoryEnum();
-		getCategory( chainCategoryEnum ).addChain( p_chain.getIndex() );
+		p_chain.setCategoryEnum( chainCategoryEnum );
 
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
