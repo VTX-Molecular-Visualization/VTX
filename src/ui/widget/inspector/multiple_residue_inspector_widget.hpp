@@ -19,6 +19,9 @@ namespace VTX::UI::Widget::Inspector
 	{
 		VTX_WIDGET
 
+	  private:
+		static const int BOND_INFO_COUNT_MAX;
+
 	  public:
 		~MultipleResidueWidget();
 		void localize() override;
@@ -40,6 +43,8 @@ namespace VTX::UI::Widget::Inspector
 		CustomWidget::QLabelMultiField * _fullnameLabel = nullptr;
 		CustomWidget::QLabelMultiField * _nbAtomsLabel	= nullptr;
 		QLabel *						 _bondsLabel	= nullptr;
+
+		int _bondInfoCount = 0;
 
 		void _onRepresentationPresetChange( const int p_presetIndex );
 		void _onRepresentationChange( const Model::Representation::InstantiatedRepresentation & p_representation,
