@@ -119,12 +119,6 @@ namespace VTX
 			// Fill buffers.
 			if ( _atomPositionsFrames.size() > 0 )
 			{
-				// Compute secondary structure if not loaded.
-				if ( _configuration.isSecondaryStructureLoadedFromFile == false )
-				{
-					Util::SecondaryStructure::computeSecondaryStructure( *this );
-				}
-
 				setRepresentableMolecule( this );
 				if ( !hasCustomRepresentation() )
 				{
@@ -837,6 +831,12 @@ namespace VTX
 		void Molecule::createSecondaryStructure()
 		{
 			assert( _secondaryStructure == nullptr );
+
+			// Compute secondary structure if not loaded.
+			if ( _configuration.isSecondaryStructureLoadedFromFile == false )
+			{
+				Util::SecondaryStructure::computeSecondaryStructure( *this );
+			}
 
 			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule>( this );
 			_secondaryStructure->init();

@@ -338,8 +338,12 @@ namespace VTX
 			VTX_INFO( "Creating SES..." );
 
 			_vertices.clear();
+			_normals.clear();
 			_indices.clear();
 			_ids.clear();
+			_colors.clear();
+			_visibilities.clear();
+			_atomsToTriangles.clear();
 
 			const std::vector<uint> atomsIdx = _category->generateAtomIndexList();
 
@@ -615,6 +619,8 @@ namespace VTX
 
 				_atomsToTriangles[ i ].first = uint( _vertices.size() );
 				_atomsToTriangles[ i ].count = uint( trianglePoints.size() );
+
+				////////////////////////////////////////////
 
 				std::vector<uint> indices = std::vector<uint>( trianglePoints.size() );
 				int				  index	  = int( _vertices.size() );
