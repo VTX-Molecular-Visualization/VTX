@@ -705,8 +705,8 @@ namespace VTX
 
 				const Residue * const residue = atom->getResiduePtr();
 				const Chain * const	  chain	  = residue->getChainPtr();
-				const uint			  visible
-					= _category->getMoleculePtr()->isVisible() && chain->isVisible() && residue->isVisible();
+				const uint			  visible = _category->getMoleculePtr()->isVisible() && chain->isVisible()
+									 && residue->isVisible() && atom->isVisible();
 
 				if ( visible == 0 )
 				{

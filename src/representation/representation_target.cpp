@@ -14,7 +14,6 @@ namespace VTX
 			{
 				_mapToRangeElements( val, _trianglesSES[ key ] );
 			}
-			_trianglesSESMap.clear();
 
 			_isGenerated = true;
 		}

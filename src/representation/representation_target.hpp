@@ -4,6 +4,7 @@
 #include "define.hpp"
 #include "model/category_enum.hpp"
 #include <map>
+#include <stdexcept>
 #include <vector>
 
 namespace VTX
@@ -49,6 +50,7 @@ namespace VTX
 			inline const TargetRangeElements & getTrianglesSES( const CATEGORY_ENUM p_category ) const
 			{
 				assert( _isGenerated );
+				assert( _trianglesSES.find( p_category ) != _trianglesSES.end() );
 				// TODO: use [].
 				return _trianglesSES.at( p_category );
 			}
@@ -80,7 +82,15 @@ namespace VTX
 
 			inline void resetTriangleSES()
 			{
-				_trianglesSES.clear();
+				for ( auto & [ key, val ] : _trianglesSES )
+				{
+					val = TargetRangeElements();
+				}
+				for ( auto & [ key, val ] : _trianglesSESMap )
+				{
+					val = TargetRangeMap();
+				}
+
 				_isGenerated = false;
 			}
 
