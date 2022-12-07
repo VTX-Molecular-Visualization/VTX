@@ -15930,7 +15930,7 @@ C37,H31,1
 C37,H32,1
 #XFC
 4-amino-1-(2-deoxy-2-fluoro-5-O-phosphono-beta-D-arabinofuranosyl)-2-oxo-1,2-dihydropyrimidine-5-carbaldehyde
-2
+1
 O2,C2,2
 N3,C2,1
 N3,C4,2
@@ -23845,7 +23845,7 @@ P,OP3,1
 OP3,H1,1
 #XPC
 (3S,4R)-4-aminopyrrolidine-3-carboxylic acid
-0
+2
 N,HN,1
 N,HNA,1
 CB,N,1

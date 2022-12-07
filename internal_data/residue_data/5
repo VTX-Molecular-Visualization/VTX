@@ -7419,7 +7419,7 @@ C36,H36A,1
 C36,H36B,1
 #543
 CALCIUM ION, 6 WATERS PLUS ETHANOL COORDINATED
-2
+3
 CA,O1,1
 CA,O2,1
 CA,O3,1
@@ -9708,7 +9708,7 @@ C9,H20,1
 N12,H21,1
 #55N
 (2R,4R)-2-(acetyloxy)-5-methyl-4-(methylamino)hexanoic acid
-2
+0
 OBA,CBB,2
 CBB,CBC,1
 CBB,OAZ,1
@@ -10988,7 +10988,7 @@ C20,H20,1
 C21,H21,1
 #56A
 3-(8-phenyloctyl)-L-histidine
-2
+0
 O,C,2
 OXT,C,1
 C,CA,1
@@ -17956,7 +17956,7 @@ O24,H20,1
 O44,H21,1
 #5A6
 (2S)-2-amino-4-[5-(5-aminopentyl)-1,3,4-oxadiazol-2-yl]butanoic acid
-2
+0
 N18,C19,1
 C20,C19,1
 C20,C21,1
@@ -25834,7 +25834,7 @@ C19,H19,1
 C20,H20,1
 #5EJ
 1-(2-deoxy-5-O-phosphono-beta-D-erythro-pentofuranosyl)-4-ethoxy-5-methylpyrimidin-2(1H)-one
-2
+1
 OP2,P,1
 P,OP1,2
 P,O5,1
@@ -32212,7 +32212,7 @@ C28,H228,1
 N5,H261,1
 #5IT
 5-IODO-THYMIDINE-5'-PHOSPHATE
-2
+1
 P,OP1,2
 P,OP2,1
 P,OP3,1
@@ -36171,7 +36171,7 @@ N19,H2,1
 N31,H1,1
 #5LG
 (phenylmethyl) ~{N}-[(8~{S},11~{S},14~{S})-8-(hydroxymethyl)-11-(2-methylpropyl)-5,10,13-tris(oxidanylidene)-1,4,9,12,17,18-hexazabicyclo[14.2.1]nonadeca-16(19),17-dien-14-yl]carbamate
-0
+2
 O20,C19,1
 C19,C11,1
 O18,C14,2
@@ -36252,7 +36252,7 @@ C6,H36,1
 C7,H37,1
 #5LH
 (phenylmethyl) ~{N}-[(9~{S},12~{S},15~{S})-9-(hydroxymethyl)-12-(2-methylpropyl)-6,11,14-tris(oxidanylidene)-1,5,10,13,18,19-hexazabicyclo[15.2.1]icosa-17(20),18-dien-15-yl]carbamate
-0
+2
 O27,C26,2
 C26,O35,1
 C26,N25,1
@@ -36366,7 +36366,7 @@ O15,N12,1
 O15,HO15,1
 #5LJ
 (phenylmethyl) ~{N}-[(12~{S},15~{S},18~{S})-15-(cyclohexylmethyl)-12-(hydroxymethyl)-9,14,17-tris(oxidanylidene)-1,8,13,16,21,22-hexazabicyclo[18.2.1]tricosa-20(23),21-dien-18-yl]carbamate
-0
+2
 O01,C02,1
 C02,C03,1
 C03,C16,1
@@ -37518,7 +37518,7 @@ CM5,HM52,1
 CM5,HM53,1
 #5MD
 2'-deoxy-1-methyl-pseudouridine
-2
+1
 O5,C5,1
 O5,H5,1
 C5,C4,1

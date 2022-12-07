@@ -10264,7 +10264,7 @@ N6,HN6,1
 N6,HN6A,1
 #VAS
 (2S,4S,5S)-5-amino-6-cyclohexyl-4-hydroxy-2-(1-methylethyl)hexanoic acid
-0
+2
 C,O,2
 C,C11,1
 C,OXT,1
@@ -20752,7 +20752,7 @@ C1,H27,1
 C1,H28,1
 #VME
 METHYL L-VALINATE
-0
+2
 N,CA,1
 N,HN1,1
 N,HN2,1
