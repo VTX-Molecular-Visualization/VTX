@@ -12,6 +12,7 @@ namespace VTX
 
 			for ( auto & [ key, val ] : _trianglesSESMap )
 			{
+				assert( _trianglesSES.find( key ) != _trianglesSES.end() );
 				_mapToRangeElements( val, _trianglesSES[ key ] );
 			}
 
