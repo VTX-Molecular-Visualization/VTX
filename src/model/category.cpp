@@ -106,9 +106,9 @@ namespace VTX::Model
 
 		size_t counter = 0;
 
-		for ( const std::pair<uint, uint> & firstLastAtom : firstLastAtoms ) 
+		for ( const std::pair<uint, uint> & firstLastAtom : firstLastAtoms )
 		{
-			for ( uint i = firstLastAtom.first; i <= firstLastAtom.second; i++ ) 
+			for ( uint i = firstLastAtom.first; i <= firstLastAtom.second; i++ )
 			{
 				atomIndexList[ counter ] = i;
 				counter++;
