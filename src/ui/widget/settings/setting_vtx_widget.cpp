@@ -40,11 +40,16 @@ namespace VTX::UI::Widget::Settings
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
 				viewport, "ControllerElasticityFactorWidget" );
 		_controllerElasticityFactorWidget->setMinMax( 0.f, 1.f );
-		_controllerTranslationFactorWidget
+		_controllerAccelerationFactorWidget
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
-				viewport, "ControllerTranslationFactorWidget" );
-		_controllerTranslationFactorWidget->setMinMax( Setting::CONTROLLER_TRANSLATION_FACTOR_MIN,
-													   Setting::CONTROLLER_TRANSLATION_FACTOR_MAX );
+				viewport, "ControllerAccelerationFactorWidget" );
+		_controllerAccelerationFactorWidget->setMinMax( Setting::CONTROLLER_ACCELERATION_FACTOR_MIN,
+														Setting::CONTROLLER_ACCELERATION_FACTOR_MAX );
+		_controllerDecelerationFactorWidget
+			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
+				viewport, "ControllerDecelerationFactorWidget" );
+		_controllerDecelerationFactorWidget->setMinMax( Setting::CONTROLLER_DECELERATION_FACTOR_MIN,
+														Setting::CONTROLLER_DECELERATION_FACTOR_MAX );
 		_controllerTranslationSpeedWidget
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
 				viewport, "ControllerTranslationSpeedWidget" );
@@ -102,7 +107,8 @@ namespace VTX::UI::Widget::Settings
 		_startSection( "Controller" );
 		_addItemInLayout( _activeControllerElasticityWidget, "Activate elasticity" );
 		_addItemInLayout( _controllerElasticityFactorWidget, "Elasticity strength" );
-		_addItemInLayout( _controllerTranslationFactorWidget, "Translation factor" );
+		_addItemInLayout( _controllerAccelerationFactorWidget, "Acceleration factor" );
+		_addItemInLayout( _controllerDecelerationFactorWidget, "Deceleration factor" );
 		_addItemInLayout( _controllerTranslationSpeedWidget, "Translation speed" );
 		_addItemInLayout( _controllerRotationSpeedWidget, "Rotation speed" );
 		_addItemInLayout( _controllerYAxisInvertedWidget, "Invert Y axis" );
@@ -156,10 +162,14 @@ namespace VTX::UI::Widget::Settings
 				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
 				 this,
 				 &SettingVTXWidget::_changeControllerElasticityFactorAction );
-		connect( _controllerTranslationFactorWidget,
+		connect( _controllerAccelerationFactorWidget,
 				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
 				 this,
-				 &SettingVTXWidget::_changeControllerTranslationFactorAction );
+				 &SettingVTXWidget::_changeControllerAccelerationFactorAction );
+		connect( _controllerDecelerationFactorWidget,
+				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
+				 this,
+				 &SettingVTXWidget::_changeControllerDecelerationFactorAction );
 		connect( _controllerTranslationSpeedWidget,
 				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
 				 this,
@@ -236,7 +246,8 @@ namespace VTX::UI::Widget::Settings
 					/ ( Setting::CONTROLLER_ELASTICITY_FACTOR_MAX - Setting::CONTROLLER_ELASTICITY_FACTOR_MIN );
 		_controllerElasticityFactorWidget->setValue( elasticityValue );
 
-		_controllerTranslationFactorWidget->setValue( VTX_SETTING().getTranslationSpeedFactor() );
+		_controllerAccelerationFactorWidget->setValue( VTX_SETTING().getAccelerationSpeedFactor() );
+		_controllerDecelerationFactorWidget->setValue( VTX_SETTING().getDecelerationSpeedFactor() );
 		_controllerTranslationSpeedWidget->setValue( VTX_SETTING().getTranslationSpeed() );
 
 		const float rotationSpeedValue
@@ -281,10 +292,15 @@ namespace VTX::UI::Widget::Settings
 		if ( VTX_SETTING().getControllerElasticityFactor() != elasticityValue )
 			VTX_ACTION( new Action::Setting::ChangeControllerElasticity( elasticityValue ) );
 	}
-	void SettingVTXWidget::_changeControllerTranslationFactorAction( const float p_value )
+	void SettingVTXWidget::_changeControllerAccelerationFactorAction( const float p_value )
 	{
-		if ( VTX_SETTING().getTranslationSpeedFactor() != p_value )
-			VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed( p_value ) );
+		if ( VTX_SETTING().getAccelerationSpeedFactor() != p_value )
+			VTX_ACTION( new Action::Setting::ChangeAccelerationFactorSpeed( p_value ) );
+	}
+	void SettingVTXWidget::_changeControllerDecelerationFactorAction( const float p_value )
+	{
+		if ( VTX_SETTING().getDecelerationSpeedFactor() != p_value )
+			VTX_ACTION( new Action::Setting::ChangeDecelerationFactorSpeed( p_value ) );
 	}
 	void SettingVTXWidget::_changeControllerTranslationSpeedAction( const float p_value )
 	{

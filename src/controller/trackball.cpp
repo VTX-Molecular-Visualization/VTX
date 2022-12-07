@@ -108,11 +108,11 @@ namespace VTX
 
 				if ( _isModifierExclusive( ModifierFlag::Shift ) )
 				{
-					deltaDistance *= VTX_SETTING().getTranslationSpeedFactor();
+					deltaDistance *= VTX_SETTING().getAccelerationSpeedFactor();
 				}
 				if ( _isModifierExclusive( ModifierFlag::Alt ) )
 				{
-					deltaDistance /= VTX_SETTING().getTranslationSpeedFactor();
+					deltaDistance /= VTX_SETTING().getDecelerationSpeedFactor();
 				}
 
 				_needUpdate = true;

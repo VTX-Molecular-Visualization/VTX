@@ -165,9 +165,12 @@ namespace VTX
 		static const float CONTROLLER_TRANSLATION_SPEED_MIN;
 		static const float CONTROLLER_TRANSLATION_SPEED_MAX;
 
-		static const float CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
-		static const float CONTROLLER_TRANSLATION_FACTOR_MIN;
-		static const float CONTROLLER_TRANSLATION_FACTOR_MAX;
+		static const float CONTROLLER_ACCELERATION_FACTOR_DEFAULT;
+		static const float CONTROLLER_ACCELERATION_FACTOR_MIN;
+		static const float CONTROLLER_ACCELERATION_FACTOR_MAX;
+		static const float CONTROLLER_DECELERATION_FACTOR_DEFAULT;
+		static const float CONTROLLER_DECELERATION_FACTOR_MIN;
+		static const float CONTROLLER_DECELERATION_FACTOR_MAX;
 
 		static const float CONTROLLER_ROTATION_SPEED_DEFAULT;
 		static const float CONTROLLER_ROTATION_SPEED_MIN;
@@ -298,8 +301,11 @@ namespace VTX
 
 		inline float getTranslationSpeed() const { return translationSpeed; }
 		void		 setTranslationSpeed( const float p_translationSpeed );
-		inline float getTranslationSpeedFactor() const { return translationFactorSpeed; }
-		void		 setTranslationSpeedFactor( const float p_translationFactorSpeed );
+		inline float getAccelerationSpeedFactor() const { return accelerationFactorSpeed; }
+		inline float getDecelerationSpeedFactor() const { return decelerationFactorSpeed; }
+		void		 setAccelerationSpeedFactor( const float p_factorSpeed );
+		void		 setDecelerationSpeedFactor( const float p_factorSpeed );
+
 		inline float getRotationSpeed() const { return rotationSpeed; }
 		void		 setRotationSpeed( const float p_rotationSpeed );
 		inline bool	 getControllerElasticityActive() const { return activeControllerElasticity; }
@@ -397,7 +403,8 @@ namespace VTX
 		float								snapshotQuality	   = SNAPSHOT_QUALITY_DEFAULT;
 
 		float translationSpeed			 = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
-		float translationFactorSpeed	 = CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
+		float accelerationFactorSpeed	 = CONTROLLER_ACCELERATION_FACTOR_DEFAULT;
+		float decelerationFactorSpeed	 = CONTROLLER_DECELERATION_FACTOR_DEFAULT;
 		float rotationSpeed				 = CONTROLLER_ROTATION_SPEED_DEFAULT;
 		bool  activeControllerElasticity = CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
 		float controllerElasticityFactor = CONTROLLER_ELASTICITY_FACTOR_DEFAULT;

@@ -350,7 +350,8 @@ namespace VTX::IO
 			{ "BACKGROUND_RESOLUTION", magic_enum::enum_name( p_setting.getSnapshotResolution() ) },
 
 			{ "CONTROLLER_TRANSLATION_SPEED", p_setting.getTranslationSpeed() },
-			{ "CONTROLLER_TRANSLATION_FACTOR", p_setting.getTranslationSpeedFactor() },
+			{ "CONTROLLER_ACCELERATION_FACTOR", p_setting.getAccelerationSpeedFactor() },
+			{ "CONTROLLER_DECELERATION_FACTOR", p_setting.getDecelerationSpeedFactor() },
 			{ "CONTROLLER_ROTATION_SPEED", p_setting.getRotationSpeed() },
 			{ "CONTROLLER_Y_AXIS_INVERTED", p_setting.getYAxisInverted() },
 
@@ -971,8 +972,10 @@ namespace VTX::IO
 
 		p_setting.setTranslationSpeed(
 			_get<float>( p_json, "CONTROLLER_TRANSLATION_SPEED", Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT ) );
-		p_setting.setTranslationSpeedFactor(
-			_get<float>( p_json, "CONTROLLER_TRANSLATION_FACTOR", Setting::CONTROLLER_TRANSLATION_FACTOR_DEFAULT ) );
+		p_setting.setAccelerationSpeedFactor(
+			_get<float>( p_json, "CONTROLLER_ACCELERATION_FACTOR", Setting::CONTROLLER_ACCELERATION_FACTOR_DEFAULT ) );
+		p_setting.setDecelerationSpeedFactor(
+			_get<float>( p_json, "CONTROLLER_DECELERATION_FACTOR", Setting::CONTROLLER_DECELERATION_FACTOR_DEFAULT ) );
 		p_setting.setRotationSpeed(
 			_get<float>( p_json, "CONTROLLER_ROTATION_SPEED", Setting::CONTROLLER_ROTATION_SPEED_DEFAULT ) );
 		p_setting.setYAxisInverted(
@@ -1042,8 +1045,8 @@ namespace VTX::IO
 	{
 		nlohmann::json jsonArrayRepresentations = nlohmann::json::array();
 		nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", VTX::ID::Model::MODEL_MOLECULE },
-												{ "INDEX", 0 },
-												{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
+													{ "INDEX", 0 },
+													{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
 		jsonArrayRepresentations.emplace_back( jsonRepresentation );
 
 		for ( const Model::Chain * const chain : p_molecule.getChains() )
