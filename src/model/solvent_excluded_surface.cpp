@@ -620,8 +620,6 @@ namespace VTX
 				_atomsToTriangles[ i ].first = uint( _vertices.size() );
 				_atomsToTriangles[ i ].count = uint( trianglePoints.size() );
 
-				////////////////////////////////////////////
-
 				std::vector<uint> indices = std::vector<uint>( trianglePoints.size() );
 				int				  index	  = int( _vertices.size() );
 				std::iota( indices.begin(), indices.end(), index );
@@ -637,7 +635,10 @@ namespace VTX
 			chrono2.stop();
 			VTX_INFO( "Triangles sorting done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
-
+			// toIndexed();
+			chrono2.stop();
+			VTX_INFO( "Mesh to indexed computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
 			recomputeNormals();
 			chrono2.stop();
 			VTX_INFO( "Normals computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );

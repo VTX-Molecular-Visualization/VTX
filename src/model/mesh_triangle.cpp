@@ -43,7 +43,9 @@ namespace VTX
 				return;
 			}
 
-			_normals.resize( _vertices.size() );
+			_normals.resize( _vertices.size(), VEC3F_ZERO );
+			std::vector<std::vector<Vec3f>> normals( _vertices.size(), std::vector<Vec3f>() );
+
 			for ( uint i = 0; i < _indices.size() - 2; i += 3 )
 			{
 				Vec3f normal = Util::Math::cross( _vertices[ _indices[ i + 1 ] ] - _vertices[ _indices[ i + 2 ] ],
@@ -53,12 +55,61 @@ namespace VTX
 
 				Util::Math::normalizeSelf( normal );
 
-				_normals[ _indices[ i + 0 ] ] = normal;
-				_normals[ _indices[ i + 1 ] ] = normal;
-				_normals[ _indices[ i + 2 ] ] = normal;
+				normals[ _indices[ i + 0 ] ].emplace_back( normal );
+				normals[ _indices[ i + 1 ] ].emplace_back( normal );
+				normals[ _indices[ i + 2 ] ].emplace_back( normal );
+			}
+
+			for ( uint i = 0; i < normals.size(); ++i )
+			{
+				std::vector<Vec3f> & verticeNormals = normals[ i ];
+				for ( const auto & n : verticeNormals )
+				{
+					_normals[ i ] += n;
+				}
+				_normals[ i ] /= verticeNormals.size();
 			}
 
 			_normals.shrink_to_fit();
+		}
+
+		void MeshTriangle::toIndexed()
+		{
+			std::vector<Vec3f> vertices = std::vector<Vec3f>();
+			std::vector<uint>  indices( _indices.size() );
+
+			for ( uint i = 0; i < _vertices.size(); ++i )
+			{
+				bool found = false;
+				for ( uint j = 0; j < vertices.size() && found == false; ++j )
+				{
+					if ( glm::length2( vertices[ j ] - _vertices[ i ] ) < EPSILON * EPSILON )
+					{
+						indices[ i ] = j;
+						found		 = true;
+						break;
+					}
+				}
+				if ( found == false )
+				{
+					vertices.push_back( _vertices[ i ] );
+					indices[ i ] = uint( vertices.size() ) - 1;
+				}
+			}
+
+			_vertices = vertices;
+			_indices  = indices;
+		}
+
+		void MeshTriangle::toNonIndexed()
+		{
+			std::vector<Vec3f> vertices( _indices.size() );
+			for ( uint i = 0; i < _indices.size(); ++i )
+			{
+				vertices[ i ] = _vertices[ _indices[ i ] ];
+			}
+			_vertices = vertices;
+			std::iota( _indices.begin(), _indices.end(), 0 );
 		}
 
 		void MeshTriangle::print() const
