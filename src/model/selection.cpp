@@ -52,7 +52,6 @@ namespace VTX::Model
 		p_molecule.refreshSelection( &_moleculesMap[ p_molecule.getId() ] );
 		_notifyDataChanged();
 		chrono.stop();
-		VTX_DEBUG( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
 	}
 	void Selection::selectMolecules( const std::vector<Molecule *> & p_molecules,
 									 const bool						 p_appendToSelection,
@@ -962,7 +961,6 @@ namespace VTX::Model
 
 		_notifyDataChanged();
 		chrono.stop();
-		VTX_DEBUG( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
 	}
 	void Selection::unselectModels( const std::vector<Model::Molecule *> & p_molecules,
 									const std::vector<Model::Category *> & p_categories,
