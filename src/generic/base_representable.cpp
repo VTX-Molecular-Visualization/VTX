@@ -209,6 +209,9 @@ namespace VTX
 					const Model::Category * const category = _molecule->getCategoryFromChain( *residue->getChainPtr() );
 					const CATEGORY_ENUM			  categoryEnum = category->getCategoryEnum();
 
+					if ( !_molecule->hasSolventExcludedSurface( categoryEnum ) )
+						continue;
+
 					const Model::SolventExcludedSurface & ses = _molecule->getSolventExcludedSurface( categoryEnum );
 
 					const std::vector<Model::SolventExcludedSurface::Range> & atomsToTriangles
