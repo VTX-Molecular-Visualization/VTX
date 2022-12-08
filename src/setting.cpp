@@ -41,7 +41,7 @@ namespace VTX
 	const IO::Struct::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT = IO::Struct::ImageExport::Format::PNG;
 
 	const std::string				   Setting::REPRESENTATION_DEFAULT_NAME		  = "Stick";
-	const int						   Setting::REPRESENTATION_DEFAULT_INDEX	  = 3;
+	const int						   Setting::REPRESENTATION_DEFAULT_INDEX	  = 4;
 	const Generic::REPRESENTATION	   Setting::DEFAULT_REPRESENTATION_TYPE		  = Generic::REPRESENTATION::STICK;
 	const std::string				   Setting::NEW_REPRESENTATION_DEFAULT_NAME	  = "New representation";
 	const float						   Setting::ATOMS_RADIUS_DEFAULT			  = 0.4f;
