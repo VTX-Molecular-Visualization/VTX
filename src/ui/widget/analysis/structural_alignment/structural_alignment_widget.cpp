@@ -1,7 +1,7 @@
 #include "structural_alignment_widget.hpp"
+#include "__new_archi/tool/analysis/rmsd/core/rmsd.hpp"
+#include "__new_archi/tool/analysis/structural_alignment/action.hpp"
 #include "action/action_manager.hpp"
-#include "action/analysis.hpp"
-#include "analysis/rmsd.hpp"
 #include "model/molecule.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -181,7 +181,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		const VTX::Analysis::StructuralAlignment::AlignmentParameters * const parameters
 			= _alignmentParametersWidget->generateParameters();
 
-		VTX_ACTION( new Action::Analysis::ComputeStructuralAlignment( staticMolecule, mobilesMolecules, parameters ) );
+		VTX_ACTION( new VTX::Tool::Analysis::StructuralAlignment::Action::ComputeStructuralAlignment(
+			staticMolecule, mobilesMolecules, parameters ) );
 
 		delete parameters;
 	}

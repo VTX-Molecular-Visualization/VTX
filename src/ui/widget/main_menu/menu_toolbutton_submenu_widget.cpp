@@ -16,6 +16,8 @@ namespace VTX::UI::Widget::MainMenu
 		setTriggerAction( this, &MenuToolButtonSubmenuWidget::_triggerDefaultAction );
 	}
 
+	void MenuToolButtonSubmenuWidget::localize() {}
+
 	void MenuToolButtonSubmenuWidget::addAction( QAction * const p_action ) { _submenu->addAction( p_action ); }
 
 	void MenuToolButtonSubmenuWidget::setDefaultAction( QAction * const p_defaultAction )

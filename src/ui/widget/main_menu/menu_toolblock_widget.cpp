@@ -303,7 +303,9 @@ namespace VTX::UI::Widget::MainMenu
 		return column;
 	}
 
-	void MenuToolBlockWidget::setTitle( const QString & p_title ) { _title->setText( p_title ); }
+	void			  MenuToolBlockWidget::setTitle( const QString & p_title ) { _title->setText( p_title ); }
+	const std::string MenuToolBlockWidget::getTitle() const { return _title->text().toStdString(); }
+
 	void MenuToolBlockWidget::validate()
 	{
 		_tmpStructure.fillGridLayout( *_gridLayout, 0 );

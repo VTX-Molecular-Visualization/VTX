@@ -1,5 +1,5 @@
 #include "ce_align.hpp"
-#include "analysis/rmsd.hpp"
+#include "__new_archi/tool/analysis/rmsd/core/rmsd.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "tool/logger.hpp"
@@ -581,8 +581,8 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 													  translation.z,
 													  1. );
 
-			const float rmsd = float(
-				Analysis::RMSD::computeRMSD( residuePositionsA, residuePositionsB, MAT4F_ID, rotationMatrix ) );
+			const float rmsd = float( VTX::Tool::Analysis::RMSD::computeRMSD(
+				residuePositionsA, residuePositionsB, MAT4F_ID, rotationMatrix ) );
 
 			if ( !result.isValid() || rmsd < result.rmsd
 				 || ( rmsd == result.rmsd && positionsCount > result.positionsCount ) )
@@ -644,7 +644,8 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 			}
 		}
 
-		return Analysis::RMSD::computeRMSD( residuePositionsPath1, residuePositionsPath2, MAT4F_ID, p_transfoMatrix );
+		return VTX::Tool::Analysis::RMSD::computeRMSD(
+			residuePositionsPath1, residuePositionsPath2, MAT4F_ID, p_transfoMatrix );
 	}
 
 	// Given two sets of 3D points, find the rotation + translation + scale

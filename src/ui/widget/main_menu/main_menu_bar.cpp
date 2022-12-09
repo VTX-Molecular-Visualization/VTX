@@ -22,13 +22,16 @@ namespace VTX::UI::Widget::MainMenu
 
 		_mainMenu = WidgetFactory::get().instantiateWidget<Home::MenuHomeWidget>( _tabWidget, "mainMenu" );
 		_tabWidget->addTab( _mainMenu, "Home" );
+		_mapTabs[ "Home" ] = _mainMenu;
 
 		_viewMenu = WidgetFactory::get().instantiateWidget<Visualization::MenuVisualizationWidget>(
 			_tabWidget, "visualizationMenu" );
 		_tabWidget->addTab( _viewMenu, "Visualization" );
+		_mapTabs[ "Visualization" ] = _viewMenu;
 
 		_toolMenu = WidgetFactory::get().instantiateWidget<Tool::MenuToolWidget>( _tabWidget, "toolMenu" );
 		_tabWidget->addTab( _toolMenu, "Tools" );
+		_mapTabs[ "Tools" ] = _toolMenu;
 
 		// !V0.1
 		//_movieMenu = new QLabel( "movieMenu", this );
@@ -49,4 +52,24 @@ namespace VTX::UI::Widget::MainMenu
 
 	void MainMenuBar::_setupSlots() {}
 	void MainMenuBar::localize() {}
+
+	MenuTooltabWidget & MainMenuBar::getTab( const std::string & p_tabName )
+	{
+		map_tab::const_iterator it = _mapTabs.find( p_tabName );
+
+		MenuTooltabWidget * res;
+
+		if ( it == _mapTabs.end() )
+		{
+			res = WidgetFactory::get().instantiateWidget<MenuTooltabWidget>( _tabWidget, "mainMenu" );
+			_tabWidget->addTab( _mainMenu, QString::fromStdString( p_tabName ) );
+		}
+		else
+		{
+			res = it->second;
+		}
+
+		return *res;
+	}
+
 } // namespace VTX::UI::Widget::MainMenu

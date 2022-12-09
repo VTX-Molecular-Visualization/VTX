@@ -40,7 +40,6 @@ namespace VTX::UI::Widget::MainMenu
 			std::vector<MenuToolButtonWidget *> _data		= std::vector<MenuToolButtonWidget *>();
 			int									_forcedSize = -1;
 		};
-
 		class TmpGridStructure
 		{
 		  public:
@@ -69,8 +68,9 @@ namespace VTX::UI::Widget::MainMenu
 
 		void localize() override;
 
-		void setTitle( const QString & p_title );
-		void validate();
+		void			  setTitle( const QString & p_title );
+		const std::string getTitle() const;
+		void			  validate();
 
 		void pushButton( MenuToolButtonWidget & p_toolButton, const int p_column );
 		int	 pushButtonInNextColumn( MenuToolButtonWidget & p_toolButton );

@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_ANALYSIS_ALIGN_PARAMETERS__
 #define __VTX_UI_WIDGET_ANALYSIS_ALIGN_PARAMETERS__
 
-#include "analysis/structural_alignment.hpp"
+#include "__new_archi/tool/analysis/structural_alignment/core/structural_alignment.hpp"
 #include "ui/layout/attribute_list_layout.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"

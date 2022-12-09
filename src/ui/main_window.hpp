@@ -56,6 +56,8 @@ namespace VTX
 
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
+			Widget::MainMenu::MainMenuBar & getMainMenu() { return *_mainMenuBar; };
+
 			const ContextualMenu & getContextualMenu() { return *_contextualMenu; }
 			CursorHandler &		   getCursorHandler() { return *_cursorHandler; }
 

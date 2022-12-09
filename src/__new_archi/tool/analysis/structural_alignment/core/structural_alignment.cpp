@@ -1,9 +1,8 @@
 #include "structural_alignment.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
+#include "method/ce_align.hpp"
 #include "model/molecule.hpp"
-#include "rmsd.hpp"
-#include "structural_alignment_method/ce_align.hpp"
 #include "tool/logger.hpp"
 #include <string>
 #include <util/chrono.hpp>

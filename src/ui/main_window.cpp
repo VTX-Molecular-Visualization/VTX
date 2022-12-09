@@ -1,8 +1,10 @@
 #include "main_window.hpp"
+#include "__new_archi/tool/analysis/rmsd/core/rmsd.hpp"
+#include "__new_archi/ui/core/io/vtx_layout_reader.hpp"
+#include "__new_archi/ui/core/layout_builder.hpp"
 #include "action/dev.hpp"
 #include "action/main.hpp"
 #include "action/selection.hpp"
-#include "analysis/rmsd.hpp"
 #include "controller/base_keyboard_controller.hpp"
 #include "controller/measurement_picker.hpp"
 #include "event/event_manager.hpp"
@@ -58,10 +60,10 @@ namespace VTX::UI
 		}
 		else if ( p_event.name == Event::Global::RMSD_COMPUTED )
 		{
-			const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> & castedEvent
-				= dynamic_cast<const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> &>( p_event );
+			const Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> & castedEvent
+				= dynamic_cast<const Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> &>( p_event );
 
-			const std::string log = Util::Analysis::getRMSDLog( castedEvent.ref );
+			const std::string log = VTX::Tool::Analysis::RMSD::getLogString( castedEvent.ref );
 
 			VTX_INFO( log );
 		}
@@ -142,6 +144,12 @@ namespace VTX::UI
 
 		_mainMenuBar->setCurrentTab( 0 );
 		_renderWidget->setFocus();
+
+		UI::Core::IO::VTXLayoutReader reader = UI::Core::IO::VTXLayoutReader();
+		reader.read();
+
+		UI::Core::LayoutBuilder layoutBuilder = UI::Core::LayoutBuilder();
+		layoutBuilder.build( reader.getResult().layoutDescriptor );
 
 		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
 	}

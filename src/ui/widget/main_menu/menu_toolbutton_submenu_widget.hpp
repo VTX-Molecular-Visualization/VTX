@@ -62,6 +62,8 @@ namespace VTX::UI::Widget::MainMenu
 		void setDefaultAction( QAction * const p_defaultAction );
 		void setSubmenu( QMenu * const p_submenu );
 
+		void localize() override;
+
 	  protected:
 		MenuToolButtonSubmenuWidget( QWidget * p_parent ) : MenuToolButtonWidget( p_parent ) {};
 		void _setupUi( const QString & p_name ) override;
