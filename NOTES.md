@@ -85,6 +85,7 @@ Liste et détail des classes :
 
 	- BOND_ORDER (enum int) _bondOrder *(BOND_ORDER pourrait être enum char si opti car contient peu de valeurs différentes (12))*
 
+
 ### ¤ Notes
 
 - Comment stocker efficacement les frames d'animation (opti mémoire & opti render) ?
@@ -137,7 +138,6 @@ Structure de rendu :
 - Structure Secondary SES (?)
 
 - Structure Render Effects (?)
-
 
 ### ¤ Idées
 
@@ -219,7 +219,7 @@ La communication entre ces deux modules se fera par le biais d'actions et d'even
 
 L'interface graphique devra définir une partie abstraite pour gérer le layout, et une partie implémentation avec la librairie UI de notre choix (Par exemple Qt).
 
-**VTX_UI** doit exposer tout un set de fonctions pour composer son interface (qui seront appelées selon les valeurs décrites par un fichier JSON depuis **VTX_BUILDER**) afin de générer des interfaces customisées selon les cas d'utilisation .
+**VTX_UI** doit exposer tout un set de fonctions pour composer son interface (qui seront appelées selon les valeurs décrites par un fichier JSON depuis **VTX_BUILDER**) afin de générer des interfaces customisées selon les cas d'utilisation.
 
 Dans cette optique, chaque élément d'interface intégré dans ce module doit être implémenté comme le seront les tools qui pourront venir se greffer à l'interface.
 
@@ -254,6 +254,11 @@ Les éléments intégrés d'office à **VTX_UI** sont :
 
 - Le Snapshot (?)
 
+**VTX_UI** sera composé d'au moins 3 namespaces. Dans un premier namespace (CORE) sera codé l'abstraction de l'interface (Ajouter un bouton, créer une fenêtre, changer le mode du pointeur, ...), ainsi que la génération de l'interface à partir d'un fichier JSON.
+
+Un second namespace contiendra l'implémentation du CORE (dans un premier temps avec QT, puis avec potentiellement d'autres implémentations dans le futur.)
+
+Le 3ème namespace contiendra la génération de l'interface de base de VTX (partie abstraite et partie implémentation (QT)).
 
 ### Notes
 
@@ -263,9 +268,7 @@ Les éléments intégrés d'office à **VTX_UI** sont :
 
 ### Dépendances
 
-**VTX_UI** dépend de **VTX_APP** pour pouvoir appeler les différentes fonctionnalités exposées par ce dernier.
-
-**VTX_UI** pourrait dépendre de **VTX_RENDER** pour la fonction Snapshot (si l'action Snapshot n'est pas intégrée dans **VTX_APP**).
+**VTX_UI** dépend de **VTX_APP** pour pouvoir appeler les différentes fonctionnalités exposées par ce dernier et pourrait dépendre de **VTX_RENDER** pour la fonction Snapshot (si l'action Snapshot n'est pas intégrée dans **VTX_APP**)..
 
 ## VTX_UTIL (ou VTX_SHARED)
 
@@ -389,6 +392,8 @@ Autres fichiers de config probable :
 ### Note 
 
 - Selon la plateforme cible de la build, VTX_BUILDER pourrait activer (ou non) les moteurs de rendus adaptés à cette plateforme (Windows => OpenGL & Vulkan ; Mac => Vulkan & Metal ; Linux => OpenGL & Vulkan)
+
+- A priori, au niveau de l'UI, il serait possible de ne pas passer par un projet à part et d'utiliser le pattern Abstract Factory pour intégrer automatiquement les widgets de VTX_TOOLS dans l'interface. Ce pattern devrait être applicable aux bibliothèques de rendu aussi. (https://stackoverflow.com/questions/582331/is-there-a-way-to-instantiate-objects-from-a-string-holding-their-class-name)
 
 ### Dépendances
 
