@@ -13,6 +13,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include <random>
+#include <util/constants.hpp>
 
 namespace VTX
 {

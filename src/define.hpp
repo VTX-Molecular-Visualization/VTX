@@ -2,8 +2,8 @@
 #define __VTX_DEFINE__
 
 #include <string>
+#include <util/constants.hpp>
 #include <util/types.hpp>
-
 namespace VTX
 {
 	// VTX.
