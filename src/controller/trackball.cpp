@@ -101,18 +101,17 @@ namespace VTX
 				deltaVelocity.z = -1e4f * p_deltaTime;
 			}
 
-			// Set values from settings.
 			if ( deltaDistance != 0.f )
 			{
 				deltaDistance *= VTX_SETTING().getTranslationSpeed();
 
 				if ( _isModifierExclusive( ModifierFlag::Shift ) )
 				{
-					deltaDistance *= VTX_SETTING().getTranslationSpeedFactor();
+					deltaDistance *= VTX_SETTING().getAccelerationSpeedFactor();
 				}
 				if ( _isModifierExclusive( ModifierFlag::Alt ) )
 				{
-					deltaDistance /= VTX_SETTING().getTranslationSpeedFactor();
+					deltaDistance /= VTX_SETTING().getDecelerationSpeedFactor();
 				}
 
 				_needUpdate = true;
@@ -120,6 +119,15 @@ namespace VTX
 
 			if ( deltaVelocity != VEC3F_ZERO )
 			{
+				if ( _isModifierExclusive( ModifierFlag::Shift ) )
+				{
+					deltaVelocity *= VTX_SETTING().getAccelerationSpeedFactor();
+				}
+				if ( _isModifierExclusive( ModifierFlag::Alt ) )
+				{
+					deltaVelocity /= VTX_SETTING().getDecelerationSpeedFactor();
+				}
+
 				_velocity.x += VTX_SETTING().getRotationSpeed() * deltaVelocity.x;
 				_velocity.y += VTX_SETTING().getRotationSpeed() * deltaVelocity.y
 							   * ( VTX_SETTING().getYAxisInverted() ? -1.f : 1.f );

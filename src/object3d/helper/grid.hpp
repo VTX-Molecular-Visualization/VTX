@@ -26,6 +26,7 @@ namespace VTX::Object3D::Helper
 		Vec3i gridPosition( const uint p_hash ) const;
 		uint  gridHash( const Vec3f & p_worldPosition ) const;
 		uint  gridHash( const Vec3i & p_gridPosition ) const;
+		uint  gridHash( const uint p_x, const uint p_y, const uint p_z ) const;
 
 		inline const uint getCellCount() const { return size.x * size.y * size.z; }
 

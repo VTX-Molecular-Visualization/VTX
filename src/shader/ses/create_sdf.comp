@@ -1,6 +1,122 @@
 #version 450
+#include "include/grid.glsl"
+#define FLT_MAX 3.402823466e+38
 
-layout( local_size_x = 1, local_size_y = 1 , local_size_z = 1) in;
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-void main() {
+// Uniforms.
+uniform vec3	uGridAtomWorldOrigin;
+uniform vec3	uGridSESWorldOrigin;
+uniform uvec3	uGridAtomSize;
+uniform uvec3	uGridSESSize;
+uniform vec3	uGridAtomCellSize;
+uniform vec3	uGridSESCellSize;
+uniform uint	uGridAtomCellCount;
+uniform uint	uGridSESCellCount;
+uniform float	uProbeRadius;
+uniform float	uVoxelSize;
+
+// Data struct.
+struct Range
+{
+	uint first;
+	uint count;
+};
+
+struct SESGridDataStruct
+{
+	float sdf;
+	int	nearestAtom;
+};
+
+// SSBO.
+layout (std430, binding = 0) writeonly buffer SESGridData
+{
+	SESGridDataStruct[] sesGridData;
+};
+
+layout (std430, binding = 1) readonly buffer AtomGridData
+{ 
+	Range[] atomGridData;
+};
+
+layout (std430, binding = 2) readonly buffer AtomIndex
+{ 
+	uint[] atomIndex;
+};
+
+layout (std140, binding = 3) readonly buffer AtomPosition
+{ 
+	vec4[] atomPosition;
+};
+
+void main()
+{
+	// Get corresponding ses grid data.
+	const uvec3 sesGridPosition = gl_GlobalInvocationID;
+	const uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
+	
+	// Not in grid.
+	if ( sesGridHash >= uGridSESCellCount )
+	{				
+		return;
+	}
+				
+	// Get corresponding acceleration grid data.
+	const vec3 sesGridCellWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize);
+	const uvec3 atomGridPosition = gridPosition( sesGridCellWorldPosition, uGridAtomWorldOrigin, uGridAtomCellSize);
+
+	// Loop over the cells to visit.
+	float minDistance = FLT_MAX;
+	
+	for ( int ox = -1; ox <= 1; ++ox )
+	{
+		for ( int oy = -1; oy <= 1; ++oy )
+		{		
+			for ( int oz = -1; oz <= 1; ++oz )
+			{	
+				const vec3 offset = vec3( ox, oy, oz );
+				const uvec3 gridPositionToVisit = uvec3( atomGridPosition + offset );	
+				const uint hashToVisit = gridHash( gridPositionToVisit, uGridAtomSize );					
+				
+				if ( hashToVisit >= uGridAtomCellCount )
+				{				
+					continue;
+				}	
+				
+				const uint first = atomGridData[ hashToVisit ].first;
+				const uint count = atomGridData[ hashToVisit ].count;
+				
+				// Compute SDF.
+				for ( uint i = first; i < first + count; ++i )
+				{		
+					const uint index = atomIndex[ i ];					
+					float d = distance( atomPosition[ index ].xyz, sesGridCellWorldPosition );
+					
+					// Inside.
+					if ( d < uVoxelSize )
+					{
+						sesGridData[ sesGridHash ].sdf = -uVoxelSize;	
+						sesGridData[ sesGridHash ].nearestAtom = -1;						
+						// Don't need to loop over other cells.
+						return;
+					}
+					// Boundary.
+					else
+					{					
+						d -= ( uProbeRadius + atomPosition[ index ].w );
+						if ( d < 0.f )
+						{
+							sesGridData[ sesGridHash ].sdf = -uVoxelSize;
+							if ( d < minDistance )
+							{
+								minDistance	= d;
+								sesGridData[ sesGridHash ].nearestAtom = int( index );
+							}
+						}						
+					}
+				}
+			}
+		}
+	}
 }

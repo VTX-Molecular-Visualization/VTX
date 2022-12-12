@@ -8,17 +8,19 @@
 #include "renderer/gl/program_manager.hpp"
 #include <vector>
 
+#define LOCAL_SIZE_X 256
+
 namespace VTX::Worker
 {
 	class GpuComputer : public Worker::BaseWorker, public Generic::BaseOpenGL
 	{
 	  public:
 		explicit GpuComputer( const IO::FilePath & p_shader,
-							  const Vec3i &		   p_size	 = Vec3i( 64, 1, 1 ),
+							  const Vec3i &		   p_size	 = Vec3i( LOCAL_SIZE_X, 1, 1 ),
 							  const GLbitfield	   p_barrier = 0,
 							  const bool		   p_force	 = false ) :
-			_sizeComputed( p_size ),
-			_size( p_size.x * p_size.y * p_size.z ), _barrier( p_barrier ), _force( p_force ),
+			_size( p_size ),
+			_barrier( p_barrier ), _force( p_force ),
 			_program( VTX_PROGRAM_MANAGER().createProgram( p_shader.filenameWithoutExtension(), { p_shader } ) )
 		{
 		}
@@ -35,10 +37,10 @@ namespace VTX::Worker
 
 	  protected:
 		Renderer::GL::Program * const _program;
-		Vec3i						  _sizeComputed;
-		uint						  _size;
-		GLbitfield					  _barrier;
-		bool						  _force;
+		Vec3i						  _size;
+		// uint						  _size;
+		GLbitfield _barrier;
+		bool	   _force;
 
 		virtual void _run() override;
 

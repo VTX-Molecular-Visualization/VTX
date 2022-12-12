@@ -264,7 +264,7 @@ namespace VTX::UI
 
 	void MainWindow::_onShortcutSave() const
 	{
-		VTX_ACTION_ENQUEUE( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 
 	void MainWindow::_onShortcutSaveAs() const { UI::Dialog::openSaveSessionDialog(); }
@@ -564,14 +564,14 @@ namespace VTX::UI
 		{
 		case WindowMode::Fullscreen:
 		{
-				setWindowState( windowState() | Qt::WindowState::WindowFullScreen ); 
+			setWindowState( windowState() | Qt::WindowState::WindowFullScreen );
 #if defined( Q_OS_WIN )
-				HWND handle = reinterpret_cast<HWND>( windowHandle()->winId() );
-				SetWindowLongPtr( handle, GWL_STYLE, GetWindowLongPtr( handle, GWL_STYLE ) | WS_BORDER );
+			HWND handle = reinterpret_cast<HWND>( windowHandle()->winId() );
+			SetWindowLongPtr( handle, GWL_STYLE, GetWindowLongPtr( handle, GWL_STYLE ) | WS_BORDER );
 #endif
 		}
 
-			break;
+		break;
 		case WindowMode::Minimized: setWindowState( windowState() | Qt::WindowState::WindowMinimized ); break;
 		case WindowMode::Maximized: setWindowState( windowState() | Qt::WindowState::WindowMaximized ); break;
 		case WindowMode::Windowed:

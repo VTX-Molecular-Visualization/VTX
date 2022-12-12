@@ -150,6 +150,7 @@ namespace VTX::Model
 									   bool						 p_parentFromMolecule );
 
 		void _extractBond( const BondExtractData & p_bondData );
+		void _updateBondInfos( const uint p_bondID, const uint p_firstAtomIndex, const uint p_secondAtomIndex );
 
 		std::vector<ExternalBondExtractData>::iterator _findInPendingExternalBond( const Model::Bond & p_bond );
 		void _applyExternalBond( const ExternalBondExtractData & p_externalBondData );

@@ -19,9 +19,9 @@ namespace VTX
 
 			inline void generate()
 			{
-				_makeCurrent();
+				makeContextCurrent();
 				_generate();
-				_doneCurrent();
+				doneContextCurrent();
 			}
 
 			virtual void bind() { _vao.bind(); }
@@ -38,9 +38,9 @@ namespace VTX
 									   Renderer::GL::BufferData::Usage p_usage
 									   = Renderer::GL::BufferData::Usage::STATIC_DRAW )
 			{
-				_makeCurrent();
+				makeContextCurrent();
 				p_buffer.set( p_vector, p_usage );
-				_doneCurrent();
+				doneContextCurrent();
 			}
 		};
 	} // namespace Buffer

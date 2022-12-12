@@ -47,6 +47,8 @@ namespace VTX::Renderer::GL
 
 		BufferStorage() = default;
 
+		BufferStorage( const Target & p_target ) { create( p_target ); }
+
 		template<typename T>
 		BufferStorage( const Target & p_target, const std::vector<T> & p_vector, const Flags & p_flags = Flags::NONE )
 		{
@@ -137,6 +139,22 @@ namespace VTX::Renderer::GL
 			assert( _gl->glIsBuffer( _id ) );
 
 			_gl->glNamedBufferStorage( _id, GLsizei( p_size ), &p_data, p_flags );
+		}
+
+		template<typename T>
+		inline void const getData( const uint p_offset, const uint p_length, T * const p_data )
+		{
+			assert( _gl->glIsBuffer( _id ) );
+
+			_gl->glGetNamedBufferSubData( _id, GLintptr( p_offset ), GLsizeiptr( p_length ), p_data );
+		}
+
+		template<typename T>
+		inline T * const map( const Flags & p_access = Flags::NONE )
+		{
+			assert( _gl->glIsBuffer( _id ) );
+
+			return reinterpret_cast<T *>( _gl->glMapNamedBuffer( _id, p_access ) );
 		}
 
 		template<typename T>

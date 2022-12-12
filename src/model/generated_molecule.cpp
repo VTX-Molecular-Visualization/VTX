@@ -451,7 +451,7 @@ namespace VTX::Model
 				const uint previousIndex
 					= sourceFirstAtom->getResiduePtr()->findBondIndex( sourceFirstAtomIndex, sourceSecondAtomIndex );
 
-				if ( previousIndex != UINT_MAX )
+				if ( previousIndex != INVALID_ID )
 				{
 					bondData.getSourceMolecule()->removeBond( previousIndex, true, false );
 				}
@@ -462,7 +462,7 @@ namespace VTX::Model
 				const uint previousIndex
 					= sourceSecondAtom->getResiduePtr()->findBondIndex( sourceFirstAtomIndex, sourceSecondAtomIndex );
 
-				if ( previousIndex != UINT_MAX )
+				if ( previousIndex != INVALID_ID )
 				{
 					bondData.getSourceMolecule()->removeBond( previousIndex, true, false );
 				}
@@ -473,6 +473,7 @@ namespace VTX::Model
 		}
 
 		_pendingExternalBonds.clear();
+		_pendingExternalBonds.shrink_to_fit();
 	}
 
 	void GeneratedMolecule::extractChain( const Model::Chain & p_chain )
@@ -624,7 +625,7 @@ namespace VTX::Model
 		p_chain.setColor( Model::Chain::getChainIdColor( p_chainSource.getOriginalChainID() ) );
 
 		const CATEGORY_ENUM & chainCategoryEnum = p_chainSource.getCategoryEnum();
-		getCategory( chainCategoryEnum ).addChain( p_chain.getIndex() );
+		p_chain.setCategoryEnum( chainCategoryEnum );
 
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
@@ -865,18 +866,14 @@ namespace VTX::Model
 					_pendingExternalBonds.erase( itExternalBond );
 
 					// Add second bond of external bonds
-					getBond( i )->setIndexFirstAtom( pendingExternalBondData.getFirstIndex() );
-					getBond( i )->setIndexSecondAtom( pendingExternalBondData.getSecondIndex() );
-					getBufferBonds()[ i * 2u ]		= pendingExternalBondData.getFirstIndex();
-					getBufferBonds()[ i * 2u + 1u ] = pendingExternalBondData.getSecondIndex();
+					_updateBondInfos(
+						i, pendingExternalBondData.getFirstIndex(), pendingExternalBondData.getSecondIndex() );
 				}
 			}
 			else
 			{
-				getBond( i )->setIndexFirstAtom( getBond( i )->getIndexFirstAtom() - atomOffset );
-				getBond( i )->setIndexSecondAtom( getBond( i )->getIndexSecondAtom() - atomOffset );
-				getBufferBonds()[ i * 2u ] -= atomOffset;
-				getBufferBonds()[ i * 2u + 1u ] -= atomOffset;
+				const Model::Bond & bond = *( getBond( i ) );
+				_updateBondInfos( i, bond.getIndexFirstAtom() - atomOffset, bond.getIndexSecondAtom() - atomOffset );
 			}
 
 			p_fromMolecule.getBonds()[ bondOffset + i ] = nullptr;
@@ -1084,6 +1081,20 @@ namespace VTX::Model
 		p_parent->setBondCount( getBondCount() - p_parent->getIndexFirstBond() );
 	}
 
+	void GeneratedMolecule::_updateBondInfos( const uint p_bondIndex,
+											  const uint p_firstAtomIndex,
+											  const uint p_secondAtomIndex )
+	{
+		Model::Bond & p_bond = *( getBond( p_bondIndex ) );
+
+		p_bond.setIndexFirstAtom( p_firstAtomIndex );
+		p_bond.setIndexSecondAtom( p_secondAtomIndex );
+		p_bond.setMoleculePtr( this );
+
+		const uint bufferIndex				 = p_bondIndex * 2u;
+		getBufferBonds()[ bufferIndex ]		 = p_firstAtomIndex;
+		getBufferBonds()[ bufferIndex + 1u ] = p_secondAtomIndex;
+	}
 	void GeneratedMolecule::_extractBond( const BondExtractData & p_bondData )
 	{
 		Model::Bond * const bond = p_bondData.getBond();

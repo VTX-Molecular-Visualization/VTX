@@ -44,6 +44,10 @@ namespace VTX::UI::Widget::Inspector
 		_nbResiduesLabel->setWordWrap( true );
 		_infoSection->appendField( "Nb Residues", _nbResiduesLabel );
 
+		_indexLabel = new CustomWidget::QLabelMultiField( this );
+		_indexLabel->setWordWrap( true );
+		_infoSection->appendField( "Index", _indexLabel );
+
 		_appendSection( _representationSection );
 		_appendSection( _infoSection );
 
@@ -110,6 +114,8 @@ namespace VTX::UI::Widget::Inspector
 						_fullnameLabel->updateWithNewValue( chain->getName() );
 					if ( !_nbResiduesLabel->hasDifferentData() )
 						_nbResiduesLabel->updateWithNewValue( std::to_string( chain->getRealResidueCount() ) );
+					if ( !_indexLabel->hasDifferentData() )
+						_indexLabel->updateWithNewValue( std::to_string( chain->getIndex() ) );
 				}
 			}
 		}
@@ -125,6 +131,7 @@ namespace VTX::UI::Widget::Inspector
 		{
 			_fullnameLabel->resetState();
 			_nbResiduesLabel->resetState();
+			_indexLabel->resetState();
 		}
 	}
 

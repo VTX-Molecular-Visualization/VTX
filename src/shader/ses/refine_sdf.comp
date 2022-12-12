@@ -1,0 +1,82 @@
+#version 450
+#include "include/grid.glsl"
+#define FLT_MAX 3.402823466e+38
+#define EPSILON  1e-6
+
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+// Uniforms.
+uniform vec3	uGridSESWorldOrigin;
+uniform uvec3	uGridSESSize;
+uniform vec3	uGridSESCellSize;
+uniform uint	uGridSESCellCount;
+uniform ivec3	uCellsToVisitCount;
+uniform float	uProbeRadius;
+
+// Data struct.
+struct SESGridDataStruct
+{
+	float sdf;
+	int	  nearestAtom;
+};
+
+// SSBO.
+layout (std430, binding = 0) buffer SESGridData
+{
+	SESGridDataStruct[] sesGridData;
+};
+
+void main()
+{
+	// Get corresponding ses grid data.
+	const uvec3 sesGridPosition = gl_GlobalInvocationID;
+	const uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
+	
+	// Not in grid.
+	if ( sesGridHash >= uGridSESCellCount )
+	{				
+		return;
+	}
+	
+	// Not in boundary.
+	if( sesGridData[sesGridHash].nearestAtom == -1 )
+	{
+		return;
+	}
+	
+	const vec3 sesWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize );
+	
+	float minDistanceWithOutsidePoint = FLT_MAX;
+	
+	for ( int ox = -uCellsToVisitCount.x; ox <= uCellsToVisitCount.x; ++ox )
+	{
+		for ( int oy = -uCellsToVisitCount.y; oy <= uCellsToVisitCount.y; ++oy )
+		{		
+			for ( int oz = -uCellsToVisitCount.z; oz <= uCellsToVisitCount.z; ++oz )
+			{	
+				const vec3 offset = vec3( ox, oy, oz );
+				const uvec3 gridPositionToVisit = uvec3( sesGridPosition + offset );					
+				const uint hashToVisit = gridHash( gridPositionToVisit, uGridSESSize );					
+				
+				if ( hashToVisit >= uGridSESCellCount )
+				{				
+					continue;
+				}	
+
+				const vec3 worldPositionToVisit = worldPosition( gridPositionToVisit, uGridSESWorldOrigin, uGridSESCellSize );
+
+				// If outside.
+				if ( abs( sesGridData[ hashToVisit ].sdf - uProbeRadius ) < EPSILON )
+				//if ( sesGridData[ hashToVisit ].sdf == uProbeRadius )
+				{
+					const float d = distance( worldPositionToVisit, sesWorldPosition );
+					if ( d < minDistanceWithOutsidePoint )
+					{
+						minDistanceWithOutsidePoint = d;
+						sesGridData[ sesGridHash ].sdf = uProbeRadius - minDistanceWithOutsidePoint;
+					}
+				}
+			}
+		}
+	}
+}

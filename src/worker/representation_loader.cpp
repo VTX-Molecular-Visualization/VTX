@@ -69,7 +69,12 @@ namespace VTX::Worker
 		}
 		else
 		{
-			_library.setDefaultRepresentation( VTX_SETTING().getDefaultRepresentationIndex(), false );
+			Model::Representation::Representation * defaultRepresentation
+				= _library.getRepresentationByName( VTX_SETTING().REPRESENTATION_DEFAULT_NAME );
+
+			const int defaultRepresentationIndex = _library.getRepresentationIndex( defaultRepresentation );
+
+			_library.setDefaultRepresentation( defaultRepresentationIndex, false );
 		}
 
 		for ( int i = 0; i < int( CATEGORY_ENUM::COUNT ); i++ )

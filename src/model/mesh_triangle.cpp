@@ -57,6 +57,8 @@ namespace VTX
 				_normals[ _indices[ i + 1 ] ] = normal;
 				_normals[ _indices[ i + 2 ] ] = normal;
 			}
+
+			_normals.shrink_to_fit();
 		}
 
 		void MeshTriangle::print() const

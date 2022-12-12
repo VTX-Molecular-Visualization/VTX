@@ -18,6 +18,8 @@
 
 namespace VTX::UI::Widget::Inspector
 {
+	const int MultipleResidueWidget::BOND_INFO_COUNT_MAX = 100;
+
 	MultipleResidueWidget::MultipleResidueWidget( QWidget * p_parent ) :
 		MultipleModelInspectorWidget( p_parent, ID::View::UI_INSPECTOR_RESIDUE ) {};
 
@@ -129,6 +131,7 @@ namespace VTX::UI::Widget::Inspector
 			_fullnameLabel->resetState();
 			_nbAtomsLabel->resetState();
 			_bondsLabel->setText( "" );
+			_bondInfoCount = 0;
 		}
 	}
 
@@ -223,6 +226,9 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_appendBondInfo( const Model::Residue & p_residue )
 	{
+		if ( _bondInfoCount >= BOND_INFO_COUNT_MAX )
+			return;
+
 		QString						  bondInfoStr = _bondsLabel->text();
 		const Model::Molecule * const moleculePtr = p_residue.getMoleculePtr();
 		for ( uint i = p_residue.getIndexFirstBond(); i < p_residue.getIndexFirstBond() + p_residue.getBondCount();
@@ -233,6 +239,10 @@ namespace VTX::UI::Widget::Inspector
 				continue;
 
 			Util::UI::appendBondInfo( *bond, bondInfoStr );
+			_bondInfoCount++;
+
+			if ( _bondInfoCount >= BOND_INFO_COUNT_MAX )
+				break;
 		}
 
 		_bondsLabel->setText( bondInfoStr );

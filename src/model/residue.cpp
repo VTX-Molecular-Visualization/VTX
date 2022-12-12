@@ -117,7 +117,7 @@ namespace VTX
 					return i;
 			}
 
-			return UINT_MAX;
+			return INVALID_ID;
 		}
 
 		const Atom * const Residue::getAlphaCarbon() const { return findFirstAtomByName( "CA" ); }

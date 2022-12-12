@@ -38,6 +38,7 @@ namespace VTX::UI::Widget::Inspector
 
 		CustomWidget::QLabelMultiField * _fullnameLabel	  = nullptr;
 		CustomWidget::QLabelMultiField * _nbResiduesLabel = nullptr;
+		CustomWidget::QLabelMultiField * _indexLabel	  = nullptr;
 
 		void _onRepresentationPresetChange( const int p_presetIndex );
 		void _onRepresentationChange( const Model::Representation::InstantiatedRepresentation & p_representation,
