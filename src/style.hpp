@@ -48,6 +48,7 @@ namespace VTX
 			const QPixmap CLOSE_PIXMAP;
 
 			const QPixmap REMOVE_LINE_ICON;
+			const QPixmap DELETE_LINE_ICON;
 
 			const QPixmap FULLSCREEN_ICON;
 			const QPixmap WINDOWED_ICON;
@@ -189,6 +190,7 @@ namespace VTX
 				CLOSE_PIXMAP( QPixmap( ":/sprite/close_icon.png" ) ),
 
 				REMOVE_LINE_ICON( QPixmap( ":/sprite/remove_line_icon.png" ) ),
+				DELETE_LINE_ICON( QPixmap( ":/sprite/remove_icon.png" ) ),
 
 				FULLSCREEN_ICON( QPixmap( ":/sprite/fullscreen_icon.png" ) ),
 				WINDOWED_ICON( QPixmap( ":/sprite/windowed_icon.png" ) ),

@@ -11,9 +11,7 @@ namespace VTX::Model
 	void Category::setMoleculePtr( Molecule * const p_molecule )
 	{
 		_moleculePtr = p_molecule;
-
-		setParent( p_molecule );
-		setRepresentableMolecule( p_molecule );
+		initBaseRepresentable( this, p_molecule, p_molecule );
 	}
 
 	void Category::addChain( const uint p_chainIndex ) { _linkedChains.emplace_back( p_chainIndex ); };

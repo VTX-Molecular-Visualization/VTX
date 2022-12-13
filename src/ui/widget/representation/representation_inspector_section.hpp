@@ -91,8 +91,7 @@ namespace VTX::UI::Widget::Representation
 		QPushButton *						  _applyToChildrenButton	   = nullptr;
 		QPushButton *						  _revertButton				   = nullptr;
 
-		std::unordered_set<const InstantiatedRepresentation *> _representations
-			= std::unordered_set<const InstantiatedRepresentation *>();
+		std::unordered_set<Model::ID> _representationIDs = std::unordered_set<Model::ID>();
 
 		Model::Representation::InstantiatedRepresentation * _dummyRepresentation	 = nullptr;
 		int													_baseRepresentationIndex = -1;

@@ -81,6 +81,7 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_modelListWidget->swapModels( p_model1, p_model2 );
 	}
+	void ModelListComponent::clearModels() { _modelListWidget->clearModels(); }
 
 	bool ModelListComponent::hasModel( const Model::BaseModel * const p_model ) const
 	{

@@ -75,7 +75,7 @@ namespace VTX
 			const Object3D::Helper::AABB getAABB() const;
 			const Object3D::Helper::AABB getWorldAABB() const;
 
-			void removeChildrenRepresentations() const;
+			void removeChildrenRepresentations();
 
 		  protected:
 			Chain() : BaseModel( VTX::ID::Model::MODEL_CHAIN ) {}
