@@ -345,6 +345,11 @@ namespace VTX
 			_visibilities.clear();
 			_atomsToTriangles.clear();
 
+			if ( _category->isEmpty() )
+			{
+				return;
+			}
+
 			const std::vector<uint> atomsIdx = _category->generateAtomIndexList();
 
 			// Sort atoms in acceleration grid.
@@ -369,7 +374,9 @@ namespace VTX
 			for ( uint i : atomsIdx )
 			{
 				const uint hash = gridAtoms.gridHash( atomPositions[ i ] );
-				atomGridData2D[ hash ].emplace_back( i );
+
+				if ( hash < atomGridData2D.size() )
+					atomGridData2D[ hash ].emplace_back( i );
 			}
 
 			chrono2.stop();
