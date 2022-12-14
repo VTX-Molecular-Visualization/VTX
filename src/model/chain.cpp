@@ -72,8 +72,7 @@ namespace VTX
 		{
 			_moleculePtr = p_molecule;
 
-			setParent( p_molecule );
-			setRepresentableMolecule( p_molecule );
+			initBaseRepresentable( this, p_molecule, p_molecule );
 		}
 
 		void Chain::setResidueCount( const uint p_count )
@@ -200,7 +199,7 @@ namespace VTX
 			return worldAabb;
 		}
 
-		void Chain::removeChildrenRepresentations() const
+		void Chain::removeChildrenRepresentations()
 		{
 			for ( uint i = _indexFirstResidue; i < _indexFirstResidue + _residueCount; i++ )
 			{
@@ -212,6 +211,8 @@ namespace VTX
 				VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
 					*residue, false, false );
 			}
+
+			_callRepresentationChange();
 		}
 
 		void Chain::_onRepresentationChange()

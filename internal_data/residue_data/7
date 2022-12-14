@@ -10122,7 +10122,7 @@ CAS,H61,1
 NBI,H62,1
 #75A
 N-acetyl-4-[difluoro(phosphono)methyl]-L-phenylalanyl-N~5~-(3-iodobenzoyl)-L-ornithinamide
-0
+2
 I,C21,1
 C20,C21,6
 C20,C19,6
@@ -23792,7 +23792,7 @@ C4,H7,1
 C3,H8,1
 #7CC
 N,N-diethyl-L-asparagine
-1
+0
 N31,C22,1
 O30,C24,2
 C22,C02,1
@@ -34438,7 +34438,7 @@ N27,H24,1
 C31,H25,1
 #7J3
 (2S)-2-amino-4-oxo-4-(piperidin-1-yl)butanoic acid
-2
+0
 O01,C02,2
 C02,C22,1
 C29,C30,1
@@ -34471,7 +34471,7 @@ OXT,HXT,1
 N32,H2,1
 #7J4
 N-tert-butoxy-L-asparagine
-2
+0
 O01,C02,2
 C02,C22,1
 N32,C22,1
@@ -53466,7 +53466,7 @@ C30,H23,1
 O16,H8,1
 #7YL
 (2R)-5-oxidanylidene-1,2-dihydropyrrole-2-carboxylic acid
-0
+2
 OE,CD,2
 CD,CG,1
 CD,N,1

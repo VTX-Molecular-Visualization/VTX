@@ -21165,7 +21165,7 @@ CB,HB,1
 OG1,HOG1,1
 #6CT
 PHOSPHORIC ACID MONO-[5-HYDROXYMETHYL-2-METHYL-3-THYMINYL-CYCLOPENTYLMETHYL]ESTER GROUP
-2
+1
 P,OP1,2
 P,OP2,1
 P,O5,1
@@ -22631,7 +22631,7 @@ C6,H21,1
 O6,H22,1
 #6DN
 (2~{S})-2-azanyl-6-(2-hydroxy-2-oxoethylamino)hexanoic acid
-0
+2
 O2,CX2,2
 NZ,CE,1
 NZ,CX1,1
@@ -34489,7 +34489,7 @@ N1,H10,1
 N1,H11,1
 #6LA
 methyl 2-(acetylamino)-4,6-O-[(1S)-1-carboxyethylidene]-2-deoxy-beta-D-mannopyranoside
-2
+1
 CAK,CAB,1
 OAN,CAL,2
 O6,CAB,1
@@ -36526,7 +36526,7 @@ C1,H1,1
 O1,HO1,1
 #6MO
 MOLYBDENUM(VI) ION
-2
+3
 #6MP
 6-METHYLPURINE
 2
@@ -52058,7 +52058,7 @@ C18,H14,1
 C19,H15,1
 #6UZ
 omega-undecylenyl-beta-D-maltopyranoside
-1
+2
 O2,C2,1
 CA,CB,1
 CA,O1,1
@@ -58844,7 +58844,7 @@ C23,H12,1
 C16,H13,1
 #6YJ
 (2~{S},4~{R})-5-(4-aminophenyl)-4-azanyl-2-methyl-pentanoic acid
-2
+0
 C25,C24,1
 C23,C24,1
 C23,C15,1

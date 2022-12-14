@@ -137,7 +137,10 @@ namespace VTX
 
 		void BaseMouseController::_handleMouseWheelEvent( const QWheelEvent & p_event )
 		{
-			_deltaMouseWheel = p_event.angleDelta().y();
+			if ( p_event.modifiers().testFlag( Qt::AltModifier ) )
+				_deltaMouseWheel = p_event.angleDelta().x();
+			else
+				_deltaMouseWheel = p_event.angleDelta().y();
 		}
 
 		/*

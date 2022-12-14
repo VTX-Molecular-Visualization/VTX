@@ -25,9 +25,7 @@ namespace VTX
 		void			 Residue::setChainPtr( Chain * const p_chain )
 		{
 			_chainPtr = p_chain;
-
-			setParent( _chainPtr );
-			setRepresentableMolecule( p_chain->getMoleculePtr() );
+			initBaseRepresentable( this, _chainPtr, p_chain->getMoleculePtr() );
 		}
 
 		const std::string & Residue::getSymbolStr() const

@@ -45767,7 +45767,7 @@ C80,H28,1
 C82,H29,1
 #8XA
 9-(5-O-phosphono-beta-D-xylofuranosyl)-9H-purin-6-amine
-1
+2
 OP1,P,2
 P,O5,1
 P,OP2,1
@@ -45869,7 +45869,7 @@ C18,H24,1
 C18,H25,1
 #8XC
 4-amino-1-(5-O-phosphono-beta-D-xylofuranosyl)pyrimidin-2(1H)-one
-1
+2
 OP1,P,2
 P,O5,1
 P,OP2,1
@@ -45962,7 +45962,7 @@ C,H20,1
 C,H21,1
 #8XG
 2-amino-9-(5-O-phosphono-beta-D-xylofuranosyl)-1,9-dihydro-6H-purin-6-one
-1
+2
 N2,C2,1
 O2,C2,1
 C2,N3,2
@@ -46655,7 +46655,7 @@ C5,H19,1
 N4,H20,1
 #8XU
 1-(5-O-phosphono-beta-D-xylofuranosyl)pyrimidine-2,4(1H,3H)-dione
-1
+2
 O2,C2,1
 O2,C2,2
 C2,C1,1
@@ -47414,7 +47414,7 @@ C22,H19,1
 N24,H20,1
 #8Y9
 [(2~{R},3~{S},5~{R})-5-[(5~{S})-5-carbamimidamido-2,4-bis(oxidanylidene)imidazolidin-1-yl]-3-oxidanyl-oxolan-2-yl]methyl dihydrogen phosphate
-2
+1
 O3,C3,1
 C3,C4,1
 C3,C2,1

@@ -2318,7 +2318,7 @@ C92,H923,1
 O5,HO5,1
 #118
 TETRAPHENYLANTIMONIUM ION
-2
+3
 SB,C1A,1
 SB,C1C,1
 SB,C1D,1
@@ -2369,7 +2369,7 @@ C2B,C1B,6
 C2B,H2B,1
 #119
 TETRAPHENYLPHOSPHONIUM ION
-2
+3
 P,C1A,1
 P,C1C,1
 P,C1D,1
@@ -3092,7 +3092,7 @@ C29,H29,1
 C28,H28,1
 #11Q
 1-(cyclohexylmethyl)-L-proline
-1
+0
 O,C,2
 C,CA,1
 C3,C2,1
@@ -7222,7 +7222,7 @@ C,OXT,1
 OXT,HOX,1
 #143
 S-2,3-DIHYDRO-5-GLYCIN-2-YL-ISOXAZOL-3-YL-CYSTEINE
-2
+0
 N,CA,1
 N,H,1
 N,H2,1
@@ -18926,7 +18926,7 @@ C37,H37A,1
 C37,H37B,1
 #1AL
 ALLANTOATE ION
-2
+3
 C1,O2,2
 C1,N3,1
 C1,N4,1
@@ -23278,7 +23278,7 @@ CAV,CAX,1
 PAY,CAW,1
 #1CU
 COPPER ION, 1 WATER COORDINATED
-2
+3
 CU,O1,1
 O1,HO11,1
 O1,HO12,1
@@ -29115,7 +29115,7 @@ C29,H19,1
 C30,H20,1
 #1G1
 N3Phe-Leu-Leu-Phe(4-NH2CH2)-methyl vinyl sulfone, bound form
-0
+2
 O50,S48,2
 C47,C46,1
 C47,S48,1
@@ -29328,7 +29328,7 @@ CE1,H20,1
 CD1,H21,1
 #1G5
 HMB-Val-Ser-Phe(4-NH2CH2)-methyl vinyl sulfone, bound form
-0
+2
 C35,C23,1
 C35,S36,1
 C23,C21,1
@@ -29412,7 +29412,7 @@ C28,H40,1
 C29,H41,1
 #1G6
 N3Phe-Phe(4-NH2CH2)-Leu-Phe(4-NH2CH2)-methyl vinyl sulfone, bound form
-0
+2
 O50,S48,2
 C47,C46,1
 C47,S48,1
@@ -31192,7 +31192,7 @@ N6,H41,1
 N6,H42,1
 #1HB
 (4S)-4-amino-5-hydroxy-N,N-dimethylpentanamide
-0
+2
 OE1,CD,2
 CH2,NE2,1
 CD,NE2,1
@@ -31233,7 +31233,7 @@ N,H4,1
 N,H5,1
 #1HD
 N-[(2S)-2-amino-3-hydroxypropyl]acetamide
-0
+2
 C,CA,1
 CA,CB,1
 CA,N,1
@@ -33122,7 +33122,7 @@ C19,H17,1
 C21,H18,1
 #1JB
 [[(2R,3S,5R)-5-[5-methyl-2,4-bis(oxidanylidene)pyrimidin-1-yl]-3-oxidanyl-oxolan-2-yl]methoxy-oxidanyl-phosphoryl][(2R,3R,4S,5R,6R)-6-methyl-3,4,5-tris(oxidanyl)oxan-2-yl] hydrogen phosphate
-2
+1
 C6Q,C5Q,1
 C4Q,O4Q,1
 C4Q,C5Q,1
@@ -57537,7 +57537,7 @@ C44,H45,1
 N34,H2,1
 #1Y0
 (4S,6aR,7aS)-5-{(2S)-2-cyclohexyl-2-[(N-methyl-L-alanyl)amino]acetyl}-N-[(4R)-3,4-dihydro-2H-chromen-4-yl]octahydro-1H-cyclopropa[4,5]pyrrolo[1,2-a]pyrazine-4-carboxamide
-0
+2
 C26,C24,1
 C26,C27,1
 C24,C27,1
@@ -58374,7 +58374,7 @@ C25,H22,1
 C23,H23,1
 #1YH
 (3S,8aR)-N-((R)-chroman-4-yl)-2-((S)-2-cyclohexyl-2-((S)-2-(methylamino)propanamido)acetyl)octahydropyrrolo[1,2-a]pyrazine-3-carboxamide
-1
+2
 C23,C24,1
 C23,C21,1
 C24,C25,1
@@ -60199,7 +60199,7 @@ CC,N2,1
 CD,N3,1
 #1ZN
 (2S,3S,4E,6E,8S,9S)-3-amino-9-methoxy-2,6,8-trimethyl-10-phenyldeca-4,6-dienoic acid
-0
+2
 C1,O1,1
 O1,C2,1
 C2,C3,1

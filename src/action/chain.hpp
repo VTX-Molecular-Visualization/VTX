@@ -199,7 +199,7 @@ namespace VTX::Action::Chain
 		{
 			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 
-			for ( const Model::Chain * const chain : _chains )
+			for ( Model::Chain * const chain : _chains )
 			{
 				chain->removeChildrenRepresentations();
 				molecules.emplace( chain->getMolecule() );

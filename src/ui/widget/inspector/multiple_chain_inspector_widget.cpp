@@ -7,6 +7,7 @@
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "ui/widget/custom_widget/folding_button.hpp"
 #include "ui/widget_factory.hpp"
 #include <QBoxLayout>
 #include <QGridLayout>
@@ -24,15 +25,24 @@ namespace VTX::UI::Widget::Inspector
 	{
 		MultipleModelInspectorWidget::_setupUi( p_name );
 
-		_representationSection
-			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
+		_representationSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
+			this, "inspector_item_section" );
 		_representationWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::RepresentationInspectorSection>(
 				this, "inspector_instantiated_representation" );
 		_representationWidget->setActionButtonVisibility(
 			Representation::RepresentationInspectorSection::ActionButtons::All );
 
-		_representationSection->setBody( _representationWidget );
+		_subRepresentationWidget
+			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::InstantiatedRepresentationListWidget>(
+				this, "sub_representation_widget" );
+
+		_subRepresentationFoldingButton = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FoldingButton>(
+			this, _subRepresentationWidget, "_sub_representation_folding_button" );
+		_subRepresentationFoldingButton->setTitle( "Representations in children" );
+
+		_representationSection->appendField( _representationWidget );
+		_representationSection->appendField( _subRepresentationFoldingButton );
 
 		_infoSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
 			this, "inspector_item_section" );
@@ -43,6 +53,10 @@ namespace VTX::UI::Widget::Inspector
 		_nbResiduesLabel = new CustomWidget::QLabelMultiField( this );
 		_nbResiduesLabel->setWordWrap( true );
 		_infoSection->appendField( "Nb Residues", _nbResiduesLabel );
+
+		_indexLabel = new CustomWidget::QLabelMultiField( this );
+		_indexLabel->setWordWrap( true );
+		_infoSection->appendField( "Index", _indexLabel );
 
 		_appendSection( _representationSection );
 		_appendSection( _infoSection );
@@ -102,6 +116,16 @@ namespace VTX::UI::Widget::Inspector
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
 					_representationWidget->updateWithNewValue( *chain->getRepresentation() );
+
+					for ( Model::Representation::InstantiatedRepresentation * representation :
+						  chain->getSubRepresentations() )
+					{
+						_subRepresentationWidget->addModel( representation );
+					}
+
+					const std::string strTitle = "Representations in children ("
+												 + std::to_string( _subRepresentationWidget->getModelCount() ) + ")";
+					_subRepresentationFoldingButton->setTitle( QString::fromStdString( strTitle ) );
 				}
 
 				if ( bool( p_flag & SectionFlag::INFOS ) )
@@ -110,6 +134,8 @@ namespace VTX::UI::Widget::Inspector
 						_fullnameLabel->updateWithNewValue( chain->getName() );
 					if ( !_nbResiduesLabel->hasDifferentData() )
 						_nbResiduesLabel->updateWithNewValue( std::to_string( chain->getRealResidueCount() ) );
+					if ( !_indexLabel->hasDifferentData() )
+						_indexLabel->updateWithNewValue( std::to_string( chain->getIndex() ) );
 				}
 			}
 		}
@@ -119,12 +145,16 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleChainWidget::_resetFieldStates( const SectionFlag & p_flag )
 	{
 		if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
+		{
 			_representationWidget->resetState();
+			_subRepresentationWidget->clearModels();
+		}
 
 		if ( bool( p_flag & SectionFlag::INFOS ) )
 		{
 			_fullnameLabel->resetState();
 			_nbResiduesLabel->resetState();
+			_indexLabel->resetState();
 		}
 	}
 

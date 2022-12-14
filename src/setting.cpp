@@ -41,7 +41,7 @@ namespace VTX
 	const IO::Struct::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT = IO::Struct::ImageExport::Format::PNG;
 
 	const std::string				   Setting::REPRESENTATION_DEFAULT_NAME		  = "Stick";
-	const int						   Setting::REPRESENTATION_DEFAULT_INDEX	  = 3;
+	const int						   Setting::REPRESENTATION_DEFAULT_INDEX	  = 4;
 	const Generic::REPRESENTATION	   Setting::DEFAULT_REPRESENTATION_TYPE		  = Generic::REPRESENTATION::STICK;
 	const std::string				   Setting::NEW_REPRESENTATION_DEFAULT_NAME	  = "New representation";
 	const float						   Setting::ATOMS_RADIUS_DEFAULT			  = 0.4f;
@@ -135,21 +135,24 @@ namespace VTX
 	const bool	Setting::CAMERA_PERSPECTIVE_DEFAULT = true;
 
 	// Controllers.
-	const float Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT  = 150.f;
-	const float Setting::CONTROLLER_TRANSLATION_SPEED_MIN	   = 50.f;
-	const float Setting::CONTROLLER_TRANSLATION_SPEED_MAX	   = 300.f;
-	const float Setting::CONTROLLER_TRANSLATION_FACTOR_DEFAULT = 2.0f;
-	const float Setting::CONTROLLER_TRANSLATION_FACTOR_MIN	   = 1.0f;
-	const float Setting::CONTROLLER_TRANSLATION_FACTOR_MAX	   = 5.0f;
-	const float Setting::CONTROLLER_ROTATION_SPEED_DEFAULT	   = 0.005f;
-	const float Setting::CONTROLLER_ROTATION_SPEED_MIN		   = 0.001f;
-	const float Setting::CONTROLLER_ROTATION_SPEED_MAX		   = 0.01f;
-	const bool	Setting::CONTROLLER_Y_AXIS_INVERTED			   = false;
-	const bool	Setting::CONTROLLER_ELASTICITY_ACTIVE_DEFAULT  = true;
-	const float Setting::CONTROLLER_ELASTICITY_FACTOR_DEFAULT  = 6.0f;
-	const float Setting::CONTROLLER_ELASTICITY_FACTOR_MIN	   = 1.0f;
-	const float Setting::CONTROLLER_ELASTICITY_FACTOR_MAX	   = 40.0f;
-	const float Setting::CONTROLLER_ELASTICITY_THRESHOLD	   = 1e-4f;
+	const float Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT	= 150.f;
+	const float Setting::CONTROLLER_TRANSLATION_SPEED_MIN		= 50.f;
+	const float Setting::CONTROLLER_TRANSLATION_SPEED_MAX		= 300.f;
+	const float Setting::CONTROLLER_ACCELERATION_FACTOR_DEFAULT = 2.0f;
+	const float Setting::CONTROLLER_ACCELERATION_FACTOR_MIN		= 1.0f;
+	const float Setting::CONTROLLER_ACCELERATION_FACTOR_MAX		= 20.0f;
+	const float Setting::CONTROLLER_DECELERATION_FACTOR_DEFAULT = 10.0f;
+	const float Setting::CONTROLLER_DECELERATION_FACTOR_MIN		= 1.0f;
+	const float Setting::CONTROLLER_DECELERATION_FACTOR_MAX		= 50.0f;
+	const float Setting::CONTROLLER_ROTATION_SPEED_DEFAULT		= 0.005f;
+	const float Setting::CONTROLLER_ROTATION_SPEED_MIN			= 0.001f;
+	const float Setting::CONTROLLER_ROTATION_SPEED_MAX			= 0.01f;
+	const bool	Setting::CONTROLLER_Y_AXIS_INVERTED				= false;
+	const bool	Setting::CONTROLLER_ELASTICITY_ACTIVE_DEFAULT	= true;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR_DEFAULT	= 6.0f;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR_MIN		= 1.0f;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR_MAX		= 40.0f;
+	const float Setting::CONTROLLER_ELASTICITY_THRESHOLD		= 1e-4f;
 
 	// Molecule
 	const float Setting::COPIED_MOLECULE_OFFSET = 5.0f;
@@ -519,11 +522,19 @@ namespace VTX
 
 		_sendDataChangedEvent( PARAMETER::CONTROLLER_TRANSLATION_SPEED );
 	}
-	void Setting::setTranslationSpeedFactor( const float p_translationFactorSpeed )
+	void Setting::setAccelerationSpeedFactor( const float p_factorSpeed )
 	{
-		translationFactorSpeed = Util::Math::clamp( p_translationFactorSpeed,
-													VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MIN,
-													VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MAX );
+		accelerationFactorSpeed = Util::Math::clamp( p_factorSpeed,
+													 VTX::Setting::CONTROLLER_ACCELERATION_FACTOR_MIN,
+													 VTX::Setting::CONTROLLER_ACCELERATION_FACTOR_MAX );
+
+		_sendDataChangedEvent( PARAMETER::CONTROLLER_TRANSLATION_SPEED_FACTOR );
+	}
+	void Setting::setDecelerationSpeedFactor( const float p_factorSpeed )
+	{
+		decelerationFactorSpeed = Util::Math::clamp( p_factorSpeed,
+													 VTX::Setting::CONTROLLER_DECELERATION_FACTOR_MIN,
+													 VTX::Setting::CONTROLLER_DECELERATION_FACTOR_MAX );
 
 		_sendDataChangedEvent( PARAMETER::CONTROLLER_TRANSLATION_SPEED_FACTOR );
 	}
@@ -635,10 +646,11 @@ namespace VTX
 		snapshotQuality	   = SNAPSHOT_QUALITY_DEFAULT;
 		snapshotResolution = SNAPSHOT_RESOLUTION_DEFAULT;
 
-		translationSpeed	   = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
-		translationFactorSpeed = CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
-		rotationSpeed		   = CONTROLLER_ROTATION_SPEED_DEFAULT;
-		yAxisInverted		   = CONTROLLER_Y_AXIS_INVERTED;
+		translationSpeed		= CONTROLLER_TRANSLATION_SPEED_DEFAULT;
+		accelerationFactorSpeed = CONTROLLER_ACCELERATION_FACTOR_DEFAULT;
+		decelerationFactorSpeed = CONTROLLER_DECELERATION_FACTOR_DEFAULT;
+		rotationSpeed			= CONTROLLER_ROTATION_SPEED_DEFAULT;
+		yAxisInverted			= CONTROLLER_Y_AXIS_INVERTED;
 
 		activeControllerElasticity = CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
 		controllerElasticityFactor = CONTROLLER_ELASTICITY_FACTOR_DEFAULT;

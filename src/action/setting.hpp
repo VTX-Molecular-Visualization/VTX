@@ -582,12 +582,23 @@ namespace VTX::Action::Setting
 		const float _speed;
 	};
 
-	class ChangeTranslationFactorSpeed : public BaseAction
+	class ChangeAccelerationFactorSpeed : public BaseAction
 	{
 	  public:
-		explicit ChangeTranslationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
+		explicit ChangeAccelerationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
 
-		virtual void execute() override { VTX_SETTING().setTranslationSpeedFactor( _factor ); };
+		virtual void execute() override { VTX_SETTING().setAccelerationSpeedFactor( _factor ); };
+
+	  private:
+		const float _factor;
+	};
+
+	class ChangeDecelerationFactorSpeed : public BaseAction
+	{
+	  public:
+		explicit ChangeDecelerationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
+
+		virtual void execute() override { VTX_SETTING().setDecelerationSpeedFactor( _factor ); };
 
 	  private:
 		const float _factor;
@@ -776,7 +787,8 @@ namespace VTX::Action::Setting
 			VTX_ACTION( new Action::Setting::ChangeSnapshotResolution( _setting.getSnapshotResolution() ) );
 
 			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( _setting.getTranslationSpeed() ) );
-			VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed( _setting.getTranslationSpeedFactor() ) );
+			VTX_ACTION( new Action::Setting::ChangeAccelerationFactorSpeed( _setting.getAccelerationSpeedFactor() ) );
+			VTX_ACTION( new Action::Setting::ChangeDecelerationFactorSpeed( _setting.getDecelerationSpeedFactor() ) );
 			VTX_ACTION( new Action::Setting::ChangeRotationSpeed( _setting.getRotationSpeed() ) );
 			VTX_ACTION( new Action::Setting::ActiveYAxisInversion( _setting.getYAxisInverted() ) );
 

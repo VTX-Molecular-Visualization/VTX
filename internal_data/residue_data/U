@@ -24097,7 +24097,7 @@ O21,HO21,1
 O22,HO22,1
 #UNX
 UNKNOWN ATOM OR ION
-2
+3
 #UNY
 (2~{R})-4-[6-(2-fluoranyl-4-methoxy-phenyl)-3-oxidanylidene-1~{H}-isoindol-2-yl]-2-methyl-2-methylsulfonyl-~{N}-oxidanyl-butanamide
 2
@@ -33619,7 +33619,7 @@ C9,H11,1
 C9,H12,1
 #UX8
 (2~{S},3~{R})-2-azanyl-3-(1~{H}-indol-3-yl)-3-oxidanyl-propanoic acid
-2
+0
 CD1,NE1,6
 CD1,CG,6
 NE1,CE2,6

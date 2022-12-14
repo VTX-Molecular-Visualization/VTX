@@ -19,8 +19,13 @@ namespace VTX
 
 				for ( uint chainIdx = 0; chainIdx < p_molecule.getChainCount(); ++chainIdx )
 				{
-					const Model::Chain & chain		  = *p_molecule.getChain( chainIdx );
-					uint				 residueCount = chain.getResidueCount();
+					const Model::Chain * const chainPtr = p_molecule.getChain( chainIdx );
+
+					if ( chainPtr == nullptr )
+						continue;
+
+					const Model::Chain & chain		  = *chainPtr;
+					const uint			 residueCount = chain.getResidueCount();
 
 					// Not enought residues.
 					if ( residueCount < 4 )
@@ -49,9 +54,19 @@ namespace VTX
 
 					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 					{
-						const Model::Residue & residue0 = *p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
-						Model::Residue &	   residue1 = *p_molecule.getResidue( idxFirstResidue + residueIdx );
-						const Model::Residue & residue2 = *p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
+						const uint					 currentResidueIndex = idxFirstResidue + residueIdx;
+						const Model::Residue * const residue0Ptr = p_molecule.getResidue( currentResidueIndex - 1 );
+						Model::Residue * const		 residue1Ptr = p_molecule.getResidue( currentResidueIndex );
+						const Model::Residue * const residue2Ptr = p_molecule.getResidue( currentResidueIndex + 1 );
+
+						if ( residue0Ptr == nullptr || residue1Ptr == nullptr || residue2Ptr == nullptr )
+						{
+							continue;
+						}
+
+						const Model::Residue & residue0 = *residue0Ptr;
+						Model::Residue &	   residue1 = *residue1Ptr;
+						const Model::Residue & residue2 = *residue2Ptr;
 
 						residue1.setSecondaryStructure( Model::SecondaryStructure::TYPE::COIL );
 
@@ -166,9 +181,19 @@ namespace VTX
 
 					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 					{
-						Model::Residue & residue0 = *p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
-						Model::Residue & residue  = *p_molecule.getResidue( idxFirstResidue + residueIdx );
-						Model::Residue & residue2 = *p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
+						const uint					 currentResidueIndex = idxFirstResidue + residueIdx;
+						const Model::Residue * const residue0Ptr = p_molecule.getResidue( currentResidueIndex - 1 );
+						Model::Residue * const		 residue1Ptr = p_molecule.getResidue( currentResidueIndex );
+						const Model::Residue * const residue2Ptr = p_molecule.getResidue( currentResidueIndex + 1 );
+
+						if ( residue0Ptr == nullptr || residue1Ptr == nullptr || residue2Ptr == nullptr )
+						{
+							continue;
+						}
+
+						const Model::Residue & residue0 = *residue0Ptr;
+						Model::Residue &	   residue	= *residue1Ptr;
+						const Model::Residue & residue2 = *residue2Ptr;
 
 						if ( ( residue0.getSecondaryStructure() == residue2.getSecondaryStructure() )
 							 && ( ( residue0.getSecondaryStructure()

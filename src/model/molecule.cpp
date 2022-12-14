@@ -119,7 +119,8 @@ namespace VTX
 			// Fill buffers.
 			if ( _atomPositionsFrames.size() > 0 )
 			{
-				setRepresentableMolecule( this );
+				initBaseRepresentable( this, nullptr, this );
+
 				if ( !hasCustomRepresentation() )
 				{
 					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation(
@@ -198,7 +199,7 @@ namespace VTX
 			_defaultRepresentationIDs.shrink_to_fit();
 		}
 
-		void Molecule::removeChildrenRepresentations() const
+		void Molecule::removeChildrenRepresentations()
 		{
 			for ( Model::Chain * const chain : _chains )
 			{

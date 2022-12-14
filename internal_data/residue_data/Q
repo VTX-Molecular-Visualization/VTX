@@ -4870,7 +4870,7 @@ B15,B13,1
 B15,B14,1
 #Q3S
 (2R,3S)-2,3-diaminobutanoic acid
-2
+0
 O,C,2
 N2,C02,1
 C,CA,1
@@ -13022,7 +13022,7 @@ C29,H24,1
 N24,H25,1
 #QA7
 5'-O-{(S)-hydroxy[(4-methyl-2-oxopentanoyl)oxy]phosphoryl}adenosine
-1
+2
 O27,C12,1
 O26,C13,1
 C13,C12,1
@@ -32915,7 +32915,7 @@ C,H41,1
 C,H42,1
 #QQ8
 (4~{S})-4-azanyl-5-formamido-pentanamide
-2
+0
 NA,CAA,1
 NM,CAO,1
 NM,CM,1
@@ -33008,7 +33008,7 @@ N7,H25,1
 O21,H24,1
 #QQB
 ~{N}-[(2~{S})-2-azanyl-3-naphthalen-1-yl-propyl]methanamide
-2
+0
 CE1,CD1,6
 CE1,CZ1,6
 CD1,CG1,6
@@ -35732,7 +35732,7 @@ O27,H19,1
 O28,H20,1
 #QSK
 [(2~{R},3~{R},4~{R},5~{R})-5-(4-azanyl-2-oxidanylidene-pyrimidin-1-yl)-3-oxidanyl-4-(trifluoromethyloxy)oxolan-2-yl]methoxyphosphinic acid
-2
+1
 F3,C7,1
 C7,O2,1
 C7,F2,1
@@ -38845,7 +38845,7 @@ N15,H21,1
 N16,H22,1
 #QV4
 4,6-dideoxy-4-{[(1S,4R,5R,6S)-4-{[alpha-D-glucopyranosyl-(1->4)-alpha-D-glucopyranosyl-(1->4)-alpha-D-glucopyranosyl]oxy}-5,6-dihydroxy-3-(hydroxymethyl)cyclohex-2-en-1-yl]amino}-alpha-D-glucopyranose
-2
+1
 O3S,C3S,1
 O2T,C2T,1
 C2T,C1T,1

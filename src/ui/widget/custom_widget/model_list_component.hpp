@@ -37,6 +37,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void insertModel( Model::BaseModel * const p_model, const int p_row );
 		void removeModel( Model::BaseModel * const p_model );
 		void swapModels( Model::BaseModel * const p_model1, Model::BaseModel * const p_model2 ) const;
+		void clearModels();
 
 		bool							hasModel( const Model::BaseModel * const p_model ) const;
 		int								getModelCount() const;

@@ -6,6 +6,7 @@
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "ui/widget/custom_widget/folding_button.hpp"
 #include "ui/widget_factory.hpp"
 #include <QBoxLayout>
 #include <QFont>
@@ -35,16 +36,26 @@ namespace VTX::UI::Widget::Inspector
 
 		_representationSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
 			this, "inspector_item_section" );
+
 		_representationWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::RepresentationInspectorSection>(
 				this, "inspector_instantiated_representation" );
 		_representationWidget->setActionButtonVisibility(
 			Representation::RepresentationInspectorSection::ActionButtons::All );
 
+		_subRepresentationWidget
+			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::InstantiatedRepresentationListWidget>(
+				this, "sub_representation_widget" );
+
+		_subRepresentationFoldingButton = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FoldingButton>(
+			this, _subRepresentationWidget, "_sub_representation_folding_button" );
+		_subRepresentationFoldingButton->setTitle( "Representations in children" );
+
 		_moleculeColor
 			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorFieldButton>( this, "molecule_color" );
 
 		_representationSection->appendField( _representationWidget );
+		_representationSection->appendField( _subRepresentationFoldingButton );
 		_representationSection->appendField( "Molecule color", _moleculeColor );
 
 		_trajectorySection
@@ -165,6 +176,16 @@ namespace VTX::UI::Widget::Inspector
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
 					_representationWidget->updateWithNewValue( *molecule->getRepresentation() );
+
+					for ( Model::Representation::InstantiatedRepresentation * representation :
+						  molecule->getSubRepresentations() )
+					{
+						_subRepresentationWidget->addModel( representation );
+					}
+
+					const std::string strTitle = "Representations in children ("
+												 + std::to_string( _subRepresentationWidget->getModelCount() ) + ")";
+					_subRepresentationFoldingButton->setTitle( QString::fromStdString( strTitle ) );
 				}
 
 				if ( bool( p_flag & SectionFlag::TRAJECTORY ) )
@@ -207,6 +228,7 @@ namespace VTX::UI::Widget::Inspector
 		if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 		{
 			_representationWidget->resetState();
+			_subRepresentationWidget->clearModels();
 		}
 
 		if ( bool( p_flag & SectionFlag::TRAJECTORY ) )

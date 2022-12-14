@@ -22,6 +22,15 @@ namespace VTX
 			_molecule = nullptr;
 		}
 
+		void BaseRepresentable::initBaseRepresentable( Model::BaseModel * const			  p_model,
+													   Generic::BaseRepresentable * const p_parent,
+													   Model::Molecule * const			  p_molecule )
+		{
+			_model	  = p_model;
+			_parent	  = p_parent;
+			_molecule = p_molecule;
+		}
+
 		void BaseRepresentable::applyRepresentation( InstantiatedRepresentation * const p_representation,
 													 const bool							p_recompute,
 													 const bool							p_notify )
@@ -32,7 +41,7 @@ namespace VTX
 				computeAllRepresentationData();
 
 			if ( p_notify )
-				_onRepresentationChange();
+				_callRepresentationChange();
 		}
 
 		void BaseRepresentable::setRepresentation( InstantiatedRepresentation * const p_representation )
@@ -42,17 +51,31 @@ namespace VTX
 
 			_representation = p_representation;
 			p_representation->setTarget( this );
+
+			Generic::BaseRepresentable * parent = getParent();
+			while ( parent != nullptr )
+			{
+				parent->_subRepresentations.emplace( p_representation );
+				parent = parent->getParent();
+			}
 		}
 
 		void BaseRepresentable::removeRepresentation( const bool p_notify )
 		{
 			if ( _representation != nullptr )
 			{
+				Generic::BaseRepresentable * parent = getParent();
+				while ( parent != nullptr )
+				{
+					parent->_subRepresentations.erase( _representation );
+					parent = parent->getParent();
+				}
+
 				MVC::MvcManager::get().deleteModel( _representation );
 				_representation = nullptr;
 
 				if ( p_notify )
-					_onRepresentationChange();
+					_callRepresentationChange();
 			}
 		}
 
@@ -61,6 +84,12 @@ namespace VTX
 		void BaseRepresentable::setParent( BaseRepresentable * const p_parent ) { _parent = p_parent; }
 
 		bool BaseRepresentable::hasCustomRepresentation() const { return _representation != nullptr; }
+
+		const std::set<Model::Representation::InstantiatedRepresentation *> BaseRepresentable::getSubRepresentations()
+			const
+		{
+			return _subRepresentations;
+		}
 
 		const Model::Representation::InstantiatedRepresentation * const BaseRepresentable::getRepresentation() const
 		{
@@ -188,45 +217,42 @@ namespace VTX
 					RepresentationTarget & representationTargets
 						= _molecule->_representationTargets[ representationTargetPair.first ];
 					representationTargets.resetTriangleSES();
-				}
-			}
 
-			// TODO finish that (/!\ triangleSESMap is clear at the end of computation. Find a way to manage that
-			for ( const Model::Residue * const residue : _molecule->getResidues() )
-			{
-				// Skip hidden items.
-				if ( residue == nullptr || !_isResidueVisible( *residue ) )
-				{
-					continue;
-				}
-
-				const InstantiatedRepresentation * const representation = residue->getRepresentation();
-				RepresentationTarget & representationTargets = _molecule->_representationTargets[ representation ];
-				const VTX::Representation::FlagDataTargeted dataFlag = representation->getFlagDataTargeted();
-
-				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::SES ) )
-				{
-					const Model::Category * const category = _molecule->getCategoryFromChain( *residue->getChainPtr() );
-					const CATEGORY_ENUM			  categoryEnum = category->getCategoryEnum();
-
-					const Model::SolventExcludedSurface & ses = _molecule->getSolventExcludedSurface( categoryEnum );
-
-					const std::vector<Model::SolventExcludedSurface::Range> & atomsToTriangles
-						= ses.getAtomsToTriangles();
-					for ( uint atomIdx = residue->getIndexFirstAtom();
-						  atomIdx < residue->getIndexFirstAtom() + residue->getAtomCount();
-						  ++atomIdx )
+					for ( const Model::Residue * const residue : _molecule->getResidues() )
 					{
-						representationTargets.appendTrianglesSES(
-							categoryEnum, atomsToTriangles[ atomIdx ].first, atomsToTriangles[ atomIdx ].count );
-					}
-				}
-			}
+						// Skip hidden items.
+						if ( residue == nullptr || !_isResidueVisible( *residue ) )
+						{
+							continue;
+						}
 
-			for ( const auto & representationTargetPair : _molecule->_representationTargets )
-			{
-				// Generate does nothing if the TargetRange has not been reset before.
-				_molecule->_representationTargets[ representationTargetPair.first ].generate();
+						const InstantiatedRepresentation * const representation = residue->getRepresentation();
+						RepresentationTarget &					 representationTargets
+							= _molecule->_representationTargets[ representation ];
+
+						const Model::Category * const category
+							= _molecule->getCategoryFromChain( *residue->getChainPtr() );
+						const CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
+
+						if ( !_molecule->hasSolventExcludedSurface( categoryEnum ) )
+							continue;
+
+						const Model::SolventExcludedSurface & ses
+							= _molecule->getSolventExcludedSurface( categoryEnum );
+
+						const std::vector<Model::SolventExcludedSurface::Range> & atomsToTriangles
+							= ses.getAtomsToTriangles();
+						for ( uint atomIdx = residue->getIndexFirstAtom();
+							  atomIdx < residue->getIndexFirstAtom() + residue->getAtomCount();
+							  ++atomIdx )
+						{
+							representationTargets.appendTrianglesSES(
+								categoryEnum, atomsToTriangles[ atomIdx ].first, atomsToTriangles[ atomIdx ].count );
+						}
+					}
+
+					_molecule->_representationTargets[ representationTargetPair.first ].generate();
+				}
 			}
 		}
 
@@ -248,6 +274,22 @@ namespace VTX
 				return false;
 
 			return true;
+		}
+
+		void BaseRepresentable::_callRepresentationChange( const bool p_callChangeOnParents )
+		{
+			_onRepresentationChange();
+
+			if ( p_callChangeOnParents )
+			{
+				BaseRepresentable * parent = getParent();
+
+				while ( parent != nullptr )
+				{
+					parent->_onRepresentationChange();
+					parent = parent->getParent();
+				}
+			}
 		}
 
 	} // namespace Generic
