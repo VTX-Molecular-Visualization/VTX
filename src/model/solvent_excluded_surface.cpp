@@ -38,6 +38,11 @@ namespace VTX
 			// Force CPU.
 			_mode = Mode::CPU;
 
+			if ( _category->isEmpty() )
+			{
+				return;
+			}
+
 			switch ( _mode )
 			{
 			case SolventExcludedSurface::Mode::CPU: _refreshCPU(); break;
@@ -88,6 +93,12 @@ namespace VTX
 			for ( uint idx : atomsIdx )
 			{
 				const uint hash = gridAtoms.gridHash( atomPositions[ idx ] );
+
+				if ( hash >= atomGridDataTmp.size() )
+				{
+					continue;
+				}
+
 				atomGridDataTmp[ hash ].emplace_back( idx );
 				atomPositionsVdW[ idx ]
 					= Vec4f( atomPositions[ idx ], _category->getMoleculePtr()->getAtom( idx )->getVdwRadius() );
@@ -345,11 +356,6 @@ namespace VTX
 			_visibilities.clear();
 			_atomsToTriangles.clear();
 
-			if ( _category->isEmpty() )
-			{
-				return;
-			}
-
 			const std::vector<uint> atomsIdx = _category->generateAtomIndexList();
 
 			// Sort atoms in acceleration grid.
@@ -376,7 +382,9 @@ namespace VTX
 				const uint hash = gridAtoms.gridHash( atomPositions[ i ] );
 
 				if ( hash < atomGridData2D.size() )
+				{
 					atomGridData2D[ hash ].emplace_back( i );
+				}
 			}
 
 			chrono2.stop();
