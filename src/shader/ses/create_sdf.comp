@@ -57,10 +57,12 @@ layout (std430, binding = 7) writeonly buffer Debug
 
 void main()
 {
-	// Get corresponding ses grid data.
-	const uvec3 sesGridPosition = gl_GlobalInvocationID;
-	const uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
-	
+	// Get corresponding ses grid data.	
+	const uint sesGridHash = gridHash( gl_GlobalInvocationID, uGridSESSize );
+	const uvec3 sesGridPosition = gridPosition( sesGridHash, uGridSESSize);
+
+	//debug[ sesGridHash ] = gl_GlobalInvocationID.y;
+
 	// Not in grid.
 	if ( sesGridHash >= uGridSESCellCount )
 	{				
@@ -73,31 +75,24 @@ void main()
 
 	// Loop over the cells to visit.
 	float minDistance = FLT_MAX;
-	
+			
 	for ( int ox = -1; ox <= 1; ++ox )
 	{
 		for ( int oy = -1; oy <= 1; ++oy )
 		{		
 			for ( int oz = -1; oz <= 1; ++oz )
 			{					
-				const vec3 offset = vec3( ox, oy, oz );
+				const vec3 offset = vec3( ox, oy, oz );				
 				const uvec3 gridPositionToVisit = uvec3( atomGridPosition + offset );					
 				const uint hashToVisit = gridHash( gridPositionToVisit, uGridAtomSize );					
-
-				debug[ sesGridHash ] = hashToVisit;
-				return;
 
 				if ( hashToVisit >= uGridAtomCellCount )
 				{				
 					continue;
-				}	
-
-				
+				}		
 
 				const uint first = atomGridData[ hashToVisit ].first;
-				const uint count = atomGridData[ hashToVisit ].count;
-
-				
+				const uint count = atomGridData[ hashToVisit ].count;				
 
 				// Compute SDF.
 				for ( uint i = first; i < first + count; ++i )
