@@ -20,15 +20,15 @@ namespace VTX
 			// BaseSceneItem
 			const Model::ID & getModelID() const override { return getId(); }
 
-			inline const std::vector<Vec3f> & getVertices() const { return _vertices; }
-			inline std::vector<Vec3f> &		  getVertices() { return _vertices; }
-			inline const Vec3f &			  getVertice( const uint p_idx ) const { return _vertices[ p_idx ]; }
-			inline Vec3f &					  getVertice( const uint p_idx ) { return _vertices[ p_idx ]; }
+			inline const std::vector<Vec4f> & getVertices() const { return _vertices; }
+			inline std::vector<Vec4f> &		  getVertices() { return _vertices; }
+			inline const Vec4f &			  getVertice( const uint p_idx ) const { return _vertices[ p_idx ]; }
+			inline Vec4f &					  getVertice( const uint p_idx ) { return _vertices[ p_idx ]; }
 
-			inline const std::vector<Vec3f> & getNormals() const { return _normals; }
-			inline std::vector<Vec3f> &		  getNormals() { return _normals; }
-			inline const Vec3f &			  getNormal( const uint p_idx ) const { return _normals[ p_idx ]; }
-			inline Vec3f &					  getNormal( const uint p_idx ) { return _normals[ p_idx ]; }
+			inline const std::vector<Vec4f> & getNormals() const { return _normals; }
+			inline std::vector<Vec4f> &		  getNormals() { return _normals; }
+			inline const Vec4f &			  getNormal( const uint p_idx ) const { return _normals[ p_idx ]; }
+			inline Vec4f &					  getNormal( const uint p_idx ) { return _normals[ p_idx ]; }
 
 			inline const std::vector<Color::Rgb> & getColors() const { return _colors; }
 			inline std::vector<Color::Rgb> &	   getColors() { return _colors; }
@@ -64,8 +64,8 @@ namespace VTX
 			void		 _computeAABB() const override;
 			virtual void _instantiate3DViews() override;
 
-			std::vector<Vec3f>		_vertices;
-			std::vector<Vec3f>		_normals;
+			std::vector<Vec4f>		_vertices;
+			std::vector<Vec4f>		_normals;
 			std::vector<Color::Rgb> _colors;
 			std::vector<uint>		_visibilities;
 			std::vector<uint>		_selections;

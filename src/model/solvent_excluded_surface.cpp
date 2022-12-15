@@ -36,7 +36,7 @@ namespace VTX
 		void SolventExcludedSurface::refresh()
 		{
 			// Force CPU.
-			_mode = Mode::GPU;
+			_mode = Mode::CPU;
 
 			if ( _category->isEmpty() )
 			{
@@ -231,19 +231,16 @@ namespace VTX
 
 			// Create SSBOs.
 			// Output.
-			_vertices		  = std::vector<Vec3f>( gridSES.getCellCount() * 5 * 3, VEC3F_ZERO );
+			_vertices		  = std::vector<Vec4f>( gridSES.getCellCount() * 5 * 3, VEC4F_ZERO );
 			_indices		  = std::vector<uint>( _vertices.size(), 0 );
-			_normals		  = std::vector<Vec3f>( _vertices.size(), VEC3F_ZERO );
+			_normals		  = std::vector<Vec4f>( _vertices.size(), VEC4F_ZERO );
 			_ids			  = std::vector<uint>( _vertices.size(), 0 );
 			_atomsToTriangles = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
 			std::vector<uint> _validities( _vertices.size(), 0 );
 
-			std::vector<Vec4f> vertices( _vertices.size(), Vec4f() );
-			std::vector<Vec4f> normals( _vertices.size(), Vec4f() );
-
-			BufferStorage ssboTrianglePositions( BufferStorage::Target::SHADER_STORAGE_BUFFER, vertices );
+			BufferStorage ssboTrianglePositions( BufferStorage::Target::SHADER_STORAGE_BUFFER, _vertices );
 			BufferStorage ssboTriangleIndices( BufferStorage::Target::SHADER_STORAGE_BUFFER, _indices );
-			BufferStorage ssboTriangleNormals( BufferStorage::Target::SHADER_STORAGE_BUFFER, normals );
+			BufferStorage ssboTriangleNormals( BufferStorage::Target::SHADER_STORAGE_BUFFER, _normals );
 			BufferStorage ssboTriangleAtomIds( BufferStorage::Target::SHADER_STORAGE_BUFFER, _ids );
 			// BufferStorage ssboAtomToTriangles( BufferStorage::Target::SHADER_STORAGE_BUFFER, _atomsToTriangles );
 			BufferStorage ssboTriangleValidities( BufferStorage::Target::SHADER_STORAGE_BUFFER, _validities );
@@ -278,20 +275,14 @@ namespace VTX
 				workerMarchingCube.start( gridSES.getCellCount() );
 			}
 
-			ssboTrianglePositions.getData( 0, uint( vertices.size() ) * sizeof( Vec4f ), &vertices[ 0 ] );
+			ssboTrianglePositions.getData( 0, uint( _vertices.size() ) * sizeof( Vec4f ), &_vertices[ 0 ] );
 			ssboTriangleIndices.getData( 0, uint( _indices.size() ) * sizeof( uint ), &_indices[ 0 ] );
-			ssboTriangleNormals.getData( 0, uint( normals.size() ) * sizeof( Vec4f ), &normals[ 0 ] );
+			ssboTriangleNormals.getData( 0, uint( _normals.size() ) * sizeof( Vec4f ), &_normals[ 0 ] );
 			ssboTriangleAtomIds.getData( 0, uint( _ids.size() ) * sizeof( uint ), &_ids[ 0 ] );
 			//  ssboAtomToTriangles.getData(
 			//	0, uint( _atomsToTriangles.size() ) * sizeof( Range ), &_atomsToTriangles[ 0 ] );
 
 			// ssboDebug.getData( 0, uint( debug.size() ) * sizeof( uint ), &debug[ 0 ] );
-
-			for ( uint i = 0; i < _vertices.size(); ++i )
-			{
-				_vertices[ i ] = Vec3f( vertices[ i ] );
-				_normals[ i ]  = Vec3f( normals[ i ] );
-			}
 
 			//_vertices.emplace_back( vertices.begin(), vertices.end() );
 			//_normals.emplace_back( normals.begin(), normals.end() );
@@ -573,7 +564,7 @@ namespace VTX
 			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
-			std::vector<std::vector<Vec3f>> atomsToTriangles( atomPositions.size(), std::vector<Vec3f>() );
+			std::vector<std::vector<Vec4f>> atomsToTriangles( atomPositions.size(), std::vector<Vec4f>() );
 
 			// Marching cube to extract mesh.
 			const Math::MarchingCube marchingCube = Math::MarchingCube();
@@ -610,8 +601,8 @@ namespace VTX
 								  gridData[ 6 ].sdf,
 								  gridData[ 7 ].sdf } };
 
-						std::vector<std::vector<Vec3f>> cellTriangles = marchingCube.triangulateCell( cell, 0 );
-						for ( std::vector<Vec3f> & cellTriangle : cellTriangles )
+						std::vector<std::vector<Vec4f>> cellTriangles = marchingCube.triangulateCell( cell, 0 );
+						for ( std::vector<Vec4f> & cellTriangle : cellTriangles )
 						{
 							assert( cellTriangle.size() == 3 );
 
@@ -630,7 +621,7 @@ namespace VTX
 							}
 
 							// Map atoms with triangle points.
-							std::vector<Vec3f> & triangles = atomsToTriangles[ gridData[ closestVertex ].nearestAtom ];
+							std::vector<Vec4f> & triangles = atomsToTriangles[ gridData[ closestVertex ].nearestAtom ];
 							triangles.insert( triangles.end(), cellTriangle.begin(), cellTriangle.end() );
 						}
 					}
@@ -650,7 +641,7 @@ namespace VTX
 					continue;
 				}
 
-				const std::vector<Vec3f> & trianglePoints = atomsToTriangles[ i ];
+				const std::vector<Vec4f> & trianglePoints = atomsToTriangles[ i ];
 
 				_atomsToTriangles[ i ].first = uint( _vertices.size() );
 				_atomsToTriangles[ i ].count = uint( trianglePoints.size() );
@@ -670,7 +661,7 @@ namespace VTX
 			chrono2.stop();
 			VTX_INFO( "Triangles sorting done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
-			// toIndexed();
+			toIndexed();
 			chrono2.stop();
 			VTX_INFO( "Mesh to indexed computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();

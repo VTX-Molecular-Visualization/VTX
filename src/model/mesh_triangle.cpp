@@ -43,13 +43,14 @@ namespace VTX
 				return;
 			}
 
-			_normals.resize( _vertices.size(), VEC3F_ZERO );
+			_normals.resize( _vertices.size(), VEC4F_ZERO );
 			std::vector<std::vector<Vec3f>> normals( _vertices.size(), std::vector<Vec3f>() );
 
 			for ( uint i = 0; i < _indices.size() - 2; i += 3 )
 			{
-				Vec3f normal = Util::Math::cross( _vertices[ _indices[ i + 1 ] ] - _vertices[ _indices[ i + 2 ] ],
-												  _vertices[ _indices[ i + 1 ] ] - _vertices[ _indices[ i + 0 ] ] );
+				Vec3f normal
+					= Util::Math::cross( Vec3f( _vertices[ _indices[ i + 1 ] ] - _vertices[ _indices[ i + 2 ] ] ),
+										 Vec3f( _vertices[ _indices[ i + 1 ] ] - _vertices[ _indices[ i + 0 ] ] ) );
 
 				assert( Util::Math::length( normal ) != 0.f );
 				Util::Math::normalizeSelf( normal );
@@ -63,50 +64,22 @@ namespace VTX
 			for ( uint i = 0; i < normals.size(); ++i )
 			{
 				std::vector<Vec3f> & verticeNormals = normals[ i ];
+				Vec3f				 normal			= VEC3F_ZERO;
 				for ( const auto & n : verticeNormals )
 				{
-					_normals[ i ] += n;
+					normal += n;
 				}
-				_normals[ i ] /= verticeNormals.size();
-				Util::Math::normalizeSelf( _normals[ i ] );
-			}
-
-			_normals.shrink_to_fit();
-		}
-
-		/*
-		void MeshTriangle::recomputeNormals()
-		{
-			if ( _indices.size() % 3 != 0 )
-			{
-				assert( false );
-				return;
-			}
-
-			_normals.resize( _vertices.size(), VEC3F_ZERO );
-
-			for ( uint i = 0; i < _indices.size() - 2; i += 3 )
-			{
-				Vec3f normal = Util::Math::cross( _vertices[ _indices[ i + 1 ] ] - _vertices[ _indices[ i + 2 ] ],
-												  _vertices[ _indices[ i + 1 ] ] - _vertices[ _indices[ i + 0 ] ] );
-
-				assert( Util::Math::length( normal ) != 0.f );
+				normal /= verticeNormals.size();
 				Util::Math::normalizeSelf( normal );
-
-				for ( uint j = 0; j < 3; ++j )
-				{
-					_normals[ _indices[ i + j ] ] += normal;
-					Util::Math::normalizeSelf( _indices[ i + j ] );
-				}
+				_normals[ i ] = Vec4f( normal, 1.f );
 			}
 
 			_normals.shrink_to_fit();
 		}
-		*/
 
 		void MeshTriangle::toIndexed()
 		{
-			std::vector<Vec3f> vertices = std::vector<Vec3f>();
+			std::vector<Vec4f> vertices = std::vector<Vec4f>();
 			std::vector<uint>  indices( _indices.size() );
 
 			for ( uint i = 0; i < _vertices.size(); ++i )
@@ -134,7 +107,7 @@ namespace VTX
 
 		void MeshTriangle::toNonIndexed()
 		{
-			std::vector<Vec3f> vertices( _indices.size() );
+			std::vector<Vec4f> vertices( _indices.size() );
 			for ( uint i = 0; i < _indices.size(); ++i )
 			{
 				vertices[ i ] = _vertices[ _indices[ i ] ];

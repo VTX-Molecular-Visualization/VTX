@@ -18,13 +18,13 @@ namespace VTX::Buffer
 
 		// Position.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_POSITION );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_POSITION, _vboPositions, sizeof( Vec3f ) );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_POSITION, _vboPositions, sizeof( Vec4f ) );
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VERTEX_POSITION, 3, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_POSITION, ATTRIBUTE_LOCATION::VERTEX_POSITION );
 
 		// Normal.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_NORMAL );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_NORMAL, _vboNormals, sizeof( Vec3f ) );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_NORMAL, _vboNormals, sizeof( Vec4f ) );
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VERTEX_NORMAL, 3, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_NORMAL, ATTRIBUTE_LOCATION::VERTEX_NORMAL );
 
@@ -55,12 +55,12 @@ namespace VTX::Buffer
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_ID, ATTRIBUTE_LOCATION::VERTEX_ID );
 	}
 
-	void MeshTriangle::setPositions( const std::vector<Vec3f> & p_positions )
+	void MeshTriangle::setPositions( const std::vector<Vec4f> & p_positions )
 	{
 		_updateBuffer( _vboPositions, p_positions );
 	}
 
-	void MeshTriangle::setNormals( const std::vector<Vec3f> & p_normals ) { _updateBuffer( _vboNormals, p_normals ); }
+	void MeshTriangle::setNormals( const std::vector<Vec4f> & p_normals ) { _updateBuffer( _vboNormals, p_normals ); }
 
 	void MeshTriangle::setColors( const std::vector<Color::Rgb> & p_colors ) { _updateBuffer( _vboColors, p_colors ); }
 

@@ -18,8 +18,8 @@ namespace VTX
 			MeshTriangle()	= default;
 			~MeshTriangle() = default;
 
-			void setPositions( const std::vector<Vec3f> & );
-			void setNormals( const std::vector<Vec3f> & );
+			void setPositions( const std::vector<Vec4f> & );
+			void setNormals( const std::vector<Vec4f> & );
 			void setColors( const std::vector<Color::Rgb> & );
 			void setVisibilities( const std::vector<uint> & );
 			void setSelections( const std::vector<uint> & );
