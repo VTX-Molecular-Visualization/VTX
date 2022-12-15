@@ -8,7 +8,7 @@
 #include "renderer/gl/program_manager.hpp"
 #include <vector>
 
-#define LOCAL_SIZE_X 256
+#define LOCAL_SIZE_X 1
 
 namespace VTX::Worker
 {
