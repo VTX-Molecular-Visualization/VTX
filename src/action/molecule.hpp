@@ -24,6 +24,21 @@
 
 namespace VTX::Action::Molecule
 {
+	class RefreshSolventExcludedSurface : public BaseAction
+	{
+	  public:
+		explicit RefreshSolventExcludedSurface( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
+
+		virtual void execute() override
+		{
+			_molecule.refreshSolventExcludedSurfaces();
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		}
+
+	  private:
+		Model::Molecule & _molecule;
+	};
+
 	class ChangeColor : public BaseAction
 	{
 	  public:
