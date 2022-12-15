@@ -19,13 +19,13 @@ namespace VTX::Buffer
 		// Position.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_POSITION );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_POSITION, _vboPositions, sizeof( Vec4f ) );
-		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VERTEX_POSITION, 3, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VERTEX_POSITION, 4, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_POSITION, ATTRIBUTE_LOCATION::VERTEX_POSITION );
 
 		// Normal.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_NORMAL );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_NORMAL, _vboNormals, sizeof( Vec4f ) );
-		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VERTEX_NORMAL, 3, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VERTEX_NORMAL, 4, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_NORMAL, ATTRIBUTE_LOCATION::VERTEX_NORMAL );
 
 		// Color.

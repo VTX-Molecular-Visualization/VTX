@@ -175,7 +175,7 @@ void main()
 			const vec3 vertice = intersections[ triangleTable[ cubeIndex * 16 + i + j ] ];
 
 			// Position.
-			trianglePositions[ sesGridHash * 15 + i + j ] = vec4( vertice, 0.f );
+			trianglePositions[ sesGridHash * 15 + i + j ] = vec4( vertice, 1.f );
 
 			// Indice.
 			triangleIndices[ sesGridHash * 15 + i + j ] = sesGridHash * 15 + i + j;
@@ -196,14 +196,12 @@ void main()
 			normalize( 
 				cross(	intersections[ triangleTable[ cubeIndex * 16 + i + 1 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ],
 						intersections[ triangleTable[ cubeIndex * 16 + i + 2 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ] ) )
-						, 0.f );
+						, 1.f );
 		
-		triangleNormals[ sesGridHash * 15 + i + 0 ] = normal;
-		triangleNormals[ sesGridHash * 15 + i + 1 ] = normal;
-		triangleNormals[ sesGridHash * 15 + i + 2 ] = normal;
-
-		triangleValidities[ sesGridHash * 15 + i + 0 ] = 1;
-		triangleValidities[ sesGridHash * 15 + i + 1 ] = 1;
-		triangleValidities[ sesGridHash * 15 + i + 2 ] = 1;
+		for ( uint j = 0; j < 3; ++j )
+		{
+			triangleNormals[ sesGridHash * 15 + i + j ] = normal;
+			triangleValidities[ sesGridHash * 15 + i + j ] = 1;
+		}
 	}
 }

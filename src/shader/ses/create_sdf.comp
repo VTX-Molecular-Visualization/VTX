@@ -61,8 +61,6 @@ void main()
 	const uint sesGridHash = gridHash( gl_GlobalInvocationID, uGridSESSize );
 	const uvec3 sesGridPosition = gridPosition( sesGridHash, uGridSESSize);
 
-	//debug[ sesGridHash ] = gl_GlobalInvocationID.y;
-
 	// Not in grid.
 	if ( sesGridHash >= uGridSESCellCount )
 	{				
