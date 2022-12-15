@@ -3,7 +3,7 @@
 #define FLT_MAX 3.402823466e+38
 #define EPSILON  1e-6
 
-layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
 // Uniforms.
 uniform vec3	uGridSESWorldOrigin;
@@ -26,6 +26,11 @@ layout (std430, binding = 0) buffer SESGridData
 	SESGridDataStruct[] sesGridData;
 };
 
+layout (std430, binding = 7) writeonly buffer Debug
+{
+	uint[] debug;
+};
+
 void main()
 {
 	// Get corresponding ses grid data.
@@ -43,7 +48,7 @@ void main()
 	{
 		return;
 	}
-	
+
 	const vec3 sesWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize );
 	
 	float minDistanceWithOutsidePoint = FLT_MAX;
@@ -79,4 +84,6 @@ void main()
 			}
 		}
 	}
+
+	
 }

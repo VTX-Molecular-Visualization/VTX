@@ -2,7 +2,7 @@
 #include "include/grid.glsl"
 #define FLT_MAX 3.402823466e+38
 
-layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
 // Uniforms.
 uniform vec3	uGridAtomWorldOrigin;
@@ -50,6 +50,11 @@ layout (std140, binding = 3) readonly buffer AtomPosition
 	vec4[] atomPosition;
 };
 
+layout (std430, binding = 7) writeonly buffer Debug
+{
+	uint[] debug;
+};
+
 void main()
 {
 	// Get corresponding ses grid data.
@@ -76,17 +81,22 @@ void main()
 			for ( int oz = -1; oz <= 1; ++oz )
 			{	
 				const vec3 offset = vec3( ox, oy, oz );
-				const uvec3 gridPositionToVisit = uvec3( atomGridPosition + offset );	
+				const uvec3 gridPositionToVisit = uvec3( atomGridPosition + offset );					
 				const uint hashToVisit = gridHash( gridPositionToVisit, uGridAtomSize );					
-				
+
 				if ( hashToVisit >= uGridAtomCellCount )
 				{				
 					continue;
 				}	
 				
+				
+
 				const uint first = atomGridData[ hashToVisit ].first;
 				const uint count = atomGridData[ hashToVisit ].count;
-				
+
+				debug[ sesGridHash ] = count;
+				return;
+
 				// Compute SDF.
 				for ( uint i = first; i < first + count; ++i )
 				{		
@@ -112,6 +122,7 @@ void main()
 							{
 								minDistance	= d;
 								sesGridData[ sesGridHash ].nearestAtom = int( index );
+								
 							}
 						}						
 					}

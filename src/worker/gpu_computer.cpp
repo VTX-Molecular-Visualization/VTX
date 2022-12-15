@@ -14,13 +14,15 @@ namespace VTX::Worker
 	{
 		VTX_DEBUG( "Starting gpu work: {}", Util::Math::to_string( _size ) );
 		_gl->glDispatchCompute( _size.x, _size.y, _size.z );
-		_gl->glMemoryBarrier( _barrier );
+		//_gl->glMemoryBarrier( _barrier );
 
-		if ( _force )
-		{
-			_gl->glFlush();
-			_gl->glFinish();
-		}
+		_gl->glMemoryBarrier( GL_ALL_BARRIER_BITS );
+
+		// if ( _force )
+		//{
+		_gl->glFlush();
+		_gl->glFinish();
+		//}
 	}
 
 	void GpuComputer::start( const Vec3i & p_size, const GLbitfield p_barrier )
@@ -39,17 +41,19 @@ namespace VTX::Worker
 
 	const Vec3i GpuComputer::_computeSize( const uint p_taskCount ) const
 	{
-		const int workGroupNeeded = static_cast<int>(
-			std::ceil( ( p_taskCount % LOCAL_SIZE_X != 0 ) ? ( p_taskCount / static_cast<float>( LOCAL_SIZE_X + 1 ) )
-														   : ( p_taskCount / static_cast<float>( LOCAL_SIZE_X ) ) ) );
+		VTX_DEBUG( "Gpu work compute task count: {} and local size: {}", p_taskCount, LOCAL_SIZE_X );
 
-		VTX_DEBUG( "{}", workGroupNeeded );
+		const int workGroupNeeded = int( ( float( p_taskCount ) / LOCAL_SIZE_X ) + 1.f );
+
+		// TODO: distribute work groups on multiple dimensions.
+		assert( workGroupNeeded <= VTX_SPEC().glMaxComputeWorkGroupCount[ 0 ] );
+
+		VTX_DEBUG( "Gpu work compute work group needed: {}", workGroupNeeded );
+
 		const int xDimension = std::min( workGroupNeeded, VTX_SPEC().glMaxComputeWorkGroupCount[ 0 ] );
-		const int yDimension = static_cast<int>( std::max(
-			std::ceil( xDimension / static_cast<float>( float( VTX_SPEC().glMaxComputeWorkGroupCount[ 1 ] ) ) ) + 1,
-			1.f ) );
-
+		const int yDimension = 1;
 		const int zDimension = 1;
+
 		return { xDimension, yDimension, zDimension };
 	}
 } // namespace VTX::Worker

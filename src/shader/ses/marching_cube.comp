@@ -1,7 +1,7 @@
 #version 450
 #include "include/grid.glsl"
 
-layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
 const uint[ 12 ][ 2 ] _EDGE_TO_VERTICES
 				= { { 0, 1 }, { 1, 2 }, { 2, 3 }, { 0, 3 }, { 4, 5 }, { 5, 6 },
@@ -41,11 +41,13 @@ struct SESGridDataStruct
 	int	  nearestAtom;
 };
 
+/*
 struct Range
 {
 	uint first;
 	uint count;
 };
+*/
 
 // SSBO.
 layout (std430, binding = 0) readonly buffer SESGridData
@@ -73,9 +75,16 @@ layout (std430, binding = 4) writeonly buffer TriangleAtomIds
 	uint[] triangleAtomIds;
 };
 
+/*
 layout (std430, binding = 5) writeonly buffer TriangleAtomRanges
 {
 	Range[] triangleAtomRanges;
+};
+*/
+
+layout (std430, binding = 5) writeonly buffer TriangleValidities
+{
+	uint[] triangleValidities;
 };
 
 layout (std430, binding = 6) readonly buffer TriangleTable
@@ -179,6 +188,9 @@ void main()
 
 			// TODO: Atom range.
 			//atomicAdd(triangleAtomRange[ sesGridData[ sesGridHash ].nearestAtom ].count, 1);
+		
+			// Validity.
+			triangleValidities[ sesGridHash * 15 + i + j ] = 1;
 		}
 		const vec4 normal = vec4(
 			normalize( 
@@ -189,5 +201,9 @@ void main()
 		triangleNormals[ sesGridHash * 15 + i + 0 ] = normal;
 		triangleNormals[ sesGridHash * 15 + i + 1 ] = normal;
 		triangleNormals[ sesGridHash * 15 + i + 2 ] = normal;
+
+		triangleValidities[ sesGridHash * 15 + i + 0 ] = 1;
+		triangleValidities[ sesGridHash * 15 + i + 1 ] = 1;
+		triangleValidities[ sesGridHash * 15 + i + 2 ] = 1;
 	}
 }
