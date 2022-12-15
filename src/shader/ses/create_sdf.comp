@@ -65,7 +65,7 @@ void main()
 	if ( sesGridHash >= uGridSESCellCount )
 	{				
 		return;
-	}
+	}	
 				
 	// Get corresponding acceleration grid data.
 	const vec3 sesGridCellWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize);
@@ -79,23 +79,25 @@ void main()
 		for ( int oy = -1; oy <= 1; ++oy )
 		{		
 			for ( int oz = -1; oz <= 1; ++oz )
-			{	
+			{					
 				const vec3 offset = vec3( ox, oy, oz );
 				const uvec3 gridPositionToVisit = uvec3( atomGridPosition + offset );					
 				const uint hashToVisit = gridHash( gridPositionToVisit, uGridAtomSize );					
+
+				debug[ sesGridHash ] = hashToVisit;
+				return;
 
 				if ( hashToVisit >= uGridAtomCellCount )
 				{				
 					continue;
 				}	
-				
+
 				
 
 				const uint first = atomGridData[ hashToVisit ].first;
 				const uint count = atomGridData[ hashToVisit ].count;
 
-				debug[ sesGridHash ] = count;
-				return;
+				
 
 				// Compute SDF.
 				for ( uint i = first; i < first + count; ++i )

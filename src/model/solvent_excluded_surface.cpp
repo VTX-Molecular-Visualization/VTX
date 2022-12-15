@@ -173,7 +173,14 @@ namespace VTX
 			workerCreateSDF.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
 
 			// Start.
-			workerCreateSDF.start( gridSES.getCellCount() );
+			if ( LOCAL_SIZE_X == 1 )
+			{
+				workerCreateSDF.start( gridSES.size );
+			}
+			else
+			{
+				workerCreateSDF.start( gridSES.getCellCount() );
+			}
 
 			ssboDebug.getData( 0, uint( debug.size() ) * sizeof( uint ), &debug[ 0 ] );
 			std::ofstream outFile( "GPU_DATA.txt" );
@@ -206,7 +213,14 @@ namespace VTX
 			workerRefineSDF.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
 
 			// Start
-			workerRefineSDF.start( gridSES.getCellCount() );
+			if ( LOCAL_SIZE_X == 1 )
+			{
+				workerRefineSDF.start( gridSES.size );
+			}
+			else
+			{
+				workerRefineSDF.start( gridSES.getCellCount() );
+			}
 
 			chrono2.stop();
 			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
@@ -255,7 +269,14 @@ namespace VTX
 			workerMarchingCube.getProgram().setVec3f( "uGridSESCellSize", gridSES.cellSize );
 
 			// Start.
-			workerMarchingCube.start( gridSES.getCellCount() );
+			if ( LOCAL_SIZE_X == 1 )
+			{
+				workerMarchingCube.start( gridSES.size );
+			}
+			else
+			{
+				workerMarchingCube.start( gridSES.getCellCount() );
+			}
 
 			ssboTrianglePositions.getData( 0, uint( vertices.size() ) * sizeof( Vec4f ), &vertices[ 0 ] );
 			ssboTriangleIndices.getData( 0, uint( _indices.size() ) * sizeof( uint ), &_indices[ 0 ] );
