@@ -434,7 +434,8 @@ namespace VTX::UI
 	{
 		// Create an emplacement for the widget before setting it floating to prevent warning
 		// TODO check https://bugreports.qt.io/browse/QTBUG-88157 to remove useless tabifyDockWidget
-		tabifyDockWidget( _inspectorWidget, p_dockWidget );
+		// Seems good on Qt 6
+		// tabifyDockWidget( _inspectorWidget, p_dockWidget );
 
 		p_dockWidget->setFloating( true );
 		p_dockWidget->resize( p_size );
