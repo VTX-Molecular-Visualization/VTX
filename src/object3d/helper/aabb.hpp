@@ -118,9 +118,9 @@ namespace VTX::Object3D::Helper
 			AABB_CORNER = 0
 		};
 
-		Renderer::GL::BufferData _vbo	  = Renderer::GL::BufferData();
-		Renderer::GL::BufferData _ibo	  = Renderer::GL::BufferData();
-		uint					 _iboSize = 0;
+		Renderer::GL::Buffer _vbo	  = Renderer::GL::Buffer();
+		Renderer::GL::Buffer _ibo	  = Renderer::GL::Buffer();
+		uint				 _iboSize = 0;
 
 		Renderer::GL::Program * _program = nullptr;
 	};

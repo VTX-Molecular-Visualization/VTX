@@ -40,13 +40,13 @@ namespace VTX
 				ATOM_ID			= 5,
 			};
 
-			Renderer::GL::BufferData _vboAtomPositions	  = Renderer::GL::BufferData();
-			Renderer::GL::BufferData _vboAtomRadii		  = Renderer::GL::BufferData();
-			Renderer::GL::BufferData _vboAtomColors		  = Renderer::GL::BufferData();
-			Renderer::GL::BufferData _vboAtomVisibilities = Renderer::GL::BufferData();
-			Renderer::GL::BufferData _vboAtomSelections	  = Renderer::GL::BufferData();
-			Renderer::GL::BufferData _vboAtomIds		  = Renderer::GL::BufferData();
-			Renderer::GL::BufferData _iboBonds			  = Renderer::GL::BufferData();
+			Renderer::GL::Buffer _vboAtomPositions	  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _vboAtomRadii		  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _vboAtomColors		  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _vboAtomVisibilities = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _vboAtomSelections	  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _vboAtomIds		  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _iboBonds			  = Renderer::GL::Buffer();
 		};
 	} // namespace Buffer
 } // namespace VTX
