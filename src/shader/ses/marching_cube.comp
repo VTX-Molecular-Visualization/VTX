@@ -60,20 +60,22 @@ layout (std140, binding = 1) writeonly buffer TrianglePositions
 	vec4[] trianglePositions;
 };
 
-layout (std430, binding = 2) writeonly buffer TriangleIndices
-{
-	uint[] triangleIndices;
-};
-
-layout (std140, binding = 3) writeonly buffer TriangleNormals
+layout (std140, binding = 2) writeonly buffer TriangleNormals
 {
 	vec4[] triangleNormals;
 };
 
+layout (std430, binding = 3) writeonly buffer TriangleIndices
+{
+	uint[] triangleIndices;
+};
+
+/*
 layout (std430, binding = 4) writeonly buffer TriangleAtomIds
 {
 	uint[] triangleAtomIds;
 };
+*/
 
 /*
 layout (std430, binding = 5) writeonly buffer TriangleAtomRanges

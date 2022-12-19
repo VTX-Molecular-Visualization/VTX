@@ -59,6 +59,7 @@ namespace VTX::Renderer::GL
 			MAP_UNSYNCHRONIZED_BIT	  = GL_MAP_UNSYNCHRONIZED_BIT
 		};
 
+		// TODO: call create and modify all buffers.
 		Buffer() = default;
 
 		Buffer( const Target & p_target ) { create( p_target ); }
@@ -80,8 +81,7 @@ namespace VTX::Renderer::GL
 		Buffer( const Target & p_target, const size_t p_size, const Flags & p_flags = Flags::NONE )
 		{
 			create( p_target );
-
-			_gl->glNamedBufferStorage( _id, GLsizei( p_size ), nullptr, p_flags );
+			set( p_size );
 		}
 
 		~Buffer() { destroy(); }
@@ -122,11 +122,12 @@ namespace VTX::Renderer::GL
 			_gl->glBindBuffer( GLenum( _target ), _id );
 		}
 
-		inline void bind( const Target & p_target ) const
+		inline void bind( const Target & p_target )
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
-			_gl->glBindBuffer( GLenum( p_target ), _id );
+			_target = p_target;
+			_gl->glBindBuffer( GLenum( _target ), _id );
 		}
 
 		inline void bind( const uint p_index ) const
@@ -136,11 +137,12 @@ namespace VTX::Renderer::GL
 			_gl->glBindBufferBase( GLenum( _target ), p_index, _id );
 		}
 
-		inline void bind( const uint p_index, const Target & p_target ) const
+		inline void bind( const uint p_index, const Target & p_target )
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
-			_gl->glBindBufferBase( GLenum( p_target ), p_index, _id );
+			_target = p_target;
+			_gl->glBindBufferBase( GLenum( _target ), p_index, _id );
 		}
 
 		inline void unbind() const { _gl->glBindBuffer( GLenum( _target ), 0 ); }
@@ -165,6 +167,13 @@ namespace VTX::Renderer::GL
 			assert( _gl->glIsBuffer( _id ) );
 
 			_gl->glNamedBufferStorage( _id, GLsizei( p_size ), &p_data, p_flags );
+		}
+
+		inline void set( const size_t p_size, const Flags & p_flags = Flags::NONE ) const
+		{
+			assert( _gl->glIsBuffer( _id ) );
+
+			_gl->glNamedBufferStorage( _id, GLsizei( p_size ), nullptr, p_flags );
 		}
 
 		template<typename T>

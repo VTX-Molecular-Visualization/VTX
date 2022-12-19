@@ -35,7 +35,6 @@ namespace VTX
 
 		void SolventExcludedSurface::refresh()
 		{
-			// Force CPU.
 			_mode = Mode::GPU;
 
 			if ( _category->isEmpty() )
@@ -146,7 +145,6 @@ namespace VTX
 			const Buffer ssboAtomPosition( Buffer::Target::SHADER_STORAGE_BUFFER, atomPositionsVdW );
 			Buffer		 ssboDebug( Buffer::Target::SHADER_STORAGE_BUFFER, debug );
 
-			// TODO: clear CPU buffers?
 			// Bind.
 			ssboSesGridData.bind( 0 );
 			ssboAtomGridDataSorted.bind( 1 );
@@ -179,12 +177,6 @@ namespace VTX
 			}
 
 			// ssboDebug.getData( 0, uint( debug.size() ) * sizeof( uint ), &debug[ 0 ] );
-			// std::ofstream outFile( "GPU_DATA.txt" );
-			// for ( const auto & e : debug )
-			//{
-			//	outFile << e << "\n";
-			// }
-			// outFile.close();
 
 			// Unbind.
 			ssboAtomGridDataSorted.unbind();
@@ -231,11 +223,21 @@ namespace VTX
 			const size_t bufferSize = gridSES.getCellCount() * 5 * 3;
 			_atomsToTriangles		= std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
 
-			Buffer ssboTrianglePositions( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( Vec4f ) );
-			Buffer ssboTriangleIndices( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( uint ) );
-			Buffer ssboTriangleNormals( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( Vec4f ) );
-			Buffer ssboTriangleAtomIds( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( uint ) );
-			// BufferStorage ssboAtomToTriangles( BufferStorage::Target::SHADER_STORAGE_BUFFER, _atomsToTriangles );
+			/////////////////////////
+			Buffer & bufferPositions = _buffer->getBufferPositions();
+			Buffer & bufferNormals	 = _buffer->getBufferNormals();
+			Buffer & bufferIndices	 = _buffer->getBufferIndices();
+
+			bufferPositions.set( bufferSize * sizeof( Vec4f ) );
+			bufferNormals.set( bufferSize * sizeof( Vec4f ) );
+			bufferIndices.set( bufferSize * sizeof( uint ) );
+
+			/////////////////////////
+			// Buffer ssboTrianglePositions( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( Vec4f ) );
+			// Buffer ssboTriangleIndices( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( uint ) );
+			// Buffer ssboTriangleNormals( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( Vec4f ) );
+			//  Buffer ssboTriangleAtomIds( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( uint ) );
+			//   BufferStorage ssboAtomToTriangles( BufferStorage::Target::SHADER_STORAGE_BUFFER, _atomsToTriangles );
 			Buffer ssboTriangleValidities( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( uint ) );
 
 			// Input.
@@ -244,11 +246,14 @@ namespace VTX
 											Math::MarchingCube::TRIANGLE_TABLE,
 											VTX::Renderer::GL::Buffer::Flags::DYNAMIC_STORAGE_BIT );
 
-			ssboTrianglePositions.bind( 1 );
-			ssboTriangleIndices.bind( 2 );
-			ssboTriangleNormals.bind( 3 );
-			ssboTriangleAtomIds.bind( 4 );
-			// ssboAtomToTriangles.bind( 5 );
+			bufferPositions.bind( 1, Buffer::Target::SHADER_STORAGE_BUFFER );
+			bufferNormals.bind( 2, Buffer::Target::SHADER_STORAGE_BUFFER );
+			bufferIndices.bind( 3, Buffer::Target::SHADER_STORAGE_BUFFER );
+			// ssboTrianglePositions.bind( 1 );
+			// ssboTriangleIndices.bind( 2 );
+			// ssboTriangleNormals.bind( 3 );
+			//  ssboTriangleAtomIds.bind( 4 );
+			//   ssboAtomToTriangles.bind( 5 );
 			ssboTriangleValidities.bind( 5 );
 			ssboTriangleTable.bind( 6 );
 
@@ -286,55 +291,67 @@ namespace VTX
 			//_normals.emplace_back( normals.begin(), normals.end() );
 
 			//////////////////////
-			_atomsToTriangles[ _atomsToTriangles.size() - 1 ] = Range { 0, uint( _indices.size() ) };
+
 			//////////////////////
 			//
 			//////////////////////
-			// std::ofstream outFile( "GPU_DATA.txt" );
-			// for ( const auto & e : debug )
-			//	outFile << std::to_string( e ) << "\n";
-			//   for ( const auto & e : _indices )
-			//	outFile << std::to_string( e ) << "\n";
-			// outFile.close();
-			//////////////////////
+			// std::vector<Vec4f> test( bufferSize );
+			// bufferPositions.getData( 0, bufferSize * sizeof( Vec4f ), &test[ 0 ] );
+
+			/*
+			std::ofstream outFile( "GPU_DATA.txt" );
+			for ( const auto & e : test )
+			{
+				outFile << glm::to_string( e ) << "\n";
+			}
+			outFile.close();
+			*/
 
 			// Unbind.
+			bufferPositions.unbind();
+			bufferNormals.unbind();
+			bufferIndices.unbind();
+
 			ssboSesGridData.unbind();
-			ssboTrianglePositions.unbind();
-			ssboTriangleIndices.unbind();
-			ssboTriangleNormals.unbind();
-			ssboTriangleAtomIds.unbind();
-			// ssboAtomToTriangles.unbind();
+			// ssboTrianglePositions.unbind();
+			// ssboTriangleIndices.unbind();
+			// ssboTriangleNormals.unbind();
+			//  ssboTriangleAtomIds.unbind();
+			//   ssboAtomToTriangles.unbind();
 			ssboTriangleValidities.unbind();
 			ssboTriangleTable.unbind();
 			ssboDebug.unbind();
 
 			_indiceCount = uint( bufferSize );
 
+			// TMP.
+			_atomsToTriangles[ _atomsToTriangles.size() - 1 ] = Range { 0, _indiceCount };
+
 			// refreshColors();
 			_colors.resize( _indiceCount, Color::Rgb::WHITE );
 			// refreshVisibilities();
 			_visibilities.resize( _indiceCount, 1 );
+			_ids.resize( _indiceCount, 0 );
 
 			//_buffer->setPositions( _vertices );
 			//_buffer->setNormals( _normals );
 			_buffer->setColors( _colors );
 			_buffer->setVisibilities( _visibilities );
-			//_buffer->setIds( _ids );
+			_buffer->setIds( _ids );
 			//_buffer->setIndices( _indices );
 
 			//_vertices.clear();
 			//_normals.clear();
 			_colors.clear();
 			_visibilities.clear();
-			//_ids.clear();
+			_ids.clear();
 			//_indices.clear();
 
 			//_vertices.shrink_to_fit();
 			//_normals.shrink_to_fit();
 			_colors.shrink_to_fit();
 			_visibilities.shrink_to_fit();
-			//_ids.shrink_to_fit();
+			_ids.shrink_to_fit();
 			//_indices.shrink_to_fit();
 
 			_atomsToTriangles.shrink_to_fit();

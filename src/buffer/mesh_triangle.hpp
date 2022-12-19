@@ -26,6 +26,14 @@ namespace VTX
 			void setIds( const std::vector<Model::ID> & );
 			void setIndices( const std::vector<uint> & );
 
+			inline Renderer::GL::Buffer & getBufferPositions() { return _vboPositions; }
+			inline Renderer::GL::Buffer & getBufferNormals() { return _vboNormals; }
+			inline Renderer::GL::Buffer & getBufferColors() { return _vboColors; }
+			inline Renderer::GL::Buffer & getBufferVisibilities() { return _vboVisibilities; }
+			inline Renderer::GL::Buffer & getBufferSelections() { return _vboSelections; }
+			inline Renderer::GL::Buffer & getBufferIds() { return _vboIds; }
+			inline Renderer::GL::Buffer & getBufferIndices() { return _ibo; }
+
 		  protected:
 			void _generate() override;
 
