@@ -71,6 +71,23 @@ layout (std430, binding = 3) writeonly buffer TriangleIndices
 };
 
 /*
+layout (std140, binding = 4) writeonly buffer TriangleColors
+{
+	vec3[] triangleColors;
+};
+*/
+
+layout (std430, binding = 5) writeonly buffer TriangleVisibilities
+{
+	uint[] triangleVisibilities;
+};
+
+layout (std430, binding = 6) writeonly buffer TriangleIds
+{
+	uint[] triangleIds;
+};
+
+/*
 layout (std430, binding = 4) writeonly buffer TriangleAtomIds
 {
 	uint[] triangleAtomIds;
@@ -84,19 +101,31 @@ layout (std430, binding = 5) writeonly buffer TriangleAtomRanges
 };
 */
 
-layout (std430, binding = 5) writeonly buffer TriangleValidities
+layout (std430, binding = 7) writeonly buffer TriangleValidities
 {
 	uint[] triangleValidities;
 };
 
-layout (std430, binding = 6) readonly buffer TriangleTable
+layout (std430, binding = 8) readonly buffer TriangleTable
 {
 	int[] triangleTable;
 };
 
-layout (std430, binding = 7) writeonly buffer Debug
+/*
+layout (std140, binding = 9) readonly buffer AtomColors
 {
-	uint[] debug;
+	vec3[] atomColors;
+};
+*/
+
+layout (std430, binding = 10) readonly buffer AtomVisibilities
+{
+	uint[] atomVisibilities;
+};
+
+layout (std430, binding = 11) readonly buffer AtomIds
+{
+	uint[] atomIds;
 };
 
 // Marching cube.
@@ -204,6 +233,10 @@ void main()
 		{
 			triangleNormals[ sesGridHash * 15 + i + j ] = normal;
 			triangleValidities[ sesGridHash * 15 + i + j ] = 1;
+			
+			//triangleColors[ sesGridHash * 15 + i + j ] = atomColors[ sesGridData[ sesGridHash ].nearestAtom ];
+			triangleVisibilities[ sesGridHash * 15 + i + j ] = atomVisibilities[ sesGridData[ sesGridHash ].nearestAtom ];
+			triangleIds[ sesGridHash * 15 + i + j ] = atomIds[ sesGridData[ sesGridHash ].nearestAtom ];
 		}
 	}
 }

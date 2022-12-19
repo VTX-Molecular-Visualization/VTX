@@ -50,11 +50,6 @@ layout (std140, binding = 3) readonly buffer AtomPosition
 	vec4[] atomPosition;
 };
 
-layout (std430, binding = 7) writeonly buffer Debug
-{
-	uint[] debug;
-};
-
 void main()
 {
 	// Get corresponding ses grid data.	

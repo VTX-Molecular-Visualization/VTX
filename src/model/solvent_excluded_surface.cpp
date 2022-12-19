@@ -223,10 +223,16 @@ namespace VTX
 			Buffer & bufferPositions = _buffer->getBufferPositions();
 			Buffer & bufferNormals	 = _buffer->getBufferNormals();
 			Buffer & bufferIndices	 = _buffer->getBufferIndices();
+			// Buffer & bufferColors		= _buffer->getBufferColors();
+			Buffer & bufferVisibilities = _buffer->getBufferVisibilities();
+			Buffer & bufferIds			= _buffer->getBufferIds();
 
 			bufferPositions.set( bufferSize * sizeof( Vec4f ) );
 			bufferNormals.set( bufferSize * sizeof( Vec4f ) );
 			bufferIndices.set( bufferSize * sizeof( uint ) );
+			// bufferColors.set( bufferSize * sizeof( Color::Rgb ) );
+			bufferVisibilities.set( bufferSize * sizeof( uint ) );
+			bufferIds.set( bufferSize * sizeof( uint ) );
 
 			/////////////////////////
 			//  Buffer ssboTriangleAtomIds( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( uint ) );
@@ -238,14 +244,26 @@ namespace VTX
 											256 * 16 * sizeof( int ),
 											Math::MarchingCube::TRIANGLE_TABLE,
 											VTX::Renderer::GL::Buffer::Flags::DYNAMIC_STORAGE_BIT );
+			// const Buffer ssboAtomColors( Buffer::Target::SHADER_STORAGE_BUFFER,
+			//							 _category->getMoleculePtr()->getBufferAtomColors() );
+			const Buffer ssboAtomVisibilities( Buffer::Target::SHADER_STORAGE_BUFFER,
+											   _category->getMoleculePtr()->getBufferAtomVisibilities() );
+			const Buffer ssboAtomIds( Buffer::Target::SHADER_STORAGE_BUFFER,
+									  _category->getMoleculePtr()->getBufferAtomIds() );
 
 			bufferPositions.bind( 1, Buffer::Target::SHADER_STORAGE_BUFFER );
 			bufferNormals.bind( 2, Buffer::Target::SHADER_STORAGE_BUFFER );
 			bufferIndices.bind( 3, Buffer::Target::SHADER_STORAGE_BUFFER );
+			// bufferColors.bind( 4, Buffer::Target::SHADER_STORAGE_BUFFER );
+			bufferVisibilities.bind( 5, Buffer::Target::SHADER_STORAGE_BUFFER );
+			bufferIds.bind( 6, Buffer::Target::SHADER_STORAGE_BUFFER );
 			//  ssboTriangleAtomIds.bind( 4 );
 			//   ssboAtomToTriangles.bind( 5 );
-			ssboTriangleValidities.bind( 5 );
-			ssboTriangleTable.bind( 6 );
+			ssboTriangleValidities.bind( 7 );
+			ssboTriangleTable.bind( 8 );
+			// ssboAtomColors.bind( 9 );
+			ssboAtomVisibilities.bind( 10 );
+			ssboAtomIds.bind( 11 );
 
 			workerMarchingCube.getProgram().use();
 
@@ -296,27 +314,35 @@ namespace VTX
 			bufferPositions.unbind();
 			bufferNormals.unbind();
 			bufferIndices.unbind();
+			// bufferColors.unbind();
+			bufferVisibilities.unbind();
+			bufferIds.unbind();
 
 			ssboSesGridData.unbind();
 			//  ssboTriangleAtomIds.unbind();
 			//   ssboAtomToTriangles.unbind();
 			ssboTriangleValidities.unbind();
 			ssboTriangleTable.unbind();
+			// ssboAtomColors.unbind();
+			ssboAtomVisibilities.unbind();
+			ssboAtomIds.unbind();
+
 			// ssboDebug.unbind();
 
 			_indiceCount = uint( bufferSize );
 
 			refreshColors();
-			refreshVisibilities();
+			// refreshVisibilities();
 
 			// TMP.
-			_atomsToTriangles[ _atomsToTriangles.size() - 1 ] = Range { 0, _indiceCount };
+			_atomsToTriangles[ 0 ] = Range { 0, _indiceCount };
 
+			/*
 			_ids.resize( _indiceCount, 0 );
 			_buffer->setIds( _ids );
 			_ids.clear();
 			_ids.shrink_to_fit();
-
+			*/
 			_atomsToTriangles.shrink_to_fit();
 
 			chrono2.stop();
