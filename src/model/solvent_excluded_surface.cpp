@@ -127,30 +127,26 @@ namespace VTX
 			Vec3i				   sesGridSize = Vec3i( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
 			Object3D::Helper::Grid gridSES	   = Object3D::Helper::Grid( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
 
-			// SES grid data.
-			std::vector<SESGridData> sesGridData
-				= std::vector<SESGridData>( gridSES.getCellCount(), SESGridData { PROBE_RADIUS, -1 } );
-			std::vector<uint> debug = std::vector<uint>( gridSES.getCellCount(), 0 );
-
 			// Worker: create SDF.
 			Worker::GpuComputer workerCreateSDF( IO::FilePath( "ses/create_sdf.comp" ) );
 
 			// Create SSBOs.
 			using VTX::Renderer::GL::Buffer;
 			// // Output.
-			Buffer ssboSesGridData( VTX::Renderer::GL::Buffer::Target::SHADER_STORAGE_BUFFER, sesGridData );
+			Buffer ssboSesGridData( VTX::Renderer::GL::Buffer::Target::SHADER_STORAGE_BUFFER,
+									gridSES.getCellCount() * sizeof( SESGridData ) );
 			// Input.
 			const Buffer ssboAtomGridDataSorted( Buffer::Target::SHADER_STORAGE_BUFFER, atomGridDataSorted );
 			const Buffer ssboAtomIndexSorted( Buffer::Target::SHADER_STORAGE_BUFFER, atomIndexSorted );
 			const Buffer ssboAtomPosition( Buffer::Target::SHADER_STORAGE_BUFFER, atomPositionsVdW );
-			Buffer		 ssboDebug( Buffer::Target::SHADER_STORAGE_BUFFER, debug );
+			// Buffer		 ssboDebug( Buffer::Target::SHADER_STORAGE_BUFFER, debug );
 
 			// Bind.
 			ssboSesGridData.bind( 0 );
 			ssboAtomGridDataSorted.bind( 1 );
 			ssboAtomIndexSorted.bind( 2 );
 			ssboAtomPosition.bind( 3 );
-			ssboDebug.bind( 7 );
+			// ssboDebug.bind( 7 );
 
 			// Set uniforms.
 			workerCreateSDF.getProgram().use();
@@ -233,9 +229,6 @@ namespace VTX
 			bufferIndices.set( bufferSize * sizeof( uint ) );
 
 			/////////////////////////
-			// Buffer ssboTrianglePositions( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( Vec4f ) );
-			// Buffer ssboTriangleIndices( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( uint ) );
-			// Buffer ssboTriangleNormals( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( Vec4f ) );
 			//  Buffer ssboTriangleAtomIds( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( uint ) );
 			//   BufferStorage ssboAtomToTriangles( BufferStorage::Target::SHADER_STORAGE_BUFFER, _atomsToTriangles );
 			Buffer ssboTriangleValidities( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( uint ) );
@@ -249,9 +242,6 @@ namespace VTX
 			bufferPositions.bind( 1, Buffer::Target::SHADER_STORAGE_BUFFER );
 			bufferNormals.bind( 2, Buffer::Target::SHADER_STORAGE_BUFFER );
 			bufferIndices.bind( 3, Buffer::Target::SHADER_STORAGE_BUFFER );
-			// ssboTrianglePositions.bind( 1 );
-			// ssboTriangleIndices.bind( 2 );
-			// ssboTriangleNormals.bind( 3 );
 			//  ssboTriangleAtomIds.bind( 4 );
 			//   ssboAtomToTriangles.bind( 5 );
 			ssboTriangleValidities.bind( 5 );
@@ -276,11 +266,6 @@ namespace VTX
 			chrono2.stop();
 			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
-
-			// ssboTrianglePositions.getData( 0, bufferSize * sizeof( Vec4f ), &_vertices[ 0 ] );
-			// ssboTriangleIndices.getData( 0, bufferSize * sizeof( uint ), &_indices[ 0 ] );
-			// ssboTriangleNormals.getData( 0, bufferSize * sizeof( Vec4f ), &_normals[ 0 ] );
-			// ssboTriangleAtomIds.getData( 0, bufferSize * sizeof( uint ), &_ids[ 0 ] );
 
 			//    ssboAtomToTriangles.getData(
 			//	0, uint( _atomsToTriangles.size() ) * sizeof( Range ), &_atomsToTriangles[ 0 ] );
@@ -313,46 +298,24 @@ namespace VTX
 			bufferIndices.unbind();
 
 			ssboSesGridData.unbind();
-			// ssboTrianglePositions.unbind();
-			// ssboTriangleIndices.unbind();
-			// ssboTriangleNormals.unbind();
 			//  ssboTriangleAtomIds.unbind();
 			//   ssboAtomToTriangles.unbind();
 			ssboTriangleValidities.unbind();
 			ssboTriangleTable.unbind();
-			ssboDebug.unbind();
+			// ssboDebug.unbind();
 
 			_indiceCount = uint( bufferSize );
+
+			refreshColors();
+			refreshVisibilities();
 
 			// TMP.
 			_atomsToTriangles[ _atomsToTriangles.size() - 1 ] = Range { 0, _indiceCount };
 
-			// refreshColors();
-			_colors.resize( _indiceCount, Color::Rgb::WHITE );
-			// refreshVisibilities();
-			_visibilities.resize( _indiceCount, 1 );
 			_ids.resize( _indiceCount, 0 );
-
-			//_buffer->setPositions( _vertices );
-			//_buffer->setNormals( _normals );
-			_buffer->setColors( _colors );
-			_buffer->setVisibilities( _visibilities );
 			_buffer->setIds( _ids );
-			//_buffer->setIndices( _indices );
-
-			//_vertices.clear();
-			//_normals.clear();
-			_colors.clear();
-			_visibilities.clear();
 			_ids.clear();
-			//_indices.clear();
-
-			//_vertices.shrink_to_fit();
-			//_normals.shrink_to_fit();
-			_colors.shrink_to_fit();
-			_visibilities.shrink_to_fit();
 			_ids.shrink_to_fit();
-			//_indices.shrink_to_fit();
 
 			_atomsToTriangles.shrink_to_fit();
 

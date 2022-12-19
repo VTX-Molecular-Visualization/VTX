@@ -66,6 +66,10 @@ void main()
 	{				
 		return;
 	}	
+
+	// Default value.
+	sesGridData[ sesGridHash ].sdf = uProbeRadius;
+	sesGridData[ sesGridHash ].nearestAtom = -1;
 				
 	// Get corresponding acceleration grid data.
 	const vec3 sesGridCellWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize);
@@ -116,8 +120,7 @@ void main()
 							if ( d < minDistance )
 							{
 								minDistance	= d;
-								sesGridData[ sesGridHash ].nearestAtom = int( index );
-								
+								sesGridData[ sesGridHash ].nearestAtom = int( index );								
 							}
 						}						
 					}
