@@ -314,7 +314,7 @@ namespace VTX
 		};
 
 		// http://jmol.sourceforge.net/jscolors/#Jmolcolors : Protein "amino" colors
-		const Color::Rgb Residue::SYMBOL_COLOR[ (int)SYMBOL::COUNT ] = {
+		const Color::Rgba Residue::SYMBOL_COLOR[ (int)SYMBOL::COUNT ] = {
 			{ 190, 160, 110 }, // UNKNOWN
 			{ 200, 200, 200 }, // ALA
 			{ 20, 90, 255 },   // ARG
@@ -355,7 +355,7 @@ namespace VTX
 			{ 255, 105, 180 }, // HOH
 		};
 
-		const Color::Rgb Residue::getResidueColor( const Model::Residue & p_residue )
+		const Color::Rgba Residue::getResidueColor( const Model::Residue & p_residue )
 		{
 			return p_residue.isStandardResidue() ? SYMBOL_COLOR[ p_residue._symbol ]
 												 : SYMBOL_COLOR[ int( SYMBOL::UNKNOWN ) ];

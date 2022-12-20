@@ -20,10 +20,10 @@ namespace VTX
 			{
 			}
 
-			Color::Rgb Li( const Ray &	 p_ray,
-						   const Scene & p_scene,
-						   const float	 p_tMin,
-						   const float	 p_tMax ) const override;
+			Color::Rgba Li( const Ray &	  p_ray,
+							const Scene & p_scene,
+							const float	  p_tMin,
+							const float	  p_tMax ) const override;
 
 		  private:
 			float _radius	 = 20.f;

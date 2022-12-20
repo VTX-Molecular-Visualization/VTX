@@ -2,7 +2,7 @@
 #define __VTX_BUFFER_MESH_TRIANGLE__
 
 #include "base_buffer_opengl.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "define.hpp"
 #include "model/base_model.hpp"
 #include "renderer/gl/vertex_array.hpp"
@@ -20,7 +20,7 @@ namespace VTX
 
 			void setPositions( const std::vector<Vec4f> & );
 			void setNormals( const std::vector<Vec4f> & );
-			void setColors( const std::vector<Color::Rgb> & );
+			void setColors( const std::vector<Color::Rgba> & );
 			void setVisibilities( const std::vector<uint> & );
 			void setSelections( const std::vector<uint> & );
 			void setIds( const std::vector<Model::ID> & );

@@ -45,9 +45,9 @@ layout (std430, binding = 2) readonly buffer AtomIndex
 	uint[] atomIndex;
 };
 
-layout (std140, binding = 3) readonly buffer AtomPosition
+layout (std140, binding = 3) readonly buffer AtomPositionsVdW
 { 
-	vec4[] atomPosition;
+	vec4[] atomPositionsVdW;
 };
 
 void main()
@@ -95,7 +95,7 @@ void main()
 				for ( uint i = first; i < first + count; ++i )
 				{		
 					const uint index = atomIndex[ i ];					
-					float d = distance( atomPosition[ index ].xyz, sesGridCellWorldPosition );
+					float d = distance( atomPositionsVdW[ index ].xyz, sesGridCellWorldPosition );
 					
 					// Inside.
 					if ( d < uVoxelSize )
@@ -108,7 +108,7 @@ void main()
 					// Boundary.
 					else
 					{					
-						d -= ( uProbeRadius + atomPosition[ index ].w );
+						d -= ( uProbeRadius + atomPositionsVdW[ index ].w );
 						if ( d < 0.f )
 						{
 							sesGridData[ sesGridHash ].sdf = -uVoxelSize;

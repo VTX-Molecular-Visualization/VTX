@@ -19,7 +19,7 @@ in TcOut
 	vec3	  position;
 	vec3	  direction;
 	vec3	  normal;
-	flat vec3 color;
+	flat vec4 color;
 	flat uint ssType;
 	flat uint visibility;
 	flat uint selection;
@@ -31,7 +31,7 @@ out TeOut
 {
 	vec3	  viewPosition;
 	vec3	  normal;
-	vec3	  color;
+	vec4	  color;
 	flat uint visibility;
 	flat uint selection;
 	flat uint id;

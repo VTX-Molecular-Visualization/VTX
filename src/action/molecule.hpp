@@ -42,12 +42,12 @@ namespace VTX::Action::Molecule
 	class ChangeColor : public BaseAction
 	{
 	  public:
-		explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgb & p_color ) :
+		explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgba & p_color ) :
 			_color( p_color ), _molecules { &p_molecule }
 		{
 			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
-		explicit ChangeColor( const std::unordered_set<Model::Molecule *> & p_molecules, const Color::Rgb & p_color ) :
+		explicit ChangeColor( const std::unordered_set<Model::Molecule *> & p_molecules, const Color::Rgba & p_color ) :
 			_color( p_color ), _molecules( p_molecules )
 		{
 			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
@@ -66,7 +66,7 @@ namespace VTX::Action::Molecule
 
 	  private:
 		const std::unordered_set<Model::Molecule *> _molecules;
-		const Color::Rgb							_color;
+		const Color::Rgba							_color;
 	};
 
 	class ChangeVisibility : public Visible::ChangeVisibility

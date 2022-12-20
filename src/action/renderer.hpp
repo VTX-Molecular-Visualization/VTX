@@ -2,7 +2,7 @@
 #define __VTX_ACTION_RENDERER__
 
 #include "base_action.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
 #include "vtx_app.hpp"
@@ -181,14 +181,14 @@ namespace VTX::Action::Renderer
 	class ChangeOutlineColor : public BaseAction
 	{
 	  public:
-		ChangeOutlineColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgb & p_color ) :
+		ChangeOutlineColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
 			_preset( p_preset ), _color( p_color ) {};
 
 		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
-		const Color::Rgb					  _color;
+		const Color::Rgba					  _color;
 	};
 
 	class EnableFog : public BaseAction
@@ -242,40 +242,40 @@ namespace VTX::Action::Renderer
 	class ChangeFogColor : public BaseAction
 	{
 	  public:
-		ChangeFogColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgb & p_color ) :
+		ChangeFogColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
 			_preset( p_preset ), _color( p_color ) {};
 
 		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
-		const Color::Rgb					  _color;
+		const Color::Rgba					  _color;
 	};
 
 	class ChangeBackgroundColor : public BaseAction
 	{
 	  public:
-		ChangeBackgroundColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgb & p_color ) :
+		ChangeBackgroundColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
 			_preset( p_preset ), _color( p_color ) {};
 
 		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
-		const Color::Rgb					  _color;
+		const Color::Rgba					  _color;
 	};
 
 	class ChangeCameraLightColor : public BaseAction
 	{
 	  public:
-		ChangeCameraLightColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgb & p_color ) :
+		ChangeCameraLightColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
 			_preset( p_preset ), _color( p_color ) {};
 
 		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
-		const Color::Rgb					  _color;
+		const Color::Rgba					  _color;
 	};
 	class ChangeCameraFOV : public BaseAction
 	{

@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_RENDER_EFFECT_PRESET_EDITOR__
 #define __VTX_UI_WIDGET_RENDER_EFFECT_PRESET_EDITOR__
 
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/color_field_button.hpp"
@@ -111,16 +111,16 @@ namespace VTX::UI::Widget::Settings
 		void _onOutlineStateChanged( const int p_state ) const;
 		void _onOutlineThicknessChanged( const uint p_value ) const;
 		void _onOutlineSensivityChanged( const float p_value ) const;
-		void _onOutlineColorChanged( const Color::Rgb & p_color ) const;
+		void _onOutlineColorChanged( const Color::Rgba & p_color ) const;
 
 		void _onFogStateChanged( const int p_state ) const;
 		void _onFogNearChanged( const int p_value ) const;
 		void _onFogFarChanged( const int p_value ) const;
 		void _onFogDensityChanged( const float p_value ) const;
-		void _onFogColorChanged( const Color::Rgb & p_color ) const;
+		void _onFogColorChanged( const Color::Rgba & p_color ) const;
 
-		void _onBackgroundColorChanged( const Color::Rgb & p_color ) const;
-		void _onCameraLightColorChanged( const Color::Rgb & p_color ) const;
+		void _onBackgroundColorChanged( const Color::Rgba & p_color ) const;
+		void _onCameraLightColorChanged( const Color::Rgba & p_color ) const;
 		void _onCameraFOVChanged( const float p_value ) const;
 		void _onCameraNearChanged( const float p_value ) const;
 		void _onCameraFarChanged( const float p_value ) const;

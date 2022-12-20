@@ -81,7 +81,7 @@ namespace VTX::Model
 
 		_computeBonds( molecule );
 
-		getBufferAtomColors().resize( getAtomCount(), Color::Rgb::BLUE );
+		getBufferAtomColors().resize( getAtomCount(), Color::Rgba::BLUE );
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
@@ -364,7 +364,7 @@ namespace VTX::Model
 
 	void GeneratedMolecule::_validateBuffers()
 	{
-		getBufferAtomColors().resize( getAtomCount(), Color::Rgb::BLUE );
+		getBufferAtomColors().resize( getAtomCount(), Color::Rgba::BLUE );
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
@@ -576,7 +576,7 @@ namespace VTX::Model
 		setName( p_namePrefix + p_molecule.getName() + p_nameSuffix );
 		setPdbIdCode( "none" );
 		setDisplayName( p_namePrefix + p_molecule.getDefaultName() + p_nameSuffix );
-		setColor( Color::Rgb::randomPastel() );
+		setColor( Color::Rgba::randomPastel() );
 
 		VTX::Representation::RepresentationManager::get().instantiateCopy(
 			p_molecule.getRepresentation(), *this, false, false );

@@ -8,7 +8,7 @@ uniform float u_cylRad;
 
 in VsOut
 {
-	flat vec3 vertexColor;
+	flat vec4 vertexColor;
 	flat uint vertexVisible;
 	flat uint vertexSelected;
 	flat uint vertexId;
@@ -19,7 +19,7 @@ out GsOut
 {
 	smooth vec3 viewImpostorPosition; // Impostor position in view space.
 	flat vec3	viewVertices[ 2 ];	  // Cylinder vertices position in view space.
-	flat vec3	colors[ 2 ];
+	flat vec4	colors[ 2 ];
 	flat uint	vertexSelected[ 2 ];
 	flat uint	vertexId[ 2 ];
 }

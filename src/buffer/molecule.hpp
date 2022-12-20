@@ -2,7 +2,7 @@
 #define __VTX_BUFFER_MOLECULE__
 
 #include "base_buffer_opengl.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "define.hpp"
 #include "model/base_model.hpp"
 #include "renderer/gl/vertex_array.hpp"
@@ -20,7 +20,7 @@ namespace VTX
 
 			void setAtomPositions( const std::vector<Vec3f> & );
 			void setAtomRadius( const std::vector<float> & );
-			void setAtomColors( const std::vector<Color::Rgb> & );
+			void setAtomColors( const std::vector<Color::Rgba> & );
 			void setAtomVisibilities( const std::vector<uint> & );
 			void setAtomSelections( const std::vector<uint> & );
 			void setAtomIds( const std::vector<Model::ID> & );

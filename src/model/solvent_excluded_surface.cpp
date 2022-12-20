@@ -220,17 +220,17 @@ namespace VTX
 			_atomsToTriangles		= std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
 
 			/////////////////////////
-			Buffer & bufferPositions = _buffer->getBufferPositions();
-			Buffer & bufferNormals	 = _buffer->getBufferNormals();
-			Buffer & bufferIndices	 = _buffer->getBufferIndices();
-			// Buffer & bufferColors		= _buffer->getBufferColors();
+			Buffer & bufferPositions	= _buffer->getBufferPositions();
+			Buffer & bufferNormals		= _buffer->getBufferNormals();
+			Buffer & bufferIndices		= _buffer->getBufferIndices();
+			Buffer & bufferColors		= _buffer->getBufferColors();
 			Buffer & bufferVisibilities = _buffer->getBufferVisibilities();
 			Buffer & bufferIds			= _buffer->getBufferIds();
 
 			bufferPositions.set( bufferSize * sizeof( Vec4f ) );
 			bufferNormals.set( bufferSize * sizeof( Vec4f ) );
 			bufferIndices.set( bufferSize * sizeof( uint ) );
-			// bufferColors.set( bufferSize * sizeof( Color::Rgb ) );
+			bufferColors.set( bufferSize * sizeof( Color::Rgba ) );
 			bufferVisibilities.set( bufferSize * sizeof( uint ) );
 			bufferIds.set( bufferSize * sizeof( uint ) );
 
@@ -244,8 +244,8 @@ namespace VTX
 											256 * 16 * sizeof( int ),
 											Math::MarchingCube::TRIANGLE_TABLE,
 											VTX::Renderer::GL::Buffer::Flags::DYNAMIC_STORAGE_BIT );
-			// const Buffer ssboAtomColors( Buffer::Target::SHADER_STORAGE_BUFFER,
-			//							 _category->getMoleculePtr()->getBufferAtomColors() );
+			const Buffer ssboAtomColors( Buffer::Target::SHADER_STORAGE_BUFFER,
+										 _category->getMoleculePtr()->getBufferAtomColors() );
 			const Buffer ssboAtomVisibilities( Buffer::Target::SHADER_STORAGE_BUFFER,
 											   _category->getMoleculePtr()->getBufferAtomVisibilities() );
 			const Buffer ssboAtomIds( Buffer::Target::SHADER_STORAGE_BUFFER,
@@ -254,14 +254,14 @@ namespace VTX
 			bufferPositions.bind( 1, Buffer::Target::SHADER_STORAGE_BUFFER );
 			bufferNormals.bind( 2, Buffer::Target::SHADER_STORAGE_BUFFER );
 			bufferIndices.bind( 3, Buffer::Target::SHADER_STORAGE_BUFFER );
-			// bufferColors.bind( 4, Buffer::Target::SHADER_STORAGE_BUFFER );
+			bufferColors.bind( 4, Buffer::Target::SHADER_STORAGE_BUFFER );
 			bufferVisibilities.bind( 5, Buffer::Target::SHADER_STORAGE_BUFFER );
 			bufferIds.bind( 6, Buffer::Target::SHADER_STORAGE_BUFFER );
 			//  ssboTriangleAtomIds.bind( 4 );
 			//   ssboAtomToTriangles.bind( 5 );
 			ssboTriangleValidities.bind( 7 );
 			ssboTriangleTable.bind( 8 );
-			// ssboAtomColors.bind( 9 );
+			ssboAtomColors.bind( 9 );
 			ssboAtomVisibilities.bind( 10 );
 			ssboAtomIds.bind( 11 );
 
@@ -314,7 +314,7 @@ namespace VTX
 			bufferPositions.unbind();
 			bufferNormals.unbind();
 			bufferIndices.unbind();
-			// bufferColors.unbind();
+			bufferColors.unbind();
 			bufferVisibilities.unbind();
 			bufferIds.unbind();
 
@@ -323,7 +323,7 @@ namespace VTX
 			//   ssboAtomToTriangles.unbind();
 			ssboTriangleValidities.unbind();
 			ssboTriangleTable.unbind();
-			// ssboAtomColors.unbind();
+			ssboAtomColors.unbind();
 			ssboAtomVisibilities.unbind();
 			ssboAtomIds.unbind();
 
@@ -331,11 +331,11 @@ namespace VTX
 
 			_indiceCount = uint( bufferSize );
 
-			refreshColors();
-			// refreshVisibilities();
+			// refreshColors();
+			//  refreshVisibilities();
 
 			// TMP.
-			_atomsToTriangles[ 0 ] = Range { 0, _indiceCount };
+			_atomsToTriangles[ atomsIdx[ 0 ] ] = Range { 0, _indiceCount };
 
 			/*
 			_ids.resize( _indiceCount, 0 );
@@ -683,7 +683,7 @@ namespace VTX
 
 		void SolventExcludedSurface::refreshColors()
 		{
-			_colors.resize( _indiceCount, Color::Rgb::WHITE );
+			_colors.resize( _indiceCount, Color::Rgba::WHITE );
 
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
@@ -693,7 +693,7 @@ namespace VTX
 					continue;
 				}
 
-				const Color::Rgb & color = _category->getMoleculePtr()->getAtomColor( atomIdx );
+				const Color::Rgba & color = _category->getMoleculePtr()->getAtomColor( atomIdx );
 				std::fill( _colors.begin() + _atomsToTriangles[ atomIdx ].first,
 						   _colors.begin() + _atomsToTriangles[ atomIdx ].first + _atomsToTriangles[ atomIdx ].count,
 						   color );

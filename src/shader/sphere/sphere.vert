@@ -8,7 +8,7 @@
 #define ATOM_ID 5
 
 layout( location = ATOM_POSITION ) in vec3 aSpherePos;
-layout( location = ATOM_COLOR ) in vec3 aSphereColor;
+layout( location = ATOM_COLOR ) in vec4 aSphereColor;
 layout( location = ATOM_RADIUS ) in float aSphereRadius;
 layout( location = ATOM_VISIBILITY ) in uint aSphereVisible;
 layout( location = ATOM_SELECTION ) in uint aSphereSelected;
@@ -23,7 +23,7 @@ uniform bool  u_isRadiusFixed = false;
 out VsOut
 {
 	flat vec3  viewSpherePos; // Sphere position in view space.
-	flat vec3  sphereColor;
+	flat vec4  sphereColor;
 	flat float sphereRadius;
 	flat uint  sphereVisible;
 	flat uint  sphereSelected;

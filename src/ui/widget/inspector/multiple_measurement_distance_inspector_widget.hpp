@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_MEASUREMENT_DISTANCE__
 #define __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_MEASUREMENT_DISTANCE__
 
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "model/measurement/distance.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget/custom_widget/color_field_button.hpp"
@@ -49,7 +49,7 @@ namespace VTX::UI::Widget::Inspector
 
 		void _setAutoNameAction() const;
 		void _renameAction() const;
-		void _setLabelColor( const Color::Rgb & p_color ) const;
+		void _setLabelColor( const Color::Rgba & p_color ) const;
 
 		void _orientOnFirstAtom() const;
 		void _orientOnSecondAtom() const;

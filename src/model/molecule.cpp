@@ -1,5 +1,5 @@
 #include "molecule.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "id.hpp"
@@ -246,7 +246,7 @@ namespace VTX
 		{
 			_bufferAtomRadius.resize( _atoms.size() );
 			_bufferAtomVisibilities.resize( _atoms.size(), 1u );
-			_bufferAtomColors.resize( _atoms.size(), Color::Rgb::WHITE );
+			_bufferAtomColors.resize( _atoms.size(), Color::Rgba::WHITE );
 			_bufferAtomSelections.resize( _atoms.size(), 0u );
 			_bufferAtomIds.resize( _atoms.size() );
 		}
@@ -286,8 +286,8 @@ namespace VTX
 					}
 				}
 
-				bool	   colorCarbon = false;
-				Color::Rgb color;
+				bool		colorCarbon = false;
+				Color::Rgba color;
 
 				switch ( colorMode )
 				{
@@ -1271,7 +1271,7 @@ namespace VTX
 			_notifyViews( new Event::VTXEvent( Event::Model::DISPLAY_NAME_CHANGE ) );
 		}
 
-		void Molecule::setColor( const Color::Rgb & p_color )
+		void Molecule::setColor( const Color::Rgba & p_color )
 		{
 			Generic::BaseColorable::setColor( p_color );
 

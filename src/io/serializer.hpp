@@ -53,7 +53,7 @@ namespace VTX
 
 	namespace Color
 	{
-		class Rgb;
+		class Rgba;
 	}
 
 	namespace IO
@@ -78,7 +78,7 @@ namespace VTX
 			nlohmann::json serialize( const Model::Representation::Representation & ) const;
 			nlohmann::json serialize( const Model::Renderer::RenderEffectPreset & ) const;
 
-			nlohmann::json serialize( const Color::Rgb & ) const;
+			nlohmann::json serialize( const Color::Rgba & ) const;
 			nlohmann::json serialize( const Math::Transform & ) const;
 			template<typename T, glm::qualifier Q>
 			nlohmann::json serialize( const glm::vec<2, T, Q> & ) const;
@@ -112,7 +112,7 @@ namespace VTX
 							  const std::tuple<uint, uint, uint> &,
 							  Model::Renderer::RenderEffectPreset & ) const;
 
-			void deserialize( const nlohmann::json &, Color::Rgb & ) const;
+			void deserialize( const nlohmann::json &, Color::Rgba & ) const;
 			void deserialize( const nlohmann::json &, Math::Transform & ) const;
 			template<typename T, glm::qualifier Q>
 			void deserialize( const nlohmann::json &, glm::vec<2, T, Q> & ) const;

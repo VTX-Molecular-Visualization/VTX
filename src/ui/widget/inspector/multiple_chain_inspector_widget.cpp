@@ -181,7 +181,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_onRepresentationColorChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
-		const Color::Rgb &										  p_color,
+		const Color::Rgba &										  p_color,
 		const bool												  p_ssColor )
 	{
 		if ( !signalsBlocked() )
@@ -231,7 +231,7 @@ namespace VTX::UI::Widget::Inspector
 		}
 	}
 
-	void MultipleChainWidget::_changeMoleculesColor( const Color::Rgb & p_color ) const
+	void MultipleChainWidget::_changeMoleculesColor( const Color::Rgba & p_color ) const
 	{
 		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 

@@ -1,6 +1,6 @@
 #include "representation.hpp"
 #include "all_representation_data.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "id.hpp"
@@ -40,7 +40,7 @@ namespace VTX::Model::Representation
 		_name = std::string( p_name );
 		_notifyViews( new Event::VTXEvent( Event::Model::DISPLAY_NAME_CHANGE ) );
 	}
-	void Representation::setColor( const Color::Rgb & p_color )
+	void Representation::setColor( const Color::Rgba & p_color )
 	{
 		_color = p_color;
 		_notifyDataChanged();

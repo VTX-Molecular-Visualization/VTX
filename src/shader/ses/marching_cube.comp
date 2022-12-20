@@ -70,12 +70,10 @@ layout (std430, binding = 3) writeonly buffer TriangleIndices
 	uint[] triangleIndices;
 };
 
-/*
 layout (std140, binding = 4) writeonly buffer TriangleColors
 {
 	vec3[] triangleColors;
 };
-*/
 
 layout (std430, binding = 5) writeonly buffer TriangleVisibilities
 {
@@ -111,12 +109,10 @@ layout (std430, binding = 8) readonly buffer TriangleTable
 	int[] triangleTable;
 };
 
-/*
 layout (std140, binding = 9) readonly buffer AtomColors
 {
 	vec3[] atomColors;
 };
-*/
 
 layout (std430, binding = 10) readonly buffer AtomVisibilities
 {

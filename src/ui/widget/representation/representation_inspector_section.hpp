@@ -1,7 +1,7 @@
 #ifndef __VTX_VIEW_UI_WIDGET_INSTANTIATED_REPRESENTATION_INSPECTOR_VIEW__
 #define __VTX_VIEW_UI_WIDGET_INSTANTIATED_REPRESENTATION_INSPECTOR_VIEW__
 
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "event/event.hpp"
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
@@ -68,7 +68,7 @@ namespace VTX::UI::Widget::Representation
 		void onRepresentationChange( const InstantiatedRepresentation &			p_representation,
 									 const Model::Representation::MEMBER_FLAG & p_flag );
 		void onRepresentationColorChange( const InstantiatedRepresentation & p_representation,
-										  const Color::Rgb &				 p_color,
+										  const Color::Rgba &				 p_color,
 										  const bool						 p_ssColor );
 		void onRevertRepresentation();
 		void onApplyRepresentationToChildren();
@@ -104,7 +104,7 @@ namespace VTX::UI::Widget::Representation
 		void _setSettingDisplay( const bool p_expand ) const;
 		void _representationPresetChange( const int p_resetIndex );
 		void _representationDataChange( const Model::Representation::MEMBER_FLAG & p_flagDataModified );
-		void _representationColorChange( const Color::Rgb & p_color, const bool p_ssColor );
+		void _representationColorChange( const Color::Rgba & p_color, const bool p_ssColor );
 		void _revertRepresentation();
 		void _applyRepresentationToChildren();
 

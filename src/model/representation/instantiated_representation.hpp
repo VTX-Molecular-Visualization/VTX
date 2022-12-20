@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_INSTANTIATED_REPRESENTATION__
 #define __VTX_MODEL_INSTANTIATED_REPRESENTATION__
 
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"
 #include "generic/base_objectoverride.hpp"
@@ -43,8 +43,8 @@ namespace VTX::Model::Representation
 
 		const std::string & getName() const { return _linkedRepresentation->getName(); };
 
-		const Color::Rgb & getColor() const { return _color.getValue(); }
-		void setColor( const Color::Rgb & p_color, const bool p_recomputeBuffers = true, const bool p_notify = true );
+		const Color::Rgba & getColor() const { return _color.getValue(); }
+		void setColor( const Color::Rgba & p_color, const bool p_recomputeBuffers = true, const bool p_notify = true );
 		const Generic::COLOR_MODE & getColorMode() const { return _colorMode.getValue(); }
 		void						setColorMode( const Generic::COLOR_MODE & p_colorMode,
 												  const bool				  p_recomputeBuffers = true,
@@ -102,7 +102,7 @@ namespace VTX::Model::Representation
 
 		Generic::BaseRepresentable * _target = nullptr;
 
-		Generic::OverridableParameter<Color::Rgb>		   _color;
+		Generic::OverridableParameter<Color::Rgba>		   _color;
 		Generic::OverridableParameter<Generic::COLOR_MODE> _colorMode;
 
 		Generic::OverridableParameter<SphereData>	_sphereData;

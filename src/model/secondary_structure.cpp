@@ -51,13 +51,13 @@ namespace VTX
 			const Molecule::AtomPositionsFrame & positions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
 
 			// Temporary vectors, merged with buffers is SS is constructed.
-			std::vector<Vec4f>		caPositions;
-			std::vector<Vec3f>		caODirections;
-			std::vector<uint>		ssTypes;
-			std::vector<Color::Rgb> colors;
-			std::vector<uint>		visibilities;
-			std::vector<Model::ID>	ids;
-			std::vector<uint>		residueIndex;
+			std::vector<Vec4f>		 caPositions;
+			std::vector<Vec3f>		 caODirections;
+			std::vector<uint>		 ssTypes;
+			std::vector<Color::Rgba> colors;
+			std::vector<uint>		 visibilities;
+			std::vector<Model::ID>	 ids;
+			std::vector<uint>		 residueIndex;
 
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
@@ -87,7 +87,7 @@ namespace VTX
 						caPositions	  = std::vector<Vec4f>();
 						caODirections = std::vector<Vec3f>();
 						ssTypes		  = std::vector<uint>();
-						colors		  = std::vector<Color::Rgb>();
+						colors		  = std::vector<Color::Rgba>();
 						visibilities  = std::vector<uint>();
 						ids			  = std::vector<Model::ID>();
 						residueIndex  = std::vector<uint>();
@@ -164,7 +164,7 @@ namespace VTX
 						case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
 							colors.emplace_back( residue->getColor() );
 							break;
-						default: colors.emplace_back( Color::Rgb::WHITE ); break;
+						default: colors.emplace_back( Color::Rgba::WHITE ); break;
 						}
 					}
 					else
@@ -219,14 +219,14 @@ namespace VTX
 			_buffer->setIndices( _bufferIndices );
 		}
 
-		void SecondaryStructure::_tryConstruct( const uint						p_chainIdx,
-												const std::vector<uint> &		p_residueIndex,
-												const std::vector<Vec4f> &		p_caPositions,
-												std::vector<Vec3f> &			p_caODirections,
-												const std::vector<uint> &		p_ssTypes,
-												const std::vector<Color::Rgb> & p_colors,
-												const std::vector<uint> &		p_visibilities,
-												const std::vector<Model::ID> &	p_ids )
+		void SecondaryStructure::_tryConstruct( const uint						 p_chainIdx,
+												const std::vector<uint> &		 p_residueIndex,
+												const std::vector<Vec4f> &		 p_caPositions,
+												std::vector<Vec3f> &			 p_caODirections,
+												const std::vector<uint> &		 p_ssTypes,
+												const std::vector<Color::Rgba> & p_colors,
+												const std::vector<uint> &		 p_visibilities,
+												const std::vector<Model::ID> &	 p_ids )
 		{
 			if ( p_caPositions.size() >= 4 )
 			{
@@ -327,7 +327,7 @@ namespace VTX
 						_bufferColors.emplace_back( residue->getColor() );
 						break;
 
-					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
+					default: _bufferColors.emplace_back( Color::Rgba::WHITE ); break;
 					}
 				}
 			}

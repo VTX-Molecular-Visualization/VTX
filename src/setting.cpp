@@ -32,9 +32,9 @@ namespace VTX
 #else
 	const bool Setting::FORCE_RENDERER_DEFAULT = true;
 #endif
-	const Color::Rgb Setting::BACKGROUND_COLOR_DEFAULT	 = Color::Rgb::BLACK;
-	const float		 Setting::BACKGROUND_OPACITY_DEFAULT = 1.0f;
-	const float		 Setting::SNAPSHOT_QUALITY_DEFAULT	 = 1.0f;
+	const Color::Rgba Setting::BACKGROUND_COLOR_DEFAULT	  = Color::Rgba::BLACK;
+	const float		  Setting::BACKGROUND_OPACITY_DEFAULT = 1.0f;
+	const float		  Setting::SNAPSHOT_QUALITY_DEFAULT	  = 1.0f;
 
 	const IO::Struct::ImageExport::RESOLUTION Setting::SNAPSHOT_RESOLUTION_DEFAULT
 		= IO::Struct::ImageExport::RESOLUTION::Free;
@@ -91,32 +91,32 @@ namespace VTX
 #else
 	const bool Setting::ACTIVE_VSYNC_DEFAULT   = false;
 #endif
-	const bool		 Setting::ACTIVE_AO_DEFAULT			= true;
-	const int		 Setting::AO_INTENSITY_DEFAULT		= 5;
-	const int		 Setting::AO_INTENSITY_MIN			= 1;
-	const int		 Setting::AO_INTENSITY_MAX			= 20;
-	const int		 Setting::AO_BLUR_SIZE_DEFAULT		= 17;
-	const int		 Setting::AO_BLUR_SIZE_MIN			= 1;
-	const int		 Setting::AO_BLUR_SIZE_MAX			= 99;
-	const bool		 Setting::ACTIVE_OUTLINE_DEFAULT	= false;
-	const uint		 Setting::OUTLINE_THICKNESS_DEFAULT = 1;
-	const uint		 Setting::OUTLINE_THICKNESS_MIN		= 1;
-	const uint		 Setting::OUTLINE_THICKNESS_MAX		= 5;
-	const float		 Setting::OUTLINE_SENSIVITY_DEFAULT = 0.4f;
-	const float		 Setting::OUTLINE_SENSIVITY_MIN		= 0.01f;
-	const float		 Setting::OUTLINE_SENSIVITY_MAX		= 1.f;
-	const Color::Rgb Setting::OUTLINE_COLOR_DEFAULT		= Color::Rgb::WHITE;
-	const bool		 Setting::ACTIVE_FOG_DEFAULT		= false;
-	const float		 Setting::FOG_NEAR_DEFAULT			= 30;
-	const float		 Setting::FOG_NEAR_MIN				= 0.f;
-	const float		 Setting::FOG_NEAR_MAX				= 1000.f;
-	const float		 Setting::FOG_FAR_DEFAULT			= 80.f;
-	const float		 Setting::FOG_FAR_MIN				= 0.f;
-	const float		 Setting::FOG_FAR_MAX				= 1000.f;
-	const float		 Setting::FOG_DENSITY_DEFAULT		= 0.8f;
-	const Color::Rgb Setting::FOG_COLOR_DEFAULT			= Color::Rgb::WHITE;
-	const bool		 Setting::ACTIVE_AA_DEFAULT			= true;
-	const Color::Rgb Setting::LIGHT_COLOR_DEFAULT		= Color::Rgb::WHITE;
+	const bool		  Setting::ACTIVE_AO_DEFAULT		 = true;
+	const int		  Setting::AO_INTENSITY_DEFAULT		 = 5;
+	const int		  Setting::AO_INTENSITY_MIN			 = 1;
+	const int		  Setting::AO_INTENSITY_MAX			 = 20;
+	const int		  Setting::AO_BLUR_SIZE_DEFAULT		 = 17;
+	const int		  Setting::AO_BLUR_SIZE_MIN			 = 1;
+	const int		  Setting::AO_BLUR_SIZE_MAX			 = 99;
+	const bool		  Setting::ACTIVE_OUTLINE_DEFAULT	 = false;
+	const uint		  Setting::OUTLINE_THICKNESS_DEFAULT = 1;
+	const uint		  Setting::OUTLINE_THICKNESS_MIN	 = 1;
+	const uint		  Setting::OUTLINE_THICKNESS_MAX	 = 5;
+	const float		  Setting::OUTLINE_SENSIVITY_DEFAULT = 0.4f;
+	const float		  Setting::OUTLINE_SENSIVITY_MIN	 = 0.01f;
+	const float		  Setting::OUTLINE_SENSIVITY_MAX	 = 1.f;
+	const Color::Rgba Setting::OUTLINE_COLOR_DEFAULT	 = Color::Rgba::WHITE;
+	const bool		  Setting::ACTIVE_FOG_DEFAULT		 = false;
+	const float		  Setting::FOG_NEAR_DEFAULT			 = 30;
+	const float		  Setting::FOG_NEAR_MIN				 = 0.f;
+	const float		  Setting::FOG_NEAR_MAX				 = 1000.f;
+	const float		  Setting::FOG_FAR_DEFAULT			 = 80.f;
+	const float		  Setting::FOG_FAR_MIN				 = 0.f;
+	const float		  Setting::FOG_FAR_MAX				 = 1000.f;
+	const float		  Setting::FOG_DENSITY_DEFAULT		 = 0.8f;
+	const Color::Rgba Setting::FOG_COLOR_DEFAULT		 = Color::Rgba::WHITE;
+	const bool		  Setting::ACTIVE_AA_DEFAULT		 = true;
+	const Color::Rgba Setting::LIGHT_COLOR_DEFAULT		 = Color::Rgba::WHITE;
 
 	// Scene.
 	const Vec3f Setting::MIN_SCENE_POS = Vec3f( -10000, -10000, -10000 );
@@ -191,7 +191,7 @@ namespace VTX
 	const uint		 Setting::VIDEO_CRF_DEFAULT		  = 10;
 
 	// Measurement
-	const Color::Rgb Setting::DEFAULT_LABEL_COLOR = Color::Rgb( 0.f, 0.f, 1.f );
+	const Color::Rgba Setting::DEFAULT_LABEL_COLOR = Color::Rgba( 0.f, 0.f, 1.f );
 
 	// Selection
 	const VTX::Selection::Granularity Setting::SELECTION_GRANULARITY_DEFAULT = VTX::Selection::Granularity::RESIDUE;
