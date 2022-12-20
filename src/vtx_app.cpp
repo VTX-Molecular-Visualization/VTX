@@ -21,10 +21,10 @@
 
 namespace VTX
 {
-	int ZERO = 0;
-	VTXApp::VTXApp() : QApplication( ZERO, nullptr )
+	// int ZERO = 0;
+	VTXApp::VTXApp() // : QApplication( ZERO, nullptr )
 	{
-		connect( this, &QCoreApplication::aboutToQuit, this, &VTXApp::_stop );
+		// connect( this, &QCoreApplication::aboutToQuit, this, &VTXApp::_stop );
 	}
 
 	VTXApp::~VTXApp() {}
@@ -61,7 +61,7 @@ namespace VTX
 		goToState( ID::State::VISUALIZATION );
 
 		// Create UI.
-		_initQt();
+		//_initQt();
 		_mainWindow = new UI::MainWindow();
 		_mainWindow->setupUi();
 		_mainWindow->show();
@@ -86,11 +86,11 @@ namespace VTX
 		}
 
 		// Start timers.
-		_timer = new QTimer( this );
-		connect( _timer, &QTimer::timeout, this, &VTXApp::_update );
-		_timer->start( 0 );
-		_elapsedTimer.start();
-		_tickTimer.start();
+		//_timer = new QTimer( this );
+		// connect( _timer, &QTimer::timeout, this, &VTXApp::_update );
+		//_timer->start( 0 );
+		//_elapsedTimer.start();
+		//_tickTimer.start();
 
 		_handleArgs( p_args );
 
@@ -108,21 +108,21 @@ namespace VTX
 
 	void VTXApp::_initQt()
 	{
-		this->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
-
-		QPalette appPalette = palette();
-		Style::applyApplicationPaletteInPalette( appPalette );
-		setPalette( appPalette );
-
-#ifdef _DEBUG
-		QLoggingCategory::setFilterRules( QStringLiteral( "qt.gamepad.debug=true" ) );
-#endif
+		//		this->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
+		//
+		//		QPalette appPalette = palette();
+		//		Style::applyApplicationPaletteInPalette( appPalette );
+		//		setPalette( appPalette );
+		//
+		// #ifdef _DEBUG
+		//		QLoggingCategory::setFilterRules( QStringLiteral( "qt.gamepad.debug=true" ) );
+		// #endif
 	}
 
 	void VTXApp::_handleArgs( const std::vector<std::string> & p_args )
 	{
-		std::vector<Util::FilePath> files	 = std::vector<Util::FilePath>();
-		std::vector<std::string>  pdbIds = std::vector<std::string>();
+		std::vector<Util::FilePath> files  = std::vector<Util::FilePath>();
+		std::vector<std::string>	pdbIds = std::vector<std::string>();
 
 		for ( const std::string & arg : p_args )
 		{
@@ -256,25 +256,43 @@ namespace VTX
 		_deleteAtEndOfFrameObjects.clear();
 	}
 
+	void VTXApp::closeAllWindows()
+	{
+		// QApplication::closeAllWindows();
+	}
+	QInputMethod * VTXApp::inputMethod()
+	{
+		return QApplication::inputMethod();
+		// QApplication::closeAllWindows();
+	}
+	void VTXApp::exit( int p_returnCode )
+	{
+		// QApplication::exit(p_returnCode);
+	}
+	void VTXApp::quit()
+	{
+		// QApplication::quit();
+	}
+
 	Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT()
 	{
 		return Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPreset();
 	}
 
-	bool VTXApp::notify( QObject * const receiver, QEvent * const event )
-	{
-		try
-		{
-			return QApplication::notify( receiver, event );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( p_e.what() );
-#ifdef VTX_PRODUCTION
-			UI::Dialog::unhandledException();
-#endif
-			return true;
-		}
-	}
+	//	bool VTXApp::notify( QObject * const receiver, QEvent * const event )
+	//	{
+	//		try
+	//		{
+	//			return QApplication::notify( receiver, event );
+	//		}
+	//		catch ( const std::exception & p_e )
+	//		{
+	//			VTX_ERROR( p_e.what() );
+	// #ifdef VTX_PRODUCTION
+	//			UI::Dialog::unhandledException();
+	// #endif
+	//			return true;
+	//		}
+	//	}
 
 } // namespace VTX

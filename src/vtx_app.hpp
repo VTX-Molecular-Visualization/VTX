@@ -6,12 +6,12 @@
 #include "spec.hpp"
 #include "stat.hpp"
 #include <QElapsedTimer>
+#include <QInputMethod>
 #include <QTimer>
-#include <QtWidgets/QApplication>
 
 namespace VTX
 {
-	class Setting;
+	// class Setting;
 	namespace Model::Representation
 	{
 		class RepresentationLibrary;
@@ -37,7 +37,7 @@ namespace VTX
 	{
 		class MainWindow;
 	}
-	class VTXApp final : public QApplication
+	class VTXApp final
 	{
 	  public:
 		inline static VTXApp & get()
@@ -83,7 +83,11 @@ namespace VTX
 
 		void deleteAtEndOfFrame( const Generic::BaseAutoDelete * const p_object );
 
-		bool notify( QObject * const, QEvent * const ) override;
+		// bool notify( QObject * const, QEvent * const ) override;
+		void		   closeAllWindows();
+		QInputMethod * inputMethod();
+		void		   exit( int p_returnCode = 0 );
+		void		   quit();
 
 	  private:
 		QTimer *	  _timer		= nullptr;
