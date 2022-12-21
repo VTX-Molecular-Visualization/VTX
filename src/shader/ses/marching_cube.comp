@@ -72,7 +72,7 @@ layout (std430, binding = 3) writeonly buffer TriangleIndices
 
 layout (std140, binding = 4) writeonly buffer TriangleColors
 {
-	vec3[] triangleColors;
+	vec4[] triangleColors;
 };
 
 layout (std430, binding = 5) writeonly buffer TriangleVisibilities
@@ -111,7 +111,7 @@ layout (std430, binding = 8) readonly buffer TriangleTable
 
 layout (std140, binding = 9) readonly buffer AtomColors
 {
-	vec3[] atomColors;
+	vec4[] atomColors;
 };
 
 layout (std430, binding = 10) readonly buffer AtomVisibilities
@@ -230,7 +230,7 @@ void main()
 			triangleNormals[ sesGridHash * 15 + i + j ] = normal;
 			triangleValidities[ sesGridHash * 15 + i + j ] = 1;
 			
-			//triangleColors[ sesGridHash * 15 + i + j ] = atomColors[ sesGridData[ sesGridHash ].nearestAtom ];
+			triangleColors[ sesGridHash * 15 + i + j ] = atomColors[ sesGridData[ sesGridHash ].nearestAtom ];
 			triangleVisibilities[ sesGridHash * 15 + i + j ] = atomVisibilities[ sesGridData[ sesGridHash ].nearestAtom ];
 			triangleIds[ sesGridHash * 15 + i + j ] = atomIds[ sesGridData[ sesGridHash ].nearestAtom ];
 		}

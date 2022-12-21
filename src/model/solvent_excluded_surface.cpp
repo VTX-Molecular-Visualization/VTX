@@ -332,7 +332,7 @@ namespace VTX
 			_indiceCount = uint( bufferSize );
 
 			// refreshColors();
-			//  refreshVisibilities();
+			// refreshVisibilities();
 
 			// TMP.
 			_atomsToTriangles[ atomsIdx[ 0 ] ] = Range { 0, _indiceCount };
