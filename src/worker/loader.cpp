@@ -252,9 +252,9 @@ namespace VTX
 
 		Loader::MODE Loader::_getMode( const Util::FilePath & p_path ) const
 		{
-			std::string extension = p_path.extension();
+			const std::string extension = p_path.extension();
 
-			if ( extension == ".vtx" )
+			if ( extension == "vtx" )
 			{
 				return MODE::SCENE;
 			}
