@@ -1,5 +1,5 @@
 #include "__new_archi/ui/environment.hpp"
-#include "core/application.hpp"
+#include "core/base_ui_application.hpp"
 #include "tool/logger.hpp"
 #include "ui_generator.hpp"
 #include <string>
@@ -28,7 +28,7 @@ int main( int p_argc, char * p_argv[] )
 {
 	try
 	{
-		VTX::UI::Core::Application * const vtxApplication = UI::UIGenerator::createUI();
+		VTX::UI::Core::BaseUIApplication * const vtxApplication = UI::UIGenerator::createUI();
 		VTX::UI::Environment::get().setUIApp( vtxApplication );
 		vtxApplication->init();
 

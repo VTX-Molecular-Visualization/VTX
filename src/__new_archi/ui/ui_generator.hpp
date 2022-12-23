@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_CORE_VTX_APP__
 #define __VTX_UI_CORE_VTX_APP__
 
-#include "core/application.hpp"
+#include "core/base_ui_application.hpp"
 
 // TODO Define that in cmake
 #define VTX_UI_STYLE_COMMAND_LINE 0
@@ -14,7 +14,7 @@ namespace VTX::UI
 	class UIGenerator
 	{
 	  public:
-		static Core::Application * createUI();
+		static Core::BaseUIApplication * createUI();
 	};
 } // namespace VTX::UI
 

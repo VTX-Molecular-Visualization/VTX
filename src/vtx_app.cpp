@@ -1,4 +1,3 @@
-
 #include "vtx_app.hpp"
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
@@ -56,30 +55,6 @@ namespace VTX
 
 		_pathSceneData = new IO::Struct::ScenePathData();
 
-		// Create statemachine.
-		_stateMachine = new State::StateMachine();
-		goToState( ID::State::VISUALIZATION );
-
-		// Create UI.
-		//_initQt();
-		_mainWindow = new UI::MainWindow();
-		_mainWindow->setupUi();
-		_mainWindow->show();
-
-		// Fix Issue for fullscreen on windows. Need to be called after show and before set fullscreen //////////
-		// https://doc.qt.io/qt-5/windows-issues.html#fullscreen-opengl-based-windows ///////////////////////////
-		// QWindowsWindowFunctions::setHasBorderInFullScreen( _mainWindow->windowHandle(), true );
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		_mainWindow->initWindowLayout();
-		VTX_INFO( "Application started" );
-
-		if ( !_mainWindow->isOpenGLValid() )
-		{
-			UI::Dialog::openGLInitializationFail();
-			return;
-		}
-
 		if ( VTX_SETTING().getCheckVTXUpdateAtLaunch() )
 		{
 			VTX_ACTION( new Action::Main::CheckForUpdate() );
@@ -101,10 +76,12 @@ namespace VTX
 			//	 new Action::Main::Open( Util::Filesystem::getDataPath( Util::FilePath( "4hhb.pdb" ) ).absolute() ) );
 			// VTX_ACTION( new Action::Main::OpenApi( "1aon" ) );
 			// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
-			VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
+			// VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
 		}
 #endif
 	}
+	void VTXApp::update() { _update(); }
+	void VTXApp::stop() { _stop(); }
 
 	void VTXApp::_initQt()
 	{
@@ -149,9 +126,6 @@ namespace VTX
 		// Elapsed time.
 		float elapsed = _elapsedTimer.nsecsElapsed() * 1e-9;
 		_elapsedTimer.restart();
-
-		// State machine.
-		_stateMachine->update( elapsed );
 
 		// Useless: nothing is delayed.
 		// Event manager.
@@ -203,45 +177,24 @@ namespace VTX
 		Worker::WorkerManager::get().stopAll();
 
 		_setting.backup();
-		_mainWindow->saveLayout();
 
 		MVC::MvcManager::get().deleteModel( _representationLibrary );
 		MVC::MvcManager::get().deleteModel( _renderEffectLibrary );
 
 		Selection::SelectionManager::get().deleteModel();
 
-		if ( _stateMachine != nullptr )
-		{
-			delete _stateMachine;
-		}
 		if ( _scene != nullptr )
 		{
 			delete _scene;
-		}
-		if ( _mainWindow != nullptr )
-		{
-			delete _mainWindow;
 		}
 	}
 
 	void VTXApp::goToState( const std::string & p_name, void * const p_arg )
 	{
-		try
-		{
-			_stateMachine->goToState( p_name, p_arg );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( p_e.what() );
-		}
 	}
 
 	void VTXApp::renderScene() const
 	{
-		if ( VTX_SETTING().getActivateRenderer() && MASK )
-		{
-			_mainWindow->updateRender();
-		}
 	}
 
 	void VTXApp::deleteAtEndOfFrame( const Generic::BaseAutoDelete * const p_object )

@@ -1,14 +1,16 @@
-#ifndef __VTX_UI_CORE_APPLICATION__
-#define __VTX_UI_CORE_APPLICATION__
+#ifndef __VTX_UI_CORE_BASE_UI_APPLICATION__
+#define __VTX_UI_CORE_BASE_UI_APPLICATION__
 
 #include <string>
 #include <vector>
 
 namespace VTX::UI::Core
 {
-	class Application
+	class BaseUIApplication
 	{
 	  public:
+		BaseUIApplication();
+
 		virtual void init();
 		virtual void start( const std::vector<std::string> & p_args );
 

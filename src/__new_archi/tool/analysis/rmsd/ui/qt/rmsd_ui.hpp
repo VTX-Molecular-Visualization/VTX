@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_ANALYSIS_RMSD_UI_RMSD_TOOL__
-#define __VTX_TOOL_ANALYSIS_RMSD_UI_RMSD_TOOL__
+#ifndef __VTX_UI_DEFAULT_TOOL_RENDER_WINDOW__
+#define __VTX_UI_DEFAULT_TOOL_RENDER_WINDOW__
 
 #include "__new_archi/tool/analysis/rmsd/tool_info.hpp"
 #include "__new_archi/ui/core/tool_registration.hpp"

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_DIALOG__
-#define __VTX_UI_DIALOG__
+#ifndef __VTX_UI_QT_DIALOG__
+#define __VTX_UI_QT_DIALOG__
 
 #include "action/base_action.hpp"
 #include "worker/worker_manager.hpp"

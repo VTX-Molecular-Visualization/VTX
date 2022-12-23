@@ -1,4 +1,5 @@
 #include "vtx_layout_reader.hpp"
+#include "__new_archi/ui/default_tools/keys.hpp"
 
 namespace VTX::UI::Core::IO
 {
@@ -8,9 +9,11 @@ namespace VTX::UI::Core::IO
 
 		ToolLayoutData layoutData;
 
+		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::DefaultTools::RENDER_WINDOW_KEY ) );
+
 		layoutData			 = UI::Core::ToolLayoutData();
 		layoutData.tabName	 = "Tools";
-		layoutData.blockName = "RMSD";
+		layoutData.blockName = "Structural Alignment";
 
 		_result.layoutDescriptor.addTool( ToolDescriptor( "RMSDTool", layoutData ) );
 

@@ -1,9 +1,10 @@
 #ifndef __VTX_UI_QT_APPLICATION__
 #define __VTX_UI_QT_APPLICATION__
 
-#include "__new_archi/ui/core/application.hpp"
+#include "__new_archi/ui/core/base_ui_application.hpp"
 #include "__new_archi/ui/environment.hpp"
 #include "__new_archi/ui/qt/main_window.hpp"
+#include "__new_archi/ui/qt/state/state_machine.hpp"
 #include <QApplication>
 #include <QElapsedTimer>
 #include <QEvent>
@@ -13,7 +14,7 @@
 
 namespace VTX::UI::QT
 {
-	class ApplicationQt : public Core::Application, public QApplication
+	class ApplicationQt : public Core::BaseUIApplication, public QApplication
 	{
 	  public:
 		static void configure();
@@ -30,7 +31,12 @@ namespace VTX::UI::QT
 		void stop() override;
 		void quit() override;
 
-		MainWindow & getMainWindow() const { return *_mainWindow; }
+		void goToState( const std::string &, void * const = nullptr );
+
+		inline MainWindow &				   getMainWindow() { return *_mainWindow; }
+		inline const MainWindow &		   getMainWindow() const { return *_mainWindow; }
+		inline State::StateMachine &	   getStateMachine() { return *_stateMachine; }
+		inline const State::StateMachine & getStateMachine() const { return *_stateMachine; }
 
 		bool notify( QObject * const, QEvent * const ) override;
 
@@ -42,6 +48,8 @@ namespace VTX::UI::QT
 
 	  private:
 		MainWindow * _mainWindow = nullptr;
+
+		State::StateMachine * _stateMachine = nullptr;
 
 		QTimer *	  _timer		= nullptr;
 		QElapsedTimer _elapsedTimer = QElapsedTimer();

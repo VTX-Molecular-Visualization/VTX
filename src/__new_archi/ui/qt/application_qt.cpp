@@ -1,4 +1,6 @@
-#include "application.hpp"
+#include "application_qt.hpp"
+#include "action/action_manager.hpp"
+#include "action/main.hpp"
 #include "dialog.hpp"
 #include "generic/base_opengl.hpp"
 #include <QCoreApplication>
@@ -25,31 +27,40 @@ namespace VTX::UI::QT
 	}
 
 	int ZERO = 0;
-	ApplicationQt::ApplicationQt() : Core::Application(), QApplication( ZERO, nullptr )
+	ApplicationQt::ApplicationQt() : Core::BaseUIApplication(), QApplication( ZERO, nullptr )
 	{
 		connect( this, &QCoreApplication::aboutToQuit, this, &ApplicationQt::stop );
 	}
 	ApplicationQt::~ApplicationQt() {}
 
-	void ApplicationQt::init() { Core::Application::init(); }
+	void ApplicationQt::init() { Core::BaseUIApplication::init(); }
 	void ApplicationQt::start( const std::vector<std::string> & p_args )
 	{
-		Core::Application::start( p_args );
+		Core::BaseUIApplication::start( p_args );
 
 		_handleArgs( p_args );
+
+		VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
 
 		_returnCode = exec();
 	}
 
-	void ApplicationQt::update() { Core::Application::update(); }
+	void ApplicationQt::update()
+	{
+		float elapsed = _elapsedTimer.nsecsElapsed() * 1e-9;
+		_elapsedTimer.restart();
+
+		Core::BaseUIApplication::update();
+		_stateMachine->update( elapsed );
+	}
 
 	void ApplicationQt::quit() { closeAllWindows(); };
 
 	void ApplicationQt::_initUI( const std::vector<std::string> & p_args )
 	{
-		//// Create statemachine.
-		//_stateMachine = new State::StateMachine();
-		// goToState( ID::State::VISUALIZATION );
+		// Create statemachine.
+		_stateMachine = new State::StateMachine();
+		goToState( ID::State::VISUALIZATION );
 
 		// Create UI.
 		_initQt();
@@ -108,7 +119,19 @@ namespace VTX::UI::QT
 		//	delete _stateMachine;
 		// }
 
-		Application::stop();
+		BaseUIApplication::stop();
+	}
+
+	void ApplicationQt::goToState( const std::string & p_name, void * const p_arg )
+	{
+		try
+		{
+			_stateMachine->goToState( p_name, p_arg );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( p_e.what() );
+		}
 	}
 
 	bool ApplicationQt::notify( QObject * const receiver, QEvent * const event )

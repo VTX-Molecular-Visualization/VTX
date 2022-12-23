@@ -20,6 +20,7 @@ namespace VTX::UI::Core::MainMenu
 
 			res = _instantiateBlock();
 			res->setTooltab( this );
+			res->setTitle( p_key );
 			_addBlock( p_key, res );
 		}
 

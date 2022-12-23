@@ -180,7 +180,7 @@ namespace VTX::Action::Main
 		}
 
 	  private:
-		std::vector<Util::FilePath>			  _paths = std::vector<Util::FilePath>();
+		std::vector<Util::FilePath>				_paths = std::vector<Util::FilePath>();
 		std::map<Util::FilePath, std::string *> _buffers;
 
 		std::vector<Model::Molecule *> _trajectoryTargets = std::vector<Model::Molecule *>();
@@ -232,7 +232,7 @@ namespace VTX::Action::Main
 		}
 
 	  private:
-		const Util::FilePath			   _path;
+		const Util::FilePath		   _path;
 		Worker::CallbackThread * const _callback;
 	};
 
@@ -380,7 +380,7 @@ namespace VTX::Action::Main
 		{
 		}
 		explicit Snapshot( const Worker::Snapshoter::MODE			 p_mode,
-						   const Util::FilePath &						 p_path,
+						   const Util::FilePath &					 p_path,
 						   const IO::Struct::ImageExport::RESOLUTION p_resolution ) :
 			Snapshot( p_mode,
 					  p_path,
@@ -390,7 +390,7 @@ namespace VTX::Action::Main
 		{
 		}
 		explicit Snapshot( const Worker::Snapshoter::MODE p_mode,
-						   const Util::FilePath &			  p_path,
+						   const Util::FilePath &		  p_path,
 						   const int					  p_width,
 						   const int					  p_height ) :
 			Snapshot( p_mode,
@@ -401,7 +401,7 @@ namespace VTX::Action::Main
 		{
 		}
 		explicit Snapshot( const Worker::Snapshoter::MODE  p_mode,
-						   const Util::FilePath &			   p_path,
+						   const Util::FilePath &		   p_path,
 						   const IO::Struct::ImageExport & p_exportData ) :
 			_mode( p_mode ),
 			_path( p_path ), _exportData( p_exportData )
@@ -418,7 +418,7 @@ namespace VTX::Action::Main
 
 	  private:
 		const Worker::Snapshoter::MODE _mode;
-		const Util::FilePath			   _path;
+		const Util::FilePath		   _path;
 		const IO::Struct::ImageExport  _exportData;
 	};
 

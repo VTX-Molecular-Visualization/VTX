@@ -1,7 +1,5 @@
 #include "main_window.hpp"
 #include "__new_archi/tool/analysis/rmsd/core/rmsd.hpp"
-#include "__new_archi/ui/core/io/vtx_layout_reader.hpp"
-#include "__new_archi/ui/core/layout_builder.hpp"
 #include "action/dev.hpp"
 #include "action/main.hpp"
 #include "action/selection.hpp"
@@ -145,11 +143,11 @@ namespace VTX::UI
 		_mainMenuBar->setCurrentTab( 0 );
 		_renderWidget->setFocus();
 
-		UI::Core::IO::VTXLayoutReader reader = UI::Core::IO::VTXLayoutReader();
-		reader.read();
+		// UI::Core::IO::VTXLayoutReader reader = UI::Core::IO::VTXLayoutReader();
+		// reader.read();
 
-		UI::Core::LayoutBuilder layoutBuilder = UI::Core::LayoutBuilder();
-		layoutBuilder.build( reader.getResult().layoutDescriptor );
+		// UI::Core::LayoutBuilder layoutBuilder = UI::Core::LayoutBuilder();
+		// layoutBuilder.build( reader.getResult().layoutDescriptor );
 
 		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
 	}

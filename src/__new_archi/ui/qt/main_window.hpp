@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_MAIN_WINDOW__
 #define __VTX_UI_QT_MAIN_WINDOW__
 
-#include "__new_archi/ui/core/main_window.hpp"
+#include "__new_archi/ui/core/base_main_window.hpp"
 #include "__new_archi/ui/qt/widget/main_menu/main_menu_bar.hpp"
 #include "ui/contextual_menu.hpp"
 #include "ui/cursor_handler.hpp"
@@ -28,7 +28,7 @@ namespace VTX::UI::QT
 {
 	class MainWindow :
 		public VTX::UI::Widget::BaseWidget<QMainWindow, Ui_MainWindow>,
-		public VTX::UI::Core::MainWindow,
+		public VTX::UI::Core::BaseMainWindow,
 		public Event::BaseEventFirererInput
 	{
 		Q_OBJECT
