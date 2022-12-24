@@ -5,7 +5,7 @@
 #include "exception.hpp"
 #include "export.hpp"
 #include "play.hpp"
-#include "visualization_state.hpp"
+#include "visualization.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::UI::QT::State

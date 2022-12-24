@@ -1,8 +1,9 @@
 #include "application_qt.hpp"
 #include "action/action_manager.hpp"
-#include "action/main.hpp"
 #include "dialog.hpp"
 #include "generic/base_opengl.hpp"
+#include "src/action/main.hpp"
+#include "vtx_app.hpp"
 #include <QCoreApplication>
 #include <QSurfaceFormat>
 #include <exception>
@@ -40,7 +41,7 @@ namespace VTX::UI::QT
 
 		_handleArgs( p_args );
 
-		VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
+		VTX_ACTION( new VTX::Action::Main::OpenApi( "1aga" ) );
 
 		_returnCode = exec();
 	}
@@ -98,6 +99,11 @@ namespace VTX::UI::QT
 		_mainWindow->show();
 
 		_mainWindow->initWindowLayout();
+	}
+
+	void ApplicationQt::_postInit( const std::vector<std::string> & p_args )
+	{
+		Core::BaseUIApplication::_postInit( p_args );
 
 		if ( !_mainWindow->isOpenGLValid() )
 		{
@@ -106,20 +112,30 @@ namespace VTX::UI::QT
 		}
 	}
 
+	void ApplicationQt::renderScene() const
+	{
+		if ( VTX_SETTING().getActivateRenderer() && VTXApp::get().MASK )
+		{
+			_mainWindow->updateRender();
+		}
+	}
+
 	void ApplicationQt::stop()
 	{
 		_mainWindow->saveLayout();
+
+		if ( _stateMachine != nullptr )
+		{
+			delete _stateMachine;
+		}
+
+		// TODO BaseUIApplication::stop() called here because some model are strongly linked to _gl
+		BaseUIApplication::stop();
 
 		if ( _mainWindow != nullptr )
 		{
 			delete _mainWindow;
 		}
-		// if ( _stateMachine != nullptr )
-		//{
-		//	delete _stateMachine;
-		// }
-
-		BaseUIApplication::stop();
 	}
 
 	void ApplicationQt::goToState( const std::string & p_name, void * const p_arg )

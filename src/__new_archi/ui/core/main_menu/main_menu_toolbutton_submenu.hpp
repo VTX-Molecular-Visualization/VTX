@@ -2,9 +2,6 @@
 #define __VTX_UI_CORE_MAIN_MENU_TOOLBUTTON_SUBMENU__
 
 #include "main_menu_toolbutton.hpp"
-#include "ui/ui_action/self_referenced_action.hpp"
-#include <QAction>
-#include <QMenu>
 #include <type_traits>
 
 namespace VTX::UI::Core::MainMenu

@@ -2,7 +2,7 @@
 #define __VTX_STATE_VISUALIZATION__
 
 #include "base_state.hpp"
-#include "controller/base_camera_controller.hpp"
+#include "src/controller/base_camera_controller.hpp"
 
 namespace VTX
 {

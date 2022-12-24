@@ -3,6 +3,7 @@
 
 #include "__new_archi/ui/core/base_main_window.hpp"
 #include "__new_archi/ui/qt/widget/main_menu/main_menu_bar.hpp"
+#include "__new_archi/ui/qt/widget/render/render_widget.hpp"
 #include "ui/contextual_menu.hpp"
 #include "ui/cursor_handler.hpp"
 #include "ui/widget/analysis/structural_alignment/structural_alignment_widget.hpp"
@@ -45,17 +46,12 @@ namespace VTX::UI::QT
 		void initWindowLayout();
 		void refreshWindowTitle();
 
-		inline bool isOpenGLValid() const
-		{
-			return false;
-			//_renderWidget->isOpenGLValid();
-		}
-		inline void updateRender() const
-		{
-			//_renderWidget->updateRender();
-		}
-		void updateRenderSetting( const Renderer::RENDER_SETTING );
-		// const Vec2i getPickedIds( const uint p_x, const uint p_y );
+		QT::Widget::Render::RenderWidget *		 getRender();
+		const QT::Widget::Render::RenderWidget * getRender() const;
+
+		inline bool isOpenGLValid() const { return getRender()->isOpenGLValid(); }
+		inline void updateRender() const { getRender()->updateRender(); }
+		void		updateRenderSetting( const Renderer::RENDER_SETTING );
 
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 

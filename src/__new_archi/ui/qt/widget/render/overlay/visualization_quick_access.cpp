@@ -1,13 +1,13 @@
 #include "visualization_quick_access.hpp"
 #include "__new_archi/ui/qt/application_qt.hpp"
-#include "__new_archi/ui/qt/state/visualization_state.hpp"
+#include "__new_archi/ui/qt/state/visualization.hpp"
 #include "action/action_manager.hpp"
-#include "action/main.hpp"
 #include "action/selection.hpp"
 #include "action/setting.hpp"
 #include "model/selection.hpp"
 #include "selection/selection_manager.hpp"
 #include "setting.hpp"
+#include "src/action/main.hpp"
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QMenu>

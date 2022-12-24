@@ -2,9 +2,9 @@
 #define __VTX_UI_WIDGET_RENDER_OVERLAY_VISUALIZATION_QUICK_ACCESS__
 
 #include "base_overlay.hpp"
-#include "controller/measurement_picker.hpp"
 #include "id.hpp"
 #include "selection/selection_enum.hpp"
+#include "src/controller/measurement_picker.hpp"
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QAction>
@@ -69,7 +69,7 @@ namespace VTX::UI::Widget::Render::Overlay
 			MenuItemData( VTX::Selection::Granularity::MOLECULE, "Pick Molecule", ":/sprite/pick_molecule.png" )
 		};
 
-		inline static std::vector<MenuItemData<Controller::MeasurementPicker::Mode>> MEASUREMENT_MODE {
+		inline static std::vector<MenuItemData<VTX::Controller::MeasurementPicker::Mode>> MEASUREMENT_MODE {
 			MenuItemData( Controller::MeasurementPicker::Mode::DISTANCE,
 						  "Distance",
 						  ":/sprite/measurement_distance_icon.png" ),

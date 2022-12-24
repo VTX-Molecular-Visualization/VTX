@@ -13,6 +13,13 @@ namespace VTX::Tool::Analysis::StructuralAlignment::UI::QT
 
 	void StructuralAlignmentTool::instantiateTool()
 	{
+		_addButtonsInMainMenu();
+
+		// VTXApp::get().getMainWindow().getContextualMenu().getMenu()
+	}
+
+	void StructuralAlignmentTool::_addButtonsInMainMenu() const
+	{
 		const VTX::UI::Core::ToolLayoutData & layoutData = getLayoutData();
 
 		VTX::UI::QT::Widget::MainMenu::MenuTooltabWidget & tooltab
@@ -23,11 +30,12 @@ namespace VTX::Tool::Analysis::StructuralAlignment::UI::QT
 			= dynamic_cast<VTX::UI::QT::Widget::MainMenu::MenuToolBlockWidget &>(
 				tooltab.getToolBlock( layoutData.blockName ) );
 
-		// VTX::UI::QT::Widget::MainMenu::MenuToolButtonSubmenuWidget * const structuralAlignmentButton
-		//	= VTX::UI::WidgetFactory::get().instantiateWidget<VTX::UI::Widget::MainMenu::MenuToolButtonSubmenuWidget>(
-		//		&tooltab, "structuralAlignmentButton" );
-		// structuralAlignmentButton->setData(
-		//	"Structural alignment", ":/sprite/structural_alignment_icon.png", Qt::Orientation::Horizontal );
+		VTX::UI::QT::Widget::MainMenu::MenuToolButtonSubmenuWidget * const structuralAlignmentButton
+			= VTX::UI::QT::WidgetFactory::get()
+				  .instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonSubmenuWidget>(
+					  &tooltab, "structuralAlignmentButton" );
+		structuralAlignmentButton->setData(
+			"Structural alignment", ":/sprite/structural_alignment_icon.png", Qt::Orientation::Horizontal );
 
 		VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget * const structuralAlignmentAdvancedButton
 			= VTX::UI::QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
@@ -36,12 +44,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::UI::QT
 		structuralAlignmentAdvancedButton->setData(
 			"Alignment\nwindow", ":/sprite/structural_alignment_settings_icon.png", Qt::Orientation::Horizontal );
 
-		// toolBlock.pushButton( *structuralAlignmentButton, 0 );
-		// toolBlock.pushButton( structuralAlignmentButton, structuralAlignmentAdvancedButton );
-		toolBlock.pushButton( *structuralAlignmentAdvancedButton );
-		// toolBlock.validate();
-
-		// VTXApp::get().getMainWindow().getContextualMenu().getMenu()
+		toolBlock.pushButton( *structuralAlignmentButton, *structuralAlignmentAdvancedButton );
 	}
 
 } // namespace VTX::Tool::Analysis::StructuralAlignment::UI::QT

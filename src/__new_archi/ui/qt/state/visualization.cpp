@@ -1,15 +1,17 @@
-#include "visualization_state.hpp"
-#include "controller/freefly.hpp"
-#include "controller/main_window_controller.hpp"
-#include "controller/measurement_picker.hpp"
-#include "controller/picker.hpp"
-#include "controller/trackball.hpp"
+#include "visualization.hpp"
+#include "__new_archi/ui/qt/application_qt.hpp"
+#include "__new_archi/ui/qt/controller/freefly.hpp"
+#include "__new_archi/ui/qt/controller/main_window_controller.hpp"
+#include "__new_archi/ui/qt/controller/measurement_picker.hpp"
+#include "__new_archi/ui/qt/controller/picker.hpp"
+#include "__new_archi/ui/qt/controller/trackball.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "model/molecule.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
+#include <util/math.hpp>
 
 namespace VTX::UI::QT::State
 {
@@ -21,32 +23,32 @@ namespace VTX::UI::QT::State
 		_registerEvent( Event::Global::MESH_REMOVED );
 
 		// Create controller.
-		_controllers.emplace( ID::Controller::MAIN_WINDOW, new Controller::MainWindowController() );
+		_controllers.emplace( ID::Controller::MAIN_WINDOW, new QT::Controller::MainWindowController() );
 		_controllers.emplace( ID::Controller::FREEFLY,
-							  new Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
+							  new QT::Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
 		_controllers.emplace( ID::Controller::TRACKBALL,
-							  new Controller::Trackball( VTXApp::get().getScene().getCamera(),
-														 VTXApp::get().getScene().getAABB().centroid(),
-														 VTXApp::get().getScene().getAABB().diameter() ) );
-		_controllers.emplace( ID::Controller::PICKER, new Controller::Picker() );
-		_controllers.emplace( ID::Controller::MEASUREMENT, new Controller::MeasurementPicker() );
+							  new QT::Controller::Trackball( VTXApp::get().getScene().getCamera(),
+															 VTXApp::get().getScene().getAABB().centroid(),
+															 VTXApp::get().getScene().getAABB().diameter() ) );
+		_controllers.emplace( ID::Controller::PICKER, new QT::Controller::Picker() );
+		_controllers.emplace( ID::Controller::MEASUREMENT, new QT::Controller::MeasurementPicker() );
 	}
 
 	void Visualization::enter( void * const p_arg )
 	{
 		BaseState::enter( p_arg );
 
-		getController<Controller::Picker>( ID::Controller::PICKER )->setActive( true );
-		getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )->setActive( false );
+		getController<QT::Controller::Picker>( ID::Controller::PICKER )->setActive( true );
+		getController<QT::Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )->setActive( false );
 		_pickerController = ID::Controller::PICKER;
 
 		if ( _cameraController == ID::Controller::FREEFLY )
 		{
-			getController<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( false );
+			getController<QT::Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( false );
 		}
 		else
 		{
-			getController<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( false );
+			getController<QT::Controller::Freefly>( ID::Controller::FREEFLY )->setActive( false );
 		}
 	}
 
@@ -55,12 +57,12 @@ namespace VTX::UI::QT::State
 		BaseState::update( p_deltaTime );
 
 		VTXApp::get().getScene().update( p_deltaTime );
-		VTXApp::get().renderScene();
+		QT_APP()->renderScene();
 	}
 
 	void Visualization::toggleCameraController()
 	{
-		if ( getController<VTX::Controller::BaseCameraController>( _cameraController )->isOrienting() )
+		if ( getController<QT::Controller::BaseCameraController>( _cameraController )->isOrienting() )
 		{
 			return;
 		}
@@ -81,7 +83,7 @@ namespace VTX::UI::QT::State
 	}
 	void Visualization::setCameraController( const ID::VTX_ID & p_controllerId )
 	{
-		if ( getController<VTX::Controller::BaseCameraController>( _cameraController )->isOrienting() )
+		if ( getController<QT::Controller::BaseCameraController>( _cameraController )->isOrienting() )
 		{
 			return;
 		}
@@ -108,13 +110,13 @@ namespace VTX::UI::QT::State
 		camera.reset( defaultPos );
 
 		// Reset controllers.
-		getController<Controller::Trackball>( ID::Controller::TRACKBALL )->reset();
-		getController<Controller::Freefly>( ID::Controller::FREEFLY )->reset();
+		getController<QT::Controller::Trackball>( ID::Controller::TRACKBALL )->reset();
+		getController<QT::Controller::Freefly>( ID::Controller::FREEFLY )->reset();
 	}
 
 	void Visualization::orientCameraController( const Object3D::Helper::AABB & p_aabb )
 	{
-		getController<VTX::Controller::BaseCameraController>( _cameraController )->orient( p_aabb );
+		getController<QT::Controller::BaseCameraController>( _cameraController )->orient( p_aabb );
 		// Override Trackball distance.
 		if ( _cameraController == ID::Controller::FREEFLY )
 		{
@@ -129,7 +131,7 @@ namespace VTX::UI::QT::State
 	}
 	void Visualization::orientCameraController( const Vec3f & p_position, const Quatf & p_orientation )
 	{
-		getController<VTX::Controller::BaseCameraController>( _cameraController )->orient( p_position, p_orientation );
+		getController<QT::Controller::BaseCameraController>( _cameraController )->orient( p_position, p_orientation );
 
 		// Override Trackball distance.
 		if ( _cameraController == ID::Controller::FREEFLY )

@@ -24,9 +24,9 @@ namespace VTX
 		{
 		  public:
 			static void openInformationDialog( const QString & p_title, const QString & p_message );
-			static void confirmActionDialog( Action::BaseAction * const p_action,
-											 const QString &			p_title,
-											 const QString &			p_message );
+			static void confirmActionDialog( VTX::Action::BaseAction * const p_action,
+											 const QString &				 p_title,
+											 const QString &				 p_message );
 
 			static void openDownloadMoleculeDialog();
 			static void openDownloadMoleculeDialog( const QString & p_pdbCode );

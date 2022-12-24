@@ -1,4 +1,5 @@
 #include "render_window.hpp"
+#include "__new_archi/ui/default_tools/keys.hpp"
 #include "__new_archi/ui/qt/application_qt.hpp"
 #include "__new_archi/ui/qt/main_window.hpp"
 #include "__new_archi/ui/qt/widget/render/render_widget.hpp"
@@ -17,7 +18,7 @@ namespace VTX::UI::DefaultTools
 		QT::Widget::Render::RenderWidget * const renderWidget
 			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::Render::RenderWidget>( mainWindow,
 																							"renderWidget" );
-		mainWindow->referencePanel( QT::Widget::Render::RenderWidget::PANEL_KEY, renderWidget );
+		mainWindow->referencePanel( DefaultTools::RENDER_WINDOW_KEY, renderWidget );
 
 		renderWidget->displayOverlay( QT::Widget::Render::Overlay::OVERLAY::VISUALIZATION_QUICK_ACCESS,
 									  QT::Widget::Render::Overlay::OVERLAY_ANCHOR::BOTTOM_CENTER );

@@ -20,14 +20,14 @@
 
 namespace VTX::UI::QT::Widget::Render
 {
-	class RenderWidget : public Core::BasePanel, public BaseManualWidget<QWidget>, public Event::BaseEventFirererInput
+	class RenderWidget :
+		public Core::BasePanel,
+		public QT::Widget::BaseManualWidget<QWidget>,
+		public Event::BaseEventFirererInput
 	{
 		NEW_ARCHI_VTX_WIDGET
 
 		friend VTX::Worker::Snapshoter;
-
-	  public:
-		inline static const Core::WidgetKey PANEL_KEY = "RenderWidget";
 
 	  public:
 		~RenderWidget();

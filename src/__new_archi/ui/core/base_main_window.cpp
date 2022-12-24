@@ -5,8 +5,9 @@ namespace VTX::UI::Core
 	BaseMainWindow::BaseMainWindow() {}
 	BaseMainWindow::~BaseMainWindow() {}
 
-	BasePanel * BaseMainWindow::getPanel( const WidgetKey & p_key ) { return _mapPanels[ p_key ]; }
-	void		BaseMainWindow::referencePanel( const WidgetKey & p_key, BasePanel * const p_panel )
+	BasePanel *		  BaseMainWindow::getPanel( const WidgetKey & p_key ) { return _mapPanels[ p_key ]; }
+	const BasePanel * BaseMainWindow::getPanel( const WidgetKey & p_key ) const { return _mapPanels.at( p_key ); }
+	void			  BaseMainWindow::referencePanel( const WidgetKey & p_key, BasePanel * const p_panel )
 	{
 		_mapPanels[ p_key ] = p_panel;
 	}

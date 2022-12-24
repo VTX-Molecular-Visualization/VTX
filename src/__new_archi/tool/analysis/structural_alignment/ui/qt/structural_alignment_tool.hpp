@@ -18,6 +18,9 @@ namespace VTX::Tool::Analysis::StructuralAlignment::UI::QT
 		StructuralAlignmentTool();
 
 		void instantiateTool() override;
+
+	  private:
+		void _addButtonsInMainMenu() const;
 	};
 } // namespace VTX::Tool::Analysis::StructuralAlignment::UI::QT
 

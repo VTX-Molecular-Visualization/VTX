@@ -3,7 +3,7 @@
 
 #include "__new_archi/ui/qt/application_qt.hpp"
 #include "__new_archi/ui/qt/state/state_machine.hpp"
-#include "__new_archi/ui/qt/state/visualization_state.hpp"
+#include "__new_archi/ui/qt/state/visualization.hpp"
 #include "action/action_manager.hpp"
 #include "action/base_action.hpp"
 #include "define.hpp"

@@ -1,9 +1,9 @@
 #ifndef __VTX_UI_QT_WIDGET_RENDER_OVERLAY_VISUALIZATION_QUICK_ACCESS__
 #define __VTX_UI_QT_WIDGET_RENDER_OVERLAY_VISUALIZATION_QUICK_ACCESS__
 
+#include "__new_archi/ui/qt/controller/measurement_picker.hpp"
 #include "__new_archi/ui/qt/widget/base_manual_widget.hpp"
 #include "base_overlay.hpp"
-#include "controller/measurement_picker.hpp"
 #include "id.hpp"
 #include "selection/selection_enum.hpp"
 #include "ui/multi_data_field.hpp"
@@ -69,15 +69,17 @@ namespace VTX::UI::QT::Widget::Render::Overlay
 			MenuItemData( VTX::Selection::Granularity::MOLECULE, "Pick Molecule", ":/sprite/pick_molecule.png" )
 		};
 
-		inline static std::vector<MenuItemData<Controller::MeasurementPicker::Mode>> MEASUREMENT_MODE {
-			MenuItemData( Controller::MeasurementPicker::Mode::DISTANCE,
+		inline static std::vector<MenuItemData<QT::Controller::MeasurementPicker::Mode>> MEASUREMENT_MODE {
+			MenuItemData( QT::Controller::MeasurementPicker::Mode::DISTANCE,
 						  "Distance",
 						  ":/sprite/measurement_distance_icon.png" ),
 			// MenuItemData( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE,
 			//			  "Distance to cycle",
 			//			  ":/sprite/measurement_distance_to_cycle_icon.png" ),
-			MenuItemData( Controller::MeasurementPicker::Mode::ANGLE, "Angle", ":/sprite/measurement_angle_icon.png" ),
-			MenuItemData( Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE,
+			MenuItemData( QT::Controller::MeasurementPicker::Mode::ANGLE,
+						  "Angle",
+						  ":/sprite/measurement_angle_icon.png" ),
+			MenuItemData( QT::Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE,
 						  "Dihedral angle",
 						  ":/sprite/measurement_dihedral_angle_icon.png" ),
 		};

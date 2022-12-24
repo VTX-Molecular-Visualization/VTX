@@ -82,7 +82,7 @@ namespace VTX::UI::QT::Widget::MainMenu
 		_gridLayout->setColumnMinimumWidth( column, 64 );
 
 		_gridLayout->addWidget( &p_toolButton1, 0, column, 3, 1 );
-		_gridLayout->addWidget( &p_toolButton2, 1, column, 3, 1 );
+		_gridLayout->addWidget( &p_toolButton2, 3, column, 3, 1 );
 
 		_connectNavigationEventToButton( p_toolButton1 );
 		_connectNavigationEventToButton( p_toolButton2 );
@@ -102,8 +102,8 @@ namespace VTX::UI::QT::Widget::MainMenu
 		_gridLayout->setColumnMinimumWidth( column, 64 );
 
 		_gridLayout->addWidget( &p_toolButton1, 0, column, 2, 1 );
-		_gridLayout->addWidget( &p_toolButton2, 1, column, 2, 1 );
 		_gridLayout->addWidget( &p_toolButton2, 2, column, 2, 1 );
+		_gridLayout->addWidget( &p_toolButton2, 4, column, 2, 1 );
 
 		_connectNavigationEventToButton( p_toolButton1 );
 		_connectNavigationEventToButton( p_toolButton2 );

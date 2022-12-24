@@ -32,6 +32,7 @@ namespace VTX::UI::QT
 		void quit() override;
 
 		void goToState( const std::string &, void * const = nullptr );
+		void renderScene() const;
 
 		inline MainWindow &				   getMainWindow() { return *_mainWindow; }
 		inline const MainWindow &		   getMainWindow() const { return *_mainWindow; }
@@ -42,6 +43,7 @@ namespace VTX::UI::QT
 
 	  protected:
 		void _initUI( const std::vector<std::string> & p_args ) override;
+		void _postInit( const std::vector<std::string> & p_args ) override;
 
 		void _initQt();
 		void _instantiateMainWindow();

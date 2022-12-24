@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_STATE_VISUALIZATION__
 #define __VTX_UI_QT_STATE_VISUALIZATION__
 
+#include "__new_archi/ui/qt/controller/base_camera_controller.hpp"
 #include "__new_archi/ui/qt/state/base_state.hpp"
-#include "controller/base_camera_controller.hpp"
 
 namespace VTX::UI::QT::State
 {
@@ -16,9 +16,9 @@ namespace VTX::UI::QT::State
 
 		// inline const Controller::BaseCameraController * const getCurrentCameraController() const { return
 		// getItem<Controller::BaseCameraController>( _cameraController ); }
-		inline Controller::BaseCameraController * const getCurrentCameraController()
+		inline QT::Controller::BaseCameraController * const getCurrentCameraController()
 		{
-			return getController<Controller::BaseCameraController>( _cameraController );
+			return getController<QT::Controller::BaseCameraController>( _cameraController );
 		}
 
 		inline const ID::VTX_ID & getCurrentCameraControllerID() const { return _cameraController; }

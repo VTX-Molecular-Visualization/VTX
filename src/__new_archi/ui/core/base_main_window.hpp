@@ -25,11 +25,18 @@ namespace VTX::UI::Core
 
 		virtual MainMenu::MainMenuBar & getMainMenu() = 0;
 		virtual BasePanel *				getPanel( const WidgetKey & p_key );
+		virtual const BasePanel *		getPanel( const WidgetKey & p_key ) const;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<BasePanel, T>::value>>
 		T * getPanel( const WidgetKey & p_key )
 		{
-			return dynamic_cast<T *>( getPanel( p_key ) );
+			return static_cast<T *>( getPanel( p_key ) );
+		}
+
+		template<typename T, typename = std::enable_if<std::is_base_of<BasePanel, T>::value>>
+		const T * getPanel( const WidgetKey & p_key ) const
+		{
+			return static_cast<const T *>( getPanel( p_key ) );
 		}
 
 		void referencePanel( const WidgetKey & p_key, BasePanel * const p_panel );

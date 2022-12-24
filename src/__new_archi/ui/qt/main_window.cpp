@@ -1,17 +1,17 @@
 #include "main_window.hpp"
 #include "__new_archi/tool/analysis/rmsd/core/rmsd.hpp"
+#include "__new_archi/ui/default_tools/keys.hpp"
 #include "__new_archi/ui/qt/application_qt.hpp"
 #include "__new_archi/ui/qt/dialog.hpp"
-#include "__new_archi/ui/qt/state/visualization_state.hpp"
-#include "__new_archi/ui/qt/widget/render/render_widget.hpp"
+#include "__new_archi/ui/qt/state/visualization.hpp"
 #include "action/dev.hpp"
-#include "action/main.hpp"
 #include "action/selection.hpp"
 #include "action/setting.hpp"
 #include "controller/base_keyboard_controller.hpp"
 #include "controller/measurement_picker.hpp"
 #include "event/event_manager.hpp"
 #include "io/struct/scene_path_data.hpp"
+#include "src/action/main.hpp"
 #include "style.hpp"
 #include "util/analysis.hpp"
 #include "util/filesystem.hpp"
@@ -107,7 +107,7 @@ namespace VTX::UI::QT
 
 		// QT::Widget::Render::RenderWidget * const renderWidget
 		//	= WidgetFactory::get().instantiateWidget<QT::Widget::Render::RenderWidget>( this, "renderWidget" );
-		// referencePanel( QT::Widget::Render::RenderWidget::PANEL_KEY, renderWidget );
+		// referencePanel( DefaultTools::RENDER_WINDOW_KEY, renderWidget );
 
 		//_inspectorWidget
 		//	= WidgetFactory::get().instantiateWidget<Widget::Inspector::InspectorWidget>( this, "inspectorWidget" );
@@ -260,6 +260,15 @@ namespace VTX::UI::QT
 				 &QShortcut::activated,
 				 this,
 				 &MainWindow::_onShortcutSetMeasurementPicker );
+	}
+
+	QT::Widget::Render::RenderWidget * MainWindow::getRender()
+	{
+		return getPanel<QT::Widget::Render::RenderWidget>( DefaultTools::RENDER_WINDOW_KEY );
+	}
+	const QT::Widget::Render::RenderWidget * MainWindow::getRender() const
+	{
+		return getPanel<QT::Widget::Render::RenderWidget>( DefaultTools::RENDER_WINDOW_KEY );
 	}
 
 	void MainWindow::_onShortcutNew() const { UI::QT::Dialog::createNewSessionDialog(); }

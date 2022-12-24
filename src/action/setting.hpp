@@ -1,6 +1,7 @@
 #ifndef __VTX_ACTION_SETTING__
 #define __VTX_ACTION_SETTING__
 
+#include "action/action_manager.hpp"
 #include "base_action.hpp"
 #include "io/reader/serialized_object.hpp"
 #include "io/struct/image_export.hpp"
