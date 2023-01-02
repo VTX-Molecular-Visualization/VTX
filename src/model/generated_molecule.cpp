@@ -711,6 +711,13 @@ namespace VTX::Model
 
 		getCategory( chain.getCategoryEnum() ).addChain( chain.getIndex() );
 
+		if ( chain.hasCustomRepresentation()
+			 && p_fromMolecule.isDefaultRepresentation( *( chain.getRepresentation() ) ) )
+		{
+			VTX::Representation::RepresentationManager::get().instantiateCopy(
+				chain.getRepresentation(), chain, false, false );
+		}
+
 		p_fromMolecule.removeChain( p_index, false, false, false );
 
 		return chain;

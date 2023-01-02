@@ -111,9 +111,13 @@ namespace VTX::Representation
 		const bool								 p_recompute,
 		const bool								 p_notify )
 	{
-		InstantiatedRepresentation * const copy
-			= instantiateRepresentation( p_source->getLinkedRepresentation(), p_target, p_recompute, p_notify );
+		InstantiatedRepresentation * const copy = MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>(
+			p_source->getLinkedRepresentation() );
+
 		copy->copy( *p_source );
+
+		assignRepresentation( copy, p_target, p_recompute, p_notify );
+
 		copy->setTarget( &p_target );
 
 		return copy;
