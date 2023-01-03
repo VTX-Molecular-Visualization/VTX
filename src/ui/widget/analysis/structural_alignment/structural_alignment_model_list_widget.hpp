@@ -46,6 +46,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 			void setRMSD( const float p_rmsd, const size_t p_residueCount );
 			void resetRMSD();
 
+			bool blockSignals( const bool p_block ) override;
+
 		  protected:
 			void _callRemoveAction();
 			void _checkModelChange( Model::BaseModel * const p_model );
