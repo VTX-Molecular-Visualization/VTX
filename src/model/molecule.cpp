@@ -199,6 +199,14 @@ namespace VTX
 			_defaultRepresentationIDs.shrink_to_fit();
 		}
 
+		bool Molecule::isDefaultRepresentation(
+			const Representation::InstantiatedRepresentation & p_representation ) const
+		{
+			return std::find(
+					   _defaultRepresentationIDs.begin(), _defaultRepresentationIDs.end(), p_representation.getId() )
+				   != _defaultRepresentationIDs.end();
+		}
+
 		void Molecule::removeChildrenRepresentations()
 		{
 			for ( Model::Chain * const chain : _chains )

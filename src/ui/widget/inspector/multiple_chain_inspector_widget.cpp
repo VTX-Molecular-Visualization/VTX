@@ -6,9 +6,12 @@
 #include "model/molecule.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
+#include "ui/main_window.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget/custom_widget/folding_button.hpp"
+#include "ui/widget/inspector/inspector_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "vtx_app.hpp"
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
@@ -68,6 +71,22 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_setupSlots()
 	{
+		QMenu * const headerMenu = new QMenu( this );
+
+		QAction * inspectorToMoleculeAction = new QAction( "Molecule", this );
+		connect( inspectorToMoleculeAction, &QAction::triggered, this, &MultipleChainWidget::_setInspectorToMolecule );
+		headerMenu->addAction( inspectorToMoleculeAction );
+
+		QAction * inspectorToResidueAction = new QAction( "Residue", this );
+		connect( inspectorToResidueAction, &QAction::triggered, this, &MultipleChainWidget::_setInspectorToResidue );
+		headerMenu->addAction( inspectorToResidueAction );
+
+		QAction * inspectorToAtomAction = new QAction( "Atom", this );
+		connect( inspectorToAtomAction, &QAction::triggered, this, &MultipleChainWidget::_setInspectorToAtom );
+		headerMenu->addAction( inspectorToAtomAction );
+
+		_getHeader()->setMenu( headerMenu );
+
 		connect( _representationWidget,
 				 &Representation::RepresentationInspectorSection::onRepresentationPresetChange,
 				 this,
@@ -250,6 +269,28 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleChainWidget::_onApplyRepresentationToChildren() const
 	{
 		VTX_ACTION( new Action::Chain::RemoveChildrenRepresentations( getTargets() ) );
+	}
+
+	void MultipleChainWidget::_setInspectorToMolecule() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::MOLECULE );
+	}
+	void MultipleChainWidget::_setInspectorToResidue() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::RESIDUE );
+	}
+	void MultipleChainWidget::_setInspectorToAtom() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

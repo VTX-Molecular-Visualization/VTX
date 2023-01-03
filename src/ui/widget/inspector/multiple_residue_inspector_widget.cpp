@@ -7,9 +7,12 @@
 #include "model/molecule.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
+#include "ui/main_window.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "ui/widget/inspector/inspector_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/ui.hpp"
+#include "vtx_app.hpp"
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>
@@ -64,6 +67,23 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_setupSlots()
 	{
+		QMenu * const headerMenu = new QMenu( this );
+
+		QAction * inspectorToMoleculeAction = new QAction( "Molecule", this );
+		connect(
+			inspectorToMoleculeAction, &QAction::triggered, this, &MultipleResidueWidget::_setInspectorToMolecule );
+		headerMenu->addAction( inspectorToMoleculeAction );
+
+		QAction * inspectorToChainAction = new QAction( "Chain", this );
+		connect( inspectorToChainAction, &QAction::triggered, this, &MultipleResidueWidget::_setInspectorToChain );
+		headerMenu->addAction( inspectorToChainAction );
+
+		QAction * inspectorToAtomAction = new QAction( "Atom", this );
+		connect( inspectorToAtomAction, &QAction::triggered, this, &MultipleResidueWidget::_setInspectorToAtom );
+		headerMenu->addAction( inspectorToAtomAction );
+
+		_getHeader()->setMenu( headerMenu );
+
 		connect( _representationWidget,
 				 &Representation::RepresentationInspectorSection::onRepresentationPresetChange,
 				 this,
@@ -246,6 +266,28 @@ namespace VTX::UI::Widget::Inspector
 		}
 
 		_bondsLabel->setText( bondInfoStr );
+	}
+
+	void MultipleResidueWidget::_setInspectorToMolecule() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::MOLECULE );
+	}
+	void MultipleResidueWidget::_setInspectorToChain() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::CHAIN );
+	}
+	void MultipleResidueWidget::_setInspectorToAtom() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

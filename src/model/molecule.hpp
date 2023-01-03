@@ -220,6 +220,7 @@ namespace VTX
 			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
 			void clearDefaultRepresentations();
+			bool isDefaultRepresentation( const Representation::InstantiatedRepresentation & p_representation ) const;
 			void removeChildrenRepresentations();
 
 			void refreshStructure();

@@ -90,6 +90,9 @@ namespace VTX
 			void		 _callRepresentationChange( const bool p_callChangeOnParents = true );
 			virtual void _onRepresentationChange() {};
 
+			void _linkRepresentationToParent() const;
+			void _delinkRepresentationToParent() const;
+
 			bool _isResidueVisible( const Model::Residue & p_residue ) const;
 
 		  private:

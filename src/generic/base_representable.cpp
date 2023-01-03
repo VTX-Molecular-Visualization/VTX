@@ -26,9 +26,28 @@ namespace VTX
 													   Generic::BaseRepresentable * const p_parent,
 													   Model::Molecule * const			  p_molecule )
 		{
-			_model	  = p_model;
-			_parent	  = p_parent;
-			_molecule = p_molecule;
+			_model = p_model;
+			setParent( p_parent );
+			setRepresentableMolecule( p_molecule );
+		}
+
+		void BaseRepresentable::_linkRepresentationToParent() const
+		{
+			Generic::BaseRepresentable * parent = getParent();
+			while ( parent != nullptr )
+			{
+				parent->_subRepresentations.emplace( _representation );
+				parent = parent->getParent();
+			}
+		}
+		void BaseRepresentable::_delinkRepresentationToParent() const
+		{
+			Generic::BaseRepresentable * parent = getParent();
+			while ( parent != nullptr )
+			{
+				parent->_subRepresentations.erase( _representation );
+				parent = parent->getParent();
+			}
 		}
 
 		void BaseRepresentable::applyRepresentation( InstantiatedRepresentation * const p_representation,
@@ -52,24 +71,14 @@ namespace VTX
 			_representation = p_representation;
 			p_representation->setTarget( this );
 
-			Generic::BaseRepresentable * parent = getParent();
-			while ( parent != nullptr )
-			{
-				parent->_subRepresentations.emplace( p_representation );
-				parent = parent->getParent();
-			}
+			_linkRepresentationToParent();
 		}
 
 		void BaseRepresentable::removeRepresentation( const bool p_notify )
 		{
 			if ( _representation != nullptr )
 			{
-				Generic::BaseRepresentable * parent = getParent();
-				while ( parent != nullptr )
-				{
-					parent->_subRepresentations.erase( _representation );
-					parent = parent->getParent();
-				}
+				_delinkRepresentationToParent();
 
 				MVC::MvcManager::get().deleteModel( _representation );
 				_representation = nullptr;
@@ -81,7 +90,19 @@ namespace VTX
 
 		bool BaseRepresentable::hasParent() const { return _parent != nullptr; }
 
-		void BaseRepresentable::setParent( BaseRepresentable * const p_parent ) { _parent = p_parent; }
+		void BaseRepresentable::setParent( BaseRepresentable * const p_parent )
+		{
+			if ( _parent != p_parent && _parent != nullptr && _representation != nullptr )
+			{
+				_delinkRepresentationToParent();
+				_parent = p_parent;
+				_linkRepresentationToParent();
+			}
+			else
+			{
+				_parent = p_parent;
+			}
+		}
 
 		bool BaseRepresentable::hasCustomRepresentation() const { return _representation != nullptr; }
 
