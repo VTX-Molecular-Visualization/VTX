@@ -40,7 +40,7 @@ namespace VTX::UI::Widget::Inspector
 		Q_OBJECT
 		VTX_WIDGET
 
-	  private:
+	  public:
 		enum class INSPECTOR_TYPE : int
 		{
 			MOLECULE,
@@ -65,6 +65,8 @@ namespace VTX::UI::Widget::Inspector
 
 		bool isFreezed() const { return _isFreezed; }
 		void setFreezed( const bool p_freezed );
+
+		void forceInspector( const INSPECTOR_TYPE & p_type );
 
 	  protected:
 		InspectorWidget( QWidget * p_parent );

@@ -22,6 +22,9 @@ namespace VTX::UI::Widget::Inspector
 		VTX_WIDGET
 
 	  private:
+		static const int BOND_INFO_COUNT_MAX;
+
+	  private:
 		class MoleculeView
 		{
 		  public:
@@ -76,6 +79,10 @@ namespace VTX::UI::Widget::Inspector
 		virtual void _setupSlots() override;
 
 		void _endOfFrameRefresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
+
+		void _setInspectorToMolecule() const;
+		void _setInspectorToChain() const;
+		void _setInspectorToResidue() const;
 
 	  private:
 		InspectorSection *				 _transformSection = nullptr;

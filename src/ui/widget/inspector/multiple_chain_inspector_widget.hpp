@@ -33,6 +33,10 @@ namespace VTX::UI::Widget::Inspector
 		void _resetFieldStates( const SectionFlag & p_flag ) override;
 		void _endOfFrameRefresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
 
+		void _setInspectorToMolecule() const;
+		void _setInspectorToResidue() const;
+		void _setInspectorToAtom() const;
+
 	  private:
 		InspectorSectionVLayout * _representationSection = nullptr;
 		InspectorSectionVLayout * _infoSection			 = nullptr;

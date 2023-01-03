@@ -4,8 +4,11 @@
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "style.hpp"
+#include "ui/main_window.hpp"
+#include "ui/widget/inspector/inspector_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/ui.hpp"
+#include "vtx_app.hpp"
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
@@ -14,6 +17,8 @@
 
 namespace VTX::UI::Widget::Inspector
 {
+	const int MultipleAtomWidget::BOND_INFO_COUNT_MAX = 100;
+
 	MultipleAtomWidget::MoleculeView::MoleculeView( const Model::Molecule * p_molecule )
 	{
 		_view = MVC::MvcManager::get().instantiateView<View::CallbackView<const Model::Molecule, MultipleAtomWidget>>(
@@ -107,7 +112,24 @@ namespace VTX::UI::Widget::Inspector
 		blockSignals( oldBlockState );
 	}
 
-	void MultipleAtomWidget::_setupSlots() {};
+	void MultipleAtomWidget::_setupSlots()
+	{
+		QMenu * const headerMenu = new QMenu( this );
+
+		QAction * inspectorToMoleculeAction = new QAction( "Molecule", this );
+		connect( inspectorToMoleculeAction, &QAction::triggered, this, &MultipleAtomWidget::_setInspectorToMolecule );
+		headerMenu->addAction( inspectorToMoleculeAction );
+
+		QAction * inspectorToChainAction = new QAction( "Chain", this );
+		connect( inspectorToChainAction, &QAction::triggered, this, &MultipleAtomWidget::_setInspectorToChain );
+		headerMenu->addAction( inspectorToChainAction );
+
+		QAction * inspectorToResidueAction = new QAction( "Residue", this );
+		connect( inspectorToResidueAction, &QAction::triggered, this, &MultipleAtomWidget::_setInspectorToResidue );
+		headerMenu->addAction( inspectorToResidueAction );
+
+		_getHeader()->setMenu( headerMenu );
+	};
 
 	void MultipleAtomWidget::_endOfFrameRefresh( const SectionFlag & p_flag )
 	{
@@ -192,9 +214,15 @@ namespace VTX::UI::Widget::Inspector
 					{
 						pendingBondIDs.erase( bondIndex );
 						fullBonds.emplace( bond );
+
+						if ( fullBonds.size() >= MultipleAtomWidget::BOND_INFO_COUNT_MAX )
+							break;
 					}
 				}
 			}
+
+			if ( fullBonds.size() >= MultipleAtomWidget::BOND_INFO_COUNT_MAX )
+				break;
 		}
 
 		QString bondInfoStr;
@@ -231,5 +259,27 @@ namespace VTX::UI::Widget::Inspector
 	{
 		MultipleModelInspectorWidget::removeTarget( p_target );
 		_moleculeViewerContainer.removeViewOnMolecule( p_target->getMoleculePtr() );
+	}
+
+	void MultipleAtomWidget::_setInspectorToMolecule() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::MOLECULE );
+	}
+	void MultipleAtomWidget::_setInspectorToChain() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::CHAIN );
+	}
+	void MultipleAtomWidget::_setInspectorToResidue() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::RESIDUE );
 	}
 } // namespace VTX::UI::Widget::Inspector

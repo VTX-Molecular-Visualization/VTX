@@ -326,6 +326,150 @@ namespace VTX::UI::Widget::Inspector
 			_inspectorViewsData.clear();
 		}
 	}
+
+	void InspectorWidget::forceInspector( const INSPECTOR_TYPE & p_type )
+	{
+		clear();
+		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		switch ( p_type )
+		{
+		case INSPECTOR_TYPE::MOLECULE:
+		{
+			for ( const Model::ID & modelID : selectionModel.getItems() )
+			{
+				const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( modelID );
+				if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
+				{
+					Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+					_addTargetToInspector<MultipleMoleculeWidget>( p_type, &molecule );
+				}
+			}
+		}
+		break;
+		case INSPECTOR_TYPE::CHAIN:
+		{
+			for ( const Model::ID & modelID : selectionModel.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+				const Model::Selection::MapChainIds & moleculeSelection
+					= selectionModel.getMoleculesMap().at( modelID );
+
+				for ( const Model::Selection::PairChainIds & chainData : moleculeSelection )
+				{
+					Model::Chain * const chain = molecule.getChain( chainData.first );
+					_addTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::CHAIN, chain );
+				}
+			}
+		}
+		break;
+		case INSPECTOR_TYPE::RESIDUE:
+		{
+			for ( const Model::ID & modelID : selectionModel.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+				const Model::Selection::MapChainIds & moleculeSelection
+					= selectionModel.getMoleculesMap().at( modelID );
+
+				for ( const Model::Selection::PairChainIds & chainData : moleculeSelection )
+				{
+					const Model::Chain * const chain = molecule.getChain( chainData.first );
+
+					for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
+					{
+						Model::Residue * const residue = molecule.getResidue( residueData.first );
+						_addTargetToInspector<MultipleResidueWidget>( INSPECTOR_TYPE::RESIDUE, residue );
+					}
+				}
+			}
+		}
+		break;
+		case INSPECTOR_TYPE::ATOM:
+		{
+			for ( const Model::ID & modelID : selectionModel.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+				const Model::Selection::MapChainIds & moleculeSelection
+					= selectionModel.getMoleculesMap().at( modelID );
+
+				for ( const Model::Selection::PairChainIds & chainData : moleculeSelection )
+				{
+					const Model::Chain * const chain = molecule.getChain( chainData.first );
+
+					for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
+					{
+						const Model::Residue * const residue = molecule.getResidue( residueData.first );
+
+						for ( const uint & atomID : residueData.second )
+						{
+							Model::Atom * const atom = molecule.getAtom( atomID );
+							_addTargetToInspector<MultipleAtomWidget>( INSPECTOR_TYPE::ATOM, atom );
+						}
+					}
+				}
+			}
+		}
+		break;
+		case INSPECTOR_TYPE::VIEWPOINT:
+		{
+			for ( const Model::ID & modelID : selectionModel.getItems() )
+			{
+				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
+				_addTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, &viewpoint );
+			}
+		}
+		break;
+		case INSPECTOR_TYPE::MEASURE_DISTANCE:
+		{
+			for ( const Model::ID & modelID : selectionModel.getItems() )
+			{
+				Model::Measurement::Distance & distanceModel
+					= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+				_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
+																		 &distanceModel );
+			}
+		}
+		break;
+		case INSPECTOR_TYPE::MEASURE_ANGLE:
+		{
+			for ( const Model::ID & modelID : selectionModel.getItems() )
+			{
+				Model::Measurement::Angle & angleModel
+					= MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
+				_addTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, &angleModel );
+			}
+		}
+		break;
+		case INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE:
+		{
+			for ( const Model::ID & modelID : selectionModel.getItems() )
+			{
+				Model::Measurement::DihedralAngle & dihedralAngleModel
+					= MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
+				_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>( INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE,
+																			  &dihedralAngleModel );
+			}
+		}
+		break;
+		case INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE:
+		{
+			for ( const Model::ID & modelID : selectionModel.getItems() )
+			{
+				Model::Measurement::Distance & distanceModel
+					= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+				_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
+																		 &distanceModel );
+			}
+		}
+		break;
+		}
+
+		for ( InspectorItemWidget * inspector : _inspectors )
+		{
+			if ( inspector->isVisible() )
+				inspector->refresh();
+		}
+	}
+
 	void InspectorWidget::localize()
 	{
 		this->setWindowTitle( "Inspector" );

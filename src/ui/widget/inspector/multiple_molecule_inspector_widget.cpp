@@ -7,6 +7,7 @@
 #include "style.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget/custom_widget/folding_button.hpp"
+#include "ui/widget/inspector/inspector_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include <QBoxLayout>
 #include <QFont>
@@ -101,6 +102,22 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_setupSlots()
 	{
+		QMenu * const headerMenu = new QMenu( this );
+
+		QAction * inspectorToChainAction = new QAction( "Chain", this );
+		connect( inspectorToChainAction, &QAction::triggered, this, &MultipleMoleculeWidget::_setInspectorToChain );
+		headerMenu->addAction( inspectorToChainAction );
+
+		QAction * inspectorToResidueAction = new QAction( "Residue", this );
+		connect( inspectorToResidueAction, &QAction::triggered, this, &MultipleMoleculeWidget::_setInspectorToResidue );
+		headerMenu->addAction( inspectorToResidueAction );
+
+		QAction * inspectorToAtomAction = new QAction( "Atom", this );
+		connect( inspectorToAtomAction, &QAction::triggered, this, &MultipleMoleculeWidget::_setInspectorToAtom );
+		headerMenu->addAction( inspectorToAtomAction );
+
+		_getHeader()->setMenu( headerMenu );
+
 		connect( _transformWidget,
 				 &CustomWidget::TransformWidget::onValueChange,
 				 this,
@@ -393,6 +410,28 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleMoleculeWidget::_onMoleculeColorChange( const Color::Rgb & p_color ) const
 	{
 		VTX_ACTION( new Action::Molecule::ChangeColor( getTargets(), p_color ) );
+	}
+
+	void MultipleMoleculeWidget::_setInspectorToChain() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::CHAIN );
+	}
+	void MultipleMoleculeWidget::_setInspectorToResidue() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::RESIDUE );
+	}
+	void MultipleMoleculeWidget::_setInspectorToAtom() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );
 	}
 
 } // namespace VTX::UI::Widget::Inspector
