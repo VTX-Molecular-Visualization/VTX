@@ -147,7 +147,7 @@ namespace VTX
 								= VTX::Representation::RepresentationManager::get().instantiateRepresentation(
 									defaultRepresentation, *chain, false, false );
 
-							_defaultRepresentationIDs.emplace_back( defaultInstantiatedRepresentation->getId() );
+							_markRepresentationAsDefault( defaultInstantiatedRepresentation );
 						}
 					}
 					_defaultRepresentationIDs.shrink_to_fit();
@@ -162,6 +162,12 @@ namespace VTX
 				_buffer->setAtomIds( _bufferAtomIds );
 				_buffer->setBonds( _bufferBonds );
 			}
+		}
+
+		void Molecule::_markRepresentationAsDefault(
+			const Representation::InstantiatedRepresentation * const _instantiatedRepresentation )
+		{
+			_defaultRepresentationIDs.emplace_back( _instantiatedRepresentation->getId() );
 		}
 
 		bool Molecule::isEmpty()
