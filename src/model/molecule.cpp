@@ -357,6 +357,10 @@ namespace VTX
 			{
 				_bufferAtomVisibilities.resize( _atoms.size(), 1u );
 
+				const bool displayHydrogen = showHydrogen();
+				const bool displaySolvent  = showSolvent();
+				const bool displayIons	   = showIon();
+
 				for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 				{
 					const Atom * const atom = _atoms[ i ];
@@ -389,7 +393,15 @@ namespace VTX
 					{
 						_bufferAtomVisibilities[ i ] = 0u;
 					}
-					else if ( _showHydrogen == false && atom->getSymbol() == Atom::SYMBOL::A_H )
+					else if ( displaySolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					else if ( displayIons == false && atom->getType() == Atom::TYPE::ION )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					else if ( displayHydrogen == false && atom->getSymbol() == Atom::SYMBOL::A_H )
 					{
 						_bufferAtomVisibilities[ i ] = 0u;
 					}
