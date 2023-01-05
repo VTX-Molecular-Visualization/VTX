@@ -27,8 +27,13 @@ namespace VTX::Util
 
 		inline const std::string extension() const
 		{
+			std::string res = std::filesystem::path( _path ).extension().string();
+
 			// substring => skip the '.' of the extension
-			return std::filesystem::path( _path ).extension().string().substr( 1 );
+			if ( res.size() > 0 && res[ 0 ] == '.' )
+				res = res.substr( 1 );
+
+			return res;
 		}
 
 		inline const bool exists() const { return std::filesystem::exists( _path ); }
