@@ -35,7 +35,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::UI::QT
 				  .instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonSubmenuWidget>(
 					  &tooltab, "structuralAlignmentButton" );
 		structuralAlignmentButton->setData(
-			"Structural alignment", ":/sprite/structural_alignment_icon.png", Qt::Orientation::Horizontal );
+			"Structural\nalignment", ":/sprite/structural_alignment_icon.png", Qt::Orientation::Horizontal );
 
 		VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget * const structuralAlignmentAdvancedButton
 			= VTX::UI::QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
