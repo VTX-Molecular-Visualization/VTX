@@ -41,8 +41,6 @@ namespace VTX::UI::QT
 
 		_handleArgs( p_args );
 
-		VTX_ACTION( new VTX::Action::Main::OpenApi( "1aga" ) );
-
 		_returnCode = exec();
 	}
 
