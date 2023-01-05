@@ -10,6 +10,7 @@ namespace VTX::UI::Core::IO
 		ToolLayoutData layoutData;
 
 		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::DefaultTools::RENDER_WINDOW_KEY ) );
+		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::DefaultTools::SCENE_WINDOW_KEY ) );
 
 		layoutData			 = UI::Core::ToolLayoutData();
 		layoutData.tabName	 = "Tools";

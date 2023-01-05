@@ -2,6 +2,9 @@
 #define __VTX_UI_QT_MAIN_WINDOW__
 
 #include "__new_archi/ui/core/base_main_window.hpp"
+#include "__new_archi/ui/core/base_panel.hpp"
+#include "__new_archi/ui/core/define.hpp"
+#include "__new_archi/ui/qt/qt_panel.hpp"
 #include "__new_archi/ui/qt/widget/main_menu/main_menu_bar.hpp"
 #include "__new_archi/ui/qt/widget/render/render_widget.hpp"
 #include "ui/contextual_menu.hpp"
@@ -46,8 +49,10 @@ namespace VTX::UI::QT
 		void initWindowLayout();
 		void refreshWindowTitle();
 
-		QT::Widget::Render::RenderWidget *		 getRender();
-		const QT::Widget::Render::RenderWidget * getRender() const;
+		virtual void referencePanel( const Core::WidgetKey & p_key, Core::BasePanel * const p_panel ) override;
+
+		QT::Widget::Render::RenderWidget *			   getRender();
+		const QT::Widget::Render::RenderWidget * const getRender() const;
 
 		inline bool isOpenGLValid() const { return getRender()->isOpenGLValid(); }
 		inline void updateRender() const { getRender()->updateRender(); }
@@ -74,6 +79,16 @@ namespace VTX::UI::QT
 		void saveLayout() const;
 		void deleteLayoutSaveFile() const;
 		void restoreDefaultLayout();
+
+		void addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
+									  Qt::DockWidgetArea  p_area,
+									  Qt::Orientation	  p_orientation,
+									  const bool		  p_visible = true );
+		void addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
+									  QDockWidget * const p_neighbour,
+									  Qt::Orientation	  p_orientation,
+									  const bool		  p_visible );
+		void addDockWidgetAsFloating( QDockWidget * const p_dockWidget, const QSize & p_size, const bool p_visible );
 
 		QWidget & getWidget( const ID::VTX_ID & p_winId ) const;
 		template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
@@ -125,15 +140,6 @@ namespace VTX::UI::QT
 		void _loadStyleSheet( const char * p_stylesheetPath );
 		void _setupSlots();
 		void _restoreDockWidget( QDockWidget * const p_dockWidget );
-		void _addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
-									   Qt::DockWidgetArea  p_area,
-									   Qt::Orientation	   p_orientation,
-									   const bool		   p_visible = true );
-		void _addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
-									   QDockWidget * const p_neighbour,
-									   Qt::Orientation	   p_orientation,
-									   const bool		   p_visible );
-		void _addDockWidgetAsFloating( QDockWidget * const p_dockWidget, const QSize & p_size, const bool p_visible );
 
 		// Shortcuts.
 		void _onShortcutNew() const;

@@ -26,7 +26,7 @@
 
 namespace VTX::UI::QT::Widget::Render
 {
-	RenderWidget::RenderWidget( QWidget * p_parent ) : Core::BasePanel(), BaseManualWidget<QWidget>( p_parent )
+	RenderWidget::RenderWidget( QWidget * p_parent ) : QtPanel(), BaseManualWidget<QWidget>( p_parent )
 	{
 		_registerEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGED );
 		_registerEvent( Event::Global::LABEL_ADDED );

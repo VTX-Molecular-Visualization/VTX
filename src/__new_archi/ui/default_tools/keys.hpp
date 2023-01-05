@@ -6,6 +6,7 @@
 namespace VTX::UI::DefaultTools
 {
 	inline static const VTX::UI::Core::ToolIdentifier RENDER_WINDOW_KEY = "VTX_RenderWindow";
+	inline static const VTX::UI::Core::ToolIdentifier SCENE_WINDOW_KEY	= "VTX_SceneWindow";
 } // namespace VTX::UI::DefaultTools
 
 #endif

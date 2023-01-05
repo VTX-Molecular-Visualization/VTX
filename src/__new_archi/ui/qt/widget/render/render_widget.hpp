@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_WIDGET_RENDER__
 #define __VTX_UI_QT_WIDGET_RENDER__
 
-#include "__new_archi/ui/core/base_panel.hpp"
 #include "__new_archi/ui/core/define.hpp"
+#include "__new_archi/ui/qt/qt_panel.hpp"
 #include "__new_archi/ui/qt/widget/base_manual_widget.hpp"
 #include "__new_archi/ui/qt/widget/render/base_integrated_widget.hpp"
 #include "__new_archi/ui/qt/widget/render/opengl_widget.hpp"
@@ -21,7 +21,7 @@
 namespace VTX::UI::QT::Widget::Render
 {
 	class RenderWidget :
-		public Core::BasePanel,
+		public QtPanel,
 		public QT::Widget::BaseManualWidget<QWidget>,
 		public Event::BaseEventFirererInput
 	{
@@ -32,6 +32,8 @@ namespace VTX::UI::QT::Widget::Render
 	  public:
 		~RenderWidget();
 		void localize() override;
+
+		PANEL_TYPE getPanelType() const override { return PANEL_TYPE::CENTRAL_WIDGET; };
 
 		inline bool isOpenGLValid() const { return _openGLWidget->isValid(); }
 		void		updateRender() const;

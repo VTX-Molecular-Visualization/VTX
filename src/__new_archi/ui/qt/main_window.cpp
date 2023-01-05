@@ -5,13 +5,15 @@
 #include "__new_archi/ui/qt/dialog.hpp"
 #include "__new_archi/ui/qt/state/visualization.hpp"
 #include "action/dev.hpp"
-#include "action/selection.hpp"
 #include "action/setting.hpp"
 #include "controller/base_keyboard_controller.hpp"
 #include "controller/measurement_picker.hpp"
 #include "event/event_manager.hpp"
 #include "io/struct/scene_path_data.hpp"
+#include "model/selection.hpp"
+#include "selection/selection_manager.hpp"
 #include "src/action/main.hpp"
+#include "src/action/selection.hpp"
 #include "style.hpp"
 #include "util/analysis.hpp"
 #include "util/filesystem.hpp"
@@ -262,11 +264,24 @@ namespace VTX::UI::QT
 				 &MainWindow::_onShortcutSetMeasurementPicker );
 	}
 
+	void MainWindow::referencePanel( const Core::WidgetKey & p_key, Core::BasePanel * const p_panel )
+	{
+		BaseMainWindow::referencePanel( p_key, p_panel );
+
+		QtPanel * const qtPanel = static_cast<QtPanel *>( p_panel );
+
+		if ( qtPanel->getPanelType() == QtPanel::PANEL_TYPE::DOCK_WIDGET )
+		{
+			QtDockablePanel * const dockPanel = dynamic_cast<QtDockablePanel *>( qtPanel );
+			connect( dockPanel, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+		}
+	}
+
 	QT::Widget::Render::RenderWidget * MainWindow::getRender()
 	{
 		return getPanel<QT::Widget::Render::RenderWidget>( DefaultTools::RENDER_WINDOW_KEY );
 	}
-	const QT::Widget::Render::RenderWidget * MainWindow::getRender() const
+	const QT::Widget::Render::RenderWidget * const MainWindow::getRender() const
 	{
 		return getPanel<QT::Widget::Render::RenderWidget>( DefaultTools::RENDER_WINDOW_KEY );
 	}
@@ -293,8 +308,8 @@ namespace VTX::UI::QT
 	{
 		if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 		{
-			VTX_ACTION(
-				new VTX::Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
+			VTX_ACTION( new VTX::Action::Selection::ClearSelection(
+				VTX::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 	void MainWindow::_onShortcutRestoreLayout() const { VTX_ACTION( new VTX::Action::Setting::RestoreLayout() ); }
@@ -376,16 +391,48 @@ namespace VTX::UI::QT
 		//_restoreDockWidget( _consoleWidget );
 		//_restoreDockWidget( _settingWidget );
 		//_restoreDockWidget( _structuralAlignmentWidget );
+		for ( const std::pair<Core::WidgetKey, Core::BasePanel *> & panel : _getPanelMap() )
+		{
+			QtPanel * const qtPanel = static_cast<QtPanel *>( panel.second );
 
-		//_addDockWidgetAsTabified( _sceneWidget, Qt::DockWidgetArea::LeftDockWidgetArea, Qt::Orientation::Horizontal );
-		//_addDockWidgetAsTabified( _sequenceWidget, Qt::DockWidgetArea::TopDockWidgetArea, Qt::Orientation::Horizontal
+			if ( qtPanel->getPanelType() == QtPanel::PANEL_TYPE::DOCK_WIDGET )
+			{
+				_restoreDockWidget( dynamic_cast<QtDockablePanel *>( qtPanel ) );
+			}
+		}
+
+		for ( const std::pair<Core::WidgetKey, Core::BasePanel *> & panel : _getPanelMap() )
+		{
+			QtPanel * const qtPanel = static_cast<QtPanel *>( panel.second );
+
+			if ( qtPanel->getPanelType() == QtPanel::PANEL_TYPE::DOCK_WIDGET )
+			{
+				QtDockablePanel * const dockablePanel = dynamic_cast<QtDockablePanel *>( qtPanel );
+
+				// const QtDockablePanel::LayoutData & layoutData = dockablePanel->getDefaultLayout();
+				const QtDockablePanel::LayoutData layoutData = QtDockablePanel::LayoutData();
+
+				if ( layoutData.floating )
+				{
+					addDockWidgetAsFloating( dockablePanel, layoutData.size, layoutData.visible );
+				}
+				else
+				{
+					addDockWidgetAsTabified(
+						dockablePanel, layoutData.widgetArea, layoutData.orientation, layoutData.visible );
+				}
+			}
+		}
+
+		// addDockWidgetAsTabified( _sceneWidget, Qt::DockWidgetArea::LeftDockWidgetArea, Qt::Orientation::Horizontal );
+		// addDockWidgetAsTabified( _sequenceWidget, Qt::DockWidgetArea::TopDockWidgetArea, Qt::Orientation::Horizontal
 		//);
 		//// !V0.1
-		//// _addDockWidgetAsTabified( _selectionWidget, _sceneWidget, Qt::Orientation::Vertical, false );
-		//_addDockWidgetAsTabified( _sequenceWidget, Qt::DockWidgetArea::TopDockWidgetArea, Qt::Orientation::Horizontal
-		//); _addDockWidgetAsTabified( 	_inspectorWidget, Qt::DockWidgetArea::RightDockWidgetArea,
-		// Qt::Orientation::Horizontal ); _addDockWidgetAsTabified( _consoleWidget,
-		// Qt::DockWidgetArea::BottomDockWidgetArea, Qt::Orientation::Vertical );
+		//// addDockWidgetAsTabified( _selectionWidget, _sceneWidget, Qt::Orientation::Vertical, false );
+		// addDockWidgetAsTabified( _sequenceWidget, Qt::DockWidgetArea::TopDockWidgetArea, Qt::Orientation::Horizontal
+		//); addDockWidgetAsTabified( 	_inspectorWidget, Qt::DockWidgetArea::RightDockWidgetArea,
+		//  Qt::Orientation::Horizontal ); addDockWidgetAsTabified( _consoleWidget,
+		//  Qt::DockWidgetArea::BottomDockWidgetArea, Qt::Orientation::Vertical );
 
 		//_addDockWidgetAsFloating( _settingWidget, Style::SETTINGS_PREFERRED_SIZE, false );
 		//_addDockWidgetAsFloating( _structuralAlignmentWidget, Style::STRUCTURAL_ALIGNMENT_PREFERRED_SIZE, false );
@@ -404,10 +451,10 @@ namespace VTX::UI::QT
 		}
 	}
 
-	void MainWindow::_addDockWidgetAsTabified( QDockWidget * const		p_dockWidget,
-											   const Qt::DockWidgetArea p_area,
-											   const Qt::Orientation	p_orientation,
-											   const bool				p_visible )
+	void MainWindow::addDockWidgetAsTabified( QDockWidget * const	   p_dockWidget,
+											  const Qt::DockWidgetArea p_area,
+											  const Qt::Orientation	   p_orientation,
+											  const bool			   p_visible )
 	{
 		addDockWidget( p_area, p_dockWidget, p_orientation );
 
@@ -417,10 +464,10 @@ namespace VTX::UI::QT
 			p_dockWidget->hide();
 	}
 
-	void MainWindow::_addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
-											   QDockWidget * const p_neighbour,
-											   Qt::Orientation	   p_orientation,
-											   const bool		   p_visible )
+	void MainWindow::addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
+											  QDockWidget * const p_neighbour,
+											  Qt::Orientation	  p_orientation,
+											  const bool		  p_visible )
 	{
 		splitDockWidget( p_neighbour, p_dockWidget, p_orientation );
 
@@ -429,9 +476,9 @@ namespace VTX::UI::QT
 		else if ( p_dockWidget->isVisible() && !p_visible )
 			p_dockWidget->hide();
 	}
-	void MainWindow::_addDockWidgetAsFloating( QDockWidget * const p_dockWidget,
-											   const QSize &	   p_size,
-											   const bool		   p_visible )
+	void MainWindow::addDockWidgetAsFloating( QDockWidget * const p_dockWidget,
+											  const QSize &		  p_size,
+											  const bool		  p_visible )
 	{
 		// Create an emplacement for the widget before setting it floating to prevent warning
 		// TODO check https://bugreports.qt.io/browse/QTBUG-88157 to remove useless tabifyDockWidget
@@ -749,7 +796,7 @@ namespace VTX::UI::QT
 	{
 		if ( p_widget->widget()->size().height() == QT_UNKNOWN_WIDGET_DEFAULT_LAYOUT_HEIGHT )
 		{
-			_addDockWidgetAsFloating( p_widget, p_defaultSize, p_widget->isVisible() );
+			addDockWidgetAsFloating( p_widget, p_defaultSize, p_widget->isVisible() );
 		}
 	}
 

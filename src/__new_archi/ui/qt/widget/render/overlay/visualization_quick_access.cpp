@@ -1,4 +1,5 @@
 #include "visualization_quick_access.hpp"
+#include "__new_archi/ui/qt/action/selection.hpp"
 #include "__new_archi/ui/qt/application_qt.hpp"
 #include "__new_archi/ui/qt/state/visualization.hpp"
 #include "action/action_manager.hpp"
@@ -196,7 +197,7 @@ namespace VTX::UI::QT::Widget::Render::Overlay
 	void VisualizationQuickAccess::_orientAction()
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Selection::Orient( selection ) );
+		VTX_ACTION( new QT::Action::Selection::Orient( selection ) );
 	}
 	void VisualizationQuickAccess::_changeCameraControllerAction( const QAction * const p_action )
 	{
@@ -210,7 +211,7 @@ namespace VTX::UI::QT::Widget::Render::Overlay
 	void VisualizationQuickAccess::_changePickerControllerAction( const QAction * const p_action )
 	{
 		const int controllerID = p_action->property( PICKER_CONTROLLER_PROPERTY_NAME ).toInt();
-		VTX_ACTION( new Action::Main::ChangePicker( PICKER_CONTROLLERS[ controllerID ].data ) );
+		VTX_ACTION( new VTX::Action::Main::ChangePicker( PICKER_CONTROLLERS[ controllerID ].data ) );
 	}
 
 	void VisualizationQuickAccess::_changeSelectionGranularityAction( const QAction * const p_action )
@@ -218,14 +219,14 @@ namespace VTX::UI::QT::Widget::Render::Overlay
 		const VTX::Selection::Granularity granularity
 			= VTX::Selection::Granularity( p_action->property( GRANULARITY_PROPERTY_NAME ).toInt() );
 
-		VTX_ACTION( new Action::Setting::ChangeSelectionGranularity( granularity ) );
+		VTX_ACTION( new VTX::Action::Setting::ChangeSelectionGranularity( granularity ) );
 	}
 	void VisualizationQuickAccess::_changeMeasurementModeAction( const QAction * const p_action )
 	{
 		const Controller::MeasurementPicker::Mode measurementMode
 			= Controller::MeasurementPicker::Mode( p_action->property( MEASUREMENT_MODE_PROPERTY_NAME ).toInt() );
 
-		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( measurementMode ) ) );
+		VTX_ACTION( new VTX::Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( measurementMode ) ) );
 	}
 
 } // namespace VTX::UI::QT::Widget::Render::Overlay

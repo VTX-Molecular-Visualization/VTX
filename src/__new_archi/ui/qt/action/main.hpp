@@ -15,35 +15,22 @@ namespace VTX::UI::QT::Action::Main
 	class Quit : public VTX::Action::BaseAction
 	{
 	  public:
-		virtual void execute() override { QT_APP()->closeAllWindows(); };
+		explicit Quit() {}
+		virtual void execute() override;
 	};
 
 	class ToggleCameraController : public VTX::Action::BaseAction
 	{
 	  public:
 		explicit ToggleCameraController() {}
-
-		virtual void execute() override
-		{
-			QT_APP()
-				->getStateMachine()
-				.getState<QT::State::Visualization>( VTX::ID::State::VISUALIZATION )
-				->toggleCameraController();
-		};
+		virtual void execute() override;
 	};
 
 	class ChangeCameraController : public VTX::Action::BaseAction
 	{
 	  public:
 		explicit ChangeCameraController( const ID::VTX_ID & p_controllerId ) : _id( p_controllerId ) {}
-
-		virtual void execute() override
-		{
-			QT_APP()
-				->getStateMachine()
-				.getState<QT::State::Visualization>( VTX::ID::State::VISUALIZATION )
-				->setCameraController( _id );
-		};
+		virtual void execute() override;
 
 	  private:
 		const ID::VTX_ID _id;
@@ -53,16 +40,7 @@ namespace VTX::UI::QT::Action::Main
 	{
 	  public:
 		explicit ResetCameraController() {}
-
-		virtual void execute() override
-		{
-			QT_APP()
-				->getStateMachine()
-				.getState<QT::State::Visualization>( VTX::ID::State::VISUALIZATION )
-				->resetCameraController();
-		};
-
-	  private:
+		virtual void execute() override;
 	};
 } // namespace VTX::UI::QT::Action::Main
 #endif

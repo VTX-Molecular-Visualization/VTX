@@ -23,7 +23,11 @@ namespace VTX::Renderer::GL
 			DYNAMIC_COPY = GL_DYNAMIC_COPY
 		};
 		BufferData() = default;
-		~BufferData() { _gl->glDeleteBuffers( 1, &_id ); }
+		~BufferData()
+		{
+			if ( _gl != nullptr )
+				_gl->glDeleteBuffers( 1, &_id );
+		}
 
 		inline void create()
 		{

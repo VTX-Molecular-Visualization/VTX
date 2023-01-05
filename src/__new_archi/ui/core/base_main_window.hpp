@@ -39,7 +39,11 @@ namespace VTX::UI::Core
 			return static_cast<const T *>( getPanel( p_key ) );
 		}
 
-		void referencePanel( const WidgetKey & p_key, BasePanel * const p_panel );
+		virtual void referencePanel( const WidgetKey & p_key, BasePanel * const p_panel );
+
+	  protected:
+		std::map<WidgetKey, BasePanel *> &		 _getPanelMap() { return _mapPanels; };
+		const std::map<WidgetKey, BasePanel *> & _getPanelMap() const { return _mapPanels; };
 
 	  private:
 		std::map<WidgetKey, BasePanel *> _mapPanels = std::map<WidgetKey, BasePanel *>();
