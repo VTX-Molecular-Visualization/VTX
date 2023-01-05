@@ -55,12 +55,12 @@ namespace VTX::UI::Widget::Inspector
 		void _onRepresentationChange( const Model::Representation::InstantiatedRepresentation & p_representation,
 									  const Model::Representation::MEMBER_FLAG &				p_flag );
 		void _onRepresentationColorChange( const Model::Representation::InstantiatedRepresentation & p_representation,
-										   const Color::Rgb &										 p_color,
+										   const Color::Rgba &										 p_color,
 										   const bool												 p_ssColor );
 		void _onRevertRepresentation() const;
 		void _onApplyRepresentationToChildren() const;
 
-		void _changeMoleculesColor( const Color::Rgb & p_color ) const;
+		void _changeMoleculesColor( const Color::Rgba & p_color ) const;
 	};
 } // namespace VTX::UI::Widget::Inspector
 

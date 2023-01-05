@@ -1,6 +1,7 @@
 #include "main_window.hpp"
 #include "action/dev.hpp"
 #include "action/main.hpp"
+#include "action/molecule.hpp"
 #include "action/selection.hpp"
 #include "analysis/rmsd.hpp"
 #include "controller/base_keyboard_controller.hpp"
@@ -222,6 +223,10 @@ namespace VTX::UI
 				 &QShortcut::activated,
 				 this,
 				 &MainWindow::_onShortcutActiveRenderer );
+		connect( new QShortcut( QKeySequence( tr( "F10" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutRefreshSES );
 #endif
 		connect( new QShortcut( QKeySequence( tr( "Del" ) ), this ),
 				 &QShortcut::activated,
@@ -297,6 +302,12 @@ namespace VTX::UI
 	void MainWindow::_onShortcutActiveRenderer() const
 	{
 		VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
+	}
+
+	void MainWindow::_onShortcutRefreshSES() const
+	{
+		VTX_ACTION( new Action::Molecule::RefreshSolventExcludedSurface(
+			*( ( *( VTXApp::get().getScene().getMolecules().begin() ) ).first ) ) );
 	}
 
 	void MainWindow::_onShortcutDelete() const

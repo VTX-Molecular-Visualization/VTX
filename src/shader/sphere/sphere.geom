@@ -8,7 +8,7 @@ uniform mat4 u_projMatrix;
 in VsOut
 {
 	flat vec3  viewSpherePos; // Sphere position in view space.
-	flat vec3  sphereColor;
+	flat vec4  sphereColor;
 	flat float sphereRadius;
 	flat uint  sphereVisible;
 	flat uint  sphereSelected;
@@ -23,7 +23,7 @@ out GsOut
 {
 	smooth vec3 viewImpPos;	   // Impostor position in view space.
 	flat vec3	viewSpherePos; // Sphere position in view space.
-	flat vec3	sphereColor;
+	flat vec4	sphereColor;
 	flat float	sphereRadius;
 	flat float	dotViewSpherePos;
 	flat uint	sphereSelected;

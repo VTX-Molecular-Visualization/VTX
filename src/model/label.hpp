@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_LABEL__
 #define __VTX_MODEL_LABEL__
 
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "define.hpp"
 #include "generic/base_scene_item.hpp"
 #include "id.hpp"
@@ -29,8 +29,8 @@ namespace VTX::Model
 
 		virtual Vec2f getSize() const;
 
-		const Color::Rgb & getColor() const { return _color; }
-		void			   setColor( const Color::Rgb & p_color );
+		const Color::Rgba & getColor() const { return _color; }
+		void				setColor( const Color::Rgba & p_color );
 
 	  protected:
 		Label();
@@ -47,7 +47,7 @@ namespace VTX::Model
 	  private:
 		std::string _name		= "";
 		bool		_autoNaming = false;
-		Color::Rgb	_color;
+		Color::Rgba _color;
 		Vec3f		_worldPosition = VEC3F_ZERO;
 
 		Object3D::Helper::AABB _aabb = Object3D::Helper::AABB();

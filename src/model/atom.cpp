@@ -437,7 +437,7 @@ namespace VTX
 		};
 
 		// CPK by http://jmol.sourceforge.net/jscolors/#Jmolcolors
-		const Color::Rgb Atom::SYMBOL_COLOR[ (int)SYMBOL::COUNT ] = {
+		const Color::Rgba Atom::SYMBOL_COLOR[ (int)SYMBOL::COUNT ] = {
 			{ 250, 22, 145 },  // UNKNOWN		= 0,
 			{ 255, 255, 255 }, // H				= 1,
 			{ 217, 255, 255 }, // HE			= 2,

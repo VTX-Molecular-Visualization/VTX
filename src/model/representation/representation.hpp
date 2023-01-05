@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_REPRESENTATION__
 #define __VTX_MODEL_REPRESENTATION__
 
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "generic/base_colorable.hpp"
 #include "model/base_model.hpp"
 #include "representation_data.hpp"
@@ -18,9 +18,9 @@ namespace VTX::Model::Representation
 		const std::string & getName() const { return _name; };
 		void				setName( const std::string & p_name );
 
-		const Color::Rgb & getColor() const { return _color; }
-		Color::Rgb &	   getColor() { return _color; }
-		void			   setColor( const Color::Rgb & p_color );
+		const Color::Rgba & getColor() const { return _color; }
+		Color::Rgba &		getColor() { return _color; }
+		void				setColor( const Color::Rgba & p_color );
 
 		const bool hasQuickAccess() const { return _quickAccess; };
 		void	   setQuickAccess( const bool p_quickAccess );
@@ -41,7 +41,7 @@ namespace VTX::Model::Representation
 
 	  private:
 		std::string _name;
-		Color::Rgb	_color;
+		Color::Rgba _color;
 		bool		_quickAccess;
 
 		RepresentationData * _data = nullptr;

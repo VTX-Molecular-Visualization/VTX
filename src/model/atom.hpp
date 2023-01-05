@@ -156,7 +156,7 @@ namespace VTX
 			static const std::string SYMBOL_STR[ (int)SYMBOL::COUNT ];
 			static const std::string SYMBOL_NAME[ (int)SYMBOL::COUNT ];
 			static const float		 SYMBOL_VDW_RADIUS[ (int)SYMBOL::COUNT ];
-			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
+			static const Color::Rgba SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
 
 			inline const uint	   getIndex() const { return _index; };
 			inline void			   setIndex( const uint p_index ) { _index = p_index; };
@@ -165,7 +165,7 @@ namespace VTX
 			inline Residue * const getResiduePtr() const { return _residuePtr; }
 			inline void			   setResiduePtr( Residue * const p_residue ) { _residuePtr = p_residue; }
 
-			inline const Color::Rgb & getColor() const { return SYMBOL_COLOR[ int( _symbol ) ]; };
+			inline const Color::Rgba & getColor() const { return SYMBOL_COLOR[ int( _symbol ) ]; };
 
 			inline const SYMBOL		   getSymbol() const { return _symbol; };
 			inline const std::string & getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; };

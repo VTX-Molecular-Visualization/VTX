@@ -347,7 +347,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_onRepresentationColorChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
-		const Color::Rgb &										  p_color,
+		const Color::Rgba &										  p_color,
 		const bool												  p_ssColor ) const
 	{
 		if ( p_ssColor )
@@ -407,7 +407,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		VTX_ACTION( new Action::Molecule::RemoveChildrenRepresentations( getTargets() ) );
 	}
-	void MultipleMoleculeWidget::_onMoleculeColorChange( const Color::Rgb & p_color ) const
+	void MultipleMoleculeWidget::_onMoleculeColorChange( const Color::Rgba & p_color ) const
 	{
 		VTX_ACTION( new Action::Molecule::ChangeColor( getTargets(), p_color ) );
 	}

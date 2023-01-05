@@ -1,5 +1,5 @@
 #include "lib_assimp.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "define.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"

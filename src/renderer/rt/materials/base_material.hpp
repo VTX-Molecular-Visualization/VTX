@@ -8,7 +8,7 @@
 #include "../intersection.hpp"
 #include "../lights/light_sample.hpp"
 #include "../ray.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 
 namespace VTX
 {
@@ -20,11 +20,11 @@ namespace VTX
 			BaseMaterial()			= default;
 			virtual ~BaseMaterial() = default;
 
-			virtual Color::Rgb getColor() const = 0;
+			virtual Color::Rgba getColor() const = 0;
 
-			virtual Color::Rgb shade( const Ray &		   p_ray,
-									  const Intersection & p_hit,
-									  const LightSample &  p_lightDirSample ) const
+			virtual Color::Rgba shade( const Ray &			p_ray,
+									   const Intersection & p_hit,
+									   const LightSample &	p_lightDirSample ) const
 				= 0;
 		};
 	} // namespace Renderer

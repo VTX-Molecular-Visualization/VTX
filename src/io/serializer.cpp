@@ -275,7 +275,7 @@ namespace VTX::IO
 		};
 	}
 
-	nlohmann::json Serializer::serialize( const Color::Rgb & p_color ) const
+	nlohmann::json Serializer::serialize( const Color::Rgba & p_color ) const
 	{
 		return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() } };
 	}
@@ -555,7 +555,7 @@ namespace VTX::IO
 
 		if ( p_json.contains( "COLOR" ) )
 		{
-			Color::Rgb color;
+			Color::Rgba color;
 			deserialize( p_json.at( "COLOR" ), color );
 
 			p_molecule.setColor( color );
@@ -685,7 +685,7 @@ namespace VTX::IO
 		}
 		if ( p_json.contains( "COLOR" ) )
 		{
-			Color::Rgb color;
+			Color::Rgba color;
 			deserialize( p_json.at( "COLOR" ), color );
 			p_representation.setColor( color );
 		}
@@ -706,7 +706,7 @@ namespace VTX::IO
 
 		if ( p_json.contains( "COLOR" ) )
 		{
-			Color::Rgb color;
+			Color::Rgba color;
 			deserialize( p_json.at( "COLOR" ), color );
 			p_distanceLabel.setColor( color );
 		}
@@ -737,7 +737,7 @@ namespace VTX::IO
 
 		if ( p_json.contains( "COLOR" ) )
 		{
-			Color::Rgb color;
+			Color::Rgba color;
 			deserialize( p_json.at( "COLOR" ), color );
 			p_angleLabel.setColor( color );
 		}
@@ -769,7 +769,7 @@ namespace VTX::IO
 
 		if ( p_json.contains( "COLOR" ) )
 		{
-			Color::Rgb color;
+			Color::Rgba color;
 			deserialize( p_json.at( "COLOR" ), color );
 			p_angleLabel.setColor( color );
 		}
@@ -794,7 +794,7 @@ namespace VTX::IO
 								  const std::tuple<uint, uint, uint> &	  p_version,
 								  Model::Representation::Representation & p_representation ) const
 	{
-		Color::Rgb color;
+		Color::Rgba color;
 		if ( p_json.contains( "COLOR" ) )
 		{
 			deserialize( p_json.at( "COLOR" ), color );
@@ -833,7 +833,7 @@ namespace VTX::IO
 								  const std::tuple<uint, uint, uint> &	p_version,
 								  Model::Renderer::RenderEffectPreset & p_preset ) const
 	{
-		Color::Rgb color;
+		Color::Rgba color;
 
 		p_preset.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
 		p_preset.setShading( _getEnum<Renderer::SHADING>( p_json, "SHADING", Setting::SHADING_DEFAULT ) );
@@ -881,7 +881,7 @@ namespace VTX::IO
 			_get<bool>( p_json, "CAMERA_PERSPECTIVE_PROJECTION", Setting::CAMERA_PERSPECTIVE_DEFAULT ) );
 	}
 
-	void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgb & p_color ) const
+	void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgba & p_color ) const
 	{
 		p_color.setR( _get<float>( p_json, "R" ) );
 		p_color.setG( _get<float>( p_json, "G" ) );

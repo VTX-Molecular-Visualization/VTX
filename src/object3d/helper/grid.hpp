@@ -49,8 +49,8 @@ namespace VTX::Object3D::Helper
 			VOXEL_MAX = 1
 		};
 
-		Renderer::GL::BufferData _vbo  = Renderer::GL::BufferData();
-		uint					 _size = 0;
+		Renderer::GL::Buffer _vbo  = Renderer::GL::Buffer();
+		uint				 _size = 0;
 
 		Renderer::GL::Program * _program = nullptr;
 	};

@@ -6,9 +6,23 @@
 
 namespace VTX::Renderer::GL
 {
-	class BufferStorage : public Generic::BaseOpenGL
+	class Buffer : public Generic::BaseOpenGL
 	{
 	  public:
+		// See http://docs.gl/gl4/glBufferData.
+		enum class Usage : GLenum
+		{
+			STREAM_DRAW	 = GL_STREAM_DRAW,
+			STREAM_READ	 = GL_STREAM_READ,
+			STREAM_COPY	 = GL_STREAM_COPY,
+			STATIC_DRAW	 = GL_STATIC_DRAW,
+			STATIC_READ	 = GL_STATIC_READ,
+			STATIC_COPY	 = GL_STATIC_COPY,
+			DYNAMIC_DRAW = GL_DYNAMIC_DRAW,
+			DYNAMIC_READ = GL_DYNAMIC_READ,
+			DYNAMIC_COPY = GL_DYNAMIC_COPY
+		};
+
 		// See https://docs.gl/gl4/glBufferStorage.
 		enum class Target : GLenum
 		{
@@ -45,35 +59,41 @@ namespace VTX::Renderer::GL
 			MAP_UNSYNCHRONIZED_BIT	  = GL_MAP_UNSYNCHRONIZED_BIT
 		};
 
-		BufferStorage() = default;
+		// TODO: call create and modify all buffers.
+		Buffer() = default;
 
-		BufferStorage( const Target & p_target ) { create( p_target ); }
+		Buffer( const Target & p_target ) { create( p_target ); }
 
 		template<typename T>
-		BufferStorage( const Target & p_target, const std::vector<T> & p_vector, const Flags & p_flags = Flags::NONE )
+		Buffer( const Target & p_target, const std::vector<T> & p_vector, const Flags & p_flags = Flags::NONE )
 		{
 			create( p_target );
 			set<T>( p_vector, p_flags );
 		}
 
 		template<typename T>
-		BufferStorage( const Target & p_target,
-					   const uint	  p_size,
-					   const T &	  p_data,
-					   const Flags &  p_flags = Flags::NONE )
+		Buffer( const Target & p_target, const size_t p_size, const T & p_data, const Flags & p_flags = Flags::NONE )
 		{
 			create( p_target );
 			set<T>( p_size, p_data, p_flags );
 		}
 
-		BufferStorage( const Target & p_target, const uint p_size, const Flags & p_flags = Flags::NONE )
+		Buffer( const Target & p_target, const size_t p_size, const Flags & p_flags = Flags::NONE )
 		{
 			create( p_target );
-			const std::vector<uint> data = std::vector<uint>( p_size, 0u );
-			set<uint>( data, p_flags );
+			set( p_size );
 		}
 
-		~BufferStorage() { destroy(); }
+		~Buffer() { destroy(); }
+
+		inline void create()
+		{
+			assert( _id == GL_INVALID_INDEX );
+
+			_gl->glCreateBuffers( 1, &_id );
+
+			assert( _gl->glIsBuffer( _id ) );
+		}
 
 		inline void create( const Target & p_target )
 		{
@@ -102,11 +122,12 @@ namespace VTX::Renderer::GL
 			_gl->glBindBuffer( GLenum( _target ), _id );
 		}
 
-		inline void bind( const Target & p_target ) const
+		inline void bind( const Target & p_target )
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
-			_gl->glBindBuffer( GLenum( p_target ), _id );
+			_target = p_target;
+			_gl->glBindBuffer( GLenum( _target ), _id );
 		}
 
 		inline void bind( const uint p_index ) const
@@ -116,14 +137,28 @@ namespace VTX::Renderer::GL
 			_gl->glBindBufferBase( GLenum( _target ), p_index, _id );
 		}
 
-		inline void bind( const uint p_index, const Target & p_target ) const
+		inline void bind( const uint p_index, const Target & p_target )
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
-			_gl->glBindBufferBase( GLenum( p_target ), p_index, _id );
+			_target = p_target;
+			_gl->glBindBufferBase( GLenum( _target ), p_index, _id );
 		}
 
 		inline void unbind() const { _gl->glBindBuffer( GLenum( _target ), 0 ); }
+
+		inline void unbind( const Target & p_target )
+		{
+			_gl->glBindBuffer( GLenum( _target ), 0 );
+			_target = p_target;
+			_gl->glBindBuffer( GLenum( _target ), 0 );
+		}
+
+		template<typename T>
+		inline void set( const std::vector<T> & p_vector, const Usage & p_usage ) const
+		{
+			_gl->glNamedBufferData( _id, sizeof( T ) * GLsizei( p_vector.size() ), p_vector.data(), GLenum( p_usage ) );
+		}
 
 		template<typename T>
 		inline void set( const std::vector<T> & p_vector, const Flags & p_flags = Flags::NONE ) const
@@ -134,19 +169,26 @@ namespace VTX::Renderer::GL
 		}
 
 		template<typename T>
-		inline void set( const uint p_size, const T & p_data, const Flags & p_flags = Flags::NONE ) const
+		inline void set( const size_t p_size, const T & p_data, const Flags & p_flags = Flags::NONE ) const
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
 			_gl->glNamedBufferStorage( _id, GLsizei( p_size ), &p_data, p_flags );
 		}
 
-		template<typename T>
-		inline void const getData( const uint p_offset, const uint p_length, T * const p_data )
+		inline void set( const size_t p_size, const Flags & p_flags = Flags::NONE ) const
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
-			_gl->glGetNamedBufferSubData( _id, GLintptr( p_offset ), GLsizeiptr( p_length ), p_data );
+			_gl->glNamedBufferStorage( _id, GLsizei( p_size ), nullptr, p_flags );
+		}
+
+		template<typename T>
+		inline void const getData( const uint p_offset, const size_t p_length, T * const p_data )
+		{
+			assert( _gl->glIsBuffer( _id ) );
+
+			_gl->glGetNamedBufferSubData( _id, GLintptr( p_offset ), GLsizei( p_length ), p_data );
 		}
 
 		template<typename T>
@@ -158,12 +200,12 @@ namespace VTX::Renderer::GL
 		}
 
 		template<typename T>
-		inline T * const map( const uint p_offset, const uint p_length, const Flags & p_access = Flags::NONE )
+		inline T * const map( const uint p_offset, const size_t p_length, const Flags & p_access = Flags::NONE )
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
 			return reinterpret_cast<T *>(
-				_gl->glMapNamedBufferRange( _id, GLintptr( p_offset ), GLsizeiptr( p_length ), p_access ) );
+				_gl->glMapNamedBufferRange( _id, GLintptr( p_offset ), GLsizei( p_length ), p_access ) );
 		}
 
 		inline void unmap()

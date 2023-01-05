@@ -8,7 +8,7 @@
 #define ATOM_ID 5
 
 layout( location = ATOM_POSITION ) in vec3 aVertexPosition;
-layout( location = ATOM_COLOR ) in vec3 aVertexColor;
+layout( location = ATOM_COLOR ) in vec4 aVertexColor;
 // TODO: this is not used!
 layout( location = ATOM_RADIUS ) in float aVertexRad;
 layout( location = ATOM_VISIBILITY ) in uint aVertexVis;
@@ -20,7 +20,7 @@ uniform mat4 u_projMatrix;
 
 out VsOut
 {
-	flat vec3 vertexColor;
+	flat vec4 vertexColor;
 	flat uint vertexVisible;
 	flat uint vertexSelected;
 	flat uint vertexId;

@@ -1,5 +1,5 @@
 #include "lib_chemfiles.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
 #include "model/category.hpp"
@@ -203,7 +203,7 @@ namespace VTX::IO::Reader
 		{
 			p_molecule.setPdbIdCode( frame.get( "pdb_idcode" )->as_string() );
 		}
-		p_molecule.setColor( Color::Rgb::randomPastel() );
+		p_molecule.setColor( Color::Rgba::randomPastel() );
 
 		// Check properties, same for all atoms/residues?
 		if ( frame.size() > 0 )

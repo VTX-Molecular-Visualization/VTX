@@ -33,10 +33,9 @@ namespace VTX
 			virtual void _generate() = 0;
 
 			template<typename T>
-			inline void _updateBuffer( Renderer::GL::BufferData &	   p_buffer,
-									   const std::vector<T> &		   p_vector,
-									   Renderer::GL::BufferData::Usage p_usage
-									   = Renderer::GL::BufferData::Usage::STATIC_DRAW )
+			inline void _updateBuffer( Renderer::GL::Buffer &	   p_buffer,
+									   const std::vector<T> &	   p_vector,
+									   Renderer::GL::Buffer::Usage p_usage = Renderer::GL::Buffer::Usage::STATIC_DRAW )
 			{
 				makeContextCurrent();
 				p_buffer.set( p_vector, p_usage );

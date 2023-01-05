@@ -146,6 +146,7 @@ namespace VTX
 			void _onShortcutRestoreLayout() const;
 			void _onShortcutCompileShaders() const;
 			void _onShortcutActiveRenderer() const;
+			void _onShortcutRefreshSES() const;
 			void _onShortcutDelete() const;
 			void _onShortcutOrient() const;
 			void _onShortcutSelectAll() const;

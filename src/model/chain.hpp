@@ -33,10 +33,10 @@ namespace VTX
 			};
 
 			// one color per chain id + 1 unknown
-			static const uint		NB_COLORS = 26;
-			static const Color::Rgb CHAIN_ID_COLOR_ATOM[ NB_COLORS ];
-			static const Color::Rgb CHAIN_ID_COLOR_HETATM[ NB_COLORS ];
-			static const Color::Rgb CHAIN_ID_UNKNOWN_COLOR;
+			static const uint		 NB_COLORS = 26;
+			static const Color::Rgba CHAIN_ID_COLOR_ATOM[ NB_COLORS ];
+			static const Color::Rgba CHAIN_ID_COLOR_HETATM[ NB_COLORS ];
+			static const Color::Rgba CHAIN_ID_UNKNOWN_COLOR;
 
 			// inline TYPE				getType() const { return _type; }
 			// inline void				setType( const TYPE p_type ) { _type = p_type; }
@@ -47,7 +47,7 @@ namespace VTX
 
 			const std::string & getOriginalChainID() const { return _originalChainID; };
 			void				setOriginalChainID( const std::string & p_chainId ) { _originalChainID = p_chainId; };
-			static Color::Rgb	getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
+			static Color::Rgba	getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
 
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name )
