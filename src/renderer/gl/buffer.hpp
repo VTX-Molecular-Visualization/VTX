@@ -147,6 +147,13 @@ namespace VTX::Renderer::GL
 
 		inline void unbind() const { _gl->glBindBuffer( GLenum( _target ), 0 ); }
 
+		inline void unbind( const Target & p_target )
+		{
+			_gl->glBindBuffer( GLenum( _target ), 0 );
+			_target = p_target;
+			_gl->glBindBuffer( GLenum( _target ), 0 );
+		}
+
 		template<typename T>
 		inline void set( const std::vector<T> & p_vector, const Usage & p_usage ) const
 		{

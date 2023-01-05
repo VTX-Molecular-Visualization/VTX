@@ -35,7 +35,7 @@ namespace VTX
 
 		void SolventExcludedSurface::refresh()
 		{
-			_mode = Mode::GPU;
+			_mode = Mode::CPU;
 
 			if ( _category->isEmpty() )
 			{
@@ -311,12 +311,12 @@ namespace VTX
 			*/
 
 			// Unbind.
-			bufferPositions.unbind();
-			bufferNormals.unbind();
-			bufferIndices.unbind();
-			bufferColors.unbind();
-			bufferVisibilities.unbind();
-			bufferIds.unbind();
+			bufferPositions.unbind( Buffer::Target::ARRAY_BUFFER );
+			bufferNormals.unbind( Buffer::Target::ARRAY_BUFFER );
+			bufferIndices.unbind( Buffer::Target::ARRAY_BUFFER );
+			bufferColors.unbind( Buffer::Target::ARRAY_BUFFER );
+			bufferVisibilities.unbind( Buffer::Target::ARRAY_BUFFER );
+			bufferIds.unbind( Buffer::Target::ARRAY_BUFFER );
 
 			ssboSesGridData.unbind();
 			//  ssboTriangleAtomIds.unbind();
@@ -698,7 +698,6 @@ namespace VTX
 						   _colors.begin() + _atomsToTriangles[ atomIdx ].first + _atomsToTriangles[ atomIdx ].count,
 						   color );
 			}
-
 			_buffer->setColors( _colors );
 			_colors.clear();
 			_colors.shrink_to_fit();
