@@ -13,7 +13,7 @@ in VsOut
 {
 	vec4	  position;
 	vec3	  direction;
-	flat vec3 color;
+	flat vec4 color;
 	flat uint ssType;
 	flat uint visibility;
 	flat uint selection;
@@ -26,7 +26,7 @@ out TcOut
 	vec3	  position;
 	vec3	  direction;
 	vec3	  normal;
-	flat vec3 color;
+	flat vec4 color;
 	flat uint ssType;
 	flat uint visibility;
 	flat uint selection;

@@ -23,7 +23,9 @@ namespace VTX::Action::Atom
 	class ChangeColor : public BaseAction
 	{
 	  public:
-		explicit ChangeColor( Model::Atom & p_atom, const Color::Rgb & p_color ) : _atom( p_atom ), _color( p_color ) {}
+		explicit ChangeColor( Model::Atom & p_atom, const Color::Rgba & p_color ) : _atom( p_atom ), _color( p_color )
+		{
+		}
 
 		virtual void execute() override
 		{
@@ -32,8 +34,8 @@ namespace VTX::Action::Atom
 		}
 
 	  private:
-		Model::Atom &	 _atom;
-		const Color::Rgb _color;
+		Model::Atom &	  _atom;
+		const Color::Rgba _color;
 	};
 
 	class ChangeVisibility : public Visible::ChangeVisibility

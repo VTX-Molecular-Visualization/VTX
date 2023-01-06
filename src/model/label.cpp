@@ -26,7 +26,7 @@ namespace VTX::Model
 			_performAutoName( p_notify );
 	}
 
-	void Label::setColor( const Color::Rgb & p_color )
+	void Label::setColor( const Color::Rgba & p_color )
 	{
 		if ( _color != p_color )
 		{

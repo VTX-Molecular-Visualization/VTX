@@ -15,18 +15,20 @@ namespace VTX
 		class BaseLight
 		{
 		  public:
-			BaseLight( const Color::Rgb & p_color, const float p_power = 1.f ) : _color( p_color ), _power( p_power ) {}
+			BaseLight( const Color::Rgba & p_color, const float p_power = 1.f ) : _color( p_color ), _power( p_power )
+			{
+			}
 			virtual ~BaseLight() = default;
 
-			const Color::Rgb & getColor() const { return _color; }
-			const float		   getPower() const { return _power; }
+			const Color::Rgba & getColor() const { return _color; }
+			const float			getPower() const { return _power; }
 
 			virtual LightSample sample( const Vec3f & p_point ) const = 0;
 
 			const bool isSurface() const { return _isSurface; }
 
 		  protected:
-			Color::Rgb _color = Color::Rgb::WHITE;
+			Color::Rgba _color = Color::Rgba::WHITE;
 			// TODO: keep it ?
 			float _power = 1.f;
 

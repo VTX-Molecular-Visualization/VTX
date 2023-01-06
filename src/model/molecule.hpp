@@ -3,7 +3,7 @@
 
 #include "base_model_3d.hpp"
 #include "buffer/molecule.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "define.hpp"
 #include "generic/base_representable.hpp"
 #include "generic/base_scene_item.hpp"
@@ -154,8 +154,8 @@ namespace VTX
 				return bool( _bufferAtomVisibilities[ p_idx ] );
 			}
 
-			inline const float &	  getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
-			inline const Color::Rgb & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
+			inline const float &	   getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
+			inline const Color::Rgba & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 
 			inline const std::vector<UnknownResidueData *> & getUnknownResidueSymbols() const
 			{
@@ -201,8 +201,8 @@ namespace VTX
 			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; }
 			inline std::vector<float> &				 getBufferAtomRadius() { return _bufferAtomRadius; }
 			inline const std::vector<float> &		 getBufferAtomRadius() const { return _bufferAtomRadius; }
-			inline std::vector<Color::Rgb> &		 getBufferAtomColors() { return _bufferAtomColors; }
-			inline const std::vector<Color::Rgb> &	 getBufferAtomColors() const { return _bufferAtomColors; }
+			inline std::vector<Color::Rgba> &		 getBufferAtomColors() { return _bufferAtomColors; }
+			inline const std::vector<Color::Rgba> &	 getBufferAtomColors() const { return _bufferAtomColors; }
 			inline std::vector<uint> &				 getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
 			inline const std::vector<uint> & getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
 			inline std::vector<uint> &		 getBufferAtomSelections() { return _bufferAtomSelections; }
@@ -287,7 +287,7 @@ namespace VTX
 			void				setDisplayName( const std::string & p_name );
 
 			// Hide BaseColorable::setColor
-			void setColor( const Color::Rgb & p_color );
+			void setColor( const Color::Rgba & p_color );
 			void notifyStructureChange();
 			void notifyVisibilityChange();
 
@@ -336,12 +336,12 @@ namespace VTX
 			std::unordered_set<std::string>	  _unknownAtomSymbol	= std::unordered_set<std::string>();
 
 			// Buffers.
-			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
-			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
-			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
-			std::vector<uint>		_bufferAtomSelections	= std::vector<uint>();
-			std::vector<uint>		_bufferAtomIds			= std::vector<uint>();
-			std::vector<uint>		_bufferBonds			= std::vector<uint>();
+			std::vector<float>		 _bufferAtomRadius		 = std::vector<float>();
+			std::vector<Color::Rgba> _bufferAtomColors		 = std::vector<Color::Rgba>();
+			std::vector<uint>		 _bufferAtomVisibilities = std::vector<uint>();
+			std::vector<uint>		 _bufferAtomSelections	 = std::vector<uint>();
+			std::vector<uint>		 _bufferAtomIds			 = std::vector<uint>();
+			std::vector<uint>		 _bufferBonds			 = std::vector<uint>();
 
 			// Secondary structure.
 			SecondaryStructure * _secondaryStructure = nullptr;

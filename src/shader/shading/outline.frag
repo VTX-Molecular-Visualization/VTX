@@ -5,7 +5,7 @@ layout( binding = 1 ) uniform sampler2D linearDepthTexture;
 
 layout( location = 0 ) out vec4 fragColor;
 
-uniform vec3  uLineColor;
+uniform vec4  uLineColor;
 uniform int	  uThickness;
 uniform float uSensivity;
 
@@ -43,5 +43,5 @@ void main()
 	const float depthThreshold = ( 1.f / uSensivity ) * depthCenter; // max( 1.f, depthCenter );
 
 	// Apply outline if edge depth is greater than threshold.
-	fragColor = edgeDepth > depthThreshold ? vec4( uLineColor, 1.f ) : texture( colorTexture, texCoord );
+	fragColor = edgeDepth > depthThreshold ? uLineColor : texture( colorTexture, texCoord );
 }

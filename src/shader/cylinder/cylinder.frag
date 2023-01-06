@@ -10,7 +10,7 @@ in GsOut
 {
 	smooth vec3 viewImpostorPosition; // Impostor position in view space.
 	flat vec3	viewVertices[ 2 ];	  // Cylinder vertices position in view space.
-	flat vec3	colors[ 2 ];
+	flat vec4	colors[ 2 ];
 	flat uint	vertexSelected[ 2 ];
 	flat uint	vertexId[ 2 ];
 }
@@ -109,7 +109,7 @@ void main()
 			gl_FragDepth = computeDepth( hit );
 
 			// Color with good color extremity.			
-			vec3 color = gsIn.colors[ int( y > d0 * 0.5f ) ];			
+			vec4 color = gsIn.colors[ int( y > d0 * 0.5f ) ];			
 			if( u_colorBlendingMode == 1 ) // Gradient.
 			{
 				color = mix( gsIn.colors[0], gsIn.colors[1], y / d0 );
@@ -125,7 +125,7 @@ void main()
 
 			// Output data.
 			outViewPositionNormal = viewPositionNormalCompressed;
-			outColor			  = vec4( color, 32.f ); // w = specular shininess.
+			outColor			  = vec4( color.xyz, 32.f ); // w = specular shininess.
 
 			const int selectAtom0 = 1 - int(floor(0.85f + (y / d0)) );
 			const int selectAtom1 = int(ceil((y / d0) - 0.85f));

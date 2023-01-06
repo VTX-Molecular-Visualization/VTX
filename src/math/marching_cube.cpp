@@ -287,12 +287,12 @@ namespace VTX
 				{ 0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 				{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 } };
 
-		std::vector<std::vector<Vec3f>> MarchingCube::triangulateCell( const GridCell & p_gridCell,
+		std::vector<std::vector<Vec4f>> MarchingCube::triangulateCell( const GridCell & p_gridCell,
 																	   const float		p_isovalue ) const
 		{
 			int						 cubeIndex	   = _computeCubeIndex( p_gridCell, p_isovalue );
-			const std::vector<Vec3f> intersections = _getIntersectionCoordinates( p_gridCell, p_isovalue, cubeIndex );
-			const std::vector<std::vector<Vec3f>> triangles = _getTriangles( intersections, cubeIndex );
+			const std::vector<Vec4f> intersections = _getIntersectionCoordinates( p_gridCell, p_isovalue, cubeIndex );
+			const std::vector<std::vector<Vec4f>> triangles = _getTriangles( intersections, cubeIndex );
 
 			return triangles;
 		}
@@ -310,27 +310,28 @@ namespace VTX
 			return cubeIndex;
 		}
 
-		Vec3f MarchingCube::_interpolate( const Vec3f & p_point1,
+		Vec4f MarchingCube::_interpolate( const Vec3f & p_point1,
 										  const float	p_val1,
 										  const Vec3f & p_point2,
 										  const float	p_val2,
 										  const float	p_isovalue ) const
 		{
-			Vec3f		interpolated;
+			Vec4f		interpolated;
 			const float mu = ( p_isovalue - p_val1 ) / ( p_val2 - p_val1 );
 
 			interpolated.x = mu * ( p_point2.x - p_point1.x ) + p_point1.x;
 			interpolated.y = mu * ( p_point2.y - p_point1.y ) + p_point1.y;
 			interpolated.z = mu * ( p_point2.z - p_point1.z ) + p_point1.z;
+			interpolated.w = 1.f;
 
 			return interpolated;
 		}
 
-		std::vector<Vec3f> MarchingCube::_getIntersectionCoordinates( const GridCell & p_gridCell,
+		std::vector<Vec4f> MarchingCube::_getIntersectionCoordinates( const GridCell & p_gridCell,
 																	  const float	   p_isovalue,
 																	  const uint	   p_cubeIndex ) const
 		{
-			std::vector<Vec3f> intersections( 12 );
+			std::vector<Vec4f> intersections( 12 );
 			uint			   intersectionsKey = EDGE_TABLE[ p_cubeIndex ];
 
 			uint idx = 0;
@@ -340,7 +341,7 @@ namespace VTX
 				{
 					const uint	v1				  = EDGE_TO_VERTICES[ idx ].first;
 					const uint	v2				  = EDGE_TO_VERTICES[ idx ].second;
-					const Vec3f intersectionPoint = _interpolate( p_gridCell.vertex[ v1 ],
+					const Vec4f intersectionPoint = _interpolate( p_gridCell.vertex[ v1 ],
 																  p_gridCell.value[ v1 ],
 																  p_gridCell.vertex[ v2 ],
 																  p_gridCell.value[ v2 ],
@@ -354,13 +355,13 @@ namespace VTX
 			return intersections;
 		}
 
-		std::vector<std::vector<Vec3f>> MarchingCube::_getTriangles( const std::vector<Vec3f> & p_intersections,
+		std::vector<std::vector<Vec4f>> MarchingCube::_getTriangles( const std::vector<Vec4f> & p_intersections,
 																	 const uint					p_cubeIndex ) const
 		{
-			std::vector<std::vector<Vec3f>> triangles = std::vector<std::vector<Vec3f>>();
+			std::vector<std::vector<Vec4f>> triangles = std::vector<std::vector<Vec4f>>();
 			for ( uint i = 0; TRIANGLE_TABLE[ p_cubeIndex ][ i ] != -1; i += 3 )
 			{
-				std::vector<Vec3f> triangle( 3 );
+				std::vector<Vec4f> triangle( 3 );
 				for ( uint j = 0; j < 3; ++j )
 				{
 					triangle[ j ] = p_intersections[ TRIANGLE_TABLE[ p_cubeIndex ][ i + j ] ];

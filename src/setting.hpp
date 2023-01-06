@@ -1,7 +1,7 @@
 #ifndef __VTX_SETTING__
 #define __VTX_SETTING__
 
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
 #include "io/struct/image_export.hpp"
@@ -53,7 +53,7 @@ namespace VTX
 		static const bool ACTIVE_RENDERER_DEFAULT;
 		static const bool FORCE_RENDERER_DEFAULT;
 
-		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
+		static const Color::Rgba BACKGROUND_COLOR_DEFAULT;
 
 		static const IO::Struct::ImageExport::RESOLUTION SNAPSHOT_RESOLUTION_DEFAULT;
 		static const IO::Struct::ImageExport::Format	 SNAPSHOT_FORMAT_DEFAULT;
@@ -121,7 +121,7 @@ namespace VTX
 		static const float OUTLINE_SENSIVITY_MIN;
 		static const float OUTLINE_SENSIVITY_MAX;
 
-		static const Color::Rgb OUTLINE_COLOR_DEFAULT;
+		static const Color::Rgba OUTLINE_COLOR_DEFAULT;
 
 		static const bool ACTIVE_FOG_DEFAULT;
 
@@ -135,11 +135,11 @@ namespace VTX
 
 		static const float FOG_DENSITY_DEFAULT;
 
-		static const Color::Rgb FOG_COLOR_DEFAULT;
+		static const Color::Rgba FOG_COLOR_DEFAULT;
 
 		static const bool ACTIVE_AA_DEFAULT;
 
-		static const Color::Rgb LIGHT_COLOR_DEFAULT;
+		static const Color::Rgba LIGHT_COLOR_DEFAULT;
 
 		// Scene.
 		static const Vec3f MIN_SCENE_POS;
@@ -223,7 +223,7 @@ namespace VTX
 		static const uint		VIDEO_CRF_DEFAULT;
 
 		// Measurement
-		static const Color::Rgb DEFAULT_LABEL_COLOR;
+		static const Color::Rgba DEFAULT_LABEL_COLOR;
 
 		// Selection
 		static const VTX::Selection::Granularity SELECTION_GRANULARITY_DEFAULT;

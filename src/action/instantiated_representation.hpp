@@ -41,14 +41,14 @@ namespace VTX::Action::InstantiatedRepresentation
 	{
 	  public:
 		explicit ChangeColor( Model::Representation::InstantiatedRepresentation * const p_representation,
-							  const Color::Rgb &										p_color ) :
+							  const Color::Rgba &										p_color ) :
 			_color( p_color )
 		{
 			_instantiatedRepresentations.emplace( p_representation );
 		}
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseRepresentable, T>::value>>
-		explicit ChangeColor( const std::unordered_set<T *> & p_representables, const Color::Rgb & p_color ) :
+		explicit ChangeColor( const std::unordered_set<T *> & p_representables, const Color::Rgba & p_color ) :
 			_color( p_color )
 		{
 			for ( T * const representable : p_representables )
@@ -84,7 +84,7 @@ namespace VTX::Action::InstantiatedRepresentation
 		};
 
 	  private:
-		const Color::Rgb														_color;
+		const Color::Rgba														_color;
 		std::unordered_set<Model::Representation::InstantiatedRepresentation *> _instantiatedRepresentations
 			= std::unordered_set<Model::Representation::InstantiatedRepresentation *>();
 	};

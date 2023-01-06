@@ -121,7 +121,7 @@ namespace VTX::Action::Setting
 	class ChangeBackgroundColor : public BaseAction
 	{
 	  public:
-		explicit ChangeBackgroundColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+		explicit ChangeBackgroundColor( const Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override
 		{
@@ -130,7 +130,7 @@ namespace VTX::Action::Setting
 		};
 
 	  private:
-		const Color::Rgb _color;
+		const Color::Rgba _color;
 	};
 
 	class ChangeSnapshotFormat : public BaseAction
@@ -373,7 +373,7 @@ namespace VTX::Action::Setting
 	class ChangeOutlineColor : public BaseAction
 	{
 	  public:
-		explicit ChangeOutlineColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+		explicit ChangeOutlineColor( const Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override
 		{
@@ -382,7 +382,7 @@ namespace VTX::Action::Setting
 		};
 
 	  private:
-		const Color::Rgb _color;
+		const Color::Rgba _color;
 	};
 
 	class ChangeOutlineThickness : public BaseAction
@@ -479,7 +479,7 @@ namespace VTX::Action::Setting
 	class ChangeFogColor : public BaseAction
 	{
 	  public:
-		explicit ChangeFogColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+		explicit ChangeFogColor( const Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override
 		{
@@ -488,7 +488,7 @@ namespace VTX::Action::Setting
 		};
 
 	  private:
-		const Color::Rgb _color;
+		const Color::Rgba _color;
 	};
 
 	class ActiveAA : public BaseAction
@@ -510,7 +510,7 @@ namespace VTX::Action::Setting
 	class ChangeLightColor : public BaseAction
 	{
 	  public:
-		explicit ChangeLightColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+		explicit ChangeLightColor( const Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override
 		{
@@ -519,7 +519,7 @@ namespace VTX::Action::Setting
 		};
 
 	  private:
-		const Color::Rgb _color;
+		const Color::Rgba _color;
 	};
 
 	class ChangeCameraClip : public BaseAction

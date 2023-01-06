@@ -224,7 +224,7 @@ namespace VTX::UI::Widget::Representation
 
 		emit onRepresentationChange( *_dummyRepresentation, p_flagDataModified );
 	}
-	void RepresentationInspectorSection::_representationColorChange( const Color::Rgb & p_color, const bool p_ssColor )
+	void RepresentationInspectorSection::_representationColorChange( const Color::Rgba & p_color, const bool p_ssColor )
 	{
 		if ( signalsBlocked() )
 			return;

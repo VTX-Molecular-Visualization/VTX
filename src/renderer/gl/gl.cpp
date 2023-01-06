@@ -91,7 +91,7 @@ namespace VTX::Renderer::GL
 		_quadVAO.setAttributeFormat( 0, 2, VertexArray::Type::FLOAT );
 		_quadVAO.setAttributeBinding( 0, 0 );
 
-		_quadVBO.set<Vec2f>( quadVertices, BufferData::Usage::STATIC_DRAW );
+		_quadVBO.set<Vec2f>( quadVertices, Buffer::Usage::STATIC_DRAW );
 	}
 
 	void GL::renderFrame( const Object3D::Scene & p_scene )

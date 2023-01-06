@@ -45,7 +45,7 @@ namespace VTX::UI::Widget::CustomWidget
 				 this,
 				 &ColorModeFieldWidget::_colorModeChange );
 		connect( _colorSetButton,
-				 QOverload<const Color::Rgb &>::of( &ColorFieldButton::onValueChange ),
+				 QOverload<const Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &ColorModeFieldWidget::_applyColor );
 		// !V0.1
@@ -86,7 +86,7 @@ namespace VTX::UI::Widget::CustomWidget
 		emit colorModeChanged( _colorMode );
 	}
 
-	void ColorModeFieldWidget::setColor( const Color::Rgb & p_color )
+	void ColorModeFieldWidget::setColor( const Color::Rgba & p_color )
 	{
 		_color = p_color;
 		_colorSetButton->setColor( p_color );
@@ -103,7 +103,7 @@ namespace VTX::UI::Widget::CustomWidget
 		const Generic::COLOR_MODE colorMode = (Generic::COLOR_MODE)p_index;
 		setColorMode( colorMode );
 	}
-	void ColorModeFieldWidget::_applyColor( const Color::Rgb & p_color )
+	void ColorModeFieldWidget::_applyColor( const Color::Rgba & p_color )
 	{
 		_color = p_color;
 		emit colorChanged( _color );
@@ -121,7 +121,7 @@ namespace VTX::UI::Widget::CustomWidget
 		return p_colorMode == Generic::COLOR_MODE::CHAIN || p_colorMode == Generic::COLOR_MODE::ATOM_CHAIN;
 	}
 
-	void ColorModeFieldWidget::updateWithNewValue( const std::pair<Generic::COLOR_MODE, Color::Rgb> & p_value )
+	void ColorModeFieldWidget::updateWithNewValue( const std::pair<Generic::COLOR_MODE, Color::Rgba> & p_value )
 	{
 		_colorModeComboBox->updateWithNewValue( int( p_value.first ) );
 		_colorSetButton->updateWithNewValue( p_value.second );

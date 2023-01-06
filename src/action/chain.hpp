@@ -26,12 +26,12 @@ namespace VTX::Action::Chain
 	class ChangeColor : public BaseAction
 	{
 	  public:
-		explicit ChangeColor( Model::Chain & p_chain, const Color::Rgb & p_color ) :
+		explicit ChangeColor( Model::Chain & p_chain, const Color::Rgba & p_color ) :
 			_color( p_color ), _chains { &p_chain }
 		{
 			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
-		explicit ChangeColor( const std::unordered_set<Model::Chain *> & p_chains, const Color::Rgb & p_color ) :
+		explicit ChangeColor( const std::unordered_set<Model::Chain *> & p_chains, const Color::Rgba & p_color ) :
 			_color( p_color ), _chains( p_chains )
 		{
 			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
@@ -57,7 +57,7 @@ namespace VTX::Action::Chain
 
 	  private:
 		const std::unordered_set<Model::Chain *> _chains = std::unordered_set<Model::Chain *>();
-		const Color::Rgb						 _color;
+		const Color::Rgba						 _color;
 	};
 
 	class ChangeVisibility : public Visible::ChangeVisibility

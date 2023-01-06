@@ -1,7 +1,7 @@
 #ifndef __VTX_RENDERER_GL__
 #define __VTX_RENDERER_GL__
 
-#include "buffer_data.hpp"
+#include "buffer.hpp"
 #include "pass/blur.hpp"
 #include "pass/fxaa.hpp"
 #include "pass/geometric.hpp"
@@ -36,7 +36,7 @@ namespace VTX::Renderer::GL
 		inline const Pass::FXAA &			getPassFXAA() const { return *_passFXAA; }
 
 		inline const VertexArray & getQuadVAO() const { return _quadVAO; }
-		inline const BufferData &  getQuadVBO() const { return _quadVBO; }
+		inline const Buffer &	   getQuadVBO() const { return _quadVBO; }
 
 		const Vec2i getPickedIds( const uint, const uint ) const override;
 
@@ -51,7 +51,7 @@ namespace VTX::Renderer::GL
 		Pass::FXAA *		   _passFXAA		   = nullptr;
 
 		VertexArray _quadVAO;
-		BufferData	_quadVBO;
+		Buffer		_quadVBO;
 
 		void _initQuadVAO();
 	};

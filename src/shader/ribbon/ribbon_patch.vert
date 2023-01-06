@@ -3,7 +3,7 @@
 layout( location = 0 ) in vec4 vao_controlPointPosition;
 layout( location = 1 ) in vec3 vao_controlPointDirection;
 layout( location = 2 ) in uint vao_ssType;
-layout( location = 3 ) in vec3 vao_color;
+layout( location = 3 ) in vec4 vao_color;
 layout( location = 4 ) in uint vao_visibility;
 layout( location = 5 ) in uint vao_controlPointSelection;
 layout( location = 6 ) in uint vao_residueId;
@@ -12,7 +12,7 @@ out VsOut
 {
 	vec4	  position;
 	vec3	  direction;
-	flat vec3 color;
+	flat vec4 color;
 	flat uint ssType;
 	flat uint visibility;
 	flat uint selection;

@@ -14,7 +14,7 @@ namespace VTX
 		class DirectionalLight : public BaseLight
 		{
 		  public:
-			DirectionalLight( const Vec3f & p_direction, const Color::Rgb & p_color ) :
+			DirectionalLight( const Vec3f & p_direction, const Color::Rgba & p_color ) :
 				BaseLight( p_color ), _direction( p_direction )
 			{
 			}

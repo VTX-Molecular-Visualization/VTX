@@ -41,11 +41,13 @@ struct SESGridDataStruct
 	int	  nearestAtom;
 };
 
+/*
 struct Range
 {
 	uint first;
 	uint count;
 };
+*/
 
 // SSBO.
 layout (std430, binding = 0) readonly buffer SESGridData
@@ -58,42 +60,76 @@ layout (std140, binding = 1) writeonly buffer TrianglePositions
 	vec4[] trianglePositions;
 };
 
-layout (std430, binding = 2) writeonly buffer TriangleIndices
-{
-	uint[] triangleIndices;
-};
-
-layout (std140, binding = 3) writeonly buffer TriangleNormals
+layout (std140, binding = 2) writeonly buffer TriangleNormals
 {
 	vec4[] triangleNormals;
 };
 
+layout (std430, binding = 3) writeonly buffer TriangleIndices
+{
+	uint[] triangleIndices;
+};
+
+layout (std140, binding = 4) writeonly buffer TriangleColors
+{
+	vec4[] triangleColors;
+};
+
+layout (std430, binding = 5) writeonly buffer TriangleVisibilities
+{
+	uint[] triangleVisibilities;
+};
+
+layout (std430, binding = 6) writeonly buffer TriangleIds
+{
+	uint[] triangleIds;
+};
+
+/*
 layout (std430, binding = 4) writeonly buffer TriangleAtomIds
 {
 	uint[] triangleAtomIds;
 };
+*/
 
+/*
 layout (std430, binding = 5) writeonly buffer TriangleAtomRanges
 {
 	Range[] triangleAtomRanges;
 };
+*/
 
-layout (std430, binding = 6) readonly buffer TriangleTable
+layout (std430, binding = 7) writeonly buffer TriangleValidities
+{
+	uint[] triangleValidities;
+};
+
+layout (std430, binding = 8) readonly buffer TriangleTable
 {
 	int[] triangleTable;
 };
 
-layout (std430, binding = 7) writeonly buffer Debug
+layout (std140, binding = 9) readonly buffer AtomColors
 {
-	uint[] debug;
+	vec4[] atomColors;
+};
+
+layout (std430, binding = 10) readonly buffer AtomVisibilities
+{
+	uint[] atomVisibilities;
+};
+
+layout (std430, binding = 11) readonly buffer AtomIds
+{
+	uint[] atomIds;
 };
 
 // Marching cube.
 void main()
 {
 	// Get corresponding ses grid data.
-	const uvec3 sesGridPosition = gl_GlobalInvocationID;
-	const uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
+	const uint sesGridHash = gridHash( gl_GlobalInvocationID, uGridSESSize );
+	const uvec3 sesGridPosition = gridPosition( sesGridHash, uGridSESSize);
 	
 	// Not in grid.
 	if (	sesGridPosition.x >= uGridSESSize.x ||
@@ -166,7 +202,7 @@ void main()
 			const vec3 vertice = intersections[ triangleTable[ cubeIndex * 16 + i + j ] ];
 
 			// Position.
-			trianglePositions[ sesGridHash * 15 + i + j ] = vec4( vertice, 0.f );
+			trianglePositions[ sesGridHash * 15 + i + j ] = vec4( vertice, 1.f );
 
 			// Indice.
 			triangleIndices[ sesGridHash * 15 + i + j ] = sesGridHash * 15 + i + j;
@@ -179,15 +215,24 @@ void main()
 
 			// TODO: Atom range.
 			//atomicAdd(triangleAtomRange[ sesGridData[ sesGridHash ].nearestAtom ].count, 1);
+		
+			// Validity.
+			triangleValidities[ sesGridHash * 15 + i + j ] = 1;
 		}
 		const vec4 normal = vec4(
 			normalize( 
 				cross(	intersections[ triangleTable[ cubeIndex * 16 + i + 1 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ],
 						intersections[ triangleTable[ cubeIndex * 16 + i + 2 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ] ) )
-						, 0.f );
+						, 1.f );
 		
-		triangleNormals[ sesGridHash * 15 + i + 0 ] = normal;
-		triangleNormals[ sesGridHash * 15 + i + 1 ] = normal;
-		triangleNormals[ sesGridHash * 15 + i + 2 ] = normal;
+		for ( uint j = 0; j < 3; ++j )
+		{
+			triangleNormals[ sesGridHash * 15 + i + j ] = normal;
+			triangleValidities[ sesGridHash * 15 + i + j ] = 1;
+			
+			triangleColors[ sesGridHash * 15 + i + j ] = atomColors[ sesGridData[ sesGridHash ].nearestAtom ];
+			triangleVisibilities[ sesGridHash * 15 + i + j ] = atomVisibilities[ sesGridData[ sesGridHash ].nearestAtom ];
+			triangleIds[ sesGridHash * 15 + i + j ] = atomIds[ sesGridData[ sesGridHash ].nearestAtom ];
+		}
 	}
 }

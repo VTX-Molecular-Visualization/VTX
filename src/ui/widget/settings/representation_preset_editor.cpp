@@ -413,7 +413,7 @@ namespace VTX::UI::Widget::Settings
 		if ( !signalsBlocked() && colorMode != _preset->getData().getRibbonColorBlendingMode() )
 			VTX_ACTION( new Action::Representation::ChangeRibbonColorBendingMode( _preset, colorMode ) );
 	}
-	void RepresentationPresetEditor::_onColorChanged( const Color::Rgb & p_color )
+	void RepresentationPresetEditor::_onColorChanged( const Color::Rgba & p_color )
 	{
 		if ( !signalsBlocked() && p_color != _preset->getColor() )
 			VTX_ACTION( new Action::Representation::ChangeColor( _preset, p_color ) );

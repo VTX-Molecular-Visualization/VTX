@@ -8,7 +8,7 @@ in GsOut
 {
 	smooth vec3 viewImpPos;	   // Impostor position in view space.
 	flat vec3	viewSpherePos; // Sphere position in view space.
-	flat vec3	sphereColor;
+	flat vec4	sphereColor;
 	flat float	sphereRadius;
 	flat float	dotViewSpherePos;
 	flat uint	sphereSelected;
@@ -87,7 +87,7 @@ void main()
 
 		// Output data.
 		outViewPositionNormal = viewPositionNormalCompressed;
-		outColor			  = vec4( gsIn.sphereColor, 32.f ); // w = specular shininess.
+		outColor			  = vec4( gsIn.sphereColor.xyz, 32.f ); // w = specular shininess.
 		outId				  = uvec2( gsIn.sphereId, 0 );
 	}
 }

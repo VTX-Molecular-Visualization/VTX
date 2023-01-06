@@ -29,8 +29,8 @@ layout (std430, binding = 0) buffer SESGridData
 void main()
 {
 	// Get corresponding ses grid data.
-	const uvec3 sesGridPosition = gl_GlobalInvocationID;
-	const uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
+	const uint sesGridHash = gridHash( gl_GlobalInvocationID, uGridSESSize );
+	const uvec3 sesGridPosition = gridPosition( sesGridHash, uGridSESSize);
 	
 	// Not in grid.
 	if ( sesGridHash >= uGridSESCellCount )
@@ -43,7 +43,7 @@ void main()
 	{
 		return;
 	}
-	
+
 	const vec3 sesWorldPosition = worldPosition( sesGridPosition, uGridSESWorldOrigin, uGridSESCellSize );
 	
 	float minDistanceWithOutsidePoint = FLT_MAX;
@@ -79,4 +79,6 @@ void main()
 			}
 		}
 	}
+
+	
 }

@@ -4,7 +4,7 @@ in TeOut
 {
 	vec3	  viewPosition;
 	vec3	  normal;
-	vec3	  color;
+	vec4	  color;
 	flat uint visibility;
 	flat uint selection;
 	flat uint id;
@@ -29,7 +29,7 @@ void main()
 	}
 
 	vec3 normal = teIn.normal;
-	vec3 color	= teIn.color;
+	vec4 color	= teIn.color;
 	if ( dot( normal, teIn.viewPosition ) > 0.f )
 	{
 		normal = -normal;
@@ -44,6 +44,6 @@ void main()
 
 	// Output data.
 	outViewPositionNormal = viewPositionNormalCompressed;
-	outColor			  = vec4( color, 32.f ); // w = specular shininess.
+	outColor			  = vec4( color.xyz, 32.f ); // w = specular shininess.
 	outId				  = uvec2( teIn.id, 0 );
 }
