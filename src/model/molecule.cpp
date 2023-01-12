@@ -160,7 +160,10 @@ namespace VTX
 				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 				_buffer->setAtomSelections( _bufferAtomSelections );
 				_buffer->setAtomIds( _bufferAtomIds );
-				_buffer->setBonds( _bufferBonds );
+				if ( _bufferBonds.empty() == false )
+				{
+					_buffer->setBonds( _bufferBonds );
+				}
 			}
 		}
 
