@@ -18,7 +18,7 @@ namespace VTX
 			Molecule()	= default;
 			~Molecule() = default;
 
-			void setAtomPositions( const std::vector<Vec3f> & );
+			void setAtomPositions( const std::vector<Vec3f> &, const bool );
 			void setAtomRadius( const std::vector<float> & );
 			void setAtomColors( const std::vector<Color::Rgba> & );
 			void setAtomVisibilities( const std::vector<uint> & );

@@ -55,9 +55,12 @@ namespace VTX::Buffer
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_ID, ATTRIBUTE_LOCATION::ATOM_ID );
 	}
 
-	void Molecule::setAtomPositions( const std::vector<Vec3f> & p_positions )
+	void Molecule::setAtomPositions( const std::vector<Vec3f> & p_positions, const bool p_isDynamic )
 	{
-		_updateBuffer( _vboAtomPositions, p_positions );
+		_updateBuffer(
+			_vboAtomPositions,
+			p_positions,
+			p_isDynamic ? Renderer::GL::Buffer::Usage::DYNAMIC_DRAW : Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
 	void Molecule::setAtomRadius( const std::vector<float> & p_radius ) { _updateBuffer( _vboAtomRadii, p_radius ); }

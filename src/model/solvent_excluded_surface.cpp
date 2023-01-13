@@ -35,7 +35,7 @@ namespace VTX
 
 		void SolventExcludedSurface::refresh()
 		{
-			_mode = Mode::CPU;
+			_mode = Mode::GPU;
 
 			if ( _category->isEmpty() )
 			{
@@ -133,19 +133,18 @@ namespace VTX
 			// Create SSBOs.
 			using VTX::Renderer::GL::Buffer;
 			// // Output.
-			Buffer ssboSesGridData( VTX::Renderer::GL::Buffer::Target::SHADER_STORAGE_BUFFER,
-									gridSES.getCellCount() * sizeof( SESGridData ) );
+			Buffer ssboSesGridData( gridSES.getCellCount() * sizeof( SESGridData ) );
 			// Input.
-			const Buffer ssboAtomGridDataSorted( Buffer::Target::SHADER_STORAGE_BUFFER, atomGridDataSorted );
-			const Buffer ssboAtomIndexSorted( Buffer::Target::SHADER_STORAGE_BUFFER, atomIndexSorted );
-			const Buffer ssboAtomPosition( Buffer::Target::SHADER_STORAGE_BUFFER, atomPositionsVdW );
-			// Buffer		 ssboDebug( Buffer::Target::SHADER_STORAGE_BUFFER, debug );
+			Buffer ssboAtomGridDataSorted( atomGridDataSorted );
+			Buffer ssboAtomIndexSorted( atomIndexSorted );
+			Buffer ssboAtomPosition( atomPositionsVdW );
+			// Buffer		 ssboDebug(  debug );
 
 			// Bind.
-			ssboSesGridData.bind( 0 );
-			ssboAtomGridDataSorted.bind( 1 );
-			ssboAtomIndexSorted.bind( 2 );
-			ssboAtomPosition.bind( 3 );
+			ssboSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			ssboAtomGridDataSorted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			ssboAtomIndexSorted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			ssboAtomPosition.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 			// ssboDebug.bind( 7 );
 
 			// Set uniforms.
@@ -226,44 +225,41 @@ namespace VTX
 			Buffer & bufferColors		= _buffer->getBufferColors();
 			Buffer & bufferVisibilities = _buffer->getBufferVisibilities();
 			Buffer & bufferIds			= _buffer->getBufferIds();
+			Buffer & bufferSelections	= _buffer->getBufferSelections();
 
 			bufferPositions.set( bufferSize * sizeof( Vec4f ) );
 			bufferNormals.set( bufferSize * sizeof( Vec4f ) );
 			bufferIndices.set( bufferSize * sizeof( uint ) );
-			bufferColors.set( bufferSize * sizeof( Color::Rgba ) );
-			bufferVisibilities.set( bufferSize * sizeof( uint ) );
+			bufferColors.set( bufferSize * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
+			bufferVisibilities.set( bufferSize * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 			bufferIds.set( bufferSize * sizeof( uint ) );
+			bufferSelections.set( std::vector( bufferSize, 0 ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 
 			/////////////////////////
-			//  Buffer ssboTriangleAtomIds( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( uint ) );
-			//   BufferStorage ssboAtomToTriangles( BufferStorage::Target::SHADER_STORAGE_BUFFER, _atomsToTriangles );
-			Buffer ssboTriangleValidities( Buffer::Target::SHADER_STORAGE_BUFFER, bufferSize * sizeof( uint ) );
-
+			//  Buffer ssboTriangleAtomIds( bufferSize * sizeof( uint ) );
+			//  BufferStorage ssboAtomToTriangles( _atomsToTriangles );
+			Buffer ssboTriangleValidities( bufferSize * sizeof( uint ) );
 			// Input.
-			const Buffer ssboTriangleTable( VTX::Renderer::GL::Buffer::Target::SHADER_STORAGE_BUFFER,
-											256 * 16 * sizeof( int ),
-											Math::MarchingCube::TRIANGLE_TABLE,
-											VTX::Renderer::GL::Buffer::Flags::DYNAMIC_STORAGE_BIT );
-			const Buffer ssboAtomColors( Buffer::Target::SHADER_STORAGE_BUFFER,
-										 _category->getMoleculePtr()->getBufferAtomColors() );
-			const Buffer ssboAtomVisibilities( Buffer::Target::SHADER_STORAGE_BUFFER,
-											   _category->getMoleculePtr()->getBufferAtomVisibilities() );
-			const Buffer ssboAtomIds( Buffer::Target::SHADER_STORAGE_BUFFER,
-									  _category->getMoleculePtr()->getBufferAtomIds() );
+			Buffer ssboTriangleTable( 256 * 16 * sizeof( int ),
+									  Math::MarchingCube::TRIANGLE_TABLE,
+									  VTX::Renderer::GL::Buffer::Flags::DYNAMIC_STORAGE_BIT );
+			Buffer ssboAtomColors( _category->getMoleculePtr()->getBufferAtomColors() );
+			Buffer ssboAtomVisibilities( _category->getMoleculePtr()->getBufferAtomVisibilities() );
+			Buffer ssboAtomIds( _category->getMoleculePtr()->getBufferAtomIds() );
 
-			bufferPositions.bind( 1, Buffer::Target::SHADER_STORAGE_BUFFER );
-			bufferNormals.bind( 2, Buffer::Target::SHADER_STORAGE_BUFFER );
-			bufferIndices.bind( 3, Buffer::Target::SHADER_STORAGE_BUFFER );
-			bufferColors.bind( 4, Buffer::Target::SHADER_STORAGE_BUFFER );
-			bufferVisibilities.bind( 5, Buffer::Target::SHADER_STORAGE_BUFFER );
-			bufferIds.bind( 6, Buffer::Target::SHADER_STORAGE_BUFFER );
-			//  ssboTriangleAtomIds.bind( 4 );
-			//   ssboAtomToTriangles.bind( 5 );
-			ssboTriangleValidities.bind( 7 );
-			ssboTriangleTable.bind( 8 );
-			ssboAtomColors.bind( 9 );
-			ssboAtomVisibilities.bind( 10 );
-			ssboAtomIds.bind( 11 );
+			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
+			bufferVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
+			bufferIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
+			//  ssboTriangleAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
+			//  ssboAtomToTriangles.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
+			ssboTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
+			ssboTriangleTable.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
+			ssboAtomColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 9 );
+			ssboAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 10 );
+			ssboAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 11 );
 
 			workerMarchingCube.getProgram().use();
 
@@ -311,16 +307,16 @@ namespace VTX
 			*/
 
 			// Unbind.
-			bufferPositions.unbind( Buffer::Target::ARRAY_BUFFER );
-			bufferNormals.unbind( Buffer::Target::ARRAY_BUFFER );
-			bufferIndices.unbind( Buffer::Target::ARRAY_BUFFER );
-			bufferColors.unbind( Buffer::Target::ARRAY_BUFFER );
-			bufferVisibilities.unbind( Buffer::Target::ARRAY_BUFFER );
-			bufferIds.unbind( Buffer::Target::ARRAY_BUFFER );
+			bufferPositions.unbind();
+			bufferNormals.unbind();
+			bufferIndices.unbind();
+			bufferColors.unbind();
+			bufferVisibilities.unbind();
+			bufferIds.unbind();
 
 			ssboSesGridData.unbind();
 			//  ssboTriangleAtomIds.unbind();
-			//   ssboAtomToTriangles.unbind();
+			//  ssboAtomToTriangles.unbind();
 			ssboTriangleValidities.unbind();
 			ssboTriangleTable.unbind();
 			ssboAtomColors.unbind();
@@ -683,7 +679,11 @@ namespace VTX
 
 		void SolventExcludedSurface::refreshColors()
 		{
-			_colors.resize( _indiceCount, Color::Rgba::WHITE );
+			using VTX::Renderer::GL::Buffer;
+			_buffer->makeContextCurrent();
+			const Buffer & bufferColor = _buffer->getBufferColors();
+
+			Color::Rgba * const ptr = bufferColor.map<Color::Rgba>( Buffer::Access::WRITE_ONLY );
 
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
@@ -694,18 +694,28 @@ namespace VTX
 				}
 
 				const Color::Rgba & color = _category->getMoleculePtr()->getAtomColor( atomIdx );
-				std::fill( _colors.begin() + _atomsToTriangles[ atomIdx ].first,
+
+				for ( uint i = 0; i < _atomsToTriangles[ atomIdx ].count; ++i )
+				{
+					ptr[ _atomsToTriangles[ atomIdx ].first + i ] = color;
+				}
+				/*
+				std::fill( (*ptr).begin() + _atomsToTriangles[atomIdx].first,
 						   _colors.begin() + _atomsToTriangles[ atomIdx ].first + _atomsToTriangles[ atomIdx ].count,
 						   color );
+						   */
 			}
-			_buffer->setColors( _colors );
-			_colors.clear();
-			_colors.shrink_to_fit();
+
+			bufferColor.unmap();
+			_buffer->doneContextCurrent();
 		}
 
 		void SolventExcludedSurface::refreshVisibilities()
 		{
+			using VTX::Renderer::GL::Buffer;
+			_buffer->makeContextCurrent();
 			_visibilities.resize( _indiceCount, 1 );
+			const Buffer & bufferVisibilities = _buffer->getBufferVisibilities();
 
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
@@ -729,14 +739,18 @@ namespace VTX
 				}
 			}
 
-			_buffer->setVisibilities( _visibilities );
+			bufferVisibilities.setSub( _visibilities );
 			_visibilities.clear();
 			_visibilities.shrink_to_fit();
+			_buffer->doneContextCurrent();
 		}
 
 		void SolventExcludedSurface::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
 		{
+			using VTX::Renderer::GL::Buffer;
+			_buffer->makeContextCurrent();
 			_selections.resize( _indiceCount, 0 );
+			const Buffer & bufferSelections = _buffer->getBufferSelections();
 
 			if ( p_selection != nullptr )
 			{
@@ -762,9 +776,10 @@ namespace VTX
 				}
 			}
 
-			_buffer->setSelections( _selections );
+			bufferSelections.setSub( _selections );
 			_selections.clear();
 			_selections.shrink_to_fit();
+			_buffer->doneContextCurrent();
 		}
 
 		void SolventExcludedSurface::_instantiate3DViews()

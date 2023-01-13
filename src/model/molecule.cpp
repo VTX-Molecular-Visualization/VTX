@@ -154,7 +154,7 @@ namespace VTX
 				}
 				computeAllRepresentationData();
 
-				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
+				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ], _atomPositionsFrames.size() > 1 );
 				_buffer->setAtomRadius( _bufferAtomRadius );
 				_fillBufferAtomColors();
 				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
@@ -500,8 +500,9 @@ namespace VTX
 
 			_currentFrame = p_frameIdx;
 			if ( _buffer != nullptr )
-				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
-
+			{
+				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ], _atomPositionsFrames.size() > 1 );
+			}
 			if ( _secondaryStructure != nullptr )
 				_secondaryStructure->refresh();
 
@@ -516,6 +517,7 @@ namespace VTX
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
+
 		void Molecule::applyNextFrame( const uint p_frameCount )
 		{
 			int		  newFrame	= _currentFrame;

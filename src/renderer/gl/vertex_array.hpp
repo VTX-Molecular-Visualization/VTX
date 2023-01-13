@@ -44,9 +44,10 @@ namespace VTX::Renderer::GL
 		};
 
 		VertexArray() = default;
-		~VertexArray() { _gl->glDeleteVertexArrays( 1, &_id ); }
+		~VertexArray() { destroy(); }
 
 		inline void create() { _gl->glCreateVertexArrays( 1, &_id ); }
+		inline void destroy() { _gl->glDeleteVertexArrays( 1, &_id ); }
 
 		inline GLuint getId() const { return _id; }
 

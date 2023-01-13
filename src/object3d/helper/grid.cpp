@@ -59,7 +59,7 @@ namespace VTX::Object3D::Helper
 			}
 		}
 
-		_vbo.set<Voxel>( voxels, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vbo.set<Voxel>( voxels );
 		_size = uint( voxels.size() );
 	}
 
