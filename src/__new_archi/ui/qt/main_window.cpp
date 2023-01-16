@@ -140,7 +140,7 @@ namespace VTX::UI::QT
 		//_statusBarWidget->setFixedHeight( 25 );
 		// setStatusBar( _statusBarWidget );
 
-		//_contextualMenu = new ContextualMenu();
+		_contextualMenu = new ContextualMenu();
 		//_cursorHandler	= new CursorHandler();
 
 		_setupSlots();

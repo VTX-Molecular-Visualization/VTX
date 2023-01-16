@@ -2,6 +2,7 @@
 #include "__new_archi/ui/default_tools/keys.hpp"
 #include "__new_archi/ui/qt/application_qt.hpp"
 #include "__new_archi/ui/qt/main_window.hpp"
+#include "__new_archi/ui/qt/widget/scene/contextual_menu_scene.hpp"
 #include "__new_archi/ui/qt/widget/scene/view/molecule_scene_view.hpp"
 #include "__new_archi/ui/qt/widget/scene/view/path_scene_view.hpp"
 #include "__new_archi/ui/qt/widget_factory.hpp"
@@ -79,6 +80,8 @@ namespace VTX::UI::DefaultTools
 
 		_registerDefaultObjects( *sceneWidget );
 		_instantiateObjectsInScene( *sceneWidget, VTXApp::get().getScene() );
+
+		setupContextualMenu();
 	}
 
 	void SceneWindow::_registerDefaultObjects( QT::Widget::Scene::SceneWidget & p_sceneWidget ) const
@@ -99,6 +102,17 @@ namespace VTX::UI::DefaultTools
 		{
 			p_sceneWidget.instantiateSceneItemWidget( path );
 		}
+	}
+
+	void SceneWindow::setupContextualMenu() const
+	{
+		QT::MainWindow * const mainWindow = &QT::QT_APP()->getMainWindow();
+
+		QT::Widget::Scene::ContextualMenuScene * defaultContextualMenu
+			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::Scene::ContextualMenuScene>(
+				mainWindow, "contextualMenuScene" );
+
+		mainWindow->getContextualMenu().registerMenu( DefaultTools::ContextualMenu::SCENE, defaultContextualMenu );
 	}
 
 } // namespace VTX::UI::DefaultTools

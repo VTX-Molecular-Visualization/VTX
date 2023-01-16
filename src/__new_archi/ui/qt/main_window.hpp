@@ -4,10 +4,10 @@
 #include "__new_archi/ui/core/base_main_window.hpp"
 #include "__new_archi/ui/core/base_panel.hpp"
 #include "__new_archi/ui/core/define.hpp"
+#include "__new_archi/ui/qt/contextual_menu.hpp"
 #include "__new_archi/ui/qt/qt_panel.hpp"
 #include "__new_archi/ui/qt/widget/main_menu/main_menu_bar.hpp"
 #include "__new_archi/ui/qt/widget/render/render_widget.hpp"
-#include "ui/contextual_menu.hpp"
 #include "ui/cursor_handler.hpp"
 #include "ui/widget/analysis/structural_alignment/structural_alignment_widget.hpp"
 #include "ui/widget/base_widget.hpp"
@@ -62,7 +62,8 @@ namespace VTX::UI::QT
 
 		Core::MainMenu::MainMenuBar & getMainMenu() override { return *_mainMenuBar; }
 
-		const ContextualMenu & getContextualMenu() { return *_contextualMenu; }
+		const ContextualMenu & getContextualMenu() const { return *_contextualMenu; }
+		ContextualMenu &	   getContextualMenu() { return *_contextualMenu; }
 		CursorHandler &		   getCursorHandler() { return *_cursorHandler; }
 
 		bool getWidgetVisibility( const ID::VTX_ID & p_winId ) const;

@@ -1,4 +1,5 @@
 #include "model_list_component.hpp"
+#include "generic/base_scene_item.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "ui/ui_action/self_referenced_action.hpp"
 #include "ui/widget_factory.hpp"
@@ -19,18 +20,20 @@ namespace VTX::UI::Widget::CustomWidget
 	ModelListComponent::ModelListComponent( BaseModelListWidget * const p_modelList, QWidget * p_parent ) :
 		BaseManualWidget( p_parent ), _modelListWidget( p_modelList )
 	{
-		_registerEvent( Event::Global::MODEL_REMOVED );
+		_registerEvent( Event::Global::SCENE_ITEM_REMOVED );
 	}
 	ModelListComponent::~ModelListComponent() {}
 
 	void ModelListComponent::receiveEvent( const Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::MODEL_REMOVED )
+		if ( p_event.name == Event::Global::SCENE_ITEM_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::BaseModel> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::BaseModel> &>( p_event );
+			const Event::VTXEventPtr<Generic::BaseSceneItem> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
 
-			removeModel( castedEvent.ptr );
+			Model::BaseModel & model
+				= MVC::MvcManager::get().getModel<Model::BaseModel>( castedEvent.ptr->getModelID() );
+			removeModel( &model );
 		}
 	}
 

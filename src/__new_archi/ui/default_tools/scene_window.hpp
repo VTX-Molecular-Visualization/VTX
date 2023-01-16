@@ -31,6 +31,7 @@ namespace VTX::UI::DefaultTools
 		SceneWindow();
 
 		void instantiateTool() override;
+		void setupContextualMenu() const;
 
 	  private:
 		void _registerDefaultObjects( QT::Widget::Scene::SceneWidget & p_sceneWidget ) const;

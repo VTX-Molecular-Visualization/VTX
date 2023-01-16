@@ -14,6 +14,7 @@ namespace VTX::UI::DefaultTools
 		RenderWindow();
 
 		void instantiateTool() override;
+		void setupContextualMenu() const;
 	};
 } // namespace VTX::UI::DefaultTools
 

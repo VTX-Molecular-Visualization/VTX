@@ -57,15 +57,16 @@ namespace VTX::UI::QT::Widget::Scene
 		void dropEvent( QDropEvent * p_event ) override;
 
 	  private:
-		CustomWidget::DockWindowMainWidget<QScrollArea> * _scrollArea		 = nullptr;
-		QWidget *										  _scrollAreaContent = nullptr;
-		QVBoxLayout *									  _layout			 = nullptr;
-		std::vector<SceneItemWidget *>					  _sceneWidgets		 = std::vector<SceneItemWidget *>();
+		CustomWidget::DockWindowMainWidget<QScrollArea> * _scrollArea		  = nullptr;
+		QWidget *										  _scrollAreaContent  = nullptr;
+		QVBoxLayout *									  _layout			  = nullptr;
+		std::vector<SceneItemWidget *>					  _sceneWidgets		  = std::vector<SceneItemWidget *>();
+		const SceneItemWidget *							  _viewpointContainer = nullptr;
 
 		std::map<ID::VTX_ID, SceneItemWidgetInstancier *> _mapInstanciers
 			= std::map<ID::VTX_ID, SceneItemWidgetInstancier *>();
 
-		int	 _getDefaultIndex( const ID::VTX_ID & p_itemTypeID ) const;
+		int	 _getDefaultIndex( const Generic::BaseSceneItem & p_item ) const;
 		void _addWidgetInLayout( QWidget * const p_sceneItemWidget, const int p_index );
 
 		void _removeWidgetInLayout( SceneItemWidget * const p_sceneItemWidget );

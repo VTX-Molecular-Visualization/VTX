@@ -1,4 +1,5 @@
 #include "measurement_picker.hpp"
+#include "__new_archi/ui/default_tools/keys.hpp"
 #include "__new_archi/ui/qt/application_qt.hpp"
 #include "__new_archi/ui/qt/state/state_machine.hpp"
 #include "__new_archi/ui/qt/state/visualization.hpp"
@@ -44,11 +45,13 @@ namespace VTX::UI::QT::Controller
 
 		if ( selection.isEmpty() )
 		{
-			UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Render, position );
+			QT_APP()->getMainWindow().getContextualMenu().pop( VTX::UI::DefaultTools::ContextualMenu::RENDER,
+															   position );
 		}
 		else
 		{
-			UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Selection, &selection, position );
+			QT_APP()->getMainWindow().getContextualMenu().pop(
+				VTX::UI::DefaultTools::ContextualMenu::SELECTION, &selection, position );
 		}
 	}
 

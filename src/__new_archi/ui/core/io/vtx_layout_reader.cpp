@@ -13,6 +13,11 @@ namespace VTX::UI::Core::IO
 		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::DefaultTools::SCENE_WINDOW_KEY ) );
 
 		layoutData			 = UI::Core::ToolLayoutData();
+		layoutData.tabName	 = "Main";
+		layoutData.blockName = "File";
+		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::DefaultTools::MOLECULE_LOADER_KEY, layoutData ) );
+
+		layoutData			 = UI::Core::ToolLayoutData();
 		layoutData.tabName	 = "Tools";
 		layoutData.blockName = "Structural Alignment";
 

@@ -361,6 +361,8 @@ namespace VTX::Object3D
 	void Scene::_createDefaultPath()
 	{
 		Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
+		_defaultPath			 = path;
+
 		addPath( path );
 	}
 

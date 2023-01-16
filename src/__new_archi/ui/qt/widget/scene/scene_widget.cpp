@@ -1,17 +1,11 @@
 #include "scene_widget.hpp"
+#include "__new_archi/ui/default_tools/keys.hpp"
 #include "__new_archi/ui/qt/application_qt.hpp"
 #include "__new_archi/ui/qt/main_window.hpp"
-#include "__new_archi/ui/qt/widget/scene/view/molecule_scene_view.hpp"
-#include "__new_archi/ui/qt/widget/scene/view/path_scene_view.hpp"
 #include "__new_archi/ui/qt/widget_factory.hpp"
 #include "action/action_manager.hpp"
 #include "action/scene.hpp"
 #include "action/selection.hpp"
-#include "model/label.hpp"
-#include "model/measurement/angle.hpp"
-#include "model/measurement/dihedral_angle.hpp"
-#include "model/measurement/distance.hpp"
-#include "model/molecule.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
@@ -19,9 +13,6 @@
 #include "style.hpp"
 #include "ui/contextual_menu.hpp"
 #include "ui/mime_type.hpp"
-#include "view/ui/widget/measurement/angle_scene_view.hpp"
-#include "view/ui/widget/measurement/dihedral_angle_scene_view.hpp"
-#include "view/ui/widget/measurement/distance_scene_view.hpp"
 #include "vtx_app.hpp"
 #include <QScrollBar>
 #include <algorithm>
@@ -67,118 +58,6 @@ namespace VTX::UI::QT::Widget::Scene
 
 			deleteSceneItemWidget( sceneItemWidget );
 		}
-		// else if ( p_event.name == Event::Global::MOLECULE_ADDED )
-		//{
-		//	const Event::VTXEventPtr<Model::Molecule> & castedEvent
-		//		= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-
-		//	const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_MOLECULE );
-
-		//	instantiateSceneItem<View::MoleculeSceneView, Model::Molecule>(
-		//		castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, "moleculeSceneView" );
-
-		//	Object3D::Scene & scene = VTXApp::get().getScene();
-		//	scene.changeModelPosition( *castedEvent.ptr, defaultPosition );
-		//}
-		// else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
-		//{
-		//	const Event::VTXEventPtr<Model::Molecule> & castedEvent
-		//		= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-
-		//	deleteSceneItem<View::MoleculeSceneView, Model::Molecule>( castedEvent.ptr,
-		//															   ID::View::UI_MOLECULE_STRUCTURE );
-		//}
-		// else if ( p_event.name == Event::Global::PATH_ADDED )
-		//{
-		//	const Event::VTXEventPtr<Model::Path> & castedEvent
-		//		= dynamic_cast<const Event::VTXEventPtr<Model::Path> &>( p_event );
-
-		//	const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_PATH );
-
-		//	instantiateSceneItem<View::PathSceneView, Model::Path>(
-		//		castedEvent.ptr, ID::View::UI_SCENE_PATH, "pathSceneView" );
-
-		//	Object3D::Scene & scene = VTXApp::get().getScene();
-		//	scene.changeModelPosition( *castedEvent.ptr, defaultPosition );
-		//}
-		// else if ( p_event.name == Event::Global::PATH_REMOVED )
-		//{
-		//	const Event::VTXEventPtr<Model::Path> & castedEvent
-		//		= dynamic_cast<const Event::VTXEventPtr<Model::Path> &>( p_event );
-
-		//	deleteSceneItem<View::PathSceneView, Model::Path>( castedEvent.ptr, ID::View::UI_SCENE_PATH );
-		//}
-		// else if ( p_event.name == Event::Global::LABEL_ADDED )
-		//{
-		//	const Event::VTXEventPtr<Model::Label> & castedEvent
-		//		= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
-
-		//	const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_LABEL );
-
-		//	const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
-		//	if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
-		//	{
-		//		Model::Measurement::Distance * const distanceModel
-		//			= static_cast<Model::Measurement::Distance *>( castedEvent.ptr );
-
-		//		instantiateSceneItem<View::UI::Widget::Measurement::DistanceSceneView,
-		// Model::Measurement::Distance>( 			distanceModel, ID::View::UI_SCENE_DISTANCE_LABEL,
-		// "distanceSceneView"
-		// );
-		//	}
-		//	else if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
-		//	{
-		//		Model::Measurement::Angle * const angleModel
-		//			= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
-
-		//		instantiateSceneItem<View::UI::Widget::Measurement::AngleSceneView, Model::Measurement::Angle>(
-		//			angleModel, ID::View::UI_SCENE_ANGLE_LABEL, "angleSceneView" );
-		//	}
-		//	else if ( labeltype == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
-		//	{
-		//		Model::Measurement::DihedralAngle * const angleModel
-		//			= static_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
-
-		//		instantiateSceneItem<View::UI::Widget::Measurement::DihedralAngleSceneView,
-		//							 Model::Measurement::DihedralAngle>(
-		//			angleModel, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL, "dihedralAngleSceneView" );
-		//	}
-
-		//	Object3D::Scene & scene = VTXApp::get().getScene();
-		//	scene.changeModelPosition( *castedEvent.ptr, defaultPosition );
-		//}
-		// else if ( p_event.name == Event::Global::LABEL_REMOVED )
-		//{
-		//	const Event::VTXEventPtr<Model::Label> & castedEvent
-		//		= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
-
-		//	const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
-		//	if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
-		//	{
-		//		Model::Measurement::Distance * const distanceModel
-		//			= static_cast<Model::Measurement::Distance *>( castedEvent.ptr );
-
-		//		deleteSceneItem<View::UI::Widget::Measurement::DistanceSceneView>( distanceModel,
-		//																		   ID::View::UI_SCENE_DISTANCE_LABEL
-		//);
-		//	}
-		//	else if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
-		//	{
-		//		Model::Measurement::Angle * const angleModel
-		//			= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
-
-		//		deleteSceneItem<View::UI::Widget::Measurement::AngleSceneView>( angleModel,
-		//																		ID::View::UI_SCENE_ANGLE_LABEL );
-		//	}
-		//	else if ( labeltype == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
-		//	{
-		//		Model::Measurement::DihedralAngle * const dihedralAngleModel
-		//			= static_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
-
-		//		deleteSceneItem<View::UI::Widget::Measurement::DihedralAngleSceneView>(
-		//			dihedralAngleModel, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL );
-		//	}
-		//}
 		else if ( p_event.name == Event::Global::SCENE_ITEM_INDEXES_CHANGE )
 		{
 			_refreshItemIndex();
@@ -191,9 +70,9 @@ namespace VTX::UI::QT::Widget::Scene
 	}
 	SceneItemWidget * SceneWidget::instantiateSceneItemWidget( Generic::BaseSceneItem * const p_sceneItem )
 	{
-		const ID::VTX_ID & modelTypeID	   = MVC::MvcManager::get().getModelTypeID( p_sceneItem->getModelID() );
-		const int		   defaultPosition = _getDefaultIndex( modelTypeID );
+		const int defaultPosition = _getDefaultIndex( *p_sceneItem );
 
+		const ID::VTX_ID &		modelTypeID		= MVC::MvcManager::get().getModelTypeID( p_sceneItem->getModelID() );
 		SceneItemWidget * const sceneItemWidget = _mapInstanciers[ modelTypeID ]->instantiateItem( p_sceneItem );
 
 		const int index = int( _sceneWidgets.size() );
@@ -352,18 +231,19 @@ namespace VTX::UI::QT::Widget::Scene
 		}
 	}
 
-	int SceneWidget::_getDefaultIndex( const ID::VTX_ID & p_itemTypeID ) const
+	int SceneWidget::_getDefaultIndex( const Generic::BaseSceneItem & p_item ) const
 	{
 		if ( _sceneWidgets.size() == 0 )
 			return 0;
 
+		const Model::ID & sceneDefaultPathID = VTXApp::get().getScene().getDefaultPath()->getId();
+
 		// TODO : Better management of section in scene view.
-		if ( p_itemTypeID != VTX::ID::Model::MODEL_PATH )
+		if ( p_item.getModelID() != sceneDefaultPathID )
 		{
 			const std::vector<SceneItemWidget *>::const_reverse_iterator lastItemIt = _sceneWidgets.crbegin();
-			const ID::VTX_ID & lastItemTypeId = MVC::MvcManager::get().getModelTypeID( ( *lastItemIt )->getModelID() );
 
-			if ( lastItemTypeId == VTX::ID::Model::MODEL_PATH )
+			if ( ( *lastItemIt )->getModelID() == sceneDefaultPathID )
 			{
 				return int( _sceneWidgets.size() - 1 );
 			}
@@ -468,7 +348,9 @@ namespace VTX::UI::QT::Widget::Scene
 		if ( p_event->buttons() & Qt::MouseButton::RightButton )
 		{
 			Object3D::Scene & scene = VTXApp::get().getScene();
-			UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Scene, &scene, p_event->globalPos() );
+
+			QT_APP()->getMainWindow().getContextualMenu().pop( VTX::UI::DefaultTools::ContextualMenu::SCENE,
+															   p_event->globalPos() );
 
 			p_event->accept();
 		}
