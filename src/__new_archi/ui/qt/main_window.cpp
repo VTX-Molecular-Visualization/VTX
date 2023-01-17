@@ -366,17 +366,17 @@ namespace VTX::UI::QT
 		title += " - RELEASE";
 #endif
 #endif
-		// const Util::FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
+		const Util::FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
 
-		// if ( !currentSessionFilepath.path().empty() )
-		//{
-		//	title += " - " + currentSessionFilepath.filename();
+		if ( !currentSessionFilepath.path().empty() )
+		{
+			title += " - " + currentSessionFilepath.filename();
 
-		//	if ( VTXApp::get().getScenePathData().sceneHasModifications() )
-		//	{
-		//		title += Style::WINDOW_TITLE_SCENE_MODIFIED_FEEDBACK;
-		//	}
-		//}
+			if ( VTXApp::get().getScenePathData().sceneHasModifications() )
+			{
+				title += Style::WINDOW_TITLE_SCENE_MODIFIED_FEEDBACK;
+			}
+		}
 
 		return title;
 	}
@@ -513,11 +513,12 @@ namespace VTX::UI::QT
 	{
 		QMainWindow::showEvent( p_event );
 
-		// if ( !_renderWidget->isOpenGLValid() )
-		//{
-		//	_renderWidget->show();
-		//	_renderWidget->hide();
-		// }
+		QT::Widget::Render::RenderWidget * const renderWidget = getRender();
+		if ( renderWidget != nullptr && !renderWidget->isOpenGLValid() )
+		{
+			renderWidget->show();
+			renderWidget->hide();
+		}
 	}
 
 	void MainWindow::dragEnterEvent( QDragEnterEvent * p_event )

@@ -2,13 +2,19 @@
 #define __VTX_UI_QT_ACTION_APPLICATION__
 
 #include "__new_archi/ui/qt/application_qt.hpp"
+#include "__new_archi/ui/qt/dialog.hpp"
 #include "__new_archi/ui/qt/state/state_machine.hpp"
 #include "__new_archi/ui/qt/state/visualization.hpp"
 #include "action/action_manager.hpp"
 #include "action/base_action.hpp"
 #include "define.hpp"
 #include "id.hpp"
+#include "io/struct/scene_path_data.hpp"
 #include "tool/logger.hpp"
+#include "worker/loader.hpp"
+#include "worker/saver.hpp"
+#include "worker/scene_loader.hpp"
+#include "worker/worker_manager.hpp"
 
 namespace VTX::UI::QT::Action::Main
 {
@@ -17,6 +23,55 @@ namespace VTX::UI::QT::Action::Main
 	  public:
 		explicit Quit() {}
 		virtual void execute() override;
+	};
+
+	class Open : public VTX::Action::BaseAction
+	{
+	  private:
+		class LoadSceneClass
+		{
+		  public:
+			LoadSceneClass( const std::vector<Util::FilePath> & p_paths ) : _paths( p_paths ) {};
+			void _loadScene();
+
+		  private:
+			std::vector<Util::FilePath> _paths;
+		};
+
+	  public:
+		explicit Open( const Util::FilePath & p_path ) { _paths.emplace_back( p_path ); }
+		explicit Open( const std::vector<Util::FilePath> & p_paths ) : _paths( p_paths ) {}
+		explicit Open( const std::map<Util::FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
+		explicit Open( const Util::FilePath & p_trajectoryPath, Model::Molecule & p_target )
+		{
+			_trajectoryTargets.emplace_back( &p_target );
+			_paths.emplace_back( p_trajectoryPath );
+		}
+
+		virtual void execute() override;
+
+	  private:
+		std::vector<Util::FilePath>				_paths = std::vector<Util::FilePath>();
+		std::map<Util::FilePath, std::string *> _buffers;
+
+		std::vector<Model::Molecule *> _trajectoryTargets = std::vector<Model::Molecule *>();
+	};
+
+	class Save : public VTX::Action::BaseAction
+	{
+	  public:
+		explicit Save() : _path( "" ), _callback( nullptr ) {}
+		explicit Save( const Util::FilePath & p_path ) : _path( p_path ), _callback( nullptr ) {}
+		explicit Save( const Util::FilePath & p_path, Worker::CallbackThread * const p_callback ) :
+			_path( p_path ), _callback( p_callback )
+		{
+		}
+
+		virtual void execute() override;
+
+	  private:
+		const Util::FilePath		   _path;
+		Worker::CallbackThread * const _callback;
 	};
 
 	class ToggleCameraController : public VTX::Action::BaseAction

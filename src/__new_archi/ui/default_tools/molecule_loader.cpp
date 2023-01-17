@@ -1,16 +1,18 @@
 #include "molecule_loader.hpp"
 #include "__new_archi/ui/default_tools/keys.hpp"
+#include "__new_archi/ui/qt/action/main.hpp"
 #include "__new_archi/ui/qt/application_qt.hpp"
+#include "__new_archi/ui/qt/dialog.hpp"
 #include "__new_archi/ui/qt/main_window.hpp"
+#include "__new_archi/ui/qt/widget/custom_widget/indexed_action.hpp"
 #include "__new_archi/ui/qt/widget/main_menu/menu_tooltab_widget.hpp"
 #include "__new_archi/ui/qt/widget/scene/view/molecule_scene_view.hpp"
 #include "__new_archi/ui/qt/widget/scene/view/path_scene_view.hpp"
 #include "__new_archi/ui/qt/widget_factory.hpp"
-#include "action/main.hpp"
-#include "action/setting.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
-#include "ui/widget/custom_widget/indexed_action.hpp"
+#include "src/action/action_manager.hpp"
+#include "src/action/setting.hpp"
 #include <QMenu>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -43,17 +45,20 @@ namespace VTX::UI::DefaultTools
 			= QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
 				&tooltab, "newSessionButton" );
 		newSessionButton->setData( "New", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
+		newSessionButton->setTriggerAction( this, &SessionLoader::_newSession );
 
 		VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget * const downloadMoleculeButton
 			= QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
 				&tooltab, "downloadMoleculeButton" );
 		downloadMoleculeButton->setData(
 			"Download", ":/sprite/download_molecule_icon.png", Qt::Orientation::Horizontal );
+		downloadMoleculeButton->setTriggerAction( this, &SessionLoader::_downloadMoleculeFile );
 
 		VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget * const openSessionButton
 			= QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
 				&tooltab, "openSessionButton" );
 		openSessionButton->setData( "Open", ":/sprite/open_session_icon.png", Qt::Orientation::Horizontal );
+		openSessionButton->setTriggerAction( this, &SessionLoader::_openFile );
 
 		_openRecentSessionButton
 			= QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
@@ -65,11 +70,13 @@ namespace VTX::UI::DefaultTools
 			= QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
 				&tooltab, "saveSessionButton" );
 		saveSessionButton->setData( "Save", ":/sprite/save_session_icon.png", Qt::Orientation::Horizontal );
+		saveSessionButton->setTriggerAction( this, &SessionLoader::_saveSession );
 
 		VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget * const saveAsSessionButton
 			= QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
 				&tooltab, "saveAsSessionButton" );
 		saveAsSessionButton->setData( "Save as...", ":/sprite/saveas_session_icon.png", Qt::Orientation::Horizontal );
+		saveAsSessionButton->setTriggerAction( this, &SessionLoader::_saveAsSession );
 
 		_recentSessionMenu = new QMenu( _openRecentSessionButton );
 		_refreshRecentFiles();
@@ -102,12 +109,12 @@ namespace VTX::UI::DefaultTools
 
 		for ( const Util::FilePath & recentFile : Setting::recentLoadingPath )
 		{
-			VTX::UI::Widget::CustomWidget::IndexedAction * const action
-				= new VTX::UI::Widget::CustomWidget::IndexedAction( actionIndex, _recentSessionMenu );
+			QT::Widget::CustomWidget::IndexedAction * const action
+				= new QT::Widget::CustomWidget::IndexedAction( actionIndex, _recentSessionMenu );
 			action->setText( QString::fromStdString( recentFile.path() ) );
 
 			connect( action,
-					 &VTX::UI::Widget::CustomWidget::IndexedAction::triggeredWithIndex,
+					 &QT::Widget::CustomWidget::IndexedAction::triggeredWithIndex,
 					 this,
 					 &SessionLoader::_loadRecentSession );
 
@@ -117,14 +124,14 @@ namespace VTX::UI::DefaultTools
 
 		_openRecentSessionButton->setEnabled( actionIndex > 0 );
 	}
-	void SessionLoader::_newSession() const { Dialog::createNewSessionDialog(); }
-	void SessionLoader::_downloadMoleculeFile() const { UI::Dialog::openDownloadMoleculeDialog(); }
-	void SessionLoader::_openFile() const { Dialog::openLoadSessionDialog(); }
+	void SessionLoader::_newSession() const { QT::Dialog::createNewSessionDialog(); }
+	void SessionLoader::_downloadMoleculeFile() const { QT::Dialog::openDownloadMoleculeDialog(); }
+	void SessionLoader::_openFile() const { QT::Dialog::openLoadSessionDialog(); }
 	void SessionLoader::_saveSession() const
 	{
-		VTX_ACTION( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new QT::Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
-	void SessionLoader::_saveAsSession() const { Dialog::openSaveSessionDialog(); }
+	void SessionLoader::_saveAsSession() const { QT::Dialog::openSaveSessionDialog(); }
 
 	void SessionLoader::_loadRecentSession( const int & p_ptrSessionIndex ) const
 	{
@@ -135,7 +142,7 @@ namespace VTX::UI::DefaultTools
 			return;
 		}
 
-		VTX_ACTION( new Action::Main::Open( *recentPath ) );
+		VTX_ACTION( new QT::Action::Main::Open( *recentPath ) );
 	}
 
 } // namespace VTX::UI::DefaultTools

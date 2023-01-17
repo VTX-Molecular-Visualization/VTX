@@ -53,7 +53,7 @@ namespace VTX::UI::QT
 		_stateMachine->update( elapsed );
 	}
 
-	void ApplicationQt::quit() { closeAllWindows(); };
+	void ApplicationQt::quit() { QApplication::quit(); };
 
 	void ApplicationQt::_initUI( const std::vector<std::string> & p_args )
 	{
@@ -94,14 +94,14 @@ namespace VTX::UI::QT
 	{
 		_mainWindow = new UI::QT::MainWindow();
 		_mainWindow->setupUi();
-		_mainWindow->show();
-
-		_mainWindow->initWindowLayout();
 	}
 
 	void ApplicationQt::_postInit( const std::vector<std::string> & p_args )
 	{
 		Core::BaseUIApplication::_postInit( p_args );
+
+		_mainWindow->show();
+		_mainWindow->initWindowLayout();
 
 		if ( !_mainWindow->isOpenGLValid() )
 		{
