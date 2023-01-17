@@ -252,6 +252,9 @@ namespace VTX::UI::Widget::Scene
 	}
 	void SceneItemWidget::_refreshItemsVisibilityRecursive( QTreeWidgetItem & p_widget )
 	{
+		if ( p_widget.isHidden() )
+			return;
+
 		const Model::ID	   itemID	 = _getModelIDFromItem( p_widget );
 		const ID::VTX_ID & modelType = MVC::MvcManager::get().getModelTypeID( itemID );
 
