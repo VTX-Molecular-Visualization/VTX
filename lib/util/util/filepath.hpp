@@ -37,8 +37,7 @@ namespace VTX::Util
 		}
 
 		inline const bool exists() const { return std::filesystem::exists( _path ); }
-
-		inline const bool empty() const { return std::filesystem::is_empty( _path ); }
+		inline const bool empty() const { return _path.empty(); }
 
 		inline friend bool operator==( const FilePath & p_lhs, const FilePath & p_rhs )
 		{
