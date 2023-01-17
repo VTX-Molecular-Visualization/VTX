@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_TOOL_DEFAULT_SESSION_LOADER__
-#define __VTX_UI_TOOL_DEFAULT_SESSION_LOADER__
+#ifndef __VTX_UI_TOOL_DEFAULT_SESSION_TOOL__
+#define __VTX_UI_TOOL_DEFAULT_SESSION_TOOL__
 
 #include "__new_archi/ui/core/tool_registration.hpp"
 #include "__new_archi/ui/qt/widget/main_menu/menu_toolbutton_widget.hpp"
@@ -12,12 +12,12 @@
 
 namespace VTX::UI::DefaultTools
 {
-	class SessionLoader : public VTX::UI::Core::BaseVTXUITool, public QObject
+	class SessionTool : public VTX::UI::Core::BaseVTXUITool, public QObject
 	{
-		REGISTER_TOOL( SessionLoader, MOLECULE_LOADER_KEY );
+		REGISTER_TOOL( SessionTool, SESSION_TOOLS_KEY );
 
 	  public:
-		SessionLoader();
+		SessionTool();
 		void instantiateTool() override;
 
 	  private:

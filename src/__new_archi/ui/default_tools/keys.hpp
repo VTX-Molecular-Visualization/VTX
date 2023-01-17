@@ -8,7 +8,7 @@ namespace VTX::UI::DefaultTools
 {
 	inline static const VTX::UI::Core::ToolIdentifier RENDER_WINDOW_KEY	  = "VTX_RenderWindow";
 	inline static const VTX::UI::Core::ToolIdentifier SCENE_WINDOW_KEY	  = "VTX_SceneWindow";
-	inline static const VTX::UI::Core::ToolIdentifier MOLECULE_LOADER_KEY = "VTX_MoleculeLoader";
+	inline static const VTX::UI::Core::ToolIdentifier SESSION_TOOLS_KEY = "VTX_SessionTools";
 
 	namespace ContextualMenu
 	{

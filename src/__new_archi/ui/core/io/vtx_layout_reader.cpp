@@ -15,7 +15,7 @@ namespace VTX::UI::Core::IO
 		layoutData			 = UI::Core::ToolLayoutData();
 		layoutData.tabName	 = "Main";
 		layoutData.blockName = "File";
-		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::DefaultTools::MOLECULE_LOADER_KEY, layoutData ) );
+		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::DefaultTools::SESSION_TOOLS_KEY, layoutData ) );
 
 		layoutData			 = UI::Core::ToolLayoutData();
 		layoutData.tabName	 = "Tools";
