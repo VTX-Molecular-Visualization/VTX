@@ -1,22 +1,100 @@
 #version 450
-#include "include/grid.glsl"
 
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 // Uniforms.
-uniform vec3	uGridSESWorldOrigin;
-uniform uvec3	uGridSESSize;
-uniform vec3	uGridSESCellSize;
+uniform uint uSize;
+uniform uint uSizeReduced;
 
 // SSBO.
-layout (std430, binding = 5) writeonly buffer TriangleValidities
+layout (std140, binding = 0) writeonly buffer TrianglePositions
+{
+	vec4[] trianglePositions;
+};
+
+layout (std140, binding = 1) writeonly buffer TriangleNormals
+{
+	vec4[] triangleNormals;
+};
+
+layout (std430, binding = 2) writeonly buffer TriangleIndices
+{
+	uint[] triangleIndices;
+};
+
+layout (std140, binding = 3) writeonly buffer TriangleColors
+{
+	vec4[] triangleColors;
+};
+
+layout (std430, binding = 4) writeonly buffer TriangleVisibilities
+{
+	uint[] triangleVisibilities;
+};
+
+layout (std430, binding = 5) writeonly buffer TriangleAtomIds
+{
+	uint[] triangleAtomIds;
+};
+
+layout (std140, binding = 6) readonly buffer TrianglePositionsTmp
+{
+	vec4[] trianglePositionsTmp;
+};
+
+layout (std140, binding = 7) readonly buffer TriangleNormalsTmp
+{
+	vec4[] triangleNormalsTmp;
+};
+
+layout (std430, binding = 8) readonly buffer TriangleAtomIdsTmp
+{
+	uint[] triangleAtomIdsTmp;
+};
+
+layout (std430, binding = 9) readonly buffer TriangleValidities
 {
 	uint[] triangleValidities;
 };
 
+layout (std430, binding = 10) readonly buffer TriangleValiditiesSum
+{
+	uint[] triangleValiditiesSum;
+};
+
+layout (std140, binding = 11) readonly buffer AtomColors
+{
+	vec4[] atomColors;
+};
+
+layout (std430, binding = 12) readonly buffer AtomVisibilities
+{
+	uint[] atomVisibilities;
+};
+
 void main()
 {
-// Get corresponding ses grid data.
+	// Get corresponding ses grid data.
 	const uvec3 sesGridPosition = gl_GlobalInvocationID;
-	const uint sesGridHash = gridHash( sesGridPosition, uGridSESSize );
+
+	const uint index = gl_GlobalInvocationID.x;
+	
+	if( index > uSize )
+	{
+		return;
+	}
+	
+	if( triangleValidities[ index ] == 0 )
+	{
+		return;
+	}
+
+	const uint indexNew = triangleValiditiesSum[ index ];
+
+	trianglePositions[ indexNew ] = trianglePositionsTmp[ index ];
+	triangleNormals[ indexNew ] = triangleNormalsTmp[ index ];
+	triangleIndices[ indexNew ] = indexNew;
+	triangleColors[ indexNew ] = atomColors[ triangleAtomIdsTmp[ index ] ];
+	triangleVisibilities[ indexNew ] = atomVisibilities[ triangleAtomIdsTmp[ index ] ];
+	triangleAtomIds[ indexNew ] = triangleAtomIdsTmp[ index ];
 }

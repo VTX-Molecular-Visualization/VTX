@@ -33,7 +33,7 @@ namespace VTX::Worker
 
 		void start();
 		void start( const Vec3i &, const GLbitfield = 0 );
-		void start( const uint, const GLbitfield = 0 );
+		void start( const size_t, const GLbitfield = 0 );
 
 	  protected:
 		Renderer::GL::Program * const _program;
@@ -46,7 +46,7 @@ namespace VTX::Worker
 
 	  private:
 		virtual void _setUniforms() {}
-		const Vec3i	 _computeSize( const uint ) const;
+		const Vec3i	 _computeSize( const size_t ) const;
 	};
 } // namespace VTX::Worker
 

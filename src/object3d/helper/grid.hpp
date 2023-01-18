@@ -28,7 +28,7 @@ namespace VTX::Object3D::Helper
 		uint  gridHash( const Vec3i & p_gridPosition ) const;
 		uint  gridHash( const uint p_x, const uint p_y, const uint p_z ) const;
 
-		inline const uint getCellCount() const { return size.x * size.y * size.z; }
+		inline const size_t getCellCount() const { return size.x * size.y * size.z; }
 
 		void refresh() override;
 		void render( const Object3D::Camera & ) const override;
@@ -50,7 +50,7 @@ namespace VTX::Object3D::Helper
 		};
 
 		Renderer::GL::Buffer _vbo  = Renderer::GL::Buffer();
-		uint				 _size = 0;
+		size_t				 _size = 0;
 
 		Renderer::GL::Program * _program = nullptr;
 	};

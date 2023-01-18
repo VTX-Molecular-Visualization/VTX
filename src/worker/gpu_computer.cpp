@@ -30,14 +30,14 @@ namespace VTX::Worker
 		start();
 	}
 
-	void GpuComputer::start( const uint p_taskCount, const GLbitfield p_barrier )
+	void GpuComputer::start( const size_t p_taskCount, const GLbitfield p_barrier )
 	{
 		_size = _computeSize( p_taskCount );
 		setBarrier( p_barrier );
 		start();
 	}
 
-	const Vec3i GpuComputer::_computeSize( const uint p_taskCount ) const
+	const Vec3i GpuComputer::_computeSize( const size_t p_taskCount ) const
 	{
 		VTX_DEBUG( "Gpu work compute task count: {} and local size: {}", p_taskCount, LOCAL_SIZE_X );
 

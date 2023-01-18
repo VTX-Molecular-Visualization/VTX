@@ -186,6 +186,22 @@ namespace VTX::Renderer::GL
 		}
 
 		template<typename T>
+		inline void const getData( std::vector<T> & p_vector )
+		{
+			assert( _gl->glIsBuffer( _id ) );
+
+			_gl->glGetNamedBufferSubData( _id, 0, GLsizei( p_vector.size() * sizeof( T ) ), &p_vector[ 0 ] );
+		}
+
+		template<typename T>
+		inline void const getData( const uint p_offset, const size_t p_length, T * const p_data )
+		{
+			assert( _gl->glIsBuffer( _id ) );
+
+			_gl->glGetNamedBufferSubData( _id, GLintptr( p_offset ), GLsizei( p_length ), p_data );
+		}
+
+		template<typename T>
 		inline T * const map( const Access & p_access ) const
 		{
 			assert( _gl->glIsBuffer( _id ) );
