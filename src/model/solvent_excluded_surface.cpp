@@ -681,6 +681,7 @@ namespace VTX
 			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
+		// TODO: check if it is still needed after creation.
 		void SolventExcludedSurface::refreshColors()
 		{
 			using VTX::Renderer::GL::Buffer;
