@@ -2,7 +2,7 @@
 #include "include/grid.glsl"
 #define FLT_MAX 3.402823466e+38
 
-layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = LOCAL_SIZE_X, local_size_y = LOCAL_SIZE_Y, local_size_z = LOCAL_SIZE_Z) in;
 
 // Uniforms.
 uniform vec3	uGridAtomWorldOrigin;

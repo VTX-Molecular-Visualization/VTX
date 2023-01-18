@@ -46,7 +46,8 @@ namespace VTX::Renderer::GL
 	}
 
 	Program * const ProgramManager::createProgram( const std::string &				 p_name,
-												   const std::vector<IO::FilePath> & p_shaders )
+												   const std::vector<IO::FilePath> & p_shaders,
+												   const std::string &				 p_toInject )
 	{
 		VTX_DEBUG( "Creating program: " + p_name );
 
@@ -58,7 +59,7 @@ namespace VTX::Renderer::GL
 
 			for ( const IO::FilePath & shader : p_shaders )
 			{
-				GLuint id = _createShader( shader );
+				GLuint id = _createShader( shader, p_toInject );
 				if ( id != GL_INVALID_INDEX )
 				{
 					program.attachShader( id );
@@ -99,7 +100,7 @@ namespace VTX::Renderer::GL
 		return nullptr;
 	}
 
-	GLuint ProgramManager::_createShader( const IO::FilePath & p_path )
+	GLuint ProgramManager::_createShader( const IO::FilePath & p_path, const std::string & p_toInject )
 	{
 		const std::string name = p_path.filename();
 		VTX_DEBUG( "Creating shader: " + name );
@@ -121,6 +122,15 @@ namespace VTX::Renderer::GL
 			{
 				_gl->glDeleteShader( shaderId );
 				return GL_INVALID_INDEX;
+			}
+
+			// Handle injection (after #version).
+			if ( p_toInject != "" )
+			{
+				size_t startPosVersion = src.find( "#version" );
+				assert( startPosVersion != std::string::npos );
+				size_t endPosVersion = src.find( "\n", startPosVersion );
+				src.insert( endPosVersion + 1, p_toInject );
 			}
 
 			// Handle #include.

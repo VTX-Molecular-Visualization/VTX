@@ -37,7 +37,9 @@ namespace VTX
 				return instance;
 			}
 
-			Program * const createProgram( const std::string &, const std::vector<IO::FilePath> & );
+			Program * const createProgram( const std::string &,
+										   const std::vector<IO::FilePath> &,
+										   const std::string & = "" );
 			void			deleteProgram( const std::string & );
 			Program * const getProgram( const std::string & );
 			void			refreshShaders();
@@ -55,7 +57,7 @@ namespace VTX
 			ProgramManager() = default;
 			~ProgramManager();
 
-			GLuint		_createShader( const IO::FilePath & );
+			GLuint		_createShader( const IO::FilePath &, const std::string & = "" );
 			std::string _getShaderErrors( const GLuint );
 		};
 	} // namespace Renderer::GL

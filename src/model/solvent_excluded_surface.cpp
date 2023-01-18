@@ -267,13 +267,12 @@ namespace VTX
 
 			// Worker: stream compaction.
 			Worker::GpuComputer workerStreamCompaction( IO::FilePath( "ses/stream_compaction.comp" ) );
-			std::vector<uint>	triangleValiditiesSum( triangleValidities.size() );
-			// Perform exclusive scan on validity buffer.
-			std::exclusive_scan(
-				triangleValidities.begin(), triangleValidities.end(), triangleValiditiesSum.begin(), 0 );
+			// std::vector<uint>	triangleValiditiesSum( triangleValidities.size() );
+			//  Perform exclusive scan on validity buffer.
+			std::exclusive_scan( triangleValidities.begin(), triangleValidities.end(), triangleValidities.begin(), 0 );
 
-			const size_t bufferSizeReduced = std::unique( triangleValiditiesSum.begin(), triangleValiditiesSum.end() )
-											 - triangleValiditiesSum.begin();
+			const size_t bufferSizeReduced
+				= std::unique( triangleValidities.begin(), triangleValidities.end() ) - triangleValidities.begin();
 			_indiceCount = uint( bufferSizeReduced );
 
 			VTX_DEBUG( "{}", bufferSize );
@@ -298,7 +297,7 @@ namespace VTX
 			bufferSelections.set( std::vector( bufferSizeReduced, 0 ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 
 			// Input.
-			Buffer ssboTriangleValiditiesSum( triangleValiditiesSum );
+			Buffer ssboTriangleValiditiesSum( triangleValidities );
 			Buffer ssboAtomColors( _category->getMoleculePtr()->getBufferAtomColors() );
 			Buffer ssboAtomVisibilities( _category->getMoleculePtr()->getBufferAtomVisibilities() );
 

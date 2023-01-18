@@ -9,6 +9,8 @@
 #include <vector>
 
 #define LOCAL_SIZE_X 1
+#define LOCAL_SIZE_Y 1
+#define LOCAL_SIZE_Z 1
 
 namespace VTX::Worker
 {
@@ -16,13 +18,17 @@ namespace VTX::Worker
 	{
 	  public:
 		explicit GpuComputer( const IO::FilePath & p_shader,
-							  const Vec3i &		   p_size	 = Vec3i( LOCAL_SIZE_X, 1, 1 ),
+							  const Vec3i &		   p_size	 = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ),
 							  const GLbitfield	   p_barrier = 0,
 							  const bool		   p_force	 = false ) :
 			_size( p_size ),
-			_barrier( p_barrier ), _force( p_force ),
-			_program( VTX_PROGRAM_MANAGER().createProgram( p_shader.filenameWithoutExtension(), { p_shader } ) )
+			_barrier( p_barrier ), _force( p_force )
 		{
+			const std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
+												+ "#define LOCAL_SIZE_Y " + std::to_string( LOCAL_SIZE_Y ) + "\n"
+												+ "#define LOCAL_SIZE_Z " + std::to_string( LOCAL_SIZE_Z ) + "\n";
+			_program = VTX_PROGRAM_MANAGER().createProgram(
+				p_shader.filenameWithoutExtension(), { p_shader }, definesToInject );
 		}
 
 		virtual ~GpuComputer() = default;
@@ -36,11 +42,10 @@ namespace VTX::Worker
 		void start( const size_t, const GLbitfield = 0 );
 
 	  protected:
-		Renderer::GL::Program * const _program;
-		Vec3i						  _size;
-		// uint						  _size;
-		GLbitfield _barrier;
-		bool	   _force;
+		Renderer::GL::Program * _program;
+		Vec3i					_size;
+		GLbitfield				_barrier;
+		bool					_force;
 
 		virtual void _run() override;
 
