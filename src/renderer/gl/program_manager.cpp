@@ -53,7 +53,7 @@ namespace VTX::Renderer::GL
 
 		if ( _programs.find( p_name ) == _programs.end() )
 		{
-			_programs[ p_name ] = new Program( p_shaders );
+			_programs[ p_name ] = new Program( p_shaders, p_toInject );
 			Program & program	= *_programs[ p_name ];
 			program.create( p_name );
 
@@ -227,7 +227,7 @@ namespace VTX::Renderer::GL
 			// program->setId( _gl->glCreateProgram() );
 			for ( const IO::FilePath & shader : program->getShaderPaths() )
 			{
-				GLuint id = _createShader( shader );
+				GLuint id = _createShader( shader, program->getToInject() );
 				if ( id != GL_INVALID_INDEX )
 				{
 					program->attachShader( id );

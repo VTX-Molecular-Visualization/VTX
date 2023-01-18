@@ -12,12 +12,16 @@ namespace VTX::Renderer::GL
 	class Program : public Generic::BaseOpenGL
 	{
 	  public:
-		Program( const std::vector<IO::FilePath> & p_shaderPaths ) : _shaderPaths( p_shaderPaths ) {}
+		Program( const std::vector<IO::FilePath> & p_shaderPaths, const std::string & p_toInject = "" ) :
+			_shaderPaths( p_shaderPaths ), _toInject( p_toInject )
+		{
+		}
 		~Program();
 
 		inline const GLuint						 getId() const { return _id; }
 		inline void								 setId( const GLuint p_id ) { _id = p_id; }
 		inline const std::vector<IO::FilePath> & getShaderPaths() const { return _shaderPaths; }
+		inline const std::string &				 getToInject() const { return _toInject; }
 
 		void create( const std::string & );
 		void attachShader( const GLuint );
@@ -144,6 +148,7 @@ namespace VTX::Renderer::GL
 		GLuint							_id			 = GL_INVALID_INDEX;
 		std::string						_name		 = "";
 		const std::vector<IO::FilePath> _shaderPaths = std::vector<IO::FilePath>();
+		const std::string				_toInject	 = "";
 		std::string						_getProgramErrors();
 
 		friend class ProgramManager;
