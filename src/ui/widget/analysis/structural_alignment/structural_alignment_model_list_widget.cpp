@@ -91,6 +91,12 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 			resetRMSD();
 	}
 
+	bool StructuralAlignmentModelListWidget::ModelFieldLine::blockSignals( const bool p_block )
+	{
+		_modelField->blockSignals( p_block );
+		return CustomWidget::BaseModelFieldLine::blockSignals( p_block );
+	};
+
 	StructuralAlignmentModelListWidget::StructuralAlignmentModelListWidget( QWidget * p_parent ) :
 		CustomWidget::BaseModelListWidget( p_parent )
 	{

@@ -23,6 +23,8 @@ namespace VTX::UI::Widget::CustomWidget
 
 		virtual Model::BaseModel * const getModel() const							  = 0;
 		virtual void					 setModel( Model::BaseModel * const p_model ) = 0;
+
+		virtual bool blockSignals( const bool p_block ) { return QObject::blockSignals( p_block ); };
 	};
 
 	class BaseModelListWidget : public BaseManualWidget<QWidget>

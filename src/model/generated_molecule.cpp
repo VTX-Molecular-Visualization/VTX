@@ -578,8 +578,9 @@ namespace VTX::Model
 		setDisplayName( p_namePrefix + p_molecule.getDefaultName() + p_nameSuffix );
 		setColor( Color::Rgba::randomPastel() );
 
-		VTX::Representation::RepresentationManager::get().instantiateCopy(
-			p_molecule.getRepresentation(), *this, false, false );
+		const Representation::InstantiatedRepresentation * const rep
+			= VTX::Representation::RepresentationManager::get().instantiateCopy(
+				p_molecule.getRepresentation(), *this, false, false );
 
 		if ( p_frame == ALL_FRAMES_INDEX )
 		{
@@ -618,6 +619,13 @@ namespace VTX::Model
 	}
 	void GeneratedMolecule::_copyChainData( Model::Chain & p_chain, const Model::Chain & p_chainSource )
 	{
+		const Representation::InstantiatedRepresentation * const sourceRepresentation
+			= p_chainSource.getRepresentation();
+
+		const bool hasDefaultRepresentation
+			= sourceRepresentation != nullptr
+			  && p_chainSource.getMoleculePtr()->isDefaultRepresentation( *sourceRepresentation );
+
 		p_chain.setMoleculePtr( this );
 		p_chain.setIndex( getChainCount() - 1 );
 		p_chain.setName( p_chainSource.getName() );
@@ -630,8 +638,12 @@ namespace VTX::Model
 
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
-			VTX::Representation::RepresentationManager::get().instantiateCopy(
-				p_chainSource.getRepresentation(), p_chain, false, false );
+			const Representation::InstantiatedRepresentation * const rep
+				= VTX::Representation::RepresentationManager::get().instantiateCopy(
+					p_chainSource.getRepresentation(), p_chain, false, false );
+
+			if ( hasDefaultRepresentation )
+				_markRepresentationAsDefault( rep );
 		}
 	}
 	void GeneratedMolecule::_copyResidueData( Model::Residue &		 p_residue,
@@ -714,8 +726,11 @@ namespace VTX::Model
 		if ( chain.hasCustomRepresentation()
 			 && p_fromMolecule.isDefaultRepresentation( *( chain.getRepresentation() ) ) )
 		{
-			VTX::Representation::RepresentationManager::get().instantiateCopy(
-				chain.getRepresentation(), chain, false, false );
+			Representation::InstantiatedRepresentation * const instantiatedRepresentation
+				= VTX::Representation::RepresentationManager::get().instantiateCopy(
+					chain.getRepresentation(), chain, false, false );
+
+			_markRepresentationAsDefault( instantiatedRepresentation );
 		}
 
 		p_fromMolecule.removeChain( p_index, false, false, false );

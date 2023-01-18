@@ -298,6 +298,9 @@ namespace VTX
 
 			void _addChain( Model::Chain * const p_chain );
 
+			void _markRepresentationAsDefault(
+				const Representation::InstantiatedRepresentation * const _instantiatedRepresentation );
+
 			void _onRepresentationChange() override;
 
 			Molecule();
