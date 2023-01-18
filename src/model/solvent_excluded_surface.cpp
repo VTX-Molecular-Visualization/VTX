@@ -267,7 +267,7 @@ namespace VTX
 
 			// Worker: stream compaction.
 			Worker::GpuComputer workerStreamCompaction( IO::FilePath( "ses/stream_compaction.comp" ) );
-			// std::vector<uint>	triangleValiditiesSum( triangleValidities.size() );
+			VTX_DEBUG( "Triangle buffer size before compaction: {}", bufferSize );
 			//  Perform exclusive scan on validity buffer.
 			std::exclusive_scan( triangleValidities.begin(), triangleValidities.end(), triangleValidities.begin(), 0 );
 
@@ -275,8 +275,7 @@ namespace VTX
 				= std::unique( triangleValidities.begin(), triangleValidities.end() ) - triangleValidities.begin();
 			_indiceCount = uint( bufferSizeReduced );
 
-			VTX_DEBUG( "{}", bufferSize );
-			VTX_DEBUG( "{}", _indiceCount );
+			VTX_DEBUG( "Triangle buffer size after compaction: {}", _indiceCount );
 
 			// Create SSBOs.
 			// Output.
