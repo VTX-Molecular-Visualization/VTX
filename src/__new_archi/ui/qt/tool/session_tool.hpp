@@ -3,8 +3,6 @@
 
 #include "__new_archi/ui/core/tool_registration.hpp"
 #include "__new_archi/ui/qt/widget/main_menu/menu_toolbutton_widget.hpp"
-#include "__new_archi/ui/qt/widget/scene/scene_item_widget_instancier.hpp"
-#include "__new_archi/ui/qt/widget/scene/scene_widget.hpp"
 #include "keys.hpp"
 #include "object3d/scene.hpp"
 #include <QMenu>
@@ -26,6 +24,7 @@ namespace VTX::UI::QT::Tool
 
 		void _addButtonsInMainMenu();
 		void _addActionsInContextualMenus();
+		void _registerShortcuts();
 
 	  private:
 		void _newSession() const;

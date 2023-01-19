@@ -1,9 +1,9 @@
 #include "picker.hpp"
-#include "__new_archi/ui/default_tools/keys.hpp"
 #include "__new_archi/ui/qt/action/selection.hpp"
 #include "__new_archi/ui/qt/application_qt.hpp"
 #include "__new_archi/ui/qt/main_window.hpp"
-#include "__new_archi/ui/qt/widget/render/render_widget.hpp"
+#include "__new_archi/ui/qt/tool/keys.hpp"
+#include "__new_archi/ui/qt/tool/render/widget/render_widget.hpp"
 #include "action/action_manager.hpp"
 #include "model/atom.hpp"
 #include "model/chain.hpp"
@@ -29,7 +29,7 @@ namespace VTX::UI::QT::Controller
 
 	void Picker::_onMouseRightClick( const uint p_x, const uint p_y )
 	{
-		QT::Widget::Render::RenderWidget * renderWidget = QT_APP()->getMainWindow().getRender();
+		QT::Tool::Render::Widget::RenderWidget * renderWidget = QT_APP()->getMainWindow().getRender();
 
 		const Vec2i ids = renderWidget->getPickedIds( p_x, p_y );
 		_performSelection( ids );
@@ -41,13 +41,11 @@ namespace VTX::UI::QT::Controller
 
 		if ( selection.isEmpty() )
 		{
-			QT_APP()->getMainWindow().getContextualMenu().pop( VTX::UI::DefaultTools::ContextualMenu::RENDER,
-															   position );
+			QT_APP()->getMainWindow().getContextualMenu().pop( Tool::ContextualMenu::RENDER, position );
 		}
 		else
 		{
-			QT_APP()->getMainWindow().getContextualMenu().pop(
-				VTX::UI::DefaultTools::ContextualMenu::SELECTION, &selection, position );
+			QT_APP()->getMainWindow().getContextualMenu().pop( Tool::ContextualMenu::SELECTION, &selection, position );
 		}
 	}
 

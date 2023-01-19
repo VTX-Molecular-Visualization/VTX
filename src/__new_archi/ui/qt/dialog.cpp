@@ -82,20 +82,6 @@ namespace VTX::UI::QT
 	//}
 	//}
 
-	void Dialog::openGLInitializationFail()
-	{
-		std::string msg
-			= "Unable to create OpenGL 4.5 context. Update your drivers and check your hardware compatibility.";
-		VTX_ERROR( msg );
-
-		QMessageBox::critical( &QT_APP()->getMainWindow(),
-							   "Error",
-							   msg.c_str(),
-							   QMessageBox::StandardButton::Ok,
-							   QMessageBox::StandardButton::Ok );
-		std::exit( EXIT_FAILURE );
-	}
-
 	void Dialog::exceptionDialog( const std::exception & e )
 	{
 		std::string msg = "Exception : " + std::string( e.what() );

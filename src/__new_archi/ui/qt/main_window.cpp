@@ -1,9 +1,9 @@
 #include "main_window.hpp"
 #include "__new_archi/tool/analysis/rmsd/core/rmsd.hpp"
-#include "__new_archi/ui/default_tools/keys.hpp"
 #include "__new_archi/ui/qt/application_qt.hpp"
 #include "__new_archi/ui/qt/dialog.hpp"
 #include "__new_archi/ui/qt/state/visualization.hpp"
+#include "__new_archi/ui/qt/tool/keys.hpp"
 #include "__new_archi/ui/qt/tool/session/dialog.hpp"
 #include "action/dev.hpp"
 #include "action/setting.hpp"
@@ -104,12 +104,6 @@ namespace VTX::UI::QT
 		_mainMenuBar = WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
 		setMenuBar( _mainMenuBar );
 		setAcceptDrops( true );
-
-		//_sceneWidget  = WidgetFactory::get().instantiateWidget<Widget::Scene::SceneWidget>( this, "sceneWidget" );
-
-		// QT::Widget::Render::RenderWidget * const renderWidget
-		//	= WidgetFactory::get().instantiateWidget<QT::Widget::Render::RenderWidget>( this, "renderWidget" );
-		// referencePanel( DefaultTools::RENDER_WINDOW_KEY, renderWidget );
 
 		//_inspectorWidget
 		//	= WidgetFactory::get().instantiateWidget<Widget::Inspector::InspectorWidget>( this, "inspectorWidget" );
@@ -275,13 +269,13 @@ namespace VTX::UI::QT
 		}
 	}
 
-	QT::Widget::Render::RenderWidget * MainWindow::getRender()
+	QT::Tool::Render::Widget::RenderWidget * MainWindow::getRender()
 	{
-		return getPanel<QT::Widget::Render::RenderWidget>( DefaultTools::RENDER_WINDOW_KEY );
+		return getPanel<QT::Tool::Render::Widget::RenderWidget>( Tool::RENDER_WINDOW_KEY );
 	}
-	const QT::Widget::Render::RenderWidget * const MainWindow::getRender() const
+	const QT::Tool::Render::Widget::RenderWidget * const MainWindow::getRender() const
 	{
-		return getPanel<QT::Widget::Render::RenderWidget>( DefaultTools::RENDER_WINDOW_KEY );
+		return getPanel<QT::Tool::Render::Widget::RenderWidget>( Tool::RENDER_WINDOW_KEY );
 	}
 
 	void MainWindow::_onShortcutFullscreen() const
@@ -504,7 +498,7 @@ namespace VTX::UI::QT
 	{
 		QMainWindow::showEvent( p_event );
 
-		QT::Widget::Render::RenderWidget * const renderWidget = getRender();
+		QT::Tool::Render::Widget::RenderWidget * const renderWidget = getRender();
 		if ( renderWidget != nullptr && !renderWidget->isOpenGLValid() )
 		{
 			renderWidget->show();

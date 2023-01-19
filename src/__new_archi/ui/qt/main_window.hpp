@@ -6,8 +6,8 @@
 #include "__new_archi/ui/core/define.hpp"
 #include "__new_archi/ui/qt/contextual_menu.hpp"
 #include "__new_archi/ui/qt/qt_panel.hpp"
+#include "__new_archi/ui/qt/tool/render/widget/render_widget.hpp"
 #include "__new_archi/ui/qt/widget/main_menu/main_menu_bar.hpp"
-#include "__new_archi/ui/qt/widget/render/render_widget.hpp"
 #include "ui/cursor_handler.hpp"
 #include "ui/widget/analysis/structural_alignment/structural_alignment_widget.hpp"
 #include "ui/widget/base_widget.hpp"
@@ -54,8 +54,8 @@ namespace VTX::UI::QT
 
 		virtual void referencePanel( const Core::WidgetKey & p_key, Core::BasePanel * const p_panel ) override;
 
-		QT::Widget::Render::RenderWidget *			   getRender();
-		const QT::Widget::Render::RenderWidget * const getRender() const;
+		QT::Tool::Render::Widget::RenderWidget *			 getRender();
+		const QT::Tool::Render::Widget::RenderWidget * const getRender() const;
 
 		inline bool isOpenGLValid() const { return getRender()->isOpenGLValid(); }
 		inline void updateRender() const { getRender()->updateRender(); }

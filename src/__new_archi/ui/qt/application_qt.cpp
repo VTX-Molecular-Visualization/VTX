@@ -1,4 +1,5 @@
 #include "application_qt.hpp"
+#include "__new_archi/ui/qt/tool/render/dialog.hpp"
 #include "action/action_manager.hpp"
 #include "dialog.hpp"
 #include "generic/base_opengl.hpp"
@@ -105,7 +106,7 @@ namespace VTX::UI::QT
 
 		if ( !_mainWindow->isOpenGLValid() )
 		{
-			UI::QT::Dialog::openGLInitializationFail();
+			UI::QT::Tool::Render::Dialog::openGLInitializationFail();
 			return;
 		}
 	}

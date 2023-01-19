@@ -21,7 +21,6 @@ namespace VTX
 								  const QString &				  p_title,
 								  const QString &				  p_message );
 
-		void openGLInitializationFail();
 		void exceptionDialog( const std::exception & e );
 		void unhandledException();
 

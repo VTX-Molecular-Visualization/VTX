@@ -1,14 +1,12 @@
 #include "session_tool.hpp"
-#include "__new_archi/ui/default_tools/keys.hpp"
 #include "__new_archi/ui/qt/application_qt.hpp"
 #include "__new_archi/ui/qt/main_window.hpp"
+#include "__new_archi/ui/qt/tool/keys.hpp"
 #include "__new_archi/ui/qt/tool/session/action.hpp"
 #include "__new_archi/ui/qt/tool/session/dialog.hpp"
 #include "__new_archi/ui/qt/tool/session/widget/dialog/download_molecule_dialog.hpp"
 #include "__new_archi/ui/qt/widget/custom_widget/indexed_action.hpp"
 #include "__new_archi/ui/qt/widget/main_menu/menu_tooltab_widget.hpp"
-#include "__new_archi/ui/qt/widget/scene/view/molecule_scene_view.hpp"
-#include "__new_archi/ui/qt/widget/scene/view/path_scene_view.hpp"
 #include "__new_archi/ui/qt/widget_factory.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
@@ -26,11 +24,7 @@ namespace VTX::UI::QT::Tool
 	{
 		_addButtonsInMainMenu();
 		_addActionsInContextualMenus();
-
-		QT_APP()->getMainWindow().addShortcut( "Ctrl+N", this, &SessionTool::_newSession );
-		QT_APP()->getMainWindow().addShortcut( "Ctrl+O", this, &SessionTool::_openFile );
-		QT_APP()->getMainWindow().addShortcut( "Ctrl+S", this, &SessionTool::_saveSession );
-		QT_APP()->getMainWindow().addShortcut( "Ctrl+Shift+S", this, &SessionTool::_saveAsSession );
+		_registerShortcuts();
 	}
 
 	void SessionTool::_addButtonsInMainMenu()
@@ -94,17 +88,23 @@ namespace VTX::UI::QT::Tool
 
 		mainWindow->getMainMenu().getTab( "Main" ).getToolBlock( "File" );
 	}
-
 	void SessionTool::_addActionsInContextualMenus()
 	{
 		QT::MainWindow * const mainWindow = &QT::QT_APP()->getMainWindow();
 
 		QT::Widget::ContextualMenu::BaseContextualMenu * const sceneContextualMenu
-			= mainWindow->getContextualMenu().getMenu( DefaultTools::ContextualMenu::SCENE );
+			= mainWindow->getContextualMenu().getMenu( Tool::ContextualMenu::SCENE );
 
 		sceneContextualMenu->appendToSection( "Loading", "Load Molecule", this, &SessionTool::_openFile );
 		sceneContextualMenu->appendToSection(
 			"Loading", "Download Molecule", this, &SessionTool::_downloadMoleculeFile );
+	}
+	void SessionTool::_registerShortcuts()
+	{
+		QT_APP()->getMainWindow().addShortcut( "Ctrl+N", this, &SessionTool::_newSession );
+		QT_APP()->getMainWindow().addShortcut( "Ctrl+O", this, &SessionTool::_openFile );
+		QT_APP()->getMainWindow().addShortcut( "Ctrl+S", this, &SessionTool::_saveSession );
+		QT_APP()->getMainWindow().addShortcut( "Ctrl+Shift+S", this, &SessionTool::_saveAsSession );
 	}
 
 	void SessionTool::_refreshRecentFiles()
