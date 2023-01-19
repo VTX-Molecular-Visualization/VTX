@@ -5,58 +5,35 @@
 #include "worker/worker_manager.hpp"
 #include <QString>
 #include <QWidget>
+#include <exception>
 
 namespace VTX
 {
-	namespace IO::Struct
+	// namespace IO::Struct
+	//{
+	//	class ImageExport;
+	// }
+
+	namespace UI::QT::Dialog
 	{
-		class ImageExport;
-	}
-	namespace Model
-	{
-		class Molecule;
-	}
+		void openInformationDialog( const QString & p_title, const QString & p_message );
+		void confirmActionDialog( VTX::Action::BaseAction * const p_action,
+								  const QString &				  p_title,
+								  const QString &				  p_message );
 
-	namespace UI::QT
-	{
-		class MainWindow;
-		class Dialog
-		{
-		  public:
-			static void openInformationDialog( const QString & p_title, const QString & p_message );
-			static void confirmActionDialog( VTX::Action::BaseAction * const p_action,
-											 const QString &				 p_title,
-											 const QString &				 p_message );
+		void openGLInitializationFail();
+		void exceptionDialog( const std::exception & e );
+		void unhandledException();
 
-			static void openDownloadMoleculeDialog();
-			static void openDownloadMoleculeDialog( const QString & p_pdbCode );
+		// static void openAdvancedSettingImageExportDialog();
+		// static bool openExportImageDialog( const IO::Struct::ImageExport & p_exportData );
 
-			static void openLoadMoleculeDialog();
-			static void openExportMoleculeDialog();
-			static void openLoadTrajectoryDialog( Model::Molecule & p_target );
+		// static void importRepresentationPresetDialog();
+		// static void importRenderEffectPresetDialog();
 
-			static void createNewSessionDialog();
+		// static QString		_toQPath( const Util::FilePath & p_path );
 
-			static void leavingSessionDialog( Worker::CallbackThread & p_callbackSucceed );
-
-			static void openLoadSessionDialog();
-			static void openSaveSessionDialog( Worker::CallbackThread * const p_callback = nullptr );
-
-			static void openAdvancedSettingImageExportDialog();
-			static bool openExportImageDialog( const IO::Struct::ImageExport & p_exportData );
-
-			static void importRepresentationPresetDialog();
-			static void importRenderEffectPresetDialog();
-
-			static void openGLInitializationFail();
-			static void unhandledException();
-
-		  private:
-			static QString		_toQPath( const Util::FilePath & p_path );
-			static MainWindow * _getMainWindow();
-		};
-
-	} // namespace UI::QT
+	} // namespace UI::QT::Dialog
 } // namespace VTX
 
 #endif

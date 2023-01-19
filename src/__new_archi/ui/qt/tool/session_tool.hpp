@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_TOOL_DEFAULT_SESSION_TOOL__
-#define __VTX_UI_TOOL_DEFAULT_SESSION_TOOL__
+#ifndef __VTX_UI_QT_TOOL_SESSION__
+#define __VTX_UI_QT_TOOL_SESSION__
 
 #include "__new_archi/ui/core/tool_registration.hpp"
 #include "__new_archi/ui/qt/widget/main_menu/menu_toolbutton_widget.hpp"
@@ -10,7 +10,7 @@
 #include <QMenu>
 #include <QObject>
 
-namespace VTX::UI::DefaultTools
+namespace VTX::UI::QT::Tool
 {
 	class SessionTool : public VTX::UI::Core::BaseVTXUITool, public QObject
 	{
@@ -37,6 +37,6 @@ namespace VTX::UI::DefaultTools
 
 		void _refreshRecentFiles();
 	};
-} // namespace VTX::UI::DefaultTools
+} // namespace VTX::UI::QT::Tool
 
 #endif

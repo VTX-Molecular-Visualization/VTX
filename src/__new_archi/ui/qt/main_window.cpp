@@ -4,6 +4,7 @@
 #include "__new_archi/ui/qt/application_qt.hpp"
 #include "__new_archi/ui/qt/dialog.hpp"
 #include "__new_archi/ui/qt/state/visualization.hpp"
+#include "__new_archi/ui/qt/tool/session/dialog.hpp"
 #include "action/dev.hpp"
 #include "action/setting.hpp"
 #include "controller/base_keyboard_controller.hpp"
@@ -23,7 +24,6 @@
 #include <QAction>
 #include <QFileDialog>
 #include <QSettings>
-#include <QShortcut>
 #include <QSize>
 #include <iostream>
 
@@ -85,7 +85,7 @@ namespace VTX::UI::QT
 					}
 				} );
 
-			UI::QT::Dialog::leavingSessionDialog( callback );
+			Tool::Session::Dialog::leavingSessionDialog( callback );
 		}
 		else
 		{
@@ -163,6 +163,20 @@ namespace VTX::UI::QT
 			setWindowMode( Core::WindowMode::Windowed );
 	}
 
+	void MainWindow::addShortcut( const std::string & p_shortcut, QAction * const p_action )
+	{
+		assert( _shortcuts.find( p_shortcut ) == _shortcuts.end() );
+
+		p_action->setParent( this );
+
+		connect( new QShortcut( QKeySequence( tr( p_shortcut.c_str() ) ), this ),
+				 &QShortcut::activated,
+				 p_action,
+				 &QAction::trigger );
+
+		_shortcuts.emplace( p_shortcut );
+	}
+
 	void MainWindow::_loadStyleSheet( const char * p_stylesheetPath )
 	{
 		QFile stylesheetFile( p_stylesheetPath );
@@ -191,22 +205,6 @@ namespace VTX::UI::QT
 		//		 &MainWindow::_onDockWindowVisibilityChange );
 
 		// Shortcuts.
-		connect( new QShortcut( QKeySequence( tr( "Ctrl+N" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutNew );
-		connect( new QShortcut( QKeySequence( tr( "Ctrl+O" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutOpen );
-		connect( new QShortcut( QKeySequence( tr( "Ctrl+S" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutSave );
-		connect( new QShortcut( QKeySequence( tr( "Ctrl+Shift+S" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutSaveAs );
 		connect( new QShortcut( QKeySequence( tr( "F11" ) ), this ),
 				 &QShortcut::activated,
 				 this,
@@ -286,13 +284,6 @@ namespace VTX::UI::QT
 		return getPanel<QT::Widget::Render::RenderWidget>( DefaultTools::RENDER_WINDOW_KEY );
 	}
 
-	void MainWindow::_onShortcutNew() const { UI::QT::Dialog::createNewSessionDialog(); }
-	void MainWindow::_onShortcutOpen() const { UI::QT::Dialog::openLoadSessionDialog(); }
-	void MainWindow::_onShortcutSave() const
-	{
-		// VTX_ACTION( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
-	}
-	void MainWindow::_onShortcutSaveAs() const { UI::QT::Dialog::openSaveSessionDialog(); }
 	void MainWindow::_onShortcutFullscreen() const
 	{
 		if ( windowState() & Qt::WindowStates::enum_type::WindowFullScreen )

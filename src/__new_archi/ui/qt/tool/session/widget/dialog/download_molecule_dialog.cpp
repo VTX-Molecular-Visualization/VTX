@@ -7,30 +7,35 @@
 #include <QPushButton>
 #include <string>
 
-namespace VTX::UI::QT::Widget::Dialog
+namespace VTX::UI::QT::Tool::Session::Widget::Dialog
 {
-	DownloadMoleculeDialog & DownloadMoleculeDialog::_getInstance()
+	DownloadMoleculeDialog * DownloadMoleculeDialog::pop()
 	{
-		if ( _instance == nullptr )
-		{
-			_instance = WidgetFactory::get().instantiateWidget<Dialog::DownloadMoleculeDialog>(
-				&QT_APP()->getMainWindow(), "downloadMoleculeDialog" );
-		}
+		DownloadMoleculeDialog * const dialog
+			= QT::WidgetFactory::get().instantiateWidget<DownloadMoleculeDialog>( &QT_APP()->getMainWindow(), "" );
 
-		return *_instance;
+		dialog->_refreshComboBoxList();
+		dialog->_fileComboBox->setFocus();
+
+		dialog->show();
+
+		return dialog;
 	}
-	DownloadMoleculeDialog::DownloadMoleculeDialog( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
-
-	void DownloadMoleculeDialog::openDialog() { _getInstance().show(); }
-	void DownloadMoleculeDialog::openDialog( const QString & p_txt )
+	DownloadMoleculeDialog * DownloadMoleculeDialog::pop( const QString & p_pdbId )
 	{
-		_getInstance()._fileComboBox->setEditText( p_txt );
-		openDialog();
+		DownloadMoleculeDialog * const dialog = pop();
+		dialog->setPdbId( p_pdbId );
+
+		return dialog;
 	}
+
+	DownloadMoleculeDialog::DownloadMoleculeDialog( QWidget * p_parent ) : BaseDialog( p_parent ) {}
+
+	void DownloadMoleculeDialog::setPdbId( const QString & p_id ) { _fileComboBox->setEditText( p_id ); }
 
 	void DownloadMoleculeDialog::_setupUi( const QString & p_name )
 	{
-		BaseManualWidget::_setupUi( p_name );
+		BaseDialog::_setupUi( p_name );
 		this->setWindowFlag( Qt::WindowFlags::enum_type::FramelessWindowHint, true );
 		this->setWindowModality( Qt::WindowModality::ApplicationModal );
 
@@ -66,13 +71,6 @@ namespace VTX::UI::QT::Widget::Dialog
 		_fileComboBox->setPlaceholderText( "Enter pdb id code" );
 	}
 
-	void DownloadMoleculeDialog::showEvent( QShowEvent * p_event )
-	{
-		BaseManualWidget::showEvent( p_event );
-		_refreshComboBoxList();
-		_fileComboBox->setFocus();
-	}
-
 	void DownloadMoleculeDialog::cancelAction() { close(); }
 	void DownloadMoleculeDialog::openAction()
 	{
@@ -92,4 +90,4 @@ namespace VTX::UI::QT::Widget::Dialog
 		_fileComboBox->setCurrentIndex( 0 );
 	}
 
-} // namespace VTX::UI::QT::Widget::Dialog
+} // namespace VTX::UI::QT::Tool::Session::Widget::Dialog

@@ -25,7 +25,10 @@
 #include "ui_main_window.h"
 #include <QCloseEvent>
 #include <QDockWidget>
+#include <QKeySequence>
 #include <QMainWindow>
+#include <QShortcut>
+#include <unordered_set>
 #include <util/types.hpp>
 
 namespace VTX::UI::QT
@@ -61,6 +64,19 @@ namespace VTX::UI::QT
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		Core::MainMenu::MainMenuBar & getMainMenu() override { return *_mainMenuBar; }
+
+		void addShortcut( const std::string & p_shortcut, QAction * const p_action );
+
+		template<typename Obj, typename Func>
+		void addShortcut( const std::string & p_shortcut, Obj p_obj, Func p_func )
+		{
+			assert( _shortcuts.find( p_shortcut ) == _shortcuts.end() );
+
+			connect(
+				new QShortcut( QKeySequence( tr( p_shortcut.c_str() ) ), this ), &QShortcut::activated, p_obj, p_func );
+
+			_shortcuts.emplace( p_shortcut );
+		}
 
 		const ContextualMenu & getContextualMenu() const { return *_contextualMenu; }
 		ContextualMenu &	   getContextualMenu() { return *_contextualMenu; }
@@ -116,6 +132,8 @@ namespace VTX::UI::QT
 	  private:
 		QT::Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
 
+		std::unordered_set<std::string> _shortcuts = std::unordered_set<std::string>();
+
 		// Widget::Render::RenderWidget *			 _renderWidget		= nullptr;
 		// Widget::Scene::SceneWidget *			 _sceneWidget		= nullptr;
 		// Widget::Inspector::InspectorWidget *	 _inspectorWidget	= nullptr;
@@ -143,10 +161,6 @@ namespace VTX::UI::QT
 		void _restoreDockWidget( QDockWidget * const p_dockWidget );
 
 		// Shortcuts.
-		void _onShortcutNew() const;
-		void _onShortcutOpen() const;
-		void _onShortcutSave() const;
-		void _onShortcutSaveAs() const;
 		void _onShortcutFullscreen() const;
 		void _onShortcutClearSelection() const;
 		void _onShortcutRestoreLayout() const;

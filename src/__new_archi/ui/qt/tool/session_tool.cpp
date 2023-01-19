@@ -1,9 +1,10 @@
 #include "session_tool.hpp"
 #include "__new_archi/ui/default_tools/keys.hpp"
-#include "__new_archi/ui/qt/action/main.hpp"
 #include "__new_archi/ui/qt/application_qt.hpp"
-#include "__new_archi/ui/qt/dialog.hpp"
 #include "__new_archi/ui/qt/main_window.hpp"
+#include "__new_archi/ui/qt/tool/session/action.hpp"
+#include "__new_archi/ui/qt/tool/session/dialog.hpp"
+#include "__new_archi/ui/qt/tool/session/widget/dialog/download_molecule_dialog.hpp"
 #include "__new_archi/ui/qt/widget/custom_widget/indexed_action.hpp"
 #include "__new_archi/ui/qt/widget/main_menu/menu_tooltab_widget.hpp"
 #include "__new_archi/ui/qt/widget/scene/view/molecule_scene_view.hpp"
@@ -17,7 +18,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-namespace VTX::UI::DefaultTools
+namespace VTX::UI::QT::Tool
 {
 	SessionTool::SessionTool() {}
 
@@ -25,6 +26,11 @@ namespace VTX::UI::DefaultTools
 	{
 		_addButtonsInMainMenu();
 		_addActionsInContextualMenus();
+
+		QT_APP()->getMainWindow().addShortcut( "Ctrl+N", this, &SessionTool::_newSession );
+		QT_APP()->getMainWindow().addShortcut( "Ctrl+O", this, &SessionTool::_openFile );
+		QT_APP()->getMainWindow().addShortcut( "Ctrl+S", this, &SessionTool::_saveSession );
+		QT_APP()->getMainWindow().addShortcut( "Ctrl+Shift+S", this, &SessionTool::_saveAsSession );
 	}
 
 	void SessionTool::_addButtonsInMainMenu()
@@ -124,14 +130,14 @@ namespace VTX::UI::DefaultTools
 
 		_openRecentSessionButton->setEnabled( actionIndex > 0 );
 	}
-	void SessionTool::_newSession() const { QT::Dialog::createNewSessionDialog(); }
-	void SessionTool::_downloadMoleculeFile() const { QT::Dialog::openDownloadMoleculeDialog(); }
-	void SessionTool::_openFile() const { QT::Dialog::openLoadSessionDialog(); }
+	void SessionTool::_newSession() const { Session::Dialog::createNewSessionDialog(); }
+	void SessionTool::_downloadMoleculeFile() const { Session::Dialog::openDownloadMoleculeDialog(); }
+	void SessionTool::_openFile() const { Session::Dialog::openLoadSessionDialog(); }
 	void SessionTool::_saveSession() const
 	{
-		VTX_ACTION( new QT::Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new Session::Action::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
-	void SessionTool::_saveAsSession() const { QT::Dialog::openSaveSessionDialog(); }
+	void SessionTool::_saveAsSession() const { Session::Dialog::openSaveSessionDialog(); }
 
 	void SessionTool::_loadRecentSession( const int & p_ptrSessionIndex ) const
 	{
@@ -142,7 +148,7 @@ namespace VTX::UI::DefaultTools
 			return;
 		}
 
-		VTX_ACTION( new QT::Action::Main::Open( *recentPath ) );
+		VTX_ACTION( new Session::Action::Open( *recentPath ) );
 	}
 
-} // namespace VTX::UI::DefaultTools
+} // namespace VTX::UI::QT::Tool
