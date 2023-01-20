@@ -371,22 +371,23 @@ namespace VTX
 					if ( atom == nullptr )
 					{
 						_bufferAtomVisibilities[ i ] = 0u;
-						continue;
 					}
-
-					if ( atom->getChainPtr()->isVisible() == false )
+					else if ( atom->getChainPtr()->isVisible() == false )
 					{
+						// Optimisation removed bacause some .gro file open by chemfiles may not have contiguous indexes
 						// If the chain is not visible, we can directly fill all the atom in it
-						const uint			   firstAtomIndexInChain = i;
-						const Model::Residue & lastResidueInChain
-							= *getResidue( atom->getChainPtr()->getIndexLastResidue() );
-						const uint atomIndexInNextChain
-							= lastResidueInChain.getIndexFirstAtom() + lastResidueInChain.getAtomCount();
+						// const uint			   firstAtomIndexInChain = i;
+						// const Model::Residue & lastResidueInChain
+						//	= *getResidue( atom->getChainPtr()->getIndexLastResidue() );
+						// const uint atomIndexInNextChain
+						//	= lastResidueInChain.getIndexFirstAtom() + lastResidueInChain.getAtomCount();
 
-						const uint count = atomIndexInNextChain - firstAtomIndexInChain;
+						// const uint count = atomIndexInNextChain - firstAtomIndexInChain;
 
-						std::fill_n( _bufferAtomVisibilities.begin() + firstAtomIndexInChain, count, 0u );
-						i += count - 1;
+						// std::fill_n( _bufferAtomVisibilities.begin() + firstAtomIndexInChain, count, 0u );
+						// i += count - 1;
+
+						_bufferAtomVisibilities[ i ] = 0u;
 					}
 					else if ( atom->getResiduePtr()->isVisible() == false )
 					{
