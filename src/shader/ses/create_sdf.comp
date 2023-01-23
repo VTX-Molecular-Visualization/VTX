@@ -1,4 +1,5 @@
 #version 450
+#include "include/helper.glsl"
 #include "include/grid.glsl"
 #define FLT_MAX 3.402823466e+38
 
@@ -62,7 +63,7 @@ layout (std140, binding = 3) readonly buffer AtomPositionsVdW
 void main()
 {
 	// Get corresponding ses grid data.	
-	const uint sesGridHash = gridHash( gl_GlobalInvocationID, uGridSESSize );
+	const uint sesGridHash = globalInvocationHash( gl_GlobalInvocationID, gl_WorkGroupSize );
 	const uvec3 sesGridPosition = gridPosition( sesGridHash, uGridSESSize);
 
 	// Not in grid.

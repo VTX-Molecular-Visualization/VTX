@@ -11,12 +11,12 @@
 #include "selection/selection_manager.hpp"
 #include "view/d3/triangle.hpp"
 #include "worker/gpu_computer.hpp"
-#include <execution>
 
 namespace VTX
 {
 	namespace Model
 	{
+
 		SolventExcludedSurface::SolventExcludedSurface( const Category * const p_category ) :
 			MeshTriangle(), _category( p_category )
 		{
@@ -271,9 +271,8 @@ namespace VTX
 			//  Perform exclusive scan on validity buffer.
 			std::exclusive_scan( triangleValidities.begin(), triangleValidities.end(), triangleValidities.begin(), 0 );
 
-			const size_t bufferSizeReduced
-				= std::unique( triangleValidities.begin(), triangleValidities.end() ) - triangleValidities.begin();
-			_indiceCount = uint( bufferSizeReduced );
+			size_t bufferSizeReduced = *( triangleValidities.end() - 1 );
+			_indiceCount			 = uint( bufferSizeReduced );
 
 			VTX_DEBUG( "Triangle buffer size after compaction: {}", _indiceCount );
 
@@ -322,6 +321,19 @@ namespace VTX
 
 			// Start.
 			workerStreamCompaction.start( bufferSize );
+
+			/////////////////////////////////
+			/*
+			_vertices = std::vector( bufferSize, Vec4f( 0.0f ) );
+			bufferPositionsTmp.getData( 0, uint( _vertices.size() ) * sizeof( Vec4f ), &_vertices[ 0 ] );
+			std::ofstream outFile( "GPU_DATA.txt" );
+			for ( const auto & e : _vertices )
+			{
+				outFile << glm::to_string( e ) << "\n";
+			}
+			outFile.close();
+			*/
+			/////////////////////////////////
 
 			// Unbind.
 			bufferPositions.unbind();
@@ -683,43 +695,70 @@ namespace VTX
 		// TODO: check if it is still needed after creation.
 		void SolventExcludedSurface::refreshColors()
 		{
-			using VTX::Renderer::GL::Buffer;
-			_buffer->makeContextCurrent();
-			const Buffer & bufferColor = _buffer->getBufferColors();
-
-			Color::Rgba * const ptr = bufferColor.map<Color::Rgba>( Buffer::Access::WRITE_ONLY );
-
-			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
+			if ( _mode == Mode::CPU )
 			{
-				const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
-				if ( atom == nullptr )
-				{
-					continue;
-				}
+				_colors.resize( _indiceCount, Color::Rgba::WHITE );
 
-				const Color::Rgba & color = _category->getMoleculePtr()->getAtomColor( atomIdx );
-
-				for ( uint i = 0; i < _atomsToTriangles[ atomIdx ].count; ++i )
+				for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 				{
-					ptr[ _atomsToTriangles[ atomIdx ].first + i ] = color;
+					const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
+					if ( atom == nullptr )
+					{
+						continue;
+					}
+
+					const Color::Rgba & color = _category->getMoleculePtr()->getAtomColor( atomIdx );
+					std::fill(
+						_colors.begin() + _atomsToTriangles[ atomIdx ].first,
+						_colors.begin() + _atomsToTriangles[ atomIdx ].first + _atomsToTriangles[ atomIdx ].count,
+						color );
 				}
-				/*
-				std::fill( (*ptr).begin() + _atomsToTriangles[atomIdx].first,
-						   _colors.begin() + _atomsToTriangles[ atomIdx ].first + _atomsToTriangles[ atomIdx ].count,
-						   color );
-						   */
+				_buffer->setColors( _colors );
+				_colors.clear();
+				_colors.shrink_to_fit();
 			}
+			else
+			{
+				using VTX::Renderer::GL::Buffer;
+				_buffer->makeContextCurrent();
+				const Buffer & bufferColor = _buffer->getBufferColors();
 
-			bufferColor.unmap();
-			_buffer->doneContextCurrent();
+				Color::Rgba * const ptr = bufferColor.map<Color::Rgba>( Buffer::Access::WRITE_ONLY );
+
+				for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
+				{
+					const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
+					if ( atom == nullptr )
+					{
+						continue;
+					}
+
+					const Color::Rgba & color = _category->getMoleculePtr()->getAtomColor( atomIdx );
+
+					for ( uint i = 0; i < _atomsToTriangles[ atomIdx ].count; ++i )
+					{
+						ptr[ _atomsToTriangles[ atomIdx ].first + i ] = color;
+					}
+				}
+
+				bufferColor.unmap();
+				_buffer->doneContextCurrent();
+			}
 		}
 
 		void SolventExcludedSurface::refreshVisibilities()
 		{
 			using VTX::Renderer::GL::Buffer;
-			_buffer->makeContextCurrent();
+
+			if ( _mode == Mode::GPU )
+			{
+				_buffer->makeContextCurrent();
+			}
+
 			_visibilities.resize( _indiceCount, 1 );
 			const Buffer & bufferVisibilities = _buffer->getBufferVisibilities();
+
+			std::vector<uint> & visitibilities = _category->getMoleculePtr()->getBufferAtomVisibilities();
 
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
@@ -729,12 +768,7 @@ namespace VTX
 					continue;
 				}
 
-				const Residue * const residue = atom->getResiduePtr();
-				const Chain * const	  chain	  = residue->getChainPtr();
-				const uint			  visible = _category->getMoleculePtr()->isVisible() && chain->isVisible()
-									 && residue->isVisible() && atom->isVisible();
-
-				if ( visible == 0 )
+				if ( visitibilities[ atomIdx ] == 0 )
 				{
 					std::fill(
 						_visibilities.begin() + _atomsToTriangles[ atomIdx ].first,
@@ -743,16 +777,33 @@ namespace VTX
 				}
 			}
 
-			bufferVisibilities.setSub( _visibilities );
+			if ( _mode == Mode::CPU )
+			{
+				_buffer->setVisibilities( _visibilities );
+			}
+			else
+			{
+				bufferVisibilities.setSub( _visibilities );
+			}
+
 			_visibilities.clear();
 			_visibilities.shrink_to_fit();
-			_buffer->doneContextCurrent();
+
+			if ( _mode == Mode::GPU )
+			{
+				_buffer->doneContextCurrent();
+			}
 		}
 
 		void SolventExcludedSurface::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
 		{
 			using VTX::Renderer::GL::Buffer;
-			_buffer->makeContextCurrent();
+
+			if ( _mode == Mode::GPU )
+			{
+				_buffer->makeContextCurrent();
+			}
+
 			_selections.resize( _indiceCount, 0 );
 			const Buffer & bufferSelections = _buffer->getBufferSelections();
 
@@ -780,10 +831,22 @@ namespace VTX
 				}
 			}
 
-			bufferSelections.setSub( _selections );
+			if ( _mode == Mode::CPU )
+			{
+				_buffer->setSelections( _selections );
+			}
+			else
+			{
+				bufferSelections.setSub( _selections );
+			}
+
 			_selections.clear();
 			_selections.shrink_to_fit();
-			_buffer->doneContextCurrent();
+
+			if ( _mode == Mode::GPU )
+			{
+				_buffer->doneContextCurrent();
+			}
 		}
 
 		void SolventExcludedSurface::_instantiate3DViews()
