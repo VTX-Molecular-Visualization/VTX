@@ -12,6 +12,8 @@
 #include "view/d3/triangle.hpp"
 #include "worker/gpu_computer.hpp"
 
+// #define DEBUG_SES
+
 namespace VTX
 {
 	namespace Model
@@ -128,25 +130,24 @@ namespace VTX
 			Vec3i				   sesGridSize = Vec3i( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
 			Object3D::Helper::Grid gridSES	   = Object3D::Helper::Grid( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
 
+			/////////////////////
 			// Worker: create SDF.
 			Worker::GpuComputer workerCreateSDF( IO::FilePath( "ses/create_sdf.comp" ) );
 
 			// Create SSBOs.
 			using VTX::Renderer::GL::Buffer;
-			// // Output.
+			// Output.
 			Buffer ssboSesGridData( gridSES.getCellCount() * sizeof( SESGridData ) );
 			// Input.
 			Buffer ssboAtomGridDataSorted( atomGridDataSorted );
 			Buffer ssboAtomIndexSorted( atomIndexSorted );
 			Buffer ssboAtomPosition( atomPositionsVdW );
-			// Buffer		 ssboDebug(  debug );
 
 			// Bind.
 			ssboSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
 			ssboAtomGridDataSorted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
 			ssboAtomIndexSorted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
 			ssboAtomPosition.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
-			// ssboDebug.bind( 7 );
 
 			// Set uniforms.
 			workerCreateSDF.getProgram().use();
@@ -172,8 +173,6 @@ namespace VTX
 				workerCreateSDF.start( gridSES.getCellCount() );
 			}
 
-			// ssboDebug.getData( 0, uint( debug.size() ) * sizeof( uint ), &debug[ 0 ] );
-
 			// Unbind.
 			ssboAtomGridDataSorted.unbind();
 			ssboAtomIndexSorted.unbind();
@@ -183,6 +182,7 @@ namespace VTX
 			VTX_INFO( "SDF created " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
+			//////////////////////
 			// Worker: refine SDF.
 			Worker::GpuComputer workerRefineSDF( IO::FilePath( "ses/refine_sdf.comp" ) );
 			workerRefineSDF.getProgram().use();
@@ -210,6 +210,7 @@ namespace VTX
 			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
+			/////////////////////////
 			// Worker: marching cube.
 			Worker::GpuComputer workerMarchingCube( IO::FilePath( "ses/marching_cube.comp" ) );
 
@@ -225,6 +226,11 @@ namespace VTX
 			// Input.
 			Buffer ssboTriangleTable( 256 * 16 * sizeof( int ), Math::MarchingCube::TRIANGLE_TABLE );
 			Buffer ssboAtomIds( _category->getMoleculePtr()->getBufferAtomIds() );
+#ifdef DEBUG_SES
+			std::vector<Vec4f> debug( bufferSize );
+			Buffer			   ssboDebug( debug );
+			ssboDebug.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 50 );
+#endif
 
 			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
 			bufferNormalsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
@@ -265,6 +271,7 @@ namespace VTX
 			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
+			////////////////////////////
 			// Worker: stream compaction.
 			Worker::GpuComputer workerStreamCompaction( IO::FilePath( "ses/stream_compaction.comp" ) );
 			VTX_DEBUG( "Triangle buffer size before compaction: {}", bufferSize );
@@ -286,13 +293,16 @@ namespace VTX
 			Buffer & bufferIds			= _buffer->getBufferIds();
 			Buffer & bufferSelections	= _buffer->getBufferSelections();
 
-			bufferPositions.set( bufferSizeReduced * sizeof( Vec4f ) );
-			bufferNormals.set( bufferSizeReduced * sizeof( Vec4f ) );
-			bufferIndices.set( bufferSizeReduced * sizeof( uint ) );
-			bufferColors.set( bufferSizeReduced * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
-			bufferVisibilities.set( bufferSizeReduced * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
-			bufferIds.set( bufferSizeReduced * sizeof( uint ) );
-			bufferSelections.set( std::vector( bufferSizeReduced, 0 ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
+			if ( _isInit == false )
+			{
+				bufferPositions.set( bufferSizeReduced * sizeof( Vec4f ) );
+				bufferNormals.set( bufferSizeReduced * sizeof( Vec4f ) );
+				bufferIndices.set( bufferSizeReduced * sizeof( uint ) );
+				bufferColors.set( bufferSizeReduced * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
+				bufferVisibilities.set( bufferSizeReduced * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
+				bufferIds.set( bufferSizeReduced * sizeof( uint ) );
+				bufferSelections.set( bufferSizeReduced * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
+			}
 
 			// Input.
 			Buffer ssboTriangleValiditiesSum( triangleValidities );
@@ -322,19 +332,6 @@ namespace VTX
 			// Start.
 			workerStreamCompaction.start( bufferSize );
 
-			/////////////////////////////////
-			/*
-			_vertices = std::vector( bufferSize, Vec4f( 0.0f ) );
-			bufferPositionsTmp.getData( 0, uint( _vertices.size() ) * sizeof( Vec4f ), &_vertices[ 0 ] );
-			std::ofstream outFile( "GPU_DATA.txt" );
-			for ( const auto & e : _vertices )
-			{
-				outFile << glm::to_string( e ) << "\n";
-			}
-			outFile.close();
-			*/
-			/////////////////////////////////
-
 			// Unbind.
 			bufferPositions.unbind();
 			bufferNormals.unbind();
@@ -350,7 +347,20 @@ namespace VTX
 			ssboAtomColors.unbind();
 			ssboAtomVisibilities.unbind();
 
-			// TMP.
+#ifdef DEBUG_SES
+			ssboDebug.getData( 0, uint( debug.size() ) * sizeof( Vec4f ), &debug[ 0 ] );
+			ssboDebug.unbind();
+
+			std::ofstream outFile( "DEBUG.txt" );
+			for ( const auto & e : debug )
+			{
+				outFile << glm::to_string( e ) << "\n";
+			}
+			outFile.close();
+
+#endif
+
+			/////////// TMP.
 			_atomsToTriangles				   = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
 			_atomsToTriangles[ atomsIdx[ 0 ] ] = Range { 0, _indiceCount };
 
@@ -735,6 +745,7 @@ namespace VTX
 
 					const Color::Rgba & color = _category->getMoleculePtr()->getAtomColor( atomIdx );
 
+					// TODO: optimize that.
 					for ( uint i = 0; i < _atomsToTriangles[ atomIdx ].count; ++i )
 					{
 						ptr[ _atomsToTriangles[ atomIdx ].first + i ] = color;

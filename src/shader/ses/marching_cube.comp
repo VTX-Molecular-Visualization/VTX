@@ -87,11 +87,18 @@ layout (std430, binding = 6) readonly buffer AtomIds
 	uint[] atomIds;
 };
 
+//////////////////////////
+layout (std140, binding = 50) buffer Debug
+{ 
+	vec4[] debug;
+};
+//////////////////////////
+
 // Marching cube.
 void main()
 {
 	// Get corresponding ses grid data.
-	const uint sesGridHash = globalInvocationHash( gl_GlobalInvocationID, gl_WorkGroupSize );
+	const uint sesGridHash = globalInvocationHash( gl_GlobalInvocationID, gl_NumWorkGroups, gl_WorkGroupSize );
 	const uvec3 sesGridPosition = gridPosition( sesGridHash, uGridSESSize);
 	
 	// Not in grid.
@@ -162,11 +169,14 @@ void main()
 	{
 		for ( uint j = 0; j < 3; ++j )
 		{
-			const vec3 vertice = intersections[ triangleTable[ cubeIndex * 16 + i + j ] ];
+			const vec3 vertice = intersections[ triangleTable[ cubeIndex * 16 + i + j ] ];		
 
 			// Position.
 			trianglePositions[ sesGridHash * 15 + i + j ] = vec4( vertice, 1.f );		
-		
+
+			// Debug.
+			//debug[ sesGridHash * 15 + i + j ] = vec4( vertice, 1.f );	
+			
 			// Validity (used for compaction in the next pass).
 			triangleValidities[ sesGridHash * 15 + i + j ] = 1;
 		}

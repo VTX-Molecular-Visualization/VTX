@@ -1,4 +1,10 @@
-uint globalInvocationHash( const uvec3 p_position, const uvec3 p_size )
+uint globalInvocationHash( uvec3 p_gl_GlobalInvocationID, uvec3 p_gl_NumWorkGroups, uvec3 p_gl_WorkGroupSize )
 {
-	return ( p_position.z * p_size.x * p_size.y ) + ( p_position.y * p_size.x ) + p_position.x;
+	return p_gl_GlobalInvocationID.x;
+/*
+	return 
+		p_gl_GlobalInvocationID.x +
+		p_gl_GlobalInvocationID.y * p_gl_NumWorkGroups.x * p_gl_WorkGroupSize.x +
+		p_gl_GlobalInvocationID.z * p_gl_NumWorkGroups.x * p_gl_NumWorkGroups.y * p_gl_WorkGroupSize.x * p_gl_WorkGroupSize.y;
+*/
 }

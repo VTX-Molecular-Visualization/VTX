@@ -149,7 +149,7 @@ namespace VTX::Renderer::GL
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
-			_gl->glNamedBufferSubData( _id, GLintptr( p_offset ), GLsizeiptr( p_size ), p_data );
+			_gl->glNamedBufferSubData( _id, GLintptr( p_offset ), GLsizei( p_size ), p_data );
 		}
 
 		template<typename T>

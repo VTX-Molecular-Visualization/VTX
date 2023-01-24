@@ -82,9 +82,16 @@ layout (std430, binding = 12) readonly buffer AtomVisibilities
 	uint[] atomVisibilities;
 };
 
+//////////////////////////
+layout (std140, binding = 50) buffer Debug
+{ 
+	vec4[] debug;
+};
+//////////////////////////
+
 void main()
 {
-	const uint index = globalInvocationHash( gl_GlobalInvocationID, gl_WorkGroupSize );
+	const uint index = globalInvocationHash( gl_GlobalInvocationID, gl_NumWorkGroups, gl_WorkGroupSize );
 	
 	if( index > uSize )
 	{
@@ -95,7 +102,7 @@ void main()
 	{
 		return;
 	}
-	
+
 	const uint indexNew = triangleValiditiesSum[ index ];
 
 	/*
