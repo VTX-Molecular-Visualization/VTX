@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_WIDGET_SEQUENCE_CHAIN_DATA__
 #define __VTX_UI_WIDGET_SEQUENCE_CHAIN_DATA__
 
+#include "chain_sequence_builder.hpp"
 #include "dataset/sequence_dataset.hpp"
 #include "model/chain.hpp"
 #include <QString>
@@ -34,16 +35,13 @@ namespace VTX::UI::Widget::Sequence
 		uint				   getCharIndex( const uint p_residueIndex ) const;
 		uint				   getPaintCharIndex( const uint p_residueIndex ) const;
 		uint				   getPaintLength( const uint p_localResidueIndex ) const;
-		inline uint			   getCharCount() const { return _dataset.back()->getLastCharIndex(); };
+		inline uint			   getCharCount() const { return _chainSequenceBuilder.getCharCount(); };
 
 	  private:
-		const Model::Molecule &						   _molecule;
-		const Model::Chain &						   _chain;
-		std::vector<Dataset::SequenceDisplayDataset *> _dataset = std::vector<Dataset::SequenceDisplayDataset *>();
-
-		uint _emplaceResidueDataSet( const uint p_localCharIndex,
-									 const uint p_startResidueIndex,
-									 const uint p_endResidueIndex );
+		const Model::Molecule & _molecule;
+		const Model::Chain &	_chain;
+		const uint				_fromResidue;
+		const uint				_toResidue;
 
 		Model::Residue * const _getResidue( const uint p_localResidueIndex ) const;
 
@@ -55,12 +53,12 @@ namespace VTX::UI::Widget::Sequence
 			const uint											 p_indexMax,
 			const bool											 p_minHasChanged ) const;
 
-		void _generateDataSet();
 		void _generateString();
 
 	  private:
-		QString _strSequence;
-		QString _strScale;
+		ChainSequenceBuilder _chainSequenceBuilder;
+		QString				 _strSequence;
+		QString				 _strScale;
 	};
 
 } // namespace VTX::UI::Widget::Sequence
