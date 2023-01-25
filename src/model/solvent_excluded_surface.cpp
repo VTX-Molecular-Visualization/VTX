@@ -219,19 +219,17 @@ namespace VTX
 			const size_t	  bufferSize = gridSES.getCellCount() * 5 * 3;
 			Buffer			  bufferPositionsTmp( bufferSize * sizeof( Vec4f ) );
 			Buffer			  bufferNormalsTmp( bufferSize * sizeof( Vec4f ) );
-			Buffer			  bufferAtomIdsTmp( bufferSize * sizeof( uint ) );
+			Buffer			  bufferAtomIndicesTmp( bufferSize * sizeof( uint ) );
 			std::vector<uint> triangleValidities( bufferSize, 0 );
 			Buffer			  bufferTriangleValidities( triangleValidities );
 			// Input.
 			Buffer bufferTriangleTable( 256 * 16 * sizeof( int ), Math::MarchingCube::TRIANGLE_TABLE );
-			Buffer bufferAtomIds( _category->getMoleculePtr()->getBufferAtomIds() );
 
 			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
 			bufferNormalsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
-			bufferAtomIdsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
 			bufferTriangleTable.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
-			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
 
 			workerMarchingCube.getProgram().use();
 
@@ -256,10 +254,9 @@ namespace VTX
 			bufferSesGridData.unbind();
 			bufferPositionsTmp.unbind();
 			bufferNormalsTmp.unbind();
-			bufferAtomIdsTmp.unbind();
+			bufferAtomIndicesTmp.unbind();
 			bufferTriangleValidities.unbind();
 			bufferTriangleTable.unbind();
-			bufferAtomIds.unbind();
 
 			chrono2.stop();
 			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
@@ -302,6 +299,7 @@ namespace VTX
 			Buffer bufferTriangleValiditiesSum( triangleValidities );
 			Buffer bufferAtomColors( _category->getMoleculePtr()->getBufferAtomColors() );
 			Buffer bufferAtomVisibilities( _category->getMoleculePtr()->getBufferAtomVisibilities() );
+			Buffer bufferAtomIds( _category->getMoleculePtr()->getBufferAtomIds() );
 
 			// Bind.
 			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
@@ -313,11 +311,12 @@ namespace VTX
 
 			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
 			bufferNormalsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
-			bufferAtomIdsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
+			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
 			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 9 );
 			bufferTriangleValiditiesSum.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 10 );
 			bufferAtomColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 11 );
 			bufferAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 12 );
+			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 13 );
 
 			workerStreamCompaction.getProgram().use();
 			workerStreamCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
@@ -336,10 +335,11 @@ namespace VTX
 
 			bufferPositionsTmp.unbind();
 			bufferNormalsTmp.unbind();
-			bufferAtomIdsTmp.unbind();
+			bufferAtomIndicesTmp.unbind();
 			bufferTriangleValiditiesSum.unbind();
 			bufferAtomColors.unbind();
 			bufferAtomVisibilities.unbind();
+			bufferAtomIds.unbind();
 
 			/////////// TMP.
 			_atomsToTriangles				   = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );

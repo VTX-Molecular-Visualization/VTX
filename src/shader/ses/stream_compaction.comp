@@ -57,9 +57,9 @@ layout (std140, binding = 7) readonly buffer TriangleNormalsTmp
 	vec4[] triangleNormalsTmp;
 };
 
-layout (std430, binding = 8) readonly buffer TriangleAtomIdsTmp
+layout (std430, binding = 8) readonly buffer TriangleAtomIndicesTmp
 {
-	uint[] triangleAtomIdsTmp;
+	uint[] triangleAtomIndicesTmp;
 };
 
 layout (std430, binding = 9) readonly buffer TriangleValidities
@@ -80,6 +80,11 @@ layout (std140, binding = 11) readonly buffer AtomColors
 layout (std430, binding = 12) readonly buffer AtomVisibilities
 {
 	uint[] atomVisibilities;
+};
+
+layout (std430, binding = 13) readonly buffer AtomIds
+{
+	uint[] atomIds;
 };
 
 void main()
@@ -106,8 +111,9 @@ void main()
 	*/
 	
 	trianglePositions[ indexNew ] = trianglePositionsTmp[ index ];
-	triangleNormals[ indexNew ] = triangleNormalsTmp[ index ];
+	triangleNormals[ indexNew ] = triangleNormalsTmp[ index ];	
 	triangleIndices[ indexNew ] = indexNew;
-	triangleColors[ indexNew ] = atomColors[ triangleAtomIdsTmp[ index ] ];
-	triangleVisibilities[ indexNew ] = atomVisibilities[ triangleAtomIdsTmp[ index ] ];
+	triangleColors[ indexNew ] = atomColors[ triangleAtomIndicesTmp[ index ] ];
+	triangleVisibilities[ indexNew ] = atomVisibilities[ triangleAtomIndicesTmp[ index ] ];
+	triangleAtomIds[ indexNew ] = atomIds[ triangleAtomIndicesTmp[ index ] ];
 }
