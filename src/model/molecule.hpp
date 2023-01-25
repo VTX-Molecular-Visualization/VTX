@@ -163,7 +163,10 @@ namespace VTX
 			}
 			inline const std::unordered_set<std::string> & getUnknownAtomSymbols() const { return _unknownAtomSymbol; }
 
-			int			addUnknownResidueSymbol( UnknownResidueData * const p_data );
+			int						   getUnknownResidueSymbolIndex( const std::string & p_symbol ) const;
+			UnknownResidueData * const getUnknownResidueSymbol( const uint p_symbolIndex ) const;
+			UnknownResidueData * const getUnknownResidueSymbol( const std::string & p_symbol ) const;
+			int						   addUnknownResidueSymbol( UnknownResidueData * const p_data );
 			inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
 
 			inline AtomPositionsFrame & addAtomPositionFrame()

@@ -98,6 +98,34 @@ namespace VTX
 			return *bond;
 		}
 
+		int Molecule::getUnknownResidueSymbolIndex( const std::string & p_symbol ) const
+		{
+			int residueIndex;
+
+			for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
+			{
+				if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_symbol )
+					return residueIndex;
+			}
+
+			return -1;
+		}
+		UnknownResidueData * const Molecule::getUnknownResidueSymbol( const uint p_unkownymbolIndex ) const
+		{
+			return _unknownResidueSymbol[ p_unkownymbolIndex ];
+		}
+
+		UnknownResidueData * const Molecule::getUnknownResidueSymbol( const std::string & p_symbol ) const
+		{
+			for ( int residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
+			{
+				if ( _unknownResidueSymbol[ residueIndex ]->symbolStr == p_symbol )
+					return _unknownResidueSymbol[ residueIndex ];
+			}
+
+			return nullptr;
+		}
+
 		int Molecule::addUnknownResidueSymbol( UnknownResidueData * const p_residueData )
 		{
 			int residueIndex;
