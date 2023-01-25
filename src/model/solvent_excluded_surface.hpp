@@ -45,11 +45,6 @@ namespace VTX
 				GPU
 			};
 
-			struct AtomGridData
-			{
-				int index;
-			};
-
 			struct SESGridData
 			{
 				float sdf;

@@ -1,4 +1,5 @@
 #version 450
+#include "include/struct.glsl"
 #include "include/helper.glsl"
 #include "include/grid.glsl"
 
@@ -44,13 +45,6 @@ uniform uvec3	uGridSESSize;
 uniform vec3	uGridSESCellSize;
 uniform float	uIsovalue;
 
-// Data struct.
-struct SESGridDataStruct
-{
-	float sdf;
-	int	  nearestAtom;
-};
-
 // SSBO.
 layout (std430, binding = 0) readonly buffer SESGridData
 {
@@ -67,7 +61,7 @@ layout (std140, binding = 2) writeonly buffer TriangleNormals
 	vec4[] triangleNormals;
 };
 
-layout (std140, binding = 3) writeonly buffer TriangleAtomIds
+layout (std430, binding = 3) writeonly buffer TriangleAtomIds
 {
 	uint[] triangleAtomIds;
 };
@@ -86,13 +80,6 @@ layout (std430, binding = 6) readonly buffer AtomIds
 {
 	uint[] atomIds;
 };
-
-//////////////////////////
-layout (std140, binding = 50) buffer Debug
-{ 
-	vec4[] debug;
-};
-//////////////////////////
 
 // Marching cube.
 void main()

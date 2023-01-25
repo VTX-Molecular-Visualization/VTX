@@ -15,7 +15,7 @@ namespace VTX::Worker
 		VTX_DEBUG( "Starting gpu work: {}", Util::Math::to_string( _size ) );
 		_gl->glDispatchCompute( _size.x, _size.y, _size.z );
 		_gl->glMemoryBarrier( _barrier );
-
+		//_gl->glMemoryBarrier( GL_ALL_BARRIER_BITS );
 		if ( _force )
 		{
 			_gl->glFlush();
