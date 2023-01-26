@@ -57,6 +57,11 @@ namespace VTX
 			}
 		}
 
+		// TODO
+		// - Decompose in multiple iterations to handle larger buffers.
+		// - Smooth normals on GPU.
+		// - Sort triangles by atom.
+		// - Find nearest atom for each triangle.
 		void SolventExcludedSurface::_refreshGPU()
 		{
 			Tool::Chrono chrono, chrono2;

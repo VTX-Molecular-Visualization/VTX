@@ -186,6 +186,8 @@ namespace VTX::UI::Widget::Render
 		GLint glMaxComputeWorkGroupCount[ 3 ];
 		GLint glMaxComputeWorkGroupSize[ 3 ];
 		GLint glMaxComputeWorkGroupInvocations;
+		GLint glMaxUniformBlockSize;
+		GLint glMaxShaderStorageBlockSize;
 		GLint glNumExtensions;
 
 		_gl->glGetIntegerv( GL_MAX_TEXTURE_SIZE, &glMaxTextureSize );
@@ -198,6 +200,8 @@ namespace VTX::UI::Widget::Render
 		_gl->glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &glMaxComputeWorkGroupSize[ 1 ] );
 		_gl->glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &glMaxComputeWorkGroupSize[ 2 ] );
 		_gl->glGetIntegerv( GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &glMaxComputeWorkGroupInvocations );
+		_gl->glGetIntegerv( GL_MAX_UNIFORM_BLOCK_SIZE, &glMaxUniformBlockSize );
+		_gl->glGetIntegerv( GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &glMaxShaderStorageBlockSize );
 		_gl->glGetIntegerv( GL_NUM_EXTENSIONS, &glNumExtensions );
 
 		std::string glExtensions = "";
@@ -222,6 +226,8 @@ namespace VTX::UI::Widget::Render
 		VTX_SPEC().glMaxComputeWorkGroupSize[ 1 ]	= glMaxComputeWorkGroupSize[ 1 ];
 		VTX_SPEC().glMaxComputeWorkGroupSize[ 2 ]	= glMaxComputeWorkGroupSize[ 2 ];
 		VTX_SPEC().glMaxComputeWorkGroupInvocations = glMaxComputeWorkGroupInvocations;
+		VTX_SPEC().glMaxUniformBlockSize			= glMaxUniformBlockSize;
+		VTX_SPEC().glMaxShaderStorageBlockSize		= glMaxShaderStorageBlockSize;
 		VTX_SPEC().glExtensions						= glExtensions;
 	}
 
