@@ -4,8 +4,13 @@
 #include "__new_archi/ui/qt/action/chain.hpp"
 #include "__new_archi/ui/qt/action/molecule.hpp"
 #include "__new_archi/ui/qt/action/residue.hpp"
+#include "__new_archi/ui/qt/application_qt.hpp"
+#include "__new_archi/ui/qt/contextual_menu.hpp"
+#include "__new_archi/ui/qt/main_window.hpp"
+#include "__new_archi/ui/qt/tool/keys.hpp"
 #include "__new_archi/ui/qt/tool/scene/widget/scene_item_selection_model.hpp"
 #include "__new_archi/ui/qt/util.hpp"
+#include "__new_archi/ui/qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "__new_archi/ui/qt/widget_factory.hpp"
 #include "action/action_manager.hpp"
 #include "action/atom.hpp"
@@ -19,9 +24,7 @@
 #include "struct/range.hpp"
 #include "style.hpp"
 #include "tool/logger.hpp"
-#include "ui/contextual_menu.hpp"
 #include "ui/mime_type.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_selection.hpp"
 #include <QScrollBar>
 #include <util/string.hpp>
 
@@ -350,19 +353,20 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		const ID::VTX_ID & modelTypeId	 = MVC::MvcManager::get().getModelTypeID( modelId );
 		const QPoint	   globalClicPos = mapToGlobal( p_clicPos );
 
-		Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+		Model::Selection &		 selection		= Selection::SelectionManager::get().getSelectionModel();
+		UI::QT::ContextualMenu & contextualMenu = QT_APP()->getMainWindow().getContextualMenu();
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 			if ( selection.isMoleculeFullySelected( molecule ) )
 			{
-				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
-					= VTX::UI::ContextualMenu::getMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuSelection>(
-						VTX::UI::ContextualMenu::Menu::Selection );
-				selectionContextualMenu->setFocusedTarget( &molecule );
+				contextualMenu
+					.getMenu<VTX::UI::QT::Widget::ContextualMenu::ContextualMenuSelection>(
+						Tool::ContextualMenu::SELECTION )
+					->setFocusedTarget( &molecule );
 
-				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+				contextualMenu.pop( Tool::ContextualMenu::SELECTION, &selection, globalClicPos );
 			}
 			else
 			{
@@ -374,11 +378,12 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			Model::Category & category = MVC::MvcManager::get().getModel<Model::Category>( modelId );
 			if ( selection.isCategoryFullySelected( category ) )
 			{
-				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
-					= VTX::UI::ContextualMenu::getMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuSelection>(
-						VTX::UI::ContextualMenu::Menu::Selection );
-				selectionContextualMenu->setFocusedTarget( &category );
-				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+				contextualMenu
+					.getMenu<VTX::UI::QT::Widget::ContextualMenu::ContextualMenuSelection>(
+						Tool::ContextualMenu::SELECTION )
+					->setFocusedTarget( &category );
+
+				contextualMenu.pop( Tool::ContextualMenu::SELECTION, &selection, globalClicPos );
 			}
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
@@ -386,15 +391,12 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			Model::Chain & chain = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
 			if ( selection.isChainFullySelected( chain ) )
 			{
-				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
-					= VTX::UI::ContextualMenu::getMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuSelection>(
-						VTX::UI::ContextualMenu::Menu::Selection );
-				selectionContextualMenu->setFocusedTarget( &chain );
-				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
-			}
-			else
-			{
-				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Chain, &chain, globalClicPos );
+				contextualMenu
+					.getMenu<VTX::UI::QT::Widget::ContextualMenu::ContextualMenuSelection>(
+						Tool::ContextualMenu::SELECTION )
+					->setFocusedTarget( &chain );
+
+				contextualMenu.pop( Tool::ContextualMenu::SELECTION, &selection, globalClicPos );
 			}
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
@@ -402,15 +404,12 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			Model::Residue & residue = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
 			if ( selection.isResidueFullySelected( residue ) )
 			{
-				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
-					= VTX::UI::ContextualMenu::getMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuSelection>(
-						VTX::UI::ContextualMenu::Menu::Selection );
-				selectionContextualMenu->setFocusedTarget( &residue );
-				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
-			}
-			else
-			{
-				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Residue, &residue, globalClicPos );
+				contextualMenu
+					.getMenu<VTX::UI::QT::Widget::ContextualMenu::ContextualMenuSelection>(
+						Tool::ContextualMenu::SELECTION )
+					->setFocusedTarget( &residue );
+
+				contextualMenu.pop( Tool::ContextualMenu::SELECTION, &selection, globalClicPos );
 			}
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
@@ -418,15 +417,12 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			Model::Atom & atom = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
 			if ( selection.isAtomSelected( atom ) )
 			{
-				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
-					= VTX::UI::ContextualMenu::getMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuSelection>(
-						VTX::UI::ContextualMenu::Menu::Selection );
-				selectionContextualMenu->setFocusedTarget( &atom );
-				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
-			}
-			else
-			{
-				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Atom, &atom, globalClicPos );
+				contextualMenu
+					.getMenu<VTX::UI::QT::Widget::ContextualMenu::ContextualMenuSelection>(
+						Tool::ContextualMenu::SELECTION )
+					->setFocusedTarget( &atom );
+
+				contextualMenu.pop( Tool::ContextualMenu::SELECTION, &selection, globalClicPos );
 			}
 		}
 	}

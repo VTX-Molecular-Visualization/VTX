@@ -58,7 +58,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 	class ContextualMenuSelection : public ContextualMenuTemplate<Model::Selection>
 	{
-		VTX_WIDGET
+		NEW_ARCHI_VTX_WIDGET
 
 	  private:
 		class ItemData

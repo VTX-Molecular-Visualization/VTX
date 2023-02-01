@@ -95,9 +95,20 @@ namespace VTX::UI::QT::Tool
 		QT::Widget::ContextualMenu::BaseContextualMenu * const sceneContextualMenu
 			= mainWindow->getContextualMenu().getMenu( Tool::ContextualMenu::SCENE );
 
-		sceneContextualMenu->appendToSection( "Loading", "Load Molecule", this, &SessionTool::_openFile );
-		sceneContextualMenu->appendToSection(
-			"Loading", "Download Molecule", this, &SessionTool::_downloadMoleculeFile );
+		if ( sceneContextualMenu != nullptr )
+		{
+			sceneContextualMenu->appendToSection( "Loading", "Load Molecule", this, &SessionTool::_openFile );
+			sceneContextualMenu->appendToSection(
+				"Loading", "Download Molecule", this, &SessionTool::_downloadMoleculeFile );
+		}
+
+		QT::Widget::ContextualMenu::BaseContextualMenu * const sceneContextualSelection
+			= mainWindow->getContextualMenu().getMenu( Tool::ContextualMenu::SELECTION );
+
+		if ( sceneContextualSelection != nullptr )
+		{
+			sceneContextualMenu->appendToSection( "Loading", "Load Trajectory", this, &SessionTool::_openFile );
+		}
 	}
 	void SessionTool::_registerShortcuts()
 	{

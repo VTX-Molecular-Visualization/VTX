@@ -20,6 +20,13 @@ namespace VTX::UI::QT
 		void registerMenu( const Core::WidgetKey & p_menuKey, Widget::ContextualMenu::BaseContextualMenu * p_menu );
 		Widget::ContextualMenu::BaseContextualMenu * const getMenu( const Core::WidgetKey & p_menuKey ) const;
 
+		template<typename T,
+				 typename = std::enable_if<std::is_base_of<Widget::ContextualMenu::BaseContextualMenu, T>::value>>
+		T * const getMenu( const Core::WidgetKey & p_menuKey ) const
+		{
+			return dynamic_cast<T *>( getMenu( p_menuKey ) );
+		}
+
 		template<typename T>
 		void pop( const Core::WidgetKey & p_menuKey, T * const p_target, const QPoint & p_worldPos ) const
 		{

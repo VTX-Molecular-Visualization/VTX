@@ -5,6 +5,7 @@
 #include "__new_archi/ui/qt/tool/scene/widget/contextual_menu_scene.hpp"
 #include "__new_archi/ui/qt/tool/scene/widget/view/molecule_scene_view.hpp"
 #include "__new_archi/ui/qt/tool/scene/widget/view/path_scene_view.hpp"
+#include "__new_archi/ui/qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "__new_archi/ui/qt/widget_factory.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
@@ -111,8 +112,12 @@ namespace VTX::UI::QT::Tool
 		Scene::Widget::ContextualMenuScene * defaultContextualMenu
 			= QT::WidgetFactory::get().instantiateWidget<Scene::Widget::ContextualMenuScene>( mainWindow,
 																							  "contextualMenuScene" );
-
 		mainWindow->getContextualMenu().registerMenu( Tool::ContextualMenu::SCENE, defaultContextualMenu );
+
+		QT::Widget::ContextualMenu::ContextualMenuSelection * contextuaMenuSelection
+			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::ContextualMenu::ContextualMenuSelection>(
+				mainWindow, "contextualMenuSelection" );
+		mainWindow->getContextualMenu().registerMenu( Tool::ContextualMenu::SELECTION, contextuaMenuSelection );
 	}
 
 } // namespace VTX::UI::QT::Tool
