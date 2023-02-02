@@ -140,7 +140,6 @@ namespace VTX
 			// Create SSBOs.
 			using VTX::Renderer::GL::Buffer;
 			// Output.
-			VTX_INFO( "size of {}", sizeof( SESGridData ) );
 			Buffer bufferSesGridData( gridSES.getCellCount() * sizeof( SESGridData ) );
 			// Input.
 			Buffer bufferAtomGridDataSorted( atomGridDataSorted );
@@ -168,27 +167,25 @@ namespace VTX
 			workerCreateSDF.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
 
 			// Start.
-			if ( LOCAL_SIZE_X == 1 )
-			{
-				workerCreateSDF.start( gridSES.size );
-			}
-			else
-			{
-				workerCreateSDF.start( gridSES.getCellCount() );
-			}
+			workerCreateSDF.start( gridSES.getCellCount() );
 
 			// Unbind.
+			bufferSesGridData.unbind();
 			bufferAtomGridDataSorted.unbind();
 			bufferAtomIndexSorted.unbind();
 			bufferAtomPosition.unbind();
 
 			chrono2.stop();
-			VTX_INFO( "SDF created " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_INFO( "SDF created in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			//////////////////////
 			// Worker: refine SDF.
 			Worker::GpuComputer workerRefineSDF( IO::FilePath( "ses/refine_sdf.comp" ) );
+
+			// Bind.
+			bufferSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+
 			workerRefineSDF.getProgram().use();
 
 			Vec3i cellsToVisitCount = Util::Math::ceil( Vec3f( PROBE_RADIUS + VOXEL_SIZE ) / gridSES.cellSize );
@@ -201,17 +198,80 @@ namespace VTX
 			workerRefineSDF.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
 
 			// Start
-			if ( LOCAL_SIZE_X == 1 )
-			{
-				workerRefineSDF.start( gridSES.size );
-			}
-			else
-			{
-				workerRefineSDF.start( gridSES.getCellCount() );
-			}
+			workerRefineSDF.start( gridSES.getCellCount() );
+
+			// Unbind.
+			bufferSesGridData.unbind();
 
 			chrono2.stop();
-			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_INFO( "SDF boundary created in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
+
+			////////////////////////////
+			// Worker: reduce grid.
+			Worker::GpuComputer workerReduceGrid( IO::FilePath( "ses/reduce_grid.comp" ) );
+
+			std::vector<uint> cellValidities( gridSES.getCellCount(), 0 );
+			Buffer			  bufferCellValidities( cellValidities );
+			Buffer			  bufferCellHashs( gridSES.getCellCount() * sizeof( uint ) );
+
+			// Bind.
+			bufferSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferCellValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferCellHashs.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+
+			workerReduceGrid.getProgram().use();
+
+			workerReduceGrid.getProgram().setVec3u( "uGridSESSize", Vec3u( gridSES.size ) );
+			workerReduceGrid.getProgram().setFloat( "uIsovalue", 0.f );
+
+			// Start.
+			workerReduceGrid.start( gridSES.getCellCount() );
+
+			bufferCellValidities.getData( cellValidities );
+
+			bufferSesGridData.unbind();
+			bufferCellValidities.unbind();
+			bufferCellHashs.unbind();
+
+			chrono2.stop();
+			VTX_INFO( "Grid reduced in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
+
+			////////////////////////////
+			// Worker: grid compaction.
+			Worker::GpuComputer workerGridCompaction( IO::FilePath( "ses/grid_compaction.comp" ) );
+			size_t				bufferSize = gridSES.getCellCount();
+			VTX_INFO( "Grid buffer size before compaction: {}", bufferSize );
+			std::exclusive_scan( cellValidities.begin(), cellValidities.end(), cellValidities.begin(), 0 );
+			size_t bufferSizeReduced = *( cellValidities.end() - 1 );
+
+			VTX_INFO( "Grid buffer size after compaction: {}", bufferSizeReduced );
+
+			Buffer bufferCellValiditiesSum( cellValidities );
+			Buffer bufferCellHashsReduced( bufferSizeReduced * sizeof( uint ) );
+
+			// Bind.
+			bufferCellValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferCellValiditiesSum.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferCellHashs.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+
+			workerGridCompaction.getProgram().use();
+			workerGridCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
+			workerGridCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
+
+			// Start.
+			workerGridCompaction.start( gridSES.getCellCount() );
+
+			// Unbind.
+			bufferCellValidities.unbind();
+			bufferCellValiditiesSum.unbind();
+			bufferCellHashs.unbind();
+			bufferCellHashsReduced.unbind();
+
+			chrono2.stop();
+			VTX_INFO( "Grid compacted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			/////////////////////////
@@ -221,7 +281,7 @@ namespace VTX
 			// Create SSBOs.
 			// Output.
 			// 5 triangles max per cell.
-			const size_t	  bufferSize = gridSES.getCellCount() * 5 * 3;
+			bufferSize = bufferSizeReduced * 5 * 3;
 			Buffer			  bufferPositionsTmp( bufferSize * sizeof( Vec4f ) );
 			Buffer			  bufferNormalsTmp( bufferSize * sizeof( Vec4f ) );
 			Buffer			  bufferAtomIndicesTmp( bufferSize * sizeof( uint ) );
@@ -230,27 +290,24 @@ namespace VTX
 			// Input.
 			Buffer bufferTriangleTable( 256 * 16 * sizeof( int ), Math::MarchingCube::TRIANGLE_TABLE );
 
+			bufferSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
 			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
 			bufferNormalsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
 			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
 			bufferTriangleTable.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
+			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
 
 			workerMarchingCube.getProgram().use();
 
 			workerMarchingCube.getProgram().setVec3f( "uGridSESWorldOrigin", gridSES.worldOrigin );
 			workerMarchingCube.getProgram().setVec3u( "uGridSESSize", Vec3u( gridSES.size ) );
 			workerMarchingCube.getProgram().setVec3f( "uGridSESCellSize", gridSES.cellSize );
+			workerMarchingCube.getProgram().setFloat( "uIsovalue", 0.f );
+			workerMarchingCube.getProgram().setUInt( "uSize", uint( bufferSizeReduced ) );
 
 			// Start.
-			if ( LOCAL_SIZE_X == 1 )
-			{
-				workerMarchingCube.start( gridSES.size );
-			}
-			else
-			{
-				workerMarchingCube.start( gridSES.getCellCount() );
-			}
+			workerMarchingCube.start( bufferSizeReduced );
 
 			// Get validities for next step.
 			bufferTriangleValidities.getData( triangleValidities );
@@ -262,22 +319,23 @@ namespace VTX
 			bufferAtomIndicesTmp.unbind();
 			bufferTriangleValidities.unbind();
 			bufferTriangleTable.unbind();
+			bufferCellHashsReduced.unbind();
 
 			chrono2.stop();
 			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			////////////////////////////
-			// Worker: stream compaction.
-			Worker::GpuComputer workerStreamCompaction( IO::FilePath( "ses/stream_compaction.comp" ) );
-			VTX_DEBUG( "Triangle buffer size before compaction: {}", bufferSize );
+			// Worker: buffer compaction.
+			Worker::GpuComputer workerStreamCompaction( IO::FilePath( "ses/buffer_compaction.comp" ) );
+			VTX_INFO( "Triangle buffer size before compaction: {}", bufferSize );
 			//  Perform exclusive scan on validity buffer.
 			std::exclusive_scan( triangleValidities.begin(), triangleValidities.end(), triangleValidities.begin(), 0 );
 
-			size_t bufferSizeReduced = *( triangleValidities.end() - 1 );
-			_indiceCount			 = uint( bufferSizeReduced );
+			bufferSizeReduced = *( triangleValidities.end() - 1 );
+			_indiceCount	  = uint( bufferSizeReduced );
 
-			VTX_DEBUG( "Triangle buffer size after compaction: {}", _indiceCount );
+			VTX_INFO( "Triangle buffer size after compaction: {}", _indiceCount );
 
 			// Create SSBOs.
 			// Output.
@@ -353,7 +411,7 @@ namespace VTX
 			_atomsToTriangles.shrink_to_fit();
 
 			chrono2.stop();
-			VTX_INFO( "Buffer filled in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_INFO( "Buffer compacted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 
 			chrono.stop();
 			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );

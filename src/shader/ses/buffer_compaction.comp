@@ -91,7 +91,7 @@ void main()
 {
 	const uint index = globalInvocationHash( gl_GlobalInvocationID, gl_NumWorkGroups, gl_WorkGroupSize );
 	
-	if( index > uSize )
+	if( index >= uSize )
 	{
 		return;
 	}

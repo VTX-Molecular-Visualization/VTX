@@ -59,6 +59,7 @@ namespace VTX
 			uint _indiceCount = 0;
 
 			void _refreshCPU();
+
 			void _refreshGPU();
 
 			SolventExcludedSurface( const Category * const );
