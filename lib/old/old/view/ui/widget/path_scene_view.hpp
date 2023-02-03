@@ -47,6 +47,7 @@ namespace VTX::View::UI::Widget
 		void _setupSlots() override;
 
 		void _onCustomContextMenuCalled( const QPoint & p_clicPos ) override;
+		void _onItemExpanded( QTreeWidgetItem * const ) override;
 
 		void _selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append = false );
 

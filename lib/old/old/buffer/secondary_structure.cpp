@@ -44,8 +44,8 @@ namespace VTX::Buffer
 
 		// Control point color.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::RESIDUE_COLOR );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::RESIDUE_COLOR, _vboColors, sizeof( Color::Rgb ) );
-		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::RESIDUE_COLOR, 3, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::RESIDUE_COLOR, _vboColors, sizeof( Color::Rgba ) );
+		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::RESIDUE_COLOR, 4, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::RESIDUE_COLOR, ATTRIBUTE_LOCATION::RESIDUE_COLOR );
 
 		// Control point visibility.
@@ -84,7 +84,7 @@ namespace VTX::Buffer
 		_updateBuffer( _vboSecondaryStructures, p_ss );
 	}
 
-	void SecondaryStructure::setColors( const std::vector<Color::Rgb> & p_colors )
+	void SecondaryStructure::setColors( const std::vector<Color::Rgba> & p_colors )
 	{
 		_updateBuffer( _vboColors, p_colors );
 	}

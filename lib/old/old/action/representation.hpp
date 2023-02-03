@@ -85,7 +85,7 @@ namespace VTX::Action::Representation
 				else
 				*/
 				{
-					Util::FilePath path = Util::Filesystem::getRepresentationPath( representation->getName() );
+					IO::FilePath path = Util::Filesystem::getRepresentationPath( representation->getName() );
 					Util::Filesystem::generateUniqueFileName( path );
 
 					Worker::RepresentationSaver * librarySaver
@@ -185,7 +185,7 @@ namespace VTX::Action::Representation
 	{
 	  public:
 		explicit ChangeColor( Model::Representation::Representation * const p_representation,
-							  const Color::Rgb &							p_color ) :
+							  const Color::Rgba &							p_color ) :
 			_representation( p_representation ),
 			_color( p_color )
 		{
@@ -198,7 +198,7 @@ namespace VTX::Action::Representation
 
 	  private:
 		Model::Representation::Representation * const _representation;
-		const Color::Rgb							  _color;
+		const Color::Rgba							  _color;
 	};
 
 	class ChangeSphereRadius : public BaseAction

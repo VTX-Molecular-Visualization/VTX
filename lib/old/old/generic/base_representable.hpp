@@ -4,11 +4,13 @@
 #include "define.hpp"
 #include "representation/representation_target.hpp"
 #include <map>
+#include <set>
 
 namespace VTX
 {
 	namespace Model
 	{
+		class BaseModel;
 		class Molecule;
 		class Residue;
 		namespace Representation
@@ -27,8 +29,13 @@ namespace VTX
 
 			~BaseRepresentable();
 
-			const InstantiatedRepresentation * const getRepresentation() const;
-			InstantiatedRepresentation * const		 getCustomRepresentation();
+			void initBaseRepresentable( Model::BaseModel * const		   p_model,
+										Generic::BaseRepresentable * const p_parent,
+										Model::Molecule * const			   p_molecule );
+
+			const InstantiatedRepresentation * const							getRepresentation() const;
+			InstantiatedRepresentation * const									getCustomRepresentation();
+			const std::set<Model::Representation::InstantiatedRepresentation *> getSubRepresentations() const;
 			void setRepresentation( InstantiatedRepresentation * const p_representation );
 			void applyRepresentation( InstantiatedRepresentation * const p_representation,
 									  const bool						 p_recompute = true,
@@ -43,8 +50,9 @@ namespace VTX
 			{
 				return _representationTargets;
 			}
-			bool hasParent() const;
-			void setParent( BaseRepresentable * p_parent );
+			bool				hasParent() const;
+			BaseRepresentable * getParent() const { return _parent; }
+			void				setParent( BaseRepresentable * p_parent );
 
 			void computeAllRepresentationData();
 			void computeRepresentationTargets();
@@ -67,20 +75,30 @@ namespace VTX
 			}
 
 			Model::Molecule * const getMolecule() const { return _molecule; };
-			void		 setRepresentableMolecule( Model::Molecule * const p_molecule ) { _molecule = p_molecule; };
-			virtual void _onRepresentationChange() {};
+			void setRepresentableMolecule( Model::Molecule * const p_molecule ) { _molecule = p_molecule; };
+
+			Model::BaseModel * const getLinkedModel() const { return _model; };
+			void					 setLinkedModel( Model::BaseModel * const p_model ) { _model = p_model; };
 
 		  protected:
-			InstantiatedRepresentation * _representation = nullptr;
+			InstantiatedRepresentation *		   _representation	   = nullptr;
+			std::set<InstantiatedRepresentation *> _subRepresentations = std::set<InstantiatedRepresentation *>();
 
 			mutable std::map<const InstantiatedRepresentation *, RepresentationTarget> _representationTargets
 				= std::map<const InstantiatedRepresentation *, RepresentationTarget>();
 
+			void		 _callRepresentationChange( const bool p_callChangeOnParents = true );
+			virtual void _onRepresentationChange() {};
+
+			void _linkRepresentationToParent() const;
+			void _delinkRepresentationToParent() const;
+
 			bool _isResidueVisible( const Model::Residue & p_residue ) const;
 
 		  private:
-			Model::Molecule *		  _molecule = nullptr;
-			const BaseRepresentable * _parent	= nullptr;
+			Model::Molecule *	_molecule = nullptr;
+			BaseRepresentable * _parent	  = nullptr;
+			Model::BaseModel *	_model	  = nullptr;
 		};
 	} // namespace Generic
 } // namespace VTX

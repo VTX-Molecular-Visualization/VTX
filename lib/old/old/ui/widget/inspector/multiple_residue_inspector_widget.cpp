@@ -7,9 +7,12 @@
 #include "model/molecule.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
+#include "ui/main_window.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "ui/widget/inspector/inspector_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/ui.hpp"
+#include "vtx_app.hpp"
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>
@@ -18,6 +21,8 @@
 
 namespace VTX::UI::Widget::Inspector
 {
+	const int MultipleResidueWidget::BOND_INFO_COUNT_MAX = 100;
+
 	MultipleResidueWidget::MultipleResidueWidget( QWidget * p_parent ) :
 		MultipleModelInspectorWidget( p_parent, ID::View::UI_INSPECTOR_RESIDUE ) {};
 
@@ -62,6 +67,23 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_setupSlots()
 	{
+		QMenu * const headerMenu = new QMenu( this );
+
+		QAction * inspectorToMoleculeAction = new QAction( "Molecule", this );
+		connect(
+			inspectorToMoleculeAction, &QAction::triggered, this, &MultipleResidueWidget::_setInspectorToMolecule );
+		headerMenu->addAction( inspectorToMoleculeAction );
+
+		QAction * inspectorToChainAction = new QAction( "Chain", this );
+		connect( inspectorToChainAction, &QAction::triggered, this, &MultipleResidueWidget::_setInspectorToChain );
+		headerMenu->addAction( inspectorToChainAction );
+
+		QAction * inspectorToAtomAction = new QAction( "Atom", this );
+		connect( inspectorToAtomAction, &QAction::triggered, this, &MultipleResidueWidget::_setInspectorToAtom );
+		headerMenu->addAction( inspectorToAtomAction );
+
+		_getHeader()->setMenu( headerMenu );
+
 		connect( _representationWidget,
 				 &Representation::RepresentationInspectorSection::onRepresentationPresetChange,
 				 this,
@@ -129,6 +151,7 @@ namespace VTX::UI::Widget::Inspector
 			_fullnameLabel->resetState();
 			_nbAtomsLabel->resetState();
 			_bondsLabel->setText( "" );
+			_bondInfoCount = 0;
 		}
 	}
 
@@ -155,7 +178,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_onRepresentationColorChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
-		const Color::Rgb &										  p_color,
+		const Color::Rgba &										  p_color,
 		const bool												  p_ssColor )
 	{
 		if ( !signalsBlocked() )
@@ -205,7 +228,7 @@ namespace VTX::UI::Widget::Inspector
 		}
 	}
 
-	void MultipleResidueWidget::_changeMoleculesColor( const Color::Rgb & p_color ) const
+	void MultipleResidueWidget::_changeMoleculesColor( const Color::Rgba & p_color ) const
 	{
 		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 
@@ -223,6 +246,9 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_appendBondInfo( const Model::Residue & p_residue )
 	{
+		if ( _bondInfoCount >= BOND_INFO_COUNT_MAX )
+			return;
+
 		QString						  bondInfoStr = _bondsLabel->text();
 		const Model::Molecule * const moleculePtr = p_residue.getMoleculePtr();
 		for ( uint i = p_residue.getIndexFirstBond(); i < p_residue.getIndexFirstBond() + p_residue.getBondCount();
@@ -233,9 +259,35 @@ namespace VTX::UI::Widget::Inspector
 				continue;
 
 			Util::UI::appendBondInfo( *bond, bondInfoStr );
+			_bondInfoCount++;
+
+			if ( _bondInfoCount >= BOND_INFO_COUNT_MAX )
+				break;
 		}
 
 		_bondsLabel->setText( bondInfoStr );
+	}
+
+	void MultipleResidueWidget::_setInspectorToMolecule() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::MOLECULE );
+	}
+	void MultipleResidueWidget::_setInspectorToChain() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::CHAIN );
+	}
+	void MultipleResidueWidget::_setInspectorToAtom() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

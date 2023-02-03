@@ -1,6 +1,7 @@
 #ifndef __VTX_UTIL_ANALYSIS__
 #define __VTX_UTIL_ANALYSIS__
 
+#include "analysis/rmsd.hpp"
 #include "define.hpp"
 #include <vector>
 
@@ -24,6 +25,8 @@ namespace VTX
 		void getAtomPositions( const Model::Selection & p_selection,
 							   const Model::Molecule *	p_target,
 							   std::vector<Vec3f> &		p_positions );
+
+		std::string getRMSDLog( const VTX::Analysis::RMSD::RMSDData & p_data );
 	} // namespace Util::Analysis
 
 } // namespace VTX

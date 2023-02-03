@@ -1,7 +1,6 @@
 #ifndef __VTX_ACTION_SETTING__
 #define __VTX_ACTION_SETTING__
 
-#include "action/action_manager.hpp"
 #include "base_action.hpp"
 #include "io/reader/serialized_object.hpp"
 #include "io/struct/image_export.hpp"
@@ -44,7 +43,7 @@ namespace VTX::Action::Setting
 		explicit Load() {}
 		virtual void execute() override
 		{
-			const Util::FilePath & path = Util::Filesystem::getSettingJsonFile();
+			const IO::FilePath & path = Util::Filesystem::getSettingJsonFile();
 			if ( path.exists() == false )
 			{
 				VTX_INFO( "No settings file found" );
@@ -122,7 +121,7 @@ namespace VTX::Action::Setting
 	class ChangeBackgroundColor : public BaseAction
 	{
 	  public:
-		explicit ChangeBackgroundColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+		explicit ChangeBackgroundColor( const Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override
 		{
@@ -131,7 +130,7 @@ namespace VTX::Action::Setting
 		};
 
 	  private:
-		const Color::Rgb _color;
+		const Color::Rgba _color;
 	};
 
 	class ChangeSnapshotFormat : public BaseAction
@@ -374,7 +373,7 @@ namespace VTX::Action::Setting
 	class ChangeOutlineColor : public BaseAction
 	{
 	  public:
-		explicit ChangeOutlineColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+		explicit ChangeOutlineColor( const Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override
 		{
@@ -383,7 +382,7 @@ namespace VTX::Action::Setting
 		};
 
 	  private:
-		const Color::Rgb _color;
+		const Color::Rgba _color;
 	};
 
 	class ChangeOutlineThickness : public BaseAction
@@ -480,7 +479,7 @@ namespace VTX::Action::Setting
 	class ChangeFogColor : public BaseAction
 	{
 	  public:
-		explicit ChangeFogColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+		explicit ChangeFogColor( const Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override
 		{
@@ -489,7 +488,7 @@ namespace VTX::Action::Setting
 		};
 
 	  private:
-		const Color::Rgb _color;
+		const Color::Rgba _color;
 	};
 
 	class ActiveAA : public BaseAction
@@ -511,7 +510,7 @@ namespace VTX::Action::Setting
 	class ChangeLightColor : public BaseAction
 	{
 	  public:
-		explicit ChangeLightColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+		explicit ChangeLightColor( const Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override
 		{
@@ -520,7 +519,7 @@ namespace VTX::Action::Setting
 		};
 
 	  private:
-		const Color::Rgb _color;
+		const Color::Rgba _color;
 	};
 
 	class ChangeCameraClip : public BaseAction
@@ -583,12 +582,23 @@ namespace VTX::Action::Setting
 		const float _speed;
 	};
 
-	class ChangeTranslationFactorSpeed : public BaseAction
+	class ChangeAccelerationFactorSpeed : public BaseAction
 	{
 	  public:
-		explicit ChangeTranslationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
+		explicit ChangeAccelerationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
 
-		virtual void execute() override { VTX_SETTING().setTranslationSpeedFactor( _factor ); };
+		virtual void execute() override { VTX_SETTING().setAccelerationSpeedFactor( _factor ); };
+
+	  private:
+		const float _factor;
+	};
+
+	class ChangeDecelerationFactorSpeed : public BaseAction
+	{
+	  public:
+		explicit ChangeDecelerationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
+
+		virtual void execute() override { VTX_SETTING().setDecelerationSpeedFactor( _factor ); };
 
 	  private:
 		const float _factor;
@@ -777,7 +787,8 @@ namespace VTX::Action::Setting
 			VTX_ACTION( new Action::Setting::ChangeSnapshotResolution( _setting.getSnapshotResolution() ) );
 
 			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( _setting.getTranslationSpeed() ) );
-			VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed( _setting.getTranslationSpeedFactor() ) );
+			VTX_ACTION( new Action::Setting::ChangeAccelerationFactorSpeed( _setting.getAccelerationSpeedFactor() ) );
+			VTX_ACTION( new Action::Setting::ChangeDecelerationFactorSpeed( _setting.getDecelerationSpeedFactor() ) );
 			VTX_ACTION( new Action::Setting::ChangeRotationSpeed( _setting.getRotationSpeed() ) );
 			VTX_ACTION( new Action::Setting::ActiveYAxisInversion( _setting.getYAxisInverted() ) );
 

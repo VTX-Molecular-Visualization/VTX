@@ -3,9 +3,9 @@
 #include "action/representable.hpp"
 #include "action/setting.hpp"
 #include "model/representation/representation_library.hpp"
+#include "util/time.hpp"
 #include <magic_enum.hpp>
 #include <sstream>
-#include <util/time.hpp>
 
 namespace VTX
 {

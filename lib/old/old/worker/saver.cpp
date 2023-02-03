@@ -6,7 +6,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
-#include <util/chrono.hpp>
+#include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include <set>
@@ -16,7 +16,7 @@ namespace VTX::Worker
 	uint Saver::_run()
 	{
 		bool		 result = 1;
-		Util::Chrono chrono;
+		Tool::Chrono chrono;
 
 		chrono.start();
 		emit logInfo( "Saving " + _path.filename() );
@@ -83,9 +83,9 @@ namespace VTX::Worker
 
 		Util::Filesystem::checkSaveDirectoryHierarchy( _path );
 
-		const Util::FilePath itemDirectory = Util::Filesystem::getSceneObjectsSaveDirectory( _path );
+		const IO::FilePath itemDirectory = Util::Filesystem::getSceneObjectsSaveDirectory( _path );
 
-		std::set<Util::FilePath> filesToRemove = Util::Filesystem::getFilesInDirectory( itemDirectory );
+		std::set<IO::FilePath> filesToRemove = Util::Filesystem::getFilesInDirectory( itemDirectory );
 
 		IO::Writer::SerializedObject<VTXApp> * const writer = new IO::Writer::SerializedObject<VTXApp>( this );
 
@@ -100,7 +100,7 @@ namespace VTX::Worker
 				const IO::Struct::ScenePathData::Data & moleculePathData
 					= VTXApp::get().getScenePathData().getData( molecule.first );
 
-				Util::FilePath filePath = moleculePathData.getFilepath();
+				IO::FilePath filePath = moleculePathData.getFilepath();
 
 				bool needToSaveMolecule = moleculePathData.needToSaveMolecule();
 
@@ -139,7 +139,7 @@ namespace VTX::Worker
 			// Clean files
 			while ( filesToRemove.size() > 0 )
 			{
-				const Util::FilePath fileToRemove = *filesToRemove.begin();
+				const IO::FilePath fileToRemove = *filesToRemove.begin();
 				filesToRemove.erase( filesToRemove.begin() );
 				Util::Filesystem::remove( fileToRemove );
 			}
@@ -156,7 +156,7 @@ namespace VTX::Worker
 		return result;
 	}
 
-	Saver::MODE Saver::_getMode( const Util::FilePath & p_path ) const
+	Saver::MODE Saver::_getMode( const IO::FilePath & p_path ) const
 	{
 		std::string extension = p_path.extension();
 

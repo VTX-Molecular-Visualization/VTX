@@ -1,7 +1,6 @@
 #include "menu_tool_structural_alignment_widget.hpp"
-#include "__new_archi/tool/analysis/rmsd/action.hpp"
-#include "__new_archi/tool/analysis/structural_alignment/action.hpp"
 #include "action/action_manager.hpp"
+#include "action/analysis.hpp"
 #include "id.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -38,7 +37,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 
-		setTitle( "Structural Alignment" );
+		setTitle( "Measurement" );
 
 		_rmsdButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "rmsdButton" );
 		_rmsdButton->setData( "RMSD", ":/sprite/analysis_compute_rmsd_icon.png", Qt::Orientation::Vertical );
@@ -92,7 +91,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	void MenuToolStructuralAlignmentWidget::_computeRMSDAction() const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new VTX::Tool::Analysis::RMSD::Action::ComputeRMSD( selection ) );
+		VTX_ACTION( new Action::Analysis::ComputeRMSD( selection ) );
 	}
 
 	void MenuToolStructuralAlignmentWidget::_computeStructuralAlignmentAction()
@@ -114,8 +113,8 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		std::vector<Model::Molecule *> mobileMolecules;
 		Util::Analysis::pickTargetAndComparersFromSelection( selection, staticMolecule, mobileMolecules );
 
-		VTX_ACTION( new VTX::Tool::Analysis::StructuralAlignment::Action::ComputeStructuralAlignment(
-			staticMolecule, mobileMolecules, _alignmentParameter ) );
+		VTX_ACTION(
+			new Action::Analysis::ComputeStructuralAlignment( staticMolecule, mobileMolecules, _alignmentParameter ) );
 	}
 
 	void MenuToolStructuralAlignmentWidget::_openStructuralAlignmentWindow() const

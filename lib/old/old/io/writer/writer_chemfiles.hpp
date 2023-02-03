@@ -20,7 +20,7 @@ namespace VTX::IO::Writer
 		ChemfilesWriter( const Worker::BaseThread * const p_thread ) : ChemfilesIO( p_thread ) {}
 		ChemfilesWriter( const Worker::BaseWorker * const p_worker ) : ChemfilesIO( p_worker ) {}
 
-		void writeFile( const Util::FilePath &, const Model::Molecule & );
+		void writeFile( const IO::FilePath &, const Model::Molecule & );
 		void writeBuffer( std::string &, const Model::Molecule &, const std::string & p_format = "PDB" );
 		void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
 

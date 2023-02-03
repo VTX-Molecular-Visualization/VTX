@@ -11,7 +11,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
-#include <util/chrono.hpp>
+#include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
@@ -20,9 +20,9 @@ namespace VTX::Worker
 {
 	void SceneLoader::_run()
 	{
-		Util::Chrono chrono;
+		Tool::Chrono chrono;
 
-		for ( const Util::FilePath & path : _paths )
+		for ( const IO::FilePath & path : _paths )
 		{
 			chrono.start();
 			VTX_INFO( "Loading " + path.filename() );

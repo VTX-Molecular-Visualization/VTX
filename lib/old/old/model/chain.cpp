@@ -8,7 +8,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		const Color::Rgb Chain::CHAIN_ID_COLOR_ATOM[ Chain::NB_COLORS ] = {
+		const Color::Rgba Chain::CHAIN_ID_COLOR_ATOM[ Chain::NB_COLORS ] = {
 			{ 192, 208, 255 }, // A, a,
 			{ 176, 255, 176 }, // B, b,
 			{ 255, 192, 200 }, // C, c,
@@ -37,7 +37,7 @@ namespace VTX
 			{ 178, 34, 34 },   // Z, z
 		};
 
-		const Color::Rgb Chain::CHAIN_ID_COLOR_HETATM[ Chain::NB_COLORS ] = {
+		const Color::Rgba Chain::CHAIN_ID_COLOR_HETATM[ Chain::NB_COLORS ] = {
 			{ 144, 160, 207 }, // A, a,
 			{ 128, 207, 152 }, // B, b,
 			{ 207, 144, 176 }, // C, c,
@@ -66,14 +66,13 @@ namespace VTX
 			{ 194, 50, 50 },   // Z, z
 		};
 
-		const Color::Rgb Chain::CHAIN_ID_UNKNOWN_COLOR = Color::Rgb::WHITE;
+		const Color::Rgba Chain::CHAIN_ID_UNKNOWN_COLOR = Color::Rgba::WHITE;
 
 		void Chain::setMoleculePtr( Molecule * const p_molecule )
 		{
 			_moleculePtr = p_molecule;
 
-			setParent( p_molecule );
-			setRepresentableMolecule( p_molecule );
+			initBaseRepresentable( this, p_molecule, p_molecule );
 		}
 
 		void Chain::setResidueCount( const uint p_count )
@@ -107,7 +106,7 @@ namespace VTX
 			_realResidueCount--;
 		}
 
-		Color::Rgb Chain::getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
+		Color::Rgba Chain::getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
 		{
 			if ( p_chainId.empty() )
 				return Chain::CHAIN_ID_UNKNOWN_COLOR;
@@ -200,7 +199,7 @@ namespace VTX
 			return worldAabb;
 		}
 
-		void Chain::removeChildrenRepresentations() const
+		void Chain::removeChildrenRepresentations()
 		{
 			for ( uint i = _indexFirstResidue; i < _indexFirstResidue + _residueCount; i++ )
 			{
@@ -212,6 +211,8 @@ namespace VTX
 				VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
 					*residue, false, false );
 			}
+
+			_callRepresentationChange();
 		}
 
 		void Chain::_onRepresentationChange()

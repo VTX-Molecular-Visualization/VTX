@@ -18,8 +18,25 @@ ExternalProject_Add(
 ExternalProject_Get_Property(glm SOURCE_DIR)
 set(GLM_INCLUDE_DIR ${SOURCE_DIR})
 
+set(VTX_UTIL_SOURCE_PATH "lib/util/util")
+
 file(GLOB_RECURSE HEADERS util/*.hpp)
+foreach(SRC IN ITEMS ${HEADERS})
+    get_filename_component(SRC_PATH "${SRC}" PATH)
+    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${VTX_UTIL_SOURCE_PATH}" "${SRC_PATH}")
+    string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
+	# Create group to make visual studio filters.
+    source_group("Header${GROUP_PATH}" FILES "${SRC}")
+endforeach()
+
 file(GLOB_RECURSE SOURCES util/*.cpp)
+foreach(SRC IN ITEMS ${SOURCES})
+    get_filename_component(SRC_PATH "${SRC}" PATH)
+    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${VTX_UTIL_SOURCE_PATH}" "${SRC_PATH}")
+    string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
+	# Create group to make visual studio filters.
+    source_group("Source${GROUP_PATH}" FILES "${SRC}")
+endforeach()
 
 add_library(${VTX_UTIL_LIB} STATIC ${HEADERS} ${SOURCES})
 

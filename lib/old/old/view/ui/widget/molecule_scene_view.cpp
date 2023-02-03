@@ -16,7 +16,7 @@
 #include "ui/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "ui/widget/scene/scene_item_selection_model.hpp"
 #include "ui/widget_factory.hpp"
-#include <util/string.hpp>
+#include "util/string.hpp"
 #include "util/ui.hpp"
 #include <QScrollBar>
 
@@ -1414,7 +1414,11 @@ namespace VTX::View::UI::Widget
 												  const Model::Chain &	   p_itemFrom ) const
 	{
 		for ( uint iChain = p_itemFrom.getIndex() + 1; iChain < _model->getChainCount(); iChain++ )
-			p_selection.emplace_back( _model->getChain( iChain )->getId() );
+		{
+			const Model::Chain * const chain = _model->getChain( iChain );
+			if ( chain != nullptr )
+				p_selection.emplace_back( chain->getId() );
+		}
 	}
 	void MoleculeSceneView::_selectAllResiduesFrom( std::vector<Model::ID> & p_selection,
 													const Model::Residue &	 p_itemFrom ) const
@@ -1423,7 +1427,9 @@ namespace VTX::View::UI::Widget
 
 		for ( uint iResidue = p_itemFrom.getIndex() + 1; iResidue <= chain.getIndexLastResidue(); iResidue++ )
 		{
-			p_selection.emplace_back( _model->getResidue( iResidue )->getId() );
+			const Model::Residue * const residue = _model->getResidue( iResidue );
+			if ( residue != nullptr )
+				p_selection.emplace_back( residue->getId() );
 		}
 	}
 	void MoleculeSceneView::_selectAllAtomsFrom( std::vector<Model::ID> & p_selection,
@@ -1434,7 +1440,9 @@ namespace VTX::View::UI::Widget
 		for ( uint iAtom = p_itemFrom.getIndex() + 1; iAtom < residue.getIndexFirstAtom() + residue.getAtomCount();
 			  iAtom++ )
 		{
-			p_selection.emplace_back( _model->getAtom( iAtom )->getId() );
+			const Model::Atom * const atom = _model->getAtom( iAtom );
+			if ( atom != nullptr )
+				p_selection.emplace_back( atom->getId() );
 		}
 	}
 
@@ -1452,7 +1460,11 @@ namespace VTX::View::UI::Widget
 												const Model::Chain &	 p_itemFrom ) const
 	{
 		for ( uint iChain = 0; iChain < p_itemFrom.getIndex(); iChain++ )
-			p_selection.emplace_back( _model->getChain( iChain )->getId() );
+		{
+			const Model::Chain * const chain = _model->getChain( iChain );
+			if ( chain != nullptr )
+				p_selection.emplace_back( chain->getId() );
+		}
 	}
 	void MoleculeSceneView::_selectAllResiduesTo( std::vector<Model::ID> & p_selection,
 												  const Model::Residue &   p_itemFrom ) const
@@ -1460,7 +1472,11 @@ namespace VTX::View::UI::Widget
 		const Model::Chain & chain = *( p_itemFrom.getChainPtr() );
 
 		for ( uint iResidue = chain.getIndexFirstResidue(); iResidue < p_itemFrom.getIndex(); iResidue++ )
-			p_selection.emplace_back( _model->getResidue( iResidue )->getId() );
+		{
+			const Model::Residue * const residue = _model->getResidue( iResidue );
+			if ( residue != nullptr )
+				p_selection.emplace_back( residue->getId() );
+		}
 	}
 	void MoleculeSceneView::_selectAllAtomsTo( std::vector<Model::ID> & p_selection,
 											   const Model::Atom &		p_itemFrom ) const
@@ -1468,7 +1484,11 @@ namespace VTX::View::UI::Widget
 		const Model::Residue & residue = *( p_itemFrom.getResiduePtr() );
 
 		for ( uint iAtom = residue.getIndexFirstAtom(); iAtom < p_itemFrom.getIndex(); iAtom++ )
-			p_selection.emplace_back( _model->getAtom( iAtom )->getId() );
+		{
+			const Model::Atom * const atom = _model->getAtom( iAtom );
+			if ( atom != nullptr )
+				p_selection.emplace_back( atom->getId() );
+		}
 	}
 
 } // namespace VTX::View::UI::Widget

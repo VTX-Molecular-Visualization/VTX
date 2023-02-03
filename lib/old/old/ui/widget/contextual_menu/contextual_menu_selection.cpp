@@ -1,7 +1,6 @@
 #include "contextual_menu_selection.hpp"
-#include "__new_archi/tool/analysis/rmsd/action.hpp"
-#include "__new_archi/tool/analysis/structural_alignment/action.hpp"
 #include "action/action_manager.hpp"
+#include "action/analysis.hpp"
 #include "action/label.hpp"
 #include "action/selection.hpp"
 #include "action/viewpoint.hpp"
@@ -649,12 +648,12 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_applyComputeRMSDAction()
 	{
-		VTX_ACTION( new VTX::Tool::Analysis::RMSD::Action::ComputeRMSD( *_target ) );
+		VTX_ACTION( new Action::Analysis::ComputeRMSD( *_target ) );
 	}
 
 	void ContextualMenuSelection::_applyAlignmentAction()
 	{
-		VTX_ACTION( new VTX::Tool::Analysis::StructuralAlignment::Action::ComputeStructuralAlignment( *_target ) );
+		VTX_ACTION( new Action::Analysis::ComputeStructuralAlignment( *_target ) );
 	}
 
 	void ContextualMenuSelection::_openAlignmentWindowAction()

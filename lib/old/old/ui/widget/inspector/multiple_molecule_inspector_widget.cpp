@@ -6,6 +6,8 @@
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "ui/widget/custom_widget/folding_button.hpp"
+#include "ui/widget/inspector/inspector_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include <QBoxLayout>
 #include <QFont>
@@ -35,16 +37,26 @@ namespace VTX::UI::Widget::Inspector
 
 		_representationSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
 			this, "inspector_item_section" );
+
 		_representationWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::RepresentationInspectorSection>(
 				this, "inspector_instantiated_representation" );
 		_representationWidget->setActionButtonVisibility(
 			Representation::RepresentationInspectorSection::ActionButtons::All );
 
+		_subRepresentationWidget
+			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::InstantiatedRepresentationListWidget>(
+				this, "sub_representation_widget" );
+
+		_subRepresentationFoldingButton = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FoldingButton>(
+			this, _subRepresentationWidget, "_sub_representation_folding_button" );
+		_subRepresentationFoldingButton->setTitle( "Representations in children" );
+
 		_moleculeColor
 			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorFieldButton>( this, "molecule_color" );
 
 		_representationSection->appendField( _representationWidget );
+		_representationSection->appendField( _subRepresentationFoldingButton );
 		_representationSection->appendField( "Molecule color", _moleculeColor );
 
 		_trajectorySection
@@ -90,6 +102,22 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_setupSlots()
 	{
+		QMenu * const headerMenu = new QMenu( this );
+
+		QAction * inspectorToChainAction = new QAction( "Chain", this );
+		connect( inspectorToChainAction, &QAction::triggered, this, &MultipleMoleculeWidget::_setInspectorToChain );
+		headerMenu->addAction( inspectorToChainAction );
+
+		QAction * inspectorToResidueAction = new QAction( "Residue", this );
+		connect( inspectorToResidueAction, &QAction::triggered, this, &MultipleMoleculeWidget::_setInspectorToResidue );
+		headerMenu->addAction( inspectorToResidueAction );
+
+		QAction * inspectorToAtomAction = new QAction( "Atom", this );
+		connect( inspectorToAtomAction, &QAction::triggered, this, &MultipleMoleculeWidget::_setInspectorToAtom );
+		headerMenu->addAction( inspectorToAtomAction );
+
+		_getHeader()->setMenu( headerMenu );
+
 		connect( _transformWidget,
 				 &CustomWidget::TransformWidget::onValueChange,
 				 this,
@@ -165,6 +193,16 @@ namespace VTX::UI::Widget::Inspector
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
 					_representationWidget->updateWithNewValue( *molecule->getRepresentation() );
+
+					for ( Model::Representation::InstantiatedRepresentation * representation :
+						  molecule->getSubRepresentations() )
+					{
+						_subRepresentationWidget->addModel( representation );
+					}
+
+					const std::string strTitle = "Representations in children ("
+												 + std::to_string( _subRepresentationWidget->getModelCount() ) + ")";
+					_subRepresentationFoldingButton->setTitle( QString::fromStdString( strTitle ) );
 				}
 
 				if ( bool( p_flag & SectionFlag::TRAJECTORY ) )
@@ -207,6 +245,7 @@ namespace VTX::UI::Widget::Inspector
 		if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 		{
 			_representationWidget->resetState();
+			_subRepresentationWidget->clearModels();
 		}
 
 		if ( bool( p_flag & SectionFlag::TRAJECTORY ) )
@@ -308,7 +347,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_onRepresentationColorChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
-		const Color::Rgb &										  p_color,
+		const Color::Rgba &										  p_color,
 		const bool												  p_ssColor ) const
 	{
 		if ( p_ssColor )
@@ -368,9 +407,31 @@ namespace VTX::UI::Widget::Inspector
 	{
 		VTX_ACTION( new Action::Molecule::RemoveChildrenRepresentations( getTargets() ) );
 	}
-	void MultipleMoleculeWidget::_onMoleculeColorChange( const Color::Rgb & p_color ) const
+	void MultipleMoleculeWidget::_onMoleculeColorChange( const Color::Rgba & p_color ) const
 	{
 		VTX_ACTION( new Action::Molecule::ChangeColor( getTargets(), p_color ) );
+	}
+
+	void MultipleMoleculeWidget::_setInspectorToChain() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::CHAIN );
+	}
+	void MultipleMoleculeWidget::_setInspectorToResidue() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::RESIDUE );
+	}
+	void MultipleMoleculeWidget::_setInspectorToAtom() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

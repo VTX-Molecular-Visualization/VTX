@@ -34,14 +34,9 @@ namespace VTX::UI::Widget::MainMenu
 		const MenuToolBlockWidget * const getNextToolBlock( const MenuToolBlockWidget * const p_from,
 															const bool						  p_loop = true ) const;
 
-		MenuToolBlockWidget & getToolBlock( const std::string & p_toolBlockName );
-
-		void localize() override {};
-
 	  protected:
 		MenuTooltabWidget( QWidget * p_parent = nullptr );
 		void _setupUi( const QString & p_name ) override;
-		void _setupSlots() override {};
 		void _addSeparator();
 
 	  private:

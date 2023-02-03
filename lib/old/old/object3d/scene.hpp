@@ -90,8 +90,6 @@ namespace VTX::Object3D
 
 		bool isEmpty() const;
 
-		const Model::Path * const getDefaultPath() const { return _defaultPath; };
-
 		void clear();
 		void reset();
 
@@ -125,7 +123,7 @@ namespace VTX::Object3D
 			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::AABB ) ) != 0 )
 				_aabb.invalidate();
 
-			VTX_EVENT( new Event::VTXEventPtr<Generic::BaseSceneItem>( Event::Global::SCENE_ITEM_REMOVED, p_item ) );
+			VTX_EVENT( new Event::VTXEventPtr<Model::BaseModel>( Event::Global::MODEL_REMOVED, p_item ) );
 			VTX_EVENT( new Event::VTXEventPtr<T>( p_removeEvent, p_item ) );
 
 			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::GRAPHIC ) ) != 0 )
@@ -145,7 +143,7 @@ namespace VTX::Object3D
 			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::AABB ) ) != 0 )
 				_aabb.invalidate();
 
-			VTX_EVENT( new Event::VTXEventPtr<Generic::BaseSceneItem>( Event::Global::SCENE_ITEM_REMOVED, p_item ) );
+			VTX_EVENT( new Event::VTXEventPtr<Model::BaseModel>( Event::Global::MODEL_REMOVED, p_item ) );
 			VTX_EVENT( new Event::VTXEventPtr<T1>( p_removeEvent, p_item ) );
 
 			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::GRAPHIC ) ) != 0 )
@@ -160,8 +158,6 @@ namespace VTX::Object3D
 		VectorMeshTrianglePtr  _meshes	  = VectorMeshTrianglePtr();
 		VectorLabelPtr		   _labels	  = VectorLabelPtr();
 		VectorHelperPtr		   _helpers	  = VectorHelperPtr();
-
-		Model::Path * _defaultPath = nullptr;
 
 		std::vector<const Generic::BaseSceneItem *> _itemOrder = std::vector<const Generic::BaseSceneItem *>();
 		void										_applySceneID( Generic::BaseSceneItem & p_item );

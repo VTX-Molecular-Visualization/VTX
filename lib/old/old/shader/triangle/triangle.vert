@@ -1,7 +1,7 @@
 #version 450
 
-layout( location = 0 ) in vec3 aVertexPosition;
-layout( location = 1 ) in vec3 aVertexNormal;
+layout( location = 0 ) in vec4 aVertexPosition;
+layout( location = 1 ) in vec4 aVertexNormal;
 layout( location = 2 ) in vec3 aVertexColor;
 layout( location = 3 ) in uint aVertexVis;
 layout( location = 4 ) in uint aVertexSelected;
@@ -15,7 +15,7 @@ out VsOut
 {
 	smooth vec3 viewPosition;
 	smooth vec3 normal;
-	flat vec3	color;
+	smooth vec3	color;
 	flat uint   selected;
 	flat uint   id;
 }
@@ -28,8 +28,8 @@ void main()
 		return;
 	}
 
-	vsOut.viewPosition = vec3( u_MVMatrix * vec4( aVertexPosition, 1.f ) );
-	vsOut.normal	   = vec3( u_normalMatrix * vec4( aVertexNormal, 1.f ) );
+	vsOut.viewPosition = vec3( u_MVMatrix * aVertexPosition );
+	vsOut.normal	   = vec3( u_normalMatrix * aVertexNormal );
 	vsOut.color		   = aVertexColor;
 	vsOut.selected	   = aVertexSelected;
 	vsOut.id		   = aVertexId;

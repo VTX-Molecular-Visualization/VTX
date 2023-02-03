@@ -2,10 +2,10 @@
 #define __VTX_TOOL_LOGGER__
 
 #include "io/writer/log.hpp"
+#include "util/time.hpp"
 #include <fmt/format.h>
 #include <iostream>
 #include <string>
-#include <util/time.hpp>
 #include <vector>
 
 namespace VTX

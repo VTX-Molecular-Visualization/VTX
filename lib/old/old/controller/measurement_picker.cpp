@@ -202,7 +202,7 @@ namespace VTX::Controller
 		}
 		break;
 
-		case MeasurementPicker::Mode::DIHEDRAL_ANGLE:
+		case Mode::DIHEDRAL_ANGLE:
 		{
 			const Model::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
 			const Model::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );

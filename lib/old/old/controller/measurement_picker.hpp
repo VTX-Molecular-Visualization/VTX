@@ -4,7 +4,6 @@
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
 #include "model/base_model.hpp"
-#include "id.hpp"
 #include <vector>
 
 namespace VTX
@@ -40,7 +39,7 @@ namespace VTX
 			inline ID::VTX_ID getTargetWidget() override { return ID::UI::Input::RENDER_WIDGET; }
 
 			const Mode & getCurrentMode() const { return _currentMode; }
-			void						  setCurrentMode( const Mode & p_mode );
+			void		 setCurrentMode( const Mode & p_mode );
 
 			void update( const float & p_deltaTime ) override;
 

@@ -3,7 +3,7 @@
 
 #include "base_model_3d.hpp"
 #include "buffer/molecule.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "define.hpp"
 #include "generic/base_representable.hpp"
 #include "generic/base_scene_item.hpp"
@@ -72,8 +72,8 @@ namespace VTX
 			inline const std::string & getPdbIdCode() const { return _pdbIdCode; }
 			void					   setPdbIdCode( const std::string & p_pdbId );
 
-			inline const Util::FilePath & getPath() const { return _path; }
-			inline void					setPath( const Util::FilePath & p_path ) { _path = p_path; }
+			inline const IO::FilePath & getPath() const { return _path; }
+			inline void					setPath( const IO::FilePath & p_path ) { _path = p_path; }
 
 			Chain &								addChain();
 			inline Chain * const				getChain( const uint p_idx ) { return _chains[ p_idx ]; }
@@ -130,15 +130,16 @@ namespace VTX
 			inline const bool				  hasSecondaryStructure() const { return _secondaryStructure != nullptr; }
 			inline const SecondaryStructure & getSecondaryStructure() const { return *_secondaryStructure; }
 			inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
-			inline const bool hasSolventExcludedSurface() const { return _solventExcludedSurface != nullptr; }
-			inline const SolventExcludedSurface & getSolventExcludedSurface() const { return *_solventExcludedSurface; }
-			inline SolventExcludedSurface &		  getSolventExcludedSurface() { return *_solventExcludedSurface; }
+			inline const bool hasSolventExcludedSurface() const { return _solventExcludedSurfaces.empty() == false; }
 
-			inline const Model::Category & getCategory( CATEGORY_ENUM p_categoryEnum ) const
+			bool					 hasSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum ) const;
+			SolventExcludedSurface & getSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum );
+
+			inline const Model::Category & getCategory( const CATEGORY_ENUM & p_categoryEnum ) const
 			{
 				return *( _categories[ int( p_categoryEnum ) ] );
 			}
-			inline Model::Category & getCategory( CATEGORY_ENUM p_categoryEnum )
+			inline Model::Category & getCategory( const CATEGORY_ENUM & p_categoryEnum )
 			{
 				return *( _categories[ int( p_categoryEnum ) ] );
 			}
@@ -153,8 +154,8 @@ namespace VTX
 				return bool( _bufferAtomVisibilities[ p_idx ] );
 			}
 
-			inline const float &	  getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
-			inline const Color::Rgb & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
+			inline const float &	   getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
+			inline const Color::Rgba & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 
 			inline const std::vector<UnknownResidueData *> & getUnknownResidueSymbols() const
 			{
@@ -200,8 +201,8 @@ namespace VTX
 			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; }
 			inline std::vector<float> &				 getBufferAtomRadius() { return _bufferAtomRadius; }
 			inline const std::vector<float> &		 getBufferAtomRadius() const { return _bufferAtomRadius; }
-			inline std::vector<Color::Rgb> &		 getBufferAtomColors() { return _bufferAtomColors; }
-			inline const std::vector<Color::Rgb> &	 getBufferAtomColors() const { return _bufferAtomColors; }
+			inline std::vector<Color::Rgba> &		 getBufferAtomColors() { return _bufferAtomColors; }
+			inline const std::vector<Color::Rgba> &	 getBufferAtomColors() const { return _bufferAtomColors; }
 			inline std::vector<uint> &				 getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
 			inline const std::vector<uint> & getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
 			inline std::vector<uint> &		 getBufferAtomSelections() { return _bufferAtomSelections; }
@@ -218,7 +219,9 @@ namespace VTX
 			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
 			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
-			void removeChildrenRepresentations() const;
+			void clearDefaultRepresentations();
+			bool isDefaultRepresentation( const Representation::InstantiatedRepresentation & p_representation ) const;
+			void removeChildrenRepresentations();
 
 			void refreshStructure();
 			void refreshColors();
@@ -271,8 +274,9 @@ namespace VTX
 			void refreshSecondaryStructure();
 
 			// Solvent excluded surface.
-			void createSolventExcludedSurface();
-			void refreshSolventExcludedSurface();
+			void createSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum );
+			void refreshSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum );
+			void refreshSolventExcludedSurfaces();
 
 			// Categorization
 			std::vector<Model::Category *> getFilledCategories() const;
@@ -283,7 +287,7 @@ namespace VTX
 			void				setDisplayName( const std::string & p_name );
 
 			// Hide BaseColorable::setColor
-			void setColor( const Color::Rgb & p_color );
+			void setColor( const Color::Rgba & p_color );
 			void notifyStructureChange();
 			void notifyVisibilityChange();
 
@@ -293,6 +297,9 @@ namespace VTX
 			void _instantiate3DViews() override;
 
 			void _addChain( Model::Chain * const p_chain );
+
+			void _markRepresentationAsDefault(
+				const Representation::InstantiatedRepresentation * const _instantiatedRepresentation );
 
 			void _onRepresentationChange() override;
 
@@ -311,7 +318,7 @@ namespace VTX
 			RepresentationState _representationState = RepresentationState();
 
 			// Models.
-			Util::FilePath					_path;
+			IO::FilePath					_path;
 			std::string						_name						= "unknown";
 			std::string						_pdbIdCode					= "unknown";
 			std::vector<Chain *>			_chains						= std::vector<Chain *>();
@@ -329,17 +336,18 @@ namespace VTX
 			std::unordered_set<std::string>	  _unknownAtomSymbol	= std::unordered_set<std::string>();
 
 			// Buffers.
-			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
-			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
-			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
-			std::vector<uint>		_bufferAtomSelections	= std::vector<uint>();
-			std::vector<uint>		_bufferAtomIds			= std::vector<uint>();
-			std::vector<uint>		_bufferBonds			= std::vector<uint>();
+			std::vector<float>		 _bufferAtomRadius		 = std::vector<float>();
+			std::vector<Color::Rgba> _bufferAtomColors		 = std::vector<Color::Rgba>();
+			std::vector<uint>		 _bufferAtomVisibilities = std::vector<uint>();
+			std::vector<uint>		 _bufferAtomSelections	 = std::vector<uint>();
+			std::vector<uint>		 _bufferAtomIds			 = std::vector<uint>();
+			std::vector<uint>		 _bufferBonds			 = std::vector<uint>();
 
 			// Secondary structure.
 			SecondaryStructure * _secondaryStructure = nullptr;
 			// Solvent excluded surface.
-			SolventExcludedSurface * _solventExcludedSurface = nullptr;
+			std::map<CATEGORY_ENUM, SolventExcludedSurface *> _solventExcludedSurfaces
+				= std::map<CATEGORY_ENUM, SolventExcludedSurface *>();
 
 			// Categories
 			std::vector<Model::Category *> _categories;
@@ -357,6 +365,8 @@ namespace VTX
 			bool _showSolvent  = true;
 			bool _showHydrogen = true;
 			bool _showIon	   = true;
+
+			std::vector<Model::ID> _defaultRepresentationIDs = std::vector<Model::ID>();
 
 			// Fill Buffers Functions
 			void _fillBufferAtomColors();

@@ -5,10 +5,10 @@
 #include "id.hpp"
 #include "model/base_model.hpp"
 #include "mvc_data.hpp"
+#include "tool/chrono.hpp"
 #include "view/base_view.hpp"
 #include <type_traits>
 #include <unordered_map>
-#include <util/chrono.hpp>
 #include <vector>
 
 namespace VTX
@@ -176,6 +176,17 @@ namespace VTX
 				_unlock();
 			}
 
+			template<typename V,
+					 typename M,
+					 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
+					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
+			inline void deleteView( const V * const p_view, const ID::VTX_ID & p_id )
+			{
+				_lock();
+				delete static_cast<MvcData *>( _container[ p_view->_model->getId() ] )->removeView( p_id );
+				_unlock();
+			}
+
 			inline void deleteView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id )
 			{
 				_lock();
@@ -202,8 +213,8 @@ namespace VTX
 			}
 
 		  private:
-			MvcManager()								 = default;
-			MvcManager( const MvcManager & )			 = delete;
+			MvcManager()					 = default;
+			MvcManager( const MvcManager & ) = delete;
 			MvcManager & operator=( const MvcManager & ) = delete;
 			~MvcManager() { assert( _container.size() == 0 ); }
 

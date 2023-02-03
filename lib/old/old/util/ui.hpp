@@ -1,7 +1,7 @@
 #ifndef __VTX_UTIL_UI__
 #define __VTX_UTIL_UI__
 
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include <QBitmap>
 #include <QColor>
 #include <QEvent>
@@ -46,7 +46,7 @@ namespace VTX::Util::UI
 		std::set<QEvent::Type> _filteredTypes = std::set<QEvent::Type>();
 	};
 
-	static void appendColorHtmlTag( QString & p_txt, const VTX::Color::Rgb & p_color )
+	static void appendColorHtmlTag( QString & p_txt, const VTX::Color::Rgba & p_color )
 	{
 		const QString colorString = QString::fromStdString( p_color.toHexaString() );
 		const QString tag		  = QString( "<font color=" + colorString + ">" );
@@ -84,7 +84,7 @@ namespace VTX::Util::UI
 		p_widget->installEventFilter( eater );
 	}
 
-	static QColor RgbToQColor( const Color::Rgb & p_rgb )
+	static QColor RgbToQColor( const Color::Rgba & p_rgb )
 	{
 		return QColor( p_rgb.r * 255, p_rgb.g * 255, p_rgb.b * 255 );
 	}

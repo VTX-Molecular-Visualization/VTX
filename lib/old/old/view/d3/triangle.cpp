@@ -1,4 +1,5 @@
 #include "triangle.hpp"
+#include "model/category.hpp"
 #include "model/molecule.hpp"
 #include "representation/representation_manager.hpp"
 
@@ -7,7 +8,7 @@ namespace VTX::View::D3
 	Renderer::GL::Program * const Triangle::_createProgram()
 	{
 		return VTX_PROGRAM_MANAGER().createProgram(
-			"Triangle", { Util::FilePath( "triangle/triangle.vert" ), Util::FilePath( "triangle/triangle.frag" ) } );
+			"Triangle", { IO::FilePath( "triangle/triangle.vert" ), IO::FilePath( "triangle/triangle.frag" ) } );
 	}
 
 	void Triangle::render( const Object3D::Camera & p_camera ) const
@@ -22,7 +23,7 @@ namespace VTX::View::D3
 	Renderer::GL::Program * const TriangleSES::_createProgram()
 	{
 		return VTX_PROGRAM_MANAGER().createProgram(
-			"Triangle", { Util::FilePath( "triangle/triangle.vert" ), Util::FilePath( "triangle/triangle.frag" ) } );
+			"Triangle", { IO::FilePath( "triangle/triangle.vert" ), IO::FilePath( "triangle/triangle.frag" ) } );
 	}
 	void TriangleSES::render( const Object3D::Camera & p_camera ) const
 	{
@@ -30,12 +31,13 @@ namespace VTX::View::D3
 
 		for ( const std::pair<const Model::Representation::InstantiatedRepresentation * const,
 							  VTX::Representation::RepresentationTarget> & representationData :
-			  _model->getMolecule()->getRepresentationData() )
+			  _model->getCategory()->getMolecule()->getRepresentationData() )
 		{
 			if ( representationData.first->hasToDrawSES() )
 			{
 				const Model::Representation::SESData &		triangleData = representationData.first->getSESData();
-				const Representation::TargetRange<void *> & target		 = representationData.second.getTrianglesSES();
+				const Representation::TargetRange<void *> & target
+					= representationData.second.getTrianglesSES( _model->getCategory()->getCategoryEnum() );
 
 				if ( target.indices.size() > 0 )
 				{

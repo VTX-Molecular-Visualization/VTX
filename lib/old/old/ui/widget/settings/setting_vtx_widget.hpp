@@ -34,12 +34,13 @@ namespace VTX::UI::Widget::Settings
 		QPushButton * _restoreSettingsButton = nullptr;
 
 		// Controller
-		QCheckBox *							   _activeControllerElasticityWidget  = nullptr;
-		CustomWidget::FloatFieldSliderWidget * _controllerElasticityFactorWidget  = nullptr;
-		CustomWidget::FloatFieldSliderWidget * _controllerTranslationFactorWidget = nullptr;
-		CustomWidget::FloatFieldSliderWidget * _controllerTranslationSpeedWidget  = nullptr;
-		CustomWidget::FloatFieldSliderWidget * _controllerRotationSpeedWidget	  = nullptr;
-		QCheckBox *							   _controllerYAxisInvertedWidget	  = nullptr;
+		QCheckBox *							   _activeControllerElasticityWidget   = nullptr;
+		CustomWidget::FloatFieldSliderWidget * _controllerElasticityFactorWidget   = nullptr;
+		CustomWidget::FloatFieldSliderWidget * _controllerAccelerationFactorWidget = nullptr;
+		CustomWidget::FloatFieldSliderWidget * _controllerDecelerationFactorWidget = nullptr;
+		CustomWidget::FloatFieldSliderWidget * _controllerTranslationSpeedWidget   = nullptr;
+		CustomWidget::FloatFieldSliderWidget * _controllerRotationSpeedWidget	   = nullptr;
+		QCheckBox *							   _controllerYAxisInvertedWidget	   = nullptr;
 
 		// Graphic
 		QComboBox *							   _snapshotFormatWidget			= nullptr;
@@ -64,7 +65,8 @@ namespace VTX::UI::Widget::Settings
 
 		void _activeControllerElasticityAction( const bool p_activate );
 		void _changeControllerElasticityFactorAction( const float p_value );
-		void _changeControllerTranslationFactorAction( const float p_value );
+		void _changeControllerAccelerationFactorAction( const float p_value );
+		void _changeControllerDecelerationFactorAction( const float p_value );
 		void _changeControllerTranslationSpeedAction( const float p_value );
 		void _changeControllerRotationSpeedAction( const float p_value );
 		void _changeControllerYInversionAction( const bool p_invert );

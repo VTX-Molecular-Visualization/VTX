@@ -1,5 +1,5 @@
 #include "align_parameters_widget.hpp"
-#include "__new_archi/tool/analysis/structural_alignment/core/method/ce_align.hpp"
+#include "analysis/structural_alignment_method/ce_align.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
 #include <QHBoxLayout>

@@ -2,8 +2,9 @@
 #include "model/measurement/angle.hpp"
 #include "model/measurement/dihedral_angle.hpp"
 #include "model/measurement/distance.hpp"
+#include "model/molecule.hpp"
 #include "style.hpp"
-#include <util/string.hpp>
+#include "util/string.hpp"
 #include <string>
 
 namespace VTX::Util::Measurement

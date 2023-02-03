@@ -19,6 +19,9 @@ namespace VTX::UI::Widget::Inspector
 	{
 		VTX_WIDGET
 
+	  private:
+		static const int BOND_INFO_COUNT_MAX;
+
 	  public:
 		~MultipleResidueWidget();
 		void localize() override;
@@ -31,6 +34,10 @@ namespace VTX::UI::Widget::Inspector
 
 		void _endOfFrameRefresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
 
+		void _setInspectorToMolecule() const;
+		void _setInspectorToChain() const;
+		void _setInspectorToAtom() const;
+
 	  private:
 		InspectorSection *		  _representationSection = nullptr;
 		InspectorSectionVLayout * _infoSection			 = nullptr;
@@ -41,16 +48,18 @@ namespace VTX::UI::Widget::Inspector
 		CustomWidget::QLabelMultiField * _nbAtomsLabel	= nullptr;
 		QLabel *						 _bondsLabel	= nullptr;
 
+		int _bondInfoCount = 0;
+
 		void _onRepresentationPresetChange( const int p_presetIndex );
 		void _onRepresentationChange( const Model::Representation::InstantiatedRepresentation & p_representation,
 									  const Model::Representation::MEMBER_FLAG &				p_flag );
 		void _onRepresentationColorChange( const Model::Representation::InstantiatedRepresentation & p_representation,
-										   const Color::Rgb &										 p_color,
+										   const Color::Rgba &										 p_color,
 										   const bool												 p_ssColor );
 		void _onRevertRepresentation() const;
 
 		void _resetFieldStates( const SectionFlag & p_flag );
-		void _changeMoleculesColor( const Color::Rgb & p_color ) const;
+		void _changeMoleculesColor( const Color::Rgba & p_color ) const;
 		void _appendBondInfo( const Model::Residue & p_residue );
 	};
 } // namespace VTX::UI::Widget::Inspector

@@ -6,8 +6,12 @@
 #include "model/molecule.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
+#include "ui/main_window.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "ui/widget/custom_widget/folding_button.hpp"
+#include "ui/widget/inspector/inspector_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "vtx_app.hpp"
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
@@ -24,15 +28,24 @@ namespace VTX::UI::Widget::Inspector
 	{
 		MultipleModelInspectorWidget::_setupUi( p_name );
 
-		_representationSection
-			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
+		_representationSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
+			this, "inspector_item_section" );
 		_representationWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::RepresentationInspectorSection>(
 				this, "inspector_instantiated_representation" );
 		_representationWidget->setActionButtonVisibility(
 			Representation::RepresentationInspectorSection::ActionButtons::All );
 
-		_representationSection->setBody( _representationWidget );
+		_subRepresentationWidget
+			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::InstantiatedRepresentationListWidget>(
+				this, "sub_representation_widget" );
+
+		_subRepresentationFoldingButton = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FoldingButton>(
+			this, _subRepresentationWidget, "_sub_representation_folding_button" );
+		_subRepresentationFoldingButton->setTitle( "Representations in children" );
+
+		_representationSection->appendField( _representationWidget );
+		_representationSection->appendField( _subRepresentationFoldingButton );
 
 		_infoSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
 			this, "inspector_item_section" );
@@ -44,6 +57,10 @@ namespace VTX::UI::Widget::Inspector
 		_nbResiduesLabel->setWordWrap( true );
 		_infoSection->appendField( "Nb Residues", _nbResiduesLabel );
 
+		_indexLabel = new CustomWidget::QLabelMultiField( this );
+		_indexLabel->setWordWrap( true );
+		_infoSection->appendField( "Index", _indexLabel );
+
 		_appendSection( _representationSection );
 		_appendSection( _infoSection );
 
@@ -54,6 +71,22 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_setupSlots()
 	{
+		QMenu * const headerMenu = new QMenu( this );
+
+		QAction * inspectorToMoleculeAction = new QAction( "Molecule", this );
+		connect( inspectorToMoleculeAction, &QAction::triggered, this, &MultipleChainWidget::_setInspectorToMolecule );
+		headerMenu->addAction( inspectorToMoleculeAction );
+
+		QAction * inspectorToResidueAction = new QAction( "Residue", this );
+		connect( inspectorToResidueAction, &QAction::triggered, this, &MultipleChainWidget::_setInspectorToResidue );
+		headerMenu->addAction( inspectorToResidueAction );
+
+		QAction * inspectorToAtomAction = new QAction( "Atom", this );
+		connect( inspectorToAtomAction, &QAction::triggered, this, &MultipleChainWidget::_setInspectorToAtom );
+		headerMenu->addAction( inspectorToAtomAction );
+
+		_getHeader()->setMenu( headerMenu );
+
 		connect( _representationWidget,
 				 &Representation::RepresentationInspectorSection::onRepresentationPresetChange,
 				 this,
@@ -102,6 +135,16 @@ namespace VTX::UI::Widget::Inspector
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
 					_representationWidget->updateWithNewValue( *chain->getRepresentation() );
+
+					for ( Model::Representation::InstantiatedRepresentation * representation :
+						  chain->getSubRepresentations() )
+					{
+						_subRepresentationWidget->addModel( representation );
+					}
+
+					const std::string strTitle = "Representations in children ("
+												 + std::to_string( _subRepresentationWidget->getModelCount() ) + ")";
+					_subRepresentationFoldingButton->setTitle( QString::fromStdString( strTitle ) );
 				}
 
 				if ( bool( p_flag & SectionFlag::INFOS ) )
@@ -110,6 +153,8 @@ namespace VTX::UI::Widget::Inspector
 						_fullnameLabel->updateWithNewValue( chain->getName() );
 					if ( !_nbResiduesLabel->hasDifferentData() )
 						_nbResiduesLabel->updateWithNewValue( std::to_string( chain->getRealResidueCount() ) );
+					if ( !_indexLabel->hasDifferentData() )
+						_indexLabel->updateWithNewValue( std::to_string( chain->getIndex() ) );
 				}
 			}
 		}
@@ -119,12 +164,16 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleChainWidget::_resetFieldStates( const SectionFlag & p_flag )
 	{
 		if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
+		{
 			_representationWidget->resetState();
+			_subRepresentationWidget->clearModels();
+		}
 
 		if ( bool( p_flag & SectionFlag::INFOS ) )
 		{
 			_fullnameLabel->resetState();
 			_nbResiduesLabel->resetState();
+			_indexLabel->resetState();
 		}
 	}
 
@@ -151,7 +200,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_onRepresentationColorChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
-		const Color::Rgb &										  p_color,
+		const Color::Rgba &										  p_color,
 		const bool												  p_ssColor )
 	{
 		if ( !signalsBlocked() )
@@ -201,7 +250,7 @@ namespace VTX::UI::Widget::Inspector
 		}
 	}
 
-	void MultipleChainWidget::_changeMoleculesColor( const Color::Rgb & p_color ) const
+	void MultipleChainWidget::_changeMoleculesColor( const Color::Rgba & p_color ) const
 	{
 		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 
@@ -220,6 +269,28 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleChainWidget::_onApplyRepresentationToChildren() const
 	{
 		VTX_ACTION( new Action::Chain::RemoveChildrenRepresentations( getTargets() ) );
+	}
+
+	void MultipleChainWidget::_setInspectorToMolecule() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::MOLECULE );
+	}
+	void MultipleChainWidget::_setInspectorToResidue() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::RESIDUE );
+	}
+	void MultipleChainWidget::_setInspectorToAtom() const
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

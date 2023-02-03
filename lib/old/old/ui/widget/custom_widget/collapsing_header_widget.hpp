@@ -4,6 +4,7 @@
 #include "ui/widget/base_manual_widget.hpp"
 #include <QBoxLayout>
 #include <QLabel>
+#include <QMenu>
 #include <QPixmap>
 #include <QPushButton>
 #include <QWidget>
@@ -37,6 +38,8 @@ namespace VTX
 					void hideBody() { _bodyWidget->setVisible( false ); };
 					void toggleBodyVisibility() { _bodyWidget->setVisible( !_bodyWidget->isVisible() ); };
 
+					void setMenu( QMenu * const p_menu );
+
 					QLabel & getHeaderLabelWidget() { return *_titleLabel; };
 					void	 setHeaderHeight( const int p_height ) { _headerWidget->setFixedHeight( p_height ); };
 
@@ -47,13 +50,17 @@ namespace VTX
 					void _setupUi( const QString & p_name ) override;
 					void _setupSlots() override;
 
+					void _displaySubmenu();
+
 				  private:
-					QVBoxLayout * _mainLayout	= nullptr;
-					QPushButton * _headerWidget = nullptr;
-					QHBoxLayout * _headerLayout = nullptr;
-					QLabel *	  _titleLabel	= nullptr;
-					QLabel *	  _iconLabel	= nullptr;
-					QWidget *	  _bodyWidget	= nullptr;
+					QVBoxLayout * _mainLayout	 = nullptr;
+					QPushButton * _headerWidget	 = nullptr;
+					QPushButton * _submenuButton = nullptr;
+					QMenu *		  _submenu		 = nullptr;
+					QHBoxLayout * _headerLayout	 = nullptr;
+					QLabel *	  _titleLabel	 = nullptr;
+					QLabel *	  _iconLabel	 = nullptr;
+					QWidget *	  _bodyWidget	 = nullptr;
 				};
 			} // namespace CustomWidget
 		}	  // namespace Widget

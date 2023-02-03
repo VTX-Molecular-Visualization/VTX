@@ -21,13 +21,13 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_toonShading
-			= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { Util::FilePath( "shading/shading_toon.frag" ) } );
+			= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { IO::FilePath( "shading/shading_toon.frag" ) } );
 		_diffuseShading = VTX_PROGRAM_MANAGER().createProgram( "DiffuseShading",
-															   { Util::FilePath( "shading/shading_diffuse.frag" ) } );
+															   { IO::FilePath( "shading/shading_diffuse.frag" ) } );
 		_glossyShading
-			= VTX_PROGRAM_MANAGER().createProgram( "GlossyShading", { Util::FilePath( "shading/shading_glossy.frag" ) } );
+			= VTX_PROGRAM_MANAGER().createProgram( "GlossyShading", { IO::FilePath( "shading/shading_glossy.frag" ) } );
 		_flatShading
-			= VTX_PROGRAM_MANAGER().createProgram( "FlatShading", { Util::FilePath( "shading/shading_flat.frag" ) } );
+			= VTX_PROGRAM_MANAGER().createProgram( "FlatShading", { IO::FilePath( "shading/shading_flat.frag" ) } );
 
 		// Use setting value.
 		set();
@@ -53,7 +53,7 @@ namespace VTX::Renderer::GL::Pass
 
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
-			const Color::Rgb & bgColor = VTX_RENDER_EFFECT().getBackgroundColor();
+			const Color::Rgba & bgColor = VTX_RENDER_EFFECT().getBackgroundColor();
 			_currentShading->setVec4f( "uBackgroundColor",
 									   bgColor.getR(),
 									   bgColor.getG(),
@@ -63,10 +63,10 @@ namespace VTX::Renderer::GL::Pass
 			_currentShading->setFloat( "uFogFar", VTX_RENDER_EFFECT().getFogFar() );
 			_currentShading->setFloat( "uFogDensity",
 									   VTX_RENDER_EFFECT().isFogEnabled() ? VTX_RENDER_EFFECT().getFogDensity() : 0.f );
-			const Color::Rgb & fogColor = VTX_RENDER_EFFECT().getFogColor();
+			const Color::Rgba & fogColor = VTX_RENDER_EFFECT().getFogColor();
 			_currentShading->setVec3f( "uFogColor", fogColor );
 
-			const Color::Rgb & lightColor = VTX_RENDER_EFFECT().getCameraLightColor();
+			const Color::Rgba & lightColor = VTX_RENDER_EFFECT().getCameraLightColor();
 			_currentShading->setVec3f( "uLightColor", lightColor );
 		}
 

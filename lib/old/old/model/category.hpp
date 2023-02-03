@@ -47,6 +47,8 @@ namespace VTX::Model
 		void setVisible( const bool p_visible );
 		void setVisible( const bool p_visible, const bool p_notify );
 
+		std::vector<uint> generateAtomIndexList() const;
+
 		void updateVisibilityState();
 
 		const Object3D::Helper::AABB getAABB() const;

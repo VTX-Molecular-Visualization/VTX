@@ -1,6 +1,6 @@
 // #include <ui/environment.hpp>
 // #include <ui/core/base_ui_application.hpp>
-//#include <old/tool/logger.hpp>
+#include <old/tool/logger.hpp>
 #include <util/chrono.hpp>
 #include <util/types.hpp>
 // #include <ui/ui_generator.hpp>
@@ -35,11 +35,10 @@ int main( int p_argc, char * p_argv[] )
 		zozo++;
 	}
 	chrono.stop();
-
-	return int(zozo);
 	
-	//VTX_INFO( "Go go go !" );
-	//return 0;
+	VTX_INFO( std::to_string( zozo ) );
+	
+	return int( zozo );
 
 //	try
 //	{

@@ -2,6 +2,7 @@
 #define __VTX_UI_WIDGET_SEQUENCE_UNKNOWN_DATASET__
 
 #include "model/chain.hpp"
+#include "model/residue.hpp"
 #include "sequence_dataset.hpp"
 
 namespace VTX::UI::Widget::Sequence::Dataset

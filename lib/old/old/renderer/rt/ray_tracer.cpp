@@ -13,11 +13,11 @@
 #include "primitives/plane.hpp"
 #include "primitives/sphere.hpp"
 #include "primitives/triangle_mesh.hpp"
+#include "tool/chrono.hpp"
+#include "util/sampler.hpp"
 #include "vtx_app.hpp"
 #include <atomic>
 #include <thread>
-#include <util/chrono.hpp>
-#include <util/math.hpp>
 
 namespace VTX
 {
@@ -209,7 +209,7 @@ namespace VTX
 
 			// start rendering
 			//_progressBar.start( nbTiles, 50 );
-			Util::Chrono chrono;
+			Tool::Chrono chrono;
 
 			chrono.start();
 
@@ -373,13 +373,13 @@ namespace VTX
 					new QuadLight( Vec3f( 200.f, 400.f, 400.f ), VEC3F_Y * 60.f, VEC3F_X * 60.f, VEC3F_XYZ, 50.f ) );*/
 
 			// 6VSB
-			_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 90.f ), Color::Rgb::WHITE, 1000000.f ) );
-			_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 300.f ), Color::Rgb::WHITE, 1000000.f ) );
-			_scene.addLight( new PointLight( Vec3f( -450.f, -200.f, -38.f ), Color::Rgb::WHITE, 1000000.f ) );
+			_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 90.f ), Color::Rgba::WHITE, 1000000.f ) );
+			_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 300.f ), Color::Rgba::WHITE, 1000000.f ) );
+			_scene.addLight( new PointLight( Vec3f( -450.f, -200.f, -38.f ), Color::Rgba::WHITE, 1000000.f ) );
 			_scene.addLight( new QuadLight( Vec3f( -450.f, -200.f, -38.f ),
 											Vec3f( 0.327533f, -0.944138f, 0.036398f ) * 80.f,
 											-Vec3f( 0.112113f, 0.077086f, 0.990701f ) * 80.f,
-											Color::Rgb::WHITE,
+											Color::Rgba::WHITE,
 											200.f ) );
 		}
 
@@ -406,9 +406,9 @@ namespace VTX
 				{
 					for ( uint x = x0; x < x1; ++x )
 					{
-						Color::Rgb color = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
+						Color::Rgba color = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
 						color.applyGamma( _gamma );
-						color = Color::Rgb::BLUE;
+						color = Color::Rgba::BLUE;
 
 						// TODO: fill buffer in the correct order and revert snapshot with stb.
 						const uint pixelId	   = ( x + ( _height - y - 1 ) * _width ) * 3;
@@ -423,12 +423,12 @@ namespace VTX
 			}
 		}
 
-		Color::Rgb RayTracer::_renderPixel( const CameraRayTracing & p_camera,
-											const float				 p_x,
-											const float				 p_y,
-											const uint				 p_nbPixelSamples )
+		Color::Rgba RayTracer::_renderPixel( const CameraRayTracing & p_camera,
+											 const float			  p_x,
+											 const float			  p_y,
+											 const uint				  p_nbPixelSamples )
 		{
-			Color::Rgb color = Color::Rgb::BLACK;
+			Color::Rgba color = Color::Rgba::BLACK;
 
 			// sampling ray within a pixel for anti-aliasing
 			for ( uint s = 0; s < p_nbPixelSamples; s++ )
@@ -439,7 +439,7 @@ namespace VTX
 
 				const Ray ray = p_camera.generateRay( sx, sy );
 
-				const Color::Rgb Li = _integrator->Li( ray, _scene, 0.f, FLOAT_INF );
+				const Color::Rgba Li = _integrator->Li( ray, _scene, 0.f, FLOAT_INF );
 				// const Color::Rgb ao = _aoIntegrator->Li( ray, _scene, 0.f, FLOAT_INF );
 
 				const float directFactor = 0.4f;

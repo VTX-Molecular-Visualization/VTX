@@ -203,7 +203,7 @@ namespace VTX::UI::Widget::Inspector
 		VTX_ACTION( new Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
 	}
 
-	void MultipleMeasurmentDihedralAngleWidget::_setLabelColor( const Color::Rgb & p_color ) const
+	void MultipleMeasurmentDihedralAngleWidget::_setLabelColor( const Color::Rgba & p_color ) const
 	{
 		std::unordered_set<Model::Label *> labelTargets = std::unordered_set<Model::Label *>();
 		for ( Model::Measurement::DihedralAngle * const targetDistance : getTargets() )

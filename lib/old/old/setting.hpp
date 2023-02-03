@@ -1,7 +1,7 @@
 #ifndef __VTX_SETTING__
 #define __VTX_SETTING__
 
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
 #include "io/struct/image_export.hpp"
@@ -53,7 +53,7 @@ namespace VTX
 		static const bool ACTIVE_RENDERER_DEFAULT;
 		static const bool FORCE_RENDERER_DEFAULT;
 
-		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
+		static const Color::Rgba BACKGROUND_COLOR_DEFAULT;
 
 		static const IO::Struct::ImageExport::RESOLUTION SNAPSHOT_RESOLUTION_DEFAULT;
 		static const IO::Struct::ImageExport::Format	 SNAPSHOT_FORMAT_DEFAULT;
@@ -121,7 +121,7 @@ namespace VTX
 		static const float OUTLINE_SENSIVITY_MIN;
 		static const float OUTLINE_SENSIVITY_MAX;
 
-		static const Color::Rgb OUTLINE_COLOR_DEFAULT;
+		static const Color::Rgba OUTLINE_COLOR_DEFAULT;
 
 		static const bool ACTIVE_FOG_DEFAULT;
 
@@ -135,11 +135,11 @@ namespace VTX
 
 		static const float FOG_DENSITY_DEFAULT;
 
-		static const Color::Rgb FOG_COLOR_DEFAULT;
+		static const Color::Rgba FOG_COLOR_DEFAULT;
 
 		static const bool ACTIVE_AA_DEFAULT;
 
-		static const Color::Rgb LIGHT_COLOR_DEFAULT;
+		static const Color::Rgba LIGHT_COLOR_DEFAULT;
 
 		// Scene.
 		static const Vec3f MIN_SCENE_POS;
@@ -165,9 +165,12 @@ namespace VTX
 		static const float CONTROLLER_TRANSLATION_SPEED_MIN;
 		static const float CONTROLLER_TRANSLATION_SPEED_MAX;
 
-		static const float CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
-		static const float CONTROLLER_TRANSLATION_FACTOR_MIN;
-		static const float CONTROLLER_TRANSLATION_FACTOR_MAX;
+		static const float CONTROLLER_ACCELERATION_FACTOR_DEFAULT;
+		static const float CONTROLLER_ACCELERATION_FACTOR_MIN;
+		static const float CONTROLLER_ACCELERATION_FACTOR_MAX;
+		static const float CONTROLLER_DECELERATION_FACTOR_DEFAULT;
+		static const float CONTROLLER_DECELERATION_FACTOR_MIN;
+		static const float CONTROLLER_DECELERATION_FACTOR_MAX;
 
 		static const float CONTROLLER_ROTATION_SPEED_DEFAULT;
 		static const float CONTROLLER_ROTATION_SPEED_MIN;
@@ -220,7 +223,7 @@ namespace VTX
 		static const uint		VIDEO_CRF_DEFAULT;
 
 		// Measurement
-		static const Color::Rgb DEFAULT_LABEL_COLOR;
+		static const Color::Rgba DEFAULT_LABEL_COLOR;
 
 		// Selection
 		static const VTX::Selection::Granularity SELECTION_GRANULARITY_DEFAULT;
@@ -298,8 +301,11 @@ namespace VTX
 
 		inline float getTranslationSpeed() const { return translationSpeed; }
 		void		 setTranslationSpeed( const float p_translationSpeed );
-		inline float getTranslationSpeedFactor() const { return translationFactorSpeed; }
-		void		 setTranslationSpeedFactor( const float p_translationFactorSpeed );
+		inline float getAccelerationSpeedFactor() const { return accelerationFactorSpeed; }
+		inline float getDecelerationSpeedFactor() const { return decelerationFactorSpeed; }
+		void		 setAccelerationSpeedFactor( const float p_factorSpeed );
+		void		 setDecelerationSpeedFactor( const float p_factorSpeed );
+
 		inline float getRotationSpeed() const { return rotationSpeed; }
 		void		 setRotationSpeed( const float p_rotationSpeed );
 		inline bool	 getControllerElasticityActive() const { return activeControllerElasticity; }
@@ -340,9 +346,9 @@ namespace VTX
 
 		static const int					  RECENT_PATH_SAVED_MAX_COUNT;
 		static const int					  RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT;
-		inline static std::list<Util::FilePath> recentLoadingPath = std::list<Util::FilePath>();
-		static void							  enqueueNewLoadingPath( const Util::FilePath & );
-		static const Util::FilePath * const	  getRecentLoadingPath( const int p_index );
+		inline static std::list<IO::FilePath> recentLoadingPath = std::list<IO::FilePath>();
+		static void							  enqueueNewLoadingPath( const IO::FilePath & );
+		static const IO::FilePath * const	  getRecentLoadingPath( const int p_index );
 
 		inline static std::list<std::string> recentDownloadCodes = std::list<std::string>();
 		static void							 enqueueNewDownloadCode( const std::string & );
@@ -397,7 +403,8 @@ namespace VTX
 		float								snapshotQuality	   = SNAPSHOT_QUALITY_DEFAULT;
 
 		float translationSpeed			 = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
-		float translationFactorSpeed	 = CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
+		float accelerationFactorSpeed	 = CONTROLLER_ACCELERATION_FACTOR_DEFAULT;
+		float decelerationFactorSpeed	 = CONTROLLER_DECELERATION_FACTOR_DEFAULT;
 		float rotationSpeed				 = CONTROLLER_ROTATION_SPEED_DEFAULT;
 		bool  activeControllerElasticity = CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
 		float controllerElasticityFactor = CONTROLLER_ELASTICITY_FACTOR_DEFAULT;

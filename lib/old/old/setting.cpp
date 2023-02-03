@@ -32,16 +32,16 @@ namespace VTX
 #else
 	const bool Setting::FORCE_RENDERER_DEFAULT = true;
 #endif
-	const Color::Rgb Setting::BACKGROUND_COLOR_DEFAULT	 = Color::Rgb::BLACK;
-	const float		 Setting::BACKGROUND_OPACITY_DEFAULT = 1.0f;
-	const float		 Setting::SNAPSHOT_QUALITY_DEFAULT	 = 1.0f;
+	const Color::Rgba Setting::BACKGROUND_COLOR_DEFAULT	  = Color::Rgba::BLACK;
+	const float		  Setting::BACKGROUND_OPACITY_DEFAULT = 1.0f;
+	const float		  Setting::SNAPSHOT_QUALITY_DEFAULT	  = 1.0f;
 
 	const IO::Struct::ImageExport::RESOLUTION Setting::SNAPSHOT_RESOLUTION_DEFAULT
 		= IO::Struct::ImageExport::RESOLUTION::Free;
 	const IO::Struct::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT = IO::Struct::ImageExport::Format::PNG;
 
 	const std::string				   Setting::REPRESENTATION_DEFAULT_NAME		  = "Stick";
-	const int						   Setting::REPRESENTATION_DEFAULT_INDEX	  = 3;
+	const int						   Setting::REPRESENTATION_DEFAULT_INDEX	  = 4;
 	const Generic::REPRESENTATION	   Setting::DEFAULT_REPRESENTATION_TYPE		  = Generic::REPRESENTATION::STICK;
 	const std::string				   Setting::NEW_REPRESENTATION_DEFAULT_NAME	  = "New representation";
 	const float						   Setting::ATOMS_RADIUS_DEFAULT			  = 0.4f;
@@ -91,32 +91,32 @@ namespace VTX
 #else
 	const bool Setting::ACTIVE_VSYNC_DEFAULT   = false;
 #endif
-	const bool		 Setting::ACTIVE_AO_DEFAULT			= true;
-	const int		 Setting::AO_INTENSITY_DEFAULT		= 5;
-	const int		 Setting::AO_INTENSITY_MIN			= 1;
-	const int		 Setting::AO_INTENSITY_MAX			= 20;
-	const int		 Setting::AO_BLUR_SIZE_DEFAULT		= 17;
-	const int		 Setting::AO_BLUR_SIZE_MIN			= 1;
-	const int		 Setting::AO_BLUR_SIZE_MAX			= 99;
-	const bool		 Setting::ACTIVE_OUTLINE_DEFAULT	= false;
-	const uint		 Setting::OUTLINE_THICKNESS_DEFAULT = 1;
-	const uint		 Setting::OUTLINE_THICKNESS_MIN		= 1;
-	const uint		 Setting::OUTLINE_THICKNESS_MAX		= 5;
-	const float		 Setting::OUTLINE_SENSIVITY_DEFAULT = 0.4f;
-	const float		 Setting::OUTLINE_SENSIVITY_MIN		= 0.01f;
-	const float		 Setting::OUTLINE_SENSIVITY_MAX		= 1.f;
-	const Color::Rgb Setting::OUTLINE_COLOR_DEFAULT		= Color::Rgb::WHITE;
-	const bool		 Setting::ACTIVE_FOG_DEFAULT		= false;
-	const float		 Setting::FOG_NEAR_DEFAULT			= 30;
-	const float		 Setting::FOG_NEAR_MIN				= 0.f;
-	const float		 Setting::FOG_NEAR_MAX				= 1000.f;
-	const float		 Setting::FOG_FAR_DEFAULT			= 80.f;
-	const float		 Setting::FOG_FAR_MIN				= 0.f;
-	const float		 Setting::FOG_FAR_MAX				= 1000.f;
-	const float		 Setting::FOG_DENSITY_DEFAULT		= 0.8f;
-	const Color::Rgb Setting::FOG_COLOR_DEFAULT			= Color::Rgb::WHITE;
-	const bool		 Setting::ACTIVE_AA_DEFAULT			= true;
-	const Color::Rgb Setting::LIGHT_COLOR_DEFAULT		= Color::Rgb::WHITE;
+	const bool		  Setting::ACTIVE_AO_DEFAULT		 = true;
+	const int		  Setting::AO_INTENSITY_DEFAULT		 = 5;
+	const int		  Setting::AO_INTENSITY_MIN			 = 1;
+	const int		  Setting::AO_INTENSITY_MAX			 = 20;
+	const int		  Setting::AO_BLUR_SIZE_DEFAULT		 = 17;
+	const int		  Setting::AO_BLUR_SIZE_MIN			 = 1;
+	const int		  Setting::AO_BLUR_SIZE_MAX			 = 99;
+	const bool		  Setting::ACTIVE_OUTLINE_DEFAULT	 = false;
+	const uint		  Setting::OUTLINE_THICKNESS_DEFAULT = 1;
+	const uint		  Setting::OUTLINE_THICKNESS_MIN	 = 1;
+	const uint		  Setting::OUTLINE_THICKNESS_MAX	 = 5;
+	const float		  Setting::OUTLINE_SENSIVITY_DEFAULT = 0.4f;
+	const float		  Setting::OUTLINE_SENSIVITY_MIN	 = 0.01f;
+	const float		  Setting::OUTLINE_SENSIVITY_MAX	 = 1.f;
+	const Color::Rgba Setting::OUTLINE_COLOR_DEFAULT	 = Color::Rgba::WHITE;
+	const bool		  Setting::ACTIVE_FOG_DEFAULT		 = false;
+	const float		  Setting::FOG_NEAR_DEFAULT			 = 30;
+	const float		  Setting::FOG_NEAR_MIN				 = 0.f;
+	const float		  Setting::FOG_NEAR_MAX				 = 1000.f;
+	const float		  Setting::FOG_FAR_DEFAULT			 = 80.f;
+	const float		  Setting::FOG_FAR_MIN				 = 0.f;
+	const float		  Setting::FOG_FAR_MAX				 = 1000.f;
+	const float		  Setting::FOG_DENSITY_DEFAULT		 = 0.8f;
+	const Color::Rgba Setting::FOG_COLOR_DEFAULT		 = Color::Rgba::WHITE;
+	const bool		  Setting::ACTIVE_AA_DEFAULT		 = true;
+	const Color::Rgba Setting::LIGHT_COLOR_DEFAULT		 = Color::Rgba::WHITE;
 
 	// Scene.
 	const Vec3f Setting::MIN_SCENE_POS = Vec3f( -10000, -10000, -10000 );
@@ -135,21 +135,24 @@ namespace VTX
 	const bool	Setting::CAMERA_PERSPECTIVE_DEFAULT = true;
 
 	// Controllers.
-	const float Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT  = 150.f;
-	const float Setting::CONTROLLER_TRANSLATION_SPEED_MIN	   = 50.f;
-	const float Setting::CONTROLLER_TRANSLATION_SPEED_MAX	   = 300.f;
-	const float Setting::CONTROLLER_TRANSLATION_FACTOR_DEFAULT = 2.0f;
-	const float Setting::CONTROLLER_TRANSLATION_FACTOR_MIN	   = 1.0f;
-	const float Setting::CONTROLLER_TRANSLATION_FACTOR_MAX	   = 5.0f;
-	const float Setting::CONTROLLER_ROTATION_SPEED_DEFAULT	   = 0.005f;
-	const float Setting::CONTROLLER_ROTATION_SPEED_MIN		   = 0.001f;
-	const float Setting::CONTROLLER_ROTATION_SPEED_MAX		   = 0.01f;
-	const bool	Setting::CONTROLLER_Y_AXIS_INVERTED			   = false;
-	const bool	Setting::CONTROLLER_ELASTICITY_ACTIVE_DEFAULT  = true;
-	const float Setting::CONTROLLER_ELASTICITY_FACTOR_DEFAULT  = 6.0f;
-	const float Setting::CONTROLLER_ELASTICITY_FACTOR_MIN	   = 1.0f;
-	const float Setting::CONTROLLER_ELASTICITY_FACTOR_MAX	   = 40.0f;
-	const float Setting::CONTROLLER_ELASTICITY_THRESHOLD	   = 1e-4f;
+	const float Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT	= 150.f;
+	const float Setting::CONTROLLER_TRANSLATION_SPEED_MIN		= 50.f;
+	const float Setting::CONTROLLER_TRANSLATION_SPEED_MAX		= 300.f;
+	const float Setting::CONTROLLER_ACCELERATION_FACTOR_DEFAULT = 2.0f;
+	const float Setting::CONTROLLER_ACCELERATION_FACTOR_MIN		= 1.0f;
+	const float Setting::CONTROLLER_ACCELERATION_FACTOR_MAX		= 20.0f;
+	const float Setting::CONTROLLER_DECELERATION_FACTOR_DEFAULT = 10.0f;
+	const float Setting::CONTROLLER_DECELERATION_FACTOR_MIN		= 1.0f;
+	const float Setting::CONTROLLER_DECELERATION_FACTOR_MAX		= 50.0f;
+	const float Setting::CONTROLLER_ROTATION_SPEED_DEFAULT		= 0.005f;
+	const float Setting::CONTROLLER_ROTATION_SPEED_MIN			= 0.001f;
+	const float Setting::CONTROLLER_ROTATION_SPEED_MAX			= 0.01f;
+	const bool	Setting::CONTROLLER_Y_AXIS_INVERTED				= false;
+	const bool	Setting::CONTROLLER_ELASTICITY_ACTIVE_DEFAULT	= true;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR_DEFAULT	= 6.0f;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR_MIN		= 1.0f;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR_MAX		= 40.0f;
+	const float Setting::CONTROLLER_ELASTICITY_THRESHOLD		= 1e-4f;
 
 	// Molecule
 	const float Setting::COPIED_MOLECULE_OFFSET = 5.0f;
@@ -188,7 +191,7 @@ namespace VTX
 	const uint		 Setting::VIDEO_CRF_DEFAULT		  = 10;
 
 	// Measurement
-	const Color::Rgb Setting::DEFAULT_LABEL_COLOR = Color::Rgb( 0.f, 0.f, 1.f );
+	const Color::Rgba Setting::DEFAULT_LABEL_COLOR = Color::Rgba( 0.f, 0.f, 1.f );
 
 	// Selection
 	const VTX::Selection::Granularity Setting::SELECTION_GRANULARITY_DEFAULT = VTX::Selection::Granularity::RESIDUE;
@@ -214,9 +217,9 @@ namespace VTX
 	const int Setting::RECENT_PATH_SAVED_MAX_COUNT			= 10;
 	const int Setting::RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT = 20;
 
-	void Setting::enqueueNewLoadingPath( const Util::FilePath & p_path )
+	void Setting::enqueueNewLoadingPath( const IO::FilePath & p_path )
 	{
-		for ( std::list<Util::FilePath>::const_iterator itPath = recentLoadingPath.cbegin();
+		for ( std::list<IO::FilePath>::const_iterator itPath = recentLoadingPath.cbegin();
 			  itPath != recentLoadingPath.cend();
 			  itPath++ )
 		{
@@ -235,12 +238,12 @@ namespace VTX
 
 		VTX_EVENT( new Event::VTXEvent( Event::Global::RECENT_FILES_CHANGE ) );
 	}
-	const Util::FilePath * const Setting::getRecentLoadingPath( const int p_index )
+	const IO::FilePath * const Setting::getRecentLoadingPath( const int p_index )
 	{
 		if ( p_index < 0 || p_index >= recentLoadingPath.size() )
 			return nullptr;
 
-		std::list<Util::FilePath>::iterator it = recentLoadingPath.begin();
+		std::list<IO::FilePath>::iterator it = recentLoadingPath.begin();
 
 		for ( int i = 0; i < p_index; i++ )
 			it++;
@@ -296,7 +299,7 @@ namespace VTX
 		{
 			const std::string strPath = settings.value( key ).toString().toStdString();
 
-			const Util::FilePath path = Util::FilePath( strPath );
+			const IO::FilePath path = IO::FilePath( strPath );
 			if ( path.exists() )
 			{
 				recentLoadingPath.push_back( path );
@@ -326,11 +329,11 @@ namespace VTX
 							QString::fromStdString( VTX_PROJECT_NAME ) );
 
 		int counter = 0;
-		for ( const Util::FilePath & path : recentLoadingPath )
+		for ( const IO::FilePath & path : recentLoadingPath )
 		{
 			const QString key
 				= QString::fromStdString( RegisterKey::RECENT_LOADED_PATH_PREFIX + std::to_string( counter ) );
-			settings.setValue( key, QString::fromStdString( path.path() ) );
+			settings.setValue( key, path.qpath() );
 
 			counter++;
 		}
@@ -349,7 +352,7 @@ namespace VTX
 	QString Setting::getLastLoadedSessionFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_OPEN_SESSION_FOLDER );
-		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_SAVE_FOLDER.path() ) );
+		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_SAVE_FOLDER.qpath() );
 	}
 	void Setting::saveLastLoadedSessionFolder( const QString & p_path )
 	{
@@ -364,7 +367,7 @@ namespace VTX
 	QString Setting::getLastSavedSessionFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_SAVED_SESSION_FOLDER );
-		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_SAVE_FOLDER.path() ) );
+		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_SAVE_FOLDER.qpath() );
 	}
 	void Setting::saveLastSavedSessionFolder( const QString & p_path )
 	{
@@ -379,7 +382,7 @@ namespace VTX
 	QString Setting::getLastImportedMoleculeFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_IMPORTED_MOLECULE_FOLDER );
-		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_MOLECULE_FOLDER.path() ) );
+		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_MOLECULE_FOLDER.qpath() );
 	}
 	void Setting::saveLastImportedMoleculeFolder( const QString & p_path )
 	{
@@ -394,7 +397,7 @@ namespace VTX
 	QString Setting::getLastExportedMoleculeFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_EXPORTED_MOLECULE_FOLDER );
-		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_MOLECULE_FOLDER.path() ) );
+		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_MOLECULE_FOLDER.qpath() );
 	}
 	void Setting::saveLastExportedMoleculeFolder( const QString & p_path )
 	{
@@ -409,8 +412,7 @@ namespace VTX
 	QString Setting::getLastExportedImageFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_EXPORTED_IMAGE_FOLDER );
-		return _getFileInRegisterKey( key,
-									  QString::fromStdString( Util::Filesystem::getDefaultSnapshotsDir().path() ) );
+		return _getFileInRegisterKey( key, Util::Filesystem::getDefaultSnapshotsDir().qpath() );
 	}
 	void Setting::saveLastExportedImageFolder( const QString & p_path )
 	{
@@ -429,12 +431,12 @@ namespace VTX
 								  QString::fromStdString( VTX_PROJECT_NAME ),
 								  QString::fromStdString( VTX_PROJECT_NAME ) );
 
-		Util::FilePath path = settings.value( p_key, p_default ).toString().toStdString();
+		IO::FilePath path = settings.value( p_key, p_default ).toString().toStdString();
 
 		if ( path.empty() || path.exists() == false )
 			return p_default;
 
-		return QString::fromStdString( path.path() );
+		return path.qpath();
 	}
 
 	void Setting::restoreDefaultRepresentationPerCategory()
@@ -520,11 +522,19 @@ namespace VTX
 
 		_sendDataChangedEvent( PARAMETER::CONTROLLER_TRANSLATION_SPEED );
 	}
-	void Setting::setTranslationSpeedFactor( const float p_translationFactorSpeed )
+	void Setting::setAccelerationSpeedFactor( const float p_factorSpeed )
 	{
-		translationFactorSpeed = Util::Math::clamp( p_translationFactorSpeed,
-													VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MIN,
-													VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MAX );
+		accelerationFactorSpeed = Util::Math::clamp( p_factorSpeed,
+													 VTX::Setting::CONTROLLER_ACCELERATION_FACTOR_MIN,
+													 VTX::Setting::CONTROLLER_ACCELERATION_FACTOR_MAX );
+
+		_sendDataChangedEvent( PARAMETER::CONTROLLER_TRANSLATION_SPEED_FACTOR );
+	}
+	void Setting::setDecelerationSpeedFactor( const float p_factorSpeed )
+	{
+		decelerationFactorSpeed = Util::Math::clamp( p_factorSpeed,
+													 VTX::Setting::CONTROLLER_DECELERATION_FACTOR_MIN,
+													 VTX::Setting::CONTROLLER_DECELERATION_FACTOR_MAX );
 
 		_sendDataChangedEvent( PARAMETER::CONTROLLER_TRANSLATION_SPEED_FACTOR );
 	}
@@ -636,10 +646,11 @@ namespace VTX
 		snapshotQuality	   = SNAPSHOT_QUALITY_DEFAULT;
 		snapshotResolution = SNAPSHOT_RESOLUTION_DEFAULT;
 
-		translationSpeed	   = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
-		translationFactorSpeed = CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
-		rotationSpeed		   = CONTROLLER_ROTATION_SPEED_DEFAULT;
-		yAxisInverted		   = CONTROLLER_Y_AXIS_INVERTED;
+		translationSpeed		= CONTROLLER_TRANSLATION_SPEED_DEFAULT;
+		accelerationFactorSpeed = CONTROLLER_ACCELERATION_FACTOR_DEFAULT;
+		decelerationFactorSpeed = CONTROLLER_DECELERATION_FACTOR_DEFAULT;
+		rotationSpeed			= CONTROLLER_ROTATION_SPEED_DEFAULT;
+		yAxisInverted			= CONTROLLER_Y_AXIS_INVERTED;
 
 		activeControllerElasticity = CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
 		controllerElasticityFactor = CONTROLLER_ELASTICITY_FACTOR_DEFAULT;

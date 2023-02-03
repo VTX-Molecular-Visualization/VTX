@@ -20,6 +20,7 @@ set(PATH_EXTERNAL_PROJECT "external_project")
 # Define libraries
 set (OLD_VTX_LIB "OLD_VTX")
 set (VTX_UTIL_LIB "VTX_UTIL")
+set (VTX_LAUNCHER_LIB "VTX_LAUNCHER")
 
 set(OLD_VTX_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/${PATH_LIB}/old/)
 set(VTX_UTIL_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/${PATH_LIB}/util/)
@@ -31,12 +32,24 @@ set(VTX_LAUNCHER_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/${PATH_LIB}/launcher/)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/util/)
 add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/old/)
-add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/core/)
-add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/renderer/)
-add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/app/)
-add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/ui/)
-add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/tool/)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/core/)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/renderer/)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/app/)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/ui/)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/tool/)
 add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/launcher/)
+
+
+# Compiler options #2.
+if(MSVC)
+	# Set default startup project.
+	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${VTX_LAUNCHER_LIB})
+	#set_target_properties(${VTX_LAUNCHER_LIB} PROPERTIES VS_GLOBAL_DisableFastUpToDateCheck false)
+	
+	# Preprocessor definitions
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+	add_definitions(-DNOMINMAX)
+endif()
 
 # Custom options.
 option(DEFINE_PRODUCTION "Enable production mode" OFF)

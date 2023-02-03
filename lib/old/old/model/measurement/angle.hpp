@@ -6,6 +6,7 @@
 #include "generic/base_auto_delete.hpp"
 #include "id.hpp"
 #include "model/label.hpp"
+#include "model/molecule.hpp"
 #include "view/callback_view.hpp"
 #include <string>
 #include <tuple>
@@ -14,7 +15,6 @@
 namespace VTX::Model
 {
 	class Atom;
-	class Molecule;
 } // namespace VTX::Model
 
 namespace VTX::Model::Measurement

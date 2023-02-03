@@ -1,17 +1,18 @@
 #include "ao_integrator.hpp"
-#include <util/math.hpp>
+#include "util/math.hpp"
+#include "util/sampler.hpp"
 
 namespace VTX
 {
 	namespace Renderer
 	{
-		Color::Rgb AOIntegrator::Li( const Ray &   p_ray,
-									 const Scene & p_scene,
-									 const float   p_tMin,
-									 const float   p_tMax ) const
+		Color::Rgba AOIntegrator::Li( const Ray &	p_ray,
+									  const Scene & p_scene,
+									  const float	p_tMin,
+									  const float	p_tMax ) const
 		{
 			Intersection intersection;
-			Color::Rgb	 Li = Color::Rgb::BLACK;
+			Color::Rgba	 Li = Color::Rgba::BLACK;
 
 			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
@@ -24,8 +25,8 @@ namespace VTX
 					float u = Util::Math::randomFloat(); // cos theta
 					float v = Util::Math::randomFloat();
 
-					Vec3f sampleDir = Util::Math::cosineWeightedHemisphere( u, v );
-					float samplePdf = Util::Math::cosineWeightedHemispherePdf( u );
+					Vec3f sampleDir = Util::Sampler::cosineWeightedHemisphere( u, v );
+					float samplePdf = Util::Sampler::cosineWeightedHemispherePdf( u );
 
 					// transform in local coordinates systems
 					Vec3f aoDir = Util::Math::normalize( TBN * sampleDir );

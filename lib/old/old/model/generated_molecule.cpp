@@ -9,8 +9,8 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
+#include "tool/chrono.hpp"
 #include <map>
-#include <util/chrono.hpp>
 
 namespace VTX::Model
 {
@@ -20,7 +20,7 @@ namespace VTX::Model
 											   const VTX::Model::ID &	p_moleculeID,
 											   const int				p_frame )
 	{
-		Util::Chrono chrono;
+		Tool::Chrono chrono;
 		chrono.start();
 
 		const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeID );
@@ -81,7 +81,7 @@ namespace VTX::Model
 
 		_computeBonds( molecule );
 
-		getBufferAtomColors().resize( getAtomCount(), Color::Rgb::BLUE );
+		getBufferAtomColors().resize( getAtomCount(), Color::Rgba::BLUE );
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
@@ -96,7 +96,7 @@ namespace VTX::Model
 
 	void GeneratedMolecule::copyFromMolecule( const Model::Molecule & p_molecule, const int p_frame )
 	{
-		Util::Chrono chrono;
+		Tool::Chrono chrono;
 		chrono.start();
 
 		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
@@ -112,7 +112,7 @@ namespace VTX::Model
 	}
 	void GeneratedMolecule::copyFromChain( const Model::Chain & p_chain, const int p_frame )
 	{
-		Util::Chrono chrono;
+		Tool::Chrono chrono;
 		chrono.start();
 
 		const Model::Molecule & molecule = *p_chain.getMoleculePtr();
@@ -133,7 +133,7 @@ namespace VTX::Model
 	}
 	void GeneratedMolecule::copyFromResidue( const Model::Residue & p_residue, const int p_frame )
 	{
-		Util::Chrono chrono;
+		Tool::Chrono chrono;
 		chrono.start();
 
 		const Model::Molecule & molecule = *p_residue.getMoleculePtr();
@@ -161,7 +161,7 @@ namespace VTX::Model
 	}
 	void GeneratedMolecule::copyFromAtom( const Model::Atom & p_atom, const int p_frame )
 	{
-		Util::Chrono chrono;
+		Tool::Chrono chrono;
 		chrono.start();
 
 		const Model::Molecule & molecule = *p_atom.getMoleculePtr();
@@ -364,7 +364,7 @@ namespace VTX::Model
 
 	void GeneratedMolecule::_validateBuffers()
 	{
-		getBufferAtomColors().resize( getAtomCount(), Color::Rgb::BLUE );
+		getBufferAtomColors().resize( getAtomCount(), Color::Rgba::BLUE );
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
@@ -379,7 +379,7 @@ namespace VTX::Model
 	void GeneratedMolecule::extractFromSelection( const Model::Selection & p_selection,
 												  const VTX::Model::ID &   p_moleculeID )
 	{
-		Util::Chrono chrono = Util::Chrono();
+		Tool::Chrono chrono = Tool::Chrono();
 		chrono.start();
 
 		Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeID );
@@ -451,7 +451,7 @@ namespace VTX::Model
 				const uint previousIndex
 					= sourceFirstAtom->getResiduePtr()->findBondIndex( sourceFirstAtomIndex, sourceSecondAtomIndex );
 
-				if ( previousIndex != UINT_MAX )
+				if ( previousIndex != INVALID_ID )
 				{
 					bondData.getSourceMolecule()->removeBond( previousIndex, true, false );
 				}
@@ -462,7 +462,7 @@ namespace VTX::Model
 				const uint previousIndex
 					= sourceSecondAtom->getResiduePtr()->findBondIndex( sourceFirstAtomIndex, sourceSecondAtomIndex );
 
-				if ( previousIndex != UINT_MAX )
+				if ( previousIndex != INVALID_ID )
 				{
 					bondData.getSourceMolecule()->removeBond( previousIndex, true, false );
 				}
@@ -473,11 +473,12 @@ namespace VTX::Model
 		}
 
 		_pendingExternalBonds.clear();
+		_pendingExternalBonds.shrink_to_fit();
 	}
 
 	void GeneratedMolecule::extractChain( const Model::Chain & p_chain )
 	{
-		Util::Chrono chrono = Util::Chrono();
+		Tool::Chrono chrono = Tool::Chrono();
 		chrono.start();
 
 		Model::Molecule & molecule = *p_chain.getMoleculePtr();
@@ -507,7 +508,7 @@ namespace VTX::Model
 	}
 	void GeneratedMolecule::extractResidue( const Model::Residue & p_residue )
 	{
-		Util::Chrono chrono = Util::Chrono();
+		Tool::Chrono chrono = Tool::Chrono();
 		chrono.start();
 
 		_pendingExternalBonds.clear();
@@ -536,7 +537,7 @@ namespace VTX::Model
 	}
 	void GeneratedMolecule::extractAtom( const Model::Atom & p_atom )
 	{
-		Util::Chrono chrono;
+		Tool::Chrono chrono;
 		chrono.start();
 
 		Model::Molecule & molecule = *p_atom.getMoleculePtr();
@@ -575,10 +576,11 @@ namespace VTX::Model
 		setName( p_namePrefix + p_molecule.getName() + p_nameSuffix );
 		setPdbIdCode( "none" );
 		setDisplayName( p_namePrefix + p_molecule.getDefaultName() + p_nameSuffix );
-		setColor( Color::Rgb::randomPastel() );
+		setColor( Color::Rgba::randomPastel() );
 
-		VTX::Representation::RepresentationManager::get().instantiateCopy(
-			p_molecule.getRepresentation(), *this, false, false );
+		const Representation::InstantiatedRepresentation * const rep
+			= VTX::Representation::RepresentationManager::get().instantiateCopy(
+				p_molecule.getRepresentation(), *this, false, false );
 
 		if ( p_frame == ALL_FRAMES_INDEX )
 		{
@@ -611,11 +613,19 @@ namespace VTX::Model
 
 		setFPS( p_molecule.getFPS() );
 		setPlayMode( p_molecule.getPlayMode() );
-		setFrame( p_molecule.getFrame() );
+		const uint frame = Util::Math::min( getFrameCount() - 1, p_molecule.getFrame() );
+		setFrame( frame );
 		setIsPlaying( p_molecule.isPlaying() );
 	}
 	void GeneratedMolecule::_copyChainData( Model::Chain & p_chain, const Model::Chain & p_chainSource )
 	{
+		const Representation::InstantiatedRepresentation * const sourceRepresentation
+			= p_chainSource.getRepresentation();
+
+		const bool hasDefaultRepresentation
+			= sourceRepresentation != nullptr
+			  && p_chainSource.getMoleculePtr()->isDefaultRepresentation( *sourceRepresentation );
+
 		p_chain.setMoleculePtr( this );
 		p_chain.setIndex( getChainCount() - 1 );
 		p_chain.setName( p_chainSource.getName() );
@@ -624,12 +634,16 @@ namespace VTX::Model
 		p_chain.setColor( Model::Chain::getChainIdColor( p_chainSource.getOriginalChainID() ) );
 
 		const CATEGORY_ENUM & chainCategoryEnum = p_chainSource.getCategoryEnum();
-		getCategory( chainCategoryEnum ).addChain( p_chain.getIndex() );
+		p_chain.setCategoryEnum( chainCategoryEnum );
 
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
-			VTX::Representation::RepresentationManager::get().instantiateCopy(
-				p_chainSource.getRepresentation(), p_chain, false, false );
+			const Representation::InstantiatedRepresentation * const rep
+				= VTX::Representation::RepresentationManager::get().instantiateCopy(
+					p_chainSource.getRepresentation(), p_chain, false, false );
+
+			if ( hasDefaultRepresentation )
+				_markRepresentationAsDefault( rep );
 		}
 	}
 	void GeneratedMolecule::_copyResidueData( Model::Residue &		 p_residue,
@@ -708,6 +722,16 @@ namespace VTX::Model
 		chain.setIndexFirstResidue( indexFirstResidue );
 
 		getCategory( chain.getCategoryEnum() ).addChain( chain.getIndex() );
+
+		if ( chain.hasCustomRepresentation()
+			 && p_fromMolecule.isDefaultRepresentation( *( chain.getRepresentation() ) ) )
+		{
+			Representation::InstantiatedRepresentation * const instantiatedRepresentation
+				= VTX::Representation::RepresentationManager::get().instantiateCopy(
+					chain.getRepresentation(), chain, false, false );
+
+			_markRepresentationAsDefault( instantiatedRepresentation );
+		}
 
 		p_fromMolecule.removeChain( p_index, false, false, false );
 
@@ -865,18 +889,14 @@ namespace VTX::Model
 					_pendingExternalBonds.erase( itExternalBond );
 
 					// Add second bond of external bonds
-					getBond( i )->setIndexFirstAtom( pendingExternalBondData.getFirstIndex() );
-					getBond( i )->setIndexSecondAtom( pendingExternalBondData.getSecondIndex() );
-					getBufferBonds()[ i * 2u ]		= pendingExternalBondData.getFirstIndex();
-					getBufferBonds()[ i * 2u + 1u ] = pendingExternalBondData.getSecondIndex();
+					_updateBondInfos(
+						i, pendingExternalBondData.getFirstIndex(), pendingExternalBondData.getSecondIndex() );
 				}
 			}
 			else
 			{
-				getBond( i )->setIndexFirstAtom( getBond( i )->getIndexFirstAtom() - atomOffset );
-				getBond( i )->setIndexSecondAtom( getBond( i )->getIndexSecondAtom() - atomOffset );
-				getBufferBonds()[ i * 2u ] -= atomOffset;
-				getBufferBonds()[ i * 2u + 1u ] -= atomOffset;
+				const Model::Bond & bond = *( getBond( i ) );
+				_updateBondInfos( i, bond.getIndexFirstAtom() - atomOffset, bond.getIndexSecondAtom() - atomOffset );
 			}
 
 			p_fromMolecule.getBonds()[ bondOffset + i ] = nullptr;
@@ -1084,6 +1104,20 @@ namespace VTX::Model
 		p_parent->setBondCount( getBondCount() - p_parent->getIndexFirstBond() );
 	}
 
+	void GeneratedMolecule::_updateBondInfos( const uint p_bondIndex,
+											  const uint p_firstAtomIndex,
+											  const uint p_secondAtomIndex )
+	{
+		Model::Bond & p_bond = *( getBond( p_bondIndex ) );
+
+		p_bond.setIndexFirstAtom( p_firstAtomIndex );
+		p_bond.setIndexSecondAtom( p_secondAtomIndex );
+		p_bond.setMoleculePtr( this );
+
+		const uint bufferIndex				 = p_bondIndex * 2u;
+		getBufferBonds()[ bufferIndex ]		 = p_firstAtomIndex;
+		getBufferBonds()[ bufferIndex + 1u ] = p_secondAtomIndex;
+	}
 	void GeneratedMolecule::_extractBond( const BondExtractData & p_bondData )
 	{
 		Model::Bond * const bond = p_bondData.getBond();

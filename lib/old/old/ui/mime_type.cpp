@@ -1,5 +1,6 @@
 #include "mime_type.hpp"
-#include <util/string.hpp>
+#include "util/string.hpp"
+#include <string>
 
 namespace VTX::UI
 {
@@ -47,6 +48,16 @@ namespace VTX::UI
 		mimeData->setData( getStrMimeType( ApplicationMimeType::MODEL ), byteArray );
 
 		return mimeData;
+	}
+
+	MimeType::ApplicationMimeType MimeType::getMimeTypeEnum( const QMimeData * const p_mimeData )
+	{
+		if ( p_mimeData->hasUrls() )
+			return MimeType::ApplicationMimeType::FILE;
+		else if ( p_mimeData->hasFormat( applicationMimeTypes[ int( MimeType::ApplicationMimeType::MODEL ) ] ) )
+			return MimeType::ApplicationMimeType::MODEL;
+
+		return MimeType::ApplicationMimeType::UNKNOWN;
 	}
 
 	bool MimeType::checkApplicationDataType( const QMimeData * const	 p_mimeData,

@@ -1,5 +1,5 @@
 #include "lib_assimp.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "define.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
@@ -17,7 +17,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			void LibAssimp::readFile( const Util::FilePath & p_path, Model::MeshTriangle & p_mesh )
+			void LibAssimp::readFile( const IO::FilePath & p_path, Model::MeshTriangle & p_mesh )
 			{
 				/*
 				Assimp::Importer Importer;
@@ -90,7 +90,7 @@ namespace VTX
 				*/
 			}
 
-			void LibAssimp::readFile( const Util::FilePath & p_path, Model::Molecule & p_molecule )
+			void LibAssimp::readFile( const IO::FilePath & p_path, Model::Molecule & p_molecule )
 			{
 				/*
 				Assimp::Importer Importer;

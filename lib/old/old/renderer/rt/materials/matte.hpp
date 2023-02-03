@@ -17,16 +17,16 @@ namespace VTX
 		class MatteMaterial : public BaseMaterial
 		{
 		  public:
-			MatteMaterial( const Color::Rgb & p_kd, const float p_roughness = 0.f ) :
+			MatteMaterial( const Color::Rgba & p_kd, const float p_roughness = 0.f ) :
 				_kd( p_kd ), _roughness( p_roughness )
 			{
 			}
 
-			Color::Rgb getColor() const override { return _kd; }
+			Color::Rgba getColor() const override { return _kd; }
 
-			Color::Rgb shade( const Ray &		   p_ray,
-							  const Intersection & p_hit,
-							  const LightSample &  p_lightSample ) const override
+			Color::Rgba shade( const Ray &			p_ray,
+							   const Intersection & p_hit,
+							   const LightSample &	p_lightSample ) const override
 			{
 				// TODO: always use OrenNayar ?
 				if ( _roughness == 0.f )
@@ -40,8 +40,8 @@ namespace VTX
 			}
 
 		  private:
-			Color::Rgb _kd		  = Color::Rgb::WHITE;
-			float	   _roughness = 0.f; // [0, 2PI]
+			Color::Rgba _kd		   = Color::Rgba::WHITE;
+			float		_roughness = 0.f; // [0, 2PI]
 		};
 	} // namespace Renderer
 } // namespace VTX

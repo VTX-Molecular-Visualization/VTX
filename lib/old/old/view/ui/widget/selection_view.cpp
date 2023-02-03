@@ -8,7 +8,7 @@
 #include "id.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "style.hpp"
-#include<util/chrono.hpp>
+#include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
 #include <QHeaderView>
@@ -51,7 +51,7 @@ namespace VTX::View::UI::Widget
 
 	void SelectionView::_refreshView()
 	{
-		Util::Chrono chrono = Util::Chrono();
+		Tool::Chrono chrono = Tool::Chrono();
 		chrono.start();
 
 		_enableSignals( false );

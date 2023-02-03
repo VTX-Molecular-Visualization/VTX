@@ -1,5 +1,4 @@
 #include "model_list_component.hpp"
-#include "generic/base_scene_item.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "ui/ui_action/self_referenced_action.hpp"
 #include "ui/widget_factory.hpp"
@@ -10,30 +9,21 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	void BaseModelListWidget::setContainsOnlyUniqueModel( const bool p_containsOnlyUniqueModel )
-	{
-		_containsOnlyUniqueModel = p_containsOnlyUniqueModel;
-	}
-
-	void BaseModelListWidget::addTypeFilter( const ID::VTX_ID & p_typeID ) { _filters.emplace_back( p_typeID ); }
-
 	ModelListComponent::ModelListComponent( BaseModelListWidget * const p_modelList, QWidget * p_parent ) :
 		BaseManualWidget( p_parent ), _modelListWidget( p_modelList )
 	{
-		_registerEvent( Event::Global::SCENE_ITEM_REMOVED );
+		_registerEvent( Event::Global::MODEL_REMOVED );
 	}
 	ModelListComponent::~ModelListComponent() {}
 
 	void ModelListComponent::receiveEvent( const Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::SCENE_ITEM_REMOVED )
+		if ( p_event.name == Event::Global::MODEL_REMOVED )
 		{
-			const Event::VTXEventPtr<Generic::BaseSceneItem> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
+			const Event::VTXEventPtr<Model::BaseModel> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::BaseModel> &>( p_event );
 
-			Model::BaseModel & model
-				= MVC::MvcManager::get().getModel<Model::BaseModel>( castedEvent.ptr->getModelID() );
-			removeModel( &model );
+			removeModel( castedEvent.ptr );
 		}
 	}
 
@@ -91,6 +81,7 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_modelListWidget->swapModels( p_model1, p_model2 );
 	}
+	void ModelListComponent::clearModels() { _modelListWidget->clearModels(); }
 
 	bool ModelListComponent::hasModel( const Model::BaseModel * const p_model ) const
 	{

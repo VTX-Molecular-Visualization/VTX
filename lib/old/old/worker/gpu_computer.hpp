@@ -8,19 +8,27 @@
 #include "renderer/gl/program_manager.hpp"
 #include <vector>
 
+#define LOCAL_SIZE_X 256
+#define LOCAL_SIZE_Y 1
+#define LOCAL_SIZE_Z 1
+
 namespace VTX::Worker
 {
 	class GpuComputer : public Worker::BaseWorker, public Generic::BaseOpenGL
 	{
 	  public:
-		explicit GpuComputer( const Util::FilePath & p_shader,
-							  const Vec3i &		   p_size	 = Vec3i( 64, 1, 1 ),
+		explicit GpuComputer( const IO::FilePath & p_shader,
+							  const Vec3i &		   p_size	 = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ),
 							  const GLbitfield	   p_barrier = 0,
 							  const bool		   p_force	 = false ) :
-			_sizeComputed( p_size ),
-			_size( p_size.x * p_size.y * p_size.z ), _barrier( p_barrier ), _force( p_force ),
-			_program( VTX_PROGRAM_MANAGER().createProgram( p_shader.filenameWithoutExtension(), { p_shader } ) )
+			_size( p_size ),
+			_barrier( p_barrier ), _force( p_force )
 		{
+			const std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
+												+ "#define LOCAL_SIZE_Y " + std::to_string( LOCAL_SIZE_Y ) + "\n"
+												+ "#define LOCAL_SIZE_Z " + std::to_string( LOCAL_SIZE_Z ) + "\n";
+			_program = VTX_PROGRAM_MANAGER().createProgram(
+				p_shader.filenameWithoutExtension(), { p_shader }, definesToInject );
 		}
 
 		virtual ~GpuComputer() = default;
@@ -31,20 +39,19 @@ namespace VTX::Worker
 
 		void start();
 		void start( const Vec3i &, const GLbitfield = 0 );
-		void start( const uint, const GLbitfield = 0 );
+		void start( const size_t, const GLbitfield = 0 );
 
 	  protected:
-		Renderer::GL::Program * const _program;
-		Vec3i						  _sizeComputed;
-		uint						  _size;
-		GLbitfield					  _barrier;
-		bool						  _force;
+		Renderer::GL::Program * _program;
+		Vec3i					_size;
+		GLbitfield				_barrier;
+		bool					_force;
 
 		virtual void _run() override;
 
 	  private:
 		virtual void _setUniforms() {}
-		const Vec3i	 _computeSize( const uint ) const;
+		const Vec3i	 _computeSize( const size_t ) const;
 	};
 } // namespace VTX::Worker
 

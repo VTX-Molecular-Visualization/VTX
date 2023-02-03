@@ -207,7 +207,14 @@ namespace VTX::Model::Renderer
 	{
 		_appliedPreset = &p_preset;
 
+		VTX::UI::MainWindow &	mw	   = VTXApp::get().getMainWindow();
 		VTX::Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
+
+		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
+		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
+		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::OUTLINE );
+		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
+		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
 
 		camera.setNear( _appliedPreset->getCameraNearClip() );
 		camera.setFar( _appliedPreset->getCameraFarClip() );
@@ -215,7 +222,6 @@ namespace VTX::Model::Renderer
 		camera.setPerspective( _appliedPreset->isPerspectiveProjection() );
 
 		_notifyViews( new Event::VTXEvent( Event::Model::APPLIED_PRESET_CHANGE ) );
-		VTX_EVENT( new Event::VTXEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGED ) );
 	}
 	bool RenderEffectPresetLibrary::isAppliedPreset( const RenderEffectPreset & p_preset ) const
 	{
@@ -335,9 +341,9 @@ namespace VTX::Model::Renderer
 		presetSketch->setShading( VTX::Renderer::SHADING::FLAT_COLOR );
 		presetSketch->enableSSAO( true );
 		presetSketch->enableOutline( true );
-		presetSketch->setOutlineColor( Color::Rgb::BLACK );
+		presetSketch->setOutlineColor( Color::Rgba::BLACK );
 		presetSketch->enableFog( false );
-		presetSketch->setBackgroundColor( Color::Rgb::WHITE );
+		presetSketch->setBackgroundColor( Color::Rgba::WHITE );
 		setQuickAccessToPreset( *presetSketch, true );
 		addPreset( presetSketch, true, false );
 

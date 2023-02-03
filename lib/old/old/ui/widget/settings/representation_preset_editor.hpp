@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_REPRESENTATION_PRESET_EDITOR__
 #define __VTX_UI_WIDGET_REPRESENTATION_PRESET_EDITOR__
 
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "model/representation/representation.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "view/ui/editor_view.hpp"
@@ -121,7 +121,7 @@ namespace VTX::UI::Widget::Settings
 		void _onRibbonColorModeChanged( const int p_index );
 		void _onRibbonColorBlendingModeChanged( const int p_index );
 		void _onColorModeChanged( const int p_index );
-		void _onColorChanged( const Color::Rgb & p_color );
+		void _onColorChanged( const Color::Rgba & p_color );
 		void _onSetDefault();
 	};
 

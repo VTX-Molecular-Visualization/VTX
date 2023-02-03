@@ -2,9 +2,9 @@
 #define __VTX_UI_WIDGET_RENDER_OVERLAY_VISUALIZATION_QUICK_ACCESS__
 
 #include "base_overlay.hpp"
+#include "controller/measurement_picker.hpp"
 #include "id.hpp"
 #include "selection/selection_enum.hpp"
-#include "controller/measurement_picker.hpp"
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QAction>
@@ -70,16 +70,14 @@ namespace VTX::UI::Widget::Render::Overlay
 		};
 
 		inline static std::vector<MenuItemData<Controller::MeasurementPicker::Mode>> MEASUREMENT_MODE {
-			MenuItemData( VTX::Controller::MeasurementPicker::Mode::DISTANCE,
+			MenuItemData( Controller::MeasurementPicker::Mode::DISTANCE,
 						  "Distance",
 						  ":/sprite/measurement_distance_icon.png" ),
-			// MenuItemData( VTX::Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE,
+			// MenuItemData( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE,
 			//			  "Distance to cycle",
 			//			  ":/sprite/measurement_distance_to_cycle_icon.png" ),
-			MenuItemData( VTX::Controller::MeasurementPicker::Mode::ANGLE,
-						  "Angle",
-						  ":/sprite/measurement_angle_icon.png" ),
-			MenuItemData( VTX::Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE,
+			MenuItemData( Controller::MeasurementPicker::Mode::ANGLE, "Angle", ":/sprite/measurement_angle_icon.png" ),
+			MenuItemData( Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE,
 						  "Dihedral angle",
 						  ":/sprite/measurement_dihedral_angle_icon.png" ),
 		};

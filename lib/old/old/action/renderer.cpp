@@ -46,7 +46,7 @@ namespace VTX::Action::Renderer
 			}
 			else
 			{
-				Util::FilePath path = Util::Filesystem::getRenderEffectPath( renderEffect->getName() );
+				IO::FilePath path = Util::Filesystem::getRenderEffectPath( renderEffect->getName() );
 				Util::Filesystem::generateUniqueFileName( path );
 
 				Worker::RenderEffectPresetSaver * librarySaver

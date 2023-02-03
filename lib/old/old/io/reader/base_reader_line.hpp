@@ -16,7 +16,7 @@ namespace VTX
 			  public:
 				virtual ~BaseReaderLine() = default;
 
-				virtual void readFile( const Util::FilePath & p_path, T & p_data ) override final
+				virtual void readFile( const IO::FilePath & p_path, T & p_data ) override final
 				{
 					std::ifstream file;
 					std::string	  line;

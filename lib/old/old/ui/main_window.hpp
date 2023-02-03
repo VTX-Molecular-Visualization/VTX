@@ -56,8 +56,6 @@ namespace VTX
 
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-			Widget::MainMenu::MainMenuBar & getMainMenu() { return *_mainMenuBar; };
-
 			const ContextualMenu & getContextualMenu() { return *_contextualMenu; }
 			CursorHandler &		   getCursorHandler() { return *_cursorHandler; }
 
@@ -148,6 +146,7 @@ namespace VTX
 			void _onShortcutRestoreLayout() const;
 			void _onShortcutCompileShaders() const;
 			void _onShortcutActiveRenderer() const;
+			void _onShortcutRefreshSES() const;
 			void _onShortcutDelete() const;
 			void _onShortcutOrient() const;
 			void _onShortcutSelectAll() const;

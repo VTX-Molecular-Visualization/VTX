@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_RENDERER_RENDER_EFFECT_PRESET__
 #define __VTX_MODEL_RENDERER_RENDER_EFFECT_PRESET__
 
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"
 #include "renderer/base_renderer.hpp"
@@ -32,40 +32,40 @@ namespace VTX::Model::Renderer
 		int	 getSSAOBlurSize() const { return _ssaoBlurSize; };
 		void setSSAOBlurSize( const int p_ssaoBlurSize );
 
-		bool			   isOutlineEnabled() const { return _outline; };
-		void			   enableOutline( const bool p_enable );
-		uint			   getOutlineThickness() const { return _outlineThickness; };
-		void			   setOutlineThickness( const uint p_outlineThickness );
-		float			   getOutlineSensivity() const { return _outlineSensivity; };
-		void			   setOutlineSensivity( const float p_outlineSensivity );
-		const Color::Rgb & getOutlineColor() const { return _outlineColor; };
-		void			   setOutlineColor( const Color::Rgb & p_outlineColor );
+		bool				isOutlineEnabled() const { return _outline; };
+		void				enableOutline( const bool p_enable );
+		uint				getOutlineThickness() const { return _outlineThickness; };
+		void				setOutlineThickness( const uint p_outlineThickness );
+		float				getOutlineSensivity() const { return _outlineSensivity; };
+		void				setOutlineSensivity( const float p_outlineSensivity );
+		const Color::Rgba & getOutlineColor() const { return _outlineColor; };
+		void				setOutlineColor( const Color::Rgba & p_outlineColor );
 
-		bool	   isFogEnabled() const { return _fog; };
-		void	   enableFog( const bool p_enable );
-		float	   getFogNear() const { return _fogNear; };
-		void	   setFogNear( const float p_fogNear );
-		float	   getFogFar() const { return _fogFar; };
-		void	   setFogFar( const float p_fogFar );
-		float	   getFogDensity() const { return _fogDensity; };
-		void	   setFogDensity( const float p_fogDensity );
-		Color::Rgb getFogColor() const { return _fogColor; };
-		void	   setFogColor( const Color::Rgb & p_fogColor );
+		bool		isFogEnabled() const { return _fog; };
+		void		enableFog( const bool p_enable );
+		float		getFogNear() const { return _fogNear; };
+		void		setFogNear( const float p_fogNear );
+		float		getFogFar() const { return _fogFar; };
+		void		setFogFar( const float p_fogFar );
+		float		getFogDensity() const { return _fogDensity; };
+		void		setFogDensity( const float p_fogDensity );
+		Color::Rgba getFogColor() const { return _fogColor; };
+		void		setFogColor( const Color::Rgba & p_fogColor );
 
-		Color::Rgb getBackgroundColor() const { return _backgroundColor; };
-		void	   setBackgroundColor( const Color::Rgb & p_backgroundColor );
-		Color::Rgb getCameraLightColor() const { return _cameraLightColor; };
-		void	   setCameraLightColor( const Color::Rgb & p_cameraLightColor );
-		float	   getCameraFOV() const { return _cameraFOV; };
-		void	   setCameraFOV( const float p_cameraFOV );
-		float	   getCameraNearClip() const { return _cameraNearClip; };
-		void	   setCameraNearClip( const float p_cameraNearClip );
-		float	   getCameraFarClip() const { return _cameraFarClip; };
-		void	   setCameraFarClip( const float p_cameraFarClip );
-		bool	   getAA() const { return _antiAliasing; };
-		void	   setAA( const bool p_antiAliasing );
-		bool	   isPerspectiveProjection() const { return _perspectiveProjection; };
-		void	   setPerspectiveProjection( const bool p_perspectiveProjection );
+		Color::Rgba getBackgroundColor() const { return _backgroundColor; };
+		void		setBackgroundColor( const Color::Rgba & p_backgroundColor );
+		Color::Rgba getCameraLightColor() const { return _cameraLightColor; };
+		void		setCameraLightColor( const Color::Rgba & p_cameraLightColor );
+		float		getCameraFOV() const { return _cameraFOV; };
+		void		setCameraFOV( const float p_cameraFOV );
+		float		getCameraNearClip() const { return _cameraNearClip; };
+		void		setCameraNearClip( const float p_cameraNearClip );
+		float		getCameraFarClip() const { return _cameraFarClip; };
+		void		setCameraFarClip( const float p_cameraFarClip );
+		bool		getAA() const { return _antiAliasing; };
+		void		setAA( const bool p_antiAliasing );
+		bool		isPerspectiveProjection() const { return _perspectiveProjection; };
+		void		setPerspectiveProjection( const bool p_perspectiveProjection );
 
 		void copyFrom( const RenderEffectPreset & p_source );
 
@@ -84,24 +84,24 @@ namespace VTX::Model::Renderer
 		int	 _ssaoIntensity;
 		int	 _ssaoBlurSize;
 
-		bool	   _outline;
-		uint	   _outlineThickness;
-		float	   _outlineSensivity;
-		Color::Rgb _outlineColor;
+		bool		_outline;
+		uint		_outlineThickness;
+		float		_outlineSensivity;
+		Color::Rgba _outlineColor;
 
-		bool	   _fog;
-		float	   _fogNear;
-		float	   _fogFar;
-		float	   _fogDensity;
-		Color::Rgb _fogColor;
+		bool		_fog;
+		float		_fogNear;
+		float		_fogFar;
+		float		_fogDensity;
+		Color::Rgba _fogColor;
 
-		Color::Rgb _backgroundColor;
-		Color::Rgb _cameraLightColor;
-		float	   _cameraFOV;
-		float	   _cameraNearClip;
-		float	   _cameraFarClip;
-		bool	   _antiAliasing;
-		bool	   _perspectiveProjection;
+		Color::Rgba _backgroundColor;
+		Color::Rgba _cameraLightColor;
+		float		_cameraFOV;
+		float		_cameraNearClip;
+		float		_cameraFarClip;
+		bool		_antiAliasing;
+		bool		_perspectiveProjection;
 	};
 
 } // namespace VTX::Model::Renderer

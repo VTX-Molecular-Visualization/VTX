@@ -3,7 +3,7 @@
 
 #include "base_model_3d.hpp"
 #include "buffer/secondary_structure.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "generic/base_colorable.hpp"
 #include "model/selection.hpp"
 #include <string>
@@ -67,12 +67,12 @@ namespace VTX
 			// Ca -> O directions.
 			std::vector<Vec3f> _bufferCaODirections = std::vector<Vec3f>();
 			// Secondary structure types.
-			std::vector<uint>		_bufferSSTypes		= std::vector<uint>();
-			std::vector<Color::Rgb> _bufferColors		= std::vector<Color::Rgb>();
-			std::vector<uint>		_bufferVisibilities = std::vector<uint>();
-			std::vector<uint>		_bufferSelections	= std::vector<uint>();
-			std::vector<uint>		_bufferIds			= std::vector<Model::ID>();
-			std::vector<uint>		_bufferIndices		= std::vector<uint>();
+			std::vector<uint>		 _bufferSSTypes		 = std::vector<uint>();
+			std::vector<Color::Rgba> _bufferColors		 = std::vector<Color::Rgba>();
+			std::vector<uint>		 _bufferVisibilities = std::vector<uint>();
+			std::vector<uint>		 _bufferSelections	 = std::vector<uint>();
+			std::vector<uint>		 _bufferIds			 = std::vector<Model::ID>();
+			std::vector<uint>		 _bufferIndices		 = std::vector<uint>();
 
 			std::map<uint, uint> _residueToIndices	 = std::map<uint, uint>();
 			std::map<uint, uint> _residueToPositions = std::map<uint, uint>();
@@ -81,14 +81,14 @@ namespace VTX
 			~SecondaryStructure() = default;
 
 			void _checkOrientationAndFlip( std::vector<Vec3f> & p_directions );
-			void _tryConstruct( const uint						p_chainIdx,
-								const std::vector<uint> &		p_residueIndex,
-								const std::vector<Vec4f> &		p_caPositions,
-								std::vector<Vec3f> &			p_caODirections,
-								const std::vector<uint> &		p_ssTypes,
-								const std::vector<Color::Rgb> & p_colors,
-								const std::vector<uint> &		p_visibilities,
-								const std::vector<Model::ID> &	p_ids );
+			void _tryConstruct( const uint						 p_chainIdx,
+								const std::vector<uint> &		 p_residueIndex,
+								const std::vector<Vec4f> &		 p_caPositions,
+								std::vector<Vec3f> &			 p_caODirections,
+								const std::vector<uint> &		 p_ssTypes,
+								const std::vector<Color::Rgba> & p_colors,
+								const std::vector<uint> &		 p_visibilities,
+								const std::vector<Model::ID> &	 p_ids );
 		};
 
 	} // namespace Model

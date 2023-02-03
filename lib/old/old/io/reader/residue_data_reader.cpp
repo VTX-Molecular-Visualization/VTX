@@ -8,7 +8,7 @@ namespace VTX::IO::Reader
 
 	bool ResidueDataReader::readResidueData( const std::string & p_residueSymbol, ResidueData & p_residueData )
 	{
-		const Util::FilePath filepath = Util::Filesystem::getResidueDataFilePath( p_residueSymbol );
+		const IO::FilePath filepath = Util::Filesystem::getResidueDataFilePath( p_residueSymbol );
 		std::string		   residueFileData;
 
 		if ( !filepath.exists() )

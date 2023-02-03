@@ -36,7 +36,7 @@ namespace VTX::UI::Widget::Inspector
 		void _setupUi( const QString & p_name ) override;
 
 	  private:
-		QGridLayout * _gridLayout = nullptr;
+		QGridLayout * _gridLayout;
 	};
 
 } // namespace VTX::UI::Widget::Inspector

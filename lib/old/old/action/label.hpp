@@ -2,7 +2,7 @@
 #define __VTX_ACTION_LABEL__
 
 #include "action/base_action.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "model/label.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -140,11 +140,11 @@ namespace VTX::Action::Label
 	class ChangeColor : public BaseAction
 	{
 	  public:
-		explicit ChangeColor( Model::Label & p_label, const Color::Rgb & p_color ) :
+		explicit ChangeColor( Model::Label & p_label, const Color::Rgba & p_color ) :
 			_labels( { &p_label } ), _color( p_color )
 		{
 		}
-		explicit ChangeColor( const std::unordered_set<Model::Label *> & p_labels, const Color::Rgb & p_color ) :
+		explicit ChangeColor( const std::unordered_set<Model::Label *> & p_labels, const Color::Rgba & p_color ) :
 			_labels( p_labels ), _color( p_color )
 		{
 		}
@@ -159,7 +159,7 @@ namespace VTX::Action::Label
 
 	  private:
 		const std::unordered_set<Model::Label *> _labels;
-		const Color::Rgb &						 _color;
+		const Color::Rgba &						 _color;
 	};
 
 } // namespace VTX::Action::Label

@@ -17,11 +17,11 @@ namespace VTX
 			namespace CookTorrance
 			{
 				// TODO: GGX or other ?
-				inline Color::Rgb fr( const Intersection & p_hit,
-									  const Vec3f &		   p_wo,
-									  const Vec3f &		   p_wi,
-									  const Color::Rgb &   p_f0,
-									  const float		   p_shininess )
+				inline Color::Rgba fr( const Intersection & p_hit,
+									   const Vec3f &		p_wo,
+									   const Vec3f &		p_wi,
+									   const Color::Rgba &	p_f0,
+									   const float			p_shininess )
 				{
 					const Vec3f h = Util::Math::normalize( p_wo + p_wi );
 
@@ -38,9 +38,9 @@ namespace VTX
 
 					// Fresnel Schlick's approximation.
 					// F = f0 + (1 - f0) * (1-IdotH)^5
-					const float		 _IdotH	 = 1.f - Util::Math::dot( p_wi, h );
-					const float		 _IdotH2 = _IdotH * _IdotH;
-					const Color::Rgb F		 = p_f0 + ( 1.f - p_f0 ) * _IdotH2 * _IdotH2 * _IdotH;
+					const float		  _IdotH  = 1.f - Util::Math::dot( p_wi, h );
+					const float		  _IdotH2 = _IdotH * _IdotH;
+					const Color::Rgba F		  = p_f0 + ( 1.f - p_f0 ) * _IdotH2 * _IdotH2 * _IdotH;
 
 					return ( F * D * G ) / ( 4.f * cosThetaO * cosThetaI );
 				}

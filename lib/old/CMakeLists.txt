@@ -1,21 +1,20 @@
 message("Project library: OLD_VTX")
 
-# Create paths.
-set(PATH_SRC "old")
-set(OLD_VTX_SOURCE_PATH "lib/old/old")
-set(PATH_WINDOWS_RESOURCE "asset/windows_resources")
-set(PATH_QT_RESOURCE "asset/qt_resources")
 
-
-# Configure Qt.
+# Compiler options.
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOUIC_SEARCH_PATHS "old/ui/qt_form" "old/view/ui/qt_form")
+set(CMAKE_AUTOUIC_SEARCH_PATHS "old/ui/qt_form" "old/view/ui/qt_form" "old/extensions/keyword_editor/forms/")
 #set(CMAKE_AUTOGEN_TARGETS_FOLDER "autogen")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-#set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+# Create paths.
+set(PATH_SRC "lib/old/old")
+set(PATH_WINDOWS_RESOURCE "asset/windows_resources")
+set(PATH_QT_RESOURCE "asset/qt_resources")
 
 # Libs URL and tags.
 set(GIT_URL_CHEMFILES https://github.com/sacraiou/chemfiles.git)
@@ -27,24 +26,30 @@ set(GIT_TAG_MAGIC_ENUM v0.8.0) #0.8.0
 set(GIT_URL_EIGEN https://gitlab.com/libeigen/eigen.git)
 set(GIT_TAG_EIGEN 3147391d946bb4b6c68edd901f2add6ac1f31f8c) #3.4.0
 
+# Create output dir.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
+if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
+	file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+endif()
+
 # Copy all sources.
 message("Copying all sources...")
 
 # Get all .hpp.
-file(GLOB_RECURSE HEADERS ${PATH_SRC}/*.hpp ${PATH_SRC}/*.h)
+file(GLOB_RECURSE HEADERS old/*.hpp old/*.h)
 foreach(SRC IN ITEMS ${HEADERS})
     get_filename_component(SRC_PATH "${SRC}" PATH)
-    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${OLD_VTX_SOURCE_PATH}" "${SRC_PATH}")
+    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
     source_group("Header${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
 # Get all sources.
-file(GLOB_RECURSE SOURCES ${PATH_SRC}/*.cpp)
+file(GLOB_RECURSE SOURCES old/*.cpp)
 foreach(SRC IN ITEMS ${SOURCES})
     get_filename_component(SRC_PATH "${SRC}" PATH)
-    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${OLD_VTX_SOURCE_PATH}" "${SRC_PATH}")
+    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
     source_group("Source${GROUP_PATH}" FILES "${SRC}")
@@ -63,7 +68,7 @@ if(MSVC)
 endif()
 
 # Get all GLSL sources.
-file(GLOB_RECURSE SHADERS ${PATH_SRC}/*.vert ${PATH_SRC}/*.frag ${PATH_SRC}/*.geom ${PATH_SRC}/*.tesc ${PATH_SRC}/*.tese ${PATH_SRC}/*.comp)
+file(GLOB_RECURSE SHADERS old/*.vert old/*.frag old/*.geom old/*.tesc old/*.tese old/*.comp old/*.glsl)
 foreach(SRC IN ITEMS ${SHADERS})
     get_filename_component(SRC_PATH "${SRC}" PATH)
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
@@ -73,7 +78,7 @@ foreach(SRC IN ITEMS ${SHADERS})
 endforeach()
 
 # Get all QT forms.
-file(GLOB_RECURSE FORMS ${PATH_SRC}/*.ui)
+file(GLOB_RECURSE FORMS old/*.ui)
 foreach(SRC IN ITEMS ${FORMS})
     get_filename_component(SRC_PATH "${SRC}" PATH)
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
@@ -91,7 +96,6 @@ foreach(SRC IN ITEMS ${QT_RESOURCES})
 	# Create group to make visual studio filters.
     source_group("Resources" FILES "${SRC}")
 endforeach()
-
 
 # Download dependencies.
 message("Downloading dependencies...")
@@ -165,20 +169,23 @@ find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
 find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
 
 # Declare executable with source files.
-add_library(${OLD_VTX_LIB} STATIC ${HEADERS} ${SOURCES} ${RESOURCES} ${FORMS} ${QT_RESOURCES})
+add_library(${OLD_VTX_LIB} STATIC ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESOURCES})
 
-# Includes directories.
-target_include_directories(${OLD_VTX_LIB} PRIVATE ${PATH_SRC})
+# Includes local directories.
+target_include_directories(${OLD_VTX_LIB} PUBLIC .)
+target_include_directories(${OLD_VTX_LIB} PUBLIC old/)
+
+# Includes VTX_Util
+target_include_directories(${OLD_VTX_LIB} PRIVATE ${VTX_UTIL_INCLUDE_PATH})
+target_link_libraries(${OLD_VTX_LIB} PRIVATE ${VTX_UTIL_LIB})
+
+# Includes external libraries directories.
 target_include_directories(${OLD_VTX_LIB} PUBLIC ${JSON_INCLUDE_DIR})
 target_include_directories(${OLD_VTX_LIB} PUBLIC ${MAGIC_ENUM_INCLUDE_DIR})
 target_include_directories(${OLD_VTX_LIB} PUBLIC ${EIGEN_INCLUDE_DIR})
 
-# Link modules.
-# Custom.
-target_include_directories(${OLD_VTX_LIB} PRIVATE ${VTX_UTIL_INCLUDE_PATH})
-target_link_libraries(${OLD_VTX_LIB} PUBLIC ${VTX_UTIL_LIB})
 
-# Third parties.
+# Link libs.
 target_link_libraries(${OLD_VTX_LIB} PUBLIC Qt6::Core)
 target_link_libraries(${OLD_VTX_LIB} PUBLIC Qt6::Gui)
 target_link_libraries(${OLD_VTX_LIB} PUBLIC Qt6::Widgets)
@@ -191,7 +198,7 @@ target_link_libraries(${OLD_VTX_LIB} PUBLIC fmt)
 
 if(MSVC)
 	# Add specific libs.
-	target_link_libraries(${OLD_VTX_LIB} PRIVATE ws2_32)
+	target_link_libraries(${OLD_VTX_LIB} PUBLIC ws2_32)
 endif()
 
 message("Creating post build events...")
@@ -213,13 +220,54 @@ if(MSVC)
 endif()
 
 # Create custom target for GPU sources that copy files to build directory.
-add_custom_target(VTX_SHADERS COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/lib/old/old/shader ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../shaders)
+add_custom_target(VTX_SHADERS COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${PATH_SRC}/shader ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../shaders)
 set_property(TARGET VTX_SHADERS APPEND PROPERTY SOURCES ${SHADERS}) # Workaround to add source to custom target.
 
 add_dependencies(${OLD_VTX_LIB} VTX_SHADERS)
 
+# Copy render effect presets to build directory.
+add_custom_command(TARGET ${OLD_VTX_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/libraries/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../libraries)
+
+# Copy Data.
+add_custom_command(TARGET ${OLD_VTX_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/internal_data ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../data)
+
+# Readme, license and changelog.
+add_custom_command(TARGET ${OLD_VTX_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/README.md ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../README.md)
+add_custom_command(TARGET ${OLD_VTX_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/CHANGELOG.md ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../CHANGELOG.md)
+add_custom_command(TARGET ${OLD_VTX_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/license.txt ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../license.txt)
+
 # Qt options
 set_property(TARGET ${OLD_VTX_LIB} PROPERTY AUTOUIC_OPTIONS "--no-autoconnection")
+
+# Compiler options #2.
+if(CMAKE_COMPILER_IS_GNUCC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    target_compile_options(${OLD_VTX_LIB} PRIVATE "-fpermissive")
+    target_compile_options(${OLD_VTX_LIB} PRIVATE "-w")
+    #target_compile_options(${OLD_VTX_LIB} PRIVATE "-Wall")
+    #target_compile_options(${OLD_VTX_LIB} PRIVATE "-Werror")
+    #target_compile_options(${OLD_VTX_LIB} PRIVATE "-pedantic-errors")
+elseif(MSVC)
+	# General.
+    target_compile_options(${OLD_VTX_LIB} PRIVATE "/W3")  # Warning level 3.
+	target_compile_options(${OLD_VTX_LIB} PRIVATE "/WX")  # Warnings as errors.
+	target_compile_options(${OLD_VTX_LIB} PRIVATE "/MP")  # Multicore compilation.
+	target_compile_options(${OLD_VTX_LIB} PRIVATE "/sdl") # SDL check.
+	
+	target_compile_options(${OLD_VTX_LIB} PRIVATE "/utf-8")
+	#target_compile_options(${OLD_VTX_LIB} PRIVATE "/DEBUG:FASTLINK") # https://devblogs.microsoft.com/cppblog/debugfastlink-for-vs2015-update-1/
+	
+	# Optimization.
+	target_compile_options(${OLD_VTX_LIB} PRIVATE "$<$<CONFIG:Release>:/O2>")
+	target_compile_options(${OLD_VTX_LIB} PRIVATE "$<$<CONFIG:Release>:/Ob2>")
+	target_compile_options(${OLD_VTX_LIB} PRIVATE "$<$<CONFIG:Release>:/Ot>")
+	target_compile_options(${OLD_VTX_LIB} PRIVATE "$<$<CONFIG:Release>:/Oi>")
+	
+	# Code Generation.
+	target_compile_options(${OLD_VTX_LIB} PRIVATE "/fp:fast") # Floating Point Model.
+
+	#set_target_properties(${OLD_VTX_LIB} PROPERTIES VS_GLOBAL_DisableFastUpToDateCheck false)
+endif()
 
 # Disable Qt5.
 add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x050F00)

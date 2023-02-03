@@ -84,9 +84,9 @@ namespace VTX
 			static const std::string SYMBOL_STR[ (int)SYMBOL::COUNT ];
 			static const std::string SYMBOL_SHORT_STR[ (int)SYMBOL::COUNT ];
 			static const std::string SYMBOL_NAME[ (int)SYMBOL::COUNT ];
-			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
+			static const Color::Rgba SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
 
-			static const Color::Rgb getResidueColor( const Model::Residue & p_residue );
+			static const Color::Rgba getResidueColor( const Model::Residue & p_residue );
 
 			inline bool isStandardResidue() const
 			{

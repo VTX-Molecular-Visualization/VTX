@@ -80,7 +80,7 @@ namespace VTX::IO
 
 	nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
 	{
-		const Util::FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
+		const IO::FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
 
 		const Writer::ChemfilesWriter * const writer
 			= VTXApp::get().getScenePathData().getData( &p_molecule ).getWriter();
@@ -275,7 +275,7 @@ namespace VTX::IO
 		};
 	}
 
-	nlohmann::json Serializer::serialize( const Color::Rgb & p_color ) const
+	nlohmann::json Serializer::serialize( const Color::Rgba & p_color ) const
 	{
 		return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() } };
 	}
@@ -350,7 +350,8 @@ namespace VTX::IO
 			{ "BACKGROUND_RESOLUTION", magic_enum::enum_name( p_setting.getSnapshotResolution() ) },
 
 			{ "CONTROLLER_TRANSLATION_SPEED", p_setting.getTranslationSpeed() },
-			{ "CONTROLLER_TRANSLATION_FACTOR", p_setting.getTranslationSpeedFactor() },
+			{ "CONTROLLER_ACCELERATION_FACTOR", p_setting.getAccelerationSpeedFactor() },
+			{ "CONTROLLER_DECELERATION_FACTOR", p_setting.getDecelerationSpeedFactor() },
 			{ "CONTROLLER_ROTATION_SPEED", p_setting.getRotationSpeed() },
 			{ "CONTROLLER_Y_AXIS_INVERTED", p_setting.getYAxisInverted() },
 
@@ -522,11 +523,11 @@ namespace VTX::IO
 			p_molecule.applyTransform( transform );
 		}
 
-		Util::FilePath molPath = _get<std::string>( p_json, "PATH" );
+		IO::FilePath molPath = _get<std::string>( p_json, "PATH" );
 
 		if ( Util::Filesystem::isRelativePath( molPath ) )
 		{
-			const Util::FilePath sceneFolder
+			const IO::FilePath sceneFolder
 				= Util::Filesystem::getSceneSaveDirectory( VTXApp::get().getScenePathData().getCurrentPath() );
 			molPath = sceneFolder / molPath;
 		}
@@ -554,7 +555,7 @@ namespace VTX::IO
 
 		if ( p_json.contains( "COLOR" ) )
 		{
-			Color::Rgb color;
+			Color::Rgba color;
 			deserialize( p_json.at( "COLOR" ), color );
 
 			p_molecule.setColor( color );
@@ -684,7 +685,7 @@ namespace VTX::IO
 		}
 		if ( p_json.contains( "COLOR" ) )
 		{
-			Color::Rgb color;
+			Color::Rgba color;
 			deserialize( p_json.at( "COLOR" ), color );
 			p_representation.setColor( color );
 		}
@@ -705,7 +706,7 @@ namespace VTX::IO
 
 		if ( p_json.contains( "COLOR" ) )
 		{
-			Color::Rgb color;
+			Color::Rgba color;
 			deserialize( p_json.at( "COLOR" ), color );
 			p_distanceLabel.setColor( color );
 		}
@@ -736,7 +737,7 @@ namespace VTX::IO
 
 		if ( p_json.contains( "COLOR" ) )
 		{
-			Color::Rgb color;
+			Color::Rgba color;
 			deserialize( p_json.at( "COLOR" ), color );
 			p_angleLabel.setColor( color );
 		}
@@ -768,7 +769,7 @@ namespace VTX::IO
 
 		if ( p_json.contains( "COLOR" ) )
 		{
-			Color::Rgb color;
+			Color::Rgba color;
 			deserialize( p_json.at( "COLOR" ), color );
 			p_angleLabel.setColor( color );
 		}
@@ -793,7 +794,7 @@ namespace VTX::IO
 								  const std::tuple<uint, uint, uint> &	  p_version,
 								  Model::Representation::Representation & p_representation ) const
 	{
-		Color::Rgb color;
+		Color::Rgba color;
 		if ( p_json.contains( "COLOR" ) )
 		{
 			deserialize( p_json.at( "COLOR" ), color );
@@ -832,7 +833,7 @@ namespace VTX::IO
 								  const std::tuple<uint, uint, uint> &	p_version,
 								  Model::Renderer::RenderEffectPreset & p_preset ) const
 	{
-		Color::Rgb color;
+		Color::Rgba color;
 
 		p_preset.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
 		p_preset.setShading( _getEnum<Renderer::SHADING>( p_json, "SHADING", Setting::SHADING_DEFAULT ) );
@@ -880,7 +881,7 @@ namespace VTX::IO
 			_get<bool>( p_json, "CAMERA_PERSPECTIVE_PROJECTION", Setting::CAMERA_PERSPECTIVE_DEFAULT ) );
 	}
 
-	void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgb & p_color ) const
+	void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgba & p_color ) const
 	{
 		p_color.setR( _get<float>( p_json, "R" ) );
 		p_color.setG( _get<float>( p_json, "G" ) );
@@ -971,8 +972,10 @@ namespace VTX::IO
 
 		p_setting.setTranslationSpeed(
 			_get<float>( p_json, "CONTROLLER_TRANSLATION_SPEED", Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT ) );
-		p_setting.setTranslationSpeedFactor(
-			_get<float>( p_json, "CONTROLLER_TRANSLATION_FACTOR", Setting::CONTROLLER_TRANSLATION_FACTOR_DEFAULT ) );
+		p_setting.setAccelerationSpeedFactor(
+			_get<float>( p_json, "CONTROLLER_ACCELERATION_FACTOR", Setting::CONTROLLER_ACCELERATION_FACTOR_DEFAULT ) );
+		p_setting.setDecelerationSpeedFactor(
+			_get<float>( p_json, "CONTROLLER_DECELERATION_FACTOR", Setting::CONTROLLER_DECELERATION_FACTOR_DEFAULT ) );
 		p_setting.setRotationSpeed(
 			_get<float>( p_json, "CONTROLLER_ROTATION_SPEED", Setting::CONTROLLER_ROTATION_SPEED_DEFAULT ) );
 		p_setting.setYAxisInverted(

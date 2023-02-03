@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_REPRESENTATION_DATA__
 #define __VTX_MODEL_REPRESENTATION_DATA__
 
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "generic/base_colorable.hpp"
 #include "representation_enum.hpp"
 #include "representation_primitive.hpp"

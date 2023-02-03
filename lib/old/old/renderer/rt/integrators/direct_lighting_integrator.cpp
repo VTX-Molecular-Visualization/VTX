@@ -1,18 +1,19 @@
 #include "direct_lighting_integrator.hpp"
-#include <util/math.hpp>
+#include "util/math.hpp"
+#include "util/sampler.hpp"
 
 namespace VTX
 {
 	namespace Renderer
 	{
-		Color::Rgb DirectLightingIntegrator::Li( const Ray &   p_ray,
-												 const Scene & p_scene,
-												 const float   p_tMin,
-												 const float   p_tMax ) const
+		Color::Rgba DirectLightingIntegrator::Li( const Ray &	p_ray,
+												  const Scene & p_scene,
+												  const float	p_tMin,
+												  const float	p_tMax ) const
 		{
 			// TODO: for now only the same as RaycastIntegrator
 			Intersection intersection;
-			Color::Rgb	 Li = Color::Rgb::BLACK;
+			Color::Rgba	 Li = Color::Rgba::BLACK;
 
 			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
@@ -23,7 +24,7 @@ namespace VTX
 				{
 					const uint nbLightSamples = light->isSurface() ? 32 : 1;
 
-					Color::Rgb lightContrib = Color::Rgb::BLACK;
+					Color::Rgba lightContrib = Color::Rgba::BLACK;
 					for ( uint i = 0; i < nbLightSamples; ++i )
 					{
 						const LightSample ls = light->sample( intersection._point );

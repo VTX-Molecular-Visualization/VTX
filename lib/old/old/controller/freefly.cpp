@@ -65,11 +65,11 @@ namespace VTX
 
 			if ( _isModifierExclusive( ModifierFlag::Shift ) )
 			{
-				translation *= VTX_SETTING().getTranslationSpeedFactor();
+				translation *= VTX_SETTING().getAccelerationSpeedFactor();
 			}
 			if ( _isModifierExclusive( ModifierFlag::Alt ) )
 			{
-				translation /= VTX_SETTING().getTranslationSpeedFactor();
+				translation /= VTX_SETTING().getDecelerationSpeedFactor();
 			}
 
 			_camera.move( translation );

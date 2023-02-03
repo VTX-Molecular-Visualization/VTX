@@ -1,7 +1,7 @@
 #ifndef __VTX_BASE_ACTION__
 #define __VTX_BASE_ACTION__
 
-#include <util/exception.hpp>
+#include "exception.hpp"
 #include <string>
 #include <vector>
 

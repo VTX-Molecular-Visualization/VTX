@@ -56,24 +56,6 @@ namespace VTX::UI::Widget::MainMenu
 		return nullptr;
 	}
 
-	MenuToolBlockWidget & MenuTooltabWidget::getToolBlock( const std::string & p_toolBlockName )
-	{
-		for ( std::vector<MenuToolBlockWidget *>::const_reverse_iterator it = _toolBlocks.crbegin();
-			  it != _toolBlocks.crend();
-			  it++ )
-		{
-			if ( ( *it )->getTitle() == p_toolBlockName )
-				return *( *it );
-		}
-
-		MenuToolBlockWidget * newToolBlock
-			= WidgetFactory::get().instantiateWidget<MenuToolBlockWidget>( this, "toolBlock" );
-		newToolBlock->setTitle( QString::fromStdString( p_toolBlockName ) );
-		addToolBlock( newToolBlock );
-
-		return *newToolBlock;
-	}
-
 	void MenuTooltabWidget::_addSeparator()
 	{
 		QLabel * separator = new QLabel( this );

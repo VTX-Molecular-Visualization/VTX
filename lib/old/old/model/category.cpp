@@ -11,9 +11,7 @@ namespace VTX::Model
 	void Category::setMoleculePtr( Molecule * const p_molecule )
 	{
 		_moleculePtr = p_molecule;
-
-		setParent( p_molecule );
-		setRepresentableMolecule( p_molecule );
+		initBaseRepresentable( this, p_molecule, p_molecule );
 	}
 
 	void Category::addChain( const uint p_chainIndex ) { _linkedChains.emplace_back( p_chainIndex ); };
@@ -75,6 +73,47 @@ namespace VTX::Model
 		}
 
 		return -1;
+	}
+
+	std::vector<uint> Category::generateAtomIndexList() const
+	{
+		std::vector<std::pair<uint, uint>> firstLastAtoms = std::vector<std::pair<uint, uint>>();
+		firstLastAtoms.reserve( _linkedChains.size() );
+
+		size_t atomCount = 0;
+
+		for ( const uint chainIndex : _linkedChains )
+		{
+			const Model::Chain * chain = _moleculePtr->getChain( chainIndex );
+
+			if ( chain == nullptr )
+				continue;
+
+			const Model::Residue * const firstResidue = _moleculePtr->getResidue( chain->getIndexFirstResidue() );
+			const Model::Residue * const lastResidue  = _moleculePtr->getResidue( chain->getIndexLastResidue() );
+
+			const uint firstAtomIndex = firstResidue->getIndexFirstAtom();
+			const uint lastAtomIndex  = lastResidue->getIndexFirstAtom() + lastResidue->getAtomCount() - 1;
+
+			firstLastAtoms.emplace_back( std::pair( firstAtomIndex, lastAtomIndex ) );
+			atomCount += lastAtomIndex - firstAtomIndex + 1;
+		}
+
+		std::vector<uint> atomIndexList = std::vector<uint>();
+		atomIndexList.resize( atomCount );
+
+		size_t counter = 0;
+
+		for ( const std::pair<uint, uint> & firstLastAtom : firstLastAtoms )
+		{
+			for ( uint i = firstLastAtom.first; i <= firstLastAtom.second; i++ )
+			{
+				atomIndexList[ counter ] = i;
+				counter++;
+			}
+		}
+
+		return atomIndexList;
 	}
 
 	void Category::setVisible( const bool p_visible )

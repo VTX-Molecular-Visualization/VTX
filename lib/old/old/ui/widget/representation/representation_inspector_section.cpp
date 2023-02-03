@@ -224,7 +224,7 @@ namespace VTX::UI::Widget::Representation
 
 		emit onRepresentationChange( *_dummyRepresentation, p_flagDataModified );
 	}
-	void RepresentationInspectorSection::_representationColorChange( const Color::Rgb & p_color, const bool p_ssColor )
+	void RepresentationInspectorSection::_representationColorChange( const Color::Rgba & p_color, const bool p_ssColor )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -255,16 +255,22 @@ namespace VTX::UI::Widget::Representation
 	{
 		if ( p_deleteViews )
 		{
-			for ( const InstantiatedRepresentation * const representation : _representations )
+			for ( const Model::ID & representationID : _representationIDs )
 			{
-				if ( MVC::MvcManager::get().hasView( representation,
-													 ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION ) )
+				if ( MVC::MvcManager::get().doesModelExists( representationID ) )
 				{
-					MVC::MvcManager::get().deleteView( representation,
-													   ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
+					const InstantiatedRepresentation & representationModel
+						= MVC::MvcManager::get().getModel<InstantiatedRepresentation>( representationID );
+
+					if ( MVC::MvcManager::get().hasView( &representationModel,
+														 ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION ) )
+					{
+						MVC::MvcManager::get().deleteView( &representationModel,
+														   ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
+					}
 				}
 			}
-			_representations.clear();
+			_representationIDs.clear();
 		}
 
 		_titleWidget->resetState();
@@ -348,7 +354,7 @@ namespace VTX::UI::Widget::Representation
 
 		if ( p_instantiateViews )
 		{
-			if ( _representations.find( &p_representation ) == _representations.end() )
+			if ( _representationIDs.find( p_representation.getId() ) == _representationIDs.end() )
 			{
 				VTX::View::CallbackView<const InstantiatedRepresentation, RepresentationInspectorSection> * const
 					viewOnRepresentation
@@ -359,7 +365,7 @@ namespace VTX::UI::Widget::Representation
 
 				viewOnRepresentation->setCallback( this,
 												   &RepresentationInspectorSection::_onTargetedRepresentationChange );
-				_representations.emplace( &p_representation );
+				_representationIDs.emplace( p_representation.getId() );
 			}
 		}
 
@@ -378,8 +384,12 @@ namespace VTX::UI::Widget::Representation
 
 	void RepresentationInspectorSection::_recomputeUi()
 	{
-		for ( const InstantiatedRepresentation * const representation : _representations )
-			updateWithNewValue( *representation, false );
+		for ( const Model::ID & representationID : _representationIDs )
+		{
+			const InstantiatedRepresentation & representation
+				= MVC::MvcManager::get().getModel<InstantiatedRepresentation>( representationID );
+			updateWithNewValue( representation, false );
+		}
 	}
 
 	void RepresentationInspectorSection::_onDummyChange( const Event::VTXEvent * const p_event ) { refresh(); }

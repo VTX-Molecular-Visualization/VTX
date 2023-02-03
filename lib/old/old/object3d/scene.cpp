@@ -76,10 +76,7 @@ namespace VTX::Object3D
 		p_molecule->referenceLinkedAABB( &_aabb );
 
 		if ( p_sendEvent )
-		{
-			VTX_EVENT( new Event::VTXEventPtr<Generic::BaseSceneItem>( Event::Global::SCENE_ITEM_ADDED, p_molecule ) );
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, p_molecule ) );
-		}
 
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
@@ -92,8 +89,6 @@ namespace VTX::Object3D
 	void Scene::addPath( PathPtr const p_path )
 	{
 		_add( p_path, _paths );
-
-		VTX_EVENT( new Event::VTXEventPtr<Generic::BaseSceneItem>( Event::Global::SCENE_ITEM_ADDED, p_path ) );
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::PATH_ADDED, p_path ) );
 	}
 
@@ -361,8 +356,6 @@ namespace VTX::Object3D
 	void Scene::_createDefaultPath()
 	{
 		Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
-		_defaultPath			 = path;
-
 		addPath( path );
 	}
 

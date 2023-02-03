@@ -18,13 +18,9 @@ namespace VTX::UI::Widget::MainMenu
 	{
 		VTX_WIDGET
 
-		using map_tab = std::map<std::string, MenuTooltabWidget *>;
-
 	  public:
 		void		localize() override;
 		inline void setCurrentTab( int p_index ) { _tabWidget->setCurrentIndex( 0 ); };
-
-		MenuTooltabWidget & getTab( const std::string & p_tabName );
 
 	  protected:
 		MainMenuBar( QWidget * p_parent );
@@ -35,13 +31,10 @@ namespace VTX::UI::Widget::MainMenu
 		void _setupSlots() override;
 
 	  private:
-		QTabWidget * _tabWidget = nullptr;
-
-		map_tab _mapTabs = map_tab();
-
-		Home::MenuHomeWidget *					 _mainMenu = nullptr;
-		Visualization::MenuVisualizationWidget * _viewMenu = nullptr;
-		Tool::MenuToolWidget *					 _toolMenu = nullptr;
+		QTabWidget *							 _tabWidget = nullptr;
+		Home::MenuHomeWidget *					 _mainMenu	= nullptr;
+		Visualization::MenuVisualizationWidget * _viewMenu	= nullptr;
+		Tool::MenuToolWidget *					 _toolMenu	= nullptr;
 		// !V0.1
 		// QLabel *								 _movieMenu		 = nullptr;
 		// Extensions::MenuExtensionsWidget * _extensionsMenu = nullptr;

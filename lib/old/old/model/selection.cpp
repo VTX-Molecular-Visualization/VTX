@@ -7,7 +7,7 @@
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
-#include<util/chrono.hpp>
+#include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include <unordered_set>
 
@@ -45,14 +45,13 @@ namespace VTX::Model
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
 
-		Util::Chrono chrono = Util::Chrono();
+		Tool::Chrono chrono = Tool::Chrono();
 		chrono.start();
 		_selectMolecule( p_molecule );
 		_setCurrentObject( &p_molecule );
 		p_molecule.refreshSelection( &_moleculesMap[ p_molecule.getId() ] );
 		_notifyDataChanged();
 		chrono.stop();
-		VTX_DEBUG( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
 	}
 	void Selection::selectMolecules( const std::vector<Molecule *> & p_molecules,
 									 const bool						 p_appendToSelection,
@@ -903,7 +902,7 @@ namespace VTX::Model
 								  const bool							 p_appendToSelection,
 								  const Model::BaseModel * const		 p_currentObj )
 	{
-		Util::Chrono chrono = Util::Chrono();
+		Tool::Chrono chrono = Tool::Chrono();
 		chrono.start();
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -962,7 +961,6 @@ namespace VTX::Model
 
 		_notifyDataChanged();
 		chrono.stop();
-		VTX_DEBUG( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
 	}
 	void Selection::unselectModels( const std::vector<Model::Molecule *> & p_molecules,
 									const std::vector<Model::Category *> & p_categories,

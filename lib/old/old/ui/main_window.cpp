@@ -1,13 +1,15 @@
 #include "main_window.hpp"
-#include "__new_archi/tool/analysis/rmsd/core/rmsd.hpp"
 #include "action/dev.hpp"
 #include "action/main.hpp"
+#include "action/molecule.hpp"
 #include "action/selection.hpp"
+#include "analysis/rmsd.hpp"
 #include "controller/base_keyboard_controller.hpp"
 #include "controller/measurement_picker.hpp"
 #include "event/event_manager.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "style.hpp"
+#include "ui/mime_type.hpp"
 #include "util/analysis.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
@@ -58,10 +60,10 @@ namespace VTX::UI
 		}
 		else if ( p_event.name == Event::Global::RMSD_COMPUTED )
 		{
-			const Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> & castedEvent
-				= dynamic_cast<const Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> &>( p_event );
+			const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> & castedEvent
+				= dynamic_cast<const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> &>( p_event );
 
-			const std::string log = VTX::Tool::Analysis::RMSD::getLogString( castedEvent.ref );
+			const std::string log = Util::Analysis::getRMSDLog( castedEvent.ref );
 
 			VTX_INFO( log );
 		}
@@ -143,12 +145,6 @@ namespace VTX::UI
 		_mainMenuBar->setCurrentTab( 0 );
 		_renderWidget->setFocus();
 
-		// UI::Core::IO::VTXLayoutReader reader = UI::Core::IO::VTXLayoutReader();
-		// reader.read();
-
-		// UI::Core::LayoutBuilder layoutBuilder = UI::Core::LayoutBuilder();
-		// layoutBuilder.build( reader.getResult().layoutDescriptor );
-
 		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
 	}
 	void MainWindow::initWindowLayout()
@@ -227,6 +223,10 @@ namespace VTX::UI
 				 &QShortcut::activated,
 				 this,
 				 &MainWindow::_onShortcutActiveRenderer );
+		connect( new QShortcut( QKeySequence( tr( "F10" ) ), this ),
+				 &QShortcut::activated,
+				 this,
+				 &MainWindow::_onShortcutRefreshSES );
 #endif
 		connect( new QShortcut( QKeySequence( tr( "Del" ) ), this ),
 				 &QShortcut::activated,
@@ -269,7 +269,7 @@ namespace VTX::UI
 
 	void MainWindow::_onShortcutSave() const
 	{
-		VTX_ACTION_ENQUEUE( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 
 	void MainWindow::_onShortcutSaveAs() const { UI::Dialog::openSaveSessionDialog(); }
@@ -302,6 +302,12 @@ namespace VTX::UI
 	void MainWindow::_onShortcutActiveRenderer() const
 	{
 		VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
+	}
+
+	void MainWindow::_onShortcutRefreshSES() const
+	{
+		VTX_ACTION( new Action::Molecule::RefreshSolventExcludedSurface(
+			*( ( *( VTXApp::get().getScene().getMolecules().begin() ) ).first ) ) );
 	}
 
 	void MainWindow::_onShortcutDelete() const
@@ -356,9 +362,9 @@ namespace VTX::UI
 		title += " - RELEASE";
 #endif
 #endif
-		const Util::FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
+		const IO::FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
 
-		if ( !currentSessionFilepath.path().empty() )
+		if ( !currentSessionFilepath.empty() )
 		{
 			title += " - " + currentSessionFilepath.filename();
 
@@ -439,7 +445,8 @@ namespace VTX::UI
 	{
 		// Create an emplacement for the widget before setting it floating to prevent warning
 		// TODO check https://bugreports.qt.io/browse/QTBUG-88157 to remove useless tabifyDockWidget
-		tabifyDockWidget( _inspectorWidget, p_dockWidget );
+		// Seems good on Qt 6
+		// tabifyDockWidget( _inspectorWidget, p_dockWidget );
 
 		p_dockWidget->setFloating( true );
 		p_dockWidget->resize( p_size );
@@ -479,7 +486,9 @@ namespace VTX::UI
 
 	void MainWindow::dragEnterEvent( QDragEnterEvent * p_event )
 	{
-		// if ( p_event->mimeData()->hasFormat( "text/plain" ) )
+		const QMimeData * const mimeData = p_event->mimeData();
+
+		if ( UI::MimeType::getMimeTypeEnum( mimeData ) == UI::MimeType::ApplicationMimeType::FILE )
 		{
 			p_event->acceptProposedAction();
 		}
@@ -489,17 +498,25 @@ namespace VTX::UI
 	{
 		const QMimeData * const mimeData = p_event->mimeData();
 
-		if ( mimeData->hasUrls() )
+		if ( UI::MimeType::getMimeTypeEnum( mimeData ) == UI::MimeType::ApplicationMimeType::FILE )
 		{
-			std::vector<Util::FilePath> _paths	= std::vector<Util::FilePath>();
-			const QList<QUrl> &			urlList = mimeData->urls();
+			const QList<QUrl> &					   urlList = mimeData->urls();
+			const std::vector<IO::FilePath>		   paths   = Util::Filesystem::getFilePathVectorFromQUrlList( urlList );
+			std::vector<std::vector<IO::FilePath>> pathPerFileTypes = std::vector<std::vector<IO::FilePath>>();
+			Util::Filesystem::fillFilepathPerMode( paths, pathPerFileTypes );
 
-			for ( const QUrl & url : urlList )
+			const std::vector<IO::FilePath> & trajectoryPaths
+				= pathPerFileTypes[ int( Util::Filesystem::FILE_TYPE_ENUM::TRAJECTORY ) ];
+
+			// If drop contains only trajectory path, open the specific window
+			if ( trajectoryPaths.size() == paths.size() )
 			{
-				_paths.emplace_back( Util::FilePath( url.toLocalFile().toStdString() ) );
+				UI::Dialog::openSetTrajectoryTargetsDialog( trajectoryPaths );
 			}
-
-			VTX_ACTION( new Action::Main::Open( _paths ) );
+			else // Else regular Open function called
+			{
+				VTX_ACTION( new Action::Main::Open( paths ) );
+			}
 		}
 	}
 
@@ -557,7 +574,16 @@ namespace VTX::UI
 
 		switch ( p_mode )
 		{
-		case WindowMode::Fullscreen: setWindowState( windowState() | Qt::WindowState::WindowFullScreen ); break;
+		case WindowMode::Fullscreen:
+		{
+			setWindowState( windowState() | Qt::WindowState::WindowFullScreen );
+#if defined( Q_OS_WIN )
+			HWND handle = reinterpret_cast<HWND>( windowHandle()->winId() );
+			SetWindowLongPtr( handle, GWL_STYLE, GetWindowLongPtr( handle, GWL_STYLE ) | WS_BORDER );
+#endif
+		}
+
+		break;
 		case WindowMode::Minimized: setWindowState( windowState() | Qt::WindowState::WindowMinimized ); break;
 		case WindowMode::Maximized: setWindowState( windowState() | Qt::WindowState::WindowMaximized ); break;
 		case WindowMode::Windowed:
@@ -581,8 +607,7 @@ namespace VTX::UI
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings  settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
-							 QSettings::IniFormat );
+		QSettings  settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		const bool settingsAreValid = settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 
 		return settingsAreValid && settings.value( "Version" ).toInt() == Style::LAYOUT_VERSION;
@@ -590,8 +615,7 @@ namespace VTX::UI
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
-							QSettings::IniFormat );
+		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
 		// Delayed restore state because all widgets grows when restore in maximized (sizes are stored when maximized,
@@ -617,8 +641,7 @@ namespace VTX::UI
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
-							QSettings::IniFormat );
+		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 
 		_checkUnknownFloatableWindows();
@@ -630,8 +653,7 @@ namespace VTX::UI
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
-							QSettings::IniFormat );
+		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		settings.setValue( "Version", Style::LAYOUT_VERSION );
 
 		settings.setValue( "Geometry", saveGeometry() );
@@ -639,8 +661,7 @@ namespace VTX::UI
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
-							QSettings::IniFormat );
+		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		settings.clear();
 	}
 

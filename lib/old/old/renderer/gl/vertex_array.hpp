@@ -1,7 +1,7 @@
 #ifndef __VTX_GL_VERETX_ARRAY__
 #define __VTX_GL_VERETX_ARRAY__
 
-#include "buffer_data.hpp"
+#include "buffer.hpp"
 #include "define.hpp"
 #include "generic/base_opengl.hpp"
 #include "vtx_app.hpp"
@@ -44,16 +44,17 @@ namespace VTX::Renderer::GL
 		};
 
 		VertexArray() = default;
-		~VertexArray() { _gl->glDeleteVertexArrays( 1, &_id ); }
+		~VertexArray() { destroy(); }
 
 		inline void create() { _gl->glCreateVertexArrays( 1, &_id ); }
+		inline void destroy() { _gl->glDeleteVertexArrays( 1, &_id ); }
 
 		inline GLuint getId() const { return _id; }
 
 		inline void bind() const { _gl->glBindVertexArray( _id ); }
 		inline void unbind() const { _gl->glBindVertexArray( 0 ); }
 
-		inline void bindElementBuffer( const BufferData & p_elementBuffer ) const
+		inline void bindElementBuffer( const Buffer & p_elementBuffer ) const
 		{
 			_gl->glVertexArrayElementBuffer( _id, p_elementBuffer.getId() );
 		}
@@ -63,10 +64,10 @@ namespace VTX::Renderer::GL
 			_gl->glEnableVertexArrayAttrib( _id, p_bindingIndex );
 		}
 
-		inline void setVertexBuffer( const GLuint		p_bindingIndex,
-									 const BufferData & p_vertexBuffer,
-									 const GLsizei		p_stride,
-									 const GLintptr		p_offset = 0 ) const
+		inline void setVertexBuffer( const GLuint	p_bindingIndex,
+									 const Buffer & p_vertexBuffer,
+									 const GLsizei	p_stride,
+									 const GLintptr p_offset = 0 ) const
 		{
 			_gl->glVertexArrayVertexBuffer( _id, p_bindingIndex, p_vertexBuffer.getId(), p_offset, p_stride );
 		}

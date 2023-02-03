@@ -25,8 +25,8 @@ namespace VTX::Buffer
 
 		// Color.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_COLOR );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_COLOR, _vboAtomColors, sizeof( Color::Rgb ) );
-		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_COLOR, _vboAtomColors, sizeof( Color::Rgba ) );
+		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::ATOM_COLOR, 4, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_COLOR, ATTRIBUTE_LOCATION::ATOM_COLOR );
 
 		// Radius.
@@ -55,14 +55,17 @@ namespace VTX::Buffer
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_ID, ATTRIBUTE_LOCATION::ATOM_ID );
 	}
 
-	void Molecule::setAtomPositions( const std::vector<Vec3f> & p_positions )
+	void Molecule::setAtomPositions( const std::vector<Vec3f> & p_positions, const bool p_isDynamic )
 	{
-		_updateBuffer( _vboAtomPositions, p_positions );
+		_updateBuffer(
+			_vboAtomPositions,
+			p_positions,
+			p_isDynamic ? Renderer::GL::Buffer::Usage::DYNAMIC_DRAW : Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
 	void Molecule::setAtomRadius( const std::vector<float> & p_radius ) { _updateBuffer( _vboAtomRadii, p_radius ); }
 
-	void Molecule::setAtomColors( const std::vector<Color::Rgb> & p_colors )
+	void Molecule::setAtomColors( const std::vector<Color::Rgba> & p_colors )
 	{
 		_updateBuffer( _vboAtomColors, p_colors );
 	}

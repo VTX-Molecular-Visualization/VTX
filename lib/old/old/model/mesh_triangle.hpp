@@ -3,7 +3,7 @@
 
 #include "base_model_3d.hpp"
 #include "buffer/mesh_triangle.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "define.hpp"
 #include "generic/base_scene_item.hpp"
 #include <vector>
@@ -20,20 +20,20 @@ namespace VTX
 			// BaseSceneItem
 			const Model::ID & getModelID() const override { return getId(); }
 
-			inline const std::vector<Vec3f> & getVertices() const { return _vertices; }
-			inline std::vector<Vec3f> &		  getVertices() { return _vertices; }
-			inline const Vec3f &			  getVertice( const uint p_idx ) const { return _vertices[ p_idx ]; }
-			inline Vec3f &					  getVertice( const uint p_idx ) { return _vertices[ p_idx ]; }
+			inline const std::vector<Vec4f> & getVertices() const { return _vertices; }
+			inline std::vector<Vec4f> &		  getVertices() { return _vertices; }
+			inline const Vec4f &			  getVertice( const uint p_idx ) const { return _vertices[ p_idx ]; }
+			inline Vec4f &					  getVertice( const uint p_idx ) { return _vertices[ p_idx ]; }
 
-			inline const std::vector<Vec3f> & getNormals() const { return _normals; }
-			inline std::vector<Vec3f> &		  getNormals() { return _normals; }
-			inline const Vec3f &			  getNormal( const uint p_idx ) const { return _normals[ p_idx ]; }
-			inline Vec3f &					  getNormal( const uint p_idx ) { return _normals[ p_idx ]; }
+			inline const std::vector<Vec4f> & getNormals() const { return _normals; }
+			inline std::vector<Vec4f> &		  getNormals() { return _normals; }
+			inline const Vec4f &			  getNormal( const uint p_idx ) const { return _normals[ p_idx ]; }
+			inline Vec4f &					  getNormal( const uint p_idx ) { return _normals[ p_idx ]; }
 
-			inline const std::vector<Color::Rgb> & getColors() const { return _colors; }
-			inline std::vector<Color::Rgb> &	   getColors() { return _colors; }
-			inline const Color::Rgb &			   getColor( const uint p_idx ) const { return _colors[ p_idx ]; }
-			inline Color::Rgb &					   getColor( const uint p_idx ) { return _colors[ p_idx ]; }
+			inline const std::vector<Color::Rgba> & getColors() const { return _colors; }
+			inline std::vector<Color::Rgba> &		getColors() { return _colors; }
+			inline const Color::Rgba &				getColor( const uint p_idx ) const { return _colors[ p_idx ]; }
+			inline Color::Rgba &					getColor( const uint p_idx ) { return _colors[ p_idx ]; }
 
 			inline const std::vector<uint> & getVisibilities() const { return _visibilities; }
 			inline std::vector<uint> &		 getVisibilities() { return _visibilities; }
@@ -51,6 +51,8 @@ namespace VTX
 			inline uint &					 getIndice( const uint p_idx ) { return _indices[ p_idx ]; }
 
 			void recomputeNormals();
+			void toIndexed();
+			void toNonIndexed();
 
 			void print() const;
 
@@ -58,17 +60,17 @@ namespace VTX
 			MeshTriangle();
 			~MeshTriangle() = default;
 
-			void _init() override;
-			void _computeAABB() const override;
+			void		 _init() override;
+			void		 _computeAABB() const override;
 			virtual void _instantiate3DViews() override;
 
-			std::vector<Vec3f>		_vertices;
-			std::vector<Vec3f>		_normals;
-			std::vector<Color::Rgb> _colors;
-			std::vector<uint>		_visibilities;
-			std::vector<uint>		_selections;
-			std::vector<Model::ID>	_ids;
-			std::vector<uint>		_indices;
+			std::vector<Vec4f>		 _vertices;
+			std::vector<Vec4f>		 _normals;
+			std::vector<Color::Rgba> _colors;
+			std::vector<uint>		 _visibilities;
+			std::vector<uint>		 _selections;
+			std::vector<Model::ID>	 _ids;
+			std::vector<uint>		 _indices;
 		};
 	} // namespace Model
 } // namespace VTX

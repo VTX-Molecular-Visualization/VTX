@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_MENU_TOOL_STRUCTURAL_ALIGNMENT__
 #define __VTX_UI_WIDGET_MENU_TOOL_STRUCTURAL_ALIGNMENT__
 
-#include "__new_archi/tool/analysis/structural_alignment/core/structural_alignment.hpp"
+#include "analysis/structural_alignment.hpp"
 #include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_submenu_widget.hpp"

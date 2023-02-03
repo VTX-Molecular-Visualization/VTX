@@ -20,7 +20,7 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "LinearizeDepth",
-														{ Util::FilePath( "shading/linearize_depth.frag" ) } );
+														{ IO::FilePath( "shading/linearize_depth.frag" ) } );
 	}
 
 	void LinearizeDepth::resize( const uint p_width, const uint p_height, const GL & )

@@ -88,15 +88,15 @@ namespace VTX::Object3D::Helper
 		std::vector<uint> indices
 			= std::vector<uint>( { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 } );
 
-		_vbo.set<Vec3f>( corners, Renderer::GL::BufferData::Usage::STATIC_DRAW );
-		_ibo.set<uint>( indices, Renderer::GL::BufferData::Usage::STATIC_DRAW );
+		_vbo.set<Vec3f>( corners, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_ibo.set<uint>( indices );
 		_iboSize = uint( indices.size() );
 	}
 
 	void AABB::_generate()
 	{
 		_program = VTX_PROGRAM_MANAGER().createProgram(
-			"Line", { Util::FilePath( "line/line.vert" ), Util::FilePath( "line/line.frag" ) } );
+			"Line", { IO::FilePath( "line/line.vert" ), IO::FilePath( "line/line.frag" ) } );
 		assert( _program != nullptr );
 
 		_vbo.create();

@@ -1,5 +1,5 @@
 #include "molecule.hpp"
-#include "color/rgb.hpp"
+#include "color/rgba.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "id.hpp"
@@ -55,8 +55,11 @@ namespace VTX
 
 			if ( _secondaryStructure != nullptr )
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
-			if ( _solventExcludedSurface != nullptr )
-				MVC::MvcManager::get().deleteModel( _solventExcludedSurface );
+
+			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
+			{
+				MVC::MvcManager::get().deleteModel( val );
+			}
 		}
 
 		void Molecule::setPdbIdCode( const std::string & p_pdbId ) { _pdbIdCode = p_pdbId; }
@@ -116,19 +119,14 @@ namespace VTX
 			// Fill buffers.
 			if ( _atomPositionsFrames.size() > 0 )
 			{
-				// Compute secondary structure if not loaded.
-				if ( _configuration.isSecondaryStructureLoadedFromFile == false )
-				{
-					Util::SecondaryStructure::computeSecondaryStructure( *this );
-				}
+				initBaseRepresentable( this, nullptr, this );
 
-				setRepresentableMolecule( this );
 				if ( !hasCustomRepresentation() )
-
 				{
 					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation(
 						*this, false, false );
 
+					_defaultRepresentationIDs.reserve( getCategories().size() );
 					for ( Model::Category * const category : getCategories() )
 					{
 						if ( category->isEmpty() )
@@ -145,21 +143,34 @@ namespace VTX
 							if ( chain == nullptr )
 								continue;
 
-							VTX::Representation::RepresentationManager::get().instantiateRepresentation(
-								defaultRepresentation, *chain, false, false );
+							const Representation::InstantiatedRepresentation * const defaultInstantiatedRepresentation
+								= VTX::Representation::RepresentationManager::get().instantiateRepresentation(
+									defaultRepresentation, *chain, false, false );
+
+							_markRepresentationAsDefault( defaultInstantiatedRepresentation );
 						}
 					}
+					_defaultRepresentationIDs.shrink_to_fit();
 				}
 				computeAllRepresentationData();
 
-				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
+				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ], _atomPositionsFrames.size() > 1 );
 				_buffer->setAtomRadius( _bufferAtomRadius );
 				_fillBufferAtomColors();
 				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 				_buffer->setAtomSelections( _bufferAtomSelections );
 				_buffer->setAtomIds( _bufferAtomIds );
-				_buffer->setBonds( _bufferBonds );
+				if ( _bufferBonds.empty() == false )
+				{
+					_buffer->setBonds( _bufferBonds );
+				}
 			}
+		}
+
+		void Molecule::_markRepresentationAsDefault(
+			const Representation::InstantiatedRepresentation * const _instantiatedRepresentation )
+		{
+			_defaultRepresentationIDs.emplace_back( _instantiatedRepresentation->getId() );
 		}
 
 		bool Molecule::isEmpty()
@@ -175,7 +186,37 @@ namespace VTX
 			return true;
 		}
 
-		void Molecule::removeChildrenRepresentations() const
+		void Molecule::clearDefaultRepresentations()
+		{
+			if ( _defaultRepresentationIDs.size() <= 0 )
+				return;
+
+			for ( const Model::ID & instantiatedRepresentationID : _defaultRepresentationIDs )
+			{
+				if ( !MVC::MvcManager::get().doesModelExists( instantiatedRepresentationID ) )
+					continue;
+
+				Model::Representation::InstantiatedRepresentation & instantiatedRepresentation
+					= MVC::MvcManager::get().getModel<Model::Representation::InstantiatedRepresentation>(
+						instantiatedRepresentationID );
+
+				VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
+					*instantiatedRepresentation.getTarget(), false, false );
+			}
+
+			_defaultRepresentationIDs.clear();
+			_defaultRepresentationIDs.shrink_to_fit();
+		}
+
+		bool Molecule::isDefaultRepresentation(
+			const Representation::InstantiatedRepresentation & p_representation ) const
+		{
+			return std::find(
+					   _defaultRepresentationIDs.begin(), _defaultRepresentationIDs.end(), p_representation.getId() )
+				   != _defaultRepresentationIDs.end();
+		}
+
+		void Molecule::removeChildrenRepresentations()
 		{
 			for ( Model::Chain * const chain : _chains )
 			{
@@ -222,7 +263,7 @@ namespace VTX
 		{
 			_bufferAtomRadius.resize( _atoms.size() );
 			_bufferAtomVisibilities.resize( _atoms.size(), 1u );
-			_bufferAtomColors.resize( _atoms.size(), Color::Rgb::WHITE );
+			_bufferAtomColors.resize( _atoms.size(), Color::Rgba::WHITE );
 			_bufferAtomSelections.resize( _atoms.size(), 0u );
 			_bufferAtomIds.resize( _atoms.size() );
 		}
@@ -262,8 +303,8 @@ namespace VTX
 					}
 				}
 
-				bool	   colorCarbon = false;
-				Color::Rgb color;
+				bool		colorCarbon = false;
+				Color::Rgba color;
 
 				switch ( colorMode )
 				{
@@ -319,6 +360,10 @@ namespace VTX
 			{
 				_bufferAtomVisibilities.resize( _atoms.size(), 1u );
 
+				const bool displayHydrogen = showHydrogen();
+				const bool displaySolvent  = showSolvent();
+				const bool displayIons	   = showIon();
+
 				for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 				{
 					const Atom * const atom = _atoms[ i ];
@@ -326,22 +371,23 @@ namespace VTX
 					if ( atom == nullptr )
 					{
 						_bufferAtomVisibilities[ i ] = 0u;
-						continue;
 					}
-
-					if ( atom->getChainPtr()->isVisible() == false )
+					else if ( atom->getChainPtr()->isVisible() == false )
 					{
+						// Optimisation removed bacause some .gro file open by chemfiles may not have contiguous indexes
 						// If the chain is not visible, we can directly fill all the atom in it
-						const uint			   firstAtomIndexInChain = i;
-						const Model::Residue & lastResidueInChain
-							= *getResidue( atom->getChainPtr()->getIndexLastResidue() );
-						const uint atomIndexInNextChain
-							= lastResidueInChain.getIndexFirstAtom() + lastResidueInChain.getAtomCount();
+						// const uint			   firstAtomIndexInChain = i;
+						// const Model::Residue & lastResidueInChain
+						//	= *getResidue( atom->getChainPtr()->getIndexLastResidue() );
+						// const uint atomIndexInNextChain
+						//	= lastResidueInChain.getIndexFirstAtom() + lastResidueInChain.getAtomCount();
 
-						const uint count = atomIndexInNextChain - firstAtomIndexInChain;
+						// const uint count = atomIndexInNextChain - firstAtomIndexInChain;
 
-						std::fill_n( _bufferAtomVisibilities.begin() + firstAtomIndexInChain, count, 0u );
-						i += count - 1;
+						// std::fill_n( _bufferAtomVisibilities.begin() + firstAtomIndexInChain, count, 0u );
+						// i += count - 1;
+
+						_bufferAtomVisibilities[ i ] = 0u;
 					}
 					else if ( atom->getResiduePtr()->isVisible() == false )
 					{
@@ -351,7 +397,15 @@ namespace VTX
 					{
 						_bufferAtomVisibilities[ i ] = 0u;
 					}
-					else if ( _showHydrogen == false && atom->getSymbol() == Atom::SYMBOL::A_H )
+					else if ( displaySolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					else if ( displayIons == false && atom->getType() == Atom::TYPE::ION )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					else if ( displayHydrogen == false && atom->getSymbol() == Atom::SYMBOL::A_H )
 					{
 						_bufferAtomVisibilities[ i ] = 0u;
 					}
@@ -412,7 +466,7 @@ namespace VTX
 			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 			refreshBondsBuffer();
 			refreshSecondaryStructure();
-			refreshSolventExcludedSurface();
+			refreshSolventExcludedSurfaces();
 		}
 
 		void Molecule::refreshColors()
@@ -422,9 +476,9 @@ namespace VTX
 			{
 				_secondaryStructure->refreshColors();
 			}
-			if ( _solventExcludedSurface != nullptr )
+			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
 			{
-				_solventExcludedSurface->refreshColors();
+				val->refreshColors();
 			}
 		}
 
@@ -435,9 +489,9 @@ namespace VTX
 			{
 				_secondaryStructure->refreshVisibilities();
 			}
-			if ( _solventExcludedSurface != nullptr )
+			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
 			{
-				_solventExcludedSurface->refreshVisibilities();
+				val->refreshVisibilities();
 			}
 		}
 
@@ -448,9 +502,9 @@ namespace VTX
 			{
 				_secondaryStructure->refreshSelection( p_selection );
 			}
-			if ( _solventExcludedSurface != nullptr )
+			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
 			{
-				_solventExcludedSurface->refreshSelection( p_selection );
+				val->refreshSelection( p_selection );
 			}
 		}
 
@@ -465,13 +519,16 @@ namespace VTX
 
 			_currentFrame = p_frameIdx;
 			if ( _buffer != nullptr )
-				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
-
+			{
+				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ], _atomPositionsFrames.size() > 1 );
+			}
 			if ( _secondaryStructure != nullptr )
 				_secondaryStructure->refresh();
 
-			if ( _solventExcludedSurface != nullptr )
-				_solventExcludedSurface->refresh();
+			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
+			{
+				val->refresh();
+			}
 
 			refreshRepresentationTargets();
 
@@ -479,6 +536,7 @@ namespace VTX
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
+
 		void Molecule::applyNextFrame( const uint p_frameCount )
 		{
 			int		  newFrame	= _currentFrame;
@@ -709,9 +767,9 @@ namespace VTX
 			{
 				_secondaryStructure->render( p_camera );
 			}
-			if ( _solventExcludedSurface != nullptr )
+			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
 			{
-				_solventExcludedSurface->render( p_camera );
+				val->render( p_camera );
 			}
 		}
 
@@ -807,6 +865,12 @@ namespace VTX
 		{
 			assert( _secondaryStructure == nullptr );
 
+			// Compute secondary structure if not loaded.
+			if ( _configuration.isSecondaryStructureLoadedFromFile == false )
+			{
+				Util::SecondaryStructure::computeSecondaryStructure( *this );
+			}
+
 			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule>( this );
 			_secondaryStructure->init();
 			_secondaryStructure->print();
@@ -822,23 +886,45 @@ namespace VTX
 			_secondaryStructure->refresh();
 		}
 
-		void Molecule::createSolventExcludedSurface()
+		bool Molecule::hasSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum ) const
 		{
-			assert( _solventExcludedSurface == nullptr );
-
-			_solventExcludedSurface = MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Molecule>( this );
-			_solventExcludedSurface->init();
-			_solventExcludedSurface->print();
+			return _solventExcludedSurfaces.find( p_categoryEnum ) != _solventExcludedSurfaces.end();
 		}
 
-		void Molecule::refreshSolventExcludedSurface()
+		SolventExcludedSurface & Molecule::getSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum )
 		{
-			if ( _solventExcludedSurface == nullptr )
-			{
-				return;
-			}
+			assert( hasSolventExcludedSurface( p_categoryEnum ) );
 
-			_solventExcludedSurface->refresh();
+			return *_solventExcludedSurfaces[ p_categoryEnum ];
+		}
+
+		void Molecule::createSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum )
+		{
+			assert( hasSolventExcludedSurface( p_categoryEnum ) == false );
+
+			assert( getCategory( p_categoryEnum ).isEmpty() == false );
+
+			SolventExcludedSurface * const ses
+				= MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Category>(
+					&getCategory( p_categoryEnum ) );
+			_solventExcludedSurfaces.emplace( p_categoryEnum, ses );
+			ses->init();
+			ses->print();
+		}
+
+		void Molecule::refreshSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum )
+		{
+			assert( hasSolventExcludedSurface( p_categoryEnum ) );
+
+			_solventExcludedSurfaces[ p_categoryEnum ]->refresh();
+		}
+
+		void Molecule::refreshSolventExcludedSurfaces()
+		{
+			for ( const auto & [ key, val ] : _solventExcludedSurfaces )
+			{
+				val->refresh();
+			}
 		}
 
 		std::vector<Model::Category *> Molecule::getFilledCategories() const
@@ -1217,7 +1303,7 @@ namespace VTX
 			_notifyViews( new Event::VTXEvent( Event::Model::DISPLAY_NAME_CHANGE ) );
 		}
 
-		void Molecule::setColor( const Color::Rgb & p_color )
+		void Molecule::setColor( const Color::Rgba & p_color )
 		{
 			Generic::BaseColorable::setColor( p_color );
 

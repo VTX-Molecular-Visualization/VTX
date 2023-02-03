@@ -1,3 +1,4 @@
+
 #include "vtx_app.hpp"
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
@@ -20,10 +21,10 @@
 
 namespace VTX
 {
-	// int ZERO = 0;
-	VTXApp::VTXApp() // : QApplication( ZERO, nullptr )
+	int ZERO = 0;
+	VTXApp::VTXApp() : QApplication( ZERO, nullptr )
 	{
-		// connect( this, &QCoreApplication::aboutToQuit, this, &VTXApp::_stop );
+		connect( this, &QCoreApplication::aboutToQuit, this, &VTXApp::_stop );
 	}
 
 	VTXApp::~VTXApp() {}
@@ -55,17 +56,36 @@ namespace VTX
 
 		_pathSceneData = new IO::Struct::ScenePathData();
 
+		// Create statemachine.
+		_stateMachine = new State::StateMachine();
+		goToState( ID::State::VISUALIZATION );
+
+		// Create UI.
+		_initQt();
+		_mainWindow = new UI::MainWindow();
+		_mainWindow->setupUi();
+		_mainWindow->show();
+
+		_mainWindow->initWindowLayout();
+		VTX_INFO( "Application started" );
+
+		if ( !_mainWindow->isOpenGLValid() )
+		{
+			UI::Dialog::openGLInitializationFail();
+			return;
+		}
+
 		if ( VTX_SETTING().getCheckVTXUpdateAtLaunch() )
 		{
 			VTX_ACTION( new Action::Main::CheckForUpdate() );
 		}
 
 		// Start timers.
-		//_timer = new QTimer( this );
-		// connect( _timer, &QTimer::timeout, this, &VTXApp::_update );
-		//_timer->start( 0 );
-		//_elapsedTimer.start();
-		//_tickTimer.start();
+		_timer = new QTimer( this );
+		connect( _timer, &QTimer::timeout, this, &VTXApp::_update );
+		_timer->start( 0 );
+		_elapsedTimer.start();
+		_tickTimer.start();
 
 		_handleArgs( p_args );
 
@@ -73,39 +93,37 @@ namespace VTX
 		if ( p_args.size() == 0 )
 		{
 			// VTX_ACTION(
-			//	 new Action::Main::Open( Util::Filesystem::getDataPath( Util::FilePath( "4hhb.pdb" ) ).absolute() ) );
+			//	 new Action::Main::Open( Util::Filesystem::getDataPath( IO::FilePath( "4hhb.pdb" ) ).absolute() ) );
 			// VTX_ACTION( new Action::Main::OpenApi( "1aon" ) );
 			// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
-			// VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
+			VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
 		}
 #endif
 	}
-	void VTXApp::update() { _update(); }
-	void VTXApp::stop() { _stop(); }
 
 	void VTXApp::_initQt()
 	{
-		//		this->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
-		//
-		//		QPalette appPalette = palette();
-		//		Style::applyApplicationPaletteInPalette( appPalette );
-		//		setPalette( appPalette );
-		//
-		// #ifdef _DEBUG
-		//		QLoggingCategory::setFilterRules( QStringLiteral( "qt.gamepad.debug=true" ) );
-		// #endif
+		this->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
+
+		QPalette appPalette = palette();
+		Style::applyApplicationPaletteInPalette( appPalette );
+		setPalette( appPalette );
+
+#ifdef _DEBUG
+		QLoggingCategory::setFilterRules( QStringLiteral( "qt.gamepad.debug=true" ) );
+#endif
 	}
 
 	void VTXApp::_handleArgs( const std::vector<std::string> & p_args )
 	{
-		std::vector<Util::FilePath> files  = std::vector<Util::FilePath>();
-		std::vector<std::string>	pdbIds = std::vector<std::string>();
+		std::vector<IO::FilePath> files	 = std::vector<IO::FilePath>();
+		std::vector<std::string>  pdbIds = std::vector<std::string>();
 
 		for ( const std::string & arg : p_args )
 		{
 			if ( arg.find( "." ) != std::string::npos )
 			{
-				files.emplace_back( Util::FilePath( arg ) );
+				files.emplace_back( IO::FilePath( arg ) );
 			}
 			else
 			{
@@ -113,7 +131,8 @@ namespace VTX
 			}
 		}
 
-		VTX_ACTION( new Action::Main::Open( files ) );
+		if ( files.size() > 0 )
+			VTX_ACTION( new Action::Main::Open( files ) );
 
 		for ( const std::string & pdbId : pdbIds )
 		{
@@ -126,6 +145,9 @@ namespace VTX
 		// Elapsed time.
 		float elapsed = _elapsedTimer.nsecsElapsed() * 1e-9;
 		_elapsedTimer.restart();
+
+		// State machine.
+		_stateMachine->update( elapsed );
 
 		// Useless: nothing is delayed.
 		// Event manager.
@@ -177,24 +199,45 @@ namespace VTX
 		Worker::WorkerManager::get().stopAll();
 
 		_setting.backup();
+		_mainWindow->saveLayout();
 
 		MVC::MvcManager::get().deleteModel( _representationLibrary );
 		MVC::MvcManager::get().deleteModel( _renderEffectLibrary );
 
 		Selection::SelectionManager::get().deleteModel();
 
+		if ( _stateMachine != nullptr )
+		{
+			delete _stateMachine;
+		}
 		if ( _scene != nullptr )
 		{
 			delete _scene;
+		}
+		if ( _mainWindow != nullptr )
+		{
+			delete _mainWindow;
 		}
 	}
 
 	void VTXApp::goToState( const std::string & p_name, void * const p_arg )
 	{
+		try
+		{
+			_stateMachine->goToState( p_name, p_arg );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( p_e.what() );
+		}
 	}
 
 	void VTXApp::renderScene() const
 	{
+		if ( VTX_SETTING().getActivateRenderer() && MASK )
+		{
+			_mainWindow->updateRender();
+		}
 	}
 
 	void VTXApp::deleteAtEndOfFrame( const Generic::BaseAutoDelete * const p_object )
@@ -209,43 +252,25 @@ namespace VTX
 		_deleteAtEndOfFrameObjects.clear();
 	}
 
-	void VTXApp::closeAllWindows()
-	{
-		// QApplication::closeAllWindows();
-	}
-	QInputMethod * VTXApp::inputMethod()
-	{
-		return QApplication::inputMethod();
-		// QApplication::closeAllWindows();
-	}
-	void VTXApp::exit( int p_returnCode )
-	{
-		// QApplication::exit(p_returnCode);
-	}
-	void VTXApp::quit()
-	{
-		// QApplication::quit();
-	}
-
 	Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT()
 	{
 		return Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPreset();
 	}
 
-	//	bool VTXApp::notify( QObject * const receiver, QEvent * const event )
-	//	{
-	//		try
-	//		{
-	//			return QApplication::notify( receiver, event );
-	//		}
-	//		catch ( const std::exception & p_e )
-	//		{
-	//			VTX_ERROR( p_e.what() );
-	// #ifdef VTX_PRODUCTION
-	//			UI::Dialog::unhandledException();
-	// #endif
-	//			return true;
-	//		}
-	//	}
+	bool VTXApp::notify( QObject * const receiver, QEvent * const event )
+	{
+		try
+		{
+			return QApplication::notify( receiver, event );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( p_e.what() );
+#ifdef VTX_PRODUCTION
+			UI::Dialog::unhandledException();
+#endif
+			return true;
+		}
+	}
 
 } // namespace VTX
