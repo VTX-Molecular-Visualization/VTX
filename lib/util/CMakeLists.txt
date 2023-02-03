@@ -21,8 +21,8 @@ set(GLM_INCLUDE_DIR ${SOURCE_DIR})
 file(GLOB_RECURSE HEADERS util/*.hpp)
 file(GLOB_RECURSE SOURCES util/*.cpp)
 
-add_library(VTX_UTIL STATIC ${HEADERS} ${SOURCES})
+add_library(${VTX_UTIL_LIB} STATIC ${HEADERS} ${SOURCES})
 
-target_include_directories(VTX_UTIL PRIVATE util/)
-target_include_directories(VTX_UTIL PUBLIC .)
-target_include_directories(VTX_UTIL PUBLIC ${GLM_INCLUDE_DIR})
+target_include_directories(${VTX_UTIL_LIB} PRIVATE util/)
+target_include_directories(${VTX_UTIL_LIB} PRIVATE .)
+target_include_directories(${VTX_UTIL_LIB} PUBLIC ${GLM_INCLUDE_DIR})
