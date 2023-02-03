@@ -1,6 +1,6 @@
 #R
 2'-DEOXY-N6-(R)STYRENE OXIDE ADENOSINE MONOPHOSPHATE
-2
+1
 P,OP1,2
 P,OP2,1
 P,OP3,1
@@ -15261,7 +15261,7 @@ RUBIDIUM ION
 3
 #RB0
 D-ribitol
-1
+2
 C1,O1,1
 C1,C2,1
 C2,O2,1
@@ -19134,7 +19134,7 @@ C,H14,1
 C,H15,1
 #RE
 RHENIUM
-3
+2
 #RE0
 3-[(3R)-3-hydroxy-2-oxo-2,3-dihydro-1H-indol-3-yl]-L-alanine
 0
@@ -23604,7 +23604,7 @@ C19,H19,1
 C20,H20,1
 #RH
 Rhodium
-3
+2
 #RH0
 3-amino-5-S-benzyl-2,3-dideoxy-5-thio-D-erythro-pentonic acid
 2
@@ -33067,7 +33067,7 @@ CAB,HAB,1
 CAA,HAA,1
 #ROB
 1-DEOXY-RIBOFURANOSE-5'-PHOSPHATE
-2
+1
 C1,O1,1
 C1,C2,1
 C1,H1',1
@@ -33669,7 +33669,7 @@ N18,H184,1
 O23,H232,1
 #RON
 NORVALINE
-2
+0
 N,CA,1
 N,HN1,1
 N,HN2,1

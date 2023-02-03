@@ -17772,7 +17772,7 @@ CAD,H11,1
 CAH,H12,1
 #39S
 N-[4-({[(6S)-2-amino-4-oxo-3,4,5,6,7,8-hexahydropteridin-6-yl]methyl}amino)benzoyl]-L-gamma-glutamyl-L-gamma-glutamyl-L-glutamic acid
-0
+2
 O,C3,2
 O7,C27,2
 O1,C3,1
@@ -22503,7 +22503,7 @@ N2,H10,1
 N1,H9,1
 #3CK
 beta-D-tagatofuranosyl alpha-D-glucopyranoside
-1
+2
 O1,C1,1
 C3,O3,1
 C3,C4,1
@@ -39971,7 +39971,7 @@ C16,H16A,1
 C16,H16B,1
 #3MT
 3-METHYLTHIAZOLIUM ION
-2
+3
 C1,N7,1
 C1,H11A,1
 C1,H12,1
@@ -42461,7 +42461,7 @@ C41,H41,1
 C42,H42,1
 #3OF
 HYDRATED FE (III) ION, 2 WATERS COORDINATED
-2
+3
 FE,O1,1
 FE,O2,1
 O1,HO11,1
@@ -44087,7 +44087,7 @@ O82,H19,1
 C1,H20,1
 #3P8
 methylammonium ion
-2
+3
 C1,N1,1
 C1,H1,1
 C1,H2,1
@@ -56778,7 +56778,7 @@ C,OXT,1
 OXT,HXT,1
 #3WT
 (3R,4S,5S)-3-methoxy-5-methyl-4-(methylamino)heptanoic acid
-0
+2
 O6,C27,2
 C27,C26,1
 C26,C20,1
@@ -56815,7 +56815,7 @@ C27,OXT,1
 OXT,H2,1
 #3WU
 (2R,3R)-3-methoxy-2-methyl-3-[(2S)-pyrrolidin-2-yl]propanoic acid
-0
+2
 C8,O2,2
 C8,C6,1
 C3,C4,1
@@ -56996,7 +56996,7 @@ C39,H63,1
 N2,H2,1
 #3WX
 2-methyl-L-proline
-0
+2
 O,C,2
 C,CA,1
 CG,CB,1

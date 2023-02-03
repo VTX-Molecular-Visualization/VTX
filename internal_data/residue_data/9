@@ -18471,7 +18471,7 @@ CAD,H26,1
 OAH,H27,1
 #9BP
 4-amino-N-(2-methylpropanoyl)-D-isovaline
-2
+0
 C7,C5,1
 C5,C6,1
 C5,C4,1
@@ -38232,7 +38232,7 @@ OAJ,H8,1
 OAM,H9,1
 #9O7
 [(3~{S},4~{R},5~{R})-5-(6-aminopurin-9-yl)-4-oxidanyl-oxolan-3-yl] [oxidanyl(phosphonooxy)phosphoryl] hydrogen phosphate
-1
+2
 O4,C4,1
 O4,C1,1
 C4,C3,1
@@ -50681,7 +50681,7 @@ C32,H26,1
 C32,H27,1
 #9WV
 beta-alanyl-3-amino-L-alanine
-2
+0
 NDV,CB,1
 CB,CA,1
 CA,N,1
