@@ -2,7 +2,7 @@
 #define __VTX_SETTING__
 
 #include "color/rgba.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "generic/base_colorable.hpp"
 #include "io/struct/image_export.hpp"
 #include "style.hpp"
@@ -346,9 +346,9 @@ namespace VTX
 
 		static const int					  RECENT_PATH_SAVED_MAX_COUNT;
 		static const int					  RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT;
-		inline static std::list<IO::FilePath> recentLoadingPath = std::list<IO::FilePath>();
-		static void							  enqueueNewLoadingPath( const IO::FilePath & );
-		static const IO::FilePath * const	  getRecentLoadingPath( const int p_index );
+		inline static std::list<Util::FilePath> recentLoadingPath = std::list<Util::FilePath>();
+		static void							  enqueueNewLoadingPath( const Util::FilePath & );
+		static const Util::FilePath * const	  getRecentLoadingPath( const int p_index );
 
 		inline static std::list<std::string> recentDownloadCodes = std::list<std::string>();
 		static void							 enqueueNewDownloadCode( const std::string & );

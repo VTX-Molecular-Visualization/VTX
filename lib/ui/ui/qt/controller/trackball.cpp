@@ -1,9 +1,9 @@
 #include "trackball.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/object3d/scene.hpp"
-#include "selection/selection_manager.hpp"
-#include "style.hpp"
-#include <src/tool/logger.hpp>
+#include <old/action/action_manager.hpp>
+#include <old/object3d/scene.hpp>
+#include <old/selection/selection_manager.hpp>
+#include <old/style.hpp>
+#include <old/tool/logger.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::Controller
@@ -106,11 +106,11 @@ namespace VTX::UI::QT::Controller
 
 			if ( _isModifierExclusive( ModifierFlag::Shift ) )
 			{
-				deltaDistance *= VTX_SETTING().getTranslationSpeedFactor();
+				deltaDistance *= VTX_SETTING().getAccelerationSpeedFactor();
 			}
 			if ( _isModifierExclusive( ModifierFlag::Alt ) )
 			{
-				deltaDistance /= VTX_SETTING().getTranslationSpeedFactor();
+				deltaDistance /= VTX_SETTING().getDecelerationSpeedFactor();
 			}
 
 			_needUpdate = true;
@@ -118,6 +118,15 @@ namespace VTX::UI::QT::Controller
 
 		if ( deltaVelocity != VEC3F_ZERO )
 		{
+			if ( _isModifierExclusive( ModifierFlag::Shift ) )
+			{
+				deltaVelocity *= VTX_SETTING().getAccelerationSpeedFactor();
+			}
+			if ( _isModifierExclusive( ModifierFlag::Alt ) )
+			{
+				deltaVelocity /= VTX_SETTING().getDecelerationSpeedFactor();
+			}
+
 			_velocity.x += VTX_SETTING().getRotationSpeed() * deltaVelocity.x;
 			_velocity.y += VTX_SETTING().getRotationSpeed() * deltaVelocity.y
 						   * ( VTX_SETTING().getYAxisInverted() ? -1.f : 1.f );

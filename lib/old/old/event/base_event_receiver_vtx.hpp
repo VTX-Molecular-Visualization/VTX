@@ -2,7 +2,7 @@
 #define __VTX_BASE_EVENT_RECEIVER_VTX__
 
 #include "base_event_receiver.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "event.hpp"
 #include <string>
 #include <vector>

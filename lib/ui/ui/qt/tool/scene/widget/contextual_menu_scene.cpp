@@ -1,8 +1,8 @@
 #include "contextual_menu_scene.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/scene.hpp"
-#include "src/action/viewpoint.hpp"
-#include "ui/dialog.hpp"
+#include "qt/tool/session/dialog.hpp"
+#include <old/action/action_manager.hpp>
+#include <old/action/scene.hpp>
+#include <old/action/viewpoint.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {
@@ -25,8 +25,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void ContextualMenuScene::localize() {}
 
-	void ContextualMenuScene::_loadMoleculeAction() { UI::Dialog::openLoadMoleculeDialog(); }
-	void ContextualMenuScene::_downloadMoleculeAction() { UI::Dialog::openDownloadMoleculeDialog(); }
+	void ContextualMenuScene::_loadMoleculeAction() { QT::Tool::Session::Dialog::openLoadMoleculeDialog(); }
+	void ContextualMenuScene::_downloadMoleculeAction() { QT::Tool::Session::Dialog::openDownloadMoleculeDialog(); }
 	void ContextualMenuScene::_showAllMoleculesAction() const { VTX_ACTION( new Action::Scene::ShowAllMolecules() ); }
 	void ContextualMenuScene::_addViewpointAction() { VTX_ACTION( new Action::Viewpoint::Create() ); }
 	void ContextualMenuScene::_clearAction() { VTX_ACTION( new Action::Scene::ResetScene() ); }

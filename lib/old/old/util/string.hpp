@@ -1,7 +1,7 @@
 #ifndef __VTX_UTIL_STRING__
 #define __VTX_UTIL_STRING__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include <algorithm>
 #include <string>
 #include <vector>

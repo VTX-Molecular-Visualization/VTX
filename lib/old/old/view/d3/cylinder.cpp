@@ -5,9 +5,9 @@ namespace VTX::View::D3
 	Renderer::GL::Program * const Cylinder::_createProgram()
 	{
 		return VTX_PROGRAM_MANAGER().createProgram( "Cylinder",
-													{ IO::FilePath( "cylinder/cylinder.vert" ),
-													  IO::FilePath( "cylinder/cylinder.geom" ),
-													  IO::FilePath( "cylinder/cylinder.frag" ) } );
+													{ Util::FilePath( "cylinder/cylinder.vert" ),
+													  Util::FilePath( "cylinder/cylinder.geom" ),
+													  Util::FilePath( "cylinder/cylinder.frag" ) } );
 	}
 
 	void Cylinder::_init() {}

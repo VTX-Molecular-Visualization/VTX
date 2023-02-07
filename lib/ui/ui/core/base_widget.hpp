@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_CORE_BASE_WIDGET__
 #define __VTX_UI_CORE_BASE_WIDGET__
 
-#include "src/event/base_event_receiver_vtx.hpp"
+#include <old/event/base_event_receiver_vtx.hpp>
 
 namespace VTX::UI::Core
 {

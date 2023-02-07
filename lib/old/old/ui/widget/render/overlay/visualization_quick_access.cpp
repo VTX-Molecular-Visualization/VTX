@@ -6,6 +6,8 @@
 #include "model/selection.hpp"
 #include "selection/selection_manager.hpp"
 #include "setting.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QMenu>

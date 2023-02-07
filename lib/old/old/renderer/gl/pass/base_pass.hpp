@@ -1,7 +1,7 @@
 #ifndef __VTX_BASE_PASS__
 #define __VTX_BASE_PASS__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "generic/base_opengl.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/gl/program.hpp"

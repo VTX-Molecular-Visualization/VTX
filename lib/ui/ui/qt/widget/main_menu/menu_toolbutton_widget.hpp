@@ -3,9 +3,9 @@
 
 #include "core/main_menu/main_menu_toolbutton.hpp"
 #include "qt/widget/base_manual_widget.hpp"
-#include "ui/navigation/arrow_navigation.hpp"
 #include <QToolButton>
 #include <QWidget>
+#include <old/ui/navigation/arrow_navigation.hpp>
 #include <type_traits>
 
 namespace VTX::UI::QT::Widget::MainMenu

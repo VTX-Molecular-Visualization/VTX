@@ -1,4 +1,5 @@
 #include "export.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "model/path.hpp"
 #include "model/viewpoint.hpp"

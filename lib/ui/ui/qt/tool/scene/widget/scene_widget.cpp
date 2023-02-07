@@ -3,19 +3,18 @@
 #include "qt/main_window.hpp"
 #include "qt/tool/keys.hpp"
 #include "qt/widget_factory.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/scene.hpp"
-#include "src/action/selection.hpp"
-#include "src/model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "src/object3d/scene.hpp"
-#include "selection/selection_manager.hpp"
-#include "style.hpp"
-#include "ui/contextual_menu.hpp"
-#include "ui/mime_type.hpp"
-#include "src/vtx_app.hpp"
 #include <QScrollBar>
 #include <algorithm>
+#include <old/action/action_manager.hpp>
+#include <old/action/scene.hpp>
+#include <old/action/selection.hpp>
+#include <old/model/selection.hpp>
+#include <old/mvc/mvc_manager.hpp>
+#include <old/object3d/scene.hpp>
+#include <old/selection/selection_manager.hpp>
+#include <old/style.hpp>
+#include <old/ui/mime_type.hpp>
+#include <old/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {

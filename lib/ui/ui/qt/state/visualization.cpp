@@ -5,12 +5,12 @@
 #include "qt/controller/measurement_picker.hpp"
 #include "qt/controller/picker.hpp"
 #include "qt/controller/trackball.hpp"
-#include "src/event/event.hpp"
-#include "src/event/event_manager.hpp"
-#include "src/model/molecule.hpp"
-#include "src/object3d/camera.hpp"
-#include "src/object3d/scene.hpp"
-#include "src/vtx_app.hpp"
+#include <old/event/event.hpp>
+#include <old/event/event_manager.hpp>
+#include <old/model/molecule.hpp>
+#include <old/object3d/camera.hpp>
+#include <old/object3d/scene.hpp>
+#include <old/vtx_app.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::State

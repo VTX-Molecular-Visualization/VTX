@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_WIDGET_BASE_MANUAL_WIDGET__
 
 #include "base_manual_widget_initializer.hpp"
-#include "src/event/base_event_receiver_vtx.hpp"
+#include <old/event/base_event_receiver_vtx.hpp>
 #include <QWidget>
 #include <type_traits>
 

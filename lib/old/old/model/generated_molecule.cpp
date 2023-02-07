@@ -1,5 +1,6 @@
 #include "generated_molecule.hpp"
 #include "id.hpp"
+#include "define.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
 #include "model/category.hpp"

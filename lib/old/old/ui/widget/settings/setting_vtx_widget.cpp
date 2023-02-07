@@ -9,6 +9,7 @@
 #include "ui/dialog.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget_factory.hpp"
+#include "ui/window_mode.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
 #include <QLabel>

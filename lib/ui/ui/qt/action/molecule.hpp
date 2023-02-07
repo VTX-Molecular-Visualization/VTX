@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_ACTION_MOLECULE__
 #define __VTX_UI_QT_ACTION_MOLECULE__
 
-#include "src/action/base_action.hpp"
-#include "src/model/molecule.hpp"
+#include <old/action/base_action.hpp>
+#include <old/model/molecule.hpp>
 
 namespace VTX::UI::QT::Action::Molecule
 {

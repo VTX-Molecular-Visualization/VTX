@@ -1,8 +1,10 @@
 #include "menu_visualization_windows_widget.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/widget_factory.hpp"
+#include "ui/window_mode.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::UI::Widget::MainMenu::Visualization

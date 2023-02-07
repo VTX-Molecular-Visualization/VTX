@@ -1,11 +1,13 @@
 #include "contextual_menu_render.hpp"
 #include "qt/application_qt.hpp"
+#include "qt/dialog.hpp"
+#include "qt/state/state_machine.hpp"
 #include "qt/state/visualization.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/main.hpp"
-#include "src/action/scene.hpp"
-#include "src/action/setting.hpp"
-#include "ui/dialog.hpp"
+#include "qt/tool/session/dialog.hpp"
+#include <old/action/action_manager.hpp>
+#include <old/action/main.hpp>
+#include <old/action/scene.hpp>
+#include <old/action/setting.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
@@ -88,8 +90,11 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		//_measurementModeAction->setChecked( pickerID == ID::Controller::MEASUREMENT );
 	}
 
-	void ContextualMenuRender::_loadMoleculeAction() const { UI::Dialog::openLoadMoleculeDialog(); }
-	void ContextualMenuRender::_downloadMoleculeAction() const { UI::Dialog::openDownloadMoleculeDialog(); }
+	void ContextualMenuRender::_loadMoleculeAction() const { QT::Tool::Session::Dialog::openLoadMoleculeDialog(); }
+	void ContextualMenuRender::_downloadMoleculeAction() const
+	{
+		QT::Tool::Session::Dialog::openDownloadMoleculeDialog();
+	}
 	void ContextualMenuRender::_showAllMoleculesAction() const { VTX_ACTION( new Action::Scene::ShowAllMolecules() ); }
 
 	void ContextualMenuRender::_setPickerToSelection() const

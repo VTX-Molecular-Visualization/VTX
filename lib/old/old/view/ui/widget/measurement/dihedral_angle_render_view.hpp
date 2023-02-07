@@ -1,7 +1,7 @@
 #ifndef __VTX_VIEW_UI_WIDGET_MEASUREMENT_DIHEDRAL_ANGLE_RENDER__
 #define __VTX_VIEW_UI_WIDGET_MEASUREMENT_DIHEDRAL_ANGLE_RENDER__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "id.hpp"
 #include "model/measurement/dihedral_angle.hpp"
 #include "ui/widget/base_manual_widget.hpp"

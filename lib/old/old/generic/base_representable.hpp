@@ -1,7 +1,7 @@
 #ifndef __VTX_BASE_REPRESENTABLE__
 #define __VTX_BASE_REPRESENTABLE__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "representation/representation_target.hpp"
 #include <map>
 #include <set>

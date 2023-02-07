@@ -1,7 +1,8 @@
 #ifndef __VTX_ANALYSIS_RMSD__
 #define __VTX_ANALYSIS_RMSD__
 
-#include "define.hpp"
+#include <util/types.hpp>
+#include <util/constants.hpp>
 #include <vector>
 
 namespace VTX::Model

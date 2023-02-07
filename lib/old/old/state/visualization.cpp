@@ -1,4 +1,5 @@
 #include "visualization.hpp"
+#include "define.hpp"
 #include "controller/freefly.hpp"
 #include "controller/main_window_controller.hpp"
 #include "controller/measurement_picker.hpp"

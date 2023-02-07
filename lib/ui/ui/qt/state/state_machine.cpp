@@ -1,12 +1,12 @@
 #include "state_machine.hpp"
-#include "src/define.hpp"
-#include "src/event/event.hpp"
-#include "src/event/event_manager.hpp"
-#include "exception.hpp"
 #include "export.hpp"
 #include "play.hpp"
 #include "visualization.hpp"
-#include "src/vtx_app.hpp"
+#include <old/define.hpp>
+#include <old/event/event.hpp>
+#include <old/event/event_manager.hpp>
+#include <old/vtx_app.hpp>
+#include <util/exception.hpp>
 
 namespace VTX::UI::QT::State
 {
@@ -36,7 +36,7 @@ namespace VTX::UI::QT::State
 		}
 		else
 		{
-			throw Exception::VTXException( "State not found: " + p_name );
+			throw Util::Exception::VTXException( "State not found: " + p_name );
 		}
 	}
 

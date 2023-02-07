@@ -1,7 +1,7 @@
 #include "menu_home_session_widget.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
-#include "define.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "setting.hpp"
 #include "ui/dialog.hpp"
@@ -9,6 +9,7 @@
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 #include <QFileDialog>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::MainMenu::Home
@@ -83,11 +84,11 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 		int actionIndex = 0;
 
-		for ( const IO::FilePath & recentFile : Setting::recentLoadingPath )
+		for ( const Util::FilePath & recentFile : Setting::recentLoadingPath )
 		{
 			CustomWidget::IndexedAction * const action
 				= new CustomWidget::IndexedAction( actionIndex, _recentSessionMenu );
-			action->setText( recentFile.qpath() );
+			action->setText( QString::fromStdString( recentFile.path() ) );
 
 			connect( action,
 					 &CustomWidget::IndexedAction::triggeredWithIndex,
@@ -112,7 +113,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 	void MenuHomeSessionWidget::_loadRecentSession( const int & p_ptrSessionIndex ) const
 	{
-		const IO::FilePath * const recentPath = Setting::getRecentLoadingPath( p_ptrSessionIndex );
+		const Util::FilePath * const recentPath = Setting::getRecentLoadingPath( p_ptrSessionIndex );
 
 		if ( recentPath == nullptr )
 		{

@@ -2,10 +2,10 @@
 #define __VTX_UI_QT_STATE_MACHINE__
 
 #include "base_state.hpp"
-#include "src/generic/base_updatable.hpp"
 #include "id.hpp"
 #include <map>
 #include <memory>
+#include <old/generic/base_updatable.hpp>
 
 namespace VTX::UI::QT::State
 {

@@ -2,7 +2,6 @@
 #include "action/main.hpp"
 #include "action/renderer.hpp"
 #include "action/setting.hpp"
-#include "define.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "generic/base_colorable.hpp"
@@ -24,6 +23,7 @@
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/representation/instantiated_representation.hpp"
 #include "model/representation/representation.hpp"
+#include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
 #include "model/viewpoint.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -35,6 +35,8 @@
 #include <algorithm>
 #include <magic_enum.hpp>
 #include <map>
+#include <util/filesystem.hpp>
+#include <util/types.hpp>
 
 namespace VTX::IO
 {
@@ -80,7 +82,7 @@ namespace VTX::IO
 
 	nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
 	{
-		const IO::FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
+		const Util::FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
 
 		const Writer::ChemfilesWriter * const writer
 			= VTXApp::get().getScenePathData().getData( &p_molecule ).getWriter();
@@ -523,11 +525,11 @@ namespace VTX::IO
 			p_molecule.applyTransform( transform );
 		}
 
-		IO::FilePath molPath = _get<std::string>( p_json, "PATH" );
+		Util::FilePath molPath = _get<std::string>( p_json, "PATH" );
 
 		if ( Util::Filesystem::isRelativePath( molPath ) )
 		{
-			const IO::FilePath sceneFolder
+			const Util::FilePath sceneFolder
 				= Util::Filesystem::getSceneSaveDirectory( VTXApp::get().getScenePathData().getCurrentPath() );
 			molPath = sceneFolder / molPath;
 		}

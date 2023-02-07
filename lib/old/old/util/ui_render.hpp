@@ -1,7 +1,7 @@
 #ifndef __VTX_UTIL_UI_RENDER__
 #define __VTX_UTIL_UI_RENDER__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include <QLine>
 #include <QPoint>
 #include <QRect>

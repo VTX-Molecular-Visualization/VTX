@@ -6,7 +6,7 @@
 #endif
 
 #include "color/rgba.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 
 namespace VTX
 {

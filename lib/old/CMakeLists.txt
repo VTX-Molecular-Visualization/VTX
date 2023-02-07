@@ -176,8 +176,8 @@ target_include_directories(${OLD_VTX_LIB} PUBLIC .)
 target_include_directories(${OLD_VTX_LIB} PUBLIC old/)
 
 # Includes VTX_Util
-target_include_directories(${OLD_VTX_LIB} PRIVATE ${VTX_UTIL_INCLUDE_PATH})
-target_link_libraries(${OLD_VTX_LIB} PRIVATE ${VTX_UTIL_LIB})
+target_include_directories(${OLD_VTX_LIB} PUBLIC ${VTX_UTIL_INCLUDE_PATH})
+target_link_libraries(${OLD_VTX_LIB} PUBLIC ${VTX_UTIL_LIB})
 
 # Includes external libraries directories.
 target_include_directories(${OLD_VTX_LIB} PUBLIC ${JSON_INCLUDE_DIR})

@@ -5,15 +5,18 @@
 #include "qt/tool/scene/widget/scene_item_selection_model.hpp"
 #include "qt/tool/scene/widget/scene_widget.hpp"
 #include "qt/util.hpp"
-#include "src/generic/base_visible.hpp"
-#include "src/model/category.hpp"
-#include "src/model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include <src/tool/logger.hpp>
-#include "ui/mime_type.hpp"
 #include <QAbstractItemModel>
 #include <QDrag>
+#include <old/generic/base_visible.hpp>
+#include <old/model/atom.hpp>
+#include <old/model/category.hpp>
+#include <old/model/chain.hpp>
+#include <old/model/residue.hpp>
+#include <old/model/selection.hpp>
+#include <old/mvc/mvc_manager.hpp>
+#include <old/selection/selection_manager.hpp>
+#include <old/tool/logger.hpp>
+#include <old/ui/mime_type.hpp>
 #include <stack>
 
 namespace VTX::UI::QT::Tool::Scene::Widget

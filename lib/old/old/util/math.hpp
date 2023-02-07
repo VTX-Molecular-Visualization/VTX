@@ -3,7 +3,8 @@
 
 #define GLM_FORCE_INLINE
 
-#include "define.hpp"
+#include <util/types.hpp>
+#include <util/constants.hpp>
 #include "glm/gtc/type_ptr.hpp"
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>

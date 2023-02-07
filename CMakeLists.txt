@@ -20,6 +20,7 @@ set(PATH_EXTERNAL_PROJECT "external_project")
 # Define libraries
 set (OLD_VTX_LIB "OLD_VTX")
 set (VTX_UTIL_LIB "VTX_UTIL")
+set (VTX_UI_LIB "VTX_UI")
 set (VTX_LAUNCHER_LIB "VTX_LAUNCHER")
 
 set(OLD_VTX_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/${PATH_LIB}/old/)
@@ -35,7 +36,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/old/)
 #add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/core/)
 #add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/renderer/)
 #add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/app/)
-#add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/ui/)
+add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/ui/)
 #add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/tool/)
 add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/launcher/)
 

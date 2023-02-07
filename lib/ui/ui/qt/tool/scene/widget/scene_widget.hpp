@@ -7,9 +7,6 @@
 #include "qt/widget/base_manual_widget.hpp"
 #include "qt/widget/custom_widget/dock_window_main_widget.hpp"
 #include "qt/widget_factory.hpp"
-#include "src/generic/base_scene_item.hpp"
-#include "src/model/base_model.hpp"
-#include "view/base_view.hpp"
 #include <QDockWidget>
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -18,6 +15,9 @@
 #include <QVBoxLayout>
 #include <QVariant>
 #include <map>
+#include <old/generic/base_scene_item.hpp>
+#include <old/model/base_model.hpp>
+#include <old/view/base_view.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Tool::Scene::Widget

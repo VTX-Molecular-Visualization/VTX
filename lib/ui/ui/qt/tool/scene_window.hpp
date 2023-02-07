@@ -5,7 +5,7 @@
 #include "qt/tool/scene/widget/scene_item_widget_instancier.hpp"
 #include "qt/tool/scene/widget/scene_widget.hpp"
 #include "keys.hpp"
-#include "src/object3d/scene.hpp"
+#include <old/object3d/scene.hpp>
 
 namespace VTX::UI::QT::Tool
 {

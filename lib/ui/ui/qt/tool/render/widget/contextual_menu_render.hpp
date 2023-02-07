@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_TOOL_RENDER_WIDGET_CONTEXTUAL_MENU__
 
 #include "qt/widget/contextual_menu/contextual_menu_template.hpp"
-#include "src/object3d/scene.hpp"
+#include <old/object3d/scene.hpp>
 #include <QAction>
 #include <QMenu>
 

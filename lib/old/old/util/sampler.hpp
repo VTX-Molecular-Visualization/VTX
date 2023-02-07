@@ -1,7 +1,7 @@
 #ifndef __VTX_UTIL_SAMPLER__
 #define __VTX_UTIL_SAMPLER__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "util/math.hpp"
 
 namespace VTX

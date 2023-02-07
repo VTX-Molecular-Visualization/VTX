@@ -91,7 +91,8 @@ namespace VTX::Util::UI
 
 	static QBitmap generateAlphaMask( const QString & p_filepath )
 	{
-		return QBitmap( QPixmap::fromImage( QImage( ":/sprite/render/dihedral_angle_icon.png" ).createAlphaMask() ) );
+		return QBitmap::fromPixmap(
+			QPixmap::fromImage( QImage( ":/sprite/render/dihedral_angle_icon.png" ).createAlphaMask() ) );
 	}
 
 	void appendBondInfo( const Model::Bond & p_bond, QString & p_str );

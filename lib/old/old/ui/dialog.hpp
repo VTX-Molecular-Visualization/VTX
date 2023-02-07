@@ -2,7 +2,7 @@
 #define __VTX_UI_DIALOG__
 
 #include "action/base_action.hpp"
-#include "io/filepath.hpp"
+#include <util/filepath.hpp>
 #include "worker/worker_manager.hpp"
 #include <QString>
 #include <QWidget>
@@ -36,8 +36,8 @@ namespace VTX
 			static void openExportMoleculeDialog();
 			static void openLoadTrajectoryDialog( Model::Molecule & p_target );
 
-			static void openSetTrajectoryTargetsDialog( const IO::FilePath & p_trajectoryFilePath );
-			static void openSetTrajectoryTargetsDialog( const std::vector<IO::FilePath> & p_trajectoryFilePaths );
+			static void openSetTrajectoryTargetsDialog( const Util::FilePath & p_trajectoryFilePath );
+			static void openSetTrajectoryTargetsDialog( const std::vector<Util::FilePath> & p_trajectoryFilePaths );
 
 			static void createNewSessionDialog();
 

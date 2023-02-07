@@ -1,7 +1,7 @@
 #ifndef __VTX_ANALYSIS_STRUCT_RESIDUE_CENTER_OF_MASS_DATA_SET__
 #define __VTX_ANALYSIS_STRUCT_RESIDUE_CENTER_OF_MASS_DATA_SET__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "residue_data_set.hpp"
 
 namespace VTX::Model

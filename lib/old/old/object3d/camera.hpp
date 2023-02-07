@@ -1,6 +1,7 @@
 #ifndef __VTX_CAMERA__
 #define __VTX_CAMERA__
 
+#include <util/types.hpp>
 #include "define.hpp"
 #include "util/math.hpp"
 

@@ -3,26 +3,28 @@
 #include "qt/tool/render/widget/base_integrated_widget.hpp"
 #include "qt/tool/render/widget/overlay/visualization_quick_access.hpp"
 #include "qt/widget_factory.hpp"
-#include "src/action/viewpoint.hpp"
-#include "src/event/event_manager.hpp"
-#include "src/action/main.hpp"
-// #include "src/model/label.hpp"
-// #include "src/model/measurement/angle.hpp"
-// #include "src/model/measurement/dihedral_angle.hpp"
-// #include "src/model/measurement/distance.hpp"
-// #include "src/model/measurement/measure_in_progress.hpp"
-#include "src/model/mesh_triangle.hpp"
-#include "src/model/molecule.hpp"
+#include <old/action/action_manager.hpp>
+#include <old/action/main.hpp>
+#include <old/action/viewpoint.hpp>
+#include <old/event/event_manager.hpp>
+#include <old/util/filesystem.hpp>
+// #include <old/model/label.hpp>
+// #include <old/model/measurement/angle.hpp>
+// #include <old/model/measurement/dihedral_angle.hpp>
+// #include <old/model/measurement/distance.hpp>
+// #include <old/model/measurement/measure_in_progress.hpp>
+#include <old/model/mesh_triangle.hpp>
+#include <old/model/molecule.hpp>
 // #include "state/state_machine.hpp"
 // #include "state/visualization.hpp"
-#include "style.hpp"
-#include <src/tool/logger.hpp>
+#include <old/style.hpp>
+#include <old/tool/logger.hpp>
 // #include "view/ui/widget/measurement/angle_render_view.hpp"
 // #include "view/ui/widget/measurement/dihedral_angle_render_view.hpp"
 // #include "view/ui/widget/measurement/distance_render_view.hpp"
 // #include "view/ui/widget/measurement/measure_in_progress_render_view.hpp"
-#include "src/vtx_app.hpp"
 #include <QShortcut>
+#include <old/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {

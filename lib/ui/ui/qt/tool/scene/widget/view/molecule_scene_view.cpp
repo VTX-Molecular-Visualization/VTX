@@ -12,20 +12,20 @@
 #include "qt/util.hpp"
 #include "qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "qt/widget_factory.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/atom.hpp"
-#include "src/action/category.hpp"
-#include "src/action/chain.hpp"
-#include "src/action/molecule.hpp"
-#include "src/action/residue.hpp"
-#include "src/action/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include "struct/range.hpp"
-#include "style.hpp"
-#include <src/tool/logger.hpp>
-#include "ui/mime_type.hpp"
 #include <QScrollBar>
+#include <old/action/action_manager.hpp>
+#include <old/action/atom.hpp>
+#include <old/action/category.hpp>
+#include <old/action/chain.hpp>
+#include <old/action/molecule.hpp>
+#include <old/action/residue.hpp>
+#include <old/action/selection.hpp>
+#include <old/mvc/mvc_manager.hpp>
+#include <old/selection/selection_manager.hpp>
+#include <old/struct/range.hpp>
+#include <old/style.hpp>
+#include <old/tool/logger.hpp>
+#include <old/ui/mime_type.hpp>
 #include <util/string.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View
@@ -367,10 +367,6 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 					->setFocusedTarget( &molecule );
 
 				contextualMenu.pop( Tool::ContextualMenu::SELECTION, &selection, globalClicPos );
-			}
-			else
-			{
-				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Molecule, &molecule, globalClicPos );
 			}
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )

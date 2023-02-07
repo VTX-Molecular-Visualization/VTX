@@ -18,7 +18,7 @@
 namespace VTX::Worker
 {
 	Snapshoter::Snapshoter( const MODE &					p_mode,
-							const IO::FilePath &			p_path,
+							const Util::FilePath &			p_path,
 							const IO::Struct::ImageExport & p_exportData ) :
 		_mode( p_mode ),
 		_path( p_path ), _exportData( p_exportData )
@@ -28,7 +28,7 @@ namespace VTX::Worker
 	Snapshoter::Snapshoter( const MODE &					p_mode,
 							QImage *						p_imageTarget,
 							const IO::Struct::ImageExport & p_exportData ) :
-		Snapshoter( p_mode, IO::FilePath(), p_exportData )
+		Snapshoter( p_mode, Util::FilePath(), p_exportData )
 	{
 		_imageTarget = p_imageTarget;
 	}
@@ -122,7 +122,8 @@ namespace VTX::Worker
 		// Save.
 		if ( !_path.empty() )
 		{
-			if ( render.save( _path.qpath(), _path.extension().c_str(), _exportData.getIntQuality() ) )
+			if ( render.save(
+					 QString::fromStdString( _path.path() ), _path.extension().c_str(), _exportData.getIntQuality() ) )
 			{
 				VTX_INFO( "Snapshot taken: " + _path.filename() );
 			}

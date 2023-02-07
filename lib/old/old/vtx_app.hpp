@@ -2,16 +2,18 @@
 #define __VTX_APP__
 
 #include "generic/base_auto_delete.hpp"
+#include "define.hpp"
 #include "setting.hpp"
 #include "spec.hpp"
 #include "stat.hpp"
+#include "state/state_machine.hpp"
 #include <QElapsedTimer>
+#include <QInputMethod>
 #include <QTimer>
-#include <QtWidgets/QApplication>
 
 namespace VTX
 {
-	class Setting;
+	// class Setting;
 	namespace Model::Representation
 	{
 		class RepresentationLibrary;
@@ -21,10 +23,6 @@ namespace VTX
 		class RenderEffectPreset;
 		class RenderEffectPresetLibrary;
 	} // namespace Model::Renderer
-	namespace State
-	{
-		class StateMachine;
-	}
 	namespace Object3D
 	{
 		class Scene;
@@ -37,7 +35,7 @@ namespace VTX
 	{
 		class MainWindow;
 	}
-	class VTXApp final : public QApplication
+	class VTXApp final
 	{
 	  public:
 		inline static VTXApp & get()
@@ -48,17 +46,22 @@ namespace VTX
 		VTX_MASK MASK = VTX_MASK_NEED_UPDATE;
 
 		void start( const std::vector<std::string> & );
+		void update();
 		void goToState( const std::string &, void * const = nullptr );
 		void renderScene() const;
+		void stop();
 
-		inline IO::Struct::ScenePathData &					  getScenePathData() { return *_pathSceneData; };
-		inline const IO::Struct::ScenePathData &			  getScenePathData() const { return *_pathSceneData; };
-		inline Object3D::Scene &							  getScene() { return *_scene; }
-		inline const Object3D::Scene &						  getScene() const { return *_scene; }
-		inline const UI::MainWindow &						  getMainWindow() const { return *_mainWindow; }
-		inline UI::MainWindow &								  getMainWindow() { return *_mainWindow; }
-		inline State::StateMachine &						  getStateMachine() { return *_stateMachine; }
-		inline const State::StateMachine &					  getStateMachine() const { return *_stateMachine; }
+		inline IO::Struct::ScenePathData &		 getScenePathData() { return *_pathSceneData; };
+		inline const IO::Struct::ScenePathData & getScenePathData() const { return *_pathSceneData; };
+		inline Object3D::Scene &				 getScene() { return *_scene; }
+		inline const Object3D::Scene &			 getScene() const { return *_scene; }
+
+		// TODO remove this. Must be In UI Module
+		inline const UI::MainWindow &	   getMainWindow() const { throw VTX::Exception::NotImplementedException(); }
+		inline UI::MainWindow &			   getMainWindow() { throw VTX::Exception::NotImplementedException(); }
+		inline State::StateMachine &	   getStateMachine() { throw VTX::Exception::NotImplementedException(); }
+		inline const State::StateMachine & getStateMachine() const { throw VTX::Exception::NotImplementedException(); }
+
 		inline Setting &									  getSetting() { return _setting; }
 		inline const Setting &								  getSetting() const { return _setting; }
 		inline Stat &										  getStat() { return _stat; }
@@ -83,7 +86,11 @@ namespace VTX
 
 		void deleteAtEndOfFrame( const Generic::BaseAutoDelete * const p_object );
 
-		bool notify( QObject * const, QEvent * const ) override;
+		// bool notify( QObject * const, QEvent * const ) override;
+		void		   closeAllWindows();
+		QInputMethod * inputMethod();
+		void		   exit( int p_returnCode = 0 );
+		void		   quit();
 
 	  private:
 		QTimer *	  _timer		= nullptr;

@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "light_sample.hpp"
 
 namespace VTX

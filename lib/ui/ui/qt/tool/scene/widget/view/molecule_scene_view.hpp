@@ -3,17 +3,6 @@
 
 #include "qt/tool/scene/widget/scene_item_widget.hpp"
 #include "qt/widget/base_manual_widget.hpp"
-#include "src/event/base_event_receiver_vtx.hpp"
-#include "src/generic/base_visible.hpp"
-#include "src/model/atom.hpp"
-#include "src/model/category.hpp"
-#include "src/model/category_enum.hpp"
-#include "src/model/chain.hpp"
-#include "src/model/molecule.hpp"
-#include "src/model/residue.hpp"
-#include "src/model/selection.hpp"
-#include "style.hpp"
-#include "view/base_view.hpp"
 #include <QKeyEvent>
 #include <QList>
 #include <QMenu>
@@ -22,6 +11,17 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 #include <map>
+#include <old/event/base_event_receiver_vtx.hpp>
+#include <old/generic/base_visible.hpp>
+#include <old/model/atom.hpp>
+#include <old/model/category.hpp>
+#include <old/model/category_enum.hpp>
+#include <old/model/chain.hpp>
+#include <old/model/molecule.hpp>
+#include <old/model/residue.hpp>
+#include <old/model/selection.hpp>
+#include <old/style.hpp>
+#include <old/view/base_view.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View
 {

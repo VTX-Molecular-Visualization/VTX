@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "lights/base_light.hpp"
 #include "primitives/base_object_3D.hpp"
 #include "primitives/molecule_rt.hpp"

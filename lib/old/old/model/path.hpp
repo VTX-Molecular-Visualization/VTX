@@ -2,7 +2,7 @@
 #define __VTX_MODEL_PATH__
 
 #include "base_model.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "generic/base_scene_item.hpp"
 #include "path/path_enum.hpp"
 #include "setting.hpp"

@@ -8,13 +8,15 @@
 #include "qt/widget/custom_widget/indexed_action.hpp"
 #include "qt/widget/main_menu/menu_tooltab_widget.hpp"
 #include "qt/widget_factory.hpp"
-#include "src/model/molecule.hpp"
-#include "src/model/path.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/setting.hpp"
 #include <QMenu>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <old/action/action_manager.hpp>
+#include <old/action/setting.hpp>
+#include <old/io/struct/scene_path_data.hpp>
+#include <old/model/molecule.hpp>
+#include <old/model/path.hpp>
+#include <old/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool
 {

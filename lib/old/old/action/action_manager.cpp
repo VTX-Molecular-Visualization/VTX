@@ -2,8 +2,15 @@
 #include "action/main.hpp"
 #include "action/representable.hpp"
 #include "action/setting.hpp"
+#include "io/struct/scene_path_data.hpp"
+#include "model/chain.hpp"
+#include "model/molecule.hpp"
+#include "model/representation/representation.hpp"
 #include "model/representation/representation_library.hpp"
+#include "model/residue.hpp"
+#include "util/filesystem.hpp"
 #include "util/time.hpp"
+#include "vtx_app.hpp"
 #include <magic_enum.hpp>
 #include <sstream>
 

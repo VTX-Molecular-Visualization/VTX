@@ -1,12 +1,16 @@
 #include "action.hpp"
-#include "qt/state/state_machine.hpp"
-#include "qt/state/visualization.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/base_action.hpp"
-#include "src/define.hpp"
 #include "dialog.hpp"
 #include "id.hpp"
-#include <src/tool/logger.hpp>
+#include "qt/state/state_machine.hpp"
+#include "qt/state/visualization.hpp"
+#include <old/io/struct/scene_path_data.hpp>
+#include <old/object3d/scene.hpp>
+#include <old/tool/logger.hpp>
+#include <old/vtx_app.hpp>
+#include <old/worker/loader.hpp>
+#include <old/worker/saver.hpp>
+#include <old/worker/scene_loader.hpp>
+#include <old/worker/worker_manager.hpp>
 
 namespace VTX::UI::QT::Tool::Session::Action
 {
@@ -67,12 +71,24 @@ namespace VTX::UI::QT::Tool::Session::Action
 				return;
 			}
 
-			for ( Model::Molecule * const trajectoryTarget : _trajectoryTargets )
+			const bool trajectoryTargetsForced = _trajectoryTargets.size() > 0;
+
+			if ( trajectoryTargetsForced )
 			{
-				loader->addDynamicTarget( trajectoryTarget );
+				for ( Model::Molecule * const trajectoryTarget : _trajectoryTargets )
+				{
+					loader->addDynamicTarget( trajectoryTarget );
+				}
+			}
+			else
+			{
+				for ( const Object3D::Scene::PairMoleculePtrFloat & molPair : VTXApp::get().getScene().getMolecules() )
+				{
+					loader->addDynamicTarget( molPair.first );
+				}
 			}
 
-			loader->setOpenTrajectoryAsStandalone( _trajectoryTargets.size() == 0 );
+			loader->setOpenTrajectoryAsMoleculeIfTargetFail( !trajectoryTargetsForced );
 
 			Worker::CallbackThread * callback = new Worker::CallbackThread(
 				[ loader ]( const uint p_code )

@@ -3,6 +3,7 @@
 #include "util/math.hpp"
 #include "util/string.hpp"
 #include "util/ui.hpp"
+#include <util/constants.hpp>
 #include <QHBoxLayout>
 #include <cmath>
 #include <iomanip>

@@ -2,7 +2,7 @@
 #define __VTX_MODEL_LABEL__
 
 #include "color/rgba.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "generic/base_scene_item.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"

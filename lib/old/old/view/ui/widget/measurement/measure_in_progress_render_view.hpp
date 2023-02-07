@@ -1,7 +1,7 @@
 #ifndef __VTX_VIEW_UI_WIDGET_MEASUREMENT_MEASURE_IN_PROGRESS_RENDER__
 #define __VTX_VIEW_UI_WIDGET_MEASUREMENT_MEASURE_IN_PROGRESS_RENDER__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "id.hpp"
 #include "model/measurement/measure_in_progress.hpp"
 #include "ui/widget/base_manual_widget.hpp"

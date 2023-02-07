@@ -1,9 +1,10 @@
 #include "export.hpp"
-#include "src/model/path.hpp"
-#include "src/model/viewpoint.hpp"
-#include "src/action/main.hpp"
-#include "src/vtx_app.hpp"
-#include "src/worker/program_launcher.hpp"
+#include <old/action/action_manager.hpp>
+#include <old/action/main.hpp>
+#include <old/model/path.hpp>
+#include <old/model/viewpoint.hpp>
+#include <old/vtx_app.hpp>
+#include <old/worker/program_launcher.hpp>
 #include <util/filesystem.hpp>
 #include <util/time.hpp>
 
@@ -104,7 +105,7 @@ namespace VTX::UI::QT::State
 	{
 		if ( std::filesystem::exists( Util::Filesystem::FFMPEG_EXE_FILE ) == false )
 		{
-			throw Exception::LibException( "ffmpeg is missing, frames are saved on disk" );
+			throw Util::Exception::LibException( "ffmpeg is missing, frames are saved on disk" );
 		}
 
 		VTX_INFO( "Encoding video" );

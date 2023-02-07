@@ -1,11 +1,9 @@
 #ifndef __VTX_UI_QT_DIALOG__
 #define __VTX_UI_QT_DIALOG__
 
-#include "src/action/base_action.hpp"
-#include "src/worker/worker_manager.hpp"
 #include <QString>
-#include <QWidget>
 #include <exception>
+#include <old/action/base_action.hpp>
 
 namespace VTX
 {

@@ -4,11 +4,11 @@
 #include "qt/controller/trackball.hpp"
 #include "qt/state/state_machine.hpp"
 #include "qt/state/visualization.hpp"
-#include "src/model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "src/object3d/scene.hpp"
-#include "selection/selection_manager.hpp"
-#include "src/vtx_app.hpp"
+#include <old/model/selection.hpp>
+#include <old/mvc/mvc_manager.hpp>
+#include <old/object3d/scene.hpp>
+#include <old/selection/selection_manager.hpp>
+#include <old/vtx_app.hpp>
 #include <set>
 
 namespace VTX::UI::QT::Action::Viewpoint

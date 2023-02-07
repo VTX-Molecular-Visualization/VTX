@@ -2,13 +2,13 @@
 #define __VTX_UI_QT_WIDGET_CONTEXTUAL_MENU_SELECTION__
 
 #include "qt/widget/contextual_menu/contextual_menu_template.hpp"
-#include "src/model/base_model.hpp"
-#include "src/model/selection.hpp"
-#include "ui/widget/custom_widget/set_representation_menu.hpp"
-#include "ui/widget/custom_widget/trajectory_frames_menu.hpp"
+// #include "ui/widget/custom_widget/set_representation_menu.hpp"
+// #include "ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include <QHideEvent>
 #include <QMenu>
 #include <map>
+#include <old/model/base_model.hpp>
+#include <old/model/selection.hpp>
 #include <unordered_set>
 #include <vector>
 
@@ -246,13 +246,13 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		void _exportAction();
 		void _loadTrajectoryAction();
 
-		void _applyComputeRMSDAction();
-		void _applyAlignmentAction();
-		void _openAlignmentWindowAction();
+		// void _applyComputeRMSDAction();
+		// void _applyAlignmentAction();
+		// void _openAlignmentWindowAction();
 
 	  private:
-		UI::Widget::CustomWidget::SetRepresentationMenu * _representationMenu = nullptr;
-		UI::Widget::CustomWidget::TrajectoryFramesMenu *  _frameListMenu	  = nullptr;
+		// UI::Widget::CustomWidget::SetRepresentationMenu * _representationMenu = nullptr;
+		// UI::Widget::CustomWidget::TrajectoryFramesMenu *  _frameListMenu	  = nullptr;
 
 		std::map<ID::VTX_ID, int>		_submenusMap = std::map<ID::VTX_ID, int>();
 		std::vector<SelectionSubMenu *> _submenus	 = std::vector<SelectionSubMenu *>();
@@ -272,8 +272,8 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		void _refreshToggleTrajectoryPlay( QAction & _action ) const;
 		bool _checkToggleTrajectoryPlayAction() const;
 
-		bool _checkApplyAlignementAction() const;
-		bool _checkComputeRMSDAction() const;
+		// bool _checkApplyAlignementAction() const;
+		// bool _checkComputeRMSDAction() const;
 
 		void _getAllLabelTypes( std::unordered_set<Model::Label *> & p_labels ) const;
 	};

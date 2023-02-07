@@ -3,6 +3,7 @@
 #include "action/main.hpp"
 #include "action/scene.hpp"
 #include "action/setting.hpp"
+#include "controller/measurement_picker.hpp"
 #include "state/visualization.hpp"
 #include "ui/dialog.hpp"
 #include "vtx_app.hpp"

@@ -135,7 +135,7 @@ namespace VTX
 
 			/////////////////////
 			// Worker: create SDF.
-			Worker::GpuComputer workerCreateSDF( IO::FilePath( "ses/create_sdf.comp" ) );
+			Worker::GpuComputer workerCreateSDF( Util::FilePath( "ses/create_sdf.comp" ) );
 
 			// Create SSBOs.
 			using VTX::Renderer::GL::Buffer;
@@ -188,7 +188,7 @@ namespace VTX
 
 			//////////////////////
 			// Worker: refine SDF.
-			Worker::GpuComputer workerRefineSDF( IO::FilePath( "ses/refine_sdf.comp" ) );
+			Worker::GpuComputer workerRefineSDF( Util::FilePath( "ses/refine_sdf.comp" ) );
 			workerRefineSDF.getProgram().use();
 
 			Vec3i cellsToVisitCount = Util::Math::ceil( Vec3f( PROBE_RADIUS + VOXEL_SIZE ) / gridSES.cellSize );
@@ -216,7 +216,7 @@ namespace VTX
 
 			/////////////////////////
 			// Worker: marching cube.
-			Worker::GpuComputer workerMarchingCube( IO::FilePath( "ses/marching_cube.comp" ) );
+			Worker::GpuComputer workerMarchingCube( Util::FilePath( "ses/marching_cube.comp" ) );
 
 			// Create SSBOs.
 			// Output.
@@ -269,7 +269,7 @@ namespace VTX
 
 			////////////////////////////
 			// Worker: stream compaction.
-			Worker::GpuComputer workerStreamCompaction( IO::FilePath( "ses/stream_compaction.comp" ) );
+			Worker::GpuComputer workerStreamCompaction( Util::FilePath( "ses/stream_compaction.comp" ) );
 			VTX_DEBUG( "Triangle buffer size before compaction: {}", bufferSize );
 			//  Perform exclusive scan on validity buffer.
 			std::exclusive_scan( triangleValidities.begin(), triangleValidities.end(), triangleValidities.begin(), 0 );

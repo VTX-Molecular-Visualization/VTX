@@ -1,20 +1,8 @@
 #ifndef __VTX_UI_QT_ACTION_APPLICATION__
 #define __VTX_UI_QT_ACTION_APPLICATION__
 
-#include "qt/application_qt.hpp"
-#include "qt/dialog.hpp"
-#include "qt/state/state_machine.hpp"
-#include "qt/state/visualization.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/base_action.hpp"
-#include "src/define.hpp"
-#include "src/id.hpp"
-#include "src/io/struct/scene_path_data.hpp"
-#include <src/tool/logger.hpp>
-#include "src/worker/loader.hpp"
-#include "src/worker/saver.hpp"
-#include "src/worker/scene_loader.hpp"
-#include "src/worker/worker_manager.hpp"
+#include <old/action/base_action.hpp>
+#include <old/id.hpp>
 
 namespace VTX::UI::QT::Action::Main
 {
@@ -22,6 +10,13 @@ namespace VTX::UI::QT::Action::Main
 	{
 	  public:
 		explicit Quit() {}
+		virtual void execute() override;
+	};
+
+	class RestoreLayout : public VTX::Action::BaseAction
+	{
+	  public:
+		explicit RestoreLayout() {}
 		virtual void execute() override;
 	};
 

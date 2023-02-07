@@ -1,5 +1,5 @@
-#ifndef __VTX_EXCEPTIONS__
-#define __VTX_EXCEPTIONS__
+#ifndef __VTX_UTIL_EXCEPTIONS__
+#define __VTX_UTIL_EXCEPTIONS__
 
 #ifdef _MSC_VER
 #pragma once
@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string>
 
-namespace VTX
+namespace VTX::Util
 {
 	namespace Exception
 	{
@@ -54,6 +54,6 @@ namespace VTX
 			explicit NotImplementedException() : std::runtime_error( "[VTX] feature not implemented" ) {}
 		};
 	} // namespace Exception
-} // namespace VTX
+} // namespace VTX::Util
 
 #endif

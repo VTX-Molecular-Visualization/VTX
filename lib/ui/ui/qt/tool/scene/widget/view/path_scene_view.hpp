@@ -3,13 +3,6 @@
 
 #include "qt/tool/scene/widget/scene_item_widget.hpp"
 #include "qt/widget/base_manual_widget.hpp"
-#include "src/event/base_event_receiver_vtx.hpp"
-#include "src/generic/base_visible.hpp"
-#include "src/model/path.hpp"
-#include "src/model/selection.hpp"
-#include "src/model/viewpoint.hpp"
-#include "style.hpp"
-#include "view/base_view.hpp"
 #include <QKeyEvent>
 #include <QList>
 #include <QMenu>
@@ -17,6 +10,13 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 #include <map>
+#include <old/event/base_event_receiver_vtx.hpp>
+#include <old/generic/base_visible.hpp>
+#include <old/model/path.hpp>
+#include <old/model/selection.hpp>
+#include <old/model/viewpoint.hpp>
+#include <old/style.hpp>
+#include <old/view/base_view.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View
 {

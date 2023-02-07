@@ -14,7 +14,7 @@ namespace VTX
 
 			Log::~Log() { _os.close(); }
 
-			void Log::writeFile( const IO::FilePath & p_path, const std::string & p_data )
+			void Log::writeFile( const Util::FilePath & p_path, const std::string & p_data )
 			{
 				_os << p_data << std::endl;
 			}

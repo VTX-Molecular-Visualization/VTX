@@ -1,6 +1,10 @@
 #include "download_mmtf.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "define.hpp"
+#include <map>
+#include <string>
+#include <util/filepath.hpp>
 
 namespace VTX::Network::Request
 {
@@ -13,8 +17,8 @@ namespace VTX::Network::Request
 	void DownloadMMTF::_success( QNetworkReply * const p_reply )
 	{
 		VTX_INFO( "Downloaded" );
-		std::map<IO::FilePath, std::string *> mapBuffers = std::map<IO::FilePath, std::string *>();
-		mapBuffers.emplace( IO::FilePath( _id + ".mmtf" ), new std::string( p_reply->readAll().toStdString() ) );
+		std::map<Util::FilePath, std::string *> mapBuffers = std::map<Util::FilePath, std::string *>();
+		mapBuffers.emplace( Util::FilePath( _id + ".mmtf" ), new std::string( p_reply->readAll().toStdString() ) );
 
 		VTX_ACTION( new Action::Main::Open( mapBuffers ) );
 	}

@@ -1,7 +1,7 @@
 #ifndef __VTX_GL_FRAMEBUFFER__
 #define __VTX_GL_FRAMEBUFFER__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "generic/base_opengl.hpp"
 #include "texture_2d.hpp"
 

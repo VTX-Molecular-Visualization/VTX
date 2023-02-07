@@ -2,7 +2,7 @@
 #define __VTX_UI_CORE_MAIN_WINDOW__
 
 #include "core/base_panel.hpp"
-#include <src/define.hpp>
+#include <old/define.hpp>
 #include "main_menu/main_menu_bar.hpp"
 #include <map>
 #include <type_traits>

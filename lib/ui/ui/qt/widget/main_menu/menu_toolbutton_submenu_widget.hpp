@@ -2,9 +2,9 @@
 #define __VTX_UI_QT_WIDGET_BASE_MENUTOOLBUTTON_SUBMENU_WIDGET__
 
 #include "menu_toolbutton_widget.hpp"
-#include "ui/ui_action/self_referenced_action.hpp"
 #include <QAction>
 #include <QMenu>
+#include <old/ui/ui_action/self_referenced_action.hpp>
 #include <type_traits>
 
 namespace VTX::UI::QT::Widget::MainMenu

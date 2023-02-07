@@ -5,7 +5,8 @@
 #pragma once
 #endif
 
-#include "define.hpp"
+#include <util/types.hpp>
+#include <util/constants.hpp>
 
 namespace VTX
 {

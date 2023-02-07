@@ -2,7 +2,7 @@
 #define __VTX_BASE_MODEL_3D__
 
 #include "buffer/base_buffer_opengl.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "event/event.hpp"
 #include "generic/base_auto_rotate.hpp"
 #include "generic/base_renderable.hpp"

@@ -1,7 +1,7 @@
 #ifndef __VTX_BASE_CONTROLLER__
 #define __VTX_BASE_CONTROLLER__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "generic/base_updatable.hpp"
 
 namespace VTX

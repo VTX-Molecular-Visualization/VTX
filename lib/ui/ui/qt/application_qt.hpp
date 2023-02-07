@@ -3,8 +3,6 @@
 
 #include "core/base_ui_application.hpp"
 #include "environment.hpp"
-#include "qt/main_window.hpp"
-#include "qt/state/state_machine.hpp"
 #include <QApplication>
 #include <QElapsedTimer>
 #include <QEvent>
@@ -14,6 +12,12 @@
 
 namespace VTX::UI::QT
 {
+	namespace State
+	{
+		class StateMachine;
+	}
+	class MainWindow;
+
 	class ApplicationQt : public Core::BaseUIApplication, public QApplication
 	{
 	  public:

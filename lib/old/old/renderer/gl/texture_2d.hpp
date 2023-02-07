@@ -1,7 +1,7 @@
 #ifndef __VTX_GL_TEXTURE_2D__
 #define __VTX_GL_TEXTURE_2D__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "generic/base_opengl.hpp"
 
 namespace VTX::Renderer::GL

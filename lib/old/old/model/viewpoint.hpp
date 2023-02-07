@@ -2,7 +2,7 @@
 #define __VTX_MODEL_VIEWPOINT__
 
 #include "base_model.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "id.hpp"
 #include "setting.hpp"
 

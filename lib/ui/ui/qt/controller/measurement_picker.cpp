@@ -1,22 +1,23 @@
 #include "measurement_picker.hpp"
 #include "qt/application_qt.hpp"
+#include "qt/main_window.hpp"
 #include "qt/state/state_machine.hpp"
 #include "qt/state/visualization.hpp"
 #include "qt/tool/keys.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/measurement.hpp"
-#include "src/action/selection.hpp"
-#include "src/event/event_manager.hpp"
-#include "src/model/atom.hpp"
-#include "src/model/measurement/measure_in_progress.hpp"
-#include "src/model/molecule.hpp"
-#include "src/model/residue.hpp"
-#include "src/model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include <src/tool/logger.hpp>
-#include "ui/cursor_handler.hpp"
 #include <QPoint>
+#include <old/action/action_manager.hpp>
+#include <old/action/measurement.hpp>
+#include <old/action/selection.hpp>
+#include <old/event/event_manager.hpp>
+#include <old/model/atom.hpp>
+#include <old/model/measurement/measure_in_progress.hpp>
+#include <old/model/molecule.hpp>
+#include <old/model/residue.hpp>
+#include <old/model/selection.hpp>
+#include <old/mvc/mvc_manager.hpp>
+#include <old/selection/selection_manager.hpp>
+#include <old/tool/logger.hpp>
+#include <old/ui/cursor_handler.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::Controller
@@ -130,10 +131,10 @@ namespace VTX::UI::QT::Controller
 		{
 			_currentMeasureModel->clearAtoms();
 
-			// VTXApp::get()
-			//	.getStateMachine()
-			//	.getState<State::Visualization>( ID::State::VISUALIZATION )
-			//	->setPickerController( ID::Controller::PICKER );
+			QT_APP()
+				->getStateMachine()
+				.getState<State::Visualization>( ID::State::VISUALIZATION )
+				->setPickerController( ID::Controller::PICKER );
 		}
 	}
 
@@ -153,8 +154,8 @@ namespace VTX::UI::QT::Controller
 				}
 				else
 				{
-					VTXApp::get()
-						.getStateMachine()
+					QT_APP()
+						->getStateMachine()
 						.getState<State::Visualization>( ID::State::VISUALIZATION )
 						->setPickerController( ID::Controller::PICKER );
 				}

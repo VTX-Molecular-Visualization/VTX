@@ -1,4 +1,5 @@
 #include "render_widget.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "action/viewpoint.hpp"
 #include "base_integrated_widget.hpp"
@@ -16,6 +17,7 @@
 #include "style.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/filesystem.hpp"
 #include "view/ui/widget/measurement/angle_render_view.hpp"
 #include "view/ui/widget/measurement/dihedral_angle_render_view.hpp"
 #include "view/ui/widget/measurement/distance_render_view.hpp"

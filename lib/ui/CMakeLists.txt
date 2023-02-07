@@ -50,8 +50,8 @@ foreach(SRC IN ITEMS ${QT_RESOURCES})
 endforeach()
 
 # Declare library
-#add_library(VTX_UI STATIC ${HEADERS} ${SOURCES} ${FORMS} ${QT_RESOURCES})
-add_library(VTX_UI STATIC ${HEADERS} ${SOURCES} ${FORMS} ${QT_RESOURCES})
+#add_library(${VTX_UI_LIB} STATIC ${HEADERS} ${SOURCES} ${FORMS} ${QT_RESOURCES})
+add_library(${VTX_UI_LIB} STATIC ${HEADERS} ${SOURCES} ${FORMS} ${QT_RESOURCES})
 
 # Find required packages.
 find_package(Qt6 COMPONENTS Core REQUIRED)
@@ -67,42 +67,40 @@ find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
 find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
 
 # Third parties.
-target_link_libraries(VTX_UI PRIVATE Qt6::Core)
-target_link_libraries(VTX_UI PRIVATE Qt6::Gui)
-target_link_libraries(VTX_UI PRIVATE Qt6::Widgets)
-target_link_libraries(VTX_UI PRIVATE Qt6::OpenGL)
-target_link_libraries(VTX_UI PRIVATE Qt6::OpenGLWidgets)
-target_link_libraries(VTX_UI PRIVATE Qt6::Network)
-target_link_libraries(VTX_UI PRIVATE Qt6::Svg)
+target_link_libraries(${VTX_UI_LIB} PUBLIC Qt6::Core)
+target_link_libraries(${VTX_UI_LIB} PUBLIC Qt6::Gui)
+target_link_libraries(${VTX_UI_LIB} PUBLIC Qt6::Widgets)
+target_link_libraries(${VTX_UI_LIB} PUBLIC Qt6::OpenGL)
+target_link_libraries(${VTX_UI_LIB} PUBLIC Qt6::OpenGLWidgets)
+target_link_libraries(${VTX_UI_LIB} PUBLIC Qt6::Network)
+target_link_libraries(${VTX_UI_LIB} PUBLIC Qt6::Svg)
 
 # Copy shared libs to output (Windows only).	
 if(MSVC)
 	# Qt for dynamic link.
-	add_custom_command(TARGET VTX_UI POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Core> $<TARGET_FILE_DIR:VTX_UI>)
-	add_custom_command(TARGET VTX_UI POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Gui> $<TARGET_FILE_DIR:VTX_UI>)
-	add_custom_command(TARGET VTX_UI POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Widgets> $<TARGET_FILE_DIR:VTX_UI>)
-	add_custom_command(TARGET VTX_UI POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::OpenGL> $<TARGET_FILE_DIR:VTX_UI>)
-	add_custom_command(TARGET VTX_UI POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::OpenGLWidgets> $<TARGET_FILE_DIR:VTX_UI>)
-	add_custom_command(TARGET VTX_UI POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Network> $<TARGET_FILE_DIR:VTX_UI>)
-	add_custom_command(TARGET VTX_UI POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Svg> $<TARGET_FILE_DIR:VTX_UI>)
-	add_custom_command(TARGET VTX_UI POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QGifPlugin> $<TARGET_FILE_DIR:VTX_UI>/imageformats/$<TARGET_FILE_NAME:Qt6::QGifPlugin>)
-	add_custom_command(TARGET VTX_UI POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QJpegPlugin> $<TARGET_FILE_DIR:VTX_UI>/imageformats/$<TARGET_FILE_NAME:Qt6::QJpegPlugin>)
-	add_custom_command(TARGET VTX_UI POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QWindowsIntegrationPlugin> $<TARGET_FILE_DIR:VTX_UI>/platforms/$<TARGET_FILE_NAME:Qt6::QWindowsIntegrationPlugin>)
-	add_custom_command(TARGET VTX_UI POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QSchannelBackendPlugin> $<TARGET_FILE_DIR:VTX_UI>/tls/$<TARGET_FILE_NAME:Qt6::QSchannelBackendPlugin>)
+	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Core> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
+	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Gui> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
+	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Widgets> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
+	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::OpenGL> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
+	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::OpenGLWidgets> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
+	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Network> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
+	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Svg> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
+	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QGifPlugin> $<TARGET_FILE_DIR:${VTX_UI_LIB}>/imageformats/$<TARGET_FILE_NAME:Qt6::QGifPlugin>)
+	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QJpegPlugin> $<TARGET_FILE_DIR:${VTX_UI_LIB}>/imageformats/$<TARGET_FILE_NAME:Qt6::QJpegPlugin>)
+	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QWindowsIntegrationPlugin> $<TARGET_FILE_DIR:${VTX_UI_LIB}>/platforms/$<TARGET_FILE_NAME:Qt6::QWindowsIntegrationPlugin>)
+	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QSchannelBackendPlugin> $<TARGET_FILE_DIR:${VTX_UI_LIB}>/tls/$<TARGET_FILE_NAME:Qt6::QSchannelBackendPlugin>)
 endif()
 
 # Qt options
-set_property(TARGET VTX_UI PROPERTY AUTOUIC_OPTIONS "--no-autoconnection")
+set_property(TARGET ${VTX_UI_LIB} PROPERTY AUTOUIC_OPTIONS "--no-autoconnection")
 
-target_include_directories(VTX_UI PRIVATE ui/)
-set(OLD_VTX_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/)
-target_include_directories(VTX_UI PRIVATE "${OLD_VTX_INCLUDE_PATH}")
+target_include_directories(${VTX_UI_LIB} PUBLIC ui/)
+target_include_directories(${VTX_UI_LIB} PUBLIC .)
+target_include_directories(${VTX_UI_LIB} PUBLIC ${OLD_VTX_INCLUDE_PATH})
+target_include_directories(${VTX_UI_LIB} PUBLIC ${VTX_UTIL_INCLUDE_PATH})
 
-target_link_libraries(VTX_UI PRIVATE VTX)
-
-
-target_link_libraries(VTX_UI PRIVATE VTX_UTIL)
-#target_link_libraries(VTX_UI PRIVATE VTX_APP)
+target_link_libraries(${VTX_UI_LIB} PUBLIC ${OLD_VTX_LIB})
+target_link_libraries(${VTX_UI_LIB} PUBLIC ${VTX_UTIL_LIB})
 
 # Disable Qt5.
 add_compile_definitions(QT_DISABLE_DEPRECATED_BEFORE=0x050F00)

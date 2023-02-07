@@ -1,4 +1,5 @@
 #include "model_field_widget.hpp"
+#include "generic/base_scene_item.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "ui/mime_type.hpp"
 #include "ui/widget_factory.hpp"
@@ -9,17 +10,17 @@ namespace VTX::UI::Widget::CustomWidget
 	ModelFieldWidget::ModelFieldWidget( QWidget * p_parent ) :
 		CustomWidget::ModelDropArea( p_parent ), DraggableItem( this )
 	{
-		_registerEvent( Event::Global::MODEL_REMOVED );
+		_registerEvent( Event::Global::SCENE_ITEM_REMOVED );
 	}
 
 	void ModelFieldWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::MODEL_REMOVED )
+		if ( p_event.name == Event::Global::SCENE_ITEM_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::BaseModel> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::BaseModel> &>( p_event );
+			const Event::VTXEventPtr<Generic::BaseSceneItem> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
 
-			if ( castedEvent.ptr == _model )
+			if ( castedEvent.ptr->getModelID() == _model->getId() )
 				setModel( nullptr );
 		}
 	}

@@ -3,7 +3,7 @@
 
 #include "qt/widget/base_manual_widget.hpp"
 #include "qt/widget/contextual_menu/contextual_menu_template.hpp"
-#include "src/object3d/scene.hpp"
+#include <old/object3d/scene.hpp>
 #include <QMenu>
 
 namespace VTX::UI::QT::Tool::Scene::Widget

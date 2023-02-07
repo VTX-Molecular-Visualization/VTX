@@ -2,8 +2,8 @@
 #define __VTX_UI_QT_WIDGET_BASE_MENUTOOLBLOCK_WIDGET__
 
 #include "core/main_menu/main_menu_toolblock.hpp"
-#include "qt/widget/base_manual_widget.hpp"
 #include "menu_toolbutton_widget.hpp"
+#include "qt/widget/base_manual_widget.hpp"
 #include <QGridLayout>
 #include <QLabel>
 #include <QVBoxLayout>

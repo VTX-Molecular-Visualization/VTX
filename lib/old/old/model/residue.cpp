@@ -3,6 +3,7 @@
 #include "bond.hpp"
 #include "chain.hpp"
 #include "molecule.hpp"
+#include "define.hpp"
 #include <algorithm>
 
 namespace VTX

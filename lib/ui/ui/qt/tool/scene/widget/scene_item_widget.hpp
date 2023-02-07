@@ -3,8 +3,8 @@
 
 #include "qt/draggable_item.hpp"
 #include "qt/widget/base_manual_widget.hpp"
-#include "src/generic/base_scene_item.hpp"
-#include "src/model/base_model.hpp"
+#include <old/generic/base_scene_item.hpp>
+#include <old/model/base_model.hpp>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMenu>

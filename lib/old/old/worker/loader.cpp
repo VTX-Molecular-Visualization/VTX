@@ -32,7 +32,7 @@ namespace VTX
 			_loadMeshFiles();
 
 			// Display errors for unknown files
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::UNKNOWN ) ] )
+			for ( const Util::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::UNKNOWN ) ] )
 			{
 				emit logError( "Error when loading " + path.path() + " : Format not supported" );
 				_pathResult[ path ].state = false;
@@ -46,7 +46,7 @@ namespace VTX
 
 		void Loader::_loadSceneFiles()
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::SCENE ) ] )
+			for ( const Util::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::SCENE ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -67,7 +67,7 @@ namespace VTX
 		}
 		void Loader::_loadConfigurationFiles( Model::Configuration::Molecule & p_config )
 		{
-			for ( const IO::FilePath & path :
+			for ( const Util::FilePath & path :
 				  _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::CONFIGURATION ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
@@ -96,7 +96,7 @@ namespace VTX
 		}
 		void Loader::_loadMoleculeFiles( const Model::Configuration::Molecule & p_config )
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::MOLECULE ) ] )
+			for ( const Util::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::MOLECULE ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -126,7 +126,7 @@ namespace VTX
 		}
 		void Loader::_loadTrajectoriesFiles( const Model::Configuration::Molecule & p_config )
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::TRAJECTORY ) ] )
+			for ( const Util::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::TRAJECTORY ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -179,7 +179,7 @@ namespace VTX
 		}
 		void Loader::_loadMeshFiles()
 		{
-			for ( const IO::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::MESH ) ] )
+			for ( const Util::FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE_ENUM::MESH ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -205,7 +205,7 @@ namespace VTX
 
 		void Loader::_loadMoleculeBuffers()
 		{
-			for ( const std::pair<const IO::FilePath, std::string *> & pair : _mapFileNameBuffer )
+			for ( const std::pair<const Util::FilePath, std::string *> & pair : _mapFileNameBuffer )
 			{
 				_startLoadingFile( pair.first, SOURCE_TYPE::BUFFER );
 
@@ -242,13 +242,13 @@ namespace VTX
 			}
 		}
 
-		void Loader::_startLoadingFile( const IO::FilePath & p_path, const SOURCE_TYPE & p_sourceType )
+		void Loader::_startLoadingFile( const Util::FilePath & p_path, const SOURCE_TYPE & p_sourceType )
 		{
 			emit logInfo( "Loading " + p_path.filename() );
 			_pathResult.emplace( p_path, Result( p_sourceType ) );
 			_loadingFileChrono.start();
 		}
-		void Loader::_endLoadingFileSuccess( const IO::FilePath & p_path )
+		void Loader::_endLoadingFileSuccess( const Util::FilePath & p_path )
 		{
 			_loadingFileChrono.stop();
 			_pathResult[ p_path ].state = true;
@@ -266,7 +266,7 @@ namespace VTX
 			default: break;
 			}
 		}
-		void Loader::_endLoadingFileFail( const IO::FilePath & p_path, const std::string & p_message )
+		void Loader::_endLoadingFileFail( const Util::FilePath & p_path, const std::string & p_message )
 		{
 			_loadingFileChrono.stop();
 			_pathResult[ p_path ].state = false;

@@ -1,4 +1,5 @@
 #include "writer_chemfiles.hpp"
+#include "define.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
 #include "model/chain.hpp"
@@ -9,7 +10,7 @@
 
 namespace VTX::IO::Writer
 {
-	void ChemfilesWriter::writeFile( const IO::FilePath & p_path, const Model::Molecule & p_molecule )
+	void ChemfilesWriter::writeFile( const Util::FilePath & p_path, const Model::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
 

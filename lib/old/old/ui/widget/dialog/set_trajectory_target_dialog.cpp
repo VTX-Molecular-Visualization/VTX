@@ -1,4 +1,5 @@
 #include "set_trajectory_target_dialog.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "model/molecule.hpp"
 #include "object3d/scene.hpp"
@@ -103,7 +104,7 @@ namespace VTX::UI::Widget::Dialog
 	SetTrajectoryTargetDialog::SetTrajectoryTargetDialog( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 
 	void SetTrajectoryTargetDialog::openDialog() { _getInstance().show(); }
-	void SetTrajectoryTargetDialog::openDialog( const IO::FilePath & p_trajectoryPath )
+	void SetTrajectoryTargetDialog::openDialog( const Util::FilePath & p_trajectoryPath )
 	{
 		_getInstance()._filepath = p_trajectoryPath;
 		_getInstance().show();

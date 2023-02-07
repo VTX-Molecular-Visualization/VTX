@@ -2,7 +2,7 @@
 #define __VTX_WORKER_GPU_COMPUTER__
 
 #include "base_worker.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "generic/base_opengl.hpp"
 #include "renderer/gl/program.hpp"
 #include "renderer/gl/program_manager.hpp"
@@ -17,7 +17,7 @@ namespace VTX::Worker
 	class GpuComputer : public Worker::BaseWorker, public Generic::BaseOpenGL
 	{
 	  public:
-		explicit GpuComputer( const IO::FilePath & p_shader,
+		explicit GpuComputer( const Util::FilePath & p_shader,
 							  const Vec3i &		   p_size	 = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ),
 							  const GLbitfield	   p_barrier = 0,
 							  const bool		   p_force	 = false ) :

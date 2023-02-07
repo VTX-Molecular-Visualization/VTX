@@ -1,7 +1,8 @@
 #ifndef __VTX_ANALYSIS_STRUCTURAL_ALIGNMENT__
 #define __VTX_ANALYSIS_STRUCTURAL_ALIGNMENT__
 
-#include "define.hpp"
+#include <util/constants.hpp>
+#include <util/types.hpp>
 #include "math/matrix.hpp"
 #include "struct/residue_center_of_mass_data_set.hpp"
 #include <Eigen/Geometry>

@@ -2,8 +2,8 @@
 #define __VTX_UI_QT_CONTROLLER_BASE_MOUSE_CONTROLLER__
 
 #include "core/controller/base_controller.hpp"
-#include "src/event/base_event_receiver_mouse.hpp"
-#include "src/event/base_event_receiver_wheel.hpp"
+#include <old/event/base_event_receiver_mouse.hpp>
+#include <old/event/base_event_receiver_wheel.hpp>
 #include <util/types.hpp>
 
 namespace VTX::UI::QT::Controller

@@ -1,12 +1,12 @@
 #include "dialog.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/main_window.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/main.hpp"
-// #include "src/io/struct/scene_path_data.hpp"
-// #include "selection/selection_manager.hpp"
 #include "qt/tool/session/widget/dialog/download_molecule_dialog.hpp"
-#include "src/vtx_app.hpp"
+#include <old/action/action_manager.hpp>
+#include <old/action/main.hpp>
+#include <old/io/struct/scene_path_data.hpp>
+// #include <old/selection/selection_manager.hpp>
+#include <old/vtx_app.hpp>
 // #include "util/ui.hpp"
 #include <QFileDialog>
 #include <QMessageBox>

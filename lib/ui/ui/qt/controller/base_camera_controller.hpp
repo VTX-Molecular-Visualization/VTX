@@ -6,8 +6,8 @@
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
 #include "id.hpp"
-#include "src/object3d/camera.hpp"
-#include "src/object3d/helper/aabb.hpp"
+#include <old/object3d/camera.hpp>
+#include <old/object3d/helper/aabb.hpp>
 #include <util/types.hpp>
 
 namespace VTX

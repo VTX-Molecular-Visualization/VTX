@@ -1,17 +1,17 @@
 #include "opengl_widget.hpp"
 #include "qt/dialog.hpp"
 #include "qt/tool/render/dialog.hpp"
-#include "src/model/renderer/render_effect_preset.hpp"
-#include "src/object3d/camera.hpp"
-#include "src/object3d/scene.hpp"
-#include "renderer/gl/gl.hpp"
-#include "renderer/gl/program_manager.hpp"
-#include "renderer/rt/ray_tracer.hpp"
-#include "spec.hpp"
-#include "src/vtx_app.hpp"
 #include <QMainWindow>
 #include <QOpenGLVersionFunctionsFactory>
 #include <QScreen>
+#include <old/model/renderer/render_effect_preset.hpp>
+#include <old/object3d/camera.hpp>
+#include <old/object3d/scene.hpp>
+#include <old/renderer/gl/gl.hpp>
+#include <old/renderer/gl/program_manager.hpp>
+#include <old/renderer/rt/ray_tracer.hpp>
+#include <old/spec.hpp>
+#include <old/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {

@@ -1,7 +1,7 @@
 #include "dialog.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/main_window.hpp"
-#include <src/tool/logger.hpp>
+#include <old/tool/logger.hpp>
 #include <QMessageBox>
 #include <string>
 

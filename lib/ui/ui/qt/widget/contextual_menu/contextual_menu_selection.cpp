@@ -1,20 +1,19 @@
 #include "contextual_menu_selection.hpp"
-#include "__new_archi/tool/analysis/rmsd/action.hpp"
-#include "__new_archi/tool/analysis/structural_alignment/action.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/label.hpp"
-#include "src/action/selection.hpp"
-#include "src/action/viewpoint.hpp"
-#include "src/action/visible.hpp"
-#include "src/model/generated_molecule.hpp"
-#include "ui/dialog.hpp"
-#include "ui/main_window.hpp"
-#include "ui/ui_action/self_referenced_action.hpp"
-#include "ui/widget/scene/scene_widget.hpp"
-#include "ui/widget_factory.hpp"
-#include "view/ui/widget/molecule_scene_view.hpp"
-#include "view/ui/widget/path_scene_view.hpp"
+// #include "__new_archi/tool/analysis/rmsd/action.hpp"
+//  #include "__new_archi/tool/analysis/structural_alignment/action.hpp"
+#include "qt/application_qt.hpp"
+#include "qt/main_window.hpp"
+#include "qt/tool/keys.hpp"
+#include "qt/tool/scene/widget/scene_widget.hpp"
+#include "qt/tool/session/dialog.hpp"
 #include <QTimer>
+#include <old/action/action_manager.hpp>
+#include <old/action/label.hpp>
+#include <old/action/selection.hpp>
+#include <old/action/viewpoint.hpp>
+#include <old/action/visible.hpp>
+#include <old/model/generated_molecule.hpp>
+#include <old/model/representation/representation_library.hpp>
 #include <string>
 
 namespace VTX::UI::QT::Widget::ContextualMenu
@@ -27,15 +26,15 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 			new ActionData( "Rename", TypeMask::Molecule, this, &ContextualMenuSelection::_renameAction ) );
 
 		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Representation", TypeMask::AllButAtom, this ) );
-		_representationMenu
-			= UI::WidgetFactory::get().instantiateWidget<UI::Widget::CustomWidget::SetRepresentationMenu>(
-				this, "SetRepresentationMenu" );
+		//_representationMenu
+		//	= QT::WidgetFactory::get().instantiateWidget<UI::Widget::CustomWidget::SetRepresentationMenu>(
+		//		this, "SetRepresentationMenu" );
 
-		SubMenuData * const changeRepresentationSubmenuData
-			= new SubMenuData( "Representation", TypeMask::AllButAtom, this, _representationMenu );
-		changeRepresentationSubmenuData->setRefreshFunction(
-			&ContextualMenuSelection::_updateCurrentRepresentationFeedback );
-		moleculeStructureSubmenu->addItemData( changeRepresentationSubmenuData );
+		// SubMenuData * const changeRepresentationSubmenuData
+		//	= new SubMenuData( "Representation", TypeMask::AllButAtom, this, _representationMenu );
+		// changeRepresentationSubmenuData->setRefreshFunction(
+		//	&ContextualMenuSelection::_updateCurrentRepresentationFeedback );
+		// moleculeStructureSubmenu->addItemData( changeRepresentationSubmenuData );
 
 		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Show/Hide", TypeMask::Molecule, this ) );
 		ActionData * const toggleWatersAction = new ActionData(
@@ -81,17 +80,17 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Duplicate", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_copyAction ) );
 
-		_frameListMenu = UI::WidgetFactory::get().instantiateWidget<UI::Widget::CustomWidget::TrajectoryFramesMenu>(
-			this, "frameListMenu" );
-		_frameListMenu->setDisplayAllFramesOption( true );
-		connect( _frameListMenu,
-				 &UI::Widget::CustomWidget::TrajectoryFramesMenu::onFrameSelected,
-				 this,
-				 &ContextualMenuSelection::_copyFrameAction );
-		SubMenuData * const duplicateFrameSubmenu
-			= new SubMenuData( "Duplicate Frame", TypeMask::MoleculeStructure, this, _frameListMenu );
-		duplicateFrameSubmenu->setRefreshFunction( &ContextualMenuSelection::_refreshFrameListMenuItems );
-		moleculeStructureSubmenu->addItemData( duplicateFrameSubmenu );
+		//_frameListMenu = QT::WidgetFactory::get().instantiateWidget<UI::Widget::CustomWidget::TrajectoryFramesMenu>(
+		//	this, "frameListMenu" );
+		//_frameListMenu->setDisplayAllFramesOption( true );
+		// connect( _frameListMenu,
+		//		 &UI::Widget::CustomWidget::TrajectoryFramesMenu::onFrameSelected,
+		//		 this,
+		//		 &ContextualMenuSelection::_copyFrameAction );
+		// SubMenuData * const duplicateFrameSubmenu
+		//	= new SubMenuData( "Duplicate Frame", TypeMask::MoleculeStructure, this, _frameListMenu );
+		// duplicateFrameSubmenu->setRefreshFunction( &ContextualMenuSelection::_refreshFrameListMenuItems );
+		// moleculeStructureSubmenu->addItemData( duplicateFrameSubmenu );
 
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Extract", TypeMask::AllButMolecule, this, &ContextualMenuSelection::_extractAction ) );
@@ -102,17 +101,16 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
 
-		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Analysis", TypeMask::MoleculeStructure, this ) );
-		ActionData * const applyComputeRMSDAction = new ActionData(
-			"RMSD", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_applyComputeRMSDAction );
-		applyComputeRMSDAction->setCheckFunction( &ContextualMenuSelection::_checkComputeRMSDAction );
-		moleculeStructureSubmenu->addItemData( applyComputeRMSDAction );
-		ActionData * const applyAlignmentAction
-			= new ActionData( "Align", TypeMask::Molecule, this, &ContextualMenuSelection::_applyAlignmentAction );
-		applyAlignmentAction->setCheckFunction( &ContextualMenuSelection::_checkApplyAlignementAction );
-		moleculeStructureSubmenu->addItemData( applyAlignmentAction );
-		moleculeStructureSubmenu->addItemData( new ActionData(
-			"Alignment settings", TypeMask::Molecule, this, &ContextualMenuSelection::_openAlignmentWindowAction ) );
+		// moleculeStructureSubmenu->addItemData( new ActionDataSection( "Analysis", TypeMask::MoleculeStructure, this )
+		// ); ActionData * const applyComputeRMSDAction = new ActionData( 	"RMSD", TypeMask::MoleculeStructure, this,
+		//&ContextualMenuSelection::_applyComputeRMSDAction ); applyComputeRMSDAction->setCheckFunction(
+		// &ContextualMenuSelection::_checkComputeRMSDAction ); moleculeStructureSubmenu->addItemData(
+		// applyComputeRMSDAction ); ActionData * const applyAlignmentAction 	= new ActionData( "Align",
+		// TypeMask::Molecule, this, &ContextualMenuSelection::_applyAlignmentAction );
+		// applyAlignmentAction->setCheckFunction( &ContextualMenuSelection::_checkApplyAlignementAction );
+		// moleculeStructureSubmenu->addItemData( applyAlignmentAction );
+		// moleculeStructureSubmenu->addItemData( new ActionData(
+		//	"Alignment settings", TypeMask::Molecule, this, &ContextualMenuSelection::_openAlignmentWindowAction ) );
 
 		// VIEWPOINTS //////////////////////////////////////////////////////////////////////////////////////////////////
 		SelectionSubMenu * const viewpointSubmenu = new SelectionSubMenu( this, "Viewpoint" );
@@ -166,10 +164,10 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 	void ContextualMenuSelection::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
 	void ContextualMenuSelection::_setupSlots()
 	{
-		connect( _representationMenu,
-				 &UI::Widget::CustomWidget::SetRepresentationMenu::onRepresentationChange,
-				 this,
-				 &ContextualMenuSelection::_applyRepresentationAction );
+		// connect( _representationMenu,
+		//		 &UI::Widget::CustomWidget::SetRepresentationMenu::onRepresentationChange,
+		//		 this,
+		//		 &ContextualMenuSelection::_applyRepresentationAction );
 
 		connect(
 			this, &ContextualMenuSelection::aboutToShow, this, &ContextualMenuSelection::_updateActionsWithSelection );
@@ -256,10 +254,11 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 	{
 		const Model::ID & modelID = *_target->getItems().begin();
 
-		UI::Widget::Scene::SceneWidget & sceneWidget
-			= VTXApp::get().getMainWindow().getWidget<UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
+		const Tool::Scene::Widget::SceneWidget * const sceneWidget
+			= QT_APP()->getMainWindow().getPanel<Tool::Scene::Widget::SceneWidget>( QT::Tool::SCENE_WINDOW_KEY );
 
-		sceneWidget.openRenameEditor( modelID );
+		if ( sceneWidget != nullptr )
+			sceneWidget->openRenameEditor( modelID );
 	}
 
 	void ContextualMenuSelection::_toggleWaterVisibilityAction()
@@ -407,7 +406,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_extractAction() { VTX_ACTION( new Action::Selection::Extract( *_target ) ); }
 	void ContextualMenuSelection::_deleteAction() { VTX_ACTION( new Action::Selection::Delete( *_target ) ); }
-	void ContextualMenuSelection::_exportAction() { UI::Dialog::openExportMoleculeDialog(); }
+	void ContextualMenuSelection::_exportAction() { QT::Tool::Session::Dialog::openExportMoleculeDialog(); }
 	void ContextualMenuSelection::_loadTrajectoryAction()
 	{
 		Model::Molecule * molecule = nullptr;
@@ -424,7 +423,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 		if ( molecule != nullptr )
 		{
-			UI::Dialog::openLoadTrajectoryDialog( *molecule );
+			QT::Tool::Session::Dialog::openLoadTrajectoryDialog( *molecule );
 		}
 	}
 
@@ -499,10 +498,10 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 				break;
 		}
 
-		if ( allSelectionHasSameRepresentation )
-			_representationMenu->tickCurrentRepresentation( selectionRepresentationIndex );
-		else
-			_representationMenu->removeTick();
+		// if ( allSelectionHasSameRepresentation )
+		//	_representationMenu->tickCurrentRepresentation( selectionRepresentationIndex );
+		// else
+		//	_representationMenu->removeTick();
 	}
 
 	void ContextualMenuSelection::_refreshToggleWaterText( QAction & _action ) const
@@ -556,8 +555,8 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_refreshFrameListMenuItems( QAction & _action ) const
 	{
-		_frameListMenu->updateFrames( *_target );
-		_action.setVisible( _frameListMenu->getFrameCount() >= 2 );
+		//_frameListMenu->updateFrames( *_target );
+		//_action.setVisible( _frameListMenu->getFrameCount() >= 2 );
 	}
 
 	void ContextualMenuSelection::_refreshToggleTrajectoryPlay( QAction & _action ) const
@@ -633,34 +632,34 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE, p_labels );
 	}
 
-	bool ContextualMenuSelection::_checkComputeRMSDAction() const
-	{
-		std::vector<Model::Molecule *> molecules
-			= _target->getItemsOfType<Model::Molecule>( ID::Model::MODEL_MOLECULE );
+	// bool ContextualMenuSelection::_checkComputeRMSDAction() const
+	//{
+	//	std::vector<Model::Molecule *> molecules
+	//		= _target->getItemsOfType<Model::Molecule>( ID::Model::MODEL_MOLECULE );
 
-		return molecules.size() >= 2;
-	}
-	bool ContextualMenuSelection::_checkApplyAlignementAction() const
-	{
-		std::vector<Model::Molecule *> molecules
-			= _target->getItemsOfType<Model::Molecule>( ID::Model::MODEL_MOLECULE );
+	//	return molecules.size() >= 2;
+	//}
+	// bool ContextualMenuSelection::_checkApplyAlignementAction() const
+	//{
+	//	std::vector<Model::Molecule *> molecules
+	//		= _target->getItemsOfType<Model::Molecule>( ID::Model::MODEL_MOLECULE );
 
-		return molecules.size() >= 2;
-	}
+	//	return molecules.size() >= 2;
+	//}
 
-	void ContextualMenuSelection::_applyComputeRMSDAction()
-	{
-		VTX_ACTION( new VTX::Tool::Analysis::RMSD::Action::ComputeRMSD( *_target ) );
-	}
+	// void ContextualMenuSelection::_applyComputeRMSDAction()
+	//{
+	//	VTX_ACTION( new VTX::Tool::Analysis::RMSD::Action::ComputeRMSD( *_target ) );
+	// }
 
-	void ContextualMenuSelection::_applyAlignmentAction()
-	{
-		VTX_ACTION( new VTX::Tool::Analysis::StructuralAlignment::Action::ComputeStructuralAlignment( *_target ) );
-	}
+	// void ContextualMenuSelection::_applyAlignmentAction()
+	//{
+	//	VTX_ACTION( new VTX::Tool::Analysis::StructuralAlignment::Action::ComputeStructuralAlignment( *_target ) );
+	// }
 
-	void ContextualMenuSelection::_openAlignmentWindowAction()
-	{
-		VTXApp::get().getMainWindow().showWidget( ID::UI::Window::STRUCTURAL_ALIGNMENT, true );
-	}
+	// void ContextualMenuSelection::_openAlignmentWindowAction()
+	//{
+	//	VTXApp::get().getMainWindow().showWidget( ID::UI::Window::STRUCTURAL_ALIGNMENT, true );
+	// }
 
 } // namespace VTX::UI::QT::Widget::ContextualMenu

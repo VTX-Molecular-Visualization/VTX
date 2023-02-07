@@ -7,11 +7,11 @@
 #include "qt/tool/render/widget/opengl_widget.hpp"
 #include "qt/tool/render/widget/overlay/base_overlay.hpp"
 #include "qt/widget/base_manual_widget.hpp"
-#include "src/event/base_event_firerer_input.hpp"
-#include "src/model/base_model.hpp"
-#include "src/mvc/mvc_manager.hpp"
-#include "src/view/base_view.hpp"
-#include "src/worker/snapshoter.hpp"
+#include <old/event/base_event_firerer_input.hpp>
+#include <old/model/base_model.hpp>
+#include <old/mvc/mvc_manager.hpp>
+#include <old/view/base_view.hpp>
+#include <old/worker/snapshoter.hpp>
 #include <QFocusEvent>
 #include <QResizeEvent>
 #include <QVBoxLayout>

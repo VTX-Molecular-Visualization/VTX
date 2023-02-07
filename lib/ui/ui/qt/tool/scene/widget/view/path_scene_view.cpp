@@ -3,16 +3,16 @@
 #include "qt/tool/scene/widget/scene_item_selection_model.hpp"
 #include "qt/tool/scene/widget/scene_widget.hpp"
 #include "qt/widget_factory.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/selection.hpp"
-#include "src/action/viewpoint.hpp"
-#include "src/mvc/mvc_manager.hpp"
-#include "src/selection/selection_manager.hpp"
-#include "src/style.hpp"
-#include <src/tool/logger.hpp>
-#include <src/ui/contextual_menu.hpp>
-#include <src/ui/mime_type.hpp>
-#include <src/ui/widget/contextual_menu/contextual_menu_selection.hpp>
+#include <old/action/action_manager.hpp>
+#include <old/action/selection.hpp>
+#include <old/action/viewpoint.hpp>
+#include <old/mvc/mvc_manager.hpp>
+#include <old/selection/selection_manager.hpp>
+#include <old/style.hpp>
+#include <old/tool/logger.hpp>
+#include <old/ui/contextual_menu.hpp>
+#include <old/ui/mime_type.hpp>
+#include <old/ui/widget/contextual_menu/contextual_menu_selection.hpp>
 #include <QScrollBar>
 #include <util/string.hpp>
 

@@ -1,7 +1,7 @@
 #ifndef __VTX_REPRESENTATION_TARGET__
 #define __VTX_REPRESENTATION_TARGET__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "model/category_enum.hpp"
 #include <map>
 #include <vector>

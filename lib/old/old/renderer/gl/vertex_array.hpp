@@ -2,7 +2,7 @@
 #define __VTX_GL_VERETX_ARRAY__
 
 #include "buffer.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "generic/base_opengl.hpp"
 #include "vtx_app.hpp"
 

@@ -1,5 +1,5 @@
 #include "state_machine.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "exception.hpp"

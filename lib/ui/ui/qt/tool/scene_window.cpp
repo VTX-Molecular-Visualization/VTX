@@ -7,8 +7,8 @@
 #include "qt/tool/scene/widget/view/path_scene_view.hpp"
 #include "qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "qt/widget_factory.hpp"
-#include "src/model/molecule.hpp"
-#include "src/model/path.hpp"
+#include <old/model/molecule.hpp>
+#include <old/model/path.hpp>
 #include <QVBoxLayout>
 #include <QWidget>
 

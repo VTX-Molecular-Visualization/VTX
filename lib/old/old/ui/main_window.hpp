@@ -18,6 +18,7 @@
 #include "widget/settings/setting_widget.hpp"
 #include "widget/settings/setting_widget_enum.hpp"
 #include "widget/status_bar/status_bar_widget.hpp"
+#include "window_mode.hpp"
 #include <QCloseEvent>
 #include <QDockWidget>
 #include <QMainWindow>
@@ -26,14 +27,6 @@ namespace VTX
 {
 	namespace UI
 	{
-		enum class WindowMode
-		{
-			Fullscreen,
-			Windowed,
-			Maximized,
-			Minimized,
-		};
-
 		class MainWindow : public Widget::BaseWidget<QMainWindow, Ui_MainWindow>, public Event::BaseEventFirererInput
 		{
 			Q_OBJECT

@@ -2,7 +2,6 @@
 #define __VTX_ACTION_MANAGER__
 
 #include "base_action_undonable.hpp"
-#include "define.hpp"
 #include "generic/base_updatable.hpp"
 #include <functional>
 #include <list>

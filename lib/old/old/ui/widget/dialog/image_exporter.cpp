@@ -3,6 +3,7 @@
 #include "io/struct/image_export.hpp"
 #include "setting.hpp"
 #include "spec.hpp"
+#include "ui/dialog.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"

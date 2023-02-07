@@ -3,7 +3,7 @@
 
 #include "atom.hpp"
 #include "base_model.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
 #include "generic/base_visible.hpp"

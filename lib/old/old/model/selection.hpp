@@ -2,7 +2,7 @@
 #define __VTX_MODEL_SELECTION__
 
 #include "base_model.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"
 #include "model/base_model.hpp"

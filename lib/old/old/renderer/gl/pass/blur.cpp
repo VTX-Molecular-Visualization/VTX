@@ -31,7 +31,7 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
-		_program = VTX_PROGRAM_MANAGER().createProgram( "Blur", { IO::FilePath( "shading/bilateral_blur.frag" ) } );
+		_program = VTX_PROGRAM_MANAGER().createProgram( "Blur", { Util::FilePath( "shading/bilateral_blur.frag" ) } );
 
 		_program->use();
 		_program->setInt( "uBlurSize", VTX_RENDER_EFFECT().getSSAOBlurSize() );

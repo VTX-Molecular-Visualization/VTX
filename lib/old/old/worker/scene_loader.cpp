@@ -22,7 +22,7 @@ namespace VTX::Worker
 	{
 		Tool::Chrono chrono;
 
-		for ( const IO::FilePath & path : _paths )
+		for ( const Util::FilePath & path : _paths )
 		{
 			chrono.start();
 			VTX_INFO( "Loading " + path.filename() );

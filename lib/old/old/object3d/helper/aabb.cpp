@@ -96,7 +96,7 @@ namespace VTX::Object3D::Helper
 	void AABB::_generate()
 	{
 		_program = VTX_PROGRAM_MANAGER().createProgram(
-			"Line", { IO::FilePath( "line/line.vert" ), IO::FilePath( "line/line.frag" ) } );
+			"Line", { Util::FilePath( "line/line.vert" ), Util::FilePath( "line/line.frag" ) } );
 		assert( _program != nullptr );
 
 		_vbo.create();

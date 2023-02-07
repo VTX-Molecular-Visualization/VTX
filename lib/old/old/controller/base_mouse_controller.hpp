@@ -2,7 +2,7 @@
 #define __VTX_BASE_MOUSE_CONTROLLER__
 
 #include "base_controller.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "event/base_event_receiver_mouse.hpp"
 #include "event/base_event_receiver_wheel.hpp"
 

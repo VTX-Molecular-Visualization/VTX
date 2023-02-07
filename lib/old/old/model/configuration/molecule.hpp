@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_CONFIGURATION_MOLECULE__
 #define __VTX_MODEL_CONFIGURATION_MOLECULE__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include <set>
 
 namespace VTX

@@ -15,6 +15,7 @@
 #include "trajectory/trajectory_enum.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
+#include <util/types.hpp>
 #include <QSettings>
 #include <exception>
 #include <string>
@@ -217,9 +218,9 @@ namespace VTX
 	const int Setting::RECENT_PATH_SAVED_MAX_COUNT			= 10;
 	const int Setting::RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT = 20;
 
-	void Setting::enqueueNewLoadingPath( const IO::FilePath & p_path )
+	void Setting::enqueueNewLoadingPath( const Util::FilePath & p_path )
 	{
-		for ( std::list<IO::FilePath>::const_iterator itPath = recentLoadingPath.cbegin();
+		for ( std::list<Util::FilePath>::const_iterator itPath = recentLoadingPath.cbegin();
 			  itPath != recentLoadingPath.cend();
 			  itPath++ )
 		{
@@ -238,12 +239,12 @@ namespace VTX
 
 		VTX_EVENT( new Event::VTXEvent( Event::Global::RECENT_FILES_CHANGE ) );
 	}
-	const IO::FilePath * const Setting::getRecentLoadingPath( const int p_index )
+	const Util::FilePath * const Setting::getRecentLoadingPath( const int p_index )
 	{
 		if ( p_index < 0 || p_index >= recentLoadingPath.size() )
 			return nullptr;
 
-		std::list<IO::FilePath>::iterator it = recentLoadingPath.begin();
+		std::list<Util::FilePath>::iterator it = recentLoadingPath.begin();
 
 		for ( int i = 0; i < p_index; i++ )
 			it++;
@@ -299,7 +300,7 @@ namespace VTX
 		{
 			const std::string strPath = settings.value( key ).toString().toStdString();
 
-			const IO::FilePath path = IO::FilePath( strPath );
+			const Util::FilePath path = Util::FilePath( strPath );
 			if ( path.exists() )
 			{
 				recentLoadingPath.push_back( path );
@@ -329,11 +330,11 @@ namespace VTX
 							QString::fromStdString( VTX_PROJECT_NAME ) );
 
 		int counter = 0;
-		for ( const IO::FilePath & path : recentLoadingPath )
+		for ( const Util::FilePath & path : recentLoadingPath )
 		{
 			const QString key
 				= QString::fromStdString( RegisterKey::RECENT_LOADED_PATH_PREFIX + std::to_string( counter ) );
-			settings.setValue( key, path.qpath() );
+			settings.setValue( key, QString::fromStdString( path.path() ) );
 
 			counter++;
 		}
@@ -352,7 +353,7 @@ namespace VTX
 	QString Setting::getLastLoadedSessionFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_OPEN_SESSION_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_SAVE_FOLDER.qpath() );
+		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_SAVE_FOLDER.path() ) );
 	}
 	void Setting::saveLastLoadedSessionFolder( const QString & p_path )
 	{
@@ -367,7 +368,7 @@ namespace VTX
 	QString Setting::getLastSavedSessionFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_SAVED_SESSION_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_SAVE_FOLDER.qpath() );
+		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_SAVE_FOLDER.path() ) );
 	}
 	void Setting::saveLastSavedSessionFolder( const QString & p_path )
 	{
@@ -382,7 +383,7 @@ namespace VTX
 	QString Setting::getLastImportedMoleculeFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_IMPORTED_MOLECULE_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_MOLECULE_FOLDER.qpath() );
+		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_MOLECULE_FOLDER.path() ) );
 	}
 	void Setting::saveLastImportedMoleculeFolder( const QString & p_path )
 	{
@@ -397,7 +398,7 @@ namespace VTX
 	QString Setting::getLastExportedMoleculeFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_EXPORTED_MOLECULE_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_MOLECULE_FOLDER.qpath() );
+		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_MOLECULE_FOLDER.path() ) );
 	}
 	void Setting::saveLastExportedMoleculeFolder( const QString & p_path )
 	{
@@ -412,7 +413,8 @@ namespace VTX
 	QString Setting::getLastExportedImageFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_EXPORTED_IMAGE_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::getDefaultSnapshotsDir().qpath() );
+		return _getFileInRegisterKey( key,
+									  QString::fromStdString( Util::Filesystem::getDefaultSnapshotsDir().path() ) );
 	}
 	void Setting::saveLastExportedImageFolder( const QString & p_path )
 	{
@@ -431,12 +433,12 @@ namespace VTX
 								  QString::fromStdString( VTX_PROJECT_NAME ),
 								  QString::fromStdString( VTX_PROJECT_NAME ) );
 
-		IO::FilePath path = settings.value( p_key, p_default ).toString().toStdString();
+		Util::FilePath path = settings.value( p_key, p_default ).toString().toStdString();
 
 		if ( path.empty() || path.exists() == false )
 			return p_default;
 
-		return path.qpath();
+		return QString::fromStdString( path.path() );
 	}
 
 	void Setting::restoreDefaultRepresentationPerCategory()

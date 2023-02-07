@@ -5,6 +5,7 @@
 #include "action/transformable.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
+#include "ui/main_window.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget/custom_widget/folding_button.hpp"
 #include "ui/widget/inspector/inspector_widget.hpp"

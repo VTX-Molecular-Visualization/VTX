@@ -4,16 +4,16 @@
 #include "qt/main_window.hpp"
 #include "qt/tool/keys.hpp"
 #include "qt/tool/render/widget/render_widget.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/model/atom.hpp"
-#include "src/model/chain.hpp"
-#include "src/model/molecule.hpp"
-#include "src/model/residue.hpp"
-#include "src/model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include "src/action/selection.hpp"
-#include <src/tool/logger.hpp>
+#include <old/action/action_manager.hpp>
+#include <old/model/atom.hpp>
+#include <old/model/chain.hpp>
+#include <old/model/molecule.hpp>
+#include <old/model/residue.hpp>
+#include <old/model/selection.hpp>
+#include <old/mvc/mvc_manager.hpp>
+#include <old/selection/selection_manager.hpp>
+#include <old/action/selection.hpp>
+#include <old/tool/logger.hpp>
 
 namespace VTX::UI::QT::Controller
 {

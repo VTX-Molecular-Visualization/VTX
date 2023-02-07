@@ -8,33 +8,40 @@
 #include "qt/qt_panel.hpp"
 #include "qt/tool/render/widget/render_widget.hpp"
 #include "qt/widget/main_menu/main_menu_bar.hpp"
-#include "src/ui/cursor_handler.hpp"
-#include "src/ui/widget/analysis/structural_alignment/structural_alignment_widget.hpp"
-#include "src/ui/widget/base_widget.hpp"
-#include "src/ui/widget/console/console_widget.hpp"
-#include "src/ui/widget/information/information_widget.hpp"
-#include "src/ui/widget/inspector/inspector_widget.hpp"
-#include "src/ui/widget/render/opengl_widget.hpp"
-#include "src/ui/widget/render/render_widget.hpp"
-#include "src/ui/widget/scene/scene_widget.hpp"
-#include "src/ui/widget/selection/selection_widget.hpp"
-#include "src/ui/widget/sequence/sequence_widget.hpp"
-#include "src/ui/widget/settings/setting_widget.hpp"
-#include "src/ui/widget/settings/setting_widget_enum.hpp"
-#include "src/ui/widget/status_bar/status_bar_widget.hpp"
 #include "ui_main_window.h"
 #include <QCloseEvent>
 #include <QDockWidget>
 #include <QKeySequence>
 #include <QMainWindow>
 #include <QShortcut>
+#include <old/event/base_event_firerer_input.hpp>
+#include <old/ui/cursor_handler.hpp>
+//  #include <old/ui/widget/analysis/structural_alignment/structural_alignment_widget.hpp>
+#include "widget/base_widget.hpp"
+//  #include <old/ui/widget/console/console_widget.hpp>
+//  #include <old/ui/widget/information/information_widget.hpp>
+//  #include <old/ui/widget/inspector/inspector_widget.hpp>
+#include <old/id.hpp>
+#include <old/renderer/base_renderer.hpp>
+//  #include <old/ui/widget/render/opengl_widget.hpp>
+//  #include <old/ui/widget/scene/scene_widget.hpp>
+//  #include <old/ui/widget/selection/selection_widget.hpp>
+//  #include <old/ui/widget/sequence/sequence_widget.hpp>
+//  #include <old/ui/widget/settings/setting_widget.hpp>
+//  #include <old/ui/widget/settings/setting_widget_enum.hpp>
+//  #include <old/ui/widget/status_bar/status_bar_widget.hpp>
 #include <unordered_set>
 #include <util/types.hpp>
 
 namespace VTX::UI::QT
 {
+	namespace Tool::Render::Widget
+	{
+		class RenderWidget;
+	}
+
 	class MainWindow :
-		public VTX::UI::Widget::BaseWidget<QMainWindow, Ui_MainWindow>,
+		public VTX::UI::QT::Widget::BaseWidget<QMainWindow, Ui_MainWindow>,
 		public VTX::UI::Core::BaseMainWindow,
 		public Event::BaseEventFirererInput
 	{

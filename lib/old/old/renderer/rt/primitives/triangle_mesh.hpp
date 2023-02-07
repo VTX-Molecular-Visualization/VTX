@@ -7,6 +7,7 @@
 
 #include "../bvh.hpp"
 #include "model/molecule.hpp"
+#include "define.hpp"
 
 namespace VTX
 {

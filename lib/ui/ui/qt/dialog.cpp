@@ -1,19 +1,20 @@
 #include "dialog.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/main_window.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/main.hpp"
-// #include "src/io/struct/image_export.hpp"
-// #include "src/io/struct/scene_path_data.hpp"
-// #include "selection/selection_manager.hpp"
+// #include <old/action/action_manager.hpp>
+// #include <old/action/main.hpp>
+#include <old/tool/logger.hpp>
+// #include <old/io/struct/image_export.hpp>
+// #include <old/io/struct/scene_path_data.hpp>
+// #include <old/selection/selection_manager.hpp>
 // #include "qt/widget/dialog/download_molecule_dialog.hpp"
-#include "src/vtx_app.hpp"
 // #include "ui/widget/dialog/image_exporter.hpp"
 // #include "util/ui.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QString>
 #include <QStringList>
+#include <string>
 #include <util/filesystem.hpp>
 #include <vector>
 
@@ -97,7 +98,7 @@ namespace VTX::UI::QT
 							   QMessageBox::StandardButton::Ok,
 							   QMessageBox::StandardButton::Ok );
 
-		VTXApp::get().exit( EXIT_FAILURE );
+		QT_APP()->exit( EXIT_FAILURE );
 	}
 
 	void Dialog::unhandledException()

@@ -1,10 +1,13 @@
 #ifndef __VTX_UTIL_SECONDARY_STRUCTURE__
 #define __VTX_UTIL_SECONDARY_STRUCTURE__
 
+#include "model/chain.hpp"
 #include "model/molecule.hpp"
+#include "model/residue.hpp"
 #include "model/secondary_structure.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
+#include <util/types.hpp>
 
 namespace VTX
 {

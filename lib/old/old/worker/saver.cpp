@@ -83,9 +83,9 @@ namespace VTX::Worker
 
 		Util::Filesystem::checkSaveDirectoryHierarchy( _path );
 
-		const IO::FilePath itemDirectory = Util::Filesystem::getSceneObjectsSaveDirectory( _path );
+		const Util::FilePath itemDirectory = Util::Filesystem::getSceneObjectsSaveDirectory( _path );
 
-		std::set<IO::FilePath> filesToRemove = Util::Filesystem::getFilesInDirectory( itemDirectory );
+		std::set<Util::FilePath> filesToRemove = Util::Filesystem::getFilesInDirectory( itemDirectory );
 
 		IO::Writer::SerializedObject<VTXApp> * const writer = new IO::Writer::SerializedObject<VTXApp>( this );
 
@@ -100,7 +100,7 @@ namespace VTX::Worker
 				const IO::Struct::ScenePathData::Data & moleculePathData
 					= VTXApp::get().getScenePathData().getData( molecule.first );
 
-				IO::FilePath filePath = moleculePathData.getFilepath();
+				Util::FilePath filePath = moleculePathData.getFilepath();
 
 				bool needToSaveMolecule = moleculePathData.needToSaveMolecule();
 
@@ -139,7 +139,7 @@ namespace VTX::Worker
 			// Clean files
 			while ( filesToRemove.size() > 0 )
 			{
-				const IO::FilePath fileToRemove = *filesToRemove.begin();
+				const Util::FilePath fileToRemove = *filesToRemove.begin();
 				filesToRemove.erase( filesToRemove.begin() );
 				Util::Filesystem::remove( fileToRemove );
 			}
@@ -156,7 +156,7 @@ namespace VTX::Worker
 		return result;
 	}
 
-	Saver::MODE Saver::_getMode( const IO::FilePath & p_path ) const
+	Saver::MODE Saver::_getMode( const Util::FilePath & p_path ) const
 	{
 		std::string extension = p_path.extension();
 

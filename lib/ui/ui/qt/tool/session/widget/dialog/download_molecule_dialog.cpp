@@ -2,9 +2,10 @@
 #include "qt/application_qt.hpp"
 #include "qt/main_window.hpp"
 #include "qt/widget_factory.hpp"
-#include "src/action/main.hpp"
-#include "src/setting.hpp"
 #include <QPushButton>
+#include <old/action/action_manager.hpp>
+#include <old/action/main.hpp>
+#include <old/setting.hpp>
 #include <string>
 
 namespace VTX::UI::QT::Tool::Session::Widget::Dialog

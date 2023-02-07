@@ -1,7 +1,7 @@
 #ifndef __VTX__BSPLINE__
 #define __VTX__BSPLINE__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include "util/math.hpp"
 #include <vector>
 

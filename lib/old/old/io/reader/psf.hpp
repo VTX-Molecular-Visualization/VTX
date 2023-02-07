@@ -2,7 +2,7 @@
 #define __VTX_READER_PSF__
 
 #include "base_reader_line.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include <set>
 
 namespace VTX

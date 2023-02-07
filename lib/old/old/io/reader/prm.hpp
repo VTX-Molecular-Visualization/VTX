@@ -2,7 +2,7 @@
 #define __VTX_READER_PRM__
 
 #include "base_reader_line.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX

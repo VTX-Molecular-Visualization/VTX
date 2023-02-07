@@ -1,5 +1,6 @@
 #include "mesh_triangle.hpp"
 #include "id.hpp"
+#include <util/constants.hpp>
 #include "mvc/mvc_manager.hpp"
 #include "tool/logger.hpp"
 #include "view/d3/triangle.hpp"

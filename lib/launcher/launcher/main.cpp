@@ -1,10 +1,11 @@
-// #include <ui/environment.hpp>
-// #include <ui/core/base_ui_application.hpp>
+#include "include_tool.hpp"
 #include <old/tool/logger.hpp>
+#include <string>
+#include <ui/core/base_ui_application.hpp>
+#include <ui/environment.hpp>
+#include <ui/ui_generator.hpp>
 #include <util/chrono.hpp>
 #include <util/types.hpp>
-// #include <ui/ui_generator.hpp>
-#include <string>
 #include <vector>
 
 #ifdef _WIN32
@@ -28,37 +29,25 @@ extern "C"
 
 int main( int p_argc, char * p_argv[] )
 {
-	Util::Chrono chrono = Util::Chrono();
-	chrono.start();
-	uint zozo = 0;
-	for ( int i = 0; i < 100000; i++ ) {
-		zozo++;
-	}
-	chrono.stop();
-	
-	VTX_INFO( std::to_string( zozo ) );
-	
-	return int( zozo );
+	try
+	{
+		VTX::UI::Core::BaseUIApplication * const vtxApplication = UI::UIGenerator::createUI();
+		VTX::UI::Environment::get().setUIApp( vtxApplication );
+		vtxApplication->init();
 
-//	try
-//	{
-//		VTX::UI::Core::BaseUIApplication * const vtxApplication = UI::UIGenerator::createUI();
-//		VTX::UI::Environment::get().setUIApp( vtxApplication );
-//		vtxApplication->init();
-//
-//		const std::vector<std::string> args( p_argv, p_argv + p_argc );
-//		vtxApplication->start( std::vector( args.begin() + 1, args.end() ) );
-//
-//		return vtxApplication->getReturnCode();
-//	}
-//	catch ( const std::exception & p_e  )
-//	{
-//		std::string error = p_e.what();
-//		//VTX_ERROR( p_e.what() );
-//#ifdef VTX_PRODUCTION
-//		UI::Dialog::unhandledException();
-//#else
-//		return EXIT_FAILURE;
-//#endif
-//	}
+		const std::vector<std::string> args( p_argv, p_argv + p_argc );
+		vtxApplication->start( std::vector( args.begin() + 1, args.end() ) );
+
+		return vtxApplication->getReturnCode();
+	}
+	catch ( const std::exception & p_e )
+	{
+		std::string error = p_e.what();
+		VTX_ERROR( p_e.what() );
+#ifdef VTX_PRODUCTION
+		UI::Dialog::unhandledException();
+#else
+		return EXIT_FAILURE;
+#endif
+	}
 }

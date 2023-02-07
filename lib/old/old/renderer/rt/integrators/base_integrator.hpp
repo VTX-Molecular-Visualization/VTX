@@ -7,7 +7,7 @@
 
 #include "../ray.hpp"
 #include "../rt_scene.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 
 namespace VTX
 {

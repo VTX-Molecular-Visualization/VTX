@@ -4,7 +4,9 @@
 #include "base_reader.hpp"
 #include "define.hpp"
 #include "io/serializer.hpp"
+#include <util/types.hpp>
 #include <QTextStream>
+#include <QFile>
 #include <nlohmann/json.hpp>
 
 namespace VTX::IO::Reader
@@ -13,11 +15,11 @@ namespace VTX::IO::Reader
 	class SerializedObject : public BaseReader<T>
 	{
 	  public:
-		void readFile( const IO::FilePath & p_path, T & p_data ) override
+		void readFile( const Util::FilePath & p_path, T & p_data ) override
 		{
 			IO::Serializer serializer = IO::Serializer();
 
-			QFile file( p_path.qpath() );
+			QFile file( QString::fromStdString( p_path.path() ) );
 			if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) == false )
 			{
 				throw Exception::IOException( "Can not read file: " + p_path.path() );

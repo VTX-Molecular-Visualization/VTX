@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_ACTION_CHAIN__
 #define __VTX_UI_QT_ACTION_CHAIN__
 
-#include "src/action/base_action.hpp"
-#include "src/model/chain.hpp"
+#include <old/action/base_action.hpp>
+#include <old/model/chain.hpp>
 
 namespace VTX::UI::QT::Action::Chain
 {

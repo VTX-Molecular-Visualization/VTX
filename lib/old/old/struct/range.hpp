@@ -1,7 +1,7 @@
 #ifndef __VTX_STRUCT_RANGE__
 #define __VTX_STRUCT_RANGE__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include <utility>
 
 namespace VTX::Struct

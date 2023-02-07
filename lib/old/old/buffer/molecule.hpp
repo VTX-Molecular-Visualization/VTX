@@ -3,7 +3,7 @@
 
 #include "base_buffer_opengl.hpp"
 #include "color/rgba.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "model/base_model.hpp"
 #include "renderer/gl/vertex_array.hpp"
 #include <vector>

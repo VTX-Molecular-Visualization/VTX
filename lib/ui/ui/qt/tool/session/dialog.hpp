@@ -1,10 +1,10 @@
 #ifndef __VTX_UI_QT_TOOL_SESSION_DIALOG__
 #define __VTX_UI_QT_TOOL_SESSION_DIALOG__
 
-#include "src/action/base_action.hpp"
-#include "src/worker/worker_manager.hpp"
 #include <QString>
 #include <QWidget>
+#include <old/model/molecule.hpp>
+#include <old/worker/worker_manager.hpp>
 
 namespace VTX::UI::QT::Tool::Session::Dialog
 {

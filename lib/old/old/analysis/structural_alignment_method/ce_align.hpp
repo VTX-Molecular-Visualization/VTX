@@ -3,7 +3,8 @@
 
 #include "analysis/struct/residue_center_of_mass_data_set.hpp"
 #include "analysis/structural_alignment.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
+#include <util/constants.hpp>
 #include "math/matrix.hpp"
 #include <Eigen/Geometry>
 #include <utility>

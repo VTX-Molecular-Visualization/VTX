@@ -1,5 +1,5 @@
 #include "program.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include "tool/logger.hpp"
 #include <iostream>
 #include <vector>

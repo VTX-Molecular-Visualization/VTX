@@ -23,9 +23,9 @@ namespace VTX::Worker
 			Representation::RepresentationManager::get().clearAllRepresentations( false );
 		}
 
-		std::set<IO::FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
+		std::set<Util::FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
 
-		for ( const IO::FilePath & file : files )
+		for ( const Util::FilePath & file : files )
 		{
 			Model::Representation::Representation * const representation
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
@@ -123,7 +123,7 @@ namespace VTX::Worker
 
 		chrono.start();
 
-		for ( const IO::FilePath & path : _paths )
+		for ( const Util::FilePath & path : _paths )
 		{
 			Model::Representation::Representation * const representation
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();

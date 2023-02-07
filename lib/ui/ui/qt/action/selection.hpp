@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_ACTION_SELECTION__
 #define __VTX_UI_QT_ACTION_SELECTION__
 
-#include "src/action/base_action.hpp"
-#include "src/model/selection.hpp"
+#include <old/action/base_action.hpp>
+#include <old/model/selection.hpp>
 
 namespace VTX::UI::QT::Action::Selection
 {

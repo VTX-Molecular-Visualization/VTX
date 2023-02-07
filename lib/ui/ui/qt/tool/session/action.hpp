@@ -3,18 +3,11 @@
 
 #include "qt/application_qt.hpp"
 #include "qt/dialog.hpp"
-#include "qt/state/state_machine.hpp"
-#include "qt/state/visualization.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/base_action.hpp"
-#include "src/define.hpp"
-#include "src/id.hpp"
-#include "src/io/struct/scene_path_data.hpp"
-#include <src/tool/logger.hpp>
-#include "src/worker/loader.hpp"
-#include "src/worker/saver.hpp"
-#include "src/worker/scene_loader.hpp"
-#include "src/worker/worker_manager.hpp"
+#include <old/action/base_action.hpp>
+#include <old/model/molecule.hpp>
+#include <old/worker/worker_manager.hpp>
+#include <util/filepath.hpp>
+#include <vector>
 
 namespace VTX::UI::QT::Tool::Session::Action
 {

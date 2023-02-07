@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_ACTION_PATH__
 #define __VTX_UI_QT_ACTION_PATH__
 
-#include "src/action/base_action.hpp"
-#include "src/model/path.hpp"
+#include <old/action/base_action.hpp>
+#include <old/model/path.hpp>
 
 namespace VTX::UI::QT::Action::Path
 {

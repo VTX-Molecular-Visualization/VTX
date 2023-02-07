@@ -1,7 +1,7 @@
 #include "util.hpp"
-#include "src/model/atom.hpp"
-#include "src/model/bond.hpp"
-#include "src/model/molecule.hpp"
+#include <old/model/atom.hpp>
+#include <old/model/bond.hpp>
+#include <old/model/molecule.hpp>
 
 namespace VTX::UI::QT::Util
 {

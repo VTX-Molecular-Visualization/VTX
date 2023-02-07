@@ -1,4 +1,5 @@
 #include "menu_visualization_camera_action_widget.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "action/selection.hpp"
 #include "id.hpp"

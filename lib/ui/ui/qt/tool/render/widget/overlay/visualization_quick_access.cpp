@@ -1,17 +1,18 @@
 #include "visualization_quick_access.hpp"
 #include "qt/action/selection.hpp"
 #include "qt/application_qt.hpp"
+#include "qt/state/state_machine.hpp"
 #include "qt/state/visualization.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/action/selection.hpp"
-#include "src/action/setting.hpp"
-#include "src/model/selection.hpp"
-#include "selection/selection_manager.hpp"
-#include "setting.hpp"
-#include "src/action/main.hpp"
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QMenu>
+#include <old/action/action_manager.hpp>
+#include <old/action/main.hpp>
+#include <old/action/selection.hpp>
+#include <old/action/setting.hpp>
+#include <old/model/selection.hpp>
+#include <old/selection/selection_manager.hpp>
+#include <old/setting.hpp>
 #include <set>
 
 namespace VTX::UI::QT::Tool::Render::Widget::Overlay

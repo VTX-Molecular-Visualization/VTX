@@ -1,7 +1,8 @@
 #ifndef __VTX_BASE_BUFFER_OPENGL__
 #define __VTX_BASE_BUFFER_OPENGL__
 
-#include "define.hpp"
+#include <util/constants.hpp>
+#include <util/types.hpp>
 #include "generic/base_opengl.hpp"
 #include "renderer/gl/vertex_array.hpp"
 

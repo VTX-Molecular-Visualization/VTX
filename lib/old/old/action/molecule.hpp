@@ -10,6 +10,8 @@
 #include "model/representation/representation_library.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "object3d/scene.hpp"
+#include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "setting.hpp"
 #include "state/state_machine.hpp"

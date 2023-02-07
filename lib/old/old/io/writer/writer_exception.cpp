@@ -10,7 +10,7 @@ namespace VTX
 	{
 		namespace Writer
 		{
-			void Exception::writeFile( const IO::FilePath & p_path, const std::exception & p_exception )
+			void Exception::writeFile( const Util::FilePath & p_path, const std::exception & p_exception )
 			{
 				std::ofstream os = std::ofstream( p_path.path() );
 				os << p_exception.what() << std::endl;

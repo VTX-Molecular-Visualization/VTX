@@ -1,4 +1,5 @@
 #include "download_molecule_dialog.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "setting.hpp"
 #include "ui/main_window.hpp"

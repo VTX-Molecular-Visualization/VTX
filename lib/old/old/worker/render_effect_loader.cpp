@@ -18,9 +18,9 @@ namespace VTX::Worker
 
 		_library.clear( false );
 
-		std::set<IO::FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
+		std::set<Util::FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
 
-		for ( const IO::FilePath & file : files )
+		for ( const Util::FilePath & file : files )
 		{
 			Model::Renderer::RenderEffectPreset * const preset
 				= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
@@ -56,7 +56,7 @@ namespace VTX::Worker
 
 		chrono.start();
 
-		for ( const IO::FilePath & path : _paths )
+		for ( const Util::FilePath & path : _paths )
 		{
 			Model::Renderer::RenderEffectPreset * const preset
 				= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();

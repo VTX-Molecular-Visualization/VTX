@@ -3,8 +3,8 @@
 
 #include "base_thread.hpp"
 #include "base_worker.hpp"
-#include "define.hpp"
-#include "io/filepath.hpp"
+#include <util/types.hpp>
+#include <util/filepath.hpp>
 
 namespace VTX
 {
@@ -38,7 +38,7 @@ namespace VTX
 		{
 		  public:
 			explicit RepresentationSaver( const Model::Representation::Representation * const p_representation,
-										  const IO::FilePath &								  p_path ) :
+										  const Util::FilePath &								  p_path ) :
 				_representation( p_representation ),
 				_path( p_path )
 			{
@@ -49,7 +49,7 @@ namespace VTX
 
 		  private:
 			const Model::Representation::Representation * const _representation;
-			const IO::FilePath									_path;
+			const Util::FilePath									_path;
 		};
 	}; // namespace Worker
 } // namespace VTX

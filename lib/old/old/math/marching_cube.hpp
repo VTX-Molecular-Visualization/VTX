@@ -1,7 +1,7 @@
 #ifndef __VTX__MARCHING_CUBE__
 #define __VTX__MARCHING_CUBE__
 
-#include "define.hpp"
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX

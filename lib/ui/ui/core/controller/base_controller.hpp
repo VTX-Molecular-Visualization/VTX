@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_CORE_CONTROLLER_BASE_CONTROLLER__
 #define __VTX_UI_CORE_CONTROLLER_BASE_CONTROLLER__
 
-#include <src/generic/base_updatable.hpp>
+#include <old/generic/base_updatable.hpp>
 
 namespace VTX::UI::Core::Controller
 {

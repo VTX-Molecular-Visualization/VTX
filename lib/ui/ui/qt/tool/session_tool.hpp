@@ -4,7 +4,7 @@
 #include "core/tool_registration.hpp"
 #include "qt/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "keys.hpp"
-#include "src/object3d/scene.hpp"
+#include <old/object3d/scene.hpp>
 #include <QMenu>
 #include <QObject>
 

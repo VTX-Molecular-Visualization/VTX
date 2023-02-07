@@ -1,6 +1,6 @@
 #include "lib_mmtf.hpp"
 #include "color/rgba.hpp"
-#include "define.hpp"
+#include <util/types.hpp>
 #include <magic_enum.hpp>
 
 namespace VTX

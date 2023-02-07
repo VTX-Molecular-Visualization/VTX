@@ -1,7 +1,8 @@
 #include "freefly.hpp"
-#include "src/action/action_manager.hpp"
-#include "src/object3d/scene.hpp"
-#include "style.hpp"
+#include <old/action/action_manager.hpp>
+#include <old/object3d/scene.hpp>
+#include <old/setting.hpp>
+#include <old/style.hpp>
 
 namespace VTX::UI::QT::Controller
 {
@@ -63,11 +64,11 @@ namespace VTX::UI::QT::Controller
 
 		if ( _isModifierExclusive( ModifierFlag::Shift ) )
 		{
-			translation *= VTX_SETTING().getTranslationSpeedFactor();
+			translation *= VTX_SETTING().getAccelerationSpeedFactor();
 		}
 		if ( _isModifierExclusive( ModifierFlag::Alt ) )
 		{
-			translation /= VTX_SETTING().getTranslationSpeedFactor();
+			translation /= VTX_SETTING().getDecelerationSpeedFactor();
 		}
 
 		_camera.move( translation );

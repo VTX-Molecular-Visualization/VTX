@@ -1,13 +1,18 @@
 #include "application_qt.hpp"
+// #include "dialog.hpp"
+#include "qt/main_window.hpp"
+#include "qt/state/state_machine.hpp"
 #include "qt/tool/render/dialog.hpp"
-#include "src/action/action_manager.hpp"
-#include "dialog.hpp"
-#include "src/generic/base_opengl.hpp"
-#include "src/action/main.hpp"
-#include "src/vtx_app.hpp"
 #include <QCoreApplication>
+#include <QIcon>
+#include <QLoggingCategory>
+#include <QPalette>
 #include <QSurfaceFormat>
-#include <exception>
+// #include <exception>
+// #include <old/action/action_manager.hpp>
+// #include <old/action/main.hpp>
+#include <old/generic/base_opengl.hpp>
+// #include <old/vtx_app.hpp>
 
 namespace VTX::UI::QT
 {
@@ -157,7 +162,7 @@ namespace VTX::UI::QT
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( p_e.what() );
+			// VTX_ERROR( p_e.what() );
 #ifdef VTX_PRODUCTION
 			UI::Dialog::unhandledException();
 #endif
