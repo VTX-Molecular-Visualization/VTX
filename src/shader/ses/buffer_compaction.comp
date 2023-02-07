@@ -16,6 +16,13 @@ layout (local_size_x = LOCAL_SIZE_X, local_size_y = LOCAL_SIZE_Y, local_size_z =
 uniform uint uSize;
 uniform uint uSizeReduced;
 
+// Data struct.
+struct Range
+{
+	uint first;
+	uint count;
+};
+
 // SSBO.
 layout (std140, binding = 0) writeonly buffer TrianglePositions
 {
@@ -67,9 +74,9 @@ layout (std430, binding = 9) readonly buffer TriangleValidities
 	uint[] triangleValidities;
 };
 
-layout (std430, binding = 10) readonly buffer TriangleValiditiesSum
-{
-	uint[] triangleValiditiesSum;
+layout (std430, binding = 10) readonly buffer TrianglesPerAtomRanges
+{ 
+	Range[] trianglesPerAtomRanges;
 };
 
 layout (std140, binding = 11) readonly buffer AtomColors
@@ -87,33 +94,51 @@ layout (std430, binding = 13) readonly buffer AtomIds
 	uint[] atomIds;
 };
 
+layout (std430, binding = 14) buffer TrianglesPerAtom
+{
+	uint[] trianglesPerAtom;
+};
+
+/*
+layout (std430, binding = 15) writeonly buffer Debug
+{
+	uint[] debug;
+};
+*/
+
 void main()
 {
-	const uint index = globalInvocationHash( gl_GlobalInvocationID, gl_NumWorkGroups, gl_WorkGroupSize );
+	uint hash = globalInvocationHash( gl_GlobalInvocationID, gl_NumWorkGroups, gl_WorkGroupSize );
+	hash *= 3;
 	
-	if( index >= uSize )
+	if( hash >= uSize )
 	{
 		return;
 	}
 	
-	if( triangleValidities[ index ] == 0 )
+	if( triangleValidities[ hash ] == 0 )
 	{
 		return;
 	}
 
-	const uint indexNew = triangleValiditiesSum[ index ];
-
-	/*
-	if( indexNew > uSizeReduced )
-	{
-		return;
-	}
-	*/
+	const uint atomIndice = triangleAtomIndicesTmp[ hash ];
 	
-	trianglePositions[ indexNew ] = trianglePositionsTmp[ index ];
-	triangleNormals[ indexNew ] = triangleNormalsTmp[ index ];	
-	triangleIndices[ indexNew ] = indexNew;
-	triangleColors[ indexNew ] = atomColors[ triangleAtomIndicesTmp[ index ] ];
-	triangleVisibilities[ indexNew ] = atomVisibilities[ triangleAtomIndicesTmp[ index ] ];
-	triangleAtomIds[ indexNew ] = atomIds[ triangleAtomIndicesTmp[ index ] ];
+	
+	const uint first = trianglesPerAtomRanges[ atomIndice ].first;
+	const uint count = trianglesPerAtomRanges[ atomIndice ].count;
+	
+	const uint indexTriangle = first + ( count - atomicAdd( trianglesPerAtom[ atomIndice ], -3 ) );
+	
+	for( uint i = 0; i < 3; i++ )
+	{
+		const uint index = hash + i;
+		const uint indexNew = indexTriangle + i;
+		
+		trianglePositions[ indexNew ] = trianglePositionsTmp[ index ];
+		triangleNormals[ indexNew ] = triangleNormalsTmp[ index ];	
+		triangleIndices[ indexNew ] = indexNew;
+		triangleColors[ indexNew ] = atomColors[ atomIndice ];
+		triangleVisibilities[ indexNew ] = atomVisibilities[ atomIndice ];
+		triangleAtomIds[ indexNew ] = atomIds[ atomIndice ];
+	}
 }

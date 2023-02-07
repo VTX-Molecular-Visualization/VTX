@@ -287,6 +287,8 @@ namespace VTX
 			Buffer			  bufferAtomIndicesTmp( bufferSize * sizeof( uint ) );
 			std::vector<uint> triangleValidities( bufferSize, 0 );
 			Buffer			  bufferTriangleValidities( triangleValidities );
+			std::vector<uint> trianglesPerAtom( atomPositions.size(), 0 );
+			Buffer			  bufferTrianglesPerAtom( trianglesPerAtom );
 			// Input.
 			Buffer bufferTriangleTable( 256 * 16 * sizeof( int ), Math::MarchingCube::TRIANGLE_TABLE );
 
@@ -297,6 +299,7 @@ namespace VTX
 			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
 			bufferTriangleTable.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
 			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
+			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
 
 			workerMarchingCube.getProgram().use();
 
@@ -311,6 +314,7 @@ namespace VTX
 
 			// Get validities for next step.
 			bufferTriangleValidities.getData( triangleValidities );
+			bufferTrianglesPerAtom.getData( trianglesPerAtom );
 
 			// Unbind.
 			bufferSesGridData.unbind();
@@ -320,6 +324,7 @@ namespace VTX
 			bufferTriangleValidities.unbind();
 			bufferTriangleTable.unbind();
 			bufferCellHashsReduced.unbind();
+			bufferTrianglesPerAtom.unbind();
 
 			chrono2.stop();
 			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
@@ -335,7 +340,27 @@ namespace VTX
 			bufferSizeReduced = *( triangleValidities.end() - 1 );
 			_indiceCount	  = uint( bufferSizeReduced );
 
+			assert( _indiceCount % 3 == 0 );
+
 			VTX_INFO( "Triangle buffer size after compaction: {}", _indiceCount );
+
+			// Compute atom to triangles.
+			_atomsToTriangles = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
+			uint counter	  = 0;
+			for ( uint i = 0; i < atomPositions.size(); ++i )
+			{
+				if ( trianglesPerAtom[ i ] == 0 )
+				{
+					continue;
+				}
+
+				const uint size		   = trianglesPerAtom[ i ];
+				_atomsToTriangles[ i ] = { counter, size };
+				counter += size;
+			}
+			_atomsToTriangles.shrink_to_fit();
+
+			assert( counter == _indiceCount );
 
 			// Create SSBOs.
 			// Output.
@@ -349,20 +374,21 @@ namespace VTX
 
 			if ( _isInit == false )
 			{
-				bufferPositions.set( bufferSizeReduced * sizeof( Vec4f ) );
-				bufferNormals.set( bufferSizeReduced * sizeof( Vec4f ) );
-				bufferIndices.set( bufferSizeReduced * sizeof( uint ) );
-				bufferColors.set( bufferSizeReduced * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
-				bufferVisibilities.set( bufferSizeReduced * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
-				bufferIds.set( bufferSizeReduced * sizeof( uint ) );
-				bufferSelections.set( bufferSizeReduced * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
+				// Create final buffers.
+				bufferPositions.set( _indiceCount * sizeof( Vec4f ) );
+				bufferNormals.set( _indiceCount * sizeof( Vec4f ) );
+				bufferIndices.set( _indiceCount * sizeof( uint ) );
+				bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
+				bufferVisibilities.set( _indiceCount * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
+				bufferIds.set( _indiceCount * sizeof( uint ) );
+				bufferSelections.set( _indiceCount * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 			}
 
 			// Input.
-			Buffer bufferTriangleValiditiesSum( triangleValidities );
 			Buffer bufferAtomColors( _category->getMoleculePtr()->getBufferAtomColors() );
 			Buffer bufferAtomVisibilities( _category->getMoleculePtr()->getBufferAtomVisibilities() );
 			Buffer bufferAtomIds( _category->getMoleculePtr()->getBufferAtomIds() );
+			Buffer bufferAtomToTriangle( _atomsToTriangles );
 
 			// Bind.
 			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
@@ -371,22 +397,26 @@ namespace VTX
 			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 			bufferVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
 			bufferIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
-
 			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
 			bufferNormalsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
 			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
 			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 9 );
-			bufferTriangleValiditiesSum.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 10 );
+			bufferAtomToTriangle.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 10 );
 			bufferAtomColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 11 );
 			bufferAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 12 );
 			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 13 );
+			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 14 );
+
+			// Buffer debug( bufferSize * sizeof( uint ) );
+			// debug.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 15 );
 
 			workerStreamCompaction.getProgram().use();
 			workerStreamCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
 			workerStreamCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
 
 			// Start.
-			workerStreamCompaction.start( bufferSize );
+			assert( bufferSize % 3 == 0 );
+			workerStreamCompaction.start( bufferSize / 3 );
 
 			// Unbind.
 			bufferPositions.unbind();
@@ -399,16 +429,11 @@ namespace VTX
 			bufferPositionsTmp.unbind();
 			bufferNormalsTmp.unbind();
 			bufferAtomIndicesTmp.unbind();
-			bufferTriangleValiditiesSum.unbind();
+			bufferAtomToTriangle.unbind();
 			bufferAtomColors.unbind();
 			bufferAtomVisibilities.unbind();
 			bufferAtomIds.unbind();
-
-			/////////// TMP.
-			_atomsToTriangles				   = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
-			_atomsToTriangles[ atomsIdx[ 0 ] ] = Range { 0, _indiceCount };
-
-			_atomsToTriangles.shrink_to_fit();
+			bufferTrianglesPerAtom.unbind();
 
 			chrono2.stop();
 			VTX_INFO( "Buffer compacted in " + std::to_string( chrono2.elapsedTime() ) + "s" );

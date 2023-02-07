@@ -82,6 +82,11 @@ layout (std430, binding = 6) readonly buffer CellHashsReduced
 	uint[] cellHashsReduced;
 };
 
+layout (std430, binding = 7) buffer TrianglesPerAtom
+{
+	uint[] trianglesPerAtom;
+};
+
 void main()
 {
 	// Get corresponding ses grid data.
@@ -160,17 +165,17 @@ void main()
 	}
 
 	// Get triangles.
+	uint counter = 0;
 	for ( uint i = 0; triangleTable[ cubeIndex * 16 + i ] != -1; i += 3 )
 	{
+		counter += 3;
+		
 		for ( uint j = 0; j < 3; ++j )
 		{
 			const vec3 vertice = intersections[ triangleTable[ cubeIndex * 16 + i + j ] ];		
 
 			// Position.
 			trianglePositions[ hash * 15 + i + j ] = vec4( vertice, 1.f );		
-
-			// Debug.
-			//debug[ sesGridHash * 15 + i + j ] = vec4( vertice, 1.f );	
 			
 			// Validity (used for compaction in the next pass).
 			triangleValidities[ hash * 15 + i + j ] = 1;
@@ -189,4 +194,6 @@ void main()
 			triangleAtomIndices[ hash * 15 + i + j ] = sesGridData[ sesGridHash ].nearestAtom;
 		}
 	}
+	
+	atomicAdd( trianglesPerAtom[ sesGridData[ sesGridHash ].nearestAtom ], counter );
 }

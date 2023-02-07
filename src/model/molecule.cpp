@@ -54,8 +54,9 @@ namespace VTX
 				delete unknownResidueSymbol;
 
 			if ( _secondaryStructure != nullptr )
+			{
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
-
+			}
 			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
 			{
 				MVC::MvcManager::get().deleteModel( val );
