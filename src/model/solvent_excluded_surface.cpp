@@ -67,7 +67,7 @@ namespace VTX
 			Tool::Chrono chrono, chrono2;
 			chrono.start();
 			chrono2.start();
-			VTX_INFO( "Creating SES..." );
+			VTX_DEBUG( "Creating SES..." );
 
 			const std::vector<uint> atomsIdx = _category->generateAtomIndexList();
 
@@ -126,7 +126,7 @@ namespace VTX
 			atomGridDataTmp.shrink_to_fit();
 
 			chrono2.stop();
-			VTX_INFO( "Atoms sorted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Atoms sorted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			// Compute SES grid and compute SDF.
@@ -176,7 +176,7 @@ namespace VTX
 			bufferAtomPosition.unbind();
 
 			chrono2.stop();
-			VTX_INFO( "SDF created in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "SDF created in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			//////////////////////
@@ -204,7 +204,7 @@ namespace VTX
 			bufferSesGridData.unbind();
 
 			chrono2.stop();
-			VTX_INFO( "SDF boundary created in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "SDF boundary created in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			////////////////////////////
@@ -235,18 +235,18 @@ namespace VTX
 			bufferCellHashs.unbind();
 
 			chrono2.stop();
-			VTX_INFO( "Grid reduced in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Grid reduced in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			////////////////////////////
 			// Worker: grid compaction.
 			Worker::GpuComputer workerGridCompaction( IO::FilePath( "ses/grid_compaction.comp" ) );
 			size_t				bufferSize = gridSES.getCellCount();
-			VTX_INFO( "Grid buffer size before compaction: {}", bufferSize );
+			VTX_DEBUG( "Grid buffer size before compaction: {}", bufferSize );
 			std::exclusive_scan( cellValidities.begin(), cellValidities.end(), cellValidities.begin(), 0 );
 			size_t bufferSizeReduced = *( cellValidities.end() - 1 );
 
-			VTX_INFO( "Grid buffer size after compaction: {}", bufferSizeReduced );
+			VTX_DEBUG( "Grid buffer size after compaction: {}", bufferSizeReduced );
 
 			Buffer bufferCellValiditiesSum( cellValidities );
 			Buffer bufferCellHashsReduced( bufferSizeReduced * sizeof( uint ) );
@@ -271,7 +271,7 @@ namespace VTX
 			bufferCellHashsReduced.unbind();
 
 			chrono2.stop();
-			VTX_INFO( "Grid compacted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Grid compacted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			/////////////////////////
@@ -327,13 +327,13 @@ namespace VTX
 			bufferTrianglesPerAtom.unbind();
 
 			chrono2.stop();
-			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			////////////////////////////
 			// Worker: buffer compaction.
 			Worker::GpuComputer workerStreamCompaction( IO::FilePath( "ses/buffer_compaction.comp" ) );
-			VTX_INFO( "Triangle buffer size before compaction: {}", bufferSize );
+			VTX_DEBUG( "Triangle buffer size before compaction: {}", bufferSize );
 			//  Perform exclusive scan on validity buffer.
 			std::exclusive_scan( triangleValidities.begin(), triangleValidities.end(), triangleValidities.begin(), 0 );
 
@@ -342,7 +342,7 @@ namespace VTX
 
 			assert( _indiceCount % 3 == 0 );
 
-			VTX_INFO( "Triangle buffer size after compaction: {}", _indiceCount );
+			VTX_DEBUG( "Triangle buffer size after compaction: {}", _indiceCount );
 
 			// Compute atom to triangles.
 			_atomsToTriangles = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
@@ -436,10 +436,10 @@ namespace VTX
 			bufferTrianglesPerAtom.unbind();
 
 			chrono2.stop();
-			VTX_INFO( "Buffer compacted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Buffer compacted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 
 			chrono.stop();
-			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			VTX_DEBUG( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
 		void SolventExcludedSurface::_refreshCPU()
@@ -447,7 +447,7 @@ namespace VTX
 			Tool::Chrono chrono, chrono2;
 			chrono.start();
 			chrono2.start();
-			VTX_INFO( "Creating SES..." );
+			VTX_DEBUG( "Creating SES..." );
 
 			_vertices.clear();
 			_normals.clear();
@@ -489,7 +489,7 @@ namespace VTX
 			}
 
 			chrono2.stop();
-			VTX_INFO( "Atoms sorted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Atoms sorted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			// Compute SES grid and compute SDF.
@@ -573,7 +573,7 @@ namespace VTX
 			}
 
 			chrono2.stop();
-			VTX_INFO( "SDF created " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "SDF created " + std::to_string( chrono2.elapsedTime() ) + "s" );
 
 			chrono2.start();
 
@@ -637,7 +637,7 @@ namespace VTX
 
 			chrono2.stop();
 
-			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			std::vector<std::vector<Vec4f>> atomsToTriangles( atomPositions.size(), std::vector<Vec4f>() );
@@ -705,7 +705,7 @@ namespace VTX
 			}
 
 			chrono2.stop();
-			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			// Fill buffers with sorted values and store data as triangle range per atoms.
@@ -735,15 +735,15 @@ namespace VTX
 			}
 
 			chrono2.stop();
-			VTX_INFO( "Triangles sorting done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Triangles sorting done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 			// toIndexed();
 			chrono2.stop();
-			VTX_INFO( "Mesh to indexed computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Mesh to indexed computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 			recomputeNormals();
 			chrono2.stop();
-			VTX_INFO( "Normals computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Normals computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 
 			_indiceCount = uint( _indices.size() );
 
@@ -768,7 +768,7 @@ namespace VTX
 			_atomsToTriangles.shrink_to_fit();
 
 			chrono.stop();
-			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			VTX_DEBUG( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
 		// TODO: check if it is still needed after creation.

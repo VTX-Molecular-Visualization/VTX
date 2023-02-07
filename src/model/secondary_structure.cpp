@@ -22,17 +22,16 @@ namespace VTX
 
 		void SecondaryStructure::_init()
 		{
-			VTX_DEBUG( "INIT" );
 			Tool::Chrono chrono;
 			chrono.start();
-			VTX_INFO( "Creating secondary structure..." );
+			VTX_DEBUG( "Creating secondary structure..." );
 
 			refresh();
 			refreshSelection(
 				VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculeMap( *_molecule ) );
 
 			chrono.stop();
-			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
 		void SecondaryStructure::refresh()
@@ -394,8 +393,8 @@ namespace VTX
 
 		void SecondaryStructure::print() const
 		{
-			VTX_INFO( "Control points: " + std::to_string( _bufferCaPositions.size() )
-					  + " / Indices: " + std::to_string( _bufferIndices.size() ) );
+			VTX_DEBUG( "Control points: " + std::to_string( _bufferCaPositions.size() )
+					   + " / Indices: " + std::to_string( _bufferIndices.size() ) );
 			VTX_DEBUG( "Sizeof secondary structure: " + std::to_string( sizeof( *this ) ) );
 		}
 

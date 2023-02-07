@@ -874,7 +874,6 @@ namespace VTX
 
 			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule>( this );
 			_secondaryStructure->init();
-			_secondaryStructure->print();
 		}
 
 		void Molecule::refreshSecondaryStructure()
@@ -910,7 +909,6 @@ namespace VTX
 					&getCategory( p_categoryEnum ) );
 			_solventExcludedSurfaces.emplace( p_categoryEnum, ses );
 			ses->init();
-			ses->print();
 		}
 
 		void Molecule::refreshSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum )
