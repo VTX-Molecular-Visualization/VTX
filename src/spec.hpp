@@ -21,6 +21,7 @@ namespace VTX
 		int glMaxComputeWorkGroupInvocations;
 		int glMaxUniformBlockSize;
 		int glMaxShaderStorageBlockSize;
+		int glMaxShaderStorageBufferBindings;
 
 		void print()
 		{
@@ -44,6 +45,7 @@ namespace VTX
 			VTX_DEBUG( "Max compute work group invocations: {}", glMaxComputeWorkGroupInvocations );
 			VTX_DEBUG( "Max uniform block size: {}", glMaxUniformBlockSize );
 			VTX_DEBUG( "Max shader storage block size: {}", glMaxShaderStorageBlockSize );
+			VTX_DEBUG( "Max shader storage buffer bindings: {}", glMaxShaderStorageBufferBindings );
 		}
 	};
 } // namespace VTX
