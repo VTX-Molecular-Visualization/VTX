@@ -1,4 +1,5 @@
 #version 450
+#include "../constant.glsl"
 #include "include/struct.glsl"
 #include "include/helper.glsl"
 #include "include/grid.glsl"
@@ -165,22 +166,33 @@ void main()
 	}
 
 	// Get triangles.
-	uint counter = 0;
 	for ( uint i = 0; triangleTable[ cubeIndex * 16 + i ] != -1; i += 3 )
-	{
-		counter += 3;
-		
+	{	
+		vec3 center;
 		for ( uint j = 0; j < 3; ++j )
 		{
 			const vec3 vertice = intersections[ triangleTable[ cubeIndex * 16 + i + j ] ];		
-
+			center += vertice;
 			// Position.
 			trianglePositions[ hash * 15 + i + j ] = vec4( vertice, 1.f );		
 			
 			// Validity (used for compaction in the next pass).
 			triangleValidities[ hash * 15 + i + j ] = 1;
 		}
-		
+		center /= 3.f;
+
+		// Get closest atom.
+		float closestDistance = FLT_MAX;
+		uint  closestVertex	  = 0;		
+		for ( uint vertex = 0; vertex < 8; ++vertex )
+		{
+			float d = distance( center, voxelWorldPosition[ vertex ] );
+			if ( d < closestDistance )
+			{
+				closestVertex	= vertex;
+				closestDistance = d;
+			}
+		}
 		
 		const vec4 normal = vec4(
 			normalize( 
@@ -188,12 +200,12 @@ void main()
 						intersections[ triangleTable[ cubeIndex * 16 + i + 2 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ] ) )
 						, 1.f );
 		
+		const uint nearestAtom = sesGridData[ voxelHash[ closestVertex ] ].nearestAtom;
 		for ( uint j = 0; j < 3; ++j )
 		{
 			triangleNormals[ hash * 15 + i + j ] = normal;
-			triangleAtomIndices[ hash * 15 + i + j ] = sesGridData[ sesGridHash ].nearestAtom;
+			triangleAtomIndices[ hash * 15 + i + j ] = nearestAtom;
 		}
+		atomicAdd( trianglesPerAtom[ nearestAtom ], 3 );
 	}
-	
-	atomicAdd( trianglesPerAtom[ sesGridData[ sesGridHash ].nearestAtom ], counter );
 }
