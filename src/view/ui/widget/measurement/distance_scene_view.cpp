@@ -1,6 +1,7 @@
 #include "distance_scene_view.hpp"
 #include "action/action_manager.hpp"
 #include "action/label.hpp"
+#include "model/molecule.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
