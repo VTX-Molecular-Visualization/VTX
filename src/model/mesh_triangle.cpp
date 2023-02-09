@@ -35,29 +35,31 @@ namespace VTX
 				MVC::MvcManager::get().instantiateView<View::D3::Triangle>( this, VTX::ID::View::D3_TRIANGLE ) );
 		}
 
-		void MeshTriangle::recomputeNormals()
+		void MeshTriangle::computeNormals( const std::vector<Vec4f> & p_vertices,
+										   const std::vector<uint> &  p_indices,
+										   std::vector<Vec4f> &		  p_normals )
 		{
-			if ( _indices.size() % 3 != 0 )
+			if ( p_indices.size() % 3 != 0 )
 			{
 				assert( false );
 				return;
 			}
 
-			_normals.resize( _vertices.size(), VEC4F_ZERO );
-			std::vector<std::vector<Vec3f>> normals( _vertices.size(), std::vector<Vec3f>() );
+			p_normals.resize( p_vertices.size(), VEC4F_ZERO );
+			std::vector<std::vector<Vec3f>> normals( p_vertices.size(), std::vector<Vec3f>() );
 
-			for ( uint i = 0; i < _indices.size() - 2; i += 3 )
+			for ( uint i = 0; i < p_indices.size() - 2; i += 3 )
 			{
 				Vec3f normal
-					= Util::Math::cross( Vec3f( _vertices[ _indices[ i + 1 ] ] - _vertices[ _indices[ i + 2 ] ] ),
-										 Vec3f( _vertices[ _indices[ i + 1 ] ] - _vertices[ _indices[ i + 0 ] ] ) );
+					= Util::Math::cross( Vec3f( p_vertices[ p_indices[ i + 1 ] ] - p_vertices[ p_indices[ i + 2 ] ] ),
+										 Vec3f( p_vertices[ p_indices[ i + 1 ] ] - p_vertices[ p_indices[ i + 0 ] ] ) );
 
 				assert( Util::Math::length( normal ) != 0.f );
 				Util::Math::normalizeSelf( normal );
 
 				for ( uint j = 0; j < 3; ++j )
 				{
-					normals[ _indices[ i + j ] ].emplace_back( normal );
+					normals[ p_indices[ i + j ] ].emplace_back( normal );
 				}
 			}
 
@@ -71,23 +73,23 @@ namespace VTX
 				}
 				normal /= verticeNormals.size();
 				Util::Math::normalizeSelf( normal );
-				_normals[ i ] = Vec4f( normal, 1.f );
+				p_normals[ i ] = Vec4f( normal, 1.f );
 			}
 
-			_normals.shrink_to_fit();
+			p_normals.shrink_to_fit();
 		}
 
-		void MeshTriangle::toIndexed()
+		void MeshTriangle::toIndexed( std::vector<Vec4f> & p_vertices, std::vector<uint> & p_indices )
 		{
 			std::vector<Vec4f> vertices = std::vector<Vec4f>();
-			std::vector<uint>  indices( _indices.size() );
+			std::vector<uint>  indices( p_indices.size() );
 
-			for ( uint i = 0; i < _vertices.size(); ++i )
+			for ( uint i = 0; i < p_vertices.size(); ++i )
 			{
 				bool found = false;
 				for ( uint j = 0; j < vertices.size() && found == false; ++j )
 				{
-					if ( glm::length2( vertices[ j ] - _vertices[ i ] ) < EPSILON * EPSILON )
+					if ( glm::length2( vertices[ j ] - p_vertices[ i ] ) < EPSILON * EPSILON )
 					{
 						indices[ i ] = j;
 						found		 = true;
@@ -96,24 +98,24 @@ namespace VTX
 				}
 				if ( found == false )
 				{
-					vertices.push_back( _vertices[ i ] );
+					vertices.push_back( p_vertices[ i ] );
 					indices[ i ] = uint( vertices.size() ) - 1;
 				}
 			}
 
-			_vertices = vertices;
-			_indices  = indices;
+			p_vertices = vertices;
+			p_indices  = indices;
 		}
 
-		void MeshTriangle::toNonIndexed()
+		void MeshTriangle::toNonIndexed( std::vector<Vec4f> & p_vertices, std::vector<uint> & p_indices )
 		{
-			std::vector<Vec4f> vertices( _indices.size() );
-			for ( uint i = 0; i < _indices.size(); ++i )
+			std::vector<Vec4f> vertices( p_indices.size() );
+			for ( uint i = 0; i < p_indices.size(); ++i )
 			{
-				vertices[ i ] = _vertices[ _indices[ i ] ];
+				vertices[ i ] = p_vertices[ p_indices[ i ] ];
 			}
-			_vertices = vertices;
-			std::iota( _indices.begin(), _indices.end(), 0 );
+			p_vertices = vertices;
+			std::iota( p_indices.begin(), p_indices.end(), 0 );
 		}
 
 		void MeshTriangle::print() const
@@ -124,6 +126,8 @@ namespace VTX
 
 			VTX_DEBUG( "Sizeof mesh triangle: " + std::to_string( sizeof( *this ) ) );
 		}
+
+		void MeshTriangle::toIndexed() {}
 
 	} // namespace Model
 } // namespace VTX

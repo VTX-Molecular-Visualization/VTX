@@ -90,6 +90,7 @@ namespace VTX::UI::Widget::Render
 		// Shortcuts.
 		void _onShortcutToggleCameraController();
 		void _onShortcutResetCameraController();
+		void _onShortcutToggleCamera();
 		void _onShortcutAddViewpoint();
 		void _onShortcutSnapshot();
 		void _onShortcutChangeRenderMode();

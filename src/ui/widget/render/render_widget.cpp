@@ -182,6 +182,9 @@ namespace VTX::UI::Widget::Render
 		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutResetCameraController );
 		shortcut = new QShortcut( QKeySequence( tr( "F2" ) ), this );
 		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
+		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutToggleCamera );
+		shortcut = new QShortcut( QKeySequence( tr( "F3" ) ), this );
+		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
 		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutAddViewpoint );
 		shortcut = new QShortcut( QKeySequence( tr( "F5" ) ), this );
 		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
@@ -207,6 +210,8 @@ namespace VTX::UI::Widget::Render
 	void RenderWidget::_onShortcutToggleCameraController() { VTX_ACTION( new Action::Main::ToggleCameraController() ); }
 
 	void RenderWidget::_onShortcutResetCameraController() { VTX_ACTION( new Action::Main::ResetCameraController() ); }
+
+	void RenderWidget::_onShortcutToggleCamera() { VTX_ACTION( new Action::Main::ToggleCamera() ); }
 
 	void RenderWidget::_onShortcutAddViewpoint() { VTX_ACTION( new Action::Viewpoint::Create() ); }
 

@@ -31,6 +31,8 @@ namespace VTX
 			inline const float getFar() const { return _far; }
 			inline const float getFov() const { return _fov; }
 
+			inline float getZoom() const { return _zoom; }
+
 			inline void setScreenSize( const uint p_width, const uint p_height )
 			{
 				_screenWidth  = p_width;
@@ -67,6 +69,7 @@ namespace VTX
 			void setFar( const float p_far );
 			void setFov( const float p_fov );
 			void setPerspective( const bool p_perspective );
+			void toggle();
 
 			void move( const Vec3f & );
 			void moveFront( const float );
@@ -82,6 +85,9 @@ namespace VTX
 			void rotateAround( const Quatf &, const Vec3f &, const float );
 			void lookAt( const Vec3f &, const Vec3f & );
 
+			void setZoom( const float p_zoom );
+			void zoom( const float p_delta );
+
 			void reset( const Vec3f & p_defaultPosition = VEC3F_ZERO );
 
 			void print() const;
@@ -90,9 +96,10 @@ namespace VTX
 			uint  _screenWidth	= 1u;
 			uint  _screenHeight = 1u;
 			float _aspectRatio	= 1.f;
-			float _near			= 1e-1f;
-			float _far			= 1e4f;
-			float _fov			= 60.f;
+
+			float _near = 1e-1f;
+			float _far	= 1e4f;
+			float _fov	= 60.f;
 
 			Vec3f _position = VEC3F_ZERO;
 			Quatf _rotation = QUATF_ID;
@@ -100,6 +107,9 @@ namespace VTX
 			Vec3f _front = CAMERA_FRONT_DEFAULT;
 			Vec3f _right = CAMERA_RIGHT_DEFAULT;
 			Vec3f _up	 = CAMERA_UP_DEFAULT;
+
+			// Orthographic only.
+			float _zoom = 1.f;
 
 			Mat4f _viewMatrix;
 			Mat4f _projectionMatrix;

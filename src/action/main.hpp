@@ -306,6 +306,14 @@ namespace VTX::Action::Main
 		std::vector<IO::FilePath> _paths = std::vector<IO::FilePath>();
 	};
 
+	class ToggleCamera : public BaseAction
+	{
+	  public:
+		explicit ToggleCamera() {}
+
+		virtual void execute() override { VTXApp::get().getScene().getCamera().toggle(); };
+	};
+
 	class ToggleCameraController : public BaseAction
 	{
 	  public:

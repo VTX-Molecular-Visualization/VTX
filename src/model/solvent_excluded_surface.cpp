@@ -737,11 +737,11 @@ namespace VTX
 			chrono2.stop();
 			VTX_DEBUG( "Triangles sorting done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
-			// toIndexed();
+			// toIndexed( _vertices, _indices );
 			chrono2.stop();
 			VTX_DEBUG( "Mesh to indexed computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
-			recomputeNormals();
+			computeNormals( _vertices, _indices, _normals );
 			chrono2.stop();
 			VTX_DEBUG( "Normals computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 
