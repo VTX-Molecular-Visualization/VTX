@@ -9,6 +9,7 @@
 #include <QPalette>
 #include <QSurfaceFormat>
 // #include <exception>
+#include <old/tool/logger.hpp>
 // #include <old/action/action_manager.hpp>
 // #include <old/action/main.hpp>
 #include <old/generic/base_opengl.hpp>
@@ -31,6 +32,9 @@ namespace VTX::UI::QT
 		format.setSwapInterval( int( true ) );
 
 		QSurfaceFormat::setDefaultFormat( format );
+
+		// Init resources
+		Q_INIT_RESOURCE( resources );
 	}
 
 	int ZERO = 0;
@@ -162,7 +166,7 @@ namespace VTX::UI::QT
 		}
 		catch ( const std::exception & p_e )
 		{
-			// VTX_ERROR( p_e.what() );
+			VTX_ERROR( p_e.what() );
 #ifdef VTX_PRODUCTION
 			UI::Dialog::unhandledException();
 #endif

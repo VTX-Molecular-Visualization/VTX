@@ -8,6 +8,11 @@
 }
 */
 
+QWidget
+{
+	background-color: #222222;
+}
+
 QWidget:disabled
 {
 	color: #808080;

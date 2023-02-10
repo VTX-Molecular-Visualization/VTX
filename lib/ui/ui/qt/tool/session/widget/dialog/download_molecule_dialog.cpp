@@ -3,6 +3,7 @@
 #include "qt/main_window.hpp"
 #include "qt/widget_factory.hpp"
 #include <QPushButton>
+#include <QVBoxLayout>
 #include <old/action/action_manager.hpp>
 #include <old/action/main.hpp>
 #include <old/setting.hpp>

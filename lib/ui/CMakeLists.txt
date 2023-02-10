@@ -2,7 +2,7 @@ message("Project library: VTX_UI")
 
 #Qt
 # Create paths.
-set(PATH_QT_RESOURCE "asset/qt_resources")
+set(PATH_QT_RESOURCE ${CMAKE_SOURCE_DIR}/asset/qt_resources)
 set(VTX_UI_SOURCE_PATH "lib/ui/ui")
 
 # Configure Qt.
@@ -50,7 +50,6 @@ foreach(SRC IN ITEMS ${QT_RESOURCES})
 endforeach()
 
 # Declare library
-#add_library(${VTX_UI_LIB} STATIC ${HEADERS} ${SOURCES} ${FORMS} ${QT_RESOURCES})
 add_library(${VTX_UI_LIB} STATIC ${HEADERS} ${SOURCES} ${FORMS} ${QT_RESOURCES})
 
 # Find required packages.
@@ -74,22 +73,6 @@ target_link_libraries(${VTX_UI_LIB} PUBLIC Qt6::OpenGL)
 target_link_libraries(${VTX_UI_LIB} PUBLIC Qt6::OpenGLWidgets)
 target_link_libraries(${VTX_UI_LIB} PUBLIC Qt6::Network)
 target_link_libraries(${VTX_UI_LIB} PUBLIC Qt6::Svg)
-
-# Copy shared libs to output (Windows only).	
-if(MSVC)
-	# Qt for dynamic link.
-	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Core> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
-	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Gui> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
-	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Widgets> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
-	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::OpenGL> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
-	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::OpenGLWidgets> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
-	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Network> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
-	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Svg> $<TARGET_FILE_DIR:${VTX_UI_LIB}>)
-	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QGifPlugin> $<TARGET_FILE_DIR:${VTX_UI_LIB}>/imageformats/$<TARGET_FILE_NAME:Qt6::QGifPlugin>)
-	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QJpegPlugin> $<TARGET_FILE_DIR:${VTX_UI_LIB}>/imageformats/$<TARGET_FILE_NAME:Qt6::QJpegPlugin>)
-	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QWindowsIntegrationPlugin> $<TARGET_FILE_DIR:${VTX_UI_LIB}>/platforms/$<TARGET_FILE_NAME:Qt6::QWindowsIntegrationPlugin>)
-	add_custom_command(TARGET ${VTX_UI_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QSchannelBackendPlugin> $<TARGET_FILE_DIR:${VTX_UI_LIB}>/tls/$<TARGET_FILE_NAME:Qt6::QSchannelBackendPlugin>)
-endif()
 
 # Qt options
 set_property(TARGET ${VTX_UI_LIB} PROPERTY AUTOUIC_OPTIONS "--no-autoconnection")

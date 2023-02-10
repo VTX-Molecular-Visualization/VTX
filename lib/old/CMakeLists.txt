@@ -13,8 +13,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Create paths.
 set(PATH_SRC "lib/old/old")
-set(PATH_WINDOWS_RESOURCE "asset/windows_resources")
-set(PATH_QT_RESOURCE "asset/qt_resources")
+set(PATH_WINDOWS_RESOURCE ${CMAKE_SOURCE_DIR}/asset/windows_resources)
+set(PATH_QT_RESOURCE ${CMAKE_SOURCE_DIR}/asset/qt_resources)
 
 # Libs URL and tags.
 set(GIT_URL_CHEMFILES https://github.com/sacraiou/chemfiles.git)

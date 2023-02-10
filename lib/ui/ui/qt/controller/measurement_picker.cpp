@@ -4,6 +4,7 @@
 #include "qt/state/state_machine.hpp"
 #include "qt/state/visualization.hpp"
 #include "qt/tool/keys.hpp"
+#include "qt/tool/render/widget/render_widget.hpp"
 #include <QPoint>
 #include <old/action/action_manager.hpp>
 #include <old/action/measurement.hpp>

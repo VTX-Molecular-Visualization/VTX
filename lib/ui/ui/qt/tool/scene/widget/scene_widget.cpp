@@ -55,7 +55,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 			SceneItemWidget * const sceneItemWidget = getSceneItemWidgetFromModel( model );
 
-			deleteSceneItemWidget( sceneItemWidget );
+			if ( sceneItemWidget != nullptr )
+				deleteSceneItemWidget( sceneItemWidget );
 		}
 		else if ( p_event.name == Event::Global::SCENE_ITEM_INDEXES_CHANGE )
 		{

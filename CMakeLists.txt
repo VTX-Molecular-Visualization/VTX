@@ -6,6 +6,10 @@ cmake_minimum_required(VERSION 3.16)
 # Project name.
 project(VTX)
 
+# Get CMake scripts.
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
+include(windeployqt) # Include Qt deployment helper function
+
 # Compiler options.
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

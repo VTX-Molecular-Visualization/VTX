@@ -52,22 +52,6 @@ target_link_libraries(VTX_TOOL PRIVATE Qt6::OpenGLWidgets)
 target_link_libraries(VTX_TOOL PRIVATE Qt6::Network)
 target_link_libraries(VTX_TOOL PRIVATE Qt6::Svg)
 
-# Copy shared libs to output (Windows only).	
-if(MSVC)
-	# Qt for dynamic link.
-	add_custom_command(TARGET VTX_TOOL POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Core> $<TARGET_FILE_DIR:VTX_TOOL>)
-	add_custom_command(TARGET VTX_TOOL POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Gui> $<TARGET_FILE_DIR:VTX_TOOL>)
-	add_custom_command(TARGET VTX_TOOL POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Widgets> $<TARGET_FILE_DIR:VTX_TOOL>)
-	add_custom_command(TARGET VTX_TOOL POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::OpenGL> $<TARGET_FILE_DIR:VTX_TOOL>)
-	add_custom_command(TARGET VTX_TOOL POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::OpenGLWidgets> $<TARGET_FILE_DIR:VTX_TOOL>)
-	add_custom_command(TARGET VTX_TOOL POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Network> $<TARGET_FILE_DIR:VTX_TOOL>)
-	add_custom_command(TARGET VTX_TOOL POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::Svg> $<TARGET_FILE_DIR:VTX_TOOL>)
-	add_custom_command(TARGET VTX_TOOL POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QGifPlugin> $<TARGET_FILE_DIR:VTX_TOOL>/imageformats/$<TARGET_FILE_NAME:Qt6::QGifPlugin>)
-	add_custom_command(TARGET VTX_TOOL POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QJpegPlugin> $<TARGET_FILE_DIR:VTX_TOOL>/imageformats/$<TARGET_FILE_NAME:Qt6::QJpegPlugin>)
-	add_custom_command(TARGET VTX_TOOL POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QWindowsIntegrationPlugin> $<TARGET_FILE_DIR:VTX_TOOL>/platforms/$<TARGET_FILE_NAME:Qt6::QWindowsIntegrationPlugin>)
-	add_custom_command(TARGET VTX_TOOL POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QSchannelBackendPlugin> $<TARGET_FILE_DIR:VTX_TOOL>/tls/$<TARGET_FILE_NAME:Qt6::QSchannelBackendPlugin>)
-endif()
-
 # Qt options
 set_property(TARGET VTX_TOOL PROPERTY AUTOUIC_OPTIONS "--no-autoconnection")
 

@@ -14,6 +14,7 @@
 // #include <QSettings>
 // #include <QSize>
 // #include <iostream>
+#include "qt/tool/render/widget/render_widget.hpp"
 #include <old/action/action_manager.hpp>
 #include <old/action/dev.hpp>
 #include <old/action/main.hpp>
@@ -289,6 +290,8 @@ namespace VTX::UI::QT
 	{
 		return getPanel<QT::Tool::Render::Widget::RenderWidget>( Tool::RENDER_WINDOW_KEY );
 	}
+	bool MainWindow::isOpenGLValid() const { return getRender()->isOpenGLValid(); }
+	void MainWindow::updateRender() const { getRender()->updateRender(); }
 
 	void MainWindow::_onShortcutFullscreen() const
 	{

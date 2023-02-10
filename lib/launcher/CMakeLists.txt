@@ -7,10 +7,25 @@ if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
 	file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
 
+# Create paths.
+set(PATH_WINDOWS_RESOURCE ${CMAKE_SOURCE_DIR}/asset/windows_resources)
+
 file(GLOB_RECURSE HEADERS launcher/*.hpp)
 file(GLOB_RECURSE SOURCES launcher/*.cpp)
 
-add_executable(${VTX_LAUNCHER_LIB} ${HEADERS} ${SOURCES})
+# Get all resources.
+if(MSVC)
+	file(GLOB_RECURSE RESOURCES ${PATH_WINDOWS_RESOURCE}/*.rc)
+	foreach(SRC IN ITEMS ${RESOURCES})
+		get_filename_component(SRC_PATH "${SRC}" PATH)
+		file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_WINDOWS_RESOURCE}" "${SRC_PATH}")
+		string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
+		# Create group to make visual studio filters.
+		source_group("Resources${GROUP_PATH}" FILES "${SRC}")
+	endforeach()
+endif()
+
+add_executable(${VTX_LAUNCHER_LIB} ${HEADERS} ${SOURCES} ${RESOURCES} )
 
 target_include_directories(${VTX_LAUNCHER_LIB} PRIVATE launcher/)
 
@@ -56,6 +71,9 @@ elseif(MSVC)
 endif()
 
 message("Creating post build events...")
+
+# Deploy QT libs.
+windeployqt(${VTX_LAUNCHER_LIB})
 
 # Copy render effect presets to build directory.
 add_custom_command(TARGET ${VTX_LAUNCHER_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/libraries/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../libraries)

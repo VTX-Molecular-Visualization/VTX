@@ -6,7 +6,6 @@
 #include "core/define.hpp"
 #include "qt/contextual_menu.hpp"
 #include "qt/qt_panel.hpp"
-#include "qt/tool/render/widget/render_widget.hpp"
 #include "qt/widget/main_menu/main_menu_bar.hpp"
 #include "ui_main_window.h"
 #include <QCloseEvent>
@@ -64,9 +63,9 @@ namespace VTX::UI::QT
 		QT::Tool::Render::Widget::RenderWidget *			 getRender();
 		const QT::Tool::Render::Widget::RenderWidget * const getRender() const;
 
-		inline bool isOpenGLValid() const { return getRender()->isOpenGLValid(); }
-		inline void updateRender() const { getRender()->updateRender(); }
-		void		updateRenderSetting( const Renderer::RENDER_SETTING );
+		bool isOpenGLValid() const;
+		void updateRender() const;
+		void updateRenderSetting( const Renderer::RENDER_SETTING );
 
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
