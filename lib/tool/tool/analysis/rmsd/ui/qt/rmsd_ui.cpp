@@ -12,7 +12,10 @@
 
 namespace VTX::Tool::Analysis::RMSD::UI::QT
 {
-	RMSDTool::RMSDTool() : VTX::Tool::QT::BaseQtTool(), VTX::Event::BaseEventReceiverVTX() {}
+	RMSDTool::RMSDTool() : VTX::Tool::QT::BaseQtTool(), VTX::Event::BaseEventReceiverVTX()
+	{
+		_registerEvent( Event::Global::SELECTION_CHANGE );
+	}
 
 	void RMSDTool::instantiateTool()
 	{
