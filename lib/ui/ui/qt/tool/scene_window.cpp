@@ -7,10 +7,10 @@
 #include "qt/tool/scene/widget/view/path_scene_view.hpp"
 #include "qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "qt/widget_factory.hpp"
-#include <old/model/molecule.hpp>
-#include <old/model/path.hpp>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <old/model/molecule.hpp>
+#include <old/model/path.hpp>
 
 namespace VTX::UI::QT::Tool
 {
@@ -66,7 +66,7 @@ namespace VTX::UI::QT::Tool
 		MVC::MvcManager::get().deleteView<Scene::Widget::View::PathSceneView>( &path, ID::View::UI_SCENE_PATH );
 	}
 
-	SceneWindow::SceneWindow() {}
+	SceneWindow::SceneWindow() : BaseQtTool() {}
 
 	void SceneWindow::instantiateTool()
 	{

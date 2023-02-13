@@ -2,14 +2,15 @@
 #define __VTX_UI_TOOL_DEFAULT_SCENE_WINDOW__
 
 #include "core/tool_registration.hpp"
+#include "keys.hpp"
+#include "qt/base_qt_tool.hpp"
 #include "qt/tool/scene/widget/scene_item_widget_instancier.hpp"
 #include "qt/tool/scene/widget/scene_widget.hpp"
-#include "keys.hpp"
 #include <old/object3d/scene.hpp>
 
 namespace VTX::UI::QT::Tool
 {
-	class SceneWindow : public VTX::UI::Core::BaseVTXUITool
+	class SceneWindow : public BaseQtTool
 	{
 		REGISTER_TOOL( SceneWindow, SCENE_WINDOW_KEY );
 

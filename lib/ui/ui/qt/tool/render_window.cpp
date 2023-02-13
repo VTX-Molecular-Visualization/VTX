@@ -10,7 +10,7 @@
 
 namespace VTX::UI::QT::Tool
 {
-	RenderWindow::RenderWindow() {}
+	RenderWindow::RenderWindow() : BaseQtTool() {}
 
 	void RenderWindow::instantiateTool()
 	{

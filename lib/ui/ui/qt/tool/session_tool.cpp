@@ -20,7 +20,7 @@
 
 namespace VTX::UI::QT::Tool
 {
-	SessionTool::SessionTool() {}
+	SessionTool::SessionTool() : BaseQtTool() {}
 
 	void SessionTool::instantiateTool()
 	{

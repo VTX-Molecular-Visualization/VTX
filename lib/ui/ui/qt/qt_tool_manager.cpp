@@ -1,10 +1,10 @@
 #include "qt_tool_manager.hpp"
 #include "base_qt_tool.hpp"
+#include "qt/application_qt.hpp"
+#include "qt/main_window.hpp"
 #include <qglobal.h>
-#include <ui/qt/application_qt.hpp>
-#include <ui/qt/main_window.hpp>
 
-namespace VTX::Tool::QT
+namespace VTX::UI::QT
 {
 	QtToolManager::QtToolManager()
 	{
@@ -24,4 +24,4 @@ namespace VTX::Tool::QT
 
 	void QtToolManager::registerTool( const BaseQtTool * const p_tool ) { _tools.emplace_back( p_tool ); }
 
-} // namespace VTX::Tool::QT
+} // namespace VTX::UI::QT

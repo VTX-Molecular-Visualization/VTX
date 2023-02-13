@@ -2,15 +2,16 @@
 #define __VTX_UI_QT_TOOL_SESSION__
 
 #include "core/tool_registration.hpp"
-#include "qt/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "keys.hpp"
-#include <old/object3d/scene.hpp>
+#include "qt/base_qt_tool.hpp"
+#include "qt/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QMenu>
 #include <QObject>
+#include <old/object3d/scene.hpp>
 
 namespace VTX::UI::QT::Tool
 {
-	class SessionTool : public VTX::UI::Core::BaseVTXUITool, public QObject
+	class SessionTool : public BaseQtTool
 	{
 		REGISTER_TOOL( SessionTool, SESSION_TOOLS_KEY );
 

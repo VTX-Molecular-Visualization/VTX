@@ -3,10 +3,11 @@
 
 #include "core/tool_registration.hpp"
 #include "keys.hpp"
+#include "qt/base_qt_tool.hpp"
 
 namespace VTX::UI::QT::Tool
 {
-	class RenderWindow : public VTX::UI::Core::BaseVTXUITool
+	class RenderWindow : public BaseQtTool
 	{
 		REGISTER_TOOL( RenderWindow, RENDER_WINDOW_KEY );
 

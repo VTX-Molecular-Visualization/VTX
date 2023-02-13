@@ -9,7 +9,7 @@
 
 namespace VTX::Tool::Analysis::StructuralAlignment::UI::QT
 {
-	StructuralAlignmentTool::StructuralAlignmentTool() : VTX::Tool::QT::BaseQtTool() {}
+	StructuralAlignmentTool::StructuralAlignmentTool() : VTX::UI::QT::BaseQtTool() {}
 
 	void StructuralAlignmentTool::instantiateTool()
 	{
