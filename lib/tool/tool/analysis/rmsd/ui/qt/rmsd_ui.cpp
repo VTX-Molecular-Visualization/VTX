@@ -1,18 +1,18 @@
 #include "rmsd_ui.hpp"
-#include "__new_archi/tool/analysis/rmsd/action.hpp"
-#include "__new_archi/ui/qt/application_qt.hpp"
-#include "__new_archi/ui/qt/main_window.hpp"
-#include "__new_archi/ui/qt/widget/main_menu/menu_tooltab_widget.hpp"
-#include "__new_archi/ui/qt/widget_factory.hpp"
-#include "action/action_manager.hpp"
-#include "event/event.hpp"
-#include "model/selection.hpp"
-#include "selection/selection_manager.hpp"
-#include "ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp"
+#include "analysis/rmsd/action.hpp"
+// #include "ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp"
+#include <old/action/action_manager.hpp>
+#include <old/event/event.hpp>
+#include <old/model/selection.hpp>
+#include <old/selection/selection_manager.hpp>
+#include <ui/qt/application_qt.hpp>
+#include <ui/qt/main_window.hpp>
+#include <ui/qt/widget/main_menu/menu_tooltab_widget.hpp>
+#include <ui/qt/widget_factory.hpp>
 
 namespace VTX::Tool::Analysis::RMSD::UI::QT
 {
-	RMSDTool::RMSDTool() {}
+	RMSDTool::RMSDTool() : VTX::Tool::QT::BaseQtTool(), VTX::Event::BaseEventReceiverVTX() {}
 
 	void RMSDTool::instantiateTool()
 	{
@@ -43,7 +43,7 @@ namespace VTX::Tool::Analysis::RMSD::UI::QT
 		_rmsdButton
 			= VTX::UI::QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
 				&tooltab, "rmsdButton" );
-		_rmsdButton->setData( "RMSD", ":/sprite/analysis_compute_rmsd_icon.png", Qt::Orientation::Vertical );
+		_rmsdButton->setData( "RMSD", ":/sprite/analysis/compute_rmsd_icon.png", Qt::Orientation::Vertical );
 
 		_rmsdButton->setTriggerAction( this, &RMSDTool::_computeRMSDAction );
 

@@ -1,11 +1,12 @@
-#ifndef __VTX_ANALYSIS_STRUCTURAL_ALIGNMENT_METHOD_CE_ALIGN__
-#define __VTX_ANALYSIS_STRUCTURAL_ALIGNMENT_METHOD_CE_ALIGN__
+#ifndef __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT_METHOD_CE_ALIGN__
+#define __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT_METHOD_CE_ALIGN__
 
-#include "__new_archi/tool/analysis/structural_alignment/core/struct/residue_center_of_mass_data_set.hpp"
-#include "__new_archi/tool/analysis/structural_alignment/core/structural_alignment.hpp"
-#include "define.hpp"
-#include "math/matrix.hpp"
+#include "analysis/structural_alignment/core/struct/residue_center_of_mass_data_set.hpp"
+#include "analysis/structural_alignment/core/structural_alignment.hpp"
 #include <Eigen/Geometry>
+#include <old/math/matrix.hpp>
+#include <util/constants.hpp>
+#include <util/types.hpp>
 #include <utility>
 #include <vector>
 
@@ -15,7 +16,7 @@ namespace VTX::Model
 	class Residue;
 } // namespace VTX::Model
 
-namespace VTX::Analysis::StructuralAlignmentMethod
+namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 {
 	class CEAlign : public StructuralAlignment::AlignmentMethod
 	{
@@ -92,6 +93,6 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		static Struct::ResidueCenterOfMassDataSet _residuePositionsDataSet;
 	};
 
-} // namespace VTX::Analysis::StructuralAlignmentMethod
+} // namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 
 #endif

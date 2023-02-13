@@ -2,9 +2,9 @@
 #define __VTX_UTIL_ANALYSIS__
 
 #include "analysis/rmsd.hpp"
+#include <string>
 #include <util/types.hpp>
 #include <vector>
-#include <string>
 
 namespace VTX
 {

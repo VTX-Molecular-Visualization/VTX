@@ -1,9 +1,9 @@
 #ifndef __VTX_TOOL_ANALYSIS_RMSD_CORE_RMSD__
 #define __VTX_TOOL_ANALYSIS_RMSD_CORE_RMSD__
 
-#include <define.hpp>
 #include <string>
 #include <util/constants.hpp>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX::Model
@@ -12,7 +12,7 @@ namespace VTX::Model
 	class Selection;
 } // namespace VTX::Model
 
-namespace VTX::Tool::Analysis::RMSD
+namespace VTX::Tool::Analysis::RMSD::Core
 {
 	class RMSDData
 	{
@@ -62,5 +62,5 @@ namespace VTX::Tool::Analysis::RMSD
 
 	std::string getLogString( const RMSDData & p_data );
 
-} // namespace VTX::Tool::Analysis::RMSD
+} // namespace VTX::Tool::Analysis::RMSD::Core
 #endif

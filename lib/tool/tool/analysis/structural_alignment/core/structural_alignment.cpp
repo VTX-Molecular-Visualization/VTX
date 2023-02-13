@@ -1,13 +1,13 @@
 #include "structural_alignment.hpp"
-#include "event/event.hpp"
-#include "event/event_manager.hpp"
 #include "method/ce_align.hpp"
-#include "model/molecule.hpp"
-#include "tool/logger.hpp"
+#include <old/event/event.hpp>
+#include <old/event/event_manager.hpp>
+#include <old/model/molecule.hpp>
+#include <old/tool/logger.hpp>
 #include <string>
 #include <util/chrono.hpp>
 
-namespace VTX::Analysis
+namespace VTX::Tool::Analysis::StructuralAlignment::Core
 {
 	StructuralAlignment::AlignmentParameters::AlignmentParameters() :
 		AlignmentParameters( AlignmentMethodEnum ::Unknown ) {};
@@ -29,7 +29,7 @@ namespace VTX::Analysis
 	{
 		switch ( p_methodEnum )
 		{
-		case AlignmentMethodEnum::CEAlign: return new StructuralAlignmentMethod::CEAlign::CustomParameters(); break;
+		case AlignmentMethodEnum::CEAlign: return new Method::CEAlign::CustomParameters(); break;
 
 		default:
 			VTX_ERROR( "Not implemented method" );
@@ -48,7 +48,7 @@ namespace VTX::Analysis
 
 		switch ( p_parameters.method )
 		{
-		case AlignmentMethodEnum::CEAlign: method = new StructuralAlignmentMethod::CEAlign(); break;
+		case AlignmentMethodEnum::CEAlign: method = new Method::CEAlign(); break;
 
 		default: VTX_ERROR( "Not Implemented" ); return;
 		}
@@ -81,4 +81,4 @@ namespace VTX::Analysis
 		delete method;
 	}
 
-} // namespace VTX::Analysis
+} // namespace VTX::Tool::Analysis::StructuralAlignment::Core

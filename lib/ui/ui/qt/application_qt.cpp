@@ -3,6 +3,7 @@
 #include "qt/main_window.hpp"
 #include "qt/state/state_machine.hpp"
 #include "qt/tool/render/dialog.hpp"
+#include "widget_factory.hpp"
 #include <QCoreApplication>
 #include <QIcon>
 #include <QLoggingCategory>
@@ -34,7 +35,7 @@ namespace VTX::UI::QT
 		QSurfaceFormat::setDefaultFormat( format );
 
 		// Init resources
-		Q_INIT_RESOURCE( resources );
+		Q_INIT_RESOURCE( resources_ui );
 	}
 
 	int ZERO = 0;
@@ -102,8 +103,7 @@ namespace VTX::UI::QT
 
 	void ApplicationQt::_instantiateMainWindow()
 	{
-		_mainWindow = new UI::QT::MainWindow();
-		_mainWindow->setupUi();
+		_mainWindow = WidgetFactory::get().instantiateWidget<QT::MainWindow>( nullptr, "MainWindow" );
 	}
 
 	void ApplicationQt::_postInit( const std::vector<std::string> & p_args )

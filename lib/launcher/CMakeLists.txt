@@ -32,10 +32,12 @@ target_include_directories(${VTX_LAUNCHER_LIB} PRIVATE launcher/)
 target_include_directories(${VTX_LAUNCHER_LIB} PRIVATE ${VTX_UTIL_INCLUDE_PATH})
 target_include_directories(${VTX_LAUNCHER_LIB} PRIVATE ${OLD_VTX_INCLUDE_PATH})
 target_include_directories(${VTX_LAUNCHER_LIB} PRIVATE ${VTX_UI_INCLUDE_PATH})
+target_include_directories(${VTX_LAUNCHER_LIB} PRIVATE ${VTX_TOOL_INCLUDE_PATH})
 
 target_link_libraries(${VTX_LAUNCHER_LIB} PRIVATE ${VTX_UTIL_LIB})
 target_link_libraries(${VTX_LAUNCHER_LIB} PRIVATE ${OLD_VTX_LIB})
 target_link_libraries(${VTX_LAUNCHER_LIB} PRIVATE ${VTX_UI_LIB})
+target_link_libraries(${VTX_LAUNCHER_LIB} PRIVATE ${VTX_TOOL_LIB})
 
 
 # Compiler options #2.
@@ -73,7 +75,7 @@ endif()
 message("Creating post build events...")
 
 # Deploy QT libs.
-windeployqt(${VTX_LAUNCHER_LIB})
+win_deploy_qt(${VTX_LAUNCHER_LIB})
 
 # Copy render effect presets to build directory.
 add_custom_command(TARGET ${VTX_LAUNCHER_LIB} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/libraries/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../libraries)

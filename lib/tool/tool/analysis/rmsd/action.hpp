@@ -1,10 +1,10 @@
 #ifndef __VTX_TOOL_ANALYSIS_RMSD_ACTION__
 #define __VTX_TOOL_ANALYSIS_RMSD_ACTION__
 
-#include "action/base_action.hpp"
 #include "core/rmsd.hpp"
-#include "model/molecule.hpp"
-#include "model/selection.hpp"
+#include <old/action/base_action.hpp>
+#include <old/model/molecule.hpp>
+#include <old/model/selection.hpp>
 #include <vector>
 
 namespace VTX::Tool::Analysis::RMSD::Action
@@ -53,14 +53,14 @@ namespace VTX::Tool::Analysis::RMSD::Action
 			{
 				for ( const Model::Molecule * const molecule : _target.moleculeData.second )
 				{
-					RMSD::callRMSDComputation( _target.moleculeData.first, molecule, _considerTransform );
+					RMSD::Core::callRMSDComputation( _target.moleculeData.first, molecule, _considerTransform );
 				}
 			}
 			break;
 
 			case MODE::SELECTION:
 			{
-				RMSD::callRMSDComputation( *_target.selectionData, _considerTransform );
+				RMSD::Core::callRMSDComputation( *_target.selectionData, _considerTransform );
 			}
 			break;
 			}

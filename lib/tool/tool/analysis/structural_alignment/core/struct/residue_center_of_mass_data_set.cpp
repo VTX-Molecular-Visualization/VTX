@@ -1,8 +1,8 @@
 #include "residue_center_of_mass_data_set.hpp"
-#include "model/molecule.hpp"
-#include "model/residue.hpp"
+#include <old/model/molecule.hpp>
+#include <old/model/residue.hpp>
 
-namespace VTX::Analysis::Struct
+namespace VTX::Tool::Analysis::StructuralAlignment::Core::Struct
 {
 	Vec3f ResidueCenterOfMassDataSet::getPositionInMolecule( const Model::Residue & p_residue )
 	{
@@ -33,4 +33,4 @@ namespace VTX::Analysis::Struct
 
 		return ( res - basePos );
 	}
-} // namespace VTX::Analysis::Struct
+} // namespace VTX::Tool::Analysis::StructuralAlignment::Core::Struct

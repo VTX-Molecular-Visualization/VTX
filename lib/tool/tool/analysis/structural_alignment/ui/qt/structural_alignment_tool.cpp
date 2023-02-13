@@ -1,15 +1,15 @@
 #include "structural_alignment_tool.hpp"
-#include "__new_archi/ui/qt/application_qt.hpp"
-#include "__new_archi/ui/qt/main_window.hpp"
-#include "__new_archi/ui/qt/widget/main_menu/menu_toolbutton_submenu_widget.hpp"
-#include "__new_archi/ui/qt/widget/main_menu/menu_toolbutton_widget.hpp"
-#include "__new_archi/ui/qt/widget/main_menu/menu_tooltab_widget.hpp"
-#include "__new_archi/ui/qt/widget_factory.hpp"
-#include "ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp"
+#include <old/ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp>
+#include <ui/qt/application_qt.hpp>
+#include <ui/qt/main_window.hpp>
+#include <ui/qt/widget/main_menu/menu_toolbutton_submenu_widget.hpp>
+#include <ui/qt/widget/main_menu/menu_toolbutton_widget.hpp>
+#include <ui/qt/widget/main_menu/menu_tooltab_widget.hpp>
+#include <ui/qt/widget_factory.hpp>
 
 namespace VTX::Tool::Analysis::StructuralAlignment::UI::QT
 {
-	StructuralAlignmentTool::StructuralAlignmentTool() {}
+	StructuralAlignmentTool::StructuralAlignmentTool() : VTX::Tool::QT::BaseQtTool() {}
 
 	void StructuralAlignmentTool::instantiateTool()
 	{

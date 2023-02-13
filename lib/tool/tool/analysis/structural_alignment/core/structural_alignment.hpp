@@ -1,10 +1,11 @@
-#ifndef __VTX_ANALYSIS_STRUCTURAL_ALIGNMENT__
-#define __VTX_ANALYSIS_STRUCTURAL_ALIGNMENT__
+#ifndef __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT__
+#define __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT__
 
-#include "define.hpp"
-#include "math/matrix.hpp"
 #include "struct/residue_center_of_mass_data_set.hpp"
 #include <Eigen/Geometry>
+#include <old/math/matrix.hpp>
+#include <util/constants.hpp>
+#include <util/types.hpp>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,7 @@ namespace VTX::Model
 	class Molecule;
 }
 
-namespace VTX::Analysis
+namespace VTX::Tool::Analysis::StructuralAlignment::Core
 {
 	class StructuralAlignment
 	{
@@ -75,6 +76,6 @@ namespace VTX::Analysis
 													   const AlignmentParameters &			  p_parameters );
 	};
 
-} // namespace VTX::Analysis
+} // namespace VTX::Tool::Analysis::StructuralAlignment::Core
 
 #endif

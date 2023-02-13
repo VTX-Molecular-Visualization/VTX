@@ -1,13 +1,13 @@
 #include "ce_align.hpp"
-#include "__new_archi/tool/analysis/rmsd/core/rmsd.hpp"
-#include "model/molecule.hpp"
-#include "model/residue.hpp"
-#include "tool/logger.hpp"
+#include "analysis/rmsd/core/rmsd.hpp"
 #include <cmath>
 #include <list>
+#include <old/model/molecule.hpp>
+#include <old/model/residue.hpp>
+#include <old/tool/logger.hpp>
 #include <string>
 
-namespace VTX::Analysis::StructuralAlignmentMethod
+namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 {
 	Struct::ResidueCenterOfMassDataSet CEAlign::_residuePositionsDataSet = Struct::ResidueCenterOfMassDataSet();
 
@@ -581,7 +581,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 													  translation.z,
 													  1. );
 
-			const float rmsd = float( VTX::Tool::Analysis::RMSD::computeRMSD(
+			const float rmsd = float( VTX::Tool::Analysis::RMSD::Core::computeRMSD(
 				residuePositionsA, residuePositionsB, MAT4F_ID, rotationMatrix ) );
 
 			if ( !result.isValid() || rmsd < result.rmsd
@@ -644,7 +644,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 			}
 		}
 
-		return VTX::Tool::Analysis::RMSD::computeRMSD(
+		return VTX::Tool::Analysis::RMSD::Core::computeRMSD(
 			residuePositionsPath1, residuePositionsPath2, MAT4F_ID, p_transfoMatrix );
 	}
 
@@ -846,4 +846,4 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 				 _eigenMat.row( 2 )[ 0 ], _eigenMat.row( 2 )[ 1 ], _eigenMat.row( 2 )[ 2 ] };
 	}
 
-} // namespace VTX::Analysis::StructuralAlignmentMethod
+} // namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method

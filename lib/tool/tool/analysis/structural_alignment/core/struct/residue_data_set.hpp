@@ -1,12 +1,12 @@
-#ifndef __VTX_ANALYSIS_STRUCTURAL_ALIGNMENT_CORE_STRUCT_RESIDUE_DATA_SET__
-#define __VTX_ANALYSIS_STRUCTURAL_ALIGNMENT_CORE_STRUCT_RESIDUE_DATA_SET__
+#ifndef __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT_CORE_STRUCT_RESIDUE_DATA_SET__
+#define __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT_CORE_STRUCT_RESIDUE_DATA_SET__
 
-#include "model/residue.hpp"
 #include <map>
+#include <old/model/residue.hpp>
 #include <string>
 #include <vector>
 
-namespace VTX::Analysis::Struct
+namespace VTX::Tool::Analysis::StructuralAlignment::Core::Struct
 {
 	template<typename T>
 	class ResidueDataSet
@@ -71,6 +71,6 @@ namespace VTX::Analysis::Struct
 		std::map<std::string, T> _nonStandardResidueData;
 	};
 
-} // namespace VTX::Analysis::Struct
+} // namespace VTX::Tool::Analysis::StructuralAlignment::Core::Struct
 
 #endif

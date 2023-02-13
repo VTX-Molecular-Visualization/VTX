@@ -1,12 +1,13 @@
 #include "rmsd.hpp"
-#include "event/event.hpp"
-#include "event/event_manager.hpp"
-#include "model/molecule.hpp"
-#include "model/selection.hpp"
-#include "util/analysis.hpp"
+#include "analysis/util.hpp"
 #include <cmath>
+#include <old/event/event.hpp>
+#include <old/event/event_manager.hpp>
+#include <old/model/molecule.hpp>
+#include <old/model/selection.hpp>
+#include <old/util/math.hpp>
 
-namespace VTX::Tool::Analysis::RMSD
+namespace VTX::Tool::Analysis::RMSD::Core
 {
 	void callRMSDComputation( const Model::Molecule * const p_firstMolecule,
 							  const Model::Molecule * const p_secondMolecule,
@@ -31,17 +32,17 @@ namespace VTX::Tool::Analysis::RMSD
 		std::vector<const Model::Molecule *> otherMolecules = std::vector<const Model::Molecule *>();
 		otherMolecules.reserve( p_selection.getMoleculeSelectedCount() - 1 );
 
-		Util::Analysis::pickTargetAndComparersFromSelection( p_selection, targetMolecule, otherMolecules );
+		Analysis::Util::pickTargetAndComparersFromSelection( p_selection, targetMolecule, otherMolecules );
 
 		std::vector<Vec3f> targetAtomPositions = std::vector<Vec3f>();
-		Util::Analysis::getAtomPositions( p_selection, targetMolecule, targetAtomPositions );
+		Analysis::Util::getAtomPositions( p_selection, targetMolecule, targetAtomPositions );
 
 		const Mat4f targetTransform = p_considerTransform ? targetMolecule->getTransform().get() : MAT4F_ID;
 
 		for ( const Model::Molecule * otherMolecule : otherMolecules )
 		{
 			std::vector<Vec3f> otherAtomPositions = std::vector<Vec3f>();
-			Util::Analysis::getAtomPositions( p_selection, otherMolecule, otherAtomPositions );
+			Analysis::Util::getAtomPositions( p_selection, otherMolecule, otherAtomPositions );
 
 			const Mat4f otherTransform = p_considerTransform ? otherMolecule->getTransform().get() : MAT4F_ID;
 
@@ -79,7 +80,7 @@ namespace VTX::Tool::Analysis::RMSD
 			const Vec3f point1Vec3f = { point1Vec4f.x, point1Vec4f.y, point1Vec4f.z };
 			const Vec3f point2Vec3f = { point2Vec4f.x, point2Vec4f.y, point2Vec4f.z };
 
-			rmsd += Util::Math::distance( point1Vec3f, point2Vec3f ) / minAtomLength;
+			rmsd += VTX::Util::Math::distance( point1Vec3f, point2Vec3f ) / minAtomLength;
 		}
 
 		rmsd = sqrt( rmsd );
@@ -123,7 +124,7 @@ namespace VTX::Tool::Analysis::RMSD
 				const Vec3f point1Vec3f = { point1Vec4f.x, point1Vec4f.y, point1Vec4f.z };
 				const Vec3f point2Vec3f = { point2Vec4f.x, point2Vec4f.y, point2Vec4f.z };
 
-				rmsd += Util::Math::distance( point1Vec3f, point2Vec3f ) / atomCount;
+				rmsd += VTX::Util::Math::distance( point1Vec3f, point2Vec3f ) / atomCount;
 			}
 		}
 		else
@@ -138,7 +139,7 @@ namespace VTX::Tool::Analysis::RMSD
 					continue;
 				}
 
-				rmsd += Util::Math::distance( frame1[ i ], frame2[ i ] ) / atomCount;
+				rmsd += VTX::Util::Math::distance( frame1[ i ], frame2[ i ] ) / atomCount;
 			}
 		}
 
@@ -166,4 +167,4 @@ namespace VTX::Tool::Analysis::RMSD
 		return log;
 	}
 
-} // namespace VTX::Tool::Analysis::RMSD
+} // namespace VTX::Tool::Analysis::RMSD::Core

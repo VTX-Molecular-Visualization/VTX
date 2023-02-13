@@ -1,15 +1,15 @@
-#ifndef __VTX_UI_DEFAULT_TOOL_RENDER_WINDOW__
-#define __VTX_UI_DEFAULT_TOOL_RENDER_WINDOW__
+#ifndef __VTX_TOOL_ANALYSIS_RMSD_UI__
+#define __VTX_TOOL_ANALYSIS_RMSD_UI__
 
-#include "__new_archi/tool/analysis/rmsd/tool_info.hpp"
-#include "__new_archi/ui/core/tool_registration.hpp"
-#include "__new_archi/ui/qt/widget/main_menu/menu_toolbutton_widget.hpp"
-#include "event/base_event_receiver_vtx.hpp"
-#include <QObject>
+#include "analysis/rmsd/tool_info.hpp"
+#include "qt/base_qt_tool.hpp"
+#include <old/event/base_event_receiver_vtx.hpp>
+#include <ui/core/tool_registration.hpp>
+#include <ui/qt/widget/main_menu/menu_toolbutton_widget.hpp>
 
 namespace VTX::Tool::Analysis::RMSD::UI::QT
 {
-	class RMSDTool : public VTX::UI::Core::BaseVTXUITool, public QObject, public VTX::Event::BaseEventReceiverVTX
+	class RMSDTool : public VTX::Tool::QT::BaseQtTool, public VTX::Event::BaseEventReceiverVTX
 	{
 		REGISTER_TOOL( RMSDTool, TOOL_KEY );
 

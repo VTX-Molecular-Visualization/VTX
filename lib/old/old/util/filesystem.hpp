@@ -1,10 +1,7 @@
 #ifndef __VTX_UTIL_FILESYSTEM__
 #define __VTX_UTIL_FILESYSTEM__
 
-#include <util/exception.hpp>
-#include <util/filepath.hpp>
 #include "tool/logger.hpp"
-#include <util/time.hpp>
 #include <QCoreApplication>
 #include <QDir>
 #include <QDirIterator>
@@ -12,6 +9,9 @@
 #include <QTextStream>
 #include <QUrl>
 #include <set>
+#include <util/exception.hpp>
+#include <util/filepath.hpp>
+#include <util/time.hpp>
 #include <vector>
 
 namespace VTX
@@ -65,7 +65,7 @@ namespace VTX
 					return FILE_TYPE_ENUM::UNKNOWN;
 				}
 			}
-			inline void fillFilepathPerMode( std::vector<Util::FilePath>				  p_filepaths,
+			inline void fillFilepathPerMode( std::vector<Util::FilePath>				p_filepaths,
 											 std::vector<std::vector<Util::FilePath>> & p_filepathPerMode )
 			{
 				p_filepathPerMode.resize( int( FILE_TYPE_ENUM::COUNT ) );
@@ -113,7 +113,10 @@ namespace VTX
 			inline const Util::FilePath getRendersDir() { return getExecutableDir() + "/renders"; }
 			inline const Util::FilePath getLogsDir() { return getExecutableDir() + "/logs"; }
 			inline const Util::FilePath getLibrariesDir() { return getExecutableDir() + "/libraries"; }
-			inline const Util::FilePath getRepresentationsLibraryDir() { return getLibrariesDir() + "/representations"; }
+			inline const Util::FilePath getRepresentationsLibraryDir()
+			{
+				return getLibrariesDir() + "/representations";
+			}
 			inline const Util::FilePath getRenderEffectPresetsLibraryDir()
 			{
 				return getLibrariesDir() + "/render_effects";
@@ -128,9 +131,9 @@ namespace VTX
 			inline const Util::FilePath getDefaultSnapshotsDir() { return getExecutableDir() + "/snapshots"; }
 
 			// Dev directories.
-			static const Util::FilePath DATA_DIR				  = Util::FilePath( "../data" );
-			static const Util::FilePath SHADERS_DIR_SRC		  = Util::FilePath( "../src/shader" );
-			static const Util::FilePath DEFAULT_SAVE_FOLDER	  = Util::FilePath( "../save" );
+			static const Util::FilePath DATA_DIR				= Util::FilePath( "../data" );
+			static const Util::FilePath SHADERS_DIR_SRC			= Util::FilePath( "../src/shader" );
+			static const Util::FilePath DEFAULT_SAVE_FOLDER		= Util::FilePath( "../save" );
 			static const Util::FilePath DEFAULT_MOLECULE_FOLDER = Util::FilePath( "../data" );
 
 			// JSon save fail when size > 192
@@ -218,33 +221,33 @@ namespace VTX
 			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
 
-			static const Util::FilePath STYLESHEET_FILE_DEFAULT = Util::FilePath( ":/stylesheet.css" );
-			static const Util::FilePath SCENE_OBJECT_DIR		  = Util::FilePath( "obj" );
+			static const Util::FilePath STYLESHEET_FILE_DEFAULT = Util::FilePath( ":/stylesheet_ui.css" );
+			static const Util::FilePath SCENE_OBJECT_DIR		= Util::FilePath( "obj" );
 
 			static const std::string DEFAULT_SCENE_FILENAME	   = "New Scene";
 			static const std::string DEFAULT_MOLECULE_FILENAME = "New Molecule";
 
-			Util::FilePath		   getParentDir( const Util::FilePath & p_path );
-			void				   createDirectory( const Util::FilePath & p_filePath );
-			bool				   copyFile( const Util::FilePath & p_from, const Util::FilePath & p_to );
-			const std::string	   readPath( const Util::FilePath & p_filePath, const char * p_codecName = nullptr );
-			void				   readPath( const Util::FilePath & p_filePath,
-											 std::string &		  p_content,
-											 const char *		  p_codecName = nullptr );
-			const QString		   readPathQString( const Util::FilePath &			   p_filePath,
-													const QStringConverter::Encoding & p_codecName
-													= QStringConverter::Encoding::Utf8 );
-			void				   readPathQString( const Util::FilePath &			   p_filePath,
-													QString &						   p_content,
-													const QStringConverter::Encoding & p_codecName = QStringConverter::Encoding::Utf8 );
-			bool				   remove( const Util::FilePath & p_filename );
-			bool				   removeAll( const Util::FilePath & p_directory );
-			void				   copyDir( const Util::FilePath & p_from, const Util::FilePath & p_to );
+			Util::FilePath			 getParentDir( const Util::FilePath & p_path );
+			void					 createDirectory( const Util::FilePath & p_filePath );
+			bool					 copyFile( const Util::FilePath & p_from, const Util::FilePath & p_to );
+			const std::string		 readPath( const Util::FilePath & p_filePath, const char * p_codecName = nullptr );
+			void					 readPath( const Util::FilePath & p_filePath,
+											   std::string &		  p_content,
+											   const char *			  p_codecName = nullptr );
+			const QString			 readPathQString( const Util::FilePath &			 p_filePath,
+													  const QStringConverter::Encoding & p_codecName
+													  = QStringConverter::Encoding::Utf8 );
+			void					 readPathQString( const Util::FilePath &			 p_filePath,
+													  QString &							 p_content,
+													  const QStringConverter::Encoding & p_codecName = QStringConverter::Encoding::Utf8 );
+			bool					 remove( const Util::FilePath & p_filename );
+			bool					 removeAll( const Util::FilePath & p_directory );
+			void					 copyDir( const Util::FilePath & p_from, const Util::FilePath & p_to );
 			std::set<Util::FilePath> getFilesInDirectory( const Util::FilePath & p_directory );
-			void				   generateUniqueFileName( Util::FilePath & p_filePath );
-			void				   checkSaveDirectoryHierarchy( const Util::FilePath & p_savePath );
-			Util::FilePath		   getDefaultMoleculeExportPath();
-			Util::FilePath		   getDefaultSceneSavePath();
+			void					 generateUniqueFileName( Util::FilePath & p_filePath );
+			void					 checkSaveDirectoryHierarchy( const Util::FilePath & p_savePath );
+			Util::FilePath			 getDefaultMoleculeExportPath();
+			Util::FilePath			 getDefaultSceneSavePath();
 
 			inline const Util::FilePath getDataPath( const Util::FilePath & p_filename )
 			{
@@ -263,7 +266,7 @@ namespace VTX
 				return Util::FilePath( getSnapshotsDir() / p_filename );
 			}
 			const Util::FilePath getUniqueSnapshotsPath();
-			std::string		   getImageExportDefaultFilter();
+			std::string			 getImageExportDefaultFilter();
 
 			inline const Util::FilePath getVideosPath( const Util::FilePath & p_filename )
 			{

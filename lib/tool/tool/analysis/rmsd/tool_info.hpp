@@ -1,7 +1,7 @@
 #ifndef __VTX_TOOL_ANALYSIS_RMSD_TOOL_INFO__
 #define __VTX_TOOL_ANALYSIS_RMSD_TOOL_INFO__
 
-#include "__new_archi/ui/core/layout_descriptor.hpp"
+#include <ui/core/layout_descriptor.hpp>
 
 namespace VTX::Tool::Analysis::RMSD
 {

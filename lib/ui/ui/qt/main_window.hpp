@@ -7,7 +7,6 @@
 #include "qt/contextual_menu.hpp"
 #include "qt/qt_panel.hpp"
 #include "qt/widget/main_menu/main_menu_bar.hpp"
-#include "ui_main_window.h"
 #include <QCloseEvent>
 #include <QDockWidget>
 #include <QKeySequence>
@@ -16,7 +15,7 @@
 #include <old/event/base_event_firerer_input.hpp>
 #include <old/ui/cursor_handler.hpp>
 //  #include <old/ui/widget/analysis/structural_alignment/structural_alignment_widget.hpp>
-#include "widget/base_widget.hpp"
+#include "widget/base_manual_widget.hpp"
 //  #include <old/ui/widget/console/console_widget.hpp>
 //  #include <old/ui/widget/information/information_widget.hpp>
 //  #include <old/ui/widget/inspector/inspector_widget.hpp>
@@ -40,7 +39,7 @@ namespace VTX::UI::QT
 	}
 
 	class MainWindow :
-		public VTX::UI::QT::Widget::BaseWidget<QMainWindow, Ui_MainWindow>,
+		public VTX::UI::QT::Widget::BaseManualWidget<QMainWindow>,
 		public VTX::UI::Core::BaseMainWindow,
 		public Event::BaseEventFirererInput
 	{
@@ -53,7 +52,7 @@ namespace VTX::UI::QT
 		MainWindow( QWidget * p_parent = nullptr );
 		~MainWindow();
 
-		void setupUi();
+		void localize() override;
 
 		void initWindowLayout();
 		void refreshWindowTitle();
@@ -120,9 +119,14 @@ namespace VTX::UI::QT
 			return static_cast<W &>( getWidget( p_winId ) );
 		}
 
+		void appendStylesheet( const char * p_stylesheetPath );
+
 		const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::MAIN_WINDOW; };
 
 	  protected:
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
+
 		void resizeEvent( QResizeEvent * ) override;
 		void showEvent( QShowEvent * ) override;
 		void dragEnterEvent( QDragEnterEvent * ) override;
@@ -163,7 +167,6 @@ namespace VTX::UI::QT
 
 		// Functions.
 		void _loadStyleSheet( const char * p_stylesheetPath );
-		void _setupSlots();
 		void _restoreDockWidget( QDockWidget * const p_dockWidget );
 
 		// Shortcuts.
@@ -192,7 +195,7 @@ namespace VTX::UI::QT
 		void _checkUnknownFloatableWindows();
 		void _checkUnknownFloatableWindow( QDockWidget * const p_widget, const QSize & p_defaultSize );
 
-		QTimer * _restoreStateTimer;
+		QTimer * _restoreStateTimer = nullptr;
 	};
 
 } // namespace VTX::UI::QT

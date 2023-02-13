@@ -35,7 +35,7 @@
 
 namespace VTX::UI::QT
 {
-	MainWindow::MainWindow( QWidget * p_parent ) : BaseMainWindow(), BaseWidget( p_parent )
+	MainWindow::MainWindow( QWidget * p_parent ) : BaseMainWindow(), BaseManualWidget( p_parent )
 	{
 		_registerEvent( Event::Global::CHANGE_STATE );
 		_registerEvent( Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
@@ -99,8 +99,10 @@ namespace VTX::UI::QT
 		}
 	}
 
-	void MainWindow::setupUi()
+	void MainWindow::_setupUi( const QString & p_name )
 	{
+		BaseManualWidget::_setupUi( p_name );
+
 		const QSize winsize = QSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
 		resize( winsize );
 		setWindowState( Qt::WindowState::WindowNoState );
@@ -144,8 +146,6 @@ namespace VTX::UI::QT
 		_contextualMenu = new ContextualMenu();
 		//_cursorHandler	= new CursorHandler();
 
-		_setupSlots();
-
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
 		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
@@ -185,6 +185,17 @@ namespace VTX::UI::QT
 
 		QString stylesheet = stylesheetFile.readAll();
 		setStyleSheet( stylesheet );
+	}
+
+	void MainWindow::appendStylesheet( const char * p_stylesheetPath )
+	{
+		QFile stylesheetFile( p_stylesheetPath );
+		stylesheetFile.open( QFile::ReadOnly );
+
+		const QString stylesheetContent = stylesheetFile.readAll();
+		const QString newStylesheet		= styleSheet() + '\n' + stylesheetContent;
+
+		setStyleSheet( newStylesheet );
 	}
 
 	void MainWindow::_setupSlots()
@@ -268,6 +279,7 @@ namespace VTX::UI::QT
 				 this,
 				 &MainWindow::_onShortcutSetMeasurementPicker );
 	}
+	void MainWindow::localize() { setWindowTitle( "VTX" ); }
 
 	void MainWindow::referencePanel( const Core::WidgetKey & p_key, Core::BasePanel * const p_panel )
 	{
