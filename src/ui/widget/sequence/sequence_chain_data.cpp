@@ -1,164 +1,24 @@
 #include "sequence_chain_data.hpp"
-#include "dataset/sequence_dataset_missing_residue.hpp"
-#include "dataset/sequence_dataset_residue.hpp"
-#include "dataset/sequence_dataset_tag.hpp"
-#include "dataset/sequence_dataset_unknown_residue.hpp"
+#include "model/molecule.hpp"
+#include "model/residue.hpp"
 
 namespace VTX::UI::Widget::Sequence
 {
 	SequenceChainData::SequenceChainData( const Model::Chain & p_chain ) :
-		_chain( p_chain ), _molecule( *( p_chain.getMoleculePtr() ) )
+		_chain( p_chain ), _molecule( *( p_chain.getMoleculePtr() ) ), _fromResidue( _chain.getIndexFirstResidue() ),
+		_toResidue( _chain.getIndexLastResidue() ), _chainSequenceBuilder( p_chain )
 	{
-		_generateDataSet();
+		_chainSequenceBuilder.generate();
 		_generateString();
 	};
-	SequenceChainData ::~SequenceChainData()
-	{
-		for ( auto it : _dataset )
-			delete it;
-
-		_dataset.clear();
-	}
-
-	Model::Residue * const SequenceChainData::_getResidue( const uint p_localResidueIndex ) const
-	{
-		const uint moleculeResidueIndex = _chain.getIndexFirstResidue() + p_localResidueIndex;
-		return _chain.getMoleculePtr()->getResidue( moleculeResidueIndex );
-	}
-
-	void SequenceChainData::_generateDataSet()
-	{
-		const uint residueCount = _chain.getResidueCount();
-
-		Dataset::SequenceDisplayDataset_HtmlColorTag * const colorTag
-			= new Dataset::SequenceDisplayDataset_HtmlColorTag( 0, _chain.getColor() );
-		_dataset.emplace_back( colorTag );
-
-		uint localCharIndex = 0;
-
-		bool lastResidueWasUnknown				   = false;
-		uint previousResidueScaleIndex			   = _getResidue( 0 )->getIndexInOriginalChain() - 1;
-		uint sequentialResidueChainStartIndex	   = 0;
-		bool startSequentialResidueChainStartIndex = true;
-
-		for ( uint localResidueIndex = 0; localResidueIndex < residueCount; localResidueIndex++ )
-		{
-			Model::Residue * const residue = _getResidue( localResidueIndex );
-
-			if ( residue == nullptr )
-			{
-				if ( localResidueIndex > 0 && startSequentialResidueChainStartIndex )
-				{
-					localCharIndex += _emplaceResidueDataSet(
-						localCharIndex, sequentialResidueChainStartIndex, localResidueIndex - 1 );
-				}
-
-				const uint firstMissingResidueIndex = localResidueIndex;
-
-				while ( _getResidue( localResidueIndex + 1 ) == nullptr )
-				{
-					localResidueIndex++;
-				}
-
-				const uint firstResidueIndexInOriginalChain = previousResidueScaleIndex + 1;
-				const uint nbMissingResidue					= localResidueIndex - firstMissingResidueIndex + 1;
-
-				Dataset::SequenceDisplayDataset_MissingResidue * missingResidueSet
-					= new Dataset::SequenceDisplayDataset_MissingResidue(
-						localCharIndex, firstResidueIndexInOriginalChain, nbMissingResidue );
-				_dataset.emplace_back( missingResidueSet );
-				localCharIndex += missingResidueSet->getStringSize();
-
-				previousResidueScaleIndex += nbMissingResidue;
-				startSequentialResidueChainStartIndex = false;
-				lastResidueWasUnknown				  = false;
-
-				continue;
-			}
-
-			uint residueScaleIndex = residue->getIndexInOriginalChain();
-
-			bool	   isMissingResidue = residueScaleIndex > previousResidueScaleIndex + 1;
-			const bool isUnknownResidue = residue->getSymbolShort() == "?" || residue->getSymbolShort() == "-";
-
-			if ( isMissingResidue )
-			{
-				if ( localResidueIndex > 0 && startSequentialResidueChainStartIndex )
-				{
-					localCharIndex += _emplaceResidueDataSet(
-						localCharIndex, sequentialResidueChainStartIndex, localResidueIndex - 1 );
-				}
-
-				const uint nbMissingResidue					= residueScaleIndex - previousResidueScaleIndex - 1;
-				const uint firstResidueIndexInOriginalChain = previousResidueScaleIndex + 1;
-
-				Dataset::SequenceDisplayDataset_MissingResidue * missingResidueSet
-					= new Dataset::SequenceDisplayDataset_MissingResidue(
-						localCharIndex, firstResidueIndexInOriginalChain, nbMissingResidue );
-				_dataset.emplace_back( missingResidueSet );
-				localCharIndex += missingResidueSet->getStringSize();
-
-				startSequentialResidueChainStartIndex = false;
-				lastResidueWasUnknown				  = false;
-			}
-
-			if ( isUnknownResidue )
-			{
-				if ( localResidueIndex > 0 && startSequentialResidueChainStartIndex )
-				{
-					localCharIndex += _emplaceResidueDataSet(
-						localCharIndex, sequentialResidueChainStartIndex, localResidueIndex - 1 );
-					lastResidueWasUnknown = false;
-				}
-
-				bool spaceBefore = localResidueIndex > 0 && !lastResidueWasUnknown;
-				bool spaceAfter	 = localResidueIndex < ( residueCount - 1 );
-
-				Dataset::SequenceDisplayDataset_UnknownResidue * unknownResidueSet
-					= new Dataset::SequenceDisplayDataset_UnknownResidue(
-						*residue, spaceBefore, spaceAfter, localCharIndex, residueScaleIndex );
-
-				_dataset.emplace_back( unknownResidueSet );
-				localCharIndex += unknownResidueSet->getStringSize();
-
-				startSequentialResidueChainStartIndex = false;
-				lastResidueWasUnknown				  = true;
-			}
-			else if ( !startSequentialResidueChainStartIndex )
-			{
-				sequentialResidueChainStartIndex	  = localResidueIndex;
-				startSequentialResidueChainStartIndex = true;
-			}
-
-			previousResidueScaleIndex = residueScaleIndex;
-		}
-
-		if ( startSequentialResidueChainStartIndex )
-		{
-			localCharIndex
-				+= _emplaceResidueDataSet( localCharIndex, sequentialResidueChainStartIndex, residueCount - 1 );
-		}
-
-		_dataset.emplace_back( new Dataset::SequenceDisplayDataset_EndHtmlColorTag( localCharIndex ) );
-	};
-
-	uint SequenceChainData::_emplaceResidueDataSet( const uint p_localCharIndex,
-													const uint p_startResidueIndex,
-													const uint p_endResidueIndex )
-	{
-		Dataset::SequenceDisplayDataset_Residue * residueSet = new Dataset::SequenceDisplayDataset_Residue(
-			_chain, p_localCharIndex, p_startResidueIndex, p_endResidueIndex );
-		_dataset.emplace_back( residueSet );
-
-		return residueSet->getStringSize();
-	}
+	SequenceChainData ::~SequenceChainData() {}
 
 	void SequenceChainData::_generateString()
 	{
 		uint sequenceLength = 0;
 		_strSequence		= QString();
 
-		for ( Dataset::SequenceDisplayDataset * const it : _dataset )
+		for ( Dataset::SequenceDisplayDataset * const it : _chainSequenceBuilder.getDataSet() )
 		{
 			it->appendToSequence( _strSequence );
 			sequenceLength += it->getStringSize();
@@ -175,8 +35,8 @@ namespace VTX::UI::Widget::Sequence
 		const uint lastResidueOffset = uint( lastResidueIndexStr.size() - 1 );
 
 		// Take last relevent data
-		auto it = _dataset.crbegin();
-		while ( it != _dataset.crend() && ( *it )->getStringSize() == 0 )
+		auto it = _chainSequenceBuilder.getDataSet().crbegin();
+		while ( it != _chainSequenceBuilder.getDataSet().crend() && ( *it )->getStringSize() == 0 )
 		{
 			it++;
 		}
@@ -189,7 +49,7 @@ namespace VTX::UI::Widget::Sequence
 
 		bool startBlock			  = true;
 		uint lastIndexCharWritten = 0;
-		for ( auto it : _dataset )
+		for ( auto it : _chainSequenceBuilder.getDataSet() )
 		{
 			it->appendToScale( _strScale, lastIndexCharWritten, startBlock );
 			startBlock = it->isFinishingBlock( startBlock );
@@ -200,7 +60,7 @@ namespace VTX::UI::Widget::Sequence
 	{
 		Model::Residue * res = nullptr;
 
-		for ( const auto it : _dataset )
+		for ( const auto it : _chainSequenceBuilder.getDataSet() )
 		{
 			if ( it->isCharIndexInScope( p_charIndex ) )
 				return it->getResidueAtCharIndex( p_charIndex );
@@ -215,7 +75,7 @@ namespace VTX::UI::Widget::Sequence
 
 		bool takeNext = false;
 
-		for ( const auto it : _dataset )
+		for ( const auto it : _chainSequenceBuilder.getDataSet() )
 		{
 			if ( takeNext )
 			{
@@ -267,7 +127,7 @@ namespace VTX::UI::Widget::Sequence
 
 	Dataset::SequenceDisplayDataset * const SequenceChainData::getDataset( const uint p_residueIndex ) const
 	{
-		for ( const auto it : _dataset )
+		for ( const auto it : _chainSequenceBuilder.getDataSet() )
 		{
 			if ( it->isResidueInScope( p_residueIndex ) )
 				return it;

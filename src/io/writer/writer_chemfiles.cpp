@@ -85,7 +85,8 @@ namespace VTX::IO::Writer
 					continue;
 
 				const std::string & chainName = chain->getName();
-				const std::string & chainId	  = chain->getOriginalChainID();
+				const std::string & chainId
+					= chain->getOriginalChainID().empty() ? chainName : chain->getOriginalChainID();
 
 				for ( uint residueIndex = chain->getIndexFirstResidue(); residueIndex <= chain->getIndexLastResidue();
 					  residueIndex++ )

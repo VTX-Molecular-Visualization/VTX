@@ -644,7 +644,7 @@ namespace VTX::UI
 		QSettings settings( Util::Filesystem::getConfigIniFile().qpath(), QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 
-		_checkUnknownFloatableWindows();
+		_checkDockWidgetsDisplay();
 
 		delete _restoreStateTimer;
 		_restoreStateTimer = nullptr;
@@ -765,13 +765,23 @@ namespace VTX::UI
 		}
 	}
 
-	void MainWindow::_checkUnknownFloatableWindows()
+	void MainWindow::_checkDockWidgetsDisplay()
 	{
-		_checkUnknownFloatableWindow( _settingWidget, Style::SETTINGS_PREFERRED_SIZE );
-		_checkUnknownFloatableWindow( _structuralAlignmentWidget, Style::STRUCTURAL_ALIGNMENT_PREFERRED_SIZE );
+		_checkDockWidgetDisplay( _sceneWidget, Style::SCENE_PREFERRED_SIZE );
+		_checkDockWidgetDisplay( _inspectorWidget, Style::INSPECTOR_PREFERRED_SIZE );
+		_checkDockWidgetDisplay( _consoleWidget, Style::CONSOLE_PREFERRED_SIZE );
+		_checkDockWidgetDisplay( _sequenceWidget, Style::SEQUENCE_PREFERRED_SIZE );
+		_checkDockWidgetDisplay( _settingWidget, Style::SETTINGS_PREFERRED_SIZE );
+		_checkDockWidgetDisplay( _structuralAlignmentWidget, Style::STRUCTURAL_ALIGNMENT_PREFERRED_SIZE );
 	}
-	void MainWindow::_checkUnknownFloatableWindow( QDockWidget * const p_widget, const QSize & p_defaultSize )
+	void MainWindow::_checkDockWidgetDisplay( QDockWidget * const p_widget, const QSize & p_defaultSize )
 	{
+		const Qt::DockWidgetArea widgetDockingArea = dockWidgetArea( p_widget );
+		if ( widgetDockingArea == Qt::DockWidgetArea::NoDockWidgetArea && !p_widget->isFloating() )
+		{
+			p_widget->setFloating( true );
+		}
+
 		if ( p_widget->widget()->size().height() == QT_UNKNOWN_WIDGET_DEFAULT_LAYOUT_HEIGHT )
 		{
 			_addDockWidgetAsFloating( p_widget, p_defaultSize, p_widget->isVisible() );
