@@ -4,6 +4,7 @@
 #include "action/setting.hpp"
 #include "io/struct/image_export.hpp"
 #include "setting.hpp"
+#include "setting_widget_enum.hpp"
 #include "style.hpp"
 #include "trajectory/trajectory_enum.hpp"
 #include "ui/dialog.hpp"
@@ -70,20 +71,20 @@ namespace VTX::UI::Widget::Settings
 		_controllerYAxisInvertedWidget = new QCheckBox( viewport );
 
 		// Camera
-		_cameraFOV = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
-			viewport, "cameraFov" );
+		_cameraFOV
+			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>( viewport, "cameraFov" );
 		_cameraFOV->setMinMax( Setting::CAMERA_FOV_MIN, Setting::CAMERA_FOV_MAX );
-		_cameraNear = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldDraggableWidget>(
-			viewport, "cameraNear" );
+		_cameraNear
+			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldDraggableWidget>( viewport, "cameraNear" );
 		_cameraNear->setMinMax( Setting::CAMERA_NEAR_MIN, Setting::CAMERA_NEAR_MAX );
 		_cameraNear->setLabel( "Near clip" );
-		_cameraFar = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldDraggableWidget>(
-			viewport, "cameraNear" );
+		_cameraFar
+			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldDraggableWidget>( viewport, "cameraNear" );
 		_cameraFar->setMinMax( Setting::CAMERA_FAR_MIN, Setting::CAMERA_FAR_MAX );
 		_cameraFar->setLabel( "Far clip" );
 		_antialiasing	  = new QCheckBox( viewport );
 		_cameraProjection = new QComboBox( viewport );
-		for ( const std::string & projectionStr : CAMERA_PROJECTION_STR )
+		for ( const std::string & projectionStr : VTXSettings::CAMERA_PROJECTION_STR )
 			_cameraProjection->addItem( QString::fromStdString( projectionStr ) );
 
 		// Graphic
@@ -319,9 +320,9 @@ namespace VTX::UI::Widget::Settings
 		_cameraNear->setValue( VTX_SETTING().getCameraNearClip() );
 		_cameraFar->setValue( VTX_SETTING().getCameraFarClip() );
 		_antialiasing->setChecked( VTX_SETTING().getAA() );
-		const bool			   isPerspective = VTX_SETTING().getCameraPerspective();
-		const CameraProjection cameraProjectionEnum
-			= isPerspective ? CameraProjection::PERSPECTIVE : CameraProjection::ORTHOGRAPHIC;
+		const bool							isPerspective = VTX_SETTING().getCameraPerspective();
+		const VTXSettings::CameraProjection cameraProjectionEnum
+			= isPerspective ? VTXSettings::CameraProjection::PERSPECTIVE : VTXSettings::CameraProjection::ORTHOGRAPHIC;
 		_cameraProjection->setCurrentIndex( int( cameraProjectionEnum ) );
 
 		_snapshotFormatWidget->setCurrentIndex( int( VTX_SETTING().getSnapshotFormat() ) );
@@ -466,8 +467,8 @@ namespace VTX::UI::Widget::Settings
 	{
 		_skipSettingEvents();
 
-		const CameraProjection projection	 = CameraProjection( p_value );
-		const bool			   isPerspective = projection == CameraProjection::PERSPECTIVE;
+		const VTXSettings::CameraProjection projection	  = VTXSettings::CameraProjection( p_value );
+		const bool							isPerspective = projection == VTXSettings::CameraProjection::PERSPECTIVE;
 		if ( VTX_SETTING().getCameraPerspective() != isPerspective )
 			VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( isPerspective ) );
 

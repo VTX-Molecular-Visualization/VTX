@@ -5,6 +5,7 @@
 #include "model/selection.hpp"
 #include "selection/selection_manager.hpp"
 #include "state/visualization.hpp"
+#include "ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 
@@ -44,8 +45,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// Selection focus
 		_cameraProjectionButton
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
-		_cameraProjectionButton->setData(
-			"Perspective", ":/sprite/camera_projection_perspective_icon.png", Qt::Orientation::Vertical );
+		_cameraProjectionButton->setData( "", "", Qt::Orientation::Vertical );
 		pushButton( *_cameraProjectionButton, 0 );
 
 		// Selection focus
@@ -118,10 +118,16 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 	void MenuVisualizationCameraActionWidget::_refreshCameraProjectionButton() const
 	{
-		const bool	  isPerspective = VTX_SETTING().getCameraPerspective();
-		const QString text			= isPerspective ? "Perspective" : "Orthographic";
-		const QString iconPath		= isPerspective ? ":/sprite/camera_projection_perspective_icon.png"
-													: ":/sprite/camera_projection_ortho_icon.png";
+		const bool											  isPerspective = VTX_SETTING().getCameraPerspective();
+		const Widget::Settings::VTXSettings::CameraProjection settingCameraProj
+			= isPerspective ? Widget::Settings::VTXSettings::CameraProjection::PERSPECTIVE
+							: Widget::Settings::VTXSettings::CameraProjection::ORTHOGRAPHIC;
+
+		const QString text = QString::fromStdString(
+			Widget::Settings::VTXSettings::CAMERA_PROJECTION_STR[ int( settingCameraProj ) ] );
+
+		const QString iconPath = isPerspective ? ":/sprite/camera_projection_perspective_icon.png"
+											   : ":/sprite/camera_projection_ortho_icon.png";
 
 		_cameraProjectionButton->setText( text );
 		_cameraProjectionButton->setIcon( QIcon::fromTheme( iconPath ) );

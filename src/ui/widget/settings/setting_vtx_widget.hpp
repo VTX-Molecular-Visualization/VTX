@@ -19,15 +19,6 @@ namespace VTX::UI::Widget::Settings
 	{
 		VTX_WIDGET
 
-		enum class CameraProjection : int
-		{
-			PERSPECTIVE,
-			ORTHOGRAPHIC,
-
-			COUNT
-		};
-		inline const static std::vector<std::string> CAMERA_PROJECTION_STR = { "Perspective", "Orthographic" };
-
 	  public:
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 		void localize() override;
