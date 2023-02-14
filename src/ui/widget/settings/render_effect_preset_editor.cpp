@@ -406,7 +406,7 @@ namespace VTX::UI::Widget::Settings
 	void RenderEffectPresetEditor::_onPerspectiveChanged( const int p_state ) const
 	{
 		const bool enable = p_state != 0;
-		if ( !signalsBlocked() && enable != _preset->isPerspectiveProjection() )
+		if ( !signalsBlocked() && enable != _preset->getPerspective() )
 			VTX_ACTION( new Action::Renderer::ChangeCameraPerspective( *_preset, enable ) );
 	}
 

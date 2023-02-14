@@ -64,8 +64,8 @@ namespace VTX::Model::Renderer
 		void		setCameraFarClip( const float p_cameraFarClip );
 		bool		getAA() const { return _antiAliasing; };
 		void		setAA( const bool p_antiAliasing );
-		bool		isPerspectiveProjection() const { return _perspectiveProjection; };
-		void		setPerspectiveProjection( const bool p_perspectiveProjection );
+		bool		getPerspective() const { return _perspective; };
+		void		setPerspectiveProjection( const bool p_perspective );
 
 		void copyFrom( const RenderEffectPreset & p_source );
 
@@ -101,7 +101,7 @@ namespace VTX::Model::Renderer
 		float		_cameraNearClip;
 		float		_cameraFarClip;
 		bool		_antiAliasing;
-		bool		_perspectiveProjection;
+		bool		_perspective;
 	};
 
 } // namespace VTX::Model::Renderer

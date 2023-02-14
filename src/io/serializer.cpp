@@ -271,7 +271,7 @@ namespace VTX::IO
 			{ "CAMERA_NEAR_CLIP", p_preset.getCameraNearClip() },
 			{ "CAMERA_FAR_CLIP", p_preset.getCameraFarClip() },
 			{ "CAMERA_AA", p_preset.getAA() },
-			{ "CAMERA_PERSPECTIVE_PROJECTION", p_preset.isPerspectiveProjection() },
+			{ "CAMERA_PERSPECTIVE_PROJECTION", p_preset.getPerspective() },
 		};
 	}
 

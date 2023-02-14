@@ -564,7 +564,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_RENDER_EFFECT().setPerspectiveProjection( _perspective );
-			VTXApp::get().getScene().getCamera().setPerspective( VTX_RENDER_EFFECT().isPerspectiveProjection() );
+			VTXApp::get().getScene().getCamera().setPerspective( VTX_RENDER_EFFECT().getPerspective() );
 		};
 
 	  private:

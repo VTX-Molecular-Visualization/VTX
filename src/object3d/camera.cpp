@@ -10,7 +10,7 @@ namespace VTX
 		Camera::Camera() :
 			_near( Util::Math::max( 1e-1f, VTX_RENDER_EFFECT().getCameraNearClip() ) ), // Avoid to little value.
 			_far( Util::Math::max( _near, VTX_RENDER_EFFECT().getCameraFarClip() ) ),
-			_fov( VTX_RENDER_EFFECT().getCameraFOV() ), _isPerspective( VTX_RENDER_EFFECT().isPerspectiveProjection() )
+			_fov( VTX_RENDER_EFFECT().getCameraFOV() ), _isPerspective( VTX_RENDER_EFFECT().getPerspective() )
 		{
 			_updateRotation();
 		}
@@ -35,15 +35,16 @@ namespace VTX
 
 		void Camera::setPerspective( const bool p_perspective )
 		{
-			_isPerspective = p_perspective;
-			_updateProjectionMatrix();
+			if ( _isPerspective != p_perspective )
+			{
+				_isPerspective = p_perspective;
+				_updateProjectionMatrix();
+
+				VTX_EVENT( new Event::VTXEvent( Event::Global::CAMERA_PROJECTION_CHANGE ) );
+			}
 		}
 
-		void Camera::toggle()
-		{
-			_isPerspective = !_isPerspective;
-			_updateProjectionMatrix();
-		}
+		void Camera::toggle() { setPerspective( !_isPerspective ); }
 
 		void Camera::move( const Vec3f & p_delta )
 		{

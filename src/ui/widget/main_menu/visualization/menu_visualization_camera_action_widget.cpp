@@ -3,6 +3,8 @@
 #include "action/selection.hpp"
 #include "id.hpp"
 #include "model/selection.hpp"
+#include "object3d/camera.hpp"
+#include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
 #include "state/visualization.hpp"
 #include "ui/widget_factory.hpp"
@@ -10,12 +12,25 @@
 
 namespace VTX::UI::Widget::MainMenu::Visualization
 {
+	MenuVisualizationCameraActionWidget::MenuVisualizationCameraActionWidget( QWidget * p_parent ) :
+		MenuToolBlockWidget( p_parent )
+	{
+		_registerEvent( Event::Global::CONTROLLER_CHANGE );
+		_registerEvent( Event::CAMERA_PROJECTION_CHANGE );
+	};
+
 	MenuVisualizationCameraActionWidget::~MenuVisualizationCameraActionWidget() {}
 
 	void MenuVisualizationCameraActionWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
 		if ( p_event.name == Event::Global::CONTROLLER_CHANGE )
+		{
 			_updateCameraModeFeedback();
+		}
+		else if ( p_event.name == Event::Global::CAMERA_PROJECTION_CHANGE )
+		{
+			_refreshCameraProjectionButton();
+		}
 	}
 
 	void MenuVisualizationCameraActionWidget::_setupUi( const QString & p_name )
@@ -23,47 +38,58 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		MenuToolBlockWidget::_setupUi( p_name );
 
 		// Selection focus
+		_cameraProjectionButton
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
+		_cameraProjectionButton->setData(
+			"Perspective", ":/sprite/camera_projection_perspective_icon.png", Qt::Orientation::Vertical );
+		pushButton( *_cameraProjectionButton, 0 );
+
+		// Selection focus
 		_center = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
 		_center->setData( "Reset", ":/sprite/camera_recenter_icon.png", Qt::Orientation::Horizontal );
-		pushButton( *_center, 0 );
+		pushButton( *_center, 1 );
 
 		_reorient
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
 		_reorient->setData( "Orient", ":/sprite/camera_orient_icon.png", Qt::Orientation::Horizontal );
-		pushButton( *_reorient, 0 );
+		pushButton( *_reorient, 1 );
 
 		// Camera Mode
 		_trackball
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
 		_trackball->setData( "Trackball", ":/sprite/camera_trackball_mode.png", Qt::Orientation::Horizontal );
-		pushButton( *_trackball, 1 );
+		pushButton( *_trackball, 2 );
 
 		_freefly
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
 		_freefly->setData( "Freecam", ":/sprite/camera_freefly_mode.png", Qt::Orientation::Horizontal );
-		pushButton( *_freefly, 1 );
+		pushButton( *_freefly, 2 );
 
 		// !V0.1
 		//_vessel = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton"
 		//); _vessel->setData( "Vessel", ":/sprite/camera_vessel_mode.png", Qt::Orientation::Horizontal ); pushButton(
-		// *_vessel, 1 );
+		// *_vessel, 2 );
 
 		// !V0.1
 		// Viewpoints
 		//_createViewpoint
 		//	= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "createViewpointButton" );
 		//_createViewpoint->setData( "Add\nViewpoint", ":/sprite/add_viewpoint.png", Qt::Orientation::Horizontal );
-		// pushButton( *_createViewpoint, 2 );
+		// pushButton( *_createViewpoint, 3 );
 
 		validate();
 
 		_updateCameraModeFeedback();
+		_refreshCameraProjectionButton();
 	}
 
 	void MenuVisualizationCameraActionWidget::localize() { setTitle( "Camera Action" ); }
 
 	void MenuVisualizationCameraActionWidget::_setupSlots()
 	{
+		_cameraProjectionButton->setTriggerAction( this,
+												   &MenuVisualizationCameraActionWidget::_toggleCameraProjection );
+
 		_center->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_recenterCamera );
 		_reorient->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_orientCamera );
 
@@ -84,6 +110,23 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_freefly->showActiveFeedback( currentControllerID == ID::Controller::FREEFLY );
 		// !V0.1
 		// _vessel->showActiveFeedback( currentControllerID == ID::Controller::VESSEL );
+	}
+
+	void MenuVisualizationCameraActionWidget::_refreshCameraProjectionButton() const
+	{
+		const Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
+
+		const QString text	   = camera.isPerspective() ? "Perspective" : "Orthographic";
+		const QString iconPath = camera.isPerspective() ? ":/sprite/camera_projection_perspective_icon.png"
+														: ":/sprite/camera_projection_ortho_icon.png";
+
+		_cameraProjectionButton->setText( text );
+		_cameraProjectionButton->setIcon( QIcon::fromTheme( iconPath ) );
+	}
+
+	void MenuVisualizationCameraActionWidget::_toggleCameraProjection() const
+	{
+		VTX_ACTION( new Action::Main::ToggleCamera() );
 	}
 
 	void MenuVisualizationCameraActionWidget::_recenterCamera() const
