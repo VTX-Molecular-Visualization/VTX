@@ -64,17 +64,6 @@ namespace VTX::UI::Widget::Settings
 			= VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( _viewport, "backgroundColor" );
 		_cameraLightColor
 			= VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( _viewport, "lightColor" );
-		_cameraFOV = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( _viewport, "cameraFov" );
-		_cameraFOV->setMinMax( Setting::CAMERA_FOV_MIN, Setting::CAMERA_FOV_MAX );
-		_cameraNear
-			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldDraggableWidget>( _viewport, "cameraNear" );
-		_cameraNear->setMinMax( Setting::CAMERA_NEAR_MIN, Setting::CAMERA_NEAR_MAX );
-		_cameraNear->setLabel( "Near clip" );
-		_cameraFar
-			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldDraggableWidget>( _viewport, "cameraNear" );
-		_cameraFar->setMinMax( Setting::CAMERA_FAR_MIN, Setting::CAMERA_FAR_MAX );
-		_cameraFar->setLabel( "Far clip" );
-		_antialiasing = new QCheckBox( _viewport );
 
 		// !V0.1
 		//_perspective  = new QCheckBox( _viewport );
@@ -111,10 +100,6 @@ namespace VTX::UI::Widget::Settings
 		_addSpace();
 		_addItem( _backgroundColor, QString( "Background color" ) );
 		_addItem( _cameraLightColor, QString( "Light Color" ) );
-		_addItem( _cameraFOV, QString( "FOV" ) );
-		_addItem( _cameraNear, _cameraNear->getLabelWidget() );
-		_addItem( _cameraFar, _cameraFar->getLabelWidget() );
-		_addItem( _antialiasing, QString( "Antialiasing" ) );
 		// !V0.1
 		//_addItem( _perspective, QString( "Perspective projection" ) );
 
@@ -193,28 +178,6 @@ namespace VTX::UI::Widget::Settings
 				 QOverload<const Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onCameraLightColorChanged );
-		connect( _cameraFOV,
-				 QOverload<float>::of( &FloatFieldSliderWidget::onValueChange ),
-				 this,
-				 &RenderEffectPresetEditor::_onCameraFOVChanged );
-
-		connect( _cameraNear,
-				 &FloatFieldDraggableWidget::onValueChange,
-				 this,
-				 &RenderEffectPresetEditor::_onCameraNearChanged );
-		connect( _cameraFar,
-				 &FloatFieldDraggableWidget::onValueChange,
-				 this,
-				 &RenderEffectPresetEditor::_onCameraFarChanged );
-		connect( _antialiasing,
-				 QOverload<int>::of( &QCheckBox::stateChanged ),
-				 this,
-				 &RenderEffectPresetEditor::_onAntialiasingChanged );
-		// !V0.1
-		// connect( _perspective,
-		//		 QOverload<int>::of( &QCheckBox::stateChanged ),
-		//		 this,
-		//		 &RenderEffectPresetEditor::_onPerspectiveChanged );
 	}
 
 	void RenderEffectPresetEditor::localize() {}
@@ -258,12 +221,6 @@ namespace VTX::UI::Widget::Settings
 
 		_backgroundColor->setColor( _preset->getBackgroundColor() );
 		_cameraLightColor->setColor( _preset->getCameraLightColor() );
-		_cameraFOV->setValue( _preset->getCameraFOV() );
-		_cameraNear->setValue( _preset->getCameraNearClip() );
-		_cameraFar->setValue( _preset->getCameraFarClip() );
-		_antialiasing->setChecked( _preset->getAA() );
-		// !V0.1
-		//_perspective->setChecked( _preset->isPerspectiveProjection() );
 	}
 
 	void RenderEffectPresetEditor::setPreset( Model::Renderer::RenderEffectPreset * const p_model,
@@ -381,33 +338,6 @@ namespace VTX::UI::Widget::Settings
 	{
 		if ( !signalsBlocked() && p_color != _preset->getCameraLightColor() )
 			VTX_ACTION( new Action::Renderer::ChangeCameraLightColor( *_preset, p_color ) );
-	}
-	void RenderEffectPresetEditor::_onCameraFOVChanged( const float p_value ) const
-	{
-		if ( !signalsBlocked() && p_value != _preset->getCameraFOV() )
-			VTX_ACTION( new Action::Renderer::ChangeCameraFOV( *_preset, p_value ) );
-	}
-	void RenderEffectPresetEditor::_onCameraNearChanged( const float p_value ) const
-	{
-		if ( !signalsBlocked() && p_value != _preset->getCameraNearClip() )
-			VTX_ACTION( new Action::Renderer::ChangeCameraNear( *_preset, p_value ) );
-	}
-	void RenderEffectPresetEditor::_onCameraFarChanged( const float p_value ) const
-	{
-		if ( !signalsBlocked() && p_value != _preset->getCameraFarClip() )
-			VTX_ACTION( new Action::Renderer::ChangeCameraFar( *_preset, p_value ) );
-	}
-	void RenderEffectPresetEditor::_onAntialiasingChanged( const int p_state ) const
-	{
-		const bool enable = p_state != 0;
-		if ( !signalsBlocked() && enable != _preset->getAA() )
-			VTX_ACTION( new Action::Renderer::EnableCameraAntialiasing( *_preset, enable ) );
-	}
-	void RenderEffectPresetEditor::_onPerspectiveChanged( const int p_state ) const
-	{
-		const bool enable = p_state != 0;
-		if ( !signalsBlocked() && enable != _preset->getPerspective() )
-			VTX_ACTION( new Action::Renderer::ChangeCameraPerspective( *_preset, enable ) );
 	}
 
 	void RenderEffectPresetEditor::_addItem( QWidget * const p_widget )

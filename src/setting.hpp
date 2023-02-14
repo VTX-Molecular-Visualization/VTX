@@ -256,6 +256,12 @@ namespace VTX
 			SNAPSHOT_RESOLUTION,
 			SNAPSHOT_QUALITY,
 
+			CAMERA_FOV,
+			CAMERA_NEAR_CLIP,
+			CAMERA_FAR_CLIP,
+			CAMERA_ANTI_ALIASING,
+			CAMERA_PROJECTION,
+
 			CONTROLLER_TRANSLATION_SPEED,
 			CONTROLLER_TRANSLATION_SPEED_FACTOR,
 			CONTROLLER_ROTATION_SPEED,
@@ -298,6 +304,18 @@ namespace VTX
 		void									   setSnapshotQuality( const float p_snapshotQuality );
 		inline IO::Struct::ImageExport::RESOLUTION getSnapshotResolution() const { return snapshotResolution; }
 		void setSnapshotResolution( const IO::Struct::ImageExport::RESOLUTION & p_snapshotResolution );
+
+		// Camera Settings
+		inline float getCameraFOV() const { return cameraFOV; };
+		void		 setCameraFOV( const float p_cameraFOV );
+		inline float getCameraNearClip() const { return cameraNearClip; };
+		void		 setCameraNearClip( const float p_cameraNearClip );
+		inline float getCameraFarClip() const { return cameraFarClip; };
+		void		 setCameraFarClip( const float p_cameraFarClip );
+		inline bool	 getAA() const { return antiAliasing; };
+		void		 setAA( const bool p_antiAliasing );
+		inline bool	 getCameraPerspective() const { return cameraPerspective; };
+		void		 setCameraPerspectiveProjection( const bool p_cameraPerspective );
 
 		inline float getTranslationSpeed() const { return translationSpeed; }
 		void		 setTranslationSpeed( const float p_translationSpeed );
@@ -401,6 +419,12 @@ namespace VTX
 		IO::Struct::ImageExport::RESOLUTION snapshotResolution = SNAPSHOT_RESOLUTION_DEFAULT;
 		float								backgroundOpacity  = BACKGROUND_OPACITY_DEFAULT;
 		float								snapshotQuality	   = SNAPSHOT_QUALITY_DEFAULT;
+
+		float cameraFOV			= CAMERA_FOV_DEFAULT;
+		float cameraNearClip	= CAMERA_NEAR_DEFAULT;
+		float cameraFarClip		= CAMERA_FAR_DEFAULT;
+		bool  antiAliasing		= ACTIVE_AA_DEFAULT;
+		bool  cameraPerspective = CAMERA_PERSPECTIVE_DEFAULT;
 
 		float translationSpeed			 = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
 		float accelerationFactorSpeed	 = CONTROLLER_ACCELERATION_FACTOR_DEFAULT;

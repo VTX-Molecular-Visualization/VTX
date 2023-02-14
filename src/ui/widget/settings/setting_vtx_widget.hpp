@@ -3,6 +3,7 @@
 
 #include "io/struct/image_export.hpp"
 #include "ui/widget/base_manual_widget.hpp"
+#include "ui/widget/custom_widget/float_field_draggable_widget.hpp"
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"
 #include "ui/widget/custom_widget/integer_field_slider_widget.hpp"
 #include <QCheckBox>
@@ -18,6 +19,15 @@ namespace VTX::UI::Widget::Settings
 	{
 		VTX_WIDGET
 
+		enum class CameraProjection : int
+		{
+			PERSPECTIVE,
+			ORTHOGRAPHIC,
+
+			COUNT
+		};
+		inline const static std::vector<std::string> CAMERA_PROJECTION_STR = { "Perspective", "Orthographic" };
+
 	  public:
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 		void localize() override;
@@ -28,6 +38,9 @@ namespace VTX::UI::Widget::Settings
 		void _setupSlots() override;
 
 		void _refreshData();
+
+		void _skipSettingEvents();
+		void _listenSettingEvents();
 
 	  private:
 		QGridLayout * _settingsLayout		 = nullptr;
@@ -41,6 +54,13 @@ namespace VTX::UI::Widget::Settings
 		CustomWidget::FloatFieldSliderWidget * _controllerTranslationSpeedWidget   = nullptr;
 		CustomWidget::FloatFieldSliderWidget * _controllerRotationSpeedWidget	   = nullptr;
 		QCheckBox *							   _controllerYAxisInvertedWidget	   = nullptr;
+
+		// Camera
+		CustomWidget::FloatFieldSliderWidget *	  _cameraFOV		= nullptr;
+		CustomWidget::FloatFieldDraggableWidget * _cameraNear		= nullptr;
+		CustomWidget::FloatFieldDraggableWidget * _cameraFar		= nullptr;
+		QCheckBox *								  _antialiasing		= nullptr;
+		QComboBox *								  _cameraProjection = nullptr;
 
 		// Graphic
 		QComboBox *							   _snapshotFormatWidget			= nullptr;
@@ -61,7 +81,8 @@ namespace VTX::UI::Widget::Settings
 		QCheckBox *	  _checkVTXUpdateAtLaunch	  = nullptr;
 		QPushButton * _restoreLayoutButton		  = nullptr;
 
-		int _currentRow = 0;
+		int	 _currentRow			 = 0;
+		bool _skipSettingEventsState = false;
 
 		void _activeControllerElasticityAction( const bool p_activate );
 		void _changeControllerElasticityFactorAction( const float p_value );
@@ -70,6 +91,12 @@ namespace VTX::UI::Widget::Settings
 		void _changeControllerTranslationSpeedAction( const float p_value );
 		void _changeControllerRotationSpeedAction( const float p_value );
 		void _changeControllerYInversionAction( const bool p_invert );
+
+		void _onCameraFOVChanged( const float p_value );
+		void _onCameraNearChanged( const float p_value );
+		void _onCameraFarChanged( const float p_value );
+		void _onAntialiasingChanged( const bool p_state );
+		void _onCameraProjectionChanged( const int p_state );
 
 		void _changeSnapshotFormat( const int p_format );
 		void _changeSnapshotBackgroundOpacity( const float p_opacity );
@@ -83,13 +110,14 @@ namespace VTX::UI::Widget::Settings
 		void _changeDefaultTrajectoryPlayMode( const int p_playmode );
 
 		void _changeSymbolDisplayMode( const int p_displayMode );
-		void _changeCheckVTXUpdateAtLaunch( const bool p_changeCheckVTXUpdateAtLaunch ) const;
-		void _activatePortableSave( const bool p_activate ) const;
+		void _changeCheckVTXUpdateAtLaunch( const bool p_changeCheckVTXUpdateAtLaunch );
+		void _activatePortableSave( const bool p_activate );
 
 		void _restoreSettingsAction();
 		void _restoreLayoutAction();
 
 		void _addItemInLayout( QWidget * const p_item, const QString & p_label );
+		void _addItemInLayout( QWidget * const p_item, QWidget * const p_labelWidget );
 		void _addItemInLayout( QWidget * const p_item );
 
 		void _startSection( const QString & p_title );

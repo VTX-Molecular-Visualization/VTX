@@ -498,7 +498,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_RENDER_EFFECT().setAA( _active );
+			VTX_SETTING().setAA( _active );
 			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
@@ -529,11 +529,11 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_RENDER_EFFECT().setCameraNearClip( Util::Math::min( _near, _far ) );
-			VTX_RENDER_EFFECT().setCameraFarClip( Util::Math::max( _near, _far ) );
+			VTX_SETTING().setCameraNearClip( Util::Math::min( _near, _far ) );
+			VTX_SETTING().setCameraFarClip( Util::Math::max( _near, _far ) );
 
-			VTXApp::get().getScene().getCamera().setNear( VTX_RENDER_EFFECT().getCameraNearClip() );
-			VTXApp::get().getScene().getCamera().setFar( VTX_RENDER_EFFECT().getCameraFarClip() );
+			VTXApp::get().getScene().getCamera().setNear( VTX_SETTING().getCameraNearClip() );
+			VTXApp::get().getScene().getCamera().setFar( VTX_SETTING().getCameraFarClip() );
 		};
 
 	  private:
@@ -548,23 +548,27 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_RENDER_EFFECT().setCameraFOV( _fov );
-			VTXApp::get().getScene().getCamera().setFov( VTX_RENDER_EFFECT().getCameraFOV() );
+			VTX_SETTING().setCameraFOV( _fov );
+			VTXApp::get().getScene().getCamera().setFov( _fov );
+
+			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 		};
 
 	  private:
 		const float _fov;
 	};
 
-	class ChangeCameraProjection : public BaseAction
+	class ChangeCameraProjectionToPerspective : public BaseAction
 	{
 	  public:
-		explicit ChangeCameraProjection( const bool p_perspective ) : _perspective( p_perspective ) {}
+		explicit ChangeCameraProjectionToPerspective( const bool p_perspective ) : _perspective( p_perspective ) {}
 
 		virtual void execute() override
 		{
-			VTX_RENDER_EFFECT().setPerspectiveProjection( _perspective );
-			VTXApp::get().getScene().getCamera().setPerspective( VTX_RENDER_EFFECT().getPerspective() );
+			VTX_SETTING().setCameraPerspectiveProjection( _perspective );
+			VTXApp::get().getScene().getCamera().setPerspective( VTX_SETTING().getCameraPerspective() );
+
+			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
 	  private:
@@ -785,6 +789,12 @@ namespace VTX::Action::Setting
 			VTX_ACTION( new Action::Setting::ChangeBackgroundOpacity( _setting.getSnapshotBackgroundOpacity() ) );
 			VTX_ACTION( new Action::Setting::ChangeSnapshotQuality( _setting.getSnapshotQuality() ) );
 			VTX_ACTION( new Action::Setting::ChangeSnapshotResolution( _setting.getSnapshotResolution() ) );
+
+			VTX_ACTION( new Action::Setting::ChangeCameraFov( _setting.getCameraFOV() ) );
+			VTX_ACTION(
+				new Action::Setting::ChangeCameraClip( _setting.getCameraNearClip(), _setting.getCameraFarClip() ) );
+			VTX_ACTION( new Action::Setting::ActiveAA( _setting.getAA() ) );
+			VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( _setting.getCameraPerspective() ) );
 
 			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( _setting.getTranslationSpeed() ) );
 			VTX_ACTION( new Action::Setting::ChangeAccelerationFactorSpeed( _setting.getAccelerationSpeedFactor() ) );

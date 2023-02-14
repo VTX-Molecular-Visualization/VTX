@@ -81,13 +81,9 @@ namespace VTX::UI::Widget::Settings
 		FloatFieldSliderWidget *	  _fogDensity = nullptr;
 		ColorFieldButton *			  _fogColor	  = nullptr;
 
-		ColorFieldButton *			_backgroundColor   = nullptr;
-		FloatFieldSliderWidget *	_backgroundOpacity = nullptr;
-		ColorFieldButton *			_cameraLightColor  = nullptr;
-		FloatFieldSliderWidget *	_cameraFOV		   = nullptr;
-		FloatFieldDraggableWidget * _cameraNear		   = nullptr;
-		FloatFieldDraggableWidget * _cameraFar		   = nullptr;
-		QCheckBox *					_antialiasing	   = nullptr;
+		ColorFieldButton *		 _backgroundColor	= nullptr;
+		FloatFieldSliderWidget * _backgroundOpacity = nullptr;
+		ColorFieldButton *		 _cameraLightColor	= nullptr;
 
 		// !V0.1
 		// QCheckBox *				 _perspective		= nullptr;
@@ -121,11 +117,6 @@ namespace VTX::UI::Widget::Settings
 
 		void _onBackgroundColorChanged( const Color::Rgba & p_color ) const;
 		void _onCameraLightColorChanged( const Color::Rgba & p_color ) const;
-		void _onCameraFOVChanged( const float p_value ) const;
-		void _onCameraNearChanged( const float p_value ) const;
-		void _onCameraFarChanged( const float p_value ) const;
-		void _onAntialiasingChanged( const int p_state ) const;
-		void _onPerspectiveChanged( const int p_state ) const;
 	};
 
 } // namespace VTX::UI::Widget::Settings

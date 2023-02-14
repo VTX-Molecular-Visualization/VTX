@@ -277,67 +277,6 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPreset & _preset;
 		const Color::Rgba					  _color;
 	};
-	class ChangeCameraFOV : public BaseAction
-	{
-	  public:
-		ChangeCameraFOV( Model::Renderer::RenderEffectPreset & p_preset, const float p_fov ) :
-			_preset( p_preset ), _fov( p_fov ) {};
-
-		virtual void execute() override;
-
-	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const float							  _fov;
-	};
-	class ChangeCameraNear : public BaseAction
-	{
-	  public:
-		ChangeCameraNear( Model::Renderer::RenderEffectPreset & p_preset, const float p_near ) :
-			_preset( p_preset ), _near( p_near ) {};
-
-		virtual void execute() override;
-
-	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const float							  _near;
-	};
-	class ChangeCameraFar : public BaseAction
-	{
-	  public:
-		ChangeCameraFar( Model::Renderer::RenderEffectPreset & p_preset, const float p_far ) :
-			_preset( p_preset ), _far( p_far ) {};
-
-		virtual void execute() override;
-
-	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const float							  _far;
-	};
-
-	class EnableCameraAntialiasing : public BaseAction
-	{
-	  public:
-		EnableCameraAntialiasing( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
-			_preset( p_preset ), _enable( p_enable ) {};
-
-		virtual void execute() override;
-
-	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const bool							  _enable;
-	};
-	class ChangeCameraPerspective : public BaseAction
-	{
-	  public:
-		ChangeCameraPerspective( Model::Renderer::RenderEffectPreset & p_preset, const bool p_perspective ) :
-			_preset( p_preset ), _perspective( p_perspective ) {};
-
-		virtual void execute() override;
-
-	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const bool							  _perspective;
-	};
 
 	class AddNewPresetInLibrary : public BaseAction
 	{

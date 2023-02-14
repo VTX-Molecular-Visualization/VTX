@@ -3,8 +3,6 @@
 #include "action/selection.hpp"
 #include "id.hpp"
 #include "model/selection.hpp"
-#include "object3d/camera.hpp"
-#include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
 #include "state/visualization.hpp"
 #include "ui/widget_factory.hpp"
@@ -16,7 +14,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		MenuToolBlockWidget( p_parent )
 	{
 		_registerEvent( Event::Global::CONTROLLER_CHANGE );
-		_registerEvent( Event::CAMERA_PROJECTION_CHANGE );
+		_registerEvent( Event::Global::SETTINGS_CHANGE );
 	};
 
 	MenuVisualizationCameraActionWidget::~MenuVisualizationCameraActionWidget() {}
@@ -27,9 +25,15 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		{
 			_updateCameraModeFeedback();
 		}
-		else if ( p_event.name == Event::Global::CAMERA_PROJECTION_CHANGE )
+		else if ( p_event.name == Event::Global::SETTINGS_CHANGE )
 		{
-			_refreshCameraProjectionButton();
+			const Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
+				= dynamic_cast<const Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
+
+			if ( castedEvent.ref.find( Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.ref.end() )
+			{
+				_refreshCameraProjectionButton();
+			}
 		}
 	}
 
@@ -114,11 +118,10 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 	void MenuVisualizationCameraActionWidget::_refreshCameraProjectionButton() const
 	{
-		const Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
-
-		const QString text	   = camera.isPerspective() ? "Perspective" : "Orthographic";
-		const QString iconPath = camera.isPerspective() ? ":/sprite/camera_projection_perspective_icon.png"
-														: ":/sprite/camera_projection_ortho_icon.png";
+		const bool	  isPerspective = VTX_SETTING().getCameraPerspective();
+		const QString text			= isPerspective ? "Perspective" : "Orthographic";
+		const QString iconPath		= isPerspective ? ":/sprite/camera_projection_perspective_icon.png"
+													: ":/sprite/camera_projection_ortho_icon.png";
 
 		_cameraProjectionButton->setText( text );
 		_cameraProjectionButton->setIcon( QIcon::fromTheme( iconPath ) );
@@ -126,7 +129,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 	void MenuVisualizationCameraActionWidget::_toggleCameraProjection() const
 	{
-		VTX_ACTION( new Action::Main::ToggleCamera() );
+		const bool changeToPerspective = !VTX_SETTING().getCameraPerspective();
+		VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 
 	void MenuVisualizationCameraActionWidget::_recenterCamera() const
