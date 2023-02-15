@@ -8,6 +8,7 @@
 #include "style.hpp"
 #include "trajectory/trajectory_enum.hpp"
 #include "ui/dialog.hpp"
+#include "ui/layout/attribute_list_layout.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/ui.hpp"
@@ -33,16 +34,6 @@ namespace VTX::UI::Widget::Settings
 	{
 		QScrollArea * const settingsScrollArea = new QScrollArea( this );
 		QWidget * const		viewport		   = new QWidget( settingsScrollArea );
-
-		QVBoxLayout * const mainLayout = new QVBoxLayout( this );
-		_settingsLayout				   = new QGridLayout( viewport );
-		_settingsLayout->setContentsMargins( 10, 10, 10, 10 );
-		_settingsLayout->setVerticalSpacing( Style::DATA_GRID_VERTICAL_SPACE );
-		_settingsLayout->setHorizontalSpacing( Style::DATA_GRID_HORIZONTAL_SPACE );
-		_settingsLayout->setColumnStretch( 0, 1 );
-		_settingsLayout->setColumnStretch( 1, 10 );
-
-		QHBoxLayout * const bottomLayout = new QHBoxLayout();
 
 		// Controller
 		_activeControllerElasticityWidget = new QCheckBox( viewport );
@@ -131,49 +122,54 @@ namespace VTX::UI::Widget::Settings
 		_restoreLayoutButton   = new QPushButton( this );
 		_restoreSettingsButton = new QPushButton( this );
 
-		_startSection( "Controller" );
-		_addItemInLayout( _activeControllerElasticityWidget, "Activate elasticity" );
-		_addItemInLayout( _controllerElasticityFactorWidget, "Elasticity strength" );
-		_addItemInLayout( _controllerAccelerationFactorWidget, "Acceleration factor" );
-		_addItemInLayout( _controllerDecelerationFactorWidget, "Deceleration factor" );
-		_addItemInLayout( _controllerTranslationSpeedWidget, "Translation speed" );
-		_addItemInLayout( _controllerRotationSpeedWidget, "Rotation speed" );
-		_addItemInLayout( _controllerYAxisInvertedWidget, "Invert Y axis" );
-		_finishSection();
+		QVBoxLayout * const					mainLayout	   = new QVBoxLayout( this );
+		Layout::AttributeListLayout * const settingsLayout = new Layout::AttributeListLayout( viewport );
+		settingsLayout->setEndSectionSpacerSize( Style::ATTRIBUTE_LIST_LAYOUT_BIG_SECTION_SPACER );
+		QHBoxLayout * const bottomLayout = new QHBoxLayout();
 
-		_startSection( "Camera" );
-		_addItemInLayout( _cameraFOV, "FOV" );
-		_addItemInLayout( _cameraNear, _cameraNear->getLabelWidget() );
-		_addItemInLayout( _cameraFar, _cameraFar->getLabelWidget() );
-		_addItemInLayout( _antialiasing, "Antialiasing" );
-		_addItemInLayout( _cameraProjection, "Projection" );
-		_finishSection();
+		settingsLayout->startAttributeSection( "Controller" );
+		settingsLayout->addAttribute( _activeControllerElasticityWidget, "Activate elasticity" );
+		settingsLayout->addAttribute( _controllerElasticityFactorWidget, "Elasticity strength" );
+		settingsLayout->addAttribute( _controllerAccelerationFactorWidget, "Acceleration factor" );
+		settingsLayout->addAttribute( _controllerDecelerationFactorWidget, "Deceleration factor" );
+		settingsLayout->addAttribute( _controllerTranslationSpeedWidget, "Translation speed" );
+		settingsLayout->addAttribute( _controllerRotationSpeedWidget, "Rotation speed" );
+		settingsLayout->addAttribute( _controllerYAxisInvertedWidget, "Invert Y axis" );
+		settingsLayout->finishAttributeSection();
 
-		_startSection( "Graphic" );
-		_addItemInLayout( _snapshotFormatWidget, "Snapshot format" );
-		_addItemInLayout( _snapshotBackgroundOpacitySlider, "Snapshot background opacity" );
-		_addItemInLayout( _snapshotResolutionWidget, "Snapshot resolution" );
-		_addItemInLayout( _snapshotQualitySlider, "Snapshot quality" );
+		settingsLayout->startAttributeSection( "Camera" );
+		settingsLayout->addAttribute( _cameraFOV, "FOV" );
+		settingsLayout->addAttribute( _cameraNear, _cameraNear->getLabelWidget() );
+		settingsLayout->addAttribute( _cameraFar, _cameraFar->getLabelWidget() );
+		settingsLayout->addAttribute( _antialiasing, "Antialiasing" );
+		settingsLayout->addAttribute( _cameraProjection, "Projection" );
+		settingsLayout->finishAttributeSection();
+
+		settingsLayout->startAttributeSection( "Graphic" );
+		settingsLayout->addAttribute( _snapshotFormatWidget, "Snapshot format" );
+		settingsLayout->addAttribute( _snapshotBackgroundOpacitySlider, "Snapshot background opacity" );
+		settingsLayout->addAttribute( _snapshotResolutionWidget, "Snapshot resolution" );
+		settingsLayout->addAttribute( _snapshotQualitySlider, "Snapshot quality" );
 
 #ifndef VTX_PRODUCTION
-		_addItemInLayout( _vsyncWidget, "VSync" );
-		_addItemInLayout( _forceRendererWidget, "Force render" );
+		settingsLayout->addAttribute( _vsyncWidget, "VSync" );
+		settingsLayout->addAttribute( _forceRendererWidget, "Force render" );
 #endif
-		_addItemInLayout( _fullscreenWidget, "Full screen" );
-		_finishSection();
+		settingsLayout->addAttribute( _fullscreenWidget, "Full screen" );
+		settingsLayout->finishAttributeSection();
 
-		_startSection( "Trajectory" );
-		_addItemInLayout( _defaultTrajectoryPlayModeWidget, "Default play mode" );
-		_addItemInLayout( _defaultTrajectorySpeedWidget, "Default play speed" );
-		_finishSection();
+		settingsLayout->startAttributeSection( "Trajectory" );
+		settingsLayout->addAttribute( _defaultTrajectoryPlayModeWidget, "Default play mode" );
+		settingsLayout->addAttribute( _defaultTrajectorySpeedWidget, "Default play speed" );
+		settingsLayout->finishAttributeSection();
 
-		_startSection( "Data" );
-		_addItemInLayout( _symbolDisplayModeWidget, "Symbol display mode" );
-		_addItemInLayout( _activatePortableSaveWidget, "Portable save" );
-		_addItemInLayout( _checkVTXUpdateAtLaunch, "Check updates at launch" );
-
-		_addItemInLayout( _restoreLayoutButton );
-		_finishSection( false );
+		settingsLayout->startAttributeSection( "Data" );
+		settingsLayout->addAttribute( _symbolDisplayModeWidget, "Symbol display mode" );
+		settingsLayout->addAttribute( _activatePortableSaveWidget, "Portable save" );
+		settingsLayout->addAttribute( _checkVTXUpdateAtLaunch, "Check updates at launch" );
+		settingsLayout->addSpace( Style::ATTRIBUTE_LIST_LAYOUT_BIG_SECTION_SPACER );
+		settingsLayout->addAttribute( _restoreLayoutButton, Qt::AlignmentFlag::AlignCenter );
+		settingsLayout->finishAttributeSection( false );
 
 		bottomLayout->addStretch( 1000 );
 		bottomLayout->addWidget( _restoreSettingsButton );
@@ -612,45 +608,6 @@ namespace VTX::UI::Widget::Settings
 		_refreshData();
 
 		_listenSettingEvents();
-	}
-
-	void SettingVTXWidget::_addItemInLayout( QWidget * const p_item, const QString & p_label )
-	{
-		QLabel * const labelWidget = new QLabel( this );
-		labelWidget->setText( p_label );
-		_addItemInLayout( p_item, labelWidget );
-	}
-	void SettingVTXWidget::_addItemInLayout( QWidget * const p_item, QWidget * const p_labelWidget )
-	{
-		_settingsLayout->addWidget( p_labelWidget, _currentRow, 0 );
-		_settingsLayout->addWidget( p_item, _currentRow, 1 );
-
-		_currentRow++;
-	}
-
-	void SettingVTXWidget::_addItemInLayout( QWidget * const p_item )
-	{
-		_settingsLayout->addWidget( p_item, _currentRow, 0, 1, 2, Qt::AlignmentFlag::AlignCenter );
-		_currentRow++;
-	}
-	void SettingVTXWidget::_startSection( const QString & p_title )
-	{
-		QLabel * const titleWidget = new QLabel( this );
-		Util::UI::setDynamicProperty( titleWidget, Style::WidgetProperty::OVERIDDEN_PARAMETER );
-
-		titleWidget->setText( p_title );
-		_settingsLayout->addWidget( titleWidget, _currentRow, 0, 1, 2, Qt::AlignmentFlag::AlignLeft );
-
-		_currentRow++;
-	}
-	void SettingVTXWidget::_finishSection( const bool p_addSpacer )
-	{
-		if ( p_addSpacer )
-		{
-			QSpacerItem * const spacer = new QSpacerItem( 0, 30 );
-			_settingsLayout->addItem( spacer, _currentRow, 0, 1, 2 );
-		}
-		_currentRow++;
 	}
 
 	void SettingVTXWidget::_skipSettingEvents() { _skipSettingEventsState = true; }

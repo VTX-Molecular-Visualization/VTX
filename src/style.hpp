@@ -237,8 +237,8 @@ namespace VTX
 
 		namespace WidgetProperty
 		{
-			inline const char * const OVERIDDEN_PARAMETER	= "OVERIDDEN_PARAMETER";
-			inline const char * const SETTING_SECTION_TITLE = "SETTING_SECTION_TITLE";
+			inline const char * const OVERIDDEN_PARAMETER			 = "OVERIDDEN_PARAMETER";
+			inline const char * const ATTRIBUTE_LAYOUT_SECTION_TITLE = "ATTRIBUTE_LAYOUT_SECTION_TITLE";
 		} // namespace WidgetProperty
 
 		inline static const std::string WINDOW_TITLE_SCENE_MODIFIED_FEEDBACK = "*";
@@ -287,8 +287,11 @@ namespace VTX
 		inline static const int SCENE_SPACE_BETWEEN_ITEMS  = 4;
 		inline static const int DATA_GRID_VERTICAL_SPACE   = 2;
 		inline static const int DATA_GRID_HORIZONTAL_SPACE = 10;
+		inline static const int DATA_GRID_INDENT_SIZE	   = 10;
+		inline static const int DATA_GRID_DEFAULT_V_SPACER = 10;
 
-		inline static const int ATTRIBUTE_LIST_LAYOUT_SPACER_HEIGHT = 30;
+		inline static const int ATTRIBUTE_LIST_LAYOUT_SMALL_SECTION_SPACER = 15;
+		inline static const int ATTRIBUTE_LIST_LAYOUT_BIG_SECTION_SPACER   = 30;
 
 		inline static const QFont  WORLD_LABEL_FONT			  = QFont( "Arial", 20, QFont::Weight::Bold, false );
 		inline static const float  WORLD_LABEL_NEAR_CLIP	  = 20.f;

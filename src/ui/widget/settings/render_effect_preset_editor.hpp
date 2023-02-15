@@ -3,6 +3,7 @@
 
 #include "color/rgba.hpp"
 #include "model/renderer/render_effect_preset.hpp"
+#include "ui/layout/attribute_list_layout.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/color_field_button.hpp"
 #include "ui/widget/custom_widget/filename_field_widget.hpp"
@@ -18,6 +19,7 @@
 #include <QGridLayout>
 #include <QScrollArea>
 #include <QSpinBox>
+#include <QWidget>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -52,12 +54,10 @@ namespace VTX::UI::Widget::Settings
 		void _catchModelEvent( const Event::VTXEvent * const p_event ) override;
 
 	  private:
-		int														  _itemCount		 = 0;
 		Model::Renderer::RenderEffectPreset *					  _preset			 = nullptr;
 		VTX::View::UI::Widget::Renderer::RenderEffectPresetView * _currentPresetView = nullptr;
 
-		QWidget *	  _viewport = nullptr;
-		QGridLayout * _layout	= nullptr;
+		Layout::AttributeListLayout * _attributeLayout = nullptr;
 
 		CustomWidget::FilenameFieldWidget * _name		 = nullptr;
 		QCheckBox *							_quickAccess = nullptr;
@@ -84,14 +84,6 @@ namespace VTX::UI::Widget::Settings
 		ColorFieldButton *		 _backgroundColor	= nullptr;
 		FloatFieldSliderWidget * _backgroundOpacity = nullptr;
 		ColorFieldButton *		 _cameraLightColor	= nullptr;
-
-		// !V0.1
-		// QCheckBox *				 _perspective		= nullptr;
-
-		void _addItem( QWidget * const p_widget );
-		void _addItem( QWidget * const p_widget, const QString & p_label );
-		void _addItem( QWidget * const p_widget, QLabel * const p_labelWidget );
-		void _addSpace( const int p_space = 10 );
 
 		void _fillShaderComboBox();
 

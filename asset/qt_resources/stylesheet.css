@@ -159,6 +159,10 @@ QLabel[OVERIDDEN_PARAMETER="true"]
 {
 	font : bold;
 }
+QWidget[ATTRIBUTE_LAYOUT_SECTION_TITLE="true"]
+{
+	font : bold;
+}
 
 QScrollBar#SequenceScrollbar:horizontal {
     border: 2px solid grey;

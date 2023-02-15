@@ -56,12 +56,12 @@ namespace VTX::View::UI::Widget::Renderer
 	void RenderEffectPresetLibraryView::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
+
 		setContentsMargins( 0, 0, 0, 0 );
 
-		QHBoxLayout * const horizontalLayout = new QHBoxLayout( this );
-		QHBoxLayout * const headerLayout	 = new QHBoxLayout();
-		QHBoxLayout * const bottomLayout	 = new QHBoxLayout();
-		QVBoxLayout * const verticalLayout	 = new QVBoxLayout();
+		QVBoxLayout * const verticalLayout = new QVBoxLayout( this );
+		QHBoxLayout * const headerLayout   = new QHBoxLayout();
+		QHBoxLayout * const bottomLayout   = new QHBoxLayout();
 
 		const int currentIndex = 0;
 
@@ -99,8 +99,6 @@ namespace VTX::View::UI::Widget::Renderer
 		verticalLayout->addItem( headerLayout );
 		verticalLayout->addWidget( _renderPresetEditor );
 		verticalLayout->addItem( bottomLayout );
-
-		horizontalLayout->addItem( verticalLayout );
 
 		_refreshPresetDisplayed( false );
 	}

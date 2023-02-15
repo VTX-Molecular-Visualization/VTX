@@ -2,6 +2,7 @@
 #include "action/action_manager.hpp"
 #include "action/renderer.hpp"
 #include "setting.hpp"
+#include "style.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/callback_view.hpp"
 #include <QGridLayout>
@@ -21,94 +22,84 @@ namespace VTX::UI::Widget::Settings
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_viewport = new QWidget( this );
+		QWidget * const viewport = new QWidget( this );
 
-		_name = WidgetFactory::get().instantiateWidget<CustomWidget::FilenameFieldWidget>( _viewport, "presetName" );
+		_name = WidgetFactory::get().instantiateWidget<CustomWidget::FilenameFieldWidget>( viewport, "presetName" );
 
-		_quickAccess = new QCheckBox( _viewport );
+		_quickAccess = new QCheckBox( viewport );
 
-		_shading = new QComboBox( _viewport );
+		_shading = new QComboBox( viewport );
 		_shading->addItems( SHADING );
 
-		_enableSSAO = new QCheckBox( _viewport );
+		_enableSSAO = new QCheckBox( viewport );
 
 		_ssaoIntensity
-			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( _viewport, "ssaoIntensity" );
+			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( viewport, "ssaoIntensity" );
 		_ssaoIntensity->setMinMax( Setting::AO_INTENSITY_MIN, Setting::AO_INTENSITY_MAX );
 		_ssaoBlurSize
-			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( _viewport, "ssaoBlurSize" );
+			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( viewport, "ssaoBlurSize" );
 		_ssaoBlurSize->setMinMax( Setting::AO_BLUR_SIZE_MIN, Setting::AO_BLUR_SIZE_MAX );
 
-		_enableOutline	  = new QCheckBox( _viewport );
-		_outlineThickness = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>(
-			_viewport, "outlineThickness" );
+		_enableOutline = new QCheckBox( viewport );
+		_outlineThickness
+			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( viewport, "outlineThickness" );
 		_outlineThickness->setMinMax( Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );
 		_outlineSensivity
-			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( _viewport, "outlineSensivity" );
+			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( viewport, "outlineSensivity" );
 		_outlineSensivity->setMinMax( Setting::OUTLINE_SENSIVITY_MIN, Setting::OUTLINE_SENSIVITY_MAX );
-		_outlineColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( _viewport, "outlineColor" );
+		_outlineColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( viewport, "outlineColor" );
 
-		_enableFog = new QCheckBox( _viewport );
-		_nearFog = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldDraggableWidget>( _viewport, "nearFog" );
+		_enableFog = new QCheckBox( viewport );
+		_nearFog = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldDraggableWidget>( viewport, "nearFog" );
 		_nearFog->setMinMax( Setting::FOG_NEAR_MIN, Setting::FOG_NEAR_MAX );
 		_nearFog->setLabel( "Near" );
-		_farFog = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldDraggableWidget>( _viewport, "farFog" );
+		_farFog = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldDraggableWidget>( viewport, "farFog" );
 		_farFog->setMinMax( Setting::FOG_FAR_MIN, Setting::FOG_FAR_MAX );
 		_farFog->setLabel( "Far" );
-		_fogDensity
-			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( _viewport, "fogDensity" );
+		_fogDensity = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( viewport, "fogDensity" );
 		_fogDensity->setMinMax( 0.0f, 1.0f );
-		_fogColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( _viewport, "fogColor" );
+		_fogColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( viewport, "fogColor" );
 
 		_backgroundColor
-			= VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( _viewport, "backgroundColor" );
-		_cameraLightColor
-			= VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( _viewport, "lightColor" );
+			= VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( viewport, "backgroundColor" );
+		_cameraLightColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( viewport, "lightColor" );
 
-		// !V0.1
-		//_perspective  = new QCheckBox( _viewport );
+		_attributeLayout = new Layout::AttributeListLayout( viewport );
+		_attributeLayout->setEndSectionSpacerSize( Style::ATTRIBUTE_LIST_LAYOUT_SMALL_SECTION_SPACER );
 
-		QHBoxLayout * const hboxLayout = new QHBoxLayout( _viewport );
-		QVBoxLayout * const vboxLayout = new QVBoxLayout();
+		_attributeLayout->startAttributeSection( "Description" );
+		_attributeLayout->addAttribute( _name, "Name" );
+		_attributeLayout->addAttribute( _quickAccess, "QuickAccess" );
+		_attributeLayout->finishAttributeSection();
 
-		_layout = new QGridLayout();
-		_layout->setContentsMargins( 0, 0, 0, 0 );
-		_layout->setColumnStretch( 0, 1 );
-		_layout->setColumnStretch( 1, 10 );
-		_layout->setVerticalSpacing( Style::DATA_GRID_VERTICAL_SPACE );
-		_layout->setHorizontalSpacing( Style::DATA_GRID_HORIZONTAL_SPACE );
+		_attributeLayout->startAttributeSection( "Shading" );
+		_attributeLayout->addAttribute( _shading, "Shading" );
+		_attributeLayout->finishAttributeSection();
 
-		_addItem( _name, QString( "Name" ) );
-		_addItem( _quickAccess, QString( "QuickAccess" ) );
-		_addSpace();
-		_addItem( _shading, QString( "Shading" ) );
-		_addSpace();
-		_addItem( _enableSSAO, QString( "SSAO" ) );
-		_addItem( _ssaoIntensity, QString( "Intensity" ) );
-		_addItem( _ssaoBlurSize, QString( "Blur Size" ) );
-		_addSpace();
-		_addItem( _enableOutline, QString( "Outline" ) );
-		_addItem( _outlineThickness, QString( "Thickness" ) );
-		_addItem( _outlineSensivity, QString( "Sensivity" ) );
-		_addItem( _outlineColor, QString( "Color" ) );
-		_addSpace();
-		_addItem( _enableFog, QString( "Fog" ) );
-		_addItem( _nearFog, _nearFog->getLabelWidget() );
-		_addItem( _farFog, _farFog->getLabelWidget() );
-		_addItem( _fogDensity, QString( "Density" ) );
-		_addItem( _fogColor, QString( "Color" ) );
-		_addSpace();
-		_addItem( _backgroundColor, QString( "Background color" ) );
-		_addItem( _cameraLightColor, QString( "Light Color" ) );
-		// !V0.1
-		//_addItem( _perspective, QString( "Perspective projection" ) );
+		_attributeLayout->startAttributeSection( "SSAO", _enableSSAO );
+		_attributeLayout->addAttribute( _ssaoIntensity, QString( "Intensity" ) );
+		_attributeLayout->addAttribute( _ssaoBlurSize, QString( "Blur Size" ) );
+		_attributeLayout->finishAttributeSection();
 
-		vboxLayout->addItem( _layout );
-		vboxLayout->addStretch( 1000 );
-		hboxLayout->addItem( vboxLayout );
-		hboxLayout->addStretch( 1000 );
+		_attributeLayout->startAttributeSection( "Outline", _enableOutline );
+		_attributeLayout->addAttribute( _outlineThickness, QString( "Thickness" ) );
+		_attributeLayout->addAttribute( _outlineSensivity, QString( "Sensivity" ) );
+		_attributeLayout->addAttribute( _outlineColor, QString( "Color" ) );
+		_attributeLayout->finishAttributeSection();
 
-		setWidget( _viewport );
+		_attributeLayout->startAttributeSection( "Fog", _enableFog );
+		_attributeLayout->addAttribute( _nearFog, _nearFog->getLabelWidget() );
+		_attributeLayout->addAttribute( _farFog, _farFog->getLabelWidget() );
+		_attributeLayout->addAttribute( _fogDensity, "Density" );
+		_attributeLayout->addAttribute( _fogColor, "Color" );
+		_attributeLayout->finishAttributeSection();
+
+		_attributeLayout->startAttributeSection( "Camera" );
+		_attributeLayout->addAttribute( _backgroundColor, "Background color" );
+		_attributeLayout->addAttribute( _cameraLightColor, "Light Color" );
+		_attributeLayout->finishAttributeSection( false );
+
+		setWidget( viewport );
 	}
 	void RenderEffectPresetEditor::_setupSlots()
 	{
@@ -195,29 +186,29 @@ namespace VTX::UI::Widget::Settings
 		const bool ssaoEnabled = _preset->isSSAOEnabled();
 		_enableSSAO->setChecked( ssaoEnabled );
 		_ssaoIntensity->setValue( _preset->getSSAOIntensity() );
-		_ssaoIntensity->setEnabled( ssaoEnabled );
+		_attributeLayout->enableAttribute( _ssaoIntensity, ssaoEnabled );
 		_ssaoBlurSize->setValue( _preset->getSSAOBlurSize() );
-		_ssaoBlurSize->setEnabled( ssaoEnabled );
+		_attributeLayout->enableAttribute( _ssaoBlurSize, ssaoEnabled );
 
 		const bool outlineEnabled = _preset->isOutlineEnabled();
 		_enableOutline->setChecked( outlineEnabled );
 		_outlineThickness->setValue( _preset->getOutlineThickness() );
-		_outlineThickness->setEnabled( outlineEnabled );
+		_attributeLayout->enableAttribute( _outlineThickness, outlineEnabled );
 		_outlineSensivity->setValue( _preset->getOutlineSensivity() );
-		_outlineSensivity->setEnabled( outlineEnabled );
+		_attributeLayout->enableAttribute( _outlineSensivity, outlineEnabled );
 		_outlineColor->setColor( _preset->getOutlineColor() );
-		_outlineColor->setEnabled( outlineEnabled );
+		_attributeLayout->enableAttribute( _outlineColor, outlineEnabled );
 
 		const bool fogEnabled = _preset->isFogEnabled();
 		_enableFog->setChecked( fogEnabled );
 		_nearFog->setValue( _preset->getFogNear() );
-		_nearFog->setEnabled( fogEnabled );
+		_attributeLayout->enableAttribute( _nearFog, fogEnabled );
 		_farFog->setValue( _preset->getFogFar() );
-		_farFog->setEnabled( fogEnabled );
+		_attributeLayout->enableAttribute( _farFog, fogEnabled );
 		_fogDensity->setValue( _preset->getFogDensity() );
-		_fogDensity->setEnabled( fogEnabled );
+		_attributeLayout->enableAttribute( _fogDensity, fogEnabled );
 		_fogColor->setColor( _preset->getFogColor() );
-		_fogColor->setEnabled( fogEnabled );
+		_attributeLayout->enableAttribute( _fogColor, fogEnabled );
 
 		_backgroundColor->setColor( _preset->getBackgroundColor() );
 		_cameraLightColor->setColor( _preset->getCameraLightColor() );
@@ -338,34 +329,5 @@ namespace VTX::UI::Widget::Settings
 	{
 		if ( !signalsBlocked() && p_color != _preset->getCameraLightColor() )
 			VTX_ACTION( new Action::Renderer::ChangeCameraLightColor( *_preset, p_color ) );
-	}
-
-	void RenderEffectPresetEditor::_addItem( QWidget * const p_widget )
-	{
-		_layout->addWidget( p_widget, _itemCount, 0, 1, 2, Qt::AlignmentFlag::AlignCenter );
-		_itemCount++;
-	}
-
-	void RenderEffectPresetEditor::_addItem( QWidget * const p_widget, const QString & p_label )
-	{
-		QLabel * const label = new QLabel( _viewport );
-		label->setText( p_label );
-
-		_addItem( p_widget, label );
-	}
-	void RenderEffectPresetEditor::_addItem( QWidget * const p_widget, QLabel * const p_labelWidget )
-	{
-		p_labelWidget->setParent( _viewport );
-
-		_layout->addWidget( p_labelWidget, _itemCount, 0 );
-		_layout->addWidget( p_widget, _itemCount, 1 );
-
-		_itemCount++;
-	}
-
-	void RenderEffectPresetEditor::_addSpace( const int p_space )
-	{
-		_layout->addItem( new QSpacerItem( 0, p_space ), _itemCount, 0, 2, 1 );
-		_itemCount++;
 	}
 } // namespace VTX::UI::Widget::Settings

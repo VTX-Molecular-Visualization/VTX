@@ -8,7 +8,6 @@
 #include "ui/widget/custom_widget/integer_field_slider_widget.hpp"
 #include <QCheckBox>
 #include <QComboBox>
-#include <QGridLayout>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QWidget>
@@ -34,7 +33,6 @@ namespace VTX::UI::Widget::Settings
 		void _listenSettingEvents();
 
 	  private:
-		QGridLayout * _settingsLayout		 = nullptr;
 		QPushButton * _restoreSettingsButton = nullptr;
 
 		// Controller
@@ -106,13 +104,6 @@ namespace VTX::UI::Widget::Settings
 
 		void _restoreSettingsAction();
 		void _restoreLayoutAction();
-
-		void _addItemInLayout( QWidget * const p_item, const QString & p_label );
-		void _addItemInLayout( QWidget * const p_item, QWidget * const p_labelWidget );
-		void _addItemInLayout( QWidget * const p_item );
-
-		void _startSection( const QString & p_title );
-		void _finishSection( const bool p_addSpacer = true );
 	};
 } // namespace VTX::UI::Widget::Settings
 #endif
