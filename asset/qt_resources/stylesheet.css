@@ -163,6 +163,21 @@ QWidget[ATTRIBUTE_LAYOUT_SECTION_TITLE="true"]
 {
 	font : bold;
 }
+QWidget[OVERLAY_STYLE="OPAQUE"]
+{
+}
+QWidget[OVERLAY_STYLE="OPAQUE"] QToolButton:hover
+{
+	background : transparent;
+}
+QWidget[OVERLAY_STYLE="TRANSPARENT"]
+{
+	background : transparent;
+}
+QWidget[OVERLAY_STYLE="TRANSPARENT"] QToolButton:hover
+{
+	background : transparent;
+}
 
 QScrollBar#SequenceScrollbar:horizontal {
     border: 2px solid grey;

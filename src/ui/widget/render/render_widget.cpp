@@ -10,6 +10,7 @@
 #include "model/measurement/measure_in_progress.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
+#include "overlay/camera_quick_access.hpp"
 #include "overlay/visualization_quick_access.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
@@ -288,6 +289,18 @@ namespace VTX::UI::Widget::Render
 		_overlays[ p_overlay ]->setVisible( false );
 	}
 
+	Overlay::BaseOverlay * RenderWidget::getOverlay( const Overlay::OVERLAY & p_overlay )
+	{
+		auto mapIt = _overlays.find( p_overlay );
+
+		if ( mapIt == _overlays.end() )
+		{
+			return nullptr;
+		}
+
+		return _overlays[ p_overlay ];
+	}
+
 	Overlay::BaseOverlay * RenderWidget::_instantiateOverlay( const Overlay::OVERLAY & p_overlayType )
 	{
 		Overlay::BaseOverlay * res;
@@ -296,6 +309,10 @@ namespace VTX::UI::Widget::Render
 		{
 		case Overlay::OVERLAY::VISUALIZATION_QUICK_ACCESS:
 			res = WidgetFactory::get().instantiateWidget<Overlay::VisualizationQuickAccess>( this, "" );
+			break;
+
+		case Overlay::OVERLAY::CAMERA_PROJECTION_QUICK_ACCESS:
+			res = WidgetFactory::get().instantiateWidget<Overlay::CameraQuickAccess>( this, "" );
 			break;
 
 		default:

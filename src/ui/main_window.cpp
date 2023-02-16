@@ -124,6 +124,10 @@ namespace VTX::UI
 
 		_renderWidget->displayOverlay( Widget::Render::Overlay::OVERLAY::VISUALIZATION_QUICK_ACCESS,
 									   Widget::Render::Overlay::OVERLAY_ANCHOR::BOTTOM_CENTER );
+		_renderWidget->displayOverlay( Widget::Render::Overlay::OVERLAY::CAMERA_PROJECTION_QUICK_ACCESS,
+									   Widget::Render::Overlay::OVERLAY_ANCHOR::TOP_RIGHT );
+		_renderWidget->getOverlay( Widget::Render::Overlay::OVERLAY::CAMERA_PROJECTION_QUICK_ACCESS )
+			->setStyle( Style::RENDER_OVERLAY_STYLE::STYLE_TRANSPARENT );
 
 		QWidget * const		centralWidget = new QWidget( this );
 		QVBoxLayout * const layout		  = new QVBoxLayout( centralWidget );

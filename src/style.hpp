@@ -239,6 +239,7 @@ namespace VTX
 		{
 			inline const char * const OVERIDDEN_PARAMETER			 = "OVERIDDEN_PARAMETER";
 			inline const char * const ATTRIBUTE_LAYOUT_SECTION_TITLE = "ATTRIBUTE_LAYOUT_SECTION_TITLE";
+			inline const char * const OVERLAY_STYLE					 = "OVERLAY_STYLE";
 		} // namespace WidgetProperty
 
 		inline static const std::string WINDOW_TITLE_SCENE_MODIFIED_FEEDBACK = "*";
@@ -292,6 +293,17 @@ namespace VTX
 
 		inline static const int ATTRIBUTE_LIST_LAYOUT_SMALL_SECTION_SPACER = 15;
 		inline static const int ATTRIBUTE_LIST_LAYOUT_BIG_SECTION_SPACER   = 30;
+
+		enum class RENDER_OVERLAY_STYLE : int
+		{
+			STYLE_OPAQUE,
+			STYLE_TRANSPARENT,
+		};
+		inline static const std::vector<QString> RENDER_OVERLAY_STYLE_NAME			 = { "OPAQUE", "TRANSPARENT" };
+		const int								 RENDER_OVERLAY_ANCHOR_OFFSET_TOP	 = 5;
+		const int								 RENDER_OVERLAY_ANCHOR_OFFSET_BOTTOM = 5;
+		const int								 RENDER_OVERLAY_ANCHOR_OFFSET_LEFT	 = 5;
+		const int								 RENDER_OVERLAY_ANCHOR_OFFSET_RIGHT	 = 5;
 
 		inline static const QFont  WORLD_LABEL_FONT			  = QFont( "Arial", 20, QFont::Weight::Bold, false );
 		inline static const float  WORLD_LABEL_NEAR_CLIP	  = 20.f;
