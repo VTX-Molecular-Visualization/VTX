@@ -668,6 +668,12 @@ namespace VTX
 
 		activeVSync = ACTIVE_VSYNC_DEFAULT;
 
+		cameraFOV		  = CAMERA_FOV_DEFAULT;
+		cameraNearClip	  = CAMERA_NEAR_DEFAULT;
+		cameraFarClip	  = CAMERA_FAR_DEFAULT;
+		antiAliasing	  = ACTIVE_AA_DEFAULT;
+		cameraPerspective = CAMERA_PERSPECTIVE_DEFAULT;
+
 		snapshotFormat	   = SNAPSHOT_FORMAT_DEFAULT;
 		backgroundOpacity  = BACKGROUND_OPACITY_DEFAULT;
 		snapshotQuality	   = SNAPSHOT_QUALITY_DEFAULT;

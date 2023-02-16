@@ -236,10 +236,11 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().setDefaultRenderEffectPresetIndex(
-				Util::Math::clamp( _renderEffectPresetIndex,
-								   0,
-								   VTX::Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount() ) );
+			const int clampedIndex = Util::Math::clamp(
+				_renderEffectPresetIndex, 0, VTX::Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount() );
+
+			VTX_SETTING().setDefaultRenderEffectPresetIndex( clampedIndex );
+
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
@@ -779,6 +780,10 @@ namespace VTX::Action::Setting
 
 			VTX_ACTION( new Action::Setting::ActiveRenderer( _setting.getActivateRenderer() ) );
 			VTX_ACTION( new Action::Setting::ForceRenderer( _setting.getForceRenderer() ) );
+
+			// Active AA before changing representation effet preset to prevent assert call
+			VTX_ACTION( new Action::Setting::ActiveAA( _setting.getAA() ) );
+
 			VTX_ACTION( new Action::Setting::ChangeDefaultRepresentation( _setting.getDefaultRepresentationIndex() ) );
 			VTX_ACTION(
 				new Action::Setting::ChangeDefaultRenderEffectPreset( _setting.getDefaultRenderEffectPresetIndex() ) );
@@ -793,7 +798,6 @@ namespace VTX::Action::Setting
 			VTX_ACTION( new Action::Setting::ChangeCameraFov( _setting.getCameraFOV() ) );
 			VTX_ACTION(
 				new Action::Setting::ChangeCameraClip( _setting.getCameraNearClip(), _setting.getCameraFarClip() ) );
-			VTX_ACTION( new Action::Setting::ActiveAA( _setting.getAA() ) );
 			VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( _setting.getCameraPerspective() ) );
 
 			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( _setting.getTranslationSpeed() ) );
