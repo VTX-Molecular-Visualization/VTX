@@ -7,7 +7,7 @@
 #include "io/writer/serialized_object.hpp"
 #include "model/category_enum.hpp"
 #include "model/molecule.hpp"
-#include "model/renderer/render_effect_preset.hpp"
+#include "model/renderer/render_effect_preset_library.hpp"
 #include "model/representation/representation_library.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
