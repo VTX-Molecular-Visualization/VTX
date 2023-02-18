@@ -375,9 +375,12 @@ namespace VTX
 			if ( _isInit == false )
 			{
 				// Create final buffers.
-				bufferPositions.set( _indiceCount * sizeof( Vec4f ) );
-				bufferNormals.set( _indiceCount * sizeof( Vec4f ) );
-				bufferIndices.set( _indiceCount * sizeof( uint ) );
+				bufferPositions.set(
+					_indiceCount * sizeof( Vec4f ),
+					Buffer::Flags( Buffer::Flags::DYNAMIC_STORAGE_BIT | Buffer::Flags::MAP_READ_BIT ) );
+				bufferNormals.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
+				bufferIndices.set( _indiceCount * sizeof( uint ),
+								   Buffer::Flags( Buffer::Flags::DYNAMIC_STORAGE_BIT | Buffer::Flags::MAP_READ_BIT ) );
 				bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
 				bufferVisibilities.set( _indiceCount * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 				bufferIds.set( _indiceCount * sizeof( uint ) );
@@ -437,6 +440,165 @@ namespace VTX
 
 			chrono2.stop();
 			VTX_DEBUG( "Buffer compacted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
+
+			////////////////////////////
+			// Worker: sort vertices.
+			if ( true )
+			{
+				// Worker::GpuComputer workerSortVertices( IO::FilePath( "ses/sort_vertices.comp" ) );
+
+				// Buffer bufferInfos( std::vector<uint>( { 0 } ),
+				//					Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
+
+				std::vector<Vec4f> vertices( _indiceCount );
+				std::vector<uint>  sortedIndices( _indiceCount );
+
+				Vec4f * const ptrPositions = bufferPositions.map<Vec4f>( Buffer::Access::READ_ONLY );
+				uint * const  ptrIndices   = bufferIndices.map<uint>( Buffer::Access::READ_ONLY );
+
+				// Get permutations.
+				auto compareVec4Function = []( const Vec4f & p_lhs, const Vec4f & p_rhs )
+				{
+					if ( p_lhs.x <= p_rhs.x && p_lhs.y <= p_rhs.y && p_lhs.z < p_rhs.z )
+						return true;
+					if ( p_lhs.x <= p_rhs.x && p_lhs.y < p_rhs.y )
+						return true;
+					if ( p_lhs.x < p_rhs.x )
+						return true;
+
+					return false;
+				};
+
+				std::vector<std::size_t> permutations( _indiceCount );
+				std::iota( permutations.begin(), permutations.end(), 0 );
+				std::sort( permutations.begin(),
+						   permutations.end(),
+						   [ & ]( std::size_t i, std::size_t j )
+						   { return compareVec4Function( ptrPositions[ i ], ptrPositions[ j ] ); } );
+
+				// Apply permutations.
+				std::transform( permutations.begin(),
+								permutations.end(),
+								sortedIndices.begin(),
+								[ & ]( std::size_t i ) { return ptrIndices[ i ]; } );
+
+				// Detect duplicates.
+				std::vector<int> newIndices( _indiceCount, -1 );
+				// uint			 toDelete = 0;
+				uint indexCurrent = sortedIndices[ 0 ];
+				for ( uint i = 1; i < _indiceCount; ++i )
+				{
+					// const uint indexCurrent = sortedIndices[ i ];
+					const uint indexNext = sortedIndices[ i ];
+
+					if ( Util::Math::length2( ptrPositions[ indexCurrent ] - ptrPositions[ indexNext ] )
+						 < EPSILON * EPSILON )
+					{
+						// toDelete++;
+						newIndices[ indexNext ] = indexCurrent;
+					}
+					else
+					{
+						indexCurrent = indexNext;
+					}
+				}
+
+				// Create new buffers.
+				//_vertices = std::vector<Vec4f>( _indiceCount - toDelete );
+				_vertices = std::vector<Vec4f>( _indiceCount );
+				_indices  = std::vector<uint>( _indiceCount );
+
+				// uint position = 0;
+				// uint offset	  = 0;
+				for ( uint i = 0; i < _indiceCount; ++i )
+				{
+					const uint newIndice = newIndices[ i ];
+
+					if ( newIndice == -1 )
+					{
+						//_vertices[ position ] = ptrPositions[ ptrIndices[ i ] ];
+						_vertices[ i ] = ptrPositions[ ptrIndices[ i ] ];
+						_indices[ i ]  = ptrIndices[ i ];
+						// position++;
+					}
+					else
+					{
+						_indices[ i ] = newIndice; // -offset;
+												   // offset++;
+					}
+				}
+
+				// assert( position == _vertices.size() );
+
+				bufferPositions.unmap();
+				bufferIndices.unmap();
+
+				bufferPositions.setSub( _vertices );
+				bufferIndices.setSub( _indices );
+
+				chrono2.stop();
+
+				// VTX_DEBUG( "Buffer sorted in {}s with {} pass", chrono2.elapsedTime(), count + 1 );
+				VTX_DEBUG( "Vertices merged in {}s", chrono2.elapsedTime() );
+
+				chrono2.start();
+
+				MeshTriangle::computeNormals( _vertices, _indices, _normals );
+
+				bufferNormals.setSub( _normals );
+
+				//_buffer->setPositions( _vertices );
+				//_buffer->setNormals( _normals );
+				//_buffer->setIndices( _indices );
+
+				_vertices.clear();
+				_normals.clear();
+				_indices.clear();
+
+				_vertices.shrink_to_fit();
+				_normals.shrink_to_fit();
+				_indices.shrink_to_fit();
+
+				/*
+				// Bind.
+				bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+				bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+				bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+				bufferInfos.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+
+				// Start.
+				uint sort  = 1;
+				uint count = 0;
+				while ( sort )
+				{
+					workerSortVertices.getProgram().use();
+					workerSortVertices.getProgram().setUInt( "uSize", uint( bufferSizeReduced ) );
+					workerSortVertices.getProgram().setUInt( "uPassNumber", count );
+
+					workerSortVertices.start( ( bufferSizeReduced + 1 ) / 2 );
+
+					// Get result and reset.
+					uint * const ptr = bufferInfos.map<uint>( Buffer::Access::READ_WRITE );
+					sort			 = ptr[ 0 ];
+					ptr[ 0 ]		 = 0;
+					bufferInfos.unmap();
+					// VTX_DEBUG( "{}", sort );
+					count++;
+				}
+
+				// Unbind.
+				bufferPositions.unbind();
+				bufferNormals.unbind();
+				bufferIndices.unbind();
+				bufferInfos.unbind();
+				*/
+			}
+
+			chrono2.stop();
+
+			// VTX_DEBUG( "Buffer sorted in {}s with {} pass", chrono2.elapsedTime(), count + 1 );
+			VTX_DEBUG( "Normals computed in {}s", chrono2.elapsedTime() );
 
 			chrono.stop();
 			VTX_DEBUG( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );

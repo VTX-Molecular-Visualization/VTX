@@ -1,0 +1,76 @@
+#version 450
+#include "include/helper.glsl"
+#include "../constant.glsl"
+
+#ifndef LOCAL_SIZE_X
+	#define LOCAL_SIZE_X 1
+#endif
+#ifndef LOCAL_SIZE_Y
+	#define LOCAL_SIZE_Y 1
+#endif
+#ifndef LOCAL_SIZE_Z
+	#define LOCAL_SIZE_Z 1
+#endif
+layout (local_size_x = LOCAL_SIZE_X, local_size_y = LOCAL_SIZE_Y, local_size_z = LOCAL_SIZE_Z) in;
+
+// Uniforms.
+uniform uint uSize;
+uniform uint uPassNumber;
+
+// SSBO.
+layout (std140, binding = 0) buffer TrianglePositions
+{
+	vec4[] trianglePositions;
+};
+
+layout (std140, binding = 1) buffer TriangleNormals
+{
+	vec4[] triangleNormals;
+};
+
+layout (std430, binding = 2) buffer TriangleIndices
+{
+	uint[] triangleIndices;
+};
+
+layout (std430, binding = 3) writeonly buffer Infos
+{
+	uint[] infos;
+};
+
+void main()
+{
+	uint hash = globalInvocationHash( gl_GlobalInvocationID, gl_NumWorkGroups, gl_WorkGroupSize );
+	uint index = hash * 2;
+	
+	if( uPassNumber % 2 != 0 )
+	{
+		index++;
+
+		if( index >= uSize - 1 )
+		{
+			return;
+		}
+	}
+
+	const bvec4 comp = lessThanEqual( trianglePositions[ index ], trianglePositions[ index + 1 ] );
+	if( ( comp.x && comp.y && comp.z ) ||
+		( comp.x && comp.y ) ||
+		( comp.x ) )
+	{
+		vec4 tempPosition = trianglePositions[ index ];
+		trianglePositions[ index ] = trianglePositions[ index + 1 ];
+		trianglePositions[ index + 1 ] = tempPosition;
+
+		vec4 tempNormal = triangleNormals[ index ];
+		triangleNormals[ index ] = triangleNormals[ index + 1 ];
+		triangleNormals[ index + 1 ] = tempNormal;
+
+		uint tempIndex = triangleIndices[ index ];
+		triangleIndices[ index ] = triangleIndices[ index + 1 ];
+		triangleIndices[ index + 1 ] = tempIndex;
+		
+		//atomicAdd( infos[ 0 ],  1 );
+		infos[ 0 ] = 1;
+	}	
+}

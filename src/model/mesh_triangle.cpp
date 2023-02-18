@@ -89,7 +89,7 @@ namespace VTX
 				bool found = false;
 				for ( uint j = 0; j < vertices.size() && found == false; ++j )
 				{
-					if ( glm::length2( vertices[ j ] - p_vertices[ i ] ) < EPSILON * EPSILON )
+					if ( Util::Math::length2( vertices[ j ] - p_vertices[ i ] ) < EPSILON * EPSILON )
 					{
 						indices[ i ] = j;
 						found		 = true;

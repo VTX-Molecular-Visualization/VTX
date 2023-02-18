@@ -1,4 +1,5 @@
 #version 450
+#include "../constant.glsl"
 #include "include/helper.glsl"
 
 #ifndef LOCAL_SIZE_X

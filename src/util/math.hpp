@@ -114,6 +114,12 @@ namespace VTX
 				return glm::length( p_value );
 			}
 
+			template<int L, typename T>
+			inline T length2( const glm::vec<L, T> & p_value )
+			{
+				return glm::length2( p_value );
+			}
+
 			template<typename T>
 			inline void normalizeSelf( T & p_value )
 			{
