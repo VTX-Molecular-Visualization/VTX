@@ -9,7 +9,8 @@ namespace VTX::UI::Widget::Sequence::Dataset
 											   const bool		   p_center ) const
 	{
 		const uint indexTxtSize = (uint)p_label.size();
-		const uint indexOffset	= p_center ? ( indexTxtSize - 1 ) / 2 : 0;
+		uint	   indexOffset	= p_center ? ( indexTxtSize - 1 ) / 2 : 0;
+		indexOffset				= p_charIndex < indexOffset ? p_charIndex : indexOffset;
 
 		for ( uint j = 0; j < indexTxtSize; j++ )
 		{

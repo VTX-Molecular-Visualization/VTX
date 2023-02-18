@@ -63,7 +63,7 @@ namespace VTX::Worker
 		}
 
 		// Force AA.
-		const bool activeAA = VTX_RENDER_EFFECT().getAA();
+		const bool activeAA = VTX_SETTING().getAA();
 		if ( activeAA == false )
 		{
 			VTX_ACTION( new Action::Setting::ActiveAA( true ) );

@@ -267,11 +267,6 @@ namespace VTX::IO
 			{ "FOG_COLOR", serialize( p_preset.getFogColor() ) },
 			{ "BACKGROUND_COLOR", serialize( p_preset.getBackgroundColor() ) },
 			{ "CAMERA_LIGHT_COLOR", serialize( p_preset.getCameraLightColor() ) },
-			{ "CAMERA_FOV", p_preset.getCameraFOV() },
-			{ "CAMERA_NEAR_CLIP", p_preset.getCameraNearClip() },
-			{ "CAMERA_FAR_CLIP", p_preset.getCameraFarClip() },
-			{ "CAMERA_AA", p_preset.getAA() },
-			{ "CAMERA_PERSPECTIVE_PROJECTION", p_preset.isPerspectiveProjection() },
 		};
 	}
 
@@ -348,6 +343,12 @@ namespace VTX::IO
 			{ "BACKGROUND_OPACITY", p_setting.getSnapshotBackgroundOpacity() },
 			{ "SNAPSHOT_QUALITY", p_setting.getSnapshotQuality() },
 			{ "BACKGROUND_RESOLUTION", magic_enum::enum_name( p_setting.getSnapshotResolution() ) },
+
+			{ "CAMERA_FOV", p_setting.getCameraFOV() },
+			{ "CAMERA_NEAR_CLIP", p_setting.getCameraNearClip() },
+			{ "CAMERA_FAR_CLIP", p_setting.getCameraFarClip() },
+			{ "CAMERA_AA", p_setting.getAA() },
+			{ "CAMERA_PERSPECTIVE_PROJECTION", p_setting.getCameraPerspective() },
 
 			{ "CONTROLLER_TRANSLATION_SPEED", p_setting.getTranslationSpeed() },
 			{ "CONTROLLER_ACCELERATION_FACTOR", p_setting.getAccelerationSpeedFactor() },
@@ -872,13 +873,6 @@ namespace VTX::IO
 		else
 			color = Setting::LIGHT_COLOR_DEFAULT;
 		p_preset.setCameraLightColor( color );
-
-		p_preset.setCameraFOV( _get<float>( p_json, "CAMERA_FOV", Setting::CAMERA_FOV_DEFAULT ) );
-		p_preset.setCameraNearClip( _get<float>( p_json, "CAMERA_NEAR_CLIP", Setting::CAMERA_NEAR_DEFAULT ) );
-		p_preset.setCameraFarClip( _get<float>( p_json, "CAMERA_FAR_CLIP", Setting::CAMERA_FAR_DEFAULT ) );
-		p_preset.setAA( _get<bool>( p_json, "CAMERA_AA", Setting::ACTIVE_AA_DEFAULT ) );
-		p_preset.setPerspectiveProjection(
-			_get<bool>( p_json, "CAMERA_PERSPECTIVE_PROJECTION", Setting::CAMERA_PERSPECTIVE_DEFAULT ) );
 	}
 
 	void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgba & p_color ) const
@@ -969,6 +963,13 @@ namespace VTX::IO
 		p_setting.setSnapshotQuality( _get<float>( p_json, "SNAPSHOT_QUALITY", Setting::SNAPSHOT_QUALITY_DEFAULT ) );
 		p_setting.setSnapshotResolution( _getEnum<IO::Struct::ImageExport::RESOLUTION>(
 			p_json, "BACKGROUND_RESOLUTION", Setting::SNAPSHOT_RESOLUTION_DEFAULT ) );
+
+		p_setting.setCameraFOV( _get<float>( p_json, "CAMERA_FOV", Setting::CAMERA_FOV_DEFAULT ) );
+		p_setting.setCameraNearClip( _get<float>( p_json, "CAMERA_NEAR_CLIP", Setting::CAMERA_NEAR_DEFAULT ) );
+		p_setting.setCameraFarClip( _get<float>( p_json, "CAMERA_FAR_CLIP", Setting::CAMERA_FAR_DEFAULT ) );
+		p_setting.setAA( _get<bool>( p_json, "CAMERA_AA", Setting::ACTIVE_AA_DEFAULT ) );
+		p_setting.setCameraPerspectiveProjection(
+			_get<bool>( p_json, "CAMERA_PERSPECTIVE_PROJECTION", Setting::CAMERA_PERSPECTIVE_DEFAULT ) );
 
 		p_setting.setTranslationSpeed(
 			_get<float>( p_json, "CONTROLLER_TRANSLATION_SPEED", Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT ) );

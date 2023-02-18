@@ -5,6 +5,21 @@
 
 namespace VTX::Util::UI
 {
+	void fillComboBox( QComboBox * const p_comboBox, const std::vector<std::string> & p_values )
+	{
+		for ( const std::string & str : p_values )
+		{
+			p_comboBox->addItem( QString::fromStdString( str ) );
+		}
+	}
+	void fillComboBox( QComboBox * const p_comboBox, const std::vector<QString> & p_values )
+	{
+		for ( const QString & str : p_values )
+		{
+			p_comboBox->addItem( str );
+		}
+	}
+
 	void appendBondInfo( const Model::Bond & p_bond, QString & p_str )
 	{
 		const Model::Molecule * const moleculePtr = p_bond.getMoleculePtr();

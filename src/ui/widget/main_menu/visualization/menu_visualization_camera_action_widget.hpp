@@ -19,19 +19,21 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 	  protected:
-		MenuVisualizationCameraActionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
-		{
-			_registerEvent( Event::Global::CONTROLLER_CHANGE );
-		};
+		MenuVisualizationCameraActionWidget( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
+		void _refreshCameraProjectionButton() const;
+
 	  private:
+		// Camera projection
+		MenuToolButtonWidget * _cameraProjectionButton = nullptr;
+
 		// Selection focus
 		MenuToolButtonWidget * _center	 = nullptr;
 		MenuToolButtonWidget * _reorient = nullptr;
 
-		// Camera Mode
+		// Camera Controller
 		MenuToolButtonWidget * _trackball = nullptr;
 		MenuToolButtonWidget * _freefly	  = nullptr;
 		// !V0.1
@@ -43,6 +45,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		void _updateCameraModeFeedback();
 
+		void _toggleCameraProjection() const;
 		void _recenterCamera() const;
 		void _orientCamera() const;
 		void _setTrackballController() const;

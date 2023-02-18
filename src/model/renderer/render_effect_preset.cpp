@@ -27,13 +27,8 @@ namespace VTX::Model::Renderer
 		_fogDensity = Setting::FOG_DENSITY_DEFAULT;
 		_fogColor	= Setting::FOG_COLOR_DEFAULT;
 
-		_backgroundColor	   = Setting::BACKGROUND_COLOR_DEFAULT;
-		_cameraLightColor	   = Setting::LIGHT_COLOR_DEFAULT;
-		_cameraFOV			   = Setting::CAMERA_FOV_DEFAULT;
-		_cameraNearClip		   = Setting::CAMERA_NEAR_DEFAULT;
-		_cameraFarClip		   = Setting::CAMERA_FAR_DEFAULT;
-		_antiAliasing		   = Setting::ACTIVE_AA_DEFAULT;
-		_perspectiveProjection = Setting::CAMERA_PERSPECTIVE_DEFAULT;
+		_backgroundColor  = Setting::BACKGROUND_COLOR_DEFAULT;
+		_cameraLightColor = Setting::LIGHT_COLOR_DEFAULT;
 	}
 
 	void RenderEffectPreset::setName( const std::string & p_name )
@@ -129,31 +124,6 @@ namespace VTX::Model::Renderer
 		_cameraLightColor = p_cameraLightColor;
 		_notifyDataChanged();
 	}
-	void RenderEffectPreset::setCameraFOV( const float p_cameraFOV )
-	{
-		_cameraFOV = p_cameraFOV;
-		_notifyDataChanged();
-	}
-	void RenderEffectPreset::setCameraNearClip( const float p_cameraNearClip )
-	{
-		_cameraNearClip = p_cameraNearClip <= _cameraFarClip ? p_cameraNearClip : _cameraFarClip;
-		_notifyDataChanged();
-	}
-	void RenderEffectPreset::setCameraFarClip( const float p_cameraFarClip )
-	{
-		_cameraFarClip = p_cameraFarClip >= _cameraNearClip ? p_cameraFarClip : _cameraNearClip;
-		_notifyDataChanged();
-	}
-	void RenderEffectPreset::setAA( const bool p_antiAliasing )
-	{
-		_antiAliasing = p_antiAliasing;
-		_notifyDataChanged();
-	}
-	void RenderEffectPreset::setPerspectiveProjection( const bool p_perspectiveProjection )
-	{
-		_perspectiveProjection = p_perspectiveProjection;
-		_notifyDataChanged();
-	}
 
 	void RenderEffectPreset::copyFrom( const RenderEffectPreset & p_source )
 	{
@@ -177,13 +147,8 @@ namespace VTX::Model::Renderer
 		_fogDensity = p_source._fogDensity;
 		_fogColor	= p_source._fogColor;
 
-		_backgroundColor	   = p_source._backgroundColor;
-		_cameraLightColor	   = p_source._cameraLightColor;
-		_cameraFOV			   = p_source._cameraFOV;
-		_cameraNearClip		   = p_source._cameraNearClip;
-		_cameraFarClip		   = p_source._cameraFarClip;
-		_antiAliasing		   = p_source._antiAliasing;
-		_perspectiveProjection = p_source._perspectiveProjection;
+		_backgroundColor  = p_source._backgroundColor;
+		_cameraLightColor = p_source._cameraLightColor;
 	}
 
 } // namespace VTX::Model::Renderer

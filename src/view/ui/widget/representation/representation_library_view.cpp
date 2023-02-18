@@ -23,10 +23,9 @@ namespace VTX::View::UI::Widget::Representation
 		BaseManualWidget::_setupUi( p_name );
 		setContentsMargins( 0, 0, 0, 0 );
 
-		QHBoxLayout * const horizontalLayout = new QHBoxLayout( this );
-		QHBoxLayout * const headerLayout	 = new QHBoxLayout();
-		QHBoxLayout * const bottomLayout	 = new QHBoxLayout();
-		QVBoxLayout * const verticalLayout	 = new QVBoxLayout();
+		QVBoxLayout * const verticalLayout = new QVBoxLayout( this );
+		QHBoxLayout * const headerLayout   = new QHBoxLayout();
+		QHBoxLayout * const bottomLayout   = new QHBoxLayout();
 
 		const int currentIndex = 0;
 		_presetList
@@ -66,8 +65,6 @@ namespace VTX::View::UI::Widget::Representation
 		verticalLayout->addItem( headerLayout );
 		verticalLayout->addWidget( _representationPresetEditor );
 		verticalLayout->addItem( bottomLayout );
-
-		horizontalLayout->addItem( verticalLayout );
 
 		_refreshPresetDisplayed( false );
 	}

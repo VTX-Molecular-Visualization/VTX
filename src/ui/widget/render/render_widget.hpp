@@ -36,6 +36,7 @@ namespace VTX::UI::Widget::Render
 
 		void displayOverlay( const Overlay::OVERLAY & p_overlay, const Overlay::OVERLAY_ANCHOR & p_position );
 		void hideOverlay( const Overlay::OVERLAY & p_overlay );
+		Overlay::BaseOverlay * getOverlay( const Overlay::OVERLAY & p_overlay );
 
 		void			 receiveEvent( const Event::VTXEvent & p_event ) override;
 		const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::RENDER_WIDGET; }

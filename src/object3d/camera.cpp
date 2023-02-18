@@ -1,5 +1,6 @@
 #include "camera.hpp"
 #include "model/renderer/render_effect_preset.hpp"
+#include "setting.hpp"
 #include "tool/logger.hpp"
 #include "vtx_app.hpp"
 
@@ -8,9 +9,9 @@ namespace VTX
 	namespace Object3D
 	{
 		Camera::Camera() :
-			_near( Util::Math::max( 1e-1f, VTX_RENDER_EFFECT().getCameraNearClip() ) ), // Avoid to little value.
-			_far( Util::Math::max( _near, VTX_RENDER_EFFECT().getCameraFarClip() ) ),
-			_fov( VTX_RENDER_EFFECT().getCameraFOV() ), _isPerspective( VTX_RENDER_EFFECT().isPerspectiveProjection() )
+			_near( Util::Math::max( 1e-1f, VTX_SETTING().getCameraNearClip() ) ), // Avoid to little value.
+			_far( Util::Math::max( _near, VTX_SETTING().getCameraFarClip() ) ), _fov( VTX_SETTING().getCameraFOV() ),
+			_isPerspective( VTX_SETTING().getCameraPerspective() )
 		{
 			_updateRotation();
 		}
@@ -35,15 +36,14 @@ namespace VTX
 
 		void Camera::setPerspective( const bool p_perspective )
 		{
-			_isPerspective = p_perspective;
-			_updateProjectionMatrix();
+			if ( _isPerspective != p_perspective )
+			{
+				_isPerspective = p_perspective;
+				_updateProjectionMatrix();
+			}
 		}
 
-		void Camera::toggle()
-		{
-			_isPerspective = !_isPerspective;
-			_updateProjectionMatrix();
-		}
+		void Camera::toggle() { setPerspective( !_isPerspective ); }
 
 		void Camera::move( const Vec3f & p_delta )
 		{

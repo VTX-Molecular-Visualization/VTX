@@ -30,6 +30,7 @@ namespace VTX
 			inline const float getNear() const { return _near; }
 			inline const float getFar() const { return _far; }
 			inline const float getFov() const { return _fov; }
+			inline const float isPerspective() const { return _isPerspective; }
 
 			inline float getZoom() const { return _zoom; }
 

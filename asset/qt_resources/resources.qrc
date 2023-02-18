@@ -8,6 +8,8 @@
 	<file>sprite/camera_focus_icon.png</file>
 	<file>sprite/camera_freefly_mode.png</file>
 	<file>sprite/camera_orient_icon.png</file>
+	<file>sprite/camera_projection_ortho_icon.png</file>
+	<file>sprite/camera_projection_perspective_icon.png</file>
 	<file>sprite/camera_recenter_icon.png</file>
 	<file>sprite/camera_trackball_mode.png</file>
 	<file>sprite/camera_vessel_mode.png</file>

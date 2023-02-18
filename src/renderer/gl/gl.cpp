@@ -1,6 +1,7 @@
 #include "gl.hpp"
 #include "model/molecule.hpp"
 #include "model/renderer/render_effect_preset.hpp"
+#include "setting.hpp"
 #include "view/base_view_3d_molecule.hpp"
 #include "vtx_app.hpp"
 #include <random>
@@ -119,7 +120,7 @@ namespace VTX::Renderer::GL
 
 		_passSelection->render( p_scene, *this );
 
-		if ( VTX_RENDER_EFFECT().getAA() )
+		if ( VTX_SETTING().getAA() )
 		{
 			_passFXAA->render( p_scene, *this );
 		}

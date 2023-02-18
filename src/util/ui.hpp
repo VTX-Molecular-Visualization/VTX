@@ -4,6 +4,7 @@
 #include "color/rgba.hpp"
 #include <QBitmap>
 #include <QColor>
+#include <QComboBox>
 #include <QEvent>
 #include <QImage>
 #include <QPixmap>
@@ -12,6 +13,8 @@
 #include <QVariant>
 #include <QWidget>
 #include <set>
+#include <string>
+#include <vector>
 
 namespace VTX::Model
 {
@@ -45,6 +48,9 @@ namespace VTX::Util::UI
 	  private:
 		std::set<QEvent::Type> _filteredTypes = std::set<QEvent::Type>();
 	};
+
+	void fillComboBox( QComboBox * const p_comboBox, const std::vector<std::string> & p_values );
+	void fillComboBox( QComboBox * const p_comboBox, const std::vector<QString> & p_values );
 
 	static void appendColorHtmlTag( QString & p_txt, const VTX::Color::Rgba & p_color )
 	{

@@ -103,13 +103,13 @@ namespace VTX::UI::Widget::Render::Overlay
 		void _refreshMeasurementMode();
 
 	  private:
-		QToolButton * _orientWidget;
-		QToolButton * _changeCameraControllerWidget;
-		QToolButton * _changePickerControllerWidget;
-		QToolButton * _changeSelectionGranularityWidget;
-		QAction *	  _changeSelectionGranularityQAction;
-		QToolButton * _changeMeasurementModeWidget;
-		QAction *	  _changeMeasurementModeQAction;
+		QToolButton * _orientWidget						 = nullptr;
+		QToolButton * _changeCameraControllerWidget		 = nullptr;
+		QToolButton * _changePickerControllerWidget		 = nullptr;
+		QToolButton * _changeSelectionGranularityWidget	 = nullptr;
+		QAction *	  _changeSelectionGranularityQAction = nullptr;
+		QToolButton * _changeMeasurementModeWidget		 = nullptr;
+		QAction *	  _changeMeasurementModeQAction		 = nullptr;
 
 		void _orientAction();
 		void _changeCameraControllerAction( const QAction * const p_action );
