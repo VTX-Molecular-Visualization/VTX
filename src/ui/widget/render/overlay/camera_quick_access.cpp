@@ -57,6 +57,7 @@ namespace VTX::UI::Widget::Render::Overlay
 
 		QAction * const toggleCameraProjectionAction = addAction( _projectionPerspectiveIcon.getIcon(), "" );
 		_cameraProjectionButton = dynamic_cast<QToolButton *>( widgetForAction( toggleCameraProjectionAction ) );
+		_cameraProjectionButton->setToolTip( "Camera projection" );
 
 		_attachViewOnAppliedRenderEffect();
 		_refreshCameraProjectionButton();
