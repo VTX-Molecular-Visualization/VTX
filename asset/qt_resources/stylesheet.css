@@ -99,6 +99,12 @@ QStatusBar > QProgressBar::chunk
 	background-color: #79C0FE;
 }
 
+QToolTip
+{
+	background-color: #444444;
+	color: white;
+}
+
 
 QTreeWidget
 {
@@ -175,6 +181,10 @@ QWidget[OVERLAY_STYLE="TRANSPARENT"]
 	background : transparent;
 }
 QWidget[OVERLAY_STYLE="TRANSPARENT"] QToolButton:hover
+{
+	background : transparent;
+}
+QWidget[OVERLAY_STYLE="TRANSPARENT"] QToolButton:pressed
 {
 	background : transparent;
 }

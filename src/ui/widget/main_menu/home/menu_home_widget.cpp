@@ -1,4 +1,7 @@
 #include "menu_home_widget.hpp"
+#include "menu_home_molecule_widget.hpp"
+#include "menu_home_session_widget.hpp"
+#include "menu_home_windows_widget.hpp"
 
 namespace VTX::UI::Widget::MainMenu::Home
 {
@@ -9,8 +12,9 @@ namespace VTX::UI::Widget::MainMenu::Home
 	{
 		MenuTooltabWidget::_setupUi( p_name );
 
-		_session = addToolBlock<MenuHomeSessionWidget>( "sessionBlockWidget" );
-		_windows = addToolBlock<MenuHomeWindowsWidget>( "windowsBlockWidget" );
+		addToolBlock<MenuHomeSessionWidget>( "sessionBlockWidget" );
+		addToolBlock<MenuHomeMoleculeWidget>( "moleculeWidget" );
+		addToolBlock<MenuHomeWindowsWidget>( "windowsBlockWidget" );
 	}
 	void MenuHomeWidget::_setupSlots() {}
 	void MenuHomeWidget::localize() {}

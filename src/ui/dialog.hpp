@@ -34,6 +34,7 @@ namespace VTX
 
 			static void openLoadMoleculeDialog();
 			static void openExportMoleculeDialog();
+			static void openLoadTrajectoryDialog();
 			static void openLoadTrajectoryDialog( Model::Molecule & p_target );
 
 			static void openSetTrajectoryTargetsDialog( const IO::FilePath & p_trajectoryFilePath );

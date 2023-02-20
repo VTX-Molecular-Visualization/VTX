@@ -1,4 +1,4 @@
-#include "menu_visualization_viewpoint.hpp"
+#include "viewpoint_block.hpp"
 #include "action/action_manager.hpp"
 #include "action/viewpoint.hpp"
 #include "model/path.hpp"
@@ -8,15 +8,14 @@
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Camera
 {
-	MenuVisualizationViewpointWidget::MenuVisualizationViewpointWidget( QWidget * p_parent ) :
-		MenuToolBlockWidget( p_parent )
+	ViewpointBlock::ViewpointBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
 		_registerEvent( Event::Global::SELECTION_CHANGE );
 	};
 
-	void MenuVisualizationViewpointWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void ViewpointBlock::receiveEvent( const Event::VTXEvent & p_event )
 	{
 		if ( p_event.name == Event::SELECTION_CHANGE )
 		{
@@ -28,7 +27,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		}
 	}
 
-	void MenuVisualizationViewpointWidget::_setupUi( const QString & p_name )
+	void ViewpointBlock::_setupUi( const QString & p_name )
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 
@@ -46,19 +45,16 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		validate();
 	}
-	void MenuVisualizationViewpointWidget::_setupSlots()
+	void ViewpointBlock::_setupSlots()
 	{
-		_createViewpointButton->setTriggerAction( this, &MenuVisualizationViewpointWidget::_createViewpointAction );
-		_deleteViewpointButton->setTriggerAction( this, &MenuVisualizationViewpointWidget::_deleteViewpointAction );
+		_createViewpointButton->setTriggerAction( this, &ViewpointBlock::_createViewpointAction );
+		_deleteViewpointButton->setTriggerAction( this, &ViewpointBlock::_deleteViewpointAction );
 	}
 
-	void MenuVisualizationViewpointWidget::localize() { setTitle( "Viewpoints" ); }
+	void ViewpointBlock::localize() { setTitle( "Viewpoints" ); }
 
-	void MenuVisualizationViewpointWidget::_createViewpointAction() const
-	{
-		VTX_ACTION( new Action::Viewpoint::Create() );
-	}
-	void MenuVisualizationViewpointWidget::_deleteViewpointAction() const
+	void ViewpointBlock::_createViewpointAction() const { VTX_ACTION( new Action::Viewpoint::Create() ); }
+	void ViewpointBlock::_deleteViewpointAction() const
 	{
 		std::vector<Model::Viewpoint *> viewpointsInSelection = std::vector<Model::Viewpoint *>();
 		const Model::Selection &		selection = VTX::Selection::SelectionManager::get().getSelectionModel();
@@ -78,9 +74,9 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		VTX_ACTION( new Action::Viewpoint::Delete( viewpointsInSelection ) );
 	}
 
-	void MenuVisualizationViewpointWidget::_enableDeleteButtonState( const bool p_enable )
+	void ViewpointBlock::_enableDeleteButtonState( const bool p_enable )
 	{
 		_deleteViewpointButton->setEnabled( p_enable );
 	}
 
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+} // namespace VTX::UI::Widget::MainMenu::Camera

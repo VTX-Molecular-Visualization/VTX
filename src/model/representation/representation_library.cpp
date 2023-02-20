@@ -264,6 +264,7 @@ namespace VTX::Model::Representation
 			Representation * const ballsAndsticks
 				= MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 			ballsAndsticks->setName( name );
+			ballsAndsticks->setQuickAccess( true );
 			ballsAndsticks->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
 			addRepresentation( ballsAndsticks, p_notify );
 		}
@@ -275,9 +276,22 @@ namespace VTX::Model::Representation
 			Representation * const cartoon
 				= MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 			cartoon->setName( name );
-			cartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
 			cartoon->setQuickAccess( true );
+			cartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
 			addRepresentation( cartoon, p_notify );
+		}
+
+		representationType = Generic::REPRESENTATION::STICK_AND_CARTOON;
+		name			   = "Cartoon + Stick";
+		if ( isExistingName( name ) == false )
+		{
+			Representation * const stickAndCartoon
+				= MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+			stickAndCartoon->setName( name );
+			stickAndCartoon->setQuickAccess( true );
+			stickAndCartoon->getData().setCylinderRadius( 0.15f );
+			stickAndCartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
+			addRepresentation( stickAndCartoon, p_notify );
 		}
 
 		representationType = Generic::REPRESENTATION::SAS;
@@ -286,8 +300,8 @@ namespace VTX::Model::Representation
 		{
 			Representation * const sas = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 			sas->setName( name );
+			sas->setQuickAccess( true );
 			sas->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
-			sas->setQuickAccess( false );
 			addRepresentation( sas, p_notify );
 		}
 
@@ -297,8 +311,8 @@ namespace VTX::Model::Representation
 		{
 			Representation * const ses = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 			ses->setName( name );
-			ses->getData().setColorMode( Generic::COLOR_MODE::PROTEIN );
 			ses->setQuickAccess( true );
+			ses->getData().setColorMode( Generic::COLOR_MODE::PROTEIN );
 			addRepresentation( ses, p_notify );
 		}
 
@@ -310,22 +324,10 @@ namespace VTX::Model::Representation
 				= MVC::MvcManager::get().instantiateModel<Representation, Generic::REPRESENTATION>(
 					representationType );
 			stick->setName( name );
+			stick->setQuickAccess( true );
 			stick->getData().setCylinderRadius( 0.15f );
 			stick->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
-			stick->setQuickAccess( true );
 			addRepresentation( stick, p_notify );
-		}
-
-		representationType = Generic::REPRESENTATION::STICK_AND_CARTOON;
-		name			   = "Stick + Cartoon";
-		if ( isExistingName( name ) == false )
-		{
-			Representation * const stickAndCartoon
-				= MVC::MvcManager::get().instantiateModel<Representation>( representationType );
-			stickAndCartoon->setName( name );
-			stickAndCartoon->getData().setCylinderRadius( 0.15f );
-			stickAndCartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
-			addRepresentation( stickAndCartoon, p_notify );
 		}
 
 		representationType = Generic::REPRESENTATION::VAN_DER_WAALS;
@@ -334,6 +336,7 @@ namespace VTX::Model::Representation
 		{
 			Representation * const vdw = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 			vdw->setName( name );
+			vdw->setQuickAccess( true );
 			vdw->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
 			vdw->getData().setSphereRadius( 0 );
 			addRepresentation( vdw, p_notify );

@@ -1,9 +1,9 @@
-#ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_REPRESENTATION_BUTTON__
-#define __VTX_UI_WIDGET_MENU_VISUALIZATION_REPRESENTATION_BUTTON__
+#ifndef __VTX_UI_WIDGET_MENU_MOLECULE_REPRESENTATION_PRESET_BUTTON__
+#define __VTX_UI_WIDGET_MENU_MOLECULE_REPRESENTATION_PRESET_BUTTON__
 
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 
-namespace VTX::UI::Widget::MainMenu
+namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	class RepresentationPresetButton : public MenuToolButtonWidget
 	{
@@ -22,5 +22,5 @@ namespace VTX::UI::Widget::MainMenu
 
 		void _onButtonClicked();
 	};
-} // namespace VTX::UI::Widget::MainMenu
+} // namespace VTX::UI::Widget::MainMenu::Molecule
 #endif

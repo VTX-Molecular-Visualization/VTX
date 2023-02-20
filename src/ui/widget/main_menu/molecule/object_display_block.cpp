@@ -1,4 +1,4 @@
-#include "menu_visualization_object_display_widget.hpp"
+#include "object_display_block.hpp"
 #include "action/action_manager.hpp"
 #include "action/molecule.hpp"
 #include "model/molecule.hpp"
@@ -8,10 +8,9 @@
 #include "selection/selection_manager.hpp"
 #include "ui/widget_factory.hpp"
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Molecule
 {
-	MenuVisualizationObjectDisplayWidget::MenuVisualizationObjectDisplayWidget( QWidget * p_parent ) :
-		MenuToolBlockWidget( p_parent )
+	ObjectDisplayBlock::ObjectDisplayBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
 		_registerEvent( Event::Global::SELECTION_CHANGE );
 		_registerEvent( Event::Global::MOLECULE_ADDED );
@@ -19,9 +18,9 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_registerEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 	}
 
-	MenuVisualizationObjectDisplayWidget::~MenuVisualizationObjectDisplayWidget() {}
+	ObjectDisplayBlock::~ObjectDisplayBlock() {}
 
-	void MenuVisualizationObjectDisplayWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void ObjectDisplayBlock::receiveEvent( const Event::VTXEvent & p_event )
 	{
 		if ( p_event.name == Event::Global::SELECTION_CHANGE || p_event.name == Event::Global::MOLECULE_ADDED
 			 || p_event.name == Event::Global::MOLECULE_REMOVED
@@ -31,7 +30,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		}
 	}
 
-	void MenuVisualizationObjectDisplayWidget::_setupUi( const QString & p_name )
+	void ObjectDisplayBlock::_setupUi( const QString & p_name )
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 
@@ -58,31 +57,23 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_refreshButtons();
 		validate();
 	}
-	void MenuVisualizationObjectDisplayWidget::_setupSlots()
+	void ObjectDisplayBlock::_setupSlots()
 	{
-		connect( _showWater,
-				 &MenuToolButtonWidget::clicked,
-				 this,
-				 &MenuVisualizationObjectDisplayWidget::_toggleWaterVisibilityAction );
+		connect( _showWater, &MenuToolButtonWidget::clicked, this, &ObjectDisplayBlock::_toggleWaterVisibilityAction );
 
 		connect( _showHydrogens,
 				 &MenuToolButtonWidget::clicked,
 				 this,
-				 &MenuVisualizationObjectDisplayWidget::_toggleHydrogenVisibilityAction );
+				 &ObjectDisplayBlock::_toggleHydrogenVisibilityAction );
 
-		connect( _showSolvent,
-				 &MenuToolButtonWidget::clicked,
-				 this,
-				 &MenuVisualizationObjectDisplayWidget::_toggleSolventVisibilityAction );
+		connect(
+			_showSolvent, &MenuToolButtonWidget::clicked, this, &ObjectDisplayBlock::_toggleSolventVisibilityAction );
 
-		connect( _showIon,
-				 &MenuToolButtonWidget::clicked,
-				 this,
-				 &MenuVisualizationObjectDisplayWidget::_toggleIonVisibilityAction );
+		connect( _showIon, &MenuToolButtonWidget::clicked, this, &ObjectDisplayBlock::_toggleIonVisibilityAction );
 	}
-	void MenuVisualizationObjectDisplayWidget::localize() { setTitle( "Object Display" ); }
+	void ObjectDisplayBlock::localize() { setTitle( "Object Display" ); }
 
-	void MenuVisualizationObjectDisplayWidget::_refreshButtons()
+	void ObjectDisplayBlock::_refreshButtons()
 	{
 		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 		_fillContainerWithTarget( molecules );
@@ -117,8 +108,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		}
 	}
 
-	void MenuVisualizationObjectDisplayWidget::_fillContainerWithTarget(
-		std::unordered_set<Model::Molecule *> & p_container ) const
+	void ObjectDisplayBlock::_fillContainerWithTarget( std::unordered_set<Model::Molecule *> & p_container ) const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
@@ -136,28 +126,28 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		}
 	}
 
-	void MenuVisualizationObjectDisplayWidget::_displayWaterButton( const bool p_active, const bool p_show )
+	void ObjectDisplayBlock::_displayWaterButton( const bool p_active, const bool p_show )
 	{
 		_showWater->setEnabled( p_active );
 
 		const QString iconPath = p_show ? ":/sprite/show_water_icon.png" : ":/sprite/hide_water_icon.png";
 		_showWater->setIcon( QIcon( iconPath ) );
 	}
-	void MenuVisualizationObjectDisplayWidget::_displaySolventButton( const bool p_active, const bool p_show )
+	void ObjectDisplayBlock::_displaySolventButton( const bool p_active, const bool p_show )
 	{
 		_showSolvent->setEnabled( p_active );
 
 		const QString iconPath = p_show ? ":/sprite/show_solvent_icon.png" : ":/sprite/hide_solvent_icon.png";
 		_showSolvent->setIcon( QIcon( iconPath ) );
 	}
-	void MenuVisualizationObjectDisplayWidget::_displayHydrogenButton( const bool p_active, const bool p_show )
+	void ObjectDisplayBlock::_displayHydrogenButton( const bool p_active, const bool p_show )
 	{
 		_showHydrogens->setEnabled( p_active );
 
 		const QString iconPath = p_show ? ":/sprite/show_hydrogen_icon.png" : ":/sprite/hide_hydrogen_icon.png";
 		_showHydrogens->setIcon( QIcon( iconPath ) );
 	}
-	void MenuVisualizationObjectDisplayWidget::_displayIonButton( const bool p_active, const bool p_show )
+	void ObjectDisplayBlock::_displayIonButton( const bool p_active, const bool p_show )
 	{
 		_showIon->setEnabled( p_active );
 
@@ -165,7 +155,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_showIon->setIcon( QIcon( iconPath ) );
 	}
 
-	void MenuVisualizationObjectDisplayWidget::_toggleWaterVisibilityAction() const
+	void ObjectDisplayBlock::_toggleWaterVisibilityAction() const
 	{
 		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 		_fillContainerWithTarget( molecules );
@@ -177,7 +167,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		VTX_ACTION( new Action::Molecule::ChangeShowWater( molecules, showWater ) );
 	}
-	void MenuVisualizationObjectDisplayWidget::_toggleSolventVisibilityAction() const
+	void ObjectDisplayBlock::_toggleSolventVisibilityAction() const
 	{
 		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 		_fillContainerWithTarget( molecules );
@@ -189,7 +179,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		VTX_ACTION( new Action::Molecule::ChangeShowSolvent( molecules, showSolvent ) );
 	}
-	void MenuVisualizationObjectDisplayWidget::_toggleHydrogenVisibilityAction() const
+	void ObjectDisplayBlock::_toggleHydrogenVisibilityAction() const
 	{
 		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 		_fillContainerWithTarget( molecules );
@@ -201,7 +191,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		VTX_ACTION( new Action::Molecule::ChangeShowHydrogen( molecules, showHydrogen ) );
 	}
-	void MenuVisualizationObjectDisplayWidget::_toggleIonVisibilityAction() const
+	void ObjectDisplayBlock::_toggleIonVisibilityAction() const
 	{
 		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 		_fillContainerWithTarget( molecules );
@@ -214,4 +204,4 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		VTX_ACTION( new Action::Molecule::ChangeShowIon( molecules, showIon ) );
 	}
 
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+} // namespace VTX::UI::Widget::MainMenu::Molecule

@@ -46,6 +46,7 @@ namespace VTX::UI::Widget::Render::Overlay
 
 		QAction * const orientAction = addAction( QIcon( ":/sprite/camera_orient_icon.png" ), "" );
 		_orientWidget				 = dynamic_cast<QToolButton *>( widgetForAction( orientAction ) );
+		_orientWidget->setToolTip( "Orient" );
 
 		QMenu * const changeCameraControllerMenu = new QMenu( this );
 		for ( int i = 0; i < CAMERA_CONTROLLERS.size(); i++ )
@@ -56,6 +57,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		}
 		_changeCameraControllerWidget
 			= dynamic_cast<QToolButton *>( widgetForAction( addMenu( changeCameraControllerMenu ) ) );
+		_changeCameraControllerWidget->setToolTip( "Camera controller" );
 
 		QMenu * const changePickerControllerMenu = new QMenu( this );
 		for ( int i = 0; i < PICKER_CONTROLLERS.size(); i++ )
@@ -66,6 +68,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		}
 		_changePickerControllerWidget
 			= dynamic_cast<QToolButton *>( widgetForAction( addMenu( changePickerControllerMenu ) ) );
+		_changePickerControllerWidget->setToolTip( "Picker" );
 
 		QMenu * const changeSelectionGranularityMenu = new QMenu( this );
 		for ( int i = 0; i < SELECTION_GRANULARITY.size(); i++ )
@@ -77,6 +80,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		_changeSelectionGranularityQAction = addMenu( changeSelectionGranularityMenu );
 		_changeSelectionGranularityWidget
 			= dynamic_cast<QToolButton *>( widgetForAction( _changeSelectionGranularityQAction ) );
+		_changeSelectionGranularityWidget->setToolTip( "Granularity" );
 
 		QMenu * const changeMeasurementModeMenu = new QMenu( this );
 		for ( int i = 0; i < MEASUREMENT_MODE.size(); i++ )
@@ -87,10 +91,10 @@ namespace VTX::UI::Widget::Render::Overlay
 		}
 		_changeMeasurementModeQAction = addMenu( changeMeasurementModeMenu );
 		_changeMeasurementModeWidget  = dynamic_cast<QToolButton *>( widgetForAction( _changeMeasurementModeQAction ) );
+		_changeMeasurementModeWidget->setToolTip( "Measurement" );
 
 		_refreshController();
 		_refreshPicker();
-		_refreshSize();
 	}
 
 	void VisualizationQuickAccess::_setupSlots()

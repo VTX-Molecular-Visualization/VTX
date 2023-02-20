@@ -1,4 +1,4 @@
-#include "menu_visualization_snapshot.hpp"
+#include "snapshot_block.hpp"
 #include "action/main.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
@@ -11,11 +11,11 @@
 #include "vtx_app.hpp"
 #include "worker/snapshoter.hpp"
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Camera
 {
-	MenuVisualizationSnapshot::MenuVisualizationSnapshot( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
+	SnapshotBlock::SnapshotBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
 
-	void MenuVisualizationSnapshot::_setupUi( const QString & p_name )
+	void SnapshotBlock::_setupUi( const QString & p_name )
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 
@@ -29,19 +29,19 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		validate();
 	}
-	void MenuVisualizationSnapshot::_setupSlots()
+	void SnapshotBlock::_setupSlots()
 	{
-		_takeSnapshot->setTriggerAction( this, &MenuVisualizationSnapshot::_takeSnapshotAction );
-		_exportAsImage->setTriggerAction( this, &MenuVisualizationSnapshot::_exportAsImageAction );
+		_takeSnapshot->setTriggerAction( this, &SnapshotBlock::_takeSnapshotAction );
+		_exportAsImage->setTriggerAction( this, &SnapshotBlock::_exportAsImageAction );
 	}
-	void MenuVisualizationSnapshot::localize() { setTitle( "Snapshot" ); }
+	void SnapshotBlock::localize() { setTitle( "Snapshot" ); }
 
-	void MenuVisualizationSnapshot::_takeSnapshotAction() const
+	void SnapshotBlock::_takeSnapshotAction() const
 	{
 		VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
 												Util::Filesystem::getUniqueSnapshotsPath(),
 												VTX_SETTING().getSnapshotResolution() ) );
 	}
 
-	void MenuVisualizationSnapshot::_exportAsImageAction() const { Dialog::openAdvancedSettingImageExportDialog(); }
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+	void SnapshotBlock::_exportAsImageAction() const { Dialog::openAdvancedSettingImageExportDialog(); }
+} // namespace VTX::UI::Widget::MainMenu::Camera

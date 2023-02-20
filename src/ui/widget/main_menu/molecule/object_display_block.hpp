@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_OBJECT_DISPLAY__
-#define __VTX_UI_WIDGET_MENU_VISUALIZATION_OBJECT_DISPLAY__
+#ifndef __VTX_UI_WIDGET_MENU_MOLECULE_OBJECT_DISPLAY_BLOCK__
+#define __VTX_UI_WIDGET_MENU_MOLECULE_OBJECT_DISPLAY_BLOCK__
 
 #include "event/event.hpp"
 #include "model/molecule.hpp"
@@ -8,20 +8,20 @@
 #include <QWidget>
 #include <unordered_set>
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Molecule
 {
-	class MenuVisualizationObjectDisplayWidget : public MenuToolBlockWidget
+	class ObjectDisplayBlock : public MenuToolBlockWidget
 	{
 		VTX_WIDGET
 
 	  public:
-		~MenuVisualizationObjectDisplayWidget();
+		~ObjectDisplayBlock();
 		void localize() override;
 
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 	  protected:
-		MenuVisualizationObjectDisplayWidget( QWidget * p_parent );
+		ObjectDisplayBlock( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
@@ -46,5 +46,5 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void _toggleHydrogenVisibilityAction() const;
 		void _toggleIonVisibilityAction() const;
 	}; // namespace Visualization
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+} // namespace VTX::UI::Widget::MainMenu::Molecule
 #endif

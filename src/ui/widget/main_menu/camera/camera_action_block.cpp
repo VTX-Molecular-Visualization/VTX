@@ -1,4 +1,4 @@
-#include "menu_visualization_camera_action_widget.hpp"
+#include "camera_action_block.hpp"
 #include "action/main.hpp"
 #include "action/selection.hpp"
 #include "id.hpp"
@@ -9,18 +9,17 @@
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Camera
 {
-	MenuVisualizationCameraActionWidget::MenuVisualizationCameraActionWidget( QWidget * p_parent ) :
-		MenuToolBlockWidget( p_parent )
+	CameraActionBlock::CameraActionBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
 		_registerEvent( Event::Global::CONTROLLER_CHANGE );
 		_registerEvent( Event::Global::SETTINGS_CHANGE );
 	};
 
-	MenuVisualizationCameraActionWidget::~MenuVisualizationCameraActionWidget() {}
+	CameraActionBlock::~CameraActionBlock() {}
 
-	void MenuVisualizationCameraActionWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void CameraActionBlock::receiveEvent( const Event::VTXEvent & p_event )
 	{
 		if ( p_event.name == Event::Global::CONTROLLER_CHANGE )
 		{
@@ -38,7 +37,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		}
 	}
 
-	void MenuVisualizationCameraActionWidget::_setupUi( const QString & p_name )
+	void CameraActionBlock::_setupUi( const QString & p_name )
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 
@@ -87,23 +86,22 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_refreshCameraProjectionButton();
 	}
 
-	void MenuVisualizationCameraActionWidget::localize() { setTitle( "Camera Action" ); }
+	void CameraActionBlock::localize() { setTitle( "Camera Action" ); }
 
-	void MenuVisualizationCameraActionWidget::_setupSlots()
+	void CameraActionBlock::_setupSlots()
 	{
-		_cameraProjectionButton->setTriggerAction( this,
-												   &MenuVisualizationCameraActionWidget::_toggleCameraProjection );
+		_cameraProjectionButton->setTriggerAction( this, &CameraActionBlock::_toggleCameraProjection );
 
-		_center->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_recenterCamera );
-		_reorient->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_orientCamera );
+		_center->setTriggerAction( this, &CameraActionBlock::_recenterCamera );
+		_reorient->setTriggerAction( this, &CameraActionBlock::_orientCamera );
 
-		_trackball->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setTrackballController );
-		_freefly->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setFreeflyController );
+		_trackball->setTriggerAction( this, &CameraActionBlock::_setTrackballController );
+		_freefly->setTriggerAction( this, &CameraActionBlock::_setFreeflyController );
 		// !V0.1
-		// _vessel->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setVesselController );
+		// _vessel->setTriggerAction( this, &CameraActionBlock::_setVesselController );
 	}
 
-	void MenuVisualizationCameraActionWidget::_updateCameraModeFeedback()
+	void CameraActionBlock::_updateCameraModeFeedback()
 	{
 		const ID::VTX_ID currentControllerID = VTXApp::get()
 												   .getStateMachine()
@@ -116,7 +114,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// _vessel->showActiveFeedback( currentControllerID == ID::Controller::VESSEL );
 	}
 
-	void MenuVisualizationCameraActionWidget::_refreshCameraProjectionButton() const
+	void CameraActionBlock::_refreshCameraProjectionButton() const
 	{
 		const bool											  isPerspective = VTX_SETTING().getCameraPerspective();
 		const Widget::Settings::VTXSettings::CameraProjection settingCameraProj
@@ -133,33 +131,30 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_cameraProjectionButton->setIcon( QIcon::fromTheme( iconPath ) );
 	}
 
-	void MenuVisualizationCameraActionWidget::_toggleCameraProjection() const
+	void CameraActionBlock::_toggleCameraProjection() const
 	{
 		const bool changeToPerspective = !VTX_SETTING().getCameraPerspective();
 		VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 
-	void MenuVisualizationCameraActionWidget::_recenterCamera() const
-	{
-		VTX_ACTION( new Action::Main::ResetCameraController() );
-	}
-	void MenuVisualizationCameraActionWidget::_orientCamera() const
+	void CameraActionBlock::_recenterCamera() const { VTX_ACTION( new Action::Main::ResetCameraController() ); }
+	void CameraActionBlock::_orientCamera() const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Selection::Orient( selection ) );
 	}
 
-	void MenuVisualizationCameraActionWidget::_setTrackballController() const
+	void CameraActionBlock::_setTrackballController() const
 	{
 		VTX_ACTION( new Action::Main::ChangeCameraController( ID::Controller::TRACKBALL ) );
 	}
-	void MenuVisualizationCameraActionWidget::_setFreeflyController() const
+	void CameraActionBlock::_setFreeflyController() const
 	{
 		VTX_ACTION( new Action::Main::ChangeCameraController( ID::Controller::FREEFLY ) );
 	}
-	void MenuVisualizationCameraActionWidget::_setVesselController() const
+	void CameraActionBlock::_setVesselController() const
 	{
 		VTX_ACTION( new Action::Main::ChangeCameraController( ID::Controller::VESSEL ) );
 	}
 
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+} // namespace VTX::UI::Widget::MainMenu::Camera
