@@ -1,18 +1,18 @@
-#ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_RENDER_EFFECTS__
-#define __VTX_UI_WIDGET_MENU_VISUALIZATION_RENDER_EFFECTS__
+#ifndef __VTX_UI_WIDGET_MENU_CAMERA_RENDER_EFFECTS_BLOCK__
+#define __VTX_UI_WIDGET_MENU_CAMERA_RENDER_EFFECTS_BLOCK__
 
 #include "event/event.hpp"
-#include "menu_visualization_render_effect_button_widget.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
+#include "render_effect_preset_button.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "view/base_view.hpp"
 #include <QWidget>
 #include <vector>
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Camera
 {
-	class MenuVisualizationRenderEffectsWidget :
+	class RenderEffectsBlock :
 		public VTX::View::BaseView<Model::Renderer::RenderEffectPresetLibrary>,
 		public MenuToolBlockWidget
 	{
@@ -26,8 +26,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void notify( const Event::VTXEvent * const p_event ) override;
 
 	  protected:
-		MenuVisualizationRenderEffectsWidget( Model::Renderer::RenderEffectPresetLibrary * const _renderEffectLibrary,
-											  QWidget *											 p_parent );
+		RenderEffectsBlock( Model::Renderer::RenderEffectPresetLibrary * const _renderEffectLibrary,
+							QWidget *										   p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
@@ -46,5 +46,5 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void _exportAsImageAction() const;
 		void _openPresetSettings() const;
 	};
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+} // namespace VTX::UI::Widget::MainMenu::Camera
 #endif

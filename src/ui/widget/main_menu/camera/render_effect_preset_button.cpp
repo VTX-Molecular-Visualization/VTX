@@ -1,10 +1,10 @@
-#include "menu_visualization_render_effect_button_widget.hpp"
 #include "action/action_manager.hpp"
 #include "action/renderer.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
+#include "render_effect_preset_button.hpp"
 
-namespace VTX::UI::Widget::MainMenu
+namespace VTX::UI::Widget::MainMenu::Camera
 {
 	void RenderEffectPresetButton::_setupUi( const QString & p_name )
 	{
@@ -26,4 +26,4 @@ namespace VTX::UI::Widget::MainMenu
 		VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *renderEffectPreset, true ) );
 	};
 
-} // namespace VTX::UI::Widget::MainMenu
+} // namespace VTX::UI::Widget::MainMenu::Camera

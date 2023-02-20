@@ -1,4 +1,4 @@
-#include "menu_visualization_selection_action_widget.hpp"
+#include "selection_action_block.hpp"
 #include "action/action_manager.hpp"
 #include "action/selection.hpp"
 #include "action/visible.hpp"
@@ -8,15 +8,14 @@
 #include "ui/dialog.hpp"
 #include "ui/widget_factory.hpp"
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Molecule
 {
-	MenuVisualizationSelectionActionWidget::MenuVisualizationSelectionActionWidget( QWidget * p_parent ) :
-		MenuToolBlockWidget( p_parent )
+	SelectionActionBlock::SelectionActionBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
 		_registerEvent( Event::Global::SELECTION_CHANGE );
 	};
 
-	void MenuVisualizationSelectionActionWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void SelectionActionBlock::receiveEvent( const Event::VTXEvent & p_event )
 	{
 		if ( p_event.name == Event::SELECTION_CHANGE )
 		{
@@ -30,7 +29,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		}
 	}
 
-	void MenuVisualizationSelectionActionWidget::_setupUi( const QString & p_name )
+	void SelectionActionBlock::_setupUi( const QString & p_name )
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 
@@ -76,69 +75,69 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		validate();
 	}
-	void MenuVisualizationSelectionActionWidget::_setupSlots()
+	void SelectionActionBlock::_setupSlots()
 	{
-		_copy->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_copySelection );
-		_extract->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_extractSelection );
-		_delete->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_deleteSelection );
+		_copy->setTriggerAction( this, &SelectionActionBlock::_copySelection );
+		_extract->setTriggerAction( this, &SelectionActionBlock::_extractSelection );
+		_delete->setTriggerAction( this, &SelectionActionBlock::_deleteSelection );
 
-		_show->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_showSelection );
-		_hide->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_hideSelection );
-		_solo->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_soloSelection );
+		_show->setTriggerAction( this, &SelectionActionBlock::_showSelection );
+		_hide->setTriggerAction( this, &SelectionActionBlock::_hideSelection );
+		_solo->setTriggerAction( this, &SelectionActionBlock::_soloSelection );
 
-		_exportSelectionButton->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_exportSelection );
+		_exportSelectionButton->setTriggerAction( this, &SelectionActionBlock::_exportSelection );
 
 		connect( _copyFrameSubmenu,
 				 &CustomWidget::TrajectoryFramesMenu::onFrameSelected,
 				 this,
-				 &MenuVisualizationSelectionActionWidget::_copyFrameSelection );
+				 &SelectionActionBlock::_copyFrameSelection );
 	}
-	void MenuVisualizationSelectionActionWidget::localize() { setTitle( "Molecule Action" ); }
+	void SelectionActionBlock::localize() { setTitle( "Molecule Action" ); }
 
-	void MenuVisualizationSelectionActionWidget::_copySelection() const
+	void SelectionActionBlock::_copySelection() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Selection::Copy( selectionModel ) );
 	}
-	void MenuVisualizationSelectionActionWidget::_copyFrameSelection( const int p_frame ) const
+	void SelectionActionBlock::_copyFrameSelection( const int p_frame ) const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Selection::Copy( selectionModel, p_frame ) );
 	}
 
-	void MenuVisualizationSelectionActionWidget::_extractSelection() const
+	void SelectionActionBlock::_extractSelection() const
 	{
 		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Selection::Extract( selectionModel ) );
 	}
-	void MenuVisualizationSelectionActionWidget::_deleteSelection() const
+	void SelectionActionBlock::_deleteSelection() const
 	{
 		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Selection::Delete( selectionModel ) );
 	}
 
-	void MenuVisualizationSelectionActionWidget::_showSelection() const
+	void SelectionActionBlock::_showSelection() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Selection::ChangeVisibility(
 			selectionModel, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW ) );
 	}
-	void MenuVisualizationSelectionActionWidget::_hideSelection() const
+	void SelectionActionBlock::_hideSelection() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Selection::ChangeVisibility(
 			selectionModel, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
 	}
-	void MenuVisualizationSelectionActionWidget::_soloSelection() const
+	void SelectionActionBlock::_soloSelection() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Selection::ChangeVisibility(
 			selectionModel, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
 	}
 
-	void MenuVisualizationSelectionActionWidget::_exportSelection() const { UI::Dialog::openExportMoleculeDialog(); }
+	void SelectionActionBlock::_exportSelection() const { UI::Dialog::openExportMoleculeDialog(); }
 
-	void MenuVisualizationSelectionActionWidget::_enableButtons( const bool p_enable )
+	void SelectionActionBlock::_enableButtons( const bool p_enable )
 	{
 		_copy->setEnabled( p_enable );
 		_extract->setEnabled( p_enable );
@@ -149,4 +148,4 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_exportSelectionButton->setEnabled( p_enable );
 	}
 
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+} // namespace VTX::UI::Widget::MainMenu::Molecule

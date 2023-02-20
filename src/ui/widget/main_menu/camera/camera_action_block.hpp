@@ -1,25 +1,25 @@
-#ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_CAMERA_ACTION__
-#define __VTX_UI_WIDGET_MENU_VISUALIZATION_CAMERA_ACTION__
+#ifndef __VTX_UI_WIDGET_MENU_CAMERA_ACTION__
+#define __VTX_UI_WIDGET_MENU_CAMERA_ACTION__
 
 #include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Camera
 {
-	class MenuVisualizationCameraActionWidget : public MenuToolBlockWidget
+	class CameraActionBlock : public MenuToolBlockWidget
 	{
 		VTX_WIDGET
 
 	  public:
-		~MenuVisualizationCameraActionWidget();
+		~CameraActionBlock();
 		void localize() override;
 
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 	  protected:
-		MenuVisualizationCameraActionWidget( QWidget * p_parent );
+		CameraActionBlock( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
@@ -52,5 +52,5 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void _setFreeflyController() const;
 		void _setVesselController() const;
 	};
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+} // namespace VTX::UI::Widget::MainMenu::Camera
 #endif

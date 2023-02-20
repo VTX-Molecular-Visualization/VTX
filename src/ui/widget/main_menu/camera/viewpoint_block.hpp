@@ -1,14 +1,14 @@
-#ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_VIEWPOINT__
-#define __VTX_UI_WIDGET_MENU_VISUALIZATION_VIEWPOINT__
+#ifndef __VTX_UI_WIDGET_MENU_CAMERA_VIEWPOINT_BLOCK__
+#define __VTX_UI_WIDGET_MENU_CAMERA_VIEWPOINT_BLOCK__
 
 #include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Camera
 {
-	class MenuVisualizationViewpointWidget : public MenuToolBlockWidget
+	class ViewpointBlock : public MenuToolBlockWidget
 	{
 		VTX_WIDGET
 
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 	  protected:
-		MenuVisualizationViewpointWidget( QWidget * p_parent );
+		ViewpointBlock( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
@@ -31,5 +31,5 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void _createViewpointAction() const;
 		void _deleteViewpointAction() const;
 	};
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+} // namespace VTX::UI::Widget::MainMenu::Camera
 #endif

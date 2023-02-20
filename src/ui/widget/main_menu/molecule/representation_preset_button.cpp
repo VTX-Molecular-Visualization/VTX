@@ -1,4 +1,4 @@
-#include "menu_visualization_representation_button_widget.hpp"
+#include "representation_preset_button.hpp"
 #include "action/action_manager.hpp"
 #include "action/representable.hpp"
 #include "generic/base_representable.hpp"
@@ -13,7 +13,7 @@
 #include "style.hpp"
 #include "vtx_app.hpp"
 
-namespace VTX::UI::Widget::MainMenu
+namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	void RepresentationPresetButton::_setupUi( const QString & p_name )
 	{
@@ -48,4 +48,4 @@ namespace VTX::UI::Widget::MainMenu
 		}
 	};
 
-} // namespace VTX::UI::Widget::MainMenu
+} // namespace VTX::UI::Widget::MainMenu::Molecule

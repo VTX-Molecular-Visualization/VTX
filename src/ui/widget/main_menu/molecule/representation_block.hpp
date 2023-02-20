@@ -1,17 +1,17 @@
-#ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_REPRESENTATION__
-#define __VTX_UI_WIDGET_MENU_VISUALIZATION_REPRESENTATION__
+#ifndef __VTX_UI_WIDGET_MENU_MOLECULE_REPRESENTATION_BLOCK__
+#define __VTX_UI_WIDGET_MENU_MOLECULE_REPRESENTATION_BLOCK__
 
-#include "menu_visualization_representation_button_widget.hpp"
 #include "model/representation/representation_library.hpp"
+#include "representation_preset_button.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "view/base_view.hpp"
 #include <QWidget>
 #include <map>
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Molecule
 {
-	class MenuVisualizationRepresentationWidget :
+	class RepresentationBlock :
 		public VTX::View::BaseView<Model::Representation::RepresentationLibrary>,
 		public MenuToolBlockWidget
 	{
@@ -22,10 +22,9 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void localize() override;
 
 	  protected:
-		MenuVisualizationRepresentationWidget(
-			Model::Representation::RepresentationLibrary * const _representationLibrary,
-			QWidget *											 p_parent );
-		~MenuVisualizationRepresentationWidget();
+		RepresentationBlock( Model::Representation::RepresentationLibrary * const _representationLibrary,
+							 QWidget *											  p_parent );
+		~RepresentationBlock();
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
@@ -42,5 +41,5 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void _instantiateUI();
 		void _addPresetAction();
 	};
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+} // namespace VTX::UI::Widget::MainMenu::Molecule
 #endif

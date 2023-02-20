@@ -1,12 +1,11 @@
 #include "main_menu_bar.hpp"
 // !V0.1
 // #include "extensions/menu_extensions_widget.hpp"
-#include "camera/menu_camera_widget.hpp"
+#include "camera/toolbar.hpp"
 #include "home/menu_home_widget.hpp"
-#include "molecule/menu_molecule_widget.hpp"
+#include "molecule/toolbar.hpp"
 #include "tool/menu_tool_widget.hpp"
 #include "ui/widget_factory.hpp"
-#include "visualization/menu_visualization_widget.hpp"
 #include <QFont>
 
 namespace VTX::UI::Widget::MainMenu
@@ -36,12 +35,12 @@ namespace VTX::UI::Widget::MainMenu
 		//																					  "visualizationMenu" );
 		//_tabWidget->addTab( viewMenu, "Visualization" );
 
-		Camera::MenuCameraWidget * const cameraMenu
-			= WidgetFactory::get().instantiateWidget<Camera::MenuCameraWidget>( _tabWidget, "cameraMenu" );
+		Camera::Toolbar * const cameraMenu
+			= WidgetFactory::get().instantiateWidget<Camera::Toolbar>( _tabWidget, "cameraMenu" );
 		_tabWidget->addTab( cameraMenu, "Camera" );
 
-		Molecule::MenuMoleculeWidget * const moleculeMenu
-			= WidgetFactory::get().instantiateWidget<Molecule::MenuMoleculeWidget>( _tabWidget, "moleculeMenu" );
+		Molecule::Toolbar * const moleculeMenu
+			= WidgetFactory::get().instantiateWidget<Molecule::Toolbar>( _tabWidget, "moleculeMenu" );
 		_tabWidget->addTab( moleculeMenu, "Molecule" );
 
 		Tool::MenuToolWidget * const toolMenu

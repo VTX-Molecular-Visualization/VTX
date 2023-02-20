@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_SELECTION_ACTION__
-#define __VTX_UI_WIDGET_MENU_VISUALIZATION_SELECTION_ACTION__
+#ifndef __VTX_UI_WIDGET_MENU_MOLECULE_SELECTION_ACTION_BLOCK__
+#define __VTX_UI_WIDGET_MENU_MOLECULE_SELECTION_ACTION_BLOCK__
 
 #include "event/event.hpp"
 #include "ui/widget/custom_widget/trajectory_frames_menu.hpp"
@@ -8,9 +8,9 @@
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Molecule
 {
-	class MenuVisualizationSelectionActionWidget : public MenuToolBlockWidget
+	class SelectionActionBlock : public MenuToolBlockWidget
 	{
 		VTX_WIDGET
 
@@ -20,7 +20,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 	  protected:
-		MenuVisualizationSelectionActionWidget( QWidget * p_parent );
+		SelectionActionBlock( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
@@ -54,5 +54,5 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		void _exportSelection() const;
 	};
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+} // namespace VTX::UI::Widget::MainMenu::Molecule
 #endif

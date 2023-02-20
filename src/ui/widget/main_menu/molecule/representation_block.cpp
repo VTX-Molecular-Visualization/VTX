@@ -1,22 +1,22 @@
-#include "menu_visualization_representation_widget.hpp"
+#include "representation_block.hpp"
 #include "model/representation/representation_library.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/settings/setting_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Molecule
 {
-	MenuVisualizationRepresentationWidget::MenuVisualizationRepresentationWidget(
+	RepresentationBlock::RepresentationBlock(
 		Model::Representation::RepresentationLibrary * const _representationLibrary,
 		QWidget *											 p_parent ) :
 		View::BaseView<Model::Representation::RepresentationLibrary>( _representationLibrary ),
 		MenuToolBlockWidget( p_parent )
 	{
 	}
-	MenuVisualizationRepresentationWidget::~MenuVisualizationRepresentationWidget() {}
+	RepresentationBlock::~RepresentationBlock() {}
 
-	void MenuVisualizationRepresentationWidget::notify( const Event::VTXEvent * const p_event )
+	void RepresentationBlock::notify( const Event::VTXEvent * const p_event )
 	{
 		if ( p_event->name == Event::Model::DATA_CHANGE )
 		{
@@ -36,20 +36,17 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		}
 	}
 
-	void MenuVisualizationRepresentationWidget::_setupUi( const QString & p_name )
+	void RepresentationBlock::_setupUi( const QString & p_name )
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 		_instantiateUI();
 	}
-	void MenuVisualizationRepresentationWidget::_setupSlots()
+	void RepresentationBlock::_setupSlots()
 	{
-		connect( _addPreset,
-				 &MenuToolButtonWidget::clicked,
-				 this,
-				 &MenuVisualizationRepresentationWidget::_addPresetAction );
+		connect( _addPreset, &MenuToolButtonWidget::clicked, this, &RepresentationBlock::_addPresetAction );
 	}
 
-	void MenuVisualizationRepresentationWidget::_refreshView()
+	void RepresentationBlock::_refreshView()
 	{
 		reset();
 
@@ -58,7 +55,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		localize();
 	}
 
-	void MenuVisualizationRepresentationWidget::_instantiateUI()
+	void RepresentationBlock::_instantiateUI()
 	{
 		_buttons.clear();
 
@@ -96,7 +93,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		validate();
 	}
 
-	void MenuVisualizationRepresentationWidget::_refreshNames()
+	void RepresentationBlock::_refreshNames()
 	{
 		for ( int i = 0; i < Model::Representation::RepresentationLibrary::get().getRepresentationCount(); i++ )
 		{
@@ -109,7 +106,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			_buttons[ i ]->setName( QString::fromStdString( representation->getName() ) );
 		}
 	}
-	void MenuVisualizationRepresentationWidget::_refreshIcons()
+	void RepresentationBlock::_refreshIcons()
 	{
 		for ( int i = 0; i < Model::Representation::RepresentationLibrary::get().getRepresentationCount(); i++ )
 		{
@@ -124,11 +121,11 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		}
 	}
 
-	void MenuVisualizationRepresentationWidget::localize() { setTitle( "Representation" ); }
+	void RepresentationBlock::localize() { setTitle( "Representation" ); }
 
-	void MenuVisualizationRepresentationWidget::_addPresetAction()
+	void RepresentationBlock::_addPresetAction()
 	{
 		VTXApp::get().getMainWindow().openSettingWindow( Settings::SETTING_MENU::REPRESENTATIONS );
 	}
 
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+} // namespace VTX::UI::Widget::MainMenu::Molecule
