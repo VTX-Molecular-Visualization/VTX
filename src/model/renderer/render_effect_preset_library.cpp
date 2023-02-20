@@ -217,6 +217,7 @@ namespace VTX::Model::Renderer
 		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
 
 		_notifyViews( new Event::VTXEvent( Event::Model::APPLIED_PRESET_CHANGE ) );
+		VTX_EVENT( new Event::VTXEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGE ) );
 	}
 	bool RenderEffectPresetLibrary::isAppliedPreset( const RenderEffectPreset & p_preset ) const
 	{
