@@ -28,6 +28,7 @@ namespace VTX::UI::Widget::Render::Overlay
 	{
 		BaseManualWidget::eventFilter( p_obj, p_event );
 
+		// Menu show event
 		if ( p_event->type() == QEvent::Show )
 		{
 			QMenu * const menu = dynamic_cast<QMenu *>( p_obj );
@@ -45,7 +46,9 @@ namespace VTX::UI::Widget::Render::Overlay
 					localPos = actionWidget->rect().topLeft() - QPoint( 0, menu->height() );
 					break;
 
-				case OVERLAY_ANCHOR::TOP_RIGHT: localPos = actionWidget->rect().topLeft() - QPoint( 0, 0 ); break;
+				case OVERLAY_ANCHOR::TOP_RIGHT:
+					localPos = actionWidget->rect().topLeft() - QPoint( menu->width(), 0 );
+					break;
 
 				case OVERLAY_ANCHOR::NONE:
 				default: localPos = QPoint( 0, 0 ); break;
@@ -57,6 +60,7 @@ namespace VTX::UI::Widget::Render::Overlay
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -81,10 +85,21 @@ namespace VTX::UI::Widget::Render::Overlay
 
 		switch ( _anchorPosition )
 		{
-		case OVERLAY_ANCHOR::BOTTOM_CENTER: setOrientation( Qt::Orientation::Horizontal ); break;
+		case OVERLAY_ANCHOR::BOTTOM_CENTER:
+			setOrientation( Qt::Orientation::Horizontal );
+			setFixedHeight( 32 );
+			break;
+
+		case OVERLAY_ANCHOR::TOP_RIGHT:
+			setOrientation( Qt::Orientation::Vertical );
+			setFixedWidth( 32 );
+			break;
+
 		case OVERLAY_ANCHOR::NONE:
 		default: setOrientation( Qt::Orientation::Horizontal ); break;
 		}
+
+		_refreshSize();
 	}
 
 	void BaseOverlay::setStyle( const Style::RENDER_OVERLAY_STYLE & p_style )

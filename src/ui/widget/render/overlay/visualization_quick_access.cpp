@@ -95,7 +95,6 @@ namespace VTX::UI::Widget::Render::Overlay
 
 		_refreshController();
 		_refreshPicker();
-		_refreshSize();
 	}
 
 	void VisualizationQuickAccess::_setupSlots()

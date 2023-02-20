@@ -1,9 +1,13 @@
 #include "camera_quick_access.hpp"
 #include "action/action_manager.hpp"
+#include "action/renderer.hpp"
 #include "action/setting.hpp"
 #include "event/event.hpp"
+#include "id.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "setting.hpp"
+#include "ui/main_window.hpp"
+#include "ui/widget/renderer/render_effect_library_combo_box.hpp"
 #include "ui/widget/settings/setting_widget_enum.hpp"
 #include "vtx_app.hpp"
 #include <QAction>
@@ -37,15 +41,9 @@ namespace VTX::UI::Widget::Render::Overlay
 											   ID::View::UI_CAMERA_QUICK_ACCESS_ON_RENDER_EFFECT );
 
 			_attachViewOnAppliedRenderEffect();
+
+			_refreshRenderEffectMenu();
 		}
-	}
-
-	void CameraQuickAccess::_attachViewOnAppliedRenderEffect()
-	{
-		RenderEffectView * const view = MVC::MvcManager::get().instantiateView<RenderEffectView>(
-			&VTX_RENDER_EFFECT(), ID::View::UI_CAMERA_QUICK_ACCESS_ON_RENDER_EFFECT );
-
-		view->setCallback( this, &CameraQuickAccess::_onRenderEffectChange );
 	}
 
 	void CameraQuickAccess::_setupUi( const QString & p_name )
@@ -59,16 +57,25 @@ namespace VTX::UI::Widget::Render::Overlay
 		_cameraProjectionButton = dynamic_cast<QToolButton *>( widgetForAction( toggleCameraProjectionAction ) );
 		_cameraProjectionButton->setToolTip( "Camera projection" );
 
+		_renderEffectLibraryMenu = new QMenu( this );
+		QToolButton * const renderEffectButton
+			= dynamic_cast<QToolButton *>( widgetForAction( addMenu( _renderEffectLibraryMenu ) ) );
+		renderEffectButton->setIcon( QIcon( ":/sprite/render_effect_preset_icon.png" ) );
+		renderEffectButton->setToolTip( "Render effect preset" );
+
+		_refreshRenderEffectMenu();
 		_attachViewOnAppliedRenderEffect();
 		_refreshCameraProjectionButton();
-
-		_refreshSize();
 	}
 
 	void CameraQuickAccess::_setupSlots()
 	{
 		BaseOverlay::_setupSlots();
 
+		connect( _renderEffectLibraryMenu,
+				 QOverload<QAction *>::of( &QMenu::triggered ),
+				 this,
+				 &CameraQuickAccess::_applyRenderEffectPresetAction );
 		connect( _cameraProjectionButton, &QToolButton::clicked, this, &CameraQuickAccess::_toggleCameraProjection );
 	}
 
@@ -82,6 +89,29 @@ namespace VTX::UI::Widget::Render::Overlay
 			= isPerspective ? _projectionPerspectiveIcon : _projectionOrthographicIcon;
 
 		_cameraProjectionButton->setIcon( bgDependantIcon.getIcon( VTX_RENDER_EFFECT().getBackgroundColor() ) );
+	}
+
+	void CameraQuickAccess::_refreshRenderEffectMenu() const
+	{
+		_renderEffectLibraryMenu->clear();
+
+		const int appliedPresetIndex = Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPresetIndex();
+
+		for ( int i = 0; i < Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount(); i++ )
+		{
+			const Model::Renderer::RenderEffectPreset * const preset
+				= Model::Renderer::RenderEffectPresetLibrary::get().getPreset( i );
+
+			QAction * const action = _renderEffectLibraryMenu->addAction( QString::fromStdString( preset->getName() ) );
+
+			action->setCheckable( true );
+			action->setChecked( i == appliedPresetIndex );
+
+			action->setData( QVariant( i ) );
+		}
+
+		QAction * const action = _renderEffectLibraryMenu->addAction( "Settings..." );
+		action->setData( QVariant( -1 ) );
 	}
 
 	void CameraQuickAccess::_refreshCameraProjectionButton()
@@ -106,8 +136,34 @@ namespace VTX::UI::Widget::Render::Overlay
 		VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 
+	void CameraQuickAccess::_applyRenderEffectPresetAction( const QAction * const p_action )
+	{
+		const int renderEffectPreset = p_action->data().toInt();
+
+		// data == -1 => Settings else preset
+		if ( renderEffectPreset == -1 )
+		{
+			VTXApp::get().getMainWindow().openSettingWindow( UI::Widget::Settings::SETTING_MENU::RENDER_EFFECTS );
+		}
+		else
+		{
+			Model::Renderer::RenderEffectPreset * const preset
+				= Model::Renderer::RenderEffectPresetLibrary::get().getPreset( renderEffectPreset );
+
+			VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *preset ) );
+		}
+	}
+
 	void CameraQuickAccess::_onRenderEffectChange( const Event::VTXEvent * const p_event )
 	{
 		_refreshCameraProjectionIconColor();
+	}
+
+	void CameraQuickAccess::_attachViewOnAppliedRenderEffect()
+	{
+		RenderEffectView * const view = MVC::MvcManager::get().instantiateView<RenderEffectView>(
+			&VTX_RENDER_EFFECT(), ID::View::UI_CAMERA_QUICK_ACCESS_ON_RENDER_EFFECT );
+
+		view->setCallback( this, &CameraQuickAccess::_onRenderEffectChange );
 	}
 } // namespace VTX::UI::Widget::Render::Overlay

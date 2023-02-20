@@ -184,6 +184,10 @@ QWidget[OVERLAY_STYLE="TRANSPARENT"] QToolButton:hover
 {
 	background : transparent;
 }
+QWidget[OVERLAY_STYLE="TRANSPARENT"] QToolButton:pressed
+{
+	background : transparent;
+}
 
 QScrollBar#SequenceScrollbar:horizontal {
     border: 2px solid grey;
