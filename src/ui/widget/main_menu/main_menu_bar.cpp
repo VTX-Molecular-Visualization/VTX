@@ -1,5 +1,12 @@
 #include "main_menu_bar.hpp"
+// !V0.1
+// #include "extensions/menu_extensions_widget.hpp"
+#include "camera/menu_camera_widget.hpp"
+#include "home/menu_home_widget.hpp"
+#include "molecule/menu_molecule_widget.hpp"
+#include "tool/menu_tool_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "visualization/menu_visualization_widget.hpp"
 #include <QFont>
 
 namespace VTX::UI::Widget::MainMenu
@@ -20,15 +27,26 @@ namespace VTX::UI::Widget::MainMenu
 		menuBarFont.setPointSize( 10 );
 		_tabWidget->setFont( menuBarFont );
 
-		_mainMenu = WidgetFactory::get().instantiateWidget<Home::MenuHomeWidget>( _tabWidget, "mainMenu" );
-		_tabWidget->addTab( _mainMenu, "Home" );
+		Home::MenuHomeWidget * const mainMenu
+			= WidgetFactory::get().instantiateWidget<Home::MenuHomeWidget>( _tabWidget, "mainMenu" );
+		_tabWidget->addTab( mainMenu, "Home" );
 
-		_viewMenu = WidgetFactory::get().instantiateWidget<Visualization::MenuVisualizationWidget>(
-			_tabWidget, "visualizationMenu" );
-		_tabWidget->addTab( _viewMenu, "Visualization" );
+		// Visualization::MenuVisualizationWidget * const viewMenu
+		//	= WidgetFactory::get().instantiateWidget<Visualization::MenuVisualizationWidget>( _tabWidget,
+		//																					  "visualizationMenu" );
+		//_tabWidget->addTab( viewMenu, "Visualization" );
 
-		_toolMenu = WidgetFactory::get().instantiateWidget<Tool::MenuToolWidget>( _tabWidget, "toolMenu" );
-		_tabWidget->addTab( _toolMenu, "Tools" );
+		Camera::MenuCameraWidget * const cameraMenu
+			= WidgetFactory::get().instantiateWidget<Camera::MenuCameraWidget>( _tabWidget, "cameraMenu" );
+		_tabWidget->addTab( cameraMenu, "Camera" );
+
+		Molecule::MenuMoleculeWidget * const moleculeMenu
+			= WidgetFactory::get().instantiateWidget<Molecule::MenuMoleculeWidget>( _tabWidget, "moleculeMenu" );
+		_tabWidget->addTab( moleculeMenu, "Molecule" );
+
+		Tool::MenuToolWidget * const toolMenu
+			= WidgetFactory::get().instantiateWidget<Tool::MenuToolWidget>( _tabWidget, "toolMenu" );
+		_tabWidget->addTab( toolMenu, "Tools" );
 
 		// !V0.1
 		//_movieMenu = new QLabel( "movieMenu", this );
