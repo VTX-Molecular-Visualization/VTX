@@ -14,7 +14,6 @@ layout (local_size_x = LOCAL_SIZE_X, local_size_y = LOCAL_SIZE_Y, local_size_z =
 
 // Uniforms.
 uniform uint uSize;
-uniform uint uPassNumber;
 
 // SSBO.
 layout (std140, binding = 0) readonly buffer Positions
@@ -41,33 +40,18 @@ void main()
 {
 	uint hash = globalInvocationHash( gl_GlobalInvocationID, gl_NumWorkGroups, gl_WorkGroupSize );
 	
+	hash *= 3;
 	if( hash >= uSize )
 	{
 		return;
 	}
 
-	// First pass.
-	if( uPassNumber == 1)
-	{
-		hash *= 3;
-		if( hash >= uSize )
-		{
-			return;
-		}
+	const vec3 normal = cross(  vec3( positions[ indices[ hash + 1 ] ] - positions[ indices[ hash + 2 ] ] ),
+								vec3( positions[ indices[ hash + 1 ] ] - positions[ indices[ hash + 0 ] ] ) );
 
-		const vec3 normal = cross(  vec3( positions[ indices[ hash + 1 ] ] - positions[ indices[ hash + 2 ] ] ),
-									vec3( positions[ indices[ hash + 1 ] ] - positions[ indices[ hash + 0 ] ] ) );
-
-		for( uint i = 0; i < 3; ++i )
-		{
-			normals[ indices [ hash + i ] ] += vec4( normalize( normal ), 1.f );
-			counters[ indices [ hash + i ] ]++;
-		}	
-	}
-	// Second pass.
-	else
+	for( uint i = 0; i < 3; ++i )
 	{
-		const vec3 normal = vec3( normals[ hash ] ) / float( counters[ hash ] );
-		normals[ hash ] = vec4( normalize( normal ), 1.f );
+		normals[ indices [ hash + i ] ] += vec4( normalize( normal ), 1.f );
+		atomicAdd( counters[ indices [ hash + i ] ], 1);
 	}
 }

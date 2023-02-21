@@ -434,7 +434,7 @@ namespace VTX
 			chrono2.start();
 
 			////////////////////////////
-			// Sort vertices.
+			// Weld vertices.
 			std::vector<Vec4f> vertices( _indiceCount );
 			std::vector<uint>  sortedIndices( _indiceCount );
 
@@ -517,8 +517,8 @@ namespace VTX
 			chrono2.start();
 
 			////////////////////////////
-			// Worker: compute normals.
-			Worker::GpuComputer workerComputeNormals( IO::FilePath( "ses/compute_normals.comp" ) );
+			// Worker: compute normals (sum).
+			Worker::GpuComputer workerComputeNormalsSum( IO::FilePath( "ses/compute_normals_sum.comp" ) );
 			Buffer				bufferCounters( _indiceCount * sizeof( uint ) );
 
 			// Bind.
@@ -527,20 +527,12 @@ namespace VTX
 			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
 			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 
-			workerComputeNormals.getProgram().use();
-			workerComputeNormals.getProgram().setUInt( "uSize", _indiceCount );
-			workerComputeNormals.getProgram().setUInt( "uPassNumber", 1 );
+			workerComputeNormalsSum.getProgram().use();
+			workerComputeNormalsSum.getProgram().setUInt( "uSize", _indiceCount );
 
 			// Start.
 			assert( _indiceCount % 3 == 0 );
-
-			// First pass.
-			workerComputeNormals.start( _indiceCount / 3 );
-
-			// Second pass.
-			workerComputeNormals.getProgram().use();
-			workerComputeNormals.getProgram().setUInt( "uPassNumber", 2 );
-			workerComputeNormals.start( _indiceCount );
+			workerComputeNormalsSum.start( _indiceCount / 3 );
 
 			// Unbind.
 			bufferPositions.unbind();
@@ -548,9 +540,26 @@ namespace VTX
 			bufferIndices.unbind();
 			bufferCounters.unbind();
 
-			// MeshTriangle::computeNormals( _vertices, _indices, _normals );
-			// bufferNormals.setSub( _normals );
+			////////////////////////////
+			// Worker: compute normals (divide).
+			Worker::GpuComputer workerComputeNormalsDivide( IO::FilePath( "ses/compute_normals_divide.comp" ) );
 
+			// Bind.
+			bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+
+			workerComputeNormalsDivide.getProgram().use();
+			workerComputeNormalsDivide.getProgram().setUInt( "uSize", _indiceCount );
+
+			// Start.
+			workerComputeNormalsDivide.start( _indiceCount );
+
+			// Unbind.
+			bufferNormals.unbind();
+			bufferCounters.unbind();
+
+			////////////////////////////
+			// Clean.
 			_vertices.clear();
 			_normals.clear();
 			_indices.clear();
