@@ -1,5 +1,6 @@
 #version 450
 #include "include/helper.glsl"
+#include "../constant.glsl"
 
 #ifndef LOCAL_SIZE_X
 	#define LOCAL_SIZE_X 1
@@ -10,6 +11,8 @@
 #ifndef LOCAL_SIZE_Z
 	#define LOCAL_SIZE_Z 1
 #endif
+
+
 layout (local_size_x = LOCAL_SIZE_X, local_size_y = LOCAL_SIZE_Y, local_size_z = LOCAL_SIZE_Z) in;
 
 // Uniforms.
@@ -36,6 +39,11 @@ layout (std430, binding = 3) buffer Counters
 	uint[] counters;
 };
 
+layout (std140, binding = 4) writeonly buffer NormalsCasted
+{
+	ivec4[] normalsCasted;
+};
+
 void main()
 {
 	uint hash = globalInvocationHash( gl_GlobalInvocationID, gl_NumWorkGroups, gl_WorkGroupSize );
@@ -46,12 +54,17 @@ void main()
 		return;
 	}
 
-	const vec3 normal = cross(  vec3( positions[ indices[ hash + 1 ] ] - positions[ indices[ hash + 2 ] ] ),
-								vec3( positions[ indices[ hash + 1 ] ] - positions[ indices[ hash + 0 ] ] ) );
+	const vec3 normal = normalize (
+							cross( 
+								vec3( positions[ indices[ hash + 1 ] ] - positions[ indices[ hash + 2 ] ] ),
+								vec3( positions[ indices[ hash + 1 ] ] - positions[ indices[ hash + 0 ] ] ) ) );
 
 	for( uint i = 0; i < 3; ++i )
 	{
-		normals[ indices [ hash + i ] ] += vec4( normalize( normal ), 1.f );
+		atomicAdd( normalsCasted[ indices[ hash + i ] ].x, int( normal.x / EPSILON ) );
+		atomicAdd( normalsCasted[ indices[ hash + i ] ].y, int( normal.y / EPSILON ) );
+		atomicAdd( normalsCasted[ indices[ hash + i ] ].z, int( normal.z / EPSILON ) );
+
 		atomicAdd( counters[ indices [ hash + i ] ], 1);
 	}
 }

@@ -1,5 +1,6 @@
 #version 450
 #include "include/helper.glsl"
+#include "../constant.glsl"
 
 #ifndef LOCAL_SIZE_X
 	#define LOCAL_SIZE_X 1
@@ -26,6 +27,11 @@ layout (std430, binding = 1) buffer Counters
 	uint[] counters;
 };
 
+layout (std140, binding = 2) readonly buffer NormalsCasted
+{
+	ivec4[] normalsCasted;
+};
+
 void main()
 {
 	uint hash = globalInvocationHash( gl_GlobalInvocationID, gl_NumWorkGroups, gl_WorkGroupSize );
@@ -35,7 +41,6 @@ void main()
 		return;
 	}
 
-	const vec3 normal = vec3( normals[ hash ] ) / float( counters[ hash ] );
+	const vec3 normal = vec3( normalsCasted[ hash ] ) / float( counters[ hash ] ) * EPSILON;
 	normals[ hash ] = vec4( normalize( normal ), 1.f );
-	
 }

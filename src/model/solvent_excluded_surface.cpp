@@ -520,12 +520,14 @@ namespace VTX
 			// Worker: compute normals (sum).
 			Worker::GpuComputer workerComputeNormalsSum( IO::FilePath( "ses/compute_normals_sum.comp" ) );
 			Buffer				bufferCounters( _indiceCount * sizeof( uint ) );
+			Buffer				bufferNormalsCasted( _indiceCount * sizeof( Vec4i ) );
 
 			// Bind.
 			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
 			bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
 			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
 			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferNormalsCasted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
 
 			workerComputeNormalsSum.getProgram().use();
 			workerComputeNormalsSum.getProgram().setUInt( "uSize", _indiceCount );
@@ -539,6 +541,7 @@ namespace VTX
 			bufferNormals.unbind();
 			bufferIndices.unbind();
 			bufferCounters.unbind();
+			bufferNormalsCasted.unbind();
 
 			////////////////////////////
 			// Worker: compute normals (divide).
@@ -547,6 +550,7 @@ namespace VTX
 			// Bind.
 			bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
 			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferNormalsCasted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
 
 			workerComputeNormalsDivide.getProgram().use();
 			workerComputeNormalsDivide.getProgram().setUInt( "uSize", _indiceCount );
@@ -557,6 +561,7 @@ namespace VTX
 			// Unbind.
 			bufferNormals.unbind();
 			bufferCounters.unbind();
+			bufferNormalsCasted.unbind();
 
 			////////////////////////////
 			// Clean.
