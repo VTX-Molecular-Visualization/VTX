@@ -283,7 +283,6 @@ namespace VTX
 			// 5 triangles max per cell.
 			bufferSize = bufferSizeReduced * 5 * 3;
 			Buffer			  bufferPositionsTmp( bufferSize * sizeof( Vec4f ) );
-			Buffer			  bufferNormalsTmp( bufferSize * sizeof( Vec4f ) );
 			Buffer			  bufferAtomIndicesTmp( bufferSize * sizeof( uint ) );
 			std::vector<uint> triangleValidities( bufferSize, 0 );
 			Buffer			  bufferTriangleValidities( triangleValidities );
@@ -294,12 +293,11 @@ namespace VTX
 
 			bufferSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
 			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
-			bufferNormalsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
-			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
-			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
-			bufferTriangleTable.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
-			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
-			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
+			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferTriangleTable.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
+			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
+			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
 
 			workerMarchingCube.getProgram().use();
 
@@ -319,7 +317,6 @@ namespace VTX
 			// Unbind.
 			bufferSesGridData.unbind();
 			bufferPositionsTmp.unbind();
-			bufferNormalsTmp.unbind();
 			bufferAtomIndicesTmp.unbind();
 			bufferTriangleValidities.unbind();
 			bufferTriangleTable.unbind();
@@ -395,23 +392,18 @@ namespace VTX
 
 			// Bind.
 			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
-			bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
-			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
-			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
-			bufferVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
-			bufferIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
-			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
-			bufferNormalsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
-			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
-			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 9 );
-			bufferAtomToTriangle.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 10 );
-			bufferAtomColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 11 );
-			bufferAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 12 );
-			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 13 );
-			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 14 );
-
-			// Buffer debug( bufferSize * sizeof( uint ) );
-			// debug.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 15 );
+			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
+			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
+			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
+			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
+			bufferAtomToTriangle.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
+			bufferAtomColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 9 );
+			bufferAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 10 );
+			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 11 );
+			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 12 );
 
 			workerStreamCompaction.getProgram().use();
 			workerStreamCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
@@ -423,14 +415,13 @@ namespace VTX
 
 			// Unbind.
 			bufferPositions.unbind();
-			bufferNormals.unbind();
+
 			bufferIndices.unbind();
 			bufferColors.unbind();
 			bufferVisibilities.unbind();
 			bufferIds.unbind();
-
 			bufferPositionsTmp.unbind();
-			bufferNormalsTmp.unbind();
+
 			bufferAtomIndicesTmp.unbind();
 			bufferAtomToTriangle.unbind();
 			bufferAtomColors.unbind();
