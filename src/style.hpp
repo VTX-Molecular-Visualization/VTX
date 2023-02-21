@@ -275,9 +275,11 @@ namespace VTX
 		inline static const std::string VIEWPOINT_GROUP_NAME	   = "Viewpoints";
 		inline static const std::string VIEWPOINT_DEFAULT_NAME	   = "Viewpoint";
 
-		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;
-		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;
-		inline static const int INSPECTOR_CONTENT_HORIZONTAL_OFFSET = 10;
+		inline static const int INSPECTOR_HEADER_HEIGHT						 = 30;
+		inline static const int INSPECTOR_HEADER_NAME_SPACING				 = 10;
+		inline static const int INSPECTOR_CONTENT_HORIZONTAL_OFFSET			 = 10;
+		inline static const int MULTIPLE_INSPECTOR_INFO_DATA_COUNT_DISPLAYED = 5;
+		inline static const int INSPECTOR_INFO_BOND_COUNT_DISPLAYED			 = 100;
 
 		inline static const std::string SEQUENCE_CHAIN_NAME_SEPARATOR				 = "/";
 		inline static const int			SEQUENCE_CHAIN_SCALE_STEP					 = 5;

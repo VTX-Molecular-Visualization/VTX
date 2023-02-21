@@ -115,20 +115,22 @@ namespace VTX::View::UI::Widget::Representation
 		VTX::UI::Dialog::confirmActionDialog(
 			new Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ),
 			"Confirm",
-			"Are you sure to delete this preset ?" );
+			"Are you sure you want to delete this preset ?" );
 	}
 	void RepresentationLibraryView::_onImportPreset() const { VTX::UI::Dialog::importRepresentationPresetDialog(); }
 	void RepresentationLibraryView::_onReloadLibrary() const
 	{
-		VTX::UI::Dialog::confirmActionDialog( new Action::Representation::ReloadPresets(),
-											  "Confirm",
-											  "Are you sure to reload all presets ? Current changes will be lost." );
+		VTX::UI::Dialog::confirmActionDialog(
+			new Action::Representation::ReloadPresets(),
+			"Confirm",
+			"Are you sure you want to reload all presets ? Current changes will be lost." );
 	}
 	void RepresentationLibraryView::_onResetLibrary() const
 	{
-		VTX::UI::Dialog::confirmActionDialog( new Action::Representation::ResetPresetsToDefault(),
-											  "Confirm",
-											  "Are you sure to reset the preset library ? All changes will be lost." );
+		VTX::UI::Dialog::confirmActionDialog(
+			new Action::Representation::ResetPresetsToDefault(),
+			"Confirm",
+			"Are you sure you want to reset the preset library ? All changes will be lost." );
 	}
 
 	void RepresentationLibraryView::_refreshPresetDisplayed( const bool p_applyPreset )

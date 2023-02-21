@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_WIDGET_MENU_CAMERA_ACTION__
-#define __VTX_UI_WIDGET_MENU_CAMERA_ACTION__
+#ifndef __VTX_UI_WIDGET_MENU_NAVIGATION_ACTION__
+#define __VTX_UI_WIDGET_MENU_NAVIGATION_ACTION__
 
 #include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
@@ -8,27 +8,22 @@
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
-	class CameraActionBlock : public MenuToolBlockWidget
+	class CameraNavigationActionBlock : public MenuToolBlockWidget
 	{
 		VTX_WIDGET
 
 	  public:
-		~CameraActionBlock();
+		~CameraNavigationActionBlock();
 		void localize() override;
 
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 	  protected:
-		CameraActionBlock( QWidget * p_parent );
+		CameraNavigationActionBlock( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
-		void _refreshCameraProjectionButton() const;
-
 	  private:
-		// Camera projection
-		MenuToolButtonWidget * _cameraProjectionButton = nullptr;
-
 		// Selection focus
 		MenuToolButtonWidget * _center	 = nullptr;
 		MenuToolButtonWidget * _reorient = nullptr;

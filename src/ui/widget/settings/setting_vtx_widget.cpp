@@ -602,8 +602,9 @@ namespace VTX::UI::Widget::Settings
 	{
 		_skipSettingEvents();
 
-		UI::Dialog::confirmActionDialog(
-			new Action::Setting::RestoreSetting(), "Confirm", "Are you sure to restore settings ?" );
+		UI::Dialog::confirmActionDialog( new Action::Setting::RestoreSetting(),
+										 "Confirm",
+										 "Are you sure you want to restore all settings ? All changes will be lost." );
 		// TMP => Move setting into a model
 		_refreshData();
 

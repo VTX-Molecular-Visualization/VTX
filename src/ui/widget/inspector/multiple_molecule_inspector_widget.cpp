@@ -5,6 +5,7 @@
 #include "action/transformable.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
+#include "ui/layout/attribute_list_layout.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget/custom_widget/folding_button.hpp"
 #include "ui/widget/inspector/inspector_widget.hpp"
@@ -79,15 +80,15 @@ namespace VTX::UI::Widget::Inspector
 
 		_nbChainsLabel = new CustomWidget::QLabelMultiField( this );
 		_nbChainsLabel->setWordWrap( true );
-		_infoSection->appendField( "Nb Chains", _nbChainsLabel );
+		_infoSection->appendField( "Chains count", _nbChainsLabel );
 
 		_nbResiduesLabel = new CustomWidget::QLabelMultiField( this );
 		_nbResiduesLabel->setWordWrap( true );
-		_infoSection->appendField( "Nb Residues", _nbResiduesLabel );
+		_infoSection->appendField( "Residues count", _nbResiduesLabel );
 
 		_nbAtomsLabel = new CustomWidget::QLabelMultiField( this );
 		_nbAtomsLabel->setWordWrap( true );
-		_infoSection->appendField( "Nb Atoms", _nbAtomsLabel );
+		_infoSection->appendField( "Atoms count", _nbAtomsLabel );
 
 		_appendSection( _transformSection );
 		_appendSection( _representationSection );
