@@ -17,9 +17,9 @@ uniform uint uSize;
 uniform uint uPassNumber;
 
 // SSBO.
-layout (std140, binding = 0) buffer Positions
+layout (std140, binding = 0) readonly buffer Positions
 {
-	vec4[] position;
+	vec4[] positions;
 };
 
 layout (std140, binding = 1) buffer Normals
@@ -27,14 +27,14 @@ layout (std140, binding = 1) buffer Normals
 	vec4[] normals;
 };
 
-layout (std430, binding = 2) buffer Indices
+layout (std430, binding = 2) readonly buffer Indices
 {
 	uint[] indices;
 };
 
-layout (std430, binding = 3) writeonly buffer Infos
+layout (std430, binding = 3) buffer Counters
 {
-	uint[] infos;
+	uint[] counters;
 };
 
 void main()
@@ -46,5 +46,28 @@ void main()
 		return;
 	}
 
+	// First pass.
+	if( uPassNumber == 1)
+	{
+		hash *= 3;
+		if( hash >= uSize )
+		{
+			return;
+		}
 
+		const vec3 normal = cross(  vec3( positions[ indices[ hash + 1 ] ] - positions[ indices[ hash + 2 ] ] ),
+									vec3( positions[ indices[ hash + 1 ] ] - positions[ indices[ hash + 0 ] ] ) );
+
+		for( uint i = 0; i < 3; ++i )
+		{
+			normals[ indices [ hash + i ] ] += vec4( normalize( normal ), 1.f );
+			counters[ indices [ hash + i ] ]++;
+		}	
+	}
+	// Second pass.
+	else
+	{
+		const vec3 normal = vec3( normals[ hash ] ) / float( counters[ hash ] );
+		normals[ hash ] = vec4( normalize( normal ), 1.f );
+	}
 }

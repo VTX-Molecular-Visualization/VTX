@@ -375,7 +375,7 @@ namespace VTX
 				bufferPositions.set(
 					_indiceCount * sizeof( Vec4f ),
 					Buffer::Flags( Buffer::Flags::DYNAMIC_STORAGE_BIT | Buffer::Flags::MAP_READ_BIT ) );
-				bufferNormals.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
+				bufferNormals.set( _indiceCount * sizeof( Vec4f ) );
 				bufferIndices.set( _indiceCount * sizeof( uint ),
 								   Buffer::Flags( Buffer::Flags::DYNAMIC_STORAGE_BIT | Buffer::Flags::MAP_READ_BIT ) );
 				bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
@@ -434,7 +434,7 @@ namespace VTX
 			chrono2.start();
 
 			////////////////////////////
-			// Worker: sort vertices.
+			// Sort vertices.
 			std::vector<Vec4f> vertices( _indiceCount );
 			std::vector<uint>  sortedIndices( _indiceCount );
 
@@ -516,9 +516,40 @@ namespace VTX
 
 			chrono2.start();
 
-			MeshTriangle::computeNormals( _vertices, _indices, _normals );
+			////////////////////////////
+			// Worker: compute normals.
+			Worker::GpuComputer workerComputeNormals( IO::FilePath( "ses/compute_normals.comp" ) );
+			Buffer				bufferCounters( _indiceCount * sizeof( uint ) );
 
-			bufferNormals.setSub( _normals );
+			// Bind.
+			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+
+			workerComputeNormals.getProgram().use();
+			workerComputeNormals.getProgram().setUInt( "uSize", _indiceCount );
+			workerComputeNormals.getProgram().setUInt( "uPassNumber", 1 );
+
+			// Start.
+			assert( _indiceCount % 3 == 0 );
+
+			// First pass.
+			workerComputeNormals.start( _indiceCount / 3 );
+
+			// Second pass.
+			workerComputeNormals.getProgram().use();
+			workerComputeNormals.getProgram().setUInt( "uPassNumber", 2 );
+			workerComputeNormals.start( _indiceCount );
+
+			// Unbind.
+			bufferPositions.unbind();
+			bufferNormals.unbind();
+			bufferIndices.unbind();
+			bufferCounters.unbind();
+
+			// MeshTriangle::computeNormals( _vertices, _indices, _normals );
+			// bufferNormals.setSub( _normals );
 
 			_vertices.clear();
 			_normals.clear();
