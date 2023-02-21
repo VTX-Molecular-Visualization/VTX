@@ -156,7 +156,10 @@ namespace VTX::UI::Widget::Settings
 
 	void SettingMoleculeWidget::_restoreDefaultRepresentations()
 	{
-		VTX_ACTION( new Action::Setting::RestoreDefaultRepresentationPerCategory() );
+		UI::Dialog::confirmActionDialog(
+			new Action::Setting::RestoreDefaultRepresentationPerCategory(),
+			"Confirm",
+			"Are you sure you want to restore default representation ? All changes will be lost." );
 	}
 
 } // namespace VTX::UI::Widget::Settings

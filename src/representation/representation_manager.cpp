@@ -31,6 +31,11 @@ namespace VTX::Representation
 		const bool					 p_recompute,
 		const bool					 p_notify )
 	{
+		if ( p_target.getMolecule() == &p_target )
+		{
+			p_target.getMolecule()->clearDefaultRepresentations();
+		}
+
 		InstantiatedRepresentation * const instantiatedRepresentation
 			= MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>( p_representation );
 

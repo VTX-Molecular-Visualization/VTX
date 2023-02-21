@@ -153,21 +153,23 @@ namespace VTX::View::UI::Widget::Renderer
 		VTX::UI::Dialog::confirmActionDialog(
 			new Action::Renderer::DeletePresetInLibrary( _presetList->currentIndex() ),
 			"Confirm",
-			"Are you sure to delete this preset ?" );
+			"Are you sure you want to delete this preset ?" );
 	}
 
 	void RenderEffectPresetLibraryView::_onImportPreset() const { VTX::UI::Dialog::importRenderEffectPresetDialog(); }
 	void RenderEffectPresetLibraryView::_onReloadLibrary() const
 	{
-		VTX::UI::Dialog::confirmActionDialog( new Action::Renderer::ReloadPresets(),
-											  "Confirm",
-											  "Are you sure to reload all presets ? Current changes will be lost." );
+		VTX::UI::Dialog::confirmActionDialog(
+			new Action::Renderer::ReloadPresets(),
+			"Confirm",
+			"Are you sure you want to reload all presets ? Current changes will be lost." );
 	}
 	void RenderEffectPresetLibraryView::_onResetToDefaultLibrary() const
 	{
-		VTX::UI::Dialog::confirmActionDialog( new Action::Renderer::ResetPresets(),
-											  "Confirm",
-											  "Are you sure to reset the preset library ? All changes will be lost." );
+		VTX::UI::Dialog::confirmActionDialog(
+			new Action::Renderer::ResetPresets(),
+			"Confirm",
+			"Are you sure you want to reset the preset library ? All changes will be lost." );
 	}
 
 	void RenderEffectPresetLibraryView::_refreshPresetDisplayed( const bool p_updateRenderer )
