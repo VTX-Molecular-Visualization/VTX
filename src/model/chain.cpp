@@ -106,6 +106,23 @@ namespace VTX
 			_realResidueCount--;
 		}
 
+		uint Chain::computeRealAtomCount() const
+		{
+			uint realAtomCount = 0;
+
+			for ( uint i = getIndexFirstResidue(); i <= getIndexLastResidue(); i++ )
+			{
+				const Model::Residue * const residue = _moleculePtr->getResidue( i );
+
+				if ( residue == nullptr )
+					continue;
+
+				realAtomCount += residue->getRealAtomCount();
+			}
+
+			return realAtomCount;
+		}
+
 		Color::Rgba Chain::getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
 		{
 			if ( p_chainId.empty() )

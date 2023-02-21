@@ -49,17 +49,36 @@ namespace VTX::UI::Widget::Inspector
 
 		_infoSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
 			this, "inspector_item_section" );
-		_fullnameLabel = new CustomWidget::QLabelMultiField( this );
+
+		QWidget * const infoSectionWidget = new QWidget( this );
+		infoSectionWidget->setContentsMargins( 0, 0, 0, 0 );
+		_infoSectionlayout = new Layout::AttributeListLayout( infoSectionWidget );
+
+		_fullnameLabel = new QLabel( this );
 		_fullnameLabel->setWordWrap( true );
-		_infoSection->appendField( "Full Name", _fullnameLabel );
+		_infoSectionlayout->addAttribute( _fullnameLabel, "Full Name" );
 
-		_nbResiduesLabel = new CustomWidget::QLabelMultiField( this );
-		_nbResiduesLabel->setWordWrap( true );
-		_infoSection->appendField( "Nb Residues", _nbResiduesLabel );
+		_residuesCountLabel = new QLabel( this );
+		_residuesCountLabel->setWordWrap( true );
+		_infoSectionlayout->addAttribute( _residuesCountLabel, "Residues count" );
 
-		_indexLabel = new CustomWidget::QLabelMultiField( this );
+		_residuesSumLabel = new QLabel( this );
+		_residuesSumLabel->setWordWrap( true );
+		_infoSectionlayout->addAttribute( _residuesSumLabel, "Residues sum" );
+
+		_atomsCountLabel = new QLabel( this );
+		_atomsCountLabel->setWordWrap( true );
+		_infoSectionlayout->addAttribute( _atomsCountLabel, "Atoms count" );
+
+		_atomsSumLabel = new QLabel( this );
+		_atomsSumLabel->setWordWrap( true );
+		_infoSectionlayout->addAttribute( _atomsSumLabel, "Atoms sum" );
+
+		_indexLabel = new QLabel( this );
 		_indexLabel->setWordWrap( true );
-		_infoSection->appendField( "Index", _indexLabel );
+		_infoSectionlayout->addAttribute( _indexLabel, "Index" );
+
+		_infoSection->appendField( infoSectionWidget );
 
 		_appendSection( _representationSection );
 		_appendSection( _infoSection );
@@ -130,6 +149,14 @@ namespace VTX::UI::Widget::Inspector
 			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( VTX::ID::Model::MODEL_CHAIN );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
+			int		currentChainDisplayedCount = 0;
+			uint	residueSum				   = 0;
+			uint	atomSum					   = 0;
+			QString fullNameText			   = QString();
+			QString residueCountText		   = QString();
+			QString atomCountText			   = QString();
+			QString indexText				   = QString();
+
 			for ( const Model::Chain * chain : targets )
 			{
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
@@ -149,15 +176,61 @@ namespace VTX::UI::Widget::Inspector
 
 				if ( bool( p_flag & SectionFlag::INFOS ) )
 				{
-					if ( !_fullnameLabel->hasDifferentData() )
-						_fullnameLabel->updateWithNewValue( chain->getName() );
-					if ( !_nbResiduesLabel->hasDifferentData() )
-						_nbResiduesLabel->updateWithNewValue( std::to_string( chain->getRealResidueCount() ) );
-					if ( !_indexLabel->hasDifferentData() )
-						_indexLabel->updateWithNewValue( std::to_string( chain->getIndex() ) );
+					// Count residue sum
+					const uint residueCount = chain->getRealResidueCount();
+					residueSum += chain->getRealResidueCount();
+
+					// Count atom sum
+					const uint atomCount = chain->computeRealAtomCount();
+					atomSum += atomCount;
+
+					if ( currentChainDisplayedCount < Style::MULTIPLE_INSPECTOR_INFO_DATA_COUNT_DISPLAYED )
+					{
+						if ( currentChainDisplayedCount > 0 )
+						{
+							fullNameText.append( " ; " );
+							residueCountText.append( " ; " );
+							atomCountText.append( " ; " );
+							indexText.append( " ; " );
+						}
+
+						fullNameText.append( QString::fromStdString( chain->getName() ) );
+						residueCountText.append( QString::fromStdString( std::to_string( residueCount ) ) );
+						atomCountText.append( QString::fromStdString( std::to_string( atomCount ) ) );
+						indexText.append( QString::fromStdString( std::to_string( chain->getIndex() ) ) );
+					}
+					else if ( currentChainDisplayedCount == Style::MULTIPLE_INSPECTOR_INFO_DATA_COUNT_DISPLAYED )
+					{
+						fullNameText.append( "..." );
+						residueCountText.append( "..." );
+						atomCountText.append( "..." );
+						indexText.append( "..." );
+					}
 				}
+
+				currentChainDisplayedCount++;
+			}
+
+			if ( bool( p_flag & SectionFlag::INFOS ) )
+			{
+				const bool displaySums = targets.size() > 1;
+
+				if ( displaySums )
+				{
+					_residuesSumLabel->setText( QString::fromStdString( std::to_string( residueSum ) ) );
+					_atomsSumLabel->setText( QString::fromStdString( std::to_string( atomSum ) ) );
+				}
+
+				_infoSectionlayout->setAttributeVisibility( _residuesSumLabel, displaySums );
+				_infoSectionlayout->setAttributeVisibility( _atomsSumLabel, displaySums );
+
+				_fullnameLabel->setText( fullNameText );
+				_residuesCountLabel->setText( residueCountText );
+				_atomsCountLabel->setText( atomCountText );
+				_indexLabel->setText( indexText );
 			}
 		}
+
 		blockSignals( blockSignalState );
 	}
 
@@ -171,9 +244,12 @@ namespace VTX::UI::Widget::Inspector
 
 		if ( bool( p_flag & SectionFlag::INFOS ) )
 		{
-			_fullnameLabel->resetState();
-			_nbResiduesLabel->resetState();
-			_indexLabel->resetState();
+			_fullnameLabel->setText( "" );
+			_residuesCountLabel->setText( "" );
+			_residuesSumLabel->setText( "" );
+			_atomsCountLabel->setText( "" );
+			_atomsSumLabel->setText( "" );
+			_indexLabel->setText( "" );
 		}
 	}
 

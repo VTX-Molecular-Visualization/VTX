@@ -22,9 +22,6 @@ namespace VTX::UI::Widget::Inspector
 		VTX_WIDGET
 
 	  private:
-		static const int BOND_INFO_COUNT_MAX;
-
-	  private:
 		class MoleculeView
 		{
 		  public:

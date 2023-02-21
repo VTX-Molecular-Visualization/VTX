@@ -7,6 +7,7 @@
 #include "model/molecule.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
+#include "ui/layout/attribute_list_layout.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget/inspector/inspector_widget.hpp"
@@ -16,13 +17,10 @@
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>
-#include <QLabel>
 #include <QPixmap>
 
 namespace VTX::UI::Widget::Inspector
 {
-	const int MultipleResidueWidget::BOND_INFO_COUNT_MAX = 100;
-
 	MultipleResidueWidget::MultipleResidueWidget( QWidget * p_parent ) :
 		MultipleModelInspectorWidget( p_parent, ID::View::UI_INSPECTOR_RESIDUE ) {};
 
@@ -45,17 +43,29 @@ namespace VTX::UI::Widget::Inspector
 
 		_infoSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
 			this, "inspector_item_section" );
+
+		QWidget * const infoSectionWidget = new QWidget( this );
+		infoSectionWidget->setContentsMargins( 0, 0, 0, 0 );
+
+		_infoSectionLayout = new Layout::AttributeListLayout( infoSectionWidget );
+
 		_fullnameLabel = new CustomWidget::QLabelMultiField( this );
 		_fullnameLabel->setWordWrap( true );
-		_infoSection->appendField( "Full Name", _fullnameLabel );
+		_infoSectionLayout->addAttribute( _fullnameLabel, "Full Name" );
 
-		_nbAtomsLabel = new CustomWidget::QLabelMultiField( this );
-		_nbAtomsLabel->setWordWrap( true );
-		_infoSection->appendField( "Nb Atoms", _nbAtomsLabel );
+		_atomsCountLabel = new QLabel( this );
+		_atomsCountLabel->setWordWrap( true );
+		_infoSectionLayout->addAttribute( _atomsCountLabel, "Atoms count" );
+
+		_atomsSumLabel = new QLabel( this );
+		_atomsSumLabel->setWordWrap( true );
+		_infoSectionLayout->addAttribute( _atomsSumLabel, "Atoms sum" );
 
 		_bondsLabel = new QLabel( this );
 		_bondsLabel->setWordWrap( true );
-		_infoSection->appendField( "Bonds", _bondsLabel );
+		_infoSectionLayout->addAttribute( _bondsLabel, "Bonds" );
+
+		_infoSection->appendField( infoSectionWidget );
 
 		_appendSection( _representationSection );
 		_appendSection( _infoSection );
@@ -121,6 +131,11 @@ namespace VTX::UI::Widget::Inspector
 			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( VTX::ID::Model::MODEL_RESIDUE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
+			int		currentResidueDisplayedCount = 0;
+			uint	atomSum						 = 0;
+			QString atomCountText				 = QString();
+			QString fullNameText				 = QString();
+
 			for ( const Model::Residue * residue : targets )
 			{
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
@@ -130,13 +145,40 @@ namespace VTX::UI::Widget::Inspector
 
 				if ( bool( p_flag & SectionFlag::INFOS ) )
 				{
-					if ( !_fullnameLabel->hasDifferentData() )
-						_fullnameLabel->updateWithNewValue( residue->getSymbolName() );
-					if ( !_nbAtomsLabel->hasDifferentData() )
-						_nbAtomsLabel->updateWithNewValue( std::to_string( residue->getRealAtomCount() ) );
+					// Count atom sum
+					const uint atomCount = residue->getRealAtomCount();
+					atomSum += atomCount;
+
+					if ( currentResidueDisplayedCount < Style::MULTIPLE_INSPECTOR_INFO_DATA_COUNT_DISPLAYED )
+					{
+						if ( currentResidueDisplayedCount > 0 )
+						{
+							fullNameText.append( " ; " );
+							atomCountText.append( " ; " );
+						}
+
+						fullNameText.append( QString::fromStdString( residue->getSymbolName() ) );
+						atomCountText.append( QString::fromStdString( std::to_string( atomCount ) ) );
+					}
+					else if ( currentResidueDisplayedCount == Style::MULTIPLE_INSPECTOR_INFO_DATA_COUNT_DISPLAYED )
+					{
+						fullNameText.append( "..." );
+						atomCountText.append( "..." );
+					}
 
 					_appendBondInfo( *residue );
 				}
+
+				currentResidueDisplayedCount++;
+			}
+
+			if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
+			{
+				_infoSectionLayout->setAttributeVisibility( _atomsSumLabel, currentResidueDisplayedCount > 1 );
+
+				_fullnameLabel->setText( fullNameText );
+				_atomsCountLabel->setText( atomCountText );
+				_atomsSumLabel->setText( QString::fromStdString( std::to_string( atomSum ) ) );
 			}
 		}
 	}
@@ -148,8 +190,9 @@ namespace VTX::UI::Widget::Inspector
 
 		if ( bool( p_flag & SectionFlag::INFOS ) )
 		{
-			_fullnameLabel->resetState();
-			_nbAtomsLabel->resetState();
+			_fullnameLabel->setText( "" );
+			_atomsCountLabel->setText( "" );
+			_atomsSumLabel->setText( "" );
 			_bondsLabel->setText( "" );
 			_bondInfoCount = 0;
 		}
@@ -246,7 +289,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_appendBondInfo( const Model::Residue & p_residue )
 	{
-		if ( _bondInfoCount >= BOND_INFO_COUNT_MAX )
+		if ( _bondInfoCount >= Style::INSPECTOR_INFO_BOND_COUNT_DISPLAYED )
 			return;
 
 		QString						  bondInfoStr = _bondsLabel->text();
@@ -255,14 +298,18 @@ namespace VTX::UI::Widget::Inspector
 			  i++ )
 		{
 			const Model::Bond * const bond = moleculePtr->getBond( i );
+
 			if ( bond == nullptr )
 				continue;
 
 			Util::UI::appendBondInfo( *bond, bondInfoStr );
 			_bondInfoCount++;
 
-			if ( _bondInfoCount >= BOND_INFO_COUNT_MAX )
+			if ( _bondInfoCount >= Style::INSPECTOR_INFO_BOND_COUNT_DISPLAYED )
+			{
+				bondInfoStr.append( "\n..." );
 				break;
+			}
 		}
 
 		_bondsLabel->setText( bondInfoStr );
