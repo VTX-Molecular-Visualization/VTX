@@ -14,6 +14,7 @@ namespace VTX::UI::Layout
 	  private:
 		inline static const Qt::Alignment DEFAULT_ALIGNMENT
 			= ( Qt::AlignmentFlag::AlignLeft | Qt::AlignmentFlag::AlignTop );
+		inline static const Qt::Alignment DEFAULT_SECTION_TITLE_ALIGNMENT = ( Qt::AlignmentFlag::AlignLeft );
 
 	  public:
 		AttributeListLayout( QWidget * const p_parent = nullptr );

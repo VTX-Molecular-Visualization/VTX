@@ -41,15 +41,15 @@ namespace VTX::UI::Widget::Inspector
 
 		_representationSection->setBody( _representationWidget );
 
-		_infoSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
-			this, "inspector_item_section" );
+		_infoSection
+			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
 
 		QWidget * const infoSectionWidget = new QWidget( this );
 		infoSectionWidget->setContentsMargins( 0, 0, 0, 0 );
 
 		_infoSectionLayout = new Layout::AttributeListLayout( infoSectionWidget );
 
-		_fullnameLabel = new CustomWidget::QLabelMultiField( this );
+		_fullnameLabel = new QLabel( this );
 		_fullnameLabel->setWordWrap( true );
 		_infoSectionLayout->addAttribute( _fullnameLabel, "Full Name" );
 
@@ -65,7 +65,7 @@ namespace VTX::UI::Widget::Inspector
 		_bondsLabel->setWordWrap( true );
 		_infoSectionLayout->addAttribute( _bondsLabel, "Bonds" );
 
-		_infoSection->appendField( infoSectionWidget );
+		_infoSection->setBody( infoSectionWidget );
 
 		_appendSection( _representationSection );
 		_appendSection( _infoSection );
