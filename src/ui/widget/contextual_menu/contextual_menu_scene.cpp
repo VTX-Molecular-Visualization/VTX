@@ -12,13 +12,15 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuScene::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
 	void ContextualMenuScene::_setupSlots()
 	{
+		addSection( "Loading" );
 		addAction( "Load Molecule", this, &ContextualMenuScene::_loadMoleculeAction );
 		addAction( "Download Molecule", this, &ContextualMenuScene::_downloadMoleculeAction );
-		addSeparator();
+
+		addSection( "Actions" );
 		addAction( "Show All", this, &ContextualMenuScene::_showAllMoleculesAction );
-		addSeparator();
+		addSection( "Viewpoints" );
 		addAction( "Add Viewpoint", this, &ContextualMenuScene::_addViewpointAction );
-		addSeparator();
+		addSection( "Scene" );
 		addAction( "Clear", this, &ContextualMenuScene::_clearAction );
 	}
 
