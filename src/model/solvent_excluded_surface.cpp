@@ -60,8 +60,6 @@ namespace VTX
 		// TODO
 		// - Decompose in multiple iterations to handle larger buffers.
 		// - Smooth normals on GPU.
-		// - Sort triangles by atom.
-		// - Find nearest atom for each triangle.
 		void SolventExcludedSurface::_refreshGPU()
 		{
 			Tool::Chrono chrono, chrono2;
@@ -372,9 +370,10 @@ namespace VTX
 			if ( _isInit == false )
 			{
 				// Create final buffers.
-				bufferPositions.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags( Buffer::Flags::MAP_READ_BIT ) );
+				bufferPositions.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
 				bufferNormals.set( _indiceCount * sizeof( Vec4f ) );
-				bufferIndices.set( _indiceCount * sizeof( uint ), Buffer::Flags::MAP_READ_BIT );
+				bufferIndices.set( _indiceCount * sizeof( uint ),
+								   Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
 				bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
 				bufferVisibilities.set( _indiceCount * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 				bufferIds.set( _indiceCount * sizeof( uint ) );
@@ -432,11 +431,10 @@ namespace VTX
 
 			////////////////////////////
 			// Weld vertices.
-			// std::vector<Vec4f> vertices( _indiceCount );
 			std::vector<uint> sortedIndices( _indiceCount );
 
 			Vec4f * const ptrPositions = bufferPositions.map<Vec4f>( Buffer::Access::READ_ONLY );
-			uint * const  ptrIndices   = bufferIndices.map<uint>( Buffer::Access::READ_ONLY );
+			uint * const  ptrIndices   = bufferIndices.map<uint>( Buffer::Access::READ_WRITE );
 
 			// Get permutations.
 			auto compareVec4Function = []( const Vec4f & p_lhs, const Vec4f & p_rhs )
@@ -458,15 +456,22 @@ namespace VTX
 					   [ & ]( std::size_t i, std::size_t j )
 					   { return compareVec4Function( ptrPositions[ i ], ptrPositions[ j ] ); } );
 
+			chrono2.stop();
+			VTX_DEBUG( "Positions sorted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
+
 			// Apply permutations.
 			std::transform( permutations.begin(),
 							permutations.end(),
 							sortedIndices.begin(),
 							[ & ]( std::size_t i ) { return ptrIndices[ i ]; } );
 
+			chrono2.stop();
+			VTX_DEBUG( "Permutations applied in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
+
 			// Detect duplicates.
-			std::vector<int> newIndices( _indiceCount, -1 );
-			uint			 indexCurrent = sortedIndices[ 0 ];
+			uint indexCurrent = sortedIndices[ 0 ];
 			for ( uint i = 1; i < _indiceCount; ++i )
 			{
 				const uint indexNext = sortedIndices[ i ];
@@ -474,7 +479,7 @@ namespace VTX
 				if ( Util::Math::length2( ptrPositions[ indexCurrent ] - ptrPositions[ indexNext ] )
 					 < EPSILON * EPSILON )
 				{
-					newIndices[ indexNext ] = indexCurrent;
+					ptrIndices[ indexNext ] = indexCurrent;
 				}
 				else
 				{
@@ -485,29 +490,8 @@ namespace VTX
 			bufferPositions.unmap();
 			bufferIndices.unmap();
 
-			////////////////////////////
-			// Worker: new indices.
-			Worker::GpuComputer workerNewIndices( IO::FilePath( "ses/new_indices.comp" ) );
-			Buffer				bufferNewIndices( newIndices );
-
-			// Bind.
-			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
-			bufferNewIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
-
-			workerNewIndices.getProgram().use();
-			workerNewIndices.getProgram().setUInt( "uSize", _indiceCount );
-
-			// Start.
-			workerNewIndices.start( _indiceCount );
-
-			// Unbind.
-			bufferIndices.unbind();
-			bufferNewIndices.unbind();
-
 			chrono2.stop();
-
-			VTX_DEBUG( "Vertices merged in {}s", chrono2.elapsedTime() );
-
+			VTX_DEBUG( "Duplicates detected in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
 			////////////////////////////
@@ -560,9 +544,7 @@ namespace VTX
 			bufferNormalsCasted.unbind();
 
 			chrono2.stop();
-
 			VTX_DEBUG( "Normals computed in {}s", chrono2.elapsedTime() );
-
 			chrono.stop();
 			VTX_DEBUG( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
