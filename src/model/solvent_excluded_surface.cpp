@@ -372,12 +372,9 @@ namespace VTX
 			if ( _isInit == false )
 			{
 				// Create final buffers.
-				bufferPositions.set(
-					_indiceCount * sizeof( Vec4f ),
-					Buffer::Flags( Buffer::Flags::DYNAMIC_STORAGE_BIT | Buffer::Flags::MAP_READ_BIT ) );
+				bufferPositions.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags( Buffer::Flags::MAP_READ_BIT ) );
 				bufferNormals.set( _indiceCount * sizeof( Vec4f ) );
-				bufferIndices.set( _indiceCount * sizeof( uint ),
-								   Buffer::Flags( Buffer::Flags::DYNAMIC_STORAGE_BIT | Buffer::Flags::MAP_READ_BIT ) );
+				bufferIndices.set( _indiceCount * sizeof( uint ), Buffer::Flags::MAP_READ_BIT );
 				bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
 				bufferVisibilities.set( _indiceCount * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 				bufferIds.set( _indiceCount * sizeof( uint ) );
@@ -435,8 +432,8 @@ namespace VTX
 
 			////////////////////////////
 			// Weld vertices.
-			std::vector<Vec4f> vertices( _indiceCount );
-			std::vector<uint>  sortedIndices( _indiceCount );
+			// std::vector<Vec4f> vertices( _indiceCount );
+			std::vector<uint> sortedIndices( _indiceCount );
 
 			Vec4f * const ptrPositions = bufferPositions.map<Vec4f>( Buffer::Access::READ_ONLY );
 			uint * const  ptrIndices   = bufferIndices.map<uint>( Buffer::Access::READ_ONLY );
@@ -485,30 +482,27 @@ namespace VTX
 				}
 			}
 
-			// Create new buffers.
-			_vertices = std::vector<Vec4f>( _indiceCount );
-			_indices  = std::vector<uint>( _indiceCount );
-
-			for ( uint i = 0; i < _indiceCount; ++i )
-			{
-				const uint newIndice = newIndices[ i ];
-
-				if ( newIndice == -1 )
-				{
-					_vertices[ i ] = ptrPositions[ ptrIndices[ i ] ];
-					_indices[ i ]  = ptrIndices[ i ];
-				}
-				else
-				{
-					_indices[ i ] = newIndice;
-				}
-			}
-
 			bufferPositions.unmap();
 			bufferIndices.unmap();
 
-			bufferPositions.setSub( _vertices );
-			bufferIndices.setSub( _indices );
+			////////////////////////////
+			// Worker: new indices.
+			Worker::GpuComputer workerNewIndices( IO::FilePath( "ses/new_indices.comp" ) );
+			Buffer				bufferNewIndices( newIndices );
+
+			// Bind.
+			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferNewIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+
+			workerNewIndices.getProgram().use();
+			workerNewIndices.getProgram().setUInt( "uSize", _indiceCount );
+
+			// Start.
+			workerNewIndices.start( _indiceCount );
+
+			// Unbind.
+			bufferIndices.unbind();
+			bufferNewIndices.unbind();
 
 			chrono2.stop();
 
@@ -520,7 +514,7 @@ namespace VTX
 			// Worker: compute normals (sum).
 			Worker::GpuComputer workerComputeNormalsSum( IO::FilePath( "ses/compute_normals_sum.comp" ) );
 			Buffer				bufferCounters( _indiceCount * sizeof( uint ) );
-			Buffer				bufferNormalsCasted( _indiceCount * sizeof( Vec4i ) );
+			Buffer				bufferNormalsCasted( _indiceCount * sizeof( Vec4u ) );
 
 			// Bind.
 			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
@@ -529,6 +523,8 @@ namespace VTX
 			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 			bufferNormalsCasted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
 
+			// workerComputeNormalsSum.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			// workerComputeNormalsSum.setForce( true );
 			workerComputeNormalsSum.getProgram().use();
 			workerComputeNormalsSum.getProgram().setUInt( "uSize", _indiceCount );
 
@@ -563,19 +559,8 @@ namespace VTX
 			bufferCounters.unbind();
 			bufferNormalsCasted.unbind();
 
-			////////////////////////////
-			// Clean.
-			_vertices.clear();
-			_normals.clear();
-			_indices.clear();
-
-			_vertices.shrink_to_fit();
-			_normals.shrink_to_fit();
-			_indices.shrink_to_fit();
-
 			chrono2.stop();
 
-			// VTX_DEBUG( "Buffer sorted in {}s with {} pass", chrono2.elapsedTime(), count + 1 );
 			VTX_DEBUG( "Normals computed in {}s", chrono2.elapsedTime() );
 
 			chrono.stop();
