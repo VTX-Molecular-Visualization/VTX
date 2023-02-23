@@ -40,7 +40,7 @@ namespace VTX::UI::Widget::Inspector
 
 	  private:
 		InspectorSectionVLayout * _representationSection = nullptr;
-		InspectorSectionVLayout * _infoSection			 = nullptr;
+		InspectorSection *		  _infoSection			 = nullptr;
 
 		Representation::RepresentationInspectorSection *	   _representationWidget		   = nullptr;
 		CustomWidget::FoldingButton *						   _subRepresentationFoldingButton = nullptr;

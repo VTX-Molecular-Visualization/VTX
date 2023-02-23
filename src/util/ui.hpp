@@ -7,6 +7,7 @@
 #include <QComboBox>
 #include <QEvent>
 #include <QImage>
+#include <QMenu>
 #include <QPixmap>
 #include <QString>
 #include <QStyle>
@@ -51,6 +52,10 @@ namespace VTX::Util::UI
 
 	void fillComboBox( QComboBox * const p_comboBox, const std::vector<std::string> & p_values );
 	void fillComboBox( QComboBox * const p_comboBox, const std::vector<QString> & p_values );
+	void fillMenu( QMenu &							p_menu,
+				   const int						p_enumSize,
+				   const std::vector<std::string> & p_names,
+				   const bool						p_actionCheckable = false );
 
 	static void appendColorHtmlTag( QString & p_txt, const VTX::Color::Rgba & p_color )
 	{

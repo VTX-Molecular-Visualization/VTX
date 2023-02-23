@@ -47,8 +47,8 @@ namespace VTX::UI::Widget::Inspector
 		_representationSection->appendField( _representationWidget );
 		_representationSection->appendField( _subRepresentationFoldingButton );
 
-		_infoSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
-			this, "inspector_item_section" );
+		_infoSection
+			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
 
 		QWidget * const infoSectionWidget = new QWidget( this );
 		infoSectionWidget->setContentsMargins( 0, 0, 0, 0 );
@@ -78,7 +78,7 @@ namespace VTX::UI::Widget::Inspector
 		_indexLabel->setWordWrap( true );
 		_infoSectionlayout->addAttribute( _indexLabel, "Index" );
 
-		_infoSection->appendField( infoSectionWidget );
+		_infoSection->setBody( infoSectionWidget );
 
 		_appendSection( _representationSection );
 		_appendSection( _infoSection );

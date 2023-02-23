@@ -36,8 +36,8 @@ namespace VTX::UI::Widget::Inspector
 		void _setInspectorToAtom() const;
 
 	  private:
-		InspectorSection *		  _representationSection = nullptr;
-		InspectorSectionVLayout * _infoSection			 = nullptr;
+		InspectorSection * _representationSection = nullptr;
+		InspectorSection * _infoSection			  = nullptr;
 
 		Representation::RepresentationInspectorSection * _representationWidget;
 

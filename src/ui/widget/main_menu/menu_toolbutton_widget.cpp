@@ -7,6 +7,11 @@
 
 namespace VTX::UI::Widget::MainMenu
 {
+	MenuToolButtonWidget::MenuToolButtonWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
+	{
+		connect( this, &QToolButton::clicked, this, &MenuToolButtonWidget::_triggerActionWithExtraData );
+	}
+
 	void MenuToolButtonWidget::setName( const QString & p_name ) { setText( p_name ); }
 
 	void MenuToolButtonWidget::setData( const QString &		  p_name,
@@ -28,6 +33,8 @@ namespace VTX::UI::Widget::MainMenu
 
 		_updateButtonStyle( p_orientation );
 	}
+
+	void MenuToolButtonWidget::setExtraData( const QVariant & p_extraData ) { _extraData = p_extraData; }
 
 	void MenuToolButtonWidget::setOrientation( const Qt::Orientation p_orientation )
 	{

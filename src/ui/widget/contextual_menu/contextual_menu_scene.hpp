@@ -3,7 +3,6 @@
 
 #include "contextual_menu_template.hpp"
 #include "object3d/scene.hpp"
-#include <QMenu>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -20,6 +19,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
+	  private:
 		void _loadMoleculeAction();
 		void _downloadMoleculeAction();
 		void _showAllMoleculesAction() const;

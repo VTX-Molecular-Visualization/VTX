@@ -200,7 +200,7 @@ namespace VTX::UI::Widget::Settings
 	{
 		for ( int i = 0; i < _optionalParameterWidgets.size(); i++ )
 		{
-			_optionalParameterWidgets[ i ]->setVisible( false );
+			_attributeLayout->setAttributeVisibility( _optionalParameterWidgets[ i ], false );
 		}
 
 		const std::vector<OPTIONAL_PARAMETER> & visibleParameters
@@ -208,7 +208,7 @@ namespace VTX::UI::Widget::Settings
 		for ( int i = 0; i < visibleParameters.size(); i++ )
 		{
 			const int parameterIndex = int( visibleParameters[ i ] );
-			_optionalParameterWidgets[ parameterIndex ]->setVisible( true );
+			_attributeLayout->setAttributeVisibility( _optionalParameterWidgets[ parameterIndex ], true );
 		}
 	}
 
