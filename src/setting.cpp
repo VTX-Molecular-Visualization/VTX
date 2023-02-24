@@ -73,13 +73,13 @@ namespace VTX
 		"Stick", // UNKNOWN
 	};
 	const std::vector<int> Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_INDEX = {
-		4, // POLYMER
-		4, // CARBOHYDRATE
-		4, // LIGAND
+		5, // POLYMER
+		5, // CARBOHYDRATE
+		5, // LIGAND
 		6, // ION
-		4, // SOLVENT
-		4, // WATER
-		4, // UNKNOWN
+		5, // SOLVENT
+		5, // WATER
+		5, // UNKNOWN
 	};
 
 	const std::string Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME = "New render preset";
