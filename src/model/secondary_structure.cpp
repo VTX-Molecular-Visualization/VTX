@@ -356,6 +356,7 @@ namespace VTX
 			_buffer->setVisibilities( _bufferVisibilities );
 		}
 
+		// TODO: use molecule buffer instead of selection model.
 		void SecondaryStructure::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
 		{
 			_bufferSelections.clear();

@@ -189,7 +189,7 @@ namespace VTX::Renderer::GL
 		}
 
 		template<typename T>
-		inline void const getData( std::vector<T> & p_vector )
+		inline void const getData( std::vector<T> & p_vector ) const
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
@@ -197,7 +197,7 @@ namespace VTX::Renderer::GL
 		}
 
 		template<typename T>
-		inline void const getData( const uint p_offset, const size_t p_length, T * const p_data )
+		inline void const getData( const uint p_offset, const size_t p_length, T * const p_data ) const
 		{
 			assert( _gl->glIsBuffer( _id ) );
 

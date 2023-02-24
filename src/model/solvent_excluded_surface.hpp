@@ -32,7 +32,7 @@ namespace VTX
 			void refresh();
 			void refreshColors();
 			void refreshVisibilities();
-			void refreshSelection( const Model::Selection::MapChainIds * const p_selection = nullptr );
+			void refreshSelections();
 
 		  protected:
 			void _init() override;

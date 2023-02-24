@@ -533,7 +533,7 @@ namespace VTX
 			}
 			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
 			{
-				val->refreshSelection( p_selection );
+				val->refreshSelections();
 			}
 		}
 
