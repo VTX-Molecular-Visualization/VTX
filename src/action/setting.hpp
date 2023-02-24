@@ -206,14 +206,18 @@ namespace VTX::Action::Setting
 			VTX::Model::Representation::Representation * const newDefaultRepresentation
 				= VTX::Model::Representation::RepresentationLibrary::get().getDefaultRepresentation();
 
-			for ( Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
-				  Representation::RepresentationManager::get().getAllInstantiatedRepresentations(
-					  previousDefaultRepresentation ) )
+			if ( previousDefaultRepresentation != newDefaultRepresentation )
 			{
-				if ( instantiatedRepresentation->getOverridedMembersFlag() == Model::Representation::MEMBER_FLAG::NONE )
+				for ( Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
+					  VTX::Representation::RepresentationManager::get().getAllInstantiatedRepresentations(
+						  previousDefaultRepresentation ) )
 				{
-					Representation::RepresentationManager::get().instantiateRepresentation(
-						newDefaultRepresentation, *instantiatedRepresentation->getTarget() );
+					if ( instantiatedRepresentation->getOverridedMembersFlag()
+						 == Model::Representation::MEMBER_FLAG::NONE )
+					{
+						VTX::Representation::RepresentationManager::get().instantiateRepresentation(
+							newDefaultRepresentation, *instantiatedRepresentation->getTarget() );
+					}
 				}
 			}
 
@@ -784,9 +788,9 @@ namespace VTX::Action::Setting
 			// Active AA before changing representation effet preset to prevent assert call
 			VTX_ACTION( new Action::Setting::ActiveAA( _setting.getAA() ) );
 
-			VTX_ACTION( new Action::Setting::ChangeDefaultRepresentation( _setting.getDefaultRepresentationIndex() ) );
-			VTX_ACTION(
-				new Action::Setting::ChangeDefaultRenderEffectPreset( _setting.getDefaultRenderEffectPresetIndex() ) );
+			// VTX_ACTION( new Action::Setting::ChangeDefaultRepresentation( _setting.getDefaultRepresentationIndex() )
+			// ); VTX_ACTION( 	new Action::Setting::ChangeDefaultRenderEffectPreset(
+			//_setting.getDefaultRenderEffectPresetIndex() ) );
 
 			VTX_ACTION( new Action::Setting::ActiveVerticalSync( _setting.getVSync() ) );
 
