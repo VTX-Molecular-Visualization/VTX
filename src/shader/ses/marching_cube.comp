@@ -58,32 +58,27 @@ layout (std140, binding = 1) writeonly buffer TrianglePositions
 	vec4[] trianglePositions;
 };
 
-layout (std140, binding = 2) writeonly buffer TriangleNormals
-{
-	vec4[] triangleNormals;
-};
-
-layout (std430, binding = 3) writeonly buffer TriangleAtomIndices
+layout (std430, binding = 2) writeonly buffer TriangleAtomIndices
 {
 	uint[] triangleAtomIndices;
 };
 
-layout (std430, binding = 4) writeonly buffer TriangleValidities
+layout (std430, binding = 3) writeonly buffer TriangleValidities
 {
 	uint[] triangleValidities;
 };
 
-layout (std430, binding = 5) readonly buffer TriangleTable
+layout (std430, binding = 4) readonly buffer TriangleTable
 {
 	int[] triangleTable;
 };
 
-layout (std430, binding = 6) readonly buffer CellHashsReduced
+layout (std430, binding = 5) readonly buffer CellHashsReduced
 {
 	uint[] cellHashsReduced;
 };
 
-layout (std430, binding = 7) buffer TrianglesPerAtom
+layout (std430, binding = 6) buffer TrianglesPerAtom
 {
 	uint[] trianglesPerAtom;
 };
@@ -194,16 +189,9 @@ void main()
 			}
 		}
 		
-		const vec4 normal = vec4(
-			normalize( 
-				cross(	intersections[ triangleTable[ cubeIndex * 16 + i + 1 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ],
-						intersections[ triangleTable[ cubeIndex * 16 + i + 2 ] ] - intersections[ triangleTable[ cubeIndex * 16 + i ] ] ) )
-						, 1.f );
-		
 		const uint nearestAtom = sesGridData[ voxelHash[ closestVertex ] ].nearestAtom;
 		for ( uint j = 0; j < 3; ++j )
 		{
-			triangleNormals[ hash * 15 + i + j ] = normal;
 			triangleAtomIndices[ hash * 15 + i + j ] = nearestAtom;
 		}
 		atomicAdd( trianglesPerAtom[ nearestAtom ], 3 );

@@ -12,6 +12,8 @@
 #include "view/d3/triangle.hpp"
 #include "worker/gpu_computer.hpp"
 
+#define VTX_SES_NORMALS_GPU 1
+
 namespace VTX
 {
 	namespace Model
@@ -60,8 +62,6 @@ namespace VTX
 		// TODO
 		// - Decompose in multiple iterations to handle larger buffers.
 		// - Smooth normals on GPU.
-		// - Sort triangles by atom.
-		// - Find nearest atom for each triangle.
 		void SolventExcludedSurface::_refreshGPU()
 		{
 			Tool::Chrono chrono, chrono2;
@@ -167,7 +167,7 @@ namespace VTX
 			workerCreateSDF.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
 
 			// Start.
-			workerCreateSDF.start( gridSES.getCellCount() );
+			workerCreateSDF.start( gridSES.getCellCount(), GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferSesGridData.unbind();
@@ -198,7 +198,7 @@ namespace VTX
 			workerRefineSDF.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
 
 			// Start
-			workerRefineSDF.start( gridSES.getCellCount() );
+			workerRefineSDF.start( gridSES.getCellCount(), GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferSesGridData.unbind();
@@ -226,7 +226,7 @@ namespace VTX
 			workerReduceGrid.getProgram().setFloat( "uIsovalue", 0.f );
 
 			// Start.
-			workerReduceGrid.start( gridSES.getCellCount() );
+			workerReduceGrid.start( gridSES.getCellCount(), GL_SHADER_STORAGE_BARRIER_BIT );
 
 			bufferCellValidities.getData( cellValidities );
 
@@ -262,7 +262,7 @@ namespace VTX
 			workerGridCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
 
 			// Start.
-			workerGridCompaction.start( gridSES.getCellCount() );
+			workerGridCompaction.start( gridSES.getCellCount(), GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferCellValidities.unbind();
@@ -283,7 +283,6 @@ namespace VTX
 			// 5 triangles max per cell.
 			bufferSize = bufferSizeReduced * 5 * 3;
 			Buffer			  bufferPositionsTmp( bufferSize * sizeof( Vec4f ) );
-			Buffer			  bufferNormalsTmp( bufferSize * sizeof( Vec4f ) );
 			Buffer			  bufferAtomIndicesTmp( bufferSize * sizeof( uint ) );
 			std::vector<uint> triangleValidities( bufferSize, 0 );
 			Buffer			  bufferTriangleValidities( triangleValidities );
@@ -294,12 +293,11 @@ namespace VTX
 
 			bufferSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
 			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
-			bufferNormalsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
-			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
-			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
-			bufferTriangleTable.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
-			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
-			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
+			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferTriangleTable.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
+			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
+			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
 
 			workerMarchingCube.getProgram().use();
 
@@ -310,7 +308,7 @@ namespace VTX
 			workerMarchingCube.getProgram().setUInt( "uSize", uint( bufferSizeReduced ) );
 
 			// Start.
-			workerMarchingCube.start( bufferSizeReduced );
+			workerMarchingCube.start( bufferSizeReduced, GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Get validities for next step.
 			bufferTriangleValidities.getData( triangleValidities );
@@ -319,7 +317,6 @@ namespace VTX
 			// Unbind.
 			bufferSesGridData.unbind();
 			bufferPositionsTmp.unbind();
-			bufferNormalsTmp.unbind();
 			bufferAtomIndicesTmp.unbind();
 			bufferTriangleValidities.unbind();
 			bufferTriangleTable.unbind();
@@ -375,9 +372,10 @@ namespace VTX
 			if ( _isInit == false )
 			{
 				// Create final buffers.
-				bufferPositions.set( _indiceCount * sizeof( Vec4f ) );
-				bufferNormals.set( _indiceCount * sizeof( Vec4f ) );
-				bufferIndices.set( _indiceCount * sizeof( uint ) );
+				bufferPositions.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
+				bufferNormals.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_WRITE_BIT );
+				bufferIndices.set( _indiceCount * sizeof( uint ),
+								   Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
 				bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
 				bufferVisibilities.set( _indiceCount * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 				bufferIds.set( _indiceCount * sizeof( uint ) );
@@ -392,23 +390,19 @@ namespace VTX
 
 			// Bind.
 			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
-			bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
-			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
 			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 			bufferVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
 			bufferIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
 			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
-			bufferNormalsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
-			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
-			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 9 );
-			bufferAtomToTriangle.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 10 );
-			bufferAtomColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 11 );
-			bufferAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 12 );
-			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 13 );
-			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 14 );
-
-			// Buffer debug( bufferSize * sizeof( uint ) );
-			// debug.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 15 );
+			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
+			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
+			bufferAtomToTriangle.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 9 );
+			bufferAtomColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 10 );
+			bufferAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 11 );
+			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 12 );
+			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 13 );
 
 			workerStreamCompaction.getProgram().use();
 			workerStreamCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
@@ -416,18 +410,16 @@ namespace VTX
 
 			// Start.
 			assert( bufferSize % 3 == 0 );
-			workerStreamCompaction.start( bufferSize / 3 );
+			workerStreamCompaction.start( bufferSize / 3, GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferPositions.unbind();
-			bufferNormals.unbind();
 			bufferIndices.unbind();
+			bufferNormals.unbind();
 			bufferColors.unbind();
 			bufferVisibilities.unbind();
 			bufferIds.unbind();
-
 			bufferPositionsTmp.unbind();
-			bufferNormalsTmp.unbind();
 			bufferAtomIndicesTmp.unbind();
 			bufferAtomToTriangle.unbind();
 			bufferAtomColors.unbind();
@@ -437,7 +429,165 @@ namespace VTX
 
 			chrono2.stop();
 			VTX_DEBUG( "Buffer compacted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
 
+			////////////////////////////
+			// Weld vertices.
+			std::vector<uint> sortedIndices( _indiceCount );
+
+			Vec4f * ptrPositions
+				= bufferPositions.map<Vec4f>( 0, _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
+			uint * ptrIndices = bufferIndices.map<uint>(
+				0,
+				_indiceCount * sizeof( uint ),
+				Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
+			assert( ptrPositions != nullptr );
+			assert( ptrIndices != nullptr );
+
+			// Get permutations.
+			auto compareVec4Function = []( const Vec4f & p_lhs, const Vec4f & p_rhs )
+			{
+				if ( p_lhs.x <= p_rhs.x && p_lhs.y <= p_rhs.y && p_lhs.z < p_rhs.z )
+					return true;
+				if ( p_lhs.x <= p_rhs.x && p_lhs.y < p_rhs.y )
+					return true;
+				if ( p_lhs.x < p_rhs.x )
+					return true;
+
+				return false;
+			};
+
+			std::vector<std::size_t> permutations( _indiceCount );
+			std::iota( permutations.begin(), permutations.end(), 0 );
+			std::sort( permutations.begin(),
+					   permutations.end(),
+					   [ & ]( std::size_t i, std::size_t j )
+					   { return compareVec4Function( ptrPositions[ i ], ptrPositions[ j ] ); } );
+
+			chrono2.stop();
+			VTX_DEBUG( "Positions sorted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
+
+			// Apply permutations.
+			std::transform( permutations.begin(),
+							permutations.end(),
+							sortedIndices.begin(),
+							[ & ]( std::size_t i ) { return ptrIndices[ i ]; } );
+
+			chrono2.stop();
+			VTX_DEBUG( "Permutations applied in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
+
+			// Detect duplicates.
+			uint indexCurrent = sortedIndices[ 0 ];
+			for ( uint i = 1; i < _indiceCount; ++i )
+			{
+				const uint indexNext = sortedIndices[ i ];
+
+				if ( Util::Math::length2( ptrPositions[ indexCurrent ] - ptrPositions[ indexNext ] )
+					 < EPSILON * EPSILON )
+				{
+					ptrIndices[ indexNext ] = indexCurrent;
+				}
+				else
+				{
+					indexCurrent = indexNext;
+				}
+			}
+
+			bufferPositions.unmap();
+			bufferIndices.unmap();
+
+			chrono2.stop();
+			VTX_DEBUG( "Duplicates detected in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			chrono2.start();
+
+#if VTX_SES_NORMALS_GPU
+			{
+				////////////////////////////
+				// Worker: compute normals (sum).
+				Worker::GpuComputer workerComputeNormalsSum( IO::FilePath( "ses/compute_normals_sum.comp" ) );
+				Buffer				bufferNormalsCasted( std::vector<Vec4i>( _indiceCount, Vec4i() ) );
+
+				// Bind.
+				bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+				bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+				bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+				bufferNormalsCasted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+
+				workerComputeNormalsSum.getProgram().use();
+				workerComputeNormalsSum.getProgram().setUInt( "uSize", _indiceCount );
+
+				// Start.
+				assert( _indiceCount % 3 == 0 );
+				workerComputeNormalsSum.setBarrierPre( GL_SHADER_STORAGE_BARRIER_BIT );
+				workerComputeNormalsSum.start( _indiceCount / 3, GL_SHADER_STORAGE_BARRIER_BIT );
+
+				// Unbind.
+				bufferPositions.unbind();
+				bufferNormals.unbind();
+				bufferIndices.unbind();
+				bufferNormalsCasted.unbind();
+
+				////////////////////////////
+				// Worker: compute normals (divide).
+				Worker::GpuComputer workerComputeNormalsDivide( IO::FilePath( "ses/compute_normals_divide.comp" ) );
+
+				// Bind.
+				bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+				bufferNormalsCasted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+
+				workerComputeNormalsDivide.getProgram().use();
+				workerComputeNormalsDivide.getProgram().setUInt( "uSize", _indiceCount );
+
+				// Start.
+				workerComputeNormalsDivide.start( _indiceCount, GL_SHADER_STORAGE_BARRIER_BIT );
+
+				// Unbind.
+				bufferNormals.unbind();
+				bufferNormalsCasted.unbind();
+			}
+#else
+			{
+				ptrPositions
+					= bufferPositions.map<Vec4f>( 0, _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
+				ptrIndices = bufferIndices.map<uint>( 0, _indiceCount * sizeof( uint ), Buffer::Flags::MAP_READ_BIT );
+				Vec4f * const ptrNormals
+					= bufferNormals.map<Vec4f>( 0, _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_WRITE_BIT );
+				assert( ptrPositions != nullptr );
+				assert( ptrIndices != nullptr );
+				assert( ptrNormals != nullptr );
+
+				for ( uint i = 0; i < _indiceCount - 2; i += 3 )
+				{
+					Vec3f normal = Util::Math::cross(
+						Vec3f( ptrPositions[ ptrIndices[ i + 1 ] ] - ptrPositions[ ptrIndices[ i + 2 ] ] ),
+						Vec3f( ptrPositions[ ptrIndices[ i + 1 ] ] - ptrPositions[ ptrIndices[ i + 0 ] ] ) );
+
+					assert( Util::Math::length( normal ) != 0.f );
+					Util::Math::normalizeSelf( normal );
+
+					for ( uint j = 0; j < 3; ++j )
+					{
+						ptrNormals[ ptrIndices[ i + j ] ].x += normal.x;
+						ptrNormals[ ptrIndices[ i + j ] ].y += normal.y;
+						ptrNormals[ ptrIndices[ i + j ] ].z += normal.z;
+					}
+				}
+
+				for ( uint i = 0; i < _indiceCount; ++i )
+				{
+					Util::Math::normalizeSelf( ptrNormals[ i ] );
+				}
+
+				bufferPositions.unmap();
+				bufferIndices.unmap();
+				bufferNormals.unmap();
+			}
+#endif
+
+			chrono2.stop();
+			VTX_DEBUG( "Normals computed in {}s", chrono2.elapsedTime() );
 			chrono.stop();
 			VTX_DEBUG( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
