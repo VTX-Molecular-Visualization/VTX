@@ -17,17 +17,12 @@ layout (local_size_x = LOCAL_SIZE_X, local_size_y = LOCAL_SIZE_Y, local_size_z =
 uniform uint uSize;
 
 // SSBO.
-layout (std140, binding = 0) writeonly buffer Normals
+layout (std140, binding = 0) buffer Normals
 {
 	vec4[] normals;
 };
 
-layout (std430, binding = 1) readonly buffer Counters
-{
-	uint[] counters;
-};
-
-layout (std140, binding = 2) readonly buffer NormalsCasted
+layout (std140, binding = 1) readonly buffer NormalsCasted
 {
 	ivec4[] normalsCasted;
 };
@@ -36,25 +31,15 @@ void main()
 {
 	uint hash = globalInvocationHash( gl_GlobalInvocationID, gl_NumWorkGroups, gl_WorkGroupSize );
 	
-	/*
 	if( hash >= uSize )
 	{
 		return;
 	}
-	*/
 
-	//const vec3 normal = ( vec3( normals[ hash ] ) / float( counters[ hash ] ) );
-
+	
 	const vec3 normal = vec3(   normalsCasted[ hash ].x,
 								normalsCasted[ hash ].y,
 								normalsCasted[ hash ].z );
 	
-
-	/*
-	const vec3 normal = vec3(   uintBitsToFloat( normalsCasted[ hash ].x ),
-								uintBitsToFloat( normalsCasted[ hash ].y ),
-								uintBitsToFloat( normalsCasted[ hash ].z ) );
-	*/
-	
-	normals[ hash ] = vec4( normalize( normal ), 1.f );
+	normals[ hash ] = vec4( normalize( normal ), 0.f );
 }

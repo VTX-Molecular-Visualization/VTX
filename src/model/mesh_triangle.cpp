@@ -46,7 +46,6 @@ namespace VTX
 			}
 
 			p_normals.resize( p_vertices.size(), VEC4F_ZERO );
-			std::vector<std::vector<Vec3f>> normals( p_vertices.size(), std::vector<Vec3f>() );
 
 			for ( uint i = 0; i < p_indices.size() - 2; i += 3 )
 			{
@@ -59,21 +58,15 @@ namespace VTX
 
 				for ( uint j = 0; j < 3; ++j )
 				{
-					normals[ p_indices[ i + j ] ].emplace_back( normal );
+					p_normals[ p_indices[ i + j ] ].x += normal.x;
+					p_normals[ p_indices[ i + j ] ].y += normal.y;
+					p_normals[ p_indices[ i + j ] ].z += normal.z;
 				}
 			}
 
-			for ( uint i = 0; i < normals.size(); ++i )
+			for ( uint i = 0; i < p_normals.size(); ++i )
 			{
-				std::vector<Vec3f> & verticeNormals = normals[ i ];
-				Vec3f				 normal			= VEC3F_ZERO;
-				for ( const auto & n : verticeNormals )
-				{
-					normal += n;
-				}
-				normal /= verticeNormals.size();
-				Util::Math::normalizeSelf( normal );
-				p_normals[ i ] = Vec4f( normal, 1.f );
+				Util::Math::normalizeSelf( p_normals[ i ] );
 			}
 
 			p_normals.shrink_to_fit();

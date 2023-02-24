@@ -44,7 +44,7 @@ namespace VTX::Worker
 	  protected:
 		Renderer::GL::Program * _program;
 		Vec3i					_size;
-		GLbitfield				_barrier;
+		GLbitfield				_barrier = 0;
 		bool					_force;
 
 		virtual void _run() override;

@@ -210,7 +210,7 @@ namespace VTX::Renderer::GL
 		}
 
 		template<typename T>
-		inline T * const map( const uint p_offset, const size_t p_length, const Access & p_access ) const
+		inline T * const map( const uint p_offset, const size_t p_length, const Flags & p_access ) const
 		{
 			assert( _gl->glIsBuffer( _id ) );
 

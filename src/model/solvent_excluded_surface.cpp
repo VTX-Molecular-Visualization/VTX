@@ -12,6 +12,8 @@
 #include "view/d3/triangle.hpp"
 #include "worker/gpu_computer.hpp"
 
+#define VTX_SES_NORMALS_GPU 1
+
 namespace VTX
 {
 	namespace Model
@@ -165,6 +167,7 @@ namespace VTX
 			workerCreateSDF.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
 
 			// Start.
+			workerCreateSDF.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			workerCreateSDF.start( gridSES.getCellCount() );
 
 			// Unbind.
@@ -196,6 +199,7 @@ namespace VTX
 			workerRefineSDF.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
 
 			// Start
+			workerRefineSDF.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			workerRefineSDF.start( gridSES.getCellCount() );
 
 			// Unbind.
@@ -224,6 +228,7 @@ namespace VTX
 			workerReduceGrid.getProgram().setFloat( "uIsovalue", 0.f );
 
 			// Start.
+			workerReduceGrid.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			workerReduceGrid.start( gridSES.getCellCount() );
 
 			bufferCellValidities.getData( cellValidities );
@@ -260,6 +265,7 @@ namespace VTX
 			workerGridCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
 
 			// Start.
+			workerGridCompaction.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			workerGridCompaction.start( gridSES.getCellCount() );
 
 			// Unbind.
@@ -306,6 +312,7 @@ namespace VTX
 			workerMarchingCube.getProgram().setUInt( "uSize", uint( bufferSizeReduced ) );
 
 			// Start.
+			workerMarchingCube.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			workerMarchingCube.start( bufferSizeReduced );
 
 			// Get validities for next step.
@@ -371,7 +378,7 @@ namespace VTX
 			{
 				// Create final buffers.
 				bufferPositions.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
-				bufferNormals.set( _indiceCount * sizeof( Vec4f ) );
+				bufferNormals.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_WRITE_BIT );
 				bufferIndices.set( _indiceCount * sizeof( uint ),
 								   Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
 				bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
@@ -389,17 +396,18 @@ namespace VTX
 			// Bind.
 			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
 			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
-			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
-			bufferVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
-			bufferIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
-			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
-			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
-			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
-			bufferAtomToTriangle.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
-			bufferAtomColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 9 );
-			bufferAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 10 );
-			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 11 );
-			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 12 );
+			bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
+			bufferIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
+			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
+			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
+			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
+			bufferAtomToTriangle.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 9 );
+			bufferAtomColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 10 );
+			bufferAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 11 );
+			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 12 );
+			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 13 );
 
 			workerStreamCompaction.getProgram().use();
 			workerStreamCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
@@ -407,17 +415,17 @@ namespace VTX
 
 			// Start.
 			assert( bufferSize % 3 == 0 );
+			workerStreamCompaction.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			workerStreamCompaction.start( bufferSize / 3 );
 
 			// Unbind.
 			bufferPositions.unbind();
-
 			bufferIndices.unbind();
+			bufferNormals.unbind();
 			bufferColors.unbind();
 			bufferVisibilities.unbind();
 			bufferIds.unbind();
 			bufferPositionsTmp.unbind();
-
 			bufferAtomIndicesTmp.unbind();
 			bufferAtomToTriangle.unbind();
 			bufferAtomColors.unbind();
@@ -433,8 +441,14 @@ namespace VTX
 			// Weld vertices.
 			std::vector<uint> sortedIndices( _indiceCount );
 
-			Vec4f * const ptrPositions = bufferPositions.map<Vec4f>( Buffer::Access::READ_ONLY );
-			uint * const  ptrIndices   = bufferIndices.map<uint>( Buffer::Access::READ_WRITE );
+			Vec4f * ptrPositions
+				= bufferPositions.map<Vec4f>( 0, _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
+			uint * ptrIndices = bufferIndices.map<uint>(
+				0,
+				_indiceCount * sizeof( uint ),
+				Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
+			assert( ptrPositions != nullptr );
+			assert( ptrIndices != nullptr );
 
 			// Get permutations.
 			auto compareVec4Function = []( const Vec4f & p_lhs, const Vec4f & p_rhs )
@@ -494,54 +508,93 @@ namespace VTX
 			VTX_DEBUG( "Duplicates detected in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
 
-			////////////////////////////
-			// Worker: compute normals (sum).
-			Worker::GpuComputer workerComputeNormalsSum( IO::FilePath( "ses/compute_normals_sum.comp" ) );
-			Buffer				bufferCounters( _indiceCount * sizeof( uint ) );
-			Buffer				bufferNormalsCasted( _indiceCount * sizeof( Vec4u ) );
+#if VTX_SES_NORMALS_GPU
+			{
+				////////////////////////////
+				// Worker: compute normals (sum).
+				Worker::GpuComputer workerComputeNormalsSum( IO::FilePath( "ses/compute_normals_sum.comp" ) );
+				Buffer				bufferNormalsCasted( std::vector<Vec4i>( _indiceCount, Vec4i() ) );
 
-			// Bind.
-			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
-			bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
-			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
-			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
-			bufferNormalsCasted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
+				// Bind.
+				bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+				bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+				bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+				bufferNormalsCasted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 
-			// workerComputeNormalsSum.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
-			// workerComputeNormalsSum.setForce( true );
-			workerComputeNormalsSum.getProgram().use();
-			workerComputeNormalsSum.getProgram().setUInt( "uSize", _indiceCount );
+				// workerComputeNormalsSum.setForce( true );
+				workerComputeNormalsSum.getProgram().use();
+				workerComputeNormalsSum.getProgram().setUInt( "uSize", _indiceCount );
 
-			// Start.
-			assert( _indiceCount % 3 == 0 );
-			workerComputeNormalsSum.start( _indiceCount / 3 );
+				// Start.
+				assert( _indiceCount % 3 == 0 );
+				workerComputeNormalsSum.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+				// Why glFlush needed here?
+				workerComputeNormalsSum.setForce( true );
+				workerComputeNormalsSum.start( _indiceCount / 3 );
 
-			// Unbind.
-			bufferPositions.unbind();
-			bufferNormals.unbind();
-			bufferIndices.unbind();
-			bufferCounters.unbind();
-			bufferNormalsCasted.unbind();
+				// Unbind.
+				bufferPositions.unbind();
+				bufferNormals.unbind();
+				bufferIndices.unbind();
+				bufferNormalsCasted.unbind();
 
-			////////////////////////////
-			// Worker: compute normals (divide).
-			Worker::GpuComputer workerComputeNormalsDivide( IO::FilePath( "ses/compute_normals_divide.comp" ) );
+				////////////////////////////
+				// Worker: compute normals (divide).
+				Worker::GpuComputer workerComputeNormalsDivide( IO::FilePath( "ses/compute_normals_divide.comp" ) );
 
-			// Bind.
-			bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
-			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
-			bufferNormalsCasted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+				// Bind.
+				bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+				bufferNormalsCasted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
 
-			workerComputeNormalsDivide.getProgram().use();
-			workerComputeNormalsDivide.getProgram().setUInt( "uSize", _indiceCount );
+				workerComputeNormalsDivide.getProgram().use();
+				workerComputeNormalsDivide.getProgram().setUInt( "uSize", _indiceCount );
 
-			// Start.
-			workerComputeNormalsDivide.start( _indiceCount );
+				// Start.
+				workerComputeNormalsDivide.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+				workerComputeNormalsDivide.start( _indiceCount );
 
-			// Unbind.
-			bufferNormals.unbind();
-			bufferCounters.unbind();
-			bufferNormalsCasted.unbind();
+				// Unbind.
+				bufferNormals.unbind();
+				bufferNormalsCasted.unbind();
+			}
+#else
+			{
+				ptrPositions
+					= bufferPositions.map<Vec4f>( 0, _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
+				ptrIndices = bufferIndices.map<uint>( 0, _indiceCount * sizeof( uint ), Buffer::Flags::MAP_READ_BIT );
+				Vec4f * const ptrNormals
+					= bufferNormals.map<Vec4f>( 0, _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_WRITE_BIT );
+				assert( ptrPositions != nullptr );
+				assert( ptrIndices != nullptr );
+				assert( ptrNormals != nullptr );
+
+				for ( uint i = 0; i < _indiceCount - 2; i += 3 )
+				{
+					Vec3f normal = Util::Math::cross(
+						Vec3f( ptrPositions[ ptrIndices[ i + 1 ] ] - ptrPositions[ ptrIndices[ i + 2 ] ] ),
+						Vec3f( ptrPositions[ ptrIndices[ i + 1 ] ] - ptrPositions[ ptrIndices[ i + 0 ] ] ) );
+
+					assert( Util::Math::length( normal ) != 0.f );
+					Util::Math::normalizeSelf( normal );
+
+					for ( uint j = 0; j < 3; ++j )
+					{
+						ptrNormals[ ptrIndices[ i + j ] ].x += normal.x;
+						ptrNormals[ ptrIndices[ i + j ] ].y += normal.y;
+						ptrNormals[ ptrIndices[ i + j ] ].z += normal.z;
+					}
+				}
+
+				for ( uint i = 0; i < _indiceCount; ++i )
+				{
+					Util::Math::normalizeSelf( ptrNormals[ i ] );
+				}
+
+				bufferPositions.unmap();
+				bufferIndices.unmap();
+				bufferNormals.unmap();
+			}
+#endif
 
 			chrono2.stop();
 			VTX_DEBUG( "Normals computed in {}s", chrono2.elapsedTime() );

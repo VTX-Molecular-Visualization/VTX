@@ -35,67 +35,65 @@ layout (std430, binding = 1) writeonly buffer TriangleIndices
 	uint[] triangleIndices;
 };
 
-layout (std140, binding = 2) writeonly buffer TriangleColors
+layout (std140, binding = 2) writeonly buffer TriangleNormals
+{
+	vec4[] triangleNormals;
+};
+
+layout (std140, binding = 3) writeonly buffer TriangleColors
 {
 	vec4[] triangleColors;
 };
 
-layout (std430, binding = 3) writeonly buffer TriangleVisibilities
+layout (std430, binding = 4) writeonly buffer TriangleVisibilities
 {
 	uint[] triangleVisibilities;
 };
 
-layout (std430, binding = 4) writeonly buffer TriangleAtomIds
+layout (std430, binding = 5) writeonly buffer TriangleAtomIds
 {
 	uint[] triangleAtomIds;
 };
 
-layout (std140, binding = 5) readonly buffer TrianglePositionsTmp
+layout (std140, binding = 6) readonly buffer TrianglePositionsTmp
 {
 	vec4[] trianglePositionsTmp;
 };
 
-layout (std430, binding = 6) readonly buffer TriangleAtomIndicesTmp
+layout (std430, binding = 7) readonly buffer TriangleAtomIndicesTmp
 {
 	uint[] triangleAtomIndicesTmp;
 };
 
-layout (std430, binding = 7) readonly buffer TriangleValidities
+layout (std430, binding = 8) readonly buffer TriangleValidities
 {
 	uint[] triangleValidities;
 };
 
-layout (std430, binding = 8) readonly buffer TrianglesPerAtomRanges
+layout (std430, binding = 9) readonly buffer TrianglesPerAtomRanges
 { 
 	Range[] trianglesPerAtomRanges;
 };
 
-layout (std140, binding = 9) readonly buffer AtomColors
+layout (std140, binding = 10) readonly buffer AtomColors
 {
 	vec4[] atomColors;
 };
 
-layout (std430, binding = 10) readonly buffer AtomVisibilities
+layout (std430, binding = 11) readonly buffer AtomVisibilities
 {
 	uint[] atomVisibilities;
 };
 
-layout (std430, binding = 11) readonly buffer AtomIds
+layout (std430, binding = 12) readonly buffer AtomIds
 {
 	uint[] atomIds;
 };
 
-layout (std430, binding = 12) buffer TrianglesPerAtom
+layout (std430, binding = 13) buffer TrianglesPerAtom
 {
 	uint[] trianglesPerAtom;
 };
-
-/*
-layout (std430, binding = 15) writeonly buffer Debug
-{
-	uint[] debug;
-};
-*/
 
 void main()
 {
@@ -126,6 +124,7 @@ void main()
 		const uint indexNew = indexTriangle + i;
 		
 		trianglePositions[ indexNew ] = trianglePositionsTmp[ index ];
+		triangleNormals[ indexNew ] = vec4( 0.f, 0.f, 0.f, 0.f );
 		triangleIndices[ indexNew ] = indexNew;
 		triangleColors[ indexNew ] = atomColors[ atomIndice ];
 		triangleVisibilities[ indexNew ] = atomVisibilities[ atomIndice ];
