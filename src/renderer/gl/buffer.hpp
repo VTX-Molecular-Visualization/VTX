@@ -111,10 +111,13 @@ namespace VTX::Renderer::GL
 
 		inline GLuint getId() const { return _id; }
 
-		inline void bind( const Target & p_target ) const
+		inline void bind( const Target & p_target )
 		{
 			assert( _gl->glIsBuffer( _id ) );
+			assert( _target == Target::NONE );
+			assert( p_target != Target::NONE );
 
+			_target = p_target;
 			_gl->glBindBuffer( GLenum( p_target ), _id );
 		}
 
