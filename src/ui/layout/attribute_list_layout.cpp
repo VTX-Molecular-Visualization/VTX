@@ -17,7 +17,7 @@ namespace VTX::UI::Layout
 	void AttributeListLayout::addAttribute( QWidget * const p_item, const QString & p_label )
 	{
 		QLabel * const labelWidget = new QLabel( widget() );
-		labelWidget->setAlignment( Qt::AlignTop | Qt::AlignLeft );
+		labelWidget->setAlignment( DEFAULT_ALIGNMENT );
 		labelWidget->setText( p_label );
 
 		addAttribute( p_item, labelWidget );
@@ -58,7 +58,7 @@ namespace VTX::UI::Layout
 	void AttributeListLayout::startAttributeSection( QWidget * const p_titleWidget )
 	{
 		Util::UI::setDynamicProperty( p_titleWidget, Style::WidgetProperty::ATTRIBUTE_LAYOUT_SECTION_TITLE );
-		addWidget( p_titleWidget, _currentRow, 0, 1, 2, Qt::AlignmentFlag::AlignLeft );
+		addWidget( p_titleWidget, _currentRow, 0, 1, 2, DEFAULT_SECTION_TITLE_ALIGNMENT );
 
 		_currentRow++;
 		_currentIndent++;
@@ -69,8 +69,8 @@ namespace VTX::UI::Layout
 		titleWidget->setText( p_title );
 		Util::UI::setDynamicProperty( titleWidget, Style::WidgetProperty::ATTRIBUTE_LAYOUT_SECTION_TITLE );
 
-		addWidget( titleWidget, _currentRow, 0, 1, 1, Qt::AlignmentFlag::AlignLeft );
-		addWidget( p_widget, _currentRow, 1, 1, 1, Qt::AlignmentFlag::AlignLeft );
+		addWidget( titleWidget, _currentRow, 0, 1, 1, DEFAULT_SECTION_TITLE_ALIGNMENT );
+		addWidget( p_widget, _currentRow, 1, 1, 1, DEFAULT_SECTION_TITLE_ALIGNMENT );
 
 		_currentRow++;
 		_currentIndent++;

@@ -2,7 +2,6 @@
 #define __VTX_UI_WIDGET_CONTEXTUAL_MENU_RENDER__
 
 #include "contextual_menu_template.hpp"
-#include "object3d/scene.hpp"
 #include <QAction>
 #include <QMenu>
 
@@ -39,7 +38,19 @@ namespace VTX::UI::Widget::ContextualMenu
 		QAction * _selectionModeAction;
 		QAction * _measurementModeAction;
 
+		QMenu * _projectionMenu		 = nullptr;
+		QMenu * _backgroundColorMenu = nullptr;
+		QMenu * _renderSettingPreset = nullptr;
+
 		void _refreshPickerMode() const;
+		void _refreshCameraProjection() const;
+		void _refreshAppliedRenderSettingPreset() const;
+
+		void _changeProjectionAction( QAction * const p_action );
+		void _setBackgroundColorAction( QAction * const p_action );
+		void _applyRenderEffectPresetAction( QAction * const p_action );
+		void _takeSnapshotAction();
+		void _exportImageAction();
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu

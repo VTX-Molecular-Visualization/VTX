@@ -5,6 +5,8 @@
 #include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
+#include <QVariant>
+#include <vector>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
@@ -23,11 +25,9 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 	  private:
 		// Default backgrounds
-		MenuToolButtonWidget * _backgroundBlackButton = nullptr;
-		MenuToolButtonWidget * _backgroundWhiteButton = nullptr;
+		std::vector<MenuToolButtonWidget *> _buttons = std::vector<MenuToolButtonWidget *>();
 
-		void _setBackgroundToBlack() const;
-		void _setBackgroundToWhite() const;
+		void _changeBackgroundColorActionTriggered( const QVariant & p_extraData );
 		void _setBackgroundColor( const Color::Rgba & p_color ) const;
 	};
 } // namespace VTX::UI::Widget::MainMenu::Camera
