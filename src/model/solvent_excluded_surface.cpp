@@ -167,7 +167,8 @@ namespace VTX
 			workerCreateSDF.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
 
 			// Start.
-			workerCreateSDF.start( gridSES.getCellCount(), GL_SHADER_STORAGE_BARRIER_BIT );
+			workerCreateSDF.start( gridSES.getCellCount() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferSesGridData.unbind();
@@ -198,7 +199,8 @@ namespace VTX
 			workerRefineSDF.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
 
 			// Start
-			workerRefineSDF.start( gridSES.getCellCount(), GL_SHADER_STORAGE_BARRIER_BIT );
+			workerRefineSDF.start( gridSES.getCellCount() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferSesGridData.unbind();
@@ -226,7 +228,8 @@ namespace VTX
 			workerReduceGrid.getProgram().setFloat( "uIsovalue", 0.f );
 
 			// Start.
-			workerReduceGrid.start( gridSES.getCellCount(), GL_SHADER_STORAGE_BARRIER_BIT );
+			workerReduceGrid.start( gridSES.getCellCount() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 			bufferCellValidities.getData( cellValidities );
 
@@ -262,7 +265,8 @@ namespace VTX
 			workerGridCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
 
 			// Start.
-			workerGridCompaction.start( gridSES.getCellCount(), GL_SHADER_STORAGE_BARRIER_BIT );
+			workerGridCompaction.start( gridSES.getCellCount() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferCellValidities.unbind();
@@ -308,7 +312,8 @@ namespace VTX
 			workerMarchingCube.getProgram().setUInt( "uSize", uint( bufferSizeReduced ) );
 
 			// Start.
-			workerMarchingCube.start( bufferSizeReduced, GL_SHADER_STORAGE_BARRIER_BIT );
+			workerMarchingCube.start( bufferSizeReduced );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Get validities for next step.
 			bufferTriangleValidities.getData( triangleValidities );
@@ -329,7 +334,7 @@ namespace VTX
 
 			////////////////////////////
 			// Worker: buffer compaction.
-			Worker::GpuComputer workerStreamCompaction( IO::FilePath( "ses/buffer_compaction.comp" ) );
+			Worker::GpuComputer workerBufferCompaction( IO::FilePath( "ses/buffer_compaction.comp" ) );
 			VTX_DEBUG( "Triangle buffer size before compaction: {}", bufferSize );
 			//  Perform exclusive scan on validity buffer.
 			std::exclusive_scan( triangleValidities.begin(), triangleValidities.end(), triangleValidities.begin(), 0 );
@@ -404,13 +409,14 @@ namespace VTX
 			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 12 );
 			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 13 );
 
-			workerStreamCompaction.getProgram().use();
-			workerStreamCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
-			workerStreamCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
+			workerBufferCompaction.getProgram().use();
+			workerBufferCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
+			workerBufferCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
 
 			// Start.
 			assert( bufferSize % 3 == 0 );
-			workerStreamCompaction.start( bufferSize / 3, GL_SHADER_STORAGE_BARRIER_BIT );
+			workerBufferCompaction.start( bufferSize / 3 );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferPositions.unbind();
@@ -498,6 +504,8 @@ namespace VTX
 			bufferPositions.unmap();
 			bufferIndices.unmap();
 
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
 			chrono2.stop();
 			VTX_DEBUG( "Duplicates detected in " + std::to_string( chrono2.elapsedTime() ) + "s" );
 			chrono2.start();
@@ -520,8 +528,8 @@ namespace VTX
 
 				// Start.
 				assert( _indiceCount % 3 == 0 );
-				workerComputeNormalsSum.setBarrierPre( GL_SHADER_STORAGE_BARRIER_BIT );
-				workerComputeNormalsSum.start( _indiceCount / 3, GL_SHADER_STORAGE_BARRIER_BIT );
+				workerComputeNormalsSum.start( _indiceCount / 3 );
+				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 				// Unbind.
 				bufferPositions.unbind();
@@ -541,7 +549,8 @@ namespace VTX
 				workerComputeNormalsDivide.getProgram().setUInt( "uSize", _indiceCount );
 
 				// Start.
-				workerComputeNormalsDivide.start( _indiceCount, GL_SHADER_STORAGE_BARRIER_BIT );
+				workerComputeNormalsDivide.start( _indiceCount );
+				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 				// Unbind.
 				bufferNormals.unbind();

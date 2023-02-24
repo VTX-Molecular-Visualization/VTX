@@ -29,7 +29,7 @@ namespace VTX
 			inline void disableDepthClamp() const { _gl->glDisable( GL_DEPTH_CLAMP ); }
 			inline void enableDepthTest() const { _gl->glEnable( GL_DEPTH_TEST ); }
 			inline void disableDepthTest() const { _gl->glDisable( GL_DEPTH_TEST ); }
-
+			inline void memoryBarrier( const GLbitfield p_barrier ) const { _gl->glMemoryBarrier( p_barrier ); }
 			inline void makeContextCurrent() { _context->makeCurrent( _surface ); }
 			inline void doneContextCurrent() { _context->doneCurrent(); }
 
