@@ -124,7 +124,6 @@ void main()
 		const uint indexNew = indexTriangle + i;
 		
 		trianglePositions[ indexNew ] = trianglePositionsTmp[ index ];
-		triangleNormals[ indexNew ] = vec4( 0.f, 0.f, 0.f, 0.f );
 		triangleIndices[ indexNew ] = indexNew;
 		triangleColors[ indexNew ] = atomColors[ atomIndice ];
 		triangleVisibilities[ indexNew ] = atomVisibilities[ atomIndice ];

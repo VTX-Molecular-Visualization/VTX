@@ -40,7 +40,6 @@ layout (std140, binding = 3) buffer NormalsCasted
 };
 
 // May be useful.
-/*
 #define atomicAddFloat(MEM, INDATA)\
 { \
     uint expected_mem = MEM; \
@@ -52,7 +51,6 @@ layout (std140, binding = 3) buffer NormalsCasted
         returned_mem = atomicCompSwap(MEM, expected_mem, floatBitsToUint(input_mem)); \
     } \
 }
-*/
 
 void main()
 {
@@ -75,5 +73,10 @@ void main()
 		atomicAdd( normalsCasted[ indices[ hash + i ] ].x, int( normal.x / EPSILON ) );
 		atomicAdd( normalsCasted[ indices[ hash + i ] ].y, int( normal.y / EPSILON ) );
 		atomicAdd( normalsCasted[ indices[ hash + i ] ].z, int( normal.z / EPSILON ) );
+
+		//atomicAddFloat( normalsCasted[ indices[ hash + i ] ].x, floatBitsToInt( normal.x ) );
+		//atomicAddFloat( normalsCasted[ indices[ hash + i ] ].y, floatBitsToInt( normal.y ) );
+		//atomicAddFloat( normalsCasted[ indices[ hash + i ] ].z, floatBitsToInt( normal.z ) );
+	
 	}
 }

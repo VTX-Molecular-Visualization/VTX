@@ -13,12 +13,19 @@ namespace VTX::Worker
 	void GpuComputer::start()
 	{
 		VTX_DEBUG( "Starting gpu work: {}", Util::Math::to_string( _size ) );
-		_gl->glDispatchCompute( _size.x, _size.y, _size.z );
-		//_gl->glMemoryBarrier( GL_ALL_BARRIER_BITS );
-		if ( _barrier )
+
+		if ( _barrierPre )
 		{
-			_gl->glMemoryBarrier( _barrier );
+			_gl->glMemoryBarrier( _barrierPre );
 		}
+
+		_gl->glDispatchCompute( _size.x, _size.y, _size.z );
+
+		if ( _barrierPost )
+		{
+			_gl->glMemoryBarrier( _barrierPost );
+		}
+
 		if ( _force )
 		{
 			_gl->glFlush();
@@ -29,14 +36,14 @@ namespace VTX::Worker
 	void GpuComputer::start( const Vec3i & p_size, const GLbitfield p_barrier )
 	{
 		_size = p_size;
-		setBarrier( p_barrier );
+		setBarrierPost( p_barrier );
 		start();
 	}
 
 	void GpuComputer::start( const size_t p_taskCount, const GLbitfield p_barrier )
 	{
 		_size = _computeSize( p_taskCount );
-		setBarrier( p_barrier );
+		setBarrierPost( p_barrier );
 		start();
 	}
 

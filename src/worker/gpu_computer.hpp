@@ -22,7 +22,7 @@ namespace VTX::Worker
 							  const GLbitfield	   p_barrier = 0,
 							  const bool		   p_force	 = false ) :
 			_size( p_size ),
-			_barrier( p_barrier ), _force( p_force )
+			_barrierPost( p_barrier ), _force( p_force )
 		{
 			const std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
 												+ "#define LOCAL_SIZE_Y " + std::to_string( LOCAL_SIZE_Y ) + "\n"
@@ -34,7 +34,8 @@ namespace VTX::Worker
 		virtual ~GpuComputer() = default;
 
 		inline Renderer::GL::Program & getProgram() { return *_program; }
-		inline void					   setBarrier( const GLbitfield p_barrier ) { _barrier = p_barrier; }
+		inline void					   setBarrierPost( const GLbitfield p_barrier ) { _barrierPost = p_barrier; }
+		inline void					   setBarrierPre( const GLbitfield p_barrier ) { _barrierPre = p_barrier; }
 		inline void					   setForce( const bool p_force ) { _force = p_force; }
 
 		void start();
@@ -44,7 +45,8 @@ namespace VTX::Worker
 	  protected:
 		Renderer::GL::Program * _program;
 		Vec3i					_size;
-		GLbitfield				_barrier = 0;
+		GLbitfield				_barrierPre	 = 0;
+		GLbitfield				_barrierPost = 0;
 		bool					_force;
 
 		virtual void _run() override;

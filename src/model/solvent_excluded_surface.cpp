@@ -167,8 +167,7 @@ namespace VTX
 			workerCreateSDF.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
 
 			// Start.
-			workerCreateSDF.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
-			workerCreateSDF.start( gridSES.getCellCount() );
+			workerCreateSDF.start( gridSES.getCellCount(), GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferSesGridData.unbind();
@@ -199,8 +198,7 @@ namespace VTX
 			workerRefineSDF.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
 
 			// Start
-			workerRefineSDF.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
-			workerRefineSDF.start( gridSES.getCellCount() );
+			workerRefineSDF.start( gridSES.getCellCount(), GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferSesGridData.unbind();
@@ -228,8 +226,7 @@ namespace VTX
 			workerReduceGrid.getProgram().setFloat( "uIsovalue", 0.f );
 
 			// Start.
-			workerReduceGrid.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
-			workerReduceGrid.start( gridSES.getCellCount() );
+			workerReduceGrid.start( gridSES.getCellCount(), GL_SHADER_STORAGE_BARRIER_BIT );
 
 			bufferCellValidities.getData( cellValidities );
 
@@ -265,8 +262,7 @@ namespace VTX
 			workerGridCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
 
 			// Start.
-			workerGridCompaction.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
-			workerGridCompaction.start( gridSES.getCellCount() );
+			workerGridCompaction.start( gridSES.getCellCount(), GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferCellValidities.unbind();
@@ -312,8 +308,7 @@ namespace VTX
 			workerMarchingCube.getProgram().setUInt( "uSize", uint( bufferSizeReduced ) );
 
 			// Start.
-			workerMarchingCube.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
-			workerMarchingCube.start( bufferSizeReduced );
+			workerMarchingCube.start( bufferSizeReduced, GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Get validities for next step.
 			bufferTriangleValidities.getData( triangleValidities );
@@ -415,8 +410,7 @@ namespace VTX
 
 			// Start.
 			assert( bufferSize % 3 == 0 );
-			workerStreamCompaction.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
-			workerStreamCompaction.start( bufferSize / 3 );
+			workerStreamCompaction.start( bufferSize / 3, GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferPositions.unbind();
@@ -521,16 +515,13 @@ namespace VTX
 				bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
 				bufferNormalsCasted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 
-				// workerComputeNormalsSum.setForce( true );
 				workerComputeNormalsSum.getProgram().use();
 				workerComputeNormalsSum.getProgram().setUInt( "uSize", _indiceCount );
 
 				// Start.
 				assert( _indiceCount % 3 == 0 );
-				workerComputeNormalsSum.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
-				// Why glFlush needed here?
-				workerComputeNormalsSum.setForce( true );
-				workerComputeNormalsSum.start( _indiceCount / 3 );
+				workerComputeNormalsSum.setBarrierPre( GL_SHADER_STORAGE_BARRIER_BIT );
+				workerComputeNormalsSum.start( _indiceCount / 3, GL_SHADER_STORAGE_BARRIER_BIT );
 
 				// Unbind.
 				bufferPositions.unbind();
@@ -550,8 +541,7 @@ namespace VTX
 				workerComputeNormalsDivide.getProgram().setUInt( "uSize", _indiceCount );
 
 				// Start.
-				workerComputeNormalsDivide.setBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
-				workerComputeNormalsDivide.start( _indiceCount );
+				workerComputeNormalsDivide.start( _indiceCount, GL_SHADER_STORAGE_BARRIER_BIT );
 
 				// Unbind.
 				bufferNormals.unbind();

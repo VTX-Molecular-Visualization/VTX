@@ -36,10 +36,15 @@ void main()
 		return;
 	}
 
-	
 	const vec3 normal = vec3(   normalsCasted[ hash ].x,
 								normalsCasted[ hash ].y,
 								normalsCasted[ hash ].z );
 	
+	/*
+	const vec3 normal = vec3(   intBitsToFloat( normalsCasted[ hash ].x ),
+								intBitsToFloat( normalsCasted[ hash ].y ),
+								intBitsToFloat( normalsCasted[ hash ].z ) );
+	*/
+
 	normals[ hash ] = vec4( normalize( normal ), 0.f );
 }
