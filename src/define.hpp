@@ -67,6 +67,8 @@ namespace VTX
 	constexpr float INV_PIf	 = glm::one_over_pi<float>();
 	constexpr float INV_2PIf = glm::one_over_two_pi<float>();
 
+	constexpr Vec2i VEC2I_ZERO = Vec2i( 0, 0 );
+
 	constexpr Vec3f VEC3F_ZERO = Vec3f( 0.f, 0.f, 0.f );
 	constexpr Vec3f VEC3F_X	   = Vec3f( 1.f, 0.f, 0.f );
 	constexpr Vec3f VEC3F_Y	   = Vec3f( 0.f, 1.f, 0.f );

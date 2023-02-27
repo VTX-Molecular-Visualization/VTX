@@ -1,4 +1,5 @@
 #include "base_camera_controller.hpp"
+#include "define.hpp"
 
 namespace VTX::Controller
 {
@@ -14,6 +15,8 @@ namespace VTX::Controller
 			{
 				_updateOrient( 1.f );
 				_isOrienting = false;
+
+				_deltaMousePosition = VEC2I_ZERO;
 			}
 			else
 			{
