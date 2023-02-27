@@ -4,15 +4,13 @@
 #include "contextual_menu_template.hpp"
 #include <QAction>
 #include <QMenu>
+#include <QString>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
 	class ContextualMenuRender : public BaseContextualMenu
 	{
 		VTX_WIDGET
-
-		inline static const char * SELECTION_GRANULARITY_PROPERTY_NAME = "GRANULARITY";
-		inline static const char * MEASUREMENT_MODE_PROPERTY_NAME	   = "MEASUREMENT_MODE";
 
 	  public:
 		~ContextualMenuRender();
@@ -28,7 +26,6 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _downloadMoleculeAction() const;
 
 		void _setPickerToSelection() const;
-		void _setPickerToMeasurement() const;
 
 		void _setSelectionGranularityAction( QAction * p_action ) const;
 		void _setMeasurementMode( QAction * p_action ) const;
@@ -38,11 +35,18 @@ namespace VTX::UI::Widget::ContextualMenu
 		QAction * _selectionModeAction;
 		QAction * _measurementModeAction;
 
-		QMenu * _projectionMenu		 = nullptr;
-		QMenu * _backgroundColorMenu = nullptr;
-		QMenu * _renderSettingPreset = nullptr;
+		QMenu * _projectionMenu			  = nullptr;
+		QMenu * _backgroundColorMenu	  = nullptr;
+		QMenu * _renderSettingPreset	  = nullptr;
+		QMenu * _selectionGranularityMenu = nullptr;
+		QMenu * _measurementModeMenu	  = nullptr;
+
+		void _addSelectionGranularityActionInMenu( const int p_granularity, const QString & p_name ) const;
+		void _addMeasurementModeActionInMenu( const int p_mode, const QString & p_name ) const;
 
 		void _refreshPickerMode() const;
+		void _refreshSelectionGranularityMenu() const;
+		void _refreshMeasurementModeMenu() const;
 		void _refreshCameraProjection() const;
 		void _refreshAppliedRenderSettingPreset() const;
 
