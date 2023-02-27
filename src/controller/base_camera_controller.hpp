@@ -7,14 +7,16 @@
 #include "base_mouse_controller.hpp"
 #include "id.hpp"
 #include "object3d/camera.hpp"
+#include "object3d/camera_manager.hpp"
 #include "object3d/helper/aabb.hpp"
 
 namespace VTX
 {
 	namespace Object3D
 	{
+		class CameraManager;
 		class Camera;
-	}
+	} // namespace Object3D
 
 	namespace Controller
 	{
@@ -24,7 +26,10 @@ namespace VTX
 			public BaseGamepadController
 		{
 		  public:
-			explicit BaseCameraController( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
+			explicit BaseCameraController( Object3D::CameraManager & p_cameraManager ) :
+				_cameraManager( p_cameraManager )
+			{
+			}
 			virtual ~BaseCameraController() = default;
 
 			virtual const ID::VTX_ID getID() const = 0;
@@ -53,7 +58,7 @@ namespace VTX
 			const float ORIENT_DURATION	 = 0.5f;
 			const float ORIENT_THRESHOLD = 1e-4f;
 
-			Object3D::Camera & _camera;
+			Object3D::CameraManager & _cameraManager;
 
 			bool  _isOrienting			  = false;
 			float _orientTime			  = 0.f;
@@ -61,6 +66,8 @@ namespace VTX
 			Vec3f _orientTargetPosition	  = VEC3F_ZERO;
 			Quatf _orientStartingRotation = QUATF_ID;
 			Quatf _orientTargetRotation	  = QUATF_ID;
+
+			inline Object3D::Camera & _camera() const { return *_cameraManager.getCamera(); }
 
 			virtual void _updateInputs( const float & )													  = 0;
 			virtual void _computeOrientPositions( const Object3D::Helper::AABB & p_aabb )				  = 0;

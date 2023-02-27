@@ -1,5 +1,4 @@
 #include "base_keyboard_controller.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX::Controller
 {

@@ -31,6 +31,7 @@ namespace VTX::View::D3
 				_program->setFloat( "u_radiusFixed", sphereData.radiusFixed );
 				_program->setFloat( "u_radiusAdd", sphereData.radiusAdd );
 				_program->setBool( "u_isRadiusFixed", sphereData.isRadiusFixed );
+				_program->setBool( "u_isPerspective", p_camera.isPerspective() );
 
 				const Representation::TargetRange<uint> & target = representationData.second.getAtoms();
 				if ( target.counts.size() > 0 )

@@ -1,5 +1,6 @@
 #include "scene.hpp"
 #include "action/main.hpp"
+#include "camera_manager.hpp"
 #include "math/transform.hpp"
 #include "model/label.hpp"
 #include "model/mesh_triangle.hpp"
@@ -13,14 +14,14 @@ namespace VTX::Object3D
 {
 	Scene::Scene()
 	{
-		_camera = new Camera();
+		_cameraManager = new CameraManager();
 		_createDefaultPath();
 	}
 
 	Scene::~Scene()
 	{
 		clear();
-		delete _camera;
+		delete _cameraManager;
 	}
 
 	bool Scene::isEmpty() const
@@ -63,6 +64,9 @@ namespace VTX::Object3D
 		clear();
 		_createDefaultPath();
 	}
+
+	Camera &	   Scene::getCamera() { return *_cameraManager->getCamera(); }
+	const Camera & Scene::getCamera() const { return *_cameraManager->getCamera(); }
 
 	void Scene::addMolecule( MoleculePtr const p_molecule, const bool p_sendEvent )
 	{

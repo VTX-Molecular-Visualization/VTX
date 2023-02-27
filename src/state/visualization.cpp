@@ -25,9 +25,9 @@ namespace VTX
 			// Create controller.
 			_controllers.emplace( ID::Controller::MAIN_WINDOW, new Controller::MainWindowController() );
 			_controllers.emplace( ID::Controller::FREEFLY,
-								  new Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
+								  new Controller::Freefly( VTXApp::get().getScene().getCameraManager() ) );
 			_controllers.emplace( ID::Controller::TRACKBALL,
-								  new Controller::Trackball( VTXApp::get().getScene().getCamera(),
+								  new Controller::Trackball( VTXApp::get().getScene().getCameraManager(),
 															 VTXApp::get().getScene().getAABB().centroid(),
 															 VTXApp::get().getScene().getAABB().diameter() ) );
 			_controllers.emplace( ID::Controller::PICKER, new Controller::Picker() );

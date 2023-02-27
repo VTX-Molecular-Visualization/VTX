@@ -30,9 +30,10 @@ namespace VTX
 			inline const float getNear() const { return _near; }
 			inline const float getFar() const { return _far; }
 			inline const float getFov() const { return _fov; }
-			inline const float isPerspective() const { return _isPerspective; }
 
-			inline float getZoom() const { return _zoom; }
+			inline const Vec3f & getTarget() const { return _target; }
+
+			virtual const bool isPerspective() const = 0;
 
 			inline void setScreenSize( const uint p_width, const uint p_height )
 			{
@@ -66,16 +67,13 @@ namespace VTX
 				setRotation( p_rotation );
 			}
 
+			void setFrontRightUp( const Vec3f & p_front, const Vec3f & p_right, const Vec3f & p_up );
+
 			void setNear( const float p_near );
 			void setFar( const float p_far );
 			void setFov( const float p_fov );
-			void setPerspective( const bool p_perspective );
-			void toggle();
 
-			void move( const Vec3f & );
-			void moveFront( const float );
-			void moveRight( const float );
-			void moveUp( const float );
+			virtual void setTarget( const Vec3f & p_target );
 
 			void rotate( const Vec3f & );
 			void rotatePitch( const float );
@@ -86,21 +84,17 @@ namespace VTX
 			void rotateAround( const Quatf &, const Vec3f &, const float );
 			void lookAt( const Vec3f &, const Vec3f & );
 
-			void setZoom( const float p_zoom );
-			void zoom( const float p_delta );
-
 			void reset( const Vec3f & p_defaultPosition = VEC3F_ZERO );
 
 			void print() const;
 
-		  private:
+		  protected:
 			uint  _screenWidth	= 1u;
 			uint  _screenHeight = 1u;
 			float _aspectRatio	= 1.f;
-
-			float _near = 1e-1f;
-			float _far	= 1e4f;
-			float _fov	= 60.f;
+			float _near			= 1e-1f;
+			float _far			= 1e4f;
+			float _fov			= 60.f;
 
 			Vec3f _position = VEC3F_ZERO;
 			Quatf _rotation = QUATF_ID;
@@ -109,16 +103,14 @@ namespace VTX
 			Vec3f _right = CAMERA_RIGHT_DEFAULT;
 			Vec3f _up	 = CAMERA_UP_DEFAULT;
 
-			// Orthographic only.
-			float _zoom = 1.f;
+			Vec3f _target = VEC3F_ZERO;
 
 			Mat4f _viewMatrix;
 			Mat4f _projectionMatrix;
-			bool  _isPerspective = true;
 
-			void _updateRotation();
-			void _updateViewMatrix();
-			void _updateProjectionMatrix();
+			void		 _updateRotation();
+			virtual void _updateViewMatrix()	   = 0;
+			virtual void _updateProjectionMatrix() = 0;
 		}; // namespace Camera
 	}	   // namespace Object3D
 } // namespace VTX

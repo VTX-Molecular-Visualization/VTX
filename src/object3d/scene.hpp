@@ -24,7 +24,9 @@ namespace VTX::Object3D
 		class BaseHelper;
 	}
 
+	class CameraManager;
 	class Camera;
+
 	class Scene : public Generic::BaseUpdatable
 	{
 	  private:
@@ -59,8 +61,9 @@ namespace VTX::Object3D
 		Scene();
 		~Scene();
 
-		inline Camera &						 getCamera() { return *_camera; }
-		inline const Camera &				 getCamera() const { return *_camera; }
+		Camera &							 getCamera();
+		const Camera &						 getCamera() const;
+		inline CameraManager &				 getCameraManager() const { return *_cameraManager; }
 		inline MapMoleculePtrFloat &		 getMolecules() { return _molecules; };
 		inline const MapMoleculePtrFloat &	 getMolecules() const { return _molecules; };
 		inline const VectorPathPtr &		 getPaths() const { return _paths; };
@@ -151,7 +154,7 @@ namespace VTX::Object3D
 		}
 
 	  private:
-		Camera *			   _camera = nullptr;
+		CameraManager *		   _cameraManager = nullptr;
 		Object3D::Helper::AABB _aabb;
 		MapMoleculePtrFloat	   _molecules = MapMoleculePtrFloat();
 		VectorPathPtr		   _paths	  = VectorPathPtr();

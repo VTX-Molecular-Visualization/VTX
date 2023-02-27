@@ -16,6 +16,7 @@
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "worker/worker_manager.hpp"
+#include <QLoggingCategory>
 #include <QPalette>
 #include <exception>
 

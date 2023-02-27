@@ -311,7 +311,7 @@ namespace VTX::Action::Main
 	  public:
 		explicit ToggleCamera() {}
 
-		virtual void execute() override { VTXApp::get().getScene().getCamera().toggle(); };
+		virtual void execute() override { VTXApp::get().getScene().getCameraManager().toggle(); };
 	};
 
 	class SetCameraProjectionToPerspective : public BaseAction
@@ -319,7 +319,10 @@ namespace VTX::Action::Main
 	  public:
 		explicit SetCameraProjectionToPerspective( const bool p_perspective ) : _perspective( p_perspective ) {}
 
-		virtual void execute() override { VTXApp::get().getScene().getCamera().setPerspective( !_perspective ); };
+		virtual void execute() override
+		{
+			VTXApp::get().getScene().getCameraManager().setPerspectiveCamera( !_perspective );
+		};
 
 	  private:
 		bool _perspective;

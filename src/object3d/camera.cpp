@@ -1,5 +1,4 @@
 #include "camera.hpp"
-#include "model/renderer/render_effect_preset.hpp"
 #include "setting.hpp"
 #include "tool/logger.hpp"
 #include "vtx_app.hpp"
@@ -10,10 +9,16 @@ namespace VTX
 	{
 		Camera::Camera() :
 			_near( Util::Math::max( 1e-1f, VTX_SETTING().getCameraNearClip() ) ), // Avoid to little value.
-			_far( Util::Math::max( _near, VTX_SETTING().getCameraFarClip() ) ), _fov( VTX_SETTING().getCameraFOV() ),
-			_isPerspective( VTX_SETTING().getCameraPerspective() )
+			_far( Util::Math::max( _near, VTX_SETTING().getCameraFarClip() ) ), _fov( VTX_SETTING().getCameraFOV() )
 		{
-			_updateRotation();
+		}
+
+		void Camera::setFrontRightUp( const Vec3f & p_front, const Vec3f & p_right, const Vec3f & p_up )
+		{
+			_front = p_front;
+			_right = p_right;
+			_up	   = p_up;
+			_updateViewMatrix();
 		}
 
 		void Camera::setNear( const float p_near )
@@ -28,48 +33,14 @@ namespace VTX
 			_far = Util::Math::max( 1e-1f, p_far );
 			_updateProjectionMatrix();
 		}
+
 		void Camera::setFov( const float p_fov )
 		{
 			_fov = p_fov;
 			_updateProjectionMatrix();
 		}
 
-		void Camera::setPerspective( const bool p_perspective )
-		{
-			if ( _isPerspective != p_perspective )
-			{
-				_isPerspective = p_perspective;
-				_updateProjectionMatrix();
-			}
-		}
-
-		void Camera::toggle() { setPerspective( !_isPerspective ); }
-
-		void Camera::move( const Vec3f & p_delta )
-		{
-			_position += _right * p_delta.x;
-			_position += _up * p_delta.y;
-			_position += _front * p_delta.z;
-			_updateViewMatrix();
-		}
-
-		void Camera::moveFront( const float p_delta )
-		{
-			_position += _front * p_delta;
-			_updateViewMatrix();
-		}
-
-		void Camera::moveRight( const float p_delta )
-		{
-			_position += _right * p_delta;
-			_updateViewMatrix();
-		}
-
-		void Camera::moveUp( const float p_delta )
-		{
-			_position += _up * p_delta;
-			_updateViewMatrix();
-		}
+		void Camera::setTarget( const Vec3f & p_target ) { _target = p_target; }
 
 		void Camera::rotate( const Vec3f & p_delta )
 		{
@@ -115,9 +86,6 @@ namespace VTX
 			_updateRotation();
 		}
 
-		void Camera::setZoom( const float p_zoom ) { _zoom = Util::Math::max( p_zoom, 1e-3f ); }
-		void Camera::zoom( const float p_delta ) { _zoom = Util::Math::max( _zoom + p_delta, 1e-3f ); }
-
 		void Camera::reset( const Vec3f & p_defaultPosition )
 		{
 			_position = p_defaultPosition;
@@ -127,32 +95,12 @@ namespace VTX
 
 		void Camera::_updateRotation()
 		{
-			Mat3f rotation = Util::Math::castMat3( _rotation );
-			_front		   = rotation * CAMERA_FRONT_DEFAULT;
-			_right		   = rotation * CAMERA_RIGHT_DEFAULT;
-			_up			   = rotation * CAMERA_UP_DEFAULT;
+			const Mat3f rotation = Util::Math::castMat3( _rotation );
+			_front				 = rotation * CAMERA_FRONT_DEFAULT;
+			_right				 = rotation * CAMERA_RIGHT_DEFAULT;
+			_up					 = rotation * CAMERA_UP_DEFAULT;
 
 			_updateViewMatrix();
-		}
-
-		void Camera::_updateViewMatrix()
-		{
-			_viewMatrix = Util::Math::lookAt( _position, _position + _front, _up );
-			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
-		}
-
-		void Camera::_updateProjectionMatrix()
-		{
-			if ( _isPerspective )
-			{
-				_projectionMatrix = Util::Math::perspective( Util::Math::radians( _fov ), _aspectRatio, _near, _far );
-			}
-			else
-			{
-				_projectionMatrix = Util::Math::ortho( -20.f, 20.f, -20.f, 20.f, _near, _far );
-			}
-
-			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 		}
 
 		void Camera::print() const

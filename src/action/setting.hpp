@@ -571,7 +571,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_SETTING().setCameraPerspectiveProjection( _perspective );
-			VTXApp::get().getScene().getCamera().setPerspective( VTX_SETTING().getCameraPerspective() );
+			VTXApp::get().getScene().getCameraManager().refresh();
 
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};

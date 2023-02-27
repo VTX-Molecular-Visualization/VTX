@@ -1,5 +1,7 @@
 #include "trackball.hpp"
 #include "action/action_manager.hpp"
+#include "object3d/orthographic_camera.hpp"
+#include "object3d/perspective_camera.hpp"
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
@@ -15,14 +17,14 @@ namespace VTX
 			BaseController::setActive( p_active );
 			if ( p_active )
 			{
-				_target = targetSimulationFromCamera( _camera );
+				_target = targetSimulationFromCamera( _camera() );
 			}
 			else
 			{
 				_velocity = VEC3F_ZERO;
 				// Save distance to force at next setActive(true).
 				// If orient is called in Freefly, the distance is overriden.
-				_distanceForced = Util::Math::distance( _camera.getPosition(), _target );
+				_distanceForced = Util::Math::distance( _camera().getPosition(), _target );
 			}
 		}
 
@@ -33,11 +35,20 @@ namespace VTX
 
 		void Trackball::_updateInputs( const float & p_deltaTime )
 		{
+			constexpr float zoomSensitivity = 0.2f;
+
 			// Wheel.
 			float deltaDistance = 0.f;
 			if ( _deltaMouseWheel != 0.f )
 			{
-				deltaDistance	 = _deltaMouseWheel * 0.00001 * Util::Math::distance( _camera.getPosition(), _target );
+				if ( _camera().isPerspective() )
+				{
+					deltaDistance = _deltaMouseWheel * 0.00001 * Util::Math::distance( _camera().getPosition(), _target );
+				}
+				else
+				{
+					deltaDistance = -glm::sign( _deltaMouseWheel ) * 0.1f * zoomSensitivity;
+				}
 				_deltaMouseWheel = 0;
 			}
 
@@ -59,7 +70,7 @@ namespace VTX
 				float deltaX = -_deltaMousePosition.x * 0.1;
 				float deltaY = _deltaMousePosition.y * 0.1;
 
-				_target		= _target + _camera.getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
+				_target		= _target + _camera().getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
 				_needUpdate = true;
 			}
 			_deltaMousePosition.x = 0;
@@ -103,15 +114,18 @@ namespace VTX
 
 			if ( deltaDistance != 0.f )
 			{
-				deltaDistance *= VTX_SETTING().getTranslationSpeed();
+				if ( _camera().isPerspective() )
+				{
+					deltaDistance *= VTX_SETTING().getTranslationSpeed();
 
-				if ( _isModifierExclusive( ModifierFlag::Shift ) )
-				{
-					deltaDistance *= VTX_SETTING().getAccelerationSpeedFactor();
-				}
-				if ( _isModifierExclusive( ModifierFlag::Alt ) )
-				{
-					deltaDistance /= VTX_SETTING().getDecelerationSpeedFactor();
+					if ( _isModifierExclusive( ModifierFlag::Shift ) )
+					{
+						deltaDistance *= VTX_SETTING().getAccelerationSpeedFactor();
+					}
+					if ( _isModifierExclusive( ModifierFlag::Alt ) )
+					{
+						deltaDistance /= VTX_SETTING().getDecelerationSpeedFactor();
+					}
 				}
 
 				_needUpdate = true;
@@ -139,23 +153,39 @@ namespace VTX
 			// Update if needed.
 			if ( _needUpdate )
 			{
-				float distance = 0.f;
-				if ( _distanceForced != 0.f )
+				if ( _camera().isPerspective() )
 				{
-					distance		= Util::Math::clamp( _distanceForced - deltaDistance, 0.1f, 10000.f );
-					_distanceForced = 0.f;
+					float distance = 0.f;
+					if ( _distanceForced != 0.f )
+					{
+						distance		= Util::Math::clamp( _distanceForced - deltaDistance, 0.1f, 10000.f );
+						_distanceForced = 0.f;
+					}
+					else
+					{
+						distance = Util::Math::distance( _camera().getPosition(), _target );
+						distance = Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
+					}
+
+					const Quatf rotation
+						= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z )
+								 * ( VTX_SETTING().getControllerElasticityActive() ? p_deltaTime : 0.2f ) );
+					_camera().rotateAround( rotation, _target, distance );
 				}
 				else
 				{
-					distance = Util::Math::distance( _camera.getPosition(), _target );
-					distance = Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
+					_cameraManager.getOrthographicCamera()->zoom( deltaDistance );
+					const Quatf rotation
+						= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z )
+								 * ( VTX_SETTING().getControllerElasticityActive() ? p_deltaTime : 0.2f ) );
+					_camera().rotateAround(
+						rotation, _target, Util::Math::distance( _camera().getPosition(), _target ) );
 				}
 
-				const Quatf rotation
-					= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z )
-							 * ( VTX_SETTING().getControllerElasticityActive() ? p_deltaTime : 0.2f ) );
-				_camera.rotateAround( rotation, _target, distance );
-				// float d = Util::Math::distance( _camera.getPosition(), _target );
+				// Quatf r = Util::Math::normalize( _camera().getRotation() * rotation );
+				//  Vec3f pos = _rotation * Vec3f( 0.0, 0.0, p_distance ) + p_target;
+
+				// float d = Util::Math::distance( _camera().getPosition(), _target );
 				// VTX_LOG_FILE( std::to_string( p_deltaTime ) + " / " + std::to_string( distance ) + " / "
 				//			  + std::to_string( d ) );
 				_needUpdate = false;
@@ -194,7 +224,18 @@ namespace VTX
 
 			_needUpdate = true;
 			_target		= VTXApp::get().getScene().getAABB().centroid();
-			_velocity	= VEC3F_ZERO;
+			_camera().setTarget( _target );
+			if ( !_camera().isPerspective() )
+				_cameraManager.getOrthographicCamera()->setZoom( 1.f );
+			_velocity = VEC3F_ZERO;
+		}
+
+		void Trackball::setTarget( const Vec3f & p_target )
+		{
+			_target = p_target;
+			_camera().setTarget( _target );
+			if ( !_camera().isPerspective() )
+				_cameraManager.getOrthographicCamera()->setZoom( 1.f );
 		}
 
 		void Trackball::_computeOrientPositions( const Object3D::Helper::AABB & p_aabb )
@@ -203,26 +244,26 @@ namespace VTX
 			_orientTargetPosition	= p_aabb.centroid();
 			_velocity				= VEC3F_ZERO;
 
-			_orientStartingRotation = _camera.getRotation();
-			_orientTargetRotation	= _camera.getRotation();
+			_orientStartingRotation = _camera().getRotation();
+			_orientTargetRotation	= _camera().getRotation();
 
-			_orientStartingDistance = Util::Math::distance( _camera.getPosition(), _target );
+			_orientStartingDistance = Util::Math::distance( _camera().getPosition(), _target );
 			_orientTargetDistance
 				= p_aabb.radius()
-				  / (float)( tan( Util::Math::radians( _camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
+				  / (float)( tan( Util::Math::radians( _camera().getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
 			_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
 						   || abs( _orientTargetDistance - _orientStartingDistance ) > ORIENT_THRESHOLD;
 		}
 
 		void Trackball::_computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation )
 		{
-			_orientStartingDistance = Util::Math::distance( _camera.getPosition(), _target );
+			_orientStartingDistance = Util::Math::distance( _camera().getPosition(), _target );
 			_orientTargetDistance	= Util::Math::distance( p_position, _target );
 
-			_orientStartingPosition = _camera.getPosition() + _camera.getFront() * _orientStartingDistance;
+			_orientStartingPosition = _camera().getPosition() + _camera().getFront() * _orientStartingDistance;
 			_orientTargetPosition	= _target;
 
-			_orientStartingRotation = _camera.getRotation();
+			_orientStartingRotation = _camera().getRotation();
 			_orientTargetRotation	= p_orientation;
 
 			_velocity	 = VEC3F_ZERO;
@@ -235,9 +276,15 @@ namespace VTX
 			_target = Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime );
 			float distance
 				= Util::Math::easeInOutInterpolation( _orientStartingDistance, _orientTargetDistance, p_deltaTime );
-			_camera.rotateAround( QUATF_ID, _target, distance );
+			_camera().rotateAround( QUATF_ID, _target, distance );
 
-			_camera.setRotation(
+			if ( !_camera().isPerspective() )
+			{
+				_cameraManager.getOrthographicCamera()->setZoom( 1.f );
+				_camera().setTarget( _target );
+			}
+
+			_camera().setRotation(
 				Util::Math::easeInOutInterpolation( _orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
 		}
 

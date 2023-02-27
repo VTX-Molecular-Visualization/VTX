@@ -7,6 +7,7 @@
 #include <QObject>
 // #include <QtGamepad/QGamepad>
 #include <set>
+#include "define.hpp"
 
 namespace VTX
 {

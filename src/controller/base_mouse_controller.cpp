@@ -2,10 +2,6 @@
 #include "ui/main_window.hpp"
 #include "ui/widget/render/opengl_widget.hpp"
 #include "vtx_app.hpp"
-#include <QCursor>
-#include <QPoint>
-#include <QRect>
-#include <QWidget>
 
 namespace VTX
 {
