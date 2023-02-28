@@ -372,6 +372,29 @@ namespace VTX::Action::Main
 	  private:
 	};
 
+	class ChangeSelectionGranularity : public BaseAction
+	{
+	  public:
+		explicit ChangeSelectionGranularity( const VTX::Selection::Granularity & p_granularity ) :
+			_granularity( p_granularity )
+		{
+		}
+
+		virtual void execute() override
+		{
+			State::Visualization * const state
+				= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+
+			if ( state->getCurrentPickerID() != ID::Controller::PICKER )
+				state->setPickerController( ID::Controller::PICKER );
+
+			VTX_SETTING().setSelectionGranularity( _granularity );
+		};
+
+	  private:
+		const VTX::Selection::Granularity _granularity;
+	};
+
 	class ChangePicker : public BaseAction
 	{
 	  public:

@@ -47,12 +47,18 @@ namespace VTX::UI::Widget::ContextualMenu
 			{
 				_refreshCameraProjection();
 			}
+
+			if ( castedEvent.ref.find( Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.ref.end() )
+			{
+				_refreshSelectionGranularityMenu();
+			}
 		}
 	}
 
-	void ContextualMenuRender::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
-	void ContextualMenuRender::_setupSlots()
+	void ContextualMenuRender::_setupUi( const QString & p_name )
 	{
+		BaseManualWidget::_setupUi( p_name );
+
 		addSection( "Loading" );
 		addAction( "Load Molecule", this, &ContextualMenuRender::_loadMoleculeAction );
 		addAction( "Download Molecule", this, &ContextualMenuRender::_downloadMoleculeAction );
@@ -60,10 +66,27 @@ namespace VTX::UI::Widget::ContextualMenu
 		addSection( "Mouse Mode" );
 		_selectionModeAction = addAction( "Selection", this, &ContextualMenuRender::_setPickerToSelection );
 		_selectionModeAction->setCheckable( true );
-		_measurementModeAction = addAction( "Measurement", this, &ContextualMenuRender::_setPickerToMeasurement );
+
+		_measurementModeMenu = new QMenu( this );
+		_measurementModeMenu->setTitle( "Measurement" );
+		_addMeasurementModeActionInMenu( int( Controller::MeasurementPicker::Mode::DISTANCE ), "Distance" );
+		//_addMeasurementModeActionInMenu( int( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE ),
+		//								 "Distance to cycle" );
+		_addMeasurementModeActionInMenu( int( Controller::MeasurementPicker::Mode::ANGLE ), "Angle" );
+		_addMeasurementModeActionInMenu( int( Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE ), "Dihedral angle" );
+		_measurementModeAction = addMenu( _measurementModeMenu );
 		_measurementModeAction->setCheckable( true );
 
-		addSection( "Camera" );
+		addSection( "Selection" );
+		_selectionGranularityMenu = new QMenu( this );
+		_selectionGranularityMenu->setTitle( "Selection target" );
+		_addSelectionGranularityActionInMenu( int( VTX::Selection::Granularity::ATOM ), "Atom" );
+		_addSelectionGranularityActionInMenu( int( VTX::Selection::Granularity::RESIDUE ), "Residue" );
+		_addSelectionGranularityActionInMenu( int( VTX::Selection::Granularity::CHAIN ), "Chain" );
+		_addSelectionGranularityActionInMenu( int( VTX::Selection::Granularity::MOLECULE ), "Molecule" );
+		addMenu( _selectionGranularityMenu );
+
+		addSection( "Render" );
 		_projectionMenu = new QMenu( "Projection", this );
 		Util::UI::fillMenu( *_projectionMenu,
 							int( Settings::VTXSettings::CameraProjection::COUNT ),
@@ -90,63 +113,43 @@ namespace VTX::UI::Widget::ContextualMenu
 		QAction * const openRenderEffectSettingsAction = new QAction( "Settings...", _renderSettingPreset );
 		openRenderEffectSettingsAction->setData( -1 );
 		_renderSettingPreset->addAction( openRenderEffectSettingsAction );
-
 		addMenu( _renderSettingPreset );
-
-		addAction( "Snapshot", this, &ContextualMenuRender::_takeSnapshotAction );
-		addAction( "Export Image...", this, &ContextualMenuRender::_exportImageAction );
 
 		addSection( "Actions" );
 		addAction( "Show All", this, &ContextualMenuRender::_showAllMoleculesAction );
 
-		addSection( "Selection" );
-		QMenu * const selectionGranularityMenu = new QMenu( this );
-		selectionGranularityMenu->setTitle( "Selection target" );
-		selectionGranularityMenu->addAction( "Atom" )->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME,
-																	int( VTX::Selection::Granularity::ATOM ) );
-		selectionGranularityMenu->addAction( "Residue" )
-			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::Selection::Granularity::RESIDUE ) );
-		selectionGranularityMenu->addAction( "Chain" )->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME,
-																	 int( VTX::Selection::Granularity::CHAIN ) );
-		selectionGranularityMenu->addAction( "Molecule" )
-			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::Selection::Granularity::MOLECULE ) );
-		connect(
-			selectionGranularityMenu, &QMenu::triggered, this, &ContextualMenuRender::_setSelectionGranularityAction );
-
-		addMenu( selectionGranularityMenu );
-
-		addSection( "Measurement" );
-		QMenu * const measurementModeMenu = new QMenu( this );
-		measurementModeMenu->setTitle( "Measurement" );
-		measurementModeMenu->addAction( "Distance" )
-			->setProperty( MEASUREMENT_MODE_PROPERTY_NAME, int( Controller::MeasurementPicker::Mode::DISTANCE ) );
-		// measurementModeMenu->addAction( "Distance to cycle" )
-		//	->setProperty( MEASUREMENT_MODE_PROPERTY_NAME,
-		//				   int( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE ) );
-		measurementModeMenu->addAction( "Angle" )->setProperty( MEASUREMENT_MODE_PROPERTY_NAME,
-																int( Controller::MeasurementPicker::Mode::ANGLE ) );
-		measurementModeMenu->addAction( "Dihedral angle" )
-			->setProperty( MEASUREMENT_MODE_PROPERTY_NAME, int( Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE ) );
-		connect( measurementModeMenu, &QMenu::triggered, this, &ContextualMenuRender::_setMeasurementMode );
-
-		addMenu( measurementModeMenu );
-
-		connect( _backgroundColorMenu,
-				 QOverload<QAction *>::of( &QMenu::triggered ),
-				 this,
-				 &ContextualMenuRender::_setBackgroundColorAction );
-		connect( _projectionMenu,
-				 QOverload<QAction *>::of( &QMenu::triggered ),
-				 this,
-				 &ContextualMenuRender::_changeProjectionAction );
-		connect( _renderSettingPreset,
-				 QOverload<QAction *>::of( &QMenu::triggered ),
-				 this,
-				 &ContextualMenuRender::_applyRenderEffectPresetAction );
+		addSection( "Image" );
+		addAction( "Snapshot", this, &ContextualMenuRender::_takeSnapshotAction );
+		addAction( "Export Image...", this, &ContextualMenuRender::_exportImageAction );
 
 		_refreshPickerMode();
+		_refreshSelectionGranularityMenu();
 		_refreshCameraProjection();
 		_refreshAppliedRenderSettingPreset();
+	}
+
+	void ContextualMenuRender::_addSelectionGranularityActionInMenu( const int		 p_granularity,
+																	 const QString & p_name ) const
+	{
+		QAction * const action = _selectionGranularityMenu->addAction( p_name );
+		action->setCheckable( true );
+		action->setData( p_granularity );
+	}
+	void ContextualMenuRender::_addMeasurementModeActionInMenu( const int p_mode, const QString & p_name ) const
+	{
+		QAction * const action = _measurementModeMenu->addAction( p_name );
+		action->setCheckable( true );
+		action->setData( p_mode );
+	}
+
+	void ContextualMenuRender::_setupSlots()
+	{
+		connect( _backgroundColorMenu, &QMenu::triggered, this, &ContextualMenuRender::_setBackgroundColorAction );
+		connect( _projectionMenu, &QMenu::triggered, this, &ContextualMenuRender::_changeProjectionAction );
+		connect( _renderSettingPreset, &QMenu::triggered, this, &ContextualMenuRender::_applyRenderEffectPresetAction );
+		connect(
+			_selectionGranularityMenu, &QMenu::triggered, this, &ContextualMenuRender::_setSelectionGranularityAction );
+		connect( _measurementModeMenu, &QMenu::triggered, this, &ContextualMenuRender::_setMeasurementMode );
 	}
 
 	void ContextualMenuRender::localize() {}
@@ -160,6 +163,41 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		_selectionModeAction->setChecked( pickerID == ID::Controller::PICKER );
 		_measurementModeAction->setChecked( pickerID == ID::Controller::MEASUREMENT );
+
+		_refreshMeasurementModeMenu();
+	}
+
+	void ContextualMenuRender::_refreshSelectionGranularityMenu() const
+	{
+		const State::Visualization * const state
+			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+		const VTX::Selection::Granularity currentGranularity = VTX_SETTING().getSelectionGranularity();
+
+		for ( QAction * const action : _selectionGranularityMenu->actions() )
+		{
+			const VTX::Selection::Granularity granularity = VTX::Selection::Granularity( action->data().toInt() );
+			action->setChecked( currentGranularity == granularity );
+		}
+	}
+	void ContextualMenuRender::_refreshMeasurementModeMenu() const
+	{
+		const State::Visualization * const state
+			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+
+		const ID::VTX_ID & pickerID = state->getCurrentPickerID();
+
+		const Controller::MeasurementPicker::Mode & currentMode
+			= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )->getCurrentMode();
+
+		for ( QAction * const action : _measurementModeMenu->actions() )
+		{
+			const Controller::MeasurementPicker::Mode mode
+				= Controller::MeasurementPicker::Mode( action->data().toInt() );
+
+			const bool checked = pickerID == ID::Controller::MEASUREMENT && currentMode == mode;
+
+			action->setChecked( checked );
+		}
 	}
 
 	void ContextualMenuRender::_refreshCameraProjection() const
@@ -185,24 +223,25 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuRender::_setPickerToSelection() const
 	{
-		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::PICKER ) );
-	}
-	void ContextualMenuRender::_setPickerToMeasurement() const
-	{
-		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT ) );
+		const State::Visualization * const state
+			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+
+		if ( state->getCurrentPickerID() != ID::Controller::PICKER )
+			VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::PICKER ) );
+		else
+			_refreshPickerMode();
 	}
 
 	void ContextualMenuRender::_setSelectionGranularityAction( QAction * p_action ) const
 	{
-		const VTX::Selection::Granularity granularity
-			= VTX::Selection::Granularity( p_action->property( SELECTION_GRANULARITY_PROPERTY_NAME ).toInt() );
-		VTX_ACTION( new Action::Setting::ChangeSelectionGranularity( granularity ) );
+		const VTX::Selection::Granularity granularity = VTX::Selection::Granularity( p_action->data().toInt() );
+		VTX_ACTION( new Action::Main::ChangeSelectionGranularity( granularity ) );
 	}
 
 	void ContextualMenuRender::_setMeasurementMode( QAction * p_action ) const
 	{
 		const Controller::MeasurementPicker::Mode mode
-			= Controller::MeasurementPicker::Mode( p_action->property( MEASUREMENT_MODE_PROPERTY_NAME ).toInt() );
+			= Controller::MeasurementPicker::Mode( p_action->data().toInt() );
 		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( mode ) ) );
 	}
 	void ContextualMenuRender::_changeProjectionAction( QAction * const p_action )
