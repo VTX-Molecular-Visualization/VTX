@@ -2,7 +2,6 @@
 #include "action/action_manager.hpp"
 #include "object3d/scene.hpp"
 #include "style.hpp"
-#include "object3d/perspective_camera.hpp"
 
 namespace VTX
 {
@@ -14,9 +13,9 @@ namespace VTX
 			if ( _mouseLeftPressed )
 			{
 				_camera().rotate( Vec3f( -VTX_SETTING().getRotationSpeed() * _deltaMousePosition.y
-										   * ( VTX_SETTING().getYAxisInverted() ? -1.f : 1.f ),
-									   -VTX_SETTING().getRotationSpeed() * _deltaMousePosition.x,
-									   0.f ) );
+											 * ( VTX_SETTING().getYAxisInverted() ? -1.f : 1.f ),
+										 -VTX_SETTING().getRotationSpeed() * _deltaMousePosition.x,
+										 0.f ) );
 			}
 			if ( _mouseRightPressed )
 			{
@@ -73,10 +72,7 @@ namespace VTX
 				translation /= VTX_SETTING().getDecelerationSpeedFactor();
 			}
 
-			if ( _camera().isPerspective() )
-				_cameraManager.getPerspectiveCamera()->move( translation );
-			else
-				VTX_DEBUG( "Freefly camera unavailable for orthographic camera!" ); // TODO : Disable button if in ortho !
+			_cameraManager.getCamera()->move( translation );
 		}
 
 		void Freefly::_computeOrientPositions( const Object3D::Helper::AABB & p_aabb )

@@ -8,6 +8,14 @@ namespace VTX
 {
 	namespace Object3D
 	{
+		enum class CameraProjection
+		{
+			PERSPECTIVE,
+			ORTHOGRAPHIC,
+
+			COUNT
+		};
+
 		class Camera
 		{
 		  public:
@@ -33,7 +41,10 @@ namespace VTX
 
 			inline const Vec3f & getTarget() const { return _target; }
 
-			virtual const bool isPerspective() const = 0;
+			inline const CameraProjection & getProjection() { return _projection; }
+			void							setCameraProjection( const CameraProjection & p_projection );
+
+			const bool isPerspective() const { return _projection == CameraProjection::PERSPECTIVE; }
 
 			inline void setScreenSize( const uint p_width, const uint p_height )
 			{
@@ -73,16 +84,22 @@ namespace VTX
 			void setFar( const float p_far );
 			void setFov( const float p_fov );
 
-			virtual void setTarget( const Vec3f & p_target );
+			virtual void move( const Vec3f & );
+			virtual void moveFront( const float );
+			virtual void moveRight( const float );
+			virtual void moveUp( const float );
+
+			virtual void  setTarget( const Vec3f & p_target );
+			virtual float getDistanceToTarget() const;
 
 			void rotate( const Vec3f & );
 			void rotatePitch( const float );
 			void rotateYaw( const float );
 			void rotateRoll( const float );
 
-			void setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance );
-			void rotateAround( const Quatf &, const Vec3f &, const float );
-			void lookAt( const Vec3f &, const Vec3f & );
+			void		 setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance );
+			virtual void rotateAround( const Quatf &, const Vec3f &, const float );
+			void		 lookAt( const Vec3f &, const Vec3f & );
 
 			void reset( const Vec3f & p_defaultPosition = VEC3F_ZERO );
 
@@ -103,14 +120,19 @@ namespace VTX
 			Vec3f _right = CAMERA_RIGHT_DEFAULT;
 			Vec3f _up	 = CAMERA_UP_DEFAULT;
 
-			Vec3f _target = VEC3F_ZERO;
+			Vec3f			 _target	 = VEC3F_ZERO;
+			CameraProjection _projection = CameraProjection::PERSPECTIVE;
 
 			Mat4f _viewMatrix;
 			Mat4f _projectionMatrix;
 
 			void		 _updateRotation();
-			virtual void _updateViewMatrix()	   = 0;
-			virtual void _updateProjectionMatrix() = 0;
+			virtual void _updateViewMatrix();
+
+			void _updateProjectionMatrix();
+			void _computePerspectiveProjectionMatrix();
+			void _computeOrthographicProjectionMatrix();
+
 		}; // namespace Camera
 	}	   // namespace Object3D
 } // namespace VTX

@@ -11,6 +11,11 @@ namespace VTX
 			_near( Util::Math::max( 1e-1f, VTX_SETTING().getCameraNearClip() ) ), // Avoid to little value.
 			_far( Util::Math::max( _near, VTX_SETTING().getCameraFarClip() ) ), _fov( VTX_SETTING().getCameraFOV() )
 		{
+			_updateRotation();
+
+			const CameraProjection & cameraProjection
+				= VTX_SETTING().getCameraPerspective() ? CameraProjection::PERSPECTIVE : CameraProjection::ORTHOGRAPHIC;
+			setCameraProjection( cameraProjection );
 		}
 
 		void Camera::setFrontRightUp( const Vec3f & p_front, const Vec3f & p_right, const Vec3f & p_up )
@@ -40,7 +45,34 @@ namespace VTX
 			_updateProjectionMatrix();
 		}
 
-		void Camera::setTarget( const Vec3f & p_target ) { _target = p_target; }
+		void Camera::move( const Vec3f & p_delta )
+		{
+			_position += _right * p_delta.x;
+			_position += _up * p_delta.y;
+			_position += _front * p_delta.z;
+			_updateViewMatrix();
+		}
+
+		void Camera::moveFront( const float p_delta )
+		{
+			_position += _front * p_delta;
+			_updateViewMatrix();
+		}
+
+		void Camera::moveRight( const float p_delta )
+		{
+			_position += _right * p_delta;
+			_updateViewMatrix();
+		}
+
+		void Camera::moveUp( const float p_delta )
+		{
+			_position += _up * p_delta;
+			_updateViewMatrix();
+		}
+
+		void  Camera::setTarget( const Vec3f & p_target ) { _target = p_target; }
+		float Camera::getDistanceToTarget() const { return Util::Math::distance( getPosition(), _target ); }
 
 		void Camera::rotate( const Vec3f & p_delta )
 		{
@@ -103,6 +135,54 @@ namespace VTX
 			_updateViewMatrix();
 		}
 
+		void Camera::setCameraProjection( const CameraProjection & p_projection )
+		{
+			_projection = p_projection;
+
+			_updateViewMatrix();
+			_updateProjectionMatrix();
+		}
+
+		void Camera::_updateViewMatrix()
+		{
+			_viewMatrix = Util::Math::lookAt( _position, _position + _front, _up );
+
+			if ( _projection == CameraProjection::ORTHOGRAPHIC )
+				_updateProjectionMatrix();
+
+			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
+		}
+
+		void Camera::_updateProjectionMatrix()
+		{
+			switch ( _projection )
+			{
+			case CameraProjection::PERSPECTIVE: _computePerspectiveProjectionMatrix(); break;
+			case CameraProjection::ORTHOGRAPHIC: _computeOrthographicProjectionMatrix(); break;
+			default:
+				VTX_WARNING( "Unknown camera projection. Projection computed as Perspective." );
+				_computePerspectiveProjectionMatrix();
+				break;
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
+		}
+
+		void Camera::_computePerspectiveProjectionMatrix()
+		{
+			_projectionMatrix = Util::Math::perspective( Util::Math::radians( _fov ), _aspectRatio, _near, _far );
+		}
+		void Camera::_computeOrthographicProjectionMatrix()
+		{
+			float top = tanf( Util::Math::radians( _fov ) * 0.5f ) * Util::Math::distance( _target, _position );
+
+			float bottom = -top;
+			float right	 = top * _aspectRatio;
+			float left	 = -top * _aspectRatio;
+
+			_projectionMatrix = Util::Math::ortho( left, right, bottom, top, _near, _far );
+		}
+
 		void Camera::print() const
 		{
 			VTX_INFO( "Position: " + Util::Math::to_string( _position ) );
@@ -110,6 +190,8 @@ namespace VTX
 			VTX_INFO( "Front: " + Util::Math::to_string( _front ) );
 			VTX_INFO( "Right: " + Util::Math::to_string( _right ) );
 			VTX_INFO( "Up: " + Util::Math::to_string( _up ) );
+
+			VTX_INFO( "Projection: " + std::to_string( int( _projection ) ) );
 		}
 
 	} // namespace Object3D

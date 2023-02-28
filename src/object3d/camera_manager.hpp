@@ -6,8 +6,6 @@ namespace VTX
 	namespace Object3D
 	{
 		class Camera;
-		class PerspectiveCamera;
-		class OrthographicCamera;
 
 		class CameraManager
 		{
@@ -15,23 +13,15 @@ namespace VTX
 			CameraManager();
 			~CameraManager();
 
-			bool						isPerspective() const;
-			inline Camera *				getCamera() const { return _currentCamera; }
-			inline PerspectiveCamera *	getPerspectiveCamera() const { return _perspectiveCamera; }
-			inline OrthographicCamera * getOrthographicCamera() const { return _orthographicCamera; }
-
-			Camera * getCameraCopy();
+			inline Camera * getCamera() const { return _currentCamera; }
 
 			void setPerspectiveCamera( const bool p_perspective );
 			void toggle();
 
-			void setCamera( Camera * p_camera );
 			void refresh();
 
 		  private:
-			Camera *			 _currentCamera;
-			PerspectiveCamera *	 _perspectiveCamera;
-			OrthographicCamera * _orthographicCamera;
+			Camera * _currentCamera;
 
 		}; // namespace OrthographicCamera
 	}	   // namespace Object3D

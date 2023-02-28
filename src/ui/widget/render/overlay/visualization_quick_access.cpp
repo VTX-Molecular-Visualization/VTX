@@ -202,11 +202,10 @@ namespace VTX::UI::Widget::Render::Overlay
 	}
 	void VisualizationQuickAccess::_changeCameraControllerAction( const QAction * const p_action )
 	{
-		const int controllerID = p_action->property( CAMERA_CONTROLLER_PROPERTY_NAME ).toInt();
-		VTXApp::get()
-			.getStateMachine()
-			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->setCameraController( CAMERA_CONTROLLERS[ controllerID ].data );
+		const int		   controllerIndex = p_action->property( CAMERA_CONTROLLER_PROPERTY_NAME ).toInt();
+		const ID::VTX_ID & controllerID	   = CAMERA_CONTROLLERS[ controllerIndex ].data;
+
+		VTX_ACTION( new Action::Main::ChangeCameraController( controllerID ) );
 	}
 
 	void VisualizationQuickAccess::_changePickerControllerAction( const QAction * const p_action )
