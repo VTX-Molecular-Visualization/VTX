@@ -29,16 +29,9 @@ namespace VTX
 			return _category->getMoleculePtr()->getTransform();
 		}
 
-		void SolventExcludedSurface::_init()
-		{
-			// Refresh all.
-			refresh();
-		}
-
 		// TODO
 		// - Decompose in multiple iterations to handle larger buffers.
-		// - Smooth normals on GPU.
-		void SolventExcludedSurface::refresh()
+		void SolventExcludedSurface::_init()
 		{
 			if ( _category->isEmpty() )
 			{
@@ -363,22 +356,17 @@ namespace VTX
 			Buffer & bufferIds			= _buffer->getBufferIds();
 			Buffer & bufferSelections	= _buffer->getBufferSelections();
 
-			if ( _isInit == false )
-			{
-				// Create final buffers.
-				bufferPositions.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
-				bufferNormals.set( std::vector<Vec4f>( _indiceCount, Vec4f() ), Buffer::Flags::MAP_WRITE_BIT );
-				bufferIndices.set( _indiceCount * sizeof( uint ),
-								   Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
-				bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
-				bufferVisibilities.set( std::vector<uint>( _indiceCount, 1 ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
-				bufferIds.set( _indiceCount * sizeof( uint ) );
-				bufferSelections.set( _indiceCount * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
-			}
+			// Create final buffers.
+			bufferPositions.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
+			bufferNormals.set( std::vector<Vec4f>( _indiceCount, Vec4f() ), Buffer::Flags::MAP_WRITE_BIT );
+			bufferIndices.set( _indiceCount * sizeof( uint ),
+							   Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
+			bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
+			bufferVisibilities.set( std::vector<uint>( _indiceCount, 1 ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
+			bufferIds.set( _indiceCount * sizeof( uint ) );
+			bufferSelections.set( _indiceCount * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 
 			// Input.
-			Buffer bufferAtomColors( _category->getMoleculePtr()->getBufferAtomColors() );
-			Buffer bufferAtomVisibilities( _category->getMoleculePtr()->getBufferAtomVisibilities() );
 			Buffer bufferAtomIds( _category->getMoleculePtr()->getBufferAtomIds() );
 			Buffer bufferAtomToTriangle( _atomsToTriangles );
 
@@ -410,6 +398,7 @@ namespace VTX
 			bufferPositionsTmp.unbind();
 			bufferAtomIndicesTmp.unbind();
 			bufferAtomToTriangle.unbind();
+			bufferAtomIds.unbind();
 			bufferTrianglesPerAtom.unbind();
 
 			chrono2.stop();

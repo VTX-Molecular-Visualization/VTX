@@ -29,7 +29,6 @@ namespace VTX
 			inline const std::vector<Range> &	 getAtomsToTriangles() const { return _atomsToTriangles; }
 			const Math::Transform &				 getTransform() const override;
 
-			void refresh();
 			void refreshColors();
 			void refreshVisibilities();
 			void refreshSelections();
