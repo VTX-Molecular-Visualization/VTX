@@ -228,7 +228,7 @@ namespace VTX
 			template<typename T>
 			inline std::string to_string_fmt( const T & p_value )
 			{
-				std::string glmString = to_string( p_value );
+				std::string glmString = glm::to_string( p_value );
 				for ( int i = 0; i < glmString.size(); i++ )
 				{
 					const char & currentChar = glmString[ i ];
