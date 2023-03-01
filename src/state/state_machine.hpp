@@ -25,7 +25,7 @@ namespace VTX
 			template<typename T, typename = std::enable_if<std::is_base_of<BaseState, T>::value>>
 			inline const T * const getState( const ID::VTX_ID & p_id ) const
 			{
-				return dynamic_cast<const T * const>( _states[ p_id ] );
+				return dynamic_cast<const T * const>( _states.at( p_id ) );
 			}
 
 			void goToState( const ID::VTX_ID &, void * const p_arg = nullptr );
