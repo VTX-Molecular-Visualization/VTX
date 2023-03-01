@@ -185,11 +185,11 @@ namespace VTX
 
 		void Camera::print() const
 		{
-			VTX_INFO( "Position: " + Util::Math::to_string( _position ) );
-			VTX_INFO( "Rotation: " + Util::Math::to_string( _rotation ) );
-			VTX_INFO( "Front: " + Util::Math::to_string( _front ) );
-			VTX_INFO( "Right: " + Util::Math::to_string( _right ) );
-			VTX_INFO( "Up: " + Util::Math::to_string( _up ) );
+			VTX_INFO( "Position: " + Util::Math::to_string_fmt( _position ) );
+			VTX_INFO( "Rotation: " + Util::Math::to_string_fmt( _rotation ) );
+			VTX_INFO( "Front: " + Util::Math::to_string_fmt( _front ) );
+			VTX_INFO( "Right: " + Util::Math::to_string_fmt( _right ) );
+			VTX_INFO( "Up: " + Util::Math::to_string_fmt( _up ) );
 
 			VTX_INFO( "Projection: " + std::to_string( int( _projection ) ) );
 		}

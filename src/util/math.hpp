@@ -225,6 +225,24 @@ namespace VTX
 				return glm::to_string( p_value );
 			}
 
+			template<typename T>
+			inline std::string to_string_fmt( const T & p_value )
+			{
+				std::string glmString = to_string( p_value );
+				for ( int i = 0; i < glmString.size(); i++ )
+				{
+					const char & currentChar = glmString[ i ];
+
+					if ( currentChar == '{' || currentChar == '}' )
+					{
+						glmString.insert( i, 1, currentChar );
+						i++;
+					}
+				}
+
+				return glmString;
+			}
+
 			template<int L, typename T>
 			inline T const * value_ptr( const glm::vec<L, T> & p_value )
 			{

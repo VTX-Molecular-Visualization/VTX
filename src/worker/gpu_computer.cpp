@@ -12,7 +12,7 @@ namespace VTX::Worker
 
 	void GpuComputer::start()
 	{
-		VTX_DEBUG( "Starting gpu work: {}", Util::Math::to_string( _size ) );
+		VTX_DEBUG( "Starting gpu work: {}", Util::Math::to_string_fmt( _size ) );
 
 		if ( _barrierPre )
 		{
