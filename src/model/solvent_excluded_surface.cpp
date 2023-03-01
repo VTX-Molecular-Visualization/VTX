@@ -361,7 +361,7 @@ namespace VTX
 			bufferNormals.set( std::vector<Vec4f>( _indiceCount, Vec4f() ), Buffer::Flags::MAP_WRITE_BIT );
 			bufferIndices.set( _indiceCount * sizeof( uint ),
 							   Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
-			bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
+			bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 			bufferVisibilities.set( std::vector<uint>( _indiceCount, 1 ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 			bufferIds.set( _indiceCount * sizeof( uint ) );
 			bufferSelections.set( _indiceCount * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
@@ -607,20 +607,22 @@ namespace VTX
 		// TODO: use a shader with molecule buffer as SSBO.
 		void SolventExcludedSurface::refreshColors()
 		{
-			Tool::Chrono chrono, chrono2;
+			Tool::Chrono chrono;
 			chrono.start();
 
 			using VTX::Renderer::GL::Buffer;
 			_buffer->makeContextCurrent();
 
 			// Map buffers.
-			const Buffer &		bufferIndices = _buffer->getBufferIndices();
-			const Buffer &		bufferColors  = _buffer->getBufferColors();
-			uint * const		ptrIndices	  = bufferIndices.map<uint>( Buffer::Access::READ_ONLY );
-			Color::Rgba * const ptrColors	  = bufferColors.map<Color::Rgba>( Buffer::Access::WRITE_ONLY );
+			const Buffer & bufferIndices = _buffer->getBufferIndices();
+			const Buffer & bufferColors	 = _buffer->getBufferColors();
+			uint * const   ptrIndices	 = bufferIndices.map<uint>( Buffer::Access::READ_ONLY );
+			// Color::Rgba * const ptrColors	  = bufferColors.map<Color::Rgba>( Buffer::Access::WRITE_ONLY );
 
 			// Apply color.
 			const std::vector<Color::Rgba> & bufferAtomColors = _category->getMoleculePtr()->getBufferAtomColors();
+			std::vector<Color::Rgba>		 colors( _indiceCount, Color::Rgba() );
+			std::vector<uint>				 counters( _indiceCount, 0 );
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
 				const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
@@ -632,13 +634,26 @@ namespace VTX
 				// Can be better
 				for ( uint i = 0; i < _atomsToTriangles[ atomIdx ].count; ++i )
 				{
-					ptrColors[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ] = bufferAtomColors[ atomIdx ];
+					// ptrColors[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ] = bufferAtomColors[ atomIdx ];
+					colors[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ] += bufferAtomColors[ atomIdx ];
+					counters[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ]++;
 				}
 			}
 
+			for ( uint i = 0; i < colors.size(); ++i )
+			{
+				if ( counters[ i ] > 0 )
+				{
+					colors[ i ] /= counters[ i ];
+				}
+			}
+
+			// Set data.
+			bufferColors.setSub( colors );
+
 			// Unmap.
 			bufferIndices.unmap();
-			bufferColors.unmap();
+			// bufferColors.unmap();
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			_buffer->doneContextCurrent();
 
@@ -649,7 +664,7 @@ namespace VTX
 		// TODO: use a shader with molecule buffer as SSBO.
 		void SolventExcludedSurface::refreshVisibilities()
 		{
-			Tool::Chrono chrono, chrono2;
+			Tool::Chrono chrono;
 			chrono.start();
 
 			using VTX::Renderer::GL::Buffer;
@@ -693,7 +708,7 @@ namespace VTX
 		// TODO: use a shader with molecule buffer as SSBO.
 		void SolventExcludedSurface::refreshSelections()
 		{
-			Tool::Chrono chrono, chrono2;
+			Tool::Chrono chrono;
 			chrono.start();
 
 			using VTX::Renderer::GL::Buffer;
