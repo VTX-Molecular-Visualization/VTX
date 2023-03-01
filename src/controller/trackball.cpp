@@ -15,7 +15,9 @@ namespace VTX
 			BaseController::setActive( p_active );
 			if ( p_active )
 			{
-				_target			= targetSimulationFromCamera( _camera() );
+				const Vec3f newTarget = targetSimulationFromCamera( _camera() );
+				setTarget( newTarget );
+
 				_distanceForced = 0.f;
 				_needUpdate		= true;
 			}
@@ -230,16 +232,14 @@ namespace VTX
 
 		void Trackball::_updateOrient( const float & p_deltaTime )
 		{
-			_target = Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime );
+			const Vec3f currentTarget
+				= Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime );
+			setTarget( currentTarget );
+
 			const float distance
 				= Util::Math::easeInOutInterpolation( _orientStartingDistance, _orientTargetDistance, p_deltaTime );
+
 			_camera().rotateAround( QUATF_ID, _target, distance );
-
-			if ( !_camera().isPerspective() )
-			{
-				_camera().setTarget( _target );
-			}
-
 			_camera().setRotation(
 				Util::Math::easeInOutInterpolation( _orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
 		}

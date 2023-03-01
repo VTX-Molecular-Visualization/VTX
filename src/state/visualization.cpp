@@ -117,6 +117,7 @@ namespace VTX
 		void Visualization::orientCameraController( const Object3D::Helper::AABB & p_aabb )
 		{
 			getController<VTX::Controller::BaseCameraController>( _cameraController )->orient( p_aabb );
+
 			// Override Trackball distance.
 			if ( _cameraController == ID::Controller::FREEFLY )
 			{
@@ -172,7 +173,7 @@ namespace VTX
 					const Event::VTXEventPtr<Model::Molecule> & castedEvent
 						= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
-					orientCameraController( castedEvent.ptr->getAABB() );
+					orientCameraController( castedEvent.ptr->getWorldAABB() );
 				}
 			}
 			else if ( p_event.name == Event::MESH_ADDED )

@@ -25,6 +25,10 @@ namespace VTX
 			public BaseKeyboardController,
 			public BaseGamepadController
 		{
+		  protected:
+			inline static const float ORIENT_DURATION  = 0.5f;
+			inline static const float ORIENT_THRESHOLD = 1e-4f;
+
 		  public:
 			explicit BaseCameraController( Object3D::CameraManager & p_cameraManager ) :
 				_cameraManager( p_cameraManager )
@@ -43,21 +47,10 @@ namespace VTX
 
 			virtual void reset() { _isOrienting = false; }
 
-			virtual void orient( const Object3D::Helper::AABB & p_aabb )
-			{
-				_orientTime = 0.f;
-				_computeOrientPositions( p_aabb );
-			}
-			virtual void orient( const Vec3f & p_position, const Quatf & p_orientation )
-			{
-				_orientTime = 0.f;
-				_computeOrientPositions( p_position, p_orientation );
-			}
+			virtual void orient( const Object3D::Helper::AABB & p_aabb );
+			virtual void orient( const Vec3f & p_position, const Quatf & p_orientation );
 
 		  protected:
-			const float ORIENT_DURATION	 = 0.5f;
-			const float ORIENT_THRESHOLD = 1e-4f;
-
 			Object3D::CameraManager & _cameraManager;
 
 			bool  _isOrienting			  = false;
