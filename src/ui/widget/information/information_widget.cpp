@@ -92,6 +92,7 @@ namespace VTX::UI::Widget::Information
 		libraryDesc->setText(
 			"<a href =\"https://chemfiles.org/\">Chemfiles</a> - "
 			"<a href =\"https://eigen.tuxfamily.org/\">Eigen</a> - "
+			"<a href =\"https://fmt.dev/latest/index.html\">fmt</a> - "
 			"<a href =\"https://www.opengl.org/sdk/libs/GLM/\">GLM</a> - "
 			"<a href =\"https://github.com/Neargye/magic_enum\">Magic enum</a> - "
 			"<a href =\"https://github.com/nlohmann/json\">nlohmann</a> - "
@@ -109,6 +110,7 @@ namespace VTX::UI::Widget::Information
 		iconAuthors->setFrameShadow( QFrame::Shadow::Sunken );
 		iconAuthors->setText(
 			"<a href = \"https://www.flaticon.com/authors/alfredo-hernandez\">alfredo-hernandez</a> - "
+			"<a href = \"https://www.flaticon.com/authors/Becris\">Becris</a> - "
 			"<a href = \"https://www.flaticon.com/authors/dinosoftlabs\">dinosoftlabs</a> - "
 			"<a href = \"https://www.flaticon.com/authors/freepik\">Freepik</a> - "
 			"<a href = \"https://www.flaticon.com/authors/good-ware\">good-ware</a> - "
@@ -118,6 +120,7 @@ namespace VTX::UI::Widget::Information
 			"<a href = \"https://www.flaticon.com/authors/mavadee\">mavadee</a> - "
 			"<a href = \"https://www.flaticon.com/authors/pixel-perfect\">pixel-perfect</a> - "
 			"<a href = \"https://www.flaticon.com/authors/roundicons\">roundicons</a> - "
+			"<a href = \"https://www.flaticon.com/authors/tanah-basah\">Tanah Basah</a> - "
 			"<a href = \"https://www.flaticon.com/authors/tempo-doloe\">tempo-doloe</a> - "
 			"<a href = \"https://www.flaticon.com/authors/vectors-market\">vectors-market</a>"
 			"" );
