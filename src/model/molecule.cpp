@@ -266,6 +266,8 @@ namespace VTX
 
 		void Molecule::_computeAABB() const
 		{
+			_aabb.invalidate();
+
 			for ( const Model::Atom * const atom : _atoms )
 			{
 				if ( atom == nullptr )
@@ -1144,7 +1146,7 @@ namespace VTX
 			_chains[ p_id ] = nullptr;
 			_realChainCount--;
 
-			_aabb.invalidate();
+			_invalidateAABB();
 
 			// Notify
 			if ( p_notifyViews )
@@ -1198,7 +1200,7 @@ namespace VTX
 			}
 			else
 			{
-				_aabb.invalidate();
+				_invalidateAABB();
 
 				// Notify
 				if ( p_notifyViews )
@@ -1292,7 +1294,7 @@ namespace VTX
 			}
 			else
 			{
-				_aabb.invalidate();
+				_invalidateAABB();
 
 				// Notify
 				if ( p_notifyViews )
