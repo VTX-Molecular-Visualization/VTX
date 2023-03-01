@@ -156,6 +156,7 @@ namespace VTX
 
 			inline const float &	   getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
 			inline const Color::Rgba & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
+			inline const uint getAtomVisibility( const uint p_idx ) const { return _bufferAtomVisibilities[ p_idx ]; }
 
 			inline const std::vector<UnknownResidueData *> & getUnknownResidueSymbols() const
 			{

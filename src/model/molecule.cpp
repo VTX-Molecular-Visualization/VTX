@@ -533,7 +533,7 @@ namespace VTX
 			}
 			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
 			{
-				val->refreshSelection( p_selection );
+				val->refreshSelections();
 			}
 		}
 
@@ -554,11 +554,7 @@ namespace VTX
 			if ( _secondaryStructure != nullptr )
 				_secondaryStructure->refresh();
 
-			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
-			{
-				val->refresh();
-			}
-
+			refreshSolventExcludedSurfaces();
 			refreshRepresentationTargets();
 
 			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_FRAME_CHANGE ) );
@@ -929,7 +925,6 @@ namespace VTX
 		void Molecule::createSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum )
 		{
 			assert( hasSolventExcludedSurface( p_categoryEnum ) == false );
-
 			assert( getCategory( p_categoryEnum ).isEmpty() == false );
 
 			SolventExcludedSurface * const ses
@@ -943,14 +938,23 @@ namespace VTX
 		{
 			assert( hasSolventExcludedSurface( p_categoryEnum ) );
 
-			_solventExcludedSurfaces[ p_categoryEnum ]->refresh();
+			MVC::MvcManager::get().deleteModel( _solventExcludedSurfaces[ p_categoryEnum ] );
+			_solventExcludedSurfaces.erase( p_categoryEnum );
+			createSolventExcludedSurface( p_categoryEnum );
 		}
 
 		void Molecule::refreshSolventExcludedSurfaces()
 		{
-			for ( const auto & [ key, val ] : _solventExcludedSurfaces )
+			for ( auto & [ categoryEnum, sesCurrent ] : _solventExcludedSurfaces )
 			{
-				val->refresh();
+				MVC::MvcManager::get().deleteModel( sesCurrent );
+
+				SolventExcludedSurface * const ses
+					= MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Category>(
+						&getCategory( categoryEnum ) );
+
+				sesCurrent = ses;
+				sesCurrent->init();
 			}
 		}
 

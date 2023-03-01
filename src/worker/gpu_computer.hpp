@@ -18,11 +18,9 @@ namespace VTX::Worker
 	{
 	  public:
 		explicit GpuComputer( const IO::FilePath & p_shader,
-							  const Vec3i &		   p_size	 = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ),
-							  const GLbitfield	   p_barrier = 0,
-							  const bool		   p_force	 = false ) :
-			_size( p_size ),
-			_barrierPost( p_barrier ), _force( p_force )
+							  const Vec3i &		   p_size = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ) ) :
+			_size( p_size )
+
 		{
 			const std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
 												+ "#define LOCAL_SIZE_Y " + std::to_string( LOCAL_SIZE_Y ) + "\n"
@@ -34,20 +32,14 @@ namespace VTX::Worker
 		virtual ~GpuComputer() = default;
 
 		inline Renderer::GL::Program & getProgram() { return *_program; }
-		inline void					   setBarrierPost( const GLbitfield p_barrier ) { _barrierPost = p_barrier; }
-		inline void					   setBarrierPre( const GLbitfield p_barrier ) { _barrierPre = p_barrier; }
-		inline void					   setForce( const bool p_force ) { _force = p_force; }
 
 		void start();
-		void start( const Vec3i &, const GLbitfield = 0 );
-		void start( const size_t, const GLbitfield = 0 );
+		void start( const Vec3i & );
+		void start( const size_t );
 
 	  protected:
 		Renderer::GL::Program * _program;
 		Vec3i					_size;
-		GLbitfield				_barrierPre	 = 0;
-		GLbitfield				_barrierPost = 0;
-		bool					_force;
 
 		virtual void _run() override;
 

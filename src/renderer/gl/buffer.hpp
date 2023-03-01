@@ -101,20 +101,29 @@ namespace VTX::Renderer::GL
 			assert( _gl->glIsBuffer( _id ) );
 		}
 
-		inline void destroy() const
+		inline void destroy()
 		{
-			if ( _id != GL_INVALID_VALUE )
+			// FIXME
+			// assert( _gl->glIsBuffer( _id ) );
+			if ( _gl->glIsBuffer( _id ) )
 			{
+				assert( _target == Target::NONE );
+
 				_gl->glDeleteBuffers( 1, &_id );
+
+				_id = GL_INVALID_INDEX;
 			}
 		}
 
 		inline GLuint getId() const { return _id; }
 
-		inline void bind( const Target & p_target ) const
+		inline void bind( const Target & p_target )
 		{
 			assert( _gl->glIsBuffer( _id ) );
+			assert( _target == Target::NONE );
+			assert( p_target != Target::NONE );
 
+			_target = p_target;
 			_gl->glBindBuffer( GLenum( p_target ), _id );
 		}
 
@@ -186,7 +195,7 @@ namespace VTX::Renderer::GL
 		}
 
 		template<typename T>
-		inline void const getData( std::vector<T> & p_vector )
+		inline void const getData( std::vector<T> & p_vector ) const
 		{
 			assert( _gl->glIsBuffer( _id ) );
 
@@ -194,7 +203,7 @@ namespace VTX::Renderer::GL
 		}
 
 		template<typename T>
-		inline void const getData( const uint p_offset, const size_t p_length, T * const p_data )
+		inline void const getData( const uint p_offset, const size_t p_length, T * const p_data ) const
 		{
 			assert( _gl->glIsBuffer( _id ) );
 

@@ -29,38 +29,26 @@ namespace VTX
 			inline const std::vector<Range> &	 getAtomsToTriangles() const { return _atomsToTriangles; }
 			const Math::Transform &				 getTransform() const override;
 
-			void refresh();
 			void refreshColors();
 			void refreshVisibilities();
-			void refreshSelection( const Model::Selection::MapChainIds * const p_selection = nullptr );
+			void refreshSelections();
 
 		  protected:
 			void _init() override;
 			void _instantiate3DViews() override;
 
 		  private:
-			enum class Mode
-			{
-				CPU,
-				GPU
-			};
-
 			struct SESGridData
 			{
 				float sdf;
 				int	  nearestAtom;
 			};
 
-			Mode						  _mode = Mode::GPU;
 			const Model::Category * const _category;
 
 			std::vector<Range> _atomsToTriangles;
 			// Move to base class?
 			uint _indiceCount = 0;
-
-			void _refreshCPU();
-
-			void _refreshGPU();
 
 			SolventExcludedSurface( const Category * const );
 			~SolventExcludedSurface() = default;
