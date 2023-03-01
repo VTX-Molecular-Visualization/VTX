@@ -12,6 +12,8 @@
 #include "view/d3/triangle.hpp"
 #include "worker/gpu_computer.hpp"
 
+#define VOXEL_SIZE 0.4f
+
 #define VTX_SES_NORMALS_GPU 1
 
 namespace VTX
@@ -51,7 +53,7 @@ namespace VTX
 			// Sort atoms in acceleration grid.
 			const float maxVdWRadius = *std::max_element(
 				Atom::SYMBOL_VDW_RADIUS, Atom::SYMBOL_VDW_RADIUS + std::size( Atom::SYMBOL_VDW_RADIUS ) );
-			const Object3D::Helper::AABB & molAABB = _category->getMoleculePtr()->getAABB();
+			const Object3D::Helper::AABB & molAABB = _category->getAABB();
 
 			const float atomGridCellSize = PROBE_RADIUS + maxVdWRadius;
 			const Vec3f gridMin			 = molAABB.getMin() - atomGridCellSize;
@@ -70,7 +72,7 @@ namespace VTX
 
 			// Store atom indices in acceleration grid.
 			std::vector<Vec4f> atomPositionsVdW = std::vector<Vec4f>( atomPositions.size() );
-			for ( uint idx : atomsIdx )
+			for ( const uint idx : atomsIdx )
 			{
 				const uint hash = gridAtoms.gridHash( atomPositions[ idx ] );
 
