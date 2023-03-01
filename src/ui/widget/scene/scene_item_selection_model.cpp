@@ -1,7 +1,10 @@
 #include "scene_item_selection_model.hpp"
 #include "action/action_manager.hpp"
 #include "action/selection.hpp"
+#include "model/category.hpp"
+#include "model/molecule.hpp"
 #include "model/path.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/scene/scene_item_widget.hpp"
@@ -188,7 +191,21 @@ namespace VTX::UI::Widget::Scene
 			for ( const QModelIndex & modelIndex : modelRange.indexes() )
 			{
 				const Model::ID & modelId = modelIndex.data( Qt::UserRole ).value<VTX::Model::ID>();
-				p_vectorId.emplace_back( modelId );
+
+				if ( MVC::MvcManager::get().getModelTypeID( modelId ) == ID::Model::MODEL_CATEGORY )
+				{
+					const Model::Category & category = MVC::MvcManager::get().getModel<Model::Category>( modelId );
+					const Model::Molecule * const molecule = category.getMoleculePtr();
+
+					for ( const uint chainIndex : category.getChains() )
+					{
+						p_vectorId.emplace_back( molecule->getChain( chainIndex )->getId() );
+					}
+				}
+				else
+				{
+					p_vectorId.emplace_back( modelId );
+				}
 			}
 		}
 	}
