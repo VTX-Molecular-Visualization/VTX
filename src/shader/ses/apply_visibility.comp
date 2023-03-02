@@ -23,9 +23,9 @@ struct Range
 };
 
 // SSBO.
-layout (std140, binding = 0) readonly buffer Colors
+layout (std430, binding = 0) buffer Visibilities
 {
-	vec4[] colors;
+	uint[] visibilities;
 };
 
 layout (std430, binding = 1) readonly buffer Indices
@@ -33,24 +33,14 @@ layout (std430, binding = 1) readonly buffer Indices
 	uint[] indices;
 };
 
-layout (std140, binding = 2) readonly buffer AtomColors
+layout (std430, binding = 2) readonly buffer AtomVisibilities
 {
-	vec4[] atomColors;
+	uint[] atomVisibilities;
 };
 
 layout (std430, binding = 3) readonly buffer AtomsToTriangles
 {
 	Range[] atomsToTriangles;
-};
-
-layout (std430, binding = 4) buffer Counters
-{
-	uint[] counters;
-};
-
-layout (std140, binding = 5) buffer ColorsUint
-{
-	uvec4[] colorsUint;
 };
 
 void main()
@@ -64,10 +54,6 @@ void main()
 
 	for ( uint i = 0; i < atomsToTriangles[ hash ].count; ++i )
 	{
-		atomicAdd( colorsUint[ indices[ atomsToTriangles[ hash ].first + i ] ].x, uint( atomColors[ hash ].x * 255 ) );
-		atomicAdd( colorsUint[ indices[ atomsToTriangles[ hash ].first + i ] ].y, uint( atomColors[ hash ].y * 255 ) );
-		atomicAdd( colorsUint[ indices[ atomsToTriangles[ hash ].first + i ] ].z, uint( atomColors[ hash ].z * 255 ) );
-
-		atomicAdd( counters[ indices[ atomsToTriangles[ hash ].first + i ] ], 1 );
+		atomicOr( visibilities[ indices[ atomsToTriangles[ hash ].first + i ] ], atomVisibilities[ hash ] );
 	}
 }

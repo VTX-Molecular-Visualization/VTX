@@ -49,8 +49,6 @@ namespace VTX::Renderer::GL
 												   const std::vector<IO::FilePath> & p_shaders,
 												   const std::string &				 p_toInject )
 	{
-		VTX_DEBUG( "Creating program: " + p_name );
-
 		if ( _programs.find( p_name ) == _programs.end() )
 		{
 			_programs[ p_name ] = new Program( p_shaders, p_toInject );
@@ -69,10 +67,6 @@ namespace VTX::Renderer::GL
 			program.link();
 
 			VTX_DEBUG( "Program " + std::to_string( _programs[ p_name ]->getId() ) + " created: " + p_name );
-		}
-		else
-		{
-			VTX_DEBUG( "Program " + p_name + " already exists" );
 		}
 
 		return _programs[ p_name ];
@@ -170,10 +164,6 @@ namespace VTX::Renderer::GL
 			}
 			_shaders.emplace( name, shaderId );
 			VTX_DEBUG( "Shader created: " + name );
-		}
-		else
-		{
-			VTX_DEBUG( "Shader already exists" );
 		}
 
 		return shaderId;

@@ -25,7 +25,7 @@ namespace VTX::Worker
 		const size_t		   _bufferSize;
 		Renderer::GL::Buffer & _buffer;
 
-		void _setUniforms() override { _program->setUInt( "uSize", _bufferSize ); }
+		void _setUniforms() override { _program->setUInt( "uSize", uint( _bufferSize ) ); }
 	};
 } // namespace VTX::Worker
 
