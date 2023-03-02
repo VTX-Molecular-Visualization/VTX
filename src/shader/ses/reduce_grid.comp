@@ -105,4 +105,8 @@ void main()
 		cellValidities[ sesGridHash ] = 1;
 		cellHashs[ sesGridHash ] = sesGridHash;
 	}
+	else
+	{
+		cellValidities[ sesGridHash ] = 0;
+	}
 }

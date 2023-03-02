@@ -80,7 +80,7 @@ void main()
 		return;
 	}
 	
-	if( triangleValidities[ hash ] == 0 )
+	if( triangleValidities[ hash ] == triangleValidities[ hash + 1 ] )
 	{
 		return;
 	}

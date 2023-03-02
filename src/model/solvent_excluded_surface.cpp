@@ -2,6 +2,7 @@
 #include "atom.hpp"
 #include "category.hpp"
 #include "chain.hpp"
+#include "custom/iterator.hpp"
 #include "math/marching_cube.hpp"
 #include "molecule.hpp"
 #include "object3d/helper/aabb.hpp"
@@ -193,10 +194,11 @@ namespace VTX
 			////////////////////////////
 			// Worker: reduce grid.
 			Worker::GpuComputer workerReduceGrid( IO::FilePath( "ses/reduce_grid.comp" ) );
+			size_t				bufferSize = gridSES.getCellCount();
 
-			std::vector<uint> cellValidities( gridSES.getCellCount(), 0 );
-			Buffer			  bufferCellValidities( cellValidities );
-			Buffer			  bufferCellHashs( gridSES.getCellCount() * sizeof( uint ) );
+			Buffer bufferCellValidities( bufferSize * sizeof( uint ),
+										 Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
+			Buffer bufferCellHashs( bufferSize * sizeof( uint ) );
 
 			// Bind.
 			bufferSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
@@ -213,8 +215,6 @@ namespace VTX
 			workerReduceGrid.start( gridSES.getCellCount() );
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-			bufferCellValidities.getData( cellValidities );
-
 			bufferSesGridData.unbind();
 			bufferCellValidities.unbind();
 			bufferCellHashs.unbind();
@@ -226,21 +226,28 @@ namespace VTX
 			////////////////////////////
 			// Worker: grid compaction.
 			Worker::GpuComputer workerGridCompaction( IO::FilePath( "ses/grid_compaction.comp" ) );
-			size_t				bufferSize = gridSES.getCellCount();
+
 			VTX_DEBUG( "Grid buffer size before compaction: {}", bufferSize );
-			std::exclusive_scan( cellValidities.begin(), cellValidities.end(), cellValidities.begin(), 0 );
-			size_t bufferSizeReduced = *( cellValidities.end() - 1 );
+
+			// Exclusive scan with std.
+			uint * cellValiditiesPtr = bufferCellValidities.map<uint>( Buffer::Access::READ_ONLY );
+
+			Custom::Iterator itBeginRead( cellValiditiesPtr );
+			Custom::Iterator itEndRead( cellValiditiesPtr + bufferSize );
+
+			std::exclusive_scan( itBeginRead, itEndRead, itBeginRead, 0 );
+			size_t bufferSizeReduced = cellValiditiesPtr[ bufferSize - 1 ];
+
+			bufferCellValidities.unmap();
 
 			VTX_DEBUG( "Grid buffer size after compaction: {}", bufferSizeReduced );
 
-			Buffer bufferCellValiditiesSum( cellValidities );
 			Buffer bufferCellHashsReduced( bufferSizeReduced * sizeof( uint ) );
 
 			// Bind.
 			bufferCellValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
-			bufferCellValiditiesSum.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
-			bufferCellHashs.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
-			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferCellHashs.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
 
 			workerGridCompaction.getProgram().use();
 			workerGridCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
@@ -253,7 +260,6 @@ namespace VTX
 
 			// Unbind.
 			bufferCellValidities.unbind();
-			bufferCellValiditiesSum.unbind();
 			bufferCellHashs.unbind();
 			bufferCellHashsReduced.unbind();
 
@@ -269,10 +275,11 @@ namespace VTX
 			// Output.
 			// 5 triangles max per cell.
 			bufferSize = bufferSizeReduced * 5 * 3;
-			Buffer			  bufferPositionsTmp( bufferSize * sizeof( Vec4f ) );
-			Buffer			  bufferAtomIndicesTmp( bufferSize * sizeof( uint ) );
-			std::vector<uint> triangleValidities( bufferSize, 0 );
-			Buffer			  bufferTriangleValidities( triangleValidities );
+			Buffer bufferPositionsTmp( bufferSize * sizeof( Vec4f ) );
+			Buffer bufferAtomIndicesTmp( bufferSize * sizeof( uint ) );
+			Buffer bufferTriangleValidities(
+				bufferSize * sizeof( uint ),
+				Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
 			std::vector<uint> trianglesPerAtom( atomPositions.size(), 0 );
 			Buffer			  bufferTrianglesPerAtom( trianglesPerAtom );
 			// Input.
@@ -300,7 +307,6 @@ namespace VTX
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Get validities for next step.
-			bufferTriangleValidities.getData( triangleValidities );
 			bufferTrianglesPerAtom.getData( trianglesPerAtom );
 
 			// Unbind.
@@ -320,11 +326,19 @@ namespace VTX
 			// Worker: buffer compaction.
 			Worker::GpuComputer workerBufferCompaction( IO::FilePath( "ses/buffer_compaction.comp" ) );
 			VTX_DEBUG( "Triangle buffer size before compaction: {}", bufferSize );
-			//  Perform exclusive scan on validity buffer.
-			std::exclusive_scan( triangleValidities.begin(), triangleValidities.end(), triangleValidities.begin(), 0 );
 
-			bufferSizeReduced = *( triangleValidities.end() - 1 );
-			_indiceCount	  = uint( bufferSizeReduced );
+			// Exclusive scan with std.
+			cellValiditiesPtr = bufferTriangleValidities.map<uint>(
+				Buffer::Access( Buffer::Access::READ_ONLY | Buffer::Access::WRITE_ONLY ) );
+
+			itBeginRead = Custom::Iterator( cellValiditiesPtr );
+			itEndRead	= Custom::Iterator( cellValiditiesPtr + bufferSize );
+
+			std::exclusive_scan( itBeginRead, itEndRead, itBeginRead, 0 );
+			bufferSizeReduced = cellValiditiesPtr[ bufferSize - 1 ];
+			bufferTriangleValidities.unmap();
+
+			_indiceCount = uint( bufferSizeReduced );
 
 			assert( _indiceCount % 3 == 0 );
 

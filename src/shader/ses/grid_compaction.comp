@@ -24,17 +24,12 @@ layout (std430, binding = 0) readonly buffer CellValidities
 	uint[] cellValidities;
 };
 
-layout (std430, binding = 1) readonly buffer CellValiditiesSum
-{
-	uint[] cellValiditiesSum;
-};
-
-layout (std430, binding = 2) readonly buffer CellHashs
+layout (std430, binding = 1) readonly buffer CellHashs
 {
 	uint[] cellHashs;
 };
 
-layout (std430, binding = 3) writeonly buffer CellHashsReduced
+layout (std430, binding = 2) writeonly buffer CellHashsReduced
 {
 	uint[] cellHashsReduced;
 };
@@ -48,11 +43,11 @@ void main()
 		return;
 	}
 
-	if( cellValidities[ index ] == 0 )
+	if( cellValidities[ index ] == cellValidities[ index + 1 ] )
 	{
 		return;
 	}
 
-	const uint indexNew = cellValiditiesSum[ index ];
+	const uint indexNew = cellValidities[ index ];
 	cellHashsReduced[ indexNew ] = cellHashs[ index ];
 }

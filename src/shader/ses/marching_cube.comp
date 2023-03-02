@@ -161,7 +161,8 @@ void main()
 	}
 
 	// Get triangles.
-	for ( uint i = 0; triangleTable[ cubeIndex * 16 + i ] != -1; i += 3 )
+	uint i = 0;
+	for (; triangleTable[ cubeIndex * 16 + i ] != -1; i += 3 )
 	{	
 		vec3 center;
 		for ( uint j = 0; j < 3; ++j )
