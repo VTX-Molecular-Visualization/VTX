@@ -6,6 +6,7 @@
 #include "id.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "setting.hpp"
+#include "ui/dialog.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/renderer/render_effect_library_combo_box.hpp"
 #include "ui/widget/settings/setting_widget_enum.hpp"
@@ -35,7 +36,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		}
 		else if ( p_event.name == Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
 		{
-			_refreshCameraProjectionIconColor();
+			_refreshIconColors();
 
 			MVC::MvcManager::get().deleteView( &VTX_RENDER_EFFECT(),
 											   ID::View::UI_CAMERA_QUICK_ACCESS_ON_RENDER_EFFECT );
@@ -63,9 +64,15 @@ namespace VTX::UI::Widget::Render::Overlay
 		renderEffectButton->setIcon( QIcon( ":/sprite/render_effect_preset_icon.png" ) );
 		renderEffectButton->setToolTip( "Render effect preset" );
 
+		_exportImageIcon.generateIcons( QImage( ":/sprite/screenshot_icon.png" ) );
+		QAction * const exportImageAction = addAction( _exportImageIcon.getIcon(), "" );
+		_exportImageButton				  = dynamic_cast<QToolButton *>( widgetForAction( exportImageAction ) );
+		renderEffectButton->setToolTip( "Export Image..." );
+
 		_refreshRenderEffectMenu();
 		_attachViewOnAppliedRenderEffect();
 		_refreshCameraProjectionButton();
+		_refreshIconColors();
 	}
 
 	void CameraQuickAccess::_setupSlots()
@@ -77,18 +84,18 @@ namespace VTX::UI::Widget::Render::Overlay
 				 this,
 				 &CameraQuickAccess::_applyRenderEffectPresetAction );
 		connect( _cameraProjectionButton, &QToolButton::clicked, this, &CameraQuickAccess::_toggleCameraProjection );
+		connect( _exportImageButton, &QToolButton::clicked, this, &CameraQuickAccess::_onExportImageClickedAction );
 	}
 
 	void CameraQuickAccess::localize() {};
 
-	void CameraQuickAccess::_refreshCameraProjectionIconColor() const
+	void CameraQuickAccess::_refreshIconColors() const
 	{
-		const bool isPerspective = VTX_SETTING().getCameraPerspective();
+		const UI::Object::BackgroundDependentIcon & cameraProjectionIcon
+			= VTX_SETTING().getCameraPerspective() ? _projectionPerspectiveIcon : _projectionOrthographicIcon;
 
-		const UI::Object::BackgroundDependentIcon & bgDependantIcon
-			= isPerspective ? _projectionPerspectiveIcon : _projectionOrthographicIcon;
-
-		_cameraProjectionButton->setIcon( bgDependantIcon.getIcon( VTX_RENDER_EFFECT().getBackgroundColor() ) );
+		_cameraProjectionButton->setIcon( cameraProjectionIcon.getIcon( VTX_RENDER_EFFECT().getBackgroundColor() ) );
+		_exportImageButton->setIcon( _exportImageIcon.getIcon( VTX_RENDER_EFFECT().getBackgroundColor() ) );
 	}
 
 	void CameraQuickAccess::_refreshRenderEffectMenu() const
@@ -153,11 +160,9 @@ namespace VTX::UI::Widget::Render::Overlay
 			VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *preset ) );
 		}
 	}
+	void CameraQuickAccess::_onExportImageClickedAction() const { UI::Dialog::openAdvancedSettingImageExportDialog(); }
 
-	void CameraQuickAccess::_onRenderEffectChange( const Event::VTXEvent * const p_event )
-	{
-		_refreshCameraProjectionIconColor();
-	}
+	void CameraQuickAccess::_onRenderEffectChange( const Event::VTXEvent * const p_event ) { _refreshIconColors(); }
 
 	void CameraQuickAccess::_attachViewOnAppliedRenderEffect()
 	{
