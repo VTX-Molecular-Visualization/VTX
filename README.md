@@ -26,6 +26,12 @@ Requirements :
 
 Needed packages :
 
+* From Ubuntu 22.04 :
+
+build-essential libgl1-mesa-dev libopengl0 libfreetype6-dev libfontconfig1-dev libxkbcommon-dev libxkbcommon-x11-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-render-util0-dev libxcb-shape0-dev libxcb-randr0-dev libdbus-1-3 libsm-dev libpcre2-dev libjpeg-dev libtiff-dev libqt6openglwidgets6 libqt6network6 libqt6svg6 qt6-base-dev
+
+* For Ubuntu 20.04 :
+
 build-essential libgl1-mesa-dev libopengl0 libfreetype6-dev libfontconfig1-dev libxkbcommon-dev libxkbcommon-x11-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-render-util0-dev libxcb-shape0-dev libxcb-randr0-dev libdbus-1-3 libsm-dev libpcre2-dev libjpeg-dev libtiff-dev
 
 Step by step :
