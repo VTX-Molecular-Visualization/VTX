@@ -139,6 +139,7 @@ namespace VTX
 			// Shortcuts.
 			void _onShortcutNew() const;
 			void _onShortcutOpen() const;
+			void _onShortcutDownload() const;
 			void _onShortcutSave() const;
 			void _onShortcutSaveAs() const;
 			void _onShortcutFullscreen() const;
