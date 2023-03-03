@@ -14,10 +14,9 @@ namespace VTX::UI
 	const QKeySequence Shortcut::Main::FULLSCREEN	  = QKeySequence( QWidget::tr( "F11" ) );
 	const QKeySequence Shortcut::Main::RESTORE_LAYOUT = QKeySequence( QWidget::tr( "F6" ) );
 
-	const QKeySequence Shortcut::Main::SELECT_ALL = QKeySequence( QWidget::tr(
-		Controller::BaseKeyboardController::getKeyboardLayout() == Controller::KeyboardLayout::AZERTY ? "Ctrl+A"
-																									  : "Ctrl+Q" ) );
-
+	const QKeySequence Shortcut::Main::SELECT_ALL	   = QKeySequence( QWidget::tr(
+		 Controller::BaseKeyboardController::getKeyboardLayout() == Controller::KeyboardLayout::AZERTY ? "Ctrl+A"
+																									   : "Ctrl+Q" ) );
 	const QKeySequence Shortcut::Main::CLEAR_SELECTION = QKeySequence( QWidget::tr( "Esc" ) );
 
 	const QKeySequence Shortcut::Main::DUPLICATE_SELECTION = QKeySequence( QWidget::tr( "Ctrl+D" ) );
@@ -28,15 +27,16 @@ namespace VTX::UI
 	const QKeySequence Shortcut::Main::SET_SELECTION_PICKER	  = QKeySequence( QWidget::tr( "P" ) );
 	const QKeySequence Shortcut::Main::SET_MEASUREMENT_PICKER = QKeySequence( QWidget::tr( "M" ) );
 
-	const QKeySequence Shortcut::Dev::COMPILE_SHADER	 = QKeySequence( QWidget::tr( "F8" ) );
-	const QKeySequence Shortcut::Dev::ACTIVE_RENDERER	 = QKeySequence( QWidget::tr( "F9" ) );
-	const QKeySequence Shortcut::Dev::REFRESH_SES		 = QKeySequence( QWidget::tr( "F10" ) );
-	const QKeySequence Shortcut::Dev::CHANGE_RENDER_MODE = QKeySequence( QWidget::tr( "F7" ) );
-	const QKeySequence Shortcut::Dev::PRINT_CAMERA_INFOS = QKeySequence( QWidget::tr( "Space" ) );
-
 	const QKeySequence Shortcut::Render::TOGGLE_CAMERA_CONTROLLER = QKeySequence( QWidget::tr( "F1" ) );
 	const QKeySequence Shortcut::Render::RESET_CAMERA_CONTROLLER  = QKeySequence( QWidget::tr( "Ctrl+F1" ) );
 	const QKeySequence Shortcut::Render::TOGGLE_CAMERA			  = QKeySequence( QWidget::tr( "F2" ) );
 	const QKeySequence Shortcut::Render::ADD_VIEWPOINT			  = QKeySequence( QWidget::tr( "F3" ) );
 	const QKeySequence Shortcut::Render::SNAPSHOT				  = QKeySequence( QWidget::tr( "F5" ) );
+	const QKeySequence Shortcut::Render::TOGGLE_ALL_OVERLAYS	  = QKeySequence( QWidget::tr( "F4" ) );
+
+	const QKeySequence Shortcut::Dev::COMPILE_SHADER	 = QKeySequence( QWidget::tr( "F8" ) );
+	const QKeySequence Shortcut::Dev::ACTIVE_RENDERER	 = QKeySequence( QWidget::tr( "F9" ) );
+	const QKeySequence Shortcut::Dev::REFRESH_SES		 = QKeySequence( QWidget::tr( "F10" ) );
+	const QKeySequence Shortcut::Dev::CHANGE_RENDER_MODE = QKeySequence( QWidget::tr( "F7" ) );
+	const QKeySequence Shortcut::Dev::PRINT_CAMERA_INFOS = QKeySequence( QWidget::tr( "Space" ) );
 } // namespace VTX::UI

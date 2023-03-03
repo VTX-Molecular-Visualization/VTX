@@ -189,6 +189,8 @@ namespace VTX::UI::Widget::Render
 		Shortcut::createLocal( Shortcut::Render::ADD_VIEWPOINT, this, &RenderWidget::_onShortcutAddViewpoint );
 
 		Shortcut::createLocal( Shortcut::Render::SNAPSHOT, this, &RenderWidget::_onShortcutSnapshot );
+		Shortcut::createLocal(
+			Shortcut::Render::TOGGLE_ALL_OVERLAYS, this, &RenderWidget::_onShortcutToggleAllOverlays );
 
 #ifndef VTX_PRODUCTION
 		Shortcut::createLocal( Shortcut::Dev::CHANGE_RENDER_MODE, this, &RenderWidget::_onShortcutChangeRenderMode );
@@ -231,6 +233,21 @@ namespace VTX::UI::Widget::Render
 	}
 
 	void RenderWidget::_onShortcutPrintCameraInfos() { VTXApp::get().getScene().getCamera().print(); }
+
+	void RenderWidget::_onShortcutToggleAllOverlays()
+	{
+		bool visibleState = true;
+		for ( auto pairIdOverlay : _overlays )
+		{
+			if ( pairIdOverlay.second->isVisible() )
+			{
+				visibleState = false;
+				break;
+			}
+		}
+
+		showAllOverlays( visibleState );
+	}
 
 	void RenderWidget::localize()
 	{
@@ -282,9 +299,19 @@ namespace VTX::UI::Widget::Render
 
 		overlay->updatePosition( contentsRect().size() );
 	}
-	void RenderWidget::hideOverlay( const Overlay::OVERLAY & p_overlay )
+	void RenderWidget::setOverlayVisibility( const Overlay::OVERLAY & p_overlay, const bool p_visible )
 	{
-		_overlays[ p_overlay ]->setVisible( false );
+		_overlays[ p_overlay ]->setVisible( p_visible );
+		VTX_EVENT( new Event::VTXEvent( Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE ) );
+	}
+	void RenderWidget::showAllOverlays( const bool p_show )
+	{
+		for ( auto pairIdOverlay : _overlays )
+		{
+			pairIdOverlay.second->setVisible( p_show );
+		}
+
+		VTX_EVENT( new Event::VTXEvent( Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE ) );
 	}
 
 	Overlay::BaseOverlay * RenderWidget::getOverlay( const Overlay::OVERLAY & p_overlay )
@@ -296,7 +323,18 @@ namespace VTX::UI::Widget::Render
 			return nullptr;
 		}
 
-		return _overlays[ p_overlay ];
+		return mapIt->second;
+	}
+	const Overlay::BaseOverlay * RenderWidget::getOverlay( const Overlay::OVERLAY & p_overlay ) const
+	{
+		auto mapIt = _overlays.find( p_overlay );
+
+		if ( mapIt == _overlays.end() )
+		{
+			return nullptr;
+		}
+
+		return mapIt->second;
 	}
 
 	Overlay::BaseOverlay * RenderWidget::_instantiateOverlay( const Overlay::OVERLAY & p_overlayType )

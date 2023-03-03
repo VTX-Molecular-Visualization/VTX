@@ -58,6 +58,17 @@ namespace VTX::UI
 			static const QKeySequence SET_MEASUREMENT_PICKER;
 		};
 
+		class Render
+		{
+		  public:
+			static const QKeySequence TOGGLE_CAMERA_CONTROLLER;
+			static const QKeySequence RESET_CAMERA_CONTROLLER;
+			static const QKeySequence TOGGLE_CAMERA;
+			static const QKeySequence ADD_VIEWPOINT;
+			static const QKeySequence SNAPSHOT;
+			static const QKeySequence TOGGLE_ALL_OVERLAYS;
+		};
+
 		class Dev
 		{
 		  public:
@@ -67,16 +78,6 @@ namespace VTX::UI
 
 			static const QKeySequence CHANGE_RENDER_MODE;
 			static const QKeySequence PRINT_CAMERA_INFOS;
-		};
-
-		class Render
-		{
-		  public:
-			static const QKeySequence TOGGLE_CAMERA_CONTROLLER;
-			static const QKeySequence RESET_CAMERA_CONTROLLER;
-			static const QKeySequence TOGGLE_CAMERA;
-			static const QKeySequence ADD_VIEWPOINT;
-			static const QKeySequence SNAPSHOT;
 		};
 	};
 

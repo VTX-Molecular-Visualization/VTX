@@ -89,6 +89,7 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 - CTRL + F1: Reset current camera controller
 - F2: Switch current projection
 - F3: Save current viewpoint
+- F4: Toggle overlays visibility
 - F5: Take a snapshot
 
 - P : Switch to selection Picker mode

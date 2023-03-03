@@ -12,6 +12,10 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		VTX_WIDGET
 
+	  private:
+		inline static const int SHOW_ALL_OVERLAYS_DATA_VALUE = -1;
+		inline static const int HIDE_ALL_OVERLAYS_DATA_VALUE = -2;
+
 	  public:
 		~ContextualMenuRender();
 		void localize() override;
@@ -41,6 +45,8 @@ namespace VTX::UI::Widget::ContextualMenu
 		QMenu * _selectionGranularityMenu = nullptr;
 		QMenu * _measurementModeMenu	  = nullptr;
 
+		QMenu * _overlaysMenu = nullptr;
+
 		void _addSelectionGranularityActionInMenu( const int p_granularity, const QString & p_name ) const;
 		void _addMeasurementModeActionInMenu( const int p_mode, const QString & p_name ) const;
 
@@ -49,10 +55,12 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _refreshMeasurementModeMenu() const;
 		void _refreshCameraProjection() const;
 		void _refreshAppliedRenderSettingPreset() const;
+		void _refreshOverlayVisibilityMenu() const;
 
 		void _changeProjectionAction( QAction * const p_action );
 		void _setBackgroundColorAction( QAction * const p_action );
 		void _applyRenderEffectPresetAction( QAction * const p_action );
+		void _setOverlayVisibilityAction( QAction * const p_action );
 		void _takeSnapshotAction();
 		void _exportImageAction();
 	};

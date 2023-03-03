@@ -1,5 +1,6 @@
 #include "camera_projection_block.hpp"
 #include "action/main.hpp"
+#include "action/setting.hpp"
 #include "id.hpp"
 #include "ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/widget_factory.hpp"

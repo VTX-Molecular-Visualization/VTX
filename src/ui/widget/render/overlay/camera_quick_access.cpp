@@ -123,17 +123,11 @@ namespace VTX::UI::Widget::Render::Overlay
 
 	void CameraQuickAccess::_refreshCameraProjectionButton()
 	{
-		const bool											  isPerspective = VTX_SETTING().getCameraPerspective();
-		const Widget::Settings::VTXSettings::CameraProjection settingCameraProj
-			= isPerspective ? Widget::Settings::VTXSettings::CameraProjection::PERSPECTIVE
-							: Widget::Settings::VTXSettings::CameraProjection::ORTHOGRAPHIC;
+		const bool isPerspective = VTX_SETTING().getCameraPerspective();
 
-		const QString text = QString::fromStdString(
-			Widget::Settings::VTXSettings::CAMERA_PROJECTION_STR[ int( settingCameraProj ) ] );
 		const UI::Object::BackgroundDependentIcon & bgDependantIcon
 			= isPerspective ? _projectionPerspectiveIcon : _projectionOrthographicIcon;
 
-		_cameraProjectionButton->setText( text );
 		_cameraProjectionButton->setIcon( bgDependantIcon.getIcon( VTX_RENDER_EFFECT().getBackgroundColor() ) );
 	}
 
