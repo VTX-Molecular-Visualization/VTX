@@ -18,13 +18,22 @@ namespace VTX::Worker
 	{
 	  public:
 		explicit GpuComputer( const IO::FilePath & p_shader,
-							  const Vec3i &		   p_size = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ) ) :
+							  const size_t		   p_size,
+							  const std::string &  p_customDefines = "" ) :
+			GpuComputer( p_shader, _computeSize( p_size ), p_customDefines )
+		{
+		}
+
+		explicit GpuComputer( const IO::FilePath & p_shader,
+							  const Vec3i &		   p_size		   = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ),
+							  const std::string &  p_customDefines = "" ) :
 			_size( p_size )
 
 		{
 			const std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
 												+ "#define LOCAL_SIZE_Y " + std::to_string( LOCAL_SIZE_Y ) + "\n"
-												+ "#define LOCAL_SIZE_Z " + std::to_string( LOCAL_SIZE_Z ) + "\n";
+												+ "#define LOCAL_SIZE_Z " + std::to_string( LOCAL_SIZE_Z ) + "\n"
+												+ p_customDefines;
 			_program = VTX_PROGRAM_MANAGER().createProgram(
 				p_shader.filenameWithoutExtension(), { p_shader }, definesToInject );
 		}
@@ -33,9 +42,9 @@ namespace VTX::Worker
 
 		inline Renderer::GL::Program & getProgram() { return *_program; }
 
-		void start();
-		void start( const Vec3i & );
-		void start( const size_t );
+		virtual void start();
+		void		 start( const Vec3i & );
+		void		 start( const size_t );
 
 	  protected:
 		Renderer::GL::Program * _program;

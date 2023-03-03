@@ -2,6 +2,7 @@
 #include "atom.hpp"
 #include "category.hpp"
 #include "chain.hpp"
+#include "custom/iterator.hpp"
 #include "math/marching_cube.hpp"
 #include "molecule.hpp"
 #include "object3d/helper/aabb.hpp"
@@ -11,6 +12,8 @@
 #include "selection/selection_manager.hpp"
 #include "view/d3/triangle.hpp"
 #include "worker/gpu_computer.hpp"
+
+#define VOXEL_SIZE 0.4f
 
 #define VTX_SES_NORMALS_GPU 1
 
@@ -51,7 +54,7 @@ namespace VTX
 			// Sort atoms in acceleration grid.
 			const float maxVdWRadius = *std::max_element(
 				Atom::SYMBOL_VDW_RADIUS, Atom::SYMBOL_VDW_RADIUS + std::size( Atom::SYMBOL_VDW_RADIUS ) );
-			const Object3D::Helper::AABB & molAABB = _category->getMoleculePtr()->getAABB();
+			const Object3D::Helper::AABB & molAABB = _category->getAABB();
 
 			const float atomGridCellSize = PROBE_RADIUS + maxVdWRadius;
 			const Vec3f gridMin			 = molAABB.getMin() - atomGridCellSize;
@@ -70,7 +73,7 @@ namespace VTX
 
 			// Store atom indices in acceleration grid.
 			std::vector<Vec4f> atomPositionsVdW = std::vector<Vec4f>( atomPositions.size() );
-			for ( uint idx : atomsIdx )
+			for ( const uint idx : atomsIdx )
 			{
 				const uint hash = gridAtoms.gridHash( atomPositions[ idx ] );
 
@@ -191,10 +194,11 @@ namespace VTX
 			////////////////////////////
 			// Worker: reduce grid.
 			Worker::GpuComputer workerReduceGrid( IO::FilePath( "ses/reduce_grid.comp" ) );
+			size_t				bufferSize = gridSES.getCellCount();
 
-			std::vector<uint> cellValidities( gridSES.getCellCount(), 0 );
-			Buffer			  bufferCellValidities( cellValidities );
-			Buffer			  bufferCellHashs( gridSES.getCellCount() * sizeof( uint ) );
+			std::vector<uint> validities( bufferSize, 0 );
+			Buffer			  bufferCellValidities( validities, Buffer::Flags::DYNAMIC_STORAGE_BIT );
+			Buffer			  bufferCellHashs( bufferSize * sizeof( uint ) );
 
 			// Bind.
 			bufferSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
@@ -211,8 +215,6 @@ namespace VTX
 			workerReduceGrid.start( gridSES.getCellCount() );
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-			bufferCellValidities.getData( cellValidities );
-
 			bufferSesGridData.unbind();
 			bufferCellValidities.unbind();
 			bufferCellHashs.unbind();
@@ -224,21 +226,23 @@ namespace VTX
 			////////////////////////////
 			// Worker: grid compaction.
 			Worker::GpuComputer workerGridCompaction( IO::FilePath( "ses/grid_compaction.comp" ) );
-			size_t				bufferSize = gridSES.getCellCount();
+
 			VTX_DEBUG( "Grid buffer size before compaction: {}", bufferSize );
-			std::exclusive_scan( cellValidities.begin(), cellValidities.end(), cellValidities.begin(), 0 );
-			size_t bufferSizeReduced = *( cellValidities.end() - 1 );
+
+			bufferCellValidities.getData( validities );
+			std::exclusive_scan( validities.begin(), validities.end(), validities.begin(), 0 );
+			bufferCellValidities.setSub( validities );
+
+			size_t bufferSizeReduced = validities[ bufferSize - 1 ];
 
 			VTX_DEBUG( "Grid buffer size after compaction: {}", bufferSizeReduced );
 
-			Buffer bufferCellValiditiesSum( cellValidities );
 			Buffer bufferCellHashsReduced( bufferSizeReduced * sizeof( uint ) );
 
 			// Bind.
 			bufferCellValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
-			bufferCellValiditiesSum.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
-			bufferCellHashs.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
-			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferCellHashs.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
 
 			workerGridCompaction.getProgram().use();
 			workerGridCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
@@ -251,7 +255,6 @@ namespace VTX
 
 			// Unbind.
 			bufferCellValidities.unbind();
-			bufferCellValiditiesSum.unbind();
 			bufferCellHashs.unbind();
 			bufferCellHashsReduced.unbind();
 
@@ -267,10 +270,10 @@ namespace VTX
 			// Output.
 			// 5 triangles max per cell.
 			bufferSize = bufferSizeReduced * 5 * 3;
+			validities = std::vector<uint>( bufferSize, 0 );
 			Buffer			  bufferPositionsTmp( bufferSize * sizeof( Vec4f ) );
 			Buffer			  bufferAtomIndicesTmp( bufferSize * sizeof( uint ) );
-			std::vector<uint> triangleValidities( bufferSize, 0 );
-			Buffer			  bufferTriangleValidities( triangleValidities );
+			Buffer			  bufferTriangleValidities( validities, Buffer::Flags::DYNAMIC_STORAGE_BIT );
 			std::vector<uint> trianglesPerAtom( atomPositions.size(), 0 );
 			Buffer			  bufferTrianglesPerAtom( trianglesPerAtom );
 			// Input.
@@ -297,10 +300,6 @@ namespace VTX
 			workerMarchingCube.start( bufferSizeReduced );
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-			// Get validities for next step.
-			bufferTriangleValidities.getData( triangleValidities );
-			bufferTrianglesPerAtom.getData( trianglesPerAtom );
-
 			// Unbind.
 			bufferSesGridData.unbind();
 			bufferPositionsTmp.unbind();
@@ -318,15 +317,19 @@ namespace VTX
 			// Worker: buffer compaction.
 			Worker::GpuComputer workerBufferCompaction( IO::FilePath( "ses/buffer_compaction.comp" ) );
 			VTX_DEBUG( "Triangle buffer size before compaction: {}", bufferSize );
-			//  Perform exclusive scan on validity buffer.
-			std::exclusive_scan( triangleValidities.begin(), triangleValidities.end(), triangleValidities.begin(), 0 );
 
-			bufferSizeReduced = *( triangleValidities.end() - 1 );
-			_indiceCount	  = uint( bufferSizeReduced );
+			// Exclusive scan with std.
+			bufferTriangleValidities.getData( validities );
+			std::exclusive_scan( validities.begin(), validities.end(), validities.begin(), 0 );
+			bufferSizeReduced = validities[ bufferSize - 1 ];
+
+			_indiceCount = uint( bufferSizeReduced );
 
 			assert( _indiceCount % 3 == 0 );
 
 			VTX_DEBUG( "Triangle buffer size after compaction: {}", _indiceCount );
+
+			bufferTrianglesPerAtom.getData( trianglesPerAtom );
 
 			// Compute atom to triangles.
 			_atomsToTriangles = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
@@ -361,7 +364,7 @@ namespace VTX
 			bufferNormals.set( std::vector<Vec4f>( _indiceCount, Vec4f() ), Buffer::Flags::MAP_WRITE_BIT );
 			bufferIndices.set( _indiceCount * sizeof( uint ),
 							   Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
-			bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
+			bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 			bufferVisibilities.set( std::vector<uint>( _indiceCount, 1 ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
 			bufferIds.set( _indiceCount * sizeof( uint ) );
 			bufferSelections.set( _indiceCount * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
@@ -607,20 +610,22 @@ namespace VTX
 		// TODO: use a shader with molecule buffer as SSBO.
 		void SolventExcludedSurface::refreshColors()
 		{
-			Tool::Chrono chrono, chrono2;
+			Tool::Chrono chrono;
 			chrono.start();
 
 			using VTX::Renderer::GL::Buffer;
 			_buffer->makeContextCurrent();
 
 			// Map buffers.
-			const Buffer &		bufferIndices = _buffer->getBufferIndices();
-			const Buffer &		bufferColors  = _buffer->getBufferColors();
-			uint * const		ptrIndices	  = bufferIndices.map<uint>( Buffer::Access::READ_ONLY );
-			Color::Rgba * const ptrColors	  = bufferColors.map<Color::Rgba>( Buffer::Access::WRITE_ONLY );
+			const Buffer & bufferIndices = _buffer->getBufferIndices();
+			const Buffer & bufferColors	 = _buffer->getBufferColors();
+			uint * const   ptrIndices	 = bufferIndices.map<uint>( Buffer::Access::READ_ONLY );
+			// Color::Rgba * const ptrColors	  = bufferColors.map<Color::Rgba>( Buffer::Access::WRITE_ONLY );
 
 			// Apply color.
 			const std::vector<Color::Rgba> & bufferAtomColors = _category->getMoleculePtr()->getBufferAtomColors();
+			std::vector<Color::Rgba>		 colors( _indiceCount, Color::Rgba() );
+			std::vector<uint>				 counters( _indiceCount, 0 );
 			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
 			{
 				const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
@@ -632,13 +637,26 @@ namespace VTX
 				// Can be better
 				for ( uint i = 0; i < _atomsToTriangles[ atomIdx ].count; ++i )
 				{
-					ptrColors[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ] = bufferAtomColors[ atomIdx ];
+					// ptrColors[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ] = bufferAtomColors[ atomIdx ];
+					colors[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ] += bufferAtomColors[ atomIdx ];
+					counters[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ]++;
 				}
 			}
 
+			for ( uint i = 0; i < colors.size(); ++i )
+			{
+				if ( counters[ i ] > 0 )
+				{
+					colors[ i ] /= counters[ i ];
+				}
+			}
+
+			// Set data.
+			bufferColors.setSub( colors );
+
 			// Unmap.
 			bufferIndices.unmap();
-			bufferColors.unmap();
+			// bufferColors.unmap();
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			_buffer->doneContextCurrent();
 
@@ -649,7 +667,7 @@ namespace VTX
 		// TODO: use a shader with molecule buffer as SSBO.
 		void SolventExcludedSurface::refreshVisibilities()
 		{
-			Tool::Chrono chrono, chrono2;
+			Tool::Chrono chrono;
 			chrono.start();
 
 			using VTX::Renderer::GL::Buffer;
@@ -693,7 +711,7 @@ namespace VTX
 		// TODO: use a shader with molecule buffer as SSBO.
 		void SolventExcludedSurface::refreshSelections()
 		{
-			Tool::Chrono chrono, chrono2;
+			Tool::Chrono chrono;
 			chrono.start();
 
 			using VTX::Renderer::GL::Buffer;
