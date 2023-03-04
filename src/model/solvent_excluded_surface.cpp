@@ -56,7 +56,7 @@ namespace VTX
 			// Sort atoms in acceleration grid.
 			const float maxVdWRadius = *std::max_element(
 				Atom::SYMBOL_VDW_RADIUS, Atom::SYMBOL_VDW_RADIUS + std::size( Atom::SYMBOL_VDW_RADIUS ) );
-			const Object3D::Helper::AABB & molAABB = _category->getAABB();
+			const Object3D::Helper::AABB molAABB = _category->getAABB();
 
 			const float atomGridCellSize = PROBE_RADIUS + maxVdWRadius;
 			const Vec3f gridMin			 = molAABB.getMin() - atomGridCellSize;
@@ -367,7 +367,7 @@ namespace VTX
 			bufferIndices.set( _indiceCount * sizeof( uint ),
 							   Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
 			bufferColors.set( _indiceCount * sizeof( Color::Rgba ) );
-			bufferVisibilities.set( std::vector<uint>( _indiceCount, 1 ) );
+			bufferVisibilities.set( _indiceCount * sizeof( uint ) );
 			bufferIds.set( _indiceCount * sizeof( uint ) );
 			bufferSelections.set( _indiceCount * sizeof( uint ) );
 
@@ -402,6 +402,7 @@ namespace VTX
 			bufferIds.unbind();
 			bufferPositionsTmp.unbind();
 			bufferAtomIndicesTmp.unbind();
+			bufferTriangleValidities.unbind();
 			bufferAtomToTriangle.unbind();
 			bufferAtomIds.unbind();
 			bufferTrianglesPerAtom.unbind();
@@ -414,9 +415,9 @@ namespace VTX
 			// Weld vertices.
 			std::vector<uint> sortedIndices( _indiceCount );
 
-			Vec4f * ptrPositions
+			Vec4f * const ptrPositions
 				= bufferPositions.map<Vec4f>( 0, _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
-			uint * ptrIndices = bufferIndices.map<uint>(
+			uint * const ptrIndices = bufferIndices.map<uint>(
 				0,
 				_indiceCount * sizeof( uint ),
 				Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );

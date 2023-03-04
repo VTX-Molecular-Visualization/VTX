@@ -112,7 +112,9 @@ namespace VTX
 
 				if ( _buffer != nullptr )
 				{
+					_buffer->makeContextCurrent();
 					delete _buffer;
+					_buffer->doneContextCurrent();
 				}
 			}
 
