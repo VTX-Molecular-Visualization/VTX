@@ -11,6 +11,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	{
 		_registerEvent( Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
 		_registerEvent( Event::Global::MAIN_WINDOW_MODE_CHANGE );
+		_registerEvent( Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
 	}
 
 	WindowsBlock::~WindowsBlock() {}
@@ -26,6 +27,10 @@ namespace VTX::UI::Widget::MainMenu::Camera
 			const WindowMode mode = dynamic_cast<const Event::VTXEventValue<WindowMode> &>( p_event ).value;
 			_updateFullscreenButton( mode );
 		}
+		else if ( p_event.name == Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE )
+		{
+			_refreshOverlayVisibilityMenu();
+		}
 	}
 
 	void WindowsBlock::_setupUi( const QString & p_name )
@@ -36,9 +41,21 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		_windowComboBoxButton->setData( "Display", ":/sprite/windows_icon.png", Qt::Orientation::Vertical );
 		pushButton( *_windowComboBoxButton, 0 );
 
+		_overlaysMenu = new QMenu( this );
+		Util::UI::fillMenu( *_overlaysMenu,
+							int( Widget::Render::Overlay::OVERLAY::COUNT ),
+							Widget::Render::Overlay::OVERLAY_NAMES_STR,
+							true );
+
+		MenuToolButtonWidget * const overlaysComboBoxButton
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "overlaysComboBoxButton" );
+		overlaysComboBoxButton->setData( "Overlays", ":/sprite/overlays_icon.png", Qt::Orientation::Vertical );
+		overlaysComboBoxButton->setMenu( _overlaysMenu );
+		pushButton( *overlaysComboBoxButton, 1 );
+
 		_settingsButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "settingsButton" );
 		_settingsButton->setData( "Settings", ":/sprite/settings_icon.png", Qt::Orientation::Vertical );
-		pushButton( *_settingsButton, 1 );
+		pushButton( *_settingsButton, 2 );
 
 		_windowsMenu = new QMenu( this );
 
@@ -55,7 +72,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		_fullscreen = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleFullscreenButton" );
 		_fullscreen->setData( "Fullscreen", ":/sprite/fullscreen_icon.png", Qt::Orientation::Vertical );
 		_updateFullscreenButton( VTXApp::get().getMainWindow().getWindowMode() );
-		pushButton( *_fullscreen, 2 );
+		pushButton( *_fullscreen, 3 );
 
 		// !V0.1
 		//_infoUnderCursor
@@ -67,18 +84,23 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		//_minimap->setData( "Show\nMinimap", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 		// pushButton( *_minimap, 2 );
 
+		//_refreshOverlayVisibilityMenu();
+
 		validate();
 	}
 	void WindowsBlock::_setupSlots()
 	{
 		connect( _settingsButton, &MenuToolButtonWidget::clicked, this, &WindowsBlock::_displaySettingsWindow );
 		_fullscreen->setTriggerAction( this, &WindowsBlock::_toggleWindowState );
+
+		connect( _overlaysMenu, &QMenu::triggered, this, &WindowsBlock::_toggleOverlayVisibilityAction );
 	}
 	void WindowsBlock::localize() { setTitle( "Windows" ); }
 	void WindowsBlock::refresh()
 	{
 		for ( const std::pair<const ID::VTX_ID * const, QAction *> & pair : _mapWindowsActions )
 			_refreshButton( *pair.first );
+		_refreshOverlayVisibilityMenu();
 	}
 	void WindowsBlock::_refreshButton( const ID::VTX_ID & p_id )
 	{
@@ -88,6 +110,20 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 		_mapWindowsActions[ &p_id ]->setChecked( windowVisibility );
 		//_mapWindowsActions[ &p_id ]->setIcon( *Style::IconConst::get().getWindowIcon( p_id ) );
+	}
+
+	void WindowsBlock::_refreshOverlayVisibilityMenu() const
+	{
+		const Render::RenderWidget & renderWigdet
+			= VTXApp::get().getMainWindow().getWidget<Render::RenderWidget>( ID::UI::Window::RENDER );
+
+		for ( QAction * const action : _overlaysMenu->actions() )
+		{
+			const int					   actionData = action->data().toInt();
+			const Render::Overlay::OVERLAY overlay	  = Render::Overlay::OVERLAY( actionData );
+			const bool					   checkState = renderWigdet.getOverlay( overlay )->isVisible();
+			action->setChecked( checkState );
+		}
 	}
 
 	void WindowsBlock::_instantiateButton( const ID::VTX_ID & p_id,
@@ -121,6 +157,19 @@ namespace VTX::UI::Widget::MainMenu::Camera
 			_fullscreen->setIcon( Style::IconConst::get().FULLSCREEN_ICON );
 			_fullscreen->setText( "Fullscreen" );
 		}
+	}
+	void WindowsBlock::_toggleOverlayVisibilityAction( QAction * const p_action )
+	{
+		Widget::Render::RenderWidget & renderWidget
+			= VTXApp::get().getMainWindow().getWidget<Widget::Render::RenderWidget>( ID::UI::Window::RENDER );
+
+		const int actionData = p_action->data().toInt();
+
+		const Render::Overlay::OVERLAY				 overlayEnum	 = Widget::Render::Overlay::OVERLAY( actionData );
+		Widget::Render::Overlay::BaseOverlay * const overlayWidget	 = renderWidget.getOverlay( overlayEnum );
+		const bool									 newVisibleState = !overlayWidget->isVisible();
+
+		renderWidget.setOverlayVisibility( overlayEnum, newVisibleState );
 	}
 
 	void WindowsBlock::_toggleSceneWindow() { VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SCENE ); }

@@ -36,11 +36,13 @@ namespace VTX::UI::Widget::Render::Overlay
 	  private:
 		QToolButton * _cameraProjectionButton  = nullptr;
 		QMenu *		  _renderEffectLibraryMenu = nullptr;
+		QToolButton * _exportImageButton	   = nullptr;
 
 		UI::Object::BackgroundDependentIcon _projectionPerspectiveIcon;
 		UI::Object::BackgroundDependentIcon _projectionOrthographicIcon;
+		UI::Object::BackgroundDependentIcon _exportImageIcon;
 
-		void _refreshCameraProjectionIconColor() const;
+		void _refreshIconColors() const;
 		void _refreshRenderEffectMenu() const;
 
 		void _attachViewOnAppliedRenderEffect();
@@ -48,6 +50,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		void _onRenderEffectChange( const Event::VTXEvent * const p_event );
 		void _toggleCameraProjection();
 		void _applyRenderEffectPresetAction( const QAction * const p_action );
+		void _onExportImageClickedAction() const;
 	};
 } // namespace VTX::UI::Widget::Render::Overlay
 #endif

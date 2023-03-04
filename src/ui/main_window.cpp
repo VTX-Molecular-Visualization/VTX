@@ -8,6 +8,7 @@
 #include "controller/measurement_picker.hpp"
 #include "event/event_manager.hpp"
 #include "io/struct/scene_path_data.hpp"
+#include "shortcut.hpp"
 #include "style.hpp"
 #include "ui/mime_type.hpp"
 #include "util/analysis.hpp"
@@ -17,7 +18,6 @@
 #include <QAction>
 #include <QFileDialog>
 #include <QSettings>
-#include <QShortcut>
 #include <QSize>
 #include <iostream>
 
@@ -190,86 +190,35 @@ namespace VTX::UI
 				 &MainWindow::_onDockWindowVisibilityChange );
 
 		// Shortcuts.
-		connect( new QShortcut( QKeySequence( tr( "Ctrl+N" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutNew );
-		connect( new QShortcut( QKeySequence( tr( "Ctrl+O" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutOpen );
-		connect( new QShortcut( QKeySequence( tr( "Ctrl+S" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutSave );
-		connect( new QShortcut( QKeySequence( tr( "Ctrl+Shift+S" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutSaveAs );
-		connect( new QShortcut( QKeySequence( tr( "F11" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutFullscreen );
-		connect( new QShortcut( QKeySequence( tr( "Esc" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutClearSelection );
-		connect( new QShortcut( QKeySequence( tr( "F6" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutRestoreLayout );
-#ifndef VTX_PRODUCTION
-		connect( new QShortcut( QKeySequence( tr( "F8" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutCompileShaders );
-		connect( new QShortcut( QKeySequence( tr( "F9" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutActiveRenderer );
-		connect( new QShortcut( QKeySequence( tr( "F10" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutRefreshSES );
-#endif
-		connect( new QShortcut( QKeySequence( tr( "Del" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutDelete );
-		connect( new QShortcut( QKeySequence( tr( "O" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutOrient );
-		connect( new QShortcut( QKeySequence( tr( Controller::BaseKeyboardController::getKeyboardLayout()
-														  == Controller::KeyboardLayout::AZERTY
-													  ? "Ctrl+A"
-													  : "Ctrl+Q" ) ),
-								this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutSelectAll );
-		connect( new QShortcut( QKeySequence( tr( "Ctrl+D" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutCopy );
-		connect( new QShortcut( QKeySequence( tr( "Ctrl+E" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutExtract );
+		Shortcut::createGlobal( Shortcut::Main::NEW_SCENE, this, &MainWindow::_onShortcutNew );
+		Shortcut::createGlobal( Shortcut::Main::OPEN_SCENE, this, &MainWindow::_onShortcutOpen );
+		Shortcut::createGlobal( Shortcut::Main::DOWNLOAD_MOLECULE, this, &MainWindow::_onShortcutDownload );
+		Shortcut::createGlobal( Shortcut::Main::SAVE_SCENE, this, &MainWindow::_onShortcutSave );
+		Shortcut::createGlobal( Shortcut::Main::SAVE_AS_SCENE, this, &MainWindow::_onShortcutSaveAs );
+		Shortcut::createGlobal( Shortcut::Main::FULLSCREEN, this, &MainWindow::_onShortcutFullscreen );
+		Shortcut::createGlobal( Shortcut::Main::RESTORE_LAYOUT, this, &MainWindow::_onShortcutRestoreLayout );
+		Shortcut::createGlobal( Shortcut::Main::SELECT_ALL, this, &MainWindow::_onShortcutSelectAll );
+		Shortcut::createGlobal( Shortcut::Main::CLEAR_SELECTION, this, &MainWindow::_onShortcutClearSelection );
+		Shortcut::createGlobal( Shortcut::Main::DUPLICATE_SELECTION, this, &MainWindow::_onShortcutCopy );
+		Shortcut::createGlobal( Shortcut::Main::EXTRACT_SELECTION, this, &MainWindow::_onShortcutExtract );
+		Shortcut::createGlobal( Shortcut::Main::DELETE_SELECTION, this, &MainWindow::_onShortcutDelete );
+		Shortcut::createGlobal( Shortcut::Main::ORIENT_ON_SELECTION, this, &MainWindow::_onShortcutOrient );
+		Shortcut::createGlobal(
+			Shortcut::Main::SET_SELECTION_PICKER, this, &MainWindow::_onShortcutSetSelectionPicker );
+		Shortcut::createGlobal(
+			Shortcut::Main::SET_MEASUREMENT_PICKER, this, &MainWindow::_onShortcutSetMeasurementPicker );
 
-		connect( new QShortcut( QKeySequence( tr( "P" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutSetSelectionPicker );
-		connect( new QShortcut( QKeySequence( tr( "M" ) ), this ),
-				 &QShortcut::activated,
-				 this,
-				 &MainWindow::_onShortcutSetMeasurementPicker );
+#ifndef VTX_PRODUCTION
+		Shortcut::createGlobal( Shortcut::Dev::COMPILE_SHADER, this, &MainWindow::_onShortcutCompileShaders );
+		Shortcut::createGlobal( Shortcut::Dev::ACTIVE_RENDERER, this, &MainWindow::_onShortcutActiveRenderer );
+		Shortcut::createGlobal( Shortcut::Dev::REFRESH_SES, this, &MainWindow::_onShortcutRefreshSES );
+#endif
 	}
 
 	void MainWindow::_onShortcutNew() const { UI::Dialog::createNewSessionDialog(); }
 
 	void MainWindow::_onShortcutOpen() const { UI::Dialog::openLoadSessionDialog(); }
+	void MainWindow::_onShortcutDownload() const { UI::Dialog::openDownloadMoleculeDialog(); }
 
 	void MainWindow::_onShortcutSave() const
 	{

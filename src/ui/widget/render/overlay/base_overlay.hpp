@@ -9,6 +9,8 @@
 #include <QObject>
 #include <QToolBar>
 #include <QWidget>
+#include <string>
+#include <vector>
 
 namespace VTX::UI::Widget::Render::Overlay
 {
@@ -16,7 +18,10 @@ namespace VTX::UI::Widget::Render::Overlay
 	{
 		VISUALIZATION_QUICK_ACCESS,
 		CAMERA_PROJECTION_QUICK_ACCESS,
+
+		COUNT,
 	};
+	inline static const std::vector<std::string> OVERLAY_NAMES_STR = { "Controller", "Rendering" };
 
 	enum class OVERLAY_ANCHOR : int
 	{

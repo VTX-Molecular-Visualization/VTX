@@ -25,6 +25,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
 		_registerEvent( Event::Global::SETTINGS_CHANGE );
 		_registerEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
+		_registerEvent( Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
 	}
 	ContextualMenuRender ::~ContextualMenuRender() {}
 
@@ -52,6 +53,10 @@ namespace VTX::UI::Widget::ContextualMenu
 			{
 				_refreshSelectionGranularityMenu();
 			}
+		}
+		else if ( p_event.name == Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE )
+		{
+			_refreshOverlayVisibilityMenu();
 		}
 	}
 
@@ -118,6 +123,23 @@ namespace VTX::UI::Widget::ContextualMenu
 		addSection( "Actions" );
 		addAction( "Show All", this, &ContextualMenuRender::_showAllMoleculesAction );
 
+		addSection( "Overlays" );
+		_overlaysMenu = new QMenu( "Overlays", this );
+
+		QAction * const actionShowAllOverlays = new QAction( "Show all", _overlaysMenu );
+		actionShowAllOverlays->setData( SHOW_ALL_OVERLAYS_DATA_VALUE );
+		_overlaysMenu->addAction( actionShowAllOverlays );
+
+		QAction * const actionHideAllOverlays = new QAction( "Hide all", _overlaysMenu );
+		actionHideAllOverlays->setData( HIDE_ALL_OVERLAYS_DATA_VALUE );
+		_overlaysMenu->addAction( actionHideAllOverlays );
+		_overlaysMenu->addSeparator();
+		Util::UI::fillMenu( *_overlaysMenu,
+							int( Widget::Render::Overlay::OVERLAY::COUNT ),
+							Widget::Render::Overlay::OVERLAY_NAMES_STR,
+							true );
+		addMenu( _overlaysMenu );
+
 		addSection( "Image" );
 		addAction( "Snapshot", this, &ContextualMenuRender::_takeSnapshotAction );
 		addAction( "Export Image...", this, &ContextualMenuRender::_exportImageAction );
@@ -126,6 +148,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		_refreshSelectionGranularityMenu();
 		_refreshCameraProjection();
 		_refreshAppliedRenderSettingPreset();
+		_refreshOverlayVisibilityMenu();
 	}
 
 	void ContextualMenuRender::_addSelectionGranularityActionInMenu( const int		 p_granularity,
@@ -145,6 +168,8 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_setupSlots()
 	{
 		connect( _backgroundColorMenu, &QMenu::triggered, this, &ContextualMenuRender::_setBackgroundColorAction );
+		connect( _overlaysMenu, &QMenu::triggered, this, &ContextualMenuRender::_setOverlayVisibilityAction );
+
 		connect( _projectionMenu, &QMenu::triggered, this, &ContextualMenuRender::_changeProjectionAction );
 		connect( _renderSettingPreset, &QMenu::triggered, this, &ContextualMenuRender::_applyRenderEffectPresetAction );
 		connect(
@@ -216,6 +241,23 @@ namespace VTX::UI::Widget::ContextualMenu
 			_renderSettingPreset->actions()[ i ]->setChecked( i == appliedRenderSettingIndex );
 		}
 	}
+	void ContextualMenuRender::_refreshOverlayVisibilityMenu() const
+	{
+		const Render::RenderWidget & renderWigdet
+			= VTXApp::get().getMainWindow().getWidget<Render::RenderWidget>( ID::UI::Window::RENDER );
+
+		for ( QAction * const action : _overlaysMenu->actions() )
+		{
+			const int actionData = action->data().toInt();
+
+			if ( actionData >= 0 )
+			{
+				const Render::Overlay::OVERLAY overlay	  = Render::Overlay::OVERLAY( actionData );
+				const bool					   checkState = renderWigdet.getOverlay( overlay )->isVisible();
+				action->setChecked( checkState );
+			}
+		}
+	}
 
 	void ContextualMenuRender::_loadMoleculeAction() const { UI::Dialog::openLoadMoleculeDialog(); }
 	void ContextualMenuRender::_downloadMoleculeAction() const { UI::Dialog::openDownloadMoleculeDialog(); }
@@ -258,6 +300,27 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		VTX_ACTION( new Action::Renderer::ChangeBackgroundColor(
 			VTX_RENDER_EFFECT(), Renderer::DEFAULT_BACKGROUND_COLORS[ int( background ) ] ) );
+	}
+	void ContextualMenuRender::_setOverlayVisibilityAction( QAction * const p_action )
+	{
+		Widget::Render::RenderWidget & renderWidget
+			= VTXApp::get().getMainWindow().getWidget<Widget::Render::RenderWidget>( ID::UI::Window::RENDER );
+
+		const int actionData = p_action->data().toInt();
+
+		if ( actionData == SHOW_ALL_OVERLAYS_DATA_VALUE || actionData == HIDE_ALL_OVERLAYS_DATA_VALUE )
+		{
+			const bool newVisibleState = actionData == SHOW_ALL_OVERLAYS_DATA_VALUE;
+			renderWidget.showAllOverlays( newVisibleState );
+		}
+		else
+		{
+			const Render::Overlay::OVERLAY				 overlayEnum   = Widget::Render::Overlay::OVERLAY( actionData );
+			Widget::Render::Overlay::BaseOverlay * const overlayWidget = renderWidget.getOverlay( overlayEnum );
+			const bool									 newVisibleState = !overlayWidget->isVisible();
+
+			renderWidget.setOverlayVisibility( overlayEnum, newVisibleState );
+		}
 	}
 	void ContextualMenuRender::_applyRenderEffectPresetAction( QAction * const p_action )
 	{

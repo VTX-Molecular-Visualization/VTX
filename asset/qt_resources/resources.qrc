@@ -64,6 +64,7 @@
 	<file>sprite/new_session_icon.png</file>
 	<file>sprite/openrecent_session_icon.png</file>
 	<file>sprite/open_session_icon.png</file>
+	<file>sprite/overlays_icon.png</file>
 	<file>sprite/pause_icon.png</file>
 	<file>sprite/pause_icon_hovered.png</file>
 	<file>sprite/picker_selection_icon.png</file>

@@ -1,5 +1,6 @@
 #include "render_widget.hpp"
 #include "action/main.hpp"
+#include "action/setting.hpp"
 #include "action/viewpoint.hpp"
 #include "base_integrated_widget.hpp"
 #include "event/event_manager.hpp"
@@ -12,10 +13,12 @@
 #include "model/molecule.hpp"
 #include "overlay/camera_quick_access.hpp"
 #include "overlay/visualization_quick_access.hpp"
+#include "setting.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "style.hpp"
 #include "tool/logger.hpp"
+#include "ui/shortcut.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/measurement/angle_render_view.hpp"
 #include "view/ui/widget/measurement/dihedral_angle_render_view.hpp"
@@ -175,28 +178,24 @@ namespace VTX::UI::Widget::Render
 
 	void RenderWidget::_setupSlots()
 	{
-		QShortcut * shortcut = new QShortcut( QKeySequence( tr( "F1" ) ), this );
-		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
-		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutToggleCameraController );
-		shortcut = new QShortcut( QKeySequence( tr( "Ctrl+F1" ) ), this );
-		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
-		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutResetCameraController );
-		shortcut = new QShortcut( QKeySequence( tr( "F2" ) ), this );
-		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
-		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutToggleCamera );
-		shortcut = new QShortcut( QKeySequence( tr( "F3" ) ), this );
-		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
-		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutAddViewpoint );
-		shortcut = new QShortcut( QKeySequence( tr( "F5" ) ), this );
-		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
-		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutSnapshot );
+		Shortcut::createLocal(
+			Shortcut::Render::TOGGLE_CAMERA_CONTROLLER, this, &RenderWidget::_onShortcutToggleCameraController );
+
+		Shortcut::createLocal(
+			Shortcut::Render::RESET_CAMERA_CONTROLLER, this, &RenderWidget::_onShortcutResetCameraController );
+
+		Shortcut::createLocal( Shortcut::Render::TOGGLE_CAMERA, this, &RenderWidget::_onShortcutToggleCamera );
+
+		Shortcut::createLocal( Shortcut::Render::ADD_VIEWPOINT, this, &RenderWidget::_onShortcutAddViewpoint );
+
+		Shortcut::createLocal( Shortcut::Render::SNAPSHOT, this, &RenderWidget::_onShortcutSnapshot );
+		Shortcut::createLocal(
+			Shortcut::Render::TOGGLE_ALL_OVERLAYS, this, &RenderWidget::_onShortcutToggleAllOverlays );
+
 #ifndef VTX_PRODUCTION
-		shortcut = new QShortcut( QKeySequence( tr( "F7" ) ), this );
-		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
-		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutChangeRenderMode );
-		shortcut = new QShortcut( QKeySequence( tr( "Space" ) ), this );
-		shortcut->setContext( Qt::WidgetWithChildrenShortcut );
-		connect( shortcut, &QShortcut::activated, this, &RenderWidget::_onShortcutPrintCameraInfos );
+		Shortcut::createLocal( Shortcut::Dev::CHANGE_RENDER_MODE, this, &RenderWidget::_onShortcutChangeRenderMode );
+
+		Shortcut::createLocal( Shortcut::Dev::PRINT_CAMERA_INFOS, this, &RenderWidget::_onShortcutPrintCameraInfos );
 #endif
 	}
 
@@ -212,7 +211,11 @@ namespace VTX::UI::Widget::Render
 
 	void RenderWidget::_onShortcutResetCameraController() { VTX_ACTION( new Action::Main::ResetCameraController() ); }
 
-	void RenderWidget::_onShortcutToggleCamera() { VTX_ACTION( new Action::Main::ToggleCamera() ); }
+	void RenderWidget::_onShortcutToggleCamera()
+	{
+		const bool changeToPerspective = !VTX_SETTING().getCameraPerspective();
+		VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
+	}
 
 	void RenderWidget::_onShortcutAddViewpoint() { VTX_ACTION( new Action::Viewpoint::Create() ); }
 
@@ -230,6 +233,21 @@ namespace VTX::UI::Widget::Render
 	}
 
 	void RenderWidget::_onShortcutPrintCameraInfos() { VTXApp::get().getScene().getCamera().print(); }
+
+	void RenderWidget::_onShortcutToggleAllOverlays()
+	{
+		bool visibleState = true;
+		for ( auto pairIdOverlay : _overlays )
+		{
+			if ( pairIdOverlay.second->isVisible() )
+			{
+				visibleState = false;
+				break;
+			}
+		}
+
+		showAllOverlays( visibleState );
+	}
 
 	void RenderWidget::localize()
 	{
@@ -281,9 +299,19 @@ namespace VTX::UI::Widget::Render
 
 		overlay->updatePosition( contentsRect().size() );
 	}
-	void RenderWidget::hideOverlay( const Overlay::OVERLAY & p_overlay )
+	void RenderWidget::setOverlayVisibility( const Overlay::OVERLAY & p_overlay, const bool p_visible )
 	{
-		_overlays[ p_overlay ]->setVisible( false );
+		_overlays[ p_overlay ]->setVisible( p_visible );
+		VTX_EVENT( new Event::VTXEvent( Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE ) );
+	}
+	void RenderWidget::showAllOverlays( const bool p_show )
+	{
+		for ( auto pairIdOverlay : _overlays )
+		{
+			pairIdOverlay.second->setVisible( p_show );
+		}
+
+		VTX_EVENT( new Event::VTXEvent( Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE ) );
 	}
 
 	Overlay::BaseOverlay * RenderWidget::getOverlay( const Overlay::OVERLAY & p_overlay )
@@ -295,7 +323,18 @@ namespace VTX::UI::Widget::Render
 			return nullptr;
 		}
 
-		return _overlays[ p_overlay ];
+		return mapIt->second;
+	}
+	const Overlay::BaseOverlay * RenderWidget::getOverlay( const Overlay::OVERLAY & p_overlay ) const
+	{
+		auto mapIt = _overlays.find( p_overlay );
+
+		if ( mapIt == _overlays.end() )
+		{
+			return nullptr;
+		}
+
+		return mapIt->second;
 	}
 
 	Overlay::BaseOverlay * RenderWidget::_instantiateOverlay( const Overlay::OVERLAY & p_overlayType )

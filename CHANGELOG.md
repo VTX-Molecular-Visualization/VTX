@@ -1,5 +1,47 @@
 # Change Log
 
+## [0.4.0] (beta) - 2022-03-XX
+
+### New features
+
+- Add SES representation for molecules.
+- Add an orthographic camera.
+- Add functionality to compute RMSD and Structural Alignments on molecules.
+- Add a layer called Category in the molecule hierarchy to group chains that contain the same type of residues (Categories are Polymer, Carbohydrate, Ligand, Ion, Solvent and Water).
+- Add ability to load a trajectory file on a loaded molecule.
+- Add a functionality to duplicate a single frame of a dynamic in a new molecule.
+
+### Debug
+
+- Debug issues with extract and duplicate functions.
+- Debug issues with molecule export.
+- Debug issues with sequence window.
+- Debug transform modification when multiple molecules were selected.
+
+### Optimizations
+
+- Computation of SS (and SES) done when needed instead of compute it at molecule loading.
+- Optimization of Show/Hide functions.
+- Optimization of sequence generation for molecules with numerous unknown residues.
+- Add a menu to display a specific inspector in the molecule hierarchy (i.e. display the inspector of all chains instead of the inspector of the molecule when the molecule is fully selected)
+
+### UI
+
+- Add a quick access to render effect presets in the render view.
+- Visualization tab in main menu splitted into Camera and Molecule tabs.
+- Export Molecule button duplicated in the Home tab.
+- Add a quick access to background color in the main menu.
+- Move camera parameters from Render Effects settings to VTX settings.
+- Update Settings window layout.
+- Display representations of children in the representation inspector.
+- Display more data in the information section of the chain inspector.
+- Limits number of bonds displayed in the inspector to 100.
+
+### Other
+
+- Update chemfiles to version 0.10.3.
+- Split translation speed factor into acceleration and deceleration speed factor for camera movements.
+
 ## [0.3.0] (beta) - 2022-05-23
 
 ### New features

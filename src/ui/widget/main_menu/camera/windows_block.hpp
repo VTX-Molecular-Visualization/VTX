@@ -34,6 +34,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 		void _refreshButton( const ID::VTX_ID & p_id );
 		void _updateFullscreenButton( const WindowMode & p_mode );
+		void _refreshOverlayVisibilityMenu() const;
 
 	  private:
 		// !V0.1
@@ -42,6 +43,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 		MenuToolButtonWidget * _fullscreen			 = nullptr;
 		MenuToolButtonWidget * _windowComboBoxButton = nullptr;
+		QMenu *				   _overlaysMenu		 = nullptr;
 		MenuToolButtonWidget * _settingsButton		 = nullptr;
 
 		QMenu * _windowsMenu = nullptr;
@@ -51,6 +53,8 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		void _instantiateButton( const ID::VTX_ID & p_id,
 								 void ( WindowsBlock::*p_action )(),
 								 const QKeySequence & p_shortcut = 0 );
+
+		void _toggleOverlayVisibilityAction( QAction * const p_action );
 
 		void _toggleSceneWindow();
 		void _toggleRenderWindow();

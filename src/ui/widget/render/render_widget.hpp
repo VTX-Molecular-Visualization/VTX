@@ -35,8 +35,11 @@ namespace VTX::UI::Widget::Render
 		const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
 		void displayOverlay( const Overlay::OVERLAY & p_overlay, const Overlay::OVERLAY_ANCHOR & p_position );
-		void hideOverlay( const Overlay::OVERLAY & p_overlay );
-		Overlay::BaseOverlay * getOverlay( const Overlay::OVERLAY & p_overlay );
+		Overlay::BaseOverlay *		 getOverlay( const Overlay::OVERLAY & p_overlay );
+		const Overlay::BaseOverlay * getOverlay( const Overlay::OVERLAY & p_overlay ) const;
+
+		void setOverlayVisibility( const Overlay::OVERLAY & p_overlay, const bool p_visible );
+		void showAllOverlays( const bool p_show );
 
 		void			 receiveEvent( const Event::VTXEvent & p_event ) override;
 		const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::RENDER_WIDGET; }
@@ -96,6 +99,7 @@ namespace VTX::UI::Widget::Render
 		void _onShortcutSnapshot();
 		void _onShortcutChangeRenderMode();
 		void _onShortcutPrintCameraInfos();
+		void _onShortcutToggleAllOverlays();
 	};
 } // namespace VTX::UI::Widget::Render
 #endif
