@@ -103,7 +103,7 @@ namespace VTX::Renderer::GL
 
 		inline void destroy()
 		{
-			// if ( _gl->glIsBuffer( _id ) )
+			if ( _gl->glIsBuffer( _id ) )
 			{
 				assert( _target == Target::NONE );
 

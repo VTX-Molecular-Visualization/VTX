@@ -181,7 +181,6 @@ namespace VTX
 					}
 					_defaultRepresentationIDs.shrink_to_fit();
 				}
-				computeAllRepresentationData();
 
 				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ], _atomPositionsFrames.size() > 1 );
 				_buffer->setAtomRadius( _bufferAtomRadius );
@@ -193,6 +192,8 @@ namespace VTX
 				{
 					_buffer->setBonds( _bufferBonds );
 				}
+
+				computeAllRepresentationData();
 			}
 		}
 
