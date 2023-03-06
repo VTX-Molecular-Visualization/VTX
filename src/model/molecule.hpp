@@ -279,7 +279,6 @@ namespace VTX
 
 			// Solvent excluded surface.
 			void createSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum );
-			void refreshSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum );
 			void refreshSolventExcludedSurfaces();
 
 			// Categorization

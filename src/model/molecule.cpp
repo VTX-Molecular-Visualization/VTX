@@ -498,8 +498,16 @@ namespace VTX
 		{
 			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 			refreshBondsBuffer();
+
+			// Refresh SS.
 			refreshSecondaryStructure();
-			refreshSolventExcludedSurfaces();
+
+			// Delete SES, will be recomputed when needed.
+			for ( auto & [ categoryEnum, sesCurrent ] : _solventExcludedSurfaces )
+			{
+				MVC::MvcManager::get().deleteModel( sesCurrent );
+			}
+			_solventExcludedSurfaces.clear();
 		}
 
 		void Molecule::refreshColors()
@@ -936,15 +944,6 @@ namespace VTX
 					&getCategory( p_categoryEnum ) );
 			_solventExcludedSurfaces.emplace( p_categoryEnum, ses );
 			ses->init();
-		}
-
-		void Molecule::refreshSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum )
-		{
-			assert( hasSolventExcludedSurface( p_categoryEnum ) );
-
-			MVC::MvcManager::get().deleteModel( _solventExcludedSurfaces[ p_categoryEnum ] );
-			_solventExcludedSurfaces.erase( p_categoryEnum );
-			createSolventExcludedSurface( p_categoryEnum );
 		}
 
 		void Molecule::refreshSolventExcludedSurfaces()
