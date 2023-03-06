@@ -86,15 +86,20 @@ namespace VTX::IO::Reader
 		// Fill other frames.
 		Tool::Chrono timeReadingFrames;
 		timeReadingFrames.start();
-		int startingFrame = 1;
+		int startingFrame	= 1;
+		int validFrameCount = 0;
 		for ( uint frameIdx = 0; frameIdx < p_trajectory.nsteps() - p_trajectoryFrameStart; ++frameIdx )
 		{
 			const std::vector<Vec3f> atomPositions = readTrajectoryFrame( p_trajectory );
 
+			if ( atomPositions.size() <= 0 )
+				continue;
+
 			for ( const std::pair<Model::Molecule *, uint> & pairMoleculeStartFrame : p_targets )
 			{
 				fillTrajectoryFrame(
-					*pairMoleculeStartFrame.first, pairMoleculeStartFrame.second + frameIdx, atomPositions );
+					*pairMoleculeStartFrame.first, pairMoleculeStartFrame.second + validFrameCount, atomPositions );
+				validFrameCount++;
 			}
 
 #ifdef _DEBUG

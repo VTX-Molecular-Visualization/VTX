@@ -274,6 +274,7 @@ namespace VTX
 				if ( atom == nullptr )
 					continue;
 
+				// Compute AABB on all frames to ensure that all the trajectory may be visible with an orient
 				const uint	atomIndex  = atom->getIndex();
 				const float atomRadius = atom->getVdwRadius();
 				for ( const AtomPositionsFrame & frame : _atomPositionsFrames )
