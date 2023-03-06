@@ -67,7 +67,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		_exportImageIcon.generateIcons( QImage( ":/sprite/screenshot_icon.png" ) );
 		QAction * const exportImageAction = addAction( _exportImageIcon.getIcon(), "" );
 		_exportImageButton				  = dynamic_cast<QToolButton *>( widgetForAction( exportImageAction ) );
-		renderEffectButton->setToolTip( "Export Image..." );
+		_exportImageButton->setToolTip( "Export Image..." );
 
 		_refreshRenderEffectMenu();
 		_attachViewOnAppliedRenderEffect();
