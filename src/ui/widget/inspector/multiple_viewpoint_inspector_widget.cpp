@@ -78,7 +78,7 @@ namespace VTX::UI::Widget::Inspector
 
 			for ( const Model::Viewpoint * viewpoint : targets )
 			{
-				if ( bool( p_flag & SectionFlag::INFOS ) )
+				if ( bool( p_flag & SectionFlag::TRANSFORM ) )
 				{
 					if ( !_transformWidget->hasDifferentData() )
 					{
@@ -88,28 +88,31 @@ namespace VTX::UI::Widget::Inspector
 					}
 				}
 
-				CustomWidget::EmbeddedDataPushButton * const gotoButton
-					= new CustomWidget::EmbeddedDataPushButton( this );
-				const Model::ID & id = viewpoint->getId();
-				gotoButton->setData( QVariant::fromValue<Model::ID>( id ) );
+				if ( bool( p_flag & SectionFlag::INFOS ) )
+				{
+					CustomWidget::EmbeddedDataPushButton * const gotoButton
+						= new CustomWidget::EmbeddedDataPushButton( this );
+					const Model::ID & id = viewpoint->getId();
+					gotoButton->setData( QVariant::fromValue<Model::ID>( id ) );
 
-				QString gotoButtonTxt;
+					QString gotoButtonTxt;
 
-				if ( targets.size() == 1 )
-					gotoButtonTxt = "Go to";
-				else
-					gotoButtonTxt = QString::fromStdString( "Go to " + viewpoint->getDefaultName() );
+					if ( targets.size() == 1 )
+						gotoButtonTxt = "Go to";
+					else
+						gotoButtonTxt = QString::fromStdString( "Go to " + viewpoint->getDefaultName() );
 
-				gotoButton->setText( gotoButtonTxt );
+					gotoButton->setText( gotoButtonTxt );
 
-				connect( gotoButton,
-						 &CustomWidget::EmbeddedDataPushButton::embeddedDataclicked,
-						 this,
-						 &MultipleViewpointWidget::_goToAction );
+					connect( gotoButton,
+							 &CustomWidget::EmbeddedDataPushButton::embeddedDataclicked,
+							 this,
+							 &MultipleViewpointWidget::_goToAction );
 
-				_actionContainer->layout()->addWidget( gotoButton );
+					_actionContainer->layout()->addWidget( gotoButton );
 
-				_gotoButtons.emplace_back( gotoButton );
+					_gotoButtons.emplace_back( gotoButton );
+				}
 			}
 		}
 	}
@@ -179,10 +182,13 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleViewpointWidget::_resetFieldStates( const SectionFlag & p_flag )
 	{
-		if ( bool( p_flag & SectionFlag::INFOS ) )
+		if ( bool( p_flag & SectionFlag::TRANSFORM ) )
 		{
 			_transformWidget->resetState();
+		}
 
+		if ( bool( p_flag & SectionFlag::INFOS ) )
+		{
 			while ( _gotoButtons.size() > 0 )
 			{
 				_actionContainer->layout()->removeWidget( _gotoButtons.back() );
