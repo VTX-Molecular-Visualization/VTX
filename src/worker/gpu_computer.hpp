@@ -17,25 +17,32 @@ namespace VTX::Worker
 	class GpuComputer : public Worker::BaseWorker, public Generic::BaseOpenGL
 	{
 	  public:
-		explicit GpuComputer( const IO::FilePath & p_shader,
-							  const size_t		   p_size,
-							  const std::string &  p_customDefines = "" ) :
+		explicit GpuComputer( const IO::FilePath &									   p_shader,
+							  const size_t											   p_size,
+							  const std::vector<std::pair<std::string, std::string>> & p_customDefines = {} ) :
 			GpuComputer( p_shader, _computeSize( p_size ), p_customDefines )
 		{
 		}
 
 		explicit GpuComputer( const IO::FilePath & p_shader,
-							  const Vec3i &		   p_size		   = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ),
-							  const std::string &  p_customDefines = "" ) :
+							  const Vec3i &		   p_size = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ),
+							  const std::vector<std::pair<std::string, std::string>> & p_customDefines = {} ) :
 			_size( p_size )
 
 		{
-			const std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
-												+ "#define LOCAL_SIZE_Y " + std::to_string( LOCAL_SIZE_Y ) + "\n"
-												+ "#define LOCAL_SIZE_Z " + std::to_string( LOCAL_SIZE_Z ) + "\n"
-												+ p_customDefines;
+			std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
+										  + "#define LOCAL_SIZE_Y " + std::to_string( LOCAL_SIZE_Y ) + "\n"
+										  + "#define LOCAL_SIZE_Z " + std::to_string( LOCAL_SIZE_Z ) + "\n";
+
+			std::string shaderNameSuffix = "";
+			for ( const std::pair<std::string, std::string> & p_define : p_customDefines )
+			{
+				definesToInject += "#define " + p_define.first + " " + p_define.second + "\n";
+				shaderNameSuffix += p_define.second;
+			}
+
 			_program = VTX_PROGRAM_MANAGER().createProgram(
-				p_shader.filenameWithoutExtension(), { p_shader }, definesToInject );
+				p_shader.filenameWithoutExtension(), { p_shader }, definesToInject, shaderNameSuffix );
 		}
 
 		virtual ~GpuComputer() = default;

@@ -49,6 +49,7 @@ namespace VTX
 			VTX_DEBUG( "Creating SES..." );
 
 			_buffer->makeContextCurrent();
+			_buffer->finish();
 
 			const std::vector<uint> atomsIdx = _category->generateAtomIndexList();
 
@@ -620,8 +621,15 @@ namespace VTX
 			Buffer & bufferIndices	  = _buffer->getBufferIndices();
 			Buffer & bufferAtomColors = _category->getMoleculePtr()->getBuffer()->getBufferColors();
 			Buffer	 bufferAtomsToTriangles( _atomsToTriangles );
-			Buffer	 bufferCounters( std::vector<uint>( _indiceCount, 0 ) );
-			Buffer	 bufferColorsUint( std::vector<Vec4u>( _indiceCount, Vec4u() ) );
+			Buffer	 bufferCounters( _indiceCount * sizeof( uint ) );
+			Buffer	 bufferColorsUint( _indiceCount * sizeof( Vec4u ) );
+
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			VTX_WORKER( new Worker::GpuBufferInitializer( bufferCounters, _indiceCount ) );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			VTX_WORKER(
+				new Worker::GpuBufferInitializer( bufferColorsUint, _indiceCount, "uvec4", "std140", "uvec4(0)" ) );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
 			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
@@ -634,7 +642,6 @@ namespace VTX
 
 			worker.getProgram().use();
 			worker.getProgram().setUInt( "uSize", uint( _atomsToTriangles.size() ) );
-			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			worker.start( _atomsToTriangles.size() );
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
@@ -653,7 +660,6 @@ namespace VTX
 
 			worker.getProgram().use();
 			worker.getProgram().setUInt( "uSize", _indiceCount );
-			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			worker.start( _indiceCount );
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
@@ -680,6 +686,7 @@ namespace VTX
 			Buffer & bufferAtomVisibilities = _category->getMoleculePtr()->getBuffer()->getBufferVisibilities();
 			Buffer	 bufferAtomsToTriangles( _atomsToTriangles );
 
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			VTX_WORKER( new Worker::GpuBufferInitializer( bufferVisibilities, _indiceCount ) );
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
@@ -692,7 +699,6 @@ namespace VTX
 
 			worker.getProgram().use();
 			worker.getProgram().setUInt( "uSize", uint( _atomsToTriangles.size() ) );
-			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			worker.start( _atomsToTriangles.size() );
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
@@ -720,6 +726,7 @@ namespace VTX
 			Buffer & bufferAtomSelections = _category->getMoleculePtr()->getBuffer()->getBufferSelections();
 			Buffer	 bufferAtomsToTriangles( _atomsToTriangles );
 
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			VTX_WORKER( new Worker::GpuBufferInitializer( bufferSelections, _indiceCount ) );
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
@@ -732,7 +739,6 @@ namespace VTX
 
 			worker.getProgram().use();
 			worker.getProgram().setUInt( "uSize", uint( _atomsToTriangles.size() ) );
-			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			worker.start( _atomsToTriangles.size() );
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
