@@ -372,7 +372,7 @@ namespace VTX
 			bufferSelections.set( _indiceCount * sizeof( uint ) );
 
 			// Input.
-			Buffer bufferAtomIds( _category->getMoleculePtr()->getBufferAtomIds() );
+			Buffer & bufferAtomIds = _category->getMoleculePtr()->getBuffer()->getBufferIds();
 			Buffer bufferAtomToTriangle( _atomsToTriangles );
 
 			// Bind.
