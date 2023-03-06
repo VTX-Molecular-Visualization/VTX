@@ -49,7 +49,6 @@ namespace VTX
 			VTX_DEBUG( "Creating SES..." );
 
 			_buffer->makeContextCurrent();
-			_buffer->finish();
 
 			const std::vector<uint> atomsIdx = _category->generateAtomIndexList();
 
@@ -586,12 +585,11 @@ namespace VTX
 			chrono2.stop();
 			VTX_DEBUG( "Normals computed in {}s", chrono2.elapsedTime() );
 
-			_buffer->finish();
 			_buffer->doneContextCurrent();
 
 			////////////////////////////
 			// Refresh other data.
-			refreshColors();
+			// refreshColors();
 			refreshVisibilities();
 			refreshSelections();
 
