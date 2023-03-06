@@ -373,7 +373,7 @@ namespace VTX
 
 			// Input.
 			Buffer & bufferAtomIds = _category->getMoleculePtr()->getBuffer()->getBufferIds();
-			Buffer bufferAtomToTriangle( _atomsToTriangles );
+			Buffer	 bufferAtomToTriangle( _atomsToTriangles );
 
 			// Bind.
 			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
@@ -590,7 +590,7 @@ namespace VTX
 
 			////////////////////////////
 			// Refresh other data.
-			// refreshColors();
+			refreshColors();
 			refreshVisibilities();
 			refreshSelections();
 
