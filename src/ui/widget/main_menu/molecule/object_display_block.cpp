@@ -71,7 +71,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 		connect( _showIon, &MenuToolButtonWidget::clicked, this, &ObjectDisplayBlock::_toggleIonVisibilityAction );
 	}
-	void ObjectDisplayBlock::localize() { setTitle( "Object Display" ); }
+	void ObjectDisplayBlock::localize() { setTitle( "Element Visibility" ); }
 
 	void ObjectDisplayBlock::_refreshButtons()
 	{

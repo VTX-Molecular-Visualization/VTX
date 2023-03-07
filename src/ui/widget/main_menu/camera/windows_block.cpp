@@ -38,7 +38,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		MenuToolBlockWidget::_setupUi( p_name );
 
 		_windowComboBoxButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "windowsButton" );
-		_windowComboBoxButton->setData( "Display", ":/sprite/windows_icon.png", Qt::Orientation::Vertical );
+		_windowComboBoxButton->setData( "Panels", ":/sprite/windows_icon.png", Qt::Orientation::Vertical );
 		pushButton( *_windowComboBoxButton, 0 );
 
 		_overlaysMenu = new QMenu( this );

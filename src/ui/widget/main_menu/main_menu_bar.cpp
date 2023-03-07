@@ -37,7 +37,7 @@ namespace VTX::UI::Widget::MainMenu
 
 		Camera::Toolbar * const cameraMenu
 			= WidgetFactory::get().instantiateWidget<Camera::Toolbar>( _tabWidget, "cameraMenu" );
-		_tabWidget->addTab( cameraMenu, "Camera" );
+		_tabWidget->addTab( cameraMenu, "Visualization" );
 
 		Molecule::Toolbar * const moleculeMenu
 			= WidgetFactory::get().instantiateWidget<Molecule::Toolbar>( _tabWidget, "moleculeMenu" );
