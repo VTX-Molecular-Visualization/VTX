@@ -4,6 +4,7 @@
 #include "mesh_triangle.hpp"
 #include "model/selection.hpp"
 #include "object3d/helper/grid.hpp"
+#include "renderer/gl/buffer.hpp"
 
 namespace VTX
 {
@@ -46,6 +47,7 @@ namespace VTX
 			const Model::Category * const _category;
 
 			std::vector<Range> _atomsToTriangles;
+
 			// Move to base class?
 			uint _indiceCount = 0;
 

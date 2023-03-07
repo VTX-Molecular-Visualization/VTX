@@ -50,7 +50,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 		_openTrajectoryButton->setTriggerAction( this, &MenuHomeMoleculeWidget::_openTrajectory );
 		_exportSelectionButton->setTriggerAction( this, &MenuHomeMoleculeWidget::_exportSelection );
 	}
-	void MenuHomeMoleculeWidget::localize() { setTitle( "Molecule Action" ); }
+	void MenuHomeMoleculeWidget::localize() { setTitle( "Molecule" ); }
 
 	void MenuHomeMoleculeWidget::_exportSelection() const { UI::Dialog::openExportMoleculeDialog(); }
 	void MenuHomeMoleculeWidget::_openTrajectory() const { UI::Dialog::openLoadTrajectoryDialog(); }

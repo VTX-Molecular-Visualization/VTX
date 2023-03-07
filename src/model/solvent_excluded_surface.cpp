@@ -7,11 +7,12 @@
 #include "molecule.hpp"
 #include "object3d/helper/aabb.hpp"
 #include "object3d/scene.hpp"
-#include "renderer/gl/buffer.hpp"
 #include "residue.hpp"
 #include "selection/selection_manager.hpp"
 #include "view/d3/triangle.hpp"
+#include "worker/gpu_buffer_initializer.hpp"
 #include "worker/gpu_computer.hpp"
+#include "worker/worker_manager.hpp"
 
 #define VOXEL_SIZE 0.4f
 
@@ -54,7 +55,7 @@ namespace VTX
 			// Sort atoms in acceleration grid.
 			const float maxVdWRadius = *std::max_element(
 				Atom::SYMBOL_VDW_RADIUS, Atom::SYMBOL_VDW_RADIUS + std::size( Atom::SYMBOL_VDW_RADIUS ) );
-			const Object3D::Helper::AABB & molAABB = _category->getAABB();
+			const Object3D::Helper::AABB molAABB = _category->getAABB();
 
 			const float atomGridCellSize = PROBE_RADIUS + maxVdWRadius;
 			const Vec3f gridMin			 = molAABB.getMin() - atomGridCellSize;
@@ -351,27 +352,28 @@ namespace VTX
 
 			// Create SSBOs.
 			// Output.
-			Buffer & bufferPositions	= _buffer->getBufferPositions();
-			Buffer & bufferNormals		= _buffer->getBufferNormals();
-			Buffer & bufferIndices		= _buffer->getBufferIndices();
-			Buffer & bufferColors		= _buffer->getBufferColors();
-			Buffer & bufferVisibilities = _buffer->getBufferVisibilities();
-			Buffer & bufferIds			= _buffer->getBufferIds();
-			Buffer & bufferSelections	= _buffer->getBufferSelections();
+			Buffer & bufferPositions		= _buffer->getBufferPositions();
+			Buffer & bufferNormals			= _buffer->getBufferNormals();
+			Buffer & bufferIndices			= _buffer->getBufferIndices();
+			Buffer & bufferColors			= _buffer->getBufferColors();
+			Buffer & bufferVisibilities		= _buffer->getBufferVisibilities();
+			Buffer & bufferIds				= _buffer->getBufferIds();
+			Buffer & bufferSelections		= _buffer->getBufferSelections();
+			Buffer & bufferAtomsToTriangles = _buffer->getBufferAtomsToTriangles();
 
 			// Create final buffers.
 			bufferPositions.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
-			bufferNormals.set( std::vector<Vec4f>( _indiceCount, Vec4f() ), Buffer::Flags::MAP_WRITE_BIT );
+			bufferNormals.set( std::vector<Vec4f>( _indiceCount, Vec4f() ) );
 			bufferIndices.set( _indiceCount * sizeof( uint ),
 							   Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
-			bufferColors.set( _indiceCount * sizeof( Color::Rgba ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
-			bufferVisibilities.set( std::vector<uint>( _indiceCount, 1 ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
+			bufferColors.set( _indiceCount * sizeof( Color::Rgba ) );
+			bufferVisibilities.set( _indiceCount * sizeof( uint ) );
 			bufferIds.set( _indiceCount * sizeof( uint ) );
-			bufferSelections.set( _indiceCount * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
+			bufferSelections.set( _indiceCount * sizeof( uint ) );
 
 			// Input.
-			Buffer bufferAtomIds( _category->getMoleculePtr()->getBufferAtomIds() );
-			Buffer bufferAtomToTriangle( _atomsToTriangles );
+			Buffer & bufferAtomIds = _category->getMoleculePtr()->getBuffer()->getBufferIds();
+			bufferAtomsToTriangles.set( _atomsToTriangles );
 
 			// Bind.
 			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
@@ -380,7 +382,7 @@ namespace VTX
 			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
 			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
-			bufferAtomToTriangle.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
+			bufferAtomsToTriangles.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
 			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
 			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
 
@@ -400,7 +402,8 @@ namespace VTX
 			bufferIds.unbind();
 			bufferPositionsTmp.unbind();
 			bufferAtomIndicesTmp.unbind();
-			bufferAtomToTriangle.unbind();
+			bufferTriangleValidities.unbind();
+			bufferAtomsToTriangles.unbind();
 			bufferAtomIds.unbind();
 			bufferTrianglesPerAtom.unbind();
 
@@ -412,9 +415,9 @@ namespace VTX
 			// Weld vertices.
 			std::vector<uint> sortedIndices( _indiceCount );
 
-			Vec4f * ptrPositions
+			Vec4f * const ptrPositions
 				= bufferPositions.map<Vec4f>( 0, _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
-			uint * ptrIndices = bufferIndices.map<uint>(
+			uint * const ptrIndices = bufferIndices.map<uint>(
 				0,
 				_indiceCount * sizeof( uint ),
 				Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
@@ -583,7 +586,6 @@ namespace VTX
 			chrono2.stop();
 			VTX_DEBUG( "Normals computed in {}s", chrono2.elapsedTime() );
 
-			_buffer->finish();
 			_buffer->doneContextCurrent();
 
 			////////////////////////////
@@ -607,7 +609,6 @@ namespace VTX
 			VTX_DEBUG( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
-		// TODO: use a shader with molecule buffer as SSBO.
 		void SolventExcludedSurface::refreshColors()
 		{
 			Tool::Chrono chrono;
@@ -616,55 +617,62 @@ namespace VTX
 			using VTX::Renderer::GL::Buffer;
 			_buffer->makeContextCurrent();
 
-			// Map buffers.
-			const Buffer & bufferIndices = _buffer->getBufferIndices();
-			const Buffer & bufferColors	 = _buffer->getBufferColors();
-			uint * const   ptrIndices	 = bufferIndices.map<uint>( Buffer::Access::READ_ONLY );
-			// Color::Rgba * const ptrColors	  = bufferColors.map<Color::Rgba>( Buffer::Access::WRITE_ONLY );
+			Buffer & bufferColors			= _buffer->getBufferColors();
+			Buffer & bufferIndices			= _buffer->getBufferIndices();
+			Buffer & bufferAtomsToTriangles = _buffer->getBufferAtomsToTriangles();
+			Buffer & bufferAtomColors		= _category->getMoleculePtr()->getBuffer()->getBufferColors();
+			Buffer	 bufferCounters( _indiceCount * sizeof( uint ) );
+			Buffer	 bufferColorsUint( _indiceCount * sizeof( Vec4u ) );
 
-			// Apply color.
-			const std::vector<Color::Rgba> & bufferAtomColors = _category->getMoleculePtr()->getBufferAtomColors();
-			std::vector<Color::Rgba>		 colors( _indiceCount, Color::Rgba() );
-			std::vector<uint>				 counters( _indiceCount, 0 );
-			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
-			{
-				const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
-				if ( atom == nullptr )
-				{
-					continue;
-				}
-
-				// Can be better
-				for ( uint i = 0; i < _atomsToTriangles[ atomIdx ].count; ++i )
-				{
-					// ptrColors[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ] = bufferAtomColors[ atomIdx ];
-					colors[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ] += bufferAtomColors[ atomIdx ];
-					counters[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ]++;
-				}
-			}
-
-			for ( uint i = 0; i < colors.size(); ++i )
-			{
-				if ( counters[ i ] > 0 )
-				{
-					colors[ i ] /= counters[ i ];
-				}
-			}
-
-			// Set data.
-			bufferColors.setSub( colors );
-
-			// Unmap.
-			bufferIndices.unmap();
-			// bufferColors.unmap();
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			VTX_WORKER( new Worker::GpuBufferInitializer( bufferCounters, _indiceCount ) );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			VTX_WORKER(
+				new Worker::GpuBufferInitializer( bufferColorsUint, _indiceCount, "uvec4", "std140", "uvec4(0)" ) );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferAtomColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferAtomsToTriangles.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
+			bufferColorsUint.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
+
+			Worker::GpuComputer worker( IO::FilePath( "ses/apply_color.comp" ) );
+
+			worker.getProgram().use();
+			worker.getProgram().setUInt( "uSize", uint( _atomsToTriangles.size() ) );
+			worker.start( _atomsToTriangles.size() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+			bufferColors.unbind();
+			bufferIndices.unbind();
+			bufferAtomColors.unbind();
+			bufferAtomsToTriangles.unbind();
+			bufferCounters.unbind();
+			bufferColorsUint.unbind();
+
+			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferColorsUint.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+
+			worker = Worker::GpuComputer( IO::FilePath( "ses/apply_color_divide.comp" ) );
+
+			worker.getProgram().use();
+			worker.getProgram().setUInt( "uSize", _indiceCount );
+			worker.start( _indiceCount );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+			bufferColors.unbind();
+			bufferCounters.unbind();
+			bufferColorsUint.unbind();
+
 			_buffer->doneContextCurrent();
 
 			chrono.stop();
 			VTX_DEBUG( "SES color refreshed in {}s", chrono.elapsedTime() );
 		}
 
-		// TODO: use a shader with molecule buffer as SSBO.
 		void SolventExcludedSurface::refreshVisibilities()
 		{
 			Tool::Chrono chrono;
@@ -673,42 +681,38 @@ namespace VTX
 			using VTX::Renderer::GL::Buffer;
 			_buffer->makeContextCurrent();
 
-			// Map buffers.
-			const Buffer & bufferIndices	  = _buffer->getBufferIndices();
-			const Buffer & bufferVisibilities = _buffer->getBufferVisibilities();
-			uint * const   ptrIndices		  = bufferIndices.map<uint>( Buffer::Access::READ_ONLY );
+			Buffer & bufferVisibilities		= _buffer->getBufferVisibilities();
+			Buffer & bufferIndices			= _buffer->getBufferIndices();
+			Buffer & bufferAtomsToTriangles = _buffer->getBufferAtomsToTriangles();
+			Buffer & bufferAtomVisibilities = _category->getMoleculePtr()->getBuffer()->getBufferVisibilities();
 
-			// Apply visibility.
-			const std::vector<uint> & bufferAtomVisiblities = _category->getMoleculePtr()->getBufferAtomVisibilities();
-			std::vector<uint>		  visibilities( _indiceCount, 1 );
-			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
-			{
-				const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
-				if ( atom == nullptr )
-				{
-					continue;
-				}
-
-				for ( uint i = 0; i < _atomsToTriangles[ atomIdx ].count; ++i )
-				{
-					visibilities[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ]
-						|= bufferAtomVisiblities[ atomIdx ];
-				}
-			}
-
-			// Set data.
-			bufferVisibilities.setSub( visibilities );
-
-			// Unmap.
-			bufferIndices.unmap();
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			VTX_WORKER( new Worker::GpuBufferInitializer( bufferVisibilities, _indiceCount ) );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+			bufferVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferAtomsToTriangles.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+
+			Worker::GpuComputer worker( IO::FilePath( "ses/apply_visibility.comp" ) );
+
+			worker.getProgram().use();
+			worker.getProgram().setUInt( "uSize", uint( _atomsToTriangles.size() ) );
+			worker.start( _atomsToTriangles.size() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+			bufferVisibilities.unbind();
+			bufferIndices.unbind();
+			bufferAtomVisibilities.unbind();
+			bufferAtomsToTriangles.unbind();
+
 			_buffer->doneContextCurrent();
 
 			chrono.stop();
 			VTX_DEBUG( "SES visibility refreshed in {}s", chrono.elapsedTime() );
 		}
 
-		// TODO: use a shader with molecule buffer as SSBO.
 		void SolventExcludedSurface::refreshSelections()
 		{
 			Tool::Chrono chrono;
@@ -717,35 +721,32 @@ namespace VTX
 			using VTX::Renderer::GL::Buffer;
 			_buffer->makeContextCurrent();
 
-			// Map buffers.
-			const Buffer & bufferIndices	= _buffer->getBufferIndices();
-			const Buffer & bufferSelections = _buffer->getBufferSelections();
-			uint * const   ptrIndices		= bufferIndices.map<uint>( Buffer::Access::READ_ONLY );
+			Buffer & bufferSelections		= _buffer->getBufferSelections();
+			Buffer & bufferIndices			= _buffer->getBufferIndices();
+			Buffer & bufferAtomsToTriangles = _buffer->getBufferAtomsToTriangles();
+			Buffer & bufferAtomSelections	= _category->getMoleculePtr()->getBuffer()->getBufferSelections();
 
-			// Apply selection.
-			const std::vector<uint> & bufferAtomSelections = _category->getMoleculePtr()->getBufferAtomSelections();
-			std::vector<uint>		  selections( _indiceCount, 0 );
-			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
-			{
-				const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
-				if ( atom == nullptr )
-				{
-					continue;
-				}
-
-				for ( uint i = 0; i < _atomsToTriangles[ atomIdx ].count; ++i )
-				{
-					selections[ ptrIndices[ _atomsToTriangles[ atomIdx ].first + i ] ]
-						|= bufferAtomSelections[ atomIdx ];
-				}
-			}
-
-			// Set data.
-			bufferSelections.setSub( selections );
-
-			// Unmap.
-			bufferIndices.unmap();
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			VTX_WORKER( new Worker::GpuBufferInitializer( bufferSelections, _indiceCount ) );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+			bufferSelections.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferAtomSelections.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferAtomsToTriangles.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+
+			Worker::GpuComputer worker( IO::FilePath( "ses/apply_selection.comp" ) );
+
+			worker.getProgram().use();
+			worker.getProgram().setUInt( "uSize", uint( _atomsToTriangles.size() ) );
+			worker.start( _atomsToTriangles.size() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+			bufferSelections.unbind();
+			bufferIndices.unbind();
+			bufferAtomSelections.unbind();
+			bufferAtomsToTriangles.unbind();
+
 			_buffer->doneContextCurrent();
 
 			chrono.stop();

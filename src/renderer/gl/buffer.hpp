@@ -103,14 +103,11 @@ namespace VTX::Renderer::GL
 
 		inline void destroy()
 		{
-			// FIXME
-			// assert( _gl->glIsBuffer( _id ) );
 			if ( _gl->glIsBuffer( _id ) )
 			{
 				assert( _target == Target::NONE );
 
 				_gl->glDeleteBuffers( 1, &_id );
-
 				_id = GL_INVALID_INDEX;
 			}
 		}

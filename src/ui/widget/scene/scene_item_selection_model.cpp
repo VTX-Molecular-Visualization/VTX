@@ -199,7 +199,10 @@ namespace VTX::UI::Widget::Scene
 
 					for ( const uint chainIndex : category.getChains() )
 					{
-						p_vectorId.emplace_back( molecule->getChain( chainIndex )->getId() );
+						const Model::Chain * const chainPtr = molecule->getChain( chainIndex );
+
+						if ( chainPtr != nullptr )
+							p_vectorId.emplace_back( chainPtr->getId() );
 					}
 				}
 				else

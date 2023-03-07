@@ -181,11 +181,9 @@ namespace VTX
 					}
 					_defaultRepresentationIDs.shrink_to_fit();
 				}
-				computeAllRepresentationData();
 
 				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ], _atomPositionsFrames.size() > 1 );
 				_buffer->setAtomRadius( _bufferAtomRadius );
-				_fillBufferAtomColors();
 				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 				_buffer->setAtomSelections( _bufferAtomSelections );
 				_buffer->setAtomIds( _bufferAtomIds );
@@ -193,6 +191,9 @@ namespace VTX
 				{
 					_buffer->setBonds( _bufferBonds );
 				}
+
+				computeAllRepresentationData();
+				_fillBufferAtomColors();
 			}
 		}
 
@@ -273,6 +274,7 @@ namespace VTX
 				if ( atom == nullptr )
 					continue;
 
+				// Compute AABB on all frames to ensure that all the trajectory may be visible with an orient
 				const uint	atomIndex  = atom->getIndex();
 				const float atomRadius = atom->getVdwRadius();
 				for ( const AtomPositionsFrame & frame : _atomPositionsFrames )
@@ -496,8 +498,16 @@ namespace VTX
 		{
 			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 			refreshBondsBuffer();
+
+			// Refresh SS.
 			refreshSecondaryStructure();
-			refreshSolventExcludedSurfaces();
+
+			// Delete SES, will be recomputed when needed.
+			for ( auto & [ categoryEnum, sesCurrent ] : _solventExcludedSurfaces )
+			{
+				MVC::MvcManager::get().deleteModel( sesCurrent );
+			}
+			_solventExcludedSurfaces.clear();
 		}
 
 		void Molecule::refreshColors()
@@ -934,15 +944,6 @@ namespace VTX
 					&getCategory( p_categoryEnum ) );
 			_solventExcludedSurfaces.emplace( p_categoryEnum, ses );
 			ses->init();
-		}
-
-		void Molecule::refreshSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum )
-		{
-			assert( hasSolventExcludedSurface( p_categoryEnum ) );
-
-			MVC::MvcManager::get().deleteModel( _solventExcludedSurfaces[ p_categoryEnum ] );
-			_solventExcludedSurfaces.erase( p_categoryEnum );
-			createSolventExcludedSurface( p_categoryEnum );
 		}
 
 		void Molecule::refreshSolventExcludedSurfaces()

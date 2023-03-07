@@ -28,7 +28,7 @@ namespace VTX::UI::Widget::MainMenu
 
 		Home::MenuHomeWidget * const mainMenu
 			= WidgetFactory::get().instantiateWidget<Home::MenuHomeWidget>( _tabWidget, "mainMenu" );
-		_tabWidget->addTab( mainMenu, "Home" );
+		_tabWidget->addTab( mainMenu, "File" );
 
 		// Visualization::MenuVisualizationWidget * const viewMenu
 		//	= WidgetFactory::get().instantiateWidget<Visualization::MenuVisualizationWidget>( _tabWidget,

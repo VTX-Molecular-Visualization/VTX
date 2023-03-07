@@ -219,6 +219,10 @@ namespace VTX
 		{
 			delete _mainWindow;
 		}
+		if ( _pathSceneData != nullptr )
+		{
+			delete _pathSceneData;
+		}
 	}
 
 	void VTXApp::goToState( const std::string & p_name, void * const p_arg )

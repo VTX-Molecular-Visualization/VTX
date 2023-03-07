@@ -10,12 +10,12 @@ namespace VTX::UI
 	{
 	  public:
 		template<typename T, typename Func>
-		static void createLocal( const QKeySequence & p_sequence, T * p_object, const Func & p_function )
+		static void createGlobal( const QKeySequence & p_sequence, T * const p_object, const Func & p_function )
 		{
 			create( p_sequence, p_object, p_function, Qt::ShortcutContext::WindowShortcut );
 		}
 		template<typename T, typename Func>
-		static void createGlobal( const QKeySequence & p_sequence, T * p_object, const Func & p_function )
+		static void createLocal( const QKeySequence & p_sequence, T * const p_object, const Func & p_function )
 		{
 			create( p_sequence, p_object, p_function, Qt::ShortcutContext::WidgetWithChildrenShortcut );
 		}
@@ -23,7 +23,7 @@ namespace VTX::UI
 	  private:
 		template<typename T, typename Func>
 		static void create( const QKeySequence &		p_sequence,
-							T *							p_object,
+							T * const					p_object,
 							const Func &				p_function,
 							const Qt::ShortcutContext & p_context = Qt::ShortcutContext ::WindowShortcut )
 		{

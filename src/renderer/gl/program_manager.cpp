@@ -47,19 +47,19 @@ namespace VTX::Renderer::GL
 
 	Program * const ProgramManager::createProgram( const std::string &				 p_name,
 												   const std::vector<IO::FilePath> & p_shaders,
-												   const std::string &				 p_toInject )
+												   const std::string &				 p_toInject,
+												   const std::string &				 p_suffix )
 	{
-		VTX_DEBUG( "Creating program: " + p_name );
-
-		if ( _programs.find( p_name ) == _programs.end() )
+		const std::string name = p_name + p_suffix;
+		if ( _programs.find( name ) == _programs.end() )
 		{
-			_programs[ p_name ] = new Program( p_shaders, p_toInject );
-			Program & program	= *_programs[ p_name ];
-			program.create( p_name );
+			_programs[ name ] = new Program( p_shaders, p_toInject );
+			Program & program = *_programs[ name ];
+			program.create( name );
 
 			for ( const IO::FilePath & shader : p_shaders )
 			{
-				GLuint id = _createShader( shader, p_toInject );
+				GLuint id = _createShader( shader, p_toInject, p_suffix );
 				if ( id != GL_INVALID_INDEX )
 				{
 					program.attachShader( id );
@@ -68,14 +68,10 @@ namespace VTX::Renderer::GL
 
 			program.link();
 
-			VTX_DEBUG( "Program " + std::to_string( _programs[ p_name ]->getId() ) + " created: " + p_name );
-		}
-		else
-		{
-			VTX_DEBUG( "Program " + p_name + " already exists" );
+			VTX_DEBUG( "Program " + std::to_string( _programs[ name ]->getId() ) + " created: " + p_name );
 		}
 
-		return _programs[ p_name ];
+		return _programs[ name ];
 	}
 
 	void ProgramManager::deleteProgram( const std::string & p_name )
@@ -100,12 +96,14 @@ namespace VTX::Renderer::GL
 		return nullptr;
 	}
 
-	GLuint ProgramManager::_createShader( const IO::FilePath & p_path, const std::string & p_toInject )
+	GLuint ProgramManager::_createShader( const IO::FilePath & p_path,
+										  const std::string &  p_toInject,
+										  const std::string &  p_suffix )
 	{
-		const std::string name = p_path.filename();
+		const std::string name = p_path.filename() + p_suffix;
 		VTX_DEBUG( "Creating shader: " + name );
 
-		const SHADER_TYPE type = getShaderType( name );
+		const SHADER_TYPE type = getShaderType( p_path );
 		if ( type == SHADER_TYPE::INVALID )
 		{
 			VTX_ERROR( "Invalid shader extension: " + name );
@@ -170,10 +168,6 @@ namespace VTX::Renderer::GL
 			}
 			_shaders.emplace( name, shaderId );
 			VTX_DEBUG( "Shader created: " + name );
-		}
-		else
-		{
-			VTX_DEBUG( "Shader already exists" );
 		}
 
 		return shaderId;
