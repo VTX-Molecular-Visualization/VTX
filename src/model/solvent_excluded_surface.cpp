@@ -7,7 +7,6 @@
 #include "molecule.hpp"
 #include "object3d/helper/aabb.hpp"
 #include "object3d/scene.hpp"
-#include "renderer/gl/buffer.hpp"
 #include "residue.hpp"
 #include "selection/selection_manager.hpp"
 #include "view/d3/triangle.hpp"
@@ -353,13 +352,14 @@ namespace VTX
 
 			// Create SSBOs.
 			// Output.
-			Buffer & bufferPositions	= _buffer->getBufferPositions();
-			Buffer & bufferNormals		= _buffer->getBufferNormals();
-			Buffer & bufferIndices		= _buffer->getBufferIndices();
-			Buffer & bufferColors		= _buffer->getBufferColors();
-			Buffer & bufferVisibilities = _buffer->getBufferVisibilities();
-			Buffer & bufferIds			= _buffer->getBufferIds();
-			Buffer & bufferSelections	= _buffer->getBufferSelections();
+			Buffer & bufferPositions		= _buffer->getBufferPositions();
+			Buffer & bufferNormals			= _buffer->getBufferNormals();
+			Buffer & bufferIndices			= _buffer->getBufferIndices();
+			Buffer & bufferColors			= _buffer->getBufferColors();
+			Buffer & bufferVisibilities		= _buffer->getBufferVisibilities();
+			Buffer & bufferIds				= _buffer->getBufferIds();
+			Buffer & bufferSelections		= _buffer->getBufferSelections();
+			Buffer & bufferAtomsToTriangles = _buffer->getBufferAtomsToTriangles();
 
 			// Create final buffers.
 			bufferPositions.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
@@ -373,7 +373,7 @@ namespace VTX
 
 			// Input.
 			Buffer & bufferAtomIds = _category->getMoleculePtr()->getBuffer()->getBufferIds();
-			Buffer	 bufferAtomToTriangle( _atomsToTriangles );
+			bufferAtomsToTriangles.set( _atomsToTriangles );
 
 			// Bind.
 			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
@@ -382,7 +382,7 @@ namespace VTX
 			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
 			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
-			bufferAtomToTriangle.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
+			bufferAtomsToTriangles.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
 			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
 			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
 
@@ -403,7 +403,7 @@ namespace VTX
 			bufferPositionsTmp.unbind();
 			bufferAtomIndicesTmp.unbind();
 			bufferTriangleValidities.unbind();
-			bufferAtomToTriangle.unbind();
+			bufferAtomsToTriangles.unbind();
 			bufferAtomIds.unbind();
 			bufferTrianglesPerAtom.unbind();
 
@@ -617,10 +617,10 @@ namespace VTX
 			using VTX::Renderer::GL::Buffer;
 			_buffer->makeContextCurrent();
 
-			Buffer & bufferColors	  = _buffer->getBufferColors();
-			Buffer & bufferIndices	  = _buffer->getBufferIndices();
-			Buffer & bufferAtomColors = _category->getMoleculePtr()->getBuffer()->getBufferColors();
-			Buffer	 bufferAtomsToTriangles( _atomsToTriangles );
+			Buffer & bufferColors			= _buffer->getBufferColors();
+			Buffer & bufferIndices			= _buffer->getBufferIndices();
+			Buffer & bufferAtomsToTriangles = _buffer->getBufferAtomsToTriangles();
+			Buffer & bufferAtomColors		= _category->getMoleculePtr()->getBuffer()->getBufferColors();
 			Buffer	 bufferCounters( _indiceCount * sizeof( uint ) );
 			Buffer	 bufferColorsUint( _indiceCount * sizeof( Vec4u ) );
 
@@ -683,8 +683,8 @@ namespace VTX
 
 			Buffer & bufferVisibilities		= _buffer->getBufferVisibilities();
 			Buffer & bufferIndices			= _buffer->getBufferIndices();
+			Buffer & bufferAtomsToTriangles = _buffer->getBufferAtomsToTriangles();
 			Buffer & bufferAtomVisibilities = _category->getMoleculePtr()->getBuffer()->getBufferVisibilities();
-			Buffer	 bufferAtomsToTriangles( _atomsToTriangles );
 
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			VTX_WORKER( new Worker::GpuBufferInitializer( bufferVisibilities, _indiceCount ) );
@@ -721,10 +721,10 @@ namespace VTX
 			using VTX::Renderer::GL::Buffer;
 			_buffer->makeContextCurrent();
 
-			Buffer & bufferSelections	  = _buffer->getBufferSelections();
-			Buffer & bufferIndices		  = _buffer->getBufferIndices();
-			Buffer & bufferAtomSelections = _category->getMoleculePtr()->getBuffer()->getBufferSelections();
-			Buffer	 bufferAtomsToTriangles( _atomsToTriangles );
+			Buffer & bufferSelections		= _buffer->getBufferSelections();
+			Buffer & bufferIndices			= _buffer->getBufferIndices();
+			Buffer & bufferAtomsToTriangles = _buffer->getBufferAtomsToTriangles();
+			Buffer & bufferAtomSelections	= _category->getMoleculePtr()->getBuffer()->getBufferSelections();
 
 			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			VTX_WORKER( new Worker::GpuBufferInitializer( bufferSelections, _indiceCount ) );

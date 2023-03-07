@@ -33,6 +33,7 @@ namespace VTX
 			inline Renderer::GL::Buffer & getBufferSelections() { return _vboSelections; }
 			inline Renderer::GL::Buffer & getBufferIds() { return _vboIds; }
 			inline Renderer::GL::Buffer & getBufferIndices() { return _ibo; }
+			inline Renderer::GL::Buffer & getBufferAtomsToTriangles() { return _bufferAtomsToTriangles; }
 
 		  protected:
 			void _generate() override;
@@ -55,6 +56,8 @@ namespace VTX
 			Renderer::GL::Buffer _vboSelections	  = Renderer::GL::Buffer();
 			Renderer::GL::Buffer _vboIds		  = Renderer::GL::Buffer();
 			Renderer::GL::Buffer _ibo			  = Renderer::GL::Buffer();
+
+			Renderer::GL::Buffer _bufferAtomsToTriangles = Renderer::GL::Buffer();
 		};
 	} // namespace Buffer
 } // namespace VTX

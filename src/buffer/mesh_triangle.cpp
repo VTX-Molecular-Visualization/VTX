@@ -11,6 +11,7 @@ namespace VTX::Buffer
 		_vboSelections.create();
 		_vboIds.create();
 		_ibo.create();
+		_bufferAtomsToTriangles.create();
 
 		_vao.create();
 
