@@ -187,7 +187,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 			}
 			else
 			{
-				const uint charOffsetInLastPair = ( p_charIndex - charOffset );
+				const uint charOffsetInLastPair = charOffset > p_charIndex ? 0 : ( p_charIndex - charOffset );
 				residueIndex += charOffsetInLastPair / ( pair.first + 1 );
 				break;
 			}

@@ -32,11 +32,11 @@ namespace VTX::UI::Widget::Sequence::Dataset
 
 		Model::Residue * const getFirstResidue() const override
 		{
-			return _chain->getMoleculePtr()->getResidue( _residueFirstIndex );
+			return _chain->getMoleculePtr()->getResidue( _chain->getIndexFirstResidue() + _residueFirstIndex );
 		};
 		Model::Residue * const getLastResidue() const override
 		{
-			return _chain->getMoleculePtr()->getResidue( _residueLastIndex );
+			return _chain->getMoleculePtr()->getResidue( _chain->getIndexFirstResidue() + _residueLastIndex );
 		};
 
 		uint getPaintLength( const uint p_charIndex ) const override;

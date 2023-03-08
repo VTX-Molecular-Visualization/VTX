@@ -58,8 +58,6 @@ namespace VTX::UI::Widget::Sequence
 
 	Model::Residue * const SequenceChainData::getResidueFromCharIndex( const uint p_charIndex ) const
 	{
-		Model::Residue * res = nullptr;
-
 		for ( const auto it : _chainSequenceBuilder.getDataSet() )
 		{
 			if ( it->isCharIndexInScope( p_charIndex ) )
