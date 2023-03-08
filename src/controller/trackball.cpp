@@ -26,13 +26,25 @@ namespace VTX
 				_velocity = VEC3F_ZERO;
 				// Save distance to force at next setActive(true).
 				// If orient is called in Freefly, the distance is overriden.
-				_distanceForced = Util::Math::distance( _camera().getPosition(), _target );
+				_distanceForced = _camera().isPerspective() ? Util::Math::distance( _camera().getPosition(), _target )
+															: _camera().getDistanceToTarget();
 			}
 		}
 
 		Vec3f Trackball::targetSimulationFromCamera( const Object3D::Camera & p_camera ) const
 		{
-			return p_camera.getPosition() + p_camera.getFront() * _distanceForced;
+			Vec3f res;
+
+			if ( p_camera.isPerspective() )
+			{
+				res = p_camera.getPosition() + p_camera.getFront() * _distanceForced;
+			}
+			else
+			{
+				res = p_camera.getPosition() + p_camera.getFront() * p_camera.getDistanceToTarget();
+			}
+
+			return res;
 		}
 
 		void Trackball::_updateInputs( const float & p_deltaTime )
