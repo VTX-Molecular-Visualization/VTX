@@ -35,13 +35,13 @@ namespace VTX::UI::Widget::MainMenu
 		//																					  "visualizationMenu" );
 		//_tabWidget->addTab( viewMenu, "Visualization" );
 
+		Molecule::Toolbar * const moleculeMenu
+			= WidgetFactory::get().instantiateWidget<Molecule::Toolbar>( _tabWidget, "moleculeMenu" );
+		_tabWidget->addTab( moleculeMenu, "Edit" );
+
 		Camera::Toolbar * const cameraMenu
 			= WidgetFactory::get().instantiateWidget<Camera::Toolbar>( _tabWidget, "cameraMenu" );
 		_tabWidget->addTab( cameraMenu, "Visualization" );
-
-		Molecule::Toolbar * const moleculeMenu
-			= WidgetFactory::get().instantiateWidget<Molecule::Toolbar>( _tabWidget, "moleculeMenu" );
-		_tabWidget->addTab( moleculeMenu, "Molecule" );
 
 		Tool::MenuToolWidget * const toolMenu
 			= WidgetFactory::get().instantiateWidget<Tool::MenuToolWidget>( _tabWidget, "toolMenu" );
