@@ -107,6 +107,8 @@ void main()
 
 		emitQuad( v1, v2, v3, v4 );
 	} else { // Orthographic
+
+		/*
 		const vec3 dirCyl = normalize( viewImpPos1 - viewImpPos0 );
 		const vec3 vertStep = normalize(vec3(-dirCyl.y, dirCyl.x, 0)) * u_cylRad;
 
@@ -115,6 +117,36 @@ void main()
 		const vec3 v2 = viewImpPos0 - vertStep;
 		const vec3 v3 = viewImpPos1 + vertStep;
 		const vec3 v4 = viewImpPos1 - vertStep;
+
+		emitQuad( v1, v2, v3, v4 );
+		*/
+
+		// Compute normalized view vector to cylinder center.
+		const float dist = ( viewImpPos0.z + viewImpPos1.z ) * 0.5f;
+		const vec3 view = normalize( vec3( 0.f, 0.f, dist ) );
+
+		// Compute cylinder coordinates system with 'x' orthogonal to 'view'.
+		const vec3 z = normalize( viewImpPos1 - viewImpPos0 );
+		const vec3 x = normalize( cross( view, z ) );
+		const vec3 y = cross( x, z ); // no need to normalize
+
+		// Compute impostor construction vectors.
+		const float dV0 = length( viewImpPos0 );
+		const float dV1 = length( viewImpPos1 );
+
+		const float sinAngle = u_cylRad / dV0;
+		float		angle	 = asin( sinAngle );
+		const vec3	y1		 = y * u_cylRad;
+		const vec3	x2		 = x * u_cylRad * cos( angle );
+		const vec3	y2		 = y1 * sinAngle;
+		angle				 = asin( u_cylRad / dV1 );
+		const vec3 x3		 = x * ( dV1 - u_cylRad ) * tan( angle );
+
+		// Compute impostors vertices.
+		const vec3 v1 = viewImpPos0 - x2 + y2;
+		const vec3 v2 = viewImpPos0 + x2 + y2;
+		const vec3 v3 = viewImpPos1 - x3 + y1;
+		const vec3 v4 = viewImpPos1 + x3 + y1;
 
 		emitQuad( v1, v2, v3, v4 );
 	}
