@@ -40,7 +40,7 @@ namespace VTX
 			void logInFile( const std::string & );
 
 		  private:
-			IO::Writer::Log _writer = IO::Writer::Log( Util::Time::getTimestamp() );
+			// IO::Writer::Log _writer = IO::Writer::Log( Util::Time::getTimestamp() );
 
 			Logger()							 = default;
 			Logger( const Logger & )			 = delete;

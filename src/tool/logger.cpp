@@ -36,7 +36,12 @@ namespace VTX
 			std::cout << messageToWrite << std::endl;
 		}
 
-		void Logger::logInFile( const std::string & p_message ) { _writer.writeFile( IO::FilePath(), p_message ); }
+		void Logger::logInFile( const std::string & p_message )
+		{
+			/*
+			_writer.writeFile(IO::FilePath(), p_message);
+			*/
+		}
 
 	} // namespace Tool
 } // namespace VTX
