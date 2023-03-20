@@ -26,6 +26,7 @@ int main( int p_argc, char * p_argv[] )
 {
 	try
 	{
+		std::cout << "Starting" << std::endl;
 		// Setup some Qt static configuration.
 		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
 		QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
