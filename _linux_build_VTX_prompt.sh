@@ -4,7 +4,7 @@ vtxVersion=0_4_RC1
 qtStaticPath=/home/nicodak/Qt/6.2.4/Static/lib/cmake
 qtDllPath=/home/nicodak/Qt/6.2.4/gcc_64/lib/cmake/
 
-qtPath=$qtDllPath
+qtPath=$qtStaticPath
 
 echo "Enter Build type"
 echo "0) Full build 1 (Clean - Updated - Packed - Copy)"
