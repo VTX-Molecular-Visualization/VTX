@@ -128,7 +128,7 @@ namespace VTX::Worker
 			}
 			else
 			{
-				VTX_ERROR( "Snapshot failed" );
+				VTX_ERROR( "Snapshot writting failed" );
 			}
 		}
 #endif

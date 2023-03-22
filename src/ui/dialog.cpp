@@ -255,12 +255,22 @@ namespace VTX::UI
 
 		if ( !filepath.isNull() )
 		{
-			const IO::FilePath path			 = IO::FilePath( filepath.toStdString() );
+			IO::FilePath	   path			 = IO::FilePath( filepath.toStdString() );
 			const IO::FilePath directoryPath = Util::Filesystem::getParentDir( path );
 
+			// If the extension is unknown (or if no extension is set), we append the default extension to the filename
+			// to prevent issue in the snapshoter.
+			if ( IO::Struct::ImageExport::getFormatFromExtension( path.extension() )
+				 == IO::Struct::ImageExport::Format::UNKNOWN )
+			{
+				const IO::Struct::ImageExport::Format defaultFormat = VTX_SETTING().getSnapshotFormat();
+				const std::string formatStr = IO::Struct::ImageExport::FORMAT_STR[ int( defaultFormat ) ];
+
+				path += '.' + formatStr;
+			}
+
 			Setting::saveLastExportedImageFolder( directoryPath.qpath() );
-			VTX_ACTION(
-				new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, filepath.toStdString(), p_exportData ) );
+			VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, path, p_exportData ) );
 
 			return true;
 		}
