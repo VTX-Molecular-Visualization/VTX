@@ -19,6 +19,7 @@
 #include <QLoggingCategory>
 #include <QPalette>
 #include <exception>
+#include "qt_plugins.cpp"
 
 namespace VTX
 {
