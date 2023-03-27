@@ -28,7 +28,7 @@ int main( int p_argc, char * p_argv[] )
 	{
 		QSurfaceFormat format;
 		format.setVersion( OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION );
-		format.setProfile( QSurfaceFormat::CoreProfile );
+		// format.setProfile( QSurfaceFormat::CoreProfile );
 		format.setRenderableType( QSurfaceFormat::OpenGL );
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
 		format.setSwapInterval( int( VTX_SETTING().ACTIVE_VSYNC_DEFAULT ) );
