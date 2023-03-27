@@ -216,12 +216,8 @@ namespace VTX::Model::Renderer
 		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
 		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
 
-		camera.setNear( _appliedPreset->getCameraNearClip() );
-		camera.setFar( _appliedPreset->getCameraFarClip() );
-		camera.setFov( _appliedPreset->getCameraFOV() );
-		camera.setPerspective( _appliedPreset->isPerspectiveProjection() );
-
 		_notifyViews( new Event::VTXEvent( Event::Model::APPLIED_PRESET_CHANGE ) );
+		VTX_EVENT( new Event::VTXEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGE ) );
 	}
 	bool RenderEffectPresetLibrary::isAppliedPreset( const RenderEffectPreset & p_preset ) const
 	{

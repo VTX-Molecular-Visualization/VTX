@@ -6,6 +6,7 @@
 #include "action/viewpoint.hpp"
 #include "action/visible.hpp"
 #include "model/generated_molecule.hpp"
+#include "model/representation/representation_library.hpp"
 #include "ui/dialog.hpp"
 #include "ui/main_window.hpp"
 #include "ui/ui_action/self_referenced_action.hpp"

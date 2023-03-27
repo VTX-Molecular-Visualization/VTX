@@ -1,4 +1,5 @@
 #include "snapshot_block.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"

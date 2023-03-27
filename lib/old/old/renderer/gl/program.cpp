@@ -42,8 +42,6 @@ namespace VTX::Renderer::GL
 
 	void Program::link()
 	{
-		VTX_DEBUG( "Linking program " + _name );
-
 		if ( _id == GL_INVALID_INDEX )
 		{
 			VTX_ERROR( "Can not link program: program is not created" );

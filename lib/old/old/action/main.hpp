@@ -35,6 +35,7 @@ namespace VTX::Action::Main
 		{
 		  public:
 			LoadSceneClass( const std::vector<Util::FilePath> & p_paths ) : _paths( p_paths ) {};
+
 			void _loadScene();
 
 		  private:
@@ -116,6 +117,25 @@ namespace VTX::Action::Main
 		std::vector<Util::FilePath> _paths = std::vector<Util::FilePath>();
 	};
 
+	class ToggleCamera : public BaseAction
+	{
+	  public:
+		explicit ToggleCamera() {}
+
+		virtual void execute() override;
+	};
+
+	class SetCameraProjectionToPerspective : public BaseAction
+	{
+	  public:
+		explicit SetCameraProjectionToPerspective( const bool p_perspective ) : _perspective( p_perspective ) {}
+
+		virtual void execute() override;
+
+	  private:
+		bool _perspective;
+	};
+
 	class ToggleCameraController : public BaseAction
 	{
 	  public:
@@ -145,6 +165,20 @@ namespace VTX::Action::Main
 	  private:
 	};
 
+	class ChangeSelectionGranularity : public BaseAction
+	{
+	  public:
+		explicit ChangeSelectionGranularity( const VTX::Selection::Granularity & p_granularity ) :
+			_granularity( p_granularity )
+		{
+		}
+
+		virtual void execute() override;
+
+	  private:
+		const VTX::Selection::Granularity _granularity;
+	};
+
 	class ChangePicker : public BaseAction
 	{
 	  public:
@@ -163,19 +197,49 @@ namespace VTX::Action::Main
 	class Snapshot : public BaseAction
 	{
 	  public:
-		explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const Util::FilePath & p_path );
+		explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const Util::FilePath & p_path ) :
+			Snapshot( p_mode,
+					  p_path,
+					  IO::Struct::ImageExport( IO::Struct::ImageExport::RESOLUTION ::Free,
+											   VTX_SETTING().getSnapshotBackgroundOpacity(),
+											   VTX_SETTING().getSnapshotQuality() ) )
+		{
+		}
 		explicit Snapshot( const Worker::Snapshoter::MODE			 p_mode,
 						   const Util::FilePath &					 p_path,
-						   const IO::Struct::ImageExport::RESOLUTION p_resolution );
+						   const IO::Struct::ImageExport::RESOLUTION p_resolution ) :
+			Snapshot( p_mode,
+					  p_path,
+					  IO::Struct::ImageExport( p_resolution,
+											   VTX_SETTING().getSnapshotBackgroundOpacity(),
+											   VTX_SETTING().getSnapshotQuality() ) )
+		{
+		}
 		explicit Snapshot( const Worker::Snapshoter::MODE p_mode,
 						   const Util::FilePath &		  p_path,
 						   const int					  p_width,
-						   const int					  p_height );
+						   const int					  p_height ) :
+			Snapshot( p_mode,
+					  p_path,
+					  IO::Struct::ImageExport( std::pair<const int, int>( p_width, p_height ),
+											   VTX_SETTING().getSnapshotBackgroundOpacity(),
+											   VTX_SETTING().getSnapshotQuality() ) )
+		{
+		}
 		explicit Snapshot( const Worker::Snapshoter::MODE  p_mode,
 						   const Util::FilePath &		   p_path,
-						   const IO::Struct::ImageExport & p_exportData );
+						   const IO::Struct::ImageExport & p_exportData ) :
+			_mode( p_mode ),
+			_path( p_path ), _exportData( p_exportData )
+		{
+		}
 
-		virtual void execute() override;
+		virtual void execute() override
+		{
+			Worker::Snapshoter * worker = new Worker::Snapshoter( _mode, _path, _exportData );
+			VTX_WORKER( worker );
+		};
+
 		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 
 	  private:
@@ -189,7 +253,7 @@ namespace VTX::Action::Main
 	  public:
 		explicit ClearConsoleInterface() {}
 
-		virtual void execute() override;
+		virtual void execute() override { VTX_EVENT( new Event::VTXEvent( Event::Global::CLEAR_CONSOLE ) ); };
 		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 	};
 

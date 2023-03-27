@@ -43,6 +43,7 @@ namespace VTX::View::UI::Widget
 				= dynamic_cast<const Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
 
 			_addViewpoint( castedEvent.ptr );
+			topLevelItem( 0 )->setExpanded( true );
 		}
 		else if ( p_event.name == Event::Global::VIEWPOINT_REMOVED )
 		{

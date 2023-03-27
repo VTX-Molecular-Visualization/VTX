@@ -86,15 +86,20 @@ namespace VTX::IO::Reader
 		// Fill other frames.
 		Tool::Chrono timeReadingFrames;
 		timeReadingFrames.start();
-		int startingFrame = 1;
+		int startingFrame	= 1;
+		int validFrameCount = 0;
 		for ( uint frameIdx = 0; frameIdx < p_trajectory.nsteps() - p_trajectoryFrameStart; ++frameIdx )
 		{
 			const std::vector<Vec3f> atomPositions = readTrajectoryFrame( p_trajectory );
 
+			if ( atomPositions.size() <= 0 )
+				continue;
+
 			for ( const std::pair<Model::Molecule *, uint> & pairMoleculeStartFrame : p_targets )
 			{
 				fillTrajectoryFrame(
-					*pairMoleculeStartFrame.first, pairMoleculeStartFrame.second + frameIdx, atomPositions );
+					*pairMoleculeStartFrame.first, pairMoleculeStartFrame.second + validFrameCount, atomPositions );
+				validFrameCount++;
 			}
 
 #ifdef _DEBUG
@@ -332,12 +337,23 @@ namespace VTX::IO::Reader
 			}
 			else
 			{
-				Model::UnknownResidueData * const unknownResidueData = new Model::UnknownResidueData();
-				unknownResidueData->symbolStr						 = residueSymbol;
-				unknownResidueData->symbolName = Util::Molecule::getResidueFullName( residueSymbol );
+				int							symbolIndex = p_molecule.getUnknownResidueSymbolIndex( residueSymbol );
+				Model::UnknownResidueData * unknownResidueData;
 
-				symbolValue
-					= int( Model::Residue::SYMBOL::COUNT ) + p_molecule.addUnknownResidueSymbol( unknownResidueData );
+				if ( symbolIndex >= 0 )
+				{
+					unknownResidueData = p_molecule.getUnknownResidueSymbol( symbolIndex );
+				}
+				else
+				{
+					unknownResidueData			   = new Model::UnknownResidueData();
+					unknownResidueData->symbolStr  = residueSymbol;
+					unknownResidueData->symbolName = Util::Molecule::getResidueFullName( residueSymbol );
+
+					symbolIndex = p_molecule.addUnknownResidueSymbol( unknownResidueData );
+				}
+
+				symbolValue = int( Model::Residue::SYMBOL::COUNT ) + symbolIndex;
 			}
 
 			modelResidue->setSymbol( symbolValue );

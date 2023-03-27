@@ -7,7 +7,7 @@ namespace VTX::Buffer
 	{
 		_vboAtomPositions.create();
 		_vboAtomColors.create();
-		_vboAtomRadii.create();
+		_vboAtomRadius.create();
 		_vboAtomVisibilities.create();
 		_vboAtomSelections.create();
 		_vboAtomIds.create();
@@ -31,7 +31,7 @@ namespace VTX::Buffer
 
 		// Radius.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_RADIUS );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_RADIUS, _vboAtomRadii, sizeof( float ) );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_RADIUS, _vboAtomRadius, sizeof( float ) );
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::ATOM_RADIUS, 1, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_RADIUS, ATTRIBUTE_LOCATION::ATOM_RADIUS );
 
@@ -63,7 +63,7 @@ namespace VTX::Buffer
 			p_isDynamic ? Renderer::GL::Buffer::Usage::DYNAMIC_DRAW : Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
-	void Molecule::setAtomRadius( const std::vector<float> & p_radius ) { _updateBuffer( _vboAtomRadii, p_radius ); }
+	void Molecule::setAtomRadius( const std::vector<float> & p_radius ) { _updateBuffer( _vboAtomRadius, p_radius ); }
 
 	void Molecule::setAtomColors( const std::vector<Color::Rgba> & p_colors )
 	{

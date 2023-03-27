@@ -27,6 +27,7 @@ namespace VTX::View::D3
 				/// TODO: put a mask
 				_program->setFloat( "u_cylRad", cylinderData.radius );
 				_program->setUInt( "u_colorBlendingMode", uint( cylinderData.colorBlendingMode ) );
+				_program->setBool( "u_isPerspective", p_camera.isPerspective() );
 
 				const Representation::TargetRange<void *> & target = representationData.second.getBonds();
 				/// TODO: use glDrawRangeElements?

@@ -24,9 +24,9 @@ namespace VTX
 			inline const VTX::ID::VTX_ID getController() const { return _controller; }
 			inline void			 setController( const VTX::ID::VTX_ID p_controller ) { _controller = p_controller; }
 			inline const Vec3f & getPosition() const { return _position; }
-			inline void			 setPosition( const Vec3f & p_position ) { _position = p_position; }
+			void				 setPosition( const Vec3f & p_position );
 			inline const Quatf & getRotation() const { return _rotation; }
-			inline void			 setRotation( const Quatf & p_rotation ) { _rotation = p_rotation; }
+			void				 setRotation( const Quatf & p_rotation );
 			inline const Vec3f & getTarget() const { return _data._target._target; }
 			inline void			 setTarget( const Vec3f & p_target ) { _data._target._target = p_target; }
 			inline const float	 getDistance() const { return _data._target._distance; }

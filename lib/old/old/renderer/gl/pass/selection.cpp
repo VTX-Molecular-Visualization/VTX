@@ -37,7 +37,7 @@ namespace VTX::Renderer::GL::Pass
 
 	void Selection::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
-		if ( VTX_RENDER_EFFECT().getAA() )
+		if ( VTX_SETTING().getAA() )
 		{
 			_fbo.bind();
 		}
@@ -71,7 +71,7 @@ namespace VTX::Renderer::GL::Pass
 
 	void Selection::updateOutputFBO( const GL & p_renderer )
 	{
-		if ( VTX_RENDER_EFFECT().getAA() )
+		if ( VTX_SETTING().getAA() )
 		{
 			_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 		}

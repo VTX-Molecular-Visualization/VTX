@@ -16,6 +16,7 @@
 
 namespace VTX::Action::Selection
 {
+
 	void SelectAll::execute()
 	{
 		const Object3D::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
@@ -51,230 +52,6 @@ namespace VTX::Action::Selection
 		VTX::Selection::SelectionManager::get().getSelectionModel().selectModels( labels, true );
 
 		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void SelectModels::execute()
-	{
-		std::vector<Model::Molecule *> molecules  = std::vector<Model::Molecule *>();
-		std::vector<Model::Category *> categories = std::vector<Model::Category *>();
-		std::vector<Model::Chain *>	   chains	  = std::vector<Model::Chain *>();
-		std::vector<Model::Residue *>  residues	  = std::vector<Model::Residue *>();
-		std::vector<Model::Atom *>	   atoms	  = std::vector<Model::Atom *>();
-
-		std::vector<Model::Path *>		paths	   = std::vector<Model::Path *>();
-		std::vector<Model::Viewpoint *> viewpoints = std::vector<Model::Viewpoint *>();
-		std::vector<Model::Label *>		labels	   = std::vector<Model::Label *>();
-
-		for ( const Model::ID modelId : _models )
-		{
-			ID::VTX_ID modelTypeId = MVC::MvcManager::get().getModelTypeID( modelId );
-
-			if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
-			{
-				Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
-				molecules.emplace_back( &model );
-			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
-			{
-				Model::Category & model = MVC::MvcManager::get().getModel<Model::Category>( modelId );
-				categories.emplace_back( &model );
-			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
-			{
-				Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
-				chains.emplace_back( &model );
-			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
-			{
-				Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
-				residues.emplace_back( &model );
-			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
-			{
-				Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
-				atoms.emplace_back( &model );
-			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_PATH )
-			{
-				Model::Path & path = MVC::MvcManager::get().getModel<Model::Path>( modelId );
-
-				for ( Model::Viewpoint * const viewpoint : path.getViewpoints() )
-					viewpoints.emplace_back( viewpoint );
-			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_VIEWPOINT )
-			{
-				Model::Viewpoint & model = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelId );
-				viewpoints.emplace_back( &model );
-			}
-			else if ( Util::Label::isLabelType( modelTypeId ) )
-			{
-				Model::Label & model = MVC::MvcManager::get().getModel<Model::Label>( modelId );
-				labels.emplace_back( &model );
-			}
-		}
-
-		_selection.selectModels( molecules, categories, chains, residues, atoms, _appendToSelection );
-		_selection.selectModels( paths, true );
-		_selection.selectModels( viewpoints, true );
-		_selection.selectModels( labels, true );
-
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void UnselectModels::execute()
-	{
-		std::vector<Model::Molecule *> molecules  = std::vector<Model::Molecule *>();
-		std::vector<Model::Category *> categories = std::vector<Model::Category *>();
-		std::vector<Model::Chain *>	   chains	  = std::vector<Model::Chain *>();
-		std::vector<Model::Residue *>  residues	  = std::vector<Model::Residue *>();
-		std::vector<Model::Atom *>	   atoms	  = std::vector<Model::Atom *>();
-
-		for ( const Model::ID modelId : _models )
-		{
-			ID::VTX_ID modelTypeId = MVC::MvcManager::get().getModelTypeID( modelId );
-
-			if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
-			{
-				Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
-				molecules.emplace_back( &model );
-			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
-			{
-				Model::Category & model = MVC::MvcManager::get().getModel<Model::Category>( modelId );
-				categories.emplace_back( &model );
-			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
-			{
-				Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
-				chains.emplace_back( &model );
-			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
-			{
-				Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
-				residues.emplace_back( &model );
-			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
-			{
-				Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
-				atoms.emplace_back( &model );
-			}
-		}
-
-		_selection.unselectModels( molecules, categories, chains, residues, atoms );
-
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void SelectViewpoint::execute() { _selection.selectModels( _viewpoints, _appendToSelection ); }
-
-	void UnselectViewpoint::execute()
-	{
-		if ( _check )
-			_selection.unselectModels( _viewpoints );
-		else
-			_selection.unselectModelsWithCheck( _viewpoints );
-
-		// VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void SelectMolecule::execute()
-	{
-		_selection.selectMolecules( _molecules, _appendToSelection );
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void SelectCategory::execute()
-	{
-		_selection.selectCategories( _categories, _appendToSelection );
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void SelectChain::execute()
-	{
-		_selection.selectChains( _chains, _appendToSelection );
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-	void SelectResidue::execute()
-	{
-		_selection.selectResidues( _residues, _appendToSelection );
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void SelectAtom::execute()
-	{
-		_selection.selectAtoms( _atoms, _appendToSelection );
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void UnselectMolecule::execute()
-	{
-		if ( _check )
-			_selection.unselectMolecules( _molecules );
-		else
-			_selection.unselectMoleculesWithCheck( _molecules );
-
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void UnselectCategory::execute()
-	{
-		if ( _check )
-			_selection.unselectCategories( _categories );
-		else
-			_selection.unselectCategoriesWithCheck( _categories );
-
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void UnselectChain::execute()
-	{
-		if ( _check )
-			_selection.unselectChains( _chains );
-		else
-			_selection.unselectChainsWithCheck( _chains );
-
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void UnselectResidue::execute()
-	{
-		if ( _check )
-			_selection.unselectResidues( _residues );
-		else
-			_selection.unselectResiduesWithCheck( _residues );
-
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void UnselectAtom::execute()
-	{
-		if ( _check )
-			_selection.unselectAtoms( _atoms );
-		else
-			_selection.unselectAtomsWithCheck( _atoms );
-
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	void ClearSelection::execute()
-	{
-		_selection.clear();
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	}
-
-	///////////////////////////// ACTION ON SELECTION ///////////////////////////////
-	void ChangeVisibility::execute()
-	{
-		switch ( _mode )
-		{
-		case VISIBILITY_MODE::SHOW:
-		case VISIBILITY_MODE::HIDE:
-		case VISIBILITY_MODE::ALL: show( _getVisibilityBool() ); break;
-		case VISIBILITY_MODE::SOLO: solo(); break;
-		case VISIBILITY_MODE::TOGGLE: break;
-		}
-
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeVisibility::show( const bool p_show )
@@ -330,6 +107,7 @@ namespace VTX::Action::Selection
 			molecule.computeRepresentationTargets();
 		}
 	}
+
 	void ChangeVisibility::solo()
 	{
 		const Object3D::Scene::MapMoleculePtrFloat & moleculesInScene	  = VTXApp::get().getScene().getMolecules();
@@ -427,109 +205,6 @@ namespace VTX::Action::Selection
 		}
 	}
 
-	void ToggleWatersVisibility::execute()
-	{
-		bool showWater = true;
-
-		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
-		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
-			showWater				   = showWater && !molecule.showWater();
-		}
-
-		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
-		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
-			molecule.setShowWater( showWater );
-		}
-
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-	}
-
-	void ToggleSolventVisibility::execute()
-	{
-		bool showSolvent = true;
-
-		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
-		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
-			showSolvent				   = showSolvent && !molecule.showSolvent();
-		}
-
-		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
-		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
-			molecule.setShowSolvent( showSolvent );
-		}
-
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-	}
-
-	void ToggleHydrogensVisibility::execute()
-	{
-		bool showHydrogen = true;
-
-		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
-		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
-			showHydrogen			   = showHydrogen && !molecule.showHydrogen();
-		}
-
-		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
-		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
-			molecule.setShowHydrogen( showHydrogen );
-		}
-
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-	}
-
-	void ToggleIonsVisibility::execute()
-	{
-		bool showIons = true;
-
-		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
-		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
-			showIons				   = showIons && !molecule.showIon();
-		}
-
-		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
-		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
-			molecule.setShowIon( showIons );
-		}
-
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-	}
-
-	void ToggleTrajectoryPlaying::execute()
-	{
-		bool play = true;
-
-		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
-		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
-			if ( molecule.hasTrajectory() )
-				play = play && !molecule.isPlaying();
-		}
-
-		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
-		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
-
-			if ( molecule.hasTrajectory() )
-			{
-				if ( molecule.isAtEndOfTrajectoryPlay() && play )
-					molecule.resetTrajectoryPlay();
-
-				molecule.setIsPlaying( play );
-			}
-		}
-
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-	}
-
 	void ChangeRepresentationPreset::execute()
 	{
 		Model::Representation::Representation * const preset
@@ -549,52 +224,6 @@ namespace VTX::Action::Selection
 			.getStateMachine()
 			.getState<State::Visualization>( ID::State::VISUALIZATION )
 			->orientCameraController( target );
-	}
-
-	void Copy::execute()
-	{
-		for ( const Model::ID & selectedObjectID : _selection.getItems() )
-		{
-			const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( selectedObjectID );
-
-			if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
-			{
-				const Model::Molecule & source	 = MVC::MvcManager::get().getModel<Model::Molecule>( selectedObjectID );
-				const int				nbFrames = source.getFrameCount();
-
-				if ( _frame == Model::GeneratedMolecule::ALL_FRAMES_SEPARATED_INDEX )
-				{
-					for ( int iFrame = 0; iFrame < nbFrames; iFrame++ )
-					{
-						_copyFrame( source, _selection, iFrame );
-					}
-				}
-				// Duplicate only if the molecule has multiple frame and if the frame is under the molecule frame
-				// count (test for multiple selection)
-				else if ( nbFrames > 0 && _frame < nbFrames )
-				{
-					_copyFrame( source, _selection, _frame );
-				}
-			}
-		}
-	}
-
-	void Copy::_copyFrame( const Model::Molecule & p_source, const Model::Selection & p_selection, const int p_frame )
-	{
-		Model::GeneratedMolecule * generatedMolecule
-			= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
-
-		generatedMolecule->copyFromSelection( _selection, p_source.getId(), p_frame );
-
-		Tool::Chrono chrono;
-
-		chrono.start();
-
-		generatedMolecule->applyTransform( p_source.getTransform() );
-		VTXApp::get().getScene().addMolecule( generatedMolecule );
-
-		chrono.stop();
-		VTX_DEBUG( "Molecule " + generatedMolecule->getDisplayName() + " copied in " + chrono.elapsedTimeStr() );
 	}
 
 	void Extract::execute()
@@ -630,102 +259,22 @@ namespace VTX::Action::Selection
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
 
-	void Delete::execute()
+	void Copy::_copyFrame( const Model::Molecule & p_source, const Model::Selection & p_selection, const int p_frame )
 	{
-		std::vector<Model::Molecule *> moleculesToDelete = std::vector<Model::Molecule *>();
+		Model::GeneratedMolecule * generatedMolecule
+			= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
-		const std::set<Model::ID>		 itemsToDeleteCopy		 = _selection.getItems();
-		Model::Selection::MapMoleculeIds moleculeMapToDeleteCopy = _selection.getMoleculesMap();
-		_selection.clear();
+		generatedMolecule->copyFromSelection( _selection, p_source.getId(), p_frame );
 
-		for ( const Model::ID & selectedObjectID : itemsToDeleteCopy )
-		{
-			const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( selectedObjectID );
+		Tool::Chrono chrono;
 
-			if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
-			{
-				const Model::Selection::PairMoleculeIds & molIds = *moleculeMapToDeleteCopy.find( selectedObjectID );
+		chrono.start();
 
-				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+		generatedMolecule->applyTransform( p_source.getTransform() );
+		VTXApp::get().getScene().addMolecule( generatedMolecule );
 
-				if ( molIds.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
-				{
-					moleculesToDelete.emplace_back( &molecule );
-					continue;
-				}
-
-				for ( const Model::Selection::PairChainIds & chainIds : molIds.second )
-				{
-					Model::Chain & chain = *molecule.getChain( chainIds.first );
-
-					if ( chainIds.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
-					{
-						molecule.removeChain( chain.getIndex(), true, true, false );
-						continue;
-					}
-
-					for ( const Model::Selection::PairResidueIds & residueIds : chainIds.second )
-					{
-						Model::Residue & residue = *molecule.getResidue( residueIds.first );
-
-						if ( residueIds.second.getFullySelectedChildCount() == residue.getRealAtomCount() )
-						{
-							molecule.removeResidue( residue.getIndex(), true, true, true, false );
-							continue;
-						}
-
-						for ( const uint atomId : residueIds.second )
-						{
-							molecule.removeAtom( atomId, true, true, true, false );
-						}
-					}
-				}
-
-				if ( molecule.isEmpty() )
-				{
-					moleculesToDelete.emplace_back( &molecule );
-				}
-				else
-				{
-					// Call notify only once after all modif in molecule
-					molecule.refreshStructure();
-					molecule.computeAllRepresentationData();
-					molecule.notifyStructureChange();
-				}
-			}
-			else if ( modelTypeID == VTX::ID::Model::MODEL_PATH )
-			{
-				Model::Path & path = MVC::MvcManager::get().getModel<Model::Path>( selectedObjectID );
-
-				VTX::VTXApp::get().getScene().removePath( &path );
-				MVC::MvcManager::get().deleteModel( &path );
-			}
-			else if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
-			{
-				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( selectedObjectID );
-
-				Model::Path * const path = viewpoint.getPathPtr();
-				path->removeViewpoint( &viewpoint );
-				MVC::MvcManager::get().deleteModel( &viewpoint );
-
-				path->refreshAllDurations();
-			}
-			else if ( Util::Label::isLabelType( modelTypeID ) )
-			{
-				Model::Label & label = MVC::MvcManager::get().getModel<Model::Label>( selectedObjectID );
-				VTXApp::get().getScene().removeLabel( &label );
-				MVC::MvcManager::get().deleteModel<Model::Label>( &label );
-			}
-		}
-
-		for ( Model::Molecule * const moleculeToDelete : moleculesToDelete )
-		{
-			VTXApp::get().getScene().removeMolecule( moleculeToDelete );
-			MVC::MvcManager::get().deleteModel( moleculeToDelete );
-		}
-
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		chrono.stop();
+		VTX_DEBUG( "Molecule " + generatedMolecule->getDisplayName() + " copied in " + chrono.elapsedTimeStr() );
 	}
-	////////////////////////////////////////////////////////////////////////////////////////
+
 } // namespace VTX::Action::Selection

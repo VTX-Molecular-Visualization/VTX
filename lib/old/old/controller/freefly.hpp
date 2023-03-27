@@ -10,7 +10,7 @@ namespace VTX
 		class Freefly : public BaseCameraController
 		{
 		  public:
-			explicit Freefly( Object3D::Camera & p_camera ) : BaseCameraController( p_camera ) {}
+			explicit Freefly( Object3D::CameraManager & p_cameraManager ) : BaseCameraController( p_cameraManager ) {}
 
 			const ID::VTX_ID getID() const override { return ID::Controller::FREEFLY; }
 

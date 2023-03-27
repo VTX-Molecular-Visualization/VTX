@@ -10,9 +10,8 @@ uniform float uFogNear;
 uniform float uFogFar;
 uniform float uFogDensity;
 uniform vec3  uFogColor;
-
-uniform vec3 uLightPosition;
 uniform vec3 uLightColor;
+uniform bool uIsPerspective;
 
 out vec4 fragColor;
 
@@ -48,7 +47,9 @@ void main()
 	}
 
 	// Light on camera.
-	const vec3 lightDir = normalize( uLightPosition - data.viewPosition );
+	const vec3 lightDir = uIsPerspective ?
+		normalize( -data.viewPosition ) :
+		vec3( 0.f, 0.f, 1.f );
 
 	const float intensity = dot( data.normal, lightDir );
 	float		lighting  = 1.f;

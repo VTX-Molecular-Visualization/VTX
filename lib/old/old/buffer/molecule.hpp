@@ -26,6 +26,13 @@ namespace VTX
 			void setAtomIds( const std::vector<Model::ID> & );
 			void setBonds( const std::vector<uint> & );
 
+			inline Renderer::GL::Buffer & getBufferPositions() { return _vboAtomPositions; }
+			inline Renderer::GL::Buffer & getBufferRadius() { return _vboAtomRadius; }
+			inline Renderer::GL::Buffer & getBufferColors() { return _vboAtomColors; }
+			inline Renderer::GL::Buffer & getBufferVisibilities() { return _vboAtomVisibilities; }
+			inline Renderer::GL::Buffer & getBufferSelections() { return _vboAtomSelections; }
+			inline Renderer::GL::Buffer & getBufferIds() { return _vboAtomIds; }
+
 		  protected:
 			void _generate() override;
 
@@ -41,7 +48,7 @@ namespace VTX
 			};
 
 			Renderer::GL::Buffer _vboAtomPositions	  = Renderer::GL::Buffer();
-			Renderer::GL::Buffer _vboAtomRadii		  = Renderer::GL::Buffer();
+			Renderer::GL::Buffer _vboAtomRadius		  = Renderer::GL::Buffer();
 			Renderer::GL::Buffer _vboAtomColors		  = Renderer::GL::Buffer();
 			Renderer::GL::Buffer _vboAtomVisibilities = Renderer::GL::Buffer();
 			Renderer::GL::Buffer _vboAtomSelections	  = Renderer::GL::Buffer();

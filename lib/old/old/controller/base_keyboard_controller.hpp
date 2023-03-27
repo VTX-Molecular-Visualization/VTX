@@ -4,7 +4,6 @@
 #include "base_controller.hpp"
 #include "event/base_event_receiver_keyboard.hpp"
 #include "vtx_app.hpp"
-#include <iostream>
 #include <set>
 
 namespace VTX

@@ -30,7 +30,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 {
 	RenderWidget::RenderWidget( QWidget * p_parent ) : QtPanel(), BaseManualWidget<QWidget>( p_parent )
 	{
-		_registerEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGED );
+		_registerEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
 		_registerEvent( Event::Global::LABEL_ADDED );
 		_registerEvent( Event::Global::LABEL_REMOVED );
 		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
@@ -40,7 +40,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void RenderWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::APPLIED_RENDER_EFFECT_CHANGED )
+		if ( p_event.name == Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
 		{
 			updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
 			updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );

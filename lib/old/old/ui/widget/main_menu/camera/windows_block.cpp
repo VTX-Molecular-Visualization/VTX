@@ -1,4 +1,5 @@
 #include "windows_block.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/settings/setting_widget_enum.hpp"

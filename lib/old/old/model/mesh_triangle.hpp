@@ -50,9 +50,15 @@ namespace VTX
 			inline const uint &				 getIndice( const uint p_idx ) const { return _indices[ p_idx ]; }
 			inline uint &					 getIndice( const uint p_idx ) { return _indices[ p_idx ]; }
 
-			void recomputeNormals();
-			void toIndexed();
-			void toNonIndexed();
+			// CPU.
+			static void computeNormals( const std::vector<Vec4f> & p_vertices,
+										const std::vector<uint> &  p_indices,
+										std::vector<Vec4f> &	   p_normals );
+			static void toIndexed( std::vector<Vec4f> & p_vertices, std::vector<uint> & p_indices );
+			static void toNonIndexed( std::vector<Vec4f> & p_vertices, std::vector<uint> & p_indices );
+
+			// GPU.
+			static void toIndexed();
 
 			void print() const;
 

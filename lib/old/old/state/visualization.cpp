@@ -1,5 +1,4 @@
 #include "visualization.hpp"
-#include "define.hpp"
 #include "controller/freefly.hpp"
 #include "controller/main_window_controller.hpp"
 #include "controller/measurement_picker.hpp"
@@ -26,9 +25,9 @@ namespace VTX
 			// Create controller.
 			_controllers.emplace( ID::Controller::MAIN_WINDOW, new Controller::MainWindowController() );
 			_controllers.emplace( ID::Controller::FREEFLY,
-								  new Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
+								  new Controller::Freefly( VTXApp::get().getScene().getCameraManager() ) );
 			_controllers.emplace( ID::Controller::TRACKBALL,
-								  new Controller::Trackball( VTXApp::get().getScene().getCamera(),
+								  new Controller::Trackball( VTXApp::get().getScene().getCameraManager(),
 															 VTXApp::get().getScene().getAABB().centroid(),
 															 VTXApp::get().getScene().getAABB().diameter() ) );
 			_controllers.emplace( ID::Controller::PICKER, new Controller::Picker() );
@@ -118,6 +117,7 @@ namespace VTX
 		void Visualization::orientCameraController( const Object3D::Helper::AABB & p_aabb )
 		{
 			getController<VTX::Controller::BaseCameraController>( _cameraController )->orient( p_aabb );
+
 			// Override Trackball distance.
 			if ( _cameraController == ID::Controller::FREEFLY )
 			{
@@ -173,7 +173,7 @@ namespace VTX
 					const Event::VTXEventPtr<Model::Molecule> & castedEvent
 						= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
-					orientCameraController( castedEvent.ptr->getAABB() );
+					orientCameraController( castedEvent.ptr->getWorldAABB() );
 				}
 			}
 			else if ( p_event.name == Event::MESH_ADDED )

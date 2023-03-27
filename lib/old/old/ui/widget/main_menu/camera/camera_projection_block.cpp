@@ -1,4 +1,5 @@
 #include "camera_projection_block.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
 #include "id.hpp"

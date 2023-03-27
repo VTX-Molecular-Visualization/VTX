@@ -220,60 +220,6 @@ namespace VTX::Action::Renderer
 		}
 	};
 
-	void ChangeCameraFOV::execute()
-	{
-		_preset.setCameraFOV( _fov );
-
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-		{
-			VTXApp::get().getScene().getCamera().setFov( _fov );
-			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
-		}
-	};
-
-	void ChangeCameraNear::execute()
-	{
-		_preset.setCameraNearClip( _near );
-
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-		{
-			VTXApp::get().getScene().getCamera().setNear( _near );
-			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
-		}
-	};
-
-	void ChangeCameraFar::execute()
-	{
-		_preset.setCameraFarClip( _far );
-
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-		{
-			VTXApp::get().getScene().getCamera().setFar( _far );
-			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
-		}
-	};
-
-	void EnableCameraAntialiasing::execute()
-	{
-		_preset.setAA( _enable );
-
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-		{
-			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
-			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-		}
-	};
-
-	void ChangeCameraPerspective::execute()
-	{
-		_preset.setPerspectiveProjection( _perspective );
-
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-		{
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		}
-	};
-
 	void AddNewPresetInLibrary::execute()
 	{
 		Model::Renderer::RenderEffectPreset * const newRenderEffect

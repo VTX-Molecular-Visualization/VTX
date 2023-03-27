@@ -4,14 +4,18 @@
 #include "color/rgba.hpp"
 #include <QBitmap>
 #include <QColor>
+#include <QComboBox>
 #include <QEvent>
 #include <QImage>
+#include <QMenu>
 #include <QPixmap>
 #include <QString>
 #include <QStyle>
 #include <QVariant>
 #include <QWidget>
 #include <set>
+#include <string>
+#include <vector>
 
 namespace VTX::Model
 {
@@ -45,6 +49,13 @@ namespace VTX::Util::UI
 	  private:
 		std::set<QEvent::Type> _filteredTypes = std::set<QEvent::Type>();
 	};
+
+	void fillComboBox( QComboBox * const p_comboBox, const std::vector<std::string> & p_values );
+	void fillComboBox( QComboBox * const p_comboBox, const std::vector<QString> & p_values );
+	void fillMenu( QMenu &							p_menu,
+				   const int						p_enumSize,
+				   const std::vector<std::string> & p_names,
+				   const bool						p_actionCheckable = false );
 
 	static void appendColorHtmlTag( QString & p_txt, const VTX::Color::Rgba & p_color )
 	{
@@ -91,8 +102,7 @@ namespace VTX::Util::UI
 
 	static QBitmap generateAlphaMask( const QString & p_filepath )
 	{
-		return QBitmap::fromPixmap(
-			QPixmap::fromImage( QImage( ":/sprite/render/dihedral_angle_icon.png" ).createAlphaMask() ) );
+		return QBitmap::fromImage( QImage( ":/sprite/render/dihedral_angle_icon.png" ).createAlphaMask() );
 	}
 
 	void appendBondInfo( const Model::Bond & p_bond, QString & p_str );

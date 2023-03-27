@@ -1,6 +1,7 @@
 #include "snapshoter.hpp"
 #include "action/action_manager.hpp"
 #include "action/setting.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "renderer/gl/framebuffer.hpp"
 #include "renderer/gl/gl.hpp"
 #include "ui/main_window.hpp"
@@ -63,7 +64,7 @@ namespace VTX::Worker
 		}
 
 		// Force AA.
-		const bool activeAA = VTX_RENDER_EFFECT().getAA();
+		const bool activeAA = VTX_SETTING().getAA();
 		if ( activeAA == false )
 		{
 			VTX_ACTION( new Action::Setting::ActiveAA( true ) );
@@ -129,7 +130,7 @@ namespace VTX::Worker
 			}
 			else
 			{
-				VTX_ERROR( "Snapshot failed" );
+				VTX_ERROR( "Snapshot writting failed" );
 			}
 		}
 #endif

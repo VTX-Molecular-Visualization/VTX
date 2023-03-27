@@ -39,6 +39,7 @@ namespace VTX
 
 			Program * const createProgram( const std::string &,
 										   const std::vector<Util::FilePath> &,
+										   const std::string & = "",
 										   const std::string & = "" );
 			void			deleteProgram( const std::string & );
 			Program * const getProgram( const std::string & );
@@ -57,7 +58,7 @@ namespace VTX
 			ProgramManager() = default;
 			~ProgramManager();
 
-			GLuint		_createShader( const Util::FilePath &, const std::string & = "" );
+			GLuint		_createShader( const Util::FilePath &, const std::string & = "", const std::string & = "" );
 			std::string _getShaderErrors( const GLuint );
 		};
 	} // namespace Renderer::GL

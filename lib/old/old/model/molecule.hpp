@@ -156,6 +156,7 @@ namespace VTX
 
 			inline const float &	   getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
 			inline const Color::Rgba & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
+			inline const uint getAtomVisibility( const uint p_idx ) const { return _bufferAtomVisibilities[ p_idx ]; }
 
 			inline const std::vector<UnknownResidueData *> & getUnknownResidueSymbols() const
 			{
@@ -163,7 +164,10 @@ namespace VTX
 			}
 			inline const std::unordered_set<std::string> & getUnknownAtomSymbols() const { return _unknownAtomSymbol; }
 
-			int			addUnknownResidueSymbol( UnknownResidueData * const p_data );
+			int						   getUnknownResidueSymbolIndex( const std::string & p_symbol ) const;
+			UnknownResidueData * const getUnknownResidueSymbol( const uint p_symbolIndex ) const;
+			UnknownResidueData * const getUnknownResidueSymbol( const std::string & p_symbol ) const;
+			int						   addUnknownResidueSymbol( UnknownResidueData * const p_data );
 			inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
 
 			inline AtomPositionsFrame & addAtomPositionFrame()
@@ -275,7 +279,6 @@ namespace VTX
 
 			// Solvent excluded surface.
 			void createSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum );
-			void refreshSolventExcludedSurface( const CATEGORY_ENUM & p_categoryEnum );
 			void refreshSolventExcludedSurfaces();
 
 			// Categorization

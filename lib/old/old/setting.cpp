@@ -74,13 +74,13 @@ namespace VTX
 		"Stick", // UNKNOWN
 	};
 	const std::vector<int> Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_INDEX = {
-		4, // POLYMER
-		4, // CARBOHYDRATE
-		4, // LIGAND
+		5, // POLYMER
+		5, // CARBOHYDRATE
+		5, // LIGAND
 		6, // ION
-		4, // SOLVENT
-		4, // WATER
-		4, // UNKNOWN
+		5, // SOLVENT
+		5, // WATER
+		5, // UNKNOWN
 	};
 
 	const std::string Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME = "New render preset";
@@ -517,6 +517,33 @@ namespace VTX
 		_sendDataChangedEvent( PARAMETER::SNAPSHOT_RESOLUTION );
 	}
 
+	// Camera Settings
+	void Setting::setCameraFOV( const float p_cameraFOV )
+	{
+		cameraFOV = p_cameraFOV;
+		_sendDataChangedEvent( PARAMETER::CAMERA_FOV );
+	}
+	void Setting::setCameraNearClip( const float p_cameraNearClip )
+	{
+		cameraNearClip = p_cameraNearClip;
+		_sendDataChangedEvent( PARAMETER::CAMERA_NEAR_CLIP );
+	}
+	void Setting::setCameraFarClip( const float p_cameraFarClip )
+	{
+		cameraFarClip = p_cameraFarClip;
+		_sendDataChangedEvent( PARAMETER::CAMERA_FAR_CLIP );
+	}
+	void Setting::setAA( const bool p_antiAliasing )
+	{
+		antiAliasing = p_antiAliasing;
+		_sendDataChangedEvent( PARAMETER::CAMERA_ANTI_ALIASING );
+	}
+	void Setting::setCameraPerspectiveProjection( const bool p_cameraPerspective )
+	{
+		cameraPerspective = p_cameraPerspective;
+		_sendDataChangedEvent( PARAMETER::CAMERA_PROJECTION );
+	}
+
 	void Setting::setTranslationSpeed( const float p_translationSpeed )
 	{
 		translationSpeed = Util::Math::clamp(
@@ -642,6 +669,12 @@ namespace VTX
 		renderEffectDefaultIndex   = RENDER_EFFECT_DEFAULT_INDEX;
 
 		activeVSync = ACTIVE_VSYNC_DEFAULT;
+
+		cameraFOV		  = CAMERA_FOV_DEFAULT;
+		cameraNearClip	  = CAMERA_NEAR_DEFAULT;
+		cameraFarClip	  = CAMERA_FAR_DEFAULT;
+		antiAliasing	  = ACTIVE_AA_DEFAULT;
+		cameraPerspective = CAMERA_PERSPECTIVE_DEFAULT;
 
 		snapshotFormat	   = SNAPSHOT_FORMAT_DEFAULT;
 		backgroundOpacity  = BACKGROUND_OPACITY_DEFAULT;

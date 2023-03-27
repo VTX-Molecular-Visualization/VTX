@@ -237,8 +237,9 @@ namespace VTX
 
 		namespace WidgetProperty
 		{
-			inline const char * const OVERIDDEN_PARAMETER	= "OVERIDDEN_PARAMETER";
-			inline const char * const SETTING_SECTION_TITLE = "SETTING_SECTION_TITLE";
+			inline const char * const OVERIDDEN_PARAMETER			 = "OVERIDDEN_PARAMETER";
+			inline const char * const ATTRIBUTE_LAYOUT_SECTION_TITLE = "ATTRIBUTE_LAYOUT_SECTION_TITLE";
+			inline const char * const OVERLAY_STYLE					 = "OVERLAY_STYLE";
 		} // namespace WidgetProperty
 
 		inline static const std::string WINDOW_TITLE_SCENE_MODIFIED_FEEDBACK = "*";
@@ -274,9 +275,11 @@ namespace VTX
 		inline static const std::string VIEWPOINT_GROUP_NAME	   = "Viewpoints";
 		inline static const std::string VIEWPOINT_DEFAULT_NAME	   = "Viewpoint";
 
-		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;
-		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;
-		inline static const int INSPECTOR_CONTENT_HORIZONTAL_OFFSET = 10;
+		inline static const int INSPECTOR_HEADER_HEIGHT						 = 30;
+		inline static const int INSPECTOR_HEADER_NAME_SPACING				 = 10;
+		inline static const int INSPECTOR_CONTENT_HORIZONTAL_OFFSET			 = 10;
+		inline static const int MULTIPLE_INSPECTOR_INFO_DATA_COUNT_DISPLAYED = 5;
+		inline static const int INSPECTOR_INFO_BOND_COUNT_DISPLAYED			 = 100;
 
 		inline static const std::string SEQUENCE_CHAIN_NAME_SEPARATOR				 = "/";
 		inline static const int			SEQUENCE_CHAIN_SCALE_STEP					 = 5;
@@ -287,8 +290,22 @@ namespace VTX
 		inline static const int SCENE_SPACE_BETWEEN_ITEMS  = 4;
 		inline static const int DATA_GRID_VERTICAL_SPACE   = 2;
 		inline static const int DATA_GRID_HORIZONTAL_SPACE = 10;
+		inline static const int DATA_GRID_INDENT_SIZE	   = 10;
+		inline static const int DATA_GRID_DEFAULT_V_SPACER = 10;
 
-		inline static const int ATTRIBUTE_LIST_LAYOUT_SPACER_HEIGHT = 30;
+		inline static const int ATTRIBUTE_LIST_LAYOUT_SMALL_SECTION_SPACER = 15;
+		inline static const int ATTRIBUTE_LIST_LAYOUT_BIG_SECTION_SPACER   = 30;
+
+		enum class RENDER_OVERLAY_STYLE : int
+		{
+			STYLE_OPAQUE,
+			STYLE_TRANSPARENT,
+		};
+		inline static const std::vector<QString> RENDER_OVERLAY_STYLE_NAME			 = { "OPAQUE", "TRANSPARENT" };
+		const int								 RENDER_OVERLAY_ANCHOR_OFFSET_TOP	 = 5;
+		const int								 RENDER_OVERLAY_ANCHOR_OFFSET_BOTTOM = 5;
+		const int								 RENDER_OVERLAY_ANCHOR_OFFSET_LEFT	 = 5;
+		const int								 RENDER_OVERLAY_ANCHOR_OFFSET_RIGHT	 = 5;
 
 		inline static const QFont  WORLD_LABEL_FONT			  = QFont( "Arial", 20, QFont::Weight::Bold, false );
 		inline static const float  WORLD_LABEL_NEAR_CLIP	  = 20.f;

@@ -2,10 +2,10 @@
 #define __VTX_WORKER_GPU_COMPUTER__
 
 #include "base_worker.hpp"
-#include <util/types.hpp>
 #include "generic/base_opengl.hpp"
 #include "renderer/gl/program.hpp"
 #include "renderer/gl/program_manager.hpp"
+#include <util/types.hpp>
 #include <vector>
 
 #define LOCAL_SIZE_X 256
@@ -17,35 +17,45 @@ namespace VTX::Worker
 	class GpuComputer : public Worker::BaseWorker, public Generic::BaseOpenGL
 	{
 	  public:
-		explicit GpuComputer( const Util::FilePath & p_shader,
-							  const Vec3i &		   p_size	 = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ),
-							  const GLbitfield	   p_barrier = 0,
-							  const bool		   p_force	 = false ) :
-			_size( p_size ),
-			_barrier( p_barrier ), _force( p_force )
+		explicit GpuComputer( const Util::FilePath &								   p_shader,
+							  const size_t											   p_size,
+							  const std::vector<std::pair<std::string, std::string>> & p_customDefines = {} ) :
+			GpuComputer( p_shader, _computeSize( p_size ), p_customDefines )
 		{
-			const std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
-												+ "#define LOCAL_SIZE_Y " + std::to_string( LOCAL_SIZE_Y ) + "\n"
-												+ "#define LOCAL_SIZE_Z " + std::to_string( LOCAL_SIZE_Z ) + "\n";
+		}
+
+		explicit GpuComputer( const Util::FilePath & p_shader,
+							  const Vec3i &			 p_size = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ),
+							  const std::vector<std::pair<std::string, std::string>> & p_customDefines = {} ) :
+			_size( p_size )
+
+		{
+			std::string definesToInject = "#define LOCAL_SIZE_X " + std::to_string( LOCAL_SIZE_X ) + "\n"
+										  + "#define LOCAL_SIZE_Y " + std::to_string( LOCAL_SIZE_Y ) + "\n"
+										  + "#define LOCAL_SIZE_Z " + std::to_string( LOCAL_SIZE_Z ) + "\n";
+
+			std::string shaderNameSuffix = "";
+			for ( const std::pair<std::string, std::string> & p_define : p_customDefines )
+			{
+				definesToInject += "#define " + p_define.first + " " + p_define.second + "\n";
+				shaderNameSuffix += p_define.second;
+			}
+
 			_program = VTX_PROGRAM_MANAGER().createProgram(
-				p_shader.filenameWithoutExtension(), { p_shader }, definesToInject );
+				p_shader.filenameWithoutExtension(), { p_shader }, definesToInject, shaderNameSuffix );
 		}
 
 		virtual ~GpuComputer() = default;
 
 		inline Renderer::GL::Program & getProgram() { return *_program; }
-		inline void					   setBarrier( const GLbitfield p_barrier ) { _barrier = p_barrier; }
-		inline void					   setForce( const bool p_force ) { _force = p_force; }
 
-		void start();
-		void start( const Vec3i &, const GLbitfield = 0 );
-		void start( const size_t, const GLbitfield = 0 );
+		virtual void start();
+		void		 start( const Vec3i & );
+		void		 start( const size_t );
 
 	  protected:
 		Renderer::GL::Program * _program;
 		Vec3i					_size;
-		GLbitfield				_barrier;
-		bool					_force;
 
 		virtual void _run() override;
 

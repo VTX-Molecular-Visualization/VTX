@@ -2,15 +2,21 @@
 #include "atom.hpp"
 #include "category.hpp"
 #include "chain.hpp"
+#include "custom/iterator.hpp"
 #include "math/marching_cube.hpp"
 #include "molecule.hpp"
 #include "object3d/helper/aabb.hpp"
 #include "object3d/scene.hpp"
-#include "renderer/gl/buffer.hpp"
 #include "residue.hpp"
 #include "selection/selection_manager.hpp"
 #include "view/d3/triangle.hpp"
+#include "worker/gpu_buffer_initializer.hpp"
 #include "worker/gpu_computer.hpp"
+#include "worker/worker_manager.hpp"
+
+#define VOXEL_SIZE 0.4f
+
+#define VTX_SES_NORMALS_GPU 1
 
 namespace VTX
 {
@@ -27,54 +33,29 @@ namespace VTX
 			return _category->getMoleculePtr()->getTransform();
 		}
 
+		// TODO
+		// - Decompose in multiple iterations to handle larger buffers.
 		void SolventExcludedSurface::_init()
 		{
-			refresh();
-			refreshSelection( VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculeMap(
-				*_category->getMoleculePtr() ) );
-		}
-
-		void SolventExcludedSurface::refresh()
-		{
-			_mode = Mode::GPU;
-
 			if ( _category->isEmpty() )
 			{
 				return;
 			}
 
-			switch ( _mode )
-			{
-			case SolventExcludedSurface::Mode::CPU: _refreshCPU(); break;
-			case SolventExcludedSurface::Mode::GPU:
-			{
-				_buffer->makeContextCurrent();
-				_refreshGPU();
-				_buffer->doneContextCurrent();
-				break;
-			}
-			default: break;
-			}
-		}
-
-		// TODO
-		// - Decompose in multiple iterations to handle larger buffers.
-		// - Smooth normals on GPU.
-		// - Sort triangles by atom.
-		// - Find nearest atom for each triangle.
-		void SolventExcludedSurface::_refreshGPU()
-		{
 			Tool::Chrono chrono, chrono2;
 			chrono.start();
 			chrono2.start();
-			VTX_INFO( "Creating SES..." );
+			VTX_DEBUG( "Creating SES..." );
+
+			_buffer->makeContextCurrent();
+			_buffer->finish();
 
 			const std::vector<uint> atomsIdx = _category->generateAtomIndexList();
 
 			// Sort atoms in acceleration grid.
 			const float maxVdWRadius = *std::max_element(
 				Atom::SYMBOL_VDW_RADIUS, Atom::SYMBOL_VDW_RADIUS + std::size( Atom::SYMBOL_VDW_RADIUS ) );
-			const Object3D::Helper::AABB & molAABB = _category->getMoleculePtr()->getAABB();
+			const Object3D::Helper::AABB molAABB = _category->getAABB();
 
 			const float atomGridCellSize = PROBE_RADIUS + maxVdWRadius;
 			const Vec3f gridMin			 = molAABB.getMin() - atomGridCellSize;
@@ -93,7 +74,7 @@ namespace VTX
 
 			// Store atom indices in acceleration grid.
 			std::vector<Vec4f> atomPositionsVdW = std::vector<Vec4f>( atomPositions.size() );
-			for ( uint idx : atomsIdx )
+			for ( const uint idx : atomsIdx )
 			{
 				const uint hash = gridAtoms.gridHash( atomPositions[ idx ] );
 
@@ -126,7 +107,7 @@ namespace VTX
 			atomGridDataTmp.shrink_to_fit();
 
 			chrono2.stop();
-			VTX_INFO( "Atoms sorted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Atoms sorted in {}s", chrono2.elapsedTime() );
 			chrono2.start();
 
 			// Compute SES grid and compute SDF.
@@ -140,7 +121,6 @@ namespace VTX
 			// Create SSBOs.
 			using VTX::Renderer::GL::Buffer;
 			// Output.
-			VTX_INFO( "size of {}", sizeof( SESGridData ) );
 			Buffer bufferSesGridData( gridSES.getCellCount() * sizeof( SESGridData ) );
 			// Input.
 			Buffer bufferAtomGridDataSorted( atomGridDataSorted );
@@ -168,27 +148,27 @@ namespace VTX
 			workerCreateSDF.getProgram().setFloat( "uVoxelSize", VOXEL_SIZE );
 
 			// Start.
-			if ( LOCAL_SIZE_X == 1 )
-			{
-				workerCreateSDF.start( gridSES.size );
-			}
-			else
-			{
-				workerCreateSDF.start( gridSES.getCellCount() );
-			}
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			workerCreateSDF.start( gridSES.getCellCount() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
+			bufferSesGridData.unbind();
 			bufferAtomGridDataSorted.unbind();
 			bufferAtomIndexSorted.unbind();
 			bufferAtomPosition.unbind();
 
 			chrono2.stop();
-			VTX_INFO( "SDF created " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "SDF created in {}s", chrono2.elapsedTime() );
 			chrono2.start();
 
 			//////////////////////
 			// Worker: refine SDF.
 			Worker::GpuComputer workerRefineSDF( Util::FilePath( "ses/refine_sdf.comp" ) );
+
+			// Bind.
+			bufferSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+
 			workerRefineSDF.getProgram().use();
 
 			Vec3i cellsToVisitCount = Util::Math::ceil( Vec3f( PROBE_RADIUS + VOXEL_SIZE ) / gridSES.cellSize );
@@ -201,17 +181,86 @@ namespace VTX
 			workerRefineSDF.getProgram().setFloat( "uProbeRadius", PROBE_RADIUS );
 
 			// Start
-			if ( LOCAL_SIZE_X == 1 )
-			{
-				workerRefineSDF.start( gridSES.size );
-			}
-			else
-			{
-				workerRefineSDF.start( gridSES.getCellCount() );
-			}
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			workerRefineSDF.start( gridSES.getCellCount() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+			// Unbind.
+			bufferSesGridData.unbind();
 
 			chrono2.stop();
-			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "SDF boundary created in {}s", chrono2.elapsedTime() );
+			chrono2.start();
+
+			////////////////////////////
+			// Worker: reduce grid.
+			Worker::GpuComputer workerReduceGrid( Util::FilePath( "ses/reduce_grid.comp" ) );
+			size_t				bufferSize = gridSES.getCellCount();
+
+			std::vector<uint> validities( bufferSize, 0 );
+			Buffer			  bufferCellValidities( validities, Buffer::Flags::DYNAMIC_STORAGE_BIT );
+			Buffer			  bufferCellHashs( bufferSize * sizeof( uint ) );
+
+			// Bind.
+			bufferSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferCellValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferCellHashs.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+
+			workerReduceGrid.getProgram().use();
+
+			workerReduceGrid.getProgram().setVec3u( "uGridSESSize", Vec3u( gridSES.size ) );
+			workerReduceGrid.getProgram().setFloat( "uIsovalue", 0.f );
+
+			// Start.
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			workerReduceGrid.start( gridSES.getCellCount() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+			bufferSesGridData.unbind();
+			bufferCellValidities.unbind();
+			bufferCellHashs.unbind();
+
+			chrono2.stop();
+			VTX_DEBUG( "Grid reduced in {}s", chrono2.elapsedTime() );
+			chrono2.start();
+
+			////////////////////////////
+			// Worker: grid compaction.
+			Worker::GpuComputer workerGridCompaction( Util::FilePath( "ses/grid_compaction.comp" ) );
+
+			VTX_DEBUG( "Grid buffer size before compaction: {}", bufferSize );
+
+			bufferCellValidities.getData( validities );
+			std::exclusive_scan( validities.begin(), validities.end(), validities.begin(), 0 );
+			bufferCellValidities.setSub( validities );
+
+			size_t bufferSizeReduced = validities[ bufferSize - 1 ];
+
+			VTX_DEBUG( "Grid buffer size after compaction: {}", bufferSizeReduced );
+
+			Buffer bufferCellHashsReduced( bufferSizeReduced * sizeof( uint ) );
+
+			// Bind.
+			bufferCellValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferCellHashs.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+
+			workerGridCompaction.getProgram().use();
+			workerGridCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
+			workerGridCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
+
+			// Start.
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			workerGridCompaction.start( gridSES.getCellCount() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+			// Unbind.
+			bufferCellValidities.unbind();
+			bufferCellHashs.unbind();
+			bufferCellHashsReduced.unbind();
+
+			chrono2.stop();
+			VTX_DEBUG( "Grid compacted in {}s", chrono2.elapsedTime() );
 			chrono2.start();
 
 			/////////////////////////
@@ -221,629 +270,487 @@ namespace VTX
 			// Create SSBOs.
 			// Output.
 			// 5 triangles max per cell.
-			const size_t	  bufferSize = gridSES.getCellCount() * 5 * 3;
+			bufferSize = bufferSizeReduced * 5 * 3;
+			validities = std::vector<uint>( bufferSize, 0 );
 			Buffer			  bufferPositionsTmp( bufferSize * sizeof( Vec4f ) );
-			Buffer			  bufferNormalsTmp( bufferSize * sizeof( Vec4f ) );
 			Buffer			  bufferAtomIndicesTmp( bufferSize * sizeof( uint ) );
-			std::vector<uint> triangleValidities( bufferSize, 0 );
-			Buffer			  bufferTriangleValidities( triangleValidities );
+			Buffer			  bufferTriangleValidities( validities, Buffer::Flags::DYNAMIC_STORAGE_BIT );
+			std::vector<uint> trianglesPerAtom( atomPositions.size(), 0 );
+			Buffer			  bufferTrianglesPerAtom( trianglesPerAtom );
 			// Input.
 			Buffer bufferTriangleTable( 256 * 16 * sizeof( int ), Math::MarchingCube::TRIANGLE_TABLE );
 
+			bufferSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
 			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
-			bufferNormalsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
-			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
-			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
-			bufferTriangleTable.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
+			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferTriangleTable.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
+			bufferCellHashsReduced.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
+			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
 
 			workerMarchingCube.getProgram().use();
 
 			workerMarchingCube.getProgram().setVec3f( "uGridSESWorldOrigin", gridSES.worldOrigin );
 			workerMarchingCube.getProgram().setVec3u( "uGridSESSize", Vec3u( gridSES.size ) );
 			workerMarchingCube.getProgram().setVec3f( "uGridSESCellSize", gridSES.cellSize );
+			workerMarchingCube.getProgram().setFloat( "uIsovalue", 0.f );
+			workerMarchingCube.getProgram().setUInt( "uSize", uint( bufferSizeReduced ) );
 
 			// Start.
-			if ( LOCAL_SIZE_X == 1 )
-			{
-				workerMarchingCube.start( gridSES.size );
-			}
-			else
-			{
-				workerMarchingCube.start( gridSES.getCellCount() );
-			}
-
-			// Get validities for next step.
-			bufferTriangleValidities.getData( triangleValidities );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			workerMarchingCube.start( bufferSizeReduced );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferSesGridData.unbind();
 			bufferPositionsTmp.unbind();
-			bufferNormalsTmp.unbind();
 			bufferAtomIndicesTmp.unbind();
 			bufferTriangleValidities.unbind();
 			bufferTriangleTable.unbind();
+			bufferCellHashsReduced.unbind();
+			bufferTrianglesPerAtom.unbind();
 
 			chrono2.stop();
-			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Marching cube done in {}s", chrono2.elapsedTime() );
 			chrono2.start();
 
 			////////////////////////////
-			// Worker: stream compaction.
-			Worker::GpuComputer workerStreamCompaction( Util::FilePath( "ses/stream_compaction.comp" ) );
+			// Worker: buffer compaction.
+			Worker::GpuComputer workerBufferCompaction( Util::FilePath( "ses/buffer_compaction.comp" ) );
 			VTX_DEBUG( "Triangle buffer size before compaction: {}", bufferSize );
-			//  Perform exclusive scan on validity buffer.
-			std::exclusive_scan( triangleValidities.begin(), triangleValidities.end(), triangleValidities.begin(), 0 );
 
-			size_t bufferSizeReduced = *( triangleValidities.end() - 1 );
-			_indiceCount			 = uint( bufferSizeReduced );
+			// Exclusive scan with std.
+			bufferTriangleValidities.getData( validities );
+			std::exclusive_scan( validities.begin(), validities.end(), validities.begin(), 0 );
+			bufferSizeReduced = validities[ bufferSize - 1 ];
+
+			_indiceCount = uint( bufferSizeReduced );
+
+			assert( _indiceCount % 3 == 0 );
 
 			VTX_DEBUG( "Triangle buffer size after compaction: {}", _indiceCount );
 
+			bufferTrianglesPerAtom.getData( trianglesPerAtom );
+
+			// Compute atom to triangles.
+			_atomsToTriangles = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
+			uint counter	  = 0;
+			for ( uint i = 0; i < atomPositions.size(); ++i )
+			{
+				if ( trianglesPerAtom[ i ] == 0 )
+				{
+					continue;
+				}
+
+				const uint size		   = trianglesPerAtom[ i ];
+				_atomsToTriangles[ i ] = { counter, size };
+				counter += size;
+			}
+			_atomsToTriangles.shrink_to_fit();
+
+			assert( counter == _indiceCount );
+
 			// Create SSBOs.
 			// Output.
-			Buffer & bufferPositions	= _buffer->getBufferPositions();
-			Buffer & bufferNormals		= _buffer->getBufferNormals();
-			Buffer & bufferIndices		= _buffer->getBufferIndices();
-			Buffer & bufferColors		= _buffer->getBufferColors();
-			Buffer & bufferVisibilities = _buffer->getBufferVisibilities();
-			Buffer & bufferIds			= _buffer->getBufferIds();
-			Buffer & bufferSelections	= _buffer->getBufferSelections();
+			Buffer & bufferPositions		= _buffer->getBufferPositions();
+			Buffer & bufferNormals			= _buffer->getBufferNormals();
+			Buffer & bufferIndices			= _buffer->getBufferIndices();
+			Buffer & bufferColors			= _buffer->getBufferColors();
+			Buffer & bufferVisibilities		= _buffer->getBufferVisibilities();
+			Buffer & bufferIds				= _buffer->getBufferIds();
+			Buffer & bufferSelections		= _buffer->getBufferSelections();
+			Buffer & bufferAtomsToTriangles = _buffer->getBufferAtomsToTriangles();
 
-			if ( _isInit == false )
-			{
-				bufferPositions.set( bufferSizeReduced * sizeof( Vec4f ) );
-				bufferNormals.set( bufferSizeReduced * sizeof( Vec4f ) );
-				bufferIndices.set( bufferSizeReduced * sizeof( uint ) );
-				bufferColors.set( bufferSizeReduced * sizeof( Color::Rgba ), Buffer::Flags::MAP_WRITE_BIT );
-				bufferVisibilities.set( bufferSizeReduced * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
-				bufferIds.set( bufferSizeReduced * sizeof( uint ) );
-				bufferSelections.set( bufferSizeReduced * sizeof( uint ), Buffer::Flags::DYNAMIC_STORAGE_BIT );
-			}
+			// Create final buffers.
+			bufferPositions.set( _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
+			bufferNormals.set( std::vector<Vec4f>( _indiceCount, Vec4f() ) );
+			bufferIndices.set( _indiceCount * sizeof( uint ),
+							   Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
+			bufferColors.set( _indiceCount * sizeof( Color::Rgba ) );
+			bufferVisibilities.set( _indiceCount * sizeof( uint ) );
+			bufferIds.set( _indiceCount * sizeof( uint ) );
+			bufferSelections.set( _indiceCount * sizeof( uint ) );
 
 			// Input.
-			Buffer bufferTriangleValiditiesSum( triangleValidities );
-			Buffer bufferAtomColors( _category->getMoleculePtr()->getBufferAtomColors() );
-			Buffer bufferAtomVisibilities( _category->getMoleculePtr()->getBufferAtomVisibilities() );
-			Buffer bufferAtomIds( _category->getMoleculePtr()->getBufferAtomIds() );
+			Buffer & bufferAtomIds = _category->getMoleculePtr()->getBuffer()->getBufferIds();
+			bufferAtomsToTriangles.set( _atomsToTriangles );
 
 			// Bind.
 			bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
-			bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
-			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
-			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
-			bufferVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
-			bufferIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
+			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
+			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
+			bufferAtomsToTriangles.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
+			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
+			bufferTrianglesPerAtom.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
 
-			bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 6 );
-			bufferNormalsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 7 );
-			bufferAtomIndicesTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 8 );
-			bufferTriangleValidities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 9 );
-			bufferTriangleValiditiesSum.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 10 );
-			bufferAtomColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 11 );
-			bufferAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 12 );
-			bufferAtomIds.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 13 );
-
-			workerStreamCompaction.getProgram().use();
-			workerStreamCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
-			workerStreamCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
+			workerBufferCompaction.getProgram().use();
+			workerBufferCompaction.getProgram().setUInt( "uSize", uint( bufferSize ) );
+			workerBufferCompaction.getProgram().setUInt( "uSizeReduced", uint( bufferSizeReduced ) );
 
 			// Start.
-			workerStreamCompaction.start( bufferSize );
+			assert( bufferSize % 3 == 0 );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			workerBufferCompaction.start( bufferSize / 3 );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 			// Unbind.
 			bufferPositions.unbind();
-			bufferNormals.unbind();
 			bufferIndices.unbind();
-			bufferColors.unbind();
-			bufferVisibilities.unbind();
 			bufferIds.unbind();
-
 			bufferPositionsTmp.unbind();
-			bufferNormalsTmp.unbind();
 			bufferAtomIndicesTmp.unbind();
-			bufferTriangleValiditiesSum.unbind();
-			bufferAtomColors.unbind();
-			bufferAtomVisibilities.unbind();
+			bufferTriangleValidities.unbind();
+			bufferAtomsToTriangles.unbind();
 			bufferAtomIds.unbind();
-
-			/////////// TMP.
-			_atomsToTriangles				   = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
-			_atomsToTriangles[ atomsIdx[ 0 ] ] = Range { 0, _indiceCount };
-
-			_atomsToTriangles.shrink_to_fit();
+			bufferTrianglesPerAtom.unbind();
 
 			chrono2.stop();
-			VTX_INFO( "Buffer filled in " + std::to_string( chrono2.elapsedTime() ) + "s" );
-
-			chrono.stop();
-			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
-		}
-
-		void SolventExcludedSurface::_refreshCPU()
-		{
-			Tool::Chrono chrono, chrono2;
-			chrono.start();
+			VTX_DEBUG( "Buffer compacted in {}s", chrono2.elapsedTime() );
 			chrono2.start();
-			VTX_INFO( "Creating SES..." );
 
-			_vertices.clear();
-			_normals.clear();
-			_indices.clear();
-			_ids.clear();
-			_colors.clear();
-			_visibilities.clear();
-			_atomsToTriangles.clear();
+			////////////////////////////
+			// Weld vertices.
+			std::vector<uint> sortedIndices( _indiceCount );
 
-			const std::vector<uint> atomsIdx = _category->generateAtomIndexList();
+			Vec4f * const ptrPositions
+				= bufferPositions.map<Vec4f>( 0, _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
+			uint * const ptrIndices = bufferIndices.map<uint>(
+				0,
+				_indiceCount * sizeof( uint ),
+				Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
+			assert( ptrPositions != nullptr );
+			assert( ptrIndices != nullptr );
 
-			// Sort atoms in acceleration grid.
-			const float maxVdWRadius = *std::max_element(
-				Atom::SYMBOL_VDW_RADIUS, Atom::SYMBOL_VDW_RADIUS + std::size( Atom::SYMBOL_VDW_RADIUS ) );
-			const Object3D::Helper::AABB & molAABB = _category->getAABB();
-
-			const float atomGridCellSize = PROBE_RADIUS + maxVdWRadius;
-			const Vec3f gridMin			 = molAABB.getMin() - atomGridCellSize;
-			const Vec3f gridMax			 = molAABB.getMax() + atomGridCellSize;
-
-			const Vec3f gridSize = gridMax - gridMin;
-			Vec3i		atomGridSize( Util::Math::ceil( gridSize / atomGridCellSize ) );
-
-			Object3D::Helper::Grid gridAtoms( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
-
-			const std::vector<Vec3f> & atomPositions = _category->getMoleculePtr()->getCurrentAtomPositionFrame();
-
-			std::vector<std::vector<uint>> atomGridData2D( gridAtoms.getCellCount(), std::vector<uint>() );
-
-			// Store atom indices in acceleration grid.
-			for ( uint i : atomsIdx )
+			// Get permutations.
+			auto compareVec4Function = []( const Vec4f & p_lhs, const Vec4f & p_rhs )
 			{
-				const uint hash = gridAtoms.gridHash( atomPositions[ i ] );
+				if ( p_lhs.x <= p_rhs.x && p_lhs.y <= p_rhs.y && p_lhs.z < p_rhs.z )
+					return true;
+				if ( p_lhs.x <= p_rhs.x && p_lhs.y < p_rhs.y )
+					return true;
+				if ( p_lhs.x < p_rhs.x )
+					return true;
 
-				if ( hash < atomGridData2D.size() )
+				return false;
+			};
+
+			std::vector<std::size_t> permutations( _indiceCount );
+			std::iota( permutations.begin(), permutations.end(), 0 );
+			std::sort( permutations.begin(),
+					   permutations.end(),
+					   [ & ]( std::size_t i, std::size_t j )
+					   { return compareVec4Function( ptrPositions[ i ], ptrPositions[ j ] ); } );
+
+			chrono2.stop();
+			VTX_DEBUG( "Positions sorted in {}s", chrono2.elapsedTime() );
+			chrono2.start();
+
+			// Apply permutations.
+			std::transform( permutations.begin(),
+							permutations.end(),
+							sortedIndices.begin(),
+							[ & ]( std::size_t i ) { return ptrIndices[ i ]; } );
+
+			chrono2.stop();
+			VTX_DEBUG( "Permutations applied in {}s", chrono2.elapsedTime() );
+			chrono2.start();
+
+			// Detect duplicates.
+			uint indexCurrent	  = sortedIndices[ 0 ];
+			uint duplicateCounter = 0;
+			for ( uint i = 1; i < _indiceCount; ++i )
+			{
+				const uint indexNext = sortedIndices[ i ];
+
+				if ( Util::Math::length2( ptrPositions[ indexCurrent ] - ptrPositions[ indexNext ] )
+					 < EPSILON * EPSILON )
 				{
-					atomGridData2D[ hash ].emplace_back( i );
+					ptrIndices[ indexNext ] = indexCurrent;
+					duplicateCounter++;
+				}
+				else
+				{
+					indexCurrent = indexNext;
 				}
 			}
 
+			bufferPositions.unmap();
+			bufferIndices.unmap();
+
+			// Amelioration:
+			// Vertices are not removed.
+			// So _indiceCount is still the size of the vertice buffer with useless index.
+			// (need to recompute atomsToTriangle and other stuff)
+
 			chrono2.stop();
-			VTX_INFO( "Atoms sorted in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "{} duplicates over {} vertices detected in {}s",
+					   duplicateCounter,
+					   _indiceCount,
+					   chrono2.elapsedTime() );
 			chrono2.start();
 
-			// Compute SES grid and compute SDF.
-			Vec3i sesGridSize( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
-
-			Object3D::Helper::Grid gridSES( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
-
-			// SES grid data.
-			std::vector<SESGridData> sesGridData( gridSES.getCellCount(), SESGridData { PROBE_RADIUS, -1 } );
-
-			// Loop over cells.
-			std::vector<uint> boundaryIndex = std::vector<uint>();
-			for ( uint sesGridHash = 0; sesGridHash < gridSES.getCellCount(); ++sesGridHash )
+#if VTX_SES_NORMALS_GPU
 			{
-				// Get corresponding ses grid data.
-				const Vec3i	  sesGridPosition = gridSES.gridPosition( sesGridHash );
-				SESGridData & gridData		  = sesGridData[ sesGridHash ];
+				////////////////////////////
+				// Worker: compute normals (sum).
+				Worker::GpuComputer workerComputeNormals( Util::FilePath( "ses/compute_normals.comp" ) );
+				Buffer				bufferNormalsCasted( std::vector<Vec4i>( _indiceCount, Vec4i() ) );
 
-				// Get corresponding acceleration grid cell hash.
-				const Vec3f sesGridCellWorldPosition = gridSES.worldPosition( sesGridPosition );
-				const Vec3i atomGridPosition		 = gridAtoms.gridPosition( sesGridCellWorldPosition );
+				// Bind.
+				bufferPositions.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+				bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+				bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+				bufferNormalsCasted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 
-				// Loop over the 27 cells to visit.
-				float minDistance = FLOAT_MAX;
-				bool  found		  = false;
+				workerComputeNormals.getProgram().use();
+				workerComputeNormals.getProgram().setUInt( "uSize", _indiceCount );
 
-				for ( int ox = -1; ox <= 1 && !found; ++ox )
-				{
-					for ( int oy = -1; oy <= 1 && !found; ++oy )
-					{
-						for ( int oz = -1; oz <= 1 && !found; ++oz )
-						{
-							Vec3f offset( ox, oy, oz );
-							Vec3i gridPositionToVisit( Vec3f( atomGridPosition ) + offset );
-							uint  hashToVisit = gridAtoms.gridHash( Vec3i( gridPositionToVisit ) );
+				// Start.
+				assert( _indiceCount % 3 == 0 );
+				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+				workerComputeNormals.start( _indiceCount / 3 );
+				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-							if ( hashToVisit >= atomGridData2D.size() )
-							{
-								continue;
-							}
+				// Unbind.
+				bufferPositions.unbind();
+				bufferNormals.unbind();
+				bufferIndices.unbind();
+				bufferNormalsCasted.unbind();
 
-							// Compute SDF.
-							for ( const uint index : atomGridData2D[ hashToVisit ] )
-							{
-								if ( _category->getMoleculePtr()->getAtom( index ) == nullptr )
-								{
-									continue;
-								}
+				////////////////////////////
+				// Worker: compute normals (divide).
+				Worker::GpuComputer workerNormalizeNormals( Util::FilePath( "ses/normalize_normals.comp" ) );
 
-								float distance
-									= Util::Math::distance( atomPositions[ index ], sesGridCellWorldPosition );
+				// Bind.
+				bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+				bufferNormalsCasted.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
 
-								// Inside.
-								if ( distance < VOXEL_SIZE )
-								{
-									gridData.sdf		 = -VOXEL_SIZE;
-									gridData.nearestAtom = -1;
-									found				 = true;
-									// Don't need to loop over other cells.
-									break;
-								}
-								// Boundary.
-								else
-								{
-									distance -= ( PROBE_RADIUS
-												  + _category->getMoleculePtr()->getAtom( index )->getVdwRadius() );
-									if ( distance < 0.f )
-									{
-										gridData.sdf = -VOXEL_SIZE;
-										if ( distance < minDistance )
-										{
-											minDistance			 = distance;
-											gridData.nearestAtom = index;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				workerNormalizeNormals.getProgram().use();
+				workerNormalizeNormals.getProgram().setUInt( "uSize", _indiceCount );
+
+				// Start.
+				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+				workerNormalizeNormals.start( _indiceCount );
+				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+				// Unbind.
+				bufferNormals.unbind();
+				bufferNormalsCasted.unbind();
 			}
-
-			chrono2.stop();
-			VTX_INFO( "SDF created " + std::to_string( chrono2.elapsedTime() ) + "s" );
-
-			chrono2.start();
-
-			// SDF refinement.
-			Vec3i cellsToVisitCount = Util::Math::ceil( Vec3f( PROBE_RADIUS + VOXEL_SIZE ) / gridSES.cellSize );
-
-			// for ( uint sesGridHash : boundaryIndex ) // Why this is slower?
-			for ( uint sesGridHash = 0; sesGridHash < gridSES.getCellCount(); ++sesGridHash )
+#else
 			{
-				// Get corresponding ses grid data.
-				const Vec3i	  sesGridPosition = gridSES.gridPosition( sesGridHash );
-				SESGridData & gridData		  = sesGridData[ sesGridHash ];
+				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-				// Not in boundary.
-				if ( gridData.nearestAtom == -1 )
+				ptrPositions
+					= bufferPositions.map<Vec4f>( 0, _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_READ_BIT );
+				ptrIndices = bufferIndices.map<uint>( 0, _indiceCount * sizeof( uint ), Buffer::Flags::MAP_READ_BIT );
+				Vec4f * const ptrNormals
+					= bufferNormals.map<Vec4f>( 0, _indiceCount * sizeof( Vec4f ), Buffer::Flags::MAP_WRITE_BIT );
+				assert( ptrPositions != nullptr );
+				assert( ptrIndices != nullptr );
+				assert( ptrNormals != nullptr );
+
+				for ( uint i = 0; i < _indiceCount - 2; i += 3 )
 				{
-					continue;
-				}
+					Vec3f normal = Util::Math::cross(
+						Vec3f( ptrPositions[ ptrIndices[ i + 1 ] ] - ptrPositions[ ptrIndices[ i + 2 ] ] ),
+						Vec3f( ptrPositions[ ptrIndices[ i + 1 ] ] - ptrPositions[ ptrIndices[ i + 0 ] ] ) );
 
-				const Vec3f sesWorldPosition = gridSES.worldPosition( sesGridPosition );
+					assert( Util::Math::length( normal ) != 0.f );
+					Util::Math::normalizeSelf( normal );
 
-				float minDistanceWithOutsidePoint = FLOAT_MAX;
-				bool  found						  = false;
-				for ( int ox = -cellsToVisitCount.x; ox <= cellsToVisitCount.x; ++ox )
-				{
-					for ( int oy = -cellsToVisitCount.y; oy <= cellsToVisitCount.y; ++oy )
+					for ( uint j = 0; j < 3; ++j )
 					{
-						for ( int oz = -cellsToVisitCount.z; oz <= cellsToVisitCount.z; ++oz )
-						{
-							Vec3f		offset				= Vec3f( ox, oy, oz );
-							const Vec3i gridPositionToVisit = Vec3i( Vec3f( sesGridPosition ) + offset );
-							const uint	hashToVisit			= gridSES.gridHash( gridPositionToVisit );
-
-							if ( hashToVisit >= sesGridData.size() )
-							{
-								continue;
-							}
-
-							const Vec3f	  worldPositionToVisit = gridSES.worldPosition( gridPositionToVisit );
-							SESGridData & gridDataToVisit	   = sesGridData[ hashToVisit ];
-
-							// If outside.
-							if ( gridDataToVisit.sdf == PROBE_RADIUS )
-							{
-								const float distance = Util::Math::distance( worldPositionToVisit, sesWorldPosition );
-								if ( distance < minDistanceWithOutsidePoint )
-								{
-									minDistanceWithOutsidePoint = distance;
-								}
-								found = true;
-							}
-						}
+						ptrNormals[ ptrIndices[ i + j ] ].x += normal.x;
+						ptrNormals[ ptrIndices[ i + j ] ].y += normal.y;
+						ptrNormals[ ptrIndices[ i + j ] ].z += normal.z;
 					}
 				}
 
-				if ( found )
+				for ( uint i = 0; i < _indiceCount; ++i )
 				{
-					gridData.sdf = PROBE_RADIUS - minDistanceWithOutsidePoint;
-				}
-			}
-
-			chrono2.stop();
-
-			VTX_INFO( "SDF boundary created " + std::to_string( chrono2.elapsedTime() ) + "s" );
-			chrono2.start();
-
-			std::vector<std::vector<Vec4f>> atomsToTriangles( atomPositions.size(), std::vector<Vec4f>() );
-
-			// Marching cube to extract mesh.
-			const Math::MarchingCube marchingCube = Math::MarchingCube();
-			for ( uint x = 0; x < uint( gridSES.size.x ) - 1; ++x )
-			{
-				for ( uint y = 0; y < uint( gridSES.size.y ) - 1; ++y )
-				{
-					for ( uint z = 0; z < uint( gridSES.size.z ) - 1; ++z )
-					{
-						SESGridData gridData[ 8 ] = { sesGridData[ gridSES.gridHash( Vec3i( x, y, z ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x + 1, y, z ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x + 1, y, z + 1 ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x, y, z + 1 ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x, y + 1, z ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x + 1, y + 1, z ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x + 1, y + 1, z + 1 ) ) ],
-													  sesGridData[ gridSES.gridHash( Vec3i( x, y + 1, z + 1 ) ) ] };
-
-						Math::MarchingCube::GridCell cell
-							= { { gridSES.worldPosition( Vec3i( x, y, z ) ),
-								  { gridSES.worldPosition( Vec3i( x + 1, y, z ) ) },
-								  { gridSES.worldPosition( Vec3i( x + 1, y, z + 1 ) ) },
-								  { gridSES.worldPosition( Vec3i( x, y, z + 1 ) ) },
-								  { gridSES.worldPosition( Vec3i( x, y + 1, z ) ) },
-								  { gridSES.worldPosition( Vec3i( x + 1, y + 1, z ) ) },
-								  { gridSES.worldPosition( Vec3i( x + 1, y + 1, z + 1 ) ) },
-								  { gridSES.worldPosition( Vec3i( x, y + 1, z + 1 ) ) } },
-								{ gridData[ 0 ].sdf,
-								  gridData[ 1 ].sdf,
-								  gridData[ 2 ].sdf,
-								  gridData[ 3 ].sdf,
-								  gridData[ 4 ].sdf,
-								  gridData[ 5 ].sdf,
-								  gridData[ 6 ].sdf,
-								  gridData[ 7 ].sdf } };
-
-						std::vector<std::vector<Vec4f>> cellTriangles = marchingCube.triangulateCell( cell, 0 );
-						for ( std::vector<Vec4f> & cellTriangle : cellTriangles )
-						{
-							assert( cellTriangle.size() == 3 );
-
-							// Get closest atom.
-							float closestDistance = FLOAT_MAX;
-							uint  closestVertex	  = 0;
-							Vec3f centroid = Vec3f( cellTriangle[ 0 ] + cellTriangle[ 1 ] + cellTriangle[ 2 ] ) / 3.f;
-							for ( uint vertex = 0; vertex < 8; ++vertex )
-							{
-								float distance = Util::Math::distance( centroid, cell.vertex[ vertex ] );
-								if ( distance < closestDistance )
-								{
-									closestVertex	= vertex;
-									closestDistance = distance;
-								}
-							}
-
-							// Map atoms with triangle points.
-							std::vector<Vec4f> & triangles = atomsToTriangles[ gridData[ closestVertex ].nearestAtom ];
-							triangles.insert( triangles.end(), cellTriangle.begin(), cellTriangle.end() );
-						}
-					}
-				}
-			}
-
-			chrono2.stop();
-			VTX_INFO( "Marching cube done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
-			chrono2.start();
-
-			// Fill buffers with sorted values and store data as triangle range per atoms.
-			_atomsToTriangles = std::vector<Range>( atomPositions.size(), Range { 0, 0 } );
-			for ( uint i = 0; i < atomsToTriangles.size(); ++i )
-			{
-				if ( _category->getMoleculePtr()->getAtom( i ) == nullptr )
-				{
-					continue;
+					Util::Math::normalizeSelf( ptrNormals[ i ] );
 				}
 
-				const std::vector<Vec4f> & trianglePoints = atomsToTriangles[ i ];
+				bufferPositions.unmap();
+				bufferIndices.unmap();
+				bufferNormals.unmap();
 
-				_atomsToTriangles[ i ].first = uint( _vertices.size() );
-				_atomsToTriangles[ i ].count = uint( trianglePoints.size() );
-
-				std::vector<uint> indices = std::vector<uint>( trianglePoints.size() );
-				int				  index	  = int( _vertices.size() );
-				std::iota( indices.begin(), indices.end(), index );
-				_indices.insert( _indices.end(), indices.begin(), indices.end() );
-
-				_vertices.insert( _vertices.end(), trianglePoints.begin(), trianglePoints.end() );
-
-				std::vector<uint> ids = std::vector<uint>( trianglePoints.size() );
-				std::fill( ids.begin(), ids.end(), _category->getMoleculePtr()->getAtom( i )->getId() );
-				_ids.insert( _ids.end(), ids.begin(), ids.end() );
+				_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 			}
+#endif
 
 			chrono2.stop();
-			VTX_INFO( "Triangles sorting done in " + std::to_string( chrono2.elapsedTime() ) + "s" );
-			chrono2.start();
-			// toIndexed();
-			chrono2.stop();
-			VTX_INFO( "Mesh to indexed computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
-			chrono2.start();
-			recomputeNormals();
-			chrono2.stop();
-			VTX_INFO( "Normals computed in " + std::to_string( chrono2.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Normals computed in {}s", chrono2.elapsedTime() );
 
-			_indiceCount = uint( _indices.size() );
+			_buffer->doneContextCurrent();
 
+			////////////////////////////
+			// Refresh other data.
 			refreshColors();
 			refreshVisibilities();
+			refreshSelections();
 
-			_buffer->setPositions( _vertices );
-			_buffer->setNormals( _normals );
-			_buffer->setIds( _ids );
-			_buffer->setIndices( _indices );
+			// No CPU data.
+			assert( _vertices.empty() );
+			assert( _indices.empty() );
+			assert( _colors.empty() );
+			assert( _normals.empty() );
+			assert( _visibilities.empty() );
+			assert( _selections.empty() );
 
-			_vertices.clear();
-			_normals.clear();
-			_ids.clear();
-			_indices.clear();
-
-			_vertices.shrink_to_fit();
-			_normals.shrink_to_fit();
-			_ids.shrink_to_fit();
-			_indices.shrink_to_fit();
-
-			_atomsToTriangles.shrink_to_fit();
+			// Only atoms to triangle indices mapping.
+			assert( _atomsToTriangles.empty() == false );
 
 			chrono.stop();
-			VTX_INFO( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			VTX_DEBUG( "SES created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
-		// TODO: check if it is still needed after creation.
 		void SolventExcludedSurface::refreshColors()
 		{
-			if ( _mode == Mode::CPU )
-			{
-				_colors.resize( _indiceCount, Color::Rgba::WHITE );
+			Tool::Chrono chrono;
+			chrono.start();
 
-				for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
-				{
-					const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
-					if ( atom == nullptr )
-					{
-						continue;
-					}
+			using VTX::Renderer::GL::Buffer;
+			_buffer->makeContextCurrent();
 
-					const Color::Rgba & color = _category->getMoleculePtr()->getAtomColor( atomIdx );
-					std::fill(
-						_colors.begin() + _atomsToTriangles[ atomIdx ].first,
-						_colors.begin() + _atomsToTriangles[ atomIdx ].first + _atomsToTriangles[ atomIdx ].count,
-						color );
-				}
-				_buffer->setColors( _colors );
-				_colors.clear();
-				_colors.shrink_to_fit();
-			}
-			else
-			{
-				using VTX::Renderer::GL::Buffer;
-				_buffer->makeContextCurrent();
-				const Buffer & bufferColor = _buffer->getBufferColors();
+			Buffer & bufferColors			= _buffer->getBufferColors();
+			Buffer & bufferIndices			= _buffer->getBufferIndices();
+			Buffer & bufferAtomsToTriangles = _buffer->getBufferAtomsToTriangles();
+			Buffer & bufferAtomColors		= _category->getMoleculePtr()->getBuffer()->getBufferColors();
+			Buffer	 bufferCounters( _indiceCount * sizeof( uint ) );
+			Buffer	 bufferColorsUint( _indiceCount * sizeof( Vec4u ) );
 
-				Color::Rgba * const ptr = bufferColor.map<Color::Rgba>( Buffer::Access::WRITE_ONLY );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			VTX_WORKER( new Worker::GpuBufferInitializer( bufferCounters, _indiceCount ) );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			VTX_WORKER(
+				new Worker::GpuBufferInitializer( bufferColorsUint, _indiceCount, "uvec4", "std140", "uvec4(0)" ) );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-				for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
-				{
-					const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
-					if ( atom == nullptr )
-					{
-						continue;
-					}
+			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferAtomColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferAtomsToTriangles.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
+			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
+			bufferColorsUint.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
 
-					const Color::Rgba & color = _category->getMoleculePtr()->getAtomColor( atomIdx );
+			Worker::GpuComputer worker( Util::FilePath( "ses/apply_color.comp" ) );
 
-					// TODO: optimize that.
-					for ( uint i = 0; i < _atomsToTriangles[ atomIdx ].count; ++i )
-					{
-						ptr[ _atomsToTriangles[ atomIdx ].first + i ] = color;
-					}
-				}
+			worker.getProgram().use();
+			worker.getProgram().setUInt( "uSize", uint( _atomsToTriangles.size() ) );
+			worker.start( _atomsToTriangles.size() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-				bufferColor.unmap();
-				_buffer->doneContextCurrent();
-			}
+			bufferColors.unbind();
+			bufferIndices.unbind();
+			bufferAtomColors.unbind();
+			bufferAtomsToTriangles.unbind();
+			bufferCounters.unbind();
+			bufferColorsUint.unbind();
+
+			bufferColors.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferColorsUint.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+
+			worker = Worker::GpuComputer( Util::FilePath( "ses/apply_color_divide.comp" ) );
+
+			worker.getProgram().use();
+			worker.getProgram().setUInt( "uSize", _indiceCount );
+			worker.start( _indiceCount );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+
+			bufferColors.unbind();
+			bufferCounters.unbind();
+			bufferColorsUint.unbind();
+
+			_buffer->doneContextCurrent();
+
+			chrono.stop();
+			VTX_DEBUG( "SES color refreshed in {}s", chrono.elapsedTime() );
 		}
 
 		void SolventExcludedSurface::refreshVisibilities()
 		{
+			Tool::Chrono chrono;
+			chrono.start();
+
 			using VTX::Renderer::GL::Buffer;
+			_buffer->makeContextCurrent();
 
-			if ( _mode == Mode::GPU )
-			{
-				_buffer->makeContextCurrent();
-			}
+			Buffer & bufferVisibilities		= _buffer->getBufferVisibilities();
+			Buffer & bufferIndices			= _buffer->getBufferIndices();
+			Buffer & bufferAtomsToTriangles = _buffer->getBufferAtomsToTriangles();
+			Buffer & bufferAtomVisibilities = _category->getMoleculePtr()->getBuffer()->getBufferVisibilities();
 
-			_visibilities.resize( _indiceCount, 1 );
-			const Buffer & bufferVisibilities = _buffer->getBufferVisibilities();
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			VTX_WORKER( new Worker::GpuBufferInitializer( bufferVisibilities, _indiceCount ) );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-			std::vector<uint> & visitibilities = _category->getMoleculePtr()->getBufferAtomVisibilities();
+			bufferVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferAtomsToTriangles.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 
-			for ( uint atomIdx = 0; atomIdx < _atomsToTriangles.size(); ++atomIdx )
-			{
-				const Atom * const atom = _category->getMoleculePtr()->getAtom( atomIdx );
-				if ( atom == nullptr )
-				{
-					continue;
-				}
+			Worker::GpuComputer worker( Util::FilePath( "ses/apply_visibility.comp" ) );
 
-				if ( visitibilities[ atomIdx ] == 0 )
-				{
-					std::fill(
-						_visibilities.begin() + _atomsToTriangles[ atomIdx ].first,
-						_visibilities.begin() + _atomsToTriangles[ atomIdx ].first + _atomsToTriangles[ atomIdx ].count,
-						0 );
-				}
-			}
+			worker.getProgram().use();
+			worker.getProgram().setUInt( "uSize", uint( _atomsToTriangles.size() ) );
+			worker.start( _atomsToTriangles.size() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-			if ( _mode == Mode::CPU )
-			{
-				_buffer->setVisibilities( _visibilities );
-			}
-			else
-			{
-				bufferVisibilities.setSub( _visibilities );
-			}
+			bufferVisibilities.unbind();
+			bufferIndices.unbind();
+			bufferAtomVisibilities.unbind();
+			bufferAtomsToTriangles.unbind();
 
-			_visibilities.clear();
-			_visibilities.shrink_to_fit();
+			_buffer->doneContextCurrent();
 
-			if ( _mode == Mode::GPU )
-			{
-				_buffer->doneContextCurrent();
-			}
+			chrono.stop();
+			VTX_DEBUG( "SES visibility refreshed in {}s", chrono.elapsedTime() );
 		}
 
-		void SolventExcludedSurface::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
+		void SolventExcludedSurface::refreshSelections()
 		{
+			Tool::Chrono chrono;
+			chrono.start();
+
 			using VTX::Renderer::GL::Buffer;
+			_buffer->makeContextCurrent();
 
-			if ( _mode == Mode::GPU )
-			{
-				_buffer->makeContextCurrent();
-			}
+			Buffer & bufferSelections		= _buffer->getBufferSelections();
+			Buffer & bufferIndices			= _buffer->getBufferIndices();
+			Buffer & bufferAtomsToTriangles = _buffer->getBufferAtomsToTriangles();
+			Buffer & bufferAtomSelections	= _category->getMoleculePtr()->getBuffer()->getBufferSelections();
 
-			_selections.resize( _indiceCount, 0 );
-			const Buffer & bufferSelections = _buffer->getBufferSelections();
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+			VTX_WORKER( new Worker::GpuBufferInitializer( bufferSelections, _indiceCount ) );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-			if ( p_selection != nullptr )
-			{
-				if ( p_selection->getFullySelectedChildCount() == _category->getMoleculePtr()->getRealChainCount() )
-				{
-					std::fill( _selections.begin(), _selections.end(), 1 );
-				}
-				else
-				{
-					for ( const Model::Selection::PairChainIds & pairChain : *p_selection )
-					{
-						for ( const Model::Selection::PairResidueIds & pairResidue : pairChain.second )
-						{
-							for ( const uint & atomIdx : pairResidue.second )
-							{
-								std::fill( _selections.begin() + _atomsToTriangles[ atomIdx ].first,
-										   _selections.begin() + _atomsToTriangles[ atomIdx ].first
-											   + _atomsToTriangles[ atomIdx ].count,
-										   1 );
-							}
-						}
-					}
-				}
-			}
+			bufferSelections.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
+			bufferIndices.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
+			bufferAtomSelections.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
+			bufferAtomsToTriangles.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 
-			if ( _mode == Mode::CPU )
-			{
-				_buffer->setSelections( _selections );
-			}
-			else
-			{
-				bufferSelections.setSub( _selections );
-			}
+			Worker::GpuComputer worker( Util::FilePath( "ses/apply_selection.comp" ) );
 
-			_selections.clear();
-			_selections.shrink_to_fit();
+			worker.getProgram().use();
+			worker.getProgram().setUInt( "uSize", uint( _atomsToTriangles.size() ) );
+			worker.start( _atomsToTriangles.size() );
+			_buffer->memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-			if ( _mode == Mode::GPU )
-			{
-				_buffer->doneContextCurrent();
-			}
+			bufferSelections.unbind();
+			bufferIndices.unbind();
+			bufferAtomSelections.unbind();
+			bufferAtomsToTriangles.unbind();
+
+			_buffer->doneContextCurrent();
+
+			chrono.stop();
+			VTX_DEBUG( "SES selection refreshed in {}s", chrono.elapsedTime() );
 		}
 
 		void SolventExcludedSurface::_instantiate3DViews()

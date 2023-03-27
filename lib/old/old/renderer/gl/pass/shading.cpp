@@ -75,9 +75,7 @@ namespace VTX::Renderer::GL::Pass
 		// TODO: distinguish "view" and "world" lights
 		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
 		{
-			const Vec4f & lightPosition
-				= p_scene.getCamera().getViewMatrix() * Vec4f( p_scene.getCamera().getPosition(), 1.f );
-			_currentShading->setVec3f( "uLightPosition", lightPosition );
+			_currentShading->setBool( "uIsPerspective", p_scene.getCamera().isPerspective() );
 		}
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );

@@ -5,14 +5,16 @@ layout( binding = 0 ) uniform sampler2D depthTexture;
 layout( location = 0 ) out float linearDepth;
 
 uniform vec4 uClipInfo;
+uniform bool uIsPerspective;
 
-// TODO: implement ortho cam ! if clipInfo[3] == 0
-// clipInfo = (zNear * zfar, zFar, zFar - zNear, isPerspective)
+// clipInfo = (zNear * zfar, zFar, zFar - zNear, zNear)
 float linearizeDepth( const vec4 clipInfo, const float depth )
 {
-	// ortho:
+	// ortho: depth * (zFar - zNear) + zNear
 	// perspective: ( zNear * zFar ) / ( zFar - depth * ( zFar - zNear ) );
-	return clipInfo[ 0 ] / ( clipInfo[ 1 ] - depth * clipInfo[ 2 ] );
+	if (uIsPerspective)
+		return clipInfo[ 0 ] / ( clipInfo[ 1 ] - depth * clipInfo[ 2 ] );
+	return depth * clipInfo[2] + clipInfo[3];
 }
 
 void main() 

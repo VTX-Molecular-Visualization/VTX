@@ -43,8 +43,9 @@ namespace VTX::Renderer::GL::Pass
 			const Object3D::Camera & cam	 = p_scene.getCamera();
 			const float				 camNear = cam.getNear();
 			const float				 camFar	 = cam.getFar();
-			// clipInfo.w: 0 = ortho ; 1 = perspective (always perspective for now).
-			_program->setVec4f( "uClipInfo", camNear * camFar, camFar, camFar - camNear, 1.f );
+
+			_program->setVec4f( "uClipInfo", camNear * camFar, camFar, camFar - camNear, camNear );
+			_program->setBool( "uIsPerspective", cam.isPerspective() );
 		}
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );

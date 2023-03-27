@@ -5,7 +5,7 @@
 
 #include <util/types.hpp>
 #include <util/constants.hpp>
-#include "glm/gtc/type_ptr.hpp"
+#include <glm/gtc/type_ptr.hpp>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/compatibility.hpp>
@@ -115,6 +115,12 @@ namespace VTX
 				return glm::length( p_value );
 			}
 
+			template<int L, typename T>
+			inline T length2( const glm::vec<L, T> & p_value )
+			{
+				return glm::length2( p_value );
+			}
+
 			template<typename T>
 			inline void normalizeSelf( T & p_value )
 			{
@@ -218,6 +224,24 @@ namespace VTX
 			inline std::string to_string( const T & p_value )
 			{
 				return glm::to_string( p_value );
+			}
+
+			template<typename T>
+			inline std::string to_string_fmt( const T & p_value )
+			{
+				std::string glmString = glm::to_string( p_value );
+				for ( int i = 0; i < glmString.size(); i++ )
+				{
+					const char & currentChar = glmString[ i ];
+
+					if ( currentChar == '{' || currentChar == '}' )
+					{
+						glmString.insert( i, 1, currentChar );
+						i++;
+					}
+				}
+
+				return glmString;
 			}
 
 			template<int L, typename T>

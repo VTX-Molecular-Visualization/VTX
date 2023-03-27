@@ -1,7 +1,6 @@
 #ifndef __VTX_CAMERA__
 #define __VTX_CAMERA__
 
-#include <util/types.hpp>
 #include "define.hpp"
 #include "util/math.hpp"
 
@@ -9,6 +8,14 @@ namespace VTX
 {
 	namespace Object3D
 	{
+		enum class CameraProjection
+		{
+			PERSPECTIVE,
+			ORTHOGRAPHIC,
+
+			COUNT
+		};
+
 		class Camera
 		{
 		  public:
@@ -31,6 +38,13 @@ namespace VTX
 			inline const float getNear() const { return _near; }
 			inline const float getFar() const { return _far; }
 			inline const float getFov() const { return _fov; }
+
+			inline const Vec3f & getTarget() const { return _target; }
+
+			inline const CameraProjection & getProjection() { return _projection; }
+			void							setCameraProjection( const CameraProjection & p_projection );
+
+			const bool isPerspective() const { return _projection == CameraProjection::PERSPECTIVE; }
 
 			inline void setScreenSize( const uint p_width, const uint p_height )
 			{
@@ -64,30 +78,34 @@ namespace VTX
 				setRotation( p_rotation );
 			}
 
+			void setFrontRightUp( const Vec3f & p_front, const Vec3f & p_right, const Vec3f & p_up );
+
 			void setNear( const float p_near );
 			void setFar( const float p_far );
 			void setFov( const float p_fov );
-			void setPerspective( const bool p_perspective );
 
-			void move( const Vec3f & );
-			void moveFront( const float );
-			void moveRight( const float );
-			void moveUp( const float );
+			virtual void move( const Vec3f & );
+			virtual void moveFront( const float );
+			virtual void moveRight( const float );
+			virtual void moveUp( const float );
+
+			virtual void  setTarget( const Vec3f & p_target );
+			virtual float getDistanceToTarget() const;
 
 			void rotate( const Vec3f & );
 			void rotatePitch( const float );
 			void rotateYaw( const float );
 			void rotateRoll( const float );
 
-			void setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance );
-			void rotateAround( const Quatf &, const Vec3f &, const float );
-			void lookAt( const Vec3f &, const Vec3f & );
+			void		 setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance );
+			virtual void rotateAround( const Quatf &, const Vec3f &, const float );
+			void		 lookAt( const Vec3f &, const Vec3f & );
 
 			void reset( const Vec3f & p_defaultPosition = VEC3F_ZERO );
 
 			void print() const;
 
-		  private:
+		  protected:
 			uint  _screenWidth	= 1u;
 			uint  _screenHeight = 1u;
 			float _aspectRatio	= 1.f;
@@ -102,13 +120,19 @@ namespace VTX
 			Vec3f _right = CAMERA_RIGHT_DEFAULT;
 			Vec3f _up	 = CAMERA_UP_DEFAULT;
 
+			Vec3f			 _target	 = VEC3F_ZERO;
+			CameraProjection _projection = CameraProjection::PERSPECTIVE;
+
 			Mat4f _viewMatrix;
 			Mat4f _projectionMatrix;
-			bool  _isPerspective = true;
 
-			void _updateRotation();
-			void _updateViewMatrix();
+			void		 _updateRotation();
+			virtual void _updateViewMatrix();
+
 			void _updateProjectionMatrix();
+			void _computePerspectiveProjectionMatrix();
+			void _computeOrthographicProjectionMatrix();
+
 		}; // namespace Camera
 	}	   // namespace Object3D
 } // namespace VTX

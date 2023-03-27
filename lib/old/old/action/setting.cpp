@@ -18,14 +18,6 @@
 
 namespace VTX::Action::Setting
 {
-	void RestoreLayout::execute()
-	{
-		// Delete previous save file in case of corruption
-		VTXApp::get().getMainWindow().deleteLayoutSaveFile();
-		VTXApp::get().getMainWindow().restoreDefaultLayout();
-
-		VTX_INFO( "Default layout restored " );
-	}
 
 	void Load::execute()
 	{
@@ -62,37 +54,11 @@ namespace VTX::Action::Setting
 		}
 	}
 
-	void WindowMode::execute()
-	{
-		VTX_SETTING().setWindowFullscreen( _windowMode == UI::WindowMode::Fullscreen );
-		VTXApp::get().getMainWindow().setWindowMode( _windowMode );
-	}
-
-	void ActiveRenderer::execute() { VTX_SETTING().setActivateRenderer( _active ); }
-
-	void ForceRenderer::execute() { VTX_SETTING().setForceRenderer( _force ); }
-
 	void ChangeBackgroundColor::execute()
 	{
 		VTX_RENDER_EFFECT().setBackgroundColor( _color );
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
-
-	void ChangeSnapshotFormat::execute() { VTX_SETTING().setSnapshotFormat( _format ); };
-
-	void ChangeBackgroundOpacity::execute()
-	{
-		VTX_SETTING().setSnapshotBackgroundOpacity( _opacity );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
-
-	void ChangeSnapshotQuality::execute()
-	{
-		VTX_SETTING().setSnapshotQuality( _quality );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
-
-	void ChangeSnapshotResolution::execute() { VTX_SETTING().setSnapshotResolution( _resolution ); };
+	}
 
 	void ChangeDefaultRepresentation::execute()
 	{
@@ -104,26 +70,41 @@ namespace VTX::Action::Setting
 		VTX::Model::Representation::Representation * const newDefaultRepresentation
 			= VTX::Model::Representation::RepresentationLibrary::get().getDefaultRepresentation();
 
-		for ( Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
-			  Representation::RepresentationManager::get().getAllInstantiatedRepresentations(
-				  previousDefaultRepresentation ) )
+		if ( previousDefaultRepresentation != newDefaultRepresentation )
 		{
-			if ( instantiatedRepresentation->getOverridedMembersFlag() == Model::Representation::MEMBER_FLAG::NONE )
+			for ( Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
+				  VTX::Representation::RepresentationManager::get().getAllInstantiatedRepresentations(
+					  previousDefaultRepresentation ) )
 			{
-				Representation::RepresentationManager::get().instantiateRepresentation(
-					newDefaultRepresentation, *instantiatedRepresentation->getTarget() );
+				if ( instantiatedRepresentation->getOverridedMembersFlag() == Model::Representation::MEMBER_FLAG::NONE )
+				{
+					VTX::Representation::RepresentationManager::get().instantiateRepresentation(
+						newDefaultRepresentation, *instantiatedRepresentation->getTarget() );
+				}
 			}
 		}
 
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-	};
+	}
+
+	void RestoreLayout::execute()
+	{
+		// Delete previous save file in case of corruption
+		VTXApp::get().getMainWindow().deleteLayoutSaveFile();
+		VTXApp::get().getMainWindow().restoreDefaultLayout();
+
+		VTX_INFO( "Default layout restored " );
+	}
 
 	void ChangeDefaultRenderEffectPreset::execute()
 	{
-		VTX_SETTING().setDefaultRenderEffectPresetIndex( Util::Math::clamp(
-			_renderEffectPresetIndex, 0, VTX::Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount() ) );
+		const int clampedIndex = Util::Math::clamp(
+			_renderEffectPresetIndex, 0, VTX::Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount() );
+
+		VTX_SETTING().setDefaultRenderEffectPresetIndex( clampedIndex );
+
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-	};
+	}
 
 	void ChangeColorMode::execute()
 	{
@@ -138,170 +119,116 @@ namespace VTX::Action::Setting
 		}
 
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-	};
+	}
 
 	void ChangeShading::execute()
 	{
 		VTX_RENDER_EFFECT().setShading( _shading );
 		VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-	};
-
-	void ActiveVerticalSync::execute()
-	{
-		VTX_SETTING().setVSync( _active );
-		// TODO: find a way to update VSync at runtime.
-	};
+	}
 
 	void ActiveAO::execute()
 	{
 		VTX_RENDER_EFFECT().enableSSAO( _active );
 		VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-	};
+	}
 
 	void ChangeAOIntensity::execute()
 	{
 		VTX_RENDER_EFFECT().setSSAOIntensity( _intensity );
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
+	}
 
 	void ChangeAOBlurSize::execute()
 	{
 		VTX_RENDER_EFFECT().setSSAOBlurSize( _blurSize );
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
+	}
 
 	void ActiveOutline::execute()
 	{
 		VTX_RENDER_EFFECT().enableOutline( _active );
 		VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::OUTLINE );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-	};
+	}
 
 	void ChangeOutlineColor::execute()
 	{
 		VTX_RENDER_EFFECT().setOutlineColor( _color );
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
+	}
 
 	void ChangeOutlineThickness::execute()
 	{
 		VTX_RENDER_EFFECT().setOutlineThickness( _thickness );
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
+	}
 
 	void ChangeOutlineSensivity::execute()
 	{
 		VTX_RENDER_EFFECT().setOutlineSensivity( _sensivity );
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
+	}
 
 	void ActiveFog::execute()
 	{
 		VTX_RENDER_EFFECT().enableFog( _active );
 		VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-	};
+	}
 
 	void ChangeFogNear::execute()
 	{
 		VTX_RENDER_EFFECT().setFogNear( _near );
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
+	}
 
 	void ChangeFogFar::execute()
 	{
 		VTX_RENDER_EFFECT().setFogFar( _far );
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
+	}
 
 	void ChangeFogDensity::execute()
 	{
 		VTX_RENDER_EFFECT().setFogDensity( _density );
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
+	}
 
 	void ChangeFogColor::execute()
 	{
 		VTX_RENDER_EFFECT().setFogColor( _color );
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
-
-	void ActiveAA::execute()
-	{
-		VTX_RENDER_EFFECT().setAA( _active );
-		VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-	};
+	}
 
 	void ChangeLightColor::execute()
 	{
 		VTX_RENDER_EFFECT().setCameraLightColor( _color );
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-	};
+	}
 
-	void ChangeCameraClip::execute()
+	void ChangeCameraProjectionToPerspective::execute()
 	{
-		VTX_RENDER_EFFECT().setCameraNearClip( Util::Math::min( _near, _far ) );
-		VTX_RENDER_EFFECT().setCameraFarClip( Util::Math::max( _near, _far ) );
+		VTX_SETTING().setCameraPerspectiveProjection( _perspective );
+		VTXApp::get().getScene().getCameraManager().refresh();
 
-		VTXApp::get().getScene().getCamera().setNear( VTX_RENDER_EFFECT().getCameraNearClip() );
-		VTXApp::get().getScene().getCamera().setFar( VTX_RENDER_EFFECT().getCameraFarClip() );
-	};
+		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+	}
 
-	void ChangeCameraFov::execute()
+	void ActiveAA::execute()
 	{
-		VTX_RENDER_EFFECT().setCameraFOV( _fov );
-		VTXApp::get().getScene().getCamera().setFov( VTX_RENDER_EFFECT().getCameraFOV() );
-	};
-
-	void ChangeCameraProjection::execute()
-	{
-		VTX_RENDER_EFFECT().setPerspectiveProjection( _perspective );
-		VTXApp::get().getScene().getCamera().setPerspective( VTX_RENDER_EFFECT().isPerspectiveProjection() );
-	};
-
-	void ChangeTranslationSpeed::execute() { VTX_SETTING().setTranslationSpeed( _speed ); };
-
-	void ChangeAccelerationFactorSpeed::execute() { VTX_SETTING().setAccelerationSpeedFactor( _factor ); };
-
-	void ChangeDecelerationFactorSpeed::execute() { VTX_SETTING().setDecelerationSpeedFactor( _factor ); };
-
-	void ChangeRotationSpeed::execute() { VTX_SETTING().setRotationSpeed( _speed ); };
-
-	void ActiveYAxisInversion::execute() { VTX_SETTING().setYAxisInverted( _active ); };
-
-	void ActiveControllerElasticity::execute() { VTX_SETTING().setControllerElasticityActive( _active ); };
-
-	void ChangeControllerElasticity::execute() { VTX_SETTING().setControllerElasticityFactor( _elasticity ); };
-
-	void ChangeDefaultTrajectorySpeed::execute() { VTX_SETTING().setDefaultTrajectorySpeed( _speed ); };
-
-	void ChangeDefaultTrajectoryPlayMode::execute() { VTX_SETTING().setDefaultTrajectoryPlayMode( _playMode ); };
-
-	void ChangeSymbolDisplayMode::execute() { VTX_SETTING().setSymbolDisplayMode( _displayMode ); };
-
-	void ChangeCheckVTXUpdateAtLaunch::execute()
-	{
-		VTX_SETTING().setCheckVTXUpdateAtLaunch( _checkVTXUpdateAtLaunch );
-	};
-
-	void ActivatePortableSave::execute() { VTX_SETTING().activatePortableSave( _activate ); };
-
-	void ChangeRenderMode::execute()
-	{
-		VTX_SETTING().mode = _mode;
-		// TODO
+		VTX_SETTING().setAA( _active );
+		VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-	};
+	}
 
-	void ChangeSelectionGranularity::execute() { VTX_SETTING().setSelectionGranularity( _granularity ); };
-
-	void ChangeDefaultRepresentationPerCategory::execute()
+	void WindowMode::execute()
 	{
-		VTX_SETTING().setDefaultRepresentationIndexPerCategory( _categoryEnum, _representationIndex );
-	};
+		VTX_SETTING().setWindowFullscreen( _windowMode == UI::WindowMode::Fullscreen );
+		VTXApp::get().getMainWindow().setWindowMode( _windowMode );
+	}
 
 	void ApplyAllSettings::execute()
 	{
@@ -314,9 +241,13 @@ namespace VTX::Action::Setting
 
 		VTX_ACTION( new Action::Setting::ActiveRenderer( _setting.getActivateRenderer() ) );
 		VTX_ACTION( new Action::Setting::ForceRenderer( _setting.getForceRenderer() ) );
-		VTX_ACTION( new Action::Setting::ChangeDefaultRepresentation( _setting.getDefaultRepresentationIndex() ) );
-		VTX_ACTION(
-			new Action::Setting::ChangeDefaultRenderEffectPreset( _setting.getDefaultRenderEffectPresetIndex() ) );
+
+		// Active AA before changing representation effet preset to prevent assert call
+		VTX_ACTION( new Action::Setting::ActiveAA( _setting.getAA() ) );
+
+		// VTX_ACTION( new Action::Setting::ChangeDefaultRepresentation( _setting.getDefaultRepresentationIndex() )
+		// ); VTX_ACTION( 	new Action::Setting::ChangeDefaultRenderEffectPreset(
+		//_setting.getDefaultRenderEffectPresetIndex() ) );
 
 		VTX_ACTION( new Action::Setting::ActiveVerticalSync( _setting.getVSync() ) );
 
@@ -324,6 +255,11 @@ namespace VTX::Action::Setting
 		VTX_ACTION( new Action::Setting::ChangeBackgroundOpacity( _setting.getSnapshotBackgroundOpacity() ) );
 		VTX_ACTION( new Action::Setting::ChangeSnapshotQuality( _setting.getSnapshotQuality() ) );
 		VTX_ACTION( new Action::Setting::ChangeSnapshotResolution( _setting.getSnapshotResolution() ) );
+
+		VTX_ACTION( new Action::Setting::ChangeCameraFov( _setting.getCameraFOV() ) );
+		VTX_ACTION(
+			new Action::Setting::ChangeCameraClip( _setting.getCameraNearClip(), _setting.getCameraFarClip() ) );
+		VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( _setting.getCameraPerspective() ) );
 
 		VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( _setting.getTranslationSpeed() ) );
 		VTX_ACTION( new Action::Setting::ChangeAccelerationFactorSpeed( _setting.getAccelerationSpeedFactor() ) );
@@ -350,8 +286,4 @@ namespace VTX::Action::Setting
 		VTX_ACTION( new Action::Setting::ApplyAllSettings( VTX_SETTING() ) );
 	}
 
-	void RestoreDefaultRepresentationPerCategory::execute()
-	{
-		VTX_SETTING().restoreDefaultRepresentationPerCategory();
-	};
 } // namespace VTX::Action::Setting

@@ -1,4 +1,5 @@
 #include "camera_navigation_action_block.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "action/selection.hpp"
 #include "id.hpp"

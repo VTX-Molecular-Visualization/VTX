@@ -1,5 +1,6 @@
 #include "scene.hpp"
 #include "action/main.hpp"
+#include "camera_manager.hpp"
 #include "math/transform.hpp"
 #include "model/label.hpp"
 #include "model/mesh_triangle.hpp"
@@ -13,14 +14,14 @@ namespace VTX::Object3D
 {
 	Scene::Scene()
 	{
-		_camera = new Camera();
+		_cameraManager = new CameraManager();
 		_createDefaultPath();
 	}
 
 	Scene::~Scene()
 	{
 		clear();
-		delete _camera;
+		delete _cameraManager;
 	}
 
 	bool Scene::isEmpty() const
@@ -64,6 +65,9 @@ namespace VTX::Object3D
 		_createDefaultPath();
 	}
 
+	Camera &	   Scene::getCamera() { return *_cameraManager->getCamera(); }
+	const Camera & Scene::getCamera() const { return *_cameraManager->getCamera(); }
+
 	void Scene::addMolecule( MoleculePtr const p_molecule, const bool p_sendEvent )
 	{
 		p_molecule->init();
@@ -72,7 +76,9 @@ namespace VTX::Object3D
 		_itemOrder.emplace_back( p_molecule );
 		_applySceneID( *p_molecule );
 
-		_aabb.extend( p_molecule->getAABB() );
+		if ( _aabb.isValid() )
+			_aabb.extend( p_molecule->getWorldAABB() );
+
 		p_molecule->referenceLinkedAABB( &_aabb );
 
 		if ( p_sendEvent )
@@ -102,7 +108,10 @@ namespace VTX::Object3D
 		p_mesh->init();
 		p_mesh->print();
 		_add( p_mesh, _meshes );
-		_aabb.extend( p_mesh->getAABB() );
+
+		if ( _aabb.isValid() )
+			_aabb.extend( p_mesh->getWorldAABB() );
+
 		p_mesh->referenceLinkedAABB( &_aabb );
 		VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_ADDED, p_mesh ) );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;

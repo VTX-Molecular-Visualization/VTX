@@ -112,7 +112,9 @@ namespace VTX
 
 				if ( _buffer != nullptr )
 				{
+					_buffer->makeContextCurrent();
 					delete _buffer;
+					_buffer->doneContextCurrent();
 				}
 			}
 
@@ -121,6 +123,13 @@ namespace VTX
 				_invalidateWorldAABB();
 				_notifyViews( new VTX::Event::VTXEvent( Event::Model::TRANSFORM_CHANGE ) );
 			};
+
+			void _invalidateAABB()
+			{
+				_aabb.invalidate();
+				_invalidateWorldAABB();
+			};
+			
 			void _invalidateWorldAABB()
 			{
 				_worldAabb.invalidate();

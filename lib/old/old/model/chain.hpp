@@ -62,6 +62,8 @@ namespace VTX
 			uint		getRealResidueCount() const { return _realResidueCount; };
 			void		removeToResidues( const uint p_residueIndex );
 
+			uint computeRealAtomCount() const;
+
 			inline uint getIndexLastResidue() const { return _indexFirstResidue + _residueCount - 1; };
 
 			// Mask BaseVisible::setVisible

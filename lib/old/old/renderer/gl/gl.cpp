@@ -119,7 +119,7 @@ namespace VTX::Renderer::GL
 
 		_passSelection->render( p_scene, *this );
 
-		if ( VTX_RENDER_EFFECT().getAA() )
+		if ( VTX_SETTING().getAA() )
 		{
 			_passFXAA->render( p_scene, *this );
 		}

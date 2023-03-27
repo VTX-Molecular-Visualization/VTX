@@ -32,7 +32,7 @@ namespace VTX::Action::Main
 		VTXApp::get().getScenePathData().clearCurrentPath();
 	}
 
-	void Quit::execute() { VTXApp::get().closeAllWindows(); };
+	void Quit::execute() { VTXApp::get().closeAllWindows(); }
 
 	void Open::execute()
 	{
@@ -137,18 +137,6 @@ namespace VTX::Action::Main
 			VTX_THREAD( loader, callback );
 		}
 	}
-	void Open::LoadSceneClass::_loadScene()
-	{
-		Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
-		VTX_WORKER( sceneLoader );
-
-		for ( const Util::FilePath & path : _paths )
-		{
-			VTXApp::get().getScenePathData().setCurrentPath( path, true );
-		}
-	}
-
-	void OpenApi::execute() { VTX_NETWORK_MANAGER().sendRequest( new Network::Request::DownloadMMTF( _id ) ); }
 
 	void Save::execute()
 	{
@@ -173,6 +161,21 @@ namespace VTX::Action::Main
 		else
 			VTX::Setting::enqueueNewLoadingPath( _path );
 	}
+
+	void RestoreWindowLayout::execute() { VTXApp::get().getMainWindow().restoreDefaultLayout(); }
+
+	void Open::LoadSceneClass::_loadScene()
+	{
+		Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
+		VTX_WORKER( sceneLoader );
+
+		for ( const Util::FilePath & path : _paths )
+		{
+			VTXApp::get().getScenePathData().setCurrentPath( path, true );
+		}
+	}
+
+	void OpenApi::execute() { VTX_NETWORK_MANAGER().sendRequest( new Network::Request::DownloadMMTF( _id ) ); }
 
 	void ImportRepresentationPreset::execute()
 	{
@@ -208,13 +211,20 @@ namespace VTX::Action::Main
 		}
 	}
 
+	void ToggleCamera::execute() { VTXApp::get().getScene().getCameraManager().toggle(); }
+
+	void SetCameraProjectionToPerspective::execute()
+	{
+		VTXApp::get().getScene().getCameraManager().setPerspectiveCamera( !_perspective );
+	}
+
 	void ToggleCameraController::execute()
 	{
 		VTXApp::get()
 			.getStateMachine()
 			.getState<State::Visualization>( ID::State::VISUALIZATION )
 			->toggleCameraController();
-	};
+	}
 
 	void ChangeCameraController::execute()
 	{
@@ -222,7 +232,7 @@ namespace VTX::Action::Main
 			.getStateMachine()
 			.getState<State::Visualization>( ID::State::VISUALIZATION )
 			->setCameraController( _id );
-	};
+	}
 
 	void ResetCameraController::execute()
 	{
@@ -230,7 +240,18 @@ namespace VTX::Action::Main
 			.getStateMachine()
 			.getState<State::Visualization>( ID::State::VISUALIZATION )
 			->resetCameraController();
-	};
+	}
+
+	void ChangeSelectionGranularity::execute()
+	{
+		State::Visualization * const state
+			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+
+		if ( state->getCurrentPickerID() != ID::Controller::PICKER )
+			state->setPickerController( ID::Controller::PICKER );
+
+		VTX_SETTING().setSelectionGranularity( _granularity );
+	}
 
 	void ChangePicker::execute()
 	{
@@ -250,58 +271,10 @@ namespace VTX::Action::Main
 				measurementController->setCurrentMode( Controller::MeasurementPicker::Mode( _mode ) );
 			}
 		}
-	};
-
-	Snapshot::Snapshot( const Worker::Snapshoter::MODE p_mode, const Util::FilePath & p_path ) :
-		Snapshot( p_mode,
-				  p_path,
-				  IO::Struct::ImageExport( IO::Struct::ImageExport::RESOLUTION ::Free,
-										   VTX_SETTING().getSnapshotBackgroundOpacity(),
-										   VTX_SETTING().getSnapshotQuality() ) )
-	{
 	}
-	Snapshot::Snapshot( const Worker::Snapshoter::MODE			  p_mode,
-						const Util::FilePath &					  p_path,
-						const IO::Struct::ImageExport::RESOLUTION p_resolution ) :
-		Snapshot( p_mode,
-				  p_path,
-				  IO::Struct::ImageExport( p_resolution,
-										   VTX_SETTING().getSnapshotBackgroundOpacity(),
-										   VTX_SETTING().getSnapshotQuality() ) )
-	{
-	}
-	Snapshot::Snapshot( const Worker::Snapshoter::MODE p_mode,
-						const Util::FilePath &		   p_path,
-						const int					   p_width,
-						const int					   p_height ) :
-		Snapshot( p_mode,
-				  p_path,
-				  IO::Struct::ImageExport( std::pair<const int, int>( p_width, p_height ),
-										   VTX_SETTING().getSnapshotBackgroundOpacity(),
-										   VTX_SETTING().getSnapshotQuality() ) )
-	{
-	}
-	Snapshot::Snapshot( const Worker::Snapshoter::MODE	p_mode,
-						const Util::FilePath &			p_path,
-						const IO::Struct::ImageExport & p_exportData ) :
-		_mode( p_mode ),
-		_path( p_path ), _exportData( p_exportData )
-	{
-	}
-
-	void Snapshot::execute()
-	{
-		Worker::Snapshoter * worker = new Worker::Snapshoter( _mode, _path, _exportData );
-		VTX_WORKER( worker );
-	};
-
-	void ClearConsoleInterface::execute() { VTX_EVENT( new Event::VTXEvent( Event::Global::CLEAR_CONSOLE ) ); };
-
-	void RestoreWindowLayout::execute() { VTXApp::get().getMainWindow().restoreDefaultLayout(); };
 
 	void CheckForUpdate::execute()
 	{
 		VTX_NETWORK_MANAGER().sendRequest( new Network::Request::CheckUpdate( _showPopupIfNoUpdate ) );
-	};
-
+	}
 } // namespace VTX::Action::Main

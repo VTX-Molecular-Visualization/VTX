@@ -14,6 +14,8 @@ namespace VTX::Controller
 			{
 				_updateOrient( 1.f );
 				_isOrienting = false;
+
+				_deltaMousePosition = VEC2I_ZERO;
 			}
 			else
 			{
@@ -24,5 +26,17 @@ namespace VTX::Controller
 		{
 			_updateInputs( p_deltaTime );
 		}
+	}
+
+	void BaseCameraController::orient( const Object3D::Helper::AABB & p_aabb )
+	{
+		_orientTime = 0.f;
+		_computeOrientPositions( p_aabb );
+	}
+
+	void BaseCameraController::orient( const Vec3f & p_position, const Quatf & p_orientation )
+	{
+		_orientTime = 0.f;
+		_computeOrientPositions( p_position, p_orientation );
 	}
 } // namespace VTX::Controller
