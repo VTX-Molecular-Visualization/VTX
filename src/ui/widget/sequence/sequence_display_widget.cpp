@@ -113,7 +113,10 @@ namespace VTX::UI::Widget::Sequence
 			painter.setWorldMatrixEnabled( false );
 			painter.setBrush( Qt::NoBrush );
 
-			const double charSize = double( _fontMetrics->averageCharWidth() );
+			// Use _fontMetrics->horizontalAdvance( 'A' ) instead of _fontMetrics->averageCharWidth() because even on a
+			// Monospace font, some characters may change the averageCharWidth value, even if all displayed chars have
+			// the same width
+			const double charSize = double( _fontMetrics->horizontalAdvance( 'A' ) );
 
 			int lastPixelDrawn	  = -1;
 			int currentFirstPixel = -1;
