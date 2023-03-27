@@ -26,9 +26,6 @@ int main( int p_argc, char * p_argv[] )
 {
 	try
 	{
-		// Setup some Qt static configuration.
-		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
-		QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
 		QSurfaceFormat format;
 		format.setVersion( OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION );
 		format.setProfile( QSurfaceFormat::CoreProfile );
