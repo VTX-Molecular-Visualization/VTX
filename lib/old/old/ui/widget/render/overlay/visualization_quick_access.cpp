@@ -6,8 +6,6 @@
 #include "model/selection.hpp"
 #include "selection/selection_manager.hpp"
 #include "setting.hpp"
-#include "state/state_machine.hpp"
-#include "state/visualization.hpp"
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QMenu>
@@ -48,6 +46,7 @@ namespace VTX::UI::Widget::Render::Overlay
 
 		QAction * const orientAction = addAction( QIcon( ":/sprite/camera_orient_icon.png" ), "" );
 		_orientWidget				 = dynamic_cast<QToolButton *>( widgetForAction( orientAction ) );
+		_orientWidget->setToolTip( "Orient" );
 
 		QMenu * const changeCameraControllerMenu = new QMenu( this );
 		for ( int i = 0; i < CAMERA_CONTROLLERS.size(); i++ )
@@ -58,6 +57,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		}
 		_changeCameraControllerWidget
 			= dynamic_cast<QToolButton *>( widgetForAction( addMenu( changeCameraControllerMenu ) ) );
+		_changeCameraControllerWidget->setToolTip( "Camera controller" );
 
 		QMenu * const changePickerControllerMenu = new QMenu( this );
 		for ( int i = 0; i < PICKER_CONTROLLERS.size(); i++ )
@@ -68,6 +68,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		}
 		_changePickerControllerWidget
 			= dynamic_cast<QToolButton *>( widgetForAction( addMenu( changePickerControllerMenu ) ) );
+		_changePickerControllerWidget->setToolTip( "Picker" );
 
 		QMenu * const changeSelectionGranularityMenu = new QMenu( this );
 		for ( int i = 0; i < SELECTION_GRANULARITY.size(); i++ )
@@ -79,6 +80,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		_changeSelectionGranularityQAction = addMenu( changeSelectionGranularityMenu );
 		_changeSelectionGranularityWidget
 			= dynamic_cast<QToolButton *>( widgetForAction( _changeSelectionGranularityQAction ) );
+		_changeSelectionGranularityWidget->setToolTip( "Granularity" );
 
 		QMenu * const changeMeasurementModeMenu = new QMenu( this );
 		for ( int i = 0; i < MEASUREMENT_MODE.size(); i++ )
@@ -89,10 +91,10 @@ namespace VTX::UI::Widget::Render::Overlay
 		}
 		_changeMeasurementModeQAction = addMenu( changeMeasurementModeMenu );
 		_changeMeasurementModeWidget  = dynamic_cast<QToolButton *>( widgetForAction( _changeMeasurementModeQAction ) );
+		_changeMeasurementModeWidget->setToolTip( "Measurement" );
 
 		_refreshController();
 		_refreshPicker();
-		_refreshSize();
 	}
 
 	void VisualizationQuickAccess::_setupSlots()
@@ -200,11 +202,10 @@ namespace VTX::UI::Widget::Render::Overlay
 	}
 	void VisualizationQuickAccess::_changeCameraControllerAction( const QAction * const p_action )
 	{
-		const int controllerID = p_action->property( CAMERA_CONTROLLER_PROPERTY_NAME ).toInt();
-		VTXApp::get()
-			.getStateMachine()
-			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->setCameraController( CAMERA_CONTROLLERS[ controllerID ].data );
+		const int		   controllerIndex = p_action->property( CAMERA_CONTROLLER_PROPERTY_NAME ).toInt();
+		const ID::VTX_ID & controllerID	   = CAMERA_CONTROLLERS[ controllerIndex ].data;
+
+		VTX_ACTION( new Action::Main::ChangeCameraController( controllerID ) );
 	}
 
 	void VisualizationQuickAccess::_changePickerControllerAction( const QAction * const p_action )

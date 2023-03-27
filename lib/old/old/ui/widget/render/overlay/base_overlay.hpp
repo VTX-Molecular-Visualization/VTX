@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_WIDGET_RENDER_BASE_OVERLAY__
 #define __VTX_UI_WIDGET_RENDER_BASE_OVERLAY__
 
+#include "style.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QAction>
 #include <QEvent>
@@ -8,17 +9,24 @@
 #include <QObject>
 #include <QToolBar>
 #include <QWidget>
+#include <string>
+#include <vector>
 
 namespace VTX::UI::Widget::Render::Overlay
 {
 	enum class OVERLAY : int
 	{
 		VISUALIZATION_QUICK_ACCESS,
+		CAMERA_PROJECTION_QUICK_ACCESS,
+
+		COUNT,
 	};
+	inline static const std::vector<std::string> OVERLAY_NAMES_STR = { "Controller", "Rendering" };
 
 	enum class OVERLAY_ANCHOR : int
 	{
 		BOTTOM_CENTER,
+		TOP_RIGHT,
 		NONE,
 	};
 
@@ -31,6 +39,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		~BaseOverlay() = default;
 		void localize() override;
 
+		void setStyle( const Style::RENDER_OVERLAY_STYLE & p_style );
 		void setAnchorPosition( const OVERLAY_ANCHOR & p_anchor );
 		void updatePosition( const QSize & p_renderRect );
 

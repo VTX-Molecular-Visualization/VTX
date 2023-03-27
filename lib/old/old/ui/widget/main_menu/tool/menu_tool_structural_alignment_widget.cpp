@@ -37,7 +37,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 
-		setTitle( "Measurement" );
+		setTitle( "Structural Alignment" );
 
 		_rmsdButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "rmsdButton" );
 		_rmsdButton->setData( "RMSD", ":/sprite/analysis_compute_rmsd_icon.png", Qt::Orientation::Vertical );

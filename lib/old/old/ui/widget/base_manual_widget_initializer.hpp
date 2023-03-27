@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_BASE_MANUAL_WIDGET_INITIALIZER__
 #define __VTX_UI_WIDGET_BASE_MANUAL_WIDGET_INITIALIZER__
 
-#include <QtCore>
+#include <QString>
 #include <string>
 
 namespace VTX

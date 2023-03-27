@@ -5,6 +5,7 @@
 #include "model/representation/instantiated_representation.hpp"
 #include "model/representation/representation.hpp"
 #include "ui//widget/custom_widget/qt_multi_data_field.hpp"
+#include "ui/layout/attribute_list_layout.hpp"
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/custom_widget/folding_button.hpp"
 #include "ui/widget/custom_widget/model_list_component.hpp"
@@ -39,15 +40,20 @@ namespace VTX::UI::Widget::Inspector
 
 	  private:
 		InspectorSectionVLayout * _representationSection = nullptr;
-		InspectorSectionVLayout * _infoSection			 = nullptr;
+		InspectorSection *		  _infoSection			 = nullptr;
 
 		Representation::RepresentationInspectorSection *	   _representationWidget		   = nullptr;
 		CustomWidget::FoldingButton *						   _subRepresentationFoldingButton = nullptr;
 		Representation::InstantiatedRepresentationListWidget * _subRepresentationWidget		   = nullptr;
 
-		CustomWidget::QLabelMultiField * _fullnameLabel	  = nullptr;
-		CustomWidget::QLabelMultiField * _nbResiduesLabel = nullptr;
-		CustomWidget::QLabelMultiField * _indexLabel	  = nullptr;
+		Layout::AttributeListLayout * _infoSectionlayout = nullptr;
+
+		QLabel * _fullnameLabel		 = nullptr;
+		QLabel * _residuesCountLabel = nullptr;
+		QLabel * _residuesSumLabel	 = nullptr;
+		QLabel * _atomsCountLabel	 = nullptr;
+		QLabel * _atomsSumLabel		 = nullptr;
+		QLabel * _indexLabel		 = nullptr;
 
 		int _subRepresentationPresentationCount = 0;
 

@@ -31,7 +31,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 
-		setTitle( "File" );
+		setTitle( "Session" );
 
 		_newSessionButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "newSessionButton" );
 		_newSessionButton->setData( "New", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
@@ -88,7 +88,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 		{
 			CustomWidget::IndexedAction * const action
 				= new CustomWidget::IndexedAction( actionIndex, _recentSessionMenu );
-			action->setText( QString::fromStdString( recentFile.path() ) );
+			action->setText( recentFile.qpath() );
 
 			connect( action,
 					 &CustomWidget::IndexedAction::triggeredWithIndex,

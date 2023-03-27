@@ -2,9 +2,9 @@
 #define __VTX_UI_WIDGET_CONTEXTUAL_MENU_RENDER__
 
 #include "contextual_menu_template.hpp"
-#include "object3d/scene.hpp"
 #include <QAction>
 #include <QMenu>
+#include <QString>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -12,8 +12,9 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		VTX_WIDGET
 
-		inline static const char * SELECTION_GRANULARITY_PROPERTY_NAME = "GRANULARITY";
-		inline static const char * MEASUREMENT_MODE_PROPERTY_NAME	   = "MEASUREMENT_MODE";
+	  private:
+		inline static const int SHOW_ALL_OVERLAYS_DATA_VALUE = -1;
+		inline static const int HIDE_ALL_OVERLAYS_DATA_VALUE = -2;
 
 	  public:
 		~ContextualMenuRender();
@@ -29,7 +30,6 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _downloadMoleculeAction() const;
 
 		void _setPickerToSelection() const;
-		void _setPickerToMeasurement() const;
 
 		void _setSelectionGranularityAction( QAction * p_action ) const;
 		void _setMeasurementMode( QAction * p_action ) const;
@@ -39,7 +39,30 @@ namespace VTX::UI::Widget::ContextualMenu
 		QAction * _selectionModeAction;
 		QAction * _measurementModeAction;
 
+		QMenu * _projectionMenu			  = nullptr;
+		QMenu * _backgroundColorMenu	  = nullptr;
+		QMenu * _renderSettingPreset	  = nullptr;
+		QMenu * _selectionGranularityMenu = nullptr;
+		QMenu * _measurementModeMenu	  = nullptr;
+
+		QMenu * _overlaysMenu = nullptr;
+
+		void _addSelectionGranularityActionInMenu( const int p_granularity, const QString & p_name ) const;
+		void _addMeasurementModeActionInMenu( const int p_mode, const QString & p_name ) const;
+
 		void _refreshPickerMode() const;
+		void _refreshSelectionGranularityMenu() const;
+		void _refreshMeasurementModeMenu() const;
+		void _refreshCameraProjection() const;
+		void _refreshAppliedRenderSettingPreset() const;
+		void _refreshOverlayVisibilityMenu() const;
+
+		void _changeProjectionAction( QAction * const p_action );
+		void _setBackgroundColorAction( QAction * const p_action );
+		void _applyRenderEffectPresetAction( QAction * const p_action );
+		void _setOverlayVisibilityAction( QAction * const p_action );
+		void _takeSnapshotAction();
+		void _exportImageAction();
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu

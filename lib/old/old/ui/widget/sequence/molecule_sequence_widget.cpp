@@ -264,7 +264,7 @@ namespace VTX::UI::Widget::Sequence
 			const Model::Residue * const closestLastResidueHovered
 				= _getClosestResidue( _lastDragSelectionPosition, cursorMoveForward, true );
 			const Model::Residue * const closestResidueCurrentlyHovered
-				= _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick, true );
+				= _getClosestResidue( currentMousePos, cursorMoveForward, true );
 
 			sameResidueHovered = closestLastResidueHovered == closestResidueCurrentlyHovered;
 		}
@@ -491,7 +491,7 @@ namespace VTX::UI::Widget::Sequence
 		{
 			const Model::Chain * const nextChain = _model->getNextChain( chain->getIndex() );
 			if ( nextChain != nullptr )
-				return p_forceResult ? _model->getResidue( nextChain->getIndexFirstResidue() ) : nullptr;
+				return _model->getResidue( nextChain->getIndexFirstResidue() );
 			else
 				return p_forceResult ? _model->getResidue( p_residue.getIndex() ) : nullptr;
 		}

@@ -1,4 +1,5 @@
 #include "base_overlay.hpp"
+#include "util/ui.hpp"
 #include <QToolButton>
 
 namespace VTX::UI::Widget::Render::Overlay
@@ -13,6 +14,8 @@ namespace VTX::UI::Widget::Render::Overlay
 		// setContentsMargins( 8, 1, 8, 1 );
 		setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding );
 
+		setStyle( Style::RENDER_OVERLAY_STYLE::STYLE_OPAQUE );
+
 		setFloatable( true );
 		setMovable( false );
 	}
@@ -25,6 +28,7 @@ namespace VTX::UI::Widget::Render::Overlay
 	{
 		BaseManualWidget::eventFilter( p_obj, p_event );
 
+		// Menu show event
 		if ( p_event->type() == QEvent::Show )
 		{
 			QMenu * const menu = dynamic_cast<QMenu *>( p_obj );
@@ -41,6 +45,11 @@ namespace VTX::UI::Widget::Render::Overlay
 				case OVERLAY_ANCHOR::BOTTOM_CENTER:
 					localPos = actionWidget->rect().topLeft() - QPoint( 0, menu->height() );
 					break;
+
+				case OVERLAY_ANCHOR::TOP_RIGHT:
+					localPos = actionWidget->rect().topLeft() - QPoint( menu->width(), 0 );
+					break;
+
 				case OVERLAY_ANCHOR::NONE:
 				default: localPos = QPoint( 0, 0 ); break;
 				}
@@ -51,6 +60,7 @@ namespace VTX::UI::Widget::Render::Overlay
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -75,10 +85,27 @@ namespace VTX::UI::Widget::Render::Overlay
 
 		switch ( _anchorPosition )
 		{
-		case OVERLAY_ANCHOR::BOTTOM_CENTER: setOrientation( Qt::Orientation::Horizontal ); break;
+		case OVERLAY_ANCHOR::BOTTOM_CENTER:
+			setOrientation( Qt::Orientation::Horizontal );
+			setFixedHeight( 32 );
+			break;
+
+		case OVERLAY_ANCHOR::TOP_RIGHT:
+			setOrientation( Qt::Orientation::Vertical );
+			setFixedWidth( 32 );
+			break;
+
 		case OVERLAY_ANCHOR::NONE:
 		default: setOrientation( Qt::Orientation::Horizontal ); break;
 		}
+
+		_refreshSize();
+	}
+
+	void BaseOverlay::setStyle( const Style::RENDER_OVERLAY_STYLE & p_style )
+	{
+		Util::UI::setDynamicProperty(
+			this, Style::WidgetProperty::OVERLAY_STYLE, Style::RENDER_OVERLAY_STYLE_NAME[ int( p_style ) ] );
 	}
 
 	void BaseOverlay::updatePosition( const QSize & p_renderSize )
@@ -89,17 +116,18 @@ namespace VTX::UI::Widget::Render::Overlay
 
 	QPoint BaseOverlay::_getPosition( const QSize & p_rect )
 	{
-		QPoint	  res;
-		const int OVERLAY_TOP_OFFEST	= 5;
-		const int OVERLAY_BOTTOM_OFFEST = 5;
-		const int OVERLAY_LEFT_OFFEST	= 5;
-		const int OVERLAY_RIGHT_OFFEST	= 5;
+		QPoint res;
 
 		switch ( _anchorPosition )
 		{
 		case OVERLAY_ANCHOR::BOTTOM_CENTER:
 			res.setX( ( p_rect.width() - width() ) / 2 );
-			res.setY( p_rect.height() - height() - OVERLAY_BOTTOM_OFFEST );
+			res.setY( p_rect.height() - height() - Style::RENDER_OVERLAY_ANCHOR_OFFSET_BOTTOM );
+			break;
+
+		case OVERLAY_ANCHOR::TOP_RIGHT:
+			res.setX( p_rect.width() - width() - Style::RENDER_OVERLAY_ANCHOR_OFFSET_RIGHT );
+			res.setY( Style::RENDER_OVERLAY_ANCHOR_OFFSET_TOP );
 			break;
 		case OVERLAY_ANCHOR::NONE:
 		default: res = QPoint( 0, 0 ); break;

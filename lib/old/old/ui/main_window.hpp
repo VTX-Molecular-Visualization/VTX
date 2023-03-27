@@ -132,6 +132,7 @@ namespace VTX
 			// Shortcuts.
 			void _onShortcutNew() const;
 			void _onShortcutOpen() const;
+			void _onShortcutDownload() const;
 			void _onShortcutSave() const;
 			void _onShortcutSaveAs() const;
 			void _onShortcutFullscreen() const;
@@ -156,8 +157,8 @@ namespace VTX
 			// When we restore a layout where a windows has not been set (new feature since the last launch ?), the
 			// window has a default size of 0. This function will check that and display it at the preferred size of the
 			// window.
-			void _checkUnknownFloatableWindows();
-			void _checkUnknownFloatableWindow( QDockWidget * const p_widget, const QSize & p_defaultSize );
+			void _checkDockWidgetsDisplay();
+			void _checkDockWidgetDisplay( QDockWidget * const p_widget, const QSize & p_defaultSize );
 
 			QTimer * _restoreStateTimer;
 		};

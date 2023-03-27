@@ -17,8 +17,6 @@
 
 namespace VTX::UI::Widget::Inspector
 {
-	const int MultipleAtomWidget::BOND_INFO_COUNT_MAX = 100;
-
 	MultipleAtomWidget::MoleculeView::MoleculeView( const Model::Molecule * p_molecule )
 	{
 		_view = MVC::MvcManager::get().instantiateView<View::CallbackView<const Model::Molecule, MultipleAtomWidget>>(
@@ -215,13 +213,13 @@ namespace VTX::UI::Widget::Inspector
 						pendingBondIDs.erase( bondIndex );
 						fullBonds.emplace( bond );
 
-						if ( fullBonds.size() >= MultipleAtomWidget::BOND_INFO_COUNT_MAX )
+						if ( fullBonds.size() >= Style::INSPECTOR_INFO_BOND_COUNT_DISPLAYED )
 							break;
 					}
 				}
 			}
 
-			if ( fullBonds.size() >= MultipleAtomWidget::BOND_INFO_COUNT_MAX )
+			if ( fullBonds.size() >= Style::INSPECTOR_INFO_BOND_COUNT_DISPLAYED )
 				break;
 		}
 

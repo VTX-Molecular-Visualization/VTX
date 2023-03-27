@@ -3,13 +3,18 @@
 
 #include "color/rgba.hpp"
 #include "model/representation/representation.hpp"
+#include "model/representation/representation_enum.hpp"
+#include "ui/layout/attribute_list_layout.hpp"
 #include "ui/widget/base_manual_widget.hpp"
+#include "ui/widget/custom_widget/color_field_button.hpp"
+#include "ui/widget/custom_widget/filename_field_widget.hpp"
+#include "ui/widget/custom_widget/float_field_slider_widget.hpp"
 #include "view/ui/editor_view.hpp"
+#include <QCheckBox>
 #include <QComboBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QScrollArea>
-#include <map>
 #include <type_traits>
 #include <vector>
 
@@ -24,43 +29,19 @@ namespace VTX::UI::Widget::Settings
 	  private:
 		using Representation = Model::Representation::Representation;
 
-		enum class PARAMETER
+		enum class OPTIONAL_PARAMETER : int
 		{
-			TYPE,
-			NAME,
 			SPHERE_RADIUS,
 			CYLINDER_RADIUS,
 			CYLINDER_COLOR_BLENDING_MODE,
+			COLOR_MODE,
 			RIBBON_COLOR_MODE,
 			RIBBON_COLOR_BLENDING_MODE,
-			COLOR_MODE,
-			COLOR,
-			QUICK_ACCESS,
-			SET_DEFAULT,
+
+			COUNT,
 		};
 
-		struct ParameterLine
-		{
-			ParameterLine( QLabel * const p_label, QWidget * const p_widget ) : _label( p_label ), _widget( p_widget )
-			{
-			}
-
-			template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-			W * const getWidget()
-			{
-				return dynamic_cast<W * const>( _widget );
-			}
-
-			void setVisible( const bool p_visible )
-			{
-				if ( _label != nullptr )
-					_label->setVisible( p_visible );
-				_widget->setVisible( p_visible );
-			}
-
-			QLabel * const	_label;
-			QWidget * const _widget;
-		};
+		static const std::vector<std::vector<OPTIONAL_PARAMETER>> _MAP_REPRESENTATION_PARAMETERS;
 
 	  public:
 		void localize() override;
@@ -78,28 +59,25 @@ namespace VTX::UI::Widget::Settings
 		void _catchModelEvent( const Event::VTXEvent * const p_event ) override;
 
 	  private:
-		int				 _itemCount = 0;
-		Representation * _preset	= nullptr;
+		Representation * _preset = nullptr;
 
-		QWidget *	  _viewport = nullptr;
-		QGridLayout * _layout	= nullptr;
+		Layout::AttributeListLayout * _attributeLayout = nullptr;
 
-		std::map<PARAMETER, ParameterLine *> _parameterWidgets;
+		CustomWidget::FilenameFieldWidget * _nameWidget				  = nullptr;
+		QCheckBox *							_quickAccess			  = nullptr;
+		QComboBox *							_representationTypeWidget = nullptr;
 
-		void _addParameter( const PARAMETER & p_parameter, QWidget * const p_widget );
-		void _addParameter( const PARAMETER & p_parameter, QWidget * const p_widget, const QString & p_label );
-		void _addSpace( const int p_spaceSize = 10 );
-		void _populateRepresentationTypeComboBox( QComboBox * const p_comboBox ) const;
+		CustomWidget::FloatFieldSliderWidget * _sphereRadiusWidget		  = nullptr;
+		CustomWidget::FloatFieldSliderWidget * _cylinderRadiusWidget	  = nullptr;
+		QComboBox *							   _cylinderColorBlendingMode = nullptr;
+		QComboBox *							   _colorModeWidget			  = nullptr;
+		QComboBox *							   _ribbonColorModeWidget	  = nullptr;
+		QComboBox *							   _ribbonColorBlendingMode	  = nullptr;
+		CustomWidget::ColorFieldButton *	   _colorButtonWidget		  = nullptr;
 
-		void _setParameterVisibility( const PARAMETER & p_parameter, const bool p_visible );
+		QPushButton * _setDefaultButton = nullptr;
 
-		template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-		W * _getParameter( const PARAMETER & p_parameter )
-		{
-			assert( _parameterWidgets.find( p_parameter ) != _parameterWidgets.end() );
-			_parameterWidgets[ p_parameter ]->setVisible( true );
-			return _parameterWidgets[ p_parameter ]->getWidget<W>();
-		}
+		std::vector<QWidget *> _optionalParameterWidgets = std::vector<QWidget *>();
 
 		void _refreshRepresentationData();
 		void _refreshBallAndStickRepresentation();
@@ -111,6 +89,8 @@ namespace VTX::UI::Widget::Settings
 		void _refreshSASRepresentation();
 		void _refreshCartoonRepresentation();
 		void _refreshSESRepresentation();
+
+		void _refreshOptionalParametersVisibility( const Generic::REPRESENTATION & p_representationEnum );
 
 		void _onRepresentationNameChange();
 		void _onQuickAccessChange( const int p_state );

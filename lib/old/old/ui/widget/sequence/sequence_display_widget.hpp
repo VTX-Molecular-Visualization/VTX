@@ -48,7 +48,7 @@ namespace VTX
 			virtual void paintEvent( QPaintEvent * ) override;
 
 		  private:
-			QFontMetricsF * _fontMetrics;
+			QFontMetricsF * _fontMetrics			= nullptr;
 			int *			_charIndexPaintCache	= new int();
 			int *			_symbolLengthPaintCache = new int();
 
