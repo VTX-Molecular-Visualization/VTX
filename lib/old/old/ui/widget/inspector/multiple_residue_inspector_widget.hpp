@@ -5,7 +5,7 @@
 #include "model/representation/representation.hpp"
 #include "model/residue.hpp"
 #include "ui//widget/custom_widget/qt_multi_data_field.hpp"
-#include "ui/multi_data_field.hpp"
+#include "ui/layout/attribute_list_layout.hpp"
 #include "ui/widget/inspector/inspector_section.hpp"
 #include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include "ui/widget/representation/representation_inspector_section.hpp"
@@ -18,9 +18,6 @@ namespace VTX::UI::Widget::Inspector
 	class MultipleResidueWidget : public MultipleModelInspectorWidget<Model::Residue>
 	{
 		VTX_WIDGET
-
-	  private:
-		static const int BOND_INFO_COUNT_MAX;
 
 	  public:
 		~MultipleResidueWidget();
@@ -39,14 +36,16 @@ namespace VTX::UI::Widget::Inspector
 		void _setInspectorToAtom() const;
 
 	  private:
-		InspectorSection *		  _representationSection = nullptr;
-		InspectorSectionVLayout * _infoSection			 = nullptr;
+		InspectorSection * _representationSection = nullptr;
+		InspectorSection * _infoSection			  = nullptr;
 
 		Representation::RepresentationInspectorSection * _representationWidget;
 
-		CustomWidget::QLabelMultiField * _fullnameLabel = nullptr;
-		CustomWidget::QLabelMultiField * _nbAtomsLabel	= nullptr;
-		QLabel *						 _bondsLabel	= nullptr;
+		Layout::AttributeListLayout * _infoSectionLayout = nullptr;
+		QLabel *					  _fullnameLabel	 = nullptr;
+		QLabel *					  _atomsCountLabel	 = nullptr;
+		QLabel *					  _atomsSumLabel	 = nullptr;
+		QLabel *					  _bondsLabel		 = nullptr;
 
 		int _bondInfoCount = 0;
 
