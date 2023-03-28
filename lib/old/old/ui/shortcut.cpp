@@ -4,7 +4,6 @@
 
 namespace VTX::UI
 {
-
 	const QKeySequence Shortcut::Main::NEW_SCENE		 = QKeySequence( QWidget::tr( "Ctrl+N" ) );
 	const QKeySequence Shortcut::Main::OPEN_SCENE		 = QKeySequence( QWidget::tr( "Ctrl+O" ) );
 	const QKeySequence Shortcut::Main::DOWNLOAD_MOLECULE = QKeySequence( QWidget::tr( "Ctrl+Shift+O" ) );
@@ -14,9 +13,10 @@ namespace VTX::UI
 	const QKeySequence Shortcut::Main::FULLSCREEN	  = QKeySequence( QWidget::tr( "F11" ) );
 	const QKeySequence Shortcut::Main::RESTORE_LAYOUT = QKeySequence( QWidget::tr( "F6" ) );
 
-	const QKeySequence Shortcut::Main::SELECT_ALL	   = QKeySequence( QWidget::tr(
-		 Controller::BaseKeyboardController::getKeyboardLayout() == Controller::KeyboardLayout::AZERTY ? "Ctrl+A"
-																									   : "Ctrl+Q" ) );
+	// const QKeySequence Shortcut::Main::SELECT_ALL	   = QKeySequence( QWidget::tr(
+	//	 Controller::BaseKeyboardController::getKeyboardLayout() == Controller::KeyboardLayout::AZERTY ? "Ctrl+A"
+	//																								   : "Ctrl+Q" ) );
+	const QKeySequence Shortcut::Main::SELECT_ALL	   = QKeySequence( QWidget::tr( "Ctrl+A" ) );
 	const QKeySequence Shortcut::Main::CLEAR_SELECTION = QKeySequence( QWidget::tr( "Esc" ) );
 
 	const QKeySequence Shortcut::Main::DUPLICATE_SELECTION = QKeySequence( QWidget::tr( "Ctrl+D" ) );
