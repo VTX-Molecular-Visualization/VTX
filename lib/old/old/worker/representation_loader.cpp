@@ -2,7 +2,7 @@
 #include "io/reader/serialized_object.hpp"
 #include "model/representation/representation_library.hpp"
 #include "representation/representation_manager.hpp"
-#include "tool/chrono.hpp"
+#include <util/chrono.hpp>
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 
@@ -10,7 +10,7 @@ namespace VTX::Worker
 {
 	void RepresentationLibraryLoader::_run()
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 
 		IO::Reader::SerializedObject<Model::Representation::Representation> * const reader
 			= new IO::Reader::SerializedObject<Model::Representation::Representation>();
@@ -116,7 +116,7 @@ namespace VTX::Worker
 
 	void RepresentationLoader::_run()
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 
 		IO::Reader::SerializedObject<Model::Representation::Representation> * const reader
 			= new IO::Reader::SerializedObject<Model::Representation::Representation>();

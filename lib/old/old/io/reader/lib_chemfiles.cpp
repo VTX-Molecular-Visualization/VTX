@@ -9,7 +9,7 @@
 #include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "setting.hpp"
-#include "tool/chrono.hpp"
+#include <util/chrono.hpp>
 #include "tool/logger.hpp"
 #include "util/bond_guessing/bond_order_guessing.hpp"
 #include "util/chemfiles.hpp"
@@ -84,7 +84,7 @@ namespace VTX::IO::Reader
 											  const uint p_trajectoryFrameStart ) const
 	{
 		// Fill other frames.
-		Tool::Chrono timeReadingFrames;
+		Util::Chrono timeReadingFrames;
 		timeReadingFrames.start();
 		int startingFrame	= 1;
 		int validFrameCount = 0;
@@ -168,7 +168,7 @@ namespace VTX::IO::Reader
 			}
 		}
 
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 		chrono.start();
 		chemfiles::Frame frame = p_trajectory.read();
 		chrono.stop();
@@ -560,7 +560,7 @@ namespace VTX::IO::Reader
 			_readTrajectoryFrames( p_trajectory, { pairMoleculeFirstFrame }, 1 );
 		}
 
-		Tool::Chrono bondComputationChrono = Tool::Chrono();
+		Util::Chrono bondComputationChrono = Util::Chrono();
 		if ( p_recomputeBonds )
 		{
 			bondComputationChrono.start();

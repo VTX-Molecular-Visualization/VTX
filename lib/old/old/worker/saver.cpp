@@ -6,7 +6,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
-#include "tool/chrono.hpp"
+#include <util/chrono.hpp>
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include <set>
@@ -16,7 +16,7 @@ namespace VTX::Worker
 	uint Saver::_run()
 	{
 		bool		 result = 1;
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 
 		chrono.start();
 		emit logInfo( "Saving " + _path.filename() );

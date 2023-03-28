@@ -7,7 +7,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
-#include "tool/chrono.hpp"
+#include <util/chrono.hpp>
 #include "tool/logger.hpp"
 #include "view/d3/ribbon.hpp"
 
@@ -22,7 +22,7 @@ namespace VTX
 
 		void SecondaryStructure::_init()
 		{
-			Tool::Chrono chrono;
+			Util::Chrono chrono;
 			chrono.start();
 			VTX_DEBUG( "Creating secondary structure..." );
 

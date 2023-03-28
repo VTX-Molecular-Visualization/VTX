@@ -4,7 +4,7 @@
 #include "model/bond.hpp"
 #include "model/chain.hpp"
 #include "model/residue.hpp"
-#include "tool/chrono.hpp"
+#include <util/chrono.hpp>
 #include "util/secondary_structure.hpp"
 #include <string>
 
@@ -35,7 +35,7 @@ namespace VTX::IO::Writer
 												Model::Molecule &		p_molecule ) const
 	{
 		// Fill other frames.
-		Tool::Chrono timeReadingFrames;
+		Util::Chrono timeReadingFrames;
 		timeReadingFrames.start();
 		int startingFrame = 1;
 		for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )

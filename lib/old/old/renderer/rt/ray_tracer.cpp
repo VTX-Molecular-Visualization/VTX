@@ -13,7 +13,7 @@
 #include "primitives/plane.hpp"
 #include "primitives/sphere.hpp"
 #include "primitives/triangle_mesh.hpp"
-#include "tool/chrono.hpp"
+#include <util/chrono.hpp>
 #include "util/sampler.hpp"
 #include "vtx_app.hpp"
 #include <atomic>
@@ -209,7 +209,7 @@ namespace VTX
 
 			// start rendering
 			//_progressBar.start( nbTiles, 50 );
-			Tool::Chrono chrono;
+			Util::Chrono chrono;
 
 			chrono.start();
 

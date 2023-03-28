@@ -4,7 +4,7 @@
 #include "base_thread.hpp"
 #include <util/types.hpp>
 #include <util/filepath.hpp>
-#include "tool/chrono.hpp"
+#include <util/chrono.hpp>
 #include <map>
 #include <vector>
 
@@ -90,7 +90,7 @@ namespace VTX
 			std::vector<std::vector<Util::FilePath>> _filepathsPerMode = std::vector<std::vector<Util::FilePath>>();
 			std::vector<Model::Molecule *>		   _moleculeTargetsForDynamics = std::vector<Model::Molecule *>();
 
-			Tool::Chrono _loadingFileChrono;
+			Util::Chrono _loadingFileChrono;
 			bool		 _openTrajectoryAsMolecule = true;
 
 			void _startLoadingFile( const Util::FilePath & p_path, const SOURCE_TYPE & p_sourceType );

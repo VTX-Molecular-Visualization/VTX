@@ -42,7 +42,7 @@ namespace VTX
 				return;
 			}
 
-			Tool::Chrono chrono, chrono2;
+			Util::Chrono chrono, chrono2;
 			chrono.start();
 			chrono2.start();
 			VTX_DEBUG( "Creating SES..." );
@@ -611,7 +611,7 @@ namespace VTX
 
 		void SolventExcludedSurface::refreshColors()
 		{
-			Tool::Chrono chrono;
+			Util::Chrono chrono;
 			chrono.start();
 
 			using VTX::Renderer::GL::Buffer;
@@ -675,7 +675,7 @@ namespace VTX
 
 		void SolventExcludedSurface::refreshVisibilities()
 		{
-			Tool::Chrono chrono;
+			Util::Chrono chrono;
 			chrono.start();
 
 			using VTX::Renderer::GL::Buffer;
@@ -715,7 +715,7 @@ namespace VTX
 
 		void SolventExcludedSurface::refreshSelections()
 		{
-			Tool::Chrono chrono;
+			Util::Chrono chrono;
 			chrono.start();
 
 			using VTX::Renderer::GL::Buffer;

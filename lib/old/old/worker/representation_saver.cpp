@@ -2,7 +2,7 @@
 #include "io/writer/serialized_object.hpp"
 #include "model/representation/representation.hpp"
 #include "mvc/mvc_manager.hpp"
-#include "tool/chrono.hpp"
+#include <util/chrono.hpp>
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include <exception>
@@ -13,7 +13,7 @@ namespace VTX::Worker
 	uint RepresentationSaverThread::_run()
 	{
 		bool		 result = 1;
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 
 		chrono.start();
 		emit		   logInfo( "Saving " + _representation->getName() );
@@ -45,7 +45,7 @@ namespace VTX::Worker
 
 	void RepresentationSaver::_run()
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 
 		chrono.start();
 		VTX_INFO( "Saving " + _representation->getName() );

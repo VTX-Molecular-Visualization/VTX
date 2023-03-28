@@ -103,7 +103,7 @@ namespace VTX::Action::Analysis
 
 		virtual void execute() override
 		{
-			Tool::Chrono chrono = Tool::Chrono();
+			Util::Chrono chrono = Util::Chrono();
 			chrono.start();
 			try
 			{

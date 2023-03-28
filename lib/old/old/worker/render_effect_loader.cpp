@@ -2,14 +2,14 @@
 #include "io/reader/serialized_object.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
-#include "tool/chrono.hpp"
+#include <util/chrono.hpp>
 #include "tool/logger.hpp"
 
 namespace VTX::Worker
 {
 	void RenderEffectPresetLibraryLoader::_run()
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 
 		IO::Reader::SerializedObject<Model::Renderer::RenderEffectPreset> * const reader
 			= new IO::Reader::SerializedObject<Model::Renderer::RenderEffectPreset>();
@@ -49,7 +49,7 @@ namespace VTX::Worker
 
 	void RenderEffectPresetLoader::_run()
 	{
-		Tool::Chrono chrono;
+		Util::Chrono chrono;
 
 		IO::Reader::SerializedObject<Model::Renderer::RenderEffectPreset> * const reader
 			= new IO::Reader::SerializedObject<Model::Renderer::RenderEffectPreset>();

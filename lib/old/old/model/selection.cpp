@@ -7,7 +7,7 @@
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
-#include "tool/chrono.hpp"
+#include <util/chrono.hpp>
 #include "tool/logger.hpp"
 #include <unordered_set>
 
@@ -45,7 +45,7 @@ namespace VTX::Model
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
 
-		Tool::Chrono chrono = Tool::Chrono();
+		Util::Chrono chrono = Util::Chrono();
 		chrono.start();
 		_selectMolecule( p_molecule );
 		_setCurrentObject( &p_molecule );
@@ -902,7 +902,7 @@ namespace VTX::Model
 								  const bool							 p_appendToSelection,
 								  const Model::BaseModel * const		 p_currentObj )
 	{
-		Tool::Chrono chrono = Tool::Chrono();
+		Util::Chrono chrono = Util::Chrono();
 		chrono.start();
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
