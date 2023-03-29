@@ -40,7 +40,7 @@ namespace VTX
 				repaint();
 			};
 			QPoint getResiduePos( const Model::Residue & p_residue, const QWidget * const p_widgetSpace ) const;
-			qreal  getSize() const { return _chainData->getCharCount() * _fontMetrics->averageCharWidth(); };
+			qreal  getSize() const { return _chainData->getCharCount() * _charSizeFromMetrics; };
 
 		  protected:
 			void mouseDoubleClickEvent( QMouseEvent * p_event ) override;
@@ -49,6 +49,7 @@ namespace VTX
 
 		  private:
 			QFontMetricsF * _fontMetrics			= nullptr;
+			double			_charSizeFromMetrics	= 0.0;
 			int *			_charIndexPaintCache	= new int();
 			int *			_symbolLengthPaintCache = new int();
 
