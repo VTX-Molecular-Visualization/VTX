@@ -3,8 +3,8 @@
 
 #include "struct/residue_center_of_mass_data_set.hpp"
 #include <Eigen/Geometry>
-#include <old/math/matrix.hpp>
 #include <util/constants.hpp>
+#include <util/math.hpp>
 #include <util/types.hpp>
 #include <utility>
 #include <vector>

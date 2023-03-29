@@ -153,7 +153,7 @@ namespace VTX::UI::QT::Controller
 			const Quatf rotation = Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z )
 										  * ( VTX_SETTING().getControllerElasticityActive() ? p_deltaTime : 0.2f ) );
 			_camera.rotateAround( rotation, _target, distance );
-			// float d = Util::Math::distance( _camera.getPosition(), _target );
+			// float d = Util::distance( _camera.getPosition(), _target );
 			// VTX_LOG_FILE( std::to_string( p_deltaTime ) + " / " + std::to_string( distance ) + " / "
 			//			  + std::to_string( d ) );
 			_needUpdate = false;

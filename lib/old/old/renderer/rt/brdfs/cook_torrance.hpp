@@ -23,22 +23,22 @@ namespace VTX
 									   const Color::Rgba &	p_f0,
 									   const float			p_shininess )
 				{
-					const Vec3f h = Util::Math::normalize( p_wo + p_wi );
+					const Vec3f h = Util::normalize( p_wo + p_wi );
 
-					const float HdotN = Util::Math::dot( h, p_hit._normal );
-					const float OdotH = Util::Math::dot( p_wo, h );
+					const float HdotN = Util::dot( h, p_hit._normal );
+					const float OdotH = Util::dot( p_wo, h );
 
 					// Microfacets distribution.
-					const float D = ( p_shininess + 2.f ) * Util::Math::pow( HdotN, p_shininess ) / TWO_PIf;
+					const float D = ( p_shininess + 2.f ) * Util::pow( HdotN, p_shininess ) / TWO_PIf;
 					// Geometric factor.
-					const float cosThetaO = Util::Math::dot( p_wo, p_hit._normal );
-					const float cosThetaI = Util::Math::dot( p_wo, p_hit._normal );
+					const float cosThetaO = Util::dot( p_wo, p_hit._normal );
+					const float cosThetaI = Util::dot( p_wo, p_hit._normal );
 					const float G
-						= Util::Math::min( 1.f, 2.f * HdotN * Util::Math::min( cosThetaO / OdotH, cosThetaI / OdotH ) );
+						= Util::min( 1.f, 2.f * HdotN * Util::min( cosThetaO / OdotH, cosThetaI / OdotH ) );
 
 					// Fresnel Schlick's approximation.
 					// F = f0 + (1 - f0) * (1-IdotH)^5
-					const float		  _IdotH  = 1.f - Util::Math::dot( p_wi, h );
+					const float		  _IdotH  = 1.f - Util::dot( p_wi, h );
 					const float		  _IdotH2 = _IdotH * _IdotH;
 					const Color::Rgba F		  = p_f0 + ( 1.f - p_f0 ) * _IdotH2 * _IdotH2 * _IdotH;
 

@@ -556,7 +556,7 @@ namespace VTX::Util::BondGuessing
 				for ( const size_t nextAtomIndex : linkedAtoms )
 				{
 					const Vec3f & nextAtomIndexPos = p_molecule.getAtomPositionFrame( p_frameIndex )[ nextAtomIndex ];
-					const float	  atomDistance	   = Util::Math::distance( atomIndexPos, nextAtomIndexPos );
+					const float	  atomDistance	   = Util::distance( atomIndexPos, nextAtomIndexPos );
 
 					NeighbourData::AtomData atomData
 						= NeighbourData::AtomData( nextAtomIndex, nextAtomIndexPos, atomDistance );
@@ -771,12 +771,12 @@ namespace VTX::Util::BondGuessing
 							if ( neighbourData.nitrogens[ 0 ].getDistance() < 1.24f && neighbourData.carbons.size() > 0
 								 && p_linkedAtomsVector[ n0Index ].size() == 1 )
 							{
-								const Vec3f n0Vector = Util::Math::normalize(
+								const Vec3f n0Vector = Util::normalize(
 									neighbourData.nitrogens[ 0 ].getVTXPosition() - atomIndexPos );
-								const Vec3f c0Vector = Util::Math::normalize(
+								const Vec3f c0Vector = Util::normalize(
 									neighbourData.carbons[ 0 ].getVTXPosition() - atomIndexPos );
 
-								if ( Util::Math::dot( n0Vector, c0Vector ) < -0.9 )
+								if ( Util::dot( n0Vector, c0Vector ) < -0.9 )
 								{
 									_setBondOrder( p_molecule, atomIndex, n0Index, VTX::Model::Bond::ORDER::TRIPLE );
 								}
@@ -1031,19 +1031,19 @@ namespace VTX::Util::BondGuessing
 
 		for ( int i = 1; i < atomCount; i++ )
 		{
-			const Vec3f vec0 = Util::Math::normalize( positions[ i ] - positions[ 0 ] );
-			const Vec3f vec1 = Util::Math::normalize( positions[ i + 1 ] - positions[ 0 ] );
+			const Vec3f vec0 = Util::normalize( positions[ i ] - positions[ 0 ] );
+			const Vec3f vec1 = Util::normalize( positions[ i + 1 ] - positions[ 0 ] );
 
-			const Vec3f cross = Util::Math::cross( vec0, vec1 );
+			const Vec3f cross = Util::cross( vec0, vec1 );
 
 			if ( cross == Vec3f( 0, 0, 0 ) )
 			{
 				return 0;
 			}
 
-			crossProducts[ i ] = Util::Math::normalize( cross );
+			crossProducts[ i ] = Util::normalize( cross );
 
-			if ( i > 1 && Util::Math::dot( crossProducts[ i - 1 ], crossProducts[ i ] ) < 0.0 )
+			if ( i > 1 && Util::dot( crossProducts[ i - 1 ], crossProducts[ i ] ) < 0.0 )
 				crossProducts[ i ] = -crossProducts[ i ];
 		}
 		crossProducts[ atomCount ] = crossProducts[ 1 ];
@@ -1051,7 +1051,7 @@ namespace VTX::Util::BondGuessing
 		float avg = 0.f;
 		for ( int i = 1; i < atomCount; i++ )
 		{
-			avg += Util::Math::dot( crossProducts[ i ], crossProducts[ i + 1 ] );
+			avg += Util::dot( crossProducts[ i ], crossProducts[ i + 1 ] );
 		}
 
 		return avg / ( atomCount - 1 );
@@ -1081,12 +1081,12 @@ namespace VTX::Util::BondGuessing
 
 		for ( int i = 0; i < p_atomCount; i++ )
 		{
-			const Vec3f vec0 = Util::Math::normalize( positions[ i ] - positions[ i + 1 ] );
-			const Vec3f vec1 = Util::Math::normalize( positions[ i + 2 ] - positions[ i + 1 ] );
+			const Vec3f vec0 = Util::normalize( positions[ i ] - positions[ i + 1 ] );
+			const Vec3f vec1 = Util::normalize( positions[ i + 2 ] - positions[ i + 1 ] );
 
-			crossProducts[ i ] = Util::Math::normalize( Util::Math::cross( vec0, vec1 ) );
+			crossProducts[ i ] = Util::normalize( Util::cross( vec0, vec1 ) );
 
-			if ( i > 1 && Util::Math::dot( crossProducts[ i - 1 ], crossProducts[ i ] ) < 0.0 )
+			if ( i > 1 && Util::dot( crossProducts[ i - 1 ], crossProducts[ i ] ) < 0.0 )
 				crossProducts[ i ] = -crossProducts[ i ];
 
 			dir += crossProducts[ i ];
@@ -1096,7 +1096,7 @@ namespace VTX::Util::BondGuessing
 
 		for ( int i = 0; i < p_atomCount; i++ )
 		{
-			avg += Util::Math::dot( crossProducts[ i ], crossProducts[ i + 1 ] );
+			avg += Util::dot( crossProducts[ i ], crossProducts[ i + 1 ] );
 		}
 
 		return avg / p_atomCount;
@@ -1138,9 +1138,9 @@ namespace VTX::Util::BondGuessing
 				}
 
 				const Vec3f & neighbourPos = p_molecule.getAtomPositionFrame( p_frameIndex )[ neighbourIndex ];
-				const Vec3f	  vec		   = Util::Math::normalize( neighbourPos - atomPos );
+				const Vec3f	  vec		   = Util::normalize( neighbourPos - atomPos );
 
-				float dot = Util::Math::dot( vec, dir );
+				float dot = Util::dot( vec, dir );
 				dot		  = dot < 0 ? -dot : dot;
 
 				if ( dot > cutoff )

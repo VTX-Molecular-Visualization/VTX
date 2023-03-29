@@ -1,10 +1,6 @@
 #ifndef __VTX_UTIL_EXCEPTIONS__
 #define __VTX_UTIL_EXCEPTIONS__
 
-#ifdef _MSC_VER
-#pragma once
-
-#endif
 #include <iostream>
 #include <string>
 

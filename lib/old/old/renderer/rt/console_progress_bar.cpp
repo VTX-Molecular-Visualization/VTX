@@ -6,8 +6,8 @@ namespace VTX
 {
 	void ConsoleProgressBar::start( const int p_nbTasks, const int p_barWidth )
 	{
-		_barWidth = Util::Math::max( 2, p_barWidth - 2 );
-		_nbTasks  = Util::Math::max( 1, p_nbTasks - 1 );
+		_barWidth = Util::max( 2, p_barWidth - 2 );
+		_nbTasks  = Util::max( 1, p_nbTasks - 1 );
 
 		std::cout << "Warning ! Console progress bar impacts performance !" << std::endl;
 		_nbTasksDone = 0;

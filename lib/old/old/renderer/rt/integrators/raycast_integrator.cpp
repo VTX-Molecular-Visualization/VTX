@@ -18,7 +18,7 @@ namespace VTX
 				// point light on camera
 				LightSample ls( -p_ray.getDirection(), 1.f, Color::Rgba::WHITE, 1.f );
 
-				const float cosTheta = Util::Math::dot( intersection._normal, ls._dir );
+				const float cosTheta = Util::dot( intersection._normal, ls._dir );
 
 				Li = intersection._primitive->getMaterial()->shade( p_ray, intersection, ls ) * cosTheta;
 			}

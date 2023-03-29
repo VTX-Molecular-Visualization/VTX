@@ -16,7 +16,7 @@ namespace VTX
 		  public:
 			AOIntegrator() = default;
 			AOIntegrator( const float p_radius, const uint p_nbSamples ) :
-				_radius( Util::Math::max( 0.f, p_radius ) ), _nbSamples( Util::Math::max( 1u, p_nbSamples ) )
+				_radius( Util::max( 0.f, p_radius ) ), _nbSamples( Util::max( 1u, p_nbSamples ) )
 			{
 			}
 

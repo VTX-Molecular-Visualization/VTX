@@ -42,11 +42,11 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 			= _generateResiduePositionsVector( p_mobileMolecule, castedParameters );
 
 		// Calculate distance matrix
-		const Math::Matrix<float> distanceMatrixStaticMol = _computeDistanceMatrix( staticMoleculeResiduePositions );
-		const Math::Matrix<float> distanceMatrixMobileMol = _computeDistanceMatrix( mobileMoleculeResiduePositions );
+		const Matrix<float> distanceMatrixStaticMol = _computeDistanceMatrix( staticMoleculeResiduePositions );
+		const Matrix<float> distanceMatrixMobileMol = _computeDistanceMatrix( mobileMoleculeResiduePositions );
 
 		// Calculate CE similarities
-		const Math::Matrix<float> scoreMatrix
+		const Matrix<float> scoreMatrix
 			= _computeScoreMatrix( distanceMatrixStaticMol, distanceMatrixMobileMol, correctedParameters );
 
 		// Calculate Top N Paths
@@ -121,9 +121,9 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		return res;
 	}
 
-	Math::Matrix<float> CEAlign::_computeDistanceMatrix( const std::vector<Vec3f> & p_positions )
+	Matrix<float> CEAlign::_computeDistanceMatrix( const std::vector<Vec3f> & p_positions )
 	{
-		Math::Matrix<float> distanceMatrix = Math::Matrix<float>( p_positions.size(), p_positions.size() );
+		Matrix<float> distanceMatrix = Matrix<float>( p_positions.size(), p_positions.size() );
 
 		for ( size_t iRow = 0; iRow < p_positions.size(); iRow++ )
 		{
@@ -139,12 +139,12 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		return distanceMatrix;
 	}
 
-	Math::Matrix<float> CEAlign::_computeScoreMatrix( const Math::Matrix<float> & p_distanceMatrix1,
-													  const Math::Matrix<float> & p_distanceMatrix2,
-													  const CustomParameters &	  p_parameters )
+	Matrix<float> CEAlign::_computeScoreMatrix( const Matrix<float> &	 p_distanceMatrix1,
+												const Matrix<float> &	 p_distanceMatrix2,
+												const CustomParameters & p_parameters )
 	{
-		Math::Matrix<float> scoreMatrix
-			= Math::Matrix<float>( p_distanceMatrix1.getRowCount(), p_distanceMatrix2.getRowCount(), -1.f );
+		Matrix<float> scoreMatrix
+			= Matrix<float>( p_distanceMatrix1.getRowCount(), p_distanceMatrix2.getRowCount(), -1.f );
 
 		const int windowSize = p_parameters.windowSize;
 
@@ -175,10 +175,10 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		return scoreMatrix;
 	}
 
-	std::vector<CEAlign::Path> CEAlign::_findPath( const Math::Matrix<float> & p_scoreMatrix,
-												   const Math::Matrix<float> & p_distanceMatrixA,
-												   const Math::Matrix<float> & p_distanceMatrixB,
-												   const CustomParameters &	   p_parameters )
+	std::vector<CEAlign::Path> CEAlign::_findPath( const Matrix<float> &	p_scoreMatrix,
+												   const Matrix<float> &	p_distanceMatrixA,
+												   const Matrix<float> &	p_distanceMatrixB,
+												   const CustomParameters & p_parameters )
 	{
 		const float d0		= p_parameters.d0;
 		const float d1		= p_parameters.d1;
@@ -211,8 +211,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 
 		// allScoreBuffer
 		// this 2D array keeps track of all partial gapped scores
-		Math::Matrix<float> allScoreBuffer
-			= Math::Matrix<float>( longestAlignmentLength, size_t( gapMax ) * 2 + 1, FLOAT_MAX );
+		Matrix<float> allScoreBuffer = Matrix<float>( longestAlignmentLength, size_t( gapMax ) * 2 + 1, FLOAT_MAX );
 
 		std::vector<size_t> tIndex = std::vector<size_t>();
 		tIndex.resize( longestAlignmentLength, -1 );
@@ -758,11 +757,11 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		// Mat4f vtxA = MAT4F_ID;
 
 		//// SVD
-		// Math::Matrix<float> vtxU;
+		// Matrix<float> vtxU;
 		// std::vector<float>	vtxSigmas;
-		// Math::Matrix<float> vtxV;
+		// Matrix<float> vtxV;
 
-		// Math::Matrix<float> vtxCov = Math::Matrix<float>( 3, 3 );
+		// Matrix<float> vtxCov = Matrix<float>( 3, 3 );
 
 		// for ( int i = 0; i < 3; i++ )
 		//{
@@ -790,20 +789,20 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		//	vtxCov.set( i, 2, sumZ );
 		//}
 
-		// Util::Math::getSVD( vtxCov, vtxU, vtxSigmas, vtxV );
+		// Util::getSVD( vtxCov, vtxU, vtxSigmas, vtxV );
 
-		// const Math::Matrix<float> vtxTransposedU = Util::Math::transpose( vtxU );
+		// const Matrix<float> vtxTransposedU = Util::transpose( vtxU );
 
-		// double vtxD = Util::Math::getDeterminant( Util::Math::matMult( vtxV, vtxTransposedU ) );
+		// double vtxD = Util::getDeterminant( Util::matMult( vtxV, vtxTransposedU ) );
 		// if ( vtxD > 0 )
 		//	vtxD = 1.0;
 		// else
 		//	vtxD = -1.0;
 
-		// Math::Matrix<float> vtxI = Math::Matrix<float>( 3, 3 );
+		// Matrix<float> vtxI = Matrix<float>( 3, 3 );
 		// vtxI.set( 2, 2, vtxD );
 
-		// const Math::Matrix<float> rotation = Util::Math::matMult( vtxV, Util::Math::matMult( vtxI, vtxTransposedU )
+		// const Matrix<float> rotation = Util::matMult( vtxV, Util::matMult( vtxI, vtxTransposedU )
 		// );
 
 		// return Mat4f( rotation.get( 0, 0 ),

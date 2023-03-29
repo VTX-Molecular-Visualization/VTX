@@ -1,8 +1,8 @@
 #ifndef __VTX__TRANSFORM__
 #define __VTX__TRANSFORM__
 
+#include <util/math.hpp>
 #include <util/types.hpp>
-#include "util/math.hpp"
 
 namespace VTX
 {

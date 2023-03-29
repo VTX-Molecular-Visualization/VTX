@@ -6,8 +6,8 @@
 #endif
 
 #include "../bvh.hpp"
-#include "model/molecule.hpp"
 #include "define.hpp"
+#include "model/molecule.hpp"
 
 namespace VTX
 {
@@ -87,8 +87,8 @@ namespace VTX
 			//	const Vec3f edge1 = v1 - v0;
 			//	const Vec3f edge2 = v2 - v0;
 
-			//	const Vec3f pVec = Util::Math::cross( d, edge2 );
-			//	const float det	 = Util::Math::dot( edge1, pVec );
+			//	const Vec3f pVec = Util::cross( d, edge2 );
+			//	const float det	 = Util::dot( edge1, pVec );
 
 			//	if ( det == 0.f ) return false;
 
@@ -96,21 +96,21 @@ namespace VTX
 
 			//	const Vec3f tVec = o - v0;
 
-			//	const float u = Util::Math::dot( tVec, pVec ) * invDet;
+			//	const float u = Util::dot( tVec, pVec ) * invDet;
 			//	if ( u < 0.f || u > 1.f ) return false;
 
-			//	const Vec3f qVec = Util::Math::cross( tVec, edge1 );
-			//	const float v	 = Util::Math::dot( d, qVec ) * invDet;
+			//	const Vec3f qVec = Util::cross( tVec, edge1 );
+			//	const float v	 = Util::dot( d, qVec ) * invDet;
 			//	const float w	 = 1.f - u - v;
 			//	if ( v < 0.f || w < 0.f ) return false;
 
-			//	const float t = Util::Math::dot( edge2, qVec ) * invDet;
+			//	const float t = Util::dot( edge2, qVec ) * invDet;
 
 			//	if ( t < p_tMin || t > p_tMax ) { return false; }
 
 			//	p_intersection._point	  = p_ray.getPointAtT( t );
 			//	const Vec3f normal		  = _interpolateNormal( u, v, w );
-			//	p_intersection._normal	  = Util::Math::faceForward( normal, d );
+			//	p_intersection._normal	  = Util::faceForward( normal, d );
 			//	p_intersection._distance  = t;
 			//	p_intersection._primitive = this;
 

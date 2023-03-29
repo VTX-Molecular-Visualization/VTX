@@ -95,7 +95,7 @@
 //	void DistanceToCycle::_computeDistance( const bool p_notify )
 //	{
 //		const float newDistance
-//			= Util::Math::distance( _firstAtom->getWorldPosition(), _secondAtom->getWorldPosition() );
+//			= Util::distance( _firstAtom->getWorldPosition(), _secondAtom->getWorldPosition() );
 //
 //		if ( _distance != newDistance )
 //		{

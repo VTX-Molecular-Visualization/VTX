@@ -134,7 +134,7 @@ namespace VTX::Model::Measurement
 	void Distance::_computeDistance( const bool p_notify )
 	{
 		const float newDistance
-			= Util::Math::distance( _atoms[ 0 ]->getWorldPosition(), _atoms[ 1 ]->getWorldPosition() );
+			= Util::distance( _atoms[ 0 ]->getWorldPosition(), _atoms[ 1 ]->getWorldPosition() );
 
 		if ( _distance != newDistance )
 		{

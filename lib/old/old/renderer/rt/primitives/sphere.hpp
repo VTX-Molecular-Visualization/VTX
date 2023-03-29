@@ -42,10 +42,10 @@ namespace VTX
 				// Precision Improvements for Ray/Sphere Intersection.
 				// In: Haines E., Akenine-Moller T. (eds) Ray Tracing Gems. Apress, Berkeley, CA
 				const Vec3f oc	  = o - _center;
-				const float b	  = Util::Math::dot( oc, d );
+				const float b	  = Util::dot( oc, d );
 				const float r2	  = _radius * _radius;
 				const Vec3f ocd	  = oc - b * d;
-				const float delta = r2 - Util::Math::dot( ocd, ocd );
+				const float delta = r2 - Util::dot( ocd, ocd );
 
 				if ( delta < 0.f )
 					return false;
@@ -54,7 +54,7 @@ namespace VTX
 
 				const float q = ( b > 0.f ) ? -sqrtDelta - b : sqrtDelta - b;
 
-				const float c = Util::Math::dot( oc, oc ) - r2;
+				const float c = Util::dot( oc, oc ) - r2;
 
 				float t = c / q;
 				if ( t > p_tMax )
@@ -72,7 +72,7 @@ namespace VTX
 
 				p_intersection._point	  = p_ray.getPointAtT( t );
 				const Vec3f normal		  = ( p_intersection._point - _center ) / _radius;
-				p_intersection._normal	  = Util::Math::faceForward( normal, d );
+				p_intersection._normal	  = Util::faceForward( normal, d );
 				p_intersection._distance  = t;
 				p_intersection._primitive = this;
 

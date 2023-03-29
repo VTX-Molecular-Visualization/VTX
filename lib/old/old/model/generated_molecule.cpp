@@ -613,7 +613,7 @@ namespace VTX::Model
 
 		setFPS( p_molecule.getFPS() );
 		setPlayMode( p_molecule.getPlayMode() );
-		const uint frame = Util::Math::min( getFrameCount() - 1, p_molecule.getFrame() );
+		const uint frame = Util::min( getFrameCount() - 1, p_molecule.getFrame() );
 		setFrame( frame );
 		setIsPlaying( p_molecule.isPlaying() );
 	}

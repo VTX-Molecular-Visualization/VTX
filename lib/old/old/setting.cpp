@@ -15,10 +15,10 @@
 #include "trajectory/trajectory_enum.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
-#include <util/types.hpp>
 #include <QSettings>
 #include <exception>
 #include <string>
+#include <util/types.hpp>
 
 namespace VTX
 {

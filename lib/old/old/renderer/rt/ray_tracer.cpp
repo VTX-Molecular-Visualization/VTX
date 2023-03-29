@@ -109,20 +109,20 @@ namespace VTX
 
 				// 6VSB_2nd931.obj
 				/*_pos = Vec3f( 0.f, 0.f, 200.f );
-				const Vec3f & camFront = Util::Math::normalize( Vec3f( -14.541f, 14.0144f, 41.9241f ) - _pos );
+				const Vec3f & camFront = Util::normalize( Vec3f( -14.541f, 14.0144f, 41.9241f ) - _pos );
 				Vec3f		  camUp	   = p_camera.getUp();
-				Vec3f		  camLeft  = Util::Math::cross( camUp, camFront );
-				camUp				   = Util::Math::cross( camLeft, camUp );*/
+				Vec3f		  camLeft  = Util::cross( camUp, camFront );
+				camUp				   = Util::cross( camLeft, camUp );*/
 
 				//_pos.z += 10.f;
 
 				const float camFov	   = p_camera.getFov();
 				const float ratio	   = p_camera.getAspectRatio();
-				const float halfHeight = tan( Util::Math::radians( camFov ) * 0.5f );
+				const float halfHeight = tan( Util::radians( camFov ) * 0.5f );
 				const float halfWidth  = ratio * halfHeight;
 
-				_du = Util::Math::normalize( Util::Math::cross( _front, _up ) ) * halfWidth;
-				_dv = Util::Math::normalize( Util::Math::cross( _right, _front ) ) * halfHeight;
+				_du = Util::normalize( Util::cross( _front, _up ) ) * halfWidth;
+				_dv = Util::normalize( Util::cross( _right, _front ) ) * halfHeight;
 
 				/*
 				std::cout << "Camera RT" << std::endl;
@@ -136,7 +136,7 @@ namespace VTX
 			Ray generateRay( const float p_sx, const float p_sy ) const
 			{
 				const Vec2f d = Vec2f( p_sx / _width, p_sy / _height ) * 2.f - 1.f;
-				return Ray( _pos, Util::Math::normalize( ( _du * d.x + _dv * d.y + _front ) ) );
+				return Ray( _pos, Util::normalize( ( _du * d.x + _dv * d.y + _front ) ) );
 			}
 
 		  private:
@@ -398,9 +398,9 @@ namespace VTX
 				const uint tileY = taskId / p_nbTilesX;
 				const uint tileX = taskId - tileY * p_nbTilesX;
 				const uint x0	 = tileX * TILE_SIZE;
-				const uint x1	 = Util::Math::min( x0 + TILE_SIZE, _width );
+				const uint x1	 = Util::min( x0 + TILE_SIZE, _width );
 				const uint y0	 = tileY * TILE_SIZE;
-				const uint y1	 = Util::Math::min( y0 + TILE_SIZE, _height );
+				const uint y1	 = Util::min( y0 + TILE_SIZE, _height );
 
 				for ( uint y = y0; y < y1; ++y )
 				{
@@ -434,8 +434,8 @@ namespace VTX
 			for ( uint s = 0; s < p_nbPixelSamples; s++ )
 			{
 				// first sample in pixel center
-				const float sx = s == 0 ? p_x : p_x + Util::Math::randomFloat();
-				const float sy = s == 0 ? p_y : p_y + Util::Math::randomFloat();
+				const float sx = s == 0 ? p_x : p_x + Util::randomFloat();
+				const float sy = s == 0 ? p_y : p_y + Util::randomFloat();
 
 				const Ray ray = p_camera.generateRay( sx, sy );
 

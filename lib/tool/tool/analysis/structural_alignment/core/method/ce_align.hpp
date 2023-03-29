@@ -1,10 +1,10 @@
 #ifndef __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT_METHOD_CE_ALIGN__
 #define __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT_METHOD_CE_ALIGN__
 
+#include "analysis/matrix.hpp"
 #include "analysis/structural_alignment/core/struct/residue_center_of_mass_data_set.hpp"
 #include "analysis/structural_alignment/core/structural_alignment.hpp"
 #include <Eigen/Geometry>
-#include <old/math/matrix.hpp>
 #include <util/constants.hpp>
 #include <util/types.hpp>
 #include <utility>
@@ -57,17 +57,17 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 																   const CustomParameters & p_parameters );
 
 		// OK
-		static Math::Matrix<float> _computeDistanceMatrix( const std::vector<Vec3f> & p_atomPositions );
+		static VTX::Analysis::Matrix<float> _computeDistanceMatrix( const std::vector<Vec3f> & p_atomPositions );
 
 		// OK
-		static Math::Matrix<float> _computeScoreMatrix( const Math::Matrix<float> & p_distanceMatrix1,
-														const Math::Matrix<float> & p_distanceMatrix2,
-														const CustomParameters &	p_parameters );
+		static VTX::Analysis::Matrix<float> _computeScoreMatrix( const VTX::Analysis::Matrix<float> & p_distanceMatrix1,
+																 const VTX::Analysis::Matrix<float> & p_distanceMatrix2,
+																 const CustomParameters &			  p_parameters );
 
-		std::vector<Path> _findPath( const Math::Matrix<float> & p_scoreMatrix,
-									 const Math::Matrix<float> & p_distanceMatrixA,
-									 const Math::Matrix<float> & p_distanceMatrixB,
-									 const CustomParameters &	 p_parameters );
+		std::vector<Path> _findPath( const VTX::Analysis::Matrix<float> & p_scoreMatrix,
+									 const VTX::Analysis::Matrix<float> & p_distanceMatrixA,
+									 const VTX::Analysis::Matrix<float> & p_distanceMatrixB,
+									 const CustomParameters &			  p_parameters );
 
 		BestPathResult _pickBest( const std::vector<Vec3f> & p_residuePositionsA,
 								  const std::vector<Vec3f> & p_residuePositionsB,

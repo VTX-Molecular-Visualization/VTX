@@ -62,7 +62,7 @@ namespace VTX
 			const Vec3f gridMax			 = molAABB.getMax() + atomGridCellSize;
 
 			const Vec3f gridSize	 = gridMax - gridMin;
-			Vec3i		atomGridSize = Vec3i( Util::Math::ceil( gridSize / atomGridCellSize ) );
+			Vec3i		atomGridSize = Vec3i( Util::ceil( gridSize / atomGridCellSize ) );
 
 			Object3D::Helper::Grid gridAtoms
 				= Object3D::Helper::Grid( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
@@ -111,7 +111,7 @@ namespace VTX
 			chrono2.start();
 
 			// Compute SES grid and compute SDF.
-			Vec3i				   sesGridSize = Vec3i( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
+			Vec3i				   sesGridSize = Vec3i( Util::ceil( gridSize / VOXEL_SIZE ) );
 			Object3D::Helper::Grid gridSES	   = Object3D::Helper::Grid( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
 
 			/////////////////////
@@ -171,7 +171,7 @@ namespace VTX
 
 			workerRefineSDF.getProgram().use();
 
-			Vec3i cellsToVisitCount = Util::Math::ceil( Vec3f( PROBE_RADIUS + VOXEL_SIZE ) / gridSES.cellSize );
+			Vec3i cellsToVisitCount = Util::ceil( Vec3f( PROBE_RADIUS + VOXEL_SIZE ) / gridSES.cellSize );
 
 			workerRefineSDF.getProgram().setVec3f( "uGridSESWorldOrigin", gridSES.worldOrigin );
 			workerRefineSDF.getProgram().setVec3u( "uGridSESSize", Vec3u( gridSES.size ) );
@@ -465,7 +465,7 @@ namespace VTX
 			{
 				const uint indexNext = sortedIndices[ i ];
 
-				if ( Util::Math::length2( ptrPositions[ indexCurrent ] - ptrPositions[ indexNext ] )
+				if ( Util::length2( ptrPositions[ indexCurrent ] - ptrPositions[ indexNext ] )
 					 < EPSILON * EPSILON )
 				{
 					ptrIndices[ indexNext ] = indexCurrent;
@@ -555,12 +555,12 @@ namespace VTX
 
 				for ( uint i = 0; i < _indiceCount - 2; i += 3 )
 				{
-					Vec3f normal = Util::Math::cross(
+					Vec3f normal = Util::cross(
 						Vec3f( ptrPositions[ ptrIndices[ i + 1 ] ] - ptrPositions[ ptrIndices[ i + 2 ] ] ),
 						Vec3f( ptrPositions[ ptrIndices[ i + 1 ] ] - ptrPositions[ ptrIndices[ i + 0 ] ] ) );
 
-					assert( Util::Math::length( normal ) != 0.f );
-					Util::Math::normalizeSelf( normal );
+					assert( Util::length( normal ) != 0.f );
+					Util::normalizeSelf( normal );
 
 					for ( uint j = 0; j < 3; ++j )
 					{
@@ -572,7 +572,7 @@ namespace VTX
 
 				for ( uint i = 0; i < _indiceCount; ++i )
 				{
-					Util::Math::normalizeSelf( ptrNormals[ i ] );
+					Util::normalizeSelf( ptrNormals[ i ] );
 				}
 
 				bufferPositions.unmap();

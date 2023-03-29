@@ -101,7 +101,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void FloatFieldSliderWidget::setValue( const float p_value )
 	{
-		const float clampedValue = Util::Math::clamp( p_value, _min, _max );
+		const float clampedValue = Util::clamp( p_value, _min, _max );
 		if ( _value != clampedValue )
 		{
 			_value = clampedValue;
@@ -143,7 +143,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_slider->setMinimum( 0 );
 		_slider->setMaximum( 100 );
 
-		_value = Util::Math::clamp( _value, p_min, p_max );
+		_value = Util::clamp( _value, p_min, p_max );
 		_refresh();
 	};
 	void FloatFieldSliderWidget::setEnabled( const bool p_enable )

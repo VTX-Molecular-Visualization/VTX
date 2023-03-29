@@ -80,13 +80,13 @@ namespace VTX
 			_orientStartingPosition = _camera().getPosition();
 			const float targetDistance
 				= p_aabb.radius()
-				  / (float)( tan( Util::Math::radians( _camera().getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
+				  / (float)( tan( Util::radians( _camera().getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
 			_orientTargetPosition = p_aabb.centroid() - _camera().getFront() * targetDistance;
 
 			_orientStartingRotation = _camera().getRotation();
 			_orientTargetRotation	= _orientStartingRotation;
 
-			_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
+			_isOrienting = Util::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
 		}
 		void Freefly::_computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation )
 		{
@@ -96,16 +96,16 @@ namespace VTX
 			_orientStartingRotation = _camera().getRotation();
 			_orientTargetRotation	= p_orientation;
 
-			_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
+			_isOrienting = Util::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
 		}
 
 		void Freefly::_updateOrient( const float & p_deltaTime )
 		{
 			_camera().setPosition(
-				Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime ) );
+				Util::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime ) );
 
 			_camera().setRotation(
-				Util::Math::easeInOutInterpolation( _orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
+				Util::easeInOutInterpolation( _orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
 		}
 
 	} // namespace Controller

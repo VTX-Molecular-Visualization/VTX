@@ -12,7 +12,7 @@ namespace VTX::Worker
 
 	void GpuComputer::start()
 	{
-		// VTX_DEBUG( "Starting gpu work: {}", Util::Math::to_string_fmt( _size ) );
+		// VTX_DEBUG( "Starting gpu work: {}", Util::to_string_fmt( _size ) );
 
 		_gl->glDispatchCompute( _size.x, _size.y, _size.z );
 	}

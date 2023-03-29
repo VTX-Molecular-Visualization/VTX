@@ -32,7 +32,7 @@ namespace VTX
 						Ray shadowRay( intersection._point, ls._dir );
 						shadowRay.offset( intersection._normal );
 
-						const float cosTheta = Util::Math::max( 0.f, Util::Math::dot( intersection._normal, ls._dir ) );
+						const float cosTheta = Util::max( 0.f, Util::dot( intersection._normal, ls._dir ) );
 
 						if ( !p_scene.intersectAny( shadowRay, SHADOW_EPS, ls._distance - SHADOW_EPS ) )
 						{

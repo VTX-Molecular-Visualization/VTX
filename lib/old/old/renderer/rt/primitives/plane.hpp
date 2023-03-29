@@ -16,11 +16,11 @@ namespace VTX
 		{
 		  public:
 			Plane( const Vec3f & p_n, const float p_d, BaseMaterial * const p_mtl ) :
-				BasePrimitive( p_mtl ), _n( Util::Math::normalize( p_n ) ), _d( p_d )
+				BasePrimitive( p_mtl ), _n( Util::normalize( p_n ) ), _d( p_d )
 			{
 			}
 			Plane( const Vec3f & p_pt, const Vec3f & p_n, BaseMaterial * const p_mtl ) :
-				BasePrimitive( p_mtl ), _n( Util::Math::normalize( p_n ) ), _d( Util::Math::dot( p_pt, _n ) )
+				BasePrimitive( p_mtl ), _n( Util::normalize( p_n ) ), _d( Util::dot( p_pt, _n ) )
 			{
 			}
 
@@ -32,17 +32,17 @@ namespace VTX
 			{
 				// const Vec3f & o	  = p_ray.getOrigin();
 				const Vec3f & d	  = p_ray.getDirection();
-				const float	  den = Util::Math::dot( d, _n );
+				const float	  den = Util::dot( d, _n );
 				if ( den == 0.f )
 					return false;
-				const float t = ( Util::Math::dot( p_ray.getOrigin(), _n ) + _d ) / den;
+				const float t = ( Util::dot( p_ray.getOrigin(), _n ) + _d ) / den;
 				if ( t < p_tMin || t > p_tMax )
 				{
 					return false;
 				}
 
 				p_intersection._point	  = p_ray.getPointAtT( t );
-				p_intersection._normal	  = Util::Math::faceForward( _n, d );
+				p_intersection._normal	  = Util::faceForward( _n, d );
 				p_intersection._distance  = t;
 				p_intersection._primitive = this;
 

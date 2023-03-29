@@ -42,11 +42,13 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 			= _generateResiduePositionsVector( p_mobileMolecule, castedParameters );
 
 		// Calculate distance matrix
-		const Math::Matrix<float> distanceMatrixStaticMol = _computeDistanceMatrix( staticMoleculeResiduePositions );
-		const Math::Matrix<float> distanceMatrixMobileMol = _computeDistanceMatrix( mobileMoleculeResiduePositions );
+		const VTX::Analysis::Matrix<float> distanceMatrixStaticMol
+			= _computeDistanceMatrix( staticMoleculeResiduePositions );
+		const VTX::Analysis::Matrix<float> distanceMatrixMobileMol
+			= _computeDistanceMatrix( mobileMoleculeResiduePositions );
 
 		// Calculate CE similarities
-		const Math::Matrix<float> scoreMatrix
+		const VTX::Analysis::Matrix<float> scoreMatrix
 			= _computeScoreMatrix( distanceMatrixStaticMol, distanceMatrixMobileMol, correctedParameters );
 
 		// Calculate Top N Paths
@@ -121,9 +123,10 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 		return res;
 	}
 
-	Math::Matrix<float> CEAlign::_computeDistanceMatrix( const std::vector<Vec3f> & p_positions )
+	VTX::Analysis::Matrix<float> CEAlign::_computeDistanceMatrix( const std::vector<Vec3f> & p_positions )
 	{
-		Math::Matrix<float> distanceMatrix = Math::Matrix<float>( p_positions.size(), p_positions.size() );
+		VTX::Analysis::Matrix<float> distanceMatrix
+			= VTX::Analysis::Matrix<float>( p_positions.size(), p_positions.size() );
 
 		for ( size_t iRow = 0; iRow < p_positions.size(); iRow++ )
 		{
@@ -139,12 +142,12 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 		return distanceMatrix;
 	}
 
-	Math::Matrix<float> CEAlign::_computeScoreMatrix( const Math::Matrix<float> & p_distanceMatrix1,
-													  const Math::Matrix<float> & p_distanceMatrix2,
-													  const CustomParameters &	  p_parameters )
+	VTX::Analysis::Matrix<float> CEAlign::_computeScoreMatrix( const VTX::Analysis::Matrix<float> & p_distanceMatrix1,
+															   const VTX::Analysis::Matrix<float> & p_distanceMatrix2,
+															   const CustomParameters &				p_parameters )
 	{
-		Math::Matrix<float> scoreMatrix
-			= Math::Matrix<float>( p_distanceMatrix1.getRowCount(), p_distanceMatrix2.getRowCount(), -1.f );
+		VTX::Analysis::Matrix<float> scoreMatrix
+			= VTX::Analysis::Matrix<float>( p_distanceMatrix1.getRowCount(), p_distanceMatrix2.getRowCount(), -1.f );
 
 		const int windowSize = p_parameters.windowSize;
 
@@ -175,10 +178,10 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 		return scoreMatrix;
 	}
 
-	std::vector<CEAlign::Path> CEAlign::_findPath( const Math::Matrix<float> & p_scoreMatrix,
-												   const Math::Matrix<float> & p_distanceMatrixA,
-												   const Math::Matrix<float> & p_distanceMatrixB,
-												   const CustomParameters &	   p_parameters )
+	std::vector<CEAlign::Path> CEAlign::_findPath( const VTX::Analysis::Matrix<float> & p_scoreMatrix,
+												   const VTX::Analysis::Matrix<float> & p_distanceMatrixA,
+												   const VTX::Analysis::Matrix<float> & p_distanceMatrixB,
+												   const CustomParameters &				p_parameters )
 	{
 		const float d0		= p_parameters.d0;
 		const float d1		= p_parameters.d1;
@@ -211,8 +214,8 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 
 		// allScoreBuffer
 		// this 2D array keeps track of all partial gapped scores
-		Math::Matrix<float> allScoreBuffer
-			= Math::Matrix<float>( longestAlignmentLength, size_t( gapMax ) * 2 + 1, FLOAT_MAX );
+		VTX::Analysis::Matrix<float> allScoreBuffer
+			= VTX::Analysis::Matrix<float>( longestAlignmentLength, size_t( gapMax ) * 2 + 1, FLOAT_MAX );
 
 		std::vector<size_t> tIndex = std::vector<size_t>();
 		tIndex.resize( longestAlignmentLength, -1 );
@@ -759,11 +762,11 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 		// Mat4f vtxA = MAT4F_ID;
 
 		//// SVD
-		// Math::Matrix<float> vtxU;
+		// VTX::Analysis::Matrix<float> vtxU;
 		// std::vector<float>	vtxSigmas;
-		// Math::Matrix<float> vtxV;
+		// VTX::Analysis::Matrix<float> vtxV;
 
-		// Math::Matrix<float> vtxCov = Math::Matrix<float>( 3, 3 );
+		// VTX::Analysis::Matrix<float> vtxCov = VTX::Analysis::Matrix<float>( 3, 3 );
 
 		// for ( int i = 0; i < 3; i++ )
 		//{
@@ -793,7 +796,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 
 		// Util::Math::getSVD( vtxCov, vtxU, vtxSigmas, vtxV );
 
-		// const Math::Matrix<float> vtxTransposedU = Util::Math::transpose( vtxU );
+		// const VTX::Analysis::Matrix<float> vtxTransposedU = Util::Math::transpose( vtxU );
 
 		// double vtxD = Util::Math::getDeterminant( Util::Math::matMult( vtxV, vtxTransposedU ) );
 		// if ( vtxD > 0 )
@@ -801,10 +804,11 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 		// else
 		//	vtxD = -1.0;
 
-		// Math::Matrix<float> vtxI = Math::Matrix<float>( 3, 3 );
+		// VTX::Analysis::Matrix<float> vtxI = VTX::Analysis::Matrix<float>( 3, 3 );
 		// vtxI.set( 2, 2, vtxD );
 
-		// const Math::Matrix<float> rotation = Util::Math::matMult( vtxV, Util::Math::matMult( vtxI, vtxTransposedU )
+		// const VTX::Analysis::Matrix<float> rotation = Util::Math::matMult( vtxV, Util::Math::matMult( vtxI,
+		// vtxTransposedU )
 		// );
 
 		// return Mat4f( rotation.get( 0, 0 ),

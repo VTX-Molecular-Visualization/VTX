@@ -1,8 +1,8 @@
 #ifndef __VTX_BASE_AUTO_ROTATE__
 #define __VTX_BASE_AUTO_ROTATE__
 
-#include <util/types.hpp>
 #include "util/math.hpp"
+#include <util/types.hpp>
 
 namespace VTX::Generic
 {

@@ -10,11 +10,11 @@ Adapted from PBRTv3 BVHAccel : https://github.com/mmp/pbrt-v3
 #endif
 
 #include "bvh.hpp"
-#include <util/chrono.hpp>
 #include "tool/logger.hpp"
 #include "util/math.hpp"
 #include <algorithm>
 #include <thread>
+#include <util/chrono.hpp>
 
 namespace VTX
 {

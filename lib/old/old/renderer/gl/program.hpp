@@ -1,11 +1,11 @@
 #ifndef __VTX_GL_PROGRAM__
 #define __VTX_GL_PROGRAM__
 
-#include <util/types.hpp>
 #include "generic/base_opengl.hpp"
 #include "tool/logger.hpp"
 #include "util/math.hpp"
 #include <string>
+#include <util/types.hpp>
 
 namespace VTX::Renderer::GL
 {
@@ -18,10 +18,10 @@ namespace VTX::Renderer::GL
 		}
 		~Program();
 
-		inline const GLuint						 getId() const { return _id; }
-		inline void								 setId( const GLuint p_id ) { _id = p_id; }
+		inline const GLuint						   getId() const { return _id; }
+		inline void								   setId( const GLuint p_id ) { _id = p_id; }
 		inline const std::vector<Util::FilePath> & getShaderPaths() const { return _shaderPaths; }
-		inline const std::string &				 getToInject() const { return _toInject; }
+		inline const std::string &				   getToInject() const { return _toInject; }
 
 		void create( const std::string & );
 		void attachShader( const GLuint );
@@ -145,11 +145,11 @@ namespace VTX::Renderer::GL
 		// =====================================
 
 	  private:
-		GLuint							_id			 = GL_INVALID_INDEX;
-		std::string						_name		 = "";
+		GLuint							  _id		   = GL_INVALID_INDEX;
+		std::string						  _name		   = "";
 		const std::vector<Util::FilePath> _shaderPaths = std::vector<Util::FilePath>();
-		const std::string				_toInject	 = "";
-		std::string						_getProgramErrors();
+		const std::string				  _toInject	   = "";
+		std::string						  _getProgramErrors();
 
 		friend class ProgramManager;
 	};

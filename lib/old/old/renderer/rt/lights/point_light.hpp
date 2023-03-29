@@ -22,10 +22,10 @@ namespace VTX
 			LightSample sample( const Vec3f & p_point ) const override
 			{
 				const Vec3f dir	  = _position - p_point;
-				const float dist2 = Util::Math::dot( dir, dir );
+				const float dist2 = Util::dot( dir, dir );
 				const float dist  = sqrtf( dist2 );
 
-				return LightSample( Util::Math::normalize( dir ), dist, ( _color * _power ) / dist2, _pdf );
+				return LightSample( Util::normalize( dir ), dist, ( _color * _power ) / dist2, _pdf );
 			}
 
 		  private:

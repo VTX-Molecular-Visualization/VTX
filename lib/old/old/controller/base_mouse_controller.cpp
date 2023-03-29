@@ -115,7 +115,7 @@ namespace VTX
 
 			if ( _mouseLeftPressed )
 			{
-				if ( Util::Math::distance( (Vec2f)mousePosition, (Vec2f)_mouseLeftClickPosition ) > CLICK_MAX_DISTANCE )
+				if ( Util::distance( (Vec2f)mousePosition, (Vec2f)_mouseLeftClickPosition ) > CLICK_MAX_DISTANCE )
 				{
 					_isLeftClickCanceled = true;
 				}
@@ -123,7 +123,7 @@ namespace VTX
 
 			if ( _mouseRightPressed )
 			{
-				if ( Util::Math::distance( (Vec2f)mousePosition, (Vec2f)_mouseRightClickPosition )
+				if ( Util::distance( (Vec2f)mousePosition, (Vec2f)_mouseRightClickPosition )
 					 > CLICK_MAX_DISTANCE )
 				{
 					_isRightClickCanceled = true;

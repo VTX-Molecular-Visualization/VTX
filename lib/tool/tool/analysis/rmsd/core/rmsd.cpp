@@ -5,7 +5,7 @@
 #include <old/event/event_manager.hpp>
 #include <old/model/molecule.hpp>
 #include <old/model/selection.hpp>
-#include <old/util/math.hpp>
+#include <util/math.hpp>
 
 namespace VTX::Tool::Analysis::RMSD::Core
 {

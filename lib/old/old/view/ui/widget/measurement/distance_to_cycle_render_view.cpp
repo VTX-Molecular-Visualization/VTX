@@ -130,7 +130,7 @@ namespace VTX::View::UI::Widget::Measurement
 	// float DistanceRenderView::_distanceToCamera( const Vec3f & p_worldPos ) const
 	//{
 	//	const Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
-	//	return Util::Math::distance( camera.getPosition(), p_worldPos );
+	//	return Util::distance( camera.getPosition(), p_worldPos );
 	//}
 
 	// bool DistanceRenderView::_isVisibleToCamera( const Vec3f & p_worldPos ) const
@@ -139,9 +139,9 @@ namespace VTX::View::UI::Widget::Measurement
 
 	//	const Vec3f & cameraForward = camera.getFront();
 	//	const Vec3f	  clipPos		= camera.getPosition() + cameraForward;
-	//	const Vec3f	  cameraToPos	= Util::Math::normalize( p_worldPos - clipPos );
+	//	const Vec3f	  cameraToPos	= Util::normalize( p_worldPos - clipPos );
 
-	//	return Util::Math::dot( cameraForward, cameraToPos ) > 0;
+	//	return Util::dot( cameraForward, cameraToPos ) > 0;
 	//}
 
 	// void DistanceRenderView::_refreshText() { _setText( Util::Measurement::getDistanceString( *_model ) ); }

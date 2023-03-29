@@ -17,19 +17,19 @@ namespace VTX
 			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
 				// create orthonormal basis around around hit normal
-				Mat3f TBN = Util::Math::createOrthonormalBasis( intersection._normal );
+				Mat3f TBN = Util::createOrthonormalBasis( intersection._normal );
 
 				float ao = 0.f;
 				for ( uint i = 0; i < _nbSamples; ++i )
 				{
-					float u = Util::Math::randomFloat(); // cos theta
-					float v = Util::Math::randomFloat();
+					float u = Util::randomFloat(); // cos theta
+					float v = Util::randomFloat();
 
 					Vec3f sampleDir = Util::Sampler::cosineWeightedHemisphere( u, v );
 					float samplePdf = Util::Sampler::cosineWeightedHemispherePdf( u );
 
 					// transform in local coordinates systems
-					Vec3f aoDir = Util::Math::normalize( TBN * sampleDir );
+					Vec3f aoDir = Util::normalize( TBN * sampleDir );
 					Ray	  aoRay( intersection._point, aoDir );
 					aoRay.offset( intersection._normal );
 

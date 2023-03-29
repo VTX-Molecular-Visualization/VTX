@@ -30,13 +30,13 @@ namespace VTX::Renderer::GL::Pass
 		for ( uint i = 0; i < _kernelSize; i++ )
 		{
 			// sample on unit hemisphere
-			Vec3f v = Util::Sampler::cosineWeightedHemisphere( Util::Math::randomFloat(), Util::Math::randomFloat() );
+			Vec3f v = Util::Sampler::cosineWeightedHemisphere( Util::randomFloat(), Util::randomFloat() );
 
 			// scale sample within the hemisphere
-			v *= Util::Math::randomFloat();
+			v *= Util::randomFloat();
 			// accelerating interpolation (distance from center reduces when number of points grow up)
 			float scale = float( i ) / float( _kernelSize );
-			scale		= Util::Math::linearInterpolation( 0.01f, 1.f, scale * scale );
+			scale		= Util::linearInterpolation( 0.01f, 1.f, scale * scale );
 			v *= scale;
 			_aoKernel[ i ] = v;
 		}
@@ -46,10 +46,10 @@ namespace VTX::Renderer::GL::Pass
 
 		for ( uint i = 0; i < noise.size(); ++i )
 		{
-			noise[ i ] = Vec3f( Util::Math::randomFloat() * 2.f - 1.f,
-								Util::Math::randomFloat() * 2.f - 1.f,
+			noise[ i ] = Vec3f( Util::randomFloat() * 2.f - 1.f,
+								Util::randomFloat() * 2.f - 1.f,
 								0.f ); // Vec3f([-1;1],[-1;1],0)
-			noise[ i ] = Util::Math::normalize( noise[ i ] );
+			noise[ i ] = Util::normalize( noise[ i ] );
 		}
 
 		_noiseTexture.create( _noiseTextureSize,
