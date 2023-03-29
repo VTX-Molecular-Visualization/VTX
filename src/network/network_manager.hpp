@@ -28,7 +28,7 @@ namespace VTX
 			std::map<QNetworkReply * const, NetworkRequest * const> _mapReplyRequest
 				= std::map<QNetworkReply * const, NetworkRequest * const>();
 
-			NetworkManager()									 = default;
+			NetworkManager();
 			NetworkManager( const NetworkManager & )			 = delete;
 			NetworkManager & operator=( const NetworkManager & ) = delete;
 			~NetworkManager()									 = default;
