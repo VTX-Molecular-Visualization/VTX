@@ -26,7 +26,7 @@ namespace VTX
 				_velocity = VEC3F_ZERO;
 				// Save distance to force at next setActive(true).
 				// If orient is called in Freefly, the distance is overriden.
-				_distanceForced = _camera().isPerspective() ? Util::distance( _camera().getPosition(), _target )
+				_distanceForced = _camera().isPerspective() ? Util::Math::distance( _camera().getPosition(), _target )
 															: _camera().getDistanceToTarget();
 			}
 		}
@@ -155,8 +155,8 @@ namespace VTX
 			// Update if needed.
 			if ( _needUpdate )
 			{
-				float distance = Util::distance( _camera().getPosition(), _target );
-				distance	   = Util::clamp( distance - deltaDistance, 0.1f, 10000.f );
+				float distance = Util::Math::distance( _camera().getPosition(), _target );
+				distance	   = Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 
 				const Quatf rotation
 					= Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z )
@@ -181,10 +181,10 @@ namespace VTX
 		{
 			if ( _velocity != VEC3F_ZERO )
 			{
-				_velocity = Util::linearInterpolation(
+				_velocity = Util::Math::linearInterpolation(
 					_velocity, VEC3F_ZERO, p_deltaTime * VTX_SETTING().getControllerElasticityFactor() );
 
-				Vec3f::bool_type res = Util::lessThan( Util::abs( _velocity ),
+				Vec3f::bool_type res = Util::Math::lessThan( Util::Math::abs( _velocity ),
 															 Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
 				if ( !_mouseLeftPressed && res.x && res.y && res.z )
 				{
@@ -218,18 +218,18 @@ namespace VTX
 			_orientStartingRotation = _camera().getRotation();
 			_orientTargetRotation	= _camera().getRotation();
 
-			_orientStartingDistance = Util::distance( _camera().getPosition(), _target );
+			_orientStartingDistance = Util::Math::distance( _camera().getPosition(), _target );
 			_orientTargetDistance
 				= p_aabb.radius()
-				  / (float)( tan( Util::radians( _camera().getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
-			_isOrienting = Util::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
+				  / (float)( tan( Util::Math::radians( _camera().getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
+			_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
 						   || abs( _orientTargetDistance - _orientStartingDistance ) > ORIENT_THRESHOLD;
 		}
 
 		void Trackball::_computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation )
 		{
-			_orientStartingDistance = Util::distance( _camera().getPosition(), _target );
-			_orientTargetDistance	= Util::distance( p_position, _target );
+			_orientStartingDistance = Util::Math::distance( _camera().getPosition(), _target );
+			_orientTargetDistance	= Util::Math::distance( p_position, _target );
 
 			_orientStartingPosition = _camera().getPosition() + _camera().getFront() * _orientStartingDistance;
 			_orientTargetPosition	= _target;
@@ -238,22 +238,22 @@ namespace VTX
 			_orientTargetRotation	= p_orientation;
 
 			_velocity	 = VEC3F_ZERO;
-			_isOrienting = Util::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
+			_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
 						   || abs( _orientTargetDistance - _orientStartingDistance ) > ORIENT_THRESHOLD;
 		}
 
 		void Trackball::_updateOrient( const float & p_deltaTime )
 		{
 			const Vec3f currentTarget
-				= Util::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime );
+				= Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime );
 			setTarget( currentTarget );
 
 			const float distance
-				= Util::easeInOutInterpolation( _orientStartingDistance, _orientTargetDistance, p_deltaTime );
+				= Util::Math::easeInOutInterpolation( _orientStartingDistance, _orientTargetDistance, p_deltaTime );
 
 			_camera().rotateAround( QUATF_ID, _target, distance );
 			_camera().setRotation(
-				Util::easeInOutInterpolation( _orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
+				Util::Math::easeInOutInterpolation( _orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
 		}
 
 	} // namespace Controller
