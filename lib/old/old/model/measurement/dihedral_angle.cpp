@@ -152,12 +152,12 @@ namespace VTX::Model::Measurement
 
 	void DihedralAngle::_computeDihedralAngle( const bool p_notify )
 	{
-		const float newAngleRad = Util::torsionalAngle( _atoms[ 0 ]->getWorldPosition(),
+		const float newAngleRad = Util::Math::torsionalAngle( _atoms[ 0 ]->getWorldPosition(),
 															  _atoms[ 1 ]->getWorldPosition(),
 															  _atoms[ 2 ]->getWorldPosition(),
 															  _atoms[ 3 ]->getWorldPosition() );
 
-		const float newAngleDegree = Util::degrees( newAngleRad );
+		const float newAngleDegree = Util::Math::degrees( newAngleRad );
 
 		if ( _dihedralAngle != newAngleDegree )
 		{

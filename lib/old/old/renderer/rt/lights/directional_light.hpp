@@ -21,7 +21,7 @@ namespace VTX
 
 			LightSample sample( const Vec3f & p_point ) const override
 			{
-				return LightSample( Util::normalize( _direction ), FLOAT_MAX, _color, 1.f );
+				return LightSample( Util::Math::normalize( _direction ), FLOAT_MAX, _color, 1.f );
 			}
 
 		  private:

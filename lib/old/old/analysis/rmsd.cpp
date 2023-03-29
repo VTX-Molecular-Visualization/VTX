@@ -52,8 +52,9 @@ namespace VTX::Analysis
 			data.setFirstMolecule( targetMolecule );
 			data.setSecondMolecule( otherMolecule );
 			data.setRMSD( rmsd );
-			const uint atomCount = uint(targetAtomPositions.size() < otherAtomPositions.size()
-				? targetAtomPositions.size() : otherAtomPositions.size());
+			const uint atomCount
+				= uint( targetAtomPositions.size() < otherAtomPositions.size() ? targetAtomPositions.size()
+																			   : otherAtomPositions.size() );
 			data.setAtomCount( atomCount );
 
 			VTX_EVENT( new Event::VTXEventRef<const RMSDData>( Event::Global::RMSD_COMPUTED, data ) );
@@ -78,7 +79,7 @@ namespace VTX::Analysis
 			const Vec3f point1Vec3f = { point1Vec4f.x, point1Vec4f.y, point1Vec4f.z };
 			const Vec3f point2Vec3f = { point2Vec4f.x, point2Vec4f.y, point2Vec4f.z };
 
-			rmsd += Util::distance( point1Vec3f, point2Vec3f ) / minAtomLength;
+			rmsd += Util::Math::distance( point1Vec3f, point2Vec3f ) / minAtomLength;
 		}
 
 		rmsd = sqrt( rmsd );
@@ -122,7 +123,7 @@ namespace VTX::Analysis
 				const Vec3f point1Vec3f = { point1Vec4f.x, point1Vec4f.y, point1Vec4f.z };
 				const Vec3f point2Vec3f = { point2Vec4f.x, point2Vec4f.y, point2Vec4f.z };
 
-				rmsd += Util::distance( point1Vec3f, point2Vec3f ) / atomCount;
+				rmsd += Util::Math::distance( point1Vec3f, point2Vec3f ) / atomCount;
 			}
 		}
 		else
@@ -137,7 +138,7 @@ namespace VTX::Analysis
 					continue;
 				}
 
-				rmsd += Util::distance( frame1[ i ], frame2[ i ] ) / atomCount;
+				rmsd += Util::Math::distance( frame1[ i ], frame2[ i ] ) / atomCount;
 			}
 		}
 

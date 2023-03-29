@@ -70,7 +70,7 @@ namespace VTX
 			{
 				// Computes value.
 				Viewpoint * const p0	= _viewpoints[ offset - 1 ];
-				Viewpoint * const p1	= _viewpoints[ Util::min<int>( (int)size - 1, offset ) ];
+				Viewpoint * const p1	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset ) ];
 				float			  value = 1.f - ( ( total - p_time ) / p1->getDuration() );
 
 				VTX::ID::VTX_ID controller = p0->getController() == VTX::ID::Controller::TRACKBALL
@@ -80,22 +80,22 @@ namespace VTX
 
 				// Lerp.
 				viewpoint.setController( controller );
-				viewpoint.setRotation( Util::linearInterpolation( p0->getRotation(), p1->getRotation(), value ) );
-				viewpoint.setPosition( Util::linearInterpolation( p0->getPosition(), p1->getPosition(), value ) );
+				viewpoint.setRotation( Util::Math::linearInterpolation( p0->getRotation(), p1->getRotation(), value ) );
+				viewpoint.setPosition( Util::Math::linearInterpolation( p0->getPosition(), p1->getPosition(), value ) );
 
 				if ( controller == VTX::ID::Controller::TRACKBALL )
 				{
-					viewpoint.setTarget( Util::linearInterpolation( p0->getTarget(), p1->getTarget(), value ) );
+					viewpoint.setTarget( Util::Math::linearInterpolation( p0->getTarget(), p1->getTarget(), value ) );
 					viewpoint.setDistance(
-						Util::linearInterpolation( p0->getDistance(), p1->getDistance(), value ) );
+						Util::Math::linearInterpolation( p0->getDistance(), p1->getDistance(), value ) );
 				}
 			}
 			else if ( _modeInterpolation == VTX::Path::INTERPOLATION_MODE::CATMULL_ROM )
 			{
-				Viewpoint * const p0	= _viewpoints[ Util::max<int>( 0, (int)offset - 2 ) ];
+				Viewpoint * const p0	= _viewpoints[ Util::Math::max<int>( 0, (int)offset - 2 ) ];
 				Viewpoint * const p1	= _viewpoints[ offset - 1 ];
-				Viewpoint * const p2	= _viewpoints[ Util::min<int>( (int)size - 1, offset ) ];
-				Viewpoint * const p3	= _viewpoints[ Util::min<int>( (int)size - 1, offset + 1 ) ];
+				Viewpoint * const p2	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset ) ];
+				Viewpoint * const p3	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset + 1 ) ];
 				float			  value = 1.f - ( ( total - p_time ) / p2->getDuration() );
 
 				VTX::ID::VTX_ID controller = p1->getController() == VTX::ID::Controller::TRACKBALL
@@ -104,26 +104,26 @@ namespace VTX
 												 : VTX::ID::Controller::FREEFLY;
 
 				viewpoint.setController( controller );
-				viewpoint.setRotation( Util::catmullRomInterpolation(
+				viewpoint.setRotation( Util::Math::catmullRomInterpolation(
 					p0->getRotation(), p1->getRotation(), p2->getRotation(), p3->getRotation(), value ) );
 
-				viewpoint.setPosition( Util::catmullRomInterpolation(
+				viewpoint.setPosition( Util::Math::catmullRomInterpolation(
 					p0->getPosition(), p1->getPosition(), p2->getPosition(), p3->getPosition(), value ) );
 
 				if ( controller == VTX::ID::Controller::TRACKBALL )
 				{
-					viewpoint.setTarget( Util::catmullRomInterpolation(
+					viewpoint.setTarget( Util::Math::catmullRomInterpolation(
 						p0->getTarget(), p1->getTarget(), p2->getTarget(), p3->getTarget(), value ) );
 					viewpoint.setDistance(
-						Util::linearInterpolation( p1->getDistance(), p2->getDistance(), value ) );
+						Util::Math::linearInterpolation( p1->getDistance(), p2->getDistance(), value ) );
 				}
 			}
 			else if ( _modeInterpolation == VTX::Path::INTERPOLATION_MODE::CUBIC )
 			{
-				Viewpoint * const p0	= _viewpoints[ Util::max<int>( 0, (int)offset - 2 ) ];
+				Viewpoint * const p0	= _viewpoints[ Util::Math::max<int>( 0, (int)offset - 2 ) ];
 				Viewpoint * const p1	= _viewpoints[ offset - 1 ];
-				Viewpoint * const p2	= _viewpoints[ Util::min<int>( (int)size - 1, offset ) ];
-				Viewpoint * const p3	= _viewpoints[ Util::min<int>( (int)size - 1, offset + 1 ) ];
+				Viewpoint * const p2	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset ) ];
+				Viewpoint * const p3	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset + 1 ) ];
 				float			  value = 1.f - ( ( total - p_time ) / p2->getDuration() );
 
 				VTX::ID::VTX_ID controller = p1->getController() == VTX::ID::Controller::TRACKBALL
@@ -132,17 +132,17 @@ namespace VTX
 												 : VTX::ID::Controller::FREEFLY;
 
 				viewpoint.setController( controller );
-				viewpoint.setRotation( Util::cubicInterpolation(
+				viewpoint.setRotation( Util::Math::cubicInterpolation(
 					p0->getRotation(), p1->getRotation(), p2->getRotation(), p3->getRotation(), value ) );
-				viewpoint.setPosition( Util::cubicInterpolation(
+				viewpoint.setPosition( Util::Math::cubicInterpolation(
 					p0->getPosition(), p1->getPosition(), p2->getPosition(), p3->getPosition(), value ) );
 
 				if ( controller == VTX::ID::Controller::TRACKBALL )
 				{
-					viewpoint.setTarget( Util::cubicInterpolation(
+					viewpoint.setTarget( Util::Math::cubicInterpolation(
 						p0->getTarget(), p1->getTarget(), p2->getTarget(), p3->getTarget(), value ) );
 					viewpoint.setDistance(
-						Util::linearInterpolation( p1->getDistance(), p2->getDistance(), value ) );
+						Util::Math::linearInterpolation( p1->getDistance(), p2->getDistance(), value ) );
 				}
 			}
 
@@ -187,10 +187,10 @@ namespace VTX
 			{
 				// Compute total distance.
 				float totalDistance = 0.f;
-				uint  size			= (uint)Util::max<int>( (int)_viewpoints.size() - 1, 0 );
+				uint  size			= (uint)Util::Math::max<int>( (int)_viewpoints.size() - 1, 0 );
 				for ( uint i = 0; i < size; ++i )
 				{
-					totalDistance += Util::distance( _viewpoints[ i ]->getPosition(),
+					totalDistance += Util::Math::distance( _viewpoints[ i ]->getPosition(),
 														   _viewpoints[ i + 1u ]->getPosition() );
 				}
 
@@ -204,7 +204,7 @@ namespace VTX
 						break;
 					}
 					float distance
-						= Util::distance( _viewpoints[ i - 1u ]->getPosition(), viewpoint->getPosition() );
+						= Util::Math::distance( _viewpoints[ i - 1u ]->getPosition(), viewpoint->getPosition() );
 					viewpoint->setDuration( _duration * distance / totalDistance );
 				}
 			}

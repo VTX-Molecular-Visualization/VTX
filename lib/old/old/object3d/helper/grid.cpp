@@ -94,7 +94,7 @@ namespace VTX::Object3D::Helper
 		const Mat4f MVMatrix = p_camera.getViewMatrix();
 		_program->setMat4f( "u_MVMatrix", MVMatrix );
 		_program->setMat4f( "u_projMatrix", p_camera.getProjectionMatrix() );
-		_program->setMat4f( "u_normalMatrix", Util::transpose( Util::inverse( MVMatrix ) ) );
+		_program->setMat4f( "u_normalMatrix", Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) );
 
 		_vao.bind();
 		_vao.drawArray( Renderer::GL::VertexArray::DrawMode::POINTS, 0, GLsizei( _size ) );

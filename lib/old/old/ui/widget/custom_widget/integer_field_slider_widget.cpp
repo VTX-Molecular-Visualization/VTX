@@ -131,7 +131,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_slider->setMinimum( _min );
 		_slider->setMaximum( _max );
 
-		_value = Util::clamp( _value, p_min, p_max );
+		_value = Util::Math::clamp( _value, p_min, p_max );
 		_refresh();
 	};
 	void IntegerFieldSliderWidget::setSingleStep( const int p_step ) { _slider->setSingleStep( p_step ); }

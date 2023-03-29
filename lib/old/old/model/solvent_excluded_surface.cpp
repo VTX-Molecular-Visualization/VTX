@@ -62,7 +62,7 @@ namespace VTX
 			const Vec3f gridMax			 = molAABB.getMax() + atomGridCellSize;
 
 			const Vec3f gridSize	 = gridMax - gridMin;
-			Vec3i		atomGridSize = Vec3i( Util::ceil( gridSize / atomGridCellSize ) );
+			Vec3i		atomGridSize = Vec3i( Util::Math::ceil( gridSize / atomGridCellSize ) );
 
 			Object3D::Helper::Grid gridAtoms
 				= Object3D::Helper::Grid( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
@@ -111,7 +111,7 @@ namespace VTX
 			chrono2.start();
 
 			// Compute SES grid and compute SDF.
-			Vec3i				   sesGridSize = Vec3i( Util::ceil( gridSize / VOXEL_SIZE ) );
+			Vec3i				   sesGridSize = Vec3i( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
 			Object3D::Helper::Grid gridSES	   = Object3D::Helper::Grid( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
 
 			/////////////////////
@@ -171,7 +171,7 @@ namespace VTX
 
 			workerRefineSDF.getProgram().use();
 
-			Vec3i cellsToVisitCount = Util::ceil( Vec3f( PROBE_RADIUS + VOXEL_SIZE ) / gridSES.cellSize );
+			Vec3i cellsToVisitCount = Util::Math::ceil( Vec3f( PROBE_RADIUS + VOXEL_SIZE ) / gridSES.cellSize );
 
 			workerRefineSDF.getProgram().setVec3f( "uGridSESWorldOrigin", gridSES.worldOrigin );
 			workerRefineSDF.getProgram().setVec3u( "uGridSESSize", Vec3u( gridSES.size ) );
@@ -465,7 +465,7 @@ namespace VTX
 			{
 				const uint indexNext = sortedIndices[ i ];
 
-				if ( Util::length2( ptrPositions[ indexCurrent ] - ptrPositions[ indexNext ] )
+				if ( Util::Math::length2( ptrPositions[ indexCurrent ] - ptrPositions[ indexNext ] )
 					 < EPSILON * EPSILON )
 				{
 					ptrIndices[ indexNext ] = indexCurrent;

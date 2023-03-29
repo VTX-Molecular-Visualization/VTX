@@ -3,12 +3,12 @@
 #include "util/math.hpp"
 #include "util/string.hpp"
 #include "util/ui.hpp"
-#include <util/constants.hpp>
 #include <QHBoxLayout>
 #include <cmath>
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <util/constants.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -101,7 +101,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void FloatFieldSliderWidget::setValue( const float p_value )
 	{
-		const float clampedValue = Util::clamp( p_value, _min, _max );
+		const float clampedValue = Util::Math::clamp( p_value, _min, _max );
 		if ( _value != clampedValue )
 		{
 			_value = clampedValue;
@@ -143,7 +143,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_slider->setMinimum( 0 );
 		_slider->setMaximum( 100 );
 
-		_value = Util::clamp( _value, p_min, p_max );
+		_value = Util::Math::clamp( _value, p_min, p_max );
 		_refresh();
 	};
 	void FloatFieldSliderWidget::setEnabled( const bool p_enable )

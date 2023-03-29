@@ -1,9 +1,9 @@
 #include "integer_field_draggable_widget.hpp"
-#include <util/types.hpp>
 #include "style.hpp"
 #include "util/math.hpp"
 #include <QHBoxLayout>
 #include <string>
+#include <util/types.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -189,7 +189,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void IntegerFieldDraggableWidget::setValue( const int p_value )
 	{
-		const int clampedValue = Util::clamp( p_value, _min, _max );
+		const int clampedValue = Util::Math::clamp( p_value, _min, _max );
 		if ( _value != clampedValue )
 		{
 			_value = clampedValue;
@@ -216,7 +216,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_min = p_min;
 		_max = p_max;
 
-		_value = Util::clamp( _value, p_min, p_max );
+		_value = Util::Math::clamp( _value, p_min, p_max );
 		_refresh();
 	};
 	void IntegerFieldDraggableWidget::setLabel( const QString & p_label ) { _label->setText( p_label ); }

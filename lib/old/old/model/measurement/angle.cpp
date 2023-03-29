@@ -151,11 +151,11 @@ namespace VTX::Model::Measurement
 		if ( isValid() )
 		{
 			const Vec3f vec1
-				= Util::normalize( _atoms[ 0 ]->getWorldPosition() - _atoms[ 1 ]->getWorldPosition() );
+				= Util::Math::normalize( _atoms[ 0 ]->getWorldPosition() - _atoms[ 1 ]->getWorldPosition() );
 			const Vec3f vec2
-				= Util::normalize( _atoms[ 2 ]->getWorldPosition() - _atoms[ 1 ]->getWorldPosition() );
+				= Util::Math::normalize( _atoms[ 2 ]->getWorldPosition() - _atoms[ 1 ]->getWorldPosition() );
 
-			newAngle = Util::degrees( Util::angle( vec1, vec2 ) );
+			newAngle = Util::Math::degrees( Util::Math::angle( vec1, vec2 ) );
 		}
 
 		if ( _angle != newAngle )

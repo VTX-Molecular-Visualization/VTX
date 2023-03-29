@@ -29,7 +29,7 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					_path.setDuration( Util::max<float>( _duration, 0.f ) );
+					_path.setDuration( Util::Math::max<float>( _duration, 0.f ) );
 					_path.refreshAllDurations();
 				}
 

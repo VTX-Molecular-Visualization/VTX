@@ -23,23 +23,23 @@ namespace VTX
 				BaseLight( p_color, p_power ),
 				_position( p_position ), _u( p_u ), _v( p_v )
 			{
-				const Vec3f invDir = Util::cross( _v, _u );
-				_pdf			   = 1.f / Util::length( invDir );
+				const Vec3f invDir = Util::Math::cross( _v, _u );
+				_pdf			   = 1.f / Util::Math::length( invDir );
 				_invNormal		   = invDir * _pdf;
 				_isSurface		   = true;
 			}
 
 			LightSample sample( const Vec3f & p_point ) const override
 			{
-				const float ru = Util::randomFloat();
-				const float rv = Util::randomFloat();
+				const float ru = Util::Math::randomFloat();
+				const float rv = Util::Math::randomFloat();
 
 				const Vec3f position  = _position + ru * _u + rv * _v;
 				Vec3f		direction = position - p_point;
-				const float dist	  = Util::length( direction );
-				Util::normalizeSelf( direction );
+				const float dist	  = Util::Math::length( direction );
+				Util::Math::normalizeSelf( direction );
 
-				const float		  cosDir   = Util::dot( _invNormal, direction );
+				const float		  cosDir   = Util::Math::dot( _invNormal, direction );
 				const float		  pdf	   = _pdf * ( dist * dist ) / fabsf( cosDir );
 				const Color::Rgba radiance = cosDir > 0.f ? _color * _power / pdf : Color::Rgba::BLACK;
 

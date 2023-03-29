@@ -38,13 +38,13 @@ namespace VTX
 				const Vec3f	  ov0 = o - _v0;
 				const Vec3f	  v	  = _v1 - _v0;
 
-				const float d0 = Util::dot( v, v );
-				const float d1 = Util::dot( v, d );
-				const float d2 = Util::dot( v, ov0 );
+				const float d0 = Util::Math::dot( v, v );
+				const float d1 = Util::Math::dot( v, d );
+				const float d2 = Util::Math::dot( v, ov0 );
 
 				const float a = d0 - d1 * d1;
-				const float b = d0 * Util::dot( ov0, d ) - d2 * d1;
-				const float c = d0 * Util::dot( ov0, ov0 ) - d2 * d2 - _radius * _radius * d0;
+				const float b = d0 * Util::Math::dot( ov0, d ) - d2 * d1;
+				const float c = d0 * Util::Math::dot( ov0, ov0 ) - d2 * d2 - _radius * _radius * d0;
 
 				const float h = b * b - a * c;
 
@@ -67,7 +67,7 @@ namespace VTX
 
 				p_intersection._point	  = p_ray.getPointAtT( t );
 				const Vec3f normal		  = ( ov0 + t * d - v * y / d0 ) / _radius;
-				p_intersection._normal	  = Util::faceForward( normal, d );
+				p_intersection._normal	  = Util::Math::faceForward( normal, d );
 				p_intersection._distance  = t;
 				p_intersection._primitive = this;
 
@@ -80,8 +80,8 @@ namespace VTX
 				const Vec3f v = _v1 - _v0;
 				const Vec3f e = _radius * sqrt( 1.f - v * v / dot( v, v ) );
 
-				_aabb = Object3D::Helper::AABB( Util::min( _v0 - e, _v1 - e ),
-												Util::max( _v0 + e, _v1 + e ) );
+				_aabb = Object3D::Helper::AABB( Util::Math::min( _v0 - e, _v1 - e ),
+												Util::Math::max( _v0 + e, _v1 + e ) );
 			}
 
 		  private:

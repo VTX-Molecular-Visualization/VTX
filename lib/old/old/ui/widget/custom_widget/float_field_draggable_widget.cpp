@@ -2,10 +2,10 @@
 #include "style.hpp"
 #include "util/math.hpp"
 #include "util/string.hpp"
-#include <util/constants.hpp>
 #include <QHBoxLayout>
 #include <cmath>
 #include <string>
+#include <util/constants.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -190,7 +190,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void FloatFieldDraggableWidget::setValue( const float p_value )
 	{
-		const float clampedValue = Util::clamp( p_value, _min, _max );
+		const float clampedValue = Util::Math::clamp( p_value, _min, _max );
 		if ( _value != clampedValue )
 		{
 			_value = clampedValue;
@@ -229,7 +229,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_min = p_min;
 		_max = p_max;
 
-		_value = Util::clamp( _value, p_min, p_max );
+		_value = Util::Math::clamp( _value, p_min, p_max );
 		_refresh();
 	};
 	void FloatFieldDraggableWidget::setLabel( const QString & p_label ) { _label->setText( p_label ); }
