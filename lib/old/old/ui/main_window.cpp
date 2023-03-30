@@ -120,9 +120,6 @@ namespace VTX::UI
 		_settingWidget
 			= WidgetFactory::get().instantiateWidget<Widget::Settings::SettingWidget>( this, "settingWidget" );
 
-		_informationWidget = WidgetFactory::get().instantiateWidget<Widget::Information::InformationWidget>(
-			this, "informationWidget" );
-
 		_structuralAlignmentWidget
 			= WidgetFactory::get().instantiateWidget<Widget::Analysis::StructuralAlignment::StructuralAlignmentWidget>(
 				this, "structuralAlignmentWidget" );
@@ -357,9 +354,6 @@ namespace VTX::UI
 
 		_addDockWidgetAsFloating( _settingWidget, Style::SETTINGS_PREFERRED_SIZE, false );
 		_addDockWidgetAsFloating( _structuralAlignmentWidget, Style::STRUCTURAL_ALIGNMENT_PREFERRED_SIZE, false );
-
-		if ( _informationWidget->isVisible() )
-			_informationWidget->hide();
 	}
 
 	void MainWindow::_restoreDockWidget( QDockWidget * const p_dockWidget )
@@ -497,8 +491,6 @@ namespace VTX::UI
 		//	widget = _selectionWidget;
 		else if ( p_winId == ID::UI::Window::SETTINGS )
 			widget = _settingWidget;
-		else if ( p_winId == ID::UI::Window::INFORMATION )
-			widget = _informationWidget;
 		else if ( p_winId == ID::UI::Window::STRUCTURAL_ALIGNMENT )
 			widget = _structuralAlignmentWidget;
 

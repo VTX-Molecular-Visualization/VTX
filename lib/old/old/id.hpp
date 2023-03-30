@@ -20,8 +20,7 @@ namespace VTX
 				const VTX_ID SEQUENCE  = "SEQUENCE";
 				// !V0.1
 				// const VTX_ID SELECTION	 = "SELECTION";
-				const VTX_ID SETTINGS	 = "SETTINGS";
-				const VTX_ID INFORMATION = "INFORMATION";
+				const VTX_ID SETTINGS = "SETTINGS";
 
 				// Tools
 				const VTX_ID STRUCTURAL_ALIGNMENT = "STRUCTURAL_ALIGNMENT";
