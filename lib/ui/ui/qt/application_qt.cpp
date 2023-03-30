@@ -52,6 +52,8 @@ namespace VTX::UI::QT
 
 		_handleArgs( p_args );
 
+		VTX_EVENT( new Event::VTXEvent( Event::Global::UI_APPLICATION_INITIALIZED ) );
+
 		_returnCode = exec();
 	}
 

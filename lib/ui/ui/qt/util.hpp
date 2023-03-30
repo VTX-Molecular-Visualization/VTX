@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_UTIL__
 #define __VTX_UI_QT_UTIL__
 
-#include <old/color/rgba.hpp>
+#include "core/define.hpp"
 #include <QBitmap>
 #include <QColor>
 #include <QEvent>
@@ -11,7 +11,9 @@
 #include <QStyle>
 #include <QVariant>
 #include <QWidget>
+#include <old/color/rgba.hpp>
 #include <set>
+#include <string>
 
 namespace VTX::Model
 {
@@ -45,6 +47,15 @@ namespace VTX::UI::QT::Util
 	  private:
 		std::set<QEvent::Type> _filteredTypes = std::set<QEvent::Type>();
 	};
+
+	static QVariant widgetKeyToQVariant( const Core::WidgetKey & p_key )
+	{
+		return QVariant( QString::fromStdString( p_key ) );
+	}
+	static Core::WidgetKey QVariantTowWidgetKey( const QVariant & p_variant )
+	{
+		return static_cast<Core::WidgetKey>( p_variant.toString().toStdString() );
+	}
 
 	static void appendColorHtmlTag( QString & p_txt, const VTX::Color::Rgba & p_color )
 	{

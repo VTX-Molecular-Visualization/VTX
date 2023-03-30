@@ -4,30 +4,22 @@
 #include "core/base_main_window.hpp"
 #include "core/base_panel.hpp"
 #include "core/define.hpp"
+#include "core/layout_descriptor.hpp"
 #include "qt/contextual_menu.hpp"
 #include "qt/qt_panel.hpp"
 #include "qt/widget/main_menu/main_menu_bar.hpp"
+#include "qt/widget/main_menu/menu_toolblock_widget.hpp"
+#include "qt/widget/main_menu/menu_tooltab_widget.hpp"
+#include "widget/base_manual_widget.hpp"
 #include <QCloseEvent>
 #include <QDockWidget>
 #include <QKeySequence>
 #include <QMainWindow>
 #include <QShortcut>
 #include <old/event/base_event_firerer_input.hpp>
-#include <old/ui/cursor_handler.hpp>
-//  #include <old/ui/widget/analysis/structural_alignment/structural_alignment_widget.hpp>
-#include "widget/base_manual_widget.hpp"
-//  #include <old/ui/widget/console/console_widget.hpp>
-//  #include <old/ui/widget/information/information_widget.hpp>
-//  #include <old/ui/widget/inspector/inspector_widget.hpp>
 #include <old/id.hpp>
 #include <old/renderer/base_renderer.hpp>
-//  #include <old/ui/widget/render/opengl_widget.hpp>
-//  #include <old/ui/widget/scene/scene_widget.hpp>
-//  #include <old/ui/widget/selection/selection_widget.hpp>
-//  #include <old/ui/widget/sequence/sequence_widget.hpp>
-//  #include <old/ui/widget/settings/setting_widget.hpp>
-//  #include <old/ui/widget/settings/setting_widget_enum.hpp>
-//  #include <old/ui/widget/status_bar/status_bar_widget.hpp>
+#include <old/ui/cursor_handler.hpp>
 #include <unordered_set>
 #include <util/types.hpp>
 
@@ -57,8 +49,6 @@ namespace VTX::UI::QT
 		void initWindowLayout();
 		void refreshWindowTitle();
 
-		virtual void referencePanel( const Core::WidgetKey & p_key, Core::BasePanel * const p_panel ) override;
-
 		QT::Tool::Render::Widget::RenderWidget *			 getRender();
 		const QT::Tool::Render::Widget::RenderWidget * const getRender() const;
 
@@ -68,7 +58,9 @@ namespace VTX::UI::QT
 
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-		Core::MainMenu::MainMenuBar & getMainMenu() override { return *_mainMenuBar; }
+		Core::MainMenu::MainMenuBar &				getMainMenu() override { return *_mainMenuBar; }
+		QT::Widget::MainMenu::MenuTooltabWidget &	getMainMenuToolTab( const Core::ToolLayoutData & layoutData );
+		QT::Widget::MainMenu::MenuToolBlockWidget & getMainMenuToolBlock( const Core::ToolLayoutData & layoutData );
 
 		void addShortcut( const std::string & p_shortcut, QAction * const p_action );
 
@@ -111,6 +103,8 @@ namespace VTX::UI::QT
 									  Qt::Orientation	  p_orientation,
 									  const bool		  p_visible );
 		void addDockWidgetAsFloating( QDockWidget * const p_dockWidget, const QSize & p_size, const bool p_visible );
+
+		void addFloatingWindow( QDialog * const p_window, const QSize & p_size, const bool p_visible );
 
 		QWidget & getWidget( const ID::VTX_ID & p_winId ) const;
 		template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>

@@ -3,6 +3,7 @@
 
 #include <old/action/base_action.hpp>
 #include <old/id.hpp>
+#include <old/tool/logger.hpp>
 
 namespace VTX::UI::QT::Action::Main
 {
@@ -42,6 +43,21 @@ namespace VTX::UI::QT::Action::Main
 	  public:
 		explicit ResetCameraController() {}
 		virtual void execute() override;
+	};
+
+	class CheckForUpdate : public VTX::Action::BaseAction
+	{
+	  public:
+		explicit CheckForUpdate( const bool p_showPopupIfNoUpdate = false ) :
+			_showPopupIfNoUpdate( p_showPopupIfNoUpdate )
+		{
+		}
+
+		virtual void execute() override;
+		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
+
+	  private:
+		bool _showPopupIfNoUpdate;
 	};
 } // namespace VTX::UI::QT::Action::Main
 #endif

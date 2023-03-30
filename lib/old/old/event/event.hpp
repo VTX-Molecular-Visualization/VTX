@@ -17,6 +17,7 @@ namespace VTX
 
 		enum Global
 		{
+			UI_APPLICATION_INITIALIZED,
 			LOG_CONSOLE,
 			CLEAR_CONSOLE,
 			CHANGE_STATE,

@@ -28,8 +28,13 @@
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
-	RenderWidget::RenderWidget( QWidget * p_parent ) : QtPanel(), BaseManualWidget<QWidget>( p_parent )
+	RenderWidget::RenderWidget( QWidget * p_parent ) : QtPanelTemplate( p_parent )
 	{
+		name			  = "Render";
+		defaultSize		  = Style::RENDER_PREFERRED_SIZE;
+		visibleByDefault  = true;
+		referenceInPanels = false;
+
 		_registerEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
 		_registerEvent( Event::Global::LABEL_ADDED );
 		_registerEvent( Event::Global::LABEL_REMOVED );
@@ -243,12 +248,6 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	}
 
 	void RenderWidget::_onShortcutPrintCameraInfos() { VTXApp::get().getScene().getCamera().print(); }
-
-	void RenderWidget::localize()
-	{
-		setWindowTitle( "Render" );
-		// setWindowTitle( QCoreApplication::translate( "RenderWidget", "Render", nullptr ) );
-	}
 
 	void RenderWidget::_addIntegratedWidget( BaseIntegratedWidget * const p_widget )
 	{

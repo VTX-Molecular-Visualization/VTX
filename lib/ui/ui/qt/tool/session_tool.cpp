@@ -31,52 +31,43 @@ namespace VTX::UI::QT::Tool
 
 	void SessionTool::_addButtonsInMainMenu()
 	{
-		QT::MainWindow * const mainWindow = &QT::QT_APP()->getMainWindow();
+		QT::MainWindow * const						mainWindow = &QT::QT_APP()->getMainWindow();
+		QT::Widget::MainMenu::MenuToolBlockWidget & toolBlock  = mainWindow->getMainMenuToolBlock( getLayoutData() );
 
-		const VTX::UI::Core::ToolLayoutData & layoutData = getLayoutData();
-
-		VTX::UI::QT::Widget::MainMenu::MenuTooltabWidget & tooltab
-			= dynamic_cast<VTX::UI::QT::Widget::MainMenu::MenuTooltabWidget &>(
-				mainWindow->getMainMenu().getTab( layoutData.tabName ) );
-
-		VTX::UI::QT::Widget::MainMenu::MenuToolBlockWidget & toolBlock
-			= dynamic_cast<VTX::UI::QT::Widget::MainMenu::MenuToolBlockWidget &>(
-				tooltab.getToolBlock( layoutData.blockName ) );
-
-		VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget * const newSessionButton
-			= QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
-				&tooltab, "newSessionButton" );
+		QT::Widget::MainMenu::MenuToolButtonWidget * const newSessionButton
+			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MenuToolButtonWidget>(
+				&toolBlock, "newSessionButton" );
 		newSessionButton->setData( "New", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
 		newSessionButton->setTriggerAction( this, &SessionTool::_newSession );
 
-		VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget * const downloadMoleculeButton
-			= QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
-				&tooltab, "downloadMoleculeButton" );
+		QT::Widget::MainMenu::MenuToolButtonWidget * const downloadMoleculeButton
+			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MenuToolButtonWidget>(
+				&toolBlock, "downloadMoleculeButton" );
 		downloadMoleculeButton->setData(
 			"Download", ":/sprite/download_molecule_icon.png", Qt::Orientation::Horizontal );
 		downloadMoleculeButton->setTriggerAction( this, &SessionTool::_downloadMoleculeFile );
 
-		VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget * const openSessionButton
-			= QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
-				&tooltab, "openSessionButton" );
+		QT::Widget::MainMenu::MenuToolButtonWidget * const openSessionButton
+			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MenuToolButtonWidget>(
+				&toolBlock, "openSessionButton" );
 		openSessionButton->setData( "Open", ":/sprite/open_session_icon.png", Qt::Orientation::Horizontal );
 		openSessionButton->setTriggerAction( this, &SessionTool::_openFile );
 
 		_openRecentSessionButton
-			= QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
-				&tooltab, "openRecentSessionButton" );
+			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MenuToolButtonWidget>(
+				&toolBlock, "openRecentSessionButton" );
 		_openRecentSessionButton->setData(
 			"Recent", ":/sprite/openrecent_session_icon.png", Qt::Orientation::Horizontal );
 
-		VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget * const saveSessionButton
-			= QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
-				&tooltab, "saveSessionButton" );
+		QT::Widget::MainMenu::MenuToolButtonWidget * const saveSessionButton
+			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MenuToolButtonWidget>(
+				&toolBlock, "saveSessionButton" );
 		saveSessionButton->setData( "Save", ":/sprite/save_session_icon.png", Qt::Orientation::Horizontal );
 		saveSessionButton->setTriggerAction( this, &SessionTool::_saveSession );
 
-		VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget * const saveAsSessionButton
-			= QT::WidgetFactory::get().instantiateWidget<VTX::UI::QT::Widget::MainMenu::MenuToolButtonWidget>(
-				&tooltab, "saveAsSessionButton" );
+		QT::Widget::MainMenu::MenuToolButtonWidget * const saveAsSessionButton
+			= QT::WidgetFactory::get().instantiateWidget<QT::Widget::MainMenu::MenuToolButtonWidget>(
+				&toolBlock, "saveAsSessionButton" );
 		saveAsSessionButton->setData( "Save as...", ":/sprite/saveas_session_icon.png", Qt::Orientation::Horizontal );
 		saveAsSessionButton->setTriggerAction( this, &SessionTool::_saveAsSession );
 

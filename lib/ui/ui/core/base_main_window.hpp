@@ -2,7 +2,7 @@
 #define __VTX_UI_CORE_MAIN_WINDOW__
 
 #include "core/base_panel.hpp"
-#include <old/define.hpp>
+#include "define.hpp"
 #include "main_menu/main_menu_bar.hpp"
 #include <map>
 #include <type_traits>
@@ -40,6 +40,9 @@ namespace VTX::UI::Core
 		}
 
 		virtual void referencePanel( const WidgetKey & p_key, BasePanel * const p_panel );
+
+		const std::map<WidgetKey, BasePanel *> & getPanelMap() const { return _getPanelMap(); };
+		const WidgetKey &						 findKeyFromPanel( const BasePanel * const p_panel );
 
 	  protected:
 		std::map<WidgetKey, BasePanel *> &		 _getPanelMap() { return _mapPanels; };

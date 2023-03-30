@@ -1,20 +1,13 @@
 #include "main_window.hpp"
 #include "controller/base_keyboard_controller.hpp"
-// #include "controller/measurement_picker.hpp"
 #include "qt/action/main.hpp"
 #include "qt/action/selection.hpp"
 #include "qt/application_qt.hpp"
-// #include "qt/dialog.hpp"
-// #include "qt/state/visualization.hpp"
 #include "qt/tool/keys.hpp"
-#include "qt/tool/session/dialog.hpp"
-#include "widget_factory.hpp"
-// #include <QAction>
-// #include <QFileDialog>
-// #include <QSettings>
-// #include <QSize>
-// #include <iostream>
 #include "qt/tool/render/widget/render_widget.hpp"
+#include "qt/tool/session/dialog.hpp"
+#include "qt/util.hpp"
+#include "widget_factory.hpp"
 #include <old/action/action_manager.hpp>
 #include <old/action/dev.hpp>
 #include <old/action/main.hpp>
@@ -25,13 +18,9 @@
 #include <old/io/struct/scene_path_data.hpp>
 #include <old/model/selection.hpp>
 #include <old/selection/selection_manager.hpp>
-// #include <old/style.hpp>
 #include <old/setting.hpp>
-// #include <old/util/analysis.hpp>
 #include <old/util/filesystem.hpp>
-// #include <old/vtx_app.hpp>
 #include <old/worker/worker_manager.hpp>
-// #include <util/filepath.hpp>
 
 namespace VTX::UI::QT
 {
@@ -42,8 +31,6 @@ namespace VTX::UI::QT
 		_registerEvent( Event::Global::SCENE_PATH_CHANGE );
 
 		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
-
-		//_registerEvent( Event::Global::RMSD_COMPUTED );
 	}
 
 	MainWindow::~MainWindow() {}
@@ -148,7 +135,7 @@ namespace VTX::UI::QT
 
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
-		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
+		_loadStyleSheet( VTX::Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
 	}
 
 	void MainWindow::initWindowLayout()
@@ -162,6 +149,17 @@ namespace VTX::UI::QT
 			setWindowMode( Core::WindowMode::Fullscreen );
 		else
 			setWindowMode( Core::WindowMode::Windowed );
+	}
+
+	QT::Widget::MainMenu::MenuTooltabWidget & MainWindow::getMainMenuToolTab( const Core::ToolLayoutData & layoutData )
+	{
+		return dynamic_cast<QT::Widget::MainMenu::MenuTooltabWidget &>( getMainMenu().getTab( layoutData.tabName ) );
+	}
+	QT::Widget::MainMenu::MenuToolBlockWidget & MainWindow::getMainMenuToolBlock(
+		const Core::ToolLayoutData & layoutData )
+	{
+		return dynamic_cast<VTX::UI::QT::Widget::MainMenu::MenuToolBlockWidget &>(
+			getMainMenu().getTab( layoutData.tabName ).getToolBlock( layoutData.blockName ) );
 	}
 
 	void MainWindow::addShortcut( const std::string & p_shortcut, QAction * const p_action )
@@ -200,8 +198,6 @@ namespace VTX::UI::QT
 
 	void MainWindow::_setupSlots()
 	{
-		// connect( _sceneWidget, &QDockWidget::visibilityChanged, this,
-		//&MainWindow::_onDockWindowVisibilityChange );
 		// connect( _inspectorWidget, &QDockWidget::visibilityChanged, this,
 		//&MainWindow::_onDockWindowVisibilityChange
 		// );
@@ -280,19 +276,6 @@ namespace VTX::UI::QT
 				 &MainWindow::_onShortcutSetMeasurementPicker );
 	}
 	void MainWindow::localize() { setWindowTitle( "VTX" ); }
-
-	void MainWindow::referencePanel( const Core::WidgetKey & p_key, Core::BasePanel * const p_panel )
-	{
-		BaseMainWindow::referencePanel( p_key, p_panel );
-
-		QtPanel * const qtPanel = static_cast<QtPanel *>( p_panel );
-
-		if ( qtPanel->getPanelType() == QtPanel::PANEL_TYPE::DOCK_WIDGET )
-		{
-			QtDockablePanel * const dockPanel = dynamic_cast<QtDockablePanel *>( qtPanel );
-			connect( dockPanel, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
-		}
-	}
 
 	QT::Tool::Render::Widget::RenderWidget * MainWindow::getRender()
 	{
@@ -379,7 +362,7 @@ namespace VTX::UI::QT
 		title += " - RELEASE";
 #endif
 #endif
-		const Util::FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
+		const VTX::Util::FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
 
 		if ( !currentSessionFilepath.path().empty() )
 		{
@@ -422,18 +405,23 @@ namespace VTX::UI::QT
 			{
 				QtDockablePanel * const dockablePanel = dynamic_cast<QtDockablePanel *>( qtPanel );
 
-				// const QtDockablePanel::LayoutData & layoutData = dockablePanel->getDefaultLayout();
-				const QtDockablePanel::LayoutData layoutData = QtDockablePanel::LayoutData();
-
-				if ( layoutData.floating )
+				if ( dockablePanel->floatingByDefault )
 				{
-					addDockWidgetAsFloating( dockablePanel, layoutData.size, layoutData.visible );
+					addDockWidgetAsFloating(
+						dockablePanel, dockablePanel->defaultSize, dockablePanel->visibleByDefault );
 				}
 				else
 				{
-					addDockWidgetAsTabified(
-						dockablePanel, layoutData.widgetArea, layoutData.orientation, layoutData.visible );
+					addDockWidgetAsTabified( dockablePanel,
+											 dockablePanel->defaultWidgetArea,
+											 dockablePanel->defaultOrientation,
+											 qtPanel->visibleByDefault );
 				}
+			}
+			else if ( qtPanel->getPanelType() == QtPanel::PANEL_TYPE::FLOATING_WINDOW )
+			{
+				QtFloatingWindowPanel * const windowPanel = dynamic_cast<QtFloatingWindowPanel *>( qtPanel );
+				addFloatingWindow( windowPanel, windowPanel->defaultSize, windowPanel->visibleByDefault );
 			}
 		}
 
@@ -507,9 +495,14 @@ namespace VTX::UI::QT
 			p_dockWidget->hide();
 	}
 
-	void MainWindow::_onDockWindowVisibilityChange( const bool p_visible )
+	void MainWindow::addFloatingWindow( QDialog * const p_window, const QSize & p_size, const bool p_visible )
 	{
-		VTX_EVENT( new Event::VTXEvent( Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE ) );
+		p_window->resize( p_size );
+
+		if ( !p_window->isVisible() && p_visible )
+			p_window->show();
+		else if ( p_window->isVisible() && !p_visible )
+			p_window->hide();
 	}
 
 	void MainWindow::resizeEvent( QResizeEvent * p_event )
@@ -549,12 +542,12 @@ namespace VTX::UI::QT
 
 		if ( mimeData->hasUrls() )
 		{
-			std::vector<Util::FilePath> _paths	= std::vector<Util::FilePath>();
-			const QList<QUrl> &			urlList = mimeData->urls();
+			std::vector<VTX::Util::FilePath> _paths	 = std::vector<VTX::Util::FilePath>();
+			const QList<QUrl> &				 urlList = mimeData->urls();
 
 			for ( const QUrl & url : urlList )
 			{
-				_paths.emplace_back( Util::FilePath( url.toLocalFile().toStdString() ) );
+				_paths.emplace_back( VTX::Util::FilePath( url.toLocalFile().toStdString() ) );
 			}
 
 			VTX_ACTION( new VTX::Action::Main::Open( _paths ) );
@@ -639,7 +632,7 @@ namespace VTX::UI::QT
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings  settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
+		QSettings  settings( QString::fromStdString( VTX::Util::Filesystem::getConfigIniFile().path() ),
 							 QSettings::IniFormat );
 		const bool settingsAreValid = settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 
@@ -648,7 +641,7 @@ namespace VTX::UI::QT
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
+		QSettings settings( QString::fromStdString( VTX::Util::Filesystem::getConfigIniFile().path() ),
 							QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
@@ -675,7 +668,7 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
+		QSettings settings( QString::fromStdString( VTX::Util::Filesystem::getConfigIniFile().path() ),
 							QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 
@@ -688,7 +681,7 @@ namespace VTX::UI::QT
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
+		QSettings settings( QString::fromStdString( VTX::Util::Filesystem::getConfigIniFile().path() ),
 							QSettings::IniFormat );
 		settings.setValue( "Version", Style::LAYOUT_VERSION );
 
@@ -697,7 +690,7 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile().path() ),
+		QSettings settings( QString::fromStdString( VTX::Util::Filesystem::getConfigIniFile().path() ),
 							QSettings::IniFormat );
 		settings.clear();
 	}
@@ -814,5 +807,4 @@ namespace VTX::UI::QT
 			addDockWidgetAsFloating( p_widget, p_defaultSize, p_widget->isVisible() );
 		}
 	}
-
 } // namespace VTX::UI::QT

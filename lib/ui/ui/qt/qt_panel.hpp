@@ -3,7 +3,10 @@
 
 #include "core/base_panel.hpp"
 #include "qt/widget/base_manual_widget.hpp"
+#include <QDialog>
 #include <QDockWidget>
+#include <QWidget>
+#include <type_traits>
 
 namespace VTX::UI::QT
 {
@@ -22,36 +25,51 @@ namespace VTX::UI::QT
 		~QtPanel();
 
 		virtual PANEL_TYPE getPanelType() const = 0;
+
+		void		 setVisible( const bool p_visible );
+		virtual bool isVisible() const = 0;
+
+		std::string name = "";
+		QSize		defaultSize;
+		bool		visibleByDefault  = false;
+		bool		referenceInPanels = true;
+		std::string section			  = "";
+
+	  protected:
+		virtual void _changeVisibility( const bool p_visible ) = 0;
 	};
 
-	class QtDockablePanel : public QtPanel, public Widget::BaseManualWidget<QDockWidget>
+	template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
+	class QtPanelTemplate : public QtPanel, public Widget::BaseManualWidget<W>
 	{
 	  public:
-		class LayoutData
-		{
-		  public:
-			bool floating;
-			bool visible;
+		QtPanelTemplate( QWidget * const p_parent = nullptr ) : QtPanel(), Widget::BaseManualWidget<W>( p_parent ) {}
+		virtual bool isVisible() const override { return W::isVisible(); };
 
-			// For tabified
-			Qt::DockWidgetArea widgetArea;
-			Qt::Orientation	   orientation;
+		void localize() override { W::setWindowTitle( QString::fromStdString( name ) ); };
 
-			// For floating
-			QSize size;
-		};
+	  protected:
+		virtual void _changeVisibility( const bool p_visible ) override { W::setVisible( p_visible ); };
+	};
 
+	class QtDockablePanel : public QtPanelTemplate<QDockWidget>
+	{
 	  public:
-		QtDockablePanel();
+		QtDockablePanel( QWidget * const p_parent = nullptr );
 		~QtDockablePanel();
 
 		virtual PANEL_TYPE getPanelType() const override { return PANEL_TYPE::DOCK_WIDGET; };
+
+		bool floatingByDefault = true;
+		// For tabified
+		Qt::DockWidgetArea defaultWidgetArea  = Qt::DockWidgetArea::NoDockWidgetArea;
+		Qt::Orientation	   defaultOrientation = Qt::Orientation::Vertical;
 	};
 
-	class QtFloatingWindowPanel : public QtPanel
+	class QtFloatingWindowPanel : public QtPanelTemplate<QDialog>
 	{
 	  public:
-		QtFloatingWindowPanel();
+		QtFloatingWindowPanel( QWidget * const p_parent = nullptr );
 		~QtFloatingWindowPanel();
 
 		virtual PANEL_TYPE getPanelType() const override { return PANEL_TYPE::FLOATING_WINDOW; };

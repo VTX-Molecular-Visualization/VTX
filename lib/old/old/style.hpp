@@ -266,6 +266,8 @@ namespace VTX
 		static const QSize SELECTION_MINIMUM_SIZE			   = QSize( 1, 1 );
 		static const QSize SETTINGS_PREFERRED_SIZE			   = QSize( 550, 600 );
 		static const QSize SETTINGS_MINIMUM_SIZE			   = QSize( 1, 1 );
+		static const QSize INFORMATION_PREFERRED_SIZE		   = QSize( 550, 600 );
+		static const QSize INFORMATION_MINIMUM_SIZE			   = QSize( 100, 100 );
 		static const QSize STRUCTURAL_ALIGNMENT_PREFERRED_SIZE = QSize( 550, 600 );
 		static const QSize STRUCTURAL_ALIGNMENT_MINIMUM_SIZE   = QSize( 1, 1 );
 

@@ -6,9 +6,12 @@
 
 namespace VTX::UI::QT::Tool
 {
-	inline static const VTX::UI::Core::ToolIdentifier RENDER_WINDOW_KEY = "VTX_RenderWindow";
-	inline static const VTX::UI::Core::ToolIdentifier SCENE_WINDOW_KEY	= "VTX_SceneWindow";
-	inline static const VTX::UI::Core::ToolIdentifier SESSION_TOOLS_KEY = "VTX_SessionTools";
+	inline static const VTX::UI::Core::ToolIdentifier RENDER_WINDOW_KEY		   = "VTX_RenderWindow";
+	inline static const VTX::UI::Core::ToolIdentifier SCENE_WINDOW_KEY		   = "VTX_SceneWindow";
+	inline static const VTX::UI::Core::ToolIdentifier SESSION_TOOLS_KEY		   = "VTX_SessionTools";
+	inline static const VTX::UI::Core::ToolIdentifier UI_FEATURE_INFORMATION   = "VTX_UIFeatureInformation";
+	inline static const VTX::UI::Core::ToolIdentifier UI_FEATURE_PANEL_DISPLAY = "VTX_UIFeaturePanelDisplay";
+	inline static const VTX::UI::Core::ToolIdentifier UI_FEATURE_QUIT		   = "VTX_UIFeatureQuit";
 
 	namespace ContextualMenu
 	{

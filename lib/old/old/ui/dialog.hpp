@@ -2,10 +2,10 @@
 #define __VTX_UI_DIALOG__
 
 #include "action/base_action.hpp"
-#include <util/filepath.hpp>
 #include "worker/worker_manager.hpp"
 #include <QString>
 #include <QWidget>
+#include <util/filepath.hpp>
 #include <vector>
 
 namespace VTX

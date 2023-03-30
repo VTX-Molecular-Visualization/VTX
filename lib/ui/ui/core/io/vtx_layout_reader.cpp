@@ -18,6 +18,21 @@ namespace VTX::UI::Core::IO
 		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::QT::Tool::SESSION_TOOLS_KEY, layoutData ) );
 
 		layoutData			 = UI::Core::ToolLayoutData();
+		layoutData.tabName	 = "Main";
+		layoutData.blockName = "Windows";
+		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::QT::Tool::UI_FEATURE_PANEL_DISPLAY, layoutData ) );
+
+		layoutData			 = UI::Core::ToolLayoutData();
+		layoutData.tabName	 = "Main";
+		layoutData.blockName = "Windows";
+		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::QT::Tool::UI_FEATURE_INFORMATION, layoutData ) );
+
+		layoutData			 = UI::Core::ToolLayoutData();
+		layoutData.tabName	 = "Main";
+		layoutData.blockName = "Windows";
+		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::QT::Tool::UI_FEATURE_QUIT, layoutData ) );
+
+		layoutData			 = UI::Core::ToolLayoutData();
 		layoutData.tabName	 = "Tools";
 		layoutData.blockName = "Structural Alignment";
 

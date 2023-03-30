@@ -20,6 +20,16 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 {
 	SceneWidget::SceneWidget( QWidget * p_parent ) : QtDockablePanel()
 	{
+		name			  = "Scene";
+		defaultSize		  = Style::SCENE_PREFERRED_SIZE;
+		visibleByDefault  = true;
+		referenceInPanels = true;
+		section			  = "VTX";
+
+		floatingByDefault  = false;
+		defaultWidgetArea  = Qt::DockWidgetArea::LeftDockWidgetArea;
+		defaultOrientation = Qt::Orientation::Horizontal;
+
 		_registerEvent( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 
 		_registerEvent( Event::Global::SCENE_ITEM_ADDED );
@@ -320,11 +330,6 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void SceneWidget::_setupSlots() {}
 
-	void SceneWidget::localize()
-	{
-		this->setWindowTitle( "Scene" );
-		// this->setWindowTitle( QCoreApplication::translate( "SceneWidget", "Scene", nullptr ) );
-	}
 	void SceneWidget::mousePressEvent( QMouseEvent * p_event )
 	{
 		// Click on header

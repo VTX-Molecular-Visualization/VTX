@@ -7,6 +7,8 @@ namespace VTX::UI::Core
 {
 	using WidgetKey = std::string;
 
+	inline static const std::string INVALID_WIDGET_KEY = "";
+
 	enum class Direction : int
 	{
 		Up,
