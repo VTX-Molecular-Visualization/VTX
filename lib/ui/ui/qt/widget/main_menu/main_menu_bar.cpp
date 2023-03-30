@@ -1,6 +1,7 @@
 #include "main_menu_bar.hpp"
-#include "qt/widget_factory.hpp"
 #include "menu_tooltab_widget.hpp"
+#include "qt/util.hpp"
+#include "qt/widget_factory.hpp"
 #include <QFont>
 
 namespace VTX::UI::QT::Widget::MainMenu

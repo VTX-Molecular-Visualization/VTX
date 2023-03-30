@@ -37,7 +37,7 @@ namespace VTX::UI::QT::Tool
 
 		VTX::UI::QT::Widget::MainMenu::MenuTooltabWidget & tooltab
 			= dynamic_cast<VTX::UI::QT::Widget::MainMenu::MenuTooltabWidget &>(
-				VTX::UI::QT::QT_APP()->getMainWindow().getMainMenu().getTab( layoutData.tabName ) );
+				mainWindow->getMainMenu().getTab( layoutData.tabName ) );
 
 		VTX::UI::QT::Widget::MainMenu::MenuToolBlockWidget & toolBlock
 			= dynamic_cast<VTX::UI::QT::Widget::MainMenu::MenuToolBlockWidget &>(
@@ -87,8 +87,6 @@ namespace VTX::UI::QT::Tool
 		toolBlock.pushButton( *newSessionButton );
 		toolBlock.pushButton( *downloadMoleculeButton, *openSessionButton, *_openRecentSessionButton );
 		toolBlock.pushButton( *saveSessionButton, *saveAsSessionButton );
-
-		mainWindow->getMainMenu().getTab( "Main" ).getToolBlock( "File" );
 	}
 	void SessionTool::_addActionsInContextualMenus()
 	{
@@ -104,10 +102,10 @@ namespace VTX::UI::QT::Tool
 				"Loading", "Download Molecule", this, &SessionTool::_downloadMoleculeFile );
 		}
 
-		QT::Widget::ContextualMenu::BaseContextualMenu * const sceneContextualSelection
+		QT::Widget::ContextualMenu::BaseContextualMenu * const selectionContextualMenu
 			= mainWindow->getContextualMenu().getMenu( Tool::ContextualMenu::SELECTION );
 
-		if ( sceneContextualSelection != nullptr )
+		if ( selectionContextualMenu != nullptr )
 		{
 			sceneContextualMenu->appendToSection( "Loading", "Load Trajectory", this, &SessionTool::_openFile );
 		}
