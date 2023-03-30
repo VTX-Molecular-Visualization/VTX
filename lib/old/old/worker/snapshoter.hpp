@@ -3,7 +3,6 @@
 
 #include "base_worker.hpp"
 #include "generic/base_opengl.hpp"
-#include <util/filepath.hpp>
 #include "io/struct/image_export.hpp"
 #include <QImage>
 
@@ -18,7 +17,7 @@ namespace VTX::Worker
 		};
 
 		explicit Snapshoter( const MODE &					 p_mode,
-							 const Util::FilePath &			 p_path,
+							 const FilePath &				 p_path,
 							 const IO::Struct::ImageExport & p_exportData );
 
 		explicit Snapshoter( const MODE &					 p_mode,
@@ -34,9 +33,9 @@ namespace VTX::Worker
 		void _addWatermark( QImage & ) const;
 
 	  private:
-		const MODE		   _mode;
-		const Util::FilePath _path;
-		QImage *		   _imageTarget = nullptr;
+		const MODE	   _mode;
+		const FilePath _path;
+		QImage *	   _imageTarget = nullptr;
 
 		const IO::Struct::ImageExport _exportData;
 	};

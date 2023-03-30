@@ -15,7 +15,7 @@
 #include "ui/dialog.hpp"
 #include "ui/mime_type.hpp"
 #include "util/analysis.hpp"
-#include "util/filesystem.hpp"
+#include <util/filesystem.hpp>
 #include "vtx_app.hpp"
 #include "widget_factory.hpp"
 #include <QAction>
@@ -154,7 +154,7 @@ namespace VTX::UI
 		_mainMenuBar->setCurrentTab( 0 );
 		_renderWidget->setFocus();
 
-		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
+		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT.c_str() );
 	}
 	void MainWindow::initWindowLayout()
 	{
@@ -320,7 +320,7 @@ namespace VTX::UI
 		title += " - RELEASE";
 #endif
 #endif
-		const Util::FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
+		const FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
 
 		if ( !currentSessionFilepath.empty() )
 		{
@@ -458,13 +458,13 @@ namespace VTX::UI
 
 		if ( UI::MimeType::getMimeTypeEnum( mimeData ) == UI::MimeType::ApplicationMimeType::FILE )
 		{
-			const QList<QUrl> &						 urlList = mimeData->urls();
-			const std::vector<Util::FilePath>		 paths = Util::Filesystem::getFilePathVectorFromQUrlList( urlList );
-			std::vector<std::vector<Util::FilePath>> pathPerFileTypes = std::vector<std::vector<Util::FilePath>>();
+			const QList<QUrl> &				   urlList = mimeData->urls();
+			const std::vector<FilePath>		   paths   = Util::Filesystem::getFilePathVectorFromQUrlList( urlList );
+			std::vector<std::vector<FilePath>> pathPerFileTypes = std::vector<std::vector<FilePath>>();
 			Util::Filesystem::fillFilepathPerMode( paths, pathPerFileTypes );
 
-			const std::vector<Util::FilePath> & trajectoryPaths
-				= pathPerFileTypes[ int( Util::Filesystem::FILE_TYPE_ENUM::TRAJECTORY ) ];
+			const std::vector<FilePath> & trajectoryPaths
+				= pathPerFileTypes[ int( Util::Filesystem::FILE_TYPE::TRAJECTORY ) ];
 
 			// If drop contains only trajectory path, open the specific window
 			if ( trajectoryPaths.size() == paths.size() )
@@ -565,7 +565,7 @@ namespace VTX::UI
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings  settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile().path() ), QSettings::IniFormat );
+		QSettings  settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
 		const bool settingsAreValid = settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 
 		return settingsAreValid && settings.value( "Version" ).toInt() == Style::LAYOUT_VERSION;
@@ -573,7 +573,7 @@ namespace VTX::UI
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile().path() ), QSettings::IniFormat );
+		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
 		// Delayed restore state because all widgets grows when restore in maximized (sizes are stored when maximized,
@@ -599,7 +599,7 @@ namespace VTX::UI
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile().path() ), QSettings::IniFormat );
+		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 
 		_checkDockWidgetsDisplay();
@@ -611,7 +611,7 @@ namespace VTX::UI
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile().path() ), QSettings::IniFormat );
+		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
 		settings.setValue( "Version", Style::LAYOUT_VERSION );
 
 		settings.setValue( "Geometry", saveGeometry() );
@@ -619,7 +619,7 @@ namespace VTX::UI
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile().path() ), QSettings::IniFormat );
+		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
 		settings.clear();
 	}
 

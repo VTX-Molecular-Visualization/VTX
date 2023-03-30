@@ -1,8 +1,8 @@
 #ifndef __VTX_APP__
 #define __VTX_APP__
 
-#include "generic/base_auto_delete.hpp"
 #include "define.hpp"
+#include "generic/base_auto_delete.hpp"
 #include "setting.hpp"
 #include "spec.hpp"
 #include "stat.hpp"
@@ -10,6 +10,7 @@
 #include <QElapsedTimer>
 #include <QInputMethod>
 #include <QTimer>
+#include <util/exceptions.hpp>
 
 namespace VTX
 {
@@ -57,10 +58,10 @@ namespace VTX
 		inline const Object3D::Scene &			 getScene() const { return *_scene; }
 
 		// TODO remove this. Must be In UI Module
-		inline const UI::MainWindow &	   getMainWindow() const { throw VTX::Exception::NotImplementedException(); }
-		inline UI::MainWindow &			   getMainWindow() { throw VTX::Exception::NotImplementedException(); }
-		inline State::StateMachine &	   getStateMachine() { throw VTX::Exception::NotImplementedException(); }
-		inline const State::StateMachine & getStateMachine() const { throw VTX::Exception::NotImplementedException(); }
+		inline const UI::MainWindow &	   getMainWindow() const { throw NotImplementedException(); }
+		inline UI::MainWindow &			   getMainWindow() { throw NotImplementedException(); }
+		inline State::StateMachine &	   getStateMachine() { throw NotImplementedException(); }
+		inline const State::StateMachine & getStateMachine() const { throw NotImplementedException(); }
 
 		inline Setting &									  getSetting() { return _setting; }
 		inline const Setting &								  getSetting() const { return _setting; }

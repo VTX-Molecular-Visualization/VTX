@@ -6,7 +6,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "vtx_app.hpp"
 #include <string>
 

@@ -4,7 +4,7 @@
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "ui/main_window.hpp"
 #include "ui/mime_type.hpp"
 #include "ui/widget/scene/scene_item_selection_model.hpp"

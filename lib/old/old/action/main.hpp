@@ -10,7 +10,7 @@
 #include "worker/snapshoter.hpp"
 #include "worker/worker_manager.hpp"
 #include <string>
-#include <util/filepath.hpp>
+
 #include <util/types.hpp>
 #include <vector>
 
@@ -34,24 +34,24 @@ namespace VTX::Action::Main
 		class LoadSceneClass
 		{
 		  public:
-			LoadSceneClass( const std::vector<Util::FilePath> & p_paths ) : _paths( p_paths ) {};
+			LoadSceneClass( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {};
 
 			void _loadScene();
 
 		  private:
-			std::vector<Util::FilePath> _paths;
+			std::vector<FilePath> _paths;
 		};
 
 	  public:
-		explicit Open( const Util::FilePath & p_path ) { _paths.emplace_back( p_path ); }
-		explicit Open( const std::vector<Util::FilePath> & p_paths ) : _paths( p_paths ) {}
-		explicit Open( const std::map<Util::FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
-		explicit Open( const Util::FilePath & p_trajectoryPath, Model::Molecule & p_target )
+		explicit Open( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
+		explicit Open( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
+		explicit Open( const std::map<FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
+		explicit Open( const FilePath & p_trajectoryPath, Model::Molecule & p_target )
 		{
 			_trajectoryTargets.emplace_back( &p_target );
 			_paths.emplace_back( p_trajectoryPath );
 		}
-		explicit Open( const Util::FilePath & p_trajectoryPath, const std::vector<Model::Molecule *> & p_targets )
+		explicit Open( const FilePath & p_trajectoryPath, const std::vector<Model::Molecule *> & p_targets )
 		{
 			_trajectoryTargets.resize( p_targets.size() );
 			std::copy( p_targets.begin(), p_targets.end(), _trajectoryTargets.begin() );
@@ -61,8 +61,8 @@ namespace VTX::Action::Main
 		virtual void execute() override;
 
 	  private:
-		std::vector<Util::FilePath>				_paths = std::vector<Util::FilePath>();
-		std::map<Util::FilePath, std::string *> _buffers;
+		std::vector<FilePath>			  _paths = std::vector<FilePath>();
+		std::map<FilePath, std::string *> _buffers;
 
 		std::vector<Model::Molecule *> _trajectoryTargets = std::vector<Model::Molecule *>();
 	};
@@ -81,9 +81,8 @@ namespace VTX::Action::Main
 	class Save : public BaseAction
 	{
 	  public:
-		explicit Save() : _path( "" ), _callback( nullptr ) {}
-		explicit Save( const Util::FilePath & p_path ) : _path( p_path ), _callback( nullptr ) {}
-		explicit Save( const Util::FilePath & p_path, Worker::CallbackThread * const p_callback ) :
+		explicit Save( const FilePath & p_path ) : _path( p_path ), _callback( nullptr ) {}
+		explicit Save( const FilePath & p_path, Worker::CallbackThread * const p_callback ) :
 			_path( p_path ), _callback( p_callback )
 		{
 		}
@@ -91,30 +90,30 @@ namespace VTX::Action::Main
 		virtual void execute() override;
 
 	  private:
-		const Util::FilePath		   _path;
+		const FilePath				   _path;
 		Worker::CallbackThread * const _callback;
 	};
 
 	class ImportRepresentationPreset : public BaseAction
 	{
 	  public:
-		explicit ImportRepresentationPreset( const Util::FilePath & p_path ) { _paths.emplace_back( p_path ); }
-		explicit ImportRepresentationPreset( const std::vector<Util::FilePath> & p_paths ) : _paths( p_paths ) {}
+		explicit ImportRepresentationPreset( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
+		explicit ImportRepresentationPreset( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 		virtual void execute() override;
 
 	  private:
-		std::vector<Util::FilePath> _paths = std::vector<Util::FilePath>();
+		std::vector<FilePath> _paths = std::vector<FilePath>();
 	};
 
 	class ImportRenderEffectPreset : public BaseAction
 	{
 	  public:
-		explicit ImportRenderEffectPreset( const Util::FilePath & p_path ) { _paths.emplace_back( p_path ); }
-		explicit ImportRenderEffectPreset( const std::vector<Util::FilePath> & p_paths ) : _paths( p_paths ) {}
+		explicit ImportRenderEffectPreset( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
+		explicit ImportRenderEffectPreset( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 		virtual void execute() override;
 
 	  private:
-		std::vector<Util::FilePath> _paths = std::vector<Util::FilePath>();
+		std::vector<FilePath> _paths = std::vector<FilePath>();
 	};
 
 	class ToggleCamera : public BaseAction
@@ -197,7 +196,7 @@ namespace VTX::Action::Main
 	class Snapshot : public BaseAction
 	{
 	  public:
-		explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const Util::FilePath & p_path ) :
+		explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const FilePath & p_path ) :
 			Snapshot( p_mode,
 					  p_path,
 					  IO::Struct::ImageExport( IO::Struct::ImageExport::RESOLUTION ::Free,
@@ -206,7 +205,7 @@ namespace VTX::Action::Main
 		{
 		}
 		explicit Snapshot( const Worker::Snapshoter::MODE			 p_mode,
-						   const Util::FilePath &					 p_path,
+						   const FilePath &							 p_path,
 						   const IO::Struct::ImageExport::RESOLUTION p_resolution ) :
 			Snapshot( p_mode,
 					  p_path,
@@ -216,7 +215,7 @@ namespace VTX::Action::Main
 		{
 		}
 		explicit Snapshot( const Worker::Snapshoter::MODE p_mode,
-						   const Util::FilePath &		  p_path,
+						   const FilePath &				  p_path,
 						   const int					  p_width,
 						   const int					  p_height ) :
 			Snapshot( p_mode,
@@ -227,7 +226,7 @@ namespace VTX::Action::Main
 		{
 		}
 		explicit Snapshot( const Worker::Snapshoter::MODE  p_mode,
-						   const Util::FilePath &		   p_path,
+						   const FilePath &				   p_path,
 						   const IO::Struct::ImageExport & p_exportData ) :
 			_mode( p_mode ),
 			_path( p_path ), _exportData( p_exportData )
@@ -244,7 +243,7 @@ namespace VTX::Action::Main
 
 	  private:
 		const Worker::Snapshoter::MODE _mode;
-		const Util::FilePath		   _path;
+		const FilePath				   _path;
 		const IO::Struct::ImageExport  _exportData;
 	};
 

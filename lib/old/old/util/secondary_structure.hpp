@@ -5,7 +5,7 @@
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "model/secondary_structure.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include <util/chrono.hpp>
 #include <util/types.hpp>
 

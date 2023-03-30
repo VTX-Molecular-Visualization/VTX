@@ -5,7 +5,7 @@
 #include "rmsd.hpp"
 #include "structural_alignment_method/ce_align.hpp"
 #include <util/chrono.hpp>
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include <string>
 #include <util/chrono.hpp>
 

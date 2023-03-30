@@ -1,6 +1,6 @@
 #include "framebuffer.hpp"
-#include "exception.hpp"
-#include "tool/logger.hpp"
+#include <util/exceptions.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::Renderer::GL
 {

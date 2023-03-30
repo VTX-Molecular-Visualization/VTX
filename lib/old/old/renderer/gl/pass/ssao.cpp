@@ -22,7 +22,7 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
-		_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { Util::FilePath( "shading/ssao.frag" ) } );
+		_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { FilePath( "shading/ssao.frag" ) } );
 
 		// generate random ao kernel
 		_aoKernel.resize( _kernelSize );

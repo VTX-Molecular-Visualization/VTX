@@ -5,10 +5,10 @@
 #include "base_worker.hpp"
 #include "event/event_manager.hpp"
 #include "generic/base_updatable.hpp"
-#include "tool/logger.hpp"
 #include <QMetaType>
 #include <QThreadPool>
 #include <string>
+#include <util/logger.hpp>
 
 namespace VTX
 {
@@ -40,7 +40,7 @@ namespace VTX
 				connect( p_worker, &Worker::BaseThread::logWarning, this, &WorkerManager::_logWarning );
 				connect( p_worker, &Worker::BaseThread::logError, this, &WorkerManager::_logError );
 				connect( p_worker, &Worker::BaseThread::logDebug, this, &WorkerManager::_logDebug );
-				connect( p_worker, &Worker::BaseThread::logFile, this, &WorkerManager::_logFile );
+				// connect( p_worker, &Worker::BaseThread::logFile, this, &WorkerManager::_logFile );
 				connect( p_worker, &Worker::BaseThread::finished, p_worker, &QObject::deleteLater );
 				VTX_DEBUG( "Starting thread" );
 				p_worker->start();
@@ -113,7 +113,7 @@ namespace VTX
 			void _logWarning( const std::string p_msg ) { VTX_WARNING( p_msg ); }
 			void _logError( const std::string p_msg ) { VTX_ERROR( p_msg ); }
 			void _logDebug( const std::string p_msg ) { VTX_DEBUG( p_msg ); }
-			void _logFile( const std::string p_msg ) { VTX_LOG_FILE( p_msg ); }
+			// void _logFile( const std::string p_msg ) { VTX_LOG_FILE( p_msg ); }
 		};
 	} // namespace Worker
 

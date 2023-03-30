@@ -12,10 +12,10 @@
 #include "setting.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "ui/dialog.hpp"
 #include "ui/main_window.hpp"
-#include "util/filesystem.hpp"
+#include <util/filesystem.hpp>
 #include "util/molecule.hpp"
 #include "vtx_app.hpp"
 #include "worker/loader.hpp"
@@ -37,7 +37,7 @@ namespace VTX::Action::Main
 	void Open::execute()
 	{
 		bool loadScene = false;
-		for ( const Util::FilePath & path : _paths )
+		for ( const FilePath & path : _paths )
 		{
 			loadScene = loadScene || path.extension() == "vtx";
 		}
@@ -100,10 +100,10 @@ namespace VTX::Action::Main
 			Worker::CallbackThread * callback = new Worker::CallbackThread(
 				[ loader ]( const uint p_code )
 				{
-					for ( const std::pair<const Util::FilePath, Worker::Loader::Result> & pairFilResult :
+					for ( const std::pair<const FilePath, Worker::Loader::Result> & pairFilResult :
 						  loader->getPathsResult() )
 					{
-						const Util::FilePath &		   filepath = pairFilResult.first;
+						const FilePath &		   filepath = pairFilResult.first;
 						const Worker::Loader::Result & result	= pairFilResult.second;
 
 						if ( !result.state )
@@ -169,7 +169,7 @@ namespace VTX::Action::Main
 		Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
 		VTX_WORKER( sceneLoader );
 
-		for ( const Util::FilePath & path : _paths )
+		for ( const FilePath & path : _paths )
 		{
 			VTXApp::get().getScenePathData().setCurrentPath( path, true );
 		}
@@ -182,9 +182,9 @@ namespace VTX::Action::Main
 		if ( _paths.empty() )
 			return;
 
-		for ( const Util::FilePath & path : _paths )
+		for ( const FilePath & path : _paths )
 		{
-			Util::FilePath target = Util::Filesystem::getRepresentationPath( path.filename() );
+			FilePath target = Util::Filesystem::getRepresentationPath( path.filename() );
 			Util::Filesystem::generateUniqueFileName( target );
 			if ( Util::Filesystem::copyFile( path, target ) )
 			{
@@ -199,9 +199,9 @@ namespace VTX::Action::Main
 		if ( _paths.empty() )
 			return;
 
-		for ( const Util::FilePath & path : _paths )
+		for ( const FilePath & path : _paths )
 		{
-			Util::FilePath target = Util::Filesystem::getRenderEffectPath( path.filename() );
+			FilePath target = Util::Filesystem::getRenderEffectPath( path.filename() );
 			Util::Filesystem::generateUniqueFileName( target );
 			if ( Util::Filesystem::copyFile( path, target ) )
 			{

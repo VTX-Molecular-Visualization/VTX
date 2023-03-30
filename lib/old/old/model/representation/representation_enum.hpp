@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_REPRESENTATION_ENUM__
 #define __VTX_MODEL_REPRESENTATION_ENUM__
 
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 
 namespace VTX
 {

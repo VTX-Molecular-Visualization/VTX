@@ -23,11 +23,11 @@ namespace VTX
 			{
 			  public:
 				Data();
-				Data( const Util::FilePath & p_path );
+				Data( const FilePath & p_path );
 
-				void				 registerPath( const Util::FilePath & p_filepath );
+				void				 registerPath( const FilePath & p_filepath );
 				bool				 hasFilepath() const;
-				const Util::FilePath & getFilepath() const;
+				const FilePath & getFilepath() const;
 
 				bool hasChanged() const;
 				void setHasChanged( const bool p_hasChanged );
@@ -39,7 +39,7 @@ namespace VTX
 				bool needToSaveMolecule() const;
 
 			  private:
-				Util::FilePath			  _path		  = Util::FilePath( "" );
+				FilePath			  _path		  = FilePath( "" );
 				bool					  _hasChanged = false;
 				Writer::ChemfilesWriter * _writer	  = nullptr;
 			};
@@ -47,15 +47,15 @@ namespace VTX
 			ScenePathData();
 			virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-			void registerLoading( const Model::Molecule * const p_molecule, const Util::FilePath & p_filepath );
+			void registerLoading( const Model::Molecule * const p_molecule, const FilePath & p_filepath );
 
-			inline const Util::FilePath & getCurrentPath() const { return _currentFilePath; }
-			void setCurrentPath( const Util::FilePath & p_filePath, const bool p_addInRecentPath = true );
+			inline const FilePath & getCurrentPath() const { return _currentFilePath; }
+			void setCurrentPath( const FilePath & p_filePath, const bool p_addInRecentPath = true );
 			void clearCurrentPath();
 
 			Data &						getData( const Model::Molecule * const p_molecule );
 			const ScenePathData::Data & getData( const Model::Molecule * const p_molecule ) const;
-			Util::FilePath				getFilepath( const Model::Molecule * const p_molecule ) const;
+			FilePath				getFilepath( const Model::Molecule * const p_molecule ) const;
 
 			void	   incrementSceneModifications();
 			void	   decrementSceneModifications();
@@ -65,7 +65,7 @@ namespace VTX
 			void	   resetSceneModifications();
 
 		  private:
-			Util::FilePath							_currentFilePath = Util::FilePath();
+			FilePath							_currentFilePath = FilePath();
 			std::map<const Model::Molecule *, Data> _mapMoleculePath;
 			int										_sceneModificationsCount = 0;
 			bool									_forceSceneModifications = false;

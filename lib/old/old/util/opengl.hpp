@@ -1,7 +1,7 @@
 #ifndef __VTX_UTIL_OPENGL__
 #define __VTX_UTIL_OPENGL__
 
-#include "exception.hpp"
+#include <util/exceptions.hpp>
 #include <iostream>
 
 namespace VTX
@@ -60,7 +60,7 @@ namespace VTX
 				{
 				case GL_DEBUG_SEVERITY_HIGH:
 					std::cerr << message << std::endl;
-					throw Exception::GLException( message );
+					throw GLException( message );
 					break;
 				case GL_DEBUG_SEVERITY_MEDIUM:
 				case GL_DEBUG_SEVERITY_LOW: std::cout << message << std::endl;

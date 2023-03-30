@@ -38,7 +38,7 @@ namespace VTX
 			}
 
 			Program * const createProgram( const std::string &,
-										   const std::vector<Util::FilePath> &,
+										   const std::vector<FilePath> &,
 										   const std::string & = "",
 										   const std::string & = "" );
 			void			deleteProgram( const std::string & );
@@ -49,7 +49,7 @@ namespace VTX
 			void dispose();
 
 			static const MapStringToEnum EXTENSIONS;
-			static SHADER_TYPE			 getShaderType( const Util::FilePath & );
+			static SHADER_TYPE			 getShaderType( const FilePath & );
 
 		  private:
 			MapStringToProgram _programs = MapStringToProgram();
@@ -58,7 +58,7 @@ namespace VTX
 			ProgramManager() = default;
 			~ProgramManager();
 
-			GLuint		_createShader( const Util::FilePath &, const std::string & = "", const std::string & = "" );
+			GLuint		_createShader( const FilePath &, const std::string & = "", const std::string & = "" );
 			std::string _getShaderErrors( const GLuint );
 		};
 	} // namespace Renderer::GL

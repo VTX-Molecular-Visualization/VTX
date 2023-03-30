@@ -3,7 +3,7 @@
 
 #include "base_action.hpp"
 #include "generic/base_visible.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include <vector>
 
 namespace VTX::Action::Visible

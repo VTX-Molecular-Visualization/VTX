@@ -84,11 +84,11 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 		int actionIndex = 0;
 
-		for ( const Util::FilePath & recentFile : Setting::recentLoadingPath )
+		for ( const FilePath & recentFile : Setting::recentLoadingPath )
 		{
 			CustomWidget::IndexedAction * const action
 				= new CustomWidget::IndexedAction( actionIndex, _recentSessionMenu );
-			action->setText( QString::fromUtf8( recentFile.path() ) );
+			action->setText( QString::fromUtf8( recentFile ) );
 
 			connect( action,
 					 &CustomWidget::IndexedAction::triggeredWithIndex,
@@ -113,7 +113,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 	void MenuHomeSessionWidget::_loadRecentSession( const int & p_ptrSessionIndex ) const
 	{
-		const Util::FilePath * const recentPath = Setting::getRecentLoadingPath( p_ptrSessionIndex );
+		const FilePath * const recentPath = Setting::getRecentLoadingPath( p_ptrSessionIndex );
 
 		if ( recentPath == nullptr )
 		{

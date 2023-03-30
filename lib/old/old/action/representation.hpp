@@ -13,7 +13,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
-#include "util/filesystem.hpp"
+#include <util/filesystem.hpp>
 #include "vtx_app.hpp"
 #include "worker/representation_loader.hpp"
 #include "worker/representation_saver.hpp"
@@ -85,7 +85,7 @@ namespace VTX::Action::Representation
 				else
 				*/
 				{
-					Util::FilePath path = Util::Filesystem::getRepresentationPath( representation->getName() );
+					FilePath path = Util::Filesystem::getRepresentationPath( representation->getName() );
 					Util::Filesystem::generateUniqueFileName( path );
 
 					Worker::RepresentationSaver * librarySaver

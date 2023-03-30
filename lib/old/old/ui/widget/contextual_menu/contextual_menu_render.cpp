@@ -14,7 +14,7 @@
 #include "ui/main_window.hpp"
 #include "ui/widget/renderer/default_background.hpp"
 #include "ui/widget/settings/setting_widget_enum.hpp"
-#include "util/filesystem.hpp"
+#include <util/filesystem.hpp>
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
 #include "worker/snapshoter.hpp"

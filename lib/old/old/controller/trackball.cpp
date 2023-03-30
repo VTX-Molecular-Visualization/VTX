@@ -3,7 +3,7 @@
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "util/math.hpp"
 
 namespace VTX

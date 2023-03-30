@@ -82,13 +82,13 @@ namespace VTX::IO
 
 	nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
 	{
-		const Util::FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
+		const FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
 
 		const Writer::ChemfilesWriter * const writer
 			= VTXApp::get().getScenePathData().getData( &p_molecule ).getWriter();
 
 		return { { "TRANSFORM", serialize( p_molecule.getTransform() ) },
-				 { "PATH", moleculePath.path() },
+				 { "PATH", moleculePath },
 				 { "REPRESENTATIONS", _serializeMoleculeRepresentations( p_molecule, writer ) },
 				 { "VISIBILITIES", _serializeMoleculeVisibilities( p_molecule, writer ) },
 				 { "NAME", p_molecule.getName() },
@@ -526,11 +526,11 @@ namespace VTX::IO
 			p_molecule.applyTransform( transform );
 		}
 
-		Util::FilePath molPath = _get<std::string>( p_json, "PATH" );
+		FilePath molPath = _get<std::string>( p_json, "PATH" );
 
 		if ( Util::Filesystem::isRelativePath( molPath ) )
 		{
-			const Util::FilePath sceneFolder
+			const FilePath sceneFolder
 				= Util::Filesystem::getSceneSaveDirectory( VTXApp::get().getScenePathData().getCurrentPath() );
 			molPath = sceneFolder / molPath;
 		}
@@ -543,7 +543,7 @@ namespace VTX::IO
 		}
 		catch ( const std::exception & p_exception )
 		{
-			_logWarning( "Error when loading " + molPath.path() + " : " + p_exception.what() );
+			_logWarning( "Error when loading " + molPath + " : " + p_exception.what() );
 			throw p_exception;
 		}
 

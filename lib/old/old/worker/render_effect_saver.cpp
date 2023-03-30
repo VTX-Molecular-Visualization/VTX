@@ -3,8 +3,8 @@
 #include "model/renderer/render_effect_preset.hpp"
 #include "mvc/mvc_manager.hpp"
 #include <util/chrono.hpp>
-#include "tool/logger.hpp"
-#include "util/filesystem.hpp"
+#include <util/logger.hpp>
+#include <util/filesystem.hpp>
 #include <exception>
 
 namespace VTX::Worker
@@ -16,7 +16,7 @@ namespace VTX::Worker
 
 		chrono.start();
 		emit			   logInfo( "Saving " + _preset->getName() );
-		const Util::FilePath path = Util::Filesystem::getRenderEffectPath( _preset->getName() );
+		const FilePath path = Util::Filesystem::getRenderEffectPath( _preset->getName() );
 
 		IO::Writer::SerializedObject<Model::Renderer::RenderEffectPreset> * writer
 			= new IO::Writer::SerializedObject<Model::Renderer::RenderEffectPreset>();

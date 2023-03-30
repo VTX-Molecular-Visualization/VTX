@@ -1,6 +1,6 @@
 #include "sphere.hpp"
 #include "representation/representation_manager.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "vtx_app.hpp"
 
 namespace VTX::View::D3
@@ -8,9 +8,9 @@ namespace VTX::View::D3
 	Renderer::GL::Program * const Sphere::_createProgram()
 	{
 		return VTX_PROGRAM_MANAGER().createProgram( "Sphere",
-													{ Util::FilePath( "sphere/sphere.vert" ),
-													  Util::FilePath( "sphere/sphere.geom" ),
-													  Util::FilePath( "sphere/sphere.frag" ) } );
+													{ FilePath( "sphere/sphere.vert" ),
+													  FilePath( "sphere/sphere.geom" ),
+													  FilePath( "sphere/sphere.frag" ) } );
 	}
 
 	void Sphere::_init() {}

@@ -13,7 +13,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "solvent_excluded_surface.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "ui/widget_factory.hpp"
 #include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"

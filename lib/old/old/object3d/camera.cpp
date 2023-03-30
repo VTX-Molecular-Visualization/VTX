@@ -1,6 +1,6 @@
 #include "camera.hpp"
 #include "setting.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "vtx_app.hpp"
 
 namespace VTX

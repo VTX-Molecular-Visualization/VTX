@@ -1,7 +1,7 @@
 #ifndef __VTX_SPEC__
 #define __VTX_SPEC__
 
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 
 namespace VTX
 {

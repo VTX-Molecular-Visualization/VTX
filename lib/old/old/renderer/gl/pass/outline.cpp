@@ -20,7 +20,7 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
-		_program = VTX_PROGRAM_MANAGER().createProgram( "Outline", { Util::FilePath( "shading/outline.frag" ) } );
+		_program = VTX_PROGRAM_MANAGER().createProgram( "Outline", { FilePath( "shading/outline.frag" ) } );
 
 		_program->use();
 

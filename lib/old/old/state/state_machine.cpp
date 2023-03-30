@@ -2,7 +2,7 @@
 #include <util/types.hpp>
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
-#include "exception.hpp"
+#include <util/exceptions.hpp>
 #include "export.hpp"
 #include "play.hpp"
 #include "visualization.hpp"
@@ -38,7 +38,7 @@ namespace VTX
 			}
 			else
 			{
-				throw Exception::VTXException( "State not found: " + p_name );
+				throw VTXException( "State not found: " + p_name );
 			}
 		}
 

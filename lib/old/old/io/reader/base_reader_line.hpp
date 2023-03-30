@@ -16,16 +16,16 @@ namespace VTX
 			  public:
 				virtual ~BaseReaderLine() = default;
 
-				virtual void readFile( const Util::FilePath & p_path, T & p_data ) override final
+				virtual void readFile( const FilePath & p_path, T & p_data ) override final
 				{
 					std::ifstream file;
 					std::string	  line;
 
-					file.open( p_path.path() );
+					file.open( p_path );
 
 					if ( !file.is_open() )
 					{
-						throw Exception::IOException( "Cannot open file" );
+						throw IOException( "Cannot open file" );
 					}
 
 					while ( getline( file, line ) )

@@ -7,7 +7,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "view/d3/ribbon.hpp"
 #include <util/chrono.hpp>
 

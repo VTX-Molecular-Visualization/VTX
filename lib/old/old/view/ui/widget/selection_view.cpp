@@ -9,7 +9,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "style.hpp"
 #include <util/chrono.hpp>
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "ui/widget_factory.hpp"
 #include <QHeaderView>
 

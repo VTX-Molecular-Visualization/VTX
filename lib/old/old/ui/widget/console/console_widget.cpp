@@ -2,7 +2,7 @@
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "style.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
 #include <QCoreApplication>

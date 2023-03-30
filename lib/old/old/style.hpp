@@ -5,7 +5,7 @@
 #include "model/category_enum.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "selection/selection_enum.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "util/label.hpp"
 #include "util/ui.hpp"
 #include <QBitmap>

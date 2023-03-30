@@ -7,8 +7,8 @@
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
 #include <util/chrono.hpp>
-#include "tool/logger.hpp"
-#include "util/filesystem.hpp"
+#include <util/logger.hpp>
+#include <util/filesystem.hpp>
 #include <set>
 
 namespace VTX::Worker
@@ -83,9 +83,9 @@ namespace VTX::Worker
 
 		Util::Filesystem::checkSaveDirectoryHierarchy( _path );
 
-		const Util::FilePath itemDirectory = Util::Filesystem::getSceneObjectsSaveDirectory( _path );
+		const FilePath itemDirectory = Util::Filesystem::getSceneObjectsSaveDirectory( _path );
 
-		std::set<Util::FilePath> filesToRemove = Util::Filesystem::getFilesInDirectory( itemDirectory );
+		std::set<FilePath> filesToRemove = Util::Filesystem::getFilesInDirectory( itemDirectory );
 
 		IO::Writer::SerializedObject<VTXApp> * const writer = new IO::Writer::SerializedObject<VTXApp>( this );
 
@@ -100,13 +100,13 @@ namespace VTX::Worker
 				const IO::Struct::ScenePathData::Data & moleculePathData
 					= VTXApp::get().getScenePathData().getData( molecule.first );
 
-				Util::FilePath filePath = moleculePathData.getFilepath();
+				FilePath filePath = moleculePathData.getFilepath();
 
 				bool needToSaveMolecule = moleculePathData.needToSaveMolecule();
 
 				if ( VTX_SETTING().isPortableSaveActivated() )
 				{
-					const bool pathIsInItemDirectory = filePath.path().rfind( itemDirectory.path(), 0 ) == 0;
+					const bool pathIsInItemDirectory = filePath.rfind( itemDirectory, 0 ) == 0;
 					needToSaveMolecule				 = needToSaveMolecule || !pathIsInItemDirectory;
 				}
 
@@ -139,7 +139,7 @@ namespace VTX::Worker
 			// Clean files
 			while ( filesToRemove.size() > 0 )
 			{
-				const Util::FilePath fileToRemove = *filesToRemove.begin();
+				const FilePath fileToRemove = *filesToRemove.begin();
 				filesToRemove.erase( filesToRemove.begin() );
 				Util::Filesystem::remove( fileToRemove );
 			}
@@ -156,7 +156,7 @@ namespace VTX::Worker
 		return result;
 	}
 
-	Saver::MODE Saver::_getMode( const Util::FilePath & p_path ) const
+	Saver::MODE Saver::_getMode( const FilePath & p_path ) const
 	{
 		std::string extension = p_path.extension();
 

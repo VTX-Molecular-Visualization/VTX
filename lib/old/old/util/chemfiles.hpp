@@ -3,7 +3,7 @@
 
 #include "model/bond.hpp"
 #include "object3d/helper/aabb.hpp"
-#include "util/filesystem.hpp"
+#include <util/filesystem.hpp>
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
 #pragma warning( pop )

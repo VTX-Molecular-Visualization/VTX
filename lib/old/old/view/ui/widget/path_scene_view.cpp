@@ -5,7 +5,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "ui/contextual_menu.hpp"
 #include "ui/mime_type.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_selection.hpp"

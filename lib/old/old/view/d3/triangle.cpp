@@ -8,7 +8,7 @@ namespace VTX::View::D3
 	Renderer::GL::Program * const Triangle::_createProgram()
 	{
 		return VTX_PROGRAM_MANAGER().createProgram(
-			"Triangle", { Util::FilePath( "triangle/triangle.vert" ), Util::FilePath( "triangle/triangle.frag" ) } );
+			"Triangle", { FilePath( "triangle/triangle.vert" ), FilePath( "triangle/triangle.frag" ) } );
 	}
 
 	void Triangle::render( const Object3D::Camera & p_camera ) const
@@ -23,7 +23,7 @@ namespace VTX::View::D3
 	Renderer::GL::Program * const TriangleSES::_createProgram()
 	{
 		return VTX_PROGRAM_MANAGER().createProgram(
-			"Triangle", { Util::FilePath( "triangle/triangle.vert" ), Util::FilePath( "triangle/triangle.frag" ) } );
+			"Triangle", { FilePath( "triangle/triangle.vert" ), FilePath( "triangle/triangle.frag" ) } );
 	}
 	void TriangleSES::render( const Object3D::Camera & p_camera ) const
 	{

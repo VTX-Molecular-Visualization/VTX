@@ -1,6 +1,6 @@
 #include "base_event_receiver_keyboard.hpp"
 #include "event_manager.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 
 namespace VTX
 {

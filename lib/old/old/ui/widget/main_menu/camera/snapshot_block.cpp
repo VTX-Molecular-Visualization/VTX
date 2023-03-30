@@ -8,7 +8,7 @@
 #include "ui/main_window.hpp"
 #include "ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/widget_factory.hpp"
-#include "util/filesystem.hpp"
+#include <util/filesystem.hpp>
 #include "vtx_app.hpp"
 #include "worker/snapshoter.hpp"
 

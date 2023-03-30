@@ -14,7 +14,7 @@ namespace VTX::Worker
 									   const std::string &	  p_type   = "uint",
 									   const std::string &	  p_layout = "std430",
 									   const std::string &	  p_value  = "0" ) :
-			GpuComputer( Util::FilePath( "ses/buffer_init.comp" ),
+			GpuComputer( FilePath( "ses/buffer_init.comp" ),
 						 p_size,
 						 { { "TYPE", p_type }, { "LAYOUT", p_layout }, { "VALUE", p_value } } ),
 			_buffer( p_buffer ), _bufferSize( p_size ), _type( p_type ), _layout( p_layout ), _value( p_value )

@@ -3,7 +3,7 @@
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
 #include <util/chrono.hpp>
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 
 namespace VTX::Worker
 {
@@ -18,9 +18,9 @@ namespace VTX::Worker
 
 		_library.clear( false );
 
-		std::set<Util::FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
+		std::set<FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
 
-		for ( const Util::FilePath & file : files )
+		for ( const FilePath & file : files )
 		{
 			Model::Renderer::RenderEffectPreset * const preset
 				= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
@@ -33,7 +33,7 @@ namespace VTX::Worker
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load render effect library " + file.path() + ": " + std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load render effect library " + file + ": " + std::string( p_e.what() ) );
 				MVC::MvcManager::get().deleteModel( preset );
 			}
 		}
@@ -56,7 +56,7 @@ namespace VTX::Worker
 
 		chrono.start();
 
-		for ( const Util::FilePath & path : _paths )
+		for ( const FilePath & path : _paths )
 		{
 			Model::Renderer::RenderEffectPreset * const preset
 				= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
@@ -69,7 +69,7 @@ namespace VTX::Worker
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load render effect preset at " + path.path() + " : " + std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load render effect preset at " + path + " : " + std::string( p_e.what() ) );
 				MVC::MvcManager::get().deleteModel( preset );
 			}
 

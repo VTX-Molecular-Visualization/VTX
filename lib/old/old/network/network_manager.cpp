@@ -1,7 +1,7 @@
 #include "network_manager.hpp"
 #include "action/main.hpp"
 #include "event/event_manager.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include <QNetworkRequest>
 
 namespace VTX

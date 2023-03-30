@@ -3,8 +3,8 @@
 #include "model/representation/representation_library.hpp"
 #include "representation/representation_manager.hpp"
 #include <util/chrono.hpp>
-#include "tool/logger.hpp"
-#include "util/filesystem.hpp"
+#include <util/logger.hpp>
+#include <util/filesystem.hpp>
 
 namespace VTX::Worker
 {
@@ -23,9 +23,9 @@ namespace VTX::Worker
 			Representation::RepresentationManager::get().clearAllRepresentations( false );
 		}
 
-		std::set<Util::FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
+		std::set<FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
 
-		for ( const Util::FilePath & file : files )
+		for ( const FilePath & file : files )
 		{
 			Model::Representation::Representation * const representation
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
@@ -38,7 +38,7 @@ namespace VTX::Worker
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load representation library " + file.path() + ": " + std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load representation library " + file + ": " + std::string( p_e.what() ) );
 				MVC::MvcManager::get().deleteModel( representation );
 			}
 		}
@@ -123,7 +123,7 @@ namespace VTX::Worker
 
 		chrono.start();
 
-		for ( const Util::FilePath & path : _paths )
+		for ( const FilePath & path : _paths )
 		{
 			Model::Representation::Representation * const representation
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
@@ -136,7 +136,7 @@ namespace VTX::Worker
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load representation at " + path.path() + " : " + std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load representation at " + path + " : " + std::string( p_e.what() ) );
 				MVC::MvcManager::get().deleteModel( representation );
 			}
 

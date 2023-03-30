@@ -16,7 +16,7 @@ namespace VTX::Renderer::GL::Pass
 						 Texture2D::Filter::NEAREST,
 						 Texture2D::Filter::NEAREST );
 
-		_program = VTX_PROGRAM_MANAGER().createProgram( "AA", { Util::FilePath( "shading/fxaa.frag" ) } );
+		_program = VTX_PROGRAM_MANAGER().createProgram( "AA", { FilePath( "shading/fxaa.frag" ) } );
 	}
 
 	void FXAA::resize( const uint p_width, const uint p_height, const GL & p_renderer )

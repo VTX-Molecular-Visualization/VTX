@@ -8,7 +8,7 @@
 #include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
 #include <util/chrono.hpp>
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include <unordered_set>
 
 namespace VTX::Model

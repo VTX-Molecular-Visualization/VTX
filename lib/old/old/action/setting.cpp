@@ -10,7 +10,7 @@
 #include "renderer/base_renderer.hpp"
 #include "representation/representation_manager.hpp"
 #include "ui/main_window.hpp"
-#include "util/filesystem.hpp"
+#include <util/filesystem.hpp>
 #include "vtx_app.hpp"
 #include <exception>
 #include <string>
@@ -21,7 +21,7 @@ namespace VTX::Action::Setting
 
 	void Load::execute()
 	{
-		const Util::FilePath & path = Util::Filesystem::getSettingJsonFile();
+		const FilePath & path = Util::Filesystem::getSettingJsonFile();
 		if ( path.exists() == false )
 		{
 			VTX_INFO( "No settings file found" );

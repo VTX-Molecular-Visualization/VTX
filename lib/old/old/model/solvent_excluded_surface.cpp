@@ -116,7 +116,7 @@ namespace VTX
 
 			/////////////////////
 			// Worker: create SDF.
-			Worker::GpuComputer workerCreateSDF( Util::FilePath( "ses/create_sdf.comp" ) );
+			Worker::GpuComputer workerCreateSDF( FilePath( "ses/create_sdf.comp" ) );
 
 			// Create SSBOs.
 			using VTX::Renderer::GL::Buffer;
@@ -164,7 +164,7 @@ namespace VTX
 
 			//////////////////////
 			// Worker: refine SDF.
-			Worker::GpuComputer workerRefineSDF( Util::FilePath( "ses/refine_sdf.comp" ) );
+			Worker::GpuComputer workerRefineSDF( FilePath( "ses/refine_sdf.comp" ) );
 
 			// Bind.
 			bufferSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
@@ -194,7 +194,7 @@ namespace VTX
 
 			////////////////////////////
 			// Worker: reduce grid.
-			Worker::GpuComputer workerReduceGrid( Util::FilePath( "ses/reduce_grid.comp" ) );
+			Worker::GpuComputer workerReduceGrid( FilePath( "ses/reduce_grid.comp" ) );
 			size_t				bufferSize = gridSES.getCellCount();
 
 			std::vector<uint> validities( bufferSize, 0 );
@@ -226,7 +226,7 @@ namespace VTX
 
 			////////////////////////////
 			// Worker: grid compaction.
-			Worker::GpuComputer workerGridCompaction( Util::FilePath( "ses/grid_compaction.comp" ) );
+			Worker::GpuComputer workerGridCompaction( FilePath( "ses/grid_compaction.comp" ) );
 
 			VTX_DEBUG( "Grid buffer size before compaction: {}", bufferSize );
 
@@ -265,7 +265,7 @@ namespace VTX
 
 			/////////////////////////
 			// Worker: marching cube.
-			Worker::GpuComputer workerMarchingCube( Util::FilePath( "ses/marching_cube.comp" ) );
+			Worker::GpuComputer workerMarchingCube( FilePath( "ses/marching_cube.comp" ) );
 
 			// Create SSBOs.
 			// Output.
@@ -316,7 +316,7 @@ namespace VTX
 
 			////////////////////////////
 			// Worker: buffer compaction.
-			Worker::GpuComputer workerBufferCompaction( Util::FilePath( "ses/buffer_compaction.comp" ) );
+			Worker::GpuComputer workerBufferCompaction( FilePath( "ses/buffer_compaction.comp" ) );
 			VTX_DEBUG( "Triangle buffer size before compaction: {}", bufferSize );
 
 			// Exclusive scan with std.
@@ -496,7 +496,7 @@ namespace VTX
 			{
 				////////////////////////////
 				// Worker: compute normals (sum).
-				Worker::GpuComputer workerComputeNormals( Util::FilePath( "ses/compute_normals.comp" ) );
+				Worker::GpuComputer workerComputeNormals( FilePath( "ses/compute_normals.comp" ) );
 				Buffer				bufferNormalsCasted( std::vector<Vec4i>( _indiceCount, Vec4i() ) );
 
 				// Bind.
@@ -522,7 +522,7 @@ namespace VTX
 
 				////////////////////////////
 				// Worker: compute normals (divide).
-				Worker::GpuComputer workerNormalizeNormals( Util::FilePath( "ses/normalize_normals.comp" ) );
+				Worker::GpuComputer workerNormalizeNormals( FilePath( "ses/normalize_normals.comp" ) );
 
 				// Bind.
 				bufferNormals.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
@@ -638,7 +638,7 @@ namespace VTX
 			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 4 );
 			bufferColorsUint.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 5 );
 
-			Worker::GpuComputer worker( Util::FilePath( "ses/apply_color.comp" ) );
+			Worker::GpuComputer worker( FilePath( "ses/apply_color.comp" ) );
 
 			worker.getProgram().use();
 			worker.getProgram().setUInt( "uSize", uint( _atomsToTriangles.size() ) );
@@ -656,7 +656,7 @@ namespace VTX
 			bufferCounters.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );
 			bufferColorsUint.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
 
-			worker = Worker::GpuComputer( Util::FilePath( "ses/apply_color_divide.comp" ) );
+			worker = Worker::GpuComputer( FilePath( "ses/apply_color_divide.comp" ) );
 
 			worker.getProgram().use();
 			worker.getProgram().setUInt( "uSize", _indiceCount );
@@ -695,7 +695,7 @@ namespace VTX
 			bufferAtomVisibilities.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
 			bufferAtomsToTriangles.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 
-			Worker::GpuComputer worker( Util::FilePath( "ses/apply_visibility.comp" ) );
+			Worker::GpuComputer worker( FilePath( "ses/apply_visibility.comp" ) );
 
 			worker.getProgram().use();
 			worker.getProgram().setUInt( "uSize", uint( _atomsToTriangles.size() ) );
@@ -735,7 +735,7 @@ namespace VTX
 			bufferAtomSelections.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 2 );
 			bufferAtomsToTriangles.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 3 );
 
-			Worker::GpuComputer worker( Util::FilePath( "ses/apply_selection.comp" ) );
+			Worker::GpuComputer worker( FilePath( "ses/apply_selection.comp" ) );
 
 			worker.getProgram().use();
 			worker.getProgram().setUInt( "uSize", uint( _atomsToTriangles.size() ) );

@@ -7,7 +7,7 @@
 #include "model/residue.hpp"
 #include "representation_enum.hpp"
 #include "setting.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "vtx_app.hpp"
 
 namespace VTX::Model::Representation

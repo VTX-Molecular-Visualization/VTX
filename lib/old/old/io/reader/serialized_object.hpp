@@ -15,14 +15,14 @@ namespace VTX::IO::Reader
 	class SerializedObject : public BaseReader<T>
 	{
 	  public:
-		void readFile( const Util::FilePath & p_path, T & p_data ) override
+		void readFile( const FilePath & p_path, T & p_data ) override
 		{
 			IO::Serializer serializer = IO::Serializer();
 
-			QFile file( QString::fromStdString( p_path.path() ) );
+			QFile file( QString::fromStdString( p_path ) );
 			if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) == false )
 			{
-				throw Exception::IOException( "Can not read file: " + p_path.path() );
+				throw IOException( "Can not read file: " + p_path );
 			}
 
 			QTextStream			 in( &file );
@@ -48,7 +48,7 @@ namespace VTX::IO::Reader
 
 			if ( needUpdate )
 			{
-				throw Exception::IOException( "Can not read file, version is newer than VTX" );
+				throw IOException( "Can not read file, version is newer than VTX" );
 			}
 
 			serializer.deserialize( json.at( "DATA" ), std::make_tuple( major, minor, revision ), p_data );

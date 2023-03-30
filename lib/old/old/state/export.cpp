@@ -3,7 +3,7 @@
 #include "action/main.hpp"
 #include "model/path.hpp"
 #include "model/viewpoint.hpp"
-#include "util/filesystem.hpp"
+#include <util/filesystem.hpp>
 #include "util/time.hpp"
 #include "vtx_app.hpp"
 #include "worker/program_launcher.hpp"
@@ -107,7 +107,7 @@ namespace VTX
 		{
 			if ( std::filesystem::exists( Util::Filesystem::FFMPEG_EXE_FILE ) == false )
 			{
-				throw Exception::LibException( "ffmpeg is missing, frames are saved on disk" );
+				throw LibException( "ffmpeg is missing, frames are saved on disk" );
 			}
 
 			VTX_INFO( "Encoding video" );

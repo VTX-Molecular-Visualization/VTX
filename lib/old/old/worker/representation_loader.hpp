@@ -2,7 +2,7 @@
 #define __VTX_WORKER_REPRESENTATION_LOADER__
 
 #include "base_worker.hpp"
-#include "util/filesystem.hpp"
+#include <util/filesystem.hpp>
 #include <map>
 #include <vector>
 
@@ -24,7 +24,7 @@ namespace VTX
 			{
 			}
 			explicit RepresentationLibraryLoader( Model::Representation::RepresentationLibrary & p_library,
-												  const Util::FilePath &							 p_path ) :
+												  const FilePath &							 p_path ) :
 				_path( p_path ),
 				_library( p_library )
 
@@ -38,7 +38,7 @@ namespace VTX
 			void _run() override;
 
 		  private:
-			Util::FilePath								   _path;
+			FilePath								   _path;
 			Model::Representation::RepresentationLibrary & _library;
 			bool										   _notify	= true;
 			bool										   _restore = true;
@@ -47,14 +47,14 @@ namespace VTX
 		class RepresentationLoader : public Worker::BaseWorker
 		{
 		  public:
-			explicit RepresentationLoader( const Util::FilePath & p_paths ) { _paths.emplace_back( p_paths ); }
-			explicit RepresentationLoader( const std::vector<Util::FilePath> & p_paths ) : _paths( p_paths ) {}
+			explicit RepresentationLoader( const FilePath & p_paths ) { _paths.emplace_back( p_paths ); }
+			explicit RepresentationLoader( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 
 		  protected:
 			void _run() override;
 
 		  private:
-			std::vector<Util::FilePath> _paths = std::vector<Util::FilePath>();
+			std::vector<FilePath> _paths = std::vector<FilePath>();
 		};
 
 	} // namespace Worker

@@ -21,13 +21,13 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_toonShading
-			= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { Util::FilePath( "shading/shading_toon.frag" ) } );
+			= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { FilePath( "shading/shading_toon.frag" ) } );
 		_diffuseShading = VTX_PROGRAM_MANAGER().createProgram( "DiffuseShading",
-															   { Util::FilePath( "shading/shading_diffuse.frag" ) } );
+															   { FilePath( "shading/shading_diffuse.frag" ) } );
 		_glossyShading
-			= VTX_PROGRAM_MANAGER().createProgram( "GlossyShading", { Util::FilePath( "shading/shading_glossy.frag" ) } );
+			= VTX_PROGRAM_MANAGER().createProgram( "GlossyShading", { FilePath( "shading/shading_glossy.frag" ) } );
 		_flatShading
-			= VTX_PROGRAM_MANAGER().createProgram( "FlatShading", { Util::FilePath( "shading/shading_flat.frag" ) } );
+			= VTX_PROGRAM_MANAGER().createProgram( "FlatShading", { FilePath( "shading/shading_flat.frag" ) } );
 
 		// Use setting value.
 		set();

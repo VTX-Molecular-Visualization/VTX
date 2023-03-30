@@ -8,7 +8,7 @@
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "ui/main_window.hpp"
 #include "vtx_app.hpp"
 

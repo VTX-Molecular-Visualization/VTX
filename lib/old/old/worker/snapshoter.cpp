@@ -5,7 +5,7 @@
 #include "renderer/gl/framebuffer.hpp"
 #include "renderer/gl/gl.hpp"
 #include "ui/main_window.hpp"
-#include "util/filesystem.hpp"
+#include <util/filesystem.hpp>
 #include "util/time.hpp"
 #include "vtx_app.hpp"
 #include <QOffscreenSurface>
@@ -19,7 +19,7 @@
 namespace VTX::Worker
 {
 	Snapshoter::Snapshoter( const MODE &					p_mode,
-							const Util::FilePath &			p_path,
+							const FilePath &			p_path,
 							const IO::Struct::ImageExport & p_exportData ) :
 		_mode( p_mode ),
 		_path( p_path ), _exportData( p_exportData )
@@ -29,7 +29,7 @@ namespace VTX::Worker
 	Snapshoter::Snapshoter( const MODE &					p_mode,
 							QImage *						p_imageTarget,
 							const IO::Struct::ImageExport & p_exportData ) :
-		Snapshoter( p_mode, Util::FilePath(), p_exportData )
+		Snapshoter( p_mode, FilePath(), p_exportData )
 	{
 		_imageTarget = p_imageTarget;
 	}
@@ -124,7 +124,7 @@ namespace VTX::Worker
 		if ( !_path.empty() )
 		{
 			if ( render.save(
-					 QString::fromStdString( _path.path() ), _path.extension().c_str(), _exportData.getIntQuality() ) )
+					 QString::fromStdString( _path ), _path.extension().c_str(), _exportData.getIntQuality() ) )
 			{
 				VTX_INFO( "Snapshot taken: " + _path.filename() );
 			}
