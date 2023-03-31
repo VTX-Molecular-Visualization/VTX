@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GL_CONSTANTS__
-#define __VTX_RENDERER_GL_CONSTANTS__
+#ifndef __VTX_UTIL_CONSTANTS__
+#define __VTX_UTIL_CONSTANTS__
 
 #include <climits>
 #include <util/types.hpp>

@@ -17,7 +17,7 @@ namespace VTX::Worker
 	class GpuComputer : public Worker::BaseWorker, public Generic::BaseOpenGL
 	{
 	  public:
-		explicit GpuComputer( const FilePath &								   p_shader,
+		explicit GpuComputer( const FilePath &										   p_shader,
 							  const size_t											   p_size,
 							  const std::vector<std::pair<std::string, std::string>> & p_customDefines = {} ) :
 			GpuComputer( p_shader, _computeSize( p_size ), p_customDefines )
@@ -25,7 +25,7 @@ namespace VTX::Worker
 		}
 
 		explicit GpuComputer( const FilePath & p_shader,
-							  const Vec3i &			 p_size = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ),
+							  const Vec3i &	   p_size = Vec3i( LOCAL_SIZE_X, LOCAL_SIZE_Y, LOCAL_SIZE_Z ),
 							  const std::vector<std::pair<std::string, std::string>> & p_customDefines = {} ) :
 			_size( p_size )
 
@@ -42,7 +42,7 @@ namespace VTX::Worker
 			}
 
 			_program = VTX_PROGRAM_MANAGER().createProgram(
-				p_shader.filenameWithoutExtension(), { p_shader }, definesToInject, shaderNameSuffix );
+				p_shader.stem().string(), { p_shader }, definesToInject, shaderNameSuffix );
 		}
 
 		virtual ~GpuComputer() = default;

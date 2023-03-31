@@ -2,8 +2,8 @@
 #define __VTX_WORKER_RENDER_EFFECT_PRESET_LOADER__
 
 #include "base_worker.hpp"
+#include "io/filesystem.hpp"
 #include <util/types.hpp>
-#include <util/filesystem.hpp>
 #include <vector>
 
 namespace VTX
@@ -20,11 +20,11 @@ namespace VTX
 		  public:
 			explicit RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary & p_library ) :
 				RenderEffectPresetLibraryLoader( p_library,
-												 FilePath( Util::Filesystem::getRenderEffectPresetsLibraryDir() ) )
+												 FilePath( IO::Filesystem::getRenderEffectPresetsLibraryDir() ) )
 			{
 			}
 			explicit RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary & p_library,
-													  const FilePath						   p_path ) :
+													  const FilePath							   p_path ) :
 				_path( p_path ),
 				_library( p_library )
 			{
@@ -36,7 +36,7 @@ namespace VTX
 			void _run() override;
 
 		  private:
-			const FilePath							 _path;
+			const FilePath								 _path;
 			Model::Renderer::RenderEffectPresetLibrary & _library;
 			bool										 _notify = true;
 		};

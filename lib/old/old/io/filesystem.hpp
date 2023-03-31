@@ -48,7 +48,7 @@ namespace VTX::IO::Filesystem
 	inline const FilePath getLicenseFile() { return getExecutableDir() / "license.txt"; }
 
 	// Dev directories.
-	// static const FilePath SHADERS_DIR_SRC		  = FilePath( "../src/shader" );
+	static const FilePath SHADERS_DIR_SRC = FilePath( "../src/shader" );
 	// static const FilePath DEFAULT_SAVE_FOLDER	  = FilePath( "../save" );
 	// static const FilePath DEFAULT_MOLECULE_FOLDER = FilePath( "../data" );
 
@@ -153,20 +153,6 @@ namespace VTX::IO::Filesystem
 		}
 	}
 
-	void generateUniqueFileName( FilePath & p_filePath )
-	{
-		uint counter = 2;
-
-		FilePath newPath = p_filePath.stem().string();
-		while ( std::filesystem::exists( newPath ) )
-		{
-			newPath = p_filePath.stem().string() + "_" + std::to_string( counter ) + p_filePath.extension().string();
-			counter++;
-		}
-
-		std::filesystem::rename( p_filePath, newPath );
-	}
-
 	const FilePath getUniqueSnapshotsPath( const Struct::ImageExport::Format p_format )
 	{
 		std::string extension;
@@ -186,7 +172,7 @@ namespace VTX::IO::Filesystem
 		std::filesystem::create_directory( getSnapshotsDir() );
 
 		FilePath path = FilePath( getSnapshotsDir() / filename );
-		generateUniqueFileName( path );
+		Util::Filesystem::generateUniqueFileName( path );
 
 		return path;
 	}

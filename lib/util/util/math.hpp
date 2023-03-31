@@ -1,5 +1,5 @@
-#ifndef __VTX__UTIL_MATH__
-#define __VTX__UTIL_MATH__
+#ifndef __VTX_UTIL_MATH__
+#define __VTX_UTIL_MATH__
 
 #define GLM_FORCE_INLINE
 

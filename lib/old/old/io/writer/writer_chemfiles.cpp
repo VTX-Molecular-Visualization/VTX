@@ -4,9 +4,9 @@
 #include "model/bond.hpp"
 #include "model/chain.hpp"
 #include "model/residue.hpp"
-#include <util/chrono.hpp>
 #include "util/secondary_structure.hpp"
 #include <string>
+#include <util/chrono.hpp>
 
 namespace VTX::IO::Writer
 {
@@ -14,7 +14,7 @@ namespace VTX::IO::Writer
 	{
 		_prepareChemfiles();
 
-		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path, 'w' );
+		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string(), 'w' );
 		_writeTrajectory( trajectory, p_molecule );
 		trajectory.close();
 	}

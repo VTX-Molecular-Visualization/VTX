@@ -6,6 +6,8 @@
 namespace VTX::Util::Filesystem
 {
 	const std::string readPath( const FilePath & p_filePath );
+	void			  generateUniqueFileName( FilePath & p_filePath );
+	void			  removeAll( const FilePath & p_filePath );
 
 	/*
 	static const QString MOLECULE_EXTENSIONS_READ

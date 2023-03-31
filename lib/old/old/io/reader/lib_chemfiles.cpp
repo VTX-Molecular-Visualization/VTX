@@ -9,8 +9,6 @@
 #include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "setting.hpp"
-#include <util/chrono.hpp>
-#include <util/logger.hpp>
 #include "util/bond_guessing/bond_order_guessing.hpp"
 #include "util/chemfiles.hpp"
 #include "util/molecule.hpp"
@@ -22,6 +20,8 @@
 #include <magic_enum.hpp>
 #include <thread>
 #include <unordered_map>
+#include <util/chrono.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::IO::Reader
 {
@@ -30,14 +30,12 @@ namespace VTX::IO::Reader
 	void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
-		chemfiles::Trajectory trajectory	 = chemfiles::Trajectory( p_path, 'r', _getFormat( p_path ) );
+		chemfiles::Trajectory trajectory	 = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
 		const bool			  recomputeBonds = _needToRecomputeBonds( _getFormat( p_path ) );
 		_readTrajectory( trajectory, p_path, p_molecule, recomputeBonds );
 	}
 
-	void LibChemfiles::readBuffer( const std::string &	p_buffer,
-								   const FilePath & p_path,
-								   Model::Molecule &	p_molecule )
+	void LibChemfiles::readBuffer( const std::string & p_buffer, const FilePath & p_path, Model::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
 		chemfiles::Trajectory trajectory
@@ -48,7 +46,7 @@ namespace VTX::IO::Reader
 	bool LibChemfiles::readDynamic( const FilePath & p_path, std::vector<Model::Molecule *> p_potentialTargets )
 	{
 		_prepareChemfiles();
-		chemfiles::Trajectory dynamicTrajectory = chemfiles::Trajectory( p_path, 'r', _getFormat( p_path ) );
+		chemfiles::Trajectory dynamicTrajectory = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
 		return _tryApplyingDynamicOnTargets( dynamicTrajectory, p_potentialTargets );
 	}
 
@@ -131,7 +129,7 @@ namespace VTX::IO::Reader
 	}
 
 	void LibChemfiles::_readTrajectory( chemfiles::Trajectory & p_trajectory,
-										const FilePath &	p_path,
+										const FilePath &		p_path,
 										Model::Molecule &		p_molecule,
 										const bool				p_recomputeBonds ) const
 	{
@@ -142,18 +140,16 @@ namespace VTX::IO::Reader
 			throw IOException( "Trajectory is empty" );
 		}
 
-		// if opening a DCD file check if a topology file is present in the same folder
-		QFileInfo fileInfo = QFileInfo( QString::fromStdString( p_path ) );
-		if ( fileInfo.suffix().toStdString() == "dcd" )
+		// If opening a DCD file check if a topology file is present in the same folder.
+		if ( p_path.extension() == "dcd" )
 		{
-			const std::string filePathWithoutExt
-				= QString( fileInfo + QDir::separator() + fileInfo.baseName() ).toStdString();
+			const std::string			   stem			  = p_path.stem().string();
 			const std::vector<std::string> topExtensions  = { ".xyz", ".pdb", ".mol2" };
 			std::string					   foundExtension = "";
 			for ( size_t ext = 0; ext < topExtensions.size(); ext++ )
 			{
 				std::fstream topFile;
-				topFile.open( filePathWithoutExt + topExtensions[ ext ] );
+				topFile.open( stem + topExtensions[ ext ] );
 				if ( topFile.is_open() )
 				{
 					topFile.close();
@@ -163,8 +159,8 @@ namespace VTX::IO::Reader
 			}
 			if ( foundExtension != "" )
 			{
-				chemfiles::Trajectory topolgy_file( filePathWithoutExt + foundExtension, 'r' );
-				p_trajectory.set_topology( filePathWithoutExt + foundExtension );
+				chemfiles::Trajectory topolgy_file( stem + foundExtension, 'r' );
+				p_trajectory.set_topology( stem + foundExtension );
 			}
 		}
 
@@ -744,7 +740,7 @@ namespace VTX::IO::Reader
 	// http://chemfiles.org/chemfiles/latest/formats.html#list-of-supported-formats
 	const std::string LibChemfiles::_getFormat( const FilePath & p_path )
 	{
-		std::string extension = p_path.extension();
+		std::string extension = p_path.extension().string();
 		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );
 		if ( extension == "nc" )
 		{

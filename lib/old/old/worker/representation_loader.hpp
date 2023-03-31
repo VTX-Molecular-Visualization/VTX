@@ -2,7 +2,7 @@
 #define __VTX_WORKER_REPRESENTATION_LOADER__
 
 #include "base_worker.hpp"
-#include <util/filesystem.hpp>
+#include "io/filesystem.hpp"
 #include <map>
 #include <vector>
 
@@ -20,11 +20,11 @@ namespace VTX
 		{
 		  public:
 			explicit RepresentationLibraryLoader( Model::Representation::RepresentationLibrary & p_library ) :
-				RepresentationLibraryLoader( p_library, Util::Filesystem::getRepresentationsLibraryDir() )
+				RepresentationLibraryLoader( p_library, IO::Filesystem::getRepresentationsLibraryDir() )
 			{
 			}
 			explicit RepresentationLibraryLoader( Model::Representation::RepresentationLibrary & p_library,
-												  const FilePath &							 p_path ) :
+												  const FilePath &								 p_path ) :
 				_path( p_path ),
 				_library( p_library )
 
@@ -38,7 +38,7 @@ namespace VTX
 			void _run() override;
 
 		  private:
-			FilePath								   _path;
+			FilePath									   _path;
 			Model::Representation::RepresentationLibrary & _library;
 			bool										   _notify	= true;
 			bool										   _restore = true;

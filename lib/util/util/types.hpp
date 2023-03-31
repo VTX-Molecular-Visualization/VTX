@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GL_TYPES__
-#define __VTX_RENDERER_GL_TYPES__
+#ifndef __VTX_UTIL_TYPES__
+#define __VTX_UTIL_TYPES__
 
 #include <filesystem>
 #include <glm/detail/qualifier.hpp>

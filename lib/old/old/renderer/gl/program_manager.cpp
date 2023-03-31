@@ -143,7 +143,7 @@ namespace VTX::Renderer::GL
 				size_t		startPosPath		= includeRelativePath.find( '"' );
 				size_t		endPosPath			= includeRelativePath.find( '"', startPosPath + 1 );
 				includeRelativePath = includeRelativePath.substr( startPosPath + 1, endPosPath - startPosPath - 1 );
-				FilePath includeAbsolutePath = path.dirpath();
+				FilePath includeAbsolutePath = path.parent_path();
 				includeAbsolutePath /= includeRelativePath;
 				const std::string srcInclude = Util::Filesystem::readPath( includeAbsolutePath );
 				src.replace( startPosInclude, endPosInclude - startPosInclude, srcInclude );
