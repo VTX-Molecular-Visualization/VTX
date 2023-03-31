@@ -17,7 +17,7 @@
 #include <old/model/molecule.hpp>
 // #include "state/state_machine.hpp"
 // #include "state/visualization.hpp"
-#include <old/style.hpp>
+#include "qt/style.hpp"
 #include <old/tool/logger.hpp>
 // #include "view/ui/widget/measurement/angle_render_view.hpp"
 // #include "view/ui/widget/measurement/dihedral_angle_render_view.hpp"
@@ -237,7 +237,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	void RenderWidget::_onShortcutSnapshot()
 	{
 		VTX_ACTION( new VTX::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-													 Util::Filesystem::getUniqueSnapshotsPath(),
+													 VTX::Util::Filesystem::getUniqueSnapshotsPath(),
 													 VTX_SETTING().getSnapshotResolution() ) );
 	}
 

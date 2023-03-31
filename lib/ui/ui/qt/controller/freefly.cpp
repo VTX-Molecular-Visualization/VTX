@@ -1,8 +1,8 @@
 #include "freefly.hpp"
+#include "qt/style.hpp"
 #include <old/action/action_manager.hpp>
 #include <old/object3d/scene.hpp>
 #include <old/setting.hpp>
-#include <old/style.hpp>
 
 namespace VTX::UI::QT::Controller
 {
@@ -78,13 +78,14 @@ namespace VTX::UI::QT::Controller
 	{
 		_orientStartingPosition = _camera.getPosition();
 		const float targetDistance
-			= p_aabb.radius() / (float)( tan( Util::Math::radians( _camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
+			= p_aabb.radius()
+			  / (float)( tan( VTX::Util::Math::radians( _camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
 		_orientTargetPosition = p_aabb.centroid() - _camera.getFront() * targetDistance;
 
 		_orientStartingRotation = _camera.getRotation();
 		_orientTargetRotation	= _orientStartingRotation;
 
-		_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
+		_isOrienting = VTX::Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
 	}
 	void Freefly::_computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation )
 	{
@@ -94,16 +95,16 @@ namespace VTX::UI::QT::Controller
 		_orientStartingRotation = _camera.getRotation();
 		_orientTargetRotation	= p_orientation;
 
-		_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
+		_isOrienting = VTX::Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
 	}
 
 	void Freefly::_updateOrient( const float & p_deltaTime )
 	{
 		_camera.setPosition(
-			Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime ) );
+			VTX::Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime ) );
 
 		_camera.setRotation(
-			Util::Math::easeInOutInterpolation( _orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
+			VTX::Util::Math::easeInOutInterpolation( _orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
 	}
 
 } // namespace VTX::UI::QT::Controller

@@ -181,7 +181,7 @@ namespace VTX::UI::QT
 		QFile stylesheetFile( p_stylesheetPath );
 		stylesheetFile.open( QFile::ReadOnly );
 
-		QString stylesheet = stylesheetFile.readAll();
+		const QString stylesheet = stylesheetFile.readAll();
 		setStyleSheet( stylesheet );
 	}
 

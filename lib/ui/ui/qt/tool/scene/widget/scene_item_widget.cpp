@@ -1,6 +1,7 @@
 #include "scene_item_widget.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/main_window.hpp"
+#include "qt/mime_type.hpp"
 #include "qt/tool/keys.hpp"
 #include "qt/tool/scene/widget/scene_item_selection_model.hpp"
 #include "qt/tool/scene/widget/scene_widget.hpp"
@@ -16,7 +17,6 @@
 #include <old/mvc/mvc_manager.hpp>
 #include <old/selection/selection_manager.hpp>
 #include <old/tool/logger.hpp>
-#include <old/ui/mime_type.hpp>
 #include <stack>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
@@ -164,13 +164,13 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		BaseManualWidget::dragEnterEvent( p_event );
 
 		const bool draggedObjectIsModel
-			= UI::MimeType::checkApplicationDataType( p_event->mimeData(), UI::MimeType::ApplicationMimeType::MODEL );
+			= QT::MimeType::checkApplicationDataType( p_event->mimeData(), MimeType::ApplicationMimeType::MODEL );
 
 		if ( draggedObjectIsModel )
 		{
-			const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
+			const MimeType::ModelData modelData = MimeType::getModelData( p_event->mimeData() );
 
-			if ( modelData.getDragSource() == UI::MimeType::DragSource::SCENE_VIEW )
+			if ( modelData.getDragSource() == MimeType::DragSource::SCENE_VIEW )
 			{
 				p_event->acceptProposedAction();
 			}
@@ -430,7 +430,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 			= isModelSelected ? &( selectionModel )
 							  : &( MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() ) );
 
-		return VTX::UI::MimeType::generateMimeDataFromModel( *modelDragged, UI::MimeType::DragSource::SCENE_VIEW );
+		return MimeType::generateMimeDataFromModel( *modelDragged, MimeType::DragSource::SCENE_VIEW );
 	}
 
 	void SceneItemWidget::_refreshCurrentItemInSelection( const Model::BaseModel * const p_obj )

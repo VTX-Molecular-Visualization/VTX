@@ -15,7 +15,7 @@
 #include <old/model/path.hpp>
 #include <old/model/selection.hpp>
 #include <old/model/viewpoint.hpp>
-#include <old/style.hpp>
+#include "qt/style.hpp"
 #include <old/view/base_view.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View

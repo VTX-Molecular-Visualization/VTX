@@ -2,12 +2,14 @@
 // #include "dialog.hpp"
 #include "qt/main_window.hpp"
 #include "qt/state/state_machine.hpp"
+#include "qt/style.hpp"
 #include "qt/tool/render/dialog.hpp"
 #include "widget_factory.hpp"
 #include <QCoreApplication>
 #include <QIcon>
 #include <QLoggingCategory>
 #include <QPalette>
+#include <QStyleFactory>
 #include <QSurfaceFormat>
 // #include <exception>
 #include <old/tool/logger.hpp>
@@ -92,7 +94,9 @@ namespace VTX::UI::QT
 
 	void ApplicationQt::_initQt()
 	{
-		this->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
+		setWindowIcon( QIcon( ":/sprite/logo.png" ) );
+
+		setStyle( QString::fromStdString( Style::DEFAULT_STYLE_FACTORY ) );
 
 		QPalette appPalette = palette();
 		Style::applyApplicationPaletteInPalette( appPalette );

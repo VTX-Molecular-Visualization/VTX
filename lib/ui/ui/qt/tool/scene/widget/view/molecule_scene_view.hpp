@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_TOOL_SCENE_WIDGET_VIEW_MOLECULE_SCENE_VIEW__
 #define __VTX_UI_QT_TOOL_SCENE_WIDGET_VIEW_MOLECULE_SCENE_VIEW__
 
+#include "qt/style.hpp"
 #include "qt/tool/scene/widget/scene_item_widget.hpp"
 #include "qt/widget/base_manual_widget.hpp"
 #include <QKeyEvent>
@@ -107,13 +108,13 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		void _applyResidueDataOnItem( const Model::Residue & p_molecule, QTreeWidgetItem & p_item ) const;
 		void _applyAtomDataOnItem( const Model::Atom & p_molecule, QTreeWidgetItem & p_item ) const;
 
-		void _applyResidueNameOnItem( const Model::Residue &			 p_molecule,
-									  QTreeWidgetItem &					 p_item,
-									  const Style::SYMBOL_DISPLAY_MODE & p_symbolDisplayMode ) const;
+		void _applyResidueNameOnItem( const Model::Residue &				  p_molecule,
+									  QTreeWidgetItem &						  p_item,
+									  const VTX::Style::SYMBOL_DISPLAY_MODE & p_symbolDisplayMode ) const;
 
-		void _refreshSymbolDisplay( const Style::SYMBOL_DISPLAY_MODE & p_displayMode );
-		void _refreshSymbolDisplayRecursive( QTreeWidgetItem * const			p_item,
-											 const Style::SYMBOL_DISPLAY_MODE & p_displayMode );
+		void _refreshSymbolDisplay( const VTX::Style::SYMBOL_DISPLAY_MODE & p_displayMode );
+		void _refreshSymbolDisplayRecursive( QTreeWidgetItem * const				 p_item,
+											 const VTX::Style::SYMBOL_DISPLAY_MODE & p_displayMode );
 
 		void _updateMoleculeStructure();
 		void _updateCategoryStructure( const Model::Category & p_category, QTreeWidgetItem & p_item );

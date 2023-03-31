@@ -1,13 +1,13 @@
 #include "information_widget.hpp"
 #include "qt/action/main.hpp"
+#include "qt/style.hpp"
 #include <QDesktopServices>
 #include <QLabel>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <old/action/action_manager.hpp>
-#include <old/define.hpp> // Get VTX version
-#include <old/style.hpp>
+#include <old/define.hpp>		   // Get VTX version
 #include <old/util/filesystem.hpp> // Read license file
 #include <string>
 
@@ -192,7 +192,7 @@ namespace VTX::UI::QT::Tool::UIFeatures::Widget
 
 	void InformationWidget::_getLicenseText( QString & p_txt ) const
 	{
-		Util::Filesystem::readPathQString( Util::Filesystem::getLicenseFile(), p_txt );
+		VTX::Util::Filesystem::readPathQString( VTX::Util::Filesystem::getLicenseFile(), p_txt );
 	}
 
 	void InformationWidget::_onFrameChange( const int p_frame )
