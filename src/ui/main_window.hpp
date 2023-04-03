@@ -121,7 +121,7 @@ namespace VTX
 			void _updatePicker() const;
 
 			// Functions.
-			void _loadStyleSheet( const char * p_stylesheetPath );
+			void _loadStyleSheet();
 			void _setupSlots();
 			void _restoreDockWidget( QDockWidget * const p_dockWidget );
 			void _addDockWidgetAsTabified( QDockWidget * const p_dockWidget,
