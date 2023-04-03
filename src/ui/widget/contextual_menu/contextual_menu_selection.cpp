@@ -99,10 +99,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		toggleTrajectoryPlayAction->setCheckFunction( &ContextualMenuSelection ::_checkToggleTrajectoryPlayAction );
 		moleculeStructureSubmenu->addItemData( toggleTrajectoryPlayAction );
 
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "File", TypeMask::Molecule, this ) );
 		moleculeStructureSubmenu->addItemData( new ActionData(
 			"Load Trajectory", TypeMask::Molecule, this, &ContextualMenuSelection::_loadTrajectoryAction ) );
-
-		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Export", TypeMask::Molecule, this ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
 
