@@ -18,15 +18,17 @@ namespace VTX::UI::Widget::ContextualMenu
 		addSection( "Loading" );
 		addAction( "Load Molecule", this, &ContextualMenuScene::_loadMoleculeAction );
 		addAction( "Download Molecule", this, &ContextualMenuScene::_downloadMoleculeAction );
+
+		addSection( "Session" );
 		addAction( "Save Session", this, &ContextualMenuScene::_saveSessionAction );
 		addAction( "Save Session As...", this, &ContextualMenuScene::_saveAsSessionAction );
+		addSeparator();
+		addAction( "Clear", this, &ContextualMenuScene::_clearAction );
 
 		addSection( "Action" );
 		addAction( "Show All", this, &ContextualMenuScene::_showAllMoleculesAction );
 		addSection( "Viewpoints" );
 		addAction( "Add Viewpoint", this, &ContextualMenuScene::_addViewpointAction );
-		addSection( "Scene" );
-		addAction( "Clear", this, &ContextualMenuScene::_clearAction );
 	}
 
 	void ContextualMenuScene::localize() {}
