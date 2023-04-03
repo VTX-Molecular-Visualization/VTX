@@ -53,7 +53,7 @@ MakeVTX()
 {
     echo "Make VTX"
     cmake -B build -DCMAKE_BUILD_TYPE=Release -DDEFINE_PRODUCTION=ON -DCMAKE_PREFIX_PATH="$qtPath" .
- 
+
     echo "Build VTX app"
 
     make -C build

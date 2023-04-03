@@ -190,8 +190,11 @@ find_package(Qt6 COMPONENTS Network REQUIRED)
 find_package(Qt6 COMPONENTS Svg REQUIRED)
 find_package(Qt6QGifPlugin PATHS ${Qt6Gui_DIR}) # Workaround
 find_package(Qt6QJpegPlugin PATHS ${Qt6Gui_DIR}) # Workaround
-find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
-find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
+
+if(MSVC)
+    find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
+    find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
+endif()
 
 # Declare executable with source files.
 add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESOURCES})
@@ -235,6 +238,8 @@ if(MSVC)
 	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QJpegPlugin> $<TARGET_FILE_DIR:VTX>/imageformats/$<TARGET_FILE_NAME:Qt6::QJpegPlugin>)
 	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QWindowsIntegrationPlugin> $<TARGET_FILE_DIR:VTX>/platforms/$<TARGET_FILE_NAME:Qt6::QWindowsIntegrationPlugin>)
 	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt6::QSchannelBackendPlugin> $<TARGET_FILE_DIR:VTX>/tls/$<TARGET_FILE_NAME:Qt6::QSchannelBackendPlugin>)
+else()
+    qt_import_plugins(VTX INCLUDE Qt::QMinimalIntegrationPlugin)
 endif()
 
 # Create custom target for GPU sources that copy files to build directory.

@@ -1,7 +1,7 @@
 #! /bin/bash
 vtxVersion=0_4_RC1
 
-qtStaticPath=/home/nicodak/Qt/6.2.4/Static/lib/cmake
+qtStaticPath=/home/nicodak/Qt/6.2.4/Static/lib/cmake/
 qtDllPath=/home/nicodak/Qt/6.2.4/gcc_64/lib/cmake/
 
 qtPath=$qtStaticPath
@@ -16,7 +16,9 @@ echo "3) Test build 2 (Copy)"
 echo "4) Simple Make 1 (Updated)"
 echo "5) Simple Make 2 (No options)"
 
-echo "6) Just pack current build ! (No make)"
+echo "6) Rebuild (No options)"
+
+echo "7) Just pack current build ! (No make)"
 
 read buildType
 
@@ -45,7 +47,11 @@ case $buildType in
         ./_linux_build_VTX_command.sh --qt-path "$qtPath" -n "VTX_${vtxVersion}" .
         ;;
         
-    6) # Just pack current build ! (No make)"
+    6) # Rebuild
+        ./_linux_build_VTX_command.sh --qt-path "$qtPath" -n  "VTX_${vtxVersion}" --clean .
+        ;;
+        
+    7) # Just pack current build ! (No make)"
         ./_linux_build_VTX_command.sh --qt-path "$qtPath" -n  "VTX_${vtxVersion}" --skip-make -z .
         ;;
 esac
