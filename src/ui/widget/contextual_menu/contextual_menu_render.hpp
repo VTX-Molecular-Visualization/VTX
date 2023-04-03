@@ -34,6 +34,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _setSelectionGranularityAction( QAction * p_action ) const;
 		void _setMeasurementMode( QAction * p_action ) const;
 		void _showAllMoleculesAction() const;
+		void _resetCameraAction() const;
 
 	  private:
 		QAction * _selectionModeAction;

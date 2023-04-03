@@ -22,6 +22,8 @@ namespace VTX::UI::Widget::ContextualMenu
 	  private:
 		void _loadMoleculeAction();
 		void _downloadMoleculeAction();
+		void _saveSessionAction();
+		void _saveAsSessionAction();
 		void _showAllMoleculesAction() const;
 		void _addViewpointAction();
 

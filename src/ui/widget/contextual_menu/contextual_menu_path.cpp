@@ -14,8 +14,9 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuPath::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
 	void ContextualMenuPath::_setupSlots()
 	{
-		addAction( "Add viewpoint", this, &ContextualMenuPath::_addViewpoint );
-		addAction( "Clear all viewpoints", this, &ContextualMenuPath::_clearViewpoints );
+		addSection( "Action" );
+		addAction( "Add Viewpoint", this, &ContextualMenuPath::_addViewpoint );
+		addAction( "Clear All", this, &ContextualMenuPath::_clearViewpoints );
 	}
 
 	void ContextualMenuPath::localize() {}
