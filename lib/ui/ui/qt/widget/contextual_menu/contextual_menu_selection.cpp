@@ -22,55 +22,11 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 	{
 		SelectionSubMenu * const moleculeStructureSubmenu = new SelectionSubMenu( this, "Molecule" );
 
-		moleculeStructureSubmenu->addItemData(
-			new ActionData( "Rename", TypeMask::Molecule, this, &ContextualMenuSelection::_renameAction ) );
-
-		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Representation", TypeMask::AllButAtom, this ) );
-		//_representationMenu
-		//	= QT::WidgetFactory::get().instantiateWidget<UI::Widget::CustomWidget::SetRepresentationMenu>(
-		//		this, "SetRepresentationMenu" );
-
-		// SubMenuData * const changeRepresentationSubmenuData
-		//	= new SubMenuData( "Representation", TypeMask::AllButAtom, this, _representationMenu );
-		// changeRepresentationSubmenuData->setRefreshFunction(
-		//	&ContextualMenuSelection::_updateCurrentRepresentationFeedback );
-		// moleculeStructureSubmenu->addItemData( changeRepresentationSubmenuData );
-
-		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Show/Hide", TypeMask::Molecule, this ) );
-		ActionData * const toggleWatersAction = new ActionData(
-			"Toggle Waters", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleWaterVisibilityAction );
-		toggleWatersAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleWaterText );
-		moleculeStructureSubmenu->addItemData( toggleWatersAction );
-
-		ActionData * const toggleHydogensAction = new ActionData(
-			"Toggle Hydrogens", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleHydrogenVisibilityAction );
-		toggleHydogensAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleHydrogenText );
-		moleculeStructureSubmenu->addItemData( toggleHydogensAction );
-
-		ActionData * const toggleSolventAction = new ActionData(
-			"Toggle Solvent", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleSolventVisibilityAction );
-		toggleSolventAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleSolventText );
-		moleculeStructureSubmenu->addItemData( toggleSolventAction );
-
-		ActionData * const toggleIonAction = new ActionData(
-			"Toggle Ions", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleIonVisibilityAction );
-		toggleIonAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleIonText );
-		moleculeStructureSubmenu->addItemData( toggleIonAction );
-
-		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Trajectory", TypeMask::Molecule, this ) );
-		ActionData * const toggleTrajectoryPlayAction = new ActionData(
-			"Toggle Playing", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleTrajectoryPlayingAction );
-
-		toggleTrajectoryPlayAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleTrajectoryPlay );
-		toggleTrajectoryPlayAction->setCheckFunction( &ContextualMenuSelection ::_checkToggleTrajectoryPlayAction );
-		moleculeStructureSubmenu->addItemData( toggleTrajectoryPlayAction );
-
-		moleculeStructureSubmenu->addItemData( new ActionData(
-			"Load Trajectory", TypeMask::Molecule, this, &ContextualMenuSelection::_loadTrajectoryAction ) );
-
-		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Edit", TypeMask::All, this ) );
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Action", TypeMask::All, this ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Orient", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_orientAction ) );
+		moleculeStructureSubmenu->addItemData(
+			new ActionData( "Rename", TypeMask::Molecule, this, &ContextualMenuSelection::_renameAction ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Show", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_showAction ) );
 		moleculeStructureSubmenu->addItemData(
@@ -80,11 +36,11 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Duplicate", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_copyAction ) );
 
-		//_frameListMenu = QT::WidgetFactory::get().instantiateWidget<UI::Widget::CustomWidget::TrajectoryFramesMenu>(
-		//	this, "frameListMenu" );
+		//_frameListMenu
+		//	= WidgetFactory::get().instantiateWidget<CustomWidget::TrajectoryFramesMenu>( this, "frameListMenu" );
 		//_frameListMenu->setDisplayAllFramesOption( true );
 		// connect( _frameListMenu,
-		//		 &UI::Widget::CustomWidget::TrajectoryFramesMenu::onFrameSelected,
+		//		 &CustomWidget::TrajectoryFramesMenu::onFrameSelected,
 		//		 this,
 		//		 &ContextualMenuSelection::_copyFrameAction );
 		// SubMenuData * const duplicateFrameSubmenu
@@ -97,7 +53,54 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Delete", TypeMask::All, this, &ContextualMenuSelection::_deleteAction ) );
 
-		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Export", TypeMask::Molecule, this ) );
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Representation", TypeMask::AllButAtom, this ) );
+		//_representationMenu = WidgetFactory::get().instantiateWidget<CustomWidget::SetRepresentationMenu>(
+		//	this, "SetRepresentationMenu" );
+
+		// SubMenuData * const changeRepresentationSubmenuData
+		//	= new SubMenuData( "Representation", TypeMask::AllButAtom, this, _representationMenu );
+		// changeRepresentationSubmenuData->setRefreshFunction(
+		//	&ContextualMenuSelection::_updateCurrentRepresentationFeedback );
+		// moleculeStructureSubmenu->addItemData( changeRepresentationSubmenuData );
+
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Element Visibility", TypeMask::All, this ) );
+		QMenu * const		elementVisibilityMenu = new QMenu( this );
+		SubMenuData * const elementVisibilitySubmenuData
+			= new SubMenuData( "Element Visibility", TypeMask::Molecule, this, elementVisibilityMenu );
+
+		ActionData * const toggleWatersAction = new ActionData(
+			"Toggle Waters", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleWaterVisibilityAction );
+		toggleWatersAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleWaterText );
+		toggleWatersAction->appendToMenu( elementVisibilityMenu );
+
+		ActionData * const toggleHydogensAction = new ActionData(
+			"Toggle Hydrogens", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleHydrogenVisibilityAction );
+		toggleHydogensAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleHydrogenText );
+		toggleHydogensAction->appendToMenu( elementVisibilityMenu );
+
+		ActionData * const toggleSolventAction = new ActionData(
+			"Toggle Solvent", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleSolventVisibilityAction );
+		toggleSolventAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleSolventText );
+		toggleSolventAction->appendToMenu( elementVisibilityMenu );
+
+		ActionData * const toggleIonAction = new ActionData(
+			"Toggle Ions", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleIonVisibilityAction );
+		toggleIonAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleIonText );
+		toggleIonAction->appendToMenu( elementVisibilityMenu );
+
+		moleculeStructureSubmenu->addItemData( elementVisibilitySubmenuData );
+
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Trajectory", TypeMask::Molecule, this ) );
+		ActionData * const toggleTrajectoryPlayAction = new ActionData(
+			"Toggle Playing", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleTrajectoryPlayingAction );
+
+		toggleTrajectoryPlayAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleTrajectoryPlay );
+		toggleTrajectoryPlayAction->setCheckFunction( &ContextualMenuSelection ::_checkToggleTrajectoryPlayAction );
+		moleculeStructureSubmenu->addItemData( toggleTrajectoryPlayAction );
+
+		moleculeStructureSubmenu->addItemData( new ActionDataSection( "File", TypeMask::Molecule, this ) );
+		moleculeStructureSubmenu->addItemData( new ActionData(
+			"Load Trajectory", TypeMask::Molecule, this, &ContextualMenuSelection::_loadTrajectoryAction ) );
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
 
@@ -114,9 +117,9 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 		// VIEWPOINTS //////////////////////////////////////////////////////////////////////////////////////////////////
 		SelectionSubMenu * const viewpointSubmenu = new SelectionSubMenu( this, "Viewpoint" );
+		viewpointSubmenu->addItemData( new ActionDataSection( "Action", TypeMask::Viewpoint, this ) );
 		viewpointSubmenu->addItemData(
 			new ActionData( "Go to", TypeMask::Viewpoint, this, &ContextualMenuSelection::_gotoViewpointAction ) );
-		viewpointSubmenu->addItemData( new ActionDataSection( "Edit", TypeMask::Viewpoint, this ) );
 		viewpointSubmenu->addItemData(
 			new ActionData( "Rename", TypeMask::Viewpoint, this, &ContextualMenuSelection::_renameAction ) );
 		viewpointSubmenu->addItemData( new ActionData(
@@ -127,9 +130,9 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 		// LABELS //////////////////////////////////////////////////////////////////////////////////////////////////
 		SelectionSubMenu * const labelSubmenu = new SelectionSubMenu( this, "Label" );
+		labelSubmenu->addItemData( new ActionDataSection( "Action", TypeMask::Label, this ) );
 		labelSubmenu->addItemData(
 			new ActionData( "Orient", TypeMask::Label, this, &ContextualMenuSelection::_orientToLabelAction ) );
-		labelSubmenu->addItemData( new ActionDataSection( "Edit", TypeMask::Label, this ) );
 		labelSubmenu->addItemData(
 			new ActionData( "Rename", TypeMask::Label, this, &ContextualMenuSelection::_renameAction ) );
 		labelSubmenu->addItemData(

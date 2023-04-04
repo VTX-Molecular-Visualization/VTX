@@ -4,8 +4,8 @@
 #include "action/renderer.hpp"
 #include "action/scene.hpp"
 #include "action/setting.hpp"
-#include "controller/measurement_picker.hpp"
 #include "action/viewpoint.hpp"
+#include "controller/measurement_picker.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
 #include "object3d/scene.hpp"
 #include "setting.hpp"
@@ -121,7 +121,8 @@ namespace VTX::UI::Widget::ContextualMenu
 		_renderSettingPreset->addAction( openRenderEffectSettingsAction );
 		addMenu( _renderSettingPreset );
 
-		addSection( "Actions" );
+		addSection( "Action" );
+		addAction( "Reset Camera", this, &ContextualMenuRender::_resetCameraAction );
 		addAction( "Show All", this, &ContextualMenuRender::_showAllMoleculesAction );
 
 		addSection( "Overlays" );
@@ -263,6 +264,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_loadMoleculeAction() const { UI::Dialog::openLoadMoleculeDialog(); }
 	void ContextualMenuRender::_downloadMoleculeAction() const { UI::Dialog::openDownloadMoleculeDialog(); }
 	void ContextualMenuRender::_showAllMoleculesAction() const { VTX_ACTION( new Action::Scene::ShowAllMolecules() ); }
+	void ContextualMenuRender::_resetCameraAction() const { VTX_ACTION( new Action::Main::ResetCameraController() ); }
 
 	void ContextualMenuRender::_setPickerToSelection() const
 	{

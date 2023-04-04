@@ -3,8 +3,8 @@
 
 #include "qt/widget/base_manual_widget.hpp"
 #include "qt/widget/contextual_menu/contextual_menu_template.hpp"
-#include <old/object3d/scene.hpp>
 #include <QMenu>
+#include <old/object3d/scene.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {
@@ -20,13 +20,6 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		ContextualMenuScene( QWidget * p_parent = nullptr );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
-
-		void _loadMoleculeAction();
-		void _downloadMoleculeAction();
-		void _showAllMoleculesAction() const;
-		void _addViewpointAction();
-
-		void _clearAction();
 	};
 
 } // namespace VTX::UI::QT::Tool::Scene::Widget

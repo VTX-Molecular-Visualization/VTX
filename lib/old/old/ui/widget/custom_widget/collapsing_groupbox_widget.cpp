@@ -3,8 +3,8 @@
 CollapsingGroupboxWidget::CollapsingGroupboxWidget( QWidget * p_parent )
 {
 	this->setStyleSheet(
-		"CollapsingGroupboxWidget::indicator:unchecked { image: url(:/sprite/checkbox_unchecked.png); }"
-		"CollapsingGroupboxWidget::indicator:checked { image: url(:/sprite/checkbox_checked.png); }"
+		"CollapsingGroupboxWidget::indicator:unchecked { image: url(:/sprite/collapsing_groupbox_expand.png); }"
+		"CollapsingGroupboxWidget::indicator:checked { image: url(:/sprite/collapsing_groupbox_collapse.png); }"
 		"CollapsingGroupboxWidget::title { subcontrol-origin: margin; left: 0px; padding: 0px 5px 0px 0px;}" );
 
 	if ( !this->isCheckable() )

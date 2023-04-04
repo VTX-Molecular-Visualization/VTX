@@ -43,8 +43,11 @@ find_package(Qt6 COMPONENTS Network REQUIRED)
 find_package(Qt6 COMPONENTS Svg REQUIRED)
 find_package(Qt6QGifPlugin PATHS ${Qt6Gui_DIR}) # Workaround
 find_package(Qt6QJpegPlugin PATHS ${Qt6Gui_DIR}) # Workaround
-find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
-find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
+
+if(MSVC)
+    find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
+    find_package(Qt6QSchannelBackendPlugin PATHS ${Qt6Network_DIR}) # Workaround
+endif()
 
 # Third parties.
 target_link_libraries(${VTX_UI_LIB} PUBLIC Qt6::Core)

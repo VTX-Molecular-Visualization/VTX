@@ -12,6 +12,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <old/action/action_manager.hpp>
+#include <old/action/scene.hpp>
 #include <old/action/setting.hpp>
 #include <old/io/struct/scene_path_data.hpp>
 #include <old/model/molecule.hpp>
@@ -91,6 +92,11 @@ namespace VTX::UI::QT::Tool
 			sceneContextualMenu->appendToSection( "Loading", "Load Molecule", this, &SessionTool::_openFile );
 			sceneContextualMenu->appendToSection(
 				"Loading", "Download Molecule", this, &SessionTool::_downloadMoleculeFile );
+
+			sceneContextualMenu->appendToSection( "Session", "Save Session", this, &SessionTool::_saveSession );
+			sceneContextualMenu->appendToSection( "Session", "Save Session As...", this, &SessionTool::_saveAsSession );
+
+			sceneContextualMenu->appendToSection( "Session", "Clear", this, &SessionTool::_saveAsSession );
 		}
 
 		QT::Widget::ContextualMenu::BaseContextualMenu * const selectionContextualMenu
@@ -98,7 +104,7 @@ namespace VTX::UI::QT::Tool
 
 		if ( selectionContextualMenu != nullptr )
 		{
-			sceneContextualMenu->appendToSection( "Loading", "Load Trajectory", this, &SessionTool::_openFile );
+			selectionContextualMenu->appendToSection( "Loading", "Load Trajectory", this, &SessionTool::_openFile );
 		}
 	}
 	void SessionTool::_registerShortcuts()
@@ -140,6 +146,7 @@ namespace VTX::UI::QT::Tool
 		VTX_ACTION( new Session::Action::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 	void SessionTool::_saveAsSession() const { Session::Dialog::openSaveSessionDialog(); }
+	void SessionTool::_clearSession() const { VTX_ACTION( new VTX::Action::Scene::ResetScene() ); }
 
 	void SessionTool::_loadRecentSession( const int & p_ptrSessionIndex ) const
 	{

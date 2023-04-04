@@ -3,11 +3,17 @@
 #include "event/event_manager.hpp"
 #include "tool/logger.hpp"
 #include <QNetworkRequest>
+#include <QSslSocket>
 
 namespace VTX
 {
 	namespace Network
 	{
+		NetworkManager::NetworkManager()
+		{
+			VTX_INFO( "OpenSSL version : " + QSslSocket::sslLibraryBuildVersionString().toStdString() );
+		}
+
 		void NetworkManager::sendRequest( NetworkRequest * const p_request )
 		{
 			QNetworkReply * const reply = _networkManager.get( *p_request );

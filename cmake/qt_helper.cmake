@@ -37,6 +37,12 @@ function(win_deploy_qt target)
 				--plugindir $<TARGET_FILE_DIR:${target}>
                 \"$<TARGET_FILE:${target}>\"
         COMMENT "Deploying Qt libraries using windeployqt for compilation target '${target}' ..."
+	
+	# TODO : Check if usefull ?	
+	if(!MSVC)
+		qt_import_plugins(VTX INCLUDE Qt::QMinimalIntegrationPlugin)
+	endif()
+	
     )
 endfunction()
 

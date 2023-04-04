@@ -151,7 +151,7 @@ namespace VTX::UI
 		_mainMenuBar->setCurrentTab( 0 );
 		_renderWidget->setFocus();
 
-		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
+		_loadStyleSheet();
 	}
 	void MainWindow::initWindowLayout()
 	{
@@ -166,13 +166,28 @@ namespace VTX::UI
 			setWindowMode( WindowMode::Windowed );
 	}
 
-	void MainWindow::_loadStyleSheet( const char * p_stylesheetPath )
+	void MainWindow::_loadStyleSheet()
 	{
-		QFile stylesheetFile( p_stylesheetPath );
+		QFile stylesheetFile( Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
 		stylesheetFile.open( QFile::ReadOnly );
 
-		QString stylesheet = stylesheetFile.readAll();
-		setStyleSheet( stylesheet );
+		QString stylesheetTxt = stylesheetFile.readAll();
+
+#ifdef _WIN32
+		QFile stylesheetWindowsFile( Util::Filesystem::STYLESHEET_FILE_WINDOWS.path().c_str() );
+		stylesheetWindowsFile.open( QFile::ReadOnly );
+
+		stylesheetTxt += stylesheetWindowsFile.readAll();
+#endif
+
+#ifdef __unix
+		QFile stylesheetUnixFile( Util::Filesystem::STYLESHEET_FILE_LINUX.path().c_str() );
+		stylesheetUnixFile.open( QFile::ReadOnly );
+
+		stylesheetTxt += stylesheetUnixFile.readAll();
+#endif
+
+		setStyleSheet( stylesheetTxt );
 	}
 
 	void MainWindow::_setupSlots()

@@ -4,8 +4,10 @@
 #include "core/define.hpp"
 #include <QBitmap>
 #include <QColor>
+#include <QComboBox>
 #include <QEvent>
 #include <QImage>
+#include <QMenu>
 #include <QPixmap>
 #include <QString>
 #include <QStyle>
@@ -14,6 +16,7 @@
 #include <old/color/rgba.hpp>
 #include <set>
 #include <string>
+#include <vector>
 
 namespace VTX::Model
 {
@@ -56,6 +59,13 @@ namespace VTX::UI::QT::Util
 	{
 		return static_cast<Core::WidgetKey>( p_variant.toString().toStdString() );
 	}
+
+	void fillComboBox( QComboBox * const p_comboBox, const std::vector<std::string> & p_values );
+	void fillComboBox( QComboBox * const p_comboBox, const std::vector<QString> & p_values );
+	void fillMenu( QMenu &							p_menu,
+				   const int						p_enumSize,
+				   const std::vector<std::string> & p_names,
+				   const bool						p_actionCheckable = false );
 
 	static void appendColorHtmlTag( QString & p_txt, const VTX::Color::Rgba & p_color )
 	{
