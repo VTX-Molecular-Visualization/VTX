@@ -2,9 +2,9 @@
 #define __VTX_UI_QT_TOOL_RENDER_WIDGET_CONTEXTUAL_MENU__
 
 #include "qt/widget/contextual_menu/contextual_menu_template.hpp"
-#include <old/object3d/scene.hpp>
 #include <QAction>
 #include <QMenu>
+#include <old/object3d/scene.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
@@ -34,6 +34,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		void _setSelectionGranularityAction( QAction * p_action ) const;
 		// void _setMeasurementMode( QAction * p_action ) const;
 		void _showAllMoleculesAction() const;
+		void _resetCameraAction() const;
 
 	  private:
 		QAction * _selectionModeAction;
