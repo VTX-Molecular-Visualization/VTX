@@ -52,7 +52,7 @@ PullFromGit()
 MakeVTX()
 {
     echo "Make VTX"
-    cmake -B build -DCMAKE_BUILD_TYPE=Release -DDEFINE_PRODUCTION=ON -DCMAKE_PREFIX_PATH="$qtPath" .
+    cmake -B build -DCMAKE_BUILD_TYPE=Release -DDEFINE_PRODUCTION=ON -DCMAKE_PREFIX_PATH="$qtPath" -DOPENSSL_USE_STATIC_LIBS=TRUE .
 
     echo "Build VTX app"
 
