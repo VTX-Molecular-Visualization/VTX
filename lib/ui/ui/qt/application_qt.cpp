@@ -10,7 +10,6 @@
 #include <QLoggingCategory>
 #include <QPalette>
 #include <QStyleFactory>
-#include <QSurfaceFormat>
 // #include <exception>
 #include <util/logger.hpp>
 // #include <old/action/action_manager.hpp>
@@ -25,16 +24,6 @@ namespace VTX::UI::QT
 		// Setup some Qt static configuration.
 		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
 		QCoreApplication::setAttribute( Qt::AA_DontCheckOpenGLContextThreadAffinity );
-		QSurfaceFormat format;
-
-		format.setVersion( OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION );
-		format.setProfile( QSurfaceFormat::CoreProfile );
-		format.setRenderableType( QSurfaceFormat::OpenGL );
-		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
-		// format.setSwapInterval( int( VTX_SETTING().ACTIVE_VSYNC_DEFAULT ) );
-		format.setSwapInterval( int( true ) );
-
-		QSurfaceFormat::setDefaultFormat( format );
 
 		// Init resources
 		Q_INIT_RESOURCE( resources_ui );
