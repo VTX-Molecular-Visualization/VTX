@@ -8,10 +8,6 @@
 #include <util/types.hpp>
 #include <vector>
 
-#ifdef _WIN32
-#include "wtypes.h"
-#endif
-
 using namespace VTX;
 
 #ifdef _WIN32
