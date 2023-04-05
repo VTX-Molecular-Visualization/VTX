@@ -35,7 +35,7 @@ namespace VTX::IO::Filesystem
 
 	inline const FilePath getExecutableDir()
 	{
-		assert( EXECUTABLE_ABSOLUTE_PATH != "" );
+		assert( std::filesystem::exists( EXECUTABLE_ABSOLUTE_PATH ) );
 		return EXECUTABLE_ABSOLUTE_PATH;
 	}
 
