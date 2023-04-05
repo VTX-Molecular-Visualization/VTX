@@ -41,7 +41,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	{
 		VTX_ACTION(
 			new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-										IO::Filesystem::getUniqueSnapshotsPath( IO::Struct::ImageExport::Format::PNG ),
+										IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 										VTX_SETTING().getSnapshotResolution() ) );
 	}
 

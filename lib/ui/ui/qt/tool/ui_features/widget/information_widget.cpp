@@ -7,8 +7,8 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <old/action/action_manager.hpp>
-#include <old/define.hpp>		   // Get VTX version
-#include <old/util/filesystem.hpp> // Read license file
+#include <old/define.hpp>		 // Get VTX version
+#include <old/io/filesystem.hpp> // Read license file
 #include <string>
 
 namespace VTX::UI::QT::Tool::UIFeatures::Widget
@@ -192,11 +192,7 @@ namespace VTX::UI::QT::Tool::UIFeatures::Widget
 
 	void InformationWidget::_getLicenseText( QString & p_txt ) const
 	{
-<<<<<<< HEAD:lib/old/old/ui/widget/information/information_widget.cpp
-		p_txt = QString::fromStdString( Util::Filesystem::readPath( IO::Filesystem::getLicenseFile() ) );
-=======
-		VTX::Util::Filesystem::readPathQString( VTX::Util::Filesystem::getLicenseFile(), p_txt );
->>>>>>> origin/dev-archi:lib/ui/ui/qt/tool/ui_features/widget/information_widget.cpp
+		p_txt = QString::fromStdString( VTX::Util::Filesystem::readPath( IO::Filesystem::getLicenseFile() ) );
 	}
 
 	void InformationWidget::_onFrameChange( const int p_frame )

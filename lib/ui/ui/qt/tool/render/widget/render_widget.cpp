@@ -236,16 +236,10 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void RenderWidget::_onShortcutSnapshot()
 	{
-<<<<<<< HEAD
 		VTX_ACTION( new VTX::Action::Main::Snapshot(
 			Worker::Snapshoter::MODE::GL,
-			IO::Filesystem::getUniqueSnapshotsPath( IO::Struct::ImageExport::Format::PNG ),
+			IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
-=======
-		VTX_ACTION( new VTX::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-													 VTX::Util::Filesystem::getUniqueSnapshotsPath(),
-													 VTX_SETTING().getSnapshotResolution() ) );
->>>>>>> origin/dev-archi
 	}
 
 	void RenderWidget::_onShortcutChangeRenderMode()

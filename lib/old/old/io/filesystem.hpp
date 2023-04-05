@@ -21,7 +21,7 @@ namespace VTX::IO::Filesystem
 	static const int		 MAX_FILE_LENGTH	  = 180;
 	static const std::string REGEX_VALID_FILENAME = "[^\\\\/:*?\"<>|]*";
 
-	enum class FILE_TYPE : int
+	enum class FILE_TYPE_ENUM : int
 	{
 		SCENE,
 		CONFIGURATION,
@@ -115,48 +115,48 @@ namespace VTX::IO::Filesystem
 		return getResidueDataDir() / p_residueName.substr( 0, 1 );
 	}
 
-	inline FILE_TYPE getFileTypeFromFilePath( const FilePath & p_path )
+	inline FILE_TYPE_ENUM getFileTypeFromFilePath( const FilePath & p_path )
 	{
 		const FilePath extension = p_path.extension();
 
 		if ( extension == "vtx" )
 		{
-			return FILE_TYPE::SCENE;
+			return FILE_TYPE_ENUM::SCENE;
 		}
 		else if ( extension == "prm" || extension == "psf" )
 		{
-			return FILE_TYPE::CONFIGURATION;
+			return FILE_TYPE_ENUM::CONFIGURATION;
 		}
 		else if ( extension == "cif" || extension == "cml" || extension == "cssr" || extension == "gro"
 				  || extension == "mmcif" || extension == "mmtf" || extension == "mol2" || extension == "molden"
 				  || extension == "pdb" || extension == "sdf" || extension == "smi" || extension == "mmtf"
 				  || extension == "xyz" )
 		{
-			return FILE_TYPE::MOLECULE;
+			return FILE_TYPE_ENUM::MOLECULE;
 		}
 		else if ( extension == "obj" )
 		{
-			return FILE_TYPE::MESH;
+			return FILE_TYPE_ENUM::MESH;
 		}
 		else if ( extension == "nc" || extension == "dcd" || extension == "lammpstrj" || extension == "arc"
 				  || extension == "trr" || extension == "xtc" || extension == "tng" || extension == "trj" )
 		{
-			return FILE_TYPE::TRAJECTORY;
+			return FILE_TYPE_ENUM::TRAJECTORY;
 		}
 		else
 		{
-			return FILE_TYPE::UNKNOWN;
+			return FILE_TYPE_ENUM::UNKNOWN;
 		}
 	}
 
 	inline void fillFilepathPerMode( std::vector<FilePath>				  p_filepaths,
 									 std::vector<std::vector<FilePath>> & p_filepathPerMode )
 	{
-		p_filepathPerMode.resize( int( FILE_TYPE::COUNT ) );
+		p_filepathPerMode.resize( int( FILE_TYPE_ENUM::COUNT ) );
 
 		for ( const FilePath & path : p_filepaths )
 		{
-			const FILE_TYPE filetype = getFileTypeFromFilePath( path );
+			const FILE_TYPE_ENUM filetype = getFileTypeFromFilePath( path );
 			p_filepathPerMode[ int( filetype ) ].emplace_back( path );
 		}
 	}
@@ -279,6 +279,8 @@ namespace VTX::IO::Filesystem
 	static const std::string RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
 
 	static const FilePath STYLESHEET_FILE_DEFAULT = FilePath( ":/stylesheet_ui.css" );
+	static const FilePath STYLESHEET_FILE_WINDOWS = FilePath( ":/stylesheet_windows.css" );
+	static const FilePath STYLESHEET_FILE_LINUX	  = FilePath( ":/stylesheet_linux.css" );
 	static const FilePath SCENE_OBJECT_DIR		  = FilePath( "obj" );
 
 	static const std::string DEFAULT_SCENE_FILENAME	   = "New Scene";

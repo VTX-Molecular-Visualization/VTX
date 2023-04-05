@@ -5,7 +5,7 @@
 #include "worker/worker_manager.hpp"
 #include <QString>
 #include <QWidget>
-#include <util/filepath.hpp>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX

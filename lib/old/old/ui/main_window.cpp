@@ -168,20 +168,20 @@ namespace VTX::UI
 
 	void MainWindow::_loadStyleSheet()
 	{
-		QFile stylesheetFile( Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
+		QFile stylesheetFile( IO::Filesystem::STYLESHEET_FILE_DEFAULT );
 		stylesheetFile.open( QFile::ReadOnly );
 
 		QString stylesheetTxt = stylesheetFile.readAll();
 
 #ifdef _WIN32
-		QFile stylesheetWindowsFile( Util::Filesystem::STYLESHEET_FILE_WINDOWS.path().c_str() );
+		QFile stylesheetWindowsFile( IO::Filesystem::STYLESHEET_FILE_WINDOWS );
 		stylesheetWindowsFile.open( QFile::ReadOnly );
 
 		stylesheetTxt += stylesheetWindowsFile.readAll();
 #endif
 
 #ifdef __unix
-		QFile stylesheetUnixFile( Util::Filesystem::STYLESHEET_FILE_LINUX.path().c_str() );
+		QFile stylesheetUnixFile( Util::Filesystem::STYLESHEET_FILE_LINUX );
 		stylesheetUnixFile.open( QFile::ReadOnly );
 
 		stylesheetTxt += stylesheetUnixFile.readAll();
