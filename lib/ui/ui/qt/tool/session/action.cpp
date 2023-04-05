@@ -14,8 +14,6 @@
 
 namespace VTX::UI::QT::Tool::Session::Action
 {
-	void Quit::execute() { QT_APP()->closeAllWindows(); }
-
 	void Open::LoadSceneClass::_loadScene()
 	{
 		Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );

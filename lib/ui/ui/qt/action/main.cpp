@@ -6,6 +6,8 @@
 #include "qt/state/visualization.hpp"
 #include <old/action/action_manager.hpp>
 #include <old/action/base_action.hpp>
+#include <old/network/network_manager.hpp>
+#include <old/network/request/check_update.hpp>
 
 namespace VTX::UI::QT::Action::Main
 {
@@ -42,4 +44,9 @@ namespace VTX::UI::QT::Action::Main
 			.getState<QT::State::Visualization>( VTX::ID::UI_NEW::State::VISUALIZATION )
 			->resetCameraController();
 	};
+
+	void CheckForUpdate::execute()
+	{
+		VTX_NETWORK_MANAGER().sendRequest( new Network::Request::CheckUpdate( _showPopupIfNoUpdate ) );
+	}
 } // namespace VTX::UI::QT::Action::Main

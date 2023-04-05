@@ -7,6 +7,7 @@
 #include "qt/application_qt.hpp"
 #include "qt/contextual_menu.hpp"
 #include "qt/main_window.hpp"
+#include "qt/style.hpp"
 #include "qt/tool/keys.hpp"
 #include "qt/tool/scene/widget/scene_item_selection_model.hpp"
 #include "qt/util.hpp"
@@ -25,7 +26,6 @@
 #include <old/struct/range.hpp>
 #include <old/style.hpp>
 #include <util/logger.hpp>
-#include <old/ui/mime_type.hpp>
 #include <util/string.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View
@@ -1012,15 +1012,15 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::DontShowIndicator );
 	}
 
-	void MoleculeSceneView::_applyResidueNameOnItem( const Model::Residue &				p_residue,
-													 QTreeWidgetItem &					p_item,
-													 const Style::SYMBOL_DISPLAY_MODE & p_symbolDisplayMode ) const
+	void MoleculeSceneView::_applyResidueNameOnItem( const Model::Residue &					 p_residue,
+													 QTreeWidgetItem &						 p_item,
+													 const VTX::Style::SYMBOL_DISPLAY_MODE & p_symbolDisplayMode ) const
 	{
 		const std::string * text;
 		switch ( p_symbolDisplayMode )
 		{
-		case Style::SYMBOL_DISPLAY_MODE::SHORT: text = &p_residue.getSymbolStr(); break;
-		case Style::SYMBOL_DISPLAY_MODE::LONG: text = &p_residue.getSymbolName(); break;
+		case VTX::Style::SYMBOL_DISPLAY_MODE::SHORT: text = &p_residue.getSymbolStr(); break;
+		case VTX::Style::SYMBOL_DISPLAY_MODE::LONG: text = &p_residue.getSymbolName(); break;
 		default:
 			VTX_WARNING( "Symbol style " + std::to_string( int( p_symbolDisplayMode ) )
 						 + " not managed in MoleculeSceneView::_applyResidueNameOnItem." );
@@ -1329,13 +1329,13 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		}
 	}
 
-	void MoleculeSceneView::_refreshSymbolDisplay( const Style::SYMBOL_DISPLAY_MODE & p_displayMode )
+	void MoleculeSceneView::_refreshSymbolDisplay( const VTX::Style::SYMBOL_DISPLAY_MODE & p_displayMode )
 	{
 		_refreshSymbolDisplayRecursive( _getMoleculeTreeWidgetItem(), p_displayMode );
 		_clearLoadedItems();
 	}
-	void MoleculeSceneView::_refreshSymbolDisplayRecursive( QTreeWidgetItem * const			   p_item,
-															const Style::SYMBOL_DISPLAY_MODE & p_displayMode )
+	void MoleculeSceneView::_refreshSymbolDisplayRecursive( QTreeWidgetItem * const					p_item,
+															const VTX::Style::SYMBOL_DISPLAY_MODE & p_displayMode )
 	{
 		const Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
 		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( modelId );

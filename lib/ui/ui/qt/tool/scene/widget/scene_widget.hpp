@@ -28,7 +28,6 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	  public:
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
-		void localize() override;
 
 		void registerSceneItemType( const ID::VTX_ID & p_type, SceneItemWidgetInstancier * const p_instancier );
 

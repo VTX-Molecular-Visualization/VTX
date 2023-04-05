@@ -17,7 +17,7 @@
 #include <old/model/molecule.hpp>
 // #include "state/state_machine.hpp"
 // #include "state/visualization.hpp"
-#include <old/style.hpp>
+#include "qt/style.hpp"
 #include <util/logger.hpp>
 // #include "view/ui/widget/measurement/angle_render_view.hpp"
 // #include "view/ui/widget/measurement/dihedral_angle_render_view.hpp"
@@ -28,8 +28,13 @@
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
-	RenderWidget::RenderWidget( QWidget * p_parent ) : QtPanel(), BaseManualWidget<QWidget>( p_parent )
+	RenderWidget::RenderWidget( QWidget * p_parent ) : QtPanelTemplate( p_parent )
 	{
+		name			  = "Render";
+		defaultSize		  = Style::RENDER_PREFERRED_SIZE;
+		visibleByDefault  = true;
+		referenceInPanels = false;
+
 		_registerEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
 		_registerEvent( Event::Global::LABEL_ADDED );
 		_registerEvent( Event::Global::LABEL_REMOVED );
@@ -231,10 +236,16 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void RenderWidget::_onShortcutSnapshot()
 	{
+<<<<<<< HEAD
 		VTX_ACTION( new VTX::Action::Main::Snapshot(
 			Worker::Snapshoter::MODE::GL,
 			IO::Filesystem::getUniqueSnapshotsPath( IO::Struct::ImageExport::Format::PNG ),
 			VTX_SETTING().getSnapshotResolution() ) );
+=======
+		VTX_ACTION( new VTX::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+													 VTX::Util::Filesystem::getUniqueSnapshotsPath(),
+													 VTX_SETTING().getSnapshotResolution() ) );
+>>>>>>> origin/dev-archi
 	}
 
 	void RenderWidget::_onShortcutChangeRenderMode()
@@ -244,12 +255,6 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	}
 
 	void RenderWidget::_onShortcutPrintCameraInfos() { VTXApp::get().getScene().getCamera().print(); }
-
-	void RenderWidget::localize()
-	{
-		setWindowTitle( "Render" );
-		// setWindowTitle( QCoreApplication::translate( "RenderWidget", "Render", nullptr ) );
-	}
 
 	void RenderWidget::_addIntegratedWidget( BaseIntegratedWidget * const p_widget )
 	{

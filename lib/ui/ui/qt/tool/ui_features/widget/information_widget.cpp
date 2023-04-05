@@ -1,19 +1,25 @@
 #include "information_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "define.hpp"
-#include "io/filesystem.hpp"
-#include "style.hpp"
+#include "qt/action/main.hpp"
+#include "qt/style.hpp"
 #include <QDesktopServices>
 #include <QLabel>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QVBoxLayout>
+#include <old/action/action_manager.hpp>
+#include <old/define.hpp>		   // Get VTX version
+#include <old/util/filesystem.hpp> // Read license file
 #include <string>
 
-namespace VTX::UI::Widget::Information
+namespace VTX::UI::QT::Tool::UIFeatures::Widget
 {
-	InformationWidget::InformationWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
+	InformationWidget::InformationWidget( QWidget * p_parent ) : QT::QtFloatingWindowPanel()
+	{
+		name			  = "About";
+		defaultSize		  = Style::INFORMATION_PREFERRED_SIZE;
+		visibleByDefault  = false;
+		referenceInPanels = false;
+	}
 
 	InformationWidget ::~InformationWidget()
 	{
@@ -174,12 +180,6 @@ namespace VTX::UI::Widget::Information
 		connect( _bugReportButton, &QPushButton::clicked, this, &InformationWidget::_goToBugReport );
 		connect( _checkUpdateButton, &QPushButton::clicked, this, &InformationWidget::_checkForUpdate );
 	};
-	void InformationWidget::localize()
-	{
-		// Qt translate (not use currently)
-		// setWindowTitle( QCoreApplication::translate( "About", "About", nullptr ) );
-		setWindowTitle( "About" );
-	}
 
 	QString InformationWidget::_getVersionText() const
 	{
@@ -192,7 +192,11 @@ namespace VTX::UI::Widget::Information
 
 	void InformationWidget::_getLicenseText( QString & p_txt ) const
 	{
+<<<<<<< HEAD:lib/old/old/ui/widget/information/information_widget.cpp
 		p_txt = QString::fromStdString( Util::Filesystem::readPath( IO::Filesystem::getLicenseFile() ) );
+=======
+		VTX::Util::Filesystem::readPathQString( VTX::Util::Filesystem::getLicenseFile(), p_txt );
+>>>>>>> origin/dev-archi:lib/ui/ui/qt/tool/ui_features/widget/information_widget.cpp
 	}
 
 	void InformationWidget::_onFrameChange( const int p_frame )
@@ -217,6 +221,6 @@ namespace VTX::UI::Widget::Information
 	{
 		QDesktopServices::openUrl( QString::fromStdString( VTX_BUG_REPORT_URL ) );
 	}
-	void InformationWidget::_checkForUpdate() const { VTX_ACTION( new Action::Main::CheckForUpdate( true ) ); }
+	void InformationWidget::_checkForUpdate() const { VTX_ACTION( new QT::Action::Main::CheckForUpdate( true ) ); }
 
-} // namespace VTX::UI::Widget::Information
+} // namespace VTX::UI::QT::Tool::UIFeatures::Widget

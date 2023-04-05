@@ -39,7 +39,10 @@ add_library(${VTX_TOOL_LIB} STATIC ${HEADERS} ${SOURCES} ${FORMS} ${QT_RESOURCES
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Gui REQUIRED)
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
-find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
+
+if(MSVC)
+	find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
+endif()
 
 # Third parties.
 target_link_libraries(${VTX_TOOL_LIB} PRIVATE Qt6::Core)

@@ -26,6 +26,12 @@ Requirements :
 
 Needed packages :
 
+* From Ubuntu 22.04 :
+
+build-essential libgl1-mesa-dev libopengl0 libfreetype6-dev libfontconfig1-dev libxkbcommon-dev libxkbcommon-x11-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-render-util0-dev libxcb-shape0-dev libxcb-randr0-dev libdbus-1-3 libsm-dev libpcre2-dev libjpeg-dev libtiff-dev libqt6openglwidgets6 libqt6network6 libqt6svg6 qt6-base-dev
+
+* For Ubuntu 20.04 :
+
 build-essential libgl1-mesa-dev libopengl0 libfreetype6-dev libfontconfig1-dev libxkbcommon-dev libxkbcommon-x11-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-render-util0-dev libxcb-shape0-dev libxcb-randr0-dev libdbus-1-3 libsm-dev libpcre2-dev libjpeg-dev libtiff-dev
 
 Step by step :
@@ -68,24 +74,33 @@ Please [take a look there](https://chemfiles.org/chemfiles/latest/formats.html).
 
 ### Shortcuts
 
-- F1: Toggle camera controller
-- CTRL + F1: Reset current camera controller
-- F2: Add current viewpoint
-- O : Orient
-- F5: Take a snapshot
-- F6: Restore the default layout
-- F11: Toggle fullscreen
-- Escape: Clear the selection
-- Delete : Delete the selection
-- P : Switch to selection Picker mode
-- M : Switch to Measure mode
+- Ctrl + N : New session
 - Ctrl + S : Save
 - Ctrl + Shift + S : Save as...
-- Ctrl + N : New session
-- Ctrl + O : Open session
+- Ctrl + O : Open session/Molecule
+- Ctrl + Shift + O : Download Molecule...
+
+- F6: Restore the default layout
+- F11: Toggle fullscreen
+
 - Ctrl + A : Select all
+- Escape: Clear the selection
+
 - Ctrl + D : Duplicate selection
 - Ctrl + E : Export selection
+- Delete : Delete the selection
+- O : Orient
+
+- F1: Toggle camera controller
+- CTRL + F1: Reset current camera controller
+- F2: Switch current projection
+- F3: Save current viewpoint
+- F4: Toggle overlays visibility
+- F5: Take a snapshot
+
+- P : Switch to selection Picker mode
+- M : Switch to Measure mode
+
 
 ### Snapshots
 

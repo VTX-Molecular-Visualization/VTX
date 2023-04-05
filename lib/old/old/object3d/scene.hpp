@@ -128,7 +128,7 @@ namespace VTX::Object3D
 			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::AABB ) ) != 0 )
 				_aabb.invalidate();
 
-			VTX_EVENT( new Event::VTXEventPtr<Model::BaseModel>( Event::Global::SCENE_ITEM_REMOVED, p_item ) );
+			VTX_EVENT( new Event::VTXEventPtr<Generic::BaseSceneItem>( Event::Global::SCENE_ITEM_REMOVED, p_item ) );
 			VTX_EVENT( new Event::VTXEventPtr<T>( p_removeEvent, p_item ) );
 
 			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::GRAPHIC ) ) != 0 )
@@ -148,7 +148,7 @@ namespace VTX::Object3D
 			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::AABB ) ) != 0 )
 				_aabb.invalidate();
 
-			VTX_EVENT( new Event::VTXEventPtr<Model::BaseModel>( Event::Global::SCENE_ITEM_REMOVED, p_item ) );
+			VTX_EVENT( new Event::VTXEventPtr<Generic::BaseSceneItem>( Event::Global::SCENE_ITEM_REMOVED, p_item ) );
 			VTX_EVENT( new Event::VTXEventPtr<T1>( p_removeEvent, p_item ) );
 
 			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::GRAPHIC ) ) != 0 )

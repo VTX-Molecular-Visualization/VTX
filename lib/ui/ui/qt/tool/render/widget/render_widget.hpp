@@ -7,23 +7,20 @@
 #include "qt/tool/render/widget/opengl_widget.hpp"
 #include "qt/tool/render/widget/overlay/base_overlay.hpp"
 #include "qt/widget/base_manual_widget.hpp"
-#include <old/event/base_event_firerer_input.hpp>
-#include <old/model/base_model.hpp>
-#include <old/mvc/mvc_manager.hpp>
-#include <old/view/base_view.hpp>
-#include <old/worker/snapshoter.hpp>
 #include <QFocusEvent>
 #include <QResizeEvent>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <map>
+#include <old/event/base_event_firerer_input.hpp>
+#include <old/model/base_model.hpp>
+#include <old/mvc/mvc_manager.hpp>
+#include <old/view/base_view.hpp>
+#include <old/worker/snapshoter.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
-	class RenderWidget :
-		public QtPanel,
-		public QT::Widget::BaseManualWidget<QWidget>,
-		public Event::BaseEventFirererInput
+	class RenderWidget : public QtPanelTemplate<QWidget>, public Event::BaseEventFirererInput
 	{
 		NEW_ARCHI_VTX_WIDGET
 
@@ -31,7 +28,6 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	  public:
 		~RenderWidget();
-		void localize() override;
 
 		PANEL_TYPE getPanelType() const override { return PANEL_TYPE::CENTRAL_WIDGET; };
 

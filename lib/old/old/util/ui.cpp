@@ -2,6 +2,7 @@
 #include "model/atom.hpp"
 #include "model/bond.hpp"
 #include "model/molecule.hpp"
+#include "model/residue.hpp"
 
 namespace VTX::Util::UI
 {
@@ -46,9 +47,17 @@ namespace VTX::Util::UI
 			return;
 
 		const QString firstAtomStr
-			= QString::fromStdString( firstAtom->getSymbolStr() + std::to_string( firstAtom->getIndex() ) );
+			= QString::fromStdString( firstAtom->getName() + std::to_string( firstAtom->getIndex() ) );
 		const QString secondAtomStr
-			= QString::fromStdString( secondAtom->getSymbolStr() + std::to_string( secondAtom->getIndex() ) );
+			= QString::fromStdString( secondAtom->getName() + std::to_string( secondAtom->getIndex() ) );
+
+		const Model::Residue * const firstResidue  = firstAtom->getResiduePtr();
+		const Model::Residue * const secondResidue = secondAtom->getResiduePtr();
+
+		const QString firstResidueStr = QString::fromStdString(
+			firstResidue->getSymbolStr() + " " + std::to_string( firstResidue->getIndexInOriginalChain() ) );
+		const QString secondResidueStr = QString::fromStdString(
+			secondResidue->getSymbolStr() + " " + std::to_string( secondResidue->getIndexInOriginalChain() ) );
 
 		QString					 linkCountStr;
 		const Model::Bond::ORDER bondOrder = p_bond.getOrder();
@@ -84,11 +93,13 @@ namespace VTX::Util::UI
 
 		if ( p_str.isEmpty() )
 		{
-			p_str.append( firstAtomStr + "--" + linkCountStr + "--" + secondAtomStr );
+			p_str.append( "(" + firstResidueStr + ") " + firstAtomStr + "--" + linkCountStr + "--" + secondAtomStr
+						  + " (" + secondResidueStr + ")" );
 		}
 		else
 		{
-			p_str.append( '\n' + firstAtomStr + "--" + linkCountStr + "--" + secondAtomStr );
+			p_str.append( "\n(" + firstResidueStr + ") " + firstAtomStr + "--" + linkCountStr + "--" + secondAtomStr
+						  + " (" + secondResidueStr + ")" );
 		}
 	}
 

@@ -1,4 +1,5 @@
 #include "trackball.hpp"
+#include "qt/style.hpp"
 #include <old/action/action_manager.hpp>
 #include <old/object3d/scene.hpp>
 #include <old/selection/selection_manager.hpp>
@@ -20,7 +21,7 @@ namespace VTX::UI::QT::Controller
 			_velocity = VEC3F_ZERO;
 			// Save distance to force at next setActive(true).
 			// If orient is called in Freefly, the distance is overriden.
-			_distanceForced = Util::Math::distance( _camera.getPosition(), _target );
+			_distanceForced = VTX::Util::Math::distance( _camera.getPosition(), _target );
 		}
 	}
 
@@ -35,7 +36,7 @@ namespace VTX::UI::QT::Controller
 		float deltaDistance = 0.f;
 		if ( _deltaMouseWheel != 0.f )
 		{
-			deltaDistance	 = _deltaMouseWheel * 0.00001 * Util::Math::distance( _camera.getPosition(), _target );
+			deltaDistance	 = _deltaMouseWheel * 0.00001 * VTX::Util::Math::distance( _camera.getPosition(), _target );
 			_deltaMouseWheel = 0;
 		}
 
@@ -141,13 +142,13 @@ namespace VTX::UI::QT::Controller
 			float distance = 0.f;
 			if ( _distanceForced != 0.f )
 			{
-				distance		= Util::Math::clamp( _distanceForced - deltaDistance, 0.1f, 10000.f );
+				distance		= VTX::Util::Math::clamp( _distanceForced - deltaDistance, 0.1f, 10000.f );
 				_distanceForced = 0.f;
 			}
 			else
 			{
-				distance = Util::Math::distance( _camera.getPosition(), _target );
-				distance = Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
+				distance = VTX::Util::Math::distance( _camera.getPosition(), _target );
+				distance = VTX::Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 			}
 
 			const Quatf rotation = Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z )
@@ -174,11 +175,11 @@ namespace VTX::UI::QT::Controller
 	{
 		if ( _velocity != VEC3F_ZERO )
 		{
-			_velocity = Util::Math::linearInterpolation(
+			_velocity = VTX::Util::Math::linearInterpolation(
 				_velocity, VEC3F_ZERO, p_deltaTime * VTX_SETTING().getControllerElasticityFactor() );
 
-			Vec3f::bool_type res = Util::Math::lessThan( Util::Math::abs( _velocity ),
-														 Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
+			Vec3f::bool_type res = VTX::Util::Math::lessThan( VTX::Util::Math::abs( _velocity ),
+															  Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
 			if ( !_mouseLeftPressed && res.x && res.y && res.z )
 			{
 				_velocity = VEC3F_ZERO;
@@ -204,17 +205,18 @@ namespace VTX::UI::QT::Controller
 		_orientStartingRotation = _camera.getRotation();
 		_orientTargetRotation	= _camera.getRotation();
 
-		_orientStartingDistance = Util::Math::distance( _camera.getPosition(), _target );
+		_orientStartingDistance = VTX::Util::Math::distance( _camera.getPosition(), _target );
 		_orientTargetDistance
-			= p_aabb.radius() / (float)( tan( Util::Math::radians( _camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
-		_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
+			= p_aabb.radius()
+			  / (float)( tan( VTX::Util::Math::radians( _camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
+		_isOrienting = VTX::Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
 					   || abs( _orientTargetDistance - _orientStartingDistance ) > ORIENT_THRESHOLD;
 	}
 
 	void Trackball::_computeOrientPositions( const Vec3f & p_position, const Quatf & p_orientation )
 	{
-		_orientStartingDistance = Util::Math::distance( _camera.getPosition(), _target );
-		_orientTargetDistance	= Util::Math::distance( p_position, _target );
+		_orientStartingDistance = VTX::Util::Math::distance( _camera.getPosition(), _target );
+		_orientTargetDistance	= VTX::Util::Math::distance( p_position, _target );
 
 		_orientStartingPosition = _camera.getPosition() + _camera.getFront() * _orientStartingDistance;
 		_orientTargetPosition	= _target;
@@ -223,19 +225,20 @@ namespace VTX::UI::QT::Controller
 		_orientTargetRotation	= p_orientation;
 
 		_velocity	 = VEC3F_ZERO;
-		_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
+		_isOrienting = VTX::Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
 					   || abs( _orientTargetDistance - _orientStartingDistance ) > ORIENT_THRESHOLD;
 	}
 
 	void Trackball::_updateOrient( const float & p_deltaTime )
 	{
-		_target = Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime );
+		_target
+			= VTX::Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime );
 		float distance
-			= Util::Math::easeInOutInterpolation( _orientStartingDistance, _orientTargetDistance, p_deltaTime );
+			= VTX::Util::Math::easeInOutInterpolation( _orientStartingDistance, _orientTargetDistance, p_deltaTime );
 		_camera.rotateAround( QUATF_ID, _target, distance );
 
 		_camera.setRotation(
-			Util::Math::easeInOutInterpolation( _orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
+			VTX::Util::Math::easeInOutInterpolation( _orientStartingRotation, _orientTargetRotation, p_deltaTime ) );
 	}
 
 } // namespace VTX::UI::QT::Controller

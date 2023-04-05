@@ -18,7 +18,8 @@ namespace VTX::UI::Widget::Sequence
 		setTextInteractionFlags( Qt::TextInteractionFlag::NoTextInteraction );
 		setFont( Style::SEQUENCE_DISPLAY_FONT() );
 
-		_fontMetrics = new QFontMetricsF( font() );
+		_fontMetrics		 = new QFontMetricsF( font() );
+		_charSizeFromMetrics = double( _fontMetrics->horizontalAdvance( 'A' ) );
 	}
 	SequenceDisplayWidget::~SequenceDisplayWidget()
 	{
@@ -56,17 +57,13 @@ namespace VTX::UI::Widget::Sequence
 	Model::Residue * const SequenceDisplayWidget::getClosestResidueFromPos( const QPoint & p_pos,
 																			const bool	   p_takeforward )
 	{
-		const float charSize  = _fontMetrics->averageCharWidth();
-		const uint	charIndex = p_pos.x() / charSize;
-
+		const uint charIndex = p_pos.x() / _charSizeFromMetrics;
 		return _chainData->getClosestResidueFromCharIndex( charIndex, p_takeforward );
 	}
 
 	Model::Residue * const SequenceDisplayWidget::_getResidueFromLocaleXPos( const int p_localeXPos ) const
 	{
-		const float charSize  = _fontMetrics->averageCharWidth();
-		const uint	charIndex = p_localeXPos / charSize;
-
+		const uint charIndex = p_localeXPos / _charSizeFromMetrics;
 		return _chainData->getResidueFromCharIndex( charIndex );
 	}
 
@@ -86,11 +83,10 @@ namespace VTX::UI::Widget::Sequence
 	QPoint SequenceDisplayWidget::getResiduePos( const Model::Residue & p_residue,
 												 const QWidget * const	p_widgetSpace ) const
 	{
-		const uint	localIndex = _getLocalResidueIndexFromResidue( p_residue );
-		const uint	charIndex  = _getCharIndex( localIndex );
-		const float charSize   = _fontMetrics->averageCharWidth();
+		const uint localIndex = _getLocalResidueIndexFromResidue( p_residue );
+		const uint charIndex  = _getCharIndex( localIndex );
 
-		const int posX = (int)( charIndex * charSize + charSize * 0.5f );
+		const int posX = (int)( charIndex * _charSizeFromMetrics + _charSizeFromMetrics * 0.5f );
 		const int posY = height() / 2;
 
 		const QPoint localPos		= QPoint( posX, posY );
@@ -113,8 +109,9 @@ namespace VTX::UI::Widget::Sequence
 			painter.setWorldMatrixEnabled( false );
 			painter.setBrush( Qt::NoBrush );
 
-			const double charSize = double( _fontMetrics->averageCharWidth() );
-
+			// Use _fontMetrics->horizontalAdvance( 'A' ) instead of _fontMetrics->averageCharWidth() because even on a
+			// Monospace font, some characters may change the averageCharWidth value, even if all displayed chars have
+			// the same width
 			int lastPixelDrawn	  = -1;
 			int currentFirstPixel = -1;
 			int currentRectWidth  = 0;
@@ -133,8 +130,8 @@ namespace VTX::UI::Widget::Sequence
 				const int charLengthPaint = _chainData->getPaintLength( locaResidueIndex );
 
 				// Trick to prevent double painting on same pixel when charsize is not int
-				int firstPixel = int( floor( charIndexPaint * charSize ) );
-				int rectWidth  = int( ceil( charLengthPaint * charSize ) );
+				int firstPixel = int( floor( charIndexPaint * _charSizeFromMetrics ) );
+				int rectWidth  = int( ceil( charLengthPaint * _charSizeFromMetrics ) );
 
 				if ( lastPixelDrawn > firstPixel )
 				{

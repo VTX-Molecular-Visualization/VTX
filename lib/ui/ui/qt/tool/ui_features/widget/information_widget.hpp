@@ -1,9 +1,8 @@
-#ifndef __VTX_UI_WIDGET_INFORMATION__
-#define __VTX_UI_WIDGET_INFORMATION__
+#ifndef __VTX_UI_QT_TOOL_UI_FEATURES_WIDGET_INFORMATION__
+#define __VTX_UI_QT_TOOL_UI_FEATURES_WIDGET_INFORMATION__
 
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/dock_window_main_widget.hpp"
-#include <QDialog>
+#include "qt/qt_panel.hpp"
+#include "qt/widget/base_manual_widget.hpp"
 #include <QImageReader>
 #include <QMovie>
 #include <QPushButton>
@@ -11,15 +10,14 @@
 #include <QString>
 #include <QWidget>
 
-namespace VTX::UI::Widget::Information
+namespace VTX::UI::QT::Tool::UIFeatures::Widget
 {
-	class InformationWidget : public BaseManualWidget<QDialog>
+	class InformationWidget : public QT::QtFloatingWindowPanel
 	{
-		VTX_WIDGET
+		NEW_ARCHI_VTX_WIDGET
 
 	  public:
 		~InformationWidget();
-		void localize() override;
 
 	  protected:
 		InformationWidget( QWidget * );
@@ -50,5 +48,5 @@ namespace VTX::UI::Widget::Information
 		void _goToBugReport() const;
 		void _checkForUpdate() const;
 	};
-} // namespace VTX::UI::Widget::Information
+} // namespace VTX::UI::QT::Tool::UIFeatures::Widget
 #endif

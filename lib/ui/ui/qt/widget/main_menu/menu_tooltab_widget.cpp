@@ -1,7 +1,7 @@
 #include "menu_tooltab_widget.hpp"
 #include "qt/widget_factory.hpp"
 #include "menu_toolblock_widget.hpp"
-#include <old/style.hpp>
+#include "qt/style.hpp"
 #include <QLabel>
 #include <QPixmap>
 

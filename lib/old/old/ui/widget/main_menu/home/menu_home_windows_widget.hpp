@@ -39,7 +39,6 @@ namespace VTX::UI::Widget::MainMenu::Home
 		MenuToolButtonWidget * _windowComboBoxButton = nullptr;
 		MenuToolButtonWidget * _fullscreen			 = nullptr;
 		MenuToolButtonWidget * _settingsButton		 = nullptr;
-		MenuToolButtonWidget * _informationButton	 = nullptr;
 		MenuToolButtonWidget * _quitButton			 = nullptr;
 
 		QMenu * _windowsMenu = nullptr;
@@ -60,7 +59,6 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 		void _toggleWindowState() const;
 		void _displaySettingsWindow();
-		void _displayInformationWindow();
 		void _quit();
 	};
 } // namespace VTX::UI::Widget::MainMenu::Home

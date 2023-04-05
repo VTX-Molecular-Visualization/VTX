@@ -1,19 +1,18 @@
 #include "path_scene_view.hpp"
 #include "qt/action/viewpoint.hpp"
+#include "qt/style.hpp"
 #include "qt/tool/scene/widget/scene_item_selection_model.hpp"
 #include "qt/tool/scene/widget/scene_widget.hpp"
 #include "qt/widget_factory.hpp"
+#include <QScrollBar>
 #include <old/action/action_manager.hpp>
 #include <old/action/selection.hpp>
 #include <old/action/viewpoint.hpp>
 #include <old/mvc/mvc_manager.hpp>
 #include <old/selection/selection_manager.hpp>
-#include <old/style.hpp>
 #include <util/logger.hpp>
 #include <old/ui/contextual_menu.hpp>
-#include <old/ui/mime_type.hpp>
 #include <old/ui/widget/contextual_menu/contextual_menu_selection.hpp>
-#include <QScrollBar>
 #include <util/string.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View
@@ -272,7 +271,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	void PathSceneView::_reformatName( std::string & p_name ) const
 	{
 		// Trim
-		Util::String::trim( p_name );
+		VTX::Util::String::trim( p_name );
 
 		// Forbid line feed
 		const size_t firstLinefeedIndex = p_name.find_first_of( '\n' );

@@ -1,6 +1,7 @@
 #include "scene_widget.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/main_window.hpp"
+#include "qt/mime_type.hpp"
 #include "qt/tool/keys.hpp"
 #include "qt/widget_factory.hpp"
 #include <QScrollBar>
@@ -12,14 +13,23 @@
 #include <old/mvc/mvc_manager.hpp>
 #include <old/object3d/scene.hpp>
 #include <old/selection/selection_manager.hpp>
-#include <old/style.hpp>
-#include <old/ui/mime_type.hpp>
+#include "qt/style.hpp"
 #include <old/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {
 	SceneWidget::SceneWidget( QWidget * p_parent ) : QtDockablePanel()
 	{
+		name			  = "Scene";
+		defaultSize		  = Style::SCENE_PREFERRED_SIZE;
+		visibleByDefault  = true;
+		referenceInPanels = true;
+		section			  = "VTX";
+
+		floatingByDefault  = false;
+		defaultWidgetArea  = Qt::DockWidgetArea::LeftDockWidgetArea;
+		defaultOrientation = Qt::Orientation::Horizontal;
+
 		_registerEvent( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 
 		_registerEvent( Event::Global::SCENE_ITEM_ADDED );
@@ -320,11 +330,6 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void SceneWidget::_setupSlots() {}
 
-	void SceneWidget::localize()
-	{
-		this->setWindowTitle( "Scene" );
-		// this->setWindowTitle( QCoreApplication::translate( "SceneWidget", "Scene", nullptr ) );
-	}
 	void SceneWidget::mousePressEvent( QMouseEvent * p_event )
 	{
 		// Click on header
@@ -359,13 +364,13 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		BaseManualWidget::dragEnterEvent( p_event );
 
 		const bool draggedObjectIsModel
-			= UI::MimeType::checkApplicationDataType( p_event->mimeData(), UI::MimeType::ApplicationMimeType::MODEL );
+			= MimeType::checkApplicationDataType( p_event->mimeData(), MimeType::ApplicationMimeType::MODEL );
 
 		if ( draggedObjectIsModel )
 		{
-			const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
+			const MimeType::ModelData modelData = MimeType::getModelData( p_event->mimeData() );
 
-			if ( modelData.getDragSource() == UI::MimeType::DragSource::SCENE_VIEW )
+			if ( modelData.getDragSource() == MimeType::DragSource::SCENE_VIEW )
 			{
 				p_event->acceptProposedAction();
 			}
@@ -377,7 +382,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		BaseManualWidget::dropEvent( p_event );
 
-		const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
+		const MimeType::ModelData modelData = MimeType::getModelData( p_event->mimeData() );
 
 		std::vector<Model::ID> droppedModelIDs = std::vector<Model::ID>();
 

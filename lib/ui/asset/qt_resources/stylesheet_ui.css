@@ -29,6 +29,10 @@ QMenu
 {
     border: 1px solid #444444;
 }
+QMenu::item:selected
+{
+    background-color: #444444;
+}
 
 QDockWidget::title
 {
@@ -58,7 +62,7 @@ QTabWidget::pane
 	border-left: 0px;
 	border-right: 0px;
 
-	padding-top: 1ex;
+	padding-top: 3px;
 	background-color: #222222;
 }
 
@@ -66,10 +70,10 @@ QTabBar::tab
 {
 	background: black;
 	border: none;
-	padding-left: 3ex;
-	padding-right: 3ex;
-	padding-top: 2ex;
-	padding-bottom: 2ex;
+	padding-left: 9px;
+	padding-right: 9px;
+	padding-top: 6px;
+	padding-bottom: 6px;
 }
 QTabBar::tab:selected, QTabBar::tab:hover
 {
@@ -102,6 +106,12 @@ QStatusBar > QProgressBar
 QStatusBar > QProgressBar::chunk
 {
 	background-color: #79C0FE;
+}
+
+QToolTip
+{
+	background-color: #444444;
+	color: white;
 }
 
 
@@ -163,6 +173,29 @@ QLabel#inspector_item_section_header_icon
 QLabel[OVERIDDEN_PARAMETER="true"]
 {
 	font : bold;
+}
+QWidget[ATTRIBUTE_LAYOUT_SECTION_TITLE="true"]
+{
+	font : bold;
+}
+QWidget[OVERLAY_STYLE="OPAQUE"]
+{
+}
+QWidget[OVERLAY_STYLE="OPAQUE"] QToolButton:hover
+{
+	background : transparent;
+}
+QWidget[OVERLAY_STYLE="TRANSPARENT"]
+{
+	background : transparent;
+}
+QWidget[OVERLAY_STYLE="TRANSPARENT"] QToolButton:hover
+{
+	background : transparent;
+}
+QWidget[OVERLAY_STYLE="TRANSPARENT"] QToolButton:pressed
+{
+	background : transparent;
 }
 
 QScrollBar#SequenceScrollbar:horizontal {

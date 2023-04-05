@@ -7,7 +7,6 @@
 #include "widget/analysis/structural_alignment/structural_alignment_widget.hpp"
 #include "widget/base_widget.hpp"
 #include "widget/console/console_widget.hpp"
-#include "widget/information/information_widget.hpp"
 #include "widget/inspector/inspector_widget.hpp"
 #include "widget/main_menu/main_menu_bar.hpp"
 #include "widget/render/opengl_widget.hpp"
@@ -92,14 +91,13 @@ namespace VTX
 		  private:
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
 
-			Widget::Render::RenderWidget *			 _renderWidget		= nullptr;
-			Widget::Scene::SceneWidget *			 _sceneWidget		= nullptr;
-			Widget::Inspector::InspectorWidget *	 _inspectorWidget	= nullptr;
-			Widget::Console::ConsoleWidget *		 _consoleWidget		= nullptr;
-			Widget::Sequence::SequenceWidget *		 _sequenceWidget	= nullptr;
-			Widget::Selection::SelectionWidget *	 _selectionWidget	= nullptr;
-			Widget::Settings::SettingWidget *		 _settingWidget		= nullptr;
-			Widget::Information::InformationWidget * _informationWidget = nullptr;
+			Widget::Render::RenderWidget *		 _renderWidget	  = nullptr;
+			Widget::Scene::SceneWidget *		 _sceneWidget	  = nullptr;
+			Widget::Inspector::InspectorWidget * _inspectorWidget = nullptr;
+			Widget::Console::ConsoleWidget *	 _consoleWidget	  = nullptr;
+			Widget::Sequence::SequenceWidget *	 _sequenceWidget  = nullptr;
+			Widget::Selection::SelectionWidget * _selectionWidget = nullptr;
+			Widget::Settings::SettingWidget *	 _settingWidget	  = nullptr;
 
 			Widget::Analysis::StructuralAlignment::StructuralAlignmentWidget * _structuralAlignmentWidget = nullptr;
 
@@ -114,7 +112,7 @@ namespace VTX
 			void _updatePicker() const;
 
 			// Functions.
-			void _loadStyleSheet( const char * p_stylesheetPath );
+			void _loadStyleSheet();
 			void _setupSlots();
 			void _restoreDockWidget( QDockWidget * const p_dockWidget );
 			void _addDockWidgetAsTabified( QDockWidget * const p_dockWidget,

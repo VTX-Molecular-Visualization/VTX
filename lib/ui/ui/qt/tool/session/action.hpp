@@ -11,13 +11,6 @@
 
 namespace VTX::UI::QT::Tool::Session::Action
 {
-	class Quit : public VTX::Action::BaseAction
-	{
-	  public:
-		explicit Quit() {}
-		virtual void execute() override;
-	};
-
 	class Open : public VTX::Action::BaseAction
 	{
 	  private:

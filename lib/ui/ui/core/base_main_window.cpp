@@ -11,4 +11,17 @@ namespace VTX::UI::Core
 	{
 		_mapPanels[ p_key ] = p_panel;
 	}
+
+	const WidgetKey & BaseMainWindow::findKeyFromPanel( const BasePanel * const p_panel )
+	{
+		std::map<WidgetKey, BasePanel *>::const_iterator it;
+		for ( it = _mapPanels.cbegin(); it != _mapPanels.cend(); it++ )
+		{
+			if ( it->second == p_panel )
+				return it->first;
+		}
+
+		return Core::INVALID_WIDGET_KEY;
+	}
+
 } // namespace VTX::UI::Core

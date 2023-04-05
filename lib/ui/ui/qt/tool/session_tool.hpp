@@ -34,6 +34,7 @@ namespace VTX::UI::QT::Tool
 		void _loadRecentSession( const int & p_ptrSessionIndex ) const;
 		void _saveSession() const;
 		void _saveAsSession() const;
+		void _clearSession() const;
 
 		void _refreshRecentFiles();
 	};

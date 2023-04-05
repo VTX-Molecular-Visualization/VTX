@@ -120,9 +120,6 @@ namespace VTX::UI
 		_settingWidget
 			= WidgetFactory::get().instantiateWidget<Widget::Settings::SettingWidget>( this, "settingWidget" );
 
-		_informationWidget = WidgetFactory::get().instantiateWidget<Widget::Information::InformationWidget>(
-			this, "informationWidget" );
-
 		_structuralAlignmentWidget
 			= WidgetFactory::get().instantiateWidget<Widget::Analysis::StructuralAlignment::StructuralAlignmentWidget>(
 				this, "structuralAlignmentWidget" );
@@ -154,7 +151,7 @@ namespace VTX::UI
 		_mainMenuBar->setCurrentTab( 0 );
 		_renderWidget->setFocus();
 
-		_loadStyleSheet( IO::Filesystem::STYLESHEET_FILE_DEFAULT.string().c_str() );
+		_loadStyleSheet();
 	}
 	void MainWindow::initWindowLayout()
 	{
@@ -169,13 +166,28 @@ namespace VTX::UI
 			setWindowMode( WindowMode::Windowed );
 	}
 
-	void MainWindow::_loadStyleSheet( const char * p_stylesheetPath )
+	void MainWindow::_loadStyleSheet()
 	{
-		QFile stylesheetFile( p_stylesheetPath );
+		QFile stylesheetFile( Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
 		stylesheetFile.open( QFile::ReadOnly );
 
-		QString stylesheet = stylesheetFile.readAll();
-		setStyleSheet( stylesheet );
+		QString stylesheetTxt = stylesheetFile.readAll();
+
+#ifdef _WIN32
+		QFile stylesheetWindowsFile( Util::Filesystem::STYLESHEET_FILE_WINDOWS.path().c_str() );
+		stylesheetWindowsFile.open( QFile::ReadOnly );
+
+		stylesheetTxt += stylesheetWindowsFile.readAll();
+#endif
+
+#ifdef __unix
+		QFile stylesheetUnixFile( Util::Filesystem::STYLESHEET_FILE_LINUX.path().c_str() );
+		stylesheetUnixFile.open( QFile::ReadOnly );
+
+		stylesheetTxt += stylesheetUnixFile.readAll();
+#endif
+
+		setStyleSheet( stylesheetTxt );
 	}
 
 	void MainWindow::_setupSlots()
@@ -357,9 +369,6 @@ namespace VTX::UI
 
 		_addDockWidgetAsFloating( _settingWidget, Style::SETTINGS_PREFERRED_SIZE, false );
 		_addDockWidgetAsFloating( _structuralAlignmentWidget, Style::STRUCTURAL_ALIGNMENT_PREFERRED_SIZE, false );
-
-		if ( _informationWidget->isVisible() )
-			_informationWidget->hide();
 	}
 
 	void MainWindow::_restoreDockWidget( QDockWidget * const p_dockWidget )
@@ -499,8 +508,6 @@ namespace VTX::UI
 		//	widget = _selectionWidget;
 		else if ( p_winId == ID::UI::Window::SETTINGS )
 			widget = _settingWidget;
-		else if ( p_winId == ID::UI::Window::INFORMATION )
-			widget = _informationWidget;
 		else if ( p_winId == ID::UI::Window::STRUCTURAL_ALIGNMENT )
 			widget = _structuralAlignmentWidget;
 
