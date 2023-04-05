@@ -4,7 +4,7 @@
 #include "mvc/mvc_manager.hpp"
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
-#include <util/filesystem.hpp>
+#include "io/filesystem.hpp"
 #include <exception>
 
 namespace VTX::Worker
@@ -17,7 +17,7 @@ namespace VTX::Worker
 
 		chrono.start();
 		emit		   logInfo( "Saving " + _representation->getName() );
-		const FilePath path = Util::Filesystem::getRepresentationPath( _representation->getName() );
+		const FilePath path = IO::Filesystem::getRepresentationPath( _representation->getName() );
 
 		IO::Writer::SerializedObject<Model::Representation::Representation> * writer
 			= new IO::Writer::SerializedObject<Model::Representation::Representation>();

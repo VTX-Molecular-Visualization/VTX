@@ -7,7 +7,7 @@
 #include <old/action/main.hpp>
 #include <old/action/viewpoint.hpp>
 #include <old/event/event_manager.hpp>
-#include <old/util/filesystem.hpp>
+#include <old/io/filesystem.hpp>
 // #include <old/model/label.hpp>
 // #include <old/model/measurement/angle.hpp>
 // #include <old/model/measurement/dihedral_angle.hpp>
@@ -18,7 +18,7 @@
 // #include "state/state_machine.hpp"
 // #include "state/visualization.hpp"
 #include <old/style.hpp>
-#include <old/tool/logger.hpp>
+#include <util/logger.hpp>
 // #include "view/ui/widget/measurement/angle_render_view.hpp"
 // #include "view/ui/widget/measurement/dihedral_angle_render_view.hpp"
 // #include "view/ui/widget/measurement/distance_render_view.hpp"
@@ -231,9 +231,10 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void RenderWidget::_onShortcutSnapshot()
 	{
-		VTX_ACTION( new VTX::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-													 Util::Filesystem::getUniqueSnapshotsPath(),
-													 VTX_SETTING().getSnapshotResolution() ) );
+		VTX_ACTION( new VTX::Action::Main::Snapshot(
+			Worker::Snapshoter::MODE::GL,
+			IO::Filesystem::getUniqueSnapshotsPath( IO::Struct::ImageExport::Format::PNG ),
+			VTX_SETTING().getSnapshotResolution() ) );
 	}
 
 	void RenderWidget::_onShortcutChangeRenderMode()

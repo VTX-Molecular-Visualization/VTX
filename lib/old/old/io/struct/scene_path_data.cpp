@@ -3,7 +3,7 @@
 #include "event/event_manager.hpp"
 #include "io/filesystem.hpp"
 #include "model/molecule.hpp"
-#include <util/filesystem.hpp>
+#include "io/filesystem.hpp"
 
 namespace VTX::IO::Struct
 {

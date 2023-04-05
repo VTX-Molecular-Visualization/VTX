@@ -47,24 +47,24 @@ class Ui_ManageCloudsWindowDialog
 	void setupUi( QWidget * ManageCloudsWindowDialog )
 	{
 		if ( ManageCloudsWindowDialog->objectName().isEmpty() )
-			ManageCloudsWindowDialog->setObjectName( QString::fromUtf8( "ManageCloudsWindowDialog" ) );
+			ManageCloudsWindowDialog->setObjectName( QString::fromStdString( "ManageCloudsWindowDialog" ) );
 		ManageCloudsWindowDialog->resize( 516, 311 );
 		verticalLayout_3 = new QVBoxLayout( ManageCloudsWindowDialog );
-		verticalLayout_3->setObjectName( QString::fromUtf8( "verticalLayout_3" ) );
+		verticalLayout_3->setObjectName( QString::fromStdString( "verticalLayout_3" ) );
 		widgetContainer = new QWidget( ManageCloudsWindowDialog );
-		widgetContainer->setObjectName( QString::fromUtf8( "widgetContainer" ) );
+		widgetContainer->setObjectName( QString::fromStdString( "widgetContainer" ) );
 		verticalLayout = new QVBoxLayout( widgetContainer );
-		verticalLayout->setObjectName( QString::fromUtf8( "verticalLayout" ) );
+		verticalLayout->setObjectName( QString::fromStdString( "verticalLayout" ) );
 		verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 		horizontalLayout_2 = new QHBoxLayout();
-		horizontalLayout_2->setObjectName( QString::fromUtf8( "horizontalLayout_2" ) );
+		horizontalLayout_2->setObjectName( QString::fromStdString( "horizontalLayout_2" ) );
 		pushButtonConnectCloud = new QPushButton( widgetContainer );
-		pushButtonConnectCloud->setObjectName( QString::fromUtf8( "pushButtonConnectCloud" ) );
+		pushButtonConnectCloud->setObjectName( QString::fromStdString( "pushButtonConnectCloud" ) );
 
 		horizontalLayout_2->addWidget( pushButtonConnectCloud );
 
 		pushButtonRemove = new QPushButton( widgetContainer );
-		pushButtonRemove->setObjectName( QString::fromUtf8( "pushButtonRemove" ) );
+		pushButtonRemove->setObjectName( QString::fromStdString( "pushButtonRemove" ) );
 
 		horizontalLayout_2->addWidget( pushButtonRemove );
 
@@ -75,11 +75,11 @@ class Ui_ManageCloudsWindowDialog
 		verticalLayout->addLayout( horizontalLayout_2 );
 
 		horizontalLayout_3 = new QHBoxLayout();
-		horizontalLayout_3->setObjectName( QString::fromUtf8( "horizontalLayout_3" ) );
+		horizontalLayout_3->setObjectName( QString::fromStdString( "horizontalLayout_3" ) );
 		listWidgetClouds = new QListWidget( widgetContainer );
 		new QListWidgetItem( listWidgetClouds );
 		new QListWidgetItem( listWidgetClouds );
-		listWidgetClouds->setObjectName( QString::fromUtf8( "listWidgetClouds" ) );
+		listWidgetClouds->setObjectName( QString::fromStdString( "listWidgetClouds" ) );
 		QSizePolicy sizePolicy( QSizePolicy::Minimum, QSizePolicy::Expanding );
 		sizePolicy.setHorizontalStretch( 0 );
 		sizePolicy.setVerticalStretch( 0 );
@@ -91,7 +91,7 @@ class Ui_ManageCloudsWindowDialog
 		horizontalLayout_3->addWidget( listWidgetClouds );
 
 		stackedWidgetCloudInformation = new QStackedWidget( widgetContainer );
-		stackedWidgetCloudInformation->setObjectName( QString::fromUtf8( "stackedWidgetCloudInformation" ) );
+		stackedWidgetCloudInformation->setObjectName( QString::fromStdString( "stackedWidgetCloudInformation" ) );
 		QSizePolicy sizePolicy1( QSizePolicy::Expanding, QSizePolicy::Expanding );
 		sizePolicy1.setHorizontalStretch( 0 );
 		sizePolicy1.setVerticalStretch( 0 );
@@ -99,25 +99,25 @@ class Ui_ManageCloudsWindowDialog
 		stackedWidgetCloudInformation->setSizePolicy( sizePolicy1 );
 		stackedWidgetCloudInformation->setFrameShape( QFrame::Panel );
 		pageAWS = new QWidget();
-		pageAWS->setObjectName( QString::fromUtf8( "pageAWS" ) );
+		pageAWS->setObjectName( QString::fromStdString( "pageAWS" ) );
 		stackedWidgetCloudInformation->addWidget( pageAWS );
 		pageGENCI = new QWidget();
-		pageGENCI->setObjectName( QString::fromUtf8( "pageGENCI" ) );
+		pageGENCI->setObjectName( QString::fromStdString( "pageGENCI" ) );
 		verticalLayout_2 = new QVBoxLayout( pageGENCI );
-		verticalLayout_2->setObjectName( QString::fromUtf8( "verticalLayout_2" ) );
+		verticalLayout_2->setObjectName( QString::fromStdString( "verticalLayout_2" ) );
 		horizontalLayout_4 = new QHBoxLayout();
-		horizontalLayout_4->setObjectName( QString::fromUtf8( "horizontalLayout_4" ) );
+		horizontalLayout_4->setObjectName( QString::fromStdString( "horizontalLayout_4" ) );
 		horizontalSpacer_2 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
 
 		horizontalLayout_4->addItem( horizontalSpacer_2 );
 
 		label = new QLabel( pageGENCI );
-		label->setObjectName( QString::fromUtf8( "label" ) );
+		label->setObjectName( QString::fromStdString( "label" ) );
 
 		horizontalLayout_4->addWidget( label );
 
 		label_2 = new QLabel( pageGENCI );
-		label_2->setObjectName( QString::fromUtf8( "label_2" ) );
+		label_2->setObjectName( QString::fromStdString( "label_2" ) );
 
 		horizontalLayout_4->addWidget( label_2 );
 

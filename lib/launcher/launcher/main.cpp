@@ -1,10 +1,10 @@
 #include "vtx_tool.hpp"
-#include <old/tool/logger.hpp>
 #include <string>
 #include <ui/core/base_ui_application.hpp>
 #include <ui/environment.hpp>
 #include <ui/ui_generator.hpp>
 #include <util/chrono.hpp>
+#include <util/logger.hpp>
 #include <util/types.hpp>
 #include <vector>
 

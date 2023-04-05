@@ -4,8 +4,9 @@
 #include "action/renderer.hpp"
 #include "action/scene.hpp"
 #include "action/setting.hpp"
-#include "controller/measurement_picker.hpp"
 #include "action/viewpoint.hpp"
+#include "controller/measurement_picker.hpp"
+#include "io/filesystem.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
 #include "object3d/scene.hpp"
 #include "setting.hpp"
@@ -14,7 +15,6 @@
 #include "ui/main_window.hpp"
 #include "ui/widget/renderer/default_background.hpp"
 #include "ui/widget/settings/setting_widget_enum.hpp"
-#include <util/filesystem.hpp>
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
 #include "worker/snapshoter.hpp"
@@ -340,9 +340,10 @@ namespace VTX::UI::Widget::ContextualMenu
 	}
 	void ContextualMenuRender::_takeSnapshotAction()
 	{
-		VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-												Util::Filesystem::getUniqueSnapshotsPath(),
-												VTX_SETTING().getSnapshotResolution() ) );
+		VTX_ACTION(
+			new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+										IO::Filesystem::getUniqueSnapshotsPath( IO::Struct::ImageExport::Format::PNG ),
+										VTX_SETTING().getSnapshotResolution() ) );
 	}
 	void ContextualMenuRender::_exportImageAction() { Dialog::openAdvancedSettingImageExportDialog(); }
 

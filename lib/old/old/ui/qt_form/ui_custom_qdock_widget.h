@@ -31,26 +31,26 @@ class Ui_CustomDockWidget
 	void setupUi( QDockWidget * CustomDockWidget )
 	{
 		if ( CustomDockWidget->objectName().isEmpty() )
-			CustomDockWidget->setObjectName( QString::fromUtf8( "CustomDockWidget" ) );
+			CustomDockWidget->setObjectName( QString::fromStdString( "CustomDockWidget" ) );
 		CustomDockWidget->resize( 346, 548 );
 		CustomDockWidget->setFloating( true );
 		dockWidgetContents = new QWidget();
-		dockWidgetContents->setObjectName( QString::fromUtf8( "dockWidgetContents" ) );
+		dockWidgetContents->setObjectName( QString::fromStdString( "dockWidgetContents" ) );
 		gridLayout = new QGridLayout( dockWidgetContents );
-		gridLayout->setObjectName( QString::fromUtf8( "gridLayout" ) );
+		gridLayout->setObjectName( QString::fromStdString( "gridLayout" ) );
 		gridLayout->setContentsMargins( 2, 5, 2, 2 );
 		scrollArea = new QScrollArea( dockWidgetContents );
-		scrollArea->setObjectName( QString::fromUtf8( "scrollArea" ) );
+		scrollArea->setObjectName( QString::fromStdString( "scrollArea" ) );
 		scrollArea->setFrameShape( QFrame::NoFrame );
 		scrollArea->setWidgetResizable( true );
 		scrollAreaWidgetContents = new QWidget();
-		scrollAreaWidgetContents->setObjectName( QString::fromUtf8( "scrollAreaWidgetContents" ) );
+		scrollAreaWidgetContents->setObjectName( QString::fromStdString( "scrollAreaWidgetContents" ) );
 		scrollAreaWidgetContents->setGeometry( QRect( 0, 0, 342, 522 ) );
 		gridLayout_3 = new QGridLayout( scrollAreaWidgetContents );
-		gridLayout_3->setObjectName( QString::fromUtf8( "gridLayout_3" ) );
+		gridLayout_3->setObjectName( QString::fromStdString( "gridLayout_3" ) );
 		gridLayout_3->setContentsMargins( 2, 9, 2, 0 );
 		gridLayoutScrollArea = new QGridLayout();
-		gridLayoutScrollArea->setObjectName( QString::fromUtf8( "gridLayoutScrollArea" ) );
+		gridLayoutScrollArea->setObjectName( QString::fromStdString( "gridLayoutScrollArea" ) );
 
 		gridLayout_3->addLayout( gridLayoutScrollArea, 0, 0, 1, 1 );
 

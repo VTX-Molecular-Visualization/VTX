@@ -13,7 +13,7 @@
 #include "selection/selection_manager.hpp"
 // #include "ui/dialog.hpp"
 // #include "ui/main_window.hpp"
-#include <util/filesystem.hpp>
+#include "io/filesystem.hpp"
 #include "worker/worker_manager.hpp"
 #include <QApplication>
 #include <QPalette>
@@ -31,7 +31,7 @@ namespace VTX
 
 	void VTXApp::start( const std::vector<std::string> & p_args )
 	{
-		VTX_INFO( "Starting application: " + Util::Filesystem::getExecutableFile() );
+		VTX_INFO( "Starting application: {}", IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );
@@ -74,7 +74,7 @@ namespace VTX
 		if ( p_args.size() == 0 )
 		{
 			// VTX_ACTION(
-			//	 new Action::Main::Open( Util::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
+			//	 new Action::Main::Open( IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
 			// VTX_ACTION( new Action::Main::OpenApi( "1aon" ) );
 			// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
 			// VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
@@ -99,8 +99,8 @@ namespace VTX
 
 	void VTXApp::_handleArgs( const std::vector<std::string> & p_args )
 	{
-		std::vector<FilePath> files  = std::vector<FilePath>();
-		std::vector<std::string>	pdbIds = std::vector<std::string>();
+		std::vector<FilePath>	 files	= std::vector<FilePath>();
+		std::vector<std::string> pdbIds = std::vector<std::string>();
 
 		for ( const std::string & arg : p_args )
 		{

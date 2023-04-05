@@ -1,17 +1,17 @@
 #include "snapshoter.hpp"
 #include "action/action_manager.hpp"
 #include "action/setting.hpp"
+#include "io/filesystem.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "renderer/gl/framebuffer.hpp"
 #include "renderer/gl/gl.hpp"
 #include "ui/main_window.hpp"
-#include <util/filesystem.hpp>
-#include "util/time.hpp"
 #include "vtx_app.hpp"
 #include <QOffscreenSurface>
 #include <QOpenGLFramebufferObject>
 #include <QPainter>
 #include <QSvgRenderer>
+#include <util/chrono.hpp>
 #include <vector>
 
 // #define VTX_DEBUG_WATERMARK
@@ -19,7 +19,7 @@
 namespace VTX::Worker
 {
 	Snapshoter::Snapshoter( const MODE &					p_mode,
-							const FilePath &			p_path,
+							const FilePath &				p_path,
 							const IO::Struct::ImageExport & p_exportData ) :
 		_mode( p_mode ),
 		_path( p_path ), _exportData( p_exportData )
@@ -123,10 +123,11 @@ namespace VTX::Worker
 		// Save.
 		if ( !_path.empty() )
 		{
-			if ( render.save(
-					 QString::fromStdString( _path ), _path.extension().c_str(), _exportData.getIntQuality() ) )
+			if ( render.save( QString::fromStdString( _path.string() ),
+							  _path.extension().string().c_str(),
+							  _exportData.getIntQuality() ) )
 			{
-				VTX_INFO( "Snapshot taken: " + _path.filename() );
+				VTX_INFO( "Snapshot taken: " + _path.filename().string() );
 			}
 			else
 			{

@@ -2,8 +2,8 @@
 #define __VTX_SCENE_LOADER__
 
 #include "base_worker.hpp"
-
 #include <map>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX

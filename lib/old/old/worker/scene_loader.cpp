@@ -1,5 +1,6 @@
 #include "scene_loader.hpp"
 #include "event/event_manager.hpp"
+#include "io/filesystem.hpp"
 #include "io/reader/lib_assimp.hpp"
 #include "io/reader/lib_chemfiles.hpp"
 #include "io/reader/prm.hpp"
@@ -11,10 +12,9 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
+#include "vtx_app.hpp"
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
-#include <util/filesystem.hpp>
-#include "vtx_app.hpp"
 
 namespace VTX::Worker
 {
@@ -25,7 +25,7 @@ namespace VTX::Worker
 		for ( const FilePath & path : _paths )
 		{
 			chrono.start();
-			VTX_INFO( "Loading " + path.filename() );
+			VTX_INFO( "Loading " + path.filename().string() );
 
 			IO::Reader::SerializedObject<VTXApp> * const reader = new IO::Reader::SerializedObject<VTXApp>();
 

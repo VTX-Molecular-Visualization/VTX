@@ -1,5 +1,6 @@
 #include "loader.hpp"
 #include "event/event_manager.hpp"
+#include "io/filesystem.hpp"
 #include "io/reader/lib_assimp.hpp"
 #include "io/reader/lib_chemfiles.hpp"
 #include "io/reader/prm.hpp"
@@ -10,10 +11,9 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
-#include <util/logger.hpp>
-#include <util/filesystem.hpp>
 #include "vtx_app.hpp"
 #include <util/chrono.hpp>
+#include <util/logger.hpp>
 
 namespace VTX
 {
@@ -21,7 +21,7 @@ namespace VTX
 	{
 		uint Loader::_run()
 		{
-			Util::Filesystem::fillFilepathPerMode( _paths, _filepathsPerMode );
+			IO::Filesystem::fillFilepathPerMode( _paths, _filepathsPerMode );
 
 			// Load all files.
 			_loadSceneFiles();
@@ -32,9 +32,9 @@ namespace VTX
 			_loadMeshFiles();
 
 			// Display errors for unknown files
-			for ( const FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE::UNKNOWN ) ] )
+			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE::UNKNOWN ) ] )
 			{
-				emit logError( "Error when loading " + path + " : Format not supported" );
+				emit logError( "Error when loading " + path.string() + " : Format not supported" );
 				_pathResult[ path ].state = false;
 			}
 
@@ -46,7 +46,7 @@ namespace VTX
 
 		void Loader::_loadSceneFiles()
 		{
-			for ( const FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE::SCENE ) ] )
+			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE::SCENE ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -67,10 +67,10 @@ namespace VTX
 		}
 		void Loader::_loadConfigurationFiles( Model::Configuration::Molecule & p_config )
 		{
-			for ( const FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE::CONFIGURATION ) ] )
+			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE::CONFIGURATION ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
-				const std::string extension = path.extension();
+				const std::string extension = path.extension().string();
 
 				try
 				{
@@ -95,7 +95,7 @@ namespace VTX
 		}
 		void Loader::_loadMoleculeFiles( const Model::Configuration::Molecule & p_config )
 		{
-			for ( const FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE::MOLECULE ) ] )
+			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE::MOLECULE ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -125,7 +125,7 @@ namespace VTX
 		}
 		void Loader::_loadTrajectoriesFiles( const Model::Configuration::Molecule & p_config )
 		{
-			for ( const FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE::TRAJECTORY ) ] )
+			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE::TRAJECTORY ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -178,7 +178,7 @@ namespace VTX
 		}
 		void Loader::_loadMeshFiles()
 		{
-			for ( const FilePath & path : _filepathsPerMode[ int( Util::Filesystem::FILE_TYPE::MESH ) ] )
+			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE::MESH ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
@@ -208,10 +208,10 @@ namespace VTX
 			{
 				_startLoadingFile( pair.first, SOURCE_TYPE::BUFFER );
 
-				const Util::Filesystem::FILE_TYPE bufferType = Util::Filesystem::getFileTypeFromFilePath( pair.first );
+				const IO::Filesystem::FILE_TYPE bufferType = IO::Filesystem::getFileTypeFromFilePath( pair.first );
 
-				if ( bufferType == Util::Filesystem::FILE_TYPE::MOLECULE
-					 || bufferType == Util::Filesystem::FILE_TYPE::TRAJECTORY )
+				if ( bufferType == IO::Filesystem::FILE_TYPE::MOLECULE
+					 || bufferType == IO::Filesystem::FILE_TYPE::TRAJECTORY )
 				{
 					// Create reader.
 					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles( this );
@@ -243,7 +243,7 @@ namespace VTX
 
 		void Loader::_startLoadingFile( const FilePath & p_path, const SOURCE_TYPE & p_sourceType )
 		{
-			emit logInfo( "Loading " + p_path.filename() );
+			emit logInfo( "Loading " + p_path.filename().string() );
 			_pathResult.emplace( p_path, Result( p_sourceType ) );
 			_loadingFileChrono.start();
 		}
@@ -255,11 +255,11 @@ namespace VTX
 			switch ( _pathResult[ p_path ].sourceType )
 			{
 			case SOURCE_TYPE::FILE:
-				emit logInfo( "File " + p_path.filename() + " treated in "
+				emit logInfo( "File " + p_path.filename().string() + " treated in "
 							  + std::to_string( _loadingFileChrono.elapsedTime() ) + "s" );
 				break;
 			case SOURCE_TYPE::BUFFER:
-				emit logInfo( "Buffer " + p_path.filename() + " treated in "
+				emit logInfo( "Buffer " + p_path.filename().string() + " treated in "
 							  + std::to_string( _loadingFileChrono.elapsedTime() ) + "s" );
 				break;
 			default: break;
@@ -270,7 +270,7 @@ namespace VTX
 			_loadingFileChrono.stop();
 			_pathResult[ p_path ].state = false;
 
-			emit logError( "Error when loading " + p_path.filename() + " : " + p_message );
+			emit logError( "Error when loading " + p_path.filename().string() + " : " + p_message );
 		}
 
 	} // namespace Worker

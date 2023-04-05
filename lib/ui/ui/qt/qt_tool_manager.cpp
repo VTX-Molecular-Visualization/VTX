@@ -9,7 +9,7 @@ namespace VTX::UI::QT
 	QtToolManager::QtToolManager()
 	{
 		Q_INIT_RESOURCE( resources_tool );
-		UI::QT::QT_APP()->getMainWindow().appendStylesheet( STYLESHEET_FILE_DEFAULT.path().c_str() );
+		UI::QT::QT_APP()->getMainWindow().appendStylesheet( STYLESHEET_FILE_DEFAULT.string().c_str() );
 	}
 	QtToolManager::~QtToolManager()
 	{

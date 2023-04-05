@@ -26,7 +26,7 @@ namespace VTX::View::UI::Widget
 
 	void SelectionView::_setupUi( const QString & p_name )
 	{
-		setObjectName( QString::fromUtf8( "selectionTree" ) );
+		setObjectName( QString::fromStdString( "selectionTree" ) );
 		setColumnCount( 2 );
 		setHeaderHidden( true );
 		setSelectionMode( QAbstractItemView::SelectionMode::NoSelection );

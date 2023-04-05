@@ -48,36 +48,36 @@ class Ui_JobManagerGUI
 	void setupUi( QWidget * JobManagerGUI )
 	{
 		if ( JobManagerGUI->objectName().isEmpty() )
-			JobManagerGUI->setObjectName( QString::fromUtf8( "JobManagerGUI" ) );
+			JobManagerGUI->setObjectName( QString::fromStdString( "JobManagerGUI" ) );
 		JobManagerGUI->resize( 568, 422 );
 		verticalLayout_2 = new QVBoxLayout( JobManagerGUI );
-		verticalLayout_2->setObjectName( QString::fromUtf8( "verticalLayout_2" ) );
+		verticalLayout_2->setObjectName( QString::fromStdString( "verticalLayout_2" ) );
 		widgetContainer = new QWidget( JobManagerGUI );
-		widgetContainer->setObjectName( QString::fromUtf8( "widgetContainer" ) );
+		widgetContainer->setObjectName( QString::fromStdString( "widgetContainer" ) );
 		verticalLayout = new QVBoxLayout( widgetContainer );
-		verticalLayout->setObjectName( QString::fromUtf8( "verticalLayout" ) );
+		verticalLayout->setObjectName( QString::fromStdString( "verticalLayout" ) );
 		verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 		horizontalLayout = new QHBoxLayout();
 		horizontalLayout->setSpacing( 2 );
-		horizontalLayout->setObjectName( QString::fromUtf8( "horizontalLayout" ) );
+		horizontalLayout->setObjectName( QString::fromStdString( "horizontalLayout" ) );
 		label = new QLabel( widgetContainer );
-		label->setObjectName( QString::fromUtf8( "label" ) );
+		label->setObjectName( QString::fromStdString( "label" ) );
 
 		horizontalLayout->addWidget( label );
 
 		radioButtonLocalJobs = new QRadioButton( widgetContainer );
-		radioButtonLocalJobs->setObjectName( QString::fromUtf8( "radioButtonLocalJobs" ) );
+		radioButtonLocalJobs->setObjectName( QString::fromStdString( "radioButtonLocalJobs" ) );
 		radioButtonLocalJobs->setChecked( true );
 
 		horizontalLayout->addWidget( radioButtonLocalJobs );
 
 		radioButtonCloudJobs = new QRadioButton( widgetContainer );
-		radioButtonCloudJobs->setObjectName( QString::fromUtf8( "radioButtonCloudJobs" ) );
+		radioButtonCloudJobs->setObjectName( QString::fromStdString( "radioButtonCloudJobs" ) );
 
 		horizontalLayout->addWidget( radioButtonCloudJobs );
 
 		radioButtonLocalJobs_2 = new QRadioButton( widgetContainer );
-		radioButtonLocalJobs_2->setObjectName( QString::fromUtf8( "radioButtonLocalJobs_2" ) );
+		radioButtonLocalJobs_2->setObjectName( QString::fromStdString( "radioButtonLocalJobs_2" ) );
 
 		horizontalLayout->addWidget( radioButtonLocalJobs_2 );
 
@@ -86,22 +86,22 @@ class Ui_JobManagerGUI
 		horizontalLayout->addItem( horizontalSpacer );
 
 		pushButtonResume = new QPushButton( widgetContainer );
-		pushButtonResume->setObjectName( QString::fromUtf8( "pushButtonResume" ) );
+		pushButtonResume->setObjectName( QString::fromStdString( "pushButtonResume" ) );
 
 		horizontalLayout->addWidget( pushButtonResume );
 
 		pushButtonPause = new QPushButton( widgetContainer );
-		pushButtonPause->setObjectName( QString::fromUtf8( "pushButtonPause" ) );
+		pushButtonPause->setObjectName( QString::fromStdString( "pushButtonPause" ) );
 
 		horizontalLayout->addWidget( pushButtonPause );
 
 		pushButtonStop = new QPushButton( widgetContainer );
-		pushButtonStop->setObjectName( QString::fromUtf8( "pushButtonStop" ) );
+		pushButtonStop->setObjectName( QString::fromStdString( "pushButtonStop" ) );
 
 		horizontalLayout->addWidget( pushButtonStop );
 
 		pushButtonRemove = new QPushButton( widgetContainer );
-		pushButtonRemove->setObjectName( QString::fromUtf8( "pushButtonRemove" ) );
+		pushButtonRemove->setObjectName( QString::fromStdString( "pushButtonRemove" ) );
 
 		horizontalLayout->addWidget( pushButtonRemove );
 
@@ -120,7 +120,7 @@ class Ui_JobManagerGUI
 		tableWidgetJobsList->setHorizontalHeaderItem( 3, __qtablewidgetitem3 );
 		QTableWidgetItem * __qtablewidgetitem4 = new QTableWidgetItem();
 		tableWidgetJobsList->setHorizontalHeaderItem( 4, __qtablewidgetitem4 );
-		tableWidgetJobsList->setObjectName( QString::fromUtf8( "tableWidgetJobsList" ) );
+		tableWidgetJobsList->setObjectName( QString::fromStdString( "tableWidgetJobsList" ) );
 		tableWidgetJobsList->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
 		tableWidgetJobsList->setAutoScroll( false );
 		tableWidgetJobsList->setSelectionBehavior( QAbstractItemView::SelectRows );
@@ -130,14 +130,14 @@ class Ui_JobManagerGUI
 		verticalLayout->addWidget( tableWidgetJobsList );
 
 		horizontalLayout_2 = new QHBoxLayout();
-		horizontalLayout_2->setObjectName( QString::fromUtf8( "horizontalLayout_2" ) );
+		horizontalLayout_2->setObjectName( QString::fromStdString( "horizontalLayout_2" ) );
 		pushButtonRetrieveJobs = new QPushButton( widgetContainer );
-		pushButtonRetrieveJobs->setObjectName( QString::fromUtf8( "pushButtonRetrieveJobs" ) );
+		pushButtonRetrieveJobs->setObjectName( QString::fromStdString( "pushButtonRetrieveJobs" ) );
 
 		horizontalLayout_2->addWidget( pushButtonRetrieveJobs );
 
 		progressBarJobs = new QProgressBar( widgetContainer );
-		progressBarJobs->setObjectName( QString::fromUtf8( "progressBarJobs" ) );
+		progressBarJobs->setObjectName( QString::fromStdString( "progressBarJobs" ) );
 		progressBarJobs->setValue( 24 );
 
 		horizontalLayout_2->addWidget( progressBarJobs );

@@ -2,7 +2,7 @@
 #define __VTX_SAVER__
 
 #include "base_thread.hpp"
-
+#include <util/types.hpp>
 
 namespace VTX::Worker
 {

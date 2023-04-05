@@ -9,13 +9,13 @@
 #include "controller/measurement_picker.hpp"
 #include "define.hpp"
 #include "event/event_manager.hpp"
+#include "io/filesystem.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "shortcut.hpp"
 #include "style.hpp"
 #include "ui/dialog.hpp"
 #include "ui/mime_type.hpp"
 #include "util/analysis.hpp"
-#include <util/filesystem.hpp>
 #include "vtx_app.hpp"
 #include "widget_factory.hpp"
 #include <QAction>
@@ -154,7 +154,7 @@ namespace VTX::UI
 		_mainMenuBar->setCurrentTab( 0 );
 		_renderWidget->setFocus();
 
-		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT.c_str() );
+		_loadStyleSheet( IO::Filesystem::STYLESHEET_FILE_DEFAULT.string().c_str() );
 	}
 	void MainWindow::initWindowLayout()
 	{
@@ -324,7 +324,7 @@ namespace VTX::UI
 
 		if ( !currentSessionFilepath.empty() )
 		{
-			title += " - " + currentSessionFilepath.filename();
+			title += " - " + currentSessionFilepath.filename().string();
 
 			if ( VTXApp::get().getScenePathData().sceneHasModifications() )
 			{
@@ -454,17 +454,18 @@ namespace VTX::UI
 
 	void MainWindow::dropEvent( QDropEvent * p_event )
 	{
+		/*
 		const QMimeData * const mimeData = p_event->mimeData();
 
 		if ( UI::MimeType::getMimeTypeEnum( mimeData ) == UI::MimeType::ApplicationMimeType::FILE )
 		{
 			const QList<QUrl> &				   urlList = mimeData->urls();
-			const std::vector<FilePath>		   paths   = Util::Filesystem::getFilePathVectorFromQUrlList( urlList );
+			const std::vector<FilePath>		   paths   = IO::Filesystem::getFilePathVectorFromQUrlList( urlList );
 			std::vector<std::vector<FilePath>> pathPerFileTypes = std::vector<std::vector<FilePath>>();
-			Util::Filesystem::fillFilepathPerMode( paths, pathPerFileTypes );
+			IO::Filesystem::fillFilepathPerMode( paths, pathPerFileTypes );
 
 			const std::vector<FilePath> & trajectoryPaths
-				= pathPerFileTypes[ int( Util::Filesystem::FILE_TYPE::TRAJECTORY ) ];
+				= pathPerFileTypes[ int( IO::Filesystem::FILE_TYPE::TRAJECTORY ) ];
 
 			// If drop contains only trajectory path, open the specific window
 			if ( trajectoryPaths.size() == paths.size() )
@@ -476,6 +477,7 @@ namespace VTX::UI
 				VTX_ACTION( new Action::Main::Open( paths ) );
 			}
 		}
+		*/
 	}
 
 	QWidget & MainWindow::getWidget( const ID::VTX_ID & p_winId ) const
@@ -565,7 +567,8 @@ namespace VTX::UI
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings  settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
+		QSettings  settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+							 QSettings::IniFormat );
 		const bool settingsAreValid = settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 
 		return settingsAreValid && settings.value( "Version" ).toInt() == Style::LAYOUT_VERSION;
@@ -573,7 +576,8 @@ namespace VTX::UI
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+							QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
 		// Delayed restore state because all widgets grows when restore in maximized (sizes are stored when maximized,
@@ -599,7 +603,8 @@ namespace VTX::UI
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+							QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 
 		_checkDockWidgetsDisplay();
@@ -611,7 +616,8 @@ namespace VTX::UI
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+							QSettings::IniFormat );
 		settings.setValue( "Version", Style::LAYOUT_VERSION );
 
 		settings.setValue( "Geometry", saveGeometry() );
@@ -619,7 +625,8 @@ namespace VTX::UI
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+							QSettings::IniFormat );
 		settings.clear();
 	}
 

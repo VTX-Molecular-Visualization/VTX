@@ -104,24 +104,24 @@ namespace VTX
 		/*
 		void Export::_generareVideo() const
 		{
-			if ( std::filesystem::exists( Util::Filesystem::FFMPEG_EXE_FILE ) == false )
+			if ( std::filesystem::exists( IO::Filesystem::FFMPEG_EXE_FILE ) == false )
 			{
 				throw LibException( "ffmpeg is missing, frames are saved on disk" );
 			}
 
 			VTX_INFO( "Encoding video" );
 
-			FilePath files = Util::Filesystem::getVideosBatchPath( _directoryName );
+			FilePath files = IO::Filesystem::getVideosBatchPath( _directoryName );
 			files /= "frame%06d.png";
-			std::string command = Util::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate "
+			std::string command = IO::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate "
 								  + std::to_string( Setting::VIDEO_FPS_DEFAULT ) + " -i " + files.string()
 								  + " -vcodec libx264 -crf " + std::to_string( Setting::VIDEO_CRF_DEFAULT ) + " "
-								  + Util::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
+								  + IO::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
 			Worker::ProgramLauncher * worker = new Worker::ProgramLauncher( command );
 			VTX_THREAD( worker );
 
 			// Clean frames
-			Util::Filesystem::removeAll( Util::Filesystem::getVideosBatchPath( _directoryName ) );
+			Util::Filesystem::removeAll( IO::Filesystem::getVideosBatchPath( _directoryName ) );
 		}
 		*/
 

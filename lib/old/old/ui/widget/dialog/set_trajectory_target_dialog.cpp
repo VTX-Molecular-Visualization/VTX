@@ -189,7 +189,7 @@ namespace VTX::UI::Widget::Dialog
 	{
 		_moleculeListWidget->clearModels();
 
-		const std::string filename = _filepath.filenameWithoutExtension();
+		const std::string filename = _filepath.stem().string();
 
 		std::vector<Model::Molecule *> molecules = std::vector<Model::Molecule *>();
 		molecules.reserve( VTXApp::get().getScene().getMolecules().size() );

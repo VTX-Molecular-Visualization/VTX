@@ -2,8 +2,8 @@
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "define.hpp"
+#include "io/filesystem.hpp"
 #include "style.hpp"
-#include <util/filesystem.hpp>
 #include <QDesktopServices>
 #include <QLabel>
 #include <QPushButton>
@@ -192,7 +192,7 @@ namespace VTX::UI::Widget::Information
 
 	void InformationWidget::_getLicenseText( QString & p_txt ) const
 	{
-		Util::Filesystem::readPathQString( Util::Filesystem::getLicenseFile(), p_txt );
+		p_txt = QString::fromStdString( Util::Filesystem::readPath( IO::Filesystem::getLicenseFile() ) );
 	}
 
 	void InformationWidget::_onFrameChange( const int p_frame )

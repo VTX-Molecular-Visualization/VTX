@@ -1,4 +1,5 @@
 #include "saver.hpp"
+#include "io/filesystem.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "io/writer/serialized_object.hpp"
 #include "io/writer/writer_chemfiles.hpp"
@@ -6,10 +7,9 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
+#include <set>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
-#include <util/filesystem.hpp>
-#include <set>
 
 namespace VTX::Worker
 {
@@ -19,7 +19,7 @@ namespace VTX::Worker
 		Util::Chrono chrono;
 
 		chrono.start();
-		emit logInfo( "Saving " + _path.filename() );
+		emit logInfo( "Saving " + _path.filename().string() );
 
 		const MODE mode = _getMode( _path );
 
@@ -81,11 +81,11 @@ namespace VTX::Worker
 	{
 		bool result = 1;
 
-		Util::Filesystem::checkSaveDirectoryHierarchy( _path );
+		IO::Filesystem::checkSaveDirectoryHierarchy( _path );
 
-		const FilePath itemDirectory = Util::Filesystem::getSceneObjectsSaveDirectory( _path );
+		const FilePath itemDirectory = IO::Filesystem::getSceneObjectsSaveDirectory( _path );
 
-		std::set<FilePath> filesToRemove = Util::Filesystem::getFilesInDirectory( itemDirectory );
+		Util::Filesystem::removeAll( itemDirectory );
 
 		IO::Writer::SerializedObject<VTXApp> * const writer = new IO::Writer::SerializedObject<VTXApp>( this );
 
@@ -106,7 +106,7 @@ namespace VTX::Worker
 
 				if ( VTX_SETTING().isPortableSaveActivated() )
 				{
-					const bool pathIsInItemDirectory = filePath.rfind( itemDirectory, 0 ) == 0;
+					const bool pathIsInItemDirectory = filePath.string().rfind( itemDirectory.string(), 0 ) == 0;
 					needToSaveMolecule				 = needToSaveMolecule || !pathIsInItemDirectory;
 				}
 
@@ -114,9 +114,9 @@ namespace VTX::Worker
 				{
 					IO::Writer::ChemfilesWriter * const moleculeWriter = new IO::Writer::ChemfilesWriter( this );
 
-					if ( Util::Filesystem::getParentDir( filePath ) != itemDirectory )
+					if ( filePath.parent_path() != itemDirectory )
 					{
-						filePath = itemDirectory + "/molecule.mmcif";
+						filePath = itemDirectory / "molecule.mmcif";
 						Util::Filesystem::generateUniqueFileName( filePath );
 						VTXApp::get().getScenePathData().getData( molecule.first ).registerPath( filePath );
 					}
@@ -124,8 +124,6 @@ namespace VTX::Worker
 					moleculeWriter->writeFile( filePath, *molecule.first );
 					VTXApp::get().getScenePathData().getData( molecule.first ).registerWriter( moleculeWriter );
 				}
-
-				filesToRemove.erase( filePath );
 			}
 
 			writer->writeFile( _path, VTXApp::get() );
@@ -134,14 +132,6 @@ namespace VTX::Worker
 			{
 				VTXApp::get().getScenePathData().getData( molecule.first ).deleteWriter();
 				VTXApp::get().getScenePathData().getData( molecule.first ).setHasChanged( false );
-			}
-
-			// Clean files
-			while ( filesToRemove.size() > 0 )
-			{
-				const FilePath fileToRemove = *filesToRemove.begin();
-				filesToRemove.erase( filesToRemove.begin() );
-				Util::Filesystem::remove( fileToRemove );
 			}
 		}
 		catch ( const std::exception & p_e )
@@ -158,7 +148,7 @@ namespace VTX::Worker
 
 	Saver::MODE Saver::_getMode( const FilePath & p_path ) const
 	{
-		std::string extension = p_path.extension();
+		std::string extension = p_path.extension().string();
 
 		if ( extension == "nc" || extension == "cif" || extension == "cml" || extension == "cssr" || extension == "dcd"
 			 || extension == "gro" || extension == "lammpstrj" || extension == "mmcif" || extension == "mmtf"

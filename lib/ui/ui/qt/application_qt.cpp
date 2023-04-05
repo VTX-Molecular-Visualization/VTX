@@ -10,7 +10,7 @@
 #include <QPalette>
 #include <QSurfaceFormat>
 // #include <exception>
-#include <old/tool/logger.hpp>
+#include <util/logger.hpp>
 // #include <old/action/action_manager.hpp>
 // #include <old/action/main.hpp>
 #include <old/generic/base_opengl.hpp>

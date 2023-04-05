@@ -3,6 +3,7 @@
 
 #include "base_thread.hpp"
 #include "base_worker.hpp"
+#include <util/types.hpp>
 
 namespace VTX
 {

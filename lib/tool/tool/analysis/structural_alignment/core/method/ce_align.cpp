@@ -4,8 +4,8 @@
 #include <list>
 #include <old/model/molecule.hpp>
 #include <old/model/residue.hpp>
-#include <old/tool/logger.hpp>
 #include <string>
+#include <util/logger.hpp>
 
 namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 {

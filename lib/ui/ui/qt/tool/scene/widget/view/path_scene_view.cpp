@@ -9,7 +9,7 @@
 #include <old/mvc/mvc_manager.hpp>
 #include <old/selection/selection_manager.hpp>
 #include <old/style.hpp>
-#include <old/tool/logger.hpp>
+#include <util/logger.hpp>
 #include <old/ui/contextual_menu.hpp>
 #include <old/ui/mime_type.hpp>
 #include <old/ui/widget/contextual_menu/contextual_menu_selection.hpp>

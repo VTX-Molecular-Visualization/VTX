@@ -1,6 +1,7 @@
 #include "snapshot_block.hpp"
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
+#include "io/filesystem.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
 #include "style.hpp"
@@ -8,7 +9,6 @@
 #include "ui/main_window.hpp"
 #include "ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/widget_factory.hpp"
-#include <util/filesystem.hpp>
 #include "vtx_app.hpp"
 #include "worker/snapshoter.hpp"
 
@@ -39,9 +39,10 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 	void SnapshotBlock::_takeSnapshotAction() const
 	{
-		VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-												Util::Filesystem::getUniqueSnapshotsPath(),
-												VTX_SETTING().getSnapshotResolution() ) );
+		VTX_ACTION(
+			new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+										IO::Filesystem::getUniqueSnapshotsPath( IO::Struct::ImageExport::Format::PNG ),
+										VTX_SETTING().getSnapshotResolution() ) );
 	}
 
 	void SnapshotBlock::_exportAsImageAction() const { Dialog::openAdvancedSettingImageExportDialog(); }

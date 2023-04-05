@@ -5,6 +5,7 @@
 #include "action/viewpoint.hpp"
 #include "base_integrated_widget.hpp"
 #include "event/event_manager.hpp"
+#include "io/filesystem.hpp"
 #include "model/label.hpp"
 #include "model/measurement/angle.hpp"
 #include "model/measurement/dihedral_angle.hpp"
@@ -18,16 +19,15 @@
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "style.hpp"
-#include <util/logger.hpp>
 #include "ui/shortcut.hpp"
 #include "ui/widget_factory.hpp"
-#include <util/filesystem.hpp>
 #include "view/ui/widget/measurement/angle_render_view.hpp"
 #include "view/ui/widget/measurement/dihedral_angle_render_view.hpp"
 #include "view/ui/widget/measurement/distance_render_view.hpp"
 #include "view/ui/widget/measurement/measure_in_progress_render_view.hpp"
 #include "vtx_app.hpp"
 #include <QShortcut>
+#include <util/logger.hpp>
 
 namespace VTX::UI::Widget::Render
 {
@@ -223,9 +223,10 @@ namespace VTX::UI::Widget::Render
 
 	void RenderWidget::_onShortcutSnapshot()
 	{
-		VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-												Util::Filesystem::getUniqueSnapshotsPath(),
-												VTX_SETTING().getSnapshotResolution() ) );
+		VTX_ACTION(
+			new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+										IO::Filesystem::getUniqueSnapshotsPath( IO::Struct::ImageExport::Format::PNG ),
+										VTX_SETTING().getSnapshotResolution() ) );
 	}
 
 	void RenderWidget::_onShortcutChangeRenderMode()

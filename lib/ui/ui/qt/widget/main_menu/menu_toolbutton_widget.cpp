@@ -1,6 +1,6 @@
 #include "menu_toolbutton_widget.hpp"
 #include <old/style.hpp>
-#include <old/tool/logger.hpp>
+#include <util/logger.hpp>
 #include <QKeyEvent>
 #include <QLayout>
 #include <QPalette>

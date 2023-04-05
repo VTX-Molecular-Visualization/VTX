@@ -1,5 +1,6 @@
 #include "setting.hpp"
 #include "action/action_manager.hpp"
+#include "io/filesystem.hpp"
 #include "io/reader/serialized_object.hpp"
 #include "io/writer/serialized_object.hpp"
 #include "model/renderer/render_effect_preset.hpp"
@@ -10,7 +11,6 @@
 #include "renderer/base_renderer.hpp"
 #include "representation/representation_manager.hpp"
 #include "ui/main_window.hpp"
-#include <util/filesystem.hpp>
 #include "vtx_app.hpp"
 #include <exception>
 #include <string>
@@ -21,8 +21,8 @@ namespace VTX::Action::Setting
 
 	void Load::execute()
 	{
-		const FilePath & path = Util::Filesystem::getSettingJsonFile();
-		if ( path.exists() == false )
+		const FilePath & path = IO::Filesystem::getSettingJsonFile();
+		if ( std::filesystem::exists( path ) == false )
 		{
 			VTX_INFO( "No settings file found" );
 			return;
@@ -45,7 +45,7 @@ namespace VTX::Action::Setting
 		IO::Writer::SerializedObject<VTX::Setting> writer = IO::Writer::SerializedObject<VTX::Setting>();
 		try
 		{
-			writer.writeFile( Util::Filesystem::getSettingJsonFile(), VTX_SETTING() );
+			writer.writeFile( IO::Filesystem::getSettingJsonFile(), VTX_SETTING() );
 			VTX_INFO( "Settings saved " );
 		}
 		catch ( const std::exception & p_e )

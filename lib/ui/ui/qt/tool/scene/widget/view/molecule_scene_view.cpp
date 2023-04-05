@@ -24,7 +24,7 @@
 #include <old/selection/selection_manager.hpp>
 #include <old/struct/range.hpp>
 #include <old/style.hpp>
-#include <old/tool/logger.hpp>
+#include <util/logger.hpp>
 #include <old/ui/mime_type.hpp>
 #include <util/string.hpp>
 

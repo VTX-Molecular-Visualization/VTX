@@ -2,9 +2,9 @@
 #define __VTX_UI_QT_CONTROLLER_BASE_GAMEPAD_CONTROLLER__
 
 #include "core/controller/base_controller.hpp"
-#include <old/tool/logger.hpp>
 #include <QDebug>
 #include <QObject>
+#include <util/logger.hpp>
 // #include <QtGamepad/QGamepad>
 #include <set>
 #include <util/types.hpp>

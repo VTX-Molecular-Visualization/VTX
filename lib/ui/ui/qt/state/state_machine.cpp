@@ -6,7 +6,7 @@
 #include <old/event/event.hpp>
 #include <old/event/event_manager.hpp>
 #include <old/vtx_app.hpp>
-#include <util/exception.hpp>
+#include <util/exceptions.hpp>
 
 namespace VTX::UI::QT::State
 {
@@ -36,7 +36,7 @@ namespace VTX::UI::QT::State
 		}
 		else
 		{
-			throw Util::Exception::VTXException( "State not found: " + p_name );
+			throw VTXException( "State not found: " + p_name );
 		}
 	}
 

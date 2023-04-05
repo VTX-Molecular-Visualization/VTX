@@ -1,7 +1,15 @@
 #ifndef __VTX_IO_FILESYSTEM__
 #define __VTX_IO_FILESYSTEM__
 
+// TODO: delete those includes
+#include "model/molecule.hpp"
+#include "model/selection.hpp"
+#include "object3d/scene.hpp"
+#include "selection/selection_manager.hpp"
+//
+#include "setting.hpp"
 #include "struct/image_export.hpp"
+#include "struct/scene_path_data.hpp"
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
@@ -48,9 +56,9 @@ namespace VTX::IO::Filesystem
 	inline const FilePath getLicenseFile() { return getExecutableDir() / "license.txt"; }
 
 	// Dev directories.
-	static const FilePath SHADERS_DIR_SRC = FilePath( "../src/shader" );
-	// static const FilePath DEFAULT_SAVE_FOLDER	  = FilePath( "../save" );
-	// static const FilePath DEFAULT_MOLECULE_FOLDER = FilePath( "../data" );
+	static const FilePath SHADERS_DIR_SRC		  = FilePath( "../src/shader" );
+	static const FilePath DEFAULT_SAVE_FOLDER	  = FilePath( "../save" );
+	static const FilePath DEFAULT_MOLECULE_FOLDER = FilePath( "../data" );
 
 	inline const FilePath getShadersPath( const FilePath & p_filename )
 	{
@@ -153,7 +161,22 @@ namespace VTX::IO::Filesystem
 		}
 	}
 
-	const FilePath getUniqueSnapshotsPath( const Struct::ImageExport::Format p_format )
+	inline void checkSaveDirectoryHierarchy( const FilePath & p_savePath )
+	{
+		const FilePath projectDirectory = getSceneSaveDirectory( p_savePath );
+		if ( std::filesystem::exists( projectDirectory ) == false )
+		{
+			std::filesystem::create_directory( projectDirectory );
+		}
+
+		const FilePath objectsPath = getSceneObjectsSaveDirectory( p_savePath );
+		if ( std::filesystem::exists( objectsPath ) == false )
+		{
+			std::filesystem::create_directory( objectsPath );
+		}
+	}
+
+	inline const FilePath getUniqueSnapshotsPath( const Struct::ImageExport::Format p_format )
 	{
 		std::string extension;
 
@@ -163,7 +186,7 @@ namespace VTX::IO::Filesystem
 		case IO::Struct::ImageExport::Format::JPEG: extension = "jpg"; break;
 		case IO::Struct::ImageExport::Format::BMP: extension = "bmp"; break;
 		default:
-			throw IOException( "Unknown format for snapshot (" + std::to_string( int( p_format ) ) );
+			throw IOException( "Unknown format for snapshot: " + std::to_string( int( p_format ) ) );
 			extension = "";
 			break;
 		}
@@ -175,6 +198,149 @@ namespace VTX::IO::Filesystem
 		Util::Filesystem::generateUniqueFileName( path );
 
 		return path;
+	}
+
+	static const std::string MOLECULE_EXTENSIONS_READ
+		= "Amber Net CDF (*.nc);;"
+		  "CIF(*.cif );;"
+		  "CML (*.cml);;"
+		  "CSSR (*.cssr);;"
+		  "DCD (*.dcd);;"
+		  "GRO (*.gro);;"
+		  "LAMMPS (*.lammpstrj);;"
+		  "MMCIF(*.mmcif);;"
+		  "MMTF (*.mmtf);;"
+		  "MOL2 (*.mol2);;"
+		  "Molden (*.molden);;"
+		  "PDB (*.pdb);;"
+		  "SDF (*.sdf);;"
+		  "SMI (*.smi);;"
+		  "Tinker (*.arc *.psf *.prm);;"
+		  "TNG (*.tng);;"
+		  "TRJ (*.trj);;"
+		  "TRR (*.trr);;"
+		  "XTC (*.xtc);;"
+		  "XYZ (*.xyz);;"
+		  "All (*)";
+
+	static const std::string MOLECULE_EXTENSIONS_WRITE
+		= "Amber Net CDF (*.nc);;"
+		  "CIF(*.cif );;"
+		  "CML (*.cml);;"
+		  "CSSR (*.cssr);;"
+		  "GRO (*.gro);;"
+		  "LAMMPS (*.lammpstrj);;"
+		  "MMCIF(*.mmcif);;"
+		  "MMTF (*.mmtf);;"
+		  "MOL2 (*.mol2);;"
+		  "PDB (*.pdb);;"
+		  "SDF (*.sdf);;"
+		  "SMI (*.smi);;"
+		  "Tinker (*.arc *.psf *.prm);;"
+		  "TRR (*.trr);;"
+		  "XTC (*.xtc);;"
+		  "XYZ (*.xyz);;";
+
+	static const std::string TRAJECTORY_EXTENSIONS_READ
+		= "Amber Net CDF (*.nc);;"
+		  "DCD (*.dcd);;"
+		  "GRO (*.gro);;"
+		  "LAMMPS (*.lammpstrj);;"
+		  "Tinker (*.arc *.psf *.prm);;"
+		  "TNG (*.tng);;"
+		  "TRJ (*.trj);;"
+		  "TRR (*.trr);;"
+		  "XTC (*.xtc);;"
+		  "All (*)";
+
+	static const std::string IMAGE_EXPORT_EXTENSIONS
+		= "PNG (*.png);;"
+		  "JPEG (*.jpg *.jpeg);;"
+		  "BMP (*.bmp);;"
+		  "All (*)";
+
+	static const std::string VTX_EXTENSIONS = "VTX file (*.vtx)";
+
+	static const std::string LOAD_MOLECULE_FILTERS			  = MOLECULE_EXTENSIONS_READ;
+	static const std::string EXPORT_MOLECULE_FILTERS		  = MOLECULE_EXTENSIONS_WRITE;
+	static const std::string OPEN_FILE_FILTERS				  = VTX_EXTENSIONS + ";;" + MOLECULE_EXTENSIONS_READ;
+	static const std::string SAVE_SCENE_FILTERS				  = VTX_EXTENSIONS;
+	static const std::string DEFAULT_MOLECULE_READ_FILTER	  = "All (*)";
+	static const std::string DEFAULT_MOLECULE_WRITE_FILTER	  = "MMCIF(*.mmcif)";
+	static const std::string DEFAULT_MOLECULE_WRITE_EXTENSION = "mmcif";
+
+	static const std::string LOAD_TRAJECTORY_FILTERS		= TRAJECTORY_EXTENSIONS_READ;
+	static const std::string DEFAULT_TRAJECTORY_READ_FILTER = "All (*)";
+
+	static const std::string DEFAULT_FILE_READ_FILTER  = "All (*)";
+	static const std::string DEFAULT_FILE_WRITE_FILTER = VTX_EXTENSIONS;
+
+	static const std::string REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
+	static const std::string RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
+
+	static const FilePath STYLESHEET_FILE_DEFAULT = FilePath( ":/stylesheet_ui.css" );
+	static const FilePath SCENE_OBJECT_DIR		  = FilePath( "obj" );
+
+	static const std::string DEFAULT_SCENE_FILENAME	   = "New Scene";
+	static const std::string DEFAULT_MOLECULE_FILENAME = "New Molecule";
+
+	inline FilePath getDefaultMoleculeExportPath()
+	{
+		const FilePath defaultFolder = FilePath( Setting::getLastExportedMoleculeFolder().toStdString() );
+
+		const int nbMoleculeInSelection
+			= Selection::SelectionManager::get().getSelectionModel().getMoleculeSelectedCount();
+
+		const Model::Molecule * exportedMolecule;
+		if ( nbMoleculeInSelection > 0 )
+		{
+			const Model::ID & moleculeID
+				= Selection::SelectionManager::get().getSelectionModel().getMoleculesMap().begin()->first;
+			exportedMolecule = &( MVC::MvcManager::get().getModel<Model::Molecule>( moleculeID ) );
+		}
+		else if ( VTXApp::get().getScene().getMolecules().size() > 0 )
+		{
+			exportedMolecule = VTXApp::get().getScene().getMolecules().begin()->first;
+		}
+		else
+		{
+			exportedMolecule = nullptr;
+		}
+
+		std::string filename
+			= exportedMolecule == nullptr ? DEFAULT_MOLECULE_FILENAME : exportedMolecule->getDisplayName();
+		filename = filename + '.' + DEFAULT_MOLECULE_WRITE_EXTENSION;
+
+		return defaultFolder / filename;
+	}
+
+	inline FilePath getDefaultSceneSavePath()
+	{
+		if ( !VTXApp::get().getScenePathData().getCurrentPath().empty() )
+		{
+			return VTXApp::get().getScenePathData().getCurrentPath();
+		}
+
+		const FilePath defaultFolder = FilePath( Setting::getLastSavedSessionFolder().toStdString() );
+		FilePath	   defaultPath	 = defaultFolder / ( DEFAULT_SCENE_FILENAME + ".vtx" );
+
+		Util::Filesystem::generateUniqueFileName( defaultPath );
+
+		return defaultPath;
+	}
+
+	inline std::string getImageExportDefaultFilter()
+	{
+		std::string filter;
+		switch ( VTX_SETTING().getSnapshotFormat() )
+		{
+		case IO::Struct::ImageExport::Format::PNG: filter = "PNG (*.png)"; break;
+		case IO::Struct::ImageExport::Format::JPEG: filter = "JPEG (*.jpg *.jpeg)"; break;
+		case IO::Struct::ImageExport::Format::BMP: filter = "BMP (*.bmp)"; break;
+		default: filter = "All (*)"; break;
+		}
+
+		return filter;
 	}
 } // namespace VTX::IO::Filesystem
 

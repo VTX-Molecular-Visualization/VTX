@@ -3,6 +3,7 @@
 #include "controller/measurement_picker.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
+#include "io/filesystem.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "network/network_manager.hpp"
@@ -12,10 +13,8 @@
 #include "setting.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
-#include <util/logger.hpp>
 #include "ui/dialog.hpp"
 #include "ui/main_window.hpp"
-#include <util/filesystem.hpp>
 #include "util/molecule.hpp"
 #include "vtx_app.hpp"
 #include "worker/loader.hpp"
@@ -23,6 +22,7 @@
 #include "worker/representation_loader.hpp"
 #include "worker/saver.hpp"
 #include "worker/scene_loader.hpp"
+#include <util/logger.hpp>
 
 namespace VTX::Action::Main
 {
@@ -103,7 +103,7 @@ namespace VTX::Action::Main
 					for ( const std::pair<const FilePath, Worker::Loader::Result> & pairFilResult :
 						  loader->getPathsResult() )
 					{
-						const FilePath &		   filepath = pairFilResult.first;
+						const FilePath &			   filepath = pairFilResult.first;
 						const Worker::Loader::Result & result	= pairFilResult.second;
 
 						if ( !result.state )
@@ -117,12 +117,12 @@ namespace VTX::Action::Main
 						}
 						else if ( result.sourceType == Worker::Loader::SOURCE_TYPE::BUFFER )
 						{
-							VTX::Setting::enqueueNewDownloadCode( filepath.filenameWithoutExtension() );
+							VTX::Setting::enqueueNewDownloadCode( filepath.stem().string() );
 						}
 
 						if ( result.molecule != nullptr )
 						{
-							result.molecule->setDisplayName( filepath.filenameWithoutExtension() );
+							result.molecule->setDisplayName( filepath.stem().string() );
 							VTXApp::get().getScene().addMolecule( result.molecule );
 						}
 						else if ( result.mesh != nullptr )
@@ -184,9 +184,9 @@ namespace VTX::Action::Main
 
 		for ( const FilePath & path : _paths )
 		{
-			FilePath target = Util::Filesystem::getRepresentationPath( path.filename() );
+			FilePath target = IO::Filesystem::getRepresentationPath( path.filename() );
 			Util::Filesystem::generateUniqueFileName( target );
-			if ( Util::Filesystem::copyFile( path, target ) )
+			if ( std::filesystem::copy_file( path, target ) )
 			{
 				Worker::RepresentationLoader * const loader = new Worker::RepresentationLoader( target );
 				VTX_WORKER( loader );
@@ -201,9 +201,9 @@ namespace VTX::Action::Main
 
 		for ( const FilePath & path : _paths )
 		{
-			FilePath target = Util::Filesystem::getRenderEffectPath( path.filename() );
+			FilePath target = IO::Filesystem::getRenderEffectPath( path.filename() );
 			Util::Filesystem::generateUniqueFileName( target );
-			if ( Util::Filesystem::copyFile( path, target ) )
+			if ( std::filesystem::copy_file( path, target ) )
 			{
 				Worker::RenderEffectPresetLoader * const loader = new Worker::RenderEffectPresetLoader( target );
 				VTX_WORKER( loader );
