@@ -1,9 +1,9 @@
 #include "chemfiles_io.hpp"
-#include "tool/logger.hpp"
 #include "worker/base_thread.hpp"
 #include "worker/base_worker.hpp"
 #include <chemfiles.hpp>
-#include <util/chrono.hpp>
+
+#include <util/logger.hpp>
 
 namespace VTX::IO
 {
@@ -50,7 +50,7 @@ namespace VTX::IO
 	{
 		if ( _thread != nullptr )
 			emit _thread->logFile( p_log );
-		else
-			VTX_LOG_FILE( p_log );
+		// else
+		// VTX_LOG_FILE( p_log );
 	}
 } // namespace VTX::IO

@@ -3,13 +3,13 @@
 
 #include "base_writer.hpp"
 #include "define.hpp"
-#include <util/types.hpp>
 #include "io/serializer.hpp"
 #include "worker/base_thread.hpp"
 #include "worker/base_worker.hpp"
-#include <QTextStream>
 #include <QFile>
+#include <QTextStream>
 #include <nlohmann/json.hpp>
+#include <util/types.hpp>
 
 namespace VTX::IO::Writer
 {
@@ -21,7 +21,7 @@ namespace VTX::IO::Writer
 		SerializedObject( const Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
 		SerializedObject( const Worker::BaseWorker * const p_worker ) : _thread( nullptr ) {}
 
-		void writeFile( const Util::FilePath & p_path, const T & p_data ) override
+		void writeFile( const FilePath & p_path, const T & p_data ) override
 		{
 			IO::Serializer serializer = IO::Serializer( _thread );
 
@@ -31,10 +31,10 @@ namespace VTX::IO::Writer
 										{ "REVISION", VTX_VERSION_REVISION } } },
 									{ "DATA", serializer.serialize( p_data ) } };
 
-			QFile file( QString::fromStdString( p_path.path() ) );
+			QFile file( QString::fromStdString( p_path.string() ) );
 			if ( file.open( QIODevice::WriteOnly | QIODevice::Text ) == false )
 			{
-				throw Exception::IOException( "Can not write file: " + p_path.path() );
+				throw IOException( "Can not write file: " + p_path.string() );
 			}
 
 			QTextStream out( &file );

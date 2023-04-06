@@ -3,10 +3,9 @@
 #include "action/main.hpp"
 #include "model/path.hpp"
 #include "model/viewpoint.hpp"
-#include "util/filesystem.hpp"
-#include "util/time.hpp"
 #include "vtx_app.hpp"
 #include "worker/program_launcher.hpp"
+#include <util/chrono.hpp>
 
 namespace VTX
 {
@@ -16,7 +15,7 @@ namespace VTX
 		void Export::enter( void * const p_arg )
 		{
 			_path		   = (Model::Path *)p_arg;
-			_directoryName = Util::Time::getTimestamp();
+			_directoryName = Util::Chrono::getTimestamp();
 			_directoryName.erase( remove_if( _directoryName.begin(), _directoryName.end(), isspace ),
 								  _directoryName.end() );
 			// VTXApp::get().getSetting().backup();
@@ -78,8 +77,8 @@ namespace VTX
 			std::string counterStr = std::to_string( _frame );
 			std::string fileName   = "frame" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
 
-			VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-													Util::Filesystem::getVideosPath( fileName + ".png" ) ) );
+			// VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+			//										IO::Filesystem::getVideosPath( fileName + ".png" ) ) );
 
 			VTX_INFO( std::to_string( (uint)( _frame * 100 / _frameCount ) ) + "%" );
 
@@ -105,24 +104,24 @@ namespace VTX
 		/*
 		void Export::_generareVideo() const
 		{
-			if ( std::filesystem::exists( Util::Filesystem::FFMPEG_EXE_FILE ) == false )
+			if ( std::filesystem::exists( IO::Filesystem::FFMPEG_EXE_FILE ) == false )
 			{
-				throw Exception::LibException( "ffmpeg is missing, frames are saved on disk" );
+				throw LibException( "ffmpeg is missing, frames are saved on disk" );
 			}
 
 			VTX_INFO( "Encoding video" );
 
-			FilePath files = Util::Filesystem::getVideosBatchPath( _directoryName );
+			FilePath files = IO::Filesystem::getVideosBatchPath( _directoryName );
 			files /= "frame%06d.png";
-			std::string command = Util::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate "
+			std::string command = IO::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate "
 								  + std::to_string( Setting::VIDEO_FPS_DEFAULT ) + " -i " + files.string()
 								  + " -vcodec libx264 -crf " + std::to_string( Setting::VIDEO_CRF_DEFAULT ) + " "
-								  + Util::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
+								  + IO::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
 			Worker::ProgramLauncher * worker = new Worker::ProgramLauncher( command );
 			VTX_THREAD( worker );
 
 			// Clean frames
-			Util::Filesystem::removeAll( Util::Filesystem::getVideosBatchPath( _directoryName ) );
+			Util::Filesystem::removeAll( IO::Filesystem::getVideosBatchPath( _directoryName ) );
 		}
 		*/
 

@@ -6,10 +6,11 @@
 #include "analysis/structural_alignment.hpp"
 #include "model/molecule.hpp"
 #include "model/selection.hpp"
-#include "tool/logger.hpp"
 #include "util/analysis.hpp"
 #include <cmath>
 #include <string>
+#include <util/chrono.hpp>
+#include <util/logger.hpp>
 #include <vector>
 
 namespace VTX::Action::Analysis

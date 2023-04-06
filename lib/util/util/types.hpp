@@ -1,6 +1,7 @@
-#ifndef __VTX_RENDERER_GL_TYPES__
-#define __VTX_RENDERER_GL_TYPES__
+#ifndef __VTX_UTIL_TYPES__
+#define __VTX_UTIL_TYPES__
 
+#include <filesystem>
 #include <glm/detail/qualifier.hpp>
 #include <glm/detail/type_quat.hpp>
 #include <glm/glm.hpp>
@@ -9,10 +10,11 @@
 namespace VTX
 {
 	// Types.
-	using ushort = unsigned short;
-	using uint	 = unsigned int;
-	using ulong	 = unsigned long;
-	using uchar	 = unsigned char;
+	using ushort   = unsigned short;
+	using uint	   = unsigned int;
+	using ulong	   = unsigned long;
+	using uchar	   = unsigned char;
+	using FilePath = std::filesystem::path;
 
 	using Vec2f = glm::vec2;
 	using Vec2i = glm::ivec2;

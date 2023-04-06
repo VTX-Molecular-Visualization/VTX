@@ -1,6 +1,6 @@
 #include "residue_data_reader.hpp"
+#include "io/filesystem.hpp"
 #include "model/residue.hpp"
-#include "util/filesystem.hpp"
 
 namespace VTX::IO::Reader
 {
@@ -8,13 +8,14 @@ namespace VTX::IO::Reader
 
 	bool ResidueDataReader::readResidueData( const std::string & p_residueSymbol, ResidueData & p_residueData )
 	{
-		const Util::FilePath filepath = Util::Filesystem::getResidueDataFilePath( p_residueSymbol );
-		std::string		   residueFileData;
+		const FilePath filepath = IO::Filesystem::getResidueDataFilePath( p_residueSymbol );
 
-		if ( !filepath.exists() )
+		if ( !std::filesystem::exists( filepath ) )
+		{
 			return false;
+		}
 
-		Util::Filesystem::readPath( filepath, residueFileData );
+		std::string residueFileData = Util::Filesystem::readPath( filepath );
 
 		std::stringstream stream = std::stringstream( residueFileData );
 
@@ -48,6 +49,7 @@ namespace VTX::IO::Reader
 
 		return true;
 	}
+
 	void ResidueDataReader::_goToResidue( std::stringstream & p_stream, const std::string & p_residueSymbol )
 	{
 		const std::string residueLine = "#" + p_residueSymbol;

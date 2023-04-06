@@ -125,39 +125,39 @@ class Ui_KeywordEditorGUI
 	void setupUi( QWidget * KeywordEditorGUI )
 	{
 		if ( KeywordEditorGUI->objectName().isEmpty() )
-			KeywordEditorGUI->setObjectName( QString::fromUtf8( "KeywordEditorGUI" ) );
+			KeywordEditorGUI->setObjectName( QString::fromStdString( "KeywordEditorGUI" ) );
 		KeywordEditorGUI->resize( 400, 1089 );
 		gridLayout = new QGridLayout( KeywordEditorGUI );
-		gridLayout->setObjectName( QString::fromUtf8( "gridLayout" ) );
+		gridLayout->setObjectName( QString::fromStdString( "gridLayout" ) );
 		tabWidgetKeywordEditor = new QTabWidget( KeywordEditorGUI );
-		tabWidgetKeywordEditor->setObjectName( QString::fromUtf8( "tabWidgetKeywordEditor" ) );
+		tabWidgetKeywordEditor->setObjectName( QString::fromStdString( "tabWidgetKeywordEditor" ) );
 		tabDynamic = new QWidget();
-		tabDynamic->setObjectName( QString::fromUtf8( "tabDynamic" ) );
+		tabDynamic->setObjectName( QString::fromStdString( "tabDynamic" ) );
 		verticalLayout_9 = new QVBoxLayout( tabDynamic );
-		verticalLayout_9->setObjectName( QString::fromUtf8( "verticalLayout_9" ) );
+		verticalLayout_9->setObjectName( QString::fromStdString( "verticalLayout_9" ) );
 		horizontalLayout_2 = new QHBoxLayout();
-		horizontalLayout_2->setObjectName( QString::fromUtf8( "horizontalLayout_2" ) );
+		horizontalLayout_2->setObjectName( QString::fromStdString( "horizontalLayout_2" ) );
 		horizontalSpacer = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
 
 		horizontalLayout_2->addItem( horizontalSpacer );
 
 		pushButtonOpenKeyfile = new QPushButton( tabDynamic );
-		pushButtonOpenKeyfile->setObjectName( QString::fromUtf8( "pushButtonOpenKeyfile" ) );
+		pushButtonOpenKeyfile->setObjectName( QString::fromStdString( "pushButtonOpenKeyfile" ) );
 
 		horizontalLayout_2->addWidget( pushButtonOpenKeyfile );
 
 		verticalLayout_9->addLayout( horizontalLayout_2 );
 
 		widgetDynamic = new QWidget( tabDynamic );
-		widgetDynamic->setObjectName( QString::fromUtf8( "widgetDynamic" ) );
+		widgetDynamic->setObjectName( QString::fromStdString( "widgetDynamic" ) );
 		verticalLayout_6 = new QVBoxLayout( widgetDynamic );
-		verticalLayout_6->setObjectName( QString::fromUtf8( "verticalLayout_6" ) );
+		verticalLayout_6->setObjectName( QString::fromStdString( "verticalLayout_6" ) );
 		verticalLayout_6->setContentsMargins( 0, 0, 0, 0 );
 		horizontalLayout_3 = new QHBoxLayout();
 		horizontalLayout_3->setSpacing( 5 );
-		horizontalLayout_3->setObjectName( QString::fromUtf8( "horizontalLayout_3" ) );
+		horizontalLayout_3->setObjectName( QString::fromStdString( "horizontalLayout_3" ) );
 		labelIntegrator = new QLabel( widgetDynamic );
-		labelIntegrator->setObjectName( QString::fromUtf8( "labelIntegrator" ) );
+		labelIntegrator->setObjectName( QString::fromStdString( "labelIntegrator" ) );
 
 		horizontalLayout_3->addWidget( labelIntegrator );
 
@@ -171,7 +171,7 @@ class Ui_KeywordEditorGUI
 		comboBoxIntegrator->addItem( QString() );
 		comboBoxIntegrator->addItem( QString() );
 		comboBoxIntegrator->addItem( QString() );
-		comboBoxIntegrator->setObjectName( QString::fromUtf8( "comboBoxIntegrator" ) );
+		comboBoxIntegrator->setObjectName( QString::fromStdString( "comboBoxIntegrator" ) );
 		QSizePolicy sizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed );
 		sizePolicy.setHorizontalStretch( 0 );
 		sizePolicy.setVerticalStretch( 0 );
@@ -183,7 +183,7 @@ class Ui_KeywordEditorGUI
 		horizontalLayout_3->addWidget( comboBoxIntegrator );
 
 		labelIntegratorInfo = new QLabel( widgetDynamic );
-		labelIntegratorInfo->setObjectName( QString::fromUtf8( "labelIntegratorInfo" ) );
+		labelIntegratorInfo->setObjectName( QString::fromStdString( "labelIntegratorInfo" ) );
 		QSizePolicy sizePolicy1( QSizePolicy::Fixed, QSizePolicy::Fixed );
 		sizePolicy1.setHorizontalStretch( 0 );
 		sizePolicy1.setVerticalStretch( 0 );
@@ -198,14 +198,14 @@ class Ui_KeywordEditorGUI
 		verticalLayout_6->addLayout( horizontalLayout_3 );
 
 		horizontalLayout = new QHBoxLayout();
-		horizontalLayout->setObjectName( QString::fromUtf8( "horizontalLayout" ) );
+		horizontalLayout->setObjectName( QString::fromStdString( "horizontalLayout" ) );
 		labelFriction = new QLabel( widgetDynamic );
-		labelFriction->setObjectName( QString::fromUtf8( "labelFriction" ) );
+		labelFriction->setObjectName( QString::fromStdString( "labelFriction" ) );
 
 		horizontalLayout->addWidget( labelFriction );
 
 		spinBoxFriction = new QSpinBox( widgetDynamic );
-		spinBoxFriction->setObjectName( QString::fromUtf8( "spinBoxFriction" ) );
+		spinBoxFriction->setObjectName( QString::fromStdString( "spinBoxFriction" ) );
 		QSizePolicy sizePolicy2( QSizePolicy::Maximum, QSizePolicy::Fixed );
 		sizePolicy2.setHorizontalStretch( 0 );
 		sizePolicy2.setVerticalStretch( 0 );
@@ -222,14 +222,14 @@ class Ui_KeywordEditorGUI
 		verticalLayout_6->addLayout( horizontalLayout );
 
 		horizontalLayout_4 = new QHBoxLayout();
-		horizontalLayout_4->setObjectName( QString::fromUtf8( "horizontalLayout_4" ) );
+		horizontalLayout_4->setObjectName( QString::fromStdString( "horizontalLayout_4" ) );
 		labelInnerTimestep = new QLabel( widgetDynamic );
-		labelInnerTimestep->setObjectName( QString::fromUtf8( "labelInnerTimestep" ) );
+		labelInnerTimestep->setObjectName( QString::fromStdString( "labelInnerTimestep" ) );
 
 		horizontalLayout_4->addWidget( labelInnerTimestep );
 
 		spinBoxInnerTimestep = new QSpinBox( widgetDynamic );
-		spinBoxInnerTimestep->setObjectName( QString::fromUtf8( "spinBoxInnerTimestep" ) );
+		spinBoxInnerTimestep->setObjectName( QString::fromStdString( "spinBoxInnerTimestep" ) );
 		spinBoxInnerTimestep->setMinimumSize( QSize( 165, 0 ) );
 		spinBoxInnerTimestep->setMaximumSize( QSize( 165, 16777215 ) );
 		spinBoxInnerTimestep->setValue( 1 );
@@ -241,14 +241,14 @@ class Ui_KeywordEditorGUI
 		verticalLayout_6->addLayout( horizontalLayout_4 );
 
 		horizontalLayout_5 = new QHBoxLayout();
-		horizontalLayout_5->setObjectName( QString::fromUtf8( "horizontalLayout_5" ) );
+		horizontalLayout_5->setObjectName( QString::fromStdString( "horizontalLayout_5" ) );
 		labelIntermediateTimestep = new QLabel( widgetDynamic );
-		labelIntermediateTimestep->setObjectName( QString::fromUtf8( "labelIntermediateTimestep" ) );
+		labelIntermediateTimestep->setObjectName( QString::fromStdString( "labelIntermediateTimestep" ) );
 
 		horizontalLayout_5->addWidget( labelIntermediateTimestep );
 
 		spinBoxIntermediateTimestep = new QSpinBox( widgetDynamic );
-		spinBoxIntermediateTimestep->setObjectName( QString::fromUtf8( "spinBoxIntermediateTimestep" ) );
+		spinBoxIntermediateTimestep->setObjectName( QString::fromStdString( "spinBoxIntermediateTimestep" ) );
 		spinBoxIntermediateTimestep->setMinimumSize( QSize( 165, 0 ) );
 		spinBoxIntermediateTimestep->setMaximumSize( QSize( 165, 16777215 ) );
 		spinBoxIntermediateTimestep->setValue( 1 );
@@ -260,9 +260,9 @@ class Ui_KeywordEditorGUI
 		verticalLayout_6->addLayout( horizontalLayout_5 );
 
 		horizontalLayout_8 = new QHBoxLayout();
-		horizontalLayout_8->setObjectName( QString::fromUtf8( "horizontalLayout_8" ) );
+		horizontalLayout_8->setObjectName( QString::fromStdString( "horizontalLayout_8" ) );
 		labelThermostat = new QLabel( widgetDynamic );
-		labelThermostat->setObjectName( QString::fromUtf8( "labelThermostat" ) );
+		labelThermostat->setObjectName( QString::fromStdString( "labelThermostat" ) );
 
 		horizontalLayout_8->addWidget( labelThermostat );
 
@@ -270,7 +270,7 @@ class Ui_KeywordEditorGUI
 		comboBoxThermostat->addItem( QString() );
 		comboBoxThermostat->addItem( QString() );
 		comboBoxThermostat->addItem( QString() );
-		comboBoxThermostat->setObjectName( QString::fromUtf8( "comboBoxThermostat" ) );
+		comboBoxThermostat->setObjectName( QString::fromStdString( "comboBoxThermostat" ) );
 		comboBoxThermostat->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxThermostat->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -281,16 +281,16 @@ class Ui_KeywordEditorGUI
 		verticalLayout_6->addLayout( horizontalLayout_8 );
 
 		horizontalLayout_9 = new QHBoxLayout();
-		horizontalLayout_9->setObjectName( QString::fromUtf8( "horizontalLayout_9" ) );
+		horizontalLayout_9->setObjectName( QString::fromStdString( "horizontalLayout_9" ) );
 		labelBarostat = new QLabel( widgetDynamic );
-		labelBarostat->setObjectName( QString::fromUtf8( "labelBarostat" ) );
+		labelBarostat->setObjectName( QString::fromStdString( "labelBarostat" ) );
 
 		horizontalLayout_9->addWidget( labelBarostat );
 
 		comboBoxBarostat = new QComboBox( widgetDynamic );
 		comboBoxBarostat->addItem( QString() );
 		comboBoxBarostat->addItem( QString() );
-		comboBoxBarostat->setObjectName( QString::fromUtf8( "comboBoxBarostat" ) );
+		comboBoxBarostat->setObjectName( QString::fromStdString( "comboBoxBarostat" ) );
 		comboBoxBarostat->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxBarostat->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -301,9 +301,9 @@ class Ui_KeywordEditorGUI
 		verticalLayout_6->addLayout( horizontalLayout_9 );
 
 		horizontalLayout_10 = new QHBoxLayout();
-		horizontalLayout_10->setObjectName( QString::fromUtf8( "horizontalLayout_10" ) );
+		horizontalLayout_10->setObjectName( QString::fromStdString( "horizontalLayout_10" ) );
 		labelPolarizationEquations = new QLabel( widgetDynamic );
-		labelPolarizationEquations->setObjectName( QString::fromUtf8( "labelPolarizationEquations" ) );
+		labelPolarizationEquations->setObjectName( QString::fromStdString( "labelPolarizationEquations" ) );
 
 		horizontalLayout_10->addWidget( labelPolarizationEquations );
 
@@ -312,7 +312,7 @@ class Ui_KeywordEditorGUI
 		comboBoxPolarizationEquations->addItem( QString() );
 		comboBoxPolarizationEquations->addItem( QString() );
 		comboBoxPolarizationEquations->addItem( QString() );
-		comboBoxPolarizationEquations->setObjectName( QString::fromUtf8( "comboBoxPolarizationEquations" ) );
+		comboBoxPolarizationEquations->setObjectName( QString::fromStdString( "comboBoxPolarizationEquations" ) );
 		comboBoxPolarizationEquations->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxPolarizationEquations->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -323,9 +323,9 @@ class Ui_KeywordEditorGUI
 		verticalLayout_6->addLayout( horizontalLayout_10 );
 
 		horizontalLayout_23 = new QHBoxLayout();
-		horizontalLayout_23->setObjectName( QString::fromUtf8( "horizontalLayout_23" ) );
+		horizontalLayout_23->setObjectName( QString::fromStdString( "horizontalLayout_23" ) );
 		labelShortRangePolarizationSolver = new QLabel( widgetDynamic );
-		labelShortRangePolarizationSolver->setObjectName( QString::fromUtf8( "labelShortRangePolarizationSolver" ) );
+		labelShortRangePolarizationSolver->setObjectName( QString::fromStdString( "labelShortRangePolarizationSolver" ) );
 
 		horizontalLayout_23->addWidget( labelShortRangePolarizationSolver );
 
@@ -335,7 +335,7 @@ class Ui_KeywordEditorGUI
 		comboBoxShortRangePolarizationSolver->addItem( QString() );
 		comboBoxShortRangePolarizationSolver->addItem( QString() );
 		comboBoxShortRangePolarizationSolver->setObjectName(
-			QString::fromUtf8( "comboBoxShortRangePolarizationSolver" ) );
+			QString::fromStdString( "comboBoxShortRangePolarizationSolver" ) );
 		comboBoxShortRangePolarizationSolver->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxShortRangePolarizationSolver->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -346,14 +346,14 @@ class Ui_KeywordEditorGUI
 		verticalLayout_6->addLayout( horizontalLayout_23 );
 
 		horizontalLayout_7 = new QHBoxLayout();
-		horizontalLayout_7->setObjectName( QString::fromUtf8( "horizontalLayout_7" ) );
+		horizontalLayout_7->setObjectName( QString::fromStdString( "horizontalLayout_7" ) );
 		labelMassPiston = new QLabel( widgetDynamic );
-		labelMassPiston->setObjectName( QString::fromUtf8( "labelMassPiston" ) );
+		labelMassPiston->setObjectName( QString::fromStdString( "labelMassPiston" ) );
 
 		horizontalLayout_7->addWidget( labelMassPiston );
 
 		spinBoxMassPiston = new QSpinBox( widgetDynamic );
-		spinBoxMassPiston->setObjectName( QString::fromUtf8( "spinBoxMassPiston" ) );
+		spinBoxMassPiston->setObjectName( QString::fromStdString( "spinBoxMassPiston" ) );
 		spinBoxMassPiston->setMinimumSize( QSize( 165, 0 ) );
 		spinBoxMassPiston->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -364,14 +364,14 @@ class Ui_KeywordEditorGUI
 		verticalLayout_6->addLayout( horizontalLayout_7 );
 
 		horizontalLayout_24 = new QHBoxLayout();
-		horizontalLayout_24->setObjectName( QString::fromUtf8( "horizontalLayout_24" ) );
+		horizontalLayout_24->setObjectName( QString::fromStdString( "horizontalLayout_24" ) );
 		labelFrictionPiston = new QLabel( widgetDynamic );
-		labelFrictionPiston->setObjectName( QString::fromUtf8( "labelFrictionPiston" ) );
+		labelFrictionPiston->setObjectName( QString::fromStdString( "labelFrictionPiston" ) );
 
 		horizontalLayout_24->addWidget( labelFrictionPiston );
 
 		spinBoxFrictionPiston = new QSpinBox( widgetDynamic );
-		spinBoxFrictionPiston->setObjectName( QString::fromUtf8( "spinBoxFrictionPiston" ) );
+		spinBoxFrictionPiston->setObjectName( QString::fromStdString( "spinBoxFrictionPiston" ) );
 		spinBoxFrictionPiston->setMinimumSize( QSize( 165, 0 ) );
 		spinBoxFrictionPiston->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -382,26 +382,26 @@ class Ui_KeywordEditorGUI
 		verticalLayout_6->addLayout( horizontalLayout_24 );
 
 		groupBoxTcgParameters = new CollapsingGroupboxWidget( widgetDynamic );
-		groupBoxTcgParameters->setObjectName( QString::fromUtf8( "groupBoxTcgParameters" ) );
+		groupBoxTcgParameters->setObjectName( QString::fromStdString( "groupBoxTcgParameters" ) );
 		verticalLayout_7 = new QVBoxLayout( groupBoxTcgParameters );
-		verticalLayout_7->setObjectName( QString::fromUtf8( "verticalLayout_7" ) );
+		verticalLayout_7->setObjectName( QString::fromStdString( "verticalLayout_7" ) );
 		widgetContainingTcgParameters = new QWidget( groupBoxTcgParameters );
-		widgetContainingTcgParameters->setObjectName( QString::fromUtf8( "widgetContainingTcgParameters" ) );
+		widgetContainingTcgParameters->setObjectName( QString::fromStdString( "widgetContainingTcgParameters" ) );
 		widgetContainingTcgParameters->setAutoFillBackground( false );
 		verticalLayout_4 = new QVBoxLayout( widgetContainingTcgParameters );
-		verticalLayout_4->setObjectName( QString::fromUtf8( "verticalLayout_4" ) );
+		verticalLayout_4->setObjectName( QString::fromStdString( "verticalLayout_4" ) );
 		verticalLayout_4->setContentsMargins( 0, 0, 0, 0 );
 		horizontalLayout_11 = new QHBoxLayout();
-		horizontalLayout_11->setObjectName( QString::fromUtf8( "horizontalLayout_11" ) );
+		horizontalLayout_11->setObjectName( QString::fromStdString( "horizontalLayout_11" ) );
 		labelTcgOrder = new QLabel( widgetContainingTcgParameters );
-		labelTcgOrder->setObjectName( QString::fromUtf8( "labelTcgOrder" ) );
+		labelTcgOrder->setObjectName( QString::fromStdString( "labelTcgOrder" ) );
 
 		horizontalLayout_11->addWidget( labelTcgOrder );
 
 		comboBoxTcgOrder = new QComboBox( widgetContainingTcgParameters );
 		comboBoxTcgOrder->addItem( QString() );
 		comboBoxTcgOrder->addItem( QString() );
-		comboBoxTcgOrder->setObjectName( QString::fromUtf8( "comboBoxTcgOrder" ) );
+		comboBoxTcgOrder->setObjectName( QString::fromStdString( "comboBoxTcgOrder" ) );
 		comboBoxTcgOrder->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxTcgOrder->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -412,16 +412,16 @@ class Ui_KeywordEditorGUI
 		verticalLayout_4->addLayout( horizontalLayout_11 );
 
 		horizontalLayout_12 = new QHBoxLayout();
-		horizontalLayout_12->setObjectName( QString::fromUtf8( "horizontalLayout_12" ) );
+		horizontalLayout_12->setObjectName( QString::fromStdString( "horizontalLayout_12" ) );
 		labelDiagPrec = new QLabel( widgetContainingTcgParameters );
-		labelDiagPrec->setObjectName( QString::fromUtf8( "labelDiagPrec" ) );
+		labelDiagPrec->setObjectName( QString::fromStdString( "labelDiagPrec" ) );
 
 		horizontalLayout_12->addWidget( labelDiagPrec );
 
 		comboBoxDiagPrec = new QComboBox( widgetContainingTcgParameters );
 		comboBoxDiagPrec->addItem( QString() );
 		comboBoxDiagPrec->addItem( QString() );
-		comboBoxDiagPrec->setObjectName( QString::fromUtf8( "comboBoxDiagPrec" ) );
+		comboBoxDiagPrec->setObjectName( QString::fromStdString( "comboBoxDiagPrec" ) );
 		comboBoxDiagPrec->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxDiagPrec->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -432,16 +432,16 @@ class Ui_KeywordEditorGUI
 		verticalLayout_4->addLayout( horizontalLayout_12 );
 
 		horizontalLayout_13 = new QHBoxLayout();
-		horizontalLayout_13->setObjectName( QString::fromUtf8( "horizontalLayout_13" ) );
+		horizontalLayout_13->setObjectName( QString::fromStdString( "horizontalLayout_13" ) );
 		labelTcgGuess = new QLabel( widgetContainingTcgParameters );
-		labelTcgGuess->setObjectName( QString::fromUtf8( "labelTcgGuess" ) );
+		labelTcgGuess->setObjectName( QString::fromStdString( "labelTcgGuess" ) );
 
 		horizontalLayout_13->addWidget( labelTcgGuess );
 
 		comboBoxTcgGuess = new QComboBox( widgetContainingTcgParameters );
 		comboBoxTcgGuess->addItem( QString() );
 		comboBoxTcgGuess->addItem( QString() );
-		comboBoxTcgGuess->setObjectName( QString::fromUtf8( "comboBoxTcgGuess" ) );
+		comboBoxTcgGuess->setObjectName( QString::fromStdString( "comboBoxTcgGuess" ) );
 		comboBoxTcgGuess->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxTcgGuess->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -452,16 +452,16 @@ class Ui_KeywordEditorGUI
 		verticalLayout_4->addLayout( horizontalLayout_13 );
 
 		horizontalLayout_14 = new QHBoxLayout();
-		horizontalLayout_14->setObjectName( QString::fromUtf8( "horizontalLayout_14" ) );
+		horizontalLayout_14->setObjectName( QString::fromStdString( "horizontalLayout_14" ) );
 		labelTcgPeek = new QLabel( widgetContainingTcgParameters );
-		labelTcgPeek->setObjectName( QString::fromUtf8( "labelTcgPeek" ) );
+		labelTcgPeek->setObjectName( QString::fromStdString( "labelTcgPeek" ) );
 
 		horizontalLayout_14->addWidget( labelTcgPeek );
 
 		comboBoxTcgPeek = new QComboBox( widgetContainingTcgParameters );
 		comboBoxTcgPeek->addItem( QString() );
 		comboBoxTcgPeek->addItem( QString() );
-		comboBoxTcgPeek->setObjectName( QString::fromUtf8( "comboBoxTcgPeek" ) );
+		comboBoxTcgPeek->setObjectName( QString::fromStdString( "comboBoxTcgPeek" ) );
 		comboBoxTcgPeek->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxTcgPeek->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -472,19 +472,19 @@ class Ui_KeywordEditorGUI
 		verticalLayout_4->addLayout( horizontalLayout_14 );
 
 		widgetPeekStep = new QWidget( widgetContainingTcgParameters );
-		widgetPeekStep->setObjectName( QString::fromUtf8( "widgetPeekStep" ) );
+		widgetPeekStep->setObjectName( QString::fromStdString( "widgetPeekStep" ) );
 		verticalLayout_2 = new QVBoxLayout( widgetPeekStep );
-		verticalLayout_2->setObjectName( QString::fromUtf8( "verticalLayout_2" ) );
+		verticalLayout_2->setObjectName( QString::fromStdString( "verticalLayout_2" ) );
 		verticalLayout_2->setContentsMargins( 0, 0, 0, 0 );
 		horizontalLayout_15 = new QHBoxLayout();
-		horizontalLayout_15->setObjectName( QString::fromUtf8( "horizontalLayout_15" ) );
+		horizontalLayout_15->setObjectName( QString::fromStdString( "horizontalLayout_15" ) );
 		labelTcgOmega = new QLabel( widgetPeekStep );
-		labelTcgOmega->setObjectName( QString::fromUtf8( "labelTcgOmega" ) );
+		labelTcgOmega->setObjectName( QString::fromStdString( "labelTcgOmega" ) );
 
 		horizontalLayout_15->addWidget( labelTcgOmega );
 
 		spinBoxTcgOmega = new QSpinBox( widgetPeekStep );
-		spinBoxTcgOmega->setObjectName( QString::fromUtf8( "spinBoxTcgOmega" ) );
+		spinBoxTcgOmega->setObjectName( QString::fromStdString( "spinBoxTcgOmega" ) );
 		spinBoxTcgOmega->setMinimumSize( QSize( 165, 0 ) );
 		spinBoxTcgOmega->setMaximumSize( QSize( 165, 16777215 ) );
 		spinBoxTcgOmega->setValue( 1 );
@@ -496,16 +496,16 @@ class Ui_KeywordEditorGUI
 		verticalLayout_2->addLayout( horizontalLayout_15 );
 
 		horizontalLayout_16 = new QHBoxLayout();
-		horizontalLayout_16->setObjectName( QString::fromUtf8( "horizontalLayout_16" ) );
+		horizontalLayout_16->setObjectName( QString::fromStdString( "horizontalLayout_16" ) );
 		labelTcgMegaFit = new QLabel( widgetPeekStep );
-		labelTcgMegaFit->setObjectName( QString::fromUtf8( "labelTcgMegaFit" ) );
+		labelTcgMegaFit->setObjectName( QString::fromStdString( "labelTcgMegaFit" ) );
 
 		horizontalLayout_16->addWidget( labelTcgMegaFit );
 
 		comboBoxTcgMegaFit = new QComboBox( widgetPeekStep );
 		comboBoxTcgMegaFit->addItem( QString() );
 		comboBoxTcgMegaFit->addItem( QString() );
-		comboBoxTcgMegaFit->setObjectName( QString::fromUtf8( "comboBoxTcgMegaFit" ) );
+		comboBoxTcgMegaFit->setObjectName( QString::fromStdString( "comboBoxTcgMegaFit" ) );
 		comboBoxTcgMegaFit->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxTcgMegaFit->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -516,14 +516,14 @@ class Ui_KeywordEditorGUI
 		verticalLayout_2->addLayout( horizontalLayout_16 );
 
 		horizontalLayout_17 = new QHBoxLayout();
-		horizontalLayout_17->setObjectName( QString::fromUtf8( "horizontalLayout_17" ) );
+		horizontalLayout_17->setObjectName( QString::fromStdString( "horizontalLayout_17" ) );
 		labelTcgMegaFitFreq = new QLabel( widgetPeekStep );
-		labelTcgMegaFitFreq->setObjectName( QString::fromUtf8( "labelTcgMegaFitFreq" ) );
+		labelTcgMegaFitFreq->setObjectName( QString::fromStdString( "labelTcgMegaFitFreq" ) );
 
 		horizontalLayout_17->addWidget( labelTcgMegaFitFreq );
 
 		spinBoxTcgMegaFitFreq = new QSpinBox( widgetPeekStep );
-		spinBoxTcgMegaFitFreq->setObjectName( QString::fromUtf8( "spinBoxTcgMegaFitFreq" ) );
+		spinBoxTcgMegaFitFreq->setObjectName( QString::fromStdString( "spinBoxTcgMegaFitFreq" ) );
 		spinBoxTcgMegaFitFreq->setMinimumSize( QSize( 165, 0 ) );
 		spinBoxTcgMegaFitFreq->setMaximumSize( QSize( 165, 16777215 ) );
 		spinBoxTcgMegaFitFreq->setMaximum( 100000000 );
@@ -542,25 +542,25 @@ class Ui_KeywordEditorGUI
 		verticalLayout_6->addWidget( groupBoxTcgParameters );
 
 		groupBoxTcgShortParameters = new CollapsingGroupboxWidget( widgetDynamic );
-		groupBoxTcgShortParameters->setObjectName( QString::fromUtf8( "groupBoxTcgShortParameters" ) );
+		groupBoxTcgShortParameters->setObjectName( QString::fromStdString( "groupBoxTcgShortParameters" ) );
 		verticalLayout_5 = new QVBoxLayout( groupBoxTcgShortParameters );
-		verticalLayout_5->setObjectName( QString::fromUtf8( "verticalLayout_5" ) );
+		verticalLayout_5->setObjectName( QString::fromStdString( "verticalLayout_5" ) );
 		widgetTcgParametersShort = new QWidget( groupBoxTcgShortParameters );
-		widgetTcgParametersShort->setObjectName( QString::fromUtf8( "widgetTcgParametersShort" ) );
+		widgetTcgParametersShort->setObjectName( QString::fromStdString( "widgetTcgParametersShort" ) );
 		verticalLayout_8 = new QVBoxLayout( widgetTcgParametersShort );
-		verticalLayout_8->setObjectName( QString::fromUtf8( "verticalLayout_8" ) );
+		verticalLayout_8->setObjectName( QString::fromStdString( "verticalLayout_8" ) );
 		verticalLayout_8->setContentsMargins( 0, 0, 0, 0 );
 		horizontalLayout_18 = new QHBoxLayout();
-		horizontalLayout_18->setObjectName( QString::fromUtf8( "horizontalLayout_18" ) );
+		horizontalLayout_18->setObjectName( QString::fromStdString( "horizontalLayout_18" ) );
 		labelTcgOrderShort = new QLabel( widgetTcgParametersShort );
-		labelTcgOrderShort->setObjectName( QString::fromUtf8( "labelTcgOrderShort" ) );
+		labelTcgOrderShort->setObjectName( QString::fromStdString( "labelTcgOrderShort" ) );
 
 		horizontalLayout_18->addWidget( labelTcgOrderShort );
 
 		comboBoxTcgOrderShort = new QComboBox( widgetTcgParametersShort );
 		comboBoxTcgOrderShort->addItem( QString() );
 		comboBoxTcgOrderShort->addItem( QString() );
-		comboBoxTcgOrderShort->setObjectName( QString::fromUtf8( "comboBoxTcgOrderShort" ) );
+		comboBoxTcgOrderShort->setObjectName( QString::fromStdString( "comboBoxTcgOrderShort" ) );
 		comboBoxTcgOrderShort->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxTcgOrderShort->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -571,16 +571,16 @@ class Ui_KeywordEditorGUI
 		verticalLayout_8->addLayout( horizontalLayout_18 );
 
 		horizontalLayout_22 = new QHBoxLayout();
-		horizontalLayout_22->setObjectName( QString::fromUtf8( "horizontalLayout_22" ) );
+		horizontalLayout_22->setObjectName( QString::fromStdString( "horizontalLayout_22" ) );
 		labelDiagPrecShort = new QLabel( widgetTcgParametersShort );
-		labelDiagPrecShort->setObjectName( QString::fromUtf8( "labelDiagPrecShort" ) );
+		labelDiagPrecShort->setObjectName( QString::fromStdString( "labelDiagPrecShort" ) );
 
 		horizontalLayout_22->addWidget( labelDiagPrecShort );
 
 		comboBoxDiagPrecShort = new QComboBox( widgetTcgParametersShort );
 		comboBoxDiagPrecShort->addItem( QString() );
 		comboBoxDiagPrecShort->addItem( QString() );
-		comboBoxDiagPrecShort->setObjectName( QString::fromUtf8( "comboBoxDiagPrecShort" ) );
+		comboBoxDiagPrecShort->setObjectName( QString::fromStdString( "comboBoxDiagPrecShort" ) );
 		comboBoxDiagPrecShort->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxDiagPrecShort->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -591,16 +591,16 @@ class Ui_KeywordEditorGUI
 		verticalLayout_8->addLayout( horizontalLayout_22 );
 
 		horizontalLayout_20 = new QHBoxLayout();
-		horizontalLayout_20->setObjectName( QString::fromUtf8( "horizontalLayout_20" ) );
+		horizontalLayout_20->setObjectName( QString::fromStdString( "horizontalLayout_20" ) );
 		labelTcgGuessShort = new QLabel( widgetTcgParametersShort );
-		labelTcgGuessShort->setObjectName( QString::fromUtf8( "labelTcgGuessShort" ) );
+		labelTcgGuessShort->setObjectName( QString::fromStdString( "labelTcgGuessShort" ) );
 
 		horizontalLayout_20->addWidget( labelTcgGuessShort );
 
 		comboBoxTcgGuessShort = new QComboBox( widgetTcgParametersShort );
 		comboBoxTcgGuessShort->addItem( QString() );
 		comboBoxTcgGuessShort->addItem( QString() );
-		comboBoxTcgGuessShort->setObjectName( QString::fromUtf8( "comboBoxTcgGuessShort" ) );
+		comboBoxTcgGuessShort->setObjectName( QString::fromStdString( "comboBoxTcgGuessShort" ) );
 		comboBoxTcgGuessShort->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxTcgGuessShort->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -611,16 +611,16 @@ class Ui_KeywordEditorGUI
 		verticalLayout_8->addLayout( horizontalLayout_20 );
 
 		horizontalLayout_21 = new QHBoxLayout();
-		horizontalLayout_21->setObjectName( QString::fromUtf8( "horizontalLayout_21" ) );
+		horizontalLayout_21->setObjectName( QString::fromStdString( "horizontalLayout_21" ) );
 		labelTcgPeekShort = new QLabel( widgetTcgParametersShort );
-		labelTcgPeekShort->setObjectName( QString::fromUtf8( "labelTcgPeekShort" ) );
+		labelTcgPeekShort->setObjectName( QString::fromStdString( "labelTcgPeekShort" ) );
 
 		horizontalLayout_21->addWidget( labelTcgPeekShort );
 
 		comboBoxTcgPeekShort = new QComboBox( widgetTcgParametersShort );
 		comboBoxTcgPeekShort->addItem( QString() );
 		comboBoxTcgPeekShort->addItem( QString() );
-		comboBoxTcgPeekShort->setObjectName( QString::fromUtf8( "comboBoxTcgPeekShort" ) );
+		comboBoxTcgPeekShort->setObjectName( QString::fromStdString( "comboBoxTcgPeekShort" ) );
 		comboBoxTcgPeekShort->setMinimumSize( QSize( 165, 0 ) );
 		comboBoxTcgPeekShort->setMaximumSize( QSize( 165, 16777215 ) );
 
@@ -631,14 +631,14 @@ class Ui_KeywordEditorGUI
 		verticalLayout_8->addLayout( horizontalLayout_21 );
 
 		horizontalLayout_19 = new QHBoxLayout();
-		horizontalLayout_19->setObjectName( QString::fromUtf8( "horizontalLayout_19" ) );
+		horizontalLayout_19->setObjectName( QString::fromStdString( "horizontalLayout_19" ) );
 		labelTcgOmegaShort = new QLabel( widgetTcgParametersShort );
-		labelTcgOmegaShort->setObjectName( QString::fromUtf8( "labelTcgOmegaShort" ) );
+		labelTcgOmegaShort->setObjectName( QString::fromStdString( "labelTcgOmegaShort" ) );
 
 		horizontalLayout_19->addWidget( labelTcgOmegaShort );
 
 		spinBoxTcgOmegaShort = new QSpinBox( widgetTcgParametersShort );
-		spinBoxTcgOmegaShort->setObjectName( QString::fromUtf8( "spinBoxTcgOmegaShort" ) );
+		spinBoxTcgOmegaShort->setObjectName( QString::fromStdString( "spinBoxTcgOmegaShort" ) );
 		spinBoxTcgOmegaShort->setMinimumSize( QSize( 165, 0 ) );
 		spinBoxTcgOmegaShort->setMaximumSize( QSize( 165, 16777215 ) );
 		spinBoxTcgOmegaShort->setValue( 1 );
@@ -656,13 +656,13 @@ class Ui_KeywordEditorGUI
 		verticalLayout_9->addWidget( widgetDynamic );
 
 		groupBoxAdditionnalKeywords = new CollapsingGroupboxWidget( tabDynamic );
-		groupBoxAdditionnalKeywords->setObjectName( QString::fromUtf8( "groupBoxAdditionnalKeywords" ) );
+		groupBoxAdditionnalKeywords->setObjectName( QString::fromStdString( "groupBoxAdditionnalKeywords" ) );
 		groupBoxAdditionnalKeywords->setCheckable( true );
 		verticalLayout_3 = new QVBoxLayout( groupBoxAdditionnalKeywords );
-		verticalLayout_3->setObjectName( QString::fromUtf8( "verticalLayout_3" ) );
+		verticalLayout_3->setObjectName( QString::fromStdString( "verticalLayout_3" ) );
 		verticalLayout_3->setContentsMargins( 9, 9, 9, 9 );
 		textBrowserAdditionnalKeywords = new QTextBrowser( groupBoxAdditionnalKeywords );
-		textBrowserAdditionnalKeywords->setObjectName( QString::fromUtf8( "textBrowserAdditionnalKeywords" ) );
+		textBrowserAdditionnalKeywords->setObjectName( QString::fromStdString( "textBrowserAdditionnalKeywords" ) );
 		textBrowserAdditionnalKeywords->setAutoFormatting( QTextEdit::AutoNone );
 		textBrowserAdditionnalKeywords->setUndoRedoEnabled( true );
 		textBrowserAdditionnalKeywords->setReadOnly( false );
@@ -672,7 +672,7 @@ class Ui_KeywordEditorGUI
 		verticalLayout_9->addWidget( groupBoxAdditionnalKeywords );
 
 		pushButtonGenerate = new QPushButton( tabDynamic );
-		pushButtonGenerate->setObjectName( QString::fromUtf8( "pushButtonGenerate" ) );
+		pushButtonGenerate->setObjectName( QString::fromStdString( "pushButtonGenerate" ) );
 
 		verticalLayout_9->addWidget( pushButtonGenerate );
 
@@ -682,7 +682,7 @@ class Ui_KeywordEditorGUI
 
 		tabWidgetKeywordEditor->addTab( tabDynamic, QString() );
 		tab_2 = new QWidget();
-		tab_2->setObjectName( QString::fromUtf8( "tab_2" ) );
+		tab_2->setObjectName( QString::fromStdString( "tab_2" ) );
 		tabWidgetKeywordEditor->addTab( tab_2, QString() );
 
 		gridLayout->addWidget( tabWidgetKeywordEditor, 0, 0, 1, 1 );

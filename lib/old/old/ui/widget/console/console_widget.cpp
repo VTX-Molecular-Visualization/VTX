@@ -2,7 +2,6 @@
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "style.hpp"
-#include "tool/logger.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
 #include <QCoreApplication>
@@ -11,6 +10,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <iostream>
+#include <util/logger.hpp>
 
 namespace VTX::UI::Widget::Console
 {
@@ -49,6 +49,7 @@ namespace VTX::UI::Widget::Console
 
 	QColor ConsoleWidget::_getMessageColor( const std::string & p_level )
 	{
+		/*
 		QColor res;
 
 		if ( p_level == Tool::Logger::LEVEL_STR[ int( Tool::Logger::LEVEL::LOG_LVL_DEBUG ) ] )
@@ -63,6 +64,9 @@ namespace VTX::UI::Widget::Console
 			res = QColor();
 
 		return res;
+		*/
+
+		return Style::CONSOLE_INFO_COLOR;
 	}
 
 	void ConsoleWidget::_setupUi( const QString & p_name )
@@ -73,7 +77,7 @@ namespace VTX::UI::Widget::Console
 			Style::CONSOLE_PREFERRED_SIZE, Style::CONSOLE_MINIMUM_SIZE, this );
 
 		_listWidget = new QListWidget( this );
-		_listWidget->setObjectName( QString::fromUtf8( "logList" ) );
+		_listWidget->setObjectName( QString::fromStdString( "logList" ) );
 
 		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
 											  QSizePolicy::Policy::MinimumExpanding,

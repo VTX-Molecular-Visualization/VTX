@@ -1,12 +1,11 @@
 #include "base_ui_application.hpp"
-#include <old/action/action_manager.hpp>
 #include "io/vtx_layout_reader.hpp"
 #include "layout_builder.hpp"
+#include <old/action/action_manager.hpp>
 #include <old/action/main.hpp>
-#include <old/tool/logger.hpp>
-#include <util/filepath.hpp>
-#include <old/util/filesystem.hpp>
+#include <old/io/filesystem.hpp>
 #include <old/vtx_app.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::UI::Core
 {
@@ -15,7 +14,7 @@ namespace VTX::UI::Core
 	void BaseUIApplication::init() {}
 	void BaseUIApplication::start( const std::vector<std::string> & p_args )
 	{
-		VTX_INFO( "Starting application: " + Util::Filesystem::getExecutableFile().path() );
+		VTX_INFO( "Starting application: " + VTX::IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 
 		_initVTXApp( p_args );
 		_initUI( p_args );
@@ -32,7 +31,7 @@ namespace VTX::UI::Core
 		if ( p_args.size() == 0 )
 		{
 			// VTX_ACTION(
-			//	 new Action::Main::Open( Util::Filesystem::getDataPath( Util::FilePath( "4hhb.pdb" ) ).absolute() ) );
+			//	 new Action::Main::Open( Util::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
 			VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
 		}
 #endif
@@ -55,14 +54,14 @@ namespace VTX::UI::Core
 
 	void BaseUIApplication::_handleArgs( const std::vector<std::string> & p_args )
 	{
-		std::vector<Util::FilePath> files  = std::vector<Util::FilePath>();
-		std::vector<std::string>	pdbIds = std::vector<std::string>();
+		std::vector<FilePath>	 files	= std::vector<FilePath>();
+		std::vector<std::string> pdbIds = std::vector<std::string>();
 
 		for ( const std::string & arg : p_args )
 		{
 			if ( arg.find( "." ) != std::string::npos )
 			{
-				files.emplace_back( Util::FilePath( arg ) );
+				files.emplace_back( FilePath( arg ) );
 			}
 			else
 			{

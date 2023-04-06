@@ -4,17 +4,17 @@
 #include "model/bond.hpp"
 #include "model/chain.hpp"
 #include "model/residue.hpp"
-#include <util/chrono.hpp>
 #include "util/secondary_structure.hpp"
 #include <string>
 
+
 namespace VTX::IO::Writer
 {
-	void ChemfilesWriter::writeFile( const Util::FilePath & p_path, const Model::Molecule & p_molecule )
+	void ChemfilesWriter::writeFile( const FilePath & p_path, const Model::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
 
-		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.path(), 'w' );
+		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string(), 'w' );
 		_writeTrajectory( trajectory, p_molecule );
 		trajectory.close();
 	}

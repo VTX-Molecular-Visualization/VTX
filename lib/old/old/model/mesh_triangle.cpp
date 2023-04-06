@@ -1,7 +1,7 @@
 #include "mesh_triangle.hpp"
 #include "id.hpp"
 #include "mvc/mvc_manager.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "view/d3/triangle.hpp"
 
 namespace VTX

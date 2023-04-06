@@ -10,7 +10,7 @@
 #include "renderer/base_renderer.hpp"
 #include "selection/selection_enum.hpp"
 #include "setting.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "trajectory/trajectory_enum.hpp"
 #include "ui/window_mode.hpp"
 

@@ -2,9 +2,9 @@
 #define __VTX_BASE_GAMEPAD_CONTROLLER__
 
 #include "base_controller.hpp"
-#include "tool/logger.hpp"
 #include <QDebug>
 #include <QObject>
+#include <util/logger.hpp>
 // #include <QtGamepad/QGamepad>
 #include <set>
 
@@ -162,7 +162,6 @@ namespace VTX
 
 			virtual void _handleButtonChangeEvent( const BUTTON & p_button, const bool p_pressed )
 			{
-				VTX_DEBUG( "button change " + std::to_string( p_button ) );
 				if ( p_pressed )
 				{
 					_handleButtonDownEvent( p_button );

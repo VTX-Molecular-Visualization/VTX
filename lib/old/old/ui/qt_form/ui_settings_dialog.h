@@ -39,41 +39,41 @@ class Ui_DialogSettings
 	void setupUi( QDialog * DialogSettings )
 	{
 		if ( DialogSettings->objectName().isEmpty() )
-			DialogSettings->setObjectName( QString::fromUtf8( "DialogSettings" ) );
+			DialogSettings->setObjectName( QString::fromStdString( "DialogSettings" ) );
 		DialogSettings->resize( 338, 300 );
 		gridLayout = new QGridLayout( DialogSettings );
-		gridLayout->setObjectName( QString::fromUtf8( "gridLayout" ) );
+		gridLayout->setObjectName( QString::fromStdString( "gridLayout" ) );
 		horizontalLayout = new QHBoxLayout();
-		horizontalLayout->setObjectName( QString::fromUtf8( "horizontalLayout" ) );
+		horizontalLayout->setObjectName( QString::fromStdString( "horizontalLayout" ) );
 		lineEditSettingsName = new QLineEdit( DialogSettings );
-		lineEditSettingsName->setObjectName( QString::fromUtf8( "lineEditSettingsName" ) );
+		lineEditSettingsName->setObjectName( QString::fromStdString( "lineEditSettingsName" ) );
 
 		horizontalLayout->addWidget( lineEditSettingsName );
 
 		pushButtonSaveSettings = new QPushButton( DialogSettings );
-		pushButtonSaveSettings->setObjectName( QString::fromUtf8( "pushButtonSaveSettings" ) );
+		pushButtonSaveSettings->setObjectName( QString::fromStdString( "pushButtonSaveSettings" ) );
 
 		horizontalLayout->addWidget( pushButtonSaveSettings );
 
 		gridLayout->addLayout( horizontalLayout, 0, 0, 1, 1 );
 
 		horizontalLayout_2 = new QHBoxLayout();
-		horizontalLayout_2->setObjectName( QString::fromUtf8( "horizontalLayout_2" ) );
+		horizontalLayout_2->setObjectName( QString::fromStdString( "horizontalLayout_2" ) );
 		listWidgetSavedSettings = new QListWidget( DialogSettings );
-		listWidgetSavedSettings->setObjectName( QString::fromUtf8( "listWidgetSavedSettings" ) );
+		listWidgetSavedSettings->setObjectName( QString::fromStdString( "listWidgetSavedSettings" ) );
 		listWidgetSavedSettings->setSelectionBehavior( QAbstractItemView::SelectRows );
 
 		horizontalLayout_2->addWidget( listWidgetSavedSettings );
 
 		verticalLayout_2 = new QVBoxLayout();
-		verticalLayout_2->setObjectName( QString::fromUtf8( "verticalLayout_2" ) );
+		verticalLayout_2->setObjectName( QString::fromStdString( "verticalLayout_2" ) );
 		pushButtonLoadSetting = new QPushButton( DialogSettings );
-		pushButtonLoadSetting->setObjectName( QString::fromUtf8( "pushButtonLoadSetting" ) );
+		pushButtonLoadSetting->setObjectName( QString::fromStdString( "pushButtonLoadSetting" ) );
 
 		verticalLayout_2->addWidget( pushButtonLoadSetting );
 
 		pushButtonRemoveSetting = new QPushButton( DialogSettings );
-		pushButtonRemoveSetting->setObjectName( QString::fromUtf8( "pushButtonRemoveSetting" ) );
+		pushButtonRemoveSetting->setObjectName( QString::fromStdString( "pushButtonRemoveSetting" ) );
 
 		verticalLayout_2->addWidget( pushButtonRemoveSetting );
 

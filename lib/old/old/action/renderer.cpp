@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+#include "io/filesystem.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
@@ -30,8 +31,8 @@ namespace VTX::Action::Renderer
 	{
 		if ( _clearDirectory )
 		{
-			Util::Filesystem::removeAll( Util::Filesystem::getRenderEffectPresetsLibraryDir() );
-			Util::Filesystem::createDirectory( Util::Filesystem::getRenderEffectPresetsLibraryDir() );
+			Util::Filesystem::removeAll( IO::Filesystem::getRenderEffectPresetsLibraryDir() );
+			std::filesystem::create_directory( IO::Filesystem::getRenderEffectPresetsLibraryDir() );
 		}
 
 		for ( const Model::Renderer::RenderEffectPreset * const renderEffect : _renderEffectPresets )
@@ -46,7 +47,7 @@ namespace VTX::Action::Renderer
 			}
 			else
 			{
-				Util::FilePath path = Util::Filesystem::getRenderEffectPath( renderEffect->getName() );
+				FilePath path = IO::Filesystem::getRenderEffectPath( renderEffect->getName() );
 				Util::Filesystem::generateUniqueFileName( path );
 
 				Worker::RenderEffectPresetSaver * librarySaver

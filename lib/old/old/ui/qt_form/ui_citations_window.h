@@ -31,21 +31,21 @@ class Ui_DialogCitations
 	void setupUi( QDialog * DialogCitations )
 	{
 		if ( DialogCitations->objectName().isEmpty() )
-			DialogCitations->setObjectName( QString::fromUtf8( "DialogCitations" ) );
+			DialogCitations->setObjectName( QString::fromStdString( "DialogCitations" ) );
 		DialogCitations->resize( 405, 300 );
 		verticalLayout_2 = new QVBoxLayout( DialogCitations );
-		verticalLayout_2->setObjectName( QString::fromUtf8( "verticalLayout_2" ) );
+		verticalLayout_2->setObjectName( QString::fromStdString( "verticalLayout_2" ) );
 		verticalLayout = new QVBoxLayout();
-		verticalLayout->setObjectName( QString::fromUtf8( "verticalLayout" ) );
+		verticalLayout->setObjectName( QString::fromStdString( "verticalLayout" ) );
 		labelCitations = new QLabel( DialogCitations );
-		labelCitations->setObjectName( QString::fromUtf8( "labelCitations" ) );
+		labelCitations->setObjectName( QString::fromStdString( "labelCitations" ) );
 
 		verticalLayout->addWidget( labelCitations );
 
 		textBrowserCitations = new QTextBrowser( DialogCitations );
-		textBrowserCitations->setObjectName( QString::fromUtf8( "textBrowserCitations" ) );
+		textBrowserCitations->setObjectName( QString::fromStdString( "textBrowserCitations" ) );
 		textBrowserCitations->setStyleSheet(
-			QString::fromUtf8( "background-color: rgb(255, 255, 255);\n"
+			QString::fromStdString( "background-color: rgb(255, 255, 255);\n"
 							   "color: rgb(0, 0, 0);\n"
 							   "" ) );
 		textBrowserCitations->setOpenExternalLinks( true );
@@ -53,7 +53,7 @@ class Ui_DialogCitations
 		verticalLayout->addWidget( textBrowserCitations );
 
 		pushButtonCopyCitations = new QPushButton( DialogCitations );
-		pushButtonCopyCitations->setObjectName( QString::fromUtf8( "pushButtonCopyCitations" ) );
+		pushButtonCopyCitations->setObjectName( QString::fromStdString( "pushButtonCopyCitations" ) );
 
 		verticalLayout->addWidget( pushButtonCopyCitations );
 

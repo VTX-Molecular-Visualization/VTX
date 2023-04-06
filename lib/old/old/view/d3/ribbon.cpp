@@ -10,10 +10,10 @@ namespace VTX::View::D3
 	Renderer::GL::Program * const Ribbon::_createProgram()
 	{
 		return VTX_PROGRAM_MANAGER().createProgram( "Ribbon",
-													{ Util::FilePath( "ribbon/ribbon_patch.vert" ),
-													  Util::FilePath( "ribbon/ribbon_patch.tesc" ),
-													  Util::FilePath( "ribbon/ribbon_patch.tese" ),
-													  Util::FilePath( "ribbon/ribbon_patch.frag" ) } );
+													{ FilePath( "ribbon/ribbon_patch.vert" ),
+													  FilePath( "ribbon/ribbon_patch.tesc" ),
+													  FilePath( "ribbon/ribbon_patch.tese" ),
+													  FilePath( "ribbon/ribbon_patch.frag" ) } );
 	}
 
 	void Ribbon::_init() { _gl->glPatchParameteri( GL_PATCH_VERTICES, 4 ); }

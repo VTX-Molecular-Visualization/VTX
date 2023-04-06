@@ -5,7 +5,7 @@
 #include "worker/worker_manager.hpp"
 #include <QString>
 #include <QWidget>
-#include <util/filepath.hpp>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX
@@ -37,8 +37,8 @@ namespace VTX
 			static void openLoadTrajectoryDialog();
 			static void openLoadTrajectoryDialog( Model::Molecule & p_target );
 
-			static void openSetTrajectoryTargetsDialog( const Util::FilePath & p_trajectoryFilePath );
-			static void openSetTrajectoryTargetsDialog( const std::vector<Util::FilePath> & p_trajectoryFilePaths );
+			static void openSetTrajectoryTargetsDialog( const FilePath & p_trajectoryFilePath );
+			static void openSetTrajectoryTargetsDialog( const std::vector<FilePath> & p_trajectoryFilePaths );
 
 			static void createNewSessionDialog();
 

@@ -15,9 +15,9 @@
 #include <old/model/category_enum.hpp>
 #include <old/model/representation/representation_enum.hpp>
 #include <old/selection/selection_enum.hpp>
-#include <old/tool/logger.hpp>
 #include <old/util/label.hpp>
 #include <string>
+#include <util/logger.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Style

@@ -32,7 +32,7 @@ namespace VTX
 				// Check for consistency.
 				if ( p_data.hasConsistentData( true ) == false )
 				{
-					throw Exception::IOException( "File is not consistent" );
+					throw IOException( "File is not consistent" );
 				}
 
 				// Set molecule properties.

@@ -3,9 +3,9 @@
 #include <old/event/event.hpp>
 #include <old/event/event_manager.hpp>
 #include <old/model/molecule.hpp>
-#include <old/tool/logger.hpp>
 #include <string>
 #include <util/chrono.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::Tool::Analysis::StructuralAlignment::Core
 {

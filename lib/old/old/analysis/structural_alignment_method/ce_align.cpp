@@ -2,7 +2,7 @@
 #include "analysis/rmsd.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include <cmath>
 #include <list>
 #include <string>

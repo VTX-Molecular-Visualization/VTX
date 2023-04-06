@@ -72,8 +72,8 @@ namespace VTX
 			inline const std::string & getPdbIdCode() const { return _pdbIdCode; }
 			void					   setPdbIdCode( const std::string & p_pdbId );
 
-			inline const Util::FilePath & getPath() const { return _path; }
-			inline void					setPath( const Util::FilePath & p_path ) { _path = p_path; }
+			inline const FilePath & getPath() const { return _path; }
+			inline void					setPath( const FilePath & p_path ) { _path = p_path; }
 
 			Chain &								addChain();
 			inline Chain * const				getChain( const uint p_idx ) { return _chains[ p_idx ]; }
@@ -321,7 +321,7 @@ namespace VTX
 			RepresentationState _representationState = RepresentationState();
 
 			// Models.
-			Util::FilePath					_path;
+			FilePath					_path;
 			std::string						_name						= "unknown";
 			std::string						_pdbIdCode					= "unknown";
 			std::vector<Chain *>			_chains						= std::vector<Chain *>();

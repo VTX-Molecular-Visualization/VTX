@@ -1,6 +1,6 @@
 #include "event_manager.hpp"
 #include "controller/base_keyboard_controller.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "vtx_app.hpp"
 
 namespace VTX

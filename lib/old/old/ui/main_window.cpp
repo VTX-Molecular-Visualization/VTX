@@ -9,13 +9,13 @@
 #include "controller/measurement_picker.hpp"
 #include "define.hpp"
 #include "event/event_manager.hpp"
+#include "io/filesystem.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "shortcut.hpp"
 #include "style.hpp"
 #include "ui/dialog.hpp"
 #include "ui/mime_type.hpp"
 #include "util/analysis.hpp"
-#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "widget_factory.hpp"
 #include <QAction>
@@ -168,20 +168,20 @@ namespace VTX::UI
 
 	void MainWindow::_loadStyleSheet()
 	{
-		QFile stylesheetFile( Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
+		QFile stylesheetFile( IO::Filesystem::STYLESHEET_FILE_DEFAULT );
 		stylesheetFile.open( QFile::ReadOnly );
 
 		QString stylesheetTxt = stylesheetFile.readAll();
 
 #ifdef _WIN32
-		QFile stylesheetWindowsFile( Util::Filesystem::STYLESHEET_FILE_WINDOWS.path().c_str() );
+		QFile stylesheetWindowsFile( IO::Filesystem::STYLESHEET_FILE_WINDOWS );
 		stylesheetWindowsFile.open( QFile::ReadOnly );
 
 		stylesheetTxt += stylesheetWindowsFile.readAll();
 #endif
 
 #ifdef __unix
-		QFile stylesheetUnixFile( Util::Filesystem::STYLESHEET_FILE_LINUX.path().c_str() );
+		QFile stylesheetUnixFile( Util::Filesystem::STYLESHEET_FILE_LINUX );
 		stylesheetUnixFile.open( QFile::ReadOnly );
 
 		stylesheetTxt += stylesheetUnixFile.readAll();
@@ -332,11 +332,11 @@ namespace VTX::UI
 		title += " - RELEASE";
 #endif
 #endif
-		const Util::FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
+		const FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
 
 		if ( !currentSessionFilepath.empty() )
 		{
-			title += " - " + currentSessionFilepath.filename();
+			title += " - " + currentSessionFilepath.filename().string();
 
 			if ( VTXApp::get().getScenePathData().sceneHasModifications() )
 			{
@@ -463,17 +463,18 @@ namespace VTX::UI
 
 	void MainWindow::dropEvent( QDropEvent * p_event )
 	{
+		/*
 		const QMimeData * const mimeData = p_event->mimeData();
 
 		if ( UI::MimeType::getMimeTypeEnum( mimeData ) == UI::MimeType::ApplicationMimeType::FILE )
 		{
-			const QList<QUrl> &						 urlList = mimeData->urls();
-			const std::vector<Util::FilePath>		 paths = Util::Filesystem::getFilePathVectorFromQUrlList( urlList );
-			std::vector<std::vector<Util::FilePath>> pathPerFileTypes = std::vector<std::vector<Util::FilePath>>();
-			Util::Filesystem::fillFilepathPerMode( paths, pathPerFileTypes );
+			const QList<QUrl> &				   urlList = mimeData->urls();
+			const std::vector<FilePath>		   paths   = IO::Filesystem::getFilePathVectorFromQUrlList( urlList );
+			std::vector<std::vector<FilePath>> pathPerFileTypes = std::vector<std::vector<FilePath>>();
+			IO::Filesystem::fillFilepathPerMode( paths, pathPerFileTypes );
 
-			const std::vector<Util::FilePath> & trajectoryPaths
-				= pathPerFileTypes[ int( Util::Filesystem::FILE_TYPE_ENUM::TRAJECTORY ) ];
+			const std::vector<FilePath> & trajectoryPaths
+				= pathPerFileTypes[ int( IO::Filesystem::FILE_TYPE::TRAJECTORY ) ];
 
 			// If drop contains only trajectory path, open the specific window
 			if ( trajectoryPaths.size() == paths.size() )
@@ -485,6 +486,7 @@ namespace VTX::UI
 				VTX_ACTION( new Action::Main::Open( paths ) );
 			}
 		}
+		*/
 	}
 
 	QWidget & MainWindow::getWidget( const ID::VTX_ID & p_winId ) const
@@ -572,7 +574,8 @@ namespace VTX::UI
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings  settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile().path() ), QSettings::IniFormat );
+		QSettings  settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+							 QSettings::IniFormat );
 		const bool settingsAreValid = settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 
 		return settingsAreValid && settings.value( "Version" ).toInt() == Style::LAYOUT_VERSION;
@@ -580,7 +583,8 @@ namespace VTX::UI
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile().path() ), QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+							QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
 		// Delayed restore state because all widgets grows when restore in maximized (sizes are stored when maximized,
@@ -606,7 +610,8 @@ namespace VTX::UI
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile().path() ), QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+							QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 
 		_checkDockWidgetsDisplay();
@@ -618,7 +623,8 @@ namespace VTX::UI
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile().path() ), QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+							QSettings::IniFormat );
 		settings.setValue( "Version", Style::LAYOUT_VERSION );
 
 		settings.setValue( "Geometry", saveGeometry() );
@@ -626,7 +632,8 @@ namespace VTX::UI
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QString::fromUtf8( Util::Filesystem::getConfigIniFile().path() ), QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+							QSettings::IniFormat );
 		settings.clear();
 	}
 

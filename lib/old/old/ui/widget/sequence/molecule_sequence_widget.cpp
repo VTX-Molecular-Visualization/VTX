@@ -7,7 +7,7 @@
 #include "selection/selection_manager.hpp"
 #include "sequence_display_widget.hpp"
 #include "style.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "ui/contextual_menu.hpp"
 #include "ui/widget_factory.hpp"
 #include <QScrollBar>

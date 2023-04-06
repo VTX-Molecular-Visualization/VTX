@@ -1,8 +1,8 @@
 #ifndef __VTX_BASE_ACTION__
 #define __VTX_BASE_ACTION__
 
-#include "exception.hpp"
 #include <string>
+#include <util/exceptions.hpp>
 #include <vector>
 
 namespace VTX

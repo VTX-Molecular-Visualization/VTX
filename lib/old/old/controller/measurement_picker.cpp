@@ -12,7 +12,7 @@
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "ui/cursor_handler.hpp"
 #include "ui/main_window.hpp"
 #include "util/math.hpp"

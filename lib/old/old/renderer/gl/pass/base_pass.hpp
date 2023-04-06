@@ -5,7 +5,7 @@
 #include "generic/base_opengl.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/gl/program.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 
 namespace VTX::Renderer::GL
 {

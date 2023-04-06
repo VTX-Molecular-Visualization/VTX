@@ -1,7 +1,7 @@
 #include "path.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
-#include "exception.hpp"
+#include <util/exceptions.hpp>
 #include "id.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "style.hpp"

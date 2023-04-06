@@ -5,12 +5,12 @@
 #include "qt/state/visualization.hpp"
 #include <old/io/struct/scene_path_data.hpp>
 #include <old/object3d/scene.hpp>
-#include <old/tool/logger.hpp>
 #include <old/vtx_app.hpp>
 #include <old/worker/loader.hpp>
 #include <old/worker/saver.hpp>
 #include <old/worker/scene_loader.hpp>
 #include <old/worker/worker_manager.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::UI::QT::Tool::Session::Action
 {
@@ -19,7 +19,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 		Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
 		VTX_WORKER( sceneLoader );
 
-		for ( const Util::FilePath & path : _paths )
+		for ( const FilePath & path : _paths )
 		{
 			VTXApp::get().getScenePathData().setCurrentPath( path, true );
 		}
@@ -28,7 +28,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 	void Open::execute()
 	{
 		bool loadScene = false;
-		for ( const Util::FilePath & path : _paths )
+		for ( const FilePath & path : _paths )
 		{
 			loadScene = loadScene || path.extension() == "vtx";
 		}
@@ -91,10 +91,10 @@ namespace VTX::UI::QT::Tool::Session::Action
 			Worker::CallbackThread * callback = new Worker::CallbackThread(
 				[ loader ]( const uint p_code )
 				{
-					for ( const std::pair<const Util::FilePath, Worker::Loader::Result> & pairFilResult :
+					for ( const std::pair<const FilePath, Worker::Loader::Result> & pairFilResult :
 						  loader->getPathsResult() )
 					{
-						const Util::FilePath &		   filepath = pairFilResult.first;
+						const FilePath &			   filepath = pairFilResult.first;
 						const Worker::Loader::Result & result	= pairFilResult.second;
 
 						if ( !result.state )
@@ -108,12 +108,12 @@ namespace VTX::UI::QT::Tool::Session::Action
 						}
 						else if ( result.sourceType == Worker::Loader::SOURCE_TYPE::BUFFER )
 						{
-							VTX::Setting::enqueueNewDownloadCode( filepath.filenameWithoutExtension() );
+							VTX::Setting::enqueueNewDownloadCode( filepath.stem().string() );
 						}
 
 						if ( result.molecule != nullptr )
 						{
-							result.molecule->setDisplayName( filepath.filenameWithoutExtension() );
+							result.molecule->setDisplayName( filepath.stem().string() );
 							VTXApp::get().getScene().addMolecule( result.molecule );
 						}
 						else if ( result.mesh != nullptr )

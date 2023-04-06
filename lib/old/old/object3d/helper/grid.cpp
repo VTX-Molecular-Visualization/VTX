@@ -66,9 +66,9 @@ namespace VTX::Object3D::Helper
 	void Grid::_generate()
 	{
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Voxel",
-														{ Util::FilePath( "voxel/voxel.vert" ),
-														  Util::FilePath( "voxel/voxel.geom" ),
-														  Util::FilePath( "voxel/voxel.frag" ) } );
+														{ FilePath( "voxel/voxel.vert" ),
+														  FilePath( "voxel/voxel.geom" ),
+														  FilePath( "voxel/voxel.frag" ) } );
 		assert( _program != nullptr );
 
 		_vbo.create();

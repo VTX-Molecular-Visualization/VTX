@@ -17,7 +17,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			void LibAssimp::readFile( const Util::FilePath & p_path, Model::MeshTriangle & p_mesh )
+			void LibAssimp::readFile( const FilePath & p_path, Model::MeshTriangle & p_mesh )
 			{
 				/*
 				Assimp::Importer Importer;
@@ -26,7 +26,7 @@ namespace VTX
 					= Importer.ReadFile( p_path.string(), aiProcess_Triangulate | aiProcess_GenNormals );
 				if ( !scene )
 				{
-					throw Exception::IOException( "File has not scene" );
+					throw IOException( "File has not scene" );
 				}
 
 				const uint nbMeshes	   = scene->mNumMeshes;
@@ -90,7 +90,7 @@ namespace VTX
 				*/
 			}
 
-			void LibAssimp::readFile( const Util::FilePath & p_path, Model::Molecule & p_molecule )
+			void LibAssimp::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 			{
 				/*
 				Assimp::Importer Importer;
@@ -98,7 +98,7 @@ namespace VTX
 				const aiScene * const scene = Importer.ReadFile( p_path.string(), 0 );
 				if ( !scene )
 				{
-					throw Exception::IOException( "File has not scene" );
+					throw IOException( "File has not scene" );
 				}
 
 				// Set molecule properties.

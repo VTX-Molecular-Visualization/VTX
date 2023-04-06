@@ -19,7 +19,7 @@
 #include <old/model/selection.hpp>
 #include <old/selection/selection_manager.hpp>
 #include <old/setting.hpp>
-#include <old/util/filesystem.hpp>
+#include <old/io/filesystem.hpp>
 #include <old/worker/worker_manager.hpp>
 
 namespace VTX::UI::QT
@@ -135,7 +135,7 @@ namespace VTX::UI::QT
 
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
-		_loadStyleSheet( VTX::Util::Filesystem::STYLESHEET_FILE_DEFAULT.path().c_str() );
+		_loadStyleSheet( IO::Filesystem::STYLESHEET_FILE_DEFAULT.string().c_str() );
 	}
 
 	void MainWindow::initWindowLayout()
@@ -362,11 +362,11 @@ namespace VTX::UI::QT
 		title += " - RELEASE";
 #endif
 #endif
-		const VTX::Util::FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
+		const FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
 
-		if ( !currentSessionFilepath.path().empty() )
+		if ( !currentSessionFilepath.empty() )
 		{
-			title += " - " + currentSessionFilepath.filename();
+			title += " - " + currentSessionFilepath.filename().string();
 
 			if ( VTXApp::get().getScenePathData().sceneHasModifications() )
 			{
@@ -542,12 +542,12 @@ namespace VTX::UI::QT
 
 		if ( mimeData->hasUrls() )
 		{
-			std::vector<VTX::Util::FilePath> _paths	 = std::vector<VTX::Util::FilePath>();
-			const QList<QUrl> &				 urlList = mimeData->urls();
+			std::vector<FilePath> _paths  = std::vector<FilePath>();
+			const QList<QUrl> &	  urlList = mimeData->urls();
 
 			for ( const QUrl & url : urlList )
 			{
-				_paths.emplace_back( VTX::Util::FilePath( url.toLocalFile().toStdString() ) );
+				_paths.emplace_back( FilePath( url.toLocalFile().toStdString() ) );
 			}
 
 			VTX_ACTION( new VTX::Action::Main::Open( _paths ) );
@@ -632,7 +632,7 @@ namespace VTX::UI::QT
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings  settings( QString::fromStdString( VTX::Util::Filesystem::getConfigIniFile().path() ),
+		QSettings  settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
 							 QSettings::IniFormat );
 		const bool settingsAreValid = settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 
@@ -641,7 +641,7 @@ namespace VTX::UI::QT
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( QString::fromStdString( VTX::Util::Filesystem::getConfigIniFile().path() ),
+		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
@@ -668,7 +668,7 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( QString::fromStdString( VTX::Util::Filesystem::getConfigIniFile().path() ),
+		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 
@@ -681,7 +681,7 @@ namespace VTX::UI::QT
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QString::fromStdString( VTX::Util::Filesystem::getConfigIniFile().path() ),
+		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		settings.setValue( "Version", Style::LAYOUT_VERSION );
 
@@ -690,7 +690,7 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QString::fromStdString( VTX::Util::Filesystem::getConfigIniFile().path() ),
+		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		settings.clear();
 	}

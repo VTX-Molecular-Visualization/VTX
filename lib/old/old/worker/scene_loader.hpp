@@ -2,8 +2,8 @@
 #define __VTX_SCENE_LOADER__
 
 #include "base_worker.hpp"
-#include <util/filepath.hpp>
 #include <map>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX
@@ -18,13 +18,13 @@ namespace VTX
 		class SceneLoader : public Worker::BaseWorker
 		{
 		  public:
-			explicit SceneLoader( const std::vector<Util::FilePath> & p_paths ) : _paths( p_paths ) {}
+			explicit SceneLoader( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 
 		  protected:
 			void _run() override;
 
 		  private:
-			const std::vector<Util::FilePath> _paths;
+			const std::vector<FilePath> _paths;
 		};
 	} // namespace Worker
 } // namespace VTX

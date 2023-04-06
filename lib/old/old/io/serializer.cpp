@@ -6,6 +6,7 @@
 #include "event/event_manager.hpp"
 #include "generic/base_colorable.hpp"
 #include "generic/base_scene_item.hpp"
+#include "io/filesystem.hpp"
 #include "io/reader/lib_chemfiles.hpp"
 #include "io/struct/image_export.hpp"
 #include "io/struct/scene_path_data.hpp"
@@ -35,7 +36,6 @@
 #include <algorithm>
 #include <magic_enum.hpp>
 #include <map>
-#include <util/filesystem.hpp>
 #include <util/types.hpp>
 
 namespace VTX::IO
@@ -82,13 +82,13 @@ namespace VTX::IO
 
 	nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
 	{
-		const Util::FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
+		const FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
 
 		const Writer::ChemfilesWriter * const writer
 			= VTXApp::get().getScenePathData().getData( &p_molecule ).getWriter();
 
 		return { { "TRANSFORM", serialize( p_molecule.getTransform() ) },
-				 { "PATH", moleculePath.path() },
+				 { "PATH", moleculePath.string() },
 				 { "REPRESENTATIONS", _serializeMoleculeRepresentations( p_molecule, writer ) },
 				 { "VISIBILITIES", _serializeMoleculeVisibilities( p_molecule, writer ) },
 				 { "NAME", p_molecule.getName() },
@@ -526,12 +526,12 @@ namespace VTX::IO
 			p_molecule.applyTransform( transform );
 		}
 
-		Util::FilePath molPath = _get<std::string>( p_json, "PATH" );
+		FilePath molPath = _get<FilePath>( p_json, "PATH" );
 
-		if ( Util::Filesystem::isRelativePath( molPath ) )
+		if ( molPath.is_relative() )
 		{
-			const Util::FilePath sceneFolder
-				= Util::Filesystem::getSceneSaveDirectory( VTXApp::get().getScenePathData().getCurrentPath() );
+			const FilePath sceneFolder
+				= IO::Filesystem::getSceneSaveDirectory( VTXApp::get().getScenePathData().getCurrentPath() );
 			molPath = sceneFolder / molPath;
 		}
 
@@ -543,7 +543,7 @@ namespace VTX::IO
 		}
 		catch ( const std::exception & p_exception )
 		{
-			_logWarning( "Error when loading " + molPath.path() + " : " + p_exception.what() );
+			_logWarning( "Error when loading " + molPath.string() + " : " + p_exception.what() );
 			throw p_exception;
 		}
 

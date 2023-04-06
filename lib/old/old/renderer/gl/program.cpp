@@ -1,6 +1,6 @@
 #include "program.hpp"
 #include <util/types.hpp>
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include <iostream>
 #include <vector>
 

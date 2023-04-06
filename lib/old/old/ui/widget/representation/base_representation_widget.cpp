@@ -6,7 +6,7 @@
 #include "id.hpp"
 #include "model/molecule.hpp"
 #include "style.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include "util/ui.hpp"
 #include <QLabel>
 #include <string>

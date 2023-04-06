@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_DIALOG_SET_TRAJECTORY_TARGET__
 #define __VTX_UI_DIALOG_SET_TRAJECTORY_TARGET__
 
-#include <util/filepath.hpp>
+
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/model_list_widget.hpp"
 #include <QAbstractButton>
@@ -78,7 +78,7 @@ namespace VTX
 		  private:
 		  public:
 			static void openDialog();
-			static void openDialog( const Util::FilePath & p_trajectoryPath );
+			static void openDialog( const FilePath & p_trajectoryPath );
 
 			void localize() override;
 			void cancelAction();
@@ -106,7 +106,7 @@ namespace VTX
 			QRadioButton *		 _createNewMoleculeRadioButton	  = nullptr;
 			QDialogButtonBox *	 _dialogButtons					  = nullptr;
 
-			Util::FilePath _filepath = Util::FilePath();
+			FilePath _filepath = FilePath();
 		};
 	} // namespace UI::Widget::Dialog
 } // namespace VTX

@@ -5,7 +5,7 @@
 #include <old/object3d/camera.hpp>
 #include <old/object3d/scene.hpp>
 #include <old/vtx_app.hpp>
-#include <util/chrono.hpp>
+
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::State

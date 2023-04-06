@@ -6,29 +6,26 @@
 
 namespace VTX::Util
 {
-
 	class Chrono
 	{
-		using Clock	   = std::chrono::high_resolution_clock;
-		using Duration = std::chrono::duration<float>;
-
 	  public:
-		void		start() { begin = interval = Clock::now(); }
-		void		stop() { end = interval = Clock::now(); }
-		float		elapsedTime() const { return ( std::chrono::duration_cast<Duration>( end - begin ) ).count(); }
-		std::string elapsedTimeStr() const { return std::to_string( elapsedTime() ) + 's'; }
-		float		intervalTime()
-		{
-			Duration intervalTime = std::chrono::duration_cast<Duration>( Clock::now() - interval );
-			interval			  = Clock::now();
-			return ( intervalTime ).count();
-		}
+		void		start();
+		void		stop();
+		float		elapsedTime() const;
+		std::string elapsedTimeStr() const;
+		float		intervalTime();
+
+		static long long getTimestamp();
 
 	  private:
+		using SystemClock = std::chrono::system_clock;
+		using Clock		  = std::chrono::high_resolution_clock;
+		using Duration	  = std::chrono::duration<float>;
+		using Ms		  = std::chrono::milliseconds;
+
 		Clock::time_point begin;
 		Clock::time_point interval;
 		Clock::time_point end;
 	};
-
 } // namespace VTX::Util
 #endif

@@ -6,7 +6,7 @@
 #include <old/action/base_action.hpp>
 #include <old/model/molecule.hpp>
 #include <old/worker/worker_manager.hpp>
-#include <util/filepath.hpp>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Tool::Session::Action
@@ -17,18 +17,18 @@ namespace VTX::UI::QT::Tool::Session::Action
 		class LoadSceneClass
 		{
 		  public:
-			LoadSceneClass( const std::vector<Util::FilePath> & p_paths ) : _paths( p_paths ) {};
+			LoadSceneClass( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {};
 			void _loadScene();
 
 		  private:
-			std::vector<Util::FilePath> _paths;
+			std::vector<FilePath> _paths;
 		};
 
 	  public:
-		explicit Open( const Util::FilePath & p_path ) { _paths.emplace_back( p_path ); }
-		explicit Open( const std::vector<Util::FilePath> & p_paths ) : _paths( p_paths ) {}
-		explicit Open( const std::map<Util::FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
-		explicit Open( const Util::FilePath & p_trajectoryPath, Model::Molecule & p_target )
+		explicit Open( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
+		explicit Open( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
+		explicit Open( const std::map<FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
+		explicit Open( const FilePath & p_trajectoryPath, Model::Molecule & p_target )
 		{
 			_trajectoryTargets.emplace_back( &p_target );
 			_paths.emplace_back( p_trajectoryPath );
@@ -37,8 +37,8 @@ namespace VTX::UI::QT::Tool::Session::Action
 		virtual void execute() override;
 
 	  private:
-		std::vector<Util::FilePath>				_paths = std::vector<Util::FilePath>();
-		std::map<Util::FilePath, std::string *> _buffers;
+		std::vector<FilePath>			  _paths = std::vector<FilePath>();
+		std::map<FilePath, std::string *> _buffers;
 
 		std::vector<Model::Molecule *> _trajectoryTargets = std::vector<Model::Molecule *>();
 	};
@@ -47,8 +47,8 @@ namespace VTX::UI::QT::Tool::Session::Action
 	{
 	  public:
 		explicit Save() : _path( "" ), _callback( nullptr ) {}
-		explicit Save( const Util::FilePath & p_path ) : _path( p_path ), _callback( nullptr ) {}
-		explicit Save( const Util::FilePath & p_path, Worker::CallbackThread * const p_callback ) :
+		explicit Save( const FilePath & p_path ) : _path( p_path ), _callback( nullptr ) {}
+		explicit Save( const FilePath & p_path, Worker::CallbackThread * const p_callback ) :
 			_path( p_path ), _callback( p_callback )
 		{
 		}
@@ -56,7 +56,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 		virtual void execute() override;
 
 	  private:
-		const Util::FilePath		   _path;
+		const FilePath				   _path;
 		Worker::CallbackThread * const _callback;
 	};
 

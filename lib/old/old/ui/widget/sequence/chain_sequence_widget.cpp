@@ -2,7 +2,7 @@
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "style.hpp"
-#include "tool/logger.hpp"
+#include <util/logger.hpp>
 #include <QFont>
 #include <QString>
 #include <QVBoxLayout>

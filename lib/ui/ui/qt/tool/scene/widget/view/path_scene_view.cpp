@@ -15,7 +15,7 @@
 #include <old/action/viewpoint.hpp>
 #include <old/mvc/mvc_manager.hpp>
 #include <old/selection/selection_manager.hpp>
-#include <old/tool/logger.hpp>
+#include <util/logger.hpp>
 #include <util/string.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View

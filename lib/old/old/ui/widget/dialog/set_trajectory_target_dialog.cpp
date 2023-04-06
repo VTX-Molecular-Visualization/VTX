@@ -104,7 +104,7 @@ namespace VTX::UI::Widget::Dialog
 	SetTrajectoryTargetDialog::SetTrajectoryTargetDialog( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 
 	void SetTrajectoryTargetDialog::openDialog() { _getInstance().show(); }
-	void SetTrajectoryTargetDialog::openDialog( const Util::FilePath & p_trajectoryPath )
+	void SetTrajectoryTargetDialog::openDialog( const FilePath & p_trajectoryPath )
 	{
 		_getInstance()._filepath = p_trajectoryPath;
 		_getInstance().show();
@@ -189,7 +189,7 @@ namespace VTX::UI::Widget::Dialog
 	{
 		_moleculeListWidget->clearModels();
 
-		const std::string filename = _filepath.filenameWithoutExtension();
+		const std::string filename = _filepath.stem().string();
 
 		std::vector<Model::Molecule *> molecules = std::vector<Model::Molecule *>();
 		molecules.reserve( VTXApp::get().getScene().getMolecules().size() );

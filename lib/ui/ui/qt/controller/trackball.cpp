@@ -3,7 +3,8 @@
 #include <old/action/action_manager.hpp>
 #include <old/object3d/scene.hpp>
 #include <old/selection/selection_manager.hpp>
-#include <old/tool/logger.hpp>
+#include <old/style.hpp>
+#include <util/logger.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::Controller

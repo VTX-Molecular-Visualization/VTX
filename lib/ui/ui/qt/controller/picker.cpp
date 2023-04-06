@@ -13,7 +13,7 @@
 #include <old/mvc/mvc_manager.hpp>
 #include <old/selection/selection_manager.hpp>
 #include <old/action/selection.hpp>
-#include <old/tool/logger.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::UI::QT::Controller
 {

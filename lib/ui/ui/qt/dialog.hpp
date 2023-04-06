@@ -28,7 +28,7 @@ namespace VTX
 		// static void importRepresentationPresetDialog();
 		// static void importRenderEffectPresetDialog();
 
-		// static QString		_toQPath( const Util::FilePath & p_path );
+		// static QString		_toQPath( const FilePath & p_path );
 
 	} // namespace UI::QT::Dialog
 } // namespace VTX

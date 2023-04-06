@@ -1,8 +1,8 @@
 #ifndef __VTX_BASE_WRITER__
 #define __VTX_BASE_WRITER__
 
-#include "exception.hpp"
-#include <util/filepath.hpp>
+#include <util/exceptions.hpp>
+#include <util/types.hpp>
 
 namespace VTX
 {
@@ -16,7 +16,7 @@ namespace VTX
 			  public:
 				virtual ~BaseWriter() = default;
 
-				virtual void writeFile( const Util::FilePath &, const T & ) = 0;
+				virtual void writeFile( const FilePath &, const T & ) = 0;
 			};
 		} // namespace Writer
 	}	  // namespace IO

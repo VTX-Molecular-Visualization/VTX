@@ -14,8 +14,8 @@ namespace VTX::Network::Request
 	void DownloadMMTF::_success( QNetworkReply * const p_reply )
 	{
 		VTX_INFO( "Downloaded" );
-		std::map<Util::FilePath, std::string *> mapBuffers = std::map<Util::FilePath, std::string *>();
-		mapBuffers.emplace( Util::FilePath( _id + ".mmtf" ), new std::string( p_reply->readAll().toStdString() ) );
+		std::map<FilePath, std::string *> mapBuffers = std::map<FilePath, std::string *>();
+		mapBuffers.emplace( FilePath( _id + ".mmtf" ), new std::string( p_reply->readAll().toStdString() ) );
 
 		VTX_ACTION( new Action::Main::Open( mapBuffers ) );
 	}

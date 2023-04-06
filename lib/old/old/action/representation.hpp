@@ -4,6 +4,7 @@
 #include "base_action.hpp"
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
+#include "io/filesystem.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/instantiated_representation.hpp"
 #include "model/representation/representation.hpp"
@@ -13,7 +14,6 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
-#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "worker/representation_loader.hpp"
 #include "worker/representation_saver.hpp"
@@ -66,8 +66,8 @@ namespace VTX::Action::Representation
 		{
 			if ( _clearDirectory )
 			{
-				Util::Filesystem::removeAll( Util::Filesystem::getRepresentationsLibraryDir() );
-				Util::Filesystem::createDirectory( Util::Filesystem::getRepresentationsLibraryDir() );
+				Util::Filesystem::removeAll( IO::Filesystem::getRepresentationsLibraryDir() );
+				std::filesystem::create_directory( IO::Filesystem::getRepresentationsLibraryDir() );
 			}
 
 			for ( const Model::Representation::Representation * const representation : _representations )
@@ -85,7 +85,7 @@ namespace VTX::Action::Representation
 				else
 				*/
 				{
-					Util::FilePath path = Util::Filesystem::getRepresentationPath( representation->getName() );
+					FilePath path = IO::Filesystem::getRepresentationPath( representation->getName() );
 					Util::Filesystem::generateUniqueFileName( path );
 
 					Worker::RepresentationSaver * librarySaver

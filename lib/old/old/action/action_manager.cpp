@@ -2,17 +2,17 @@
 #include "action/main.hpp"
 #include "action/representable.hpp"
 #include "action/setting.hpp"
+#include "io/filesystem.hpp"
 #include "io/struct/scene_path_data.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
 #include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
-#include "util/filesystem.hpp"
-#include "util/time.hpp"
 #include "vtx_app.hpp"
 #include <magic_enum.hpp>
 #include <sstream>
+#include "io/filesystem.hpp"
 
 namespace VTX
 {
@@ -45,8 +45,9 @@ namespace VTX
 
 				if ( command == "snapshot" )
 				{
-					action = new Main::Snapshot( Worker::Snapshoter::MODE::GL,
-												 Util::Filesystem::getUniqueSnapshotsPath() );
+					action = new Main::Snapshot(
+						Worker::Snapshoter::MODE::GL,
+						IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ) );
 				}
 				else if ( command == "change_representation" )
 				{

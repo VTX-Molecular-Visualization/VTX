@@ -2,6 +2,7 @@
 #include "define.hpp"
 #include "ui/dialog.hpp"
 #include <nlohmann/json.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::Network::Request
 {
