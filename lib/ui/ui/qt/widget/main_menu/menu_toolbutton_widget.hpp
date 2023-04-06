@@ -2,10 +2,10 @@
 #define __VTX_UI_QT_WIDGET_BASE_MENUTOOLBUTTON_WIDGET__
 
 #include "core/main_menu/main_menu_toolbutton.hpp"
+#include "qt/navigation/arrow_navigation.hpp"
 #include "qt/widget/base_manual_widget.hpp"
 #include <QToolButton>
 #include <QWidget>
-#include <old/ui/navigation/arrow_navigation.hpp>
 #include <type_traits>
 
 namespace VTX::UI::QT::Widget::MainMenu

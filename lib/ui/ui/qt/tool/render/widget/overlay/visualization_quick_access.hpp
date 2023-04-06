@@ -10,7 +10,6 @@
 #include <QFrame>
 #include <QToolButton>
 #include <old/selection/selection_enum.hpp>
-#include <old/ui/multi_data_field.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Tool::Render::Widget::Overlay

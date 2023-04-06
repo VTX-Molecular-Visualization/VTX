@@ -1,8 +1,13 @@
 #include "path_scene_view.hpp"
 #include "qt/action/viewpoint.hpp"
+#include "qt/application_qt.hpp"
+#include "qt/contextual_menu.hpp"
+#include "qt/main_window.hpp"
 #include "qt/style.hpp"
+#include "qt/tool/keys.hpp"
 #include "qt/tool/scene/widget/scene_item_selection_model.hpp"
 #include "qt/tool/scene/widget/scene_widget.hpp"
+#include "qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "qt/widget_factory.hpp"
 #include <QScrollBar>
 #include <old/action/action_manager.hpp>
@@ -11,8 +16,6 @@
 #include <old/mvc/mvc_manager.hpp>
 #include <old/selection/selection_manager.hpp>
 #include <old/tool/logger.hpp>
-#include <old/ui/contextual_menu.hpp>
-#include <old/ui/widget/contextual_menu/contextual_menu_selection.hpp>
 #include <util/string.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View
@@ -160,10 +163,24 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 	void PathSceneView::_fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection )
 	{
-		std::set<Model::Viewpoint *> viewpoints = std::set<Model::Viewpoint *>();
-		p_selection.getItemsOfType( VTX::ID::Model::MODEL_VIEWPOINT, viewpoints );
+		std::set<Model::Path *> paths = std::set<Model::Path *>();
+		p_selection.getItemsOfType( VTX::ID::Model::MODEL_PATH, paths );
 
 		bool pathItemAdded = false;
+
+		for ( const Model::Path * const path : paths )
+		{
+			if ( path == _model )
+			{
+				const QTreeWidgetItem * const pathItem = topLevelItem( 0 );
+				p_itemSelection.append( QItemSelectionRange( indexFromItem( pathItem ) ) );
+				pathItemAdded = true;
+				break;
+			}
+		}
+
+		std::set<Model::Viewpoint *> viewpoints = std::set<Model::Viewpoint *>();
+		p_selection.getItemsOfType( VTX::ID::Model::MODEL_VIEWPOINT, viewpoints );
 
 		for ( const Model::Viewpoint * const viewpoint : viewpoints )
 		{
@@ -232,40 +249,16 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	}
 	void PathSceneView::_onCustomContextMenuCalled( const QPoint & p_clicPos )
 	{
-		VTX::UI::ContextualMenu::Menu menuType	   = VTX::UI::ContextualMenu::Menu::COUNT;
 		const QTreeWidgetItem * const targetedItem = itemAt( p_clicPos );
 
 		if ( targetedItem == nullptr )
 			return;
 
-		const Model::ID & itemID = _getModelIDFromItem( *targetedItem );
+		Model::Selection &			   selection	  = Selection::SelectionManager::get().getSelectionModel();
+		const UI::QT::ContextualMenu & contextualMenu = QT_APP()->getMainWindow().getContextualMenu();
+		const QPoint				   globalClicPos  = mapToGlobal( p_clicPos );
 
-		const QPoint globalClicPos = mapToGlobal( p_clicPos );
-
-		if ( MVC::MvcManager::get().getModelTypeID( itemID ) == VTX::ID::Model::MODEL_PATH )
-		{
-			Model::Path & pathTargeted = MVC::MvcManager::get().getModel<Model::Path>( itemID );
-			VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Path, &pathTargeted, globalClicPos );
-		}
-		else if ( MVC::MvcManager::get().getModelTypeID( itemID ) == VTX::ID::Model::MODEL_VIEWPOINT )
-		{
-			Model::Viewpoint & viewpointTargeted = MVC::MvcManager::get().getModel<Model::Viewpoint>( itemID );
-			Model::Selection & selection		 = Selection::SelectionManager::get().getSelectionModel();
-
-			if ( selection.isModelSelected( viewpointTargeted ) )
-			{
-				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
-					= VTX::UI::ContextualMenu::getMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuSelection>(
-						VTX::UI::ContextualMenu::Menu::Selection );
-				selectionContextualMenu->setFocusedTarget( &viewpointTargeted );
-				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
-			}
-			else
-			{
-				VTX::UI::ContextualMenu::pop(
-					VTX::UI::ContextualMenu::Menu::Viewpoint, &viewpointTargeted, globalClicPos );
-			}
-		}
+		contextualMenu.pop( Tool::ContextualMenu::SELECTION, &selection, globalClicPos );
 	}
 
 	void PathSceneView::_reformatName( std::string & p_name ) const

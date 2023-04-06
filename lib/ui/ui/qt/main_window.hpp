@@ -6,6 +6,7 @@
 #include "core/define.hpp"
 #include "core/layout_descriptor.hpp"
 #include "qt/contextual_menu.hpp"
+#include "qt/cursor_handler.hpp"
 #include "qt/qt_panel.hpp"
 #include "qt/widget/main_menu/main_menu_bar.hpp"
 #include "qt/widget/main_menu/menu_toolblock_widget.hpp"
@@ -19,7 +20,6 @@
 #include <old/event/base_event_firerer_input.hpp>
 #include <old/id.hpp>
 #include <old/renderer/base_renderer.hpp>
-#include <old/ui/cursor_handler.hpp>
 #include <unordered_set>
 #include <util/types.hpp>
 

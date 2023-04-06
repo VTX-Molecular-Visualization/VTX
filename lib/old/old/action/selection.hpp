@@ -85,9 +85,7 @@ namespace VTX::Action::Selection
 				else if ( modelTypeId == VTX::ID::Model::MODEL_PATH )
 				{
 					Model::Path & path = MVC::MvcManager::get().getModel<Model::Path>( modelId );
-
-					for ( Model::Viewpoint * const viewpoint : path.getViewpoints() )
-						viewpoints.emplace_back( viewpoint );
+					paths.emplace_back( &path );
 				}
 				else if ( modelTypeId == VTX::ID::Model::MODEL_VIEWPOINT )
 				{

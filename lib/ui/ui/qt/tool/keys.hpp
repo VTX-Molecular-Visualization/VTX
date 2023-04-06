@@ -20,6 +20,11 @@ namespace VTX::UI::QT::Tool
 		const Core::WidgetKey SELECTION = "VTX_ContextualMenu_Selection";
 	}; // namespace ContextualMenu
 
+	namespace Cursor
+	{
+		const Core::WidgetKey DEFAULT = "VTX_Cursor_Default";
+	}; // namespace Cursor
+
 } // namespace VTX::UI::QT::Tool
 
 #endif

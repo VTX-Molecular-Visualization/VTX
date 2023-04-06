@@ -131,7 +131,7 @@ namespace VTX::UI::QT
 		// setStatusBar( _statusBarWidget );
 
 		_contextualMenu = new ContextualMenu();
-		//_cursorHandler	= new CursorHandler();
+		_cursorHandler	= new CursorHandler();
 
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 

@@ -26,6 +26,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		Residue		   = 1 << 2,
 		Atom		   = 1 << 3,
 		Representation = 1 << 4,
+		Path		   = 1 << 5,
 		Viewpoint	   = 1 << 5,
 		Label		   = 1 << 6,
 
@@ -195,6 +196,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		enum class SUBMENU_TEMPLATE : int
 		{
 			MOLECULE_STRUCTURE,
+			PATH,
 			VIEWPOINT,
 			LABEL,
 
@@ -233,6 +235,9 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		void _copyFrameAction( const int p_frame );
 		void _extractAction();
 		void _deleteAction();
+
+		void _addViewpointAction();
+		void _clearViewpointsAction();
 
 		void _gotoViewpointAction();
 		void _relocateViewpointAction();

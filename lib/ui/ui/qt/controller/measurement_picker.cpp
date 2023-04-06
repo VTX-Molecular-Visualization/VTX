@@ -8,7 +8,6 @@
 #include <QPoint>
 #include <old/action/action_manager.hpp>
 #include <old/action/measurement.hpp>
-#include <old/action/selection.hpp>
 #include <old/event/event_manager.hpp>
 #include <old/model/atom.hpp>
 #include <old/model/measurement/measure_in_progress.hpp>
@@ -18,7 +17,6 @@
 #include <old/mvc/mvc_manager.hpp>
 #include <old/selection/selection_manager.hpp>
 #include <old/tool/logger.hpp>
-#include <old/ui/cursor_handler.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::Controller

@@ -9,6 +9,7 @@
 #include <QTimer>
 #include <old/action/action_manager.hpp>
 #include <old/action/label.hpp>
+#include <old/action/path.hpp>
 #include <old/action/selection.hpp>
 #include <old/action/viewpoint.hpp>
 #include <old/action/visible.hpp>
@@ -115,6 +116,15 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		// moleculeStructureSubmenu->addItemData( new ActionData(
 		//	"Alignment settings", TypeMask::Molecule, this, &ContextualMenuSelection::_openAlignmentWindowAction ) );
 
+		// PATHS ///////////////////////////////////////////////////////////////////////////////////////////////////////
+		SelectionSubMenu * const pathSubmenu = new SelectionSubMenu( this, "Path" );
+		pathSubmenu->addItemData( new ActionDataSection( "Action", TypeMask::Path, this ) );
+		pathSubmenu->addItemData(
+			new ActionData( "Add Viewpoint", TypeMask::Path, this, &ContextualMenuSelection::_addViewpointAction ) );
+		pathSubmenu->addItemData(
+			new ActionData( "Clear All", TypeMask::Path, this, &ContextualMenuSelection::_clearViewpointsAction ) );
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 		// VIEWPOINTS //////////////////////////////////////////////////////////////////////////////////////////////////
 		SelectionSubMenu * const viewpointSubmenu = new SelectionSubMenu( this, "Viewpoint" );
 		viewpointSubmenu->addItemData( new ActionDataSection( "Action", TypeMask::Viewpoint, this ) );
@@ -141,6 +151,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 		_submenus.resize( int( SUBMENU_TEMPLATE::COUNT ) );
 		_submenus[ int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE ) ] = moleculeStructureSubmenu;
+		_submenus[ int( SUBMENU_TEMPLATE::PATH ) ]				 = pathSubmenu;
 		_submenus[ int( SUBMENU_TEMPLATE::VIEWPOINT ) ]			 = viewpointSubmenu;
 		_submenus[ int( SUBMENU_TEMPLATE::LABEL ) ]				 = labelSubmenu;
 
@@ -149,8 +160,8 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		_submenusMap[ VTX::ID::Model::MODEL_RESIDUE ]  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
 		_submenusMap[ VTX::ID::Model::MODEL_ATOM ]	   = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
 
+		_submenusMap[ VTX::ID::Model::MODEL_PATH ]		= int( SUBMENU_TEMPLATE::PATH );
 		_submenusMap[ VTX::ID::Model::MODEL_VIEWPOINT ] = int( SUBMENU_TEMPLATE::VIEWPOINT );
-		_submenusMap[ VTX::ID::Model::MODEL_PATH ]		= int( SUBMENU_TEMPLATE::VIEWPOINT );
 
 		_submenusMap[ VTX::ID::Model::MODEL_LABEL ]							= int( SUBMENU_TEMPLATE::LABEL );
 		_submenusMap[ VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE ]			= int( SUBMENU_TEMPLATE::LABEL );
@@ -586,6 +597,13 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		}
 
 		return false;
+	}
+
+	void ContextualMenuSelection::_addViewpointAction() { VTX_ACTION( new VTX::Action::Viewpoint::Create() ); }
+	void ContextualMenuSelection::_clearViewpointsAction()
+	{
+		Model::Path * const targetPath = dynamic_cast<Model::Path * const>( _target );
+		VTX_ACTION( new VTX::Action::Path::Clear( *targetPath ) );
 	}
 
 	void ContextualMenuSelection::_gotoViewpointAction()
