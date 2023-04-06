@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+	<file>sprite/analysis/compute_rmsd_icon.png</file>
+	<file>sprite/analysis/structural_alignment_icon.png</file>
+	<file>sprite/analysis/structural_alignment_settings_icon.png</file>
+	<file>stylesheet_tool.css</file>
+</qresource>
+</RCC>
