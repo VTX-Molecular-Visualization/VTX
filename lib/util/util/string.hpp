@@ -16,9 +16,8 @@ namespace VTX::Util::String
 
 	std::vector<std::string> split( const std::string & p_str, const char p_separator );
 	std::string & replaceAll( std::string & p_str, const std::string & p_toReplace, const std::string & p_replacement );
-
-	std::string floatToStr( const float p_value, const int p_nbDecimals );
-	uint		strToUint( const std::string & p_str );
+	std::string	  floatToStr( const float p_value, const int p_nbDecimals );
+	uint		  strToUint( const std::string & p_str );
 } // namespace VTX::Util::String
 
 #endif

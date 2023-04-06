@@ -2,6 +2,13 @@
 
 namespace VTX::Util
 {
+	long long Chrono::getTimestamp()
+	{
+		SystemClock::time_point now = SystemClock::now();
+		Ms						ms	= std::chrono::duration_cast<Ms>( now.time_since_epoch() );
+		return ms.count();
+	}
+
 	void Chrono::start() { begin = interval = Clock::now(); }
 
 	void Chrono::stop() { end = interval = Clock::now(); }
@@ -17,10 +24,4 @@ namespace VTX::Util
 		return ( intervalTime ).count();
 	}
 
-	long long Chrono::getTimestamp()
-	{
-		SystemClock::time_point now = SystemClock::now();
-		Ms						ms	= std::chrono::duration_cast<Ms>( now.time_since_epoch() );
-		return ms.count();
-	}
 } // namespace VTX::Util

@@ -9,13 +9,13 @@ namespace VTX::Util
 	class Chrono
 	{
 	  public:
+		static long long getTimestamp();
+
 		void		start();
 		void		stop();
 		float		elapsedTime() const;
 		std::string elapsedTimeStr() const;
 		float		intervalTime();
-
-		static long long getTimestamp();
 
 	  private:
 		using SystemClock = std::chrono::system_clock;
