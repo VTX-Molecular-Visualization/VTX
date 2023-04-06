@@ -5,13 +5,9 @@
 	<file>sprite/add_preset_icon.png</file>
 	<file>sprite/add_viewpoint.png</file>
 	<file>sprite/analysis_compute_rmsd_icon.png</file>
-	<file>sprite/background_black_icon.png</file>
-	<file>sprite/background_white_icon.png</file>
 	<file>sprite/camera_focus_icon.png</file>
 	<file>sprite/camera_freefly_mode.png</file>
 	<file>sprite/camera_orient_icon.png</file>
-	<file>sprite/camera_projection_ortho_icon.png</file>
-	<file>sprite/camera_projection_perspective_icon.png</file>
 	<file>sprite/camera_recenter_icon.png</file>
 	<file>sprite/camera_trackball_mode.png</file>
 	<file>sprite/camera_vessel_mode.png</file>
@@ -46,7 +42,6 @@
 	<file>sprite/job_manager.png</file>
 	<file>sprite/keyword_editor.png</file>
 	<file>sprite/load_molecule_icon.png</file>
-	<file>sprite/load_trajectory_icon.png</file>
 	<file>sprite/locked_icon.png</file>
 	<file>sprite/lock_window_icon.png</file>
 	<file>sprite/lock_window_icon_hovered.png</file>
@@ -64,7 +59,6 @@
 	<file>sprite/new_session_icon.png</file>
 	<file>sprite/openrecent_session_icon.png</file>
 	<file>sprite/open_session_icon.png</file>
-	<file>sprite/overlays_icon.png</file>
 	<file>sprite/pause_icon.png</file>
 	<file>sprite/pause_icon_hovered.png</file>
 	<file>sprite/picker_selection_icon.png</file>
