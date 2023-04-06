@@ -6,7 +6,7 @@
 #include "model/residue.hpp"
 #include "util/secondary_structure.hpp"
 #include <string>
-#include <util/chrono.hpp>
+
 
 namespace VTX::IO::Writer
 {

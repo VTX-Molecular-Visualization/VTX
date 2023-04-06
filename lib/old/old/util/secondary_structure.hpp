@@ -5,8 +5,8 @@
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "model/secondary_structure.hpp"
-#include <util/logger.hpp>
 #include <util/chrono.hpp>
+#include <util/logger.hpp>
 #include <util/types.hpp>
 
 namespace VTX
@@ -247,15 +247,15 @@ namespace VTX
 					res = Model::SecondaryStructure::TYPE::HELIX_PI;
 				else if ( p_str == "right-handed omega helix" ) // ?
 					res = Model::SecondaryStructure::TYPE::COUNT;
-				else if ( p_str == "left-handed omega helix" ) // ?
+				else if ( p_str == "left-handed omega helix" )	// ?
 					res = Model::SecondaryStructure::TYPE::COUNT;
 				else if ( p_str == "right-handed gamma helix" ) // ?
 					res = Model::SecondaryStructure::TYPE::COUNT;
-				else if ( p_str == "left-handed gamma helix" ) // ?
+				else if ( p_str == "left-handed gamma helix" )	// ?
 					res = Model::SecondaryStructure::TYPE::COUNT;
-				else if ( p_str == "2 - 7 ribbon / helix" ) // ?
+				else if ( p_str == "2 - 7 ribbon / helix" )		// ?
 					res = Model::SecondaryStructure::TYPE::COUNT;
-				else if ( p_str == "polyproline" ) // ?
+				else if ( p_str == "polyproline" )				// ?
 					res = Model::SecondaryStructure::TYPE::COUNT;
 
 				return res;

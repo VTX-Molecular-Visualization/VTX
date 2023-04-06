@@ -6,7 +6,7 @@
 #include <old/action/base_action.hpp>
 #include <old/model/molecule.hpp>
 #include <old/model/selection.hpp>
-#include <util/chrono.hpp>
+
 #include <vector>
 
 namespace VTX::Tool::Analysis::StructuralAlignment::Action

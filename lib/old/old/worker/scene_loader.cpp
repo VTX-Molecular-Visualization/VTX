@@ -13,7 +13,6 @@
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
-#include <util/chrono.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Worker

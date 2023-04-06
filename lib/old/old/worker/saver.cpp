@@ -8,7 +8,6 @@
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
 #include <set>
-#include <util/chrono.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Worker

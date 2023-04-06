@@ -11,7 +11,7 @@
 #include <QOpenGLFramebufferObject>
 #include <QPainter>
 #include <QSvgRenderer>
-#include <util/chrono.hpp>
+
 #include <vector>
 
 // #define VTX_DEBUG_WATERMARK

@@ -9,10 +9,10 @@
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
-#include <util/chrono.hpp>
 #include "util/label.hpp"
 #include "util/molecule.hpp"
 #include "vtx_app.hpp"
+#include <util/chrono.hpp>
 
 namespace VTX::Action::Selection
 {

@@ -2,7 +2,7 @@
 #include "worker/base_thread.hpp"
 #include "worker/base_worker.hpp"
 #include <chemfiles.hpp>
-#include <util/chrono.hpp>
+
 #include <util/logger.hpp>
 
 namespace VTX::IO

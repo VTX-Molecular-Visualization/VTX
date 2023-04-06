@@ -13,6 +13,7 @@
 #include "worker/gpu_buffer_initializer.hpp"
 #include "worker/gpu_computer.hpp"
 #include "worker/worker_manager.hpp"
+#include <util/chrono.hpp>
 
 #define VOXEL_SIZE 0.4f
 

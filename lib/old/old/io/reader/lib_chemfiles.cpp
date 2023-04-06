@@ -20,7 +20,7 @@
 #include <magic_enum.hpp>
 #include <thread>
 #include <unordered_map>
-#include <util/chrono.hpp>
+
 #include <util/logger.hpp>
 
 namespace VTX::IO::Reader

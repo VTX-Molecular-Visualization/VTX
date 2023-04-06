@@ -4,7 +4,7 @@
 #include "model/renderer/render_effect_preset.hpp"
 #include "mvc/mvc_manager.hpp"
 #include <exception>
-#include <util/chrono.hpp>
+
 #include <util/logger.hpp>
 
 namespace VTX::Worker

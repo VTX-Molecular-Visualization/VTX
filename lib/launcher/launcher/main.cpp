@@ -3,7 +3,6 @@
 #include <ui/core/base_ui_application.hpp>
 #include <ui/environment.hpp>
 #include <ui/ui_generator.hpp>
-#include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
 #include <vector>
@@ -27,6 +26,7 @@ int main( int p_argc, char * p_argv[] )
 {
 	try
 	{
+		Util::Logger::init();
 		VTX::UI::Core::BaseUIApplication * const vtxApplication = UI::UIGenerator::createUI();
 		VTX::UI::Environment::get().setUIApp( vtxApplication );
 		vtxApplication->init();
