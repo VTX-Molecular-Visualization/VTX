@@ -76,6 +76,11 @@ namespace VTX
 			std::vector<Vec4f> atomPositionsVdW = std::vector<Vec4f>( atomPositions.size() );
 			for ( const uint idx : atomsIdx )
 			{
+				if ( _category->getMoleculePtr()->getAtom( idx ) == nullptr )
+				{
+					continue;
+				}
+
 				const uint hash = gridAtoms.gridHash( atomPositions[ idx ] );
 
 				if ( hash >= atomGridDataTmp.size() )
