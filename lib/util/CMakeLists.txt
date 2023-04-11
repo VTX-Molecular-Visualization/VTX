@@ -1,3 +1,5 @@
+message("Project library: VTX_UTIL")
+
 set(GIT_URL_GLM https://github.com/g-truc/glm.git)
 set(GIT_TAG_GLM 0.9.9.8)
 set(GIT_URL_SPDLOG https://github.com/gabime/spdlog.git)
@@ -37,6 +39,7 @@ file(GLOB_RECURSE SOURCES src/*.cpp)
 add_library(VTX_UTIL STATIC ${SOURCES})
 
 target_include_directories(VTX_UTIL PUBLIC include)
+target_include_directories(VTX_UTIL PRIVATE include/util)
 target_include_directories(VTX_UTIL PRIVATE ${GLM_INCLUDE_DIR})
 target_include_directories(VTX_UTIL PRIVATE ${SPDLOG_INCLUDE_DIR}/include)
 target_include_directories(VTX_UTIL PRIVATE src)
