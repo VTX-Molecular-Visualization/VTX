@@ -1,18 +1,57 @@
 #ifndef __VTX_UTIL_LOGGER__
 #define __VTX_UTIL_LOGGER__
 
+#include "generic/base_static_singleton.hpp"
 #include <filesystem>
+#include <memory>
 #include <spdlog/spdlog.h>
 
-namespace VTX::Util::Logger
+namespace VTX::Util
 {
-	void init( const std::filesystem::path & p_logDir = std::filesystem::current_path() );
-} // namespace VTX::Util::Logger
+	class Logger final : public Generic::BaseStaticSingleton<Logger>
+	{
+	  public:
+		Logger( StructPrivacyToken p_token );
 
-#define VTX_DEBUG( ... ) spdlog::debug( __VA_ARGS__ )
-#define VTX_INFO( ... ) spdlog::info( __VA_ARGS__ )
-#define VTX_WARNING( ... ) spdlog::warn( __VA_ARGS__ )
-#define VTX_ERROR( ... ) spdlog::error( __VA_ARGS__ )
-#define VTX_CRITICAL( ... ) spdlog::critical( __VA_ARGS__ )
+		void init( const std::filesystem::path & );
+	};
+
+} // namespace VTX::Util
+
+template<typename... Args>
+inline void VTX_TRACE( const std::string & p_fmt, const Args &... p_args )
+{
+	spdlog::log( spdlog::level::trace, p_fmt, p_args... );
+}
+
+template<typename... Args>
+inline void VTX_DEBUG( const std::string & p_fmt, const Args &... p_args )
+{
+	spdlog::log( spdlog::level::debug, p_fmt, p_args... );
+}
+
+template<typename... Args>
+inline void VTX_INFO( const std::string & p_fmt, const Args &... p_args )
+{
+	spdlog::log( spdlog::level::info, p_fmt, p_args... );
+}
+
+template<typename... Args>
+inline void VTX_WARNING( const std::string & p_fmt, const Args &... p_args )
+{
+	spdlog::log( spdlog::level::warn, p_fmt, p_args... );
+}
+
+template<typename... Args>
+inline void VTX_ERROR( const std::string & p_fmt, const Args &... p_args )
+{
+	spdlog::log( spdlog::level::err, p_fmt, p_args... );
+}
+
+template<typename... Args>
+inline void VTX_CRITICAL( const std::string & p_fmt, const Args &... p_args )
+{
+	spdlog::log( spdlog::level::critical, p_fmt, p_args... );
+}
 
 #endif

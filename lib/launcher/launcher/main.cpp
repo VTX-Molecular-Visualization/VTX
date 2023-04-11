@@ -26,7 +26,8 @@ int main( int p_argc, char * p_argv[] )
 {
 	try
 	{
-		Util::Logger::init();
+		const FilePath logDir = std::filesystem::current_path();
+		Util::Logger::get().init( logDir );
 		VTX::UI::Core::BaseUIApplication * const vtxApplication = UI::UIGenerator::createUI();
 		VTX::UI::Environment::get().setUIApp( vtxApplication );
 		vtxApplication->init();
@@ -40,6 +41,7 @@ int main( int p_argc, char * p_argv[] )
 	{
 		std::string error = p_e.what();
 		VTX_ERROR( p_e.what() );
+
 #ifdef VTX_PRODUCTION
 		UI::Dialog::unhandledException();
 #else
