@@ -1,4 +1,5 @@
-/build/
+build/
+lib/**/build/
 /data/
 /external_project/
 /RELEASE/
