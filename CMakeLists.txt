@@ -49,10 +49,11 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/ui/)
 add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/tool/)
 #add_subdirectory(${CMAKE_SOURCE_DIR}/${PATH_LIB}/launcher/)
 
+file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/include/*.hpp)
 file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 file(GLOB_RECURSE RESOURCES ${CMAKE_SOURCE_DIR}/asset/windows_resources/*.rc)
 
-add_executable(VTX ${SOURCES} ${RESOURCES})
+add_executable(VTX ${HEADERS} ${SOURCES} ${RESOURCES})
 
 target_include_directories(VTX PUBLIC include)
 target_link_libraries(VTX PRIVATE VTX_UTIL)
