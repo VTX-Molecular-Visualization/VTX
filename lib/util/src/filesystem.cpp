@@ -1,5 +1,5 @@
-#include "filesystem.hpp"
-#include "exceptions.hpp"
+#include "util/filesystem.hpp"
+#include "util/exceptions.hpp"
 #include <fstream>
 
 namespace VTX::Util::Filesystem

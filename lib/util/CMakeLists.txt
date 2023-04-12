@@ -41,7 +41,6 @@ file(GLOB_RECURSE SOURCES src/*.cpp)
 add_library(VTX_UTIL SHARED ${SOURCES})
 
 target_include_directories(VTX_UTIL PUBLIC include)
-target_include_directories(VTX_UTIL PRIVATE include/util)
 target_include_directories(VTX_UTIL PUBLIC ${GLM_INCLUDE_DIR})
 target_include_directories(VTX_UTIL PRIVATE ${SPDLOG_INCLUDE_DIR}/include)
 target_include_directories(VTX_UTIL PRIVATE src)
