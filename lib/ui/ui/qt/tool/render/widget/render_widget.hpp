@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_TOOL_RENDER_WIDGET_RENDER__
 
 #include "core/define.hpp"
+#include "old_ui/event/base_event_firerer_input.hpp"
 #include "qt/qt_panel.hpp"
 #include "qt/tool/render/widget/base_integrated_widget.hpp"
 #include "qt/tool/render/widget/opengl_widget.hpp"
@@ -12,7 +13,6 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <map>
-#include <old/event/base_event_firerer_input.hpp>
 #include <old/model/base_model.hpp>
 #include <old/mvc/mvc_manager.hpp>
 #include <old/view/base_view.hpp>

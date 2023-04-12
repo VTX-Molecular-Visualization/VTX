@@ -15,6 +15,7 @@
 #include "model/viewpoint.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
+#include "util/label.hpp"
 #include "visible.hpp"
 #include <vector>
 
@@ -798,17 +799,6 @@ namespace VTX::Action::Selection
 	  private:
 		Model::Selection & _selection;
 		const int		   _indexPreset;
-	};
-
-	class Orient : public BaseAction
-	{
-	  public:
-		explicit Orient( const Model::Selection & p_selection ) : _selection( p_selection ) {}
-
-		virtual void execute() override;
-
-	  private:
-		const Model::Selection & _selection;
 	};
 
 	class Copy : public BaseAction

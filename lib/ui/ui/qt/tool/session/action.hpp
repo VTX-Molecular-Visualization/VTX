@@ -37,6 +37,9 @@ namespace VTX::UI::QT::Tool::Session::Action
 		virtual void execute() override;
 
 	  private:
+		void _callEffectiveOpenAction();
+
+	  private:
 		std::vector<FilePath>			  _paths = std::vector<FilePath>();
 		std::map<FilePath, std::string *> _buffers;
 

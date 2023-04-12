@@ -13,14 +13,13 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "solvent_excluded_surface.hpp"
-#include <util/logger.hpp>
-#include "ui/widget_factory.hpp"
 #include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
 #include "vtx_app.hpp"
 #include <algorithm>
+#include <util/logger.hpp>
 
 namespace VTX
 {

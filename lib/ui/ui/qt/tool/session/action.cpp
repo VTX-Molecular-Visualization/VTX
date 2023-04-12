@@ -3,6 +3,8 @@
 #include "id.hpp"
 #include "qt/state/state_machine.hpp"
 #include "qt/state/visualization.hpp"
+#include <old/action/action_manager.hpp>
+#include <old/action/main.hpp>
 #include <old/io/struct/scene_path_data.hpp>
 #include <old/object3d/scene.hpp>
 #include <old/vtx_app.hpp>
@@ -14,6 +16,7 @@
 
 namespace VTX::UI::QT::Tool::Session::Action
 {
+	// TODO keep only Dialog parts here and move real loading action into VTX_APP.
 	void Open::LoadSceneClass::_loadScene()
 	{
 		Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
@@ -24,7 +27,6 @@ namespace VTX::UI::QT::Tool::Session::Action
 			VTXApp::get().getScenePathData().setCurrentPath( path, true );
 		}
 	}
-
 	void Open::execute()
 	{
 		bool loadScene = false;
@@ -38,97 +40,39 @@ namespace VTX::UI::QT::Tool::Session::Action
 			if ( _paths.empty() )
 				return;
 
-			LoadSceneClass * const sceneClass = new LoadSceneClass( _paths );
-
 			Worker::CallbackThread callback = Worker::CallbackThread(
-				[ sceneClass ]( const uint p_code )
+				[ this ]( const uint p_code )
 				{
 					if ( p_code )
 					{
-						VTXApp::get().getScene().clear();
-						sceneClass->_loadScene();
+						_callEffectiveOpenAction();
 					}
-
-					delete sceneClass;
 				} );
 			Dialog::leavingSessionDialog( callback );
 		}
 		else
 		{
-			Worker::Loader * loader = nullptr;
-			if ( _paths.empty() == false )
-			{
-				loader = new Worker::Loader( _paths );
-			}
-			else if ( _buffers.empty() == false )
-			{
-				loader = new Worker::Loader( _buffers );
-			}
-			if ( loader == nullptr )
-			{
-				return;
-			}
-
-			const bool trajectoryTargetsForced = _trajectoryTargets.size() > 0;
-
-			if ( trajectoryTargetsForced )
-			{
-				for ( Model::Molecule * const trajectoryTarget : _trajectoryTargets )
-				{
-					loader->addDynamicTarget( trajectoryTarget );
-				}
-			}
-			else
-			{
-				for ( const Object3D::Scene::PairMoleculePtrFloat & molPair : VTXApp::get().getScene().getMolecules() )
-				{
-					loader->addDynamicTarget( molPair.first );
-				}
-			}
-
-			loader->setOpenTrajectoryAsMoleculeIfTargetFail( !trajectoryTargetsForced );
-
-			Worker::CallbackThread * callback = new Worker::CallbackThread(
-				[ loader ]( const uint p_code )
-				{
-					for ( const std::pair<const FilePath, Worker::Loader::Result> & pairFilResult :
-						  loader->getPathsResult() )
-					{
-						const FilePath &			   filepath = pairFilResult.first;
-						const Worker::Loader::Result & result	= pairFilResult.second;
-
-						if ( !result.state )
-							continue;
-
-						if ( result.sourceType == Worker::Loader::SOURCE_TYPE::FILE )
-						{
-							if ( result.molecule != nullptr )
-								VTXApp::get().getScenePathData().registerLoading( result.molecule, filepath );
-							VTX::Setting::enqueueNewLoadingPath( filepath );
-						}
-						else if ( result.sourceType == Worker::Loader::SOURCE_TYPE::BUFFER )
-						{
-							VTX::Setting::enqueueNewDownloadCode( filepath.stem().string() );
-						}
-
-						if ( result.molecule != nullptr )
-						{
-							result.molecule->setDisplayName( filepath.stem().string() );
-							VTXApp::get().getScene().addMolecule( result.molecule );
-						}
-						else if ( result.mesh != nullptr )
-						{
-							VTXApp::get().getScene().addMesh( result.mesh );
-						}
-					}
-
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-				} );
-
-			VTX_THREAD( loader, callback );
+			_callEffectiveOpenAction();
 		}
 	}
 
+	void Open::_callEffectiveOpenAction()
+	{
+		if ( !_trajectoryTargets.empty() )
+		{
+			VTX_ACTION( new VTX::Action::Main::Open( _paths[ 0 ], *_trajectoryTargets[ 0 ] ) );
+		}
+		else if ( !_buffers.empty() )
+		{
+			VTX_ACTION( new VTX::Action::Main::Open( _buffers ) );
+		}
+		else
+		{
+			VTX_ACTION( new VTX::Action::Main::Open( _paths ) );
+		}
+	}
+
+	// TODO keep only Dialog parts here and move real loading action into VTX_APP.
 	void Save::execute()
 	{
 		if ( _path.empty() )
@@ -137,22 +81,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 			return;
 		}
 
-		Worker::Saver * const saver = new Worker::Saver( _path );
-
-		if ( saver == nullptr )
-			return;
-
-		VTX_THREAD( saver, _callback );
-
-		if ( _path.extension() == "vtx" )
-		{
-			VTXApp::get().getScenePathData().setCurrentPath( _path, true );
-			VTX_EVENT( new Event::VTXEvent( Event::Global::SCENE_SAVED ) );
-		}
-		else
-		{
-			VTX::Setting::enqueueNewLoadingPath( _path );
-		}
+		VTX::Action::Main::Save( _path, _callback );
 	}
 
 	void ToggleCameraController::execute()
@@ -162,7 +91,6 @@ namespace VTX::UI::QT::Tool::Session::Action
 			.getState<QT::State::Visualization>( VTX::ID::UI_NEW::State::VISUALIZATION )
 			->toggleCameraController();
 	}
-
 	void ChangeCameraController::execute()
 	{
 		QT_APP()
@@ -170,7 +98,6 @@ namespace VTX::UI::QT::Tool::Session::Action
 			.getState<QT::State::Visualization>( VTX::ID::UI_NEW::State::VISUALIZATION )
 			->setCameraController( _id );
 	};
-
 	void ResetCameraController::execute()
 	{
 		QT_APP()

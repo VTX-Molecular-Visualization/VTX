@@ -11,8 +11,6 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
-#include "state/state_machine.hpp"
-#include "state/visualization.hpp"
 #include "util/molecule.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
@@ -104,23 +102,6 @@ namespace VTX::Action::Atom
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
-	};
-
-	class Orient : public BaseAction
-	{
-	  public:
-		explicit Orient( const Model::Atom & p_atom ) : _atom( p_atom ) {}
-
-		virtual void execute() override
-		{
-			VTXApp::get()
-				.getStateMachine()
-				.getState<State::Visualization>( ID::State::VISUALIZATION )
-				->orientCameraController( _atom.getWorldAABB() );
-		}
-
-	  private:
-		const Model::Atom & _atom;
 	};
 
 	class Delete : public BaseAction

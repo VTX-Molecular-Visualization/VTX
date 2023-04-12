@@ -3,7 +3,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
-#include "ui/main_window.hpp"
+#include "vtx_app.hpp"
 #include "worker/render_effect_loader.hpp"
 #include "worker/render_effect_saver.hpp"
 #include "worker/worker_manager.hpp"
@@ -79,13 +79,12 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPresetLibrary::get().setQuickAccessToPreset( _preset, _quickAccess );
 	};
 
-	void ChangeShading ::execute()
+	void ChangeShading::execute()
 	{
 		_preset.setShading( _shading );
 
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
-			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 	};
@@ -95,7 +94,6 @@ namespace VTX::Action::Renderer
 		_preset.enableSSAO( _enable );
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
-			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 	};
@@ -124,7 +122,6 @@ namespace VTX::Action::Renderer
 
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
-			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::OUTLINE );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 	};
@@ -161,7 +158,6 @@ namespace VTX::Action::Renderer
 		_preset.enableFog( _enable );
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
-			VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 	};

@@ -1,7 +1,6 @@
 #include "path.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
-#include <util/exceptions.hpp>
 #include "id.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "style.hpp"
@@ -9,6 +8,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <util/exceptions.hpp>
 
 namespace VTX
 {

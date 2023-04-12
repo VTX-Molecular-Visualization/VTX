@@ -6,9 +6,7 @@
 #include "setting.hpp"
 #include "spec.hpp"
 #include "stat.hpp"
-#include "state/state_machine.hpp"
 #include <QElapsedTimer>
-#include <QInputMethod>
 #include <QTimer>
 #include <util/exceptions.hpp>
 
@@ -58,10 +56,8 @@ namespace VTX
 		inline const Object3D::Scene &			 getScene() const { return *_scene; }
 
 		// TODO remove this. Must be In UI Module
-		inline const UI::MainWindow &	   getMainWindow() const { throw NotImplementedException(); }
-		inline UI::MainWindow &			   getMainWindow() { throw NotImplementedException(); }
-		inline State::StateMachine &	   getStateMachine() { throw NotImplementedException(); }
-		inline const State::StateMachine & getStateMachine() const { throw NotImplementedException(); }
+		inline const UI::MainWindow & getMainWindow() const { throw NotImplementedException(); }
+		inline UI::MainWindow &		  getMainWindow() { throw NotImplementedException(); }
 
 		inline Setting &									  getSetting() { return _setting; }
 		inline const Setting &								  getSetting() const { return _setting; }
@@ -88,10 +84,9 @@ namespace VTX
 		void deleteAtEndOfFrame( const Generic::BaseAutoDelete * const p_object );
 
 		// bool notify( QObject * const, QEvent * const ) override;
-		void		   closeAllWindows();
-		QInputMethod * inputMethod();
-		void		   exit( int p_returnCode = 0 );
-		void		   quit();
+		void closeAllWindows();
+		void exit( int p_returnCode = 0 );
+		void quit();
 
 	  private:
 		QTimer *	  _timer		= nullptr;
@@ -103,7 +98,6 @@ namespace VTX
 		Stat										   _stat				  = Stat();
 		Spec										   _spec				  = Spec();
 		UI::MainWindow *							   _mainWindow			  = nullptr;
-		State::StateMachine *						   _stateMachine		  = nullptr;
 		Object3D::Scene *							   _scene				  = nullptr;
 		IO::Struct::ScenePathData *					   _pathSceneData		  = nullptr;
 		Model::Representation::RepresentationLibrary * _representationLibrary = nullptr;

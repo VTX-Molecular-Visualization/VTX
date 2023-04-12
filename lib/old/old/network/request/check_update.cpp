@@ -1,6 +1,6 @@
 #include "check_update.hpp"
 #include "define.hpp"
-#include "ui/dialog.hpp"
+// #include "ui/dialog.hpp"
 #include <nlohmann/json.hpp>
 #include <util/logger.hpp>
 
@@ -47,13 +47,13 @@ namespace VTX::Network::Request
 					+ " is available at: " + VTX_RELEASES_CLICKABLE_URL + "<br>or " + VTX_WEBSITE_CLICKABLE_URL );
 
 				VTX_INFO( consoleMessage );
-				UI::Dialog::openInformationDialog( "New version available", dialogMessage );
+				// UI::Dialog::openInformationDialog( "New version available", dialogMessage );
 			}
 			else
 			{
 				if ( _showPopupIfNoUpdate )
 				{
-					UI::Dialog::openInformationDialog( "No update", "You have the latest version" );
+					// UI::Dialog::openInformationDialog( "No update", "You have the latest version" );
 				}
 				VTX_INFO( "No update available" );
 			}

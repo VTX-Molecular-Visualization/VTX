@@ -1,28 +1,15 @@
 #include "main.hpp"
-#include "action/action_manager.hpp"
-#include "controller/measurement_picker.hpp"
-#include "event/event.hpp"
-#include "event/event_manager.hpp"
 #include "io/filesystem.hpp"
-#include "io/struct/scene_path_data.hpp"
-#include "mvc/mvc_manager.hpp"
 #include "network/network_manager.hpp"
-#include "network/request/check_update.hpp"
 #include "network/request/download_mmtf.hpp"
+#include "object3d/camera_manager.hpp"
 #include "object3d/scene.hpp"
-#include "setting.hpp"
-#include "state/state_machine.hpp"
-#include "state/visualization.hpp"
-#include "ui/dialog.hpp"
-#include "ui/main_window.hpp"
-#include "util/molecule.hpp"
 #include "vtx_app.hpp"
 #include "worker/loader.hpp"
 #include "worker/render_effect_loader.hpp"
 #include "worker/representation_loader.hpp"
 #include "worker/saver.hpp"
 #include "worker/scene_loader.hpp"
-#include <util/logger.hpp>
 
 namespace VTX::Action::Main
 {
@@ -31,9 +18,17 @@ namespace VTX::Action::Main
 		VTXApp::get().getScene().reset();
 		VTXApp::get().getScenePathData().clearCurrentPath();
 	}
+	// TODO keep only Dialog parts here and move real loading action into VTX_APP.
+	void Open::LoadSceneClass::_loadScene()
+	{
+		Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
+		VTX_WORKER( sceneLoader );
 
-	void Quit::execute() { VTXApp::get().closeAllWindows(); }
-
+		for ( const FilePath & path : _paths )
+		{
+			VTXApp::get().getScenePathData().setCurrentPath( path, true );
+		}
+	}
 	void Open::execute()
 	{
 		bool loadScene = false;
@@ -47,20 +42,12 @@ namespace VTX::Action::Main
 			if ( _paths.empty() )
 				return;
 
+			VTXApp::get().getScene().clear();
+
 			LoadSceneClass * const sceneClass = new LoadSceneClass( _paths );
+			sceneClass->_loadScene();
 
-			Worker::CallbackThread callback = Worker::CallbackThread(
-				[ sceneClass ]( const uint p_code )
-				{
-					if ( p_code )
-					{
-						VTXApp::get().getScene().clear();
-						sceneClass->_loadScene();
-					}
-
-					delete sceneClass;
-				} );
-			UI::Dialog::leavingSessionDialog( callback );
+			delete sceneClass;
 		}
 		else
 		{
@@ -138,14 +125,11 @@ namespace VTX::Action::Main
 		}
 	}
 
+	void OpenApi::execute() { VTX_NETWORK_MANAGER().sendRequest( new Network::Request::DownloadMMTF( _id ) ); }
+
+	// TODO keep only Dialog parts here and move real loading action into VTX_APP.
 	void Save::execute()
 	{
-		if ( _path.empty() )
-		{
-			UI::Dialog::openSaveSessionDialog( _callback );
-			return;
-		}
-
 		Worker::Saver * const saver = new Worker::Saver( _path );
 
 		if ( saver == nullptr )
@@ -159,23 +143,10 @@ namespace VTX::Action::Main
 			VTX_EVENT( new Event::VTXEvent( Event::Global::SCENE_SAVED ) );
 		}
 		else
-			VTX::Setting::enqueueNewLoadingPath( _path );
-	}
-
-	void RestoreWindowLayout::execute() { VTXApp::get().getMainWindow().restoreDefaultLayout(); }
-
-	void Open::LoadSceneClass::_loadScene()
-	{
-		Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
-		VTX_WORKER( sceneLoader );
-
-		for ( const FilePath & path : _paths )
 		{
-			VTXApp::get().getScenePathData().setCurrentPath( path, true );
+			VTX::Setting::enqueueNewLoadingPath( _path );
 		}
 	}
-
-	void OpenApi::execute() { VTX_NETWORK_MANAGER().sendRequest( new Network::Request::DownloadMMTF( _id ) ); }
 
 	void ImportRepresentationPreset::execute()
 	{
@@ -213,68 +184,14 @@ namespace VTX::Action::Main
 
 	void ToggleCamera::execute() { VTXApp::get().getScene().getCameraManager().toggle(); }
 
+	void Snapshot::execute()
+	{
+		Worker::Snapshoter * worker = new Worker::Snapshoter( _mode, _path, _exportData );
+		VTX_WORKER( worker );
+	};
+
 	void SetCameraProjectionToPerspective::execute()
 	{
 		VTXApp::get().getScene().getCameraManager().setPerspectiveCamera( !_perspective );
-	}
-
-	void ToggleCameraController::execute()
-	{
-		VTXApp::get()
-			.getStateMachine()
-			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->toggleCameraController();
-	}
-
-	void ChangeCameraController::execute()
-	{
-		VTXApp::get()
-			.getStateMachine()
-			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->setCameraController( _id );
-	}
-
-	void ResetCameraController::execute()
-	{
-		VTXApp::get()
-			.getStateMachine()
-			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->resetCameraController();
-	}
-
-	void ChangeSelectionGranularity::execute()
-	{
-		State::Visualization * const state
-			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
-
-		if ( state->getCurrentPickerID() != ID::Controller::PICKER )
-			state->setPickerController( ID::Controller::PICKER );
-
-		VTX_SETTING().setSelectionGranularity( _granularity );
-	}
-
-	void ChangePicker::execute()
-	{
-		State::Visualization * const state
-			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
-
-		if ( state->getCurrentPickerID() != _pickerController )
-			state->setPickerController( _pickerController );
-
-		if ( _mode > -1 )
-		{
-			if ( _pickerController == ID::Controller::MEASUREMENT )
-			{
-				Controller::MeasurementPicker * const measurementController
-					= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT );
-
-				measurementController->setCurrentMode( Controller::MeasurementPicker::Mode( _mode ) );
-			}
-		}
-	}
-
-	void CheckForUpdate::execute()
-	{
-		VTX_NETWORK_MANAGER().sendRequest( new Network::Request::CheckUpdate( _showPopupIfNoUpdate ) );
 	}
 } // namespace VTX::Action::Main

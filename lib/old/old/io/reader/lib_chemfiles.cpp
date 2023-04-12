@@ -13,14 +13,11 @@
 #include "util/chemfiles.hpp"
 #include "util/molecule.hpp"
 #include "worker/base_thread.hpp"
-#include <QDir>
-#include <QFileInfo>
 #include <algorithm>
 #include <iostream>
 #include <magic_enum.hpp>
 #include <thread>
 #include <unordered_map>
-
 #include <util/logger.hpp>
 
 namespace VTX::IO::Reader

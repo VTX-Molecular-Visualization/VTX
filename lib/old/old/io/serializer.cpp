@@ -14,10 +14,6 @@
 #include "model/chain.hpp"
 #include "model/configuration/molecule.hpp"
 #include "model/label.hpp"
-#include "model/measurement/angle.hpp"
-#include "model/measurement/dihedral_angle.hpp"
-#include "model/measurement/distance.hpp"
-#include "model/measurement/distance_to_cycle.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
@@ -29,8 +25,6 @@
 #include "model/viewpoint.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
-#include "state/state_machine.hpp"
-#include "state/visualization.hpp"
 #include "trajectory/trajectory_enum.hpp"
 #include "worker/base_thread.hpp"
 #include <algorithm>
@@ -108,54 +102,17 @@ namespace VTX::IO
 	{
 		const ID::VTX_ID & labelTypeID = p_label.getTypeId();
 
-		if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
-			return serialize( dynamic_cast<const Model::Measurement::Distance &>( p_label ) );
-		else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
-			return serialize( dynamic_cast<const Model::Measurement::DistanceToCycle &>( p_label ) );
-		else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
-			return serialize( dynamic_cast<const Model::Measurement::Angle &>( p_label ) );
-		else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
-			return serialize( dynamic_cast<const Model::Measurement::DihedralAngle &>( p_label ) );
-		else
-			return {};
-	}
+		// if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+		//	return serialize( dynamic_cast<const Model::Measurement::Distance &>( p_label ) );
+		// else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+		//	return serialize( dynamic_cast<const Model::Measurement::DistanceToCycle &>( p_label ) );
+		// else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
+		//	return serialize( dynamic_cast<const Model::Measurement::Angle &>( p_label ) );
+		// else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+		//	return serialize( dynamic_cast<const Model::Measurement::DihedralAngle &>( p_label ) );
+		// else
 
-	nlohmann::json Serializer::serialize( const Model::Measurement::Distance & p_distanceLabel ) const
-	{
-		return { { "TYPE_ID", p_distanceLabel.getTypeId() },
-				 { "NAME", p_distanceLabel.getDefaultName() },
-				 { "ENABLED", p_distanceLabel.isEnable() },
-				 { "COLOR", serialize( p_distanceLabel.getColor() ) },
-				 { "ATOM_1_ID", serializeAtomReference( p_distanceLabel.getFirstAtom() ) },
-				 { "ATOM_2_ID", serializeAtomReference( p_distanceLabel.getSecondAtom() ) },
-				 { "AUTO_NAMING", p_distanceLabel.hasAutoNaming() },
-				 { "PERSISTENT_SCENE_ID", p_distanceLabel.getPersistentSceneID() } };
-	}
-	nlohmann::json Serializer::serialize( const Model::Measurement::DistanceToCycle & ) const { return {}; }
-	nlohmann::json Serializer::serialize( const Model::Measurement::Angle & p_angleLabel ) const
-	{
-		return { { "TYPE_ID", p_angleLabel.getTypeId() },
-				 { "NAME", p_angleLabel.getDefaultName() },
-				 { "ENABLED", p_angleLabel.isEnable() },
-				 { "COLOR", serialize( p_angleLabel.getColor() ) },
-				 { "ATOM_1_ID", serializeAtomReference( p_angleLabel.getFirstAtom() ) },
-				 { "ATOM_2_ID", serializeAtomReference( p_angleLabel.getSecondAtom() ) },
-				 { "ATOM_3_ID", serializeAtomReference( p_angleLabel.getThirdAtom() ) },
-				 { "AUTO_NAMING", p_angleLabel.hasAutoNaming() },
-				 { "PERSISTENT_SCENE_ID", p_angleLabel.getPersistentSceneID() } };
-	}
-	nlohmann::json Serializer::serialize( const Model::Measurement::DihedralAngle & p_angleLabel ) const
-	{
-		return { { "TYPE_ID", p_angleLabel.getTypeId() },
-				 { "NAME", p_angleLabel.getDefaultName() },
-				 { "ENABLED", p_angleLabel.isEnable() },
-				 { "COLOR", serialize( p_angleLabel.getColor() ) },
-				 { "ATOM_1_ID", serializeAtomReference( p_angleLabel.getFirstAtom() ) },
-				 { "ATOM_2_ID", serializeAtomReference( p_angleLabel.getSecondAtom() ) },
-				 { "ATOM_3_ID", serializeAtomReference( p_angleLabel.getThirdAtom() ) },
-				 { "ATOM_4_ID", serializeAtomReference( p_angleLabel.getFourthAtom() ) },
-				 { "AUTO_NAMING", p_angleLabel.hasAutoNaming() },
-				 { "PERSISTENT_SCENE_ID", p_angleLabel.getPersistentSceneID() } };
+		return {};
 	}
 
 	nlohmann::json Serializer::serialize( const Model::Path & p_path ) const
@@ -459,7 +416,6 @@ namespace VTX::IO
 				}
 			}
 		}
-
 		if ( p_json.contains( "LABELS" ) )
 		{
 			for ( const nlohmann::json & jsonLabel : p_json.at( "LABELS" ) )
@@ -473,15 +429,15 @@ namespace VTX::IO
 					{
 						ID::VTX_ID typeID = jsonLabelData.at( "TYPE_ID" ).get<ID::VTX_ID>();
 
-						if ( typeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
-							label = tryDeserializeModel<Model::Measurement::Distance>( jsonLabelData );
-						// else if ( typeID == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
-						//	label = tryDeserializeModel<Model::Measurement::DistanceToCycle>(
-						//		jsonLabelData.at( "LABEL" ) );
-						else if ( typeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
-							label = tryDeserializeModel<Model::Measurement::Angle>( jsonLabelData );
-						else if ( typeID == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
-							label = tryDeserializeModel<Model::Measurement::DihedralAngle>( jsonLabelData );
+						// if ( typeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+						//	label = tryDeserializeModel<Model::Measurement::Distance>( jsonLabelData );
+						//// else if ( typeID == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+						////	label = tryDeserializeModel<Model::Measurement::DistanceToCycle>(
+						////		jsonLabelData.at( "LABEL" ) );
+						// else if ( typeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
+						//	label = tryDeserializeModel<Model::Measurement::Angle>( jsonLabelData );
+						// else if ( typeID == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+						//	label = tryDeserializeModel<Model::Measurement::DihedralAngle>( jsonLabelData );
 					}
 
 					if ( label != nullptr )
@@ -507,10 +463,12 @@ namespace VTX::IO
 			}
 		}
 
-		VTXApp::get()
-			.getStateMachine()
-			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->resetCameraController();
+		// TODO Manage this
+		// VTXApp::get()
+		//	.getStateMachine()
+		//	.getState<State::Visualization>( ID::State::VISUALIZATION )
+		//	->resetCameraController();
+
 		p_scene.getCamera().setPosition( cameraPos );
 		p_scene.getCamera().setRotation( cameraRot );
 	}
@@ -694,103 +652,6 @@ namespace VTX::IO
 		}
 
 		_migrate( p_json, p_version, p_representation );
-	}
-
-	void Serializer::deserialize( const nlohmann::json & p_json, Model::Measurement::Distance & p_distanceLabel ) const
-	{
-		if ( p_json.contains( "AUTO_NAMING" ) )
-			p_distanceLabel.setAutoNaming( p_json.at( "AUTO_NAMING" ).get<bool>() );
-
-		if ( !p_distanceLabel.hasAutoNaming() && p_json.contains( "NAME" ) )
-			p_distanceLabel.setName( p_json.at( "NAME" ).get<std::string>() );
-
-		if ( p_json.contains( "ENABLED" ) )
-			p_distanceLabel.setEnable( p_json.at( "ENABLED" ).get<bool>() );
-
-		if ( p_json.contains( "COLOR" ) )
-		{
-			Color::Rgba color;
-			deserialize( p_json.at( "COLOR" ), color );
-			p_distanceLabel.setColor( color );
-		}
-
-		if ( p_json.contains( "ATOM_1_ID" ) && p_json.contains( "ATOM_2_ID" ) )
-		{
-			const Model::Atom * atom1 = deserializeAtomReference( p_json.at( "ATOM_1_ID" ) );
-			const Model::Atom * atom2 = deserializeAtomReference( p_json.at( "ATOM_2_ID" ) );
-
-			if ( atom1 != nullptr && atom2 != nullptr )
-				p_distanceLabel.setAtoms( *atom1, *atom2 );
-		}
-
-		if ( p_json.contains( "PERSISTENT_SCENE_ID" ) )
-			p_distanceLabel.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
-	}
-	void Serializer::deserialize( const nlohmann::json &, Model::Measurement::DistanceToCycle & ) const {}
-	void Serializer::deserialize( const nlohmann::json & p_json, Model::Measurement::Angle & p_angleLabel ) const
-	{
-		if ( p_json.contains( "AUTO_NAMING" ) )
-			p_angleLabel.setAutoNaming( p_json.at( "AUTO_NAMING" ).get<bool>() );
-
-		if ( !p_angleLabel.hasAutoNaming() && p_json.contains( "NAME" ) )
-			p_angleLabel.setName( p_json.at( "NAME" ).get<std::string>() );
-
-		if ( p_json.contains( "ENABLED" ) )
-			p_angleLabel.setEnable( p_json.at( "ENABLED" ).get<bool>() );
-
-		if ( p_json.contains( "COLOR" ) )
-		{
-			Color::Rgba color;
-			deserialize( p_json.at( "COLOR" ), color );
-			p_angleLabel.setColor( color );
-		}
-
-		if ( p_json.contains( "ATOM_1_ID" ) && p_json.contains( "ATOM_2_ID" ) && p_json.contains( "ATOM_3_ID" ) )
-		{
-			const Model::Atom * atom1 = deserializeAtomReference( p_json.at( "ATOM_1_ID" ) );
-			const Model::Atom * atom2 = deserializeAtomReference( p_json.at( "ATOM_2_ID" ) );
-			const Model::Atom * atom3 = deserializeAtomReference( p_json.at( "ATOM_3_ID" ) );
-
-			if ( atom1 != nullptr && atom2 != nullptr && atom3 != nullptr )
-				p_angleLabel.setAtoms( *atom1, *atom2, *atom3 );
-		}
-
-		if ( p_json.contains( "PERSISTENT_SCENE_ID" ) )
-			p_angleLabel.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
-	}
-	void Serializer::deserialize( const nlohmann::json &			  p_json,
-								  Model::Measurement::DihedralAngle & p_angleLabel ) const
-	{
-		if ( p_json.contains( "AUTO_NAMING" ) )
-			p_angleLabel.setAutoNaming( p_json.at( "AUTO_NAMING" ).get<bool>() );
-
-		if ( !p_angleLabel.hasAutoNaming() && p_json.contains( "NAME" ) )
-			p_angleLabel.setName( p_json.at( "NAME" ).get<std::string>() );
-
-		if ( p_json.contains( "ENABLED" ) )
-			p_angleLabel.setEnable( p_json.at( "ENABLED" ).get<bool>() );
-
-		if ( p_json.contains( "COLOR" ) )
-		{
-			Color::Rgba color;
-			deserialize( p_json.at( "COLOR" ), color );
-			p_angleLabel.setColor( color );
-		}
-
-		if ( p_json.contains( "ATOM_1_ID" ) && p_json.contains( "ATOM_2_ID" ) && p_json.contains( "ATOM_3_ID" )
-			 && p_json.contains( "ATOM_4_ID" ) )
-		{
-			const Model::Atom * atom1 = deserializeAtomReference( p_json.at( "ATOM_1_ID" ) );
-			const Model::Atom * atom2 = deserializeAtomReference( p_json.at( "ATOM_2_ID" ) );
-			const Model::Atom * atom3 = deserializeAtomReference( p_json.at( "ATOM_3_ID" ) );
-			const Model::Atom * atom4 = deserializeAtomReference( p_json.at( "ATOM_4_ID" ) );
-
-			if ( atom1 != nullptr && atom2 != nullptr && atom3 != nullptr && atom4 != nullptr )
-				p_angleLabel.setAtoms( *atom1, *atom2, *atom3, *atom4 );
-		}
-
-		if ( p_json.contains( "PERSISTENT_SCENE_ID" ) )
-			p_angleLabel.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
 	}
 
 	void Serializer::deserialize( const nlohmann::json &				  p_json,

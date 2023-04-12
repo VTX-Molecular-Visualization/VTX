@@ -182,23 +182,6 @@ namespace VTX::Action::Residue
 		const std::unordered_set<Model::Residue *> _residues;
 	};
 
-	class Orient : public BaseAction
-	{
-	  public:
-		explicit Orient( const Model::Residue & p_residue ) : _residue( p_residue ) {}
-
-		virtual void execute() override
-		{
-			VTXApp::get()
-				.getStateMachine()
-				.getState<State::Visualization>( ID::State::VISUALIZATION )
-				->orientCameraController( _residue.getWorldAABB() );
-		}
-
-	  private:
-		const Model::Residue & _residue;
-	};
-
 	class Delete : public BaseAction
 	{
 	  public:

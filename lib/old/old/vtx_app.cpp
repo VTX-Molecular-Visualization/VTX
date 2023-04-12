@@ -15,8 +15,8 @@
 // #include "ui/main_window.hpp"
 #include "io/filesystem.hpp"
 #include "worker/worker_manager.hpp"
-#include <QApplication>
-#include <QPalette>
+// #include <QApplication>
+// #include <QPalette>
 #include <exception>
 
 namespace VTX
@@ -55,11 +55,6 @@ namespace VTX
 		_scene->getCamera().setScreenSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
 
 		_pathSceneData = new IO::Struct::ScenePathData();
-
-		if ( VTX_SETTING().getCheckVTXUpdateAtLaunch() )
-		{
-			VTX_ACTION( new Action::Main::CheckForUpdate() );
-		}
 
 		// Start timers.
 		//_timer = new QTimer( this );
@@ -210,8 +205,7 @@ namespace VTX
 	{
 		// QApplication::closeAllWindows();
 	}
-	QInputMethod * VTXApp::inputMethod() { return QApplication::inputMethod(); }
-	void		   VTXApp::exit( int p_returnCode )
+	void VTXApp::exit( int p_returnCode )
 	{
 		// QApplication::exit(p_returnCode);
 	}

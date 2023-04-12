@@ -3,12 +3,9 @@
 #include "action/renderer.hpp"
 #include "event/event_manager.hpp"
 #include "mvc/mvc_manager.hpp"
-#include "object3d/camera.hpp"
-#include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
 #include "renderer/gl/gl.hpp"
 #include "setting.hpp"
-#include "ui/main_window.hpp"
 #include "view/callback_view.hpp"
 #include "vtx_app.hpp"
 #include "worker/render_effect_loader.hpp"
@@ -206,15 +203,6 @@ namespace VTX::Model::Renderer
 	void RenderEffectPresetLibrary::applyPreset( RenderEffectPreset & p_preset )
 	{
 		_appliedPreset = &p_preset;
-
-		VTX::UI::MainWindow &	mw	   = VTXApp::get().getMainWindow();
-		VTX::Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
-
-		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
-		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
-		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::OUTLINE );
-		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
-		mw.updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
 
 		_notifyViews( new Event::VTXEvent( Event::Model::APPLIED_PRESET_CHANGE ) );
 		VTX_EVENT( new Event::VTXEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGE ) );

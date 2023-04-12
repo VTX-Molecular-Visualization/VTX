@@ -217,23 +217,6 @@ namespace VTX::Action::Chain
 		const std::unordered_set<Model::Chain *> _chains;
 	};
 
-	class Orient : public BaseAction
-	{
-	  public:
-		explicit Orient( const Model::Chain & p_chain ) : _chain( p_chain ) {}
-
-		virtual void execute() override
-		{
-			VTXApp::get()
-				.getStateMachine()
-				.getState<State::Visualization>( ID::State::VISUALIZATION )
-				->orientCameraController( _chain.getWorldAABB() );
-		}
-
-	  private:
-		const Model::Chain & _chain;
-	};
-
 	class Delete : public BaseAction
 	{
 	  public:

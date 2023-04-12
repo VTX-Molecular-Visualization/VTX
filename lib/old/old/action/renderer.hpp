@@ -5,7 +5,6 @@
 #include "color/rgba.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX::Action::Renderer
 {

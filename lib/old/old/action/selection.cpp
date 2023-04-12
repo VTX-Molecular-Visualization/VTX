@@ -7,8 +7,6 @@
 #include "object3d/scene.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
-#include "state/state_machine.hpp"
-#include "state/visualization.hpp"
 #include "util/label.hpp"
 #include "util/molecule.hpp"
 #include "vtx_app.hpp"
@@ -16,7 +14,6 @@
 
 namespace VTX::Action::Selection
 {
-
 	void SelectAll::execute()
 	{
 		const Object3D::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
@@ -213,17 +210,6 @@ namespace VTX::Action::Selection
 		Representation::RepresentationManager::get().instantiateRepresentations( preset, _selection );
 
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-	}
-
-	void Orient::execute()
-	{
-		const Object3D::Helper::AABB target
-			= _selection.hasMolecule() ? _selection.getAABB() : VTXApp::get().getScene().getAABB();
-
-		VTXApp::get()
-			.getStateMachine()
-			.getState<State::Visualization>( ID::State::VISUALIZATION )
-			->orientCameraController( target );
 	}
 
 	void Extract::execute()

@@ -2,12 +2,13 @@
 #define __VTX_SETTING__
 
 #include "color/rgba.hpp"
-#include <util/types.hpp>
 #include "generic/base_colorable.hpp"
+#include "id.hpp"
 #include "io/struct/image_export.hpp"
 #include "style.hpp"
 #include <QString>
 #include <list>
+#include <util/types.hpp>
 
 namespace VTX
 {
@@ -362,10 +363,10 @@ namespace VTX
 		inline const bool isPortableSaveActivated() const { return portableSaveActivated; }
 		void			  activatePortableSave( const bool p_activate );
 
-		static const int					  RECENT_PATH_SAVED_MAX_COUNT;
-		static const int					  RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT;
+		static const int				  RECENT_PATH_SAVED_MAX_COUNT;
+		static const int				  RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT;
 		inline static std::list<FilePath> recentLoadingPath = std::list<FilePath>();
-		static void							  enqueueNewLoadingPath( const FilePath & );
+		static void						  enqueueNewLoadingPath( const FilePath & );
 		static const FilePath * const	  getRecentLoadingPath( const int p_index );
 
 		inline static std::list<std::string> recentDownloadCodes = std::list<std::string>();

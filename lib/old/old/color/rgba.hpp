@@ -2,7 +2,6 @@
 #define __VTX_COLOR_RGBA__
 
 #include "util/math.hpp"
-#include <QColor>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -201,8 +200,6 @@ namespace VTX
 			}
 
 			inline const float brightness() const { return ( x * 0.299f ) + ( y * 0.587f ) + ( z * 0.114f ); }
-
-			inline QColor toQColor() const { return QColor( x * 255, y * 255, z * 255 ); }
 
 			friend std::ostream & operator<<( std::ostream & p_os, const Rgba & p_c );
 

@@ -486,23 +486,6 @@ namespace VTX::Action::Molecule
 		Model::Molecule & _molecule;
 	};
 
-	class Orient : public BaseAction
-	{
-	  public:
-		explicit Orient( const Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
-
-		virtual void execute() override
-		{
-			VTXApp::get()
-				.getStateMachine()
-				.getState<State::Visualization>( ID::State::VISUALIZATION )
-				->orientCameraController( _molecule.getWorldAABB() );
-		}
-
-	  private:
-		const Model::Molecule & _molecule;
-	};
-
 	class Copy : public BaseAction
 	{
 	  public:

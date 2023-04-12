@@ -2,14 +2,14 @@
 #define __VTX_UI_QT_WIDGET_BASE_MANUAL_WIDGET__
 
 #include "base_manual_widget_initializer.hpp"
-#include <old/event/base_event_receiver_vtx.hpp>
 #include <QWidget>
+#include <old/event/base_event_receiver_vtx.hpp>
 #include <type_traits>
 
 namespace VTX::UI::QT::Widget
 {
 	template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-	class BaseManualWidget : public W, public Event::BaseEventReceiverVTX, public BaseManualWidgetInitializer
+	class BaseManualWidget : public W, public VTX::Event::BaseEventReceiverVTX, public BaseManualWidgetInitializer
 	{
 		NEW_ARCHI_VTX_WIDGET
 

@@ -12,6 +12,7 @@ namespace VTX::UI::QT::Tool
 	inline static const VTX::UI::Core::ToolIdentifier UI_FEATURE_INFORMATION   = "VTX_UIFeatureInformation";
 	inline static const VTX::UI::Core::ToolIdentifier UI_FEATURE_PANEL_DISPLAY = "VTX_UIFeaturePanelDisplay";
 	inline static const VTX::UI::Core::ToolIdentifier UI_FEATURE_QUIT		   = "VTX_UIFeatureQuit";
+	inline static const VTX::UI::Core::ToolIdentifier CHECK_UPDATE_KEY		   = "VTX_CheckUpdateKey";
 
 	namespace ContextualMenu
 	{

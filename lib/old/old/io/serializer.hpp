@@ -41,13 +41,6 @@ namespace VTX
 		{
 			class RenderEffectPreset;
 		} // namespace Renderer
-		namespace Measurement
-		{
-			class Distance;
-			class DistanceToCycle;
-			class Angle;
-			class DihedralAngle;
-		} // namespace Measurement
 
 	} // namespace Model
 
@@ -70,10 +63,6 @@ namespace VTX
 			nlohmann::json serialize( const Model::Viewpoint & ) const;
 			nlohmann::json serialize( const Model::Representation::InstantiatedRepresentation & ) const;
 			nlohmann::json serialize( const Model::Label & ) const;
-			nlohmann::json serialize( const Model::Measurement::Distance & ) const;
-			nlohmann::json serialize( const Model::Measurement::DistanceToCycle & ) const;
-			nlohmann::json serialize( const Model::Measurement::Angle & ) const;
-			nlohmann::json serialize( const Model::Measurement::DihedralAngle & ) const;
 
 			nlohmann::json serialize( const Model::Representation::Representation & ) const;
 			nlohmann::json serialize( const Model::Renderer::RenderEffectPreset & ) const;
@@ -100,10 +89,6 @@ namespace VTX
 			void deserialize( const nlohmann::json &,
 							  const std::tuple<uint, uint, uint> &,
 							  Model::Representation::InstantiatedRepresentation & ) const;
-			void deserialize( const nlohmann::json &, Model::Measurement::Distance & ) const;
-			void deserialize( const nlohmann::json &, Model::Measurement::DistanceToCycle & ) const;
-			void deserialize( const nlohmann::json &, Model::Measurement::Angle & ) const;
-			void deserialize( const nlohmann::json &, Model::Measurement::DihedralAngle & ) const;
 
 			void deserialize( const nlohmann::json &,
 							  const std::tuple<uint, uint, uint> &,

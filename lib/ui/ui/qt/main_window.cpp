@@ -15,41 +15,41 @@
 #include <old/action/setting.hpp>
 #include <old/event/event.hpp>
 #include <old/event/event_manager.hpp>
+#include <old/io/filesystem.hpp>
 #include <old/io/struct/scene_path_data.hpp>
 #include <old/model/selection.hpp>
 #include <old/selection/selection_manager.hpp>
 #include <old/setting.hpp>
-#include <old/io/filesystem.hpp>
 #include <old/worker/worker_manager.hpp>
 
 namespace VTX::UI::QT
 {
 	MainWindow::MainWindow( QWidget * p_parent ) : BaseMainWindow(), BaseManualWidget( p_parent )
 	{
-		_registerEvent( Event::Global::CHANGE_STATE );
-		_registerEvent( Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
-		_registerEvent( Event::Global::SCENE_PATH_CHANGE );
+		_registerEvent( VTX::Event::Global::CHANGE_STATE );
+		_registerEvent( VTX::Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
+		_registerEvent( VTX::Event::Global::SCENE_PATH_CHANGE );
 
-		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
 	}
 
 	MainWindow::~MainWindow() {}
 
-	void MainWindow::receiveEvent( const Event::VTXEvent & p_event )
+	void MainWindow::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::CHANGE_STATE )
+		if ( p_event.name == VTX::Event::Global::CHANGE_STATE )
 		{
-			const Event::VTXEventValue<ID::VTX_ID> & event
-				= dynamic_cast<const Event::VTXEventValue<ID::VTX_ID> &>( p_event );
+			const VTX::Event::VTXEventValue<ID::VTX_ID> & event
+				= dynamic_cast<const VTX::Event::VTXEventValue<ID::VTX_ID> &>( p_event );
 
 			ID::VTX_ID state = event.value;
 		}
-		else if ( p_event.name == Event::Global::SCENE_PATH_CHANGE
-				  || p_event.name == Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::SCENE_PATH_CHANGE
+				  || p_event.name == VTX::Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
 		{
 			refreshWindowTitle();
 		}
-		else if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_updatePicker();
 		}
@@ -512,7 +512,7 @@ namespace VTX::UI::QT
 		if ( p_event->type() == QEvent::Type::WindowStateChange )
 		{
 			Core::WindowMode newMode = _getWindowModeFromWindowState( windowState() );
-			VTX_EVENT( new Event::VTXEvent( Event::Global::MAIN_WINDOW_MODE_CHANGE ) );
+			VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::MAIN_WINDOW_MODE_CHANGE ) );
 		}
 	}
 
@@ -619,7 +619,7 @@ namespace VTX::UI::QT
 			break;
 		}
 
-		VTX_EVENT( new Event::VTXEventValue( Event::Global::MAIN_WINDOW_MODE_CHANGE, p_mode ) );
+		VTX_EVENT( new VTX::Event::VTXEventValue( VTX::Event::Global::MAIN_WINDOW_MODE_CHANGE, p_mode ) );
 	}
 	void MainWindow::toggleWindowState()
 	{

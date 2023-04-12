@@ -7,10 +7,10 @@
 #include "model/renderer/render_effect_preset_library.hpp"
 #include "model/representation/representation_library.hpp"
 #include "object3d/camera.hpp"
+#include "object3d/camera_manager.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
 #include "representation/representation_manager.hpp"
-#include "ui/main_window.hpp"
 #include "vtx_app.hpp"
 #include <exception>
 #include <string>
@@ -87,15 +87,6 @@ namespace VTX::Action::Setting
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
-	void RestoreLayout::execute()
-	{
-		// Delete previous save file in case of corruption
-		VTXApp::get().getMainWindow().deleteLayoutSaveFile();
-		VTXApp::get().getMainWindow().restoreDefaultLayout();
-
-		VTX_INFO( "Default layout restored " );
-	}
-
 	void ChangeDefaultRenderEffectPreset::execute()
 	{
 		const int clampedIndex = Util::Math::clamp(
@@ -124,14 +115,12 @@ namespace VTX::Action::Setting
 	void ChangeShading::execute()
 	{
 		VTX_RENDER_EFFECT().setShading( _shading );
-		VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
 	void ActiveAO::execute()
 	{
 		VTX_RENDER_EFFECT().enableSSAO( _active );
-		VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
@@ -150,7 +139,6 @@ namespace VTX::Action::Setting
 	void ActiveOutline::execute()
 	{
 		VTX_RENDER_EFFECT().enableOutline( _active );
-		VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::OUTLINE );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
@@ -175,7 +163,6 @@ namespace VTX::Action::Setting
 	void ActiveFog::execute()
 	{
 		VTX_RENDER_EFFECT().enableFog( _active );
-		VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
@@ -220,14 +207,7 @@ namespace VTX::Action::Setting
 	void ActiveAA::execute()
 	{
 		VTX_SETTING().setAA( _active );
-		VTXApp::get().getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-	}
-
-	void WindowMode::execute()
-	{
-		VTX_SETTING().setWindowFullscreen( _windowMode == UI::WindowMode::Fullscreen );
-		VTXApp::get().getMainWindow().setWindowMode( _windowMode );
 	}
 
 	void ApplyAllSettings::execute()
@@ -235,9 +215,6 @@ namespace VTX::Action::Setting
 		VTX_ACTION( new Action::Setting::ChangeSymbolDisplayMode( _setting.getSymbolDisplayMode() ) );
 		VTX_ACTION( new Action::Setting::ChangeCheckVTXUpdateAtLaunch( _setting.getCheckVTXUpdateAtLaunch() ) );
 		VTX_ACTION( new Action::Setting::ActivatePortableSave( _setting.isPortableSaveActivated() ) );
-
-		VTX_ACTION( new Action::Setting::WindowMode( _setting.getWindowFullscreen() ? VTX::UI::WindowMode::Fullscreen
-																					: VTX::UI::WindowMode::Windowed ) );
 
 		VTX_ACTION( new Action::Setting::ActiveRenderer( _setting.getActivateRenderer() ) );
 		VTX_ACTION( new Action::Setting::ForceRenderer( _setting.getForceRenderer() ) );

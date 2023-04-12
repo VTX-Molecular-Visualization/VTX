@@ -10,19 +10,11 @@
 #include "renderer/base_renderer.hpp"
 #include "selection/selection_enum.hpp"
 #include "setting.hpp"
-#include <util/logger.hpp>
 #include "trajectory/trajectory_enum.hpp"
-#include "ui/window_mode.hpp"
+#include <util/logger.hpp>
 
 namespace VTX::Action::Setting
 {
-	class RestoreLayout : public BaseAction
-	{
-	  public:
-		explicit RestoreLayout() {}
-		virtual void execute() override;
-	};
-
 	class Load : public BaseAction
 	{
 	  public:
@@ -35,16 +27,6 @@ namespace VTX::Action::Setting
 	  public:
 		explicit Save() {}
 		virtual void execute() override;
-	};
-
-	class WindowMode : public BaseAction
-	{
-	  public:
-		explicit WindowMode( const UI::WindowMode & p_windowMode ) : _windowMode( p_windowMode ) {}
-		void execute() override;
-
-	  private:
-		const UI::WindowMode _windowMode;
 	};
 
 	class ActiveRenderer : public BaseAction

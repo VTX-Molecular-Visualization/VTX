@@ -220,23 +220,6 @@ namespace VTX::Action::Category
 	//	const std::unordered_set<Model::Category *> _categories;
 	//};
 
-	class Orient : public BaseAction
-	{
-	  public:
-		explicit Orient( const Model::Category & p_category ) : _category( p_category ) {}
-
-		virtual void execute() override
-		{
-			VTXApp::get()
-				.getStateMachine()
-				.getState<State::Visualization>( ID::State::VISUALIZATION )
-				->orientCameraController( _category.getWorldAABB() );
-		}
-
-	  private:
-		const Model::Category & _category;
-	};
-
 	// class Delete : public BaseAction
 	//{
 	//  public:
