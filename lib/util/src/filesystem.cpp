@@ -28,9 +28,9 @@ namespace VTX::Util::Filesystem
 		uint	 counter	= 2;
 		while ( std::filesystem::exists( p_filePath ) )
 		{
-			p_filePath
-				= parentPath
-				  / p_filePath.stem().append( "_" + std::to_string( counter ) + "." + p_filePath.extension().string() );
+			p_filePath = parentPath
+						 / p_filePath.stem().string().append( "_" + std::to_string( counter )
+															  + p_filePath.extension().string() );
 			counter++;
 		}
 	}

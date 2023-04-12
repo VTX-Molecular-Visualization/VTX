@@ -39,7 +39,7 @@ set(SPDLOG_INCLUDE_DIR ${SOURCE_DIR})
 
 file(GLOB_RECURSE HEADERS include/*.hpp)
 file(GLOB_RECURSE SOURCES src/*.cpp)
-add_library(VTX_UTIL SHARED ${HEADERS} ${SOURCES})
+add_library(VTX_UTIL STATIC ${HEADERS} ${SOURCES})
 
 target_include_directories(VTX_UTIL PUBLIC include)
 target_include_directories(VTX_UTIL PUBLIC ${GLM_INCLUDE_DIR})

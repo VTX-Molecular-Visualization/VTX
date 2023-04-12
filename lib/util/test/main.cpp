@@ -1,44 +1,58 @@
 #include <catch2/catch_test_macros.hpp>
+#include <fstream>
+#include <util/filesystem.hpp>
 #include <util/string.hpp>
 
-TEST_CASE( "Util::String::trimStart", "[string]" )
+// string.hpp
+TEST_CASE( "Util::String", "[string]" )
 {
 	std::string str = "   test   ";
 	VTX::Util::String::trimStart( str );
 	REQUIRE( str == "test   " );
-}
 
-TEST_CASE( "Util::String::trimEnd", "[string]" )
-{
-	std::string str = "   test   ";
+	str = "   test   ";
 	VTX::Util::String::trimEnd( str );
 	REQUIRE( str == "   test" );
-}
 
-TEST_CASE( "Util::String::trim", "[string]" )
-{
-	std::string str = "   test   ";
+	str = "   test   ";
 	VTX::Util::String::trim( str );
 	REQUIRE( str == "test" );
-}
 
-TEST_CASE( "Util::String::replaceAll", "[string]" )
-{
-	std::string str = "a string with characters to replace";
+	str = "a string with characters to replace";
 	VTX::Util::String::replaceAll( str, "r", "t" );
 	REQUIRE( str == "a stting with chatactets to teplace" );
-}
 
-TEST_CASE( "Util::String::floatToStr", "[string]" )
-{
 	const float f = 3.14159;
 	REQUIRE( VTX::Util::String::floatToStr( f, 0 ) == "3" );
 	REQUIRE( VTX::Util::String::floatToStr( f, 2 ) == "3.14" );
 	REQUIRE( VTX::Util::String::floatToStr( f, 5 ) == "3.14159" );
+
+	str = "3.14159";
+	REQUIRE( VTX::Util::String::strToUint( str ) == 3 );
 }
 
-TEST_CASE( "Util::String::strToUint", "[string]" )
+// filesystem.hpp
+TEST_CASE( "Util::Filesystem", "[filesystem]" )
 {
-	const std::string str = "3.14159";
-	REQUIRE( VTX::Util::String::strToUint( str ) == 3 );
+	std::filesystem::create_directory( "data_test" );
+	const VTX::FilePath filePath( "data_test/test.txt" );
+	std::ofstream		file( filePath );
+	file << "Hello, world!";
+	file.close();
+
+	REQUIRE( std::filesystem::exists( filePath ) );
+	REQUIRE( VTX::Util::Filesystem::readPath( filePath ) == "Hello, world!" );
+
+	VTX::FilePath filePath2( "data_test/test.txt" );
+	VTX::Util::Filesystem::generateUniqueFileName( filePath2 );
+
+	REQUIRE( filePath2.filename().string() == "test_2.txt" );
+	REQUIRE( filePath2.string() == VTX::FilePath( "data_test" ) / "test_2.txt" );
+
+	std::ofstream file2( filePath2 );
+	file2 << "Hello, world!";
+	file2.close();
+
+	VTX::Util::Filesystem::removeAll( "data_test/sdqsdqsd" );
+	REQUIRE( std::filesystem::exists( "data_test" ) == false );
 }
