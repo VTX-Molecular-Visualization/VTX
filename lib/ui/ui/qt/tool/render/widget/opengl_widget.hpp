@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_WIDGET_OPENGL__
 
 #include "qt/widget/base_manual_widget.hpp"
-#include <old/renderer/base_renderer.hpp>
+#include <app/old_app/renderer/base_renderer.hpp>
 #include <QElapsedTimer>
 #include <QOpenGLWidget>
 #include <QPainter>

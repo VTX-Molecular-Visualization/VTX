@@ -11,13 +11,13 @@
 #include <QMenu>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <old/action/action_manager.hpp>
-#include <old/action/scene.hpp>
-#include <old/action/setting.hpp>
-#include <old/io/struct/scene_path_data.hpp>
-#include <old/model/molecule.hpp>
-#include <old/model/path.hpp>
-#include <old/vtx_app.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/scene.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/path.hpp>
+#include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool
 {

@@ -2,10 +2,10 @@
 #define __VTX_UI_QT_ACTION_VIEWPOINT__
 
 #include "qt/controller/base_camera_controller.hpp"
-#include <old/action/base_action.hpp>
-#include <old/model/path.hpp>
-#include <old/model/viewpoint.hpp>
-#include <old/object3d/camera.hpp>
+#include <app/old_app/action/base_action.hpp>
+#include <app/old_app/model/path.hpp>
+#include <app/old_app/model/viewpoint.hpp>
+#include <app/old_app/object3d/camera.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Action::Viewpoint

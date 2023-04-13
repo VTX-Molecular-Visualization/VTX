@@ -2,8 +2,8 @@
 #define __VTX_UI_QT_BASE_STATE__
 
 #include "core/controller/base_controller.hpp"
-#include <old/event/base_event_receiver_vtx.hpp>
-#include <old/generic/base_updatable.hpp>
+#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/old_app/generic/base_updatable.hpp>
 #include "id.hpp"
 #include <map>
 

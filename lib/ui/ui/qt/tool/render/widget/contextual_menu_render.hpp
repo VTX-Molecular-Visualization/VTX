@@ -4,7 +4,7 @@
 #include "qt/widget/contextual_menu/contextual_menu_template.hpp"
 #include <QAction>
 #include <QMenu>
-#include <old/object3d/scene.hpp>
+#include <app/old_app/object3d/scene.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {

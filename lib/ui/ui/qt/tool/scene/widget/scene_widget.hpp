@@ -15,9 +15,9 @@
 #include <QVBoxLayout>
 #include <QVariant>
 #include <map>
-#include <old/generic/base_scene_item.hpp>
-#include <old/model/base_model.hpp>
-#include <old/view/base_view.hpp>
+#include <app/old_app/generic/base_scene_item.hpp>
+#include <app/old_app/model/base_model.hpp>
+#include <app/old_app/view/base_view.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Tool::Scene::Widget

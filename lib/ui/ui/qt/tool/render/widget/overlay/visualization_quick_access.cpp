@@ -6,13 +6,13 @@
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QMenu>
-#include <old/action/action_manager.hpp>
-#include <old/action/main.hpp>
-#include <old/action/selection.hpp>
-#include <old/action/setting.hpp>
-#include <old/model/selection.hpp>
-#include <old/selection/selection_manager.hpp>
-#include <old/setting.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <app/old_app/setting.hpp>
 #include <set>
 
 namespace VTX::UI::QT::Tool::Render::Widget::Overlay

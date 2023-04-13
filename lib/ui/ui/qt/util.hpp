@@ -13,7 +13,7 @@
 #include <QStyle>
 #include <QVariant>
 #include <QWidget>
-#include <old/color/rgba.hpp>
+#include <app/old_app/color/rgba.hpp>
 #include <set>
 #include <string>
 #include <vector>

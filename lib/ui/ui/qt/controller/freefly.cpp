@@ -1,8 +1,8 @@
 #include "freefly.hpp"
 #include "qt/style.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/object3d/scene.hpp>
-#include <old/setting.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/setting.hpp>
 
 namespace VTX::UI::QT::Controller
 {

@@ -8,19 +8,19 @@
 #include "qt/tool/session/dialog.hpp"
 #include "qt/util.hpp"
 #include "widget_factory.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/action/dev.hpp>
-#include <old/action/main.hpp>
-#include <old/action/selection.hpp>
-#include <old/action/setting.hpp>
-#include <old/event/event.hpp>
-#include <old/event/event_manager.hpp>
-#include <old/io/filesystem.hpp>
-#include <old/io/struct/scene_path_data.hpp>
-#include <old/model/selection.hpp>
-#include <old/selection/selection_manager.hpp>
-#include <old/setting.hpp>
-#include <old/worker/worker_manager.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/dev.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/event/event_manager.hpp>
+#include <app/old_app/io/filesystem.hpp>
+#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <app/old_app/setting.hpp>
+#include <app/old_app/worker/worker_manager.hpp>
 
 namespace VTX::UI::QT
 {

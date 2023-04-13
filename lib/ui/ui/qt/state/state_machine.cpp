@@ -2,10 +2,10 @@
 #include "export.hpp"
 #include "play.hpp"
 #include "visualization.hpp"
-#include <old/define.hpp>
-#include <old/event/event.hpp>
-#include <old/event/event_manager.hpp>
-#include <old/vtx_app.hpp>
+#include <app/old_app/define.hpp>
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/event/event_manager.hpp>
+#include <app/old_app/vtx_app.hpp>
 #include <util/exceptions.hpp>
 
 namespace VTX::UI::QT::State

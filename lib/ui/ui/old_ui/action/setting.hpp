@@ -2,7 +2,7 @@
 #define __VTX_UI_ACTION_SETTING__
 
 #include "core/base_main_window.hpp"
-#include <old/action/base_action.hpp>
+#include <app/old_app/action/base_action.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::Action::Setting

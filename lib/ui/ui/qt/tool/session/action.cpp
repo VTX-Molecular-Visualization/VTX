@@ -3,15 +3,15 @@
 #include "id.hpp"
 #include "qt/state/state_machine.hpp"
 #include "qt/state/visualization.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/action/main.hpp>
-#include <old/io/struct/scene_path_data.hpp>
-#include <old/object3d/scene.hpp>
-#include <old/vtx_app.hpp>
-#include <old/worker/loader.hpp>
-#include <old/worker/saver.hpp>
-#include <old/worker/scene_loader.hpp>
-#include <old/worker/worker_manager.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/vtx_app.hpp>
+#include <app/old_app/worker/loader.hpp>
+#include <app/old_app/worker/saver.hpp>
+#include <app/old_app/worker/scene_loader.hpp>
+#include <app/old_app/worker/worker_manager.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Tool::Session::Action

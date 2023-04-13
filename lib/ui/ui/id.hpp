@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_ID__
 #define __VTX_UI_ID__
 
-#include <old/id.hpp>
+#include <app/old_app/id.hpp>
 
 //TODO rename this namespace to UI when all UI will be extracted from src (and remove UI IDs in src/id.hpp
 namespace VTX::ID::UI_NEW

@@ -18,8 +18,8 @@
 #include <QKeySequence>
 #include <QMainWindow>
 #include <QShortcut>
-#include <old/id.hpp>
-#include <old/renderer/base_renderer.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/renderer/base_renderer.hpp>
 #include <unordered_set>
 #include <util/types.hpp>
 

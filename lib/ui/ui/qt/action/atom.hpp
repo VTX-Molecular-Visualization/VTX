@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_ACTION_ATOM__
 #define __VTX_UI_QT_ACTION_ATOM__
 
-#include <old/action/base_action.hpp>
-#include <old/model/atom.hpp>
+#include <app/old_app/action/base_action.hpp>
+#include <app/old_app/model/atom.hpp>
 
 namespace VTX::UI::QT::Action::Atom
 {

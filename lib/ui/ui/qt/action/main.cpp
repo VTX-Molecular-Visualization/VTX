@@ -4,10 +4,10 @@
 #include "qt/main_window.hpp"
 #include "qt/state/state_machine.hpp"
 #include "qt/state/visualization.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/action/base_action.hpp>
-#include <old/network/network_manager.hpp>
-#include <old/network/request/check_update.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/base_action.hpp>
+#include <app/old_app/network/network_manager.hpp>
+#include <app/old_app/network/request/check_update.hpp>
 
 namespace VTX::UI::QT::Action::Main
 {

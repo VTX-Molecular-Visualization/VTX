@@ -6,7 +6,7 @@
 #include "qt/base_qt_tool.hpp"
 #include "qt/tool/scene/widget/scene_item_widget_instancier.hpp"
 #include "qt/tool/scene/widget/scene_widget.hpp"
-#include <old/object3d/scene.hpp>
+#include <app/old_app/object3d/scene.hpp>
 
 namespace VTX::UI::QT::Tool
 {

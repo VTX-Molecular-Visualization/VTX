@@ -54,10 +54,10 @@ apply_qt_options(${VTX_TOOL_LIB})
 
 target_include_directories(${VTX_TOOL_LIB} PUBLIC tool/)
 target_include_directories(${VTX_TOOL_LIB} PUBLIC .)
-target_include_directories(${VTX_TOOL_LIB} PUBLIC ${OLD_VTX_INCLUDE_PATH})
+target_include_directories(${VTX_TOOL_LIB} PUBLIC ${VTX_APP_INCLUDE_PATH})
 target_include_directories(${VTX_TOOL_LIB} PUBLIC ${VTX_UTIL_INCLUDE_PATH})
 target_include_directories(${VTX_TOOL_LIB} PUBLIC ${VTX_UI_INCLUDE_PATH})
 
-target_link_libraries(${VTX_TOOL_LIB} PUBLIC ${OLD_VTX_LIB})
 target_link_libraries(${VTX_TOOL_LIB} PUBLIC ${VTX_UTIL_LIB})
+target_link_libraries(${VTX_TOOL_LIB} PUBLIC ${VTX_APP_LIB})
 target_link_libraries(${VTX_TOOL_LIB} PUBLIC ${VTX_UI_LIB})

@@ -10,8 +10,8 @@
 #include <QMenu>
 #include <QWidget>
 #include <list>
-#include <old/action/action_manager.hpp>
-#include <old/action/setting.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/setting.hpp>
 
 namespace VTX::UI::QT::Tool
 {

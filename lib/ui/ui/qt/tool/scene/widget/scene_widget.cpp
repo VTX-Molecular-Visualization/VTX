@@ -6,15 +6,15 @@
 #include "qt/widget_factory.hpp"
 #include <QScrollBar>
 #include <algorithm>
-#include <old/action/action_manager.hpp>
-#include <old/action/scene.hpp>
-#include <old/action/selection.hpp>
-#include <old/model/selection.hpp>
-#include <old/mvc/mvc_manager.hpp>
-#include <old/object3d/scene.hpp>
-#include <old/selection/selection_manager.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/scene.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 #include "qt/style.hpp"
-#include <old/vtx_app.hpp>
+#include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {

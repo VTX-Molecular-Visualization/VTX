@@ -10,13 +10,13 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 #include <map>
-#include <old/event/base_event_receiver_vtx.hpp>
-#include <old/generic/base_visible.hpp>
-#include <old/model/path.hpp>
-#include <old/model/selection.hpp>
-#include <old/model/viewpoint.hpp>
+#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/old_app/generic/base_visible.hpp>
+#include <app/old_app/model/path.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/model/viewpoint.hpp>
 #include "qt/style.hpp"
-#include <old/view/base_view.hpp>
+#include <app/old_app/view/base_view.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View
 {

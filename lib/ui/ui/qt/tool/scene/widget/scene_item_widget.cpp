@@ -8,14 +8,14 @@
 #include "qt/util.hpp"
 #include <QAbstractItemModel>
 #include <QDrag>
-#include <old/generic/base_visible.hpp>
-#include <old/model/atom.hpp>
-#include <old/model/category.hpp>
-#include <old/model/chain.hpp>
-#include <old/model/residue.hpp>
-#include <old/model/selection.hpp>
-#include <old/mvc/mvc_manager.hpp>
-#include <old/selection/selection_manager.hpp>
+#include <app/old_app/generic/base_visible.hpp>
+#include <app/old_app/model/atom.hpp>
+#include <app/old_app/model/category.hpp>
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/residue.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>
 #include <stack>
 

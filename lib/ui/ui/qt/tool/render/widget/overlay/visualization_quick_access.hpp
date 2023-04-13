@@ -9,7 +9,7 @@
 #include <QComboBox>
 #include <QFrame>
 #include <QToolButton>
-#include <old/selection/selection_enum.hpp>
+#include <app/old_app/selection/selection_enum.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Tool::Render::Widget::Overlay

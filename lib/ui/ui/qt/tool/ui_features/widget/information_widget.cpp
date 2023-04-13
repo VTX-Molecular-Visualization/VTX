@@ -6,9 +6,9 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QVBoxLayout>
-#include <old/action/action_manager.hpp>
-#include <old/define.hpp>		 // Get VTX version
-#include <old/io/filesystem.hpp> // Read license file
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/define.hpp>		 // Get VTX version
+#include <app/old_app/io/filesystem.hpp> // Read license file
 #include <string>
 
 namespace VTX::UI::QT::Tool::UIFeatures::Widget

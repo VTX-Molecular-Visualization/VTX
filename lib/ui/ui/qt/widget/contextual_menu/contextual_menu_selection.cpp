@@ -7,14 +7,14 @@
 #include "qt/tool/scene/widget/scene_widget.hpp"
 #include "qt/tool/session/dialog.hpp"
 #include <QTimer>
-#include <old/action/action_manager.hpp>
-#include <old/action/label.hpp>
-#include <old/action/path.hpp>
-#include <old/action/selection.hpp>
-#include <old/action/viewpoint.hpp>
-#include <old/action/visible.hpp>
-#include <old/model/generated_molecule.hpp>
-#include <old/model/representation/representation_library.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/label.hpp>
+#include <app/old_app/action/path.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/action/viewpoint.hpp>
+#include <app/old_app/action/visible.hpp>
+#include <app/old_app/model/generated_molecule.hpp>
+#include <app/old_app/model/representation/representation_library.hpp>
 #include <string>
 
 namespace VTX::UI::QT::Widget::ContextualMenu

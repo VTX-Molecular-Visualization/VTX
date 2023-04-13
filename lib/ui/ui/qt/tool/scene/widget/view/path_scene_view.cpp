@@ -10,11 +10,11 @@
 #include "qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "qt/widget_factory.hpp"
 #include <QScrollBar>
-#include <old/action/action_manager.hpp>
-#include <old/action/selection.hpp>
-#include <old/action/viewpoint.hpp>
-#include <old/mvc/mvc_manager.hpp>
-#include <old/selection/selection_manager.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/action/viewpoint.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
 

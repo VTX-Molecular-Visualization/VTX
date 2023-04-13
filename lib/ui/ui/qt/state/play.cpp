@@ -1,10 +1,10 @@
 #include "play.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/model/path.hpp>
-#include <old/model/viewpoint.hpp>
-#include <old/object3d/camera.hpp>
-#include <old/object3d/scene.hpp>
-#include <old/vtx_app.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/model/path.hpp>
+#include <app/old_app/model/viewpoint.hpp>
+#include <app/old_app/object3d/camera.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/vtx_app.hpp>
 
 #include <util/math.hpp>
 

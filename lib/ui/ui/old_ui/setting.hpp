@@ -3,11 +3,11 @@
 
 #include <QString>
 #include <list>
-#include <old/color/rgba.hpp>
-#include <old/generic/base_colorable.hpp>
-#include <old/id.hpp>
-#include <old/io/struct/image_export.hpp>
-#include <old/style.hpp>
+#include <app/old_app/color/rgba.hpp>
+#include <app/old_app/generic/base_colorable.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/io/struct/image_export.hpp>
+#include <app/old_app/style.hpp>
 #include <util/types.hpp>
 
 namespace VTX

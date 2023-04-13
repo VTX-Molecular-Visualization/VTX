@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::Sequence
 			const Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 			View::UI::Widget::MoleculeSequenceView * const moleculeSequenceView
-				= MVC::MvcManager::get().instantiateViewWidget<View::UI::Widget::MoleculeSequenceView>(
+				= QidgetFactory::get().instantiateViewWidget<View::UI::Widget::MoleculeSequenceView>(
 					castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE, this );
 			MoleculeSequenceWidget * const widget = moleculeSequenceView->getWidget();
 			_moleculeWidgets.emplace( widget );

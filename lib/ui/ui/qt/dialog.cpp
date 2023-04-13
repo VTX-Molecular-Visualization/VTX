@@ -1,12 +1,12 @@
 #include "dialog.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/main_window.hpp"
-// #include <old/action/action_manager.hpp>
-// #include <old/action/main.hpp>
+// #include <app/old_app/action/action_manager.hpp>
+// #include <app/old_app/action/main.hpp>
 #include <util/logger.hpp>
-// #include <old/io/struct/image_export.hpp>
-// #include <old/io/struct/scene_path_data.hpp>
-// #include <old/selection/selection_manager.hpp>
+// #include <app/old_app/io/struct/image_export.hpp>
+// #include <app/old_app/io/struct/scene_path_data.hpp>
+// #include <app/old_app/selection/selection_manager.hpp>
 // #include "qt/widget/dialog/download_molecule_dialog.hpp"
 // #include "ui/widget/dialog/image_exporter.hpp"
 // #include "util/ui.hpp"

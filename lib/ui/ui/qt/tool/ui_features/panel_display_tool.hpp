@@ -7,7 +7,7 @@
 #include "qt/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QAction>
 #include <QMenu>
-#include <old/event/base_event_receiver_vtx.hpp>
+#include <app/old_app/event/base_event_receiver_vtx.hpp>
 
 namespace VTX::UI::QT::Tool
 {

@@ -1,0 +1,27 @@
+#ifndef __VTX_BASE_OBJECT_3D_HELPER__
+#define __VTX_BASE_OBJECT_3D_HELPER__
+
+#include "old_app/buffer/base_buffer_opengl.hpp"
+#include "old_app/generic/base_renderable.hpp"
+
+namespace VTX::Object3D::Helper
+{
+	class BaseHelper : public Generic::BaseRenderable, public Buffer::BaseBufferOpenGL
+	{
+	  public:
+		BaseHelper()		  = default;
+		virtual ~BaseHelper() = default;
+
+		// BaseRenderable.
+		virtual void render( const Object3D::Camera & ) const override {}
+
+		virtual void refresh() {}
+
+	  private:
+		// BaseBufferOpenGL.
+		virtual void _generate() override {}
+	};
+
+} // namespace VTX::Object3D::Helper
+
+#endif

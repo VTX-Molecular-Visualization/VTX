@@ -13,10 +13,10 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <map>
-#include <old/model/base_model.hpp>
-#include <old/mvc/mvc_manager.hpp>
-#include <old/view/base_view.hpp>
-#include <old/worker/snapshoter.hpp>
+#include <app/old_app/model/base_model.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/view/base_view.hpp>
+#include <app/old_app/worker/snapshoter.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {

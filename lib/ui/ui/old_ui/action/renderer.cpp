@@ -1,8 +1,8 @@
 #include "renderer.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/main_window.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/action/renderer.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/renderer.hpp>
 
 namespace VTX::UI::Action::Renderer
 {

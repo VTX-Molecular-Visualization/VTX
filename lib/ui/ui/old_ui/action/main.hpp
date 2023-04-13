@@ -1,16 +1,16 @@
 #ifndef __VTX_UI_ACTION_MAIN__
 #define __VTX_UI_ACTION_MAIN__
 
-#include <old/action/base_action.hpp>
-#include <old/event/event.hpp>
-#include <old/event/event_manager.hpp>
-#include <old/io/struct/image_export.hpp>
-#include <old/model/molecule.hpp>
-#include <old/model/path.hpp>
-#include <old/model/secondary_structure.hpp>
-#include <old/model/solvent_excluded_surface.hpp>
-#include <old/worker/snapshoter.hpp>
-#include <old/worker/worker_manager.hpp>
+#include <app/old_app/action/base_action.hpp>
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/event/event_manager.hpp>
+#include <app/old_app/io/struct/image_export.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/path.hpp>
+#include <app/old_app/model/secondary_structure.hpp>
+#include <app/old_app/model/solvent_excluded_surface.hpp>
+#include <app/old_app/worker/snapshoter.hpp>
+#include <app/old_app/worker/worker_manager.hpp>
 #include <string>
 #include <util/types.hpp>
 #include <vector>

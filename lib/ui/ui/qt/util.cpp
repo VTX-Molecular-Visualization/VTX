@@ -1,9 +1,9 @@
 #include "util.hpp"
 #include <QAction>
-#include <old/model/atom.hpp>
-#include <old/model/bond.hpp>
-#include <old/model/molecule.hpp>
-#include <old/model/residue.hpp>
+#include <app/old_app/model/atom.hpp>
+#include <app/old_app/model/bond.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/residue.hpp>
 
 namespace VTX::UI::QT::Util
 {

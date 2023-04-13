@@ -5,10 +5,10 @@
 #include "qt/state/state_machine.hpp"
 #include "qt/state/visualization.hpp"
 #include "qt/tool/session/dialog.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/action/main.hpp>
-#include <old/action/scene.hpp>
-#include <old/action/setting.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/scene.hpp>
+#include <app/old_app/action/setting.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {

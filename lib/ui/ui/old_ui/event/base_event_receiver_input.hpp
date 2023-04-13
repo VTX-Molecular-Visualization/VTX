@@ -1,8 +1,8 @@
 #ifndef __VTX_BASE_EVENT_RECEIVER_INPUT__
 #define __VTX_BASE_EVENT_RECEIVER_INPUT__
 
-#include <old/event/base_event_receiver.hpp>
-#include <old/id.hpp>
+#include <app/old_app/event/base_event_receiver.hpp>
+#include <app/old_app/id.hpp>
 
 namespace VTX
 {
