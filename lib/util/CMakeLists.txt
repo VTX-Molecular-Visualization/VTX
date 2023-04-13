@@ -1,13 +1,12 @@
 message("VTX_UTIL")
+cmake_minimum_required(VERSION 3.16)
+project(VTX_UTIL)
 
 # Git dependencies.
 set(GIT_URL_GLM https://github.com/g-truc/glm.git)
 set(GIT_TAG_GLM 0.9.9.8)
 set(GIT_URL_SPDLOG https://github.com/gabime/spdlog.git)
 set(GIT_TAG_SPDLOG v1.11.0)
-  
-cmake_minimum_required(VERSION 3.16)
-project(VTX_UTIL)
 
 # Fetch third parties.
 include(FetchContent)
@@ -30,3 +29,29 @@ target_link_libraries(VTX_UTIL PRIVATE spdlog)
 
 # Target compile options.
 target_compile_features(VTX_UTIL PUBLIC cxx_std_17)
+
+# Tests.
+if(NOT TARGET Catch2)
+	set(GIT_URL_CATCH2 https://github.com/catchorg/Catch2.git)
+	set(GIT_TAG_CATCH2 v3.3.2)
+
+	FetchContent_Declare(Catch2 GIT_REPOSITORY ${GIT_URL_CATCH2} GIT_TAG ${GIT_TAG_CATCH2})
+	FetchContent_MakeAvailable(Catch2)
+
+	# Catch2 configuration.
+	list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+	include(CTest)
+	include(Catch)
+endif()
+
+# Create executable.
+add_executable(VTX_UTIL_TEST test/main.cpp)
+
+# Link third parties.
+target_link_libraries(VTX_UTIL_TEST PRIVATE Catch2::Catch2WithMain)
+
+# Link VTX_UTIL.
+target_link_libraries(VTX_UTIL_TEST PRIVATE VTX_UTIL)
+
+# Catch2.
+catch_discover_tests(VTX_UTIL_TEST)
