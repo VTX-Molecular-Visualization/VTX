@@ -1,3 +1,0 @@
-@ECHO OFF
-cmake -B build -DDEFINE_PRODUCTION=OFF -Wno-dev .
-PAUSE
