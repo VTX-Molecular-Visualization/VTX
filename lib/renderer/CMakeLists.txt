@@ -3,12 +3,11 @@ cmake_minimum_required(VERSION 3.16)
 project(VTX_RENDERER)
 
 # Get headers and sources.
-#file(GLOB_RECURSE HEADERS include/*.hpp)
+file(GLOB_RECURSE HEADERS include/*.hpp)
 file(GLOB_RECURSE SOURCES src/*.cpp  src/*.c)
 
 # Create library.
-#add_library(VTX_RENDERER STATIC ${SOURCES})
-add_executable(VTX_RENDERER ${SOURCES})
+add_library(VTX_RENDERER STATIC ${HEADERS} ${SOURCES})
 target_include_directories(VTX_RENDERER PUBLIC include)
 
 # Link VTX_UTIL.
@@ -41,7 +40,7 @@ add_executable(VTX_RENDERER_TEST test/main.cpp)
 target_link_libraries(VTX_RENDERER_TEST PRIVATE Catch2::Catch2WithMain)
 
 # Link VTX_RENDERER.
-#target_link_libraries(VTX_RENDERER_TEST PRIVATE VTX_RENDERER)
+target_link_libraries(VTX_RENDERER_TEST PRIVATE VTX_RENDERER)
 
 # Catch2.
 catch_discover_tests(VTX_RENDERER_TEST)
