@@ -1,26 +1,47 @@
-message("Project library: VTX_RENDERER")
+message("VTX_RENDERER")
+cmake_minimum_required(VERSION 3.16)
+project(VTX_RENDERER)
 
-set(GIT_URL_GL3W https://github.com/skaslev/gl3w.git)
-set(GIT_TAG_GL3W 5f8d7fd) # 24 March 2021
+# Get headers and sources.
+#file(GLOB_RECURSE HEADERS include/*.hpp)
+file(GLOB_RECURSE SOURCES src/*.cpp  src/*.c)
 
-# GL3W
-include(FetchContent)
-FetchContent_Declare(
-  gl3w
-  GIT_REPOSITORY ${GIT_URL_GL3W}
-  GIT_TAG        ${GIT_TAG_GL3W}
-)
-FetchContent_MakeAvailable(gl3w)
-execute_process(COMMAND python ${gl3w_SOURCE_DIR}/gl3w_gen.py --root=${CMAKE_BINARY_DIR}/gl3w)
+# Create library.
+#add_library(VTX_RENDERER STATIC ${SOURCES})
+add_executable(VTX_RENDERER ${SOURCES})
+target_include_directories(VTX_RENDERER PUBLIC include)
 
-file(GLOB_RECURSE HEADERS renderer/*.hpp)
-file(GLOB_RECURSE SOURCES renderer/*.cpp)
-
-add_library(VTX_RENDERER STATIC ${HEADERS} ${SOURCES})
-
-target_include_directories(VTX_RENDERER PRIVATE renderer/)
-target_include_directories(VTX_RENDERER PUBLIC .)
-target_include_directories(VTX_RENDERER PRIVATE ${CMAKE_BINARY_DIR}/gl3w/include)
-target_include_directories(VTX_RENDERER PRIVATE ${CMAKE_BINARY_DIR}/gl3w/include/GL)
-
+# Link VTX_UTIL.
+if(NOT TARGET VTX_UTIL)
+	add_subdirectory(../util lib)
+endif()
 target_link_libraries(VTX_RENDERER PRIVATE VTX_UTIL)
+
+# Target compile options.
+target_compile_features(VTX_RENDERER PUBLIC cxx_std_17)
+
+# Tests.
+if(NOT TARGET Catch2)
+	set(GIT_URL_CATCH2 https://github.com/catchorg/Catch2.git)
+	set(GIT_TAG_CATCH2 v3.3.2)
+
+	FetchContent_Declare(Catch2 GIT_REPOSITORY ${GIT_URL_CATCH2} GIT_TAG ${GIT_TAG_CATCH2})
+	FetchContent_MakeAvailable(Catch2)
+
+	# Catch2 configuration.
+	list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+	include(CTest)
+	include(Catch)
+endif()
+
+# Create executable.
+add_executable(VTX_RENDERER_TEST test/main.cpp)
+
+# Link third parties.
+target_link_libraries(VTX_RENDERER_TEST PRIVATE Catch2::Catch2WithMain)
+
+# Link VTX_RENDERER.
+#target_link_libraries(VTX_RENDERER_TEST PRIVATE VTX_RENDERER)
+
+# Catch2.
+catch_discover_tests(VTX_RENDERER_TEST)
