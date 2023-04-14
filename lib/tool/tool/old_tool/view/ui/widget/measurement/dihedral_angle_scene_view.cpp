@@ -1,14 +1,15 @@
 #include "dihedral_angle_scene_view.hpp"
-#include "action/action_manager.hpp"
-#include "action/label.hpp"
-#include <app/old_app/model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include "old_ui/ui/contextual_menu.hpp"
-#include "old_ui/ui/mime_type.hpp"
-#include "old_ui/ui/widget/contextual_menu/contextual_menu_label.hpp"
-#include "old_ui/ui/widget/contextual_menu/contextual_menu_selection.hpp"
-#include "util/ui.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/label.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <ui/old_ui/ui/contextual_menu.hpp>
+#include <ui/old_ui/ui/mime_type.hpp>
+#include <ui/old_ui/ui/widget/contextual_menu/contextual_menu_label.hpp>
+#include <ui/old_ui/ui/widget/contextual_menu/contextual_menu_selection.hpp>
+#include <ui/old_ui/util/ui.hpp>
+#include <ui/qt/action/label.hpp>
 
 namespace VTX::View::UI::Widget::Measurement
 {
@@ -58,7 +59,7 @@ namespace VTX::View::UI::Widget::Measurement
 	{
 		if ( p_column == 0 )
 		{
-			VTX_ACTION( new Action::Label::Orient( _model ) );
+			VTX_ACTION( new VTX::UI::QT::Action::Label::Orient( _model ) );
 		}
 	}
 

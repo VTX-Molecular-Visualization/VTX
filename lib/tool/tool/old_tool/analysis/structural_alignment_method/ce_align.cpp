@@ -1,11 +1,11 @@
 #include "ce_align.hpp"
-#include "analysis/rmsd.hpp"
-#include "model/molecule.hpp"
-#include "model/residue.hpp"
-#include <util/logger.hpp>
+#include "old_tool/analysis/rmsd.hpp"
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/residue.hpp>
 #include <cmath>
 #include <list>
 #include <string>
+#include <util/logger.hpp>
 
 namespace VTX::Analysis::StructuralAlignmentMethod
 {

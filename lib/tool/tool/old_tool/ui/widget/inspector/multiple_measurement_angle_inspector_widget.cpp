@@ -1,10 +1,12 @@
 #include "multiple_measurement_angle_inspector_widget.hpp"
+#include "old_tool/model/measurement/angle.hpp"
+#include "old_tool/util/measurement.hpp"
 #include "old_ui/ui/widget_factory.hpp"
 #include <app/old_app/action/action_manager.hpp>
 #include <app/old_app/action/atom.hpp>
 #include <app/old_app/action/label.hpp>
-#include <app/old_app/model/measurement/angle.hpp>
-#include <app/old_app/util/measurement.hpp>
+#include <ui/qt/action/atom.hpp>
+#include <ui/qt/action/label.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -151,21 +153,21 @@ namespace VTX::UI::Widget::Inspector
 		const Model::Measurement::Angle * const angleModel
 			= dynamic_cast<const Model::Measurement::Angle *>( *( getTargets().begin() ) );
 
-		VTX_ACTION( new Action::Atom::Orient( angleModel->getFirstAtom() ) );
+		VTX_ACTION( new QT::Action::Atom::Orient( angleModel->getFirstAtom() ) );
 	}
 	void MultipleMeasurmentAngleWidget::_orientOnSecondAtom() const
 	{
 		const Model::Measurement::Angle * const angleModel
 			= dynamic_cast<const Model::Measurement::Angle *>( *( getTargets().begin() ) );
 
-		VTX_ACTION( new Action::Atom::Orient( angleModel->getSecondAtom() ) );
+		VTX_ACTION( new QT::Action::Atom::Orient( angleModel->getSecondAtom() ) );
 	}
 	void MultipleMeasurmentAngleWidget::_orientOnThirdAtom() const
 	{
 		const Model::Measurement::Angle * const angleModel
 			= dynamic_cast<const Model::Measurement::Angle *>( *( getTargets().begin() ) );
 
-		VTX_ACTION( new Action::Atom::Orient( angleModel->getThirdAtom() ) );
+		VTX_ACTION( new QT::Action::Atom::Orient( angleModel->getThirdAtom() ) );
 	}
 
 	void MultipleMeasurmentAngleWidget::_renameAction() const

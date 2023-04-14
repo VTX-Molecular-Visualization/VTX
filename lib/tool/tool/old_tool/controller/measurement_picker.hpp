@@ -1,9 +1,9 @@
 #ifndef __VTX_CONTROLLER_MEASUREMENT_PICKER__
 #define __VTX_CONTROLLER_MEASUREMENT_PICKER__
 
-#include "base_keyboard_controller.hpp"
-#include "base_mouse_controller.hpp"
 #include <app/old_app/model/base_model.hpp>
+#include <ui/old_ui/controller/base_keyboard_controller.hpp>
+#include <ui/old_ui/controller/base_mouse_controller.hpp>
 
 namespace VTX
 {

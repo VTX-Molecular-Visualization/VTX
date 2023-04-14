@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_WIDGET_CLOUDMANAGER__
 #define __VTX_UI_WIDGET_CLOUDMANAGER__
 
+#include "old_tool/ui/widget/custom_widget/custom_qdockwidget.hpp"
 #include "old_ui/ui/qt_form/ui_cloud_connector_window.h"
-#include "old_ui/ui/widget/custom_widget/custom_qdockwidget.hpp"
 
 namespace VTX
 {

@@ -1,7 +1,7 @@
 #include "menu_extensions_all_widget.hpp"
-#include "action/main.hpp"
-#include "old_ui/ui/widget_factory.hpp"
-#include "io/filesystem.hpp"
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/io/filesystem.hpp>
+#include <ui/old_ui/ui/widget_factory.hpp>
 
 namespace VTX
 {

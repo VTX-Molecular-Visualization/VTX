@@ -25,10 +25,10 @@ namespace VTX::UI
 		QInputMethod * inputMethod() const { return QApplication::inputMethod(); }
 
 	  private:
-		VTXApp();
+		VTXApp() : ::VTX::VTXApp() {};
 		VTXApp( const VTXApp & )			 = delete;
 		VTXApp & operator=( const VTXApp & ) = delete;
-		~VTXApp();
+		~VTXApp() {}
 	};
 } // namespace VTX::UI
 

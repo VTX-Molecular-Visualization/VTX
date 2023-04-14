@@ -20,16 +20,16 @@ namespace VTX::View::UI::Widget::Measurement
 		View::BaseView<Model::Measurement::Angle>( p_model ),
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>( p_parent )
 	{
-		_labelPen	= QPen( Style::WORLD_LABEL_OUTLINE_COLOR );
-		_labelBrush = QBrush( Style::WORLD_LABEL_FILL_COLOR );
+		_labelPen	= QPen( VTX::UI::Style::WORLD_LABEL_OUTLINE_COLOR );
+		_labelBrush = QBrush( VTX::UI::Style::WORLD_LABEL_FILL_COLOR );
 		_labelBrush.setStyle( Qt::BrushStyle::SolidPattern );
 
 		_linePen = QPen();
-		_linePen.setStyle( Style::MEASUREMENT_ANGLE_LINE_STYLE );
+		_linePen.setStyle( VTX::UI::Style::MEASUREMENT_ANGLE_LINE_STYLE );
 		_lineBrush = QBrush( Qt::BrushStyle::NoBrush );
 
 		_arcPen = QPen();
-		_arcPen.setStyle( Style::MEASUREMENT_ANGLE_ARC_STYLE );
+		_arcPen.setStyle( VTX::UI::Style::MEASUREMENT_ANGLE_ARC_STYLE );
 		_arcBrush = QBrush( Qt::BrushStyle::NoBrush );
 	}
 
@@ -76,11 +76,12 @@ namespace VTX::View::UI::Widget::Measurement
 		const Vec3f centerWorldPos		= Util::UIRender::getCenter( atomPositions );
 		_paintData.textDistanceToCamera = Util::UIRender::distanceToCamera( camera, centerWorldPos );
 
-		const float ratioScale = 1.f
-								 - std::clamp( ( _paintData.textDistanceToCamera - Style::WORLD_LABEL_NEAR_CLIP )
-												   / ( Style::WORLD_LABEL_FAR_CLIP - Style::WORLD_LABEL_NEAR_CLIP ),
-											   0.f,
-											   1.f );
+		const float ratioScale
+			= 1.f
+			  - std::clamp( ( _paintData.textDistanceToCamera - VTX::UI::Style::WORLD_LABEL_NEAR_CLIP )
+								/ ( VTX::UI::Style::WORLD_LABEL_FAR_CLIP - VTX::UI::Style::WORLD_LABEL_NEAR_CLIP ),
+							0.f,
+							1.f );
 
 		if ( ratioScale == 0.f )
 			return;
@@ -94,12 +95,12 @@ namespace VTX::View::UI::Widget::Measurement
 		for ( const Vec3f & vec : vec3fPositions )
 			qPointPositions.emplace_back( Util::UIRender::vec3fToQPoint( vec ) );
 
-		_paintData.lineSize = Style::MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS
-							  + ( Style::MEASUREMENT_ANGLE_LABEL_MAX_LINE_THICKNESS
-								  - Style::MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS )
+		_paintData.lineSize = VTX::UI::Style::MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS
+							  + ( VTX::UI::Style::MEASUREMENT_ANGLE_LABEL_MAX_LINE_THICKNESS
+								  - VTX::UI::Style::MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS )
 									* ratioScale;
 
-		_paintData.pointRadius = ( _paintData.lineSize / 2 ) + Style::LABEL_RENDER_POINT_RADIUS;
+		_paintData.pointRadius = ( _paintData.lineSize / 2 ) + VTX::UI::Style::LABEL_RENDER_POINT_RADIUS;
 
 		int minX, maxX, minY, maxY;
 		Util::UIRender::getMinMax( qPointPositions, minX, maxX, minY, maxY );
@@ -123,16 +124,17 @@ namespace VTX::View::UI::Widget::Measurement
 
 			const int arcRadius = std::min( { int( firstLineLength * 0.8f ),
 											  int( secondLineLength * 0.8f ),
-											  Style::MEASUREMENT_ANGLE_ARC_RADIUS } );
+											  VTX::UI::Style::MEASUREMENT_ANGLE_ARC_RADIUS } );
 
 			const QPoint textPos
 				= anglePoint
-				  + QPoint( screenBisector.x() * ( arcRadius + Style::MEASUREMENT_ANGLE_LABEL_TEXT_OFFSET ),
-							screenBisector.y() * ( arcRadius + Style::MEASUREMENT_ANGLE_LABEL_TEXT_OFFSET ) );
+				  + QPoint( screenBisector.x() * ( arcRadius + VTX::UI::Style::MEASUREMENT_ANGLE_LABEL_TEXT_OFFSET ),
+							screenBisector.y() * ( arcRadius + VTX::UI::Style::MEASUREMENT_ANGLE_LABEL_TEXT_OFFSET ) );
 
 			const float textScale
-				= Style::WORLD_LABEL_MIN_TEXT_SCALE
-				  + ( Style::WORLD_LABEL_MAX_TEXT_SCALE - Style::WORLD_LABEL_MIN_TEXT_SCALE ) * ratioScale;
+				= VTX::UI::Style::WORLD_LABEL_MIN_TEXT_SCALE
+				  + ( VTX::UI::Style::WORLD_LABEL_MAX_TEXT_SCALE - VTX::UI::Style::WORLD_LABEL_MIN_TEXT_SCALE )
+						* ratioScale;
 
 			const int minXText = textPos.x() - ( _paintData.textSize.width() * textScale ) / 2;
 			const int maxXText = textPos.x() + ( _paintData.textSize.width() * textScale ) / 2;
@@ -221,12 +223,12 @@ namespace VTX::View::UI::Widget::Measurement
 	{
 		const QString qstr = QString::fromStdString( p_txt );
 
-		const QFontMetrics labelFontMetric = QFontMetrics( Style::WORLD_LABEL_FONT );
+		const QFontMetrics labelFontMetric = QFontMetrics( VTX::UI::Style::WORLD_LABEL_FONT );
 
 		_paintData.textSize = QSize( labelFontMetric.horizontalAdvance( qstr ), labelFontMetric.height() );
 
 		_painterPath.clear();
-		_painterPath.addText( { 0, 0 }, Style::WORLD_LABEL_FONT, qstr );
+		_painterPath.addText( { 0, 0 }, VTX::UI::Style::WORLD_LABEL_FONT, qstr );
 	}
 
 	void AngleRenderView::paintEvent( QPaintEvent * event )
@@ -236,7 +238,7 @@ namespace VTX::View::UI::Widget::Measurement
 		if ( !_model->isValid() || !_model->isEnable() )
 			return;
 
-		if ( _paintData.textDistanceToCamera < Style::WORLD_LABEL_FAR_CLIP )
+		if ( _paintData.textDistanceToCamera < VTX::UI::Style::WORLD_LABEL_FAR_CLIP )
 		{
 			QPainter painter( this );
 			painter.save();

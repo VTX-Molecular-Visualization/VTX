@@ -1,17 +1,17 @@
 #include "measure_in_progress_render_view.hpp"
-#include <app/old_app/model/atom.hpp"
-#include "style.hpp"
-#include "old_ui/ui/main_window.hpp"
-#include "util/measurement.hpp"
-#include "util/ui_render.hpp"
-#include "vtx_app.hpp"
+#include "old_tool/util/measurement.hpp"
 #include <QFontMetrics>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPoint>
 #include <QVBoxLayout>
 #include <algorithm>
+#include <app/old_app/model/atom.hpp>
 #include <string>
+#include <ui/old_ui/style.hpp>
+#include <ui/old_ui/ui/main_window.hpp>
+#include <ui/old_ui/util/ui_render.hpp>
+#include <ui/old_ui/vtx_app.hpp>
 
 namespace VTX::View::UI::Widget::Measurement
 {
@@ -21,8 +21,8 @@ namespace VTX::View::UI::Widget::Measurement
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>( p_parent )
 	{
 		_linePen = QPen();
-		_linePen.setColor( Style::MEASUREMENT_ANGLE_LINE_COLOR );
-		_linePen.setStyle( Style::MEASUREMENT_ANGLE_LINE_STYLE );
+		_linePen.setColor( VTX::UI::Style::MEASUREMENT_ANGLE_LINE_COLOR );
+		_linePen.setStyle( VTX::UI::Style::MEASUREMENT_ANGLE_LINE_STYLE );
 		_lineBrush = QBrush( Qt::BrushStyle::NoBrush );
 	}
 
@@ -80,16 +80,17 @@ namespace VTX::View::UI::Widget::Measurement
 		_paintData.distanceToCamera = Util::UIRender::distanceToCamera( camera, centerWorldPos );
 
 		// TODO Sigmoid
-		const float ratioScale = 1.f
-								 - std::clamp( ( _paintData.distanceToCamera - Style::WORLD_LABEL_NEAR_CLIP )
-												   / ( Style::WORLD_LABEL_FAR_CLIP - Style::WORLD_LABEL_NEAR_CLIP ),
-											   0.f,
-											   1.f );
-		_paintData.lineSize = Style::MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS
-							  + ( Style::MEASUREMENT_ANGLE_LABEL_MAX_LINE_THICKNESS
-								  - Style::MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS )
+		const float ratioScale
+			= 1.f
+			  - std::clamp( ( _paintData.distanceToCamera - VTX::UI::Style::WORLD_LABEL_NEAR_CLIP )
+								/ ( VTX::UI::Style::WORLD_LABEL_FAR_CLIP - VTX::UI::Style::WORLD_LABEL_NEAR_CLIP ),
+							0.f,
+							1.f );
+		_paintData.lineSize = VTX::UI::Style::MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS
+							  + ( VTX::UI::Style::MEASUREMENT_ANGLE_LABEL_MAX_LINE_THICKNESS
+								  - VTX::UI::Style::MEASUREMENT_ANGLE_LABEL_MIN_LINE_THICKNESS )
 									* ratioScale;
-		_paintData.pointRadius = ( _paintData.lineSize / 2 ) + Style::LABEL_RENDER_POINT_RADIUS;
+		_paintData.pointRadius = ( _paintData.lineSize / 2 ) + VTX::UI::Style::LABEL_RENDER_POINT_RADIUS;
 
 		const QRect		   renderRect	  = parentWidget()->rect();
 		std::vector<Vec3f> vec3fPositions = std::vector<Vec3f>();

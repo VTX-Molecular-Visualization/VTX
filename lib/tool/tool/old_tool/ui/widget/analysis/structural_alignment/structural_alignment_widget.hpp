@@ -35,7 +35,7 @@ namespace VTX
 				= UI::Widget::Analysis::StructuralAlignment::StructuralAlignmentModelListWidget;
 
 		  public:
-			void receiveEvent( const Event::VTXEvent & p_event ) override;
+			void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 			void localize() override;
 
 			void refresh();

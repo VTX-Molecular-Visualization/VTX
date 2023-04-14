@@ -20,12 +20,12 @@ namespace VTX::View::UI::Widget::Measurement
 		View::BaseView<Model::Measurement::Distance>( p_model ),
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>( p_parent )
 	{
-		_labelPen	= QPen( Style::WORLD_LABEL_OUTLINE_COLOR );
-		_labelBrush = QBrush( Style::WORLD_LABEL_FILL_COLOR );
+		_labelPen	= QPen( VTX::UI::Style::WORLD_LABEL_OUTLINE_COLOR );
+		_labelBrush = QBrush( VTX::UI::Style::WORLD_LABEL_FILL_COLOR );
 		_labelBrush.setStyle( Qt::BrushStyle::SolidPattern );
 
 		_linePen = QPen();
-		_linePen.setStyle( Style::MEASUREMENT_DISTANCE_LABEL_LINE_STYLE );
+		_linePen.setStyle( VTX::UI::Style::MEASUREMENT_DISTANCE_LABEL_LINE_STYLE );
 		_lineBrush = QBrush( Qt::BrushStyle::SolidPattern );
 		//_lineBrush = QBrush( Qt::BrushStyle::SolidPattern );
 	}
@@ -75,11 +75,12 @@ namespace VTX::View::UI::Widget::Measurement
 		const Vec3f centerWorldPos		= ( firstAtomWorldPos + secondAtomWorldPos ) * 0.5f;
 		_paintData.textDistanceToCamera = Util::UIRender::distanceToCamera( camera, centerWorldPos );
 
-		const float ratioScale = 1.f
-								 - std::clamp( ( _paintData.textDistanceToCamera - Style::WORLD_LABEL_NEAR_CLIP )
-												   / ( Style::WORLD_LABEL_FAR_CLIP - Style::WORLD_LABEL_NEAR_CLIP ),
-											   0.f,
-											   1.f );
+		const float ratioScale
+			= 1.f
+			  - std::clamp( ( _paintData.textDistanceToCamera - VTX::UI::Style::WORLD_LABEL_NEAR_CLIP )
+								/ ( VTX::UI::Style::WORLD_LABEL_FAR_CLIP - VTX::UI::Style::WORLD_LABEL_NEAR_CLIP ),
+							0.f,
+							1.f );
 
 		if ( ratioScale == 0.f )
 		{
@@ -87,12 +88,13 @@ namespace VTX::View::UI::Widget::Measurement
 			return;
 		}
 
-		_paintData.lineSize = Style::MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS
-							  + ( Style::MEASUREMENT_DISTANCE_LABEL_MAX_LINE_THICKNESS
-								  - Style::MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS )
+		_paintData.lineSize = VTX::UI::Style::MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS
+							  + ( VTX::UI::Style::MEASUREMENT_DISTANCE_LABEL_MAX_LINE_THICKNESS
+								  - VTX::UI::Style::MEASUREMENT_DISTANCE_LABEL_MIN_LINE_THICKNESS )
 									* ratioScale;
 
-		_paintData.pointRadius	= ( _paintData.lineSize / 2 ) + Style::MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS + 2;
+		_paintData.pointRadius
+			= ( _paintData.lineSize / 2 ) + VTX::UI::Style::MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS + 2;
 		const int pointDiameter = _paintData.pointRadius * 2;
 
 		const QRect renderRect = parentWidget()->rect();
@@ -120,8 +122,9 @@ namespace VTX::View::UI::Widget::Measurement
 		{
 			const QPoint textScreenPointPos = Util::UIRender::vec3fToQPoint( textScreenVec3fPos );
 			const float	 textScale
-				= Style::WORLD_LABEL_MIN_TEXT_SCALE
-				  + ( Style::WORLD_LABEL_MAX_TEXT_SCALE - Style::WORLD_LABEL_MIN_TEXT_SCALE ) * ratioScale;
+				= VTX::UI::Style::WORLD_LABEL_MIN_TEXT_SCALE
+				  + ( VTX::UI::Style::WORLD_LABEL_MAX_TEXT_SCALE - VTX::UI::Style::WORLD_LABEL_MIN_TEXT_SCALE )
+						* ratioScale;
 
 			minX = std::min( { minX, ( textScreenPointPos.x() - _paintData.textSize.width() / 2 ) } );
 			minY = std::min( { minY, ( textScreenPointPos.y() - _paintData.textSize.height() / 2 ) } );
@@ -156,12 +159,12 @@ namespace VTX::View::UI::Widget::Measurement
 	{
 		const QString qstr = QString::fromStdString( p_txt );
 
-		const QFontMetrics labelFontMetric = QFontMetrics( Style::WORLD_LABEL_FONT );
+		const QFontMetrics labelFontMetric = QFontMetrics( VTX::UI::Style::WORLD_LABEL_FONT );
 
 		_paintData.textSize = QSize( labelFontMetric.horizontalAdvance( qstr ), labelFontMetric.height() );
 
 		_painterPath.clear();
-		_painterPath.addText( { 0, 0 }, Style::WORLD_LABEL_FONT, qstr );
+		_painterPath.addText( { 0, 0 }, VTX::UI::Style::WORLD_LABEL_FONT, qstr );
 	}
 
 	void DistanceRenderView::paintEvent( QPaintEvent * event )
@@ -171,7 +174,7 @@ namespace VTX::View::UI::Widget::Measurement
 		if ( !_model->isValid() || !_model->isEnable() )
 			return;
 
-		if ( _paintData.textDistanceToCamera < Style::WORLD_LABEL_FAR_CLIP )
+		if ( _paintData.textDistanceToCamera < VTX::UI::Style::WORLD_LABEL_FAR_CLIP )
 		{
 			QPainter painter( this );
 			painter.save();
@@ -187,7 +190,8 @@ namespace VTX::View::UI::Widget::Measurement
 
 			const Vec3f firstAtomPos  = _paintData.firstAtomScreenPos - Vec3f( pos().x(), pos().y(), 0 );
 			const Vec3f secondAtomPos = _paintData.secondAtomScreenPos - Vec3f( pos().x(), pos().y(), 0 );
-			const int	pointRadius	  = ( _paintData.lineSize / 2 ) + Style::MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS;
+			const int	pointRadius
+				= ( _paintData.lineSize / 2 ) + VTX::UI::Style::MEASUREMENT_DISTANCE_LABEL_POINT_RADIUS;
 
 			if ( firstAtomPos.z >= 0 )
 			{

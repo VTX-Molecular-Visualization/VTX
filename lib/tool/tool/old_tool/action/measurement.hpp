@@ -1,15 +1,15 @@
 #ifndef __VTX_ACTION_MEASUREMENT__
 #define __VTX_ACTION_MEASUREMENT__
 
-#include "action/base_action.hpp"
-#include "model/atom.hpp"
-#include "model/measurement/angle.hpp"
-#include "model/measurement/dihedral_angle.hpp"
-#include "model/measurement/distance.hpp"
-#include "model/molecule.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "object3d/scene.hpp"
-#include "vtx_app.hpp"
+#include "tool/old_tool/model/measurement/angle.hpp"
+#include "tool/old_tool/model/measurement/dihedral_angle.hpp"
+#include "tool/old_tool/model/measurement/distance.hpp"
+#include <app/old_app/action/base_action.hpp>
+#include <app/old_app/model/atom.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <ui/old_ui/vtx_app.hpp>
 
 namespace VTX::Action::Measurement
 {

@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	MenuToolStructuralAlignmentWidget::MenuToolStructuralAlignmentWidget( QWidget * p_parent ) :
 		MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
 	}
 
 	MenuToolStructuralAlignmentWidget::~MenuToolStructuralAlignmentWidget()
@@ -27,9 +27,9 @@ namespace VTX::UI::Widget::MainMenu::Tool
 			delete _alignmentParameter;
 	}
 
-	void MenuToolStructuralAlignmentWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void MenuToolStructuralAlignmentWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == VTX::Event::Global::SELECTION_CHANGE )
 			_refreshButtons();
 	}
 

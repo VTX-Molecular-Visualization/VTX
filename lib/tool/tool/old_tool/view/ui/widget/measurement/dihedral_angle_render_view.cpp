@@ -21,12 +21,12 @@ namespace VTX::View::UI::Widget::Measurement
 		View::BaseView<Model::Measurement::DihedralAngle>( p_model ),
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>( p_parent )
 	{
-		_labelPen	= QPen( Style::WORLD_LABEL_OUTLINE_COLOR );
-		_labelBrush = QBrush( Style::WORLD_LABEL_FILL_COLOR );
+		_labelPen	= QPen( VTX::UI::Style::WORLD_LABEL_OUTLINE_COLOR );
+		_labelBrush = QBrush( VTX::UI::Style::WORLD_LABEL_FILL_COLOR );
 		_labelBrush.setStyle( Qt::BrushStyle::SolidPattern );
 
 		_linePen = QPen();
-		_linePen.setStyle( Style::MEASUREMENT_DIHEDRAL_ANGLE_LINE_STYLE );
+		_linePen.setStyle( VTX::UI::Style::MEASUREMENT_DIHEDRAL_ANGLE_LINE_STYLE );
 		_lineBrush = QBrush( Qt::BrushStyle::NoBrush );
 	}
 
@@ -34,7 +34,7 @@ namespace VTX::View::UI::Widget::Measurement
 	{
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>::_setupUi( p_name );
 
-		_paintData.pixmap = QPixmap( Style::IconConst::get().DIHEDRAL_ANGLE_RENDER_ICON_MASK.size() );
+		_paintData.pixmap = QPixmap( VTX::UI::Style::IconConst::get().DIHEDRAL_ANGLE_RENDER_ICON_MASK.size() );
 
 		_refreshText();
 		_refreshColor();
@@ -75,11 +75,12 @@ namespace VTX::View::UI::Widget::Measurement
 		const Vec3f centerWorldPos		= Util::UIRender::getCenter( atomPositions );
 		_paintData.textDistanceToCamera = Util::UIRender::distanceToCamera( camera, centerWorldPos );
 
-		const float ratioScale = 1.f
-								 - std::clamp( ( _paintData.textDistanceToCamera - Style::WORLD_LABEL_NEAR_CLIP )
-												   / ( Style::WORLD_LABEL_FAR_CLIP - Style::WORLD_LABEL_NEAR_CLIP ),
-											   0.f,
-											   1.f );
+		const float ratioScale
+			= 1.f
+			  - std::clamp( ( _paintData.textDistanceToCamera - VTX::UI::Style::WORLD_LABEL_NEAR_CLIP )
+								/ ( VTX::UI::Style::WORLD_LABEL_FAR_CLIP - VTX::UI::Style::WORLD_LABEL_NEAR_CLIP ),
+							0.f,
+							1.f );
 
 		if ( ratioScale == 0.f )
 		{
@@ -97,10 +98,10 @@ namespace VTX::View::UI::Widget::Measurement
 			qPointPositions.emplace_back( Util::UIRender::vec3fToQPoint( vec ) );
 
 		_paintData.lineSize
-			= Util::UIRender::linearInterpolation( Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MIN_LINE_THICKNESS,
-												   Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MAX_LINE_THICKNESS,
+			= Util::UIRender::linearInterpolation( VTX::UI::Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MIN_LINE_THICKNESS,
+												   VTX::UI::Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MAX_LINE_THICKNESS,
 												   ratioScale );
-		_paintData.pointRadius	= ( _paintData.lineSize / 2 ) + Style::LABEL_RENDER_POINT_RADIUS;
+		_paintData.pointRadius	= ( _paintData.lineSize / 2 ) + VTX::UI::Style::LABEL_RENDER_POINT_RADIUS;
 		const int pointDiameter = _paintData.pointRadius * 2;
 
 		int minX, maxX, minY, maxY;
@@ -118,17 +119,17 @@ namespace VTX::View::UI::Widget::Measurement
 		{
 			const QPoint iconPos = Util::UIRender::vec3fToQPoint( iconVec3Pos );
 			const float	 pixmapSizeScaled
-				= Util::UIRender::linearInterpolation( Style::MEASUREMENT_DIHEDRAL_ANGLE_ICON_MIN_SIZE,
-													   Style::MEASUREMENT_DIHEDRAL_ANGLE_ICON_MAX_SIZE,
+				= Util::UIRender::linearInterpolation( VTX::UI::Style::MEASUREMENT_DIHEDRAL_ANGLE_ICON_MIN_SIZE,
+													   VTX::UI::Style::MEASUREMENT_DIHEDRAL_ANGLE_ICON_MAX_SIZE,
 													   ratioScale );
 
 			const float textScale = Util::UIRender::linearInterpolation(
-				Style::WORLD_LABEL_MIN_TEXT_SCALE, Style::WORLD_LABEL_MAX_TEXT_SCALE, ratioScale );
+				VTX::UI::Style::WORLD_LABEL_MIN_TEXT_SCALE, VTX::UI::Style::WORLD_LABEL_MAX_TEXT_SCALE, ratioScale );
 
-			const int textYOffset
-				= ( ( _paintData.textSize.height() / 2 ) + Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_TEXT_OFFSET )
-					  * textScale
-				  + ( pixmapSizeScaled / 2 );
+			const int textYOffset = ( ( _paintData.textSize.height() / 2 )
+									  + VTX::UI::Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_TEXT_OFFSET )
+										* textScale
+									+ ( pixmapSizeScaled / 2 );
 
 			const Vec3f	 textVec3fPos = iconVec3Pos + Vec3f( 0, -textYOffset, 0 );
 			const QPoint textPos	  = Util::UIRender::vec3fToQPoint( textVec3fPos );
@@ -162,8 +163,8 @@ namespace VTX::View::UI::Widget::Measurement
 		setFixedSize( size );
 
 		_paintData.lineSize
-			= Util::UIRender::linearInterpolation( Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MIN_LINE_THICKNESS,
-												   Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MAX_LINE_THICKNESS,
+			= Util::UIRender::linearInterpolation( VTX::UI::Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MIN_LINE_THICKNESS,
+												   VTX::UI::Style::MEASUREMENT_DIHEDRAL_ANGLE_LABEL_MAX_LINE_THICKNESS,
 												   ratioScale );
 
 		_paintData.drawTextAndIcon = drawTextAndIcon;
@@ -184,19 +185,19 @@ namespace VTX::View::UI::Widget::Measurement
 		_lineBrush.setColor( lineColor );
 
 		_paintData.pixmap.fill( Util::UI::RgbToQColor( _model->getColor() ) );
-		_paintData.pixmap.setMask( Style::IconConst::get().DIHEDRAL_ANGLE_RENDER_ICON_MASK );
+		_paintData.pixmap.setMask( VTX::UI::Style::IconConst::get().DIHEDRAL_ANGLE_RENDER_ICON_MASK );
 	}
 
 	void DihedralAngleRenderView::_setText( const std::string & p_txt )
 	{
 		const QString qstr = QString::fromStdString( p_txt );
 
-		const QFontMetrics labelFontMetric = QFontMetrics( Style::WORLD_LABEL_FONT );
+		const QFontMetrics labelFontMetric = QFontMetrics( VTX::UI::Style::WORLD_LABEL_FONT );
 
 		_paintData.textSize = QSize( labelFontMetric.horizontalAdvance( qstr ), labelFontMetric.height() );
 
 		_painterPath.clear();
-		_painterPath.addText( { 0, 0 }, Style::WORLD_LABEL_FONT, qstr );
+		_painterPath.addText( { 0, 0 }, VTX::UI::Style::WORLD_LABEL_FONT, qstr );
 	}
 
 	void DihedralAngleRenderView::paintEvent( QPaintEvent * event )
@@ -206,7 +207,7 @@ namespace VTX::View::UI::Widget::Measurement
 		if ( !_model->isValid() || !_model->isEnable() )
 			return;
 
-		if ( _paintData.textDistanceToCamera < Style::WORLD_LABEL_FAR_CLIP )
+		if ( _paintData.textDistanceToCamera < VTX::UI::Style::WORLD_LABEL_FAR_CLIP )
 		{
 			QPainter painter( this );
 			painter.save();

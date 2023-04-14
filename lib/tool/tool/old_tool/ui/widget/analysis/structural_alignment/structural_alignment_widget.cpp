@@ -16,14 +16,15 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 {
 	StructuralAlignmentWidget::StructuralAlignmentWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED );
+		_registerEvent( VTX::Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED );
 	}
-	void StructuralAlignmentWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void StructuralAlignmentWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED )
+		if ( p_event.name == VTX::Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED )
 		{
-			const Event::VTXEventRef<const VTX::Analysis::StructuralAlignment::AlignmentResult> & castedEvent
-				= dynamic_cast<const Event::VTXEventRef<const VTX::Analysis::StructuralAlignment::AlignmentResult> &>(
+			const VTX::Event::VTXEventRef<const VTX::Analysis::StructuralAlignment::AlignmentResult> & castedEvent
+				= dynamic_cast<
+					const VTX::Event::VTXEventRef<const VTX::Analysis::StructuralAlignment::AlignmentResult> &>(
 					p_event );
 
 			VTX::Analysis::StructuralAlignment::AlignmentResult alignmentResult = castedEvent.ref;

@@ -1,10 +1,11 @@
 #include "multiple_measurement_distance_inspector_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/atom.hpp"
-#include "action/label.hpp"
-#include <app/old_app/model/measurement/distance.hpp"
+#include "old_tool/model/measurement/distance.hpp"
+#include "old_tool/util/measurement.hpp"
 #include "old_ui/ui/widget_factory.hpp"
-#include "util/measurement.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/atom.hpp>
+#include <app/old_app/action/label.hpp>
+#include <ui/qt/action/atom.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -146,14 +147,14 @@ namespace VTX::UI::Widget::Inspector
 		const Model::Measurement::Distance * const distance
 			= dynamic_cast<const Model::Measurement::Distance *>( *( getTargets().begin() ) );
 
-		VTX_ACTION( new Action::Atom::Orient( distance->getFirstAtom() ) );
+		VTX_ACTION( new QT::Action::Atom::Orient( distance->getFirstAtom() ) );
 	}
 	void MultipleMeasurmentDistanceWidget::_orientOnSecondAtom() const
 	{
 		const Model::Measurement::Distance * const distance
 			= dynamic_cast<const Model::Measurement::Distance *>( *( getTargets().begin() ) );
 
-		VTX_ACTION( new Action::Atom::Orient( distance->getSecondAtom() ) );
+		VTX_ACTION( new QT::Action::Atom::Orient( distance->getSecondAtom() ) );
 	}
 
 	void MultipleMeasurmentDistanceWidget::_renameAction() const

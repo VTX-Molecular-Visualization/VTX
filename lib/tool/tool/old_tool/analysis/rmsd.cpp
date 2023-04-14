@@ -1,9 +1,9 @@
 #include "rmsd.hpp"
-#include "event/event.hpp"
-#include "event/event_manager.hpp"
-#include "model/molecule.hpp"
-#include "model/selection.hpp"
-#include "util/analysis.hpp"
+#include "old_tool/util/analysis.hpp"
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/event/event_manager.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/selection.hpp>
 #include <cmath>
 
 namespace VTX::Analysis

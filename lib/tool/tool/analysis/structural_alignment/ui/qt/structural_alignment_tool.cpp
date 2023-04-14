@@ -1,5 +1,5 @@
 #include "structural_alignment_tool.hpp"
-#include <app/old_app/ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp>
+#include "old_tool/ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp"
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>
 #include <ui/qt/widget/main_menu/menu_toolbutton_submenu_widget.hpp>

@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_CITATIONS_WINDOW_
 #define __VTX_UI_WIDGET_CITATIONS_WINDOW_
 
-#include "old_ui/ui/qt_form/ui_citations_window.h"
+#include "qt/qt_form/ui_citations_window.h"
 #include <QDialog>
 #include <QWidget>
 

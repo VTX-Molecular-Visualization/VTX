@@ -87,6 +87,12 @@ namespace VTX
 		void exit( int p_returnCode = 0 );
 		void quit();
 
+	  protected:
+		VTXApp();
+		VTXApp( const VTXApp & )			 = delete;
+		VTXApp & operator=( const VTXApp & ) = delete;
+		~VTXApp();
+
 	  private:
 		// TODO Reimplement this without Qt
 		// QElapsedTimer _tickTimer   = QElapsedTimer();
@@ -103,11 +109,6 @@ namespace VTX
 
 		std::vector<const Generic::BaseAutoDelete *> _deleteAtEndOfFrameObjects
 			= std::vector<const Generic::BaseAutoDelete *>();
-
-		VTXApp();
-		VTXApp( const VTXApp & )			 = delete;
-		VTXApp & operator=( const VTXApp & ) = delete;
-		~VTXApp();
 
 		void _initQt();
 		void _handleArgs( const std::vector<std::string> & );

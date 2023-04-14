@@ -9,6 +9,7 @@
 #include <ui/old_ui/ui/widget/contextual_menu/contextual_menu_label.hpp>
 #include <ui/old_ui/ui/widget/contextual_menu/contextual_menu_selection.hpp>
 #include <ui/old_ui/util/ui.hpp>
+#include <ui/qt/action/label.hpp>
 
 namespace VTX::View::UI::Widget::Measurement
 {
@@ -56,7 +57,7 @@ namespace VTX::View::UI::Widget::Measurement
 	{
 		if ( p_column == 0 )
 		{
-			VTX_ACTION( new Action::Label::Orient( _model ) );
+			VTX_ACTION( new VTX::UI::QT::Action::Label::Orient( _model ) );
 		}
 	}
 

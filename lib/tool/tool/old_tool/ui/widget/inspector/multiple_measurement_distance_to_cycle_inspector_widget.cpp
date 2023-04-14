@@ -1,10 +1,4 @@
 #include "multiple_measurement_distance_to_cycle_inspector_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/atom.hpp"
-#include "action/label.hpp"
-#include <app/old_app/model/measurement/distance.hpp"
-#include "old_ui/ui/widget_factory.hpp"
-#include "util/measurement.hpp"
 
 namespace VTX::UI::Widget::Inspector
 {

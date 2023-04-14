@@ -1,9 +1,9 @@
 #ifndef __VTX_UI_WIDGET_MENU_EXTENSIONS_JOBS__
 #define __VTX_UI_WIDGET_MENU_EXTENSIONS_JOBS__
 
+#include "old_tool/ui/widget/main_menu/extensions/extension_cloud_connector_gui.hpp"
+#include "old_tool/ui/widget/main_menu/extensions/extension_job_manager_gui.hpp"
 #include "old_ui/ui/widget/base_manual_widget.hpp"
-#include "old_ui/ui/widget/main_menu/extensions/extension_cloud_connector_gui.hpp"
-#include "old_ui/ui/widget/main_menu/extensions/extension_job_manager_gui.hpp"
 #include "old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QDockWidget>

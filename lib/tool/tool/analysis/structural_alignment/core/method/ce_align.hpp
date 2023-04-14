@@ -1,9 +1,9 @@
 #ifndef __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT_METHOD_CE_ALIGN__
 #define __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT_METHOD_CE_ALIGN__
 
-#include "analysis/matrix.hpp"
 #include "analysis/structural_alignment/core/struct/residue_center_of_mass_data_set.hpp"
 #include "analysis/structural_alignment/core/structural_alignment.hpp"
+#include "old_tool/analysis/matrix.hpp"
 #include <Eigen/Geometry>
 #include <util/constants.hpp>
 #include <util/types.hpp>

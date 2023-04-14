@@ -1,10 +1,11 @@
 #include "multiple_measurement_dihedral_angle_inspector_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/atom.hpp"
-#include "action/label.hpp"
-#include <app/old_app/model/measurement/distance.hpp"
-#include "old_ui/ui/widget_factory.hpp"
-#include "util/measurement.hpp"
+#include "old_tool/model/measurement/distance.hpp"
+#include "old_tool/util/measurement.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/atom.hpp>
+#include <app/old_app/action/label.hpp>
+#include <ui/old_ui/ui/widget_factory.hpp>
+#include <ui/qt/action/atom.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -170,28 +171,28 @@ namespace VTX::UI::Widget::Inspector
 		const Model::Measurement::DihedralAngle * const dihedralAngleModel
 			= dynamic_cast<const Model::Measurement::DihedralAngle *>( *( getTargets().begin() ) );
 
-		VTX_ACTION( new Action::Atom::Orient( dihedralAngleModel->getFirstAtom() ) );
+		VTX_ACTION( new QT::Action::Atom::Orient( dihedralAngleModel->getFirstAtom() ) );
 	}
 	void MultipleMeasurmentDihedralAngleWidget::_orientOnSecondAtom() const
 	{
 		const Model::Measurement::DihedralAngle * const dihedralAngleModel
 			= dynamic_cast<const Model::Measurement::DihedralAngle *>( *( getTargets().begin() ) );
 
-		VTX_ACTION( new Action::Atom::Orient( dihedralAngleModel->getSecondAtom() ) );
+		VTX_ACTION( new QT::Action::Atom::Orient( dihedralAngleModel->getSecondAtom() ) );
 	}
 	void MultipleMeasurmentDihedralAngleWidget::_orientOnThirdAtom() const
 	{
 		const Model::Measurement::DihedralAngle * const dihedralAngleModel
 			= dynamic_cast<const Model::Measurement::DihedralAngle *>( *( getTargets().begin() ) );
 
-		VTX_ACTION( new Action::Atom::Orient( dihedralAngleModel->getThirdAtom() ) );
+		VTX_ACTION( new QT::Action::Atom::Orient( dihedralAngleModel->getThirdAtom() ) );
 	}
 	void MultipleMeasurmentDihedralAngleWidget::_orientOnFourthAtom() const
 	{
 		const Model::Measurement::DihedralAngle * const dihedralAngleModel
 			= dynamic_cast<const Model::Measurement::DihedralAngle *>( *( getTargets().begin() ) );
 
-		VTX_ACTION( new Action::Atom::Orient( dihedralAngleModel->getFourthAtom() ) );
+		VTX_ACTION( new QT::Action::Atom::Orient( dihedralAngleModel->getFourthAtom() ) );
 	}
 
 	void MultipleMeasurmentDihedralAngleWidget::_renameAction() const

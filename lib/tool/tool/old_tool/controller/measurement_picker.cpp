@@ -1,21 +1,21 @@
 #include "measurement_picker.hpp"
-#include "action/action_manager.hpp"
-#include "action/measurement.hpp"
-#include "action/selection.hpp"
-#include "event/event_manager.hpp"
-#include "old_ui/ui/cursor_handler.hpp"
 #include "old_ui/ui/main_window.hpp"
-#include "selection/selection_manager.hpp"
-#include "state/state_machine.hpp"
-#include "state/visualization.hpp"
-#include "vtx_app.hpp"
+#include "tool/old_tool/action/measurement.hpp"
+#include "tool/old_tool/model/measurement/measure_in_progress.hpp"
 #include <QPoint>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/event/event_manager.hpp>
 #include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/measurement/measure_in_progress.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/residue.hpp>
 #include <app/old_app/model/selection.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <ui/old_ui/state/state_machine.hpp>
+#include <ui/old_ui/state/visualization.hpp>
+#include <ui/old_ui/ui/cursor_handler.hpp>
+#include <ui/old_ui/vtx_app.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 
@@ -157,7 +157,7 @@ namespace VTX::Controller
 				}
 				else
 				{
-					VTXApp::get()
+					UI::VTXApp::get()
 						.getStateMachine()
 						.getState<State::Visualization>( ID::State::VISUALIZATION )
 						->setPickerController( ID::Controller::PICKER );
