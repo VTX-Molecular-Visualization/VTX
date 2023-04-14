@@ -1,15 +1,15 @@
 #ifndef __VTX_UI_WIDGET_CHAIN_SEQUENCE_WIDGET__
 #define __VTX_UI_WIDGET_CHAIN_SEQUENCE_WIDGET__
 
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
+#include "old_ui/ui/widget/view_item_widget.hpp"
 #include "sequence_chain_data.hpp"
 #include "sequence_display_widget.hpp"
-#include "ui/widget/view_item_widget.hpp"
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPoint>
 #include <QString>
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/molecule.hpp>
 
 namespace VTX
 {

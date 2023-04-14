@@ -1,14 +1,14 @@
 #ifndef __VTX_VIEW_UI_WIDGET_RENDER_EFFECT_PRESET_LIBRARY__
 #define __VTX_VIEW_UI_WIDGET_RENDER_EFFECT_PRESET_LIBRARY__
 
-#include "model/renderer/render_effect_preset_library.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/renderer/render_effect_library_combo_box.hpp"
-#include "ui/widget/settings/render_effect_preset_editor.hpp"
-#include "view/base_view.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/renderer/render_effect_library_combo_box.hpp"
+#include "old_ui/ui/widget/settings/render_effect_preset_editor.hpp"
 #include <QComboBox>
 #include <QPushButton>
 #include <QWidget>
+#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
+#include <app/old_app/view/base_view.hpp>
 
 namespace VTX::View::UI::Widget::Renderer
 {
@@ -24,8 +24,8 @@ namespace VTX::View::UI::Widget::Renderer
 
 	  public:
 		void localize() override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
-		void notify( const Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void notify( const VTX::Event::VTXEvent * const p_event ) override;
 
 		void selectPreset( const int p_presetIndex );
 

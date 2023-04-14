@@ -1,14 +1,14 @@
 #include "menu_home_session_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "action/setting.hpp"
-#include "io/struct/scene_path_data.hpp"
-#include "setting.hpp"
-#include "ui/dialog.hpp"
-#include "ui/widget/custom_widget/indexed_action.hpp"
-#include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/widget/custom_widget/indexed_action.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QFileDialog>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/old_app/setting.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -16,14 +16,14 @@ namespace VTX::UI::Widget::MainMenu::Home
 {
 	MenuHomeSessionWidget::MenuHomeSessionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( Event::Global::RECENT_FILES_CHANGE );
+		_registerEvent( VTX::Event::Global::RECENT_FILES_CHANGE );
 	}
 
 	MenuHomeSessionWidget::~MenuHomeSessionWidget() {}
 
-	void MenuHomeSessionWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void MenuHomeSessionWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::RECENT_FILES_CHANGE )
+		if ( p_event.name == VTX::Event::Global::RECENT_FILES_CHANGE )
 			_refreshRecentFiles();
 	}
 

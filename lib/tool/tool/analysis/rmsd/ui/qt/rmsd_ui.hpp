@@ -2,7 +2,7 @@
 #define __VTX_TOOL_ANALYSIS_RMSD_UI__
 
 #include "analysis/rmsd/tool_info.hpp"
-#include <old/event/base_event_receiver_vtx.hpp>
+#include <app/old_app/event/base_event_receiver_vtx.hpp>
 #include <ui/core/tool_registration.hpp>
 #include <ui/qt/base_qt_tool.hpp>
 #include <ui/qt/widget/main_menu/menu_toolbutton_widget.hpp>

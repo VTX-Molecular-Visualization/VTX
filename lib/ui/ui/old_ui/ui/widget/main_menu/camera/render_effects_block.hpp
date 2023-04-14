@@ -1,13 +1,13 @@
 #ifndef __VTX_UI_WIDGET_MENU_CAMERA_RENDER_EFFECTS_BLOCK__
 #define __VTX_UI_WIDGET_MENU_CAMERA_RENDER_EFFECTS_BLOCK__
 
-#include "event/event.hpp"
-#include "model/renderer/render_effect_preset_library.hpp"
+#include "old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
+#include "old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "render_effect_preset_button.hpp"
-#include "ui/widget/main_menu/menu_toolblock_widget.hpp"
-#include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
-#include "view/base_view.hpp"
 #include <QWidget>
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
+#include <app/old_app/view/base_view.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::MainMenu::Camera
@@ -20,10 +20,10 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		VTX_VIEW
 
 	  public:
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
-		void notify( const Event::VTXEvent * const p_event ) override;
+		void notify( const VTX::Event::VTXEvent * const p_event ) override;
 
 	  protected:
 		RenderEffectsBlock( Model::Renderer::RenderEffectPresetLibrary * const _renderEffectLibrary,

@@ -27,8 +27,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 	  public:
 		void localize() override;
-		void notify( const Event::VTXEvent * const p_event ) override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void notify( const VTX::Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 		const Model::ID &			   getModelID() const override { return _model->getId(); };
 		const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };

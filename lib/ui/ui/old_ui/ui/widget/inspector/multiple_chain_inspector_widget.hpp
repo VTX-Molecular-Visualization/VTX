@@ -1,19 +1,19 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_CHAIN__
 #define __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_CHAIN__
 
-#include "model/chain.hpp"
-#include "model/representation/instantiated_representation.hpp"
-#include "model/representation/representation.hpp"
-#include "ui//widget/custom_widget/qt_multi_data_field.hpp"
-#include "ui/layout/attribute_list_layout.hpp"
-#include "ui/multi_data_field.hpp"
-#include "ui/widget/custom_widget/folding_button.hpp"
-#include "ui/widget/custom_widget/model_list_component.hpp"
-#include "ui/widget/inspector/inspector_section.hpp"
-#include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
-#include "ui/widget/representation/instantiated_representation_list_widget.hpp"
-#include "ui/widget/representation/representation_inspector_section.hpp"
+#include "old_ui/ui//widget/custom_widget/qt_multi_data_field.hpp"
+#include "old_ui/ui/layout/attribute_list_layout.hpp"
+#include "old_ui/ui/multi_data_field.hpp"
+#include "old_ui/ui/widget/custom_widget/folding_button.hpp"
+#include "old_ui/ui/widget/custom_widget/model_list_component.hpp"
+#include "old_ui/ui/widget/inspector/inspector_section.hpp"
+#include "old_ui/ui/widget/inspector/multiple_model_inspector_widget.hpp"
+#include "old_ui/ui/widget/representation/instantiated_representation_list_widget.hpp"
+#include "old_ui/ui/widget/representation/representation_inspector_section.hpp"
 #include <QWidget>
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/representation/instantiated_representation.hpp>
+#include <app/old_app/model/representation/representation.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {

@@ -1,51 +1,51 @@
 #include "scene_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/scene.hpp"
-#include "action/selection.hpp"
-#include "model/label.hpp"
-#include "model/measurement/angle.hpp"
-#include "model/measurement/dihedral_angle.hpp"
-#include "model/measurement/distance.hpp"
-#include "model/molecule.hpp"
-#include "model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "object3d/scene.hpp"
-#include "selection/selection_manager.hpp"
-#include "style.hpp"
-#include "ui/contextual_menu.hpp"
-#include "ui/mime_type.hpp"
-#include "ui/widget_factory.hpp"
-#include "view/ui/widget/measurement/angle_scene_view.hpp"
-#include "view/ui/widget/measurement/dihedral_angle_scene_view.hpp"
-#include "view/ui/widget/measurement/distance_scene_view.hpp"
-#include "view/ui/widget/molecule_scene_view.hpp"
-#include "view/ui/widget/path_scene_view.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/contextual_menu.hpp"
+#include "old_ui/ui/mime_type.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/view/ui/widget/molecule_scene_view.hpp"
+#include "old_ui/view/ui/widget/path_scene_view.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QScrollBar>
 #include <algorithm>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/scene.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/model/label.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+// #include <tool/old_tool/model/measurement/angle.hpp>
+// #include <tool/old_tool/model/measurement/dihedral_angle.hpp>
+// #include <tool/old_tool/model/measurement/distance.hpp>
+// #include <tool/old_tool/view/ui/widget/measurement/angle_scene_view.hpp>
+// #include <tool/old_tool/view/ui/widget/measurement/dihedral_angle_scene_view.hpp>
+// #include <tool/old_tool/view/ui/widget/measurement/distance_scene_view.hpp>
 
 namespace VTX::UI::Widget::Scene
 {
 	SceneWidget::SceneWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
+		_registerEvent( VTX::Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 
-		_registerEvent( Event::Global::MOLECULE_ADDED );
-		_registerEvent( Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::Event::Global::MOLECULE_ADDED );
+		_registerEvent( VTX::Event::Global::MOLECULE_REMOVED );
 
-		_registerEvent( Event::Global::PATH_ADDED );
-		_registerEvent( Event::Global::PATH_REMOVED );
+		_registerEvent( VTX::Event::Global::PATH_ADDED );
+		_registerEvent( VTX::Event::Global::PATH_REMOVED );
 
-		_registerEvent( Event::Global::LABEL_ADDED );
-		_registerEvent( Event::Global::LABEL_REMOVED );
+		_registerEvent( VTX::Event::Global::LABEL_ADDED );
+		_registerEvent( VTX::Event::Global::LABEL_REMOVED );
 	}
 
-	void SceneWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void SceneWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::MOLECULE_ADDED )
+		if ( p_event.name == VTX::Event::Global::MOLECULE_ADDED )
 		{
-			const Event::VTXEventPtr<Model::Molecule> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Molecule> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
 			const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_MOLECULE );
 
@@ -55,18 +55,18 @@ namespace VTX::UI::Widget::Scene
 			Object3D::Scene & scene = VTXApp::get().getScene();
 			scene.changeModelPosition( *castedEvent.ptr, defaultPosition );
 		}
-		else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::MOLECULE_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Molecule> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Molecule> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
 			deleteSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>( castedEvent.ptr,
 																				   ID::View::UI_MOLECULE_STRUCTURE );
 		}
-		else if ( p_event.name == Event::Global::PATH_ADDED )
+		else if ( p_event.name == VTX::Event::Global::PATH_ADDED )
 		{
-			const Event::VTXEventPtr<Model::Path> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Path> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Path> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Path> &>( p_event );
 
 			const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_PATH );
 
@@ -76,82 +76,82 @@ namespace VTX::UI::Widget::Scene
 			Object3D::Scene & scene = VTXApp::get().getScene();
 			scene.changeModelPosition( *castedEvent.ptr, defaultPosition );
 		}
-		else if ( p_event.name == Event::Global::PATH_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::PATH_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Path> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Path> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Path> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Path> &>( p_event );
 
 			deleteSceneItem<View::UI::Widget::PathSceneView, Model::Path>( castedEvent.ptr, ID::View::UI_SCENE_PATH );
 		}
-		else if ( p_event.name == Event::Global::LABEL_ADDED )
+		else if ( p_event.name == VTX::Event::Global::LABEL_ADDED )
 		{
-			const Event::VTXEventPtr<Model::Label> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Label> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Label> &>( p_event );
 
 			const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_LABEL );
 
 			const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
-			if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
-			{
-				Model::Measurement::Distance * const distanceModel
-					= static_cast<Model::Measurement::Distance *>( castedEvent.ptr );
+			// if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+			//{
+			//	Model::Measurement::Distance * const distanceModel
+			//		= static_cast<Model::Measurement::Distance *>( castedEvent.ptr );
 
-				instantiateSceneItem<View::UI::Widget::Measurement::DistanceSceneView, Model::Measurement::Distance>(
-					distanceModel, ID::View::UI_SCENE_DISTANCE_LABEL, "distanceSceneView" );
-			}
-			else if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
-			{
-				Model::Measurement::Angle * const angleModel
-					= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
+			//	instantiateSceneItem<View::UI::Widget::Measurement::DistanceSceneView, Model::Measurement::Distance>(
+			//		distanceModel, ID::View::UI_SCENE_DISTANCE_LABEL, "distanceSceneView" );
+			//}
+			// else if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
+			//{
+			//	Model::Measurement::Angle * const angleModel
+			//		= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
 
-				instantiateSceneItem<View::UI::Widget::Measurement::AngleSceneView, Model::Measurement::Angle>(
-					angleModel, ID::View::UI_SCENE_ANGLE_LABEL, "angleSceneView" );
-			}
-			else if ( labeltype == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
-			{
-				Model::Measurement::DihedralAngle * const angleModel
-					= static_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
+			//	instantiateSceneItem<View::UI::Widget::Measurement::AngleSceneView, Model::Measurement::Angle>(
+			//		angleModel, ID::View::UI_SCENE_ANGLE_LABEL, "angleSceneView" );
+			//}
+			// else if ( labeltype == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+			//{
+			//	Model::Measurement::DihedralAngle * const angleModel
+			//		= static_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
 
-				instantiateSceneItem<View::UI::Widget::Measurement::DihedralAngleSceneView,
-									 Model::Measurement::DihedralAngle>(
-					angleModel, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL, "dihedralAngleSceneView" );
-			}
+			//	instantiateSceneItem<View::UI::Widget::Measurement::DihedralAngleSceneView,
+			//						 Model::Measurement::DihedralAngle>(
+			//		angleModel, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL, "dihedralAngleSceneView" );
+			//}
 
 			Object3D::Scene & scene = VTXApp::get().getScene();
 			scene.changeModelPosition( *castedEvent.ptr, defaultPosition );
 		}
-		else if ( p_event.name == Event::Global::LABEL_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::LABEL_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Label> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Label> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Label> &>( p_event );
 
 			const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
-			if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
-			{
-				Model::Measurement::Distance * const distanceModel
-					= static_cast<Model::Measurement::Distance *>( castedEvent.ptr );
+			// if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+			//{
+			//	Model::Measurement::Distance * const distanceModel
+			//		= static_cast<Model::Measurement::Distance *>( castedEvent.ptr );
 
-				deleteSceneItem<View::UI::Widget::Measurement::DistanceSceneView>( distanceModel,
-																				   ID::View::UI_SCENE_DISTANCE_LABEL );
-			}
-			else if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
-			{
-				Model::Measurement::Angle * const angleModel
-					= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
+			//	deleteSceneItem<View::UI::Widget::Measurement::DistanceSceneView>( distanceModel,
+			//																	   ID::View::UI_SCENE_DISTANCE_LABEL );
+			//}
+			// else if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
+			//{
+			//	Model::Measurement::Angle * const angleModel
+			//		= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
 
-				deleteSceneItem<View::UI::Widget::Measurement::AngleSceneView>( angleModel,
-																				ID::View::UI_SCENE_ANGLE_LABEL );
-			}
-			else if ( labeltype == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
-			{
-				Model::Measurement::DihedralAngle * const dihedralAngleModel
-					= static_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
+			//	deleteSceneItem<View::UI::Widget::Measurement::AngleSceneView>( angleModel,
+			//																	ID::View::UI_SCENE_ANGLE_LABEL );
+			//}
+			// else if ( labeltype == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+			//{
+			//	Model::Measurement::DihedralAngle * const dihedralAngleModel
+			//		= static_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
 
-				deleteSceneItem<View::UI::Widget::Measurement::DihedralAngleSceneView>(
-					dihedralAngleModel, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL );
-			}
+			//	deleteSceneItem<View::UI::Widget::Measurement::DihedralAngleSceneView>(
+			//		dihedralAngleModel, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL );
+			//}
 		}
-		else if ( p_event.name == Event::Global::SCENE_ITEM_INDEXES_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::SCENE_ITEM_INDEXES_CHANGE )
 		{
 			_refreshItemIndex();
 		}

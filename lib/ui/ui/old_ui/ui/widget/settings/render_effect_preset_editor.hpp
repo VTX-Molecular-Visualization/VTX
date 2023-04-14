@@ -1,25 +1,25 @@
 #ifndef __VTX_UI_WIDGET_RENDER_EFFECT_PRESET_EDITOR__
 #define __VTX_UI_WIDGET_RENDER_EFFECT_PRESET_EDITOR__
 
-#include "color/rgba.hpp"
-#include "model/renderer/render_effect_preset.hpp"
-#include "ui/layout/attribute_list_layout.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/color_field_button.hpp"
-#include "ui/widget/custom_widget/filename_field_widget.hpp"
-#include "ui/widget/custom_widget/float_field_draggable_widget.hpp"
-#include "ui/widget/custom_widget/float_field_slider_widget.hpp"
-#include "ui/widget/custom_widget/integer_field_draggable_widget.hpp"
-#include "ui/widget/custom_widget/integer_field_slider_widget.hpp"
-#include "view/base_view.hpp"
-#include "view/ui/editor_view.hpp"
-#include "view/ui/widget/renderer/render_effect_preset_view.hpp"
+#include "old_ui/ui/layout/attribute_list_layout.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/color_field_button.hpp"
+#include "old_ui/ui/widget/custom_widget/filename_field_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/float_field_draggable_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/float_field_slider_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/integer_field_draggable_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/integer_field_slider_widget.hpp"
+#include "old_ui/view/ui/editor_view.hpp"
+#include "old_ui/view/ui/widget/renderer/render_effect_preset_view.hpp"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QGridLayout>
 #include <QScrollArea>
 #include <QSpinBox>
 #include <QWidget>
+#include <app/old_app/color/rgba.hpp>
+#include <app/old_app/model/renderer/render_effect_preset.hpp>
+#include <app/old_app/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -51,7 +51,7 @@ namespace VTX::UI::Widget::Settings
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
 
-		void _catchModelEvent( const Event::VTXEvent * const p_event ) override;
+		void _catchModelEvent( const VTX::Event::VTXEvent * const p_event ) override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset *					  _preset			 = nullptr;

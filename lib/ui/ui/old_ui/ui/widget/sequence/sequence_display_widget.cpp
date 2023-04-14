@@ -1,15 +1,16 @@
 #include "sequence_display_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/residue.hpp"
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
-#include "model/selection.hpp"
-#include "selection/selection_manager.hpp"
-#include "style.hpp"
-#include "util/ui.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/util/ui.hpp"
+#include "old_ui/vtx_app.hpp"
+#include "qt/action/residue.hpp"
 #include <QPainter>
 #include <QRectF>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/residue.hpp>
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::Sequence
 {
@@ -44,7 +45,7 @@ namespace VTX::UI::Widget::Sequence
 		const Model::Residue * const residue = _getResidueFromLocaleXPos( p_event->localPos().x() );
 		if ( residue != nullptr )
 		{
-			VTX_ACTION( new VTX::Action::Residue::Orient( *residue ) );
+			VTX_ACTION( new QT::Action::Residue::Orient( *residue ) );
 			p_event->accept();
 		}
 	}

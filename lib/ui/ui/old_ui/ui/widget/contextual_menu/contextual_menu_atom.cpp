@@ -1,7 +1,8 @@
 #include "contextual_menu_atom.hpp"
-#include "action/action_manager.hpp"
-#include "action/atom.hpp"
-#include "action/visible.hpp"
+#include "qt/action/atom.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/atom.hpp>
+#include <app/old_app/action/visible.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -30,7 +31,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		setTitle( QString::fromStdString( title ) );
 	}
 
-	void ContextualMenuAtom::_orientAction() { VTX_ACTION( new Action::Atom::Orient( *_target ) ); }
+	void ContextualMenuAtom::_orientAction() { VTX_ACTION( new QT::Action::Atom::Orient( *_target ) ); }
 	void ContextualMenuAtom::_showAction()
 	{
 		VTX_ACTION(

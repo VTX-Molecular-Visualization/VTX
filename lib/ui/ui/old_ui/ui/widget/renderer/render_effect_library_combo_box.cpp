@@ -1,8 +1,8 @@
 #include "render_effect_library_combo_box.hpp"
-#include "model/renderer/render_effect_preset_library.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "style.hpp"
-#include "view/callback_view.hpp"
+#include "old_ui/style.hpp"
+#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/view/callback_view.hpp>
 
 namespace VTX::UI::Widget::Renderer
 {
@@ -82,10 +82,10 @@ namespace VTX::UI::Widget::Renderer
 		}
 	}
 
-	void RenderEffectLibraryComboBox::_onLibraryChange( const Event::VTXEvent * const p_event )
+	void RenderEffectLibraryComboBox::_onLibraryChange( const VTX::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE || p_event->name == Event::Model::DATA_CHANGE
-			 || p_event->name == Event::Model::APPLIED_PRESET_CHANGE )
+		if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE || p_event->name == VTX::Event::Model::DATA_CHANGE
+			 || p_event->name == VTX::Event::Model::APPLIED_PRESET_CHANGE )
 		{
 			_fillItemList();
 

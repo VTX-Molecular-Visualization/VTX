@@ -2,9 +2,9 @@
 #define __VTX_UI_WIDGET_INSPECTOR_ITEM__
 
 #include "inspector_section_flag.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/collapsing_header_widget.hpp"
-#include "ui/widget/inspector/inspector_section.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "old_ui/ui/widget/inspector/inspector_section.hpp"
 #include <QWidget>
 
 namespace VTX::UI::Widget::Inspector

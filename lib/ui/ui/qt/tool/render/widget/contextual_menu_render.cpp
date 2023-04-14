@@ -1,4 +1,5 @@
 #include "contextual_menu_render.hpp"
+#include "old_ui/action/main.hpp"
 #include "qt/action/main.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/dialog.hpp"
@@ -15,13 +16,13 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	ContextualMenuRender::ContextualMenuRender( QWidget * const p_parent ) :
 		QT::Widget::ContextualMenu::BaseContextualMenu( p_parent )
 	{
-		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
 	}
 	ContextualMenuRender ::~ContextualMenuRender() {}
 
-	void ContextualMenuRender ::receiveEvent( const Event::VTXEvent & p_event )
+	void ContextualMenuRender ::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_refreshPickerMode();
 		}

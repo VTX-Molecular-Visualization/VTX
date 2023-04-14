@@ -2,7 +2,7 @@
 #define __VTX_UI_WIDGET_SEQUENCE_DATASET_TAG__
 
 #include "sequence_dataset.hpp"
-#include "util/ui.hpp"
+#include "old_ui/util/ui.hpp"
 
 namespace VTX
 {

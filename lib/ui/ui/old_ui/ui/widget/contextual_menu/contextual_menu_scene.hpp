@@ -2,7 +2,7 @@
 #define __VTX_UI_WIDGET_CONTEXTUAL_MENU_SCENE__
 
 #include "contextual_menu_template.hpp"
-#include "object3d/scene.hpp"
+#include <app/old_app/object3d/scene.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {

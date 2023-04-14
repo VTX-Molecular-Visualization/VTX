@@ -1,26 +1,26 @@
 #include "camera_projection_block.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "action/setting.hpp"
-#include "id.hpp"
-#include "ui/widget/settings/setting_widget_enum.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/widget/settings/setting_widget_enum.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/id.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
 	CameraProjectionBlock::CameraProjectionBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::Event::Global::SETTINGS_CHANGE );
 	};
 
 	CameraProjectionBlock::~CameraProjectionBlock() {}
 
-	void CameraProjectionBlock::receiveEvent( const Event::VTXEvent & p_event )
+	void CameraProjectionBlock::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::SETTINGS_CHANGE )
+		if ( p_event.name == VTX::Event::Global::SETTINGS_CHANGE )
 		{
-			const Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
-				= dynamic_cast<const Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
+			const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
 
 			if ( castedEvent.ref.find( Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.ref.end() )
 			{

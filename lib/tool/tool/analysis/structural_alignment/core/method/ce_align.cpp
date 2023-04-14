@@ -2,8 +2,8 @@
 #include "analysis/rmsd/core/rmsd.hpp"
 #include <cmath>
 #include <list>
-#include <old/model/molecule.hpp>
-#include <old/model/residue.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/residue.hpp>
 #include <string>
 #include <util/logger.hpp>
 

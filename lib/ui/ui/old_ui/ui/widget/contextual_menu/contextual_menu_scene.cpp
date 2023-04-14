@@ -1,11 +1,12 @@
 #include "contextual_menu_scene.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "action/scene.hpp"
-#include "action/viewpoint.hpp"
-#include "io/struct/scene_path_data.hpp"
-#include "ui/dialog.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/vtx_app.hpp"
+#include "qt/action/viewpoint.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/scene.hpp>
+#include <app/old_app/action/viewpoint.hpp>
+#include <app/old_app/io/struct/scene_path_data.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -41,7 +42,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	}
 	void ContextualMenuScene::_saveAsSessionAction() { Dialog::openSaveSessionDialog(); }
 	void ContextualMenuScene::_showAllMoleculesAction() const { VTX_ACTION( new Action::Scene::ShowAllMolecules() ); }
-	void ContextualMenuScene::_addViewpointAction() { VTX_ACTION( new Action::Viewpoint::Create() ); }
+	void ContextualMenuScene::_addViewpointAction() { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
 	void ContextualMenuScene::_clearAction() { VTX_ACTION( new Action::Scene::ResetScene() ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

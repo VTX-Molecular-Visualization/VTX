@@ -12,8 +12,8 @@ namespace VTX
 	{
 		class BaseMouseController :
 			virtual public BaseController,
-			public Event::BaseEventReceiverMouse,
-			public Event::BaseEventReceiverWheel
+			public VTX::Event::BaseEventReceiverMouse,
+			public VTX::Event::BaseEventReceiverWheel
 		{
 		  public:
 			inline static const int CLICK_MAX_DISTANCE = 3;

@@ -1,16 +1,16 @@
 #ifndef __VTX_UI_WIDGET_SETTINGS_VTX__
 #define __VTX_UI_WIDGET_SETTINGS_VTX__
 
-#include "io/struct/image_export.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/float_field_draggable_widget.hpp"
-#include "ui/widget/custom_widget/float_field_slider_widget.hpp"
-#include "ui/widget/custom_widget/integer_field_slider_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/float_field_draggable_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/float_field_slider_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/integer_field_slider_widget.hpp"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QWidget>
+#include <app/old_app/io/struct/image_export.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -19,7 +19,7 @@ namespace VTX::UI::Widget::Settings
 		VTX_WIDGET
 
 	  public:
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
 	  protected:

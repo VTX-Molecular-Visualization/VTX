@@ -4,10 +4,10 @@
 #include "base_event_receiver_keyboard.hpp"
 #include "base_event_receiver_mouse.hpp"
 #include "base_event_receiver_wheel.hpp"
-#include "event/event.hpp"
-#include "generic/base_lockable.hpp"
-#include "generic/base_updatable.hpp"
-#include "id.hpp"
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/generic/base_lockable.hpp>
+#include <app/old_app/generic/base_updatable.hpp>
+#include <app/old_app/id.hpp>
 #include <map>
 #include <queue>
 #include <set>

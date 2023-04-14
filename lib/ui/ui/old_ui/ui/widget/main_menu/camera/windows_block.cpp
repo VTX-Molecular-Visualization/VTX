@@ -1,34 +1,35 @@
 #include "windows_block.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/settings/setting_widget_enum.hpp"
-#include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/action/setting.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget/settings/setting_widget_enum.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/vtx_app.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
 	WindowsBlock::WindowsBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
-		_registerEvent( Event::Global::MAIN_WINDOW_MODE_CHANGE );
-		_registerEvent( Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
+		_registerEvent( VTX::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
+		_registerEvent( VTX::Event::Global::MAIN_WINDOW_MODE_CHANGE );
+		_registerEvent( VTX::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
 	}
 
 	WindowsBlock::~WindowsBlock() {}
 
-	void WindowsBlock::receiveEvent( const Event::VTXEvent & p_event )
+	void WindowsBlock::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
+		if ( p_event.name == VTX::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
 		{
 			refresh();
 		}
-		else if ( p_event.name == Event::Global::MAIN_WINDOW_MODE_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::MAIN_WINDOW_MODE_CHANGE )
 		{
-			const WindowMode mode = dynamic_cast<const Event::VTXEventValue<WindowMode> &>( p_event ).value;
+			const WindowMode mode = dynamic_cast<const VTX::Event::VTXEventValue<WindowMode> &>( p_event ).value;
 			_updateFullscreenButton( mode );
 		}
-		else if ( p_event.name == Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE )
 		{
 			_refreshOverlayVisibilityMenu();
 		}
@@ -199,8 +200,8 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		const Qt::WindowStates windowState = VTXApp::get().getMainWindow().windowState();
 
 		if ( windowState & Qt::WindowStates::enum_type::WindowFullScreen )
-			VTX_ACTION( new Action::Setting::WindowMode( WindowMode::Windowed ) );
+			VTX_ACTION( new Action::Setting::WindowMode( Core::WindowMode::Windowed ) );
 		else
-			VTX_ACTION( new Action::Setting::WindowMode( WindowMode::Fullscreen ) );
+			VTX_ACTION( new Action::Setting::WindowMode( Core::WindowMode::Fullscreen ) );
 	}
 } // namespace VTX::UI::Widget::MainMenu::Camera

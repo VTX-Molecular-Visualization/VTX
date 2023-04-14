@@ -1,13 +1,13 @@
 #ifndef __VTX_UI_WIDGET_MODEL_DROP_AREA__
 #define __VTX_UI_WIDGET_MODEL_DROP_AREA__
 
-#include "id.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QFrame>
 #include <QString>
 #include <QWidget>
+#include <app/old_app/id.hpp>
 #include <vector>
 
 namespace VTX

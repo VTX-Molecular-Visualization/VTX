@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_CURSOR_HANDLER__
 #define __VTX_UI_CURSOR_HANDLER__
 
-#include "ui/widget/contextual_menu/contextual_menu_template.hpp"
+#include "old_ui/ui/widget/contextual_menu/contextual_menu_template.hpp"
 #include <QCursor>
 #include <QWidget>
 #include <set>

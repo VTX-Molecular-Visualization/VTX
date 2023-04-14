@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_WIDGET_RENDER_EFFECT_DEFAULT_BACKGROUND__
 #define __VTX_UI_WIDGET_RENDER_EFFECT_DEFAULT_BACKGROUND__
 
-#include "color/rgba.hpp"
 #include <QIcon>
+#include <app/old_app/color/rgba.hpp>
 #include <string>
 #include <vector>
 

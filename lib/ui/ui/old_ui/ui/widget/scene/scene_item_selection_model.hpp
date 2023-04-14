@@ -1,13 +1,13 @@
 #ifndef __VTX_UI_WIDGET_SCENE_ITEM_SELECTION_MODEL__
 #define __VTX_UI_WIDGET_SCENE_ITEM_SELECTION_MODEL__
 
-#include "id.hpp"
-#include "model/base_model.hpp"
-#include "model/molecule.hpp"
-#include "model/selection.hpp"
 #include <QAbstractItemModel>
 #include <QItemSelection>
 #include <QItemSelectionModel>
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/base_model.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/selection.hpp>
 
 namespace VTX::Model
 {

@@ -1,31 +1,31 @@
 #ifndef __VTX_VIEW_UI_WIDGET_INSTANTIATED_REPRESENTATION_INSPECTOR_VIEW__
 #define __VTX_VIEW_UI_WIDGET_INSTANTIATED_REPRESENTATION_INSPECTOR_VIEW__
 
-#include "color/rgba.hpp"
-#include "event/event.hpp"
-#include "generic/base_colorable.hpp"
-#include "generic/base_representable.hpp"
-#include "model/representation/instantiated_representation.hpp"
-#include "ui/multi_data_field.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/representation/ball_and_stick_representation_widget.hpp"
-#include "ui/widget/representation/ball_stick_and_cartoon_representation_widget.hpp"
-#include "ui/widget/representation/base_representation_widget.hpp"
-#include "ui/widget/representation/cartoon_representation_widget.hpp"
-#include "ui/widget/representation/representation_library_combo_box.hpp"
-#include "ui/widget/representation/sas_representation_widget.hpp"
-#include "ui/widget/representation/ses_representation_widget.hpp"
-#include "ui/widget/representation/stick_and_cartoon_representation_widget.hpp"
-#include "ui/widget/representation/stick_representation_widget.hpp"
-#include "ui/widget/representation/trace_representation_widget.hpp"
-#include "ui/widget/representation/vdw_representation_widget.hpp"
-#include "view/base_view.hpp"
+#include "old_ui/ui/multi_data_field.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/representation/ball_and_stick_representation_widget.hpp"
+#include "old_ui/ui/widget/representation/ball_stick_and_cartoon_representation_widget.hpp"
+#include "old_ui/ui/widget/representation/base_representation_widget.hpp"
+#include "old_ui/ui/widget/representation/cartoon_representation_widget.hpp"
+#include "old_ui/ui/widget/representation/representation_library_combo_box.hpp"
+#include "old_ui/ui/widget/representation/sas_representation_widget.hpp"
+#include "old_ui/ui/widget/representation/ses_representation_widget.hpp"
+#include "old_ui/ui/widget/representation/stick_and_cartoon_representation_widget.hpp"
+#include "old_ui/ui/widget/representation/stick_representation_widget.hpp"
+#include "old_ui/ui/widget/representation/trace_representation_widget.hpp"
+#include "old_ui/ui/widget/representation/vdw_representation_widget.hpp"
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <app/old_app/color/rgba.hpp>
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/generic/base_colorable.hpp>
+#include <app/old_app/generic/base_representable.hpp>
+#include <app/old_app/model/representation/instantiated_representation.hpp>
+#include <app/old_app/view/base_view.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Representation
@@ -51,7 +51,7 @@ namespace VTX::UI::Widget::Representation
 
 	  public:
 		void localize() override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		void refresh();
 
 		void resetState() override;
@@ -108,10 +108,10 @@ namespace VTX::UI::Widget::Representation
 		void _revertRepresentation();
 		void _applyRepresentationToChildren();
 
-		void _onTargetedRepresentationChange( const Event::VTXEvent * const p_event );
+		void _onTargetedRepresentationChange( const VTX::Event::VTXEvent * const p_event );
 		void _recomputeUi();
 
-		void _onDummyChange( const Event::VTXEvent * const p_event );
+		void _onDummyChange( const VTX::Event::VTXEvent * const p_event );
 	};
 
 } // namespace VTX::UI::Widget::Representation

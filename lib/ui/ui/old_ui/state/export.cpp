@@ -1,10 +1,12 @@
 #include "export.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "model/path.hpp"
-#include "model/viewpoint.hpp"
-#include "vtx_app.hpp"
-#include "worker/program_launcher.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/model/path.hpp>
+#include <app/old_app/model/viewpoint.hpp>
+#include <app/old_app/object3d/camera.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/vtx_app.hpp>
+#include <app/old_app/worker/program_launcher.hpp>
 #include <util/chrono.hpp>
 
 namespace VTX

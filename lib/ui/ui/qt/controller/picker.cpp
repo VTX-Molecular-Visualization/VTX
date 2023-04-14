@@ -5,14 +5,15 @@
 #include "qt/tool/keys.hpp"
 #include "qt/tool/render/widget/render_widget.hpp"
 #include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/selection.hpp>
 #include <app/old_app/model/atom.hpp>
 #include <app/old_app/model/chain.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/residue.hpp>
 #include <app/old_app/model/selection.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/selection/selection_enum.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
-#include <app/old_app/action/selection.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Controller

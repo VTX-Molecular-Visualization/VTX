@@ -1,12 +1,12 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_AUTO_ROTATE_WIDGET__
 #define __VTX_UI_WIDGET_CUSTOM_AUTO_ROTATE_WIDGET__
 
-#include "generic/base_auto_rotate.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/float_field_slider_widget.hpp"
-#include "ui/widget/custom_widget/vector3_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/float_field_slider_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/vector3_widget.hpp"
 #include <QPushButton>
 #include <QWidget>
+#include <app/old_app/generic/base_auto_rotate.hpp>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::CustomWidget

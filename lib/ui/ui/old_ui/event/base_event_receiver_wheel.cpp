@@ -5,9 +5,15 @@ namespace VTX
 {
 	namespace Event
 	{
-		BaseEventReceiverWheel ::BaseEventReceiverWheel() { EventManager::get().registerEventReceiverWheel( this ); }
+		BaseEventReceiverWheel ::BaseEventReceiverWheel()
+		{
+			UI::Event::EventManager::get().registerEventReceiverWheel( this );
+		}
 
-		BaseEventReceiverWheel ::~BaseEventReceiverWheel() { EventManager::get().unregisterEventReceiverWheel( this ); }
+		BaseEventReceiverWheel ::~BaseEventReceiverWheel()
+		{
+			UI::Event::EventManager::get().unregisterEventReceiverWheel( this );
+		}
 
 	} // namespace Event
 } // namespace VTX

@@ -1,17 +1,17 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR__
 #define __VTX_UI_WIDGET_INSPECTOR__
 
-#include "id.hpp"
 #include "inspector_item_widget.hpp"
 #include "multiple_model_inspector_widget.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/dock_window_main_widget.hpp"
-#include "view/ui/widget/base_widget_view.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/dock_window_main_widget.hpp"
+#include "old_ui/view/ui/widget/base_widget_view.hpp"
 #include <QDockWidget>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <app/old_app/id.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Inspector
@@ -59,7 +59,7 @@ namespace VTX::UI::Widget::Inspector
 	  public:
 		~InspectorWidget();
 		void localize() override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		void refresh();
 		void clear();
 

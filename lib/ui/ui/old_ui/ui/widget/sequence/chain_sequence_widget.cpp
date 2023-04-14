@@ -1,12 +1,12 @@
 #include "chain_sequence_widget.hpp"
-#include "model/molecule.hpp"
-#include "model/residue.hpp"
-#include "style.hpp"
-#include <util/logger.hpp>
+#include "old_ui/style.hpp"
 #include <QFont>
 #include <QString>
 #include <QVBoxLayout>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/residue.hpp>
 #include <string>
+#include <util/logger.hpp>
 
 namespace VTX
 {

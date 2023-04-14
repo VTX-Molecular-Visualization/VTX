@@ -1,49 +1,51 @@
 #include "contextual_menu_render.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "action/renderer.hpp"
-#include "action/scene.hpp"
-#include "action/setting.hpp"
-#include "action/viewpoint.hpp"
-#include "controller/measurement_picker.hpp"
-#include "io/filesystem.hpp"
-#include "model/renderer/render_effect_preset_library.hpp"
-#include "object3d/scene.hpp"
-#include "setting.hpp"
-#include "state/visualization.hpp"
-#include "ui/dialog.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/renderer/default_background.hpp"
-#include "ui/widget/settings/setting_widget_enum.hpp"
-#include "util/ui.hpp"
-#include "vtx_app.hpp"
-#include "worker/snapshoter.hpp"
+// #include "old_ui/controller/measurement_picker.hpp"
+#include "old_ui/action/main.hpp"
+#include "old_ui/state/visualization.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget/renderer/default_background.hpp"
+#include "old_ui/ui/widget/settings/setting_widget_enum.hpp"
+#include "old_ui/util/ui.hpp"
+#include "old_ui/vtx_app.hpp"
+#include "qt/action/main.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/renderer.hpp>
+#include <app/old_app/action/scene.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/action/viewpoint.hpp>
+#include <app/old_app/io/filesystem.hpp>
+#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/setting.hpp>
+#include <app/old_app/worker/snapshoter.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
 	ContextualMenuRender::ContextualMenuRender( QWidget * const p_parent ) : BaseContextualMenu( p_parent )
 	{
-		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
-		_registerEvent( Event::Global::SETTINGS_CHANGE );
-		_registerEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
-		_registerEvent( Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
+		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
+		_registerEvent( VTX::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
 	}
 	ContextualMenuRender ::~ContextualMenuRender() {}
 
-	void ContextualMenuRender ::receiveEvent( const Event::VTXEvent & p_event )
+	void ContextualMenuRender ::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_refreshPickerMode();
 		}
-		else if ( p_event.name == Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
 		{
 			_refreshAppliedRenderSettingPreset();
 		}
-		else if ( p_event.name == Event::Global::SETTINGS_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::SETTINGS_CHANGE )
 		{
-			const Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
-				= dynamic_cast<const Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
+			const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
 
 			if ( castedEvent.ref.find( Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.ref.end() )
 			{
@@ -55,7 +57,7 @@ namespace VTX::UI::Widget::ContextualMenu
 				_refreshSelectionGranularityMenu();
 			}
 		}
-		else if ( p_event.name == Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE )
 		{
 			_refreshOverlayVisibilityMenu();
 		}
@@ -73,15 +75,14 @@ namespace VTX::UI::Widget::ContextualMenu
 		_selectionModeAction = addAction( "Selection", this, &ContextualMenuRender::_setPickerToSelection );
 		_selectionModeAction->setCheckable( true );
 
-		_measurementModeMenu = new QMenu( this );
-		_measurementModeMenu->setTitle( "Measurement" );
-		_addMeasurementModeActionInMenu( int( Controller::MeasurementPicker::Mode::DISTANCE ), "Distance" );
-		//_addMeasurementModeActionInMenu( int( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE ),
-		//								 "Distance to cycle" );
-		_addMeasurementModeActionInMenu( int( Controller::MeasurementPicker::Mode::ANGLE ), "Angle" );
-		_addMeasurementModeActionInMenu( int( Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE ), "Dihedral angle" );
-		_measurementModeAction = addMenu( _measurementModeMenu );
-		_measurementModeAction->setCheckable( true );
+		//_measurementModeMenu = new QMenu( this );
+		//_measurementModeMenu->setTitle( "Measurement" );
+		//_addMeasurementModeActionInMenu( int( Controller::MeasurementPicker::Mode::DISTANCE ), "Distance" );
+		////_addMeasurementModeActionInMenu( int( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE ),
+		////								 "Distance to cycle" );
+		//_addMeasurementModeActionInMenu( int( Controller::MeasurementPicker::Mode::ANGLE ), "Angle" );
+		//_addMeasurementModeActionInMenu( int( Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE ), "Dihedral angle"
+		//); _measurementModeAction = addMenu( _measurementModeMenu ); _measurementModeAction->setCheckable( true );
 
 		addSection( "Selection" );
 		_selectionGranularityMenu = new QMenu( this );
@@ -213,18 +214,18 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		const ID::VTX_ID & pickerID = state->getCurrentPickerID();
 
-		const Controller::MeasurementPicker::Mode & currentMode
-			= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )->getCurrentMode();
+		// const Controller::MeasurementPicker::Mode & currentMode
+		//	= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )->getCurrentMode();
 
-		for ( QAction * const action : _measurementModeMenu->actions() )
-		{
-			const Controller::MeasurementPicker::Mode mode
-				= Controller::MeasurementPicker::Mode( action->data().toInt() );
+		// for ( QAction * const action : _measurementModeMenu->actions() )
+		//{
+		//	const Controller::MeasurementPicker::Mode mode
+		//		= Controller::MeasurementPicker::Mode( action->data().toInt() );
 
-			const bool checked = pickerID == ID::Controller::MEASUREMENT && currentMode == mode;
+		//	const bool checked = pickerID == ID::Controller::MEASUREMENT && currentMode == mode;
 
-			action->setChecked( checked );
-		}
+		//	action->setChecked( checked );
+		//}
 	}
 
 	void ContextualMenuRender::_refreshCameraProjection() const
@@ -264,7 +265,10 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_loadMoleculeAction() const { UI::Dialog::openLoadMoleculeDialog(); }
 	void ContextualMenuRender::_downloadMoleculeAction() const { UI::Dialog::openDownloadMoleculeDialog(); }
 	void ContextualMenuRender::_showAllMoleculesAction() const { VTX_ACTION( new Action::Scene::ShowAllMolecules() ); }
-	void ContextualMenuRender::_resetCameraAction() const { VTX_ACTION( new Action::Main::ResetCameraController() ); }
+	void ContextualMenuRender::_resetCameraAction() const
+	{
+		VTX_ACTION( new QT::Action::Main::ResetCameraController() );
+	}
 
 	void ContextualMenuRender::_setPickerToSelection() const
 	{
@@ -285,9 +289,9 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuRender::_setMeasurementMode( QAction * p_action ) const
 	{
-		const Controller::MeasurementPicker::Mode mode
-			= Controller::MeasurementPicker::Mode( p_action->data().toInt() );
-		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( mode ) ) );
+		// const Controller::MeasurementPicker::Mode mode
+		//	= Controller::MeasurementPicker::Mode( p_action->data().toInt() );
+		// VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( mode ) ) );
 	}
 	void ContextualMenuRender::_changeProjectionAction( QAction * const p_action )
 	{

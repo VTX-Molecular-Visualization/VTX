@@ -1,6 +1,6 @@
 #include "vector3_widget.hpp"
-#include "style.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 
 namespace VTX::UI::Widget::CustomWidget
 {

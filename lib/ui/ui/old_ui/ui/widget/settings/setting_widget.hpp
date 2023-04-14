@@ -2,9 +2,9 @@
 #define __VTX_UI_WIDGET_SETTING__
 
 #include "setting_widget_enum.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/base_manual_widget_initializer.hpp"
-#include "ui/widget/custom_widget/dock_window_main_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget_initializer.hpp"
+#include "old_ui/ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include <QDockWidget>
 #include <QLabel>
 #include <QPushButton>
@@ -21,7 +21,7 @@ namespace VTX::UI::Widget::Settings
 		VTX_WIDGET
 
 	  public:
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
 		void setCurrentMenu( const SETTING_MENU & p_menuIndex, const bool p_force = false );

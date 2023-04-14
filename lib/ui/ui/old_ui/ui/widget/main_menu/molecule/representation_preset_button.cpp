@@ -1,17 +1,17 @@
 #include "representation_preset_button.hpp"
-#include "action/action_manager.hpp"
-#include "action/representable.hpp"
-#include "generic/base_representable.hpp"
-#include "model/molecule.hpp"
-#include "model/representation/representation.hpp"
-#include "model/representation/representation_library.hpp"
-#include "model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "object3d/scene.hpp"
-#include "representation/representation_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include "style.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/vtx_app.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/representable.hpp>
+#include <app/old_app/generic/base_representable.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/representation/representation.hpp>
+#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/representation/representation_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {

@@ -1,15 +1,15 @@
 #include "render_effect_preset_library_view.hpp"
-#include "action/action_manager.hpp"
-#include "action/renderer.hpp"
-#include "event/event_manager.hpp"
-#include "id.hpp"
-#include "model/renderer/render_effect_preset.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include "render_effect_preset_view.hpp"
-#include "setting.hpp"
-#include "ui/dialog.hpp"
-#include "ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/renderer.hpp>
+#include <app/old_app/event/event_manager.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/renderer/render_effect_preset.hpp>
+#include <app/old_app/setting.hpp>
 
 namespace VTX::View::UI::Widget::Renderer
 {
@@ -19,33 +19,34 @@ namespace VTX::View::UI::Widget::Renderer
 		View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( p_model ),
 		VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
-		_registerEvent( Event::Global::RENDER_EFFECT_ADDED );
-		_registerEvent( Event::Global::RENDER_EFFECT_REMOVED );
+		_registerEvent( VTX::Event::Global::RENDER_EFFECT_ADDED );
+		_registerEvent( VTX::Event::Global::RENDER_EFFECT_REMOVED );
 	}
 
-	void RenderEffectPresetLibraryView::notify( const Event::VTXEvent * const p_event )
+	void RenderEffectPresetLibraryView::notify( const VTX::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::APPLIED_PRESET_CHANGE )
+		if ( p_event->name == VTX::Event::Model::APPLIED_PRESET_CHANGE )
 		{
 			_presetList->setCurrentIndex( _model->getAppliedPresetIndex() );
 		}
 	}
 
-	void RenderEffectPresetLibraryView::receiveEvent( const Event::VTXEvent & p_event )
+	void RenderEffectPresetLibraryView::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::RENDER_EFFECT_ADDED )
+		if ( p_event.name == VTX::Event::Global::RENDER_EFFECT_ADDED )
 		{
-			const Event::VTXEventValue<int> & castedEvent = dynamic_cast<const Event::VTXEventValue<int> &>( p_event );
-			const int						  representationIndex = castedEvent.value;
+			const VTX::Event::VTXEventValue<int> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventValue<int> &>( p_event );
+			const int representationIndex = castedEvent.value;
 
 			_refreshDeletePresetButton();
 		}
-		else if ( p_event.name == Event::Global::RENDER_EFFECT_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::RENDER_EFFECT_REMOVED )
 		{
 			_refreshPresetDisplayed( true );
 			_refreshDeletePresetButton();
 		}
-		else if ( p_event.name == Event::Global::RENDER_EFFECT_LIBRARY_CLEARED )
+		else if ( p_event.name == VTX::Event::Global::RENDER_EFFECT_LIBRARY_CLEARED )
 		{
 			const bool previousSignalState = blockSignals( true );
 			_presetList->setCurrentIndex( -1 );

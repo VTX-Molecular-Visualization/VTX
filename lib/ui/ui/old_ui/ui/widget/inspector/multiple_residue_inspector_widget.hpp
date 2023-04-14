@@ -1,17 +1,17 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_RESIDUE__
 #define __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_RESIDUE__
 
-#include "model/representation/instantiated_representation.hpp"
-#include "model/representation/representation.hpp"
-#include "model/residue.hpp"
-#include "ui//widget/custom_widget/qt_multi_data_field.hpp"
-#include "ui/layout/attribute_list_layout.hpp"
-#include "ui/widget/inspector/inspector_section.hpp"
-#include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
-#include "ui/widget/representation/representation_inspector_section.hpp"
-#include "view/base_view.hpp"
+#include "old_ui/ui//widget/custom_widget/qt_multi_data_field.hpp"
+#include "old_ui/ui/layout/attribute_list_layout.hpp"
+#include "old_ui/ui/widget/inspector/inspector_section.hpp"
+#include "old_ui/ui/widget/inspector/multiple_model_inspector_widget.hpp"
+#include "old_ui/ui/widget/representation/representation_inspector_section.hpp"
 #include <QLabel>
 #include <QWidget>
+#include <app/old_app/model/representation/instantiated_representation.hpp>
+#include <app/old_app/model/representation/representation.hpp>
+#include <app/old_app/model/residue.hpp>
+#include <app/old_app/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {

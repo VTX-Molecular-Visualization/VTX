@@ -2,24 +2,24 @@
 #define __VTX_UI_WIDGET_RENDER__
 
 #include "base_integrated_widget.hpp"
-#include "event/base_event_firerer_input.hpp"
-#include "model/base_model.hpp"
-#include "mvc/mvc_manager.hpp"
+#include "old_ui/event/base_event_firerer_input.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include "opengl_widget.hpp"
 #include "overlay/base_overlay.hpp"
 #include "overlay/visualization_quick_access.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "view/base_view.hpp"
-#include "worker/snapshoter.hpp"
 #include <QFocusEvent>
 #include <QResizeEvent>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <app/old_app/model/base_model.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/view/base_view.hpp>
+#include <app/old_app/worker/snapshoter.hpp>
 #include <map>
 
 namespace VTX::UI::Widget::Render
 {
-	class RenderWidget : public BaseManualWidget<QWidget>, public Event::BaseEventFirererInput
+	class RenderWidget : public BaseManualWidget<QWidget>, public VTX::UI::Event::BaseEventFirererInput
 	{
 		VTX_WIDGET
 
@@ -41,7 +41,7 @@ namespace VTX::UI::Widget::Render
 		void setOverlayVisibility( const Overlay::OVERLAY & p_overlay, const bool p_visible );
 		void showAllOverlays( const bool p_show );
 
-		void			 receiveEvent( const Event::VTXEvent & p_event ) override;
+		void			 receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::RENDER_WIDGET; }
 
 	  protected:

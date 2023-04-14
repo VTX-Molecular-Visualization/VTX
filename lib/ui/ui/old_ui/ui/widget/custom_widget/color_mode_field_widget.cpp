@@ -1,9 +1,9 @@
 #include "color_mode_field_widget.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/settings/setting_widget.hpp"
-#include "ui/widget_factory.hpp"
-#include "util/ui.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget/settings/setting_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/util/ui.hpp"
+#include "old_ui/vtx_app.hpp"
 
 namespace VTX::UI::Widget::CustomWidget
 {

@@ -1,6 +1,9 @@
 #include "contextual_menu_selection.hpp"
 // #include "__new_archi/tool/analysis/rmsd/action.hpp"
 //  #include "__new_archi/tool/analysis/structural_alignment/action.hpp"
+#include "qt/action/label.hpp"
+#include "qt/action/selection.hpp"
+#include "qt/action/viewpoint.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/main_window.hpp"
 #include "qt/tool/keys.hpp"
@@ -277,27 +280,27 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_toggleWaterVisibilityAction()
 	{
-		VTX_ACTION( new Action::Selection::ToggleWatersVisibility( *_target ) );
+		VTX_ACTION( new VTX::Action::Selection::ToggleWatersVisibility( *_target ) );
 	}
 	void ContextualMenuSelection::_toggleHydrogenVisibilityAction()
 	{
-		VTX_ACTION( new Action::Selection::ToggleHydrogensVisibility( *_target ) );
+		VTX_ACTION( new VTX::Action::Selection::ToggleHydrogensVisibility( *_target ) );
 	}
 	void ContextualMenuSelection::_toggleSolventVisibilityAction()
 	{
-		VTX_ACTION( new Action::Selection::ToggleSolventVisibility( *_target ) );
+		VTX_ACTION( new VTX::Action::Selection::ToggleSolventVisibility( *_target ) );
 	}
 	void ContextualMenuSelection::_toggleIonVisibilityAction()
 	{
-		VTX_ACTION( new Action::Selection::ToggleIonsVisibility( *_target ) );
+		VTX_ACTION( new VTX::Action::Selection::ToggleIonsVisibility( *_target ) );
 	}
 
 	void ContextualMenuSelection::_toggleTrajectoryPlayingAction()
 	{
-		VTX_ACTION( new Action::Selection::ToggleTrajectoryPlaying( *_target ) );
+		VTX_ACTION( new VTX::Action::Selection::ToggleTrajectoryPlaying( *_target ) );
 	}
 
-	void ContextualMenuSelection::_orientAction() { VTX_ACTION( new Action::Selection::Orient( *_target ) ); }
+	void ContextualMenuSelection::_orientAction() { VTX_ACTION( new QT::Action::Selection::Orient( *_target ) ); }
 	void ContextualMenuSelection::_showAction()
 	{
 		if ( _focusedTarget != nullptr )
@@ -318,22 +321,22 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 			if ( focusedModelBaseVisible != nullptr )
 			{
-				VTX_ACTION( new Action::Selection::ChangeVisibility(
+				VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
 					*_target,
 					*focusedModelBaseVisible,
 					focusedModelTypeID,
-					Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+					VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
 			}
 			else
 			{
-				VTX_ACTION( new Action::Selection::ChangeVisibility(
-					*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+				VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
+					*_target, VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
 			}
 		}
 		else
 		{
-			VTX_ACTION( new Action::Selection::ChangeVisibility(
-				*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+			VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
+				*_target, VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
 		}
 	}
 	void ContextualMenuSelection::_hideAction()
@@ -356,22 +359,22 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 			if ( focusedModelBaseVisible != nullptr )
 			{
-				VTX_ACTION( new Action::Selection::ChangeVisibility(
+				VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
 					*_target,
 					*focusedModelBaseVisible,
 					focusedModelTypeID,
-					Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+					VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
 			}
 			else
 			{
-				VTX_ACTION( new Action::Selection::ChangeVisibility(
-					*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+				VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
+					*_target, VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
 			}
 		}
 		else
 		{
-			VTX_ACTION( new Action::Selection::ChangeVisibility(
-				*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+			VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
+				*_target, VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
 		}
 	}
 	void ContextualMenuSelection::_soloAction()
@@ -394,32 +397,32 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 			if ( focusedModelBaseVisible != nullptr )
 			{
-				VTX_ACTION( new Action::Selection::ChangeVisibility(
+				VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
 					*_target,
 					*focusedModelBaseVisible,
 					focusedModelTypeID,
-					Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+					VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
 			}
 			else
 			{
-				VTX_ACTION( new Action::Selection::ChangeVisibility(
-					*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+				VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
+					*_target, VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
 			}
 		}
 		else
 		{
-			VTX_ACTION( new Action::Selection::ChangeVisibility(
-				*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+			VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
+				*_target, VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
 		}
 	}
-	void ContextualMenuSelection::_copyAction() { VTX_ACTION( new Action::Selection::Copy( *_target ) ); }
+	void ContextualMenuSelection::_copyAction() { VTX_ACTION( new VTX::Action::Selection::Copy( *_target ) ); }
 	void ContextualMenuSelection::_copyFrameAction( const int p_frame )
 	{
-		VTX_ACTION( new Action::Selection::Copy( *_target, p_frame ) );
+		VTX_ACTION( new VTX::Action::Selection::Copy( *_target, p_frame ) );
 	}
 
-	void ContextualMenuSelection::_extractAction() { VTX_ACTION( new Action::Selection::Extract( *_target ) ); }
-	void ContextualMenuSelection::_deleteAction() { VTX_ACTION( new Action::Selection::Delete( *_target ) ); }
+	void ContextualMenuSelection::_extractAction() { VTX_ACTION( new VTX::Action::Selection::Extract( *_target ) ); }
+	void ContextualMenuSelection::_deleteAction() { VTX_ACTION( new VTX::Action::Selection::Delete( *_target ) ); }
 	void ContextualMenuSelection::_exportAction() { QT::Tool::Session::Dialog::openExportMoleculeDialog(); }
 	void ContextualMenuSelection::_loadTrajectoryAction()
 	{
@@ -443,7 +446,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_applyRepresentationAction( const int p_representationIndex )
 	{
-		VTX_ACTION( new Action::Selection::ChangeRepresentationPreset( *_target, p_representationIndex ) );
+		VTX_ACTION( new VTX::Action::Selection::ChangeRepresentationPreset( *_target, p_representationIndex ) );
 	}
 
 	void ContextualMenuSelection::_updateCurrentRepresentationFeedback( QAction & _action ) const
@@ -599,7 +602,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		return false;
 	}
 
-	void ContextualMenuSelection::_addViewpointAction() { VTX_ACTION( new VTX::Action::Viewpoint::Create() ); }
+	void ContextualMenuSelection::_addViewpointAction() { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
 	void ContextualMenuSelection::_clearViewpointsAction()
 	{
 		Model::Path * const targetPath = dynamic_cast<Model::Path * const>( _target );
@@ -612,18 +615,18 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 			= _target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT );
 
 		if ( viewpointsInSelection.size() > 0 )
-			VTX_ACTION( new Action::Viewpoint::GoTo( **viewpointsInSelection.crbegin() ) );
+			VTX_ACTION( new QT::Action::Viewpoint::GoTo( **viewpointsInSelection.crbegin() ) );
 	}
 	void ContextualMenuSelection::_relocateViewpointAction()
 	{
 		std::vector<Model::Viewpoint *> viewpointsInSelection
 			= _target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT );
 
-		VTX_ACTION( new Action::Viewpoint::Relocate( viewpointsInSelection ) );
+		VTX_ACTION( new VTX::Action::Viewpoint::Relocate( viewpointsInSelection ) );
 	}
 	void ContextualMenuSelection::_deleteViewpointAction()
 	{
-		VTX_ACTION( new Action::Viewpoint::Delete(
+		VTX_ACTION( new QT::Action::Viewpoint::Delete(
 			_target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT ) ) );
 	}
 
@@ -633,7 +636,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		_getAllLabelTypes( labelsInSelection );
 
 		if ( labelsInSelection.size() > 0 )
-			VTX_ACTION( new Action::Label::Orient( labelsInSelection ) );
+			VTX_ACTION( new QT::Action::Label::Orient( labelsInSelection ) );
 	}
 	void ContextualMenuSelection::_deleteLabelAction()
 	{
@@ -641,7 +644,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		_getAllLabelTypes( labelsInSelection );
 
 		if ( labelsInSelection.size() > 0 )
-			VTX_ACTION( new Action::Label::Delete( labelsInSelection ) );
+			VTX_ACTION( new VTX::Action::Label::Delete( labelsInSelection ) );
 	}
 
 	void ContextualMenuSelection::_getAllLabelTypes( std::unordered_set<Model::Label *> & p_labels ) const

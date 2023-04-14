@@ -1,7 +1,7 @@
 #include "filename_field_widget.hpp"
-#include "io/filesystem.hpp"
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
+#include <app/old_app/io/filesystem.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {

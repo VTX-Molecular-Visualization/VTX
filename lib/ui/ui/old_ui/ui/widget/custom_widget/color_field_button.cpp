@@ -1,5 +1,5 @@
 #include "color_field_button.hpp"
-#include "style.hpp"
+#include "old_ui/style.hpp"
 #include <QPainter>
 #include <QRect>
 #include <string>

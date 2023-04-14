@@ -1,15 +1,15 @@
 #include "base_representation_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/instantiated_representation.hpp"
-#include "action/molecule.hpp"
-#include "generic/base_representable.hpp"
-#include "id.hpp"
-#include "model/molecule.hpp"
-#include "style.hpp"
-#include <util/logger.hpp>
-#include "util/ui.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/util/ui.hpp"
 #include <QLabel>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/instantiated_representation.hpp>
+#include <app/old_app/action/molecule.hpp>
+#include <app/old_app/generic/base_representable.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/molecule.hpp>
 #include <string>
+#include <util/logger.hpp>
 
 namespace VTX::UI::Widget::Representation
 {

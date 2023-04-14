@@ -25,6 +25,11 @@ namespace VTX::Worker
 	{
 	}
 
+	Snapshoter::Snapshoter( const MODE & p_mode, void * p_imageTarget, const IO::Struct::ImageExport & p_exportData ) :
+		Snapshoter( p_mode, FilePath(), p_exportData )
+	{
+	}
+
 	// Snapshoter::Snapshoter( const MODE &					p_mode,
 	//						QImage *						p_imageTarget,
 	//						const IO::Struct::ImageExport & p_exportData ) :

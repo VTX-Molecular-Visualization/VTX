@@ -1,9 +1,9 @@
 #include "stick_representation_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/representable.hpp"
-#include "setting.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/representable.hpp>
+#include <app/old_app/setting.hpp>
 
 namespace VTX::UI::Widget::Representation
 {

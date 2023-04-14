@@ -1,11 +1,11 @@
-#include "util/measurement.hpp"
-#include "model/measurement/angle.hpp"
-#include "model/measurement/dihedral_angle.hpp"
-#include "model/measurement/distance.hpp"
-#include "model/molecule.hpp"
-#include "style.hpp"
-#include "util/string.hpp"
+#include "old_tool/util/measurement.hpp"
+#include "old_tool/model/measurement/angle.hpp"
+#include "old_tool/model/measurement/dihedral_angle.hpp"
+#include "old_tool/model/measurement/distance.hpp"
+#include <app/old_app/model/molecule.hpp>
 #include <string>
+#include <ui/old_ui/style.hpp>
+#include <util/string.hpp>
 
 namespace VTX::Util::Measurement
 {

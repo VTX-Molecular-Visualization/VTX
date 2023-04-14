@@ -1,5 +1,5 @@
 #include "sequence_dataset_residue.hpp"
-#include "style.hpp"
+#include "old_ui/style.hpp"
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {

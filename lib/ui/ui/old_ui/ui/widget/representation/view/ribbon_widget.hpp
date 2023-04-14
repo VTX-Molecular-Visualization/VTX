@@ -2,8 +2,8 @@
 #define __VTX_UI_WIDGET_REPRESENTATION_VIEW_RIBBON_WIDGET__
 
 #include "base_representation_view_widget.hpp"
-#include "ui/widget/custom_widget/qt_multi_data_field.hpp"
-#include "ui/widget/custom_widget/ribbon_color_mode_field_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/qt_multi_data_field.hpp"
+#include "old_ui/ui/widget/custom_widget/ribbon_color_mode_field_widget.hpp"
 
 namespace VTX::UI::Widget::Representation::View
 {

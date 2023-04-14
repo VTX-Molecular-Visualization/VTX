@@ -1,14 +1,14 @@
 #include "image_exporter.hpp"
-#include "action/main.hpp"
-#include "io/struct/image_export.hpp"
-#include "setting.hpp"
-#include "spec.hpp"
-#include "ui/dialog.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QFileDialog>
 #include <QPushButton>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/io/struct/image_export.hpp>
+#include <app/old_app/setting.hpp>
+#include <app/old_app/spec.hpp>
 
 namespace VTX::UI::Widget::Dialog
 {

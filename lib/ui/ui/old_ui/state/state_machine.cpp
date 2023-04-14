@@ -1,12 +1,12 @@
 #include "state_machine.hpp"
-#include <util/types.hpp>
-#include "event/event.hpp"
-#include "event/event_manager.hpp"
-#include <util/exceptions.hpp>
 #include "export.hpp"
+#include "old_ui/vtx_app.hpp"
 #include "play.hpp"
 #include "visualization.hpp"
-#include "vtx_app.hpp"
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/event/event_manager.hpp>
+#include <util/exceptions.hpp>
+#include <util/types.hpp>
 
 namespace VTX
 {
@@ -33,7 +33,7 @@ namespace VTX
 			VTX_DEBUG( "Go to state: " + p_name );
 			if ( _states.find( p_name ) != _states.end() )
 			{
-				VTX_EVENT( new Event::VTXEventValue<ID::VTX_ID>( Event::Global::CHANGE_STATE, p_name ) );
+				VTX_EVENT( new VTX::Event::VTXEventValue<ID::VTX_ID>( VTX::Event::Global::CHANGE_STATE, p_name ) );
 				_switchState( _states[ p_name ], p_arg );
 			}
 			else

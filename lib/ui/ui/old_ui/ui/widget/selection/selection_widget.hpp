@@ -1,15 +1,15 @@
 #ifndef __VTX_UI_WIDGET_SELECTION__
 #define __VTX_UI_WIDGET_SELECTION__
 
-#include "model/selection.hpp"
-#include "selection/selection_enum.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/dock_window_main_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include <QComboBox>
 #include <QDockWidget>
 #include <QString>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/selection/selection_enum.hpp>
 
 namespace VTX::UI::Widget::Selection
 {
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::Selection
 		VTX_WIDGET
 
 	  public:
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
 	  protected:

@@ -33,7 +33,7 @@ namespace VTX
 	{
 		class MainWindow;
 	}
-	class VTXApp final
+	class VTXApp // final
 	{
 	  public:
 		inline static VTXApp & get()

@@ -1,12 +1,12 @@
 #ifndef __VTX_MODEL_MEASUREMENT_DISTANCE__
 #define __VTX_MODEL_MEASUREMENT_DISTANCE__
 
-#include "event/base_event_receiver_vtx.hpp"
-#include "event/event.hpp"
-#include "generic/base_auto_delete.hpp"
-#include "id.hpp"
-#include "model/label.hpp"
-#include "view/callback_view.hpp"
+#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/generic/base_auto_delete.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/label.hpp>
+#include <app/old_app/view/callback_view.hpp>
 #include <string>
 #include <utility>
 #include <vector>

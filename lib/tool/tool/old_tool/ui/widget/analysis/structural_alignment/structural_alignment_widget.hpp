@@ -9,7 +9,7 @@
 #include <QString>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <old/generic/base_scene_item.hpp>
+#include <app/old_app/generic/base_scene_item.hpp>
 #include <old_ui/ui/layout/attribute_list_layout.hpp>
 #include <old_ui/ui/widget/base_manual_widget.hpp>
 #include <old_ui/ui/widget/custom_widget/dock_window_main_widget.hpp>

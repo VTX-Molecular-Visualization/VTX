@@ -2,8 +2,8 @@
 #define __VTX_UI_QT_WIDGET_CONTEXTUAL_MENU_SELECTION__
 
 #include "qt/widget/contextual_menu/contextual_menu_template.hpp"
-// #include "ui/widget/custom_widget/set_representation_menu.hpp"
-// #include "ui/widget/custom_widget/trajectory_frames_menu.hpp"
+// #include "old_ui/ui/widget/custom_widget/set_representation_menu.hpp"
+// #include "old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include <QHideEvent>
 #include <QMenu>
 #include <map>

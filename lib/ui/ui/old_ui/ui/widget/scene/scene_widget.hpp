@@ -1,13 +1,10 @@
 #ifndef __VTX_UI_WIDGET_SCENE__
 #define __VTX_UI_WIDGET_SCENE__
 
-#include "generic/base_scene_item.hpp"
-#include "model/base_model.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/dock_window_main_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include "scene_item_widget.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/dock_window_main_widget.hpp"
-#include "ui/widget_factory.hpp"
-#include "view/base_view.hpp"
 #include <QDockWidget>
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -15,6 +12,9 @@
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QVariant>
+#include <app/old_app/generic/base_scene_item.hpp>
+#include <app/old_app/model/base_model.hpp>
+#include <app/old_app/view/base_view.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Scene
@@ -24,7 +24,7 @@ namespace VTX::UI::Widget::Scene
 		VTX_WIDGET
 
 	  public:
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
 		const std::vector<SceneItemWidget *> & getSceneItemWidgets() const { return _sceneWidgets; }

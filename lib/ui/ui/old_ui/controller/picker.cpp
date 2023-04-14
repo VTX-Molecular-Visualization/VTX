@@ -1,16 +1,17 @@
 #include "picker.hpp"
-#include "action/action_manager.hpp"
-#include "action/selection.hpp"
-#include "model/atom.hpp"
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
-#include "model/residue.hpp"
-#include "model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "selection/selection_manager.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "qt/action/selection.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/model/atom.hpp>
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/residue.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <app/old_app/vtx_app.hpp>
 #include <util/logger.hpp>
-#include "ui/main_window.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX::Controller
 {
@@ -368,7 +369,7 @@ namespace VTX::Controller
 		if ( _isModifierExclusive( ModifierFlag::None ) )
 		{
 			const Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
-			VTX_ACTION( new Action::Selection::Orient( selectionModel ) );
+			VTX_ACTION( new UI::QT::Action::Selection::Orient( selectionModel ) );
 		}
 	}
 

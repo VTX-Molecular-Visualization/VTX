@@ -1,21 +1,21 @@
 #include "multiple_chain_inspector_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/chain.hpp"
-#include "action/instantiated_representation.hpp"
-#include "action/molecule.hpp"
-#include "model/molecule.hpp"
-#include "representation/representation_manager.hpp"
-#include "style.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/custom_widget/collapsing_header_widget.hpp"
-#include "ui/widget/custom_widget/folding_button.hpp"
-#include "ui/widget/inspector/inspector_widget.hpp"
-#include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/folding_button.hpp"
+#include "old_ui/ui/widget/inspector/inspector_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
 #include <QPixmap>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/chain.hpp>
+#include <app/old_app/action/instantiated_representation.hpp>
+#include <app/old_app/action/molecule.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/representation/representation_manager.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {

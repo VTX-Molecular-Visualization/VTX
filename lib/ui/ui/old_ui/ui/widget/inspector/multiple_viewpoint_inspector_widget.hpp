@@ -1,15 +1,15 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_VIEWPOINT__
 #define __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_VIEWPOINT__
 
-#include "model/viewpoint.hpp"
-#include "ui/widget/custom_widget/collapsing_header_widget.hpp"
-#include "ui/widget/custom_widget/embedded_data_push_button.hpp"
-#include "ui/widget/custom_widget/qt_multi_data_field.hpp"
-#include "ui/widget/custom_widget/transform_widget.hpp"
-#include "ui/widget/inspector/inspector_section.hpp"
-#include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/embedded_data_push_button.hpp"
+#include "old_ui/ui/widget/custom_widget/qt_multi_data_field.hpp"
+#include "old_ui/ui/widget/custom_widget/transform_widget.hpp"
+#include "old_ui/ui/widget/inspector/inspector_section.hpp"
+#include "old_ui/ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include <QPushButton>
 #include <QWidget>
+#include <app/old_app/model/viewpoint.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {

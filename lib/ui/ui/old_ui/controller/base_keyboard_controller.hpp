@@ -2,8 +2,7 @@
 #define __VTX_BASE_KEYBOARD_CONTROLLER__
 
 #include "base_controller.hpp"
-#include "event/base_event_receiver_keyboard.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/event/base_event_receiver_keyboard.hpp"
 #include <set>
 
 namespace VTX
@@ -25,7 +24,7 @@ namespace VTX
 			AltGr	= 1 << 3,
 		};
 
-		class BaseKeyboardController : virtual public BaseController, public Event::BaseEventReceiverKeyboard
+		class BaseKeyboardController : virtual public BaseController, public VTX::Event::BaseEventReceiverKeyboard
 		{
 		  public:
 			virtual void receiveEvent( const QKeyEvent & p_event ) override;

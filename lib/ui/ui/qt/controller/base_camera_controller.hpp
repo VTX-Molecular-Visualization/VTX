@@ -1,11 +1,12 @@
 #ifndef __VTX_UI_QT_BASE_CAMERA_CONTROLLER__
 #define __VTX_UI_QT_BASE_CAMERA_CONTROLLER__
 
-#include "core/controller/base_controller.hpp"
 #include "base_gamepad_controller.hpp"
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
+#include "core/controller/base_controller.hpp"
 #include "id.hpp"
+#include <app/old_app/id.hpp>
 #include <app/old_app/object3d/camera.hpp>
 #include <app/old_app/object3d/helper/aabb.hpp>
 #include <util/types.hpp>

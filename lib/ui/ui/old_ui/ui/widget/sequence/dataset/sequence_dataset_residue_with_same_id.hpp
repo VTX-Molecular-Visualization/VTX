@@ -1,9 +1,9 @@
 #ifndef __VTX_UI_WIDGET_SEQUENCE_DATASET_RESIDUE_WITH_SAME_ID__
 #define __VTX_UI_WIDGET_SEQUENCE_DATASET_RESIDUE_WITH_SAME_ID__
 
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
 #include "sequence_dataset.hpp"
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/molecule.hpp>
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {

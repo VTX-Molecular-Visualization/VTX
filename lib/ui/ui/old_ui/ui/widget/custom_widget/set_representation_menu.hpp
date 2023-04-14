@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_SET_REPRESENTATION_MENU__
 #define __VTX_UI_WIDGET_CUSTOM_SET_REPRESENTATION_MENU__
 
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QAction>
 #include <QActionGroup>
 #include <QMenu>

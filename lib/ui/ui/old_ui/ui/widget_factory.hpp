@@ -1,12 +1,12 @@
 #ifndef __VTX_UI_WIDGETFACTORY__
 #define __VTX_UI_WIDGETFACTORY__
 
-#include "mvc/mvc_manager.hpp"
 #include "widget/base_manual_widget.hpp"
 #include "widget/base_manual_widget_initializer.hpp"
 #include <QMainWindow>
 #include <QTreeWidget>
 #include <QWidget>
+#include <app/old_app/mvc/mvc_manager.hpp>
 #include <string>
 #include <type_traits>
 

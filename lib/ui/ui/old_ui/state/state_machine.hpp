@@ -2,8 +2,8 @@
 #define __VTX_STATE_MACHINE__
 
 #include "base_state.hpp"
-#include "generic/base_updatable.hpp"
-#include "id.hpp"
+#include <app/old_app/generic/base_updatable.hpp>
+#include <app/old_app/id.hpp>
 #include <map>
 #include <memory>
 

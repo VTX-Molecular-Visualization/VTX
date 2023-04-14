@@ -3,8 +3,10 @@
 
 #include "contextual_menu.hpp"
 #include "cursor_handler.hpp"
-#include "ui_main_window.h"
-#include "widget/analysis/structural_alignment/structural_alignment_widget.hpp"
+#include "old_ui/event/base_event_firerer_input.hpp"
+#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/old_app/event/event.hpp>
+// #include "widget/analysis/structural_alignment/structural_alignment_widget.hpp"
 #include "widget/base_widget.hpp"
 #include "widget/console/console_widget.hpp"
 #include "widget/inspector/inspector_widget.hpp"
@@ -21,12 +23,16 @@
 #include <QCloseEvent>
 #include <QDockWidget>
 #include <QMainWindow>
+#include <QTimer>
 
 namespace VTX
 {
 	namespace UI
 	{
-		class MainWindow : public Widget::BaseWidget<QMainWindow, Ui_MainWindow>, public Event::BaseEventFirererInput
+		class MainWindow :
+			public QMainWindow,
+			public VTX::Event::BaseEventReceiverVTX,
+			public VTX::UI::Event::BaseEventFirererInput
 		{
 			Q_OBJECT
 
@@ -46,7 +52,7 @@ namespace VTX
 			void		updateRenderSetting( const Renderer::RENDER_SETTING );
 			const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
-			void receiveEvent( const Event::VTXEvent & p_event ) override;
+			void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 			const ContextualMenu & getContextualMenu() { return *_contextualMenu; }
 			CursorHandler &		   getCursorHandler() { return *_cursorHandler; }
@@ -99,7 +105,7 @@ namespace VTX
 			Widget::Selection::SelectionWidget * _selectionWidget = nullptr;
 			Widget::Settings::SettingWidget *	 _settingWidget	  = nullptr;
 
-			Widget::Analysis::StructuralAlignment::StructuralAlignmentWidget * _structuralAlignmentWidget = nullptr;
+			// Widget::Analysis::StructuralAlignment::StructuralAlignmentWidget * _structuralAlignmentWidget = nullptr;
 
 			ContextualMenu * _contextualMenu = nullptr;
 			CursorHandler *	 _cursorHandler	 = nullptr;

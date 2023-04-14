@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_DOCK_WINDOW_MAIN_WIDGET__
 #define __VTX_UI_WIDGET_CUSTOM_DOCK_WINDOW_MAIN_WIDGET__
 
-#include "state/state_machine.hpp"
-#include "state/visualization.hpp"
+#include "old_ui/state/state_machine.hpp"
+#include "old_ui/state/visualization.hpp"
 #include <QFocusEvent>
 #include <QWidget>
 #include <type_traits>

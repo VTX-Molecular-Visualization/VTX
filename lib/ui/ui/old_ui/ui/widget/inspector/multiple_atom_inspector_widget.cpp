@@ -1,18 +1,18 @@
 #include "multiple_atom_inspector_widget.hpp"
-#include "action/action_manager.hpp"
-#include "model/bond.hpp"
-#include "model/molecule.hpp"
-#include "model/residue.hpp"
-#include "style.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/inspector/inspector_widget.hpp"
-#include "ui/widget_factory.hpp"
-#include "util/ui.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget/inspector/inspector_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/util/ui.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
 #include <QPixmap>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/model/bond.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/residue.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::Inspector
@@ -237,9 +237,9 @@ namespace VTX::UI::Widget::Inspector
 		_infoSection->localize();
 	}
 
-	void MultipleAtomWidget::_eventCalledOnMolecule( const Event::VTXEvent * const p_event )
+	void MultipleAtomWidget::_eventCalledOnMolecule( const VTX::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::TRAJECTORY_FRAME_CHANGE )
+		if ( p_event->name == VTX::Event::Model::TRAJECTORY_FRAME_CHANGE )
 			_onTargetChangeEvent( nullptr, p_event );
 	}
 

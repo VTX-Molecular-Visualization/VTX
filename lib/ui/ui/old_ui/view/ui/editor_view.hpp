@@ -1,12 +1,12 @@
 #ifndef __VTX_VIEW_UI_EDITOR_TARGET_VIEW__
 #define __VTX_VIEW_UI_EDITOR_TARGET_VIEW__
 
-#include "event/event.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "view/base_view.hpp"
-#include "view/callback_view.hpp"
-#include "view/ui/editor_view.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/view/ui/editor_view.hpp"
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/view/base_view.hpp>
+#include <app/old_app/view/callback_view.hpp>
 
 namespace VTX::View::UI
 {
@@ -33,7 +33,7 @@ namespace VTX::View::UI
 		}
 
 	  protected:
-		virtual void _catchModelEvent( const Event::VTXEvent * const p_event ) = 0;
+		virtual void _catchModelEvent( const VTX::Event::VTXEvent * const p_event ) = 0;
 
 	  private:
 		const ID::VTX_ID			  _viewId;

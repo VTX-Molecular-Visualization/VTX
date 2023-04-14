@@ -1,5 +1,5 @@
 #include "setting_render_effect_widget.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include <QString>
 #include <QVBoxLayout>
 
@@ -7,7 +7,7 @@ namespace VTX::UI::Widget::Settings
 {
 	SettingRenderEffectWidget::SettingRenderEffectWidget( QWidget * const p_parent ) : BaseManualWidget( p_parent ) {}
 
-	void SettingRenderEffectWidget::receiveEvent( const Event::VTXEvent & p_event ) {}
+	void SettingRenderEffectWidget::receiveEvent( const VTX::Event::VTXEvent & p_event ) {}
 
 	void SettingRenderEffectWidget::_setupUi( const QString & p_name )
 	{

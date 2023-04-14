@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_TRAJECTORY_FRAMES_MENU__
 #define __VTX_UI_WIDGET_CUSTOM_TRAJECTORY_FRAMES_MENU__
 
-#include "ui/ui_action/self_referenced_action.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/ui_action/self_referenced_action.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QAction>
 #include <QMenu>
 #include <QString>

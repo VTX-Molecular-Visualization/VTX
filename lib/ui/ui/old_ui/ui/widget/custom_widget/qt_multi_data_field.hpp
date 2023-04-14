@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_QT_MUTLI_DATA_FIELD__
 #define __VTX_UI_WIDGET_CUSTOM_QT_MUTLI_DATA_FIELD__
 
-#include "style.hpp"
-#include "ui/multi_data_field.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/multi_data_field.hpp"
 #include <QComboBox>
 #include <QLabel>
 #include <QLineEdit>

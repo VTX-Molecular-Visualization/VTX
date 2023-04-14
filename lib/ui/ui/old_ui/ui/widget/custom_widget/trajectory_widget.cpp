@@ -1,11 +1,11 @@
 #include "trajectory_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/molecule.hpp"
-#include "trajectory/trajectory_enum.hpp"
-#include "ui/widget_factory.hpp"
-#include "util/ui.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/util/ui.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/molecule.hpp>
+#include <app/old_app/trajectory/trajectory_enum.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {

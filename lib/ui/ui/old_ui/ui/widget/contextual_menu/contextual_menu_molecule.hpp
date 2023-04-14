@@ -2,9 +2,9 @@
 #define __VTX_UI_WIDGET_CONTEXTUAL_MENU_MOLECULE__
 
 #include "contextual_menu_template.hpp"
-#include "model/molecule.hpp"
-#include "ui/widget/custom_widget/set_representation_menu.hpp"
+#include "old_ui/ui/widget/custom_widget/set_representation_menu.hpp"
 #include <QMenu>
+#include <app/old_app/model/molecule.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {

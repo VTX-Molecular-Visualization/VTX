@@ -2,8 +2,8 @@
 #define __VTX_UI_WIDGET_CONTEXTUAL_MENU_ATOM__
 
 #include "contextual_menu_template.hpp"
-#include "model/atom.hpp"
 #include <QMenu>
+#include <app/old_app/model/atom.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {

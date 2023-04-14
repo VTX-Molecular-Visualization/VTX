@@ -1,7 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SEQUENCE_DISPLAY_WIDGET__
 #define __VTX_UI_WIDGET_SEQUENCE_DISPLAY_WIDGET__
 
-#include "model/residue.hpp"
 #include "sequence_chain_data.hpp"
 #include <QFontMetricsF>
 #include <QLabel>
@@ -9,6 +8,7 @@
 #include <QPaintEvent>
 #include <QPoint>
 #include <QString>
+#include <app/old_app/model/residue.hpp>
 #include <list>
 #include <vector>
 

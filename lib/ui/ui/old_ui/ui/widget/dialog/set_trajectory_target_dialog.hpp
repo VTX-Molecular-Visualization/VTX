@@ -2,8 +2,8 @@
 #define __VTX_UI_DIALOG_SET_TRAJECTORY_TARGET__
 
 
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/model_list_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/model_list_widget.hpp"
 #include <QAbstractButton>
 #include <QButtonGroup>
 #include <QCheckBox>

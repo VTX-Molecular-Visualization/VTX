@@ -1,24 +1,24 @@
 #include "dialog.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "io/filesystem.hpp"
-#include "io/struct/image_export.hpp"
-#include "io/struct/scene_path_data.hpp"
-#include "selection/selection_manager.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/dialog/download_molecule_dialog.hpp"
-#include "ui/widget/dialog/image_exporter.hpp"
-#include "ui/widget/dialog/set_trajectory_target_dialog.hpp"
-#include "util/ui.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget/dialog/download_molecule_dialog.hpp"
+#include "old_ui/ui/widget/dialog/image_exporter.hpp"
+#include "old_ui/ui/widget/dialog/set_trajectory_target_dialog.hpp"
+#include "old_ui/util/ui.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/io/filesystem.hpp>
+#include <app/old_app/io/struct/image_export.hpp>
+#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI
 {
-	void Dialog::confirmActionDialog( Action::BaseAction * const p_action,
-									  const QString &			 p_title,
-									  const QString &			 p_message )
+	void Dialog::confirmActionDialog( VTX::Action::BaseAction * const p_action,
+									  const QString &				  p_title,
+									  const QString &				  p_message )
 	{
 		const int res = QMessageBox::warning( &VTXApp::get().getMainWindow(),
 											  p_title,
@@ -56,7 +56,7 @@ namespace VTX::UI
 	void Dialog::openLoadMoleculeDialog()
 	{
 		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
-		QString defaultPath	  = Setting::getLastImportedMoleculeFolder();
+		QString defaultPath	  = QString::fromStdString( Setting::getLastImportedMoleculeFolder() );
 
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
@@ -67,7 +67,7 @@ namespace VTX::UI
 
 		if ( !filenames.isEmpty() )
 		{
-			Setting::saveLastImportedMoleculeFolder( filenames[ filenames.size() - 1 ] );
+			Setting::saveLastImportedMoleculeFolder( filenames[ filenames.size() - 1 ].toStdString() );
 
 			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
@@ -93,7 +93,7 @@ namespace VTX::UI
 			const FilePath path			 = FilePath( filename.toStdString() );
 			const FilePath directoryPath = path.parent_path();
 
-			Setting::saveLastExportedMoleculeFolder( QString::fromStdString( directoryPath.string() ) );
+			Setting::saveLastExportedMoleculeFolder( directoryPath.string() );
 			VTX_ACTION( new Action::Main::Save( path ) );
 		}
 	}
@@ -101,7 +101,7 @@ namespace VTX::UI
 	void Dialog::openLoadTrajectoryDialog()
 	{
 		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_TRAJECTORY_READ_FILTER );
-		QString defaultPath	  = Setting::getLastImportedMoleculeFolder();
+		QString defaultPath	  = QString::fromStdString( Setting::getLastImportedMoleculeFolder() );
 
 		const QString filename
 			= QFileDialog::getOpenFileName( &VTXApp::get().getMainWindow(),
@@ -112,14 +112,14 @@ namespace VTX::UI
 
 		if ( !filename.isEmpty() )
 		{
-			Setting::saveLastImportedMoleculeFolder( filename );
+			Setting::saveLastImportedMoleculeFolder( filename.toStdString() );
 			openSetTrajectoryTargetsDialog( filename.toStdString() );
 		}
 	}
 	void Dialog::openLoadTrajectoryDialog( Model::Molecule & p_target )
 	{
 		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
-		QString defaultPath	  = Setting::getLastImportedMoleculeFolder();
+		QString defaultPath	  = QString::fromStdString( Setting::getLastImportedMoleculeFolder() );
 
 		const QString filename
 			= QFileDialog::getOpenFileName( &VTXApp::get().getMainWindow(),
@@ -130,7 +130,7 @@ namespace VTX::UI
 
 		if ( !filename.isEmpty() )
 		{
-			Setting::saveLastImportedMoleculeFolder( filename );
+			Setting::saveLastImportedMoleculeFolder( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Open( FilePath( filename.toStdString() ), p_target ) );
 		}
 	}
@@ -212,14 +212,14 @@ namespace VTX::UI
 			const FilePath path			 = FilePath( filename.toStdString() );
 			const FilePath directoryPath = path.parent_path();
 
-			Setting::saveLastSavedSessionFolder( QString::fromStdString( directoryPath.string() ) );
+			Setting::saveLastSavedSessionFolder( directoryPath.string() );
 			VTX_ACTION( new Action::Main::Save( path, p_callback ) );
 		}
 	}
 	void Dialog::openLoadSessionDialog()
 	{
 		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_FILE_READ_FILTER );
-		QString defaultPath	  = Setting::getLastLoadedSessionFolder();
+		QString defaultPath	  = QString::fromStdString( Setting::getLastLoadedSessionFolder() );
 
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
@@ -230,7 +230,7 @@ namespace VTX::UI
 
 		if ( filenames.size() > 0 )
 		{
-			Setting::saveLastLoadedSessionFolder( filenames[ filenames.size() - 1 ] );
+			Setting::saveLastLoadedSessionFolder( filenames[ filenames.size() - 1 ].toStdString() );
 
 			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
@@ -244,7 +244,7 @@ namespace VTX::UI
 	bool Dialog::openExportImageDialog( const IO::Struct::ImageExport & p_exportData )
 	{
 		QString		  defaultFilter = QString::fromStdString( IO::Filesystem::getImageExportDefaultFilter() );
-		const QString defaultPath	= Setting::getLastExportedImageFolder();
+		const QString defaultPath	= QString::fromStdString( Setting::getLastExportedImageFolder() );
 
 		const QString filepath
 			= QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
@@ -269,7 +269,7 @@ namespace VTX::UI
 				path += '.' + formatStr;
 			}
 
-			Setting::saveLastExportedImageFolder( QString::fromStdString( directoryPath.string() ) );
+			Setting::saveLastExportedImageFolder( directoryPath.string() );
 			VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, path, p_exportData ) );
 
 			return true;

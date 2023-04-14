@@ -1,20 +1,23 @@
 #include "contextual_menu_selection.hpp"
-#include "action/action_manager.hpp"
-#include "action/analysis.hpp"
-#include "action/label.hpp"
-#include "action/selection.hpp"
-#include "action/viewpoint.hpp"
-#include "action/visible.hpp"
-#include "model/generated_molecule.hpp"
-#include "model/representation/representation_library.hpp"
-#include "ui/dialog.hpp"
-#include "ui/main_window.hpp"
-#include "ui/ui_action/self_referenced_action.hpp"
-#include "ui/widget/scene/scene_widget.hpp"
-#include "ui/widget_factory.hpp"
-#include "view/ui/widget/molecule_scene_view.hpp"
-#include "view/ui/widget/path_scene_view.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/ui_action/self_referenced_action.hpp"
+#include "old_ui/ui/widget/scene/scene_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/view/ui/widget/molecule_scene_view.hpp"
+#include "old_ui/view/ui/widget/path_scene_view.hpp"
+#include "qt/action/label.hpp"
+#include "qt/action/selection.hpp"
+#include "qt/action/viewpoint.hpp"
 #include <QTimer>
+#include <app/old_app/action/action_manager.hpp>
+// #include <tool/old_tool/action/analysis.hpp>
+#include <app/old_app/action/label.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/action/viewpoint.hpp>
+#include <app/old_app/action/visible.hpp>
+#include <app/old_app/model/generated_molecule.hpp>
+#include <app/old_app/model/representation/representation_library.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::ContextualMenu
@@ -105,17 +108,16 @@ namespace VTX::UI::Widget::ContextualMenu
 		moleculeStructureSubmenu->addItemData(
 			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
 
-		moleculeStructureSubmenu->addItemData( new ActionDataSection( "Analysis", TypeMask::MoleculeStructure, this ) );
-		ActionData * const applyComputeRMSDAction = new ActionData(
-			"RMSD", TypeMask::MoleculeStructure, this, &ContextualMenuSelection::_applyComputeRMSDAction );
-		applyComputeRMSDAction->setCheckFunction( &ContextualMenuSelection::_checkComputeRMSDAction );
-		moleculeStructureSubmenu->addItemData( applyComputeRMSDAction );
-		ActionData * const applyAlignmentAction
-			= new ActionData( "Align", TypeMask::Molecule, this, &ContextualMenuSelection::_applyAlignmentAction );
-		applyAlignmentAction->setCheckFunction( &ContextualMenuSelection::_checkApplyAlignementAction );
-		moleculeStructureSubmenu->addItemData( applyAlignmentAction );
-		moleculeStructureSubmenu->addItemData( new ActionData(
-			"Alignment settings", TypeMask::Molecule, this, &ContextualMenuSelection::_openAlignmentWindowAction ) );
+		// moleculeStructureSubmenu->addItemData( new ActionDataSection( "Analysis", TypeMask::MoleculeStructure, this )
+		// ); ActionData * const applyComputeRMSDAction = new ActionData( 	"RMSD", TypeMask::MoleculeStructure, this,
+		//&ContextualMenuSelection::_applyComputeRMSDAction ); applyComputeRMSDAction->setCheckFunction(
+		// &ContextualMenuSelection::_checkComputeRMSDAction ); moleculeStructureSubmenu->addItemData(
+		// applyComputeRMSDAction ); ActionData * const applyAlignmentAction 	= new ActionData( "Align",
+		// TypeMask::Molecule, this, &ContextualMenuSelection::_applyAlignmentAction );
+		// applyAlignmentAction->setCheckFunction( &ContextualMenuSelection::_checkApplyAlignementAction );
+		// moleculeStructureSubmenu->addItemData( applyAlignmentAction );
+		// moleculeStructureSubmenu->addItemData( new ActionData(
+		//	"Alignment settings", TypeMask::Molecule, this, &ContextualMenuSelection::_openAlignmentWindowAction ) );
 
 		// VIEWPOINTS //////////////////////////////////////////////////////////////////////////////////////////////////
 		SelectionSubMenu * const viewpointSubmenu = new SelectionSubMenu( this, "Viewpoint" );
@@ -287,7 +289,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		VTX_ACTION( new Action::Selection::ToggleTrajectoryPlaying( *_target ) );
 	}
 
-	void ContextualMenuSelection::_orientAction() { VTX_ACTION( new Action::Selection::Orient( *_target ) ); }
+	void ContextualMenuSelection::_orientAction() { VTX_ACTION( new QT::Action::Selection::Orient( *_target ) ); }
 	void ContextualMenuSelection::_showAction()
 	{
 		if ( _focusedTarget != nullptr )
@@ -595,7 +597,7 @@ namespace VTX::UI::Widget::ContextualMenu
 			= _target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT );
 
 		if ( viewpointsInSelection.size() > 0 )
-			VTX_ACTION( new Action::Viewpoint::GoTo( **viewpointsInSelection.crbegin() ) );
+			VTX_ACTION( new QT::Action::Viewpoint::GoTo( **viewpointsInSelection.crbegin() ) );
 	}
 	void ContextualMenuSelection::_relocateViewpointAction()
 	{
@@ -606,7 +608,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	}
 	void ContextualMenuSelection::_deleteViewpointAction()
 	{
-		VTX_ACTION( new Action::Viewpoint::Delete(
+		VTX_ACTION( new QT::Action::Viewpoint::Delete(
 			_target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT ) ) );
 	}
 
@@ -616,7 +618,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		_getAllLabelTypes( labelsInSelection );
 
 		if ( labelsInSelection.size() > 0 )
-			VTX_ACTION( new Action::Label::Orient( labelsInSelection ) );
+			VTX_ACTION( new QT::Action::Label::Orient( labelsInSelection ) );
 	}
 	void ContextualMenuSelection::_deleteLabelAction()
 	{
@@ -653,12 +655,12 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_applyComputeRMSDAction()
 	{
-		VTX_ACTION( new Action::Analysis::ComputeRMSD( *_target ) );
+		// VTX_ACTION( new Action::Analysis::ComputeRMSD( *_target ) );
 	}
 
 	void ContextualMenuSelection::_applyAlignmentAction()
 	{
-		VTX_ACTION( new Action::Analysis::ComputeStructuralAlignment( *_target ) );
+		// VTX_ACTION( new Action::Analysis::ComputeStructuralAlignment( *_target ) );
 	}
 
 	void ContextualMenuSelection::_openAlignmentWindowAction()

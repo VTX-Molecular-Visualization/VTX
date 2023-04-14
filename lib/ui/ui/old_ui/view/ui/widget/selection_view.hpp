@@ -1,18 +1,18 @@
 #ifndef __VTX_VIEW_UI_WIDGET_SELECTION_VIEW__
 #define __VTX_VIEW_UI_WIDGET_SELECTION_VIEW__
 
-#include "model/atom.hpp"
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
-#include "model/residue.hpp"
-#include "model/selection.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/scene/scene_item_widget.hpp"
-#include "view/base_view.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/scene/scene_item_widget.hpp"
 #include <QPainter>
 #include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
 #include <QTreeWidgetItem>
+#include <app/old_app/model/atom.hpp>
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/residue.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/view/base_view.hpp>
 
 namespace VTX::View::UI::Widget
 {

@@ -1,5 +1,5 @@
 #include "cursor_handler.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/vtx_app.hpp"
 
 namespace VTX::UI
 {

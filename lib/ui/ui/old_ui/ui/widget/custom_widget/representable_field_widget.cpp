@@ -1,10 +1,10 @@
 #include "representable_field_widget.hpp"
-#include "id.hpp"
-#include "model/base_model.hpp"
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "ui/mime_type.hpp"
+#include "old_ui/ui/mime_type.hpp"
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/base_model.hpp>
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
 
 namespace VTX
 {

@@ -2,7 +2,7 @@
 #define __VTX_UI_WIDGET_BASE_MENUTOOLBLOCK_WIDGET__
 
 #include "menu_toolbutton_widget.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QGridLayout>
 #include <QLabel>
 #include <QVBoxLayout>

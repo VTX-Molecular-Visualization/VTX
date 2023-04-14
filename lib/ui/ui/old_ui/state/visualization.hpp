@@ -2,7 +2,7 @@
 #define __VTX_STATE_VISUALIZATION__
 
 #include "base_state.hpp"
-#include "controller/base_camera_controller.hpp"
+#include "old_ui/controller/base_camera_controller.hpp"
 
 namespace VTX
 {
@@ -36,7 +36,7 @@ namespace VTX
 
 			void setPickerController( const ID::VTX_ID & p_pickerId );
 
-			virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
+			virtual void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 		  private:
 			ID::VTX_ID _cameraController = Setting::CONTROLLER_MODE_DEFAULT;

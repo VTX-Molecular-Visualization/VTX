@@ -1,10 +1,10 @@
 #include "ball_stick_and_cartoon_representation_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/instantiated_representation.hpp"
-#include "setting.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include <QGridLayout>
 #include <QLabel>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/instantiated_representation.hpp>
+#include <app/old_app/setting.hpp>
 
 namespace VTX::UI::Widget::Representation
 {

@@ -1,10 +1,11 @@
 #include "contextual_menu_chain.hpp"
-#include "action/action_manager.hpp"
-#include "action/chain.hpp"
-#include "action/visible.hpp"
-#include "model/representation/representation.hpp"
-#include "model/representation/representation_library.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "qt/action/chain.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/chain.hpp>
+#include <app/old_app/action/visible.hpp>
+#include <app/old_app/model/representation/representation.hpp>
+#include <app/old_app/model/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -45,7 +46,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		setTitle( QString::fromStdString( title ) );
 	}
 
-	void ContextualMenuChain::_orientAction() { VTX_ACTION( new Action::Chain::Orient( *_target ) ); }
+	void ContextualMenuChain::_orientAction() { VTX_ACTION( new QT::Action::Chain::Orient( *_target ) ); }
 	void ContextualMenuChain::_showAction()
 	{
 		VTX_ACTION(

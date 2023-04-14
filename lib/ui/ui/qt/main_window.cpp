@@ -1,5 +1,7 @@
 #include "main_window.hpp"
-#include "controller/base_keyboard_controller.hpp"
+#include "old_ui/action/main.hpp"
+#include "old_ui/controller/base_keyboard_controller.hpp"
+#include "old_ui/style.hpp"
 #include "qt/action/main.hpp"
 #include "qt/action/selection.hpp"
 #include "qt/application_qt.hpp"
@@ -53,10 +55,10 @@ namespace VTX::UI::QT
 		{
 			_updatePicker();
 		}
-		// else if ( p_event.name == Event::Global::RMSD_COMPUTED )
+		// else if ( p_event.name == VTX::Event::Global::RMSD_COMPUTED )
 		//{
-		//	const Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> & castedEvent
-		//		= dynamic_cast<const Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> &>( p_event );
+		//	const VTX::Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> & castedEvent
+		//		= dynamic_cast<const VTX::Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> &>( p_event );
 
 		//	const std::string log = VTX::Tool::Analysis::RMSD::getLogString( castedEvent.ref );
 
@@ -90,7 +92,7 @@ namespace VTX::UI::QT
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		const QSize winsize = QSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
+		const QSize winsize = QSize( VTX::Style::WINDOW_WIDTH_DEFAULT, VTX::Style::WINDOW_HEIGHT_DEFAULT );
 		resize( winsize );
 		setWindowState( Qt::WindowState::WindowNoState );
 		refreshWindowTitle();
@@ -249,8 +251,8 @@ namespace VTX::UI::QT
 				 &QShortcut::activated,
 				 this,
 				 &MainWindow::_onShortcutOrient );
-		connect( new QShortcut( QKeySequence( tr( QT::Controller::BaseKeyboardController::getKeyboardLayout()
-														  == QT::Controller::KeyboardLayout::AZERTY
+		connect( new QShortcut( QKeySequence( tr( Controller::BaseKeyboardController::getKeyboardLayout()
+														  == Controller::KeyboardLayout::AZERTY
 													  ? "Ctrl+A"
 													  : "Ctrl+Q" ) ),
 								this ),

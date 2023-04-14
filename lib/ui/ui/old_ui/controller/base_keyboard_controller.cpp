@@ -1,4 +1,5 @@
 #include "base_keyboard_controller.hpp"
+#include "old_ui/vtx_app.hpp"
 
 namespace VTX::Controller
 {
@@ -46,7 +47,7 @@ namespace VTX::Controller
 
 	KeyboardLayout BaseKeyboardController::getKeyboardLayout()
 	{
-		switch ( VTXApp::get().inputMethod()->locale().language() )
+		switch ( UI::VTXApp::get().inputMethod()->locale().language() )
 		{
 		case QLocale::Language::French: return KeyboardLayout::AZERTY;
 		default: return KeyboardLayout ::QWERTY;

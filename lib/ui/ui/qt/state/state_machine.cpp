@@ -31,7 +31,7 @@ namespace VTX::UI::QT::State
 		VTX_DEBUG( "Go to state: " + p_name );
 		if ( _states.find( p_name ) != _states.end() )
 		{
-			VTX_EVENT( new Event::VTXEventValue<ID::VTX_ID>( Event::Global::CHANGE_STATE, p_name ) );
+			VTX_EVENT( new VTX::Event::VTXEventValue<ID::VTX_ID>( VTX::Event::Global::CHANGE_STATE, p_name ) );
 			_switchState( _states[ p_name ], p_arg );
 		}
 		else

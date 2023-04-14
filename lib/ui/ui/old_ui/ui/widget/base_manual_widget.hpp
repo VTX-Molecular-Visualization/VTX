@@ -13,7 +13,7 @@ namespace VTX
 		namespace Widget
 		{
 			template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-			class BaseManualWidget : public W, public Event::BaseEventReceiverVTX, public BaseManualWidgetInitializer
+			class BaseManualWidget : public W, public VTX::Event::BaseEventReceiverVTX, public BaseManualWidgetInitializer
 			{
 				VTX_WIDGET
 

@@ -1,12 +1,12 @@
 #include "representation_preset_editor.hpp"
-#include "action/action_manager.hpp"
-#include "action/representation.hpp"
-#include "setting.hpp"
-#include "ui/widget_factory.hpp"
-#include "util/ui.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/util/ui.hpp"
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QVBoxLayout>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/representation.hpp>
+#include <app/old_app/setting.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -181,7 +181,7 @@ namespace VTX::UI::Widget::Settings
 
 	void RepresentationPresetEditor::localize() {}
 
-	void RepresentationPresetEditor::_catchModelEvent( const Event::VTXEvent * const p_event ) { refresh(); }
+	void RepresentationPresetEditor::_catchModelEvent( const VTX::Event::VTXEvent * const p_event ) { refresh(); }
 
 	void RepresentationPresetEditor::refresh()
 	{

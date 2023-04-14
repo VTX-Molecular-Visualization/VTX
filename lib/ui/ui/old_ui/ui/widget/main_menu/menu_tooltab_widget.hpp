@@ -2,8 +2,8 @@
 #define __VTX_UI_WIDGET_MENU_TOOLTAB__
 
 #include "menu_toolblock_widget.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <string>
 #include <type_traits>

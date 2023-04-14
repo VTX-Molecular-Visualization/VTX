@@ -1,5 +1,5 @@
 #include "shortcut.hpp"
-#include "controller/base_keyboard_controller.hpp"
+#include "old_ui/controller/base_keyboard_controller.hpp"
 #include <QWidget>
 
 namespace VTX::UI

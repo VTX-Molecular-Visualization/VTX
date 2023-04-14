@@ -1,9 +1,9 @@
 #include "representation_library_combo_box.hpp"
-#include "model/representation/representation_library.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "representation/representation_manager.hpp"
-#include "style.hpp"
-#include "view/callback_view.hpp"
+#include "old_ui/style.hpp"
+#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/representation/representation_manager.hpp>
+#include <app/old_app/view/callback_view.hpp>
 
 namespace VTX::UI::Widget::Representation
 {
@@ -81,9 +81,10 @@ namespace VTX::UI::Widget::Representation
 		}
 	}
 
-	void RepresentationLibraryComboBox::_onRepresentationLibraryChange( const Event::VTXEvent * const p_event )
+	void RepresentationLibraryComboBox::_onRepresentationLibraryChange( const VTX::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE || p_event->name == Event::Model::DATA_CHANGE )
+		if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE
+			 || p_event->name == VTX::Event::Model::DATA_CHANGE )
 		{
 			_fillItemList();
 

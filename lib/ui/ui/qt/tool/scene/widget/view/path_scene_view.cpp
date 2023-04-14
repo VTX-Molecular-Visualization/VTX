@@ -1,4 +1,5 @@
 #include "path_scene_view.hpp"
+#include "old_ui/style.hpp"
 #include "qt/action/viewpoint.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/contextual_menu.hpp"
@@ -23,34 +24,34 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	PathSceneView::PathSceneView( Model::Path * const p_model, QWidget * const p_parent ) :
 		VTX::View::BaseView<Model::Path>( p_model ), SceneItemWidget( p_parent )
 	{
-		_registerEvent( Event::Global::VIEWPOINT_ADDED );
-		_registerEvent( Event::Global::VIEWPOINT_REMOVED );
+		_registerEvent( VTX::Event::Global::VIEWPOINT_ADDED );
+		_registerEvent( VTX::Event::Global::VIEWPOINT_REMOVED );
 	}
 	PathSceneView::~PathSceneView() {}
 
-	void PathSceneView::notify( const Event::VTXEvent * const p_event )
+	void PathSceneView::notify( const VTX::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DATA_CHANGE ) {}
-		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
+		if ( p_event->name == VTX::Event::Model::DATA_CHANGE ) {}
+		else if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			topLevelItem( 0 )->setText( 0, QString::fromStdString( _model->getDefaultName() ) );
 		}
 	}
-	void PathSceneView::receiveEvent( const Event::VTXEvent & p_event )
+	void PathSceneView::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
 		SceneItemWidget::receiveEvent( p_event );
 
-		if ( p_event.name == Event::Global::VIEWPOINT_ADDED )
+		if ( p_event.name == VTX::Event::Global::VIEWPOINT_ADDED )
 		{
-			const Event::VTXEventPtr<Model::Viewpoint> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Viewpoint> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
 
 			_addViewpoint( castedEvent.ptr );
 		}
-		else if ( p_event.name == Event::Global::VIEWPOINT_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::VIEWPOINT_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Viewpoint> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Viewpoint> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
 
 			_removeViewpoint( castedEvent.ptr );
 		}
@@ -298,7 +299,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 		viewpointItem->setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( p_viewpoint->getId() ) );
 		viewpointItem->setText( 0, QString::fromStdString( p_viewpoint->getDefaultName() ) );
-		viewpointItem->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_viewpoint->getTypeId() ) );
+		viewpointItem->setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( p_viewpoint->getTypeId() ) );
 
 		topLevelItem( 0 )->addChild( viewpointItem );
 

@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_FILENAME_FIELD__
 #define __VTX_UI_WIDGET_CUSTOM_FILENAME_FIELD__
 
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QLineEdit>
 #include <QString>
 #include <QWidget>

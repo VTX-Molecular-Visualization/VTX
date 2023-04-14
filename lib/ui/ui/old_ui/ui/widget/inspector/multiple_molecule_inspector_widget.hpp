@@ -1,25 +1,25 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_MOLECULE__
 #define __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_MOLECULE__
 
-#include "color/rgba.hpp"
-#include "generic/base_transformable.hpp"
-#include "model/molecule.hpp"
-#include "model/representation/instantiated_representation.hpp"
-#include "model/representation/representation.hpp"
-#include "ui/multi_data_field.hpp"
-#include "ui/widget/custom_widget/auto_rotate_widget.hpp"
-#include "ui/widget/custom_widget/color_field_button.hpp"
-#include "ui/widget/custom_widget/folding_button.hpp"
-#include "ui/widget/custom_widget/model_list_component.hpp"
-#include "ui/widget/custom_widget/qt_multi_data_field.hpp"
-#include "ui/widget/custom_widget/trajectory_widget.hpp"
-#include "ui/widget/custom_widget/transform_widget.hpp"
-#include "ui/widget/inspector/inspector_section.hpp"
-#include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
-#include "ui/widget/representation/instantiated_representation_list_widget.hpp"
-#include "ui/widget/representation/representation_inspector_section.hpp"
-#include "view/base_view.hpp"
+#include "old_ui/ui/multi_data_field.hpp"
+#include "old_ui/ui/widget/custom_widget/auto_rotate_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/color_field_button.hpp"
+#include "old_ui/ui/widget/custom_widget/folding_button.hpp"
+#include "old_ui/ui/widget/custom_widget/model_list_component.hpp"
+#include "old_ui/ui/widget/custom_widget/qt_multi_data_field.hpp"
+#include "old_ui/ui/widget/custom_widget/trajectory_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/transform_widget.hpp"
+#include "old_ui/ui/widget/inspector/inspector_section.hpp"
+#include "old_ui/ui/widget/inspector/multiple_model_inspector_widget.hpp"
+#include "old_ui/ui/widget/representation/instantiated_representation_list_widget.hpp"
+#include "old_ui/ui/widget/representation/representation_inspector_section.hpp"
 #include <QWidget>
+#include <app/old_app/color/rgba.hpp>
+#include <app/old_app/generic/base_transformable.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/representation/instantiated_representation.hpp>
+#include <app/old_app/model/representation/representation.hpp>
+#include <app/old_app/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {

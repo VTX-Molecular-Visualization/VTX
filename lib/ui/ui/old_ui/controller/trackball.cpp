@@ -1,10 +1,10 @@
 #include "trackball.hpp"
-#include "action/action_manager.hpp"
-#include "object3d/scene.hpp"
-#include "selection/selection_manager.hpp"
-#include "style.hpp"
+#include "old_ui/style.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>
-#include "util/math.hpp"
+#include <util/math.hpp>
 
 namespace VTX
 {
@@ -221,7 +221,7 @@ namespace VTX
 			_orientStartingDistance = Util::Math::distance( _camera().getPosition(), _target );
 			_orientTargetDistance
 				= p_aabb.radius()
-				  / (float)( tan( Util::Math::radians( _camera().getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
+				  / (float)( tan( Util::Math::radians( _camera().getFov() ) * VTX::UI::Style::ORIENT_ZOOM_FACTOR ) );
 			_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
 						   || abs( _orientTargetDistance - _orientStartingDistance ) > ORIENT_THRESHOLD;
 		}

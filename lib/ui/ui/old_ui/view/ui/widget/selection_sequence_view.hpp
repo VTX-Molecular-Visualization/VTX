@@ -1,9 +1,9 @@
 #ifndef __VTX_VIEW_UI_WIDGET_SELECTION_SEQUENCE_VIEW__
 #define __VTX_VIEW_UI_WIDGET_SELECTION_SEQUENCE_VIEW__
 
-#include "model/selection.hpp"
-#include "ui/widget/sequence/sequence_widget.hpp"
-#include "view/base_view.hpp"
+#include "old_ui/ui/widget/sequence/sequence_widget.hpp"
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/view/base_view.hpp>
 
 namespace VTX
 {

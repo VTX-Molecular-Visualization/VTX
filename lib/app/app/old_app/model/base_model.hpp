@@ -1,10 +1,10 @@
 #ifndef __VTX_BASE_MODEL__
 #define __VTX_BASE_MODEL__
 
-#include <util/types.hpp>
 #include "old_app/event/event.hpp"
 #include "old_app/id.hpp"
 #include <string>
+#include <util/types.hpp>
 
 namespace VTX::MVC
 {

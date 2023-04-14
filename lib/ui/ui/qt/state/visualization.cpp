@@ -1,4 +1,5 @@
 #include "visualization.hpp"
+#include "old_ui/style.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/controller/freefly.hpp"
 #include "qt/controller/main_window_controller.hpp"
@@ -17,10 +18,10 @@ namespace VTX::UI::QT::State
 {
 	Visualization::Visualization()
 	{
-		_registerEvent( Event::Global::MOLECULE_ADDED );
-		_registerEvent( Event::Global::MOLECULE_REMOVED );
-		_registerEvent( Event::Global::MESH_ADDED );
-		_registerEvent( Event::Global::MESH_REMOVED );
+		_registerEvent( VTX::Event::Global::MOLECULE_ADDED );
+		_registerEvent( VTX::Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::Event::Global::MESH_ADDED );
+		_registerEvent( VTX::Event::Global::MESH_REMOVED );
 
 		// Create controller.
 		_controllers.emplace( ID::Controller::MAIN_WINDOW, new QT::Controller::MainWindowController() );
@@ -79,7 +80,7 @@ namespace VTX::UI::QT::State
 		}
 		_controllers[ _cameraController ]->setActive( true );
 
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::CONTROLLER_CHANGE, &_cameraController ) );
+		VTX_EVENT( new VTX::Event::VTXEventPtr( VTX::Event::Global::CONTROLLER_CHANGE, &_cameraController ) );
 	}
 	void Visualization::setCameraController( const ID::VTX_ID & p_controllerId )
 	{
@@ -96,7 +97,7 @@ namespace VTX::UI::QT::State
 		_cameraController = p_controllerId;
 		_controllers[ _cameraController ]->setActive( true );
 
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::CONTROLLER_CHANGE, &_cameraController ) );
+		VTX_EVENT( new VTX::Event::VTXEventPtr( VTX::Event::Global::CONTROLLER_CHANGE, &_cameraController ) );
 	}
 
 	void Visualization::resetCameraController()
@@ -106,7 +107,7 @@ namespace VTX::UI::QT::State
 		const Vec3f		   defaultPos
 			= VTXApp::get().getScene().getAABB().centroid()
 			  - CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
-					/ (float)( tan( Util::Math::radians( camera.getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
+					/ (float)( tan( Util::Math::radians( camera.getFov() ) * UI::Style::ORIENT_ZOOM_FACTOR ) );
 		camera.reset( defaultPos );
 
 		// Reset controllers.
@@ -155,24 +156,24 @@ namespace VTX::UI::QT::State
 		_pickerController = p_pickerId;
 		_controllers[ _pickerController ]->setActive( true );
 
-		VTX_EVENT( new Event::VTXEvent( Event::Global::PICKER_MODE_CHANGE ) );
+		VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::PICKER_MODE_CHANGE ) );
 	}
 
-	void Visualization::receiveEvent( const Event::VTXEvent & p_event )
+	void Visualization::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
 		// Recenter when add the first element in scene
-		if ( p_event.name == Event::MOLECULE_ADDED )
+		if ( p_event.name == VTX::Event::MOLECULE_ADDED )
 		{
 			if ( VTXApp::get().getScene().getMolecules().size() == 1
 				 && VTXApp::get().getScene().getMeshes().size() == 0 )
 			{
-				const Event::VTXEventPtr<Model::Molecule> & castedEvent
-					= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+				const VTX::Event::VTXEventPtr<Model::Molecule> & castedEvent
+					= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
 				orientCameraController( castedEvent.ptr->getAABB() );
 			}
 		}
-		else if ( p_event.name == Event::MESH_ADDED )
+		else if ( p_event.name == VTX::Event::MESH_ADDED )
 		{
 			if ( VTXApp::get().getScene().getMolecules().size() == 0
 				 && VTXApp::get().getScene().getMeshes().size() == 1 )

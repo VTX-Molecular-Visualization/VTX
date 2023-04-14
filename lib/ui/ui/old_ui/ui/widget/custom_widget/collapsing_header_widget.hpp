@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_COLLAPSING_HEADER_WIDGET__
 #define __VTX_UI_WIDGET_COLLAPSING_HEADER_WIDGET__
 
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QBoxLayout>
 #include <QLabel>
 #include <QMenu>

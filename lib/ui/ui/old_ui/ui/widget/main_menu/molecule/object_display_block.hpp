@@ -1,11 +1,11 @@
 #ifndef __VTX_UI_WIDGET_MENU_MOLECULE_OBJECT_DISPLAY_BLOCK__
 #define __VTX_UI_WIDGET_MENU_MOLECULE_OBJECT_DISPLAY_BLOCK__
 
-#include "event/event.hpp"
-#include "model/molecule.hpp"
-#include "ui/widget/main_menu/menu_toolblock_widget.hpp"
-#include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
+#include "old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
+#include "old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/model/molecule.hpp>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		~ObjectDisplayBlock();
 		void localize() override;
 
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		ObjectDisplayBlock( QWidget * p_parent );

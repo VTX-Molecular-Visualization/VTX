@@ -1,6 +1,6 @@
 #include "check_update.hpp"
-#include "define.hpp"
-#include "ui/dialog.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include <app/old_app/define.hpp>
 #include <nlohmann/json.hpp>
 #include <util/logger.hpp>
 
@@ -12,11 +12,11 @@ namespace VTX::Network::Request
 		VTX_INFO( "Checking for update" );
 	}
 
-	void CheckUpdate::_success( QNetworkReply * const p_reply )
+	void CheckUpdate::_success( NetworkReply * const p_reply )
 	{
 		try
 		{
-			nlohmann::json json = nlohmann::json::parse( p_reply->readAll().toStdString() ).at( "VERSION" );
+			nlohmann::json json = nlohmann::json::parse( p_reply->readAll() ).at( "VERSION" );
 
 			const int major	   = json.at( "MAJOR" );
 			const int minor	   = json.at( "MINOR" );

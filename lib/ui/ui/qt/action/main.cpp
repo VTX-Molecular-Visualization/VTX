@@ -6,6 +6,7 @@
 #include "qt/state/visualization.hpp"
 #include <app/old_app/action/action_manager.hpp>
 #include <app/old_app/action/base_action.hpp>
+#include <app/old_app/id.hpp>
 #include <app/old_app/network/network_manager.hpp>
 #include <app/old_app/network/request/check_update.hpp>
 

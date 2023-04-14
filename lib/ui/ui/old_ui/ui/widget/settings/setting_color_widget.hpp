@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_SETTING_COLOR__
 #define __VTX_UI_WIDGET_SETTING_COLOR__
 
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QWidget>
 
 namespace VTX::UI::Widget::Settings
@@ -11,7 +11,7 @@ namespace VTX::UI::Widget::Settings
 		VTX_WIDGET
 
 	  public:
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
 	  protected:

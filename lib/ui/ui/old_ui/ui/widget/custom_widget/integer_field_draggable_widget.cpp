@@ -1,8 +1,8 @@
 #include "integer_field_draggable_widget.hpp"
-#include "style.hpp"
-#include "util/math.hpp"
+#include "old_ui/style.hpp"
 #include <QHBoxLayout>
 #include <string>
+#include <util/math.hpp>
 #include <util/types.hpp>
 
 namespace VTX::UI::Widget::CustomWidget

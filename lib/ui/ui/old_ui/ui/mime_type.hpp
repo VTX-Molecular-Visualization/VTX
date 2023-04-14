@@ -1,11 +1,11 @@
 #ifndef __VTX_UI_MIME_TYPE__
 #define __VTX_UI_MIME_TYPE__
 
-#include "id.hpp"
-#include "model/base_model.hpp"
 #include <QByteArray>
 #include <QMimeData>
 #include <QString>
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/base_model.hpp>
 
 namespace VTX::UI
 {

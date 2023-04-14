@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_STATUS_BAR__
 #define __VTX_UI_WIDGET_STATUS_BAR__
 
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QLabel>
 #include <QProgressBar>
 #include <QStatusBar>
@@ -19,7 +19,7 @@ namespace VTX
 					VTX_WIDGET
 
 				  public:
-					void receiveEvent( const Event::VTXEvent & p_event ) override;
+					void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 					void localize() override;
 
 				  protected:

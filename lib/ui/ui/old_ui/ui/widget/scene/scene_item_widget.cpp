@@ -1,41 +1,41 @@
 #include "scene_item_widget.hpp"
-#include "generic/base_visible.hpp"
-#include "model/category.hpp"
-#include "model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include <util/logger.hpp>
-#include "ui/main_window.hpp"
-#include "ui/mime_type.hpp"
-#include "ui/widget/scene/scene_item_selection_model.hpp"
-#include "ui/widget/scene/scene_widget.hpp"
-#include "util/ui.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/mime_type.hpp"
+#include "old_ui/ui/widget/scene/scene_item_selection_model.hpp"
+#include "old_ui/ui/widget/scene/scene_widget.hpp"
+#include "old_ui/util/ui.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QAbstractItemModel>
 #include <QDrag>
+#include <app/old_app/generic/base_visible.hpp>
+#include <app/old_app/model/category.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 #include <stack>
+#include <util/logger.hpp>
 
 namespace VTX::UI::Widget::Scene
 {
 	SceneItemWidget::SceneItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ), DraggableItem( this )
 	{
-		_registerEvent( Event::Global::SELECTION_CHANGE );
-		_registerEvent( Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE );
+		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE );
 	}
 
-	void SceneItemWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void SceneItemWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == VTX::Event::Global::SELECTION_CHANGE )
 		{
-			const Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Selection> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Selection> &>( p_event );
 
 			_refreshSelection( *castedEvent.ptr );
 		}
-		else if ( p_event.name == Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE )
 		{
-			const Event::VTXEventPtr<const Model::BaseModel> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<const Model::BaseModel> &>( p_event );
+			const VTX::Event::VTXEventPtr<const Model::BaseModel> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<const Model::BaseModel> &>( p_event );
 
 			_refreshCurrentItemInSelection( castedEvent.ptr );
 		}
@@ -313,7 +313,7 @@ namespace VTX::UI::Widget::Scene
 
 		topLevelItem->setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( model.getId() ) );
 		topLevelItem->setText( 0, QString::fromStdString( model.getDefaultName() ) );
-		topLevelItem->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( model.getTypeId() ) );
+		topLevelItem->setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( model.getTypeId() ) );
 
 		_refreshItemVisibility( topLevelItem, true );
 

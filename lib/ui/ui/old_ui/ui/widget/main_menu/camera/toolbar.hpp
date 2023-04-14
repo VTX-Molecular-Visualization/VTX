@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_MENU_CAMERA__
 #define __VTX_UI_WIDGET_MENU_CAMERA__
 
-#include "ui/widget/main_menu/menu_tooltab_widget.hpp"
+#include "old_ui/ui/widget/main_menu/menu_tooltab_widget.hpp"
 #include <QWidget>
 
 namespace VTX::UI::Widget::MainMenu::Camera

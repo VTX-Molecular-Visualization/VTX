@@ -1,11 +1,11 @@
 #include "download_molecule_dialog.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "setting.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QPushButton>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/setting.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Dialog

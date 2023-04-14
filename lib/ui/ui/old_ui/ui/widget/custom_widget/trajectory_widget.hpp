@@ -1,12 +1,12 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_TRAJECTORY_WIDGET__
 #define __VTX_UI_WIDGET_CUSTOM_TRAJECTORY_WIDGET__
 
-#include "model/molecule.hpp"
-#include "ui/multi_data_field.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/integer_field_slider_widget.hpp"
-// #include "ui/widget/custom_widget/integer_range_widget.hpp"
-#include "ui/widget/custom_widget/qt_multi_data_field.hpp"
+#include "old_ui/ui/multi_data_field.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/integer_field_slider_widget.hpp"
+#include <app/old_app/model/molecule.hpp>
+// #include "old_ui/ui/widget/custom_widget/integer_range_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/qt_multi_data_field.hpp"
 #include <QWidget>
 #include <unordered_set>
 

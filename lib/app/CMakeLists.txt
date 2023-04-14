@@ -92,7 +92,7 @@ set(MAGIC_ENUM_INCLUDE_DIR ${SOURCE_DIR}/include)
 add_library(${VTX_APP_LIB} STATIC ${HEADERS} ${SOURCES} ${SHADERS})
 
 # Includes local directories.
-target_include_directories(${VTX_APP_LIB} PRIVATE app/)
+target_include_directories(${VTX_APP_LIB} PUBLIC app/)
 target_include_directories(${VTX_APP_LIB} PUBLIC .)
 
 # Includes external libraries directories.

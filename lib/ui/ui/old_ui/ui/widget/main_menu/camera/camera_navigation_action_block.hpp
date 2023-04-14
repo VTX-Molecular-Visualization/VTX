@@ -1,10 +1,10 @@
 #ifndef __VTX_UI_WIDGET_MENU_NAVIGATION_ACTION__
 #define __VTX_UI_WIDGET_MENU_NAVIGATION_ACTION__
 
-#include "event/event.hpp"
-#include "ui/widget/main_menu/menu_toolblock_widget.hpp"
-#include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
+#include "old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
+#include "old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
+#include <app/old_app/event/event.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
@@ -16,7 +16,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		~CameraNavigationActionBlock();
 		void localize() override;
 
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		CameraNavigationActionBlock( QWidget * p_parent );

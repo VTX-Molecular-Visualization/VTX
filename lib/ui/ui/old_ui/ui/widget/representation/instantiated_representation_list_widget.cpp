@@ -1,20 +1,20 @@
 #include "instantiated_representation_list_widget.hpp"
-#include "generic/base_representable.hpp"
-#include "model/atom.hpp"
-#include "model/category.hpp"
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
-#include "model/residue.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "representation/representation_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include "style.hpp"
-#include "ui/ui_action/self_referenced_action.hpp"
-#include "ui/widget_factory.hpp"
-#include "util/ui.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/ui_action/self_referenced_action.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/util/ui.hpp"
 #include <QRadioButton>
 #include <QVBoxLayout>
 #include <QVariant>
+#include <app/old_app/generic/base_representable.hpp>
+#include <app/old_app/model/atom.hpp>
+#include <app/old_app/model/category.hpp>
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/residue.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/representation/representation_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::Representation
 {

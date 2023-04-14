@@ -1,17 +1,17 @@
 #ifndef __VTX_UI_WIDGET_COLORMODE_FIELD_WIDGET__
 #define __VTX_UI_WIDGET_COLORMODE_FIELD_WIDGET__
 
-#include "color/rgba.hpp"
 #include "color_field_button.hpp"
-#include "generic/base_colorable.hpp"
-#include "ui/multi_data_field.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/qt_multi_data_field.hpp"
+#include "old_ui/ui/multi_data_field.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/qt_multi_data_field.hpp"
 #include <QBoxLayout>
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QWidget>
+#include <app/old_app/color/rgba.hpp>
+#include <app/old_app/generic/base_colorable.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {

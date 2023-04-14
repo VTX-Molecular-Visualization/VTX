@@ -1,26 +1,26 @@
 #include "selection_action_block.hpp"
-#include "action/action_manager.hpp"
-#include "action/selection.hpp"
-#include "action/visible.hpp"
-#include "model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include "ui/dialog.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/action/visible.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	SelectionActionBlock::SelectionActionBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
 	};
 
-	void SelectionActionBlock::receiveEvent( const Event::VTXEvent & p_event )
+	void SelectionActionBlock::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::SELECTION_CHANGE )
+		if ( p_event.name == VTX::Event::SELECTION_CHANGE )
 		{
-			const Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Selection> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Selection> &>( p_event );
 
 			const bool enableSelection = castedEvent.ptr->getMoleculeSelectedCount() > 0;
 			_enableButtons( enableSelection );

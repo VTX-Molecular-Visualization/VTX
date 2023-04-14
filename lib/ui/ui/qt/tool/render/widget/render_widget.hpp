@@ -12,15 +12,15 @@
 #include <QResizeEvent>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <map>
 #include <app/old_app/model/base_model.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>
 #include <app/old_app/view/base_view.hpp>
 #include <app/old_app/worker/snapshoter.hpp>
+#include <map>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
-	class RenderWidget : public QtPanelTemplate<QWidget>, public Event::BaseEventFirererInput
+	class RenderWidget : public QtPanelTemplate<QWidget>, public VTX::UI::Event::BaseEventFirererInput
 	{
 		NEW_ARCHI_VTX_WIDGET
 
@@ -39,7 +39,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		void displayOverlay( const Overlay::OVERLAY & p_overlay, const Overlay::OVERLAY_ANCHOR & p_position );
 		void hideOverlay( const Overlay::OVERLAY & p_overlay );
 
-		void			 receiveEvent( const Event::VTXEvent & p_event ) override;
+		void			 receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::RENDER_WIDGET; }
 
 	  protected:

@@ -3,8 +3,8 @@
 
 #include "chain_sequence_builder.hpp"
 #include "dataset/sequence_dataset.hpp"
-#include "model/chain.hpp"
 #include <QString>
+#include <app/old_app/model/chain.hpp>
 #include <vector>
 
 namespace VTX::Model

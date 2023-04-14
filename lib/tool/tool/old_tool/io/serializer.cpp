@@ -3,7 +3,7 @@
 #include "old_tool/model/measurement/dihedral_angle.hpp"
 #include "old_tool/model/measurement/distance.hpp"
 #include "old_tool/model/measurement/distance_to_cycle.hpp"
-#include <old/model/label.hpp>
+#include <app/old_app/model/label.hpp>
 
 namespace VTX::IO
 {

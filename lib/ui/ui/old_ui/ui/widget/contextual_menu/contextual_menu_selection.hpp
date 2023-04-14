@@ -2,12 +2,12 @@
 #define __VTX_UI_WIDGET_CONTEXTUAL_MENU_SELECTION__
 
 #include "contextual_menu_template.hpp"
-#include "model/base_model.hpp"
-#include "model/selection.hpp"
-#include "ui/widget/custom_widget/set_representation_menu.hpp"
-#include "ui/widget/custom_widget/trajectory_frames_menu.hpp"
+#include "old_ui/ui/widget/custom_widget/set_representation_menu.hpp"
+#include "old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include <QHideEvent>
 #include <QMenu>
+#include <app/old_app/model/base_model.hpp>
+#include <app/old_app/model/selection.hpp>
 #include <map>
 #include <unordered_set>
 #include <vector>

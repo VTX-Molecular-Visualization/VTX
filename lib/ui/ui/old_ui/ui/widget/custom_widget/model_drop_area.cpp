@@ -1,8 +1,8 @@
 #include "model_drop_area.hpp"
-#include "id.hpp"
-#include "model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "ui/mime_type.hpp"
+#include "old_ui/ui/mime_type.hpp"
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::CustomWidget

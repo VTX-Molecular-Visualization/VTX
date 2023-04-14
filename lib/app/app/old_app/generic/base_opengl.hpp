@@ -16,12 +16,12 @@ constexpr unsigned int OPENGL_MAJOR_VERSION = 4;
 constexpr unsigned int OPENGL_MINOR_VERSION = 5;
 
 // TODO Remove these using when openGL will be linked again
-using GLboolean	 = bool;
+using GLboolean	 = unsigned char;
 using GLint		 = int;
 using GLuint	 = unsigned int;
-using GLenum	 = int;
-using GLbitfield = unsigned long;
-using GLsizei	 = size_t;
+using GLenum	 = unsigned int;
+using GLbitfield = unsigned int;
+using GLsizei	 = int;
 #ifdef _WIN64
 typedef signed long long int GLsizeiptr;
 typedef signed long long int GLintptr;
@@ -32,10 +32,10 @@ typedef signed long int GLintptr;
 using GLvoid = void;
 
 // TODO Remove these consts when openGL will be linked again
-constexpr GLboolean	 GL_TRUE					   = true;
-constexpr GLboolean	 GL_FALSE					   = false;
-constexpr GLuint	 GL_INVALID_INDEX			   = 0xFFFFFFFFu;
-constexpr GLbitfield GL_SHADER_STORAGE_BARRIER_BIT = 0x00002000;
+#define GL_TRUE 1
+#define GL_FALSE 0
+#define GL_INVALID_INDEX 0xFFFFFFFFu
+#define GL_SHADER_STORAGE_BARRIER_BIT 0x00002000
 
 namespace VTX
 {

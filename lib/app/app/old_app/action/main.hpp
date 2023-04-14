@@ -41,6 +41,11 @@ namespace VTX::Action::Main
 			_trajectoryTargets.emplace_back( &p_target );
 			_paths.emplace_back( p_trajectoryPath );
 		}
+		explicit Open( const FilePath & p_trajectoryPath, const std::vector<Model::Molecule *> & p_targets ) :
+			_trajectoryTargets( p_targets )
+		{
+			_paths.emplace_back( p_trajectoryPath );
+		}
 
 		virtual void execute() override;
 

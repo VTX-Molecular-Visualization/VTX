@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_WIDGET_CONSOLE__
 #define __VTX_UI_WIDGET_CONSOLE__
 
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/dock_window_main_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include <QColor>
 #include <QDockWidget>
 #include <QListWidget>
@@ -16,7 +16,7 @@ namespace VTX::UI::Widget::Console
 		VTX_WIDGET
 
 	  public:
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		ConsoleWidget( QWidget * );

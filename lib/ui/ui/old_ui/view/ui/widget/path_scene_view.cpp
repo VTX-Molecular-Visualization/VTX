@@ -1,54 +1,55 @@
 #include "path_scene_view.hpp"
-#include "action/action_manager.hpp"
-#include "action/selection.hpp"
-#include "action/viewpoint.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include "style.hpp"
-#include <util/logger.hpp>
-#include "ui/contextual_menu.hpp"
-#include "ui/mime_type.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_selection.hpp"
-#include "ui/widget/scene/scene_item_selection_model.hpp"
-#include "ui/widget/scene/scene_widget.hpp"
-#include "ui/widget_factory.hpp"
-#include "util/string.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/contextual_menu.hpp"
+#include "old_ui/ui/mime_type.hpp"
+#include "old_ui/ui/widget/contextual_menu/contextual_menu_selection.hpp"
+#include "old_ui/ui/widget/scene/scene_item_selection_model.hpp"
+#include "old_ui/ui/widget/scene/scene_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "qt/action/viewpoint.hpp"
 #include <QScrollBar>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/action/viewpoint.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <util/logger.hpp>
+#include <util/string.hpp>
 
 namespace VTX::View::UI::Widget
 {
 	PathSceneView::PathSceneView( Model::Path * const p_model, QWidget * const p_parent ) :
 		View::BaseView<Model::Path>( p_model ), SceneItemWidget( p_parent )
 	{
-		_registerEvent( Event::Global::VIEWPOINT_ADDED );
-		_registerEvent( Event::Global::VIEWPOINT_REMOVED );
+		_registerEvent( VTX::Event::Global::VIEWPOINT_ADDED );
+		_registerEvent( VTX::Event::Global::VIEWPOINT_REMOVED );
 	}
 	PathSceneView::~PathSceneView() {}
 
-	void PathSceneView::notify( const Event::VTXEvent * const p_event )
+	void PathSceneView::notify( const VTX::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DATA_CHANGE ) {}
-		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
+		if ( p_event->name == VTX::Event::Model::DATA_CHANGE ) {}
+		else if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			topLevelItem( 0 )->setText( 0, QString::fromStdString( _model->getDefaultName() ) );
 		}
 	}
-	void PathSceneView::receiveEvent( const Event::VTXEvent & p_event )
+	void PathSceneView::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
 		SceneItemWidget::receiveEvent( p_event );
 
-		if ( p_event.name == Event::Global::VIEWPOINT_ADDED )
+		if ( p_event.name == VTX::Event::Global::VIEWPOINT_ADDED )
 		{
-			const Event::VTXEventPtr<Model::Viewpoint> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Viewpoint> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
 
 			_addViewpoint( castedEvent.ptr );
 			topLevelItem( 0 )->setExpanded( true );
 		}
-		else if ( p_event.name == Event::Global::VIEWPOINT_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::VIEWPOINT_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Viewpoint> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Viewpoint> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
 
 			_removeViewpoint( castedEvent.ptr );
 		}
@@ -156,7 +157,7 @@ namespace VTX::View::UI::Widget
 	void PathSceneView::_createTopLevelObject()
 	{
 		SceneItemWidget::_createTopLevelObject();
-		topLevelItem( 0 )->setText( 0, QString::fromStdString( Style::VIEWPOINT_GROUP_NAME ) );
+		topLevelItem( 0 )->setText( 0, QString::fromStdString( VTX::UI::Style::VIEWPOINT_GROUP_NAME ) );
 	}
 
 	void PathSceneView::_fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection )
@@ -227,7 +228,7 @@ namespace VTX::View::UI::Widget
 				Model::Viewpoint & viewpoint  = MVC::MvcManager::get().getModel<Model::Viewpoint>( idTarget );
 				Object3D::Camera & mainCamera = VTXApp::get().getScene().getCamera();
 
-				VTX_ACTION( new Action::Viewpoint::GoTo( viewpoint, mainCamera ) );
+				VTX_ACTION( new VTX::UI::QT::Action::Viewpoint::GoTo( viewpoint, mainCamera ) );
 			}
 		}
 	}
@@ -286,8 +287,8 @@ namespace VTX::View::UI::Widget
 			p_name.erase( firstLinefeedIndex );
 
 		// Clamp size
-		if ( p_name.size() > Style::MOLECULE_NAME_MAXIMUM_SIZE )
-			p_name = p_name.substr( 0, Style::MOLECULE_NAME_MAXIMUM_SIZE );
+		if ( p_name.size() > VTX::UI::Style::MOLECULE_NAME_MAXIMUM_SIZE )
+			p_name = p_name.substr( 0, VTX::UI::Style::MOLECULE_NAME_MAXIMUM_SIZE );
 	}
 
 	QTreeWidgetItem * PathSceneView::_itemFromViewpoint( const Model::Viewpoint & p_viewpoint ) const
@@ -312,7 +313,7 @@ namespace VTX::View::UI::Widget
 
 		viewpointItem->setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( p_viewpoint->getId() ) );
 		viewpointItem->setText( 0, QString::fromStdString( p_viewpoint->getDefaultName() ) );
-		viewpointItem->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_viewpoint->getTypeId() ) );
+		viewpointItem->setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( p_viewpoint->getTypeId() ) );
 
 		topLevelItem( 0 )->addChild( viewpointItem );
 

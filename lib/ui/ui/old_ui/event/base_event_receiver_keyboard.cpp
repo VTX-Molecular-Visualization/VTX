@@ -8,11 +8,11 @@ namespace VTX
 	{
 		BaseEventReceiverKeyboard::BaseEventReceiverKeyboard()
 		{
-			EventManager::get().registerEventReceiverKeyboard( this );
+			UI::Event::EventManager::get().registerEventReceiverKeyboard( this );
 		}
 		BaseEventReceiverKeyboard::~BaseEventReceiverKeyboard()
 		{
-			EventManager::get().unregisterEventReceiverKeyboard( this );
+			UI::Event::EventManager::get().unregisterEventReceiverKeyboard( this );
 		}
 	} // namespace Event
 } // namespace VTX

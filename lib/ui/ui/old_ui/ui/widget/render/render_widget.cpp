@@ -1,162 +1,164 @@
 #include "render_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "action/setting.hpp"
-#include "action/viewpoint.hpp"
 #include "base_integrated_widget.hpp"
-#include "event/event_manager.hpp"
-#include "io/filesystem.hpp"
-#include "model/label.hpp"
-#include "model/measurement/angle.hpp"
-#include "model/measurement/dihedral_angle.hpp"
-#include "model/measurement/distance.hpp"
-#include "model/measurement/measure_in_progress.hpp"
-#include "model/mesh_triangle.hpp"
-#include "model/molecule.hpp"
+// #include "old_tool/view/ui/widget/measurement/angle_render_view.hpp"
+// #include "old_tool/view/ui/widget/measurement/dihedral_angle_render_view.hpp"
+// #include "old_tool/view/ui/widget/measurement/distance_render_view.hpp"
+// #include "old_tool/view/ui/widget/measurement/measure_in_progress_render_view.hpp"
+#include "old_ui/setting.hpp"
+#include "old_ui/state/state_machine.hpp"
+#include "old_ui/state/visualization.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/shortcut.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/vtx_app.hpp"
 #include "overlay/camera_quick_access.hpp"
 #include "overlay/visualization_quick_access.hpp"
-#include "setting.hpp"
-#include "state/state_machine.hpp"
-#include "state/visualization.hpp"
-#include "style.hpp"
-#include "ui/shortcut.hpp"
-#include "ui/widget_factory.hpp"
-#include "view/ui/widget/measurement/angle_render_view.hpp"
-#include "view/ui/widget/measurement/dihedral_angle_render_view.hpp"
-#include "view/ui/widget/measurement/distance_render_view.hpp"
-#include "view/ui/widget/measurement/measure_in_progress_render_view.hpp"
-#include "vtx_app.hpp"
+#include "qt/action/main.hpp"
+#include "qt/action/viewpoint.hpp"
 #include <QShortcut>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/action/viewpoint.hpp>
+#include <app/old_app/event/event_manager.hpp>
+#include <app/old_app/io/filesystem.hpp>
+#include <app/old_app/model/label.hpp>
+// #include <tool/old_tool/model/measurement/angle.hpp>
+// #include <tool/old_tool/model/measurement/dihedral_angle.hpp>
+// #include <tool/old_tool/model/measurement/distance.hpp>
+// #include <tool/old_tool/model/measurement/measure_in_progress.hpp>
+#include <app/old_app/model/mesh_triangle.hpp>
+#include <app/old_app/model/molecule.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::Widget::Render
 {
 	RenderWidget::RenderWidget( QWidget * p_parent ) : BaseManualWidget<QWidget>( p_parent )
 	{
-		_registerEvent( Event::Global::LABEL_ADDED );
-		_registerEvent( Event::Global::LABEL_REMOVED );
-		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::Event::Global::LABEL_ADDED );
+		_registerEvent( VTX::Event::Global::LABEL_REMOVED );
+		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
 	}
 
 	RenderWidget::~RenderWidget() {}
 
-	void RenderWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void RenderWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::LABEL_ADDED )
+		if ( p_event.name == VTX::Event::Global::LABEL_ADDED )
 		{
-			const Event::VTXEventPtr<Model::Label> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Label> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Label> &>( p_event );
 
 			const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
 
 			BaseIntegratedWidget * integratedWidget = nullptr;
 
-			if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
-			{
-				Model::Measurement::Distance * const distanceModel
-					= static_cast<Model::Measurement::Distance *>( castedEvent.ptr );
+			// if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+			//{
+			//	Model::Measurement::Distance * const distanceModel
+			//		= static_cast<Model::Measurement::Distance *>( castedEvent.ptr );
 
-				integratedWidget = WidgetFactory::get()
-									   .instantiateViewWidget<View::UI::Widget::Measurement::DistanceRenderView,
-															  Model::Measurement::Distance>(
-										   distanceModel, ID::View::UI_RENDER_MEASUREMENT_DISTANCE, this, "Distance" );
-			}
-			else if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
-			{
-				Model::Measurement::Angle * const angleModel
-					= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
+			//	integratedWidget = WidgetFactory::get()
+			//						   .instantiateViewWidget<View::UI::Widget::Measurement::DistanceRenderView,
+			//												  Model::Measurement::Distance>(
+			//							   distanceModel, ID::View::UI_RENDER_MEASUREMENT_DISTANCE, this, "Distance" );
+			//}
+			// else if ( labeltype == ID::Model::MODEL_MEASUREMENT_ANGLE )
+			//{
+			//	Model::Measurement::Angle * const angleModel
+			//		= static_cast<Model::Measurement::Angle *>( castedEvent.ptr );
 
-				integratedWidget = WidgetFactory::get()
-									   .instantiateViewWidget<View::UI::Widget::Measurement::AngleRenderView,
-															  Model::Measurement::Angle>(
-										   angleModel, ID::View::UI_RENDER_MEASUREMENT_ANGLE, this, "Angle" );
-			}
-			else if ( labeltype == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
-			{
-				Model::Measurement::DihedralAngle * const dihedralAngleModel
-					= static_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
+			//	integratedWidget = WidgetFactory::get()
+			//						   .instantiateViewWidget<View::UI::Widget::Measurement::AngleRenderView,
+			//												  Model::Measurement::Angle>(
+			//							   angleModel, ID::View::UI_RENDER_MEASUREMENT_ANGLE, this, "Angle" );
+			//}
+			// else if ( labeltype == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+			//{
+			//	Model::Measurement::DihedralAngle * const dihedralAngleModel
+			//		= static_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
 
-				integratedWidget = WidgetFactory::get()
-									   .instantiateViewWidget<View::UI::Widget::Measurement::DihedralAngleRenderView,
-															  Model::Measurement::DihedralAngle>(
-										   dihedralAngleModel,
-										   ID::View::UI_RENDER_MEASUREMENT_DIHEDRAL_ANGLE,
-										   this,
-										   "DihedralAngle" );
-			}
+			//	integratedWidget = WidgetFactory::get()
+			//						   .instantiateViewWidget<View::UI::Widget::Measurement::DihedralAngleRenderView,
+			//												  Model::Measurement::DihedralAngle>(
+			//							   dihedralAngleModel,
+			//							   ID::View::UI_RENDER_MEASUREMENT_DIHEDRAL_ANGLE,
+			//							   this,
+			//							   "DihedralAngle" );
+			//}
 
 			if ( integratedWidget != nullptr )
 			{
 				_addIntegratedWidget( integratedWidget );
 			}
 		}
-		else if ( p_event.name == Event::Global::LABEL_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::LABEL_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Label> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Label> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Label> &>( p_event );
 
 			const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
 
-			if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
-			{
-				const Model::Measurement::Distance * const model
-					= dynamic_cast<const Model::Measurement::Distance *>( castedEvent.ptr );
-				_removeViewIntegratedWidget<View::UI::Widget::Measurement::DistanceRenderView,
-											Model::Measurement::Distance>( model,
-																		   ID::View::UI_RENDER_MEASUREMENT_DISTANCE );
-			}
-			else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
-			{
-				const Model::Measurement::Angle * const model
-					= dynamic_cast<const Model::Measurement::Angle *>( castedEvent.ptr );
-				_removeViewIntegratedWidget<View::UI::Widget::Measurement::AngleRenderView, Model::Measurement::Angle>(
-					model, ID::View::UI_RENDER_MEASUREMENT_ANGLE );
-			}
-			else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
-			{
-				const Model::Measurement::DihedralAngle * const model
-					= dynamic_cast<const Model::Measurement::DihedralAngle *>( castedEvent.ptr );
-				_removeViewIntegratedWidget<View::UI::Widget::Measurement::DihedralAngleRenderView,
-											Model::Measurement::DihedralAngle>(
-					model, ID::View::UI_RENDER_MEASUREMENT_DIHEDRAL_ANGLE );
-			}
+			// if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+			//{
+			//	const Model::Measurement::Distance * const model
+			//		= dynamic_cast<const Model::Measurement::Distance *>( castedEvent.ptr );
+			//	_removeViewIntegratedWidget<View::UI::Widget::Measurement::DistanceRenderView,
+			//								Model::Measurement::Distance>( model,
+			//															   ID::View::UI_RENDER_MEASUREMENT_DISTANCE );
+			// }
+			// else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
+			//{
+			//	const Model::Measurement::Angle * const model
+			//		= dynamic_cast<const Model::Measurement::Angle *>( castedEvent.ptr );
+			//	_removeViewIntegratedWidget<View::UI::Widget::Measurement::AngleRenderView, Model::Measurement::Angle>(
+			//		model, ID::View::UI_RENDER_MEASUREMENT_ANGLE );
+			// }
+			// else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+			//{
+			//	const Model::Measurement::DihedralAngle * const model
+			//		= dynamic_cast<const Model::Measurement::DihedralAngle *>( castedEvent.ptr );
+			//	_removeViewIntegratedWidget<View::UI::Widget::Measurement::DihedralAngleRenderView,
+			//								Model::Measurement::DihedralAngle>(
+			//		model, ID::View::UI_RENDER_MEASUREMENT_DIHEDRAL_ANGLE );
+			// }
 		}
-		else if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
 		{
 			State::Visualization * const state
 				= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
-			Model::Measurement::MeasureInProgress & measureInProgressModel
-				= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )
-					  ->getMeasureInProgressModel();
+			// Model::Measurement::MeasureInProgress & measureInProgressModel
+			//	= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )
+			//		  ->getMeasureInProgressModel();
 
-			if ( state->getCurrentPickerID() == ID::Controller::PICKER )
-			{
-				if ( MVC::MvcManager::get().hasView( &measureInProgressModel,
-													 ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS ) )
-				{
-					_removeViewIntegratedWidget<View::UI::Widget::Measurement::MeasureInProgressRenderView,
-												Model::Measurement::MeasureInProgress>(
-						&measureInProgressModel, ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS );
-				}
-			}
-			else if ( state->getCurrentPickerID() == ID::Controller::MEASUREMENT )
-			{
-				if ( !MVC::MvcManager::get().hasView( &measureInProgressModel,
-													  ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS ) )
-				{
-					UI::Widget::Render::BaseIntegratedWidget * const measureInProgressView
-						= WidgetFactory::get()
-							  .instantiateViewWidget<View::UI::Widget::Measurement::MeasureInProgressRenderView,
-													 Model::Measurement::MeasureInProgress>(
-								  &measureInProgressModel,
-								  ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS,
-								  this,
-								  "MeasureInProgress" );
+			// if ( state->getCurrentPickerID() == ID::Controller::PICKER )
+			//{
+			//	if ( MVC::MvcManager::get().hasView( &measureInProgressModel,
+			//										 ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS ) )
+			//	{
+			//		_removeViewIntegratedWidget<View::UI::Widget::Measurement::MeasureInProgressRenderView,
+			//									Model::Measurement::MeasureInProgress>(
+			//			&measureInProgressModel, ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS );
+			//	}
+			// }
+			// else if ( state->getCurrentPickerID() == ID::Controller::MEASUREMENT )
+			//{
+			//	if ( !MVC::MvcManager::get().hasView( &measureInProgressModel,
+			//										  ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS ) )
+			//	{
+			//		UI::Widget::Render::BaseIntegratedWidget * const measureInProgressView
+			//			= WidgetFactory::get()
+			//				  .instantiateViewWidget<View::UI::Widget::Measurement::MeasureInProgressRenderView,
+			//										 Model::Measurement::MeasureInProgress>(
+			//					  &measureInProgressModel,
+			//					  ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS,
+			//					  this,
+			//					  "MeasureInProgress" );
 
-					_addIntegratedWidget( measureInProgressView );
-				}
-			}
+			//		_addIntegratedWidget( measureInProgressView );
+			//	}
+			//}
 		}
 	}
 
@@ -209,9 +211,15 @@ namespace VTX::UI::Widget::Render
 		}
 	}
 
-	void RenderWidget::_onShortcutToggleCameraController() { VTX_ACTION( new Action::Main::ToggleCameraController() ); }
+	void RenderWidget::_onShortcutToggleCameraController()
+	{
+		VTX_ACTION( new QT::Action::Main::ToggleCameraController() );
+	}
 
-	void RenderWidget::_onShortcutResetCameraController() { VTX_ACTION( new Action::Main::ResetCameraController() ); }
+	void RenderWidget::_onShortcutResetCameraController()
+	{
+		VTX_ACTION( new QT::Action::Main::ResetCameraController() );
+	}
 
 	void RenderWidget::_onShortcutToggleCamera()
 	{
@@ -219,7 +227,7 @@ namespace VTX::UI::Widget::Render
 		VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 
-	void RenderWidget::_onShortcutAddViewpoint() { VTX_ACTION( new Action::Viewpoint::Create() ); }
+	void RenderWidget::_onShortcutAddViewpoint() { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
 
 	void RenderWidget::_onShortcutSnapshot()
 	{
@@ -305,7 +313,7 @@ namespace VTX::UI::Widget::Render
 	void RenderWidget::setOverlayVisibility( const Overlay::OVERLAY & p_overlay, const bool p_visible )
 	{
 		_overlays[ p_overlay ]->setVisible( p_visible );
-		VTX_EVENT( new Event::VTXEvent( Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE ) );
+		VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE ) );
 	}
 	void RenderWidget::showAllOverlays( const bool p_show )
 	{
@@ -314,7 +322,7 @@ namespace VTX::UI::Widget::Render
 			pairIdOverlay.second->setVisible( p_show );
 		}
 
-		VTX_EVENT( new Event::VTXEvent( Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE ) );
+		VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE ) );
 	}
 
 	Overlay::BaseOverlay * RenderWidget::getOverlay( const Overlay::OVERLAY & p_overlay )

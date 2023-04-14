@@ -1,11 +1,11 @@
 #ifndef __VTX_VIEW_UI_WIDGET_BASE_WIDGET_VIEW__
 #define __VTX_VIEW_UI_WIDGET_BASE_WIDGET_VIEW__
 
-#include "model/base_model.hpp"
-#include "ui/widget/base_manual_widget_initializer.hpp"
-#include "ui/widget/view_item_widget.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/widget/base_manual_widget_initializer.hpp"
+#include "old_ui/ui/widget/view_item_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include <QWidget>
+#include <app/old_app/model/base_model.hpp>
 #include <type_traits>
 
 namespace VTX::View::UI::Widget
@@ -19,7 +19,7 @@ namespace VTX::View::UI::Widget
 	  public:
 		W * const getWidget() { return _widget; };
 
-		virtual void notify( const Event::VTXEvent * const p_event )
+		virtual void notify( const VTX::Event::VTXEvent * const p_event )
 		{
 			View::BaseView<M>::notify( p_event );
 			_widget->notify( p_event );

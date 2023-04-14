@@ -1,17 +1,21 @@
 #include "selection_view.hpp"
-#include "action/action_manager.hpp"
-#include "action/atom.hpp"
-#include "action/chain.hpp"
-#include "action/molecule.hpp"
-#include "action/residue.hpp"
-#include "action/selection.hpp"
-#include "id.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "style.hpp"
-
-#include <util/logger.hpp>
-#include "ui/widget_factory.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "qt/action/atom.hpp"
+#include "qt/action/chain.hpp"
+#include "qt/action/molecule.hpp"
+#include "qt/action/residue.hpp"
+#include "qt/action/selection.hpp"
 #include <QHeaderView>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/atom.hpp>
+#include <app/old_app/action/chain.hpp>
+#include <app/old_app/action/molecule.hpp>
+#include <app/old_app/action/residue.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::View::UI::Widget
 {
@@ -363,22 +367,22 @@ namespace VTX::View::UI::Widget
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
-			VTX_ACTION( new Action::Molecule::Orient( model ) );
+			VTX_ACTION( new VTX::UI::QT::Action::Molecule::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
-			VTX_ACTION( new Action::Chain::Orient( model ) );
+			VTX_ACTION( new VTX::UI::QT::Action::Chain::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
 			Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
-			VTX_ACTION( new Action::Residue::Orient( model ) );
+			VTX_ACTION( new VTX::UI::QT::Action::Residue::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
 			Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
-			VTX_ACTION( new Action::Atom::Orient( model ) );
+			VTX_ACTION( new VTX::UI::QT::Action::Atom::Orient( model ) );
 		}
 	}
 	void SelectionView::_onItemExpanded( QTreeWidgetItem * const p_item )
@@ -422,7 +426,7 @@ namespace VTX::View::UI::Widget
 						SceneItemWidget::MODEL_ID_ROLE,
 						QVariant::fromValue<VTX::Model::ID>( p_molecule.getId() ) );
 		p_item.setText( NAME_COLUMN_INDEX, QString::fromStdString( p_molecule.getDefaultName() ) );
-		p_item.setIcon( NAME_COLUMN_INDEX, *VTX::Style::IconConst::get().getModelSymbol( p_molecule.getTypeId() ) );
+		p_item.setIcon( NAME_COLUMN_INDEX, *VTX::UI::Style::IconConst::get().getModelSymbol( p_molecule.getTypeId() ) );
 
 		const QTreeWidgetItem::ChildIndicatorPolicy childIndicatorPolicy
 			= p_children.size() > 0 ? QTreeWidgetItem::ChildIndicatorPolicy::ShowIndicator
@@ -436,7 +440,7 @@ namespace VTX::View::UI::Widget
 	{
 		p_item.setData( NAME_COLUMN_INDEX, SceneItemWidget::MODEL_ID_ROLE, QVariant::fromValue( p_chain.getId() ) );
 		p_item.setText( NAME_COLUMN_INDEX, QString::fromStdString( p_chain.getDefaultName() ) );
-		p_item.setIcon( NAME_COLUMN_INDEX, *VTX::Style::IconConst::get().getModelSymbol( p_chain.getTypeId() ) );
+		p_item.setIcon( NAME_COLUMN_INDEX, *VTX::UI::Style::IconConst::get().getModelSymbol( p_chain.getTypeId() ) );
 
 		QTreeWidgetItem::ChildIndicatorPolicy childIndicator
 			= p_children.size() > 0 ? QTreeWidgetItem::ChildIndicatorPolicy::ShowIndicator
@@ -453,7 +457,7 @@ namespace VTX::View::UI::Widget
 		p_item.setText( NAME_COLUMN_INDEX,
 						QString::fromStdString( p_residue.getSymbolStr() + " "
 												+ std::to_string( p_residue.getIndexInOriginalChain() ) ) );
-		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_residue.getTypeId() ) );
+		p_item.setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( p_residue.getTypeId() ) );
 
 		// Always show indicator, if residue has no child, it is remove from the molecule
 		QTreeWidgetItem::ChildIndicatorPolicy childIndicator
@@ -467,7 +471,7 @@ namespace VTX::View::UI::Widget
 		p_item.setData( NAME_COLUMN_INDEX, SceneItemWidget::MODEL_ID_ROLE, QVariant::fromValue( p_atom.getId() ) );
 		p_item.setText( NAME_COLUMN_INDEX,
 						QString::fromStdString( p_atom.getSymbolStr() + " " + std::to_string( p_atom.getIndex() ) ) );
-		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_atom.getTypeId() ) );
+		p_item.setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( p_atom.getTypeId() ) );
 		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::DontShowIndicator );
 	}
 
@@ -509,7 +513,7 @@ namespace VTX::View::UI::Widget
 								  option.rect.y() + ( ( option.rect.height() - size ) / 2 ),
 								  size,
 								  size );
-		painter->drawPixmap( rect, Style::IconConst::get().CLOSE_PIXMAP );
+		painter->drawPixmap( rect, VTX::UI::Style::IconConst::get().CLOSE_PIXMAP );
 	}
 
 	QSize SelectionView::SelectionStyleItemDelegate::sizeHint( const QStyleOptionViewItem & option,
@@ -520,7 +524,7 @@ namespace VTX::View::UI::Widget
 
 	int SelectionView::SelectionStyleItemDelegate::_getSize() const
 	{
-		const QPixmap & removePixmap = Style::IconConst::get().CLOSE_PIXMAP;
+		const QPixmap & removePixmap = VTX::UI::Style::IconConst::get().CLOSE_PIXMAP;
 		return removePixmap.height() + 2;
 	}
 

@@ -1,9 +1,9 @@
 #include "setting_representation_widget.hpp"
-#include "model/representation/representation_library.hpp"
-#include "style.hpp"
-#include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QVBoxLayout>
+#include <app/old_app/model/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -11,7 +11,7 @@ namespace VTX::UI::Widget::Settings
 	{
 	}
 
-	void SettingRepresentationWidget::receiveEvent( const Event::VTXEvent & p_event ) {}
+	void SettingRepresentationWidget::receiveEvent( const VTX::Event::VTXEvent & p_event ) {}
 
 	void SettingRepresentationWidget::_setupUi( const QString & p_name )
 	{

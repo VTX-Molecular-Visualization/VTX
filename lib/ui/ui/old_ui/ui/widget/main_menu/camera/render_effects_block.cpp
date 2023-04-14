@@ -1,16 +1,16 @@
 #include "render_effects_block.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "io/filesystem.hpp"
-#include "model/renderer/render_effect_preset.hpp"
-#include "model/renderer/render_effect_preset_library.hpp"
-#include "style.hpp"
-#include "ui/dialog.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/settings/setting_widget_enum.hpp"
-#include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
-#include "worker/snapshoter.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget/settings/setting_widget_enum.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/vtx_app.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/io/filesystem.hpp>
+#include <app/old_app/model/renderer/render_effect_preset.hpp>
+#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
+#include <app/old_app/worker/snapshoter.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
@@ -19,7 +19,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( _renderEffectLibrary ),
 		MenuToolBlockWidget( p_parent ) {};
 
-	void RenderEffectsBlock::receiveEvent( const Event::VTXEvent & p_event ) {}
+	void RenderEffectsBlock::receiveEvent( const VTX::Event::VTXEvent & p_event ) {}
 
 	void RenderEffectsBlock::_setupUi( const QString & p_name )
 	{
@@ -32,10 +32,11 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	}
 	void RenderEffectsBlock::localize() { setTitle( "Render Effects" ); }
 
-	void RenderEffectsBlock::notify( const Event::VTXEvent * const p_event )
+	void RenderEffectsBlock::notify( const VTX::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE || p_event->name == Event::Model::QUICK_ACCESS_CHANGE
-			 || p_event->name == Event::Model::DATA_CHANGE )
+		if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE
+			 || p_event->name == VTX::Event::Model::QUICK_ACCESS_CHANGE
+			 || p_event->name == VTX::Event::Model::DATA_CHANGE )
 		{
 			_refreshView();
 		}

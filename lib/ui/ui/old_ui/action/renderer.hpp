@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_ACTION_RENDERER__
 #define __VTX_UI_ACTION_RENDERER__
 
-#include "color/rgba.hpp"
 #include <app/old_app/action/base_action.hpp>
+#include <app/old_app/color/rgba.hpp>
 #include <app/old_app/model/renderer/render_effect_preset.hpp>
 
 namespace VTX::UI::Action::Renderer

@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_INTEGER_FIELD__
 #define __VTX_UI_WIDGET_CUSTOM_INTEGER_FIELD__
 
-#include "ui/multi_data_field.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/multi_data_field.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QLineEdit>
 #include <QSlider>
 #include <QString>

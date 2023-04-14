@@ -1,10 +1,10 @@
 #ifndef __VTX_UI_WIDGET_SEQUENCE_DATASET__
 #define __VTX_UI_WIDGET_SEQUENCE_DATASET__
 
-#include "model/residue.hpp"
-#include "style.hpp"
+#include "old_ui/style.hpp"
 #include <QPoint>
 #include <QString>
+#include <app/old_app/model/residue.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Sequence::Dataset

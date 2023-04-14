@@ -2,13 +2,13 @@
 #include "background_block.hpp"
 #include "camera_navigation_action_block.hpp"
 #include "camera_projection_block.hpp"
-#include "model/renderer/render_effect_preset_library.hpp"
-#include "model/representation/representation_library.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include "render_effects_block.hpp"
 #include "snapshot_block.hpp"
-#include "ui/widget_factory.hpp"
 #include "viewpoint_block.hpp"
 #include "windows_block.hpp"
+#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
+#include <app/old_app/model/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {

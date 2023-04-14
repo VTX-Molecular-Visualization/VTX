@@ -1,7 +1,7 @@
 #include "render_preview_widget.hpp"
-#include "style.hpp"
-#include "worker/snapshoter.hpp"
-#include "worker/worker_manager.hpp"
+#include "old_ui/style.hpp"
+#include <app/old_app/worker/snapshoter.hpp>
+#include <app/old_app/worker/worker_manager.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -42,7 +42,7 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 
 		Worker::Snapshoter * const snapshoter
-			= new Worker::Snapshoter( Worker::Snapshoter::MODE::GL, &preview, snapshotData );
+			= new Worker::Snapshoter( Worker::Snapshoter::MODE::GL, (void *)( &preview ), snapshotData );
 		VTX_WORKER( snapshoter );
 
 		const QSize	 imgSize = Style::EXPORT_IMAGE_PREVIEW_SIZE;

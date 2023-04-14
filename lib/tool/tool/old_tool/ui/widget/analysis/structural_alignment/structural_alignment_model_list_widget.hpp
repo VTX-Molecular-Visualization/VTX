@@ -7,7 +7,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QWidget>
-#include <old/model/base_model.hpp>
+#include <app/old_app/model/base_model.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Analysis::StructuralAlignment

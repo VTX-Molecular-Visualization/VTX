@@ -1,10 +1,10 @@
 #include "rmsd_ui.hpp"
 #include "analysis/rmsd/action.hpp"
 // #include "ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/event/event.hpp>
-#include <old/model/selection.hpp>
-#include <old/selection/selection_manager.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>
 #include <ui/qt/widget/main_menu/menu_tooltab_widget.hpp>

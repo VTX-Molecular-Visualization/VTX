@@ -1,12 +1,12 @@
 #ifndef __VTX_ACTION_ANALYSIS__
 #define __VTX_ACTION_ANALYSIS__
 
-#include "action/base_action.hpp"
-#include "analysis/rmsd.hpp"
-#include "analysis/structural_alignment.hpp"
-#include "model/molecule.hpp"
-#include "model/selection.hpp"
-#include "util/analysis.hpp"
+#include "old_tool/analysis/rmsd.hpp"
+#include "old_tool/analysis/structural_alignment.hpp"
+#include "old_tool/util/analysis.hpp"
+#include <app/old_app/action/base_action.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/selection.hpp>
 #include <cmath>
 #include <string>
 #include <util/chrono.hpp>

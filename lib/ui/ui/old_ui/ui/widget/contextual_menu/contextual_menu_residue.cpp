@@ -1,10 +1,11 @@
 #include "contextual_menu_residue.hpp"
-#include "action/action_manager.hpp"
-#include "action/residue.hpp"
-#include "action/visible.hpp"
-#include "model/representation/representation.hpp"
-#include "model/representation/representation_library.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "qt/action/residue.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/residue.hpp>
+#include <app/old_app/action/visible.hpp>
+#include <app/old_app/model/representation/representation.hpp>
+#include <app/old_app/model/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -45,7 +46,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		setTitle( QString::fromStdString( title ) );
 	}
 
-	void ContextualMenuResidue::_orientAction() { VTX_ACTION( new Action::Residue::Orient( *_target ) ); }
+	void ContextualMenuResidue::_orientAction() { VTX_ACTION( new QT::Action::Residue::Orient( *_target ) ); }
 	void ContextualMenuResidue::_showAction()
 	{
 		VTX_ACTION( new Action::Residue::ChangeVisibility( *_target,

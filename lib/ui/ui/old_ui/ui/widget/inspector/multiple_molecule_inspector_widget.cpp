@@ -1,28 +1,28 @@
 #include "multiple_molecule_inspector_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/instantiated_representation.hpp"
-#include "action/molecule.hpp"
-#include "action/transformable.hpp"
-#include "representation/representation_manager.hpp"
-#include "style.hpp"
-#include "ui/layout/attribute_list_layout.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/custom_widget/collapsing_header_widget.hpp"
-#include "ui/widget/custom_widget/folding_button.hpp"
-#include "ui/widget/inspector/inspector_widget.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/layout/attribute_list_layout.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/folding_button.hpp"
+#include "old_ui/ui/widget/inspector/inspector_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>
 #include <QLabel>
 #include <QPixmap>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/instantiated_representation.hpp>
+#include <app/old_app/action/molecule.hpp>
+#include <app/old_app/action/transformable.hpp>
+#include <app/old_app/representation/representation_manager.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
 	MultipleMoleculeWidget::MultipleMoleculeWidget( QWidget * p_parent ) :
 		MultipleModelInspectorWidget( p_parent, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE )
 	{
-		_registerEvent( Event::Global::LATE_UPDATE );
+		_registerEvent( VTX::Event::Global::LATE_UPDATE );
 	};
 
 	MultipleMoleculeWidget::~MultipleMoleculeWidget() {}

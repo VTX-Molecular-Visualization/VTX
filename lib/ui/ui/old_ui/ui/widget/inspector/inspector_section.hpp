@@ -1,9 +1,9 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_SECTION__
 #define __VTX_UI_WIDGET_INSPECTOR_SECTION__
 
-#include "style.hpp"
-#include "ui/widget/custom_widget/collapsing_header_widget.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include <QGridLayout>
 #include <QLabel>
 #include <QString>

@@ -2,9 +2,9 @@
 #define __VTX_UI_WIDGET_CONTEXTUAL_MENU_LABEL__
 
 #include "contextual_menu_template.hpp"
-#include "model/label.hpp"
-#include "ui/widget/custom_widget/set_representation_menu.hpp"
+#include "old_ui/ui/widget/custom_widget/set_representation_menu.hpp"
 #include <QMenu>
+#include <app/old_app/model/label.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {

@@ -2,15 +2,15 @@
 #define __VTX_UI_WIDGET_RENDER_OVERLAY_VISUALIZATION_QUICK_ACCESS__
 
 #include "base_overlay.hpp"
-#include "controller/measurement_picker.hpp"
-#include "id.hpp"
-#include "selection/selection_enum.hpp"
-#include "ui/multi_data_field.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+// #include "old_ui/controller/measurement_picker.hpp"
+#include "old_ui/ui/multi_data_field.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QAction>
 #include <QComboBox>
 #include <QFrame>
 #include <QToolButton>
+#include <app/old_app/id.hpp>
+#include <app/old_app/selection/selection_enum.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Render::Overlay
@@ -69,18 +69,18 @@ namespace VTX::UI::Widget::Render::Overlay
 			MenuItemData( VTX::Selection::Granularity::MOLECULE, "Pick Molecule", ":/sprite/pick_molecule.png" )
 		};
 
-		inline static std::vector<MenuItemData<Controller::MeasurementPicker::Mode>> MEASUREMENT_MODE {
-			MenuItemData( Controller::MeasurementPicker::Mode::DISTANCE,
-						  "Distance",
-						  ":/sprite/measurement_distance_icon.png" ),
-			// MenuItemData( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE,
-			//			  "Distance to cycle",
-			//			  ":/sprite/measurement_distance_to_cycle_icon.png" ),
-			MenuItemData( Controller::MeasurementPicker::Mode::ANGLE, "Angle", ":/sprite/measurement_angle_icon.png" ),
-			MenuItemData( Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE,
-						  "Dihedral angle",
-						  ":/sprite/measurement_dihedral_angle_icon.png" ),
-		};
+		// inline static std::vector<MenuItemData<Controller::MeasurementPicker::Mode>> MEASUREMENT_MODE {
+		//	MenuItemData( Controller::MeasurementPicker::Mode::DISTANCE,
+		//				  "Distance",
+		//				  ":/sprite/measurement_distance_icon.png" ),
+		//	// MenuItemData( Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE,
+		//	//			  "Distance to cycle",
+		//	//			  ":/sprite/measurement_distance_to_cycle_icon.png" ),
+		//	MenuItemData( Controller::MeasurementPicker::Mode::ANGLE, "Angle", ":/sprite/measurement_angle_icon.png" ),
+		//	MenuItemData( Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE,
+		//				  "Dihedral angle",
+		//				  ":/sprite/measurement_dihedral_angle_icon.png" ),
+		// };
 
 		inline static const char * CAMERA_CONTROLLER_PROPERTY_NAME = "CAMERA_CONTROLLER";
 		inline static const char * PICKER_CONTROLLER_PROPERTY_NAME = "PICKER_CONTROLLER";
@@ -91,7 +91,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		~VisualizationQuickAccess() = default;
 		void localize() override;
 
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		VisualizationQuickAccess( QWidget * p_parent );

@@ -1,6 +1,6 @@
 #include "event_manager.hpp"
 #include "old_ui/controller/base_keyboard_controller.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::UI::Event

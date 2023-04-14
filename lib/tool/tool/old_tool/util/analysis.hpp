@@ -1,7 +1,7 @@
 #ifndef __VTX_UTIL_ANALYSIS__
 #define __VTX_UTIL_ANALYSIS__
 
-#include "analysis/rmsd.hpp"
+#include "old_tool/analysis/rmsd.hpp"
 #include <string>
 #include <util/types.hpp>
 #include <vector>

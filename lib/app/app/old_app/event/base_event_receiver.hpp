@@ -14,7 +14,7 @@ namespace VTX
 		{
 			friend EventManager;
 
-		  private:
+		  protected:
 			virtual void receiveEvent( const T & p_event ) {}
 		};
 	} // namespace Event

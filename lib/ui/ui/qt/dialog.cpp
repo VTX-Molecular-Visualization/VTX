@@ -8,8 +8,8 @@
 // #include <app/old_app/io/struct/scene_path_data.hpp>
 // #include <app/old_app/selection/selection_manager.hpp>
 // #include "qt/widget/dialog/download_molecule_dialog.hpp"
-// #include "ui/widget/dialog/image_exporter.hpp"
-// #include "util/ui.hpp"
+// #include "old_ui/ui/widget/dialog/image_exporter.hpp"
+// #include "old_ui/util/ui.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QString>

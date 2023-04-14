@@ -1,40 +1,44 @@
 #include "visualization_quick_access.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "action/selection.hpp"
-#include "action/setting.hpp"
-#include "model/selection.hpp"
-#include "selection/selection_manager.hpp"
-#include "setting.hpp"
-#include "state/visualization.hpp"
+#include "old_ui/action/main.hpp"
+#include "old_ui/state/visualization.hpp"
+#include "old_ui/vtx_app.hpp"
+#include "qt/action/main.hpp"
+#include "qt/action/selection.hpp"
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QMenu>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <app/old_app/setting.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::Render::Overlay
 {
 	VisualizationQuickAccess::VisualizationQuickAccess( QWidget * p_parent ) : BaseOverlay( p_parent )
 	{
-		_registerEvent( Event::Global::CONTROLLER_CHANGE );
-		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
-		_registerEvent( Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::Event::Global::CONTROLLER_CHANGE );
+		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::Event::Global::SETTINGS_CHANGE );
 	};
 
-	void VisualizationQuickAccess::receiveEvent( const Event::VTXEvent & p_event )
+	void VisualizationQuickAccess::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::CONTROLLER_CHANGE )
+		if ( p_event.name == VTX::Event::Global::CONTROLLER_CHANGE )
 		{
 			_refreshController();
 		}
-		else if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_refreshPicker();
 		}
-		else if ( p_event.name == Event::Global::SETTINGS_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::SETTINGS_CHANGE )
 		{
-			const Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
-				= dynamic_cast<const Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
+			const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
 
 			if ( castedEvent.ref.find( Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.ref.cend() )
 				_refreshSelectionGranularity();
@@ -84,12 +88,12 @@ namespace VTX::UI::Widget::Render::Overlay
 		_changeSelectionGranularityWidget->setToolTip( "Granularity" );
 
 		QMenu * const changeMeasurementModeMenu = new QMenu( this );
-		for ( int i = 0; i < MEASUREMENT_MODE.size(); i++ )
-		{
-			const MenuItemData<Controller::MeasurementPicker::Mode> & data = MEASUREMENT_MODE[ i ];
-			QAction * const action = changeMeasurementModeMenu->addAction( QIcon( data.iconPath ), data.name );
-			action->setProperty( MEASUREMENT_MODE_PROPERTY_NAME, QVariant( int( data.data ) ) );
-		}
+		// for ( int i = 0; i < MEASUREMENT_MODE.size(); i++ )
+		//{
+		//	const MenuItemData<Controller::MeasurementPicker::Mode> & data = MEASUREMENT_MODE[ i ];
+		//	QAction * const action = changeMeasurementModeMenu->addAction( QIcon( data.iconPath ), data.name );
+		//	action->setProperty( MEASUREMENT_MODE_PROPERTY_NAME, QVariant( int( data.data ) ) );
+		// }
 		_changeMeasurementModeQAction = addMenu( changeMeasurementModeMenu );
 		_changeMeasurementModeWidget  = dynamic_cast<QToolButton *>( widgetForAction( _changeMeasurementModeQAction ) );
 		_changeMeasurementModeWidget->setToolTip( "Measurement" );
@@ -179,34 +183,34 @@ namespace VTX::UI::Widget::Render::Overlay
 	}
 	void VisualizationQuickAccess::_refreshMeasurementMode()
 	{
-		const Controller::MeasurementPicker::Mode currentMeasurementMode
-			= VTXApp::get()
-				  .getStateMachine()
-				  .getState<State::Visualization>( ID::State::VISUALIZATION )
-				  ->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )
-				  ->getCurrentMode();
+		// const Controller::MeasurementPicker::Mode currentMeasurementMode
+		//	= VTXApp::get()
+		//		  .getStateMachine()
+		//		  .getState<State::Visualization>( ID::State::VISUALIZATION )
+		//		  ->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )
+		//		  ->getCurrentMode();
 
-		for ( const MenuItemData<Controller::MeasurementPicker::Mode> & data : MEASUREMENT_MODE )
-		{
-			if ( data.data == currentMeasurementMode )
-			{
-				_changeMeasurementModeWidget->setIcon( QIcon( data.iconPath ) );
-				break;
-			}
-		}
+		// for ( const MenuItemData<Controller::MeasurementPicker::Mode> & data : MEASUREMENT_MODE )
+		//{
+		//	if ( data.data == currentMeasurementMode )
+		//	{
+		//		_changeMeasurementModeWidget->setIcon( QIcon( data.iconPath ) );
+		//		break;
+		//	}
+		// }
 	}
 
 	void VisualizationQuickAccess::_orientAction()
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Selection::Orient( selection ) );
+		VTX_ACTION( new QT::Action::Selection::Orient( selection ) );
 	}
 	void VisualizationQuickAccess::_changeCameraControllerAction( const QAction * const p_action )
 	{
 		const int		   controllerIndex = p_action->property( CAMERA_CONTROLLER_PROPERTY_NAME ).toInt();
 		const ID::VTX_ID & controllerID	   = CAMERA_CONTROLLERS[ controllerIndex ].data;
 
-		VTX_ACTION( new Action::Main::ChangeCameraController( controllerID ) );
+		VTX_ACTION( new QT::Action::Main::ChangeCameraController( controllerID ) );
 	}
 
 	void VisualizationQuickAccess::_changePickerControllerAction( const QAction * const p_action )
@@ -224,10 +228,10 @@ namespace VTX::UI::Widget::Render::Overlay
 	}
 	void VisualizationQuickAccess::_changeMeasurementModeAction( const QAction * const p_action )
 	{
-		const Controller::MeasurementPicker::Mode measurementMode
-			= Controller::MeasurementPicker::Mode( p_action->property( MEASUREMENT_MODE_PROPERTY_NAME ).toInt() );
+		// const Controller::MeasurementPicker::Mode measurementMode
+		//	= Controller::MeasurementPicker::Mode( p_action->property( MEASUREMENT_MODE_PROPERTY_NAME ).toInt() );
 
-		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( measurementMode ) ) );
+		// VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( measurementMode ) ) );
 	}
 
 } // namespace VTX::UI::Widget::Render::Overlay

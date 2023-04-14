@@ -4,8 +4,8 @@
 #include "camera/toolbar.hpp"
 #include "home/menu_home_widget.hpp"
 #include "molecule/toolbar.hpp"
-#include "tool/menu_tool_widget.hpp"
-#include "ui/widget_factory.hpp"
+// #include "tool/menu_tool_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include <QFont>
 
 namespace VTX::UI::Widget::MainMenu
@@ -43,9 +43,9 @@ namespace VTX::UI::Widget::MainMenu
 			= WidgetFactory::get().instantiateWidget<Camera::Toolbar>( _tabWidget, "cameraMenu" );
 		_tabWidget->addTab( cameraMenu, "Visualization" );
 
-		Tool::MenuToolWidget * const toolMenu
-			= WidgetFactory::get().instantiateWidget<Tool::MenuToolWidget>( _tabWidget, "toolMenu" );
-		_tabWidget->addTab( toolMenu, "Tools" );
+		// Tool::MenuToolWidget * const toolMenu
+		//	= WidgetFactory::get().instantiateWidget<Tool::MenuToolWidget>( _tabWidget, "toolMenu" );
+		//_tabWidget->addTab( toolMenu, "Tools" );
 
 		// !V0.1
 		//_movieMenu = new QLabel( "movieMenu", this );

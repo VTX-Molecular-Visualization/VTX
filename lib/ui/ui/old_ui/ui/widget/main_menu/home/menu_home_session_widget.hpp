@@ -1,9 +1,9 @@
 #ifndef __VTX_UI_WIDGET_MENU_HOME_SESSION__
 #define __VTX_UI_WIDGET_MENU_HOME_SESSION__
 
-#include "event/event.hpp"
-#include "ui/widget/main_menu/menu_toolblock_widget.hpp"
-#include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
+#include <app/old_app/event/event.hpp>
+#include "old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
+#include "old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QMenu>
 #include <QWidget>
 
@@ -17,7 +17,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 		~MenuHomeSessionWidget();
 		void localize() override;
 
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		MenuHomeSessionWidget( QWidget * p_parent );

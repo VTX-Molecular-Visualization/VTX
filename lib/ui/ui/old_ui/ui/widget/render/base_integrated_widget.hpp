@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_RENDER_BASE_INTEGRATED_WIDGET__
 #define __VTX_UI_WIDGET_RENDER_BASE_INTEGRATED_WIDGET__
 
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QWidget>
 #include <type_traits>
 

@@ -1,18 +1,18 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_ATOM__
 #define __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_ATOM__
 
-#include "math/transform.hpp"
-#include "model/atom.hpp"
-#include "ui//widget/custom_widget/qt_multi_data_field.hpp"
-#include "ui/multi_data_field.hpp"
-#include "ui/widget/custom_widget/collapsing_header_widget.hpp"
-#include "ui/widget/custom_widget/transform_widget.hpp"
-#include "ui/widget/inspector/inspector_section.hpp"
-#include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
-#include "view/base_view.hpp"
-#include "view/callback_view.hpp"
+#include "old_ui/ui//widget/custom_widget/qt_multi_data_field.hpp"
+#include "old_ui/ui/multi_data_field.hpp"
+#include "old_ui/ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/transform_widget.hpp"
+#include "old_ui/ui/widget/inspector/inspector_section.hpp"
+#include "old_ui/ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include <QLabel>
 #include <QWidget>
+#include <app/old_app/math/transform.hpp>
+#include <app/old_app/model/atom.hpp>
+#include <app/old_app/view/base_view.hpp>
+#include <app/old_app/view/callback_view.hpp>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
@@ -93,7 +93,7 @@ namespace VTX::UI::Widget::Inspector
 
 		MoleculeViewContainer _moleculeViewerContainer = MoleculeViewContainer( this );
 
-		void _eventCalledOnMolecule( const Event::VTXEvent * const p_event );
+		void _eventCalledOnMolecule( const VTX::Event::VTXEvent * const p_event );
 
 		void _resetFieldStates( const SectionFlag & p_flag );
 		void _fillBondData();

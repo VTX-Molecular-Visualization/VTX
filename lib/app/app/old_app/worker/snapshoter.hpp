@@ -22,6 +22,9 @@ namespace VTX::Worker
 							 const FilePath &				 p_path,
 							 const IO::Struct::ImageExport & p_exportData );
 
+		// Temp constructor to bypass call with QImage.
+		explicit Snapshoter( const MODE & p_mode, void * p_imageTarget, const IO::Struct::ImageExport & p_exportData );
+
 		// explicit Snapshoter( const MODE &					 p_mode,
 		//					 QImage *						 p_imageTarget,
 		//					 const IO::Struct::ImageExport & p_exportData );

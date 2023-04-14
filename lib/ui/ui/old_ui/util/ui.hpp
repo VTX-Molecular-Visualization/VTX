@@ -1,7 +1,6 @@
 #ifndef __VTX_UTIL_UI__
 #define __VTX_UTIL_UI__
 
-#include "color/rgba.hpp"
 #include <QBitmap>
 #include <QColor>
 #include <QComboBox>
@@ -13,6 +12,7 @@
 #include <QStyle>
 #include <QVariant>
 #include <QWidget>
+#include <app/old_app/color/rgba.hpp>
 #include <set>
 #include <string>
 #include <vector>

@@ -1,9 +1,9 @@
 #ifndef __VTX_UI_OBJECT_BACKGROUND_DEPENDENT_ICON__
 #define __VTX_UI_OBJECT_BACKGROUND_DEPENDENT_ICON__
 
-#include "color/rgba.hpp"
 #include <QIcon>
 #include <QImage>
+#include <app/old_app/color/rgba.hpp>
 
 namespace VTX::UI::Object
 {

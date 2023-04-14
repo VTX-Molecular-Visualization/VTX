@@ -1,9 +1,9 @@
 #include "background_block.hpp"
-#include "action/action_manager.hpp"
-#include "action/renderer.hpp"
-#include "id.hpp"
-#include "ui/widget/renderer/default_background.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/widget/renderer/default_background.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/renderer.hpp>
+#include <app/old_app/id.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {

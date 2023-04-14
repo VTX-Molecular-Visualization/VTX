@@ -2,7 +2,7 @@
 #define __VTX_UI_WIDGET_SAS_REPRESENTATION_WIDGET__
 
 #include "base_representation_widget.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QWidget>
 
 namespace VTX::UI::Widget::Representation

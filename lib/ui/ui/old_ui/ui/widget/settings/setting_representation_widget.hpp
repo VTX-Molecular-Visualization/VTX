@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_WIDGET_SETTING_REPRESENTATION__
 #define __VTX_UI_WIDGET_SETTING_REPRESENTATION__
 
-#include "ui/widget/base_manual_widget.hpp"
-#include "view/ui/widget/representation/representation_library_view.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/view/ui/widget/representation/representation_library_view.hpp"
 #include <QString>
 #include <QWidget>
 
@@ -15,7 +15,7 @@ namespace VTX::UI::Widget::Settings
 		using RepresentationLibraryView = View::UI::Widget::Representation::RepresentationLibraryView;
 
 	  public:
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
 	  protected:

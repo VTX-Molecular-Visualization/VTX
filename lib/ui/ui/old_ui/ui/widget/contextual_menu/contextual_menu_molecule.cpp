@@ -1,12 +1,13 @@
 #include "contextual_menu_molecule.hpp"
-#include "action/action_manager.hpp"
-#include "action/molecule.hpp"
-#include "action/visible.hpp"
-#include "model/representation/representation.hpp"
-#include "model/representation/representation_library.hpp"
-#include "ui/dialog.hpp"
-#include "ui/widget_factory.hpp"
-#include "view/ui/widget/molecule_scene_view.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/view/ui/widget/molecule_scene_view.hpp"
+#include "qt/action/molecule.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/molecule.hpp>
+#include <app/old_app/action/visible.hpp>
+#include <app/old_app/model/representation/representation.hpp>
+#include <app/old_app/model/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -106,7 +107,10 @@ namespace VTX::UI::Widget::ContextualMenu
 		VTX_ACTION( new Action::Molecule::ChangeIsPlaying( *_target, newIsPlaying ) );
 	}
 
-	void ContextualMenuMolecule::_orientAction() { VTX_ACTION( new Action::Molecule::Orient( *_target ) ); }
+	void ContextualMenuMolecule::_orientAction()
+	{
+		VTX_ACTION( new VTX::UI::QT::Action::Molecule::Orient( *_target ) );
+	}
 	void ContextualMenuMolecule::_showAction()
 	{
 		VTX_ACTION( new Action::Molecule::ChangeVisibility( *_target,

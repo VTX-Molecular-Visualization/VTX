@@ -1,7 +1,7 @@
 #include "freefly.hpp"
-#include "action/action_manager.hpp"
-#include "object3d/scene.hpp"
-#include "style.hpp"
+#include "old_ui/style.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/object3d/scene.hpp>
 
 namespace VTX
 {
@@ -80,7 +80,7 @@ namespace VTX
 			_orientStartingPosition = _camera().getPosition();
 			const float targetDistance
 				= p_aabb.radius()
-				  / (float)( tan( Util::Math::radians( _camera().getFov() ) * Style::ORIENT_ZOOM_FACTOR ) );
+				  / (float)( tan( Util::Math::radians( _camera().getFov() ) * UI::Style::ORIENT_ZOOM_FACTOR ) );
 			_orientTargetPosition = p_aabb.centroid() - _camera().getFront() * targetDistance;
 
 			_orientStartingRotation = _camera().getRotation();

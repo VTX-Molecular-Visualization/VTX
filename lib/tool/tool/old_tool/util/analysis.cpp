@@ -1,9 +1,9 @@
 #include "analysis.hpp"
-#include "analysis/rmsd.hpp"
-#include "model/molecule.hpp"
-#include "model/selection.hpp"
-#include "object3d/scene.hpp"
-#include "vtx_app.hpp"
+#include "old_tool/analysis/rmsd.hpp"
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/vtx_app.hpp>
 
 namespace VTX::Util::Analysis
 {
@@ -126,7 +126,6 @@ namespace VTX::Util::Analysis
 	{
 		std::string log = "RMSD between " + p_data.getFirstMolecule()->getDisplayName() + " and "
 						  + p_data.getSecondMolecule()->getDisplayName();
-
 
 		if ( p_data.hasResidueCount() )
 		{

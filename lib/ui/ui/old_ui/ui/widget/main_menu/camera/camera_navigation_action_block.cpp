@@ -1,26 +1,29 @@
 #include "camera_navigation_action_block.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "action/selection.hpp"
-#include "id.hpp"
-#include "model/selection.hpp"
-#include "selection/selection_manager.hpp"
-#include "state/visualization.hpp"
-#include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/state/visualization.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/vtx_app.hpp"
+#include "qt/action/main.hpp"
+#include "qt/action/selection.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
 	CameraNavigationActionBlock::CameraNavigationActionBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( Event::Global::CONTROLLER_CHANGE );
+		_registerEvent( VTX::Event::Global::CONTROLLER_CHANGE );
 	};
 
 	CameraNavigationActionBlock::~CameraNavigationActionBlock() {}
 
-	void CameraNavigationActionBlock::receiveEvent( const Event::VTXEvent & p_event )
+	void CameraNavigationActionBlock::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::CONTROLLER_CHANGE )
+		if ( p_event.name == VTX::Event::Global::CONTROLLER_CHANGE )
 		{
 			_updateCameraModeFeedback();
 		}
@@ -102,25 +105,25 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 	void CameraNavigationActionBlock::_recenterCamera() const
 	{
-		VTX_ACTION( new Action::Main::ResetCameraController() );
+		VTX_ACTION( new QT::Action::Main::ResetCameraController() );
 	}
 	void CameraNavigationActionBlock::_orientCamera() const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Selection::Orient( selection ) );
+		VTX_ACTION( new QT::Action::Selection::Orient( selection ) );
 	}
 
 	void CameraNavigationActionBlock::_setTrackballController() const
 	{
-		VTX_ACTION( new Action::Main::ChangeCameraController( ID::Controller::TRACKBALL ) );
+		VTX_ACTION( new QT::Action::Main::ChangeCameraController( ID::Controller::TRACKBALL ) );
 	}
 	void CameraNavigationActionBlock::_setFreeflyController() const
 	{
-		VTX_ACTION( new Action::Main::ChangeCameraController( ID::Controller::FREEFLY ) );
+		VTX_ACTION( new QT::Action::Main::ChangeCameraController( ID::Controller::FREEFLY ) );
 	}
 	void CameraNavigationActionBlock::_setVesselController() const
 	{
-		VTX_ACTION( new Action::Main::ChangeCameraController( ID::Controller::VESSEL ) );
+		VTX_ACTION( new QT::Action::Main::ChangeCameraController( ID::Controller::VESSEL ) );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Camera

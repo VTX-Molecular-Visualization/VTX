@@ -1,20 +1,9 @@
 #ifndef __VTX_VIEW_UI_WIDGET_MOLECULE_SCENE_VIEW__
 #define __VTX_VIEW_UI_WIDGET_MOLECULE_SCENE_VIEW__
 
-#include "event/base_event_receiver_vtx.hpp"
-#include "generic/base_visible.hpp"
-#include "id.hpp"
-#include "model/atom.hpp"
-#include "model/category.hpp"
-#include "model/category_enum.hpp"
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
-#include "model/residue.hpp"
-#include "model/selection.hpp"
-#include "style.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/scene/scene_item_widget.hpp"
-#include "view/base_view.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/scene/scene_item_widget.hpp"
 #include <QKeyEvent>
 #include <QList>
 #include <QMenu>
@@ -22,6 +11,17 @@
 #include <QString>
 #include <QTreeWidgetItem>
 #include <QWidget>
+#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/old_app/generic/base_visible.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/atom.hpp>
+#include <app/old_app/model/category.hpp>
+#include <app/old_app/model/category_enum.hpp>
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/residue.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/view/base_view.hpp>
 #include <map>
 
 namespace VTX::View::UI::Widget
@@ -35,8 +35,8 @@ namespace VTX::View::UI::Widget
 		inline static const Qt::ItemDataRole CATEGORY_ROLE = CHILD_FIRST_ROLE;
 
 	  public:
-		void notify( const Event::VTXEvent * const p_event ) override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void notify( const VTX::Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 		const Model::ID &					   getModelID() const override { return _model->getId(); };
 		virtual const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };

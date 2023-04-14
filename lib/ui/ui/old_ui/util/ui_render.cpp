@@ -1,5 +1,5 @@
-#include "util/ui_render.hpp"
-#include "object3d/camera.hpp"
+#include "old_ui/util/ui_render.hpp"
+#include <app/old_app/object3d/camera.hpp>
 
 namespace VTX::Util::UIRender
 {

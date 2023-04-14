@@ -2,15 +2,15 @@
 #define __VTX_UI_WIDGET_MOLECULE_SEQUENCE_WIDGET__
 
 #include "chain_sequence_widget.hpp"
-#include "event/event.hpp"
-#include "model/molecule.hpp"
-#include "ui/widget/view_item_widget.hpp"
+#include "old_ui/ui/widget/view_item_widget.hpp"
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMouseEvent>
 #include <QPoint>
 #include <QScrollArea>
 #include <QWidget>
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/model/molecule.hpp>
 #include <vector>
 
 namespace VTX::Model
@@ -40,12 +40,12 @@ namespace VTX::UI::Widget::Sequence
 		};
 
 	  public:
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		void refresh() override;
 		void localize() override;
 		void repaintSelection() const;
 
-		void notify( const Event::VTXEvent * const p_event ) override;
+		void notify( const VTX::Event::VTXEvent * const p_event ) override;
 
 	  protected:
 		MoleculeSequenceWidget( QWidget * p_parent );

@@ -1,11 +1,11 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_RENDER_PREVIEW_WIDGET__
 #define __VTX_UI_WIDGET_CUSTOM_RENDER_PREVIEW_WIDGET__
 
-#include "io/struct/image_export.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QLabel>
 #include <QPixmap>
 #include <QWidget>
+#include <app/old_app/io/struct/image_export.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {

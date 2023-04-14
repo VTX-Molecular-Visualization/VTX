@@ -1,6 +1,6 @@
 #include "stick_and_cartoon_representation_widget.hpp"
-#include "setting.hpp"
 #include <QHBoxLayout>
+#include <app/old_app/setting.hpp>
 
 namespace VTX::UI::Widget::Representation
 {

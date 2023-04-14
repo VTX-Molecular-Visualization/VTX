@@ -1,17 +1,18 @@
 #include "opengl_widget.hpp"
-#include "model/renderer/render_effect_preset.hpp"
-#include "object3d/camera.hpp"
-#include "object3d/scene.hpp"
-#include "renderer/gl/gl.hpp"
-#include "renderer/gl/program_manager.hpp"
-#include "renderer/rt/ray_tracer.hpp"
-#include "spec.hpp"
-#include "ui/dialog.hpp"
-#include "util/opengl.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QMainWindow>
 #include <QOpenGLVersionFunctionsFactory>
 #include <QScreen>
+#include <app/old_app/model/renderer/render_effect_preset.hpp>
+#include <app/old_app/object3d/camera.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/renderer/gl/gl.hpp>
+#include <app/old_app/renderer/gl/program_manager.hpp>
+#include <app/old_app/renderer/rt/ray_tracer.hpp>
+#include <app/old_app/spec.hpp>
+#include <app/old_app/style.hpp>
+#include <app/old_app/util/opengl.hpp>
 
 namespace VTX::UI::Widget::Render
 {
@@ -176,8 +177,8 @@ namespace VTX::UI::Widget::Render
 		if ( needInit )
 		{
 			const float pixelRatio = getScreenPixelRatio();
-			getRenderer().init( Style::WINDOW_WIDTH_DEFAULT * pixelRatio,
-								Style::WINDOW_HEIGHT_DEFAULT * pixelRatio,
+			getRenderer().init( VTX::Style::WINDOW_WIDTH_DEFAULT * pixelRatio,
+								VTX::Style::WINDOW_HEIGHT_DEFAULT * pixelRatio,
 								defaultFramebufferObject() );
 		}
 	}

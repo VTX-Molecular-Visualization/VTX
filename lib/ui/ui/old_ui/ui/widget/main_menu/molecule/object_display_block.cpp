@@ -1,30 +1,30 @@
 #include "object_display_block.hpp"
-#include "action/action_manager.hpp"
-#include "action/molecule.hpp"
-#include "model/molecule.hpp"
-#include "model/selection.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "object3d/scene.hpp"
-#include "selection/selection_manager.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/molecule.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	ObjectDisplayBlock::ObjectDisplayBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( Event::Global::SELECTION_CHANGE );
-		_registerEvent( Event::Global::MOLECULE_ADDED );
-		_registerEvent( Event::Global::MOLECULE_REMOVED );
-		_registerEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
+		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::Event::Global::MOLECULE_ADDED );
+		_registerEvent( VTX::Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 	}
 
 	ObjectDisplayBlock::~ObjectDisplayBlock() {}
 
-	void ObjectDisplayBlock::receiveEvent( const Event::VTXEvent & p_event )
+	void ObjectDisplayBlock::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::SELECTION_CHANGE || p_event.name == Event::Global::MOLECULE_ADDED
-			 || p_event.name == Event::Global::MOLECULE_REMOVED
-			 || p_event.name == Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE )
+		if ( p_event.name == VTX::Event::Global::SELECTION_CHANGE || p_event.name == VTX::Event::Global::MOLECULE_ADDED
+			 || p_event.name == VTX::Event::Global::MOLECULE_REMOVED
+			 || p_event.name == VTX::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE )
 		{
 			_refreshButtons();
 		}

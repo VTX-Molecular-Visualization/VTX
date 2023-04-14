@@ -5,7 +5,7 @@
 
 namespace VTX::UI::Core
 {
-	class BaseWidget : public Event::BaseEventReceiverVTX
+	class BaseWidget : public VTX::Event::BaseEventReceiverVTX
 	{
 	  public:
 		BaseWidget() = default;

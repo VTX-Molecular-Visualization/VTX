@@ -1,14 +1,14 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_TRANSFORM__
 #define __VTX_UI_WIDGET_CUSTOM_TRANSFORM__
 
-#include "generic/base_transformable.hpp"
-#include "math/transform.hpp"
-#include "ui/multi_data_field.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/multi_data_field.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include "vector3_widget.hpp"
 #include <QBoxLayout>
 #include <QFrame>
 #include <QSpinBox>
+#include <app/old_app/generic/base_transformable.hpp>
+#include <app/old_app/math/transform.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {

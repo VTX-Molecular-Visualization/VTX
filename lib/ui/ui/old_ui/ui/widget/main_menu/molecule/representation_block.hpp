@@ -1,12 +1,12 @@
 #ifndef __VTX_UI_WIDGET_MENU_MOLECULE_REPRESENTATION_BLOCK__
 #define __VTX_UI_WIDGET_MENU_MOLECULE_REPRESENTATION_BLOCK__
 
-#include "model/representation/representation_library.hpp"
+#include "old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
+#include "old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "representation_preset_button.hpp"
-#include "ui/widget/main_menu/menu_toolblock_widget.hpp"
-#include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
-#include "view/base_view.hpp"
 #include <QWidget>
+#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/old_app/view/base_view.hpp>
 #include <map>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
@@ -32,7 +32,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		void _refreshIcons();
 		void _refreshView() override;
 
-		void notify( const Event::VTXEvent * const p_event ) override;
+		void notify( const VTX::Event::VTXEvent * const p_event ) override;
 
 	  private:
 		std::map<int, RepresentationPresetButton *> _buttons   = std::map<int, RepresentationPresetButton *>();

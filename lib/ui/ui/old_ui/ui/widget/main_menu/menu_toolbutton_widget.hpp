@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_WIDGET_BASE_MENUTOOLBUTTON_WIDGET__
 #define __VTX_UI_WIDGET_BASE_MENUTOOLBUTTON_WIDGET__
 
-#include "ui/navigation/arrow_navigation.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/navigation/arrow_navigation.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QToolButton>
 #include <QWidget>
 #include <type_traits>

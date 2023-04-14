@@ -1,9 +1,9 @@
 #include "menu_toolbutton_widget.hpp"
-#include "style.hpp"
-#include <util/logger.hpp>
+#include "old_ui/style.hpp"
 #include <QKeyEvent>
 #include <QLayout>
 #include <QPalette>
+#include <util/logger.hpp>
 
 namespace VTX::UI::Widget::MainMenu
 {

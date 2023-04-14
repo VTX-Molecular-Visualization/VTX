@@ -5,9 +5,15 @@ namespace VTX
 {
 	namespace Event
 	{
-		BaseEventReceiverMouse ::BaseEventReceiverMouse() { EventManager::get().registerEventReceiverMouse( this ); }
+		BaseEventReceiverMouse::BaseEventReceiverMouse()
+		{
+			UI::Event::EventManager::get().registerEventReceiverMouse( this );
+		}
 
-		BaseEventReceiverMouse ::~BaseEventReceiverMouse() { EventManager::get().unregisterEventReceiverMouse( this ); }
+		BaseEventReceiverMouse::~BaseEventReceiverMouse()
+		{
+			UI::Event::EventManager::get().unregisterEventReceiverMouse( this );
+		}
 
 	} // namespace Event
 } // namespace VTX

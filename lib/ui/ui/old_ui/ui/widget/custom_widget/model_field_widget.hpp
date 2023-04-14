@@ -1,11 +1,11 @@
 #ifndef __VTX_UI_WIDGET_MODEL_FIELD_WIDGET__
 #define __VTX_UI_WIDGET_MODEL_FIELD_WIDGET__
 
-#include "id.hpp"
-#include "ui/draggable_item.hpp"
-#include "ui/widget/custom_widget/model_drop_area.hpp"
+#include "old_ui/ui/draggable_item.hpp"
+#include "old_ui/ui/widget/custom_widget/model_drop_area.hpp"
 #include <QLabel>
 #include <QWidget>
+#include <app/old_app/id.hpp>
 #include <type_traits>
 
 namespace VTX
@@ -24,7 +24,7 @@ namespace VTX
 
 		  public:
 			~ModelFieldWidget() {};
-			void receiveEvent( const Event::VTXEvent & p_event ) override;
+			void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 			void localize() override;
 			void refresh();

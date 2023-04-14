@@ -1,13 +1,13 @@
 #include "setting_widget.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/vtx_app.hpp"
 #include "setting_color_widget.hpp"
 #include "setting_menu_item.hpp"
 #include "setting_molecule_widget.hpp"
 #include "setting_render_effect_widget.hpp"
 #include "setting_representation_widget.hpp"
 #include "setting_vtx_widget.hpp"
-#include "style.hpp"
-#include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX::UI::Widget::Settings
 {
@@ -21,7 +21,7 @@ namespace VTX::UI::Widget::Settings
 		}
 	}
 
-	void SettingWidget::receiveEvent( const Event::VTXEvent & p_event ) {}
+	void SettingWidget::receiveEvent( const VTX::Event::VTXEvent & p_event ) {}
 
 	void SettingWidget::_setupUi( const QString & p_name )
 	{

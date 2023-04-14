@@ -1,9 +1,9 @@
 #include "model_list_widget.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "ui/ui_action/self_referenced_action.hpp"
-#include "ui/widget_factory.hpp"
-#include "util/ui.hpp"
+#include "old_ui/ui/ui_action/self_referenced_action.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/util/ui.hpp"
 #include <QLabel>
+#include <app/old_app/mvc/mvc_manager.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {

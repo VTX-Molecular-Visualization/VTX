@@ -35,8 +35,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		inline static const Qt::ItemDataRole CATEGORY_ROLE = CHILD_FIRST_ROLE;
 
 	  public:
-		void notify( const Event::VTXEvent * const p_event ) override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void notify( const VTX::Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 		const Model::ID &					   getModelID() const override { return _model->getId(); };
 		virtual const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };

@@ -1218,7 +1218,7 @@
   <customwidget>
    <class>CollapsingGroupboxWidget</class>
    <extends>QGroupBox</extends>
-   <header location="global">ui/widget/custom_widget/collapsing_groupbox_widget.hpp</header>
+   <header location="global">old_ui/ui/widget/custom_widget/collapsing_groupbox_widget.hpp</header>
    <container>1</container>
    <slots>
     <slot>toggleBodyVisibility(bool)</slot>

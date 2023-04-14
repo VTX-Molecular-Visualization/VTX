@@ -1,14 +1,14 @@
 #ifndef __VTX_UI_BASE_REPRESENTATION_VIEW_WIDGET__
 #define __VTX_UI_BASE_REPRESENTATION_VIEW_WIDGET__
 
-#include "model/representation/instantiated_representation.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/float_field_slider_widget.hpp"
-#include "ui/widget/custom_widget/qt_multi_data_field.hpp"
-#include "ui/widget_factory.hpp"
-#include "util/ui.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/float_field_slider_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/qt_multi_data_field.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/util/ui.hpp"
 #include <QGridLayout>
 #include <QWidget>
+#include <app/old_app/model/representation/instantiated_representation.hpp>
 
 namespace VTX::UI::Widget::Representation::View
 {

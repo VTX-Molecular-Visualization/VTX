@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_DIALOG_DOWNLOAD_MOLECULE__
 #define __VTX_UI_DIALOG_DOWNLOAD_MOLECULE__
 
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>

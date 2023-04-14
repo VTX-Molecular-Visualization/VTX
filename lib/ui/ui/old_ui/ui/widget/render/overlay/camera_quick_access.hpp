@@ -2,13 +2,13 @@
 #define __VTX_UI_WIDGET_RENDER_OVERLAY_CAMERA_QUICK_ACCESS__
 
 #include "base_overlay.hpp"
-#include "model/renderer/render_effect_preset.hpp"
-#include "ui/object/background_dependent_icon.hpp"
-#include "view/callback_view.hpp"
+#include "old_ui/ui/object/background_dependent_icon.hpp"
 #include <QAction>
 #include <QMenu>
 #include <QToolButton>
 #include <QWidget>
+#include <app/old_app/model/renderer/render_effect_preset.hpp>
+#include <app/old_app/view/callback_view.hpp>
 
 namespace VTX::UI::Widget::Render::Overlay
 {
@@ -24,7 +24,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		~CameraQuickAccess();
 		void localize() override;
 
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		CameraQuickAccess( QWidget * p_parent );
@@ -47,7 +47,7 @@ namespace VTX::UI::Widget::Render::Overlay
 
 		void _attachViewOnAppliedRenderEffect();
 
-		void _onRenderEffectChange( const Event::VTXEvent * const p_event );
+		void _onRenderEffectChange( const VTX::Event::VTXEvent * const p_event );
 		void _toggleCameraProjection();
 		void _applyRenderEffectPresetAction( const QAction * const p_action );
 		void _onExportImageClickedAction() const;

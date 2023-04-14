@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Controller
 
 	class BaseKeyboardController :
 		virtual public UI::Core::Controller::BaseController,
-		public Event::BaseEventReceiverKeyboard
+		public VTX::Event::BaseEventReceiverKeyboard
 	{
 	  public:
 		virtual void receiveEvent( const QKeyEvent & p_event ) override;

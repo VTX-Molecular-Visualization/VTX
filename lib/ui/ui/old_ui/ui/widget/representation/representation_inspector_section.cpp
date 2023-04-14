@@ -1,16 +1,16 @@
 #include "representation_inspector_section.hpp"
-#include "action/action_manager.hpp"
-#include "model/representation/representation.hpp"
-#include "model/representation/representation_library.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "representation/representation_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include "style.hpp"
-#include "ui/widget/representation/base_representation_widget.hpp"
-#include "ui/widget_factory.hpp"
-#include "view/callback_view.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/widget/representation/base_representation_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/model/representation/representation.hpp>
+#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/representation/representation_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <app/old_app/view/callback_view.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Representation
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::Representation
 	RepresentationInspectorSection::RepresentationInspectorSection( QWidget * const p_parent ) :
 		BaseManualWidget( p_parent ), TMultiDataField()
 	{
-		_registerEvent( Event::Global::LATE_UPDATE );
+		_registerEvent( VTX::Event::Global::LATE_UPDATE );
 	}
 
 	RepresentationInspectorSection::~RepresentationInspectorSection()
@@ -29,9 +29,9 @@ namespace VTX::UI::Widget::Representation
 			MVC::MvcManager::get().deleteModel( _dummyRepresentation );
 	}
 
-	void RepresentationInspectorSection::receiveEvent( const Event::VTXEvent & p_event )
+	void RepresentationInspectorSection::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::LATE_UPDATE )
+		if ( p_event.name == VTX::Event::Global::LATE_UPDATE )
 		{
 			if ( _isDirty )
 			{
@@ -374,9 +374,9 @@ namespace VTX::UI::Widget::Representation
 
 	void RepresentationInspectorSection::_displayDifferentsDataFeedback() {}
 
-	void RepresentationInspectorSection::_onTargetedRepresentationChange( const Event::VTXEvent * const p_event )
+	void RepresentationInspectorSection::_onTargetedRepresentationChange( const VTX::Event::VTXEvent * const p_event )
 	{
-		resetState( false, p_event->name == Event::Model::REPRESENTATION_TYPE_CHANGE );
+		resetState( false, p_event->name == VTX::Event::Model::REPRESENTATION_TYPE_CHANGE );
 		setDirty();
 	}
 
@@ -392,6 +392,6 @@ namespace VTX::UI::Widget::Representation
 		}
 	}
 
-	void RepresentationInspectorSection::_onDummyChange( const Event::VTXEvent * const p_event ) { refresh(); }
+	void RepresentationInspectorSection::_onDummyChange( const VTX::Event::VTXEvent * const p_event ) { refresh(); }
 
 } // namespace VTX::UI::Widget::Representation

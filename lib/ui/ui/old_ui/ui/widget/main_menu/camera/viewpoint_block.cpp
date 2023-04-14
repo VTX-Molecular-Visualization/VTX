@@ -1,26 +1,27 @@
 #include "viewpoint_block.hpp"
-#include "action/action_manager.hpp"
-#include "action/viewpoint.hpp"
-#include "model/path.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "object3d/camera.hpp"
-#include "selection/selection_manager.hpp"
-#include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "qt/action/viewpoint.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/viewpoint.hpp>
+#include <app/old_app/model/path.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/object3d/camera.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
 	ViewpointBlock::ViewpointBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
 	};
 
-	void ViewpointBlock::receiveEvent( const Event::VTXEvent & p_event )
+	void ViewpointBlock::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::SELECTION_CHANGE )
+		if ( p_event.name == VTX::Event::SELECTION_CHANGE )
 		{
-			const Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Selection> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Selection> &>( p_event );
 
 			const Model::Selection * const selectionModel = castedEvent.ptr;
 			_enableDeleteButtonState( selectionModel->hasItemOfType( VTX::ID::Model::MODEL_VIEWPOINT ) );
@@ -53,7 +54,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 	void ViewpointBlock::localize() { setTitle( "Viewpoints" ); }
 
-	void ViewpointBlock::_createViewpointAction() const { VTX_ACTION( new Action::Viewpoint::Create() ); }
+	void ViewpointBlock::_createViewpointAction() const { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
 	void ViewpointBlock::_deleteViewpointAction() const
 	{
 		std::vector<Model::Viewpoint *> viewpointsInSelection = std::vector<Model::Viewpoint *>();
@@ -71,7 +72,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 			}
 		}
 
-		VTX_ACTION( new Action::Viewpoint::Delete( viewpointsInSelection ) );
+		VTX_ACTION( new QT::Action::Viewpoint::Delete( viewpointsInSelection ) );
 	}
 
 	void ViewpointBlock::_enableDeleteButtonState( const bool p_enable )

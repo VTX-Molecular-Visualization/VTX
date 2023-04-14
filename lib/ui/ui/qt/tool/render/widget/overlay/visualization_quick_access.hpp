@@ -9,6 +9,7 @@
 #include <QComboBox>
 #include <QFrame>
 #include <QToolButton>
+#include <app/old_app/id.hpp>
 #include <app/old_app/selection/selection_enum.hpp>
 #include <vector>
 
@@ -98,7 +99,7 @@ namespace VTX::UI::QT::Tool::Render::Widget::Overlay
 		~VisualizationQuickAccess() = default;
 		void localize() override;
 
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		VisualizationQuickAccess( QWidget * p_parent );

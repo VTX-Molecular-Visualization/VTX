@@ -1,8 +1,7 @@
 #ifndef __VTX_UI_WIDGET_REPRESENTABLE_FIELD_WIDGET__
 #define __VTX_UI_WIDGET_REPRESENTABLE_FIELD_WIDGET__
 
-#include "generic/base_representable.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QBoxLayout>
 #include <QDragEnterEvent>
 #include <QLabel>
@@ -10,6 +9,7 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QWidget>
+#include <app/old_app/generic/base_representable.hpp>
 
 namespace VTX
 {

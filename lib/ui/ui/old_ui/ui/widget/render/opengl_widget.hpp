@@ -1,11 +1,18 @@
 #ifndef __VTX_UI_WIDGET_OPENGL__
 #define __VTX_UI_WIDGET_OPENGL__
 
-#include "renderer/base_renderer.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QElapsedTimer>
+#include <QOpenGLFunctions_4_5_Core>
 #include <QOpenGLWidget>
 #include <QPainter>
+#include <QSurface>
+#include <app/old_app/renderer/base_renderer.hpp>
+
+using OpenGLFunctions = QOpenGLFunctions_4_5_Core;
+using OpenGLContext	  = QOpenGLContext;
+using OpenGLSurface	  = QSurface;
+using OpenGLWidget	  = QOpenGLWidget;
 
 namespace VTX
 {
@@ -21,7 +28,6 @@ namespace VTX
 	namespace UI::Widget::Render
 	{
 		class OpenGLWidget : public BaseManualWidget<QOpenGLWidget>, public Generic::BaseOpenGL
-
 		{
 			VTX_WIDGET
 
@@ -61,6 +67,11 @@ namespace VTX
 
 			void _setupUi( const QString & p_name ) override {}
 			void _setupSlots() override {}
+
+		  protected:
+			static inline OpenGLFunctions * _gl		 = nullptr;
+			static inline OpenGLContext *	_context = nullptr;
+			static inline OpenGLSurface *	_surface = nullptr;
 
 		  private:
 			QElapsedTimer _timer		= QElapsedTimer();

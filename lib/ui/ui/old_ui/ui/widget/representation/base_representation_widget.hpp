@@ -1,14 +1,14 @@
 #ifndef __VTX_UI_WIDGET_BASE_REPRESENTATION_WIDGET__
 #define __VTX_UI_WIDGET_BASE_REPRESENTATION_WIDGET__
 
-#include "model/representation/instantiated_representation.hpp"
-#include "ui/multi_data_field.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/color_mode_field_widget.hpp"
+#include "old_ui/ui/multi_data_field.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/color_mode_field_widget.hpp"
 #include "view/cylinder_widget.hpp"
 #include "view/ribbon_widget.hpp"
 #include "view/sphere_widget.hpp"
 #include <QWidget>
+#include <app/old_app/model/representation/instantiated_representation.hpp>
 #include <unordered_set>
 
 namespace VTX::View::UI::Widget::Representation

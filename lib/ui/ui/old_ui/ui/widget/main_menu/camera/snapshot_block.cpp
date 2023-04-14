@@ -1,16 +1,16 @@
 #include "snapshot_block.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "io/filesystem.hpp"
-#include "model/renderer/render_effect_preset.hpp"
-#include "model/renderer/render_effect_preset_library.hpp"
-#include "style.hpp"
-#include "ui/dialog.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/settings/setting_widget_enum.hpp"
-#include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
-#include "worker/snapshoter.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget/settings/setting_widget_enum.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/vtx_app.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/io/filesystem.hpp>
+#include <app/old_app/model/renderer/render_effect_preset.hpp>
+#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
+#include <app/old_app/worker/snapshoter.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {

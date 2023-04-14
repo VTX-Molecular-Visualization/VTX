@@ -1,31 +1,31 @@
 #include "setting_molecule_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "action/setting.hpp"
-#include "io/struct/image_export.hpp"
-#include "setting.hpp"
-#include "style.hpp"
-#include "trajectory/trajectory_enum.hpp"
-#include "ui/dialog.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget_factory.hpp"
-#include "util/ui.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "old_ui/util/ui.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QLabel>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/io/struct/image_export.hpp>
+#include <app/old_app/setting.hpp>
+#include <app/old_app/trajectory/trajectory_enum.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
 	SettingMoleculeWidget::SettingMoleculeWidget( QWidget * const p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::Event::Global::SETTINGS_CHANGE );
 	}
 
-	void SettingMoleculeWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void SettingMoleculeWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::SETTINGS_CHANGE )
+		if ( p_event.name == VTX::Event::Global::SETTINGS_CHANGE )
 		{
-			const Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
-				= static_cast<const Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
+			const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
+				= static_cast<const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
 
 			if ( castedEvent.ref.find( Setting::PARAMETER::DEFAULT_REPRESENTATION_PER_CATEGORY )
 				 != castedEvent.ref.end() )

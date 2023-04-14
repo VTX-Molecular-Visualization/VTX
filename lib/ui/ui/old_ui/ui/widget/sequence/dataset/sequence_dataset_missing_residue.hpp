@@ -1,12 +1,12 @@
 #ifndef __VTX_UI_WIDGET_SEQUENCE_DATASET_MISSING_RESIDUE__
 #define __VTX_UI_WIDGET_SEQUENCE_DATASET_MISSING_RESIDUE__
 
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
-#include "model/residue.hpp"
+#include "old_ui/style.hpp"
 #include "sequence_dataset.hpp"
-#include "style.hpp"
 #include <QString>
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/residue.hpp>
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {

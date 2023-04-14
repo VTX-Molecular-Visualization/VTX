@@ -1,17 +1,17 @@
 #ifndef __VTX_UI_WIDGET_MODEL_LIST_COMPONENT__
 #define __VTX_UI_WIDGET_MODEL_LIST_COMPONENT__
 
-#include "model/base_model.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/folding_button.hpp"
-#include "ui/widget/custom_widget/model_drop_area.hpp"
-#include "ui/widget/custom_widget/model_field_widget.hpp"
-#include "ui/widget/custom_widget/model_list_widget.hpp"
-#include "ui/widget/custom_widget/textual_model_drop_area.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/folding_button.hpp"
+#include "old_ui/ui/widget/custom_widget/model_drop_area.hpp"
+#include "old_ui/ui/widget/custom_widget/model_field_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/model_list_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/textual_model_drop_area.hpp"
 #include <QGridLayout>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QWidget>
+#include <app/old_app/model/base_model.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	  public:
 		~ModelListComponent();
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 		void localize() override;
 

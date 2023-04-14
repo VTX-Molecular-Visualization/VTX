@@ -1,5 +1,5 @@
 #include "folding_button.hpp"
-#include "style.hpp"
+#include "old_ui/style.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 

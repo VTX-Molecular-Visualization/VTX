@@ -1,4 +1,5 @@
 #include "visualization_quick_access.hpp"
+#include "old_ui/action/main.hpp"
 #include "qt/action/selection.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/state/state_machine.hpp"
@@ -19,25 +20,25 @@ namespace VTX::UI::QT::Tool::Render::Widget::Overlay
 {
 	VisualizationQuickAccess::VisualizationQuickAccess( QWidget * p_parent ) : BaseOverlay( p_parent )
 	{
-		_registerEvent( Event::Global::CONTROLLER_CHANGE );
-		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
-		_registerEvent( Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::Event::Global::CONTROLLER_CHANGE );
+		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::Event::Global::SETTINGS_CHANGE );
 	};
 
-	void VisualizationQuickAccess::receiveEvent( const Event::VTXEvent & p_event )
+	void VisualizationQuickAccess::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::CONTROLLER_CHANGE )
+		if ( p_event.name == VTX::Event::Global::CONTROLLER_CHANGE )
 		{
 			_refreshController();
 		}
-		else if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_refreshPicker();
 		}
-		else if ( p_event.name == Event::Global::SETTINGS_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::SETTINGS_CHANGE )
 		{
-			const Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
-				= dynamic_cast<const Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
+			const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
 
 			if ( castedEvent.ref.find( Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.ref.cend() )
 				_refreshSelectionGranularity();

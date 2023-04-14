@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_MAIN_MENU_BAR__
 #define __VTX_UI_WIDGET_MAIN_MENU_BAR__
 
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QMenuBar>
 #include <QResizeEvent>
 #include <QTabWidget>

@@ -2,8 +2,8 @@
 #define __VTX_VIEW_UI_WIDGET_MOLECULE_SEQUENCE_VIEW__
 
 #include "base_widget_view.hpp"
-#include "model/molecule.hpp"
-#include "ui/widget/sequence/molecule_sequence_widget.hpp"
+#include "old_ui/ui/widget/sequence/molecule_sequence_widget.hpp"
+#include <app/old_app/model/molecule.hpp>
 
 namespace VTX
 {

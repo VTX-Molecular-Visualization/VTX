@@ -1,14 +1,15 @@
 #include "console_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/main.hpp"
-#include "style.hpp"
-#include "util/ui.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/action/main.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/util/ui.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QCoreApplication>
 #include <QHBoxLayout>
 #include <QListWidget>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
 #include <iostream>
 #include <util/logger.hpp>
 
@@ -16,15 +17,15 @@ namespace VTX::UI::Widget::Console
 {
 	ConsoleWidget::ConsoleWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( Event::Global::LOG_CONSOLE );
-		_registerEvent( Event::Global::CLEAR_CONSOLE );
+		_registerEvent( VTX::Event::Global::LOG_CONSOLE );
+		_registerEvent( VTX::Event::Global::CLEAR_CONSOLE );
 	}
 
-	void ConsoleWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void ConsoleWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::LOG_CONSOLE )
+		if ( p_event.name == VTX::Event::Global::LOG_CONSOLE )
 		{
-			const Event::VTXEventLog & event = dynamic_cast<const Event::VTXEventLog &>( p_event );
+			const VTX::Event::VTXEventLog & event = dynamic_cast<const VTX::Event::VTXEventLog &>( p_event );
 
 			const std::string		message = "[" + event.date + "] " + "[" + event.level + "] " + event.message;
 			QListWidgetItem * const newItem = new QListWidgetItem( QString::fromStdString( message ) );
@@ -41,7 +42,7 @@ namespace VTX::UI::Widget::Console
 
 			_listWidget->scrollToBottom();
 		}
-		else if ( p_event.name == Event::Global::CLEAR_CONSOLE )
+		else if ( p_event.name == VTX::Event::Global::CLEAR_CONSOLE )
 		{
 			_listWidget->clear();
 		}

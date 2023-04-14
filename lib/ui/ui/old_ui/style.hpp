@@ -1,12 +1,7 @@
 #ifndef __VTX_UI_STYLE__
 #define __VTX_UI_STYLE__
 
-#include "id.hpp"
-#include "model/category_enum.hpp"
-#include "model/representation/representation_enum.hpp"
-#include "selection/selection_enum.hpp"
-#include "util/label.hpp"
-#include "util/ui.hpp"
+#include "old_ui/util/ui.hpp"
 #include <QBitmap>
 #include <QChar>
 #include <QColor>
@@ -15,12 +10,17 @@
 #include <QPixmap>
 #include <QSize>
 #include <QString>
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/category_enum.hpp>
+#include <app/old_app/model/representation/representation_enum.hpp>
+#include <app/old_app/selection/selection_enum.hpp>
+#include <app/old_app/util/label.hpp>
 #include <iostream>
 #include <string>
 #include <util/logger.hpp>
 #include <vector>
 
-namespace VTX
+namespace VTX::UI
 {
 	namespace Style
 	{
@@ -402,6 +402,6 @@ namespace VTX
 		};
 
 	} // namespace Style
-} // namespace VTX
+} // namespace VTX::UI
 
 #endif

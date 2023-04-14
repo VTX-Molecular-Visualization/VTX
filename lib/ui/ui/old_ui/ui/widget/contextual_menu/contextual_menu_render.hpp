@@ -19,7 +19,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	  public:
 		~ContextualMenuRender();
 		void localize() override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		ContextualMenuRender( QWidget * p_parent = nullptr );

@@ -1,7 +1,7 @@
 #include "base_mouse_controller.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/render/opengl_widget.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget/render/opengl_widget.hpp"
+#include "old_ui/vtx_app.hpp"
 
 namespace VTX
 {

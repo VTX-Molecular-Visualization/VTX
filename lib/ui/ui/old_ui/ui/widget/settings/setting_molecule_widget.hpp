@@ -1,13 +1,13 @@
 #ifndef __VTX_UI_WIDGET_SETTINGS_MOLECULE__
 #define __VTX_UI_WIDGET_SETTINGS_MOLECULE__
 
-#include "io/struct/image_export.hpp"
-#include "ui/layout/attribute_list_layout.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/representation/representation_library_combo_box.hpp"
+#include "old_ui/ui/layout/attribute_list_layout.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/representation/representation_library_combo_box.hpp"
 #include <QComboBox>
 #include <QPushButton>
 #include <QWidget>
+#include <app/old_app/io/struct/image_export.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::Settings
 		using RepresentationLibraryComboBox = VTX::UI::Widget::Representation::RepresentationLibraryComboBox;
 
 	  public:
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
 	  protected:

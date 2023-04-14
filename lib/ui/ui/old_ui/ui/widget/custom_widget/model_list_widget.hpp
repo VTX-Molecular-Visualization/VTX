@@ -1,13 +1,13 @@
 #ifndef __VTX_UI_WIDGET_MODEL_LIST_WIDGET__
 #define __VTX_UI_WIDGET_MODEL_LIST_WIDGET__
 
-#include "id.hpp"
-#include "model/base_model.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QGridLayout>
 #include <QObject>
 #include <QString>
 #include <QWidget>
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/base_model.hpp>
 #include <type_traits>
 #include <vector>
 

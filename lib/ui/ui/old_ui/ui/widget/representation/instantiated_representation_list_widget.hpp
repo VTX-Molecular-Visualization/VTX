@@ -1,14 +1,14 @@
 #ifndef __VTX_UI_WIDGET_REPRESENTATION_INSTANTIATED_REPRESENTATION_LIST_WIDGET__
 #define __VTX_UI_WIDGET_REPRESENTATION_INSTANTIATED_REPRESENTATION_LIST_WIDGET__
 
-#include "model/base_model.hpp"
-#include "model/representation/instantiated_representation.hpp"
-#include "ui/widget/custom_widget/model_list_component.hpp"
-#include "ui/widget/custom_widget/model_list_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/model_list_component.hpp"
+#include "old_ui/ui/widget/custom_widget/model_list_widget.hpp"
 #include <QGridLayout>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QWidget>
+#include <app/old_app/model/base_model.hpp>
+#include <app/old_app/model/representation/instantiated_representation.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Representation

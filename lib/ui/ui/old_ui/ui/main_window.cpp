@@ -1,22 +1,17 @@
 #include "main_window.hpp"
-#include "action/action_manager.hpp"
-#include "action/dev.hpp"
-#include "action/main.hpp"
-#include "action/molecule.hpp"
-#include "action/selection.hpp"
-#include "analysis/rmsd.hpp"
-#include "controller/base_keyboard_controller.hpp"
-#include "controller/measurement_picker.hpp"
-#include "define.hpp"
-#include "event/event_manager.hpp"
-#include "io/filesystem.hpp"
-#include "io/struct/scene_path_data.hpp"
+// #include "analysis/rmsd.hpp"
+#include "old_ui/controller/base_keyboard_controller.hpp"
+// #include "old_ui/controller/measurement_picker.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/mime_type.hpp"
+#include "old_ui/vtx_app.hpp"
 #include "shortcut.hpp"
-#include "style.hpp"
-#include "ui/dialog.hpp"
-#include "ui/mime_type.hpp"
-#include "util/analysis.hpp"
-#include "vtx_app.hpp"
+// #include "util/analysis.hpp"
+#include "old_ui/action/main.hpp"
+#include "old_ui/action/setting.hpp"
+#include "ui/qt/action/main.hpp"
+#include "ui/qt/action/selection.hpp"
 #include "widget_factory.hpp"
 #include <QAction>
 #include <QFileDialog>
@@ -24,19 +19,30 @@
 #include <QShortcut>
 #include <QSize>
 #include <QWindow>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/dev.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/molecule.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/define.hpp>
+#include <app/old_app/event/event_manager.hpp>
+#include <app/old_app/io/filesystem.hpp>
+#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/old_app/style.hpp>
 #include <iostream>
 
 namespace VTX::UI
 {
-	MainWindow::MainWindow( QWidget * p_parent ) : BaseWidget( p_parent )
+	MainWindow::MainWindow( QWidget * p_parent ) : QMainWindow( p_parent )
 	{
-		_registerEvent( Event::Global::CHANGE_STATE );
-		_registerEvent( Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
-		_registerEvent( Event::Global::SCENE_PATH_CHANGE );
+		_registerEvent( VTX::Event::Global::CHANGE_STATE );
+		_registerEvent( VTX::Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
+		_registerEvent( VTX::Event::Global::SCENE_PATH_CHANGE );
 
-		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
 
-		_registerEvent( Event::Global::RMSD_COMPUTED );
+		_registerEvent( VTX::Event::Global::RMSD_COMPUTED );
 	}
 
 	MainWindow::~MainWindow()
@@ -45,32 +51,32 @@ namespace VTX::UI
 		delete _cursorHandler;
 	}
 
-	void MainWindow::receiveEvent( const Event::VTXEvent & p_event )
+	void MainWindow::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::CHANGE_STATE )
+		if ( p_event.name == VTX::Event::Global::CHANGE_STATE )
 		{
-			const Event::VTXEventValue<ID::VTX_ID> & event
-				= dynamic_cast<const Event::VTXEventValue<ID::VTX_ID> &>( p_event );
+			const VTX::Event::VTXEventValue<ID::VTX_ID> & event
+				= dynamic_cast<const VTX::Event::VTXEventValue<ID::VTX_ID> &>( p_event );
 
 			ID::VTX_ID state = event.value;
 		}
-		else if ( p_event.name == Event::Global::SCENE_PATH_CHANGE
-				  || p_event.name == Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::SCENE_PATH_CHANGE
+				  || p_event.name == VTX::Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
 		{
 			refreshWindowTitle();
 		}
-		else if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_updatePicker();
 		}
-		else if ( p_event.name == Event::Global::RMSD_COMPUTED )
+		else if ( p_event.name == VTX::Event::Global::RMSD_COMPUTED )
 		{
-			const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> & castedEvent
-				= dynamic_cast<const Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> &>( p_event );
+			// const VTX::Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> & castedEvent
+			//	= dynamic_cast<const VTX::Event::VTXEventRef<const VTX::Analysis::RMSD::RMSDData> &>( p_event );
 
-			const std::string log = Util::Analysis::getRMSDLog( castedEvent.ref );
+			// const std::string log = Util::Analysis::getRMSDLog( castedEvent.ref );
 
-			VTX_INFO( log );
+			// VTX_INFO( log );
 		}
 	}
 
@@ -96,7 +102,7 @@ namespace VTX::UI
 
 	void MainWindow::setupUi()
 	{
-		const QSize winsize = QSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
+		const QSize winsize = QSize( VTX::Style::WINDOW_WIDTH_DEFAULT, VTX::Style::WINDOW_HEIGHT_DEFAULT );
 		resize( winsize );
 		setWindowState( Qt::WindowState::WindowNoState );
 		refreshWindowTitle();
@@ -120,9 +126,9 @@ namespace VTX::UI
 		_settingWidget
 			= WidgetFactory::get().instantiateWidget<Widget::Settings::SettingWidget>( this, "settingWidget" );
 
-		_structuralAlignmentWidget
-			= WidgetFactory::get().instantiateWidget<Widget::Analysis::StructuralAlignment::StructuralAlignmentWidget>(
-				this, "structuralAlignmentWidget" );
+		//_structuralAlignmentWidget
+		//	= WidgetFactory::get().instantiateWidget<Widget::Analysis::StructuralAlignment::StructuralAlignmentWidget>(
+		//		this, "structuralAlignmentWidget" );
 
 		_renderWidget->displayOverlay( Widget::Render::Overlay::OVERLAY::VISUALIZATION_QUICK_ACCESS,
 									   Widget::Render::Overlay::OVERLAY_ANCHOR::BOTTOM_CENTER );
@@ -201,10 +207,10 @@ namespace VTX::UI
 		connect( _settingWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 		connect( _sequenceWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 
-		connect( _structuralAlignmentWidget,
-				 &QDockWidget::visibilityChanged,
-				 this,
-				 &MainWindow::_onDockWindowVisibilityChange );
+		// connect( _structuralAlignmentWidget,
+		//		 &QDockWidget::visibilityChanged,
+		//		 this,
+		//		 &MainWindow::_onDockWindowVisibilityChange );
 
 		// Shortcuts.
 		Shortcut::createGlobal( Shortcut::Main::NEW_SCENE, this, &MainWindow::_onShortcutNew );
@@ -222,8 +228,8 @@ namespace VTX::UI
 		Shortcut::createGlobal( Shortcut::Main::ORIENT_ON_SELECTION, this, &MainWindow::_onShortcutOrient );
 		Shortcut::createGlobal(
 			Shortcut::Main::SET_SELECTION_PICKER, this, &MainWindow::_onShortcutSetSelectionPicker );
-		Shortcut::createGlobal(
-			Shortcut::Main::SET_MEASUREMENT_PICKER, this, &MainWindow::_onShortcutSetMeasurementPicker );
+		// Shortcut::createGlobal(
+		//	Shortcut::Main::SET_MEASUREMENT_PICKER, this, &MainWindow::_onShortcutSetMeasurementPicker );
 
 #ifndef VTX_PRODUCTION
 		Shortcut::createGlobal( Shortcut::Dev::COMPILE_SHADER, this, &MainWindow::_onShortcutCompileShaders );
@@ -239,7 +245,7 @@ namespace VTX::UI
 
 	void MainWindow::_onShortcutSave() const
 	{
-		VTX_ACTION( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new VTX::Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 
 	void MainWindow::_onShortcutSaveAs() const { UI::Dialog::openSaveSessionDialog(); }
@@ -248,11 +254,11 @@ namespace VTX::UI
 	{
 		if ( windowState() & Qt::WindowStates::enum_type::WindowFullScreen )
 		{
-			VTX_ACTION( new Action::Setting::WindowMode( WindowMode::Windowed ) );
+			VTX_ACTION( new Action::Setting::WindowMode( Core::WindowMode::Windowed ) );
 		}
 		else
 		{
-			VTX_ACTION( new Action::Setting::WindowMode( WindowMode::Fullscreen ) );
+			VTX_ACTION( new Action::Setting::WindowMode( Core::WindowMode::Fullscreen ) );
 		}
 	}
 
@@ -261,22 +267,22 @@ namespace VTX::UI
 		if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 		{
 			VTX_ACTION(
-				new Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
+				new VTX::Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 
-	void MainWindow::_onShortcutRestoreLayout() const { VTX_ACTION( new Action::Setting::RestoreLayout() ); }
+	void MainWindow::_onShortcutRestoreLayout() const { VTX_ACTION( new QT::Action::Main::RestoreLayout() ); }
 
-	void MainWindow::_onShortcutCompileShaders() const { VTX_ACTION( new Action::Dev::CompileShaders() ); }
+	void MainWindow::_onShortcutCompileShaders() const { VTX_ACTION( new VTX::Action::Dev::CompileShaders() ); }
 
 	void MainWindow::_onShortcutActiveRenderer() const
 	{
-		VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
+		VTX_ACTION( new VTX::Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
 	}
 
 	void MainWindow::_onShortcutRefreshSES() const
 	{
-		VTX_ACTION( new Action::Molecule::RefreshSolventExcludedSurface(
+		VTX_ACTION( new VTX::Action::Molecule::RefreshSolventExcludedSurface(
 			*( ( *( VTXApp::get().getScene().getMolecules().begin() ) ).first ) ) );
 	}
 
@@ -284,39 +290,39 @@ namespace VTX::UI
 	{
 		if ( Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
 		{
-			VTX_ACTION( new Action::Selection::Delete( Selection::SelectionManager::get().getSelectionModel() ) );
+			VTX_ACTION( new VTX::Action::Selection::Delete( Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 
 	void MainWindow::_onShortcutOrient() const
 	{
 		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Selection::Orient( selection ) );
+		VTX_ACTION( new QT::Action::Selection::Orient( selection ) );
 	}
 
-	void MainWindow::_onShortcutSelectAll() const { VTX_ACTION( new Action::Selection::SelectAll() ); }
+	void MainWindow::_onShortcutSelectAll() const { VTX_ACTION( new VTX::Action::Selection::SelectAll() ); }
 
 	void MainWindow::_onShortcutCopy() const
 	{
 		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
-			VTX_ACTION( new Action::Selection::Copy( selectionModel ) );
+			VTX_ACTION( new VTX::Action::Selection::Copy( selectionModel ) );
 	}
 
 	void MainWindow::_onShortcutExtract() const
 	{
 		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
-			VTX_ACTION( new Action::Selection::Extract( selectionModel ) );
+			VTX_ACTION( new VTX::Action::Selection::Extract( selectionModel ) );
 	}
 
 	void MainWindow::_onShortcutSetSelectionPicker() const
 	{
-		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::PICKER ) );
+		VTX_ACTION( new VTX::Action::Main::ChangePicker( ID::Controller::PICKER ) );
 	}
 	void MainWindow::_onShortcutSetMeasurementPicker() const
 	{
-		VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT ) );
+		VTX_ACTION( new VTX::Action::Main::ChangePicker( ID::Controller::MEASUREMENT ) );
 	}
 
 	void MainWindow::refreshWindowTitle()
@@ -356,7 +362,7 @@ namespace VTX::UI
 		_restoreDockWidget( _inspectorWidget );
 		_restoreDockWidget( _consoleWidget );
 		_restoreDockWidget( _settingWidget );
-		_restoreDockWidget( _structuralAlignmentWidget );
+		//_restoreDockWidget( _structuralAlignmentWidget );
 
 		_addDockWidgetAsTabified( _sceneWidget, Qt::DockWidgetArea::LeftDockWidgetArea, Qt::Orientation::Horizontal );
 		_addDockWidgetAsTabified( _sequenceWidget, Qt::DockWidgetArea::TopDockWidgetArea, Qt::Orientation::Horizontal );
@@ -368,7 +374,7 @@ namespace VTX::UI
 		_addDockWidgetAsTabified( _consoleWidget, Qt::DockWidgetArea::BottomDockWidgetArea, Qt::Orientation::Vertical );
 
 		_addDockWidgetAsFloating( _settingWidget, Style::SETTINGS_PREFERRED_SIZE, false );
-		_addDockWidgetAsFloating( _structuralAlignmentWidget, Style::STRUCTURAL_ALIGNMENT_PREFERRED_SIZE, false );
+		//_addDockWidgetAsFloating( _structuralAlignmentWidget, Style::STRUCTURAL_ALIGNMENT_PREFERRED_SIZE, false );
 	}
 
 	void MainWindow::_restoreDockWidget( QDockWidget * const p_dockWidget )
@@ -426,7 +432,7 @@ namespace VTX::UI
 
 	void MainWindow::_onDockWindowVisibilityChange( const bool p_visible )
 	{
-		VTX_EVENT( new Event::VTXEvent( Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE ) );
+		VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE ) );
 	}
 
 	void MainWindow::resizeEvent( QResizeEvent * p_event )
@@ -436,7 +442,7 @@ namespace VTX::UI
 		if ( p_event->type() == QEvent::Type::WindowStateChange )
 		{
 			WindowMode newMode = _getWindowModeFromWindowState( windowState() );
-			VTX_EVENT( new Event::VTXEvent( Event::Global::MAIN_WINDOW_MODE_CHANGE ) );
+			VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::MAIN_WINDOW_MODE_CHANGE ) );
 		}
 	}
 
@@ -508,8 +514,8 @@ namespace VTX::UI
 		//	widget = _selectionWidget;
 		else if ( p_winId == ID::UI::Window::SETTINGS )
 			widget = _settingWidget;
-		else if ( p_winId == ID::UI::Window::STRUCTURAL_ALIGNMENT )
-			widget = _structuralAlignmentWidget;
+		// else if ( p_winId == ID::UI::Window::STRUCTURAL_ALIGNMENT )
+		//	widget = _structuralAlignmentWidget;
 
 		return *widget;
 	}
@@ -561,7 +567,7 @@ namespace VTX::UI
 			break;
 		}
 
-		VTX_EVENT( new Event::VTXEventValue( Event::Global::MAIN_WINDOW_MODE_CHANGE, p_mode ) );
+		VTX_EVENT( new VTX::Event::VTXEventValue( VTX::Event::Global::MAIN_WINDOW_MODE_CHANGE, p_mode ) );
 	}
 	void MainWindow::toggleWindowState()
 	{
@@ -601,7 +607,7 @@ namespace VTX::UI
 		_inspectorWidget->hide();
 		//_selectionWidget->hide();
 		_settingWidget->hide();
-		_structuralAlignmentWidget->hide();
+		//_structuralAlignmentWidget->hide();
 
 		_restoreStateTimer = new QTimer( this );
 		_restoreStateTimer->setSingleShot( true );
@@ -701,40 +707,39 @@ namespace VTX::UI
 
 	void MainWindow::_updatePicker() const
 	{
-		const State::Visualization * const visualizationState
-			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+		// const State::Visualization * const visualizationState
+		//	= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
-		const ID::VTX_ID & pickerID = visualizationState->getCurrentPickerID();
+		// const ID::VTX_ID & pickerID = visualizationState->getCurrentPickerID();
 
-		if ( pickerID == ID::Controller::PICKER )
-		{
-			_cursorHandler->applyCursor(
-				CursorHandler::Cursor::DEFAULT, &getWidget( ID::UI::Window::RENDER ), "Picker" );
-		}
-		else if ( pickerID == ID::Controller::MEASUREMENT )
-		{
-			const Controller::MeasurementPicker * const measurementPicker
-				= visualizationState->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT );
+		// if ( pickerID == ID::Controller::PICKER )
+		//{
+		//	_cursorHandler->applyCursor(
+		//		CursorHandler::Cursor::DEFAULT, &getWidget( ID::UI::Window::RENDER ), "Picker" );
+		// }
+		// else if ( pickerID == ID::Controller::MEASUREMENT )
+		//{
+		//  const Controller::MeasurementPicker * const measurementPicker
+		//	= visualizationState->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT );
 
-			CursorHandler::Cursor cursor;
+		// CursorHandler::Cursor cursor;
 
-			switch ( measurementPicker->getCurrentMode() )
-			{
-			case Controller::MeasurementPicker::Mode::DISTANCE:
-				cursor = CursorHandler::Cursor::MEASUREMENT_DISTANCE;
-				break;
-			case Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE:
-				cursor = CursorHandler::Cursor::MEASUREMENT_DISTANCE_TO_CYCLE;
-				break;
-			case Controller::MeasurementPicker::Mode::ANGLE: cursor = CursorHandler::Cursor::MEASUREMENT_ANGLE; break;
-			case Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE:
-				cursor = CursorHandler::Cursor::MEASUREMENT_DIHEDRAL_ANGLE;
-				break;
-			default: cursor = CursorHandler::Cursor::DEFAULT; break;
-			}
+		// switch ( measurementPicker->getCurrentMode() )
+		//{
+		// case Controller::MeasurementPicker::Mode::DISTANCE:
+		//	cursor = CursorHandler::Cursor::MEASUREMENT_DISTANCE;
+		//	break;
+		// case Controller::MeasurementPicker::Mode::DISTANCE_TO_CYCLE:
+		//	cursor = CursorHandler::Cursor::MEASUREMENT_DISTANCE_TO_CYCLE;
+		//	break;
+		// case Controller::MeasurementPicker::Mode::ANGLE: cursor = CursorHandler::Cursor::MEASUREMENT_ANGLE;
+		// break; case Controller::MeasurementPicker::Mode::DIHEDRAL_ANGLE: 	cursor =
+		// CursorHandler::Cursor::MEASUREMENT_DIHEDRAL_ANGLE; 	break; default: cursor =
+		// CursorHandler::Cursor::DEFAULT; break;
+		// }
 
-			_cursorHandler->applyCursor( cursor, &getWidget( ID::UI::Window::RENDER ), "Picker_Measurement" );
-		}
+		//_cursorHandler->applyCursor( cursor, &getWidget( ID::UI::Window::RENDER ), "Picker_Measurement" );
+		//}
 	}
 
 	void MainWindow::_checkDockWidgetsDisplay()
@@ -744,7 +749,7 @@ namespace VTX::UI
 		_checkDockWidgetDisplay( _consoleWidget, Style::CONSOLE_PREFERRED_SIZE );
 		_checkDockWidgetDisplay( _sequenceWidget, Style::SEQUENCE_PREFERRED_SIZE );
 		_checkDockWidgetDisplay( _settingWidget, Style::SETTINGS_PREFERRED_SIZE );
-		_checkDockWidgetDisplay( _structuralAlignmentWidget, Style::STRUCTURAL_ALIGNMENT_PREFERRED_SIZE );
+		//_checkDockWidgetDisplay( _structuralAlignmentWidget, Style::STRUCTURAL_ALIGNMENT_PREFERRED_SIZE );
 	}
 	void MainWindow::_checkDockWidgetDisplay( QDockWidget * const p_widget, const QSize & p_defaultSize )
 	{

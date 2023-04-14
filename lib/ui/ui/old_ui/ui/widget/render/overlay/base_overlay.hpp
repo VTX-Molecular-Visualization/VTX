@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_WIDGET_RENDER_BASE_OVERLAY__
 #define __VTX_UI_WIDGET_RENDER_BASE_OVERLAY__
 
-#include "style.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QAction>
 #include <QEvent>
 #include <QMenu>

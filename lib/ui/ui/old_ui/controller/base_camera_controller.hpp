@@ -5,10 +5,10 @@
 #include "base_gamepad_controller.hpp"
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
-#include "id.hpp"
-#include "object3d/camera.hpp"
-#include "object3d/camera_manager.hpp"
-#include "object3d/helper/aabb.hpp"
+#include <app/old_app/id.hpp>
+#include <app/old_app/object3d/camera.hpp>
+#include <app/old_app/object3d/camera_manager.hpp>
+#include <app/old_app/object3d/helper/aabb.hpp>
 
 namespace VTX
 {

@@ -1,10 +1,10 @@
 #ifndef __VTX_UI_WIDGET_RENDER_EFFECT_REPRESENTATION_LIBRARY_COMBO_BOX__
 #define __VTX_UI_WIDGET_RENDER_EFFECT_REPRESENTATION_LIBRARY_COMBO_BOX__
 
-#include "event/event.hpp"
-#include "id.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/qt_multi_data_field.hpp"
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/id.hpp>
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/qt_multi_data_field.hpp"
 #include <QIcon>
 #include <QWheelEvent>
 #include <QWidget>
@@ -33,7 +33,7 @@ namespace VTX::UI::Widget::Renderer
 		void wheelEvent( QWheelEvent * event ) override;
 
 	  private:
-		void _onLibraryChange( const Event::VTXEvent * const p_event );
+		void _onLibraryChange( const VTX::Event::VTXEvent * const p_event );
 		void _fillItemList();
 		void _updateHighlightAppliedItemFeedback();
 

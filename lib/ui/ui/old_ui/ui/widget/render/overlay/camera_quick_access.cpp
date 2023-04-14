@@ -1,40 +1,40 @@
 #include "camera_quick_access.hpp"
-#include "action/action_manager.hpp"
-#include "action/renderer.hpp"
-#include "action/setting.hpp"
-#include "event/event.hpp"
-#include "id.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "setting.hpp"
-#include "ui/dialog.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/renderer/render_effect_library_combo_box.hpp"
-#include "ui/widget/settings/setting_widget_enum.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget/renderer/render_effect_library_combo_box.hpp"
+#include "old_ui/ui/widget/settings/setting_widget_enum.hpp"
+#include "old_ui/vtx_app.hpp"
 #include <QAction>
 #include <QIcon>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/renderer.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/setting.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::Render::Overlay
 {
 	CameraQuickAccess::CameraQuickAccess( QWidget * p_parent ) : BaseOverlay( p_parent )
 	{
-		_registerEvent( Event::Global::SETTINGS_CHANGE );
-		_registerEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
+		_registerEvent( VTX::Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
 	};
 	CameraQuickAccess ::~CameraQuickAccess() {}
 
-	void CameraQuickAccess::receiveEvent( const Event::VTXEvent & p_event )
+	void CameraQuickAccess::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::SETTINGS_CHANGE )
+		if ( p_event.name == VTX::Event::Global::SETTINGS_CHANGE )
 		{
-			const Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
-				= dynamic_cast<const Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
+			const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
 
 			if ( castedEvent.ref.find( Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.ref.cend() )
 				_refreshCameraProjectionButton();
 		}
-		else if ( p_event.name == Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
 		{
 			_refreshIconColors();
 
@@ -156,7 +156,10 @@ namespace VTX::UI::Widget::Render::Overlay
 	}
 	void CameraQuickAccess::_onExportImageClickedAction() const { UI::Dialog::openAdvancedSettingImageExportDialog(); }
 
-	void CameraQuickAccess::_onRenderEffectChange( const Event::VTXEvent * const p_event ) { _refreshIconColors(); }
+	void CameraQuickAccess::_onRenderEffectChange( const VTX::Event::VTXEvent * const p_event )
+	{
+		_refreshIconColors();
+	}
 
 	void CameraQuickAccess::_attachViewOnAppliedRenderEffect()
 	{

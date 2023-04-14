@@ -1,10 +1,10 @@
 #ifndef __VTX_UI_WIDGET_MENU_CAMERA_SNAPSHOT_BLOCK__
 #define __VTX_UI_WIDGET_MENU_CAMERA_SNAPSHOT_BLOCK__
 
-#include "event/event.hpp"
-#include "ui/widget/main_menu/menu_toolblock_widget.hpp"
-#include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
-#include "view/base_view.hpp"
+#include <app/old_app/event/event.hpp>
+#include "old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
+#include "old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
+#include <app/old_app/view/base_view.hpp>
 #include <QWidget>
 #include <vector>
 

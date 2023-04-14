@@ -1,22 +1,22 @@
 #ifndef __VTX_VIEW_UI_WIDGET_PATH_SCENE_VIEW__
 #define __VTX_VIEW_UI_WIDGET_PATH_SCENE_VIEW__
 
-#include "event/base_event_receiver_vtx.hpp"
-#include "generic/base_visible.hpp"
-#include "id.hpp"
-#include "model/path.hpp"
-#include "model/selection.hpp"
-#include "model/viewpoint.hpp"
-#include "style.hpp"
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/scene/scene_item_widget.hpp"
-#include "view/base_view.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/scene/scene_item_widget.hpp"
 #include <QKeyEvent>
 #include <QList>
 #include <QMenu>
 #include <QString>
 #include <QTreeWidgetItem>
 #include <QWidget>
+#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/old_app/generic/base_visible.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/path.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/model/viewpoint.hpp>
+#include <app/old_app/view/base_view.hpp>
 #include <map>
 
 namespace VTX::View::UI::Widget
@@ -28,8 +28,8 @@ namespace VTX::View::UI::Widget
 
 	  public:
 		void localize() override;
-		void notify( const Event::VTXEvent * const p_event ) override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void notify( const VTX::Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 		const Model::ID &			   getModelID() const override { return _model->getId(); };
 		const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };

@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_CONTEXTUAL_MENU__
 #define __VTX_UI_CONTEXTUAL_MENU__
 
-#include "ui/widget/contextual_menu/contextual_menu_template.hpp"
+#include "old_ui/ui/widget/contextual_menu/contextual_menu_template.hpp"
 #include <QMenu>
 #include <QPoint>
 #include <type_traits>

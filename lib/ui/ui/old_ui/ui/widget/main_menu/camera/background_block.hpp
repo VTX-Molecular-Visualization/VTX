@@ -1,11 +1,11 @@
 #ifndef __VTX_UI_WIDGET_MENU_CAMERA_BACKGROUND_BLOCK__
 #define __VTX_UI_WIDGET_MENU_CAMERA_BACKGROUND_BLOCK__
 
-#include "color/rgba.hpp"
-#include "event/event.hpp"
-#include "ui/widget/main_menu/menu_toolblock_widget.hpp"
-#include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
+#include "old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
+#include "old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QVariant>
+#include <app/old_app/color/rgba.hpp>
+#include <app/old_app/event/event.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::MainMenu::Camera

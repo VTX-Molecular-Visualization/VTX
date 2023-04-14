@@ -50,7 +50,7 @@ namespace VTX::Action::Main
 	  public:
 		explicit ClearConsoleInterface() {}
 
-		virtual void execute() override { VTX_EVENT( new Event::VTXEvent( Event::Global::CLEAR_CONSOLE ) ); };
+		virtual void execute() override { VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::CLEAR_CONSOLE ) ); };
 		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 	};
 

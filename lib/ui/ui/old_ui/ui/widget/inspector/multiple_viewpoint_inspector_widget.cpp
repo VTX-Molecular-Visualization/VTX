@@ -1,7 +1,8 @@
 #include "multiple_viewpoint_inspector_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/viewpoint.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+#include "qt/action/viewpoint.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/viewpoint.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -163,7 +164,7 @@ namespace VTX::UI::Widget::Inspector
 		const Model::ID &		 modelID   = p_viewpointIndex.value<Model::ID>();
 		const Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
 
-		VTX_ACTION( new Action::Viewpoint::GoTo( viewpoint ) );
+		VTX_ACTION( new QT::Action::Viewpoint::GoTo( viewpoint ) );
 	}
 
 	void MultipleViewpointWidget::_relocateAction() const

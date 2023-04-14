@@ -1,9 +1,9 @@
 #include "integer_field_slider_widget.hpp"
-#include "style.hpp"
-#include "util/math.hpp"
-#include "util/ui.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/util/ui.hpp"
 #include <QHBoxLayout>
 #include <string>
+#include <util/math.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {

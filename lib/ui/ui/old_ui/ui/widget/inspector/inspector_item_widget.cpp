@@ -1,5 +1,5 @@
 #include "inspector_item_widget.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include <QVBoxLayout>
 #include <QWidget>
 

@@ -1,14 +1,14 @@
 #include "scene_item_selection_model.hpp"
-#include "action/action_manager.hpp"
-#include "action/selection.hpp"
-#include "model/category.hpp"
-#include "model/molecule.hpp"
-#include "model/path.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/scene/scene_item_widget.hpp"
-#include "vtx_app.hpp"
+#include "old_ui/ui/main_window.hpp"
+#include "old_ui/ui/widget/scene/scene_item_widget.hpp"
+#include "old_ui/vtx_app.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/model/category.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/path.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::Scene
 {

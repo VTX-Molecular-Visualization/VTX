@@ -1,13 +1,14 @@
 #include "contextual_menu_label.hpp"
-#include "action/action_manager.hpp"
-#include "action/label.hpp"
-#include "model/path.hpp"
-#include "ui/widget/scene/scene_item_widget.hpp"
-#include "ui/widget_factory.hpp"
-#include "view/ui/widget/measurement/angle_scene_view.hpp"
-#include "view/ui/widget/measurement/dihedral_angle_scene_view.hpp"
-#include "view/ui/widget/measurement/distance_scene_view.hpp"
-#include "view/ui/widget/measurement/distance_to_cycle_scene_view.hpp"
+#include "old_ui/ui/widget/scene/scene_item_widget.hpp"
+#include "old_ui/ui/widget_factory.hpp"
+// #include "old_ui/view/ui/widget/measurement/angle_scene_view.hpp"
+// #include "old_ui/view/ui/widget/measurement/dihedral_angle_scene_view.hpp"
+// #include "old_ui/view/ui/widget/measurement/distance_scene_view.hpp"
+// #include "old_ui/view/ui/widget/measurement/distance_to_cycle_scene_view.hpp"
+#include "qt/action/label.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/label.hpp>
+#include <app/old_app/model/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -31,35 +32,35 @@ namespace VTX::UI::Widget::ContextualMenu
 		setTitle( QString::fromStdString( p_target->getDefaultName() ) );
 	}
 
-	void ContextualMenuLabel::_orientAction() { VTX_ACTION( new Action::Label::Orient( _target ) ); }
+	void ContextualMenuLabel::_orientAction() { VTX_ACTION( new QT::Action::Label::Orient( _target ) ); }
 	void ContextualMenuLabel::_renameAction()
 	{
-		UI::Widget::Scene::SceneItemWidget * sceneItem;
+		UI::Widget::Scene::SceneItemWidget * sceneItem = nullptr;
 
-		if ( _target->getTypeId() == ID::Model::MODEL_MEASUREMENT_DISTANCE )
-		{
-			sceneItem = MVC::MvcManager::get().getView<View::UI::Widget::Measurement::DistanceSceneView>(
-				_target, ID::View::UI_SCENE_DISTANCE_LABEL );
-		}
-		else if ( _target->getTypeId() == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
-		{
-			sceneItem = MVC::MvcManager::get().getView<View::UI::Widget::Measurement::DistanceToCycleSceneView>(
-				_target, ID::View::UI_SCENE_DISTANCE_TO_CYCLE_LABEL );
-		}
-		else if ( _target->getTypeId() == ID::Model::MODEL_MEASUREMENT_ANGLE )
-		{
-			sceneItem = MVC::MvcManager::get().getView<View::UI::Widget::Measurement::AngleSceneView>(
-				_target, ID::View::UI_SCENE_ANGLE_LABEL );
-		}
-		else if ( _target->getTypeId() == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
-		{
-			sceneItem = MVC::MvcManager::get().getView<View::UI::Widget::Measurement::DihedralAngleSceneView>(
-				_target, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL );
-		}
-		else
-		{
-			sceneItem = nullptr;
-		}
+		// if ( _target->getTypeId() == ID::Model::MODEL_MEASUREMENT_DISTANCE )
+		//{
+		//	sceneItem = MVC::MvcManager::get().getView<View::UI::Widget::Measurement::DistanceSceneView>(
+		//		_target, ID::View::UI_SCENE_DISTANCE_LABEL );
+		// }
+		// else if ( _target->getTypeId() == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+		//{
+		//	sceneItem = MVC::MvcManager::get().getView<View::UI::Widget::Measurement::DistanceToCycleSceneView>(
+		//		_target, ID::View::UI_SCENE_DISTANCE_TO_CYCLE_LABEL );
+		// }
+		// else if ( _target->getTypeId() == ID::Model::MODEL_MEASUREMENT_ANGLE )
+		//{
+		//	sceneItem = MVC::MvcManager::get().getView<View::UI::Widget::Measurement::AngleSceneView>(
+		//		_target, ID::View::UI_SCENE_ANGLE_LABEL );
+		// }
+		// else if ( _target->getTypeId() == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+		//{
+		//	sceneItem = MVC::MvcManager::get().getView<View::UI::Widget::Measurement::DihedralAngleSceneView>(
+		//		_target, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL );
+		// }
+		// else
+		//{
+		//	sceneItem = nullptr;
+		// }
 
 		if ( sceneItem != nullptr )
 		{

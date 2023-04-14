@@ -8,7 +8,7 @@ namespace VTX::UI::Action::Renderer
 {
 	void ChangeShading::execute()
 	{
-		VTX_ACTION( new VTX::Action::Renderer::ChangeShading( _preset, _shading ) );
+		VTX_ACTION( new Action::Renderer::ChangeShading( _preset, _shading ) );
 
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
@@ -18,7 +18,7 @@ namespace VTX::UI::Action::Renderer
 
 	void EnableSSAO::execute()
 	{
-		VTX_ACTION( new VTX::Action::Renderer::EnableSSAO( _preset, _enable ) );
+		VTX_ACTION( new Action::Renderer::EnableSSAO( _preset, _enable ) );
 
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
@@ -28,7 +28,7 @@ namespace VTX::UI::Action::Renderer
 
 	void EnableOutline::execute()
 	{
-		VTX_ACTION( new VTX::Action::Renderer::EnableOutline( _preset, _enable ) );
+		VTX_ACTION( new Action::Renderer::EnableOutline( _preset, _enable ) );
 
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
@@ -38,7 +38,7 @@ namespace VTX::UI::Action::Renderer
 
 	void EnableFog::execute()
 	{
-		VTX_ACTION( new VTX::Action::Renderer::EnableFog( _preset, _enable ) );
+		VTX_ACTION( new Action::Renderer::EnableFog( _preset, _enable ) );
 
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{

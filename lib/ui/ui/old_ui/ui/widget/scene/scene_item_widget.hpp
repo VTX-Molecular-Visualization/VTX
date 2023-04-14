@@ -1,16 +1,16 @@
 #ifndef __VTX_UI_WIDGET_SCENE_ITEM__
 #define __VTX_UI_WIDGET_SCENE_ITEM__
 
-#include "generic/base_scene_item.hpp"
-#include "model/base_model.hpp"
-#include "ui/draggable_item.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/draggable_item.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMenu>
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QTreeWidget>
+#include <app/old_app/generic/base_scene_item.hpp>
+#include <app/old_app/model/base_model.hpp>
 #include <vector>
 
 namespace VTX::Generic
@@ -37,7 +37,7 @@ namespace VTX::UI::Widget::Scene
 
 	  public:
 		void localize() override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 		virtual void updatePosInSceneHierarchy( const int p_position );
 

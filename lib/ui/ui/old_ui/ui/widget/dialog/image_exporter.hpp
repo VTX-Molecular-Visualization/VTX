@@ -1,11 +1,11 @@
 #ifndef __VTX_UI_DIALOG_IMAGE_EXPORTER__
 #define __VTX_UI_DIALOG_IMAGE_EXPORTER__
 
-#include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/collapsing_groupbox_widget.hpp"
-#include "ui/widget/custom_widget/float_field_slider_widget.hpp"
-#include "ui/widget/custom_widget/integer_field_draggable_widget.hpp"
-#include "ui/widget/custom_widget/render_preview_widget.hpp"
+#include "old_ui/ui/widget/base_manual_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/collapsing_groupbox_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/float_field_slider_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/integer_field_draggable_widget.hpp"
+#include "old_ui/ui/widget/custom_widget/render_preview_widget.hpp"
 #include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>

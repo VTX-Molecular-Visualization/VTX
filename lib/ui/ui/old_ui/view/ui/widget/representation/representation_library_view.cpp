@@ -1,12 +1,12 @@
 #include "representation_library_view.hpp"
-#include "action/action_manager.hpp"
-#include "action/representation.hpp"
-#include "id.hpp"
-#include "model/representation/representation.hpp"
-#include "ui/dialog.hpp"
-#include "ui/widget_factory.hpp"
+#include "old_ui/ui/dialog.hpp"
+#include "old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/representation.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/representation/representation.hpp>
 
 namespace VTX::View::UI::Widget::Representation
 {
@@ -15,7 +15,7 @@ namespace VTX::View::UI::Widget::Representation
 		View::BaseView<Model::Representation::RepresentationLibrary>( p_model ),
 		VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
-		_registerEvent( Event::Global::REPRESENTATION_ADDED );
+		_registerEvent( VTX::Event::Global::REPRESENTATION_ADDED );
 	}
 
 	void RepresentationLibraryView::_setupUi( const QString & p_name )
@@ -85,11 +85,11 @@ namespace VTX::View::UI::Widget::Representation
 		connect( _resetLibraryButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onResetLibrary );
 	}
 
-	void RepresentationLibraryView::receiveEvent( const Event::VTXEvent & p_event )
+	void RepresentationLibraryView::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::REPRESENTATION_ADDED )
+		if ( p_event.name == VTX::Event::Global::REPRESENTATION_ADDED )
 		{
-			const Event::VTXEventValue<int> & castedEvent = dynamic_cast<const Event::VTXEventValue<int> &>( p_event );
+			const VTX::Event::VTXEventValue<int> & castedEvent = dynamic_cast<const VTX::Event::VTXEventValue<int> &>( p_event );
 			const int						  representationIndex = castedEvent.value;
 
 			_presetList->setCurrentIndex( representationIndex );

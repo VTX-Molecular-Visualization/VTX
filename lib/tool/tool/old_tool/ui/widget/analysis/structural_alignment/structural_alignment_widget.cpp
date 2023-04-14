@@ -2,13 +2,13 @@
 #include "old_tool/action/analysis.hpp"
 #include "old_tool/analysis/rmsd.hpp"
 #include "structural_alignment_model_list_widget.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/model/molecule.hpp>
-#include <old/model/selection.hpp>
-#include <old/mvc/mvc_manager.hpp>
-#include <old/object3d/scene.hpp>
-#include <old/selection/selection_manager.hpp>
-#include <old/vtx_app.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <app/old_app/vtx_app.hpp>
 #include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
 

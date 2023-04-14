@@ -1,122 +1,122 @@
 #include "inspector_widget.hpp"
-#include "model/atom.hpp"
-#include "model/chain.hpp"
-#include "model/label.hpp"
-#include "model/measurement/angle.hpp"
-#include "model/measurement/dihedral_angle.hpp"
-#include "model/measurement/distance.hpp"
-#include "model/measurement/distance_to_cycle.hpp"
-#include "model/molecule.hpp"
-#include "model/representation/representation.hpp"
-#include "model/representation/representation_library.hpp"
-#include "model/residue.hpp"
-#include "model/selection.hpp"
-#include "model/viewpoint.hpp"
-#include "representation/representation_manager.hpp"
-#include "selection/selection_manager.hpp"
-#include "style.hpp"
-#include "ui/widget/inspector/multiple_atom_inspector_widget.hpp"
-#include "ui/widget/inspector/multiple_chain_inspector_widget.hpp"
-#include "ui/widget/inspector/multiple_measurement_angle_inspector_widget.hpp"
-#include "ui/widget/inspector/multiple_measurement_dihedral_angle_inspector_widget.hpp"
-#include "ui/widget/inspector/multiple_measurement_distance_inspector_widget.hpp"
-#include "ui/widget/inspector/multiple_measurement_distance_to_cycle_inspector_widget.hpp"
-#include "ui/widget/inspector/multiple_molecule_inspector_widget.hpp"
-#include "ui/widget/inspector/multiple_residue_inspector_widget.hpp"
-#include "ui/widget/inspector/multiple_viewpoint_inspector_widget.hpp"
+#include "old_ui/style.hpp"
+#include "old_ui/ui/widget/inspector/multiple_atom_inspector_widget.hpp"
+#include "old_ui/ui/widget/inspector/multiple_chain_inspector_widget.hpp"
+// #include "old_ui/ui/widget/inspector/multiple_measurement_angle_inspector_widget.hpp"
+// #include "old_ui/ui/widget/inspector/multiple_measurement_dihedral_angle_inspector_widget.hpp"
+// #include "old_ui/ui/widget/inspector/multiple_measurement_distance_inspector_widget.hpp"
+// #include "old_ui/ui/widget/inspector/multiple_measurement_distance_to_cycle_inspector_widget.hpp"
+#include "old_ui/ui/widget/inspector/multiple_molecule_inspector_widget.hpp"
+#include "old_ui/ui/widget/inspector/multiple_residue_inspector_widget.hpp"
+#include "old_ui/ui/widget/inspector/multiple_viewpoint_inspector_widget.hpp"
 #include <QFrame>
 #include <QHBoxLayout>
+#include <app/old_app/model/atom.hpp>
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/label.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/representation/representation.hpp>
+#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/old_app/model/residue.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/model/viewpoint.hpp>
+#include <app/old_app/representation/representation_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+// #include <tool/old_tool/model/measurement/angle.hpp>
+// #include <tool/old_tool/model/measurement/dihedral_angle.hpp>
+// #include <tool/old_tool/model/measurement/distance.hpp>
+// #include <tool/old_tool/model/measurement/distance_to_cycle.hpp>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
 {
 	InspectorWidget::InspectorWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( Event::Global::SELECTION_CHANGE );
-		_registerEvent( Event::Global::MOLECULE_REMOVED );
-		_registerEvent( Event::Global::CHAIN_REMOVED );
-		_registerEvent( Event::Global::RESIDUE_REMOVED );
-		_registerEvent( Event::Global::ATOM_REMOVED );
-		_registerEvent( Event::Global::VIEWPOINT_REMOVED );
-		_registerEvent( Event::Global::LABEL_REMOVED );
+		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::Event::Global::CHAIN_REMOVED );
+		_registerEvent( VTX::Event::Global::RESIDUE_REMOVED );
+		_registerEvent( VTX::Event::Global::ATOM_REMOVED );
+		_registerEvent( VTX::Event::Global::VIEWPOINT_REMOVED );
+		_registerEvent( VTX::Event::Global::LABEL_REMOVED );
 	}
 
 	InspectorWidget::~InspectorWidget() {}
 
-	void InspectorWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void InspectorWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == VTX::Event::Global::SELECTION_CHANGE )
 		{
 			refresh();
 		}
-		else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::MOLECULE_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Molecule> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Molecule> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
 			_removeTargetToInspector<MultipleMoleculeWidget>( INSPECTOR_TYPE::MOLECULE, castedEvent.ptr );
 		}
-		else if ( p_event.name == Event::Global::CHAIN_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::CHAIN_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Chain> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Chain> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Chain> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Chain> &>( p_event );
 
 			_removeTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::CHAIN, castedEvent.ptr );
 		}
-		else if ( p_event.name == Event::Global::RESIDUE_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::RESIDUE_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Residue> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Residue> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Residue> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Residue> &>( p_event );
 
 			_removeTargetToInspector<MultipleResidueWidget>( INSPECTOR_TYPE::RESIDUE, castedEvent.ptr );
 		}
-		else if ( p_event.name == Event::Global::ATOM_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::ATOM_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Atom> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Atom> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Atom> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Atom> &>( p_event );
 
 			_removeTargetToInspector<MultipleAtomWidget>( INSPECTOR_TYPE::ATOM, castedEvent.ptr );
 		}
-		else if ( p_event.name == Event::Global::VIEWPOINT_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::VIEWPOINT_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Viewpoint> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
+			const VTX::Event::VTXEventPtr<Model::Viewpoint> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
 
 			_removeTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, castedEvent.ptr );
 		}
-		else if ( p_event.name == Event::Global::LABEL_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::LABEL_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Label> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+			// const VTX::Event::VTXEventPtr<Model::Label> & castedEvent
+			//	= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Label> &>( p_event );
 
-			const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
-			if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
-			{
-				Model::Measurement::Distance * const distanceModel
-					= dynamic_cast<Model::Measurement::Distance *>( castedEvent.ptr );
-				_removeTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
-																			distanceModel );
-			}
-			// else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+			// const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
+			// if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 			//{
-			//	Model::Measurement::DistanceToCycle * const angleModel
-			//		= dynamic_cast<Model::Measurement::DistanceToCycle *>( castedEvent.ptr );
-			//	_removeTargetToInspector<MultipleMeasurmentDistanceToCycleWidget>(
-			//		INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE, angleModel );
-			//}
-			else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
-			{
-				Model::Measurement::Angle * const angleModel
-					= dynamic_cast<Model::Measurement::Angle *>( castedEvent.ptr );
-				_removeTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, angleModel );
-			}
-			else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
-			{
-				Model::Measurement::DihedralAngle * const angleModel
-					= dynamic_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
-				_removeTargetToInspector<MultipleMeasurmentDihedralAngleWidget>( INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE,
-																				 angleModel );
-			}
+			//	Model::Measurement::Distance * const distanceModel
+			//		= dynamic_cast<Model::Measurement::Distance *>( castedEvent.ptr );
+			//	_removeTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
+			//																distanceModel );
+			// }
+			//// else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+			////{
+			////	Model::Measurement::DistanceToCycle * const angleModel
+			////		= dynamic_cast<Model::Measurement::DistanceToCycle *>( castedEvent.ptr );
+			////	_removeTargetToInspector<MultipleMeasurmentDistanceToCycleWidget>(
+			////		INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE, angleModel );
+			////}
+			// else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_ANGLE )
+			//{
+			//	Model::Measurement::Angle * const angleModel
+			//		= dynamic_cast<Model::Measurement::Angle *>( castedEvent.ptr );
+			//	_removeTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, angleModel );
+			// }
+			// else if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+			//{
+			//	Model::Measurement::DihedralAngle * const angleModel
+			//		= dynamic_cast<Model::Measurement::DihedralAngle *>( castedEvent.ptr );
+			//	_removeTargetToInspector<MultipleMeasurmentDihedralAngleWidget>( INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE,
+			//																	 angleModel );
+			// }
 		}
 	}
 
@@ -178,18 +178,18 @@ namespace VTX::UI::Widget::Inspector
 			= WidgetFactory::get().instantiateWidget<MultipleAtomWidget>( this, "multipleAtomInspector" );
 		_inspectors[ int( INSPECTOR_TYPE::VIEWPOINT ) ]
 			= WidgetFactory::get().instantiateWidget<MultipleViewpointWidget>( this, "multipleViewpointInspector" );
-		_inspectors[ int( INSPECTOR_TYPE::MEASURE_DISTANCE ) ]
-			= WidgetFactory::get().instantiateWidget<MultipleMeasurmentDistanceWidget>(
-				this, "multipleMeasurementDistanceInspector" );
-		_inspectors[ int( INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE ) ]
-			= WidgetFactory::get().instantiateWidget<MultipleMeasurmentDistanceWidget>(
-				this, "multipleMeasurementAngleInspector" );
-		_inspectors[ int( INSPECTOR_TYPE::MEASURE_ANGLE ) ]
-			= WidgetFactory::get().instantiateWidget<MultipleMeasurmentAngleWidget>(
-				this, "multipleMeasurementAngleInspector" );
-		_inspectors[ int( INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE ) ]
-			= WidgetFactory::get().instantiateWidget<MultipleMeasurmentDihedralAngleWidget>(
-				this, "multipleMeasurementAngleInspector" );
+		//_inspectors[ int( INSPECTOR_TYPE::MEASURE_DISTANCE ) ]
+		//	= WidgetFactory::get().instantiateWidget<MultipleMeasurmentDistanceWidget>(
+		//		this, "multipleMeasurementDistanceInspector" );
+		//_inspectors[ int( INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE ) ]
+		//	= WidgetFactory::get().instantiateWidget<MultipleMeasurmentDistanceWidget>(
+		//		this, "multipleMeasurementAngleInspector" );
+		//_inspectors[ int( INSPECTOR_TYPE::MEASURE_ANGLE ) ]
+		//	= WidgetFactory::get().instantiateWidget<MultipleMeasurmentAngleWidget>(
+		//		this, "multipleMeasurementAngleInspector" );
+		//_inspectors[ int( INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE ) ]
+		//	= WidgetFactory::get().instantiateWidget<MultipleMeasurmentDihedralAngleWidget>(
+		//		this, "multipleMeasurementAngleInspector" );
 
 		for ( InspectorItemWidget * const inspector : _inspectors )
 		{
@@ -268,33 +268,33 @@ namespace VTX::UI::Widget::Inspector
 					Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
 					_addTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, &viewpoint );
 				}
-				else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
-				{
-					Model::Measurement::Distance & distanceModel
-						= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
-					_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
-																			 &distanceModel );
-				}
-				else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_ANGLE )
-				{
-					Model::Measurement::Angle & angleModel
-						= MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
-					_addTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, &angleModel );
-				}
-				else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
-				{
-					Model::Measurement::DihedralAngle & dihedralAngleModel
-						= MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
-					_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>(
-						INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE, &dihedralAngleModel );
-				}
-				else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
-				{
-					Model::Measurement::Distance & distanceModel
-						= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
-					_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
-																			 &distanceModel );
-				}
+				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
+				//{
+				//	Model::Measurement::Distance & distanceModel
+				//		= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+				//	_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
+				//															 &distanceModel );
+				// }
+				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_ANGLE )
+				//{
+				//	Model::Measurement::Angle & angleModel
+				//		= MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
+				//	_addTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, &angleModel );
+				// }
+				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+				//{
+				//	Model::Measurement::DihedralAngle & dihedralAngleModel
+				//		= MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
+				//	_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>(
+				//		INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE, &dihedralAngleModel );
+				// }
+				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+				//{
+				//	Model::Measurement::Distance & distanceModel
+				//		= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+				//	_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
+				//															 &distanceModel );
+				// }
 			}
 		}
 
@@ -418,49 +418,51 @@ namespace VTX::UI::Widget::Inspector
 			}
 		}
 		break;
-		case INSPECTOR_TYPE::MEASURE_DISTANCE:
-		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
-			{
-				Model::Measurement::Distance & distanceModel
-					= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
-				_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
-																		 &distanceModel );
-			}
-		}
-		break;
-		case INSPECTOR_TYPE::MEASURE_ANGLE:
-		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
-			{
-				Model::Measurement::Angle & angleModel
-					= MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
-				_addTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, &angleModel );
-			}
-		}
-		break;
-		case INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE:
-		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
-			{
-				Model::Measurement::DihedralAngle & dihedralAngleModel
-					= MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
-				_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>( INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE,
-																			  &dihedralAngleModel );
-			}
-		}
-		break;
-		case INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE:
-		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
-			{
-				Model::Measurement::Distance & distanceModel
-					= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
-				_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
-																		 &distanceModel );
-			}
-		}
-		break;
+			// case INSPECTOR_TYPE::MEASURE_DISTANCE:
+			//{
+			//	for ( const Model::ID & modelID : selectionModel.getItems() )
+			//	{
+			//		Model::Measurement::Distance & distanceModel
+			//			= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+			//		_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
+			//																 &distanceModel );
+			//	}
+			// }
+			// break;
+			// case INSPECTOR_TYPE::MEASURE_ANGLE:
+			//{
+			//	for ( const Model::ID & modelID : selectionModel.getItems() )
+			//	{
+			//		Model::Measurement::Angle & angleModel
+			//			= MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
+			//		_addTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, &angleModel );
+			//	}
+			// }
+			// break;
+			// case INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE:
+			//{
+			//	for ( const Model::ID & modelID : selectionModel.getItems() )
+			//	{
+			//		Model::Measurement::DihedralAngle & dihedralAngleModel
+			//			= MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
+			//		_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>(
+			// INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE,
+			// &dihedralAngleModel
+			// );
+			//	}
+			// }
+			// break;
+			// case INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE:
+			//{
+			//	for ( const Model::ID & modelID : selectionModel.getItems() )
+			//	{
+			//		Model::Measurement::Distance & distanceModel
+			//			= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+			//		_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
+			//																 &distanceModel );
+			//	}
+			// }
+			// break;
 		}
 
 		for ( InspectorItemWidget * inspector : _inspectors )

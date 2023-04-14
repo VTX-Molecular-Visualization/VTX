@@ -1,10 +1,10 @@
 #include "trajectory_frames_menu.hpp"
-#include "action/action_manager.hpp"
-#include "action/molecule.hpp"
-#include "model/generated_molecule.hpp"
-#include "model/molecule.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "util/string.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/molecule.hpp>
+#include <app/old_app/model/generated_molecule.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <util/string.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
