@@ -1,10 +1,10 @@
 #include "base_ui_application.hpp"
 #include "io/vtx_layout_reader.hpp"
 #include "layout_builder.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/action/main.hpp>
-#include <old/io/filesystem.hpp>
-#include <old/vtx_app.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/io/filesystem.hpp>
+#include <app/old_app/vtx_app.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::Core

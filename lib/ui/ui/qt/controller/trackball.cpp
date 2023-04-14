@@ -1,9 +1,9 @@
 #include "trackball.hpp"
 #include "qt/style.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/object3d/scene.hpp>
-#include <old/selection/selection_manager.hpp>
-#include <old/style.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <app/old_app/style.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 

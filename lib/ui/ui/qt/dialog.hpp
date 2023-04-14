@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <exception>
-#include <old/action/base_action.hpp>
+#include <app/old_app/action/base_action.hpp>
 
 namespace VTX
 {

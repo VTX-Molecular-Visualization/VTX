@@ -1,27 +1,28 @@
 #include "contextual_menu_render.hpp"
+#include "old_ui/action/main.hpp"
 #include "qt/action/main.hpp"
 #include "qt/application_qt.hpp"
 #include "qt/dialog.hpp"
 #include "qt/state/state_machine.hpp"
 #include "qt/state/visualization.hpp"
 #include "qt/tool/session/dialog.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/action/main.hpp>
-#include <old/action/scene.hpp>
-#include <old/action/setting.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/scene.hpp>
+#include <app/old_app/action/setting.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
 	ContextualMenuRender::ContextualMenuRender( QWidget * const p_parent ) :
 		QT::Widget::ContextualMenu::BaseContextualMenu( p_parent )
 	{
-		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
 	}
 	ContextualMenuRender ::~ContextualMenuRender() {}
 
-	void ContextualMenuRender ::receiveEvent( const Event::VTXEvent & p_event )
+	void ContextualMenuRender ::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_refreshPickerMode();
 		}

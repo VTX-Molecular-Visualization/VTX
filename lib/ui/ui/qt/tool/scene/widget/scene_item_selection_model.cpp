@@ -4,10 +4,10 @@
 #include "qt/tool/keys.hpp"
 #include "qt/tool/scene/widget/scene_item_widget.hpp"
 #include "qt/tool/scene/widget/scene_widget.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/action/selection.hpp>
-#include <old/model/path.hpp>
-#include <old/selection/selection_manager.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/model/path.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {

@@ -1,9 +1,9 @@
 #include "util.hpp"
 #include "rmsd/core/rmsd.hpp"
-#include <old/model/molecule.hpp>
-#include <old/model/selection.hpp>
-#include <old/object3d/scene.hpp>
-#include <old/vtx_app.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/vtx_app.hpp>
 
 namespace VTX::Tool::Analysis::Util
 {

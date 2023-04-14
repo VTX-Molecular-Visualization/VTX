@@ -1,4 +1,5 @@
 #include "molecule_scene_view.hpp"
+#include "old_ui/style.hpp"
 #include "qt/action/atom.hpp"
 #include "qt/action/category.hpp"
 #include "qt/action/chain.hpp"
@@ -14,17 +15,17 @@
 #include "qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "qt/widget_factory.hpp"
 #include <QScrollBar>
-#include <old/action/action_manager.hpp>
-#include <old/action/atom.hpp>
-#include <old/action/category.hpp>
-#include <old/action/chain.hpp>
-#include <old/action/molecule.hpp>
-#include <old/action/residue.hpp>
-#include <old/action/selection.hpp>
-#include <old/mvc/mvc_manager.hpp>
-#include <old/selection/selection_manager.hpp>
-#include <old/struct/range.hpp>
-#include <old/style.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/atom.hpp>
+#include <app/old_app/action/category.hpp>
+#include <app/old_app/action/chain.hpp>
+#include <app/old_app/action/molecule.hpp>
+#include <app/old_app/action/residue.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <app/old_app/struct/range.hpp>
+#include <app/old_app/style.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
 
@@ -33,21 +34,21 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	MoleculeSceneView::MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent ) :
 		VTX::View::BaseView<Model::Molecule>( p_model ), SceneItemWidget( p_parent )
 	{
-		_registerEvent( Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::Event::Global::SETTINGS_CHANGE );
 	}
 
 	MoleculeSceneView ::~MoleculeSceneView() { _clearLoadedItems(); }
 
-	void MoleculeSceneView::notify( const Event::VTXEvent * const p_event )
+	void MoleculeSceneView::notify( const VTX::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::MOLECULE_VISIBILITY )
+		if ( p_event->name == VTX::Event::Model::MOLECULE_VISIBILITY )
 		{
 			_refreshItemVisibility( _getMoleculeTreeWidgetItem(), _model->isVisible() );
 		}
-		else if ( p_event->name == Event::Model::CATEGORY_VISIBILITY )
+		else if ( p_event->name == VTX::Event::Model::CATEGORY_VISIBILITY )
 		{
-			const Event::VTXEventValue<CATEGORY_ENUM> * const castedEventData
-				= dynamic_cast<const Event::VTXEventValue<CATEGORY_ENUM> *>( p_event );
+			const VTX::Event::VTXEventValue<CATEGORY_ENUM> * const castedEventData
+				= dynamic_cast<const VTX::Event::VTXEventValue<CATEGORY_ENUM> *>( p_event );
 			const Model::Category & category = _model->getCategory( castedEventData->value );
 
 			if ( _isMoleculeExpanded() )
@@ -55,10 +56,10 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				_refreshItemVisibility( _getTreeWidgetItem( category ), category.isVisible() );
 			}
 		}
-		else if ( p_event->name == Event::Model::CHAIN_VISIBILITY )
+		else if ( p_event->name == VTX::Event::Model::CHAIN_VISIBILITY )
 		{
-			const Event::VTXEventValue<uint> * const castedEventData
-				= dynamic_cast<const Event::VTXEventValue<uint> *>( p_event );
+			const VTX::Event::VTXEventValue<uint> * const castedEventData
+				= dynamic_cast<const VTX::Event::VTXEventValue<uint> *>( p_event );
 			const uint				index	 = castedEventData->value;
 			const Model::Chain &	chain	 = *_model->getChain( index );
 			const Model::Category & category = *( _model->getCategoryFromChain( chain ) );
@@ -70,10 +71,10 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				_refreshItemVisibility( _getTreeWidgetItem( chain ), chain.isVisible() );
 			}
 		}
-		else if ( p_event->name == Event::Model::RESIDUE_VISIBILITY )
+		else if ( p_event->name == VTX::Event::Model::RESIDUE_VISIBILITY )
 		{
-			const Event::VTXEventValue<uint> * const castedEventData
-				= dynamic_cast<const Event::VTXEventValue<uint> *>( p_event );
+			const VTX::Event::VTXEventValue<uint> * const castedEventData
+				= dynamic_cast<const VTX::Event::VTXEventValue<uint> *>( p_event );
 			const uint			   index   = castedEventData->value;
 			const Model::Residue & residue = *_model->getResidue( index );
 
@@ -83,10 +84,10 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				_refreshItemVisibility( _getTreeWidgetItem( residue ), residue.isVisible() );
 			}
 		}
-		else if ( p_event->name == Event::Model::ATOM_VISIBILITY )
+		else if ( p_event->name == VTX::Event::Model::ATOM_VISIBILITY )
 		{
-			const Event::VTXEventValue<uint> * const castedEventData
-				= dynamic_cast<const Event::VTXEventValue<uint> *>( p_event );
+			const VTX::Event::VTXEventValue<uint> * const castedEventData
+				= dynamic_cast<const VTX::Event::VTXEventValue<uint> *>( p_event );
 			const Model::Atom & atom = *_model->getAtom( castedEventData->value );
 
 			if ( _isResidueExpanded( *atom.getResiduePtr() ) )
@@ -94,30 +95,30 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				_refreshItemVisibility( _getTreeWidgetItem( atom ), atom.isVisible() );
 			}
 		}
-		else if ( p_event->name == Event::Model::VISIBILITY )
+		else if ( p_event->name == VTX::Event::Model::VISIBILITY )
 		{
 			_refreshItemsVisibility();
 		}
-		else if ( p_event->name == Event::Model::DATA_CHANGE )
+		else if ( p_event->name == VTX::Event::Model::DATA_CHANGE )
 		{
 			_clearLoadedItems();
 			_updateMoleculeStructure();
 			_refreshSize();
 		}
-		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
+		else if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			_getMoleculeTreeWidgetItem()->setText( 0, QString::fromStdString( _model->getDisplayName() ) );
 		}
 	}
 
-	void MoleculeSceneView::receiveEvent( const Event::VTXEvent & p_event )
+	void MoleculeSceneView::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
 		SceneItemWidget::receiveEvent( p_event );
 
-		if ( p_event.name == Event::Global::SETTINGS_CHANGE )
+		if ( p_event.name == VTX::Event::Global::SETTINGS_CHANGE )
 		{
-			const Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
-				= dynamic_cast<const Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
+			const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
 
 			if ( castedEvent.ref.find( Setting::PARAMETER ::SYMBOL_DISPLAY_MODE ) != castedEvent.ref.end() )
 			{
@@ -963,7 +964,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	{
 		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( p_molecule.getId() ) );
 		p_item.setText( 0, QString::fromStdString( p_molecule.getDisplayName() ) );
-		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_molecule.getTypeId() ) );
+		p_item.setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( p_molecule.getTypeId() ) );
 
 		const QTreeWidgetItem::ChildIndicatorPolicy childIndicatorPolicy
 			= p_molecule.getChainCount() > 0 ? QTreeWidgetItem::ChildIndicatorPolicy::ShowIndicator
@@ -977,7 +978,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue( p_category.getId() ) );
 		p_item.setData( 0, CATEGORY_ROLE, QVariant::fromValue( int( p_category.getCategoryEnum() ) ) );
 		p_item.setText( 0, QString::fromStdString( p_category.getName() ) );
-		p_item.setIcon( 0, *VTX::Style::IconConst::get().getResidueCategorySymbol( p_category.getCategoryEnum() ) );
+		p_item.setIcon( 0, *VTX::UI::Style::IconConst::get().getResidueCategorySymbol( p_category.getCategoryEnum() ) );
 
 		// Always show indicator, if the category has no child, it is remove from the molecule
 		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::ShowIndicator );
@@ -989,7 +990,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue( p_chain.getId() ) );
 		p_item.setData( 0, CATEGORY_ROLE, QVariant::fromValue( int( p_category ) ) );
 		p_item.setText( 0, QString::fromStdString( p_chain.getDefaultName() ) );
-		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_chain.getTypeId() ) );
+		p_item.setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( p_chain.getTypeId() ) );
 
 		// Always show indicator, if chain has no child, it is remove from the molecule
 		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::ShowIndicator );
@@ -998,7 +999,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	{
 		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue( p_residue.getId() ) );
 		_applyResidueNameOnItem( p_residue, p_item, VTX_SETTING().getSymbolDisplayMode() );
-		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_residue.getTypeId() ) );
+		p_item.setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( p_residue.getTypeId() ) );
 
 		// Always show indicator, if residue has no child, it is remove from the molecule
 		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::ShowIndicator );
@@ -1008,7 +1009,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue( p_atom.getId() ) );
 		p_item.setText( 0,
 						QString::fromStdString( p_atom.getSymbolStr() + " " + std::to_string( p_atom.getIndex() ) ) );
-		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_atom.getTypeId() ) );
+		p_item.setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( p_atom.getTypeId() ) );
 		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::DontShowIndicator );
 	}
 

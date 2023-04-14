@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_TOOL_RENDER_WIDGET_RENDER__
 
 #include "core/define.hpp"
+#include "old_ui/event/base_event_firerer_input.hpp"
 #include "qt/qt_panel.hpp"
 #include "qt/tool/render/widget/base_integrated_widget.hpp"
 #include "qt/tool/render/widget/opengl_widget.hpp"
@@ -11,16 +12,15 @@
 #include <QResizeEvent>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <app/old_app/model/base_model.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/view/base_view.hpp>
+#include <app/old_app/worker/snapshoter.hpp>
 #include <map>
-#include <old/event/base_event_firerer_input.hpp>
-#include <old/model/base_model.hpp>
-#include <old/mvc/mvc_manager.hpp>
-#include <old/view/base_view.hpp>
-#include <old/worker/snapshoter.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
-	class RenderWidget : public QtPanelTemplate<QWidget>, public Event::BaseEventFirererInput
+	class RenderWidget : public QtPanelTemplate<QWidget>, public VTX::UI::Event::BaseEventFirererInput
 	{
 		NEW_ARCHI_VTX_WIDGET
 
@@ -39,7 +39,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		void displayOverlay( const Overlay::OVERLAY & p_overlay, const Overlay::OVERLAY_ANCHOR & p_position );
 		void hideOverlay( const Overlay::OVERLAY & p_overlay );
 
-		void			 receiveEvent( const Event::VTXEvent & p_event ) override;
+		void			 receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 		const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::RENDER_WIDGET; }
 
 	  protected:

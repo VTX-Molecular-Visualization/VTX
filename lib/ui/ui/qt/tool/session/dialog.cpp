@@ -2,17 +2,17 @@
 #include "qt/application_qt.hpp"
 #include "qt/main_window.hpp"
 #include "qt/tool/session/widget/dialog/download_molecule_dialog.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/action/main.hpp>
-#include <old/io/struct/scene_path_data.hpp>
-// #include <old/selection/selection_manager.hpp>
-#include <old/vtx_app.hpp>
-// #include "util/ui.hpp"
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/io/struct/scene_path_data.hpp>
+// #include <app/old_app/selection/selection_manager.hpp>
+#include <app/old_app/vtx_app.hpp>
+// #include "old_ui/util/ui.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QString>
 #include <QStringList>
-#include <old/io/filesystem.hpp>
+#include <app/old_app/io/filesystem.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Tool::Session::Dialog
@@ -26,7 +26,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 	void Dialog::openLoadMoleculeDialog()
 	{
 		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
-		QString defaultPath	  = Setting::getLastImportedMoleculeFolder();
+		QString defaultPath	  = QString::fromStdString( Setting::getLastImportedMoleculeFolder() );
 
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &QT_APP()->getMainWindow(),
@@ -37,7 +37,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 
 		if ( !filenames.isEmpty() )
 		{
-			Setting::saveLastImportedMoleculeFolder( filenames[ filenames.size() - 1 ] );
+			Setting::saveLastImportedMoleculeFolder( filenames[ filenames.size() - 1 ].toStdString() );
 
 			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
@@ -63,7 +63,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 			const FilePath path			 = FilePath( filename.toStdString() );
 			const FilePath directoryPath = path.parent_path();
 
-			Setting::saveLastExportedMoleculeFolder( QString::fromStdString( directoryPath.string() ) );
+			Setting::saveLastExportedMoleculeFolder( directoryPath.string() );
 			VTX_ACTION( new Action::Main::Save( path ) );
 		}
 	}
@@ -155,14 +155,14 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 			const FilePath path			 = FilePath( filename.toStdString() );
 			const FilePath directoryPath = path.parent_path();
 
-			Setting::saveLastSavedSessionFolder( QString::fromStdString( directoryPath.string() ) );
+			Setting::saveLastSavedSessionFolder( directoryPath.string() );
 			VTX_ACTION( new Action::Main::Save( path, p_callback ) );
 		}
 	}
 	void Dialog::openLoadSessionDialog()
 	{
 		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_FILE_READ_FILTER );
-		QString defaultPath	  = Setting::getLastLoadedSessionFolder();
+		QString defaultPath	  = QString::fromStdString( Setting::getLastLoadedSessionFolder() );
 
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &QT_APP()->getMainWindow(),
@@ -173,7 +173,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 
 		if ( filenames.size() > 0 )
 		{
-			Setting::saveLastLoadedSessionFolder( filenames[ filenames.size() - 1 ] );
+			Setting::saveLastLoadedSessionFolder( filenames[ filenames.size() - 1 ].toStdString() );
 
 			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )

@@ -6,15 +6,15 @@
 #include "qt/widget_factory.hpp"
 #include <QScrollBar>
 #include <algorithm>
-#include <old/action/action_manager.hpp>
-#include <old/action/scene.hpp>
-#include <old/action/selection.hpp>
-#include <old/model/selection.hpp>
-#include <old/mvc/mvc_manager.hpp>
-#include <old/object3d/scene.hpp>
-#include <old/selection/selection_manager.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/scene.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
 #include "qt/style.hpp"
-#include <old/vtx_app.hpp>
+#include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {
@@ -30,10 +30,10 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		defaultWidgetArea  = Qt::DockWidgetArea::LeftDockWidgetArea;
 		defaultOrientation = Qt::Orientation::Horizontal;
 
-		_registerEvent( Event::Global::SCENE_ITEM_INDEXES_CHANGE );
+		_registerEvent( VTX::Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 
-		_registerEvent( Event::Global::SCENE_ITEM_ADDED );
-		_registerEvent( Event::Global::SCENE_ITEM_REMOVED );
+		_registerEvent( VTX::Event::Global::SCENE_ITEM_ADDED );
+		_registerEvent( VTX::Event::Global::SCENE_ITEM_REMOVED );
 	}
 
 	SceneWidget ::~SceneWidget()
@@ -46,19 +46,19 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		_mapInstanciers.clear();
 	}
 
-	void SceneWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void SceneWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::SCENE_ITEM_ADDED )
+		if ( p_event.name == VTX::Event::Global::SCENE_ITEM_ADDED )
 		{
-			const Event::VTXEventPtr<Generic::BaseSceneItem> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
+			const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
 
 			instantiateSceneItemWidget( castedEvent.ptr );
 		}
-		else if ( p_event.name == Event::Global::SCENE_ITEM_REMOVED )
+		else if ( p_event.name == VTX::Event::Global::SCENE_ITEM_REMOVED )
 		{
-			const Event::VTXEventPtr<Generic::BaseSceneItem> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
+			const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> & castedEvent
+				= dynamic_cast<const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
 
 			Model::BaseModel & model
 				= MVC::MvcManager::get().getModel<Model::BaseModel>( castedEvent.ptr->getModelID() );
@@ -68,7 +68,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 			if ( sceneItemWidget != nullptr )
 				deleteSceneItemWidget( sceneItemWidget );
 		}
-		else if ( p_event.name == Event::Global::SCENE_ITEM_INDEXES_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::SCENE_ITEM_INDEXES_CHANGE )
 		{
 			_refreshItemIndex();
 		}

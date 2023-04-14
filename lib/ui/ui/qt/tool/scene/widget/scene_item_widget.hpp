@@ -9,8 +9,8 @@
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QTreeWidget>
-#include <old/generic/base_scene_item.hpp>
-#include <old/model/base_model.hpp>
+#include <app/old_app/generic/base_scene_item.hpp>
+#include <app/old_app/model/base_model.hpp>
 #include <vector>
 
 namespace VTX::Generic
@@ -37,7 +37,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	  public:
 		void localize() override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 		virtual void updatePosInSceneHierarchy( const int p_position );
 

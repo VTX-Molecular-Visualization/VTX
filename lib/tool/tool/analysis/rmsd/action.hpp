@@ -2,9 +2,9 @@
 #define __VTX_TOOL_ANALYSIS_RMSD_ACTION__
 
 #include "core/rmsd.hpp"
-#include <old/action/base_action.hpp>
-#include <old/model/molecule.hpp>
-#include <old/model/selection.hpp>
+#include <app/old_app/action/base_action.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/selection.hpp>
 #include <vector>
 
 namespace VTX::Tool::Analysis::RMSD::Action

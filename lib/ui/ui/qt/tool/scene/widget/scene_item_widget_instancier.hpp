@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_TOOL_SCENE_WIDGET_SCENE_ITEM_WIDGET_INSTANTIER__
 
 #include "qt/tool/scene/widget/scene_item_widget.hpp"
-#include <old/generic/base_scene_item.hpp>
+#include <app/old_app/generic/base_scene_item.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {

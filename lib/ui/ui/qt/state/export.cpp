@@ -1,10 +1,10 @@
 #include "export.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/action/main.hpp>
-#include <old/model/path.hpp>
-#include <old/model/viewpoint.hpp>
-#include <old/vtx_app.hpp>
-#include <old/worker/program_launcher.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/model/path.hpp>
+#include <app/old_app/model/viewpoint.hpp>
+#include <app/old_app/vtx_app.hpp>
+#include <app/old_app/worker/program_launcher.hpp>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 

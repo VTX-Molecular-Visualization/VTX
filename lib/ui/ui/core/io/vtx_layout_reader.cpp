@@ -32,6 +32,9 @@ namespace VTX::UI::Core::IO
 		layoutData.blockName = "Windows";
 		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::QT::Tool::UI_FEATURE_QUIT, layoutData ) );
 
+		layoutData = UI::Core::ToolLayoutData();
+		_result.layoutDescriptor.addTool( ToolDescriptor( VTX::UI::QT::Tool::CHECK_UPDATE_KEY, layoutData ) );
+
 		layoutData			 = UI::Core::ToolLayoutData();
 		layoutData.tabName	 = "Tools";
 		layoutData.blockName = "Structural Alignment";

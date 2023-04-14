@@ -4,9 +4,9 @@
 #include "qt/widget_factory.hpp"
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <old/action/action_manager.hpp>
-#include <old/action/main.hpp>
-#include <old/setting.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/setting.hpp>
 #include <string>
 
 namespace VTX::UI::QT::Tool::Session::Widget::Dialog

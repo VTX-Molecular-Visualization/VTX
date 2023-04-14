@@ -5,6 +5,7 @@
 #include "core/base_panel.hpp"
 #include "core/define.hpp"
 #include "core/layout_descriptor.hpp"
+#include "old_ui/event/base_event_firerer_input.hpp"
 #include "qt/contextual_menu.hpp"
 #include "qt/cursor_handler.hpp"
 #include "qt/qt_panel.hpp"
@@ -17,9 +18,8 @@
 #include <QKeySequence>
 #include <QMainWindow>
 #include <QShortcut>
-#include <old/event/base_event_firerer_input.hpp>
-#include <old/id.hpp>
-#include <old/renderer/base_renderer.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/renderer/base_renderer.hpp>
 #include <unordered_set>
 #include <util/types.hpp>
 
@@ -33,7 +33,7 @@ namespace VTX::UI::QT
 	class MainWindow :
 		public VTX::UI::QT::Widget::BaseManualWidget<QMainWindow>,
 		public VTX::UI::Core::BaseMainWindow,
-		public Event::BaseEventFirererInput
+		public VTX::UI::Event::BaseEventFirererInput
 	{
 		Q_OBJECT
 
@@ -56,7 +56,7 @@ namespace VTX::UI::QT
 		void updateRender() const;
 		void updateRenderSetting( const Renderer::RENDER_SETTING );
 
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 		Core::MainMenu::MainMenuBar &				getMainMenu() override { return *_mainMenuBar; }
 		QT::Widget::MainMenu::MenuTooltabWidget &	getMainMenuToolTab( const Core::ToolLayoutData & layoutData );

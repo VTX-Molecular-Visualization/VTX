@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_ACTION_APPLICATION__
 #define __VTX_UI_QT_ACTION_APPLICATION__
 
-#include <old/action/base_action.hpp>
-#include <old/id.hpp>
+#include <app/old_app/action/base_action.hpp>
+#include <app/old_app/id.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Action::Main

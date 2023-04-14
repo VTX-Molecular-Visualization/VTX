@@ -29,6 +29,23 @@ foreach(SRC IN ITEMS ${SOURCES})
     source_group("Source${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
+include(FetchContent)
+include(ExternalProject)
+
+# Eigen.
+ExternalProject_Add(
+    eigen
+    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_EXTERNAL_PROJECT}/Eigen
+    GIT_REPOSITORY ${GIT_URL_EIGEN}
+	GIT_TAG ${GIT_TAG_EIGEN}
+	CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+    )
+ExternalProject_Get_Property(eigen SOURCE_DIR)
+set(EIGEN_INCLUDE_DIR ${SOURCE_DIR}/)
+
 # Fill FORMS and QT_RESOURCES file lists
 find_qt_files()
 
@@ -54,10 +71,11 @@ apply_qt_options(${VTX_TOOL_LIB})
 
 target_include_directories(${VTX_TOOL_LIB} PUBLIC tool/)
 target_include_directories(${VTX_TOOL_LIB} PUBLIC .)
-target_include_directories(${VTX_TOOL_LIB} PUBLIC ${OLD_VTX_INCLUDE_PATH})
 target_include_directories(${VTX_TOOL_LIB} PUBLIC ${VTX_UTIL_INCLUDE_PATH})
+target_include_directories(${VTX_TOOL_LIB} PUBLIC ${VTX_APP_INCLUDE_PATH})
 target_include_directories(${VTX_TOOL_LIB} PUBLIC ${VTX_UI_INCLUDE_PATH})
+target_include_directories(${VTX_TOOL_LIB} PUBLIC ${EIGEN_INCLUDE_DIR})
 
-target_link_libraries(${VTX_TOOL_LIB} PUBLIC ${OLD_VTX_LIB})
 target_link_libraries(${VTX_TOOL_LIB} PUBLIC ${VTX_UTIL_LIB})
+target_link_libraries(${VTX_TOOL_LIB} PUBLIC ${VTX_APP_LIB})
 target_link_libraries(${VTX_TOOL_LIB} PUBLIC ${VTX_UI_LIB})

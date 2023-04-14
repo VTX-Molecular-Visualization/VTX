@@ -2,16 +2,16 @@
 #define __VTX_UI_QT_CONTROLLER_BASE_MOUSE_CONTROLLER__
 
 #include "core/controller/base_controller.hpp"
-#include <old/event/base_event_receiver_mouse.hpp>
-#include <old/event/base_event_receiver_wheel.hpp>
+#include "old_ui/event/base_event_receiver_mouse.hpp"
+#include "old_ui/event/base_event_receiver_wheel.hpp"
 #include <util/types.hpp>
 
 namespace VTX::UI::QT::Controller
 {
 	class BaseMouseController :
 		virtual public UI::Core::Controller::BaseController,
-		public Event::BaseEventReceiverMouse,
-		public Event::BaseEventReceiverWheel
+		public VTX::Event::BaseEventReceiverMouse,
+		public VTX::Event::BaseEventReceiverWheel
 	{
 	  public:
 		inline static const int CLICK_MAX_DISTANCE = 3;

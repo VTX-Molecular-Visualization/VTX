@@ -4,14 +4,14 @@
 #include <QMainWindow>
 #include <QOpenGLVersionFunctionsFactory>
 #include <QScreen>
-#include <old/model/renderer/render_effect_preset.hpp>
-#include <old/object3d/camera.hpp>
-#include <old/object3d/scene.hpp>
-#include <old/renderer/gl/gl.hpp>
-#include <old/renderer/gl/program_manager.hpp>
-#include <old/renderer/rt/ray_tracer.hpp>
-#include <old/spec.hpp>
-#include <old/vtx_app.hpp>
+#include <app/old_app/model/renderer/render_effect_preset.hpp>
+#include <app/old_app/object3d/camera.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/renderer/gl/gl.hpp>
+#include <app/old_app/renderer/gl/program_manager.hpp>
+#include <app/old_app/renderer/rt/ray_tracer.hpp>
+#include <app/old_app/spec.hpp>
+#include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {

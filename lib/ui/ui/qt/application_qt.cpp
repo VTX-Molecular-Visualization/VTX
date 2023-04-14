@@ -12,10 +12,11 @@
 #include <QStyleFactory>
 // #include <exception>
 #include <util/logger.hpp>
-// #include <old/action/action_manager.hpp>
-// #include <old/action/main.hpp>
-#include <old/generic/base_opengl.hpp>
-// #include <old/vtx_app.hpp>
+// #include <app/old_app/action/action_manager.hpp>
+// #include <app/old_app/action/main.hpp>
+#include <app/old_app/generic/base_opengl.hpp>
+#include <app/old_app/vtx_app.hpp>
+// #include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::QT
 {
@@ -43,7 +44,7 @@ namespace VTX::UI::QT
 
 		_handleArgs( p_args );
 
-		VTX_EVENT( new Event::VTXEvent( Event::Global::UI_APPLICATION_INITIALIZED ) );
+		VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::UI_APPLICATION_INITIALIZED ) );
 
 		_returnCode = exec();
 	}
@@ -126,6 +127,13 @@ namespace VTX::UI::QT
 	void ApplicationQt::stop()
 	{
 		_mainWindow->saveLayout();
+
+		// _timer can be uninitialized if critical error append during start (i.e. OpenGL init fail)
+		if ( _timer != nullptr )
+		{
+			_timer->stop();
+			delete _timer;
+		}
 
 		if ( _stateMachine != nullptr )
 		{

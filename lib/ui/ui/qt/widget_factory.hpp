@@ -3,7 +3,7 @@
 
 #include "qt/widget/base_manual_widget.hpp"
 #include "qt/widget/base_manual_widget_initializer.hpp"
-#include <old/mvc/mvc_manager.hpp>
+#include <app/old_app/mvc/mvc_manager.hpp>
 #include <QMainWindow>
 #include <QTreeWidget>
 #include <QWidget>

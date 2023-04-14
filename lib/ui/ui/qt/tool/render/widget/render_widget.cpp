@@ -1,20 +1,22 @@
 #include "render_widget.hpp"
 #include "qt/action/main.hpp"
+#include "qt/action/viewpoint.hpp"
 #include "qt/tool/render/widget/base_integrated_widget.hpp"
 #include "qt/tool/render/widget/overlay/visualization_quick_access.hpp"
 #include "qt/widget_factory.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/action/main.hpp>
-#include <old/action/viewpoint.hpp>
-#include <old/event/event_manager.hpp>
-#include <old/io/filesystem.hpp>
-// #include <old/model/label.hpp>
-// #include <old/model/measurement/angle.hpp>
-// #include <old/model/measurement/dihedral_angle.hpp>
-// #include <old/model/measurement/distance.hpp>
-// #include <old/model/measurement/measure_in_progress.hpp>
-#include <old/model/mesh_triangle.hpp>
-#include <old/model/molecule.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/action/viewpoint.hpp>
+#include <app/old_app/event/event_manager.hpp>
+#include <app/old_app/io/filesystem.hpp>
+// #include <app/old_app/model/label.hpp>
+// #include <app/old_app/model/measurement/angle.hpp>
+// #include <app/old_app/model/measurement/dihedral_angle.hpp>
+// #include <app/old_app/model/measurement/distance.hpp>
+// #include <app/old_app/model/measurement/measure_in_progress.hpp>
+#include <app/old_app/model/mesh_triangle.hpp>
+#include <app/old_app/model/molecule.hpp>
 // #include "state/state_machine.hpp"
 // #include "state/visualization.hpp"
 #include "qt/style.hpp"
@@ -24,7 +26,7 @@
 // #include "view/ui/widget/measurement/distance_render_view.hpp"
 // #include "view/ui/widget/measurement/measure_in_progress_render_view.hpp"
 #include <QShortcut>
-#include <old/vtx_app.hpp>
+#include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
@@ -35,17 +37,17 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		visibleByDefault  = true;
 		referenceInPanels = false;
 
-		_registerEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
-		_registerEvent( Event::Global::LABEL_ADDED );
-		_registerEvent( Event::Global::LABEL_REMOVED );
-		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
+		_registerEvent( VTX::Event::Global::LABEL_ADDED );
+		_registerEvent( VTX::Event::Global::LABEL_REMOVED );
+		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
 	}
 
 	RenderWidget::~RenderWidget() {}
 
-	void RenderWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void RenderWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
+		if ( p_event.name == VTX::Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
 		{
 			updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
 			updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
@@ -54,10 +56,10 @@ namespace VTX::UI::QT::Tool::Render::Widget
 			updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
 		}
 
-		// if ( p_event.name == Event::Global::LABEL_ADDED )
+		// if ( p_event.name == VTX::Event::Global::LABEL_ADDED )
 		//{
-		//	const Event::VTXEventPtr<Model::Label> & castedEvent
-		//		= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+		//	const VTX::Event::VTXEventPtr<Model::Label> & castedEvent
+		//		= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Label> &>( p_event );
 
 		//	const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
 
@@ -102,10 +104,10 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		//		_addIntegratedWidget( integratedWidget );
 		//	}
 		//}
-		// else if ( p_event.name == Event::Global::LABEL_REMOVED )
+		// else if ( p_event.name == VTX::Event::Global::LABEL_REMOVED )
 		//{
-		//	const Event::VTXEventPtr<Model::Label> & castedEvent
-		//		= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+		//	const VTX::Event::VTXEventPtr<Model::Label> & castedEvent
+		//		= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Label> &>( p_event );
 
 		//	const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
 
@@ -133,7 +135,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		//			model, ID::View::UI_RENDER_MEASUREMENT_DIHEDRAL_ANGLE );
 		//	}
 		//}
-		// else if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		// else if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
 		//{
 		//	State::Visualization * const state
 		//		= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
@@ -232,7 +234,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		VTX_ACTION( new QT::Action::Main::ResetCameraController() );
 	}
 
-	void RenderWidget::_onShortcutAddViewpoint() { VTX_ACTION( new VTX::Action::Viewpoint::Create() ); }
+	void RenderWidget::_onShortcutAddViewpoint() { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
 
 	void RenderWidget::_onShortcutSnapshot()
 	{

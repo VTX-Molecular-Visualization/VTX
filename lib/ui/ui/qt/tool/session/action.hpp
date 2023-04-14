@@ -3,9 +3,9 @@
 
 #include "qt/application_qt.hpp"
 #include "qt/dialog.hpp"
-#include <old/action/base_action.hpp>
-#include <old/model/molecule.hpp>
-#include <old/worker/worker_manager.hpp>
+#include <app/old_app/action/base_action.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/worker/worker_manager.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -35,6 +35,9 @@ namespace VTX::UI::QT::Tool::Session::Action
 		}
 
 		virtual void execute() override;
+
+	  private:
+		void _callEffectiveOpenAction();
 
 	  private:
 		std::vector<FilePath>			  _paths = std::vector<FilePath>();

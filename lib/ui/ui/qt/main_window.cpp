@@ -1,5 +1,7 @@
 #include "main_window.hpp"
-#include "controller/base_keyboard_controller.hpp"
+#include "old_ui/action/main.hpp"
+#include "old_ui/controller/base_keyboard_controller.hpp"
+#include "old_ui/style.hpp"
 #include "qt/action/main.hpp"
 #include "qt/action/selection.hpp"
 #include "qt/application_qt.hpp"
@@ -8,55 +10,55 @@
 #include "qt/tool/session/dialog.hpp"
 #include "qt/util.hpp"
 #include "widget_factory.hpp"
-#include <old/action/action_manager.hpp>
-#include <old/action/dev.hpp>
-#include <old/action/main.hpp>
-#include <old/action/selection.hpp>
-#include <old/action/setting.hpp>
-#include <old/event/event.hpp>
-#include <old/event/event_manager.hpp>
-#include <old/io/struct/scene_path_data.hpp>
-#include <old/model/selection.hpp>
-#include <old/selection/selection_manager.hpp>
-#include <old/setting.hpp>
-#include <old/io/filesystem.hpp>
-#include <old/worker/worker_manager.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/dev.hpp>
+#include <app/old_app/action/main.hpp>
+#include <app/old_app/action/selection.hpp>
+#include <app/old_app/action/setting.hpp>
+#include <app/old_app/event/event.hpp>
+#include <app/old_app/event/event_manager.hpp>
+#include <app/old_app/io/filesystem.hpp>
+#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <app/old_app/setting.hpp>
+#include <app/old_app/worker/worker_manager.hpp>
 
 namespace VTX::UI::QT
 {
 	MainWindow::MainWindow( QWidget * p_parent ) : BaseMainWindow(), BaseManualWidget( p_parent )
 	{
-		_registerEvent( Event::Global::CHANGE_STATE );
-		_registerEvent( Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
-		_registerEvent( Event::Global::SCENE_PATH_CHANGE );
+		_registerEvent( VTX::Event::Global::CHANGE_STATE );
+		_registerEvent( VTX::Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
+		_registerEvent( VTX::Event::Global::SCENE_PATH_CHANGE );
 
-		_registerEvent( Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
 	}
 
 	MainWindow::~MainWindow() {}
 
-	void MainWindow::receiveEvent( const Event::VTXEvent & p_event )
+	void MainWindow::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::CHANGE_STATE )
+		if ( p_event.name == VTX::Event::Global::CHANGE_STATE )
 		{
-			const Event::VTXEventValue<ID::VTX_ID> & event
-				= dynamic_cast<const Event::VTXEventValue<ID::VTX_ID> &>( p_event );
+			const VTX::Event::VTXEventValue<ID::VTX_ID> & event
+				= dynamic_cast<const VTX::Event::VTXEventValue<ID::VTX_ID> &>( p_event );
 
 			ID::VTX_ID state = event.value;
 		}
-		else if ( p_event.name == Event::Global::SCENE_PATH_CHANGE
-				  || p_event.name == Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::SCENE_PATH_CHANGE
+				  || p_event.name == VTX::Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
 		{
 			refreshWindowTitle();
 		}
-		else if ( p_event.name == Event::Global::PICKER_MODE_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_updatePicker();
 		}
-		// else if ( p_event.name == Event::Global::RMSD_COMPUTED )
+		// else if ( p_event.name == VTX::Event::Global::RMSD_COMPUTED )
 		//{
-		//	const Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> & castedEvent
-		//		= dynamic_cast<const Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> &>( p_event );
+		//	const VTX::Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> & castedEvent
+		//		= dynamic_cast<const VTX::Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> &>( p_event );
 
 		//	const std::string log = VTX::Tool::Analysis::RMSD::getLogString( castedEvent.ref );
 
@@ -90,7 +92,7 @@ namespace VTX::UI::QT
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		const QSize winsize = QSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
+		const QSize winsize = QSize( VTX::Style::WINDOW_WIDTH_DEFAULT, VTX::Style::WINDOW_HEIGHT_DEFAULT );
 		resize( winsize );
 		setWindowState( Qt::WindowState::WindowNoState );
 		refreshWindowTitle();
@@ -249,8 +251,8 @@ namespace VTX::UI::QT
 				 &QShortcut::activated,
 				 this,
 				 &MainWindow::_onShortcutOrient );
-		connect( new QShortcut( QKeySequence( tr( QT::Controller::BaseKeyboardController::getKeyboardLayout()
-														  == QT::Controller::KeyboardLayout::AZERTY
+		connect( new QShortcut( QKeySequence( tr( Controller::BaseKeyboardController::getKeyboardLayout()
+														  == Controller::KeyboardLayout::AZERTY
 													  ? "Ctrl+A"
 													  : "Ctrl+Q" ) ),
 								this ),
@@ -512,7 +514,7 @@ namespace VTX::UI::QT
 		if ( p_event->type() == QEvent::Type::WindowStateChange )
 		{
 			Core::WindowMode newMode = _getWindowModeFromWindowState( windowState() );
-			VTX_EVENT( new Event::VTXEvent( Event::Global::MAIN_WINDOW_MODE_CHANGE ) );
+			VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::MAIN_WINDOW_MODE_CHANGE ) );
 		}
 	}
 
@@ -619,7 +621,7 @@ namespace VTX::UI::QT
 			break;
 		}
 
-		VTX_EVENT( new Event::VTXEventValue( Event::Global::MAIN_WINDOW_MODE_CHANGE, p_mode ) );
+		VTX_EVENT( new VTX::Event::VTXEventValue( VTX::Event::Global::MAIN_WINDOW_MODE_CHANGE, p_mode ) );
 	}
 	void MainWindow::toggleWindowState()
 	{

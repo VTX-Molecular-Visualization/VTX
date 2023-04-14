@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_ACTION_CATEGORY__
 #define __VTX_UI_QT_ACTION_CATEGORY__
 
-#include <old/action/base_action.hpp>
-#include <old/model/category.hpp>
+#include <app/old_app/action/base_action.hpp>
+#include <app/old_app/model/category.hpp>
 
 namespace VTX::UI::QT::Action::Category
 {

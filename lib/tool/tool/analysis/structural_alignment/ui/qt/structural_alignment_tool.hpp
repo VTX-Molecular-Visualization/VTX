@@ -2,7 +2,7 @@
 #define __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT_TOOL__
 
 #include "analysis/structural_alignment/tool_info.hpp"
-#include <old/ui/widget/analysis/structural_alignment/structural_alignment_widget.hpp>
+#include <old_tool/ui/widget/analysis/structural_alignment/structural_alignment_widget.hpp>
 #include <ui/core/tool_registration.hpp>
 #include <ui/qt/base_qt_tool.hpp>
 

@@ -12,17 +12,17 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 #include <map>
-#include <old/event/base_event_receiver_vtx.hpp>
-#include <old/generic/base_visible.hpp>
-#include <old/model/atom.hpp>
-#include <old/model/category.hpp>
-#include <old/model/category_enum.hpp>
-#include <old/model/chain.hpp>
-#include <old/model/molecule.hpp>
-#include <old/model/residue.hpp>
-#include <old/model/selection.hpp>
-#include <old/style.hpp>
-#include <old/view/base_view.hpp>
+#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/old_app/generic/base_visible.hpp>
+#include <app/old_app/model/atom.hpp>
+#include <app/old_app/model/category.hpp>
+#include <app/old_app/model/category_enum.hpp>
+#include <app/old_app/model/chain.hpp>
+#include <app/old_app/model/molecule.hpp>
+#include <app/old_app/model/residue.hpp>
+#include <app/old_app/model/selection.hpp>
+#include <app/old_app/style.hpp>
+#include <app/old_app/view/base_view.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View
 {
@@ -35,8 +35,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		inline static const Qt::ItemDataRole CATEGORY_ROLE = CHILD_FIRST_ROLE;
 
 	  public:
-		void notify( const Event::VTXEvent * const p_event ) override;
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void notify( const VTX::Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
 
 		const Model::ID &					   getModelID() const override { return _model->getId(); };
 		virtual const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };

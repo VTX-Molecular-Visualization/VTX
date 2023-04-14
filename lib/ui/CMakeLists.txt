@@ -63,8 +63,8 @@ apply_qt_options(${VTX_UI_LIB})
 
 target_include_directories(${VTX_UI_LIB} PUBLIC ui/)
 target_include_directories(${VTX_UI_LIB} PUBLIC .)
-target_include_directories(${VTX_UI_LIB} PUBLIC ${OLD_VTX_INCLUDE_PATH})
+target_include_directories(${VTX_UI_LIB} PUBLIC ${VTX_APP_INCLUDE_PATH})
 target_include_directories(${VTX_UI_LIB} PUBLIC ${VTX_UTIL_INCLUDE_PATH})
 
-target_link_libraries(${VTX_UI_LIB} PUBLIC ${OLD_VTX_LIB})
+target_link_libraries(${VTX_UI_LIB} PUBLIC ${VTX_APP_LIB})
 target_link_libraries(${VTX_UI_LIB} PUBLIC ${VTX_UTIL_LIB})

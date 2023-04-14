@@ -1,8 +1,8 @@
 #ifndef __VTX_UI_QT_ACTION_RESIDUE__
 #define __VTX_UI_QT_ACTION_RESIDUE__
 
-#include <old/action/base_action.hpp>
-#include <old/model/residue.hpp>
+#include <app/old_app/action/base_action.hpp>
+#include <app/old_app/model/residue.hpp>
 
 namespace VTX::UI::QT::Action::Residue
 {

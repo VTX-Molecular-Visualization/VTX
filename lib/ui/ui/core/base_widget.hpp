@@ -1,11 +1,11 @@
 #ifndef __VTX_UI_CORE_BASE_WIDGET__
 #define __VTX_UI_CORE_BASE_WIDGET__
 
-#include <old/event/base_event_receiver_vtx.hpp>
+#include <app/old_app/event/base_event_receiver_vtx.hpp>
 
 namespace VTX::UI::Core
 {
-	class BaseWidget : public Event::BaseEventReceiverVTX
+	class BaseWidget : public VTX::Event::BaseEventReceiverVTX
 	{
 	  public:
 		BaseWidget() = default;

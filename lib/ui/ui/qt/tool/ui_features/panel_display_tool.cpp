@@ -10,20 +10,20 @@
 #include <QMenu>
 #include <QWidget>
 #include <list>
-#include <old/action/action_manager.hpp>
-#include <old/action/setting.hpp>
+#include <app/old_app/action/action_manager.hpp>
+#include <app/old_app/action/setting.hpp>
 
 namespace VTX::UI::QT::Tool
 {
 	PanelDisplayTool::PanelDisplayTool() : BaseQtTool()
 	{
-		_registerEvent( Event::Global::UI_APPLICATION_INITIALIZED );
-		_registerEvent( Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
+		_registerEvent( VTX::Event::Global::UI_APPLICATION_INITIALIZED );
+		_registerEvent( VTX::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
 	}
 
-	void PanelDisplayTool::receiveEvent( const Event::VTXEvent & p_event )
+	void PanelDisplayTool::receiveEvent( const VTX::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::UI_APPLICATION_INITIALIZED )
+		if ( p_event.name == VTX::Event::Global::UI_APPLICATION_INITIALIZED )
 		{
 			QT::MainWindow * const mainWindow = &QT::QT_APP()->getMainWindow();
 
@@ -35,7 +35,7 @@ namespace VTX::UI::QT::Tool
 
 			_refreshPanelVisibilityState();
 		}
-		else if ( p_event.name == Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
+		else if ( p_event.name == VTX::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
 		{
 			_refreshPanelVisibilityState();
 		}

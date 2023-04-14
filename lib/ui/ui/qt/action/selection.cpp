@@ -2,9 +2,9 @@
 #include "qt/application_qt.hpp"
 #include "qt/state/state_machine.hpp"
 #include "qt/state/visualization.hpp"
-#include <old/object3d/helper/aabb.hpp>
-#include <old/object3d/scene.hpp>
-#include <old/vtx_app.hpp>
+#include <app/old_app/object3d/helper/aabb.hpp>
+#include <app/old_app/object3d/scene.hpp>
+#include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Action::Selection
 {

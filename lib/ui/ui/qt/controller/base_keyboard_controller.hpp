@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_CONTROLLER_BASE_KEYBOARD_CONTROLLER__
 
 #include "core/controller/base_controller.hpp"
-#include <old/event/base_event_receiver_keyboard.hpp>
+#include "old_ui/event/base_event_receiver_keyboard.hpp"
 #include <iostream>
 #include <set>
 
@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Controller
 
 	class BaseKeyboardController :
 		virtual public UI::Core::Controller::BaseController,
-		public Event::BaseEventReceiverKeyboard
+		public VTX::Event::BaseEventReceiverKeyboard
 	{
 	  public:
 		virtual void receiveEvent( const QKeyEvent & p_event ) override;

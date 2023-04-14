@@ -11,11 +11,11 @@
 #include <QSize>
 #include <QString>
 #include <iostream>
-#include <old/id.hpp>
-#include <old/model/category_enum.hpp>
-#include <old/model/representation/representation_enum.hpp>
-#include <old/selection/selection_enum.hpp>
-#include <old/util/label.hpp>
+#include <app/old_app/id.hpp>
+#include <app/old_app/model/category_enum.hpp>
+#include <app/old_app/model/representation/representation_enum.hpp>
+#include <app/old_app/selection/selection_enum.hpp>
+#include <app/old_app/util/label.hpp>
 #include <string>
 #include <util/logger.hpp>
 #include <vector>
