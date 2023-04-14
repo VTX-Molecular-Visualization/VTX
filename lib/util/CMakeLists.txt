@@ -25,7 +25,7 @@ target_include_directories(VTX_UTIL PUBLIC include)
 
 # Link third parties.
 target_link_libraries(VTX_UTIL PUBLIC glm)
-target_link_libraries(VTX_UTIL PRIVATE spdlog)
+target_link_libraries(VTX_UTIL PUBLIC spdlog)
 
 # Target compile options.
 target_compile_features(VTX_UTIL PUBLIC cxx_std_17)
