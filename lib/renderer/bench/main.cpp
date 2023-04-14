@@ -4,7 +4,7 @@
 #include <iostream>
 #include <memory>
 
-void errorCallback( int error, const char * description ) { std::cerr << description << std::endl; }
+void errorCallback( int error, const char * p_description ) { std::cerr << p_description << std::endl; }
 
 int main( int argc, char ** argv )
 {
@@ -17,7 +17,7 @@ int main( int argc, char ** argv )
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 5 );
 	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 
-	GLFWwindow * const window = glfwCreateWindow( 1920, 1080, "VTX_RENDERER_BENCH", NULL, NULL );
+	GLFWwindow * const window = glfwCreateWindow( 800, 600, "VTX_RENDERER_BENCH", NULL, NULL );
 	if ( !window )
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -31,9 +31,18 @@ int main( int argc, char ** argv )
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return EXIT_FAILURE;
 	}
+
+	const unsigned char * glVendor	  = glGetString( GL_VENDOR );
+	const unsigned char * glRenderer  = glGetString( GL_RENDERER );
+	const unsigned char * glVersion	  = glGetString( GL_VERSION );
+	const unsigned char * glslVersion = glGetString( GL_SHADING_LANGUAGE_VERSION );
+
+	std::cout << "GL device: " << glVendor << " " << glRenderer << std::endl;
+	std::cout << "GL version: " << glVersion << std::endl;
+	std::cout << "GLSL version: " << glslVersion << std::endl;
 	std::cout << "GLAD initialized: " << GLVersion.major << "." << GLVersion.minor << std::endl;
 
-	glViewport( 0, 0, 1920, 1080 );
+	glViewport( 0, 0, 800, 600 );
 	glClearColor( 0.5f, 0.5f, 0.5f, 1.f );
 
 	while ( !glfwWindowShouldClose( window ) )
