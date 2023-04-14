@@ -44,3 +44,19 @@ target_link_libraries(VTX_RENDERER_TEST PRIVATE VTX_RENDERER)
 
 # Catch2.
 catch_discover_tests(VTX_RENDERER_TEST)
+
+# Benchmark.
+set(GIT_URL_GLFW https://github.com/glfw/glfw.git)
+set(GIT_TAG_GLFW 3.3.8)
+
+FetchContent_Declare(glfw GIT_REPOSITORY ${GIT_URL_GLFW} GIT_TAG ${GIT_TAG_GLFW})
+FetchContent_MakeAvailable(glfw)
+
+# Create executable.
+add_executable(VTX_RENDERER_BENCH bench/main.cpp)
+
+# Link third parties.
+target_link_libraries(VTX_RENDERER_BENCH PRIVATE glfw)
+
+# Link VTX_RENDERER.
+target_link_libraries(VTX_RENDERER_BENCH PRIVATE VTX_RENDERER)
