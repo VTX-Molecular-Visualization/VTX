@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <fstream>
 #include <util/filesystem.hpp>
+#include <util/generic/base_static_singleton.hpp>
 #include <util/string.hpp>
 
 // string.hpp
@@ -55,4 +56,23 @@ TEST_CASE( "Util::Filesystem", "[filesystem]" )
 
 	VTX::Util::Filesystem::removeAll( "data_test/sdqsdqsd" );
 	REQUIRE( std::filesystem::exists( "data_test" ) == false );
+}
+
+// base_static_singleton.hpp
+TEST_CASE( "Util::BaseStaticSingleton", "[generic]" )
+{
+	class SingletonTest : public VTX::Util::Generic::BaseStaticSingleton<SingletonTest>
+	{
+	  public:
+		SingletonTest( const StructPrivacyToken & ) {}
+		SingletonTest( std::initializer_list<int> ) = delete;
+	};
+
+	const SingletonTest & instance = VTX::Util::Generic::BaseStaticSingleton<SingletonTest>::get();
+
+	// Forbidden.
+	// const SingletonTest consDefault;
+	// const SingletonTest consCopy( instance );
+	// const SingletonTest consMove( std::move( instance ) );
+	// const SingletonTest consInit( {} );
 }

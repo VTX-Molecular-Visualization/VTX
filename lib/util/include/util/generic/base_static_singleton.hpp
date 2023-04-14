@@ -1,6 +1,8 @@
 #ifndef __VTX_UTIL_GENERIC_BASE_STATIC_SINGLETON__
 #define __VTX_UTIL_GENERIC_BASE_STATIC_SINGLETON__
 
+#include <initializer_list>
+
 namespace VTX::Util::Generic
 {
 
@@ -14,9 +16,11 @@ namespace VTX::Util::Generic
 			return instance;
 		}
 
-		BaseStaticSingleton( const BaseStaticSingleton & )			 = delete;
+		BaseStaticSingleton( const BaseStaticSingleton & ) = delete;
+		BaseStaticSingleton( std::initializer_list<int> )  = delete;
+		BaseStaticSingleton( BaseStaticSingleton && )	   = delete;
+
 		BaseStaticSingleton & operator=( const BaseStaticSingleton ) = delete;
-		BaseStaticSingleton( BaseStaticSingleton && )				 = delete;
 		BaseStaticSingleton & operator=( BaseStaticSingleton && )	 = delete;
 
 	  protected:

@@ -12,6 +12,7 @@ namespace VTX::Util
 	{
 	  public:
 		Logger( StructPrivacyToken p_token );
+		Logger( std::initializer_list<int> ) = delete;
 
 		void init( const std::filesystem::path & );
 	};
