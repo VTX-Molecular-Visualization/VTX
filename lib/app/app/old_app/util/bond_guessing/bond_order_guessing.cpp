@@ -228,7 +228,7 @@ namespace VTX::Util::BondGuessing
 				for ( const size_t nextAtomIndex : linkedAtoms )
 				{
 					const chemfiles::Vector3D & nextAtomIndexPos = p_frame.positions()[ nextAtomIndex ];
-					const float					atomDistance	 = ( nextAtomIndexPos - atomIndexPos ).norm();
+					const float					atomDistance	 = float( ( nextAtomIndexPos - atomIndexPos ).norm() );
 
 					NeighbourData::AtomData atomData
 						= NeighbourData::AtomData( nextAtomIndex, nextAtomIndexPos, atomDistance );
@@ -905,7 +905,7 @@ namespace VTX::Util::BondGuessing
 		float avg = 0.f;
 		for ( int i = 1; i < atomCount; i++ )
 		{
-			avg += chemfiles::dot( crossProducts[ i ], crossProducts[ i + 1 ] );
+			avg += float( chemfiles::dot( crossProducts[ i ], crossProducts[ i + 1 ] ) );
 		}
 
 		return avg / ( atomCount - 1 );
@@ -951,7 +951,7 @@ namespace VTX::Util::BondGuessing
 
 		for ( int i = 0; i < p_atomCount; i++ )
 		{
-			avg += chemfiles::dot( crossProducts[ i ], crossProducts[ i + 1 ] );
+			avg += float( chemfiles::dot( crossProducts[ i ], crossProducts[ i + 1 ] ) );
 		}
 		result = avg / p_atomCount;
 
@@ -984,7 +984,7 @@ namespace VTX::Util::BondGuessing
 				const chemfiles::Vector3D & neighbourPos = p_frame.positions()[ neighbourIndex ];
 				chemfiles::Vector3D			vec			 = neighbourPos - atomPos;
 				_normalizeVector( vec );
-				float dot = chemfiles::dot( vec, dir );
+				float dot = float( chemfiles::dot( vec, dir ) );
 				dot		  = dot < 0 ? -dot : dot;
 
 				if ( dot > cutoff )

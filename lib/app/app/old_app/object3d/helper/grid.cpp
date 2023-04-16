@@ -15,9 +15,9 @@ namespace VTX::Object3D::Helper
 	Vec3i Grid::gridPosition( const Vec3f & p_worldPosition ) const
 	{
 		VTX::Vec3i gridPos;
-		gridPos.x = std::floor( ( p_worldPosition.x - worldOrigin.x ) / cellSize.x );
-		gridPos.y = std::floor( ( p_worldPosition.y - worldOrigin.y ) / cellSize.y );
-		gridPos.z = std::floor( ( p_worldPosition.z - worldOrigin.z ) / cellSize.z );
+		gridPos.x = uint( std::floor( ( p_worldPosition.x - worldOrigin.x ) / cellSize.x ) );
+		gridPos.y = uint( std::floor( ( p_worldPosition.y - worldOrigin.y ) / cellSize.y ) );
+		gridPos.z = uint( std::floor( ( p_worldPosition.z - worldOrigin.z ) / cellSize.z ) );
 		return gridPos;
 	}
 
@@ -65,10 +65,9 @@ namespace VTX::Object3D::Helper
 
 	void Grid::_generate()
 	{
-		_program = VTX_PROGRAM_MANAGER().createProgram( "Voxel",
-														{ FilePath( "voxel/voxel.vert" ),
-														  FilePath( "voxel/voxel.geom" ),
-														  FilePath( "voxel/voxel.frag" ) } );
+		_program = VTX_PROGRAM_MANAGER().createProgram(
+			"Voxel",
+			{ FilePath( "voxel/voxel.vert" ), FilePath( "voxel/voxel.geom" ), FilePath( "voxel/voxel.frag" ) } );
 		assert( _program != nullptr );
 
 		_vbo.create();

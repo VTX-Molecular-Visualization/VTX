@@ -1,4 +1,3 @@
-#include "vtx_tool_include.hpp"
 #include <string>
 #include <ui/core/base_ui_application.hpp>
 #include <ui/environment.hpp>
@@ -11,6 +10,7 @@ using namespace VTX;
 
 #ifdef _WIN32
 // Force GPU (NVIDIA/AMD).
+#include <windows.h>
 extern "C"
 {
 	__declspec( dllexport ) DWORD NvOptimusEnablement				 = 0x00000001;

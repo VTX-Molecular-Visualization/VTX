@@ -1,81 +1,56 @@
-message("Project library: VTX_TOOL")
+message("VTX_TOOL")
+cmake_minimum_required(VERSION 3.16)
+project(VTX_TOOL)
 
-# Create paths.
-set(VTX_TOOL_SOURCE_PATH "lib/tool/tool")
-
-# Libs URL and tags.
+# Git dependencies.
 set(GIT_URL_EIGEN https://gitlab.com/libeigen/eigen.git)
-set(GIT_TAG_EIGEN 3147391d946bb4b6c68edd901f2add6ac1f31f8c) #3.4.0
+set(GIT_TAG_EIGEN 3.4)
 
+# Get CMake helper functions.
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+include(qt_helper)
+
+# Fill FORMS and QT_RESOURCES file lists.
 configure_qt("tool")
-
-# Get all .hpp.
-file(GLOB_RECURSE HEADERS tool/*.hpp tool/*.h)
-foreach(SRC IN ITEMS ${HEADERS})
-    get_filename_component(SRC_PATH "${SRC}" PATH)
-    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${VTX_TOOL_SOURCE_PATH}" "${SRC_PATH}")
-    string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
-	# Create group to make visual studio filters.
-    source_group("Header${GROUP_PATH}" FILES "${SRC}")
-endforeach()
-
-# Get all sources.
-file(GLOB_RECURSE SOURCES tool/*.cpp)
-foreach(SRC IN ITEMS ${SOURCES})
-    get_filename_component(SRC_PATH "${SRC}" PATH)
-    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${VTX_TOOL_SOURCE_PATH}" "${SRC_PATH}")
-    string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
-	# Create group to make visual studio filters.
-    source_group("Source${GROUP_PATH}" FILES "${SRC}")
-endforeach()
-
-include(FetchContent)
-include(ExternalProject)
-
-# Eigen.
-ExternalProject_Add(
-    eigen
-    PREFIX ${CMAKE_SOURCE_DIR}/${PATH_EXTERNAL_PROJECT}/Eigen
-    GIT_REPOSITORY ${GIT_URL_EIGEN}
-	GIT_TAG ${GIT_TAG_EIGEN}
-	CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
-    )
-ExternalProject_Get_Property(eigen SOURCE_DIR)
-set(EIGEN_INCLUDE_DIR ${SOURCE_DIR}/)
-
-# Fill FORMS and QT_RESOURCES file lists
-find_qt_files()
-
-# Declare library
-add_library(${VTX_TOOL_LIB} STATIC ${HEADERS} ${SOURCES} ${FORMS} ${QT_RESOURCES})
 
 # Find required packages.
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Gui REQUIRED)
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
-
 if(MSVC)
 	find_package(Qt6QWindowsIntegrationPlugin PATHS ${Qt6Gui_DIR}) # Workaround
 endif()
 
-# Third parties.
-target_link_libraries(${VTX_TOOL_LIB} PRIVATE Qt6::Core)
-target_link_libraries(${VTX_TOOL_LIB} PRIVATE Qt6::Gui)
-target_link_libraries(${VTX_TOOL_LIB} PRIVATE Qt6::Widgets)
+# Get headers and sources.
+#file(GLOB_RECURSE HEADERS include/*.hpp)
+#file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE HEADERS tool/*.hpp)
+file(GLOB_RECURSE SOURCES tool/*.cpp)
+
+# Fetch third parties.
+include(FetchContent)
+FetchContent_Declare(eigen GIT_REPOSITORY ${GIT_URL_EIGEN} GIT_TAG ${GIT_TAG_EIGEN})
+FetchContent_MakeAvailable(eigen)
+
+# Fill FORMS and QT_RESOURCES file lists
+find_qt_files()
+
+# Declare library
+add_library(VTX_TOOL STATIC ${HEADERS} ${SOURCES} ${FORMS} ${QT_RESOURCES})
+#target_include_directories(VTX_TOOL PUBLIC include)
+target_include_directories(VTX_TOOL PUBLIC .)
+target_include_directories(VTX_TOOL PUBLIC tool)
+
+# Link VTX_UTIL.
+if(NOT TARGET VTX_UTIL)
+	add_subdirectory(../util lib/util)
+endif()
+target_link_libraries(VTX_TOOL PRIVATE VTX_UTIL)
+
+# Link third parties.
+target_link_libraries(VTX_TOOL PRIVATE Qt6::Core)
+target_link_libraries(VTX_TOOL PRIVATE Qt6::Gui)
+target_link_libraries(VTX_TOOL PRIVATE Qt6::Widgets)
 
 # Qt options
-apply_qt_options(${VTX_TOOL_LIB})
-
-target_include_directories(${VTX_TOOL_LIB} PUBLIC tool/)
-target_include_directories(${VTX_TOOL_LIB} PUBLIC .)
-target_include_directories(${VTX_TOOL_LIB} PUBLIC ${VTX_UTIL_INCLUDE_PATH})
-target_include_directories(${VTX_TOOL_LIB} PUBLIC ${VTX_APP_INCLUDE_PATH})
-target_include_directories(${VTX_TOOL_LIB} PUBLIC ${VTX_UI_INCLUDE_PATH})
-target_include_directories(${VTX_TOOL_LIB} PUBLIC ${EIGEN_INCLUDE_DIR})
-
-target_link_libraries(${VTX_TOOL_LIB} PUBLIC ${VTX_UTIL_LIB})
-target_link_libraries(${VTX_TOOL_LIB} PUBLIC ${VTX_APP_LIB})
-target_link_libraries(${VTX_TOOL_LIB} PUBLIC ${VTX_UI_LIB})
+apply_qt_options(VTX_TOOL)

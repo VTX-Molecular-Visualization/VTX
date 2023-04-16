@@ -4,11 +4,11 @@
 #include "old_app/io/writer/writer_chemfiles.hpp"
 #include "old_app/math/transform.hpp"
 #include "old_app/model/base_model.hpp"
-#include <util/math.hpp>
 #include <magic_enum.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <tuple>
+#include <util/math.hpp>
 
 namespace VTX
 {
@@ -42,7 +42,7 @@ namespace VTX
 			class RenderEffectPreset;
 		} // namespace Renderer
 
-	} // namespace Model
+	}	  // namespace Model
 
 	namespace Color
 	{

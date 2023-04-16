@@ -17,7 +17,7 @@ namespace VTX
 		void Export::enter( void * const p_arg )
 		{
 			_path		   = (Model::Path *)p_arg;
-			_directoryName = Util::Chrono::getTimestamp();
+			_directoryName = std::to_string( Util::Chrono::getTimestamp() );
 			_directoryName.erase( remove_if( _directoryName.begin(), _directoryName.end(), isspace ),
 								  _directoryName.end() );
 			// VTXApp::get().getSetting().backup();

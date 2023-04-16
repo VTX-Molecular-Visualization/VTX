@@ -1,11 +1,11 @@
-message("Project library: VTX_CORE")
+message("VTX_CORE")
+cmake_minimum_required(VERSION 3.16)
+project(VTX_CORE)
 
-file(GLOB_RECURSE HEADERS core/*.hpp)
-file(GLOB_RECURSE SOURCES core/*.cpp)
+# Get headers and sources.
+file(GLOB_RECURSE HEADERS include/*.hpp)
+file(GLOB_RECURSE SOURCES src/*.cpp)
 
+# Create library.
 add_library(VTX_CORE STATIC ${HEADERS} ${SOURCES})
-
-target_include_directories(VTX_CORE PRIVATE core/)
-target_include_directories(VTX_CORE PUBLIC .)
-
-target_link_libraries(VTX_CORE PRIVATE VTX_UTIL)
+target_include_directories(VTX_CORE PRIVATE include)

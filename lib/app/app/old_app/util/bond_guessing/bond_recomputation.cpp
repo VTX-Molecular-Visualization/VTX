@@ -311,7 +311,7 @@ namespace VTX::Util::BondGuessing
 				{
 					const size_t			indexAtom1	= atomsToCheck[ cellIndex ][ i ];
 					const chemfiles::Atom & atom1		= frame.topology()[ indexAtom1 ];
-					const int				symbolAtom1 = atom1.atomic_number().value_or( 0 );
+					const int				symbolAtom1 = int( atom1.atomic_number().value_or( 0 ) );
 
 					for ( size_t j = 0; j < atomNumInCell; j++ )
 					{
@@ -319,7 +319,7 @@ namespace VTX::Util::BondGuessing
 
 						// TODO : Change with frame.sqrDistance when it will be added in chemfiles
 						const float interAtomicDist
-							= ( frame.positions()[ indexAtom2 ] - frame.positions()[ indexAtom1 ] ).sqrNorm();
+							= float( ( frame.positions()[ indexAtom2 ] - frame.positions()[ indexAtom1 ] ).sqrNorm() );
 						// float interAtomicDist = frame.distance( indexAtom1, indexAtom2 );
 						// interAtomicDist *= interAtomicDist;
 
@@ -330,7 +330,7 @@ namespace VTX::Util::BondGuessing
 						}
 
 						const chemfiles::Atom & atom2		= frame.topology()[ indexAtom2 ];
-						const int				symbolAtom2 = atom2.atomic_number().value_or( 0 );
+						const int				symbolAtom2 = int( atom2.atomic_number().value_or( 0 ) );
 
 						const float atom1Radius = Model::Atom::SYMBOL_VDW_RADIUS[ symbolAtom1 ];
 						const float atom2Radius = Model::Atom::SYMBOL_VDW_RADIUS[ symbolAtom2 ];
