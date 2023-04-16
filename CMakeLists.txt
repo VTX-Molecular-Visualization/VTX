@@ -5,6 +5,9 @@ project(VTX)
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*.hpp)
 file(GLOB_RECURSE SOURCES src/*.cpp)
+if(MSVC)
+	file(GLOB_RECURSE RESOURCES asset/windows_resources/*.rc)
+endif()
 
 # Declare executable.
 add_executable(VTX ${HEADERS} ${SOURCES} ${RESOURCES})
