@@ -7,7 +7,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(qt_helper)
 
 # Fill FORMS and QT_RESOURCES file lists.
-configure_qt("ui")
+configure_qt("src")
 
 # Find required packages.
 find_package(Qt6 COMPONENTS Core REQUIRED)
@@ -25,19 +25,15 @@ if(MSVC)
 endif()
 
 # Get headers and sources.
-#file(GLOB_RECURSE HEADERS include/*.hpp)
-#file(GLOB_RECURSE SOURCES src/*.cpp)
-file(GLOB_RECURSE HEADERS ui/*.hpp)
-file(GLOB_RECURSE SOURCES ui/*.cpp)
+file(GLOB_RECURSE HEADERS include/*.hpp)
+file(GLOB_RECURSE SOURCES src/*.cpp)
 
 # Fill FORMS and QT_RESOURCES file lists.
 find_qt_files()
 
 # Declare library.
 add_library(VTX_UI STATIC ${HEADERS} ${SOURCES} ${FORMS} ${QT_RESOURCES})
-#target_include_directories(VTX_UI PUBLIC include)
-target_include_directories(VTX_UI PUBLIC .)
-target_include_directories(VTX_UI PUBLIC ui)
+target_include_directories(VTX_UI PUBLIC include)
 
 # Link VTX_UTIL.
 if(NOT TARGET VTX_UTIL)
