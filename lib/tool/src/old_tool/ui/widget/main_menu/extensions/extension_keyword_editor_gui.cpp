@@ -1,4 +1,4 @@
-#include "old_tool/ui/widget/main_menu/extensions/extension_keyword_editor_gui.hpp"
+#include "tool/old_tool/ui/widget/main_menu/extensions/extension_keyword_editor_gui.hpp"
 
 namespace VTX
 {

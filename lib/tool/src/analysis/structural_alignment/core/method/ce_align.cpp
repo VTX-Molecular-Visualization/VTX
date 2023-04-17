@@ -1,5 +1,5 @@
-#include "analysis/structural_alignment/core/method/ce_align.hpp"
-#include "analysis/rmsd/core/rmsd.hpp"
+#include "tool/analysis/structural_alignment/core/method/ce_align.hpp"
+#include "tool/analysis/rmsd/core/rmsd.hpp"
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/residue.hpp>
 #include <cmath>

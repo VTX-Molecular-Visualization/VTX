@@ -1,5 +1,5 @@
-#include "analysis/rmsd/ui/qt/rmsd_ui.hpp"
-#include "analysis/rmsd/action.hpp"
+#include "tool/analysis/rmsd/ui/qt/rmsd_ui.hpp"
+#include "tool/analysis/rmsd/action.hpp"
 // #include "ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp"
 #include <app/old_app/action/action_manager.hpp>
 #include <app/old_app/event/event.hpp>

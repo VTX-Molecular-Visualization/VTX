@@ -1,4 +1,4 @@
-#include "old_tool/ui/widget/analysis/structural_alignment/structural_alignment_model_list_widget.hpp"
+#include "tool/old_tool/ui/widget/analysis/structural_alignment/structural_alignment_model_list_widget.hpp"
 #include <QRadioButton>
 #include <QVBoxLayout>
 #include <QVariant>

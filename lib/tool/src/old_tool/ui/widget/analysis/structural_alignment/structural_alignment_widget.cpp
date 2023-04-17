@@ -1,7 +1,7 @@
-#include "old_tool/ui/widget/analysis/structural_alignment/structural_alignment_widget.hpp"
-#include "old_tool/action/analysis.hpp"
-#include "old_tool/analysis/rmsd.hpp"
-#include "old_tool/ui/widget/analysis/structural_alignment/structural_alignment_model_list_widget.hpp"
+#include "tool/old_tool/ui/widget/analysis/structural_alignment/structural_alignment_widget.hpp"
+#include "tool/old_tool/action/analysis.hpp"
+#include "tool/old_tool/analysis/rmsd.hpp"
+#include "tool/old_tool/ui/widget/analysis/structural_alignment/structural_alignment_model_list_widget.hpp"
 #include <app/old_app/action/action_manager.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/selection.hpp>

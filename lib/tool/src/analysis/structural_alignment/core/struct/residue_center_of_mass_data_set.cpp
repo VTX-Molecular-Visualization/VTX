@@ -1,4 +1,4 @@
-#include "analysis/structural_alignment/core/struct/residue_center_of_mass_data_set.hpp"
+#include "tool/analysis/structural_alignment/core/struct/residue_center_of_mass_data_set.hpp"
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/residue.hpp>
 

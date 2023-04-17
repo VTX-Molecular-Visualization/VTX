@@ -1,8 +1,8 @@
-#include "old_tool/io/serializer.hpp"
-#include "old_tool/model/measurement/angle.hpp"
-#include "old_tool/model/measurement/dihedral_angle.hpp"
-#include "old_tool/model/measurement/distance.hpp"
-#include "old_tool/model/measurement/distance_to_cycle.hpp"
+#include "tool/old_tool/io/serializer.hpp"
+#include "tool/old_tool/model/measurement/angle.hpp"
+#include "tool/old_tool/model/measurement/dihedral_angle.hpp"
+#include "tool/old_tool/model/measurement/distance.hpp"
+#include "tool/old_tool/model/measurement/distance_to_cycle.hpp"
 #include <app/old_app/model/label.hpp>
 
 namespace VTX::IO
