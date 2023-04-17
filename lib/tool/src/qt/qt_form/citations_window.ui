@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogCitations</class>
+ <widget class="QDialog" name="DialogCitations">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>405</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Citations</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="labelCitations">
+       <property name="text">
+        <string>If you use this tool in your project please cite the following papers:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTextBrowser" name="textBrowserCitations">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);
+</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonCopyCitations">
+       <property name="toolTip">
+        <string>Copy citations to clipbord</string>
+       </property>
+       <property name="text">
+        <string>Copy</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButtonCopyCitations</sender>
+   <signal>clicked()</signal>
+   <receiver>DialogCitations</receiver>
+   <slot>onCopyCitationsToClipboardPressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>197</x>
+     <y>282</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>394</x>
+     <y>224</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onCopyCitationsToClipboardPressed()</slot>
+ </slots>
+</ui>
