@@ -20,16 +20,12 @@ FetchContent_Declare(magic_enum GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM} GIT_TAG ${G
 FetchContent_MakeAvailable(magic_enum)
 
 # Get headers and sources.
-#file(GLOB_RECURSE HEADERS include/*.hpp)
-#file(GLOB_RECURSE SOURCES src/*.cpp)
-file(GLOB_RECURSE HEADERS app/*.hpp)
-file(GLOB_RECURSE SOURCES app/*.cpp)
+file(GLOB_RECURSE HEADERS include/*.hpp)
+file(GLOB_RECURSE SOURCES src/*.cpp)
 
 # Create library.
 add_library(VTX_APP STATIC ${HEADERS} ${SOURCES})
-#arget_include_directories(VTX_APP PUBLIC include)
-target_include_directories(VTX_APP PUBLIC .)
-target_include_directories(VTX_APP PUBLIC app)
+target_include_directories(VTX_APP PUBLIC include)
 
 # Link VTX_UTIL.
 if(NOT TARGET VTX_UTIL)
