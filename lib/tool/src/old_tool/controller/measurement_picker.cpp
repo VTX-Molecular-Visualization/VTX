@@ -1,6 +1,6 @@
-#include "old_tool/controller/measurement_picker.hpp"
-#include "old_tool/action/measurement.hpp"
-#include "old_tool/model/measurement/measure_in_progress.hpp"
+#include "tool/old_tool/controller/measurement_picker.hpp"
+#include "tool/old_tool/action/measurement.hpp"
+#include "tool/old_tool/model/measurement/measure_in_progress.hpp"
 #include <QPoint>
 #include <app/old_app/action/action_manager.hpp>
 #include <app/old_app/action/selection.hpp>

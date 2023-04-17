@@ -1,4 +1,4 @@
-#include "old_tool/extensions/keyword_editor/extension_keyword_editor.hpp"
+#include "tool/old_tool/extensions/keyword_editor/extension_keyword_editor.hpp"
 #include <QRegularExpression>
 #include <QTextStream>
 #include <QVariant>

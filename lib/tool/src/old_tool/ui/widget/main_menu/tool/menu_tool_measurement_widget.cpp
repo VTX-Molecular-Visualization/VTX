@@ -1,6 +1,6 @@
-#include "old_tool/ui/widget/main_menu/tool/menu_tool_measurement_widget.hpp"
-#include "old_tool/action/measurement.hpp"
-#include "old_tool/controller/measurement_picker.hpp"
+#include "tool/old_tool/ui/widget/main_menu/tool/menu_tool_measurement_widget.hpp"
+#include "tool/old_tool/action/measurement.hpp"
+#include "tool/old_tool/controller/measurement_picker.hpp"
 #include <app/old_app/action/action_manager.hpp>
 #include <app/old_app/action/main.hpp>
 #include <app/old_app/id.hpp>

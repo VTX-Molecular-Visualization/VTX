@@ -1,4 +1,4 @@
-#include "old_tool/ui/widget/inspector/multiple_measurement_distance_to_cycle_inspector_widget.hpp"
+#include "tool/old_tool/ui/widget/inspector/multiple_measurement_distance_to_cycle_inspector_widget.hpp"
 
 namespace VTX::UI::Widget::Inspector
 {

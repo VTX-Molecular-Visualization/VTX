@@ -1,5 +1,5 @@
-#include "old_tool/ui/widget/analysis/structural_alignment/align_parameters_widget.hpp"
-#include "old_tool/analysis/structural_alignment_method/ce_align.hpp"
+#include "tool/old_tool/ui/widget/analysis/structural_alignment/align_parameters_widget.hpp"
+#include "tool/old_tool/analysis/structural_alignment_method/ce_align.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <ui/old_ui/style.hpp>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RenderWidget</class>
+ <widget class="QDockWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>256</width>
+    <height>214</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Render</string>
+  </property>
+  <widget class="VTX::UI::Widget::OpenGLWidget" name="openGLWidget"/>
+ </widget>
+  <customwidgets>
+    <customwidget>
+      <class>VTX::UI::Widget::OpenGLWidget</class>
+      <extends>QOpenGLWidget</extends>
+      <header>ui/widget/opengl_widget.hpp</header>
+    </customwidget>
+  </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

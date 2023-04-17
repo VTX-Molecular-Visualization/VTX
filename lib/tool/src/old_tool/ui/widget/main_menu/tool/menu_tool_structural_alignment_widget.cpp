@@ -1,6 +1,6 @@
-#include "old_tool/ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp"
-#include "old_tool/action/analysis.hpp"
-#include "old_tool/util/analysis.hpp"
+#include "tool/old_tool/ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp"
+#include "tool/old_tool/action/analysis.hpp"
+#include "tool/old_tool/util/analysis.hpp"
 #include <QAction>
 #include <QMenu>
 #include <app/old_app/action/action_manager.hpp>

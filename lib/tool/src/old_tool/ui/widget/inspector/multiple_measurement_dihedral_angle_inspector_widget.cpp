@@ -1,6 +1,6 @@
-#include "old_tool/ui/widget/inspector/multiple_measurement_dihedral_angle_inspector_widget.hpp"
-#include "old_tool/model/measurement/distance.hpp"
-#include "old_tool/util/measurement.hpp"
+#include "tool/old_tool/ui/widget/inspector/multiple_measurement_dihedral_angle_inspector_widget.hpp"
+#include "tool/old_tool/model/measurement/distance.hpp"
+#include "tool/old_tool/util/measurement.hpp"
 #include <app/old_app/action/action_manager.hpp>
 #include <app/old_app/action/atom.hpp>
 #include <app/old_app/action/label.hpp>

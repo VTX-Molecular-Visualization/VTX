@@ -1,7 +1,7 @@
-#include "old_tool/util/measurement.hpp"
-#include "old_tool/model/measurement/angle.hpp"
-#include "old_tool/model/measurement/dihedral_angle.hpp"
-#include "old_tool/model/measurement/distance.hpp"
+#include "tool/old_tool/util/measurement.hpp"
+#include "tool/old_tool/model/measurement/angle.hpp"
+#include "tool/old_tool/model/measurement/dihedral_angle.hpp"
+#include "tool/old_tool/model/measurement/distance.hpp"
 #include <app/old_app/model/molecule.hpp>
 #include <string>
 #include <ui/old_ui/style.hpp>
