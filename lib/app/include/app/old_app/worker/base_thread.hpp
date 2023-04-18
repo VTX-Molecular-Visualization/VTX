@@ -19,6 +19,12 @@ namespace VTX
 			BaseThread()		  = default;
 			virtual ~BaseThread() = default;
 
+			void start()
+			{
+				// QThread::start();
+				_run();
+			}
+
 			void run() {}
 			// void run() override
 			//{

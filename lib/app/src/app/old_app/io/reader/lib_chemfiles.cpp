@@ -739,83 +739,83 @@ namespace VTX::IO::Reader
 	{
 		std::string extension = p_path.extension().string();
 		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );
-		if ( extension == "nc" )
+		if ( extension == ".nc" )
 		{
 			return "Amber NetCDF";
 		}
-		else if ( extension == "cif" )
+		else if ( extension == ".cif" )
 		{
 			return "mmCIF"; // Workaround.
 		}
-		else if ( extension == "cml" )
+		else if ( extension == ".cml" )
 		{
 			return "CML";
 		}
-		else if ( extension == "cssr" )
+		else if ( extension == ".cssr" )
 		{
 			return "CSSR";
 		}
-		else if ( extension == "dcd" )
+		else if ( extension == ".dcd" )
 		{
 			return "DCD";
 		}
-		else if ( extension == "gro" )
+		else if ( extension == ".gro" )
 		{
 			return "GRO";
 		}
-		else if ( extension == "lammpstrj" )
+		else if ( extension == ".lammpstrj" )
 		{
 			return "LAMMPS";
 		}
-		else if ( extension == "mmcif" )
+		else if ( extension == ".mmcif" )
 		{
 			return "mmCIF";
 		}
-		else if ( extension == "mmtf" )
+		else if ( extension == ".mmtf" )
 		{
 			return "MMTF";
 		}
-		else if ( extension == "mol2" )
+		else if ( extension == ".mol2" )
 		{
 			return "MOL2";
 		}
-		else if ( extension == "molden" )
+		else if ( extension == ".molden" )
 		{
 			return "Molden";
 		}
-		else if ( extension == "pdb" )
+		else if ( extension == ".pdb" )
 		{
 			return "PDB";
 		}
-		else if ( extension == "sdf" )
+		else if ( extension == ".sdf" )
 		{
 			return "SDF";
 		}
-		else if ( extension == "smi" )
+		else if ( extension == ".smi" )
 		{
 			return "SMI";
 		}
-		else if ( extension == "arc" )
+		else if ( extension == ".arc" )
 		{
 			return "Tinker";
 		}
-		else if ( extension == "tng" )
+		else if ( extension == ".tng" )
 		{
 			return "TNG";
 		}
-		else if ( extension == "trj" )
+		else if ( extension == ".trj" )
 		{
 			return "TRJ";
 		}
-		else if ( extension == "trr" )
+		else if ( extension == ".trr" )
 		{
 			return "TRR";
 		}
-		else if ( extension == "xtc" )
+		else if ( extension == ".xtc" )
 		{
 			return "XTC";
 		}
-		else if ( extension == "xyz" )
+		else if ( extension == ".xyz" )
 		{
 			return "XYZ";
 		}
