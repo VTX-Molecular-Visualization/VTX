@@ -11,9 +11,9 @@ set(GIT_TAG_SPDLOG v1.11.0)
 # Fetch third parties.
 include(FetchContent)
 FetchContent_Declare(glm GIT_REPOSITORY ${GIT_URL_GLM} GIT_TAG ${GIT_TAG_GLM})
-FetchContent_MakeAvailable(glm)
 FetchContent_Declare(spdlog GIT_REPOSITORY ${GIT_URL_SPDLOG} GIT_TAG ${GIT_TAG_SPDLOG})
-FetchContent_MakeAvailable(spdlog)
+
+FetchContent_MakeAvailable(glm spdlog)
 
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*.hpp)
