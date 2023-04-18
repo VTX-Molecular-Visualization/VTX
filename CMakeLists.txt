@@ -18,8 +18,8 @@ add_subdirectory(lib/util)
 target_link_libraries(VTX PRIVATE VTX_UTIL)
 add_subdirectory(lib/ui)
 target_link_libraries(VTX PRIVATE VTX_UI)
-#add_subdirectory(lib/tool)
-#target_link_libraries(VTX PRIVATE VTX_TOOL)
+add_subdirectory(lib/tool)
+target_link_libraries(VTX PRIVATE VTX_TOOL)
 
 # TODO: move in corresponding lib.
 if(MSVC)

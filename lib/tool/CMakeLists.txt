@@ -4,7 +4,8 @@ project(VTX_TOOL)
 
 # Git dependencies.
 set(GIT_URL_EIGEN https://gitlab.com/libeigen/eigen.git)
-set(GIT_TAG_EIGEN 3.4)
+# set(GIT_TAG_EIGEN 3.4)
+set(GIT_TAG_EIGEN 3147391d946bb4b6c68edd901f2add6ac1f31f8c) #3.4.0
 
 # Get CMake helper functions.
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
@@ -26,10 +27,26 @@ file(GLOB_RECURSE HEADERS include/*.hpp)
 file(GLOB_RECURSE SOURCES src/*.cpp)
 
 # Fetch third parties.
-include(FetchContent)
+# Eigen.
+
+# This part doesn't works because of a target name conflict between Eigen and chemfiles ("uninstall" target in each lib)
+#include(FetchContent)
 #FetchContent_Declare(eigen GIT_REPOSITORY ${GIT_URL_EIGEN} GIT_TAG ${GIT_TAG_EIGEN})
 #FetchContent_MakeAvailable(eigen)
 
+# TODO Find a better way to include Eigen
+ExternalProject_Add(
+    eigen
+    PREFIX "${CMAKE_SOURCE_DIR}/external_project/Eigen"
+    GIT_REPOSITORY ${GIT_URL_EIGEN}
+	GIT_TAG ${GIT_TAG_EIGEN}
+	CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+    )
+ExternalProject_Get_Property(eigen SOURCE_DIR)
+set(EIGEN_INCLUDE_DIR ${SOURCE_DIR}/)
 
 # Fill FORMS and QT_RESOURCES file lists
 find_qt_files()
@@ -48,13 +65,13 @@ target_link_libraries(VTX_TOOL PRIVATE VTX_UTIL)
 if(NOT TARGET VTX_APP)
 	add_subdirectory(../app lib/app)
 endif()
-target_link_libraries(VTX_TOOL PRIVATE VTX_APP)
+target_link_libraries(VTX_TOOL PUBLIC VTX_APP)
 
 # Link VTX_UI.
 if(NOT TARGET VTX_UI)
 	add_subdirectory(../ui lib/ui)
 endif()
-target_link_libraries(VTX_TOOL PRIVATE VTX_UI)
+target_link_libraries(VTX_TOOL PUBLIC VTX_UI)
 
 # Link third parties.
 target_link_libraries(VTX_TOOL PRIVATE Qt6::Core)
@@ -62,6 +79,7 @@ target_link_libraries(VTX_TOOL PRIVATE Qt6::Gui)
 target_link_libraries(VTX_TOOL PRIVATE Qt6::Widgets)
 
 #target_link_libraries(VTX_TOOL PUBLIC eigen)
+target_include_directories(VTX_TOOL PUBLIC ${EIGEN_INCLUDE_DIR})
 
 # Qt options
 apply_qt_options(VTX_TOOL)
