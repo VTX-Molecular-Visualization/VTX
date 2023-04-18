@@ -66,7 +66,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 			= StructuralAlignment::AlignmentResult( &p_staticMolecule, &p_mobileMolecule );
 
 		result.transformationMatrix = bestPathResult.transformationMatrix;
-		result.alignedResiduesRMSD	= atomRmsdOnPath;
+		result.alignedResiduesRMSD	= float( atomRmsdOnPath );
 		result.alignedResidueCount	= bestPathResult.positionsCount;
 
 		return result;
@@ -148,7 +148,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 
 		const int windowSize = p_parameters.windowSize;
 
-		const int sumSize = ( windowSize - 1.f ) * ( windowSize - 2.f ) / 2.f;
+		const int sumSize = int( ( windowSize - 1.f ) * ( windowSize - 2.f ) / 2.f );
 
 		const size_t windSizeMat1 = p_distanceMatrix1.getRowCount() - windowSize;
 		const size_t windSizeMat2 = p_distanceMatrix2.getRowCount() - windowSize;
@@ -643,7 +643,8 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 			}
 		}
 
-		return Analysis::RMSD::computeRMSD( residuePositionsPath1, residuePositionsPath2, MAT4F_ID, p_transfoMatrix );
+		return float(
+			Analysis::RMSD::computeRMSD( residuePositionsPath1, residuePositionsPath2, MAT4F_ID, p_transfoMatrix ) );
 	}
 
 	// Given two sets of 3D points, find the rotation + translation + scale
@@ -702,8 +703,8 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 			in_ctr += in.col( col );
 			out_ctr += out.col( col );
 		}
-		in_ctr /= in.cols();
-		out_ctr /= out.cols();
+		in_ctr	= Eigen::Vector3d( in_ctr / in.cols() );
+		out_ctr = Eigen::Vector3d( out_ctr / out.cols() );
 		for ( int col = 0; col < in.cols(); col++ )
 		{
 			in.col( col ) -= in_ctr;
