@@ -1,40 +1,9 @@
-#ifndef __VTX_BASE_RENDERER__
-#define __VTX_BASE_RENDERER__
-
-#include "generic/base_opengl.hpp"
-#include "gl/framebuffer.hpp"
-#include "model/base_model.hpp"
-#include "object3d/scene.hpp"
-#include <vector>
+#ifndef __VTX_RENDERER_BASE_RENDERER__
+#define __VTX_RENDERER_BASE_RENDERER__
 
 namespace VTX::Renderer
 {
-	enum class MODE : int
-	{
-		GL,
-		RT_CPU,
-		COUNT
-	};
-
-	enum class SHADING : int
-	{
-		DIFFUSE = 0,
-		GLOSSY,
-		TOON,
-		FLAT_COLOR,
-		COUNT
-	};
-
-	enum class RENDER_SETTING : int
-	{
-		SHADING = 0,
-		SSAO,
-		OUTLINE,
-		FOG,
-		AA
-	};
-
-	class BaseRenderer : public Generic::BaseOpenGL
+	class BaseRenderer
 	{
 	  public:
 		BaseRenderer()			= default;
@@ -56,10 +25,12 @@ namespace VTX::Renderer
 
 		virtual void updateRenderSetting( const RENDER_SETTING ) {}
 
+		/*
 		virtual const Vec2i getPickedIds( const uint, const uint ) const
 		{
 			return Vec2i( Model::ID_UNKNOWN, Model::ID_UNKNOWN );
 		}
+		*/
 
 	  protected:
 		uint			_width			   = 0;

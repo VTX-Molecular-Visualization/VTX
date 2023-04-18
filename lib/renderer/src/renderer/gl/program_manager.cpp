@@ -1,8 +1,5 @@
-#include "program_manager.hpp"
-#include "define.hpp"
-#include "exception.hpp"
-#include "tool/logger.hpp"
-#include "util/filesystem.hpp"
+#include "renderer/gl/program_manager.hpp"
+#include <util/logger.hpp>
 #include <vector>
 
 namespace VTX::Renderer::GL
@@ -15,9 +12,9 @@ namespace VTX::Renderer::GL
 							 { "tesc", SHADER_TYPE::TESS_CONTROL },
 							 { "tese", SHADER_TYPE::TESS_EVALUATION } } );
 
-	SHADER_TYPE ProgramManager::getShaderType( const IO::FilePath & p_name )
+	SHADER_TYPE ProgramManager::getShaderType( const FilePath & p_name )
 	{
-		std::string extension = p_name.extension();
+		std::string extension = p_name.extension().string();
 		if ( ProgramManager::EXTENSIONS.find( extension ) != ProgramManager::EXTENSIONS.end() )
 		{
 			return ProgramManager::EXTENSIONS.at( extension );
@@ -33,7 +30,7 @@ namespace VTX::Renderer::GL
 	{
 		for ( const PairStringToGLuint & pair : _shaders )
 		{
-			_gl->glDeleteShader( pair.second );
+			glDeleteShader( pair.second );
 		}
 
 		for ( const PairStringToProgram & pair : _programs )
@@ -45,10 +42,10 @@ namespace VTX::Renderer::GL
 		_programs.clear();
 	}
 
-	Program * const ProgramManager::createProgram( const std::string &				 p_name,
-												   const std::vector<IO::FilePath> & p_shaders,
-												   const std::string &				 p_toInject,
-												   const std::string &				 p_suffix )
+	Program * const ProgramManager::createProgram( const std::string &			 p_name,
+												   const std::vector<FilePath> & p_shaders,
+												   const std::string &			 p_toInject,
+												   const std::string &			 p_suffix )
 	{
 		const std::string name = p_name + p_suffix;
 		if ( _programs.find( name ) == _programs.end() )
@@ -57,7 +54,7 @@ namespace VTX::Renderer::GL
 			Program & program = *_programs[ name ];
 			program.create( name );
 
-			for ( const IO::FilePath & shader : p_shaders )
+			for ( const FilePath & shader : p_shaders )
 			{
 				GLuint id = _createShader( shader, p_toInject, p_suffix );
 				if ( id != GL_INVALID_INDEX )
@@ -96,11 +93,11 @@ namespace VTX::Renderer::GL
 		return nullptr;
 	}
 
-	GLuint ProgramManager::_createShader( const IO::FilePath & p_path,
-										  const std::string &  p_toInject,
-										  const std::string &  p_suffix )
+	GLuint ProgramManager::_createShader( const FilePath &	  p_path,
+										  const std::string & p_toInject,
+										  const std::string & p_suffix )
 	{
-		const std::string name = p_path.filename() + p_suffix;
+		const std::string name = p_path.filename().string() + p_suffix;
 		VTX_DEBUG( "Creating shader: " + name );
 
 		const SHADER_TYPE type = getShaderType( p_path );
@@ -113,12 +110,12 @@ namespace VTX::Renderer::GL
 		GLuint shaderId = getShader( name );
 		if ( shaderId == GL_INVALID_INDEX )
 		{
-			shaderId		  = _gl->glCreateShader( (int)type );
-			IO::FilePath path = Util::Filesystem::getShadersPath( p_path );
-			std::string	 src  = Util::Filesystem::readPath( path );
+			shaderId		 = glCreateShader( (int)type );
+			FilePath	path = Util::Filesystem::getShadersPath( p_path );
+			std::string src	 = Util::Filesystem::readPath( path );
 			if ( src.empty() )
 			{
-				_gl->glDeleteShader( shaderId );
+				glDeleteShader( shaderId );
 				return GL_INVALID_INDEX;
 			}
 
@@ -145,24 +142,24 @@ namespace VTX::Renderer::GL
 				size_t		startPosPath		= includeRelativePath.find( '"' );
 				size_t		endPosPath			= includeRelativePath.find( '"', startPosPath + 1 );
 				includeRelativePath = includeRelativePath.substr( startPosPath + 1, endPosPath - startPosPath - 1 );
-				IO::FilePath includeAbsolutePath = path.dirpath();
+				FilePath includeAbsolutePath = path.dirpath();
 				includeAbsolutePath /= includeRelativePath;
 				const std::string srcInclude = Util::Filesystem::readPath( includeAbsolutePath );
 				src.replace( startPosInclude, endPosInclude - startPosInclude, srcInclude );
 			}
 
 			const GLchar * shaderCode = src.c_str();
-			_gl->glShaderSource( shaderId, 1, &shaderCode, 0 );
-			_gl->glCompileShader( shaderId );
+			glShaderSource( shaderId, 1, &shaderCode, 0 );
+			glCompileShader( shaderId );
 			GLint compiled;
-			_gl->glGetShaderiv( shaderId, GL_COMPILE_STATUS, &compiled );
+			glGetShaderiv( shaderId, GL_COMPILE_STATUS, &compiled );
 			if ( compiled == GL_FALSE )
 			{
 				std::string error = "Error compiling shader: ";
 				error += name;
 				error += "\n";
 				error += _getShaderErrors( shaderId );
-				_gl->glDeleteShader( shaderId );
+				glDeleteShader( shaderId );
 				VTX_ERROR( error );
 				return GL_INVALID_INDEX;
 			}
@@ -186,13 +183,13 @@ namespace VTX::Renderer::GL
 	std::string ProgramManager::_getShaderErrors( const GLuint p_shader )
 	{
 		GLint length;
-		_gl->glGetShaderiv( p_shader, GL_INFO_LOG_LENGTH, &length );
+		glGetShaderiv( p_shader, GL_INFO_LOG_LENGTH, &length );
 		if ( length == 0 )
 		{
 			return "";
 		}
 		std::vector<GLchar> log( length );
-		_gl->glGetShaderInfoLog( p_shader, length, &length, &log[ 0 ] );
+		glGetShaderInfoLog( p_shader, length, &length, &log[ 0 ] );
 		return std::string( log.begin(), log.end() );
 	}
 
@@ -207,7 +204,7 @@ namespace VTX::Renderer::GL
 		// Delete shaders.
 		for ( const PairStringToGLuint & pair : _shaders )
 		{
-			_gl->glDeleteShader( pair.second );
+			glDeleteShader( pair.second );
 		}
 
 		_shaders.clear();
@@ -217,9 +214,9 @@ namespace VTX::Renderer::GL
 		{
 			Program * const program = pair.second;
 			// Don't need to delete program.
-			//_gl->glDeleteProgram( program->getId() );
-			// program->setId( _gl->glCreateProgram() );
-			for ( const IO::FilePath & shader : program->getShaderPaths() )
+			// glDeleteProgram( program->getId() );
+			// program->setId( glCreateProgram() );
+			for ( const FilePath & shader : program->getShaderPaths() )
 			{
 				GLuint id = _createShader( shader, program->getToInject() );
 				if ( id != GL_INVALID_INDEX )

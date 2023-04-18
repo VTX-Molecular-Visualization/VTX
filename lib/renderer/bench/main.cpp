@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include <renderer/gl/include_opengl.hpp>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -47,7 +47,7 @@ int main( int argc, char ** argv )
 
 	while ( !glfwWindowShouldClose( window ) )
 	{
-		glClear( GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 		glfwSwapBuffers( window );
 		glfwPollEvents();
 	}

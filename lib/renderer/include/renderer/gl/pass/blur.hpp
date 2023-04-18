@@ -1,5 +1,5 @@
-#ifndef __VTX_PASS_BLUR__
-#define __VTX_PASS_BLUR__
+#ifndef __VTX_RENDERER_GL_PASS_BLUR__
+#define __VTX_RENDERER_GL_PASS_BLUR__
 
 #include "base_pass.hpp"
 #include "renderer/gl/framebuffer.hpp"
@@ -13,9 +13,9 @@ namespace VTX::Renderer::GL::Pass
 		Blur()			= default;
 		virtual ~Blur() = default;
 
-		void init( const uint, const uint, const GL & ) override;
-		void resize( const uint, const uint, const GL & ) override;
-		void render( const Object3D::Scene &, const GL & ) override;
+		void init() override;
+		void resize() override;
+		void render() override;
 
 		inline const Texture2D & getTexture() const { return _texture; }
 

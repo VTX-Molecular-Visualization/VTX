@@ -1,8 +1,6 @@
-#ifndef __VTX_GL_PROGRAM_MANAGER__
-#define __VTX_GL_PROGRAM_MANAGER__
+#ifndef __VTX_RENDERER_GL_PROGRAM_MANAGER__
+#define __VTX_RENDERER_GL_PROGRAM_MANAGER__
 
-#include "define.hpp"
-#include "generic/base_opengl.hpp"
 #include "program.hpp"
 #include <map>
 #include <vector>
@@ -22,7 +20,7 @@ namespace VTX
 			INVALID			= GL_INVALID_VALUE
 		};
 
-		class ProgramManager : public Generic::BaseOpenGL
+		class ProgramManager
 		{
 		  public:
 			using MapStringToEnum	  = std::map<std::string, SHADER_TYPE>;
@@ -38,7 +36,7 @@ namespace VTX
 			}
 
 			Program * const createProgram( const std::string &,
-										   const std::vector<IO::FilePath> &,
+										   const std::vector<FilePath> &,
 										   const std::string & = "",
 										   const std::string & = "" );
 			void			deleteProgram( const std::string & );
@@ -49,7 +47,7 @@ namespace VTX
 			void dispose();
 
 			static const MapStringToEnum EXTENSIONS;
-			static SHADER_TYPE			 getShaderType( const IO::FilePath & );
+			static SHADER_TYPE			 getShaderType( const FilePath & );
 
 		  private:
 			MapStringToProgram _programs = MapStringToProgram();
@@ -58,7 +56,7 @@ namespace VTX
 			ProgramManager() = default;
 			~ProgramManager();
 
-			GLuint		_createShader( const IO::FilePath &, const std::string & = "", const std::string & = "" );
+			GLuint		_createShader( const FilePath &, const std::string & = "", const std::string & = "" );
 			std::string _getShaderErrors( const GLuint );
 		};
 	} // namespace Renderer::GL

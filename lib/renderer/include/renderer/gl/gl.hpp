@@ -26,6 +26,14 @@ namespace VTX::Renderer::GL
 		void updateRenderSetting( const RENDER_SETTING ) override;
 		void resize( const uint, const uint, const GLuint ) override;
 
+		inline void enableDepthClamp() const { glEnable(GL_DEPTH_CLAMP); }
+		inline void disableDepthClamp() const { glDisable(GL_DEPTH_CLAMP); }
+		inline void enableDepthTest() const { glEnable(GL_DEPTH_TEST); }
+		inline void disableDepthTest() const { glDisable(GL_DEPTH_TEST); }
+		inline void memoryBarrier(const GLbitfield p_barrier) const { _gl->glMemoryBarrier(p_barrier); }
+		inline void flush() const { glFlush(); }
+		inline void finish() const { glFinish(); }
+
 		inline const Pass::Geometric &		getPassGeometric() const { return *_passGeometric; }
 		inline const Pass::LinearizeDepth & getPassLinearizeDepth() const { return *_passLinearizeDepth; }
 		inline const Pass::SSAO &			getPassSSAO() const { return *_passSSAO; }
