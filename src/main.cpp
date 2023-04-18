@@ -1,3 +1,4 @@
+#include "vtx_tool_include.hpp"
 #include <string>
 #include <ui/core/base_ui_application.hpp>
 #include <ui/environment.hpp>
