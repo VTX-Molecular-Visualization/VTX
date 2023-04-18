@@ -2,7 +2,6 @@
 #define __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT__
 
 #include "struct/residue_center_of_mass_data_set.hpp"
-#include <Eigen/Geometry>
 #include <util/constants.hpp>
 #include <util/math.hpp>
 #include <util/types.hpp>
@@ -52,7 +51,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core
 
 			const Model::Molecule * const staticMolecule = nullptr;
 			const Model::Molecule * const mobileMolecule = nullptr;
-			float						  alignedResidueCount;
+			size_t						  alignedResidueCount;
 			float						  alignedResiduesRMSD  = -1.f;
 			Mat4f						  transformationMatrix = MAT4F_ID;
 		};

@@ -2,7 +2,7 @@
 #define __VTX_UI_WIDGET_JOBMANAGER__
 
 #include "tool/old_tool/ui/widget/custom_widget/custom_qdockwidget.hpp"
-#include "tool/qt/qt_form/ui_job_manager_window.h"
+#include "tool/qt_forms/ui_job_manager_window.h"
 
 namespace VTX
 {

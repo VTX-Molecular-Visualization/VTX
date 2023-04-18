@@ -13,11 +13,10 @@ set(GIT_TAG_MAGIC_ENUM v0.8.2)
 # Fetch third parties.
 include(FetchContent)
 FetchContent_Declare(chemfiles GIT_REPOSITORY ${GIT_URL_CHEMFILES} GIT_TAG ${GIT_TAG_CHEMFILES})
-FetchContent_MakeAvailable(chemfiles)
 FetchContent_Declare(nlohmann_json GIT_REPOSITORY ${GIT_URL_JSON} GIT_TAG ${GIT_TAG_JSON})
-FetchContent_MakeAvailable(nlohmann_json)
 FetchContent_Declare(magic_enum GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM} GIT_TAG ${GIT_TAG_MAGIC_ENUM})
-FetchContent_MakeAvailable(magic_enum)
+
+FetchContent_MakeAvailable(chemfiles nlohmann_json magic_enum)
 
 # Get headers and sources.
 file(GLOB_RECURSE HEADERS include/*.hpp)
