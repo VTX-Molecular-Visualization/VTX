@@ -2,7 +2,7 @@
 #define __VTX_UI_WIDGET_CLOUDMANAGER__
 
 #include "tool/old_tool/ui/widget/custom_widget/custom_qdockwidget.hpp"
-#include "tool/qt/qt_form/ui_cloud_connector_window.h"
+#include "tool/qt_forms/ui_cloud_connector_window.h"
 
 namespace VTX
 {

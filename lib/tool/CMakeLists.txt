@@ -11,8 +11,8 @@ set(GIT_TAG_EIGEN 3147391d946bb4b6c68edd901f2add6ac1f31f8c) #3.4.0
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(qt_helper)
 
-# Fill FORMS and QT_RESOURCES file lists.
-configure_qt("src")
+# Configure Qt
+configure_qt()
 
 # Find required packages.
 find_package(Qt6 COMPONENTS Core REQUIRED)
@@ -48,11 +48,12 @@ ExternalProject_Add(
 ExternalProject_Get_Property(eigen SOURCE_DIR)
 set(EIGEN_INCLUDE_DIR ${SOURCE_DIR}/)
 
-# Fill FORMS and QT_RESOURCES file lists
-find_qt_files()
+# Get QT forms and resources
+file(GLOB_RECURSE QT_FORMS asset/qt/forms/*.ui)
+file(GLOB_RECURSE QT_RESOURCES asset/qt/resources/*.qrc)
 
 # Declare library
-add_library(VTX_TOOL STATIC ${HEADERS} ${SOURCES} ${FORMS} ${QT_RESOURCES})
+add_library(VTX_TOOL STATIC ${HEADERS} ${SOURCES} ${QT_FORMS} ${QT_RESOURCES})
 target_include_directories(VTX_TOOL PUBLIC include)
 
 # Link VTX_UTIL.

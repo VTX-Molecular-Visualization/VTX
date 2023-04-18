@@ -3,7 +3,7 @@
 
 #include "tool/old_tool/extensions/keyword_editor/extension_keyword_editor.hpp"
 #include "tool/old_tool/ui/widget/custom_widget/custom_qdockwidget.hpp"
-#include "tool/qt/qt_form/ui_keyword_editor_main_window.h"
+#include "tool/qt_forms/ui_keyword_editor_main_window.h"
 
 namespace VTX
 {

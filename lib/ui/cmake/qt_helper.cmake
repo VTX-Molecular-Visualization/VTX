@@ -46,38 +46,16 @@ function(win_deploy_qt target)
     )
 endfunction()
 
-function (configure_qt src_folder)
+function (configure_qt)
 
 	set(CMAKE_AUTOMOC ON PARENT_SCOPE)
 	set(CMAKE_AUTORCC ON PARENT_SCOPE)
 	set(CMAKE_AUTOUIC ON PARENT_SCOPE)
-	set(CMAKE_AUTOUIC_SEARCH_PATHS "${src_folder}/qt/qt_form" PARENT_SCOPE)
+	set(CMAKE_AUTOUIC_SEARCH_PATHS "asset/qt/forms" PARENT_SCOPE)
 	#set(CMAKE_AUTOGEN_TARGETS_FOLDER "autogen")
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON PARENT_SCOPE)
 	set(CMAKE_INCLUDE_CURRENT_DIR ON PARENT_SCOPE)
 	#set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-	
-endfunction()
-
-# Fill FORMS and QT_RESOURCES file lists
-function (find_qt_files)
-
-	# Get all QT forms.
-	file(GLOB_RECURSE INTERNAL_FORMS *.ui)
-	set(FORMS ${INTERNAL_FORMS} PARENT_SCOPE)
-	foreach(SRC IN ITEMS ${INTERNAL_FORMS})
-		# Create group to make visual studio filters.
-		source_group("Forms" FILES "${SRC}")
-	endforeach()
-
-	# Get all QT Resources Files.
-	file(GLOB_RECURSE INTERNAL_QT_RESOURCES *.qrc)
-	set(QT_RESOURCES ${INTERNAL_QT_RESOURCES} PARENT_SCOPE)
-	
-	foreach(SRC IN ITEMS ${INTERNAL_QT_RESOURCES})
-		# Create group to make visual studio filters.
-		source_group("Resources" FILES "${SRC}")
-	endforeach()
 	
 endfunction()
 

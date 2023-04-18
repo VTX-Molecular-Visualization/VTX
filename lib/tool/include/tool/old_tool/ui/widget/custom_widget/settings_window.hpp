@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_SETTINGS_WINDOW_
 #define __VTX_UI_WIDGET_SETTINGS_WINDOW_
 
-#include "old_tool/qt/qt_form/ui_settings_dialog.h"
+#include "tool/qt_forms/ui_settings_dialog.h"
 #include <QDialog>
 #include <QWidget>
 

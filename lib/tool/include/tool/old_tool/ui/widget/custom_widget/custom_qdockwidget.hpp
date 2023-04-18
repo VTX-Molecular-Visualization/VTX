@@ -1,9 +1,9 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_QDOCK_WIDGET__
 #define __VTX_UI_WIDGET_CUSTOM_QDOCK_WIDGET__
 
-#include "tool/old_tool/qt/qt_form/ui_custom_qdock_widget.h"
 #include "tool/old_tool/ui/widget/custom_widget/citations_window.hpp"
 #include "tool/old_tool/ui/widget/custom_widget/settings_window.hpp"
+#include "tool/qt_forms/ui_custom_qdock_widget.h"
 #include <QDockWidget>
 #include <QFileDialog>
 #include <QSettings>
