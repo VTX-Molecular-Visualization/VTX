@@ -3,6 +3,7 @@
 #include "app/old_app/io/reader/serialized_object.hpp"
 #include "app/old_app/model/representation/representation_library.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
+#include <filesystem>
 #include <util/logger.hpp>
 
 namespace VTX::Worker
@@ -22,26 +23,33 @@ namespace VTX::Worker
 			Representation::RepresentationManager::get().clearAllRepresentations( false );
 		}
 
-		for ( const std::filesystem::directory_entry & file : std::filesystem::directory_iterator { _path } )
+		if ( std::filesystem::exists( _path ) )
 		{
-			Model::Representation::Representation * const representation
-				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
+			for ( const std::filesystem::directory_entry & file : std::filesystem::directory_iterator { _path } )
+			{
+				Model::Representation::Representation * const representation
+					= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
 
-			try
-			{
-				reader->readFile( file, *representation );
-				representation->setName( file.path().stem().string() );
-				_library.addRepresentation( representation, false );
+				try
+				{
+					reader->readFile( file, *representation );
+					representation->setName( file.path().stem().string() );
+					_library.addRepresentation( representation, false );
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR(
+						"Cannot load representation library {}: {}", file.path().string(), std::string( p_e.what() ) );
+					MVC::MvcManager::get().deleteModel( representation );
+				}
 			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR(
-					"Cannot load representation library {}: {}", file.path().string(), std::string( p_e.what() ) );
-				MVC::MvcManager::get().deleteModel( representation );
-			}
+
+			VTX_INFO( "Representation library loaded." );
 		}
-
-		VTX_INFO( "Representation library loaded." );
+		else
+		{
+			VTX_WARNING( "Can't find representation library folder at {}. Load Default.", _path.string() );
+		}
 
 		delete reader;
 

@@ -2,6 +2,7 @@
 #include "app/old_app/io/reader/serialized_object.hpp"
 #include "app/old_app/model/renderer/render_effect_preset.hpp"
 #include "app/old_app/model/renderer/render_effect_preset_library.hpp"
+#include <filesystem>
 #include <util/logger.hpp>
 
 namespace VTX::Worker
@@ -17,26 +18,33 @@ namespace VTX::Worker
 
 		_library.clear( false );
 
-		for ( const std::filesystem::directory_entry & file : std::filesystem::directory_iterator { _path } )
+		if ( std::filesystem::exists( _path ) )
 		{
-			Model::Renderer::RenderEffectPreset * const preset
-				= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
+			for ( const std::filesystem::directory_entry & file : std::filesystem::directory_iterator { _path } )
+			{
+				Model::Renderer::RenderEffectPreset * const preset
+					= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
 
-			try
-			{
-				reader->readFile( file, *preset );
-				preset->setName( file.path().stem().string() );
-				_library.addPreset( preset, true, _notify );
+				try
+				{
+					reader->readFile( file, *preset );
+					preset->setName( file.path().stem().string() );
+					_library.addPreset( preset, true, _notify );
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( "Cannot load render effect library " + file.path().string() + ": "
+							   + std::string( p_e.what() ) );
+					MVC::MvcManager::get().deleteModel( preset );
+				}
 			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( "Cannot load render effect library " + file.path().string() + ": "
-						   + std::string( p_e.what() ) );
-				MVC::MvcManager::get().deleteModel( preset );
-			}
+
+			VTX_INFO( "Render effect library loaded." );
 		}
-
-		VTX_INFO( "Render effect library loaded." );
+		else
+		{
+			VTX_WARNING( "Can't find render effect library folder at {}. Load Default.", _path.string() );
+		}
 
 		delete reader;
 
