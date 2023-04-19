@@ -2,8 +2,8 @@
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/tool/session/widget/dialog/download_molecule_dialog.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/main.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/main.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
 // #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/vtx_app.hpp>

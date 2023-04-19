@@ -3,9 +3,9 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/view/ui/widget/molecule_scene_view.hpp"
 #include "ui/qt/action/molecule.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/molecule.hpp>
-#include <app/old_app/action/visible.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/molecule.hpp>
+#include <app/action/visible.hpp>
 #include <app/old_app/model/representation/representation.hpp>
 #include <app/old_app/model/representation/representation_library.hpp>
 

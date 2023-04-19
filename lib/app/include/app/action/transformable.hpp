@@ -1,25 +1,25 @@
 #ifndef __VTX_ACTION_TRANSFORMABLE__
 #define __VTX_ACTION_TRANSFORMABLE__
 
-#include "base_action.hpp"
-#include "base_action_undonable.hpp"
-#include "app/old_app/math/transform.hpp"
-#include "app/old_app/model/molecule.hpp"
+#include "app/core/action/base_action.hpp"
+#include "app/core/action/base_action_undonable.hpp"
 #include "app/old_app/generic/base_auto_rotate.hpp"
 #include "app/old_app/generic/base_transformable.hpp"
+#include "app/old_app/math/transform.hpp"
+#include "app/old_app/model/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <unordered_set>
 
 namespace VTX::Action::Transformable
 {
-	class SetTranslation : public BaseActionUndonable
+	class SetTranslation : public Core::Action::BaseActionUndonable
 	{
 	  public:
 		explicit SetTranslation( Generic::BaseTransformable & p_transformable, const Vec3f & p_translation ) :
 			_transformable( p_transformable ), _translation( p_translation ),
 			_translationOld( p_transformable.getTransform().getTranslation() )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -39,20 +39,20 @@ namespace VTX::Action::Transformable
 		const Vec3f					 _translation;
 		const Mat4f					 _translationOld;
 	};
-	class Translate : public BaseAction
+	class Translate : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Translate( Generic::BaseTransformable & p_transformable, const Vec3f & p_delta ) :
 			_transformables { &p_transformable }, _delta( p_delta )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit Translate( std::unordered_set<Generic::BaseTransformable *> & p_transformables,
 							const Vec3f &									   p_delta ) :
 			_transformables( p_transformables ),
 			_delta( p_delta )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -72,14 +72,14 @@ namespace VTX::Action::Transformable
 		const Vec3f										 _delta;
 	};
 
-	class SetRotation : public BaseActionUndonable
+	class SetRotation : public Core::Action::BaseActionUndonable
 	{
 	  public:
 		explicit SetRotation( Generic::BaseTransformable & p_transformable, const Vec3f & p_euler ) :
 			_transformable( p_transformable ), _euler( p_euler ),
 			_eulerOld( p_transformable.getTransform().getEulerAngles() )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -99,7 +99,7 @@ namespace VTX::Action::Transformable
 		const Vec3f					 _euler;
 		const Vec3f					 _eulerOld;
 	};
-	class Rotate : public BaseAction
+	class Rotate : public Core::Action::BaseAction
 	{
 	  private:
 		enum class RotationType
@@ -113,7 +113,7 @@ namespace VTX::Action::Transformable
 			_transformables { &p_transformable }, _angle( p_angle ), _axis( p_axis ),
 			_rotationType( RotationType::Axis_Angle )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit Rotate( const std::unordered_set<Generic::BaseTransformable *> & p_transformables,
 						 const float											  p_angle,
@@ -121,20 +121,20 @@ namespace VTX::Action::Transformable
 			_transformables( p_transformables ),
 			_angle( p_angle ), _axis( p_axis ), _rotationType( RotationType::Axis_Angle )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		explicit Rotate( Generic::BaseTransformable & p_transformable, const Vec3f & p_euler ) :
 			_transformables { &p_transformable }, _axis( p_euler ), _angle( 0 ), _rotationType( RotationType::Euler )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit Rotate( const std::unordered_set<Generic::BaseTransformable *> & p_transformables,
 						 const Vec3f &											  p_euler ) :
 			_transformables( p_transformables ),
 			_axis( p_euler ), _angle( 0 ), _rotationType( RotationType::Euler )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -162,13 +162,13 @@ namespace VTX::Action::Transformable
 		const Vec3f										 _axis;
 	};
 
-	class SetScale : public BaseActionUndonable
+	class SetScale : public Core::Action::BaseActionUndonable
 	{
 	  public:
 		explicit SetScale( Generic::BaseTransformable & p_transformable, const float p_scale ) :
 			_transformable( p_transformable ), _scale( p_scale ), _scaleOld( p_transformable.getTransform().getScale() )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -188,18 +188,18 @@ namespace VTX::Action::Transformable
 		const float					 _scale;
 		const Mat4f					 _scaleOld;
 	};
-	class Scale : public BaseAction
+	class Scale : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Scale( Generic::BaseTransformable & p_transformable, const Vec3f & p_delta ) :
 			_transformables { &p_transformable }, _delta( p_delta )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit Scale( std::unordered_set<Generic::BaseTransformable *> & p_transformables, const Vec3f & p_delta ) :
 			_transformables( p_transformables ), _delta( p_delta )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -220,7 +220,7 @@ namespace VTX::Action::Transformable
 		const Vec3f										 _delta;
 	};
 
-	class ApplyTransform : public BaseAction
+	class ApplyTransform : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ApplyTransform( Model::Molecule &										  p_transformable,
@@ -230,7 +230,7 @@ namespace VTX::Action::Transformable
 			_transform( p_transform ),
 			_mask( p_mask ), _transformables { &p_transformable }
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit ApplyTransform( const std::unordered_set<Model::Molecule *> &			  p_transformables,
 								 const Math::Transform &								  p_transform,
@@ -239,7 +239,7 @@ namespace VTX::Action::Transformable
 			_transform( p_transform ),
 			_mask( p_mask )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 
 			_transformables.reserve( p_transformables.size() );
 			for ( Model::Molecule * const molecule : p_transformables )
@@ -264,7 +264,7 @@ namespace VTX::Action::Transformable
 		std::vector<Generic::BaseTransformable *> _transformables = std::vector<Generic::BaseTransformable *>();
 	};
 
-	class SetAutoRotationOrientation : public BaseAction
+	class SetAutoRotationOrientation : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SetAutoRotationOrientation( const std::unordered_set<Generic::BaseAutoRotate *> p_autoRotateComponent,
@@ -272,7 +272,7 @@ namespace VTX::Action::Transformable
 			_autoRotateComponents( p_autoRotateComponent ),
 			_orientation( p_orientation )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -285,7 +285,7 @@ namespace VTX::Action::Transformable
 		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
 		const Vec3f									  _orientation;
 	};
-	class AddToAutoRotationOrientation : public BaseAction
+	class AddToAutoRotationOrientation : public Core::Action::BaseAction
 	{
 	  public:
 		explicit AddToAutoRotationOrientation(
@@ -294,7 +294,7 @@ namespace VTX::Action::Transformable
 			_autoRotateComponents( p_autoRotateComponent ),
 			_delta( p_delta )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -308,7 +308,7 @@ namespace VTX::Action::Transformable
 		const Vec3f									  _delta;
 	};
 
-	class SetAutoRotationSpeed : public BaseAction
+	class SetAutoRotationSpeed : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SetAutoRotationSpeed( const std::unordered_set<Generic::BaseAutoRotate *> p_autoRotateComponent,
@@ -316,7 +316,7 @@ namespace VTX::Action::Transformable
 			_autoRotateComponents( p_autoRotateComponent ),
 			_speed( p_speed )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -329,7 +329,7 @@ namespace VTX::Action::Transformable
 		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
 		const float									  _speed;
 	};
-	class SetAutoRotationPlay : public BaseAction
+	class SetAutoRotationPlay : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SetAutoRotationPlay( const std::unordered_set<Generic::BaseAutoRotate *> p_autoRotateComponent,

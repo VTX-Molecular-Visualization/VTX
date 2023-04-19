@@ -1,8 +1,8 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/representation_preset_button.hpp"
 #include "ui/old_ui/style.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/representable.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/representable.hpp>
 #include <app/old_app/generic/base_representable.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/representation/representation.hpp>

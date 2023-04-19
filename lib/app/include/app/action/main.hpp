@@ -1,7 +1,7 @@
 #ifndef __VTX_ACTION_MAIN__
 #define __VTX_ACTION_MAIN__
 
-#include "base_action.hpp"
+#include "app/core/action/base_action.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -13,13 +13,13 @@
 
 namespace VTX::Action::Main
 {
-	class New : public BaseAction
+	class New : public Core::Action::BaseAction
 	{
 	  public:
 		virtual void execute() override;
 	};
 
-	class Open : public VTX::Action::BaseAction
+	class Open : public Core::Action::BaseAction
 	{
 	  private:
 		class LoadSceneClass
@@ -56,7 +56,7 @@ namespace VTX::Action::Main
 		std::vector<Model::Molecule *> _trajectoryTargets = std::vector<Model::Molecule *>();
 	};
 
-	class OpenApi : public BaseAction
+	class OpenApi : public Core::Action::BaseAction
 	{
 	  public:
 		explicit OpenApi( const std::string & p_id ) : _id( p_id ) {}
@@ -67,7 +67,7 @@ namespace VTX::Action::Main
 		const std::string _id;
 	};
 
-	class Save : public VTX::Action::BaseAction
+	class Save : public VTX::Core::Action::BaseAction
 	{
 	  public:
 		explicit Save() : _path( "" ), _callback( nullptr ) {}
@@ -84,7 +84,7 @@ namespace VTX::Action::Main
 		Worker::CallbackThread * const _callback;
 	};
 
-	class ImportRepresentationPreset : public BaseAction
+	class ImportRepresentationPreset : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ImportRepresentationPreset( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
@@ -95,7 +95,7 @@ namespace VTX::Action::Main
 		std::vector<FilePath> _paths = std::vector<FilePath>();
 	};
 
-	class ImportRenderEffectPreset : public BaseAction
+	class ImportRenderEffectPreset : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ImportRenderEffectPreset( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
@@ -106,7 +106,7 @@ namespace VTX::Action::Main
 		std::vector<FilePath> _paths = std::vector<FilePath>();
 	};
 
-	class ToggleCamera : public BaseAction
+	class ToggleCamera : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleCamera() {}
@@ -114,7 +114,7 @@ namespace VTX::Action::Main
 		virtual void execute() override;
 	};
 
-	class SetCameraProjectionToPerspective : public BaseAction
+	class SetCameraProjectionToPerspective : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SetCameraProjectionToPerspective( const bool p_perspective ) : _perspective( p_perspective ) {}
@@ -125,7 +125,7 @@ namespace VTX::Action::Main
 		bool _perspective;
 	};
 
-	class Snapshot : public BaseAction
+	class Snapshot : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const FilePath & p_path ) :

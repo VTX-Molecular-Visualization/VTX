@@ -2,7 +2,7 @@
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/state/state_machine.hpp"
 #include "ui/qt/state/visualization.hpp"
-#include <app/old_app/action/base_action.hpp>
+#include <app/core/action/base_action.hpp>
 #include <app/old_app/model/label.hpp>
 #include <unordered_set>
 #include <vector>

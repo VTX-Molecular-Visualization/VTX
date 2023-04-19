@@ -10,11 +10,11 @@
 #include "ui/qt/tool/session/dialog.hpp"
 #include "ui/qt/util.hpp"
 #include "ui/qt/widget_factory.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/dev.hpp>
-#include <app/old_app/action/main.hpp>
-#include <app/old_app/action/selection.hpp>
-#include <app/old_app/action/setting.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/dev.hpp>
+#include <app/action/main.hpp>
+#include <app/action/selection.hpp>
+#include <app/action/setting.hpp>
 #include <app/old_app/event/event.hpp>
 #include <app/old_app/event/event_manager.hpp>
 #include <app/old_app/io/filesystem.hpp>

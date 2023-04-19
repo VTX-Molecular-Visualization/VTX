@@ -7,8 +7,8 @@
 #include "ui/old_ui/vtx_app.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/main.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/main.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
@@ -16,7 +16,7 @@
 
 namespace VTX::UI
 {
-	void Dialog::confirmActionDialog( VTX::Action::BaseAction * const p_action,
+	void Dialog::confirmActionDialog( VTX::Core::Action::BaseAction * const p_action,
 									  const QString &				  p_title,
 									  const QString &				  p_message )
 	{

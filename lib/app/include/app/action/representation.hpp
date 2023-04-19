@@ -1,7 +1,7 @@
 #ifndef __VTX_ACTION_REPRESENTATION__
 #define __VTX_ACTION_REPRESENTATION__
 
-#include "base_action.hpp"
+#include "app/core/action/base_action.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/model/molecule.hpp"
 #include "app/old_app/model/representation/instantiated_representation.hpp"
@@ -22,7 +22,7 @@
 
 namespace VTX::Action::Representation
 {
-	class ReloadPresets : public BaseAction
+	class ReloadPresets : public Core::Action::BaseAction
 	{
 	  public:
 		ReloadPresets() {};
@@ -34,14 +34,14 @@ namespace VTX::Action::Representation
 		};
 	};
 
-	class ResetPresetsToDefault : public BaseAction
+	class ResetPresetsToDefault : public Core::Action::BaseAction
 	{
 	  public:
 		ResetPresetsToDefault() {};
 		virtual void execute() override { VTX::Representation::RepresentationManager::get().resetRepresentations(); };
 	};
 
-	class SavePreset : public BaseAction
+	class SavePreset : public Core::Action::BaseAction
 	{
 	  public:
 		SavePreset( const Model::Representation::Representation & p_representation )
@@ -104,7 +104,7 @@ namespace VTX::Action::Representation
 		bool _async			 = true;
 	};
 
-	class ChangeName : public BaseAction
+	class ChangeName : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeName( Model::Representation::Representation * const p_representation,
@@ -120,7 +120,7 @@ namespace VTX::Action::Representation
 		Model::Representation::Representation * const _representation;
 		const std::string							  _name;
 	};
-	class ChangeQuickAccess : public BaseAction
+	class ChangeQuickAccess : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeQuickAccess( Model::Representation::Representation * const p_representation,
@@ -140,7 +140,7 @@ namespace VTX::Action::Representation
 		const bool									  _quickAccess;
 	};
 
-	class ChangeRepresentation : public BaseAction
+	class ChangeRepresentation : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRepresentation( Model::Representation::Representation * const p_representation,
@@ -160,7 +160,7 @@ namespace VTX::Action::Representation
 		Model::Representation::Representation * const _representation;
 		const Generic::REPRESENTATION				  _representationType;
 	};
-	class ChangeColorMode : public BaseAction
+	class ChangeColorMode : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColorMode( Model::Representation::Representation * const p_representation,
@@ -181,7 +181,7 @@ namespace VTX::Action::Representation
 		const Generic::COLOR_MODE					  _colorMode;
 	};
 
-	class ChangeColor : public BaseAction
+	class ChangeColor : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColor( Model::Representation::Representation * const p_representation,
@@ -201,7 +201,7 @@ namespace VTX::Action::Representation
 		const Color::Rgba							  _color;
 	};
 
-	class ChangeSphereRadius : public BaseAction
+	class ChangeSphereRadius : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeSphereRadius( Model::Representation::Representation * const p_representation,
@@ -222,7 +222,7 @@ namespace VTX::Action::Representation
 		const float									  _radius;
 	};
 
-	class ChangeCylinderRadius : public BaseAction
+	class ChangeCylinderRadius : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeCylinderRadius( Model::Representation::Representation * const p_representation,
@@ -243,7 +243,7 @@ namespace VTX::Action::Representation
 		const float									  _radius;
 	};
 
-	class ChangeCylinderColorBendingMode : public BaseAction
+	class ChangeCylinderColorBendingMode : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeCylinderColorBendingMode( Model::Representation::Representation * const p_representation,
@@ -264,7 +264,7 @@ namespace VTX::Action::Representation
 		const Generic::COLOR_BLENDING_MODE			  _colorBendingMode;
 	};
 
-	class ChangeRibbonColorMode : public BaseAction
+	class ChangeRibbonColorMode : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRibbonColorMode( Model::Representation::Representation * const p_representation,
@@ -285,7 +285,7 @@ namespace VTX::Action::Representation
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
 	};
 
-	class ChangeRibbonColorBendingMode : public BaseAction
+	class ChangeRibbonColorBendingMode : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRibbonColorBendingMode( Model::Representation::Representation * const p_representation,
@@ -306,7 +306,7 @@ namespace VTX::Action::Representation
 		const Generic::COLOR_BLENDING_MODE			  _colorBendingMode;
 	};
 
-	class AddNewPresetInLibrary : public BaseAction
+	class AddNewPresetInLibrary : public Core::Action::BaseAction
 	{
 	  public:
 		explicit AddNewPresetInLibrary( const std::string & p_representationName ) :
@@ -327,7 +327,7 @@ namespace VTX::Action::Representation
 		const std::string _representationName;
 	};
 
-	class CopyPresetInLibrary : public BaseAction
+	class CopyPresetInLibrary : public Core::Action::BaseAction
 	{
 	  public:
 		explicit CopyPresetInLibrary( const int p_representationIndex ) : _representationIndex( p_representationIndex )
@@ -343,7 +343,7 @@ namespace VTX::Action::Representation
 		const int _representationIndex;
 	};
 
-	class DeletePresetInLibrary : public BaseAction
+	class DeletePresetInLibrary : public Core::Action::BaseAction
 	{
 	  public:
 		explicit DeletePresetInLibrary( const int p_representationIndex ) :
@@ -365,7 +365,7 @@ namespace VTX::Action::Representation
 		const int _representationIndex;
 	};
 
-	class SetAsDefaultRepresentation : public BaseAction
+	class SetAsDefaultRepresentation : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SetAsDefaultRepresentation( const int p_representationIndex ) :

@@ -1,4 +1,4 @@
-#include "app/old_app/action/renderer.hpp"
+#include "app/action/renderer.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/camera.hpp"

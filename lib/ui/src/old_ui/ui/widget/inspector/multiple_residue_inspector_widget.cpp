@@ -11,11 +11,11 @@
 #include <QFont>
 #include <QGridLayout>
 #include <QPixmap>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/instantiated_representation.hpp>
-#include <app/old_app/action/molecule.hpp>
-#include <app/old_app/action/residue.hpp>
-#include <app/old_app/action/transformable.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/instantiated_representation.hpp>
+#include <app/action/molecule.hpp>
+#include <app/action/residue.hpp>
+#include <app/action/transformable.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 

@@ -1,5 +1,5 @@
-#include "app/old_app/action/setting.hpp"
-#include "app/old_app/action/action_manager.hpp"
+#include "app/action/setting.hpp"
+#include "app/core/action/action_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
 #include "app/old_app/io/writer/serialized_object.hpp"

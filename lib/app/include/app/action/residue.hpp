@@ -20,18 +20,18 @@
 
 namespace VTX::Action::Residue
 {
-	class ChangeColor : public BaseAction
+	class ChangeColor : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColor( Model::Residue & p_residue, const Color::Rgba & p_color ) :
 			_color( p_color ), _residues { &p_residue }
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit ChangeColor( const std::unordered_set<Model::Residue *> & p_residues, const Color::Rgba & p_color ) :
 			_color( p_color ), _residues( p_residues )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -63,7 +63,7 @@ namespace VTX::Action::Residue
 		explicit ChangeVisibility( Model::Residue & p_residue, const VISIBILITY_MODE p_mode ) :
 			Visible::ChangeVisibility( p_residue, p_mode )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -127,20 +127,20 @@ namespace VTX::Action::Residue
 		}
 	};
 
-	class ChangeRepresentationPreset : public BaseAction
+	class ChangeRepresentationPreset : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRepresentationPreset( Model::Residue & p_residue, const int p_indexPreset ) :
 			_indexPreset( p_indexPreset ), _residues { &p_residue }
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit ChangeRepresentationPreset( const std::unordered_set<Model::Residue *> & p_residues,
 											 const int									  p_indexPreset ) :
 			_indexPreset( p_indexPreset ),
 			_residues( p_residues )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -157,17 +157,17 @@ namespace VTX::Action::Residue
 		const int								   _indexPreset;
 	};
 
-	class RemoveRepresentation : public BaseAction
+	class RemoveRepresentation : public Core::Action::BaseAction
 	{
 	  public:
 		explicit RemoveRepresentation( Model::Residue & p_residue ) : _residues { &p_residue }
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit RemoveRepresentation( const std::unordered_set<Model::Residue *> & p_residues ) :
 			_residues( p_residues )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -180,12 +180,12 @@ namespace VTX::Action::Residue
 		const std::unordered_set<Model::Residue *> _residues;
 	};
 
-	class Delete : public BaseAction
+	class Delete : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Delete( Model::Residue & p_residue ) : _residue( p_residue )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -214,12 +214,12 @@ namespace VTX::Action::Residue
 		Model::Residue & _residue;
 	};
 
-	class Copy : public BaseAction
+	class Copy : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Copy( const Model::Residue & p_target ) : _target( p_target )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override
 		{
@@ -236,12 +236,12 @@ namespace VTX::Action::Residue
 		const Model::Residue & _target;
 	};
 
-	class Extract : public BaseAction
+	class Extract : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Extract( const Model::Residue & p_target ) : _target( p_target )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override
 		{
@@ -260,7 +260,7 @@ namespace VTX::Action::Residue
 		const Model::Residue & _target;
 	};
 
-	class ApplyRepresentation : public BaseAction
+	class ApplyRepresentation : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ApplyRepresentation( const std::unordered_set<Model::Residue *> &				p_residues,
@@ -269,7 +269,7 @@ namespace VTX::Action::Residue
 			_representation( p_source ),
 			_flag( p_flag ), _residues( p_residues )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override

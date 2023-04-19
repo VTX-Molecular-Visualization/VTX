@@ -1,9 +1,9 @@
 #include "ui/old_ui/ui/widget/contextual_menu/contextual_menu_residue.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/residue.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/residue.hpp>
-#include <app/old_app/action/visible.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/residue.hpp>
+#include <app/action/visible.hpp>
 #include <app/old_app/model/representation/representation.hpp>
 #include <app/old_app/model/representation/representation_library.hpp>
 

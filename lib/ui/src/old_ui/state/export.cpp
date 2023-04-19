@@ -1,6 +1,6 @@
 #include "ui/old_ui/state/export.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/main.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/main.hpp>
 #include <app/old_app/model/path.hpp>
 #include <app/old_app/model/viewpoint.hpp>
 #include <app/old_app/object3d/camera.hpp>

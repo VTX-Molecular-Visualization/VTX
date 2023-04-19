@@ -1,6 +1,6 @@
 #include "app/old_app/model/representation/representation_library.hpp"
-#include "app/old_app/action/action_manager.hpp"
-#include "app/old_app/action/representation.hpp"
+#include "app/core/action/action_manager.hpp"
+#include "app/action/representation.hpp"
 #include "app/old_app/event/event.hpp"
 #include "app/old_app/event/event_manager.hpp"
 #include "app/old_app/id.hpp"

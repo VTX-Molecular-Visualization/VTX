@@ -4,10 +4,10 @@
 #include "ui/qt/tool/render/widget/base_integrated_widget.hpp"
 #include "ui/qt/tool/render/widget/overlay/visualization_quick_access.hpp"
 #include "ui/qt/widget_factory.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/main.hpp>
-#include <app/old_app/action/setting.hpp>
-#include <app/old_app/action/viewpoint.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/main.hpp>
+#include <app/action/setting.hpp>
+#include <app/action/viewpoint.hpp>
 #include <app/old_app/event/event_manager.hpp>
 #include <app/old_app/io/filesystem.hpp>
 // #include <app/old_app/model/label.hpp>

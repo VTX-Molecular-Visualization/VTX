@@ -1,9 +1,9 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/selection_action_block.hpp"
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/selection.hpp>
-#include <app/old_app/action/visible.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/selection.hpp>
+#include <app/action/visible.hpp>
 #include <app/old_app/model/selection.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>

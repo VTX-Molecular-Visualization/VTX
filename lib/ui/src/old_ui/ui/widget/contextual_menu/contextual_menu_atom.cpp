@@ -1,8 +1,8 @@
 #include "ui/old_ui/ui/widget/contextual_menu/contextual_menu_atom.hpp"
 #include "ui/qt/action/atom.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/atom.hpp>
-#include <app/old_app/action/visible.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/atom.hpp>
+#include <app/action/visible.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {

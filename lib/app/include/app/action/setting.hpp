@@ -1,7 +1,7 @@
 #ifndef __VTX_ACTION_SETTING__
 #define __VTX_ACTION_SETTING__
 
-#include "base_action.hpp"
+#include "app/core/action/base_action.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
@@ -15,21 +15,21 @@
 
 namespace VTX::Action::Setting
 {
-	class Load : public BaseAction
+	class Load : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Load() {}
 		virtual void execute() override;
 	};
 
-	class Save : public BaseAction
+	class Save : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Save() {}
 		virtual void execute() override;
 	};
 
-	class ActiveRenderer : public BaseAction
+	class ActiveRenderer : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ActiveRenderer( const bool p_active ) : _active( p_active ) {}
@@ -40,7 +40,7 @@ namespace VTX::Action::Setting
 		const bool _active;
 	};
 
-	class ForceRenderer : public BaseAction
+	class ForceRenderer : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ForceRenderer( const bool p_force ) : _force( p_force ) {}
@@ -51,7 +51,7 @@ namespace VTX::Action::Setting
 		const bool _force;
 	};
 
-	class ChangeBackgroundColor : public BaseAction
+	class ChangeBackgroundColor : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeBackgroundColor( const Color::Rgba & p_color ) : _color( p_color ) {}
@@ -62,7 +62,7 @@ namespace VTX::Action::Setting
 		const Color::Rgba _color;
 	};
 
-	class ChangeSnapshotFormat : public BaseAction
+	class ChangeSnapshotFormat : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeSnapshotFormat( const IO::Struct::ImageExport::Format p_format ) : _format( p_format ) {}
@@ -73,7 +73,7 @@ namespace VTX::Action::Setting
 		const IO::Struct::ImageExport::Format _format;
 	};
 
-	class ChangeBackgroundOpacity : public BaseAction
+	class ChangeBackgroundOpacity : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeBackgroundOpacity( const float p_opacity ) : _opacity( p_opacity ) {}
@@ -88,7 +88,7 @@ namespace VTX::Action::Setting
 		const float _opacity;
 	};
 
-	class ChangeSnapshotQuality : public BaseAction
+	class ChangeSnapshotQuality : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeSnapshotQuality( const float p_quality ) : _quality( p_quality ) {}
@@ -103,7 +103,7 @@ namespace VTX::Action::Setting
 		const float _quality;
 	};
 
-	class ChangeSnapshotResolution : public BaseAction
+	class ChangeSnapshotResolution : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeSnapshotResolution( const IO::Struct::ImageExport::RESOLUTION & p_resolution ) :
@@ -117,7 +117,7 @@ namespace VTX::Action::Setting
 		const IO::Struct::ImageExport::RESOLUTION _resolution;
 	};
 
-	class ChangeDefaultRepresentation : public BaseAction
+	class ChangeDefaultRepresentation : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeDefaultRepresentation( const int p_representationIndex ) :
@@ -133,7 +133,7 @@ namespace VTX::Action::Setting
 		const int _representationIndex;
 	};
 
-	class ChangeDefaultRenderEffectPreset : public BaseAction
+	class ChangeDefaultRenderEffectPreset : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeDefaultRenderEffectPreset( const int p_renderEffectPresetIndex ) :
@@ -149,7 +149,7 @@ namespace VTX::Action::Setting
 		const int _renderEffectPresetIndex;
 	};
 
-	class ChangeColorMode : public BaseAction
+	class ChangeColorMode : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColorMode( const Generic::COLOR_MODE p_mode ) : _mode( p_mode ) {}
@@ -162,7 +162,7 @@ namespace VTX::Action::Setting
 		const Generic::COLOR_MODE _mode;
 	};
 
-	class ChangeShading : public BaseAction
+	class ChangeShading : public Core::Action::BaseAction
 	{
 	  public:
 		ChangeShading( const VTX::Renderer::SHADING p_shading ) : _shading( p_shading ) {}
@@ -175,7 +175,7 @@ namespace VTX::Action::Setting
 		const VTX::Renderer::SHADING _shading;
 	};
 
-	class ActiveVerticalSync : public BaseAction
+	class ActiveVerticalSync : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ActiveVerticalSync( const bool p_active ) : _active( p_active ) {}
@@ -190,7 +190,7 @@ namespace VTX::Action::Setting
 		const bool _active;
 	};
 
-	class ActiveAO : public BaseAction
+	class ActiveAO : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ActiveAO( const bool p_active ) : _active( p_active ) {}
@@ -201,7 +201,7 @@ namespace VTX::Action::Setting
 		const bool _active;
 	};
 
-	class ChangeAOIntensity : public BaseAction
+	class ChangeAOIntensity : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeAOIntensity( const int p_intensity ) : _intensity( p_intensity ) {}
@@ -212,7 +212,7 @@ namespace VTX::Action::Setting
 		const int _intensity;
 	};
 
-	class ChangeAOBlurSize : public BaseAction
+	class ChangeAOBlurSize : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeAOBlurSize( const int p_blurSize ) : _blurSize( p_blurSize ) {}
@@ -223,7 +223,7 @@ namespace VTX::Action::Setting
 		const int _blurSize;
 	};
 
-	class ActiveOutline : public BaseAction
+	class ActiveOutline : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ActiveOutline( const bool p_active ) : _active( p_active ) {}
@@ -234,7 +234,7 @@ namespace VTX::Action::Setting
 		const bool _active;
 	};
 
-	class ChangeOutlineColor : public BaseAction
+	class ChangeOutlineColor : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeOutlineColor( const Color::Rgba & p_color ) : _color( p_color ) {}
@@ -245,7 +245,7 @@ namespace VTX::Action::Setting
 		const Color::Rgba _color;
 	};
 
-	class ChangeOutlineThickness : public BaseAction
+	class ChangeOutlineThickness : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeOutlineThickness( const uint p_thickness ) : _thickness( p_thickness ) {}
@@ -256,7 +256,7 @@ namespace VTX::Action::Setting
 		const uint _thickness;
 	};
 
-	class ChangeOutlineSensivity : public BaseAction
+	class ChangeOutlineSensivity : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeOutlineSensivity( const float p_sensivity ) : _sensivity( p_sensivity ) {}
@@ -267,7 +267,7 @@ namespace VTX::Action::Setting
 		const float _sensivity;
 	};
 
-	class ActiveFog : public BaseAction
+	class ActiveFog : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ActiveFog( const bool p_active ) : _active( p_active ) {}
@@ -278,7 +278,7 @@ namespace VTX::Action::Setting
 		const bool _active;
 	};
 
-	class ChangeFogNear : public BaseAction
+	class ChangeFogNear : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeFogNear( const float p_near ) : _near( p_near ) {}
@@ -289,7 +289,7 @@ namespace VTX::Action::Setting
 		const float _near;
 	};
 
-	class ChangeFogFar : public BaseAction
+	class ChangeFogFar : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeFogFar( const float p_far ) : _far( p_far ) {}
@@ -300,7 +300,7 @@ namespace VTX::Action::Setting
 		const float _far;
 	};
 
-	class ChangeFogDensity : public BaseAction
+	class ChangeFogDensity : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeFogDensity( const float p_density ) : _density( p_density ) {}
@@ -311,7 +311,7 @@ namespace VTX::Action::Setting
 		const float _density;
 	};
 
-	class ChangeFogColor : public BaseAction
+	class ChangeFogColor : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeFogColor( const Color::Rgba & p_color ) : _color( p_color ) {}
@@ -322,7 +322,7 @@ namespace VTX::Action::Setting
 		const Color::Rgba _color;
 	};
 
-	class ActiveAA : public BaseAction
+	class ActiveAA : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ActiveAA( const bool p_active ) : _active( p_active ) {}
@@ -333,7 +333,7 @@ namespace VTX::Action::Setting
 		const bool _active;
 	};
 
-	class ChangeLightColor : public BaseAction
+	class ChangeLightColor : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeLightColor( const Color::Rgba & p_color ) : _color( p_color ) {}
@@ -344,7 +344,7 @@ namespace VTX::Action::Setting
 		const Color::Rgba _color;
 	};
 
-	class ChangeCameraClip : public BaseAction
+	class ChangeCameraClip : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeCameraClip( const float p_near, const float p_far ) : _near( p_near ), _far( p_far ) {}
@@ -363,7 +363,7 @@ namespace VTX::Action::Setting
 		const float _far;
 	};
 
-	class ChangeCameraFov : public BaseAction
+	class ChangeCameraFov : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeCameraFov( const float p_fov ) : _fov( p_fov ) {}
@@ -380,7 +380,7 @@ namespace VTX::Action::Setting
 		const float _fov;
 	};
 
-	class ChangeCameraProjectionToPerspective : public BaseAction
+	class ChangeCameraProjectionToPerspective : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeCameraProjectionToPerspective( const bool p_perspective ) : _perspective( p_perspective ) {}
@@ -391,7 +391,7 @@ namespace VTX::Action::Setting
 		const bool _perspective;
 	};
 
-	class ChangeTranslationSpeed : public BaseAction
+	class ChangeTranslationSpeed : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeTranslationSpeed( const float p_speed ) : _speed( p_speed ) {}
@@ -402,7 +402,7 @@ namespace VTX::Action::Setting
 		const float _speed;
 	};
 
-	class ChangeAccelerationFactorSpeed : public BaseAction
+	class ChangeAccelerationFactorSpeed : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeAccelerationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
@@ -413,7 +413,7 @@ namespace VTX::Action::Setting
 		const float _factor;
 	};
 
-	class ChangeDecelerationFactorSpeed : public BaseAction
+	class ChangeDecelerationFactorSpeed : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeDecelerationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
@@ -424,7 +424,7 @@ namespace VTX::Action::Setting
 		const float _factor;
 	};
 
-	class ChangeRotationSpeed : public BaseAction
+	class ChangeRotationSpeed : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRotationSpeed( const float p_speed ) : _speed( p_speed ) {}
@@ -435,7 +435,7 @@ namespace VTX::Action::Setting
 		const float _speed;
 	};
 
-	class ActiveYAxisInversion : public BaseAction
+	class ActiveYAxisInversion : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ActiveYAxisInversion( const bool p_active ) : _active( p_active ) {}
@@ -446,7 +446,7 @@ namespace VTX::Action::Setting
 		const bool _active;
 	};
 
-	class ActiveControllerElasticity : public BaseAction
+	class ActiveControllerElasticity : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ActiveControllerElasticity( const bool p_active ) : _active( p_active ) {}
@@ -457,7 +457,7 @@ namespace VTX::Action::Setting
 		const bool _active;
 	};
 
-	class ChangeControllerElasticity : public BaseAction
+	class ChangeControllerElasticity : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeControllerElasticity( const float p_elasticity ) : _elasticity( p_elasticity ) {}
@@ -468,7 +468,7 @@ namespace VTX::Action::Setting
 		const float _elasticity;
 	};
 
-	class ChangeDefaultTrajectorySpeed : public BaseAction
+	class ChangeDefaultTrajectorySpeed : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeDefaultTrajectorySpeed( const int p_speed ) : _speed( p_speed ) {}
@@ -479,7 +479,7 @@ namespace VTX::Action::Setting
 		const int _speed;
 	};
 
-	class ChangeDefaultTrajectoryPlayMode : public BaseAction
+	class ChangeDefaultTrajectoryPlayMode : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_playMode ) : _playMode( p_playMode ) {}
@@ -490,7 +490,7 @@ namespace VTX::Action::Setting
 		const Trajectory::PlayMode _playMode;
 	};
 
-	class ChangeSymbolDisplayMode : public BaseAction
+	class ChangeSymbolDisplayMode : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE & p_displayMode ) :
@@ -504,7 +504,7 @@ namespace VTX::Action::Setting
 		const Style::SYMBOL_DISPLAY_MODE _displayMode;
 	};
 
-	class ChangeCheckVTXUpdateAtLaunch : public BaseAction
+	class ChangeCheckVTXUpdateAtLaunch : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeCheckVTXUpdateAtLaunch( const bool p_checkVtxUpdateAtLaunch ) :
@@ -518,7 +518,7 @@ namespace VTX::Action::Setting
 		const bool _checkVTXUpdateAtLaunch;
 	};
 
-	class ActivatePortableSave : public BaseAction
+	class ActivatePortableSave : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ActivatePortableSave( const bool p_activate ) : _activate( p_activate ) {}
@@ -529,7 +529,7 @@ namespace VTX::Action::Setting
 		const bool _activate;
 	};
 
-	class ChangeRenderMode : public BaseAction
+	class ChangeRenderMode : public Core::Action::BaseAction
 	{
 	  public:
 		ChangeRenderMode( const VTX::Renderer::MODE p_mode ) : _mode( p_mode ) {}
@@ -545,7 +545,7 @@ namespace VTX::Action::Setting
 		const VTX::Renderer::MODE _mode;
 	};
 
-	class ChangeSelectionGranularity : public BaseAction
+	class ChangeSelectionGranularity : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeSelectionGranularity( const VTX::Selection::Granularity & p_granularity ) :
@@ -559,7 +559,7 @@ namespace VTX::Action::Setting
 		const VTX::Selection::Granularity _granularity;
 	};
 
-	class ChangeDefaultRepresentationPerCategory : public BaseAction
+	class ChangeDefaultRepresentationPerCategory : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeDefaultRepresentationPerCategory( const CATEGORY_ENUM & p_categoryEnum,
@@ -579,7 +579,7 @@ namespace VTX::Action::Setting
 		const int			_representationIndex;
 	};
 
-	class ApplyAllSettings : public BaseAction
+	class ApplyAllSettings : public Core::Action::BaseAction
 	{
 	  public:
 		ApplyAllSettings( VTX::Setting & p_setting ) : _setting( p_setting ) {}
@@ -590,7 +590,7 @@ namespace VTX::Action::Setting
 		VTX::Setting _setting;
 	};
 
-	class ReloadSetting : public BaseAction
+	class ReloadSetting : public Core::Action::BaseAction
 	{
 	  public:
 		ReloadSetting() {}
@@ -598,7 +598,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override;
 	};
 
-	class RestoreSetting : public BaseAction
+	class RestoreSetting : public Core::Action::BaseAction
 	{
 	  public:
 		RestoreSetting() {}
@@ -606,7 +606,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override;
 	};
 
-	class RestoreDefaultRepresentationPerCategory : public BaseAction
+	class RestoreDefaultRepresentationPerCategory : public Core::Action::BaseAction
 	{
 	  public:
 		explicit RestoreDefaultRepresentationPerCategory() {}

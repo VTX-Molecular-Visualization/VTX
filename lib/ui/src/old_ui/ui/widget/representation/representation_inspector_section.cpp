@@ -4,7 +4,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/old_app/action/action_manager.hpp>
+#include <app/core/action/action_manager.hpp>
 #include <app/old_app/model/representation/representation.hpp>
 #include <app/old_app/model/representation/representation_library.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>

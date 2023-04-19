@@ -2,9 +2,9 @@
 #include "ui/old_ui/style.hpp"
 #include "ui/old_ui/util/ui.hpp"
 #include <QLabel>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/instantiated_representation.hpp>
-#include <app/old_app/action/molecule.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/instantiated_representation.hpp>
+#include <app/action/molecule.hpp>
 #include <app/old_app/generic/base_representable.hpp>
 #include <app/old_app/id.hpp>
 #include <app/old_app/model/molecule.hpp>

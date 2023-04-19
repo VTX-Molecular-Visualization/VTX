@@ -1,7 +1,7 @@
 #ifndef __VTX_ACTION_PATH__
 #define __VTX_ACTION_PATH__
 
-#include "base_action.hpp"
+#include "app/core/action/base_action.hpp"
 #include "app/old_app/model/path.hpp"
 #include "app/old_app/model/selection.hpp"
 #include "app/old_app/model/viewpoint.hpp"
@@ -18,13 +18,13 @@ namespace VTX
 	{
 		namespace Path
 		{
-			class ChangeDuration : public BaseAction
+			class ChangeDuration : public Core::Action::BaseAction
 			{
 			  public:
 				explicit ChangeDuration( Model::Path & p_path, const float p_duration ) :
 					_path( p_path ), _duration( p_duration )
 				{
-					_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+					_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 				}
 
 				virtual void execute() override
@@ -38,13 +38,13 @@ namespace VTX
 				const float	  _duration;
 			};
 
-			class ChangeDurationMode : public BaseAction
+			class ChangeDurationMode : public Core::Action::BaseAction
 			{
 			  public:
 				explicit ChangeDurationMode( Model::Path & p_path, const VTX::Path::DURATION_MODE p_mode ) :
 					_path( p_path ), _mode( p_mode )
 				{
-					_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+					_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 				}
 
 				virtual void execute() override
@@ -58,13 +58,13 @@ namespace VTX
 				const VTX::Path::DURATION_MODE _mode;
 			};
 
-			class ChangeInterpolationMode : public BaseAction
+			class ChangeInterpolationMode : public Core::Action::BaseAction
 			{
 			  public:
 				explicit ChangeInterpolationMode( Model::Path & p_path, const VTX::Path::INTERPOLATION_MODE p_mode ) :
 					_path( p_path ), _mode( p_mode )
 				{
-					_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+					_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 				}
 
 				virtual void execute() override
@@ -78,7 +78,7 @@ namespace VTX
 				const VTX::Path::INTERPOLATION_MODE _mode;
 			};
 
-			class Play : public BaseAction
+			class Play : public Core::Action::BaseAction
 			{
 			  public:
 				explicit Play( Model::Path * const p_path ) : _path( p_path ) {}
@@ -89,7 +89,7 @@ namespace VTX
 			};
 
 			/*
-			class ExportVideo : public BaseAction
+			class ExportVideo : public Core::Action::BaseAction
 			{
 			  public:
 				explicit ExportVideo( Model::Path * const p_path, Worker::Snapshoter::MODE p_mode ) :
@@ -112,13 +112,13 @@ namespace VTX
 			};
 			*/
 
-			class ChangeIsLooping : public BaseAction
+			class ChangeIsLooping : public Core::Action::BaseAction
 			{
 			  public:
 				explicit ChangeIsLooping( Model::Path & p_path, const bool p_isLooping ) :
 					_path( p_path ), _isLooping( p_isLooping )
 				{
-					_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+					_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 				}
 
 				virtual void execute() override { _path.setIsLooping( _isLooping ); }
@@ -128,18 +128,18 @@ namespace VTX
 				const bool	  _isLooping;
 			};
 
-			class SetSelected : public BaseAction
+			class SetSelected : public Core::Action::BaseAction
 			{
 			  public:
 			  private:
 			};
 
-			class Clear : public BaseAction
+			class Clear : public Core::Action::BaseAction
 			{
 			  public:
 				explicit Clear( Model::Path & p_path ) : _path( p_path )
 				{
-					_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+					_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 				}
 
 				virtual void execute() override

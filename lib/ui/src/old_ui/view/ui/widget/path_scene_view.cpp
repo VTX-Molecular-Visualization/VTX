@@ -8,9 +8,9 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 #include <QScrollBar>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/selection.hpp>
-#include <app/old_app/action/viewpoint.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/selection.hpp>
+#include <app/action/viewpoint.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>

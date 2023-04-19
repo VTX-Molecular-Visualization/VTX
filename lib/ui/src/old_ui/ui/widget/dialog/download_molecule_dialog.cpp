@@ -3,8 +3,8 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QPushButton>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/main.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/main.hpp>
 #include <app/old_app/setting.hpp>
 #include <string>
 

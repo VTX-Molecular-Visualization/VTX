@@ -5,8 +5,8 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QScrollBar>
 #include <algorithm>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/selection.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/selection.hpp>
 #include <app/old_app/model/category_enum.hpp>
 #include <app/old_app/model/selection.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>

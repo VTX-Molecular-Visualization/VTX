@@ -21,18 +21,18 @@
 
 namespace VTX::Action::Chain
 {
-	class ChangeColor : public BaseAction
+	class ChangeColor : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColor( Model::Chain & p_chain, const Color::Rgba & p_color ) :
 			_color( p_color ), _chains { &p_chain }
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit ChangeColor( const std::unordered_set<Model::Chain *> & p_chains, const Color::Rgba & p_color ) :
 			_color( p_color ), _chains( p_chains )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -64,7 +64,7 @@ namespace VTX::Action::Chain
 		explicit ChangeVisibility( Model::Chain & p_chain, const VISIBILITY_MODE p_mode ) :
 			Visible::ChangeVisibility( p_chain, p_mode )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -128,20 +128,20 @@ namespace VTX::Action::Chain
 		}
 	};
 
-	class ChangeRepresentationPreset : public BaseAction
+	class ChangeRepresentationPreset : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRepresentationPreset( Model::Chain & p_chain, const int p_indexPreset ) :
 			_indexPreset( p_indexPreset ), _chains { &p_chain }
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit ChangeRepresentationPreset( const std::unordered_set<Model::Chain *> & p_chains,
 											 const int									p_indexPreset ) :
 			_indexPreset( p_indexPreset ),
 			_chains( p_chains )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -158,16 +158,16 @@ namespace VTX::Action::Chain
 		const int								 _indexPreset;
 	};
 
-	class RemoveRepresentation : public BaseAction
+	class RemoveRepresentation : public Core::Action::BaseAction
 	{
 	  public:
 		explicit RemoveRepresentation( Model::Chain & p_chain ) : _chains { &p_chain }
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit RemoveRepresentation( const std::unordered_set<Model::Chain *> & p_chains ) : _chains( p_chains )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -180,17 +180,17 @@ namespace VTX::Action::Chain
 		const std::unordered_set<Model::Chain *> _chains;
 	};
 
-	class RemoveChildrenRepresentations : public BaseAction
+	class RemoveChildrenRepresentations : public Core::Action::BaseAction
 	{
 	  public:
 		explicit RemoveChildrenRepresentations( Model::Chain & p_chain ) : _chains { &p_chain }
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit RemoveChildrenRepresentations( const std::unordered_set<Model::Chain *> & p_chains ) :
 			_chains( p_chains )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -215,12 +215,12 @@ namespace VTX::Action::Chain
 		const std::unordered_set<Model::Chain *> _chains;
 	};
 
-	class Delete : public BaseAction
+	class Delete : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Delete( Model::Chain & p_chain ) : _chain( p_chain )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -249,12 +249,12 @@ namespace VTX::Action::Chain
 		Model::Chain & _chain;
 	};
 
-	class Copy : public BaseAction
+	class Copy : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Copy( const Model::Chain & p_target ) : _target( p_target )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override
 		{
@@ -271,12 +271,12 @@ namespace VTX::Action::Chain
 		const Model::Chain & _target;
 	};
 
-	class Extract : public BaseAction
+	class Extract : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Extract( const Model::Chain & p_target ) : _target( p_target )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override
 		{
@@ -295,7 +295,7 @@ namespace VTX::Action::Chain
 		const Model::Chain & _target;
 	};
 
-	class ApplyRepresentation : public BaseAction
+	class ApplyRepresentation : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ApplyRepresentation( const std::unordered_set<Model::Chain *> &				p_chains,
@@ -304,7 +304,7 @@ namespace VTX::Action::Chain
 			_representation( p_source ),
 			_flag( p_flag ), _chains( p_chains )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override

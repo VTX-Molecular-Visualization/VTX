@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QWidget>
-#include <app/old_app/action/base_action.hpp>
+#include <app/core/action/base_action.hpp>
 #include <app/old_app/worker/worker_manager.hpp>
 #include <util/types.hpp>
 #include <vector>
@@ -25,9 +25,9 @@ namespace VTX
 		{
 		  public:
 			static void openInformationDialog( const QString & p_title, const QString & p_message );
-			static void confirmActionDialog( VTX::Action::BaseAction * const p_action,
-											 const QString &				 p_title,
-											 const QString &				 p_message );
+			static void confirmActionDialog( VTX::Core::Action::BaseAction * const p_action,
+											 const QString &					   p_title,
+											 const QString &					   p_message );
 
 			static void openDownloadMoleculeDialog();
 			static void openDownloadMoleculeDialog( const QString & p_pdbCode );

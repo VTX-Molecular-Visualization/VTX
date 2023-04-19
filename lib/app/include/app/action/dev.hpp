@@ -1,14 +1,14 @@
 #ifndef __VTX_ACTION_DEV__
 #define __VTX_ACTION_DEV__
 
-#include "base_action.hpp"
+#include "app/core/action/base_action.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
 #include "app/old_app/vtx_app.hpp"
 
 namespace VTX::Action::Dev
 {
-	class CompileShaders : public BaseAction
+	class CompileShaders : public Core::Action::BaseAction
 	{
 	  public:
 		virtual void execute() override

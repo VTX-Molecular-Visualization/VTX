@@ -1,7 +1,7 @@
 #include "app/old_app/vtx_app.hpp"
-#include "app/old_app/action/action_manager.hpp"
-#include "app/old_app/action/main.hpp"
-#include "app/old_app/action/setting.hpp"
+#include "app/core/action/action_manager.hpp"
+#include "app/action/main.hpp"
+#include "app/action/setting.hpp"
 #include "app/old_app/event/event.hpp"
 #include "app/old_app/event/event_manager.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
@@ -39,7 +39,7 @@ namespace VTX
 
 		// Create singletons.
 		MVC::MvcManager::get();
-		Action::ActionManager::get();
+		Core::Action::ActionManager::get();
 		Event::EventManager::get();
 		Selection::SelectionManager::get();
 		Worker::WorkerManager::get();

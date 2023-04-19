@@ -1,8 +1,8 @@
 #include "ui/old_ui/controller/picker.hpp"
 #include "ui/old_ui/ui/main_window.hpp"
 #include "ui/qt/action/selection.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/selection.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/selection.hpp>
 #include <app/old_app/model/atom.hpp>
 #include <app/old_app/model/chain.hpp>
 #include <app/old_app/model/molecule.hpp>

@@ -1,7 +1,7 @@
 #ifndef __VTX_ACTION_LABEL__
 #define __VTX_ACTION_LABEL__
 
-#include "app/old_app/action/base_action.hpp"
+#include "app/core/action/base_action.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/model/label.hpp"
 #include "app/old_app/model/selection.hpp"
@@ -15,7 +15,7 @@
 
 namespace VTX::Action::Label
 {
-	class SetEnable : public BaseAction
+	class SetEnable : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SetEnable( Model::Label & p_label, const bool p_enabled ) :
@@ -38,7 +38,7 @@ namespace VTX::Action::Label
 		std::unordered_set<Model::Label *> _labels;
 	};
 
-	class Delete : public BaseAction
+	class Delete : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Delete( Model::Label * const p_label ) : _labels( { p_label } ) {}
@@ -63,7 +63,7 @@ namespace VTX::Action::Label
 	  private:
 		std::vector<Model::Label *> _labels;
 	};
-	class EnableAutoNaming : public BaseAction
+	class EnableAutoNaming : public Core::Action::BaseAction
 	{
 	  public:
 		explicit EnableAutoNaming( Model::Label & p_label, const bool p_enable ) :
@@ -86,7 +86,7 @@ namespace VTX::Action::Label
 		const bool								   _enable;
 	};
 
-	class Rename : public BaseAction
+	class Rename : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Rename( Model::Label & p_label, const std::string & p_newName ) :
@@ -112,7 +112,7 @@ namespace VTX::Action::Label
 		const std::string						 _name;
 	};
 
-	class ChangeColor : public BaseAction
+	class ChangeColor : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColor( Model::Label & p_label, const Color::Rgba & p_color ) :

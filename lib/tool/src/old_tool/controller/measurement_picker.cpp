@@ -2,8 +2,8 @@
 #include "tool/old_tool/action/measurement.hpp"
 #include "tool/old_tool/model/measurement/measure_in_progress.hpp"
 #include <QPoint>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/selection.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/selection.hpp>
 #include <app/old_app/event/event_manager.hpp>
 #include <app/old_app/model/atom.hpp>
 #include <app/old_app/model/molecule.hpp>

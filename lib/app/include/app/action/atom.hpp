@@ -12,13 +12,13 @@
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 #include "app/old_app/util/molecule.hpp"
-#include "visible.hpp"
 #include "app/old_app/vtx_app.hpp"
+#include "visible.hpp"
 #include <set>
 
 namespace VTX::Action::Atom
 {
-	class ChangeColor : public BaseAction
+	class ChangeColor : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColor( Model::Atom & p_atom, const Color::Rgba & p_color ) : _atom( p_atom ), _color( p_color )
@@ -42,7 +42,7 @@ namespace VTX::Action::Atom
 		explicit ChangeVisibility( Model::Atom & p_atom, const VISIBILITY_MODE p_mode ) :
 			Visible::ChangeVisibility( p_atom, p_mode )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -104,12 +104,12 @@ namespace VTX::Action::Atom
 		}
 	};
 
-	class Delete : public BaseAction
+	class Delete : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Delete( Model::Atom & p_atom ) : _atom( p_atom )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -138,12 +138,12 @@ namespace VTX::Action::Atom
 		Model::Atom & _atom;
 	};
 
-	class Copy : public BaseAction
+	class Copy : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Copy( const Model::Atom & p_target ) : _target( p_target )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override
 		{
@@ -159,12 +159,12 @@ namespace VTX::Action::Atom
 		const Model::Atom & _target;
 	};
 
-	class Extract : public BaseAction
+	class Extract : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Extract( const Model::Atom & p_target ) : _target( p_target )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override
 		{

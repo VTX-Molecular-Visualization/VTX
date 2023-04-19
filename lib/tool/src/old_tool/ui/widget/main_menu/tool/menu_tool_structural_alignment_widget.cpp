@@ -3,7 +3,7 @@
 #include "tool/old_tool/util/analysis.hpp"
 #include <QAction>
 #include <QMenu>
-#include <app/old_app/action/action_manager.hpp>
+#include <app/core/action/action_manager.hpp>
 #include <app/old_app/id.hpp>
 #include <app/old_app/model/selection.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>

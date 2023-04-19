@@ -1,7 +1,7 @@
 #ifndef __VTX_ACTION_VIEWPOINT__
 #define __VTX_ACTION_VIEWPOINT__
 
-#include "base_action.hpp"
+#include "app/core/action/base_action.hpp"
 #include "app/old_app/model/path.hpp"
 #include "app/old_app/model/selection.hpp"
 #include "app/old_app/model/viewpoint.hpp"
@@ -17,7 +17,7 @@
 namespace VTX::Action::Viewpoint
 {
 	/*
-	class AddAction : public BaseAction
+	class AddAction : public Core::Action::BaseAction
 	{
 	  public:
 		explicit AddAction( Model::Viewpoint & p_viewpoint, const std::string & p_action ) :
@@ -32,7 +32,7 @@ namespace VTX::Action::Viewpoint
 		const std::string  _action;
 	};
 
-	class DeleteAction : public BaseAction
+	class DeleteAction : public Core::Action::BaseAction
 	{
 	  public:
 		explicit DeleteAction( Model::Viewpoint &								p_viewpoint,
@@ -50,7 +50,7 @@ namespace VTX::Action::Viewpoint
 	};
 	*/
 
-	class ChangeDuration : public BaseAction
+	class ChangeDuration : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeDuration( Model::Viewpoint & p_viewpoint, const float p_duration ) :
@@ -69,7 +69,7 @@ namespace VTX::Action::Viewpoint
 		const float		   _duration;
 	};
 
-	class Relocate : public BaseAction
+	class Relocate : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Relocate( Model::Viewpoint & p_viewpoint ) :
@@ -83,24 +83,24 @@ namespace VTX::Action::Viewpoint
 		explicit Relocate( Model::Viewpoint & p_viewpoint, const Object3D::Camera & p_camera ) :
 			_viewpoints { &p_viewpoint }, _position( p_camera.getPosition() ), _rotation( p_camera.getRotation() )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit Relocate( std::vector<Model::Viewpoint *> & p_viewpoints, const Object3D::Camera & p_camera ) :
 			_viewpoints( p_viewpoints ), _position( p_camera.getPosition() ), _rotation( p_camera.getRotation() )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit Relocate( Model::Viewpoint & p_viewpoint, const Math::Transform & p_transform ) :
 			_viewpoints { &p_viewpoint }, _position( p_transform.getTranslationVector() ),
 			_rotation( p_transform.getRotation() )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit Relocate( std::vector<Model::Viewpoint *> & p_viewpoints, const Math::Transform & p_transform ) :
 			_viewpoints( p_viewpoints ), _position( p_transform.getTranslationVector() ),
 			_rotation( p_transform.getRotation() )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -124,18 +124,18 @@ namespace VTX::Action::Viewpoint
 		const Quatf						_rotation;
 	};
 
-	class Translate : public BaseAction
+	class Translate : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Translate( Model::Viewpoint & p_viewpoint, const Vec3f & p_translation ) :
 			_viewpoints { &p_viewpoint }, _translation( p_translation )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit Translate( std::vector<Model::Viewpoint *> & p_viewpoints, const Vec3f & p_translation ) :
 			_viewpoints( p_viewpoints ), _translation( p_translation )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -157,7 +157,7 @@ namespace VTX::Action::Viewpoint
 		const Vec3f						_translation;
 	};
 
-	class Rotate : public BaseAction
+	class Rotate : public Core::Action::BaseAction
 	{
 	  private:
 		enum class RotationType
@@ -170,7 +170,7 @@ namespace VTX::Action::Viewpoint
 		explicit Rotate( Model::Viewpoint & p_viewpoint, const float p_angle, const Vec3f & p_axis ) :
 			_viewpoints { &p_viewpoint }, _angle( p_angle ), _axis( p_axis ), _rotationType( RotationType::Axis_Angle )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit Rotate( const std::unordered_set<Model::Viewpoint *> & p_viewpoints,
 						 const float									p_angle,
@@ -178,18 +178,18 @@ namespace VTX::Action::Viewpoint
 			_viewpoints( p_viewpoints ),
 			_angle( p_angle ), _axis( p_axis ), _rotationType( RotationType::Axis_Angle )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		explicit Rotate( Model::Viewpoint & p_viewpoint, const Vec3f & p_euler ) :
 			_viewpoints { &p_viewpoint }, _axis( p_euler ), _angle( 0 ), _rotationType( RotationType::Euler )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit Rotate( const std::unordered_set<Model::Viewpoint *> & p_viewpoints, const Vec3f & p_euler ) :
 			_viewpoints( p_viewpoints ), _axis( p_euler ), _angle( 0 ), _rotationType( RotationType::Euler )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -224,7 +224,7 @@ namespace VTX::Action::Viewpoint
 		const Vec3f							   _axis;
 	};
 
-	class Rename : public BaseAction
+	class Rename : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Rename( Model::Viewpoint & p_viewpoint, const std::string & p_name ) :

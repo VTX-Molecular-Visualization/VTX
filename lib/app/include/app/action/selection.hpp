@@ -1,7 +1,7 @@
 #ifndef __VTX_ACTION_SELECTION__
 #define __VTX_ACTION_SELECTION__
 
-#include "base_action.hpp"
+#include "app/core/action/base_action.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/model/atom.hpp"
 #include "app/old_app/model/category.hpp"
@@ -21,14 +21,14 @@
 
 namespace VTX::Action::Selection
 {
-	class SelectAll : public BaseAction
+	class SelectAll : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectAll() {}
 
 		virtual void execute() override;
 	};
-	class SelectModels : public BaseAction
+	class SelectModels : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectModels( Model::Selection &			  p_selection,
@@ -113,7 +113,7 @@ namespace VTX::Action::Selection
 		std::vector<Model::ID> _models = std::vector<Model::ID>();
 		const bool			   _appendToSelection;
 	};
-	class UnselectModels : public BaseAction
+	class UnselectModels : public Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectModels( Model::Selection & p_selection, const std::vector<Model::ID> & p_models ) :
@@ -173,7 +173,7 @@ namespace VTX::Action::Selection
 		std::vector<Model::ID> _models = std::vector<Model::ID>();
 	};
 
-	class SelectViewpoint : public BaseAction
+	class SelectViewpoint : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectViewpoint( Model::Selection & p_selection,
@@ -204,7 +204,7 @@ namespace VTX::Action::Selection
 		std::vector<Model::Viewpoint *> _viewpoints = std::vector<Model::Viewpoint *>();
 		const bool						_appendToSelection;
 	};
-	class UnselectViewpoint : public BaseAction
+	class UnselectViewpoint : public Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectViewpoint( Model::Selection & p_selection,
@@ -242,7 +242,7 @@ namespace VTX::Action::Selection
 		const bool						_check;
 	};
 
-	class SelectMolecule : public BaseAction
+	class SelectMolecule : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectMolecule( Model::Selection & p_selection,
@@ -276,7 +276,7 @@ namespace VTX::Action::Selection
 		const bool					   _appendToSelection;
 	};
 
-	class SelectCategory : public BaseAction
+	class SelectCategory : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectCategory( Model::Selection & p_selection,
@@ -307,7 +307,7 @@ namespace VTX::Action::Selection
 		const bool					   _appendToSelection;
 	};
 
-	class SelectChain : public BaseAction
+	class SelectChain : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectChain( Model::Selection & p_selection,
@@ -338,7 +338,7 @@ namespace VTX::Action::Selection
 		const bool					_appendToSelection;
 	};
 
-	class SelectResidue : public BaseAction
+	class SelectResidue : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectResidue( Model::Selection & p_selection,
@@ -372,7 +372,7 @@ namespace VTX::Action::Selection
 		const bool					  _appendToSelection;
 	};
 
-	class SelectAtom : public BaseAction
+	class SelectAtom : public Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectAtom( Model::Selection & p_selection,
@@ -404,7 +404,7 @@ namespace VTX::Action::Selection
 		const bool				   _appendToSelection;
 	};
 
-	class UnselectMolecule : public BaseAction
+	class UnselectMolecule : public Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectMolecule( Model::Selection & p_selection,
@@ -442,7 +442,7 @@ namespace VTX::Action::Selection
 		const bool					   _check;
 	};
 
-	class UnselectCategory : public BaseAction
+	class UnselectCategory : public Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectCategory( Model::Selection & p_selection,
@@ -480,7 +480,7 @@ namespace VTX::Action::Selection
 		const bool					   _check;
 	};
 
-	class UnselectChain : public BaseAction
+	class UnselectChain : public Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectChain( Model::Selection & p_selection, Model::Chain & p_chain, bool p_check = false ) :
@@ -515,7 +515,7 @@ namespace VTX::Action::Selection
 		const bool					_check;
 	};
 
-	class UnselectResidue : public BaseAction
+	class UnselectResidue : public Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectResidue( Model::Selection & p_selection, Model::Residue & p_residue, bool p_check = false ) :
@@ -550,7 +550,7 @@ namespace VTX::Action::Selection
 		const bool					  _check;
 	};
 
-	class UnselectAtom : public BaseAction
+	class UnselectAtom : public Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectAtom( Model::Selection & p_selection, Model::Atom & p_atom, bool p_check = false ) :
@@ -581,7 +581,7 @@ namespace VTX::Action::Selection
 		const bool				   _check;
 	};
 
-	class ClearSelection : public BaseAction
+	class ClearSelection : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ClearSelection( Model::Selection & p_selection ) : _selection( p_selection ) {}
@@ -607,7 +607,7 @@ namespace VTX::Action::Selection
 			Visible::ChangeVisibility( p_mode ),
 			_selection( p_selection ), _objRefTypeId( p_objRefTypeId )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		explicit ChangeVisibility( const Model::Selection & p_selection, const VISIBILITY_MODE p_mode ) :
@@ -637,7 +637,7 @@ namespace VTX::Action::Selection
 		const ID::VTX_ID		 _objRefTypeId;
 	};
 
-	class ToggleWatersVisibility : public BaseAction
+	class ToggleWatersVisibility : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleWatersVisibility( Model::Selection & p_selection ) : _selection( p_selection ) {}
@@ -665,7 +665,7 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 
-	class ToggleSolventVisibility : public BaseAction
+	class ToggleSolventVisibility : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleSolventVisibility( Model::Selection & p_selection ) : _selection( p_selection ) {}
@@ -693,7 +693,7 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 
-	class ToggleHydrogensVisibility : public BaseAction
+	class ToggleHydrogensVisibility : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleHydrogensVisibility( Model::Selection & p_selection ) : _selection( p_selection ) {}
@@ -721,7 +721,7 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 
-	class ToggleIonsVisibility : public BaseAction
+	class ToggleIonsVisibility : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleIonsVisibility( Model::Selection & p_selection ) : _selection( p_selection ) {}
@@ -749,7 +749,7 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 
-	class ToggleTrajectoryPlaying : public BaseAction
+	class ToggleTrajectoryPlaying : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleTrajectoryPlaying( Model::Selection & p_selection ) : _selection( p_selection ) {}
@@ -785,13 +785,13 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 
-	class ChangeRepresentationPreset : public BaseAction
+	class ChangeRepresentationPreset : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRepresentationPreset( Model::Selection & p_selection, const int p_indexPreset ) :
 			_selection( p_selection ), _indexPreset( p_indexPreset )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override;
@@ -801,7 +801,7 @@ namespace VTX::Action::Selection
 		const int		   _indexPreset;
 	};
 
-	class Copy : public BaseAction
+	class Copy : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Copy( const Model::Selection & p_source,
@@ -809,7 +809,7 @@ namespace VTX::Action::Selection
 			_selection( p_source ),
 			_frame( p_frame )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override
 		{
@@ -848,24 +848,24 @@ namespace VTX::Action::Selection
 		const int				 _frame;
 	};
 
-	class Extract : public BaseAction
+	class Extract : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Extract( Model::Selection & p_source ) : _selection( p_source )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override;
 
 	  private:
 		Model::Selection & _selection;
 	};
-	class Delete : public BaseAction
+	class Delete : public Core::Action::BaseAction
 	{
 	  public:
 		explicit Delete( Model::Selection & p_selection ) : _selection( p_selection )
 		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override

@@ -4,8 +4,8 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QVBoxLayout>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/representation.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/representation.hpp>
 #include <app/old_app/setting.hpp>
 
 namespace VTX::UI::Widget::Settings

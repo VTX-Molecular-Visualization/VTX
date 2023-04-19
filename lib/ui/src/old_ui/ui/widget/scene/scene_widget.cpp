@@ -8,9 +8,9 @@
 #include "ui/old_ui/vtx_app.hpp"
 #include <QScrollBar>
 #include <algorithm>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/scene.hpp>
-#include <app/old_app/action/selection.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/scene.hpp>
+#include <app/action/selection.hpp>
 #include <app/old_app/model/label.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/selection.hpp>

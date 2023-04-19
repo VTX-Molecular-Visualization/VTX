@@ -1,8 +1,8 @@
 #include "ui/old_ui/action/setting.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/main_window.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/setting.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/setting.hpp>
 
 namespace VTX::UI::Action::Setting
 {

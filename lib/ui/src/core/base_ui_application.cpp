@@ -1,8 +1,8 @@
 #include "ui/core/base_ui_application.hpp"
 #include "ui/core/io/vtx_layout_reader.hpp"
 #include "ui/core/layout_builder.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/main.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/main.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <util/logger.hpp>

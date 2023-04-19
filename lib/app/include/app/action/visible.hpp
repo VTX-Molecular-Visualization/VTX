@@ -1,14 +1,14 @@
 #ifndef __VTX_ACTION_VISIBLE__
 #define __VTX_ACTION_VISIBLE__
 
-#include "base_action.hpp"
+#include "app/core/action/base_action.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include <util/logger.hpp>
 #include <vector>
 
 namespace VTX::Action::Visible
 {
-	class ChangeVisibility : public BaseAction
+	class ChangeVisibility : public Core::Action::BaseAction
 	{
 	  public:
 		enum class VISIBILITY_MODE : int

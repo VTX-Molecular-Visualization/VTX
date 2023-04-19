@@ -1,7 +1,7 @@
 #include "ui/old_ui/ui/widget/main_menu/camera/render_effect_preset_button.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/renderer.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/renderer.hpp>
 #include <app/old_app/model/renderer/render_effect_preset.hpp>
 #include <app/old_app/model/renderer/render_effect_preset_library.hpp>
 
