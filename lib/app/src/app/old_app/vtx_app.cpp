@@ -13,8 +13,8 @@
 #include "app/old_app/selection/selection_manager.hpp"
 // #include "ui/dialog.hpp"
 // #include "ui/main_window.hpp"
+#include "app/core/worker/worker_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/worker/worker_manager.hpp"
 // #include <QApplication>
 // #include <QPalette>
 #include <exception>
@@ -42,7 +42,7 @@ namespace VTX
 		Core::Action::ActionManager::get();
 		Core::Event::EventManager::get();
 		Selection::SelectionManager::get();
-		Worker::WorkerManager::get();
+		Core::Worker::WorkerManager::get();
 
 		// Create Databases
 		_representationLibrary
@@ -159,7 +159,7 @@ namespace VTX
 	{
 		// Prevent events throw for nothing when quitting app
 		Core::Event::EventManager::get().freezeEvent( true );
-		Worker::WorkerManager::get().stopAll();
+		Core::Worker::WorkerManager::get().stopAll();
 
 		_setting.backup();
 

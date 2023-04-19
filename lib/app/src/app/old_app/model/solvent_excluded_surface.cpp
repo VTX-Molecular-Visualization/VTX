@@ -10,9 +10,9 @@
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 #include "app/old_app/view/d3/triangle.hpp"
-#include "app/old_app/worker/gpu_buffer_initializer.hpp"
-#include "app/old_app/worker/gpu_computer.hpp"
-#include "app/old_app/worker/worker_manager.hpp"
+#include "app/worker/gpu_buffer_initializer.hpp"
+#include "app/worker/gpu_computer.hpp"
+#include "app/core/worker/worker_manager.hpp"
 #include <numeric>
 #include <util/chrono.hpp>
 

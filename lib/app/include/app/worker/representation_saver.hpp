@@ -1,8 +1,8 @@
 #ifndef __VTX_WORKER_REPRESENTATION_SAVER__
 #define __VTX_WORKER_REPRESENTATION_SAVER__
 
-#include "base_thread.hpp"
-#include "base_worker.hpp"
+#include "app/core/worker/base_thread.hpp"
+#include "app/core/worker/base_worker.hpp"
 #include <util/types.hpp>
 
 namespace VTX
@@ -15,7 +15,7 @@ namespace VTX
 	namespace Worker
 	{
 		/*
-		class RepresentationSaverThread : public Worker::BaseThread
+		class RepresentationSaverThread : public Core::Worker::BaseThread
 		{
 			// Q_OBJECT
 
@@ -33,7 +33,7 @@ namespace VTX
 		};
 		*/
 
-		class RepresentationSaver : public Worker::BaseWorker
+		class RepresentationSaver : public Core::Worker::BaseWorker
 		{
 		  public:
 			explicit RepresentationSaver( const Model::Representation::Representation * const p_representation,

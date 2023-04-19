@@ -1,7 +1,7 @@
 #ifndef __VTX_WORKER_GPU_COMPUTER__
 #define __VTX_WORKER_GPU_COMPUTER__
 
-#include "base_worker.hpp"
+#include "app/core/worker/base_worker.hpp"
 #include "app/old_app/generic/base_opengl.hpp"
 #include "app/old_app/renderer/gl/program.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
@@ -14,7 +14,7 @@
 
 namespace VTX::Worker
 {
-	class GpuComputer : public Worker::BaseWorker, public Generic::BaseOpenGL
+	class GpuComputer : public Core::Worker::BaseWorker, public Generic::BaseOpenGL
 	{
 	  public:
 		explicit GpuComputer( const FilePath &										   p_shader,

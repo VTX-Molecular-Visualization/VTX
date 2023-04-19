@@ -1,12 +1,12 @@
 #ifndef __VTX_SAVER__
 #define __VTX_SAVER__
 
-#include "base_thread.hpp"
+#include "app/core/worker/base_thread.hpp"
 #include <util/types.hpp>
 
 namespace VTX::Worker
 {
-	class Saver : public Worker::BaseThread
+	class Saver : public Core::Worker::BaseThread
 	{
 		// Q_OBJECT
 

@@ -4,7 +4,7 @@
 #include <app/old_app/model/path.hpp>
 #include <app/old_app/model/viewpoint.hpp>
 #include <app/old_app/vtx_app.hpp>
-#include <app/old_app/worker/program_launcher.hpp>
+#include <app/worker/program_launcher.hpp>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 

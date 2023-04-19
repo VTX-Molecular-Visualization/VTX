@@ -5,7 +5,7 @@
 #include "app/old_app/selection/selection_manager.hpp"
 // #include "state/export.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/old_app/worker/snapshoter.hpp"
+#include "app/worker/snapshoter.hpp"
 
 namespace VTX::Action::Path
 {

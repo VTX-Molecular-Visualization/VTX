@@ -17,11 +17,11 @@
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/setting.hpp>
 #include <app/old_app/util/molecule.hpp>
-#include <app/old_app/worker/loader.hpp>
-#include <app/old_app/worker/render_effect_loader.hpp>
-#include <app/old_app/worker/representation_loader.hpp>
-#include <app/old_app/worker/saver.hpp>
-#include <app/old_app/worker/scene_loader.hpp>
+#include <app/worker/loader.hpp>
+#include <app/worker/render_effect_loader.hpp>
+#include <app/worker/representation_loader.hpp>
+#include <app/worker/saver.hpp>
+#include <app/worker/scene_loader.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Action::Main

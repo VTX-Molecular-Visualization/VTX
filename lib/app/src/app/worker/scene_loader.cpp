@@ -1,4 +1,4 @@
-#include "app/old_app/worker/scene_loader.hpp"
+#include "app/worker/scene_loader.hpp"
 #include "app/core/event/event_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/lib_assimp.hpp"

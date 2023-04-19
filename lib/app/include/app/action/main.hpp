@@ -2,12 +2,12 @@
 #define __VTX_ACTION_MAIN__
 
 #include "app/core/action/base_action.hpp"
+#include "app/core/worker/worker_manager.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
 #include "app/old_app/model/molecule.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/old_app/worker/snapshoter.hpp"
-#include "app/old_app/worker/worker_manager.hpp"
+#include "app/worker/snapshoter.hpp"
 #include <string>
 #include <util/types.hpp>
 #include <vector>
@@ -73,7 +73,7 @@ namespace VTX::Action::Main
 	  public:
 		explicit Save() : _path( "" ), _callback( nullptr ) {}
 		explicit Save( const FilePath & p_path ) : _path( p_path ), _callback( nullptr ) {}
-		explicit Save( const FilePath & p_path, Worker::CallbackThread * const p_callback ) :
+		explicit Save( const FilePath & p_path, VTX::Core::Worker::CallbackThread * const p_callback ) :
 			_path( p_path ), _callback( p_callback )
 		{
 		}
@@ -81,8 +81,8 @@ namespace VTX::Action::Main
 		virtual void execute() override;
 
 	  private:
-		const FilePath				   _path;
-		Worker::CallbackThread * const _callback;
+		const FilePath							  _path;
+		VTX::Core::Worker::CallbackThread * const _callback;
 	};
 
 	class ImportRepresentationPreset : public Core::Action::BaseAction

@@ -6,7 +6,7 @@
 #include <app/old_app/object3d/camera.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
-#include <app/old_app/worker/program_launcher.hpp>
+#include <app/worker/program_launcher.hpp>
 #include <util/chrono.hpp>
 
 namespace VTX

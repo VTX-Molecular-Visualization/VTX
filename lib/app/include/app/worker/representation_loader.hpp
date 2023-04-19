@@ -1,7 +1,7 @@
 #ifndef __VTX_WORKER_REPRESENTATION_LOADER__
 #define __VTX_WORKER_REPRESENTATION_LOADER__
 
-#include "base_worker.hpp"
+#include "app/core/worker/base_worker.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include <map>
 #include <vector>
@@ -16,7 +16,7 @@ namespace VTX
 
 	namespace Worker
 	{
-		class RepresentationLibraryLoader : public Worker::BaseWorker
+		class RepresentationLibraryLoader : public Core::Worker::BaseWorker
 		{
 		  public:
 			explicit RepresentationLibraryLoader( Model::Representation::RepresentationLibrary & p_library ) :
@@ -44,7 +44,7 @@ namespace VTX
 			bool										   _restore = true;
 		};
 
-		class RepresentationLoader : public Worker::BaseWorker
+		class RepresentationLoader : public VTX::Core::Worker::BaseWorker
 		{
 		  public:
 			explicit RepresentationLoader( const FilePath & p_paths ) { _paths.emplace_back( p_paths ); }

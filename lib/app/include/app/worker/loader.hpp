@@ -1,7 +1,7 @@
 #ifndef __VTX_LOADER__
 #define __VTX_LOADER__
 
-#include "base_thread.hpp"
+#include "app/core/worker/base_thread.hpp"
 #include <map>
 #include <util/chrono.hpp>
 #include <util/types.hpp>
@@ -27,7 +27,7 @@ namespace VTX
 
 	namespace Worker
 	{
-		class Loader : public Worker::BaseThread
+		class Loader : public Core::Worker::BaseThread
 		{
 			// Q_OBJECT
 

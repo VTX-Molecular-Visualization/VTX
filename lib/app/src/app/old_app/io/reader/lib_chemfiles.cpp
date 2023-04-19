@@ -12,7 +12,7 @@
 #include "app/old_app/util/bond_guessing/bond_order_guessing.hpp"
 #include "app/old_app/util/chemfiles.hpp"
 #include "app/old_app/util/molecule.hpp"
-#include "app/old_app/worker/base_thread.hpp"
+#include "app/core/worker/base_thread.hpp"
 #include <algorithm>
 #include <iostream>
 #include <magic_enum.hpp>
@@ -22,7 +22,7 @@
 
 namespace VTX::IO::Reader
 {
-	LibChemfiles::LibChemfiles( const Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
+	LibChemfiles::LibChemfiles( const VTX::Core::Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
 
 	void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 	{

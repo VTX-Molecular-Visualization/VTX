@@ -1,4 +1,4 @@
-#include "app/old_app/worker/gpu_computer.hpp"
+#include "app/worker/gpu_computer.hpp"
 #include "app/old_app/vtx_app.hpp"
 
 namespace VTX::Worker

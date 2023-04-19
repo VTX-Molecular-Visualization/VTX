@@ -15,7 +15,7 @@
 #include <app/old_app/model/base_model.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>
 #include <app/old_app/view/base_view.hpp>
-#include <app/old_app/worker/snapshoter.hpp>
+#include <app/worker/snapshoter.hpp>
 #include <map>
 
 namespace VTX::UI::QT::Tool::Render::Widget

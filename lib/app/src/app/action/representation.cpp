@@ -4,9 +4,9 @@
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/old_app/worker/representation_loader.hpp"
-#include "app/old_app/worker/representation_saver.hpp"
-#include "app/old_app/worker/worker_manager.hpp"
+#include "app/worker/representation_loader.hpp"
+#include "app/worker/representation_saver.hpp"
+#include "app/core/worker/worker_manager.hpp"
 #include <filesystem>
 #include <util/filesystem.hpp>
 

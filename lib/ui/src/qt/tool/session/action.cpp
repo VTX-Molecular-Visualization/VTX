@@ -9,10 +9,10 @@
 #include <app/old_app/io/struct/scene_path_data.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
-#include <app/old_app/worker/loader.hpp>
-#include <app/old_app/worker/saver.hpp>
-#include <app/old_app/worker/scene_loader.hpp>
-#include <app/old_app/worker/worker_manager.hpp>
+#include <app/worker/loader.hpp>
+#include <app/worker/saver.hpp>
+#include <app/worker/scene_loader.hpp>
+#include <app/core/worker/worker_manager.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Tool::Session::Action
@@ -41,7 +41,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 			if ( _paths.empty() )
 				return;
 
-			Worker::CallbackThread callback = Worker::CallbackThread(
+			VTX::Core::Worker::CallbackThread callback = VTX::Core::Worker::CallbackThread(
 				[ this ]( const uint p_code )
 				{
 					if ( p_code )

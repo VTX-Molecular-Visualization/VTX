@@ -3,14 +3,14 @@
 
 // TODO reimplemente that without Qt
 
-#include "base_worker.hpp"
+#include "app/core/worker/base_worker.hpp"
 #include "app/old_app/generic/base_opengl.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
 // #include <QImage>
 
 namespace VTX::Worker
 {
-	class Snapshoter : public Worker::BaseWorker, public Generic::BaseOpenGL
+	class Snapshoter : public Core::Worker::BaseWorker, public Generic::BaseOpenGL
 	{
 	  public:
 		enum class MODE : int

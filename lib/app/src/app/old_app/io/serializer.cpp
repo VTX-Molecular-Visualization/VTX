@@ -26,7 +26,7 @@
 #include "app/old_app/mvc/mvc_manager.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/trajectory/trajectory_enum.hpp"
-#include "app/old_app/worker/base_thread.hpp"
+#include "app/core/worker/base_thread.hpp"
 #include <algorithm>
 #include <magic_enum.hpp>
 #include <map>
@@ -34,7 +34,7 @@
 
 namespace VTX::IO
 {
-	Serializer::Serializer( const Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
+	Serializer::Serializer( const VTX::Core::Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
 
 	nlohmann::json Serializer::serialize( const VTXApp & p_app ) const
 	{

@@ -1,7 +1,7 @@
 #ifndef __VTX_WORKER_RENDER_EFFECT_PRESET_LOADER__
 #define __VTX_WORKER_RENDER_EFFECT_PRESET_LOADER__
 
-#include "base_worker.hpp"
+#include "app/core/worker/base_worker.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include <util/types.hpp>
 #include <vector>
@@ -15,7 +15,7 @@ namespace VTX
 
 	namespace Worker
 	{
-		class RenderEffectPresetLibraryLoader : public Worker::BaseWorker
+		class RenderEffectPresetLibraryLoader : public Core::Worker::BaseWorker
 		{
 		  public:
 			explicit RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary & p_library ) :
@@ -41,7 +41,7 @@ namespace VTX
 			bool										 _notify = true;
 		};
 
-		class RenderEffectPresetLoader : public Worker::BaseWorker
+		class RenderEffectPresetLoader : public VTX::Core::Worker::BaseWorker
 		{
 		  public:
 			explicit RenderEffectPresetLoader( const FilePath & p_path ) { _paths.emplace_back( p_path ); }

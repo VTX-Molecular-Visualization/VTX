@@ -13,7 +13,7 @@
 // TODO reimplemente that without Qt
 namespace VTX
 {
-	namespace Worker
+	namespace Core::Worker
 	{
 		using CallbackThread = std::function<void( uint )>;
 		using CallbackWorker = std::function<void( void )>;
@@ -122,15 +122,17 @@ namespace VTX
 			// void _logDebug( const std::string p_msg ) { VTX_DEBUG( p_msg ); }
 			//  void _logFile( const std::string p_msg ) { VTX_LOG_FILE( p_msg ); }
 		};
-	} // namespace Worker
+	} // namespace Core::Worker
 
-	inline void VTX_THREAD( Worker::BaseThread * const p_thread, Worker::CallbackThread * const p_callback = nullptr )
+	inline void VTX_THREAD( Core::Worker::BaseThread * const	 p_thread,
+							Core::Worker::CallbackThread * const p_callback = nullptr )
 	{
-		Worker::WorkerManager::get().run( p_thread, p_callback );
+		Core::Worker::WorkerManager::get().run( p_thread, p_callback );
 	}
-	inline void VTX_WORKER( Worker::BaseWorker * const p_worker, Worker::CallbackWorker * const p_callback = nullptr )
+	inline void VTX_WORKER( Core::Worker::BaseWorker * const	 p_worker,
+							Core::Worker::CallbackWorker * const p_callback = nullptr )
 	{
-		Worker::WorkerManager::get().run( p_worker, p_callback );
+		Core::Worker::WorkerManager::get().run( p_worker, p_callback );
 	}
 	// inline void VTX_ASYNC( const std::function<void( void )> & p_function ) { std::thread( p_function ).detach(); }
 } // namespace VTX

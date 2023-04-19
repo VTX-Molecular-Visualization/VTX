@@ -1,7 +1,7 @@
 #ifndef __VTX_SCENE_LOADER__
 #define __VTX_SCENE_LOADER__
 
-#include "base_worker.hpp"
+#include "app/core/worker/base_worker.hpp"
 #include <map>
 #include <util/types.hpp>
 #include <vector>
@@ -15,7 +15,7 @@ namespace VTX
 
 	namespace Worker
 	{
-		class SceneLoader : public Worker::BaseWorker
+		class SceneLoader : public Core::Worker::BaseWorker
 		{
 		  public:
 			explicit SceneLoader( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}

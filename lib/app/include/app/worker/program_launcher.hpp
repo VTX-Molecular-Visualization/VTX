@@ -1,13 +1,13 @@
 #ifndef __VTX_PROGRAM_LAUNCHER__
 #define __VTX_PROGRAM_LAUNCHER__
 
-#include "base_thread.hpp"
+#include "app/core/worker/base_thread.hpp"
 #include <string>
 #include <util/types.hpp>
 
 namespace VTX::Worker
 {
-	class ProgramLauncher : public Worker::BaseThread
+	class ProgramLauncher : public Core::Worker::BaseThread
 	{
 		// Q_OBJECT
 

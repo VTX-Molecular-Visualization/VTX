@@ -22,7 +22,7 @@
 #include <app/old_app/model/selection.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/setting.hpp>
-#include <app/old_app/worker/worker_manager.hpp>
+#include <app/core/worker/worker_manager.hpp>
 
 namespace VTX::UI::QT
 {
@@ -71,7 +71,7 @@ namespace VTX::UI::QT
 		if ( VTXApp::get().hasAnyModifications() )
 		{
 			p_closeEvent->ignore();
-			Worker::CallbackThread callback = Worker::CallbackThread(
+			VTX::Core::Worker::CallbackThread callback = VTX::Core::Worker::CallbackThread(
 				[]( const uint p_code )
 				{
 					if ( p_code )

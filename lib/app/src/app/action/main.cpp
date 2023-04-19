@@ -1,15 +1,16 @@
 #include "app/action/main.hpp"
+#include "app/core/worker/worker_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/network/network_manager.hpp"
 #include "app/old_app/network/request/download_mmtf.hpp"
 #include "app/old_app/object3d/camera_manager.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/old_app/worker/loader.hpp"
-#include "app/old_app/worker/render_effect_loader.hpp"
-#include "app/old_app/worker/representation_loader.hpp"
-#include "app/old_app/worker/saver.hpp"
-#include "app/old_app/worker/scene_loader.hpp"
+#include "app/worker/loader.hpp"
+#include "app/worker/render_effect_loader.hpp"
+#include "app/worker/representation_loader.hpp"
+#include "app/worker/saver.hpp"
+#include "app/worker/scene_loader.hpp"
 
 namespace VTX::Action::Main
 {
@@ -84,7 +85,7 @@ namespace VTX::Action::Main
 
 			loader->setOpenTrajectoryAsMoleculeIfTargetFail( !trajectoryTargetsForced );
 
-			Worker::CallbackThread * callback = new Worker::CallbackThread(
+			VTX::Core::Worker::CallbackThread * callback = new VTX::Core::Worker::CallbackThread(
 				[ loader ]( const uint p_code )
 				{
 					for ( const std::pair<const FilePath, Worker::Loader::Result> & pairFilResult :

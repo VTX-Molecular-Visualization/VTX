@@ -1,4 +1,4 @@
-#include "app/old_app/worker/render_effect_loader.hpp"
+#include "app/worker/render_effect_loader.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
 #include "app/old_app/model/renderer/render_effect_preset.hpp"
 #include "app/old_app/model/renderer/render_effect_preset_library.hpp"

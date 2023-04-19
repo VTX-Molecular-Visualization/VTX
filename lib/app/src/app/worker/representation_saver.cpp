@@ -1,4 +1,4 @@
-#include "app/old_app/worker/representation_saver.hpp"
+#include "app/worker/representation_saver.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/writer/serialized_object.hpp"
 #include "app/old_app/model/representation/representation.hpp"

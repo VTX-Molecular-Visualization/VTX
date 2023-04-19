@@ -1,7 +1,7 @@
 #include "ui/old_ui/ui/widget/custom_widget/render_preview_widget.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/old_app/worker/snapshoter.hpp>
-#include <app/old_app/worker/worker_manager.hpp>
+#include <app/worker/snapshoter.hpp>
+#include <app/core/worker/worker_manager.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
