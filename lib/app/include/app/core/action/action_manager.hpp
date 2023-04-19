@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_ACTION_ACTION_MANAGER__
-#define __VTX_CORE_ACTION_ACTION_MANAGER__
+#ifndef __VTX_APP_CORE_ACTION_ACTION_MANAGER__
+#define __VTX_APP_CORE_ACTION_ACTION_MANAGER__
 
 #include "app/core/action/base_action.hpp"
 #include "app/core/action/base_action_undonable.hpp"

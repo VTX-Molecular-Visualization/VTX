@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_ACTION_ENUM_ACTION_TAG__
-#define __VTX_CORE_ACTION_ENUM_ACTION_TAG__
+#ifndef __VTX_APP_CORE_ACTION_ENUM_ACTION_TAG__
+#define __VTX_APP_CORE_ACTION_ENUM_ACTION_TAG__
 
 namespace VTX::Core::Action
 {

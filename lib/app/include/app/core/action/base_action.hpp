@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_ACTION_BASE_ACTION__
-#define __VTX_CORE_ACTION_BASE_ACTION__
+#ifndef __VTX_APP_CORE_ACTION_BASE_ACTION__
+#define __VTX_APP_CORE_ACTION_BASE_ACTION__
 
 #include "enum_action_tag.hpp"
 #include <string>

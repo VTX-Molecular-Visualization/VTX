@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_ACTION_BASE_ACTION_UNDONABLE__
-#define __VTX_CORE_ACTION_BASE_ACTION_UNDONABLE__
+#ifndef __VTX_APP_CORE_ACTION_BASE_ACTION_UNDONABLE__
+#define __VTX_APP_CORE_ACTION_BASE_ACTION_UNDONABLE__
 
 #include "app/core/action/base_action.hpp"
 
