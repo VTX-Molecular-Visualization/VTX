@@ -6,8 +6,8 @@
 #include "ui/qt/controller/measurement_picker.hpp"
 #include "ui/qt/controller/picker.hpp"
 #include "ui/qt/controller/trackball.hpp"
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
+#include <app/event/vtx_event.hpp>
+#include <app/core/event/event_manager.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/object3d/camera.hpp>
 #include <app/old_app/object3d/scene.hpp>

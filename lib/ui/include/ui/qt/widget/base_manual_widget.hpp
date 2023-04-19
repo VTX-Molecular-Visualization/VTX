@@ -3,7 +3,7 @@
 
 #include "base_manual_widget_initializer.hpp"
 #include <QWidget>
-#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/event/base_event_receiver_vtx.hpp>
 #include <type_traits>
 
 namespace VTX::UI::QT::Widget

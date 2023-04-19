@@ -1,7 +1,7 @@
 #ifndef __VTX_BASE_MODEL__
 #define __VTX_BASE_MODEL__
 
-#include "app/old_app/event/event.hpp"
+#include "app/event/vtx_event.hpp"
 #include "app/old_app/id.hpp"
 #include <string>
 #include <util/types.hpp>

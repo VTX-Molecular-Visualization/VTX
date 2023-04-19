@@ -12,7 +12,7 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 #include <map>
-#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/event/base_event_receiver_vtx.hpp>
 #include <app/old_app/generic/base_visible.hpp>
 #include <app/old_app/model/atom.hpp>
 #include <app/old_app/model/category.hpp>

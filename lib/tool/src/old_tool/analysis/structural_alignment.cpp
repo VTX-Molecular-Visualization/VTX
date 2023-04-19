@@ -1,8 +1,8 @@
 #include "tool/old_tool/analysis/structural_alignment.hpp"
 #include "tool/old_tool/analysis/rmsd.hpp"
 #include "tool/old_tool/analysis/structural_alignment_method/ce_align.hpp"
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
+#include <app/event/vtx_event.hpp>
+#include <app/core/event/event_manager.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <string>
 #include <util/chrono.hpp>

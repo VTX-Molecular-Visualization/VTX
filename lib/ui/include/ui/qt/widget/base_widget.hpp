@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_QT_WIDGET_BASE_WIDGET__
 #define __VTX_UI_QT_WIDGET_BASE_WIDGET__
 
-#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/event/base_event_receiver_vtx.hpp>
 #include <QPainter>
 #include <QStyleOption>
 #include <QWidget>

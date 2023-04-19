@@ -1,5 +1,5 @@
 #include "app/old_app/representation/representation_manager.hpp"
-#include "app/old_app/event/event_manager.hpp"
+#include "app/core/event/event_manager.hpp"
 #include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/model/chain.hpp"
 #include "app/old_app/model/molecule.hpp"

@@ -1,7 +1,7 @@
 #ifndef __VTX_SCENE__
 #define __VTX_SCENE__
 
-#include "app/old_app/event/event_manager.hpp"
+#include "app/core/event/event_manager.hpp"
 #include "app/old_app/generic/base_scene_item.hpp"
 #include "app/old_app/generic/base_updatable.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"

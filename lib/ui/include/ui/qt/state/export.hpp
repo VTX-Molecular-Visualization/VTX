@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_STATE_EXPORT__
 
 #include "base_state.hpp"
+#include <util/types.hpp>
 
 namespace VTX
 {

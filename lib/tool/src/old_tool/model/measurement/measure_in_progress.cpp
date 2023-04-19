@@ -1,8 +1,8 @@
 #include "tool/old_tool/model/measurement/measure_in_progress.hpp"
 #include "tool/old_tool/util/measurement.hpp"
 #include <algorithm>
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
+#include <app/event/vtx_event.hpp>
+#include <app/core/event/event_manager.hpp>
 #include <app/old_app/model/atom.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>

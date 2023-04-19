@@ -17,105 +17,107 @@ namespace VTX::Core::Action
 {
 	void ActionManager::execute( BaseAction * const p_action ) { _flushAction( p_action ); }
 
+	// TODO interpret commands outside of this class. The CommandInterpretor class will generate an action and call
+	// ActionManager::execute(BaseAction * const p_action)
 	void ActionManager::execute( const std::string & p_action )
 	{
-		std::istringstream		 iss( p_action );
-		std::string				 word;
-		std::vector<std::string> words = std::vector<std::string>();
-		while ( iss >> word )
-		{
-			words.emplace_back( word );
-		}
+		// std::istringstream		 iss( p_action );
+		// std::string				 word;
+		// std::vector<std::string> words = std::vector<std::string>();
+		// while ( iss >> word )
+		//{
+		//	words.emplace_back( word );
+		// }
 
-		if ( words.size() == 0 )
-		{
-			VTX_ERROR( "Empty action string" );
-		}
+		// if ( words.size() == 0 )
+		//{
+		//	VTX_ERROR( "Empty action string" );
+		// }
 
-		std::string & command = words[ 0 ];
-		BaseAction *  action  = nullptr;
+		// std::string & command = words[ 0 ];
+		// BaseAction *  action  = nullptr;
 
-		// TODO: map with ids.
-		try
-		{
-			Model::Molecule & molecule = *( *VTXApp::get().getScene().getMolecules().begin() ).first;
+		//// TODO: map with ids.
+		// try
+		//{
+		//	Model::Molecule & molecule = *( *VTXApp::get().getScene().getMolecules().begin() ).first;
 
-			if ( command == "snapshot" )
-			{
-				action = new VTX::Action::Main::Snapshot(
-					Worker::Snapshoter::MODE::GL,
-					IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ) );
-			}
-			else if ( command == "change_representation" )
-			{
-				action = new VTX::Action::Setting::ChangeDefaultRepresentation( std::stoi( words.at( 1 ) ) );
-			}
-			else if ( command == "change_shading" )
-			{
-				action = new VTX::Action::Setting::ChangeShading(
-					magic_enum::enum_cast<Renderer::SHADING>( words.at( 1 ) ).value() );
-			}
-			else if ( command == "change_color_mode" )
-			{
-				action = new VTX::Action::Setting::ChangeColorMode(
-					magic_enum::enum_cast<Generic::COLOR_MODE>( words.at( 1 ) ).value() );
-			}
-			else if ( command == "set_representation_molecule" )
-			{
-				Model::Representation::Representation * const representation
-					= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
-				action = new VTX::Action::Representable::SetRepresentation( molecule, representation );
-			}
-			else if ( command == "remove_representation_molecule" )
-			{
-				action = new VTX::Action::Representable::RemoveRepresentation( molecule );
-			}
-			else if ( command == "set_representation_chain" )
-			{
-				Model::Representation::Representation * const representation
-					= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
-				const int idChain = std::stoi( words.at( 2 ) );
-				action			  = new VTX::Action::Representable::SetRepresentation( *molecule.getChains()[ idChain ],
-																			   representation );
-			}
-			else if ( command == "remove_representation_chain" )
-			{
-				const int idChain = std::stoi( words.at( 1 ) );
-				action = new VTX::Action::Representable::RemoveRepresentation( *molecule.getChains()[ idChain ] );
-			}
-			else if ( command == "set_representation_residue" )
-			{
-				Model::Representation::Representation * const representation
-					= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
-				const int indexResidue = std::stoi( words.at( 2 ) );
-				action = new VTX::Action::Representable::SetRepresentation( *molecule.getResidues()[ indexResidue ],
-																			representation );
-			}
-			else if ( command == "remove_representation_residue" )
-			{
-				const int indexResidue = std::stoi( words.at( 1 ) );
-				action
-					= new VTX::Action::Representable::RemoveRepresentation( *molecule.getResidues()[ indexResidue ] );
-			}
-		}
-		catch ( const std::exception & )
-		{
-			if ( action != nullptr )
-			{
-				action->displayUsage();
-				delete action;
-				return;
-			}
-		}
+		//	if ( command == "snapshot" )
+		//	{
+		//		action = new VTX::Action::Main::Snapshot(
+		//			Worker::Snapshoter::MODE::GL,
+		//			IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ) );
+		//	}
+		//	else if ( command == "change_representation" )
+		//	{
+		//		action = new VTX::Action::Setting::ChangeDefaultRepresentation( std::stoi( words.at( 1 ) ) );
+		//	}
+		//	else if ( command == "change_shading" )
+		//	{
+		//		action = new VTX::Action::Setting::ChangeShading(
+		//			magic_enum::enum_cast<Renderer::SHADING>( words.at( 1 ) ).value() );
+		//	}
+		//	else if ( command == "change_color_mode" )
+		//	{
+		//		action = new VTX::Action::Setting::ChangeColorMode(
+		//			magic_enum::enum_cast<Generic::COLOR_MODE>( words.at( 1 ) ).value() );
+		//	}
+		//	else if ( command == "set_representation_molecule" )
+		//	{
+		//		Model::Representation::Representation * const representation
+		//			= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
+		//		action = new VTX::Action::Representable::SetRepresentation( molecule, representation );
+		//	}
+		//	else if ( command == "remove_representation_molecule" )
+		//	{
+		//		action = new VTX::Action::Representable::RemoveRepresentation( molecule );
+		//	}
+		//	else if ( command == "set_representation_chain" )
+		//	{
+		//		Model::Representation::Representation * const representation
+		//			= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
+		//		const int idChain = std::stoi( words.at( 2 ) );
+		//		action			  = new VTX::Action::Representable::SetRepresentation( *molecule.getChains()[ idChain ],
+		//																	   representation );
+		//	}
+		//	else if ( command == "remove_representation_chain" )
+		//	{
+		//		const int idChain = std::stoi( words.at( 1 ) );
+		//		action = new VTX::Action::Representable::RemoveRepresentation( *molecule.getChains()[ idChain ] );
+		//	}
+		//	else if ( command == "set_representation_residue" )
+		//	{
+		//		Model::Representation::Representation * const representation
+		//			= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
+		//		const int indexResidue = std::stoi( words.at( 2 ) );
+		//		action = new VTX::Action::Representable::SetRepresentation( *molecule.getResidues()[ indexResidue ],
+		//																	representation );
+		//	}
+		//	else if ( command == "remove_representation_residue" )
+		//	{
+		//		const int indexResidue = std::stoi( words.at( 1 ) );
+		//		action
+		//			= new VTX::Action::Representable::RemoveRepresentation( *molecule.getResidues()[ indexResidue ] );
+		//	}
+		//}
+		// catch ( const std::exception & )
+		//{
+		//	if ( action != nullptr )
+		//	{
+		//		action->displayUsage();
+		//		delete action;
+		//		return;
+		//	}
+		//}
 
-		if ( action != nullptr )
-		{
-			execute( action );
-		}
-		else
-		{
-			VTX_ERROR( "Action not found" );
-		}
+		// if ( action != nullptr )
+		//{
+		//	execute( action );
+		// }
+		// else
+		//{
+		//	VTX_ERROR( "Action not found" );
+		// }
 	}
 
 	bool ActionManager::canUndo() const { return _bufferUndo.size() > 0; }

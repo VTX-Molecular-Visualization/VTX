@@ -1,7 +1,7 @@
 #ifndef __VTX_WORKER_MANAGER__
 #define __VTX_WORKER_MANAGER__
 
-#include "app/old_app/event/event_manager.hpp"
+#include "app/core/event/event_manager.hpp"
 #include "app/old_app/generic/base_updatable.hpp"
 #include "base_thread.hpp"
 #include "base_worker.hpp"

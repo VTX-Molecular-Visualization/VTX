@@ -20,7 +20,7 @@
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
 #include <app/action/viewpoint.hpp>
-#include <app/old_app/event/event_manager.hpp>
+#include <app/core/event/event_manager.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/model/label.hpp>
 // #include <tool/old_tool/model/measurement/angle.hpp>

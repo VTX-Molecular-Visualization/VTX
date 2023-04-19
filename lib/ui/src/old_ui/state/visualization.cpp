@@ -5,8 +5,8 @@
 #include "ui/old_ui/controller/picker.hpp"
 #include "ui/old_ui/controller/trackball.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
+#include <app/event/vtx_event.hpp>
+#include <app/core/event/event_manager.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/object3d/camera.hpp>
 #include <app/old_app/object3d/scene.hpp>

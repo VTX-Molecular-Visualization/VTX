@@ -1,8 +1,8 @@
 #ifndef __VTX_BASE_MODEL_3D__
 #define __VTX_BASE_MODEL_3D__
 
+#include "app/event/vtx_event.hpp"
 #include "app/old_app/buffer/base_buffer_opengl.hpp"
-#include "app/old_app/event/event.hpp"
 #include "app/old_app/generic/base_auto_rotate.hpp"
 #include "app/old_app/generic/base_renderable.hpp"
 #include "app/old_app/generic/base_transformable.hpp"

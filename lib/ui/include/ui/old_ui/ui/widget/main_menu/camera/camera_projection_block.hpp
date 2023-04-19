@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_MENU_CAMERA_PROJECTION__
 #define __VTX_UI_WIDGET_MENU_CAMERA_PROJECTION__
 
-#include <app/old_app/event/event.hpp>
+#include <app/event/vtx_event.hpp>
 #include "ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>

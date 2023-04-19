@@ -1,7 +1,7 @@
 #include "app/old_app/model/renderer/render_effect_preset_library.hpp"
 #include "app/core/action/action_manager.hpp"
 #include "app/action/renderer.hpp"
-#include "app/old_app/event/event_manager.hpp"
+#include "app/core/event/event_manager.hpp"
 #include "app/old_app/mvc/mvc_manager.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"

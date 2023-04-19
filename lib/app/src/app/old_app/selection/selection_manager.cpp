@@ -1,5 +1,5 @@
 #include "app/old_app/selection/selection_manager.hpp"
-#include "app/old_app/event/event_manager.hpp"
+#include "app/core/event/event_manager.hpp"
 #include "app/old_app/model/selection.hpp"
 #include "app/old_app/mvc/mvc_manager.hpp"
 #include <string>

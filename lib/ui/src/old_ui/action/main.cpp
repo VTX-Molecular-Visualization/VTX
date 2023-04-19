@@ -6,8 +6,8 @@
 #include "ui/old_ui/ui/main_window.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <app/core/action/action_manager.hpp>
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
+#include <app/event/vtx_event.hpp>
+#include <app/core/event/event_manager.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>

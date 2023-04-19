@@ -1,5 +1,5 @@
 #include "app/old_app/model/representation/instantiated_representation.hpp"
-#include "app/old_app/event/event.hpp"
+#include "app/event/vtx_event.hpp"
 #include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/model/molecule.hpp"
 #include "app/old_app/model/secondary_structure.hpp"

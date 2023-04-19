@@ -1,17 +1,17 @@
 #ifndef __VTX_MODEL_SELECTION__
 #define __VTX_MODEL_SELECTION__
 
-#include "base_model.hpp"
-#include <util/types.hpp>
-#include "app/old_app/event/base_event_receiver_vtx.hpp"
-#include "app/old_app/event/event.hpp"
+#include "app/event/base_event_receiver_vtx.hpp"
+#include "app/event/vtx_event.hpp"
 #include "app/old_app/model/base_model.hpp"
 #include "app/old_app/model/category_enum.hpp"
 #include "app/old_app/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
+#include "base_model.hpp"
 #include <map>
 #include <set>
 #include <unordered_set>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX::Model

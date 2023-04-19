@@ -5,7 +5,7 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "render_effect_preset_button.hpp"
 #include <QWidget>
-#include <app/old_app/event/event.hpp>
+#include <app/event/vtx_event.hpp>
 #include <app/old_app/model/renderer/render_effect_preset_library.hpp>
 #include <app/old_app/view/base_view.hpp>
 #include <vector>

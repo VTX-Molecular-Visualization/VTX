@@ -4,8 +4,8 @@
 #include "contextual_menu.hpp"
 #include "cursor_handler.hpp"
 #include "ui/old_ui/event/base_event_firerer_input.hpp"
-#include <app/old_app/event/base_event_receiver_vtx.hpp>
-#include <app/old_app/event/event.hpp>
+#include <app/event/base_event_receiver_vtx.hpp>
+#include <app/event/vtx_event.hpp>
 // #include "widget/analysis/structural_alignment/structural_alignment_widget.hpp"
 #include "widget/base_widget.hpp"
 #include "widget/console/console_widget.hpp"

@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_REPRESENTATION_LIBRARY__
 #define __VTX_MODEL_REPRESENTATION_LIBRARY__
 
-#include "app/old_app/event/event.hpp"
+#include "app/event/vtx_event.hpp"
 #include "app/old_app/model/base_model.hpp"
 #include "app/old_app/model/category_enum.hpp"
 #include "app/old_app/mvc/mvc_manager.hpp"

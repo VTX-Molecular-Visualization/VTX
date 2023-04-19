@@ -6,7 +6,7 @@
 #include <QIcon>
 #include <QWheelEvent>
 #include <QWidget>
-#include <app/old_app/event/event.hpp>
+#include <app/event/vtx_event.hpp>
 #include <app/old_app/id.hpp>
 
 namespace VTX::UI::Widget::Representation

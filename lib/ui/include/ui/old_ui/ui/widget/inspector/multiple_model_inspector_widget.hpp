@@ -4,7 +4,7 @@
 #include "inspector_item_widget.hpp"
 #include "inspector_section_flag.hpp"
 #include <QWidget>
-#include <app/old_app/event/event.hpp>
+#include <app/event/vtx_event.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>
 #include <app/old_app/view/callback_view.hpp>
 #include <type_traits>

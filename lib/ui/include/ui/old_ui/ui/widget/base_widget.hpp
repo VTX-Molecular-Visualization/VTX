@@ -4,7 +4,7 @@
 #include <QPainter>
 #include <QStyleOption>
 #include <QWidget>
-#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/event/base_event_receiver_vtx.hpp>
 
 namespace VTX
 {

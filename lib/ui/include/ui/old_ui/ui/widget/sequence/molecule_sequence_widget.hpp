@@ -9,7 +9,7 @@
 #include <QPoint>
 #include <QScrollArea>
 #include <QWidget>
-#include <app/old_app/event/event.hpp>
+#include <app/event/vtx_event.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <vector>
 

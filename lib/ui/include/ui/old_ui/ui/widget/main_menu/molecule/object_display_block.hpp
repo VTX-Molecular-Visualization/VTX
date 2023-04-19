@@ -4,7 +4,7 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
-#include <app/old_app/event/event.hpp>
+#include <app/event/vtx_event.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <unordered_set>
 

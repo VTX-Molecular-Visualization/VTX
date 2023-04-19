@@ -1,5 +1,5 @@
 #include "app/old_app/worker/loader.hpp"
-#include "app/old_app/event/event_manager.hpp"
+#include "app/core/event/event_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/lib_assimp.hpp"
 #include "app/old_app/io/reader/lib_chemfiles.hpp"

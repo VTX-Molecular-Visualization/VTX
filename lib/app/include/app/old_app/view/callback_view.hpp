@@ -2,7 +2,7 @@
 #define __VTX_VIEW_CALLBACK_VIEW__
 
 #include "base_view.hpp"
-#include "app/old_app/event/event.hpp"
+#include "app/event/vtx_event.hpp"
 
 namespace VTX::View
 {

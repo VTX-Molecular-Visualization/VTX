@@ -2,8 +2,8 @@
 #define __VTX_MODEL_MEASUREMENT_MEASURE_IN_PROGRESS__
 
 #include <QPoint>
-#include <app/old_app/event/base_event_receiver_vtx.hpp>
-#include <app/old_app/event/event.hpp>
+#include <app/event/base_event_receiver_vtx.hpp>
+#include <app/event/vtx_event.hpp>
 #include <app/old_app/generic/base_auto_delete.hpp>
 #include <app/old_app/id.hpp>
 #include <app/old_app/model/label.hpp>

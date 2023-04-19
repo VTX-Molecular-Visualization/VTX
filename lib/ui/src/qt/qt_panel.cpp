@@ -1,6 +1,6 @@
 #include "ui/qt/qt_panel.hpp"
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
+#include <app/event/vtx_event.hpp>
+#include <app/core/event/event_manager.hpp>
 
 namespace VTX::UI::QT
 {

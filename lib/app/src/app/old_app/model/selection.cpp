@@ -1,6 +1,6 @@
 #include "app/old_app/model/selection.hpp"
 #include "app/old_app/define.hpp"
-#include "app/old_app/event/event_manager.hpp"
+#include "app/core/event/event_manager.hpp"
 #include "app/old_app/model/atom.hpp"
 #include "app/old_app/model/category.hpp"
 #include "app/old_app/model/chain.hpp"

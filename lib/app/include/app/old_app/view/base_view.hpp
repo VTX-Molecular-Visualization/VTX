@@ -1,7 +1,7 @@
 #ifndef __VTX_BASE_VIEW__
 #define __VTX_BASE_VIEW__
 
-#include "app/old_app/event/event.hpp"
+#include "app/event/vtx_event.hpp"
 #include "app/old_app/model/base_model.hpp"
 #include <util/logger.hpp>
 

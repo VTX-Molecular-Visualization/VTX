@@ -2,8 +2,8 @@
 #define __VTX_UI_ACTION_MAIN__
 
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
+#include <app/core/event/event_manager.hpp>
+#include <app/event/vtx_event.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/path.hpp>

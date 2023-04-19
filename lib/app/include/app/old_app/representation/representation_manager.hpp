@@ -1,7 +1,7 @@
 #ifndef __VTX_REPRESENTATION_MANAGER__
 #define __VTX_REPRESENTATION_MANAGER__
 
-#include "app/old_app/event/event.hpp"
+#include "app/event/vtx_event.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/model/molecule.hpp"
 #include "app/old_app/model/representation/representation_data.hpp"

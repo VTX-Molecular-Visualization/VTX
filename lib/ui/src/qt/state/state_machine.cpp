@@ -3,8 +3,8 @@
 #include "ui/qt/state/play.hpp"
 #include "ui/qt/state/visualization.hpp"
 #include <app/old_app/define.hpp>
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
+#include <app/event/vtx_event.hpp>
+#include <app/core/event/event_manager.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <util/exceptions.hpp>
 

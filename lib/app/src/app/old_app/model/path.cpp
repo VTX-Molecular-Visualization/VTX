@@ -1,6 +1,6 @@
 #include "app/old_app/model/path.hpp"
-#include "app/old_app/event/event.hpp"
-#include "app/old_app/event/event_manager.hpp"
+#include "app/core/event/event_manager.hpp"
+#include "app/event/vtx_event.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/model/viewpoint.hpp"
 #include "app/old_app/mvc/mvc_manager.hpp"

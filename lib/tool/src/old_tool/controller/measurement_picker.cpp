@@ -4,7 +4,7 @@
 #include <QPoint>
 #include <app/core/action/action_manager.hpp>
 #include <app/action/selection.hpp>
-#include <app/old_app/event/event_manager.hpp>
+#include <app/core/event/event_manager.hpp>
 #include <app/old_app/model/atom.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/residue.hpp>

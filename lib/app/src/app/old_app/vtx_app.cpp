@@ -1,9 +1,9 @@
 #include "app/old_app/vtx_app.hpp"
-#include "app/core/action/action_manager.hpp"
 #include "app/action/main.hpp"
 #include "app/action/setting.hpp"
-#include "app/old_app/event/event.hpp"
-#include "app/old_app/event/event_manager.hpp"
+#include "app/core/action/action_manager.hpp"
+#include "app/core/event/event_manager.hpp"
+#include "app/event/vtx_event.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
 #include "app/old_app/model/renderer/render_effect_preset.hpp"
 #include "app/old_app/model/renderer/render_effect_preset_library.hpp"
@@ -40,7 +40,7 @@ namespace VTX
 		// Create singletons.
 		MVC::MvcManager::get();
 		Core::Action::ActionManager::get();
-		Event::EventManager::get();
+		Core::Event::EventManager::get();
 		Selection::SelectionManager::get();
 		Worker::WorkerManager::get();
 
@@ -158,7 +158,7 @@ namespace VTX
 	void VTXApp::_stop()
 	{
 		// Prevent events throw for nothing when quitting app
-		Event::EventManager::get().freezeEvent( true );
+		Core::Event::EventManager::get().freezeEvent( true );
 		Worker::WorkerManager::get().stopAll();
 
 		_setting.backup();

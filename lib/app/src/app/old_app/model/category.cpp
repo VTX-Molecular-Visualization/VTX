@@ -1,5 +1,5 @@
 #include "app/old_app/model/category.hpp"
-#include "app/old_app/event/event.hpp"
+#include "app/event/vtx_event.hpp"
 #include "app/old_app/model/atom.hpp"
 #include "app/old_app/model/chain.hpp"
 #include "app/old_app/model/molecule.hpp"
