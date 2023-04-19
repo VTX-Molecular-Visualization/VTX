@@ -2,53 +2,49 @@
 #define __VTX_ACTION_VIEWPOINT__
 
 #include "app/core/action/base_action.hpp"
-#include "app/old_app/model/path.hpp"
-#include "app/old_app/model/selection.hpp"
+#include "app/old_app/math/transform.hpp"
 #include "app/old_app/model/viewpoint.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/scene.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
-#include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include <set>
+#include <string>
+#include <unordered_set>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX::Action::Viewpoint
 {
-	/*
-	class AddAction : public Core::Action::BaseAction
-	{
-	  public:
-		explicit AddAction( Model::Viewpoint & p_viewpoint, const std::string & p_action ) :
-			_viewpoint( p_viewpoint ), _action( p_action )
-		{
-		}
+	// class AddAction : public Core::Action::BaseAction
+	//{
+	//   public:
+	//	explicit AddAction( Model::Viewpoint & p_viewpoint, const std::string & p_action ) :
+	//		_viewpoint( p_viewpoint ), _action( p_action )
+	//	{
+	//	}
 
-		virtual void execute() override { _viewpoint.addAction( _action ); }
+	//	virtual void execute() override;
 
-	  private:
-		Model::Viewpoint & _viewpoint;
-		const std::string  _action;
-	};
+	//  private:
+	//	Model::Viewpoint & _viewpoint;
+	//	const std::string  _action;
+	//};
 
-	class DeleteAction : public Core::Action::BaseAction
-	{
-	  public:
-		explicit DeleteAction( Model::Viewpoint &								p_viewpoint,
-							   const std::vector<std::string>::const_iterator & p_action ) :
-			_viewpoint( p_viewpoint ),
-			_action( p_action )
-		{
-		}
+	// class DeleteAction : public Core::Action::BaseAction
+	//{
+	//   public:
+	//	explicit DeleteAction( Model::Viewpoint &								p_viewpoint,
+	//						   const std::vector<std::string>::const_iterator & p_action ) :
+	//		_viewpoint( p_viewpoint ),
+	//		_action( p_action )
+	//	{
+	//	}
 
-		virtual void execute() override { _viewpoint.removeAction( _action ); }
+	//	virtual void execute() override;
 
-	  private:
-		Model::Viewpoint &							   _viewpoint;
-		const std::vector<std::string>::const_iterator _action;
-	};
-	*/
+	//  private:
+	//	Model::Viewpoint &							   _viewpoint;
+	//	const std::vector<std::string>::const_iterator _action;
+	//};
 
 	class ChangeDuration : public Core::Action::BaseAction
 	{
@@ -58,11 +54,7 @@ namespace VTX::Action::Viewpoint
 		{
 		}
 
-		virtual void execute() override
-		{
-			_viewpoint.setDuration( Util::Math::max<float>( _duration, 0.f ) );
-			_viewpoint.getPathPtr()->refreshAllDurations();
-		}
+		virtual void execute() override;
 
 	  private:
 		Model::Viewpoint & _viewpoint;
@@ -103,20 +95,7 @@ namespace VTX::Action::Viewpoint
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override
-		{
-			std::set<Model::Path *> paths = std::set<Model::Path *>();
-
-			for ( Model::Viewpoint * const viewpoint : _viewpoints )
-			{
-				viewpoint->setPosition( _position );
-				viewpoint->setRotation( _rotation );
-				paths.emplace( viewpoint->getPathPtr() );
-			}
-
-			for ( Model::Path * const path : paths )
-				path->refreshAllDurations();
-		}
+		virtual void execute() override;
 
 	  private:
 		std::vector<Model::Viewpoint *> _viewpoints;
@@ -138,19 +117,7 @@ namespace VTX::Action::Viewpoint
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override
-		{
-			std::set<Model::Path *> paths = std::set<Model::Path *>();
-
-			for ( Model::Viewpoint * const viewpoint : _viewpoints )
-			{
-				viewpoint->setPosition( viewpoint->getPosition() + _translation );
-				paths.emplace( viewpoint->getPathPtr() );
-			}
-
-			for ( Model::Path * const path : paths )
-				path->refreshAllDurations();
-		}
+		virtual void execute() override;
 
 	  private:
 		std::vector<Model::Viewpoint *> _viewpoints;
@@ -192,30 +159,7 @@ namespace VTX::Action::Viewpoint
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override
-		{
-			for ( Model::Viewpoint * const viewpoint : _viewpoints )
-			{
-				switch ( _rotationType )
-				{
-				case RotationType::Axis_Angle:
-				{
-					Quatf newRotation = Util::Math::rotate( viewpoint->getRotation(), _angle, _axis );
-					viewpoint->setRotation( newRotation );
-					break;
-				}
-				case RotationType::Euler:
-				{
-					Quatf deltaRotation = Util::Math::eulerToQuaternion( _axis );
-					viewpoint->setRotation( viewpoint->getRotation() + deltaRotation );
-					break;
-				}
-				default: break;
-				}
-			}
-
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
+		virtual void execute() override;
 
 	  private:
 		std::unordered_set<Model::Viewpoint *> _viewpoints;
@@ -232,7 +176,7 @@ namespace VTX::Action::Viewpoint
 		{
 		}
 
-		virtual void execute() override { _viewpoint.setName( _name ); }
+		virtual void execute() override;
 
 	  private:
 		Model::Viewpoint &	_viewpoint;

@@ -188,7 +188,7 @@ namespace VTX::Action::Main
 	{
 		Worker::Snapshoter * worker = new Worker::Snapshoter( _mode, _path, _exportData );
 		VTX_WORKER( worker );
-	};
+	}
 
 	void SetCameraProjectionToPerspective::execute()
 	{

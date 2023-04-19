@@ -1,9 +1,10 @@
 #include "ui/old_ui/ui/widget/main_menu/camera/viewpoint_block.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/viewpoint.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/viewpoint.hpp>
+#include <app/core/action/action_manager.hpp>
 #include <app/old_app/model/path.hpp>
+#include <app/old_app/model/selection.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/camera.hpp>
 #include <app/old_app/selection/selection_manager.hpp>

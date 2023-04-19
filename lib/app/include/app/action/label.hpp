@@ -4,12 +4,7 @@
 #include "app/core/action/base_action.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/model/label.hpp"
-#include "app/old_app/model/selection.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
-#include "app/old_app/object3d/helper/aabb.hpp"
-#include "app/old_app/object3d/scene.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -27,11 +22,7 @@ namespace VTX::Action::Label
 		{
 		}
 
-		virtual void execute() override
-		{
-			for ( Model::Label * label : _labels )
-				label->setEnable( _enabled );
-		}
+		virtual void execute() override;
 
 	  private:
 		const bool						   _enabled;
@@ -49,16 +40,7 @@ namespace VTX::Action::Label
 				_labels.emplace_back( label );
 		}
 
-		virtual void execute() override
-		{
-			VTX::Selection::SelectionManager::get().getSelectionModel().unselectModels<Model::Label>( _labels );
-
-			for ( Model::Label * label : _labels )
-			{
-				VTXApp::get().getScene().removeLabel( label );
-				MVC::MvcManager::get().deleteModel<Model::Label>( label );
-			}
-		}
+		virtual void execute() override;
 
 	  private:
 		std::vector<Model::Label *> _labels;
@@ -75,11 +57,7 @@ namespace VTX::Action::Label
 		{
 		}
 
-		virtual void execute() override
-		{
-			for ( Model::Label * const label : _labels )
-				label->setAutoNaming( _enable );
-		}
+		virtual void execute() override;
 
 	  private:
 		const std::unordered_set<Model::Label *> & _labels;
@@ -98,14 +76,7 @@ namespace VTX::Action::Label
 		{
 		}
 
-		virtual void execute() override
-		{
-			for ( Model::Label * const label : _labels )
-			{
-				label->setAutoNaming( false );
-				label->setName( _name );
-			}
-		}
+		virtual void execute() override;
 
 	  private:
 		const std::unordered_set<Model::Label *> _labels;
@@ -124,13 +95,7 @@ namespace VTX::Action::Label
 		{
 		}
 
-		virtual void execute() override
-		{
-			for ( Model::Label * const label : _labels )
-			{
-				label->setColor( _color );
-			}
-		}
+		virtual void execute() override;
 
 	  private:
 		const std::unordered_set<Model::Label *> _labels;

@@ -6,8 +6,6 @@
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
 #include "app/old_app/model/category_enum.hpp"
-#include "app/old_app/object3d/camera.hpp"
-#include "app/old_app/renderer/base_renderer.hpp"
 #include "app/old_app/selection/selection_enum.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/trajectory/trajectory_enum.hpp"
@@ -34,7 +32,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ActiveRenderer( const bool p_active ) : _active( p_active ) {}
 
-		virtual void execute() override { VTX_SETTING().setActivateRenderer( _active ); }
+		virtual void execute() override;
 
 	  private:
 		const bool _active;
@@ -45,7 +43,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ForceRenderer( const bool p_force ) : _force( p_force ) {}
 
-		virtual void execute() override { VTX_SETTING().setForceRenderer( _force ); }
+		virtual void execute() override;
 
 	  private:
 		const bool _force;
@@ -67,7 +65,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeSnapshotFormat( const IO::Struct::ImageExport::Format p_format ) : _format( p_format ) {}
 
-		virtual void execute() override { VTX_SETTING().setSnapshotFormat( _format ); };
+		virtual void execute() override;
 
 	  private:
 		const IO::Struct::ImageExport::Format _format;
@@ -78,11 +76,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeBackgroundOpacity( const float p_opacity ) : _opacity( p_opacity ) {}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().setSnapshotBackgroundOpacity( _opacity );
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		};
+		virtual void execute() override;
 
 	  private:
 		const float _opacity;
@@ -93,11 +87,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeSnapshotQuality( const float p_quality ) : _quality( p_quality ) {}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().setSnapshotQuality( _quality );
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		};
+		virtual void execute() override;
 
 	  private:
 		const float _quality;
@@ -111,7 +101,7 @@ namespace VTX::Action::Setting
 		{
 		}
 
-		virtual void execute() override { VTX_SETTING().setSnapshotResolution( _resolution ); };
+		virtual void execute() override;
 
 	  private:
 		const IO::Struct::ImageExport::RESOLUTION _resolution;
@@ -180,11 +170,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ActiveVerticalSync( const bool p_active ) : _active( p_active ) {}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().setVSync( _active );
-			// TODO: find a way to update VSync at runtime.
-		};
+		virtual void execute() override;
 
 	  private:
 		const bool _active;
@@ -349,14 +335,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeCameraClip( const float p_near, const float p_far ) : _near( p_near ), _far( p_far ) {}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().setCameraNearClip( Util::Math::min( _near, _far ) );
-			VTX_SETTING().setCameraFarClip( Util::Math::max( _near, _far ) );
-
-			VTXApp::get().getScene().getCamera().setNear( VTX_SETTING().getCameraNearClip() );
-			VTXApp::get().getScene().getCamera().setFar( VTX_SETTING().getCameraFarClip() );
-		};
+		virtual void execute() override;
 
 	  private:
 		const float _near;
@@ -368,13 +347,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeCameraFov( const float p_fov ) : _fov( p_fov ) {}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().setCameraFOV( _fov );
-			VTXApp::get().getScene().getCamera().setFov( _fov );
-
-			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
-		};
+		virtual void execute() override;
 
 	  private:
 		const float _fov;
@@ -396,7 +369,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeTranslationSpeed( const float p_speed ) : _speed( p_speed ) {}
 
-		virtual void execute() override { VTX_SETTING().setTranslationSpeed( _speed ); };
+		virtual void execute() override;
 
 	  private:
 		const float _speed;
@@ -407,7 +380,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeAccelerationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
 
-		virtual void execute() override { VTX_SETTING().setAccelerationSpeedFactor( _factor ); };
+		virtual void execute() override;
 
 	  private:
 		const float _factor;
@@ -418,7 +391,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeDecelerationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
 
-		virtual void execute() override { VTX_SETTING().setDecelerationSpeedFactor( _factor ); };
+		virtual void execute() override;
 
 	  private:
 		const float _factor;
@@ -429,7 +402,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeRotationSpeed( const float p_speed ) : _speed( p_speed ) {}
 
-		virtual void execute() override { VTX_SETTING().setRotationSpeed( _speed ); };
+		virtual void execute() override;
 
 	  private:
 		const float _speed;
@@ -440,7 +413,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ActiveYAxisInversion( const bool p_active ) : _active( p_active ) {}
 
-		virtual void execute() override { VTX_SETTING().setYAxisInverted( _active ); };
+		virtual void execute() override;
 
 	  private:
 		const bool _active;
@@ -451,7 +424,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ActiveControllerElasticity( const bool p_active ) : _active( p_active ) {}
 
-		virtual void execute() override { VTX_SETTING().setControllerElasticityActive( _active ); };
+		virtual void execute() override;
 
 	  private:
 		const bool _active;
@@ -462,7 +435,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeControllerElasticity( const float p_elasticity ) : _elasticity( p_elasticity ) {}
 
-		virtual void execute() override { VTX_SETTING().setControllerElasticityFactor( _elasticity ); };
+		virtual void execute() override;
 
 	  private:
 		const float _elasticity;
@@ -473,7 +446,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeDefaultTrajectorySpeed( const int p_speed ) : _speed( p_speed ) {}
 
-		virtual void execute() override { VTX_SETTING().setDefaultTrajectorySpeed( _speed ); };
+		virtual void execute() override;
 
 	  private:
 		const int _speed;
@@ -484,7 +457,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_playMode ) : _playMode( p_playMode ) {}
 
-		virtual void execute() override { VTX_SETTING().setDefaultTrajectoryPlayMode( _playMode ); };
+		virtual void execute() override;
 
 	  private:
 		const Trajectory::PlayMode _playMode;
@@ -498,7 +471,7 @@ namespace VTX::Action::Setting
 		{
 		}
 
-		virtual void execute() override { VTX_SETTING().setSymbolDisplayMode( _displayMode ); };
+		virtual void execute() override;
 
 	  private:
 		const Style::SYMBOL_DISPLAY_MODE _displayMode;
@@ -512,7 +485,7 @@ namespace VTX::Action::Setting
 		{
 		}
 
-		virtual void execute() override { VTX_SETTING().setCheckVTXUpdateAtLaunch( _checkVTXUpdateAtLaunch ); };
+		virtual void execute() override;
 
 	  private:
 		const bool _checkVTXUpdateAtLaunch;
@@ -523,7 +496,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ActivatePortableSave( const bool p_activate ) : _activate( p_activate ) {}
 
-		virtual void execute() override { VTX_SETTING().activatePortableSave( _activate ); };
+		virtual void execute() override;
 
 	  private:
 		const bool _activate;
@@ -534,12 +507,7 @@ namespace VTX::Action::Setting
 	  public:
 		ChangeRenderMode( const VTX::Renderer::MODE p_mode ) : _mode( p_mode ) {}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().mode = _mode;
-			// TODO
-			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-		};
+		virtual void execute() override;
 
 	  private:
 		const VTX::Renderer::MODE _mode;
@@ -553,7 +521,7 @@ namespace VTX::Action::Setting
 		{
 		}
 
-		virtual void execute() override { VTX_SETTING().setSelectionGranularity( _granularity ); };
+		virtual void execute() override;
 
 	  private:
 		const VTX::Selection::Granularity _granularity;
@@ -569,10 +537,7 @@ namespace VTX::Action::Setting
 		{
 		}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().setDefaultRepresentationIndexPerCategory( _categoryEnum, _representationIndex );
-		};
+		virtual void execute() override;
 
 	  private:
 		const CATEGORY_ENUM _categoryEnum;
@@ -611,7 +576,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit RestoreDefaultRepresentationPerCategory() {}
 
-		virtual void execute() override { VTX_SETTING().restoreDefaultRepresentationPerCategory(); };
+		virtual void execute() override;
 	};
 } // namespace VTX::Action::Setting
 

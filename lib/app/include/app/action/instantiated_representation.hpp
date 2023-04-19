@@ -2,16 +2,11 @@
 #define __VTX_ACTION_INSTANTIATED_REPRESENTATION__
 
 #include "app/core/action/base_action.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/representation/instantiated_representation.hpp"
-#include "app/old_app/model/representation/representation.hpp"
-#include "app/old_app/model/secondary_structure.hpp"
-#include "app/old_app/model/selection.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_representable.hpp"
+#include "app/old_app/model/representation/instantiated_representation.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include <type_traits>
 #include <unordered_set>
 
 namespace VTX::Action::InstantiatedRepresentation
@@ -26,11 +21,7 @@ namespace VTX::Action::InstantiatedRepresentation
 		{
 		}
 
-		void execute()
-		{
-			_instantiatedRepresentation->setColorMode( _colorMode );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		};
+		virtual void execute() override;
 
 	  private:
 		const Generic::COLOR_MODE								  _colorMode;
@@ -64,24 +55,7 @@ namespace VTX::Action::InstantiatedRepresentation
 			}
 		}
 
-		void execute()
-		{
-			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
-
-			for ( Model::Representation::InstantiatedRepresentation * const representation :
-				  _instantiatedRepresentations )
-			{
-				representation->setColor( _color, false, true );
-				molecules.emplace( representation->getConstTarget()->getMolecule() );
-			}
-
-			for ( Model::Molecule * const molecule : molecules )
-			{
-				molecule->refreshColors();
-			}
-
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		};
+		virtual void execute() override;
 
 	  private:
 		const Color::Rgba														_color;
@@ -99,11 +73,7 @@ namespace VTX::Action::InstantiatedRepresentation
 		{
 		}
 
-		void execute()
-		{
-			_instantiatedRepresentation->setSphereRadius( _radius );
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		};
+		virtual void execute() override;
 
 	  private:
 		const float												  _radius;
@@ -119,11 +89,7 @@ namespace VTX::Action::InstantiatedRepresentation
 		{
 		}
 
-		void execute()
-		{
-			_instantiatedRepresentation->setCylinderRadius( _radius );
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		};
+		virtual void execute() override;
 
 	  private:
 		const float												  _radius;
@@ -141,11 +107,7 @@ namespace VTX::Action::InstantiatedRepresentation
 		{
 		}
 
-		void execute()
-		{
-			_instantiatedRepresentation->setCylinderColorBlendingMode( _mode );
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		};
+		virtual void execute() override;
 
 	  private:
 		const Generic::COLOR_BLENDING_MODE						  _mode;
@@ -162,11 +124,7 @@ namespace VTX::Action::InstantiatedRepresentation
 		{
 		}
 
-		void execute()
-		{
-			_instantiatedRepresentation->setRibbonColorMode( _colorMode );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		};
+		virtual void execute() override;
 
 	  private:
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE			  _colorMode;
@@ -184,11 +142,7 @@ namespace VTX::Action::InstantiatedRepresentation
 		{
 		}
 
-		void execute()
-		{
-			_instantiatedRepresentation->setRibbonColorBlendingMode( _mode );
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		};
+		virtual void execute() override;
 
 	  private:
 		const Generic::COLOR_BLENDING_MODE						  _mode;

@@ -3,6 +3,7 @@
 
 #include "app/old_app/event/event.hpp"
 #include "app/old_app/id.hpp"
+#include "app/old_app/model/molecule.hpp"
 #include "app/old_app/model/representation/representation_data.hpp"
 #include "app/old_app/model/representation/representation_enum.hpp"
 #include <map>

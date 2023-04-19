@@ -53,11 +53,30 @@ namespace VTX::Action::Setting
 		}
 	}
 
+	void ActiveRenderer::execute() { VTX_SETTING().setActivateRenderer( _active ); }
+	void ForceRenderer::execute() { VTX_SETTING().setForceRenderer( _force ); }
+
 	void ChangeBackgroundColor::execute()
 	{
 		VTX_RENDER_EFFECT().setBackgroundColor( _color );
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 	}
+
+	void ChangeSnapshotFormat::execute() { VTX_SETTING().setSnapshotFormat( _format ); }
+
+	void ChangeBackgroundOpacity::execute()
+	{
+		VTX_SETTING().setSnapshotBackgroundOpacity( _opacity );
+		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+	}
+
+	void ChangeSnapshotQuality::execute()
+	{
+		VTX_SETTING().setSnapshotQuality( _quality );
+		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+	}
+
+	void ChangeSnapshotResolution::execute() { VTX_SETTING().setSnapshotResolution( _resolution ); }
 
 	void ChangeDefaultRepresentation::execute()
 	{
@@ -115,6 +134,11 @@ namespace VTX::Action::Setting
 	{
 		VTX_RENDER_EFFECT().setShading( _shading );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+	}
+	void ActiveVerticalSync::execute()
+	{
+		VTX_SETTING().setVSync( _active );
+		// TODO: find a way to update VSync at runtime.
 	}
 
 	void ActiveAO::execute()
@@ -195,6 +219,23 @@ namespace VTX::Action::Setting
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 	}
 
+	void ChangeCameraClip::execute()
+	{
+		VTX_SETTING().setCameraNearClip( Util::Math::min( _near, _far ) );
+		VTX_SETTING().setCameraFarClip( Util::Math::max( _near, _far ) );
+
+		VTXApp::get().getScene().getCamera().setNear( VTX_SETTING().getCameraNearClip() );
+		VTXApp::get().getScene().getCamera().setFar( VTX_SETTING().getCameraFarClip() );
+	}
+
+	void ChangeCameraFov::execute()
+	{
+		VTX_SETTING().setCameraFOV( _fov );
+		VTXApp::get().getScene().getCamera().setFov( _fov );
+
+		VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
+	}
+
 	void ChangeCameraProjectionToPerspective::execute()
 	{
 		VTX_SETTING().setCameraPerspectiveProjection( _perspective );
@@ -207,6 +248,44 @@ namespace VTX::Action::Setting
 	{
 		VTX_SETTING().setAA( _active );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+	}
+
+	void ChangeTranslationSpeed::execute() { VTX_SETTING().setTranslationSpeed( _speed ); }
+
+	void ChangeAccelerationFactorSpeed::execute() { VTX_SETTING().setAccelerationSpeedFactor( _factor ); }
+
+	void ChangeDecelerationFactorSpeed::execute() { VTX_SETTING().setDecelerationSpeedFactor( _factor ); }
+
+	void ChangeRotationSpeed::execute() { VTX_SETTING().setRotationSpeed( _speed ); }
+
+	void ActiveYAxisInversion::execute() { VTX_SETTING().setYAxisInverted( _active ); }
+
+	void ActiveControllerElasticity::execute() { VTX_SETTING().setControllerElasticityActive( _active ); }
+
+	void ChangeControllerElasticity::execute() { VTX_SETTING().setControllerElasticityFactor( _elasticity ); }
+
+	void ChangeDefaultTrajectorySpeed::execute() { VTX_SETTING().setDefaultTrajectorySpeed( _speed ); }
+
+	void ChangeDefaultTrajectoryPlayMode::execute() { VTX_SETTING().setDefaultTrajectoryPlayMode( _playMode ); }
+
+	void ChangeSymbolDisplayMode::execute() { VTX_SETTING().setSymbolDisplayMode( _displayMode ); }
+
+	void ChangeCheckVTXUpdateAtLaunch::execute() { VTX_SETTING().setCheckVTXUpdateAtLaunch( _checkVTXUpdateAtLaunch ); }
+
+	void ActivatePortableSave::execute() { VTX_SETTING().activatePortableSave( _activate ); }
+
+	void ChangeRenderMode::execute()
+	{
+		VTX_SETTING().mode = _mode;
+		// TODO
+		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+	}
+
+	void ChangeSelectionGranularity::execute() { VTX_SETTING().setSelectionGranularity( _granularity ); }
+
+	void ChangeDefaultRepresentationPerCategory::execute()
+	{
+		VTX_SETTING().setDefaultRepresentationIndexPerCategory( _categoryEnum, _representationIndex );
 	}
 
 	void ApplyAllSettings::execute()
@@ -261,5 +340,6 @@ namespace VTX::Action::Setting
 		VTX_SETTING().restore();
 		VTX_ACTION( new Action::Setting::ApplyAllSettings( VTX_SETTING() ) );
 	}
+	void RestoreDefaultRepresentationPerCategory::execute() { VTX_SETTING().restoreDefaultRepresentationPerCategory(); }
 
 } // namespace VTX::Action::Setting

@@ -2,22 +2,10 @@
 #define __VTX_ACTION_REPRESENTATION__
 
 #include "app/core/action/base_action.hpp"
-#include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/representation/instantiated_representation.hpp"
+#include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/model/representation/representation.hpp"
 #include "app/old_app/model/representation/representation_library.hpp"
-#include "app/old_app/model/secondary_structure.hpp"
-#include "app/old_app/model/selection.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
-#include "app/old_app/generic/base_colorable.hpp"
-#include "app/old_app/generic/base_representable.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
-#include "app/old_app/setting.hpp"
-#include "app/old_app/vtx_app.hpp"
-#include "app/old_app/worker/representation_loader.hpp"
-#include "app/old_app/worker/representation_saver.hpp"
-#include "app/old_app/worker/worker_manager.hpp"
+#include <string>
 #include <unordered_set>
 
 namespace VTX::Action::Representation
@@ -26,19 +14,14 @@ namespace VTX::Action::Representation
 	{
 	  public:
 		ReloadPresets() {};
-		virtual void execute() override
-		{
-			Worker::RepresentationLibraryLoader * libraryLoader
-				= new Worker::RepresentationLibraryLoader( Model::Representation::RepresentationLibrary::get() );
-			VTX_WORKER( libraryLoader );
-		};
+		virtual void execute() override;
 	};
 
 	class ResetPresetsToDefault : public Core::Action::BaseAction
 	{
 	  public:
 		ResetPresetsToDefault() {};
-		virtual void execute() override { VTX::Representation::RepresentationManager::get().resetRepresentations(); };
+		virtual void execute() override;
 	};
 
 	class SavePreset : public Core::Action::BaseAction
@@ -62,39 +45,7 @@ namespace VTX::Action::Representation
 
 		void setAsync( const bool p_async ) { _async = p_async; }
 
-		virtual void execute() override
-		{
-			if ( _clearDirectory )
-			{
-				Util::Filesystem::removeAll( IO::Filesystem::getRepresentationsLibraryDir() );
-				std::filesystem::create_directory( IO::Filesystem::getRepresentationsLibraryDir() );
-			}
-
-			for ( const Model::Representation::Representation * const representation : _representations )
-			{
-				// Don't think it's a good idea to run a thread at app exit.
-				/*
-				if ( _async )
-				{
-					Worker::RepresentationSaverThread * librarySaver
-						= new Worker::RepresentationSaverThread( representation );
-					Worker::Callback * callback = new Worker::Callback( [ librarySaver ]( const uint p_code ) {} );
-
-					VTX_WORKER( librarySaver, callback );
-				}
-				else
-				*/
-				{
-					FilePath path = IO::Filesystem::getRepresentationPath( representation->getName() );
-					Util::Filesystem::generateUniqueFileName( path );
-
-					Worker::RepresentationSaver * librarySaver
-						= new Worker::RepresentationSaver( representation, path );
-
-					VTX_WORKER( librarySaver );
-				}
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		std::unordered_set<const Model::Representation::Representation *> _representations
@@ -114,7 +65,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute() { _representation->setName( _name ); };
+		void execute();
 
 	  private:
 		Model::Representation::Representation * const _representation;
@@ -130,10 +81,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute()
-		{
-			VTX::Representation::RepresentationManager::get().setQuickAccessToPreset( _representation, _quickAccess );
-		};
+		void execute();
 
 	  private:
 		Model::Representation::Representation * const _representation;
@@ -150,11 +98,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute()
-		{
-			_representation->changeRepresentationType( _representationType );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		};
+		void execute();
 
 	  private:
 		Model::Representation::Representation * const _representation;
@@ -170,11 +114,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute()
-		{
-			_representation->getData().setColorMode( _colorMode );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		};
+		void execute();
 
 	  private:
 		Model::Representation::Representation * const _representation;
@@ -190,11 +130,7 @@ namespace VTX::Action::Representation
 			_color( p_color )
 		{
 		}
-		void execute()
-		{
-			_representation->setColor( _color );
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		};
+		void execute();
 
 	  private:
 		Model::Representation::Representation * const _representation;
@@ -211,11 +147,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute()
-		{
-			_representation->getData().setSphereRadius( _radius );
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		};
+		void execute();
 
 	  private:
 		Model::Representation::Representation * const _representation;
@@ -232,11 +164,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute()
-		{
-			_representation->getData().setCylinderRadius( _radius );
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		};
+		void execute();
 
 	  private:
 		Model::Representation::Representation * const _representation;
@@ -253,11 +181,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute()
-		{
-			_representation->getData().setCylinderColorBlendingMode( _colorBendingMode );
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		};
+		void execute();
 
 	  private:
 		Model::Representation::Representation * const _representation;
@@ -274,11 +198,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute()
-		{
-			_representation->getData().setRibbonColorMode( _colorMode );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		};
+		void execute();
 
 	  private:
 		Model::Representation::Representation * const _representation;
@@ -295,11 +215,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute()
-		{
-			_representation->getData().setRibbonColorBlendingMode( _colorBendingMode );
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		};
+		void execute();
 
 	  private:
 		Model::Representation::Representation * const _representation;
@@ -314,15 +230,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute()
-		{
-			Model::Representation::Representation * const newRepresentation
-				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>(
-					VTX::Setting::DEFAULT_REPRESENTATION_TYPE );
-
-			newRepresentation->setName( _representationName );
-			Model::Representation::RepresentationLibrary::get().addRepresentation( newRepresentation );
-		};
+		void execute();
 
 		const std::string _representationName;
 	};
@@ -334,10 +242,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute()
-		{
-			Model::Representation::RepresentationLibrary::get().copyRepresentation( _representationIndex );
-		};
+		void execute();
 
 	  private:
 		const int _representationIndex;
@@ -351,15 +256,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute()
-		{
-			const Model::Representation::Representation * representation
-				= Model::Representation::RepresentationLibrary::get().getRepresentation( _representationIndex );
-
-			VTX::Representation::RepresentationManager::get().deleteRepresentation( representation );
-
-			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-		};
+		void execute();
 
 	  private:
 		const int _representationIndex;
@@ -373,11 +270,7 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute()
-		{
-			Model::Representation::RepresentationLibrary::get().setDefaultRepresentation( _representationIndex );
-			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-		};
+		void execute();
 
 	  private:
 		const int _representationIndex;

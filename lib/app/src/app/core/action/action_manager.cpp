@@ -64,37 +64,38 @@ namespace VTX::Core::Action
 			{
 				Model::Representation::Representation * const representation
 					= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
-				action = new VTX::Action::RepresentableSetRepresentation( molecule, representation );
+				action = new VTX::Action::Representable::SetRepresentation( molecule, representation );
 			}
 			else if ( command == "remove_representation_molecule" )
 			{
-				action = new VTX::Action::RepresentableRemoveRepresentation( molecule );
+				action = new VTX::Action::Representable::RemoveRepresentation( molecule );
 			}
 			else if ( command == "set_representation_chain" )
 			{
 				Model::Representation::Representation * const representation
 					= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 				const int idChain = std::stoi( words.at( 2 ) );
-				action			  = new VTX::Action::RepresentableSetRepresentation( *molecule.getChains()[ idChain ],
-																			 representation );
+				action			  = new VTX::Action::Representable::SetRepresentation( *molecule.getChains()[ idChain ],
+																			   representation );
 			}
 			else if ( command == "remove_representation_chain" )
 			{
 				const int idChain = std::stoi( words.at( 1 ) );
-				action = new VTX::Action::RepresentableRemoveRepresentation( *molecule.getChains()[ idChain ] );
+				action = new VTX::Action::Representable::RemoveRepresentation( *molecule.getChains()[ idChain ] );
 			}
 			else if ( command == "set_representation_residue" )
 			{
 				Model::Representation::Representation * const representation
 					= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 				const int indexResidue = std::stoi( words.at( 2 ) );
-				action = new VTX::Action::RepresentableSetRepresentation( *molecule.getResidues()[ indexResidue ],
-																		  representation );
+				action = new VTX::Action::Representable::SetRepresentation( *molecule.getResidues()[ indexResidue ],
+																			representation );
 			}
 			else if ( command == "remove_representation_residue" )
 			{
 				const int indexResidue = std::stoi( words.at( 1 ) );
-				action = new VTX::Action::RepresentableRemoveRepresentation( *molecule.getResidues()[ indexResidue ] );
+				action
+					= new VTX::Action::Representable::RemoveRepresentation( *molecule.getResidues()[ indexResidue ] );
 			}
 		}
 		catch ( const std::exception & )

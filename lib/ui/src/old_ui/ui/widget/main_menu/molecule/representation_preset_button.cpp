@@ -1,8 +1,8 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/representation_preset_button.hpp"
 #include "ui/old_ui/style.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/representable.hpp>
+#include <app/core/action/action_manager.hpp>
 #include <app/old_app/generic/base_representable.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/representation/representation.hpp>
@@ -35,7 +35,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 		if ( selection.getMoleculesMap().size() > 0 )
 		{
-			VTX_ACTION( new Action::RepresentableSetRepresentation( &selection, representation ) );
+			VTX_ACTION( new Action::Representable::SetRepresentation( &selection, representation ) );
 		}
 		else
 		{
@@ -43,7 +43,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 			for ( const Object3D::Scene::PairMoleculePtrFloat & pair : mapMolFloat )
 			{
-				VTX_ACTION( new Action::RepresentableSetRepresentation( *pair.first, representation ) );
+				VTX_ACTION( new Action::Representable::SetRepresentation( *pair.first, representation ) );
 			}
 		}
 	};

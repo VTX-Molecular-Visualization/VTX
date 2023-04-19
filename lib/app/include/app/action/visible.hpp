@@ -3,7 +3,6 @@
 
 #include "app/core/action/base_action.hpp"
 #include "app/old_app/generic/base_visible.hpp"
-#include <util/logger.hpp>
 #include <vector>
 
 namespace VTX::Action::Visible
@@ -33,52 +32,14 @@ namespace VTX::Action::Visible
 				_visibles[ i ] = p_visibles[ i ];
 		}
 
-		virtual void execute() override
-		{
-			for ( Generic::BaseVisible * const visible : _visibles )
-			{
-				const bool newVisibility = _getVisibilityBool( *visible );
-				visible->setVisible( newVisibility );
-			}
-		}
+		virtual void execute() override;
 
 	  protected:
 		std::vector<Generic::BaseVisible *> _visibles = std::vector<Generic::BaseVisible *>();
 		const VISIBILITY_MODE				_mode;
 
-		inline bool _getVisibilityBool( const Generic::BaseVisible & visible ) const
-		{
-			bool newVisibility;
-			switch ( _mode )
-			{
-			case VISIBILITY_MODE::SHOW:
-			case VISIBILITY_MODE::SOLO:
-			case VISIBILITY_MODE::ALL: newVisibility = true; break;
-			case VISIBILITY_MODE::HIDE: newVisibility = false; break;
-			case VISIBILITY_MODE::TOGGLE: newVisibility = !visible.isVisible(); break;
-			default: newVisibility = visible.isVisible(); break;
-			}
-
-			return newVisibility;
-		}
-		inline bool _getVisibilityBool() const
-		{
-			bool newVisibility;
-			switch ( _mode )
-			{
-			case VISIBILITY_MODE::SHOW:
-			case VISIBILITY_MODE::SOLO:
-			case VISIBILITY_MODE::ALL: newVisibility = true; break;
-			case VISIBILITY_MODE::HIDE: newVisibility = false; break;
-			case VISIBILITY_MODE::TOGGLE:
-				VTX_ERROR( "can't manage toggle without target." );
-				newVisibility = false;
-				break;
-			default: newVisibility = false; break;
-			}
-
-			return newVisibility;
-		}
+		bool _getVisibilityBool( const Generic::BaseVisible & visible ) const;
+		bool _getVisibilityBool() const;
 	};
 } // namespace VTX::Action::Visible
 #endif

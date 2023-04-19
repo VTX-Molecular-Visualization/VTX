@@ -7,8 +7,9 @@
 #include "app/old_app/generic/base_transformable.hpp"
 #include "app/old_app/math/transform.hpp"
 #include "app/old_app/model/molecule.hpp"
-#include "app/old_app/vtx_app.hpp"
 #include <unordered_set>
+#include <util/types.hpp>
+#include <vector>
 
 namespace VTX::Action::Transformable
 {
@@ -22,17 +23,8 @@ namespace VTX::Action::Transformable
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override
-		{
-			_transformable.setTranslation( _translation );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
-
-		virtual void undo() override
-		{
-			_transformable.setTranslation( _translationOld );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
+		virtual void execute() override;
+		virtual void undo() override;
 
 	  private:
 		Generic::BaseTransformable & _transformable;
@@ -55,17 +47,7 @@ namespace VTX::Action::Transformable
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override
-		{
-			for ( Generic::BaseTransformable * transformable : _transformables )
-			{
-				Vec3f newPos = transformable->getTransform().getTranslationVector() + _delta;
-				newPos		 = Util::Math::clamp( newPos, VTX::Setting::MIN_SCENE_POS, VTX::Setting::MAX_SCENE_POS );
-				transformable->setTranslation( newPos );
-			}
-
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
+		virtual void execute() override;
 
 	  private:
 		std::unordered_set<Generic::BaseTransformable *> _transformables;
@@ -82,17 +64,8 @@ namespace VTX::Action::Transformable
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override
-		{
-			_transformable.setRotation( _euler );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
-
-		virtual void undo() override
-		{
-			_transformable.setRotation( _eulerOld );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
+		virtual void execute() override;
+		virtual void undo() override;
 
 	  private:
 		Generic::BaseTransformable & _transformable;
@@ -137,23 +110,7 @@ namespace VTX::Action::Transformable
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override
-		{
-			for ( Generic::BaseTransformable * const transformable : _transformables )
-			{
-				switch ( _rotationType )
-				{
-				case RotationType::Axis_Angle: transformable->rotate( _angle, _axis ); break;
-				case RotationType::Euler:
-					Vec3f newEuler = transformable->getTransform().getEulerAngles() + _axis;
-					newEuler = Util::Math::clamp( newEuler, VTX::Setting::MIN_EULER_VEC, VTX::Setting::MAX_EULER_VEC );
-					transformable->setRotation( newEuler );
-					break;
-				}
-			}
-
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
+		virtual void execute() override;
 
 	  private:
 		std::unordered_set<Generic::BaseTransformable *> _transformables;
@@ -171,17 +128,8 @@ namespace VTX::Action::Transformable
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override
-		{
-			_transformable.setScale( _scale );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
-
-		virtual void undo() override
-		{
-			_transformable.setScale( _scaleOld );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
+		virtual void execute() override;
+		virtual void undo() override;
 
 	  private:
 		Generic::BaseTransformable & _transformable;
@@ -202,18 +150,7 @@ namespace VTX::Action::Transformable
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override
-		{
-			for ( Generic::BaseTransformable * transformable : _transformables )
-			{
-				Vec3f newScale = transformable->getTransform().getScaleVector() + _delta;
-				newScale = Util::Math::clamp( newScale, VTX::Setting::MIN_SCALE_VEC, VTX::Setting::MAX_SCALE_VEC );
-
-				transformable->setScale( newScale );
-			}
-
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
+		virtual void execute() override;
 
 	  private:
 		std::unordered_set<Generic::BaseTransformable *> _transformables;
@@ -248,15 +185,7 @@ namespace VTX::Action::Transformable
 			}
 		}
 
-		virtual void execute() override
-		{
-			for ( Generic::BaseTransformable * const transformable : _transformables )
-			{
-				transformable->applyTransform( _transform, _mask );
-			}
-
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
+		virtual void execute() override;
 
 	  private:
 		const Math::Transform									 _transform;
@@ -275,11 +204,7 @@ namespace VTX::Action::Transformable
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override
-		{
-			for ( Generic::BaseAutoRotate * const autoRotateComponent : _autoRotateComponents )
-				autoRotateComponent->setAutoRotationVector( _orientation );
-		}
+		virtual void execute() override;
 
 	  private:
 		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
@@ -297,11 +222,7 @@ namespace VTX::Action::Transformable
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override
-		{
-			for ( Generic::BaseAutoRotate * const autoRotateComponent : _autoRotateComponents )
-				autoRotateComponent->setAutoRotationVector( autoRotateComponent->getAutoRotationVector() + _delta );
-		}
+		virtual void execute() override;
 
 	  private:
 		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
@@ -319,11 +240,7 @@ namespace VTX::Action::Transformable
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 
-		virtual void execute() override
-		{
-			for ( Generic::BaseAutoRotate * const autoRotateComponent : _autoRotateComponents )
-				autoRotateComponent->setAutoRotationMagnitude( _speed );
-		}
+		virtual void execute() override;
 
 	  private:
 		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
@@ -339,11 +256,7 @@ namespace VTX::Action::Transformable
 		{
 		}
 
-		virtual void execute() override
-		{
-			for ( Generic::BaseAutoRotate * const autoRotateComponent : _autoRotateComponents )
-				autoRotateComponent->setAutoRotationPlaying( _play );
-		}
+		virtual void execute() override;
 
 	  private:
 		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
