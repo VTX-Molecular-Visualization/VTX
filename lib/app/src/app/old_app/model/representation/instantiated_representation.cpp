@@ -3,7 +3,7 @@
 #include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/model/molecule.hpp"
 #include "app/old_app/model/secondary_structure.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"

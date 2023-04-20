@@ -6,7 +6,7 @@
 #include "app/old_app/model/chain.hpp"
 #include "app/old_app/model/residue.hpp"
 #include "app/old_app/model/selection.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 #include <map>
@@ -23,7 +23,7 @@ namespace VTX::Model
 		Util::Chrono chrono;
 		chrono.start();
 
-		const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeID );
+		const Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeID );
 		const Model::Selection::MapChainIds & moleculeSelectionData = p_selection.getMoleculesMap().at( p_moleculeID );
 
 		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
@@ -382,7 +382,7 @@ namespace VTX::Model
 		Util::Chrono chrono = Util::Chrono();
 		chrono.start();
 
-		Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeID );
+		Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeID );
 		const Model::Selection::MapChainIds & moleculeSelectionData = p_selection.getMoleculesMap().at( p_moleculeID );
 
 		_pendingExternalBonds.clear();

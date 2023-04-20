@@ -4,9 +4,9 @@
 #include "ui/old_ui/ui/widget/base_manual_widget.hpp"
 #include "ui/old_ui/view/ui/editor_view.hpp"
 #include <app/event/vtx_event.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
-#include <app/old_app/view/base_view.hpp>
-#include <app/old_app/view/callback_view.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
+#include <app/view/base_view.hpp>
+#include <app/view/callback_view.hpp>
 
 namespace VTX::View::UI
 {
@@ -17,18 +17,18 @@ namespace VTX::View::UI
 		EditorView( const ID::VTX_ID & p_viewId ) : _viewId( p_viewId ) {}
 		virtual ~EditorView()
 		{
-			if ( _view != nullptr && MVC::MvcManager::get().hasView( _target, _viewId ) )
-				MVC::MvcManager::get().deleteView( _target, _viewId );
+			if ( _view != nullptr && VTX::Core::MVC::MvcManager::get().hasView( _target, _viewId ) )
+				VTX::Core::MVC::MvcManager::get().deleteView( _target, _viewId );
 		}
 
 		void createTempView( T * const p_target )
 		{
-			if ( _view != nullptr && MVC::MvcManager::get().hasView( _target, _viewId ) )
-				MVC::MvcManager::get().deleteView( _target, _viewId );
+			if ( _view != nullptr && VTX::Core::MVC::MvcManager::get().hasView( _target, _viewId ) )
+				VTX::Core::MVC::MvcManager::get().deleteView( _target, _viewId );
 
 			_target = p_target;
 
-			_view = MVC::MvcManager::get().instantiateView<CallbackView<T, EditorView>>( p_target, _viewId );
+			_view = VTX::Core::MVC::MvcManager::get().instantiateView<CallbackView<T, EditorView>>( p_target, _viewId );
 			_view->setCallback( this, &EditorView::_catchModelEvent );
 		}
 

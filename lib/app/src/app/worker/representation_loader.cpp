@@ -28,7 +28,7 @@ namespace VTX::Worker
 			for ( const std::filesystem::directory_entry & file : std::filesystem::directory_iterator { _path } )
 			{
 				Model::Representation::Representation * const representation
-					= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
+					= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
 
 				try
 				{
@@ -40,7 +40,7 @@ namespace VTX::Worker
 				{
 					VTX_ERROR(
 						"Cannot load representation library {}: {}", file.path().string(), std::string( p_e.what() ) );
-					MVC::MvcManager::get().deleteModel( representation );
+					VTX::Core::MVC::MvcManager::get().deleteModel( representation );
 				}
 			}
 
@@ -132,7 +132,7 @@ namespace VTX::Worker
 		for ( const FilePath & path : _paths )
 		{
 			Model::Representation::Representation * const representation
-				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
+				= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
 
 			try
 			{
@@ -143,7 +143,7 @@ namespace VTX::Worker
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Cannot load representation at {}: {}", path.string(), std::string( p_e.what() ) );
-				MVC::MvcManager::get().deleteModel( representation );
+				VTX::Core::MVC::MvcManager::get().deleteModel( representation );
 			}
 
 			VTX_INFO( "Representation " + path.stem().string() + " loaded." );

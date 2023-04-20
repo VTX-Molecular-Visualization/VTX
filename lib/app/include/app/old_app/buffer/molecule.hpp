@@ -4,7 +4,7 @@
 #include "base_buffer_opengl.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include <util/types.hpp>
-#include "app/old_app/model/base_model.hpp"
+#include "app/model/base_model.hpp"
 #include "app/old_app/renderer/gl/vertex_array.hpp"
 #include <vector>
 

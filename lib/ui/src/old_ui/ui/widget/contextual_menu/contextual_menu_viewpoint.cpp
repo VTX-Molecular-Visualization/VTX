@@ -2,8 +2,8 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/view/ui/widget/path_scene_view.hpp"
 #include "ui/qt/action/viewpoint.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/viewpoint.hpp>
+#include <app/core/action/action_manager.hpp>
 #include <app/old_app/model/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
@@ -32,8 +32,8 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuViewpoint::_renameAction()
 	{
 		View::UI::Widget::PathSceneView * const pathSceneView
-			= MVC::MvcManager::get().getView<View::UI::Widget::PathSceneView>( _target->getPathPtr(),
-																			   ID::View::UI_SCENE_PATH );
+			= VTX::Core::MVC::MvcManager::get().getView<View::UI::Widget::PathSceneView>( _target->getPathPtr(),
+																						  ID::View::UI_SCENE_PATH );
 
 		pathSceneView->openRenameEditor( _target->getId() );
 	}

@@ -1,14 +1,14 @@
-#ifndef __VTX_BASE_MODEL_3D__
-#define __VTX_BASE_MODEL_3D__
+#ifndef __VTX_MODEL_BASE_MODEL_3D__
+#define __VTX_MODEL_BASE_MODEL_3D__
 
 #include "app/event/vtx_event.hpp"
+#include "app/model/base_model.hpp"
 #include "app/old_app/buffer/base_buffer_opengl.hpp"
 #include "app/old_app/generic/base_auto_rotate.hpp"
 #include "app/old_app/generic/base_renderable.hpp"
 #include "app/old_app/generic/base_transformable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/model/base_model.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
 #include <unordered_set>
 #include <util/logger.hpp>

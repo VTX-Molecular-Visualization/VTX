@@ -5,7 +5,7 @@
 #include <app/core/event/event_manager.hpp>
 #include <app/old_app/model/atom.hpp>
 #include <app/old_app/model/molecule.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <util/math.hpp>
 #include <variant>
@@ -124,7 +124,7 @@ namespace VTX::Model::Measurement
 
 		if ( atomFromNewMolecule )
 		{
-			MoleculeView * const moleculeView = MVC::MvcManager::get().instantiateView<MoleculeView>(
+			MoleculeView * const moleculeView = VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>(
 				p_atom.getMoleculePtr(), getViewID( int( _atoms.size() - 1 ) ) );
 
 			moleculeView->setCallback( this, &MeasureInProgress::_onMoleculeChange );
@@ -244,7 +244,7 @@ namespace VTX::Model::Measurement
 		{
 			if ( _moleculeViews[ i ] != nullptr )
 			{
-				MVC::MvcManager::get().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
+				VTX::Core::MVC::MvcManager::get().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
 				_moleculeViews[ i ] = nullptr;
 			}
 		}
@@ -265,10 +265,10 @@ namespace VTX::Model::Measurement
 
 	VTX::ID::VTX_ID MeasureInProgress::getViewID( const int p_atomPos ) const
 	{
-		return MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
+		return VTX::Core::MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
 													  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 	}
 
-	void MeasureInProgress::autoDelete() const { MVC::MvcManager::get().deleteModel( this ); }
+	void MeasureInProgress::autoDelete() const { VTX::Core::MVC::MvcManager::get().deleteModel( this ); }
 
 } // namespace VTX::Model::Measurement

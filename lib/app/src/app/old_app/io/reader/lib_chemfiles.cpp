@@ -7,7 +7,7 @@
 #include "app/old_app/model/chain.hpp"
 #include "app/old_app/model/molecule.hpp"
 #include "app/old_app/model/residue.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/util/bond_guessing/bond_order_guessing.hpp"
 #include "app/old_app/util/chemfiles.hpp"
@@ -309,7 +309,7 @@ namespace VTX::IO::Reader
 			modelChain->setResidueCount( modelChain->getResidueCount() + 1 );
 
 			// Create residue.
-			Model::Residue * modelResidue		   = MVC::MvcManager::get().instantiateModel<Model::Residue>();
+			Model::Residue * modelResidue		   = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Residue>();
 			p_molecule.getResidues()[ residueIdx ] = modelResidue;
 			modelResidue->setIndex( residueIdx );
 
@@ -464,7 +464,7 @@ namespace VTX::IO::Reader
 									 .as_double() );
 
 				// Create atom.
-				Model::Atom * modelAtom			= MVC::MvcManager::get().instantiateModel<Model::Atom>();
+				Model::Atom * modelAtom			= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Atom>();
 				p_molecule.getAtoms()[ atomId ] = modelAtom;
 				modelAtom->setIndex( atomId );
 				modelAtom->setResiduePtr( modelResidue );
@@ -621,7 +621,7 @@ namespace VTX::IO::Reader
 			for ( uint i = 0; i < vectorBonds.size(); ++i, ++counter )
 			{
 				const chemfiles::Bond & bond	  = topology.bonds()[ vectorBonds[ i ] ];
-				Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
+				Model::Bond *			modelBond = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Bond>();
 				p_molecule.getBonds()[ counter ]  = modelBond;
 
 				modelBond->setMoleculePtr( &p_molecule );
@@ -639,7 +639,7 @@ namespace VTX::IO::Reader
 			for ( uint i = 0; i < vectorExtraBonds.size(); ++i, ++counter )
 			{
 				const chemfiles::Bond & bond	  = topology.bonds()[ vectorExtraBonds[ i ] ];
-				Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
+				Model::Bond *			modelBond = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Bond>();
 				p_molecule.getBonds()[ counter ]  = modelBond;
 
 				modelBond->setMoleculePtr( &p_molecule );

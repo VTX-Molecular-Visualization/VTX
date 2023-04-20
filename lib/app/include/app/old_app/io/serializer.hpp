@@ -3,7 +3,7 @@
 
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
 #include "app/old_app/math/transform.hpp"
-#include "app/old_app/model/base_model.hpp"
+#include "app/model/base_model.hpp"
 #include <magic_enum.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -114,7 +114,7 @@ namespace VTX
 			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			M * tryDeserializeModel( const nlohmann::json & p_json ) const
 			{
-				M * const model = MVC::MvcManager::get().instantiateModel<M>();
+				M * const model = VTX::Core::MVC::MvcManager::get().instantiateModel<M>();
 
 				try
 				{
@@ -122,7 +122,7 @@ namespace VTX
 				}
 				catch ( std::exception e )
 				{
-					MVC::MvcManager::get().deleteModel( model );
+					VTX::Core::MVC::MvcManager::get().deleteModel( model );
 					throw e;
 				}
 

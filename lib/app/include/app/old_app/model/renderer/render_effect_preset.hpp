@@ -3,7 +3,7 @@
 
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/model/base_model.hpp"
+#include "app/model/base_model.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
 #include <util/math.hpp>
 #include <string>

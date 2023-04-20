@@ -5,7 +5,7 @@
 #include "ui/qt/state/state_machine.hpp"
 #include "ui/qt/state/visualization.hpp"
 #include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/vtx_app.hpp>
@@ -51,7 +51,7 @@ namespace VTX::UI::QT::Action::Viewpoint
 	{
 		const std::string		 viewpointName = _path.generateNewViewpointName();
 		Model::Viewpoint * const viewpoint
-			= MVC::MvcManager::get().instantiateModel<Model::Viewpoint, Model::Path * const>( &_path );
+			= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Viewpoint, Model::Path * const>( &_path );
 		viewpoint->setController( _controller );
 		viewpoint->setRotation( _rotation );
 		viewpoint->setPosition( _position );
@@ -76,7 +76,7 @@ namespace VTX::UI::QT::Action::Viewpoint
 			path->removeViewpoint( viewpoint );
 			paths.emplace( path );
 
-			MVC::MvcManager::get().deleteModel( viewpoint );
+			VTX::Core::MVC::MvcManager::get().deleteModel( viewpoint );
 		}
 
 		for ( Model::Path * const path : paths )

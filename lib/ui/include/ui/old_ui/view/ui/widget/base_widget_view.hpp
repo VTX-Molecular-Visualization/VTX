@@ -5,7 +5,7 @@
 #include "ui/old_ui/ui/widget/view_item_widget.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QWidget>
-#include <app/old_app/model/base_model.hpp>
+#include <app/model/base_model.hpp>
 #include <type_traits>
 
 namespace VTX::View::UI::Widget

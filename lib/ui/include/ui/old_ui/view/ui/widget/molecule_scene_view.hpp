@@ -21,7 +21,7 @@
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/residue.hpp>
 #include <app/old_app/model/selection.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/view/base_view.hpp>
 #include <map>
 
 namespace VTX::View::UI::Widget

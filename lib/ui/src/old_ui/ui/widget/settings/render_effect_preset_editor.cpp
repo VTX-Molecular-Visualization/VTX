@@ -9,7 +9,7 @@
 #include <app/core/action/action_manager.hpp>
 #include <app/action/renderer.hpp>
 #include <app/old_app/setting.hpp>
-#include <app/old_app/view/callback_view.hpp>
+#include <app/view/callback_view.hpp>
 
 namespace VTX::UI::Widget::Settings
 {

@@ -1,13 +1,13 @@
-#ifndef __VTX_BASE_VIEW_3D__
-#define __VTX_BASE_VIEW_3D__
+#ifndef __VTX_VIEW_BASE_VIEW_3D__
+#define __VTX_VIEW_BASE_VIEW_3D__
 
-#include "base_view.hpp"
+#include "app/model/base_model_3d.hpp"
 #include "app/old_app/generic/base_renderable.hpp"
-#include "app/old_app/model/base_model_3d.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
-#include <util/math.hpp>
 #include "app/old_app/vtx_app.hpp"
+#include "base_view.hpp"
+#include <util/math.hpp>
 
 namespace VTX::View
 {

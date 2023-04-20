@@ -12,7 +12,7 @@
 #include <app/old_app/model/chain.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/residue.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 

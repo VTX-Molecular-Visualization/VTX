@@ -4,7 +4,7 @@
 #include <app/event/vtx_event.hpp>
 #include "ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
-#include <app/old_app/view/base_view.hpp>
+#include <app/view/base_view.hpp>
 #include <QWidget>
 #include <vector>
 

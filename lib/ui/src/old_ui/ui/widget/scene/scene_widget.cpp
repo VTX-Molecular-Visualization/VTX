@@ -14,7 +14,7 @@
 #include <app/old_app/model/label.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 // #include <tool/old_tool/model/measurement/angle.hpp>
@@ -304,7 +304,7 @@ namespace VTX::UI::Widget::Scene
 		if ( p_itemTypeID != VTX::ID::Model::MODEL_PATH )
 		{
 			const std::vector<SceneItemWidget *>::const_reverse_iterator lastItemIt = _sceneWidgets.crbegin();
-			const ID::VTX_ID & lastItemTypeId = MVC::MvcManager::get().getModelTypeID( ( *lastItemIt )->getModelID() );
+			const ID::VTX_ID & lastItemTypeId = VTX::Core::MVC::MvcManager::get().getModelTypeID( ( *lastItemIt )->getModelID() );
 
 			if ( lastItemTypeId == VTX::ID::Model::MODEL_PATH )
 			{
@@ -462,7 +462,7 @@ namespace VTX::UI::Widget::Scene
 		if ( modelData.getTypeID() == ID::Model::MODEL_SELECTION )
 		{
 			const Model::Selection & selection
-				= MVC::MvcManager::get().getModel<Model::Selection>( modelData.getModelID() );
+				= VTX::Core::MVC::MvcManager::get().getModel<Model::Selection>( modelData.getModelID() );
 
 			droppedModelIDs.reserve( selection.getItems().size() );
 			for ( const Model::ID & id : selection.getItems() )

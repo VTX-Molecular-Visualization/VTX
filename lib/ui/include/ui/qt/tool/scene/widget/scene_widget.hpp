@@ -16,8 +16,8 @@
 #include <QVariant>
 #include <map>
 #include <app/old_app/generic/base_scene_item.hpp>
-#include <app/old_app/model/base_model.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/model/base_model.hpp>
+#include <app/view/base_view.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
@@ -101,11 +101,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 				 typename = std::enable_if<std::is_base_of<VTX::View::BaseView<M>, V>::value>>
 		void deleteSceneItem( M * const p_model, const ID::VTX_ID & p_viewID )
 		{
-			V * const sceneItemWidget = MVC::MvcManager::get().getView<V>( p_model, p_viewID );
+			V * const sceneItemWidget = VTX::Core::MVC::MvcManager::get().getView<V>( p_model, p_viewID );
 
 			_removeWidgetInLayout( sceneItemWidget );
 
-			MVC::MvcManager::get().deleteView<V>( p_model, p_viewID );
+			VTX::Core::MVC::MvcManager::get().deleteView<V>( p_model, p_viewID );
 		}
 	};
 

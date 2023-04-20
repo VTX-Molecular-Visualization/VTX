@@ -1,7 +1,7 @@
 #ifndef __MODEL_MESH_TRIANGLE__
 #define __MODEL_MESH_TRIANGLE__
 
-#include "base_model_3d.hpp"
+#include "app/model/base_model_3d.hpp"
 #include "app/old_app/buffer/mesh_triangle.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include <util/types.hpp>

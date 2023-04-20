@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_VIEWPOINT__
 #define __VTX_MODEL_VIEWPOINT__
 
-#include "base_model.hpp"
+#include "app/model/base_model.hpp"
 #include <util/types.hpp>
 #include "app/old_app/id.hpp"
 #include "app/old_app/setting.hpp"

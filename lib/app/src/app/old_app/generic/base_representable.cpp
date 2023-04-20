@@ -7,7 +7,7 @@
 #include "app/old_app/model/residue.hpp"
 #include "app/old_app/model/secondary_structure.hpp"
 #include "app/old_app/model/solvent_excluded_surface.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -80,7 +80,7 @@ namespace VTX
 			{
 				_delinkRepresentationToParent();
 
-				MVC::MvcManager::get().deleteModel( _representation );
+				VTX::Core::MVC::MvcManager::get().deleteModel( _representation );
 				_representation = nullptr;
 
 				if ( p_notify )

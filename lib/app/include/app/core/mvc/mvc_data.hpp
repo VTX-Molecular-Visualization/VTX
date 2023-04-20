@@ -1,11 +1,12 @@
-#ifndef __VTX_MVC_DATA__
-#define __VTX_MVC_DATA__
+#ifndef __VTX_CORE_MVC_DATA__
+#define __VTX_CORE_MVC_DATA__
 
+#include "app/model/base_model.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/model/base_model.hpp"
-#include "app/old_app/view/base_view_3d.hpp"
+#include "app/view/base_view.hpp"
+#include <map>
 
-namespace VTX::MVC
+namespace VTX::Core::MVC
 {
 	class MvcData
 	{
@@ -60,7 +61,7 @@ namespace VTX::MVC
 		inline MapViews &		getViews() { return _views; }
 		inline const MapViews & getViews() const { return _views; }
 
-		void notifyViews( const Event::VTXEvent * const p_event ) const
+		void notifyViews( const VTX::Event::VTXEvent * const p_event ) const
 		{
 			for ( const PairViews & pair : _views )
 			{
@@ -73,6 +74,6 @@ namespace VTX::MVC
 		MapViews				 _views = MapViews();
 	};
 
-} // namespace VTX::MVC
+} // namespace VTX::Core::MVC
 
 #endif

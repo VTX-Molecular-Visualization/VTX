@@ -1,7 +1,7 @@
 #ifndef __VTX_BASE_SCENE_ITEM__
 #define __VTX_BASE_SCENE_ITEM__
 
-#include "app/old_app/model/base_model.hpp"
+#include "app/model/base_model.hpp"
 
 namespace VTX::Generic
 {

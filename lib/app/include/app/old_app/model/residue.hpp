@@ -2,7 +2,7 @@
 #define __VTX_MODEL_RESIDUE__
 
 #include "atom.hpp"
-#include "base_model.hpp"
+#include "app/model/base_model.hpp"
 #include <util/types.hpp>
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_representable.hpp"

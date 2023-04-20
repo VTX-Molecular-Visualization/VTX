@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QWidget>
-#include <app/old_app/model/base_model.hpp>
+#include <app/model/base_model.hpp>
 #include <ui/old_ui/ui/widget/custom_widget/model_list_component.hpp>
 #include <ui/old_ui/ui/widget/custom_widget/model_list_widget.hpp>
 #include <vector>

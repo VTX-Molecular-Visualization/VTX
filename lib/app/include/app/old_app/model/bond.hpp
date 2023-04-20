@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_BOND__
 #define __VTX_MODEL_BOND__
 
-#include "base_model.hpp"
+#include "app/model/base_model.hpp"
 #include "app/old_app/id.hpp"
 #include <string>
 

@@ -8,7 +8,7 @@
 #include "app/old_app/io/reader/serialized_object.hpp"
 #include "app/old_app/model/mesh_triangle.hpp"
 #include "app/old_app/model/molecule.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -102,7 +102,7 @@ namespace VTX
 				IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles( this );
 
 				// Set PRM.
-				Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+				Model::Molecule * const molecule = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 				molecule->setConfiguration( p_config );
 
 				// Load.
@@ -116,7 +116,7 @@ namespace VTX
 				catch ( const std::exception & p_e )
 				{
 					_endLoadingFileFail( path, p_e.what() );
-					MVC::MvcManager::get().deleteModel( molecule );
+					VTX::Core::MVC::MvcManager::get().deleteModel( molecule );
 				}
 
 				delete reader;
@@ -141,7 +141,7 @@ namespace VTX
 						if ( _openTrajectoryAsMolecule )
 						{
 							Model::Molecule * const molecule
-								= MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+								= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 							molecule->setConfiguration( p_config );
 
 							// Load.
@@ -154,7 +154,7 @@ namespace VTX
 							catch ( const std::exception & p_e )
 							{
 								_endLoadingFileFail( path, p_e.what() );
-								MVC::MvcManager::get().deleteModel( molecule );
+								VTX::Core::MVC::MvcManager::get().deleteModel( molecule );
 							}
 						}
 						else
@@ -182,7 +182,7 @@ namespace VTX
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
 				IO::Reader::LibAssimp * const reader = new IO::Reader::LibAssimp();
-				Model::MeshTriangle * const	  mesh	 = MVC::MvcManager::get().instantiateModel<Model::MeshTriangle>();
+				Model::MeshTriangle * const	  mesh	 = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::MeshTriangle>();
 
 				try
 				{
@@ -194,7 +194,7 @@ namespace VTX
 				catch ( const std::exception & p_e )
 				{
 					_endLoadingFileFail( path, p_e.what() );
-					MVC::MvcManager::get().deleteModel( mesh );
+					VTX::Core::MVC::MvcManager::get().deleteModel( mesh );
 				}
 
 				delete reader;
@@ -214,7 +214,7 @@ namespace VTX
 				{
 					// Create reader.
 					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles( this );
-					Model::Molecule *		   molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+					Model::Molecule *		   molecule = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 
 					// Load.
 					try
@@ -226,7 +226,7 @@ namespace VTX
 					catch ( const std::exception & p_e )
 					{
 						_endLoadingFileFail( pair.first, p_e.what() );
-						MVC::MvcManager::get().deleteModel( molecule );
+						VTX::Core::MVC::MvcManager::get().deleteModel( molecule );
 					}
 
 					delete reader;

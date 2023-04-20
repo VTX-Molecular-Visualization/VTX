@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_SECONDARY_STRUCTURE__
 #define __VTX_MODEL_SECONDARY_STRUCTURE__
 
-#include "base_model_3d.hpp"
+#include "app/model/base_model_3d.hpp"
 #include "app/old_app/buffer/secondary_structure.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"

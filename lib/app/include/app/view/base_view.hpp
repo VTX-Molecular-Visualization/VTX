@@ -1,16 +1,16 @@
-#ifndef __VTX_BASE_VIEW__
-#define __VTX_BASE_VIEW__
+#ifndef __VTX_VIEW_BASE_VIEW__
+#define __VTX_VIEW_BASE_VIEW__
 
 #include "app/event/vtx_event.hpp"
-#include "app/old_app/model/base_model.hpp"
+#include "app/model/base_model.hpp"
 #include <util/logger.hpp>
 
-namespace VTX::MVC
+namespace VTX::Core::MVC
 {
 	class MvcManager;
 }
 
-#define VTX_VIEW friend VTX::MVC::MvcManager;
+#define VTX_VIEW friend VTX::Core::MVC::MvcManager;
 
 namespace VTX
 {

@@ -2,7 +2,7 @@
 #include "ui/old_ui/ui/mime_type.hpp"
 #include <app/old_app/id.hpp>
 #include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -59,7 +59,7 @@ namespace VTX::UI::Widget::CustomWidget
 				if ( typeId == ID::Model::MODEL_SELECTION )
 				{
 					const Model::Selection & selection
-						= MVC::MvcManager::get().getModel<Model::Selection>( modelData.getModelID() );
+						= VTX::Core::MVC::MvcManager::get().getModel<Model::Selection>( modelData.getModelID() );
 
 					if ( _acceptGroup )
 					{
@@ -99,14 +99,14 @@ namespace VTX::UI::Widget::CustomWidget
 	void ModelDropArea::dropEvent( QDropEvent * p_event )
 	{
 		const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
-		Model::BaseModel & model = MVC::MvcManager::get().getModel<Model::BaseModel>( modelData.getModelID() );
+		Model::BaseModel & model = VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( modelData.getModelID() );
 
 		p_event->acceptProposedAction();
 
 		if ( model.getTypeId() == ID::Model::MODEL_SELECTION )
 		{
 			const Model::Selection & selection
-				= MVC::MvcManager::get().getModel<Model::Selection>( modelData.getModelID() );
+				= VTX::Core::MVC::MvcManager::get().getModel<Model::Selection>( modelData.getModelID() );
 
 			std::set<ID::VTX_ID> types = std::set<ID::VTX_ID>();
 			selection.getItemTypes( types );

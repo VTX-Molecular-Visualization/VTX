@@ -3,7 +3,7 @@
 
 #include "app/old_app/model/mesh_triangle.hpp"
 #include "app/old_app/model/solvent_excluded_surface.hpp"
-#include "app/old_app/view/base_view_3d.hpp"
+#include "app/view/base_view_3d.hpp"
 
 namespace VTX
 {

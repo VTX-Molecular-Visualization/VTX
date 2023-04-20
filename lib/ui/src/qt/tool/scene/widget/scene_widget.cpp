@@ -12,7 +12,7 @@
 #include <app/core/action/action_manager.hpp>
 #include <app/old_app/model/path.hpp>
 #include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/vtx_app.hpp>
@@ -62,7 +62,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 				= dynamic_cast<const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
 
 			Model::BaseModel & model
-				= MVC::MvcManager::get().getModel<Model::BaseModel>( castedEvent.ptr->getModelID() );
+				= VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( castedEvent.ptr->getModelID() );
 
 			SceneItemWidget * const sceneItemWidget = getSceneItemWidgetFromModel( model );
 
@@ -83,7 +83,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		const int defaultPosition = _getDefaultIndex( *p_sceneItem );
 
-		const ID::VTX_ID &		modelTypeID		= MVC::MvcManager::get().getModelTypeID( p_sceneItem->getModelID() );
+		const ID::VTX_ID &		modelTypeID		= VTX::Core::MVC::MvcManager::get().getModelTypeID( p_sceneItem->getModelID() );
 		SceneItemWidget * const sceneItemWidget = _mapInstanciers[ modelTypeID ]->instantiateItem( p_sceneItem );
 
 		const int index = int( _sceneWidgets.size() );
@@ -100,7 +100,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		_removeWidgetInLayout( p_item );
 
-		const ID::VTX_ID & itemType = MVC::MvcManager::get().getModelTypeID( p_item->getModelID() );
+		const ID::VTX_ID & itemType = VTX::Core::MVC::MvcManager::get().getModelTypeID( p_item->getModelID() );
 		_mapInstanciers[ itemType ]->destroyItem( p_item );
 	}
 
@@ -390,7 +390,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		if ( modelData.getTypeID() == ID::Model::MODEL_SELECTION )
 		{
 			const Model::Selection & selection
-				= MVC::MvcManager::get().getModel<Model::Selection>( modelData.getModelID() );
+				= VTX::Core::MVC::MvcManager::get().getModel<Model::Selection>( modelData.getModelID() );
 
 			droppedModelIDs.reserve( selection.getItems().size() );
 			for ( const Model::ID & id : selection.getItems() )

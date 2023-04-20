@@ -9,7 +9,7 @@
 #include <QPoint>
 #include <QSize>
 #include <app/old_app/id.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/view/base_view.hpp>
 #include <string>
 #include <ui/old_ui/ui/widget/base_manual_widget.hpp>
 #include <ui/old_ui/ui/widget/render/base_integrated_widget.hpp>

@@ -10,7 +10,7 @@
 #include <app/core/event/event_manager.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/network/network_manager.hpp>
 #include <app/old_app/network/request/check_update.hpp>
 #include <app/old_app/network/request/download_mmtf.hpp>

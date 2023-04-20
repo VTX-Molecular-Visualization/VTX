@@ -3,7 +3,7 @@
 
 #include "app/old_app/generic/base_opengl.hpp"
 #include "gl/framebuffer.hpp"
-#include "app/old_app/model/base_model.hpp"
+#include "app/model/base_model.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include <vector>
 

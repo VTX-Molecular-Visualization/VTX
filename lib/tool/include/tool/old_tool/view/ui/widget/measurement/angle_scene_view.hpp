@@ -5,7 +5,7 @@
 #include <QMimeData>
 #include <QWidget>
 #include <app/old_app/id.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/view/base_view.hpp>
 #include <string>
 #include <ui/old_ui/ui/widget/scene/scene_item_widget.hpp>
 

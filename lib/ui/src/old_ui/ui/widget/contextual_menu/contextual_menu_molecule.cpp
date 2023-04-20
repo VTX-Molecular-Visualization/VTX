@@ -79,7 +79,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuMolecule::_renameAction()
 	{
 		View::UI::Widget::MoleculeSceneView * const molSceneView
-			= MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSceneView>( _target,
+			= VTX::Core::MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSceneView>( _target,
 																				   ID::View::UI_MOLECULE_STRUCTURE );
 
 		molSceneView->openRenameEditor( _target->getId() );

@@ -6,7 +6,7 @@
 #include "app/old_app/model/chain.hpp"
 #include "app/old_app/model/molecule.hpp"
 #include "app/old_app/model/residue.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include <unordered_set>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -17,7 +17,7 @@ namespace VTX::Model
 	{
 		for ( const Model::ID & modelID : getItems() )
 		{
-			if ( MVC::MvcManager::get().getModelTypeID( modelID ) == p_id )
+			if ( VTX::Core::MVC::MvcManager::get().getModelTypeID( modelID ) == p_id )
 			{
 				return true;
 			}
@@ -1079,7 +1079,7 @@ namespace VTX::Model
 
 	bool Selection::isModelSelected( const Model::ID & p_id ) const
 	{
-		const Model::BaseModel & model = MVC::MvcManager::get().getModel<Model::BaseModel>( p_id );
+		const Model::BaseModel & model = VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( p_id );
 		return isModelSelected( model );
 	}
 
@@ -1115,7 +1115,7 @@ namespace VTX::Model
 	{
 		for ( const std::pair<const VTX::Model::ID, MapChainIds> & item : _moleculesMap )
 		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( item.first );
+			Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( item.first );
 			molecule.refreshSelection( nullptr );
 		}
 
@@ -1129,7 +1129,7 @@ namespace VTX::Model
 	{
 		for ( const std::pair<const VTX::Model::ID, MapChainIds> & item : _moleculesMap )
 		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( item.first );
+			Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( item.first );
 			molecule.refreshSelection( nullptr );
 		}
 
@@ -1170,11 +1170,11 @@ namespace VTX::Model
 
 		for ( const Model::ID & id : _items )
 		{
-			const VTX::ID::VTX_ID & typeId = MVC::MvcManager::get().getModelTypeID( id );
+			const VTX::ID::VTX_ID & typeId = VTX::Core::MVC::MvcManager::get().getModelTypeID( id );
 
 			if ( typeId == VTX::ID::Model::MODEL_MOLECULE )
 			{
-				const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( id );
+				const Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( id );
 
 				if ( isMoleculeFullySelected( molecule ) )
 				{
@@ -1231,7 +1231,7 @@ namespace VTX::Model
 
 		for ( const std::pair<const VTX::Model::ID, MapChainIds> & mapMol : _moleculesMap )
 		{
-			const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( mapMol.first );
+			const Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( mapMol.first );
 			Object3D::Helper::AABB	aabb	 = Object3D::Helper::AABB();
 			_mapSelectionAABB.emplace( molecule.getId(), aabb );
 

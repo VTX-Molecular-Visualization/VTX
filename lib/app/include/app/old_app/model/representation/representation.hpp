@@ -3,7 +3,7 @@
 
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
-#include "app/old_app/model/base_model.hpp"
+#include "app/model/base_model.hpp"
 #include "representation_data.hpp"
 #include "representation_enum.hpp"
 #include <util/math.hpp>

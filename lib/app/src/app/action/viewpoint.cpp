@@ -1,6 +1,6 @@
 #include "app/action/viewpoint.hpp"
 #include "app/old_app/model/path.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include <set>
 
 namespace VTX::Action::Viewpoint

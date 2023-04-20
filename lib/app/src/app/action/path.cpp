@@ -1,7 +1,7 @@
 #include "app/action/path.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/model/selection.hpp"
 #include "app/old_app/model/viewpoint.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 // #include "state/export.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -50,7 +50,7 @@ namespace VTX::Action::Path
 			Model::Viewpoint * const viewpointToDelete = _path.getViewpoints().back();
 			_path.removeViewpoint( viewpointToDelete );
 
-			MVC::MvcManager::get().deleteModel( viewpointToDelete );
+			VTX::Core::MVC::MvcManager::get().deleteModel( viewpointToDelete );
 		}
 	}
 

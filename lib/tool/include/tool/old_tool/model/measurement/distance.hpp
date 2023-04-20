@@ -6,7 +6,7 @@
 #include <app/old_app/generic/base_auto_delete.hpp>
 #include <app/old_app/id.hpp>
 #include <app/old_app/model/label.hpp>
-#include <app/old_app/view/callback_view.hpp>
+#include <app/view/callback_view.hpp>
 #include <string>
 #include <utility>
 #include <vector>

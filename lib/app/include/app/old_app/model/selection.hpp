@@ -1,13 +1,12 @@
 #ifndef __VTX_MODEL_SELECTION__
 #define __VTX_MODEL_SELECTION__
 
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/event/base_event_receiver_vtx.hpp"
 #include "app/event/vtx_event.hpp"
-#include "app/old_app/model/base_model.hpp"
+#include "app/model/base_model.hpp"
 #include "app/old_app/model/category_enum.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
-#include "base_model.hpp"
 #include <map>
 #include <set>
 #include <unordered_set>
@@ -205,9 +204,9 @@ namespace VTX::Model
 			std::vector<T *> models = std::vector<T *>();
 			for ( const VTX::Model::ID & modelID : getItems() )
 			{
-				if ( MVC::MvcManager::get().getModelTypeID( modelID ) == p_modelTypeID )
+				if ( VTX::Core::MVC::MvcManager::get().getModelTypeID( modelID ) == p_modelTypeID )
 				{
-					T & model = MVC::MvcManager::get().getModel<T>( modelID );
+					T & model = VTX::Core::MVC::MvcManager::get().getModel<T>( modelID );
 					models.emplace_back( &model );
 				}
 			}
@@ -231,9 +230,9 @@ namespace VTX::Model
 		{
 			for ( const VTX::Model::ID & itemID : _items )
 			{
-				if ( MVC::MvcManager::get().getModelTypeID( itemID ) == p_itemType )
+				if ( VTX::Core::MVC::MvcManager::get().getModelTypeID( itemID ) == p_itemType )
 				{
-					T & item = MVC::MvcManager::get().getModel<T>( itemID );
+					T & item = VTX::Core::MVC::MvcManager::get().getModel<T>( itemID );
 					p_items.emplace( &item );
 				}
 			}
@@ -243,9 +242,9 @@ namespace VTX::Model
 		{
 			for ( const VTX::Model::ID & itemID : _items )
 			{
-				if ( MVC::MvcManager::get().getModelTypeID( itemID ) == p_itemType )
+				if ( VTX::Core::MVC::MvcManager::get().getModelTypeID( itemID ) == p_itemType )
 				{
-					T & item = MVC::MvcManager::get().getModel<T>( itemID );
+					T & item = VTX::Core::MVC::MvcManager::get().getModel<T>( itemID );
 					p_items.emplace( &item );
 				}
 			}

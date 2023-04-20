@@ -11,7 +11,7 @@
 #include "app/old_app/model/residue.hpp"
 #include "app/old_app/model/selection.hpp"
 #include "app/old_app/model/solvent_excluded_surface.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/util/secondary_structure.hpp"
@@ -32,7 +32,7 @@ namespace VTX
 
 			for ( int i = 0; i < int( CATEGORY_ENUM::COUNT ); i++ )
 			{
-				_categories[ i ] = MVC::MvcManager::get().instantiateModel<Model::Category>();
+				_categories[ i ] = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Category>();
 				_categories[ i ]->setMoleculePtr( this );
 				_categories[ i ]->setCategoryEnum( CATEGORY_ENUM( i ) );
 			}
@@ -43,22 +43,22 @@ namespace VTX
 
 		Molecule::~Molecule()
 		{
-			MVC::MvcManager::get().deleteAllModels( _atoms );
-			MVC::MvcManager::get().deleteAllModels( _bonds );
-			MVC::MvcManager::get().deleteAllModels( _residues );
-			MVC::MvcManager::get().deleteAllModels( _chains );
-			MVC::MvcManager::get().deleteAllModels( _categories );
+			VTX::Core::MVC::MvcManager::get().deleteAllModels( _atoms );
+			VTX::Core::MVC::MvcManager::get().deleteAllModels( _bonds );
+			VTX::Core::MVC::MvcManager::get().deleteAllModels( _residues );
+			VTX::Core::MVC::MvcManager::get().deleteAllModels( _chains );
+			VTX::Core::MVC::MvcManager::get().deleteAllModels( _categories );
 
 			for ( const UnknownResidueData * const unknownResidueSymbol : _unknownResidueSymbol )
 				delete unknownResidueSymbol;
 
 			if ( _secondaryStructure != nullptr )
 			{
-				MVC::MvcManager::get().deleteModel( _secondaryStructure );
+				VTX::Core::MVC::MvcManager::get().deleteModel( _secondaryStructure );
 			}
 			for ( auto const & [ key, val ] : _solventExcludedSurfaces )
 			{
-				MVC::MvcManager::get().deleteModel( val );
+				VTX::Core::MVC::MvcManager::get().deleteModel( val );
 			}
 		}
 
@@ -66,7 +66,7 @@ namespace VTX
 
 		Chain & Molecule::addChain()
 		{
-			Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
+			Chain * const chain = VTX::Core::MVC::MvcManager::get().instantiateModel<Chain>();
 			_addChain( chain );
 			return *chain;
 		}
@@ -78,21 +78,21 @@ namespace VTX
 
 		Residue & Molecule::addResidue()
 		{
-			Residue * const residue = MVC::MvcManager::get().instantiateModel<Residue>();
+			Residue * const residue = VTX::Core::MVC::MvcManager::get().instantiateModel<Residue>();
 			_residues.emplace_back( residue );
 			return *residue;
 		}
 
 		Atom & Molecule::addAtom()
 		{
-			Atom * const atom = MVC::MvcManager::get().instantiateModel<Atom>();
+			Atom * const atom = VTX::Core::MVC::MvcManager::get().instantiateModel<Atom>();
 			_atoms.emplace_back( atom );
 			return *atom;
 		}
 
 		Bond & Molecule::addBond()
 		{
-			Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
+			Bond * const bond = VTX::Core::MVC::MvcManager::get().instantiateModel<Bond>();
 			bond->setMoleculePtr( this );
 			_bonds.emplace_back( bond );
 			return *bond;
@@ -222,11 +222,11 @@ namespace VTX
 
 			for ( const Model::ID & instantiatedRepresentationID : _defaultRepresentationIDs )
 			{
-				if ( !MVC::MvcManager::get().doesModelExists( instantiatedRepresentationID ) )
+				if ( !VTX::Core::MVC::MvcManager::get().doesModelExists( instantiatedRepresentationID ) )
 					continue;
 
 				Model::Representation::InstantiatedRepresentation & instantiatedRepresentation
-					= MVC::MvcManager::get().getModel<Model::Representation::InstantiatedRepresentation>(
+					= VTX::Core::MVC::MvcManager::get().getModel<Model::Representation::InstantiatedRepresentation>(
 						instantiatedRepresentationID );
 
 				VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
@@ -286,9 +286,9 @@ namespace VTX
 		void Molecule::_instantiate3DViews()
 		{
 			_addRenderable(
-				MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, VTX::ID::View::D3_SPHERE ) );
+				VTX::Core::MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, VTX::ID::View::D3_SPHERE ) );
 			_addRenderable(
-				MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, VTX::ID::View::D3_CYLINDER ) );
+				VTX::Core::MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, VTX::ID::View::D3_CYLINDER ) );
 		}
 
 		void Molecule::resizeBuffers()
@@ -504,7 +504,7 @@ namespace VTX
 			// Delete SES, will be recomputed when needed.
 			for ( auto & [ categoryEnum, sesCurrent ] : _solventExcludedSurfaces )
 			{
-				MVC::MvcManager::get().deleteModel( sesCurrent );
+				VTX::Core::MVC::MvcManager::get().deleteModel( sesCurrent );
 			}
 			_solventExcludedSurfaces.clear();
 		}
@@ -822,19 +822,19 @@ namespace VTX
 			}
 
 			// Clear topology.
-			MVC::MvcManager::get().deleteAllModels( _chains );
-			MVC::MvcManager::get().deleteAllModels( _residues );
+			VTX::Core::MVC::MvcManager::get().deleteAllModels( _chains );
+			VTX::Core::MVC::MvcManager::get().deleteAllModels( _residues );
 
 			// Create models.
 			_chains.resize( p_molecule.getChainCount() );
 			for ( uint i = 0; i < p_molecule.getChainCount(); ++i )
 			{
-				getChains()[ i ] = MVC::MvcManager::get().instantiateModel<Chain>();
+				getChains()[ i ] = VTX::Core::MVC::MvcManager::get().instantiateModel<Chain>();
 			}
 			_residues.resize( p_molecule.getResidueCount() );
 			for ( uint i = 0; i < p_molecule.getResidueCount(); ++i )
 			{
-				getResidues()[ i ] = MVC::MvcManager::get().instantiateModel<Residue>();
+				getResidues()[ i ] = VTX::Core::MVC::MvcManager::get().instantiateModel<Residue>();
 			}
 
 			setName( p_molecule.getName() );
@@ -907,7 +907,7 @@ namespace VTX
 				Util::SecondaryStructure::computeSecondaryStructure( *this );
 			}
 
-			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule>( this );
+			_secondaryStructure = VTX::Core::MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule>( this );
 			_secondaryStructure->init();
 		}
 
@@ -939,7 +939,7 @@ namespace VTX
 			assert( getCategory( p_categoryEnum ).isEmpty() == false );
 
 			SolventExcludedSurface * const ses
-				= MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Category>(
+				= VTX::Core::MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Category>(
 					&getCategory( p_categoryEnum ) );
 			_solventExcludedSurfaces.emplace( p_categoryEnum, ses );
 			ses->init();
@@ -949,10 +949,10 @@ namespace VTX
 		{
 			for ( auto & [ categoryEnum, sesCurrent ] : _solventExcludedSurfaces )
 			{
-				MVC::MvcManager::get().deleteModel( sesCurrent );
+				VTX::Core::MVC::MvcManager::get().deleteModel( sesCurrent );
 
 				SolventExcludedSurface * const ses
-					= MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Category>(
+					= VTX::Core::MVC::MvcManager::get().instantiateModel<SolventExcludedSurface, Category>(
 						&getCategory( categoryEnum ) );
 
 				sesCurrent = ses;
@@ -1156,7 +1156,7 @@ namespace VTX
 
 			// Delete chain
 			if ( p_delete )
-				MVC::MvcManager::get().deleteModel( chainToDelete );
+				VTX::Core::MVC::MvcManager::get().deleteModel( chainToDelete );
 		}
 
 		void Molecule::removeResidue( const uint p_id,
@@ -1211,7 +1211,7 @@ namespace VTX
 
 			// Remove Residue
 			if ( p_delete )
-				MVC::MvcManager::get().deleteModel( residueToDelete );
+				VTX::Core::MVC::MvcManager::get().deleteModel( residueToDelete );
 		}
 
 		void Molecule::removeAtom( const uint p_id,
@@ -1305,13 +1305,13 @@ namespace VTX
 
 			// Delete Atom
 			if ( p_delete )
-				MVC::MvcManager::get().deleteModel( atomToDelete );
+				VTX::Core::MVC::MvcManager::get().deleteModel( atomToDelete );
 		}
 
 		void Molecule::removeBond( const uint p_id, const bool p_delete, const bool p_notifyViews )
 		{
 			if ( p_delete )
-				MVC::MvcManager::get().deleteModel( _bonds[ p_id ] );
+				VTX::Core::MVC::MvcManager::get().deleteModel( _bonds[ p_id ] );
 
 			_bonds[ p_id ] = nullptr;
 

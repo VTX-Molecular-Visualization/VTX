@@ -6,7 +6,7 @@
 #include <QVBoxLayout>
 #include <QVariant>
 #include <app/old_app/generic/base_scene_item.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -25,7 +25,7 @@ namespace VTX::UI::Widget::CustomWidget
 				= dynamic_cast<const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
 
 			Model::BaseModel & model
-				= MVC::MvcManager::get().getModel<Model::BaseModel>( castedEvent.ptr->getModelID() );
+				= VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( castedEvent.ptr->getModelID() );
 			removeModel( &model );
 		}
 	}

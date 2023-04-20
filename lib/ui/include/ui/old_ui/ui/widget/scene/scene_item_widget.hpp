@@ -10,7 +10,7 @@
 #include <QMouseEvent>
 #include <QTreeWidget>
 #include <app/old_app/generic/base_scene_item.hpp>
-#include <app/old_app/model/base_model.hpp>
+#include <app/model/base_model.hpp>
 #include <vector>
 
 namespace VTX::Generic

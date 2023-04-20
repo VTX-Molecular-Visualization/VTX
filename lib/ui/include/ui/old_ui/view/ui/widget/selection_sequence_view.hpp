@@ -3,7 +3,7 @@
 
 #include "ui/old_ui/ui/widget/sequence/sequence_widget.hpp"
 #include <app/old_app/model/selection.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/view/base_view.hpp>
 
 namespace VTX
 {

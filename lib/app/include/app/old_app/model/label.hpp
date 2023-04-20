@@ -5,7 +5,7 @@
 #include <util/types.hpp>
 #include "app/old_app/generic/base_scene_item.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/model/base_model.hpp"
+#include "app/model/base_model.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
 
 namespace VTX::Model

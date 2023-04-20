@@ -11,9 +11,9 @@
 #include <QResizeEvent>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/old_app/model/base_model.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/model/base_model.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
+#include <app/view/base_view.hpp>
 #include <app/worker/snapshoter.hpp>
 #include <map>
 
@@ -83,12 +83,12 @@ namespace VTX::UI::Widget::Render
 				 typename = std::enable_if<std::is_base_of<BaseIntegratedWidget, V>::value>>
 		void _removeViewIntegratedWidget( const M * const p_model, const ID::VTX_ID & p_viewName )
 		{
-			V * const integratedWidgetView = MVC::MvcManager::get().getView<V>( p_model, p_viewName );
+			V * const integratedWidgetView = VTX::Core::MVC::MvcManager::get().getView<V>( p_model, p_viewName );
 
 			_integratedWidgets.erase(
 				std::find( _integratedWidgets.begin(), _integratedWidgets.end(), integratedWidgetView ) );
 
-			MVC::MvcManager::get().deleteView( p_model, p_viewName );
+			VTX::Core::MVC::MvcManager::get().deleteView( p_model, p_viewName );
 		}
 
 		// Shortcuts.

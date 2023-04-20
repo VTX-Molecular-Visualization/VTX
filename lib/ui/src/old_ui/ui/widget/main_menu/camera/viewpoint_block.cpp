@@ -5,7 +5,7 @@
 #include <app/core/action/action_manager.hpp>
 #include <app/old_app/model/path.hpp>
 #include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/camera.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/vtx_app.hpp>
@@ -65,10 +65,10 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 		for ( const Model::ID & modelID : selection.getItems() )
 		{
-			const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( modelID );
+			const ID::VTX_ID & modelTypeID = VTX::Core::MVC::MvcManager::get().getModelTypeID( modelID );
 			if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
-				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
+				Model::Viewpoint & viewpoint = VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
 				viewpointsInSelection.emplace_back( &viewpoint );
 			}
 		}

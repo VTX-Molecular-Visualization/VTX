@@ -199,11 +199,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 													  const Model::ID &	 p_modelId,
 													  const bool		 p_appendToSelection ) const
 	{
-		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( p_modelId );
+		const ID::VTX_ID & modelTypeId = VTX::Core::MVC::MvcManager::get().getModelTypeID( p_modelId );
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( p_modelId );
+			Model::Molecule & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isMoleculeFullySelected( model ) )
 				VTX_ACTION( new Action::Selection::UnselectMolecule( p_selectionModel, model ) );
 			else
@@ -211,7 +211,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			Model::Category & model = MVC::MvcManager::get().getModel<Model::Category>( p_modelId );
+			Model::Category & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isCategoryFullySelected( model ) )
 				VTX_ACTION( new Action::Selection::UnselectCategory( p_selectionModel, model ) );
 			else
@@ -219,7 +219,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
-			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( p_modelId );
+			Model::Chain & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Chain>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isChainFullySelected( model ) )
 				VTX_ACTION( new Action::Selection::UnselectChain( p_selectionModel, model ) );
 			else
@@ -227,7 +227,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( p_modelId );
+			Model::Residue & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isResidueFullySelected( model ) )
 				VTX_ACTION( new Action::Selection::UnselectResidue( p_selectionModel, model ) );
 			else
@@ -235,7 +235,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
-			Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( p_modelId );
+			Model::Atom & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( p_modelId );
 			if ( p_appendToSelection && p_selectionModel.isAtomSelected( model ) )
 				VTX_ACTION( new Action::Selection::UnselectAtom( p_selectionModel, model ) );
 			else
@@ -246,31 +246,31 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	void SceneItemSelectionModel::_unselectModelAction( Model::Selection & p_selectionModel,
 														const Model::ID &  p_modelId ) const
 	{
-		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( p_modelId );
+		const ID::VTX_ID & modelTypeId = VTX::Core::MVC::MvcManager::get().getModelTypeID( p_modelId );
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( p_modelId );
+			Model::Molecule & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( p_modelId );
 			VTX_ACTION( new Action::Selection::UnselectMolecule( p_selectionModel, model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			Model::Category & model = MVC::MvcManager::get().getModel<Model::Category>( p_modelId );
+			Model::Category & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( p_modelId );
 			VTX_ACTION( new Action::Selection::UnselectCategory( p_selectionModel, model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
-			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( p_modelId );
+			Model::Chain & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Chain>( p_modelId );
 			VTX_ACTION( new Action::Selection::UnselectChain( p_selectionModel, model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( p_modelId );
+			Model::Residue & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( p_modelId );
 			VTX_ACTION( new Action::Selection::UnselectResidue( p_selectionModel, model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
-			Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( p_modelId );
+			Model::Atom & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( p_modelId );
 			VTX_ACTION( new Action::Selection::UnselectAtom( p_selectionModel, model ) );
 		}
 	}
@@ -278,14 +278,14 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	Model::BaseModel * SceneItemSelectionModel::_getModel( const QModelIndex & p_modelIndex ) const
 	{
 		const VTX::Model::ID & modelId = p_modelIndex.data( SceneItemWidget::MODEL_ID_ROLE ).value<VTX::Model::ID>();
-		Model::BaseModel &	   model   = MVC::MvcManager::get().getModel<Model::BaseModel>( modelId );
+		Model::BaseModel &	   model   = VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( modelId );
 
 		return &model;
 	}
 	Model::BaseModel * SceneItemSelectionModel::_getModel( const SceneItemWidget & p_sceneItem ) const
 	{
 		const VTX::Model::ID & modelId = p_sceneItem.getModelID();
-		Model::BaseModel &	   model   = MVC::MvcManager::get().getModel<Model::BaseModel>( modelId );
+		Model::BaseModel &	   model   = VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( modelId );
 
 		return &model;
 	}

@@ -5,6 +5,7 @@
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/model/renderer/render_effect_preset.hpp"
 #include "app/old_app/model/renderer/render_effect_preset_library.hpp"
+#include <unordered_set>
 
 namespace VTX::Action::Renderer
 {

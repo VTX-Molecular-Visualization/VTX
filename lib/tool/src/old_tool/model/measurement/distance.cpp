@@ -4,7 +4,7 @@
 #include <app/core/event/event_manager.hpp>
 #include <app/old_app/model/atom.hpp>
 #include <app/old_app/model/molecule.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <util/math.hpp>
 
@@ -159,14 +159,14 @@ namespace VTX::Model::Measurement
 	void Distance::_instantiateViewsOnMolecules()
 	{
 		MoleculeView * const firstMoleculeView
-			= MVC::MvcManager::get().instantiateView<MoleculeView>( _atoms[ 0 ]->getMoleculePtr(), getViewID( 0 ) );
+			= VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>( _atoms[ 0 ]->getMoleculePtr(), getViewID( 0 ) );
 		firstMoleculeView->setCallback( this, &Distance::_onMoleculeChange );
 		_moleculeViews[ 0 ] = firstMoleculeView;
 
 		if ( _atoms[ 0 ]->getMoleculePtr() != _atoms[ 1 ]->getMoleculePtr() )
 		{
 			MoleculeView * const secondMoleculeView
-				= MVC::MvcManager::get().instantiateView<MoleculeView>( _atoms[ 1 ]->getMoleculePtr(), getViewID( 1 ) );
+				= VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>( _atoms[ 1 ]->getMoleculePtr(), getViewID( 1 ) );
 			secondMoleculeView->setCallback( this, &Distance::_onMoleculeChange );
 			_moleculeViews[ 1 ] = firstMoleculeView;
 		}
@@ -180,7 +180,7 @@ namespace VTX::Model::Measurement
 
 			if ( view != nullptr )
 			{
-				MVC::MvcManager::get().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
+				VTX::Core::MVC::MvcManager::get().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
 				_moleculeViews[ i ] = nullptr;
 			}
 		}
@@ -237,10 +237,10 @@ namespace VTX::Model::Measurement
 
 	VTX::ID::VTX_ID Distance::getViewID( const int p_atomPos ) const
 	{
-		return MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
+		return VTX::Core::MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
 													  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 	}
 
-	void Distance::autoDelete() const { MVC::MvcManager::get().deleteModel( this ); }
+	void Distance::autoDelete() const { VTX::Core::MVC::MvcManager::get().deleteModel( this ); }
 
 } // namespace VTX::Model::Measurement

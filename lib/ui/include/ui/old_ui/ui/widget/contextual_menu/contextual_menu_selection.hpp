@@ -6,7 +6,7 @@
 #include "ui/old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include <QHideEvent>
 #include <QMenu>
-#include <app/old_app/model/base_model.hpp>
+#include <app/model/base_model.hpp>
 #include <app/old_app/model/selection.hpp>
 #include <map>
 #include <unordered_set>

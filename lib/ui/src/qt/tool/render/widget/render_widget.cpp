@@ -146,7 +146,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 		//	if ( state->getCurrentPickerID() == ID::Controller::PICKER )
 		//	{
-		//		if ( MVC::MvcManager::get().hasView( &measureInProgressModel,
+		//		if ( VTX::Core::MVC::MvcManager::get().hasView( &measureInProgressModel,
 		//											 ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS ) )
 		//		{
 		//			_removeViewIntegratedWidget<View::UI::Widget::Measurement::MeasureInProgressRenderView,
@@ -156,7 +156,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		//	}
 		//	else if ( state->getCurrentPickerID() == ID::Controller::MEASUREMENT )
 		//	{
-		//		if ( !MVC::MvcManager::get().hasView( &measureInProgressModel,
+		//		if ( !VTX::Core::MVC::MvcManager::get().hasView( &measureInProgressModel,
 		//											  ID::View::UI_RENDER_MEASUREMENT_MEASURE_IN_PROGRESS ) )
 		//		{
 		//			UI::Widget::Render::BaseIntegratedWidget * const measureInProgressView

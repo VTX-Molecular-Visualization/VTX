@@ -7,7 +7,7 @@
 #include <app/old_app/id.hpp>
 #include <app/old_app/model/label.hpp>
 #include <app/old_app/model/molecule.hpp>
-#include <app/old_app/view/callback_view.hpp>
+#include <app/view/callback_view.hpp>
 #include <string>
 #include <tuple>
 #include <vector>

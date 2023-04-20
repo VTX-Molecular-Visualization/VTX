@@ -116,14 +116,14 @@
 //	void DistanceToCycle::_instantiateViewsOnMolecules()
 //	{
 //		MoleculeView * const firstMoleculeView
-//			= MVC::MvcManager::get().instantiateView<MoleculeView>( _firstAtom->getMoleculePtr(), getViewID( 0 ) );
+//			= VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>( _firstAtom->getMoleculePtr(), getViewID( 0 ) );
 //		firstMoleculeView->setCallback( this, &DistanceToCycle::_onMoleculeChange );
 //		_moleculeViews.emplace_back( firstMoleculeView );
 //
 //		if ( _firstAtom->getMoleculePtr() != _secondAtom->getMoleculePtr() )
 //		{
 //			MoleculeView * const secondMoleculeView
-//				= MVC::MvcManager::get().instantiateView<MoleculeView>( _secondAtom->getMoleculePtr(), getViewID( 1 ) );
+//				= VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>( _secondAtom->getMoleculePtr(), getViewID( 1 ) );
 //			secondMoleculeView->setCallback( this, &DistanceToCycle::_onMoleculeChange );
 //			_moleculeViews.emplace_back( secondMoleculeView );
 //		}
@@ -133,12 +133,12 @@
 //	{
 //		if ( _moleculeViews.size() > 0 )
 //		{
-//			MVC::MvcManager::get().deleteView( _firstAtom->getMoleculePtr(), getViewID( 0 ) );
+//			VTX::Core::MVC::MvcManager::get().deleteView( _firstAtom->getMoleculePtr(), getViewID( 0 ) );
 //		}
 //
 //		if ( _moleculeViews.size() > 1 )
 //		{
-//			MVC::MvcManager::get().deleteView( _secondAtom->getMoleculePtr(), getViewID( 1 ) );
+//			VTX::Core::MVC::MvcManager::get().deleteView( _secondAtom->getMoleculePtr(), getViewID( 1 ) );
 //		}
 //
 //		_moleculeViews.clear();
@@ -196,10 +196,10 @@
 //
 //	VTX::ID::VTX_ID DistanceToCycle::getViewID( const int p_atomPos ) const
 //	{
-//		return MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
+//		return VTX::Core::MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
 //													  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 //	}
 //
-//	void DistanceToCycle::autoDelete() const { MVC::MvcManager::get().deleteModel( this ); }
+//	void DistanceToCycle::autoDelete() const { VTX::Core::MVC::MvcManager::get().deleteModel( this ); }
 //
 // } // namespace VTX::Model::Measurement

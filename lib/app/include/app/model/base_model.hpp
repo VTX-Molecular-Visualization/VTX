@@ -1,17 +1,17 @@
-#ifndef __VTX_BASE_MODEL__
-#define __VTX_BASE_MODEL__
+#ifndef __VTX_MODEL_BASE_MODEL__
+#define __VTX_MODEL_BASE_MODEL__
 
 #include "app/event/vtx_event.hpp"
 #include "app/old_app/id.hpp"
 #include <string>
 #include <util/types.hpp>
 
-namespace VTX::MVC
+namespace VTX::Core::MVC
 {
 	class MvcManager;
 }
 
-#define VTX_MODEL friend VTX::MVC::MvcManager;
+#define VTX_MODEL friend VTX::Core::MVC::MvcManager;
 
 namespace VTX
 {

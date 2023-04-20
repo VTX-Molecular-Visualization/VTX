@@ -3,7 +3,7 @@
 
 #include "ui/qt/widget/base_manual_widget.hpp"
 #include "ui/qt/widget/base_manual_widget_initializer.hpp"
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <QMainWindow>
 #include <QTreeWidget>
 #include <QWidget>
@@ -55,7 +55,7 @@ namespace VTX::UI::QT
 										 QWidget * const	 p_parent,
 										 const std::string & p_name ) const
 		{
-			V * const res = MVC::MvcManager::get().instantiateViewWidget<V>( p_model, p_id, p_parent );
+			V * const res = VTX::Core::MVC::MvcManager::get().instantiateViewWidget<V>( p_model, p_id, p_parent );
 
 			_initManualWidget<V>( res, p_name );
 

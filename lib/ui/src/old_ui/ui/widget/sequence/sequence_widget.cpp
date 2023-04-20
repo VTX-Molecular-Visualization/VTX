@@ -5,8 +5,8 @@
 #include <QScrollBar>
 #include <QWidget>
 #include <app/old_app/model/molecule.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
+#include <app/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Sequence
 {
@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::Sequence
 			const VTX::Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Molecule> &>( p_event );
 			View::UI::Widget::MoleculeSequenceView * const moleculeSequenceView
-				= MVC::MvcManager::get().instantiateViewWidget<View::UI::Widget::MoleculeSequenceView>(
+				= VTX::Core::MVC::MvcManager::get().instantiateViewWidget<View::UI::Widget::MoleculeSequenceView>(
 					castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE, this );
 			MoleculeSequenceWidget * const widget = moleculeSequenceView->getWidget();
 			_moleculeWidgets.emplace( widget );
@@ -34,10 +34,10 @@ namespace VTX::UI::Widget::Sequence
 			const VTX::Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Molecule> &>( p_event );
 			View::UI::Widget::MoleculeSequenceView * const moleculeSequenceView
-				= MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSequenceView>(
+				= VTX::Core::MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSequenceView>(
 					castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE );
 			_moleculeWidgets.erase( moleculeSequenceView->getWidget() );
-			MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeSequenceView>( castedEvent.ptr,
+			VTX::Core::MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeSequenceView>( castedEvent.ptr,
 																					   ID::View::UI_MOLECULE_SEQUENCE );
 		}
 	}

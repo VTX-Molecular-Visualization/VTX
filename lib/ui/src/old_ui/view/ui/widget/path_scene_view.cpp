@@ -11,7 +11,7 @@
 #include <app/core/action/action_manager.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/viewpoint.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
@@ -191,9 +191,9 @@ namespace VTX::View::UI::Widget
 		if ( p_column == 0 )
 		{
 			const Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<Model::ID>();
-			if ( MVC::MvcManager::get().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
+			if ( VTX::Core::MVC::MvcManager::get().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
-				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( idTarget );
+				Model::Viewpoint & viewpoint = VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( idTarget );
 				std::string		   itemTxt	 = p_item->text( 0 ).toStdString();
 
 				if ( itemTxt != viewpoint.getDefaultName() )
@@ -223,9 +223,9 @@ namespace VTX::View::UI::Widget
 		if ( p_column == 0 )
 		{
 			const Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<Model::ID>();
-			if ( MVC::MvcManager::get().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
+			if ( VTX::Core::MVC::MvcManager::get().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
-				Model::Viewpoint & viewpoint  = MVC::MvcManager::get().getModel<Model::Viewpoint>( idTarget );
+				Model::Viewpoint & viewpoint  = VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( idTarget );
 				Object3D::Camera & mainCamera = VTXApp::get().getScene().getCamera();
 
 				VTX_ACTION( new VTX::UI::QT::Action::Viewpoint::GoTo( viewpoint, mainCamera ) );
@@ -244,14 +244,14 @@ namespace VTX::View::UI::Widget
 
 		const QPoint globalClicPos = mapToGlobal( p_clicPos );
 
-		if ( MVC::MvcManager::get().getModelTypeID( itemID ) == VTX::ID::Model::MODEL_PATH )
+		if ( VTX::Core::MVC::MvcManager::get().getModelTypeID( itemID ) == VTX::ID::Model::MODEL_PATH )
 		{
-			Model::Path & pathTargeted = MVC::MvcManager::get().getModel<Model::Path>( itemID );
+			Model::Path & pathTargeted = VTX::Core::MVC::MvcManager::get().getModel<Model::Path>( itemID );
 			VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Path, &pathTargeted, globalClicPos );
 		}
-		else if ( MVC::MvcManager::get().getModelTypeID( itemID ) == VTX::ID::Model::MODEL_VIEWPOINT )
+		else if ( VTX::Core::MVC::MvcManager::get().getModelTypeID( itemID ) == VTX::ID::Model::MODEL_VIEWPOINT )
 		{
-			Model::Viewpoint & viewpointTargeted = MVC::MvcManager::get().getModel<Model::Viewpoint>( itemID );
+			Model::Viewpoint & viewpointTargeted = VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( itemID );
 			Model::Selection & selection		 = Selection::SelectionManager::get().getSelectionModel();
 
 			if ( selection.isModelSelected( viewpointTargeted ) )

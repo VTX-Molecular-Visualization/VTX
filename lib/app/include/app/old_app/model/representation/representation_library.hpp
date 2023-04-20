@@ -2,9 +2,9 @@
 #define __VTX_MODEL_REPRESENTATION_LIBRARY__
 
 #include "app/event/vtx_event.hpp"
-#include "app/old_app/model/base_model.hpp"
+#include "app/model/base_model.hpp"
 #include "app/old_app/model/category_enum.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "representation.hpp"
 #include <vector>
 

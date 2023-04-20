@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_CHAIN__
 #define __VTX_MODEL_CHAIN__
 
-#include "base_model.hpp"
+#include "app/model/base_model.hpp"
 #include "category_enum.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_representable.hpp"

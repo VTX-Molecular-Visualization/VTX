@@ -11,8 +11,8 @@
 #include <QWidget>
 #include <app/old_app/math/transform.hpp>
 #include <app/old_app/model/atom.hpp>
-#include <app/old_app/view/base_view.hpp>
-#include <app/old_app/view/callback_view.hpp>
+#include <app/view/base_view.hpp>
+#include <app/view/callback_view.hpp>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector

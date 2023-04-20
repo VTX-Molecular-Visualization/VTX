@@ -9,7 +9,7 @@
 #include "app/old_app/io/struct/scene_path_data.hpp"
 #include "app/old_app/model/mesh_triangle.hpp"
 #include "app/old_app/model/molecule.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/vtx_app.hpp"

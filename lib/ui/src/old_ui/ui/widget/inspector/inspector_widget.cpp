@@ -217,11 +217,11 @@ namespace VTX::UI::Widget::Inspector
 
 			for ( const Model::ID & modelID : selectionModel.getItems() )
 			{
-				const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( modelID );
+				const ID::VTX_ID & modelTypeID = VTX::Core::MVC::MvcManager::get().getModelTypeID( modelID );
 
 				if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				{
-					Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+					Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
 					const Model::Selection::MapChainIds & moleculeSelection
 						= selectionModel.getMoleculesMap().at( modelID );
 
@@ -265,33 +265,33 @@ namespace VTX::UI::Widget::Inspector
 				}
 				else if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
 				{
-					Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
+					Model::Viewpoint & viewpoint = VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
 					_addTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, &viewpoint );
 				}
 				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
 				//{
 				//	Model::Measurement::Distance & distanceModel
-				//		= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+				//		= VTX::Core::MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
 				//	_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
 				//															 &distanceModel );
 				// }
 				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_ANGLE )
 				//{
 				//	Model::Measurement::Angle & angleModel
-				//		= MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
+				//		= VTX::Core::MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
 				//	_addTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, &angleModel );
 				// }
 				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
 				//{
 				//	Model::Measurement::DihedralAngle & dihedralAngleModel
-				//		= MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
+				//		= VTX::Core::MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
 				//	_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>(
 				//		INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE, &dihedralAngleModel );
 				// }
 				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
 				//{
 				//	Model::Measurement::Distance & distanceModel
-				//		= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+				//		= VTX::Core::MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
 				//	_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
 				//															 &distanceModel );
 				// }
@@ -337,10 +337,10 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const Model::ID & modelID : selectionModel.getItems() )
 			{
-				const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( modelID );
+				const ID::VTX_ID & modelTypeID = VTX::Core::MVC::MvcManager::get().getModelTypeID( modelID );
 				if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				{
-					Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+					Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
 					_addTargetToInspector<MultipleMoleculeWidget>( p_type, &molecule );
 				}
 			}
@@ -350,7 +350,7 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const Model::ID & modelID : selectionModel.getItems() )
 			{
-				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+				Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
 					= selectionModel.getMoleculesMap().at( modelID );
 
@@ -366,7 +366,7 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const Model::ID & modelID : selectionModel.getItems() )
 			{
-				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+				Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
 					= selectionModel.getMoleculesMap().at( modelID );
 
@@ -387,7 +387,7 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const Model::ID & modelID : selectionModel.getItems() )
 			{
-				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+				Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
 					= selectionModel.getMoleculesMap().at( modelID );
 
@@ -413,7 +413,7 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const Model::ID & modelID : selectionModel.getItems() )
 			{
-				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
+				Model::Viewpoint & viewpoint = VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
 				_addTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, &viewpoint );
 			}
 		}
@@ -423,7 +423,7 @@ namespace VTX::UI::Widget::Inspector
 			//	for ( const Model::ID & modelID : selectionModel.getItems() )
 			//	{
 			//		Model::Measurement::Distance & distanceModel
-			//			= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+			//			= VTX::Core::MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
 			//		_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
 			//																 &distanceModel );
 			//	}
@@ -434,7 +434,7 @@ namespace VTX::UI::Widget::Inspector
 			//	for ( const Model::ID & modelID : selectionModel.getItems() )
 			//	{
 			//		Model::Measurement::Angle & angleModel
-			//			= MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
+			//			= VTX::Core::MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
 			//		_addTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, &angleModel );
 			//	}
 			// }
@@ -444,7 +444,7 @@ namespace VTX::UI::Widget::Inspector
 			//	for ( const Model::ID & modelID : selectionModel.getItems() )
 			//	{
 			//		Model::Measurement::DihedralAngle & dihedralAngleModel
-			//			= MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
+			//			= VTX::Core::MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
 			//		_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>(
 			// INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE,
 			// &dihedralAngleModel
@@ -457,7 +457,7 @@ namespace VTX::UI::Widget::Inspector
 			//	for ( const Model::ID & modelID : selectionModel.getItems() )
 			//	{
 			//		Model::Measurement::Distance & distanceModel
-			//			= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+			//			= VTX::Core::MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
 			//		_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
 			//																 &distanceModel );
 			//	}

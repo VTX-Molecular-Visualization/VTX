@@ -19,12 +19,12 @@ namespace VTX::UI::Widget::Inspector
 {
 	MultipleAtomWidget::MoleculeView::MoleculeView( const Model::Molecule * p_molecule )
 	{
-		_view = MVC::MvcManager::get().instantiateView<View::CallbackView<const Model::Molecule, MultipleAtomWidget>>(
+		_view = VTX::Core::MVC::MvcManager::get().instantiateView<View::CallbackView<const Model::Molecule, MultipleAtomWidget>>(
 			p_molecule, ID::View::UI_INSPECTOR_ATOM );
 	}
 	MultipleAtomWidget::MoleculeView::~MoleculeView()
 	{
-		MVC::MvcManager::get()
+		VTX::Core::MVC::MvcManager::get()
 			.deleteView<View::CallbackView<const Model::Molecule, MultipleAtomWidget>, const Model::Molecule>(
 				_view, ID::View::UI_INSPECTOR_ATOM );
 	}

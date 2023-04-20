@@ -5,7 +5,7 @@
 #include "app/old_app/model/mesh_triangle.hpp"
 #include "app/old_app/model/molecule.hpp"
 #include "app/old_app/model/path.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/camera_manager.hpp"
 #include "app/old_app/object3d/helper/base_helper.hpp"
 #include <algorithm>
@@ -36,15 +36,15 @@ namespace VTX::Object3D
 		{
 			MoleculePtr const molecule = _molecules.begin()->first;
 			removeMolecule( molecule );
-			MVC::MvcManager::get().deleteModel( molecule );
+			VTX::Core::MVC::MvcManager::get().deleteModel( molecule );
 		}
 
 		_molecules.clear();
 
-		MVC::MvcManager::get().deleteAllModels( _meshes );
+		VTX::Core::MVC::MvcManager::get().deleteAllModels( _meshes );
 		_meshes.clear();
 
-		MVC::MvcManager::get().deleteAllModels( _labels );
+		VTX::Core::MVC::MvcManager::get().deleteAllModels( _labels );
 		_labels.clear();
 
 		_helpers.clear();
@@ -53,7 +53,7 @@ namespace VTX::Object3D
 		{
 			PathPtr const path = *_paths.begin();
 			removePath( path );
-			MVC::MvcManager::get().deleteModel( path );
+			VTX::Core::MVC::MvcManager::get().deleteModel( path );
 		}
 
 		_paths.clear();
@@ -369,7 +369,7 @@ namespace VTX::Object3D
 
 	void Scene::_createDefaultPath()
 	{
-		Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
+		Model::Path * const path = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Path>();
 		_defaultPath			 = path;
 
 		addPath( path );

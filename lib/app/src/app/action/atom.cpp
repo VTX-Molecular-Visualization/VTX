@@ -3,7 +3,7 @@
 #include "app/old_app/model/generated_molecule.hpp"
 #include "app/old_app/model/molecule.hpp"
 #include "app/old_app/model/selection.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 #include "app/old_app/util/molecule.hpp"
@@ -88,7 +88,7 @@ namespace VTX::Action::Atom
 		if ( molecule->isEmpty() )
 		{
 			VTXApp::get().getScene().removeMolecule( molecule );
-			MVC::MvcManager::get().deleteModel( molecule );
+			VTX::Core::MVC::MvcManager::get().deleteModel( molecule );
 		}
 		else
 		{
@@ -103,7 +103,7 @@ namespace VTX::Action::Atom
 	void Copy::execute()
 	{
 		Model::GeneratedMolecule * generatedMolecule
-			= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+			= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
 		generatedMolecule->copyFromAtom( _target );
 		generatedMolecule->applyTransform( _target.getMoleculePtr()->getTransform() );
@@ -115,7 +115,7 @@ namespace VTX::Action::Atom
 		VTX::Selection::SelectionManager::get().getSelectionModel().clear();
 
 		Model::GeneratedMolecule * const generatedMolecule
-			= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+			= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
 		generatedMolecule->extractAtom( _target );
 		VTXApp::get().getScene().addMolecule( generatedMolecule );

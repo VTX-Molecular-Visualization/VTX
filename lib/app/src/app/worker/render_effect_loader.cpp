@@ -23,7 +23,7 @@ namespace VTX::Worker
 			for ( const std::filesystem::directory_entry & file : std::filesystem::directory_iterator { _path } )
 			{
 				Model::Renderer::RenderEffectPreset * const preset
-					= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
+					= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
 
 				try
 				{
@@ -35,7 +35,7 @@ namespace VTX::Worker
 				{
 					VTX_ERROR( "Cannot load render effect library " + file.path().string() + ": "
 							   + std::string( p_e.what() ) );
-					MVC::MvcManager::get().deleteModel( preset );
+					VTX::Core::MVC::MvcManager::get().deleteModel( preset );
 				}
 			}
 
@@ -65,7 +65,7 @@ namespace VTX::Worker
 		for ( const FilePath & path : _paths )
 		{
 			Model::Renderer::RenderEffectPreset * const preset
-				= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
+				= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
 
 			try
 			{
@@ -76,7 +76,7 @@ namespace VTX::Worker
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Cannot load render effect preset at " + path.string() + " : " + std::string( p_e.what() ) );
-				MVC::MvcManager::get().deleteModel( preset );
+				VTX::Core::MVC::MvcManager::get().deleteModel( preset );
 			}
 
 			VTX_INFO( "Render effect preset " + path.stem().string() + " loaded." );

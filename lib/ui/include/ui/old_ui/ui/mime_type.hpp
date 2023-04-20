@@ -4,8 +4,8 @@
 #include <QByteArray>
 #include <QMimeData>
 #include <QString>
+#include <app/model/base_model.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/base_model.hpp>
 
 namespace VTX::UI
 {

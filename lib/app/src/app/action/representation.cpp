@@ -1,6 +1,6 @@
 #include "app/action/representation.hpp"
 #include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -112,7 +112,7 @@ namespace VTX::Action::Representation
 	void AddNewPresetInLibrary::execute()
 	{
 		Model::Representation::Representation * const newRepresentation
-			= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>(
+			= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>(
 				VTX::Setting::DEFAULT_REPRESENTATION_TYPE );
 
 		newRepresentation->setName( _representationName );

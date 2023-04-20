@@ -3,7 +3,7 @@
 #include <app/action/molecule.hpp>
 #include <app/old_app/model/generated_molecule.hpp>
 #include <app/old_app/model/molecule.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <util/string.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -50,7 +50,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		for ( const Model::Selection::PairMoleculeIds & pairMolecule : p_selection.getMoleculesMap() )
 		{
-			const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( pairMolecule.first );
+			const Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( pairMolecule.first );
 			maxNbFrame = maxNbFrame < molecule.getFrameCount() ? molecule.getFrameCount() : maxNbFrame;
 		}
 

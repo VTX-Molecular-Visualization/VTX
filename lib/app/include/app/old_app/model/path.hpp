@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_PATH__
 #define __VTX_MODEL_PATH__
 
-#include "base_model.hpp"
+#include "app/model/base_model.hpp"
 #include "app/old_app/generic/base_scene_item.hpp"
 #include "app/old_app/path/path_enum.hpp"
 #include "app/old_app/setting.hpp"

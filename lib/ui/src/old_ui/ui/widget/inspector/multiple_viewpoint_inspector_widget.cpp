@@ -162,7 +162,7 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleViewpointWidget::_goToAction( const QVariant & p_viewpointIndex ) const
 	{
 		const Model::ID &		 modelID   = p_viewpointIndex.value<Model::ID>();
-		const Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
+		const Model::Viewpoint & viewpoint = VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
 
 		VTX_ACTION( new QT::Action::Viewpoint::GoTo( viewpoint ) );
 	}

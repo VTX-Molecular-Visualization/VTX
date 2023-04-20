@@ -15,7 +15,7 @@
 #include <app/old_app/model/chain.hpp>
 #include <app/old_app/model/residue.hpp>
 #include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <stack>
 #include <util/logger.hpp>
@@ -66,7 +66,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		setEditTriggers( EditTrigger::SelectedClicked );
 		setExpandsOnDoubleClick( false );
 
-		Model::BaseModel & vtxModel = MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() );
+		Model::BaseModel & vtxModel = VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() );
 		setSelectionModel( new SceneItemSelectionModel( &vtxModel, model(), this ) );
 
 		_createTopLevelObject();
@@ -257,28 +257,28 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	void SceneItemWidget::_refreshItemsVisibilityRecursive( QTreeWidgetItem & p_widget )
 	{
 		const Model::ID	   itemID	 = _getModelIDFromItem( p_widget );
-		const ID::VTX_ID & modelType = MVC::MvcManager::get().getModelTypeID( itemID );
+		const ID::VTX_ID & modelType = VTX::Core::MVC::MvcManager::get().getModelTypeID( itemID );
 
 		bool visibility;
 		if ( modelType == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			visibility = MVC::MvcManager::get().getModel<Model::Molecule>( itemID ).isVisible();
+			visibility = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			visibility = MVC::MvcManager::get().getModel<Model::Category>( itemID ).isVisible();
+			visibility = VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_CHAIN )
 		{
-			visibility = MVC::MvcManager::get().getModel<Model::Chain>( itemID ).isVisible();
+			visibility = VTX::Core::MVC::MvcManager::get().getModel<Model::Chain>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			visibility = MVC::MvcManager::get().getModel<Model::Residue>( itemID ).isVisible();
+			visibility = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_ATOM )
 		{
-			visibility = MVC::MvcManager::get().getModel<Model::Atom>( itemID ).isVisible();
+			visibility = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( itemID ).isVisible();
 		}
 		else
 		{
@@ -307,7 +307,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void SceneItemWidget::_createTopLevelObject()
 	{
-		const Model::BaseModel & model = MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() );
+		const Model::BaseModel & model = VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() );
 
 		QTreeWidgetItem * const topLevelItem = new QTreeWidgetItem();
 		topLevelItem->setFlags( topLevelItem->flags() | Qt::ItemFlag::ItemIsEditable );
@@ -326,12 +326,12 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
 		const Model::ID & itemModel = _getModelIDFromItem( p_itemToSelect );
-		const ID::VTX_ID  itemType	= MVC::MvcManager::get().getModelTypeID( itemModel );
+		const ID::VTX_ID  itemType	= VTX::Core::MVC::MvcManager::get().getModelTypeID( itemModel );
 
 		p_itemToSelect.treeWidget()->setFocus( Qt::FocusReason::TabFocusReason );
 		p_itemToSelect.treeWidget()->setCurrentItem( &p_itemToSelect );
 
-		selectionModel.selectModel( MVC::MvcManager::get().getModel<Model::BaseModel>( itemModel ), p_append );
+		selectionModel.selectModel( VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( itemModel ), p_append );
 	}
 
 	void SceneItemWidget::_refreshSize()
@@ -429,7 +429,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		const Model::BaseModel * const modelDragged
 			= isModelSelected ? &( selectionModel )
-							  : &( MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() ) );
+							  : &( VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() ) );
 
 		return MimeType::generateMimeDataFromModel( *modelDragged, MimeType::DragSource::SCENE_VIEW );
 	}
