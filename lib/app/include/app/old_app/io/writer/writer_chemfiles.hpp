@@ -1,9 +1,9 @@
 #ifndef __VTX_WRITE_CHEMFILES__
 #define __VTX_WRITE_CHEMFILES__
 
-#include "base_writer.hpp"
+#include "app/model/molecule.hpp"
 #include "app/old_app/io/chemfiles_io.hpp"
-#include "app/old_app/model/molecule.hpp"
+#include "base_writer.hpp"
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
 #pragma warning( pop )

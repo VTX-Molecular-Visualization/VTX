@@ -3,9 +3,9 @@
 
 #include "app/event/vtx_event.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/representation/representation_data.hpp"
-#include "app/old_app/model/representation/representation_enum.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/representation/representation_data.hpp"
+#include "app/model/representation/representation_enum.hpp"
 #include <map>
 #include <unordered_set>
 

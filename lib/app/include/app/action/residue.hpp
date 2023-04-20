@@ -3,8 +3,8 @@
 
 #include "app/action/visible.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/old_app/model/representation/instantiated_representation.hpp"
-#include "app/old_app/model/residue.hpp"
+#include "app/model/representation/instantiated_representation.hpp"
+#include "app/model/residue.hpp"
 #include <unordered_set>
 
 namespace VTX::Action::Residue

@@ -11,9 +11,9 @@
 #include <app/core/action/action_manager.hpp>
 #include <app/action/scene.hpp>
 #include <app/action/selection.hpp>
-#include <app/old_app/model/label.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/label.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/selection.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>

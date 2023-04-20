@@ -19,7 +19,7 @@
 #include <app/core/event/event_manager.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/setting.hpp>
 #include <app/core/worker/worker_manager.hpp>

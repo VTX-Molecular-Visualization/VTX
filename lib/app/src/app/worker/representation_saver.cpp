@@ -1,7 +1,7 @@
 #include "app/worker/representation_saver.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/writer/serialized_object.hpp"
-#include "app/old_app/model/representation/representation.hpp"
+#include "app/model/representation/representation.hpp"
 #include "app/core/mvc/mvc_manager.hpp"
 #include <exception>
 #include <util/logger.hpp>

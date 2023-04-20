@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <app/event/vtx_event.hpp>
 #include <app/core/event/event_manager.hpp>
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/molecule.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <util/math.hpp>

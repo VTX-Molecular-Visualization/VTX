@@ -9,7 +9,7 @@
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera

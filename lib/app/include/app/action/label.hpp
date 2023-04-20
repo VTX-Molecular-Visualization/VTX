@@ -3,7 +3,7 @@
 
 #include "app/core/action/base_action.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/old_app/model/label.hpp"
+#include "app/model/label.hpp"
 #include <string>
 #include <unordered_set>
 #include <vector>

@@ -5,8 +5,8 @@
 #include "tool/old_tool/analysis/structural_alignment.hpp"
 #include "tool/old_tool/util/analysis.hpp"
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/selection.hpp>
 #include <cmath>
 #include <string>
 #include <util/chrono.hpp>

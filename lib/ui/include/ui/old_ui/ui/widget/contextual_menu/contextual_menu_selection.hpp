@@ -7,7 +7,7 @@
 #include <QHideEvent>
 #include <QMenu>
 #include <app/model/base_model.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/selection.hpp>
 #include <map>
 #include <unordered_set>
 #include <vector>

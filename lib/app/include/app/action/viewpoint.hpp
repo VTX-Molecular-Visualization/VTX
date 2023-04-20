@@ -3,7 +3,7 @@
 
 #include "app/core/action/base_action.hpp"
 #include "app/old_app/math/transform.hpp"
-#include "app/old_app/model/viewpoint.hpp"
+#include "app/model/viewpoint.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/vtx_app.hpp"

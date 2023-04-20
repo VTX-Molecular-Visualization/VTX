@@ -3,8 +3,8 @@
 
 #include "app/core/action/base_action.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
-#include "app/old_app/model/representation/representation.hpp"
-#include "app/old_app/model/representation/representation_library.hpp"
+#include "app/model/representation/representation.hpp"
+#include "app/model/representation/representation_library.hpp"
 #include <string>
 #include <unordered_set>
 

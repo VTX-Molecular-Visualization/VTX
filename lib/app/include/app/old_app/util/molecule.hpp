@@ -2,8 +2,8 @@
 #define __VTX_UTIL_MOLECULE__
 
 #include "app/old_app/io/reader/residue_data_reader.hpp"
-#include "app/old_app/model/category_enum.hpp"
-#include "app/old_app/model/molecule.hpp"
+#include "app/model/category_enum.hpp"
+#include "app/model/molecule.hpp"
 #include "app/old_app/setting.hpp"
 #include <map>
 #include <string>

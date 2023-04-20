@@ -4,8 +4,8 @@
 #include "app/action/visible.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/core/action/base_action_undonable.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/representation/instantiated_representation.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/representation/instantiated_representation.hpp"
 #include "app/old_app/trajectory/trajectory_enum.hpp"
 #include <string>
 #include <unordered_set>

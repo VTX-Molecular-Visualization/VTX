@@ -4,7 +4,7 @@
 #include <app/core/action/action_manager.hpp>
 #include <app/action/main.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/atom.hpp>
+#include <app/model/atom.hpp>
 #include <ui/old_ui/action/main.hpp>
 #include <ui/old_ui/state/state_machine.hpp>
 #include <ui/old_ui/state/visualization.hpp>

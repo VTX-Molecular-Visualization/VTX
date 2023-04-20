@@ -9,11 +9,11 @@
 #include <app/core/action/action_manager.hpp>
 // #include <app/action/measurement.hpp>
 #include <app/core/event/event_manager.hpp>
-#include <app/old_app/model/atom.hpp>
-// #include <app/old_app/model/measurement/measure_in_progress.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/atom.hpp>
+// #include <app/model/measurement/measure_in_progress.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
+#include <app/model/selection.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>

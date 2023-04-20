@@ -6,7 +6,7 @@
 #include "ui/old_ui/ui/widget/representation/representation_library_combo_box.hpp"
 #include "ui/old_ui/ui/widget/settings/representation_preset_editor.hpp"
 #include <QWidget>
-#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/model/representation/representation_library.hpp>
 #include <app/view/base_view.hpp>
 
 namespace VTX::View::UI::Widget::Representation

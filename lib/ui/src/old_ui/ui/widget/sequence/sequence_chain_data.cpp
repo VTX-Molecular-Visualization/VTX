@@ -1,6 +1,6 @@
 #include "ui/old_ui/ui/widget/sequence/sequence_chain_data.hpp"
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
 
 namespace VTX::UI::Widget::Sequence
 {

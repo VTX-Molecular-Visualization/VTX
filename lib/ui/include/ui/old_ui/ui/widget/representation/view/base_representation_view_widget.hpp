@@ -8,7 +8,7 @@
 #include "ui/old_ui/util/ui.hpp"
 #include <QGridLayout>
 #include <QWidget>
-#include <app/old_app/model/representation/instantiated_representation.hpp>
+#include <app/model/representation/instantiated_representation.hpp>
 
 namespace VTX::UI::Widget::Representation::View
 {

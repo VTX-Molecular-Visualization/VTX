@@ -3,7 +3,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QVBoxLayout>
-#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/model/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::Settings
 {

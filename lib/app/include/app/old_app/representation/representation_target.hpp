@@ -2,7 +2,7 @@
 #define __VTX_REPRESENTATION_TARGET__
 
 #include <util/types.hpp>
-#include "app/old_app/model/category_enum.hpp"
+#include "app/model/category_enum.hpp"
 #include <map>
 #include <vector>
 

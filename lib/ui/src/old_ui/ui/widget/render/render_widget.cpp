@@ -22,13 +22,13 @@
 #include <app/action/viewpoint.hpp>
 #include <app/core/event/event_manager.hpp>
 #include <app/old_app/io/filesystem.hpp>
-#include <app/old_app/model/label.hpp>
+#include <app/model/label.hpp>
 // #include <tool/old_tool/model/measurement/angle.hpp>
 // #include <tool/old_tool/model/measurement/dihedral_angle.hpp>
 // #include <tool/old_tool/model/measurement/distance.hpp>
 // #include <tool/old_tool/model/measurement/measure_in_progress.hpp>
-#include <app/old_app/model/mesh_triangle.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/mesh_triangle.hpp>
+#include <app/model/molecule.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::Widget::Render

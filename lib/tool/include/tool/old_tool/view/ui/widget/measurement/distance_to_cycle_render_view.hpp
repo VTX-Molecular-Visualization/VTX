@@ -3,7 +3,7 @@
 //
 // #include <util/types.hpp>
 // #include <app/old_app/id.hpp>
-// #include <app/old_app/model/measurement/distance_to_cycle.hpp"
+// #include <app/model/measurement/distance_to_cycle.hpp"
 // #include <ui/old_ui/ui/widget/base_manual_widget.hpp>
 // #include <ui/old_ui/ui/widget/render/base_integrated_widget.hpp>
 // #include "view/base_view.hpp"

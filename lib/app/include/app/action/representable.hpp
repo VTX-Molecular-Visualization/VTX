@@ -3,8 +3,8 @@
 
 #include "app/core/action/base_action.hpp"
 #include "app/old_app/generic/base_representable.hpp"
-#include "app/old_app/model/representation/representation.hpp"
-#include "app/old_app/model/selection.hpp"
+#include "app/model/representation/representation.hpp"
+#include "app/model/selection.hpp"
 
 namespace VTX::Action::Representable
 {

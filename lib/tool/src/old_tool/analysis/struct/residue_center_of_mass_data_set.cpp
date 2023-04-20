@@ -1,6 +1,6 @@
 #include "tool/old_tool/analysis/struct/residue_center_of_mass_data_set.hpp"
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
 
 namespace VTX::Analysis::Struct
 {

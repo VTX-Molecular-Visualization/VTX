@@ -6,7 +6,7 @@
 #include <QPushButton>
 #include <app/core/action/action_manager.hpp>
 #include <app/action/main.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/molecule.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/setting.hpp>
 #include <string>

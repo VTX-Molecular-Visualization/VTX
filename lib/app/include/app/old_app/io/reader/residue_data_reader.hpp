@@ -1,9 +1,9 @@
 #ifndef __VTX_READER_RESIDUE_DATA__
 #define __VTX_READER_RESIDUE_DATA__
 
+#include "app/model/bond.hpp"
+#include "app/model/category_enum.hpp"
 #include "base_reader.hpp"
-#include "app/old_app/model/bond.hpp"
-#include "app/old_app/model/category_enum.hpp"
 #include <map>
 #include <sstream>
 #include <string>

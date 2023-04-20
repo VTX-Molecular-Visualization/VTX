@@ -1,9 +1,9 @@
 #include "app/old_app/util/molecule.hpp"
-#include "app/old_app/model/atom.hpp"
-#include "app/old_app/model/bond.hpp"
-#include "app/old_app/model/category.hpp"
-#include "app/old_app/model/chain.hpp"
-#include "app/old_app/model/residue.hpp"
+#include "app/model/atom.hpp"
+#include "app/model/bond.hpp"
+#include "app/model/category.hpp"
+#include "app/model/chain.hpp"
+#include "app/model/residue.hpp"
 #include "app/old_app/util/bond_guessing/bond_order_guessing.hpp"
 #include <sstream>
 

@@ -8,7 +8,7 @@
 #include <QString>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/selection/selection_enum.hpp>
 
 namespace VTX::UI::Widget::Selection

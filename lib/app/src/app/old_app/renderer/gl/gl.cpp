@@ -1,6 +1,6 @@
 #include "app/old_app/renderer/gl/gl.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/renderer/render_effect_preset.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/renderer/render_effect_preset.hpp"
 #include "app/old_app/view/base_view_3d_molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <random>

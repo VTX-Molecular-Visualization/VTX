@@ -10,9 +10,9 @@
 #include <QLabel>
 #include <QPixmap>
 #include <app/core/action/action_manager.hpp>
-#include <app/old_app/model/bond.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
+#include <app/model/bond.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::Inspector

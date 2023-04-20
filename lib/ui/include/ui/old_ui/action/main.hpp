@@ -6,10 +6,10 @@
 #include <app/core/worker/worker_manager.hpp>
 #include <app/event/vtx_event.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/path.hpp>
-#include <app/old_app/model/secondary_structure.hpp>
-#include <app/old_app/model/solvent_excluded_surface.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/path.hpp>
+#include <app/model/secondary_structure.hpp>
+#include <app/model/solvent_excluded_surface.hpp>
 #include <app/worker/snapshoter.hpp>
 #include <string>
 #include <util/types.hpp>

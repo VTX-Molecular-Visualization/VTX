@@ -16,7 +16,7 @@
 #include <app/action/setting.hpp>
 #include <app/action/viewpoint.hpp>
 #include <app/old_app/io/filesystem.hpp>
-#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
+#include <app/model/renderer/render_effect_preset_library.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/setting.hpp>
 #include <app/worker/snapshoter.hpp>

@@ -5,8 +5,8 @@
 #include "tool/old_tool/model/measurement/dihedral_angle.hpp"
 #include "tool/old_tool/model/measurement/distance.hpp"
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/molecule.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <ui/old_ui/vtx_app.hpp>

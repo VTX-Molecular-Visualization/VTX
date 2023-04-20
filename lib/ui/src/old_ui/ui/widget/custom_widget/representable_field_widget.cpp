@@ -2,8 +2,8 @@
 #include "ui/old_ui/ui/mime_type.hpp"
 #include <app/old_app/id.hpp>
 #include <app/model/base_model.hpp>
-#include <app/old_app/model/chain.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/chain.hpp>
+#include <app/model/molecule.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 
 namespace VTX

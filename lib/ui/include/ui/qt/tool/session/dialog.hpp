@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QWidget>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/molecule.hpp>
 #include <app/core/worker/worker_manager.hpp>
 
 namespace VTX::UI::QT::Tool::Session::Dialog

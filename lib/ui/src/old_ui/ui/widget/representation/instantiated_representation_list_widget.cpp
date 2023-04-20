@@ -7,11 +7,11 @@
 #include <QVBoxLayout>
 #include <QVariant>
 #include <app/old_app/generic/base_representable.hpp>
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/category.hpp>
-#include <app/old_app/model/chain.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/category.hpp>
+#include <app/model/chain.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>

@@ -9,8 +9,8 @@
 #include "ui/qt/widget_factory.hpp"
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/path.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/path.hpp>
 
 namespace VTX::UI::QT::Tool
 {

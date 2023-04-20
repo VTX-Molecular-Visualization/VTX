@@ -1,7 +1,7 @@
 #ifndef __VTX_VIEW_3D_RIBBON__
 #define __VTX_VIEW_3D_RIBBON__
 
-#include "app/old_app/model/secondary_structure.hpp"
+#include "app/model/secondary_structure.hpp"
 #include "app/view/base_view_3d.hpp"
 
 namespace VTX

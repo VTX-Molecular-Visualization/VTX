@@ -1,6 +1,6 @@
 #include "ui/old_ui/ui/widget/representation/representation_library_combo_box.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/model/representation/representation_library.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/view/callback_view.hpp>

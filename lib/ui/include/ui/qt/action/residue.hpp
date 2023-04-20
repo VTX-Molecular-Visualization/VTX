@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_ACTION_RESIDUE__
 
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/residue.hpp>
+#include <app/model/residue.hpp>
 
 namespace VTX::UI::QT::Action::Residue
 {

@@ -1,8 +1,8 @@
 #include "ui/old_ui/state/export.hpp"
 #include <app/core/action/action_manager.hpp>
 #include <app/action/main.hpp>
-#include <app/old_app/model/path.hpp>
-#include <app/old_app/model/viewpoint.hpp>
+#include <app/model/path.hpp>
+#include <app/model/viewpoint.hpp>
 #include <app/old_app/object3d/camera.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/vtx_app.hpp>

@@ -2,7 +2,7 @@
 #define __VTX_VIEW_UI_WIDGET_RENDER_EFFECT_PRESET__
 
 #include "ui/old_ui/ui/widget/base_manual_widget.hpp"
-#include <app/old_app/model/renderer/render_effect_preset.hpp>
+#include <app/model/renderer/render_effect_preset.hpp>
 #include <app/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Settings

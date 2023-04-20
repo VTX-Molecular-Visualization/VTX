@@ -8,7 +8,7 @@
 #include <QPaintEvent>
 #include <QPoint>
 #include <QString>
-#include <app/old_app/model/residue.hpp>
+#include <app/model/residue.hpp>
 #include <list>
 #include <vector>
 

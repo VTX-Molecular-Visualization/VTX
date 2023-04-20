@@ -7,9 +7,9 @@
 #include <QRectF>
 #include <app/core/action/action_manager.hpp>
 #include <app/action/residue.hpp>
-#include <app/old_app/model/chain.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/chain.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::Sequence

@@ -4,11 +4,11 @@
 #include "app/action/setting.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
-#include "app/old_app/model/chain.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/representation/representation.hpp"
-#include "app/old_app/model/representation/representation_library.hpp"
-#include "app/old_app/model/residue.hpp"
+#include "app/model/chain.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/representation/representation.hpp"
+#include "app/model/representation/representation_library.hpp"
+#include "app/model/residue.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <magic_enum.hpp>
 #include <sstream>

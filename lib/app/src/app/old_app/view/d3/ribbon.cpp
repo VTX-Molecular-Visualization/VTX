@@ -1,5 +1,5 @@
 #include "app/old_app/view/d3/ribbon.hpp"
-#include "app/old_app/model/molecule.hpp"
+#include "app/model/molecule.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/representation/representation_target.hpp"

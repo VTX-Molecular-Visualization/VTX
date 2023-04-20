@@ -8,7 +8,7 @@
 #include <app/action/renderer.hpp>
 #include <app/core/event/event_manager.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/renderer/render_effect_preset.hpp>
+#include <app/model/renderer/render_effect_preset.hpp>
 #include <app/old_app/setting.hpp>
 
 namespace VTX::View::UI::Widget::Renderer

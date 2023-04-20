@@ -1,8 +1,8 @@
 #include "ui/old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include <app/core/action/action_manager.hpp>
 #include <app/action/molecule.hpp>
-#include <app/old_app/model/generated_molecule.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/generated_molecule.hpp>
+#include <app/model/molecule.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <util/string.hpp>
 

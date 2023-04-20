@@ -4,7 +4,7 @@
 #include "app/core/action/base_action.hpp"
 #include "app/core/worker/worker_manager.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
-#include "app/old_app/model/molecule.hpp"
+#include "app/model/molecule.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker/snapshoter.hpp"

@@ -1,7 +1,7 @@
 #include "tool/analysis/util.hpp"
 #include "tool/analysis/rmsd/core/rmsd.hpp"
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
 

@@ -3,7 +3,7 @@
 // #include "ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp"
 #include <app/core/action/action_manager.hpp>
 #include <app/event/vtx_event.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>

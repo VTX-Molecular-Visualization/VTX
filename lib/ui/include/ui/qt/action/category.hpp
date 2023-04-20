@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_ACTION_CATEGORY__
 
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/category.hpp>
+#include <app/model/category.hpp>
 
 namespace VTX::UI::QT::Action::Category
 {

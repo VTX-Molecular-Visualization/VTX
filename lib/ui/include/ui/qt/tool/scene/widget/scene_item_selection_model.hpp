@@ -2,8 +2,8 @@
 #define __VTX_UI_QT_TOOL_SCENE_WIDGET_SCENE_ITEM_SELECTION_MODEL__
 
 #include <app/model/base_model.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/selection.hpp>
 #include <QAbstractItemModel>
 #include <QItemSelection>
 #include <QItemSelectionModel>

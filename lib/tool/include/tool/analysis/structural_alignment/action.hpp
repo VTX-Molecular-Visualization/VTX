@@ -4,8 +4,8 @@
 #include "tool/analysis/util.hpp"
 #include "core/structural_alignment.hpp"
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/selection.hpp>
 
 #include <vector>
 

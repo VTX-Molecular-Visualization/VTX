@@ -5,7 +5,7 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "representation_preset_button.hpp"
 #include <QWidget>
-#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/model/representation/representation_library.hpp>
 #include <app/view/base_view.hpp>
 #include <map>
 

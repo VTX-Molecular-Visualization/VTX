@@ -5,7 +5,7 @@
 #include <app/core/action/action_manager.hpp>
 #include <app/action/path.hpp>
 #include <app/action/viewpoint.hpp>
-#include <app/old_app/model/path.hpp>
+#include <app/model/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {

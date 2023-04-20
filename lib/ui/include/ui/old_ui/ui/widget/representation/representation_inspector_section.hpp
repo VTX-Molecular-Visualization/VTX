@@ -24,7 +24,7 @@
 #include <app/event/vtx_event.hpp>
 #include <app/old_app/generic/base_colorable.hpp>
 #include <app/old_app/generic/base_representable.hpp>
-#include <app/old_app/model/representation/instantiated_representation.hpp>
+#include <app/model/representation/instantiated_representation.hpp>
 #include <app/view/base_view.hpp>
 #include <vector>
 

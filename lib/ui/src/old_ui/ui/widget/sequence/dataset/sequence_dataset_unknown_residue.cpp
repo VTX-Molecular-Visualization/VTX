@@ -1,6 +1,6 @@
 #include "ui/old_ui/ui/widget/sequence/dataset/sequence_dataset_unknown_residue.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/old_app/model/residue.hpp>
+#include <app/model/residue.hpp>
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {

@@ -4,8 +4,8 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/selection_action_block.hpp"
 #include "ui/old_ui/ui/widget/main_menu/molecule/windows_block.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
-#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/model/renderer/render_effect_preset_library.hpp>
+#include <app/model/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {

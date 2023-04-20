@@ -13,8 +13,8 @@
 #include <QLabel>
 #include <QScrollArea>
 #include <app/old_app/color/rgba.hpp>
-#include <app/old_app/model/representation/representation.hpp>
-#include <app/old_app/model/representation/representation_enum.hpp>
+#include <app/model/representation/representation.hpp>
+#include <app/model/representation/representation_enum.hpp>
 #include <type_traits>
 #include <vector>
 

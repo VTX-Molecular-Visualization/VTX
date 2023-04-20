@@ -8,7 +8,7 @@
 #include <QRadioButton>
 #include <QWidget>
 #include <app/model/base_model.hpp>
-#include <app/old_app/model/representation/instantiated_representation.hpp>
+#include <app/model/representation/instantiated_representation.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Representation

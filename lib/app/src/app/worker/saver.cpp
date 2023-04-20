@@ -3,7 +3,7 @@
 #include "app/old_app/io/struct/scene_path_data.hpp"
 #include "app/old_app/io/writer/serialized_object.hpp"
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
-#include "app/old_app/model/molecule.hpp"
+#include "app/model/molecule.hpp"
 #include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/selection/selection_manager.hpp"

@@ -1,5 +1,5 @@
 #include "app/old_app/renderer/gl/pass/blur.hpp"
-#include "app/old_app/model/renderer/render_effect_preset.hpp"
+#include "app/model/renderer/render_effect_preset.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
 #include "app/old_app/vtx_app.hpp"

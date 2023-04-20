@@ -4,7 +4,7 @@
 #include "app/core/action/base_action.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_representable.hpp"
-#include "app/old_app/model/representation/instantiated_representation.hpp"
+#include "app/model/representation/instantiated_representation.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include <type_traits>
 #include <unordered_set>

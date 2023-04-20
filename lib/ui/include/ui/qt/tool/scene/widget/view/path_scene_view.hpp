@@ -12,9 +12,9 @@
 #include <map>
 #include <app/event/base_event_receiver_vtx.hpp>
 #include <app/old_app/generic/base_visible.hpp>
-#include <app/old_app/model/path.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/model/viewpoint.hpp>
+#include <app/model/path.hpp>
+#include <app/model/selection.hpp>
+#include <app/model/viewpoint.hpp>
 #include "ui/qt/style.hpp"
 #include <app/view/base_view.hpp>
 

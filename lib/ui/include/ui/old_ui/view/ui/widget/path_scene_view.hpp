@@ -11,11 +11,11 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 #include <app/event/base_event_receiver_vtx.hpp>
+#include <app/model/path.hpp>
+#include <app/model/selection.hpp>
+#include <app/model/viewpoint.hpp>
 #include <app/old_app/generic/base_visible.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/path.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/model/viewpoint.hpp>
 #include <app/view/base_view.hpp>
 #include <map>
 

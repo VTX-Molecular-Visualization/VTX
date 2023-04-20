@@ -8,9 +8,9 @@
 //// #include <app/core/mvc/mvc_manager.hpp>
 //// #include "ui/renderer/gl/program_manager.hpp"
 //// #include "ui/selection/selection_manager.hpp"
-//// #include <app/old_app/model/renderer/render_effect_preset.hpp"
-//// #include <app/old_app/model/renderer/render_effect_preset_library.hpp"
-//// #include <app/old_app/model/representation/representation_library.hpp"
+//// #include <app/model/renderer/render_effect_preset.hpp"
+//// #include <app/model/renderer/render_effect_preset_library.hpp"
+//// #include <app/model/representation/representation_library.hpp"
 ////// #include "ui/old_ui/ui/dialog.hpp"
 ////// #include "ui/old_ui/ui/main_window.hpp"
 //// #include "ui/io/filesystem.hpp"

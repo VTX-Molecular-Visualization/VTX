@@ -1,7 +1,7 @@
 #include "app/worker/representation_loader.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
-#include "app/old_app/model/representation/representation_library.hpp"
+#include "app/model/representation/representation_library.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include <filesystem>
 #include <util/logger.hpp>

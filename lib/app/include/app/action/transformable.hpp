@@ -6,7 +6,7 @@
 #include "app/old_app/generic/base_auto_rotate.hpp"
 #include "app/old_app/generic/base_transformable.hpp"
 #include "app/old_app/math/transform.hpp"
-#include "app/old_app/model/molecule.hpp"
+#include "app/model/molecule.hpp"
 #include <unordered_set>
 #include <util/types.hpp>
 #include <vector>

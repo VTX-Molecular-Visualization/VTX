@@ -15,8 +15,8 @@
 #include <app/action/scene.hpp>
 #include <app/action/setting.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/path.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/path.hpp>
 #include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool

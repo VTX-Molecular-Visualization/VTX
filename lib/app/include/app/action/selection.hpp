@@ -3,15 +3,15 @@
 
 #include "app/action/visible.hpp"
 #include "app/core/action/base_action.hpp"
+#include "app/model/atom.hpp"
+#include "app/model/category.hpp"
+#include "app/model/chain.hpp"
+#include "app/model/generated_molecule.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/residue.hpp"
+#include "app/model/selection.hpp"
+#include "app/model/viewpoint.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/model/atom.hpp"
-#include "app/old_app/model/category.hpp"
-#include "app/old_app/model/chain.hpp"
-#include "app/old_app/model/generated_molecule.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/residue.hpp"
-#include "app/old_app/model/selection.hpp"
-#include "app/old_app/model/viewpoint.hpp"
 #include <vector>
 
 namespace VTX::Action::Selection

@@ -5,7 +5,7 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
 #include <app/event/vtx_event.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/molecule.hpp>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::MainMenu::Molecule

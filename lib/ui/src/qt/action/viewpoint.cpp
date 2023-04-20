@@ -4,7 +4,7 @@
 #include "ui/qt/controller/trackball.hpp"
 #include "ui/qt/state/state_machine.hpp"
 #include "ui/qt/state/visualization.hpp"
-#include <app/old_app/model/selection.hpp>
+#include <app/model/selection.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>

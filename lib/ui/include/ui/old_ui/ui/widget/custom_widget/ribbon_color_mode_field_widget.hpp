@@ -11,7 +11,7 @@
 #include <QWidget>
 #include <app/old_app/color/rgba.hpp>
 #include <app/old_app/generic/base_colorable.hpp>
-#include <app/old_app/model/secondary_structure.hpp>
+#include <app/model/secondary_structure.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {

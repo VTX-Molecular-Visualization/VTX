@@ -3,8 +3,8 @@
 
 #include "ui/qt/controller/base_camera_controller.hpp"
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/path.hpp>
-#include <app/old_app/model/viewpoint.hpp>
+#include <app/model/path.hpp>
+#include <app/model/viewpoint.hpp>
 #include <app/old_app/object3d/camera.hpp>
 #include <vector>
 

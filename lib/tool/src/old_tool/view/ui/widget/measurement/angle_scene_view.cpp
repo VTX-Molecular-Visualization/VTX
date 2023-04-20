@@ -1,7 +1,7 @@
 #include "tool/old_tool/view/ui/widget/measurement/angle_scene_view.hpp"
 #include <app/core/action/action_manager.hpp>
 #include <app/action/label.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/selection.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <ui/old_ui/ui/contextual_menu.hpp>

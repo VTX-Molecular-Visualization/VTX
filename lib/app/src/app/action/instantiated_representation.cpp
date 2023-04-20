@@ -1,5 +1,5 @@
 #include "app/action/instantiated_representation.hpp"
-#include "app/old_app/model/molecule.hpp"
+#include "app/model/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 
 namespace VTX::Action::InstantiatedRepresentation

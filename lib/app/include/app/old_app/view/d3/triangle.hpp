@@ -1,8 +1,8 @@
 #ifndef __VTX_VIEW_3D_MESH_TRIANGLE__
 #define __VTX_VIEW_3D_MESH_TRIANGLE__
 
-#include "app/old_app/model/mesh_triangle.hpp"
-#include "app/old_app/model/solvent_excluded_surface.hpp"
+#include "app/model/mesh_triangle.hpp"
+#include "app/model/solvent_excluded_surface.hpp"
 #include "app/view/base_view_3d.hpp"
 
 namespace VTX

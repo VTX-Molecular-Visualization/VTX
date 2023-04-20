@@ -11,15 +11,15 @@
 #include "ui/old_ui/ui/widget/inspector/multiple_viewpoint_inspector_widget.hpp"
 #include <QFrame>
 #include <QHBoxLayout>
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/chain.hpp>
-#include <app/old_app/model/label.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/representation/representation.hpp>
-#include <app/old_app/model/representation/representation_library.hpp>
-#include <app/old_app/model/residue.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/model/viewpoint.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/chain.hpp>
+#include <app/model/label.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/representation/representation.hpp>
+#include <app/model/representation/representation_library.hpp>
+#include <app/model/residue.hpp>
+#include <app/model/selection.hpp>
+#include <app/model/viewpoint.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 // #include <tool/old_tool/model/measurement/angle.hpp>

@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_ACTION_SELECTION__
 
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/selection.hpp>
 
 namespace VTX::UI::QT::Action::Selection
 {

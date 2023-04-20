@@ -10,7 +10,7 @@
 #include <QScrollArea>
 #include <QWidget>
 #include <app/event/vtx_event.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/molecule.hpp>
 #include <vector>
 
 namespace VTX::Model

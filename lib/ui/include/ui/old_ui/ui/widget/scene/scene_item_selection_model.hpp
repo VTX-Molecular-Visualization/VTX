@@ -6,8 +6,8 @@
 #include <QItemSelectionModel>
 #include <app/old_app/id.hpp>
 #include <app/model/base_model.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/selection.hpp>
 
 namespace VTX::Model
 {

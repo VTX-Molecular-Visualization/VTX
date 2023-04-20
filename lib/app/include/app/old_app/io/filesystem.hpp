@@ -2,8 +2,8 @@
 #define __VTX_IO_FILESYSTEM__
 
 // TODO: delete those includes
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/selection.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/selection.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 #include "app/old_app/setting.hpp"

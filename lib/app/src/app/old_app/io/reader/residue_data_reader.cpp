@@ -1,6 +1,6 @@
 #include "app/old_app/io/reader/residue_data_reader.hpp"
 #include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/model/residue.hpp"
+#include "app/model/residue.hpp"
 
 namespace VTX::IO::Reader
 {

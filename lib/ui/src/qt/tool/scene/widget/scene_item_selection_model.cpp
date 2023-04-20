@@ -6,7 +6,7 @@
 #include "ui/qt/tool/scene/widget/scene_widget.hpp"
 #include <app/core/action/action_manager.hpp>
 #include <app/action/selection.hpp>
-#include <app/old_app/model/path.hpp>
+#include <app/model/path.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget

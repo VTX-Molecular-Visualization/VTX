@@ -8,8 +8,8 @@
 #include <QAbstractItemModel>
 #include <QDrag>
 #include <app/old_app/generic/base_visible.hpp>
-#include <app/old_app/model/category.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/category.hpp>
+#include <app/model/selection.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <stack>

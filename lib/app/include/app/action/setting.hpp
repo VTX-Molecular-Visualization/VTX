@@ -5,7 +5,7 @@
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
-#include "app/old_app/model/category_enum.hpp"
+#include "app/model/category_enum.hpp"
 #include "app/old_app/selection/selection_enum.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/trajectory/trajectory_enum.hpp"

@@ -1,8 +1,8 @@
 #include "ui/old_ui/util/ui.hpp"
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/bond.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/bond.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
 
 namespace VTX::Util::UI
 {

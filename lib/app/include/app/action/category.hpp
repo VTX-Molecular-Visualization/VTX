@@ -3,8 +3,8 @@
 
 #include "app/action/visible.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/old_app/model/category.hpp"
-// #include "app/old_app/model/representation/instantiated_representation.hpp"
+#include "app/model/category.hpp"
+// #include "app/model/representation/instantiated_representation.hpp"
 // #include <unordered_set>
 
 namespace VTX::Action::Category

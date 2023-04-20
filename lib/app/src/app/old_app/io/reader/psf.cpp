@@ -1,5 +1,5 @@
 #include "app/old_app/io/reader/psf.hpp"
-#include "app/old_app/model/configuration/molecule.hpp"
+#include "app/model/configuration/molecule.hpp"
 #include <fstream>
 #include <sstream>
 

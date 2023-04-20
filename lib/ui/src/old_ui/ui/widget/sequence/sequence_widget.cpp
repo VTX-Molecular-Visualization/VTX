@@ -4,7 +4,7 @@
 #include <QLayout>
 #include <QScrollBar>
 #include <QWidget>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/molecule.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/view/base_view.hpp>
 

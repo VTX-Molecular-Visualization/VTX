@@ -10,13 +10,13 @@
 #include <app/action/viewpoint.hpp>
 #include <app/core/event/event_manager.hpp>
 #include <app/old_app/io/filesystem.hpp>
-// #include <app/old_app/model/label.hpp>
-// #include <app/old_app/model/measurement/angle.hpp>
-// #include <app/old_app/model/measurement/dihedral_angle.hpp>
-// #include <app/old_app/model/measurement/distance.hpp>
-// #include <app/old_app/model/measurement/measure_in_progress.hpp>
-#include <app/old_app/model/mesh_triangle.hpp>
-#include <app/old_app/model/molecule.hpp>
+// #include <app/model/label.hpp>
+// #include <app/model/measurement/angle.hpp>
+// #include <app/model/measurement/dihedral_angle.hpp>
+// #include <app/model/measurement/distance.hpp>
+// #include <app/model/measurement/measure_in_progress.hpp>
+#include <app/model/mesh_triangle.hpp>
+#include <app/model/molecule.hpp>
 // #include "ui/state/state_machine.hpp"
 // #include "ui/state/visualization.hpp"
 #include "ui/qt/style.hpp"

@@ -14,7 +14,7 @@
 #include <app/action/chain.hpp>
 #include <app/action/instantiated_representation.hpp>
 #include <app/action/molecule.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/molecule.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 
 namespace VTX::UI::Widget::Inspector

@@ -5,8 +5,8 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <app/core/action/action_manager.hpp>
-#include <app/old_app/model/representation/representation.hpp>
-#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/model/representation/representation.hpp>
+#include <app/model/representation/representation_library.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>

@@ -4,7 +4,7 @@
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/dialog.hpp"
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/molecule.hpp>
 #include <app/core/worker/worker_manager.hpp>
 #include <util/types.hpp>
 #include <vector>

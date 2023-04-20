@@ -10,7 +10,7 @@
 #include <QLabel>
 #include <QWidget>
 #include <app/old_app/math/transform.hpp>
-#include <app/old_app/model/atom.hpp>
+#include <app/model/atom.hpp>
 #include <app/view/base_view.hpp>
 #include <app/view/callback_view.hpp>
 #include <unordered_set>

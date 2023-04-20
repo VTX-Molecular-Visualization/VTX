@@ -14,13 +14,13 @@
 #include <map>
 #include <app/event/base_event_receiver_vtx.hpp>
 #include <app/old_app/generic/base_visible.hpp>
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/category.hpp>
-#include <app/old_app/model/category_enum.hpp>
-#include <app/old_app/model/chain.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/category.hpp>
+#include <app/model/category_enum.hpp>
+#include <app/model/chain.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/style.hpp>
 #include <app/view/base_view.hpp>
 

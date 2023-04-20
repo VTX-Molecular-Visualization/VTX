@@ -2,7 +2,7 @@
 #include "app/event/vtx_event.hpp"
 #include "app/core/event/event_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/model/molecule.hpp"
+#include "app/model/molecule.hpp"
 
 namespace VTX::IO::Struct
 {

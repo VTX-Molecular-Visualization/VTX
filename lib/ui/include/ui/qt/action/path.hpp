@@ -2,7 +2,7 @@
 #define __VTX_UI_QT_ACTION_PATH__
 
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/path.hpp>
+#include <app/model/path.hpp>
 
 namespace VTX::UI::QT::Action::Path
 {

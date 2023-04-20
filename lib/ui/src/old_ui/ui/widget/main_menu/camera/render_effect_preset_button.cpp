@@ -2,8 +2,8 @@
 #include "ui/old_ui/style.hpp"
 #include <app/core/action/action_manager.hpp>
 #include <app/action/renderer.hpp>
-#include <app/old_app/model/renderer/render_effect_preset.hpp>
-#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
+#include <app/model/renderer/render_effect_preset.hpp>
+#include <app/model/renderer/render_effect_preset_library.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
