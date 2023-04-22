@@ -1,32 +1,52 @@
 #ifndef __VTX_GL_VERETX_ARRAY__
 #define __VTX_GL_VERETX_ARRAY__
 
-#define VTX_USE_OPENGL_MULTI_DRAW 1
+#include "renderer/gl/include_opengl.hpp"
 
 namespace VTX::Renderer::GL
 {
-	// TODO: methods such as 'enableAttrib', 'setVertexBuffer', etc. might be merged...
 	class VertexArray
 	{
 	  public:
 		VertexArray() = default;
 		~VertexArray() { destroy(); }
 
-		inline void create() { glCreateVertexArrays( 1, &_id ); }
-		inline void destroy() { glDeleteVertexArrays( 1, &_id ); }
+		inline void create()
+		{
+			assert( _id == GL_INVALID_INDEX );
+
+			glCreateVertexArrays( 1, &_id );
+		}
+		inline void destroy()
+		{
+			assert( _id != GL_INVALID_INDEX );
+
+			glDeleteVertexArrays( 1, &_id );
+			_id = GL_INVALID_INDEX;
+		}
 
 		inline GLuint getId() const { return _id; }
 
-		inline void bind() const { glBindVertexArray( _id ); }
+		inline void bind() const
+		{
+			assert( glIsVertexArray( _id ) );
+
+			glBindVertexArray( _id );
+		}
+
 		inline void unbind() const { glBindVertexArray( 0 ); }
 
 		inline void bindElementBuffer( const Buffer & p_elementBuffer ) const
 		{
+			assert( glIsVertexArray( _id ) );
+
 			glVertexArrayElementBuffer( _id, p_elementBuffer.getId() );
 		}
 
 		inline void enableAttribute( const GLuint p_bindingIndex ) const
 		{
+			assert( glIsVertexArray( _id ) );
+
 			glEnableVertexArrayAttrib( _id, p_bindingIndex );
 		}
 
@@ -35,6 +55,8 @@ namespace VTX::Renderer::GL
 									 const GLsizei	p_stride,
 									 const GLintptr p_offset = 0 ) const
 		{
+			assert( glIsVertexArray( _id ) );
+
 			glVertexArrayVertexBuffer( _id, p_bindingIndex, p_vertexBuffer.getId(), p_offset, p_stride );
 		}
 
@@ -44,6 +66,8 @@ namespace VTX::Renderer::GL
 										const GLuint	p_relativeOffset = 0,
 										const GLboolean p_normalized	 = GL_FALSE ) const
 		{
+			assert( glIsVertexArray( _id ) );
+
 			// TODO: split ? test !
 			if ( p_type == GL_FLOAT )
 			{
@@ -61,6 +85,8 @@ namespace VTX::Renderer::GL
 
 		inline void setAttributeBinding( const GLuint p_attributeIndex, const GLuint p_bindingIndex ) const
 		{
+			assert( glIsVertexArray( _id ) );
+
 			glVertexArrayAttribBinding( _id, p_attributeIndex, p_bindingIndex );
 		}
 
@@ -78,19 +104,8 @@ namespace VTX::Renderer::GL
 									const GLsizei		  p_primcount ) const
 		{
 			bind();
-#if VTX_USE_OPENGL_MULTI_DRAW
 			glMultiDrawArrays( p_mode, p_first, p_count, p_primcount );
 			// VTX_STAT().drawCalls++;
-#else
-			for ( uint i = 0; i < uint( p_primcount ); i++ )
-			{
-				if ( p_count[ i ] > 0 )
-				{
-					glDrawArrays(  p_mode ), p_first[ i ], p_count[ i ] );
-					// VTX_STAT().drawCalls++;
-				}
-			}
-#endif
 			unbind();
 		}
 
@@ -112,19 +127,8 @@ namespace VTX::Renderer::GL
 									  const GLsizei				   p_primcount ) const
 		{
 			bind();
-#if VTX_USE_OPENGL_MULTI_DRAW
 			glMultiDrawElements( p_mode, p_count, p_type, p_offset, p_primcount );
 			// VTX_STAT().drawCalls++;
-#else
-			for ( uint i = 0; i < uint( p_primcount ); i++ )
-			{
-				if ( p_count[ i ] > 0 )
-				{
-					glDrawElements( p_mode, p_count[ i ], p_type, p_offset[ i ] );
-					// VTX_STAT().drawCalls++;
-				}
-			}
-#endif
 			unbind();
 		}
 

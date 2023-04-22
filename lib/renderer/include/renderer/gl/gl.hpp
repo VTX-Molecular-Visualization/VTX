@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GL__
-#define __VTX_RENDERER_GL__
+#ifndef __VTX_RENDERER_GL_GL__
+#define __VTX_RENDERER_GL_GL__
 
 #include "buffer.hpp"
 #include "pass/blur.hpp"
@@ -10,58 +10,72 @@
 #include "pass/selection.hpp"
 #include "pass/shading.hpp"
 #include "pass/ssao.hpp"
-#include "renderer/base_renderer.hpp"
 #include "vertex_array.hpp"
+#include <util/types.hpp>
 
 namespace VTX::Renderer::GL
 {
-	class GL : public BaseRenderer
+	class GL
 	{
 	  public:
 		GL();
-		~GL();
+		~GL() = default;
 
-		void init( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId ) override;
-		void renderFrame( const Object3D::Scene & ) override;
-		void updateRenderSetting( const RENDER_SETTING ) override;
-		void resize( const uint, const uint, const GLuint ) override;
+		/*
+		inline const Pass::Geometric &		getPassGeometric() const { return _passGeometric; }
+		inline const Pass::LinearizeDepth & getPassLinearizeDepth() const { return _passLinearizeDepth; }
+		inline const Pass::SSAO &			getPassSSAO() const { return _passSSAO; }
+		inline const Pass::Blur &			getPassBlur() const { return _passBlur; }
+		inline const Pass::Shading &		getPassShading() const { return _passShading; }
+		inline const Pass::Outline &		getPassOutline() const { return _passOutline; }
+		inline const Pass::Selection &		getPassSelection() const { return _passSelection; }
+		inline const Pass::FXAA &			getPassFXAA() const { return _passFXAA; }
+		*/
 
-		inline void enableDepthClamp() const { glEnable(GL_DEPTH_CLAMP); }
-		inline void disableDepthClamp() const { glDisable(GL_DEPTH_CLAMP); }
-		inline void enableDepthTest() const { glEnable(GL_DEPTH_TEST); }
-		inline void disableDepthTest() const { glDisable(GL_DEPTH_TEST); }
-		inline void memoryBarrier(const GLbitfield p_barrier) const { _gl->glMemoryBarrier(p_barrier); }
+		inline void setOutput( const GLuint p_output ) {}
+
+		/*
+		inline void enableDepthClamp() const { glEnable( GL_DEPTH_CLAMP ); }
+		inline void disableDepthClamp() const { glDisable( GL_DEPTH_CLAMP ); }
+		inline void enableDepthTest() const { glEnable( GL_DEPTH_TEST ); }
+		inline void disableDepthTest() const { glDisable( GL_DEPTH_TEST ); }
+		inline void memoryBarrier( const GLbitfield p_barrier ) const { glMemoryBarrier( p_barrier ); }
 		inline void flush() const { glFlush(); }
 		inline void finish() const { glFinish(); }
-
-		inline const Pass::Geometric &		getPassGeometric() const { return *_passGeometric; }
-		inline const Pass::LinearizeDepth & getPassLinearizeDepth() const { return *_passLinearizeDepth; }
-		inline const Pass::SSAO &			getPassSSAO() const { return *_passSSAO; }
-		inline const Pass::Blur &			getPassBlur() const { return *_passBlur; }
-		inline const Pass::Shading &		getPassShading() const { return *_passShading; }
-		inline const Pass::Outline &		getPassOutline() const { return *_passOutline; }
-		inline const Pass::Selection &		getPassSelection() const { return *_passSelection; }
-		inline const Pass::FXAA &			getPassFXAA() const { return *_passFXAA; }
-
+		*/
+		/*
 		inline const VertexArray & getQuadVAO() const { return _quadVAO; }
 		inline const Buffer &	   getQuadVBO() const { return _quadVBO; }
+		*/
 
-		const Vec2i getPickedIds( const uint, const uint ) const override;
+		void init( const size_t p_width, const size_t p_height );
+		void resize( const size_t p_width, const size_t p_height );
+
+		void renderFrame();
+		// void updateRenderSetting( const RENDER_SETTING );
+
+		const Vec2i getPickedIds( const uint p_x, const uint p_y ) const;
 
 	  private:
-		Pass::Geometric *	   _passGeometric	   = nullptr;
-		Pass::LinearizeDepth * _passLinearizeDepth = nullptr;
-		Pass::SSAO *		   _passSSAO		   = nullptr;
-		Pass::Blur *		   _passBlur		   = nullptr;
-		Pass::Shading *		   _passShading		   = nullptr;
-		Pass::Outline *		   _passOutline		   = nullptr;
-		Pass::Selection *	   _passSelection	   = nullptr;
-		Pass::FXAA *		   _passFXAA		   = nullptr;
+		size_t _width  = 0;
+		size_t _height = 0;
 
-		VertexArray _quadVAO;
-		Buffer		_quadVBO;
+		VertexArray _quadVAO = VertexArray();
+		Buffer		_quadVBO = Buffer();
 
-		void _initQuadVAO();
+		Framebuffer _output = Framebuffer();
+
+		std::vector<Pass::BasePass> _passes = std::vector<Pass::BasePass>();
+		/*
+		Pass::Geometric		 _passGeometric		 = Pass::Geometric();
+		Pass::LinearizeDepth _passLinearizeDepth = Pass::LinearizeDepth();
+		Pass::SSAO			 _passSSAO			 = Pass::SSAO();
+		Pass::Blur			 _passBlur			 = Pass::Blur();
+		Pass::Shading		 _passShading		 = Pass::Shading();
+		Pass::Outline		 _passOutline		 = Pass::Outline();
+		Pass::Selection		 _passSelection		 = Pass::Selection();
+		Pass::FXAA			 _passFXAA			 = Pass::FXAA();
+		*/
 	};
 } // namespace VTX::Renderer::GL
 

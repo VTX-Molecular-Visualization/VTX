@@ -1,5 +1,5 @@
-#ifndef __VTX_PASS_SELECTION__
-#define __VTX_PASS_SELECTION__
+#ifndef __VTX_RENDERER_GL_PASS_SELECTION__
+#define __VTX_RENDERER_GL_PASS_SELECTION__
 
 #include "base_pass.hpp"
 #include "renderer/gl/framebuffer.hpp"
@@ -13,14 +13,14 @@ namespace VTX::Renderer::GL::Pass
 		Selection()			 = default;
 		virtual ~Selection() = default;
 
-		void init( const uint, const uint, const GL & ) override;
-		void resize( const uint, const uint, const GL & ) override;
-		void render( const Object3D::Scene &, const GL & ) override;
+		void init( const size_t p_width, const size_t p_height ) override;
+		void resize( const size_t p_width, const size_t p_height ) override;
+		void render() override;
 
-		inline const Texture2D &   getTexture() const { return _texture; }
-		inline const Framebuffer & getFbo() const { return _fbo; }
+		// inline const Texture2D &   getTexture() const { return _texture; }
+		// inline const Framebuffer & getFbo() const { return _fbo; }
 
-		void updateOutputFBO( const GL & );
+		// void updateOutputFBO( const GL & );
 
 	  private:
 		Program *	_program = nullptr;

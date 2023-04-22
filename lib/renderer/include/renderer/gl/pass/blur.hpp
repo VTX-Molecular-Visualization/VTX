@@ -13,13 +13,13 @@ namespace VTX::Renderer::GL::Pass
 		Blur()			= default;
 		virtual ~Blur() = default;
 
-		void init() override;
-		void resize() override;
+		void init( const size_t p_width, const size_t p_height ) override;
+		void resize( const size_t p_width, const size_t p_height ) override;
 		void render() override;
 
-		inline const Texture2D & getTexture() const { return _texture; }
+		// inline const Texture2D & getTexture() const { return _texture; }
 
-		void clearTexture();
+		// void clearTexture();
 
 	  private:
 		Program *	_program		  = nullptr;

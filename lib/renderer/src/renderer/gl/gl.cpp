@@ -1,14 +1,8 @@
-#include "gl.hpp"
-#include "model/molecule.hpp"
-#include "model/renderer/render_effect_preset.hpp"
-#include "setting.hpp"
-#include "view/base_view_3d_molecule.hpp"
-#include "vtx_app.hpp"
-#include <random>
+#include "renderer/gl/gl.hpp"
 
 namespace VTX::Renderer::GL
 {
-	GL::GL() : BaseRenderer(), _quadVAO(), _quadVBO()
+	GL::GL()
 	{
 		_passGeometric		= new Pass::Geometric();
 		_passLinearizeDepth = new Pass::LinearizeDepth();
@@ -49,8 +43,20 @@ namespace VTX::Renderer::GL
 		_passSelection->init( _width, _height, *this );
 		_passFXAA->init( _width, _height, *this );
 
-		// Init VAO.
-		_initQuadVAO();
+		// Init quad vao/vbo for deferred shading.
+		std::vector<Vec2f> quadVertices
+			= { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
+
+		_quadVBO.create();
+
+		_quadVAO.create();
+
+		_quadVAO.enableAttribute( 0 );
+		_quadVAO.setVertexBuffer( 0, _quadVBO, sizeof( Vec2f ) );
+		_quadVAO.setAttributeFormat( 0, 2, GL_FLOAT );
+		_quadVAO.setAttributeBinding( 0, 0 );
+
+		_quadVBO.set<Vec2f>( quadVertices );
 
 		VTX_INFO( "Renderer initialized" );
 	}
@@ -67,32 +73,6 @@ namespace VTX::Renderer::GL
 		_passOutline->resize( _width, _height, *this );
 		_passSelection->resize( _width, _height, *this );
 		_passFXAA->resize( _width, _height, *this );
-	}
-
-	void GL::_initQuadVAO()
-	{
-		// Init quad vao/vbo for deferred shading.
-
-		// clang-format off
-			std::vector<Vec2f> quadVertices =
-			{
-				Vec2f(-1.f,  1.f),
-				Vec2f(-1.f,  -1.f),
-				Vec2f(1.f,  1.f),
-				Vec2f(1.f,  -1.f)
-			};
-		// clang-format on
-
-		_quadVBO.create();
-
-		_quadVAO.create();
-
-		_quadVAO.enableAttribute( 0 );
-		_quadVAO.setVertexBuffer( 0, _quadVBO, sizeof( Vec2f ) );
-		_quadVAO.setAttributeFormat( 0, 2, VertexArray::Type::FLOAT );
-		_quadVAO.setAttributeBinding( 0, 0 );
-
-		_quadVBO.set<Vec2f>( quadVertices );
 	}
 
 	void GL::renderFrame( const Object3D::Scene & p_scene )

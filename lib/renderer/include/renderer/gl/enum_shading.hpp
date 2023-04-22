@@ -1,8 +1,8 @@
-namespace VTX::Renderer
+namespace VTX::Renderer::GL
 {
 	enum class ENUM_SHADING : int
 	{
-		DIFFUSE = 0,
+		DIFFUSE,
 		GLOSSY,
 		TOON,
 		FLAT_COLOR,

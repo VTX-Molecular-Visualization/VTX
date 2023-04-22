@@ -1,5 +1,5 @@
-#ifndef __VTX_PASS_GEOMETRIC__
-#define __VTX_PASS_GEOMETRIC__
+#ifndef __VTX_RENDERER_GL_PASS_GEOMETRIC__
+#define __VTX_RENDERER_GL_PASS_GEOMETRIC__
 
 #include "base_pass.hpp"
 #include "renderer/gl/framebuffer.hpp"
@@ -13,10 +13,11 @@ namespace VTX::Renderer::GL::Pass
 		Geometric()			 = default;
 		virtual ~Geometric() = default;
 
-		void init( const uint, const uint, const GL & ) override;
-		void resize( const uint, const uint, const GL & ) override;
-		void render( const Object3D::Scene &, const GL & ) override;
+		void init( const size_t p_width, const size_t p_height ) override;
+		void resize( const size_t p_width, const size_t p_height ) override;
+		void render() override;
 
+		/*
 		inline const Framebuffer & getFbo() const { return _fbo; }
 		inline const Texture2D &   getViewPositionsNormalsCompressedTexture() const
 		{
@@ -24,6 +25,7 @@ namespace VTX::Renderer::GL::Pass
 		}
 		inline const Texture2D & getColorsTexture() const { return _colorsTexture; }
 		inline const Texture2D & getDepthTexture() const { return _depthTexture; }
+		*/
 
 	  private:
 		Framebuffer _fbo								   = Framebuffer();

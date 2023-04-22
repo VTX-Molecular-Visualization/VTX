@@ -482,6 +482,7 @@ namespace VTX::Util::Math
 		return exponent;
 	}
 
+	// TODO:  std::fabsf.
 	inline Vec3f orthogonalVector( const Vec3f & normal )
 	{
 		// Solve a*x + b*y + c*z = 0

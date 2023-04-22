@@ -1,5 +1,5 @@
-#ifndef __VTX_PASS_SHADING__
-#define __VTX_PASS_SHADING__
+#ifndef __VTX_RENDERER_GL_PASS_SHADING__
+#define __VTX_RENDERER_GL_PASS_SHADING__
 
 #include "base_pass.hpp"
 #include "renderer/gl/framebuffer.hpp"
@@ -13,13 +13,13 @@ namespace VTX::Renderer::GL::Pass
 		Shading()		   = default;
 		virtual ~Shading() = default;
 
-		void init( const uint, const uint, const GL & ) override;
-		void resize( const uint, const uint, const GL & ) override;
-		void render( const Object3D::Scene &, const GL & ) override;
-		void set();
+		void init( const size_t p_width, const size_t p_height ) override;
+		void resize( const size_t p_width, const size_t p_height ) override;
+		void render() override;
+		// void set();
 
-		inline const Texture2D &   getTexture() const { return _texture; }
-		inline const Framebuffer & getFbo() const { return _fbo; }
+		// inline const Texture2D &   getTexture() const { return _texture; }
+		// inline const Framebuffer & getFbo() const { return _fbo; }
 
 	  private:
 		Program * _diffuseShading = nullptr;

@@ -1,8 +1,8 @@
-namespace VTX::Renderer
+namespace VTX::Renderer::GL
 {
 	enum class ENUM_RENDER_SETTING : int
 	{
-		SHADING = 0,
+		SHADING,
 		SSAO,
 		OUTLINE,
 		FOG,

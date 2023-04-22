@@ -12,9 +12,9 @@ namespace VTX::Renderer::GL::Pass
 		BasePass()			= default;
 		virtual ~BasePass() = default;
 
-		virtual void init( const uint p_width, const uint p_height )   = 0;
-		virtual void resize( const uint p_width, const uint p_height ) = 0;
-		virtual void render()										   = 0;
+		virtual void init( const size_t p_width, const size_t p_height ) {}
+		virtual void resize( const size_t p_width, const size_t p_height ) {}
+		virtual void render() = 0;
 	};
 
 } // namespace VTX::Renderer::GL::Pass

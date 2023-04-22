@@ -1,5 +1,5 @@
-#ifndef __VTX_PASS_SSAO__
-#define __VTX_PASS_SSAO__
+#ifndef __VTX_RENDERER_GL_PASS_SSAO__
+#define __VTX_RENDERER_GL_PASS_SSAO__
 
 #include "base_pass.hpp"
 #include "renderer/gl/framebuffer.hpp"
@@ -13,11 +13,11 @@ namespace VTX::Renderer::GL::Pass
 		SSAO()			= default;
 		virtual ~SSAO() = default;
 
-		void init( const uint, const uint, const GL & ) override;
-		void resize( const uint, const uint, const GL & ) override;
-		void render( const Object3D::Scene &, const GL & ) override;
+		void init( const size_t p_width, const size_t p_height ) override;
+		void resize( const size_t p_width, const size_t p_height ) override;
+		void render() override;
 
-		inline const Texture2D & getTexture() const { return _texture; }
+		// inline const Texture2D & getTexture() const { return _texture; }
 
 	  private:
 		Program *		   _program			 = nullptr;
