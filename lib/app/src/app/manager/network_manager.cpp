@@ -12,7 +12,7 @@ namespace VTX::App::Manager
 		// VTX_INFO( "OpenSSL version : " + QSslSocket::sslLibraryBuildVersionString().toStdString() );
 	}
 
-	void NetworkManager::sendRequest( Core::Network::NetworkRequest * const p_request )
+	void NetworkManager::sendRequest( const std::shared_ptr<Core::Network::NetworkRequest> & p_request )
 	{
 		// QNetworkReply * const reply = _networkManager.get( *p_request );
 		//_mapReplyRequest.emplace( reply, p_request );
