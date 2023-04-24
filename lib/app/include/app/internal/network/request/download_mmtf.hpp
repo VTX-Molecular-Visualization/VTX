@@ -4,7 +4,7 @@
 #include "app/core/network/network_request.hpp"
 #include <string>
 
-namespace VTX::Network::Request
+namespace VTX::App::Internal::Network::Request
 {
 	class DownloadMMTF : public Core::Network::NetworkRequest
 	{
@@ -18,5 +18,5 @@ namespace VTX::Network::Request
 
 		void _success( Core::Network::NetworkReply * const p_reply ) override;
 	};
-} // namespace VTX::Network::Request
+} // namespace VTX::App::Internal::Network::Request
 #endif

@@ -1,10 +1,10 @@
-#include "app/network/request/check_update.hpp"
+#include "app/internal/network/request/check_update.hpp"
 #include "app/old_app/define.hpp"
 // #include "ui/dialog.hpp"
 #include <nlohmann/json.hpp>
 #include <util/logger.hpp>
 
-namespace VTX::Network::Request
+namespace VTX::App::Internal::Network::Request
 {
 	CheckUpdate::CheckUpdate( const bool p_showPopupIfNoUpdate ) :
 		NetworkRequest( std::string( VTX_VERSION_URL ) ), _showPopupIfNoUpdate( p_showPopupIfNoUpdate )
@@ -64,4 +64,4 @@ namespace VTX::Network::Request
 			VTX_ERROR( p_e.what() );
 		}
 	}
-} // namespace VTX::Network::Request
+} // namespace VTX::App::Internal::Network::Request

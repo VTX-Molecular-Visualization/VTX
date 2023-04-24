@@ -5,7 +5,7 @@
 
 namespace VTX::Network::Request
 {
-	class CheckUpdate : public Core::Network::NetworkRequest
+	class CheckUpdate : public App::Core::Network::NetworkRequest
 	{
 		VTX_REQUEST
 
@@ -14,7 +14,7 @@ namespace VTX::Network::Request
 
 	  private:
 		bool _showPopupIfNoUpdate;
-		void _success( Core::Network::NetworkReply * const p_reply ) override;
+		void _success( App::Core::Network::NetworkReply * const p_reply ) override;
 	};
 
 } // namespace VTX::Network::Request

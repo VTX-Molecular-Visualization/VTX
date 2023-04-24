@@ -1,9 +1,9 @@
-#include "app/network/request/download_mmtf.hpp"
+#include "app/internal/network/request/download_mmtf.hpp"
 #include "app/action/main.hpp"
 #include "app/core/action/action_manager.hpp"
 #include "app/old_app/define.hpp"
 
-namespace VTX::Network::Request
+namespace VTX::App::Internal::Network::Request
 {
 	DownloadMMTF::DownloadMMTF( const std::string & p_id ) :
 		NetworkRequest( std::string( API_URL_MMTF + p_id ) ), _id( p_id )
@@ -20,4 +20,4 @@ namespace VTX::Network::Request
 		VTX_ACTION( new Action::Main::Open( mapBuffers ) );
 	}
 
-} // namespace VTX::Network::Request
+} // namespace VTX::App::Internal::Network::Request

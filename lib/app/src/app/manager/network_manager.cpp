@@ -1,18 +1,18 @@
-#include "app/core/network/network_manager.hpp"
+#include "app/manager/network_manager.hpp"
 #include "app/action/main.hpp"
 #include "app/core/event/event_manager.hpp"
 #include <util/logger.hpp>
 // #include <QNetworkRequest>
 // #include <QSslSocket>
 
-namespace VTX::Core::Network
+namespace VTX::App::Manager
 {
 	NetworkManager::NetworkManager()
 	{
 		// VTX_INFO( "OpenSSL version : " + QSslSocket::sslLibraryBuildVersionString().toStdString() );
 	}
 
-	void NetworkManager::sendRequest( NetworkRequest * const p_request )
+	void NetworkManager::sendRequest( Core::Network::NetworkRequest * const p_request )
 	{
 		// QNetworkReply * const reply = _networkManager.get( *p_request );
 		//_mapReplyRequest.emplace( reply, p_request );
@@ -65,4 +65,4 @@ namespace VTX::Core::Network
 	//	// VTX_INFO( std::to_string( ( uint )( percent * 100 ) ) + "%" );
 	//}
 
-} // namespace VTX::Core::Network
+} // namespace VTX::App::Manager

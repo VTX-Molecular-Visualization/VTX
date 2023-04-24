@@ -1,7 +1,7 @@
 #include "app/action/main.hpp"
-#include "app/core/network/network_manager.hpp"
 #include "app/core/worker/worker_manager.hpp"
-#include "app/network/request/download_mmtf.hpp"
+#include "app/internal/network/request/download_mmtf.hpp"
+#include "app/manager/network_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/object3d/camera_manager.hpp"
 #include "app/old_app/object3d/scene.hpp"
@@ -126,7 +126,10 @@ namespace VTX::Action::Main
 		}
 	}
 
-	void OpenApi::execute() { VTX_NETWORK_MANAGER().sendRequest( new Network::Request::DownloadMMTF( _id ) ); }
+	void OpenApi::execute()
+	{
+		VTX_NETWORK_MANAGER().sendRequest( new App::Internal::Network::Request::DownloadMMTF( _id ) );
+	}
 
 	// TODO keep only Dialog parts here and move real loading action into VTX_APP.
 	void Save::execute()

@@ -1,7 +1,7 @@
 #include "app/core/network/network_request.hpp"
 #include <util/logger.hpp>
 
-namespace VTX::Core::Network
+namespace VTX::App::Core::Network
 {
 	void NetworkRequest::_finished( NetworkReply * const p_reply )
 	{
@@ -35,4 +35,4 @@ namespace VTX::Core::Network
 
 		return true;
 	}
-} // namespace VTX::Core::Network
+} // namespace VTX::App::Core::Network
