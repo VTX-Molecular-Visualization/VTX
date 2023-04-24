@@ -2,7 +2,6 @@
 // #include "ui/analysis/rmsd.hpp"
 #include "ui/old_ui/controller/base_keyboard_controller.hpp"
 // #include "ui/old_ui/controller/measurement_picker.hpp"
-#include "ui/old_ui/style.hpp"
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/ui/mime_type.hpp"
 #include "ui/old_ui/ui/shortcut.hpp"
@@ -10,6 +9,7 @@
 // #include "ui/util/analysis.hpp"
 #include "ui/old_ui/action/main.hpp"
 #include "ui/old_ui/action/setting.hpp"
+#include "ui/old_ui/style.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/main.hpp"
 #include "ui/qt/action/selection.hpp"
@@ -19,17 +19,16 @@
 #include <QShortcut>
 #include <QSize>
 #include <QWindow>
-#include <app/core/action/action_manager.hpp>
 #include <app/action/dev.hpp>
 #include <app/action/main.hpp>
 #include <app/action/molecule.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
-#include <app/old_app/define.hpp>
+#include <app/core/action/action_manager.hpp>
 #include <app/core/event/event_manager.hpp>
+#include <app/old_app/define.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
-#include <app/old_app/style.hpp>
 #include <iostream>
 
 namespace VTX::UI
@@ -102,7 +101,7 @@ namespace VTX::UI
 
 	void MainWindow::setupUi()
 	{
-		const QSize winsize = QSize( VTX::Style::WINDOW_WIDTH_DEFAULT, VTX::Style::WINDOW_HEIGHT_DEFAULT );
+		const QSize winsize = QSize( UI::Style::WINDOW_WIDTH_DEFAULT, UI::Style::WINDOW_HEIGHT_DEFAULT );
 		resize( winsize );
 		setWindowState( Qt::WindowState::WindowNoState );
 		refreshWindowTitle();

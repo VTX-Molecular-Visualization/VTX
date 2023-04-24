@@ -3,8 +3,8 @@
 
 #include "app/action/visible.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/old_app/color/rgba.hpp"
 #include "app/model/atom.hpp"
+#include "app/old_app/color/rgba.hpp"
 
 namespace VTX::Action::Atom
 {

@@ -1,4 +1,5 @@
 #include "ui/old_ui/ui/widget/render/opengl_widget.hpp"
+#include "ui/old_ui/style.hpp"
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QMainWindow>
@@ -11,7 +12,6 @@
 #include <app/old_app/renderer/gl/program_manager.hpp>
 #include <app/old_app/renderer/rt/ray_tracer.hpp>
 #include <app/old_app/spec.hpp>
-#include <app/old_app/style.hpp>
 #include <app/old_app/util/opengl.hpp>
 
 namespace VTX::UI::Widget::Render
@@ -177,8 +177,8 @@ namespace VTX::UI::Widget::Render
 		if ( needInit )
 		{
 			const float pixelRatio = getScreenPixelRatio();
-			getRenderer().init( VTX::Style::WINDOW_WIDTH_DEFAULT * pixelRatio,
-								VTX::Style::WINDOW_HEIGHT_DEFAULT * pixelRatio,
+			getRenderer().init( UI::Style::WINDOW_WIDTH_DEFAULT * pixelRatio,
+								UI::Style::WINDOW_HEIGHT_DEFAULT * pixelRatio,
 								defaultFramebufferObject() );
 		}
 	}

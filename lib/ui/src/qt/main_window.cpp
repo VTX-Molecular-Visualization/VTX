@@ -10,19 +10,19 @@
 #include "ui/qt/tool/session/dialog.hpp"
 #include "ui/qt/util.hpp"
 #include "ui/qt/widget_factory.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/dev.hpp>
 #include <app/action/main.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
-#include <app/event/vtx_event.hpp>
+#include <app/core/action/action_manager.hpp>
 #include <app/core/event/event_manager.hpp>
+#include <app/core/worker/worker_manager.hpp>
+#include <app/event/vtx_event.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
-#include <app/model/selection.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/setting.hpp>
-#include <app/core/worker/worker_manager.hpp>
 
 namespace VTX::UI::QT
 {
@@ -92,7 +92,7 @@ namespace VTX::UI::QT
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		const QSize winsize = QSize( VTX::Style::WINDOW_WIDTH_DEFAULT, VTX::Style::WINDOW_HEIGHT_DEFAULT );
+		const QSize winsize = QSize( UI::Style::WINDOW_WIDTH_DEFAULT, UI::Style::WINDOW_HEIGHT_DEFAULT );
 		resize( winsize );
 		setWindowState( Qt::WindowState::WindowNoState );
 		refreshWindowTitle();

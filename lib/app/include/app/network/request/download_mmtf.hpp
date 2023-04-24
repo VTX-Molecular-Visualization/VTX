@@ -1,11 +1,12 @@
 #ifndef __VTX_NETWORK_REQUEST_DOWNLOAD_MMTF__
 #define __VTX_NETWORK_REQUEST_DOWNLOAD_MMTF__
 
-#include "app/old_app/network/network_request.hpp"
+#include "app/core/network/network_request.hpp"
+#include <string>
 
 namespace VTX::Network::Request
 {
-	class DownloadMMTF : public NetworkRequest
+	class DownloadMMTF : public Core::Network::NetworkRequest
 	{
 		VTX_REQUEST
 
@@ -15,7 +16,7 @@ namespace VTX::Network::Request
 	  private:
 		std::string _id;
 
-		void _success( NetworkReply * const p_reply ) override;
+		void _success( Core::Network::NetworkReply * const p_reply ) override;
 	};
 } // namespace VTX::Network::Request
 #endif

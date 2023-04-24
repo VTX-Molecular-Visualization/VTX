@@ -1,11 +1,11 @@
-#include "app/old_app/network/network_manager.hpp"
+#include "app/core/network/network_manager.hpp"
 #include "app/action/main.hpp"
 #include "app/core/event/event_manager.hpp"
 #include <util/logger.hpp>
 // #include <QNetworkRequest>
 // #include <QSslSocket>
 
-namespace VTX::Network
+namespace VTX::Core::Network
 {
 	NetworkManager::NetworkManager()
 	{
@@ -65,4 +65,4 @@ namespace VTX::Network
 	//	// VTX_INFO( std::to_string( ( uint )( percent * 100 ) ) + "%" );
 	//}
 
-} // namespace VTX::Network
+} // namespace VTX::Core::Network

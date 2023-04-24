@@ -1,4 +1,4 @@
-#include "app/old_app/network/request/check_update.hpp"
+#include "app/network/request/check_update.hpp"
 #include "app/old_app/define.hpp"
 // #include "ui/dialog.hpp"
 #include <nlohmann/json.hpp>
@@ -12,7 +12,7 @@ namespace VTX::Network::Request
 		VTX_INFO( "Checking for update" );
 	}
 
-	void CheckUpdate::_success( NetworkReply * const p_reply )
+	void CheckUpdate::_success( Core::Network::NetworkReply * const p_reply )
 	{
 		try
 		{

@@ -9,7 +9,7 @@
 
 namespace VTX
 {
-	namespace Network
+	namespace Core::Network
 	{
 		// TODO reimplemente that without Qt
 		class NetworkManager // : public QObject
@@ -41,8 +41,11 @@ namespace VTX
 			// void _downloadProgress( const qint64, const qint64 );
 			void _finished();
 		};
-	} // namespace Network
+	} // namespace Core::Network
 
-	inline Network::NetworkManager & VTX_NETWORK_MANAGER() { return Network::NetworkManager::get(); }
+	inline VTX::Core::Network::NetworkManager & VTX_NETWORK_MANAGER()
+	{
+		return VTX::Core::Network::NetworkManager::get();
+	}
 } // namespace VTX
 #endif

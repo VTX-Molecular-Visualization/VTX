@@ -1,6 +1,6 @@
-#include "app/old_app/network/request/download_mmtf.hpp"
-#include "app/core/action/action_manager.hpp"
+#include "app/network/request/download_mmtf.hpp"
 #include "app/action/main.hpp"
+#include "app/core/action/action_manager.hpp"
 #include "app/old_app/define.hpp"
 
 namespace VTX::Network::Request
@@ -11,7 +11,7 @@ namespace VTX::Network::Request
 		VTX_INFO( "Downloading " + p_id + "..." );
 	}
 
-	void DownloadMMTF::_success( NetworkReply * const p_reply )
+	void DownloadMMTF::_success( Core::Network::NetworkReply * const p_reply )
 	{
 		VTX_INFO( "Downloaded" );
 		std::map<FilePath, std::string *> mapBuffers = std::map<FilePath, std::string *>();

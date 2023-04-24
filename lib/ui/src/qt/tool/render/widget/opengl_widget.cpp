@@ -1,4 +1,5 @@
 #include "ui/qt/tool/render/widget/opengl_widget.hpp"
+#include "ui/old_ui/style.hpp"
 #include "ui/qt/dialog.hpp"
 #include "ui/qt/tool/render/dialog.hpp"
 #include <QMainWindow>
@@ -176,8 +177,8 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		if ( needInit )
 		{
 			const float pixelRatio = getScreenPixelRatio();
-			getRenderer().init( Style::WINDOW_WIDTH_DEFAULT * pixelRatio,
-								Style::WINDOW_HEIGHT_DEFAULT * pixelRatio,
+			getRenderer().init( UI::Style::WINDOW_WIDTH_DEFAULT * pixelRatio,
+								UI::Style::WINDOW_HEIGHT_DEFAULT * pixelRatio,
 								defaultFramebufferObject() );
 		}
 	}
