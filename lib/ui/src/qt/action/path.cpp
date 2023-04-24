@@ -8,7 +8,7 @@ namespace VTX::UI::QT::Action::Path
 	void Play::execute() { QT_APP()->goToState( ID::UI_NEW::State::PLAY, _path ); };
 
 	/*
-	class ExportVideo : public BaseAction
+	class ExportVideo : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ExportVideo( Model::Path * const p_path, Worker::Snapshoter::MODE p_mode ) :

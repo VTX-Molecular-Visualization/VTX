@@ -3,8 +3,8 @@
 #include "ui/qt/state/state_machine.hpp"
 #include "ui/qt/state/visualization.hpp"
 #include "ui/qt/tool/session/dialog.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/main.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/main.hpp>
 #include <app/old_app/id.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
 #include <app/old_app/object3d/scene.hpp>

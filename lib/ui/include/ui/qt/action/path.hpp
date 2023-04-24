@@ -1,12 +1,12 @@
 #ifndef __VTX_UI_QT_ACTION_PATH__
 #define __VTX_UI_QT_ACTION_PATH__
 
-#include <app/old_app/action/base_action.hpp>
+#include <app/core/action/base_action.hpp>
 #include <app/old_app/model/path.hpp>
 
 namespace VTX::UI::QT::Action::Path
 {
-	class Play : public VTX::Action::BaseAction
+	class Play : public VTX::Core::Action::BaseAction
 	{
 	  public:
 		explicit Play( Model::Path * const p_path ) : _path( p_path ) {}
@@ -17,7 +17,7 @@ namespace VTX::UI::QT::Action::Path
 	};
 
 	/*
-	class ExportVideo : public BaseAction
+	class ExportVideo : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ExportVideo( Model::Path * const p_path, Worker::Snapshoter::MODE p_mode ) :

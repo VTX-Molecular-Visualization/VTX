@@ -1,10 +1,10 @@
 #ifndef __VTX_WORKER_MANAGER__
 #define __VTX_WORKER_MANAGER__
 
-#include "base_thread.hpp"
-#include "base_worker.hpp"
 #include "app/old_app/event/event_manager.hpp"
 #include "app/old_app/generic/base_updatable.hpp"
+#include "base_thread.hpp"
+#include "base_worker.hpp"
 // #include <QMetaType>
 //  #include <QThreadPool>
 #include <string>
@@ -45,6 +45,10 @@ namespace VTX
 				// connect( p_worker, &Worker::BaseThread::finished, p_worker, &QObject::deleteLater );
 				VTX_DEBUG( "Starting thread" );
 				// p_worker->start();
+
+				// Simulate Thread run (temp since QThread not reconnected)
+				p_worker->start();
+				_resultReady( p_worker, 1 );
 			}
 
 			void run( BaseWorker * p_worker, CallbackWorker * const p_callback = nullptr )
@@ -84,28 +88,28 @@ namespace VTX
 			std::map<BaseThread *, CallbackThread *> _workers = std::map<BaseThread *, CallbackThread *>();
 
 			// private slots:
-			// void _resultReady( BaseThread * p_worker, const uint p_returnCode )
-			//{
-			//	VTX_DEBUG( "Thread finished: " + std::to_string( p_returnCode ) );
+			void _resultReady( BaseThread * p_worker, const uint p_returnCode )
+			{
+				VTX_DEBUG( "Thread finished: " + std::to_string( p_returnCode ) );
 
-			//	assert( p_worker != nullptr );
+				assert( p_worker != nullptr );
 
-			//	// Call callback and delete all.
-			//	if ( _workers.find( p_worker ) != _workers.end() )
-			//	{
-			//		CallbackThread * const callback = _workers[ p_worker ];
+				// Call callback and delete all.
+				if ( _workers.find( p_worker ) != _workers.end() )
+				{
+					CallbackThread * const callback = _workers[ p_worker ];
 
-			//		_workers.erase( _workers.find( p_worker ) );
+					_workers.erase( _workers.find( p_worker ) );
 
-			//		if ( callback != nullptr )
-			//		{
-			//			( *callback )( p_returnCode );
-			//			delete callback;
-			//		}
-			//	}
+					if ( callback != nullptr )
+					{
+						( *callback )( p_returnCode );
+						delete callback;
+					}
+				}
 
-			//	delete p_worker;
-			//}
+				delete p_worker;
+			}
 
 			// void _updateProgress( BaseThread * p_worker, const uint p_progress )
 			//{

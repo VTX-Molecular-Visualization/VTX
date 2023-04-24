@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_ACTION_MAIN__
 #define __VTX_UI_ACTION_MAIN__
 
-#include <app/old_app/action/base_action.hpp>
+#include <app/core/action/base_action.hpp>
 #include <app/old_app/event/event.hpp>
 #include <app/old_app/event/event_manager.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
@@ -17,7 +17,7 @@
 
 namespace VTX::Action::Main
 {
-	class ChangeSelectionGranularity : public BaseAction
+	class ChangeSelectionGranularity : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeSelectionGranularity( const VTX::Selection::Granularity & p_granularity ) :
@@ -30,7 +30,7 @@ namespace VTX::Action::Main
 	  private:
 		const VTX::Selection::Granularity _granularity;
 	};
-	class ChangePicker : public BaseAction
+	class ChangePicker : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangePicker( const ID::VTX_ID & p_pickerController, const int p_mode = -1 ) :
@@ -45,7 +45,7 @@ namespace VTX::Action::Main
 		const int		   _mode;
 	};
 
-	class ClearConsoleInterface : public BaseAction
+	class ClearConsoleInterface : public Core::Action::BaseAction
 	{
 	  public:
 		explicit ClearConsoleInterface() {}

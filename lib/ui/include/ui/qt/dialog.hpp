@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <exception>
-#include <app/old_app/action/base_action.hpp>
+#include <app/core/action/base_action.hpp>
 
 namespace VTX
 {
@@ -15,7 +15,7 @@ namespace VTX
 	namespace UI::QT::Dialog
 	{
 		void openInformationDialog( const QString & p_title, const QString & p_message );
-		void confirmActionDialog( VTX::Action::BaseAction * const p_action,
+		void confirmActionDialog( VTX::Core::Action::BaseAction * const p_action,
 								  const QString &				  p_title,
 								  const QString &				  p_message );
 

@@ -2,13 +2,13 @@
 #define __VTX_UI_ACTION_SETTING__
 
 #include "ui/core/base_main_window.hpp"
-#include <app/old_app/action/base_action.hpp>
+#include <app/core/action/base_action.hpp>
 #include <app/old_app/renderer/base_renderer.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::Action::Setting
 {
-	class WindowMode : public VTX::Action::BaseAction
+	class WindowMode : public VTX::Core::Action::BaseAction
 	{
 	  public:
 		explicit WindowMode( const Core::WindowMode & p_windowMode ) : _windowMode( p_windowMode ) {}
@@ -18,7 +18,7 @@ namespace VTX::UI::Action::Setting
 		const Core::WindowMode _windowMode;
 	};
 
-	class ChangeShading : public VTX::Action::BaseAction
+	class ChangeShading : public VTX::Core::Action::BaseAction
 	{
 	  public:
 		ChangeShading( const VTX::Renderer::SHADING p_shading ) : _shading( p_shading ) {}
@@ -31,7 +31,7 @@ namespace VTX::UI::Action::Setting
 		const VTX::Renderer::SHADING _shading;
 	};
 
-	class ActiveAO : public VTX::Action::BaseAction
+	class ActiveAO : public VTX::Core::Action::BaseAction
 	{
 	  public:
 		explicit ActiveAO( const bool p_active ) : _active( p_active ) {}
@@ -42,7 +42,7 @@ namespace VTX::UI::Action::Setting
 		const bool _active;
 	};
 
-	class ActiveOutline : public VTX::Action::BaseAction
+	class ActiveOutline : public VTX::Core::Action::BaseAction
 	{
 	  public:
 		explicit ActiveOutline( const bool p_active ) : _active( p_active ) {}
@@ -53,7 +53,7 @@ namespace VTX::UI::Action::Setting
 		const bool _active;
 	};
 
-	class ActiveFog : public VTX::Action::BaseAction
+	class ActiveFog : public VTX::Core::Action::BaseAction
 	{
 	  public:
 		explicit ActiveFog( const bool p_active ) : _active( p_active ) {}
@@ -64,7 +64,7 @@ namespace VTX::UI::Action::Setting
 		const bool _active;
 	};
 
-	class ActiveAA : public VTX::Action::BaseAction
+	class ActiveAA : public VTX::Core::Action::BaseAction
 	{
 	  public:
 		explicit ActiveAA( const bool p_active ) : _active( p_active ) {}
@@ -75,7 +75,7 @@ namespace VTX::UI::Action::Setting
 		const bool _active;
 	};
 
-	class ApplyAllSettings : public VTX::Action::BaseAction
+	class ApplyAllSettings : public VTX::Core::Action::BaseAction
 	{
 	  public:
 		ApplyAllSettings( VTX::Setting & p_setting ) : _setting( p_setting ) {}

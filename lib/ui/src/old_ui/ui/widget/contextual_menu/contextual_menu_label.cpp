@@ -6,8 +6,8 @@
 // #include "ui/old_ui/view/ui/widget/measurement/distance_scene_view.hpp"
 // #include "ui/old_ui/view/ui/widget/measurement/distance_to_cycle_scene_view.hpp"
 #include "ui/qt/action/label.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/label.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/label.hpp>
 #include <app/old_app/model/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu

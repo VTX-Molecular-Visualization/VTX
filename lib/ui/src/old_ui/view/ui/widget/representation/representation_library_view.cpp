@@ -3,8 +3,8 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/representation.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/representation.hpp>
 #include <app/old_app/id.hpp>
 #include <app/old_app/model/representation/representation.hpp>
 

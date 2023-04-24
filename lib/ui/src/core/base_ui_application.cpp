@@ -1,8 +1,8 @@
 #include "ui/core/base_ui_application.hpp"
 #include "ui/core/io/vtx_layout_reader.hpp"
 #include "ui/core/layout_builder.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/main.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/main.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <util/logger.hpp>
@@ -52,29 +52,6 @@ namespace VTX::UI::Core
 
 	void BaseUIApplication::quit() {};
 
-	void BaseUIApplication::_handleArgs( const std::vector<std::string> & p_args )
-	{
-		std::vector<FilePath>	 files	= std::vector<FilePath>();
-		std::vector<std::string> pdbIds = std::vector<std::string>();
-
-		for ( const std::string & arg : p_args )
-		{
-			if ( arg.find( "." ) != std::string::npos )
-			{
-				files.emplace_back( FilePath( arg ) );
-			}
-			else
-			{
-				pdbIds.emplace_back( arg );
-			}
-		}
-
-		VTX_ACTION( new Action::Main::Open( files ) );
-
-		for ( const std::string & pdbId : pdbIds )
-		{
-			VTX_ACTION( new Action::Main::OpenApi( pdbId ) );
-		}
-	}
+	void BaseUIApplication::_handleArgs( const std::vector<std::string> & p_args ) {}
 
 } // namespace VTX::UI::Core

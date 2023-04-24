@@ -1,12 +1,12 @@
 #ifndef __VTX_UI_QT_ACTION_CATEGORY__
 #define __VTX_UI_QT_ACTION_CATEGORY__
 
-#include <app/old_app/action/base_action.hpp>
+#include <app/core/action/base_action.hpp>
 #include <app/old_app/model/category.hpp>
 
 namespace VTX::UI::QT::Action::Category
 {
-	class Orient : public VTX::Action::BaseAction
+	class Orient : public VTX::Core::Action::BaseAction
 	{
 	  public:
 		explicit Orient( const Model::Category & p_category ) : _category( p_category ) {}

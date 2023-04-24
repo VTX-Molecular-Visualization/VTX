@@ -1,8 +1,8 @@
 #include "tool/old_tool/ui/widget/main_menu/tool/menu_tool_measurement_widget.hpp"
 #include "tool/old_tool/action/measurement.hpp"
 #include "tool/old_tool/controller/measurement_picker.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/main.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/main.hpp>
 #include <app/old_app/id.hpp>
 #include <app/old_app/model/atom.hpp>
 #include <ui/old_ui/action/main.hpp>

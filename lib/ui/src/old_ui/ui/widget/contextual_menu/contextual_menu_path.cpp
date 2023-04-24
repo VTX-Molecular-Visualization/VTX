@@ -2,9 +2,9 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/view/ui/widget/path_scene_view.hpp"
 #include "ui/qt/action/viewpoint.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/path.hpp>
-#include <app/old_app/action/viewpoint.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/path.hpp>
+#include <app/action/viewpoint.hpp>
 #include <app/old_app/model/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu

@@ -11,9 +11,9 @@
 #include <QMenu>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/scene.hpp>
-#include <app/old_app/action/setting.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/scene.hpp>
+#include <app/action/setting.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
 #include <app/old_app/model/molecule.hpp>
 #include <app/old_app/model/path.hpp>

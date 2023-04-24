@@ -6,9 +6,9 @@
 #include "ui/old_ui/util/ui.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QLabel>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/main.hpp>
-#include <app/old_app/action/setting.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/main.hpp>
+#include <app/action/setting.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
 #include <app/old_app/setting.hpp>
 #include <app/old_app/trajectory/trajectory_enum.hpp>

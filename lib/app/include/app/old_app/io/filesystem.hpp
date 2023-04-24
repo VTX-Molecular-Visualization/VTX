@@ -118,27 +118,27 @@ namespace VTX::IO::Filesystem
 	{
 		const FilePath extension = p_path.extension();
 
-		if ( extension == "vtx" )
+		if ( extension == ".vtx" )
 		{
 			return FILE_TYPE_ENUM::SCENE;
 		}
-		else if ( extension == "prm" || extension == "psf" )
+		else if ( extension == ".prm" || extension == ".psf" )
 		{
 			return FILE_TYPE_ENUM::CONFIGURATION;
 		}
-		else if ( extension == "cif" || extension == "cml" || extension == "cssr" || extension == "gro"
-				  || extension == "mmcif" || extension == "mmtf" || extension == "mol2" || extension == "molden"
-				  || extension == "pdb" || extension == "sdf" || extension == "smi" || extension == "mmtf"
-				  || extension == "xyz" )
+		else if ( extension == ".cif" || extension == ".cml" || extension == ".cssr" || extension == ".gro"
+				  || extension == ".mmcif" || extension == ".mmtf" || extension == ".mol2" || extension == ".molden"
+				  || extension == ".pdb" || extension == ".sdf" || extension == ".smi" || extension == ".mmtf"
+				  || extension == ".xyz" )
 		{
 			return FILE_TYPE_ENUM::MOLECULE;
 		}
-		else if ( extension == "obj" )
+		else if ( extension == ".obj" )
 		{
 			return FILE_TYPE_ENUM::MESH;
 		}
-		else if ( extension == "nc" || extension == "dcd" || extension == "lammpstrj" || extension == "arc"
-				  || extension == "trr" || extension == "xtc" || extension == "tng" || extension == "trj" )
+		else if ( extension == ".nc" || extension == ".dcd" || extension == ".lammpstrj" || extension == ".arc"
+				  || extension == ".trr" || extension == ".xtc" || extension == ".tng" || extension == ".trj" )
 		{
 			return FILE_TYPE_ENUM::TRAJECTORY;
 		}

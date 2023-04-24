@@ -29,7 +29,7 @@ namespace VTX::UI::QT::Action::Viewpoint
 		_path( p_path ),
 		_rotation( p_camera.getRotation() ), _position( p_camera.getPosition() ), _controller( p_controller->getID() )
 	{
-		_tag = VTX::Action::ACTION_TAG( _tag | VTX::Action::ACTION_TAG::MODIFY_SCENE );
+		_tag = VTX::Core::Action::ACTION_TAG( _tag | VTX::Core::Action::ACTION_TAG::MODIFY_SCENE );
 
 		const State::Visualization * const visualizationState
 			= QT_APP()->getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );

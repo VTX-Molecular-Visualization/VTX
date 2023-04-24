@@ -3,8 +3,8 @@
 #include "ui/old_ui/util/ui.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/molecule.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/molecule.hpp>
 #include <app/old_app/trajectory/trajectory_enum.hpp>
 
 namespace VTX::UI::Widget::CustomWidget

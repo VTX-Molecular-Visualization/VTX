@@ -8,8 +8,8 @@
 #include <QListWidget>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/main.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/main.hpp>
 #include <iostream>
 #include <util/logger.hpp>
 

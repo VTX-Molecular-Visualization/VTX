@@ -1,8 +1,8 @@
 #include "ui/old_ui/ui/widget/inspector/multiple_viewpoint_inspector_widget.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/viewpoint.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/viewpoint.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/viewpoint.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {

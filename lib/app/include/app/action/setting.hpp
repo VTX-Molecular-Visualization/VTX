@@ -1,0 +1,583 @@
+#ifndef __VTX_ACTION_SETTING__
+#define __VTX_ACTION_SETTING__
+
+#include "app/core/action/base_action.hpp"
+#include "app/old_app/color/rgba.hpp"
+#include "app/old_app/generic/base_colorable.hpp"
+#include "app/old_app/io/struct/image_export.hpp"
+#include "app/old_app/model/category_enum.hpp"
+#include "app/old_app/selection/selection_enum.hpp"
+#include "app/old_app/setting.hpp"
+#include "app/old_app/trajectory/trajectory_enum.hpp"
+#include <util/logger.hpp>
+
+namespace VTX::Action::Setting
+{
+	class Load : public Core::Action::BaseAction
+	{
+	  public:
+		explicit Load() {}
+		virtual void execute() override;
+	};
+
+	class Save : public Core::Action::BaseAction
+	{
+	  public:
+		explicit Save() {}
+		virtual void execute() override;
+	};
+
+	class ActiveRenderer : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ActiveRenderer( const bool p_active ) : _active( p_active ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const bool _active;
+	};
+
+	class ForceRenderer : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ForceRenderer( const bool p_force ) : _force( p_force ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const bool _force;
+	};
+
+	class ChangeBackgroundColor : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeBackgroundColor( const Color::Rgba & p_color ) : _color( p_color ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const Color::Rgba _color;
+	};
+
+	class ChangeSnapshotFormat : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeSnapshotFormat( const IO::Struct::ImageExport::Format p_format ) : _format( p_format ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const IO::Struct::ImageExport::Format _format;
+	};
+
+	class ChangeBackgroundOpacity : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeBackgroundOpacity( const float p_opacity ) : _opacity( p_opacity ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _opacity;
+	};
+
+	class ChangeSnapshotQuality : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeSnapshotQuality( const float p_quality ) : _quality( p_quality ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _quality;
+	};
+
+	class ChangeSnapshotResolution : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeSnapshotResolution( const IO::Struct::ImageExport::RESOLUTION & p_resolution ) :
+			_resolution( p_resolution )
+		{
+		}
+
+		virtual void execute() override;
+
+	  private:
+		const IO::Struct::ImageExport::RESOLUTION _resolution;
+	};
+
+	class ChangeDefaultRepresentation : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeDefaultRepresentation( const int p_representationIndex ) :
+			_representationIndex( p_representationIndex )
+		{
+		}
+
+		virtual void execute() override;
+
+		virtual void displayUsage() override { VTX_INFO( "BALL_AND_STICK|VAN_DER_WAALS|STICK|SAS" ); }
+
+	  private:
+		const int _representationIndex;
+	};
+
+	class ChangeDefaultRenderEffectPreset : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeDefaultRenderEffectPreset( const int p_renderEffectPresetIndex ) :
+			_renderEffectPresetIndex( p_renderEffectPresetIndex )
+		{
+		}
+
+		virtual void execute() override;
+
+		virtual void displayUsage() override { VTX_INFO( "BALL_AND_STICK|VAN_DER_WAALS|STICK|SAS" ); }
+
+	  private:
+		const int _renderEffectPresetIndex;
+	};
+
+	class ChangeColorMode : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeColorMode( const Generic::COLOR_MODE p_mode ) : _mode( p_mode ) {}
+
+		virtual void execute() override;
+
+		virtual void displayUsage() override { VTX_INFO( "ATOM|RESIDUE|CHAIN|PROTEIN" ); }
+
+	  private:
+		const Generic::COLOR_MODE _mode;
+	};
+
+	class ChangeShading : public Core::Action::BaseAction
+	{
+	  public:
+		ChangeShading( const VTX::Renderer::SHADING p_shading ) : _shading( p_shading ) {}
+
+		virtual void execute() override;
+
+		virtual void displayUsage() override { VTX_INFO( "DIFFUSE|GLOSSY|TOON|FLAT_COLOR" ); }
+
+	  private:
+		const VTX::Renderer::SHADING _shading;
+	};
+
+	class ActiveVerticalSync : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ActiveVerticalSync( const bool p_active ) : _active( p_active ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const bool _active;
+	};
+
+	class ActiveAO : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ActiveAO( const bool p_active ) : _active( p_active ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const bool _active;
+	};
+
+	class ChangeAOIntensity : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeAOIntensity( const int p_intensity ) : _intensity( p_intensity ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const int _intensity;
+	};
+
+	class ChangeAOBlurSize : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeAOBlurSize( const int p_blurSize ) : _blurSize( p_blurSize ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const int _blurSize;
+	};
+
+	class ActiveOutline : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ActiveOutline( const bool p_active ) : _active( p_active ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const bool _active;
+	};
+
+	class ChangeOutlineColor : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeOutlineColor( const Color::Rgba & p_color ) : _color( p_color ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const Color::Rgba _color;
+	};
+
+	class ChangeOutlineThickness : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeOutlineThickness( const uint p_thickness ) : _thickness( p_thickness ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const uint _thickness;
+	};
+
+	class ChangeOutlineSensivity : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeOutlineSensivity( const float p_sensivity ) : _sensivity( p_sensivity ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _sensivity;
+	};
+
+	class ActiveFog : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ActiveFog( const bool p_active ) : _active( p_active ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const bool _active;
+	};
+
+	class ChangeFogNear : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeFogNear( const float p_near ) : _near( p_near ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _near;
+	};
+
+	class ChangeFogFar : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeFogFar( const float p_far ) : _far( p_far ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _far;
+	};
+
+	class ChangeFogDensity : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeFogDensity( const float p_density ) : _density( p_density ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _density;
+	};
+
+	class ChangeFogColor : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeFogColor( const Color::Rgba & p_color ) : _color( p_color ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const Color::Rgba _color;
+	};
+
+	class ActiveAA : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ActiveAA( const bool p_active ) : _active( p_active ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const bool _active;
+	};
+
+	class ChangeLightColor : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeLightColor( const Color::Rgba & p_color ) : _color( p_color ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const Color::Rgba _color;
+	};
+
+	class ChangeCameraClip : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeCameraClip( const float p_near, const float p_far ) : _near( p_near ), _far( p_far ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _near;
+		const float _far;
+	};
+
+	class ChangeCameraFov : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeCameraFov( const float p_fov ) : _fov( p_fov ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _fov;
+	};
+
+	class ChangeCameraProjectionToPerspective : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeCameraProjectionToPerspective( const bool p_perspective ) : _perspective( p_perspective ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const bool _perspective;
+	};
+
+	class ChangeTranslationSpeed : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeTranslationSpeed( const float p_speed ) : _speed( p_speed ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _speed;
+	};
+
+	class ChangeAccelerationFactorSpeed : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeAccelerationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _factor;
+	};
+
+	class ChangeDecelerationFactorSpeed : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeDecelerationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _factor;
+	};
+
+	class ChangeRotationSpeed : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeRotationSpeed( const float p_speed ) : _speed( p_speed ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _speed;
+	};
+
+	class ActiveYAxisInversion : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ActiveYAxisInversion( const bool p_active ) : _active( p_active ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const bool _active;
+	};
+
+	class ActiveControllerElasticity : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ActiveControllerElasticity( const bool p_active ) : _active( p_active ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const bool _active;
+	};
+
+	class ChangeControllerElasticity : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeControllerElasticity( const float p_elasticity ) : _elasticity( p_elasticity ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const float _elasticity;
+	};
+
+	class ChangeDefaultTrajectorySpeed : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeDefaultTrajectorySpeed( const int p_speed ) : _speed( p_speed ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const int _speed;
+	};
+
+	class ChangeDefaultTrajectoryPlayMode : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_playMode ) : _playMode( p_playMode ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const Trajectory::PlayMode _playMode;
+	};
+
+	class ChangeSymbolDisplayMode : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE & p_displayMode ) :
+			_displayMode( p_displayMode )
+		{
+		}
+
+		virtual void execute() override;
+
+	  private:
+		const Style::SYMBOL_DISPLAY_MODE _displayMode;
+	};
+
+	class ChangeCheckVTXUpdateAtLaunch : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeCheckVTXUpdateAtLaunch( const bool p_checkVtxUpdateAtLaunch ) :
+			_checkVTXUpdateAtLaunch( p_checkVtxUpdateAtLaunch )
+		{
+		}
+
+		virtual void execute() override;
+
+	  private:
+		const bool _checkVTXUpdateAtLaunch;
+	};
+
+	class ActivatePortableSave : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ActivatePortableSave( const bool p_activate ) : _activate( p_activate ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const bool _activate;
+	};
+
+	class ChangeRenderMode : public Core::Action::BaseAction
+	{
+	  public:
+		ChangeRenderMode( const VTX::Renderer::MODE p_mode ) : _mode( p_mode ) {}
+
+		virtual void execute() override;
+
+	  private:
+		const VTX::Renderer::MODE _mode;
+	};
+
+	class ChangeSelectionGranularity : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeSelectionGranularity( const VTX::Selection::Granularity & p_granularity ) :
+			_granularity( p_granularity )
+		{
+		}
+
+		virtual void execute() override;
+
+	  private:
+		const VTX::Selection::Granularity _granularity;
+	};
+
+	class ChangeDefaultRepresentationPerCategory : public Core::Action::BaseAction
+	{
+	  public:
+		explicit ChangeDefaultRepresentationPerCategory( const CATEGORY_ENUM & p_categoryEnum,
+														 const int			   p_representationIndex ) :
+			_categoryEnum( p_categoryEnum ),
+			_representationIndex( p_representationIndex )
+		{
+		}
+
+		virtual void execute() override;
+
+	  private:
+		const CATEGORY_ENUM _categoryEnum;
+		const int			_representationIndex;
+	};
+
+	class ApplyAllSettings : public Core::Action::BaseAction
+	{
+	  public:
+		ApplyAllSettings( VTX::Setting & p_setting ) : _setting( p_setting ) {}
+
+		virtual void execute() override;
+
+	  private:
+		VTX::Setting _setting;
+	};
+
+	class ReloadSetting : public Core::Action::BaseAction
+	{
+	  public:
+		ReloadSetting() {}
+
+		virtual void execute() override;
+	};
+
+	class RestoreSetting : public Core::Action::BaseAction
+	{
+	  public:
+		RestoreSetting() {}
+
+		virtual void execute() override;
+	};
+
+	class RestoreDefaultRepresentationPerCategory : public Core::Action::BaseAction
+	{
+	  public:
+		explicit RestoreDefaultRepresentationPerCategory() {}
+
+		virtual void execute() override;
+	};
+} // namespace VTX::Action::Setting
+
+#endif

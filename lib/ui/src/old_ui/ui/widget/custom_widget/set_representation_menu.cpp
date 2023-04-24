@@ -1,7 +1,7 @@
 #include "ui/old_ui/ui/widget/custom_widget/set_representation_menu.hpp"
 #include "ui/old_ui/ui/widget/custom_widget/indexed_action.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/molecule.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/molecule.hpp>
 #include <app/old_app/model/representation/representation.hpp>
 #include <app/old_app/model/representation/representation_library.hpp>
 

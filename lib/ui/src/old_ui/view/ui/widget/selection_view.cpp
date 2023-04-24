@@ -7,14 +7,17 @@
 #include "ui/qt/action/residue.hpp"
 #include "ui/qt/action/selection.hpp"
 #include <QHeaderView>
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/atom.hpp>
-#include <app/old_app/action/chain.hpp>
-#include <app/old_app/action/molecule.hpp>
-#include <app/old_app/action/residue.hpp>
-#include <app/old_app/action/selection.hpp>
+#include <app/action/atom.hpp>
+#include <app/action/chain.hpp>
+#include <app/action/molecule.hpp>
+#include <app/action/residue.hpp>
+#include <app/action/selection.hpp>
+#include <app/core/action/action_manager.hpp>
 #include <app/old_app/id.hpp>
+#include <app/old_app/model/selection.hpp>
 #include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/old_app/selection/selection_manager.hpp>
+#include <util/chrono.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::View::UI::Widget

@@ -10,12 +10,12 @@
 #include "ui/qt/action/selection.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 #include <QTimer>
-#include <app/old_app/action/action_manager.hpp>
+#include <app/core/action/action_manager.hpp>
 // #include <tool/old_tool/action/analysis.hpp>
-#include <app/old_app/action/label.hpp>
-#include <app/old_app/action/selection.hpp>
-#include <app/old_app/action/viewpoint.hpp>
-#include <app/old_app/action/visible.hpp>
+#include <app/action/label.hpp>
+#include <app/action/selection.hpp>
+#include <app/action/viewpoint.hpp>
+#include <app/action/visible.hpp>
 #include <app/old_app/model/generated_molecule.hpp>
 #include <app/old_app/model/representation/representation_library.hpp>
 #include <string>

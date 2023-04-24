@@ -1,8 +1,8 @@
 #include "ui/qt/dialog.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/main_window.hpp"
-// #include <app/old_app/action/action_manager.hpp>
-// #include <app/old_app/action/main.hpp>
+// #include <app/core/action/action_manager.hpp>
+// #include <app/action/main.hpp>
 #include <util/logger.hpp>
 // #include <app/old_app/io/struct/image_export.hpp>
 // #include <app/old_app/io/struct/scene_path_data.hpp>

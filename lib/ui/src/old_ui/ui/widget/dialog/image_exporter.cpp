@@ -5,7 +5,7 @@
 #include "ui/old_ui/vtx_app.hpp"
 #include <QFileDialog>
 #include <QPushButton>
-#include <app/old_app/action/main.hpp>
+#include <app/action/main.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
 #include <app/old_app/setting.hpp>
 #include <app/old_app/spec.hpp>

@@ -4,8 +4,8 @@
 #include "ui/qt/tool/keys.hpp"
 #include "ui/qt/tool/scene/widget/scene_item_widget.hpp"
 #include "ui/qt/tool/scene/widget/scene_widget.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/selection.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/selection.hpp>
 #include <app/old_app/model/path.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 

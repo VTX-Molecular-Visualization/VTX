@@ -2,10 +2,10 @@
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include "ui/qt/action/viewpoint.hpp"
-#include <app/old_app/action/action_manager.hpp>
-#include <app/old_app/action/main.hpp>
-#include <app/old_app/action/scene.hpp>
-#include <app/old_app/action/viewpoint.hpp>
+#include <app/core/action/action_manager.hpp>
+#include <app/action/main.hpp>
+#include <app/action/scene.hpp>
+#include <app/action/viewpoint.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
