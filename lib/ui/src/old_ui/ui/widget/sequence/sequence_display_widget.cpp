@@ -5,7 +5,7 @@
 #include "ui/qt/action/residue.hpp"
 #include <QPainter>
 #include <QRectF>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/residue.hpp>
 #include <app/model/chain.hpp>
 #include <app/model/molecule.hpp>

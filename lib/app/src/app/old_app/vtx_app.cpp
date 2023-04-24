@@ -1,10 +1,10 @@
 #include "app/old_app/vtx_app.hpp"
 #include "app/action/main.hpp"
 #include "app/action/setting.hpp"
-#include "app/core/action/action_manager.hpp"
 #include "app/core/event/event_manager.hpp"
 #include "app/core/mvc/mvc_manager.hpp"
 #include "app/event/vtx_event.hpp"
+#include "app/manager/action_manager.hpp"
 #include "app/model/renderer/render_effect_preset.hpp"
 #include "app/model/renderer/render_effect_preset_library.hpp"
 #include "app/model/representation/representation_library.hpp"
@@ -35,12 +35,12 @@ namespace VTX
 		VTX_INFO( "Starting application: {}", IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 
 		// Load settings.
-		VTX_ACTION( new Action::Setting::Load() );
+		VTX_ACTION<App::Action::Setting::Load>();
 		_setting.loadRecentPaths();
 
 		// Create singletons.
 		VTX::Core::MVC::MvcManager::get();
-		Core::Action::ActionManager::get();
+		App::Manager::ActionManager::get();
 		Core::Event::EventManager::get();
 		Selection::SelectionManager::get();
 		Core::Worker::WorkerManager::get();
@@ -66,10 +66,10 @@ namespace VTX
 		if ( p_args.size() == 0 )
 		{
 			// VTX_ACTION(
-			//	 new Action::Main::Open( IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
-			// VTX_ACTION( new Action::Main::OpenApi( "1aon" ) );
-			// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
-			// VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
+			//	 new App::Action::Main::Open( IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
+			// VTX_ACTION( new App::Action::Main::OpenApi( "1aon" ) );
+			// VTX_ACTION( new App::Action::Main::OpenApi( "4hhb" ) );
+			// VTX_ACTION( new App::Action::Main::OpenApi( "1aga" ) );
 		}
 #endif
 	}
@@ -108,12 +108,12 @@ namespace VTX
 
 		if ( files.size() > 0 )
 		{
-			VTX_ACTION( new Action::Main::Open( files ) );
+			VTX_ACTION<App::Action::Main::Open>( files );
 		}
 
 		for ( const std::string & pdbId : pdbIds )
 		{
-			VTX_ACTION( new Action::Main::OpenApi( pdbId ) );
+			VTX_ACTION<App::Action::Main::OpenApi>( pdbId );
 		}
 	}
 

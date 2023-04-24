@@ -9,14 +9,14 @@
 #include "ui/old_ui/util/ui.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include "ui/qt/action/main.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/main.hpp>
 #include <app/action/renderer.hpp>
 #include <app/action/scene.hpp>
 #include <app/action/setting.hpp>
 #include <app/action/viewpoint.hpp>
-#include <app/old_app/io/filesystem.hpp>
+
 #include <app/model/renderer/render_effect_preset_library.hpp>
+#include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/setting.hpp>
 #include <app/worker/snapshoter.hpp>
@@ -264,7 +264,10 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuRender::_loadMoleculeAction() const { UI::Dialog::openLoadMoleculeDialog(); }
 	void ContextualMenuRender::_downloadMoleculeAction() const { UI::Dialog::openDownloadMoleculeDialog(); }
-	void ContextualMenuRender::_showAllMoleculesAction() const { VTX_ACTION( new Action::Scene::ShowAllMolecules() ); }
+	void ContextualMenuRender::_showAllMoleculesAction() const
+	{
+		VTX_ACTION( new App::Action::Scene::ShowAllMolecules() );
+	}
 	void ContextualMenuRender::_resetCameraAction() const
 	{
 		VTX_ACTION( new QT::Action::Main::ResetCameraController() );
@@ -291,7 +294,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		// const Controller::MeasurementPicker::Mode mode
 		//	= Controller::MeasurementPicker::Mode( p_action->data().toInt() );
-		// VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( mode ) ) );
+		// VTX_ACTION( new App::Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( mode ) ) );
 	}
 	void ContextualMenuRender::_changeProjectionAction( QAction * const p_action )
 	{
@@ -299,13 +302,13 @@ namespace VTX::UI::Widget::ContextualMenu
 			= Settings::VTXSettings::CameraProjection( p_action->data().toInt() );
 
 		const bool changeToPerspective = projection == Settings::VTXSettings::CameraProjection::PERSPECTIVE;
-		VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
+		VTX_ACTION( new App::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 	void ContextualMenuRender::_setBackgroundColorAction( QAction * const p_action )
 	{
 		const Renderer::DEFAULT_BACKGROUND background = Renderer::DEFAULT_BACKGROUND( p_action->data().toInt() );
 
-		VTX_ACTION( new Action::Renderer::ChangeBackgroundColor(
+		VTX_ACTION( new App::Action::Renderer::ChangeBackgroundColor(
 			VTX_RENDER_EFFECT(), Renderer::DEFAULT_BACKGROUND_COLORS[ int( background ) ] ) );
 	}
 	void ContextualMenuRender::_setOverlayVisibilityAction( QAction * const p_action )
@@ -341,15 +344,15 @@ namespace VTX::UI::Widget::ContextualMenu
 		{
 			Model::Renderer::RenderEffectPreset * const preset
 				= Model::Renderer::RenderEffectPresetLibrary::get().getPreset( presetIndex );
-			VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *preset ) );
+			VTX_ACTION( new App::Action::Renderer::ApplyRenderEffectPreset( *preset ) );
 		}
 	}
 	void ContextualMenuRender::_takeSnapshotAction()
 	{
-		VTX_ACTION(
-			new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-										IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
-										VTX_SETTING().getSnapshotResolution() ) );
+		VTX_ACTION( new App::Action::Main::Snapshot(
+			Worker::Snapshoter::MODE::GL,
+			IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
+			VTX_SETTING().getSnapshotResolution() ) );
 	}
 	void ContextualMenuRender::_exportImageAction() { Dialog::openAdvancedSettingImageExportDialog(); }
 

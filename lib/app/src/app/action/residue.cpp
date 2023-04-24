@@ -1,11 +1,11 @@
 #include "app/action/residue.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/model/generated_molecule.hpp"
 #include "app/model/molecule.hpp"
 #include "app/model/representation/representation.hpp"
 #include "app/model/representation/representation_library.hpp"
 #include "app/model/residue.hpp"
 #include "app/model/selection.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
@@ -15,7 +15,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace VTX::Action::Residue
+namespace VTX::App::Action::Residue
 {
 	void ChangeColor::execute()
 	{
@@ -161,4 +161,4 @@ namespace VTX::Action::Residue
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
 
-} // namespace VTX::Action::Residue
+} // namespace VTX::App::Action::Residue

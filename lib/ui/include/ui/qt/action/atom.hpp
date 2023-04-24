@@ -6,7 +6,7 @@
 
 namespace VTX::UI::QT::Action::Atom
 {
-	class Orient : public VTX::Core::Action::BaseAction
+	class Orient : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Orient( const Model::Atom & p_atom ) : _atom( p_atom ) {}

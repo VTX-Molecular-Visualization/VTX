@@ -8,7 +8,7 @@
 #include "ui/old_ui/vtx_app.hpp"
 #include <QScrollBar>
 #include <algorithm>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/scene.hpp>
 #include <app/action/selection.hpp>
 #include <app/model/label.hpp>
@@ -413,7 +413,7 @@ namespace VTX::UI::Widget::Scene
 			Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 			if ( !selectionModel.isEmpty() )
 			{
-				VTX_ACTION( new Action::Selection::ClearSelection( selectionModel ) );
+				VTX_ACTION( new App::Action::Selection::ClearSelection( selectionModel ) );
 			}
 
 			p_event->accept();
@@ -512,6 +512,6 @@ namespace VTX::UI::Widget::Scene
 
 		p_event->acceptProposedAction();
 
-		VTX_ACTION( new Action::Scene::ChangeItemIndex( droppedItems, newIndex ) );
+		VTX_ACTION( new App::Action::Scene::ChangeItemIndex( droppedItems, newIndex ) );
 	}
 } // namespace VTX::UI::Widget::Scene

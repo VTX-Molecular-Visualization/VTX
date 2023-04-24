@@ -6,10 +6,10 @@
 #include "ui/qt/state/state_machine.hpp"
 #include "ui/qt/state/visualization.hpp"
 #include "ui/qt/tool/session/dialog.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/main.hpp>
 #include <app/action/scene.hpp>
 #include <app/action/setting.hpp>
+
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
@@ -147,7 +147,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	}
 	void ContextualMenuRender::_showAllMoleculesAction() const
 	{
-		VTX_ACTION( new VTX::Action::Scene::ShowAllMolecules() );
+		VTX_ACTION( new VTX::App::Action::Scene::ShowAllMolecules() );
 	}
 	void ContextualMenuRender::_resetCameraAction() const
 	{
@@ -167,14 +167,14 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	{
 		const VTX::Selection::Granularity granularity
 			= VTX::Selection::Granularity( p_action->property( SELECTION_GRANULARITY_PROPERTY_NAME ).toInt() );
-		VTX_ACTION( new VTX::Action::Setting::ChangeSelectionGranularity( granularity ) );
+		VTX_ACTION( new VTX::App::Action::Setting::ChangeSelectionGranularity( granularity ) );
 	}
 
 	// void ContextualMenuRender::_setMeasurementMode( QAction * p_action ) const
 	//{
 	//	const Controller::MeasurementPicker::Mode mode
 	//		= Controller::MeasurementPicker::Mode( p_action->property( MEASUREMENT_MODE_PROPERTY_NAME ).toInt() );
-	//	VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( mode ) ) );
+	//	VTX_ACTION( new App::Action::Main::ChangePicker( ID::Controller::MEASUREMENT, int( mode ) ) );
 	// }
 
 } // namespace VTX::UI::QT::Tool::Render::Widget

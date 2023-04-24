@@ -1,7 +1,7 @@
 #include "ui/old_ui/ui/widget/contextual_menu/contextual_menu_residue.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/residue.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/residue.hpp>
 #include <app/action/visible.hpp>
 #include <app/model/representation/representation.hpp>
@@ -49,26 +49,26 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuResidue::_orientAction() { VTX_ACTION( new QT::Action::Residue::Orient( *_target ) ); }
 	void ContextualMenuResidue::_showAction()
 	{
-		VTX_ACTION( new Action::Residue::ChangeVisibility( *_target,
-														   Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+		VTX_ACTION( new App::Action::Residue::ChangeVisibility( *_target,
+														   App::Action::VISIBILITY_MODE::ALL ) );
 	}
 	void ContextualMenuResidue::_hideAction()
 	{
-		VTX_ACTION( new Action::Residue::ChangeVisibility( *_target,
-														   Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+		VTX_ACTION( new App::Action::Residue::ChangeVisibility( *_target,
+														   App::Action::VISIBILITY_MODE::HIDE ) );
 	}
 	void ContextualMenuResidue::_soloAction()
 	{
-		VTX_ACTION( new Action::Residue::ChangeVisibility( *_target,
-														   Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+		VTX_ACTION( new App::Action::Residue::ChangeVisibility( *_target,
+														   App::Action::VISIBILITY_MODE::SOLO ) );
 	}
-	void ContextualMenuResidue::_copyAction() { VTX_ACTION( new Action::Residue::Copy( *_target ) ); }
-	void ContextualMenuResidue::_extractAction() { VTX_ACTION( new Action::Residue::Extract( *_target ) ); }
-	void ContextualMenuResidue::_deleteAction() { VTX_ACTION( new Action::Residue::Delete( *_target ) ); }
+	void ContextualMenuResidue::_copyAction() { VTX_ACTION( new App::Action::Residue::Copy( *_target ) ); }
+	void ContextualMenuResidue::_extractAction() { VTX_ACTION( new App::Action::Residue::Extract( *_target ) ); }
+	void ContextualMenuResidue::_deleteAction() { VTX_ACTION( new App::Action::Residue::Delete( *_target ) ); }
 
 	void ContextualMenuResidue::_applyRepresentationAction( const int p_representationIndex )
 	{
-		VTX_ACTION( new Action::Residue::ChangeRepresentationPreset( *_target, p_representationIndex ) );
+		VTX_ACTION( new App::Action::Residue::ChangeRepresentationPreset( *_target, p_representationIndex ) );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

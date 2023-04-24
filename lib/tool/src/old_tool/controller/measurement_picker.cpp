@@ -2,14 +2,14 @@
 #include "tool/old_tool/action/measurement.hpp"
 #include "tool/old_tool/model/measurement/measure_in_progress.hpp"
 #include <QPoint>
-#include <app/core/action/action_manager.hpp>
 #include <app/action/selection.hpp>
 #include <app/core/event/event_manager.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
+
 #include <app/model/atom.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/residue.hpp>
 #include <app/model/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <ui/old_ui/state/state_machine.hpp>
 #include <ui/old_ui/state/visualization.hpp>
@@ -23,7 +23,8 @@ namespace VTX::Controller
 {
 	MeasurementPicker::MeasurementPicker()
 	{
-		_currentMeasureModel = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Measurement::MeasureInProgress>();
+		_currentMeasureModel
+			= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Measurement::MeasureInProgress>();
 	}
 	MeasurementPicker::~MeasurementPicker() { VTX::Core::MVC::MvcManager::get().deleteModel( _currentMeasureModel ); }
 
@@ -99,8 +100,9 @@ namespace VTX::Controller
 				// If residue => select alpha carbon
 				if ( typeId == ID::Model::MODEL_RESIDUE )
 				{
-					const Model::Residue & residue = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( ids.x );
-					atomID						   = residue.getAlphaCarbon()->getId();
+					const Model::Residue & residue
+						= VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( ids.x );
+					atomID = residue.getAlphaCarbon()->getId();
 				}
 				else // => Atom
 				{

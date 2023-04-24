@@ -4,7 +4,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QPushButton>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/model/molecule.hpp>
 #include <app/old_app/object3d/scene.hpp>
@@ -176,11 +176,11 @@ namespace VTX::UI::Widget::Dialog
 		if ( _linkToMoleculeRadioButton->isChecked() )
 		{
 			const std::vector<Model::Molecule *> selectedMolecules = _moleculeListWidget->getTickedMolecules();
-			VTX_ACTION( new Action::Main::Open( _filepath, selectedMolecules ) );
+			VTX_ACTION( new App::Action::Main::Open( _filepath, selectedMolecules ) );
 		}
 		else if ( _createNewMoleculeRadioButton->isChecked() )
 		{
-			VTX_ACTION( new Action::Main::Open( _filepath ) );
+			VTX_ACTION( new App::Action::Main::Open( _filepath ) );
 		}
 
 		close();

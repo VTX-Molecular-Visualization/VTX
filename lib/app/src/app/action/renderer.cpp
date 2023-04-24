@@ -1,14 +1,14 @@
 #include "app/action/renderer.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/core/worker/worker_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker/render_effect_loader.hpp"
 #include "app/worker/render_effect_saver.hpp"
 
-namespace VTX::Action::Renderer
+namespace VTX::App::Action::Renderer
 {
 	void ReloadPresets::execute()
 	{
@@ -240,4 +240,4 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPresetLibrary::get().deletePreset( _presetIndex );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
-} // namespace VTX::Action::Renderer
+} // namespace VTX::App::Action::Renderer

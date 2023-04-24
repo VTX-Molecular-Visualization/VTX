@@ -1,8 +1,8 @@
 #include "app/action/molecule.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/model/generated_molecule.hpp"
 #include "app/model/representation/representation.hpp"
 #include "app/model/representation/representation_library.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/setting.hpp"
@@ -10,7 +10,7 @@
 #include "app/old_app/vtx_app.hpp"
 #include <util/math.hpp>
 
-namespace VTX::Action::Molecule
+namespace VTX::App::Action::Molecule
 {
 	void RefreshSolventExcludedSurface::execute()
 	{
@@ -204,4 +204,4 @@ namespace VTX::Action::Molecule
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
 
-} // namespace VTX::Action::Molecule
+} // namespace VTX::App::Action::Molecule

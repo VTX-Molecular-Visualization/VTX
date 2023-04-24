@@ -12,9 +12,9 @@
 #include "ui/old_ui/vtx_app.hpp"
 #include "ui/qt/action/main.hpp"
 #include <QLabel>
-#include <app/core/action/action_manager.hpp>
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
+
 #include <app/old_app/io/struct/image_export.hpp>
 #include <app/old_app/setting.hpp>
 #include <app/old_app/style.hpp>
@@ -350,7 +350,7 @@ namespace VTX::UI::Widget::Settings
 	{
 		_skipSettingEvents();
 		if ( VTX_SETTING().getControllerElasticityActive() != p_activate )
-			VTX_ACTION( new VTX::Action::Setting::ActiveControllerElasticity( p_activate ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ActiveControllerElasticity( p_activate ) );
 
 		_listenSettingEvents();
 	}
@@ -364,7 +364,7 @@ namespace VTX::UI::Widget::Settings
 					  * ( Setting::CONTROLLER_ELASTICITY_FACTOR_MAX - Setting::CONTROLLER_ELASTICITY_FACTOR_MIN ) );
 
 		if ( VTX_SETTING().getControllerElasticityFactor() != elasticityValue )
-			VTX_ACTION( new VTX::Action::Setting::ChangeControllerElasticity( elasticityValue ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeControllerElasticity( elasticityValue ) );
 
 		_listenSettingEvents();
 	}
@@ -373,7 +373,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( VTX_SETTING().getAccelerationSpeedFactor() != p_value )
-			VTX_ACTION( new VTX::Action::Setting::ChangeAccelerationFactorSpeed( p_value ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeAccelerationFactorSpeed( p_value ) );
 
 		_listenSettingEvents();
 	}
@@ -382,7 +382,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( VTX_SETTING().getDecelerationSpeedFactor() != p_value )
-			VTX_ACTION( new VTX::Action::Setting::ChangeDecelerationFactorSpeed( p_value ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeDecelerationFactorSpeed( p_value ) );
 
 		_listenSettingEvents();
 	}
@@ -391,7 +391,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( VTX_SETTING().getTranslationSpeed() != p_value )
-			VTX_ACTION( new VTX::Action::Setting::ChangeTranslationSpeed( p_value ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeTranslationSpeed( p_value ) );
 
 		_listenSettingEvents();
 	}
@@ -404,7 +404,7 @@ namespace VTX::UI::Widget::Settings
 			  + ( Setting::CONTROLLER_ROTATION_SPEED_MAX - Setting::CONTROLLER_ROTATION_SPEED_MIN ) * p_value;
 
 		if ( VTX_SETTING().getRotationSpeed() != rotationSpeed )
-			VTX_ACTION( new VTX::Action::Setting::ChangeRotationSpeed( rotationSpeed ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeRotationSpeed( rotationSpeed ) );
 
 		_listenSettingEvents();
 	}
@@ -413,7 +413,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( VTX_SETTING().getYAxisInverted() != p_invert )
-			VTX_ACTION( new VTX::Action::Setting::ActiveYAxisInversion( p_invert ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ActiveYAxisInversion( p_invert ) );
 
 		_listenSettingEvents();
 	}
@@ -423,7 +423,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( p_value != VTX_SETTING().getCameraFOV() )
-			VTX_ACTION( new VTX::Action::Setting::ChangeCameraFov( p_value ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeCameraFov( p_value ) );
 
 		_listenSettingEvents();
 	}
@@ -436,7 +436,7 @@ namespace VTX::UI::Widget::Settings
 			const float nearClip = p_value;
 			const float farClip	 = VTX_SETTING().getCameraFarClip();
 
-			VTX_ACTION( new VTX::Action::Setting::ChangeCameraClip( nearClip, farClip ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeCameraClip( nearClip, farClip ) );
 		}
 
 		_listenSettingEvents();
@@ -450,7 +450,7 @@ namespace VTX::UI::Widget::Settings
 			const float nearClip = VTX_SETTING().getCameraNearClip();
 			const float farClip	 = p_value;
 
-			VTX_ACTION( new VTX::Action::Setting::ChangeCameraClip( nearClip, farClip ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeCameraClip( nearClip, farClip ) );
 		}
 
 		_listenSettingEvents();
@@ -460,7 +460,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( p_state != VTX_SETTING().getAA() )
-			VTX_ACTION( new VTX::Action::Setting::ActiveAA( p_state ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ActiveAA( p_state ) );
 
 		_listenSettingEvents();
 	}
@@ -471,7 +471,7 @@ namespace VTX::UI::Widget::Settings
 		const VTXSettings::CameraProjection projection	  = VTXSettings::CameraProjection( p_value );
 		const bool							isPerspective = projection == VTXSettings::CameraProjection::PERSPECTIVE;
 		if ( VTX_SETTING().getCameraPerspective() != isPerspective )
-			VTX_ACTION( new VTX::Action::Setting::ChangeCameraProjectionToPerspective( isPerspective ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeCameraProjectionToPerspective( isPerspective ) );
 
 		_listenSettingEvents();
 	}
@@ -482,7 +482,7 @@ namespace VTX::UI::Widget::Settings
 
 		const IO::Struct::ImageExport::Format format = IO::Struct::ImageExport::Format( p_format );
 		if ( VTX_SETTING().getSnapshotFormat() != format )
-			VTX_ACTION( new VTX::Action::Setting::ChangeSnapshotFormat( format ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeSnapshotFormat( format ) );
 
 		_listenSettingEvents();
 	}
@@ -491,7 +491,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( VTX_SETTING().getSnapshotBackgroundOpacity() != p_opacity )
-			VTX_ACTION( new VTX::Action::Setting::ChangeBackgroundOpacity( p_opacity ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeBackgroundOpacity( p_opacity ) );
 
 		_listenSettingEvents();
 	}
@@ -501,7 +501,7 @@ namespace VTX::UI::Widget::Settings
 
 		const IO::Struct::ImageExport::RESOLUTION resolution = IO::Struct::ImageExport::RESOLUTION( p_resolution );
 		if ( VTX_SETTING().getSnapshotResolution() != resolution )
-			VTX_ACTION( new VTX::Action::Setting::ChangeSnapshotResolution( resolution ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeSnapshotResolution( resolution ) );
 
 		_listenSettingEvents();
 	}
@@ -510,7 +510,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( VTX_SETTING().getSnapshotQuality() != p_quality )
-			VTX_ACTION( new VTX::Action::Setting::ChangeSnapshotQuality( p_quality ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeSnapshotQuality( p_quality ) );
 
 		_listenSettingEvents();
 	}
@@ -520,7 +520,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( VTX_SETTING().getVSync() != p_activate )
-			VTX_ACTION( new VTX::Action::Setting::ActiveVerticalSync( p_activate ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ActiveVerticalSync( p_activate ) );
 
 		_listenSettingEvents();
 	}
@@ -529,7 +529,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( VTX_SETTING().getForceRenderer() != p_activate )
-			VTX_ACTION( new VTX::Action::Setting::ForceRenderer( p_activate ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ForceRenderer( p_activate ) );
 
 		_listenSettingEvents();
 	}
@@ -551,7 +551,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( VTX_SETTING().getDefaultTrajectorySpeed() != p_fps )
-			VTX_ACTION( new VTX::Action::Setting::ChangeDefaultTrajectorySpeed( p_fps ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeDefaultTrajectorySpeed( p_fps ) );
 
 		_listenSettingEvents();
 	}
@@ -561,7 +561,7 @@ namespace VTX::UI::Widget::Settings
 
 		const Trajectory::PlayMode playMode = Trajectory::PlayMode( p_playmode );
 		if ( VTX_SETTING().getDefaultTrajectoryPlayMode() != playMode )
-			VTX_ACTION( new VTX::Action::Setting::ChangeDefaultTrajectoryPlayMode( playMode ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeDefaultTrajectoryPlayMode( playMode ) );
 
 		_listenSettingEvents();
 	}
@@ -571,7 +571,7 @@ namespace VTX::UI::Widget::Settings
 
 		const VTX::Style::SYMBOL_DISPLAY_MODE displayMode = VTX::Style::SYMBOL_DISPLAY_MODE( p_displayMode );
 		if ( VTX_SETTING().getSymbolDisplayMode() != displayMode )
-			VTX_ACTION( new VTX::Action::Setting::ChangeSymbolDisplayMode( displayMode ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeSymbolDisplayMode( displayMode ) );
 
 		_listenSettingEvents();
 	}
@@ -580,7 +580,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( VTX_SETTING().getCheckVTXUpdateAtLaunch() != p_changeCheckVTXUpdateAtLaunch )
-			VTX_ACTION( new VTX::Action::Setting::ChangeCheckVTXUpdateAtLaunch( p_changeCheckVTXUpdateAtLaunch ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ChangeCheckVTXUpdateAtLaunch( p_changeCheckVTXUpdateAtLaunch ) );
 
 		_listenSettingEvents();
 	}
@@ -589,7 +589,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		if ( VTX_SETTING().isPortableSaveActivated() != p_activate )
-			VTX_ACTION( new VTX::Action::Setting::ActivatePortableSave( p_activate ) );
+			VTX_ACTION( new VTX::App::Action::Setting::ActivatePortableSave( p_activate ) );
 
 		_listenSettingEvents();
 	}
@@ -607,7 +607,7 @@ namespace VTX::UI::Widget::Settings
 	{
 		_skipSettingEvents();
 
-		UI::Dialog::confirmActionDialog( new VTX::Action::Setting::RestoreSetting(),
+		UI::Dialog::confirmActionDialog( new VTX::App::Action::Setting::RestoreSetting(),
 										 "Confirm",
 										 "Are you sure you want to restore all settings ? All changes will be lost." );
 		// TMP => Move setting into a model

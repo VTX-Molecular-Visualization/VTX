@@ -6,7 +6,7 @@
 
 namespace VTX::UI::QT::Action::Path
 {
-	class Play : public VTX::Core::Action::BaseAction
+	class Play : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Play( Model::Path * const p_path ) : _path( p_path ) {}
@@ -17,7 +17,7 @@ namespace VTX::UI::QT::Action::Path
 	};
 
 	/*
-	class ExportVideo : public Core::Action::BaseAction
+	class ExportVideo : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ExportVideo( Model::Path * const p_path, Worker::Snapshoter::MODE p_mode ) :

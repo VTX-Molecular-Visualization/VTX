@@ -24,8 +24,8 @@
 #include <app/action/molecule.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
-#include <app/core/action/action_manager.hpp>
 #include <app/core/event/event_manager.hpp>
+
 #include <app/old_app/define.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
@@ -244,7 +244,7 @@ namespace VTX::UI
 
 	void MainWindow::_onShortcutSave() const
 	{
-		VTX_ACTION( new VTX::Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new VTX::App::Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 
 	void MainWindow::_onShortcutSaveAs() const { UI::Dialog::openSaveSessionDialog(); }
@@ -265,23 +265,23 @@ namespace VTX::UI
 	{
 		if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 		{
-			VTX_ACTION(
-				new VTX::Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
+			VTX_ACTION( new VTX::App::Action::Selection::ClearSelection(
+				Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 
 	void MainWindow::_onShortcutRestoreLayout() const { VTX_ACTION( new QT::Action::Main::RestoreLayout() ); }
 
-	void MainWindow::_onShortcutCompileShaders() const { VTX_ACTION( new VTX::Action::Dev::CompileShaders() ); }
+	void MainWindow::_onShortcutCompileShaders() const { VTX_ACTION( new VTX::App::Action::Dev::CompileShaders() ); }
 
 	void MainWindow::_onShortcutActiveRenderer() const
 	{
-		VTX_ACTION( new VTX::Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
+		VTX_ACTION( new VTX::App::Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
 	}
 
 	void MainWindow::_onShortcutRefreshSES() const
 	{
-		VTX_ACTION( new VTX::Action::Molecule::RefreshSolventExcludedSurface(
+		VTX_ACTION( new VTX::App::Action::Molecule::RefreshSolventExcludedSurface(
 			*( ( *( VTXApp::get().getScene().getMolecules().begin() ) ).first ) ) );
 	}
 
@@ -289,7 +289,8 @@ namespace VTX::UI
 	{
 		if ( Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
 		{
-			VTX_ACTION( new VTX::Action::Selection::Delete( Selection::SelectionManager::get().getSelectionModel() ) );
+			VTX_ACTION(
+				new VTX::App::Action::Selection::Delete( Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 
@@ -299,20 +300,20 @@ namespace VTX::UI
 		VTX_ACTION( new QT::Action::Selection::Orient( selection ) );
 	}
 
-	void MainWindow::_onShortcutSelectAll() const { VTX_ACTION( new VTX::Action::Selection::SelectAll() ); }
+	void MainWindow::_onShortcutSelectAll() const { VTX_ACTION( new VTX::App::Action::Selection::SelectAll() ); }
 
 	void MainWindow::_onShortcutCopy() const
 	{
 		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
-			VTX_ACTION( new VTX::Action::Selection::Copy( selectionModel ) );
+			VTX_ACTION( new VTX::App::Action::Selection::Copy( selectionModel ) );
 	}
 
 	void MainWindow::_onShortcutExtract() const
 	{
 		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
-			VTX_ACTION( new VTX::Action::Selection::Extract( selectionModel ) );
+			VTX_ACTION( new VTX::App::Action::Selection::Extract( selectionModel ) );
 	}
 
 	void MainWindow::_onShortcutSetSelectionPicker() const
@@ -488,7 +489,7 @@ namespace VTX::UI
 			}
 			else // Else regular Open function called
 			{
-				VTX_ACTION( new Action::Main::Open( paths ) );
+				VTX_ACTION( new App::Action::Main::Open( paths ) );
 			}
 		}
 		*/

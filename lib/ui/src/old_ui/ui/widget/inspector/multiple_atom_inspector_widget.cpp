@@ -9,7 +9,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QPixmap>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/model/bond.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/residue.hpp>

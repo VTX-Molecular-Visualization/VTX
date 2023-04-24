@@ -12,7 +12,7 @@
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Action::Atom
+namespace VTX::App::Action::Atom
 {
 	void ChangeColor::execute()
 	{
@@ -122,4 +122,4 @@ namespace VTX::Action::Atom
 
 		VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );
 	}
-} // namespace VTX::Action::Atom
+} // namespace VTX::App::Action::Atom

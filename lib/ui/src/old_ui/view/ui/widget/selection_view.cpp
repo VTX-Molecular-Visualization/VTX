@@ -12,7 +12,7 @@
 #include <app/action/molecule.hpp>
 #include <app/action/residue.hpp>
 #include <app/action/selection.hpp>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/old_app/id.hpp>
 #include <app/model/selection.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
@@ -343,22 +343,22 @@ namespace VTX::View::UI::Widget
 			if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 			{
 				Model::Molecule & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
-				VTX_ACTION( new Action::Selection::UnselectMolecule( selectionModel, model ) );
+				VTX_ACTION( new App::Action::Selection::UnselectMolecule( selectionModel, model ) );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 			{
 				Model::Chain & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Chain>( modelId );
-				VTX_ACTION( new Action::Selection::UnselectChain( selectionModel, model ) );
+				VTX_ACTION( new App::Action::Selection::UnselectChain( selectionModel, model ) );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 			{
 				Model::Residue & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( modelId );
-				VTX_ACTION( new Action::Selection::UnselectResidue( selectionModel, model ) );
+				VTX_ACTION( new App::Action::Selection::UnselectResidue( selectionModel, model ) );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 			{
 				Model::Atom & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( modelId );
-				VTX_ACTION( new Action::Selection::UnselectAtom( selectionModel, model ) );
+				VTX_ACTION( new App::Action::Selection::UnselectAtom( selectionModel, model ) );
 			}
 		}
 	}

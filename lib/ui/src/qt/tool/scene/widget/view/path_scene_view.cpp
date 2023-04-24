@@ -11,7 +11,7 @@
 #include "ui/qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <QScrollBar>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/selection.hpp>
 #include <app/action/viewpoint.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
@@ -222,7 +222,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 					}
 					else if ( itemTxt != viewpoint.getDefaultName() )
 					{
-						VTX_ACTION( new VTX::Action::Viewpoint::Rename( viewpoint, itemTxt ) );
+						VTX_ACTION( new VTX::App::Action::Viewpoint::Rename( viewpoint, itemTxt ) );
 					}
 
 					const bool oldSignalState = blockSignals( true );

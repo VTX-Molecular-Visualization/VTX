@@ -3,7 +3,7 @@
 #include "ui/old_ui/util/ui.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/molecule.hpp>
 #include <app/old_app/trajectory/trajectory_enum.hpp>
 
@@ -147,16 +147,16 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void TrajectoryWidget::_setFrameAction( const int p_frame )
 	{
-		VTX_ACTION( new Action::Molecule::ChangeFrame( _molecules, p_frame, true ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeFrame( _molecules, p_frame, true ) );
 	}
 
 	void TrajectoryWidget::_backToStartAction()
 	{
-		VTX_ACTION( new Action::Molecule::ChangeFrame( _molecules, 0, true ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeFrame( _molecules, 0, true ) );
 	}
 	void TrajectoryWidget::_previousFrameAction()
 	{
-		VTX_ACTION( new Action::Molecule::PreviousFrame( _molecules, true ) );
+		VTX_ACTION( new App::Action::Molecule::PreviousFrame( _molecules, true ) );
 	}
 	void TrajectoryWidget::_togglePlayAction()
 	{
@@ -166,12 +166,12 @@ namespace VTX::UI::Widget::CustomWidget
 		for ( const Model::Molecule * const molecule : _molecules )
 			setPlay = setPlay && !molecule->isPlaying();
 
-		VTX_ACTION( new Action::Molecule::ChangeIsPlaying( _molecules, setPlay ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeIsPlaying( _molecules, setPlay ) );
 	}
-	void TrajectoryWidget::_nextFrameAction() { VTX_ACTION( new Action::Molecule::NextFrame( _molecules, true ) ); }
+	void TrajectoryWidget::_nextFrameAction() { VTX_ACTION( new App::Action::Molecule::NextFrame( _molecules, true ) ); }
 	void TrajectoryWidget::_goToEndAction()
 	{
-		VTX_ACTION( new Action::Molecule::ChangeFrame( _molecules, INT32_MAX, true ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeFrame( _molecules, INT32_MAX, true ) );
 	}
 
 	void TrajectoryWidget::_playModeChange( const int p_playMode )
@@ -189,7 +189,7 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 
 		if ( dataChange )
-			VTX_ACTION( new Action::Molecule::ChangePlayMode( _molecules, playmode ) );
+			VTX_ACTION( new App::Action::Molecule::ChangePlayMode( _molecules, playmode ) );
 	}
 	void TrajectoryWidget::_speedChange( const int p_speed )
 	{
@@ -205,7 +205,7 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 
 		if ( dataChange )
-			VTX_ACTION( new Action::Molecule::ChangeFPS( _molecules, p_speed ) );
+			VTX_ACTION( new App::Action::Molecule::ChangeFPS( _molecules, p_speed ) );
 	}
 
 	void TrajectoryWidget::_fillPlayModeComboBox()

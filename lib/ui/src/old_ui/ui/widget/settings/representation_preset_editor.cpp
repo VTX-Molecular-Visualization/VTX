@@ -4,7 +4,7 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QVBoxLayout>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/representation.hpp>
 #include <app/old_app/setting.hpp>
 
@@ -324,14 +324,14 @@ namespace VTX::UI::Widget::Settings
 		}
 
 		if ( !signalsBlocked() && nameStr != _preset->getName() )
-			VTX_ACTION( new Action::Representation::ChangeName( _preset, nameStr ) );
+			VTX_ACTION( new App::Action::Representation::ChangeName( _preset, nameStr ) );
 	}
 
 	void RepresentationPresetEditor::_onQuickAccessChange( const int p_state )
 	{
 		const bool quickAccess = p_state == Qt::CheckState::Checked;
 		if ( !signalsBlocked() && quickAccess != _preset->hasQuickAccess() )
-			VTX_ACTION( new Action::Representation::ChangeQuickAccess( _preset, quickAccess ) );
+			VTX_ACTION( new App::Action::Representation::ChangeQuickAccess( _preset, quickAccess ) );
 	}
 
 	void RepresentationPresetEditor::_onRepresentationTypeChange( const int p_newIndex )
@@ -339,50 +339,50 @@ namespace VTX::UI::Widget::Settings
 		const Generic::REPRESENTATION representationType = Generic::REPRESENTATION( p_newIndex );
 
 		if ( !signalsBlocked() && representationType != _preset->getRepresentationType() )
-			VTX_ACTION( new Action::Representation::ChangeRepresentation( _preset, representationType ) );
+			VTX_ACTION( new App::Action::Representation::ChangeRepresentation( _preset, representationType ) );
 	}
 	void RepresentationPresetEditor::_onSphereRadiusChanged( const float p_radius )
 	{
 		if ( !signalsBlocked() )
-			VTX_ACTION( new Action::Representation::ChangeSphereRadius( _preset, p_radius ) );
+			VTX_ACTION( new App::Action::Representation::ChangeSphereRadius( _preset, p_radius ) );
 	}
 	void RepresentationPresetEditor::_onCylinderRadiusChanged( const float p_radius )
 	{
 		if ( !signalsBlocked() )
-			VTX_ACTION( new Action::Representation::ChangeCylinderRadius( _preset, p_radius ) );
+			VTX_ACTION( new App::Action::Representation::ChangeCylinderRadius( _preset, p_radius ) );
 	}
 	void RepresentationPresetEditor::_onCylinderColorBendingModeChanged( const int p_colorMode )
 	{
 		Generic::COLOR_BLENDING_MODE colorMode = Generic::COLOR_BLENDING_MODE( p_colorMode );
 
 		if ( !signalsBlocked() && colorMode != _preset->getData().getCylinderColorBlendingMode() )
-			VTX_ACTION( new Action::Representation::ChangeCylinderColorBendingMode( _preset, colorMode ) );
+			VTX_ACTION( new App::Action::Representation::ChangeCylinderColorBendingMode( _preset, colorMode ) );
 	}
 	void RepresentationPresetEditor::_onColorModeChanged( const int p_colorMode )
 	{
 		Generic::COLOR_MODE colorMode = Generic::COLOR_MODE( p_colorMode );
 
 		if ( !signalsBlocked() && colorMode != _preset->getData().getColorMode() )
-			VTX_ACTION( new Action::Representation::ChangeColorMode( _preset, colorMode ) );
+			VTX_ACTION( new App::Action::Representation::ChangeColorMode( _preset, colorMode ) );
 	}
 	void RepresentationPresetEditor::_onRibbonColorModeChanged( const int p_colorMode )
 	{
 		Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode = Generic::SECONDARY_STRUCTURE_COLOR_MODE( p_colorMode );
 
 		if ( !signalsBlocked() && colorMode != _preset->getData().getRibbonColorMode() )
-			VTX_ACTION( new Action::Representation::ChangeRibbonColorMode( _preset, colorMode ) );
+			VTX_ACTION( new App::Action::Representation::ChangeRibbonColorMode( _preset, colorMode ) );
 	}
 	void RepresentationPresetEditor::_onRibbonColorBlendingModeChanged( const int p_colorMode )
 	{
 		Generic::COLOR_BLENDING_MODE colorMode = Generic::COLOR_BLENDING_MODE( p_colorMode );
 
 		if ( !signalsBlocked() && colorMode != _preset->getData().getRibbonColorBlendingMode() )
-			VTX_ACTION( new Action::Representation::ChangeRibbonColorBendingMode( _preset, colorMode ) );
+			VTX_ACTION( new App::Action::Representation::ChangeRibbonColorBendingMode( _preset, colorMode ) );
 	}
 	void RepresentationPresetEditor::_onColorChanged( const Color::Rgba & p_color )
 	{
 		if ( !signalsBlocked() && p_color != _preset->getColor() )
-			VTX_ACTION( new Action::Representation::ChangeColor( _preset, p_color ) );
+			VTX_ACTION( new App::Action::Representation::ChangeColor( _preset, p_color ) );
 	}
 	void RepresentationPresetEditor::_onSetDefault()
 	{
@@ -391,7 +391,7 @@ namespace VTX::UI::Widget::Settings
 		{
 			const int presetIndex
 				= Model::Representation::RepresentationLibrary::get().getRepresentationIndex( _preset );
-			VTX_ACTION( new Action::Representation::SetAsDefaultRepresentation( presetIndex ) );
+			VTX_ACTION( new App::Action::Representation::SetAsDefaultRepresentation( presetIndex ) );
 		}
 	}
 

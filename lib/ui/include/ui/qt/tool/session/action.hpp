@@ -11,7 +11,7 @@
 
 namespace VTX::UI::QT::Tool::Session::Action
 {
-	class Open : public VTX::Core::Action::BaseAction
+	class Open : public VTX::App::Core::Action::BaseAction
 	{
 	  private:
 		class LoadSceneClass
@@ -46,7 +46,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 		std::vector<Model::Molecule *> _trajectoryTargets = std::vector<Model::Molecule *>();
 	};
 
-	class Save : public VTX::Core::Action::BaseAction
+	class Save : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Save() : _path( "" ), _callback( nullptr ) {}
@@ -63,14 +63,14 @@ namespace VTX::UI::QT::Tool::Session::Action
 		VTX::Core::Worker::CallbackThread * const _callback;
 	};
 
-	class ToggleCameraController : public VTX::Core::Action::BaseAction
+	class ToggleCameraController : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleCameraController() {}
 		virtual void execute() override;
 	};
 
-	class ChangeCameraController : public VTX::Core::Action::BaseAction
+	class ChangeCameraController : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeCameraController( const ID::VTX_ID & p_controllerId ) : _id( p_controllerId ) {}
@@ -80,7 +80,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 		const ID::VTX_ID _id;
 	};
 
-	class ResetCameraController : public VTX::Core::Action::BaseAction
+	class ResetCameraController : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ResetCameraController() {}

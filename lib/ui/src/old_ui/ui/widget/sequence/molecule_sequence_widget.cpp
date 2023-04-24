@@ -5,7 +5,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QScrollBar>
 #include <algorithm>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/selection.hpp>
 #include <app/model/category_enum.hpp>
 #include <app/model/selection.hpp>
@@ -599,12 +599,12 @@ namespace VTX::UI::Widget::Sequence
 	}
 	void MoleculeSequenceWidget::_select( std::vector<Model::Residue *> & p_residues ) const
 	{
-		VTX_ACTION( new Action::Selection::SelectResidue(
+		VTX_ACTION( new App::Action::Selection::SelectResidue(
 			VTX::Selection::SelectionManager::get().getSelectionModel(), p_residues, true ) );
 	}
 	void MoleculeSequenceWidget::_unselect( std::vector<Model::Residue *> & p_residues, const bool p_checkData ) const
 	{
-		VTX_ACTION( new Action::Selection::UnselectResidue(
+		VTX_ACTION( new App::Action::Selection::UnselectResidue(
 			VTX::Selection::SelectionManager::get().getSelectionModel(), p_residues, p_checkData ) );
 	}
 	void MoleculeSequenceWidget::_toggleSelect( std::vector<Model::Residue *> & p_residues ) const
@@ -616,12 +616,12 @@ namespace VTX::UI::Widget::Sequence
 
 			if ( selection.isResidueSelected( *residue ) )
 			{
-				VTX_ACTION( new Action::Selection::UnselectResidue(
+				VTX_ACTION( new App::Action::Selection::UnselectResidue(
 					VTX::Selection::SelectionManager::get().getSelectionModel(), *residue ) );
 			}
 			else
 			{
-				VTX_ACTION( new Action::Selection::SelectResidue(
+				VTX_ACTION( new App::Action::Selection::SelectResidue(
 					VTX::Selection::SelectionManager::get().getSelectionModel(), *residue ) );
 			}
 		}
@@ -631,7 +631,7 @@ namespace VTX::UI::Widget::Sequence
 		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 		if ( !selectionModel.isEmpty() )
 		{
-			VTX_ACTION( new Action::Selection::ClearSelection( selectionModel ) );
+			VTX_ACTION( new App::Action::Selection::ClearSelection( selectionModel ) );
 		}
 	}
 

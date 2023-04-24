@@ -2,7 +2,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 #include <app/action/viewpoint.hpp>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/model/path.hpp>
 #include <app/model/selection.hpp>
 #include <app/core/mvc/mvc_manager.hpp>

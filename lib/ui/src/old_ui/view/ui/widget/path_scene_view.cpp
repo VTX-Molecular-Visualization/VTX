@@ -8,7 +8,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 #include <QScrollBar>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/selection.hpp>
 #include <app/action/viewpoint.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
@@ -206,7 +206,7 @@ namespace VTX::View::UI::Widget
 					}
 					else if ( itemTxt != viewpoint.getDefaultName() )
 					{
-						VTX_ACTION( new Action::Viewpoint::Rename( viewpoint, itemTxt ) );
+						VTX_ACTION( new App::Action::Viewpoint::Rename( viewpoint, itemTxt ) );
 					}
 
 					const bool oldSignalState = blockSignals( true );

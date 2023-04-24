@@ -2,7 +2,7 @@
 #include "app/model/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 
-namespace VTX::Action::InstantiatedRepresentation
+namespace VTX::App::Action::InstantiatedRepresentation
 {
 	void ChangeColorMode::execute()
 	{
@@ -58,4 +58,4 @@ namespace VTX::Action::InstantiatedRepresentation
 		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 	}
 
-} // namespace VTX::Action::InstantiatedRepresentation
+} // namespace VTX::App::Action::InstantiatedRepresentation

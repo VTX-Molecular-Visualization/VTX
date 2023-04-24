@@ -6,7 +6,7 @@
 // #include "ui/old_ui/view/ui/widget/measurement/distance_scene_view.hpp"
 // #include "ui/old_ui/view/ui/widget/measurement/distance_to_cycle_scene_view.hpp"
 #include "ui/qt/action/label.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/label.hpp>
 #include <app/model/path.hpp>
 
@@ -67,6 +67,6 @@ namespace VTX::UI::Widget::ContextualMenu
 			sceneItem->openRenameEditor( _target->getId() );
 		}
 	}
-	void ContextualMenuLabel::_deleteAction() { VTX_ACTION( new Action::Label::Delete( _target ) ); }
+	void ContextualMenuLabel::_deleteAction() { VTX_ACTION( new App::Action::Label::Delete( _target ) ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

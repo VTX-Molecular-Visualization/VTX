@@ -3,7 +3,7 @@
 #include "ui/old_ui/view/ui/widget/path_scene_view.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 #include <app/action/viewpoint.hpp>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/model/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
@@ -40,6 +40,6 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuViewpoint::_deleteAction() { VTX_ACTION( new QT::Action::Viewpoint::Delete( *_target ) ); }
 	void ContextualMenuViewpoint::_gotoAction() { VTX_ACTION( new QT::Action::Viewpoint::GoTo( *_target ) ); }
-	void ContextualMenuViewpoint::_relocateAction() { VTX_ACTION( new Action::Viewpoint::Relocate( *_target ) ); }
+	void ContextualMenuViewpoint::_relocateAction() { VTX_ACTION( new App::Action::Viewpoint::Relocate( *_target ) ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

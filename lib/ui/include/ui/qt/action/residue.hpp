@@ -6,7 +6,7 @@
 
 namespace VTX::UI::QT::Action::Residue
 {
-	class Orient : public VTX::Core::Action::BaseAction
+	class Orient : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Orient( const Model::Residue & p_residue ) : _residue( p_residue ) {}

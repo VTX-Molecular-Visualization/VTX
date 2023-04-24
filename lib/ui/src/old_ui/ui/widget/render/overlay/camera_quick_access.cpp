@@ -6,7 +6,7 @@
 #include "ui/old_ui/vtx_app.hpp"
 #include <QAction>
 #include <QIcon>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/renderer.hpp>
 #include <app/action/setting.hpp>
 #include <app/event/vtx_event.hpp>
@@ -134,7 +134,7 @@ namespace VTX::UI::Widget::Render::Overlay
 	void CameraQuickAccess::_toggleCameraProjection()
 	{
 		const bool changeToPerspective = !VTX_SETTING().getCameraPerspective();
-		VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
+		VTX_ACTION( new App::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 
 	void CameraQuickAccess::_applyRenderEffectPresetAction( const QAction * const p_action )
@@ -151,7 +151,7 @@ namespace VTX::UI::Widget::Render::Overlay
 			Model::Renderer::RenderEffectPreset * const preset
 				= Model::Renderer::RenderEffectPresetLibrary::get().getPreset( renderEffectPreset );
 
-			VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *preset ) );
+			VTX_ACTION( new App::Action::Renderer::ApplyRenderEffectPreset( *preset ) );
 		}
 	}
 	void CameraQuickAccess::_onExportImageClickedAction() const { UI::Dialog::openAdvancedSettingImageExportDialog(); }

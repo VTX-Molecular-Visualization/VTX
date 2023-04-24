@@ -4,7 +4,7 @@
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/tool/keys.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/selection.hpp>
 #include <app/model/atom.hpp>
 #include <app/model/chain.hpp>
@@ -56,7 +56,7 @@ namespace VTX::UI::QT::Controller
 		if ( _isModifierExclusive( ModifierFlag::Control ) == false )
 		{
 			VTX_ACTION(
-				new VTX::Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
+				new VTX::App::Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 
 		// If something clicked.
@@ -132,20 +132,20 @@ namespace VTX::UI::QT::Controller
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
 		case VTX::Selection::Granularity::MOLECULE:
-			VTX_ACTION( new VTX::Action::Selection::SelectMolecule(
+			VTX_ACTION( new VTX::App::Action::Selection::SelectMolecule(
 				selectionModel, *p_atomPicked.getMoleculePtr(), appendToSelection ) );
 			break;
 		case VTX::Selection::Granularity::CHAIN:
-			VTX_ACTION( new VTX::Action::Selection::SelectChain(
+			VTX_ACTION( new VTX::App::Action::Selection::SelectChain(
 				selectionModel, *p_atomPicked.getChainPtr(), appendToSelection ) );
 			break;
 		case VTX::Selection::Granularity::RESIDUE:
-			VTX_ACTION( new VTX::Action::Selection::SelectResidue(
+			VTX_ACTION( new VTX::App::Action::Selection::SelectResidue(
 				selectionModel, *p_atomPicked.getResiduePtr(), appendToSelection ) );
 			break;
 		case VTX::Selection::Granularity::ATOM:
 		default:
-			VTX_ACTION( new VTX::Action::Selection::SelectAtom( selectionModel, p_atomPicked, appendToSelection ) );
+			VTX_ACTION( new VTX::App::Action::Selection::SelectAtom( selectionModel, p_atomPicked, appendToSelection ) );
 			break;
 		}
 	}
@@ -162,12 +162,12 @@ namespace VTX::UI::QT::Controller
 			Model::Molecule * const mol2 = p_atomPicked2.getMoleculePtr();
 			if ( mol1 == mol2 )
 			{
-				VTX_ACTION( new VTX::Action::Selection::SelectMolecule( selectionModel, *mol1, appendToSelection ) );
+				VTX_ACTION( new VTX::App::Action::Selection::SelectMolecule( selectionModel, *mol1, appendToSelection ) );
 			}
 			else
 			{
 				VTX_ACTION(
-					new VTX::Action::Selection::SelectMolecule( selectionModel, { mol1, mol2 }, appendToSelection ) );
+					new VTX::App::Action::Selection::SelectMolecule( selectionModel, { mol1, mol2 }, appendToSelection ) );
 			}
 			break;
 		}
@@ -178,12 +178,12 @@ namespace VTX::UI::QT::Controller
 
 			if ( chain1 == chain2 )
 			{
-				VTX_ACTION( new VTX::Action::Selection::SelectChain( selectionModel, *chain1, appendToSelection ) );
+				VTX_ACTION( new VTX::App::Action::Selection::SelectChain( selectionModel, *chain1, appendToSelection ) );
 			}
 			else
 			{
 				VTX_ACTION(
-					new VTX::Action::Selection::SelectChain( selectionModel, { chain1, chain2 }, appendToSelection ) );
+					new VTX::App::Action::Selection::SelectChain( selectionModel, { chain1, chain2 }, appendToSelection ) );
 			}
 			break;
 		}
@@ -194,12 +194,12 @@ namespace VTX::UI::QT::Controller
 
 			if ( res1 == res2 )
 			{
-				VTX_ACTION( new VTX::Action::Selection::SelectResidue( selectionModel, *res1, appendToSelection ) );
+				VTX_ACTION( new VTX::App::Action::Selection::SelectResidue( selectionModel, *res1, appendToSelection ) );
 			}
 			else
 			{
 				VTX_ACTION(
-					new VTX::Action::Selection::SelectResidue( selectionModel, { res1, res2 }, appendToSelection ) );
+					new VTX::App::Action::Selection::SelectResidue( selectionModel, { res1, res2 }, appendToSelection ) );
 			}
 			break;
 		}
@@ -209,11 +209,11 @@ namespace VTX::UI::QT::Controller
 			if ( &p_atomPicked1 == &p_atomPicked2 )
 			{
 				VTX_ACTION(
-					new VTX::Action::Selection::SelectAtom( selectionModel, p_atomPicked1, appendToSelection ) );
+					new VTX::App::Action::Selection::SelectAtom( selectionModel, p_atomPicked1, appendToSelection ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Selection::SelectAtom(
+				VTX_ACTION( new VTX::App::Action::Selection::SelectAtom(
 					selectionModel, { &p_atomPicked1, &p_atomPicked2 }, appendToSelection ) );
 			}
 			break;
@@ -228,18 +228,18 @@ namespace VTX::UI::QT::Controller
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
 		case VTX::Selection::Granularity::MOLECULE:
-			VTX_ACTION( new VTX::Action::Selection::SelectMolecule(
+			VTX_ACTION( new VTX::App::Action::Selection::SelectMolecule(
 				selectionModel, *p_residuePicked.getMoleculePtr(), appendToSelection ) );
 			break;
 		case VTX::Selection::Granularity::CHAIN:
-			VTX_ACTION( new VTX::Action::Selection::SelectChain(
+			VTX_ACTION( new VTX::App::Action::Selection::SelectChain(
 				selectionModel, *p_residuePicked.getChainPtr(), appendToSelection ) );
 			break;
 		case VTX::Selection::Granularity::RESIDUE:
 		case VTX::Selection::Granularity::ATOM:
 		default:
 			VTX_ACTION(
-				new VTX::Action::Selection::SelectResidue( selectionModel, p_residuePicked, appendToSelection ) );
+				new VTX::App::Action::Selection::SelectResidue( selectionModel, p_residuePicked, appendToSelection ) );
 			break;
 		}
 	}
@@ -252,20 +252,20 @@ namespace VTX::UI::QT::Controller
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
 		case VTX::Selection::Granularity::MOLECULE:
-			VTX_ACTION( new VTX::Action::Selection::UnselectMolecule(
+			VTX_ACTION( new VTX::App::Action::Selection::UnselectMolecule(
 				selectionModel, *p_atomPicked.getMoleculePtr(), appendToSelection ) );
 			break;
 		case VTX::Selection::Granularity::CHAIN:
-			VTX_ACTION( new VTX::Action::Selection::UnselectChain(
+			VTX_ACTION( new VTX::App::Action::Selection::UnselectChain(
 				selectionModel, *p_atomPicked.getChainPtr(), appendToSelection ) );
 			break;
 		case VTX::Selection::Granularity::RESIDUE:
-			VTX_ACTION( new VTX::Action::Selection::UnselectResidue(
+			VTX_ACTION( new VTX::App::Action::Selection::UnselectResidue(
 				selectionModel, *p_atomPicked.getResiduePtr(), appendToSelection ) );
 			break;
 		case VTX::Selection::Granularity::ATOM:
 		default:
-			VTX_ACTION( new VTX::Action::Selection::UnselectAtom( selectionModel, p_atomPicked, appendToSelection ) );
+			VTX_ACTION( new VTX::App::Action::Selection::UnselectAtom( selectionModel, p_atomPicked, appendToSelection ) );
 			break;
 		}
 	}
@@ -282,12 +282,12 @@ namespace VTX::UI::QT::Controller
 			Model::Molecule * const mol2 = p_atomPicked2.getMoleculePtr();
 			if ( mol1 == mol2 )
 			{
-				VTX_ACTION( new VTX::Action::Selection::UnselectMolecule( selectionModel, *mol1, appendToSelection ) );
+				VTX_ACTION( new VTX::App::Action::Selection::UnselectMolecule( selectionModel, *mol1, appendToSelection ) );
 			}
 			else
 			{
 				VTX_ACTION(
-					new VTX::Action::Selection::UnselectMolecule( selectionModel, { mol1, mol2 }, appendToSelection ) );
+					new VTX::App::Action::Selection::UnselectMolecule( selectionModel, { mol1, mol2 }, appendToSelection ) );
 			}
 			break;
 		}
@@ -298,11 +298,11 @@ namespace VTX::UI::QT::Controller
 
 			if ( chain1 == chain2 )
 			{
-				VTX_ACTION( new VTX::Action::Selection::UnselectChain( selectionModel, *chain1, appendToSelection ) );
+				VTX_ACTION( new VTX::App::Action::Selection::UnselectChain( selectionModel, *chain1, appendToSelection ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Selection::UnselectChain(
+				VTX_ACTION( new VTX::App::Action::Selection::UnselectChain(
 					selectionModel, { chain1, chain2 }, appendToSelection ) );
 			}
 			break;
@@ -314,12 +314,12 @@ namespace VTX::UI::QT::Controller
 
 			if ( res1 == res2 )
 			{
-				VTX_ACTION( new VTX::Action::Selection::UnselectResidue( selectionModel, *res1, appendToSelection ) );
+				VTX_ACTION( new VTX::App::Action::Selection::UnselectResidue( selectionModel, *res1, appendToSelection ) );
 			}
 			else
 			{
 				VTX_ACTION(
-					new VTX::Action::Selection::UnselectResidue( selectionModel, { res1, res2 }, appendToSelection ) );
+					new VTX::App::Action::Selection::UnselectResidue( selectionModel, { res1, res2 }, appendToSelection ) );
 			}
 		}
 		break;
@@ -328,11 +328,11 @@ namespace VTX::UI::QT::Controller
 			if ( &p_atomPicked1 == &p_atomPicked2 )
 			{
 				VTX_ACTION(
-					new VTX::Action::Selection::UnselectAtom( selectionModel, p_atomPicked1, appendToSelection ) );
+					new VTX::App::Action::Selection::UnselectAtom( selectionModel, p_atomPicked1, appendToSelection ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Selection::UnselectAtom(
+				VTX_ACTION( new VTX::App::Action::Selection::UnselectAtom(
 					selectionModel, { &p_atomPicked1, &p_atomPicked2 }, appendToSelection ) );
 			}
 			break;
@@ -346,18 +346,18 @@ namespace VTX::UI::QT::Controller
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
 		case VTX::Selection::Granularity::MOLECULE:
-			VTX_ACTION( new VTX::Action::Selection::UnselectMolecule(
+			VTX_ACTION( new VTX::App::Action::Selection::UnselectMolecule(
 				selectionModel, *p_residuePicked.getMoleculePtr(), appendToSelection ) );
 			break;
 		case VTX::Selection::Granularity::CHAIN:
-			VTX_ACTION( new VTX::Action::Selection::UnselectChain(
+			VTX_ACTION( new VTX::App::Action::Selection::UnselectChain(
 				selectionModel, *p_residuePicked.getChainPtr(), appendToSelection ) );
 			break;
 		case VTX::Selection::Granularity::RESIDUE:
 		case VTX::Selection::Granularity::ATOM:
 		default:
 			VTX_ACTION(
-				new VTX::Action::Selection::UnselectResidue( selectionModel, p_residuePicked, appendToSelection ) );
+				new VTX::App::Action::Selection::UnselectResidue( selectionModel, p_residuePicked, appendToSelection ) );
 			break;
 		}
 	}

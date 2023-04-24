@@ -4,7 +4,7 @@
 #include "ui/old_ui/view/ui/widget/renderer/render_effect_preset_view.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/renderer.hpp>
 #include <app/core/event/event_manager.hpp>
 #include <app/old_app/id.hpp>
@@ -136,23 +136,23 @@ namespace VTX::View::UI::Widget::Renderer
 
 		if ( currentPreset != nullptr )
 		{
-			VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *currentPreset, true ) );
+			VTX_ACTION( new App::Action::Renderer::ApplyRenderEffectPreset( *currentPreset, true ) );
 			_refreshPresetDisplayed( false );
 		}
 	}
 
 	void RenderEffectPresetLibraryView::_onAddPreset() const
 	{
-		VTX_ACTION( new Action::Renderer::AddNewPresetInLibrary( Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME ) );
+		VTX_ACTION( new App::Action::Renderer::AddNewPresetInLibrary( Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME ) );
 	}
 	void RenderEffectPresetLibraryView::_onCopyPreset() const
 	{
-		VTX_ACTION( new Action::Renderer::CopyPresetInLibrary( _presetList->currentIndex() ) );
+		VTX_ACTION( new App::Action::Renderer::CopyPresetInLibrary( _presetList->currentIndex() ) );
 	}
 	void RenderEffectPresetLibraryView::_onDeletePreset()
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new Action::Renderer::DeletePresetInLibrary( _presetList->currentIndex() ),
+			new App::Action::Renderer::DeletePresetInLibrary( _presetList->currentIndex() ),
 			"Confirm",
 			"Are you sure you want to delete this preset ?" );
 	}
@@ -161,14 +161,14 @@ namespace VTX::View::UI::Widget::Renderer
 	void RenderEffectPresetLibraryView::_onReloadLibrary() const
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new Action::Renderer::ReloadPresets(),
+			new App::Action::Renderer::ReloadPresets(),
 			"Confirm",
 			"Are you sure you want to reload all presets ? Current changes will be lost." );
 	}
 	void RenderEffectPresetLibraryView::_onResetToDefaultLibrary() const
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new Action::Renderer::ResetPresets(),
+			new App::Action::Renderer::ResetPresets(),
 			"Confirm",
 			"Are you sure you want to reset the preset library ? All changes will be lost." );
 	}

@@ -15,7 +15,7 @@ namespace VTX
 	namespace UI::QT::Dialog
 	{
 		void openInformationDialog( const QString & p_title, const QString & p_message );
-		void confirmActionDialog( VTX::Core::Action::BaseAction * const p_action,
+		void confirmActionDialog( VTX::App::Core::Action::BaseAction * const p_action,
 								  const QString &				  p_title,
 								  const QString &				  p_message );
 

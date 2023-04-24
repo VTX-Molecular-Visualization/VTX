@@ -1,7 +1,7 @@
 #include "tool/old_tool/ui/widget/inspector/multiple_measurement_angle_inspector_widget.hpp"
 #include "tool/old_tool/model/measurement/angle.hpp"
 #include "tool/old_tool/util/measurement.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/atom.hpp>
 #include <app/action/label.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
@@ -176,7 +176,7 @@ namespace VTX::UI::Widget::Inspector
 		for ( Model::Measurement::Angle * const angleModel : getTargets() )
 			labelTargets.emplace( angleModel );
 
-		VTX_ACTION( new Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
+		VTX_ACTION( new App::Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
 	}
 
 	void MultipleMeasurmentAngleWidget::_setLabelColor( const Color::Rgba & p_color ) const
@@ -185,7 +185,7 @@ namespace VTX::UI::Widget::Inspector
 		for ( Model::Measurement::Angle * const targetDistance : getTargets() )
 			labelTargets.emplace( targetDistance );
 
-		VTX_ACTION( new Action::Label::ChangeColor( labelTargets, p_color ) );
+		VTX_ACTION( new App::Action::Label::ChangeColor( labelTargets, p_color ) );
 	}
 
 	void MultipleMeasurmentAngleWidget::_setAutoNameAction() const
@@ -194,7 +194,7 @@ namespace VTX::UI::Widget::Inspector
 		for ( Model::Measurement::Angle * const angleModel : getTargets() )
 			labelTargets.emplace( angleModel );
 
-		VTX_ACTION( new Action::Label::EnableAutoNaming( labelTargets, true ) );
+		VTX_ACTION( new App::Action::Label::EnableAutoNaming( labelTargets, true ) );
 	}
 
 	void MultipleMeasurmentAngleWidget::_resetFieldStates( const SectionFlag & p_flag )

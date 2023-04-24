@@ -1,7 +1,7 @@
 #include "ui/old_ui/ui/widget/main_menu/home/menu_home_molecule_widget.hpp"
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/selection.hpp>
 #include <app/model/selection.hpp>
 #include <app/core/mvc/mvc_manager.hpp>

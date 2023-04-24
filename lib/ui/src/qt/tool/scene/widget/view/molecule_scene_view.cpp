@@ -15,7 +15,7 @@
 #include "ui/qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <QScrollBar>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/atom.hpp>
 #include <app/action/category.hpp>
 #include <app/action/chain.hpp>
@@ -267,7 +267,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 					}
 					else if ( itemTxt != _model->getDisplayName() )
 					{
-						VTX_ACTION( new VTX::Action::Molecule::Rename( *_model, itemTxt ) );
+						VTX_ACTION( new VTX::App::Action::Molecule::Rename( *_model, itemTxt ) );
 					}
 
 					const bool oldSignalState = blockSignals( true );
@@ -1042,9 +1042,9 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 
-		const VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
-			= modelEnabled ? VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW
-						   : VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
+		const VTX::App::Action::VISIBILITY_MODE visibilityMode
+			= modelEnabled ? VTX::App::Action::VISIBILITY_MODE::SHOW
+						   : VTX::App::Action::VISIBILITY_MODE::HIDE;
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
@@ -1053,11 +1053,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			if ( selection.isMoleculeFullySelected( model ) )
 			{
 				VTX_ACTION(
-					new VTX::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+					new VTX::App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Molecule::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Molecule::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
@@ -1067,11 +1067,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			if ( selection.isCategoryFullySelected( model ) )
 			{
 				VTX_ACTION(
-					new VTX::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+					new VTX::App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Category::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Category::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
@@ -1081,11 +1081,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			if ( selection.isChainFullySelected( model ) )
 			{
 				VTX_ACTION(
-					new VTX::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+					new VTX::App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Chain::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Chain::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
@@ -1095,11 +1095,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			if ( selection.isResidueFullySelected( model ) )
 			{
 				VTX_ACTION(
-					new VTX::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+					new VTX::App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Residue::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Residue::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
@@ -1109,11 +1109,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			if ( selection.isAtomSelected( model ) )
 			{
 				VTX_ACTION(
-					new VTX::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+					new VTX::App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Atom::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Atom::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
 	}

@@ -13,7 +13,7 @@
 #include "ui/qt/action/residue.hpp"
 #include "ui/qt/action/selection.hpp"
 #include <QScrollBar>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/atom.hpp>
 #include <app/action/category.hpp>
 #include <app/action/chain.hpp>
@@ -264,7 +264,7 @@ namespace VTX::View::UI::Widget
 					}
 					else if ( itemTxt != _model->getDisplayName() )
 					{
-						VTX_ACTION( new Action::Molecule::Rename( *_model, itemTxt ) );
+						VTX_ACTION( new App::Action::Molecule::Rename( *_model, itemTxt ) );
 					}
 
 					const bool oldSignalState = blockSignals( true );
@@ -1050,54 +1050,54 @@ namespace VTX::View::UI::Widget
 
 		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 
-		const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
-			= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW
-						   : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
+		const App::Action::VISIBILITY_MODE visibilityMode
+			= modelEnabled ? App::Action::VISIBILITY_MODE::SHOW
+						   : App::Action::VISIBILITY_MODE::HIDE;
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			Model::Molecule & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 
 			if ( selection.isMoleculeFullySelected( model ) )
-				VTX_ACTION( new Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION( new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
-				VTX_ACTION( new Action::Molecule::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new App::Action::Molecule::ChangeVisibility( model, visibilityMode ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
 		{
 			Model::Category & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( modelId );
 
 			if ( selection.isCategoryFullySelected( model ) )
-				VTX_ACTION( new Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION( new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
-				VTX_ACTION( new Action::Category::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new App::Action::Category::ChangeVisibility( model, visibilityMode ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Chain>( modelId );
 
 			if ( selection.isChainFullySelected( model ) )
-				VTX_ACTION( new Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION( new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
-				VTX_ACTION( new Action::Chain::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new App::Action::Chain::ChangeVisibility( model, visibilityMode ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
 			Model::Residue & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( modelId );
 
 			if ( selection.isResidueFullySelected( model ) )
-				VTX_ACTION( new Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION( new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
-				VTX_ACTION( new Action::Residue::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new App::Action::Residue::ChangeVisibility( model, visibilityMode ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
 			Model::Atom & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( modelId );
 
 			if ( selection.isAtomSelected( model ) )
-				VTX_ACTION( new Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION( new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
-				VTX_ACTION( new Action::Atom::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new App::Action::Atom::ChangeVisibility( model, visibilityMode ) );
 		}
 	}
 	void MoleculeSceneView::_reformatMoleculeName( std::string & p_moleculeName ) const

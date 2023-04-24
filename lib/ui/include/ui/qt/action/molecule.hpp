@@ -6,7 +6,7 @@
 
 namespace VTX::UI::QT::Action::Molecule
 {
-	class Orient : public VTX::Core::Action::BaseAction
+	class Orient : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Orient( const Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}

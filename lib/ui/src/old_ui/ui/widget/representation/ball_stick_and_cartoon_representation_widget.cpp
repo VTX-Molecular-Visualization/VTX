@@ -2,7 +2,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QGridLayout>
 #include <QLabel>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/instantiated_representation.hpp>
 #include <app/old_app/setting.hpp>
 

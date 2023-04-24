@@ -3,7 +3,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QPushButton>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/old_app/setting.hpp>
 #include <string>
@@ -78,7 +78,7 @@ namespace VTX::UI::Widget::Dialog
 	void DownloadMoleculeDialog::openAction()
 	{
 		const std::string code = _fileComboBox->currentText().toStdString();
-		VTX_ACTION( new Action::Main::OpenApi( code ) );
+		VTX_ACTION( new App::Action::Main::OpenApi( code ) );
 
 		close();
 	}

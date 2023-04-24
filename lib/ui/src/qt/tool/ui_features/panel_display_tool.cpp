@@ -9,7 +9,7 @@
 #include "ui/qt/widget_factory.hpp"
 #include <QMenu>
 #include <QWidget>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/setting.hpp>
 #include <list>
 

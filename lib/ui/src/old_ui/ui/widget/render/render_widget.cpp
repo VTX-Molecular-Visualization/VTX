@@ -16,7 +16,7 @@
 #include "ui/qt/action/main.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 #include <QShortcut>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
 #include <app/action/viewpoint.hpp>
@@ -224,7 +224,7 @@ namespace VTX::UI::Widget::Render
 	void RenderWidget::_onShortcutToggleCamera()
 	{
 		const bool changeToPerspective = !VTX_SETTING().getCameraPerspective();
-		VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
+		VTX_ACTION( new App::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 
 	void RenderWidget::_onShortcutAddViewpoint() { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
@@ -232,14 +232,14 @@ namespace VTX::UI::Widget::Render
 	void RenderWidget::_onShortcutSnapshot()
 	{
 		VTX_ACTION(
-			new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+			new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
 										IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 										VTX_SETTING().getSnapshotResolution() ) );
 	}
 
 	void RenderWidget::_onShortcutChangeRenderMode()
 	{
-		VTX_ACTION( new Action::Setting::ChangeRenderMode(
+		VTX_ACTION( new App::Action::Setting::ChangeRenderMode(
 			VTX::Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)VTX::Renderer::MODE::COUNT ) ) );
 	}
 

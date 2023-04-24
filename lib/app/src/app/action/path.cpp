@@ -7,7 +7,7 @@
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker/snapshoter.hpp"
 
-namespace VTX::Action::Path
+namespace VTX::App::Action::Path
 {
 	void ChangeDuration::execute()
 	{
@@ -54,4 +54,4 @@ namespace VTX::Action::Path
 		}
 	}
 
-} // namespace VTX::Action::Path
+} // namespace VTX::App::Action::Path

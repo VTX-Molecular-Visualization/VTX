@@ -3,7 +3,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/representation.hpp>
 #include <app/old_app/id.hpp>
 #include <app/model/representation/representation.hpp>
@@ -105,16 +105,16 @@ namespace VTX::View::UI::Widget::Representation
 
 	void RepresentationLibraryView::_onAddPreset() const
 	{
-		VTX_ACTION( new Action::Representation::AddNewPresetInLibrary( Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
+		VTX_ACTION( new App::Action::Representation::AddNewPresetInLibrary( Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
 	}
 	void RepresentationLibraryView::_onCopyPreset() const
 	{
-		VTX_ACTION( new Action::Representation::CopyPresetInLibrary( _presetList->currentIndex() ) );
+		VTX_ACTION( new App::Action::Representation::CopyPresetInLibrary( _presetList->currentIndex() ) );
 	}
 	void RepresentationLibraryView::_onDeletePreset()
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ),
+			new App::Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ),
 			"Confirm",
 			"Are you sure you want to delete this preset ?" );
 	}
@@ -122,14 +122,14 @@ namespace VTX::View::UI::Widget::Representation
 	void RepresentationLibraryView::_onReloadLibrary() const
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new Action::Representation::ReloadPresets(),
+			new App::Action::Representation::ReloadPresets(),
 			"Confirm",
 			"Are you sure you want to reload all presets ? Current changes will be lost." );
 	}
 	void RepresentationLibraryView::_onResetLibrary() const
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new Action::Representation::ResetPresetsToDefault(),
+			new App::Action::Representation::ResetPresetsToDefault(),
 			"Confirm",
 			"Are you sure you want to reset the preset library ? All changes will be lost." );
 	}

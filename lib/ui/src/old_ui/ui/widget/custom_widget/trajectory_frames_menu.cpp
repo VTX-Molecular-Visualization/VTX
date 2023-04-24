@@ -1,5 +1,5 @@
 #include "ui/old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/molecule.hpp>
 #include <app/model/generated_molecule.hpp>
 #include <app/model/molecule.hpp>

@@ -1,7 +1,8 @@
 #include "app/action/visible.hpp"
+#include "app/action.hpp"
 #include <util/logger.hpp>
 
-namespace VTX::Action::Visible
+namespace VTX::App::Action::Visible
 {
 	void ChangeVisibility::execute()
 	{
@@ -45,4 +46,4 @@ namespace VTX::Action::Visible
 
 		return newVisibility;
 	}
-} // namespace VTX::Action::Visible
+} // namespace VTX::App::Action::Visible

@@ -1,15 +1,16 @@
-#ifndef __VTX_ACTION_CATEGORY__
-#define __VTX_ACTION_CATEGORY__
+#ifndef __VTX_APP_ACTION_CATEGORY__
+#define __VTX_APP_ACTION_CATEGORY__
 
+#include "app/action.hpp"
 #include "app/action/visible.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/model/category.hpp"
 // #include "app/model/representation/instantiated_representation.hpp"
 // #include <unordered_set>
 
-namespace VTX::Action::Category
+namespace VTX::App::Action::Category
 {
-	// class ChangeColor : public Core::Action::BaseAction
+	// class ChangeColor : public App::Core::Action::BaseAction
 	//{
 	//  public:
 	//	explicit ChangeColor( Model::Category & p_category, const Color::Rgb & p_color ) :
@@ -42,7 +43,7 @@ namespace VTX::Action::Category
 		virtual void execute() override;
 	};
 
-	// class ChangeRepresentationPreset : public Core::Action::BaseAction
+	// class ChangeRepresentationPreset : public App::Core::Action::BaseAction
 	//{
 	//  public:
 	//	explicit ChangeRepresentationPreset( Model::Category & p_category, const int p_indexPreset ) :
@@ -65,7 +66,7 @@ namespace VTX::Action::Category
 	//	const int								 _indexPreset;
 	//};
 
-	// class RemoveRepresentation : public Core::Action::BaseAction
+	// class RemoveRepresentation : public App::Core::Action::BaseAction
 	//{
 	//  public:
 	//	explicit RemoveRepresentation( Model::Category & p_category ) : _categories { &p_category }
@@ -84,7 +85,7 @@ namespace VTX::Action::Category
 	//	const std::unordered_set<Model::Category *> _categories;
 	//};
 
-	// class RemoveChildrenRepresentations : public Core::Action::BaseAction
+	// class RemoveChildrenRepresentations : public App::Core::Action::BaseAction
 	//{
 	//  public:
 	//	explicit RemoveChildrenRepresentations( Model::Category & p_category ) : _categories { &p_category }
@@ -103,7 +104,7 @@ namespace VTX::Action::Category
 	//	const std::unordered_set<Model::Category *> _categories;
 	//};
 
-	// class Delete : public Core::Action::BaseAction
+	// class Delete : public App::Core::Action::BaseAction
 	//{
 	//  public:
 	//	explicit Delete( Model::Category & p_category ) : _category( p_category )
@@ -117,7 +118,7 @@ namespace VTX::Action::Category
 	//	Model::Category & _category;
 	//};
 
-	// class Copy : public Core::Action::BaseAction
+	// class Copy : public App::Core::Action::BaseAction
 	//{
 	//  public:
 	//	explicit Copy( const Model::Category & p_target ) : _target( p_target )
@@ -130,7 +131,7 @@ namespace VTX::Action::Category
 	//	const Model::Category & _target;
 	//};
 
-	// class Extract : public Core::Action::BaseAction
+	// class Extract : public App::Core::Action::BaseAction
 	//{
 	//  public:
 	//	explicit Extract( const Model::Category & p_target ) : _target( p_target )
@@ -143,7 +144,7 @@ namespace VTX::Action::Category
 	//	const Model::Category & _target;
 	//};
 
-	// class ApplyRepresentation : public Core::Action::BaseAction
+	// class ApplyRepresentation : public App::Core::Action::BaseAction
 	//{
 	//  public:
 	//	explicit ApplyRepresentation( const std::unordered_set<Model::Category *> &				p_categories,
@@ -163,5 +164,5 @@ namespace VTX::Action::Category
 	//	const Model::Representation::MEMBER_FLAG				  _flag;
 	//};
 
-} // namespace VTX::Action::Category
+} // namespace VTX::App::Action::Category
 #endif

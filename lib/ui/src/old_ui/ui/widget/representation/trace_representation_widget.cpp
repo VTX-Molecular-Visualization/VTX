@@ -1,7 +1,7 @@
 #include "ui/old_ui/ui/widget/representation/trace_representation_widget.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/representable.hpp>
 
 namespace VTX::UI::Widget::Representation

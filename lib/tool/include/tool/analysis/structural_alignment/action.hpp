@@ -11,7 +11,7 @@
 
 namespace VTX::Tool::Analysis::StructuralAlignment::Action
 {
-	class ComputeStructuralAlignment : public VTX::Core::Action::BaseAction
+	class ComputeStructuralAlignment : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ComputeStructuralAlignment(

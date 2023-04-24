@@ -7,7 +7,7 @@
 
 namespace VTX::UI::Action::Renderer
 {
-	class ChangeShading : public VTX::Core::Action::BaseAction
+	class ChangeShading : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeShading( Model::Renderer::RenderEffectPreset & p_preset, const VTX::Renderer::SHADING & p_shading ) :
@@ -20,7 +20,7 @@ namespace VTX::UI::Action::Renderer
 		const VTX::Renderer::SHADING		  _shading;
 	};
 
-	class EnableSSAO : public VTX::Core::Action::BaseAction
+	class EnableSSAO : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		EnableSSAO( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
@@ -33,7 +33,7 @@ namespace VTX::UI::Action::Renderer
 		const bool							  _enable;
 	};
 
-	class EnableOutline : public VTX::Core::Action::BaseAction
+	class EnableOutline : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		EnableOutline( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
@@ -46,7 +46,7 @@ namespace VTX::UI::Action::Renderer
 		const bool							  _enable;
 	};
 
-	class EnableFog : public VTX::Core::Action::BaseAction
+	class EnableFog : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		EnableFog( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :

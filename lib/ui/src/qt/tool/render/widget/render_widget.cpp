@@ -4,7 +4,7 @@
 #include "ui/qt/tool/render/widget/base_integrated_widget.hpp"
 #include "ui/qt/tool/render/widget/overlay/visualization_quick_access.hpp"
 #include "ui/qt/widget_factory.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
 #include <app/action/viewpoint.hpp>
@@ -238,7 +238,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void RenderWidget::_onShortcutSnapshot()
 	{
-		VTX_ACTION( new VTX::Action::Main::Snapshot(
+		VTX_ACTION( new VTX::App::Action::Main::Snapshot(
 			Worker::Snapshoter::MODE::GL,
 			IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
@@ -246,7 +246,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void RenderWidget::_onShortcutChangeRenderMode()
 	{
-		VTX_ACTION( new VTX::Action::Setting::ChangeRenderMode(
+		VTX_ACTION( new VTX::App::Action::Setting::ChangeRenderMode(
 			Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)Renderer::MODE::COUNT ) ) );
 	}
 

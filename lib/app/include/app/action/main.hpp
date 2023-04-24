@@ -1,10 +1,11 @@
-#ifndef __VTX_ACTION_MAIN__
-#define __VTX_ACTION_MAIN__
+#ifndef __VTX_APP_ACTION_MAIN__
+#define __VTX_APP_ACTION_MAIN__
 
+#include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/core/worker/worker_manager.hpp"
-#include "app/old_app/io/struct/image_export.hpp"
 #include "app/model/molecule.hpp"
+#include "app/old_app/io/struct/image_export.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker/snapshoter.hpp"
@@ -12,15 +13,15 @@
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Action::Main
+namespace VTX::App::Action::Main
 {
-	class New : public Core::Action::BaseAction
+	class New : public App::Core::Action::BaseAction
 	{
 	  public:
 		virtual void execute() override;
 	};
 
-	class Open : public Core::Action::BaseAction
+	class Open : public App::Core::Action::BaseAction
 	{
 	  private:
 		class LoadSceneClass
@@ -57,7 +58,7 @@ namespace VTX::Action::Main
 		std::vector<Model::Molecule *> _trajectoryTargets = std::vector<Model::Molecule *>();
 	};
 
-	class OpenApi : public Core::Action::BaseAction
+	class OpenApi : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit OpenApi( const std::string & p_id ) : _id( p_id ) {}
@@ -68,7 +69,7 @@ namespace VTX::Action::Main
 		const std::string _id;
 	};
 
-	class Save : public VTX::Core::Action::BaseAction
+	class Save : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Save() : _path( "" ), _callback( nullptr ) {}
@@ -85,7 +86,7 @@ namespace VTX::Action::Main
 		VTX::Core::Worker::CallbackThread * const _callback;
 	};
 
-	class ImportRepresentationPreset : public Core::Action::BaseAction
+	class ImportRepresentationPreset : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ImportRepresentationPreset( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
@@ -96,7 +97,7 @@ namespace VTX::Action::Main
 		std::vector<FilePath> _paths = std::vector<FilePath>();
 	};
 
-	class ImportRenderEffectPreset : public Core::Action::BaseAction
+	class ImportRenderEffectPreset : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ImportRenderEffectPreset( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
@@ -107,7 +108,7 @@ namespace VTX::Action::Main
 		std::vector<FilePath> _paths = std::vector<FilePath>();
 	};
 
-	class ToggleCamera : public Core::Action::BaseAction
+	class ToggleCamera : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleCamera() {}
@@ -115,7 +116,7 @@ namespace VTX::Action::Main
 		virtual void execute() override;
 	};
 
-	class SetCameraProjectionToPerspective : public Core::Action::BaseAction
+	class SetCameraProjectionToPerspective : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SetCameraProjectionToPerspective( const bool p_perspective ) : _perspective( p_perspective ) {}
@@ -126,7 +127,7 @@ namespace VTX::Action::Main
 		bool _perspective;
 	};
 
-	class Snapshot : public Core::Action::BaseAction
+	class Snapshot : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const FilePath & p_path ) :
@@ -176,5 +177,5 @@ namespace VTX::Action::Main
 		const IO::Struct::ImageExport  _exportData;
 	};
 
-} // namespace VTX::Action::Main
+} // namespace VTX::App::Action::Main
 #endif

@@ -2,7 +2,7 @@
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/vtx_app.hpp"
 
-namespace VTX::Action::Representable
+namespace VTX::App::Action::Representable
 {
 	void SetRepresentation::execute()
 	{
@@ -24,4 +24,4 @@ namespace VTX::Action::Representable
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
 
-} // namespace VTX::Action::Representable
+} // namespace VTX::App::Action::Representable

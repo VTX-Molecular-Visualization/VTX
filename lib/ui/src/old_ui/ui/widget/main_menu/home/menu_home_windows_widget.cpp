@@ -6,9 +6,9 @@
 #include "ui/old_ui/ui/window_mode.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include "ui/qt/action/main.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
+
 
 namespace VTX::UI::Widget::MainMenu::Home
 {

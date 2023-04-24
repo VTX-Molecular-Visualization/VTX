@@ -4,8 +4,8 @@
 #include "ui/old_ui/ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/main.hpp>
+
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {

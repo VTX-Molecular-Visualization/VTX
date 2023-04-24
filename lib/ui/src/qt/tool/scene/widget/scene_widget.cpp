@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <app/action/scene.hpp>
 #include <app/action/selection.hpp>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/model/path.hpp>
 #include <app/model/selection.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
@@ -345,7 +345,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 			Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 			if ( !selectionModel.isEmpty() )
 			{
-				VTX_ACTION( new Action::Selection::ClearSelection( selectionModel ) );
+				VTX_ACTION( new App::Action::Selection::ClearSelection( selectionModel ) );
 			}
 
 			p_event->accept();
@@ -440,6 +440,6 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		p_event->acceptProposedAction();
 
-		VTX_ACTION( new Action::Scene::ChangeItemIndex( droppedItems, newIndex ) );
+		VTX_ACTION( new App::Action::Scene::ChangeItemIndex( droppedItems, newIndex ) );
 	}
 } // namespace VTX::UI::QT::Tool::Scene::Widget

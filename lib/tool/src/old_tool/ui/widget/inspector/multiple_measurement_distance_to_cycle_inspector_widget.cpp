@@ -131,14 +131,14 @@ namespace VTX::UI::Widget::Inspector
 	//	const Model::Measurement::Distance * const distance
 	//		= dynamic_cast<const Model::Measurement::Distance *>( *( getTargets().begin() ) );
 
-	//	VTX_ACTION( new Action::Atom::Orient( distance->getFirstAtom() ) );
+	//	VTX_ACTION( new App::Action::Atom::Orient( distance->getFirstAtom() ) );
 	//}
 	// void MultipleMeasurmentDistanceToCycleWidget::_orientOnSecondAtom() const
 	//{
 	//	const Model::Measurement::Distance * const distance
 	//		= dynamic_cast<const Model::Measurement::Distance *>( *( getTargets().begin() ) );
 
-	//	VTX_ACTION( new Action::Atom::Orient( distance->getSecondAtom() ) );
+	//	VTX_ACTION( new App::Action::Atom::Orient( distance->getSecondAtom() ) );
 	//}
 
 	// void MultipleMeasurmentDistanceToCycleWidget::_renameAction() const
@@ -147,7 +147,7 @@ namespace VTX::UI::Widget::Inspector
 	//	for ( Model::Measurement::DistanceToCycle * const targetDistance : getTargets() )
 	//		labelTargets.emplace( targetDistance );
 
-	//	VTX_ACTION( new Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
+	//	VTX_ACTION( new App::Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
 	//}
 
 	// void MultipleMeasurmentDistanceToCycleWidget::_setAutoNameAction() const
@@ -156,7 +156,7 @@ namespace VTX::UI::Widget::Inspector
 	//	for ( Model::Measurement::DistanceToCycle * const targetDistance : getTargets() )
 	//		labelTargets.emplace( targetDistance );
 
-	//	VTX_ACTION( new Action::Label::EnableAutoNaming( labelTargets, true ) );
+	//	VTX_ACTION( new App::Action::Label::EnableAutoNaming( labelTargets, true ) );
 	//}
 
 	// void MultipleMeasurmentDistanceToCycleWidget::_resetFieldStates( const SectionFlag & p_flag )

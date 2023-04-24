@@ -11,7 +11,7 @@
 #include <QFont>
 #include <QGridLayout>
 #include <QPixmap>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/instantiated_representation.hpp>
 #include <app/action/molecule.hpp>
 #include <app/action/residue.hpp>
@@ -207,7 +207,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_onRepresentationPresetChange( const int p_presetIndex )
 	{
-		VTX_ACTION( new Action::Residue::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
+		VTX_ACTION( new App::Action::Residue::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
 	void MultipleResidueWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
@@ -215,7 +215,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new Action::Residue::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
+			VTX_ACTION( new App::Action::Residue::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
 		}
 	}
 
@@ -231,7 +231,7 @@ namespace VTX::UI::Widget::Inspector
 				switch ( p_representation.getRibbonData().colorMode )
 				{
 				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
+					VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
 				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
@@ -252,7 +252,7 @@ namespace VTX::UI::Widget::Inspector
 				{
 				case Generic::COLOR_MODE::ATOM_CUSTOM:
 				case Generic::COLOR_MODE::CUSTOM:
-					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
+					VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
 				case Generic::COLOR_MODE::ATOM_PROTEIN:
@@ -280,11 +280,11 @@ namespace VTX::UI::Widget::Inspector
 			molecules.emplace( item->getMoleculePtr() );
 		}
 
-		VTX_ACTION( new Action::Molecule::ChangeColor( molecules, p_color ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeColor( molecules, p_color ) );
 	}
 	void MultipleResidueWidget::_onRevertRepresentation() const
 	{
-		VTX_ACTION( new Action::Residue::RemoveRepresentation( getTargets() ) );
+		VTX_ACTION( new App::Action::Residue::RemoveRepresentation( getTargets() ) );
 	}
 
 	void MultipleResidueWidget::_appendBondInfo( const Model::Residue & p_residue )

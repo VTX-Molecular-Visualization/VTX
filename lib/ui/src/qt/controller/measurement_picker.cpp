@@ -6,7 +6,7 @@
 #include "ui/qt/tool/keys.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
 #include <QPoint>
-#include <app/core/action/action_manager.hpp>
+
 // #include <app/action/measurement.hpp>
 #include <app/core/event/event_manager.hpp>
 #include <app/model/atom.hpp>
@@ -188,7 +188,7 @@ namespace VTX::UI::QT::Controller
 		//	const Model::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
 		//	const Model::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
 
-		//	VTX_ACTION( new Action::Measurement::InstantiateDistanceLabel( *firstAtom, *secondAtom ) );
+		//	VTX_ACTION( new App::Action::Measurement::InstantiateDistanceLabel( *firstAtom, *secondAtom ) );
 		//}
 		// break;
 
@@ -198,7 +198,7 @@ namespace VTX::UI::QT::Controller
 		//	const Model::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
 		//	const Model::Atom * const thirdAtom	 = _currentMeasureModel->getAtom( 2 );
 
-		//	VTX_ACTION( new Action::Measurement::InstantiateAngleLabel( *firstAtom, *secondAtom, *thirdAtom ) );
+		//	VTX_ACTION( new App::Action::Measurement::InstantiateAngleLabel( *firstAtom, *secondAtom, *thirdAtom ) );
 		//}
 		// break;
 
@@ -209,7 +209,7 @@ namespace VTX::UI::QT::Controller
 		//	const Model::Atom * const thirdAtom	 = _currentMeasureModel->getAtom( 2 );
 		//	const Model::Atom * const fourthAtom = _currentMeasureModel->getAtom( 3 );
 
-		//	VTX_ACTION( new Action::Measurement::InstantiateDihedralAngleLabel(
+		//	VTX_ACTION( new App::Action::Measurement::InstantiateDihedralAngleLabel(
 		//		*firstAtom, *secondAtom, *thirdAtom, *fourthAtom ) );
 		//}
 		// break;

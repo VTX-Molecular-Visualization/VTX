@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_ACTION_ACTION_MANAGER__
-#define __VTX_APP_CORE_ACTION_ACTION_MANAGER__
+#ifndef __VTX_APP_MANAGER_ACTION_MANAGER__
+#define __VTX_APP_MANAGER_ACTION_MANAGER__
 
 #include "app/core/action/base_action.hpp"
 #include "app/core/action/base_action_undonable.hpp"
@@ -11,8 +11,10 @@
 
 namespace VTX
 {
-	namespace Core::Action
+	namespace App::Manager
 	{
+		using namespace VTX::App::Core::Action;
+
 		class ActionManager final : public Generic::BaseUpdatable
 		{
 		  public:
@@ -25,6 +27,7 @@ namespace VTX
 				return instance;
 			}
 
+			// TODO Use shared_ptr instead of BaseAction * const
 			void		execute( BaseAction * const );
 			void		execute( const std::string & );
 			inline void enqueue( BaseAction * const p_action ) { _actionQueue.emplace( p_action ); }
@@ -48,18 +51,7 @@ namespace VTX
 			void _flushAction( BaseAction * const );
 			void _purgeBuffer();
 		};
-	} // namespace Core::Action
+	} // namespace App::Manager
 
-	inline void VTX_ACTION( Core::Action::BaseAction * const p_action )
-	{
-		Core::Action::ActionManager::get().execute( p_action );
-	}
-
-	inline void VTX_ACTION_ENQUEUE( Core::Action::BaseAction * const p_action )
-	{
-		Core::Action::ActionManager::get().enqueue( p_action );
-	}
-
-	inline void VTX_ACTION( const std::string & p_action ) { Core::Action::ActionManager::get().execute( p_action ); }
 } // namespace VTX
 #endif

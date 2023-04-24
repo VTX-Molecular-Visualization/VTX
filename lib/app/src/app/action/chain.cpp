@@ -1,11 +1,11 @@
 #include "app/action/chain.hpp"
-#include "app/old_app/generic/base_visible.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/model/generated_molecule.hpp"
 #include "app/model/molecule.hpp"
 #include "app/model/representation/representation.hpp"
 #include "app/model/representation/representation_library.hpp"
 #include "app/model/selection.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
@@ -14,7 +14,7 @@
 #include <map>
 #include <vector>
 
-namespace VTX::Action::Chain
+namespace VTX::App::Action::Chain
 {
 	void ChangeColor::execute()
 	{
@@ -177,4 +177,4 @@ namespace VTX::Action::Chain
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
 
-} // namespace VTX::Action::Chain
+} // namespace VTX::App::Action::Chain

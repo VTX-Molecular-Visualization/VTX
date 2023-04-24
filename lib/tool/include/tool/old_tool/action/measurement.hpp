@@ -13,7 +13,7 @@
 
 namespace VTX::Action::Measurement
 {
-	class InstantiateDistanceLabel : public Core::Action::BaseAction
+	class InstantiateDistanceLabel : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit InstantiateDistanceLabel( const Model::Atom & p_firstAtom, const Model::Atom & p_secondAtom ) :
@@ -54,7 +54,7 @@ namespace VTX::Action::Measurement
 		const Model::Atom & _secondAtom;
 	};
 
-	class InstantiateAngleLabel : public Core::Action::BaseAction
+	class InstantiateAngleLabel : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit InstantiateAngleLabel( const Model::Atom & p_firstAtom,
@@ -80,7 +80,7 @@ namespace VTX::Action::Measurement
 		const Model::Atom & _thirdAtom;
 	};
 
-	class InstantiateDihedralAngleLabel : public Core::Action::BaseAction
+	class InstantiateDihedralAngleLabel : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit InstantiateDihedralAngleLabel( const Model::Atom & p_firstAtom,

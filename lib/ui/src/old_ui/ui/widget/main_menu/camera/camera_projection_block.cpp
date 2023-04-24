@@ -1,7 +1,7 @@
 #include "ui/old_ui/ui/widget/main_menu/camera/camera_projection_block.hpp"
 #include "ui/old_ui/ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
 #include <app/old_app/id.hpp>
@@ -69,7 +69,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	void CameraProjectionBlock::_toggleCameraProjection() const
 	{
 		const bool changeToPerspective = !VTX_SETTING().getCameraPerspective();
-		VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
+		VTX_ACTION( new App::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Camera

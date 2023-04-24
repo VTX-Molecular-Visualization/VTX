@@ -1,14 +1,15 @@
-#ifndef __VTX_ACTION_PATH__
-#define __VTX_ACTION_PATH__
+#ifndef __VTX_APP_ACTION_PATH__
+#define __VTX_APP_ACTION_PATH__
 
+#include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/model/path.hpp"
 #include "app/old_app/path/path_enum.hpp"
 // #include "app/worker/snapshoter.hpp"
 
-namespace VTX::Action::Path
+namespace VTX::App::Action::Path
 {
-	class ChangeDuration : public Core::Action::BaseAction
+	class ChangeDuration : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeDuration( Model::Path & p_path, const float p_duration ) :
@@ -24,7 +25,7 @@ namespace VTX::Action::Path
 		const float	  _duration;
 	};
 
-	class ChangeDurationMode : public Core::Action::BaseAction
+	class ChangeDurationMode : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeDurationMode( Model::Path & p_path, const VTX::Path::DURATION_MODE p_mode ) :
@@ -40,7 +41,7 @@ namespace VTX::Action::Path
 		const VTX::Path::DURATION_MODE _mode;
 	};
 
-	class ChangeInterpolationMode : public Core::Action::BaseAction
+	class ChangeInterpolationMode : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeInterpolationMode( Model::Path & p_path, const VTX::Path::INTERPOLATION_MODE p_mode ) :
@@ -56,7 +57,7 @@ namespace VTX::Action::Path
 		const VTX::Path::INTERPOLATION_MODE _mode;
 	};
 
-	class Play : public Core::Action::BaseAction
+	class Play : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Play( Model::Path * const p_path ) : _path( p_path ) {}
@@ -66,7 +67,7 @@ namespace VTX::Action::Path
 		Model::Path * const _path;
 	};
 
-	// class ExportVideo : public Core::Action::BaseAction
+	// class ExportVideo : public App::Core::Action::BaseAction
 	//{
 	//   public:
 	//	explicit ExportVideo( Model::Path * const p_path, Worker::Snapshoter::MODE p_mode ) :
@@ -81,7 +82,7 @@ namespace VTX::Action::Path
 	//	Model::Path * const			   _path;
 	//};
 
-	class ChangeIsLooping : public Core::Action::BaseAction
+	class ChangeIsLooping : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeIsLooping( Model::Path & p_path, const bool p_isLooping ) :
@@ -97,13 +98,13 @@ namespace VTX::Action::Path
 		const bool	  _isLooping;
 	};
 
-	class SetSelected : public Core::Action::BaseAction
+	class SetSelected : public App::Core::Action::BaseAction
 	{
 	  public:
 	  private:
 	};
 
-	class Clear : public Core::Action::BaseAction
+	class Clear : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Clear( Model::Path & p_path ) : _path( p_path )
@@ -117,5 +118,5 @@ namespace VTX::Action::Path
 		Model::Path & _path;
 	};
 
-} // namespace VTX::Action::Path
+} // namespace VTX::App::Action::Path
 #endif

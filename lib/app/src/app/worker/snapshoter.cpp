@@ -1,8 +1,8 @@
 #include "app/worker/snapshoter.hpp"
-#include "app/core/action/action_manager.hpp"
 #include "app/action/setting.hpp"
-#include "app/old_app/io/filesystem.hpp"
+#include "app/manager/action_manager.hpp"
 #include "app/model/renderer/render_effect_preset.hpp"
+#include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/renderer/gl/framebuffer.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 // #include <QOffscreenSurface>
@@ -72,7 +72,7 @@ namespace VTX::Worker
 		//		const bool activeAA = VTX_SETTING().getAA();
 		//		if ( activeAA == false )
 		//		{
-		//			VTX_ACTION( new Action::Setting::ActiveAA( true ) );
+		//			VTX_ACTION( new App::Action::Setting::ActiveAA( true ) );
 		//		}
 		//
 		//		// Make current.
@@ -113,7 +113,7 @@ namespace VTX::Worker
 		//		// Restore values.
 		//		if ( activeAA == false )
 		//		{
-		//			VTX_ACTION( new Action::Setting::ActiveAA( false ) );
+		//			VTX_ACTION( new App::Action::Setting::ActiveAA( false ) );
 		//		}
 		//
 		//		// Add watermark.

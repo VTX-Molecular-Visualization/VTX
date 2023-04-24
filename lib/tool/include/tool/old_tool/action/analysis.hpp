@@ -4,6 +4,7 @@
 #include "tool/old_tool/analysis/rmsd.hpp"
 #include "tool/old_tool/analysis/structural_alignment.hpp"
 #include "tool/old_tool/util/analysis.hpp"
+#include <app/action.hpp>
 #include <app/core/action/base_action.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/selection.hpp>
@@ -15,7 +16,7 @@
 
 namespace VTX::Action::Analysis
 {
-	class ComputeRMSD : public Core::Action::BaseAction
+	class ComputeRMSD : public App::Core::Action::BaseAction
 	{
 	  private:
 		enum class MODE : int
@@ -82,7 +83,7 @@ namespace VTX::Action::Analysis
 		const bool			   _considerTransform;
 	};
 
-	class ComputeStructuralAlignment : public Core::Action::BaseAction
+	class ComputeStructuralAlignment : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ComputeStructuralAlignment(

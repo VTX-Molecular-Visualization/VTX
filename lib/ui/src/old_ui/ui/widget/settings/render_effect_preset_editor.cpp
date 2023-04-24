@@ -6,7 +6,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QVBoxLayout>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/renderer.hpp>
 #include <app/old_app/setting.hpp>
 #include <app/view/callback_view.hpp>
@@ -241,12 +241,12 @@ namespace VTX::UI::Widget::Settings
 		}
 
 		if ( !signalsBlocked() && _preset->getName() != strName )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeName( *_preset, strName ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeName( *_preset, strName ) );
 	}
 	void RenderEffectPresetEditor::_onQuickAccessChanged( const bool p_quickAccess ) const
 	{
 		if ( !signalsBlocked() && _preset->hasQuickAccess() != p_quickAccess )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeQuickAccess( *_preset, p_quickAccess ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeQuickAccess( *_preset, p_quickAccess ) );
 	}
 
 	void RenderEffectPresetEditor::_onShadingChange( const int p_newIndex ) const
@@ -265,12 +265,12 @@ namespace VTX::UI::Widget::Settings
 	void RenderEffectPresetEditor::_onSSAOIntensityChanged( const int p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getSSAOIntensity() )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeSSAOIntensity( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeSSAOIntensity( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onSSAOBlurSizeChanged( const int p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getSSAOBlurSize() )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeSSAOBlurSize( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeSSAOBlurSize( *_preset, p_value ) );
 	}
 
 	void RenderEffectPresetEditor::_onOutlineStateChanged( const int p_state ) const
@@ -282,17 +282,17 @@ namespace VTX::UI::Widget::Settings
 	void RenderEffectPresetEditor::_onOutlineThicknessChanged( const uint p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getOutlineThickness() )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeOutlineThickness( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeOutlineThickness( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onOutlineSensivityChanged( const float p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getOutlineSensivity() )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeOutlineSensivity( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeOutlineSensivity( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onOutlineColorChanged( const Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getOutlineColor() )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeOutlineColor( *_preset, p_color ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeOutlineColor( *_preset, p_color ) );
 	}
 
 	void RenderEffectPresetEditor::_onFogStateChanged( const int p_state ) const
@@ -304,31 +304,31 @@ namespace VTX::UI::Widget::Settings
 	void RenderEffectPresetEditor::_onFogNearChanged( const int p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getFogNear() )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeFogNear( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeFogNear( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onFogFarChanged( const int p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getFogFar() )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeFogFar( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeFogFar( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onFogDensityChanged( const float p_value ) const
 	{
 		if ( !signalsBlocked() && p_value != _preset->getFogDensity() )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeFogDensity( *_preset, p_value ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeFogDensity( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onFogColorChanged( const Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getFogColor() )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeFogColor( *_preset, p_color ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeFogColor( *_preset, p_color ) );
 	}
 	void RenderEffectPresetEditor::_onBackgroundColorChanged( const Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getBackgroundColor() )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeBackgroundColor( *_preset, p_color ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeBackgroundColor( *_preset, p_color ) );
 	}
 	void RenderEffectPresetEditor::_onCameraLightColorChanged( const Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getCameraLightColor() )
-			VTX_ACTION( new VTX::Action::Renderer::ChangeCameraLightColor( *_preset, p_color ) );
+			VTX_ACTION( new VTX::App::Action::Renderer::ChangeCameraLightColor( *_preset, p_color ) );
 	}
 } // namespace VTX::UI::Widget::Settings

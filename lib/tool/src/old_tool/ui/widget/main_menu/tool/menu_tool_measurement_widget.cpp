@@ -1,10 +1,10 @@
 #include "tool/old_tool/ui/widget/main_menu/tool/menu_tool_measurement_widget.hpp"
 #include "tool/old_tool/action/measurement.hpp"
 #include "tool/old_tool/controller/measurement_picker.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/main.hpp>
-#include <app/old_app/id.hpp>
+
 #include <app/model/atom.hpp>
+#include <app/old_app/id.hpp>
 #include <ui/old_ui/action/main.hpp>
 #include <ui/old_ui/state/state_machine.hpp>
 #include <ui/old_ui/state/visualization.hpp>

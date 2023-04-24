@@ -5,7 +5,7 @@
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/ui/main_window.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/core/event/event_manager.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/manager/network_manager.hpp>

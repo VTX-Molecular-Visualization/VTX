@@ -6,7 +6,7 @@
 #include "ui/old_ui/util/ui.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QLabel>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
@@ -130,34 +130,34 @@ namespace VTX::UI::Widget::Settings
 
 	void SettingMoleculeWidget::_defaultRepresentationForPolymerChange( int p_index )
 	{
-		VTX_ACTION( new Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::POLYMER, p_index ) );
+		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::POLYMER, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForCarbohydrateChange( int p_index )
 	{
 		VTX_ACTION(
-			new Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::CARBOHYDRATE, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::CARBOHYDRATE, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForLigandChange( int p_index )
 	{
-		VTX_ACTION( new Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::LIGAND, p_index ) );
+		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::LIGAND, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForIonChange( int p_index )
 	{
-		VTX_ACTION( new Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::ION, p_index ) );
+		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::ION, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForSolventChange( int p_index )
 	{
-		VTX_ACTION( new Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::SOLVENT, p_index ) );
+		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::SOLVENT, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForWaterChange( int p_index )
 	{
-		VTX_ACTION( new Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::WATER, p_index ) );
+		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::WATER, p_index ) );
 	}
 
 	void SettingMoleculeWidget::_restoreDefaultRepresentations()
 	{
 		UI::Dialog::confirmActionDialog(
-			new Action::Setting::RestoreDefaultRepresentationPerCategory(),
+			new App::Action::Setting::RestoreDefaultRepresentationPerCategory(),
 			"Confirm",
 			"Are you sure you want to restore default representation ? All changes will be lost." );
 	}

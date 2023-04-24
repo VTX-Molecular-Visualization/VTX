@@ -4,7 +4,7 @@
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/state/state_machine.hpp"
 #include "ui/qt/state/visualization.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/core/action/base_action.hpp>
 #include <app/internal/network/request/check_update.hpp>
 #include <app/manager/network_manager.hpp>

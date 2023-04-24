@@ -34,7 +34,7 @@
 //		// VTX_INFO( "Starting application: {}", IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 //
 //		//		// Load settings.
-//		//		VTX_ACTION( new Action::Setting::Load() );
+//		//		VTX_ACTION( new App::Action::Setting::Load() );
 //		//		_setting.loadRecentPaths();
 //		//
 //		//		// Create singletons.
@@ -59,7 +59,7 @@
 //		//
 //		//		if ( VTX_SETTING().getCheckVTXUpdateAtLaunch() )
 //		//		{
-//		//			VTX_ACTION( new Action::Main::CheckForUpdate() );
+//		//			VTX_ACTION( new App::Action::Main::CheckForUpdate() );
 //		//		}
 //		//
 //		//		// Start timers.
@@ -75,10 +75,10 @@
 //		//		if ( p_args.size() == 0 )
 //		//		{
 //		//			// VTX_ACTION(
-//		//			//	 new Action::Main::Open( IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
-//		//			// VTX_ACTION( new Action::Main::OpenApi( "1aon" ) );
-//		//			// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
-//		//			// VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
+//		//			//	 new App::Action::Main::Open( IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
+//		//			// VTX_ACTION( new App::Action::Main::OpenApi( "1aon" ) );
+//		//			// VTX_ACTION( new App::Action::Main::OpenApi( "4hhb" ) );
+//		//			// VTX_ACTION( new App::Action::Main::OpenApi( "1aga" ) );
 //		//		}
 //		// #endif
 //	}
@@ -115,11 +115,11 @@
 //		//	}
 //		// }
 //
-//		// VTX_ACTION( new Action::Main::Open( files ) );
+//		// VTX_ACTION( new App::Action::Main::Open( files ) );
 //
 //		// for ( const std::string & pdbId : pdbIds )
 //		//{
-//		//	VTX_ACTION( new Action::Main::OpenApi( pdbId ) );
+//		//	VTX_ACTION( new App::Action::Main::OpenApi( pdbId ) );
 //		// }
 //	}
 //

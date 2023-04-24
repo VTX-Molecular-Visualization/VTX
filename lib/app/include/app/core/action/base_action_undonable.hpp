@@ -3,9 +3,9 @@
 
 #include "app/core/action/base_action.hpp"
 
-namespace VTX::Core::Action
+namespace VTX::App::Core::Action
 {
-	class BaseActionUndonable : public Core::Action::BaseAction
+	class BaseActionUndonable : public App::Core::Action::BaseAction
 	{
 	  public:
 		virtual ~BaseActionUndonable() = default;
@@ -13,5 +13,5 @@ namespace VTX::Core::Action
 		virtual void undo() = 0;
 		virtual void redo() { execute(); }
 	};
-} // namespace VTX::Core::Action
+} // namespace VTX::App::Core::Action
 #endif

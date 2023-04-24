@@ -12,7 +12,7 @@
 #include <QStyleFactory>
 // #include <exception>
 #include <util/logger.hpp>
-// #include <app/core/action/action_manager.hpp>
+// 
 // #include <app/action/main.hpp>
 #include <app/old_app/generic/base_opengl.hpp>
 #include <app/old_app/vtx_app.hpp>

@@ -6,7 +6,7 @@
 
 namespace VTX::UI::QT::Action::Selection
 {
-	class Orient : public VTX::Core::Action::BaseAction
+	class Orient : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Orient( const Model::Selection & p_selection ) : _selection( p_selection ) {}

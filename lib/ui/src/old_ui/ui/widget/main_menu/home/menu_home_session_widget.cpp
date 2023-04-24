@@ -4,7 +4,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QFileDialog>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
@@ -107,7 +107,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 	void MenuHomeSessionWidget::_openFile() const { Dialog::openLoadSessionDialog(); }
 	void MenuHomeSessionWidget::_saveSession() const
 	{
-		VTX_ACTION( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new App::Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 	void MenuHomeSessionWidget::_saveAsSession() const { Dialog::openSaveSessionDialog(); }
 
@@ -120,7 +120,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 			return;
 		}
 
-		VTX_ACTION( new Action::Main::Open( *recentPath ) );
+		VTX_ACTION( new App::Action::Main::Open( *recentPath ) );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Home

@@ -7,7 +7,7 @@
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QMenu>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
@@ -221,7 +221,7 @@ namespace VTX::UI::QT::Tool::Render::Widget::Overlay
 		const VTX::Selection::Granularity granularity
 			= VTX::Selection::Granularity( p_action->property( GRANULARITY_PROPERTY_NAME ).toInt() );
 
-		VTX_ACTION( new VTX::Action::Setting::ChangeSelectionGranularity( granularity ) );
+		VTX_ACTION( new VTX::App::Action::Setting::ChangeSelectionGranularity( granularity ) );
 	}
 	void VisualizationQuickAccess::_changeMeasurementModeAction( const QAction * const p_action )
 	{

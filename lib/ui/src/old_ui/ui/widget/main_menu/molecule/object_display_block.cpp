@@ -1,6 +1,6 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/object_display_block.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/molecule.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/selection.hpp>
@@ -165,7 +165,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		for ( const Model::Molecule * const molecule : molecules )
 			showWater = showWater && !molecule->showWater();
 
-		VTX_ACTION( new Action::Molecule::ChangeShowWater( molecules, showWater ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeShowWater( molecules, showWater ) );
 	}
 	void ObjectDisplayBlock::_toggleSolventVisibilityAction() const
 	{
@@ -177,7 +177,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		for ( const Model::Molecule * const molecule : molecules )
 			showSolvent = showSolvent && !molecule->showSolvent();
 
-		VTX_ACTION( new Action::Molecule::ChangeShowSolvent( molecules, showSolvent ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeShowSolvent( molecules, showSolvent ) );
 	}
 	void ObjectDisplayBlock::_toggleHydrogenVisibilityAction() const
 	{
@@ -189,7 +189,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		for ( const Model::Molecule * const molecule : molecules )
 			showHydrogen = showHydrogen && !molecule->showHydrogen();
 
-		VTX_ACTION( new Action::Molecule::ChangeShowHydrogen( molecules, showHydrogen ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeShowHydrogen( molecules, showHydrogen ) );
 	}
 	void ObjectDisplayBlock::_toggleIonVisibilityAction() const
 	{
@@ -201,7 +201,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		for ( const Model::Molecule * const molecule : molecules )
 			showIon = showIon && !molecule->showIon();
 
-		VTX_ACTION( new Action::Molecule::ChangeShowIon( molecules, showIon ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeShowIon( molecules, showIon ) );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Molecule

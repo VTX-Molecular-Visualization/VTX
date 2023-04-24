@@ -1,9 +1,9 @@
 #include "app/action/selection.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
 #include "app/model/label.hpp"
 #include "app/model/path.hpp"
 #include "app/model/representation/representation.hpp"
 #include "app/model/representation/representation_library.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
@@ -12,7 +12,7 @@
 #include "app/old_app/vtx_app.hpp"
 #include <util/chrono.hpp>
 
-namespace VTX::Action::Selection
+namespace VTX::App::Action::Selection
 {
 	void SelectAll::execute()
 	{
@@ -543,8 +543,9 @@ namespace VTX::Action::Selection
 
 			if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 			{
-				const Model::Molecule & source	 = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( selectedObjectID );
-				const int				nbFrames = source.getFrameCount();
+				const Model::Molecule & source
+					= VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( selectedObjectID );
+				const int nbFrames = source.getFrameCount();
 
 				if ( _frame == Model::GeneratedMolecule::ALL_FRAMES_SEPARATED_INDEX )
 				{
@@ -629,7 +630,8 @@ namespace VTX::Action::Selection
 			{
 				const Model::Selection::PairMoleculeIds & molIds = *moleculeMapToDeleteCopy.find( selectedObjectID );
 
-				Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+				Model::Molecule & molecule
+					= VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 
 				if ( molIds.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 				{
@@ -685,7 +687,8 @@ namespace VTX::Action::Selection
 			}
 			else if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
-				Model::Viewpoint & viewpoint = VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( selectedObjectID );
+				Model::Viewpoint & viewpoint
+					= VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( selectedObjectID );
 
 				Model::Path * const path = viewpoint.getPathPtr();
 				path->removeViewpoint( &viewpoint );
@@ -711,4 +714,4 @@ namespace VTX::Action::Selection
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
 
-} // namespace VTX::Action::Selection
+} // namespace VTX::App::Action::Selection

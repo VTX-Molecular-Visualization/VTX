@@ -1,19 +1,20 @@
-#ifndef __VTX_ACTION_SCENE__
-#define __VTX_ACTION_SCENE__
+#ifndef __VTX_APP_ACTION_SCENE__
+#define __VTX_APP_ACTION_SCENE__
 
+#include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/old_app/generic/base_scene_item.hpp"
 #include <vector>
 
-namespace VTX::Action::Scene
+namespace VTX::App::Action::Scene
 {
-	class ResetScene : public Core::Action::BaseAction
+	class ResetScene : public App::Core::Action::BaseAction
 	{
 	  public:
 		virtual void execute() override;
 	};
 
-	class ChangeItemIndex : public Core::Action::BaseAction
+	class ChangeItemIndex : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeItemIndex( const Generic::BaseSceneItem & p_item, const int p_position ) :
@@ -33,7 +34,7 @@ namespace VTX::Action::Scene
 		const int										  _position;
 	};
 
-	class ShowAllMolecules : public Core::Action::BaseAction
+	class ShowAllMolecules : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ShowAllMolecules()
@@ -42,5 +43,5 @@ namespace VTX::Action::Scene
 		}
 		virtual void execute() override;
 	};
-} // namespace VTX::Action::Scene
+} // namespace VTX::App::Action::Scene
 #endif

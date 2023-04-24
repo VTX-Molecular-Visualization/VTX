@@ -11,7 +11,7 @@
 #include <QMenu>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/scene.hpp>
 #include <app/action/setting.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
@@ -146,7 +146,7 @@ namespace VTX::UI::QT::Tool
 		VTX_ACTION( new Session::Action::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 	void SessionTool::_saveAsSession() const { Session::Dialog::openSaveSessionDialog(); }
-	void SessionTool::_clearSession() const { VTX_ACTION( new VTX::Action::Scene::ResetScene() ); }
+	void SessionTool::_clearSession() const { VTX_ACTION( new VTX::App::Action::Scene::ResetScene() ); }
 
 	void SessionTool::_loadRecentSession( const int & p_ptrSessionIndex ) const
 	{

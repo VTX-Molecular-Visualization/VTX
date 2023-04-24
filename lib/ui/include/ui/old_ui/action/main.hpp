@@ -5,11 +5,11 @@
 #include <app/core/event/event_manager.hpp>
 #include <app/core/worker/worker_manager.hpp>
 #include <app/event/vtx_event.hpp>
-#include <app/old_app/io/struct/image_export.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/path.hpp>
 #include <app/model/secondary_structure.hpp>
 #include <app/model/solvent_excluded_surface.hpp>
+#include <app/old_app/io/struct/image_export.hpp>
 #include <app/worker/snapshoter.hpp>
 #include <string>
 #include <util/types.hpp>
@@ -17,7 +17,7 @@
 
 namespace VTX::Action::Main
 {
-	class ChangeSelectionGranularity : public Core::Action::BaseAction
+	class ChangeSelectionGranularity : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeSelectionGranularity( const VTX::Selection::Granularity & p_granularity ) :
@@ -30,7 +30,7 @@ namespace VTX::Action::Main
 	  private:
 		const VTX::Selection::Granularity _granularity;
 	};
-	class ChangePicker : public Core::Action::BaseAction
+	class ChangePicker : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangePicker( const ID::VTX_ID & p_pickerController, const int p_mode = -1 ) :
@@ -45,7 +45,7 @@ namespace VTX::Action::Main
 		const int		   _mode;
 	};
 
-	class ClearConsoleInterface : public Core::Action::BaseAction
+	class ClearConsoleInterface : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ClearConsoleInterface() {}

@@ -13,7 +13,7 @@
 #include "app/old_app/vtx_app.hpp"
 #include <unordered_set>
 
-namespace VTX::Action::Category
+namespace VTX::App::Action::Category
 {
 	// void ChangeColor::execute()
 	//{
@@ -178,4 +178,4 @@ namespace VTX::Action::Category
 	//	VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	//}
 
-} // namespace VTX::Action::Category
+} // namespace VTX::App::Action::Category

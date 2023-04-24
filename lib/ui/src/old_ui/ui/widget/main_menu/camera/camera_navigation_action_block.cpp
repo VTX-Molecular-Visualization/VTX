@@ -4,7 +4,7 @@
 #include "ui/old_ui/vtx_app.hpp"
 #include "ui/qt/action/main.hpp"
 #include "ui/qt/action/selection.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
@@ -100,7 +100,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	void CameraNavigationActionBlock::_toggleCameraProjection() const
 	{
 		const bool changeToPerspective = !VTX_SETTING().getCameraPerspective();
-		VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
+		VTX_ACTION( new App::Action::Setting::ChangeCameraProjectionToPerspective( changeToPerspective ) );
 	}
 
 	void CameraNavigationActionBlock::_recenterCamera() const

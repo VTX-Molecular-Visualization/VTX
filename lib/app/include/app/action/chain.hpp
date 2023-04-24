@@ -1,16 +1,17 @@
-#ifndef __VTX_ACTION_CHAIN__
-#define __VTX_ACTION_CHAIN__
+#ifndef __VTX_APP_ACTION_CHAIN__
+#define __VTX_APP_ACTION_CHAIN__
 
+#include "app/action.hpp"
 #include "app/action/visible.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/old_app/color/rgba.hpp"
 #include "app/model/chain.hpp"
 #include "app/model/representation/instantiated_representation.hpp"
+#include "app/old_app/color/rgba.hpp"
 #include <unordered_set>
 
-namespace VTX::Action::Chain
+namespace VTX::App::Action::Chain
 {
-	class ChangeColor : public Core::Action::BaseAction
+	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColor( Model::Chain & p_chain, const Color::Rgba & p_color ) :
@@ -43,7 +44,7 @@ namespace VTX::Action::Chain
 		virtual void execute() override;
 	};
 
-	class ChangeRepresentationPreset : public Core::Action::BaseAction
+	class ChangeRepresentationPreset : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRepresentationPreset( Model::Chain & p_chain, const int p_indexPreset ) :
@@ -66,7 +67,7 @@ namespace VTX::Action::Chain
 		const int								 _indexPreset;
 	};
 
-	class RemoveRepresentation : public Core::Action::BaseAction
+	class RemoveRepresentation : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit RemoveRepresentation( Model::Chain & p_chain ) : _chains { &p_chain }
@@ -84,7 +85,7 @@ namespace VTX::Action::Chain
 		const std::unordered_set<Model::Chain *> _chains;
 	};
 
-	class RemoveChildrenRepresentations : public Core::Action::BaseAction
+	class RemoveChildrenRepresentations : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit RemoveChildrenRepresentations( Model::Chain & p_chain ) : _chains { &p_chain }
@@ -103,7 +104,7 @@ namespace VTX::Action::Chain
 		const std::unordered_set<Model::Chain *> _chains;
 	};
 
-	class Delete : public Core::Action::BaseAction
+	class Delete : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Delete( Model::Chain & p_chain ) : _chain( p_chain )
@@ -117,7 +118,7 @@ namespace VTX::Action::Chain
 		Model::Chain & _chain;
 	};
 
-	class Copy : public Core::Action::BaseAction
+	class Copy : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Copy( const Model::Chain & p_target ) : _target( p_target )
@@ -130,7 +131,7 @@ namespace VTX::Action::Chain
 		const Model::Chain & _target;
 	};
 
-	class Extract : public Core::Action::BaseAction
+	class Extract : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Extract( const Model::Chain & p_target ) : _target( p_target )
@@ -143,7 +144,7 @@ namespace VTX::Action::Chain
 		const Model::Chain & _target;
 	};
 
-	class ApplyRepresentation : public Core::Action::BaseAction
+	class ApplyRepresentation : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ApplyRepresentation( const std::unordered_set<Model::Chain *> &				p_chains,
@@ -163,5 +164,5 @@ namespace VTX::Action::Chain
 		const Model::Representation::MEMBER_FLAG				  _flag;
 	};
 
-} // namespace VTX::Action::Chain
+} // namespace VTX::App::Action::Chain
 #endif

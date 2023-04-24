@@ -1,7 +1,7 @@
 #include "ui/old_ui/ui/widget/inspector/multiple_viewpoint_inspector_widget.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/viewpoint.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/viewpoint.hpp>
 
 namespace VTX::UI::Widget::Inspector
@@ -128,7 +128,7 @@ namespace VTX::UI::Widget::Inspector
 			for ( Model::Viewpoint * target : getTargets() )
 				viewpointsVector.emplace_back( target );
 
-			VTX_ACTION( new Action::Viewpoint::Relocate( viewpointsVector, p_transform ) );
+			VTX_ACTION( new App::Action::Viewpoint::Relocate( viewpointsVector, p_transform ) );
 		}
 	}
 
@@ -142,7 +142,7 @@ namespace VTX::UI::Widget::Inspector
 			for ( Model::Viewpoint * target : getTargets() )
 				viewpointsVector.emplace_back( target );
 
-			VTX_ACTION( new Action::Viewpoint::Translate( viewpointsVector, p_delta ) );
+			VTX_ACTION( new App::Action::Viewpoint::Translate( viewpointsVector, p_delta ) );
 		}
 	}
 	void MultipleViewpointWidget::_onRotationDragged( const Vec3f & p_delta ) const
@@ -155,7 +155,7 @@ namespace VTX::UI::Widget::Inspector
 			for ( Model::Viewpoint * target : getTargets() )
 				viewpointsVector.emplace( target );
 
-			VTX_ACTION( new Action::Viewpoint::Rotate( viewpointsVector, p_delta ) );
+			VTX_ACTION( new App::Action::Viewpoint::Rotate( viewpointsVector, p_delta ) );
 		}
 	}
 
@@ -177,7 +177,7 @@ namespace VTX::UI::Widget::Inspector
 			for ( Model::Viewpoint * target : getTargets() )
 				viewpointsVector.emplace_back( target );
 
-			VTX_ACTION( new Action::Viewpoint::Relocate( viewpointsVector ) );
+			VTX_ACTION( new App::Action::Viewpoint::Relocate( viewpointsVector ) );
 		}
 	}
 

@@ -1,5 +1,5 @@
 #include "tool/old_tool/view/ui/widget/measurement/angle_scene_view.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/label.hpp>
 #include <app/model/selection.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
@@ -43,12 +43,12 @@ namespace VTX::View::UI::Widget::Measurement
 
 			if ( newName != _model->getDefaultName() )
 			{
-				VTX_ACTION( new Action::Label::Rename( *_model, newName ) );
+				VTX_ACTION( new App::Action::Label::Rename( *_model, newName ) );
 			}
 			else
 			{
 				const bool enableState = Util::UI::getCheckState( p_item->checkState( 0 ) );
-				VTX_ACTION( new Action::Label::SetEnable( *_model, enableState ) );
+				VTX_ACTION( new App::Action::Label::SetEnable( *_model, enableState ) );
 			}
 		}
 	}

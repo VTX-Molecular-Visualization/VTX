@@ -12,7 +12,7 @@
 #include "app/worker/saver.hpp"
 #include "app/worker/scene_loader.hpp"
 
-namespace VTX::Action::Main
+namespace VTX::App::Action::Main
 {
 	void New::execute()
 	{
@@ -198,4 +198,4 @@ namespace VTX::Action::Main
 	{
 		VTXApp::get().getScene().getCameraManager().setPerspectiveCamera( !_perspective );
 	}
-} // namespace VTX::Action::Main
+} // namespace VTX::App::Action::Main

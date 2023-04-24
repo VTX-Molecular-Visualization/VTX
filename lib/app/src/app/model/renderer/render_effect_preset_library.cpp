@@ -1,9 +1,9 @@
 #include "app/model/renderer/render_effect_preset_library.hpp"
 #include "app/action/renderer.hpp"
-#include "app/core/action/action_manager.hpp"
 #include "app/core/event/event_manager.hpp"
 #include "app/core/mvc/mvc_manager.hpp"
 #include "app/core/worker/worker_manager.hpp"
+#include "app/manager/action_manager.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/setting.hpp"
@@ -34,7 +34,7 @@ namespace VTX::Model::Renderer
 	};
 	RenderEffectPresetLibrary ::~RenderEffectPresetLibrary()
 	{
-		Action::Renderer::SavePreset * const saveAction = new Action::Renderer::SavePreset( *this );
+		App::Action::Renderer::SavePreset * const saveAction = new App::Action::Renderer::SavePreset( *this );
 		saveAction->setAsync( false );
 
 		VTX_ACTION( saveAction );

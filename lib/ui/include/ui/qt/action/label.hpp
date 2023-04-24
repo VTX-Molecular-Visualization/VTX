@@ -8,7 +8,7 @@
 
 namespace VTX::UI::QT::Action::Label
 {
-	class Orient : public VTX::Core::Action::BaseAction
+	class Orient : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Orient( Model::Label * const p_label ) : _labels( { p_label } ) {}

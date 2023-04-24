@@ -6,7 +6,7 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QVBoxLayout>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/old_app/define.hpp>		 // Get VTX version
 #include <app/old_app/io/filesystem.hpp> // Read license file
 #include <string>

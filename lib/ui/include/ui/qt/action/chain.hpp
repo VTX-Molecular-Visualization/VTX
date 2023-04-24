@@ -7,7 +7,7 @@
 namespace VTX::UI::QT::Action::Chain
 {
 
-	class Orient : public VTX::Core::Action::BaseAction
+	class Orient : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Orient( const Model::Chain & p_chain ) : _chain( p_chain ) {}
