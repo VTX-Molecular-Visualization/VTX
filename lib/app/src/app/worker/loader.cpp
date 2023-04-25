@@ -1,14 +1,14 @@
 #include "app/worker/loader.hpp"
-#include "app/core/event/event_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
+#include "app/event.hpp"
+#include "app/model/mesh_triangle.hpp"
+#include "app/model/molecule.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/lib_assimp.hpp"
 #include "app/old_app/io/reader/lib_chemfiles.hpp"
 #include "app/old_app/io/reader/prm.hpp"
 #include "app/old_app/io/reader/psf.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
-#include "app/model/mesh_triangle.hpp"
-#include "app/model/molecule.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -102,7 +102,8 @@ namespace VTX
 				IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles( this );
 
 				// Set PRM.
-				Model::Molecule * const molecule = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+				Model::Molecule * const molecule
+					= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 				molecule->setConfiguration( p_config );
 
 				// Load.
@@ -182,7 +183,8 @@ namespace VTX
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
 				IO::Reader::LibAssimp * const reader = new IO::Reader::LibAssimp();
-				Model::MeshTriangle * const	  mesh	 = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::MeshTriangle>();
+				Model::MeshTriangle * const	  mesh
+					= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::MeshTriangle>();
 
 				try
 				{
@@ -213,8 +215,8 @@ namespace VTX
 					 || bufferType == IO::Filesystem::FILE_TYPE_ENUM::TRAJECTORY )
 				{
 					// Create reader.
-					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles( this );
-					Model::Molecule *		   molecule = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+					IO::Reader::LibChemfiles * reader = new IO::Reader::LibChemfiles( this );
+					Model::Molecule * molecule = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 
 					// Load.
 					try

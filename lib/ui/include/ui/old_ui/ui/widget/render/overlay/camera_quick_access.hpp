@@ -24,7 +24,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		~CameraQuickAccess();
 		void localize() override;
 
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		CameraQuickAccess( QWidget * p_parent );
@@ -47,7 +47,7 @@ namespace VTX::UI::Widget::Render::Overlay
 
 		void _attachViewOnAppliedRenderEffect();
 
-		void _onRenderEffectChange( const VTX::Event::VTXEvent * const p_event );
+		void _onRenderEffectChange( const VTX::App::Core::Event::VTXEvent * const p_event );
 		void _toggleCameraProjection();
 		void _applyRenderEffectPresetAction( const QAction * const p_action );
 		void _onExportImageClickedAction() const;

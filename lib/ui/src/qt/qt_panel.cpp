@@ -1,6 +1,7 @@
 #include "ui/qt/qt_panel.hpp"
-#include <app/event/vtx_event.hpp>
-#include <app/core/event/event_manager.hpp>
+#include <app/core/event/vtx_event.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
 
 namespace VTX::UI::QT
 {
@@ -10,7 +11,7 @@ namespace VTX::UI::QT
 	void QtPanel::setVisible( const bool p_visible )
 	{
 		_changeVisibility( p_visible );
-		VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE ) );
+		VTX_EVENT( VTX::App::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
 	}
 
 	QtDockablePanel::QtDockablePanel( QWidget * const p_parent ) : QtPanelTemplate() {}

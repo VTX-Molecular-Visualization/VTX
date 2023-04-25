@@ -128,9 +128,8 @@ namespace VTX
 
 			if ( previousVisibleState != p_visible )
 			{
-				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
-				getMoleculePtr()->propagateEventToViews(
-					new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
+				_notifyViews<uint>( App::Event::Model::RESIDUE_VISIBILITY, _index );
+				getMoleculePtr()->propagateEventToViews<uint>( App::Event::Model::RESIDUE_VISIBILITY, _index );
 			}
 		}
 
@@ -144,9 +143,8 @@ namespace VTX
 			{
 				if ( p_notify )
 				{
-					_notifyViews( new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
-					getMoleculePtr()->propagateEventToViews(
-						new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
+					_notifyViews<uint>( App::Event::Model::RESIDUE_VISIBILITY, _index );
+					getMoleculePtr()->propagateEventToViews<uint>( App::Event::Model::RESIDUE_VISIBILITY, _index );
 				}
 			}
 		}
@@ -185,10 +183,7 @@ namespace VTX
 			return worldAabb;
 		}
 
-		void Residue::_onRepresentationChange()
-		{
-			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
-		}
+		void Residue::_onRepresentationChange() { _notifyViews( App::Event::Model::REPRESENTATION_CHANGE ); }
 
 		const std::string Residue::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {
 			"---", // UNKNOWN

@@ -11,10 +11,10 @@
 #include "ui/qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <QScrollBar>
-
 #include <app/action/selection.hpp>
 #include <app/action/viewpoint.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
+#include <app/event/global.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
@@ -24,36 +24,36 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	PathSceneView::PathSceneView( Model::Path * const p_model, QWidget * const p_parent ) :
 		VTX::View::BaseView<Model::Path>( p_model ), SceneItemWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::VIEWPOINT_ADDED );
-		_registerEvent( VTX::Event::Global::VIEWPOINT_REMOVED );
+		_registerEvent( VTX::App::Event::Global::VIEWPOINT_ADDED );
+		_registerEvent( VTX::App::Event::Global::VIEWPOINT_REMOVED );
 	}
 	PathSceneView::~PathSceneView() {}
 
-	void PathSceneView::notify( const VTX::Event::VTXEvent * const p_event )
+	void PathSceneView::notify( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::DATA_CHANGE ) {}
-		else if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE )
+		if ( p_event->name == VTX::App::Event::Model::DATA_CHANGE ) {}
+		else if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			topLevelItem( 0 )->setText( 0, QString::fromStdString( _model->getDefaultName() ) );
 		}
 	}
-	void PathSceneView::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void PathSceneView::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
 		SceneItemWidget::receiveEvent( p_event );
 
-		if ( p_event.name == VTX::Event::Global::VIEWPOINT_ADDED )
+		if ( p_event.name == VTX::App::Event::Global::VIEWPOINT_ADDED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Viewpoint> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> &>( p_event );
 
-			_addViewpoint( castedEvent.ptr );
+			_addViewpoint( castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::VIEWPOINT_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::VIEWPOINT_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Viewpoint> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> &>( p_event );
 
-			_removeViewpoint( castedEvent.ptr );
+			_removeViewpoint( castedEvent.get() );
 		}
 	}
 
@@ -241,7 +241,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			const Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<Model::ID>();
 			if ( VTX::Core::MVC::MvcManager::get().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
-				Model::Viewpoint & viewpoint  = VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( idTarget );
+				Model::Viewpoint & viewpoint = VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( idTarget );
 				Object3D::Camera & mainCamera = VTXApp::get().getScene().getCamera();
 
 				VTX_ACTION( new QT::Action::Viewpoint::GoTo( viewpoint, mainCamera ) );

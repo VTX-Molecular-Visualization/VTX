@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_WINDOWS__
 #define __VTX_UI_WIDGET_MENU_VISUALIZATION_WINDOWS__
 
-#include <app/event/vtx_event.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include <app/old_app/id.hpp>
 #include "ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
@@ -24,7 +24,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	  public:
 		~WindowsBlock();
 		void localize() override;
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 		void refresh();
 
 	  protected:

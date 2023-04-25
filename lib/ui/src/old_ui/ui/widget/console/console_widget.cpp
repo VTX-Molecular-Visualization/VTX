@@ -9,7 +9,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <app/action/main.hpp>
-
+#include <app/event/global.hpp>
 #include <iostream>
 #include <util/logger.hpp>
 
@@ -17,19 +17,25 @@ namespace VTX::UI::Widget::Console
 {
 	ConsoleWidget::ConsoleWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::LOG_CONSOLE );
-		_registerEvent( VTX::Event::Global::CLEAR_CONSOLE );
+		_registerEvent( VTX::App::Event::Global::LOG_CONSOLE );
+		_registerEvent( VTX::App::Event::Global::CLEAR_CONSOLE );
 	}
 
-	void ConsoleWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void ConsoleWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::LOG_CONSOLE )
+		if ( p_event.name == VTX::App::Event::Global::LOG_CONSOLE )
 		{
-			const VTX::Event::VTXEventLog & event = dynamic_cast<const VTX::Event::VTXEventLog &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<std::string, std::string, std::string> & event
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<std::string, std::string, std::string> &>(
+					p_event );
 
-			const std::string		message = "[" + event.date + "] " + "[" + event.level + "] " + event.message;
+			const std::string logLevel	 = event.get<0>();
+			const std::string logDate	 = event.get<1>();
+			const std::string logMessage = event.get<2>();
+
+			const std::string		message = "[" + logDate + "] " + "[" + logLevel + "] " + logMessage;
 			QListWidgetItem * const newItem = new QListWidgetItem( QString::fromStdString( message ) );
-			newItem->setData( Qt::ForegroundRole, _getMessageColor( event.level ) );
+			newItem->setData( Qt::ForegroundRole, _getMessageColor( logLevel ) );
 
 			_listWidget->addItem( newItem );
 
@@ -42,7 +48,7 @@ namespace VTX::UI::Widget::Console
 
 			_listWidget->scrollToBottom();
 		}
-		else if ( p_event.name == VTX::Event::Global::CLEAR_CONSOLE )
+		else if ( p_event.name == VTX::App::Event::Global::CLEAR_CONSOLE )
 		{
 			_listWidget->clear();
 		}

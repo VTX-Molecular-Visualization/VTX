@@ -2,9 +2,10 @@
 #include "ui/qt/state/export.hpp"
 #include "ui/qt/state/play.hpp"
 #include "ui/qt/state/visualization.hpp"
+#include <app/core/event/vtx_event.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
 #include <app/old_app/define.hpp>
-#include <app/event/vtx_event.hpp>
-#include <app/core/event/event_manager.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <util/exceptions.hpp>
 
@@ -31,7 +32,7 @@ namespace VTX::UI::QT::State
 		VTX_DEBUG( "Go to state: " + p_name );
 		if ( _states.find( p_name ) != _states.end() )
 		{
-			VTX_EVENT( new VTX::Event::VTXEventValue<ID::VTX_ID>( VTX::Event::Global::CHANGE_STATE, p_name ) );
+			VTX_EVENT<const ID::VTX_ID &>( VTX::App::Event::Global::CHANGE_STATE, p_name );
 			_switchState( _states[ p_name ], p_arg );
 		}
 		else

@@ -41,7 +41,7 @@ namespace VTX::UI::Widget::Render
 		void setOverlayVisibility( const Overlay::OVERLAY & p_overlay, const bool p_visible );
 		void showAllOverlays( const bool p_show );
 
-		void			 receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void			 receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 		const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::RENDER_WIDGET; }
 
 	  protected:

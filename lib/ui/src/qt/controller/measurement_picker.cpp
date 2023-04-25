@@ -8,7 +8,7 @@
 #include <QPoint>
 
 // #include <app/action/measurement.hpp>
-#include <app/core/event/event_manager.hpp>
+#include <app/event.hpp>
 #include <app/model/atom.hpp>
 // #include <app/model/measurement/measure_in_progress.hpp>
 #include <app/model/molecule.hpp>
@@ -225,7 +225,7 @@ namespace VTX::UI::QT::Controller
 		//	_currentMeasureModel->clearAtoms();
 		//	_currentMode = p_mode;
 
-		//	VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::PICKER_MODE_CHANGE ) );
+		//	VTX_EVENT( new VTX::App::Core::Event::VTXEvent( VTX::App::Event::Global::PICKER_MODE_CHANGE ) );
 		//}
 	}
 } // namespace VTX::UI::QT::Controller

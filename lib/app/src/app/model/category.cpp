@@ -1,5 +1,5 @@
 #include "app/model/category.hpp"
-#include "app/event/vtx_event.hpp"
+#include "app/core/event/vtx_event.hpp"
 #include "app/model/atom.hpp"
 #include "app/model/chain.hpp"
 #include "app/model/molecule.hpp"
@@ -124,9 +124,8 @@ namespace VTX::Model
 
 		if ( previousVisibleState != p_visible )
 		{
-			_notifyViews( new Event::VTXEventValue<CATEGORY_ENUM>( Event::Model::CATEGORY_VISIBILITY, _category ) );
-			_moleculePtr->propagateEventToViews(
-				new Event::VTXEventValue<CATEGORY_ENUM>( Event::Model::CATEGORY_VISIBILITY, _category ) );
+			_notifyViews<CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY, _category );
+			_moleculePtr->propagateEventToViews<CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY, _category );
 		}
 	}
 	void Category::setVisible( const bool p_visible, const bool p_notify )
@@ -139,9 +138,8 @@ namespace VTX::Model
 		{
 			if ( p_notify )
 			{
-				_notifyViews( new Event::VTXEventValue<CATEGORY_ENUM>( Event::Model::CATEGORY_VISIBILITY, _category ) );
-				_moleculePtr->propagateEventToViews(
-					new Event::VTXEventValue<CATEGORY_ENUM>( Event::Model::CATEGORY_VISIBILITY, _category ) );
+				_notifyViews<CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY, _category );
+				_moleculePtr->propagateEventToViews<CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY, _category );
 			}
 		}
 	}
@@ -198,9 +196,6 @@ namespace VTX::Model
 		return worldAabb;
 	}
 
-	void Category::_onRepresentationChange()
-	{
-		_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
-	}
+	void Category::_onRepresentationChange() { _notifyViews( App::Event::Model::REPRESENTATION_CHANGE ); }
 
 } // namespace VTX::Model

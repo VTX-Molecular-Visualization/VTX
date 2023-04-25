@@ -61,7 +61,7 @@ namespace VTX::Core::MVC
 		inline MapViews &		getViews() { return _views; }
 		inline const MapViews & getViews() const { return _views; }
 
-		void notifyViews( const VTX::Event::VTXEvent * const p_event ) const
+		void notifyViews( const VTX::App::Core::Event::VTXEvent * const p_event ) const
 		{
 			for ( const PairViews & pair : _views )
 			{

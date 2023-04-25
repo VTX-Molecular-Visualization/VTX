@@ -3,25 +3,26 @@
 #include "ui/old_ui/ui/mime_type.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
-#include <app/old_app/generic/base_scene_item.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
+#include <app/event/global.hpp>
+#include <app/old_app/generic/base_scene_item.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
 	ModelFieldWidget::ModelFieldWidget( QWidget * p_parent ) :
 		CustomWidget::ModelDropArea( p_parent ), DraggableItem( this )
 	{
-		_registerEvent( VTX::Event::Global::SCENE_ITEM_REMOVED );
+		_registerEvent( VTX::App::Event::Global::SCENE_ITEM_REMOVED );
 	}
 
-	void ModelFieldWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void ModelFieldWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::SCENE_ITEM_REMOVED )
+		if ( p_event.name == VTX::App::Event::Global::SCENE_ITEM_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> &>( p_event );
 
-			if ( castedEvent.ptr->getModelID() == _model->getId() )
+			if ( castedEvent.get()->getModelID() == _model->getId() )
 				setModel( nullptr );
 		}
 	}

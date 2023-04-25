@@ -11,10 +11,10 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QPixmap>
-
 #include <app/action/instantiated_representation.hpp>
 #include <app/action/molecule.hpp>
 #include <app/action/transformable.hpp>
+#include <app/event/global.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 
 namespace VTX::UI::Widget::Inspector
@@ -22,7 +22,7 @@ namespace VTX::UI::Widget::Inspector
 	MultipleMoleculeWidget::MultipleMoleculeWidget( QWidget * p_parent ) :
 		MultipleModelInspectorWidget( p_parent, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE )
 	{
-		_registerEvent( VTX::Event::Global::LATE_UPDATE );
+		_registerEvent( VTX::App::Event::Global::LATE_UPDATE );
 	};
 
 	MultipleMoleculeWidget::~MultipleMoleculeWidget() {}

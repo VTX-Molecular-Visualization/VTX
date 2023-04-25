@@ -11,7 +11,7 @@ namespace VTX::UI::Widget::Settings
 	{
 	}
 
-	void SettingRepresentationWidget::receiveEvent( const VTX::Event::VTXEvent & p_event ) {}
+	void SettingRepresentationWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) {}
 
 	void SettingRepresentationWidget::_setupUi( const QString & p_name )
 	{

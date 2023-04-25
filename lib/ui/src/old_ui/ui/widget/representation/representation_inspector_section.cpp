@@ -4,10 +4,10 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-
+#include <app/core/mvc/mvc_manager.hpp>
+#include <app/event/global.hpp>
 #include <app/model/representation/representation.hpp>
 #include <app/model/representation/representation_library.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/view/callback_view.hpp>
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::Representation
 	RepresentationInspectorSection::RepresentationInspectorSection( QWidget * const p_parent ) :
 		BaseManualWidget( p_parent ), TMultiDataField()
 	{
-		_registerEvent( VTX::Event::Global::LATE_UPDATE );
+		_registerEvent( VTX::App::Event::Global::LATE_UPDATE );
 	}
 
 	RepresentationInspectorSection::~RepresentationInspectorSection()
@@ -29,9 +29,9 @@ namespace VTX::UI::Widget::Representation
 			VTX::Core::MVC::MvcManager::get().deleteModel( _dummyRepresentation );
 	}
 
-	void RepresentationInspectorSection::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void RepresentationInspectorSection::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::LATE_UPDATE )
+		if ( p_event.name == VTX::App::Event::Global::LATE_UPDATE )
 		{
 			if ( _isDirty )
 			{
@@ -262,11 +262,11 @@ namespace VTX::UI::Widget::Representation
 					const InstantiatedRepresentation & representationModel
 						= VTX::Core::MVC::MvcManager::get().getModel<InstantiatedRepresentation>( representationID );
 
-					if ( VTX::Core::MVC::MvcManager::get().hasView( &representationModel,
-														 ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION ) )
+					if ( VTX::Core::MVC::MvcManager::get().hasView(
+							 &representationModel, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION ) )
 					{
-						VTX::Core::MVC::MvcManager::get().deleteView( &representationModel,
-														   ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
+						VTX::Core::MVC::MvcManager::get().deleteView(
+							&representationModel, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
 					}
 				}
 			}
@@ -374,9 +374,10 @@ namespace VTX::UI::Widget::Representation
 
 	void RepresentationInspectorSection::_displayDifferentsDataFeedback() {}
 
-	void RepresentationInspectorSection::_onTargetedRepresentationChange( const VTX::Event::VTXEvent * const p_event )
+	void RepresentationInspectorSection::_onTargetedRepresentationChange(
+		const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		resetState( false, p_event->name == VTX::Event::Model::REPRESENTATION_TYPE_CHANGE );
+		resetState( false, p_event->name == VTX::App::Event::Model::REPRESENTATION_TYPE_CHANGE );
 		setDirty();
 	}
 
@@ -392,6 +393,9 @@ namespace VTX::UI::Widget::Representation
 		}
 	}
 
-	void RepresentationInspectorSection::_onDummyChange( const VTX::Event::VTXEvent * const p_event ) { refresh(); }
+	void RepresentationInspectorSection::_onDummyChange( const VTX::App::Core::Event::VTXEvent * const p_event )
+	{
+		refresh();
+	}
 
 } // namespace VTX::UI::Widget::Representation

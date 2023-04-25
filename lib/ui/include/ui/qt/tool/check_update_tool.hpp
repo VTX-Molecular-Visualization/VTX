@@ -7,12 +7,12 @@
 #include "ui/qt/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QMenu>
 #include <QObject>
-#include <app/event/base_event_receiver_vtx.hpp>
+#include <app/core/event/base_event_receiver_vtx.hpp>
 #include <app/old_app/object3d/scene.hpp>
 
 namespace VTX::UI::QT::Tool
 {
-	class CheckUpdateTool : public BaseQtTool, public VTX::Event::BaseEventReceiverVTX
+	class CheckUpdateTool : public BaseQtTool, public VTX::App::Core::Event::BaseEventReceiverVTX
 	{
 		REGISTER_TOOL( CheckUpdateTool, CHECK_UPDATE_KEY );
 
@@ -20,7 +20,7 @@ namespace VTX::UI::QT::Tool
 		CheckUpdateTool();
 		void instantiateTool() override;
 
-		virtual void receiveEvent( const VTX::Event::VTXEvent & p_event );
+		virtual void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event );
 	};
 } // namespace VTX::UI::QT::Tool
 

@@ -5,7 +5,7 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "render_effect_preset_button.hpp"
 #include <QWidget>
-#include <app/event/vtx_event.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include <app/model/renderer/render_effect_preset_library.hpp>
 #include <app/view/base_view.hpp>
 #include <vector>
@@ -20,10 +20,10 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		VTX_VIEW
 
 	  public:
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
-		void notify( const VTX::Event::VTXEvent * const p_event ) override;
+		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
 
 	  protected:
 		RenderEffectsBlock( Model::Renderer::RenderEffectPresetLibrary * const _renderEffectLibrary,

@@ -1,7 +1,8 @@
 #include "app/action/main.hpp"
 #include "app/core/worker/worker_manager.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
 #include "app/internal/network/request/download_mmtf.hpp"
-#include "app/manager/network_manager.hpp"
 #include "app/network.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/object3d/camera_manager.hpp"
@@ -142,7 +143,7 @@ namespace VTX::App::Action::Main
 		if ( _path.extension() == "vtx" )
 		{
 			VTXApp::get().getScenePathData().setCurrentPath( _path, true );
-			VTX_EVENT( new Event::VTXEvent( Event::Global::SCENE_SAVED ) );
+			VTX_EVENT( VTX::App::Event::Global::SCENE_SAVED );
 		}
 		else
 		{

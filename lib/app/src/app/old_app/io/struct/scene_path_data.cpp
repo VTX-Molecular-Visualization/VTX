@@ -1,8 +1,9 @@
 #include "app/old_app/io/struct/scene_path_data.hpp"
-#include "app/event/vtx_event.hpp"
-#include "app/core/event/event_manager.hpp"
-#include "app/old_app/io/filesystem.hpp"
+#include "app/core/event/vtx_event.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
 #include "app/model/molecule.hpp"
+#include "app/old_app/io/filesystem.hpp"
 
 namespace VTX::IO::Struct
 {
@@ -29,39 +30,40 @@ namespace VTX::IO::Struct
 	void ScenePathData::Data::registerWriter( Writer::ChemfilesWriter * const p_writer ) { _writer = p_writer; }
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	ScenePathData::ScenePathData() : Event::BaseEventReceiverVTX()
+	ScenePathData::ScenePathData() : App::Core::Event::BaseEventReceiverVTX()
 	{
-		_registerEvent( Event::Global::MOLECULE_ADDED );
-		_registerEvent( Event::Global::MOLECULE_REMOVED );
-		_registerEvent( Event::Global::MOLECULE_STRUCTURE_CHANGE );
-		_registerEvent( Event::Global::SCENE_SAVED );
-		_registerEvent( Event::Global::SCENE_PATH_CHANGE );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_ADDED );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_STRUCTURE_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SCENE_SAVED );
+		_registerEvent( VTX::App::Event::Global::SCENE_PATH_CHANGE );
 	}
 
-	void ScenePathData::receiveEvent( const Event::VTXEvent & p_event )
+	void ScenePathData::receiveEvent( const App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::MOLECULE_ADDED )
+		if ( p_event.name == VTX::App::Event::Global::MOLECULE_ADDED )
 		{
 			const Model::Molecule * const molecule
-				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event ).ptr;
+				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event ).get();
 
 			if ( _mapMoleculePath.find( molecule ) == _mapMoleculePath.end() )
 				_mapMoleculePath[ molecule ] = Data();
 		}
-		else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 		{
 			const Model::Molecule * const molecule
-				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event ).ptr;
+				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event ).get();
 			_mapMoleculePath.erase( molecule );
 		}
-		else if ( p_event.name == Event::Global::MOLECULE_STRUCTURE_CHANGE )
+		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_STRUCTURE_CHANGE )
 		{
 			const Model::Molecule * const molecule
-				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event ).ptr;
+				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event ).get();
 
 			_mapMoleculePath[ molecule ].setHasChanged( true );
 		}
-		else if ( p_event.name == Event::Global::SCENE_SAVED || p_event.name == Event::Global::SCENE_PATH_CHANGE )
+		else if ( p_event.name == VTX::App::Event::Global::SCENE_SAVED
+				  || p_event.name == VTX::App::Event::Global::SCENE_PATH_CHANGE )
 		{
 			resetSceneModifications();
 		}
@@ -85,12 +87,12 @@ namespace VTX::IO::Struct
 		if ( p_addInRecentPath )
 			Setting::enqueueNewLoadingPath( p_filePath );
 
-		VTX_EVENT( new Event::VTXEventRef<const FilePath>( Event::Global::SCENE_PATH_CHANGE, _currentFilePath ) );
+		VTX_EVENT<const FilePath &>( VTX::App::Event::Global::SCENE_PATH_CHANGE, _currentFilePath );
 	}
 	void ScenePathData::clearCurrentPath()
 	{
 		_currentFilePath = FilePath();
-		VTX_EVENT( new Event::VTXEventRef<const FilePath>( Event::Global::SCENE_PATH_CHANGE, _currentFilePath ) );
+		VTX_EVENT<const FilePath &>( VTX::App::Event::Global::SCENE_PATH_CHANGE, _currentFilePath );
 	}
 
 	Writer::ChemfilesWriter * const ScenePathData::Data::getWriter() { return _writer; }
@@ -137,18 +139,18 @@ namespace VTX::IO::Struct
 		_sceneModificationsCount++;
 
 		if ( _sceneModificationsCount == 0 )
-			VTX_EVENT( new Event::VTXEventValue<bool>( Event::Global::SCENE_MODIFICATION_STATE_CHANGE, false ) );
+			VTX_EVENT<bool>( VTX::App::Event::Global::SCENE_MODIFICATION_STATE_CHANGE, false );
 		else if ( _sceneModificationsCount == 1 )
-			VTX_EVENT( new Event::VTXEventValue<bool>( Event::Global::SCENE_MODIFICATION_STATE_CHANGE, true ) );
+			VTX_EVENT<bool>( VTX::App::Event::Global::SCENE_MODIFICATION_STATE_CHANGE, true );
 	}
 	void ScenePathData::decrementSceneModifications()
 	{
 		_sceneModificationsCount--;
 
 		if ( _sceneModificationsCount == 0 )
-			VTX_EVENT( new Event::VTXEventValue<bool>( Event::Global::SCENE_MODIFICATION_STATE_CHANGE, false ) );
+			VTX_EVENT<bool>( VTX::App::Event::Global::SCENE_MODIFICATION_STATE_CHANGE, false );
 		else if ( _sceneModificationsCount == -1 )
-			VTX_EVENT( new Event::VTXEventValue<bool>( Event::Global::SCENE_MODIFICATION_STATE_CHANGE, true ) );
+			VTX_EVENT<bool>( VTX::App::Event::Global::SCENE_MODIFICATION_STATE_CHANGE, true );
 	}
 	const int  ScenePathData::getSceneModificationsCounter() const { return _sceneModificationsCount; }
 	const bool ScenePathData::sceneHasModifications() const
@@ -161,7 +163,7 @@ namespace VTX::IO::Struct
 		_forceSceneModifications	= true;
 
 		if ( !sceneWasModified )
-			VTX_EVENT( new Event::VTXEventValue<bool>( Event::Global::SCENE_MODIFICATION_STATE_CHANGE, true ) );
+			VTX_EVENT<bool>( VTX::App::Event::Global::SCENE_MODIFICATION_STATE_CHANGE, true );
 	}
 	void ScenePathData::resetSceneModifications()
 	{
@@ -171,7 +173,7 @@ namespace VTX::IO::Struct
 		_sceneModificationsCount = 0;
 
 		if ( sceneWasModified )
-			VTX_EVENT( new Event::VTXEventValue<bool>( Event::Global::SCENE_MODIFICATION_STATE_CHANGE, false ) );
+			VTX_EVENT<bool>( VTX::App::Event::Global::SCENE_MODIFICATION_STATE_CHANGE, false );
 	}
 
 } // namespace VTX::IO::Struct

@@ -15,7 +15,7 @@ namespace VTX::UI::Widget::Settings
 		using RepresentationLibraryView = View::UI::Widget::Representation::RepresentationLibraryView;
 
 	  public:
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
 	  protected:

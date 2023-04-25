@@ -39,7 +39,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		void displayOverlay( const Overlay::OVERLAY & p_overlay, const Overlay::OVERLAY_ANCHOR & p_position );
 		void hideOverlay( const Overlay::OVERLAY & p_overlay );
 
-		void			 receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void			 receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 		const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::RENDER_WIDGET; }
 
 	  protected:

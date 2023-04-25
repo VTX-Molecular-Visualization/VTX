@@ -18,10 +18,10 @@ namespace VTX::View::UI::Widget::Measurement
 	{
 	}
 
-	void DistanceSceneView::notify( const Event::VTXEvent * const p_event )
+	void DistanceSceneView::notify( const App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DATA_CHANGE ) {}
-		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
+		if ( p_event->name ==App::Event::Model::DATA_CHANGE ) {}
+		else if ( p_event->name ==App::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			topLevelItem( 0 )->setText( 0, QString::fromStdString( _model->getDefaultName() ) );
 		}

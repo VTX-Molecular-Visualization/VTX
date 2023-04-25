@@ -7,7 +7,7 @@ namespace VTX::UI::Widget::Settings
 {
 	SettingRenderEffectWidget::SettingRenderEffectWidget( QWidget * const p_parent ) : BaseManualWidget( p_parent ) {}
 
-	void SettingRenderEffectWidget::receiveEvent( const VTX::Event::VTXEvent & p_event ) {}
+	void SettingRenderEffectWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) {}
 
 	void SettingRenderEffectWidget::_setupUi( const QString & p_name )
 	{

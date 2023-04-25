@@ -3,7 +3,7 @@
 
 #include "core/action/base_action.hpp"
 #include "manager/action_manager.hpp"
-#include <memory>
+// #include <memory>
 #include <type_traits>
 
 // TODO Apply VTX_ACTION<> whenever it's possible

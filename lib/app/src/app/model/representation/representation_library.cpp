@@ -1,9 +1,10 @@
 #include "app/model/representation/representation_library.hpp"
 #include "app/action/representation.hpp"
-#include "app/core/event/event_manager.hpp"
+#include "app/core/event/vtx_event.hpp"
 #include "app/core/mvc/mvc_manager.hpp"
 #include "app/core/worker/worker_manager.hpp"
-#include "app/event/vtx_event.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/setting.hpp"
@@ -98,7 +99,7 @@ namespace VTX::Model::Representation
 			_notifyDataChanged();
 
 			const int newRepresentationIndex = int( _representations.size() ) - 1;
-			VTX_EVENT( new Event::VTXEventValue<int>( Event::Global::REPRESENTATION_ADDED, newRepresentationIndex ) );
+			VTX_EVENT<int>( VTX::App::Event::Global::REPRESENTATION_ADDED, newRepresentationIndex );
 		}
 	};
 	void RepresentationLibrary::copyRepresentation( const int p_index, const bool p_notify )
@@ -129,7 +130,7 @@ namespace VTX::Model::Representation
 			if ( p_notify )
 				_notifyDataChanged();
 
-			VTX_EVENT( new Event::VTXEventValue<int>( Event::Global::REPRESENTATION_REMOVED, p_index ) );
+			VTX_EVENT<int>( VTX::App::Event::Global::REPRESENTATION_REMOVED, p_index );
 		}
 		else
 		{
@@ -349,12 +350,12 @@ namespace VTX::Model::Representation
 		}
 	}
 
-	void RepresentationLibrary::_onRepresentationChange( const Event::VTXEvent * const p_event )
+	void RepresentationLibrary::_onRepresentationChange( const App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DATA_CHANGE )
-			_notifyViews( new Event::VTXEvent( Event::Model::SUBITEM_DATA_CHANGE ) );
+		if ( p_event->name == App::Event::Model::DATA_CHANGE )
+			_notifyViews( App::Event::Model::SUBITEM_DATA_CHANGE );
 		else
-			_notifyViews( new Event::VTXEvent( *p_event ) );
+			_notifyViews( new App::Core::Event::VTXEvent( *p_event ) );
 	}
 
 } // namespace VTX::Model::Representation

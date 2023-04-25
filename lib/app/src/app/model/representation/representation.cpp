@@ -1,11 +1,11 @@
 #include "app/model/representation/representation.hpp"
-#include "app/old_app/color/rgba.hpp"
-#include "app/event/vtx_event.hpp"
-#include "app/core/event/event_manager.hpp"
-#include "app/old_app/id.hpp"
+#include "app/core/event/vtx_event.hpp"
+#include "app/event.hpp"
 #include "app/model/representation/all_representation_data.hpp"
 #include "app/model/representation/representation_enum.hpp"
 #include "app/model/residue.hpp"
+#include "app/old_app/color/rgba.hpp"
+#include "app/old_app/id.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <util/logger.hpp>
@@ -38,7 +38,7 @@ namespace VTX::Model::Representation
 	void Representation::setName( const std::string & p_name )
 	{
 		_name = std::string( p_name );
-		_notifyViews( new Event::VTXEvent( Event::Model::DISPLAY_NAME_CHANGE ) );
+		_notifyViews( App::Event::Model::DISPLAY_NAME_CHANGE );
 	}
 	void Representation::setColor( const Color::Rgba & p_color )
 	{
@@ -49,7 +49,7 @@ namespace VTX::Model::Representation
 	void Representation::setQuickAccess( const bool p_quickAccess )
 	{
 		_quickAccess = p_quickAccess;
-		_notifyViews( new Event::VTXEvent( Event::Model::QUICK_ACCESS_CHANGE ) );
+		_notifyViews( App::Event::Model::QUICK_ACCESS_CHANGE );
 	}
 
 	void Representation::changeRepresentationType( const Generic::REPRESENTATION & p_newType, const bool p_notify )
@@ -89,7 +89,7 @@ namespace VTX::Model::Representation
 
 		if ( p_notify )
 		{
-			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_TYPE_CHANGE ) );
+			_notifyViews( App::Event::Model::REPRESENTATION_TYPE_CHANGE );
 		}
 	}
 

@@ -5,7 +5,7 @@
 #include "vtx_event.hpp"
 #include <vector>
 
-namespace VTX::Event
+namespace VTX::App::Core::Event
 {
 	class BaseEventReceiverVTX : public Core::Event::BaseEventReceiver<VTXEvent>
 	{
@@ -20,5 +20,5 @@ namespace VTX::Event
 	  private:
 		std::vector<VTX_EVENT> _events = std::vector<VTX_EVENT>();
 	};
-} // namespace VTX::Event
+} // namespace VTX::App::Core::Event
 #endif

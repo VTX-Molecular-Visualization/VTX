@@ -9,13 +9,14 @@
 #include "ui/qt/util.hpp"
 #include <QAbstractItemModel>
 #include <QDrag>
-#include <app/old_app/generic/base_visible.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
+#include <app/event/global.hpp>
 #include <app/model/atom.hpp>
 #include <app/model/category.hpp>
 #include <app/model/chain.hpp>
 #include <app/model/residue.hpp>
 #include <app/model/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/old_app/generic/base_visible.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <stack>
 #include <util/logger.hpp>
@@ -24,25 +25,25 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 {
 	SceneItemWidget::SceneItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ), DraggableItem( this )
 	{
-		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
-		_registerEvent( VTX::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE );
 	}
 
-	void SceneItemWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void SceneItemWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::SELECTION_CHANGE )
 		{
-			const VTX::Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Selection> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<const Model::Selection *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const Model::Selection *> &>( p_event );
 
-			_refreshSelection( *castedEvent.ptr );
+			_refreshSelection( *castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE )
+		else if ( p_event.name == VTX::App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE )
 		{
-			const VTX::Event::VTXEventPtr<const Model::BaseModel> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<const Model::BaseModel> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<const Model::BaseModel *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const Model::BaseModel *> &>( p_event );
 
-			_refreshCurrentItemInSelection( castedEvent.ptr );
+			_refreshCurrentItemInSelection( castedEvent.get() );
 		}
 	}
 
@@ -331,7 +332,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		p_itemToSelect.treeWidget()->setFocus( Qt::FocusReason::TabFocusReason );
 		p_itemToSelect.treeWidget()->setCurrentItem( &p_itemToSelect );
 
-		selectionModel.selectModel( VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( itemModel ), p_append );
+		selectionModel.selectModel( VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( itemModel ),
+									p_append );
 	}
 
 	void SceneItemWidget::_refreshSize()

@@ -198,7 +198,7 @@ namespace VTX::Core::MVC
 				   && _container[ p_model->getId() ]->hasView( p_id );
 		};
 
-		inline void notifyViews( const Model::BaseModel * const p_caller, const VTX::Event::VTXEvent * const p_event )
+		inline void notifyViews( const Model::BaseModel * const p_caller, const VTX::App::Core::Event::VTXEvent * const p_event )
 		{
 			_lock();
 			_container[ p_caller->getId() ]->notifyViews( p_event );

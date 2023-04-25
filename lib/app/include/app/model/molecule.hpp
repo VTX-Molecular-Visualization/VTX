@@ -2,17 +2,17 @@
 #define __VTX_MODEL_MOLECULE__
 
 #include "app/model/base_model_3d.hpp"
+#include "app/model/category_enum.hpp"
+#include "app/model/configuration/molecule.hpp"
+#include "app/model/secondary_structure.hpp"
+#include "app/model/selection.hpp"
+#include "app/model/solvent_excluded_surface.hpp"
 #include "app/old_app/buffer/molecule.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/generic/base_scene_item.hpp"
 #include "app/old_app/io/reader/prm.hpp"
 #include "app/old_app/io/reader/psf.hpp"
-#include "app/model/category_enum.hpp"
-#include "app/model/configuration/molecule.hpp"
-#include "app/model/secondary_structure.hpp"
-#include "app/model/selection.hpp"
-#include "app/model/solvent_excluded_surface.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
 #include "app/old_app/representation/representation_target.hpp"
 #include "app/old_app/struct/range.hpp"
@@ -284,7 +284,14 @@ namespace VTX
 			// Categorization
 			std::vector<Model::Category *> getFilledCategories() const;
 
-			void propagateEventToViews( const Event::VTXEvent * const p_event ) { _notifyViews( p_event ); }
+			void propagateEventToViews( const App::Core::Event::VTXEvent * const p_event ) { _notifyViews( p_event ); }
+
+			template<typename... Args>
+			inline void propagateEventToViews( const App::Core::Event::VTX_EVENT & p_eventID, Args... p_args )
+			{
+				_notifyViews( p_eventID, p_args... );
+			}
+			void propagateEventToViews( const App::Core::Event::VTX_EVENT & p_eventID ) { _notifyViews( p_eventID ); }
 
 			const std::string & getDisplayName() const { return _displayName; };
 			void				setDisplayName( const std::string & p_name );

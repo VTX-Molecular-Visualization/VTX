@@ -1,9 +1,10 @@
 #include "app/old_app/vtx_app.hpp"
 #include "app/action/main.hpp"
 #include "app/action/setting.hpp"
-#include "app/core/event/event_manager.hpp"
+#include "app/core/event/vtx_event.hpp"
 #include "app/core/mvc/mvc_manager.hpp"
-#include "app/event/vtx_event.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/model/renderer/render_effect_preset.hpp"
 #include "app/model/renderer/render_effect_preset_library.hpp"
@@ -41,7 +42,7 @@ namespace VTX
 		// Create singletons.
 		VTX::Core::MVC::MvcManager::get();
 		App::Manager::ActionManager::get();
-		Core::Event::EventManager::get();
+		App::Manager::EventManager::get();
 		Selection::SelectionManager::get();
 		Core::Worker::WorkerManager::get();
 
@@ -129,7 +130,7 @@ namespace VTX
 		_applyEndOfFrameDeletes();
 
 		// Call late update event for processes at end of frame
-		VTX_EVENT( new Event::VTXEvent( Event::Global::LATE_UPDATE ) );
+		VTX_EVENT( VTX::App::Event::Global::LATE_UPDATE );
 
 		// TODO Reimplement this without Qt
 		//// Tickrate.
@@ -160,7 +161,7 @@ namespace VTX
 	void VTXApp::_stop()
 	{
 		// Prevent events throw for nothing when quitting app
-		Core::Event::EventManager::get().freezeEvent( true );
+		App::Manager::EventManager::get().freezeEvent( true );
 		Core::Worker::WorkerManager::get().stopAll();
 
 		_setting.backup();

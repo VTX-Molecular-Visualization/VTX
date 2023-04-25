@@ -1,8 +1,8 @@
 #ifndef __VTX_IO_STRUCT_SCENE_PATH_DATA__
 #define __VTX_IO_STRUCT_SCENE_PATH_DATA__
 
-#include "app/event/base_event_receiver_vtx.hpp"
-#include "app/event/vtx_event.hpp"
+#include "app/core/event/base_event_receiver_vtx.hpp"
+#include "app/core/event/vtx_event.hpp"
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
 #include <map>
 #include <util/types.hpp>
@@ -16,7 +16,7 @@ namespace VTX
 
 	namespace IO::Struct
 	{
-		class ScenePathData : Event::BaseEventReceiverVTX
+		class ScenePathData : public App::Core::Event::BaseEventReceiverVTX
 		{
 		  public:
 			struct Data
@@ -45,7 +45,7 @@ namespace VTX
 			};
 
 			ScenePathData();
-			virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
+			virtual void receiveEvent( const App::Core::Event::VTXEvent & p_event ) override;
 
 			void registerLoading( const Model::Molecule * const p_molecule, const FilePath & p_filepath );
 

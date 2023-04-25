@@ -14,7 +14,7 @@ namespace VTX
 	namespace Event
 	{
 		template<typename T>
-		class BaseEventReceiverInput : public VTX::Core::Event::BaseEventReceiver<T>
+		class BaseEventReceiverInput : public VTX::App::Core::Event::BaseEventReceiver<T>
 		{
 			friend ::VTX::UI::Event::EventManager;
 
@@ -27,7 +27,7 @@ namespace VTX
 		  protected:
 			virtual void receiveEvent( const T & p_event ) override
 			{
-				VTX::Core::Event::BaseEventReceiver<T>::receiveEvent( p_event );
+				VTX::App::Core::Event::BaseEventReceiver<T>::receiveEvent( p_event );
 			}
 		};
 	} // namespace Event

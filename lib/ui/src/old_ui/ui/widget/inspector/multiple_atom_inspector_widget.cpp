@@ -237,9 +237,9 @@ namespace VTX::UI::Widget::Inspector
 		_infoSection->localize();
 	}
 
-	void MultipleAtomWidget::_eventCalledOnMolecule( const VTX::Event::VTXEvent * const p_event )
+	void MultipleAtomWidget::_eventCalledOnMolecule( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::TRAJECTORY_FRAME_CHANGE )
+		if ( p_event->name == VTX::App::Event::Model::TRAJECTORY_FRAME_CHANGE )
 			_onTargetChangeEvent( nullptr, p_event );
 	}
 

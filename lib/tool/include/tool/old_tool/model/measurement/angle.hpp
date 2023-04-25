@@ -1,12 +1,12 @@
 #ifndef __VTX_MODEL_MEASUREMENT_ANGLE__
 #define __VTX_MODEL_MEASUREMENT_ANGLE__
 
-#include <app/event/base_event_receiver_vtx.hpp>
-#include <app/event/vtx_event.hpp>
-#include <app/old_app/generic/base_auto_delete.hpp>
-#include <app/old_app/id.hpp>
+#include <app/core/event/base_event_receiver_vtx.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include <app/model/label.hpp>
 #include <app/model/molecule.hpp>
+#include <app/old_app/generic/base_auto_delete.hpp>
+#include <app/old_app/id.hpp>
 #include <app/view/callback_view.hpp>
 #include <string>
 #include <tuple>
@@ -19,7 +19,7 @@ namespace VTX::Model
 
 namespace VTX::Model::Measurement
 {
-	class Angle : public Model::Label, Event::BaseEventReceiverVTX, Generic::BaseAutoDelete
+	class Angle : public Model::Label, public App::Core::Event::BaseEventReceiverVTX, public Generic::BaseAutoDelete
 	{
 		VTX_MODEL
 
@@ -34,7 +34,7 @@ namespace VTX::Model::Measurement
 					   const Model::Atom & p_secondAtom,
 					   const Model::Atom & p_thirdAtom );
 
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const App::Core::Event::VTXEvent & p_event ) override;
 
 		void _recomputeAABB( Object3D::Helper::AABB & p_aabb ) override;
 
@@ -79,7 +79,8 @@ namespace VTX::Model::Measurement
 
 		VTX::ID::VTX_ID getViewID( const int p_atomPos ) const;
 
-		void _onMoleculeChange( const Model::Molecule * const p_molecule, const Event::VTXEvent * const p_event );
+		void _onMoleculeChange( const Model::Molecule * const				  p_molecule,
+								const VTX::App::Core::Event::VTXEvent * const p_event );
 	};
 
 } // namespace VTX::Model::Measurement

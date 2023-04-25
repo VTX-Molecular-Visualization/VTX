@@ -1,13 +1,13 @@
 #ifndef __VTX_MODEL_INSTANTIATED_REPRESENTATION__
 #define __VTX_MODEL_INSTANTIATED_REPRESENTATION__
 
-#include "app/old_app/color/rgba.hpp"
-#include "app/event/base_event_receiver_vtx.hpp"
-#include "app/event/vtx_event.hpp"
-#include "app/old_app/generic/base_objectoverride.hpp"
-#include "app/old_app/id.hpp"
+#include "app/core/event/base_event_receiver_vtx.hpp"
+#include "app/core/event/vtx_event.hpp"
 #include "app/model/base_model.hpp"
 #include "app/model/secondary_structure.hpp"
+#include "app/old_app/color/rgba.hpp"
+#include "app/old_app/generic/base_objectoverride.hpp"
+#include "app/old_app/id.hpp"
 #include "representation.hpp"
 #include "representation_data.hpp"
 #include "representation_enum.hpp"
@@ -25,12 +25,15 @@ namespace VTX::Generic
 
 namespace VTX::Model::Representation
 {
-	class InstantiatedRepresentation : public BaseModel, public Generic::BaseObjectOverride, Event::BaseEventReceiverVTX
+	class InstantiatedRepresentation :
+		public BaseModel,
+		public Generic::BaseObjectOverride,
+		public App::Core::Event::BaseEventReceiverVTX
 	{
 		VTX_MODEL
 
 	  public:
-		virtual void receiveEvent( const Event::VTXEvent & p_event );
+		virtual void receiveEvent( const App::Core::Event::VTXEvent & p_event );
 
 		const Generic::BaseRepresentable * const getConstTarget() const;
 		Generic::BaseRepresentable * const		 getTarget() const;
@@ -91,7 +94,7 @@ namespace VTX::Model::Representation
 		MEMBER_FLAG getOverridedMembersFlag() const;
 		bool		isMemberOverrided( const MEMBER_FLAG & p_member ) const;
 		void		refreshSourceValues();
-		void		onLinkedRepresentationChange( const Event::VTXEvent * const p_event );
+		void		onLinkedRepresentationChange( const App::Core::Event::VTXEvent * const p_event );
 
 	  protected:
 		InstantiatedRepresentation( const Representation * const p_linkedRepresentation );

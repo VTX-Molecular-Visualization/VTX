@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_BASE_MODEL_3D__
 #define __VTX_MODEL_BASE_MODEL_3D__
 
-#include "app/event/vtx_event.hpp"
+#include "app/core/event/vtx_event.hpp"
 #include "app/model/base_model.hpp"
 #include "app/old_app/buffer/base_buffer_opengl.hpp"
 #include "app/old_app/generic/base_auto_rotate.hpp"
@@ -54,22 +54,22 @@ namespace VTX
 			void setAutoRotationVector( const Vec3f p_value ) override
 			{
 				Generic::BaseAutoRotate::setAutoRotationVector( p_value );
-				_notifyViews( new Event::VTXEvent( Event::Model::AUTO_ROTATE_DATA_CHANGE ) );
+				_notifyViews( App::Event::Model::AUTO_ROTATE_DATA_CHANGE );
 			}
 			void setAutoRotationNormalizedVector( const Vec3f p_value ) override
 			{
 				Generic::BaseAutoRotate::setAutoRotationNormalizedVector( p_value );
-				_notifyViews( new Event::VTXEvent( Event::Model::AUTO_ROTATE_DATA_CHANGE ) );
+				_notifyViews( App::Event::Model::AUTO_ROTATE_DATA_CHANGE );
 			}
 			void setAutoRotationMagnitude( const float p_speed ) override
 			{
 				Generic::BaseAutoRotate::setAutoRotationMagnitude( p_speed );
-				_notifyViews( new Event::VTXEvent( Event::Model::AUTO_ROTATE_DATA_CHANGE ) );
+				_notifyViews( App::Event::Model::AUTO_ROTATE_DATA_CHANGE );
 			}
 			void setAutoRotationPlaying( const bool p_play ) override
 			{
 				Generic::BaseAutoRotate::setAutoRotationPlaying( p_play );
-				_notifyViews( new Event::VTXEvent( Event::Model::AUTO_ROTATE_DATA_CHANGE ) );
+				_notifyViews( App::Event::Model::AUTO_ROTATE_DATA_CHANGE );
 			}
 
 			virtual void render( const Object3D::Camera & p_camera ) const override
@@ -93,7 +93,7 @@ namespace VTX
 				_instantiate3DViews();
 
 				_isInit = true;
-				_notifyViews( new Event::VTXEvent( Event::Model::INIT ) );
+				_notifyViews( App::Event::Model::INIT );
 			}
 
 		  protected:
@@ -121,7 +121,7 @@ namespace VTX
 			virtual void _transformModifiedEvent() override
 			{
 				_invalidateWorldAABB();
-				_notifyViews( new VTX::Event::VTXEvent( Event::Model::TRANSFORM_CHANGE ) );
+				_notifyViews( App::Event::Model::TRANSFORM_CHANGE );
 			};
 
 			void _invalidateAABB()

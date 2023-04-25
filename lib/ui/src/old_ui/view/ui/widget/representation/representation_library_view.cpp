@@ -3,10 +3,10 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-
 #include <app/action/representation.hpp>
-#include <app/old_app/id.hpp>
+#include <app/event/global.hpp>
 #include <app/model/representation/representation.hpp>
+#include <app/old_app/id.hpp>
 
 namespace VTX::View::UI::Widget::Representation
 {
@@ -15,7 +15,7 @@ namespace VTX::View::UI::Widget::Representation
 		View::BaseView<Model::Representation::RepresentationLibrary>( p_model ),
 		VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::REPRESENTATION_ADDED );
+		_registerEvent( VTX::App::Event::Global::REPRESENTATION_ADDED );
 	}
 
 	void RepresentationLibraryView::_setupUi( const QString & p_name )
@@ -85,13 +85,12 @@ namespace VTX::View::UI::Widget::Representation
 		connect( _resetLibraryButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onResetLibrary );
 	}
 
-	void RepresentationLibraryView::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void RepresentationLibraryView::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::REPRESENTATION_ADDED )
+		if ( p_event.name == VTX::App::Event::Global::REPRESENTATION_ADDED )
 		{
-			const VTX::Event::VTXEventValue<int> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventValue<int> &>( p_event );
-			const int representationIndex = castedEvent.value;
+			const int representationIndex
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<int> &>( p_event ).get();
 
 			_presetList->setCurrentIndex( representationIndex );
 		}
@@ -105,7 +104,8 @@ namespace VTX::View::UI::Widget::Representation
 
 	void RepresentationLibraryView::_onAddPreset() const
 	{
-		VTX_ACTION( new App::Action::Representation::AddNewPresetInLibrary( Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
+		VTX_ACTION(
+			new App::Action::Representation::AddNewPresetInLibrary( Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
 	}
 	void RepresentationLibraryView::_onCopyPreset() const
 	{

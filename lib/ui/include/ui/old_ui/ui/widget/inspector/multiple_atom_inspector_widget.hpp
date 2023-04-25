@@ -93,7 +93,7 @@ namespace VTX::UI::Widget::Inspector
 
 		MoleculeViewContainer _moleculeViewerContainer = MoleculeViewContainer( this );
 
-		void _eventCalledOnMolecule( const VTX::Event::VTXEvent * const p_event );
+		void _eventCalledOnMolecule( const VTX::App::Core::Event::VTXEvent * const p_event );
 
 		void _resetFieldStates( const SectionFlag & p_flag );
 		void _fillBondData();

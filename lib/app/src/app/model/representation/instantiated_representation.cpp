@@ -1,9 +1,10 @@
 #include "app/model/representation/instantiated_representation.hpp"
-#include "app/event/vtx_event.hpp"
-#include "app/old_app/generic/base_representable.hpp"
+#include "app/core/event/vtx_event.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
+#include "app/event/global.hpp"
 #include "app/model/molecule.hpp"
 #include "app/model/secondary_structure.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -49,25 +50,26 @@ namespace VTX::Model::Representation
 		_ribbonData( Generic::OverridableParameter( _linkedRepresentation->getData().getRibbonData() ) ),
 		_sesData( Generic::OverridableParameter( _linkedRepresentation->getData().getSESData() ) )
 	{
-		_registerEvent( Event::Global::MOLECULE_COLOR_CHANGE );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_COLOR_CHANGE );
 	}
 
 	InstantiatedRepresentation::~InstantiatedRepresentation() {}
 
-	void InstantiatedRepresentation::onLinkedRepresentationChange( const Event::VTXEvent * const p_event )
+	void InstantiatedRepresentation::onLinkedRepresentationChange( const App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::REPRESENTATION_TYPE_CHANGE || p_event->name == Event::Model::DATA_CHANGE )
+		if ( p_event->name == App::Event::Model::REPRESENTATION_TYPE_CHANGE
+			 || p_event->name == App::Event::Model::DATA_CHANGE )
 		{
 			if ( _target != nullptr )
 				_updateTarget( VTX::Representation::MoleculeComputationFlag::ALL );
 		}
 
-		_notifyViews( new Event::VTXEvent( *p_event ) );
+		_notifyViews( new App::Core::Event::VTXEvent( *p_event ) );
 	}
 
-	void InstantiatedRepresentation::receiveEvent( const Event::VTXEvent & p_event )
+	void InstantiatedRepresentation::receiveEvent( const App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::MOLECULE_COLOR_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::MOLECULE_COLOR_CHANGE )
 		{
 			bool useMoleculeColor = false;
 

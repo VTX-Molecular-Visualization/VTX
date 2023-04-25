@@ -1,9 +1,10 @@
 #ifndef __VTX_MODEL_SELECTION__
 #define __VTX_MODEL_SELECTION__
 
+#include "app/core/event/base_event_receiver_vtx.hpp"
+#include "app/core/event/vtx_event.hpp"
 #include "app/core/mvc/mvc_manager.hpp"
-#include "app/event/base_event_receiver_vtx.hpp"
-#include "app/event/vtx_event.hpp"
+#include "app/event/global.hpp"
 #include "app/model/base_model.hpp"
 #include "app/model/category_enum.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
@@ -21,7 +22,7 @@ namespace VTX::Model
 	class Residue;
 	class Atom;
 
-	class Selection : public BaseModel, public VTX::Event::BaseEventReceiverVTX
+	class Selection : public BaseModel, public VTX::App::Core::Event::BaseEventReceiverVTX
 	{
 		VTX_MODEL
 
@@ -219,7 +220,7 @@ namespace VTX::Model
 
 		void moveDataTo( Selection & p_target );
 
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const App::Core::Event::VTXEvent & p_event ) override;
 
 		void						   getItemTypes( std::set<VTX::ID::VTX_ID> & p_types ) const;
 		Object3D::Helper::AABB		   getAABB() const;
@@ -251,7 +252,10 @@ namespace VTX::Model
 		}
 
 	  protected:
-		Selection() : BaseModel( VTX::ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
+		Selection() : BaseModel( VTX::ID::Model::MODEL_SELECTION )
+		{
+			_registerEvent( App::Event::Global::MOLECULE_REMOVED );
+		}
 		~Selection() = default;
 
 		void _notifyDataChanged();

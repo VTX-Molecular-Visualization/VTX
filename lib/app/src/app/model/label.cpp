@@ -15,7 +15,7 @@ namespace VTX::Model
 	void Label::setName( const std::string & p_name )
 	{
 		_name = p_name;
-		_notifyViews( new Event::VTXEvent( Event::Model::DISPLAY_NAME_CHANGE ) );
+		_notifyViews( App::Event::Model::DISPLAY_NAME_CHANGE );
 	}
 
 	void Label::setAutoNaming( const bool p_autoNaming, const bool p_notify )

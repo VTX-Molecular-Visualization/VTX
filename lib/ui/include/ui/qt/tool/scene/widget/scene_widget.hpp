@@ -27,7 +27,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		NEW_ARCHI_VTX_WIDGET
 
 	  public:
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 		void registerSceneItemType( const ID::VTX_ID & p_type, SceneItemWidgetInstancier * const p_instancier );
 

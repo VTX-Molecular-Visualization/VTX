@@ -9,10 +9,10 @@
 #include <algorithm>
 #include <app/action/scene.hpp>
 #include <app/action/selection.hpp>
-
+#include <app/core/mvc/mvc_manager.hpp>
+#include <app/event/global.hpp>
 #include <app/model/path.hpp>
 #include <app/model/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/vtx_app.hpp>
@@ -31,10 +31,10 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		defaultWidgetArea  = Qt::DockWidgetArea::LeftDockWidgetArea;
 		defaultOrientation = Qt::Orientation::Horizontal;
 
-		_registerEvent( VTX::Event::Global::SCENE_ITEM_INDEXES_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 
-		_registerEvent( VTX::Event::Global::SCENE_ITEM_ADDED );
-		_registerEvent( VTX::Event::Global::SCENE_ITEM_REMOVED );
+		_registerEvent( VTX::App::Event::Global::SCENE_ITEM_ADDED );
+		_registerEvent( VTX::App::Event::Global::SCENE_ITEM_REMOVED );
 	}
 
 	SceneWidget ::~SceneWidget()
@@ -47,29 +47,29 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		_mapInstanciers.clear();
 	}
 
-	void SceneWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void SceneWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::SCENE_ITEM_ADDED )
+		if ( p_event.name == VTX::App::Event::Global::SCENE_ITEM_ADDED )
 		{
-			const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> &>( p_event );
 
-			instantiateSceneItemWidget( castedEvent.ptr );
+			instantiateSceneItemWidget( castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::SCENE_ITEM_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::SCENE_ITEM_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> &>( p_event );
 
 			Model::BaseModel & model
-				= VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( castedEvent.ptr->getModelID() );
+				= VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( castedEvent.get()->getModelID() );
 
 			SceneItemWidget * const sceneItemWidget = getSceneItemWidgetFromModel( model );
 
 			if ( sceneItemWidget != nullptr )
 				deleteSceneItemWidget( sceneItemWidget );
 		}
-		else if ( p_event.name == VTX::Event::Global::SCENE_ITEM_INDEXES_CHANGE )
+		else if ( p_event.name == VTX::App::Event::Global::SCENE_ITEM_INDEXES_CHANGE )
 		{
 			_refreshItemIndex();
 		}
@@ -83,7 +83,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		const int defaultPosition = _getDefaultIndex( *p_sceneItem );
 
-		const ID::VTX_ID &		modelTypeID		= VTX::Core::MVC::MvcManager::get().getModelTypeID( p_sceneItem->getModelID() );
+		const ID::VTX_ID & modelTypeID = VTX::Core::MVC::MvcManager::get().getModelTypeID( p_sceneItem->getModelID() );
 		SceneItemWidget * const sceneItemWidget = _mapInstanciers[ modelTypeID ]->instantiateItem( p_sceneItem );
 
 		const int index = int( _sceneWidgets.size() );

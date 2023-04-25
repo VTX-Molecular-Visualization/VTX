@@ -1,7 +1,7 @@
 #ifndef __VTX_VIEW_BASE_VIEW__
 #define __VTX_VIEW_BASE_VIEW__
 
-#include "app/event/vtx_event.hpp"
+#include "app/core/event/vtx_event.hpp"
 #include "app/model/base_model.hpp"
 #include <util/logger.hpp>
 
@@ -22,9 +22,9 @@ namespace VTX
 			VTX_VIEW
 
 		  public:
-			virtual void notify( const Event::VTXEvent * const p_event )
+			virtual void notify( const App::Core::Event::VTXEvent * const p_event )
 			{
-				if ( p_event->name == Event::Model::DATA_CHANGE )
+				if ( p_event->name == App::Event::Model::DATA_CHANGE )
 				{
 					_refreshView();
 				}

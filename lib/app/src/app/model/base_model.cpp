@@ -5,7 +5,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		void BaseModel::_notifyViews( const Event::VTXEvent * const p_event )
+		void BaseModel::_notifyViews( const App::Core::Event::VTXEvent * const p_event )
 		{
 			VTX::Core::MVC::MvcManager::get().notifyViews( this, p_event );
 			delete p_event;

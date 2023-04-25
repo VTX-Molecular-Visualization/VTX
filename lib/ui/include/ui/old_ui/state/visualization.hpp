@@ -36,7 +36,7 @@ namespace VTX
 
 			void setPickerController( const ID::VTX_ID & p_pickerId );
 
-			virtual void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+			virtual void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 		  private:
 			ID::VTX_ID _cameraController = Setting::CONTROLLER_MODE_DEFAULT;

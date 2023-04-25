@@ -3,9 +3,9 @@
 #include "tool/old_tool/model/measurement/measure_in_progress.hpp"
 #include <QPoint>
 #include <app/action/selection.hpp>
-#include <app/core/event/event_manager.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
-
+#include <app/event.hpp>
+#include <app/event/global.hpp>
 #include <app/model/atom.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/residue.hpp>
@@ -227,7 +227,7 @@ namespace VTX::Controller
 			_currentMeasureModel->clearAtoms();
 			_currentMode = p_mode;
 
-			VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::PICKER_MODE_CHANGE ) );
+			VTX_EVENT( VTX::App::Event::Global::PICKER_MODE_CHANGE );
 		}
 	}
 } // namespace VTX::Controller

@@ -24,8 +24,8 @@ namespace VTX::View::UI::Widget::Renderer
 
 	  public:
 		void localize() override;
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
-		void notify( const VTX::Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
 
 		void selectPreset( const int p_presetIndex );
 

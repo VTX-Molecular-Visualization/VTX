@@ -29,7 +29,7 @@ namespace VTX
 				refresh();
 			}
 
-			virtual void notify( const VTX::Event::VTXEvent * const p_event ) {};
+			virtual void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) {};
 
 			virtual void refresh() {}
 

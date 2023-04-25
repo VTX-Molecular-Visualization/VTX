@@ -1,10 +1,10 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/object_display_block.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-
 #include <app/action/molecule.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
+#include <app/event/global.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 
@@ -12,19 +12,20 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	ObjectDisplayBlock::ObjectDisplayBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
-		_registerEvent( VTX::Event::Global::MOLECULE_ADDED );
-		_registerEvent( VTX::Event::Global::MOLECULE_REMOVED );
-		_registerEvent( VTX::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_ADDED );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 	}
 
 	ObjectDisplayBlock::~ObjectDisplayBlock() {}
 
-	void ObjectDisplayBlock::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void ObjectDisplayBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::SELECTION_CHANGE || p_event.name == VTX::Event::Global::MOLECULE_ADDED
-			 || p_event.name == VTX::Event::Global::MOLECULE_REMOVED
-			 || p_event.name == VTX::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::SELECTION_CHANGE
+			 || p_event.name == VTX::App::Event::Global::MOLECULE_ADDED
+			 || p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED
+			 || p_event.name == VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE )
 		{
 			_refreshButtons();
 		}

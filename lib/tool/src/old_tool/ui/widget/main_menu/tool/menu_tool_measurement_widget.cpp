@@ -2,7 +2,7 @@
 #include "tool/old_tool/action/measurement.hpp"
 #include "tool/old_tool/controller/measurement_picker.hpp"
 #include <app/action/main.hpp>
-
+#include <app/event/global.hpp>
 #include <app/model/atom.hpp>
 #include <app/old_app/id.hpp>
 #include <ui/old_ui/action/main.hpp>
@@ -15,14 +15,14 @@ namespace VTX::UI::Widget::MainMenu::Tool
 {
 	MenuToolMeasurementWidget::MenuToolMeasurementWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::App::Event::Global::PICKER_MODE_CHANGE );
 	}
 
 	MenuToolMeasurementWidget::~MenuToolMeasurementWidget() {}
 
-	void MenuToolMeasurementWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void MenuToolMeasurementWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::PICKER_MODE_CHANGE )
 			_refreshButtons();
 	}
 

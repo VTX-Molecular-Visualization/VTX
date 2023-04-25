@@ -9,20 +9,20 @@
 #include <app/action/main.hpp>
 #include <app/action/scene.hpp>
 #include <app/action/setting.hpp>
-
+#include <app/event/global.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
 	ContextualMenuRender::ContextualMenuRender( QWidget * const p_parent ) :
 		QT::Widget::ContextualMenu::BaseContextualMenu( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::App::Event::Global::PICKER_MODE_CHANGE );
 	}
 	ContextualMenuRender ::~ContextualMenuRender() {}
 
-	void ContextualMenuRender ::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void ContextualMenuRender ::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_refreshPickerMode();
 		}

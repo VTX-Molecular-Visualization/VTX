@@ -14,7 +14,7 @@
 #include <QLabel>
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
-
+#include <app/event/global.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
 #include <app/old_app/setting.hpp>
 #include <app/old_app/style.hpp>
@@ -24,12 +24,12 @@ namespace VTX::UI::Widget::Settings
 {
 	SettingVTXWidget::SettingVTXWidget( QWidget * const p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SETTINGS_CHANGE );
 	}
 
-	void SettingVTXWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void SettingVTXWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::SETTINGS_CHANGE && !_skipSettingEventsState )
+		if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE && !_skipSettingEventsState )
 		{
 			_refreshData();
 		}

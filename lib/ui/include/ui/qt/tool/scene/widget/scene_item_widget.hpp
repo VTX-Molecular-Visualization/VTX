@@ -37,7 +37,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	  public:
 		void localize() override;
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 		virtual void updatePosInSceneHierarchy( const int p_position );
 

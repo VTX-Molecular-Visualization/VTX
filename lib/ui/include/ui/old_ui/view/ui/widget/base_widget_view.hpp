@@ -19,7 +19,7 @@ namespace VTX::View::UI::Widget
 	  public:
 		W * const getWidget() { return _widget; };
 
-		virtual void notify( const VTX::Event::VTXEvent * const p_event )
+		virtual void notify( const VTX::App::Core::Event::VTXEvent * const p_event )
 		{
 			View::BaseView<M>::notify( p_event );
 			_widget->notify( p_event );

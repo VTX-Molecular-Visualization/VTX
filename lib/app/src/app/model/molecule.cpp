@@ -1,8 +1,8 @@
 #include "app/model/molecule.hpp"
-#include "app/old_app/color/rgba.hpp"
-#include "app/event/vtx_event.hpp"
-#include "app/core/event/event_manager.hpp"
-#include "app/old_app/id.hpp"
+#include "app/core/event/vtx_event.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
 #include "app/model/atom.hpp"
 #include "app/model/bond.hpp"
 #include "app/model/category.hpp"
@@ -11,7 +11,8 @@
 #include "app/model/residue.hpp"
 #include "app/model/selection.hpp"
 #include "app/model/solvent_excluded_surface.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/old_app/color/rgba.hpp"
+#include "app/old_app/id.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/util/secondary_structure.hpp"
@@ -259,10 +260,7 @@ namespace VTX
 			}
 		}
 
-		void Molecule::_onRepresentationChange()
-		{
-			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
-		}
+		void Molecule::_onRepresentationChange() { _notifyViews( App::Event::Model::REPRESENTATION_CHANGE ); }
 
 		void Molecule::_computeAABB() const
 		{
@@ -287,8 +285,8 @@ namespace VTX
 		{
 			_addRenderable(
 				VTX::Core::MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, VTX::ID::View::D3_SPHERE ) );
-			_addRenderable(
-				VTX::Core::MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, VTX::ID::View::D3_CYLINDER ) );
+			_addRenderable( VTX::Core::MVC::MvcManager::get().instantiateView<View::D3::Cylinder>(
+				this, VTX::ID::View::D3_CYLINDER ) );
 		}
 
 		void Molecule::resizeBuffers()
@@ -568,7 +566,7 @@ namespace VTX
 			refreshSolventExcludedSurfaces();
 			refreshRepresentationTargets();
 
-			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_FRAME_CHANGE ) );
+			_notifyViews( App::Event::Model::TRAJECTORY_FRAME_CHANGE );
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
@@ -625,7 +623,7 @@ namespace VTX
 			if ( _fps != p_fps )
 			{
 				_fps = p_fps;
-				_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_DATA_CHANGE ) );
+				_notifyViews( App::Event::Model::TRAJECTORY_DATA_CHANGE );
 			}
 		}
 		void Molecule::setIsPlaying( const bool p_isPlaying )
@@ -636,7 +634,7 @@ namespace VTX
 				_dynamicLoopCount = 0;
 				_trajectoryTimer  = 0;
 
-				_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_DATA_CHANGE ) );
+				_notifyViews( App::Event::Model::TRAJECTORY_DATA_CHANGE );
 			}
 		}
 		void Molecule::setPlayMode( const Trajectory::PlayMode & p_playMode )
@@ -644,7 +642,7 @@ namespace VTX
 			if ( _playMode != p_playMode )
 			{
 				_playMode = p_playMode;
-				_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_DATA_CHANGE ) );
+				_notifyViews( App::Event::Model::TRAJECTORY_DATA_CHANGE );
 			}
 		}
 
@@ -723,38 +721,35 @@ namespace VTX
 			_dynamicLoopCount = 0;
 			setFrame( frame );
 		}
-		void Molecule::forceNotifyTrajectoryChanged()
-		{
-			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_DATA_CHANGE ) );
-		}
+		void Molecule::forceNotifyTrajectoryChanged() { _notifyViews( App::Event::Model::TRAJECTORY_DATA_CHANGE ); }
 
 		bool Molecule::showWater() const { return getCategory( CATEGORY_ENUM::WATER ).isVisible(); }
 		void Molecule::setShowWater( const bool p_showWater )
 		{
 			Util::Molecule::show( getCategory( CATEGORY_ENUM::WATER ), p_showWater );
 			_fillBufferAtomVisibilities();
-			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
+			VTX_EVENT( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 		}
 		bool Molecule::showHydrogen() const { return _showHydrogen; }
 		void Molecule::setShowHydrogen( const bool p_showHydrogen )
 		{
 			_showHydrogen = p_showHydrogen;
 			_fillBufferAtomVisibilities();
-			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
+			VTX_EVENT( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 		}
 		bool Molecule::showSolvent() const { return getCategory( CATEGORY_ENUM::SOLVENT ).isVisible(); }
 		void Molecule::setShowSolvent( const bool p_showSolvent )
 		{
 			Util::Molecule::show( getCategory( CATEGORY_ENUM::SOLVENT ), p_showSolvent );
 			_fillBufferAtomVisibilities();
-			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
+			VTX_EVENT( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 		}
 		bool Molecule::showIon() const { return getCategory( CATEGORY_ENUM::ION ).isVisible(); }
 		void Molecule::setShowIon( const bool p_showIon )
 		{
 			Util::Molecule::show( getCategory( CATEGORY_ENUM::ION ), p_showIon );
 			_fillBufferAtomVisibilities();
-			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
+			VTX_EVENT( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 		}
 
 		void Molecule::print() const
@@ -907,7 +902,8 @@ namespace VTX
 				Util::SecondaryStructure::computeSecondaryStructure( *this );
 			}
 
-			_secondaryStructure = VTX::Core::MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule>( this );
+			_secondaryStructure
+				= VTX::Core::MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule>( this );
 			_secondaryStructure->init();
 		}
 
@@ -990,7 +986,7 @@ namespace VTX
 
 			if ( previousVisibleState != p_visible )
 			{
-				_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
+				_notifyViews( App::Event::Model::MOLECULE_VISIBILITY );
 			}
 		}
 		void Molecule::setVisible( const bool p_visible, const bool p_notify )
@@ -1002,7 +998,7 @@ namespace VTX
 			if ( previousVisibleState != p_visible )
 			{
 				if ( p_notify )
-					_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
+					_notifyViews( App::Event::Model::MOLECULE_VISIBILITY );
 			}
 		}
 
@@ -1152,7 +1148,7 @@ namespace VTX
 			if ( p_notifyViews )
 				notifyStructureChange();
 
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::CHAIN_REMOVED, chainToDelete ) );
+			VTX_EVENT<Model::Chain *>( VTX::App::Event::Global::CHAIN_REMOVED, chainToDelete );
 
 			// Delete chain
 			if ( p_delete )
@@ -1207,7 +1203,7 @@ namespace VTX
 					notifyStructureChange();
 			}
 
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::RESIDUE_REMOVED, residueToDelete ) );
+			VTX_EVENT<Model::Residue *>( VTX::App::Event::Global::RESIDUE_REMOVED, residueToDelete );
 
 			// Remove Residue
 			if ( p_delete )
@@ -1301,7 +1297,7 @@ namespace VTX
 					notifyStructureChange();
 			}
 
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::ATOM_REMOVED, atomToDelete ) );
+			VTX_EVENT<Model::Atom *>( VTX::App::Event::Global::ATOM_REMOVED, atomToDelete );
 
 			// Delete Atom
 			if ( p_delete )
@@ -1325,15 +1321,18 @@ namespace VTX
 		void Molecule::notifyStructureChange()
 		{
 			_notifyDataChanged();
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_STRUCTURE_CHANGE, this ) );
+			VTX_EVENT<Model::Molecule *>( VTX::App::Event::Global::MOLECULE_STRUCTURE_CHANGE, this );
 		}
 
-		void Molecule::notifyVisibilityChange() { _notifyViews( new Event::VTXEvent( Event::Model::VISIBILITY ) ); }
+		void Molecule::notifyVisibilityChange()
+		{
+			_notifyViews( new App::Core::Event::VTXEvent( App::Event::Model::VISIBILITY ) );
+		}
 
 		void Molecule::setDisplayName( const std::string & p_name )
 		{
 			_displayName = p_name;
-			_notifyViews( new Event::VTXEvent( Event::Model::DISPLAY_NAME_CHANGE ) );
+			_notifyViews( App::Event::Model::DISPLAY_NAME_CHANGE );
 		}
 
 		void Molecule::setColor( const Color::Rgba & p_color )
@@ -1342,8 +1341,8 @@ namespace VTX
 
 			if ( isInit() )
 			{
-				_notifyViews( new Event::VTXEvent( Event::Model::COLOR_CHANGE ) );
-				VTX_EVENT( new Event::VTXEventRef( Event::Global::MOLECULE_COLOR_CHANGE, p_color ) );
+				_notifyViews( App::Event::Model::COLOR_CHANGE );
+				VTX_EVENT<const Color::Rgba &>( VTX::App::Event::Global::MOLECULE_COLOR_CHANGE, p_color );
 			}
 		}
 

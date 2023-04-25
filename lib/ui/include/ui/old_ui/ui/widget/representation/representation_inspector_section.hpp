@@ -21,7 +21,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <app/old_app/color/rgba.hpp>
-#include <app/event/vtx_event.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include <app/old_app/generic/base_colorable.hpp>
 #include <app/old_app/generic/base_representable.hpp>
 #include <app/model/representation/instantiated_representation.hpp>
@@ -51,7 +51,7 @@ namespace VTX::UI::Widget::Representation
 
 	  public:
 		void localize() override;
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 		void refresh();
 
 		void resetState() override;
@@ -108,10 +108,10 @@ namespace VTX::UI::Widget::Representation
 		void _revertRepresentation();
 		void _applyRepresentationToChildren();
 
-		void _onTargetedRepresentationChange( const VTX::Event::VTXEvent * const p_event );
+		void _onTargetedRepresentationChange( const VTX::App::Core::Event::VTXEvent * const p_event );
 		void _recomputeUi();
 
-		void _onDummyChange( const VTX::Event::VTXEvent * const p_event );
+		void _onDummyChange( const VTX::App::Core::Event::VTXEvent * const p_event );
 	};
 
 } // namespace VTX::UI::Widget::Representation

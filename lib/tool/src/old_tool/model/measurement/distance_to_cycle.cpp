@@ -3,6 +3,7 @@
 // #include "event/event_manager.hpp"
 // #include "model/atom.hpp"
 // #include "model/molecule.hpp"
+// #include <app/event/global.hpp>
 // #include "mvc/mvc_manager.hpp"
 // #include "object3d/scene.hpp"
 // #include <util/math.hpp>
@@ -13,9 +14,9 @@
 //{
 //	DistanceToCycle::DistanceToCycle() : Model::Label( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
 //	{
-//		_registerEvent( Event::Global::MOLECULE_REMOVED );
-//		_registerEvent( Event::Global::ATOM_REMOVED );
-//		_registerEvent( Event::Global::LABEL_REMOVED );
+//		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
+//		_registerEvent( VTX::App::Event::Global::ATOM_REMOVED );
+//		_registerEvent( VTX::App::Event::Global::LABEL_REMOVED );
 //
 //		setAutoNaming( true, false );
 //		_moleculeViews.reserve( 2 );
@@ -28,12 +29,12 @@
 //
 //	DistanceToCycle ::~DistanceToCycle() {}
 //
-//	void DistanceToCycle::receiveEvent( const Event::VTXEvent & p_event )
+//	void DistanceToCycle::receiveEvent( const App::Core::Event::VTXEvent & p_event )
 //	{
-//		if ( p_event.name == Event::Global::ATOM_REMOVED )
+//		if ( p_event.name == VTX::App::Event::Global::ATOM_REMOVED )
 //		{
 //			const Event::VTXEventPtr<Model::Atom> & castedEvent
-//				= dynamic_cast<const Event::VTXEventPtr<Model::Atom> &>( p_event );
+//				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Atom*> &>( p_event );
 //
 //			if ( castedEvent.ptr == _firstAtom || castedEvent.ptr == _secondAtom )
 //			{
@@ -43,10 +44,10 @@
 //				VTXApp::get().deleteAtEndOfFrame( this );
 //			}
 //		}
-//		else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
+//		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 //		{
 //			const Event::VTXEventPtr<Model::Molecule> & castedEvent
-//				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+//				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Molecule*> &>( p_event );
 //
 //			if ( castedEvent.ptr == _firstAtom->getMoleculePtr() || castedEvent.ptr == _secondAtom->getMoleculePtr() )
 //			{
@@ -56,10 +57,10 @@
 //				VTXApp::get().deleteAtEndOfFrame( this );
 //			}
 //		}
-//		else if ( p_event.name == Event::Global::LABEL_REMOVED )
+//		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
 //		{
 //			const Event::VTXEventPtr<Model::Label> & castedEvent
-//				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+//				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label*> &>( p_event );
 //
 //			// TODO : Use a manager instead of managing scene from model
 //			if ( castedEvent.ptr == this )
@@ -116,16 +117,18 @@
 //	void DistanceToCycle::_instantiateViewsOnMolecules()
 //	{
 //		MoleculeView * const firstMoleculeView
-//			= VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>( _firstAtom->getMoleculePtr(), getViewID( 0 ) );
-//		firstMoleculeView->setCallback( this, &DistanceToCycle::_onMoleculeChange );
-//		_moleculeViews.emplace_back( firstMoleculeView );
+//			= VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>( _firstAtom->getMoleculePtr(), getViewID(
+// 0
+//)
+//); 		firstMoleculeView->setCallback( this, &DistanceToCycle::_onMoleculeChange );
+//_moleculeViews.emplace_back( firstMoleculeView );
 //
 //		if ( _firstAtom->getMoleculePtr() != _secondAtom->getMoleculePtr() )
 //		{
 //			MoleculeView * const secondMoleculeView
-//				= VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>( _secondAtom->getMoleculePtr(), getViewID( 1 ) );
-//			secondMoleculeView->setCallback( this, &DistanceToCycle::_onMoleculeChange );
-//			_moleculeViews.emplace_back( secondMoleculeView );
+//				= VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>( _secondAtom->getMoleculePtr(),
+// getViewID( 1 ) ); 			secondMoleculeView->setCallback( this, &DistanceToCycle::_onMoleculeChange );
+//_moleculeViews.emplace_back( secondMoleculeView );
 //		}
 //	}
 //
@@ -145,16 +148,16 @@
 //	}
 //
 //	void DistanceToCycle::_onMoleculeChange( const Model::Molecule * const p_molecule,
-//											 const Event::VTXEvent * const p_event )
+//											 const App::Core::Event::VTXEvent * const p_event )
 //	{
 //		bool recomputeDistance = false;
-//		if ( p_event->name == Event::Model::TRANSFORM_CHANGE )
+//		if ( p_event->name ==App::Event::Model::TRANSFORM_CHANGE )
 //		{
 //			// recompute only if the two atoms aren't in the same molecule
 //			recomputeDistance = _firstAtom->getMoleculePtr() != _secondAtom->getMoleculePtr();
 //			_invalidateAABB();
 //		}
-//		else if ( p_event->name == Event::Model::TRAJECTORY_FRAME_CHANGE )
+//		else if ( p_event->name ==App::Event::Model::TRAJECTORY_FRAME_CHANGE )
 //		{
 //			recomputeDistance = true;
 //			_invalidateAABB();

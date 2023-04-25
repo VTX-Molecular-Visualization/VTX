@@ -160,9 +160,8 @@ namespace VTX
 
 			if ( previousVisibleState != p_visible )
 			{
-				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::CHAIN_VISIBILITY, _index ) );
-				_moleculePtr->propagateEventToViews(
-					new Event::VTXEventValue<uint>( Event::Model::CHAIN_VISIBILITY, _index ) );
+				_notifyViews<uint>( App::Event::Model::CHAIN_VISIBILITY, _index );
+				_moleculePtr->propagateEventToViews<uint>( App::Event::Model::CHAIN_VISIBILITY, _index );
 			}
 		}
 
@@ -176,9 +175,8 @@ namespace VTX
 			{
 				if ( p_notify )
 				{
-					_notifyViews( new Event::VTXEventValue<uint>( Event::Model::CHAIN_VISIBILITY, _index ) );
-					_moleculePtr->propagateEventToViews(
-						new Event::VTXEventValue<uint>( Event::Model::CHAIN_VISIBILITY, _index ) );
+					_notifyViews<uint>( App::Event::Model::CHAIN_VISIBILITY, _index );
+					_moleculePtr->propagateEventToViews<uint>( App::Event::Model::CHAIN_VISIBILITY, _index );
 				}
 			}
 		}
@@ -232,9 +230,6 @@ namespace VTX
 			_callRepresentationChange();
 		}
 
-		void Chain::_onRepresentationChange()
-		{
-			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
-		}
+		void Chain::_onRepresentationChange() { _notifyViews( App::Event::Model::REPRESENTATION_CHANGE ); }
 	} // namespace Model
 } // namespace VTX

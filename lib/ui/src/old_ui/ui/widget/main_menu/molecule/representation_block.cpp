@@ -16,21 +16,21 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	}
 	RepresentationBlock::~RepresentationBlock() {}
 
-	void RepresentationBlock::notify( const VTX::Event::VTXEvent * const p_event )
+	void RepresentationBlock::notify( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::DATA_CHANGE )
+		if ( p_event->name == VTX::App::Event::Model::DATA_CHANGE )
 		{
 			_refreshView();
 		}
-		else if ( p_event->name == VTX::Event::Model::QUICK_ACCESS_CHANGE )
+		else if ( p_event->name == VTX::App::Event::Model::QUICK_ACCESS_CHANGE )
 		{
 			_refreshView();
 		}
-		else if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE )
+		else if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			_refreshNames();
 		}
-		else if ( p_event->name == VTX::Event::Model::REPRESENTATION_TYPE_CHANGE )
+		else if ( p_event->name == VTX::App::Event::Model::REPRESENTATION_TYPE_CHANGE )
 		{
 			_refreshIcons();
 		}

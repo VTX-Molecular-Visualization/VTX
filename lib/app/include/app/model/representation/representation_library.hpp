@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_REPRESENTATION_LIBRARY__
 #define __VTX_MODEL_REPRESENTATION_LIBRARY__
 
-#include "app/event/vtx_event.hpp"
+#include "app/core/event/vtx_event.hpp"
 #include "app/model/base_model.hpp"
 #include "app/model/category_enum.hpp"
 #include "app/core/mvc/mvc_manager.hpp"
@@ -53,7 +53,7 @@ namespace VTX::Model::Representation
 		RepresentationLibrary();
 		~RepresentationLibrary();
 
-		virtual void _onRepresentationChange( const Event::VTXEvent * const p_event );
+		virtual void _onRepresentationChange( const App::Core::Event::VTXEvent * const p_event );
 
 	  private:
 		std::vector<Representation *> _representations;

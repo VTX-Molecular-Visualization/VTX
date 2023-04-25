@@ -32,7 +32,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		void _refreshIcons();
 		void _refreshView() override;
 
-		void notify( const VTX::Event::VTXEvent * const p_event ) override;
+		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
 
 	  private:
 		std::map<int, RepresentationPresetButton *> _buttons   = std::map<int, RepresentationPresetButton *>();

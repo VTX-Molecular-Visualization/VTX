@@ -2,10 +2,10 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 #include <app/action/viewpoint.hpp>
-
+#include <app/core/mvc/mvc_manager.hpp>
+#include <app/event/global.hpp>
 #include <app/model/path.hpp>
 #include <app/model/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/camera.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/vtx_app.hpp>
@@ -14,17 +14,17 @@ namespace VTX::UI::Widget::MainMenu::Camera
 {
 	ViewpointBlock::ViewpointBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
 	};
 
-	void ViewpointBlock::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void ViewpointBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::SELECTION_CHANGE )
+		if ( p_event.name == App::Event::Global::SELECTION_CHANGE )
 		{
-			const VTX::Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Selection> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Selection *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Selection *> &>( p_event );
 
-			const Model::Selection * const selectionModel = castedEvent.ptr;
+			const Model::Selection * const selectionModel = castedEvent.get();
 			_enableDeleteButtonState( selectionModel->hasItemOfType( VTX::ID::Model::MODEL_VIEWPOINT ) );
 		}
 	}

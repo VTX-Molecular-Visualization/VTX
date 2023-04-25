@@ -174,7 +174,7 @@ namespace VTX::UI::Widget::Settings
 
 	void RenderEffectPresetEditor::localize() {}
 
-	void RenderEffectPresetEditor::_catchModelEvent( const VTX::Event::VTXEvent * const p_event ) { refresh(); }
+	void RenderEffectPresetEditor::_catchModelEvent( const VTX::App::Core::Event::VTXEvent * const p_event ) { refresh(); }
 
 	void RenderEffectPresetEditor::refresh()
 	{

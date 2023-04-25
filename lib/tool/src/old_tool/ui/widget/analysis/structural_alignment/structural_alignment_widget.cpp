@@ -3,6 +3,7 @@
 #include "tool/old_tool/analysis/rmsd.hpp"
 #include "tool/old_tool/ui/widget/analysis/structural_alignment/structural_alignment_model_list_widget.hpp"
 #include <app/core/mvc/mvc_manager.hpp>
+#include <app/event/global.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/selection.hpp>
 #include <app/old_app/object3d/scene.hpp>
@@ -15,18 +16,16 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 {
 	StructuralAlignmentWidget::StructuralAlignmentWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED );
+		_registerEvent( VTX::App::Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED );
 	}
-	void StructuralAlignmentWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void StructuralAlignmentWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED )
+		if ( p_event.name == VTX::App::Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED )
 		{
-			const VTX::Event::VTXEventRef<const VTX::Analysis::StructuralAlignment::AlignmentResult> & castedEvent
-				= dynamic_cast<
-					const VTX::Event::VTXEventRef<const VTX::Analysis::StructuralAlignment::AlignmentResult> &>(
-					p_event );
-
-			VTX::Analysis::StructuralAlignment::AlignmentResult alignmentResult = castedEvent.ref;
+			const VTX::Analysis::StructuralAlignment::AlignmentResult & alignmentResult
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<
+					const VTX::Analysis::StructuralAlignment::AlignmentResult &> &>( p_event )
+					  .get();
 
 			VTX_INFO( "RMSD : {} over {} residues",
 					  alignmentResult.alignedResiduesRMSD,

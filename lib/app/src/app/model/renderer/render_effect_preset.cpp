@@ -33,7 +33,7 @@ namespace VTX::Model::Renderer
 	void RenderEffectPreset::setName( const std::string & p_name )
 	{
 		_name = std::string( p_name );
-		_notifyViews( new Event::VTXEvent( Event::Model::DISPLAY_NAME_CHANGE ) );
+		_notifyViews( App::Event::Model::DISPLAY_NAME_CHANGE );
 	}
 	void RenderEffectPreset::setIconPath( const std::string & p_iconPath )
 	{
@@ -43,7 +43,7 @@ namespace VTX::Model::Renderer
 	void RenderEffectPreset::setQuickAccess( const bool p_quickAccess )
 	{
 		_quickAccess = p_quickAccess;
-		_notifyViews( new Event::VTXEvent( Event::Model::QUICK_ACCESS_CHANGE ) );
+		_notifyViews( App::Event::Model::QUICK_ACCESS_CHANGE );
 	}
 
 	void RenderEffectPreset::enableSSAO( const bool p_enable )

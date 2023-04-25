@@ -1,6 +1,6 @@
 #include "app/old_app/representation/representation_manager.hpp"
-#include "app/core/event/event_manager.hpp"
-#include "app/old_app/generic/base_representable.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
+#include "app/event.hpp"
 #include "app/model/chain.hpp"
 #include "app/model/molecule.hpp"
 #include "app/model/representation/instantiated_representation.hpp"
@@ -8,7 +8,7 @@
 #include "app/model/representation/representation_library.hpp"
 #include "app/model/residue.hpp"
 #include "app/model/selection.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/view/callback_view.hpp"
 
@@ -116,8 +116,9 @@ namespace VTX::Representation
 		const bool								 p_recompute,
 		const bool								 p_notify )
 	{
-		InstantiatedRepresentation * const copy = VTX::Core::MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>(
-			p_source->getLinkedRepresentation() );
+		InstantiatedRepresentation * const copy
+			= VTX::Core::MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>(
+				p_source->getLinkedRepresentation() );
 
 		copy->copy( *p_source );
 
@@ -181,20 +182,22 @@ namespace VTX::Representation
 	void RepresentationManager::_instantiateViewOnRepresentation( const Representation * const p_representation )
 	{
 		View::CallbackView<const Representation, RepresentationManager> * const view
-			= VTX::Core::MVC::MvcManager::get().instantiateView<View::CallbackView<const Representation, RepresentationManager>>(
-				p_representation, ID::View::INSTANTIATED_REPRESENTATION_ON_REPRESENTATION );
+			= VTX::Core::MVC::MvcManager::get()
+				  .instantiateView<View::CallbackView<const Representation, RepresentationManager>>(
+					  p_representation, ID::View::INSTANTIATED_REPRESENTATION_ON_REPRESENTATION );
 
 		view->setCallback( this, &RepresentationManager::_onRepresentationChange );
 	}
 	void RepresentationManager::_deleteViewOnRepresentation( const Representation * const p_representation ) const
 	{
-		VTX::Core::MVC::MvcManager::get().deleteView( p_representation, ID::View::INSTANTIATED_REPRESENTATION_ON_REPRESENTATION );
+		VTX::Core::MVC::MvcManager::get().deleteView( p_representation,
+													  ID::View::INSTANTIATED_REPRESENTATION_ON_REPRESENTATION );
 	}
 
-	void RepresentationManager::_onRepresentationChange( const Representation * const  p_representation,
-														 const Event::VTXEvent * const p_event )
+	void RepresentationManager::_onRepresentationChange( const Representation * const			  p_representation,
+														 const App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::REPRESENTATION_TYPE_CHANGE )
+		if ( p_event->name == App::Event::Model::REPRESENTATION_TYPE_CHANGE )
 		{
 			for ( InstantiatedRepresentation * const instantiatedRepresentation :
 				  _mapRepresentationInstances[ p_representation ] )
@@ -288,7 +291,8 @@ namespace VTX::Representation
 		const InstantiatedRepresentation & p_source )
 	{
 		InstantiatedRepresentation * const dummy
-			= VTX::Core::MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>( p_source.getLinkedRepresentation() );
+			= VTX::Core::MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>(
+				p_source.getLinkedRepresentation() );
 
 		dummy->copy( p_source );
 		return dummy;

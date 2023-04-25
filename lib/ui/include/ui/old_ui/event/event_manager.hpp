@@ -4,7 +4,7 @@
 #include "base_event_receiver_keyboard.hpp"
 #include "base_event_receiver_mouse.hpp"
 #include "base_event_receiver_wheel.hpp"
-#include <app/event/vtx_event.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include <app/old_app/generic/base_lockable.hpp>
 #include <app/old_app/generic/base_updatable.hpp>
 #include <app/old_app/id.hpp>

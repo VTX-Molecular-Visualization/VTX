@@ -19,7 +19,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( _renderEffectLibrary ),
 		MenuToolBlockWidget( p_parent ) {};
 
-	void RenderEffectsBlock::receiveEvent( const VTX::Event::VTXEvent & p_event ) {}
+	void RenderEffectsBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) {}
 
 	void RenderEffectsBlock::_setupUi( const QString & p_name )
 	{
@@ -32,11 +32,11 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	}
 	void RenderEffectsBlock::localize() { setTitle( "Render Effects" ); }
 
-	void RenderEffectsBlock::notify( const VTX::Event::VTXEvent * const p_event )
+	void RenderEffectsBlock::notify( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE
-			 || p_event->name == VTX::Event::Model::QUICK_ACCESS_CHANGE
-			 || p_event->name == VTX::Event::Model::DATA_CHANGE )
+		if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE
+			 || p_event->name == VTX::App::Event::Model::QUICK_ACCESS_CHANGE
+			 || p_event->name == VTX::App::Event::Model::DATA_CHANGE )
 		{
 			_refreshView();
 		}

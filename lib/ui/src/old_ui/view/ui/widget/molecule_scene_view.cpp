@@ -13,7 +13,6 @@
 #include "ui/qt/action/residue.hpp"
 #include "ui/qt/action/selection.hpp"
 #include <QScrollBar>
-
 #include <app/action/atom.hpp>
 #include <app/action/category.hpp>
 #include <app/action/chain.hpp>
@@ -21,6 +20,7 @@
 #include <app/action/residue.hpp>
 #include <app/action/selection.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
+#include <app/event/global.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/struct/range.hpp>
 #include <util/logger.hpp>
@@ -31,33 +31,33 @@ namespace VTX::View::UI::Widget
 	MoleculeSceneView::MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent ) :
 		View::BaseView<Model::Molecule>( p_model ), SceneItemWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SETTINGS_CHANGE );
 	}
 
 	MoleculeSceneView ::~MoleculeSceneView() { _clearLoadedItems(); }
 
-	void MoleculeSceneView::notify( const VTX::Event::VTXEvent * const p_event )
+	void MoleculeSceneView::notify( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::MOLECULE_VISIBILITY )
+		if ( p_event->name == VTX::App::Event::Model::MOLECULE_VISIBILITY )
 		{
 			_refreshItemVisibility( _getMoleculeTreeWidgetItem(), _model->isVisible() );
 		}
-		else if ( p_event->name == VTX::Event::Model::CATEGORY_VISIBILITY )
+		else if ( p_event->name == VTX::App::Event::Model::CATEGORY_VISIBILITY )
 		{
-			const VTX::Event::VTXEventValue<CATEGORY_ENUM> * const castedEventData
-				= dynamic_cast<const VTX::Event::VTXEventValue<CATEGORY_ENUM> *>( p_event );
-			const Model::Category & category = _model->getCategory( castedEventData->value );
+			const VTX::App::Core::Event::VTXEventArg<CATEGORY_ENUM> * const castedEventData
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<CATEGORY_ENUM> *>( p_event );
+			const Model::Category & category = _model->getCategory( castedEventData->get() );
 
 			if ( _isMoleculeExpanded() )
 			{
 				_refreshItemVisibility( _getTreeWidgetItem( category ), category.isVisible() );
 			}
 		}
-		else if ( p_event->name == VTX::Event::Model::CHAIN_VISIBILITY )
+		else if ( p_event->name == VTX::App::Event::Model::CHAIN_VISIBILITY )
 		{
-			const VTX::Event::VTXEventValue<uint> * const castedEventData
-				= dynamic_cast<const VTX::Event::VTXEventValue<uint> *>( p_event );
-			const uint				index	 = castedEventData->value;
+			const VTX::App::Core::Event::VTXEventArg<uint> * const castedEventData
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<uint> *>( p_event );
+			const uint				index	 = castedEventData->get();
 			const Model::Chain &	chain	 = *_model->getChain( index );
 			const Model::Category & category = *( _model->getCategoryFromChain( chain ) );
 
@@ -68,11 +68,11 @@ namespace VTX::View::UI::Widget
 				_refreshItemVisibility( _getTreeWidgetItem( chain ), chain.isVisible() );
 			}
 		}
-		else if ( p_event->name == VTX::Event::Model::RESIDUE_VISIBILITY )
+		else if ( p_event->name == VTX::App::Event::Model::RESIDUE_VISIBILITY )
 		{
-			const VTX::Event::VTXEventValue<uint> * const castedEventData
-				= dynamic_cast<const VTX::Event::VTXEventValue<uint> *>( p_event );
-			const uint			   index   = castedEventData->value;
+			const VTX::App::Core::Event::VTXEventArg<uint> * const castedEventData
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<uint> *>( p_event );
+			const uint			   index   = castedEventData->get();
 			const Model::Residue & residue = *_model->getResidue( index );
 
 			// Check if items are visible before refresh it. If not, the will be update when they will appear
@@ -81,43 +81,44 @@ namespace VTX::View::UI::Widget
 				_refreshItemVisibility( _getTreeWidgetItem( residue ), residue.isVisible() );
 			}
 		}
-		else if ( p_event->name == VTX::Event::Model::ATOM_VISIBILITY )
+		else if ( p_event->name == VTX::App::Event::Model::ATOM_VISIBILITY )
 		{
-			const VTX::Event::VTXEventValue<uint> * const castedEventData
-				= dynamic_cast<const VTX::Event::VTXEventValue<uint> *>( p_event );
-			const Model::Atom & atom = *_model->getAtom( castedEventData->value );
+			const VTX::App::Core::Event::VTXEventArg<uint> * const castedEventData
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<uint> *>( p_event );
+			const Model::Atom & atom = *_model->getAtom( castedEventData->get() );
 
 			if ( _isResidueExpanded( *atom.getResiduePtr() ) )
 			{
 				_refreshItemVisibility( _getTreeWidgetItem( atom ), atom.isVisible() );
 			}
 		}
-		else if ( p_event->name == VTX::Event::Model::VISIBILITY )
+		else if ( p_event->name == VTX::App::Event::Model::VISIBILITY )
 		{
 			_refreshItemsVisibility();
 		}
-		else if ( p_event->name == VTX::Event::Model::DATA_CHANGE )
+		else if ( p_event->name == VTX::App::Event::Model::DATA_CHANGE )
 		{
 			_clearLoadedItems();
 			_updateMoleculeStructure();
 			_refreshSize();
 		}
-		else if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE )
+		else if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			_getMoleculeTreeWidgetItem()->setText( 0, QString::fromStdString( _model->getDisplayName() ) );
 		}
 	}
 
-	void MoleculeSceneView::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void MoleculeSceneView::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
 		SceneItemWidget::receiveEvent( p_event );
 
-		if ( p_event.name == VTX::Event::Global::SETTINGS_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> &>(
+					p_event );
 
-			if ( castedEvent.ref.find( Setting::PARAMETER ::SYMBOL_DISPLAY_MODE ) != castedEvent.ref.end() )
+			if ( castedEvent.get().find( Setting::PARAMETER ::SYMBOL_DISPLAY_MODE ) != castedEvent.get().end() )
 			{
 				_refreshSymbolDisplay( VTX_SETTING().getSymbolDisplayMode() );
 			}
@@ -629,7 +630,8 @@ namespace VTX::View::UI::Widget
 
 	void MoleculeSceneView::_expandAll( QTreeWidgetItem * const p_from )
 	{
-		const ID::VTX_ID & modelTypeId = VTX::Core::MVC::MvcManager::get().getModelTypeID( _getModelIDFromItem( *p_from ) );
+		const ID::VTX_ID & modelTypeId
+			= VTX::Core::MVC::MvcManager::get().getModelTypeID( _getModelIDFromItem( *p_from ) );
 
 		_enableSignals( false );
 
@@ -700,7 +702,8 @@ namespace VTX::View::UI::Widget
 				continue;
 
 			const Model::ID &		categoryID = _getModelIDFromItem( *item );
-			const Model::Category & category   = VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( categoryID );
+			const Model::Category & category
+				= VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( categoryID );
 
 			const Qt::CheckState newCheckState = Util::UI::getCheckState( category.isVisible() );
 			item->setCheckState( 0, newCheckState );
@@ -740,7 +743,8 @@ namespace VTX::View::UI::Widget
 			std::vector<QTreeWidgetItem *> nullItems = std::vector<QTreeWidgetItem *>();
 
 			const Model::ID &		categoryId = _getModelIDFromItem( *p_categoryItem );
-			const Model::Category & category   = VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( categoryId );
+			const Model::Category & category
+				= VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( categoryId );
 
 			const std::vector<uint> & chains = category.getChains();
 
@@ -1051,15 +1055,15 @@ namespace VTX::View::UI::Widget
 		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 
 		const App::Action::VISIBILITY_MODE visibilityMode
-			= modelEnabled ? App::Action::VISIBILITY_MODE::SHOW
-						   : App::Action::VISIBILITY_MODE::HIDE;
+			= modelEnabled ? App::Action::VISIBILITY_MODE::SHOW : App::Action::VISIBILITY_MODE::HIDE;
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			Model::Molecule & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 
 			if ( selection.isMoleculeFullySelected( model ) )
-				VTX_ACTION( new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION(
+					new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
 				VTX_ACTION( new App::Action::Molecule::ChangeVisibility( model, visibilityMode ) );
 		}
@@ -1068,7 +1072,8 @@ namespace VTX::View::UI::Widget
 			Model::Category & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( modelId );
 
 			if ( selection.isCategoryFullySelected( model ) )
-				VTX_ACTION( new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION(
+					new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
 				VTX_ACTION( new App::Action::Category::ChangeVisibility( model, visibilityMode ) );
 		}
@@ -1077,7 +1082,8 @@ namespace VTX::View::UI::Widget
 			Model::Chain & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Chain>( modelId );
 
 			if ( selection.isChainFullySelected( model ) )
-				VTX_ACTION( new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION(
+					new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
 				VTX_ACTION( new App::Action::Chain::ChangeVisibility( model, visibilityMode ) );
 		}
@@ -1086,7 +1092,8 @@ namespace VTX::View::UI::Widget
 			Model::Residue & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( modelId );
 
 			if ( selection.isResidueFullySelected( model ) )
-				VTX_ACTION( new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION(
+					new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
 				VTX_ACTION( new App::Action::Residue::ChangeVisibility( model, visibilityMode ) );
 		}
@@ -1095,7 +1102,8 @@ namespace VTX::View::UI::Widget
 			Model::Atom & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( modelId );
 
 			if ( selection.isAtomSelected( model ) )
-				VTX_ACTION( new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION(
+					new App::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
 				VTX_ACTION( new App::Action::Atom::ChangeVisibility( model, visibilityMode ) );
 		}

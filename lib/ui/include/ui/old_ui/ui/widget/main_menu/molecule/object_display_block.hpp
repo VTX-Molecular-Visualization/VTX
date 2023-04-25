@@ -4,7 +4,7 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
-#include <app/event/vtx_event.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include <app/model/molecule.hpp>
 #include <unordered_set>
 
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		~ObjectDisplayBlock();
 		void localize() override;
 
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		ObjectDisplayBlock( QWidget * p_parent );

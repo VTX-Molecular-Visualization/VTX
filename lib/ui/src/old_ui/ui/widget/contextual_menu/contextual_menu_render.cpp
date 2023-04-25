@@ -14,7 +14,7 @@
 #include <app/action/scene.hpp>
 #include <app/action/setting.hpp>
 #include <app/action/viewpoint.hpp>
-
+#include <app/event/global.hpp>
 #include <app/model/renderer/render_effect_preset_library.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/object3d/scene.hpp>
@@ -25,39 +25,40 @@ namespace VTX::UI::Widget::ContextualMenu
 {
 	ContextualMenuRender::ContextualMenuRender( QWidget * const p_parent ) : BaseContextualMenu( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
-		_registerEvent( VTX::Event::Global::SETTINGS_CHANGE );
-		_registerEvent( VTX::Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
-		_registerEvent( VTX::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
+		_registerEvent( VTX::App::Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::App::Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
+		_registerEvent( VTX::App::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE );
 	}
 	ContextualMenuRender ::~ContextualMenuRender() {}
 
-	void ContextualMenuRender ::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void ContextualMenuRender ::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_refreshPickerMode();
 		}
-		else if ( p_event.name == VTX::Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
+		else if ( p_event.name == VTX::App::Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
 		{
 			_refreshAppliedRenderSettingPreset();
 		}
-		else if ( p_event.name == VTX::Event::Global::SETTINGS_CHANGE )
+		else if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> &>(
+					p_event );
 
-			if ( castedEvent.ref.find( Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.ref.end() )
+			if ( castedEvent.get().find( Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().end() )
 			{
 				_refreshCameraProjection();
 			}
 
-			if ( castedEvent.ref.find( Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.ref.end() )
+			if ( castedEvent.get().find( Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.get().end() )
 			{
 				_refreshSelectionGranularityMenu();
 			}
 		}
-		else if ( p_event.name == VTX::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE )
+		else if ( p_event.name == VTX::App::Event::Global::RENDER_OVERLAY_VISIBILITY_CHANGE )
 		{
 			_refreshOverlayVisibilityMenu();
 		}

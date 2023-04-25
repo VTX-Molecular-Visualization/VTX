@@ -4,9 +4,9 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QFileDialog>
-
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
+#include <app/event/global.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
 #include <app/old_app/setting.hpp>
 #include <util/types.hpp>
@@ -16,14 +16,14 @@ namespace VTX::UI::Widget::MainMenu::Home
 {
 	MenuHomeSessionWidget::MenuHomeSessionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::RECENT_FILES_CHANGE );
+		_registerEvent( VTX::App::Event::Global::RECENT_FILES_CHANGE );
 	}
 
 	MenuHomeSessionWidget::~MenuHomeSessionWidget() {}
 
-	void MenuHomeSessionWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void MenuHomeSessionWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::RECENT_FILES_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::RECENT_FILES_CHANGE )
 			_refreshRecentFiles();
 	}
 

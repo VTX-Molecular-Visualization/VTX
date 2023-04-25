@@ -181,7 +181,7 @@ namespace VTX::UI::Widget::Settings
 
 	void RepresentationPresetEditor::localize() {}
 
-	void RepresentationPresetEditor::_catchModelEvent( const VTX::Event::VTXEvent * const p_event ) { refresh(); }
+	void RepresentationPresetEditor::_catchModelEvent( const VTX::App::Core::Event::VTXEvent * const p_event ) { refresh(); }
 
 	void RepresentationPresetEditor::refresh()
 	{

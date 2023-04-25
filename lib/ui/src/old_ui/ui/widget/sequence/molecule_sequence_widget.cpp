@@ -5,11 +5,11 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QScrollBar>
 #include <algorithm>
-
 #include <app/action/selection.hpp>
+#include <app/core/mvc/mvc_manager.hpp>
+#include <app/event/global.hpp>
 #include <app/model/category_enum.hpp>
 #include <app/model/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>
 
@@ -17,18 +17,18 @@ namespace VTX::UI::Widget::Sequence
 {
 	MoleculeSequenceWidget::MoleculeSequenceWidget( QWidget * p_parent ) : ViewItemWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
 	}
 
-	void MoleculeSequenceWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void MoleculeSequenceWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::SELECTION_CHANGE )
 			repaintSelection();
 	}
 
-	void MoleculeSequenceWidget::notify( const VTX::Event::VTXEvent * const p_event )
+	void MoleculeSequenceWidget::notify( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE )
+		if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			const Model::Chain * currentChain = _getCurrentChain();
 			_updateLabelName( currentChain );

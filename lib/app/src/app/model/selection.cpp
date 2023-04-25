@@ -1,12 +1,12 @@
 #include "app/model/selection.hpp"
-#include "app/old_app/define.hpp"
-#include "app/core/event/event_manager.hpp"
+#include "app/core/mvc/mvc_manager.hpp"
+#include "app/event.hpp"
 #include "app/model/atom.hpp"
 #include "app/model/category.hpp"
 #include "app/model/chain.hpp"
 #include "app/model/molecule.hpp"
 #include "app/model/residue.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/old_app/define.hpp"
 #include <unordered_set>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -1109,7 +1109,7 @@ namespace VTX::Model
 		_notifyDataChanged();
 
 		if ( previousCurrentObject != _currentObject )
-			VTX_EVENT( new Event::VTXEventPtr( Event::CURRENT_ITEM_IN_SELECTION_CHANGE, _currentObject ) );
+			VTX_EVENT<const Model::BaseModel *>( App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE, _currentObject );
 	}
 	void Selection::_clearWithoutNotify()
 	{
@@ -1148,20 +1148,20 @@ namespace VTX::Model
 		clear();
 	}
 
-	void Selection::receiveEvent( const Event::VTXEvent & p_event )
+	void Selection::receiveEvent( const App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::MOLECULE_REMOVED )
+		if ( p_event.name == App::Event::Global::MOLECULE_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Molecule> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-			unselectMolecule( *castedEvent.ptr );
+			const App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
+				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
+			unselectMolecule( *castedEvent.get() );
 		}
 	}
 
 	void Selection::_notifyDataChanged()
 	{
 		BaseModel::_notifyDataChanged();
-		VTX_EVENT( new Event::VTXEventPtr( Event ::SELECTION_CHANGE, this ) );
+		VTX_EVENT<const Model::Selection *>( App::Event::Global::SELECTION_CHANGE, this );
 	}
 
 	void Selection::getItemTypes( std::set<VTX::ID::VTX_ID> & p_types ) const
@@ -1231,8 +1231,9 @@ namespace VTX::Model
 
 		for ( const std::pair<const VTX::Model::ID, MapChainIds> & mapMol : _moleculesMap )
 		{
-			const Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( mapMol.first );
-			Object3D::Helper::AABB	aabb	 = Object3D::Helper::AABB();
+			const Model::Molecule & molecule
+				= VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( mapMol.first );
+			Object3D::Helper::AABB aabb = Object3D::Helper::AABB();
 			_mapSelectionAABB.emplace( molecule.getId(), aabb );
 
 			if ( molecule.getChainCount() == mapMol.second.size() )
@@ -1283,7 +1284,10 @@ namespace VTX::Model
 			_currentObject = p_model;
 
 			if ( p_notify )
-				VTX_EVENT( new Event::VTXEventPtr( Event::CURRENT_ITEM_IN_SELECTION_CHANGE, _currentObject ) );
+			{
+				VTX_EVENT<const Model::BaseModel *>( App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE,
+													 _currentObject );
+			}
 		}
 	}
 	void Selection::_clearCurrentObject( const bool p_notify )
@@ -1292,7 +1296,10 @@ namespace VTX::Model
 		{
 			_currentObject = nullptr;
 			if ( p_notify )
-				VTX_EVENT( new Event::VTXEventPtr( Event::CURRENT_ITEM_IN_SELECTION_CHANGE, _currentObject ) );
+			{
+				VTX_EVENT<const Model::BaseModel *>( App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE,
+													 _currentObject );
+			}
 		}
 	}
 

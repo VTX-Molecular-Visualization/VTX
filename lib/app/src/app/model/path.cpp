@@ -1,9 +1,10 @@
 #include "app/model/path.hpp"
-#include "app/core/event/event_manager.hpp"
-#include "app/event/vtx_event.hpp"
-#include "app/old_app/id.hpp"
-#include "app/model/viewpoint.hpp"
+#include "app/core/event/vtx_event.hpp"
 #include "app/core/mvc/mvc_manager.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
+#include "app/model/viewpoint.hpp"
+#include "app/old_app/id.hpp"
 #include "app/old_app/style.hpp"
 #include <algorithm>
 #include <fstream>
@@ -20,12 +21,12 @@ namespace VTX
 		void Path::addViewpoint( const ViewpointPtr p_viewpoint )
 		{
 			_viewpoints.emplace_back( p_viewpoint );
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::VIEWPOINT_ADDED, p_viewpoint ) );
+			VTX_EVENT<Model::Viewpoint *>( VTX::App::Event::Global::VIEWPOINT_ADDED, p_viewpoint );
 		}
 		void Path::removeViewpoint( const ViewpointPtr p_viewpoint )
 		{
 			_viewpoints.erase( std::find( _viewpoints.begin(), _viewpoints.end(), p_viewpoint ) );
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::VIEWPOINT_REMOVED, p_viewpoint ) );
+			VTX_EVENT<Model::Viewpoint *>( VTX::App::Event::Global::VIEWPOINT_REMOVED, p_viewpoint );
 		}
 
 		/*

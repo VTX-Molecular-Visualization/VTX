@@ -21,7 +21,7 @@ namespace VTX::View::UI::Widget::Measurement
 		virtual const Model::ID &			   getModelID() const { return _model->getId(); };
 		virtual const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };
 
-		void notify( const Event::VTXEvent * const p_event ) override;
+		void notify( const App::Core::Event::VTXEvent * const p_event ) override;
 
 	  protected:
 		DistanceSceneView( Model::Measurement::Distance * const p_model, QWidget * const p_parent );

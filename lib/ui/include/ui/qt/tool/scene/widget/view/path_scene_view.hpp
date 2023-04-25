@@ -10,7 +10,7 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 #include <map>
-#include <app/event/base_event_receiver_vtx.hpp>
+#include <app/core/event/base_event_receiver_vtx.hpp>
 #include <app/old_app/generic/base_visible.hpp>
 #include <app/model/path.hpp>
 #include <app/model/selection.hpp>
@@ -27,8 +27,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 	  public:
 		void localize() override;
-		void notify( const VTX::Event::VTXEvent * const p_event ) override;
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 		const Model::ID &			   getModelID() const override { return _model->getId(); };
 		const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };

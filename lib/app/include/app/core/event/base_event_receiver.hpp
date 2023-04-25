@@ -1,17 +1,24 @@
 #ifndef __VTX_APP_CORE_EVENT_BASE_EVENT_RECEIVER__
 #define __VTX_APP_CORE_EVENT_BASE_EVENT_RECEIVER__
 
-namespace VTX::Core::Event
+namespace VTX::App
 {
-	class EventManager;
-
-	template<typename T>
-	class BaseEventReceiver
+	namespace Manager
 	{
-		friend EventManager;
+		class EventManager;
+	}
 
-	  protected:
-		virtual void receiveEvent( const T & p_event ) {}
-	};
-} // namespace VTX::Core::Event
+	namespace Core::Event
+	{
+		template<typename T>
+		class BaseEventReceiver
+		{
+			friend Manager::EventManager;
+
+		  protected:
+			virtual void receiveEvent( const T & p_event ) {}
+		};
+	} // namespace Core::Event
+
+} // namespace VTX::App
 #endif

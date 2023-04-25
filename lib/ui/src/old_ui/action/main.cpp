@@ -5,13 +5,11 @@
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/ui/main_window.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-
-#include <app/core/event/event_manager.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
-#include <app/manager/network_manager.hpp>
-#include <app/event/vtx_event.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include <app/internal/network/request/check_update.hpp>
 #include <app/internal/network/request/download_mmtf.hpp>
+#include <app/event.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
 #include <app/old_app/object3d/scene.hpp>

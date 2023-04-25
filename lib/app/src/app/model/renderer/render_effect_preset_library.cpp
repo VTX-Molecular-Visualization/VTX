@@ -1,8 +1,9 @@
 #include "app/model/renderer/render_effect_preset_library.hpp"
 #include "app/action/renderer.hpp"
-#include "app/core/event/event_manager.hpp"
 #include "app/core/mvc/mvc_manager.hpp"
 #include "app/core/worker/worker_manager.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
@@ -100,7 +101,7 @@ namespace VTX::Model::Renderer
 			_notifyDataChanged();
 
 		const int presetAddedIndex = int( _presets.size() - 1 );
-		VTX_EVENT( new Event::VTXEventValue( Event::Global::RENDER_EFFECT_ADDED, presetAddedIndex ) );
+		VTX_EVENT<int>( VTX::App::Event::Global::RENDER_EFFECT_ADDED, presetAddedIndex );
 	};
 
 	RenderEffectPreset * const RenderEffectPresetLibrary::copyPreset( const int p_index )
@@ -141,7 +142,9 @@ namespace VTX::Model::Renderer
 
 			_notifyDataChanged();
 
-			VTX_EVENT( new Event::VTXEventValue( Event::Global::RENDER_EFFECT_REMOVED, p_index ) );
+			VTX_EVENT( VTX::App::Event::Global::SCENE_SAVED );
+
+			VTX_EVENT<int>( VTX::App::Event::Global::RENDER_EFFECT_REMOVED, p_index );
 		}
 		else
 		{
@@ -207,8 +210,8 @@ namespace VTX::Model::Renderer
 	{
 		_appliedPreset = &p_preset;
 
-		_notifyViews( new Event::VTXEvent( Event::Model::APPLIED_PRESET_CHANGE ) );
-		VTX_EVENT( new Event::VTXEvent( Event::Global::APPLIED_RENDER_EFFECT_CHANGE ) );
+		_notifyViews( App::Event::Model::APPLIED_PRESET_CHANGE );
+		VTX_EVENT( VTX::App::Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
 	}
 	bool RenderEffectPresetLibrary::isAppliedPreset( const RenderEffectPreset & p_preset ) const
 	{
@@ -272,7 +275,7 @@ namespace VTX::Model::Renderer
 
 		if ( p_notify )
 		{
-			VTX_EVENT( new Event::VTXEvent( Event::Global::RENDER_EFFECT_LIBRARY_CLEARED ) );
+			VTX_EVENT( VTX::App::Event::Global::RENDER_EFFECT_LIBRARY_CLEARED );
 			_notifyDataChanged();
 		}
 	}
@@ -340,11 +343,11 @@ namespace VTX::Model::Renderer
 			_notifyDataChanged();
 	}
 
-	void RenderEffectPresetLibrary::_onPresetChange( const Event::VTXEvent * const p_event )
+	void RenderEffectPresetLibrary::_onPresetChange( const App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DATA_CHANGE )
-			_notifyViews( new Event::VTXEvent( Event::Model::SUBITEM_DATA_CHANGE ) );
+		if ( p_event->name == App::Event::Model::DATA_CHANGE )
+			_notifyViews( App::Event::Model::SUBITEM_DATA_CHANGE );
 		else
-			_notifyViews( new Event::VTXEvent( *p_event ) );
+			_notifyViews( new App::Core::Event::VTXEvent( *p_event ) );
 	}
 } // namespace VTX::Model::Renderer

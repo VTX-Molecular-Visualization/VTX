@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_MENU_CAMERA_SNAPSHOT_BLOCK__
 #define __VTX_UI_WIDGET_MENU_CAMERA_SNAPSHOT_BLOCK__
 
-#include <app/event/vtx_event.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include "ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <app/view/base_view.hpp>

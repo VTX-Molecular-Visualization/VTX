@@ -1,6 +1,7 @@
 #include "app/manager/network_manager.hpp"
 #include "app/action/main.hpp"
-#include "app/core/event/event_manager.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
 #include <util/logger.hpp>
 // #include <QNetworkRequest>
 // #include <QSslSocket>
@@ -59,10 +60,10 @@ namespace VTX::App::Manager
 	//		return;
 	//	}
 
-	//	float percent = p_bytesReceived / p_bytesTotal;
-	//	// VTX_DEBUG( std::to_string( p_bytesReceived ) + " / " + std::to_string( p_bytesTotal ) );
-	//	VTX_EVENT( new Event::VTXEventValue<float>( Event::Global::UPDATE_PROGRESS_BAR, percent ) );
-	//	// VTX_INFO( std::to_string( ( uint )( percent * 100 ) ) + "%" );
+	// float percent = p_bytesReceived / p_bytesTotal;
+	//// VTX_DEBUG( std::to_string( p_bytesReceived ) + " / " + std::to_string( p_bytesTotal ) );
+	// VTX_EVENT<float>( VTX::App::Event::Global::UPDATE_PROGRESS_BAR, percent ) );
+	//  VTX_INFO( std::to_string( ( uint )( percent * 100 ) ) + "%" );
 	//}
 
 } // namespace VTX::App::Manager

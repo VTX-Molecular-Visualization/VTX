@@ -3,7 +3,7 @@
 
 #include "ui/old_ui/ui/widget/base_manual_widget.hpp"
 #include "ui/old_ui/view/ui/editor_view.hpp"
-#include <app/event/vtx_event.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include <app/core/mvc/mvc_manager.hpp>
 #include <app/view/base_view.hpp>
 #include <app/view/callback_view.hpp>
@@ -33,7 +33,7 @@ namespace VTX::View::UI
 		}
 
 	  protected:
-		virtual void _catchModelEvent( const VTX::Event::VTXEvent * const p_event ) = 0;
+		virtual void _catchModelEvent( const VTX::App::Core::Event::VTXEvent * const p_event ) = 0;
 
 	  private:
 		const ID::VTX_ID			  _viewId;

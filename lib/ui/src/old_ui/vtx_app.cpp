@@ -2,7 +2,7 @@
 //// #include "ui/action/action_manager.hpp"
 //// #include "ui/action/main.hpp"
 //// #include "ui/action/setting.hpp"
-//// #include <app/event/vtx_event.hpp>
+//// #include <app/core/event/vtx_event.hpp>
 //// #include "ui/event/event_manager.hpp"
 //// #include "ui/io/struct/scene_path_data.hpp"
 //// #include <app/core/mvc/mvc_manager.hpp>
@@ -131,7 +131,7 @@
 //
 //		//// Useless: nothing is delayed.
 //		//// Event manager.
-//		//// VTX::Event::EventManager::get().update( elapsed );
+//		//// VTX::App::Core::Event::EventManager::get().update( elapsed );
 //
 //		//// Action manager.
 //		//// Action::ActionManager::get().update( elapsed );
@@ -139,7 +139,7 @@
 //		//_applyEndOfFrameDeletes();
 //
 //		//// Call late update event for processes at end of frame
-//		// VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::LATE_UPDATE ) );
+//		// VTX_EVENT( new VTX::App::Core::Event::VTXEvent( VTX::App::Event::Global::LATE_UPDATE ) );
 //
 //		//// Tickrate.
 //		//_tickCounter++;
@@ -175,7 +175,7 @@
 //		//	delete _timer;
 //		// }
 //		//// Prevent events throw for nothing when quitting app
-//		// VTX::Event::EventManager::get().freezeEvent( true );
+//		// VTX::App::Core::Event::EventManager::get().freezeEvent( true );
 //		// Worker::WorkerManager::get().stopAll();
 //
 //		//_setting.backup();

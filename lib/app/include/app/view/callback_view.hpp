@@ -2,7 +2,7 @@
 #define __VTX_VIEW_CALLBACK_VIEW__
 
 #include "base_view.hpp"
-#include "app/event/vtx_event.hpp"
+#include "app/core/event/vtx_event.hpp"
 
 namespace VTX::View
 {
@@ -12,19 +12,19 @@ namespace VTX::View
 		VTX_VIEW
 
 	  public:
-		void setCallback( T2 * const p_caller, void ( T2::*p_notifyCallback )( const Event::VTXEvent * const ) )
+		void setCallback( T2 * const p_caller, void ( T2::*p_notifyCallback )( const App::Core::Event::VTXEvent * const ) )
 		{
 			_notifyTarget	= p_caller;
 			_notifyCallback = p_notifyCallback;
 		}
 		void setCallback( T2 * const p_caller,
-						  void ( T2::*p_notifyCallback )( const T1 * const p_model, const Event::VTXEvent * const ) )
+						  void ( T2::*p_notifyCallback )( const T1 * const p_model, const App::Core::Event::VTXEvent * const ) )
 		{
 			_notifyTarget			 = p_caller;
 			_notifyWithModelCallback = p_notifyCallback;
 		}
 
-		void notify( const Event::VTXEvent * const p_event ) override
+		void notify( const App::Core::Event::VTXEvent * const p_event ) override
 		{
 			if ( _notifyCallback != nullptr )
 				( _notifyTarget->*_notifyCallback )( p_event );
@@ -38,8 +38,8 @@ namespace VTX::View
 
 	  private:
 		T2 * _notifyTarget																				  = nullptr;
-		void ( T2::*_notifyCallback )( const Event::VTXEvent * const )									  = nullptr;
-		void ( T2::*_notifyWithModelCallback )( const T1 * const p_model, const Event::VTXEvent * const ) = nullptr;
+		void ( T2::*_notifyCallback )( const App::Core::Event::VTXEvent * const )									  = nullptr;
+		void ( T2::*_notifyWithModelCallback )( const T1 * const p_model, const App::Core::Event::VTXEvent * const ) = nullptr;
 	};
 
 } // namespace VTX::View

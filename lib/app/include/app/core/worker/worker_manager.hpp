@@ -1,7 +1,8 @@
 #ifndef __VTX_WORKER_MANAGER__
 #define __VTX_WORKER_MANAGER__
 
-#include "app/core/event/event_manager.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
 #include "app/old_app/generic/base_updatable.hpp"
 #include "base_thread.hpp"
 #include "base_worker.hpp"
@@ -113,7 +114,7 @@ namespace VTX
 
 			// void _updateProgress( BaseThread * p_worker, const uint p_progress )
 			//{
-			//	VTX_EVENT( new Event::VTXEventValue<float>( Event::Global::UPDATE_PROGRESS_BAR, p_progress ) );
+			//	VTX_EVENT<float>( VTX::App::Event::Global::UPDATE_PROGRESS_BAR, p_progress );
 			// }
 
 			// void _logInfo( const std::string p_msg ) { VTX_INFO( p_msg ); }

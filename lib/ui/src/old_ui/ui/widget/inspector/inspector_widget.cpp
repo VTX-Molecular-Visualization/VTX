@@ -11,6 +11,7 @@
 #include "ui/old_ui/ui/widget/inspector/multiple_viewpoint_inspector_widget.hpp"
 #include <QFrame>
 #include <QHBoxLayout>
+#include <app/event/global.hpp>
 #include <app/model/atom.hpp>
 #include <app/model/chain.hpp>
 #include <app/model/label.hpp>
@@ -32,62 +33,62 @@ namespace VTX::UI::Widget::Inspector
 {
 	InspectorWidget::InspectorWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
-		_registerEvent( VTX::Event::Global::MOLECULE_REMOVED );
-		_registerEvent( VTX::Event::Global::CHAIN_REMOVED );
-		_registerEvent( VTX::Event::Global::RESIDUE_REMOVED );
-		_registerEvent( VTX::Event::Global::ATOM_REMOVED );
-		_registerEvent( VTX::Event::Global::VIEWPOINT_REMOVED );
-		_registerEvent( VTX::Event::Global::LABEL_REMOVED );
+		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::App::Event::Global::CHAIN_REMOVED );
+		_registerEvent( VTX::App::Event::Global::RESIDUE_REMOVED );
+		_registerEvent( VTX::App::Event::Global::ATOM_REMOVED );
+		_registerEvent( VTX::App::Event::Global::VIEWPOINT_REMOVED );
+		_registerEvent( VTX::App::Event::Global::LABEL_REMOVED );
 	}
 
 	InspectorWidget::~InspectorWidget() {}
 
-	void InspectorWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void InspectorWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::SELECTION_CHANGE )
 		{
 			refresh();
 		}
-		else if ( p_event.name == VTX::Event::Global::MOLECULE_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Molecule> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Molecule> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
 
-			_removeTargetToInspector<MultipleMoleculeWidget>( INSPECTOR_TYPE::MOLECULE, castedEvent.ptr );
+			_removeTargetToInspector<MultipleMoleculeWidget>( INSPECTOR_TYPE::MOLECULE, castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::CHAIN_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::CHAIN_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Chain> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Chain> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Chain *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Chain *> &>( p_event );
 
-			_removeTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::CHAIN, castedEvent.ptr );
+			_removeTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::CHAIN, castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::RESIDUE_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::RESIDUE_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Residue> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Residue> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Residue *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Residue *> &>( p_event );
 
-			_removeTargetToInspector<MultipleResidueWidget>( INSPECTOR_TYPE::RESIDUE, castedEvent.ptr );
+			_removeTargetToInspector<MultipleResidueWidget>( INSPECTOR_TYPE::RESIDUE, castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::ATOM_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::ATOM_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Atom> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Atom> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Atom *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Atom *> &>( p_event );
 
-			_removeTargetToInspector<MultipleAtomWidget>( INSPECTOR_TYPE::ATOM, castedEvent.ptr );
+			_removeTargetToInspector<MultipleAtomWidget>( INSPECTOR_TYPE::ATOM, castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::VIEWPOINT_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::VIEWPOINT_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Viewpoint> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> &>( p_event );
 
-			_removeTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, castedEvent.ptr );
+			_removeTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::LABEL_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
 		{
-			// const VTX::Event::VTXEventPtr<Model::Label> & castedEvent
-			//	= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Label> &>( p_event );
+			// const App::Core::Event::VTXEventArg<Model::Label*> & castedEvent
+			//	= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label*> &>( p_event );
 
 			// const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
 			// if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
@@ -265,7 +266,8 @@ namespace VTX::UI::Widget::Inspector
 				}
 				else if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
 				{
-					Model::Viewpoint & viewpoint = VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
+					Model::Viewpoint & viewpoint
+						= VTX::Core::MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
 					_addTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, &viewpoint );
 				}
 				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )

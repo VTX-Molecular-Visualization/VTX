@@ -1,7 +1,7 @@
 #ifndef __VTX_REPRESENTATION_MANAGER__
 #define __VTX_REPRESENTATION_MANAGER__
 
-#include "app/event/vtx_event.hpp"
+#include "app/core/event/vtx_event.hpp"
 #include "app/old_app/id.hpp"
 #include "app/model/molecule.hpp"
 #include "app/model/representation/representation_data.hpp"
@@ -201,7 +201,7 @@ namespace VTX::Representation
 		void _applyNextBaseRepresentationOnInstances( const Representation * const p_defaultRepresentation );
 
 		void _onRepresentationChange( const Representation * const	representation,
-									  const Event::VTXEvent * const p_event );
+									  const App::Core::Event::VTXEvent * const p_event );
 		int	 _getRepresentationWithQuickAccessCount() const;
 	};
 } // namespace VTX::Representation

@@ -11,7 +11,7 @@
 #include <QString>
 #include <QTreeWidgetItem>
 #include <QWidget>
-#include <app/event/base_event_receiver_vtx.hpp>
+#include <app/core/event/base_event_receiver_vtx.hpp>
 #include <app/old_app/generic/base_visible.hpp>
 #include <app/old_app/id.hpp>
 #include <app/model/atom.hpp>
@@ -35,8 +35,8 @@ namespace VTX::View::UI::Widget
 		inline static const Qt::ItemDataRole CATEGORY_ROLE = CHILD_FIRST_ROLE;
 
 	  public:
-		void notify( const VTX::Event::VTXEvent * const p_event ) override;
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 		const Model::ID &					   getModelID() const override { return _model->getId(); };
 		virtual const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };

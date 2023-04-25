@@ -1,7 +1,8 @@
 #ifndef __VTX_MODEL_BASE_MODEL__
 #define __VTX_MODEL_BASE_MODEL__
 
-#include "app/event/vtx_event.hpp"
+#include "app/core/event/vtx_event.hpp"
+#include "app/event/model.hpp"
 #include "app/old_app/id.hpp"
 #include <string>
 #include <util/types.hpp>
@@ -54,9 +55,25 @@ namespace VTX
 
 			const std::string *& _getNamePtr() { return _name; }
 
-			void		_instantiateDefaultViews() {}
-			void		_notifyViews( const Event::VTXEvent * const p_event );
-			inline void _notifyDataChanged() { _notifyViews( new Event::VTXEvent( Event::Model::DATA_CHANGE ) ); }
+			void _instantiateDefaultViews() {}
+
+			inline void _notifyViews( const App::Core::Event::VTX_EVENT & p_eventID )
+			{
+				App::Core::Event::VTXEvent * const event = new App::Core::Event::VTXEvent( p_eventID );
+				_notifyViews( event );
+			}
+
+			template<typename... Args>
+			inline void _notifyViews( const App::Core::Event::VTX_EVENT & p_eventID, Args... p_args )
+			{
+				App::Core::Event::VTXEventArg<Args...> * const event
+					= new App::Core::Event::VTXEventArg<Args...>( p_eventID, p_args... );
+				_notifyViews( event );
+			}
+
+			void _notifyViews( const App::Core::Event::VTXEvent * const p_event );
+
+			inline void _notifyDataChanged() { _notifyViews( VTX::App::Event::Model::DATA_CHANGE ); }
 		};
 	} // namespace Model
 } // namespace VTX

@@ -2,9 +2,10 @@
 #define __VTX_UI_ACTION_MAIN__
 
 #include <app/core/action/base_action.hpp>
-#include <app/core/event/event_manager.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include <app/core/worker/worker_manager.hpp>
-#include <app/event/vtx_event.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/path.hpp>
 #include <app/model/secondary_structure.hpp>
@@ -50,7 +51,7 @@ namespace VTX::Action::Main
 	  public:
 		explicit ClearConsoleInterface() {}
 
-		virtual void execute() override { VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::CLEAR_CONSOLE ) ); };
+		virtual void execute() override { VTX_EVENT( VTX::App::Event::Global::CLEAR_CONSOLE ); };
 		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 	};
 

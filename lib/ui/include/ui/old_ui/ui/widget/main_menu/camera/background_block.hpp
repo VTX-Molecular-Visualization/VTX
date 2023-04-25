@@ -5,7 +5,7 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QVariant>
 #include <app/old_app/color/rgba.hpp>
-#include <app/event/vtx_event.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::MainMenu::Camera

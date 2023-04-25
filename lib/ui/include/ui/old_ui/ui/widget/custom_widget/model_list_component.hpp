@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	  public:
 		~ModelListComponent();
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 		void localize() override;
 
