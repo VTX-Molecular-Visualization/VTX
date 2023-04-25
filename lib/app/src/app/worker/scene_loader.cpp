@@ -1,5 +1,5 @@
 #include "app/worker/scene_loader.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/event.hpp"
 #include "app/model/mesh_triangle.hpp"
 #include "app/model/molecule.hpp"

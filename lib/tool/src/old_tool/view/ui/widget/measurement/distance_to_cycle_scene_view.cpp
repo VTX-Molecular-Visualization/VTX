@@ -2,7 +2,7 @@
 
 #include <app/action/label.hpp>
 #include <app/model/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <ui/old_ui/ui/contextual_menu.hpp>
 #include <ui/old_ui/ui/mime_type.hpp>

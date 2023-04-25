@@ -1,5 +1,5 @@
 #include "app/action/label.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/model/selection.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
@@ -20,7 +20,7 @@ namespace VTX::App::Action::Label
 		for ( Model::Label * label : _labels )
 		{
 			VTXApp::get().getScene().removeLabel( label );
-			VTX::Core::MVC::MvcManager::get().deleteModel<Model::Label>( label );
+			VTX::MVC_MANAGER().deleteModel<Model::Label>( label );
 		}
 	}
 

@@ -762,7 +762,7 @@ namespace VTX
 		void SolventExcludedSurface::_instantiate3DViews()
 		{
 			_addRenderable(
-				VTX::Core::MVC::MvcManager::get().instantiateView<View::D3::TriangleSES>( this, VTX::ID::View::D3_TRIANGLE_SES ) );
+				VTX::MVC_MANAGER().instantiateView<View::D3::TriangleSES>( this, VTX::ID::View::D3_TRIANGLE_SES ) );
 		}
 	} // namespace Model
 } // namespace VTX

@@ -4,7 +4,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/model/representation/representation.hpp>
 #include <app/model/representation/representation_library.hpp>
@@ -26,7 +26,7 @@ namespace VTX::UI::Widget::Representation
 		// Views "UI_INSPECTOR_INSTANTIATED_REPRESENTATION" delete with models
 
 		if ( _dummyRepresentation != nullptr )
-			VTX::Core::MVC::MvcManager::get().deleteModel( _dummyRepresentation );
+			VTX::MVC_MANAGER().deleteModel( _dummyRepresentation );
 	}
 
 	void RepresentationInspectorSection::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
@@ -257,15 +257,15 @@ namespace VTX::UI::Widget::Representation
 		{
 			for ( const Model::ID & representationID : _representationIDs )
 			{
-				if ( VTX::Core::MVC::MvcManager::get().doesModelExists( representationID ) )
+				if ( VTX::MVC_MANAGER().doesModelExists( representationID ) )
 				{
 					const InstantiatedRepresentation & representationModel
-						= VTX::Core::MVC::MvcManager::get().getModel<InstantiatedRepresentation>( representationID );
+						= VTX::MVC_MANAGER().getModel<InstantiatedRepresentation>( representationID );
 
-					if ( VTX::Core::MVC::MvcManager::get().hasView(
+					if ( VTX::MVC_MANAGER().hasView(
 							 &representationModel, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION ) )
 					{
-						VTX::Core::MVC::MvcManager::get().deleteView(
+						VTX::MVC_MANAGER().deleteView(
 							&representationModel, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
 					}
 				}
@@ -312,7 +312,7 @@ namespace VTX::UI::Widget::Representation
 
 				VTX::View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection> * const
 					representationView
-					= VTX::Core::MVC::MvcManager::get()
+					= VTX::MVC_MANAGER()
 						  .instantiateView<
 							  VTX::View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection>>(
 							  _dummyRepresentation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
@@ -358,7 +358,7 @@ namespace VTX::UI::Widget::Representation
 			{
 				VTX::View::CallbackView<const InstantiatedRepresentation, RepresentationInspectorSection> * const
 					viewOnRepresentation
-					= VTX::Core::MVC::MvcManager::get()
+					= VTX::MVC_MANAGER()
 						  .instantiateView<VTX::View::CallbackView<const InstantiatedRepresentation,
 																   RepresentationInspectorSection>>(
 							  &p_representation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
@@ -388,7 +388,7 @@ namespace VTX::UI::Widget::Representation
 		for ( const Model::ID & representationID : _representationIDs )
 		{
 			const InstantiatedRepresentation & representation
-				= VTX::Core::MVC::MvcManager::get().getModel<InstantiatedRepresentation>( representationID );
+				= VTX::MVC_MANAGER().getModel<InstantiatedRepresentation>( representationID );
 			updateWithNewValue( representation, false );
 		}
 	}

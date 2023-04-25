@@ -35,9 +35,9 @@ namespace VTX::UI::QT::Tool
 			= dynamic_cast<const Scene::Widget::View::MoleculeSceneView *>( p_sceneWidget );
 
 		const Model::Molecule & molecule
-			= VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( moleculeSceneItemWidget->getModelID() );
+			= VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeSceneItemWidget->getModelID() );
 
-		VTX::Core::MVC::MvcManager::get().deleteView<Scene::Widget::View::MoleculeSceneView>( &molecule,
+		VTX::MVC_MANAGER().deleteView<Scene::Widget::View::MoleculeSceneView>( &molecule,
 																				   ID::View::UI_MOLECULE_STRUCTURE );
 	}
 
@@ -61,9 +61,9 @@ namespace VTX::UI::QT::Tool
 		const Scene::Widget::View::PathSceneView * const pathSceneItemWidget
 			= dynamic_cast<const Scene::Widget::View::PathSceneView *>( p_sceneWidget );
 
-		const Model::Path & path = VTX::Core::MVC::MvcManager::get().getModel<Model::Path>( pathSceneItemWidget->getModelID() );
+		const Model::Path & path = VTX::MVC_MANAGER().getModel<Model::Path>( pathSceneItemWidget->getModelID() );
 
-		VTX::Core::MVC::MvcManager::get().deleteView<Scene::Widget::View::PathSceneView>( &path, ID::View::UI_SCENE_PATH );
+		VTX::MVC_MANAGER().deleteView<Scene::Widget::View::PathSceneView>( &path, ID::View::UI_SCENE_PATH );
 	}
 
 	SceneWindow::SceneWindow() : BaseQtTool() {}

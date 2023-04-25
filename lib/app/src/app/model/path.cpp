@@ -1,6 +1,6 @@
 #include "app/model/path.hpp"
 #include "app/core/event/vtx_event.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/model/viewpoint.hpp"
@@ -16,7 +16,7 @@ namespace VTX
 	namespace Model
 	{
 		Path::Path() : BaseModel( VTX::ID::Model::MODEL_PATH ) {};
-		Path::~Path() { VTX::Core::MVC::MvcManager::get().deleteAllModels( _viewpoints ); }
+		Path::~Path() { VTX::MVC_MANAGER().deleteAllModels( _viewpoints ); }
 
 		void Path::addViewpoint( const ViewpointPtr p_viewpoint )
 		{

@@ -1,5 +1,5 @@
 #include "app/action/molecule.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/model/generated_molecule.hpp"
 #include "app/model/representation/representation.hpp"
 #include "app/model/representation/representation_library.hpp"
@@ -181,13 +181,13 @@ namespace VTX::App::Action::Molecule
 	void Delete::execute()
 	{
 		VTXApp::get().getScene().removeMolecule( &_molecule );
-		VTX::Core::MVC::MvcManager::get().deleteModel( &_molecule );
+		VTX::MVC_MANAGER().deleteModel( &_molecule );
 	}
 
 	void Copy::execute()
 	{
 		Model::GeneratedMolecule * generatedMolecule
-			= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+			= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
 
 		generatedMolecule->copyFromMolecule( _target );
 		generatedMolecule->applyTransform( _target.getTransform() );

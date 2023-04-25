@@ -5,7 +5,7 @@
 #include "inspector_section_flag.hpp"
 #include <QWidget>
 #include <app/core/event/vtx_event.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/event/model.hpp>
 #include <app/view/callback_view.hpp>
@@ -33,8 +33,8 @@ namespace VTX::UI::Widget::Inspector
 			{
 				for ( T * const target : _targets )
 				{
-					if ( VTX::Core::MVC::MvcManager::get().hasView( target, _callbackViewId ) )
-						VTX::Core::MVC::MvcManager::get().deleteView( target, _callbackViewId );
+					if ( VTX::MVC_MANAGER().hasView( target, _callbackViewId ) )
+						VTX::MVC_MANAGER().deleteView( target, _callbackViewId );
 				}
 				_targets.clear();
 
@@ -47,7 +47,7 @@ namespace VTX::UI::Widget::Inspector
 			_targets.emplace( p_target );
 
 			InspectorView * const view
-				= VTX::Core::MVC::MvcManager::get().instantiateView<InspectorView>( p_target, _callbackViewId );
+				= VTX::MVC_MANAGER().instantiateView<InspectorView>( p_target, _callbackViewId );
 			view->setCallback( this, &MultipleModelInspectorWidget<T>::_onTargetChangeEvent );
 
 			_sectionToRefresh = SectionFlag::ALL;
@@ -56,8 +56,8 @@ namespace VTX::UI::Widget::Inspector
 		{
 			_targets.erase( p_target );
 
-			if ( VTX::Core::MVC::MvcManager::get().hasView( p_target, _callbackViewId ) )
-				VTX::Core::MVC::MvcManager::get().deleteView( p_target, _callbackViewId );
+			if ( VTX::MVC_MANAGER().hasView( p_target, _callbackViewId ) )
+				VTX::MVC_MANAGER().deleteView( p_target, _callbackViewId );
 
 			_sectionToRefresh = SectionFlag::ALL;
 		}

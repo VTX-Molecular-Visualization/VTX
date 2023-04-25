@@ -10,8 +10,8 @@
 #include <algorithm>
 #include <app/action/scene.hpp>
 #include <app/action/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
 #include <app/event/global.hpp>
+#include <app/mvc.hpp>
 #include <app/model/label.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/selection.hpp>
@@ -307,7 +307,7 @@ namespace VTX::UI::Widget::Scene
 		{
 			const std::vector<SceneItemWidget *>::const_reverse_iterator lastItemIt = _sceneWidgets.crbegin();
 			const ID::VTX_ID &											 lastItemTypeId
-				= VTX::Core::MVC::MvcManager::get().getModelTypeID( ( *lastItemIt )->getModelID() );
+				= VTX::MVC_MANAGER().getModelTypeID( ( *lastItemIt )->getModelID() );
 
 			if ( lastItemTypeId == VTX::ID::Model::MODEL_PATH )
 			{
@@ -465,7 +465,7 @@ namespace VTX::UI::Widget::Scene
 		if ( modelData.getTypeID() == ID::Model::MODEL_SELECTION )
 		{
 			const Model::Selection & selection
-				= VTX::Core::MVC::MvcManager::get().getModel<Model::Selection>( modelData.getModelID() );
+				= VTX::MVC_MANAGER().getModel<Model::Selection>( modelData.getModelID() );
 
 			droppedModelIDs.reserve( selection.getItems().size() );
 			for ( const Model::ID & id : selection.getItems() )

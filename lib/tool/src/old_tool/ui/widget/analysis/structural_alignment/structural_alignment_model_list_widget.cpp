@@ -2,7 +2,7 @@
 #include <QRadioButton>
 #include <QVBoxLayout>
 #include <QVariant>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/ui_action/self_referenced_action.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>

@@ -1,5 +1,5 @@
 #include "app/action/renderer.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/core/worker/worker_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/object3d/camera.hpp"
@@ -221,7 +221,7 @@ namespace VTX::App::Action::Renderer
 	void AddNewPresetInLibrary::execute()
 	{
 		Model::Renderer::RenderEffectPreset * const newRenderEffect
-			= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
+			= VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPreset>();
 
 		newRenderEffect->setName( _presetName );
 		Model::Renderer::RenderEffectPresetLibrary::get().addPreset( newRenderEffect );

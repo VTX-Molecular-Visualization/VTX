@@ -1,7 +1,7 @@
 #include "app/model/representation/representation_library.hpp"
 #include "app/action/representation.hpp"
 #include "app/core/event/vtx_event.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/core/worker/worker_manager.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
@@ -88,7 +88,7 @@ namespace VTX::Model::Representation
 		_representations.emplace_back( p_representation );
 
 		View::CallbackView<Representation, RepresentationLibrary> * const callbackView
-			= VTX::Core::MVC::MvcManager::get()
+			= VTX::MVC_MANAGER()
 				  .instantiateView<View::CallbackView<Representation, RepresentationLibrary>>(
 					  p_representation, VTX::ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
 
@@ -106,7 +106,7 @@ namespace VTX::Model::Representation
 	{
 		Representation * const sourceRepresentation = _representations[ p_index ];
 		Representation * const copiedRepresentation
-			= VTX::Core::MVC::MvcManager::get().instantiateModel<Representation>(
+			= VTX::MVC_MANAGER().instantiateModel<Representation>(
 				sourceRepresentation->getRepresentationType() );
 
 		copiedRepresentation->copyDataFrom( *sourceRepresentation );
@@ -123,7 +123,7 @@ namespace VTX::Model::Representation
 		{
 			removedRepresentation = _representations[ p_index ];
 
-			VTX::Core::MVC::MvcManager::get().deleteView( _representations[ p_index ],
+			VTX::MVC_MANAGER().deleteView( _representations[ p_index ],
 														  VTX::ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
 			_representations.erase( _representations.begin() + p_index );
 
@@ -157,7 +157,7 @@ namespace VTX::Model::Representation
 		const Representation * const representationToDelete = removeRepresentation( p_index, p_notify );
 
 		if ( representationToDelete != nullptr )
-			VTX::Core::MVC::MvcManager::get().deleteModel( representationToDelete );
+			VTX::MVC_MANAGER().deleteModel( representationToDelete );
 	}
 
 	void RepresentationLibrary::setDefaultRepresentation( const int p_representationIndex, const bool p_notify )
@@ -266,7 +266,7 @@ namespace VTX::Model::Representation
 		if ( isExistingName( name ) == false )
 		{
 			Representation * const ballsAndsticks
-				= VTX::Core::MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+				= VTX::MVC_MANAGER().instantiateModel<Representation>( representationType );
 			ballsAndsticks->setName( name );
 			ballsAndsticks->setQuickAccess( true );
 			ballsAndsticks->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
@@ -278,7 +278,7 @@ namespace VTX::Model::Representation
 		if ( isExistingName( name ) == false )
 		{
 			Representation * const cartoon
-				= VTX::Core::MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+				= VTX::MVC_MANAGER().instantiateModel<Representation>( representationType );
 			cartoon->setName( name );
 			cartoon->setQuickAccess( true );
 			cartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
@@ -290,7 +290,7 @@ namespace VTX::Model::Representation
 		if ( isExistingName( name ) == false )
 		{
 			Representation * const stickAndCartoon
-				= VTX::Core::MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+				= VTX::MVC_MANAGER().instantiateModel<Representation>( representationType );
 			stickAndCartoon->setName( name );
 			stickAndCartoon->setQuickAccess( true );
 			stickAndCartoon->getData().setCylinderRadius( 0.15f );
@@ -303,7 +303,7 @@ namespace VTX::Model::Representation
 		if ( isExistingName( name ) == false )
 		{
 			Representation * const sas
-				= VTX::Core::MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+				= VTX::MVC_MANAGER().instantiateModel<Representation>( representationType );
 			sas->setName( name );
 			sas->setQuickAccess( true );
 			sas->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
@@ -315,7 +315,7 @@ namespace VTX::Model::Representation
 		if ( isExistingName( name ) == false )
 		{
 			Representation * const ses
-				= VTX::Core::MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+				= VTX::MVC_MANAGER().instantiateModel<Representation>( representationType );
 			ses->setName( name );
 			ses->setQuickAccess( true );
 			ses->getData().setColorMode( Generic::COLOR_MODE::PROTEIN );
@@ -327,7 +327,7 @@ namespace VTX::Model::Representation
 		if ( isExistingName( name ) == false )
 		{
 			Representation * const stick
-				= VTX::Core::MVC::MvcManager::get().instantiateModel<Representation, Generic::REPRESENTATION>(
+				= VTX::MVC_MANAGER().instantiateModel<Representation, Generic::REPRESENTATION>(
 					representationType );
 			stick->setName( name );
 			stick->setQuickAccess( true );
@@ -341,7 +341,7 @@ namespace VTX::Model::Representation
 		if ( isExistingName( name ) == false )
 		{
 			Representation * const vdw
-				= VTX::Core::MVC::MvcManager::get().instantiateModel<Representation>( representationType );
+				= VTX::MVC_MANAGER().instantiateModel<Representation>( representationType );
 			vdw->setName( name );
 			vdw->setQuickAccess( true );
 			vdw->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );

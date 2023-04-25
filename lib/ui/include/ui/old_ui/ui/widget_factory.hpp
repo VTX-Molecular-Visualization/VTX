@@ -6,7 +6,7 @@
 #include <QMainWindow>
 #include <QTreeWidget>
 #include <QWidget>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <string>
 #include <type_traits>
 
@@ -58,7 +58,7 @@ namespace VTX
 											 QWidget * const	 p_parent,
 											 const std::string & p_name ) const
 			{
-				V * const res = VTX::Core::MVC::MvcManager::get().instantiateViewWidget<V>( p_model, p_id, p_parent );
+				V * const res = VTX::MVC_MANAGER().instantiateViewWidget<V>( p_model, p_id, p_parent );
 
 				_initManualWidget<V>( res, p_name );
 

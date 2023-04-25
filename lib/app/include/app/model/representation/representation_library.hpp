@@ -4,7 +4,7 @@
 #include "app/core/event/vtx_event.hpp"
 #include "app/model/base_model.hpp"
 #include "app/model/category_enum.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "representation.hpp"
 #include <vector>
 

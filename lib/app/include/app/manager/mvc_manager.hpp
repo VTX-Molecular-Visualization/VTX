@@ -1,18 +1,20 @@
-#ifndef __VTX_CORE_MVC_MANAGER__
-#define __VTX_CORE_MVC_MANAGER__
+#ifndef __VTX_APP_MANAGER_MVC_MANAGER__
+#define __VTX_APP_MANAGER_MVC_MANAGER__
 
 #include "app/model/base_model.hpp"
 #include "app/old_app/generic/base_lockable.hpp"
 #include "app/old_app/id.hpp"
 #include "app/view/base_view.hpp"
-#include "mvc_data.hpp"
+#include "details/mvc/mvc_data.hpp"
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
 
-namespace VTX::Core::MVC
+namespace VTX::App::Manager
 {
-	class MvcManager : public Generic::BaseLockable
+	using namespace ::VTX::App::Manager::Details::MVC;
+
+	class MvcManager : public VTX::Generic::BaseLockable
 	{
 	  public:
 		inline static MvcManager & get()
@@ -198,7 +200,8 @@ namespace VTX::Core::MVC
 				   && _container[ p_model->getId() ]->hasView( p_id );
 		};
 
-		inline void notifyViews( const Model::BaseModel * const p_caller, const VTX::App::Core::Event::VTXEvent * const p_event )
+		inline void notifyViews( const Model::BaseModel * const				   p_caller,
+								 const VTX::App::Core::Event::VTXEvent * const p_event )
 		{
 			_lock();
 			_container[ p_caller->getId() ]->notifyViews( p_event );
@@ -218,6 +221,6 @@ namespace VTX::Core::MVC
 
 		std::unordered_map<VTX::Model::ID, MvcData *> _container = std::unordered_map<VTX::Model::ID, MvcData *>();
 	};
-} // namespace VTX::Core::MVC
+} // namespace VTX::App::Manager
 
 #endif

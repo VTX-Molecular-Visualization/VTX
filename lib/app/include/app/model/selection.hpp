@@ -3,10 +3,10 @@
 
 #include "app/core/event/base_event_receiver_vtx.hpp"
 #include "app/core/event/vtx_event.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
 #include "app/event/global.hpp"
 #include "app/model/base_model.hpp"
 #include "app/model/category_enum.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
 #include <map>
 #include <set>
@@ -205,9 +205,9 @@ namespace VTX::Model
 			std::vector<T *> models = std::vector<T *>();
 			for ( const VTX::Model::ID & modelID : getItems() )
 			{
-				if ( VTX::Core::MVC::MvcManager::get().getModelTypeID( modelID ) == p_modelTypeID )
+				if ( VTX::MVC_MANAGER().getModelTypeID( modelID ) == p_modelTypeID )
 				{
-					T & model = VTX::Core::MVC::MvcManager::get().getModel<T>( modelID );
+					T & model = VTX::MVC_MANAGER().getModel<T>( modelID );
 					models.emplace_back( &model );
 				}
 			}
@@ -231,9 +231,9 @@ namespace VTX::Model
 		{
 			for ( const VTX::Model::ID & itemID : _items )
 			{
-				if ( VTX::Core::MVC::MvcManager::get().getModelTypeID( itemID ) == p_itemType )
+				if ( VTX::MVC_MANAGER().getModelTypeID( itemID ) == p_itemType )
 				{
-					T & item = VTX::Core::MVC::MvcManager::get().getModel<T>( itemID );
+					T & item = VTX::MVC_MANAGER().getModel<T>( itemID );
 					p_items.emplace( &item );
 				}
 			}
@@ -243,9 +243,9 @@ namespace VTX::Model
 		{
 			for ( const VTX::Model::ID & itemID : _items )
 			{
-				if ( VTX::Core::MVC::MvcManager::get().getModelTypeID( itemID ) == p_itemType )
+				if ( VTX::MVC_MANAGER().getModelTypeID( itemID ) == p_itemType )
 				{
-					T & item = VTX::Core::MVC::MvcManager::get().getModel<T>( itemID );
+					T & item = VTX::MVC_MANAGER().getModel<T>( itemID );
 					p_items.emplace( &item );
 				}
 			}

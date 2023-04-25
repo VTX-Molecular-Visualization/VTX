@@ -1,5 +1,5 @@
 #include "app/action/viewpoint.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/model/path.hpp"
 #include <set>
 

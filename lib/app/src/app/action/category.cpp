@@ -5,7 +5,7 @@
 #include "app/model/molecule.hpp"
 // #include "app/model/representation/representation_library.hpp"
 // #include "app/model/selection.hpp"
-// #include "app/core/mvc/mvc_manager.hpp"
+// #include "app/mvc.hpp"
 #include "app/old_app/object3d/scene.hpp"
 // #include "app/old_app/representation/representation_manager.hpp"
 // #include "app/old_app/selection/selection_manager.hpp"
@@ -136,7 +136,7 @@ namespace VTX::App::Action::Category
 	//	if ( molecule->isEmpty() )
 	//	{
 	//		VTXApp::get().getScene().removeMolecule( molecule );
-	//		VTX::Core::MVC::MvcManager::get().deleteModel( molecule );
+	//		VTX::MVC_MANAGER().deleteModel( molecule );
 	//	}
 	//	else
 	//	{
@@ -151,7 +151,7 @@ namespace VTX::App::Action::Category
 	// void Copy::execute()
 	//{
 	//	Model::GeneratedMolecule * generatedMolecule
-	//		= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+	//		= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
 
 	//	generatedMolecule->copyFromChain( _target );
 	//	generatedMolecule->applyTransform( _target.getMoleculePtr()->getTransform() );
@@ -164,7 +164,7 @@ namespace VTX::App::Action::Category
 	//	VTX::Selection::SelectionManager::get().getSelectionModel().clear();
 
 	//	Model::GeneratedMolecule * const generatedMolecule
-	//		= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+	//		= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
 
 	//	generatedMolecule->extractChain( _target );
 	//	VTXApp::get().getScene().addMolecule( generatedMolecule );

@@ -18,7 +18,7 @@ namespace VTX::Tool::Analysis::Util
 		for ( const Model::Selection::PairMoleculeIds & pairMoleculeID : p_selection.getMoleculesMap() )
 		{
 			Model::Molecule * const currentMolecule
-				= &VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( pairMoleculeID.first );
+				= &VTX::MVC_MANAGER().getModel<Model::Molecule>( pairMoleculeID.first );
 
 			const int currentMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( *currentMolecule );
 
@@ -63,7 +63,7 @@ namespace VTX::Tool::Analysis::Util
 		for ( const Model::Selection::PairMoleculeIds & pairMoleculeID : p_selection.getMoleculesMap() )
 		{
 			Model::Molecule * const currentMolecule
-				= &VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( pairMoleculeID.first );
+				= &VTX::MVC_MANAGER().getModel<Model::Molecule>( pairMoleculeID.first );
 
 			const int currentMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( *currentMolecule );
 

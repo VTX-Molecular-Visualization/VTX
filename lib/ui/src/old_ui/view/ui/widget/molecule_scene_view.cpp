@@ -19,7 +19,7 @@
 #include <app/action/molecule.hpp>
 #include <app/action/residue.hpp>
 #include <app/action/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/struct/range.hpp>
@@ -282,38 +282,38 @@ namespace VTX::View::UI::Widget
 	void MoleculeSceneView::_onItemDoubleClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
 	{
 		const Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
-		const ID::VTX_ID & modelTypeId = VTX::Core::MVC::MvcManager::get().getModelTypeID( modelId );
+		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			Model::Molecule & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+			Model::Molecule & model = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelId );
 			VTX_ACTION( new VTX::UI::QT::Action::Molecule::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			Model::Category & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( modelId );
+			Model::Category & model = VTX::MVC_MANAGER().getModel<Model::Category>( modelId );
 			VTX_ACTION( new VTX::UI::QT::Action::Category::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
-			Model::Chain & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+			Model::Chain & model = VTX::MVC_MANAGER().getModel<Model::Chain>( modelId );
 			VTX_ACTION( new VTX::UI::QT::Action::Chain::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			Model::Residue & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+			Model::Residue & model = VTX::MVC_MANAGER().getModel<Model::Residue>( modelId );
 			VTX_ACTION( new VTX::UI::QT::Action::Residue::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
-			Model::Atom & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+			Model::Atom & model = VTX::MVC_MANAGER().getModel<Model::Atom>( modelId );
 			VTX_ACTION( new VTX::UI::QT::Action::Atom::Orient( model ) );
 		}
 	}
 	void MoleculeSceneView::_onItemExpanded( QTreeWidgetItem * const p_item )
 	{
 		const Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
-		const ID::VTX_ID & modelTypeId = VTX::Core::MVC::MvcManager::get().getModelTypeID( modelId );
+		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
@@ -349,14 +349,14 @@ namespace VTX::View::UI::Widget
 			return;
 
 		const Model::ID &  modelId		 = _getModelIDFromItem( *targetedItem );
-		const ID::VTX_ID & modelTypeId	 = VTX::Core::MVC::MvcManager::get().getModelTypeID( modelId );
+		const ID::VTX_ID & modelTypeId	 = VTX::MVC_MANAGER().getModelTypeID( modelId );
 		const QPoint	   globalClicPos = mapToGlobal( p_clicPos );
 
 		Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelId );
 			if ( selection.isMoleculeFullySelected( molecule ) )
 			{
 				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
@@ -373,7 +373,7 @@ namespace VTX::View::UI::Widget
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			Model::Category & category = VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( modelId );
+			Model::Category & category = VTX::MVC_MANAGER().getModel<Model::Category>( modelId );
 			if ( selection.isCategoryFullySelected( category ) )
 			{
 				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
@@ -385,7 +385,7 @@ namespace VTX::View::UI::Widget
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
-			Model::Chain & chain = VTX::Core::MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+			Model::Chain & chain = VTX::MVC_MANAGER().getModel<Model::Chain>( modelId );
 			if ( selection.isChainFullySelected( chain ) )
 			{
 				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
@@ -401,7 +401,7 @@ namespace VTX::View::UI::Widget
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			Model::Residue & residue = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+			Model::Residue & residue = VTX::MVC_MANAGER().getModel<Model::Residue>( modelId );
 			if ( selection.isResidueFullySelected( residue ) )
 			{
 				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
@@ -417,7 +417,7 @@ namespace VTX::View::UI::Widget
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
-			Model::Atom & atom = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+			Model::Atom & atom = VTX::MVC_MANAGER().getModel<Model::Atom>( modelId );
 			if ( selection.isAtomSelected( atom ) )
 			{
 				VTX::UI::Widget::ContextualMenu::ContextualMenuSelection * const selectionContextualMenu
@@ -631,7 +631,7 @@ namespace VTX::View::UI::Widget
 	void MoleculeSceneView::_expandAll( QTreeWidgetItem * const p_from )
 	{
 		const ID::VTX_ID & modelTypeId
-			= VTX::Core::MVC::MvcManager::get().getModelTypeID( _getModelIDFromItem( *p_from ) );
+			= VTX::MVC_MANAGER().getModelTypeID( _getModelIDFromItem( *p_from ) );
 
 		_enableSignals( false );
 
@@ -703,7 +703,7 @@ namespace VTX::View::UI::Widget
 
 			const Model::ID &		categoryID = _getModelIDFromItem( *item );
 			const Model::Category & category
-				= VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( categoryID );
+				= VTX::MVC_MANAGER().getModel<Model::Category>( categoryID );
 
 			const Qt::CheckState newCheckState = Util::UI::getCheckState( category.isVisible() );
 			item->setCheckState( 0, newCheckState );
@@ -744,7 +744,7 @@ namespace VTX::View::UI::Widget
 
 			const Model::ID &		categoryId = _getModelIDFromItem( *p_categoryItem );
 			const Model::Category & category
-				= VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( categoryId );
+				= VTX::MVC_MANAGER().getModel<Model::Category>( categoryId );
 
 			const std::vector<uint> & chains = category.getChains();
 
@@ -783,7 +783,7 @@ namespace VTX::View::UI::Widget
 				continue;
 
 			const Model::ID &	 chainID = _getModelIDFromItem( *item );
-			const Model::Chain & chain	 = VTX::Core::MVC::MvcManager::get().getModel<Model::Chain>( chainID );
+			const Model::Chain & chain	 = VTX::MVC_MANAGER().getModel<Model::Chain>( chainID );
 
 			const Qt::CheckState newCheckState = Util::UI::getCheckState( chain.isVisible() );
 			item->setCheckState( 0, newCheckState );
@@ -825,7 +825,7 @@ namespace VTX::View::UI::Widget
 			std::vector<QTreeWidgetItem *> nullItems = std::vector<QTreeWidgetItem *>();
 
 			const Model::ID &	 chainId	  = _getModelIDFromItem( *p_chainItem );
-			const Model::Chain & chain		  = VTX::Core::MVC::MvcManager::get().getModel<Model::Chain>( chainId );
+			const Model::Chain & chain		  = VTX::MVC_MANAGER().getModel<Model::Chain>( chainId );
 			const uint			 residueCount = chain.getResidueCount();
 			nullItems.reserve( residueCount );
 			items.reserve( residueCount );
@@ -864,7 +864,7 @@ namespace VTX::View::UI::Widget
 				continue;
 
 			const Model::ID &	   residueID = _getModelIDFromItem( *item );
-			const Model::Residue & residue	 = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( residueID );
+			const Model::Residue & residue	 = VTX::MVC_MANAGER().getModel<Model::Residue>( residueID );
 
 			const Qt::CheckState newCheckState = Util::UI::getCheckState( residue.isVisible() );
 			item->setCheckState( 0, newCheckState );
@@ -906,7 +906,7 @@ namespace VTX::View::UI::Widget
 			std::vector<QTreeWidgetItem *> nullItems = std::vector<QTreeWidgetItem *>();
 
 			const Model::ID &	   residueId = _getModelIDFromItem( *p_residueItem );
-			const Model::Residue & residue	 = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( residueId );
+			const Model::Residue & residue	 = VTX::MVC_MANAGER().getModel<Model::Residue>( residueId );
 			const uint			   atomCount = residue.getAtomCount();
 			nullItems.reserve( atomCount );
 			items.reserve( atomCount );
@@ -941,7 +941,7 @@ namespace VTX::View::UI::Widget
 				continue;
 
 			const Model::ID &	atomID = _getModelIDFromItem( *item );
-			const Model::Atom & atom   = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( atomID );
+			const Model::Atom & atom   = VTX::MVC_MANAGER().getModel<Model::Atom>( atomID );
 
 			const Qt::CheckState newCheckState = Util::UI::getCheckState( atom.isVisible() );
 			item->setCheckState( 0, newCheckState );
@@ -1049,7 +1049,7 @@ namespace VTX::View::UI::Widget
 	void MoleculeSceneView::_doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const
 	{
 		const Model::ID &  modelId		= _getModelIDFromItem( *p_item );
-		const ID::VTX_ID & modelTypeId	= VTX::Core::MVC::MvcManager::get().getModelTypeID( modelId );
+		const ID::VTX_ID & modelTypeId	= VTX::MVC_MANAGER().getModelTypeID( modelId );
 		const bool		   modelEnabled = p_item->checkState( 0 ) == Qt::CheckState::Checked ? true : false;
 
 		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
@@ -1059,7 +1059,7 @@ namespace VTX::View::UI::Widget
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			Model::Molecule & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+			Model::Molecule & model = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelId );
 
 			if ( selection.isMoleculeFullySelected( model ) )
 				VTX_ACTION(
@@ -1069,7 +1069,7 @@ namespace VTX::View::UI::Widget
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			Model::Category & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( modelId );
+			Model::Category & model = VTX::MVC_MANAGER().getModel<Model::Category>( modelId );
 
 			if ( selection.isCategoryFullySelected( model ) )
 				VTX_ACTION(
@@ -1079,7 +1079,7 @@ namespace VTX::View::UI::Widget
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
-			Model::Chain & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+			Model::Chain & model = VTX::MVC_MANAGER().getModel<Model::Chain>( modelId );
 
 			if ( selection.isChainFullySelected( model ) )
 				VTX_ACTION(
@@ -1089,7 +1089,7 @@ namespace VTX::View::UI::Widget
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			Model::Residue & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+			Model::Residue & model = VTX::MVC_MANAGER().getModel<Model::Residue>( modelId );
 
 			if ( selection.isResidueFullySelected( model ) )
 				VTX_ACTION(
@@ -1099,7 +1099,7 @@ namespace VTX::View::UI::Widget
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
-			Model::Atom & model = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+			Model::Atom & model = VTX::MVC_MANAGER().getModel<Model::Atom>( modelId );
 
 			if ( selection.isAtomSelected( model ) )
 				VTX_ACTION(
@@ -1330,7 +1330,7 @@ namespace VTX::View::UI::Widget
 															const Style::SYMBOL_DISPLAY_MODE & p_displayMode )
 	{
 		const Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
-		const ID::VTX_ID & modelTypeId = VTX::Core::MVC::MvcManager::get().getModelTypeID( modelId );
+		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
@@ -1338,7 +1338,7 @@ namespace VTX::View::UI::Widget
 			{
 				QTreeWidgetItem * const child	= p_item->child( i );
 				const Model::ID &		modelId = _getModelIDFromItem( *child );
-				const Model::Residue &	residue = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+				const Model::Residue &	residue = VTX::MVC_MANAGER().getModel<Model::Residue>( modelId );
 
 				_applyResidueNameOnItem( residue, *child, p_displayMode );
 			}

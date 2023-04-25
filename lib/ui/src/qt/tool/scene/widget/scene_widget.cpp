@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <app/action/scene.hpp>
 #include <app/action/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/model/path.hpp>
 #include <app/model/selection.hpp>
@@ -62,7 +62,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> &>( p_event );
 
 			Model::BaseModel & model
-				= VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( castedEvent.get()->getModelID() );
+				= VTX::MVC_MANAGER().getModel<Model::BaseModel>( castedEvent.get()->getModelID() );
 
 			SceneItemWidget * const sceneItemWidget = getSceneItemWidgetFromModel( model );
 
@@ -83,7 +83,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		const int defaultPosition = _getDefaultIndex( *p_sceneItem );
 
-		const ID::VTX_ID & modelTypeID = VTX::Core::MVC::MvcManager::get().getModelTypeID( p_sceneItem->getModelID() );
+		const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( p_sceneItem->getModelID() );
 		SceneItemWidget * const sceneItemWidget = _mapInstanciers[ modelTypeID ]->instantiateItem( p_sceneItem );
 
 		const int index = int( _sceneWidgets.size() );
@@ -100,7 +100,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		_removeWidgetInLayout( p_item );
 
-		const ID::VTX_ID & itemType = VTX::Core::MVC::MvcManager::get().getModelTypeID( p_item->getModelID() );
+		const ID::VTX_ID & itemType = VTX::MVC_MANAGER().getModelTypeID( p_item->getModelID() );
 		_mapInstanciers[ itemType ]->destroyItem( p_item );
 	}
 
@@ -390,7 +390,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		if ( modelData.getTypeID() == ID::Model::MODEL_SELECTION )
 		{
 			const Model::Selection & selection
-				= VTX::Core::MVC::MvcManager::get().getModel<Model::Selection>( modelData.getModelID() );
+				= VTX::MVC_MANAGER().getModel<Model::Selection>( modelData.getModelID() );
 
 			droppedModelIDs.reserve( selection.getItems().size() );
 			for ( const Model::ID & id : selection.getItems() )

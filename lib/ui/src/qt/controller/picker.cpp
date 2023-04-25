@@ -11,7 +11,7 @@
 #include <app/model/molecule.hpp>
 #include <app/model/residue.hpp>
 #include <app/model/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/selection/selection_enum.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>
@@ -62,14 +62,14 @@ namespace VTX::UI::QT::Controller
 		// If something clicked.
 		if ( p_ids.x != Model::ID_UNKNOWN )
 		{
-			const ID::VTX_ID & typeId = VTX::Core::MVC::MvcManager::get().getModelTypeID( p_ids.x );
+			const ID::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( p_ids.x );
 
 			// Already selected.
 			if ( Selection::SelectionManager::get().getSelectionModel().isModelSelected(
-					 VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( p_ids.x ) )
+					 VTX::MVC_MANAGER().getModel<Model::BaseModel>( p_ids.x ) )
 				 && ( p_ids.y != Model::ID_UNKNOWN
 						  ? Selection::SelectionManager::get().getSelectionModel().isModelSelected(
-							  VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( p_ids.y ) )
+							  VTX::MVC_MANAGER().getModel<Model::BaseModel>( p_ids.y ) )
 						  : true ) )
 			{
 				// Remove from selection.
@@ -78,21 +78,21 @@ namespace VTX::UI::QT::Controller
 					// Residue.
 					if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
 					{
-						Model::Residue & residuePicked = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( p_ids.x );
+						Model::Residue & residuePicked = VTX::MVC_MANAGER().getModel<Model::Residue>( p_ids.x );
 						_unselectItem( residuePicked );
 					}
 					// Bond.
 					else if ( p_ids.y != Model::ID_UNKNOWN )
 					{
-						Model::Atom & atomPicked1 = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( p_ids.x );
-						Model::Atom & atomPicked2 = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( p_ids.y );
+						Model::Atom & atomPicked1 = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.x );
+						Model::Atom & atomPicked2 = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.y );
 
 						_unselectItem( atomPicked1, atomPicked2 );
 					}
 					// Atom.
 					else
 					{
-						Model::Atom & atomPicked = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( p_ids.x );
+						Model::Atom & atomPicked = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.x );
 						_unselectItem( atomPicked );
 					}
 				}
@@ -103,21 +103,21 @@ namespace VTX::UI::QT::Controller
 				// Residue.
 				if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
 				{
-					Model::Residue & residuePicked = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( p_ids.x );
+					Model::Residue & residuePicked = VTX::MVC_MANAGER().getModel<Model::Residue>( p_ids.x );
 					_selectItem( residuePicked );
 				}
 				// Bond.
 				else if ( p_ids.y != Model::ID_UNKNOWN )
 				{
-					Model::Atom & atomPicked1 = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( p_ids.x );
-					Model::Atom & atomPicked2 = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( p_ids.y );
+					Model::Atom & atomPicked1 = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.x );
+					Model::Atom & atomPicked2 = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.y );
 
 					_selectItem( atomPicked1, atomPicked2 );
 				}
 				// Atom.
 				else
 				{
-					Model::Atom & atomPicked = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( p_ids.x );
+					Model::Atom & atomPicked = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.x );
 					_selectItem( atomPicked );
 				}
 			}

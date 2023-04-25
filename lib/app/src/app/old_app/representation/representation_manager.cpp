@@ -1,5 +1,5 @@
 #include "app/old_app/representation/representation_manager.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/event.hpp"
 #include "app/model/chain.hpp"
 #include "app/model/molecule.hpp"
@@ -37,7 +37,7 @@ namespace VTX::Representation
 		}
 
 		InstantiatedRepresentation * const instantiatedRepresentation
-			= VTX::Core::MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>( p_representation );
+			= VTX::MVC_MANAGER().instantiateModel<InstantiatedRepresentation>( p_representation );
 
 		assignRepresentation( instantiatedRepresentation, p_target, p_recompute, p_notify );
 
@@ -82,7 +82,7 @@ namespace VTX::Representation
 	{
 		for ( const Model::Selection::PairMoleculeIds & molData : p_selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( molData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molData.first );
 			if ( molData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 			{
 				instantiateRepresentation( p_representation, molecule, false, true );
@@ -117,7 +117,7 @@ namespace VTX::Representation
 		const bool								 p_notify )
 	{
 		InstantiatedRepresentation * const copy
-			= VTX::Core::MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>(
+			= VTX::MVC_MANAGER().instantiateModel<InstantiatedRepresentation>(
 				p_source->getLinkedRepresentation() );
 
 		copy->copy( *p_source );
@@ -182,7 +182,7 @@ namespace VTX::Representation
 	void RepresentationManager::_instantiateViewOnRepresentation( const Representation * const p_representation )
 	{
 		View::CallbackView<const Representation, RepresentationManager> * const view
-			= VTX::Core::MVC::MvcManager::get()
+			= VTX::MVC_MANAGER()
 				  .instantiateView<View::CallbackView<const Representation, RepresentationManager>>(
 					  p_representation, ID::View::INSTANTIATED_REPRESENTATION_ON_REPRESENTATION );
 
@@ -190,7 +190,7 @@ namespace VTX::Representation
 	}
 	void RepresentationManager::_deleteViewOnRepresentation( const Representation * const p_representation ) const
 	{
-		VTX::Core::MVC::MvcManager::get().deleteView( p_representation,
+		VTX::MVC_MANAGER().deleteView( p_representation,
 													  ID::View::INSTANTIATED_REPRESENTATION_ON_REPRESENTATION );
 	}
 
@@ -291,7 +291,7 @@ namespace VTX::Representation
 		const InstantiatedRepresentation & p_source )
 	{
 		InstantiatedRepresentation * const dummy
-			= VTX::Core::MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>(
+			= VTX::MVC_MANAGER().instantiateModel<InstantiatedRepresentation>(
 				p_source.getLinkedRepresentation() );
 
 		dummy->copy( p_source );

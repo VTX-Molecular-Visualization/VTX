@@ -1,12 +1,12 @@
-#ifndef __VTX_CORE_MVC_DATA__
-#define __VTX_CORE_MVC_DATA__
+#ifndef __VTX_APP_MANAGER_DETAILS_MVC_MVC_DATA__
+#define __VTX_APP_MANAGER_DETAILS_MVC_MVC_DATA__
 
 #include "app/model/base_model.hpp"
 #include "app/old_app/id.hpp"
 #include "app/view/base_view.hpp"
 #include <map>
 
-namespace VTX::Core::MVC
+namespace VTX::App::Manager::Details::MVC
 {
 	class MvcData
 	{
@@ -74,6 +74,6 @@ namespace VTX::Core::MVC
 		MapViews				 _views = MapViews();
 	};
 
-} // namespace VTX::Core::MVC
+} // namespace VTX::App::Manager::Details::MVC
 
 #endif

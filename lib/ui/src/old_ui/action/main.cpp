@@ -5,7 +5,7 @@
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/ui/main_window.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/internal/network/request/check_update.hpp>
 #include <app/internal/network/request/download_mmtf.hpp>

@@ -5,7 +5,7 @@
 #include <QRadioButton>
 #include <QVBoxLayout>
 #include <QVariant>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/old_app/generic/base_scene_item.hpp>
 
@@ -26,7 +26,7 @@ namespace VTX::UI::Widget::CustomWidget
 				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> &>( p_event );
 
 			Model::BaseModel & model
-				= VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( castedEvent.get()->getModelID() );
+				= VTX::MVC_MANAGER().getModel<Model::BaseModel>( castedEvent.get()->getModelID() );
 			removeModel( &model );
 		}
 	}

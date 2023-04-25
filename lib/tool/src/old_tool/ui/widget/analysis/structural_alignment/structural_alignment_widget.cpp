@@ -2,7 +2,7 @@
 #include "tool/old_tool/action/analysis.hpp"
 #include "tool/old_tool/analysis/rmsd.hpp"
 #include "tool/old_tool/ui/widget/analysis/structural_alignment/structural_alignment_model_list_widget.hpp"
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/selection.hpp>
@@ -160,7 +160,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		for ( const Model::Selection::PairMoleculeIds & pairMolIDs : p_selection.getMoleculesMap() )
 		{
 			Model::Molecule & molecule
-				= VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( pairMolIDs.first );
+				= VTX::MVC_MANAGER().getModel<Model::Molecule>( pairMolIDs.first );
 			selectedMolecules.emplace_back( &molecule );
 		}
 

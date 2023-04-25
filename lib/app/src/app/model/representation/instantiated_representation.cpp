@@ -1,6 +1,6 @@
 #include "app/model/representation/instantiated_representation.hpp"
 #include "app/core/event/vtx_event.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/event/global.hpp"
 #include "app/model/molecule.hpp"
 #include "app/model/secondary_structure.hpp"

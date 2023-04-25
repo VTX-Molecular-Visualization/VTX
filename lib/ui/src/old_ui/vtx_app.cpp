@@ -5,7 +5,7 @@
 //// #include <app/core/event/vtx_event.hpp>
 //// #include "ui/event/event_manager.hpp"
 //// #include "ui/io/struct/scene_path_data.hpp"
-//// #include <app/core/mvc/mvc_manager.hpp>
+//// #include <app/mvc.hpp>
 //// #include "ui/renderer/gl/program_manager.hpp"
 //// #include "ui/selection/selection_manager.hpp"
 //// #include <app/model/renderer/render_effect_preset.hpp"
@@ -38,7 +38,7 @@
 //		//		_setting.loadRecentPaths();
 //		//
 //		//		// Create singletons.
-//		//		VTX::Core::MVC::MvcManager::get();
+//		//		VTX::MVC_MANAGER();
 //		//		Action::ActionManager::get();
 //		//		Event::EventManager::get();
 //		//		Selection::SelectionManager::get();
@@ -46,9 +46,9 @@
 //		//
 //		//		// Create Databases
 //		//		_representationLibrary
-//		//			= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Representation::RepresentationLibrary>();
+//		//			= VTX::MVC_MANAGER().instantiateModel<Model::Representation::RepresentationLibrary>();
 //		//		_renderEffectLibrary =
-//		// VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
+//		// VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
 //		//		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 //		//
 //		//		// Create scene.
@@ -180,8 +180,8 @@
 //
 //		//_setting.backup();
 //
-//		// VTX::Core::MVC::MvcManager::get().deleteModel( _representationLibrary );
-//		// VTX::Core::MVC::MvcManager::get().deleteModel( _renderEffectLibrary );
+//		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
+//		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 //
 //		// Selection::SelectionManager::get().deleteModel();
 //

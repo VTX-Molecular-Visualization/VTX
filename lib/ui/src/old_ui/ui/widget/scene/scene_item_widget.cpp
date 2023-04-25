@@ -7,7 +7,7 @@
 #include "ui/old_ui/vtx_app.hpp"
 #include <QAbstractItemModel>
 #include <QDrag>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/model/category.hpp>
 #include <app/model/selection.hpp>
@@ -62,7 +62,7 @@ namespace VTX::UI::Widget::Scene
 		setEditTriggers( EditTrigger::SelectedClicked );
 		setExpandsOnDoubleClick( false );
 
-		Model::BaseModel & vtxModel = VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() );
+		Model::BaseModel & vtxModel = VTX::MVC_MANAGER().getModel<Model::BaseModel>( getModelID() );
 		setSelectionModel( new VTX::UI::Widget::Scene::SceneItemSelectionModel( &vtxModel, model(), this ) );
 
 		_createTopLevelObject();
@@ -257,28 +257,28 @@ namespace VTX::UI::Widget::Scene
 			return;
 
 		const Model::ID	   itemID	 = _getModelIDFromItem( p_widget );
-		const ID::VTX_ID & modelType = VTX::Core::MVC::MvcManager::get().getModelTypeID( itemID );
+		const ID::VTX_ID & modelType = VTX::MVC_MANAGER().getModelTypeID( itemID );
 
 		bool visibility;
 		if ( modelType == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			visibility = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<Model::Molecule>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			visibility = VTX::Core::MVC::MvcManager::get().getModel<Model::Category>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<Model::Category>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_CHAIN )
 		{
-			visibility = VTX::Core::MVC::MvcManager::get().getModel<Model::Chain>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<Model::Chain>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			visibility = VTX::Core::MVC::MvcManager::get().getModel<Model::Residue>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<Model::Residue>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_ATOM )
 		{
-			visibility = VTX::Core::MVC::MvcManager::get().getModel<Model::Atom>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<Model::Atom>( itemID ).isVisible();
 		}
 		else
 		{
@@ -307,7 +307,7 @@ namespace VTX::UI::Widget::Scene
 
 	void SceneItemWidget::_createTopLevelObject()
 	{
-		const Model::BaseModel & model = VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() );
+		const Model::BaseModel & model = VTX::MVC_MANAGER().getModel<Model::BaseModel>( getModelID() );
 
 		QTreeWidgetItem * const topLevelItem = new QTreeWidgetItem();
 		topLevelItem->setFlags( topLevelItem->flags() | Qt::ItemFlag::ItemIsEditable );
@@ -326,12 +326,12 @@ namespace VTX::UI::Widget::Scene
 		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
 		const Model::ID & itemModel = _getModelIDFromItem( p_itemToSelect );
-		const ID::VTX_ID  itemType	= VTX::Core::MVC::MvcManager::get().getModelTypeID( itemModel );
+		const ID::VTX_ID  itemType	= VTX::MVC_MANAGER().getModelTypeID( itemModel );
 
 		p_itemToSelect.treeWidget()->setFocus( Qt::FocusReason::TabFocusReason );
 		p_itemToSelect.treeWidget()->setCurrentItem( &p_itemToSelect );
 
-		selectionModel.selectModel( VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( itemModel ),
+		selectionModel.selectModel( VTX::MVC_MANAGER().getModel<Model::BaseModel>( itemModel ),
 									p_append );
 	}
 
@@ -430,7 +430,7 @@ namespace VTX::UI::Widget::Scene
 
 		const Model::BaseModel * const modelDragged
 			= isModelSelected ? &( selectionModel )
-							  : &( VTX::Core::MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() ) );
+							  : &( VTX::MVC_MANAGER().getModel<Model::BaseModel>( getModelID() ) );
 
 		return VTX::UI::MimeType::generateMimeDataFromModel( *modelDragged, UI::MimeType::DragSource::SCENE_VIEW );
 	}

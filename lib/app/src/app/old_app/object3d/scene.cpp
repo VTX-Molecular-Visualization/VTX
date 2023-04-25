@@ -1,6 +1,6 @@
 #include "app/old_app/object3d/scene.hpp"
 #include "app/action/main.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/model/label.hpp"
@@ -38,15 +38,15 @@ namespace VTX::Object3D
 		{
 			MoleculePtr const molecule = _molecules.begin()->first;
 			removeMolecule( molecule );
-			VTX::Core::MVC::MvcManager::get().deleteModel( molecule );
+			VTX::MVC_MANAGER().deleteModel( molecule );
 		}
 
 		_molecules.clear();
 
-		VTX::Core::MVC::MvcManager::get().deleteAllModels( _meshes );
+		VTX::MVC_MANAGER().deleteAllModels( _meshes );
 		_meshes.clear();
 
-		VTX::Core::MVC::MvcManager::get().deleteAllModels( _labels );
+		VTX::MVC_MANAGER().deleteAllModels( _labels );
 		_labels.clear();
 
 		_helpers.clear();
@@ -55,7 +55,7 @@ namespace VTX::Object3D
 		{
 			PathPtr const path = *_paths.begin();
 			removePath( path );
-			VTX::Core::MVC::MvcManager::get().deleteModel( path );
+			VTX::MVC_MANAGER().deleteModel( path );
 		}
 
 		_paths.clear();
@@ -372,7 +372,7 @@ namespace VTX::Object3D
 
 	void Scene::_createDefaultPath()
 	{
-		Model::Path * const path = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Path>();
+		Model::Path * const path = VTX::MVC_MANAGER().instantiateModel<Model::Path>();
 		_defaultPath			 = path;
 
 		addPath( path );

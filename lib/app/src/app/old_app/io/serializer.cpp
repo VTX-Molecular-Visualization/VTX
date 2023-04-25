@@ -3,7 +3,7 @@
 #include "app/action/renderer.hpp"
 #include "app/action/setting.hpp"
 #include "app/core/event/vtx_event.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include "app/event.hpp"
 #include "app/model/category_enum.hpp"
@@ -367,7 +367,7 @@ namespace VTX::IO
 				if ( jsonMolecule.contains( "MOLECULE" ) )
 				{
 					Model::Molecule * const molecule
-						= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+						= VTX::MVC_MANAGER().instantiateModel<Model::Molecule>();
 
 					try
 					{
@@ -375,7 +375,7 @@ namespace VTX::IO
 					}
 					catch ( std::exception e )
 					{
-						VTX::Core::MVC::MvcManager::get().deleteModel( molecule );
+						VTX::MVC_MANAGER().deleteModel( molecule );
 						throw e;
 					}
 
@@ -563,7 +563,7 @@ namespace VTX::IO
 			for ( const nlohmann::json & jsonViewpoint : p_json.at( "VIEWPOINTS" ) )
 			{
 				Model::Viewpoint * const viewpoint
-					= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Viewpoint>( &p_path );
+					= VTX::MVC_MANAGER().instantiateModel<Model::Viewpoint>( &p_path );
 				deserialize( jsonViewpoint, *viewpoint );
 				p_path.addViewpoint( viewpoint );
 			}
@@ -1056,7 +1056,7 @@ namespace VTX::IO
 				continue;
 
 			Model::Representation::InstantiatedRepresentation * const representation
-				= VTX::Core::MVC::MvcManager::get()
+				= VTX::MVC_MANAGER()
 					  .instantiateModel<Model::Representation::InstantiatedRepresentation>();
 			deserialize( jsonRepresentations.at( "REPRESENTATION" ), p_version, *representation );
 

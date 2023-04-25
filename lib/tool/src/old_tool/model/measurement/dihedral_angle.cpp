@@ -1,7 +1,7 @@
 #include "tool/old_tool/model/measurement/dihedral_angle.hpp"
 #include "tool/old_tool/util/measurement.hpp"
 #include <app/core/event/vtx_event.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
 #include <app/model/atom.hpp>
@@ -194,7 +194,7 @@ namespace VTX::Model::Measurement
 				if ( std::find( viewedMolecules.begin(), viewedMolecules.end(), molecule ) == viewedMolecules.end() )
 				{
 					MoleculeView * const moleculeView
-						= VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>( molecule, getViewID( i ) );
+						= VTX::MVC_MANAGER().instantiateView<MoleculeView>( molecule, getViewID( i ) );
 
 					moleculeView->setCallback( this, &DihedralAngle::_onMoleculeChange );
 					_moleculeViews[ i ] = moleculeView;
@@ -214,7 +214,7 @@ namespace VTX::Model::Measurement
 		{
 			if ( _moleculeViews[ i ] != nullptr )
 			{
-				VTX::Core::MVC::MvcManager::get().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
+				VTX::MVC_MANAGER().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
 				_moleculeViews[ i ] = nullptr;
 			}
 		}
@@ -271,10 +271,10 @@ namespace VTX::Model::Measurement
 
 	VTX::ID::VTX_ID DihedralAngle::getViewID( const int p_atomPos ) const
 	{
-		return VTX::Core::MVC::MvcManager::get().generateViewID(
+		return VTX::MVC_MANAGER().generateViewID(
 			VTX::ID::View::MEASUREMENT_ON_MOLECULE, std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 	}
 
-	void DihedralAngle::autoDelete() const { VTX::Core::MVC::MvcManager::get().deleteModel( this ); }
+	void DihedralAngle::autoDelete() const { VTX::MVC_MANAGER().deleteModel( this ); }
 
 } // namespace VTX::Model::Measurement

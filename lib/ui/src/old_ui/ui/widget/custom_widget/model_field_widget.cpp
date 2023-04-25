@@ -3,7 +3,7 @@
 #include "ui/old_ui/ui/mime_type.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/old_app/generic/base_scene_item.hpp>
 

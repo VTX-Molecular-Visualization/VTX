@@ -8,7 +8,7 @@
 #include <app/model/representation/representation.hpp>
 #include <app/model/representation/representation_library.hpp>
 #include <app/model/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>

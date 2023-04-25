@@ -3,7 +3,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <app/action/selection.hpp>
 #include <app/action/visible.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/model/selection.hpp>
 #include <app/old_app/selection/selection_manager.hpp>

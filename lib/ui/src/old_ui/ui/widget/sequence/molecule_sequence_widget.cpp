@@ -6,7 +6,7 @@
 #include <QScrollBar>
 #include <algorithm>
 #include <app/action/selection.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/model/category_enum.hpp>
 #include <app/model/selection.hpp>

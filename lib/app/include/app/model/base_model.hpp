@@ -7,12 +7,12 @@
 #include <string>
 #include <util/types.hpp>
 
-namespace VTX::Core::MVC
+namespace VTX::App::Manager
 {
 	class MvcManager;
 }
 
-#define VTX_MODEL friend VTX::Core::MVC::MvcManager;
+#define VTX_MODEL friend VTX::App::Manager::MvcManager;
 
 namespace VTX
 {

@@ -5,12 +5,12 @@
 #include "app/model/base_model.hpp"
 #include <util/logger.hpp>
 
-namespace VTX::Core::MVC
+namespace VTX::App::Manager
 {
 	class MvcManager;
 }
 
-#define VTX_VIEW friend VTX::Core::MVC::MvcManager;
+#define VTX_VIEW friend VTX::App::Manager::MvcManager;
 
 namespace VTX
 {

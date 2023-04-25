@@ -2,7 +2,7 @@
 #define __VTX_MODEL_RENDER_EFFECT_PRESET_LIBRARY__
 
 #include "app/core/event/vtx_event.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/model/base_model.hpp"
 #include "render_effect_preset.hpp"
 #include <vector>

@@ -1,7 +1,7 @@
 #include "tool/old_tool/model/measurement/distance.hpp"
 #include "tool/old_tool/util/measurement.hpp"
 #include <app/core/event/vtx_event.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
 #include <app/model/atom.hpp>
@@ -159,14 +159,14 @@ namespace VTX::Model::Measurement
 
 	void Distance::_instantiateViewsOnMolecules()
 	{
-		MoleculeView * const firstMoleculeView = VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>(
+		MoleculeView * const firstMoleculeView = VTX::MVC_MANAGER().instantiateView<MoleculeView>(
 			_atoms[ 0 ]->getMoleculePtr(), getViewID( 0 ) );
 		firstMoleculeView->setCallback( this, &Distance::_onMoleculeChange );
 		_moleculeViews[ 0 ] = firstMoleculeView;
 
 		if ( _atoms[ 0 ]->getMoleculePtr() != _atoms[ 1 ]->getMoleculePtr() )
 		{
-			MoleculeView * const secondMoleculeView = VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>(
+			MoleculeView * const secondMoleculeView = VTX::MVC_MANAGER().instantiateView<MoleculeView>(
 				_atoms[ 1 ]->getMoleculePtr(), getViewID( 1 ) );
 			secondMoleculeView->setCallback( this, &Distance::_onMoleculeChange );
 			_moleculeViews[ 1 ] = firstMoleculeView;
@@ -181,7 +181,7 @@ namespace VTX::Model::Measurement
 
 			if ( view != nullptr )
 			{
-				VTX::Core::MVC::MvcManager::get().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
+				VTX::MVC_MANAGER().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
 				_moleculeViews[ i ] = nullptr;
 			}
 		}
@@ -239,10 +239,10 @@ namespace VTX::Model::Measurement
 
 	VTX::ID::VTX_ID Distance::getViewID( const int p_atomPos ) const
 	{
-		return VTX::Core::MVC::MvcManager::get().generateViewID(
+		return VTX::MVC_MANAGER().generateViewID(
 			VTX::ID::View::MEASUREMENT_ON_MOLECULE, std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 	}
 
-	void Distance::autoDelete() const { VTX::Core::MVC::MvcManager::get().deleteModel( this ); }
+	void Distance::autoDelete() const { VTX::MVC_MANAGER().deleteModel( this ); }
 
 } // namespace VTX::Model::Measurement

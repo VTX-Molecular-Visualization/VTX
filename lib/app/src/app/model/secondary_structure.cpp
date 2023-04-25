@@ -4,7 +4,7 @@
 #include "app/model/molecule.hpp"
 #include "app/model/residue.hpp"
 #include "app/model/selection.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 #include "app/old_app/view/d3/ribbon.hpp"
@@ -287,7 +287,7 @@ namespace VTX
 		void SecondaryStructure::_instantiate3DViews()
 		{
 			_addRenderable(
-				VTX::Core::MVC::MvcManager::get().instantiateView<View::D3::Ribbon>( this, VTX::ID::View::D3_RIBBON_PATCH ) );
+				VTX::MVC_MANAGER().instantiateView<View::D3::Ribbon>( this, VTX::ID::View::D3_RIBBON_PATCH ) );
 		}
 
 		void SecondaryStructure::refreshColors()

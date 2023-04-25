@@ -3,7 +3,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/util/ui.hpp"
 #include <QLabel>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {

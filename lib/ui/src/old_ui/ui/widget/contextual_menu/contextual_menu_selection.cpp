@@ -424,7 +424,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		else if ( _target->getMoleculesMap().size() > 0 )
 		{
 			const Model::ID & moleculeID = _target->getMoleculesMap().begin()->first;
-			molecule					 = &( VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( moleculeID ) );
+			molecule					 = &( VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeID ) );
 		}
 
 		if ( molecule != nullptr )
@@ -445,7 +445,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 
 			if ( moleculeData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 			{
@@ -515,7 +515,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		bool displayShowWater = true;
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 			displayShowWater		   = displayShowWater && !molecule.showWater();
 		}
 
@@ -527,7 +527,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		bool displayShowHydrogen = true;
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 			displayShowHydrogen		   = displayShowHydrogen && !molecule.showHydrogen();
 		}
 
@@ -539,7 +539,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		bool displayShowSolvent = true;
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 			displayShowSolvent		   = displayShowSolvent && !molecule.showSolvent();
 		}
 
@@ -551,7 +551,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		bool displayShowIon = true;
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 			displayShowIon			   = displayShowIon && !molecule.showIon();
 		}
 
@@ -570,7 +570,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		bool displayPlay = true;
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 			if ( molecule.hasTrajectory() )
 				displayPlay = displayPlay && !molecule.isPlaying();
 		}
@@ -583,7 +583,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 			if ( molecule.hasTrajectory() )
 				return true;
 		}

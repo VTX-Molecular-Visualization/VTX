@@ -117,7 +117,7 @@
 //	void DistanceToCycle::_instantiateViewsOnMolecules()
 //	{
 //		MoleculeView * const firstMoleculeView
-//			= VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>( _firstAtom->getMoleculePtr(), getViewID(
+//			= VTX::MVC_MANAGER().instantiateView<MoleculeView>( _firstAtom->getMoleculePtr(), getViewID(
 // 0
 //)
 //); 		firstMoleculeView->setCallback( this, &DistanceToCycle::_onMoleculeChange );
@@ -126,7 +126,7 @@
 //		if ( _firstAtom->getMoleculePtr() != _secondAtom->getMoleculePtr() )
 //		{
 //			MoleculeView * const secondMoleculeView
-//				= VTX::Core::MVC::MvcManager::get().instantiateView<MoleculeView>( _secondAtom->getMoleculePtr(),
+//				= VTX::MVC_MANAGER().instantiateView<MoleculeView>( _secondAtom->getMoleculePtr(),
 // getViewID( 1 ) ); 			secondMoleculeView->setCallback( this, &DistanceToCycle::_onMoleculeChange );
 //_moleculeViews.emplace_back( secondMoleculeView );
 //		}
@@ -136,12 +136,12 @@
 //	{
 //		if ( _moleculeViews.size() > 0 )
 //		{
-//			VTX::Core::MVC::MvcManager::get().deleteView( _firstAtom->getMoleculePtr(), getViewID( 0 ) );
+//			VTX::MVC_MANAGER().deleteView( _firstAtom->getMoleculePtr(), getViewID( 0 ) );
 //		}
 //
 //		if ( _moleculeViews.size() > 1 )
 //		{
-//			VTX::Core::MVC::MvcManager::get().deleteView( _secondAtom->getMoleculePtr(), getViewID( 1 ) );
+//			VTX::MVC_MANAGER().deleteView( _secondAtom->getMoleculePtr(), getViewID( 1 ) );
 //		}
 //
 //		_moleculeViews.clear();
@@ -199,10 +199,10 @@
 //
 //	VTX::ID::VTX_ID DistanceToCycle::getViewID( const int p_atomPos ) const
 //	{
-//		return VTX::Core::MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
+//		return VTX::MVC_MANAGER().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
 //													  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 //	}
 //
-//	void DistanceToCycle::autoDelete() const { VTX::Core::MVC::MvcManager::get().deleteModel( this ); }
+//	void DistanceToCycle::autoDelete() const { VTX::MVC_MANAGER().deleteModel( this ); }
 //
 // } // namespace VTX::Model::Measurement

@@ -114,7 +114,7 @@ namespace VTX
 			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			M * tryDeserializeModel( const nlohmann::json & p_json ) const
 			{
-				M * const model = VTX::Core::MVC::MvcManager::get().instantiateModel<M>();
+				M * const model = VTX::MVC_MANAGER().instantiateModel<M>();
 
 				try
 				{
@@ -122,7 +122,7 @@ namespace VTX
 				}
 				catch ( std::exception e )
 				{
-					VTX::Core::MVC::MvcManager::get().deleteModel( model );
+					VTX::MVC_MANAGER().deleteModel( model );
 					throw e;
 				}
 

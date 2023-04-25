@@ -1,5 +1,5 @@
 #include "app/old_app/selection/selection_manager.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/model/selection.hpp"
@@ -12,11 +12,11 @@ namespace VTX
 	{
 		SelectionManager::SelectionManager()
 		{
-			_selectionModel = VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Selection>();
+			_selectionModel = VTX::MVC_MANAGER().instantiateModel<Model::Selection>();
 			VTX_EVENT<Model::Selection *>( VTX::App::Event::Global::SELECTION_ADDED, _selectionModel );
 		}
 		SelectionManager::~SelectionManager() {}
 
-		void SelectionManager::deleteModel() { VTX::Core::MVC::MvcManager::get().deleteModel( _selectionModel ); }
+		void SelectionManager::deleteModel() { VTX::MVC_MANAGER().deleteModel( _selectionModel ); }
 	} // namespace Selection
 } // namespace VTX

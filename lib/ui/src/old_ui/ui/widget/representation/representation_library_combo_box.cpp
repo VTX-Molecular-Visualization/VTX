@@ -1,7 +1,7 @@
 #include "ui/old_ui/ui/widget/representation/representation_library_combo_box.hpp"
 #include "ui/old_ui/style.hpp"
 #include <app/model/representation/representation_library.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/view/callback_view.hpp>
 
@@ -16,8 +16,8 @@ namespace VTX::UI::Widget::Representation
 	RepresentationLibraryComboBox::~RepresentationLibraryComboBox()
 	{
 		// Check view if setting window destroy before combo box (view can be destroyed twice)
-		if ( VTX::Core::MVC::MvcManager::get().hasView( &Model::Representation::RepresentationLibrary::get(), _viewID ) )
-			VTX::Core::MVC::MvcManager::get().deleteView( &Model::Representation::RepresentationLibrary::get(), _viewID );
+		if ( VTX::MVC_MANAGER().hasView( &Model::Representation::RepresentationLibrary::get(), _viewID ) )
+			VTX::MVC_MANAGER().deleteView( &Model::Representation::RepresentationLibrary::get(), _viewID );
 	}
 
 	void RepresentationLibraryComboBox::_setupUi( const QString & p_name )
@@ -26,7 +26,7 @@ namespace VTX::UI::Widget::Representation
 		_fillItemList();
 
 		View::CallbackView<Model::Representation::RepresentationLibrary, RepresentationLibraryComboBox> * const view
-			= VTX::Core::MVC::MvcManager::get()
+			= VTX::MVC_MANAGER()
 				  .instantiateView<
 					  View::CallbackView<Model::Representation::RepresentationLibrary, RepresentationLibraryComboBox>>(
 					  &Model::Representation::RepresentationLibrary::get(), _viewID );

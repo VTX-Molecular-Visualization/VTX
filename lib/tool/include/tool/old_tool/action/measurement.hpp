@@ -7,7 +7,7 @@
 #include <app/core/action/base_action.hpp>
 #include <app/model/atom.hpp>
 #include <app/model/molecule.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <ui/old_ui/vtx_app.hpp>
 
@@ -33,7 +33,7 @@ namespace VTX::Action::Measurement
 			//	const uint secondAtomIndex = distribution( generator );
 
 			//	Model::Measurement::Distance * const distanceModel
-			//		= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Measurement::Distance>(
+			//		= VTX::MVC_MANAGER().instantiateModel<Model::Measurement::Distance>(
 			//			Model::Measurement::Distance::AtomPair( *mol.getAtom( firstAtomIndex ),
 			//													*mol.getAtom( secondAtomIndex ) ) );
 
@@ -44,7 +44,7 @@ namespace VTX::Action::Measurement
 
 			const Model::Measurement::Distance::AtomPair pair( _firstAtom, _secondAtom );
 			Model::Measurement::Distance * const		 distanceModel
-				= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Measurement::Distance>( pair );
+				= VTX::MVC_MANAGER().instantiateModel<Model::Measurement::Distance>( pair );
 
 			VTXApp::get().getScene().addLabel( distanceModel );
 		}
@@ -69,7 +69,7 @@ namespace VTX::Action::Measurement
 		{
 			const Model::Measurement::Angle::AtomTriplet triplet( _firstAtom, _secondAtom, _thirdAtom );
 			Model::Measurement::Angle * const			 angleModel
-				= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Measurement::Angle>( triplet );
+				= VTX::MVC_MANAGER().instantiateModel<Model::Measurement::Angle>( triplet );
 
 			VTXApp::get().getScene().addLabel( angleModel );
 		}
@@ -98,7 +98,7 @@ namespace VTX::Action::Measurement
 				_firstAtom, _secondAtom, _thirdAtom, _fourthAtom );
 
 			Model::Measurement::DihedralAngle * const dihedralAngleModel
-				= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::Measurement::DihedralAngle>( quadruplet );
+				= VTX::MVC_MANAGER().instantiateModel<Model::Measurement::DihedralAngle>( quadruplet );
 
 			VTXApp::get().getScene().addLabel( dihedralAngleModel );
 		}

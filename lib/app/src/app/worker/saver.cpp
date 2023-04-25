@@ -4,7 +4,7 @@
 #include "app/old_app/io/writer/serialized_object.hpp"
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
 #include "app/model/molecule.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 #include <set>
@@ -50,7 +50,7 @@ namespace VTX::Worker
 			{
 				for ( const auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculesMap() )
 				{
-					Model::Molecule & molecule = VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( it.first );
+					Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( it.first );
 					writer->writeFile( _path, molecule );
 				}
 			}

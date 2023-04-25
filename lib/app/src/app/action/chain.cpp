@@ -1,5 +1,5 @@
 #include "app/action/chain.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/model/generated_molecule.hpp"
 #include "app/model/molecule.hpp"
 #include "app/model/representation/representation.hpp"
@@ -135,7 +135,7 @@ namespace VTX::App::Action::Chain
 		if ( molecule->isEmpty() )
 		{
 			VTXApp::get().getScene().removeMolecule( molecule );
-			VTX::Core::MVC::MvcManager::get().deleteModel( molecule );
+			VTX::MVC_MANAGER().deleteModel( molecule );
 		}
 		else
 		{
@@ -150,7 +150,7 @@ namespace VTX::App::Action::Chain
 	void Copy::execute()
 	{
 		Model::GeneratedMolecule * generatedMolecule
-			= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+			= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
 
 		generatedMolecule->copyFromChain( _target );
 		generatedMolecule->applyTransform( _target.getMoleculePtr()->getTransform() );
@@ -163,7 +163,7 @@ namespace VTX::App::Action::Chain
 		VTX::Selection::SelectionManager::get().getSelectionModel().clear();
 
 		Model::GeneratedMolecule * const generatedMolecule
-			= VTX::Core::MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+			= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
 
 		generatedMolecule->extractChain( _target );
 		VTXApp::get().getScene().addMolecule( generatedMolecule );

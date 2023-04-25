@@ -297,7 +297,7 @@ namespace VTX::IO::Filesystem
 		{
 			const Model::ID & moleculeID
 				= Selection::SelectionManager::get().getSelectionModel().getMoleculesMap().begin()->first;
-			exportedMolecule = &( VTX::Core::MVC::MvcManager::get().getModel<Model::Molecule>( moleculeID ) );
+			exportedMolecule = &( VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeID ) );
 		}
 		else if ( VTXApp::get().getScene().getMolecules().size() > 0 )
 		{

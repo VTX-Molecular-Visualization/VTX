@@ -32,7 +32,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuViewpoint::_renameAction()
 	{
 		View::UI::Widget::PathSceneView * const pathSceneView
-			= VTX::Core::MVC::MvcManager::get().getView<View::UI::Widget::PathSceneView>( _target->getPathPtr(),
+			= VTX::MVC_MANAGER().getView<View::UI::Widget::PathSceneView>( _target->getPathPtr(),
 																						  ID::View::UI_SCENE_PATH );
 
 		pathSceneView->openRenameEditor( _target->getId() );

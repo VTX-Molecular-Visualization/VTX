@@ -6,7 +6,7 @@
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QtGlobal>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/old_app/selection/selection_enum.hpp>
 #include <app/old_app/selection/selection_manager.hpp>

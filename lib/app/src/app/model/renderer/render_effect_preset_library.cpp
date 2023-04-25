@@ -1,6 +1,6 @@
 #include "app/model/renderer/render_effect_preset_library.hpp"
 #include "app/action/renderer.hpp"
-#include "app/core/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/core/worker/worker_manager.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
@@ -91,7 +91,7 @@ namespace VTX::Model::Renderer
 		}
 
 		View::CallbackView<RenderEffectPreset, RenderEffectPresetLibrary> * const callbackView
-			= VTX::Core::MVC::MvcManager::get()
+			= VTX::MVC_MANAGER()
 				  .instantiateView<View::CallbackView<RenderEffectPreset, RenderEffectPresetLibrary>>(
 					  p_preset, VTX::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
 
@@ -108,7 +108,7 @@ namespace VTX::Model::Renderer
 	{
 		const RenderEffectPreset * const sourcePreset = _presets[ p_index ];
 		RenderEffectPreset * const		 copiedPreset
-			= VTX::Core::MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
+			= VTX::MVC_MANAGER().instantiateModel<RenderEffectPreset>();
 		copiedPreset->copyFrom( *sourcePreset );
 
 		copiedPreset->setName( getValidName( sourcePreset->getName() ) );
@@ -125,7 +125,7 @@ namespace VTX::Model::Renderer
 
 		if ( 0 <= p_index && p_index < _presets.size() )
 		{
-			VTX::Core::MVC::MvcManager::get().deleteView( _presets[ p_index ],
+			VTX::MVC_MANAGER().deleteView( _presets[ p_index ],
 														  VTX::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
 
 			removedPreset = _presets[ p_index ];
@@ -158,7 +158,7 @@ namespace VTX::Model::Renderer
 		const RenderEffectPreset * const presetToDelete = removePreset( p_index );
 
 		if ( presetToDelete != nullptr )
-			VTX::Core::MVC::MvcManager::get().deleteModel( presetToDelete );
+			VTX::MVC_MANAGER().deleteModel( presetToDelete );
 	}
 
 	int RenderEffectPresetLibrary::getPresetIndex( const RenderEffectPreset * const p_preset ) const
@@ -269,7 +269,7 @@ namespace VTX::Model::Renderer
 
 		while ( _presets.size() > 0 )
 		{
-			VTX::Core::MVC::MvcManager::get().deleteModel<RenderEffectPreset>( _presets.back() );
+			VTX::MVC_MANAGER().deleteModel<RenderEffectPreset>( _presets.back() );
 			_presets.pop_back();
 		}
 
@@ -316,7 +316,7 @@ namespace VTX::Model::Renderer
 	{
 		// Preset default
 		RenderEffectPreset * const defaultPreset
-			= VTX::Core::MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
+			= VTX::MVC_MANAGER().instantiateModel<RenderEffectPreset>();
 		defaultPreset->setName( "Default" );
 		setQuickAccessToPreset( *defaultPreset, true );
 		addPreset( defaultPreset, false, false );
@@ -328,7 +328,7 @@ namespace VTX::Model::Renderer
 
 		// Preset Sketch
 		RenderEffectPreset * const presetSketch
-			= VTX::Core::MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
+			= VTX::MVC_MANAGER().instantiateModel<RenderEffectPreset>();
 		presetSketch->setName( "Sketch" );
 		presetSketch->setShading( VTX::Renderer::SHADING::FLAT_COLOR );
 		presetSketch->enableSSAO( true );

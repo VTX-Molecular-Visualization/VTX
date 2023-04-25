@@ -9,7 +9,7 @@
 #include <app/action/renderer.hpp>
 #include <app/action/setting.hpp>
 #include <app/core/event/vtx_event.hpp>
-#include <app/core/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/old_app/id.hpp>
 #include <app/old_app/setting.hpp>
@@ -39,7 +39,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		{
 			_refreshIconColors();
 
-			VTX::Core::MVC::MvcManager::get().deleteView( &VTX_RENDER_EFFECT(),
+			VTX::MVC_MANAGER().deleteView( &VTX_RENDER_EFFECT(),
 														  ID::View::UI_CAMERA_QUICK_ACCESS_ON_RENDER_EFFECT );
 
 			_attachViewOnAppliedRenderEffect();
@@ -164,7 +164,7 @@ namespace VTX::UI::Widget::Render::Overlay
 
 	void CameraQuickAccess::_attachViewOnAppliedRenderEffect()
 	{
-		RenderEffectView * const view = VTX::Core::MVC::MvcManager::get().instantiateView<RenderEffectView>(
+		RenderEffectView * const view = VTX::MVC_MANAGER().instantiateView<RenderEffectView>(
 			&VTX_RENDER_EFFECT(), ID::View::UI_CAMERA_QUICK_ACCESS_ON_RENDER_EFFECT );
 
 		view->setCallback( this, &CameraQuickAccess::_onRenderEffectChange );
