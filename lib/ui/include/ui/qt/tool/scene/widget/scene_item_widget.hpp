@@ -10,7 +10,7 @@
 #include <QMouseEvent>
 #include <QTreeWidget>
 #include <app/old_app/generic/base_scene_item.hpp>
-#include <app/model/base_model.hpp>
+#include <app/core/model/base_model.hpp>
 #include <vector>
 
 namespace VTX::Generic
@@ -41,15 +41,15 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		virtual void updatePosInSceneHierarchy( const int p_position );
 
-		virtual const Model::ID &			   getModelID() const		= 0;
+		virtual const App::Core::Model::ID &			   getModelID() const		= 0;
 		virtual const Generic::BaseSceneItem & getBaseSceneItem() const = 0;
 		virtual QTreeWidgetItem *			   getLastVisibleItem();
 
-		virtual bool containsModel( const Model::BaseModel & p_model ) const { return p_model.getId() == getModelID(); }
-		virtual std::vector<Model::ID> getAllItemsFrom( const Model::BaseModel & p_model ) const;
-		virtual std::vector<Model::ID> getAllItemsTo( const Model::BaseModel & p_model ) const;
+		virtual bool containsModel( const App::Core::Model::BaseModel & p_model ) const { return p_model.getId() == getModelID(); }
+		virtual std::vector<App::Core::Model::ID> getAllItemsFrom( const App::Core::Model::BaseModel & p_model ) const;
+		virtual std::vector<App::Core::Model::ID> getAllItemsTo( const App::Core::Model::BaseModel & p_model ) const;
 
-		void openRenameEditor( const Model::ID & p_modelID );
+		void openRenameEditor( const App::Core::Model::ID & p_modelID );
 
 	  protected:
 		SceneItemWidget( QWidget * p_parent );
@@ -86,11 +86,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		virtual bool _itemCanBeRenamed( const QTreeWidgetItem * p_item );
 
-		void _refreshCurrentItemInSelection( const Model::BaseModel * const p_obj );
+		void _refreshCurrentItemInSelection( const App::Core::Model::BaseModel * const p_obj );
 
-		Model::ID				  _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;
-		virtual QTreeWidgetItem * _findItemFromModelID( const Model::ID & p_id ) const;
-		QTreeWidgetItem * _findItemFromModelIDRecursive( QTreeWidgetItem & p_parent, const Model::ID & p_id ) const;
+		App::Core::Model::ID				  _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;
+		virtual QTreeWidgetItem * _findItemFromModelID( const App::Core::Model::ID & p_id ) const;
+		QTreeWidgetItem * _findItemFromModelIDRecursive( QTreeWidgetItem & p_parent, const App::Core::Model::ID & p_id ) const;
 		bool			  _getItemExpandState( const QTreeWidgetItem & p_item ) const;
 
 		QMimeData * _getDataForDrag() const override;

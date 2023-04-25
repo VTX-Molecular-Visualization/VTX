@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_CATEGORY__
 #define __VTX_MODEL_CATEGORY__
 
-#include "app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
 #include "category_enum.hpp"
 #include <util/types.hpp>
 #include "app/old_app/generic/base_colorable.hpp"
@@ -17,7 +17,7 @@ namespace VTX::Model
 	class Molecule;
 
 	class Category :
-		public BaseModel,
+		public App::Core::Model::BaseModel,
 		public Generic::BaseColorable,
 		public Generic::BaseVisible,
 		public Generic::BaseRepresentable

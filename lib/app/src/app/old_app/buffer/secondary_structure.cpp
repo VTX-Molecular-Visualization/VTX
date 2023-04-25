@@ -64,7 +64,7 @@ namespace VTX::Buffer
 
 		// Id.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::RESIDUE_ID );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::RESIDUE_ID, _vboIds, sizeof( Model::ID ) );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::RESIDUE_ID, _vboIds, sizeof( App::Core::Model::ID ) );
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::RESIDUE_ID, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::RESIDUE_ID, ATTRIBUTE_LOCATION::RESIDUE_ID );
 	}
@@ -99,7 +99,7 @@ namespace VTX::Buffer
 		_updateBuffer( _vboSelections, p_selections );
 	}
 
-	void SecondaryStructure::setIds( const std::vector<Model::ID> & p_ids ) { _updateBuffer( _vboIds, p_ids ); }
+	void SecondaryStructure::setIds( const std::vector<App::Core::Model::ID> & p_ids ) { _updateBuffer( _vboIds, p_ids ); }
 
 	void SecondaryStructure::setIndices( const std::vector<uint> & p_indices ) { _updateBuffer( _ibo, p_indices ); }
 

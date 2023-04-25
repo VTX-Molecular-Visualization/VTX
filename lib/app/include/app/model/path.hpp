@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_PATH__
 #define __VTX_MODEL_PATH__
 
-#include "app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
 #include "app/old_app/generic/base_scene_item.hpp"
 #include "app/old_app/path/path_enum.hpp"
 #include "app/old_app/setting.hpp"
@@ -13,7 +13,7 @@ namespace VTX
 	namespace Model
 	{
 		class Viewpoint;
-		class Path : public BaseModel, public Generic::BaseSceneItem
+		class Path : public App::Core::Model::BaseModel, public Generic::BaseSceneItem
 		{
 			VTX_MODEL
 
@@ -22,7 +22,7 @@ namespace VTX
 			using VectorViewpointPtr = std::vector<ViewpointPtr>;
 
 			// BaseSceneItem
-			const Model::ID & getModelID() const override { return getId(); }
+			const App::Core::Model::ID & getModelID() const override { return getId(); }
 
 			void addViewpoint( const ViewpointPtr p_viewpoint );
 			void removeViewpoint( const ViewpointPtr p_viewpoint );

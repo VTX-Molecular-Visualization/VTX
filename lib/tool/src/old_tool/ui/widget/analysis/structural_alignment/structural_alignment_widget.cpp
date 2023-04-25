@@ -46,7 +46,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 	{
 		bool staticMoleculeIsTicked = _moleculeList->getTickedModel() == p_result.staticMolecule;
 
-		const std::vector<Model::BaseModel *> notTickedModels = _moleculeList->getNotTickedModels();
+		const std::vector<App::Core::Model::BaseModel *> notTickedModels = _moleculeList->getNotTickedModels();
 		bool								  mobileMoleculeIsInList
 			= std::find( notTickedModels.begin(), notTickedModels.end(), p_result.mobileMolecule )
 			  != notTickedModels.end();

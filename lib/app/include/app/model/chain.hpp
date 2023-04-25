@@ -1,13 +1,13 @@
 #ifndef __VTX_MODEL_CHAIN__
 #define __VTX_MODEL_CHAIN__
 
-#include "app/model/base_model.hpp"
-#include "category_enum.hpp"
+#include "app/core/model/base_model.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
+#include "category_enum.hpp"
 #include <iostream>
 #include <string>
 #include <util/types.hpp>
@@ -18,7 +18,7 @@ namespace VTX
 	{
 		class Molecule;
 		class Chain :
-			public BaseModel,
+			public App::Core::Model::BaseModel,
 			public Generic::BaseColorable,
 			public Generic::BaseVisible,
 			public Generic::BaseRepresentable

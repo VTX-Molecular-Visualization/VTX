@@ -14,14 +14,14 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	void SceneItemSelectionModel::select( const QItemSelection &			  selection,
 										  QItemSelectionModel::SelectionFlags command )
 	{
-		std::vector<Model::ID> selectionIds = std::vector<Model::ID>();
+		std::vector<App::Core::Model::ID> selectionIds = std::vector<App::Core::Model::ID>();
 		_fillVectorWithItemIds( selection, selectionIds );
 
 		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
 		if ( command == QItemSelectionModel::NoUpdate )
 		{
-			std::vector<Model::ID>::const_iterator it = selectionIds.begin();
+			std::vector<App::Core::Model::ID>::const_iterator it = selectionIds.begin();
 
 			while ( it != selectionIds.end() )
 			{
@@ -49,12 +49,12 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 				assert( sceneWidget.getSceneItemWidgets().size() > 0 );
 
-				const Model::BaseModel * firstSceneItem = _getModel( *sceneWidget.getSceneItemWidgets()[ 0 ] );
+				const App::Core::Model::BaseModel * firstSceneItem = _getModel( *sceneWidget.getSceneItemWidgets()[ 0 ] );
 
 				if ( selectionModel.getCurrentObject() != nullptr )
 				{
-					const Model::BaseModel * const currentObject = selectionModel.getCurrentObject();
-					const Model::BaseModel *	   newCurrentSelectedItem
+					const App::Core::Model::BaseModel * const currentObject = selectionModel.getCurrentObject();
+					const App::Core::Model::BaseModel *	   newCurrentSelectedItem
 						= currentIndex().isValid() ? _getModel( currentIndex() ) : firstSceneItem;
 
 					const SceneItemWidget * const currentSceneItemObject
@@ -62,8 +62,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 					const SceneItemWidget * const newSceneItemObject
 						= sceneWidget.getSceneItemWidgetFromModel( *newCurrentSelectedItem );
 
-					const Model::ID & firstObjectId	 = currentSceneItemObject->getModelID();
-					const Model::ID & secondObjectId = newSceneItemObject->getModelID();
+					const App::Core::Model::ID & firstObjectId	 = currentSceneItemObject->getModelID();
+					const App::Core::Model::ID & secondObjectId = newSceneItemObject->getModelID();
 
 					if ( firstObjectId != secondObjectId )
 					{
@@ -72,7 +72,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 						bool startAddToSelection = false;
 						for ( const SceneItemWidget * const sceneWidget : sceneWidget.getSceneItemWidgets() )
 						{
-							const Model::ID & itemId = sceneWidget->getModelID();
+							const App::Core::Model::ID & itemId = sceneWidget->getModelID();
 
 							if ( itemId == firstObjectId )
 							{
@@ -132,7 +132,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		}
 		else
 		{
-			const Model::ID &  modelId		  = index.data( Qt::UserRole ).value<VTX::Model::ID>();
+			const App::Core::Model::ID &  modelId		  = index.data( Qt::UserRole ).value<VTX::App::Core::Model::ID>();
 			Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
 			if ( command & QItemSelectionModel::Select )
@@ -158,10 +158,10 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void SceneItemSelectionModel::_appendAllSubitemsBeforeObjectInSelectionVector(
 		const SceneItemWidget &	 p_sceneItemWidget,
-		const Model::BaseModel & p_itemFrom,
-		std::vector<Model::ID> & p_selectionVector ) const
+		const App::Core::Model::BaseModel & p_itemFrom,
+		std::vector<App::Core::Model::ID> & p_selectionVector ) const
 	{
-		const std::vector<Model::ID> newItems = p_sceneItemWidget.getAllItemsTo( p_itemFrom );
+		const std::vector<App::Core::Model::ID> newItems = p_sceneItemWidget.getAllItemsTo( p_itemFrom );
 
 		const size_t startIndex = p_selectionVector.size();
 		p_selectionVector.resize( p_selectionVector.size() + newItems.size() );
@@ -170,10 +170,10 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void SceneItemSelectionModel::_appendAllSubitemsAfterObjectInSelectionVector(
 		const SceneItemWidget &	 p_sceneItemWidget,
-		const Model::BaseModel & p_itemFrom,
-		std::vector<Model::ID> & p_selectionVector ) const
+		const App::Core::Model::BaseModel & p_itemFrom,
+		std::vector<App::Core::Model::ID> & p_selectionVector ) const
 	{
-		const std::vector<Model::ID> newItems = p_sceneItemWidget.getAllItemsFrom( p_itemFrom );
+		const std::vector<App::Core::Model::ID> newItems = p_sceneItemWidget.getAllItemsFrom( p_itemFrom );
 
 		const size_t startIndex = p_selectionVector.size();
 		p_selectionVector.resize( p_selectionVector.size() + newItems.size() );
@@ -181,7 +181,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	}
 
 	void SceneItemSelectionModel::_fillVectorWithItemIds( const QItemSelection &   p_selection,
-														  std::vector<Model::ID> & p_vectorId ) const
+														  std::vector<App::Core::Model::ID> & p_vectorId ) const
 	{
 		for ( const QItemSelectionRange & modelRange : p_selection )
 		{
@@ -189,14 +189,14 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 			for ( const QModelIndex & modelIndex : modelRange.indexes() )
 			{
-				const Model::ID & modelId = modelIndex.data( Qt::UserRole ).value<VTX::Model::ID>();
+				const App::Core::Model::ID & modelId = modelIndex.data( Qt::UserRole ).value<VTX::App::Core::Model::ID>();
 				p_vectorId.emplace_back( modelId );
 			}
 		}
 	}
 
 	void SceneItemSelectionModel::_selectModelAction( Model::Selection & p_selectionModel,
-													  const Model::ID &	 p_modelId,
+													  const App::Core::Model::ID &	 p_modelId,
 													  const bool		 p_appendToSelection ) const
 	{
 		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( p_modelId );
@@ -244,7 +244,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	}
 
 	void SceneItemSelectionModel::_unselectModelAction( Model::Selection & p_selectionModel,
-														const Model::ID &  p_modelId ) const
+														const App::Core::Model::ID &  p_modelId ) const
 	{
 		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( p_modelId );
 
@@ -275,17 +275,17 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		}
 	}
 
-	Model::BaseModel * SceneItemSelectionModel::_getModel( const QModelIndex & p_modelIndex ) const
+	App::Core::Model::BaseModel * SceneItemSelectionModel::_getModel( const QModelIndex & p_modelIndex ) const
 	{
-		const VTX::Model::ID & modelId = p_modelIndex.data( SceneItemWidget::MODEL_ID_ROLE ).value<VTX::Model::ID>();
-		Model::BaseModel &	   model   = VTX::MVC_MANAGER().getModel<Model::BaseModel>( modelId );
+		const VTX::App::Core::Model::ID & modelId = p_modelIndex.data( SceneItemWidget::MODEL_ID_ROLE ).value<VTX::App::Core::Model::ID>();
+		App::Core::Model::BaseModel &	   model   = VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( modelId );
 
 		return &model;
 	}
-	Model::BaseModel * SceneItemSelectionModel::_getModel( const SceneItemWidget & p_sceneItem ) const
+	App::Core::Model::BaseModel * SceneItemSelectionModel::_getModel( const SceneItemWidget & p_sceneItem ) const
 	{
-		const VTX::Model::ID & modelId = p_sceneItem.getModelID();
-		Model::BaseModel &	   model   = VTX::MVC_MANAGER().getModel<Model::BaseModel>( modelId );
+		const VTX::App::Core::Model::ID & modelId = p_sceneItem.getModelID();
+		App::Core::Model::BaseModel &	   model   = VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( modelId );
 
 		return &model;
 	}

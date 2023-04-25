@@ -1,11 +1,11 @@
 #ifndef __VTX_MODEL_SECONDARY_STRUCTURE__
 #define __VTX_MODEL_SECONDARY_STRUCTURE__
 
-#include "app/model/base_model_3d.hpp"
+#include "app/core/model/base_model_3d.hpp"
+#include "app/model/selection.hpp"
 #include "app/old_app/buffer/secondary_structure.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
-#include "app/model/selection.hpp"
 #include <string>
 #include <vector>
 
@@ -14,7 +14,7 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class SecondaryStructure : public BaseModel3D<Buffer::SecondaryStructure>
+		class SecondaryStructure : public App::Core::Model::BaseModel3D<Buffer::SecondaryStructure>
 		{
 			VTX_MODEL
 
@@ -71,7 +71,7 @@ namespace VTX
 			std::vector<Color::Rgba> _bufferColors		 = std::vector<Color::Rgba>();
 			std::vector<uint>		 _bufferVisibilities = std::vector<uint>();
 			std::vector<uint>		 _bufferSelections	 = std::vector<uint>();
-			std::vector<uint>		 _bufferIds			 = std::vector<Model::ID>();
+			std::vector<uint>		 _bufferIds			 = std::vector<App::Core::Model::ID>();
 			std::vector<uint>		 _bufferIndices		 = std::vector<uint>();
 
 			std::map<uint, uint> _residueToIndices	 = std::map<uint, uint>();
@@ -81,14 +81,14 @@ namespace VTX
 			~SecondaryStructure() = default;
 
 			void _checkOrientationAndFlip( std::vector<Vec3f> & p_directions );
-			void _tryConstruct( const uint						 p_chainIdx,
-								const std::vector<uint> &		 p_residueIndex,
-								const std::vector<Vec4f> &		 p_caPositions,
-								std::vector<Vec3f> &			 p_caODirections,
-								const std::vector<uint> &		 p_ssTypes,
-								const std::vector<Color::Rgba> & p_colors,
-								const std::vector<uint> &		 p_visibilities,
-								const std::vector<Model::ID> &	 p_ids );
+			void _tryConstruct( const uint								  p_chainIdx,
+								const std::vector<uint> &				  p_residueIndex,
+								const std::vector<Vec4f> &				  p_caPositions,
+								std::vector<Vec3f> &					  p_caODirections,
+								const std::vector<uint> &				  p_ssTypes,
+								const std::vector<Color::Rgba> &		  p_colors,
+								const std::vector<uint> &				  p_visibilities,
+								const std::vector<App::Core::Model::ID> & p_ids );
 		};
 
 	} // namespace Model

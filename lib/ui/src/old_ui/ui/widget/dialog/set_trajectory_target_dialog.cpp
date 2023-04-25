@@ -30,8 +30,8 @@ namespace VTX::UI::Widget::Dialog
 		_modelLabel = nullptr;
 	}
 
-	Model::BaseModel * const MoleculeListWidget::ModelFieldLine::getModel() const { return _linkedMolecule; };
-	void					 MoleculeListWidget::ModelFieldLine::setModel( Model::BaseModel * const p_model )
+	App::Core::Model::BaseModel * const MoleculeListWidget::ModelFieldLine::getModel() const { return _linkedMolecule; };
+	void					 MoleculeListWidget::ModelFieldLine::setModel( App::Core::Model::BaseModel * const p_model )
 	{
 		_linkedMolecule = static_cast<Model::Molecule *>( p_model );
 

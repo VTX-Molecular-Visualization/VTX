@@ -216,7 +216,7 @@ namespace VTX::UI::Widget::Inspector
 
 			const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-			for ( const Model::ID & modelID : selectionModel.getItems() )
+			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
 				const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
 
@@ -337,7 +337,7 @@ namespace VTX::UI::Widget::Inspector
 		{
 		case INSPECTOR_TYPE::MOLECULE:
 		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
+			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
 				const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
 				if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
@@ -350,7 +350,7 @@ namespace VTX::UI::Widget::Inspector
 		break;
 		case INSPECTOR_TYPE::CHAIN:
 		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
+			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
 				Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
@@ -366,7 +366,7 @@ namespace VTX::UI::Widget::Inspector
 		break;
 		case INSPECTOR_TYPE::RESIDUE:
 		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
+			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
 				Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
@@ -387,7 +387,7 @@ namespace VTX::UI::Widget::Inspector
 		break;
 		case INSPECTOR_TYPE::ATOM:
 		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
+			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
 				Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
@@ -413,7 +413,7 @@ namespace VTX::UI::Widget::Inspector
 		break;
 		case INSPECTOR_TYPE::VIEWPOINT:
 		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
+			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
 				Model::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<Model::Viewpoint>( modelID );
 				_addTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, &viewpoint );
@@ -422,7 +422,7 @@ namespace VTX::UI::Widget::Inspector
 		break;
 			// case INSPECTOR_TYPE::MEASURE_DISTANCE:
 			//{
-			//	for ( const Model::ID & modelID : selectionModel.getItems() )
+			//	for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			//	{
 			//		Model::Measurement::Distance & distanceModel
 			//			= VTX::MVC_MANAGER().getModel<Model::Measurement::Distance>( modelID );
@@ -433,7 +433,7 @@ namespace VTX::UI::Widget::Inspector
 			// break;
 			// case INSPECTOR_TYPE::MEASURE_ANGLE:
 			//{
-			//	for ( const Model::ID & modelID : selectionModel.getItems() )
+			//	for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			//	{
 			//		Model::Measurement::Angle & angleModel
 			//			= VTX::MVC_MANAGER().getModel<Model::Measurement::Angle>( modelID );
@@ -443,7 +443,7 @@ namespace VTX::UI::Widget::Inspector
 			// break;
 			// case INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE:
 			//{
-			//	for ( const Model::ID & modelID : selectionModel.getItems() )
+			//	for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			//	{
 			//		Model::Measurement::DihedralAngle & dihedralAngleModel
 			//			= VTX::MVC_MANAGER().getModel<Model::Measurement::DihedralAngle>( modelID );
@@ -456,7 +456,7 @@ namespace VTX::UI::Widget::Inspector
 			// break;
 			// case INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE:
 			//{
-			//	for ( const Model::ID & modelID : selectionModel.getItems() )
+			//	for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			//	{
 			//		Model::Measurement::Distance & distanceModel
 			//			= VTX::MVC_MANAGER().getModel<Model::Measurement::Distance>( modelID );

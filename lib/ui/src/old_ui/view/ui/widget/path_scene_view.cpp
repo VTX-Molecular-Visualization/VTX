@@ -19,7 +19,7 @@
 namespace VTX::View::UI::Widget
 {
 	PathSceneView::PathSceneView( Model::Path * const p_model, QWidget * const p_parent ) :
-		View::BaseView<Model::Path>( p_model ), SceneItemWidget( p_parent )
+		App::Core::View::BaseView<Model::Path>( p_model ), SceneItemWidget( p_parent )
 	{
 		_registerEvent( VTX::App::Event::Global::VIEWPOINT_ADDED );
 		_registerEvent( VTX::App::Event::Global::VIEWPOINT_REMOVED );
@@ -55,7 +55,7 @@ namespace VTX::View::UI::Widget
 		}
 	}
 
-	bool PathSceneView::containsModel( const Model::BaseModel & p_model ) const
+	bool PathSceneView::containsModel( const App::Core::Model::BaseModel & p_model ) const
 	{
 		const VTX::ID::VTX_ID & modelTypeID = p_model.getTypeId();
 		const Model::Path *		linkedPath;
@@ -70,7 +70,7 @@ namespace VTX::View::UI::Widget
 		return linkedPath == _model;
 	}
 
-	std::vector<Model::ID> PathSceneView::getAllItemsFrom( const Model::BaseModel & p_model ) const
+	std::vector<App::Core::Model::ID> PathSceneView::getAllItemsFrom( const App::Core::Model::BaseModel & p_model ) const
 	{
 		const ID::VTX_ID & typeID = p_model.getTypeId();
 
@@ -79,7 +79,7 @@ namespace VTX::View::UI::Widget
 			return SceneItemWidget::getAllItemsFrom( p_model );
 		}
 
-		std::vector<Model::ID> res;
+		std::vector<App::Core::Model::ID> res;
 
 		if ( p_model.getTypeId() == VTX::ID::Model::MODEL_VIEWPOINT )
 		{
@@ -95,7 +95,7 @@ namespace VTX::View::UI::Widget
 
 		return res;
 	}
-	std::vector<Model::ID> PathSceneView::getAllItemsTo( const Model::BaseModel & p_model ) const
+	std::vector<App::Core::Model::ID> PathSceneView::getAllItemsTo( const App::Core::Model::BaseModel & p_model ) const
 	{
 		const ID::VTX_ID & typeID = p_model.getTypeId();
 
@@ -104,7 +104,7 @@ namespace VTX::View::UI::Widget
 			return SceneItemWidget::getAllItemsFrom( p_model );
 		}
 
-		std::vector<Model::ID> res;
+		std::vector<App::Core::Model::ID> res;
 
 		if ( p_model.getTypeId() == VTX::ID::Model::MODEL_VIEWPOINT )
 		{
@@ -190,7 +190,7 @@ namespace VTX::View::UI::Widget
 	{
 		if ( p_column == 0 )
 		{
-			const Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<Model::ID>();
+			const App::Core::Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<App::Core::Model::ID>();
 			if ( VTX::MVC_MANAGER().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
 				Model::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<Model::Viewpoint>( idTarget );
@@ -222,7 +222,7 @@ namespace VTX::View::UI::Widget
 	{
 		if ( p_column == 0 )
 		{
-			const Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<Model::ID>();
+			const App::Core::Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<App::Core::Model::ID>();
 			if ( VTX::MVC_MANAGER().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
 				Model::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<Model::Viewpoint>( idTarget );
@@ -240,7 +240,7 @@ namespace VTX::View::UI::Widget
 		if ( targetedItem == nullptr )
 			return;
 
-		const Model::ID & itemID = _getModelIDFromItem( *targetedItem );
+		const App::Core::Model::ID & itemID = _getModelIDFromItem( *targetedItem );
 
 		const QPoint globalClicPos = mapToGlobal( p_clicPos );
 
@@ -294,12 +294,12 @@ namespace VTX::View::UI::Widget
 
 	QTreeWidgetItem * PathSceneView::_itemFromViewpoint( const Model::Viewpoint & p_viewpoint ) const
 	{
-		const Model::ID & viewpointID = p_viewpoint.getId();
+		const App::Core::Model::ID & viewpointID = p_viewpoint.getId();
 
 		for ( int i = 0; i < topLevelItem( 0 )->childCount(); i++ )
 		{
 			QTreeWidgetItem * const item   = topLevelItem( 0 )->child( i );
-			const Model::ID &		itemID = item->data( 0, MODEL_ID_ROLE ).value<Model::ID>();
+			const App::Core::Model::ID &		itemID = item->data( 0, MODEL_ID_ROLE ).value<App::Core::Model::ID>();
 			if ( viewpointID == itemID )
 				return item;
 		}
@@ -312,7 +312,7 @@ namespace VTX::View::UI::Widget
 		QTreeWidgetItem * const viewpointItem = new QTreeWidgetItem();
 		viewpointItem->setFlags( viewpointItem->flags() | Qt::ItemFlag::ItemIsEditable );
 
-		viewpointItem->setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( p_viewpoint->getId() ) );
+		viewpointItem->setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::App::Core::Model::ID>( p_viewpoint->getId() ) );
 		viewpointItem->setText( 0, QString::fromStdString( p_viewpoint->getDefaultName() ) );
 		viewpointItem->setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( p_viewpoint->getTypeId() ) );
 

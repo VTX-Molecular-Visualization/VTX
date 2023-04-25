@@ -1,7 +1,7 @@
 #ifndef __MODEL_MESH_TRIANGLE__
 #define __MODEL_MESH_TRIANGLE__
 
-#include "app/model/base_model_3d.hpp"
+#include "app/core/model/base_model_3d.hpp"
 #include "app/old_app/buffer/mesh_triangle.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include <util/types.hpp>
@@ -12,13 +12,13 @@ namespace VTX
 {
 	namespace Model
 	{
-		class MeshTriangle : public BaseModel3D<Buffer::MeshTriangle>, public Generic::BaseSceneItem
+		class MeshTriangle : public App::Core::Model::BaseModel3D<Buffer::MeshTriangle>, public Generic::BaseSceneItem
 		{
 			VTX_MODEL
 
 		  public:
 			// BaseSceneItem
-			const Model::ID & getModelID() const override { return getId(); }
+			const App::Core::Model::ID & getModelID() const override { return getId(); }
 
 			inline const std::vector<Vec4f> & getVertices() const { return _vertices; }
 			inline std::vector<Vec4f> &		  getVertices() { return _vertices; }
@@ -75,7 +75,7 @@ namespace VTX
 			std::vector<Color::Rgba> _colors;
 			std::vector<uint>		 _visibilities;
 			std::vector<uint>		 _selections;
-			std::vector<Model::ID>	 _ids;
+			std::vector<App::Core::Model::ID>	 _ids;
 			std::vector<uint>		 _indices;
 		};
 	} // namespace Model

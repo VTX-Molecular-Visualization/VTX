@@ -2,7 +2,7 @@
 #define __VTX_MODEL_REPRESENTATION_LIBRARY__
 
 #include "app/core/event/vtx_event.hpp"
-#include "app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
 #include "app/model/category_enum.hpp"
 #include "app/mvc.hpp"
 #include "representation.hpp"
@@ -10,7 +10,7 @@
 
 namespace VTX::Model::Representation
 {
-	class RepresentationLibrary : public BaseModel
+	class RepresentationLibrary : public App::Core::Model::BaseModel
 	{
 		VTX_MODEL
 

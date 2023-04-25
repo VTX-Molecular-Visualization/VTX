@@ -12,7 +12,7 @@ namespace VTX::View::UI::Widget::Representation
 {
 	RepresentationLibraryView::RepresentationLibraryView( Model::Representation::RepresentationLibrary * const p_model,
 														  QWidget * const p_parent ) :
-		View::BaseView<Model::Representation::RepresentationLibrary>( p_model ),
+		App::Core::View::BaseView<Model::Representation::RepresentationLibrary>( p_model ),
 		VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
 		_registerEvent( VTX::App::Event::Global::REPRESENTATION_ADDED );

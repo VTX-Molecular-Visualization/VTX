@@ -10,7 +10,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	RepresentationBlock::RepresentationBlock(
 		Model::Representation::RepresentationLibrary * const _representationLibrary,
 		QWidget *											 p_parent ) :
-		View::BaseView<Model::Representation::RepresentationLibrary>( _representationLibrary ),
+		App::Core::View::BaseView<Model::Representation::RepresentationLibrary>( _representationLibrary ),
 		MenuToolBlockWidget( p_parent )
 	{
 	}

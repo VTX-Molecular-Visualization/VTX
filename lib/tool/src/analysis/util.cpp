@@ -111,7 +111,7 @@ namespace VTX::Tool::Analysis::Util
 		{
 			for ( const Model::Selection::PairResidueIds & residuePair : chainPair.second )
 			{
-				for ( const Model::ID & atomIndex : residuePair.second )
+				for ( const App::Core::Model::ID & atomIndex : residuePair.second )
 				{
 					p_positions[ counter ] = atomPositionFrame[ atomIndex ];
 					counter++;

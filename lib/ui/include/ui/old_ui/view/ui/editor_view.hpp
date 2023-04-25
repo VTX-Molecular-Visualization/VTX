@@ -4,9 +4,9 @@
 #include "ui/old_ui/ui/widget/base_manual_widget.hpp"
 #include "ui/old_ui/view/ui/editor_view.hpp"
 #include <app/core/event/vtx_event.hpp>
+#include <app/core/view/base_view.hpp>
+#include <app/core/view/callback_view.hpp>
 #include <app/mvc.hpp>
-#include <app/view/base_view.hpp>
-#include <app/view/callback_view.hpp>
 
 namespace VTX::View::UI
 {
@@ -28,7 +28,8 @@ namespace VTX::View::UI
 
 			_target = p_target;
 
-			_view = VTX::MVC_MANAGER().instantiateView<CallbackView<T, EditorView>>( p_target, _viewId );
+			_view
+				= VTX::MVC_MANAGER().instantiateView<App::Core::View::CallbackView<T, EditorView>>( p_target, _viewId );
 			_view->setCallback( this, &EditorView::_catchModelEvent );
 		}
 
@@ -36,9 +37,9 @@ namespace VTX::View::UI
 		virtual void _catchModelEvent( const VTX::App::Core::Event::VTXEvent * const p_event ) = 0;
 
 	  private:
-		const ID::VTX_ID			  _viewId;
-		CallbackView<T, EditorView> * _view	  = nullptr;
-		const T *					  _target = nullptr;
+		const ID::VTX_ID							   _viewId;
+		App::Core::View::CallbackView<T, EditorView> * _view   = nullptr;
+		const T *									   _target = nullptr;
 	};
 
 } // namespace VTX::View::UI

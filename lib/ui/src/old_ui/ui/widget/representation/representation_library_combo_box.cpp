@@ -3,7 +3,7 @@
 #include <app/model/representation/representation_library.hpp>
 #include <app/mvc.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
-#include <app/view/callback_view.hpp>
+#include <app/core/view/callback_view.hpp>
 
 namespace VTX::UI::Widget::Representation
 {
@@ -25,10 +25,10 @@ namespace VTX::UI::Widget::Representation
 		BaseManualWidget::_setupUi( p_name );
 		_fillItemList();
 
-		View::CallbackView<Model::Representation::RepresentationLibrary, RepresentationLibraryComboBox> * const view
+		App::Core::View::CallbackView<Model::Representation::RepresentationLibrary, RepresentationLibraryComboBox> * const view
 			= VTX::MVC_MANAGER()
 				  .instantiateView<
-					  View::CallbackView<Model::Representation::RepresentationLibrary, RepresentationLibraryComboBox>>(
+					  App::Core::View::CallbackView<Model::Representation::RepresentationLibrary, RepresentationLibraryComboBox>>(
 					  &Model::Representation::RepresentationLibrary::get(), _viewID );
 
 		view->setCallback( this, &RepresentationLibraryComboBox::_onRepresentationLibraryChange );

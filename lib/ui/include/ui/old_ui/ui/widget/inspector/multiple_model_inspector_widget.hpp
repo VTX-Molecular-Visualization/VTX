@@ -8,16 +8,16 @@
 #include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/event/model.hpp>
-#include <app/view/callback_view.hpp>
+#include <app/core/view/callback_view.hpp>
 #include <type_traits>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
 {
-	template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+	template<typename T, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, T>::value>>
 	class MultipleModelInspectorWidget : public InspectorItemWidget
 	{
-		using InspectorView = View::CallbackView<T, MultipleModelInspectorWidget<T>>;
+		using InspectorView = App::Core::View::CallbackView<T, MultipleModelInspectorWidget<T>>;
 
 	  public:
 		virtual void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override

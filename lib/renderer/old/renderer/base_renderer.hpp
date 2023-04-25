@@ -58,7 +58,7 @@ namespace VTX::Renderer
 
 		virtual const Vec2i getPickedIds( const uint, const uint ) const
 		{
-			return Vec2i( Model::ID_UNKNOWN, Model::ID_UNKNOWN );
+			return Vec2i( App::Core::Model::ID_UNKNOWN, App::Core::Model::ID_UNKNOWN );
 		}
 
 	  protected:

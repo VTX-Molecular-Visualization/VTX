@@ -61,8 +61,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 			const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> & castedEvent
 				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> &>( p_event );
 
-			Model::BaseModel & model
-				= VTX::MVC_MANAGER().getModel<Model::BaseModel>( castedEvent.get()->getModelID() );
+			App::Core::Model::BaseModel & model
+				= VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( castedEvent.get()->getModelID() );
 
 			SceneItemWidget * const sceneItemWidget = getSceneItemWidgetFromModel( model );
 
@@ -119,7 +119,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		}
 	}
 
-	int SceneWidget::_findItemIndex( const Model::ID & p_modelID, const int p_startIndex ) const
+	int SceneWidget::_findItemIndex( const App::Core::Model::ID & p_modelID, const int p_startIndex ) const
 	{
 		for ( int i = p_startIndex; i < _sceneWidgets.size(); i++ )
 		{
@@ -198,7 +198,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		return itemFound ? res : nullptr;
 	}
 
-	SceneItemWidget * SceneWidget::getSceneItemWidgetFromModel( const Model::BaseModel & p_model ) const
+	SceneItemWidget * SceneWidget::getSceneItemWidgetFromModel( const App::Core::Model::BaseModel & p_model ) const
 	{
 		for ( SceneItemWidget * const sceneItem : _sceneWidgets )
 		{
@@ -209,7 +209,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		return nullptr;
 	}
 
-	void SceneWidget::openRenameEditor( const Model::ID & p_itemID ) const
+	void SceneWidget::openRenameEditor( const App::Core::Model::ID & p_itemID ) const
 	{
 		for ( SceneItemWidget * const sceneWidget : _sceneWidgets )
 		{
@@ -247,7 +247,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		if ( _sceneWidgets.size() == 0 )
 			return 0;
 
-		const Model::ID & sceneDefaultPathID = VTXApp::get().getScene().getDefaultPath()->getId();
+		const App::Core::Model::ID & sceneDefaultPathID = VTXApp::get().getScene().getDefaultPath()->getId();
 
 		// TODO : Better management of section in scene view.
 		if ( p_item.getModelID() != sceneDefaultPathID )
@@ -385,7 +385,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		const MimeType::ModelData modelData = MimeType::getModelData( p_event->mimeData() );
 
-		std::vector<Model::ID> droppedModelIDs = std::vector<Model::ID>();
+		std::vector<App::Core::Model::ID> droppedModelIDs = std::vector<App::Core::Model::ID>();
 
 		if ( modelData.getTypeID() == ID::Model::MODEL_SELECTION )
 		{
@@ -393,7 +393,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 				= VTX::MVC_MANAGER().getModel<Model::Selection>( modelData.getModelID() );
 
 			droppedModelIDs.reserve( selection.getItems().size() );
-			for ( const Model::ID & id : selection.getItems() )
+			for ( const App::Core::Model::ID & id : selection.getItems() )
 			{
 				droppedModelIDs.emplace_back( id );
 			}
@@ -407,7 +407,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		std::vector<const Generic::BaseSceneItem *> droppedItems = std::vector<const Generic::BaseSceneItem *>();
 		droppedItems.reserve( droppedModelIDs.size() );
 
-		for ( const Model::ID & droppedModelId : droppedModelIDs )
+		for ( const App::Core::Model::ID & droppedModelId : droppedModelIDs )
 		{
 			SceneItemWidget * sceneItemWidget = nullptr;
 			int				  sceneItemIndex  = 0;

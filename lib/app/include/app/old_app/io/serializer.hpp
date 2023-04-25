@@ -3,7 +3,7 @@
 
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
 #include "app/old_app/math/transform.hpp"
-#include "app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
 #include <magic_enum.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -111,7 +111,7 @@ namespace VTX
 
 			const Model::Atom * deserializeAtomReference( const nlohmann::json & ) const;
 
-			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
+			template<typename M, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>>
 			M * tryDeserializeModel( const nlohmann::json & p_json ) const
 			{
 				M * const model = VTX::MVC_MANAGER().instantiateModel<M>();

@@ -73,7 +73,7 @@ namespace VTX::View::UI::Widget
 		for ( const Model::Selection::PairMoleculeIds & pairMolecule : items )
 		{
 			QTreeWidgetItem * moleculeView = nullptr;
-			const Model::ID & moleculeId   = pairMolecule.first;
+			const App::Core::Model::ID & moleculeId   = pairMolecule.first;
 
 			moleculeView = _extractItemFromList( moleculeId, children );
 
@@ -122,7 +122,7 @@ namespace VTX::View::UI::Widget
 	{
 		_enableSignals( false );
 
-		const Model::ID &		   moleculeId = _getModelID( *p_moleculeItem );
+		const App::Core::Model::ID &		   moleculeId = _getModelID( *p_moleculeItem );
 		QList<QTreeWidgetItem *> * itemsPtr;
 
 		p_moleculeItem->setData( 0, SceneItemWidget::EXPAND_STATE_ROLE, true );
@@ -183,7 +183,7 @@ namespace VTX::View::UI::Widget
 	{
 		_enableSignals( false );
 
-		const Model::ID &		   chainId = _getModelID( *p_chainItem );
+		const App::Core::Model::ID &		   chainId = _getModelID( *p_chainItem );
 		QList<QTreeWidgetItem *> * itemsPtr;
 
 		p_chainItem->setData( 0, SceneItemWidget::EXPAND_STATE_ROLE, true );
@@ -201,7 +201,7 @@ namespace VTX::View::UI::Widget
 
 			const Model::Chain & chain = VTX::MVC_MANAGER().getModel<Model::Chain>( chainId );
 
-			const Model::ID &						moleculeId = chain.getMoleculePtr()->getId();
+			const App::Core::Model::ID &						moleculeId = chain.getMoleculePtr()->getId();
 			const uint								chainIndex = chain.getIndex();
 			const Model::Selection::MapResidueIds & residueIds
 				= _model->getMoleculesMap().at( moleculeId ).at( chainIndex );
@@ -248,7 +248,7 @@ namespace VTX::View::UI::Widget
 	{
 		_enableSignals( false );
 
-		const Model::ID & residueId = _getModelID( *p_residueItem );
+		const App::Core::Model::ID & residueId = _getModelID( *p_residueItem );
 
 		p_residueItem->setData( 0, SceneItemWidget::EXPAND_STATE_ROLE, true );
 
@@ -264,7 +264,7 @@ namespace VTX::View::UI::Widget
 			const Model::Residue &	residue	   = VTX::MVC_MANAGER().getModel<Model::Residue>( residueId );
 			const Model::Chain &	chain	   = *residue.getChainPtr();
 			const Model::Molecule & molecule   = *chain.getMoleculePtr();
-			const Model::ID			moleculeId = molecule.getId();
+			const App::Core::Model::ID			moleculeId = molecule.getId();
 
 			const uint residueIndex = residue.getIndex();
 			const uint chainIndex	= chain.getIndex();
@@ -304,14 +304,14 @@ namespace VTX::View::UI::Widget
 
 		p_item.setData( 0, SceneItemWidget::EXPAND_STATE_ROLE, false );
 
-		const Model::ID &				 id	   = _getModelID( p_item );
+		const App::Core::Model::ID &				 id	   = _getModelID( p_item );
 		QList<QTreeWidgetItem *> * const items = new QList( p_item.takeChildren() );
 		_mapLoadedItems.emplace( id, items );
 
 		_enableSignals( true );
 	}
 
-	QTreeWidgetItem * SelectionView::_extractItemFromList( const Model::ID &		  p_id,
+	QTreeWidgetItem * SelectionView::_extractItemFromList( const App::Core::Model::ID &		  p_id,
 														   QList<QTreeWidgetItem *> & p_list ) const
 	{
 		for ( int i = 0; i < p_list.size(); i++ )
@@ -336,7 +336,7 @@ namespace VTX::View::UI::Widget
 	{
 		if ( p_column == REMOVE_COLUMN_INDEX )
 		{
-			const Model::ID &  modelId		  = _getModelID( *p_item );
+			const App::Core::Model::ID &  modelId		  = _getModelID( *p_item );
 			ID::VTX_ID		   modelTypeId	  = VTX::MVC_MANAGER().getModelTypeID( modelId );
 			Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
@@ -364,7 +364,7 @@ namespace VTX::View::UI::Widget
 	}
 	void SelectionView::_onItemDoubleClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
 	{
-		const Model::ID &  modelId	   = _getModelID( *p_item );
+		const App::Core::Model::ID &  modelId	   = _getModelID( *p_item );
 		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
@@ -394,7 +394,7 @@ namespace VTX::View::UI::Widget
 		setMinimumHeight( 0 );
 		setMinimumWidth( sizeHintForColumn( 0 ) );
 
-		const Model::ID &  modelId	   = _getModelID( *p_item );
+		const App::Core::Model::ID &  modelId	   = _getModelID( *p_item );
 		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
@@ -427,7 +427,7 @@ namespace VTX::View::UI::Widget
 	{
 		p_item.setData( NAME_COLUMN_INDEX,
 						SceneItemWidget::MODEL_ID_ROLE,
-						QVariant::fromValue<VTX::Model::ID>( p_molecule.getId() ) );
+						QVariant::fromValue<VTX::App::Core::Model::ID>( p_molecule.getId() ) );
 		p_item.setText( NAME_COLUMN_INDEX, QString::fromStdString( p_molecule.getDefaultName() ) );
 		p_item.setIcon( NAME_COLUMN_INDEX, *VTX::UI::Style::IconConst::get().getModelSymbol( p_molecule.getTypeId() ) );
 
@@ -478,10 +478,10 @@ namespace VTX::View::UI::Widget
 		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::DontShowIndicator );
 	}
 
-	Model::ID SelectionView::_getModelID( const QTreeWidgetItem & p_item ) const
+	App::Core::Model::ID SelectionView::_getModelID( const QTreeWidgetItem & p_item ) const
 	{
 		const QVariant & dataID = p_item.data( NAME_COLUMN_INDEX, SceneItemWidget::MODEL_ID_ROLE );
-		return dataID.value<VTX::Model::ID>();
+		return dataID.value<VTX::App::Core::Model::ID>();
 	}
 	bool SelectionView::_getItemExpandState( const QTreeWidgetItem & p_item ) const
 	{

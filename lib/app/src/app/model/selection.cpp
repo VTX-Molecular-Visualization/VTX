@@ -1,11 +1,11 @@
 #include "app/model/selection.hpp"
-#include "app/mvc.hpp"
 #include "app/event.hpp"
 #include "app/model/atom.hpp"
 #include "app/model/category.hpp"
 #include "app/model/chain.hpp"
 #include "app/model/molecule.hpp"
 #include "app/model/residue.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/define.hpp"
 #include <unordered_set>
 #include <util/chrono.hpp>
@@ -15,7 +15,7 @@ namespace VTX::Model
 {
 	bool Selection::hasItemOfType( const VTX::ID::VTX_ID & p_id ) const
 	{
-		for ( const Model::ID & modelID : getItems() )
+		for ( const App::Core::Model::ID & modelID : getItems() )
 		{
 			if ( VTX::MVC_MANAGER().getModelTypeID( modelID ) == p_id )
 			{
@@ -376,12 +376,12 @@ namespace VTX::Model
 
 	bool Selection::isMoleculeSelected( const Molecule & p_molecule ) const
 	{
-		const ID & id = p_molecule.getId();
+		const App::Core::Model::ID & id = p_molecule.getId();
 		return _items.find( id ) != _items.end();
 	}
 	bool Selection::isMoleculeFullySelected( const Molecule & p_molecule ) const
 	{
-		const ID &							 id = p_molecule.getId();
+		const App::Core::Model::ID &		 id = p_molecule.getId();
 		const MapMoleculeIds::const_iterator it = _moleculesMap.find( id );
 
 		return _items.find( id ) != _items.end()
@@ -389,7 +389,7 @@ namespace VTX::Model
 	}
 	bool Selection::isChainSelected( const Chain & p_chain ) const
 	{
-		const ID & moleculeId = p_chain.getMoleculePtr()->getId();
+		const App::Core::Model::ID & moleculeId = p_chain.getMoleculePtr()->getId();
 
 		if ( _items.find( moleculeId ) == _items.end() )
 			return false;
@@ -401,7 +401,7 @@ namespace VTX::Model
 	}
 	bool Selection::isChainFullySelected( const Chain & p_chain ) const
 	{
-		const ID & moleculeId = p_chain.getMoleculePtr()->getId();
+		const App::Core::Model::ID & moleculeId = p_chain.getMoleculePtr()->getId();
 		if ( _items.find( moleculeId ) == _items.end() )
 			return false;
 
@@ -412,7 +412,7 @@ namespace VTX::Model
 	}
 	bool Selection::isResidueSelected( const Residue & p_residue ) const
 	{
-		const ID & moleculeId = p_residue.getMoleculePtr()->getId();
+		const App::Core::Model::ID & moleculeId = p_residue.getMoleculePtr()->getId();
 
 		if ( _items.find( moleculeId ) == _items.end() )
 			return false;
@@ -430,7 +430,7 @@ namespace VTX::Model
 	}
 	bool Selection::isResidueFullySelected( const Residue & p_residue ) const
 	{
-		const ID & moleculeId = p_residue.getMoleculePtr()->getId();
+		const App::Core::Model::ID & moleculeId = p_residue.getMoleculePtr()->getId();
 		if ( _items.find( moleculeId ) == _items.end() )
 			return false;
 
@@ -447,7 +447,7 @@ namespace VTX::Model
 	}
 	bool Selection::isAtomSelected( const Atom & p_atom ) const
 	{
-		const ID & moleculeId = p_atom.getMoleculePtr()->getId();
+		const App::Core::Model::ID & moleculeId = p_atom.getMoleculePtr()->getId();
 
 		if ( _items.find( moleculeId ) == _items.end() )
 			return false;
@@ -473,24 +473,24 @@ namespace VTX::Model
 	uint Selection::getChainSelectedCount() const
 	{
 		uint res = 0;
-		for ( const std::pair<const VTX::Model::ID, MapChainIds> & mapMolecules : _moleculesMap )
+		for ( const std::pair<const VTX::App::Core::Model::ID, MapChainIds> & mapMolecules : _moleculesMap )
 			res += (uint)mapMolecules.second.size();
 		return res;
 	}
 	uint Selection::getResidueSelectedCount() const
 	{
 		uint res = 0;
-		for ( const std::pair<const VTX::Model::ID, MapChainIds> & mapMolecules : _moleculesMap )
-			for ( const std::pair<const VTX::Model::ID, MapResidueIds> & mapChains : mapMolecules.second )
+		for ( const std::pair<const VTX::App::Core::Model::ID, MapChainIds> & mapMolecules : _moleculesMap )
+			for ( const std::pair<const VTX::App::Core::Model::ID, MapResidueIds> & mapChains : mapMolecules.second )
 				res += (uint)mapChains.second.size();
 		return res;
 	}
 	uint Selection::getAtomSelectedCount() const
 	{
 		uint res = 0;
-		for ( const std::pair<const VTX::Model::ID, MapChainIds> & mapMolecules : _moleculesMap )
-			for ( const std::pair<const VTX::Model::ID, MapResidueIds> & mapChains : mapMolecules.second )
-				for ( const std::pair<const VTX::Model::ID, VecAtomIds> & mapResidus : mapChains.second )
+		for ( const std::pair<const VTX::App::Core::Model::ID, MapChainIds> & mapMolecules : _moleculesMap )
+			for ( const std::pair<const VTX::App::Core::Model::ID, MapResidueIds> & mapChains : mapMolecules.second )
+				for ( const std::pair<const VTX::App::Core::Model::ID, VecAtomIds> & mapResidus : mapChains.second )
 					res += (uint)mapResidus.second.size();
 		return res;
 	}
@@ -663,8 +663,8 @@ namespace VTX::Model
 
 	bool Selection::_addMolecule( const Molecule & p_molecule )
 	{
-		const ID & id				= p_molecule.getId();
-		const bool hasToAddMolecule = _items.find( id ) == _items.end();
+		const App::Core::Model::ID & id				  = p_molecule.getId();
+		const bool					 hasToAddMolecule = _items.find( id ) == _items.end();
 
 		if ( hasToAddMolecule )
 		{
@@ -676,8 +676,8 @@ namespace VTX::Model
 
 	bool Selection::_addChain( const Chain & p_chain )
 	{
-		const ID &	 moleculeId = p_chain.getMoleculePtr()->getId();
-		const uint & index		= p_chain.getIndex();
+		const App::Core::Model::ID & moleculeId = p_chain.getMoleculePtr()->getId();
+		const uint &				 index		= p_chain.getIndex();
 
 		MapChainIds & chainMap = _moleculesMap[ moleculeId ];
 
@@ -693,9 +693,9 @@ namespace VTX::Model
 
 	bool Selection::_addResidue( const Residue & p_residue )
 	{
-		const ID &	 moleculeId = p_residue.getMoleculePtr()->getId();
-		const uint & chainIndex = p_residue.getChainPtr()->getIndex();
-		const uint & index		= p_residue.getIndex();
+		const App::Core::Model::ID & moleculeId = p_residue.getMoleculePtr()->getId();
+		const uint &				 chainIndex = p_residue.getChainPtr()->getIndex();
+		const uint &				 index		= p_residue.getIndex();
 
 		MapResidueIds & residueMap = _moleculesMap[ moleculeId ][ chainIndex ];
 
@@ -711,10 +711,10 @@ namespace VTX::Model
 
 	bool Selection::_addAtom( const Atom & p_atom )
 	{
-		const ID &	 moleculeId	  = p_atom.getMoleculePtr()->getId();
-		const uint & chainIndex	  = p_atom.getChainPtr()->getIndex();
-		const uint & residueIndex = p_atom.getResiduePtr()->getIndex();
-		const uint & index		  = p_atom.getIndex();
+		const App::Core::Model::ID & moleculeId	  = p_atom.getMoleculePtr()->getId();
+		const uint &				 chainIndex	  = p_atom.getChainPtr()->getIndex();
+		const uint &				 residueIndex = p_atom.getResiduePtr()->getIndex();
+		const uint &				 index		  = p_atom.getIndex();
 
 		VecAtomIds & atomVector = _moleculesMap[ moleculeId ][ chainIndex ][ residueIndex ];
 
@@ -748,9 +748,9 @@ namespace VTX::Model
 		const Molecule & moleculeParent = *p_chain.getMoleculePtr();
 		//_referenceFullChain( p_chain );
 
-		const ID &		moleculeId = moleculeParent.getId();
-		const uint		chainIndex = p_chain.getIndex();
-		MapResidueIds & residueMap = _moleculesMap[ moleculeId ][ chainIndex ];
+		const App::Core::Model::ID & moleculeId = moleculeParent.getId();
+		const uint					 chainIndex = p_chain.getIndex();
+		MapResidueIds &				 residueMap = _moleculesMap[ moleculeId ][ chainIndex ];
 
 		if ( residueMap.getFullySelectedChildCount() == p_chain.getRealResidueCount() )
 			return;
@@ -821,7 +821,7 @@ namespace VTX::Model
 
 	void Selection::_removeMolecule( const Molecule & p_molecule )
 	{
-		const ID & id = p_molecule.getId();
+		const App::Core::Model::ID & id = p_molecule.getId();
 		_moleculesMap.erase( id );
 		_items.erase( id );
 		_mapSelectionAABB.erase( id );
@@ -829,8 +829,8 @@ namespace VTX::Model
 
 	void Selection::_removeChain( const Chain & p_chain )
 	{
-		const ID & moleculeId = p_chain.getMoleculePtr()->getId();
-		const ID & index	  = p_chain.getIndex();
+		const App::Core::Model::ID & moleculeId = p_chain.getMoleculePtr()->getId();
+		const App::Core::Model::ID & index		= p_chain.getIndex();
 
 		_moleculesMap[ moleculeId ].erase( index );
 
@@ -846,9 +846,9 @@ namespace VTX::Model
 
 	void Selection::_removeResidue( const Residue & p_residue )
 	{
-		const ID & moleculeId = p_residue.getMoleculePtr()->getId();
-		const ID & chainIndex = p_residue.getChainPtr()->getIndex();
-		const ID & index	  = p_residue.getIndex();
+		const App::Core::Model::ID & moleculeId = p_residue.getMoleculePtr()->getId();
+		const App::Core::Model::ID & chainIndex = p_residue.getChainPtr()->getIndex();
+		const App::Core::Model::ID & index		= p_residue.getIndex();
 
 		_moleculesMap[ moleculeId ][ chainIndex ].erase( index );
 
@@ -864,10 +864,10 @@ namespace VTX::Model
 
 	void Selection::_removeAtom( const Atom & p_atom )
 	{
-		const ID & moleculeId	= p_atom.getMoleculePtr()->getId();
-		const ID & chainIndex	= p_atom.getChainPtr()->getIndex();
-		const ID & residueIndex = p_atom.getResiduePtr()->getIndex();
-		const ID & index		= p_atom.getIndex();
+		const App::Core::Model::ID & moleculeId	  = p_atom.getMoleculePtr()->getId();
+		const App::Core::Model::ID & chainIndex	  = p_atom.getChainPtr()->getIndex();
+		const App::Core::Model::ID & residueIndex = p_atom.getResiduePtr()->getIndex();
+		const App::Core::Model::ID & index		  = p_atom.getIndex();
 
 		VecAtomIds & atomVector = _moleculesMap[ moleculeId ][ chainIndex ][ residueIndex ];
 
@@ -894,13 +894,13 @@ namespace VTX::Model
 		}
 	}
 
-	void Selection::selectModels( const std::vector<Model::Molecule *> & p_molecules,
-								  const std::vector<Model::Category *> & p_categories,
-								  const std::vector<Model::Chain *> &	 p_chains,
-								  const std::vector<Model::Residue *> &	 p_residues,
-								  const std::vector<Model::Atom *> &	 p_atoms,
-								  const bool							 p_appendToSelection,
-								  const Model::BaseModel * const		 p_currentObj )
+	void Selection::selectModels( const std::vector<Model::Molecule *> &	p_molecules,
+								  const std::vector<Model::Category *> &	p_categories,
+								  const std::vector<Model::Chain *> &		p_chains,
+								  const std::vector<Model::Residue *> &		p_residues,
+								  const std::vector<Model::Atom *> &		p_atoms,
+								  const bool								p_appendToSelection,
+								  const App::Core::Model::BaseModel * const p_currentObj )
 	{
 		Util::Chrono chrono = Util::Chrono();
 		chrono.start();
@@ -1004,7 +1004,7 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
-	void Selection::selectModel( Model::BaseModel & p_model, const bool p_appendToSelection )
+	void Selection::selectModel( App::Core::Model::BaseModel & p_model, const bool p_appendToSelection )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -1026,12 +1026,12 @@ namespace VTX::Model
 		}
 	}
 
-	void Selection::unselectModel( const Model::BaseModel & p_model )
+	void Selection::unselectModel( const App::Core::Model::BaseModel & p_model )
 	{
 		_unselectModel( p_model );
 		_notifyDataChanged();
 	}
-	void Selection::_unselectModel( const Model::BaseModel & p_model ) { _items.erase( p_model.getId() ); }
+	void Selection::_unselectModel( const App::Core::Model::BaseModel & p_model ) { _items.erase( p_model.getId() ); }
 
 	bool Selection::isCategorySelected( const Model::Category & p_category ) const
 	{
@@ -1077,13 +1077,13 @@ namespace VTX::Model
 		return res;
 	}
 
-	bool Selection::isModelSelected( const Model::ID & p_id ) const
+	bool Selection::isModelSelected( const App::Core::Model::ID & p_id ) const
 	{
-		const Model::BaseModel & model = VTX::MVC_MANAGER().getModel<Model::BaseModel>( p_id );
+		const App::Core::Model::BaseModel & model = VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( p_id );
 		return isModelSelected( model );
 	}
 
-	bool Selection::isModelSelected( const Model::BaseModel & p_model ) const
+	bool Selection::isModelSelected( const App::Core::Model::BaseModel & p_model ) const
 	{
 		const VTX::ID::VTX_ID & modelTypeID = p_model.getTypeId();
 
@@ -1103,17 +1103,18 @@ namespace VTX::Model
 
 	void Selection::clear()
 	{
-		const Model::BaseModel * const previousCurrentObject = _currentObject;
+		const App::Core::Model::BaseModel * const previousCurrentObject = _currentObject;
 		_clearWithoutNotify();
 
 		_notifyDataChanged();
 
 		if ( previousCurrentObject != _currentObject )
-			VTX_EVENT<const Model::BaseModel *>( App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE, _currentObject );
+			VTX_EVENT<const App::Core::Model::BaseModel *>( App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE,
+															_currentObject );
 	}
 	void Selection::_clearWithoutNotify()
 	{
-		for ( const std::pair<const VTX::Model::ID, MapChainIds> & item : _moleculesMap )
+		for ( const std::pair<const VTX::App::Core::Model::ID, MapChainIds> & item : _moleculesMap )
 		{
 			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( item.first );
 			molecule.refreshSelection( nullptr );
@@ -1127,13 +1128,13 @@ namespace VTX::Model
 
 	void Selection::moveDataTo( Selection & p_target )
 	{
-		for ( const std::pair<const VTX::Model::ID, MapChainIds> & item : _moleculesMap )
+		for ( const std::pair<const VTX::App::Core::Model::ID, MapChainIds> & item : _moleculesMap )
 		{
 			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( item.first );
 			molecule.refreshSelection( nullptr );
 		}
 
-		for ( const VTX::Model::ID & item : _items )
+		for ( const VTX::App::Core::Model::ID & item : _items )
 			p_target._items.emplace( item );
 
 		_items.clear();
@@ -1168,7 +1169,7 @@ namespace VTX::Model
 	{
 		p_types.clear();
 
-		for ( const Model::ID & id : _items )
+		for ( const App::Core::Model::ID & id : _items )
 		{
 			const VTX::ID::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( id );
 
@@ -1182,7 +1183,7 @@ namespace VTX::Model
 					continue;
 				}
 
-				for ( const std::pair<const Model::ID, MapResidueIds> & chainData : _moleculesMap.at( id ) )
+				for ( const std::pair<const App::Core::Model::ID, MapResidueIds> & chainData : _moleculesMap.at( id ) )
 				{
 					const Model::Chain & chain = *molecule.getChain( chainData.first );
 					if ( isChainFullySelected( chain ) )
@@ -1191,7 +1192,7 @@ namespace VTX::Model
 						continue;
 					}
 
-					for ( const std::pair<const Model::ID, VecAtomIds> & residueData : chainData.second )
+					for ( const std::pair<const App::Core::Model::ID, VecAtomIds> & residueData : chainData.second )
 					{
 						const Model::Residue & residue = *molecule.getResidue( residueData.first );
 						if ( isResidueFullySelected( residue ) )
@@ -1216,7 +1217,8 @@ namespace VTX::Model
 	{
 		Object3D::Helper::AABB res = Object3D::Helper::AABB();
 
-		for ( const std::pair<const VTX::Model::ID, Object3D::Helper::AABB> & pairIdAabb : _mapSelectionAABB )
+		for ( const std::pair<const VTX::App::Core::Model::ID, Object3D::Helper::AABB> & pairIdAabb :
+			  _mapSelectionAABB )
 		{
 			const Object3D::Helper::AABB & currentAABB = pairIdAabb.second;
 			res.extend( currentAABB );
@@ -1229,11 +1231,10 @@ namespace VTX::Model
 	{
 		_mapSelectionAABB.clear();
 
-		for ( const std::pair<const VTX::Model::ID, MapChainIds> & mapMol : _moleculesMap )
+		for ( const std::pair<const VTX::App::Core::Model::ID, MapChainIds> & mapMol : _moleculesMap )
 		{
-			const Model::Molecule & molecule
-				= VTX::MVC_MANAGER().getModel<Model::Molecule>( mapMol.first );
-			Object3D::Helper::AABB aabb = Object3D::Helper::AABB();
+			const Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( mapMol.first );
+			Object3D::Helper::AABB	aabb	 = Object3D::Helper::AABB();
 			_mapSelectionAABB.emplace( molecule.getId(), aabb );
 
 			if ( molecule.getChainCount() == mapMol.second.size() )
@@ -1242,7 +1243,7 @@ namespace VTX::Model
 				continue;
 			}
 
-			for ( const std::pair<const VTX::Model::ID, MapResidueIds> & mapChain : mapMol.second )
+			for ( const std::pair<const VTX::App::Core::Model::ID, MapResidueIds> & mapChain : mapMol.second )
 			{
 				const Model::Chain & chain = *molecule.getChain( mapChain.first );
 				if ( chain.getResidueCount() == mapChain.second.size() )
@@ -1251,7 +1252,7 @@ namespace VTX::Model
 					continue;
 				}
 
-				for ( const std::pair<const VTX::Model::ID, VecAtomIds> & mapResidue : mapChain.second )
+				for ( const std::pair<const VTX::App::Core::Model::ID, VecAtomIds> & mapResidue : mapChain.second )
 				{
 					const Model::Residue & residue = *molecule.getResidue( mapResidue.first );
 					if ( residue.getAtomCount() == mapResidue.second.size() )
@@ -1269,7 +1270,7 @@ namespace VTX::Model
 			}
 		}
 	}
-	const Model::BaseModel * const Selection::getCurrentObject() const { return _currentObject; }
+	const App::Core::Model::BaseModel * const Selection::getCurrentObject() const { return _currentObject; }
 
 	void Selection::_emplaceMolecule( const Molecule & p_molecule )
 	{
@@ -1277,7 +1278,7 @@ namespace VTX::Model
 		_moleculesMap.emplace( p_molecule.getId(), MapChainIds() );
 	}
 
-	void Selection::_setCurrentObject( const Model::BaseModel * const p_model, const bool p_notify )
+	void Selection::_setCurrentObject( const App::Core::Model::BaseModel * const p_model, const bool p_notify )
 	{
 		if ( _currentObject != p_model )
 		{
@@ -1285,8 +1286,8 @@ namespace VTX::Model
 
 			if ( p_notify )
 			{
-				VTX_EVENT<const Model::BaseModel *>( App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE,
-													 _currentObject );
+				VTX_EVENT<const App::Core::Model::BaseModel *>( App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE,
+																_currentObject );
 			}
 		}
 	}
@@ -1297,8 +1298,8 @@ namespace VTX::Model
 			_currentObject = nullptr;
 			if ( p_notify )
 			{
-				VTX_EVENT<const Model::BaseModel *>( App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE,
-													 _currentObject );
+				VTX_EVENT<const App::Core::Model::BaseModel *>( App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE,
+																_currentObject );
 			}
 		}
 	}

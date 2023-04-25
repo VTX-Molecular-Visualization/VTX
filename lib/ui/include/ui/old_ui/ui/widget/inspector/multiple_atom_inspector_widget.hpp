@@ -11,8 +11,8 @@
 #include <QWidget>
 #include <app/old_app/math/transform.hpp>
 #include <app/model/atom.hpp>
-#include <app/view/base_view.hpp>
-#include <app/view/callback_view.hpp>
+#include <app/core/view/base_view.hpp>
+#include <app/core/view/callback_view.hpp>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
@@ -32,10 +32,10 @@ namespace VTX::UI::Widget::Inspector
 			void removeViewer() { _counter--; };
 			bool hasViewer() { return _counter > 0; };
 
-			View::CallbackView<const Model::Molecule, MultipleAtomWidget> & getView() { return *_view; }
+			App::Core::View::CallbackView<const Model::Molecule, MultipleAtomWidget> & getView() { return *_view; }
 
 		  private:
-			View::CallbackView<const Model::Molecule, MultipleAtomWidget> * _view	 = nullptr;
+			App::Core::View::CallbackView<const Model::Molecule, MultipleAtomWidget> * _view	 = nullptr;
 			uint															_counter = 1;
 		};
 		class MoleculeViewContainer
@@ -47,7 +47,7 @@ namespace VTX::UI::Widget::Inspector
 			}
 			void addViewOnMolecule( const Model::Molecule * p_molecule );
 			void removeViewOnMolecule( const Model::Molecule * p_molecule );
-			View::CallbackView<const Model::Molecule, MultipleAtomWidget> & getView(
+			App::Core::View::CallbackView<const Model::Molecule, MultipleAtomWidget> & getView(
 				const Model::Molecule * p_molecule )
 			{
 				return _mapMolecules[ p_molecule ]->getView();

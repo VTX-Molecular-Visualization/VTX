@@ -4,7 +4,7 @@
 #include "app/core/event/base_event_receiver_vtx.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/event/global.hpp"
-#include "app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
 #include "app/model/category_enum.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
@@ -22,7 +22,7 @@ namespace VTX::Model
 	class Residue;
 	class Atom;
 
-	class Selection : public BaseModel, public VTX::App::Core::Event::BaseEventReceiverVTX
+	class Selection : public App::Core::Model::BaseModel, public VTX::App::Core::Event::BaseEventReceiverVTX
 	{
 		VTX_MODEL
 
@@ -41,7 +41,7 @@ namespace VTX::Model
 
 			uint _childrenFullySelectedCount = 0;
 		};
-		class MapResidueIds : public std::map<VTX::Model::ID, VecAtomIds>
+		class MapResidueIds : public std::map<VTX::App::Core::Model::ID, VecAtomIds>
 		{
 			friend Selection;
 
@@ -56,7 +56,7 @@ namespace VTX::Model
 		  private:
 			uint _childrenFullySelectedCount = 0;
 		};
-		class MapChainIds : public std::map<VTX::Model::ID, MapResidueIds>
+		class MapChainIds : public std::map<VTX::App::Core::Model::ID, MapResidueIds>
 		{
 			friend Selection;
 
@@ -70,14 +70,14 @@ namespace VTX::Model
 
 			uint _childrenFullySelectedCount = 0;
 		};
-		using MapMoleculeIds = std::map<VTX::Model::ID, MapChainIds>;
+		using MapMoleculeIds = std::map<VTX::App::Core::Model::ID, MapChainIds>;
 
 		using PairResidueIds  = std::pair<const uint, VecAtomIds>;
 		using PairChainIds	  = std::pair<const uint, MapResidueIds>;
-		using PairMoleculeIds = std::pair<const VTX::Model::ID, MapChainIds>;
+		using PairMoleculeIds = std::pair<const VTX::App::Core::Model::ID, MapChainIds>;
 
-		inline const std::set<VTX::Model::ID> & getItems() const { return _items; }
-		inline std::set<VTX::Model::ID> &		getItems() { return _items; }
+		inline const std::set<VTX::App::Core::Model::ID> & getItems() const { return _items; }
+		inline std::set<VTX::App::Core::Model::ID> &		getItems() { return _items; }
 
 		inline const MapMoleculeIds & getMoleculesMap() const { return _moleculesMap; }
 		inline MapMoleculeIds &		  getMoleculesMap() { return _moleculesMap; }
@@ -145,19 +145,19 @@ namespace VTX::Model
 						   const std::vector<Model::Residue *> &  p_residues,
 						   const std::vector<Model::Atom *> &	  p_atoms,
 						   const bool							  p_appendToSelection = false,
-						   const Model::BaseModel * const		  p_currentObj		  = nullptr );
+						   const App::Core::Model::BaseModel * const		  p_currentObj		  = nullptr );
 		void unselectModels( const std::vector<Model::Molecule *> & p_molecules,
 							 const std::vector<Model::Category *> & p_categories,
 							 const std::vector<Model::Chain *> &	p_chains,
 							 const std::vector<Model::Residue *> &	p_residus,
 							 const std::vector<Model::Atom *> &		p_atoms );
 
-		void selectModel( Model::BaseModel & p_model, const bool p_appendToSelection = false );
-		void unselectModel( const Model::BaseModel & );
-		bool isModelSelected( const Model::BaseModel & ) const;
-		bool isModelSelected( const Model::ID & ) const;
+		void selectModel( App::Core::Model::BaseModel & p_model, const bool p_appendToSelection = false );
+		void unselectModel( const App::Core::Model::BaseModel & );
+		bool isModelSelected( const App::Core::Model::BaseModel & ) const;
+		bool isModelSelected( const App::Core::Model::ID & ) const;
 
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		template<typename T, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, T>::value>>
 		void selectModels( const std::vector<T *> & p_models, const bool p_appendToSelection = false )
 		{
 			if ( !p_appendToSelection )
@@ -173,7 +173,7 @@ namespace VTX::Model
 
 			_notifyDataChanged();
 		}
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		template<typename T, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, T>::value>>
 		void unselectModels( const std::vector<T *> & p_models )
 		{
 			if ( p_models.size() == 0 )
@@ -184,7 +184,7 @@ namespace VTX::Model
 
 			_notifyDataChanged();
 		}
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		template<typename T, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, T>::value>>
 		void unselectModelsWithCheck( const std::vector<T *> & p_models )
 		{
 			if ( p_models.size() == 0 )
@@ -199,11 +199,11 @@ namespace VTX::Model
 			_notifyDataChanged();
 		}
 
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		template<typename T, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, T>::value>>
 		std::vector<T *> getItemsOfType( const VTX::ID::VTX_ID & p_modelTypeID )
 		{
 			std::vector<T *> models = std::vector<T *>();
-			for ( const VTX::Model::ID & modelID : getItems() )
+			for ( const VTX::App::Core::Model::ID & modelID : getItems() )
 			{
 				if ( VTX::MVC_MANAGER().getModelTypeID( modelID ) == p_modelTypeID )
 				{
@@ -224,12 +224,12 @@ namespace VTX::Model
 
 		void						   getItemTypes( std::set<VTX::ID::VTX_ID> & p_types ) const;
 		Object3D::Helper::AABB		   getAABB() const;
-		const Model::BaseModel * const getCurrentObject() const;
+		const App::Core::Model::BaseModel * const getCurrentObject() const;
 
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		template<typename T, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, T>::value>>
 		void getItemsOfType( const VTX::ID::VTX_ID & p_itemType, std::set<T *> & p_items ) const
 		{
-			for ( const VTX::Model::ID & itemID : _items )
+			for ( const VTX::App::Core::Model::ID & itemID : _items )
 			{
 				if ( VTX::MVC_MANAGER().getModelTypeID( itemID ) == p_itemType )
 				{
@@ -238,10 +238,10 @@ namespace VTX::Model
 				}
 			}
 		}
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		template<typename T, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, T>::value>>
 		void getItemsOfType( const VTX::ID::VTX_ID & p_itemType, std::unordered_set<T *> & p_items ) const
 		{
-			for ( const VTX::Model::ID & itemID : _items )
+			for ( const VTX::App::Core::Model::ID & itemID : _items )
 			{
 				if ( VTX::MVC_MANAGER().getModelTypeID( itemID ) == p_itemType )
 				{
@@ -261,12 +261,12 @@ namespace VTX::Model
 		void _notifyDataChanged();
 
 	  private:
-		std::set<VTX::Model::ID> _items		   = std::set<VTX::Model::ID>();
+		std::set<VTX::App::Core::Model::ID> _items		   = std::set<VTX::App::Core::Model::ID>();
 		MapMoleculeIds			 _moleculesMap = MapMoleculeIds();
 
-		std::map<VTX::Model::ID, Object3D::Helper::AABB> _mapSelectionAABB
-			= std::map<VTX::Model::ID, Object3D::Helper::AABB>();
-		const Model::BaseModel * _currentObject = nullptr;
+		std::map<VTX::App::Core::Model::ID, Object3D::Helper::AABB> _mapSelectionAABB
+			= std::map<VTX::App::Core::Model::ID, Object3D::Helper::AABB>();
+		const App::Core::Model::BaseModel * _currentObject = nullptr;
 
 		void _selectMolecule( const Molecule & );
 		void _unselectMolecule( const Molecule & );
@@ -279,7 +279,7 @@ namespace VTX::Model
 		void _selectAtom( const Atom & );
 		void _unselectAtom( const Atom & );
 
-		void _unselectModel( const Model::BaseModel & );
+		void _unselectModel( const App::Core::Model::BaseModel & );
 
 		bool _addMolecule( const Molecule & );
 		bool _addChain( const Chain & );
@@ -310,7 +310,7 @@ namespace VTX::Model
 
 		void _emplaceMolecule( const Molecule & );
 
-		void _setCurrentObject( const Model::BaseModel * const p_model, const bool p_notify = true );
+		void _setCurrentObject( const App::Core::Model::BaseModel * const p_model, const bool p_notify = true );
 		void _clearCurrentObject( const bool p_notify = true );
 	};
 

@@ -62,7 +62,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void ModelFieldWidget::refresh()
 	{
-		const Model::BaseModel * const model = getModel();
+		const App::Core::Model::BaseModel * const model = getModel();
 
 		if ( model == nullptr )
 		{
@@ -81,7 +81,7 @@ namespace VTX::UI::Widget::CustomWidget
 		adjustSize();
 	}
 
-	void ModelFieldWidget::setModel( Model::BaseModel * const p_model )
+	void ModelFieldWidget::setModel( App::Core::Model::BaseModel * const p_model )
 	{
 		if ( _model != p_model )
 		{
@@ -92,7 +92,7 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 	}
 
-	void ModelFieldWidget::_onModelDropped( Model::BaseModel * const p_model ) { setModel( p_model ); }
+	void ModelFieldWidget::_onModelDropped( App::Core::Model::BaseModel * const p_model ) { setModel( p_model ); }
 
 	QMimeData * ModelFieldWidget::_getDataForDrag() const
 	{

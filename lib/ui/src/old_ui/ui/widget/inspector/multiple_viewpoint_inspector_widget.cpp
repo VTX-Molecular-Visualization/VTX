@@ -93,8 +93,8 @@ namespace VTX::UI::Widget::Inspector
 				{
 					CustomWidget::EmbeddedDataPushButton * const gotoButton
 						= new CustomWidget::EmbeddedDataPushButton( this );
-					const Model::ID & id = viewpoint->getId();
-					gotoButton->setData( QVariant::fromValue<Model::ID>( id ) );
+					const App::Core::Model::ID & id = viewpoint->getId();
+					gotoButton->setData( QVariant::fromValue<App::Core::Model::ID>( id ) );
 
 					QString gotoButtonTxt;
 
@@ -161,7 +161,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleViewpointWidget::_goToAction( const QVariant & p_viewpointIndex ) const
 	{
-		const Model::ID &		 modelID   = p_viewpointIndex.value<Model::ID>();
+		const App::Core::Model::ID &		 modelID   = p_viewpointIndex.value<App::Core::Model::ID>();
 		const Model::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<Model::Viewpoint>( modelID );
 
 		VTX_ACTION( new QT::Action::Viewpoint::GoTo( viewpoint ) );

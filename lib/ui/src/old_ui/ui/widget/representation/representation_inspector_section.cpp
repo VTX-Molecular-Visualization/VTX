@@ -10,7 +10,7 @@
 #include <app/model/representation/representation_library.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
-#include <app/view/callback_view.hpp>
+#include <app/core/view/callback_view.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Representation
@@ -255,7 +255,7 @@ namespace VTX::UI::Widget::Representation
 	{
 		if ( p_deleteViews )
 		{
-			for ( const Model::ID & representationID : _representationIDs )
+			for ( const App::Core::Model::ID & representationID : _representationIDs )
 			{
 				if ( VTX::MVC_MANAGER().doesModelExists( representationID ) )
 				{
@@ -310,11 +310,11 @@ namespace VTX::UI::Widget::Representation
 				_dummyRepresentation
 					= VTX::Representation::RepresentationManager::get().instantiateDummy( p_representation );
 
-				VTX::View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection> * const
+				VTX::App::Core::View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection> * const
 					representationView
 					= VTX::MVC_MANAGER()
 						  .instantiateView<
-							  VTX::View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection>>(
+							  VTX::App::Core::View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection>>(
 							  _dummyRepresentation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
 
 				representationView->setCallback( this, &RepresentationInspectorSection::_onDummyChange );
@@ -356,10 +356,10 @@ namespace VTX::UI::Widget::Representation
 		{
 			if ( _representationIDs.find( p_representation.getId() ) == _representationIDs.end() )
 			{
-				VTX::View::CallbackView<const InstantiatedRepresentation, RepresentationInspectorSection> * const
+				VTX::App::Core::View::CallbackView<const InstantiatedRepresentation, RepresentationInspectorSection> * const
 					viewOnRepresentation
 					= VTX::MVC_MANAGER()
-						  .instantiateView<VTX::View::CallbackView<const InstantiatedRepresentation,
+						  .instantiateView<VTX::App::Core::View::CallbackView<const InstantiatedRepresentation,
 																   RepresentationInspectorSection>>(
 							  &p_representation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
 
@@ -385,7 +385,7 @@ namespace VTX::UI::Widget::Representation
 
 	void RepresentationInspectorSection::_recomputeUi()
 	{
-		for ( const Model::ID & representationID : _representationIDs )
+		for ( const App::Core::Model::ID & representationID : _representationIDs )
 		{
 			const InstantiatedRepresentation & representation
 				= VTX::MVC_MANAGER().getModel<InstantiatedRepresentation>( representationID );

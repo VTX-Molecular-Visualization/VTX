@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_BOND__
 #define __VTX_MODEL_BOND__
 
-#include "app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
 #include "app/old_app/id.hpp"
 #include <string>
 
@@ -10,7 +10,7 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class Bond : public BaseModel
+		class Bond : public App::Core::Model::BaseModel
 		{
 			VTX_MODEL
 

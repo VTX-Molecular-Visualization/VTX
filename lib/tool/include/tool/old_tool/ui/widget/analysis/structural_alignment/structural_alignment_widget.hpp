@@ -18,9 +18,13 @@
 
 namespace VTX
 {
-	namespace Model
+	namespace App::Core::Model
 	{
 		class BaseModel;
+	} // namespace App::Core::Model
+
+	namespace Model
+	{
 		class Molecule;
 		class Selection;
 	} // namespace Model

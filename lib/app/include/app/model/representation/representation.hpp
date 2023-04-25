@@ -3,14 +3,14 @@
 
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
-#include "app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
 #include "representation_data.hpp"
 #include "representation_enum.hpp"
 #include <util/math.hpp>
 
 namespace VTX::Model::Representation
 {
-	class Representation : public BaseModel
+	class Representation : public App::Core::Model::BaseModel
 	{
 		VTX_MODEL
 

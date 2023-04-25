@@ -57,7 +57,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		_rmsdLabel = nullptr;
 	}
 
-	void StructuralAlignmentModelListWidget::ModelFieldLine::setModel( Model::BaseModel * const p_model )
+	void StructuralAlignmentModelListWidget::ModelFieldLine::setModel( App::Core::Model::BaseModel * const p_model )
 	{
 		_modelField->setModel( p_model );
 		resetRMSD();
@@ -80,10 +80,10 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 	void StructuralAlignmentModelListWidget::ModelFieldLine::_callRemoveAction()
 	{
-		Model::BaseModel * const model = _modelField->getModel();
+		App::Core::Model::BaseModel * const model = _modelField->getModel();
 		_owner->removeModel( model );
 	}
-	void StructuralAlignmentModelListWidget::ModelFieldLine::_checkModelChange( Model::BaseModel * const p_model )
+	void StructuralAlignmentModelListWidget::ModelFieldLine::_checkModelChange( App::Core::Model::BaseModel * const p_model )
 	{
 		if ( _owner->getContainsOnlyUniqueModel() && _owner->hasModel( p_model ) )
 			_owner->swapModels( _modelField->getModel(), p_model );
@@ -115,7 +115,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		}
 	}
 
-	Model::BaseModel * const StructuralAlignmentModelListWidget::getTickedModel() const
+	App::Core::Model::BaseModel * const StructuralAlignmentModelListWidget::getTickedModel() const
 	{
 		for ( CustomWidget::BaseModelFieldLine * const line : _getLines() )
 		{
@@ -126,9 +126,9 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		return nullptr;
 	}
-	std::vector<Model::BaseModel *> StructuralAlignmentModelListWidget::getNotTickedModels() const
+	std::vector<App::Core::Model::BaseModel *> StructuralAlignmentModelListWidget::getNotTickedModels() const
 	{
-		std::vector<Model::BaseModel *> res = std::vector<Model::BaseModel *>();
+		std::vector<App::Core::Model::BaseModel *> res = std::vector<App::Core::Model::BaseModel *>();
 		res.reserve( _getLines().size() );
 
 		for ( CustomWidget::BaseModelFieldLine * const line : _getLines() )
@@ -143,13 +143,13 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		return res;
 	}
 
-	void StructuralAlignmentModelListWidget::setRMSD( const Model::BaseModel * const p_model,
+	void StructuralAlignmentModelListWidget::setRMSD( const App::Core::Model::BaseModel * const p_model,
 													  const float					 p_rmsd,
 													  const size_t					 p_residueCount ) const
 	{
 		_findLineFromModel<ModelFieldLine>( p_model )->setRMSD( p_rmsd, p_residueCount );
 	}
-	void StructuralAlignmentModelListWidget::resetRMSD( const Model::BaseModel * const p_model ) const
+	void StructuralAlignmentModelListWidget::resetRMSD( const App::Core::Model::BaseModel * const p_model ) const
 	{
 		_findLineFromModel<ModelFieldLine>( p_model )->resetRMSD();
 	}
@@ -168,7 +168,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		return newLine;
 	}
 	void StructuralAlignmentModelListWidget::_initLine( CustomWidget::BaseModelFieldLine * const p_line,
-														Model::BaseModel * const				 p_model ) const
+														App::Core::Model::BaseModel * const				 p_model ) const
 	{
 		CustomWidget::BaseModelListWidget::_initLine( p_line, p_model );
 

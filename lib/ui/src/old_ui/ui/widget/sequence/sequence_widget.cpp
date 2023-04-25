@@ -7,7 +7,7 @@
 #include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/model/molecule.hpp>
-#include <app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Sequence
 {

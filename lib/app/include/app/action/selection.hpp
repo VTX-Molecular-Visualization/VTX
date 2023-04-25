@@ -39,7 +39,7 @@ namespace VTX::App::Action::Selection
 	{
 	  public:
 		explicit SelectModels( Model::Selection &			  p_selection,
-							   const std::vector<Model::ID> & p_models,
+							   const std::vector<App::Core::Model::ID> & p_models,
 							   const bool					  p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_appendToSelection( p_appendToSelection )
@@ -53,13 +53,13 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		Model::Selection &	   _selection;
-		std::vector<Model::ID> _models = std::vector<Model::ID>();
+		std::vector<App::Core::Model::ID> _models = std::vector<App::Core::Model::ID>();
 		const bool			   _appendToSelection;
 	};
 	class UnselectModels : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit UnselectModels( Model::Selection & p_selection, const std::vector<Model::ID> & p_models ) :
+		explicit UnselectModels( Model::Selection & p_selection, const std::vector<App::Core::Model::ID> & p_models ) :
 			_selection( p_selection )
 		{
 			_models.resize( p_models.size() );
@@ -71,7 +71,7 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		Model::Selection &	   _selection;
-		std::vector<Model::ID> _models = std::vector<Model::ID>();
+		std::vector<App::Core::Model::ID> _models = std::vector<App::Core::Model::ID>();
 	};
 
 	class SelectMolecule : public App::Core::Action::BaseAction

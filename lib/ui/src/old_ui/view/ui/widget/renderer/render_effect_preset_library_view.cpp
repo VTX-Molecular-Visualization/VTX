@@ -16,7 +16,7 @@ namespace VTX::View::UI::Widget::Renderer
 	RenderEffectPresetLibraryView::RenderEffectPresetLibraryView(
 		Model::Renderer::RenderEffectPresetLibrary * const p_model,
 		QWidget * const									   p_parent ) :
-		View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( p_model ),
+		App::Core::View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( p_model ),
 		VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
 		_registerEvent( VTX::App::Event::Global::RENDER_EFFECT_ADDED );

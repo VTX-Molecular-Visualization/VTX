@@ -15,7 +15,7 @@
 namespace VTX::View::UI::Widget::Measurement
 {
 	// DistanceRenderView::DistanceRenderView( Model::Measurement::Distance * const p_model, QWidget * const p_parent )
-	// : 	View::BaseView<Model::Measurement::Distance>( p_model ),
+	// : 	App::Core::View::BaseView<Model::Measurement::Distance>( p_model ),
 	//	VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>( p_parent )
 	//{
 	//	_labelPen	= QPen( Style::WORLD_LABEL_OUTLINE_COLOR );

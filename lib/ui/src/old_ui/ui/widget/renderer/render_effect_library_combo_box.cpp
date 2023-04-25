@@ -2,7 +2,7 @@
 #include "ui/old_ui/style.hpp"
 #include <app/model/renderer/render_effect_preset_library.hpp>
 #include <app/mvc.hpp>
-#include <app/view/callback_view.hpp>
+#include <app/core/view/callback_view.hpp>
 
 namespace VTX::UI::Widget::Renderer
 {
@@ -24,10 +24,10 @@ namespace VTX::UI::Widget::Renderer
 		BaseManualWidget::_setupUi( p_name );
 		_fillItemList();
 
-		View::CallbackView<Model::Renderer::RenderEffectPresetLibrary, RenderEffectLibraryComboBox> * const view
+		App::Core::View::CallbackView<Model::Renderer::RenderEffectPresetLibrary, RenderEffectLibraryComboBox> * const view
 			= VTX::MVC_MANAGER()
 				  .instantiateView<
-					  View::CallbackView<Model::Renderer::RenderEffectPresetLibrary, RenderEffectLibraryComboBox>>(
+					  App::Core::View::CallbackView<Model::Renderer::RenderEffectPresetLibrary, RenderEffectLibraryComboBox>>(
 					  &Model::Renderer::RenderEffectPresetLibrary::get(), _viewID );
 
 		view->setCallback( this, &RenderEffectLibraryComboBox::_onLibraryChange );

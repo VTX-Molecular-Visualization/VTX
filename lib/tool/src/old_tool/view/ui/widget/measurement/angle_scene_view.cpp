@@ -14,7 +14,7 @@
 namespace VTX::View::UI::Widget::Measurement
 {
 	AngleSceneView::AngleSceneView( Model::Measurement::Angle * const p_model, QWidget * const p_parent ) :
-		View::BaseView<Model::Measurement::Angle>( p_model ), SceneItemWidget( p_parent )
+		App::Core::View::BaseView<Model::Measurement::Angle>( p_model ), SceneItemWidget( p_parent )
 	{
 	}
 

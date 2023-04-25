@@ -19,7 +19,7 @@
 #include <QWidget>
 #include <app/old_app/color/rgba.hpp>
 #include <app/model/renderer/render_effect_preset.hpp>
-#include <app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Settings
 {

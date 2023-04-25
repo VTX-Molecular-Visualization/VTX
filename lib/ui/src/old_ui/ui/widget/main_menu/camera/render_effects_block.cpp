@@ -16,7 +16,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 {
 	RenderEffectsBlock::RenderEffectsBlock( Model::Renderer::RenderEffectPresetLibrary * const _renderEffectLibrary,
 											QWidget *										   p_parent ) :
-		View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( _renderEffectLibrary ),
+		App::Core::View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( _renderEffectLibrary ),
 		MenuToolBlockWidget( p_parent ) {};
 
 	void RenderEffectsBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) {}

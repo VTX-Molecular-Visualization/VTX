@@ -1,7 +1,7 @@
 #ifndef __VTX_MODEL_MOLECULE__
 #define __VTX_MODEL_MOLECULE__
 
-#include "app/model/base_model_3d.hpp"
+#include "app/core/model/base_model_3d.hpp"
 #include "app/model/category_enum.hpp"
 #include "app/model/configuration/molecule.hpp"
 #include "app/model/secondary_structure.hpp"
@@ -42,7 +42,7 @@ namespace VTX
 		class Atom;
 		class Bond;
 		class Molecule :
-			public BaseModel3D<Buffer::Molecule>,
+			public App::Core::Model::BaseModel3D<Buffer::Molecule>,
 			public Generic::BaseColorable,
 			public Generic::BaseRepresentable,
 			public Generic::BaseSceneItem
@@ -60,7 +60,7 @@ namespace VTX
 			inline void setConfiguration( const Configuration::Molecule & p_config ) { _configuration = p_config; }
 
 			// BaseSceneItem
-			const Model::ID & getModelID() const override { return getId(); }
+			const App::Core::Model::ID & getModelID() const override { return getId(); }
 
 			// Representation.
 			inline const RepresentationState & getRepresentationState() const { return _representationState; }
@@ -376,7 +376,7 @@ namespace VTX
 			bool _showHydrogen = true;
 			bool _showIon	   = true;
 
-			std::vector<Model::ID> _defaultRepresentationIDs = std::vector<Model::ID>();
+			std::vector<App::Core::Model::ID> _defaultRepresentationIDs = std::vector<App::Core::Model::ID>();
 
 			// Fill Buffers Functions
 			void _fillBufferAtomColors();

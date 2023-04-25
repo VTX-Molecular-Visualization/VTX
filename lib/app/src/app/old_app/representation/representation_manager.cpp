@@ -10,7 +10,7 @@
 #include "app/model/selection.hpp"
 #include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/setting.hpp"
-#include "app/view/callback_view.hpp"
+#include "app/core/view/callback_view.hpp"
 
 namespace VTX::Representation
 {
@@ -181,9 +181,9 @@ namespace VTX::Representation
 
 	void RepresentationManager::_instantiateViewOnRepresentation( const Representation * const p_representation )
 	{
-		View::CallbackView<const Representation, RepresentationManager> * const view
+		App::Core::View::CallbackView<const Representation, RepresentationManager> * const view
 			= VTX::MVC_MANAGER()
-				  .instantiateView<View::CallbackView<const Representation, RepresentationManager>>(
+				  .instantiateView<App::Core::View::CallbackView<const Representation, RepresentationManager>>(
 					  p_representation, ID::View::INSTANTIATED_REPRESENTATION_ON_REPRESENTATION );
 
 		view->setCallback( this, &RepresentationManager::_onRepresentationChange );

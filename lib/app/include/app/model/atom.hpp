@@ -1,12 +1,12 @@
 #ifndef __VTX_MODEL_ATOM__
 #define __VTX_MODEL_ATOM__
 
-#include "app/model/base_model.hpp"
-#include <util/types.hpp>
+#include "app/core/model/base_model.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
+#include <util/types.hpp>
 
 namespace VTX
 {
@@ -15,7 +15,7 @@ namespace VTX
 		class Molecule;
 		class Chain;
 		class Residue;
-		class Atom : public BaseModel, public Generic::BaseVisible
+		class Atom : public App::Core::Model::BaseModel, public Generic::BaseVisible
 		{
 			VTX_MODEL
 

@@ -150,7 +150,7 @@ namespace VTX::Renderer::GL
 		return { 0, 0 };
 		//_passGeometric->getFbo().bind( Framebuffer::Target::READ_FRAMEBUFFER );
 		//_passGeometric->getFbo().setReadBuffer( Framebuffer::Attachment::COLOR2 );
-		// Vec2i ids = Vec2i( Model::ID_UNKNOWN, Model::ID_UNKNOWN );
+		// Vec2i ids = Vec2i( App::Core::Model::ID_UNKNOWN, App::Core::Model::ID_UNKNOWN );
 		//_gl->glReadPixels( p_x, p_y, 1, 1, GLenum( Texture2D::Format::RG_INTEGER ), GL_UNSIGNED_INT, &ids );
 		//_passGeometric->getFbo().unbind();
 

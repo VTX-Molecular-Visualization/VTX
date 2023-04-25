@@ -19,7 +19,7 @@
 //  namespace VTX::View::UI::Widget::Measurement
 //{
 //	class DistanceToCycleRenderView :
-//		public View::BaseView<VTX::Model::Measurement::DistanceToCycle>,
+//		public App::Core::View::BaseView<VTX::Model::Measurement::DistanceToCycle>,
 //		public VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>
 //	{
 //		VTX_WIDGET

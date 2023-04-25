@@ -77,9 +77,9 @@ namespace VTX::UI::QT::Controller
 		// const Vec2i ids = QT_APP()->getMainWindow().getRender()->getPickedIds( p_event.pos().x(), p_event.pos().y()
 		// );
 
-		// if ( ids.x != Model::ID_UNKNOWN )
+		// if ( ids.x != App::Core::Model::ID_UNKNOWN )
 		//{
-		//	if ( ids.y != Model::ID_UNKNOWN )
+		//	if ( ids.y != App::Core::Model::ID_UNKNOWN )
 		//	{
 		//		// Bond clicked => set atom pair to next target
 		//		 if ( _currentMode == Mode::DISTANCE && _currentMeasureModel->getAtomCount() == 0 )
@@ -94,7 +94,7 @@ namespace VTX::UI::QT::Controller
 		//	else
 		//	{
 		//		const ID::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( ids.x );
-		//		Model::ID		   atomID;
+		//		App::Core::Model::ID		   atomID;
 
 		//		// If residue => select alpha carbon
 		//		if ( typeId == ID::Model::MODEL_RESIDUE )

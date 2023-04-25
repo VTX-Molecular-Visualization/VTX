@@ -22,7 +22,7 @@ namespace VTX
 			_molecule = nullptr;
 		}
 
-		void BaseRepresentable::initBaseRepresentable( Model::BaseModel * const			  p_model,
+		void BaseRepresentable::initBaseRepresentable( App::Core::Model::BaseModel * const			  p_model,
 													   Generic::BaseRepresentable * const p_parent,
 													   Model::Molecule * const			  p_molecule )
 		{

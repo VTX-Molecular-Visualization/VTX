@@ -7,12 +7,12 @@
 #include "ui/old_ui/ui/widget/settings/representation_preset_editor.hpp"
 #include <QWidget>
 #include <app/model/representation/representation_library.hpp>
-#include <app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 
 namespace VTX::View::UI::Widget::Representation
 {
 	class RepresentationLibraryView :
-		public View::BaseView<Model::Representation::RepresentationLibrary>,
+		public App::Core::View::BaseView<Model::Representation::RepresentationLibrary>,
 		public VTX::UI::Widget::BaseManualWidget<QWidget>
 	{
 		VTX_WIDGET

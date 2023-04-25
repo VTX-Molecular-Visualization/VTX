@@ -7,7 +7,7 @@
 #include <app/model/label.hpp>
 #include <app/old_app/generic/base_auto_delete.hpp>
 #include <app/old_app/id.hpp>
-#include <app/view/callback_view.hpp>
+#include <app/core/view/callback_view.hpp>
 #include <string>
 #include <vector>
 
@@ -36,7 +36,7 @@ namespace VTX::Model::Measurement
 		};
 
 	  private:
-		using MoleculeView = View::CallbackView<Model::Molecule, Model::Measurement::MeasureInProgress>;
+		using MoleculeView = App::Core::View::CallbackView<Model::Molecule, Model::Measurement::MeasureInProgress>;
 
 		class PotentialTarget
 		{

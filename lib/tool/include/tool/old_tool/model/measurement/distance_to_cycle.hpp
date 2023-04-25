@@ -6,7 +6,7 @@
 #include <app/model/label.hpp>
 #include <app/old_app/generic/base_auto_delete.hpp>
 #include <app/old_app/id.hpp>
-#include <app/view/callback_view.hpp>
+#include <app/core/view/callback_view.hpp>
 #include <string>
 #include <utility>
 
@@ -26,7 +26,7 @@ namespace VTX::Model::Measurement
 		VTX_MODEL
 		//
 		//	  private:
-		//		using MoleculeView = View::CallbackView<Model::Molecule, Model::Measurement::DistanceToCycle>;
+		//		using MoleculeView = App::Core::View::CallbackView<Model::Molecule, Model::Measurement::DistanceToCycle>;
 		//
 		//	  public:
 		//		using AtomPair = std::pair<const Model::Atom &, const Model::Atom &>;

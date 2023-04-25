@@ -15,7 +15,7 @@
 
 namespace VTX::Controller
 {
-	Picker::Picker() : _lastClickedIds { Model::ID_UNKNOWN, Model::ID_UNKNOWN } {}
+	Picker::Picker() : _lastClickedIds { App::Core::Model::ID_UNKNOWN, App::Core::Model::ID_UNKNOWN } {}
 	void Picker::update( const float & p_deltaTime ) { BaseMouseController::update( p_deltaTime ); }
 
 	void Picker::_onMouseLeftClick( const uint p_x, const uint p_y )
@@ -59,16 +59,16 @@ namespace VTX::Controller
 		}
 
 		// If something clicked.
-		if ( p_ids.x != Model::ID_UNKNOWN )
+		if ( p_ids.x != App::Core::Model::ID_UNKNOWN )
 		{
 			const ID::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( p_ids.x );
 
 			// Already selected.
 			if ( Selection::SelectionManager::get().getSelectionModel().isModelSelected(
-					 VTX::MVC_MANAGER().getModel<Model::BaseModel>( p_ids.x ) )
-				 && ( p_ids.y != Model::ID_UNKNOWN
+					 VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( p_ids.x ) )
+				 && ( p_ids.y != App::Core::Model::ID_UNKNOWN
 						  ? Selection::SelectionManager::get().getSelectionModel().isModelSelected(
-							  VTX::MVC_MANAGER().getModel<Model::BaseModel>( p_ids.y ) )
+							  VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( p_ids.y ) )
 						  : true ) )
 			{
 				// Remove from selection.
@@ -81,7 +81,7 @@ namespace VTX::Controller
 						_unselectItem( residuePicked );
 					}
 					// Bond.
-					else if ( p_ids.y != Model::ID_UNKNOWN )
+					else if ( p_ids.y != App::Core::Model::ID_UNKNOWN )
 					{
 						Model::Atom & atomPicked1 = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.x );
 						Model::Atom & atomPicked2 = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.y );
@@ -106,7 +106,7 @@ namespace VTX::Controller
 					_selectItem( residuePicked );
 				}
 				// Bond.
-				else if ( p_ids.y != Model::ID_UNKNOWN )
+				else if ( p_ids.y != App::Core::Model::ID_UNKNOWN )
 				{
 					Model::Atom & atomPicked1 = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.x );
 					Model::Atom & atomPicked2 = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.y );
@@ -360,7 +360,7 @@ namespace VTX::Controller
 	{
 		const Vec2i ids = VTXApp::get().getMainWindow().getPickedIds( p_x, p_y );
 
-		if ( ids.x == Model::ID_UNKNOWN )
+		if ( ids.x == App::Core::Model::ID_UNKNOWN )
 			return;
 
 		if ( _lastClickedIds.x != ids.x || _lastClickedIds.y != ids.y )

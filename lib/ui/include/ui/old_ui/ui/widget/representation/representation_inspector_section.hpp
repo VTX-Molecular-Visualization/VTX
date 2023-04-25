@@ -25,7 +25,7 @@
 #include <app/old_app/generic/base_colorable.hpp>
 #include <app/old_app/generic/base_representable.hpp>
 #include <app/model/representation/instantiated_representation.hpp>
-#include <app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Representation
@@ -91,7 +91,7 @@ namespace VTX::UI::Widget::Representation
 		QPushButton *						  _applyToChildrenButton	   = nullptr;
 		QPushButton *						  _revertButton				   = nullptr;
 
-		std::unordered_set<Model::ID> _representationIDs = std::unordered_set<Model::ID>();
+		std::unordered_set<App::Core::Model::ID> _representationIDs = std::unordered_set<App::Core::Model::ID>();
 
 		Model::Representation::InstantiatedRepresentation * _dummyRepresentation	 = nullptr;
 		int													_baseRepresentationIndex = -1;

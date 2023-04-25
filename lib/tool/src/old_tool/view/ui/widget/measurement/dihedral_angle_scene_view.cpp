@@ -15,7 +15,7 @@ namespace VTX::View::UI::Widget::Measurement
 {
 	DihedralAngleSceneView::DihedralAngleSceneView( Model::Measurement::DihedralAngle * const p_model,
 													QWidget * const							  p_parent ) :
-		View::BaseView<Model::Measurement::DihedralAngle>( p_model ),
+		App::Core::View::BaseView<Model::Measurement::DihedralAngle>( p_model ),
 		SceneItemWidget( p_parent )
 	{
 	}

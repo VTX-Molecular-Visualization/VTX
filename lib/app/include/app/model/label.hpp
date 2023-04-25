@@ -5,18 +5,18 @@
 #include <util/types.hpp>
 #include "app/old_app/generic/base_scene_item.hpp"
 #include "app/old_app/id.hpp"
-#include "app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
 
 namespace VTX::Model
 {
-	class Label : public BaseModel, public Generic::BaseSceneItem
+	class Label : public App::Core::Model::BaseModel, public Generic::BaseSceneItem
 	{
 		VTX_MODEL
 
 	  public:
 		// BaseSceneItem
-		const Model::ID & getModelID() const override { return getId(); }
+		const App::Core::Model::ID & getModelID() const override { return getId(); }
 
 		void		  setName( const std::string & p_name );
 		const Vec3f & getPosition() const;

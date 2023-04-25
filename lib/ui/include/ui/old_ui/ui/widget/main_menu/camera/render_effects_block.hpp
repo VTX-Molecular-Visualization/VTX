@@ -7,13 +7,13 @@
 #include <QWidget>
 #include <app/core/event/vtx_event.hpp>
 #include <app/model/renderer/render_effect_preset_library.hpp>
-#include <app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
 	class RenderEffectsBlock :
-		public VTX::View::BaseView<Model::Renderer::RenderEffectPresetLibrary>,
+		public VTX::App::Core::View::BaseView<Model::Renderer::RenderEffectPresetLibrary>,
 		public MenuToolBlockWidget
 	{
 		VTX_WIDGET

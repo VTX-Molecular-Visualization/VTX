@@ -11,10 +11,10 @@
 #include <app/action/scene.hpp>
 #include <app/action/selection.hpp>
 #include <app/event/global.hpp>
-#include <app/mvc.hpp>
 #include <app/model/label.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/selection.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 // #include <tool/old_tool/model/measurement/angle.hpp>
@@ -174,7 +174,7 @@ namespace VTX::UI::Widget::Scene
 		}
 	}
 
-	int SceneWidget::_findItemIndex( const Model::ID & p_modelID, const int p_startIndex ) const
+	int SceneWidget::_findItemIndex( const App::Core::Model::ID & p_modelID, const int p_startIndex ) const
 	{
 		for ( int i = p_startIndex; i < _sceneWidgets.size(); i++ )
 		{
@@ -253,7 +253,7 @@ namespace VTX::UI::Widget::Scene
 		return itemFound ? res : nullptr;
 	}
 
-	SceneItemWidget * SceneWidget::getSceneItemWidgetFromModel( const Model::BaseModel & p_model ) const
+	SceneItemWidget * SceneWidget::getSceneItemWidgetFromModel( const App::Core::Model::BaseModel & p_model ) const
 	{
 		for ( SceneItemWidget * const sceneItem : _sceneWidgets )
 		{
@@ -264,7 +264,7 @@ namespace VTX::UI::Widget::Scene
 		return nullptr;
 	}
 
-	void SceneWidget::openRenameEditor( const Model::ID & p_itemID ) const
+	void SceneWidget::openRenameEditor( const App::Core::Model::ID & p_itemID ) const
 	{
 		for ( SceneItemWidget * const sceneWidget : _sceneWidgets )
 		{
@@ -306,8 +306,7 @@ namespace VTX::UI::Widget::Scene
 		if ( p_itemTypeID != VTX::ID::Model::MODEL_PATH )
 		{
 			const std::vector<SceneItemWidget *>::const_reverse_iterator lastItemIt = _sceneWidgets.crbegin();
-			const ID::VTX_ID &											 lastItemTypeId
-				= VTX::MVC_MANAGER().getModelTypeID( ( *lastItemIt )->getModelID() );
+			const ID::VTX_ID & lastItemTypeId = VTX::MVC_MANAGER().getModelTypeID( ( *lastItemIt )->getModelID() );
 
 			if ( lastItemTypeId == VTX::ID::Model::MODEL_PATH )
 			{
@@ -460,7 +459,7 @@ namespace VTX::UI::Widget::Scene
 
 		const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
 
-		std::vector<Model::ID> droppedModelIDs = std::vector<Model::ID>();
+		std::vector<App::Core::Model::ID> droppedModelIDs = std::vector<App::Core::Model::ID>();
 
 		if ( modelData.getTypeID() == ID::Model::MODEL_SELECTION )
 		{
@@ -468,7 +467,7 @@ namespace VTX::UI::Widget::Scene
 				= VTX::MVC_MANAGER().getModel<Model::Selection>( modelData.getModelID() );
 
 			droppedModelIDs.reserve( selection.getItems().size() );
-			for ( const Model::ID & id : selection.getItems() )
+			for ( const App::Core::Model::ID & id : selection.getItems() )
 			{
 				droppedModelIDs.emplace_back( id );
 			}
@@ -482,7 +481,7 @@ namespace VTX::UI::Widget::Scene
 		std::vector<const Generic::BaseSceneItem *> droppedItems = std::vector<const Generic::BaseSceneItem *>();
 		droppedItems.reserve( droppedModelIDs.size() );
 
-		for ( const Model::ID & droppedModelId : droppedModelIDs )
+		for ( const App::Core::Model::ID & droppedModelId : droppedModelIDs )
 		{
 			SceneItemWidget * sceneItemWidget = nullptr;
 			int				  sceneItemIndex  = 0;

@@ -8,12 +8,12 @@
 #include <QPushButton>
 #include <QWidget>
 #include <app/model/renderer/render_effect_preset_library.hpp>
-#include <app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 
 namespace VTX::View::UI::Widget::Renderer
 {
 	class RenderEffectPresetLibraryView :
-		public View::BaseView<Model::Renderer::RenderEffectPresetLibrary>,
+		public App::Core::View::BaseView<Model::Renderer::RenderEffectPresetLibrary>,
 		public VTX::UI::Widget::BaseManualWidget<QWidget>
 	{
 		VTX_WIDGET

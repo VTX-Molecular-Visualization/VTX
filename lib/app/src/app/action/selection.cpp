@@ -63,7 +63,7 @@ namespace VTX::App::Action::Selection
 		std::vector<Model::Viewpoint *> viewpoints = std::vector<Model::Viewpoint *>();
 		std::vector<Model::Label *>		labels	   = std::vector<Model::Label *>();
 
-		for ( const Model::ID modelId : _models )
+		for ( const App::Core::Model::ID modelId : _models )
 		{
 			ID::VTX_ID modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
@@ -125,7 +125,7 @@ namespace VTX::App::Action::Selection
 		std::vector<Model::Residue *>  residues	  = std::vector<Model::Residue *>();
 		std::vector<Model::Atom *>	   atoms	  = std::vector<Model::Atom *>();
 
-		for ( const Model::ID modelId : _models )
+		for ( const App::Core::Model::ID modelId : _models )
 		{
 			ID::VTX_ID modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
@@ -537,7 +537,7 @@ namespace VTX::App::Action::Selection
 
 	void Copy::execute()
 	{
-		for ( const Model::ID & selectedObjectID : _selection.getItems() )
+		for ( const App::Core::Model::ID & selectedObjectID : _selection.getItems() )
 		{
 			const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( selectedObjectID );
 
@@ -592,7 +592,7 @@ namespace VTX::App::Action::Selection
 
 		for ( const Model::Selection::PairMoleculeIds & moleculeSelectionData : tmpSelection->getMoleculesMap() )
 		{
-			const Model::ID & idMolSource = moleculeSelectionData.first;
+			const App::Core::Model::ID & idMolSource = moleculeSelectionData.first;
 			Model::Molecule & molecule	  = VTX::MVC_MANAGER().getModel<Model::Molecule>( idMolSource );
 
 			if ( tmpSelection->isMoleculeFullySelected( molecule ) )
@@ -618,11 +618,11 @@ namespace VTX::App::Action::Selection
 	{
 		std::vector<Model::Molecule *> moleculesToDelete = std::vector<Model::Molecule *>();
 
-		const std::set<Model::ID>		 itemsToDeleteCopy		 = _selection.getItems();
+		const std::set<App::Core::Model::ID>		 itemsToDeleteCopy		 = _selection.getItems();
 		Model::Selection::MapMoleculeIds moleculeMapToDeleteCopy = _selection.getMoleculesMap();
 		_selection.clear();
 
-		for ( const Model::ID & selectedObjectID : itemsToDeleteCopy )
+		for ( const App::Core::Model::ID & selectedObjectID : itemsToDeleteCopy )
 		{
 			const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( selectedObjectID );
 

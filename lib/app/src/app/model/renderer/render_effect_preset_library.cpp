@@ -9,7 +9,7 @@
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/view/callback_view.hpp"
+#include "app/core/view/callback_view.hpp"
 #include "app/worker/render_effect_loader.hpp"
 
 namespace VTX::Model::Renderer
@@ -90,9 +90,9 @@ namespace VTX::Model::Renderer
 			_presets.insert( _presets.begin(), p_preset );
 		}
 
-		View::CallbackView<RenderEffectPreset, RenderEffectPresetLibrary> * const callbackView
+		App::Core::View::CallbackView<RenderEffectPreset, RenderEffectPresetLibrary> * const callbackView
 			= VTX::MVC_MANAGER()
-				  .instantiateView<View::CallbackView<RenderEffectPreset, RenderEffectPresetLibrary>>(
+				  .instantiateView<App::Core::View::CallbackView<RenderEffectPreset, RenderEffectPresetLibrary>>(
 					  p_preset, VTX::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
 
 		callbackView->setCallback( this, &RenderEffectPresetLibrary::_onPresetChange );

@@ -14,7 +14,7 @@
 namespace VTX::View::UI::Widget::Measurement
 {
 	DistanceSceneView::DistanceSceneView( Model::Measurement::Distance * const p_model, QWidget * const p_parent ) :
-		View::BaseView<Model::Measurement::Distance>( p_model ), SceneItemWidget( p_parent )
+		App::Core::View::BaseView<Model::Measurement::Distance>( p_model ), SceneItemWidget( p_parent )
 	{
 	}
 

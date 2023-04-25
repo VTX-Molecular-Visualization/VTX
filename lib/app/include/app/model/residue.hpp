@@ -2,7 +2,7 @@
 #define __VTX_MODEL_RESIDUE__
 
 #include "atom.hpp"
-#include "app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
 #include <util/types.hpp>
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_representable.hpp"
@@ -19,7 +19,7 @@ namespace VTX
 		class Molecule;
 		class Chain;
 		class Residue :
-			public BaseModel,
+			public App::Core::Model::BaseModel,
 			public Generic::BaseColorable,
 			public Generic::BaseVisible,
 			public Generic::BaseRepresentable

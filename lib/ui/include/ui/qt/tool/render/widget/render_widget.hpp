@@ -12,9 +12,9 @@
 #include <QResizeEvent>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/model/base_model.hpp>
+#include <app/core/model/base_model.hpp>
 #include <app/mvc.hpp>
-#include <app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 #include <app/worker/snapshoter.hpp>
 #include <map>
 
@@ -76,8 +76,8 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 		template<typename V,
 				 typename M,
-				 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
-				 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>,
+				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
+				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>,
 				 typename = std::enable_if<std::is_base_of<BaseIntegratedWidget, V>::value>>
 		void _removeViewIntegratedWidget( const M * const p_model, const ID::VTX_ID & p_viewName )
 		{

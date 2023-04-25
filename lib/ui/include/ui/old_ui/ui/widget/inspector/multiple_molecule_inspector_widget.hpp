@@ -19,7 +19,7 @@
 #include <app/model/molecule.hpp>
 #include <app/model/representation/instantiated_representation.hpp>
 #include <app/model/representation/representation.hpp>
-#include <app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {

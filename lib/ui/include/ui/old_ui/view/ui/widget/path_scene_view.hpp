@@ -16,12 +16,12 @@
 #include <app/model/viewpoint.hpp>
 #include <app/old_app/generic/base_visible.hpp>
 #include <app/old_app/id.hpp>
-#include <app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 #include <map>
 
 namespace VTX::View::UI::Widget
 {
-	class PathSceneView : public View::BaseView<Model::Path>, public VTX::UI::Widget::Scene::SceneItemWidget
+	class PathSceneView : public App::Core::View::BaseView<Model::Path>, public VTX::UI::Widget::Scene::SceneItemWidget
 	{
 		VTX_WIDGET
 		VTX_VIEW
@@ -31,11 +31,11 @@ namespace VTX::View::UI::Widget
 		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
 		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
-		const Model::ID &			   getModelID() const override { return _model->getId(); };
+		const App::Core::Model::ID &			   getModelID() const override { return _model->getId(); };
 		const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };
-		virtual bool				   containsModel( const Model::BaseModel & p_model ) const override;
-		virtual std::vector<Model::ID> getAllItemsFrom( const Model::BaseModel & p_model ) const override;
-		virtual std::vector<Model::ID> getAllItemsTo( const Model::BaseModel & p_model ) const override;
+		virtual bool				   containsModel( const App::Core::Model::BaseModel & p_model ) const override;
+		virtual std::vector<App::Core::Model::ID> getAllItemsFrom( const App::Core::Model::BaseModel & p_model ) const override;
+		virtual std::vector<App::Core::Model::ID> getAllItemsTo( const App::Core::Model::BaseModel & p_model ) const override;
 
 		QTreeWidgetItem * getLastVisibleItem() override;
 

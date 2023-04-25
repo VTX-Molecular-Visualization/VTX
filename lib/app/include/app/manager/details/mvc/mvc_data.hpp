@@ -1,9 +1,9 @@
 #ifndef __VTX_APP_MANAGER_DETAILS_MVC_MVC_DATA__
 #define __VTX_APP_MANAGER_DETAILS_MVC_MVC_DATA__
 
-#include "app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
+#include "app/core/view/base_view.hpp"
 #include "app/old_app/id.hpp"
-#include "app/view/base_view.hpp"
 #include <map>
 
 namespace VTX::App::Manager::Details::MVC
@@ -11,29 +11,29 @@ namespace VTX::App::Manager::Details::MVC
 	class MvcData
 	{
 	  public:
-		using MapViews	= std::map<ID::VTX_ID, View::BaseView<Model::BaseModel> *>;
-		using PairViews = std::pair<const ID::VTX_ID, View::BaseView<Model::BaseModel> *>;
+		using MapViews	= std::map<ID::VTX_ID, App::Core::View::BaseView<App::Core::Model::BaseModel> *>;
+		using PairViews = std::pair<const ID::VTX_ID, App::Core::View::BaseView<App::Core::Model::BaseModel> *>;
 
-		MvcData( Model::BaseModel * const p_model ) : _model( p_model ) {}
+		MvcData( App::Core::Model::BaseModel * const p_model ) : _model( p_model ) {}
 		~MvcData() = default;
 
-		const Model::ID &		 getId() const { return _model->getId(); }
-		const Model::BaseModel & getModel() const { return *_model; };
-		Model::BaseModel &		 getModel() { return *_model; };
+		const App::Core::Model::ID &		getId() const { return _model->getId(); }
+		const App::Core::Model::BaseModel & getModel() const { return *_model; };
+		App::Core::Model::BaseModel &		getModel() { return *_model; };
 
 		template<typename M,
 				 typename V,
-				 typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>,
-				 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
+				 typename = std::enable_if<std::is_base_of<M, App::Core::Model::BaseModel>::value>,
+				 typename = std::enable_if<std::is_base_of<V, App::Core::View::BaseView<M>>::value>>
 		inline void addView( const ID::VTX_ID & p_id, V * const p_view )
 		{
-			_views.emplace( p_id, (View::BaseView<Model::BaseModel> * const)p_view );
+			_views.emplace( p_id, (App::Core::View::BaseView<App::Core::Model::BaseModel> * const)p_view );
 		}
 
 		template<typename M,
 				 typename V,
-				 typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>,
-				 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
+				 typename = std::enable_if<std::is_base_of<M, App::Core::Model::BaseModel>::value>,
+				 typename = std::enable_if<std::is_base_of<V, App::Core::View::BaseView<M>>::value>>
 		inline V * const removeView( const ID::VTX_ID & p_id )
 		{
 			V * const view = (V * const)_views[ p_id ];
@@ -41,17 +41,17 @@ namespace VTX::App::Manager::Details::MVC
 			return view;
 		}
 
-		inline View::BaseView<Model::BaseModel> * removeView( const ID::VTX_ID & p_id )
+		inline App::Core::View::BaseView<App::Core::Model::BaseModel> * removeView( const ID::VTX_ID & p_id )
 		{
-			View::BaseView<Model::BaseModel> * const view = _views[ p_id ];
+			App::Core::View::BaseView<App::Core::Model::BaseModel> * const view = _views[ p_id ];
 			_views.erase( p_id );
 			return view;
 		}
 
 		template<typename M,
 				 typename V,
-				 typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>,
-				 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
+				 typename = std::enable_if<std::is_base_of<M, App::Core::Model::BaseModel>::value>,
+				 typename = std::enable_if<std::is_base_of<V, App::Core::View::BaseView<M>>::value>>
 		inline V * const getView( const ID::VTX_ID & p_id )
 		{
 			return (V * const)_views[ p_id ];
@@ -70,8 +70,8 @@ namespace VTX::App::Manager::Details::MVC
 		};
 
 	  private:
-		Model::BaseModel * const _model;
-		MapViews				 _views = MapViews();
+		App::Core::Model::BaseModel * const _model;
+		MapViews							_views = MapViews();
 	};
 
 } // namespace VTX::App::Manager::Details::MVC

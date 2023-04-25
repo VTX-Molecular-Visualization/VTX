@@ -200,7 +200,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		QTimer::singleShot( 0, this, [ this ] { _focusedTarget = nullptr; } );
 	}
 
-	void ContextualMenuSelection::setFocusedTarget( Model::BaseModel * const p_focusedTarget )
+	void ContextualMenuSelection::setFocusedTarget( App::Core::Model::BaseModel * const p_focusedTarget )
 	{
 		_focusedTarget = p_focusedTarget;
 	}
@@ -269,7 +269,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_renameAction()
 	{
-		const Model::ID & modelID = *_target->getItems().begin();
+		const App::Core::Model::ID & modelID = *_target->getItems().begin();
 
 		const Tool::Scene::Widget::SceneWidget * const sceneWidget
 			= QT_APP()->getMainWindow().getPanel<Tool::Scene::Widget::SceneWidget>( QT::Tool::SCENE_WINDOW_KEY );
@@ -434,7 +434,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		}
 		else if ( _target->getMoleculesMap().size() > 0 )
 		{
-			const Model::ID & moleculeID = _target->getMoleculesMap().begin()->first;
+			const App::Core::Model::ID & moleculeID = _target->getMoleculesMap().begin()->first;
 			molecule					 = &( VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeID ) );
 		}
 

@@ -75,7 +75,7 @@ namespace VTX::Buffer
 		_updateBuffer( _vboSelections, p_selections );
 	}
 
-	void MeshTriangle::setIds( const std::vector<Model::ID> & p_ids ) { _updateBuffer( _vboIds, p_ids ); }
+	void MeshTriangle::setIds( const std::vector<App::Core::Model::ID> & p_ids ) { _updateBuffer( _vboIds, p_ids ); }
 
 	void MeshTriangle::setIndices( const std::vector<uint> & p_indices ) { _updateBuffer( _ibo, p_indices ); }
 

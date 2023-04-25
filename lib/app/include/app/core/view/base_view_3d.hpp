@@ -1,7 +1,7 @@
 #ifndef __VTX_VIEW_BASE_VIEW_3D__
 #define __VTX_VIEW_BASE_VIEW_3D__
 
-#include "app/model/base_model_3d.hpp"
+#include "app/core/model/base_model_3d.hpp"
 #include "app/old_app/generic/base_renderable.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
@@ -9,10 +9,11 @@
 #include "base_view.hpp"
 #include <util/math.hpp>
 
-namespace VTX::View
+namespace VTX::App::Core::View
 {
 	template<typename T,
-			 typename = std::enable_if<std::is_base_of<Model::BaseModel3D<Buffer::BaseBufferOpenGL>, T>::value>>
+			 typename
+			 = std::enable_if<std::is_base_of<App::Core::Model::BaseModel3D<Buffer::BaseBufferOpenGL>, T>::value>>
 	class BaseView3D : public BaseView<T>, public Generic::BaseRenderable, public Generic::BaseOpenGL
 	{
 		VTX_VIEW
@@ -54,5 +55,5 @@ namespace VTX::View
 		virtual Renderer::GL::Program * const _createProgram() = 0;
 		virtual void						  _init() {}
 	};
-} // namespace VTX::View
+} // namespace VTX::App::Core::View
 #endif

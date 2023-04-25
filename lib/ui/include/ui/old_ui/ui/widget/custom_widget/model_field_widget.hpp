@@ -10,10 +10,10 @@
 
 namespace VTX
 {
-	namespace Model
+	namespace App::Core::Model
 	{
 		class BaseModel;
-	}
+	} // namespace App::Core::Model
 
 	namespace UI::Widget::CustomWidget
 	{
@@ -29,23 +29,23 @@ namespace VTX
 			void localize() override;
 			void refresh();
 
-			inline Model::BaseModel * const		  getModel() { return _model; };
-			inline const Model::BaseModel * const getModel() const { return _model; };
-			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
+			inline App::Core::Model::BaseModel * const		 getModel() { return _model; };
+			inline const App::Core::Model::BaseModel * const getModel() const { return _model; };
+			template<typename M, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>>
 			M * const getModel()
 			{
 				return static_cast<M *>( getModel() );
 			}
-			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
+			template<typename M, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>>
 			const M * const getModel() const
 			{
 				return static_cast<M *>( getModel() );
 			}
 
-			void setModel( Model::BaseModel * const p_model );
+			void setModel( App::Core::Model::BaseModel * const p_model );
 
 		  signals:
-			void onModelChanged( Model::BaseModel * const p_model );
+			void onModelChanged( App::Core::Model::BaseModel * const p_model );
 
 		  protected:
 			ModelFieldWidget( QWidget * p_parent );
@@ -53,12 +53,12 @@ namespace VTX
 			void _setupUi( const QString & p_name ) override;
 			void _setupSlots() override;
 
-			void _onModelDropped( Model::BaseModel * const p_model );
+			void _onModelDropped( App::Core::Model::BaseModel * const p_model );
 
 			QMimeData * _getDataForDrag() const override;
 
 		  private:
-			Model::BaseModel * _model = nullptr;
+			App::Core::Model::BaseModel * _model = nullptr;
 
 			QLabel * _label				  = nullptr;
 			QLabel * _modelTypeIconWidget = nullptr;

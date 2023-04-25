@@ -83,14 +83,14 @@ namespace VTX::Model
 
 	  public:
 		void copyFromSelection( const Model::Selection & p_selection,
-								const Model::ID &		 p_moleculeID,
+								const App::Core::Model::ID &		 p_moleculeID,
 								const int				 p_frame = ALL_FRAMES_INDEX );
 		void copyFromMolecule( const Model::Molecule & p_molecule, const int p_frame = ALL_FRAMES_INDEX );
 		void copyFromChain( const Model::Chain & p_chain, const int p_frame = ALL_FRAMES_INDEX );
 		void copyFromResidue( const Model::Residue & p_residue, const int p_frame = ALL_FRAMES_INDEX );
 		void copyFromAtom( const Model::Atom & p_atom, const int p_frame = ALL_FRAMES_INDEX );
 
-		void extractFromSelection( const Model::Selection & p_selection, const Model::ID & p_moleculeID );
+		void extractFromSelection( const Model::Selection & p_selection, const App::Core::Model::ID & p_moleculeID );
 		void extractChain( const Model::Chain & p_chain );
 		void extractResidue( const Model::Residue & p_residue );
 		void extractAtom( const Model::Atom & p_atom );

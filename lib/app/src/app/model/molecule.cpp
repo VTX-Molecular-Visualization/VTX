@@ -221,7 +221,7 @@ namespace VTX
 			if ( _defaultRepresentationIDs.size() <= 0 )
 				return;
 
-			for ( const Model::ID & instantiatedRepresentationID : _defaultRepresentationIDs )
+			for ( const App::Core::Model::ID & instantiatedRepresentationID : _defaultRepresentationIDs )
 			{
 				if ( !VTX::MVC_MANAGER().doesModelExists( instantiatedRepresentationID ) )
 					continue;

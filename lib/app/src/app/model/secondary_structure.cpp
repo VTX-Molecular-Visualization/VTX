@@ -55,7 +55,7 @@ namespace VTX
 			std::vector<uint>		 ssTypes;
 			std::vector<Color::Rgba> colors;
 			std::vector<uint>		 visibilities;
-			std::vector<Model::ID>	 ids;
+			std::vector<App::Core::Model::ID>	 ids;
 			std::vector<uint>		 residueIndex;
 
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
@@ -88,7 +88,7 @@ namespace VTX
 						ssTypes		  = std::vector<uint>();
 						colors		  = std::vector<Color::Rgba>();
 						visibilities  = std::vector<uint>();
-						ids			  = std::vector<Model::ID>();
+						ids			  = std::vector<App::Core::Model::ID>();
 						residueIndex  = std::vector<uint>();
 
 						createVectors = false;
@@ -225,7 +225,7 @@ namespace VTX
 												const std::vector<uint> &		 p_ssTypes,
 												const std::vector<Color::Rgba> & p_colors,
 												const std::vector<uint> &		 p_visibilities,
-												const std::vector<Model::ID> &	 p_ids )
+												const std::vector<App::Core::Model::ID> &	 p_ids )
 		{
 			if ( p_caPositions.size() >= 4 )
 			{

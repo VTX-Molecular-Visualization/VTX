@@ -3,13 +3,13 @@
 
 #include "app/core/event/vtx_event.hpp"
 #include "app/mvc.hpp"
-#include "app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
 #include "render_effect_preset.hpp"
 #include <vector>
 
 namespace VTX::Model::Renderer
 {
-	class RenderEffectPresetLibrary : public BaseModel
+	class RenderEffectPresetLibrary : public App::Core::Model::BaseModel
 	{
 		VTX_MODEL
 
