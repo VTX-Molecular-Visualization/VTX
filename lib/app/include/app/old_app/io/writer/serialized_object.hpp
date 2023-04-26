@@ -18,8 +18,8 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		SerializedObject() : _thread( nullptr ) {}
-		SerializedObject( const VTX::Core::Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
-		SerializedObject( const VTX::Core::Worker::BaseWorker * const p_worker ) : _thread( nullptr ) {}
+		SerializedObject( const VTX::App::Core::Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
+		SerializedObject( const VTX::App::Core::Worker::BaseWorker * const p_worker ) : _thread( nullptr ) {}
 
 		void writeFile( const FilePath & p_path, const T & p_data ) override
 		{
@@ -79,7 +79,7 @@ namespace VTX::IO::Writer
 		}
 
 	  private:
-		const VTX::Core::Worker::BaseThread * const _thread;
+		const VTX::App::Core::Worker::BaseThread * const _thread;
 	};
 } // namespace VTX::IO::Writer
 #endif

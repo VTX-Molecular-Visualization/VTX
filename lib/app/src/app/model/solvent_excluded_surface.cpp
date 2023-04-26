@@ -1,18 +1,18 @@
 #include "app/model/solvent_excluded_surface.hpp"
-#include "app/old_app/custom/iterator.hpp"
-#include "app/old_app/math/marching_cube.hpp"
+#include "app/internal/worker/gpu_buffer_initializer.hpp"
+#include "app/internal/worker/gpu_computer.hpp"
 #include "app/model/atom.hpp"
 #include "app/model/category.hpp"
 #include "app/model/chain.hpp"
 #include "app/model/molecule.hpp"
 #include "app/model/residue.hpp"
+#include "app/old_app/custom/iterator.hpp"
+#include "app/old_app/math/marching_cube.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 #include "app/old_app/view/d3/triangle.hpp"
-#include "app/worker/gpu_buffer_initializer.hpp"
-#include "app/worker/gpu_computer.hpp"
-#include "app/core/worker/worker_manager.hpp"
+#include "app/worker.hpp"
 #include <numeric>
 #include <util/chrono.hpp>
 

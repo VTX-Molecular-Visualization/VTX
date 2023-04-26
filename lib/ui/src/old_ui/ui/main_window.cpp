@@ -83,7 +83,7 @@ namespace VTX::UI
 		if ( VTXApp::get().hasAnyModifications() )
 		{
 			p_closeEvent->ignore();
-			VTX::Core::Worker::CallbackThread callback = VTX::Core::Worker::CallbackThread(
+			VTX::App::Core::Worker::CallbackThread callback = VTX::App::Core::Worker::CallbackThread(
 				[]( const uint p_code )
 				{
 					if ( p_code )

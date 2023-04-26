@@ -1,12 +1,12 @@
 #include "app/action/renderer.hpp"
+#include "app/internal/worker/render_effect_loader.hpp"
+#include "app/internal/worker/render_effect_saver.hpp"
 #include "app/mvc.hpp"
-#include "app/core/worker/worker_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/worker/render_effect_loader.hpp"
-#include "app/worker/render_effect_saver.hpp"
+#include "app/worker.hpp"
 
 namespace VTX::App::Action::Renderer
 {
@@ -15,7 +15,7 @@ namespace VTX::App::Action::Renderer
 		Worker::RenderEffectPresetLibraryLoader * libraryLoader
 			= new Worker::RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary::get() );
 
-		VTX::Core::Worker::CallbackWorker * const callback = new VTX::Core::Worker::CallbackWorker(
+		VTX::App::Core::Worker::CallbackWorker * const callback = new VTX::App::Core::Worker::CallbackWorker(
 			[]()
 			{
 				Model::Renderer::RenderEffectPresetLibrary::get().applyPreset(
@@ -41,8 +41,8 @@ namespace VTX::App::Action::Renderer
 			{
 				Worker::RenderEffectPresetSaverThread * librarySaver
 					= new Worker::RenderEffectPresetSaverThread( renderEffect );
-				VTX::Core::Worker::CallbackThread * callback
-					= new VTX::Core::Worker::CallbackThread( []( const uint p_code ) {} );
+				VTX::App::Core::Worker::CallbackThread * callback
+					= new VTX::App::Core::Worker::CallbackThread( []( const uint p_code ) {} );
 
 				VTX_THREAD( librarySaver, callback );
 			}

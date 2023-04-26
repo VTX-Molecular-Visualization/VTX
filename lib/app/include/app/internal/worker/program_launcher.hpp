@@ -7,7 +7,7 @@
 
 namespace VTX::Worker
 {
-	class ProgramLauncher : public Core::Worker::BaseThread
+	class ProgramLauncher : public App::Core::Worker::BaseThread
 	{
 		// Q_OBJECT
 

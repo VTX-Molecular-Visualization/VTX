@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_CORE_WORKER_BASE_WORKER__
 #define __VTX_APP_CORE_WORKER_BASE_WORKER__
 
-namespace VTX::Core::Worker
+namespace VTX::App::Core::Worker
 {
 	class BaseWorker
 	{
@@ -14,5 +14,5 @@ namespace VTX::Core::Worker
 	  protected:
 		virtual void _run() = 0;
 	};
-} // namespace VTX::Core::Worker
+} // namespace VTX::App::Core::Worker
 #endif

@@ -15,7 +15,7 @@ namespace VTX
 
 	namespace Worker
 	{
-		class RenderEffectPresetLibraryLoader : public Core::Worker::BaseWorker
+		class RenderEffectPresetLibraryLoader : public App::Core::Worker::BaseWorker
 		{
 		  public:
 			explicit RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary & p_library ) :
@@ -41,7 +41,7 @@ namespace VTX
 			bool										 _notify = true;
 		};
 
-		class RenderEffectPresetLoader : public VTX::Core::Worker::BaseWorker
+		class RenderEffectPresetLoader : public VTX::App::Core::Worker::BaseWorker
 		{
 		  public:
 			explicit RenderEffectPresetLoader( const FilePath & p_path ) { _paths.emplace_back( p_path ); }

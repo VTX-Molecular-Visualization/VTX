@@ -4,8 +4,8 @@
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/dialog.hpp"
 #include <app/core/action/base_action.hpp>
+#include <app/core/worker/callback.hpp>
 #include <app/model/molecule.hpp>
-#include <app/core/worker/worker_manager.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -51,7 +51,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 	  public:
 		explicit Save() : _path( "" ), _callback( nullptr ) {}
 		explicit Save( const FilePath & p_path ) : _path( p_path ), _callback( nullptr ) {}
-		explicit Save( const FilePath & p_path, VTX::Core::Worker::CallbackThread * const p_callback ) :
+		explicit Save( const FilePath & p_path, VTX::App::Core::Worker::CallbackThread * const p_callback ) :
 			_path( p_path ), _callback( p_callback )
 		{
 		}
@@ -59,8 +59,8 @@ namespace VTX::UI::QT::Tool::Session::Action
 		virtual void execute() override;
 
 	  private:
-		const FilePath				   _path;
-		VTX::Core::Worker::CallbackThread * const _callback;
+		const FilePath								   _path;
+		VTX::App::Core::Worker::CallbackThread * const _callback;
 	};
 
 	class ToggleCameraController : public VTX::App::Core::Action::BaseAction

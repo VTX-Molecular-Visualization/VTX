@@ -54,7 +54,7 @@ namespace VTX
 		class Serializer
 		{
 		  public:
-			Serializer( const VTX::Core::Worker::BaseThread * const p_thread = nullptr );
+			Serializer( const VTX::App::Core::Worker::BaseThread * const p_thread = nullptr );
 
 			nlohmann::json serialize( const VTXApp & ) const;
 			nlohmann::json serialize( const Object3D::Scene & ) const;
@@ -189,7 +189,7 @@ namespace VTX
 			void _logInfo( const std::string & p_msg ) const;
 			void _logDebug( const std::string & p_msg ) const;
 
-			const VTX::Core::Worker::BaseThread * const _thread;
+			const VTX::App::Core::Worker::BaseThread * const _thread;
 		};
 
 	} // namespace IO

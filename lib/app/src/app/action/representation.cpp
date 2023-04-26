@@ -1,12 +1,12 @@
 #include "app/action/representation.hpp"
+#include "app/internal/worker/representation_loader.hpp"
+#include "app/internal/worker/representation_saver.hpp"
 #include "app/mvc.hpp"
-#include "app/core/worker/worker_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/worker/representation_loader.hpp"
-#include "app/worker/representation_saver.hpp"
+#include "app/worker.hpp"
 #include <filesystem>
 #include <util/filesystem.hpp>
 

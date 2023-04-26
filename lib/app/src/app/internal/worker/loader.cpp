@@ -1,8 +1,8 @@
-#include "app/worker/loader.hpp"
-#include "app/mvc.hpp"
+#include "app/internal/worker/loader.hpp"
 #include "app/event.hpp"
 #include "app/model/mesh_triangle.hpp"
 #include "app/model/molecule.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/lib_assimp.hpp"
 #include "app/old_app/io/reader/lib_chemfiles.hpp"
@@ -102,8 +102,7 @@ namespace VTX
 				IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles( this );
 
 				// Set PRM.
-				Model::Molecule * const molecule
-					= VTX::MVC_MANAGER().instantiateModel<Model::Molecule>();
+				Model::Molecule * const molecule = VTX::MVC_MANAGER().instantiateModel<Model::Molecule>();
 				molecule->setConfiguration( p_config );
 
 				// Load.
@@ -141,8 +140,7 @@ namespace VTX
 					{
 						if ( _openTrajectoryAsMolecule )
 						{
-							Model::Molecule * const molecule
-								= VTX::MVC_MANAGER().instantiateModel<Model::Molecule>();
+							Model::Molecule * const molecule = VTX::MVC_MANAGER().instantiateModel<Model::Molecule>();
 							molecule->setConfiguration( p_config );
 
 							// Load.
@@ -183,8 +181,7 @@ namespace VTX
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
 				IO::Reader::LibAssimp * const reader = new IO::Reader::LibAssimp();
-				Model::MeshTriangle * const	  mesh
-					= VTX::MVC_MANAGER().instantiateModel<Model::MeshTriangle>();
+				Model::MeshTriangle * const	  mesh	 = VTX::MVC_MANAGER().instantiateModel<Model::MeshTriangle>();
 
 				try
 				{
@@ -215,8 +212,8 @@ namespace VTX
 					 || bufferType == IO::Filesystem::FILE_TYPE_ENUM::TRAJECTORY )
 				{
 					// Create reader.
-					IO::Reader::LibChemfiles * reader = new IO::Reader::LibChemfiles( this );
-					Model::Molecule * molecule = VTX::MVC_MANAGER().instantiateModel<Model::Molecule>();
+					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles( this );
+					Model::Molecule *		   molecule = VTX::MVC_MANAGER().instantiateModel<Model::Molecule>();
 
 					// Load.
 					try

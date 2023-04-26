@@ -1,11 +1,11 @@
 #include "app/action/path.hpp"
-#include "app/mvc.hpp"
 #include "app/model/selection.hpp"
 #include "app/model/viewpoint.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 // #include "state/export.hpp"
+#include "app/internal/worker/snapshoter.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/worker/snapshoter.hpp"
 
 namespace VTX::App::Action::Path
 {

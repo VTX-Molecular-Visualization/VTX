@@ -14,7 +14,7 @@
 
 namespace VTX::Worker
 {
-	class GpuComputer : public Core::Worker::BaseWorker, public Generic::BaseOpenGL
+	class GpuComputer : public App::Core::Worker::BaseWorker, public Generic::BaseOpenGL
 	{
 	  public:
 		explicit GpuComputer( const FilePath &										   p_shader,

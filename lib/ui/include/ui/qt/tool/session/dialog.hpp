@@ -3,8 +3,8 @@
 
 #include <QString>
 #include <QWidget>
+#include <app/core/worker/callback.hpp>
 #include <app/model/molecule.hpp>
-#include <app/core/worker/worker_manager.hpp>
 
 namespace VTX::UI::QT::Tool::Session::Dialog
 {
@@ -17,9 +17,9 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 
 	void createNewSessionDialog();
 
-	void leavingSessionDialog( VTX::Core::Worker::CallbackThread & p_callbackSucceed );
+	void leavingSessionDialog( VTX::App::Core::Worker::CallbackThread & p_callbackSucceed );
 
 	void openLoadSessionDialog();
-	void openSaveSessionDialog( VTX::Core::Worker::CallbackThread * const p_callback = nullptr );
+	void openSaveSessionDialog( VTX::App::Core::Worker::CallbackThread * const p_callback = nullptr );
 } // namespace VTX::UI::QT::Tool::Session::Dialog
 #endif

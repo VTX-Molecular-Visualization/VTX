@@ -16,7 +16,7 @@ namespace VTX
 
 	namespace Worker
 	{
-		class RepresentationLibraryLoader : public Core::Worker::BaseWorker
+		class RepresentationLibraryLoader : public App::Core::Worker::BaseWorker
 		{
 		  public:
 			explicit RepresentationLibraryLoader( Model::Representation::RepresentationLibrary & p_library ) :
@@ -44,7 +44,7 @@ namespace VTX
 			bool										   _restore = true;
 		};
 
-		class RepresentationLoader : public VTX::Core::Worker::BaseWorker
+		class RepresentationLoader : public VTX::App::Core::Worker::BaseWorker
 		{
 		  public:
 			explicit RepresentationLoader( const FilePath & p_paths ) { _paths.emplace_back( p_paths ); }

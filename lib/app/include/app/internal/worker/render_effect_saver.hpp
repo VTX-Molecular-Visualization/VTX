@@ -14,7 +14,7 @@ namespace VTX
 
 	namespace Worker
 	{
-		class RenderEffectPresetSaverThread : public Core::Worker::BaseThread
+		class RenderEffectPresetSaverThread : public App::Core::Worker::BaseThread
 		{
 			// Q_OBJECT
 
@@ -30,7 +30,7 @@ namespace VTX
 		  private:
 			const Model::Renderer::RenderEffectPreset * const _preset;
 		};
-		class RenderEffectPresetSaver : public VTX::Core::Worker::BaseWorker
+		class RenderEffectPresetSaver : public VTX::App::Core::Worker::BaseWorker
 		{
 		  public:
 			explicit RenderEffectPresetSaver( const Model::Renderer::RenderEffectPreset * const p_preset,

@@ -5,7 +5,7 @@
 #include "app/core/action/base_action.hpp"
 #include "app/model/path.hpp"
 #include "app/old_app/path/path_enum.hpp"
-// #include "app/worker/snapshoter.hpp"
+// #include "app/internal/worker/snapshoter.hpp"
 
 namespace VTX::App::Action::Path
 {

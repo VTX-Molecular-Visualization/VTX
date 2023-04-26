@@ -15,7 +15,7 @@ namespace VTX
 
 	namespace Worker
 	{
-		class SceneLoader : public Core::Worker::BaseWorker
+		class SceneLoader : public App::Core::Worker::BaseWorker
 		{
 		  public:
 			explicit SceneLoader( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}

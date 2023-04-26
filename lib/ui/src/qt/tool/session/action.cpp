@@ -4,15 +4,13 @@
 #include "ui/qt/state/visualization.hpp"
 #include "ui/qt/tool/session/dialog.hpp"
 #include <app/action/main.hpp>
-#include <app/core/worker/worker_manager.hpp>
-
+#include <app/internal/worker/loader.hpp>
+#include <app/internal/worker/saver.hpp>
+#include <app/internal/worker/scene_loader.hpp>
 #include <app/old_app/id.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
-#include <app/worker/loader.hpp>
-#include <app/worker/saver.hpp>
-#include <app/worker/scene_loader.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Tool::Session::Action
@@ -41,7 +39,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 			if ( _paths.empty() )
 				return;
 
-			VTX::Core::Worker::CallbackThread callback = VTX::Core::Worker::CallbackThread(
+			VTX::App::Core::Worker::CallbackThread callback = VTX::App::Core::Worker::CallbackThread(
 				[ this ]( const uint p_code )
 				{
 					if ( p_code )

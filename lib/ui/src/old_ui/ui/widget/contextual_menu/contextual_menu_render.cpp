@@ -19,7 +19,7 @@
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/setting.hpp>
-#include <app/worker/snapshoter.hpp>
+#include <app/internal/worker/snapshoter.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {

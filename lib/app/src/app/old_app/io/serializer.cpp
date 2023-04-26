@@ -36,7 +36,7 @@
 
 namespace VTX::IO
 {
-	Serializer::Serializer( const VTX::Core::Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
+	Serializer::Serializer( const VTX::App::Core::Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
 
 	nlohmann::json Serializer::serialize( const VTXApp & p_app ) const
 	{

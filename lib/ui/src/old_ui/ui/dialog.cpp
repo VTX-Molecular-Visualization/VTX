@@ -146,7 +146,7 @@ namespace VTX::UI
 
 	void Dialog::createNewSessionDialog()
 	{
-		VTX::Core::Worker::CallbackThread callback = VTX::Core::Worker::CallbackThread(
+		VTX::App::Core::Worker::CallbackThread callback = VTX::App::Core::Worker::CallbackThread(
 			[]( const uint p_code )
 			{
 				if ( p_code )
@@ -155,7 +155,7 @@ namespace VTX::UI
 
 		leavingSessionDialog( callback );
 	}
-	void Dialog::leavingSessionDialog( VTX::Core::Worker::CallbackThread & p_callback )
+	void Dialog::leavingSessionDialog( VTX::App::Core::Worker::CallbackThread & p_callback )
 	{
 		if ( !VTXApp::get().hasAnyModifications() )
 		{
@@ -174,7 +174,7 @@ namespace VTX::UI
 		{
 			const FilePath & filepath = VTXApp::get().getScenePathData().getCurrentPath();
 
-			VTX::Core::Worker::CallbackThread * threadCallback = new VTX::Core::Worker::CallbackThread( p_callback );
+			VTX::App::Core::Worker::CallbackThread * threadCallback = new VTX::App::Core::Worker::CallbackThread( p_callback );
 
 			if ( filepath.empty() )
 			{
@@ -195,7 +195,7 @@ namespace VTX::UI
 		}
 	}
 
-	void Dialog::openSaveSessionDialog( VTX::Core::Worker::CallbackThread * const p_callback )
+	void Dialog::openSaveSessionDialog( VTX::App::Core::Worker::CallbackThread * const p_callback )
 	{
 		QString		  defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_FILE_WRITE_FILTER );
 		const QString defaultPath	= QString::fromStdString( IO::Filesystem::getDefaultSceneSavePath().string() );

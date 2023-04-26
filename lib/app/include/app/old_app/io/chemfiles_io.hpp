@@ -1,17 +1,15 @@
 #ifndef __VTX_IO_CHEMFILES__
 #define __VTX_IO_CHEMFILES__
 
-#include "app/core/worker/base_thread.hpp"
-#include "app/core/worker/base_worker.hpp"
 #include <string>
 
 namespace VTX
 {
-	namespace Worker
+	namespace App::Core::Worker
 	{
 		class BaseThread;
 		class BaseWorker;
-	} // namespace Worker
+	} // namespace App::Core::Worker
 
 	namespace IO
 	{
@@ -19,8 +17,8 @@ namespace VTX
 		{
 		  public:
 			ChemfilesIO() : _thread( nullptr ) {}
-			ChemfilesIO( const VTX::Core::Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
-			ChemfilesIO( const VTX::Core::Worker::BaseWorker * const p_worker ) : _thread( nullptr ) {}
+			ChemfilesIO( const VTX::App::Core::Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
+			ChemfilesIO( const VTX::App::Core::Worker::BaseWorker * const p_worker ) : _thread( nullptr ) {}
 
 		  protected:
 			void _prepareChemfiles() const;
@@ -32,7 +30,7 @@ namespace VTX
 			void _logFile( const std::string & p_log ) const;
 
 		  private:
-			const VTX::Core::Worker::BaseThread * const _thread;
+			const VTX::App::Core::Worker::BaseThread * const _thread;
 		};
 	} // namespace IO
 } // namespace VTX

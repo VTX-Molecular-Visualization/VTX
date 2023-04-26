@@ -3,15 +3,14 @@
 
 #include <app/core/action/base_action.hpp>
 #include <app/core/event/vtx_event.hpp>
-#include <app/core/worker/worker_manager.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
+#include <app/internal/worker/snapshoter.hpp>
 #include <app/model/molecule.hpp>
 #include <app/model/path.hpp>
 #include <app/model/secondary_structure.hpp>
 #include <app/model/solvent_excluded_surface.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
-#include <app/worker/snapshoter.hpp>
 #include <string>
 #include <util/types.hpp>
 #include <vector>

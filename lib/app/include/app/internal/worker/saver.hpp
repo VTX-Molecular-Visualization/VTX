@@ -6,7 +6,7 @@
 
 namespace VTX::Worker
 {
-	class Saver : public Core::Worker::BaseThread
+	class Saver : public App::Core::Worker::BaseThread
 	{
 		// Q_OBJECT
 

@@ -1,4 +1,4 @@
-#include "app/worker/snapshoter.hpp"
+#include "app/internal/worker/snapshoter.hpp"
 #include "app/action/setting.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/model/renderer/render_effect_preset.hpp"

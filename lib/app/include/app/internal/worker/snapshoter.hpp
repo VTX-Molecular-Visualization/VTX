@@ -10,7 +10,7 @@
 
 namespace VTX::Worker
 {
-	class Snapshoter : public Core::Worker::BaseWorker, public Generic::BaseOpenGL
+	class Snapshoter : public App::Core::Worker::BaseWorker, public Generic::BaseOpenGL
 	{
 	  public:
 		enum class MODE : int

@@ -1,16 +1,16 @@
 #include "app/model/renderer/render_effect_preset_library.hpp"
 #include "app/action/renderer.hpp"
-#include "app/mvc.hpp"
-#include "app/core/worker/worker_manager.hpp"
+#include "app/core/view/callback_view.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
+#include "app/internal/worker/render_effect_loader.hpp"
 #include "app/manager/action_manager.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/core/view/callback_view.hpp"
-#include "app/worker/render_effect_loader.hpp"
+#include "app/worker.hpp"
 
 namespace VTX::Model::Renderer
 {
@@ -107,8 +107,7 @@ namespace VTX::Model::Renderer
 	RenderEffectPreset * const RenderEffectPresetLibrary::copyPreset( const int p_index )
 	{
 		const RenderEffectPreset * const sourcePreset = _presets[ p_index ];
-		RenderEffectPreset * const		 copiedPreset
-			= VTX::MVC_MANAGER().instantiateModel<RenderEffectPreset>();
+		RenderEffectPreset * const		 copiedPreset = VTX::MVC_MANAGER().instantiateModel<RenderEffectPreset>();
 		copiedPreset->copyFrom( *sourcePreset );
 
 		copiedPreset->setName( getValidName( sourcePreset->getName() ) );
@@ -125,8 +124,7 @@ namespace VTX::Model::Renderer
 
 		if ( 0 <= p_index && p_index < _presets.size() )
 		{
-			VTX::MVC_MANAGER().deleteView( _presets[ p_index ],
-														  VTX::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
+			VTX::MVC_MANAGER().deleteView( _presets[ p_index ], VTX::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
 
 			removedPreset = _presets[ p_index ];
 
@@ -315,8 +313,7 @@ namespace VTX::Model::Renderer
 	void RenderEffectPresetLibrary::_generateDefaultPreset()
 	{
 		// Preset default
-		RenderEffectPreset * const defaultPreset
-			= VTX::MVC_MANAGER().instantiateModel<RenderEffectPreset>();
+		RenderEffectPreset * const defaultPreset = VTX::MVC_MANAGER().instantiateModel<RenderEffectPreset>();
 		defaultPreset->setName( "Default" );
 		setQuickAccessToPreset( *defaultPreset, true );
 		addPreset( defaultPreset, false, false );
@@ -327,8 +324,7 @@ namespace VTX::Model::Renderer
 		_generateDefaultPreset();
 
 		// Preset Sketch
-		RenderEffectPreset * const presetSketch
-			= VTX::MVC_MANAGER().instantiateModel<RenderEffectPreset>();
+		RenderEffectPreset * const presetSketch = VTX::MVC_MANAGER().instantiateModel<RenderEffectPreset>();
 		presetSketch->setName( "Sketch" );
 		presetSketch->setShading( VTX::Renderer::SHADING::FLAT_COLOR );
 		presetSketch->enableSSAO( true );

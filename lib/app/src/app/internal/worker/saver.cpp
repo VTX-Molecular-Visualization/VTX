@@ -1,10 +1,10 @@
-#include "app/worker/saver.hpp"
+#include "app/internal/worker/saver.hpp"
+#include "app/model/molecule.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
 #include "app/old_app/io/writer/serialized_object.hpp"
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
-#include "app/model/molecule.hpp"
-#include "app/mvc.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 #include <set>

@@ -2,15 +2,15 @@
 #include "app/action/representation.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/core/view/callback_view.hpp"
-#include "app/core/worker/worker_manager.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
+#include "app/internal/worker/representation_loader.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/worker/representation_loader.hpp"
+#include "app/worker.hpp"
 #include <string>
 
 namespace VTX::Model::Representation

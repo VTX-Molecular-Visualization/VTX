@@ -22,7 +22,7 @@
 
 namespace VTX::IO::Reader
 {
-	LibChemfiles::LibChemfiles( const VTX::Core::Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
+	LibChemfiles::LibChemfiles( const VTX::App::Core::Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
 
 	void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 	{

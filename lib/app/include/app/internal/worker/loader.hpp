@@ -27,7 +27,7 @@ namespace VTX
 
 	namespace Worker
 	{
-		class Loader : public Core::Worker::BaseThread
+		class Loader : public App::Core::Worker::BaseThread
 		{
 			// Q_OBJECT
 

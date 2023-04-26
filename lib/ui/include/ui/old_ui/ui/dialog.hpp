@@ -4,7 +4,7 @@
 #include <QString>
 #include <QWidget>
 #include <app/core/action/base_action.hpp>
-#include <app/core/worker/worker_manager.hpp>
+#include <app/core/worker/callback.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -42,10 +42,10 @@ namespace VTX
 
 			static void createNewSessionDialog();
 
-			static void leavingSessionDialog( VTX::Core::Worker::CallbackThread & p_callbackSucceed );
+			static void leavingSessionDialog( VTX::App::Core::Worker::CallbackThread & p_callbackSucceed );
 
 			static void openLoadSessionDialog();
-			static void openSaveSessionDialog( VTX::Core::Worker::CallbackThread * const p_callback = nullptr );
+			static void openSaveSessionDialog( VTX::App::Core::Worker::CallbackThread * const p_callback = nullptr );
 
 			static void openAdvancedSettingImageExportDialog();
 			static bool openExportImageDialog( const IO::Struct::ImageExport & p_exportData );

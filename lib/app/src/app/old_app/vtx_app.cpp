@@ -2,21 +2,21 @@
 #include "app/action/main.hpp"
 #include "app/action/setting.hpp"
 #include "app/core/event/vtx_event.hpp"
-#include "app/mvc.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/model/renderer/render_effect_preset.hpp"
 #include "app/model/renderer/render_effect_preset_library.hpp"
 #include "app/model/representation/representation_library.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 // #include "ui/dialog.hpp"
 // #include "ui/main_window.hpp"
-#include "app/core/worker/worker_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
+#include "app/worker.hpp"
 // #include <QApplication>
 // #include <QPalette>
 #include <exception>
@@ -44,13 +44,11 @@ namespace VTX
 		App::Manager::ActionManager::get();
 		App::Manager::EventManager::get();
 		Selection::SelectionManager::get();
-		Core::Worker::WorkerManager::get();
+		App::Manager::WorkerManager::get();
 
 		// Create Databases
-		_representationLibrary
-			= VTX::MVC_MANAGER().instantiateModel<Model::Representation::RepresentationLibrary>();
-		_renderEffectLibrary
-			= VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
+		_representationLibrary = VTX::MVC_MANAGER().instantiateModel<Model::Representation::RepresentationLibrary>();
+		_renderEffectLibrary   = VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
 		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 
 		// Create scene.
@@ -162,7 +160,7 @@ namespace VTX
 	{
 		// Prevent events throw for nothing when quitting app
 		App::Manager::EventManager::get().freezeEvent( true );
-		Core::Worker::WorkerManager::get().stopAll();
+		App::Manager::WorkerManager::get().stopAll();
 
 		_setting.backup();
 
