@@ -1,29 +1,21 @@
 #ifndef __VTX_READER_PSF__
 #define __VTX_READER_PSF__
 
+#include "app/component/io/_fwd.hpp"
 #include "base_reader_line.hpp"
-#include <util/types.hpp>
 #include <set>
+#include <string>
+#include <util/types.hpp>
 
-namespace VTX
+namespace VTX::IO::Reader
 {
-	namespace Model::Configuration
+	class PSF : public BaseReaderLine<App::Component::IO::MoleculeConfiguration>
 	{
-		struct Molecule;
-	}
-	namespace IO
-	{
-		namespace Reader
-		{
-			class PSF : public BaseReaderLine<Model::Configuration::Molecule>
-			{
-			  protected:
-				void _readLine( const std::string &, Model::Configuration::Molecule & ) override;
+	  protected:
+		void _readLine( const std::string &, App::Component::IO::MoleculeConfiguration & ) override;
 
-			  private:
-				std::string _readSymbol( const std::string & ) const;
-			};
-		} // namespace Reader
-	}	  // namespace IO
-} // namespace VTX
+	  private:
+		std::string _readSymbol( const std::string & ) const;
+	};
+} // namespace VTX::IO::Reader
 #endif

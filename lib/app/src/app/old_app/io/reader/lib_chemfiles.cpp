@@ -175,10 +175,10 @@ namespace VTX::IO::Reader
 
 		_logInfo( "Trajectory read in: " + chrono.elapsedTimeStr() );
 
-		const chemfiles::Topology &				topology = frame.topology();
-		const std::vector<chemfiles::Residue> & residues = topology.residues();
-		const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
-		Model::Configuration::Molecule &		config	 = p_molecule.getConfiguration();
+		const chemfiles::Topology &					topology = frame.topology();
+		const std::vector<chemfiles::Residue> &		residues = topology.residues();
+		const std::vector<chemfiles::Bond> &		bonds	 = topology.bonds();
+		App::Component::IO::MoleculeConfiguration & config	 = p_molecule.getConfiguration();
 		p_molecule.setPath( p_path );
 
 		if ( topology.residues().size() == 0 )

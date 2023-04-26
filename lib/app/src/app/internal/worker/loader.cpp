@@ -1,7 +1,8 @@
 #include "app/internal/worker/loader.hpp"
+#include "app/component/chemistry/molecule.hpp"
+#include "app/component/io/molecule_configuration.hpp"
 #include "app/event.hpp"
 #include "app/model/mesh_triangle.hpp"
-#include "app/component/chemistry/molecule.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/lib_assimp.hpp"
@@ -24,7 +25,7 @@ namespace VTX
 
 			// Load all files.
 			_loadSceneFiles();
-			Model::Configuration::Molecule config = Model::Configuration::Molecule();
+			App::Component::IO::MoleculeConfiguration config = App::Component::IO::MoleculeConfiguration();
 			_loadConfigurationFiles( config );
 			_loadMoleculeFiles( config );
 			_loadTrajectoriesFiles( config );
@@ -64,7 +65,7 @@ namespace VTX
 				delete reader;
 			}
 		}
-		void Loader::_loadConfigurationFiles( Model::Configuration::Molecule & p_config )
+		void Loader::_loadConfigurationFiles( App::Component::IO::MoleculeConfiguration & p_config )
 		{
 			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE_ENUM::CONFIGURATION ) ] )
 			{
@@ -92,7 +93,7 @@ namespace VTX
 				}
 			}
 		}
-		void Loader::_loadMoleculeFiles( const Model::Configuration::Molecule & p_config )
+		void Loader::_loadMoleculeFiles( const App::Component::IO::MoleculeConfiguration & p_config )
 		{
 			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE_ENUM::MOLECULE ) ] )
 			{
@@ -102,7 +103,8 @@ namespace VTX
 				IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles( this );
 
 				// Set PRM.
-				App::Component::Chemistry::Molecule * const molecule = VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Molecule>();
+				App::Component::Chemistry::Molecule * const molecule
+					= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Molecule>();
 				molecule->setConfiguration( p_config );
 
 				// Load.
@@ -122,7 +124,7 @@ namespace VTX
 				delete reader;
 			}
 		}
-		void Loader::_loadTrajectoriesFiles( const Model::Configuration::Molecule & p_config )
+		void Loader::_loadTrajectoriesFiles( const App::Component::IO::MoleculeConfiguration & p_config )
 		{
 			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE_ENUM::TRAJECTORY ) ] )
 			{
@@ -140,7 +142,8 @@ namespace VTX
 					{
 						if ( _openTrajectoryAsMolecule )
 						{
-							App::Component::Chemistry::Molecule * const molecule = VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Molecule>();
+							App::Component::Chemistry::Molecule * const molecule
+								= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Molecule>();
 							molecule->setConfiguration( p_config );
 
 							// Load.
@@ -212,8 +215,9 @@ namespace VTX
 					 || bufferType == IO::Filesystem::FILE_TYPE_ENUM::TRAJECTORY )
 				{
 					// Create reader.
-					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles( this );
-					App::Component::Chemistry::Molecule *		   molecule = VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Molecule>();
+					IO::Reader::LibChemfiles *			  reader = new IO::Reader::LibChemfiles( this );
+					App::Component::Chemistry::Molecule * molecule
+						= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Molecule>();
 
 					// Load.
 					try

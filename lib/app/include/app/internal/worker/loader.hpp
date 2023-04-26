@@ -2,6 +2,7 @@
 #define __VTX_LOADER__
 
 #include "app/component/chemistry/_fwd.hpp"
+#include "app/component/io/_fwd.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include <map>
 #include <util/chrono.hpp>
@@ -12,11 +13,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		namespace Configuration
-		{
-			struct Molecule;
-		}
-
 		class MeshTriangle;
 	} // namespace Model
 
@@ -71,9 +67,9 @@ namespace VTX
 			uint _run() override;
 
 			void _loadSceneFiles();
-			void _loadConfigurationFiles( Model::Configuration::Molecule & );
-			void _loadMoleculeFiles( const Model::Configuration::Molecule & );
-			void _loadTrajectoriesFiles( const Model::Configuration::Molecule & p_config );
+			void _loadConfigurationFiles( App::Component::IO::MoleculeConfiguration & );
+			void _loadMoleculeFiles( const App::Component::IO::MoleculeConfiguration & );
+			void _loadTrajectoriesFiles( const App::Component::IO::MoleculeConfiguration & p_config );
 			void _loadMeshFiles();
 
 			void _loadMoleculeBuffers();

@@ -5,10 +5,10 @@
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/chemistry/secondary_structure.hpp"
 #include "app/component/chemistry/solvent_excluded_surface.hpp"
+#include "app/component/io/molecule_configuration.hpp"
 #include "app/core/model/base_model_3d.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/internal/chemdb/unknown_residue_data.hpp"
-#include "app/model/configuration/molecule.hpp"
 #include "app/model/representation/instantiated_representation.hpp"
 #include "app/model/selection.hpp"
 #include "app/old_app/buffer/molecule.hpp"
@@ -46,9 +46,12 @@ namespace VTX::App::Component::Chemistry
 											 VTX::Representation::RepresentationTarget>;
 
 		// Configuration.
-		inline const Model::Configuration::Molecule & getConfiguration() const { return _configuration; }
-		inline Model::Configuration::Molecule &		  getConfiguration() { return _configuration; }
-		inline void setConfiguration( const Model::Configuration::Molecule & p_config ) { _configuration = p_config; }
+		inline const Component::IO::MoleculeConfiguration & getConfiguration() const { return _configuration; }
+		inline Component::IO::MoleculeConfiguration &		getConfiguration() { return _configuration; }
+		inline void setConfiguration( const Component::IO::MoleculeConfiguration & p_config )
+		{
+			_configuration = p_config;
+		}
 
 		// BaseSceneItem
 		const App::Core::Model::ID & getModelID() const override { return getId(); }
@@ -308,7 +311,7 @@ namespace VTX::App::Component::Chemistry
 		uint		_realChainCount = 0;
 
 		// Configuration.
-		Model::Configuration::Molecule _configuration = Model::Configuration::Molecule();
+		Component::IO::MoleculeConfiguration _configuration = Component::IO::MoleculeConfiguration();
 
 		// Representation.
 		RepresentationState _representationState = RepresentationState();

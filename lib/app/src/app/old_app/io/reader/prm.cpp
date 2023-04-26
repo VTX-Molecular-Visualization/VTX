@@ -1,44 +1,38 @@
 #include "app/old_app/io/reader/prm.hpp"
-#include "app/model/configuration/molecule.hpp"
+#include "app/component/io/molecule_configuration.hpp"
 #include <fstream>
 #include <sstream>
 
-namespace VTX
+namespace VTX::IO::Reader
 {
-	namespace IO
+	void PRM::_readLine( const std::string & p_line, App::Component::IO::MoleculeConfiguration & p_configuration )
 	{
-		namespace Reader
+		// Read only line starting with "atom".
+		if ( p_line.rfind( "atom", 0 ) != 0 )
 		{
-			void PRM::_readLine( const std::string & p_line, Model::Configuration::Molecule & p_configuration )
-			{
-				// Read only line starting with "atom".
-				if ( p_line.rfind( "atom", 0 ) != 0 )
-				{
-					return;
-				}
-				else if ( p_line.find( "Water", 0 ) != std::string::npos )
-				{
-					p_configuration.solventAtomIds.emplace( _readId( p_line ) );
-				}
-				else if ( p_line.find( "Ion", 0 ) != std::string::npos )
-				{
-					p_configuration.ionAtomIds.emplace( _readId( p_line ) );
-				}
-			}
+			return;
+		}
+		else if ( p_line.find( "Water", 0 ) != std::string::npos )
+		{
+			p_configuration.solventAtomIds.emplace( _readId( p_line ) );
+		}
+		else if ( p_line.find( "Ion", 0 ) != std::string::npos )
+		{
+			p_configuration.ionAtomIds.emplace( _readId( p_line ) );
+		}
+	}
 
-			uint PRM::_readId( const std::string & p_line ) const
-			{
-				std::istringstream iss;
-				uint			   id;
-				std::string		   str;
+	uint PRM::_readId( const std::string & p_line ) const
+	{
+		std::istringstream iss;
+		uint			   id;
+		std::string		   str;
 
-				iss.str( p_line );
-				iss >> str;
-				iss >> id;
+		iss.str( p_line );
+		iss >> str;
+		iss >> id;
 
-				return id;
-			}
+		return id;
+	}
 
-		} // namespace Reader
-	}	  // namespace IO
-} // namespace VTX
+} // namespace VTX::IO::Reader

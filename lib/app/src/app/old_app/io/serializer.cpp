@@ -10,7 +10,6 @@
 #include "app/core/worker/base_thread.hpp"
 #include "app/event.hpp"
 #include "app/internal/chemdb/category.hpp"
-#include "app/model/configuration/molecule.hpp"
 #include "app/model/label.hpp"
 #include "app/model/mesh_triangle.hpp"
 #include "app/model/path.hpp"

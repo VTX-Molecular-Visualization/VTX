@@ -1,29 +1,21 @@
 #ifndef __VTX_READER_PRM__
 #define __VTX_READER_PRM__
 
+#include "app/component/io/_fwd.hpp"
 #include "base_reader_line.hpp"
+#include <string>
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX
+namespace VTX::IO::Reader
 {
-	namespace Model::Configuration
+	class PRM : public BaseReaderLine<App::Component::IO::MoleculeConfiguration>
 	{
-		struct Molecule;
-	}
-	namespace IO
-	{
-		namespace Reader
-		{
-			class PRM : public BaseReaderLine<Model::Configuration::Molecule>
-			{
-			  protected:
-				void _readLine( const std::string &, Model::Configuration::Molecule & ) override;
+	  protected:
+		void _readLine( const std::string &, App::Component::IO::MoleculeConfiguration & ) override;
 
-			  private:
-				uint _readId( const std::string & ) const;
-			};
-		} // namespace Reader
-	}	  // namespace IO
-} // namespace VTX
+	  private:
+		uint _readId( const std::string & ) const;
+	};
+} // namespace VTX::IO::Reader
 #endif
