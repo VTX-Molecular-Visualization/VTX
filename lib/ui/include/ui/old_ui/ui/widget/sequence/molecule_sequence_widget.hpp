@@ -14,11 +14,6 @@
 #include <app/core/event/vtx_event.hpp>
 #include <vector>
 
-// namespace VTX::Model
-//{
-//	class Chain;
-//	class Residue;
-// } // namespace VTX::Model
 namespace VTX::UI::Widget::Sequence
 {
 	class MoleculeSequenceWidget : public ViewItemWidget<App::Component::Chemistry::Molecule>

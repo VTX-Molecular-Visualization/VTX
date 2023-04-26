@@ -17,7 +17,6 @@ namespace VTX::Generic
 
 namespace VTX::Model
 {
-	// class Molecule;
 	class Selection;
 	namespace Representation
 	{

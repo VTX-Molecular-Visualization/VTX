@@ -3,10 +3,10 @@
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/category.hpp"
 #include "app/component/chemistry/chain.hpp"
-#include "app/component/chemistry/enum_category.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/core/worker/base_thread.hpp"
+#include "app/internal/chemdb/category.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/setting.hpp"
@@ -22,6 +22,8 @@
 
 namespace VTX::IO::Reader
 {
+	namespace ChemDB = VTX::App::Internal::ChemDB;
+
 	LibChemfiles::LibChemfiles( const VTX::App::Core::Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
 
 	void LibChemfiles::readFile( const FilePath & p_path, App::Component::Chemistry::Molecule & p_molecule )
@@ -270,8 +272,8 @@ namespace VTX::IO::Reader
 		std::map<uint, std::vector<size_t>> mapResidueBonds		 = std::map<uint, std::vector<size_t>>();
 		std::map<uint, std::vector<size_t>> mapResidueExtraBonds = std::map<uint, std::vector<size_t>>();
 
-		int										 oldIndexInChain  = INT_MIN;
-		App::Component::Chemistry::CATEGORY_ENUM lastCategoryEnum = App::Component::Chemistry::CATEGORY_ENUM::UNKNOWN;
+		int									  oldIndexInChain  = INT_MIN;
+		App::Internal::ChemDB::Category::TYPE lastCategoryEnum = App::Internal::ChemDB::Category::TYPE::UNKNOWN;
 
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 		{
@@ -282,7 +284,7 @@ namespace VTX::IO::Reader
 			const std::string chainId		= residue.properties().get( "chainid" ).value_or( "" ).as_string();
 			std::string		  residueSymbol = residue.name();
 
-			const App::Component::Chemistry::CATEGORY_ENUM categoryEnum
+			const App::Internal::ChemDB::Category::TYPE categoryEnum
 				= Util::Molecule::getResidueCategory( residueSymbol );
 
 			const bool createNewChain = p_molecule.getChainCount() == 0 || // No chain created
@@ -327,8 +329,7 @@ namespace VTX::IO::Reader
 							residueSymbol.end(),
 							residueSymbol.begin(),
 							[]( unsigned char c ) { return std::toupper( c ); } );
-			const std::optional symbol
-				= magic_enum::enum_cast<App::Component::Chemistry::Residue::SYMBOL>( residueSymbol );
+			const std::optional symbol = magic_enum::enum_cast<ChemDB::Residue::SYMBOL>( residueSymbol );
 
 			int symbolValue;
 
@@ -339,7 +340,7 @@ namespace VTX::IO::Reader
 			else
 			{
 				int symbolIndex = p_molecule.getUnknownResidueSymbolIndex( residueSymbol );
-				App::Component::Chemistry::UnknownResidueData * unknownResidueData;
+				App::Internal::ChemDB::UnknownResidueData * unknownResidueData;
 
 				if ( symbolIndex >= 0 )
 				{
@@ -347,14 +348,14 @@ namespace VTX::IO::Reader
 				}
 				else
 				{
-					unknownResidueData			   = new App::Component::Chemistry::UnknownResidueData();
+					unknownResidueData			   = new App::Internal::ChemDB::UnknownResidueData();
 					unknownResidueData->symbolStr  = residueSymbol;
 					unknownResidueData->symbolName = Util::Molecule::getResidueFullName( residueSymbol );
 
 					symbolIndex = p_molecule.addUnknownResidueSymbol( unknownResidueData );
 				}
 
-				symbolValue = int( App::Component::Chemistry::Residue::SYMBOL::COUNT ) + symbolIndex;
+				symbolValue = int( ChemDB::Residue::SYMBOL::COUNT ) + symbolIndex;
 			}
 
 			modelResidue->setSymbol( symbolValue );
@@ -362,8 +363,7 @@ namespace VTX::IO::Reader
 			modelResidue->setColor( App::Component::Chemistry::Residue::getResidueColor( *modelResidue ) );
 
 			const bool isStandard = residue.properties().get( "is_standard_pdb" ).value_or( true ).as_bool();
-			modelResidue->setType( isStandard ? App::Component::Chemistry::Residue::TYPE::STANDARD
-											  : App::Component::Chemistry::Residue::TYPE::NON_STANDARD );
+			modelResidue->setType( isStandard ? ChemDB::Residue::TYPE::STANDARD : ChemDB::Residue::TYPE::NON_STANDARD );
 
 			// Check residue index in chain.
 			const int indexInChain = (int)residue.id().value_or( INT_MIN );
@@ -390,43 +390,35 @@ namespace VTX::IO::Reader
 				{
 					if ( secondaryStructure == "extended" )
 					{
-						modelResidue->setSecondaryStructure(
-							App::Component::Chemistry::SecondaryStructure::TYPE::STRAND );
+						modelResidue->setSecondaryStructure( ChemDB::SecondaryStructure::TYPE::STRAND );
 					}
 					else if ( secondaryStructure == "turn" )
 					{
-						modelResidue->setSecondaryStructure(
-							App::Component::Chemistry::SecondaryStructure::TYPE::TURN );
+						modelResidue->setSecondaryStructure( ChemDB::SecondaryStructure::TYPE::TURN );
 					}
 					else if ( secondaryStructure == "coil" )
 					{
-						modelResidue->setSecondaryStructure(
-							App::Component::Chemistry::SecondaryStructure::TYPE::COIL );
+						modelResidue->setSecondaryStructure( ChemDB::SecondaryStructure::TYPE::COIL );
 					}
 					else if ( secondaryStructure == "right-handed alpha helix" )
 					{
-						modelResidue->setSecondaryStructure(
-							App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT );
+						modelResidue->setSecondaryStructure( ChemDB::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT );
 					}
 					else if ( secondaryStructure == "left-handed alpha helix" )
 					{
-						modelResidue->setSecondaryStructure(
-							App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT );
+						modelResidue->setSecondaryStructure( ChemDB::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT );
 					}
 					else if ( secondaryStructure == "right-handed 3-10 helix" )
 					{
-						modelResidue->setSecondaryStructure(
-							App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_3_10_RIGHT );
+						modelResidue->setSecondaryStructure( ChemDB::SecondaryStructure::TYPE::HELIX_3_10_RIGHT );
 					}
 					else if ( secondaryStructure == "left-handed 3-10 helix" )
 					{
-						modelResidue->setSecondaryStructure(
-							App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_3_10_LEFT );
+						modelResidue->setSecondaryStructure( ChemDB::SecondaryStructure::TYPE::HELIX_3_10_LEFT );
 					}
 					else if ( secondaryStructure == "pi helix" )
 					{
-						modelResidue->setSecondaryStructure(
-							App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_PI );
+						modelResidue->setSecondaryStructure( ChemDB::SecondaryStructure::TYPE::HELIX_PI );
 					}
 					else if ( secondaryStructure == "right-handed omega helix" )
 					{
@@ -495,8 +487,7 @@ namespace VTX::IO::Reader
 
 				// _logInfo( atom.name() + " " + atom.type() );
 
-				std::optional symbol
-					= magic_enum::enum_cast<App::Component::Chemistry::Atom::SYMBOL>( "A_" + atomSymbol );
+				std::optional symbol = magic_enum::enum_cast<ChemDB::Atom::SYMBOL>( "A_" + atomSymbol );
 
 				symbol.has_value() ? modelAtom->setSymbol( symbol.value() )
 								   : p_molecule.addUnknownAtomSymbol( atom.type() );
@@ -519,13 +510,13 @@ namespace VTX::IO::Reader
 						 != config.solventAtomIds.end() )
 					{
 						solventCounter++;
-						modelAtom->setType( App::Component::Chemistry::Atom::TYPE::SOLVENT );
+						modelAtom->setType( ChemDB::Atom::TYPE::SOLVENT );
 					}
 					else if ( std::find( config.ionAtomIds.begin(), config.ionAtomIds.end(), atomType )
 							  != config.ionAtomIds.end() )
 					{
 						ionCounter++;
-						modelAtom->setType( App::Component::Chemistry::Atom::TYPE::ION );
+						modelAtom->setType( ChemDB::Atom::TYPE::ION );
 					}
 				}
 
@@ -535,13 +526,13 @@ namespace VTX::IO::Reader
 					 != config.solventResidueSymbols.end() )
 				{
 					solventCounter++;
-					modelAtom->setType( App::Component::Chemistry::Atom::TYPE::SOLVENT );
+					modelAtom->setType( ChemDB::Atom::TYPE::SOLVENT );
 				}
 				else if ( std::find( config.ionResidueSymbols.begin(), config.ionResidueSymbols.end(), residueSymbol )
 						  != config.ionResidueSymbols.end() )
 				{
 					ionCounter++;
-					modelAtom->setType( App::Component::Chemistry::Atom::TYPE::ION );
+					modelAtom->setType( ChemDB::Atom::TYPE::ION );
 				}
 
 				// Radius.
@@ -555,11 +546,11 @@ namespace VTX::IO::Reader
 			// not with arc/prm because arc do not contains topology.
 			if ( solventCounter == residue.size() )
 			{
-				modelResidue->setAtomType( App::Component::Chemistry::Atom::TYPE::SOLVENT );
+				modelResidue->setAtomType( ChemDB::Atom::TYPE::SOLVENT );
 			}
 			else if ( ionCounter == residue.size() )
 			{
-				modelResidue->setAtomType( App::Component::Chemistry::Atom::TYPE::ION );
+				modelResidue->setAtomType( ChemDB::Atom::TYPE::ION );
 			}
 		}
 
@@ -650,9 +641,8 @@ namespace VTX::IO::Reader
 				modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
 				modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
 
-				const chemfiles::Bond::BondOrder			 bondOrder = topology.bond_orders()[ vectorBonds[ i ] ];
-				const App::Component::Chemistry::Bond::ORDER modelOrder
-					= App::Component::Chemistry::Bond::ORDER( int( bondOrder ) );
+				const chemfiles::Bond::BondOrder bondOrder	= topology.bond_orders()[ vectorBonds[ i ] ];
+				const ChemDB::Bond::ORDER		 modelOrder = ChemDB::Bond::ORDER( int( bondOrder ) );
 				modelBond->setOrder( modelOrder );
 
 				p_molecule.getBufferBonds()[ counter * 2u ]		 = uint( bond[ 0 ] );
@@ -670,9 +660,8 @@ namespace VTX::IO::Reader
 				modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
 				modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
 
-				const chemfiles::Bond::BondOrder bondOrder = topology.bond_orders()[ vectorExtraBonds[ i ] ];
-				const App::Component::Chemistry::Bond::ORDER modelBondOrder
-					= App::Component::Chemistry::Bond::ORDER( int( bondOrder ) );
+				const chemfiles::Bond::BondOrder bondOrder		= topology.bond_orders()[ vectorExtraBonds[ i ] ];
+				const ChemDB::Bond::ORDER		 modelBondOrder = ChemDB::Bond::ORDER( int( bondOrder ) );
 				modelBond->setOrder( modelBondOrder );
 
 				p_molecule.getBufferBonds()[ counter * 2u ]		 = uint( bond[ 0 ] );

@@ -29,7 +29,7 @@ namespace VTX::UI::Widget::Settings
 		void _refreshData();
 
 		void _refreshRepresentationComboBox( RepresentationLibraryComboBox * const p_comboBox,
-											 const App::Component::Chemistry::CATEGORY_ENUM				   p_categoryEnum );
+											 const App::Internal::ChemDB::Category::TYPE				   p_categoryEnum );
 
 	  private:
 		Layout::AttributeListLayout * _layout;

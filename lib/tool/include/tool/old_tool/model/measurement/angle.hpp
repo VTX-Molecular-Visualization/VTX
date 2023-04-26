@@ -13,11 +13,6 @@
 #include <tuple>
 #include <vector>
 
-// namespace VTX::Model
-//{
-//	class Atom;
-// } // namespace VTX::Model
-
 namespace VTX::Model::Measurement
 {
 	class Angle : public Model::Label, public App::Core::Event::BaseEventReceiverVTX, public Generic::BaseAutoDelete

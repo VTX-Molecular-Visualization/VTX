@@ -2,7 +2,6 @@
 #define __VTX_MODEL_SELECTION__
 
 #include "app/component/chemistry/_fwd.hpp"
-#include "app/component/chemistry/enum_category.hpp"
 #include "app/core/event/base_event_receiver_vtx.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/core/model/base_model.hpp"
@@ -17,12 +16,6 @@
 
 namespace VTX::Model
 {
-	// class Molecule;
-	// class Category;
-	// class Chain;
-	// class Residue;
-	// class Atom;
-
 	class Selection : public App::Core::Model::BaseModel, public VTX::App::Core::Event::BaseEventReceiverVTX
 	{
 		VTX_MODEL

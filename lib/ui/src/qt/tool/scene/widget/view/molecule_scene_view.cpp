@@ -47,8 +47,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		}
 		else if ( p_event->name == VTX::App::Event::Model::CATEGORY_VISIBILITY )
 		{
-			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::CATEGORY_ENUM> * const castedEventData
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::CATEGORY_ENUM> *>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Internal::ChemDB::Category::TYPE> * const castedEventData
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Internal::ChemDB::Category::TYPE> *>( p_event );
 			const App::Component::Chemistry::Category & category = _model->getCategory( castedEventData->get() );
 
 			if ( _isMoleculeExpanded() )
@@ -448,11 +448,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		if ( !item->isExpanded() )
 			return;
 
-		for ( int i = 0; i < int( App::Component::Chemistry::CATEGORY_ENUM::COUNT ); i++ )
+		for ( int i = 0; i < int( App::Internal::ChemDB::Category::TYPE::COUNT ); i++ )
 		{
 			QTreeWidgetItem * const currentCategoryItem = item->child( i );
 
-			const App::Component::Chemistry::Category & category = _model->getCategory( App::Component::Chemistry::CATEGORY_ENUM( i ) );
+			const App::Component::Chemistry::Category & category = _model->getCategory( App::Internal::ChemDB::Category::TYPE( i ) );
 
 			if ( category.isEmpty() )
 			{
@@ -666,9 +666,9 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			items.reserve( categoryCount );
 			nullItems.reserve( categoryCount );
 
-			for ( int i = 0; i < int( App::Component::Chemistry::CATEGORY_ENUM::COUNT ); i++ )
+			for ( int i = 0; i < int( App::Internal::ChemDB::Category::TYPE::COUNT ); i++ )
 			{
-				const App::Component::Chemistry::Category & category = _model->getCategory( App::Component::Chemistry::CATEGORY_ENUM( i ) );
+				const App::Component::Chemistry::Category & category = _model->getCategory( App::Internal::ChemDB::Category::TYPE( i ) );
 
 				QTreeWidgetItem * const categoryView = new QTreeWidgetItem();
 
@@ -989,7 +989,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	}
 	void MoleculeSceneView::_applyChainDataOnItem( const App::Component::Chemistry::Chain & p_chain,
 												   QTreeWidgetItem &	p_item,
-												   const App::Component::Chemistry::CATEGORY_ENUM	p_category ) const
+												   const App::Internal::ChemDB::Category::TYPE	p_category ) const
 	{
 		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue( p_chain.getId() ) );
 		p_item.setData( 0, CATEGORY_ROLE, QVariant::fromValue( int( p_category ) ) );
@@ -1420,10 +1420,10 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		return p_item == _getMoleculeTreeWidgetItem() && selection.isMoleculeFullySelected( *_model );
 	}
 
-	App::Component::Chemistry::CATEGORY_ENUM MoleculeSceneView::_getCategoryFromItem( const QTreeWidgetItem & p_item ) const
+	App::Internal::ChemDB::Category::TYPE MoleculeSceneView::_getCategoryFromItem( const QTreeWidgetItem & p_item ) const
 	{
 		const QVariant & dataID = p_item.data( 0, CATEGORY_ROLE );
-		return App::Component::Chemistry::CATEGORY_ENUM( dataID.value<int>() );
+		return App::Internal::ChemDB::Category::TYPE( dataID.value<int>() );
 	}
 
 	void MoleculeSceneView::_selectAllCategoriesFrom( std::vector<App::Core::Model::ID> & p_selection,
@@ -1433,7 +1433,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 		for ( int iCategory = int( p_itemFrom.getCategoryEnum() ) + 1; iCategory < categories.size(); iCategory++ )
 		{
-			p_selection.emplace_back( _model->getCategory( App::Component::Chemistry::CATEGORY_ENUM( iCategory ) ).getId() );
+			p_selection.emplace_back( _model->getCategory( App::Internal::ChemDB::Category::TYPE( iCategory ) ).getId() );
 		}
 	}
 	void MoleculeSceneView::_selectAllChainsFrom( std::vector<App::Core::Model::ID> & p_selection,
@@ -1471,7 +1471,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 		for ( int iCategory = 0; iCategory < int( p_itemFrom.getCategoryEnum() ); iCategory++ )
 		{
-			p_selection.emplace_back( _model->getCategory( App::Component::Chemistry::CATEGORY_ENUM( iCategory ) ).getId() );
+			p_selection.emplace_back( _model->getCategory( App::Internal::ChemDB::Category::TYPE( iCategory ) ).getId() );
 		}
 	}
 	void MoleculeSceneView::_selectAllChainsTo( std::vector<App::Core::Model::ID> & p_selection,

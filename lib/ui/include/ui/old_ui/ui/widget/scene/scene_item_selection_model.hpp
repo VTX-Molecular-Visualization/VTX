@@ -10,14 +10,6 @@
 #include <app/model/selection.hpp>
 #include <app/old_app/id.hpp>
 
-// namespace VTX::Model
-//{
-//	class Molecule;
-//	class Chain;
-//	class Residue;
-//	class Atom;
-// } // namespace VTX::Model
-
 namespace VTX::UI::Widget::Scene
 {
 	class SceneItemWidget;

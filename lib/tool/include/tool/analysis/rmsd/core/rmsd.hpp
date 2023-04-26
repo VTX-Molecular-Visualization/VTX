@@ -9,7 +9,6 @@
 
 namespace VTX::Model
 {
-	// class Molecule;
 	class Selection;
 } // namespace VTX::Model
 

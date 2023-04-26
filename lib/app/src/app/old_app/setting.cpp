@@ -1,9 +1,9 @@
 #include "app/old_app/setting.hpp"
-#include "app/component/chemistry/enum_category.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
+#include "app/internal/chemdb/category.hpp"
 #include "app/model/representation/representation_enum.hpp"
 #include "app/old_app/define.hpp"
 #include "app/old_app/io/filesystem.hpp"
@@ -592,26 +592,26 @@ namespace VTX
 	}
 
 	int Setting::getDefaultRepresentationIndexPerCategory(
-		const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum ) const
+		const App::Internal::ChemDB::Category::TYPE & p_categoryEnum ) const
 	{
 		return representationPerCategory[ int( p_categoryEnum ) ];
 	}
 	void Setting::setDefaultRepresentationIndexPerCategory(
-		const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum,
-		const int										 p_representationDefaultIndex )
+		const App::Internal::ChemDB::Category::TYPE & p_categoryEnum,
+		const int									  p_representationDefaultIndex )
 	{
 		representationPerCategory[ int( p_categoryEnum ) ] = p_representationDefaultIndex;
 		_sendDataChangedEvent( PARAMETER::DEFAULT_REPRESENTATION_PER_CATEGORY );
 	}
 	const std::string & Setting::getTmpDefaultRepresentationNamePerCategory(
-		const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum )
+		const App::Internal::ChemDB::Category::TYPE & p_categoryEnum )
 	{
 		return _tmpRepresentationPerCategory[ int( p_categoryEnum ) ];
 	}
 
 	void Setting::setTmpDefaultRepresentationNamePerCategory(
-		const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum,
-		const std::string &								 p_representationDefaultName )
+		const App::Internal::ChemDB::Category::TYPE & p_categoryEnum,
+		const std::string &							  p_representationDefaultName )
 	{
 		_tmpRepresentationPerCategory[ int( p_categoryEnum ) ] = p_representationDefaultName;
 	}

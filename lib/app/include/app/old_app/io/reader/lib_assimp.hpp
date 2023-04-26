@@ -9,7 +9,6 @@ namespace VTX
 	namespace Model
 	{
 		class MeshTriangle;
-		// class Molecule;
 	} // namespace Model
 
 	namespace IO

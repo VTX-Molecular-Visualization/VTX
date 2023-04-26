@@ -15,10 +15,6 @@ namespace VTX
 	{
 		class ImageExport;
 	}
-	// namespace Model
-	//{
-	//	class Molecule;
-	// }
 
 	namespace UI
 	{

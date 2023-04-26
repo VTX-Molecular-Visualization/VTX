@@ -610,9 +610,11 @@ namespace VTX::App::Component::Chemistry
 			generatedAtomPosFrame.reserve( atomPosFrame.size() );
 		}
 
-		for ( const UnknownResidueData * const unknownSymbolPtr : p_molecule.getUnknownResidueSymbols() )
+		for ( const Internal::ChemDB::UnknownResidueData * const unknownSymbolPtr :
+			  p_molecule.getUnknownResidueSymbols() )
 		{
-			UnknownResidueData * const unknownSymbolCopy = new UnknownResidueData( *unknownSymbolPtr );
+			Internal::ChemDB::UnknownResidueData * const unknownSymbolCopy
+				= new Internal::ChemDB::UnknownResidueData( *unknownSymbolPtr );
 			addUnknownResidueSymbol( unknownSymbolCopy );
 		}
 
@@ -645,7 +647,7 @@ namespace VTX::App::Component::Chemistry
 		p_chain.setIndexFirstResidue( getResidueCount() );
 		p_chain.setColor( Chemistry::Chain::getChainIdColor( p_chainSource.getOriginalChainID() ) );
 
-		const Chemistry::CATEGORY_ENUM & chainCategoryEnum = p_chainSource.getCategoryEnum();
+		const ChemDB::Category::TYPE & chainCategoryEnum = p_chainSource.getCategoryEnum();
 		p_chain.setCategoryEnum( chainCategoryEnum );
 
 		if ( p_chainSource.hasCustomRepresentation() )
@@ -694,10 +696,10 @@ namespace VTX::App::Component::Chemistry
 
 	Chemistry::Chain & GeneratedMolecule::_extractFullChain( Chemistry::Molecule & p_fromMolecule, const uint p_index )
 	{
-		Chemistry::Chain &				 chain					   = *p_fromMolecule.getChain( p_index );
-		const Chemistry::CATEGORY_ENUM & chainCategoryEnum		   = chain.getCategoryEnum();
-		const uint						 previousFirstResidueIndex = chain.getIndexFirstResidue();
-		const uint						 indexFirstResidue		   = getResidueCount();
+		Chemistry::Chain &			   chain					 = *p_fromMolecule.getChain( p_index );
+		const ChemDB::Category::TYPE & chainCategoryEnum		 = chain.getCategoryEnum();
+		const uint					   previousFirstResidueIndex = chain.getIndexFirstResidue();
+		const uint					   indexFirstResidue		 = getResidueCount();
 
 		_addChain( &chain );
 

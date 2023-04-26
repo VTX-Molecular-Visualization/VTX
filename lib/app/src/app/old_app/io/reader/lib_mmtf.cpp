@@ -27,7 +27,8 @@ namespace VTX
 				return _readStructureData( data, p_molecule );
 			}
 
-			void LibMMTF::_readStructureData( const mmtf::StructureData & p_data, App::Component::Chemistry::Molecule & p_molecule )
+			void LibMMTF::_readStructureData( const mmtf::StructureData & p_data, App::Component::Chemistry::Molecule &
+p_molecule )
 			{
 				// Check for consistency.
 				if ( p_data.hasConsistentData( true ) == false )
@@ -63,7 +64,8 @@ namespace VTX
 					chain.setName( p_data.chainNameList[ chainGlobalIdx ] );
 					chain.setIdFirstResidue( residueGlobalIdx );
 					chain.setResidueCount( p_data.groupsPerChain[ chainGlobalIdx ] );
-					chain.setColor( App::Component::Chemistry::Chain::getChainIdColor( p_data.chainIdList[ chainGlobalIdx ] ) );
+					chain.setColor( App::Component::Chemistry::Chain::getChainIdColor( p_data.chainIdList[
+chainGlobalIdx ] ) );
 
 					// For each residue in the chain.
 					uint residueCount = p_data.groupsPerChain[ chainGlobalIdx ];
@@ -85,10 +87,9 @@ namespace VTX
 						residue.setChainPtr( &chain );
 						residue.setIndex( residueGlobalIdx );
 						const std::string & residueSymbol = group.groupName;
-						std::optional		symbol = magic_enum::enum_cast<App::Component::Chemistry::Residue::SYMBOL>( residueSymbol );
-						symbol.has_value() ? residue.setSymbol( symbol.value() )
-										   : p_molecule.addUnknownResidueSymbol( residueSymbol );
-						residue.setColor( App::Component::Chemistry::Residue::SYMBOL_COLOR[ int( residue.getSymbol() ) ] );
+						std::optional		symbol = magic_enum::enum_cast<App::Internal::ChemDB::Residue::SYMBOL>(
+residueSymbol ); symbol.has_value() ? residue.setSymbol( symbol.value() ) : p_molecule.addUnknownResidueSymbol(
+residueSymbol ); residue.setColor( App::Component::Chemistry::Residue::SYMBOL_COLOR[ int( residue.getSymbol() ) ] );
 						residue.setIdFirstAtom( atomGlobalIdx );
 						residue.setAtomCount( uint( group.atomNameList.size() ) );
 						// residue.setIdFirstBond( bondGlobalIdx );
@@ -116,9 +117,8 @@ namespace VTX
 							atom.setResiduePtr( &residue );
 							atom.setIndex( atomGlobalIdx );
 							const std::string & atomSymbol = group.elementList[ atomIdx ];
-							std::optional symbol = magic_enum::enum_cast<App::Component::Chemistry::Atom::SYMBOL>( "A_" + atomSymbol );
-							symbol.has_value() ? atom.setSymbol( symbol.value() )
-											   : p_molecule.addUnknownAtomSymbol( atomSymbol );
+							std::optional symbol = magic_enum::enum_cast<App::Component::Chemistry::Atom::SYMBOL>( "A_"
++ atomSymbol ); symbol.has_value() ? atom.setSymbol( symbol.value() ) : p_molecule.addUnknownAtomSymbol( atomSymbol );
 
 							atom.setName( group.atomNameList[ atomIdx ] );
 							atom.setColor( App::Component::Chemistry::Atom::SYMBOL_COLOR[ (int)atom.getSymbol() ] );

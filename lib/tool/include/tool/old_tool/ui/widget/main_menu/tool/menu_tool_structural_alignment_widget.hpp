@@ -15,7 +15,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		// class Molecule;
 		class Selection;
 	} // namespace Model
 

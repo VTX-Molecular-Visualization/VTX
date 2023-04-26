@@ -8,14 +8,6 @@
 #include <app/core/model/base_model.hpp>
 #include <app/model/selection.hpp>
 
-// namespace VTX::Model
-//{
-//	class Molecule;
-//	class Chain;
-//	class Residue;
-//	class Atom;
-// } // namespace VTX::Model
-
 namespace VTX::UI::QT::Tool::Scene::Widget
 {
 	class SceneItemWidget;

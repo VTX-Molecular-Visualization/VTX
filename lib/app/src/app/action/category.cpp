@@ -1,5 +1,5 @@
 #include "app/action/category.hpp"
-#include "app/component/chemistry/enum_category.hpp"
+#include "app/internal/chemdb/category.hpp"
 // #include "app/component/chemistry/chain.hpp"
 // #include "app/component/chemistry/generated_molecule.hpp"
 #include "app/component/chemistry/molecule.hpp"
@@ -17,7 +17,8 @@ namespace VTX::App::Action::Category
 {
 	// void ChangeColor::execute()
 	//{
-	//	std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
+	//	std::unordered_set<App::Component::Chemistry::Molecule *> molecules =
+	// std::unordered_set<App::Component::Chemistry::Molecule *>();
 
 	//	for ( App::Component::Chemistry::Category * const chain : _categories )
 	//	{
@@ -37,12 +38,14 @@ namespace VTX::App::Action::Category
 	{
 		if ( _mode == VISIBILITY_MODE::SOLO )
 		{
-			std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::CATEGORY_ENUM>> categoriesPerMolecules
-				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::CATEGORY_ENUM>>();
+			std::map<App::Component::Chemistry::Molecule *, std::vector<App::Internal::ChemDB::Category::TYPE>>
+				categoriesPerMolecules
+				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Internal::ChemDB::Category::TYPE>>();
 
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				App::Component::Chemistry::Category * const category = static_cast<App::Component::Chemistry::Category *>( visible );
+				App::Component::Chemistry::Category * const category
+					= static_cast<App::Component::Chemistry::Category *>( visible );
 				categoriesPerMolecules[ category->getMoleculePtr() ].emplace_back( category->getCategoryEnum() );
 			}
 
@@ -51,7 +54,8 @@ namespace VTX::App::Action::Category
 			{
 				App::Component::Chemistry::Molecule * const molecule = sceneMolecule.first;
 
-				std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::CATEGORY_ENUM>>::iterator it
+				std::map<App::Component::Chemistry::Molecule *,
+						 std::vector<App::Internal::ChemDB::Category::TYPE>>::iterator it
 					= categoriesPerMolecules.find( molecule );
 
 				if ( it != categoriesPerMolecules.end() )
@@ -69,17 +73,19 @@ namespace VTX::App::Action::Category
 		}
 		else
 		{
-			std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Category *>> categoriesPerMolecules
+			std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Category *>>
+				categoriesPerMolecules
 				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Category *>>();
 
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				App::Component::Chemistry::Category * const category = static_cast<App::Component::Chemistry::Category *>( visible );
+				App::Component::Chemistry::Category * const category
+					= static_cast<App::Component::Chemistry::Category *>( visible );
 				categoriesPerMolecules[ category->getMoleculePtr() ].emplace_back( category );
 			}
 
-			for ( const std::pair<App::Component::Chemistry::Molecule * const, std::vector<App::Component::Chemistry::Category *>> & pair :
-				  categoriesPerMolecules )
+			for ( const std::pair<App::Component::Chemistry::Molecule * const,
+								  std::vector<App::Component::Chemistry::Category *>> & pair : categoriesPerMolecules )
 			{
 				for ( App::Component::Chemistry::Category * const category : pair.second )
 					Util::Molecule::show( *category, _getVisibilityBool( *category ), true, false, false );
@@ -110,7 +116,8 @@ namespace VTX::App::Action::Category
 
 	// void RemoveChildrenRepresentations::execute()
 	//{
-	//	std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
+	//	std::unordered_set<App::Component::Chemistry::Molecule *> molecules =
+	// std::unordered_set<App::Component::Chemistry::Molecule *>();
 
 	//	for ( const App::Component::Chemistry::Category * const chain : _categories )
 	//	{

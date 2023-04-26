@@ -12,12 +12,6 @@
 #include <string>
 #include <vector>
 
-// namespace VTX::Model
-//{
-//	class Atom;
-//	class Molecule;
-// } // namespace VTX::Model
-
 namespace VTX::Model::Measurement
 {
 	class MeasureInProgress :

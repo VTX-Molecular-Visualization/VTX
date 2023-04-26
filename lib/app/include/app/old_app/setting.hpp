@@ -1,8 +1,8 @@
 #ifndef __VTX_SETTING__
 #define __VTX_SETTING__
 
-#include "app/component/chemistry/enum_category.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
+#include "app/internal/chemdb/category.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/id.hpp"
@@ -14,8 +14,6 @@
 
 namespace VTX
 {
-	// enum class App::Component::Chemistry::CATEGORY_ENUM;
-
 	namespace Generic
 	{
 		enum class COLOR_MODE;
@@ -350,14 +348,13 @@ namespace VTX
 		void	   setDefaultRenderEffectPresetIndex( const int p_renderEffectDefaultIndex );
 
 		int getDefaultRepresentationIndexPerCategory(
-			const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum ) const;
-		void setDefaultRepresentationIndexPerCategory( const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum,
+			const App::Internal::ChemDB::Category::TYPE & p_categoryEnum ) const;
+		void setDefaultRepresentationIndexPerCategory( const App::Internal::ChemDB::Category::TYPE & p_categoryEnum,
 													   const int p_representationDefaultIndex );
 		const std::string & getTmpDefaultRepresentationNamePerCategory(
-			const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum );
-		void setTmpDefaultRepresentationNamePerCategory(
-			const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum,
-			const std::string &								 p_representationDefaultName );
+			const App::Internal::ChemDB::Category::TYPE & p_categoryEnum );
+		void setTmpDefaultRepresentationNamePerCategory( const App::Internal::ChemDB::Category::TYPE & p_categoryEnum,
+														 const std::string & p_representationDefaultName );
 
 		inline VTX::Selection::Granularity getSelectionGranularity() const { return selectionGranularity; }
 		void setSelectionGranularity( const VTX::Selection::Granularity & p_selectionGranularity );

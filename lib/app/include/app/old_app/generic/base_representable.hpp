@@ -16,8 +16,6 @@ namespace VTX
 
 	namespace Model
 	{
-		// class Molecule;
-		// class Residue;
 		namespace Representation
 		{
 			class InstantiatedRepresentation;

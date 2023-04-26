@@ -1,11 +1,11 @@
 #include "app/old_app/io/reader/lib_assimp.hpp"
-#include "app/old_app/color/rgba.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"
-#include "app/model/mesh_triangle.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/model/mesh_triangle.hpp"
+#include "app/old_app/color/rgba.hpp"
 #include <util/types.hpp>
 // #include <assimp/Importer.hpp>
 // #include <assimp/postprocess.h>
@@ -151,7 +151,7 @@ namespace VTX
 						App::Component::Chemistry::Residue * const residue = p_molecule.getResidue( residueGlobalIdx );
 						residue->setChainPtr( &chain );
 						residue->setIndex( residueGlobalIdx );
-						residue->setSymbol( App::Component::Chemistry::Residue::SYMBOL::UNKNOWN );
+						residue->setSymbol( App::Internal::ChemDB::Residue::SYMBOL::UNKNOWN );
 						residue->setIndexFirstAtom( atomGlobalIdx );
 						residue->setAtomCount( uint( mesh->mNumVertices ) );
 						residue->setColor( Color::Rgb::randomPastel() );

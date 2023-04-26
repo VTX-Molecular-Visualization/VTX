@@ -11,12 +11,6 @@
 #include <string>
 #include <utility>
 
-// namespace VTX::Model
-//{
-//	class Atom;
-//	class Molecule;
-// } // namespace VTX::Model
-
 namespace VTX::Model::Measurement
 {
 	class DistanceToCycle :

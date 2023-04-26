@@ -3,10 +3,10 @@
 #include "app/component/chemistry/category.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
-#include "app/model/representation/representation_library.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/chemistry/secondary_structure.hpp"
 #include "app/component/chemistry/solvent_excluded_surface.hpp"
+#include "app/model/representation/representation_library.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/setting.hpp"
@@ -22,9 +22,9 @@ namespace VTX
 			_molecule = nullptr;
 		}
 
-		void BaseRepresentable::initBaseRepresentable( App::Core::Model::BaseModel * const			  p_model,
-													   Generic::BaseRepresentable * const p_parent,
-													   App::Component::Chemistry::Molecule * const			  p_molecule )
+		void BaseRepresentable::initBaseRepresentable( App::Core::Model::BaseModel * const		   p_model,
+													   Generic::BaseRepresentable * const		   p_parent,
+													   App::Component::Chemistry::Molecule * const p_molecule )
 		{
 			_model = p_model;
 			setParent( p_parent );
@@ -179,8 +179,9 @@ namespace VTX
 						_molecule->createSecondaryStructure();
 					}
 
-					App::Component::Chemistry::SecondaryStructure & secondaryStructure = _molecule->getSecondaryStructure();
-					std::map<uint, uint> &		residueToControlPointIndices
+					App::Component::Chemistry::SecondaryStructure & secondaryStructure
+						= _molecule->getSecondaryStructure();
+					std::map<uint, uint> & residueToControlPointIndices
 						= secondaryStructure.getResidueToControlPointIndice();
 					if ( residueToControlPointIndices.find( residue->getIndex() )
 						 != residueToControlPointIndices.end() )
@@ -190,10 +191,12 @@ namespace VTX
 				}
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::SES ) )
 				{
-					const App::Component::Chemistry::Category * const category = _molecule->getCategoryFromChain( *residue->getChainPtr() );
-					const App::Component::Chemistry::CATEGORY_ENUM			  categoryEnum = category->getCategoryEnum();
+					const App::Component::Chemistry::Category * const category
+						= _molecule->getCategoryFromChain( *residue->getChainPtr() );
+					const App::Internal::ChemDB::Category::TYPE categoryEnum = category->getCategoryEnum();
 
-					if ( categoryEnum == App::Component::Chemistry::CATEGORY_ENUM::POLYMER || categoryEnum == App::Component::Chemistry::CATEGORY_ENUM::CARBOHYDRATE )
+					if ( categoryEnum == App::Internal::ChemDB::Category::TYPE::POLYMER
+						 || categoryEnum == App::Internal::ChemDB::Category::TYPE::CARBOHYDRATE )
 					{
 						if ( _molecule->hasSolventExcludedSurface( categoryEnum ) == false )
 						{
@@ -253,7 +256,7 @@ namespace VTX
 
 						const App::Component::Chemistry::Category * const category
 							= _molecule->getCategoryFromChain( *residue->getChainPtr() );
-						const App::Component::Chemistry::CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
+						const App::Internal::ChemDB::Category::TYPE categoryEnum = category->getCategoryEnum();
 
 						if ( !_molecule->hasSolventExcludedSurface( categoryEnum ) )
 							continue;
@@ -286,12 +289,12 @@ namespace VTX
 				 || molecule->isVisible() == false )
 				return false;
 
-			const App::Component::Chemistry::Atom::TYPE atomType = p_residue.getAtomType();
+			const App::Internal::ChemDB::Atom::TYPE atomType = p_residue.getAtomType();
 
-			if ( molecule->showSolvent() == false && atomType == App::Component::Chemistry::Atom::TYPE::SOLVENT )
+			if ( molecule->showSolvent() == false && atomType == App::Internal::ChemDB::Atom::TYPE::SOLVENT )
 				return false;
 
-			if ( molecule->showIon() == false && atomType == App::Component::Chemistry::Atom::TYPE::ION )
+			if ( molecule->showIon() == false && atomType == App::Internal::ChemDB::Atom::TYPE::ION )
 				return false;
 
 			return true;

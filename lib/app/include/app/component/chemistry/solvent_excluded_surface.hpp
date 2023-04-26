@@ -11,9 +11,6 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	// class Molecule;
-	// class Category;
-
 	class SolventExcludedSurface : public Model::MeshTriangle
 	{
 		VTX_MODEL

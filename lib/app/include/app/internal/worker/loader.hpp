@@ -17,7 +17,6 @@ namespace VTX
 			struct Molecule;
 		}
 
-		// class Molecule;
 		class MeshTriangle;
 	} // namespace Model
 

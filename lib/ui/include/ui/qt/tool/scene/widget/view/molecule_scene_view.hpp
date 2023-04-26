@@ -16,7 +16,7 @@
 #include <app/old_app/generic/base_visible.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/category.hpp>
-#include <app/component/chemistry/enum_category.hpp>
+#include <app/internal/chemdb/category.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
@@ -104,7 +104,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		void _applyCategoryDataOnItem( const App::Component::Chemistry::Category & p_category, QTreeWidgetItem & p_item ) const;
 		void _applyChainDataOnItem( const App::Component::Chemistry::Chain & p_molecule,
 									QTreeWidgetItem &	 p_item,
-									const App::Component::Chemistry::CATEGORY_ENUM	 p_category ) const;
+									const App::Internal::ChemDB::Category::TYPE	 p_category ) const;
 		void _applyResidueDataOnItem( const App::Component::Chemistry::Residue & p_molecule, QTreeWidgetItem & p_item ) const;
 		void _applyAtomDataOnItem( const App::Component::Chemistry::Atom & p_molecule, QTreeWidgetItem & p_item ) const;
 
@@ -132,7 +132,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		bool _isChainExpanded( const App::Component::Chemistry::Chain & p_chain ) const;
 		bool _isResidueExpanded( const App::Component::Chemistry::Residue & p_residue ) const;
 
-		App::Component::Chemistry::CATEGORY_ENUM _getCategoryFromItem( const QTreeWidgetItem & p_item ) const;
+		App::Internal::ChemDB::Category::TYPE _getCategoryFromItem( const QTreeWidgetItem & p_item ) const;
 	};
 
 } // namespace VTX::UI::QT::Tool::Scene::Widget::View

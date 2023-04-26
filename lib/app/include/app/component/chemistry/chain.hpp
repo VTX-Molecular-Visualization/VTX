@@ -3,19 +3,20 @@
 
 #include "_fwd.hpp"
 #include "app/core/model/base_model.hpp"
+#include "app/internal/chemdb/category.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
-#include "enum_category.hpp"
 #include <iostream>
 #include <string>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
-	// class Molecule;
+	namespace ChemDB = App::Internal::ChemDB;
+
 	class Chain :
 		public App::Core::Model::BaseModel,
 		public Generic::BaseColorable,
@@ -25,20 +26,11 @@ namespace VTX::App::Component::Chemistry
 		VTX_MODEL
 
 	  public:
-		enum class TYPE : int
-		{
-			STANDARD,
-			NON_STANDARD
-		};
+		static Color::Rgba getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
 
-		// one color per chain id + 1 unknown
-		static const uint		 NB_COLORS = 26;
-		static const Color::Rgba CHAIN_ID_COLOR_ATOM[ NB_COLORS ];
-		static const Color::Rgba CHAIN_ID_COLOR_HETATM[ NB_COLORS ];
-		static const Color::Rgba CHAIN_ID_UNKNOWN_COLOR;
-
-		// inline TYPE				getType() const { return _type; }
-		// inline void				setType( const TYPE p_type ) { _type = p_type; }
+	  public:
+		// inline CHAIN_TYPE	getType() const { return _type; }
+		// inline void			setType( const CHAIN_TYPE p_type ) { _type = p_type; }
 		inline uint				getIndex() const { return _index; };
 		inline void				setIndex( const uint p_index ) { _index = p_index; };
 		inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
@@ -46,7 +38,6 @@ namespace VTX::App::Component::Chemistry
 
 		const std::string & getOriginalChainID() const { return _originalChainID; };
 		void				setOriginalChainID( const std::string & p_chainId ) { _originalChainID = p_chainId; };
-		static Color::Rgba	getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
 
 		inline const std::string & getName() const { return _name; };
 		inline void				   setName( const std::string & p_name )
@@ -66,8 +57,8 @@ namespace VTX::App::Component::Chemistry
 		inline uint getIndexLastResidue() const { return _indexFirstResidue + _residueCount - 1; };
 
 		// Mask BaseVisible::setVisible
-		const Chemistry::CATEGORY_ENUM & getCategoryEnum() const { return _categoryEnum; }
-		void							 setCategoryEnum( const Chemistry::CATEGORY_ENUM & p_categoryEnum );
+		const ChemDB::Category::TYPE & getCategoryEnum() const { return _categoryEnum; }
+		void						   setCategoryEnum( const ChemDB::Category::TYPE & p_categoryEnum );
 
 		// Mask BaseVisible::setVisible
 		void setVisible( const bool p_visible );
@@ -84,8 +75,8 @@ namespace VTX::App::Component::Chemistry
 		void _onRepresentationChange() override;
 
 	  private:
-		// TYPE	   _type		= TYPE::STANDARD;
-		Chemistry::CATEGORY_ENUM _categoryEnum = Chemistry::CATEGORY_ENUM::UNKNOWN;
+		// CHAIN_TYPE	   _type		= CHAIN_TYPE::STANDARD;
+		ChemDB::Category::TYPE _categoryEnum = ChemDB::Category::TYPE::UNKNOWN;
 
 		uint		_index			 = 0;
 		Molecule *	_moleculePtr	 = nullptr;

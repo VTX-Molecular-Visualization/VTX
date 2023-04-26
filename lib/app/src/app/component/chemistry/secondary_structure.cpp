@@ -2,6 +2,7 @@
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/internal/chemDB/secondary_structure.hpp"
 #include "app/model/selection.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"

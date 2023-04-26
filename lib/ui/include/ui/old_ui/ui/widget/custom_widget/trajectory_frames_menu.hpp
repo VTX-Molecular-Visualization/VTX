@@ -14,7 +14,6 @@ namespace VTX
 	namespace Model
 	{
 		class Selection;
-		// class Molecule;
 	} // namespace Model
 
 	namespace UI::Widget::CustomWidget

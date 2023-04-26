@@ -189,7 +189,8 @@ namespace VTX::Model::Representation
 	}
 	Representation * RepresentationLibrary::getDefaultRepresentation() { return _defaultRepresentation; }
 
-	Representation * RepresentationLibrary::getDefaultRepresentation( const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum )
+	Representation * RepresentationLibrary::getDefaultRepresentation(
+		const App::Internal::ChemDB::Category::TYPE & p_categoryEnum )
 	{
 		const int representationIndex = VTX_SETTING().getDefaultRepresentationIndexPerCategory( p_categoryEnum );
 

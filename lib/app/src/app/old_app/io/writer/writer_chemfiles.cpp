@@ -1,14 +1,16 @@
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
-#include "app/old_app/define.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/old_app/define.hpp"
 #include "app/old_app/util/secondary_structure.hpp"
 #include <string>
 
 namespace VTX::IO::Writer
 {
+	namespace ChemDB = VTX::App::Internal::ChemDB;
+
 	void ChemfilesWriter::writeFile( const FilePath & p_path, const App::Component::Chemistry::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
@@ -17,9 +19,9 @@ namespace VTX::IO::Writer
 		_writeTrajectory( trajectory, p_molecule );
 		trajectory.close();
 	}
-	void ChemfilesWriter::writeBuffer( std::string &		   p_buffer,
+	void ChemfilesWriter::writeBuffer( std::string &							   p_buffer,
 									   const App::Component::Chemistry::Molecule & p_molecule,
-									   const std::string &	   p_format )
+									   const std::string &						   p_format )
 	{
 		_prepareChemfiles();
 
@@ -30,8 +32,8 @@ namespace VTX::IO::Writer
 		p_buffer.append( span.begin(), span.end() );
 	}
 
-	void ChemfilesWriter::fillTrajectoryFrames( chemfiles::Trajectory & p_trajectory,
-												App::Component::Chemistry::Molecule &		p_molecule ) const
+	void ChemfilesWriter::fillTrajectoryFrames( chemfiles::Trajectory &				  p_trajectory,
+												App::Component::Chemistry::Molecule & p_molecule ) const
 	{
 		// Fill other frames.
 		Util::Chrono timeReadingFrames;
@@ -39,9 +41,10 @@ namespace VTX::IO::Writer
 		int startingFrame = 1;
 		for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )
 		{
-			App::Component::Chemistry::Molecule::AtomPositionsFrame &		 moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
-			chemfiles::Frame							 frame		   = p_trajectory.read_step( frameIdx );
-			const chemfiles::span<chemfiles::Vector3D> & positions	   = frame.positions();
+			App::Component::Chemistry::Molecule::AtomPositionsFrame & moleculeFrame
+				= p_molecule.getAtomPositionFrame( frameIdx );
+			chemfiles::Frame							 frame	   = p_trajectory.read_step( frameIdx );
+			const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 			for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
 			{
 				const chemfiles::Vector3D & position = positions[ positionIdx ];
@@ -60,7 +63,8 @@ namespace VTX::IO::Writer
 		_logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
 	}
 
-	void ChemfilesWriter::_writeTrajectory( chemfiles::Trajectory & p_trajectory, const App::Component::Chemistry::Molecule & p_molecule )
+	void ChemfilesWriter::_writeTrajectory( chemfiles::Trajectory &						p_trajectory,
+											const App::Component::Chemistry::Molecule & p_molecule )
 	{
 		_vecNewAtomIndexes.resize( p_molecule.getAtomCount(), INVALID_ID );
 		_vecNewResidueIndexes.resize( p_molecule.getResidueCount(), INVALID_ID );
@@ -91,7 +95,8 @@ namespace VTX::IO::Writer
 				for ( uint residueIndex = chain->getIndexFirstResidue(); residueIndex <= chain->getIndexLastResidue();
 					  residueIndex++ )
 				{
-					const VTX::App::Component::Chemistry::Residue * const residue = p_molecule.getResidue( residueIndex );
+					const VTX::App::Component::Chemistry::Residue * const residue
+						= p_molecule.getResidue( residueIndex );
 
 					if ( residue == nullptr )
 						continue;
@@ -111,8 +116,8 @@ namespace VTX::IO::Writer
 					if ( residue->hasInsertionCode() )
 						chemResidue.set( "insertion_code", std::string( 1, residue->getInsertionCode() ) );
 
-					const bool isStdPdb = residue->getType() == App::Component::Chemistry::Residue::TYPE::STANDARD
-										  && residue->getSymbol() != App::Component::Chemistry::Residue::SYMBOL::UNKNOWN;
+					const bool isStdPdb = residue->getType() == ChemDB::Residue::TYPE::STANDARD
+										  && residue->getSymbol() != ChemDB::Residue::SYMBOL::UNKNOWN;
 					chemResidue.set( "is_standard_pdb", isStdPdb );
 
 					for ( ; firstResAtomIdx < atomCount; ++firstResAtomIdx )

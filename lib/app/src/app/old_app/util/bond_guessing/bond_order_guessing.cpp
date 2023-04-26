@@ -9,6 +9,8 @@
 
 namespace VTX::Util::BondGuessing
 {
+	namespace ChemDB = App::Internal::ChemDB;
+
 	void BondOrderGuessing::recomputeBondOrders( chemfiles::Frame & p_frame )
 	{
 		std::vector<std::vector<size_t>> linkedAtomsVector = std::vector<std::vector<size_t>>();
@@ -46,8 +48,8 @@ namespace VTX::Util::BondGuessing
 			}
 		}
 	}
-	void BondOrderGuessing::_buildNeighbourStruct( const App::Component::Chemistry::Molecule &			  p_molecule,
-												   std::vector<std::vector<size_t>> & p_linkedAtomsVector )
+	void BondOrderGuessing::_buildNeighbourStruct( const App::Component::Chemistry::Molecule & p_molecule,
+												   std::vector<std::vector<size_t>> &		   p_linkedAtomsVector )
 	{
 		std::vector<size_t> defaultBondVector = std::vector<size_t>();
 		defaultBondVector.reserve( 4 );
@@ -60,14 +62,14 @@ namespace VTX::Util::BondGuessing
 			if ( bond == nullptr )
 				continue;
 
-			const uint				  indexFirstAtom = bond->getIndexFirstAtom();
+			const uint									  indexFirstAtom = bond->getIndexFirstAtom();
 			const App::Component::Chemistry::Atom * const atom1			 = p_molecule.getAtom( indexFirstAtom );
 
-			const uint				  indexSecondAtom = bond->getIndexSecondAtom();
-			const App::Component::Chemistry::Atom * const atom2			  = p_molecule.getAtom( bond->getIndexSecondAtom() );
+			const uint									  indexSecondAtom = bond->getIndexSecondAtom();
+			const App::Component::Chemistry::Atom * const atom2 = p_molecule.getAtom( bond->getIndexSecondAtom() );
 
-			if ( atom1 == nullptr || atom1->getSymbol() == App::Component::Chemistry::Atom::SYMBOL::A_H || atom2 == nullptr
-				 || atom2->getSymbol() == App::Component::Chemistry::Atom::SYMBOL::A_H )
+			if ( atom1 == nullptr || atom1->getSymbol() == ChemDB::Atom::SYMBOL::A_H || atom2 == nullptr
+				 || atom2->getSymbol() == ChemDB::Atom::SYMBOL::A_H )
 			{
 				continue;
 			}
@@ -148,9 +150,9 @@ namespace VTX::Util::BondGuessing
 		}
 	}
 
-	void BondOrderGuessing::_tagCycles( const App::Component::Chemistry::Molecule &					 p_molecule,
-										const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
-										std::vector<CycleState> &				 p_cycleStatePerAtoms )
+	void BondOrderGuessing::_tagCycles( const App::Component::Chemistry::Molecule & p_molecule,
+										const std::vector<std::vector<size_t>> &	p_linkedAtomsVector,
+										std::vector<CycleState> &					p_cycleStatePerAtoms )
 	{
 		std::vector<size_t> cycleIndexes = std::vector<size_t>();
 		cycleIndexes.resize( 6, -1 );
@@ -164,11 +166,11 @@ namespace VTX::Util::BondGuessing
 			_tagCyclesRecursive( p_molecule, p_linkedAtomsVector, p_cycleStatePerAtoms, cycleIndexes, 1 );
 		}
 	}
-	void BondOrderGuessing::_tagCyclesRecursive( const App::Component::Chemistry::Molecule &				  p_molecule,
-												 const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
-												 std::vector<CycleState> &				  p_cycleStatePerAtoms,
-												 std::vector<size_t> &					  p_cycleIndexes,
-												 short									  p_counter )
+	void BondOrderGuessing::_tagCyclesRecursive( const App::Component::Chemistry::Molecule & p_molecule,
+												 const std::vector<std::vector<size_t>> &	 p_linkedAtomsVector,
+												 std::vector<CycleState> &					 p_cycleStatePerAtoms,
+												 std::vector<size_t> &						 p_cycleIndexes,
+												 short										 p_counter )
 	{
 		const size_t & currentAtomIndex = p_cycleIndexes[ p_counter - 1 ];
 		for ( const size_t nextAtomIndex : p_linkedAtomsVector[ currentAtomIndex ] )
@@ -529,7 +531,7 @@ namespace VTX::Util::BondGuessing
 		}
 	}
 
-	void BondOrderGuessing::_checkBondOrders( App::Component::Chemistry::Molecule &						   p_molecule,
+	void BondOrderGuessing::_checkBondOrders( App::Component::Chemistry::Molecule &	   p_molecule,
 											  const uint							   p_frameIndex,
 											  const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
 											  const std::vector<CycleState> &		   p_cycleStatePerAtom )
@@ -543,9 +545,9 @@ namespace VTX::Util::BondGuessing
 			if ( atom == nullptr )
 				continue;
 
-			const App::Component::Chemistry::Atom::SYMBOL atomType = atom->getSymbol();
-			if ( atomType == App::Component::Chemistry::Atom::SYMBOL::A_P || atomType == App::Component::Chemistry::Atom::SYMBOL::A_S
-				 || atomType == App::Component::Chemistry::Atom::SYMBOL::A_N || atomType == App::Component::Chemistry::Atom::SYMBOL::A_C )
+			const ChemDB::Atom::SYMBOL atomType = atom->getSymbol();
+			if ( atomType == ChemDB::Atom::SYMBOL::A_P || atomType == ChemDB::Atom::SYMBOL::A_S
+				 || atomType == ChemDB::Atom::SYMBOL::A_N || atomType == ChemDB::Atom::SYMBOL::A_C )
 			{
 				const std::vector<size_t> & linkedAtoms	 = p_linkedAtomsVector[ atomIndex ];
 				const Vec3f &				atomIndexPos = p_molecule.getAtomPositionFrame( p_frameIndex )[ atomIndex ];
@@ -561,17 +563,17 @@ namespace VTX::Util::BondGuessing
 					NeighbourData::AtomData atomData
 						= NeighbourData::AtomData( nextAtomIndex, nextAtomIndexPos, atomDistance );
 
-					const App::Component::Chemistry::Atom::SYMBOL nextAtomType = p_molecule.getAtom( uint( nextAtomIndex ) )->getSymbol();
+					const ChemDB::Atom::SYMBOL nextAtomType = p_molecule.getAtom( uint( nextAtomIndex ) )->getSymbol();
 
-					if ( nextAtomType == App::Component::Chemistry::Atom::SYMBOL::A_C )
+					if ( nextAtomType == ChemDB::Atom::SYMBOL::A_C )
 						neighbourData.carbons.emplace_back( atomData );
-					else if ( nextAtomType == App::Component::Chemistry::Atom::SYMBOL::A_O )
+					else if ( nextAtomType == ChemDB::Atom::SYMBOL::A_O )
 						neighbourData.oxygens.emplace_back( atomData );
-					else if ( nextAtomType == App::Component::Chemistry::Atom::SYMBOL::A_N )
+					else if ( nextAtomType == ChemDB::Atom::SYMBOL::A_N )
 						neighbourData.nitrogens.emplace_back( atomData );
 				}
 
-				if ( atomType == App::Component::Chemistry::Atom::SYMBOL::A_C )
+				if ( atomType == ChemDB::Atom::SYMBOL::A_C )
 				{
 					const float avgDotCross = _computeAverageCenterDotCross( p_molecule, 0, linkedAtoms );
 
@@ -590,8 +592,10 @@ namespace VTX::Util::BondGuessing
 								if ( neighbourData.oxygens[ 0 ].getDistance() < 1.38f
 									 && p_linkedAtomsVector[ firstOxygenIndex ].size() == 1 )
 								{
-									_setBondOrder(
-										p_molecule, atomIndex, firstOxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::DOUBLE );
+									_setBondOrder( p_molecule,
+												   atomIndex,
+												   firstOxygenIndex,
+												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
 								}
 							}
 							else if ( nitrogenCountInNeighbours >= 1 && oxygenCountInNeighbours >= 2 )
@@ -608,21 +612,29 @@ namespace VTX::Util::BondGuessing
 								if ( firstOxygenIsValid && secondOxygenIsValid )
 								{
 									// order = 4 in pymol
-									_setBondOrder(
-										p_molecule, atomIndex, firstOxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::DOUBLE );
+									_setBondOrder( p_molecule,
+												   atomIndex,
+												   firstOxygenIndex,
+												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
 									// order = 4 in pymol
-									_setBondOrder(
-										p_molecule, atomIndex, secondOxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::SINGLE );
+									_setBondOrder( p_molecule,
+												   atomIndex,
+												   secondOxygenIndex,
+												   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
 								}
 								else if ( firstOxygenIsValid )
 								{
-									_setBondOrder(
-										p_molecule, atomIndex, firstOxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::DOUBLE );
+									_setBondOrder( p_molecule,
+												   atomIndex,
+												   firstOxygenIndex,
+												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
 								}
 								else if ( secondOxygenIsValid )
 								{
-									_setBondOrder(
-										p_molecule, atomIndex, secondOxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::DOUBLE );
+									_setBondOrder( p_molecule,
+												   atomIndex,
+												   secondOxygenIndex,
+												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
 								}
 							}
 							else if ( nitrogenCountInNeighbours == 0 && oxygenCountInNeighbours == 1 )
@@ -633,8 +645,10 @@ namespace VTX::Util::BondGuessing
 								if ( neighbourData.oxygens[ 0 ].getDistance() < 1.31f
 									 && p_linkedAtomsVector[ firstOxygenIndex ].size() == 1 )
 								{
-									_setBondOrder(
-										p_molecule, atomIndex, firstOxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::DOUBLE );
+									_setBondOrder( p_molecule,
+												   atomIndex,
+												   firstOxygenIndex,
+												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
 								}
 							}
 							else if ( nitrogenCountInNeighbours == 0 && oxygenCountInNeighbours >= 2 )
@@ -652,22 +666,30 @@ namespace VTX::Util::BondGuessing
 								{
 									// ASP | GLU
 									// order = 4 in pymol
-									_setBondOrder(
-										p_molecule, atomIndex, firstOxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::DOUBLE );
+									_setBondOrder( p_molecule,
+												   atomIndex,
+												   firstOxygenIndex,
+												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
 									// order = 4 in pymol
-									_setBondOrder(
-										p_molecule, atomIndex, secondOxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::SINGLE );
+									_setBondOrder( p_molecule,
+												   atomIndex,
+												   secondOxygenIndex,
+												   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
 								}
 								else if ( firstOxygenIsValid )
 								{
 									// Esther
-									_setBondOrder(
-										p_molecule, atomIndex, firstOxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::DOUBLE );
+									_setBondOrder( p_molecule,
+												   atomIndex,
+												   firstOxygenIndex,
+												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
 								}
 								else if ( secondOxygenIsValid )
 								{
-									_setBondOrder(
-										p_molecule, atomIndex, secondOxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::DOUBLE );
+									_setBondOrder( p_molecule,
+												   atomIndex,
+												   secondOxygenIndex,
+												   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
 								}
 							}
 							else if ( nitrogenCountInNeighbours >= 3 )
@@ -688,30 +710,42 @@ namespace VTX::Util::BondGuessing
 									if ( n0NeighbourCount == 1 && n1NeighbourCount == 1 && n2NeighbourCount >= 2 )
 									{
 										// order = 4 in pymol
-										_setBondOrder(
-											p_molecule, atomIndex, n0Index, VTX::App::Component::Chemistry::Bond::ORDER::SINGLE );
+										_setBondOrder( p_molecule,
+													   atomIndex,
+													   n0Index,
+													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
 										// order = 4 in pymol
-										_setBondOrder(
-											p_molecule, atomIndex, n1Index, VTX::App::Component::Chemistry::Bond::ORDER::SINGLE );
+										_setBondOrder( p_molecule,
+													   atomIndex,
+													   n1Index,
+													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
 									}
 									else if ( n0NeighbourCount == 1 && n1NeighbourCount >= 2 && n2NeighbourCount == 1 )
 									{
 										// order = 4 in pymol
-										_setBondOrder(
-											p_molecule, atomIndex, n0Index, VTX::App::Component::Chemistry::Bond::ORDER::SINGLE );
+										_setBondOrder( p_molecule,
+													   atomIndex,
+													   n0Index,
+													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
 										// order = 4 in pymol
-										_setBondOrder(
-											p_molecule, atomIndex, n2Index, VTX::App::Component::Chemistry::Bond::ORDER::SINGLE );
+										_setBondOrder( p_molecule,
+													   atomIndex,
+													   n2Index,
+													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
 									}
 									else if ( n0NeighbourCount >= 2 && n1NeighbourCount == 1 && n2NeighbourCount == 1 )
 									{
 										// ARG
 										// order = 4 in pymol
-										_setBondOrder(
-											p_molecule, atomIndex, n1Index, VTX::App::Component::Chemistry::Bond::ORDER::SINGLE );
+										_setBondOrder( p_molecule,
+													   atomIndex,
+													   n1Index,
+													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
 										// order = 4 in pymol
-										_setBondOrder(
-											p_molecule, atomIndex, n2Index, VTX::App::Component::Chemistry::Bond::ORDER::DOUBLE );
+										_setBondOrder( p_molecule,
+													   atomIndex,
+													   n2Index,
+													   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
 									}
 								}
 							}
@@ -730,11 +764,15 @@ namespace VTX::Util::BondGuessing
 										 && p_cycleStatePerAtom[ n1Index ] == CycleState::None )
 									{
 										// order = 4 in pymol
-										_setBondOrder(
-											p_molecule, atomIndex, n0Index, VTX::App::Component::Chemistry::Bond::ORDER::SINGLE );
+										_setBondOrder( p_molecule,
+													   atomIndex,
+													   n0Index,
+													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
 										// order = 4 in pymol
-										_setBondOrder(
-											p_molecule, atomIndex, n1Index, VTX::App::Component::Chemistry::Bond::ORDER::SINGLE );
+										_setBondOrder( p_molecule,
+													   atomIndex,
+													   n1Index,
+													   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
 									}
 								}
 							}
@@ -767,7 +805,8 @@ namespace VTX::Util::BondGuessing
 
 						if ( n0DotCross > planerCutoff )
 						{
-							_setBondOrder( p_molecule, atomIndex, n0Index, VTX::App::Component::Chemistry::Bond::ORDER::DOUBLE );
+							_setBondOrder(
+								p_molecule, atomIndex, n0Index, VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
 							if ( neighbourData.nitrogens[ 0 ].getDistance() < 1.24f && neighbourData.carbons.size() > 0
 								 && p_linkedAtomsVector[ n0Index ].size() == 1 )
 							{
@@ -778,13 +817,16 @@ namespace VTX::Util::BondGuessing
 
 								if ( Util::Math::dot( n0Vector, c0Vector ) < -0.9 )
 								{
-									_setBondOrder( p_molecule, atomIndex, n0Index, VTX::App::Component::Chemistry::Bond::ORDER::TRIPLE );
+									_setBondOrder( p_molecule,
+												   atomIndex,
+												   n0Index,
+												   VTX::App::Internal::ChemDB::Bond::ORDER::TRIPLE );
 								}
 							}
 						}
 					}
 				}
-				else if ( atomType == App::Component::Chemistry::Atom::SYMBOL::A_N )
+				else if ( atomType == ChemDB::Atom::SYMBOL::A_N )
 				{
 					if ( neighbourCount == 3 && neighbourData.oxygens.size() == 2
 						 && _computeAverageCenterDotCross( p_molecule, p_frameIndex, linkedAtoms ) > planerCutoff )
@@ -793,18 +835,24 @@ namespace VTX::Util::BondGuessing
 						if ( p_linkedAtomsVector[ firstOxygenIndex ].size() == 1 )
 						{
 							// order = 4 in pymol
-							_setBondOrder( p_molecule, atomIndex, firstOxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::SINGLE );
+							_setBondOrder( p_molecule,
+										   atomIndex,
+										   firstOxygenIndex,
+										   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
 						}
 
 						const size_t secondOxygenIndex = neighbourData.oxygens[ 1 ].getIndex();
 						if ( p_linkedAtomsVector[ secondOxygenIndex ].size() == 1 )
 						{
 							// order = 4 in pymol
-							_setBondOrder( p_molecule, atomIndex, secondOxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::SINGLE );
+							_setBondOrder( p_molecule,
+										   atomIndex,
+										   secondOxygenIndex,
+										   VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE );
 						}
 					}
 				}
-				else if ( atomType == App::Component::Chemistry::Atom::SYMBOL::A_S || atomType == App::Component::Chemistry::Atom::SYMBOL::A_P )
+				else if ( atomType == ChemDB::Atom::SYMBOL::A_S || atomType == ChemDB::Atom::SYMBOL::A_P )
 				{
 					if ( neighbourData.oxygens.size() >= 4 )
 					{
@@ -813,7 +861,10 @@ namespace VTX::Util::BondGuessing
 							const size_t oxygenIndex = neighbourData.oxygens[ i ].getIndex();
 							if ( p_linkedAtomsVector[ oxygenIndex ].size() == 1 )
 							{
-								_setBondOrder( p_molecule, atomIndex, oxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::DOUBLE );
+								_setBondOrder( p_molecule,
+											   atomIndex,
+											   oxygenIndex,
+											   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
 								break;
 							}
 						}
@@ -825,7 +876,10 @@ namespace VTX::Util::BondGuessing
 							const size_t oxygenIndex = neighbourData.oxygens[ i ].getIndex();
 							if ( p_linkedAtomsVector[ oxygenIndex ].size() == 1 )
 							{
-								_setBondOrder( p_molecule, atomIndex, oxygenIndex, VTX::App::Component::Chemistry::Bond::ORDER::DOUBLE );
+								_setBondOrder( p_molecule,
+											   atomIndex,
+											   oxygenIndex,
+											   VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE );
 							}
 						}
 					}
@@ -833,23 +887,25 @@ namespace VTX::Util::BondGuessing
 
 				if ( p_cycleStatePerAtom[ atomIndex ] == CycleState::Planar )
 				{
-					if ( atomType == App::Component::Chemistry::Atom::SYMBOL::A_C || atomType == App::Component::Chemistry::Atom::SYMBOL::A_N
-						 || atomType == App::Component::Chemistry::Atom::SYMBOL::A_O || atomType == App::Component::Chemistry::Atom::SYMBOL::A_S )
+					if ( atomType == ChemDB::Atom::SYMBOL::A_C || atomType == ChemDB::Atom::SYMBOL::A_N
+						 || atomType == ChemDB::Atom::SYMBOL::A_O || atomType == ChemDB::Atom::SYMBOL::A_S )
 					{
 						for ( const size_t neighbourIndex : linkedAtoms )
 						{
 							if ( p_cycleStatePerAtom[ neighbourIndex ] == CycleState::Planar )
 							{
-								const App::Component::Chemistry::Atom::SYMBOL & neighbourType
+								const ChemDB::Atom::SYMBOL & neighbourType
 									= p_molecule.getAtom( uint( neighbourIndex ) )->getSymbol();
-								if ( neighbourType == App::Component::Chemistry::Atom::SYMBOL::A_C
-									 || neighbourType == App::Component::Chemistry::Atom::SYMBOL::A_N
-									 || neighbourType == App::Component::Chemistry::Atom::SYMBOL::A_O
-									 || neighbourType == App::Component::Chemistry::Atom::SYMBOL::A_S )
+								if ( neighbourType == ChemDB::Atom::SYMBOL::A_C
+									 || neighbourType == ChemDB::Atom::SYMBOL::A_N
+									 || neighbourType == ChemDB::Atom::SYMBOL::A_O
+									 || neighbourType == ChemDB::Atom::SYMBOL::A_S )
 								{
 									// order = 4 in pymol
-									_setBondOrder(
-										p_molecule, atomIndex, neighbourIndex, VTX::App::Component::Chemistry::Bond::ORDER::AROMATIC );
+									_setBondOrder( p_molecule,
+												   atomIndex,
+												   neighbourIndex,
+												   VTX::App::Internal::ChemDB::Bond::ORDER::AROMATIC );
 								}
 							}
 						}
@@ -1008,9 +1064,9 @@ namespace VTX::Util::BondGuessing
 		}
 	}
 
-	float BondOrderGuessing::_computeAverageCenterDotCross( const App::Component::Chemistry::Molecule &		p_molecule,
-															const uint					p_frameIndex,
-															const std::vector<size_t> & p_atoms )
+	float BondOrderGuessing::_computeAverageCenterDotCross( const App::Component::Chemistry::Molecule & p_molecule,
+															const uint									p_frameIndex,
+															const std::vector<size_t> &					p_atoms )
 	{
 		float		 result	   = 0.0F;
 		const size_t atomCount = p_atoms.size();
@@ -1056,11 +1112,11 @@ namespace VTX::Util::BondGuessing
 
 		return avg / ( atomCount - 1 );
 	}
-	float BondOrderGuessing::_computeAverageRingDotCross( const App::Component::Chemistry::Molecule &	  p_molecule,
-														  const uint				  p_frameIndex,
-														  const std::vector<size_t> & p_atoms,
-														  const int					  p_atomCount,
-														  Vec3f &					  dir )
+	float BondOrderGuessing::_computeAverageRingDotCross( const App::Component::Chemistry::Molecule & p_molecule,
+														  const uint								  p_frameIndex,
+														  const std::vector<size_t> &				  p_atoms,
+														  const int									  p_atomCount,
+														  Vec3f &									  dir )
 	{
 		if ( p_atomCount == 0 )
 			return 0.f;
@@ -1101,38 +1157,38 @@ namespace VTX::Util::BondGuessing
 
 		return avg / p_atomCount;
 	}
-	bool BondOrderGuessing::_verifyPlanarBonds( const App::Component::Chemistry::Molecule &					 p_molecule,
-												const uint								 p_frameIndex,
-												const std::vector<size_t> &				 p_atoms,
-												const int								 p_atomCount,
-												const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
-												const Vec3f &							 dir,
-												const float								 cutoff )
+	bool BondOrderGuessing::_verifyPlanarBonds( const App::Component::Chemistry::Molecule & p_molecule,
+												const uint									p_frameIndex,
+												const std::vector<size_t> &					p_atoms,
+												const int									p_atomCount,
+												const std::vector<std::vector<size_t>> &	p_linkedAtomsVector,
+												const Vec3f &								dir,
+												const float									cutoff )
 	{
 		for ( int i = 0; i < p_atomCount; i++ )
 		{
 			const uint atomIndex = uint( p_atoms[ i ] );
 
-			const Vec3f &			  atomPos = p_molecule.getAtomPositionFrame( p_frameIndex )[ atomIndex ];
-			const App::Component::Chemistry::Atom * const atom	  = p_molecule.getAtom( atomIndex );
+			const Vec3f & atomPos = p_molecule.getAtomPositionFrame( p_frameIndex )[ atomIndex ];
+			const App::Component::Chemistry::Atom * const atom = p_molecule.getAtom( atomIndex );
 
 			if ( atom == nullptr )
 				continue;
 
-			const App::Component::Chemistry::Atom::SYMBOL atomType = atom->getSymbol();
+			const ChemDB::Atom::SYMBOL atomType = atom->getSymbol();
 
-			if ( !( atomType == App::Component::Chemistry::Atom::SYMBOL::A_C || atomType == App::Component::Chemistry::Atom::SYMBOL::A_N
-					|| atomType == App::Component::Chemistry::Atom::SYMBOL::A_O || atomType == App::Component::Chemistry::Atom::SYMBOL::A_S ) )
+			if ( !( atomType == ChemDB::Atom::SYMBOL::A_C || atomType == ChemDB::Atom::SYMBOL::A_N
+					|| atomType == ChemDB::Atom::SYMBOL::A_O || atomType == ChemDB::Atom::SYMBOL::A_S ) )
 			{
 				continue;
 			}
 
 			for ( const size_t neighbourIndex : p_linkedAtomsVector[ atomIndex ] )
 			{
-				const App::Component::Chemistry::Atom::SYMBOL neighbourType = p_molecule.getAtom( uint( neighbourIndex ) )->getSymbol();
+				const ChemDB::Atom::SYMBOL neighbourType = p_molecule.getAtom( uint( neighbourIndex ) )->getSymbol();
 
-				if ( !( neighbourType == App::Component::Chemistry::Atom::SYMBOL::A_C || neighbourType == App::Component::Chemistry::Atom::SYMBOL::A_N
-						|| neighbourType == App::Component::Chemistry::Atom::SYMBOL::A_O || neighbourType == App::Component::Chemistry::Atom::SYMBOL::A_S ) )
+				if ( !( neighbourType == ChemDB::Atom::SYMBOL::A_C || neighbourType == ChemDB::Atom::SYMBOL::A_N
+						|| neighbourType == ChemDB::Atom::SYMBOL::A_O || neighbourType == ChemDB::Atom::SYMBOL::A_S ) )
 				{
 					continue;
 				}
@@ -1151,13 +1207,14 @@ namespace VTX::Util::BondGuessing
 		return true;
 	}
 
-	void BondOrderGuessing::_setBondOrder( App::Component::Chemistry::Molecule &		p_molecule,
-										   const size_t				p_firstAtomIndex,
-										   const size_t				p_secondAtomIndex,
-										   const App::Component::Chemistry::Bond::ORDER p_bondOrder,
-										   const bool				p_force )
+	void BondOrderGuessing::_setBondOrder( App::Component::Chemistry::Molecule &	p_molecule,
+										   const size_t								p_firstAtomIndex,
+										   const size_t								p_secondAtomIndex,
+										   const App::Internal::ChemDB::Bond::ORDER p_bondOrder,
+										   const bool								p_force )
 	{
-		const App::Component::Chemistry::Residue & residueFirstAtom = *( p_molecule.getAtom( uint( p_firstAtomIndex ) )->getResiduePtr() );
+		const App::Component::Chemistry::Residue & residueFirstAtom
+			= *( p_molecule.getAtom( uint( p_firstAtomIndex ) )->getResiduePtr() );
 
 		for ( uint iBond = residueFirstAtom.getIndexFirstBond();
 			  iBond < residueFirstAtom.getIndexFirstBond() + residueFirstAtom.getBondCount();
@@ -1176,14 +1233,14 @@ namespace VTX::Util::BondGuessing
 		}
 	}
 
-	void BondOrderGuessing::_setBondOrder( App::Component::Chemistry::Molecule &		p_molecule,
-										   const uint				p_bondIndex,
-										   const App::Component::Chemistry::Bond::ORDER p_bondOrder,
-										   const bool				p_force )
+	void BondOrderGuessing::_setBondOrder( App::Component::Chemistry::Molecule &	p_molecule,
+										   const uint								p_bondIndex,
+										   const App::Internal::ChemDB::Bond::ORDER p_bondOrder,
+										   const bool								p_force )
 	{
 		App::Component::Chemistry::Bond * const bond = p_molecule.getBond( p_bondIndex );
 
-		if ( p_force || bond->getOrder() == App::Component::Chemistry::Bond::ORDER::UNKNOWN )
+		if ( p_force || bond->getOrder() == App::Internal::ChemDB::Bond::ORDER::UNKNOWN )
 		{
 			bond->setOrder( p_bondOrder );
 		}
@@ -1260,18 +1317,20 @@ namespace VTX::Util::BondGuessing
 	{
 		bool res = true;
 
-		int					   bondDataCurrentIndex = 0;
+		int										   bondDataCurrentIndex = 0;
 		const App::Component::Chemistry::Residue * previousResidue		= nullptr;
 		for ( App::Component::Chemistry::Bond * const bond : p_molecule.getBonds() )
 		{
-			if ( bond->getOrder() != App::Component::Chemistry::Bond::ORDER::UNKNOWN )
+			if ( bond->getOrder() != App::Internal::ChemDB::Bond::ORDER::UNKNOWN )
 				continue;
 
 			const uint firstAtomIndex  = bond->getIndexFirstAtom();
 			const uint secondAtomIndex = bond->getIndexSecondAtom();
 
-			const App::Component::Chemistry::Residue * const firstAtomResidue  = p_molecule.getAtom( firstAtomIndex )->getResiduePtr();
-			const App::Component::Chemistry::Residue * const secondAtomResidue = p_molecule.getAtom( secondAtomIndex )->getResiduePtr();
+			const App::Component::Chemistry::Residue * const firstAtomResidue
+				= p_molecule.getAtom( firstAtomIndex )->getResiduePtr();
+			const App::Component::Chemistry::Residue * const secondAtomResidue
+				= p_molecule.getAtom( secondAtomIndex )->getResiduePtr();
 
 			if ( firstAtomResidue != secondAtomResidue )
 				continue;

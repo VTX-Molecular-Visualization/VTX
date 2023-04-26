@@ -14,7 +14,6 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	// class Molecule;
 	class SecondaryStructure : public App::Core::Model::BaseModel3D<Buffer::SecondaryStructure>
 	{
 		VTX_MODEL
@@ -24,19 +23,6 @@ namespace VTX::App::Component::Chemistry
 		using SSDataPair = std::pair<const uint, std::vector<uint>>;
 
 	  public:
-		enum class TYPE : int
-		{
-			HELIX_ALPHA_RIGHT = 0,
-			HELIX_ALPHA_LEFT  = 1,
-			HELIX_3_10_RIGHT  = 2,
-			HELIX_3_10_LEFT	  = 3,
-			HELIX_PI		  = 4,
-			STRAND			  = 5,
-			TURN			  = 6,
-			COIL			  = 7,
-			COUNT
-		};
-
 		inline Chemistry::Molecule * const getMolecule() { return _molecule; }
 
 		void refresh();

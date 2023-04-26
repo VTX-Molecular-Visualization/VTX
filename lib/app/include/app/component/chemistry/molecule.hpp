@@ -2,11 +2,12 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_MOLECULE__
 
 #include "_fwd.hpp"
-#include "app/component/chemistry/enum_category.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/chemistry/secondary_structure.hpp"
 #include "app/component/chemistry/solvent_excluded_surface.hpp"
 #include "app/core/model/base_model_3d.hpp"
+#include "app/internal/chemdb/category.hpp"
+#include "app/internal/chemdb/unknown_residue_data.hpp"
 #include "app/model/configuration/molecule.hpp"
 #include "app/model/representation/instantiated_representation.hpp"
 #include "app/model/selection.hpp"
@@ -29,17 +30,8 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	struct UnknownResidueData
-	{
-		std::string symbolStr;
-		std::string symbolName;
-	};
+	namespace ChemDB = App::Internal::ChemDB;
 
-	// class Category;
-	// class Chain;
-	// class Residue;
-	// class Atom;
-	// class Bond;
 	class Molecule :
 		public App::Core::Model::BaseModel3D<Buffer::Molecule>,
 		public Generic::BaseColorable,
@@ -131,14 +123,14 @@ namespace VTX::App::Component::Chemistry
 		inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
 		inline const bool hasSolventExcludedSurface() const { return _solventExcludedSurfaces.empty() == false; }
 
-		bool					 hasSolventExcludedSurface( const Chemistry::CATEGORY_ENUM & p_categoryEnum ) const;
-		SolventExcludedSurface & getSolventExcludedSurface( const Chemistry::CATEGORY_ENUM & p_categoryEnum );
+		bool					 hasSolventExcludedSurface( const ChemDB::Category::TYPE & p_categoryEnum ) const;
+		SolventExcludedSurface & getSolventExcludedSurface( const ChemDB::Category::TYPE & p_categoryEnum );
 
-		inline const Chemistry::Category & getCategory( const Chemistry::CATEGORY_ENUM & p_categoryEnum ) const
+		inline const Chemistry::Category & getCategory( const ChemDB::Category::TYPE & p_categoryEnum ) const
 		{
 			return *( _categories[ int( p_categoryEnum ) ] );
 		}
-		inline Chemistry::Category & getCategory( const Chemistry::CATEGORY_ENUM & p_categoryEnum )
+		inline Chemistry::Category & getCategory( const ChemDB::Category::TYPE & p_categoryEnum )
 		{
 			return *( _categories[ int( p_categoryEnum ) ] );
 		}
@@ -154,16 +146,16 @@ namespace VTX::App::Component::Chemistry
 		inline const Color::Rgba & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 		inline const uint getAtomVisibility( const uint p_idx ) const { return _bufferAtomVisibilities[ p_idx ]; }
 
-		inline const std::vector<UnknownResidueData *> & getUnknownResidueSymbols() const
+		inline const std::vector<Internal::ChemDB::UnknownResidueData *> & getUnknownResidueSymbols() const
 		{
 			return _unknownResidueSymbol;
 		}
 		inline const std::unordered_set<std::string> & getUnknownAtomSymbols() const { return _unknownAtomSymbol; }
 
-		int						   getUnknownResidueSymbolIndex( const std::string & p_symbol ) const;
-		UnknownResidueData * const getUnknownResidueSymbol( const uint p_symbolIndex ) const;
-		UnknownResidueData * const getUnknownResidueSymbol( const std::string & p_symbol ) const;
-		int						   addUnknownResidueSymbol( UnknownResidueData * const p_data );
+		int											 getUnknownResidueSymbolIndex( const std::string & p_symbol ) const;
+		Internal::ChemDB::UnknownResidueData * const getUnknownResidueSymbol( const uint p_symbolIndex ) const;
+		Internal::ChemDB::UnknownResidueData * const getUnknownResidueSymbol( const std::string & p_symbol ) const;
+		int			addUnknownResidueSymbol( Internal::ChemDB::UnknownResidueData * const p_data );
 		inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
 
 		inline AtomPositionsFrame & addAtomPositionFrame()
@@ -272,7 +264,7 @@ namespace VTX::App::Component::Chemistry
 		void refreshSecondaryStructure();
 
 		// Solvent excluded surface.
-		void createSolventExcludedSurface( const Chemistry::CATEGORY_ENUM & p_categoryEnum );
+		void createSolventExcludedSurface( const ChemDB::Category::TYPE & p_categoryEnum );
 		void refreshSolventExcludedSurfaces();
 
 		// Categorization
@@ -336,8 +328,9 @@ namespace VTX::App::Component::Chemistry
 		Generic::COLOR_MODE _colorMode = Generic::COLOR_MODE::INHERITED;
 
 		// Missing symbols.
-		std::vector<UnknownResidueData *> _unknownResidueSymbol = std::vector<UnknownResidueData *>();
-		std::unordered_set<std::string>	  _unknownAtomSymbol	= std::unordered_set<std::string>();
+		std::vector<Internal::ChemDB::UnknownResidueData *> _unknownResidueSymbol
+			= std::vector<Internal::ChemDB::UnknownResidueData *>();
+		std::unordered_set<std::string> _unknownAtomSymbol = std::unordered_set<std::string>();
 
 		// Buffers.
 		std::vector<float>		 _bufferAtomRadius		 = std::vector<float>();
@@ -350,8 +343,8 @@ namespace VTX::App::Component::Chemistry
 		// Secondary structure.
 		SecondaryStructure * _secondaryStructure = nullptr;
 		// Solvent excluded surface.
-		std::map<Chemistry::CATEGORY_ENUM, SolventExcludedSurface *> _solventExcludedSurfaces
-			= std::map<Chemistry::CATEGORY_ENUM, SolventExcludedSurface *>();
+		std::map<ChemDB::Category::TYPE, SolventExcludedSurface *> _solventExcludedSurfaces
+			= std::map<ChemDB::Category::TYPE, SolventExcludedSurface *>();
 
 		// Categories
 		std::vector<Chemistry::Category *> _categories;

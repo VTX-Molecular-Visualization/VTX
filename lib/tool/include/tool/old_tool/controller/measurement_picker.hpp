@@ -10,9 +10,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		// class Atom;
-		// class Residue;
-
 		namespace Measurement
 		{
 			class MeasureInProgress;

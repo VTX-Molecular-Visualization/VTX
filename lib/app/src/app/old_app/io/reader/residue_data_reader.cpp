@@ -1,6 +1,6 @@
 #include "app/old_app/io/reader/residue_data_reader.hpp"
-#include "app/old_app/io/filesystem.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/old_app/io/filesystem.hpp"
 
 namespace VTX::IO::Reader
 {
@@ -25,7 +25,7 @@ namespace VTX::IO::Reader
 		std::string categoryStr;
 		std::getline( stream, categoryStr, '\n' );
 
-		p_residueData.category = App::Component::Chemistry::CATEGORY_ENUM( std::atoi( categoryStr.c_str() ) );
+		p_residueData.category = App::Internal::ChemDB::Category::TYPE( std::atoi( categoryStr.c_str() ) );
 
 		std::string line;
 		while ( std::getline( stream, line ) )
@@ -42,7 +42,7 @@ namespace VTX::IO::Reader
 
 			std::string orderStr;
 			std::getline( streamLine, orderStr, ',' );
-			bondData.bondOrder = App::Component::Chemistry::Bond::ORDER( std::stoi( orderStr ) );
+			bondData.bondOrder = App::Internal::ChemDB::Bond::ORDER( std::stoi( orderStr ) );
 
 			p_residueData.bondData.emplace_back( bondData );
 		}

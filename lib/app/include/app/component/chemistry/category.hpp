@@ -3,19 +3,19 @@
 
 #include "_fwd.hpp"
 #include "app/core/model/base_model.hpp"
+#include "app/internal/chemdb/category.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
-#include "enum_category.hpp"
 #include <string>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::App::Component::Chemistry
 {
-	// class Molecule;
+	namespace ChemDB = App::Internal::ChemDB;
 
 	class Category :
 		public App::Core::Model::BaseModel,
@@ -26,12 +26,12 @@ namespace VTX::App::Component::Chemistry
 		VTX_MODEL
 
 	  public:
-		inline void setCategoryEnum( const Chemistry::CATEGORY_ENUM & p_category ) { _category = p_category; };
-		inline Chemistry::CATEGORY_ENUM getCategoryEnum() const { return _category; };
-		void							setMoleculePtr( Molecule * const p_molecule );
-		inline Molecule * const			getMoleculePtr() const { return _moleculePtr; };
+		inline void setCategoryEnum( const ChemDB::Category::TYPE & p_category ) { _category = p_category; };
+		inline ChemDB::Category::TYPE getCategoryEnum() const { return _category; };
+		void						  setMoleculePtr( Molecule * const p_molecule );
+		inline Molecule * const		  getMoleculePtr() const { return _moleculePtr; };
 
-		inline const std::string & getName() const { return CATEGORY_ENUM_STR[ int( _category ) ]; };
+		inline const std::string & getName() const { return ChemDB::Category::TYPE_STR[ int( _category ) ]; };
 
 		void					  addChain( const uint p_chainIndex );
 		void					  removeChain( const uint p_chainIndex );
@@ -61,8 +61,8 @@ namespace VTX::App::Component::Chemistry
 		void _onRepresentationChange() override;
 
 	  private:
-		Chemistry::CATEGORY_ENUM _category	   = Chemistry::CATEGORY_ENUM::UNKNOWN;
-		std::vector<uint>		 _linkedChains = std::vector<uint>();
+		ChemDB::Category::TYPE _category	 = ChemDB::Category::TYPE::UNKNOWN;
+		std::vector<uint>	   _linkedChains = std::vector<uint>();
 
 		Molecule * _moleculePtr = nullptr;
 	};

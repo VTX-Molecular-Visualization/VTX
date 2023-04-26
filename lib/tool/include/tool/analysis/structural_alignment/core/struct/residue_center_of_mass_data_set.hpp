@@ -5,11 +5,6 @@
 #include <app/component/chemistry/_fwd.hpp>
 #include <util/types.hpp>
 
-// namespace VTX::Model
-//{
-//	class Residue;
-// } // namespace VTX::Model
-
 namespace VTX::Tool::Analysis::StructuralAlignment::Core::Struct
 {
 	class ResidueCenterOfMassDataSet : public ResidueDataSet<Vec3f>

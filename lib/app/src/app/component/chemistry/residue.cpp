@@ -7,7 +7,7 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	bool Residue::IsStandard( const std::string & p_residueSymbol )
+	bool Residue::checkIfStandardFromName( const std::string & p_residueSymbol )
 	{
 		std::string residueSymbol = p_residueSymbol;
 		std::transform( residueSymbol.begin(),
@@ -15,7 +15,9 @@ namespace VTX::App::Component::Chemistry
 						residueSymbol.begin(),
 						[]( unsigned char c ) { return std::toupper( c ); } );
 
-		return std::find( std::begin( SYMBOL_STR ), std::end( SYMBOL_STR ), residueSymbol ) != std::end( SYMBOL_STR );
+		return std::find(
+				   std::begin( ChemDB::Residue::SYMBOL_STR ), std::end( ChemDB::Residue::SYMBOL_STR ), residueSymbol )
+			   != std::end( ChemDB::Residue::SYMBOL_STR );
 	}
 
 	Molecule * const Residue::getMoleculePtr() const { return _chainPtr->getMoleculePtr(); };
@@ -28,21 +30,22 @@ namespace VTX::App::Component::Chemistry
 	const std::string & Residue::getSymbolStr() const
 	{
 		return _symbol < SYMBOL_COUNT
-				   ? SYMBOL_STR[ _symbol ]
+				   ? ChemDB::Residue::SYMBOL_STR[ _symbol ]
 				   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ]->symbolStr;
 	}
 	const std::string & Residue::getSymbolName() const
 	{
 		return _symbol < SYMBOL_COUNT
-				   ? SYMBOL_NAME[ _symbol ]
+				   ? ChemDB::Residue::SYMBOL_NAME[ _symbol ]
 				   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ]->symbolName;
 	}
 
 	const std::string & Residue::getSymbolShort() const
 	{
-		return _symbol < SYMBOL_COUNT ? SYMBOL_SHORT_STR[ _symbol ] : SYMBOL_SHORT_STR[ int( SYMBOL::UNKNOWN ) ];
+		return _symbol < SYMBOL_COUNT ? ChemDB::Residue::SYMBOL_SHORT_STR[ _symbol ]
+									  : ChemDB::Residue::SYMBOL_SHORT_STR[ int( ChemDB::Residue::SYMBOL::UNKNOWN ) ];
 	}
-	void Residue::setSymbol( const SYMBOL & p_symbol ) { setSymbol( int( p_symbol ) ); }
+	void Residue::setSymbol( const ChemDB::Residue::SYMBOL & p_symbol ) { setSymbol( int( p_symbol ) ); }
 	void Residue::setSymbol( const int p_symbolValue )
 	{
 		_symbol = p_symbolValue;
@@ -182,175 +185,9 @@ namespace VTX::App::Component::Chemistry
 
 	void Residue::_onRepresentationChange() { _notifyViews( App::Event::Model::REPRESENTATION_CHANGE ); }
 
-	const std::string Residue::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {
-		"---", // UNKNOWN
-		"ALA", // ALA
-		"ARG", // ARG
-		"ASN", // ASN
-		"ASP", // ASP
-		"CYS", // CYS
-		"GLN", // GLN
-		"GLU", // GLU
-		"GLY", // GLY
-		"HIS", // HIS
-		"ILE", // ILE
-		"LEU", // LEU
-		"LYS", // LYS
-		"MET", // MET
-		"PHE", // PHE
-		"PRO", // PRO
-		"SER", // SER
-		"THR", // THR
-		"TRP", // TRP
-		"TYR", // TYR
-		"VAL", // VAL
-		"SEC", // SEC
-		"PYL", // PYL
-		"ASX", // ASX
-		"GLX", // GLX
-		"C",   // C
-		"G",   // G
-		"A",   // A
-		"U",   // U
-		"I",   // I
-		"DC",  // DC
-		"DG",  // DG
-		"DA",  // DA
-		"DU",  // DU
-		"DT",  // DT
-		"DI",  // DI
-		"WAT", // WAT
-		"HOH", // HOH
-	};
-
-	const std::string Residue::SYMBOL_SHORT_STR[ (int)SYMBOL::COUNT ] = {
-		"-",  // UNKNOWN
-		"A",  // ALA
-		"R",  // ARG
-		"N",  // ASN
-		"D",  // ASP
-		"C",  // CYS
-		"Q",  // GLN
-		"E",  // GLU
-		"G",  // GLY
-		"H",  // HIS
-		"I",  // ILE
-		"L",  // LEU
-		"K",  // LYS
-		"M",  // MET
-		"F",  // PHE
-		"P",  // PRO
-		"S",  // SER
-		"T",  // THR
-		"W",  // TRP
-		"Y",  // TYR
-		"V",  // VAL
-		"U",  // SEC
-		"O",  // PYL
-		"?",  // ASX
-		"?",  // GLX
-		"C",  // C
-		"G",  // G
-		"A",  // A
-		"U",  // U
-		"I",  // I
-		"DC", // DC
-		"DG", // DG
-		"DA", // DA
-		"DU", // DU
-		"DT", // DT
-		"DI", // DI
-		"O",  // WAT
-		"O",  // HOH
-	};
-
-	const std::string Residue::SYMBOL_NAME[ (int)SYMBOL::COUNT ] = {
-		"Unknown",		  // UNKNOWN
-		"Alanine",		  // ALA
-		"Arginine",		  // ARG
-		"Asparagine",	  // ASN
-		"Aspartate",	  // ASP
-		"Cysteine",		  // CYS
-		"Glutamine",	  // GLN
-		"Glutamate",	  // GLU
-		"Glycine",		  // GLY
-		"Histidine",	  // HIS
-		"Isoleucine",	  // ILE
-		"Leucine",		  // LEU
-		"Lysine",		  // LYS
-		"Methionine",	  // MET
-		"Phenylalanine",  // PHE
-		"Proline",		  // PRO
-		"Serine",		  // SER
-		"Threonine",	  // THR
-		"Tryptophan",	  // TRP
-		"Tyrosine",		  // TYR
-		"Valine",		  // VAL
-		"Selenocysteine", // SEC
-		"Pyrrolysine",	  // PYL
-		"?",			  // ASX
-		"?",			  // GLX
-		"Cytosine",		  // C
-		"Guanine",		  // G
-		"Adenine",		  // A
-		"Uracil",		  // U
-		"Inosine",		  // I
-		"Cytosine",		  // DC
-		"Guanine",		  // DG
-		"Adenine",		  // DA
-		"Uracil",		  // DU
-		"Thymine",		  // DT
-		"Inosine",		  // DI
-		"Water",		  // WAT
-		"Water",		  // HOH
-	};
-
-	// http://jmol.sourceforge.net/jscolors/#Jmolcolors : Protein "amino" colors
-	const Color::Rgba Residue::SYMBOL_COLOR[ (int)SYMBOL::COUNT ] = {
-		{ 190, 160, 110 }, // UNKNOWN
-		{ 200, 200, 200 }, // ALA
-		{ 20, 90, 255 },   // ARG
-		{ 0, 220, 220 },   // ASN
-		{ 230, 10, 10 },   // ASP
-		{ 230, 230, 0 },   // CYS
-		{ 0, 220, 220 },   // GLN
-		{ 230, 10, 10 },   // GLU
-		{ 235, 235, 235 }, // GLY
-		{ 130, 130, 210 }, // HIS
-		{ 15, 130, 15 },   // ILE
-		{ 15, 130, 15 },   // LEU
-		{ 20, 90, 255 },   // LYS
-		{ 230, 230, 0 },   // MET
-		{ 50, 50, 170 },   // PHE
-		{ 220, 150, 130 }, // PRO
-		{ 250, 150, 0 },   // SER
-		{ 250, 150, 0 },   // THR
-		{ 180, 90, 180 },  // TRP
-		{ 50, 50, 170 },   // TYR
-		{ 15, 130, 15 },   // VAL
-		{ 190, 160, 110 }, // SEC
-		{ 190, 160, 110 }, // PYL
-		{ 255, 105, 180 }, // ASX
-		{ 255, 105, 180 }, // GLX
-		{ 255, 140, 75 },  // C
-		{ 255, 112, 112 }, // G
-		{ 160, 160, 255 }, // A
-		{ 255, 128, 128 }, // U
-		{ 128, 255, 255 }, // I
-		{ 255, 140, 75 },  // DC
-		{ 255, 112, 112 }, // DG
-		{ 160, 160, 255 }, // DA
-		{ 255, 128, 128 }, // DU
-		{ 160, 255, 160 }, // DT
-		{ 128, 255, 255 }, // DI
-		{ 255, 105, 180 }, // WAT
-		{ 255, 105, 180 }, // HOH
-	};
-
 	const Color::Rgba Residue::getResidueColor( const Chemistry::Residue & p_residue )
 	{
-		return p_residue.isStandardResidue() ? SYMBOL_COLOR[ p_residue._symbol ]
-											 : SYMBOL_COLOR[ int( SYMBOL::UNKNOWN ) ];
+		return p_residue.isStandardResidue() ? ChemDB::Residue::SYMBOL_COLOR[ p_residue._symbol ]
+											 : ChemDB::Residue::SYMBOL_COLOR[ int( ChemDB::Residue::SYMBOL::UNKNOWN ) ];
 	}
-
 } // namespace VTX::App::Component::Chemistry

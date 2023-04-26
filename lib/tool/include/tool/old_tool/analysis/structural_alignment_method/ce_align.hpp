@@ -10,12 +10,6 @@
 #include <utility>
 #include <vector>
 
-// namespace VTX::Model
-//{
-//	class Molecule;
-//	class Residue;
-// } // namespace VTX::Model
-
 namespace VTX::Analysis::StructuralAlignmentMethod
 {
 	class CEAlign : public StructuralAlignment::AlignmentMethod

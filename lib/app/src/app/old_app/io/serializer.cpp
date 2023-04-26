@@ -3,13 +3,13 @@
 #include "app/action/renderer.hpp"
 #include "app/action/setting.hpp"
 #include "app/component/chemistry/chain.hpp"
-#include "app/component/chemistry/enum_category.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include "app/event.hpp"
+#include "app/internal/chemdb/category.hpp"
 #include "app/model/configuration/molecule.hpp"
 #include "app/model/label.hpp"
 #include "app/model/mesh_triangle.hpp"
@@ -278,12 +278,12 @@ namespace VTX::IO
 				  ->getName();
 
 		std::vector<std::string> defaultRepresentationNamePerCategory = std::vector<std::string>();
-		defaultRepresentationNamePerCategory.resize( int( App::Component::Chemistry::CATEGORY_ENUM::COUNT ) );
+		defaultRepresentationNamePerCategory.resize( int( App::Internal::ChemDB::Category::TYPE::COUNT ) );
 
-		for ( int i = 0; i < int( App::Component::Chemistry::CATEGORY_ENUM::COUNT ); i++ )
+		for ( int i = 0; i < int( App::Internal::ChemDB::Category::TYPE::COUNT ); i++ )
 		{
 			const int representationIndex
-				= p_setting.getDefaultRepresentationIndexPerCategory( App::Component::Chemistry::CATEGORY_ENUM( i ) );
+				= p_setting.getDefaultRepresentationIndexPerCategory( App::Internal::ChemDB::Category::TYPE( i ) );
 			const Model::Representation::Representation * representation
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( representationIndex );
 
@@ -871,12 +871,12 @@ namespace VTX::IO
 		const std::vector<std::string> representationNamePerCategory = _get<std::vector<std::string>>(
 			p_json, "DEFAULT_REPRESENTATION_PER_CATEGORY", Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_NAME );
 
-		const int categoryCount = int( App::Component::Chemistry::CATEGORY_ENUM::COUNT );
+		const int categoryCount = int( App::Internal::ChemDB::Category::TYPE::COUNT );
 		if ( representationNamePerCategory.size() == categoryCount )
 		{
 			for ( int i = 0; i < categoryCount; i++ )
 			{
-				p_setting.setTmpDefaultRepresentationNamePerCategory( App::Component::Chemistry::CATEGORY_ENUM( i ),
+				p_setting.setTmpDefaultRepresentationNamePerCategory( App::Internal::ChemDB::Category::TYPE( i ),
 																	  representationNamePerCategory[ i ] );
 			}
 		}

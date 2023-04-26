@@ -13,12 +13,6 @@
 #include "representation_data.hpp"
 #include "representation_enum.hpp"
 
-// namespace VTX::Model
-//{
-//	class Molecule;
-//	class SecondaryStructure;
-//
-// } // namespace VTX::Model
 namespace VTX::Generic
 {
 	class BaseRepresentable;

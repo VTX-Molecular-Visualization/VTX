@@ -124,9 +124,9 @@ namespace VTX::App::Component::Chemistry
 
 		if ( previousVisibleState != p_visible )
 		{
-			_notifyViews<Chemistry::CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY, _category );
-			_moleculePtr->propagateEventToViews<Chemistry::CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY,
-																		   _category );
+			_notifyViews<ChemDB::Category::TYPE>( App::Event::Model::CATEGORY_VISIBILITY, _category );
+			_moleculePtr->propagateEventToViews<ChemDB::Category::TYPE>( App::Event::Model::CATEGORY_VISIBILITY,
+																		 _category );
 		}
 	}
 	void Category::setVisible( const bool p_visible, const bool p_notify )
@@ -139,9 +139,9 @@ namespace VTX::App::Component::Chemistry
 		{
 			if ( p_notify )
 			{
-				_notifyViews<Chemistry::CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY, _category );
-				_moleculePtr->propagateEventToViews<Chemistry::CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY,
-																			   _category );
+				_notifyViews<ChemDB::Category::TYPE>( App::Event::Model::CATEGORY_VISIBILITY, _category );
+				_moleculePtr->propagateEventToViews<ChemDB::Category::TYPE>( App::Event::Model::CATEGORY_VISIBILITY,
+																			 _category );
 			}
 		}
 	}

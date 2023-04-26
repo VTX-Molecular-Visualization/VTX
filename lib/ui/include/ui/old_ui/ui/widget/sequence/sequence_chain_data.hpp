@@ -7,12 +7,6 @@
 #include <app/component/chemistry/_fwd.hpp>
 #include <vector>
 
-// namespace VTX::Model
-//{
-//	class Molecule;
-//	class Residue;
-// } // namespace VTX::Model
-
 namespace VTX::UI::Widget::Sequence
 {
 	class SequenceChainData

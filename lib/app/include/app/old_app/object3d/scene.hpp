@@ -14,7 +14,6 @@
 namespace VTX::Model
 {
 	class MeshTriangle;
-	// class Molecule;
 	class Path;
 	class Label;
 } // namespace VTX::Model

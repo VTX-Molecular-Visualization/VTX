@@ -2,14 +2,14 @@
 #define __VTX_APP_ACTION_SETTING__
 
 #include "app/action.hpp"
+#include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/component/chemistry/enum_category.hpp"
+#include "app/internal/chemdb/category.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
 #include "app/old_app/selection/selection_enum.hpp"
 #include "app/old_app/setting.hpp"
-#include "app/component/chemistry/enum_trajectory.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::App::Action::Setting
@@ -456,7 +456,10 @@ namespace VTX::App::Action::Setting
 	class ChangeDefaultTrajectoryPlayMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeDefaultTrajectoryPlayMode( const Component::Chemistry::PlayMode p_playMode ) : _playMode( p_playMode ) {}
+		explicit ChangeDefaultTrajectoryPlayMode( const Component::Chemistry::PlayMode p_playMode ) :
+			_playMode( p_playMode )
+		{
+		}
 
 		virtual void execute() override;
 
@@ -531,8 +534,8 @@ namespace VTX::App::Action::Setting
 	class ChangeDefaultRepresentationPerCategory : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeDefaultRepresentationPerCategory( const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum,
-														 const int			   p_representationIndex ) :
+		explicit ChangeDefaultRepresentationPerCategory( const App::Internal::ChemDB::Category::TYPE & p_categoryEnum,
+														 const int p_representationIndex ) :
 			_categoryEnum( p_categoryEnum ),
 			_representationIndex( p_representationIndex )
 		{
@@ -541,8 +544,8 @@ namespace VTX::App::Action::Setting
 		virtual void execute() override;
 
 	  private:
-		const App::Component::Chemistry::CATEGORY_ENUM _categoryEnum;
-		const int			_representationIndex;
+		const App::Internal::ChemDB::Category::TYPE _categoryEnum;
+		const int									_representationIndex;
 	};
 
 	class ApplyAllSettings : public App::Core::Action::BaseAction

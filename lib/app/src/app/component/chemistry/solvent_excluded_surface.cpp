@@ -4,6 +4,7 @@
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/internal/chemdb/atom.hpp"
 #include "app/internal/worker/gpu_buffer_initializer.hpp"
 #include "app/internal/worker/gpu_computer.hpp"
 #include "app/old_app/custom/iterator.hpp"
@@ -22,6 +23,8 @@
 
 namespace VTX::App::Component::Chemistry
 {
+	namespace ChemDB = VTX::App::Internal::ChemDB;
+
 	SolventExcludedSurface::SolventExcludedSurface( const Category * const p_category ) :
 		MeshTriangle(), _category( p_category )
 	{
@@ -52,9 +55,10 @@ namespace VTX::App::Component::Chemistry
 		const std::vector<uint> atomsIdx = _category->generateAtomIndexList();
 
 		// Sort atoms in acceleration grid.
-		const float					 maxVdWRadius = *std::max_element( Atom::SYMBOL_VDW_RADIUS,
-													   Atom::SYMBOL_VDW_RADIUS + std::size( Atom::SYMBOL_VDW_RADIUS ) );
-		const Object3D::Helper::AABB molAABB	  = _category->getAABB();
+		const float maxVdWRadius
+			= *std::max_element( ChemDB::Atom::SYMBOL_VDW_RADIUS,
+								 ChemDB::Atom::SYMBOL_VDW_RADIUS + std::size( ChemDB::Atom::SYMBOL_VDW_RADIUS ) );
+		const Object3D::Helper::AABB molAABB = _category->getAABB();
 
 		const float atomGridCellSize = PROBE_RADIUS + maxVdWRadius;
 		const Vec3f gridMin			 = molAABB.getMin() - atomGridCellSize;

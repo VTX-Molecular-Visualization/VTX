@@ -12,7 +12,7 @@
 #include <QString>
 #include <iostream>
 #include <app/old_app/id.hpp>
-#include <app/component/chemistry/enum_category.hpp>
+#include <app/internal/chemdb/category.hpp>
 #include <app/model/representation/representation_enum.hpp>
 #include <app/old_app/selection/selection_enum.hpp>
 #include <app/old_app/util/label.hpp>
@@ -168,7 +168,7 @@ namespace VTX::UI::QT::Style
 			return res;
 		}
 
-		const QPixmap * const getResidueCategorySymbol( const App::Component::Chemistry::CATEGORY_ENUM & p_category ) const
+		const QPixmap * const getResidueCategorySymbol( const App::Internal::ChemDB::Category::TYPE & p_category ) const
 		{
 			return &RESIDUE_CATEGORY_ICON;
 		}

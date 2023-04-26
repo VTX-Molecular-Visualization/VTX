@@ -12,12 +12,6 @@
 #include <utility>
 #include <vector>
 
-// namespace VTX::Model
-//{
-//	class Atom;
-//	class Molecule;
-// } // namespace VTX::Model
-
 namespace VTX::Model::Measurement
 {
 	class Distance : public Model::Label, public App::Core::Event::BaseEventReceiverVTX, public Generic::BaseAutoDelete

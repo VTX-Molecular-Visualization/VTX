@@ -9,16 +9,10 @@
 
 namespace VTX
 {
-	namespace Model
+	namespace Model::Measurement
 	{
-		// class Atom;
-		// class Residue;
-
-		namespace Measurement
-		{
-			class MeasureInProgress;
-		}
-	} // namespace Model
+		class MeasureInProgress;
+	} // namespace Model::Measurement
 
 	namespace UI::QT::Controller
 	{

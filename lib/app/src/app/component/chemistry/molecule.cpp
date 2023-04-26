@@ -24,16 +24,18 @@
 
 namespace VTX::App::Component::Chemistry
 {
+	namespace ChemDB = VTX::App::Internal::ChemDB;
+
 	Molecule::Molecule() : Molecule( VTX::ID::Model::MODEL_MOLECULE ) {}
 	Molecule::Molecule( const VTX::ID::VTX_ID & p_typeId ) : BaseModel3D( VTX::ID::Model::MODEL_MOLECULE )
 	{
-		_categories.resize( int( Chemistry::CATEGORY_ENUM::COUNT ) );
+		_categories.resize( int( ChemDB::Category::TYPE::COUNT ) );
 
-		for ( int i = 0; i < int( Chemistry::CATEGORY_ENUM::COUNT ); i++ )
+		for ( int i = 0; i < int( ChemDB::Category::TYPE::COUNT ); i++ )
 		{
 			_categories[ i ] = VTX::MVC_MANAGER().instantiateModel<Chemistry::Category>();
 			_categories[ i ]->setMoleculePtr( this );
-			_categories[ i ]->setCategoryEnum( Chemistry::CATEGORY_ENUM( i ) );
+			_categories[ i ]->setCategoryEnum( ChemDB::Category::TYPE( i ) );
 		}
 
 		_playMode = VTX_SETTING().getDefaultTrajectoryPlayMode();
@@ -48,7 +50,7 @@ namespace VTX::App::Component::Chemistry
 		VTX::MVC_MANAGER().deleteAllModels( _chains );
 		VTX::MVC_MANAGER().deleteAllModels( _categories );
 
-		for ( const UnknownResidueData * const unknownResidueSymbol : _unknownResidueSymbol )
+		for ( const Internal::ChemDB::UnknownResidueData * const unknownResidueSymbol : _unknownResidueSymbol )
 			delete unknownResidueSymbol;
 
 		if ( _secondaryStructure != nullptr )
@@ -109,12 +111,13 @@ namespace VTX::App::Component::Chemistry
 
 		return -1;
 	}
-	UnknownResidueData * const Molecule::getUnknownResidueSymbol( const uint p_unkownymbolIndex ) const
+	Internal::ChemDB::UnknownResidueData * const Molecule::getUnknownResidueSymbol(
+		const uint p_unkownymbolIndex ) const
 	{
 		return _unknownResidueSymbol[ p_unkownymbolIndex ];
 	}
 
-	UnknownResidueData * const Molecule::getUnknownResidueSymbol( const std::string & p_symbol ) const
+	Internal::ChemDB::UnknownResidueData * const Molecule::getUnknownResidueSymbol( const std::string & p_symbol ) const
 	{
 		for ( int residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
 		{
@@ -125,7 +128,7 @@ namespace VTX::App::Component::Chemistry
 		return nullptr;
 	}
 
-	int Molecule::addUnknownResidueSymbol( UnknownResidueData * const p_residueData )
+	int Molecule::addUnknownResidueSymbol( Internal::ChemDB::UnknownResidueData * const p_residueData )
 	{
 		int residueIndex;
 
@@ -359,7 +362,7 @@ namespace VTX::App::Component::Chemistry
 				if ( atom == nullptr )
 					continue;
 
-				if ( colorCarbon && atom->getSymbol() != Chemistry::Atom::SYMBOL::A_C )
+				if ( colorCarbon && atom->getSymbol() != ChemDB::Atom::SYMBOL::A_C )
 				{
 					_bufferAtomColors[ i ] = atom->getColor();
 				}
@@ -422,15 +425,15 @@ namespace VTX::App::Component::Chemistry
 				{
 					_bufferAtomVisibilities[ i ] = 0u;
 				}
-				else if ( displaySolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
+				else if ( displaySolvent == false && atom->getType() == ChemDB::Atom::TYPE::SOLVENT )
 				{
 					_bufferAtomVisibilities[ i ] = 0u;
 				}
-				else if ( displayIons == false && atom->getType() == Atom::TYPE::ION )
+				else if ( displayIons == false && atom->getType() == ChemDB::Atom::TYPE::ION )
 				{
 					_bufferAtomVisibilities[ i ] = 0u;
 				}
-				else if ( displayHydrogen == false && atom->getSymbol() == Atom::SYMBOL::A_H )
+				else if ( displayHydrogen == false && atom->getSymbol() == ChemDB::Atom::SYMBOL::A_H )
 				{
 					_bufferAtomVisibilities[ i ] = 0u;
 				}
@@ -719,10 +722,10 @@ namespace VTX::App::Component::Chemistry
 	}
 	void Molecule::forceNotifyTrajectoryChanged() { _notifyViews( App::Event::Model::TRAJECTORY_DATA_CHANGE ); }
 
-	bool Molecule::showWater() const { return getCategory( Chemistry::CATEGORY_ENUM::WATER ).isVisible(); }
+	bool Molecule::showWater() const { return getCategory( ChemDB::Category::TYPE::WATER ).isVisible(); }
 	void Molecule::setShowWater( const bool p_showWater )
 	{
-		Util::Molecule::show( getCategory( Chemistry::CATEGORY_ENUM::WATER ), p_showWater );
+		Util::Molecule::show( getCategory( ChemDB::Category::TYPE::WATER ), p_showWater );
 		_fillBufferAtomVisibilities();
 		VTX_EVENT( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 	}
@@ -733,17 +736,17 @@ namespace VTX::App::Component::Chemistry
 		_fillBufferAtomVisibilities();
 		VTX_EVENT( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 	}
-	bool Molecule::showSolvent() const { return getCategory( Chemistry::CATEGORY_ENUM::SOLVENT ).isVisible(); }
+	bool Molecule::showSolvent() const { return getCategory( ChemDB::Category::TYPE::SOLVENT ).isVisible(); }
 	void Molecule::setShowSolvent( const bool p_showSolvent )
 	{
-		Util::Molecule::show( getCategory( Chemistry::CATEGORY_ENUM::SOLVENT ), p_showSolvent );
+		Util::Molecule::show( getCategory( ChemDB::Category::TYPE::SOLVENT ), p_showSolvent );
 		_fillBufferAtomVisibilities();
 		VTX_EVENT( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 	}
-	bool Molecule::showIon() const { return getCategory( Chemistry::CATEGORY_ENUM::ION ).isVisible(); }
+	bool Molecule::showIon() const { return getCategory( ChemDB::Category::TYPE::ION ).isVisible(); }
 	void Molecule::setShowIon( const bool p_showIon )
 	{
-		Util::Molecule::show( getCategory( Chemistry::CATEGORY_ENUM::ION ), p_showIon );
+		Util::Molecule::show( getCategory( ChemDB::Category::TYPE::ION ), p_showIon );
 		_fillBufferAtomVisibilities();
 		VTX_EVENT( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 	}
@@ -756,11 +759,11 @@ namespace VTX::App::Component::Chemistry
 				  + " / Atoms: " + std::to_string( _atoms.size() ) + " / Bonds: " + std::to_string( _bonds.size() ) );
 
 		// Display unknown symbols.
-		const std::vector<UnknownResidueData *> & unknownResidueSymbols = getUnknownResidueSymbols();
+		const std::vector<ChemDB::UnknownResidueData *> & unknownResidueSymbols = getUnknownResidueSymbols();
 		if ( unknownResidueSymbols.empty() == false )
 		{
 			std::string unknownResidueSymbolsStr = "";
-			for ( const UnknownResidueData * const unknownResidueData : unknownResidueSymbols )
+			for ( const ChemDB::UnknownResidueData * const unknownResidueData : unknownResidueSymbols )
 			{
 				unknownResidueSymbolsStr += unknownResidueData->symbolStr + " ";
 			}
@@ -911,19 +914,19 @@ namespace VTX::App::Component::Chemistry
 		_secondaryStructure->refresh();
 	}
 
-	bool Molecule::hasSolventExcludedSurface( const Chemistry::CATEGORY_ENUM & p_categoryEnum ) const
+	bool Molecule::hasSolventExcludedSurface( const ChemDB::Category::TYPE & p_categoryEnum ) const
 	{
 		return _solventExcludedSurfaces.find( p_categoryEnum ) != _solventExcludedSurfaces.end();
 	}
 
-	SolventExcludedSurface & Molecule::getSolventExcludedSurface( const Chemistry::CATEGORY_ENUM & p_categoryEnum )
+	SolventExcludedSurface & Molecule::getSolventExcludedSurface( const ChemDB::Category::TYPE & p_categoryEnum )
 	{
 		assert( hasSolventExcludedSurface( p_categoryEnum ) );
 
 		return *_solventExcludedSurfaces[ p_categoryEnum ];
 	}
 
-	void Molecule::createSolventExcludedSurface( const Chemistry::CATEGORY_ENUM & p_categoryEnum )
+	void Molecule::createSolventExcludedSurface( const ChemDB::Category::TYPE & p_categoryEnum )
 	{
 		assert( hasSolventExcludedSurface( p_categoryEnum ) == false );
 		assert( getCategory( p_categoryEnum ).isEmpty() == false );
@@ -951,7 +954,7 @@ namespace VTX::App::Component::Chemistry
 	std::vector<Chemistry::Category *> Molecule::getFilledCategories() const
 	{
 		std::vector<Chemistry::Category *> res = std::vector<Chemistry::Category *>();
-		res.reserve( int( Chemistry::CATEGORY_ENUM::COUNT ) );
+		res.reserve( int( ChemDB::Category::TYPE::COUNT ) );
 
 		for ( Chemistry::Category * const category : _categories )
 		{

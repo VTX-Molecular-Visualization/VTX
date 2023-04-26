@@ -21,11 +21,6 @@ namespace VTX
 		class BaseModel;
 	} // namespace App::Core::Model
 
-	// namespace Model
-	//{
-	//	class Molecule;
-	// } // namespace Model
-
 	namespace UI::Widget::Dialog
 	{
 		class MoleculeListWidget : public CustomWidget::BaseModelListWidget

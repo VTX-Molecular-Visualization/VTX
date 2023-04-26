@@ -9,11 +9,6 @@
 #include <utility>
 #include <vector>
 
-// namespace VTX::Model
-//{
-//	class Molecule;
-// }
-
 namespace VTX::Tool::Analysis::StructuralAlignment::Core
 {
 	class StructuralAlignment

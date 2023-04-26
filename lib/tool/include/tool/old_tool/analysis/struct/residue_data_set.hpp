@@ -2,6 +2,7 @@
 #define __VTX_ANALYSIS_STRUCT_RESIDUE_DATA_SET__
 
 #include <app/component/chemistry/residue.hpp>
+#include <app/internal/chemdb/residue.hpp>
 #include <map>
 #include <string>
 #include <vector>
@@ -16,7 +17,7 @@ namespace VTX::Analysis::Struct
 		{
 			_standardResidueData = std::vector<T>();
 
-			const int standardResidueCount = int( App::Component::Chemistry::Residue::SYMBOL::COUNT );
+			const int standardResidueCount = int( App::Internal::ChemDB::Residue::SYMBOL::COUNT );
 			_standardResidueData.resize( standardResidueCount );
 			_standardResidueDataRegistered.resize( standardResidueCount, false );
 

@@ -13,10 +13,6 @@
 
 namespace VTX
 {
-	// namespace Model
-	//{
-	//	class Molecule;
-	// }
 	namespace Worker
 	{
 		class BaseThread;

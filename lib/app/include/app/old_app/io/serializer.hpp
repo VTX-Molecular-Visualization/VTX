@@ -28,8 +28,6 @@ namespace VTX
 
 	namespace Model
 	{
-		// class Molecule;
-		// class Atom;
 		class Label;
 		class Path;
 		class Viewpoint;
