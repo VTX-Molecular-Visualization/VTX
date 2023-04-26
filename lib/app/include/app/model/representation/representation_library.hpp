@@ -3,7 +3,7 @@
 
 #include "app/core/event/vtx_event.hpp"
 #include "app/core/model/base_model.hpp"
-#include "app/model/category_enum.hpp"
+#include "app/component/chemistry/enum_category.hpp"
 #include "app/mvc.hpp"
 #include "representation.hpp"
 #include <vector>
@@ -37,7 +37,7 @@ namespace VTX::Model::Representation
 		void			 setDefaultRepresentation( const int p_representationIndex, const bool p_notify = true );
 		int				 getDefaultRepresentationIndex() const;
 		Representation * getDefaultRepresentation();
-		Representation * getDefaultRepresentation( const CATEGORY_ENUM & p_categoryEnum );
+		Representation * getDefaultRepresentation( const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum );
 
 		std::string getValidName( const std::string & p_name ) const;
 		bool		isValidName( const std::string & p_name ) const;

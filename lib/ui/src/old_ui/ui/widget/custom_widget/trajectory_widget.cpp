@@ -3,14 +3,14 @@
 #include "ui/old_ui/util/ui.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-
 #include <app/action/molecule.hpp>
-#include <app/old_app/trajectory/trajectory_enum.hpp>
+#include <app/component/chemistry/enum_trajectory.hpp>
+#include <app/old_app/setting.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
 	TrajectoryWidget::TrajectoryWidget( QWidget * p_parent ) :
-		BaseManualWidget<QWidget>( p_parent ), TMultiDataField<Model::Molecule>()
+		BaseManualWidget<QWidget>( p_parent ), TMultiDataField<App::Component::Chemistry::Molecule>()
 	{
 	}
 
@@ -98,7 +98,7 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_timeline->resetState();
 
-		for ( const Model::Molecule * const molecule : _molecules )
+		for ( const App::Component::Chemistry::Molecule * const molecule : _molecules )
 		{
 			_timeline->updateWithNewValue( molecule->getFrame() );
 		}
@@ -118,7 +118,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_speedWidget->resetState();
 		//_playRangeWidget->resetState();
 	}
-	void TrajectoryWidget::updateWithNewValue( Model::Molecule & p_molecule )
+	void TrajectoryWidget::updateWithNewValue( App::Component::Chemistry::Molecule & p_molecule )
 	{
 		_molecules.emplace( &p_molecule );
 
@@ -163,12 +163,15 @@ namespace VTX::UI::Widget::CustomWidget
 		// if one is playing => set to pause else play all
 		bool setPlay = true;
 
-		for ( const Model::Molecule * const molecule : _molecules )
+		for ( const App::Component::Chemistry::Molecule * const molecule : _molecules )
 			setPlay = setPlay && !molecule->isPlaying();
 
 		VTX_ACTION( new App::Action::Molecule::ChangeIsPlaying( _molecules, setPlay ) );
 	}
-	void TrajectoryWidget::_nextFrameAction() { VTX_ACTION( new App::Action::Molecule::NextFrame( _molecules, true ) ); }
+	void TrajectoryWidget::_nextFrameAction()
+	{
+		VTX_ACTION( new App::Action::Molecule::NextFrame( _molecules, true ) );
+	}
 	void TrajectoryWidget::_goToEndAction()
 	{
 		VTX_ACTION( new App::Action::Molecule::ChangeFrame( _molecules, INT32_MAX, true ) );
@@ -176,10 +179,10 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void TrajectoryWidget::_playModeChange( const int p_playMode )
 	{
-		const Trajectory::PlayMode playmode	  = Trajectory::PlayMode( p_playMode );
-		bool					   dataChange = false;
+		const App::Component::Chemistry::PlayMode playmode	 = App::Component::Chemistry::PlayMode( p_playMode );
+		bool									  dataChange = false;
 
-		for ( const Model::Molecule * const molecule : _molecules )
+		for ( const App::Component::Chemistry::Molecule * const molecule : _molecules )
 		{
 			if ( molecule->getPlayMode() != playmode )
 			{
@@ -195,7 +198,7 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		bool dataChange = false;
 
-		for ( const Model::Molecule * const molecule : _molecules )
+		for ( const App::Component::Chemistry::Molecule * const molecule : _molecules )
 		{
 			if ( molecule->getFPS() != p_speed )
 			{
@@ -210,7 +213,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void TrajectoryWidget::_fillPlayModeComboBox()
 	{
-		for ( const std::string & str : Trajectory::PLAY_MODE_STRING )
+		for ( const std::string & str : App::Component::Chemistry::PLAY_MODE_STRING )
 		{
 			_playModeWidget->addItem( QString::fromStdString( str ) );
 		}

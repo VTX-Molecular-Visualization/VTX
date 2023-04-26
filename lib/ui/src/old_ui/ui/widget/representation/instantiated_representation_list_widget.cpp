@@ -7,11 +7,11 @@
 #include <QVBoxLayout>
 #include <QVariant>
 #include <app/old_app/generic/base_representable.hpp>
-#include <app/model/atom.hpp>
-#include <app/model/category.hpp>
-#include <app/model/chain.hpp>
-#include <app/model/molecule.hpp>
-#include <app/model/residue.hpp>
+#include <app/component/chemistry/atom.hpp>
+#include <app/component/chemistry/category.hpp>
+#include <app/component/chemistry/chain.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/residue.hpp>
 #include <app/mvc.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
@@ -59,15 +59,15 @@ namespace VTX::UI::Widget::Representation
 		}
 		else if ( target->getTypeId() == ID::Model::MODEL_CHAIN )
 		{
-			const Model::Chain * const	  chain	   = static_cast<const Model::Chain *>( target );
-			const Model::Category * const category = chain->getMoleculePtr()->getCategoryFromChain( *chain );
+			const App::Component::Chemistry::Chain * const	  chain	   = static_cast<const App::Component::Chemistry::Chain *>( target );
+			const App::Component::Chemistry::Category * const category = chain->getMoleculePtr()->getCategoryFromChain( *chain );
 			modelNameStr						   = category->getName() + "/" + chain->getDefaultName();
 		}
 		else if ( target->getTypeId() == ID::Model::MODEL_RESIDUE )
 		{
-			const Model::Residue * const  residue  = static_cast<const Model::Residue *>( target );
-			const Model::Chain * const	  chain	   = residue->getChainPtr();
-			const Model::Category * const category = chain->getMoleculePtr()->getCategoryFromChain( *chain );
+			const App::Component::Chemistry::Residue * const  residue  = static_cast<const App::Component::Chemistry::Residue *>( target );
+			const App::Component::Chemistry::Chain * const	  chain	   = residue->getChainPtr();
+			const App::Component::Chemistry::Category * const category = chain->getMoleculePtr()->getCategoryFromChain( *chain );
 			modelNameStr = category->getName() + "/" + chain->getDefaultName() + "/" + residue->getDefaultName();
 		}
 
@@ -83,22 +83,22 @@ namespace VTX::UI::Widget::Representation
 
 		if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			Model::Molecule * const molecule = static_cast<Model::Molecule *>( targetModel );
+			App::Component::Chemistry::Molecule * const molecule = static_cast<App::Component::Chemistry::Molecule *>( targetModel );
 			VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *molecule );
 		}
 		else if ( modelTypeID == VTX::ID::Model::MODEL_CHAIN )
 		{
-			Model::Chain * const chain = static_cast<Model::Chain *>( targetModel );
+			App::Component::Chemistry::Chain * const chain = static_cast<App::Component::Chemistry::Chain *>( targetModel );
 			VTX::Selection::SelectionManager::get().getSelectionModel().selectChain( *chain );
 		}
 		else if ( modelTypeID == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			Model::Residue * const residue = static_cast<Model::Residue *>( targetModel );
+			App::Component::Chemistry::Residue * const residue = static_cast<App::Component::Chemistry::Residue *>( targetModel );
 			VTX::Selection::SelectionManager::get().getSelectionModel().selectResidue( *residue );
 		}
 		else if ( modelTypeID == VTX::ID::Model::MODEL_ATOM )
 		{
-			Model::Atom * const atom = static_cast<Model::Atom *>( targetModel );
+			App::Component::Chemistry::Atom * const atom = static_cast<App::Component::Chemistry::Atom *>( targetModel );
 			VTX::Selection::SelectionManager::get().getSelectionModel().selectAtom( *atom );
 		}
 	}
@@ -110,17 +110,17 @@ namespace VTX::UI::Widget::Representation
 
 		if ( representableTypeID == ID::Model::MODEL_MOLECULE )
 		{
-			Model::Molecule * const molecule = static_cast<Model::Molecule *>( targetModel );
+			App::Component::Chemistry::Molecule * const molecule = static_cast<App::Component::Chemistry::Molecule *>( targetModel );
 			VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation( *molecule );
 		}
 		else if ( representableTypeID == ID::Model::MODEL_CHAIN )
 		{
-			Model::Chain * const chain = static_cast<Model::Chain *>( targetModel );
+			App::Component::Chemistry::Chain * const chain = static_cast<App::Component::Chemistry::Chain *>( targetModel );
 			VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation( *chain );
 		}
 		else if ( representableTypeID == ID::Model::MODEL_CHAIN )
 		{
-			Model::Residue * const residue = static_cast<Model::Residue *>( targetModel );
+			App::Component::Chemistry::Residue * const residue = static_cast<App::Component::Chemistry::Residue *>( targetModel );
 			VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation( *residue );
 		}
 

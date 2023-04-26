@@ -6,7 +6,7 @@
 #include <QPushButton>
 
 #include <app/action/main.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/setting.hpp>
 #include <string>
@@ -33,7 +33,7 @@ namespace VTX::UI::Widget::Dialog
 	App::Core::Model::BaseModel * const MoleculeListWidget::ModelFieldLine::getModel() const { return _linkedMolecule; };
 	void					 MoleculeListWidget::ModelFieldLine::setModel( App::Core::Model::BaseModel * const p_model )
 	{
-		_linkedMolecule = static_cast<Model::Molecule *>( p_model );
+		_linkedMolecule = static_cast<App::Component::Chemistry::Molecule *>( p_model );
 
 		if ( _linkedMolecule == nullptr )
 			_modelLabel->setText( "-" );
@@ -68,9 +68,9 @@ namespace VTX::UI::Widget::Dialog
 		_addWidgetInColumn( castedLine->getModelLabel(), p_row, int( GRID_LAYOUT_COLUMN::MODEL ) );
 	}
 
-	std::vector<Model::Molecule *> MoleculeListWidget::getTickedMolecules() const
+	std::vector<App::Component::Chemistry::Molecule *> MoleculeListWidget::getTickedMolecules() const
 	{
-		std::vector<Model::Molecule *> res = std::vector<Model::Molecule *>();
+		std::vector<App::Component::Chemistry::Molecule *> res = std::vector<App::Component::Chemistry::Molecule *>();
 		res.reserve( _getLines().size() );
 
 		for ( CustomWidget::BaseModelFieldLine * const line : _getLines() )
@@ -85,7 +85,7 @@ namespace VTX::UI::Widget::Dialog
 		return res;
 	}
 
-	void MoleculeListWidget::tickMolecule( Model::Molecule * const p_molecule, const bool p_ticked )
+	void MoleculeListWidget::tickMolecule( App::Component::Chemistry::Molecule * const p_molecule, const bool p_ticked )
 	{
 		_findLineFromModel<ModelFieldLine>( p_molecule )->setTickState( p_ticked );
 	}
@@ -175,7 +175,7 @@ namespace VTX::UI::Widget::Dialog
 	{
 		if ( _linkToMoleculeRadioButton->isChecked() )
 		{
-			const std::vector<Model::Molecule *> selectedMolecules = _moleculeListWidget->getTickedMolecules();
+			const std::vector<App::Component::Chemistry::Molecule *> selectedMolecules = _moleculeListWidget->getTickedMolecules();
 			VTX_ACTION( new App::Action::Main::Open( _filepath, selectedMolecules ) );
 		}
 		else if ( _createNewMoleculeRadioButton->isChecked() )
@@ -192,7 +192,7 @@ namespace VTX::UI::Widget::Dialog
 
 		const std::string filename = _filepath.stem().string();
 
-		std::vector<Model::Molecule *> molecules = std::vector<Model::Molecule *>();
+		std::vector<App::Component::Chemistry::Molecule *> molecules = std::vector<App::Component::Chemistry::Molecule *>();
 		molecules.reserve( VTXApp::get().getScene().getMolecules().size() );
 
 		for ( const Object3D::Scene::PairMoleculePtrFloat & pairMolecule : VTXApp::get().getScene().getMolecules() )
@@ -200,7 +200,7 @@ namespace VTX::UI::Widget::Dialog
 
 		VTXApp::get().getScene().sortMoleculesBySceneIndex( molecules );
 
-		for ( Model::Molecule * const molecule : molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : molecules )
 		{
 			_moleculeListWidget->addModel( molecule );
 			_moleculeListWidget->tickMolecule( molecule, molecule->getDisplayName() == filename );

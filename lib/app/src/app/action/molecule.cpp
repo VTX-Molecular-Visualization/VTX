@@ -1,6 +1,6 @@
 #include "app/action/molecule.hpp"
 #include "app/mvc.hpp"
-#include "app/model/generated_molecule.hpp"
+#include "app/component/chemistry/generated_molecule.hpp"
 #include "app/model/representation/representation.hpp"
 #include "app/model/representation/representation_library.hpp"
 #include "app/old_app/object3d/scene.hpp"
@@ -20,7 +20,7 @@ namespace VTX::App::Action::Molecule
 
 	void ChangeColor::execute()
 	{
-		for ( Model::Molecule * const molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : _molecules )
 		{
 			molecule->setColor( _color );
 			molecule->refreshColors();
@@ -33,7 +33,7 @@ namespace VTX::App::Action::Molecule
 	{
 		for ( Generic::BaseVisible * const visible : _visibles )
 		{
-			Model::Molecule * molecule = static_cast<Model::Molecule *>( visible );
+			App::Component::Chemistry::Molecule * molecule = static_cast<App::Component::Chemistry::Molecule *>( visible );
 
 			switch ( _mode )
 			{
@@ -60,7 +60,7 @@ namespace VTX::App::Action::Molecule
 
 	void RemoveRepresentation::execute()
 	{
-		for ( Model::Molecule * const molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : _molecules )
 			VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation( *molecule );
 
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
@@ -68,7 +68,7 @@ namespace VTX::App::Action::Molecule
 
 	void RemoveChildrenRepresentations::execute()
 	{
-		for ( Model::Molecule * const molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : _molecules )
 		{
 			molecule->removeChildrenRepresentations();
 			molecule->computeAllRepresentationData();
@@ -79,14 +79,14 @@ namespace VTX::App::Action::Molecule
 
 	void ChangeFPS::execute()
 	{
-		for ( Model::Molecule * molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * molecule : _molecules )
 			molecule->setFPS(
 				Util::Math::clamp( _fps, VTX::Setting::MIN_TRAJECTORY_SPEED, VTX::Setting::MAX_TRAJECTORY_SPEED ) );
 	}
 
 	void ChangeFrame::execute()
 	{
-		for ( Model::Molecule * const molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : _molecules )
 		{
 			molecule->setFrame( Util::Math::clamp( _frame, 0, (int)molecule->getFrameCount() - 1 ) );
 			if ( _pause )
@@ -98,7 +98,7 @@ namespace VTX::App::Action::Molecule
 
 	void PreviousFrame::execute()
 	{
-		for ( Model::Molecule * const molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : _molecules )
 		{
 			const int previousFrame		   = molecule->getFrame() - 1;
 			const int clampedPreviousFrame = previousFrame < 0 ? 0 : previousFrame;
@@ -114,7 +114,7 @@ namespace VTX::App::Action::Molecule
 
 	void NextFrame::execute()
 	{
-		for ( Model::Molecule * const molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : _molecules )
 		{
 			const int nextFrame		   = molecule->getFrame() + 1;
 			const int lastFrame		   = molecule->getFrameCount() - 1;
@@ -131,7 +131,7 @@ namespace VTX::App::Action::Molecule
 
 	void ChangeIsPlaying::execute()
 	{
-		for ( Model::Molecule * const molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : _molecules )
 		{
 			if ( molecule->isAtEndOfTrajectoryPlay() && _isPlaying )
 				molecule->resetTrajectoryPlay();
@@ -142,13 +142,13 @@ namespace VTX::App::Action::Molecule
 
 	void ChangePlayMode::execute()
 	{
-		for ( Model::Molecule * const molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : _molecules )
 			molecule->setPlayMode( _playMode );
 	}
 
 	void ChangeShowIon::execute()
 	{
-		for ( Model::Molecule * const molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : _molecules )
 			molecule->setShowIon( _showIon );
 
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
@@ -156,7 +156,7 @@ namespace VTX::App::Action::Molecule
 
 	void ChangeShowSolvent::execute()
 	{
-		for ( Model::Molecule * const molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : _molecules )
 			molecule->setShowSolvent( _showSolvent );
 
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
@@ -164,7 +164,7 @@ namespace VTX::App::Action::Molecule
 
 	void ChangeShowWater::execute()
 	{
-		for ( Model::Molecule * const molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : _molecules )
 			molecule->setShowWater( _showWater );
 
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
@@ -172,7 +172,7 @@ namespace VTX::App::Action::Molecule
 
 	void ChangeShowHydrogen::execute()
 	{
-		for ( Model::Molecule * const molecule : _molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : _molecules )
 			molecule->setShowHydrogen( _showHydrogen );
 
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
@@ -186,8 +186,8 @@ namespace VTX::App::Action::Molecule
 
 	void Copy::execute()
 	{
-		Model::GeneratedMolecule * generatedMolecule
-			= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
+		App::Component::Chemistry::GeneratedMolecule * generatedMolecule
+			= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
 
 		generatedMolecule->copyFromMolecule( _target );
 		generatedMolecule->applyTransform( _target.getTransform() );

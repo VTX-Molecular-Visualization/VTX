@@ -12,13 +12,13 @@
 #include <QFrame>
 #include <QHBoxLayout>
 #include <app/event/global.hpp>
-#include <app/model/atom.hpp>
-#include <app/model/chain.hpp>
+#include <app/component/chemistry/atom.hpp>
+#include <app/component/chemistry/chain.hpp>
 #include <app/model/label.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/model/representation/representation.hpp>
 #include <app/model/representation/representation_library.hpp>
-#include <app/model/residue.hpp>
+#include <app/component/chemistry/residue.hpp>
 #include <app/model/selection.hpp>
 #include <app/model/viewpoint.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
@@ -52,29 +52,29 @@ namespace VTX::UI::Widget::Inspector
 		}
 		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event );
 
 			_removeTargetToInspector<MultipleMoleculeWidget>( INSPECTOR_TYPE::MOLECULE, castedEvent.get() );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::CHAIN_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Model::Chain *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Chain *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Chain *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Chain *> &>( p_event );
 
 			_removeTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::CHAIN, castedEvent.get() );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::RESIDUE_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Model::Residue *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Residue *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Residue *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Residue *> &>( p_event );
 
 			_removeTargetToInspector<MultipleResidueWidget>( INSPECTOR_TYPE::RESIDUE, castedEvent.get() );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::ATOM_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Model::Atom *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Atom *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom *> &>( p_event );
 
 			_removeTargetToInspector<MultipleAtomWidget>( INSPECTOR_TYPE::ATOM, castedEvent.get() );
 		}
@@ -222,7 +222,7 @@ namespace VTX::UI::Widget::Inspector
 
 				if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				{
-					Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
+					App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
 					const Model::Selection::MapChainIds & moleculeSelection
 						= selectionModel.getMoleculesMap().at( modelID );
 
@@ -234,7 +234,7 @@ namespace VTX::UI::Widget::Inspector
 					{
 						for ( const Model::Selection::PairChainIds & chainData : moleculeSelection )
 						{
-							Model::Chain * const chain = molecule.getChain( chainData.first );
+							App::Component::Chemistry::Chain * const chain = molecule.getChain( chainData.first );
 
 							if ( chainData.second.getFullySelectedChildCount() == chain->getRealResidueCount() )
 							{
@@ -244,7 +244,7 @@ namespace VTX::UI::Widget::Inspector
 							{
 								for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
 								{
-									Model::Residue * const residue = molecule.getResidue( residueData.first );
+									App::Component::Chemistry::Residue * const residue = molecule.getResidue( residueData.first );
 
 									if ( residueData.second.getFullySelectedChildCount()
 										 == residue->getRealAtomCount() )
@@ -255,7 +255,7 @@ namespace VTX::UI::Widget::Inspector
 									{
 										for ( const uint & atomID : residueData.second )
 										{
-											Model::Atom * const atom = molecule.getAtom( atomID );
+											App::Component::Chemistry::Atom * const atom = molecule.getAtom( atomID );
 											_addTargetToInspector<MultipleAtomWidget>( INSPECTOR_TYPE::ATOM, atom );
 										}
 									}
@@ -342,7 +342,7 @@ namespace VTX::UI::Widget::Inspector
 				const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
 				if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				{
-					Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
+					App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
 					_addTargetToInspector<MultipleMoleculeWidget>( p_type, &molecule );
 				}
 			}
@@ -352,13 +352,13 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
+				App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
 					= selectionModel.getMoleculesMap().at( modelID );
 
 				for ( const Model::Selection::PairChainIds & chainData : moleculeSelection )
 				{
-					Model::Chain * const chain = molecule.getChain( chainData.first );
+					App::Component::Chemistry::Chain * const chain = molecule.getChain( chainData.first );
 					_addTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::CHAIN, chain );
 				}
 			}
@@ -368,17 +368,17 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
+				App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
 					= selectionModel.getMoleculesMap().at( modelID );
 
 				for ( const Model::Selection::PairChainIds & chainData : moleculeSelection )
 				{
-					const Model::Chain * const chain = molecule.getChain( chainData.first );
+					const App::Component::Chemistry::Chain * const chain = molecule.getChain( chainData.first );
 
 					for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
 					{
-						Model::Residue * const residue = molecule.getResidue( residueData.first );
+						App::Component::Chemistry::Residue * const residue = molecule.getResidue( residueData.first );
 						_addTargetToInspector<MultipleResidueWidget>( INSPECTOR_TYPE::RESIDUE, residue );
 					}
 				}
@@ -389,21 +389,21 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
+				App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
 					= selectionModel.getMoleculesMap().at( modelID );
 
 				for ( const Model::Selection::PairChainIds & chainData : moleculeSelection )
 				{
-					const Model::Chain * const chain = molecule.getChain( chainData.first );
+					const App::Component::Chemistry::Chain * const chain = molecule.getChain( chainData.first );
 
 					for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
 					{
-						const Model::Residue * const residue = molecule.getResidue( residueData.first );
+						const App::Component::Chemistry::Residue * const residue = molecule.getResidue( residueData.first );
 
 						for ( const uint & atomID : residueData.second )
 						{
-							Model::Atom * const atom = molecule.getAtom( atomID );
+							App::Component::Chemistry::Atom * const atom = molecule.getAtom( atomID );
 							_addTargetToInspector<MultipleAtomWidget>( INSPECTOR_TYPE::ATOM, atom );
 						}
 					}

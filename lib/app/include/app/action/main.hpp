@@ -4,7 +4,7 @@
 #include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/worker.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -38,12 +38,12 @@ namespace VTX::App::Action::Main
 		explicit Open( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
 		explicit Open( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 		explicit Open( const std::map<FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
-		explicit Open( const FilePath & p_trajectoryPath, Model::Molecule & p_target )
+		explicit Open( const FilePath & p_trajectoryPath, App::Component::Chemistry::Molecule & p_target )
 		{
 			_trajectoryTargets.emplace_back( &p_target );
 			_paths.emplace_back( p_trajectoryPath );
 		}
-		explicit Open( const FilePath & p_trajectoryPath, const std::vector<Model::Molecule *> & p_targets ) :
+		explicit Open( const FilePath & p_trajectoryPath, const std::vector<App::Component::Chemistry::Molecule *> & p_targets ) :
 			_trajectoryTargets( p_targets )
 		{
 			_paths.emplace_back( p_trajectoryPath );
@@ -55,7 +55,7 @@ namespace VTX::App::Action::Main
 		std::vector<FilePath>			  _paths = std::vector<FilePath>();
 		std::map<FilePath, std::string *> _buffers;
 
-		std::vector<Model::Molecule *> _trajectoryTargets = std::vector<Model::Molecule *>();
+		std::vector<App::Component::Chemistry::Molecule *> _trajectoryTargets = std::vector<App::Component::Chemistry::Molecule *>();
 	};
 
 	class OpenApi : public App::Core::Action::BaseAction

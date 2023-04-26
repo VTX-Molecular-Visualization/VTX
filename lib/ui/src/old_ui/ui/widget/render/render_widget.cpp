@@ -28,7 +28,7 @@
 // #include <tool/old_tool/model/measurement/distance.hpp>
 // #include <tool/old_tool/model/measurement/measure_in_progress.hpp>
 #include <app/model/mesh_triangle.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::Widget::Render

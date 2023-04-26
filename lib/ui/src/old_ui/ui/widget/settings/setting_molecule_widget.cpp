@@ -11,7 +11,7 @@
 #include <app/event/global.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
 #include <app/old_app/setting.hpp>
-#include <app/old_app/trajectory/trajectory_enum.hpp>
+#include <app/component/chemistry/enum_trajectory.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -115,16 +115,16 @@ namespace VTX::UI::Widget::Settings
 
 	void SettingMoleculeWidget::_refreshData()
 	{
-		_refreshRepresentationComboBox( _defaultRepresentationForPolymer, CATEGORY_ENUM::POLYMER );
-		_refreshRepresentationComboBox( _defaultRepresentationForCarbohydrate, CATEGORY_ENUM::CARBOHYDRATE );
-		_refreshRepresentationComboBox( _defaultRepresentationForLigand, CATEGORY_ENUM::LIGAND );
-		_refreshRepresentationComboBox( _defaultRepresentationForIon, CATEGORY_ENUM::ION );
-		_refreshRepresentationComboBox( _defaultRepresentationForSolvent, CATEGORY_ENUM::SOLVENT );
-		_refreshRepresentationComboBox( _defaultRepresentationForWater, CATEGORY_ENUM::WATER );
+		_refreshRepresentationComboBox( _defaultRepresentationForPolymer, App::Component::Chemistry::CATEGORY_ENUM::POLYMER );
+		_refreshRepresentationComboBox( _defaultRepresentationForCarbohydrate, App::Component::Chemistry::CATEGORY_ENUM::CARBOHYDRATE );
+		_refreshRepresentationComboBox( _defaultRepresentationForLigand, App::Component::Chemistry::CATEGORY_ENUM::LIGAND );
+		_refreshRepresentationComboBox( _defaultRepresentationForIon, App::Component::Chemistry::CATEGORY_ENUM::ION );
+		_refreshRepresentationComboBox( _defaultRepresentationForSolvent, App::Component::Chemistry::CATEGORY_ENUM::SOLVENT );
+		_refreshRepresentationComboBox( _defaultRepresentationForWater, App::Component::Chemistry::CATEGORY_ENUM::WATER );
 	}
 
 	void SettingMoleculeWidget::_refreshRepresentationComboBox( RepresentationLibraryComboBox * const p_comboBox,
-																const CATEGORY_ENUM					  p_categoryEnum )
+																const App::Component::Chemistry::CATEGORY_ENUM					  p_categoryEnum )
 	{
 		p_comboBox->setCurrentIndex( VTX_SETTING().getDefaultRepresentationIndexPerCategory( p_categoryEnum ) );
 	}
@@ -132,30 +132,30 @@ namespace VTX::UI::Widget::Settings
 	void SettingMoleculeWidget::_defaultRepresentationForPolymerChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::POLYMER, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Component::Chemistry::CATEGORY_ENUM::POLYMER, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForCarbohydrateChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::CARBOHYDRATE, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Component::Chemistry::CATEGORY_ENUM::CARBOHYDRATE, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForLigandChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::LIGAND, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Component::Chemistry::CATEGORY_ENUM::LIGAND, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForIonChange( int p_index )
 	{
-		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::ION, p_index ) );
+		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Component::Chemistry::CATEGORY_ENUM::ION, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForSolventChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::SOLVENT, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Component::Chemistry::CATEGORY_ENUM::SOLVENT, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForWaterChange( int p_index )
 	{
-		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::WATER, p_index ) );
+		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Component::Chemistry::CATEGORY_ENUM::WATER, p_index ) );
 	}
 
 	void SettingMoleculeWidget::_restoreDefaultRepresentations()

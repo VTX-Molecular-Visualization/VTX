@@ -17,10 +17,10 @@ namespace VTX::App::Action::Selection
 	void SelectAll::execute()
 	{
 		const Object3D::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
-		std::vector<Model::Molecule *>				 molecules		= std::vector<Model::Molecule *>();
+		std::vector<App::Component::Chemistry::Molecule *>				 molecules		= std::vector<App::Component::Chemistry::Molecule *>();
 		molecules.reserve( sceneMolecules.size() );
 
-		for ( const std::pair<Model::Molecule * const, float> & moleculePair : sceneMolecules )
+		for ( const std::pair<App::Component::Chemistry::Molecule * const, float> & moleculePair : sceneMolecules )
 		{
 			molecules.emplace_back( moleculePair.first );
 		}
@@ -53,11 +53,11 @@ namespace VTX::App::Action::Selection
 
 	void SelectModels::execute()
 	{
-		std::vector<Model::Molecule *> molecules  = std::vector<Model::Molecule *>();
-		std::vector<Model::Category *> categories = std::vector<Model::Category *>();
-		std::vector<Model::Chain *>	   chains	  = std::vector<Model::Chain *>();
-		std::vector<Model::Residue *>  residues	  = std::vector<Model::Residue *>();
-		std::vector<Model::Atom *>	   atoms	  = std::vector<Model::Atom *>();
+		std::vector<App::Component::Chemistry::Molecule *> molecules  = std::vector<App::Component::Chemistry::Molecule *>();
+		std::vector<App::Component::Chemistry::Category *> categories = std::vector<App::Component::Chemistry::Category *>();
+		std::vector<App::Component::Chemistry::Chain *>	   chains	  = std::vector<App::Component::Chemistry::Chain *>();
+		std::vector<App::Component::Chemistry::Residue *>  residues	  = std::vector<App::Component::Chemistry::Residue *>();
+		std::vector<App::Component::Chemistry::Atom *>	   atoms	  = std::vector<App::Component::Chemistry::Atom *>();
 
 		std::vector<Model::Path *>		paths	   = std::vector<Model::Path *>();
 		std::vector<Model::Viewpoint *> viewpoints = std::vector<Model::Viewpoint *>();
@@ -69,27 +69,27 @@ namespace VTX::App::Action::Selection
 
 			if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 			{
-				Model::Molecule & model = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelId );
+				App::Component::Chemistry::Molecule & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelId );
 				molecules.emplace_back( &model );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
 			{
-				Model::Category & model = VTX::MVC_MANAGER().getModel<Model::Category>( modelId );
+				App::Component::Chemistry::Category & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( modelId );
 				categories.emplace_back( &model );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 			{
-				Model::Chain & model = VTX::MVC_MANAGER().getModel<Model::Chain>( modelId );
+				App::Component::Chemistry::Chain & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( modelId );
 				chains.emplace_back( &model );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 			{
-				Model::Residue & model = VTX::MVC_MANAGER().getModel<Model::Residue>( modelId );
+				App::Component::Chemistry::Residue & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( modelId );
 				residues.emplace_back( &model );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 			{
-				Model::Atom & model = VTX::MVC_MANAGER().getModel<Model::Atom>( modelId );
+				App::Component::Chemistry::Atom & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( modelId );
 				atoms.emplace_back( &model );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_PATH )
@@ -119,11 +119,11 @@ namespace VTX::App::Action::Selection
 
 	void UnselectModels::execute()
 	{
-		std::vector<Model::Molecule *> molecules  = std::vector<Model::Molecule *>();
-		std::vector<Model::Category *> categories = std::vector<Model::Category *>();
-		std::vector<Model::Chain *>	   chains	  = std::vector<Model::Chain *>();
-		std::vector<Model::Residue *>  residues	  = std::vector<Model::Residue *>();
-		std::vector<Model::Atom *>	   atoms	  = std::vector<Model::Atom *>();
+		std::vector<App::Component::Chemistry::Molecule *> molecules  = std::vector<App::Component::Chemistry::Molecule *>();
+		std::vector<App::Component::Chemistry::Category *> categories = std::vector<App::Component::Chemistry::Category *>();
+		std::vector<App::Component::Chemistry::Chain *>	   chains	  = std::vector<App::Component::Chemistry::Chain *>();
+		std::vector<App::Component::Chemistry::Residue *>  residues	  = std::vector<App::Component::Chemistry::Residue *>();
+		std::vector<App::Component::Chemistry::Atom *>	   atoms	  = std::vector<App::Component::Chemistry::Atom *>();
 
 		for ( const App::Core::Model::ID modelId : _models )
 		{
@@ -131,27 +131,27 @@ namespace VTX::App::Action::Selection
 
 			if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 			{
-				Model::Molecule & model = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelId );
+				App::Component::Chemistry::Molecule & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelId );
 				molecules.emplace_back( &model );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
 			{
-				Model::Category & model = VTX::MVC_MANAGER().getModel<Model::Category>( modelId );
+				App::Component::Chemistry::Category & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( modelId );
 				categories.emplace_back( &model );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 			{
-				Model::Chain & model = VTX::MVC_MANAGER().getModel<Model::Chain>( modelId );
+				App::Component::Chemistry::Chain & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( modelId );
 				chains.emplace_back( &model );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 			{
-				Model::Residue & model = VTX::MVC_MANAGER().getModel<Model::Residue>( modelId );
+				App::Component::Chemistry::Residue & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( modelId );
 				residues.emplace_back( &model );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 			{
-				Model::Atom & model = VTX::MVC_MANAGER().getModel<Model::Atom>( modelId );
+				App::Component::Chemistry::Atom & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( modelId );
 				atoms.emplace_back( &model );
 			}
 		}
@@ -275,7 +275,7 @@ namespace VTX::App::Action::Selection
 	{
 		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molIds.first );
+			App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molIds.first );
 
 			if ( _selection.isMoleculeFullySelected( molecule ) )
 			{
@@ -287,7 +287,7 @@ namespace VTX::App::Action::Selection
 
 				for ( const Model::Selection::PairChainIds & chainIds : molIds.second )
 				{
-					Model::Chain & chain = *molecule.getChain( chainIds.first );
+					App::Component::Chemistry::Chain & chain = *molecule.getChain( chainIds.first );
 					if ( _selection.isChainFullySelected( chain ) )
 					{
 						Util::Molecule::show( chain, p_show, false, false, false );
@@ -297,7 +297,7 @@ namespace VTX::App::Action::Selection
 						chain.setVisible( true );
 						for ( const Model::Selection::PairResidueIds & residueIds : chainIds.second )
 						{
-							Model::Residue & residue = *molecule.getResidue( residueIds.first );
+							App::Component::Chemistry::Residue & residue = *molecule.getResidue( residueIds.first );
 							if ( _selection.isResidueFullySelected( residue ) )
 							{
 								Util::Molecule::show( residue, p_show, false, false, false );
@@ -307,7 +307,7 @@ namespace VTX::App::Action::Selection
 								residue.setVisible( true );
 								for ( const uint atomId : residueIds.second )
 								{
-									Model::Atom * const atom = molecule.getAtom( atomId );
+									App::Component::Chemistry::Atom * const atom = molecule.getAtom( atomId );
 									atom->setVisible( p_show, false );
 								}
 							}
@@ -316,7 +316,7 @@ namespace VTX::App::Action::Selection
 				}
 			}
 
-			for ( Model::Category * const category : molecule.getCategories() )
+			for ( App::Component::Chemistry::Category * const category : molecule.getCategories() )
 				category->updateVisibilityState();
 
 			molecule.notifyVisibilityChange();
@@ -332,7 +332,7 @@ namespace VTX::App::Action::Selection
 
 		for ( const Object3D::Scene::PairMoleculePtrFloat & sceneMolecule : moleculesInScene )
 		{
-			Model::Molecule * const							 molecule = sceneMolecule.first;
+			App::Component::Chemistry::Molecule * const							 molecule = sceneMolecule.first;
 			Model::Selection::MapMoleculeIds::const_iterator itSelection
 				= moleculesInSelection.find( molecule->getId() );
 
@@ -344,7 +344,7 @@ namespace VTX::App::Action::Selection
 
 				for ( uint iChain = 0; iChain < molecule->getChainCount(); iChain++ )
 				{
-					Model::Chain * const chain = molecule->getChain( iChain );
+					App::Component::Chemistry::Chain * const chain = molecule->getChain( iChain );
 
 					if ( chain == nullptr )
 						continue;
@@ -359,7 +359,7 @@ namespace VTX::App::Action::Selection
 						for ( uint iResidue = chain->getIndexFirstResidue(); iResidue <= chain->getIndexLastResidue();
 							  iResidue++ )
 						{
-							Model::Residue * const residue = molecule->getResidue( iResidue );
+							App::Component::Chemistry::Residue * const residue = molecule->getResidue( iResidue );
 
 							if ( residue == nullptr )
 								continue;
@@ -376,7 +376,7 @@ namespace VTX::App::Action::Selection
 									  iAtom < residue->getIndexFirstAtom() + residue->getAtomCount();
 									  iAtom++ )
 								{
-									Model::Atom * const atom = molecule->getAtom( iAtom );
+									App::Component::Chemistry::Atom * const atom = molecule->getAtom( iAtom );
 
 									if ( atom == nullptr )
 										continue;
@@ -413,7 +413,7 @@ namespace VTX::App::Action::Selection
 				molecule->setVisible( false, false );
 			}
 
-			for ( Model::Category * const category : molecule->getCategories() )
+			for ( App::Component::Chemistry::Category * const category : molecule->getCategories() )
 				category->updateVisibilityState();
 
 			molecule->notifyVisibilityChange();
@@ -428,13 +428,13 @@ namespace VTX::App::Action::Selection
 
 		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molIds.first );
+			App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molIds.first );
 			showWater				   = showWater && !molecule.showWater();
 		}
 
 		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molIds.first );
+			App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molIds.first );
 			molecule.setShowWater( showWater );
 		}
 
@@ -447,13 +447,13 @@ namespace VTX::App::Action::Selection
 
 		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molIds.first );
+			App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molIds.first );
 			showSolvent				   = showSolvent && !molecule.showSolvent();
 		}
 
 		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molIds.first );
+			App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molIds.first );
 			molecule.setShowSolvent( showSolvent );
 		}
 
@@ -466,13 +466,13 @@ namespace VTX::App::Action::Selection
 
 		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molIds.first );
+			App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molIds.first );
 			showHydrogen			   = showHydrogen && !molecule.showHydrogen();
 		}
 
 		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molIds.first );
+			App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molIds.first );
 			molecule.setShowHydrogen( showHydrogen );
 		}
 
@@ -485,13 +485,13 @@ namespace VTX::App::Action::Selection
 
 		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molIds.first );
+			App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molIds.first );
 			showIons				   = showIons && !molecule.showIon();
 		}
 
 		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molIds.first );
+			App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molIds.first );
 			molecule.setShowIon( showIons );
 		}
 
@@ -504,14 +504,14 @@ namespace VTX::App::Action::Selection
 
 		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molIds.first );
+			App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molIds.first );
 			if ( molecule.hasTrajectory() )
 				play = play && !molecule.isPlaying();
 		}
 
 		for ( const Model::Selection::PairMoleculeIds & molIds : _selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molIds.first );
+			App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molIds.first );
 
 			if ( molecule.hasTrajectory() )
 			{
@@ -543,11 +543,11 @@ namespace VTX::App::Action::Selection
 
 			if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 			{
-				const Model::Molecule & source
-					= VTX::MVC_MANAGER().getModel<Model::Molecule>( selectedObjectID );
+				const App::Component::Chemistry::Molecule & source
+					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( selectedObjectID );
 				const int nbFrames = source.getFrameCount();
 
-				if ( _frame == Model::GeneratedMolecule::ALL_FRAMES_SEPARATED_INDEX )
+				if ( _frame == App::Component::Chemistry::GeneratedMolecule::ALL_FRAMES_SEPARATED_INDEX )
 				{
 					for ( int iFrame = 0; iFrame < nbFrames; iFrame++ )
 					{
@@ -563,10 +563,10 @@ namespace VTX::App::Action::Selection
 			}
 		}
 	}
-	void Copy::_copyFrame( const Model::Molecule & p_source, const Model::Selection & p_selection, const int p_frame )
+	void Copy::_copyFrame( const App::Component::Chemistry::Molecule & p_source, const Model::Selection & p_selection, const int p_frame )
 	{
-		Model::GeneratedMolecule * generatedMolecule
-			= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
+		App::Component::Chemistry::GeneratedMolecule * generatedMolecule
+			= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
 
 		generatedMolecule->copyFromSelection( _selection, p_source.getId(), p_frame );
 
@@ -587,19 +587,19 @@ namespace VTX::App::Action::Selection
 		_selection.moveDataTo( *tmpSelection );
 		VTX::Selection::SelectionManager::get().getSelectionModel().clear();
 
-		std::vector<Model::Molecule *> generatedMolecules = std::vector<Model::Molecule *>();
+		std::vector<App::Component::Chemistry::Molecule *> generatedMolecules = std::vector<App::Component::Chemistry::Molecule *>();
 		generatedMolecules.reserve( tmpSelection->getMoleculesMap().size() );
 
 		for ( const Model::Selection::PairMoleculeIds & moleculeSelectionData : tmpSelection->getMoleculesMap() )
 		{
 			const App::Core::Model::ID & idMolSource = moleculeSelectionData.first;
-			Model::Molecule & molecule	  = VTX::MVC_MANAGER().getModel<Model::Molecule>( idMolSource );
+			App::Component::Chemistry::Molecule & molecule	  = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( idMolSource );
 
 			if ( tmpSelection->isMoleculeFullySelected( molecule ) )
 				continue;
 
-			Model::GeneratedMolecule * const generatedMolecule
-				= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
+			App::Component::Chemistry::GeneratedMolecule * const generatedMolecule
+				= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
 
 			generatedMolecule->extractFromSelection( *tmpSelection, idMolSource );
 			VTXApp::get().getScene().addMolecule( generatedMolecule );
@@ -616,7 +616,7 @@ namespace VTX::App::Action::Selection
 
 	void Delete::execute()
 	{
-		std::vector<Model::Molecule *> moleculesToDelete = std::vector<Model::Molecule *>();
+		std::vector<App::Component::Chemistry::Molecule *> moleculesToDelete = std::vector<App::Component::Chemistry::Molecule *>();
 
 		const std::set<App::Core::Model::ID>		 itemsToDeleteCopy		 = _selection.getItems();
 		Model::Selection::MapMoleculeIds moleculeMapToDeleteCopy = _selection.getMoleculesMap();
@@ -630,8 +630,8 @@ namespace VTX::App::Action::Selection
 			{
 				const Model::Selection::PairMoleculeIds & molIds = *moleculeMapToDeleteCopy.find( selectedObjectID );
 
-				Model::Molecule & molecule
-					= VTX::MVC_MANAGER().getModel<Model::Molecule>( molIds.first );
+				App::Component::Chemistry::Molecule & molecule
+					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molIds.first );
 
 				if ( molIds.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 				{
@@ -641,7 +641,7 @@ namespace VTX::App::Action::Selection
 
 				for ( const Model::Selection::PairChainIds & chainIds : molIds.second )
 				{
-					Model::Chain & chain = *molecule.getChain( chainIds.first );
+					App::Component::Chemistry::Chain & chain = *molecule.getChain( chainIds.first );
 
 					if ( chainIds.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
 					{
@@ -651,7 +651,7 @@ namespace VTX::App::Action::Selection
 
 					for ( const Model::Selection::PairResidueIds & residueIds : chainIds.second )
 					{
-						Model::Residue & residue = *molecule.getResidue( residueIds.first );
+						App::Component::Chemistry::Residue & residue = *molecule.getResidue( residueIds.first );
 
 						if ( residueIds.second.getFullySelectedChildCount() == residue.getRealAtomCount() )
 						{
@@ -704,7 +704,7 @@ namespace VTX::App::Action::Selection
 			}
 		}
 
-		for ( Model::Molecule * const moleculeToDelete : moleculesToDelete )
+		for ( App::Component::Chemistry::Molecule * const moleculeToDelete : moleculesToDelete )
 		{
 			VTXApp::get().getScene().removeMolecule( moleculeToDelete );
 			VTX::MVC_MANAGER().deleteModel( moleculeToDelete );

@@ -14,7 +14,7 @@
 #include <app/action/chain.hpp>
 #include <app/action/instantiated_representation.hpp>
 #include <app/action/molecule.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 
 namespace VTX::UI::Widget::Inspector
@@ -139,7 +139,7 @@ namespace VTX::UI::Widget::Inspector
 		bool blockSignalState = blockSignals( true );
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<Model::Chain *> & targets = getTargets();
+		const std::unordered_set<App::Component::Chemistry::Chain *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
@@ -157,7 +157,7 @@ namespace VTX::UI::Widget::Inspector
 			QString atomCountText			   = QString();
 			QString indexText				   = QString();
 
-			for ( const Model::Chain * chain : targets )
+			for ( const App::Component::Chemistry::Chain * chain : targets )
 			{
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
@@ -328,9 +328,9 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_changeMoleculesColor( const Color::Rgba & p_color ) const
 	{
-		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 
-		for ( const Model::Chain * const item : getTargets() )
+		for ( const App::Component::Chemistry::Chain * const item : getTargets() )
 		{
 			molecules.emplace( item->getMoleculePtr() );
 		}

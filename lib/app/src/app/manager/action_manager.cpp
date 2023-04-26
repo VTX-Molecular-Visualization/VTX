@@ -2,11 +2,11 @@
 #include "app/action/main.hpp"
 #include "app/action/representable.hpp"
 #include "app/action/setting.hpp"
-#include "app/model/chain.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/model/representation/representation.hpp"
 #include "app/model/representation/representation_library.hpp"
-#include "app/model/residue.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -40,7 +40,7 @@ namespace VTX::App::Manager
 		//// TODO: map with ids.
 		// try
 		//{
-		//	Model::Molecule & molecule = *( *VTXApp::get().getScene().getMolecules().begin() ).first;
+		//	App::Component::Chemistry::Molecule & molecule = *( *VTXApp::get().getScene().getMolecules().begin() ).first;
 
 		//	if ( command == "snapshot" )
 		//	{

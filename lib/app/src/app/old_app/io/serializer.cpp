@@ -2,23 +2,24 @@
 #include "app/action/main.hpp"
 #include "app/action/renderer.hpp"
 #include "app/action/setting.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/enum_category.hpp"
+#include "app/component/chemistry/enum_trajectory.hpp"
+#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include "app/core/event/vtx_event.hpp"
-#include "app/mvc.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include "app/event.hpp"
-#include "app/model/category_enum.hpp"
-#include "app/model/chain.hpp"
 #include "app/model/configuration/molecule.hpp"
 #include "app/model/label.hpp"
 #include "app/model/mesh_triangle.hpp"
-#include "app/model/molecule.hpp"
 #include "app/model/path.hpp"
 #include "app/model/renderer/render_effect_preset.hpp"
 #include "app/model/representation/instantiated_representation.hpp"
 #include "app/model/representation/representation.hpp"
 #include "app/model/representation/representation_library.hpp"
-#include "app/model/residue.hpp"
 #include "app/model/viewpoint.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_scene_item.hpp"
 #include "app/old_app/io/filesystem.hpp"
@@ -28,7 +29,6 @@
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
-#include "app/old_app/trajectory/trajectory_enum.hpp"
 #include <algorithm>
 #include <magic_enum.hpp>
 #include <map>
@@ -76,7 +76,7 @@ namespace VTX::IO
 				 { "LABELS", jsonArrayLabels } };
 	}
 
-	nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
+	nlohmann::json Serializer::serialize( const App::Component::Chemistry::Molecule & p_molecule ) const
 	{
 		const FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
 
@@ -278,11 +278,12 @@ namespace VTX::IO
 				  ->getName();
 
 		std::vector<std::string> defaultRepresentationNamePerCategory = std::vector<std::string>();
-		defaultRepresentationNamePerCategory.resize( int( CATEGORY_ENUM::COUNT ) );
+		defaultRepresentationNamePerCategory.resize( int( App::Component::Chemistry::CATEGORY_ENUM::COUNT ) );
 
-		for ( int i = 0; i < int( CATEGORY_ENUM::COUNT ); i++ )
+		for ( int i = 0; i < int( App::Component::Chemistry::CATEGORY_ENUM::COUNT ); i++ )
 		{
-			const int representationIndex = p_setting.getDefaultRepresentationIndexPerCategory( CATEGORY_ENUM( i ) );
+			const int representationIndex
+				= p_setting.getDefaultRepresentationIndexPerCategory( App::Component::Chemistry::CATEGORY_ENUM( i ) );
 			const Model::Representation::Representation * representation
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( representationIndex );
 
@@ -330,7 +331,7 @@ namespace VTX::IO
 		};
 	}
 
-	nlohmann::json Serializer::serializeAtomReference( const Model::Atom & p_atom ) const
+	nlohmann::json Serializer::serializeAtomReference( const App::Component::Chemistry::Atom & p_atom ) const
 	{
 		return nlohmann::json(
 			{ { "M", p_atom.getMoleculePtr()->getPersistentSceneID() }, { "A", p_atom.getIndex() } } );
@@ -355,7 +356,8 @@ namespace VTX::IO
 		if ( p_json.contains( "CAMERA_ROTATION" ) )
 			deserialize( p_json.at( "CAMERA_ROTATION" ), cameraRot );
 
-		std::vector<Model::Molecule *>			molecules		= std::vector<Model::Molecule *>();
+		std::vector<App::Component::Chemistry::Molecule *> molecules
+			= std::vector<App::Component::Chemistry::Molecule *>();
 		std::map<int, Generic::BaseSceneItem *> itemPositionMap = std::map<int, Generic::BaseSceneItem *>();
 
 		int lastItemIndex = -1;
@@ -366,8 +368,8 @@ namespace VTX::IO
 			{
 				if ( jsonMolecule.contains( "MOLECULE" ) )
 				{
-					Model::Molecule * const molecule
-						= VTX::MVC_MANAGER().instantiateModel<Model::Molecule>();
+					App::Component::Chemistry::Molecule * const molecule
+						= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Molecule>();
 
 					try
 					{
@@ -476,9 +478,9 @@ namespace VTX::IO
 		p_scene.getCamera().setRotation( cameraRot );
 	}
 
-	void Serializer::deserialize( const nlohmann::json &			   p_json,
-								  const std::tuple<uint, uint, uint> & p_version,
-								  Model::Molecule &					   p_molecule ) const
+	void Serializer::deserialize( const nlohmann::json &				p_json,
+								  const std::tuple<uint, uint, uint> &	p_version,
+								  App::Component::Chemistry::Molecule & p_molecule ) const
 	{
 		if ( p_json.contains( "TRANSFORM" ) )
 		{
@@ -539,7 +541,7 @@ namespace VTX::IO
 
 		p_molecule.setFrame( _get<uint>( p_json, "CURRENT_FRAME" ) );
 		p_molecule.setFPS( _get<uint>( p_json, "TRAJECTORY_FPS" ) );
-		p_molecule.setPlayMode( _getEnum<Trajectory::PlayMode>( p_json, "TRAJECTORY_PLAYMODE" ) );
+		p_molecule.setPlayMode( _getEnum<App::Component::Chemistry::PlayMode>( p_json, "TRAJECTORY_PLAYMODE" ) );
 		p_molecule.setIsPlaying( _get<bool>( p_json, "TRAJECTORY_ISPLAYING" ) );
 		p_molecule.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
 	}
@@ -562,8 +564,7 @@ namespace VTX::IO
 		{
 			for ( const nlohmann::json & jsonViewpoint : p_json.at( "VIEWPOINTS" ) )
 			{
-				Model::Viewpoint * const viewpoint
-					= VTX::MVC_MANAGER().instantiateModel<Model::Viewpoint>( &p_path );
+				Model::Viewpoint * const viewpoint = VTX::MVC_MANAGER().instantiateModel<Model::Viewpoint>( &p_path );
 				deserialize( jsonViewpoint, *viewpoint );
 				p_path.addViewpoint( viewpoint );
 			}
@@ -855,7 +856,7 @@ namespace VTX::IO
 
 		p_setting.setDefaultTrajectorySpeed(
 			_get<int>( p_json, "DEFAULT_TRAJECTORY_SPEED", Setting::DEFAULT_TRAJECTORY_SPEED ) );
-		p_setting.setDefaultTrajectoryPlayMode( _getEnum<Trajectory::PlayMode>(
+		p_setting.setDefaultTrajectoryPlayMode( _getEnum<App::Component::Chemistry::PlayMode>(
 			p_json, "DEFAULT_TRAJECTORY_PLAY_MODE", Setting::DEFAULT_TRAJECTORY_PLAY_MODE ) );
 
 		p_setting.setCheckVTXUpdateAtLaunch(
@@ -870,18 +871,18 @@ namespace VTX::IO
 		const std::vector<std::string> representationNamePerCategory = _get<std::vector<std::string>>(
 			p_json, "DEFAULT_REPRESENTATION_PER_CATEGORY", Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_NAME );
 
-		const int categoryCount = int( CATEGORY_ENUM::COUNT );
+		const int categoryCount = int( App::Component::Chemistry::CATEGORY_ENUM::COUNT );
 		if ( representationNamePerCategory.size() == categoryCount )
 		{
 			for ( int i = 0; i < categoryCount; i++ )
 			{
-				p_setting.setTmpDefaultRepresentationNamePerCategory( CATEGORY_ENUM( i ),
+				p_setting.setTmpDefaultRepresentationNamePerCategory( App::Component::Chemistry::CATEGORY_ENUM( i ),
 																	  representationNamePerCategory[ i ] );
 			}
 		}
 	}
 
-	const Model::Atom * Serializer::deserializeAtomReference( const nlohmann::json & p_json ) const
+	const App::Component::Chemistry::Atom * Serializer::deserializeAtomReference( const nlohmann::json & p_json ) const
 	{
 		if ( !p_json.contains( "M" ) || !p_json.contains( "A" ) )
 			return nullptr;
@@ -890,7 +891,7 @@ namespace VTX::IO
 
 		const Object3D::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
 
-		const Model::Molecule * linkedMolecule = nullptr;
+		const App::Component::Chemistry::Molecule * linkedMolecule = nullptr;
 		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : sceneMolecules )
 		{
 			if ( pair.first->getPersistentSceneID() == moleculePersistentSceneID )
@@ -907,8 +908,9 @@ namespace VTX::IO
 		return linkedMolecule->getAtom( atomIndex );
 	}
 
-	nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,
-																  const Writer::ChemfilesWriter * p_writer ) const
+	nlohmann::json Serializer::_serializeMoleculeRepresentations(
+		const App::Component::Chemistry::Molecule & p_molecule,
+		const Writer::ChemfilesWriter *				p_writer ) const
 	{
 		nlohmann::json jsonArrayRepresentations = nlohmann::json::array();
 		nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", VTX::ID::Model::MODEL_MOLECULE },
@@ -916,7 +918,7 @@ namespace VTX::IO
 													{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
 		jsonArrayRepresentations.emplace_back( jsonRepresentation );
 
-		for ( const Model::Chain * const chain : p_molecule.getChains() )
+		for ( const App::Component::Chemistry::Chain * const chain : p_molecule.getChains() )
 		{
 			if ( chain == nullptr )
 				continue;
@@ -931,7 +933,7 @@ namespace VTX::IO
 
 			for ( uint residueIndex = 0; residueIndex < chain->getResidueCount(); residueIndex++ )
 			{
-				const Model::Residue * const residue
+				const App::Component::Chemistry::Residue * const residue
 					= p_molecule.getResidue( chain->getIndexFirstResidue() + residueIndex );
 
 				if ( residue == nullptr )
@@ -984,14 +986,14 @@ namespace VTX::IO
 		}
 	}
 
-	nlohmann::json Serializer::_serializeMoleculeVisibilities( const Model::Molecule &		   p_molecule,
+	nlohmann::json Serializer::_serializeMoleculeVisibilities( const App::Component::Chemistry::Molecule & p_molecule,
 															   const Writer::ChemfilesWriter * p_writer ) const
 	{
 		nlohmann::json jsonChainVisibilitiesArray	= nlohmann::json::array();
 		nlohmann::json jsonResidueVisibilitiesArray = nlohmann::json::array();
 		nlohmann::json jsonAtomVisibilitiesArray	= nlohmann::json::array();
 
-		for ( const Model::Chain * const chain : p_molecule.getChains() )
+		for ( const App::Component::Chemistry::Chain * const chain : p_molecule.getChains() )
 		{
 			if ( chain == nullptr )
 				continue;
@@ -1004,7 +1006,7 @@ namespace VTX::IO
 			}
 		}
 
-		for ( const Model::Residue * const residue : p_molecule.getResidues() )
+		for ( const App::Component::Chemistry::Residue * const residue : p_molecule.getResidues() )
 		{
 			if ( residue == nullptr )
 				continue;
@@ -1017,7 +1019,7 @@ namespace VTX::IO
 			}
 		}
 
-		for ( const Model::Atom * const atom : p_molecule.getAtoms() )
+		for ( const App::Component::Chemistry::Atom * const atom : p_molecule.getAtoms() )
 		{
 			if ( atom == nullptr )
 				continue;
@@ -1035,9 +1037,9 @@ namespace VTX::IO
 				 { "ATOMS", jsonAtomVisibilitiesArray } };
 	}
 
-	void Serializer::_deserializeMoleculeRepresentations( const nlohmann::json &			   p_json,
-														  const std::tuple<uint, uint, uint> & p_version,
-														  Model::Molecule &					   p_molecule ) const
+	void Serializer::_deserializeMoleculeRepresentations( const nlohmann::json &				p_json,
+														  const std::tuple<uint, uint, uint> &	p_version,
+														  App::Component::Chemistry::Molecule & p_molecule ) const
 	{
 		for ( const nlohmann::json & jsonRepresentations : p_json )
 		{
@@ -1056,8 +1058,7 @@ namespace VTX::IO
 				continue;
 
 			Model::Representation::InstantiatedRepresentation * const representation
-				= VTX::MVC_MANAGER()
-					  .instantiateModel<Model::Representation::InstantiatedRepresentation>();
+				= VTX::MVC_MANAGER().instantiateModel<Model::Representation::InstantiatedRepresentation>();
 			deserialize( jsonRepresentations.at( "REPRESENTATION" ), p_version, *representation );
 
 			if ( type == VTX::ID::Model::MODEL_MOLECULE )
@@ -1077,8 +1078,8 @@ namespace VTX::IO
 			}
 		}
 	}
-	void Serializer::_deserializeMoleculeVisibilities( const nlohmann::json & p_json,
-													   Model::Molecule &	  p_molecule ) const
+	void Serializer::_deserializeMoleculeVisibilities( const nlohmann::json &				 p_json,
+													   App::Component::Chemistry::Molecule & p_molecule ) const
 	{
 		p_molecule.setVisible( _get<bool>( p_json, "SELF", true ) );
 

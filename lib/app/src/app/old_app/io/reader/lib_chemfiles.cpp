@@ -1,18 +1,18 @@
 #include "app/old_app/io/reader/lib_chemfiles.hpp"
-#include "app/old_app/color/rgba.hpp"
-#include "app/model/atom.hpp"
-#include "app/model/bond.hpp"
-#include "app/model/category.hpp"
-#include "app/model/category_enum.hpp"
-#include "app/model/chain.hpp"
-#include "app/model/molecule.hpp"
-#include "app/model/residue.hpp"
+#include "app/component/chemistry/atom.hpp"
+#include "app/component/chemistry/bond.hpp"
+#include "app/component/chemistry/category.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/enum_category.hpp"
+#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/residue.hpp"
+#include "app/core/worker/base_thread.hpp"
 #include "app/mvc.hpp"
+#include "app/old_app/color/rgba.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/util/bond_guessing/bond_order_guessing.hpp"
 #include "app/old_app/util/chemfiles.hpp"
 #include "app/old_app/util/molecule.hpp"
-#include "app/core/worker/base_thread.hpp"
 #include <algorithm>
 #include <iostream>
 #include <magic_enum.hpp>
@@ -24,7 +24,7 @@ namespace VTX::IO::Reader
 {
 	LibChemfiles::LibChemfiles( const VTX::App::Core::Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
 
-	void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
+	void LibChemfiles::readFile( const FilePath & p_path, App::Component::Chemistry::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
 		chemfiles::Trajectory trajectory	 = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
@@ -32,7 +32,9 @@ namespace VTX::IO::Reader
 		_readTrajectory( trajectory, p_path, p_molecule, recomputeBonds );
 	}
 
-	void LibChemfiles::readBuffer( const std::string & p_buffer, const FilePath & p_path, Model::Molecule & p_molecule )
+	void LibChemfiles::readBuffer( const std::string &					 p_buffer,
+								   const FilePath &						 p_path,
+								   App::Component::Chemistry::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
 		chemfiles::Trajectory trajectory
@@ -40,7 +42,8 @@ namespace VTX::IO::Reader
 		_readTrajectory( trajectory, p_path, p_molecule );
 	}
 
-	bool LibChemfiles::readDynamic( const FilePath & p_path, std::vector<Model::Molecule *> p_potentialTargets )
+	bool LibChemfiles::readDynamic( const FilePath &								   p_path,
+									std::vector<App::Component::Chemistry::Molecule *> p_potentialTargets )
 	{
 		_prepareChemfiles();
 		chemfiles::Trajectory dynamicTrajectory = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
@@ -64,19 +67,21 @@ namespace VTX::IO::Reader
 
 		return res;
 	}
-	void LibChemfiles::fillTrajectoryFrame( Model::Molecule &		   p_molecule,
-											const uint				   p_moleculeFrameIndex,
-											const std::vector<Vec3f> & p_atomPositions ) const
+	void LibChemfiles::fillTrajectoryFrame( App::Component::Chemistry::Molecule & p_molecule,
+											const uint							  p_moleculeFrameIndex,
+											const std::vector<Vec3f> &			  p_atomPositions ) const
 	{
-		Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( p_moleculeFrameIndex );
+		App::Component::Chemistry::Molecule::AtomPositionsFrame & moleculeFrame
+			= p_molecule.getAtomPositionFrame( p_moleculeFrameIndex );
 		moleculeFrame.resize( p_atomPositions.size() );
 
 		std::copy( p_atomPositions.begin(), p_atomPositions.end(), moleculeFrame.begin() );
 	}
 
-	void LibChemfiles::_readTrajectoryFrames( chemfiles::Trajectory &								  p_trajectory,
-											  const std::vector<std::pair<Model::Molecule *, uint>> & p_targets,
-											  const uint p_trajectoryFrameStart ) const
+	void LibChemfiles::_readTrajectoryFrames(
+		chemfiles::Trajectory &														p_trajectory,
+		const std::vector<std::pair<App::Component::Chemistry::Molecule *, uint>> & p_targets,
+		const uint																	p_trajectoryFrameStart ) const
 	{
 		// Fill other frames.
 		Util::Chrono timeReadingFrames;
@@ -90,7 +95,7 @@ namespace VTX::IO::Reader
 			if ( atomPositions.size() <= 0 )
 				continue;
 
-			for ( const std::pair<Model::Molecule *, uint> & pairMoleculeStartFrame : p_targets )
+			for ( const std::pair<App::Component::Chemistry::Molecule *, uint> & pairMoleculeStartFrame : p_targets )
 			{
 				fillTrajectoryFrame(
 					*pairMoleculeStartFrame.first, pairMoleculeStartFrame.second + validFrameCount, atomPositions );
@@ -110,9 +115,9 @@ namespace VTX::IO::Reader
 		_logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
 
 		// Erase supernumeraries frames
-		for ( const std::pair<Model::Molecule *, uint> & pairMoleculeFirstFrame : p_targets )
+		for ( const std::pair<App::Component::Chemistry::Molecule *, uint> & pairMoleculeFirstFrame : p_targets )
 		{
-			Model::Molecule & molecule = *( pairMoleculeFirstFrame.first );
+			App::Component::Chemistry::Molecule & molecule = *( pairMoleculeFirstFrame.first );
 			if ( molecule.getFrames().back().size() == 0 )
 			{
 				do
@@ -125,10 +130,10 @@ namespace VTX::IO::Reader
 		}
 	}
 
-	void LibChemfiles::_readTrajectory( chemfiles::Trajectory & p_trajectory,
-										const FilePath &		p_path,
-										Model::Molecule &		p_molecule,
-										const bool				p_recomputeBonds ) const
+	void LibChemfiles::_readTrajectory( chemfiles::Trajectory &				  p_trajectory,
+										const FilePath &					  p_path,
+										App::Component::Chemistry::Molecule & p_molecule,
+										const bool							  p_recomputeBonds ) const
 	{
 		_logInfo( std::to_string( p_trajectory.nsteps() ) + " frames found" );
 
@@ -255,18 +260,18 @@ namespace VTX::IO::Reader
 		p_molecule.getResidues().resize( topology.residues().size() );
 		p_molecule.getAtoms().resize( frame.size() );
 		p_molecule.resizeBuffers();
-		Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
+		App::Component::Chemistry::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 		modelFrame.resize( frame.size() );
 
-		Model::Chain * modelChain;
-		std::string	   lastChainName = "";
-		uint		   chainModelId	 = -1;
+		App::Component::Chemistry::Chain * modelChain;
+		std::string						   lastChainName = "";
+		uint							   chainModelId	 = -1;
 
 		std::map<uint, std::vector<size_t>> mapResidueBonds		 = std::map<uint, std::vector<size_t>>();
 		std::map<uint, std::vector<size_t>> mapResidueExtraBonds = std::map<uint, std::vector<size_t>>();
 
-		int			  oldIndexInChain  = INT_MIN;
-		CATEGORY_ENUM lastCategoryEnum = CATEGORY_ENUM::UNKNOWN;
+		int										 oldIndexInChain  = INT_MIN;
+		App::Component::Chemistry::CATEGORY_ENUM lastCategoryEnum = App::Component::Chemistry::CATEGORY_ENUM::UNKNOWN;
 
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 		{
@@ -277,7 +282,8 @@ namespace VTX::IO::Reader
 			const std::string chainId		= residue.properties().get( "chainid" ).value_or( "" ).as_string();
 			std::string		  residueSymbol = residue.name();
 
-			const CATEGORY_ENUM categoryEnum = Util::Molecule::getResidueCategory( residueSymbol );
+			const App::Component::Chemistry::CATEGORY_ENUM categoryEnum
+				= Util::Molecule::getResidueCategory( residueSymbol );
 
 			const bool createNewChain = p_molecule.getChainCount() == 0 || // No chain created
 										chainName != lastChainName ||	   // New chain ID
@@ -297,7 +303,7 @@ namespace VTX::IO::Reader
 				modelChain->setIndexFirstResidue( residueIdx );
 				modelChain->setResidueCount( 0 );
 				modelChain->setOriginalChainID( chainId );
-				modelChain->setColor( Model::Chain::getChainIdColor( chainId ) );
+				modelChain->setColor( App::Component::Chemistry::Chain::getChainIdColor( chainId ) );
 				modelChain->setCategoryEnum( categoryEnum );
 
 				lastChainName	 = chainName;
@@ -309,7 +315,8 @@ namespace VTX::IO::Reader
 			modelChain->setResidueCount( modelChain->getResidueCount() + 1 );
 
 			// Create residue.
-			Model::Residue * modelResidue		   = VTX::MVC_MANAGER().instantiateModel<Model::Residue>();
+			App::Component::Chemistry::Residue * modelResidue
+				= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Residue>();
 			p_molecule.getResidues()[ residueIdx ] = modelResidue;
 			modelResidue->setIndex( residueIdx );
 
@@ -320,7 +327,8 @@ namespace VTX::IO::Reader
 							residueSymbol.end(),
 							residueSymbol.begin(),
 							[]( unsigned char c ) { return std::toupper( c ); } );
-			const std::optional symbol = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
+			const std::optional symbol
+				= magic_enum::enum_cast<App::Component::Chemistry::Residue::SYMBOL>( residueSymbol );
 
 			int symbolValue;
 
@@ -330,8 +338,8 @@ namespace VTX::IO::Reader
 			}
 			else
 			{
-				int							symbolIndex = p_molecule.getUnknownResidueSymbolIndex( residueSymbol );
-				Model::UnknownResidueData * unknownResidueData;
+				int symbolIndex = p_molecule.getUnknownResidueSymbolIndex( residueSymbol );
+				App::Component::Chemistry::UnknownResidueData * unknownResidueData;
 
 				if ( symbolIndex >= 0 )
 				{
@@ -339,22 +347,23 @@ namespace VTX::IO::Reader
 				}
 				else
 				{
-					unknownResidueData			   = new Model::UnknownResidueData();
+					unknownResidueData			   = new App::Component::Chemistry::UnknownResidueData();
 					unknownResidueData->symbolStr  = residueSymbol;
 					unknownResidueData->symbolName = Util::Molecule::getResidueFullName( residueSymbol );
 
 					symbolIndex = p_molecule.addUnknownResidueSymbol( unknownResidueData );
 				}
 
-				symbolValue = int( Model::Residue::SYMBOL::COUNT ) + symbolIndex;
+				symbolValue = int( App::Component::Chemistry::Residue::SYMBOL::COUNT ) + symbolIndex;
 			}
 
 			modelResidue->setSymbol( symbolValue );
 
-			modelResidue->setColor( Model::Residue::getResidueColor( *modelResidue ) );
+			modelResidue->setColor( App::Component::Chemistry::Residue::getResidueColor( *modelResidue ) );
 
 			const bool isStandard = residue.properties().get( "is_standard_pdb" ).value_or( true ).as_bool();
-			modelResidue->setType( isStandard ? Model::Residue::TYPE::STANDARD : Model::Residue::TYPE::NON_STANDARD );
+			modelResidue->setType( isStandard ? App::Component::Chemistry::Residue::TYPE::STANDARD
+											  : App::Component::Chemistry::Residue::TYPE::NON_STANDARD );
 
 			// Check residue index in chain.
 			const int indexInChain = (int)residue.id().value_or( INT_MIN );
@@ -381,35 +390,43 @@ namespace VTX::IO::Reader
 				{
 					if ( secondaryStructure == "extended" )
 					{
-						modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::STRAND );
+						modelResidue->setSecondaryStructure(
+							App::Component::Chemistry::SecondaryStructure::TYPE::STRAND );
 					}
 					else if ( secondaryStructure == "turn" )
 					{
-						modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::TURN );
+						modelResidue->setSecondaryStructure(
+							App::Component::Chemistry::SecondaryStructure::TYPE::TURN );
 					}
 					else if ( secondaryStructure == "coil" )
 					{
-						modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::COIL );
+						modelResidue->setSecondaryStructure(
+							App::Component::Chemistry::SecondaryStructure::TYPE::COIL );
 					}
 					else if ( secondaryStructure == "right-handed alpha helix" )
 					{
-						modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT );
+						modelResidue->setSecondaryStructure(
+							App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT );
 					}
 					else if ( secondaryStructure == "left-handed alpha helix" )
 					{
-						modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT );
+						modelResidue->setSecondaryStructure(
+							App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT );
 					}
 					else if ( secondaryStructure == "right-handed 3-10 helix" )
 					{
-						modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_3_10_RIGHT );
+						modelResidue->setSecondaryStructure(
+							App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_3_10_RIGHT );
 					}
 					else if ( secondaryStructure == "left-handed 3-10 helix" )
 					{
-						modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_3_10_LEFT );
+						modelResidue->setSecondaryStructure(
+							App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_3_10_LEFT );
 					}
 					else if ( secondaryStructure == "pi helix" )
 					{
-						modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_PI );
+						modelResidue->setSecondaryStructure(
+							App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_PI );
 					}
 					else if ( secondaryStructure == "right-handed omega helix" )
 					{
@@ -464,7 +481,8 @@ namespace VTX::IO::Reader
 									 .as_double() );
 
 				// Create atom.
-				Model::Atom * modelAtom			= VTX::MVC_MANAGER().instantiateModel<Model::Atom>();
+				App::Component::Chemistry::Atom * modelAtom
+					= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Atom>();
 				p_molecule.getAtoms()[ atomId ] = modelAtom;
 				modelAtom->setIndex( atomId );
 				modelAtom->setResiduePtr( modelResidue );
@@ -477,13 +495,15 @@ namespace VTX::IO::Reader
 
 				// _logInfo( atom.name() + " " + atom.type() );
 
-				std::optional symbol = magic_enum::enum_cast<Model::Atom::SYMBOL>( "A_" + atomSymbol );
+				std::optional symbol
+					= magic_enum::enum_cast<App::Component::Chemistry::Atom::SYMBOL>( "A_" + atomSymbol );
 
 				symbol.has_value() ? modelAtom->setSymbol( symbol.value() )
 								   : p_molecule.addUnknownAtomSymbol( atom.type() );
 
 				modelAtom->setName( atom.name() );
-				// modelAtom->setColor( Model::Atom::SYMBOL_COLOR[ int( modelAtom->getSymbol() ) ] );
+				// modelAtom->setColor( App::Component::Chemistry::Atom::SYMBOL_COLOR[ int( modelAtom->getSymbol() ) ]
+				// );
 
 				const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 				const chemfiles::Vector3D &					 position  = positions[ atomId ];
@@ -499,13 +519,13 @@ namespace VTX::IO::Reader
 						 != config.solventAtomIds.end() )
 					{
 						solventCounter++;
-						modelAtom->setType( Model::Atom::TYPE::SOLVENT );
+						modelAtom->setType( App::Component::Chemistry::Atom::TYPE::SOLVENT );
 					}
 					else if ( std::find( config.ionAtomIds.begin(), config.ionAtomIds.end(), atomType )
 							  != config.ionAtomIds.end() )
 					{
 						ionCounter++;
-						modelAtom->setType( Model::Atom::TYPE::ION );
+						modelAtom->setType( App::Component::Chemistry::Atom::TYPE::ION );
 					}
 				}
 
@@ -515,13 +535,13 @@ namespace VTX::IO::Reader
 					 != config.solventResidueSymbols.end() )
 				{
 					solventCounter++;
-					modelAtom->setType( Model::Atom::TYPE::SOLVENT );
+					modelAtom->setType( App::Component::Chemistry::Atom::TYPE::SOLVENT );
 				}
 				else if ( std::find( config.ionResidueSymbols.begin(), config.ionResidueSymbols.end(), residueSymbol )
 						  != config.ionResidueSymbols.end() )
 				{
 					ionCounter++;
-					modelAtom->setType( Model::Atom::TYPE::ION );
+					modelAtom->setType( App::Component::Chemistry::Atom::TYPE::ION );
 				}
 
 				// Radius.
@@ -535,11 +555,11 @@ namespace VTX::IO::Reader
 			// not with arc/prm because arc do not contains topology.
 			if ( solventCounter == residue.size() )
 			{
-				modelResidue->setAtomType( Model::Atom::TYPE::SOLVENT );
+				modelResidue->setAtomType( App::Component::Chemistry::Atom::TYPE::SOLVENT );
 			}
 			else if ( ionCounter == residue.size() )
 			{
-				modelResidue->setAtomType( Model::Atom::TYPE::ION );
+				modelResidue->setAtomType( App::Component::Chemistry::Atom::TYPE::ION );
 			}
 		}
 
@@ -549,7 +569,7 @@ namespace VTX::IO::Reader
 			// std::thread fillFrames(
 			//	&LibChemfiles::fillTrajectoryFrames, this, std::ref( p_trajectory ), std::ref( p_molecule ) );
 			// fillFrames.detach();
-			std::pair<Model::Molecule *, uint> pairMoleculeFirstFrame = { &p_molecule, 1 };
+			std::pair<App::Component::Chemistry::Molecule *, uint> pairMoleculeFirstFrame = { &p_molecule, 1 };
 			_readTrajectoryFrames( p_trajectory, { pairMoleculeFirstFrame }, 1 );
 		}
 
@@ -585,8 +605,9 @@ namespace VTX::IO::Reader
 		{
 			const chemfiles::Bond & bond = bonds[ boundIdx ];
 
-			Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) )->getResiduePtr();
-			Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) )->getResiduePtr();
+			App::Component::Chemistry::Residue * residueStart
+				= p_molecule.getAtom( uint( bond[ 0 ] ) )->getResiduePtr();
+			App::Component::Chemistry::Residue * residueEnd = p_molecule.getAtom( uint( bond[ 1 ] ) )->getResiduePtr();
 
 			if ( residueStart == residueEnd )
 			{
@@ -611,25 +632,27 @@ namespace VTX::IO::Reader
 		counter				  = 0;
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 		{
-			Model::Residue * const		residue			 = p_molecule.getResidue( residueIdx );
-			const std::vector<size_t> & vectorBonds		 = mapResidueBonds[ residueIdx ];
-			const std::vector<size_t> & vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
+			App::Component::Chemistry::Residue * const residue			= p_molecule.getResidue( residueIdx );
+			const std::vector<size_t> &				   vectorBonds		= mapResidueBonds[ residueIdx ];
+			const std::vector<size_t> &				   vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
 
 			residue->setIndexFirstBond( counter );
 			residue->setBondCount( uint( vectorBonds.size() ) + uint( vectorExtraBonds.size() ) );
 
 			for ( uint i = 0; i < vectorBonds.size(); ++i, ++counter )
 			{
-				const chemfiles::Bond & bond	  = topology.bonds()[ vectorBonds[ i ] ];
-				Model::Bond *			modelBond = VTX::MVC_MANAGER().instantiateModel<Model::Bond>();
-				p_molecule.getBonds()[ counter ]  = modelBond;
+				const chemfiles::Bond &			  bond = topology.bonds()[ vectorBonds[ i ] ];
+				App::Component::Chemistry::Bond * modelBond
+					= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Bond>();
+				p_molecule.getBonds()[ counter ] = modelBond;
 
 				modelBond->setMoleculePtr( &p_molecule );
 				modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
 				modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
 
-				const chemfiles::Bond::BondOrder bondOrder	= topology.bond_orders()[ vectorBonds[ i ] ];
-				const Model::Bond::ORDER		 modelOrder = Model::Bond::ORDER( int( bondOrder ) );
+				const chemfiles::Bond::BondOrder			 bondOrder = topology.bond_orders()[ vectorBonds[ i ] ];
+				const App::Component::Chemistry::Bond::ORDER modelOrder
+					= App::Component::Chemistry::Bond::ORDER( int( bondOrder ) );
 				modelBond->setOrder( modelOrder );
 
 				p_molecule.getBufferBonds()[ counter * 2u ]		 = uint( bond[ 0 ] );
@@ -638,16 +661,18 @@ namespace VTX::IO::Reader
 
 			for ( uint i = 0; i < vectorExtraBonds.size(); ++i, ++counter )
 			{
-				const chemfiles::Bond & bond	  = topology.bonds()[ vectorExtraBonds[ i ] ];
-				Model::Bond *			modelBond = VTX::MVC_MANAGER().instantiateModel<Model::Bond>();
-				p_molecule.getBonds()[ counter ]  = modelBond;
+				const chemfiles::Bond &			  bond = topology.bonds()[ vectorExtraBonds[ i ] ];
+				App::Component::Chemistry::Bond * modelBond
+					= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Bond>();
+				p_molecule.getBonds()[ counter ] = modelBond;
 
 				modelBond->setMoleculePtr( &p_molecule );
 				modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
 				modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
 
-				const chemfiles::Bond::BondOrder bondOrder		= topology.bond_orders()[ vectorExtraBonds[ i ] ];
-				const Model::Bond::ORDER		 modelBondOrder = Model::Bond::ORDER( int( bondOrder ) );
+				const chemfiles::Bond::BondOrder bondOrder = topology.bond_orders()[ vectorExtraBonds[ i ] ];
+				const App::Component::Chemistry::Bond::ORDER modelBondOrder
+					= App::Component::Chemistry::Bond::ORDER( int( bondOrder ) );
 				modelBond->setOrder( modelBondOrder );
 
 				p_molecule.getBufferBonds()[ counter * 2u ]		 = uint( bond[ 0 ] );
@@ -672,8 +697,9 @@ namespace VTX::IO::Reader
 		assert( counter == counterOld );
 	}
 
-	bool LibChemfiles::_tryApplyingDynamicOnTargets( chemfiles::Trajectory &				p_dynamicTrajectory,
-													 const std::vector<Model::Molecule *> & p_potentialTargets ) const
+	bool LibChemfiles::_tryApplyingDynamicOnTargets(
+		chemfiles::Trajectory &									   p_dynamicTrajectory,
+		const std::vector<App::Component::Chemistry::Molecule *> & p_potentialTargets ) const
 	{
 		bool res = false;
 
@@ -683,11 +709,11 @@ namespace VTX::IO::Reader
 		const std::vector<Vec3f> positions		= readTrajectoryFrame( p_dynamicTrajectory );
 		const size_t			 frameAtomCount = positions.size();
 
-		std::vector<std::pair<Model::Molecule *, uint>> validTargets
-			= std::vector<std::pair<Model::Molecule *, uint>>();
+		std::vector<std::pair<App::Component::Chemistry::Molecule *, uint>> validTargets
+			= std::vector<std::pair<App::Component::Chemistry::Molecule *, uint>>();
 		validTargets.reserve( p_potentialTargets.size() );
 
-		for ( Model::Molecule * const molecule : p_potentialTargets )
+		for ( App::Component::Chemistry::Molecule * const molecule : p_potentialTargets )
 		{
 			if ( molecule->getAtomCount() == frameAtomCount )
 			{
@@ -704,8 +730,10 @@ namespace VTX::IO::Reader
 					_logError( "Error when reading trajectory : " + std::string( p_e.what() ) );
 
 					// If an issue happened when reading trajectory, we pop back all non-filled frames
-					std::vector<Model::Molecule::AtomPositionsFrame> & frames = molecule->getAtomPositionFrames();
-					std::vector<Model::Molecule::AtomPositionsFrame>::reverse_iterator itFrame = frames.rbegin();
+					std::vector<App::Component::Chemistry::Molecule::AtomPositionsFrame> & frames
+						= molecule->getAtomPositionFrames();
+					std::vector<App::Component::Chemistry::Molecule::AtomPositionsFrame>::reverse_iterator itFrame
+						= frames.rbegin();
 
 					while ( itFrame != frames.rend() && itFrame->size() == 0 )
 					{
@@ -725,7 +753,7 @@ namespace VTX::IO::Reader
 
 		_readTrajectoryFrames( p_dynamicTrajectory, validTargets, 1 );
 
-		for ( const std::pair<Model::Molecule *, uint> & pairMoleculeFirstFrame : validTargets )
+		for ( const std::pair<App::Component::Chemistry::Molecule *, uint> & pairMoleculeFirstFrame : validTargets )
 		{
 			pairMoleculeFirstFrame.first->forceNotifyTrajectoryChanged();
 		}

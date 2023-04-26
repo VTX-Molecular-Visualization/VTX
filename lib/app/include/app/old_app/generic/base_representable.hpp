@@ -1,6 +1,7 @@
 #ifndef __VTX_BASE_REPRESENTABLE__
 #define __VTX_BASE_REPRESENTABLE__
 
+#include "app/component/chemistry/_fwd.hpp"
 #include "app/old_app/representation/representation_target.hpp"
 #include <map>
 #include <set>
@@ -15,8 +16,8 @@ namespace VTX
 
 	namespace Model
 	{
-		class Molecule;
-		class Residue;
+		// class Molecule;
+		// class Residue;
 		namespace Representation
 		{
 			class InstantiatedRepresentation;
@@ -33,9 +34,9 @@ namespace VTX
 
 			~BaseRepresentable();
 
-			void initBaseRepresentable( App::Core::Model::BaseModel * const p_model,
-										Generic::BaseRepresentable * const	p_parent,
-										Model::Molecule * const				p_molecule );
+			void initBaseRepresentable( App::Core::Model::BaseModel * const			p_model,
+										Generic::BaseRepresentable * const			p_parent,
+										App::Component::Chemistry::Molecule * const p_molecule );
 
 			const InstantiatedRepresentation * const							getRepresentation() const;
 			InstantiatedRepresentation * const									getCustomRepresentation();
@@ -78,8 +79,11 @@ namespace VTX
 				return _representationTargets[ p_representation ].getRibbons();
 			}
 
-			Model::Molecule * const getMolecule() const { return _molecule; };
-			void setRepresentableMolecule( Model::Molecule * const p_molecule ) { _molecule = p_molecule; };
+			App::Component::Chemistry::Molecule * const getMolecule() const { return _molecule; };
+			void setRepresentableMolecule( App::Component::Chemistry::Molecule * const p_molecule )
+			{
+				_molecule = p_molecule;
+			};
 
 			App::Core::Model::BaseModel * const getLinkedModel() const { return _model; };
 			void setLinkedModel( App::Core::Model::BaseModel * const p_model ) { _model = p_model; };
@@ -97,12 +101,12 @@ namespace VTX
 			void _linkRepresentationToParent() const;
 			void _delinkRepresentationToParent() const;
 
-			bool _isResidueVisible( const Model::Residue & p_residue ) const;
+			bool _isResidueVisible( const App::Component::Chemistry::Residue & p_residue ) const;
 
 		  private:
-			Model::Molecule *			  _molecule = nullptr;
-			BaseRepresentable *			  _parent	= nullptr;
-			App::Core::Model::BaseModel * _model	= nullptr;
+			App::Component::Chemistry::Molecule * _molecule = nullptr;
+			BaseRepresentable *					  _parent	= nullptr;
+			App::Core::Model::BaseModel *		  _model	= nullptr;
 		};
 	} // namespace Generic
 } // namespace VTX

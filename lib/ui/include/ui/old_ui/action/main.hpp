@@ -6,10 +6,10 @@
 #include <app/event.hpp>
 #include <app/event/global.hpp>
 #include <app/internal/worker/snapshoter.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/model/path.hpp>
-#include <app/model/secondary_structure.hpp>
-#include <app/model/solvent_excluded_surface.hpp>
+#include <app/component/chemistry/secondary_structure.hpp>
+#include <app/component/chemistry/solvent_excluded_surface.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
 #include <string>
 #include <util/types.hpp>

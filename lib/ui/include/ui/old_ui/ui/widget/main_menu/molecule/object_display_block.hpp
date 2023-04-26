@@ -5,7 +5,7 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
 #include <app/core/event/vtx_event.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
@@ -34,7 +34,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 		void _refreshButtons();
 
-		void _fillContainerWithTarget( std::unordered_set<Model::Molecule *> & _container ) const;
+		void _fillContainerWithTarget( std::unordered_set<App::Component::Chemistry::Molecule *> & _container ) const;
 
 		void _displayWaterButton( const bool p_active, const bool p_show );
 		void _displaySolventButton( const bool p_active, const bool p_show );

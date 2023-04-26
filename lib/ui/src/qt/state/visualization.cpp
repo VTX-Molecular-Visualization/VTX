@@ -9,7 +9,7 @@
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/old_app/object3d/camera.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
@@ -168,8 +168,8 @@ namespace VTX::UI::QT::State
 			if ( VTXApp::get().getScene().getMolecules().size() == 1
 				 && VTXApp::get().getScene().getMeshes().size() == 0 )
 			{
-				const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
-					= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
+				const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
+					= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event );
 
 				orientCameraController( castedEvent.get()->getAABB() );
 			}

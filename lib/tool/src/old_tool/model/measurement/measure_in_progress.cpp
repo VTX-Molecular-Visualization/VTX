@@ -5,8 +5,8 @@
 #include <app/mvc.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/model/atom.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/atom.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <util/math.hpp>
 #include <variant>
@@ -18,13 +18,13 @@ namespace VTX::Model::Measurement
 		_type			 = PotentialTargetType::POSITION;
 		_target.position = p_position;
 	}
-	void MeasureInProgress::PotentialTarget::setAtom( const Model::Atom * const p_atom )
+	void MeasureInProgress::PotentialTarget::setAtom( const App::Component::Chemistry::Atom * const p_atom )
 	{
 		_type		 = PotentialTargetType::ATOM;
 		_target.atom = p_atom;
 	}
-	void MeasureInProgress::PotentialTarget::setAtomPair( const Model::Atom * const p_firstAtom,
-														  const Model::Atom * const p_secondAtom )
+	void MeasureInProgress::PotentialTarget::setAtomPair( const App::Component::Chemistry::Atom * const p_firstAtom,
+														  const App::Component::Chemistry::Atom * const p_secondAtom )
 	{
 		_type			 = PotentialTargetType::ATOMPAIR;
 		_target.atomPair = { p_firstAtom, p_secondAtom };
@@ -48,8 +48,8 @@ namespace VTX::Model::Measurement
 	{
 		if ( p_event.name == VTX::App::Event::Global::ATOM_REMOVED )
 		{
-			const App::Core::Event::VTXEventArg<Model::Atom *> & castedEvent
-				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Atom *> &>( p_event );
+			const App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom *> & castedEvent
+				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom *> &>( p_event );
 
 			if ( _isLinkedToAtom( castedEvent.get() ) )
 			{
@@ -60,8 +60,8 @@ namespace VTX::Model::Measurement
 		}
 		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 		{
-			const App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
-				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
+			const App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
+				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event );
 
 			if ( _isLinkedToMolecule( castedEvent.get() ) )
 			{
@@ -95,7 +95,7 @@ namespace VTX::Model::Measurement
 			break;
 
 		case PotentialTargetType::ATOMPAIR:
-			const std::pair<const Model::Atom *, const Model::Atom *> & atomPair = _potentialNextTarget.getAtomPair();
+			const std::pair<const App::Component::Chemistry::Atom *, const App::Component::Chemistry::Atom *> & atomPair = _potentialNextTarget.getAtomPair();
 			addAtom( *atomPair.first );
 			addAtom( *atomPair.second );
 			updated = true;
@@ -105,14 +105,14 @@ namespace VTX::Model::Measurement
 		return updated;
 	}
 
-	void MeasureInProgress::addAtom( const Model::Atom & p_atom )
+	void MeasureInProgress::addAtom( const App::Component::Chemistry::Atom & p_atom )
 	{
 		_atoms.emplace_back( &p_atom );
 
 		bool  atomFromNewMolecule = true;
 		Vec3f position			  = VEC3F_ZERO;
 
-		for ( const Model::Atom * const atom : _atoms )
+		for ( const App::Component::Chemistry::Atom * const atom : _atoms )
 		{
 			position += atom->getWorldPosition() / float( _atoms.size() );
 			atomFromNewMolecule = atomFromNewMolecule && atom->getMoleculePtr() == p_atom.getMoleculePtr();
@@ -139,7 +139,7 @@ namespace VTX::Model::Measurement
 		_notifyDataChanged();
 	}
 
-	void MeasureInProgress::removeAtom( const Model::Atom & p_atom ) { _notifyDataChanged(); }
+	void MeasureInProgress::removeAtom( const App::Component::Chemistry::Atom & p_atom ) { _notifyDataChanged(); }
 
 	void MeasureInProgress::clearAtoms()
 	{
@@ -152,7 +152,7 @@ namespace VTX::Model::Measurement
 		_notifyDataChanged();
 	}
 
-	const Model::Atom * const MeasureInProgress::getAtom( const int p_index ) const
+	const App::Component::Chemistry::Atom * const MeasureInProgress::getAtom( const int p_index ) const
 	{
 		if ( p_index < _atoms.size() )
 			return _atoms[ p_index ];
@@ -162,7 +162,7 @@ namespace VTX::Model::Measurement
 
 	int MeasureInProgress::getAtomCount() const { return int( _atoms.size() ); }
 
-	bool MeasureInProgress::contains( const Model::Atom & p_atom ) const
+	bool MeasureInProgress::contains( const App::Component::Chemistry::Atom & p_atom ) const
 	{
 		return std::find( _atoms.cbegin(), _atoms.cend(), &p_atom ) != _atoms.cend();
 	}
@@ -179,12 +179,12 @@ namespace VTX::Model::Measurement
 		_notifyDataChanged();
 	}
 
-	void MeasureInProgress::setPotentialNextTarget( const Model::Atom & p_atom )
+	void MeasureInProgress::setPotentialNextTarget( const App::Component::Chemistry::Atom & p_atom )
 	{
 		_potentialNextTarget.setAtom( &p_atom );
 		_notifyDataChanged();
 	}
-	void MeasureInProgress::setPotentialNextTarget( const Model::Atom & p_firstAtom, const Model::Atom & p_secondAtom )
+	void MeasureInProgress::setPotentialNextTarget( const App::Component::Chemistry::Atom & p_firstAtom, const App::Component::Chemistry::Atom & p_secondAtom )
 	{
 		_potentialNextTarget.setAtomPair( &p_firstAtom, &p_secondAtom );
 		_notifyDataChanged();
@@ -192,7 +192,7 @@ namespace VTX::Model::Measurement
 
 	bool MeasureInProgress::isValid() const
 	{
-		for ( const Model::Atom * const atomPtr : _atoms )
+		for ( const App::Component::Chemistry::Atom * const atomPtr : _atoms )
 			if ( atomPtr == nullptr )
 				return false;
 
@@ -205,23 +205,23 @@ namespace VTX::Model::Measurement
 			_atoms[ i ] = nullptr;
 	}
 
-	bool MeasureInProgress::_isLinkedToAtom( const Model::Atom * const p_atom ) const
+	bool MeasureInProgress::_isLinkedToAtom( const App::Component::Chemistry::Atom * const p_atom ) const
 	{
 		if ( !isValid() )
 			return false;
 
-		for ( const Model::Atom * const linkedAtom : _atoms )
+		for ( const App::Component::Chemistry::Atom * const linkedAtom : _atoms )
 			if ( linkedAtom == p_atom )
 				return true;
 
 		return false;
 	}
-	bool MeasureInProgress::_isLinkedToMolecule( const Model::Molecule * const p_molecule ) const
+	bool MeasureInProgress::_isLinkedToMolecule( const App::Component::Chemistry::Molecule * const p_molecule ) const
 	{
 		if ( !isValid() )
 			return false;
 
-		for ( const Model::Atom * const linkedAtom : _atoms )
+		for ( const App::Component::Chemistry::Atom * const linkedAtom : _atoms )
 			if ( linkedAtom->getMoleculePtr() == p_molecule )
 				return true;
 
@@ -232,7 +232,7 @@ namespace VTX::Model::Measurement
 	{
 		p_aabb = Object3D::Helper::AABB();
 
-		for ( const Model::Atom * const atom : _atoms )
+		for ( const App::Component::Chemistry::Atom * const atom : _atoms )
 		{
 			if ( atom != nullptr )
 				p_aabb.extend( atom->getWorldAABB() );
@@ -251,7 +251,7 @@ namespace VTX::Model::Measurement
 		}
 	}
 
-	void MeasureInProgress::_onMoleculeChange( const Model::Molecule * const			p_molecule,
+	void MeasureInProgress::_onMoleculeChange( const App::Component::Chemistry::Molecule * const			p_molecule,
 											   const App::Core::Event::VTXEvent * const p_event )
 	{
 		if ( p_event->name == App::Event::Model::TRANSFORM_CHANGE )

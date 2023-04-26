@@ -116,7 +116,7 @@ namespace VTX::UI
 			openSetTrajectoryTargetsDialog( filename.toStdString() );
 		}
 	}
-	void Dialog::openLoadTrajectoryDialog( Model::Molecule & p_target )
+	void Dialog::openLoadTrajectoryDialog( App::Component::Chemistry::Molecule & p_target )
 	{
 		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
 		QString defaultPath	  = QString::fromStdString( Setting::getLastImportedMoleculeFolder() );

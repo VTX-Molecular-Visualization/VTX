@@ -3,15 +3,16 @@
 
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
+#include <app/component/chemistry/_fwd.hpp>
 #include <util/types.hpp>
 
 namespace VTX
 {
-	namespace Model
-	{
-		class Atom;
-		class Residue;
-	} // namespace Model
+	// namespace Model
+	//{
+	//	class Atom;
+	//	class Residue;
+	// } // namespace Model
 
 	namespace UI::QT::Controller
 	{
@@ -30,13 +31,15 @@ namespace VTX
 
 			void _performSelection( const Vec2i & p_ids ) const;
 
-			void _selectItem( Model::Atom & p_atomPicked ) const;
-			void _selectItem( Model::Atom & p_atomPicked1, Model::Atom & p_atomPicked2 ) const;
-			void _selectItem( Model::Residue & p_residuePicked ) const;
+			void _selectItem( App::Component::Chemistry::Atom & p_atomPicked ) const;
+			void _selectItem( App::Component::Chemistry::Atom & p_atomPicked1,
+							  App::Component::Chemistry::Atom & p_atomPicked2 ) const;
+			void _selectItem( App::Component::Chemistry::Residue & p_residuePicked ) const;
 
-			void _unselectItem( Model::Atom & p_atomPicked ) const;
-			void _unselectItem( Model::Atom & p_atomPicked1, Model::Atom & p_atomPicked2 ) const;
-			void _unselectItem( Model::Residue & p_residuePicked ) const;
+			void _unselectItem( App::Component::Chemistry::Atom & p_atomPicked ) const;
+			void _unselectItem( App::Component::Chemistry::Atom & p_atomPicked1,
+								App::Component::Chemistry::Atom & p_atomPicked2 ) const;
+			void _unselectItem( App::Component::Chemistry::Residue & p_residuePicked ) const;
 
 		  private:
 			Vec2i _lastClickedIds;

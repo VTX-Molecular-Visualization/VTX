@@ -12,7 +12,7 @@
 #include <app/action/selection.hpp>
 #include <app/event/global.hpp>
 #include <app/model/label.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/model/selection.hpp>
 #include <app/mvc.hpp>
 #include <app/old_app/object3d/scene.hpp>
@@ -44,14 +44,14 @@ namespace VTX::UI::Widget::Scene
 	{
 		if ( p_event.name == VTX::App::Event::Global::MOLECULE_ADDED )
 		{
-			const App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
+			const App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event );
 
-			Model::Molecule * const moleculePtr = castedEvent.get();
+			App::Component::Chemistry::Molecule * const moleculePtr = castedEvent.get();
 
 			const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_MOLECULE );
 
-			instantiateSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>(
+			instantiateSceneItem<View::UI::Widget::MoleculeSceneView, App::Component::Chemistry::Molecule>(
 				moleculePtr, ID::View::UI_MOLECULE_STRUCTURE, "moleculeSceneView" );
 
 			Object3D::Scene & scene = VTXApp::get().getScene();
@@ -59,10 +59,10 @@ namespace VTX::UI::Widget::Scene
 		}
 		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event );
 
-			deleteSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>( castedEvent.get(),
+			deleteSceneItem<View::UI::Widget::MoleculeSceneView, App::Component::Chemistry::Molecule>( castedEvent.get(),
 																				   ID::View::UI_MOLECULE_STRUCTURE );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::PATH_ADDED )
@@ -382,9 +382,9 @@ namespace VTX::UI::Widget::Scene
 
 		setAcceptDrops( true );
 
-		for ( const std::pair<Model::Molecule *, float> pairMolecule : VTXApp::get().getScene().getMolecules() )
+		for ( const std::pair<App::Component::Chemistry::Molecule *, float> pairMolecule : VTXApp::get().getScene().getMolecules() )
 		{
-			instantiateSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>(
+			instantiateSceneItem<View::UI::Widget::MoleculeSceneView, App::Component::Chemistry::Molecule>(
 				pairMolecule.first, ID::View::UI_MOLECULE_STRUCTURE, "moleculeSceneView" );
 		}
 		for ( Model::Path * const path : VTXApp::get().getScene().getPaths() )

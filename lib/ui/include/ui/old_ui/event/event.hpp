@@ -1,14 +1,15 @@
 #ifndef __VTX_EVENT__
 #define __VTX_EVENT__
 
+#include <app/component/chemistry/_fwd.hpp>
 #include <string>
 
 namespace VTX
 {
-	namespace Model
-	{
-		class Molecule;
-	}
+	// namespace Model
+	//{
+	//	class Molecule;
+	// }
 
 	namespace Event
 	{

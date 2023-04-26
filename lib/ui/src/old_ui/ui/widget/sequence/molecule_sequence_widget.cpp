@@ -6,10 +6,10 @@
 #include <QScrollBar>
 #include <algorithm>
 #include <app/action/selection.hpp>
-#include <app/mvc.hpp>
+#include <app/component/chemistry/enum_category.hpp>
 #include <app/event/global.hpp>
-#include <app/model/category_enum.hpp>
 #include <app/model/selection.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>
 
@@ -30,7 +30,7 @@ namespace VTX::UI::Widget::Sequence
 	{
 		if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE )
 		{
-			const Model::Chain * currentChain = _getCurrentChain();
+			const App::Component::Chemistry::Chain * currentChain = _getCurrentChain();
 			_updateLabelName( currentChain );
 		}
 	}
@@ -74,11 +74,11 @@ namespace VTX::UI::Widget::Sequence
 
 	void MoleculeSequenceWidget::_onScrollBarValueChanged()
 	{
-		const Model::Chain * currentChain = _getCurrentChain();
+		const App::Component::Chemistry::Chain * currentChain = _getCurrentChain();
 		_updateLabelName( currentChain );
 	}
 
-	Model::Chain * MoleculeSequenceWidget::_getCurrentChain() const
+	App::Component::Chemistry::Chain * MoleculeSequenceWidget::_getCurrentChain() const
 	{
 		const int value = _scrollArea->horizontalScrollBar()->value();
 
@@ -98,10 +98,10 @@ namespace VTX::UI::Widget::Sequence
 
 	void MoleculeSequenceWidget::_initLabelName()
 	{
-		const Model::Chain * const chain = _model->getFirstChain();
+		const App::Component::Chemistry::Chain * const chain = _model->getFirstChain();
 		_updateLabelName( chain );
 	}
-	void MoleculeSequenceWidget::_updateLabelName( const Model::Chain * const p_currentChainDisplayed ) const
+	void MoleculeSequenceWidget::_updateLabelName( const App::Component::Chemistry::Chain * const p_currentChainDisplayed ) const
 	{
 		std::string txt;
 		if ( p_currentChainDisplayed == nullptr )
@@ -111,7 +111,8 @@ namespace VTX::UI::Widget::Sequence
 		else
 		{
 			txt = _model->getDisplayName() + Style::SEQUENCE_CHAIN_NAME_SEPARATOR + p_currentChainDisplayed->getName()
-				  + "-" + CATEGORY_ENUM_STR[ int( p_currentChainDisplayed->getCategoryEnum() ) ]
+				  + "-"
+				  + App::Component::Chemistry::CATEGORY_ENUM_STR[ int( p_currentChainDisplayed->getCategoryEnum() ) ]
 				  + Style::SEQUENCE_CHAIN_NAME_SEPARATOR;
 		}
 
@@ -146,7 +147,7 @@ namespace VTX::UI::Widget::Sequence
 		_chainDisplayWidgets = std::vector<ChainSequenceWidget *>();
 		_chainDisplayWidgets.reserve( _model->getChainCount() );
 
-		for ( Model::Chain * const chain : _model->getChains() )
+		for ( App::Component::Chemistry::Chain * const chain : _model->getChains() )
 		{
 			if ( chain == nullptr )
 				continue;
@@ -156,7 +157,8 @@ namespace VTX::UI::Widget::Sequence
 			chainNameWidget->setFont( Style::SEQUENCE_DISPLAY_FONT() );
 			chainNameWidget->setText( QString::fromStdString(
 				Style::SEQUENCE_CHAIN_NAME_SEPARATOR + chain->getName() + "-"
-				+ CATEGORY_ENUM_STR[ int( chain->getCategoryEnum() ) ] + Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
+				+ App::Component::Chemistry::CATEGORY_ENUM_STR[ int( chain->getCategoryEnum() ) ]
+				+ Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
 			_chainLabelWidgets.emplace_back( chainNameWidget );
 
 			ChainSequenceWidget * const chainSequenceDisplay
@@ -174,7 +176,7 @@ namespace VTX::UI::Widget::Sequence
 
 	void MoleculeSequenceWidget::mousePressEvent( QMouseEvent * p_event )
 	{
-		ViewItemWidget<Model::Molecule>::mousePressEvent( p_event );
+		ViewItemWidget<App::Component::Chemistry::Molecule>::mousePressEvent( p_event );
 
 		if ( !p_event->buttons().testFlag( Qt::MouseButton::LeftButton ) )
 			return;
@@ -198,12 +200,12 @@ namespace VTX::UI::Widget::Sequence
 			 && !( _startResidueHovered == nullptr && _lastResidueHovered == nullptr ) )
 		{
 			bool				   takeForward = _lastDragSelectionPosition.x() <= _startPressPosition.x();
-			Model::Residue * const closestResidueFromPreviousClick = _getClosestResidue(
+			App::Component::Chemistry::Residue * const closestResidueFromPreviousClick = _getClosestResidue(
 				_lastDragSelectionPosition, _startPressPosition.x() > _lastDragSelectionPosition.x(), true );
 
-			const Model::Residue * const fromResidue
+			const App::Component::Chemistry::Residue * const fromResidue
 				= takeForward ? closestResidueFromPreviousClick : _closestResidueFromStartPosition;
-			const Model::Residue * const toResidue
+			const App::Component::Chemistry::Residue * const toResidue
 				= takeForward ? _closestResidueFromStartPosition : closestResidueFromPreviousClick;
 
 			_getFromTo( *fromResidue, *toResidue, &_frameSelection );
@@ -215,8 +217,8 @@ namespace VTX::UI::Widget::Sequence
 			// block
 			if ( select )
 			{
-				Model::Residue * firstResidueOfSelection = closestResidueFromPreviousClick;
-				Model::Residue * previousResidue		 = closestResidueFromPreviousClick;
+				App::Component::Chemistry::Residue * firstResidueOfSelection = closestResidueFromPreviousClick;
+				App::Component::Chemistry::Residue * previousResidue		 = closestResidueFromPreviousClick;
 				const bool		 searchForward			 = _lastDragSelectionPosition.x() > _startPressPosition.x();
 
 				while ( previousResidue != nullptr && _isSelected( previousResidue ) )
@@ -244,14 +246,14 @@ namespace VTX::UI::Widget::Sequence
 	}
 	void MoleculeSequenceWidget::mouseMoveEvent( QMouseEvent * p_event )
 	{
-		ViewItemWidget<Model::Molecule>::mouseMoveEvent( p_event );
+		ViewItemWidget<App::Component::Chemistry::Molecule>::mouseMoveEvent( p_event );
 
 		if ( !p_event->buttons().testFlag( Qt::MouseButton::LeftButton ) )
 			return;
 
 		const QPoint	 currentMousePos	   = _scrollAreaContent->mapFromGlobal( p_event->globalPos() );
 		const bool		 cursorMoveForward	   = currentMousePos.x() >= _lastDragSelectionPosition.x();
-		Model::Residue * currentResidueHovered = _getResidueAtPos( currentMousePos );
+		App::Component::Chemistry::Residue * currentResidueHovered = _getResidueAtPos( currentMousePos );
 
 		const bool cursorInFrontOfStartClick = currentMousePos.x() > _startPressPosition.x();
 
@@ -261,9 +263,9 @@ namespace VTX::UI::Widget::Sequence
 		// same
 		if ( sameResidueHovered && currentResidueHovered == nullptr )
 		{
-			const Model::Residue * const closestLastResidueHovered
+			const App::Component::Chemistry::Residue * const closestLastResidueHovered
 				= _getClosestResidue( _lastDragSelectionPosition, cursorMoveForward, true );
-			const Model::Residue * const closestResidueCurrentlyHovered
+			const App::Component::Chemistry::Residue * const closestResidueCurrentlyHovered
 				= _getClosestResidue( currentMousePos, cursorMoveForward, true );
 
 			sameResidueHovered = closestLastResidueHovered == closestResidueCurrentlyHovered;
@@ -280,21 +282,21 @@ namespace VTX::UI::Widget::Sequence
 											  || ( _lastDragSelectionPosition.x() > _startPressPosition.x()
 												   && currentMousePos.x() <= _startPressPosition.x() );
 
-		const Model::Residue * closestLastResidueHovered
+		const App::Component::Chemistry::Residue * closestLastResidueHovered
 			= _getClosestResidue( _lastDragSelectionPosition, cursorMoveForward );
 
 		// If the cursor switch side of the first clicked object, we clear the selection
 		if ( switchSideFromStartClick )
 		{
-			const Model::Residue * const startResidue = _getResidueAtPos( _startPressPosition );
+			const App::Component::Chemistry::Residue * const startResidue = _getResidueAtPos( _startPressPosition );
 
-			const Model::Residue * closestResidueCurrentlyHovered
+			const App::Component::Chemistry::Residue * closestResidueCurrentlyHovered
 				= _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick, true );
-			const Model::Residue * closestOfStart
+			const App::Component::Chemistry::Residue * closestOfStart
 				= _getClosestResidue( _startPressPosition, !cursorInFrontOfStartClick, true );
 
-			const Model::Residue * fromResidue = cursorInFrontOfStartClick ? closestLastResidueHovered : closestOfStart;
-			const Model::Residue * toResidue   = cursorInFrontOfStartClick ? closestOfStart : closestLastResidueHovered;
+			const App::Component::Chemistry::Residue * fromResidue = cursorInFrontOfStartClick ? closestLastResidueHovered : closestOfStart;
+			const App::Component::Chemistry::Residue * toResidue   = cursorInFrontOfStartClick ? closestOfStart : closestLastResidueHovered;
 
 			_getFromTo( *fromResidue, *toResidue, &_frameSelection );
 			_applySelection( false );
@@ -316,8 +318,8 @@ namespace VTX::UI::Widget::Sequence
 			const bool addToSelection = ( cursorInFrontOfStartClick && cursorMoveForward )
 										|| ( !cursorInFrontOfStartClick && !cursorMoveForward );
 
-			const Model::Residue * fromResidue;
-			const Model::Residue * toResidue;
+			const App::Component::Chemistry::Residue * fromResidue;
+			const App::Component::Chemistry::Residue * toResidue;
 
 			if ( cursorMoveForward )
 			{
@@ -365,7 +367,7 @@ namespace VTX::UI::Widget::Sequence
 	{
 		const QPoint		   globalMousePos  = p_event->globalPos();
 		const QPoint		   currentMousePos = _scrollAreaContent->mapFromGlobal( globalMousePos );
-		Model::Residue * const residueHovered  = _getResidueAtPos( currentMousePos );
+		App::Component::Chemistry::Residue * const residueHovered  = _getResidueAtPos( currentMousePos );
 
 		if ( p_event->button() == Qt::MouseButton::LeftButton )
 		{
@@ -392,7 +394,7 @@ namespace VTX::UI::Widget::Sequence
 		}
 	}
 
-	void MoleculeSequenceWidget::_applySelection( const bool p_select, Model::Residue * p_residue )
+	void MoleculeSequenceWidget::_applySelection( const bool p_select, App::Component::Chemistry::Residue * p_residue )
 	{
 		_frameSelection.clear();
 		_frameSelection.emplace_back( p_residue );
@@ -463,15 +465,15 @@ namespace VTX::UI::Widget::Sequence
 		return res;
 	}
 
-	Model::Residue * const MoleculeSequenceWidget::_getPreviousResidue( const Model::Residue & p_residue,
+	App::Component::Chemistry::Residue * const MoleculeSequenceWidget::_getPreviousResidue( const App::Component::Chemistry::Residue & p_residue,
 																		const bool			   p_forceResult ) const
 	{
-		const Model::Chain * const chain			 = p_residue.getChainPtr();
+		const App::Component::Chemistry::Chain * const chain			 = p_residue.getChainPtr();
 		const bool				   isFirstOfItsChain = p_residue.getIndex() == chain->getIndexFirstResidue();
 
 		if ( isFirstOfItsChain )
 		{
-			const Model::Chain * const previousChain = _model->getPreviousChain( chain->getIndex() );
+			const App::Component::Chemistry::Chain * const previousChain = _model->getPreviousChain( chain->getIndex() );
 			if ( previousChain != nullptr )
 				return _model->getResidue( previousChain->getIndexLastResidue() );
 			else
@@ -482,14 +484,14 @@ namespace VTX::UI::Widget::Sequence
 			return _model->getPreviousResidue( p_residue.getIndex() );
 		}
 	}
-	Model::Residue * const MoleculeSequenceWidget::_getNextResidue( const Model::Residue & p_residue,
+	App::Component::Chemistry::Residue * const MoleculeSequenceWidget::_getNextResidue( const App::Component::Chemistry::Residue & p_residue,
 																	const bool			   p_forceResult ) const
 	{
-		const Model::Chain * const chain			= p_residue.getChainPtr();
+		const App::Component::Chemistry::Chain * const chain			= p_residue.getChainPtr();
 		const bool				   isLastOfItsChain = p_residue.getIndex() == ( chain->getIndexLastResidue() );
 		if ( isLastOfItsChain )
 		{
-			const Model::Chain * const nextChain = _model->getNextChain( chain->getIndex() );
+			const App::Component::Chemistry::Chain * const nextChain = _model->getNextChain( chain->getIndex() );
 			if ( nextChain != nullptr )
 				return _model->getResidue( nextChain->getIndexFirstResidue() );
 			else
@@ -500,26 +502,26 @@ namespace VTX::UI::Widget::Sequence
 			return _model->getNextResidue( p_residue.getIndex() );
 		}
 	}
-	QPoint MoleculeSequenceWidget::_getResiduePos( const Model::Residue & p_residue ) const
+	QPoint MoleculeSequenceWidget::_getResiduePos( const App::Component::Chemistry::Residue & p_residue ) const
 	{
 		const int						  chainIndex	 = p_residue.getChainPtr()->getIndex();
 		const ChainSequenceWidget * const sequenceWidget = _chainDisplayWidgets[ chainIndex ];
 		return sequenceWidget->getResiduePos( p_residue, _scrollAreaContent );
 	}
 
-	void MoleculeSequenceWidget::_getFromTo( const Model::Residue &				   p_from,
-											 const Model::Residue &				   p_to,
-											 std::vector<Model::Residue *> * const _container ) const
+	void MoleculeSequenceWidget::_getFromTo( const App::Component::Chemistry::Residue &				   p_from,
+											 const App::Component::Chemistry::Residue &				   p_to,
+											 std::vector<App::Component::Chemistry::Residue *> * const _container ) const
 	{
-		const Model::Residue & startResidue = p_from;
-		const Model::Residue & endResidue	= p_to;
+		const App::Component::Chemistry::Residue & startResidue = p_from;
+		const App::Component::Chemistry::Residue & endResidue	= p_to;
 
-		const Model::Chain * const startChain = startResidue.getChainPtr();
-		const Model::Chain * const endChain	  = endResidue.getChainPtr();
+		const App::Component::Chemistry::Chain * const startChain = startResidue.getChainPtr();
+		const App::Component::Chemistry::Chain * const endChain	  = endResidue.getChainPtr();
 
 		for ( uint iChain = startChain->getIndex(); iChain <= endChain->getIndex(); iChain++ )
 		{
-			const Model::Chain * const currentChain = _model->getChain( iChain );
+			const App::Component::Chemistry::Chain * const currentChain = _model->getChain( iChain );
 
 			if ( currentChain == nullptr )
 				continue;
@@ -531,7 +533,7 @@ namespace VTX::UI::Widget::Sequence
 
 			for ( uint iResidue = startResidueIndex; iResidue <= endResidueIndex; iResidue++ )
 			{
-				Model::Residue * const currentResidue = _model->getResidue( iResidue );
+				App::Component::Chemistry::Residue * const currentResidue = _model->getResidue( iResidue );
 
 				if ( currentResidue == nullptr )
 					continue;
@@ -540,9 +542,9 @@ namespace VTX::UI::Widget::Sequence
 			}
 		}
 	}
-	Model::Residue * const MoleculeSequenceWidget::_getResidueAtPos( const QPoint & p_pos ) const
+	App::Component::Chemistry::Residue * const MoleculeSequenceWidget::_getResidueAtPos( const QPoint & p_pos ) const
 	{
-		Model::Residue * res = nullptr;
+		App::Component::Chemistry::Residue * res = nullptr;
 
 		for ( auto it : _chainDisplayWidgets )
 		{
@@ -558,11 +560,11 @@ namespace VTX::UI::Widget::Sequence
 
 		return res;
 	}
-	Model::Residue * const MoleculeSequenceWidget::_getClosestResidue( const QPoint & p_pos,
+	App::Component::Chemistry::Residue * const MoleculeSequenceWidget::_getClosestResidue( const QPoint & p_pos,
 																	   const bool	  p_next,
 																	   const bool	  p_forceGetValue ) const
 	{
-		Model::Residue * res = _getResidueAtPos( p_pos );
+		App::Component::Chemistry::Residue * res = _getResidueAtPos( p_pos );
 
 		if ( res != nullptr )
 			return res;
@@ -593,26 +595,26 @@ namespace VTX::UI::Widget::Sequence
 		return res;
 	}
 
-	bool MoleculeSequenceWidget::_isSelected( const Model::Residue * const residue ) const
+	bool MoleculeSequenceWidget::_isSelected( const App::Component::Chemistry::Residue * const residue ) const
 	{
 		return VTX::Selection::SelectionManager::get().getSelectionModel().isResidueSelected( *residue );
 	}
-	void MoleculeSequenceWidget::_select( std::vector<Model::Residue *> & p_residues ) const
+	void MoleculeSequenceWidget::_select( std::vector<App::Component::Chemistry::Residue *> & p_residues ) const
 	{
 		VTX_ACTION( new App::Action::Selection::SelectResidue(
 			VTX::Selection::SelectionManager::get().getSelectionModel(), p_residues, true ) );
 	}
-	void MoleculeSequenceWidget::_unselect( std::vector<Model::Residue *> & p_residues, const bool p_checkData ) const
+	void MoleculeSequenceWidget::_unselect( std::vector<App::Component::Chemistry::Residue *> & p_residues, const bool p_checkData ) const
 	{
 		VTX_ACTION( new App::Action::Selection::UnselectResidue(
 			VTX::Selection::SelectionManager::get().getSelectionModel(), p_residues, p_checkData ) );
 	}
-	void MoleculeSequenceWidget::_toggleSelect( std::vector<Model::Residue *> & p_residues ) const
+	void MoleculeSequenceWidget::_toggleSelect( std::vector<App::Component::Chemistry::Residue *> & p_residues ) const
 	{
 		Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
-		for ( std::vector<Model::Residue *>::const_iterator it = p_residues.cbegin(); it != p_residues.cend(); it++ )
+		for ( std::vector<App::Component::Chemistry::Residue *>::const_iterator it = p_residues.cbegin(); it != p_residues.cend(); it++ )
 		{
-			Model::Residue * const residue = *it;
+			App::Component::Chemistry::Residue * const residue = *it;
 
 			if ( selection.isResidueSelected( *residue ) )
 			{

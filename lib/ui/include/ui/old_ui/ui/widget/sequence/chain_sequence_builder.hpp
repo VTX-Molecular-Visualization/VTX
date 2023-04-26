@@ -3,7 +3,7 @@
 
 #include "dataset/sequence_dataset.hpp"
 #include <QString>
-#include <app/model/chain.hpp>
+#include <app/component/chemistry/chain.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Sequence
@@ -32,7 +32,7 @@ namespace VTX::UI::Widget::Sequence
 		};
 
 	  public:
-		ChainSequenceBuilder( const Model::Chain & p_chain );
+		ChainSequenceBuilder( const App::Component::Chemistry::Chain & p_chain );
 		~ChainSequenceBuilder();
 
 		void generate();
@@ -48,14 +48,14 @@ namespace VTX::UI::Widget::Sequence
 		void _emplaceUnknownResidueDataSet( const BuildingDatasetMetadata & p_data );
 		void _emplaceMissingResidueDataSet( const BuildingDatasetMetadata & p_data );
 
-		Model::Residue * const _getResidue( const uint p_localResidueIndex ) const;
+		App::Component::Chemistry::Residue * const _getResidue( const uint p_localResidueIndex ) const;
 
 		uint										   _currentCharPos	   = 0;
 		bool										   _lastDataWasUnknown = false;
 		std::vector<Dataset::SequenceDisplayDataset *> _dataset = std::vector<Dataset::SequenceDisplayDataset *>();
 
 	  private:
-		const Model::Chain & _chain;
+		const App::Component::Chemistry::Chain & _chain;
 	};
 
 } // namespace VTX::UI::Widget::Sequence

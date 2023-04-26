@@ -1,7 +1,7 @@
 #ifndef __VTX_UTIL_CHEMFILES__
 #define __VTX_UTIL_CHEMFILES__
 
-#include "app/model/bond.hpp"
+#include "app/component/chemistry/bond.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #pragma warning( push, 0 )
@@ -13,7 +13,7 @@
 
 namespace VTX::Util::Chemfiles
 {
-	chemfiles::Bond::BondOrder convertBondOrder( const Model::Bond::ORDER p_bondOrder );
+	chemfiles::Bond::BondOrder convertBondOrder( const App::Component::Chemistry::Bond::ORDER p_bondOrder );
 
 	void recomputeBonds( chemfiles::Frame & p_frame, const VTX::Object3D::Helper::AABB & p_aabb );
 	void recomputeBondOrders( chemfiles::Frame & p_frame );

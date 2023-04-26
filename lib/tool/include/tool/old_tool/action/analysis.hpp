@@ -6,7 +6,7 @@
 #include "tool/old_tool/util/analysis.hpp"
 #include <app/action.hpp>
 #include <app/core/action/base_action.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/model/selection.hpp>
 #include <cmath>
 #include <string>
@@ -28,20 +28,20 @@ namespace VTX::Action::Analysis
 		union RMSDTarget
 		{
 			RMSDTarget() {};
-			RMSDTarget( const Model::Molecule * p_target, std::vector<const Model::Molecule *> p_others ) :
+			RMSDTarget( const App::Component::Chemistry::Molecule * p_target, std::vector<const App::Component::Chemistry::Molecule *> p_others ) :
 				moleculeData { p_target, p_others }
 			{
 			}
 			RMSDTarget( const Model::Selection * const p_selection ) : selectionData( p_selection ) {}
 			~RMSDTarget() {};
 
-			const std::pair<const Model::Molecule *, std::vector<const Model::Molecule *>> moleculeData;
+			const std::pair<const App::Component::Chemistry::Molecule *, std::vector<const App::Component::Chemistry::Molecule *>> moleculeData;
 			const Model::Selection * const												   selectionData;
 		};
 
 	  public:
-		explicit ComputeRMSD( const Model::Molecule * const			 p_target,
-							  std::vector<const Model::Molecule *> & p_others,
+		explicit ComputeRMSD( const App::Component::Chemistry::Molecule * const			 p_target,
+							  std::vector<const App::Component::Chemistry::Molecule *> & p_others,
 							  const bool							 p_considerTransform = true ) :
 			_mode( MODE::MOLECULE ),
 			_target( p_target, p_others ), _considerTransform( p_considerTransform )
@@ -58,7 +58,7 @@ namespace VTX::Action::Analysis
 			{
 			case MODE::MOLECULE:
 			{
-				for ( const Model::Molecule * const molecule : _target.moleculeData.second )
+				for ( const App::Component::Chemistry::Molecule * const molecule : _target.moleculeData.second )
 				{
 					VTX::Analysis::RMSD::callRMSDComputation(
 						_target.moleculeData.first, molecule, _considerTransform );
@@ -87,8 +87,8 @@ namespace VTX::Action::Analysis
 	{
 	  public:
 		explicit ComputeStructuralAlignment(
-			const Model::Molecule * const										  p_staticMolecule,
-			const std::vector<Model::Molecule *> &								  p_mobileMolecules,
+			const App::Component::Chemistry::Molecule * const										  p_staticMolecule,
+			const std::vector<App::Component::Chemistry::Molecule *> &								  p_mobileMolecules,
 			const VTX::Analysis::StructuralAlignment::AlignmentParameters * const p_parameters ) :
 			_staticMolecule( p_staticMolecule ),
 			_mobileMolecules( p_mobileMolecules ), _parameters( p_parameters )
@@ -122,8 +122,8 @@ namespace VTX::Action::Analysis
 		}
 
 	  private:
-		const Model::Molecule *											_staticMolecule;
-		std::vector<Model::Molecule *>									_mobileMolecules;
+		const App::Component::Chemistry::Molecule *											_staticMolecule;
+		std::vector<App::Component::Chemistry::Molecule *>									_mobileMolecules;
 		const VTX::Analysis::StructuralAlignment::AlignmentParameters * _parameters;
 	};
 

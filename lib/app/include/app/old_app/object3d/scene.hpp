@@ -1,6 +1,7 @@
 #ifndef __VTX_SCENE__
 #define __VTX_SCENE__
 
+#include "app/component/chemistry/_fwd.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/old_app/generic/base_scene_item.hpp"
@@ -13,7 +14,7 @@
 namespace VTX::Model
 {
 	class MeshTriangle;
-	class Molecule;
+	// class Molecule;
 	class Path;
 	class Label;
 } // namespace VTX::Model
@@ -47,7 +48,7 @@ namespace VTX::Object3D
 		};
 
 	  public:
-		using MoleculePtr			= Model::Molecule *;
+		using MoleculePtr			= App::Component::Chemistry::Molecule *;
 		using PathPtr				= Model::Path *;
 		using MeshTrianglePtr		= Model::MeshTriangle *;
 		using LabelPtr				= Model::Label *;
@@ -90,7 +91,7 @@ namespace VTX::Object3D
 		int									 getItemPosition( const Generic::BaseSceneItem & p_item ) const;
 		void changeModelPosition( const Generic::BaseSceneItem & p_item, const int p_position );
 		void changeModelsPosition( const std::vector<const Generic::BaseSceneItem *> & p_items, const int p_position );
-		void sortMoleculesBySceneIndex( std::vector<Model::Molecule *> & p_molecules ) const;
+		void sortMoleculesBySceneIndex( std::vector<App::Component::Chemistry::Molecule *> & p_molecules ) const;
 
 		bool isEmpty() const;
 

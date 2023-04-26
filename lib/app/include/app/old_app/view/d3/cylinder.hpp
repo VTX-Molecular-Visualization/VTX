@@ -21,7 +21,7 @@ namespace VTX
 				void						  _init() override;
 
 			  private:
-				explicit Cylinder( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
+				explicit Cylinder( App::Component::Chemistry::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 			};
 		} // namespace D3
 	}	  // namespace View

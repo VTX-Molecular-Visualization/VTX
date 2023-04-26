@@ -3,7 +3,7 @@
 #include <app/action/molecule.hpp>
 #include <app/mvc.hpp>
 #include <app/event/global.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/model/selection.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
@@ -76,7 +76,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 	void ObjectDisplayBlock::_refreshButtons()
 	{
-		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		// No molecules, buttons disabled
@@ -94,7 +94,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 			bool displayShowIon		 = true;
 			bool displayShowHydrogen = true;
 
-			for ( const Model::Molecule * const molecule : molecules )
+			for ( const App::Component::Chemistry::Molecule * const molecule : molecules )
 			{
 				displayShowWater	= displayShowWater && !molecule->showWater();
 				displayShowSolvent	= displayShowSolvent && !molecule->showSolvent();
@@ -109,18 +109,18 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		}
 	}
 
-	void ObjectDisplayBlock::_fillContainerWithTarget( std::unordered_set<Model::Molecule *> & p_container ) const
+	void ObjectDisplayBlock::_fillContainerWithTarget( std::unordered_set<App::Component::Chemistry::Molecule *> & p_container ) const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
 		// No selection => check all molecules in scene
 		if ( selection.hasMolecule() )
 		{
-			selection.getItemsOfType<Model::Molecule>( VTX::ID::Model::MODEL_MOLECULE, p_container );
+			selection.getItemsOfType<App::Component::Chemistry::Molecule>( VTX::ID::Model::MODEL_MOLECULE, p_container );
 		}
 		else
 		{
-			for ( const std::pair<Model::Molecule *, float> & molData : VTXApp::get().getScene().getMolecules() )
+			for ( const std::pair<App::Component::Chemistry::Molecule *, float> & molData : VTXApp::get().getScene().getMolecules() )
 			{
 				p_container.emplace( molData.first );
 			}
@@ -158,48 +158,48 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 	void ObjectDisplayBlock::_toggleWaterVisibilityAction() const
 	{
-		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		bool showWater = true;
 
-		for ( const Model::Molecule * const molecule : molecules )
+		for ( const App::Component::Chemistry::Molecule * const molecule : molecules )
 			showWater = showWater && !molecule->showWater();
 
 		VTX_ACTION( new App::Action::Molecule::ChangeShowWater( molecules, showWater ) );
 	}
 	void ObjectDisplayBlock::_toggleSolventVisibilityAction() const
 	{
-		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		bool showSolvent = true;
 
-		for ( const Model::Molecule * const molecule : molecules )
+		for ( const App::Component::Chemistry::Molecule * const molecule : molecules )
 			showSolvent = showSolvent && !molecule->showSolvent();
 
 		VTX_ACTION( new App::Action::Molecule::ChangeShowSolvent( molecules, showSolvent ) );
 	}
 	void ObjectDisplayBlock::_toggleHydrogenVisibilityAction() const
 	{
-		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		bool showHydrogen = true;
 
-		for ( const Model::Molecule * const molecule : molecules )
+		for ( const App::Component::Chemistry::Molecule * const molecule : molecules )
 			showHydrogen = showHydrogen && !molecule->showHydrogen();
 
 		VTX_ACTION( new App::Action::Molecule::ChangeShowHydrogen( molecules, showHydrogen ) );
 	}
 	void ObjectDisplayBlock::_toggleIonVisibilityAction() const
 	{
-		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		bool showIon = true;
 
-		for ( const Model::Molecule * const molecule : molecules )
+		for ( const App::Component::Chemistry::Molecule * const molecule : molecules )
 			showIon = showIon && !molecule->showIon();
 
 		VTX_ACTION( new App::Action::Molecule::ChangeShowIon( molecules, showIon ) );

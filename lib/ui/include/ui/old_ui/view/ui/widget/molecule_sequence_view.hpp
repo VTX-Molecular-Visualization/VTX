@@ -3,7 +3,7 @@
 
 #include "base_widget_view.hpp"
 #include "ui/old_ui/ui/widget/sequence/molecule_sequence_widget.hpp"
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 
 namespace VTX
 {
@@ -14,12 +14,12 @@ namespace VTX
 			namespace Widget
 			{
 				class MoleculeSequenceView :
-					public BaseWidgetView<Model::Molecule, VTX::UI::Widget::Sequence::MoleculeSequenceWidget>
+					public BaseWidgetView<App::Component::Chemistry::Molecule, VTX::UI::Widget::Sequence::MoleculeSequenceWidget>
 				{
 					VTX_VIEW
 
 				  private:
-					MoleculeSequenceView( Model::Molecule * const p_molecule, QWidget * p_parent ) :
+					MoleculeSequenceView( App::Component::Chemistry::Molecule * const p_molecule, QWidget * p_parent ) :
 						BaseWidgetView( p_molecule, "MoleculeSequence", p_parent ) {};
 				};
 

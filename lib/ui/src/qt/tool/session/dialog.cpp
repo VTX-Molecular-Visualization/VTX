@@ -68,7 +68,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 		}
 	}
 
-	void Dialog::openLoadTrajectoryDialog( Model::Molecule & p_target )
+	void Dialog::openLoadTrajectoryDialog( App::Component::Chemistry::Molecule & p_target )
 	{
 		// QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
 		// QString			defaultPath	  = Setting::getLastImportedMoleculeFolder();

@@ -1,9 +1,9 @@
 #include "ui/qt/util.hpp"
 #include <QAction>
-#include <app/model/atom.hpp>
-#include <app/model/bond.hpp>
-#include <app/model/molecule.hpp>
-#include <app/model/residue.hpp>
+#include <app/component/chemistry/atom.hpp>
+#include <app/component/chemistry/bond.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/residue.hpp>
 
 namespace VTX::UI::QT::Util
 {
@@ -37,12 +37,12 @@ namespace VTX::UI::QT::Util
 		}
 	}
 
-	void appendBondInfo( const Model::Bond & p_bond, QString & p_str )
+	void appendBondInfo( const App::Component::Chemistry::Bond & p_bond, QString & p_str )
 	{
-		const Model::Molecule * const moleculePtr = p_bond.getMoleculePtr();
+		const App::Component::Chemistry::Molecule * const moleculePtr = p_bond.getMoleculePtr();
 
-		const Model::Atom * const firstAtom	 = moleculePtr->getAtom( p_bond.getIndexFirstAtom() );
-		const Model::Atom * const secondAtom = moleculePtr->getAtom( p_bond.getIndexSecondAtom() );
+		const App::Component::Chemistry::Atom * const firstAtom	 = moleculePtr->getAtom( p_bond.getIndexFirstAtom() );
+		const App::Component::Chemistry::Atom * const secondAtom = moleculePtr->getAtom( p_bond.getIndexSecondAtom() );
 
 		if ( firstAtom == nullptr || secondAtom == nullptr )
 			return;
@@ -52,8 +52,8 @@ namespace VTX::UI::QT::Util
 		const QString secondAtomStr
 			= QString::fromStdString( secondAtom->getName() + std::to_string( secondAtom->getIndex() ) );
 
-		const Model::Residue * const firstResidue  = firstAtom->getResiduePtr();
-		const Model::Residue * const secondResidue = secondAtom->getResiduePtr();
+		const App::Component::Chemistry::Residue * const firstResidue  = firstAtom->getResiduePtr();
+		const App::Component::Chemistry::Residue * const secondResidue = secondAtom->getResiduePtr();
 
 		const QString firstResidueStr = QString::fromStdString(
 			firstResidue->getSymbolStr() + " " + std::to_string( firstResidue->getIndexInOriginalChain() ) );
@@ -61,29 +61,29 @@ namespace VTX::UI::QT::Util
 			secondResidue->getSymbolStr() + " " + std::to_string( secondResidue->getIndexInOriginalChain() ) );
 
 		QString					 linkCountStr;
-		const Model::Bond::ORDER bondOrder = p_bond.getOrder();
+		const App::Component::Chemistry::Bond::ORDER bondOrder = p_bond.getOrder();
 
-		if ( bondOrder == Model::Bond::ORDER::SINGLE )
+		if ( bondOrder == App::Component::Chemistry::Bond::ORDER::SINGLE )
 		{
 			linkCountStr = '1';
 		}
-		else if ( bondOrder == Model::Bond::ORDER::DOUBLE )
+		else if ( bondOrder == App::Component::Chemistry::Bond::ORDER::DOUBLE )
 		{
 			linkCountStr = '2';
 		}
-		else if ( bondOrder == Model::Bond::ORDER::TRIPLE )
+		else if ( bondOrder == App::Component::Chemistry::Bond::ORDER::TRIPLE )
 		{
 			linkCountStr = '3';
 		}
-		else if ( bondOrder == Model::Bond::ORDER::QUADRUPLE )
+		else if ( bondOrder == App::Component::Chemistry::Bond::ORDER::QUADRUPLE )
 		{
 			linkCountStr = '4';
 		}
-		else if ( bondOrder == Model::Bond::ORDER::QUINTUPLET )
+		else if ( bondOrder == App::Component::Chemistry::Bond::ORDER::QUINTUPLET )
 		{
 			linkCountStr = '5';
 		}
-		else if ( bondOrder == Model::Bond::ORDER::AROMATIC )
+		else if ( bondOrder == App::Component::Chemistry::Bond::ORDER::AROMATIC )
 		{
 			linkCountStr = 'A';
 		}

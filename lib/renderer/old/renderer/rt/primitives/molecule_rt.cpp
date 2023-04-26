@@ -14,7 +14,7 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		MoleculeRT::MoleculeRT( const Model::Molecule * p_molecule )
+		MoleculeRT::MoleculeRT( const App::Component::Chemistry::Molecule * p_molecule )
 		{
 			const Generic::REPRESENTATION rep = //
 												// Generic::REPRESENTATION::SAS;
@@ -38,7 +38,7 @@ namespace VTX
 				primitives.reserve( nbAtoms );
 			}
 
-			// std::map<Model::Chain *, Vec3f> mapColors;
+			// std::map<App::Component::Chemistry::Chain *, Vec3f> mapColors;
 			// const std::vector<Vec3f>		predefColors = {
 			//	   Vec3f( 0.145f, 0.886f, 0.906f ), // bleu clair
 			//	   Vec3f( 1.f, 0.247f, 0.4f ),		// rouge clair
@@ -59,7 +59,7 @@ namespace VTX
 			//};
 			// =====================================
 
-			std::map<Model::Chain *, BaseMaterial *> mapMtls;
+			std::map<App::Component::Chemistry::Chain *, BaseMaterial *> mapMtls;
 
 			float roughness = 0.3f;
 			float shininess = 32.f;
@@ -82,7 +82,7 @@ namespace VTX
 			{
 				if ( p_molecule->isAtomVisible( i ) )
 				{
-					Model::Chain * chainPtr = p_molecule->getAtom( i )->getChainPtr();
+					App::Component::Chemistry::Chain * chainPtr = p_molecule->getAtom( i )->getChainPtr();
 
 					if ( mapMtls.find( chainPtr ) == mapMtls.end() )
 					{
@@ -105,7 +105,7 @@ namespace VTX
 			{
 				for ( uint i = 0; i < nbBonds; ++i )
 				{
-					const Model::Bond & bond = *p_molecule->getBond( i );
+					const App::Component::Chemistry::Bond & bond = *p_molecule->getBond( i );
 					const Vec3f &		a1	 = tAtomPositions[ bond.getIndexFirstAtom() ];
 					const Vec3f &		a2	 = tAtomPositions[ bond.getIndexSecondAtom() ];
 
@@ -122,7 +122,7 @@ namespace VTX
 			// for ( uint i = 0; i < p_molecule->getResidueCount(); ++i )
 			//{
 			//	// TODO: remove material duplication + only allow chain colors
-			//	const Model::Residue & r = p_molecule->getResidue( i );
+			//	const App::Component::Chemistry::Residue & r = p_molecule->getResidue( i );
 			//	_materials.emplace_back( new DiffuseMaterial( r.getChainPtr()->getColor() ) );
 
 			//	const uint idFirstAtomRes = r.getIdFirstAtom();

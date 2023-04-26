@@ -16,14 +16,14 @@
 #include <QWidget>
 #include <app/old_app/color/rgba.hpp>
 #include <app/old_app/generic/base_transformable.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/model/representation/instantiated_representation.hpp>
 #include <app/model/representation/representation.hpp>
 #include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleMoleculeWidget : public MultipleModelInspectorWidget<Model::Molecule>
+	class MultipleMoleculeWidget : public MultipleModelInspectorWidget<App::Component::Chemistry::Molecule>
 	{
 		VTX_WIDGET
 

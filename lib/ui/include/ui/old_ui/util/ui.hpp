@@ -12,15 +12,16 @@
 #include <QStyle>
 #include <QVariant>
 #include <QWidget>
+#include <app/component/chemistry/_fwd.hpp>
 #include <app/old_app/color/rgba.hpp>
 #include <set>
 #include <string>
 #include <vector>
 
-namespace VTX::Model
-{
-	class Bond;
-}
+// namespace VTX::Model
+//{
+//	class Bond;
+// }
 
 namespace VTX::Util::UI
 {
@@ -105,7 +106,7 @@ namespace VTX::Util::UI
 		return QBitmap::fromImage( QImage( p_filepath ).createAlphaMask() );
 	}
 
-	void appendBondInfo( const Model::Bond & p_bond, QString & p_str );
+	void appendBondInfo( const App::Component::Chemistry::Bond & p_bond, QString & p_str );
 
 } // namespace VTX::Util::UI
 

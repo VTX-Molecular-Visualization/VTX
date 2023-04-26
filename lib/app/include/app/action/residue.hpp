@@ -4,7 +4,7 @@
 #include "app/action.hpp"
 #include "app/action/visible.hpp"
 #include "app/model/representation/instantiated_representation.hpp"
-#include "app/model/residue.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include <unordered_set>
 
@@ -13,12 +13,12 @@ namespace VTX::App::Action::Residue
 	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeColor( Model::Residue & p_residue, const Color::Rgba & p_color ) :
+		explicit ChangeColor( App::Component::Chemistry::Residue & p_residue, const Color::Rgba & p_color ) :
 			_color( p_color ), _residues { &p_residue }
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
-		explicit ChangeColor( const std::unordered_set<Model::Residue *> & p_residues, const Color::Rgba & p_color ) :
+		explicit ChangeColor( const std::unordered_set<App::Component::Chemistry::Residue *> & p_residues, const Color::Rgba & p_color ) :
 			_color( p_color ), _residues( p_residues )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
@@ -27,14 +27,14 @@ namespace VTX::App::Action::Residue
 		virtual void execute() override;
 
 	  private:
-		const std::unordered_set<Model::Residue *> _residues;
+		const std::unordered_set<App::Component::Chemistry::Residue *> _residues;
 		const Color::Rgba						   _color;
 	};
 
 	class ChangeVisibility : public Visible::ChangeVisibility
 	{
 	  public:
-		explicit ChangeVisibility( Model::Residue & p_residue, const VISIBILITY_MODE p_mode ) :
+		explicit ChangeVisibility( App::Component::Chemistry::Residue & p_residue, const VISIBILITY_MODE p_mode ) :
 			Visible::ChangeVisibility( p_residue, p_mode )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
@@ -46,12 +46,12 @@ namespace VTX::App::Action::Residue
 	class ChangeRepresentationPreset : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeRepresentationPreset( Model::Residue & p_residue, const int p_indexPreset ) :
+		explicit ChangeRepresentationPreset( App::Component::Chemistry::Residue & p_residue, const int p_indexPreset ) :
 			_indexPreset( p_indexPreset ), _residues { &p_residue }
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
-		explicit ChangeRepresentationPreset( const std::unordered_set<Model::Residue *> & p_residues,
+		explicit ChangeRepresentationPreset( const std::unordered_set<App::Component::Chemistry::Residue *> & p_residues,
 											 const int									  p_indexPreset ) :
 			_indexPreset( p_indexPreset ),
 			_residues( p_residues )
@@ -62,18 +62,18 @@ namespace VTX::App::Action::Residue
 		virtual void execute() override;
 
 	  private:
-		const std::unordered_set<Model::Residue *> _residues;
+		const std::unordered_set<App::Component::Chemistry::Residue *> _residues;
 		const int								   _indexPreset;
 	};
 
 	class RemoveRepresentation : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit RemoveRepresentation( Model::Residue & p_residue ) : _residues { &p_residue }
+		explicit RemoveRepresentation( App::Component::Chemistry::Residue & p_residue ) : _residues { &p_residue }
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
-		explicit RemoveRepresentation( const std::unordered_set<Model::Residue *> & p_residues ) :
+		explicit RemoveRepresentation( const std::unordered_set<App::Component::Chemistry::Residue *> & p_residues ) :
 			_residues( p_residues )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
@@ -82,13 +82,13 @@ namespace VTX::App::Action::Residue
 		virtual void execute() override;
 
 	  private:
-		const std::unordered_set<Model::Residue *> _residues;
+		const std::unordered_set<App::Component::Chemistry::Residue *> _residues;
 	};
 
 	class Delete : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit Delete( Model::Residue & p_residue ) : _residue( p_residue )
+		explicit Delete( App::Component::Chemistry::Residue & p_residue ) : _residue( p_residue )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
@@ -96,39 +96,39 @@ namespace VTX::App::Action::Residue
 		virtual void execute() override;
 
 	  private:
-		Model::Residue & _residue;
+		App::Component::Chemistry::Residue & _residue;
 	};
 
 	class Copy : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit Copy( const Model::Residue & p_target ) : _target( p_target )
+		explicit Copy( const App::Component::Chemistry::Residue & p_target ) : _target( p_target )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override;
 
 	  private:
-		const Model::Residue & _target;
+		const App::Component::Chemistry::Residue & _target;
 	};
 
 	class Extract : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit Extract( const Model::Residue & p_target ) : _target( p_target )
+		explicit Extract( const App::Component::Chemistry::Residue & p_target ) : _target( p_target )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override;
 
 	  private:
-		const Model::Residue & _target;
+		const App::Component::Chemistry::Residue & _target;
 	};
 
 	class ApplyRepresentation : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ApplyRepresentation( const std::unordered_set<Model::Residue *> &				p_residues,
+		explicit ApplyRepresentation( const std::unordered_set<App::Component::Chemistry::Residue *> &				p_residues,
 									  const Model::Representation::InstantiatedRepresentation & p_source,
 									  const Model::Representation::MEMBER_FLAG &				p_flag ) :
 			_representation( p_source ),
@@ -140,7 +140,7 @@ namespace VTX::App::Action::Residue
 		virtual void execute() override;
 
 	  private:
-		const std::unordered_set<Model::Residue *>				  _residues;
+		const std::unordered_set<App::Component::Chemistry::Residue *>				  _residues;
 		const Model::Representation::InstantiatedRepresentation & _representation;
 		const Model::Representation::MEMBER_FLAG				  _flag;
 	};

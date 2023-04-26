@@ -16,7 +16,7 @@
 #include <app/action/molecule.hpp>
 #include <app/action/residue.hpp>
 #include <app/action/transformable.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 
 namespace VTX::UI::Widget::Inspector
@@ -121,7 +121,7 @@ namespace VTX::UI::Widget::Inspector
 
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<Model::Residue *> & targets = getTargets();
+		const std::unordered_set<App::Component::Chemistry::Residue *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
@@ -136,7 +136,7 @@ namespace VTX::UI::Widget::Inspector
 			QString atomCountText				 = QString();
 			QString fullNameText				 = QString();
 
-			for ( const Model::Residue * residue : targets )
+			for ( const App::Component::Chemistry::Residue * residue : targets )
 			{
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
@@ -273,9 +273,9 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_changeMoleculesColor( const Color::Rgba & p_color ) const
 	{
-		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 
-		for ( const Model::Residue * const item : getTargets() )
+		for ( const App::Component::Chemistry::Residue * const item : getTargets() )
 		{
 			molecules.emplace( item->getMoleculePtr() );
 		}
@@ -287,17 +287,17 @@ namespace VTX::UI::Widget::Inspector
 		VTX_ACTION( new App::Action::Residue::RemoveRepresentation( getTargets() ) );
 	}
 
-	void MultipleResidueWidget::_appendBondInfo( const Model::Residue & p_residue )
+	void MultipleResidueWidget::_appendBondInfo( const App::Component::Chemistry::Residue & p_residue )
 	{
 		if ( _bondInfoCount >= Style::INSPECTOR_INFO_BOND_COUNT_DISPLAYED )
 			return;
 
 		QString						  bondInfoStr = _bondsLabel->text();
-		const Model::Molecule * const moleculePtr = p_residue.getMoleculePtr();
+		const App::Component::Chemistry::Molecule * const moleculePtr = p_residue.getMoleculePtr();
 		for ( uint i = p_residue.getIndexFirstBond(); i < p_residue.getIndexFirstBond() + p_residue.getBondCount();
 			  i++ )
 		{
-			const Model::Bond * const bond = moleculePtr->getBond( i );
+			const App::Component::Chemistry::Bond * const bond = moleculePtr->getBond( i );
 
 			if ( bond == nullptr )
 				continue;

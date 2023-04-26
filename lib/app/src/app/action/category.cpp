@@ -1,8 +1,8 @@
 #include "app/action/category.hpp"
-#include "app/model/category_enum.hpp"
-// #include "app/model/chain.hpp"
-// #include "app/model/generated_molecule.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/enum_category.hpp"
+// #include "app/component/chemistry/chain.hpp"
+// #include "app/component/chemistry/generated_molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 // #include "app/model/representation/representation_library.hpp"
 // #include "app/model/selection.hpp"
 // #include "app/mvc.hpp"
@@ -17,15 +17,15 @@ namespace VTX::App::Action::Category
 {
 	// void ChangeColor::execute()
 	//{
-	//	std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+	//	std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 
-	//	for ( Model::Category * const chain : _categories )
+	//	for ( App::Component::Chemistry::Category * const chain : _categories )
 	//	{
 	//		chain->setColor( _color );
 	//		molecules.emplace( chain->getMolecule() );
 	//	}
 
-	//	for ( Model::Molecule * const molecule : molecules )
+	//	for ( App::Component::Chemistry::Molecule * const molecule : molecules )
 	//	{
 	//		molecule->refreshColors();
 	//	}
@@ -37,21 +37,21 @@ namespace VTX::App::Action::Category
 	{
 		if ( _mode == VISIBILITY_MODE::SOLO )
 		{
-			std::map<Model::Molecule *, std::vector<CATEGORY_ENUM>> categoriesPerMolecules
-				= std::map<Model::Molecule *, std::vector<CATEGORY_ENUM>>();
+			std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::CATEGORY_ENUM>> categoriesPerMolecules
+				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::CATEGORY_ENUM>>();
 
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				Model::Category * const category = static_cast<Model::Category *>( visible );
+				App::Component::Chemistry::Category * const category = static_cast<App::Component::Chemistry::Category *>( visible );
 				categoriesPerMolecules[ category->getMoleculePtr() ].emplace_back( category->getCategoryEnum() );
 			}
 
 			for ( const Object3D::Scene::PairMoleculePtrFloat & sceneMolecule :
 				  VTXApp::get().getScene().getMolecules() )
 			{
-				Model::Molecule * const molecule = sceneMolecule.first;
+				App::Component::Chemistry::Molecule * const molecule = sceneMolecule.first;
 
-				std::map<Model::Molecule *, std::vector<CATEGORY_ENUM>>::iterator it
+				std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::CATEGORY_ENUM>>::iterator it
 					= categoriesPerMolecules.find( molecule );
 
 				if ( it != categoriesPerMolecules.end() )
@@ -69,19 +69,19 @@ namespace VTX::App::Action::Category
 		}
 		else
 		{
-			std::map<Model::Molecule *, std::vector<Model::Category *>> categoriesPerMolecules
-				= std::map<Model::Molecule *, std::vector<Model::Category *>>();
+			std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Category *>> categoriesPerMolecules
+				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Category *>>();
 
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				Model::Category * const category = static_cast<Model::Category *>( visible );
+				App::Component::Chemistry::Category * const category = static_cast<App::Component::Chemistry::Category *>( visible );
 				categoriesPerMolecules[ category->getMoleculePtr() ].emplace_back( category );
 			}
 
-			for ( const std::pair<Model::Molecule * const, std::vector<Model::Category *>> & pair :
+			for ( const std::pair<App::Component::Chemistry::Molecule * const, std::vector<App::Component::Chemistry::Category *>> & pair :
 				  categoriesPerMolecules )
 			{
-				for ( Model::Category * const category : pair.second )
+				for ( App::Component::Chemistry::Category * const category : pair.second )
 					Util::Molecule::show( *category, _getVisibilityBool( *category ), true, false, false );
 
 				pair.first->notifyVisibilityChange();
@@ -110,15 +110,15 @@ namespace VTX::App::Action::Category
 
 	// void RemoveChildrenRepresentations::execute()
 	//{
-	//	std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+	//	std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 
-	//	for ( const Model::Category * const chain : _categories )
+	//	for ( const App::Component::Chemistry::Category * const chain : _categories )
 	//	{
 	//		chain->removeChildrenRepresentations();
 	//		molecules.emplace( chain->getMolecule() );
 	//	}
 
-	//	for ( Model::Molecule * const molecule : molecules )
+	//	for ( App::Component::Chemistry::Molecule * const molecule : molecules )
 	//	{
 	//		molecule->computeAllRepresentationData();
 	//	}
@@ -130,7 +130,7 @@ namespace VTX::App::Action::Category
 	//{
 	//	VTX::Selection::SelectionManager::get().getSelectionModel().unselectChain( _category );
 
-	//	Model::Molecule * const molecule = _category.getMoleculePtr();
+	//	App::Component::Chemistry::Molecule * const molecule = _category.getMoleculePtr();
 	//	molecule->removeChain( _category.getIndex() );
 
 	//	if ( molecule->isEmpty() )
@@ -150,8 +150,8 @@ namespace VTX::App::Action::Category
 
 	// void Copy::execute()
 	//{
-	//	Model::GeneratedMolecule * generatedMolecule
-	//		= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
+	//	App::Component::Chemistry::GeneratedMolecule * generatedMolecule
+	//		= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
 
 	//	generatedMolecule->copyFromChain( _target );
 	//	generatedMolecule->applyTransform( _target.getMoleculePtr()->getTransform() );
@@ -163,8 +163,8 @@ namespace VTX::App::Action::Category
 	//{
 	//	VTX::Selection::SelectionManager::get().getSelectionModel().clear();
 
-	//	Model::GeneratedMolecule * const generatedMolecule
-	//		= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
+	//	App::Component::Chemistry::GeneratedMolecule * const generatedMolecule
+	//		= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
 
 	//	generatedMolecule->extractChain( _target );
 	//	VTXApp::get().getScene().addMolecule( generatedMolecule );

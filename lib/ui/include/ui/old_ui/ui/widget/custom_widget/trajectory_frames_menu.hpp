@@ -6,6 +6,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QString>
+#include <app/component/chemistry/_fwd.hpp>
 #include <string>
 
 namespace VTX
@@ -13,7 +14,7 @@ namespace VTX
 	namespace Model
 	{
 		class Selection;
-		class Molecule;
+		// class Molecule;
 	} // namespace Model
 
 	namespace UI::Widget::CustomWidget
@@ -37,7 +38,7 @@ namespace VTX
 			void setFrameDisplayString( const std::string & p_str );
 			void setDisplayAllOptionName( const std::string & p_name );
 
-			void updateFrames( const Model::Molecule & p_molecule );
+			void updateFrames( const App::Component::Chemistry::Molecule & p_molecule );
 			void updateFrames( const Model::Selection & p_selection );
 
 			void setDisplayAllFramesOption( const bool p_displayAllFramesOption );

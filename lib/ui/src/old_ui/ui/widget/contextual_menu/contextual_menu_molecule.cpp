@@ -57,7 +57,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuMolecule::localize() {}
 
-	void ContextualMenuMolecule::setTarget( Model::Molecule * const p_target )
+	void ContextualMenuMolecule::setTarget( App::Component::Chemistry::Molecule * const p_target )
 	{
 		ContextualMenuTemplate::setTarget( p_target );
 		setTitle( QString::fromStdString( p_target->getPdbIdCode() ) );

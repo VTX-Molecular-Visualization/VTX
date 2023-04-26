@@ -5,7 +5,7 @@
 #include "app/event/global.hpp"
 #include "app/model/label.hpp"
 #include "app/model/mesh_triangle.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/model/path.hpp"
 #include "app/old_app/math/transform.hpp"
 #include "app/old_app/object3d/camera_manager.hpp"
@@ -86,7 +86,7 @@ namespace VTX::Object3D
 		if ( p_sendEvent )
 		{
 			VTX_EVENT<Generic::BaseSceneItem *>( VTX::App::Event::Global::SCENE_ITEM_ADDED, p_molecule );
-			VTX_EVENT<Model::Molecule *>( VTX::App::Event::Global::MOLECULE_ADDED, p_molecule );
+			VTX_EVENT<App::Component::Chemistry::Molecule *>( VTX::App::Event::Global::MOLECULE_ADDED, p_molecule );
 		}
 
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
@@ -278,7 +278,7 @@ namespace VTX::Object3D
 		VTX_EVENT( VTX::App::Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 	}
 
-	void Scene::sortMoleculesBySceneIndex( std::vector<Model::Molecule *> & p_molecules ) const
+	void Scene::sortMoleculesBySceneIndex( std::vector<App::Component::Chemistry::Molecule *> & p_molecules ) const
 	{
 		for ( int i = 0; i < p_molecules.size(); i++ )
 		{
@@ -295,7 +295,7 @@ namespace VTX::Object3D
 				}
 			}
 
-			Model::Molecule * const tmp	 = p_molecules[ i ];
+			App::Component::Chemistry::Molecule * const tmp	 = p_molecules[ i ];
 			p_molecules[ i ]			 = p_molecules[ indexInVector ];
 			p_molecules[ indexInVector ] = tmp;
 		}

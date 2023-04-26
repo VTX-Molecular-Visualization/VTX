@@ -14,11 +14,11 @@
 #include <QLabel>
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
+#include <app/component/chemistry/enum_trajectory.hpp>
 #include <app/event/global.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
 #include <app/old_app/setting.hpp>
 #include <app/old_app/style.hpp>
-#include <app/old_app/trajectory/trajectory_enum.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -109,7 +109,7 @@ namespace VTX::UI::Widget::Settings
 
 		// Trajectory
 		_defaultTrajectoryPlayModeWidget = new QComboBox( viewport );
-		for ( const std::string & playmodeStr : Trajectory::PLAY_MODE_STRING )
+		for ( const std::string & playmodeStr : App::Component::Chemistry::PLAY_MODE_STRING )
 			_defaultTrajectoryPlayModeWidget->addItem( QString::fromStdString( playmodeStr ) );
 
 		_defaultTrajectorySpeedWidget = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldSliderWidget>(
@@ -559,7 +559,7 @@ namespace VTX::UI::Widget::Settings
 	{
 		_skipSettingEvents();
 
-		const Trajectory::PlayMode playMode = Trajectory::PlayMode( p_playmode );
+		const App::Component::Chemistry::PlayMode playMode = App::Component::Chemistry::PlayMode( p_playmode );
 		if ( VTX_SETTING().getDefaultTrajectoryPlayMode() != playMode )
 			VTX_ACTION( new VTX::App::Action::Setting::ChangeDefaultTrajectoryPlayMode( playMode ) );
 

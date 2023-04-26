@@ -1,11 +1,12 @@
 #ifndef __VTX_MODEL_SELECTION__
 #define __VTX_MODEL_SELECTION__
 
+#include "app/component/chemistry/_fwd.hpp"
+#include "app/component/chemistry/enum_category.hpp"
 #include "app/core/event/base_event_receiver_vtx.hpp"
 #include "app/core/event/vtx_event.hpp"
-#include "app/event/global.hpp"
 #include "app/core/model/base_model.hpp"
-#include "app/model/category_enum.hpp"
+#include "app/event/global.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
 #include <map>
@@ -16,11 +17,11 @@
 
 namespace VTX::Model
 {
-	class Molecule;
-	class Category;
-	class Chain;
-	class Residue;
-	class Atom;
+	// class Molecule;
+	// class Category;
+	// class Chain;
+	// class Residue;
+	// class Atom;
 
 	class Selection : public App::Core::Model::BaseModel, public VTX::App::Core::Event::BaseEventReceiverVTX
 	{
@@ -77,80 +78,80 @@ namespace VTX::Model
 		using PairMoleculeIds = std::pair<const VTX::App::Core::Model::ID, MapChainIds>;
 
 		inline const std::set<VTX::App::Core::Model::ID> & getItems() const { return _items; }
-		inline std::set<VTX::App::Core::Model::ID> &		getItems() { return _items; }
+		inline std::set<VTX::App::Core::Model::ID> &	   getItems() { return _items; }
 
 		inline const MapMoleculeIds & getMoleculesMap() const { return _moleculesMap; }
 		inline MapMoleculeIds &		  getMoleculesMap() { return _moleculesMap; }
-		const MapChainIds * const	  getMoleculeMap( const Molecule & );
+		const MapChainIds * const	  getMoleculeMap( const App::Component::Chemistry::Molecule & );
 
 		bool hasItemOfType( const VTX::ID::VTX_ID & p_id ) const;
 
 		bool hasMolecule() const;
-		void selectMolecule( Molecule &, const bool p_appendToSelection = false );
-		void selectMolecules( const std::vector<Molecule *> &,
-							  const bool			 p_appendToSelection = false,
-							  const Molecule * const p_currentObj		 = nullptr );
-		void unselectMolecule( Molecule & );
-		void unselectMolecules( const std::vector<Molecule *> & );
-		void unselectMoleculesWithCheck( const std::vector<Molecule *> & );
-		bool isMoleculeSelected( const Molecule & ) const;
-		bool isMoleculeFullySelected( const Molecule & ) const;
+		void selectMolecule( App::Component::Chemistry::Molecule &, const bool p_appendToSelection = false );
+		void selectMolecules( const std::vector<App::Component::Chemistry::Molecule *> &,
+							  const bool										p_appendToSelection = false,
+							  const App::Component::Chemistry::Molecule * const p_currentObj		= nullptr );
+		void unselectMolecule( App::Component::Chemistry::Molecule & );
+		void unselectMolecules( const std::vector<App::Component::Chemistry::Molecule *> & );
+		void unselectMoleculesWithCheck( const std::vector<App::Component::Chemistry::Molecule *> & );
+		bool isMoleculeSelected( const App::Component::Chemistry::Molecule & ) const;
+		bool isMoleculeFullySelected( const App::Component::Chemistry::Molecule & ) const;
 		uint getMoleculeSelectedCount() const;
 
-		void selectChain( Chain &, const bool p_appendToSelection = false );
-		void selectChains( const std::vector<Chain *> &,
-						   const bool		   p_appendToSelection = false,
-						   const Chain * const p_currentObj		   = nullptr );
-		void unselectChain( Chain & );
-		void unselectChains( const std::vector<Chain *> & );
-		void unselectChainsWithCheck( const std::vector<Chain *> & );
-		bool isChainSelected( const Chain & ) const;
-		bool isChainFullySelected( const Chain & ) const;
+		void selectChain( App::Component::Chemistry::Chain &, const bool p_appendToSelection = false );
+		void selectChains( const std::vector<App::Component::Chemistry::Chain *> &,
+						   const bool									  p_appendToSelection = false,
+						   const App::Component::Chemistry::Chain * const p_currentObj		  = nullptr );
+		void unselectChain( App::Component::Chemistry::Chain & );
+		void unselectChains( const std::vector<App::Component::Chemistry::Chain *> & );
+		void unselectChainsWithCheck( const std::vector<App::Component::Chemistry::Chain *> & );
+		bool isChainSelected( const App::Component::Chemistry::Chain & ) const;
+		bool isChainFullySelected( const App::Component::Chemistry::Chain & ) const;
 		uint getChainSelectedCount() const;
 
-		void selectResidue( Residue &, const bool p_appendToSelection = false );
-		void selectResidues( const std::vector<Residue *> &,
-							 const bool			   p_appendToSelection = false,
-							 const Residue * const p_currentObj		   = nullptr );
-		void unselectResidue( Residue & );
-		void unselectResidues( const std::vector<Residue *> & );
-		void unselectResiduesWithCheck( const std::vector<Residue *> & );
-		bool isResidueSelected( const Residue & ) const;
-		bool isResidueFullySelected( const Residue & ) const;
+		void selectResidue( App::Component::Chemistry::Residue &, const bool p_appendToSelection = false );
+		void selectResidues( const std::vector<App::Component::Chemistry::Residue *> &,
+							 const bool										  p_appendToSelection = false,
+							 const App::Component::Chemistry::Residue * const p_currentObj		  = nullptr );
+		void unselectResidue( App::Component::Chemistry::Residue & );
+		void unselectResidues( const std::vector<App::Component::Chemistry::Residue *> & );
+		void unselectResiduesWithCheck( const std::vector<App::Component::Chemistry::Residue *> & );
+		bool isResidueSelected( const App::Component::Chemistry::Residue & ) const;
+		bool isResidueFullySelected( const App::Component::Chemistry::Residue & ) const;
 		uint getResidueSelectedCount() const;
 
-		void selectAtom( Atom &, const bool p_appendToSelection = false );
-		void selectAtoms( const std::vector<Atom *> &,
-						  const bool		 p_appendToSelection = false,
-						  const Atom * const p_currentObj		 = nullptr );
-		void unselectAtom( Atom & );
-		void unselectAtoms( const std::vector<Atom *> & );
-		void unselectAtomsWithCheck( const std::vector<Atom *> & );
-		bool isAtomSelected( const Atom & ) const;
+		void selectAtom( App::Component::Chemistry::Atom &, const bool p_appendToSelection = false );
+		void selectAtoms( const std::vector<App::Component::Chemistry::Atom *> &,
+						  const bool									p_appendToSelection = false,
+						  const App::Component::Chemistry::Atom * const p_currentObj		= nullptr );
+		void unselectAtom( App::Component::Chemistry::Atom & );
+		void unselectAtoms( const std::vector<App::Component::Chemistry::Atom *> & );
+		void unselectAtomsWithCheck( const std::vector<App::Component::Chemistry::Atom *> & );
+		bool isAtomSelected( const App::Component::Chemistry::Atom & ) const;
 		uint getAtomSelectedCount() const;
 
-		void selectCategory( Category &, const bool p_appendToSelection = false );
-		void selectCategories( const std::vector<Category *> &,
-							   const bool			  p_appendToSelection = false,
-							   const Category * const p_currentObj		  = nullptr );
-		void unselectCategory( Category & );
-		void unselectCategories( const std::vector<Category *> & );
-		void unselectCategoriesWithCheck( const std::vector<Category *> & );
-		bool isCategorySelected( const Model::Category & ) const;
-		bool isCategoryFullySelected( const Model::Category & ) const;
+		void selectCategory( App::Component::Chemistry::Category &, const bool p_appendToSelection = false );
+		void selectCategories( const std::vector<App::Component::Chemistry::Category *> &,
+							   const bool										 p_appendToSelection = false,
+							   const App::Component::Chemistry::Category * const p_currentObj		 = nullptr );
+		void unselectCategory( App::Component::Chemistry::Category & );
+		void unselectCategories( const std::vector<App::Component::Chemistry::Category *> & );
+		void unselectCategoriesWithCheck( const std::vector<App::Component::Chemistry::Category *> & );
+		bool isCategorySelected( const App::Component::Chemistry::Category & ) const;
+		bool isCategoryFullySelected( const App::Component::Chemistry::Category & ) const;
 
-		void selectModels( const std::vector<Model::Molecule *> & p_molecules,
-						   const std::vector<Model::Category *> & p_categories,
-						   const std::vector<Model::Chain *> &	  p_chains,
-						   const std::vector<Model::Residue *> &  p_residues,
-						   const std::vector<Model::Atom *> &	  p_atoms,
-						   const bool							  p_appendToSelection = false,
-						   const App::Core::Model::BaseModel * const		  p_currentObj		  = nullptr );
-		void unselectModels( const std::vector<Model::Molecule *> & p_molecules,
-							 const std::vector<Model::Category *> & p_categories,
-							 const std::vector<Model::Chain *> &	p_chains,
-							 const std::vector<Model::Residue *> &	p_residus,
-							 const std::vector<Model::Atom *> &		p_atoms );
+		void selectModels( const std::vector<App::Component::Chemistry::Molecule *> & p_molecules,
+						   const std::vector<App::Component::Chemistry::Category *> & p_categories,
+						   const std::vector<App::Component::Chemistry::Chain *> &	  p_chains,
+						   const std::vector<App::Component::Chemistry::Residue *> &  p_residues,
+						   const std::vector<App::Component::Chemistry::Atom *> &	  p_atoms,
+						   const bool												  p_appendToSelection = false,
+						   const App::Core::Model::BaseModel * const				  p_currentObj		  = nullptr );
+		void unselectModels( const std::vector<App::Component::Chemistry::Molecule *> & p_molecules,
+							 const std::vector<App::Component::Chemistry::Category *> & p_categories,
+							 const std::vector<App::Component::Chemistry::Chain *> &	p_chains,
+							 const std::vector<App::Component::Chemistry::Residue *> &	p_residus,
+							 const std::vector<App::Component::Chemistry::Atom *> &		p_atoms );
 
 		void selectModel( App::Core::Model::BaseModel & p_model, const bool p_appendToSelection = false );
 		void unselectModel( const App::Core::Model::BaseModel & );
@@ -222,8 +223,8 @@ namespace VTX::Model
 
 		void receiveEvent( const App::Core::Event::VTXEvent & p_event ) override;
 
-		void						   getItemTypes( std::set<VTX::ID::VTX_ID> & p_types ) const;
-		Object3D::Helper::AABB		   getAABB() const;
+		void									  getItemTypes( std::set<VTX::ID::VTX_ID> & p_types ) const;
+		Object3D::Helper::AABB					  getAABB() const;
 		const App::Core::Model::BaseModel * const getCurrentObject() const;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, T>::value>>
@@ -261,54 +262,54 @@ namespace VTX::Model
 		void _notifyDataChanged();
 
 	  private:
-		std::set<VTX::App::Core::Model::ID> _items		   = std::set<VTX::App::Core::Model::ID>();
-		MapMoleculeIds			 _moleculesMap = MapMoleculeIds();
+		std::set<VTX::App::Core::Model::ID> _items		  = std::set<VTX::App::Core::Model::ID>();
+		MapMoleculeIds						_moleculesMap = MapMoleculeIds();
 
 		std::map<VTX::App::Core::Model::ID, Object3D::Helper::AABB> _mapSelectionAABB
 			= std::map<VTX::App::Core::Model::ID, Object3D::Helper::AABB>();
 		const App::Core::Model::BaseModel * _currentObject = nullptr;
 
-		void _selectMolecule( const Molecule & );
-		void _unselectMolecule( const Molecule & );
-		void _selectCategory( const Category & );
-		void _unselectCategory( const Category & );
-		void _selectChain( const Chain & );
-		void _unselectChain( const Chain & );
-		void _selectResidue( const Residue & );
-		void _unselectResidue( const Residue & );
-		void _selectAtom( const Atom & );
-		void _unselectAtom( const Atom & );
+		void _selectMolecule( const App::Component::Chemistry::Molecule & );
+		void _unselectMolecule( const App::Component::Chemistry::Molecule & );
+		void _selectCategory( const App::Component::Chemistry::Category & );
+		void _unselectCategory( const App::Component::Chemistry::Category & );
+		void _selectChain( const App::Component::Chemistry::Chain & );
+		void _unselectChain( const App::Component::Chemistry::Chain & );
+		void _selectResidue( const App::Component::Chemistry::Residue & );
+		void _unselectResidue( const App::Component::Chemistry::Residue & );
+		void _selectAtom( const App::Component::Chemistry::Atom & );
+		void _unselectAtom( const App::Component::Chemistry::Atom & );
 
 		void _unselectModel( const App::Core::Model::BaseModel & );
 
-		bool _addMolecule( const Molecule & );
-		bool _addChain( const Chain & );
-		bool _addResidue( const Residue & );
-		bool _addAtom( const Atom & );
+		bool _addMolecule( const App::Component::Chemistry::Molecule & );
+		bool _addChain( const App::Component::Chemistry::Chain & );
+		bool _addResidue( const App::Component::Chemistry::Residue & );
+		bool _addAtom( const App::Component::Chemistry::Atom & );
 
-		void _addMoleculeContent( const Molecule & );
-		void _addChainContent( const Chain & );
-		void _addResidueContent( const Residue & );
+		void _addMoleculeContent( const App::Component::Chemistry::Molecule & );
+		void _addChainContent( const App::Component::Chemistry::Chain & );
+		void _addResidueContent( const App::Component::Chemistry::Residue & );
 
-		void _removeMolecule( const Molecule & );
-		void _removeChain( const Chain & );
-		void _removeResidue( const Residue & );
-		void _removeAtom( const Atom & );
+		void _removeMolecule( const App::Component::Chemistry::Molecule & );
+		void _removeChain( const App::Component::Chemistry::Chain & );
+		void _removeResidue( const App::Component::Chemistry::Residue & );
+		void _removeAtom( const App::Component::Chemistry::Atom & );
 
 		void _clearWithoutNotify();
 
-		void _refreshMoleculeSelection( Molecule * const );
+		void _refreshMoleculeSelection( App::Component::Chemistry::Molecule * const );
 		void _recomputeAABB();
 
-		void _referenceAtom( const Atom & p_atom );
-		void _referenceFullResidue( const Residue & p_residue );
-		void _referenceFullChain( const Chain & p_chain );
+		void _referenceAtom( const App::Component::Chemistry::Atom & p_atom );
+		void _referenceFullResidue( const App::Component::Chemistry::Residue & p_residue );
+		void _referenceFullChain( const App::Component::Chemistry::Chain & p_chain );
 
-		void _unreferenceAtom( const Atom & p_atom );
-		void _unreferenceFullResidue( const Residue & p_residue );
-		void _unreferenceFullChain( const Chain & p_chain );
+		void _unreferenceAtom( const App::Component::Chemistry::Atom & p_atom );
+		void _unreferenceFullResidue( const App::Component::Chemistry::Residue & p_residue );
+		void _unreferenceFullChain( const App::Component::Chemistry::Chain & p_chain );
 
-		void _emplaceMolecule( const Molecule & );
+		void _emplaceMolecule( const App::Component::Chemistry::Molecule & );
 
 		void _setCurrentObject( const App::Core::Model::BaseModel * const p_model, const bool p_notify = true );
 		void _clearCurrentObject( const bool p_notify = true );

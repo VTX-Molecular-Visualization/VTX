@@ -4,7 +4,7 @@
 #include <app/action/representable.hpp>
 
 #include <app/old_app/generic/base_representable.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/model/representation/representation.hpp>
 #include <app/model/representation/representation_library.hpp>
 #include <app/model/selection.hpp>

@@ -1,11 +1,12 @@
 #ifndef __VTX_REPRESENTATION_MANAGER__
 #define __VTX_REPRESENTATION_MANAGER__
 
+#include "app/component/chemistry/_fwd.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/core/event/vtx_event.hpp"
-#include "app/old_app/id.hpp"
-#include "app/model/molecule.hpp"
 #include "app/model/representation/representation_data.hpp"
 #include "app/model/representation/representation_enum.hpp"
+#include "app/old_app/id.hpp"
 #include <map>
 #include <unordered_set>
 
@@ -16,7 +17,7 @@ namespace VTX::Generic
 
 namespace VTX::Model
 {
-	class Molecule;
+	// class Molecule;
 	class Selection;
 	namespace Representation
 	{
@@ -67,7 +68,8 @@ namespace VTX::Representation
 		void instantiateRepresentations( const Representation * const	 p_representation,
 										 const std::unordered_set<T *> & p_targets )
 		{
-			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+			std::unordered_set<App::Component::Chemistry::Molecule *> molecules
+				= std::unordered_set<App::Component::Chemistry::Molecule *>();
 
 			for ( T * const representable : p_targets )
 			{
@@ -75,7 +77,7 @@ namespace VTX::Representation
 				molecules.emplace( representable->getMolecule() );
 			}
 
-			for ( Model::Molecule * const molecule : molecules )
+			for ( App::Component::Chemistry::Molecule * const molecule : molecules )
 			{
 				molecule->computeAllRepresentationData();
 			}
@@ -97,7 +99,8 @@ namespace VTX::Representation
 								  const Model::Representation::MEMBER_FLAG & p_flag
 								  = Model::Representation::MEMBER_FLAG::ALL )
 		{
-			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+			std::unordered_set<App::Component::Chemistry::Molecule *> molecules
+				= std::unordered_set<App::Component::Chemistry::Molecule *>();
 
 			for ( T * representable : p_representables )
 			{
@@ -105,7 +108,7 @@ namespace VTX::Representation
 				molecules.emplace( representable->getMolecule() );
 			}
 
-			for ( Model::Molecule * const molecule : molecules )
+			for ( App::Component::Chemistry::Molecule * const molecule : molecules )
 			{
 				molecule->computeAllRepresentationData();
 			}
@@ -135,7 +138,8 @@ namespace VTX::Representation
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseRepresentable, T>::value>>
 		void removeInstantiatedRepresentations( const std::unordered_set<T *> & p_targets )
 		{
-			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+			std::unordered_set<App::Component::Chemistry::Molecule *> molecules
+				= std::unordered_set<App::Component::Chemistry::Molecule *>();
 
 			for ( T * const representable : p_targets )
 			{
@@ -143,7 +147,7 @@ namespace VTX::Representation
 				molecules.emplace( representable->getMolecule() );
 			}
 
-			for ( Model::Molecule * const molecule : molecules )
+			for ( App::Component::Chemistry::Molecule * const molecule : molecules )
 			{
 				molecule->computeAllRepresentationData();
 			}
@@ -200,7 +204,7 @@ namespace VTX::Representation
 
 		void _applyNextBaseRepresentationOnInstances( const Representation * const p_defaultRepresentation );
 
-		void _onRepresentationChange( const Representation * const	representation,
+		void _onRepresentationChange( const Representation * const			   representation,
 									  const App::Core::Event::VTXEvent * const p_event );
 		int	 _getRepresentationWithQuickAccessCount() const;
 	};

@@ -9,7 +9,7 @@
 #include "ui/qt/widget_factory.hpp"
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/model/path.hpp>
 
 namespace VTX::UI::QT::Tool
@@ -20,7 +20,7 @@ namespace VTX::UI::QT::Tool
 		Scene::Widget::SceneWidget * const sceneWidget
 			= QT::QT_APP()->getMainWindow().getPanel<Scene::Widget::SceneWidget>( Tool::SCENE_WINDOW_KEY );
 
-		Model::Molecule * const molecule = static_cast<Model::Molecule *>( p_item );
+		App::Component::Chemistry::Molecule * const molecule = static_cast<App::Component::Chemistry::Molecule *>( p_item );
 
 		Scene::Widget::View::MoleculeSceneView * const moleculeSceneItemWidget
 			= QT::WidgetFactory::get().instantiateViewWidget<Scene::Widget::View::MoleculeSceneView>(
@@ -34,8 +34,8 @@ namespace VTX::UI::QT::Tool
 		const Scene::Widget::View::MoleculeSceneView * const moleculeSceneItemWidget
 			= dynamic_cast<const Scene::Widget::View::MoleculeSceneView *>( p_sceneWidget );
 
-		const Model::Molecule & molecule
-			= VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeSceneItemWidget->getModelID() );
+		const App::Component::Chemistry::Molecule & molecule
+			= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeSceneItemWidget->getModelID() );
 
 		VTX::MVC_MANAGER().deleteView<Scene::Widget::View::MoleculeSceneView>( &molecule,
 																				   ID::View::UI_MOLECULE_STRUCTURE );
@@ -94,7 +94,7 @@ namespace VTX::UI::QT::Tool
 	void SceneWindow::_instantiateObjectsInScene( Scene::Widget::SceneWidget & p_sceneWidget,
 												  const VTX::Object3D::Scene & p_scene ) const
 	{
-		for ( const std::pair<Model::Molecule *, float> pairMolecule : p_scene.getMolecules() )
+		for ( const std::pair<App::Component::Chemistry::Molecule *, float> pairMolecule : p_scene.getMolecules() )
 		{
 			p_sceneWidget.instantiateSceneItemWidget( pairMolecule.first );
 		}

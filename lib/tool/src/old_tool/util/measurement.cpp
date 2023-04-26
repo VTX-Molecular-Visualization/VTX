@@ -2,7 +2,7 @@
 #include "tool/old_tool/model/measurement/angle.hpp"
 #include "tool/old_tool/model/measurement/dihedral_angle.hpp"
 #include "tool/old_tool/model/measurement/distance.hpp"
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <string>
 #include <ui/old_ui/style.hpp>
 #include <util/string.hpp>

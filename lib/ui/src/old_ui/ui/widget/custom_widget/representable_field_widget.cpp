@@ -2,8 +2,8 @@
 #include "ui/old_ui/ui/mime_type.hpp"
 #include <app/old_app/id.hpp>
 #include <app/core/model/base_model.hpp>
-#include <app/model/chain.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/chain.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/mvc.hpp>
 
 namespace VTX
@@ -59,10 +59,10 @@ namespace VTX
 
 					if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 						representable = static_cast<Generic::BaseRepresentable *>(
-							static_cast<Model::Molecule *>( representableModel ) );
+							static_cast<App::Component::Chemistry::Molecule *>( representableModel ) );
 					else if ( modelTypeID == VTX::ID::Model::MODEL_CHAIN )
 						representable = static_cast<Generic::BaseRepresentable *>(
-							static_cast<Model::Chain *>( representableModel ) );
+							static_cast<App::Component::Chemistry::Chain *>( representableModel ) );
 
 					p_event->acceptProposedAction();
 

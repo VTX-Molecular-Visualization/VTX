@@ -2,7 +2,7 @@
 #define __VTX_IO_FILESYSTEM__
 
 // TODO: delete those includes
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/model/selection.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
@@ -292,12 +292,12 @@ namespace VTX::IO::Filesystem
 		const int nbMoleculeInSelection
 			= Selection::SelectionManager::get().getSelectionModel().getMoleculeSelectedCount();
 
-		const Model::Molecule * exportedMolecule;
+		const App::Component::Chemistry::Molecule * exportedMolecule;
 		if ( nbMoleculeInSelection > 0 )
 		{
 			const App::Core::Model::ID & moleculeID
 				= Selection::SelectionManager::get().getSelectionModel().getMoleculesMap().begin()->first;
-			exportedMolecule = &( VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeID ) );
+			exportedMolecule = &( VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeID ) );
 		}
 		else if ( VTXApp::get().getScene().getMolecules().size() > 0 )
 		{

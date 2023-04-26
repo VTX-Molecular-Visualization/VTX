@@ -4,7 +4,7 @@
 #include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/core/action/base_action_undonable.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/old_app/generic/base_auto_rotate.hpp"
 #include "app/old_app/generic/base_transformable.hpp"
 #include "app/old_app/math/transform.hpp"
@@ -161,7 +161,7 @@ namespace VTX::App::Action::Transformable
 	class ApplyTransform : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ApplyTransform( Model::Molecule &										  p_transformable,
+		explicit ApplyTransform( App::Component::Chemistry::Molecule &										  p_transformable,
 								 const Math::Transform &								  p_transform,
 								 const Generic::BaseTransformable::TransformComposantMask p_mask
 								 = Generic::BaseTransformable::TransformComposantMask::TRANSFORM ) :
@@ -170,7 +170,7 @@ namespace VTX::App::Action::Transformable
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
-		explicit ApplyTransform( const std::unordered_set<Model::Molecule *> &			  p_transformables,
+		explicit ApplyTransform( const std::unordered_set<App::Component::Chemistry::Molecule *> &			  p_transformables,
 								 const Math::Transform &								  p_transform,
 								 const Generic::BaseTransformable::TransformComposantMask p_mask
 								 = Generic::BaseTransformable::TransformComposantMask::TRANSFORM ) :
@@ -180,7 +180,7 @@ namespace VTX::App::Action::Transformable
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 
 			_transformables.reserve( p_transformables.size() );
-			for ( Model::Molecule * const molecule : p_transformables )
+			for ( App::Component::Chemistry::Molecule * const molecule : p_transformables )
 			{
 				_transformables.emplace_back( molecule );
 			}

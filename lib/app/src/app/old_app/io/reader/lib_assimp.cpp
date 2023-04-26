@@ -1,11 +1,11 @@
 #include "app/old_app/io/reader/lib_assimp.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/model/atom.hpp"
-#include "app/model/bond.hpp"
-#include "app/model/chain.hpp"
+#include "app/component/chemistry/atom.hpp"
+#include "app/component/chemistry/bond.hpp"
+#include "app/component/chemistry/chain.hpp"
 #include "app/model/mesh_triangle.hpp"
-#include "app/model/molecule.hpp"
-#include "app/model/residue.hpp"
+#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include <util/types.hpp>
 // #include <assimp/Importer.hpp>
 // #include <assimp/postprocess.h>
@@ -90,7 +90,7 @@ namespace VTX
 				*/
 			}
 
-			void LibAssimp::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
+			void LibAssimp::readFile( const FilePath & p_path, App::Component::Chemistry::Molecule & p_molecule )
 			{
 				/*
 				Assimp::Importer Importer;
@@ -123,7 +123,7 @@ namespace VTX
 				}
 
 				p_molecule.addAtomPositionFrame();
-				Model::Molecule::AtomPositionsFrame & frame = p_molecule.getAtomPositionFrame( 0 );
+				App::Component::Chemistry::Molecule::AtomPositionsFrame & frame = p_molecule.getAtomPositionFrame( 0 );
 
 				// Loop over meshes.
 				for ( uint chainIdx = 0; chainIdx < chainCount; ++chainIdx, ++chainGlobalIdx )
@@ -133,7 +133,7 @@ namespace VTX
 
 					// New chain.
 					p_molecule.addChain();
-					Model::Chain & chain = *p_molecule.getChain( chainGlobalIdx );
+					App::Component::Chemistry::Chain & chain = *p_molecule.getChain( chainGlobalIdx );
 					chain.setMoleculePtr( &p_molecule );
 					chain.setIndex( chainGlobalIdx );
 					chain.setName( mesh->mName.C_Str() );
@@ -148,10 +148,10 @@ namespace VTX
 
 						// New residue.
 						p_molecule.addResidue();
-						Model::Residue * const residue = p_molecule.getResidue( residueGlobalIdx );
+						App::Component::Chemistry::Residue * const residue = p_molecule.getResidue( residueGlobalIdx );
 						residue->setChainPtr( &chain );
 						residue->setIndex( residueGlobalIdx );
-						residue->setSymbol( Model::Residue::SYMBOL::UNKNOWN );
+						residue->setSymbol( App::Component::Chemistry::Residue::SYMBOL::UNKNOWN );
 						residue->setIndexFirstAtom( atomGlobalIdx );
 						residue->setAtomCount( uint( mesh->mNumVertices ) );
 						residue->setColor( Color::Rgb::randomPastel() );
@@ -164,10 +164,10 @@ namespace VTX
 
 							// New atom.
 							p_molecule.addAtom();
-							Model::Atom & atom = *p_molecule.getAtom( atomGlobalIdx );
+							App::Component::Chemistry::Atom & atom = *p_molecule.getAtom( atomGlobalIdx );
 							atom.setResiduePtr( residue );
 							atom.setIndex( atomGlobalIdx );
-							atom.setSymbol( Model::Atom::SYMBOL::UNKNOWN );
+							atom.setSymbol( App::Component::Chemistry::Atom::SYMBOL::UNKNOWN );
 
 							aiColor4D diffuse;
 							if ( aiGetMaterialColor( material, AI_MATKEY_COLOR_DIFFUSE, &diffuse ) == AI_SUCCESS )
@@ -182,7 +182,7 @@ namespace VTX
 
 							// Bond.
 							p_molecule.addBond();
-							Model::Bond & bond = *p_molecule.getBond( atomGlobalIdx );
+							App::Component::Chemistry::Bond & bond = *p_molecule.getBond( atomGlobalIdx );
 							bond.setIndexFirstAtom( atomGlobalIdx );
 							bond.setIndexSecondAtom( ( atomIdx == face.mNumIndices - 1 )
 														 ? ( atomGlobalIdx - face.mNumIndices + 1 )

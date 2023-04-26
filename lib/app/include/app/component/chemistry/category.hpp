@@ -1,20 +1,21 @@
-#ifndef __VTX_MODEL_CATEGORY__
-#define __VTX_MODEL_CATEGORY__
+#ifndef __VTX_APP_COMPONENT_CHEMISTRY_CATEGORY__
+#define __VTX_APP_COMPONENT_CHEMISTRY_CATEGORY__
 
+#include "_fwd.hpp"
 #include "app/core/model/base_model.hpp"
-#include "category_enum.hpp"
-#include <util/types.hpp>
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
+#include "enum_category.hpp"
 #include <string>
+#include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Model
+namespace VTX::App::Component::Chemistry
 {
-	class Molecule;
+	// class Molecule;
 
 	class Category :
 		public App::Core::Model::BaseModel,
@@ -25,10 +26,10 @@ namespace VTX::Model
 		VTX_MODEL
 
 	  public:
-		inline void				setCategoryEnum( const CATEGORY_ENUM & p_category ) { _category = p_category; };
-		inline CATEGORY_ENUM	getCategoryEnum() const { return _category; };
-		void					setMoleculePtr( Molecule * const p_molecule );
-		inline Molecule * const getMoleculePtr() const { return _moleculePtr; };
+		inline void setCategoryEnum( const Chemistry::CATEGORY_ENUM & p_category ) { _category = p_category; };
+		inline Chemistry::CATEGORY_ENUM getCategoryEnum() const { return _category; };
+		void							setMoleculePtr( Molecule * const p_molecule );
+		inline Molecule * const			getMoleculePtr() const { return _moleculePtr; };
 
 		inline const std::string & getName() const { return CATEGORY_ENUM_STR[ int( _category ) ]; };
 
@@ -60,11 +61,11 @@ namespace VTX::Model
 		void _onRepresentationChange() override;
 
 	  private:
-		CATEGORY_ENUM	  _category		= CATEGORY_ENUM::UNKNOWN;
-		std::vector<uint> _linkedChains = std::vector<uint>();
+		Chemistry::CATEGORY_ENUM _category	   = Chemistry::CATEGORY_ENUM::UNKNOWN;
+		std::vector<uint>		 _linkedChains = std::vector<uint>();
 
 		Molecule * _moleculePtr = nullptr;
 	};
 
-} // namespace VTX::Model
+} // namespace VTX::App::Component::Chemistry
 #endif

@@ -1,10 +1,10 @@
 #include "app/model/selection.hpp"
+#include "app/component/chemistry/atom.hpp"
+#include "app/component/chemistry/category.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include "app/event.hpp"
-#include "app/model/atom.hpp"
-#include "app/model/category.hpp"
-#include "app/model/chain.hpp"
-#include "app/model/molecule.hpp"
-#include "app/model/residue.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/define.hpp"
 #include <unordered_set>
@@ -26,7 +26,8 @@ namespace VTX::Model
 		return false;
 	}
 
-	const Selection::MapChainIds * const Selection::getMoleculeMap( const Molecule & p_molecule )
+	const Selection::MapChainIds * const Selection::getMoleculeMap(
+		const App::Component::Chemistry::Molecule & p_molecule )
 	{
 		if ( _moleculesMap.find( p_molecule.getId() ) != _moleculesMap.end() )
 		{
@@ -40,7 +41,7 @@ namespace VTX::Model
 
 	bool Selection::hasMolecule() const { return _moleculesMap.size() > 0; }
 
-	void Selection::selectMolecule( Molecule & p_molecule, const bool p_appendToSelection )
+	void Selection::selectMolecule( App::Component::Chemistry::Molecule & p_molecule, const bool p_appendToSelection )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -53,9 +54,9 @@ namespace VTX::Model
 		_notifyDataChanged();
 		chrono.stop();
 	}
-	void Selection::selectMolecules( const std::vector<Molecule *> & p_molecules,
-									 const bool						 p_appendToSelection,
-									 const Molecule * const			 p_currentObj )
+	void Selection::selectMolecules( const std::vector<App::Component::Chemistry::Molecule *> & p_molecules,
+									 const bool													p_appendToSelection,
+									 const App::Component::Chemistry::Molecule * const			p_currentObj )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -82,7 +83,7 @@ namespace VTX::Model
 
 		_notifyDataChanged();
 	}
-	void Selection::selectCategory( Category & p_category, const bool p_appendToSelection )
+	void Selection::selectCategory( App::Component::Chemistry::Category & p_category, const bool p_appendToSelection )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -92,25 +93,26 @@ namespace VTX::Model
 		_refreshMoleculeSelection( p_category.getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::selectCategories( const std::vector<Category *> & p_categories,
-									  const bool					  p_appendToSelection,
-									  const Category * const		  p_currentObj )
+	void Selection::selectCategories( const std::vector<App::Component::Chemistry::Category *> & p_categories,
+									  const bool												 p_appendToSelection,
+									  const App::Component::Chemistry::Category * const			 p_currentObj )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
 		else if ( p_categories.size() <= 0 )
 			return;
 
-		for ( Category * const categoryPtr : p_categories )
+		for ( App::Component::Chemistry::Category * const categoryPtr : p_categories )
 			_selectCategory( *categoryPtr );
 
-		const Model::Category * const currentObj = p_currentObj != nullptr ? p_currentObj : *p_categories.crbegin();
+		const App::Component::Chemistry::Category * const currentObj
+			= p_currentObj != nullptr ? p_currentObj : *p_categories.crbegin();
 		_setCurrentObject( currentObj );
 
 		_refreshMoleculeSelection( p_categories[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::selectChain( Chain & p_chain, const bool p_appendToSelection )
+	void Selection::selectChain( App::Component::Chemistry::Chain & p_chain, const bool p_appendToSelection )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -120,9 +122,9 @@ namespace VTX::Model
 		_refreshMoleculeSelection( p_chain.getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::selectChains( const std::vector<Chain *> & p_chains,
-								  const bool				   p_appendToSelection,
-								  const Chain * const		   p_currentObj )
+	void Selection::selectChains( const std::vector<App::Component::Chemistry::Chain *> & p_chains,
+								  const bool											  p_appendToSelection,
+								  const App::Component::Chemistry::Chain * const		  p_currentObj )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -145,7 +147,7 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
-	void Selection::selectResidue( Residue & p_residue, const bool p_appendToSelection )
+	void Selection::selectResidue( App::Component::Chemistry::Residue & p_residue, const bool p_appendToSelection )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -155,9 +157,9 @@ namespace VTX::Model
 		_refreshMoleculeSelection( p_residue.getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::selectResidues( const std::vector<Residue *> & p_residues,
-									const bool					   p_appendToSelection,
-									const Residue * const		   p_currentObj )
+	void Selection::selectResidues( const std::vector<App::Component::Chemistry::Residue *> & p_residues,
+									const bool												  p_appendToSelection,
+									const App::Component::Chemistry::Residue * const		  p_currentObj )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -184,7 +186,7 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
-	void Selection::selectAtom( Atom & p_atom, const bool p_appendToSelection )
+	void Selection::selectAtom( App::Component::Chemistry::Atom & p_atom, const bool p_appendToSelection )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -194,9 +196,9 @@ namespace VTX::Model
 		_refreshMoleculeSelection( p_atom.getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::selectAtoms( const std::vector<Atom *> & p_atoms,
-								 const bool					 p_appendToSelection,
-								 const Atom * const			 p_currentObj )
+	void Selection::selectAtoms( const std::vector<App::Component::Chemistry::Atom *> & p_atoms,
+								 const bool												p_appendToSelection,
+								 const App::Component::Chemistry::Atom * const			p_currentObj )
 	{
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
@@ -223,13 +225,13 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
-	void Selection::unselectMolecule( Molecule & p_molecule )
+	void Selection::unselectMolecule( App::Component::Chemistry::Molecule & p_molecule )
 	{
 		_unselectMolecule( p_molecule );
 		_refreshMoleculeSelection( &p_molecule );
 		_notifyDataChanged();
 	}
-	void Selection::unselectMolecules( const std::vector<Molecule *> & p_molecules )
+	void Selection::unselectMolecules( const std::vector<App::Component::Chemistry::Molecule *> & p_molecules )
 	{
 		if ( p_molecules.size() == 0 )
 			return;
@@ -242,11 +244,11 @@ namespace VTX::Model
 
 		_notifyDataChanged();
 	}
-	void Selection::unselectMoleculesWithCheck( const std::vector<Molecule *> & p_molecules )
+	void Selection::unselectMoleculesWithCheck( const std::vector<App::Component::Chemistry::Molecule *> & p_molecules )
 	{
 		for ( const auto it : p_molecules )
 		{
-			Model::Molecule & molecule = *it;
+			App::Component::Chemistry::Molecule & molecule = *it;
 			if ( isMoleculeSelected( molecule ) )
 			{
 				_unselectMolecule( molecule );
@@ -257,29 +259,30 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
-	void Selection::unselectCategory( Category & p_category )
+	void Selection::unselectCategory( App::Component::Chemistry::Category & p_category )
 	{
 		_unselectCategory( p_category );
 		_refreshMoleculeSelection( p_category.getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::unselectCategories( const std::vector<Category *> & p_categories )
+	void Selection::unselectCategories( const std::vector<App::Component::Chemistry::Category *> & p_categories )
 	{
 		if ( p_categories.size() == 0 )
 			return;
 
-		for ( const Model::Category * const it : p_categories )
+		for ( const App::Component::Chemistry::Category * const it : p_categories )
 			_unselectCategory( *it );
 
 		_refreshMoleculeSelection( p_categories[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::unselectCategoriesWithCheck( const std::vector<Category *> & p_categories )
+	void Selection::unselectCategoriesWithCheck(
+		const std::vector<App::Component::Chemistry::Category *> & p_categories )
 	{
 		if ( p_categories.size() == 0 )
 			return;
 
-		for ( const Model::Category * const it : p_categories )
+		for ( const App::Component::Chemistry::Category * const it : p_categories )
 		{
 			if ( isCategorySelected( *it ) )
 				_unselectCategory( *it );
@@ -288,13 +291,13 @@ namespace VTX::Model
 		_refreshMoleculeSelection( p_categories[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::unselectChain( Chain & p_chain )
+	void Selection::unselectChain( App::Component::Chemistry::Chain & p_chain )
 	{
 		_unselectChain( p_chain );
 		_refreshMoleculeSelection( p_chain.getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::unselectChains( const std::vector<Chain *> & p_chains )
+	void Selection::unselectChains( const std::vector<App::Component::Chemistry::Chain *> & p_chains )
 	{
 		if ( p_chains.size() == 0 )
 			return;
@@ -305,7 +308,7 @@ namespace VTX::Model
 		_refreshMoleculeSelection( p_chains[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::unselectChainsWithCheck( const std::vector<Chain *> & p_chains )
+	void Selection::unselectChainsWithCheck( const std::vector<App::Component::Chemistry::Chain *> & p_chains )
 	{
 		for ( const auto it : p_chains )
 		{
@@ -317,13 +320,13 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
-	void Selection::unselectResidue( Residue & p_residue )
+	void Selection::unselectResidue( App::Component::Chemistry::Residue & p_residue )
 	{
 		_unselectResidue( p_residue );
 		_refreshMoleculeSelection( p_residue.getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::unselectResidues( const std::vector<Residue *> & p_residues )
+	void Selection::unselectResidues( const std::vector<App::Component::Chemistry::Residue *> & p_residues )
 	{
 		if ( p_residues.size() == 0 )
 			return;
@@ -334,7 +337,7 @@ namespace VTX::Model
 		_refreshMoleculeSelection( p_residues[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::unselectResiduesWithCheck( const std::vector<Residue *> & p_residues )
+	void Selection::unselectResiduesWithCheck( const std::vector<App::Component::Chemistry::Residue *> & p_residues )
 	{
 		for ( const auto it : p_residues )
 		{
@@ -345,13 +348,13 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
-	void Selection::unselectAtom( Atom & p_atom )
+	void Selection::unselectAtom( App::Component::Chemistry::Atom & p_atom )
 	{
 		_unselectAtom( p_atom );
 		_refreshMoleculeSelection( p_atom.getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::unselectAtoms( const std::vector<Atom *> & p_atoms )
+	void Selection::unselectAtoms( const std::vector<App::Component::Chemistry::Atom *> & p_atoms )
 	{
 		if ( p_atoms.size() == 0 )
 			return;
@@ -362,7 +365,7 @@ namespace VTX::Model
 		_refreshMoleculeSelection( p_atoms[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
 	}
-	void Selection::unselectAtomsWithCheck( const std::vector<Atom *> & p_atoms )
+	void Selection::unselectAtomsWithCheck( const std::vector<App::Component::Chemistry::Atom *> & p_atoms )
 	{
 		for ( const auto it : p_atoms )
 		{
@@ -374,12 +377,12 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
-	bool Selection::isMoleculeSelected( const Molecule & p_molecule ) const
+	bool Selection::isMoleculeSelected( const App::Component::Chemistry::Molecule & p_molecule ) const
 	{
 		const App::Core::Model::ID & id = p_molecule.getId();
 		return _items.find( id ) != _items.end();
 	}
-	bool Selection::isMoleculeFullySelected( const Molecule & p_molecule ) const
+	bool Selection::isMoleculeFullySelected( const App::Component::Chemistry::Molecule & p_molecule ) const
 	{
 		const App::Core::Model::ID &		 id = p_molecule.getId();
 		const MapMoleculeIds::const_iterator it = _moleculesMap.find( id );
@@ -387,7 +390,7 @@ namespace VTX::Model
 		return _items.find( id ) != _items.end()
 			   && it->second.getFullySelectedChildCount() == p_molecule.getRealChainCount();
 	}
-	bool Selection::isChainSelected( const Chain & p_chain ) const
+	bool Selection::isChainSelected( const App::Component::Chemistry::Chain & p_chain ) const
 	{
 		const App::Core::Model::ID & moleculeId = p_chain.getMoleculePtr()->getId();
 
@@ -399,7 +402,7 @@ namespace VTX::Model
 
 		return chainMap.find( index ) != chainMap.end();
 	}
-	bool Selection::isChainFullySelected( const Chain & p_chain ) const
+	bool Selection::isChainFullySelected( const App::Component::Chemistry::Chain & p_chain ) const
 	{
 		const App::Core::Model::ID & moleculeId = p_chain.getMoleculePtr()->getId();
 		if ( _items.find( moleculeId ) == _items.end() )
@@ -410,7 +413,7 @@ namespace VTX::Model
 
 		return it != chainMap.end() && it->second.getFullySelectedChildCount() == p_chain.getRealResidueCount();
 	}
-	bool Selection::isResidueSelected( const Residue & p_residue ) const
+	bool Selection::isResidueSelected( const App::Component::Chemistry::Residue & p_residue ) const
 	{
 		const App::Core::Model::ID & moleculeId = p_residue.getMoleculePtr()->getId();
 
@@ -428,7 +431,7 @@ namespace VTX::Model
 
 		return residueMap.find( index ) != residueMap.end();
 	}
-	bool Selection::isResidueFullySelected( const Residue & p_residue ) const
+	bool Selection::isResidueFullySelected( const App::Component::Chemistry::Residue & p_residue ) const
 	{
 		const App::Core::Model::ID & moleculeId = p_residue.getMoleculePtr()->getId();
 		if ( _items.find( moleculeId ) == _items.end() )
@@ -445,7 +448,7 @@ namespace VTX::Model
 
 		return it != residueMap.end() && it->second.getFullySelectedChildCount() == p_residue.getRealAtomCount();
 	}
-	bool Selection::isAtomSelected( const Atom & p_atom ) const
+	bool Selection::isAtomSelected( const App::Component::Chemistry::Atom & p_atom ) const
 	{
 		const App::Core::Model::ID & moleculeId = p_atom.getMoleculePtr()->getId();
 
@@ -495,7 +498,7 @@ namespace VTX::Model
 		return res;
 	}
 
-	void Selection::_selectMolecule( const Molecule & p_molecule )
+	void Selection::_selectMolecule( const App::Component::Chemistry::Molecule & p_molecule )
 	{
 		_addMolecule( p_molecule );
 		_addMoleculeContent( p_molecule );
@@ -503,13 +506,13 @@ namespace VTX::Model
 		_mapSelectionAABB[ p_molecule.getId() ].extend( p_molecule.getWorldAABB() );
 	}
 
-	void Selection::_selectCategory( const Category & p_category )
+	void Selection::_selectCategory( const App::Component::Chemistry::Category & p_category )
 	{
-		Model::Molecule * const molecule = p_category.getMoleculePtr();
+		App::Component::Chemistry::Molecule * const molecule = p_category.getMoleculePtr();
 
 		for ( const uint chainIndex : p_category.getChains() )
 		{
-			const Model::Chain * const chain = molecule->getChain( chainIndex );
+			App::Component::Chemistry::Chain * const chain = molecule->getChain( chainIndex );
 
 			if ( chain == nullptr )
 				continue;
@@ -518,9 +521,9 @@ namespace VTX::Model
 		}
 	}
 
-	void Selection::_selectChain( const Chain & p_chain )
+	void Selection::_selectChain( const App::Component::Chemistry::Chain & p_chain )
 	{
-		const Molecule & parent = *p_chain.getMoleculePtr();
+		const App::Component::Chemistry::Molecule & parent = *p_chain.getMoleculePtr();
 		_addMolecule( parent );
 		_addChain( p_chain );
 		_addChainContent( p_chain );
@@ -528,10 +531,10 @@ namespace VTX::Model
 		_mapSelectionAABB[ parent.getId() ].extend( p_chain.getWorldAABB() );
 	}
 
-	void Selection::_selectResidue( const Residue & p_residue )
+	void Selection::_selectResidue( const App::Component::Chemistry::Residue & p_residue )
 	{
-		const Chain &	 chainParent	= *p_residue.getChainPtr();
-		const Molecule & moleculeParent = *chainParent.getMoleculePtr();
+		const App::Component::Chemistry::Chain &	chainParent	   = *p_residue.getChainPtr();
+		const App::Component::Chemistry::Molecule & moleculeParent = *chainParent.getMoleculePtr();
 
 		_addMolecule( moleculeParent );
 		_addChain( chainParent );
@@ -541,11 +544,11 @@ namespace VTX::Model
 		_mapSelectionAABB[ moleculeParent.getId() ].extend( p_residue.getWorldAABB() );
 	}
 
-	void Selection::_selectAtom( const Atom & p_atom )
+	void Selection::_selectAtom( const App::Component::Chemistry::Atom & p_atom )
 	{
-		const Residue &	 residueParent	= *p_atom.getResiduePtr();
-		const Chain &	 chainParent	= *residueParent.getChainPtr();
-		const Molecule & moleculeParent = *chainParent.getMoleculePtr();
+		const App::Component::Chemistry::Residue &	residueParent  = *p_atom.getResiduePtr();
+		const App::Component::Chemistry::Chain &	chainParent	   = *residueParent.getChainPtr();
+		const App::Component::Chemistry::Molecule & moleculeParent = *chainParent.getMoleculePtr();
 
 		_addMolecule( moleculeParent );
 		_addChain( chainParent );
@@ -558,11 +561,11 @@ namespace VTX::Model
 		_mapSelectionAABB[ moleculeParent.getId() ].extend( p_atom.getWorldAABB() );
 	}
 
-	void Selection::_referenceAtom( const Atom & p_atom )
+	void Selection::_referenceAtom( const App::Component::Chemistry::Atom & p_atom )
 	{
-		const Residue &	 residueParent	= *p_atom.getResiduePtr();
-		const Chain &	 chainParent	= *residueParent.getChainPtr();
-		const Molecule & moleculeParent = *chainParent.getMoleculePtr();
+		const App::Component::Chemistry::Residue &	residueParent  = *p_atom.getResiduePtr();
+		const App::Component::Chemistry::Chain &	chainParent	   = *residueParent.getChainPtr();
+		const App::Component::Chemistry::Molecule & moleculeParent = *chainParent.getMoleculePtr();
 
 		VecAtomIds & atoms
 			= _moleculesMap[ moleculeParent.getId() ][ chainParent.getIndex() ][ residueParent.getIndex() ];
@@ -570,29 +573,29 @@ namespace VTX::Model
 		if ( atoms.getFullySelectedChildCount() == residueParent.getRealAtomCount() )
 			_referenceFullResidue( residueParent );
 	}
-	void Selection::_referenceFullResidue( const Residue & p_residue )
+	void Selection::_referenceFullResidue( const App::Component::Chemistry::Residue & p_residue )
 	{
-		const Chain &	 chainParent	= *p_residue.getChainPtr();
-		const Molecule & moleculeParent = *chainParent.getMoleculePtr();
+		const App::Component::Chemistry::Chain &	chainParent	   = *p_residue.getChainPtr();
+		const App::Component::Chemistry::Molecule & moleculeParent = *chainParent.getMoleculePtr();
 
 		MapResidueIds & residues = _moleculesMap[ moleculeParent.getId() ][ chainParent.getIndex() ];
 		residues._addFullChild();
 		if ( residues.getFullySelectedChildCount() == chainParent.getRealResidueCount() )
 			_referenceFullChain( chainParent );
 	}
-	void Selection::_referenceFullChain( const Chain & p_chain )
+	void Selection::_referenceFullChain( const App::Component::Chemistry::Chain & p_chain )
 	{
-		const Molecule & moleculeParent = *p_chain.getMoleculePtr();
+		const App::Component::Chemistry::Molecule & moleculeParent = *p_chain.getMoleculePtr();
 
 		MapChainIds & chains = _moleculesMap[ moleculeParent.getId() ];
 		chains._addFullChild();
 	}
 
-	void Selection::_unreferenceAtom( const Atom & p_atom )
+	void Selection::_unreferenceAtom( const App::Component::Chemistry::Atom & p_atom )
 	{
-		const Residue &	 residueParent	= *p_atom.getResiduePtr();
-		const Chain &	 chainParent	= *residueParent.getChainPtr();
-		const Molecule & moleculeParent = *chainParent.getMoleculePtr();
+		const App::Component::Chemistry::Residue &	residueParent  = *p_atom.getResiduePtr();
+		const App::Component::Chemistry::Chain &	chainParent	   = *residueParent.getChainPtr();
+		const App::Component::Chemistry::Molecule & moleculeParent = *chainParent.getMoleculePtr();
 
 		VecAtomIds & atoms
 			= _moleculesMap[ moleculeParent.getId() ][ chainParent.getIndex() ][ residueParent.getIndex() ];
@@ -601,10 +604,10 @@ namespace VTX::Model
 		if ( propagateToParent )
 			_unreferenceFullResidue( residueParent );
 	}
-	void Selection::_unreferenceFullResidue( const Residue & p_residue )
+	void Selection::_unreferenceFullResidue( const App::Component::Chemistry::Residue & p_residue )
 	{
-		const Chain &	 chainParent	= *p_residue.getChainPtr();
-		const Molecule & moleculeParent = *chainParent.getMoleculePtr();
+		const App::Component::Chemistry::Chain &	chainParent	   = *p_residue.getChainPtr();
+		const App::Component::Chemistry::Molecule & moleculeParent = *chainParent.getMoleculePtr();
 
 		MapResidueIds & residues		  = _moleculesMap[ moleculeParent.getId() ][ chainParent.getIndex() ];
 		const bool		propagateToParent = residues.getFullySelectedChildCount() == chainParent.getRealResidueCount();
@@ -612,27 +615,27 @@ namespace VTX::Model
 		if ( propagateToParent )
 			_unreferenceFullChain( chainParent );
 	}
-	void Selection::_unreferenceFullChain( const Chain & p_chain )
+	void Selection::_unreferenceFullChain( const App::Component::Chemistry::Chain & p_chain )
 	{
-		const Molecule & moleculeParent = *p_chain.getMoleculePtr();
+		const App::Component::Chemistry::Molecule & moleculeParent = *p_chain.getMoleculePtr();
 
 		MapChainIds & chains = _moleculesMap[ moleculeParent.getId() ];
 		chains._removeFullChild();
 	}
 
-	void Selection::_unselectMolecule( const Molecule & p_molecule )
+	void Selection::_unselectMolecule( const App::Component::Chemistry::Molecule & p_molecule )
 	{
 		_removeMolecule( p_molecule );
 		_recomputeAABB();
 	}
 
-	void Selection::_unselectCategory( const Category & p_category )
+	void Selection::_unselectCategory( const App::Component::Chemistry::Category & p_category )
 	{
-		Model::Molecule * const molecule = p_category.getMoleculePtr();
+		App::Component::Chemistry::Molecule * const molecule = p_category.getMoleculePtr();
 
 		for ( const uint chainIndex : p_category.getChains() )
 		{
-			const Model::Chain * const chain = molecule->getChain( chainIndex );
+			const App::Component::Chemistry::Chain * const chain = molecule->getChain( chainIndex );
 
 			if ( chain == nullptr )
 				continue;
@@ -643,25 +646,25 @@ namespace VTX::Model
 		_recomputeAABB();
 	}
 
-	void Selection::_unselectChain( const Chain & p_chain )
+	void Selection::_unselectChain( const App::Component::Chemistry::Chain & p_chain )
 	{
 		_removeChain( p_chain );
 		_recomputeAABB();
 	}
 
-	void Selection::_unselectResidue( const Residue & p_residue )
+	void Selection::_unselectResidue( const App::Component::Chemistry::Residue & p_residue )
 	{
 		_removeResidue( p_residue );
 		_recomputeAABB();
 	}
 
-	void Selection::_unselectAtom( const Atom & p_atom )
+	void Selection::_unselectAtom( const App::Component::Chemistry::Atom & p_atom )
 	{
 		_removeAtom( p_atom );
 		_recomputeAABB();
 	}
 
-	bool Selection::_addMolecule( const Molecule & p_molecule )
+	bool Selection::_addMolecule( const App::Component::Chemistry::Molecule & p_molecule )
 	{
 		const App::Core::Model::ID & id				  = p_molecule.getId();
 		const bool					 hasToAddMolecule = _items.find( id ) == _items.end();
@@ -674,7 +677,7 @@ namespace VTX::Model
 		return hasToAddMolecule;
 	}
 
-	bool Selection::_addChain( const Chain & p_chain )
+	bool Selection::_addChain( const App::Component::Chemistry::Chain & p_chain )
 	{
 		const App::Core::Model::ID & moleculeId = p_chain.getMoleculePtr()->getId();
 		const uint &				 index		= p_chain.getIndex();
@@ -691,7 +694,7 @@ namespace VTX::Model
 		return hasToAddChain;
 	}
 
-	bool Selection::_addResidue( const Residue & p_residue )
+	bool Selection::_addResidue( const App::Component::Chemistry::Residue & p_residue )
 	{
 		const App::Core::Model::ID & moleculeId = p_residue.getMoleculePtr()->getId();
 		const uint &				 chainIndex = p_residue.getChainPtr()->getIndex();
@@ -709,7 +712,7 @@ namespace VTX::Model
 		return hasToAddResidue;
 	}
 
-	bool Selection::_addAtom( const Atom & p_atom )
+	bool Selection::_addAtom( const App::Component::Chemistry::Atom & p_atom )
 	{
 		const App::Core::Model::ID & moleculeId	  = p_atom.getMoleculePtr()->getId();
 		const uint &				 chainIndex	  = p_atom.getChainPtr()->getIndex();
@@ -727,13 +730,13 @@ namespace VTX::Model
 		return hasToAddAtom;
 	}
 
-	void Selection::_addMoleculeContent( const Molecule & p_molecule )
+	void Selection::_addMoleculeContent( const App::Component::Chemistry::Molecule & p_molecule )
 	{
 		//_items[ p_molecule.getId() ]._setFullChildrenCount( p_molecule.getChainCount() );
 
 		for ( uint i = 0; i < p_molecule.getChainCount(); ++i )
 		{
-			const Chain * const chain = p_molecule.getChain( i );
+			const App::Component::Chemistry::Chain * const chain = p_molecule.getChain( i );
 
 			if ( chain == nullptr )
 				continue;
@@ -743,9 +746,9 @@ namespace VTX::Model
 		}
 	}
 
-	void Selection::_addChainContent( const Chain & p_chain )
+	void Selection::_addChainContent( const App::Component::Chemistry::Chain & p_chain )
 	{
-		const Molecule & moleculeParent = *p_chain.getMoleculePtr();
+		const App::Component::Chemistry::Molecule & moleculeParent = *p_chain.getMoleculePtr();
 		//_referenceFullChain( p_chain );
 
 		const App::Core::Model::ID & moleculeId = moleculeParent.getId();
@@ -757,7 +760,8 @@ namespace VTX::Model
 
 		for ( uint i = 0; i < p_chain.getResidueCount(); ++i )
 		{
-			const Residue * const residue = moleculeParent.getResidue( p_chain.getIndexFirstResidue() + i );
+			const App::Component::Chemistry::Residue * const residue
+				= moleculeParent.getResidue( p_chain.getIndexFirstResidue() + i );
 
 			if ( residue == nullptr )
 				continue;
@@ -775,10 +779,10 @@ namespace VTX::Model
 		}
 	}
 
-	void Selection::_addResidueContent( const Residue & p_residue )
+	void Selection::_addResidueContent( const App::Component::Chemistry::Residue & p_residue )
 	{
-		const Chain &	 chainParent	= *p_residue.getChainPtr();
-		const Molecule & moleculeParent = *chainParent.getMoleculePtr();
+		const App::Component::Chemistry::Chain &	chainParent	   = *p_residue.getChainPtr();
+		const App::Component::Chemistry::Molecule & moleculeParent = *chainParent.getMoleculePtr();
 
 		VecAtomIds & atoms = _moleculesMap[ moleculeParent.getId() ][ chainParent.getIndex() ][ p_residue.getIndex() ];
 
@@ -799,7 +803,7 @@ namespace VTX::Model
 
 		for ( uint i = firstAtom; i < nextFirstAtom; ++i )
 		{
-			const Atom * const atom = moleculeParent.getAtom( i );
+			const App::Component::Chemistry::Atom * const atom = moleculeParent.getAtom( i );
 
 			if ( atom == nullptr )
 				continue;
@@ -819,7 +823,7 @@ namespace VTX::Model
 		}
 	}
 
-	void Selection::_removeMolecule( const Molecule & p_molecule )
+	void Selection::_removeMolecule( const App::Component::Chemistry::Molecule & p_molecule )
 	{
 		const App::Core::Model::ID & id = p_molecule.getId();
 		_moleculesMap.erase( id );
@@ -827,7 +831,7 @@ namespace VTX::Model
 		_mapSelectionAABB.erase( id );
 	}
 
-	void Selection::_removeChain( const Chain & p_chain )
+	void Selection::_removeChain( const App::Component::Chemistry::Chain & p_chain )
 	{
 		const App::Core::Model::ID & moleculeId = p_chain.getMoleculePtr()->getId();
 		const App::Core::Model::ID & index		= p_chain.getIndex();
@@ -844,7 +848,7 @@ namespace VTX::Model
 		}
 	}
 
-	void Selection::_removeResidue( const Residue & p_residue )
+	void Selection::_removeResidue( const App::Component::Chemistry::Residue & p_residue )
 	{
 		const App::Core::Model::ID & moleculeId = p_residue.getMoleculePtr()->getId();
 		const App::Core::Model::ID & chainIndex = p_residue.getChainPtr()->getIndex();
@@ -862,7 +866,7 @@ namespace VTX::Model
 		}
 	}
 
-	void Selection::_removeAtom( const Atom & p_atom )
+	void Selection::_removeAtom( const App::Component::Chemistry::Atom & p_atom )
 	{
 		const App::Core::Model::ID & moleculeId	  = p_atom.getMoleculePtr()->getId();
 		const App::Core::Model::ID & chainIndex	  = p_atom.getChainPtr()->getIndex();
@@ -882,7 +886,7 @@ namespace VTX::Model
 		}
 	}
 
-	void Selection::_refreshMoleculeSelection( Molecule * const p_molecule )
+	void Selection::_refreshMoleculeSelection( App::Component::Chemistry::Molecule * const p_molecule )
 	{
 		if ( _moleculesMap.find( p_molecule->getId() ) != _moleculesMap.end() )
 		{
@@ -894,48 +898,49 @@ namespace VTX::Model
 		}
 	}
 
-	void Selection::selectModels( const std::vector<Model::Molecule *> &	p_molecules,
-								  const std::vector<Model::Category *> &	p_categories,
-								  const std::vector<Model::Chain *> &		p_chains,
-								  const std::vector<Model::Residue *> &		p_residues,
-								  const std::vector<Model::Atom *> &		p_atoms,
-								  const bool								p_appendToSelection,
-								  const App::Core::Model::BaseModel * const p_currentObj )
+	void Selection::selectModels( const std::vector<App::Component::Chemistry::Molecule *> & p_molecules,
+								  const std::vector<App::Component::Chemistry::Category *> & p_categories,
+								  const std::vector<App::Component::Chemistry::Chain *> &	 p_chains,
+								  const std::vector<App::Component::Chemistry::Residue *> &	 p_residues,
+								  const std::vector<App::Component::Chemistry::Atom *> &	 p_atoms,
+								  const bool												 p_appendToSelection,
+								  const App::Core::Model::BaseModel * const					 p_currentObj )
 	{
 		Util::Chrono chrono = Util::Chrono();
 		chrono.start();
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
 
-		std::unordered_set<Model::Molecule *> moleculeSet = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> moleculeSet
+			= std::unordered_set<App::Component::Chemistry::Molecule *>();
 
-		for ( Model::Molecule * const it : p_molecules )
+		for ( App::Component::Chemistry::Molecule * const it : p_molecules )
 		{
 			_selectMolecule( *it );
 			moleculeSet.emplace( it );
 		}
-		for ( const Model::Category * const it : p_categories )
+		for ( const App::Component::Chemistry::Category * const it : p_categories )
 		{
 			_selectCategory( *it );
 			moleculeSet.emplace( it->getMoleculePtr() );
 		}
-		for ( const Model::Chain * const it : p_chains )
+		for ( const App::Component::Chemistry::Chain * const it : p_chains )
 		{
 			_selectChain( *it );
 			moleculeSet.emplace( it->getMoleculePtr() );
 		}
-		for ( const Model::Residue * const it : p_residues )
+		for ( const App::Component::Chemistry::Residue * const it : p_residues )
 		{
 			_selectResidue( *it );
 			moleculeSet.emplace( it->getMoleculePtr() );
 		}
-		for ( const Model::Atom * const it : p_atoms )
+		for ( const App::Component::Chemistry::Atom * const it : p_atoms )
 		{
 			_selectAtom( *it );
 			moleculeSet.emplace( it->getMoleculePtr() );
 		}
 
-		for ( Model::Molecule * const moleculePtr : moleculeSet )
+		for ( App::Component::Chemistry::Molecule * const moleculePtr : moleculeSet )
 		{
 			_emplaceMolecule( *moleculePtr );
 			moleculePtr->refreshSelection( &_moleculesMap[ moleculePtr->getId() ] );
@@ -962,41 +967,42 @@ namespace VTX::Model
 		_notifyDataChanged();
 		chrono.stop();
 	}
-	void Selection::unselectModels( const std::vector<Model::Molecule *> & p_molecules,
-									const std::vector<Model::Category *> & p_categories,
-									const std::vector<Model::Chain *> &	   p_chains,
-									const std::vector<Model::Residue *> &  p_residus,
-									const std::vector<Model::Atom *> &	   p_atoms )
+	void Selection::unselectModels( const std::vector<App::Component::Chemistry::Molecule *> & p_molecules,
+									const std::vector<App::Component::Chemistry::Category *> & p_categories,
+									const std::vector<App::Component::Chemistry::Chain *> &	   p_chains,
+									const std::vector<App::Component::Chemistry::Residue *> &  p_residus,
+									const std::vector<App::Component::Chemistry::Atom *> &	   p_atoms )
 	{
-		std::unordered_set<Model::Molecule *> moleculeSet = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> moleculeSet
+			= std::unordered_set<App::Component::Chemistry::Molecule *>();
 
-		for ( Model::Molecule * const it : p_molecules )
+		for ( App::Component::Chemistry::Molecule * const it : p_molecules )
 		{
 			_unselectMolecule( *it );
 			moleculeSet.emplace( it );
 		}
-		for ( const Model::Category * const it : p_categories )
+		for ( const App::Component::Chemistry::Category * const it : p_categories )
 		{
 			_unselectCategory( *it );
 			moleculeSet.emplace( it->getMoleculePtr() );
 		}
-		for ( const Model::Chain * const it : p_chains )
+		for ( const App::Component::Chemistry::Chain * const it : p_chains )
 		{
 			_unselectChain( *it );
 			moleculeSet.emplace( it->getMoleculePtr() );
 		}
-		for ( const Model::Residue * const it : p_residus )
+		for ( const App::Component::Chemistry::Residue * const it : p_residus )
 		{
 			_unselectResidue( *it );
 			moleculeSet.emplace( it->getMoleculePtr() );
 		}
-		for ( const Model::Atom * const it : p_atoms )
+		for ( const App::Component::Chemistry::Atom * const it : p_atoms )
 		{
 			_unselectAtom( *it );
 			moleculeSet.emplace( it->getMoleculePtr() );
 		}
 
-		for ( Model::Molecule * const moleculePtr : moleculeSet )
+		for ( App::Component::Chemistry::Molecule * const moleculePtr : moleculeSet )
 		{
 			_refreshMoleculeSelection( moleculePtr );
 		}
@@ -1012,13 +1018,13 @@ namespace VTX::Model
 		const VTX::ID::VTX_ID & modelType = p_model.getTypeId();
 
 		if ( modelType == VTX::ID::Model::MODEL_MOLECULE )
-			selectMolecule( static_cast<Model::Molecule &>( p_model ), p_appendToSelection );
+			selectMolecule( static_cast<App::Component::Chemistry::Molecule &>( p_model ), p_appendToSelection );
 		else if ( modelType == VTX::ID::Model::MODEL_CHAIN )
-			selectChain( static_cast<Model::Chain &>( p_model ), p_appendToSelection );
+			selectChain( static_cast<App::Component::Chemistry::Chain &>( p_model ), p_appendToSelection );
 		else if ( modelType == VTX::ID::Model::MODEL_RESIDUE )
-			selectResidue( static_cast<Model::Residue &>( p_model ), p_appendToSelection );
+			selectResidue( static_cast<App::Component::Chemistry::Residue &>( p_model ), p_appendToSelection );
 		else if ( modelType == VTX::ID::Model::MODEL_ATOM )
-			selectAtom( static_cast<Model::Atom &>( p_model ), p_appendToSelection );
+			selectAtom( static_cast<App::Component::Chemistry::Atom &>( p_model ), p_appendToSelection );
 		else
 		{
 			_items.emplace( p_model.getId() );
@@ -1033,13 +1039,13 @@ namespace VTX::Model
 	}
 	void Selection::_unselectModel( const App::Core::Model::BaseModel & p_model ) { _items.erase( p_model.getId() ); }
 
-	bool Selection::isCategorySelected( const Model::Category & p_category ) const
+	bool Selection::isCategorySelected( const App::Component::Chemistry::Category & p_category ) const
 	{
 		bool res = false;
 
 		for ( const uint chainIndex : p_category.getChains() )
 		{
-			const Model::Chain * const chain = p_category.getMoleculePtr()->getChain( chainIndex );
+			const App::Component::Chemistry::Chain * const chain = p_category.getMoleculePtr()->getChain( chainIndex );
 
 			if ( chain == nullptr )
 				continue;
@@ -1053,7 +1059,7 @@ namespace VTX::Model
 
 		return res;
 	}
-	bool Selection::isCategoryFullySelected( const Model::Category & p_category ) const
+	bool Selection::isCategoryFullySelected( const App::Component::Chemistry::Category & p_category ) const
 	{
 		if ( p_category.isEmpty() )
 			return false;
@@ -1062,7 +1068,7 @@ namespace VTX::Model
 
 		for ( const uint chainIndex : p_category.getChains() )
 		{
-			const Model::Chain * const chain = p_category.getMoleculePtr()->getChain( chainIndex );
+			const App::Component::Chemistry::Chain * const chain = p_category.getMoleculePtr()->getChain( chainIndex );
 
 			if ( chain == nullptr )
 				continue;
@@ -1088,13 +1094,13 @@ namespace VTX::Model
 		const VTX::ID::VTX_ID & modelTypeID = p_model.getTypeId();
 
 		if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
-			return isMoleculeFullySelected( static_cast<const Model::Molecule &>( p_model ) );
+			return isMoleculeFullySelected( static_cast<const App::Component::Chemistry::Molecule &>( p_model ) );
 		else if ( modelTypeID == VTX::ID::Model::MODEL_CHAIN )
-			return isChainFullySelected( static_cast<const Model::Chain &>( p_model ) );
+			return isChainFullySelected( static_cast<const App::Component::Chemistry::Chain &>( p_model ) );
 		else if ( modelTypeID == VTX::ID::Model::MODEL_RESIDUE )
-			return isResidueFullySelected( static_cast<const Model::Residue &>( p_model ) );
+			return isResidueFullySelected( static_cast<const App::Component::Chemistry::Residue &>( p_model ) );
 		else if ( modelTypeID == VTX::ID::Model::MODEL_ATOM )
-			return isAtomSelected( static_cast<const Model::Atom &>( p_model ) );
+			return isAtomSelected( static_cast<const App::Component::Chemistry::Atom &>( p_model ) );
 		else
 			return _items.find( p_model.getId() ) != _items.end();
 	}
@@ -1116,7 +1122,8 @@ namespace VTX::Model
 	{
 		for ( const std::pair<const VTX::App::Core::Model::ID, MapChainIds> & item : _moleculesMap )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( item.first );
+			App::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( item.first );
 			molecule.refreshSelection( nullptr );
 		}
 
@@ -1130,7 +1137,8 @@ namespace VTX::Model
 	{
 		for ( const std::pair<const VTX::App::Core::Model::ID, MapChainIds> & item : _moleculesMap )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( item.first );
+			App::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( item.first );
 			molecule.refreshSelection( nullptr );
 		}
 
@@ -1153,8 +1161,8 @@ namespace VTX::Model
 	{
 		if ( p_event.name == App::Event::Global::MOLECULE_REMOVED )
 		{
-			const App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
-				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
+			const App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
+				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event );
 			unselectMolecule( *castedEvent.get() );
 		}
 	}
@@ -1175,7 +1183,8 @@ namespace VTX::Model
 
 			if ( typeId == VTX::ID::Model::MODEL_MOLECULE )
 			{
-				const Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( id );
+				const App::Component::Chemistry::Molecule & molecule
+					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( id );
 
 				if ( isMoleculeFullySelected( molecule ) )
 				{
@@ -1185,7 +1194,7 @@ namespace VTX::Model
 
 				for ( const std::pair<const App::Core::Model::ID, MapResidueIds> & chainData : _moleculesMap.at( id ) )
 				{
-					const Model::Chain & chain = *molecule.getChain( chainData.first );
+					const App::Component::Chemistry::Chain & chain = *molecule.getChain( chainData.first );
 					if ( isChainFullySelected( chain ) )
 					{
 						p_types.emplace( chain.getTypeId() );
@@ -1194,7 +1203,7 @@ namespace VTX::Model
 
 					for ( const std::pair<const App::Core::Model::ID, VecAtomIds> & residueData : chainData.second )
 					{
-						const Model::Residue & residue = *molecule.getResidue( residueData.first );
+						const App::Component::Chemistry::Residue & residue = *molecule.getResidue( residueData.first );
 						if ( isResidueFullySelected( residue ) )
 						{
 							p_types.emplace( residue.getTypeId() );
@@ -1233,8 +1242,9 @@ namespace VTX::Model
 
 		for ( const std::pair<const VTX::App::Core::Model::ID, MapChainIds> & mapMol : _moleculesMap )
 		{
-			const Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( mapMol.first );
-			Object3D::Helper::AABB	aabb	 = Object3D::Helper::AABB();
+			const App::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( mapMol.first );
+			Object3D::Helper::AABB aabb = Object3D::Helper::AABB();
 			_mapSelectionAABB.emplace( molecule.getId(), aabb );
 
 			if ( molecule.getChainCount() == mapMol.second.size() )
@@ -1245,7 +1255,7 @@ namespace VTX::Model
 
 			for ( const std::pair<const VTX::App::Core::Model::ID, MapResidueIds> & mapChain : mapMol.second )
 			{
-				const Model::Chain & chain = *molecule.getChain( mapChain.first );
+				const App::Component::Chemistry::Chain & chain = *molecule.getChain( mapChain.first );
 				if ( chain.getResidueCount() == mapChain.second.size() )
 				{
 					aabb.extend( chain.getAABB() );
@@ -1254,7 +1264,7 @@ namespace VTX::Model
 
 				for ( const std::pair<const VTX::App::Core::Model::ID, VecAtomIds> & mapResidue : mapChain.second )
 				{
-					const Model::Residue & residue = *molecule.getResidue( mapResidue.first );
+					const App::Component::Chemistry::Residue & residue = *molecule.getResidue( mapResidue.first );
 					if ( residue.getAtomCount() == mapResidue.second.size() )
 					{
 						aabb.extend( residue.getAABB() );
@@ -1263,7 +1273,7 @@ namespace VTX::Model
 
 					for ( const uint & vectorId : mapResidue.second )
 					{
-						const Model::Atom & atom = *molecule.getAtom( vectorId );
+						const App::Component::Chemistry::Atom & atom = *molecule.getAtom( vectorId );
 						aabb.extend( atom.getAABB() );
 					}
 				}
@@ -1272,7 +1282,7 @@ namespace VTX::Model
 	}
 	const App::Core::Model::BaseModel * const Selection::getCurrentObject() const { return _currentObject; }
 
-	void Selection::_emplaceMolecule( const Molecule & p_molecule )
+	void Selection::_emplaceMolecule( const App::Component::Chemistry::Molecule & p_molecule )
 	{
 		_items.emplace( p_molecule.getId() );
 		_moleculesMap.emplace( p_molecule.getId(), MapChainIds() );

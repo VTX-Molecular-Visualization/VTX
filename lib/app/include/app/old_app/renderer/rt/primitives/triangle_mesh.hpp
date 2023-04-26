@@ -7,7 +7,7 @@
 
 #include "../bvh.hpp"
 #include "app/old_app/define.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 
 namespace VTX
 {
@@ -21,7 +21,7 @@ namespace VTX
 			friend Triangle;
 			TriangleMesh() = default;
 			// explicit TriangleMesh( const FilePath & meshToLoad );
-			// explicit TriangleMesh( const Model::Molecule * p_molecule );
+			// explicit TriangleMesh( const App::Component::Chemistry::Molecule * p_molecule );
 
 			~TriangleMesh()
 			{

@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QWidget>
+#include <app/component/chemistry/_fwd.hpp>
 #include <app/core/action/base_action.hpp>
 #include <app/core/worker/callback.hpp>
 #include <util/types.hpp>
@@ -14,10 +15,10 @@ namespace VTX
 	{
 		class ImageExport;
 	}
-	namespace Model
-	{
-		class Molecule;
-	}
+	// namespace Model
+	//{
+	//	class Molecule;
+	// }
 
 	namespace UI
 	{
@@ -35,7 +36,7 @@ namespace VTX
 			static void openLoadMoleculeDialog();
 			static void openExportMoleculeDialog();
 			static void openLoadTrajectoryDialog();
-			static void openLoadTrajectoryDialog( Model::Molecule & p_target );
+			static void openLoadTrajectoryDialog( App::Component::Chemistry::Molecule & p_target );
 
 			static void openSetTrajectoryTargetsDialog( const FilePath & p_trajectoryFilePath );
 			static void openSetTrajectoryTargetsDialog( const std::vector<FilePath> & p_trajectoryFilePaths );

@@ -3,7 +3,7 @@
 
 #include "app/core/view/base_view_3d.hpp"
 #include "app/model/mesh_triangle.hpp"
-#include "app/model/solvent_excluded_surface.hpp"
+#include "app/component/chemistry/solvent_excluded_surface.hpp"
 
 namespace VTX
 {
@@ -25,7 +25,7 @@ namespace VTX
 				explicit Triangle( Model::MeshTriangle * const p_model ) : BaseView3D( p_model ) {}
 			};
 
-			class TriangleSES : public App::Core::View::BaseView3D<Model::SolventExcludedSurface>
+			class TriangleSES : public App::Core::View::BaseView3D<App::Component::Chemistry::SolventExcludedSurface>
 			{
 				VTX_VIEW
 
@@ -36,7 +36,7 @@ namespace VTX
 				Renderer::GL::Program * const _createProgram() override;
 
 			  private:
-				explicit TriangleSES( Model::SolventExcludedSurface * const p_model ) : BaseView3D( p_model ) {}
+				explicit TriangleSES( App::Component::Chemistry::SolventExcludedSurface * const p_model ) : BaseView3D( p_model ) {}
 			};
 		} // namespace D3
 	}	  // namespace View

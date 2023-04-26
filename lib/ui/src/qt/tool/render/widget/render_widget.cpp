@@ -15,7 +15,7 @@
 // #include <app/model/measurement/distance.hpp>
 // #include <app/model/measurement/measure_in_progress.hpp>
 #include <app/model/mesh_triangle.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 // #include "ui/state/state_machine.hpp"
 // #include "ui/state/visualization.hpp"
 #include "ui/qt/style.hpp"

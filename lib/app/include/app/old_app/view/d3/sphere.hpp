@@ -21,7 +21,7 @@ namespace VTX
 				void						  _init() override;
 
 			  private:
-				explicit Sphere( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
+				explicit Sphere( App::Component::Chemistry::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 			};
 		} // namespace D3
 	}	  // namespace View

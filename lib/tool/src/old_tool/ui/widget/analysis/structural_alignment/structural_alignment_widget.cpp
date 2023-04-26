@@ -4,7 +4,7 @@
 #include "tool/old_tool/ui/widget/analysis/structural_alignment/structural_alignment_model_list_widget.hpp"
 #include <app/mvc.hpp>
 #include <app/event/global.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/model/selection.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
@@ -154,13 +154,13 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 	void StructuralAlignmentWidget::_updateTargetedMoleculesWithSelection( const Model::Selection & p_selection )
 	{
-		std::vector<Model::Molecule *> selectedMolecules = std::vector<Model::Molecule *>();
+		std::vector<App::Component::Chemistry::Molecule *> selectedMolecules = std::vector<App::Component::Chemistry::Molecule *>();
 		selectedMolecules.reserve( p_selection.getMoleculesMap().size() );
 
 		for ( const Model::Selection::PairMoleculeIds & pairMolIDs : p_selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule
-				= VTX::MVC_MANAGER().getModel<Model::Molecule>( pairMolIDs.first );
+			App::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( pairMolIDs.first );
 			selectedMolecules.emplace_back( &molecule );
 		}
 
@@ -172,8 +172,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 	void StructuralAlignmentWidget::_computeAlign() const
 	{
-		const Model::Molecule * const  staticMolecule	= _moleculeList->getTickedModel<Model::Molecule>();
-		std::vector<Model::Molecule *> mobilesMolecules = _moleculeList->getNotTickedModels<Model::Molecule>();
+		const App::Component::Chemistry::Molecule * const  staticMolecule	= _moleculeList->getTickedModel<App::Component::Chemistry::Molecule>();
+		std::vector<App::Component::Chemistry::Molecule *> mobilesMolecules = _moleculeList->getNotTickedModels<App::Component::Chemistry::Molecule>();
 
 		// TODO : Display error message here (red text under empty field ?)
 		if ( staticMolecule == nullptr || mobilesMolecules.size() == 0 )

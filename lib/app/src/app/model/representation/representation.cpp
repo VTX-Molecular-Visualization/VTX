@@ -3,7 +3,7 @@
 #include "app/event.hpp"
 #include "app/model/representation/all_representation_data.hpp"
 #include "app/model/representation/representation_enum.hpp"
-#include "app/model/residue.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/setting.hpp"
@@ -14,8 +14,8 @@ namespace VTX::Model::Representation
 {
 	Representation::Representation() : BaseModel( VTX::ID::Model::MODEL_REPRESENTATION )
 	{
-		const int randomColorIndex = getId() % int( Model::Residue::SYMBOL::COUNT );
-		_color					   = Model::Residue::SYMBOL_COLOR[ randomColorIndex ];
+		const int randomColorIndex = getId() % int( App::Component::Chemistry::Residue::SYMBOL::COUNT );
+		_color					   = App::Component::Chemistry::Residue::SYMBOL_COLOR[ randomColorIndex ];
 	}
 
 	Representation::Representation( const Generic::REPRESENTATION & p_type ) :
@@ -23,8 +23,8 @@ namespace VTX::Model::Representation
 	{
 		changeRepresentationType( p_type, false );
 
-		const int randomColorIndex = getId() % int( Model::Residue::SYMBOL::COUNT );
-		_color					   = Model::Residue::SYMBOL_COLOR[ randomColorIndex ];
+		const int randomColorIndex = getId() % int( App::Component::Chemistry::Residue::SYMBOL::COUNT );
+		_color					   = App::Component::Chemistry::Residue::SYMBOL_COLOR[ randomColorIndex ];
 	}
 
 	Representation::~Representation()

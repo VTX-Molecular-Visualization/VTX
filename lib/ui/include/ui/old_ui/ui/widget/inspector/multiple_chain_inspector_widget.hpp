@@ -11,13 +11,13 @@
 #include "ui/old_ui/ui/widget/representation/instantiated_representation_list_widget.hpp"
 #include "ui/old_ui/ui/widget/representation/representation_inspector_section.hpp"
 #include <QWidget>
-#include <app/model/chain.hpp>
+#include <app/component/chemistry/chain.hpp>
 #include <app/model/representation/instantiated_representation.hpp>
 #include <app/model/representation/representation.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleChainWidget : public MultipleModelInspectorWidget<Model::Chain>
+	class MultipleChainWidget : public MultipleModelInspectorWidget<App::Component::Chemistry::Chain>
 	{
 		VTX_WIDGET
 

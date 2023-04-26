@@ -80,8 +80,8 @@ namespace VTX::View::UI::Widget
 			if ( moleculeView == nullptr )
 			{
 				moleculeView = new QTreeWidgetItem();
-				const Model::Molecule & molecule
-					= VTX::MVC_MANAGER().getModel<Model::Molecule>( pairMolecule.first );
+				const App::Component::Chemistry::Molecule & molecule
+					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( pairMolecule.first );
 				_applyMoleculeDataOnItem( molecule, *moleculeView, pairMolecule.second );
 			}
 
@@ -139,7 +139,7 @@ namespace VTX::View::UI::Widget
 			QList<QTreeWidgetItem *> & items = *itemsPtr;
 
 			const Model::Selection::MapChainIds & chainIds = _model->getMoleculesMap().at( moleculeId );
-			const Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeId );
+			const App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeId );
 
 			const uint chainCount = uint( chainIds.size() );
 			items.reserve( chainCount );
@@ -148,7 +148,7 @@ namespace VTX::View::UI::Widget
 
 			for ( const Model::Selection::PairChainIds & pairChain : chainIds )
 			{
-				const Model::Chain & chain = *molecule.getChain( pairChain.first );
+				const App::Component::Chemistry::Chain & chain = *molecule.getChain( pairChain.first );
 
 				QTreeWidgetItem * chainView = _extractItemFromList( chain.getId(), children );
 
@@ -199,7 +199,7 @@ namespace VTX::View::UI::Widget
 			itemsPtr						 = new QList<QTreeWidgetItem *>();
 			QList<QTreeWidgetItem *> & items = *itemsPtr;
 
-			const Model::Chain & chain = VTX::MVC_MANAGER().getModel<Model::Chain>( chainId );
+			const App::Component::Chemistry::Chain & chain = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( chainId );
 
 			const App::Core::Model::ID &						moleculeId = chain.getMoleculePtr()->getId();
 			const uint								chainIndex = chain.getIndex();
@@ -211,10 +211,10 @@ namespace VTX::View::UI::Widget
 
 			QList<QTreeWidgetItem *> children = p_chainItem->takeChildren();
 
-			const Model::Molecule & molecule = *chain.getMoleculePtr();
+			const App::Component::Chemistry::Molecule & molecule = *chain.getMoleculePtr();
 			for ( const Model::Selection::PairResidueIds & pairResidue : residueIds )
 			{
-				const Model::Residue & residue	   = *molecule.getResidue( pairResidue.first );
+				const App::Component::Chemistry::Residue & residue	   = *molecule.getResidue( pairResidue.first );
 				QTreeWidgetItem *	   residueView = _extractItemFromList( residue.getId(), children );
 
 				if ( residueView == nullptr )
@@ -261,9 +261,9 @@ namespace VTX::View::UI::Widget
 		{
 			QList<QTreeWidgetItem *> items = QList<QTreeWidgetItem *>();
 
-			const Model::Residue &	residue	   = VTX::MVC_MANAGER().getModel<Model::Residue>( residueId );
-			const Model::Chain &	chain	   = *residue.getChainPtr();
-			const Model::Molecule & molecule   = *chain.getMoleculePtr();
+			const App::Component::Chemistry::Residue &	residue	   = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( residueId );
+			const App::Component::Chemistry::Chain &	chain	   = *residue.getChainPtr();
+			const App::Component::Chemistry::Molecule & molecule   = *chain.getMoleculePtr();
 			const App::Core::Model::ID			moleculeId = molecule.getId();
 
 			const uint residueIndex = residue.getIndex();
@@ -279,7 +279,7 @@ namespace VTX::View::UI::Widget
 
 			for ( const uint & atomIndex : vecAtoms )
 			{
-				const Model::Atom * const atomPtr  = molecule.getAtom( atomIndex );
+				const App::Component::Chemistry::Atom * const atomPtr  = molecule.getAtom( atomIndex );
 				QTreeWidgetItem *		  atomView = _extractItemFromList( atomPtr->getId(), children );
 
 				if ( atomView == nullptr )
@@ -342,22 +342,22 @@ namespace VTX::View::UI::Widget
 
 			if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 			{
-				Model::Molecule & model = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelId );
+				App::Component::Chemistry::Molecule & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelId );
 				VTX_ACTION( new App::Action::Selection::UnselectMolecule( selectionModel, model ) );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 			{
-				Model::Chain & model = VTX::MVC_MANAGER().getModel<Model::Chain>( modelId );
+				App::Component::Chemistry::Chain & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( modelId );
 				VTX_ACTION( new App::Action::Selection::UnselectChain( selectionModel, model ) );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 			{
-				Model::Residue & model = VTX::MVC_MANAGER().getModel<Model::Residue>( modelId );
+				App::Component::Chemistry::Residue & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( modelId );
 				VTX_ACTION( new App::Action::Selection::UnselectResidue( selectionModel, model ) );
 			}
 			else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 			{
-				Model::Atom & model = VTX::MVC_MANAGER().getModel<Model::Atom>( modelId );
+				App::Component::Chemistry::Atom & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( modelId );
 				VTX_ACTION( new App::Action::Selection::UnselectAtom( selectionModel, model ) );
 			}
 		}
@@ -369,22 +369,22 @@ namespace VTX::View::UI::Widget
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			Model::Molecule & model = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelId );
+			App::Component::Chemistry::Molecule & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelId );
 			VTX_ACTION( new VTX::UI::QT::Action::Molecule::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
-			Model::Chain & model = VTX::MVC_MANAGER().getModel<Model::Chain>( modelId );
+			App::Component::Chemistry::Chain & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( modelId );
 			VTX_ACTION( new VTX::UI::QT::Action::Chain::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			Model::Residue & model = VTX::MVC_MANAGER().getModel<Model::Residue>( modelId );
+			App::Component::Chemistry::Residue & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( modelId );
 			VTX_ACTION( new VTX::UI::QT::Action::Residue::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
-			Model::Atom & model = VTX::MVC_MANAGER().getModel<Model::Atom>( modelId );
+			App::Component::Chemistry::Atom & model = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( modelId );
 			VTX_ACTION( new VTX::UI::QT::Action::Atom::Orient( model ) );
 		}
 	}
@@ -421,7 +421,7 @@ namespace VTX::View::UI::Widget
 
 	void SelectionView::localize() {}
 
-	void SelectionView::_applyMoleculeDataOnItem( const Model::Molecule &				p_molecule,
+	void SelectionView::_applyMoleculeDataOnItem( const App::Component::Chemistry::Molecule &				p_molecule,
 												  QTreeWidgetItem &						p_item,
 												  const Model::Selection::MapChainIds & p_children ) const
 	{
@@ -437,7 +437,7 @@ namespace VTX::View::UI::Widget
 
 		p_item.setChildIndicatorPolicy( childIndicatorPolicy );
 	}
-	void SelectionView::_applyChainDataOnItem( const Model::Chain &					   p_chain,
+	void SelectionView::_applyChainDataOnItem( const App::Component::Chemistry::Chain &					   p_chain,
 											   QTreeWidgetItem &					   p_item,
 											   const Model::Selection::MapResidueIds & p_children ) const
 	{
@@ -452,7 +452,7 @@ namespace VTX::View::UI::Widget
 		// Always show indicator, if cbain has no child, it is remove from the molecule
 		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::ShowIndicator );
 	}
-	void SelectionView::_applyResidueDataOnItem( const Model::Residue &				  p_residue,
+	void SelectionView::_applyResidueDataOnItem( const App::Component::Chemistry::Residue &				  p_residue,
 												 QTreeWidgetItem &					  p_item,
 												 const Model::Selection::VecAtomIds & p_children ) const
 	{
@@ -469,7 +469,7 @@ namespace VTX::View::UI::Widget
 
 		p_item.setChildIndicatorPolicy( childIndicator );
 	}
-	void SelectionView::_applyAtomDataOnItem( const Model::Atom & p_atom, QTreeWidgetItem & p_item ) const
+	void SelectionView::_applyAtomDataOnItem( const App::Component::Chemistry::Atom & p_atom, QTreeWidgetItem & p_item ) const
 	{
 		p_item.setData( NAME_COLUMN_INDEX, SceneItemWidget::MODEL_ID_ROLE, QVariant::fromValue( p_atom.getId() ) );
 		p_item.setText( NAME_COLUMN_INDEX,

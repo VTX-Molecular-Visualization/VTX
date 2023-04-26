@@ -1,12 +1,12 @@
-#include "app/model/category.hpp"
+#include "app/component/chemistry/category.hpp"
+#include "app/component/chemistry/atom.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include "app/core/event/vtx_event.hpp"
-#include "app/model/atom.hpp"
-#include "app/model/chain.hpp"
-#include "app/model/molecule.hpp"
-#include "app/model/residue.hpp"
 #include <algorithm>
 
-namespace VTX::Model
+namespace VTX::App::Component::Chemistry
 {
 	void Category::setMoleculePtr( Molecule * const p_molecule )
 	{
@@ -30,7 +30,7 @@ namespace VTX::Model
 	{
 		for ( const uint chainIndex : _linkedChains )
 		{
-			const Model::Chain * const chain = _moleculePtr->getChain( chainIndex );
+			const Chemistry::Chain * const chain = _moleculePtr->getChain( chainIndex );
 
 			if ( chain == nullptr )
 				continue;
@@ -47,7 +47,7 @@ namespace VTX::Model
 	}
 	bool Category::hasResidue( const uint p_residueIndex ) const
 	{
-		const Model::Residue * const residue = _moleculePtr->getResidue( p_residueIndex );
+		const Chemistry::Residue * const residue = _moleculePtr->getResidue( p_residueIndex );
 
 		if ( residue == nullptr )
 			return false;
@@ -56,7 +56,7 @@ namespace VTX::Model
 	}
 	bool Category::hasAtom( const uint p_atomIndex ) const
 	{
-		const Model::Atom * const atom = _moleculePtr->getAtom( p_atomIndex );
+		const Chemistry::Atom * const atom = _moleculePtr->getAtom( p_atomIndex );
 
 		if ( atom == nullptr )
 			return false;
@@ -84,13 +84,13 @@ namespace VTX::Model
 
 		for ( const uint chainIndex : _linkedChains )
 		{
-			const Model::Chain * chain = _moleculePtr->getChain( chainIndex );
+			const Chemistry::Chain * chain = _moleculePtr->getChain( chainIndex );
 
 			if ( chain == nullptr )
 				continue;
 
-			const Model::Residue * const firstResidue = _moleculePtr->getResidue( chain->getIndexFirstResidue() );
-			const Model::Residue * const lastResidue  = _moleculePtr->getResidue( chain->getIndexLastResidue() );
+			const Chemistry::Residue * const firstResidue = _moleculePtr->getResidue( chain->getIndexFirstResidue() );
+			const Chemistry::Residue * const lastResidue  = _moleculePtr->getResidue( chain->getIndexLastResidue() );
 
 			const uint firstAtomIndex = firstResidue->getIndexFirstAtom();
 			const uint lastAtomIndex  = lastResidue->getIndexFirstAtom() + lastResidue->getAtomCount() - 1;
@@ -124,8 +124,9 @@ namespace VTX::Model
 
 		if ( previousVisibleState != p_visible )
 		{
-			_notifyViews<CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY, _category );
-			_moleculePtr->propagateEventToViews<CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY, _category );
+			_notifyViews<Chemistry::CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY, _category );
+			_moleculePtr->propagateEventToViews<Chemistry::CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY,
+																		   _category );
 		}
 	}
 	void Category::setVisible( const bool p_visible, const bool p_notify )
@@ -138,8 +139,9 @@ namespace VTX::Model
 		{
 			if ( p_notify )
 			{
-				_notifyViews<CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY, _category );
-				_moleculePtr->propagateEventToViews<CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY, _category );
+				_notifyViews<Chemistry::CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY, _category );
+				_moleculePtr->propagateEventToViews<Chemistry::CATEGORY_ENUM>( App::Event::Model::CATEGORY_VISIBILITY,
+																			   _category );
 			}
 		}
 	}
@@ -148,7 +150,7 @@ namespace VTX::Model
 	{
 		for ( const uint chainIndex : _linkedChains )
 		{
-			const Model::Chain * const chain = _moleculePtr->getChain( chainIndex );
+			const Chemistry::Chain * const chain = _moleculePtr->getChain( chainIndex );
 
 			if ( chain == nullptr )
 				continue;
@@ -169,7 +171,7 @@ namespace VTX::Model
 
 		for ( const uint chainIndex : _linkedChains )
 		{
-			const Model::Chain * const chain = _moleculePtr->getChain( chainIndex );
+			const Chemistry::Chain * const chain = _moleculePtr->getChain( chainIndex );
 
 			if ( chain == nullptr )
 				continue;
@@ -198,4 +200,4 @@ namespace VTX::Model
 
 	void Category::_onRepresentationChange() { _notifyViews( App::Event::Model::REPRESENTATION_CHANGE ); }
 
-} // namespace VTX::Model
+} // namespace VTX::App::Component::Chemistry

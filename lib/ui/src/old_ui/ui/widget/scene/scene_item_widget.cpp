@@ -9,7 +9,7 @@
 #include <QDrag>
 #include <app/mvc.hpp>
 #include <app/event/global.hpp>
-#include <app/model/category.hpp>
+#include <app/component/chemistry/category.hpp>
 #include <app/model/selection.hpp>
 #include <app/old_app/generic/base_visible.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
@@ -262,23 +262,23 @@ namespace VTX::UI::Widget::Scene
 		bool visibility;
 		if ( modelType == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			visibility = VTX::MVC_MANAGER().getModel<Model::Molecule>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			visibility = VTX::MVC_MANAGER().getModel<Model::Category>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_CHAIN )
 		{
-			visibility = VTX::MVC_MANAGER().getModel<Model::Chain>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			visibility = VTX::MVC_MANAGER().getModel<Model::Residue>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_ATOM )
 		{
-			visibility = VTX::MVC_MANAGER().getModel<Model::Atom>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( itemID ).isVisible();
 		}
 		else
 		{

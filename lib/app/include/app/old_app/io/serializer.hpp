@@ -1,9 +1,10 @@
 #ifndef __VTX_SERIALIZER__
 #define __VTX_SERIALIZER__
 
+#include "app/component/chemistry/_fwd.hpp"
+#include "app/core/model/base_model.hpp"
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
 #include "app/old_app/math/transform.hpp"
-#include "app/core/model/base_model.hpp"
 #include <magic_enum.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -27,8 +28,8 @@ namespace VTX
 
 	namespace Model
 	{
-		class Molecule;
-		class Atom;
+		// class Molecule;
+		// class Atom;
 		class Label;
 		class Path;
 		class Viewpoint;
@@ -42,7 +43,7 @@ namespace VTX
 			class RenderEffectPreset;
 		} // namespace Renderer
 
-	}	  // namespace Model
+	} // namespace Model
 
 	namespace Color
 	{
@@ -58,7 +59,7 @@ namespace VTX
 
 			nlohmann::json serialize( const VTXApp & ) const;
 			nlohmann::json serialize( const Object3D::Scene & ) const;
-			nlohmann::json serialize( const Model::Molecule & ) const;
+			nlohmann::json serialize( const App::Component::Chemistry::Molecule & ) const;
 			nlohmann::json serialize( const Model::Path & ) const;
 			nlohmann::json serialize( const Model::Viewpoint & ) const;
 			nlohmann::json serialize( const Model::Representation::InstantiatedRepresentation & ) const;
@@ -79,11 +80,13 @@ namespace VTX
 			nlohmann::json serialize( const glm::qua<T, Q> & ) const;
 			nlohmann::json serialize( const Setting & ) const;
 
-			nlohmann::json serializeAtomReference( const Model::Atom & ) const;
+			nlohmann::json serializeAtomReference( const App::Component::Chemistry::Atom & ) const;
 
 			void deserialize( const nlohmann::json &, const std::tuple<uint, uint, uint> &, VTXApp & ) const;
 			void deserialize( const nlohmann::json &, const std::tuple<uint, uint, uint> &, Object3D::Scene & ) const;
-			void deserialize( const nlohmann::json &, const std::tuple<uint, uint, uint> &, Model::Molecule & ) const;
+			void deserialize( const nlohmann::json &,
+							  const std::tuple<uint, uint, uint> &,
+							  App::Component::Chemistry::Molecule & ) const;
 			void deserialize( const nlohmann::json &, Model::Path & ) const;
 			void deserialize( const nlohmann::json &, Model::Viewpoint & ) const;
 			void deserialize( const nlohmann::json &,
@@ -109,7 +112,7 @@ namespace VTX
 			void deserialize( const nlohmann::json &, glm::qua<T, Q> & ) const;
 			void deserialize( const nlohmann::json &, const std::tuple<uint, uint, uint> &, Setting & ) const;
 
-			const Model::Atom * deserializeAtomReference( const nlohmann::json & ) const;
+			const App::Component::Chemistry::Atom * deserializeAtomReference( const nlohmann::json & ) const;
 
 			template<typename M, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>>
 			M * tryDeserializeModel( const nlohmann::json & p_json ) const
@@ -137,15 +140,16 @@ namespace VTX
 						   const std::tuple<uint, uint, uint> &,
 						   Model::Representation::Representation & ) const;
 
-			nlohmann::json _serializeMoleculeRepresentations( const Model::Molecule &,
+			nlohmann::json _serializeMoleculeRepresentations( const App::Component::Chemistry::Molecule &,
 															  const VTX::IO::Writer::ChemfilesWriter * ) const;
-			nlohmann::json _serializeMoleculeVisibilities( const Model::Molecule &,
+			nlohmann::json _serializeMoleculeVisibilities( const App::Component::Chemistry::Molecule &,
 														   const VTX::IO::Writer::ChemfilesWriter * ) const;
 
 			void _deserializeMoleculeRepresentations( const nlohmann::json &,
 													  const std::tuple<uint, uint, uint> &,
-													  Model::Molecule & ) const;
-			void _deserializeMoleculeVisibilities( const nlohmann::json &, Model::Molecule & ) const;
+													  App::Component::Chemistry::Molecule & ) const;
+			void _deserializeMoleculeVisibilities( const nlohmann::json &,
+												   App::Component::Chemistry::Molecule & ) const;
 
 			template<typename T>
 			T _get( const nlohmann::json & p_json, const std::string & p_key, const T & p_defaultValue = T() ) const

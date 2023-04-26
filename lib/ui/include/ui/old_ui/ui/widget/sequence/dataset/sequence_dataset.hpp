@@ -4,7 +4,7 @@
 #include "ui/old_ui/style.hpp"
 #include <QPoint>
 #include <QString>
-#include <app/model/residue.hpp>
+#include <app/component/chemistry/residue.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Sequence::Dataset
@@ -27,12 +27,12 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		{
 			return _startIndexChar <= p_charIndex && p_charIndex < ( _startIndexChar + _charCount );
 		}
-		virtual Model::Residue * const getResidueAtCharIndex( const uint p_charIndex ) { return nullptr; };
+		virtual App::Component::Chemistry::Residue * const getResidueAtCharIndex( const uint p_charIndex ) { return nullptr; };
 
 		virtual bool				   isResidueInScope( const uint p_residueIndex ) const { return false; };
 		virtual uint				   getCharIndexOfResidue( const uint p_residueIndex ) const { return 0; };
-		virtual Model::Residue * const getFirstResidue() const { return nullptr; };
-		virtual Model::Residue * const getLastResidue() const { return nullptr; };
+		virtual App::Component::Chemistry::Residue * const getFirstResidue() const { return nullptr; };
+		virtual App::Component::Chemistry::Residue * const getLastResidue() const { return nullptr; };
 
 		virtual uint getPaintCharIndex( const uint p_charIndex ) const { return getCharIndexOfResidue( p_charIndex ); };
 		virtual uint getPaintLength( const uint p_charIndex ) const { return 0; };

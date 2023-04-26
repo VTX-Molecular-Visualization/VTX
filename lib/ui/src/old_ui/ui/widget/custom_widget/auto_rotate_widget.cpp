@@ -2,10 +2,8 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-
 #include <app/action/transformable.hpp>
 #include <app/old_app/setting.hpp>
-#include <app/old_app/trajectory/trajectory_enum.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::Widget::CustomWidget

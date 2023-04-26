@@ -20,7 +20,7 @@ namespace VTX
 			friend Triangle;
 			TriangleMesh() = default;
 			// explicit TriangleMesh( const FilePath & meshToLoad );
-			// explicit TriangleMesh( const Model::Molecule * p_molecule );
+			// explicit TriangleMesh( const App::Component::Chemistry::Molecule * p_molecule );
 
 			~TriangleMesh()
 			{

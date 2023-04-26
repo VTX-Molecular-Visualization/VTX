@@ -1,5 +1,5 @@
 #include "app/action/instantiated_representation.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 
 namespace VTX::App::Action::InstantiatedRepresentation
@@ -12,7 +12,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 
 	void ChangeColor::execute()
 	{
-		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 
 		for ( Model::Representation::InstantiatedRepresentation * const representation : _instantiatedRepresentations )
 		{
@@ -20,7 +20,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 			molecules.emplace( representation->getConstTarget()->getMolecule() );
 		}
 
-		for ( Model::Molecule * const molecule : molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : molecules )
 		{
 			molecule->refreshColors();
 		}

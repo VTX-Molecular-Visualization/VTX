@@ -5,7 +5,7 @@
 #include "ui/qt/dialog.hpp"
 #include <app/core/action/base_action.hpp>
 #include <app/core/worker/callback.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -28,7 +28,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 		explicit Open( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
 		explicit Open( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 		explicit Open( const std::map<FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
-		explicit Open( const FilePath & p_trajectoryPath, Model::Molecule & p_target )
+		explicit Open( const FilePath & p_trajectoryPath, App::Component::Chemistry::Molecule & p_target )
 		{
 			_trajectoryTargets.emplace_back( &p_target );
 			_paths.emplace_back( p_trajectoryPath );
@@ -43,7 +43,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 		std::vector<FilePath>			  _paths = std::vector<FilePath>();
 		std::map<FilePath, std::string *> _buffers;
 
-		std::vector<Model::Molecule *> _trajectoryTargets = std::vector<Model::Molecule *>();
+		std::vector<App::Component::Chemistry::Molecule *> _trajectoryTargets = std::vector<App::Component::Chemistry::Molecule *>();
 	};
 
 	class Save : public VTX::App::Core::Action::BaseAction

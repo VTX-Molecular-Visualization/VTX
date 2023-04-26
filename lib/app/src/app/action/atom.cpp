@@ -1,7 +1,7 @@
 #include "app/action/atom.hpp"
 #include "app/mvc.hpp"
-#include "app/model/generated_molecule.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/generated_molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/model/selection.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/object3d/scene.hpp"
@@ -24,21 +24,21 @@ namespace VTX::App::Action::Atom
 	{
 		if ( _mode == VISIBILITY_MODE::SOLO )
 		{
-			std::map<Model::Molecule *, std::vector<uint>> atomIDsPerMolecules
-				= std::map<Model::Molecule *, std::vector<uint>>();
+			std::map<App::Component::Chemistry::Molecule *, std::vector<uint>> atomIDsPerMolecules
+				= std::map<App::Component::Chemistry::Molecule *, std::vector<uint>>();
 
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				Model::Atom * const atom = static_cast<Model::Atom *>( visible );
+				App::Component::Chemistry::Atom * const atom = static_cast<App::Component::Chemistry::Atom *>( visible );
 				atomIDsPerMolecules[ atom->getMoleculePtr() ].emplace_back( atom->getIndex() );
 			}
 
 			for ( const Object3D::Scene::PairMoleculePtrFloat & sceneMolecule :
 				  VTXApp::get().getScene().getMolecules() )
 			{
-				Model::Molecule * const molecule = sceneMolecule.first;
+				App::Component::Chemistry::Molecule * const molecule = sceneMolecule.first;
 
-				std::map<Model::Molecule *, std::vector<uint>>::iterator it = atomIDsPerMolecules.find( molecule );
+				std::map<App::Component::Chemistry::Molecule *, std::vector<uint>>::iterator it = atomIDsPerMolecules.find( molecule );
 
 				if ( it != atomIDsPerMolecules.end() )
 				{
@@ -55,18 +55,18 @@ namespace VTX::App::Action::Atom
 		}
 		else
 		{
-			std::map<Model::Molecule *, std::vector<Model::Atom *>> atomsPerMolecules
-				= std::map<Model::Molecule *, std::vector<Model::Atom *>>();
+			std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Atom *>> atomsPerMolecules
+				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Atom *>>();
 
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				Model::Atom * const atom = static_cast<Model::Atom *>( visible );
+				App::Component::Chemistry::Atom * const atom = static_cast<App::Component::Chemistry::Atom *>( visible );
 				atomsPerMolecules[ atom->getMoleculePtr() ].emplace_back( atom );
 			}
 
-			for ( const std::pair<Model::Molecule *, std::vector<Model::Atom *>> & pair : atomsPerMolecules )
+			for ( const std::pair<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Atom *>> & pair : atomsPerMolecules )
 			{
-				for ( Model::Atom * const atom : pair.second )
+				for ( App::Component::Chemistry::Atom * const atom : pair.second )
 					Util::Molecule::show( *atom, _getVisibilityBool( *atom ), true, false, false );
 
 				pair.first->notifyVisibilityChange();
@@ -82,7 +82,7 @@ namespace VTX::App::Action::Atom
 	{
 		VTX::Selection::SelectionManager::get().getSelectionModel().unselectAtom( _atom );
 
-		Model::Molecule * const molecule = _atom.getMoleculePtr();
+		App::Component::Chemistry::Molecule * const molecule = _atom.getMoleculePtr();
 		molecule->removeAtom( _atom.getIndex() );
 
 		if ( molecule->isEmpty() )
@@ -102,8 +102,8 @@ namespace VTX::App::Action::Atom
 
 	void Copy::execute()
 	{
-		Model::GeneratedMolecule * generatedMolecule
-			= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
+		App::Component::Chemistry::GeneratedMolecule * generatedMolecule
+			= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
 
 		generatedMolecule->copyFromAtom( _target );
 		generatedMolecule->applyTransform( _target.getMoleculePtr()->getTransform() );
@@ -114,8 +114,8 @@ namespace VTX::App::Action::Atom
 	{
 		VTX::Selection::SelectionManager::get().getSelectionModel().clear();
 
-		Model::GeneratedMolecule * const generatedMolecule
-			= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
+		App::Component::Chemistry::GeneratedMolecule * const generatedMolecule
+			= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
 
 		generatedMolecule->extractAtom( _target );
 		VTXApp::get().getScene().addMolecule( generatedMolecule );

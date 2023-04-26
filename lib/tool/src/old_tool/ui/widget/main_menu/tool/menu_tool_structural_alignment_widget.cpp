@@ -109,8 +109,8 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-		const Model::Molecule *		   staticMolecule;
-		std::vector<Model::Molecule *> mobileMolecules;
+		const App::Component::Chemistry::Molecule *		   staticMolecule;
+		std::vector<App::Component::Chemistry::Molecule *> mobileMolecules;
 		Util::Analysis::pickTargetAndComparersFromSelection( selection, staticMolecule, mobileMolecules );
 
 		VTX_ACTION(

@@ -38,7 +38,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuResidue::localize() {}
 
-	void ContextualMenuResidue::setTarget( Model::Residue * const p_target )
+	void ContextualMenuResidue::setTarget( App::Component::Chemistry::Residue * const p_target )
 	{
 		ContextualMenuTemplate::setTarget( p_target );
 

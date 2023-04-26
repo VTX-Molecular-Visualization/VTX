@@ -4,12 +4,12 @@
 #include "app/action.hpp"
 #include "app/action/visible.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/model/atom.hpp"
-#include "app/model/category.hpp"
-#include "app/model/chain.hpp"
-#include "app/model/generated_molecule.hpp"
-#include "app/model/molecule.hpp"
-#include "app/model/residue.hpp"
+#include "app/component/chemistry/atom.hpp"
+#include "app/component/chemistry/category.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/generated_molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include "app/model/selection.hpp"
 #include "app/model/viewpoint.hpp"
 #include "app/old_app/id.hpp"
@@ -78,7 +78,7 @@ namespace VTX::App::Action::Selection
 	{
 	  public:
 		explicit SelectMolecule( Model::Selection & p_selection,
-								 Model::Molecule &	p_molecule,
+								 App::Component::Chemistry::Molecule &	p_molecule,
 								 const bool			p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_appendToSelection( p_appendToSelection )
@@ -86,7 +86,7 @@ namespace VTX::App::Action::Selection
 			_molecules.emplace_back( &p_molecule );
 		}
 		explicit SelectMolecule( Model::Selection &						p_selection,
-								 const std::vector<Model::Molecule *> & p_molecules,
+								 const std::vector<App::Component::Chemistry::Molecule *> & p_molecules,
 								 const bool								p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_appendToSelection( p_appendToSelection )
@@ -100,14 +100,14 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		Model::Selection &			   _selection;
-		std::vector<Model::Molecule *> _molecules = std::vector<Model::Molecule *>();
+		std::vector<App::Component::Chemistry::Molecule *> _molecules = std::vector<App::Component::Chemistry::Molecule *>();
 		const bool					   _appendToSelection;
 	};
 	class SelectCategory : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectCategory( Model::Selection & p_selection,
-								 Model::Category &	p_category,
+								 App::Component::Chemistry::Category &	p_category,
 								 const bool			p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_categories { &p_category }, _appendToSelection( p_appendToSelection )
@@ -115,7 +115,7 @@ namespace VTX::App::Action::Selection
 		}
 
 		explicit SelectCategory( Model::Selection &						p_selection,
-								 const std::vector<Model::Category *> & p_categories,
+								 const std::vector<App::Component::Chemistry::Category *> & p_categories,
 								 const bool								p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_categories( p_categories ), _appendToSelection( p_appendToSelection )
@@ -126,14 +126,14 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		Model::Selection &			   _selection;
-		std::vector<Model::Category *> _categories;
+		std::vector<App::Component::Chemistry::Category *> _categories;
 		const bool					   _appendToSelection;
 	};
 	class SelectChain : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectChain( Model::Selection & p_selection,
-							  Model::Chain &	 p_chain,
+							  App::Component::Chemistry::Chain &	 p_chain,
 							  const bool		 p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_chains { &p_chain }, _appendToSelection( p_appendToSelection )
@@ -141,7 +141,7 @@ namespace VTX::App::Action::Selection
 		}
 
 		explicit SelectChain( Model::Selection &				  p_selection,
-							  const std::vector<Model::Chain *> & p_chains,
+							  const std::vector<App::Component::Chemistry::Chain *> & p_chains,
 							  const bool						  p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_chains( p_chains ), _appendToSelection( p_appendToSelection )
@@ -152,14 +152,14 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		Model::Selection &			_selection;
-		std::vector<Model::Chain *> _chains;
+		std::vector<App::Component::Chemistry::Chain *> _chains;
 		const bool					_appendToSelection;
 	};
 	class SelectResidue : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectResidue( Model::Selection & p_selection,
-								Model::Residue &   p_residue,
+								App::Component::Chemistry::Residue &   p_residue,
 								const bool		   p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_appendToSelection( p_appendToSelection )
@@ -167,7 +167,7 @@ namespace VTX::App::Action::Selection
 			_residues.emplace_back( &p_residue );
 		}
 		explicit SelectResidue( Model::Selection &					  p_selection,
-								const std::vector<Model::Residue *> & p_residues,
+								const std::vector<App::Component::Chemistry::Residue *> & p_residues,
 								const bool							  p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_appendToSelection( p_appendToSelection )
@@ -181,14 +181,14 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		Model::Selection &			  _selection;
-		std::vector<Model::Residue *> _residues = std::vector<Model::Residue *>();
+		std::vector<App::Component::Chemistry::Residue *> _residues = std::vector<App::Component::Chemistry::Residue *>();
 		const bool					  _appendToSelection;
 	};
 	class SelectAtom : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectAtom( Model::Selection & p_selection,
-							 Model::Atom &		p_atom,
+							 App::Component::Chemistry::Atom &		p_atom,
 							 const bool			p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_appendToSelection( p_appendToSelection )
@@ -197,7 +197,7 @@ namespace VTX::App::Action::Selection
 		}
 
 		explicit SelectAtom( Model::Selection &					p_selection,
-							 const std::vector<Model::Atom *> & p_atoms,
+							 const std::vector<App::Component::Chemistry::Atom *> & p_atoms,
 							 const bool							p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_atoms( p_atoms ), _appendToSelection( p_appendToSelection )
@@ -208,7 +208,7 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		Model::Selection &		   _selection;
-		std::vector<Model::Atom *> _atoms = std::vector<Model::Atom *>();
+		std::vector<App::Component::Chemistry::Atom *> _atoms = std::vector<App::Component::Chemistry::Atom *>();
 		const bool				   _appendToSelection;
 	};
 
@@ -216,7 +216,7 @@ namespace VTX::App::Action::Selection
 	{
 	  public:
 		explicit UnselectMolecule( Model::Selection & p_selection,
-								   Model::Molecule &  p_molecule,
+								   App::Component::Chemistry::Molecule &  p_molecule,
 								   bool				  p_check = false ) :
 			_selection( p_selection ),
 			_check( p_check )
@@ -224,7 +224,7 @@ namespace VTX::App::Action::Selection
 			_molecules.emplace_back( &p_molecule );
 		}
 		explicit UnselectMolecule( Model::Selection &					  p_selection,
-								   const std::vector<Model::Molecule *> & p_molecules,
+								   const std::vector<App::Component::Chemistry::Molecule *> & p_molecules,
 								   bool									  p_check = false ) :
 			_selection( p_selection ),
 			_check( p_check )
@@ -238,14 +238,14 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		Model::Selection &			   _selection;
-		std::vector<Model::Molecule *> _molecules = std::vector<Model::Molecule *>();
+		std::vector<App::Component::Chemistry::Molecule *> _molecules = std::vector<App::Component::Chemistry::Molecule *>();
 		const bool					   _check;
 	};
 	class UnselectCategory : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectCategory( Model::Selection & p_selection,
-								   Model::Category &  p_category,
+								   App::Component::Chemistry::Category &  p_category,
 								   bool				  p_check = false ) :
 			_selection( p_selection ),
 			_check( p_check )
@@ -253,7 +253,7 @@ namespace VTX::App::Action::Selection
 			_categories.emplace_back( &p_category );
 		}
 		explicit UnselectCategory( Model::Selection &					  p_selection,
-								   const std::vector<Model::Category *> & p_categories,
+								   const std::vector<App::Component::Chemistry::Category *> & p_categories,
 								   bool									  p_check = false ) :
 			_selection( p_selection ),
 			_check( p_check )
@@ -267,19 +267,19 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		Model::Selection &			   _selection;
-		std::vector<Model::Category *> _categories = std::vector<Model::Category *>();
+		std::vector<App::Component::Chemistry::Category *> _categories = std::vector<App::Component::Chemistry::Category *>();
 		const bool					   _check;
 	};
 	class UnselectChain : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit UnselectChain( Model::Selection & p_selection, Model::Chain & p_chain, bool p_check = false ) :
+		explicit UnselectChain( Model::Selection & p_selection, App::Component::Chemistry::Chain & p_chain, bool p_check = false ) :
 			_selection( p_selection ), _check( p_check )
 		{
 			_chains.emplace_back( &p_chain );
 		}
 		explicit UnselectChain( Model::Selection &					p_selection,
-								const std::vector<Model::Chain *> & p_chains,
+								const std::vector<App::Component::Chemistry::Chain *> & p_chains,
 								bool								p_check = false ) :
 			_selection( p_selection ),
 			_check( p_check )
@@ -293,19 +293,19 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		Model::Selection &			_selection;
-		std::vector<Model::Chain *> _chains = std::vector<Model::Chain *>();
+		std::vector<App::Component::Chemistry::Chain *> _chains = std::vector<App::Component::Chemistry::Chain *>();
 		const bool					_check;
 	};
 	class UnselectResidue : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit UnselectResidue( Model::Selection & p_selection, Model::Residue & p_residue, bool p_check = false ) :
+		explicit UnselectResidue( Model::Selection & p_selection, App::Component::Chemistry::Residue & p_residue, bool p_check = false ) :
 			_selection( p_selection ), _check( p_check )
 		{
 			_residues.emplace_back( &p_residue );
 		}
 		explicit UnselectResidue( Model::Selection &					p_selection,
-								  const std::vector<Model::Residue *> & p_residues,
+								  const std::vector<App::Component::Chemistry::Residue *> & p_residues,
 								  bool									p_check = false ) :
 			_selection( p_selection ),
 			_check( p_check )
@@ -319,19 +319,19 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		Model::Selection &			  _selection;
-		std::vector<Model::Residue *> _residues = std::vector<Model::Residue *>();
+		std::vector<App::Component::Chemistry::Residue *> _residues = std::vector<App::Component::Chemistry::Residue *>();
 		const bool					  _check;
 	};
 	class UnselectAtom : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit UnselectAtom( Model::Selection & p_selection, Model::Atom & p_atom, bool p_check = false ) :
+		explicit UnselectAtom( Model::Selection & p_selection, App::Component::Chemistry::Atom & p_atom, bool p_check = false ) :
 			_selection( p_selection ), _check( p_check )
 		{
 			_atoms.emplace_back( &p_atom );
 		}
 		explicit UnselectAtom( Model::Selection &				  p_selection,
-							   const std::vector<Model::Atom *> & p_atoms,
+							   const std::vector<App::Component::Chemistry::Atom *> & p_atoms,
 							   bool								  p_check = false ) :
 			_selection( p_selection ),
 			_atoms( p_atoms ), _check( p_check )
@@ -341,7 +341,7 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		Model::Selection &		   _selection;
-		std::vector<Model::Atom *> _atoms = std::vector<Model::Atom *>();
+		std::vector<App::Component::Chemistry::Atom *> _atoms = std::vector<App::Component::Chemistry::Atom *>();
 		const bool				   _check;
 	};
 
@@ -508,7 +508,7 @@ namespace VTX::App::Action::Selection
 	{
 	  public:
 		explicit Copy( const Model::Selection & p_source,
-					   const int				p_frame = Model::GeneratedMolecule::ALL_FRAMES_INDEX ) :
+					   const int				p_frame = App::Component::Chemistry::GeneratedMolecule::ALL_FRAMES_INDEX ) :
 			_selection( p_source ),
 			_frame( p_frame )
 		{
@@ -517,7 +517,7 @@ namespace VTX::App::Action::Selection
 		virtual void execute() override;
 
 	  protected:
-		void _copyFrame( const Model::Molecule & p_source, const Model::Selection & p_selection, const int p_frame );
+		void _copyFrame( const App::Component::Chemistry::Molecule & p_source, const Model::Selection & p_selection, const int p_frame );
 
 	  private:
 		const Model::Selection & _selection;

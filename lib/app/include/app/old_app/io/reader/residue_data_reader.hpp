@@ -1,8 +1,8 @@
 #ifndef __VTX_READER_RESIDUE_DATA__
 #define __VTX_READER_RESIDUE_DATA__
 
-#include "app/model/bond.hpp"
-#include "app/model/category_enum.hpp"
+#include "app/component/chemistry/bond.hpp"
+#include "app/component/chemistry/enum_category.hpp"
 #include "base_reader.hpp"
 #include <map>
 #include <sstream>
@@ -16,7 +16,7 @@ namespace VTX::IO::Reader
 	  public:
 		std::string		   atom1;
 		std::string		   atom2;
-		Model::Bond::ORDER bondOrder;
+		App::Component::Chemistry::Bond::ORDER bondOrder;
 	};
 	class ResidueData
 	{
@@ -28,7 +28,7 @@ namespace VTX::IO::Reader
 			fullname( p_fullname ), bondData( p_bondData ) {};
 
 		std::string			  fullname;
-		CATEGORY_ENUM		  category;
+		App::Component::Chemistry::CATEGORY_ENUM		  category;
 		std::vector<BondData> bondData;
 	};
 

@@ -2,7 +2,7 @@
 #define __VTX_VIEW_3D_RIBBON__
 
 #include "app/core/view/base_view_3d.hpp"
-#include "app/model/secondary_structure.hpp"
+#include "app/component/chemistry/secondary_structure.hpp"
 
 namespace VTX
 {
@@ -10,7 +10,7 @@ namespace VTX
 	{
 		namespace D3
 		{
-			class Ribbon : public App::Core::View::BaseView3D<Model::SecondaryStructure>
+			class Ribbon : public App::Core::View::BaseView3D<App::Component::Chemistry::SecondaryStructure>
 			{
 				VTX_VIEW
 
@@ -22,7 +22,7 @@ namespace VTX
 				void						  _init() override;
 
 			  private:
-				explicit Ribbon( Model::SecondaryStructure * const p_model ) : BaseView3D( p_model ) {}
+				explicit Ribbon( App::Component::Chemistry::SecondaryStructure * const p_model ) : BaseView3D( p_model ) {}
 			};
 		} // namespace D3
 	}	  // namespace View

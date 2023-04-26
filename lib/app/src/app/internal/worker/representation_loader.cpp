@@ -83,9 +83,9 @@ namespace VTX::Worker
 			_library.setDefaultRepresentation( defaultRepresentationIndex, false );
 		}
 
-		for ( int i = 0; i < int( CATEGORY_ENUM::COUNT ); i++ )
+		for ( int i = 0; i < int( App::Component::Chemistry::CATEGORY_ENUM::COUNT ); i++ )
 		{
-			const CATEGORY_ENUM categoryEnum = CATEGORY_ENUM( i );
+			const App::Component::Chemistry::CATEGORY_ENUM categoryEnum = App::Component::Chemistry::CATEGORY_ENUM( i );
 			const std::string & representationName
 				= VTXApp::get().getSetting().getTmpDefaultRepresentationNamePerCategory( categoryEnum );
 

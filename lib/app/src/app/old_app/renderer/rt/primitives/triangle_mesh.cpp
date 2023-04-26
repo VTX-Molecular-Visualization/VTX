@@ -92,7 +92,7 @@ namespace VTX
 		*/
 
 		/*
-		TriangleMesh::TriangleMesh( const Model::Molecule * p_molecule )
+		TriangleMesh::TriangleMesh( const App::Component::Chemistry::Molecule * p_molecule )
 		{
 			const Model::Ribbon & ribbon	  = p_molecule->getRibbon();
 			_vertices						  = ribbon.getVertices();

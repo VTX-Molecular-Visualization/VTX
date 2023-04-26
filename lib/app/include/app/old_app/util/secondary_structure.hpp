@@ -1,10 +1,10 @@
 #ifndef __VTX_UTIL_SECONDARY_STRUCTURE__
 #define __VTX_UTIL_SECONDARY_STRUCTURE__
 
-#include "app/model/chain.hpp"
-#include "app/model/molecule.hpp"
-#include "app/model/residue.hpp"
-#include "app/model/secondary_structure.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/residue.hpp"
+#include "app/component/chemistry/secondary_structure.hpp"
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>
@@ -15,19 +15,19 @@ namespace VTX
 	{
 		namespace SecondaryStructure
 		{
-			static void computeStride( Model::Molecule & p_molecule )
+			static void computeStride( App::Component::Chemistry::Molecule & p_molecule )
 			{
-				const Model::Molecule::AtomPositionsFrame & positions
+				const App::Component::Chemistry::Molecule::AtomPositionsFrame & positions
 					= p_molecule.getAtomPositionFrame( p_molecule.getFrame() );
 
 				for ( uint chainIdx = 0; chainIdx < p_molecule.getChainCount(); ++chainIdx )
 				{
-					const Model::Chain * const chainPtr = p_molecule.getChain( chainIdx );
+					const App::Component::Chemistry::Chain * const chainPtr = p_molecule.getChain( chainIdx );
 
 					if ( chainPtr == nullptr )
 						continue;
 
-					const Model::Chain & chain		  = *chainPtr;
+					const App::Component::Chemistry::Chain & chain		  = *chainPtr;
 					const uint			 residueCount = chain.getResidueCount();
 
 					// Not enought residues.
@@ -51,33 +51,33 @@ namespace VTX
 					psi[ residueCount - 1 ] = PI_2f;
 
 					p_molecule.getResidue( idxFirstResidue )
-						->setSecondaryStructure( Model::SecondaryStructure::TYPE::COIL );
+						->setSecondaryStructure( App::Component::Chemistry::SecondaryStructure::TYPE::COIL );
 					p_molecule.getResidue( idxFirstResidue + residueCount - 1 )
-						->setSecondaryStructure( Model::SecondaryStructure::TYPE::COIL );
+						->setSecondaryStructure( App::Component::Chemistry::SecondaryStructure::TYPE::COIL );
 
 					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 					{
 						const uint					 currentResidueIndex = idxFirstResidue + residueIdx;
-						const Model::Residue * const residue0Ptr = p_molecule.getResidue( currentResidueIndex - 1 );
-						Model::Residue * const		 residue1Ptr = p_molecule.getResidue( currentResidueIndex );
-						const Model::Residue * const residue2Ptr = p_molecule.getResidue( currentResidueIndex + 1 );
+						const App::Component::Chemistry::Residue * const residue0Ptr = p_molecule.getResidue( currentResidueIndex - 1 );
+						App::Component::Chemistry::Residue * const		 residue1Ptr = p_molecule.getResidue( currentResidueIndex );
+						const App::Component::Chemistry::Residue * const residue2Ptr = p_molecule.getResidue( currentResidueIndex + 1 );
 
 						if ( residue0Ptr == nullptr || residue1Ptr == nullptr || residue2Ptr == nullptr )
 						{
 							continue;
 						}
 
-						const Model::Residue & residue0 = *residue0Ptr;
-						Model::Residue &	   residue1 = *residue1Ptr;
-						const Model::Residue & residue2 = *residue2Ptr;
+						const App::Component::Chemistry::Residue & residue0 = *residue0Ptr;
+						App::Component::Chemistry::Residue &	   residue1 = *residue1Ptr;
+						const App::Component::Chemistry::Residue & residue2 = *residue2Ptr;
 
-						residue1.setSecondaryStructure( Model::SecondaryStructure::TYPE::COIL );
+						residue1.setSecondaryStructure( App::Component::Chemistry::SecondaryStructure::TYPE::COIL );
 
-						const Model::Atom * C0	= residue0.findFirstAtomByName( "C" );
-						const Model::Atom * N1	= residue1.findFirstAtomByName( "N" );
-						const Model::Atom * CA1 = residue1.getAlphaCarbon();
-						const Model::Atom * C1	= residue1.findFirstAtomByName( "C" );
-						const Model::Atom * N2	= residue2.findFirstAtomByName( "N" );
+						const App::Component::Chemistry::Atom * C0	= residue0.findFirstAtomByName( "C" );
+						const App::Component::Chemistry::Atom * N1	= residue1.findFirstAtomByName( "N" );
+						const App::Component::Chemistry::Atom * CA1 = residue1.getAlphaCarbon();
+						const App::Component::Chemistry::Atom * C1	= residue1.findFirstAtomByName( "C" );
+						const App::Component::Chemistry::Atom * N2	= residue2.findFirstAtomByName( "N" );
 
 						if ( C0 == nullptr || N1 == nullptr || CA1 == nullptr || C1 == nullptr || N2 == nullptr )
 						{
@@ -123,8 +123,8 @@ namespace VTX
 							{
 								for ( uint k = firstHelixIdx; k < residueIdx; k++ )
 								{
-									Model::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
-									residue.setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT );
+									App::Component::Chemistry::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
+									residue.setSecondaryStructure( App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT );
 								}
 							}
 							RHelixCount = 0;
@@ -148,8 +148,8 @@ namespace VTX
 							{
 								for ( uint k = firstHelixIdx; k < residueIdx; k++ )
 								{
-									Model::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
-									residue.setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT );
+									App::Component::Chemistry::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
+									residue.setSecondaryStructure( App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT );
 								}
 							}
 							LHelixCount = 0;
@@ -174,8 +174,8 @@ namespace VTX
 							{
 								for ( uint k = firstStrandIdx; k < residueIdx; k++ )
 								{
-									Model::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
-									residue.setSecondaryStructure( Model::SecondaryStructure::TYPE::STRAND );
+									App::Component::Chemistry::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
+									residue.setSecondaryStructure( App::Component::Chemistry::SecondaryStructure::TYPE::STRAND );
 								}
 							}
 							strandCount = 0;
@@ -185,25 +185,25 @@ namespace VTX
 					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 					{
 						const uint					 currentResidueIndex = idxFirstResidue + residueIdx;
-						const Model::Residue * const residue0Ptr = p_molecule.getResidue( currentResidueIndex - 1 );
-						Model::Residue * const		 residue1Ptr = p_molecule.getResidue( currentResidueIndex );
-						const Model::Residue * const residue2Ptr = p_molecule.getResidue( currentResidueIndex + 1 );
+						const App::Component::Chemistry::Residue * const residue0Ptr = p_molecule.getResidue( currentResidueIndex - 1 );
+						App::Component::Chemistry::Residue * const		 residue1Ptr = p_molecule.getResidue( currentResidueIndex );
+						const App::Component::Chemistry::Residue * const residue2Ptr = p_molecule.getResidue( currentResidueIndex + 1 );
 
 						if ( residue0Ptr == nullptr || residue1Ptr == nullptr || residue2Ptr == nullptr )
 						{
 							continue;
 						}
 
-						const Model::Residue & residue0 = *residue0Ptr;
-						Model::Residue &	   residue	= *residue1Ptr;
-						const Model::Residue & residue2 = *residue2Ptr;
+						const App::Component::Chemistry::Residue & residue0 = *residue0Ptr;
+						App::Component::Chemistry::Residue &	   residue	= *residue1Ptr;
+						const App::Component::Chemistry::Residue & residue2 = *residue2Ptr;
 
 						if ( ( residue0.getSecondaryStructure() == residue2.getSecondaryStructure() )
 							 && ( ( residue0.getSecondaryStructure()
-									== Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT )
+									== App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT )
 								  || ( residue0.getSecondaryStructure()
-									   == Model::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT )
-								  || ( residue0.getSecondaryStructure() == Model::SecondaryStructure::TYPE::STRAND ) ) )
+									   == App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT )
+								  || ( residue0.getSecondaryStructure() == App::Component::Chemistry::SecondaryStructure::TYPE::STRAND ) ) )
 
 						{
 							residue.setSecondaryStructure( residue0.getSecondaryStructure() );
@@ -212,7 +212,7 @@ namespace VTX
 				}
 			}
 
-			static void computeSecondaryStructure( Model::Molecule & p_molecule )
+			static void computeSecondaryStructure( App::Component::Chemistry::Molecule & p_molecule )
 			{
 				Util::Chrono chrono;
 				chrono.start();
@@ -225,56 +225,56 @@ namespace VTX
 				VTX_INFO( "Secondary structure computed in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
-			static Model::SecondaryStructure::TYPE pdbFormattedToEnumSecondaryStructure( const std::string & p_str )
+			static App::Component::Chemistry::SecondaryStructure::TYPE pdbFormattedToEnumSecondaryStructure( const std::string & p_str )
 			{
-				Model::SecondaryStructure::TYPE res = Model::SecondaryStructure::TYPE::COUNT;
+				App::Component::Chemistry::SecondaryStructure::TYPE res = App::Component::Chemistry::SecondaryStructure::TYPE::COUNT;
 
 				if ( p_str == "extended" )
-					res = Model::SecondaryStructure::TYPE::STRAND;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::STRAND;
 				else if ( p_str == "turn" )
-					res = Model::SecondaryStructure::TYPE::TURN;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::TURN;
 				else if ( p_str == "coil" )
-					res = Model::SecondaryStructure::TYPE::COIL;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::COIL;
 				else if ( p_str == "right-handed alpha helix" )
-					res = Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT;
 				else if ( p_str == "left-handed alpha helix" )
-					res = Model::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT;
 				else if ( p_str == "right-handed 3-10 helix" )
-					res = Model::SecondaryStructure::TYPE::HELIX_3_10_RIGHT;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_3_10_RIGHT;
 				else if ( p_str == "left-handed 3-10 helix" )
-					res = Model::SecondaryStructure::TYPE::HELIX_3_10_LEFT;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_3_10_LEFT;
 				else if ( p_str == "pi helix" )
-					res = Model::SecondaryStructure::TYPE::HELIX_PI;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_PI;
 				else if ( p_str == "right-handed omega helix" ) // ?
-					res = Model::SecondaryStructure::TYPE::COUNT;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::COUNT;
 				else if ( p_str == "left-handed omega helix" )	// ?
-					res = Model::SecondaryStructure::TYPE::COUNT;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::COUNT;
 				else if ( p_str == "right-handed gamma helix" ) // ?
-					res = Model::SecondaryStructure::TYPE::COUNT;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::COUNT;
 				else if ( p_str == "left-handed gamma helix" )	// ?
-					res = Model::SecondaryStructure::TYPE::COUNT;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::COUNT;
 				else if ( p_str == "2 - 7 ribbon / helix" )		// ?
-					res = Model::SecondaryStructure::TYPE::COUNT;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::COUNT;
 				else if ( p_str == "polyproline" )				// ?
-					res = Model::SecondaryStructure::TYPE::COUNT;
+					res = App::Component::Chemistry::SecondaryStructure::TYPE::COUNT;
 
 				return res;
 			}
 
-			static std::string enumToPdbFormattedSecondaryStructure( const Model::SecondaryStructure::TYPE p_enum )
+			static std::string enumToPdbFormattedSecondaryStructure( const App::Component::Chemistry::SecondaryStructure::TYPE p_enum )
 			{
 				std::string res;
 
 				switch ( p_enum )
 				{
-				case Model::SecondaryStructure::TYPE::STRAND: res = "extended"; break;
-				case Model::SecondaryStructure::TYPE::TURN: res = "turn"; break;
-				case Model::SecondaryStructure::TYPE::COIL: res = "coil"; break;
-				case Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT: res = "right-handed alpha helix"; break;
-				case Model::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT: res = "left-handed alpha helix"; break;
-				case Model::SecondaryStructure::TYPE::HELIX_3_10_RIGHT: res = "right-handed 3-10 helix"; break;
-				case Model::SecondaryStructure::TYPE::HELIX_3_10_LEFT: res = "left-handed 3-10 helix"; break;
-				case Model::SecondaryStructure::TYPE::HELIX_PI: res = "pi helix"; break;
+				case App::Component::Chemistry::SecondaryStructure::TYPE::STRAND: res = "extended"; break;
+				case App::Component::Chemistry::SecondaryStructure::TYPE::TURN: res = "turn"; break;
+				case App::Component::Chemistry::SecondaryStructure::TYPE::COIL: res = "coil"; break;
+				case App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT: res = "right-handed alpha helix"; break;
+				case App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT: res = "left-handed alpha helix"; break;
+				case App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_3_10_RIGHT: res = "right-handed 3-10 helix"; break;
+				case App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_3_10_LEFT: res = "left-handed 3-10 helix"; break;
+				case App::Component::Chemistry::SecondaryStructure::TYPE::HELIX_PI: res = "pi helix"; break;
 				default: res = ""; break;
 				}
 

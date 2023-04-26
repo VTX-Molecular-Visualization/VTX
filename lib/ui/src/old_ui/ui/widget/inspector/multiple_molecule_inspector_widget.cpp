@@ -175,7 +175,7 @@ namespace VTX::UI::Widget::Inspector
 		bool blockSignalState = blockSignals( true );
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<Model::Molecule *> & targets = getTargets();
+		const std::unordered_set<App::Component::Chemistry::Molecule *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
@@ -185,7 +185,7 @@ namespace VTX::UI::Widget::Inspector
 			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( VTX::ID::Model::MODEL_MOLECULE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
-			for ( Model::Molecule * molecule : targets )
+			for ( App::Component::Chemistry::Molecule * molecule : targets )
 			{
 				if ( bool( p_flag & SectionFlag::TRANSFORM ) )
 				{
@@ -299,7 +299,7 @@ namespace VTX::UI::Widget::Inspector
 				= std::unordered_set<Generic::BaseTransformable *>();
 			transformableSet.reserve( getTargets().size() );
 
-			for ( Model::Molecule * target : getTargets() )
+			for ( App::Component::Chemistry::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 
 			VTX_ACTION( new App::Action::Transformable::Translate( transformableSet, p_delta ) );
@@ -313,7 +313,7 @@ namespace VTX::UI::Widget::Inspector
 				= std::unordered_set<Generic::BaseTransformable *>();
 			transformableSet.reserve( getTargets().size() );
 
-			for ( Model::Molecule * target : getTargets() )
+			for ( App::Component::Chemistry::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 
 			VTX_ACTION( new App::Action::Transformable::Rotate( transformableSet, p_delta ) );
@@ -327,7 +327,7 @@ namespace VTX::UI::Widget::Inspector
 				= std::unordered_set<Generic::BaseTransformable *>();
 			transformableSet.reserve( getTargets().size() );
 
-			for ( Model::Molecule * target : getTargets() )
+			for ( App::Component::Chemistry::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 			VTX_ACTION( new App::Action::Transformable::Scale( transformableSet, p_delta ) );
 		}

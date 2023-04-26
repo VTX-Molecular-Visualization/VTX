@@ -10,12 +10,12 @@
 #include <QWidget>
 #include <app/model/representation/instantiated_representation.hpp>
 #include <app/model/representation/representation.hpp>
-#include <app/model/residue.hpp>
+#include <app/component/chemistry/residue.hpp>
 #include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleResidueWidget : public MultipleModelInspectorWidget<Model::Residue>
+	class MultipleResidueWidget : public MultipleModelInspectorWidget<App::Component::Chemistry::Residue>
 	{
 		VTX_WIDGET
 
@@ -59,7 +59,7 @@ namespace VTX::UI::Widget::Inspector
 
 		void _resetFieldStates( const SectionFlag & p_flag );
 		void _changeMoleculesColor( const Color::Rgba & p_color ) const;
-		void _appendBondInfo( const Model::Residue & p_residue );
+		void _appendBondInfo( const App::Component::Chemistry::Residue & p_residue );
 	};
 } // namespace VTX::UI::Widget::Inspector
 

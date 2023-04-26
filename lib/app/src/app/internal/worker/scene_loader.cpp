@@ -1,7 +1,7 @@
 #include "app/internal/worker/scene_loader.hpp"
 #include "app/event.hpp"
 #include "app/model/mesh_triangle.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/lib_assimp.hpp"

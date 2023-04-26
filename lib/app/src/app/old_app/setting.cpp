@@ -1,8 +1,9 @@
 #include "app/old_app/setting.hpp"
+#include "app/component/chemistry/enum_category.hpp"
+#include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
-#include "app/model/category_enum.hpp"
 #include "app/model/representation/representation_enum.hpp"
 #include "app/old_app/define.hpp"
 #include "app/old_app/io/filesystem.hpp"
@@ -14,7 +15,6 @@
 #include "app/old_app/renderer/base_renderer.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/selection/selection_enum.hpp"
-#include "app/old_app/trajectory/trajectory_enum.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <exception>
 #include <string>
@@ -163,10 +163,11 @@ namespace VTX
 	const Path::INTERPOLATION_MODE Setting::DEFAULT_PATH_INTERPOLATION_MODE = Path::INTERPOLATION_MODE::CATMULL_ROM;
 
 	// Trajectory
-	const int				   Setting::MIN_TRAJECTORY_SPEED		 = 1;
-	const int				   Setting::MAX_TRAJECTORY_SPEED		 = 60;
-	const int				   Setting::DEFAULT_TRAJECTORY_SPEED	 = 5;
-	const Trajectory::PlayMode Setting::DEFAULT_TRAJECTORY_PLAY_MODE = Trajectory::PlayMode::Loop;
+	const int								  Setting::MIN_TRAJECTORY_SPEED		= 1;
+	const int								  Setting::MAX_TRAJECTORY_SPEED		= 60;
+	const int								  Setting::DEFAULT_TRAJECTORY_SPEED = 5;
+	const App::Component::Chemistry::PlayMode Setting::DEFAULT_TRAJECTORY_PLAY_MODE
+		= App::Component::Chemistry::PlayMode::Loop;
 
 	// Transform
 	const float Setting::MIN_EULER	   = -10000.f;
@@ -590,23 +591,27 @@ namespace VTX
 		renderEffectDefaultIndex = p_renderEffectDefaultIndex;
 	}
 
-	int Setting::getDefaultRepresentationIndexPerCategory( const CATEGORY_ENUM & p_categoryEnum ) const
+	int Setting::getDefaultRepresentationIndexPerCategory(
+		const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum ) const
 	{
 		return representationPerCategory[ int( p_categoryEnum ) ];
 	}
-	void Setting::setDefaultRepresentationIndexPerCategory( const CATEGORY_ENUM & p_categoryEnum,
-															const int			  p_representationDefaultIndex )
+	void Setting::setDefaultRepresentationIndexPerCategory(
+		const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum,
+		const int										 p_representationDefaultIndex )
 	{
 		representationPerCategory[ int( p_categoryEnum ) ] = p_representationDefaultIndex;
 		_sendDataChangedEvent( PARAMETER::DEFAULT_REPRESENTATION_PER_CATEGORY );
 	}
-	const std::string & Setting::getTmpDefaultRepresentationNamePerCategory( const CATEGORY_ENUM & p_categoryEnum )
+	const std::string & Setting::getTmpDefaultRepresentationNamePerCategory(
+		const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum )
 	{
 		return _tmpRepresentationPerCategory[ int( p_categoryEnum ) ];
 	}
 
-	void Setting::setTmpDefaultRepresentationNamePerCategory( const CATEGORY_ENUM & p_categoryEnum,
-															  const std::string &	p_representationDefaultName )
+	void Setting::setTmpDefaultRepresentationNamePerCategory(
+		const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum,
+		const std::string &								 p_representationDefaultName )
 	{
 		_tmpRepresentationPerCategory[ int( p_categoryEnum ) ] = p_representationDefaultName;
 	}
@@ -623,7 +628,7 @@ namespace VTX
 			p_defaultTrajectorySpeed, VTX::Setting::MIN_TRAJECTORY_SPEED, VTX::Setting::MAX_TRAJECTORY_SPEED );
 		_sendDataChangedEvent( PARAMETER::TRAJECTORY_DEFAULT_SPEED );
 	}
-	void Setting::setDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_defaultTrajectoryPlayMode )
+	void Setting::setDefaultTrajectoryPlayMode( const App::Component::Chemistry::PlayMode p_defaultTrajectoryPlayMode )
 	{
 		defaultTrajectoryPlayMode = p_defaultTrajectoryPlayMode;
 		_sendDataChangedEvent( PARAMETER::TRAJECTORY_DEFAULT_PLAY_MODE );

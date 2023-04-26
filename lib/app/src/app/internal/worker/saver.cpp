@@ -1,5 +1,5 @@
 #include "app/internal/worker/saver.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
@@ -50,7 +50,7 @@ namespace VTX::Worker
 			{
 				for ( const auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculesMap() )
 				{
-					Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( it.first );
+					App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( it.first );
 					writer->writeFile( _path, molecule );
 				}
 			}
@@ -59,7 +59,7 @@ namespace VTX::Worker
 			{
 				for ( const auto it : VTXApp::get().getScene().getMolecules() )
 				{
-					Model::Molecule * molecule = it.first;
+					App::Component::Chemistry::Molecule * molecule = it.first;
 					writer->writeFile( _path, *molecule );
 				}
 			}

@@ -1,5 +1,5 @@
 #include "ui/old_ui/ui/widget/representation/view/ribbon_widget.hpp"
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 
 namespace VTX::UI::Widget::Representation::View
 {

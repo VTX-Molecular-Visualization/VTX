@@ -1,7 +1,7 @@
 #include "app/internal/worker/loader.hpp"
 #include "app/event.hpp"
 #include "app/model/mesh_triangle.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/lib_assimp.hpp"
@@ -102,7 +102,7 @@ namespace VTX
 				IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles( this );
 
 				// Set PRM.
-				Model::Molecule * const molecule = VTX::MVC_MANAGER().instantiateModel<Model::Molecule>();
+				App::Component::Chemistry::Molecule * const molecule = VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Molecule>();
 				molecule->setConfiguration( p_config );
 
 				// Load.
@@ -140,7 +140,7 @@ namespace VTX
 					{
 						if ( _openTrajectoryAsMolecule )
 						{
-							Model::Molecule * const molecule = VTX::MVC_MANAGER().instantiateModel<Model::Molecule>();
+							App::Component::Chemistry::Molecule * const molecule = VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Molecule>();
 							molecule->setConfiguration( p_config );
 
 							// Load.
@@ -213,7 +213,7 @@ namespace VTX
 				{
 					// Create reader.
 					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles( this );
-					Model::Molecule *		   molecule = VTX::MVC_MANAGER().instantiateModel<Model::Molecule>();
+					App::Component::Chemistry::Molecule *		   molecule = VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Molecule>();
 
 					// Load.
 					try

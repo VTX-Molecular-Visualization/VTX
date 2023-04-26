@@ -1,10 +1,11 @@
 #ifndef __VTX_MODEL_INSTANTIATED_REPRESENTATION__
 #define __VTX_MODEL_INSTANTIATED_REPRESENTATION__
 
+#include "app/component/chemistry/_fwd.hpp"
+#include "app/component/chemistry/secondary_structure.hpp"
 #include "app/core/event/base_event_receiver_vtx.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/core/model/base_model.hpp"
-#include "app/model/secondary_structure.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_objectoverride.hpp"
 #include "app/old_app/id.hpp"
@@ -12,12 +13,12 @@
 #include "representation_data.hpp"
 #include "representation_enum.hpp"
 
-namespace VTX::Model
-{
-	class Molecule;
-	class SecondaryStructure;
-
-} // namespace VTX::Model
+// namespace VTX::Model
+//{
+//	class Molecule;
+//	class SecondaryStructure;
+//
+// } // namespace VTX::Model
 namespace VTX::Generic
 {
 	class BaseRepresentable;

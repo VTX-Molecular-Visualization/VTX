@@ -2,7 +2,7 @@
 #define __VTX_REPRESENTATION_TARGET__
 
 #include <util/types.hpp>
-#include "app/model/category_enum.hpp"
+#include "app/component/chemistry/enum_category.hpp"
 #include <map>
 #include <vector>
 
@@ -46,7 +46,7 @@ namespace VTX
 				return _ribbons;
 			}
 
-			inline const TargetRangeElements & getTrianglesSES( const CATEGORY_ENUM p_category ) const
+			inline const TargetRangeElements & getTrianglesSES( const App::Component::Chemistry::CATEGORY_ENUM p_category ) const
 			{
 				assert( _isGenerated );
 				assert( _trianglesSES.find( p_category ) != _trianglesSES.end() );
@@ -69,7 +69,7 @@ namespace VTX
 				_append( _ribbonsMap, p_indice, p_count );
 			}
 
-			inline void appendTrianglesSES( const CATEGORY_ENUM p_category, const uint p_indice, const uint p_count )
+			inline void appendTrianglesSES( const App::Component::Chemistry::CATEGORY_ENUM p_category, const uint p_indice, const uint p_count )
 			{
 				assert( _trianglesSESMap.find( p_category ) != _trianglesSESMap.end() );
 				_append( _trianglesSESMap[ p_category ], p_indice, p_count );
@@ -95,15 +95,15 @@ namespace VTX
 			TargetRangeArrays								   _atoms	= TargetRangeArrays();
 			TargetRangeElements								   _bonds	= TargetRangeElements();
 			TargetRangeElements								   _ribbons = TargetRangeElements();
-			std::map<const CATEGORY_ENUM, TargetRangeElements> _trianglesSES
-				= { { CATEGORY_ENUM::POLYMER, TargetRangeElements() },
-					{ CATEGORY_ENUM::CARBOHYDRATE, TargetRangeElements() } };
+			std::map<const App::Component::Chemistry::CATEGORY_ENUM, TargetRangeElements> _trianglesSES
+				= { { App::Component::Chemistry::CATEGORY_ENUM::POLYMER, TargetRangeElements() },
+					{ App::Component::Chemistry::CATEGORY_ENUM::CARBOHYDRATE, TargetRangeElements() } };
 
 			TargetRangeMap								  _atomsMap	  = TargetRangeMap();
 			TargetRangeMap								  _bondsMap	  = TargetRangeMap();
 			TargetRangeMap								  _ribbonsMap = TargetRangeMap();
-			std::map<const CATEGORY_ENUM, TargetRangeMap> _trianglesSESMap
-				= { { CATEGORY_ENUM::POLYMER, TargetRangeMap() }, { CATEGORY_ENUM::CARBOHYDRATE, TargetRangeMap() } };
+			std::map<const App::Component::Chemistry::CATEGORY_ENUM, TargetRangeMap> _trianglesSESMap
+				= { { App::Component::Chemistry::CATEGORY_ENUM::POLYMER, TargetRangeMap() }, { App::Component::Chemistry::CATEGORY_ENUM::CARBOHYDRATE, TargetRangeMap() } };
 
 			bool _isGenerated = false;
 			void _append( TargetRangeMap & p_range, const uint p_indice, const uint p_count );

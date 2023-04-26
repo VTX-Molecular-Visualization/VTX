@@ -4,7 +4,7 @@
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <string>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -19,8 +19,8 @@ namespace VTX::Analysis
 	{
 	}
 	StructuralAlignment::AlignmentMethod::AlignmentMethod() {}
-	StructuralAlignment::AlignmentResult::AlignmentResult( const Model::Molecule * const p_staticMolecule,
-														   const Model::Molecule * const p_mobileMolecule ) :
+	StructuralAlignment::AlignmentResult::AlignmentResult( const App::Component::Chemistry::Molecule * const p_staticMolecule,
+														   const App::Component::Chemistry::Molecule * const p_mobileMolecule ) :
 		staticMolecule( p_staticMolecule ),
 		mobileMolecule( p_mobileMolecule )
 	{
@@ -40,8 +40,8 @@ namespace VTX::Analysis
 		}
 	}
 
-	void StructuralAlignment::computeAlignment( const Model::Molecule * const		   p_staticMolecule,
-												const std::vector<Model::Molecule *> & p_mobilesMolecules,
+	void StructuralAlignment::computeAlignment( const App::Component::Chemistry::Molecule * const		   p_staticMolecule,
+												const std::vector<App::Component::Chemistry::Molecule *> & p_mobilesMolecules,
 												const AlignmentParameters &			   p_parameters )
 	{
 		Util::Chrono chrono = Util::Chrono();
@@ -57,7 +57,7 @@ namespace VTX::Analysis
 
 		try
 		{
-			for ( Model::Molecule * const mobileMolecule : p_mobilesMolecules )
+			for ( App::Component::Chemistry::Molecule * const mobileMolecule : p_mobilesMolecules )
 			{
 				Util::Chrono chrono = Util::Chrono();
 				chrono.start();

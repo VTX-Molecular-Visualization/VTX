@@ -1,7 +1,7 @@
 #include "tool/analysis/structural_alignment/core/method/ce_align.hpp"
 #include "tool/analysis/rmsd/core/rmsd.hpp"
-#include <app/model/molecule.hpp>
-#include <app/model/residue.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/residue.hpp>
 #include <cmath>
 #include <list>
 #include <string>
@@ -22,8 +22,8 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 	}
 
 	StructuralAlignment::AlignmentResult CEAlign::compute(
-		const Model::Molecule &							 p_staticMolecule,
-		Model::Molecule &								 p_mobileMolecule,
+		const App::Component::Chemistry::Molecule &							 p_staticMolecule,
+		App::Component::Chemistry::Molecule &								 p_mobileMolecule,
 		const StructuralAlignment::AlignmentParameters & p_parameters )
 	{
 		const CustomParameters & castedParameters = reinterpret_cast<const CustomParameters &>( p_parameters );
@@ -74,7 +74,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 		return result;
 	}
 
-	std::vector<Vec3f> CEAlign::_generateResiduePositionsVector( const Model::Molecule &  p_molecule,
+	std::vector<Vec3f> CEAlign::_generateResiduePositionsVector( const App::Component::Chemistry::Molecule &  p_molecule,
 																 const CustomParameters & p_parameters )
 	{
 		std::vector<Vec3f> residuePositionsVector = std::vector<Vec3f>();
@@ -84,7 +84,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 
 		for ( uint iResidue = 0; iResidue < p_molecule.getResidueCount(); iResidue++ )
 		{
-			const Model::Residue * const residuePtr = p_molecule.getResidue( iResidue );
+			const App::Component::Chemistry::Residue * const residuePtr = p_molecule.getResidue( iResidue );
 
 			bool considerResidue = residuePtr != nullptr;
 			considerResidue		 = considerResidue && ( p_parameters.considerWater || !residuePtr->isWater() );
@@ -102,12 +102,12 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 		return residuePositionsVector;
 	}
 
-	Vec3f CEAlign::_computeResidueCenterOfMass( const Model::Residue & p_residue )
+	Vec3f CEAlign::_computeResidueCenterOfMass( const App::Component::Chemistry::Residue & p_residue )
 	{
 		// return _residuePositionsDataSet.getPositionInMolecule( p_residue );
 
-		const Model::Molecule &						molecule = *( p_residue.getMoleculePtr() );
-		const Model::Molecule::AtomPositionsFrame & atomPositions
+		const App::Component::Chemistry::Molecule &						molecule = *( p_residue.getMoleculePtr() );
+		const App::Component::Chemistry::Molecule::AtomPositionsFrame & atomPositions
 			= molecule.getAtomPositionFrame( molecule.getFrame() );
 
 		Vec3f res = VEC3F_ZERO;
@@ -600,8 +600,8 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 		return result;
 	}
 
-	float CEAlign::_computeRMSDOnAtomOfPath( const Model::Molecule & p_staticMolecule,
-											 const Model::Molecule & p_mobileMolecule,
+	float CEAlign::_computeRMSDOnAtomOfPath( const App::Component::Chemistry::Molecule & p_staticMolecule,
+											 const App::Component::Chemistry::Molecule & p_mobileMolecule,
 											 const Path &			 p_path,
 											 const int				 p_windowSize,
 											 const Mat4f &			 p_transfoMatrix )
@@ -625,8 +625,8 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 					break;
 				}
 
-				const Model::Residue * const residue1 = p_staticMolecule.getResidue( iResidue1 );
-				const Model::Residue * const residue2 = p_mobileMolecule.getResidue( iResidue2 );
+				const App::Component::Chemistry::Residue * const residue1 = p_staticMolecule.getResidue( iResidue1 );
+				const App::Component::Chemistry::Residue * const residue2 = p_mobileMolecule.getResidue( iResidue2 );
 
 				if ( residue1 == nullptr || residue2 == nullptr )
 					continue;

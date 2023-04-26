@@ -3,13 +3,13 @@
 
 #include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/model/category_enum.hpp"
+#include "app/component/chemistry/enum_category.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
 #include "app/old_app/selection/selection_enum.hpp"
 #include "app/old_app/setting.hpp"
-#include "app/old_app/trajectory/trajectory_enum.hpp"
+#include "app/component/chemistry/enum_trajectory.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::App::Action::Setting
@@ -456,12 +456,12 @@ namespace VTX::App::Action::Setting
 	class ChangeDefaultTrajectoryPlayMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_playMode ) : _playMode( p_playMode ) {}
+		explicit ChangeDefaultTrajectoryPlayMode( const Component::Chemistry::PlayMode p_playMode ) : _playMode( p_playMode ) {}
 
 		virtual void execute() override;
 
 	  private:
-		const Trajectory::PlayMode _playMode;
+		const Component::Chemistry::PlayMode _playMode;
 	};
 
 	class ChangeSymbolDisplayMode : public App::Core::Action::BaseAction
@@ -531,7 +531,7 @@ namespace VTX::App::Action::Setting
 	class ChangeDefaultRepresentationPerCategory : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeDefaultRepresentationPerCategory( const CATEGORY_ENUM & p_categoryEnum,
+		explicit ChangeDefaultRepresentationPerCategory( const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum,
 														 const int			   p_representationIndex ) :
 			_categoryEnum( p_categoryEnum ),
 			_representationIndex( p_representationIndex )
@@ -541,7 +541,7 @@ namespace VTX::App::Action::Setting
 		virtual void execute() override;
 
 	  private:
-		const CATEGORY_ENUM _categoryEnum;
+		const App::Component::Chemistry::CATEGORY_ENUM _categoryEnum;
 		const int			_representationIndex;
 	};
 

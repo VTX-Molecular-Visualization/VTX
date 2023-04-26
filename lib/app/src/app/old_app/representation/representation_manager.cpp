@@ -1,12 +1,12 @@
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/mvc.hpp"
 #include "app/event.hpp"
-#include "app/model/chain.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/model/representation/instantiated_representation.hpp"
 #include "app/model/representation/representation.hpp"
 #include "app/model/representation/representation_library.hpp"
-#include "app/model/residue.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include "app/model/selection.hpp"
 #include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/setting.hpp"
@@ -82,7 +82,7 @@ namespace VTX::Representation
 	{
 		for ( const Model::Selection::PairMoleculeIds & molData : p_selection.getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( molData.first );
+			App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molData.first );
 			if ( molData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 			{
 				instantiateRepresentation( p_representation, molecule, false, true );
@@ -91,7 +91,7 @@ namespace VTX::Representation
 			{
 				for ( const Model::Selection::PairChainIds & chainData : molData.second )
 				{
-					Model::Chain & chain = *molecule.getChain( chainData.first );
+					App::Component::Chemistry::Chain & chain = *molecule.getChain( chainData.first );
 					if ( chainData.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
 					{
 						instantiateRepresentation( p_representation, chain, false, true );
@@ -100,7 +100,7 @@ namespace VTX::Representation
 					{
 						for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
 						{
-							Model::Residue & residue = *molecule.getResidue( residueData.first );
+							App::Component::Chemistry::Residue & residue = *molecule.getResidue( residueData.first );
 							instantiateRepresentation( p_representation, residue, false, true );
 						}
 					}
@@ -223,7 +223,7 @@ namespace VTX::Representation
 		const Representation * const newRepresentation
 			= RepresentationLibrary::get().getRepresentation( newRepresentationIndex );
 
-		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 
 		while ( _mapRepresentationInstances[ p_defaultRepresentation ].size() > 0 )
 		{
@@ -237,7 +237,7 @@ namespace VTX::Representation
 			instantiateRepresentation( newRepresentation, target, false, true );
 		}
 
-		for ( Model::Molecule * const molecule : molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : molecules )
 		{
 			molecule->computeAllRepresentationData();
 		}

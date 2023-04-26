@@ -3,10 +3,10 @@
 #include "ui/qt/action/selection.hpp"
 
 #include <app/action/selection.hpp>
-#include <app/model/atom.hpp>
-#include <app/model/chain.hpp>
-#include <app/model/molecule.hpp>
-#include <app/model/residue.hpp>
+#include <app/component/chemistry/atom.hpp>
+#include <app/component/chemistry/chain.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/residue.hpp>
 #include <app/model/selection.hpp>
 #include <app/mvc.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
@@ -77,21 +77,21 @@ namespace VTX::Controller
 					// Residue.
 					if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
 					{
-						Model::Residue & residuePicked = VTX::MVC_MANAGER().getModel<Model::Residue>( p_ids.x );
+						App::Component::Chemistry::Residue & residuePicked = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_ids.x );
 						_unselectItem( residuePicked );
 					}
 					// Bond.
 					else if ( p_ids.y != App::Core::Model::ID_UNKNOWN )
 					{
-						Model::Atom & atomPicked1 = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.x );
-						Model::Atom & atomPicked2 = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.y );
+						App::Component::Chemistry::Atom & atomPicked1 = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.x );
+						App::Component::Chemistry::Atom & atomPicked2 = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.y );
 
 						_unselectItem( atomPicked1, atomPicked2 );
 					}
 					// Atom.
 					else
 					{
-						Model::Atom & atomPicked = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.x );
+						App::Component::Chemistry::Atom & atomPicked = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.x );
 						_unselectItem( atomPicked );
 					}
 				}
@@ -102,28 +102,28 @@ namespace VTX::Controller
 				// Residue.
 				if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
 				{
-					Model::Residue & residuePicked = VTX::MVC_MANAGER().getModel<Model::Residue>( p_ids.x );
+					App::Component::Chemistry::Residue & residuePicked = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_ids.x );
 					_selectItem( residuePicked );
 				}
 				// Bond.
 				else if ( p_ids.y != App::Core::Model::ID_UNKNOWN )
 				{
-					Model::Atom & atomPicked1 = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.x );
-					Model::Atom & atomPicked2 = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.y );
+					App::Component::Chemistry::Atom & atomPicked1 = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.x );
+					App::Component::Chemistry::Atom & atomPicked2 = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.y );
 
 					_selectItem( atomPicked1, atomPicked2 );
 				}
 				// Atom.
 				else
 				{
-					Model::Atom & atomPicked = VTX::MVC_MANAGER().getModel<Model::Atom>( p_ids.x );
+					App::Component::Chemistry::Atom & atomPicked = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.x );
 					_selectItem( atomPicked );
 				}
 			}
 		}
 	}
 
-	void Picker::_selectItem( Model::Atom & p_atomPicked ) const
+	void Picker::_selectItem( App::Component::Chemistry::Atom & p_atomPicked ) const
 	{
 		Model::Selection & selectionModel	 = Selection::SelectionManager::get().getSelectionModel();
 		const bool		   appendToSelection = _isModifierExclusive( ModifierFlag::Control );
@@ -148,7 +148,7 @@ namespace VTX::Controller
 			break;
 		}
 	}
-	void Picker::_selectItem( Model::Atom & p_atomPicked1, Model::Atom & p_atomPicked2 ) const
+	void Picker::_selectItem( App::Component::Chemistry::Atom & p_atomPicked1, App::Component::Chemistry::Atom & p_atomPicked2 ) const
 	{
 		Model::Selection & selectionModel	 = Selection::SelectionManager::get().getSelectionModel();
 		const bool		   appendToSelection = _isModifierExclusive( ModifierFlag::Control );
@@ -157,8 +157,8 @@ namespace VTX::Controller
 		{
 		case VTX::Selection::Granularity::MOLECULE:
 		{
-			Model::Molecule * const mol1 = p_atomPicked1.getMoleculePtr();
-			Model::Molecule * const mol2 = p_atomPicked2.getMoleculePtr();
+			App::Component::Chemistry::Molecule * const mol1 = p_atomPicked1.getMoleculePtr();
+			App::Component::Chemistry::Molecule * const mol2 = p_atomPicked2.getMoleculePtr();
 			if ( mol1 == mol2 )
 			{
 				VTX_ACTION( new App::Action::Selection::SelectMolecule( selectionModel, *mol1, appendToSelection ) );
@@ -172,8 +172,8 @@ namespace VTX::Controller
 		}
 		case VTX::Selection::Granularity::CHAIN:
 		{
-			Model::Chain * const chain1 = p_atomPicked1.getChainPtr();
-			Model::Chain * const chain2 = p_atomPicked2.getChainPtr();
+			App::Component::Chemistry::Chain * const chain1 = p_atomPicked1.getChainPtr();
+			App::Component::Chemistry::Chain * const chain2 = p_atomPicked2.getChainPtr();
 
 			if ( chain1 == chain2 )
 			{
@@ -188,8 +188,8 @@ namespace VTX::Controller
 		}
 		case VTX::Selection::Granularity::RESIDUE:
 		{
-			Model::Residue * const res1 = p_atomPicked1.getResiduePtr();
-			Model::Residue * const res2 = p_atomPicked2.getResiduePtr();
+			App::Component::Chemistry::Residue * const res1 = p_atomPicked1.getResiduePtr();
+			App::Component::Chemistry::Residue * const res2 = p_atomPicked2.getResiduePtr();
 
 			if ( res1 == res2 )
 			{
@@ -217,7 +217,7 @@ namespace VTX::Controller
 		}
 		}
 	}
-	void Picker::_selectItem( Model::Residue & p_residuePicked ) const
+	void Picker::_selectItem( App::Component::Chemistry::Residue & p_residuePicked ) const
 	{
 		Model::Selection & selectionModel	 = Selection::SelectionManager::get().getSelectionModel();
 		const bool		   appendToSelection = _isModifierExclusive( ModifierFlag::Control );
@@ -240,7 +240,7 @@ namespace VTX::Controller
 		}
 	}
 
-	void Picker::_unselectItem( Model::Atom & p_atomPicked ) const
+	void Picker::_unselectItem( App::Component::Chemistry::Atom & p_atomPicked ) const
 	{
 		Model::Selection & selectionModel	 = Selection::SelectionManager::get().getSelectionModel();
 		const bool		   appendToSelection = _isModifierExclusive( ModifierFlag::Control );
@@ -265,7 +265,7 @@ namespace VTX::Controller
 			break;
 		}
 	}
-	void Picker::_unselectItem( Model::Atom & p_atomPicked1, Model::Atom & p_atomPicked2 ) const
+	void Picker::_unselectItem( App::Component::Chemistry::Atom & p_atomPicked1, App::Component::Chemistry::Atom & p_atomPicked2 ) const
 	{
 		Model::Selection & selectionModel	 = Selection::SelectionManager::get().getSelectionModel();
 		const bool		   appendToSelection = _isModifierExclusive( ModifierFlag::Control );
@@ -274,8 +274,8 @@ namespace VTX::Controller
 		{
 		case VTX::Selection::Granularity::MOLECULE:
 		{
-			Model::Molecule * const mol1 = p_atomPicked1.getMoleculePtr();
-			Model::Molecule * const mol2 = p_atomPicked2.getMoleculePtr();
+			App::Component::Chemistry::Molecule * const mol1 = p_atomPicked1.getMoleculePtr();
+			App::Component::Chemistry::Molecule * const mol2 = p_atomPicked2.getMoleculePtr();
 			if ( mol1 == mol2 )
 			{
 				VTX_ACTION( new App::Action::Selection::UnselectMolecule( selectionModel, *mol1, appendToSelection ) );
@@ -289,8 +289,8 @@ namespace VTX::Controller
 		}
 		case VTX::Selection::Granularity::CHAIN:
 		{
-			Model::Chain * const chain1 = p_atomPicked1.getChainPtr();
-			Model::Chain * const chain2 = p_atomPicked2.getChainPtr();
+			App::Component::Chemistry::Chain * const chain1 = p_atomPicked1.getChainPtr();
+			App::Component::Chemistry::Chain * const chain2 = p_atomPicked2.getChainPtr();
 
 			if ( chain1 == chain2 )
 			{
@@ -305,8 +305,8 @@ namespace VTX::Controller
 		}
 		case VTX::Selection::Granularity::RESIDUE:
 		{
-			Model::Residue * const res1 = p_atomPicked1.getResiduePtr();
-			Model::Residue * const res2 = p_atomPicked2.getResiduePtr();
+			App::Component::Chemistry::Residue * const res1 = p_atomPicked1.getResiduePtr();
+			App::Component::Chemistry::Residue * const res2 = p_atomPicked2.getResiduePtr();
 
 			if ( res1 == res2 )
 			{
@@ -333,7 +333,7 @@ namespace VTX::Controller
 			break;
 		}
 	}
-	void Picker::_unselectItem( Model::Residue & p_residuePicked ) const
+	void Picker::_unselectItem( App::Component::Chemistry::Residue & p_residuePicked ) const
 	{
 		Model::Selection & selectionModel	 = Selection::SelectionManager::get().getSelectionModel();
 		const bool		   appendToSelection = _isModifierExclusive( ModifierFlag::Control );

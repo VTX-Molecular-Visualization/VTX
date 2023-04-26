@@ -2,7 +2,7 @@
 #include "app/core/event/vtx_event.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/old_app/io/filesystem.hpp"
 
 namespace VTX::IO::Struct
@@ -11,11 +11,11 @@ namespace VTX::IO::Struct
 	// /////////////////////////////////////////////////////////////////////////////////////////////////////////
 	ScenePathData::Data::Data() : _path( FilePath() ) {}
 	ScenePathData::Data::Data( const FilePath & p_path ) : _path( p_path ) {}
-	ScenePathData::Data & ScenePathData::getData( const Model::Molecule * const p_molecule )
+	ScenePathData::Data & ScenePathData::getData( const App::Component::Chemistry::Molecule * const p_molecule )
 	{
 		return _mapMoleculePath[ p_molecule ];
 	}
-	const ScenePathData::Data & ScenePathData::getData( const Model::Molecule * const p_molecule ) const
+	const ScenePathData::Data & ScenePathData::getData( const App::Component::Chemistry::Molecule * const p_molecule ) const
 	{
 		return _mapMoleculePath.at( p_molecule );
 	}
@@ -43,22 +43,22 @@ namespace VTX::IO::Struct
 	{
 		if ( p_event.name == VTX::App::Event::Global::MOLECULE_ADDED )
 		{
-			const Model::Molecule * const molecule
-				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event ).get();
+			const App::Component::Chemistry::Molecule * const molecule
+				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event ).get();
 
 			if ( _mapMoleculePath.find( molecule ) == _mapMoleculePath.end() )
 				_mapMoleculePath[ molecule ] = Data();
 		}
 		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 		{
-			const Model::Molecule * const molecule
-				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event ).get();
+			const App::Component::Chemistry::Molecule * const molecule
+				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event ).get();
 			_mapMoleculePath.erase( molecule );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_STRUCTURE_CHANGE )
 		{
-			const Model::Molecule * const molecule
-				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event ).get();
+			const App::Component::Chemistry::Molecule * const molecule
+				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event ).get();
 
 			_mapMoleculePath[ molecule ].setHasChanged( true );
 		}
@@ -69,7 +69,7 @@ namespace VTX::IO::Struct
 		}
 	}
 
-	void ScenePathData::registerLoading( const Model::Molecule * const p_molecule, const FilePath & p_filepath )
+	void ScenePathData::registerLoading( const App::Component::Chemistry::Molecule * const p_molecule, const FilePath & p_filepath )
 	{
 		if ( _mapMoleculePath.find( p_molecule ) == _mapMoleculePath.end() )
 			_mapMoleculePath[ p_molecule ] = Data( p_filepath );
@@ -105,7 +105,7 @@ namespace VTX::IO::Struct
 		}
 	}
 
-	FilePath ScenePathData::getFilepath( const Model::Molecule * const p_molecule ) const
+	FilePath ScenePathData::getFilepath( const App::Component::Chemistry::Molecule * const p_molecule ) const
 	{
 		FilePath res;
 

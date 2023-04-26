@@ -1,6 +1,7 @@
 #ifndef __VTX_LOADER__
 #define __VTX_LOADER__
 
+#include "app/component/chemistry/_fwd.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include <map>
 #include <util/chrono.hpp>
@@ -16,7 +17,7 @@ namespace VTX
 			struct Molecule;
 		}
 
-		class Molecule;
+		// class Molecule;
 		class MeshTriangle;
 	} // namespace Model
 
@@ -45,9 +46,9 @@ namespace VTX
 				Result( const SOURCE_TYPE p_sourceType ) : sourceType( p_sourceType ) {};
 
 			  public:
-				bool				  state	   = false;
-				Model::Molecule *	  molecule = nullptr;
-				Model::MeshTriangle * mesh	   = nullptr;
+				bool								  state	   = false;
+				App::Component::Chemistry::Molecule * molecule = nullptr;
+				Model::MeshTriangle *				  mesh	   = nullptr;
 
 				SOURCE_TYPE sourceType = SOURCE_TYPE::UNKNOWN;
 			};
@@ -58,7 +59,7 @@ namespace VTX
 			~Loader() = default;
 
 			inline const std::map<FilePath, Result> & getPathsResult() const { return _pathResult; }
-			inline void								  addDynamicTarget( Model::Molecule * const p_target )
+			inline void addDynamicTarget( App::Component::Chemistry::Molecule * const p_target )
 			{
 				_moleculeTargetsForDynamics.emplace_back( p_target );
 			}
@@ -84,8 +85,9 @@ namespace VTX
 
 			std::map<FilePath, Result> _pathResult = std::map<FilePath, Result>();
 
-			std::vector<std::vector<FilePath>> _filepathsPerMode		   = std::vector<std::vector<FilePath>>();
-			std::vector<Model::Molecule *>	   _moleculeTargetsForDynamics = std::vector<Model::Molecule *>();
+			std::vector<std::vector<FilePath>>				   _filepathsPerMode = std::vector<std::vector<FilePath>>();
+			std::vector<App::Component::Chemistry::Molecule *> _moleculeTargetsForDynamics
+				= std::vector<App::Component::Chemistry::Molecule *>();
 
 			Util::Chrono _loadingFileChrono;
 			bool		 _openTrajectoryAsMolecule = true;

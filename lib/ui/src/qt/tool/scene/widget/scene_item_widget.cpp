@@ -9,13 +9,14 @@
 #include "ui/qt/util.hpp"
 #include <QAbstractItemModel>
 #include <QDrag>
-#include <app/mvc.hpp>
+#include <app/component/chemistry/atom.hpp>
+#include <app/component/chemistry/category.hpp>
+#include <app/component/chemistry/chain.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/residue.hpp>
 #include <app/event/global.hpp>
-#include <app/model/atom.hpp>
-#include <app/model/category.hpp>
-#include <app/model/chain.hpp>
-#include <app/model/residue.hpp>
 #include <app/model/selection.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/generic/base_visible.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <stack>
@@ -41,7 +42,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		else if ( p_event.name == VTX::App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE )
 		{
 			const VTX::App::Core::Event::VTXEventArg<const App::Core::Model::BaseModel *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const App::Core::Model::BaseModel *> &>( p_event );
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const App::Core::Model::BaseModel *> &>(
+					p_event );
 
 			_refreshCurrentItemInSelection( castedEvent.get() );
 		}
@@ -67,7 +69,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		setEditTriggers( EditTrigger::SelectedClicked );
 		setExpandsOnDoubleClick( false );
 
-		App::Core::Model::BaseModel & vtxModel = VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( getModelID() );
+		App::Core::Model::BaseModel & vtxModel
+			= VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( getModelID() );
 		setSelectionModel( new SceneItemSelectionModel( &vtxModel, model(), this ) );
 
 		_createTopLevelObject();
@@ -91,12 +94,14 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	}
 	void SceneItemWidget::_openRenameEditor( QTreeWidgetItem & p_target ) { editItem( &p_target ); }
 
-	std::vector<App::Core::Model::ID> SceneItemWidget::getAllItemsFrom( const App::Core::Model::BaseModel & p_model ) const
+	std::vector<App::Core::Model::ID> SceneItemWidget::getAllItemsFrom(
+		const App::Core::Model::BaseModel & p_model ) const
 	{
 		// Default return for scene item without subitems
 		return { getModelID() };
 	}
-	std::vector<App::Core::Model::ID> SceneItemWidget::getAllItemsTo( const App::Core::Model::BaseModel & p_model ) const
+	std::vector<App::Core::Model::ID> SceneItemWidget::getAllItemsTo(
+		const App::Core::Model::BaseModel & p_model ) const
 	{
 		// Default return for scene item without subitems
 		return { getModelID() };
@@ -257,29 +262,29 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	}
 	void SceneItemWidget::_refreshItemsVisibilityRecursive( QTreeWidgetItem & p_widget )
 	{
-		const App::Core::Model::ID	   itemID	 = _getModelIDFromItem( p_widget );
-		const ID::VTX_ID & modelType = VTX::MVC_MANAGER().getModelTypeID( itemID );
+		const App::Core::Model::ID itemID	 = _getModelIDFromItem( p_widget );
+		const ID::VTX_ID &		   modelType = VTX::MVC_MANAGER().getModelTypeID( itemID );
 
 		bool visibility;
 		if ( modelType == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			visibility = VTX::MVC_MANAGER().getModel<Model::Molecule>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			visibility = VTX::MVC_MANAGER().getModel<Model::Category>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_CHAIN )
 		{
-			visibility = VTX::MVC_MANAGER().getModel<Model::Chain>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			visibility = VTX::MVC_MANAGER().getModel<Model::Residue>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_ATOM )
 		{
-			visibility = VTX::MVC_MANAGER().getModel<Model::Atom>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( itemID ).isVisible();
 		}
 		else
 		{
@@ -308,7 +313,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void SceneItemWidget::_createTopLevelObject()
 	{
-		const App::Core::Model::BaseModel & model = VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( getModelID() );
+		const App::Core::Model::BaseModel & model
+			= VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( getModelID() );
 
 		QTreeWidgetItem * const topLevelItem = new QTreeWidgetItem();
 		topLevelItem->setFlags( topLevelItem->flags() | Qt::ItemFlag::ItemIsEditable );
@@ -327,13 +333,12 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
 		const App::Core::Model::ID & itemModel = _getModelIDFromItem( p_itemToSelect );
-		const ID::VTX_ID  itemType	= VTX::MVC_MANAGER().getModelTypeID( itemModel );
+		const ID::VTX_ID			 itemType  = VTX::MVC_MANAGER().getModelTypeID( itemModel );
 
 		p_itemToSelect.treeWidget()->setFocus( Qt::FocusReason::TabFocusReason );
 		p_itemToSelect.treeWidget()->setCurrentItem( &p_itemToSelect );
 
-		selectionModel.selectModel( VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( itemModel ),
-									p_append );
+		selectionModel.selectModel( VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( itemModel ), p_append );
 	}
 
 	void SceneItemWidget::_refreshSize()
@@ -397,7 +402,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		return _findItemFromModelIDRecursive( *topLevelItem( 0 ), p_id );
 	}
-	QTreeWidgetItem * SceneItemWidget::_findItemFromModelIDRecursive( QTreeWidgetItem & p_parent,
+	QTreeWidgetItem * SceneItemWidget::_findItemFromModelIDRecursive( QTreeWidgetItem &			   p_parent,
 																	  const App::Core::Model::ID & p_id ) const
 	{
 		if ( _getModelIDFromItem( p_parent ) == p_id )

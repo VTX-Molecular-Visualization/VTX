@@ -1,12 +1,12 @@
 #include "app/old_app/generic/base_representable.hpp"
-#include "app/model/atom.hpp"
-#include "app/model/category.hpp"
-#include "app/model/chain.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/atom.hpp"
+#include "app/component/chemistry/category.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/molecule.hpp"
 #include "app/model/representation/representation_library.hpp"
-#include "app/model/residue.hpp"
-#include "app/model/secondary_structure.hpp"
-#include "app/model/solvent_excluded_surface.hpp"
+#include "app/component/chemistry/residue.hpp"
+#include "app/component/chemistry/secondary_structure.hpp"
+#include "app/component/chemistry/solvent_excluded_surface.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/setting.hpp"
@@ -24,7 +24,7 @@ namespace VTX
 
 		void BaseRepresentable::initBaseRepresentable( App::Core::Model::BaseModel * const			  p_model,
 													   Generic::BaseRepresentable * const p_parent,
-													   Model::Molecule * const			  p_molecule )
+													   App::Component::Chemistry::Molecule * const			  p_molecule )
 		{
 			_model = p_model;
 			setParent( p_parent );
@@ -145,7 +145,7 @@ namespace VTX
 		{
 			_molecule->_representationTargets.clear();
 
-			for ( Model::Residue * const residue : _molecule->getResidues() )
+			for ( App::Component::Chemistry::Residue * const residue : _molecule->getResidues() )
 			{
 				// Skip hidden items.
 				if ( residue == nullptr || !_isResidueVisible( *residue ) )
@@ -179,7 +179,7 @@ namespace VTX
 						_molecule->createSecondaryStructure();
 					}
 
-					Model::SecondaryStructure & secondaryStructure = _molecule->getSecondaryStructure();
+					App::Component::Chemistry::SecondaryStructure & secondaryStructure = _molecule->getSecondaryStructure();
 					std::map<uint, uint> &		residueToControlPointIndices
 						= secondaryStructure.getResidueToControlPointIndice();
 					if ( residueToControlPointIndices.find( residue->getIndex() )
@@ -190,19 +190,19 @@ namespace VTX
 				}
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::SES ) )
 				{
-					const Model::Category * const category = _molecule->getCategoryFromChain( *residue->getChainPtr() );
-					const CATEGORY_ENUM			  categoryEnum = category->getCategoryEnum();
+					const App::Component::Chemistry::Category * const category = _molecule->getCategoryFromChain( *residue->getChainPtr() );
+					const App::Component::Chemistry::CATEGORY_ENUM			  categoryEnum = category->getCategoryEnum();
 
-					if ( categoryEnum == CATEGORY_ENUM::POLYMER || categoryEnum == CATEGORY_ENUM::CARBOHYDRATE )
+					if ( categoryEnum == App::Component::Chemistry::CATEGORY_ENUM::POLYMER || categoryEnum == App::Component::Chemistry::CATEGORY_ENUM::CARBOHYDRATE )
 					{
 						if ( _molecule->hasSolventExcludedSurface( categoryEnum ) == false )
 						{
 							_molecule->createSolventExcludedSurface( categoryEnum );
 						}
 
-						const Model::SolventExcludedSurface & ses
+						const App::Component::Chemistry::SolventExcludedSurface & ses
 							= _molecule->getSolventExcludedSurface( categoryEnum );
-						const std::vector<Model::SolventExcludedSurface::Range> & atomsToTriangles
+						const std::vector<App::Component::Chemistry::SolventExcludedSurface::Range> & atomsToTriangles
 							= ses.getAtomsToTriangles();
 						for ( uint atomIdx = residue->getIndexFirstAtom();
 							  atomIdx < residue->getIndexFirstAtom() + residue->getAtomCount();
@@ -239,7 +239,7 @@ namespace VTX
 						= _molecule->_representationTargets[ representationTargetPair.first ];
 					representationTargets.resetTriangleSES();
 
-					for ( const Model::Residue * const residue : _molecule->getResidues() )
+					for ( const App::Component::Chemistry::Residue * const residue : _molecule->getResidues() )
 					{
 						// Skip hidden items.
 						if ( residue == nullptr || !_isResidueVisible( *residue ) )
@@ -251,17 +251,17 @@ namespace VTX
 						RepresentationTarget &					 representationTargets
 							= _molecule->_representationTargets[ representation ];
 
-						const Model::Category * const category
+						const App::Component::Chemistry::Category * const category
 							= _molecule->getCategoryFromChain( *residue->getChainPtr() );
-						const CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
+						const App::Component::Chemistry::CATEGORY_ENUM categoryEnum = category->getCategoryEnum();
 
 						if ( !_molecule->hasSolventExcludedSurface( categoryEnum ) )
 							continue;
 
-						const Model::SolventExcludedSurface & ses
+						const App::Component::Chemistry::SolventExcludedSurface & ses
 							= _molecule->getSolventExcludedSurface( categoryEnum );
 
-						const std::vector<Model::SolventExcludedSurface::Range> & atomsToTriangles
+						const std::vector<App::Component::Chemistry::SolventExcludedSurface::Range> & atomsToTriangles
 							= ses.getAtomsToTriangles();
 						for ( uint atomIdx = residue->getIndexFirstAtom();
 							  atomIdx < residue->getIndexFirstAtom() + residue->getAtomCount();
@@ -277,21 +277,21 @@ namespace VTX
 			}
 		}
 
-		bool BaseRepresentable::_isResidueVisible( const Model::Residue & p_residue ) const
+		bool BaseRepresentable::_isResidueVisible( const App::Component::Chemistry::Residue & p_residue ) const
 		{
-			const Model::Molecule * const molecule = p_residue.getMoleculePtr();
+			const App::Component::Chemistry::Molecule * const molecule = p_residue.getMoleculePtr();
 
 			// Skip hidden items.
 			if ( p_residue.isVisible() == false || p_residue.getChainPtr()->isVisible() == false
 				 || molecule->isVisible() == false )
 				return false;
 
-			const Model::Atom::TYPE atomType = p_residue.getAtomType();
+			const App::Component::Chemistry::Atom::TYPE atomType = p_residue.getAtomType();
 
-			if ( molecule->showSolvent() == false && atomType == Model::Atom::TYPE::SOLVENT )
+			if ( molecule->showSolvent() == false && atomType == App::Component::Chemistry::Atom::TYPE::SOLVENT )
 				return false;
 
-			if ( molecule->showIon() == false && atomType == Model::Atom::TYPE::ION )
+			if ( molecule->showIon() == false && atomType == App::Component::Chemistry::Atom::TYPE::ION )
 				return false;
 
 			return true;

@@ -72,7 +72,7 @@ namespace VTX::App::Action::Main
 
 			if ( trajectoryTargetsForced )
 			{
-				for ( Model::Molecule * const trajectoryTarget : _trajectoryTargets )
+				for ( App::Component::Chemistry::Molecule * const trajectoryTarget : _trajectoryTargets )
 				{
 					loader->addDynamicTarget( trajectoryTarget );
 				}

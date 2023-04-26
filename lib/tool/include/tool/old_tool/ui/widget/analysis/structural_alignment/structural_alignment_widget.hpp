@@ -9,6 +9,7 @@
 #include <QString>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <app/component/chemistry/_fwd.hpp>
 #include <app/old_app/generic/base_scene_item.hpp>
 #include <ui/old_ui/ui/layout/attribute_list_layout.hpp>
 #include <ui/old_ui/ui/widget/base_manual_widget.hpp>
@@ -25,7 +26,7 @@ namespace VTX
 
 	namespace Model
 	{
-		class Molecule;
+		// class Molecule;
 		class Selection;
 	} // namespace Model
 

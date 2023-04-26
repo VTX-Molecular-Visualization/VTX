@@ -6,7 +6,7 @@
 #include <QPoint>
 #include <QVBoxLayout>
 #include <algorithm>
-#include <app/model/atom.hpp>
+#include <app/component/chemistry/atom.hpp>
 #include <app/old_app/style.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <string>

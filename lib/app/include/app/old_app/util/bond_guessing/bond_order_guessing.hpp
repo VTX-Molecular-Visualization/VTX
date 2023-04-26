@@ -1,6 +1,7 @@
 #ifndef __VTX_UTIL_BOND_GUESSING_ORDER__
 #define __VTX_UTIL_BOND_GUESSING_ORDER__
 
+#include "app/component/chemistry/_fwd.hpp"
 #include "app/old_app/io/reader/residue_data_reader.hpp"
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
@@ -11,10 +12,10 @@
 
 namespace VTX
 {
-	namespace Model
-	{
-		class Molecule;
-	}
+	// namespace Model
+	//{
+	//	class Molecule;
+	// }
 
 	namespace Util::BondGuessing
 	{
@@ -78,10 +79,10 @@ namespace VTX
 
 		  public:
 			static void recomputeBondOrders( chemfiles::Frame & p_frame );
-			static void recomputeBondOrders( Model::Molecule & p_molecule );
+			static void recomputeBondOrders( App::Component::Chemistry::Molecule & p_molecule );
 
 			static bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
-			static bool recomputeBondOrdersFromFile( Model::Molecule & p_molecule );
+			static bool recomputeBondOrdersFromFile( App::Component::Chemistry::Molecule & p_molecule );
 
 			static const std::vector<IO::Reader::BondData> & getResidueBonds( const std::string & p_residueSymbol );
 
@@ -89,8 +90,8 @@ namespace VTX
 			// Guess bond order with topology
 			static void _buildNeighbourStruct( const chemfiles::Frame &			  p_frame,
 											   std::vector<std::vector<size_t>> & p_linkedAtomsVector );
-			static void _buildNeighbourStruct( const Model::Molecule &			  p_molecule,
-											   std::vector<std::vector<size_t>> & p_linkedAtomsVector );
+			static void _buildNeighbourStruct( const App::Component::Chemistry::Molecule & p_molecule,
+											   std::vector<std::vector<size_t>> &		   p_linkedAtomsVector );
 
 			static void _tagCycles( const chemfiles::Frame &				 p_frame,
 									const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
@@ -101,19 +102,19 @@ namespace VTX
 											 std::vector<size_t> &					  p_cycleIndexes,
 											 short									  p_counter );
 
-			static void _tagCycles( const Model::Molecule &					 p_molecule,
-									const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
-									std::vector<CycleState> &				 p_cycleStatePerAtom );
-			static void _tagCyclesRecursive( const Model::Molecule &				  p_molecule,
-											 const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
-											 std::vector<CycleState> &				  p_cycleStatePerAtom,
-											 std::vector<size_t> &					  p_cycleIndexes,
-											 short									  p_counter );
+			static void _tagCycles( const App::Component::Chemistry::Molecule & p_molecule,
+									const std::vector<std::vector<size_t>> &	p_linkedAtomsVector,
+									std::vector<CycleState> &					p_cycleStatePerAtom );
+			static void _tagCyclesRecursive( const App::Component::Chemistry::Molecule & p_molecule,
+											 const std::vector<std::vector<size_t>> &	 p_linkedAtomsVector,
+											 std::vector<CycleState> &					 p_cycleStatePerAtom,
+											 std::vector<size_t> &						 p_cycleIndexes,
+											 short										 p_counter );
 
 			static void _checkBondOrders( chemfiles::Frame &					   p_frame,
 										  const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
 										  const std::vector<CycleState> &		   p_cycleStatePerAtom );
-			static void _checkBondOrders( Model::Molecule &						   p_molecule,
+			static void _checkBondOrders( App::Component::Chemistry::Molecule &	   p_molecule,
 										  const uint							   p_frameIndex,
 										  const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
 										  const std::vector<CycleState> &		   p_cycleStatePerAtom );
@@ -121,19 +122,19 @@ namespace VTX
 			static float _computeAverageCenterDotCross( const chemfiles::Frame &	p_frame,
 														const std::vector<size_t> & p_atoms );
 
-			static float _computeAverageCenterDotCross( const Model::Molecule &		p_molecule,
-														const uint					p_frameIndex,
-														const std::vector<size_t> & p_atoms );
+			static float _computeAverageCenterDotCross( const App::Component::Chemistry::Molecule & p_molecule,
+														const uint									p_frameIndex,
+														const std::vector<size_t> &					p_atoms );
 
 			static float _computeAverageRingDotCross( const chemfiles::Frame &	  p_frame,
 													  const std::vector<size_t> & p_atoms,
 													  const int					  p_atomCount,
 													  chemfiles::Vector3D &		  dir );
-			static float _computeAverageRingDotCross( const Model::Molecule &	  p_molecule,
-													  const uint				  p_frameIndex,
-													  const std::vector<size_t> & p_atoms,
-													  const int					  p_atomCount,
-													  Vec3f &					  dir );
+			static float _computeAverageRingDotCross( const App::Component::Chemistry::Molecule & p_molecule,
+													  const uint								  p_frameIndex,
+													  const std::vector<size_t> &				  p_atoms,
+													  const int									  p_atomCount,
+													  Vec3f &									  dir );
 
 			static bool _verifyPlanarBonds( const chemfiles::Frame &				 p_frame,
 											const std::vector<size_t> &				 p_atoms,
@@ -141,13 +142,13 @@ namespace VTX
 											const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
 											const chemfiles::Vector3D &				 dir,
 											const float								 cutoff );
-			static bool _verifyPlanarBonds( const Model::Molecule &					 p_molecule,
-											const uint								 p_frameIndex,
-											const std::vector<size_t> &				 p_atoms,
-											const int								 p_atomCount,
-											const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
-											const Vec3f &							 dir,
-											const float								 cutoff );
+			static bool _verifyPlanarBonds( const App::Component::Chemistry::Molecule & p_molecule,
+											const uint									p_frameIndex,
+											const std::vector<size_t> &					p_atoms,
+											const int									p_atomCount,
+											const std::vector<std::vector<size_t>> &	p_linkedAtomsVector,
+											const Vec3f &								dir,
+											const float									cutoff );
 
 			static void _normalizeVector( chemfiles::Vector3D & p_vector );
 
@@ -157,15 +158,15 @@ namespace VTX
 									   const chemfiles::Bond::BondOrder p_bondOrder,
 									   const bool						p_force = false );
 
-			static void _setBondOrder( Model::Molecule &		p_molecule,
-									   const size_t				p_firstAtomIndex,
-									   const size_t				p_secondAtomIndex,
-									   const Model::Bond::ORDER p_bondOrder,
-									   const bool				p_force = false );
-			static void _setBondOrder( Model::Molecule &		p_molecule,
-									   const uint				p_bondIndex,
-									   const Model::Bond::ORDER p_bondOrder,
-									   const bool				p_force = false );
+			static void _setBondOrder( App::Component::Chemistry::Molecule &		p_molecule,
+									   const size_t									p_firstAtomIndex,
+									   const size_t									p_secondAtomIndex,
+									   const App::Component::Chemistry::Bond::ORDER p_bondOrder,
+									   const bool									p_force = false );
+			static void _setBondOrder( App::Component::Chemistry::Molecule &		p_molecule,
+									   const uint									p_bondIndex,
+									   const App::Component::Chemistry::Bond::ORDER p_bondOrder,
+									   const bool									p_force = false );
 		};
 
 	} // namespace Util::BondGuessing

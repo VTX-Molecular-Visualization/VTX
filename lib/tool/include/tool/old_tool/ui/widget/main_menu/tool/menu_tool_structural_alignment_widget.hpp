@@ -4,6 +4,7 @@
 #include "tool/old_tool/analysis/structural_alignment.hpp"
 #include <QString>
 #include <QWidget>
+#include <app/component/chemistry/_fwd.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp>
 #include <ui/old_ui/ui/widget/main_menu/menu_toolbutton_submenu_widget.hpp>
@@ -14,7 +15,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		class Molecule;
+		// class Molecule;
 		class Selection;
 	} // namespace Model
 

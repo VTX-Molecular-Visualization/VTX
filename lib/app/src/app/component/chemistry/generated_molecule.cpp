@@ -1,9 +1,9 @@
-#include "app/model/generated_molecule.hpp"
-#include "app/model/atom.hpp"
-#include "app/model/bond.hpp"
-#include "app/model/category.hpp"
-#include "app/model/chain.hpp"
-#include "app/model/residue.hpp"
+#include "app/component/chemistry/generated_molecule.hpp"
+#include "app/component/chemistry/atom.hpp"
+#include "app/component/chemistry/bond.hpp"
+#include "app/component/chemistry/category.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include "app/model/selection.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"
@@ -12,9 +12,17 @@
 #include <map>
 #include <util/chrono.hpp>
 
-namespace VTX::Model
+namespace VTX::App::Component::Chemistry
 {
-	GeneratedMolecule::GeneratedMolecule() : Model::Molecule( VTX::ID::Model::MODEL_GENERATED_MOLECULE ) {}
+	GeneratedMolecule::BondExtractData::BondExtractData( Chemistry::Bond * const p_bond,
+														 const uint				 p_previousBondIndex ) :
+		_bond( p_bond ),
+		_previousBondIndex( p_previousBondIndex ), _sourceMolecule( p_bond->getMoleculePtr() ),
+		_sourceFirstIndex( p_bond->getIndexFirstAtom() ), _sourceSecondIndex( p_bond->getIndexSecondAtom() )
+	{
+	}
+
+	GeneratedMolecule::GeneratedMolecule() : Chemistry::Molecule( VTX::ID::Model::MODEL_GENERATED_MOLECULE ) {}
 
 	void GeneratedMolecule::copyFromSelection( const Model::Selection &			 p_selection,
 											   const VTX::App::Core::Model::ID & p_moleculeID,
@@ -23,7 +31,7 @@ namespace VTX::Model
 		Util::Chrono chrono;
 		chrono.start();
 
-		const Model::Molecule &				  molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( p_moleculeID );
+		const Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<Chemistry::Molecule>( p_moleculeID );
 		const Model::Selection::MapChainIds & moleculeSelectionData = p_selection.getMoleculesMap().at( p_moleculeID );
 
 		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
@@ -36,8 +44,8 @@ namespace VTX::Model
 		for ( const std::pair<const VTX::App::Core::Model::ID, Model::Selection::MapResidueIds> & chainData :
 			  moleculeSelectionData )
 		{
-			const Model::Chain & chain			= *molecule.getChain( chainData.first );
-			Model::Chain &		 generatedChain = addChain();
+			const Chemistry::Chain & chain			= *molecule.getChain( chainData.first );
+			Chemistry::Chain &		 generatedChain = addChain();
 
 			_copyChainData( generatedChain, chain );
 
@@ -46,16 +54,16 @@ namespace VTX::Model
 			for ( const std::pair<const VTX::App::Core::Model::ID, Model::Selection::VecAtomIds> & residueData :
 				  chainData.second )
 			{
-				const Model::Residue & residue			= *molecule.getResidue( residueData.first );
-				Model::Residue &	   generatedResidue = addResidue();
+				const Chemistry::Residue & residue			= *molecule.getResidue( residueData.first );
+				Chemistry::Residue &	   generatedResidue = addResidue();
 				_copyResidueData( generatedResidue, residue, &generatedChain );
 				generatedResidue.setAtomCount( uint( residueData.second.size() ) );
 
 				for ( const App::Core::Model::ID & atomId : residueData.second )
 				{
-					const Model::Atom & atom = *molecule.getAtom( atomId );
+					const Chemistry::Atom & atom = *molecule.getAtom( atomId );
 
-					Model::Atom & generatedAtom = addAtom();
+					Chemistry::Atom & generatedAtom = addAtom();
 					generatedAtom.setResiduePtr( &generatedResidue );
 
 					_copyAtomData( generatedAtom, atom, &generatedResidue );
@@ -95,7 +103,7 @@ namespace VTX::Model
 		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
 
-	void GeneratedMolecule::copyFromMolecule( const Model::Molecule & p_molecule, const int p_frame )
+	void GeneratedMolecule::copyFromMolecule( const Chemistry::Molecule & p_molecule, const int p_frame )
 	{
 		Util::Chrono chrono;
 		chrono.start();
@@ -111,12 +119,12 @@ namespace VTX::Model
 		chrono.stop();
 		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
-	void GeneratedMolecule::copyFromChain( const Model::Chain & p_chain, const int p_frame )
+	void GeneratedMolecule::copyFromChain( const Chemistry::Chain & p_chain, const int p_frame )
 	{
 		Util::Chrono chrono;
 		chrono.start();
 
-		const Model::Molecule & molecule = *p_chain.getMoleculePtr();
+		const Chemistry::Molecule & molecule = *p_chain.getMoleculePtr();
 
 		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
 		const std::string suffix = p_frame == ALL_FRAMES_INDEX ? COPY_SUFFIX : _getFrameCopySuffix( p_frame );
@@ -132,20 +140,20 @@ namespace VTX::Model
 		chrono.stop();
 		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
-	void GeneratedMolecule::copyFromResidue( const Model::Residue & p_residue, const int p_frame )
+	void GeneratedMolecule::copyFromResidue( const Chemistry::Residue & p_residue, const int p_frame )
 	{
 		Util::Chrono chrono;
 		chrono.start();
 
-		const Model::Molecule & molecule = *p_residue.getMoleculePtr();
+		const Chemistry::Molecule & molecule = *p_residue.getMoleculePtr();
 
 		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
 		const std::string suffix = p_frame == ALL_FRAMES_INDEX ? COPY_SUFFIX : _getFrameCopySuffix( p_frame );
 
 		_copyMoleculeData( molecule, p_frame, prefix, suffix );
 
-		const Model::Chain & chain			= *p_residue.getChainPtr();
-		Model::Chain &		 generatedChain = addChain();
+		const Chemistry::Chain & chain			= *p_residue.getChainPtr();
+		Chemistry::Chain &		 generatedChain = addChain();
 		_copyChainData( generatedChain, chain );
 		generatedChain.setResidueCount( 1 );
 
@@ -160,25 +168,25 @@ namespace VTX::Model
 		chrono.stop();
 		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
-	void GeneratedMolecule::copyFromAtom( const Model::Atom & p_atom, const int p_frame )
+	void GeneratedMolecule::copyFromAtom( const Chemistry::Atom & p_atom, const int p_frame )
 	{
 		Util::Chrono chrono;
 		chrono.start();
 
-		const Model::Molecule & molecule = *p_atom.getMoleculePtr();
+		const Chemistry::Molecule & molecule = *p_atom.getMoleculePtr();
 
 		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
 		const std::string suffix = p_frame == ALL_FRAMES_INDEX ? COPY_SUFFIX : _getFrameCopySuffix( p_frame );
 
 		_copyMoleculeData( molecule, p_frame, prefix, suffix );
 
-		const Model::Chain & chain			= *p_atom.getChainPtr();
-		Model::Chain &		 generatedChain = addChain();
+		const Chemistry::Chain & chain			= *p_atom.getChainPtr();
+		Chemistry::Chain &		 generatedChain = addChain();
 		_copyChainData( generatedChain, chain );
 		generatedChain.setResidueCount( 1 );
 
-		const Model::Residue & residue			= *p_atom.getResiduePtr();
-		Model::Residue &	   generatedResidue = addResidue();
+		const Chemistry::Residue & residue			= *p_atom.getResiduePtr();
+		Chemistry::Residue &	   generatedResidue = addResidue();
 		_copyResidueData( generatedResidue, residue, &generatedChain );
 		generatedResidue.setAtomCount( 1 );
 
@@ -190,16 +198,16 @@ namespace VTX::Model
 		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
 
-	void GeneratedMolecule::_copyFullMolecule( const Model::Molecule & p_moleculeSource,
-											   const int			   p_frame,
-											   const std::string &	   p_prefix,
-											   const std::string &	   p_suffix )
+	void GeneratedMolecule::_copyFullMolecule( const Chemistry::Molecule & p_moleculeSource,
+											   const int				   p_frame,
+											   const std::string &		   p_prefix,
+											   const std::string &		   p_suffix )
 	{
 		_copyMoleculeData( p_moleculeSource, p_frame, p_prefix, p_suffix );
 
 		for ( uint i = 0; i < p_moleculeSource.getChainCount(); i++ )
 		{
-			const Model::Chain * const chain = p_moleculeSource.getChain( i );
+			const Chemistry::Chain * const chain = p_moleculeSource.getChain( i );
 
 			if ( chain == nullptr )
 				continue;
@@ -207,11 +215,11 @@ namespace VTX::Model
 			_copyFullChain( *chain, p_moleculeSource, p_frame );
 		}
 	}
-	Model::Chain & GeneratedMolecule::_copyFullChain( const Model::Chain &	  p_source,
-													  const Model::Molecule & p_moleculeSource,
-													  const int				  p_frame )
+	Chemistry::Chain & GeneratedMolecule::_copyFullChain( const Chemistry::Chain &	  p_source,
+														  const Chemistry::Molecule & p_moleculeSource,
+														  const int					  p_frame )
 	{
-		Model::Chain & generatedChain = addChain();
+		Chemistry::Chain & generatedChain = addChain();
 		_copyChainData( generatedChain, p_source );
 
 		const uint firstIndex = p_source.getIndexFirstResidue();
@@ -221,7 +229,7 @@ namespace VTX::Model
 
 		for ( uint i = firstIndex; i <= lastIndex; i++ )
 		{
-			const Model::Residue * const residue = p_moleculeSource.getResidue( i );
+			const Chemistry::Residue * const residue = p_moleculeSource.getResidue( i );
 
 			if ( residue == nullptr )
 				continue;
@@ -234,12 +242,12 @@ namespace VTX::Model
 		return generatedChain;
 	}
 
-	Model::Residue & GeneratedMolecule::_copyFullResidue( const Model::Residue &  p_source,
-														  const Model::Molecule & p_moleculeSource,
-														  Model::Chain * const	  p_parent,
-														  const int				  p_frame )
+	Chemistry::Residue & GeneratedMolecule::_copyFullResidue( const Chemistry::Residue &  p_source,
+															  const Chemistry::Molecule & p_moleculeSource,
+															  Chemistry::Chain * const	  p_parent,
+															  const int					  p_frame )
 	{
-		Model::Residue & generatedResidue = addResidue();
+		Chemistry::Residue & generatedResidue = addResidue();
 		_copyResidueData( generatedResidue, p_source, p_parent );
 
 		const uint firstIndex = p_source.getIndexFirstAtom();
@@ -248,12 +256,12 @@ namespace VTX::Model
 
 		for ( uint i = firstIndex; i <= lastIndex; i++ )
 		{
-			const Model::Atom * const atom = p_moleculeSource.getAtom( i );
+			const Chemistry::Atom * const atom = p_moleculeSource.getAtom( i );
 
 			if ( atom == nullptr )
 				continue;
 
-			Model::Atom & generatedAtom = _copyAtom( *atom, p_moleculeSource, &generatedResidue, p_frame );
+			Chemistry::Atom & generatedAtom = _copyAtom( *atom, p_moleculeSource, &generatedResidue, p_frame );
 			_mapAtomIds.emplace( atom->getIndex(), generatedAtom.getIndex() );
 
 			atomCount++;
@@ -263,12 +271,12 @@ namespace VTX::Model
 
 		return generatedResidue;
 	}
-	Model::Atom & GeneratedMolecule::_copyAtom( const Model::Atom &		p_source,
-												const Model::Molecule & p_moleculeSource,
-												Model::Residue * const	p_parent,
-												const int				p_frame )
+	Chemistry::Atom & GeneratedMolecule::_copyAtom( const Chemistry::Atom &		p_source,
+													const Chemistry::Molecule & p_moleculeSource,
+													Chemistry::Residue * const	p_parent,
+													const int					p_frame )
 	{
-		Model::Atom & generatedAtom = addAtom();
+		Chemistry::Atom & generatedAtom = addAtom();
 		generatedAtom.setResiduePtr( p_parent );
 		_copyAtomData( generatedAtom, p_source, p_parent );
 
@@ -290,7 +298,7 @@ namespace VTX::Model
 		return generatedAtom;
 	}
 
-	void GeneratedMolecule::_computeBonds( const Model::Molecule & p_source )
+	void GeneratedMolecule::_computeBonds( const Chemistry::Molecule & p_source )
 	{
 		if ( p_source.getBondCount() <= 0 )
 			return;
@@ -298,8 +306,8 @@ namespace VTX::Model
 		// Bonds
 		getBufferBonds().reserve( p_source.getBufferBonds().size() );
 
-		uint				indexFirstValidBond = 0;
-		const Model::Bond * bondPtr				= p_source.getBonds()[ indexFirstValidBond ];
+		uint					indexFirstValidBond = 0;
+		const Chemistry::Bond * bondPtr				= p_source.getBonds()[ indexFirstValidBond ];
 
 		while ( indexFirstValidBond < p_source.getBondCount() && bondPtr == nullptr )
 		{
@@ -310,9 +318,9 @@ namespace VTX::Model
 		if ( bondPtr == nullptr )
 			return;
 
-		Model::Residue * previousResidue	  = getAtom( bondPtr->getIndexFirstAtom() )->getResiduePtr();
-		uint			 previousResidueIndex = previousResidue->getIndex();
-		uint			 counter			  = 0;
+		Chemistry::Residue * previousResidue	  = getAtom( bondPtr->getIndexFirstAtom() )->getResiduePtr();
+		uint				 previousResidueIndex = previousResidue->getIndex();
+		uint				 counter			  = 0;
 
 		for ( uint i = indexFirstValidBond; i < p_source.getBondCount(); i++ )
 		{
@@ -321,7 +329,7 @@ namespace VTX::Model
 			if ( bondPtr == nullptr )
 				continue;
 
-			const Model::Bond & bond = *bondPtr;
+			const Chemistry::Bond & bond = *bondPtr;
 
 			if ( _mapAtomIds.find( bond.getIndexFirstAtom() ) != _mapAtomIds.end()
 				 && _mapAtomIds.find( bond.getIndexSecondAtom() ) != _mapAtomIds.end() )
@@ -329,7 +337,7 @@ namespace VTX::Model
 				const uint indexFirstAtom  = _mapAtomIds[ bond.getIndexFirstAtom() ];
 				const uint indexSecondAtom = _mapAtomIds[ bond.getIndexSecondAtom() ];
 
-				Model::Bond & generatedBond = addBond();
+				Chemistry::Bond & generatedBond = addBond();
 
 				generatedBond.setIndexFirstAtom( indexFirstAtom );
 				generatedBond.setIndexSecondAtom( indexSecondAtom );
@@ -340,8 +348,8 @@ namespace VTX::Model
 
 				const uint generatedBondIndex = getBondCount() - 1;
 
-				Model::Residue * const currentResidue	   = getAtom( indexFirstAtom )->getResiduePtr();
-				const uint			   currentResidueIndex = currentResidue->getIndex();
+				Chemistry::Residue * const currentResidue	   = getAtom( indexFirstAtom )->getResiduePtr();
+				const uint				   currentResidueIndex = currentResidue->getIndex();
 
 				if ( currentResidueIndex > previousResidueIndex )
 				{
@@ -383,7 +391,7 @@ namespace VTX::Model
 		Util::Chrono chrono = Util::Chrono();
 		chrono.start();
 
-		Model::Molecule &					  molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( p_moleculeID );
+		Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<Chemistry::Molecule>( p_moleculeID );
 		const Model::Selection::MapChainIds & moleculeSelectionData = p_selection.getMoleculesMap().at( p_moleculeID );
 
 		_pendingExternalBonds.clear();
@@ -396,7 +404,7 @@ namespace VTX::Model
 		for ( const std::pair<const VTX::App::Core::Model::ID, Model::Selection::MapResidueIds> & chainData :
 			  moleculeSelectionData )
 		{
-			const Model::Chain * const chain = molecule.getChain( chainData.first );
+			const Chemistry::Chain * const chain = molecule.getChain( chainData.first );
 
 			if ( chain->getRealResidueCount() == chainData.second.getFullySelectedChildCount() )
 			{
@@ -404,21 +412,21 @@ namespace VTX::Model
 				continue;
 			}
 
-			Model::Chain & generatedChain = addChain();
+			Chemistry::Chain & generatedChain = addChain();
 			_copyChainData( generatedChain, *chain );
 			generatedChain.setResidueCount( uint( chainData.second.size() ) );
 
 			for ( const std::pair<const VTX::App::Core::Model::ID, Model::Selection::VecAtomIds> & residueData :
 				  chainData.second )
 			{
-				const Model::Residue * const residue = molecule.getResidue( residueData.first );
+				const Chemistry::Residue * const residue = molecule.getResidue( residueData.first );
 				if ( residue->getRealAtomCount() == residueData.second.getFullySelectedChildCount() )
 				{
 					_extractFullResidue( molecule, residueData.first, &generatedChain );
 					continue;
 				}
 
-				Model::Residue & generatedResidue = addResidue();
+				Chemistry::Residue & generatedResidue = addResidue();
 				_copyResidueData( generatedResidue, *residue, &generatedChain );
 				_extractAtomsFromResidue( molecule, &generatedResidue, residueData.second, false );
 				generatedResidue.setAtomCount( uint( residueData.second.getFullySelectedChildCount() ) );
@@ -445,8 +453,10 @@ namespace VTX::Model
 			const uint sourceFirstAtomIndex	 = bondData.getSourceFirstIndex();
 			const uint sourceSecondAtomIndex = bondData.getSourceSecondIndex();
 
-			const Model::Atom * const sourceFirstAtom  = bondData.getSourceMolecule()->getAtom( sourceFirstAtomIndex );
-			const Model::Atom * const sourceSecondAtom = bondData.getSourceMolecule()->getAtom( sourceSecondAtomIndex );
+			const Chemistry::Atom * const sourceFirstAtom
+				= bondData.getSourceMolecule()->getAtom( sourceFirstAtomIndex );
+			const Chemistry::Atom * const sourceSecondAtom
+				= bondData.getSourceMolecule()->getAtom( sourceSecondAtomIndex );
 
 			if ( sourceFirstAtom != nullptr )
 			{
@@ -478,12 +488,12 @@ namespace VTX::Model
 		_pendingExternalBonds.shrink_to_fit();
 	}
 
-	void GeneratedMolecule::extractChain( const Model::Chain & p_chain )
+	void GeneratedMolecule::extractChain( const Chemistry::Chain & p_chain )
 	{
 		Util::Chrono chrono = Util::Chrono();
 		chrono.start();
 
-		Model::Molecule & molecule = *p_chain.getMoleculePtr();
+		Chemistry::Molecule & molecule = *p_chain.getMoleculePtr();
 
 		const uint firstBondIndex = molecule.getResidue( p_chain.getIndexFirstResidue() )->getIndexFirstBond();
 		const uint lastBondIndex  = molecule.getResidue( p_chain.getIndexLastResidue() )->getIndexFirstBond()
@@ -508,7 +518,7 @@ namespace VTX::Model
 		molecule.refreshStructure();
 		molecule.computeAllRepresentationData();
 	}
-	void GeneratedMolecule::extractResidue( const Model::Residue & p_residue )
+	void GeneratedMolecule::extractResidue( const Chemistry::Residue & p_residue )
 	{
 		Util::Chrono chrono = Util::Chrono();
 		chrono.start();
@@ -517,10 +527,10 @@ namespace VTX::Model
 		_pendingExternalBonds.reserve( 4 ); // Considering max 4 external bounds for a residue
 		getBufferBonds().reserve( p_residue.getBondCount() * 2u );
 
-		Model::Molecule & molecule = *p_residue.getMoleculePtr();
+		Chemistry::Molecule & molecule = *p_residue.getMoleculePtr();
 		_copyMoleculeData( molecule, ALL_FRAMES_INDEX, EXTRACT_PREFIX, EXTRACT_SUFFIX );
 
-		Model::Chain & generatedChain = addChain();
+		Chemistry::Chain & generatedChain = addChain();
 		_copyChainData( generatedChain, *p_residue.getChainPtr() );
 		generatedChain.setResidueCount( 1 );
 
@@ -537,21 +547,21 @@ namespace VTX::Model
 		molecule.refreshStructure();
 		molecule.computeAllRepresentationData();
 	}
-	void GeneratedMolecule::extractAtom( const Model::Atom & p_atom )
+	void GeneratedMolecule::extractAtom( const Chemistry::Atom & p_atom )
 	{
 		Util::Chrono chrono;
 		chrono.start();
 
-		Model::Molecule & molecule = *p_atom.getMoleculePtr();
+		Chemistry::Molecule & molecule = *p_atom.getMoleculePtr();
 		_copyMoleculeData( molecule, ALL_FRAMES_INDEX, EXTRACT_PREFIX, EXTRACT_SUFFIX );
 
-		const Model::Chain & chain			= *p_atom.getChainPtr();
-		Model::Chain &		 generatedChain = addChain();
+		const Chemistry::Chain & chain			= *p_atom.getChainPtr();
+		Chemistry::Chain &		 generatedChain = addChain();
 		_copyChainData( generatedChain, chain );
 		generatedChain.setResidueCount( 1 );
 
-		const Model::Residue & residue			= *p_atom.getResiduePtr();
-		Model::Residue &	   generatedResidue = addResidue();
+		const Chemistry::Residue & residue			= *p_atom.getResiduePtr();
+		Chemistry::Residue &	   generatedResidue = addResidue();
 		_copyResidueData( generatedResidue, residue, &generatedChain );
 		generatedResidue.setAtomCount( 1 );
 
@@ -569,10 +579,10 @@ namespace VTX::Model
 		VTX_INFO( "Extract done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
 
-	void GeneratedMolecule::_copyMoleculeData( const Model::Molecule & p_molecule,
-											   const int			   p_frame,
-											   const std::string &	   p_namePrefix,
-											   const std::string &	   p_nameSuffix )
+	void GeneratedMolecule::_copyMoleculeData( const Chemistry::Molecule & p_molecule,
+											   const int				   p_frame,
+											   const std::string &		   p_namePrefix,
+											   const std::string &		   p_nameSuffix )
 	{
 		// Copy molecule properties.
 		setName( p_namePrefix + p_molecule.getName() + p_nameSuffix );
@@ -580,7 +590,7 @@ namespace VTX::Model
 		setDisplayName( p_namePrefix + p_molecule.getDefaultName() + p_nameSuffix );
 		setColor( Color::Rgba::randomPastel() );
 
-		const Representation::InstantiatedRepresentation * const rep
+		const Model::Representation::InstantiatedRepresentation * const rep
 			= VTX::Representation::RepresentationManager::get().instantiateCopy(
 				p_molecule.getRepresentation(), *this, false, false );
 
@@ -619,9 +629,9 @@ namespace VTX::Model
 		setFrame( frame );
 		setIsPlaying( p_molecule.isPlaying() );
 	}
-	void GeneratedMolecule::_copyChainData( Model::Chain & p_chain, const Model::Chain & p_chainSource )
+	void GeneratedMolecule::_copyChainData( Chemistry::Chain & p_chain, const Chemistry::Chain & p_chainSource )
 	{
-		const Representation::InstantiatedRepresentation * const sourceRepresentation
+		const Model::Representation::InstantiatedRepresentation * const sourceRepresentation
 			= p_chainSource.getRepresentation();
 
 		const bool hasDefaultRepresentation
@@ -633,14 +643,14 @@ namespace VTX::Model
 		p_chain.setName( p_chainSource.getName() );
 		p_chain.setOriginalChainID( p_chainSource.getOriginalChainID() );
 		p_chain.setIndexFirstResidue( getResidueCount() );
-		p_chain.setColor( Model::Chain::getChainIdColor( p_chainSource.getOriginalChainID() ) );
+		p_chain.setColor( Chemistry::Chain::getChainIdColor( p_chainSource.getOriginalChainID() ) );
 
-		const CATEGORY_ENUM & chainCategoryEnum = p_chainSource.getCategoryEnum();
+		const Chemistry::CATEGORY_ENUM & chainCategoryEnum = p_chainSource.getCategoryEnum();
 		p_chain.setCategoryEnum( chainCategoryEnum );
 
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
-			const Representation::InstantiatedRepresentation * const rep
+			const Model::Representation::InstantiatedRepresentation * const rep
 				= VTX::Representation::RepresentationManager::get().instantiateCopy(
 					p_chainSource.getRepresentation(), p_chain, false, false );
 
@@ -648,16 +658,16 @@ namespace VTX::Model
 				_markRepresentationAsDefault( rep );
 		}
 	}
-	void GeneratedMolecule::_copyResidueData( Model::Residue &		 p_residue,
-											  const Model::Residue & p_residueSource,
-											  Model::Chain * const	 p_parent )
+	void GeneratedMolecule::_copyResidueData( Chemistry::Residue &		 p_residue,
+											  const Chemistry::Residue & p_residueSource,
+											  Chemistry::Chain * const	 p_parent )
 	{
 		p_residue.setIndex( getResidueCount() - 1 );
 		p_residue.setChainPtr( p_parent );
 		p_residue.setIndexInOriginalChain( p_residueSource.getIndexInOriginalChain() );
 		p_residue.setIndexFirstAtom( getAtomCount() );
 		p_residue.setSymbol( p_residueSource.getSymbol() );
-		p_residue.setColor( Model::Residue::getResidueColor( p_residueSource ) );
+		p_residue.setColor( Chemistry::Residue::getResidueColor( p_residueSource ) );
 		p_residue.setType( p_residueSource.getType() );
 		p_residue.setSecondaryStructure( p_residueSource.getSecondaryStructure() );
 		p_residue.setAtomType( p_residueSource.getAtomType() );
@@ -668,26 +678,26 @@ namespace VTX::Model
 				p_residueSource.getRepresentation(), p_residue, false, false );
 		}
 	}
-	void GeneratedMolecule::_copyAtomData( Model::Atom &		  p_atom,
-										   const Model::Atom &	  p_atomSource,
-										   Model::Residue * const p_parent )
+	void GeneratedMolecule::_copyAtomData( Chemistry::Atom &		  p_atom,
+										   const Chemistry::Atom &	  p_atomSource,
+										   Chemistry::Residue * const p_parent )
 	{
 		p_atom.setIndex( getAtomCount() - 1 );
 		p_atom.setResiduePtr( p_parent );
 		p_atom.setSymbol( p_atomSource.getSymbol() );
 		p_atom.setName( p_atomSource.getName() );
-		// p_atom.setColor( Model::Atom::SYMBOL_COLOR[ int( p_atomSource.getSymbol() ) ] );
+		// p_atom.setColor( Chemistry::Atom::SYMBOL_COLOR[ int( p_atomSource.getSymbol() ) ] );
 		p_atom.setType( p_atomSource.getType() );
 		getBufferAtomRadius().emplace_back( p_atomSource.getVdwRadius() );
 		getBufferAtomIds().emplace_back( p_atom.getId() );
 	}
 
-	Model::Chain & GeneratedMolecule::_extractFullChain( Model::Molecule & p_fromMolecule, const uint p_index )
+	Chemistry::Chain & GeneratedMolecule::_extractFullChain( Chemistry::Molecule & p_fromMolecule, const uint p_index )
 	{
-		Model::Chain &		  chain						= *p_fromMolecule.getChain( p_index );
-		const CATEGORY_ENUM & chainCategoryEnum			= chain.getCategoryEnum();
-		const uint			  previousFirstResidueIndex = chain.getIndexFirstResidue();
-		const uint			  indexFirstResidue			= getResidueCount();
+		Chemistry::Chain &				 chain					   = *p_fromMolecule.getChain( p_index );
+		const Chemistry::CATEGORY_ENUM & chainCategoryEnum		   = chain.getCategoryEnum();
+		const uint						 previousFirstResidueIndex = chain.getIndexFirstResidue();
+		const uint						 indexFirstResidue		   = getResidueCount();
 
 		_addChain( &chain );
 
@@ -699,8 +709,8 @@ namespace VTX::Model
 		const uint lastResidueIndex	   = previousFirstResidueIndex + chain.getResidueCount() - 1;
 		for ( uint i = previousFirstResidueIndex + 1; i <= lastResidueIndex; i++ )
 		{
-			const Model::Residue & currResidue	  = *p_fromMolecule.getResidue( i );
-			const uint			   indexFirstAtom = currResidue.getIndexFirstAtom();
+			const Chemistry::Residue & currResidue	  = *p_fromMolecule.getResidue( i );
+			const uint				   indexFirstAtom = currResidue.getIndexFirstAtom();
 
 			if ( indexFirstAtom == ( firstAtomIndexRange + atomRangeCount ) )
 			{
@@ -728,7 +738,7 @@ namespace VTX::Model
 		if ( chain.hasCustomRepresentation()
 			 && p_fromMolecule.isDefaultRepresentation( *( chain.getRepresentation() ) ) )
 		{
-			Representation::InstantiatedRepresentation * const instantiatedRepresentation
+			Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
 				= VTX::Representation::RepresentationManager::get().instantiateCopy(
 					chain.getRepresentation(), chain, false, false );
 
@@ -740,13 +750,13 @@ namespace VTX::Model
 		return chain;
 	}
 
-	void GeneratedMolecule::_extractAllResidues( Model::Molecule & p_fromMolecule,
-												 const uint		   p_startIndex,
-												 const uint		   p_count )
+	void GeneratedMolecule::_extractAllResidues( Chemistry::Molecule & p_fromMolecule,
+												 const uint			   p_startIndex,
+												 const uint			   p_count )
 	{
-		const Model::Residue * const firstSourceResidue	  = p_fromMolecule.getResidue( p_startIndex );
-		const Model::Residue * const lastSourceResidue	  = p_fromMolecule.getResidue( p_startIndex + p_count - 1 );
-		const uint					 indexFirstSourceAtom = firstSourceResidue->getIndexFirstAtom();
+		const Chemistry::Residue * const firstSourceResidue	  = p_fromMolecule.getResidue( p_startIndex );
+		const Chemistry::Residue * const lastSourceResidue	  = p_fromMolecule.getResidue( p_startIndex + p_count - 1 );
+		const uint						 indexFirstSourceAtom = firstSourceResidue->getIndexFirstAtom();
 		const uint indexLastSourceAtom = lastSourceResidue->getIndexFirstAtom() + lastSourceResidue->getAtomCount() - 1;
 
 		const uint indexFirstResidue = getResidueCount();
@@ -767,20 +777,20 @@ namespace VTX::Model
 
 			p_fromMolecule.removeResidue( previousResidueIndex, false, false, false, false );
 
-			Model::Residue & residue = *getResidue( currentResidueIndex );
+			Chemistry::Residue & residue = *getResidue( currentResidueIndex );
 			residue.setIndex( currentResidueIndex );
 			residue.setRepresentableMolecule( this );
 		}
 	}
 
-	Model::Residue & GeneratedMolecule::_extractFullResidue( Model::Molecule &	  p_fromMolecule,
-															 const uint			  p_index,
-															 Model::Chain * const p_parent )
+	Chemistry::Residue & GeneratedMolecule::_extractFullResidue( Chemistry::Molecule &	  p_fromMolecule,
+																 const uint				  p_index,
+																 Chemistry::Chain * const p_parent )
 	{
-		Model::Residue & residue				= *p_fromMolecule.getResidue( p_index );
-		const uint		 previousIndex			= residue.getIndex();
-		const uint		 previousIndexFirstAtom = residue.getIndexFirstAtom();
-		const uint		 indexFirstAtom			= getAtomCount();
+		Chemistry::Residue & residue				= *p_fromMolecule.getResidue( p_index );
+		const uint			 previousIndex			= residue.getIndex();
+		const uint			 previousIndexFirstAtom = residue.getIndexFirstAtom();
+		const uint			 indexFirstAtom			= getAtomCount();
 
 		getResidues().emplace_back( &residue );
 		_extractAtomsFromResidue( p_fromMolecule, &residue, previousIndexFirstAtom, residue.getAtomCount(), true );
@@ -793,12 +803,12 @@ namespace VTX::Model
 		return residue;
 	}
 
-	void GeneratedMolecule::_extractAllAtoms( Model::Molecule & p_fromMolecule,
-											  const uint		p_startIndex,
-											  const uint		p_count )
+	void GeneratedMolecule::_extractAllAtoms( Chemistry::Molecule & p_fromMolecule,
+											  const uint			p_startIndex,
+											  const uint			p_count )
 	{
-		const Model::Residue * const previousFirstResidue = p_fromMolecule.getAtom( p_startIndex )->getResiduePtr();
-		const Model::Residue * const previousLastResidue
+		const Chemistry::Residue * const previousFirstResidue = p_fromMolecule.getAtom( p_startIndex )->getResiduePtr();
+		const Chemistry::Residue * const previousLastResidue
 			= p_fromMolecule.getAtom( p_startIndex + p_count - 1 )->getResiduePtr();
 
 		const uint previousIndexFirstBond = previousFirstResidue->getIndexFirstBond();
@@ -841,8 +851,8 @@ namespace VTX::Model
 			if ( getBond( i ) == nullptr )
 				continue;
 
-			const uint			fromBondIndex = bondOffset + i;
-			Model::Bond * const fromBond	  = p_fromMolecule.getBonds()[ bondOffset + i ];
+			const uint				fromBondIndex = bondOffset + i;
+			Chemistry::Bond * const fromBond	  = p_fromMolecule.getBonds()[ bondOffset + i ];
 
 			const bool bondFirstAtomInAtomRange = p_startIndex <= fromBond->getIndexFirstAtom()
 												  && fromBond->getIndexFirstAtom() <= ( p_startIndex + p_count );
@@ -897,7 +907,7 @@ namespace VTX::Model
 			}
 			else
 			{
-				const Model::Bond & bond = *( getBond( i ) );
+				const Chemistry::Bond & bond = *( getBond( i ) );
 				_updateBondInfos( i, bond.getIndexFirstAtom() - atomOffset, bond.getIndexSecondAtom() - atomOffset );
 			}
 
@@ -906,14 +916,14 @@ namespace VTX::Model
 
 		for ( uint i = previousFirstResidue->getIndex(); i <= previousLastResidue->getIndex(); i++ )
 		{
-			Model::Residue * const residue = p_fromMolecule.getResidue( i );
+			Chemistry::Residue * const residue = p_fromMolecule.getResidue( i );
 			residue->setIndexFirstAtom( residue->getIndexFirstAtom() - atomOffset );
 			residue->setIndexFirstBond( residue->getIndexFirstBond() - bondOffset );
 		}
 
 		for ( uint i = indexFirstAtom; i < getAtomCount(); i++ )
 		{
-			Model::Atom & atom = *getAtom( i );
+			Chemistry::Atom & atom = *getAtom( i );
 			atom.setIndex( i );
 			getBufferAtomIds().emplace_back( atom.getId() );
 		}
@@ -922,11 +932,11 @@ namespace VTX::Model
 			p_fromMolecule.removeAtom( i, false, false, false, false );
 	}
 
-	void GeneratedMolecule::_extractAtomsFromResidue( Model::Molecule &		 p_fromMolecule,
-													  Model::Residue * const p_parent,
-													  const uint			 p_startIndex,
-													  const uint			 p_count,
-													  bool					 p_parentFromMolecule )
+	void GeneratedMolecule::_extractAtomsFromResidue( Chemistry::Molecule &		 p_fromMolecule,
+													  Chemistry::Residue * const p_parent,
+													  const uint				 p_startIndex,
+													  const uint				 p_count,
+													  bool						 p_parentFromMolecule )
 	{
 		std::vector<uint> vec = std::vector<uint>();
 		vec.resize( p_count );
@@ -935,17 +945,17 @@ namespace VTX::Model
 		_extractAtomsFromResidue( p_fromMolecule, p_parent, vec, p_parentFromMolecule );
 	}
 
-	void GeneratedMolecule::_extractAtomsFromResidue( Model::Molecule &			p_fromMolecule,
-													  Model::Residue * const	p_parent,
-													  const std::vector<uint> & p_indexes,
-													  bool						p_parentFromMolecule )
+	void GeneratedMolecule::_extractAtomsFromResidue( Chemistry::Molecule &		 p_fromMolecule,
+													  Chemistry::Residue * const p_parent,
+													  const std::vector<uint> &	 p_indexes,
+													  bool						 p_parentFromMolecule )
 	{
 		const uint indexFirstAtom	 = getAtomCount();
 		const uint newIndexFirstBond = getBondCount();
 
-		const Model::Residue & sourceResidue	  = *p_fromMolecule.getAtom( p_indexes[ 0 ] )->getResiduePtr();
-		const uint			   parentFirstAtom	  = sourceResidue.getIndexFirstAtom();
-		const uint			   parentFirstAtomOut = sourceResidue.getIndexFirstAtom() + sourceResidue.getAtomCount();
+		const Chemistry::Residue & sourceResidue   = *p_fromMolecule.getAtom( p_indexes[ 0 ] )->getResiduePtr();
+		const uint				   parentFirstAtom = sourceResidue.getIndexFirstAtom();
+		const uint parentFirstAtomOut			   = sourceResidue.getIndexFirstAtom() + sourceResidue.getAtomCount();
 
 		std::vector<BondExtractData> internalBonds = std::vector<BondExtractData>();
 		internalBonds.reserve( sourceResidue.getBondCount() );
@@ -955,9 +965,9 @@ namespace VTX::Model
 
 		for ( const uint idAtom : p_indexes )
 		{
-			Model::Atom &		   atom			= *p_fromMolecule.getAtom( idAtom );
-			const Model::Residue & fromResidue	= *atom.getResiduePtr();
-			const uint			   newAtomIndex = getAtomCount();
+			Chemistry::Atom &		   atom			= *p_fromMolecule.getAtom( idAtom );
+			const Chemistry::Residue & fromResidue	= *atom.getResiduePtr();
+			const uint				   newAtomIndex = getAtomCount();
 
 			for ( uint i = 0; i < internalBonds.size(); i++ )
 			{
@@ -981,7 +991,7 @@ namespace VTX::Model
 				  idBond < fromResidue.getIndexFirstBond() + fromResidue.getBondCount();
 				  idBond++ )
 			{
-				Model::Bond * const bond = p_fromMolecule.getBond( idBond );
+				Chemistry::Bond * const bond = p_fromMolecule.getBond( idBond );
 
 				if ( bond == nullptr )
 					continue;
@@ -1095,7 +1105,7 @@ namespace VTX::Model
 		// Update atom data
 		for ( uint i = indexFirstAtom; i < getAtomCount(); i++ )
 		{
-			Model::Atom & atom = *getAtom( i );
+			Chemistry::Atom & atom = *getAtom( i );
 
 			atom.setIndex( i );
 			atom.setResiduePtr( p_parent );
@@ -1110,7 +1120,7 @@ namespace VTX::Model
 											  const uint p_firstAtomIndex,
 											  const uint p_secondAtomIndex )
 	{
-		Model::Bond & p_bond = *( getBond( p_bondIndex ) );
+		Chemistry::Bond & p_bond = *( getBond( p_bondIndex ) );
 
 		p_bond.setIndexFirstAtom( p_firstAtomIndex );
 		p_bond.setIndexSecondAtom( p_secondAtomIndex );
@@ -1122,7 +1132,7 @@ namespace VTX::Model
 	}
 	void GeneratedMolecule::_extractBond( const BondExtractData & p_bondData )
 	{
-		Model::Bond * const bond = p_bondData.getBond();
+		Chemistry::Bond * const bond = p_bondData.getBond();
 
 		const uint newFirstIndex  = p_bondData.getFirstIndex();
 		const uint newSecondIndex = p_bondData.getSecondIndex();
@@ -1147,7 +1157,7 @@ namespace VTX::Model
 	}
 
 	std::vector<GeneratedMolecule::ExternalBondExtractData>::iterator GeneratedMolecule::_findInPendingExternalBond(
-		const Model::Bond & p_bond )
+		const Chemistry::Bond & p_bond )
 	{
 		std::vector<ExternalBondExtractData>::iterator it = _pendingExternalBonds.begin();
 
@@ -1172,4 +1182,4 @@ namespace VTX::Model
 		return "[Frame " + std::to_string( p_frame ) + ']';
 	}
 
-} // namespace VTX::Model
+} // namespace VTX::App::Component::Chemistry

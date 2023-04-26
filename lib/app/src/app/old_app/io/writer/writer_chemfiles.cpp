@@ -1,15 +1,15 @@
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
 #include "app/old_app/define.hpp"
-#include "app/model/atom.hpp"
-#include "app/model/bond.hpp"
-#include "app/model/chain.hpp"
-#include "app/model/residue.hpp"
+#include "app/component/chemistry/atom.hpp"
+#include "app/component/chemistry/bond.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include "app/old_app/util/secondary_structure.hpp"
 #include <string>
 
 namespace VTX::IO::Writer
 {
-	void ChemfilesWriter::writeFile( const FilePath & p_path, const Model::Molecule & p_molecule )
+	void ChemfilesWriter::writeFile( const FilePath & p_path, const App::Component::Chemistry::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
 
@@ -18,7 +18,7 @@ namespace VTX::IO::Writer
 		trajectory.close();
 	}
 	void ChemfilesWriter::writeBuffer( std::string &		   p_buffer,
-									   const Model::Molecule & p_molecule,
+									   const App::Component::Chemistry::Molecule & p_molecule,
 									   const std::string &	   p_format )
 	{
 		_prepareChemfiles();
@@ -31,7 +31,7 @@ namespace VTX::IO::Writer
 	}
 
 	void ChemfilesWriter::fillTrajectoryFrames( chemfiles::Trajectory & p_trajectory,
-												Model::Molecule &		p_molecule ) const
+												App::Component::Chemistry::Molecule &		p_molecule ) const
 	{
 		// Fill other frames.
 		Util::Chrono timeReadingFrames;
@@ -39,7 +39,7 @@ namespace VTX::IO::Writer
 		int startingFrame = 1;
 		for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )
 		{
-			Model::Molecule::AtomPositionsFrame &		 moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
+			App::Component::Chemistry::Molecule::AtomPositionsFrame &		 moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
 			chemfiles::Frame							 frame		   = p_trajectory.read_step( frameIdx );
 			const chemfiles::span<chemfiles::Vector3D> & positions	   = frame.positions();
 			for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
@@ -60,7 +60,7 @@ namespace VTX::IO::Writer
 		_logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
 	}
 
-	void ChemfilesWriter::_writeTrajectory( chemfiles::Trajectory & p_trajectory, const Model::Molecule & p_molecule )
+	void ChemfilesWriter::_writeTrajectory( chemfiles::Trajectory & p_trajectory, const App::Component::Chemistry::Molecule & p_molecule )
 	{
 		_vecNewAtomIndexes.resize( p_molecule.getAtomCount(), INVALID_ID );
 		_vecNewResidueIndexes.resize( p_molecule.getResidueCount(), INVALID_ID );
@@ -79,7 +79,7 @@ namespace VTX::IO::Writer
 			uint currentExportedResidueIndex = 0;
 			uint currentExportedChainIndex	 = 0;
 
-			for ( const Model::Chain * const chain : p_molecule.getChains() )
+			for ( const App::Component::Chemistry::Chain * const chain : p_molecule.getChains() )
 			{
 				if ( chain == nullptr )
 					continue;
@@ -91,7 +91,7 @@ namespace VTX::IO::Writer
 				for ( uint residueIndex = chain->getIndexFirstResidue(); residueIndex <= chain->getIndexLastResidue();
 					  residueIndex++ )
 				{
-					const VTX::Model::Residue * const residue = p_molecule.getResidue( residueIndex );
+					const VTX::App::Component::Chemistry::Residue * const residue = p_molecule.getResidue( residueIndex );
 
 					if ( residue == nullptr )
 						continue;
@@ -111,13 +111,13 @@ namespace VTX::IO::Writer
 					if ( residue->hasInsertionCode() )
 						chemResidue.set( "insertion_code", std::string( 1, residue->getInsertionCode() ) );
 
-					const bool isStdPdb = residue->getType() == Model::Residue::TYPE::STANDARD
-										  && residue->getSymbol() != Model::Residue::SYMBOL::UNKNOWN;
+					const bool isStdPdb = residue->getType() == App::Component::Chemistry::Residue::TYPE::STANDARD
+										  && residue->getSymbol() != App::Component::Chemistry::Residue::SYMBOL::UNKNOWN;
 					chemResidue.set( "is_standard_pdb", isStdPdb );
 
 					for ( ; firstResAtomIdx < atomCount; ++firstResAtomIdx )
 					{
-						const VTX::Model::Atom * const atom = p_molecule.getAtom( firstResAtomIdx );
+						const VTX::App::Component::Chemistry::Atom * const atom = p_molecule.getAtom( firstResAtomIdx );
 
 						if ( atom == nullptr )
 							continue;
@@ -146,7 +146,7 @@ namespace VTX::IO::Writer
 			// add bonds
 			for ( VTX::uint bond = 0; bond < p_molecule.getBondCount(); bond++ )
 			{
-				const VTX::Model::Bond * bnd = p_molecule.getBond( bond );
+				const VTX::App::Component::Chemistry::Bond * bnd = p_molecule.getBond( bond );
 
 				if ( bnd == nullptr )
 					continue;
@@ -163,15 +163,15 @@ namespace VTX::IO::Writer
 		}
 	}
 
-	uint ChemfilesWriter::getNewChainIndex( const Model::Chain & p_chain ) const
+	uint ChemfilesWriter::getNewChainIndex( const App::Component::Chemistry::Chain & p_chain ) const
 	{
 		return _vecNewChainIndexes[ p_chain.getIndex() ];
 	}
-	uint ChemfilesWriter::getNewResidueIndex( const Model::Residue & p_residue ) const
+	uint ChemfilesWriter::getNewResidueIndex( const App::Component::Chemistry::Residue & p_residue ) const
 	{
 		return _vecNewResidueIndexes[ p_residue.getIndex() ];
 	}
-	uint ChemfilesWriter::getNewAtomIndex( const Model::Atom & p_atom ) const
+	uint ChemfilesWriter::getNewAtomIndex( const App::Component::Chemistry::Atom & p_atom ) const
 	{
 		return _vecNewAtomIndexes[ p_atom.getIndex() ];
 	}

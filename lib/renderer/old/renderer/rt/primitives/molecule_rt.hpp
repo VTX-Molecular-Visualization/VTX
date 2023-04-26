@@ -15,7 +15,7 @@ namespace VTX
 		class MoleculeRT : public BaseObject3D
 		{
 		  public:
-			MoleculeRT( const Model::Molecule * p_molecule );
+			MoleculeRT( const App::Component::Chemistry::Molecule * p_molecule );
 			~MoleculeRT()
 			{
 				for ( Renderer::BaseMaterial * mtl : _materials )

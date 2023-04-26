@@ -3,6 +3,7 @@
 
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
+#include <app/component/chemistry/_fwd.hpp>
 #include <app/core/model/base_model.hpp>
 #include <vector>
 
@@ -10,8 +11,8 @@ namespace VTX
 {
 	namespace Model
 	{
-		class Atom;
-		class Residue;
+		// class Atom;
+		// class Residue;
 
 		namespace Measurement
 		{

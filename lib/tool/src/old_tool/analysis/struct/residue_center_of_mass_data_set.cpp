@@ -1,10 +1,10 @@
 #include "tool/old_tool/analysis/struct/residue_center_of_mass_data_set.hpp"
-#include <app/model/molecule.hpp>
-#include <app/model/residue.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/residue.hpp>
 
 namespace VTX::Analysis::Struct
 {
-	Vec3f ResidueCenterOfMassDataSet::getPositionInMolecule( const Model::Residue & p_residue )
+	Vec3f ResidueCenterOfMassDataSet::getPositionInMolecule( const App::Component::Chemistry::Residue & p_residue )
 	{
 		const Vec3f	  absoluteResidueCenterOfMass = ResidueDataSet::get( p_residue );
 		const Vec3f & offset
@@ -13,10 +13,10 @@ namespace VTX::Analysis::Struct
 		return absoluteResidueCenterOfMass + offset;
 	}
 
-	Vec3f ResidueCenterOfMassDataSet::generateResidueData( const Model::Residue & p_residue ) const
+	Vec3f ResidueCenterOfMassDataSet::generateResidueData( const App::Component::Chemistry::Residue & p_residue ) const
 	{
-		const Model::Molecule &						molecule = *( p_residue.getMoleculePtr() );
-		const Model::Molecule::AtomPositionsFrame & atomPositions
+		const App::Component::Chemistry::Molecule &						molecule = *( p_residue.getMoleculePtr() );
+		const App::Component::Chemistry::Molecule::AtomPositionsFrame & atomPositions
 			= molecule.getAtomPositionFrame( molecule.getFrame() );
 
 		Vec3f res = VEC3F_ZERO;

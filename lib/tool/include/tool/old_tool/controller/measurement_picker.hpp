@@ -1,6 +1,7 @@
 #ifndef __VTX_CONTROLLER_MEASUREMENT_PICKER__
 #define __VTX_CONTROLLER_MEASUREMENT_PICKER__
 
+#include <app/component/chemistry/_fwd.hpp>
 #include <app/core/model/base_model.hpp>
 #include <ui/old_ui/controller/base_keyboard_controller.hpp>
 #include <ui/old_ui/controller/base_mouse_controller.hpp>
@@ -9,8 +10,8 @@ namespace VTX
 {
 	namespace Model
 	{
-		class Atom;
-		class Residue;
+		// class Atom;
+		// class Residue;
 
 		namespace Measurement
 		{

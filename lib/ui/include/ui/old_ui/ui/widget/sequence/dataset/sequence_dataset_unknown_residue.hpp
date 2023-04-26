@@ -2,8 +2,8 @@
 #define __VTX_UI_WIDGET_SEQUENCE_UNKNOWN_DATASET__
 
 #include "sequence_dataset.hpp"
-#include <app/model/chain.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/chain.hpp>
+#include <app/component/chemistry/molecule.hpp>
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {
@@ -13,7 +13,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		using PairCharLengthCount = std::pair<uint, uint>;
 
 	  public:
-		SequenceDisplayDataset_UnknownResidue( const Model::Chain & p_chain,
+		SequenceDisplayDataset_UnknownResidue( const App::Component::Chemistry::Chain & p_chain,
 											   const uint			p_startIndexChar,
 											   const uint			p_residueFirstIndex,
 											   const uint			p_residueLastIndex,
@@ -22,7 +22,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 
 		void appendToSequence( QString & p_sequenceString ) const override;
 		void appendToScale( QString & p_scale, uint & p_lastIndexCharWritten, bool p_startBloc ) const override;
-		Model::Residue * const getResidueAtCharIndex( const uint p_charIndex ) override;
+		App::Component::Chemistry::Residue * const getResidueAtCharIndex( const uint p_charIndex ) override;
 
 		virtual bool isResidueInScope( const uint p_residueIndex ) const
 		{
@@ -30,11 +30,11 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		};
 		virtual uint getCharIndexOfResidue( const uint p_residueIndex ) const { return _startIndexChar; };
 
-		Model::Residue * const getFirstResidue() const override
+		App::Component::Chemistry::Residue * const getFirstResidue() const override
 		{
 			return _chain->getMoleculePtr()->getResidue( _chain->getIndexFirstResidue() + _residueFirstIndex );
 		};
-		Model::Residue * const getLastResidue() const override
+		App::Component::Chemistry::Residue * const getLastResidue() const override
 		{
 			return _chain->getMoleculePtr()->getResidue( _chain->getIndexFirstResidue() + _residueLastIndex );
 		};
@@ -46,7 +46,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 	  private:
 		void _buildInnerData();
 
-		const Model::Chain * const _chain;
+		const App::Component::Chemistry::Chain * const _chain;
 		uint					   _residueFirstIndex;
 		uint					   _residueLastIndex;
 		const bool				   _spaceBefore;

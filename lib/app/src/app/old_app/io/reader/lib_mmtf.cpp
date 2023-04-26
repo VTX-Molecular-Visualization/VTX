@@ -10,7 +10,7 @@ namespace VTX
 		namespace Reader
 		{
 			/*
-			void LibMMTF::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			void LibMMTF::readFile( const Path & p_path, App::Component::Chemistry::Molecule & p_molecule )
 			{
 				mmtf::StructureData data;
 				mmtf::decodeFromFile( data, p_path.c_str() );
@@ -19,7 +19,7 @@ namespace VTX
 
 			void LibMMTF::readBuffer( const std::string & p_buffer,
 									  const std::string & p_extension,
-									  Model::Molecule &	  p_molecule )
+									  App::Component::Chemistry::Molecule &	  p_molecule )
 			{
 				mmtf::StructureData data;
 				mmtf::decodeFromBuffer( data, p_buffer.c_str(), p_buffer.size() );
@@ -27,7 +27,7 @@ namespace VTX
 				return _readStructureData( data, p_molecule );
 			}
 
-			void LibMMTF::_readStructureData( const mmtf::StructureData & p_data, Model::Molecule & p_molecule )
+			void LibMMTF::_readStructureData( const mmtf::StructureData & p_data, App::Component::Chemistry::Molecule & p_molecule )
 			{
 				// Check for consistency.
 				if ( p_data.hasConsistentData( true ) == false )
@@ -46,7 +46,7 @@ namespace VTX
 				uint  bondGlobalIdx	   = 0;
 
 				p_molecule.addAtomPositionFrame();
-				Model::Molecule::AtomPositionsFrame & frame = p_molecule.getAtomPositionFrame( 0 );
+				App::Component::Chemistry::Molecule::AtomPositionsFrame & frame = p_molecule.getAtomPositionFrame( 0 );
 
 				uint chainCount = p_data.chainsPerModel[ 0 ];
 #ifdef _DEBUG
@@ -57,13 +57,13 @@ namespace VTX
 				{
 					// New chain.
 					p_molecule.addChain();
-					Model::Chain & chain = p_molecule.getChain( chainGlobalIdx );
+					App::Component::Chemistry::Chain & chain = p_molecule.getChain( chainGlobalIdx );
 					chain.setMoleculePtr( &p_molecule );
 					chain.setIndex( chainGlobalIdx );
 					chain.setName( p_data.chainNameList[ chainGlobalIdx ] );
 					chain.setIdFirstResidue( residueGlobalIdx );
 					chain.setResidueCount( p_data.groupsPerChain[ chainGlobalIdx ] );
-					chain.setColor( Model::Chain::getChainIdColor( p_data.chainIdList[ chainGlobalIdx ] ) );
+					chain.setColor( App::Component::Chemistry::Chain::getChainIdColor( p_data.chainIdList[ chainGlobalIdx ] ) );
 
 					// For each residue in the chain.
 					uint residueCount = p_data.groupsPerChain[ chainGlobalIdx ];
@@ -81,14 +81,14 @@ namespace VTX
 
 						// New residue.
 						p_molecule.addResidue();
-						Model::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
+						App::Component::Chemistry::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
 						residue.setChainPtr( &chain );
 						residue.setIndex( residueGlobalIdx );
 						const std::string & residueSymbol = group.groupName;
-						std::optional		symbol = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
+						std::optional		symbol = magic_enum::enum_cast<App::Component::Chemistry::Residue::SYMBOL>( residueSymbol );
 						symbol.has_value() ? residue.setSymbol( symbol.value() )
 										   : p_molecule.addUnknownResidueSymbol( residueSymbol );
-						residue.setColor( Model::Residue::SYMBOL_COLOR[ int( residue.getSymbol() ) ] );
+						residue.setColor( App::Component::Chemistry::Residue::SYMBOL_COLOR[ int( residue.getSymbol() ) ] );
 						residue.setIdFirstAtom( atomGlobalIdx );
 						residue.setAtomCount( uint( group.atomNameList.size() ) );
 						// residue.setIdFirstBond( bondGlobalIdx );
@@ -112,16 +112,16 @@ namespace VTX
 						{
 							// New atom.
 							p_molecule.addAtom();
-							Model::Atom & atom = p_molecule.getAtom( atomGlobalIdx );
+							App::Component::Chemistry::Atom & atom = p_molecule.getAtom( atomGlobalIdx );
 							atom.setResiduePtr( &residue );
 							atom.setIndex( atomGlobalIdx );
 							const std::string & atomSymbol = group.elementList[ atomIdx ];
-							std::optional symbol = magic_enum::enum_cast<Model::Atom::SYMBOL>( "A_" + atomSymbol );
+							std::optional symbol = magic_enum::enum_cast<App::Component::Chemistry::Atom::SYMBOL>( "A_" + atomSymbol );
 							symbol.has_value() ? atom.setSymbol( symbol.value() )
 											   : p_molecule.addUnknownAtomSymbol( atomSymbol );
 
 							atom.setName( group.atomNameList[ atomIdx ] );
-							atom.setColor( Model::Atom::SYMBOL_COLOR[ (int)atom.getSymbol() ] );
+							atom.setColor( App::Component::Chemistry::Atom::SYMBOL_COLOR[ (int)atom.getSymbol() ] );
 
 							x = p_data.xCoordList[ atomGlobalIdx ];
 							y = p_data.yCoordList[ atomGlobalIdx ];
@@ -140,7 +140,7 @@ namespace VTX
 						for ( uint boundIdx = 0; boundIdx < bondCount * 2; boundIdx += 2, bondGlobalIdx++ )
 						{
 							p_molecule.addBond();
-							Model::Bond & bond = p_molecule.getBond( bondGlobalIdx );
+							App::Component::Chemistry::Bond & bond = p_molecule.getBond( bondGlobalIdx );
 
 							bond.setIndexFirstAtom( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx ] );
 							bond.setIndexSecondAtom( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx + 1 ] );
@@ -153,7 +153,7 @@ namespace VTX
 				for ( uint boundIdx = 0; boundIdx < bondCount * 2; boundIdx += 2, ++bondGlobalIdx )
 				{
 					p_molecule.addBond();
-					Model::Bond & bond = p_molecule.getBond( bondGlobalIdx );
+					App::Component::Chemistry::Bond & bond = p_molecule.getBond( bondGlobalIdx );
 
 					bond.setIndexFirstAtom( p_data.bondAtomList[ boundIdx ] );
 					bond.setIndexSecondAtom( p_data.bondAtomList[ boundIdx + 1 ] );

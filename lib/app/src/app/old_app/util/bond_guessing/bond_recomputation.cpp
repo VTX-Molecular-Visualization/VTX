@@ -1,6 +1,6 @@
 #include "app/old_app/util/bond_guessing/bond_recomputation.hpp"
-#include "app/model/atom.hpp"
-#include "app/model/residue.hpp"
+#include "app/component/chemistry/atom.hpp"
+#include "app/component/chemistry/residue.hpp"
 #include "app/old_app/setting.hpp"
 #include <iostream>
 
@@ -218,7 +218,7 @@ namespace VTX::Util::BondGuessing
 
 		for ( const chemfiles::Residue & residue : p_frame.topology().residues() )
 		{
-			const bool isStandard = Model::Residue::IsStandard( residue.name() );
+			const bool isStandard = App::Component::Chemistry::Residue::IsStandard( residue.name() );
 
 			if ( isStandard )
 			{
@@ -288,7 +288,7 @@ namespace VTX::Util::BondGuessing
 		// float cutoff = 8.f;
 		// float	  cutoffPow2		  = cutoff * cutoff;
 		float	  cutoffPow2		  = 8.f;
-		const int hydrogenSymbolValue = int( Model::Atom::SYMBOL::A_H );
+		const int hydrogenSymbolValue = int( App::Component::Chemistry::Atom::SYMBOL::A_H );
 
 		const std::vector<std::vector<size_t>> & atomsToCheck = p_cellList.getNonStdAtoms();
 
@@ -332,8 +332,8 @@ namespace VTX::Util::BondGuessing
 						const chemfiles::Atom & atom2		= frame.topology()[ indexAtom2 ];
 						const int				symbolAtom2 = int( atom2.atomic_number().value_or( 0 ) );
 
-						const float atom1Radius = Model::Atom::SYMBOL_VDW_RADIUS[ symbolAtom1 ];
-						const float atom2Radius = Model::Atom::SYMBOL_VDW_RADIUS[ symbolAtom2 ];
+						const float atom1Radius = App::Component::Chemistry::Atom::SYMBOL_VDW_RADIUS[ symbolAtom1 ];
+						const float atom2Radius = App::Component::Chemistry::Atom::SYMBOL_VDW_RADIUS[ symbolAtom2 ];
 						const float radii		= atom1Radius + atom2Radius;
 
 						if ( interAtomicDist < radii )

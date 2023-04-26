@@ -1,6 +1,8 @@
 #ifndef __VTX_SETTING__
 #define __VTX_SETTING__
 
+#include "app/component/chemistry/enum_category.hpp"
+#include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/id.hpp"
@@ -12,7 +14,7 @@
 
 namespace VTX
 {
-	enum class CATEGORY_ENUM;
+	// enum class App::Component::Chemistry::CATEGORY_ENUM;
 
 	namespace Generic
 	{
@@ -203,10 +205,10 @@ namespace VTX
 		static const Path::INTERPOLATION_MODE DEFAULT_PATH_INTERPOLATION_MODE;
 
 		// Trajectory
-		static const int				  MIN_TRAJECTORY_SPEED;
-		static const int				  MAX_TRAJECTORY_SPEED;
-		static const int				  DEFAULT_TRAJECTORY_SPEED;
-		static const Trajectory::PlayMode DEFAULT_TRAJECTORY_PLAY_MODE;
+		static const int								 MIN_TRAJECTORY_SPEED;
+		static const int								 MAX_TRAJECTORY_SPEED;
+		static const int								 DEFAULT_TRAJECTORY_SPEED;
+		static const App::Component::Chemistry::PlayMode DEFAULT_TRAJECTORY_PLAY_MODE;
 
 		// Transform
 		static const float MIN_EULER;
@@ -347,20 +349,26 @@ namespace VTX
 		inline int getDefaultRenderEffectPresetIndex() const { return renderEffectDefaultIndex; }
 		void	   setDefaultRenderEffectPresetIndex( const int p_renderEffectDefaultIndex );
 
-		int					getDefaultRepresentationIndexPerCategory( const CATEGORY_ENUM & p_categoryEnum ) const;
-		void				setDefaultRepresentationIndexPerCategory( const CATEGORY_ENUM & p_categoryEnum,
-																	  const int				p_representationDefaultIndex );
-		const std::string & getTmpDefaultRepresentationNamePerCategory( const CATEGORY_ENUM & p_categoryEnum );
-		void				setTmpDefaultRepresentationNamePerCategory( const CATEGORY_ENUM & p_categoryEnum,
-																		const std::string &	  p_representationDefaultName );
+		int getDefaultRepresentationIndexPerCategory(
+			const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum ) const;
+		void setDefaultRepresentationIndexPerCategory( const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum,
+													   const int p_representationDefaultIndex );
+		const std::string & getTmpDefaultRepresentationNamePerCategory(
+			const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum );
+		void setTmpDefaultRepresentationNamePerCategory(
+			const App::Component::Chemistry::CATEGORY_ENUM & p_categoryEnum,
+			const std::string &								 p_representationDefaultName );
 
 		inline VTX::Selection::Granularity getSelectionGranularity() const { return selectionGranularity; }
 		void setSelectionGranularity( const VTX::Selection::Granularity & p_selectionGranularity );
 
-		inline int							getDefaultTrajectorySpeed() const { return defaultTrajectorySpeed; }
-		void								setDefaultTrajectorySpeed( const int p_defaultTrajectorySpeed );
-		inline const Trajectory::PlayMode & getDefaultTrajectoryPlayMode() const { return defaultTrajectoryPlayMode; }
-		void setDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_defaultTrajectoryPlayMode );
+		inline int getDefaultTrajectorySpeed() const { return defaultTrajectorySpeed; }
+		void	   setDefaultTrajectorySpeed( const int p_defaultTrajectorySpeed );
+		inline const App::Component::Chemistry::PlayMode & getDefaultTrajectoryPlayMode() const
+		{
+			return defaultTrajectoryPlayMode;
+		}
+		void setDefaultTrajectoryPlayMode( const App::Component::Chemistry::PlayMode p_defaultTrajectoryPlayMode );
 
 		inline const Style::SYMBOL_DISPLAY_MODE getSymbolDisplayMode() const { return symbolDisplayMode; }
 		void setSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE p_symbolDisplayMode );
@@ -455,8 +463,8 @@ namespace VTX
 
 		VTX::Selection::Granularity selectionGranularity = SELECTION_GRANULARITY_DEFAULT;
 
-		int					 defaultTrajectorySpeed	   = DEFAULT_TRAJECTORY_SPEED;
-		Trajectory::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
+		int									defaultTrajectorySpeed	  = DEFAULT_TRAJECTORY_SPEED;
+		App::Component::Chemistry::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
 
 		Style::SYMBOL_DISPLAY_MODE symbolDisplayMode	 = SYMBOL_DISPLAY_MODE_DEFAULT;
 		bool					   checkVTXUpdate		 = CHECK_VTX_UPDATE_DEFAULT;

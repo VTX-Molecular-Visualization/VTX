@@ -6,7 +6,7 @@
 #endif
 
 #include "../bvh.hpp"
-#include "app/model/molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
 
 namespace VTX
 {
@@ -15,7 +15,7 @@ namespace VTX
 		class MoleculeRT : public BaseObject3D
 		{
 		  public:
-			MoleculeRT( const Model::Molecule * p_molecule );
+			MoleculeRT( const App::Component::Chemistry::Molecule * p_molecule );
 			~MoleculeRT()
 			{
 				for ( Renderer::BaseMaterial * mtl : _materials )
