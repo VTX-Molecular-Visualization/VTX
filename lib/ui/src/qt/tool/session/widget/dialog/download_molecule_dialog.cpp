@@ -4,7 +4,7 @@
 #include "ui/qt/widget_factory.hpp"
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/old_app/setting.hpp>
 #include <string>
@@ -77,7 +77,7 @@ namespace VTX::UI::QT::Tool::Session::Widget::Dialog
 	void DownloadMoleculeDialog::openAction()
 	{
 		const std::string code = _fileComboBox->currentText().toStdString();
-		VTX_ACTION( new Action::Main::OpenApi( code ) );
+		VTX_ACTION( new App::Action::Main::OpenApi( code ) );
 
 		close();
 	}

@@ -9,7 +9,7 @@
 #include "ui/old_ui/ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include <QPushButton>
 #include <QWidget>
-#include <app/old_app/model/viewpoint.hpp>
+#include <app/model/viewpoint.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {

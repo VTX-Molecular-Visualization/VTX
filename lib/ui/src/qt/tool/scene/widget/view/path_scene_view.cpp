@@ -11,10 +11,10 @@
 #include "ui/qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <QScrollBar>
-#include <app/core/action/action_manager.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/viewpoint.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
+#include <app/event/global.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
@@ -22,42 +22,42 @@
 namespace VTX::UI::QT::Tool::Scene::Widget::View
 {
 	PathSceneView::PathSceneView( Model::Path * const p_model, QWidget * const p_parent ) :
-		VTX::View::BaseView<Model::Path>( p_model ), SceneItemWidget( p_parent )
+		VTX::App::Core::View::BaseView<Model::Path>( p_model ), SceneItemWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::VIEWPOINT_ADDED );
-		_registerEvent( VTX::Event::Global::VIEWPOINT_REMOVED );
+		_registerEvent( VTX::App::Event::Global::VIEWPOINT_ADDED );
+		_registerEvent( VTX::App::Event::Global::VIEWPOINT_REMOVED );
 	}
 	PathSceneView::~PathSceneView() {}
 
-	void PathSceneView::notify( const VTX::Event::VTXEvent * const p_event )
+	void PathSceneView::notify( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::DATA_CHANGE ) {}
-		else if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE )
+		if ( p_event->name == VTX::App::Event::Model::DATA_CHANGE ) {}
+		else if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			topLevelItem( 0 )->setText( 0, QString::fromStdString( _model->getDefaultName() ) );
 		}
 	}
-	void PathSceneView::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void PathSceneView::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
 		SceneItemWidget::receiveEvent( p_event );
 
-		if ( p_event.name == VTX::Event::Global::VIEWPOINT_ADDED )
+		if ( p_event.name == VTX::App::Event::Global::VIEWPOINT_ADDED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Viewpoint> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> &>( p_event );
 
-			_addViewpoint( castedEvent.ptr );
+			_addViewpoint( castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::VIEWPOINT_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::VIEWPOINT_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Viewpoint> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> &>( p_event );
 
-			_removeViewpoint( castedEvent.ptr );
+			_removeViewpoint( castedEvent.get() );
 		}
 	}
 
-	bool PathSceneView::containsModel( const Model::BaseModel & p_model ) const
+	bool PathSceneView::containsModel( const App::Core::Model::BaseModel & p_model ) const
 	{
 		const VTX::ID::VTX_ID & modelTypeID = p_model.getTypeId();
 		const Model::Path *		linkedPath;
@@ -72,7 +72,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		return linkedPath == _model;
 	}
 
-	std::vector<Model::ID> PathSceneView::getAllItemsFrom( const Model::BaseModel & p_model ) const
+	std::vector<App::Core::Model::ID> PathSceneView::getAllItemsFrom( const App::Core::Model::BaseModel & p_model ) const
 	{
 		const ID::VTX_ID & typeID = p_model.getTypeId();
 
@@ -81,7 +81,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			return SceneItemWidget::getAllItemsFrom( p_model );
 		}
 
-		std::vector<Model::ID> res;
+		std::vector<App::Core::Model::ID> res;
 
 		if ( p_model.getTypeId() == VTX::ID::Model::MODEL_VIEWPOINT )
 		{
@@ -97,7 +97,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 		return res;
 	}
-	std::vector<Model::ID> PathSceneView::getAllItemsTo( const Model::BaseModel & p_model ) const
+	std::vector<App::Core::Model::ID> PathSceneView::getAllItemsTo( const App::Core::Model::BaseModel & p_model ) const
 	{
 		const ID::VTX_ID & typeID = p_model.getTypeId();
 
@@ -106,7 +106,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			return SceneItemWidget::getAllItemsFrom( p_model );
 		}
 
-		std::vector<Model::ID> res;
+		std::vector<App::Core::Model::ID> res;
 
 		if ( p_model.getTypeId() == VTX::ID::Model::MODEL_VIEWPOINT )
 		{
@@ -206,10 +206,10 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	{
 		if ( p_column == 0 )
 		{
-			const Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<Model::ID>();
-			if ( MVC::MvcManager::get().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
+			const App::Core::Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<App::Core::Model::ID>();
+			if ( VTX::MVC_MANAGER().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
-				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( idTarget );
+				Model::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<Model::Viewpoint>( idTarget );
 				std::string		   itemTxt	 = p_item->text( 0 ).toStdString();
 
 				if ( itemTxt != viewpoint.getDefaultName() )
@@ -222,7 +222,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 					}
 					else if ( itemTxt != viewpoint.getDefaultName() )
 					{
-						VTX_ACTION( new VTX::Action::Viewpoint::Rename( viewpoint, itemTxt ) );
+						VTX_ACTION( new VTX::App::Action::Viewpoint::Rename( viewpoint, itemTxt ) );
 					}
 
 					const bool oldSignalState = blockSignals( true );
@@ -238,10 +238,10 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	{
 		if ( p_column == 0 )
 		{
-			const Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<Model::ID>();
-			if ( MVC::MvcManager::get().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
+			const App::Core::Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<App::Core::Model::ID>();
+			if ( VTX::MVC_MANAGER().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
-				Model::Viewpoint & viewpoint  = MVC::MvcManager::get().getModel<Model::Viewpoint>( idTarget );
+				Model::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<Model::Viewpoint>( idTarget );
 				Object3D::Camera & mainCamera = VTXApp::get().getScene().getCamera();
 
 				VTX_ACTION( new QT::Action::Viewpoint::GoTo( viewpoint, mainCamera ) );
@@ -279,12 +279,12 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 	QTreeWidgetItem * PathSceneView::_itemFromViewpoint( const Model::Viewpoint & p_viewpoint ) const
 	{
-		const Model::ID & viewpointID = p_viewpoint.getId();
+		const App::Core::Model::ID & viewpointID = p_viewpoint.getId();
 
 		for ( int i = 0; i < topLevelItem( 0 )->childCount(); i++ )
 		{
 			QTreeWidgetItem * const item   = topLevelItem( 0 )->child( i );
-			const Model::ID &		itemID = item->data( 0, MODEL_ID_ROLE ).value<Model::ID>();
+			const App::Core::Model::ID &		itemID = item->data( 0, MODEL_ID_ROLE ).value<App::Core::Model::ID>();
 			if ( viewpointID == itemID )
 				return item;
 		}
@@ -297,7 +297,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		QTreeWidgetItem * const viewpointItem = new QTreeWidgetItem();
 		viewpointItem->setFlags( viewpointItem->flags() | Qt::ItemFlag::ItemIsEditable );
 
-		viewpointItem->setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( p_viewpoint->getId() ) );
+		viewpointItem->setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::App::Core::Model::ID>( p_viewpoint->getId() ) );
 		viewpointItem->setText( 0, QString::fromStdString( p_viewpoint->getDefaultName() ) );
 		viewpointItem->setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( p_viewpoint->getTypeId() ) );
 

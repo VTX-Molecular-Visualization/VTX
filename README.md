@@ -270,7 +270,7 @@ And you have to implement the _functionalityAction to call the Action you create
 ```cpp
 void BlockWidget::_functionalityAction() const
 {
-	VTX_ACTION( new Action::Namespace::MyNewAction( params ) );
+	VTX_ACTION<App::Action::Namespace::MyNewAction>( params );
 }
 ```
 
@@ -288,7 +288,7 @@ src/ui/main_window.cpp
 ```cpp
 void MainWindow::_onShortcutFunctionality() const
 {
-	VTX_ACTION( new Action::Namespace::MyNewAction(params) ); 
+	VTX_ACTION<new App::Action::Namespace::MyNewAction>(params); 
 }
 ```
 

@@ -9,7 +9,7 @@
 #include <QPoint>
 #include <QSize>
 #include <app/old_app/id.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 #include <string>
 #include <ui/old_ui/ui/widget/base_manual_widget.hpp>
 #include <ui/old_ui/ui/widget/render/base_integrated_widget.hpp>
@@ -18,7 +18,7 @@
 namespace VTX::View::UI::Widget::Measurement
 {
 	class MeasureInProgressRenderView :
-		public View::BaseView<VTX::Model::Measurement::MeasureInProgress>,
+		public App::Core::View::BaseView<VTX::Model::Measurement::MeasureInProgress>,
 		public VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>
 	{
 		VTX_WIDGET

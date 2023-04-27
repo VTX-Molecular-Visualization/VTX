@@ -1,18 +1,18 @@
 #include "app/old_app/io/reader/lib_chemfiles.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/old_app/model/atom.hpp"
-#include "app/old_app/model/bond.hpp"
-#include "app/old_app/model/category.hpp"
-#include "app/old_app/model/category_enum.hpp"
-#include "app/old_app/model/chain.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/residue.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/model/atom.hpp"
+#include "app/model/bond.hpp"
+#include "app/model/category.hpp"
+#include "app/model/category_enum.hpp"
+#include "app/model/chain.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/residue.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/util/bond_guessing/bond_order_guessing.hpp"
 #include "app/old_app/util/chemfiles.hpp"
 #include "app/old_app/util/molecule.hpp"
-#include "app/old_app/worker/base_thread.hpp"
+#include "app/core/worker/base_thread.hpp"
 #include <algorithm>
 #include <iostream>
 #include <magic_enum.hpp>
@@ -22,7 +22,7 @@
 
 namespace VTX::IO::Reader
 {
-	LibChemfiles::LibChemfiles( const Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
+	LibChemfiles::LibChemfiles( const VTX::Core::Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
 
 	void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 	{
@@ -309,7 +309,7 @@ namespace VTX::IO::Reader
 			modelChain->setResidueCount( modelChain->getResidueCount() + 1 );
 
 			// Create residue.
-			Model::Residue * modelResidue		   = MVC::MvcManager::get().instantiateModel<Model::Residue>();
+			Model::Residue * modelResidue		   = VTX::MVC_MANAGER().instantiateModel<Model::Residue>();
 			p_molecule.getResidues()[ residueIdx ] = modelResidue;
 			modelResidue->setIndex( residueIdx );
 
@@ -464,7 +464,7 @@ namespace VTX::IO::Reader
 									 .as_double() );
 
 				// Create atom.
-				Model::Atom * modelAtom			= MVC::MvcManager::get().instantiateModel<Model::Atom>();
+				Model::Atom * modelAtom			= VTX::MVC_MANAGER().instantiateModel<Model::Atom>();
 				p_molecule.getAtoms()[ atomId ] = modelAtom;
 				modelAtom->setIndex( atomId );
 				modelAtom->setResiduePtr( modelResidue );
@@ -621,7 +621,7 @@ namespace VTX::IO::Reader
 			for ( uint i = 0; i < vectorBonds.size(); ++i, ++counter )
 			{
 				const chemfiles::Bond & bond	  = topology.bonds()[ vectorBonds[ i ] ];
-				Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
+				Model::Bond *			modelBond = VTX::MVC_MANAGER().instantiateModel<Model::Bond>();
 				p_molecule.getBonds()[ counter ]  = modelBond;
 
 				modelBond->setMoleculePtr( &p_molecule );
@@ -639,7 +639,7 @@ namespace VTX::IO::Reader
 			for ( uint i = 0; i < vectorExtraBonds.size(); ++i, ++counter )
 			{
 				const chemfiles::Bond & bond	  = topology.bonds()[ vectorExtraBonds[ i ] ];
-				Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
+				Model::Bond *			modelBond = VTX::MVC_MANAGER().instantiateModel<Model::Bond>();
 				p_molecule.getBonds()[ counter ]  = modelBond;
 
 				modelBond->setMoleculePtr( &p_molecule );

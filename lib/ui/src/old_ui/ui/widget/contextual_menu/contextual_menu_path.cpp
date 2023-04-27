@@ -2,10 +2,10 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/view/ui/widget/path_scene_view.hpp"
 #include "ui/qt/action/viewpoint.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/path.hpp>
 #include <app/action/viewpoint.hpp>
-#include <app/old_app/model/path.hpp>
+#include <app/model/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -29,6 +29,6 @@ namespace VTX::UI::Widget::ContextualMenu
 	}
 
 	void ContextualMenuPath::_addViewpoint() { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
-	void ContextualMenuPath::_clearViewpoints() { VTX_ACTION( new Action::Path::Clear( *_target ) ); }
+	void ContextualMenuPath::_clearViewpoints() { VTX_ACTION( new App::Action::Path::Clear( *_target ) ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

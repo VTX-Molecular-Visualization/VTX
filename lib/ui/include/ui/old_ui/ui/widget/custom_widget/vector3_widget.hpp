@@ -10,6 +10,7 @@
 #include <QMouseEvent>
 #include <QSpinBox>
 #include <QWidget>
+#include <util/types.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {

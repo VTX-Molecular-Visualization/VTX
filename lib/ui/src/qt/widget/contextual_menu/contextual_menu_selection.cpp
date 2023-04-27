@@ -10,14 +10,14 @@
 #include "ui/qt/tool/scene/widget/scene_widget.hpp"
 #include "ui/qt/tool/session/dialog.hpp"
 #include <QTimer>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/label.hpp>
 #include <app/action/path.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/viewpoint.hpp>
 #include <app/action/visible.hpp>
-#include <app/old_app/model/generated_molecule.hpp>
-#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/model/generated_molecule.hpp>
+#include <app/model/representation/representation_library.hpp>
 #include <string>
 
 namespace VTX::UI::QT::Widget::ContextualMenu
@@ -200,7 +200,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		QTimer::singleShot( 0, this, [ this ] { _focusedTarget = nullptr; } );
 	}
 
-	void ContextualMenuSelection::setFocusedTarget( Model::BaseModel * const p_focusedTarget )
+	void ContextualMenuSelection::setFocusedTarget( App::Core::Model::BaseModel * const p_focusedTarget )
 	{
 		_focusedTarget = p_focusedTarget;
 	}
@@ -269,7 +269,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_renameAction()
 	{
-		const Model::ID & modelID = *_target->getItems().begin();
+		const App::Core::Model::ID & modelID = *_target->getItems().begin();
 
 		const Tool::Scene::Widget::SceneWidget * const sceneWidget
 			= QT_APP()->getMainWindow().getPanel<Tool::Scene::Widget::SceneWidget>( QT::Tool::SCENE_WINDOW_KEY );
@@ -280,24 +280,24 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_toggleWaterVisibilityAction()
 	{
-		VTX_ACTION( new VTX::Action::Selection::ToggleWatersVisibility( *_target ) );
+		VTX_ACTION( new VTX::App::Action::Selection::ToggleWatersVisibility( *_target ) );
 	}
 	void ContextualMenuSelection::_toggleHydrogenVisibilityAction()
 	{
-		VTX_ACTION( new VTX::Action::Selection::ToggleHydrogensVisibility( *_target ) );
+		VTX_ACTION( new VTX::App::Action::Selection::ToggleHydrogensVisibility( *_target ) );
 	}
 	void ContextualMenuSelection::_toggleSolventVisibilityAction()
 	{
-		VTX_ACTION( new VTX::Action::Selection::ToggleSolventVisibility( *_target ) );
+		VTX_ACTION( new VTX::App::Action::Selection::ToggleSolventVisibility( *_target ) );
 	}
 	void ContextualMenuSelection::_toggleIonVisibilityAction()
 	{
-		VTX_ACTION( new VTX::Action::Selection::ToggleIonsVisibility( *_target ) );
+		VTX_ACTION( new VTX::App::Action::Selection::ToggleIonsVisibility( *_target ) );
 	}
 
 	void ContextualMenuSelection::_toggleTrajectoryPlayingAction()
 	{
-		VTX_ACTION( new VTX::Action::Selection::ToggleTrajectoryPlaying( *_target ) );
+		VTX_ACTION( new VTX::App::Action::Selection::ToggleTrajectoryPlaying( *_target ) );
 	}
 
 	void ContextualMenuSelection::_orientAction() { VTX_ACTION( new QT::Action::Selection::Orient( *_target ) ); }
@@ -321,22 +321,22 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 			if ( focusedModelBaseVisible != nullptr )
 			{
-				VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
+				VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
 					*_target,
 					*focusedModelBaseVisible,
 					focusedModelTypeID,
-					VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+					VTX::App::Action::VISIBILITY_MODE::ALL ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
-					*_target, VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+				VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
+					*_target, VTX::App::Action::VISIBILITY_MODE::ALL ) );
 			}
 		}
 		else
 		{
-			VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
-				*_target, VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+			VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
+				*_target, VTX::App::Action::VISIBILITY_MODE::ALL ) );
 		}
 	}
 	void ContextualMenuSelection::_hideAction()
@@ -359,22 +359,22 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 			if ( focusedModelBaseVisible != nullptr )
 			{
-				VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
+				VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
 					*_target,
 					*focusedModelBaseVisible,
 					focusedModelTypeID,
-					VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+					VTX::App::Action::VISIBILITY_MODE::HIDE ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
-					*_target, VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+				VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
+					*_target, VTX::App::Action::VISIBILITY_MODE::HIDE ) );
 			}
 		}
 		else
 		{
-			VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
-				*_target, VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+			VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
+				*_target, VTX::App::Action::VISIBILITY_MODE::HIDE ) );
 		}
 	}
 	void ContextualMenuSelection::_soloAction()
@@ -397,32 +397,32 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 			if ( focusedModelBaseVisible != nullptr )
 			{
-				VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
+				VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
 					*_target,
 					*focusedModelBaseVisible,
 					focusedModelTypeID,
-					VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+					VTX::App::Action::VISIBILITY_MODE::SOLO ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
-					*_target, VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+				VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
+					*_target, VTX::App::Action::VISIBILITY_MODE::SOLO ) );
 			}
 		}
 		else
 		{
-			VTX_ACTION( new VTX::Action::Selection::ChangeVisibility(
-				*_target, VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+			VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
+				*_target, VTX::App::Action::VISIBILITY_MODE::SOLO ) );
 		}
 	}
-	void ContextualMenuSelection::_copyAction() { VTX_ACTION( new VTX::Action::Selection::Copy( *_target ) ); }
+	void ContextualMenuSelection::_copyAction() { VTX_ACTION( new VTX::App::Action::Selection::Copy( *_target ) ); }
 	void ContextualMenuSelection::_copyFrameAction( const int p_frame )
 	{
-		VTX_ACTION( new VTX::Action::Selection::Copy( *_target, p_frame ) );
+		VTX_ACTION( new VTX::App::Action::Selection::Copy( *_target, p_frame ) );
 	}
 
-	void ContextualMenuSelection::_extractAction() { VTX_ACTION( new VTX::Action::Selection::Extract( *_target ) ); }
-	void ContextualMenuSelection::_deleteAction() { VTX_ACTION( new VTX::Action::Selection::Delete( *_target ) ); }
+	void ContextualMenuSelection::_extractAction() { VTX_ACTION( new VTX::App::Action::Selection::Extract( *_target ) ); }
+	void ContextualMenuSelection::_deleteAction() { VTX_ACTION( new VTX::App::Action::Selection::Delete( *_target ) ); }
 	void ContextualMenuSelection::_exportAction() { QT::Tool::Session::Dialog::openExportMoleculeDialog(); }
 	void ContextualMenuSelection::_loadTrajectoryAction()
 	{
@@ -434,8 +434,8 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		}
 		else if ( _target->getMoleculesMap().size() > 0 )
 		{
-			const Model::ID & moleculeID = _target->getMoleculesMap().begin()->first;
-			molecule					 = &( MVC::MvcManager::get().getModel<Model::Molecule>( moleculeID ) );
+			const App::Core::Model::ID & moleculeID = _target->getMoleculesMap().begin()->first;
+			molecule					 = &( VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeID ) );
 		}
 
 		if ( molecule != nullptr )
@@ -446,7 +446,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_applyRepresentationAction( const int p_representationIndex )
 	{
-		VTX_ACTION( new VTX::Action::Selection::ChangeRepresentationPreset( *_target, p_representationIndex ) );
+		VTX_ACTION( new VTX::App::Action::Selection::ChangeRepresentationPreset( *_target, p_representationIndex ) );
 	}
 
 	void ContextualMenuSelection::_updateCurrentRepresentationFeedback( QAction & _action ) const
@@ -456,7 +456,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 
 			if ( moleculeData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 			{
@@ -526,7 +526,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		bool displayShowWater = true;
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 			displayShowWater		   = displayShowWater && !molecule.showWater();
 		}
 
@@ -538,7 +538,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		bool displayShowHydrogen = true;
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 			displayShowHydrogen		   = displayShowHydrogen && !molecule.showHydrogen();
 		}
 
@@ -550,7 +550,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		bool displayShowSolvent = true;
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 			displayShowSolvent		   = displayShowSolvent && !molecule.showSolvent();
 		}
 
@@ -562,7 +562,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		bool displayShowIon = true;
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 			displayShowIon			   = displayShowIon && !molecule.showIon();
 		}
 
@@ -581,7 +581,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		bool displayPlay = true;
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 			if ( molecule.hasTrajectory() )
 				displayPlay = displayPlay && !molecule.isPlaying();
 		}
@@ -594,7 +594,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 	{
 		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
 			if ( molecule.hasTrajectory() )
 				return true;
 		}
@@ -606,7 +606,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 	void ContextualMenuSelection::_clearViewpointsAction()
 	{
 		Model::Path * const targetPath = dynamic_cast<Model::Path * const>( _target );
-		VTX_ACTION( new VTX::Action::Path::Clear( *targetPath ) );
+		VTX_ACTION( new VTX::App::Action::Path::Clear( *targetPath ) );
 	}
 
 	void ContextualMenuSelection::_gotoViewpointAction()
@@ -622,7 +622,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		std::vector<Model::Viewpoint *> viewpointsInSelection
 			= _target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT );
 
-		VTX_ACTION( new VTX::Action::Viewpoint::Relocate( viewpointsInSelection ) );
+		VTX_ACTION( new VTX::App::Action::Viewpoint::Relocate( viewpointsInSelection ) );
 	}
 	void ContextualMenuSelection::_deleteViewpointAction()
 	{
@@ -644,7 +644,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		_getAllLabelTypes( labelsInSelection );
 
 		if ( labelsInSelection.size() > 0 )
-			VTX_ACTION( new VTX::Action::Label::Delete( labelsInSelection ) );
+			VTX_ACTION( new VTX::App::Action::Label::Delete( labelsInSelection ) );
 	}
 
 	void ContextualMenuSelection::_getAllLabelTypes( std::unordered_set<Model::Label *> & p_labels ) const

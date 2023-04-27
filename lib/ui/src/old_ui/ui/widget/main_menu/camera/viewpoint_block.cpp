@@ -2,10 +2,10 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 #include <app/action/viewpoint.hpp>
-#include <app/core/action/action_manager.hpp>
-#include <app/old_app/model/path.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/event/global.hpp>
+#include <app/model/path.hpp>
+#include <app/model/selection.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/object3d/camera.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/vtx_app.hpp>
@@ -14,17 +14,17 @@ namespace VTX::UI::Widget::MainMenu::Camera
 {
 	ViewpointBlock::ViewpointBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
 	};
 
-	void ViewpointBlock::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void ViewpointBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::SELECTION_CHANGE )
+		if ( p_event.name == App::Event::Global::SELECTION_CHANGE )
 		{
-			const VTX::Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Selection> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Selection *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Selection *> &>( p_event );
 
-			const Model::Selection * const selectionModel = castedEvent.ptr;
+			const Model::Selection * const selectionModel = castedEvent.get();
 			_enableDeleteButtonState( selectionModel->hasItemOfType( VTX::ID::Model::MODEL_VIEWPOINT ) );
 		}
 	}
@@ -63,12 +63,12 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 		viewpointsInSelection.reserve( selection.getItems().size() );
 
-		for ( const Model::ID & modelID : selection.getItems() )
+		for ( const App::Core::Model::ID & modelID : selection.getItems() )
 		{
-			const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( modelID );
+			const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
 			if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
-				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
+				Model::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<Model::Viewpoint>( modelID );
 				viewpointsInSelection.emplace_back( &viewpoint );
 			}
 		}

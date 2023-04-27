@@ -1,6 +1,7 @@
 #include "ui/old_ui/ui/widget/status_bar/status_bar_widget.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QHBoxLayout>
+#include <app/event/global.hpp>
 
 namespace VTX
 {
@@ -12,14 +13,15 @@ namespace VTX
 			{
 				StatusBarWidget::StatusBarWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 				{
-					_registerEvent( VTX::Event::Global::UPDATE_PROGRESS_BAR );
+					_registerEvent( VTX::App::Event::Global::UPDATE_PROGRESS_BAR );
 				}
 
-				void StatusBarWidget ::receiveEvent( const VTX::Event::VTXEvent & p_event )
+				void StatusBarWidget ::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 				{
-					if ( p_event.name == VTX::Event::Global::UPDATE_PROGRESS_BAR )
+					if ( p_event.name == VTX::App::Event::Global::UPDATE_PROGRESS_BAR )
 					{
-						float progress = dynamic_cast<const VTX::Event::VTXEventValue<float> &>( p_event ).value;
+						const float progress
+							= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<float> &>( p_event ).get();
 
 						if ( progress == 1.0f )
 						{

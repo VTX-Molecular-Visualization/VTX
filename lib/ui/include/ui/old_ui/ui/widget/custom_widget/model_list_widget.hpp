@@ -7,7 +7,7 @@
 #include <QString>
 #include <QWidget>
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/base_model.hpp>
+#include <app/core/model/base_model.hpp>
 #include <type_traits>
 #include <vector>
 
@@ -21,8 +21,8 @@ namespace VTX::UI::Widget::CustomWidget
 		BaseModelFieldLine( BaseModelListWidget * p_parent );
 		virtual ~BaseModelFieldLine() = default;
 
-		virtual Model::BaseModel * const getModel() const							  = 0;
-		virtual void					 setModel( Model::BaseModel * const p_model ) = 0;
+		virtual App::Core::Model::BaseModel * const getModel() const							  = 0;
+		virtual void					 setModel( App::Core::Model::BaseModel * const p_model ) = 0;
 
 		virtual bool blockSignals( const bool p_block ) { return QObject::blockSignals( p_block ); };
 	};
@@ -42,24 +42,24 @@ namespace VTX::UI::Widget::CustomWidget
 	  public:
 		void localize() override;
 
-		void addModel( Model::BaseModel * const p_model );
-		void insertModel( Model::BaseModel * const p_model, const int p_row );
-		void removeModel( Model::BaseModel * const p_model );
+		void addModel( App::Core::Model::BaseModel * const p_model );
+		void insertModel( App::Core::Model::BaseModel * const p_model, const int p_row );
+		void removeModel( App::Core::Model::BaseModel * const p_model );
 		void clearModels();
-		void swapModels( Model::BaseModel * const p_model1, Model::BaseModel * const p_model2 ) const;
+		void swapModels( App::Core::Model::BaseModel * const p_model1, App::Core::Model::BaseModel * const p_model2 ) const;
 
-		bool							hasModel( const Model::BaseModel * const p_model ) const;
+		bool							hasModel( const App::Core::Model::BaseModel * const p_model ) const;
 		int								getModelCount() const;
-		std::vector<Model::BaseModel *> getModels() const;
+		std::vector<App::Core::Model::BaseModel *> getModels() const;
 
-		template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
+		template<typename M, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>>
 		std::vector<M *> getModels() const
 		{
 			std::vector<M *>					  res		 = std::vector<M *>();
-			const std::vector<Model::BaseModel *> baseModels = getModels();
+			const std::vector<App::Core::Model::BaseModel *> baseModels = getModels();
 			res.reserve( baseModels.size() );
 
-			for ( const Model::BaseModel * const model : baseModels )
+			for ( const App::Core::Model::BaseModel * const model : baseModels )
 				res.emplace_back( static_cast<M *>( model ) );
 
 			return res;
@@ -82,9 +82,9 @@ namespace VTX::UI::Widget::CustomWidget
 		virtual void _initColumns() = 0;
 		void		 _initColumn( const int p_columnIndex, const std::string p_title, const int p_stretch );
 
-		void							   _addModelInLayout( Model::BaseModel * const p_model, const int p_row );
+		void							   _addModelInLayout( App::Core::Model::BaseModel * const p_model, const int p_row );
 		virtual BaseModelFieldLine * const _instantiateLine() = 0;
-		virtual void _initLine( BaseModelFieldLine * const p_line, Model::BaseModel * const p_model ) const;
+		virtual void _initLine( BaseModelFieldLine * const p_line, App::Core::Model::BaseModel * const p_model ) const;
 		virtual void _addLineInLayout( BaseModelFieldLine * const p_line, const int p_row ) = 0;
 
 		void _addWidgetInColumn( QWidget * p_widget, const int p_row, const int p_column );
@@ -95,11 +95,11 @@ namespace VTX::UI::Widget::CustomWidget
 		std::vector<BaseModelFieldLine *> &		  _getLines() { return _lines; }
 		const std::vector<BaseModelFieldLine *> & _getLines() const { return _lines; }
 
-		bool				 _isModelAlreadyInList( const Model::BaseModel * const p_model ) const;
-		BaseModelFieldLine * _findLineFromModel( const Model::BaseModel * const p_model ) const;
+		bool				 _isModelAlreadyInList( const App::Core::Model::BaseModel * const p_model ) const;
+		BaseModelFieldLine * _findLineFromModel( const App::Core::Model::BaseModel * const p_model ) const;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<BaseModelFieldLine, T>::value>>
-		T * _findLineFromModel( const Model::BaseModel * const p_model ) const
+		T * _findLineFromModel( const App::Core::Model::BaseModel * const p_model ) const
 		{
 			return dynamic_cast<T *>( _findLineFromModel( p_model ) );
 		}

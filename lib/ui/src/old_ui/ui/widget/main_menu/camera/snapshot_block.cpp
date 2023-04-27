@@ -5,12 +5,12 @@
 #include "ui/old_ui/ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/old_app/io/filesystem.hpp>
-#include <app/old_app/model/renderer/render_effect_preset.hpp>
-#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
-#include <app/old_app/worker/snapshoter.hpp>
+#include <app/model/renderer/render_effect_preset.hpp>
+#include <app/model/renderer/render_effect_preset_library.hpp>
+#include <app/worker/snapshoter.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
@@ -40,7 +40,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	void SnapshotBlock::_takeSnapshotAction() const
 	{
 		VTX_ACTION(
-			new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+			new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
 										IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 										VTX_SETTING().getSnapshotResolution() ) );
 	}

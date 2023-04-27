@@ -1,17 +1,18 @@
-#ifndef __VTX_ACTION_INSTANTIATED_REPRESENTATION__
-#define __VTX_ACTION_INSTANTIATED_REPRESENTATION__
+#ifndef __VTX_APP_ACTION_INSTANTIATED_REPRESENTATION__
+#define __VTX_APP_ACTION_INSTANTIATED_REPRESENTATION__
 
+#include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
+#include "app/model/representation/instantiated_representation.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_representable.hpp"
-#include "app/old_app/model/representation/instantiated_representation.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include <type_traits>
 #include <unordered_set>
 
-namespace VTX::Action::InstantiatedRepresentation
+namespace VTX::App::Action::InstantiatedRepresentation
 {
-	class ChangeColorMode : public Core::Action::BaseAction
+	class ChangeColorMode : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColorMode( Model::Representation::InstantiatedRepresentation * const p_representation,
@@ -28,7 +29,7 @@ namespace VTX::Action::InstantiatedRepresentation
 		Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 
-	class ChangeColor : public Core::Action::BaseAction
+	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColor( Model::Representation::InstantiatedRepresentation * const p_representation,
@@ -63,7 +64,7 @@ namespace VTX::Action::InstantiatedRepresentation
 			= std::unordered_set<Model::Representation::InstantiatedRepresentation *>();
 	};
 
-	class ChangeSphereRadius : public Core::Action::BaseAction
+	class ChangeSphereRadius : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeSphereRadius( Model::Representation::InstantiatedRepresentation * const p_representation,
@@ -79,7 +80,7 @@ namespace VTX::Action::InstantiatedRepresentation
 		const float												  _radius;
 		Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
-	class ChangeCylinderRadius : public Core::Action::BaseAction
+	class ChangeCylinderRadius : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeCylinderRadius( Model::Representation::InstantiatedRepresentation * const p_representation,
@@ -96,7 +97,7 @@ namespace VTX::Action::InstantiatedRepresentation
 		Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 
-	class ChangeCylindeColorBlendingMode : public Core::Action::BaseAction
+	class ChangeCylindeColorBlendingMode : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeCylindeColorBlendingMode(
@@ -114,7 +115,7 @@ namespace VTX::Action::InstantiatedRepresentation
 		Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 
-	class ChangeRibbonColorMode : public Core::Action::BaseAction
+	class ChangeRibbonColorMode : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRibbonColorMode( Model::Representation::InstantiatedRepresentation * const p_representation,
@@ -131,7 +132,7 @@ namespace VTX::Action::InstantiatedRepresentation
 		Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 
-	class ChangeRibbonColorBlendingMode : public Core::Action::BaseAction
+	class ChangeRibbonColorBlendingMode : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRibbonColorBlendingMode(
@@ -148,5 +149,5 @@ namespace VTX::Action::InstantiatedRepresentation
 		const Generic::COLOR_BLENDING_MODE						  _mode;
 		Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
-} // namespace VTX::Action::InstantiatedRepresentation
+} // namespace VTX::App::Action::InstantiatedRepresentation
 #endif

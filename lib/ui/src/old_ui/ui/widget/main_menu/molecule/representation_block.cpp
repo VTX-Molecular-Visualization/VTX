@@ -3,34 +3,34 @@
 #include "ui/old_ui/ui/widget/settings/setting_widget.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/model/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	RepresentationBlock::RepresentationBlock(
 		Model::Representation::RepresentationLibrary * const _representationLibrary,
 		QWidget *											 p_parent ) :
-		View::BaseView<Model::Representation::RepresentationLibrary>( _representationLibrary ),
+		App::Core::View::BaseView<Model::Representation::RepresentationLibrary>( _representationLibrary ),
 		MenuToolBlockWidget( p_parent )
 	{
 	}
 	RepresentationBlock::~RepresentationBlock() {}
 
-	void RepresentationBlock::notify( const VTX::Event::VTXEvent * const p_event )
+	void RepresentationBlock::notify( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::DATA_CHANGE )
+		if ( p_event->name == VTX::App::Event::Model::DATA_CHANGE )
 		{
 			_refreshView();
 		}
-		else if ( p_event->name == VTX::Event::Model::QUICK_ACCESS_CHANGE )
+		else if ( p_event->name == VTX::App::Event::Model::QUICK_ACCESS_CHANGE )
 		{
 			_refreshView();
 		}
-		else if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE )
+		else if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			_refreshNames();
 		}
-		else if ( p_event->name == VTX::Event::Model::REPRESENTATION_TYPE_CHANGE )
+		else if ( p_event->name == VTX::App::Event::Model::REPRESENTATION_TYPE_CHANGE )
 		{
 			_refreshIcons();
 		}

@@ -1,11 +1,12 @@
 #include "tool/old_tool/model/measurement/measure_in_progress.hpp"
 #include "tool/old_tool/util/measurement.hpp"
 #include <algorithm>
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/event/vtx_event.hpp>
+#include <app/mvc.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/molecule.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <util/math.hpp>
 #include <variant>
@@ -34,48 +35,48 @@ namespace VTX::Model::Measurement
 		_atoms.reserve( 4 );
 		_moleculeViews.reserve( 4 );
 
-		_registerEvent( Event::Global::MOLECULE_REMOVED );
-		_registerEvent( Event::Global::ATOM_REMOVED );
-		_registerEvent( Event::Global::LABEL_REMOVED );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::App::Event::Global::ATOM_REMOVED );
+		_registerEvent( VTX::App::Event::Global::LABEL_REMOVED );
 
 		setAutoNaming( false, false );
 	}
 
 	MeasureInProgress ::~MeasureInProgress() {}
 
-	void MeasureInProgress::receiveEvent( const Event::VTXEvent & p_event )
+	void MeasureInProgress::receiveEvent( const App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::ATOM_REMOVED )
+		if ( p_event.name == VTX::App::Event::Global::ATOM_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Atom> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Atom> &>( p_event );
+			const App::Core::Event::VTXEventArg<Model::Atom *> & castedEvent
+				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Atom *> &>( p_event );
 
-			if ( _isLinkedToAtom( castedEvent.ptr ) )
+			if ( _isLinkedToAtom( castedEvent.get() ) )
 			{
 				// TODO : Use a manager instead of managing scene from model
 				clearPotentialTarget();
 				clearAtoms();
 			}
 		}
-		else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Molecule> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+			const App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
+				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
 
-			if ( _isLinkedToMolecule( castedEvent.ptr ) )
+			if ( _isLinkedToMolecule( castedEvent.get() ) )
 			{
 				// TODO : Use a manager instead of managing scene from model
 				clearPotentialTarget();
 				clearAtoms();
 			}
 		}
-		else if ( p_event.name == Event::Global::LABEL_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Label> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+			const App::Core::Event::VTXEventArg<Model::Label *> & castedEvent
+				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label *> &>( p_event );
 
 			// TODO : Use a manager instead of managing scene from model
-			if ( castedEvent.ptr == this )
+			if ( castedEvent.get() == this )
 				_cleanViews();
 		}
 	}
@@ -124,7 +125,7 @@ namespace VTX::Model::Measurement
 
 		if ( atomFromNewMolecule )
 		{
-			MoleculeView * const moleculeView = MVC::MvcManager::get().instantiateView<MoleculeView>(
+			MoleculeView * const moleculeView = VTX::MVC_MANAGER().instantiateView<MoleculeView>(
 				p_atom.getMoleculePtr(), getViewID( int( _atoms.size() - 1 ) ) );
 
 			moleculeView->setCallback( this, &MeasureInProgress::_onMoleculeChange );
@@ -244,20 +245,20 @@ namespace VTX::Model::Measurement
 		{
 			if ( _moleculeViews[ i ] != nullptr )
 			{
-				MVC::MvcManager::get().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
+				VTX::MVC_MANAGER().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
 				_moleculeViews[ i ] = nullptr;
 			}
 		}
 	}
 
-	void MeasureInProgress::_onMoleculeChange( const Model::Molecule * const p_molecule,
-											   const Event::VTXEvent * const p_event )
+	void MeasureInProgress::_onMoleculeChange( const Model::Molecule * const			p_molecule,
+											   const App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::TRANSFORM_CHANGE )
+		if ( p_event->name == App::Event::Model::TRANSFORM_CHANGE )
 		{
 			_invalidateAABB();
 		}
-		else if ( p_event->name == Event::Model::TRAJECTORY_FRAME_CHANGE )
+		else if ( p_event->name == App::Event::Model::TRAJECTORY_FRAME_CHANGE )
 		{
 			_invalidateAABB();
 		}
@@ -265,10 +266,10 @@ namespace VTX::Model::Measurement
 
 	VTX::ID::VTX_ID MeasureInProgress::getViewID( const int p_atomPos ) const
 	{
-		return MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
-													  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
+		return VTX::MVC_MANAGER().generateViewID(
+			VTX::ID::View::MEASUREMENT_ON_MOLECULE, std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 	}
 
-	void MeasureInProgress::autoDelete() const { MVC::MvcManager::get().deleteModel( this ); }
+	void MeasureInProgress::autoDelete() const { VTX::MVC_MANAGER().deleteModel( this ); }
 
 } // namespace VTX::Model::Measurement

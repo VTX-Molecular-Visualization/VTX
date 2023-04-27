@@ -11,10 +11,10 @@
 #include <QResizeEvent>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/old_app/model/base_model.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
-#include <app/old_app/view/base_view.hpp>
-#include <app/old_app/worker/snapshoter.hpp>
+#include <app/core/model/base_model.hpp>
+#include <app/mvc.hpp>
+#include <app/core/view/base_view.hpp>
+#include <app/worker/snapshoter.hpp>
 #include <map>
 
 namespace VTX::UI::Widget::Render
@@ -41,7 +41,7 @@ namespace VTX::UI::Widget::Render
 		void setOverlayVisibility( const Overlay::OVERLAY & p_overlay, const bool p_visible );
 		void showAllOverlays( const bool p_show );
 
-		void			 receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void			 receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 		const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::RENDER_WIDGET; }
 
 	  protected:
@@ -78,17 +78,17 @@ namespace VTX::UI::Widget::Render
 
 		template<typename V,
 				 typename M,
-				 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
-				 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>,
+				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
+				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>,
 				 typename = std::enable_if<std::is_base_of<BaseIntegratedWidget, V>::value>>
 		void _removeViewIntegratedWidget( const M * const p_model, const ID::VTX_ID & p_viewName )
 		{
-			V * const integratedWidgetView = MVC::MvcManager::get().getView<V>( p_model, p_viewName );
+			V * const integratedWidgetView = VTX::MVC_MANAGER().getView<V>( p_model, p_viewName );
 
 			_integratedWidgets.erase(
 				std::find( _integratedWidgets.begin(), _integratedWidgets.end(), integratedWidgetView ) );
 
-			MVC::MvcManager::get().deleteView( p_model, p_viewName );
+			VTX::MVC_MANAGER().deleteView( p_model, p_viewName );
 		}
 
 		// Shortcuts.

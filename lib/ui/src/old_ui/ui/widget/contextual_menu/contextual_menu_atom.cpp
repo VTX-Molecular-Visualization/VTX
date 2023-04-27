@@ -1,8 +1,8 @@
 #include "ui/old_ui/ui/widget/contextual_menu/contextual_menu_atom.hpp"
 #include "ui/qt/action/atom.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/atom.hpp>
 #include <app/action/visible.hpp>
+
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -34,22 +34,19 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuAtom::_orientAction() { VTX_ACTION( new QT::Action::Atom::Orient( *_target ) ); }
 	void ContextualMenuAtom::_showAction()
 	{
-		VTX_ACTION(
-			new Action::Atom::ChangeVisibility( *_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+		VTX_ACTION( new App::Action::Atom::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::ALL ) );
 	}
 	void ContextualMenuAtom::_hideAction()
 	{
-		VTX_ACTION(
-			new Action::Atom::ChangeVisibility( *_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+		VTX_ACTION( new App::Action::Atom::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::HIDE ) );
 	}
 	void ContextualMenuAtom::_soloAction()
 	{
-		VTX_ACTION(
-			new Action::Atom::ChangeVisibility( *_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+		VTX_ACTION( new App::Action::Atom::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::SOLO ) );
 	}
 
-	void ContextualMenuAtom::_copyAction() { VTX_ACTION( new Action::Atom::Copy( *_target ) ); }
-	void ContextualMenuAtom::_extractAction() { VTX_ACTION( new Action::Atom::Extract( *_target ) ); }
-	void ContextualMenuAtom::_deleteAction() { VTX_ACTION( new Action::Atom::Delete( *_target ) ); }
+	void ContextualMenuAtom::_copyAction() { VTX_ACTION( new App::Action::Atom::Copy( *_target ) ); }
+	void ContextualMenuAtom::_extractAction() { VTX_ACTION( new App::Action::Atom::Extract( *_target ) ); }
+	void ContextualMenuAtom::_deleteAction() { VTX_ACTION( new App::Action::Atom::Delete( *_target ) ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

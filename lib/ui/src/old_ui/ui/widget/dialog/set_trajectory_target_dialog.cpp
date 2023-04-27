@@ -4,9 +4,9 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <QPushButton>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/molecule.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/setting.hpp>
 #include <string>
@@ -30,8 +30,8 @@ namespace VTX::UI::Widget::Dialog
 		_modelLabel = nullptr;
 	}
 
-	Model::BaseModel * const MoleculeListWidget::ModelFieldLine::getModel() const { return _linkedMolecule; };
-	void					 MoleculeListWidget::ModelFieldLine::setModel( Model::BaseModel * const p_model )
+	App::Core::Model::BaseModel * const MoleculeListWidget::ModelFieldLine::getModel() const { return _linkedMolecule; };
+	void					 MoleculeListWidget::ModelFieldLine::setModel( App::Core::Model::BaseModel * const p_model )
 	{
 		_linkedMolecule = static_cast<Model::Molecule *>( p_model );
 
@@ -176,11 +176,11 @@ namespace VTX::UI::Widget::Dialog
 		if ( _linkToMoleculeRadioButton->isChecked() )
 		{
 			const std::vector<Model::Molecule *> selectedMolecules = _moleculeListWidget->getTickedMolecules();
-			VTX_ACTION( new Action::Main::Open( _filepath, selectedMolecules ) );
+			VTX_ACTION( new App::Action::Main::Open( _filepath, selectedMolecules ) );
 		}
 		else if ( _createNewMoleculeRadioButton->isChecked() )
 		{
-			VTX_ACTION( new Action::Main::Open( _filepath ) );
+			VTX_ACTION( new App::Action::Main::Open( _filepath ) );
 		}
 
 		close();

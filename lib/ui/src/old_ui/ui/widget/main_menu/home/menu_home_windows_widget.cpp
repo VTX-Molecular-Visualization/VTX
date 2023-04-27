@@ -6,29 +6,30 @@
 #include "ui/old_ui/ui/window_mode.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include "ui/qt/action/main.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
+#include <app/event/global.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Home
 {
 	MenuHomeWindowsWidget::MenuHomeWindowsWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
-		_registerEvent( VTX::Event::Global::MAIN_WINDOW_MODE_CHANGE );
+		_registerEvent( VTX::App::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
+		_registerEvent( VTX::App::Event::Global::MAIN_WINDOW_MODE_CHANGE );
 	}
 
 	MenuHomeWindowsWidget::~MenuHomeWindowsWidget() {}
 
-	void MenuHomeWindowsWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void MenuHomeWindowsWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
 		{
 			refresh();
 		}
-		else if ( p_event.name == VTX::Event::Global::MAIN_WINDOW_MODE_CHANGE )
+		else if ( p_event.name == VTX::App::Event::Global::MAIN_WINDOW_MODE_CHANGE )
 		{
-			const WindowMode mode = dynamic_cast<const VTX::Event::VTXEventValue<WindowMode> &>( p_event ).value;
+			const WindowMode mode
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<WindowMode> &>( p_event ).get();
 			_updateFullscreenButton( mode );
 		}
 	}

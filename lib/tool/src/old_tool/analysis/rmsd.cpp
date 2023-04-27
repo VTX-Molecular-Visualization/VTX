@@ -1,9 +1,10 @@
 #include "tool/old_tool/analysis/rmsd.hpp"
 #include "tool/old_tool/util/analysis.hpp"
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/core/event/vtx_event.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/selection.hpp>
 #include <cmath>
 
 namespace VTX::Analysis
@@ -20,7 +21,7 @@ namespace VTX::Analysis
 		data.setSecondMolecule( p_secondMolecule );
 		data.setRMSD( rmsd );
 
-		VTX_EVENT( new Event::VTXEventRef<const RMSDData>( Event::Global::RMSD_COMPUTED, data ) );
+		VTX_EVENT<const RMSDData &>( VTX::App::Event::Global::RMSD_COMPUTED, data );
 	}
 
 	void RMSD::callRMSDComputation( const Model::Selection & p_selection, const bool p_considerTransform )
@@ -57,7 +58,7 @@ namespace VTX::Analysis
 																			   : otherAtomPositions.size() );
 			data.setAtomCount( atomCount );
 
-			VTX_EVENT( new Event::VTXEventRef<const RMSDData>( Event::Global::RMSD_COMPUTED, data ) );
+			VTX_EVENT<const RMSDData &>( VTX::App::Event::Global::RMSD_COMPUTED, data );
 		}
 	}
 

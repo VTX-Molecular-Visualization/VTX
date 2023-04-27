@@ -1,9 +1,9 @@
 #include "ui/old_ui/ui/widget/main_menu/camera/render_effect_preset_button.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/renderer.hpp>
-#include <app/old_app/model/renderer/render_effect_preset.hpp>
-#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
+#include <app/model/renderer/render_effect_preset.hpp>
+#include <app/model/renderer/render_effect_preset_library.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
@@ -24,7 +24,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		VTX::Model::Renderer::RenderEffectPreset * renderEffectPreset
 			= VTX::Model::Renderer::RenderEffectPresetLibrary::get().getPreset( _id );
 
-		VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *renderEffectPreset, true ) );
+		VTX_ACTION( new App::Action::Renderer::ApplyRenderEffectPreset( *renderEffectPreset, true ) );
 	};
 
 } // namespace VTX::UI::Widget::MainMenu::Camera

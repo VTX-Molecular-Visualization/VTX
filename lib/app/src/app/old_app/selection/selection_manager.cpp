@@ -1,7 +1,8 @@
 #include "app/old_app/selection/selection_manager.hpp"
-#include "app/old_app/event/event_manager.hpp"
-#include "app/old_app/model/selection.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
+#include "app/model/selection.hpp"
 #include <string>
 #include <util/logger.hpp>
 
@@ -11,11 +12,11 @@ namespace VTX
 	{
 		SelectionManager::SelectionManager()
 		{
-			_selectionModel = MVC::MvcManager::get().instantiateModel<Model::Selection>();
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SELECTION_ADDED, _selectionModel ) );
+			_selectionModel = VTX::MVC_MANAGER().instantiateModel<Model::Selection>();
+			VTX_EVENT<Model::Selection *>( VTX::App::Event::Global::SELECTION_ADDED, _selectionModel );
 		}
 		SelectionManager::~SelectionManager() {}
 
-		void SelectionManager::deleteModel() { MVC::MvcManager::get().deleteModel( _selectionModel ); }
+		void SelectionManager::deleteModel() { VTX::MVC_MANAGER().deleteModel( _selectionModel ); }
 	} // namespace Selection
 } // namespace VTX

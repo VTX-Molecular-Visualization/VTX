@@ -1,6 +1,6 @@
 #include "app/old_app/renderer/gl/pass/geometric.hpp"
-#include "app/old_app/model/mesh_triangle.hpp"
-#include "app/old_app/model/molecule.hpp"
+#include "app/model/mesh_triangle.hpp"
+#include "app/model/molecule.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
 

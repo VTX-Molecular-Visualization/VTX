@@ -6,15 +6,15 @@
 #include "ui/qt/tool/keys.hpp"
 #include "ui/qt/tool/render/widget/render_widget.hpp"
 #include <QPoint>
-#include <app/core/action/action_manager.hpp>
+
 // #include <app/action/measurement.hpp>
-#include <app/old_app/event/event_manager.hpp>
-#include <app/old_app/model/atom.hpp>
-// #include <app/old_app/model/measurement/measure_in_progress.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/event.hpp>
+#include <app/model/atom.hpp>
+// #include <app/model/measurement/measure_in_progress.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
+#include <app/model/selection.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
@@ -23,11 +23,11 @@ namespace VTX::UI::QT::Controller
 {
 	MeasurementPicker::MeasurementPicker()
 	{
-		//_currentMeasureModel = MVC::MvcManager::get().instantiateModel<Model::Measurement::MeasureInProgress>();
+		//_currentMeasureModel = VTX::MVC_MANAGER().instantiateModel<Model::Measurement::MeasureInProgress>();
 	}
 	MeasurementPicker::~MeasurementPicker()
 	{
-		// MVC::MvcManager::get().deleteModel( _currentMeasureModel );
+		// VTX::MVC_MANAGER().deleteModel( _currentMeasureModel );
 	}
 
 	void MeasurementPicker::_onMouseLeftClick( const uint p_x, const uint p_y )
@@ -77,15 +77,15 @@ namespace VTX::UI::QT::Controller
 		// const Vec2i ids = QT_APP()->getMainWindow().getRender()->getPickedIds( p_event.pos().x(), p_event.pos().y()
 		// );
 
-		// if ( ids.x != Model::ID_UNKNOWN )
+		// if ( ids.x != App::Core::Model::ID_UNKNOWN )
 		//{
-		//	if ( ids.y != Model::ID_UNKNOWN )
+		//	if ( ids.y != App::Core::Model::ID_UNKNOWN )
 		//	{
 		//		// Bond clicked => set atom pair to next target
 		//		 if ( _currentMode == Mode::DISTANCE && _currentMeasureModel->getAtomCount() == 0 )
 		//		{
-		//			const Model::Atom & firstAtom  = MVC::MvcManager::get().getModel<Model::Atom>( ids.x );
-		//			const Model::Atom & secondAtom = MVC::MvcManager::get().getModel<Model::Atom>( ids.y );
+		//			const Model::Atom & firstAtom  = VTX::MVC_MANAGER().getModel<Model::Atom>( ids.x );
+		//			const Model::Atom & secondAtom = VTX::MVC_MANAGER().getModel<Model::Atom>( ids.y );
 
 		//			_currentMeasureModel->setPotentialNextTarget( firstAtom, secondAtom );
 		//			hasFindTarget = true;
@@ -93,13 +93,13 @@ namespace VTX::UI::QT::Controller
 		//	}
 		//	else
 		//	{
-		//		const ID::VTX_ID & typeId = MVC::MvcManager::get().getModelTypeID( ids.x );
-		//		Model::ID		   atomID;
+		//		const ID::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( ids.x );
+		//		App::Core::Model::ID		   atomID;
 
 		//		// If residue => select alpha carbon
 		//		if ( typeId == ID::Model::MODEL_RESIDUE )
 		//		{
-		//			const Model::Residue & residue = MVC::MvcManager::get().getModel<Model::Residue>( ids.x );
+		//			const Model::Residue & residue = VTX::MVC_MANAGER().getModel<Model::Residue>( ids.x );
 		//			atomID						   = residue.getAlphaCarbon()->getId();
 		//		}
 		//		else // => Atom
@@ -108,7 +108,7 @@ namespace VTX::UI::QT::Controller
 		//		}
 
 		//		// Atom picked
-		//		 const Model::Atom & atom = MVC::MvcManager::get().getModel<Model::Atom>( atomID );
+		//		 const Model::Atom & atom = VTX::MVC_MANAGER().getModel<Model::Atom>( atomID );
 		//		 if ( !_currentMeasureModel->contains( atom ) )
 		//		{
 		//			_currentMeasureModel->setPotentialNextTarget( atom );
@@ -188,7 +188,7 @@ namespace VTX::UI::QT::Controller
 		//	const Model::Atom * const firstAtom	 = _currentMeasureModel->getAtom( 0 );
 		//	const Model::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
 
-		//	VTX_ACTION( new Action::Measurement::InstantiateDistanceLabel( *firstAtom, *secondAtom ) );
+		//	VTX_ACTION( new App::Action::Measurement::InstantiateDistanceLabel( *firstAtom, *secondAtom ) );
 		//}
 		// break;
 
@@ -198,7 +198,7 @@ namespace VTX::UI::QT::Controller
 		//	const Model::Atom * const secondAtom = _currentMeasureModel->getAtom( 1 );
 		//	const Model::Atom * const thirdAtom	 = _currentMeasureModel->getAtom( 2 );
 
-		//	VTX_ACTION( new Action::Measurement::InstantiateAngleLabel( *firstAtom, *secondAtom, *thirdAtom ) );
+		//	VTX_ACTION( new App::Action::Measurement::InstantiateAngleLabel( *firstAtom, *secondAtom, *thirdAtom ) );
 		//}
 		// break;
 
@@ -209,7 +209,7 @@ namespace VTX::UI::QT::Controller
 		//	const Model::Atom * const thirdAtom	 = _currentMeasureModel->getAtom( 2 );
 		//	const Model::Atom * const fourthAtom = _currentMeasureModel->getAtom( 3 );
 
-		//	VTX_ACTION( new Action::Measurement::InstantiateDihedralAngleLabel(
+		//	VTX_ACTION( new App::Action::Measurement::InstantiateDihedralAngleLabel(
 		//		*firstAtom, *secondAtom, *thirdAtom, *fourthAtom ) );
 		//}
 		// break;
@@ -225,7 +225,7 @@ namespace VTX::UI::QT::Controller
 		//	_currentMeasureModel->clearAtoms();
 		//	_currentMode = p_mode;
 
-		//	VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::PICKER_MODE_CHANGE ) );
+		//	VTX_EVENT( new VTX::App::Core::Event::VTXEvent( VTX::App::Event::Global::PICKER_MODE_CHANGE ) );
 		//}
 	}
 } // namespace VTX::UI::QT::Controller

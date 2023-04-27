@@ -10,9 +10,10 @@
 #include <QLoggingCategory>
 #include <QPalette>
 #include <QStyleFactory>
+#include <app/event/global.hpp>
 // #include <exception>
 #include <util/logger.hpp>
-// #include <app/core/action/action_manager.hpp>
+//
 // #include <app/action/main.hpp>
 #include <app/old_app/generic/base_opengl.hpp>
 #include <app/old_app/vtx_app.hpp>
@@ -44,7 +45,7 @@ namespace VTX::UI::QT
 
 		_handleArgs( p_args );
 
-		VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::UI_APPLICATION_INITIALIZED ) );
+		VTX_EVENT( VTX::App::Event::Global::UI_APPLICATION_INITIALIZED );
 
 		_returnCode = exec();
 	}

@@ -1,9 +1,9 @@
 #ifndef __VTX_WRITE_CHEMFILES__
 #define __VTX_WRITE_CHEMFILES__
 
-#include "base_writer.hpp"
+#include "app/model/molecule.hpp"
 #include "app/old_app/io/chemfiles_io.hpp"
-#include "app/old_app/model/molecule.hpp"
+#include "base_writer.hpp"
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
 #pragma warning( pop )
@@ -17,8 +17,8 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		ChemfilesWriter() : ChemfilesIO() {};
-		ChemfilesWriter( const Worker::BaseThread * const p_thread ) : ChemfilesIO( p_thread ) {}
-		ChemfilesWriter( const Worker::BaseWorker * const p_worker ) : ChemfilesIO( p_worker ) {}
+		ChemfilesWriter( const VTX::Core::Worker::BaseThread * const p_thread ) : ChemfilesIO( p_thread ) {}
+		ChemfilesWriter( const VTX::Core::Worker::BaseWorker * const p_worker ) : ChemfilesIO( p_worker ) {}
 
 		void writeFile( const FilePath &, const Model::Molecule & );
 		void writeBuffer( std::string &, const Model::Molecule &, const std::string & p_format = "PDB" );

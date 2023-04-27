@@ -4,11 +4,10 @@
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/state/state_machine.hpp"
 #include "ui/qt/state/visualization.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/core/action/base_action.hpp>
+#include <app/internal/network/request/check_update.hpp>
+#include <app/network.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/network/network_manager.hpp>
-#include <app/old_app/network/request/check_update.hpp>
 
 namespace VTX::UI::QT::Action::Main
 {
@@ -48,6 +47,6 @@ namespace VTX::UI::QT::Action::Main
 
 	void CheckForUpdate::execute()
 	{
-		VTX_NETWORK_MANAGER().sendRequest( new Network::Request::CheckUpdate( _showPopupIfNoUpdate ) );
+		VTX_NETWORK_REQUEST<App::Internal::Network::Request::CheckUpdate>( _showPopupIfNoUpdate );
 	}
 } // namespace VTX::UI::QT::Action::Main

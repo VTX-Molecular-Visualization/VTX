@@ -1,9 +1,9 @@
 #include "ui/old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/molecule.hpp>
-#include <app/old_app/model/generated_molecule.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/model/generated_molecule.hpp>
+#include <app/model/molecule.hpp>
+#include <app/mvc.hpp>
 #include <util/string.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -50,7 +50,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		for ( const Model::Selection::PairMoleculeIds & pairMolecule : p_selection.getMoleculesMap() )
 		{
-			const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( pairMolecule.first );
+			const Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( pairMolecule.first );
 			maxNbFrame = maxNbFrame < molecule.getFrameCount() ? molecule.getFrameCount() : maxNbFrame;
 		}
 

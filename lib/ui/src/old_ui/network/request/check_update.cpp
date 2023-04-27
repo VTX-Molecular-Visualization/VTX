@@ -12,7 +12,7 @@ namespace VTX::Network::Request
 		VTX_INFO( "Checking for update" );
 	}
 
-	void CheckUpdate::_success( NetworkReply * const p_reply )
+	void CheckUpdate::_success( App::Core::Network::NetworkReply * const p_reply )
 	{
 		try
 		{

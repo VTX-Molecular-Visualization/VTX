@@ -1,14 +1,15 @@
-#ifndef __VTX_ACTION_ATOM__
-#define __VTX_ACTION_ATOM__
+#ifndef __VTX_APP_ACTION_ATOM__
+#define __VTX_APP_ACTION_ATOM__
 
+#include "app/action.hpp"
 #include "app/action/visible.hpp"
 #include "app/core/action/base_action.hpp"
+#include "app/model/atom.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/old_app/model/atom.hpp"
 
-namespace VTX::Action::Atom
+namespace VTX::App::Action::Atom
 {
-	class ChangeColor : public Core::Action::BaseAction
+	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColor( Model::Atom & p_atom, const Color::Rgba & p_color ) : _atom( p_atom ), _color( p_color )
@@ -34,7 +35,7 @@ namespace VTX::Action::Atom
 		virtual void execute() override;
 	};
 
-	class Delete : public Core::Action::BaseAction
+	class Delete : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Delete( Model::Atom & p_atom ) : _atom( p_atom )
@@ -48,7 +49,7 @@ namespace VTX::Action::Atom
 		Model::Atom & _atom;
 	};
 
-	class Copy : public Core::Action::BaseAction
+	class Copy : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Copy( const Model::Atom & p_target ) : _target( p_target )
@@ -61,7 +62,7 @@ namespace VTX::Action::Atom
 		const Model::Atom & _target;
 	};
 
-	class Extract : public Core::Action::BaseAction
+	class Extract : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Extract( const Model::Atom & p_target ) : _target( p_target )
@@ -73,5 +74,5 @@ namespace VTX::Action::Atom
 	  private:
 		const Model::Atom & _target;
 	};
-} // namespace VTX::Action::Atom
+} // namespace VTX::App::Action::Atom
 #endif

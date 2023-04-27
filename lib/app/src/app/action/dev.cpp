@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <util/filesystem.hpp>
 
-namespace VTX::Action::Dev
+namespace VTX::App::Action::Dev
 {
 	void CompileShaders::execute()
 	{
@@ -18,4 +18,4 @@ namespace VTX::Action::Dev
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
-} // namespace VTX::Action::Dev
+} // namespace VTX::App::Action::Dev

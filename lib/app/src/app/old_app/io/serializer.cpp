@@ -2,31 +2,33 @@
 #include "app/action/main.hpp"
 #include "app/action/renderer.hpp"
 #include "app/action/setting.hpp"
-#include "app/old_app/event/event.hpp"
-#include "app/old_app/event/event_manager.hpp"
+#include "app/core/event/vtx_event.hpp"
+#include "app/mvc.hpp"
+#include "app/core/worker/base_thread.hpp"
+#include "app/event.hpp"
+#include "app/model/category_enum.hpp"
+#include "app/model/chain.hpp"
+#include "app/model/configuration/molecule.hpp"
+#include "app/model/label.hpp"
+#include "app/model/mesh_triangle.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/path.hpp"
+#include "app/model/renderer/render_effect_preset.hpp"
+#include "app/model/representation/instantiated_representation.hpp"
+#include "app/model/representation/representation.hpp"
+#include "app/model/representation/representation_library.hpp"
+#include "app/model/residue.hpp"
+#include "app/model/viewpoint.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_scene_item.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/lib_chemfiles.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
-#include "app/old_app/model/category_enum.hpp"
-#include "app/old_app/model/chain.hpp"
-#include "app/old_app/model/configuration/molecule.hpp"
-#include "app/old_app/model/label.hpp"
-#include "app/old_app/model/mesh_triangle.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/path.hpp"
-#include "app/old_app/model/renderer/render_effect_preset.hpp"
-#include "app/old_app/model/representation/instantiated_representation.hpp"
-#include "app/old_app/model/representation/representation.hpp"
-#include "app/old_app/model/representation/representation_library.hpp"
-#include "app/old_app/model/residue.hpp"
-#include "app/old_app/model/viewpoint.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/old_app/object3d/camera.hpp"
+#include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/trajectory/trajectory_enum.hpp"
-#include "app/old_app/worker/base_thread.hpp"
 #include <algorithm>
 #include <magic_enum.hpp>
 #include <map>
@@ -34,7 +36,7 @@
 
 namespace VTX::IO
 {
-	Serializer::Serializer( const Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
+	Serializer::Serializer( const VTX::Core::Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
 
 	nlohmann::json Serializer::serialize( const VTXApp & p_app ) const
 	{
@@ -364,7 +366,8 @@ namespace VTX::IO
 			{
 				if ( jsonMolecule.contains( "MOLECULE" ) )
 				{
-					Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+					Model::Molecule * const molecule
+						= VTX::MVC_MANAGER().instantiateModel<Model::Molecule>();
 
 					try
 					{
@@ -372,7 +375,7 @@ namespace VTX::IO
 					}
 					catch ( std::exception e )
 					{
-						MVC::MvcManager::get().deleteModel( molecule );
+						VTX::MVC_MANAGER().deleteModel( molecule );
 						throw e;
 					}
 
@@ -560,7 +563,7 @@ namespace VTX::IO
 			for ( const nlohmann::json & jsonViewpoint : p_json.at( "VIEWPOINTS" ) )
 			{
 				Model::Viewpoint * const viewpoint
-					= MVC::MvcManager::get().instantiateModel<Model::Viewpoint>( &p_path );
+					= VTX::MVC_MANAGER().instantiateModel<Model::Viewpoint>( &p_path );
 				deserialize( jsonViewpoint, *viewpoint );
 				p_path.addViewpoint( viewpoint );
 			}
@@ -1053,7 +1056,8 @@ namespace VTX::IO
 				continue;
 
 			Model::Representation::InstantiatedRepresentation * const representation
-				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>();
+				= VTX::MVC_MANAGER()
+					  .instantiateModel<Model::Representation::InstantiatedRepresentation>();
 			deserialize( jsonRepresentations.at( "REPRESENTATION" ), p_version, *representation );
 
 			if ( type == VTX::ID::Model::MODEL_MOLECULE )

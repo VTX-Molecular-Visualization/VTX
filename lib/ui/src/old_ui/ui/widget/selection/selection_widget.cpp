@@ -6,7 +6,8 @@
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QtGlobal>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
+#include <app/event/global.hpp>
 #include <app/old_app/selection/selection_enum.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/setting.hpp>
@@ -16,19 +17,19 @@ namespace VTX::UI::Widget::Selection
 {
 	SelectionWidget::SelectionWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::SELECTION_ADDED );
-		_registerEvent( VTX::Event::Global::SELECTION_REMOVED );
+		_registerEvent( VTX::App::Event::Global::SELECTION_ADDED );
+		_registerEvent( VTX::App::Event::Global::SELECTION_REMOVED );
 	}
 
-	void SelectionWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void SelectionWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::SELECTION_ADDED )
+		if ( p_event.name == VTX::App::Event::Global::SELECTION_ADDED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Selection> &>( p_event );
-			_addSelectionModel( castedEvent.ptr );
+			const VTX::App::Core::Event::VTXEventArg<Model::Selection *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Selection *> &>( p_event );
+			_addSelectionModel( castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::SELECTION_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::SELECTION_REMOVED )
 		{
 			// Only 1 selection at this time.
 		}

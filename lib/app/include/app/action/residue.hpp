@@ -1,15 +1,16 @@
-#ifndef __VTX_ACTION_RESIDUE__
-#define __VTX_ACTION_RESIDUE__
+#ifndef __VTX_APP_ACTION_RESIDUE__
+#define __VTX_APP_ACTION_RESIDUE__
 
+#include "app/action.hpp"
 #include "app/action/visible.hpp"
+#include "app/model/representation/instantiated_representation.hpp"
+#include "app/model/residue.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/old_app/model/representation/instantiated_representation.hpp"
-#include "app/old_app/model/residue.hpp"
 #include <unordered_set>
 
-namespace VTX::Action::Residue
+namespace VTX::App::Action::Residue
 {
-	class ChangeColor : public Core::Action::BaseAction
+	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColor( Model::Residue & p_residue, const Color::Rgba & p_color ) :
@@ -42,7 +43,7 @@ namespace VTX::Action::Residue
 		virtual void execute() override;
 	};
 
-	class ChangeRepresentationPreset : public Core::Action::BaseAction
+	class ChangeRepresentationPreset : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRepresentationPreset( Model::Residue & p_residue, const int p_indexPreset ) :
@@ -65,7 +66,7 @@ namespace VTX::Action::Residue
 		const int								   _indexPreset;
 	};
 
-	class RemoveRepresentation : public Core::Action::BaseAction
+	class RemoveRepresentation : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit RemoveRepresentation( Model::Residue & p_residue ) : _residues { &p_residue }
@@ -84,7 +85,7 @@ namespace VTX::Action::Residue
 		const std::unordered_set<Model::Residue *> _residues;
 	};
 
-	class Delete : public Core::Action::BaseAction
+	class Delete : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Delete( Model::Residue & p_residue ) : _residue( p_residue )
@@ -98,7 +99,7 @@ namespace VTX::Action::Residue
 		Model::Residue & _residue;
 	};
 
-	class Copy : public Core::Action::BaseAction
+	class Copy : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Copy( const Model::Residue & p_target ) : _target( p_target )
@@ -111,7 +112,7 @@ namespace VTX::Action::Residue
 		const Model::Residue & _target;
 	};
 
-	class Extract : public Core::Action::BaseAction
+	class Extract : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Extract( const Model::Residue & p_target ) : _target( p_target )
@@ -124,7 +125,7 @@ namespace VTX::Action::Residue
 		const Model::Residue & _target;
 	};
 
-	class ApplyRepresentation : public Core::Action::BaseAction
+	class ApplyRepresentation : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ApplyRepresentation( const std::unordered_set<Model::Residue *> &				p_residues,
@@ -143,5 +144,5 @@ namespace VTX::Action::Residue
 		const Model::Representation::InstantiatedRepresentation & _representation;
 		const Model::Representation::MEMBER_FLAG				  _flag;
 	};
-} // namespace VTX::Action::Residue
+} // namespace VTX::App::Action::Residue
 #endif

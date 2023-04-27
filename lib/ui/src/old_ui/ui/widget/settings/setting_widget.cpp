@@ -21,7 +21,7 @@ namespace VTX::UI::Widget::Settings
 		}
 	}
 
-	void SettingWidget::receiveEvent( const VTX::Event::VTXEvent & p_event ) {}
+	void SettingWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) {}
 
 	void SettingWidget::_setupUi( const QString & p_name )
 	{

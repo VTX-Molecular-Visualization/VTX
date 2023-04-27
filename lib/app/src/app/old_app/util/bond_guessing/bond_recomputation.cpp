@@ -1,6 +1,6 @@
 #include "app/old_app/util/bond_guessing/bond_recomputation.hpp"
-#include "app/old_app/model/atom.hpp"
-#include "app/old_app/model/residue.hpp"
+#include "app/model/atom.hpp"
+#include "app/model/residue.hpp"
 #include "app/old_app/setting.hpp"
 #include <iostream>
 

@@ -5,7 +5,7 @@
 #include "ui/qt/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/qt/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "ui/qt/widget_factory.hpp"
-#include <app/core/action/action_manager.hpp>
+
 
 namespace VTX::UI::QT::Tool::UIFeatures
 {

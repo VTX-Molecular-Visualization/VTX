@@ -1,11 +1,13 @@
 #include "app/old_app/object3d/scene.hpp"
 #include "app/action/main.hpp"
+#include "app/mvc.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
+#include "app/model/label.hpp"
+#include "app/model/mesh_triangle.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/path.hpp"
 #include "app/old_app/math/transform.hpp"
-#include "app/old_app/model/label.hpp"
-#include "app/old_app/model/mesh_triangle.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/path.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
 #include "app/old_app/object3d/camera_manager.hpp"
 #include "app/old_app/object3d/helper/base_helper.hpp"
 #include <algorithm>
@@ -36,15 +38,15 @@ namespace VTX::Object3D
 		{
 			MoleculePtr const molecule = _molecules.begin()->first;
 			removeMolecule( molecule );
-			MVC::MvcManager::get().deleteModel( molecule );
+			VTX::MVC_MANAGER().deleteModel( molecule );
 		}
 
 		_molecules.clear();
 
-		MVC::MvcManager::get().deleteAllModels( _meshes );
+		VTX::MVC_MANAGER().deleteAllModels( _meshes );
 		_meshes.clear();
 
-		MVC::MvcManager::get().deleteAllModels( _labels );
+		VTX::MVC_MANAGER().deleteAllModels( _labels );
 		_labels.clear();
 
 		_helpers.clear();
@@ -53,7 +55,7 @@ namespace VTX::Object3D
 		{
 			PathPtr const path = *_paths.begin();
 			removePath( path );
-			MVC::MvcManager::get().deleteModel( path );
+			VTX::MVC_MANAGER().deleteModel( path );
 		}
 
 		_paths.clear();
@@ -83,8 +85,8 @@ namespace VTX::Object3D
 
 		if ( p_sendEvent )
 		{
-			VTX_EVENT( new Event::VTXEventPtr<Generic::BaseSceneItem>( Event::Global::SCENE_ITEM_ADDED, p_molecule ) );
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, p_molecule ) );
+			VTX_EVENT<Generic::BaseSceneItem *>( VTX::App::Event::Global::SCENE_ITEM_ADDED, p_molecule );
+			VTX_EVENT<Model::Molecule *>( VTX::App::Event::Global::MOLECULE_ADDED, p_molecule );
 		}
 
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
@@ -92,20 +94,21 @@ namespace VTX::Object3D
 
 	void Scene::removeMolecule( MoleculePtr const p_molecule )
 	{
-		_remove( p_molecule, _molecules, Event::Global::MOLECULE_REMOVED, ModelCharacteristicsFlag::MOLECULE );
+		_remove(
+			p_molecule, _molecules, VTX::App::Event::Global::MOLECULE_REMOVED, ModelCharacteristicsFlag::MOLECULE );
 	}
 
 	void Scene::addPath( PathPtr const p_path )
 	{
 		_add( p_path, _paths );
 
-		VTX_EVENT( new Event::VTXEventPtr<Generic::BaseSceneItem>( Event::Global::SCENE_ITEM_ADDED, p_path ) );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::PATH_ADDED, p_path ) );
+		VTX_EVENT<Generic::BaseSceneItem *>( VTX::App::Event::Global::SCENE_ITEM_ADDED, p_path );
+		VTX_EVENT<Model::Path *>( VTX::App::Event::Global::PATH_ADDED, p_path );
 	}
 
 	void Scene::removePath( PathPtr const p_path )
 	{
-		_remove( p_path, _paths, Event::Global::PATH_REMOVED, ModelCharacteristicsFlag::NONE );
+		_remove( p_path, _paths, VTX::App::Event::Global::PATH_REMOVED, ModelCharacteristicsFlag::NONE );
 	}
 
 	void Scene::addMesh( MeshTrianglePtr const p_mesh )
@@ -118,23 +121,23 @@ namespace VTX::Object3D
 			_aabb.extend( p_mesh->getWorldAABB() );
 
 		p_mesh->referenceLinkedAABB( &_aabb );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_ADDED, p_mesh ) );
+		VTX_EVENT<MeshTrianglePtr>( VTX::App::Event::Global::MESH_ADDED, p_mesh );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
 	void Scene::removeMesh( MeshTrianglePtr const p_mesh )
 	{
-		_remove( p_mesh, _meshes, Event::Global::MESH_REMOVED, ModelCharacteristicsFlag::MESH );
+		_remove( p_mesh, _meshes, VTX::App::Event::Global::MESH_REMOVED, ModelCharacteristicsFlag::MESH );
 	}
 
 	void Scene::addLabel( LabelPtr const p_label )
 	{
 		_add( p_label, _labels );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::LABEL_ADDED, p_label ) );
+		VTX_EVENT<LabelPtr>( VTX::App::Event::Global::LABEL_ADDED, p_label );
 	}
 	void Scene::removeLabel( LabelPtr const p_label )
 	{
-		_remove( p_label, _labels, Event::Global::LABEL_REMOVED, ModelCharacteristicsFlag::LABEL );
+		_remove( p_label, _labels, VTX::App::Event::Global::LABEL_REMOVED, ModelCharacteristicsFlag::LABEL );
 	}
 
 	void Scene::addHelper( HelperPtr const p_helper )
@@ -205,7 +208,7 @@ namespace VTX::Object3D
 			_itemOrder[ p_position ] = itemPtr;
 		}
 
-		VTX_EVENT( new Event::VTXEvent( Event::Global::SCENE_ITEM_INDEXES_CHANGE ) );
+		VTX_EVENT( VTX::App::Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 	}
 
 	void Scene::changeModelsPosition( const std::vector<const Generic::BaseSceneItem *> & p_items,
@@ -272,7 +275,7 @@ namespace VTX::Object3D
 			_itemOrder[ p_position - indexMovedItemsBeforePosition + i ] = movedItems[ i ];
 		}
 
-		VTX_EVENT( new Event::VTXEvent( Event::Global::SCENE_ITEM_INDEXES_CHANGE ) );
+		VTX_EVENT( VTX::App::Event::Global::SCENE_ITEM_INDEXES_CHANGE );
 	}
 
 	void Scene::sortMoleculesBySceneIndex( std::vector<Model::Molecule *> & p_molecules ) const
@@ -369,7 +372,7 @@ namespace VTX::Object3D
 
 	void Scene::_createDefaultPath()
 	{
-		Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
+		Model::Path * const path = VTX::MVC_MANAGER().instantiateModel<Model::Path>();
 		_defaultPath			 = path;
 
 		addPath( path );

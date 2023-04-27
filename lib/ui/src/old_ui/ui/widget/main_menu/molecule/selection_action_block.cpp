@@ -1,31 +1,31 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/selection_action_block.hpp"
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/visible.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
+#include <app/event/global.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	SelectionActionBlock::SelectionActionBlock( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
 	};
 
-	void SelectionActionBlock::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void SelectionActionBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::SELECTION_CHANGE )
+		if ( p_event.name == App::Event::Global::SELECTION_CHANGE )
 		{
-			const VTX::Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Selection> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<const Model::Selection *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const Model::Selection *> &>( p_event );
 
-			const bool enableSelection = castedEvent.ptr->getMoleculeSelectedCount() > 0;
+			const bool enableSelection = castedEvent.get()->getMoleculeSelectedCount() > 0;
 			_enableButtons( enableSelection );
 
-			_copyFrameSubmenu->updateFrames( *castedEvent.ptr );
+			_copyFrameSubmenu->updateFrames( *castedEvent.get() );
 		}
 	}
 
@@ -97,42 +97,42 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	void SelectionActionBlock::_copySelection() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Selection::Copy( selectionModel ) );
+		VTX_ACTION( new App::Action::Selection::Copy( selectionModel ) );
 	}
 	void SelectionActionBlock::_copyFrameSelection( const int p_frame ) const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Selection::Copy( selectionModel, p_frame ) );
+		VTX_ACTION( new App::Action::Selection::Copy( selectionModel, p_frame ) );
 	}
 
 	void SelectionActionBlock::_extractSelection() const
 	{
 		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Selection::Extract( selectionModel ) );
+		VTX_ACTION( new App::Action::Selection::Extract( selectionModel ) );
 	}
 	void SelectionActionBlock::_deleteSelection() const
 	{
 		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Selection::Delete( selectionModel ) );
+		VTX_ACTION( new App::Action::Selection::Delete( selectionModel ) );
 	}
 
 	void SelectionActionBlock::_showSelection() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Selection::ChangeVisibility(
-			selectionModel, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW ) );
+		VTX_ACTION(
+			new App::Action::Selection::ChangeVisibility( selectionModel, App::Action::VISIBILITY_MODE::SHOW ) );
 	}
 	void SelectionActionBlock::_hideSelection() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Selection::ChangeVisibility(
-			selectionModel, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+		VTX_ACTION(
+			new App::Action::Selection::ChangeVisibility( selectionModel, App::Action::VISIBILITY_MODE::HIDE ) );
 	}
 	void SelectionActionBlock::_soloSelection() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Selection::ChangeVisibility(
-			selectionModel, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+		VTX_ACTION(
+			new App::Action::Selection::ChangeVisibility( selectionModel, App::Action::VISIBILITY_MODE::SOLO ) );
 	}
 
 	void SelectionActionBlock::_exportSelection() const { UI::Dialog::openExportMoleculeDialog(); }

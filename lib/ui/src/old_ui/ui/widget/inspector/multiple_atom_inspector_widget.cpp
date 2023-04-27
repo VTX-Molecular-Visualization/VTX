@@ -9,23 +9,23 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QPixmap>
-#include <app/core/action/action_manager.hpp>
-#include <app/old_app/model/bond.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
+
+#include <app/model/bond.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::Inspector
 {
 	MultipleAtomWidget::MoleculeView::MoleculeView( const Model::Molecule * p_molecule )
 	{
-		_view = MVC::MvcManager::get().instantiateView<View::CallbackView<const Model::Molecule, MultipleAtomWidget>>(
+		_view = VTX::MVC_MANAGER().instantiateView<App::Core::View::CallbackView<const Model::Molecule, MultipleAtomWidget>>(
 			p_molecule, ID::View::UI_INSPECTOR_ATOM );
 	}
 	MultipleAtomWidget::MoleculeView::~MoleculeView()
 	{
-		MVC::MvcManager::get()
-			.deleteView<View::CallbackView<const Model::Molecule, MultipleAtomWidget>, const Model::Molecule>(
+		VTX::MVC_MANAGER()
+			.deleteView<App::Core::View::CallbackView<const Model::Molecule, MultipleAtomWidget>, const Model::Molecule>(
 				_view, ID::View::UI_INSPECTOR_ATOM );
 	}
 
@@ -237,9 +237,9 @@ namespace VTX::UI::Widget::Inspector
 		_infoSection->localize();
 	}
 
-	void MultipleAtomWidget::_eventCalledOnMolecule( const VTX::Event::VTXEvent * const p_event )
+	void MultipleAtomWidget::_eventCalledOnMolecule( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::TRAJECTORY_FRAME_CHANGE )
+		if ( p_event->name == VTX::App::Event::Model::TRAJECTORY_FRAME_CHANGE )
 			_onTargetChangeEvent( nullptr, p_event );
 	}
 

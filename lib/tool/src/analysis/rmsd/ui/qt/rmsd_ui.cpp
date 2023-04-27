@@ -1,9 +1,10 @@
 #include "tool/analysis/rmsd/ui/qt/rmsd_ui.hpp"
 #include "tool/analysis/rmsd/action.hpp"
 // #include "ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp"
-#include <app/core/action/action_manager.hpp>
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/model/selection.hpp>
+
+#include <app/core/event/vtx_event.hpp>
+#include <app/event/global.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>
@@ -12,9 +13,9 @@
 
 namespace VTX::Tool::Analysis::RMSD::UI::QT
 {
-	RMSDTool::RMSDTool() : VTX::UI::QT::BaseQtTool(), VTX::Event::BaseEventReceiverVTX()
+	RMSDTool::RMSDTool() : VTX::UI::QT::BaseQtTool(), VTX::App::Core::Event::BaseEventReceiverVTX()
 	{
-		_registerEvent( Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
 	}
 
 	void RMSDTool::instantiateTool()
@@ -25,9 +26,9 @@ namespace VTX::Tool::Analysis::RMSD::UI::QT
 		// VTXApp::get().getMainWindow().getContextualMenu().getMenu()
 	}
 
-	void RMSDTool::receiveEvent( const Event::VTXEvent & p_event )
+	void RMSDTool::receiveEvent( const App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::SELECTION_CHANGE )
 			_refreshButton();
 	}
 

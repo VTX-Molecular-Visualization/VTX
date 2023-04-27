@@ -1,9 +1,9 @@
 #include "app/action/viewpoint.hpp"
-#include "app/old_app/model/path.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
+#include "app/model/path.hpp"
 #include <set>
 
-namespace VTX::Action::Viewpoint
+namespace VTX::App::Action::Viewpoint
 {
 	// void AddAction::execute() { _viewpoint.addAction( _action ); }
 	// void DeleteAction::execute() { _viewpoint.removeAction( _action ); }
@@ -70,4 +70,4 @@ namespace VTX::Action::Viewpoint
 
 	void Rename::execute() { _viewpoint.setName( _name ); }
 
-} // namespace VTX::Action::Viewpoint
+} // namespace VTX::App::Action::Viewpoint

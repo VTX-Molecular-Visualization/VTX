@@ -3,19 +3,19 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/core/action/action_manager.hpp>
 #include <app/action/representation.hpp>
+#include <app/event/global.hpp>
+#include <app/model/representation/representation.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/representation/representation.hpp>
 
 namespace VTX::View::UI::Widget::Representation
 {
 	RepresentationLibraryView::RepresentationLibraryView( Model::Representation::RepresentationLibrary * const p_model,
 														  QWidget * const p_parent ) :
-		View::BaseView<Model::Representation::RepresentationLibrary>( p_model ),
+		App::Core::View::BaseView<Model::Representation::RepresentationLibrary>( p_model ),
 		VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::REPRESENTATION_ADDED );
+		_registerEvent( VTX::App::Event::Global::REPRESENTATION_ADDED );
 	}
 
 	void RepresentationLibraryView::_setupUi( const QString & p_name )
@@ -85,13 +85,12 @@ namespace VTX::View::UI::Widget::Representation
 		connect( _resetLibraryButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onResetLibrary );
 	}
 
-	void RepresentationLibraryView::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void RepresentationLibraryView::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::REPRESENTATION_ADDED )
+		if ( p_event.name == VTX::App::Event::Global::REPRESENTATION_ADDED )
 		{
-			const VTX::Event::VTXEventValue<int> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventValue<int> &>( p_event );
-			const int representationIndex = castedEvent.value;
+			const int representationIndex
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<int> &>( p_event ).get();
 
 			_presetList->setCurrentIndex( representationIndex );
 		}
@@ -105,16 +104,17 @@ namespace VTX::View::UI::Widget::Representation
 
 	void RepresentationLibraryView::_onAddPreset() const
 	{
-		VTX_ACTION( new Action::Representation::AddNewPresetInLibrary( Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
+		VTX_ACTION(
+			new App::Action::Representation::AddNewPresetInLibrary( Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
 	}
 	void RepresentationLibraryView::_onCopyPreset() const
 	{
-		VTX_ACTION( new Action::Representation::CopyPresetInLibrary( _presetList->currentIndex() ) );
+		VTX_ACTION( new App::Action::Representation::CopyPresetInLibrary( _presetList->currentIndex() ) );
 	}
 	void RepresentationLibraryView::_onDeletePreset()
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ),
+			new App::Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ),
 			"Confirm",
 			"Are you sure you want to delete this preset ?" );
 	}
@@ -122,14 +122,14 @@ namespace VTX::View::UI::Widget::Representation
 	void RepresentationLibraryView::_onReloadLibrary() const
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new Action::Representation::ReloadPresets(),
+			new App::Action::Representation::ReloadPresets(),
 			"Confirm",
 			"Are you sure you want to reload all presets ? Current changes will be lost." );
 	}
 	void RepresentationLibraryView::_onResetLibrary() const
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			new Action::Representation::ResetPresetsToDefault(),
+			new App::Action::Representation::ResetPresetsToDefault(),
 			"Confirm",
 			"Are you sure you want to reset the preset library ? All changes will be lost." );
 	}

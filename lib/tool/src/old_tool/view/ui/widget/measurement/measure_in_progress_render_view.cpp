@@ -6,7 +6,7 @@
 #include <QPoint>
 #include <QVBoxLayout>
 #include <algorithm>
-#include <app/old_app/model/atom.hpp>
+#include <app/model/atom.hpp>
 #include <string>
 #include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/main_window.hpp>
@@ -17,7 +17,7 @@ namespace VTX::View::UI::Widget::Measurement
 {
 	MeasureInProgressRenderView::MeasureInProgressRenderView( Model::Measurement::MeasureInProgress * const p_model,
 															  QWidget * const								p_parent ) :
-		View::BaseView<Model::Measurement::MeasureInProgress>( p_model ),
+		App::Core::View::BaseView<Model::Measurement::MeasureInProgress>( p_model ),
 		VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>( p_parent )
 	{
 		_linePen = QPen();

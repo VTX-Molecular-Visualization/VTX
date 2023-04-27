@@ -2,7 +2,7 @@
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/main_window.hpp"
 #include "ui/qt/tool/session/widget/dialog/download_molecule_dialog.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
 // #include <app/old_app/selection/selection_manager.hpp>
@@ -43,7 +43,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 			for ( const QString & qstr : filenames )
 				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
 
-			VTX_ACTION( new Action::Main::Open( filepathes ) );
+			VTX_ACTION( new App::Action::Main::Open( filepathes ) );
 		}
 	}
 	void Dialog::openExportMoleculeDialog()
@@ -64,7 +64,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 			const FilePath directoryPath = path.parent_path();
 
 			Setting::saveLastExportedMoleculeFolder( directoryPath.string() );
-			VTX_ACTION( new Action::Main::Save( path ) );
+			VTX_ACTION( new App::Action::Main::Save( path ) );
 		}
 	}
 
@@ -83,22 +83,22 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 		// if ( !filename.isEmpty() )
 		//{
 		//	Setting::saveLastImportedMoleculeFolder( filename );
-		//	VTX_ACTION( new Action::Main::Open( FilePath( filename.toStdString() ), p_target ) );
+		//	VTX_ACTION( new App::Action::Main::Open( FilePath( filename.toStdString() ), p_target ) );
 		// }
 	}
 
 	void Dialog::createNewSessionDialog()
 	{
-		Worker::CallbackThread callback = Worker::CallbackThread(
+		VTX::Core::Worker::CallbackThread callback = VTX::Core::Worker::CallbackThread(
 			[]( const uint p_code )
 			{
 				if ( p_code )
-					VTX_ACTION( new Action::Main::New() );
+					VTX_ACTION( new App::Action::Main::New() );
 			} );
 
 		leavingSessionDialog( callback );
 	}
-	void Dialog::leavingSessionDialog( Worker::CallbackThread & p_callback )
+	void Dialog::leavingSessionDialog( VTX::Core::Worker::CallbackThread & p_callback )
 	{
 		if ( !VTXApp::get().hasAnyModifications() )
 		{
@@ -117,7 +117,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 		{
 			const FilePath & filepath = VTXApp::get().getScenePathData().getCurrentPath();
 
-			Worker::CallbackThread * threadCallback = new Worker::CallbackThread( p_callback );
+			VTX::Core::Worker::CallbackThread * threadCallback = new VTX::Core::Worker::CallbackThread( p_callback );
 
 			if ( filepath.empty() )
 			{
@@ -125,7 +125,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 			}
 			else
 			{
-				VTX_ACTION( new Action::Main::Save( FilePath( filepath ), threadCallback ) );
+				VTX_ACTION( new App::Action::Main::Save( FilePath( filepath ), threadCallback ) );
 			}
 		}
 		else if ( res == QMessageBox::StandardButton::Discard )
@@ -138,7 +138,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 		}
 	}
 
-	void Dialog::openSaveSessionDialog( Worker::CallbackThread * const p_callback )
+	void Dialog::openSaveSessionDialog( VTX::Core::Worker::CallbackThread * const p_callback )
 	{
 		QString		  defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_FILE_WRITE_FILTER );
 		const QString defaultPath	= QString::fromStdString( IO::Filesystem::getDefaultSceneSavePath().string() );
@@ -156,7 +156,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 			const FilePath directoryPath = path.parent_path();
 
 			Setting::saveLastSavedSessionFolder( directoryPath.string() );
-			VTX_ACTION( new Action::Main::Save( path, p_callback ) );
+			VTX_ACTION( new App::Action::Main::Save( path, p_callback ) );
 		}
 	}
 	void Dialog::openLoadSessionDialog()
@@ -179,7 +179,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 			for ( const QString & qstr : filenames )
 				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
 
-			VTX_ACTION( new Action::Main::Open( filepathes ) );
+			VTX_ACTION( new App::Action::Main::Open( filepathes ) );
 		}
 	}
 } // namespace VTX::UI::QT::Tool::Session::Dialog

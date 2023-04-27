@@ -4,7 +4,7 @@
 #include "tool/old_tool/controller/measurement_picker.hpp"
 #include <QMenu>
 #include <QWidget>
-#include <app/old_app/event/event.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include <ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp>
 #include <ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp>
 
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		~MenuToolMeasurementWidget();
 
 		void localize() override;
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		MenuToolMeasurementWidget( QWidget * p_parent );

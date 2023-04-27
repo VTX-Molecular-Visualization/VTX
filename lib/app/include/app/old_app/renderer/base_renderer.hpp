@@ -1,10 +1,10 @@
 #ifndef __VTX_BASE_RENDERER__
 #define __VTX_BASE_RENDERER__
 
+#include "app/core/model/base_model.hpp"
 #include "app/old_app/generic/base_opengl.hpp"
-#include "gl/framebuffer.hpp"
-#include "app/old_app/model/base_model.hpp"
 #include "app/old_app/object3d/scene.hpp"
+#include "gl/framebuffer.hpp"
 #include <vector>
 
 namespace VTX::Renderer
@@ -58,7 +58,7 @@ namespace VTX::Renderer
 
 		virtual const Vec2i getPickedIds( const uint, const uint ) const
 		{
-			return Vec2i( Model::ID_UNKNOWN, Model::ID_UNKNOWN );
+			return Vec2i( App::Core::Model::ID_UNKNOWN, App::Core::Model::ID_UNKNOWN );
 		}
 
 	  protected:

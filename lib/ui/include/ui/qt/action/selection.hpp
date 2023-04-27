@@ -2,11 +2,11 @@
 #define __VTX_UI_QT_ACTION_SELECTION__
 
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/selection.hpp>
 
 namespace VTX::UI::QT::Action::Selection
 {
-	class Orient : public VTX::Core::Action::BaseAction
+	class Orient : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Orient( const Model::Selection & p_selection ) : _selection( p_selection ) {}

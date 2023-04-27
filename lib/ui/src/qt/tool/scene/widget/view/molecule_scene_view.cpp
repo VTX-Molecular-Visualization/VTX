@@ -15,14 +15,14 @@
 #include "ui/qt/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "ui/qt/widget_factory.hpp"
 #include <QScrollBar>
-#include <app/core/action/action_manager.hpp>
 #include <app/action/atom.hpp>
 #include <app/action/category.hpp>
 #include <app/action/chain.hpp>
 #include <app/action/molecule.hpp>
 #include <app/action/residue.hpp>
 #include <app/action/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/mvc.hpp>
+#include <app/event/global.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/struct/range.hpp>
 #include <app/old_app/style.hpp>
@@ -32,35 +32,35 @@
 namespace VTX::UI::QT::Tool::Scene::Widget::View
 {
 	MoleculeSceneView::MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent ) :
-		VTX::View::BaseView<Model::Molecule>( p_model ), SceneItemWidget( p_parent )
+		VTX::App::Core::View::BaseView<Model::Molecule>( p_model ), SceneItemWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::SETTINGS_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SETTINGS_CHANGE );
 	}
 
 	MoleculeSceneView ::~MoleculeSceneView() { _clearLoadedItems(); }
 
-	void MoleculeSceneView::notify( const VTX::Event::VTXEvent * const p_event )
+	void MoleculeSceneView::notify( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::MOLECULE_VISIBILITY )
+		if ( p_event->name == VTX::App::Event::Model::MOLECULE_VISIBILITY )
 		{
 			_refreshItemVisibility( _getMoleculeTreeWidgetItem(), _model->isVisible() );
 		}
-		else if ( p_event->name == VTX::Event::Model::CATEGORY_VISIBILITY )
+		else if ( p_event->name == VTX::App::Event::Model::CATEGORY_VISIBILITY )
 		{
-			const VTX::Event::VTXEventValue<CATEGORY_ENUM> * const castedEventData
-				= dynamic_cast<const VTX::Event::VTXEventValue<CATEGORY_ENUM> *>( p_event );
-			const Model::Category & category = _model->getCategory( castedEventData->value );
+			const VTX::App::Core::Event::VTXEventArg<CATEGORY_ENUM> * const castedEventData
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<CATEGORY_ENUM> *>( p_event );
+			const Model::Category & category = _model->getCategory( castedEventData->get() );
 
 			if ( _isMoleculeExpanded() )
 			{
 				_refreshItemVisibility( _getTreeWidgetItem( category ), category.isVisible() );
 			}
 		}
-		else if ( p_event->name == VTX::Event::Model::CHAIN_VISIBILITY )
+		else if ( p_event->name == VTX::App::Event::Model::CHAIN_VISIBILITY )
 		{
-			const VTX::Event::VTXEventValue<uint> * const castedEventData
-				= dynamic_cast<const VTX::Event::VTXEventValue<uint> *>( p_event );
-			const uint				index	 = castedEventData->value;
+			const VTX::App::Core::Event::VTXEventArg<uint> * const castedEventData
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<uint> *>( p_event );
+			const uint				index	 = castedEventData->get();
 			const Model::Chain &	chain	 = *_model->getChain( index );
 			const Model::Category & category = *( _model->getCategoryFromChain( chain ) );
 
@@ -71,11 +71,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				_refreshItemVisibility( _getTreeWidgetItem( chain ), chain.isVisible() );
 			}
 		}
-		else if ( p_event->name == VTX::Event::Model::RESIDUE_VISIBILITY )
+		else if ( p_event->name == VTX::App::Event::Model::RESIDUE_VISIBILITY )
 		{
-			const VTX::Event::VTXEventValue<uint> * const castedEventData
-				= dynamic_cast<const VTX::Event::VTXEventValue<uint> *>( p_event );
-			const uint			   index   = castedEventData->value;
+			const VTX::App::Core::Event::VTXEventArg<uint> * const castedEventData
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<uint> *>( p_event );
+			const uint			   index   = castedEventData->get();
 			const Model::Residue & residue = *_model->getResidue( index );
 
 			// Check if items are visible before refresh it. If not, the will be update when they will appear
@@ -84,50 +84,51 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				_refreshItemVisibility( _getTreeWidgetItem( residue ), residue.isVisible() );
 			}
 		}
-		else if ( p_event->name == VTX::Event::Model::ATOM_VISIBILITY )
+		else if ( p_event->name == VTX::App::Event::Model::ATOM_VISIBILITY )
 		{
-			const VTX::Event::VTXEventValue<uint> * const castedEventData
-				= dynamic_cast<const VTX::Event::VTXEventValue<uint> *>( p_event );
-			const Model::Atom & atom = *_model->getAtom( castedEventData->value );
+			const VTX::App::Core::Event::VTXEventArg<uint> * const castedEventData
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<uint> *>( p_event );
+			const Model::Atom & atom = *_model->getAtom( castedEventData->get() );
 
 			if ( _isResidueExpanded( *atom.getResiduePtr() ) )
 			{
 				_refreshItemVisibility( _getTreeWidgetItem( atom ), atom.isVisible() );
 			}
 		}
-		else if ( p_event->name == VTX::Event::Model::VISIBILITY )
+		else if ( p_event->name == VTX::App::Event::Model::VISIBILITY )
 		{
 			_refreshItemsVisibility();
 		}
-		else if ( p_event->name == VTX::Event::Model::DATA_CHANGE )
+		else if ( p_event->name == VTX::App::Event::Model::DATA_CHANGE )
 		{
 			_clearLoadedItems();
 			_updateMoleculeStructure();
 			_refreshSize();
 		}
-		else if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE )
+		else if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			_getMoleculeTreeWidgetItem()->setText( 0, QString::fromStdString( _model->getDisplayName() ) );
 		}
 	}
 
-	void MoleculeSceneView::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void MoleculeSceneView::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
 		SceneItemWidget::receiveEvent( p_event );
 
-		if ( p_event.name == VTX::Event::Global::SETTINGS_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> &>(
+					p_event );
 
-			if ( castedEvent.ref.find( Setting::PARAMETER ::SYMBOL_DISPLAY_MODE ) != castedEvent.ref.end() )
+			if ( castedEvent.get().find( Setting::PARAMETER::SYMBOL_DISPLAY_MODE ) != castedEvent.get().end() )
 			{
 				_refreshSymbolDisplay( VTX_SETTING().getSymbolDisplayMode() );
 			}
 		}
 	}
 
-	bool MoleculeSceneView::containsModel( const Model::BaseModel & p_model ) const
+	bool MoleculeSceneView::containsModel( const App::Core::Model::BaseModel & p_model ) const
 	{
 		const VTX::ID::VTX_ID & modelTypeID = p_model.getTypeId();
 		const Model::Molecule * linkedMolecule;
@@ -148,7 +149,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		return linkedMolecule == _model;
 	}
 
-	std::vector<Model::ID> MoleculeSceneView::getAllItemsFrom( const Model::BaseModel & p_model ) const
+	std::vector<App::Core::Model::ID> MoleculeSceneView::getAllItemsFrom( const App::Core::Model::BaseModel & p_model ) const
 	{
 		const ID::VTX_ID & typeID = p_model.getTypeId();
 
@@ -157,7 +158,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			return SceneItemWidget::getAllItemsFrom( p_model );
 		}
 
-		std::vector<Model::ID> res;
+		std::vector<App::Core::Model::ID> res;
 
 		if ( typeID == VTX::ID::Model::MODEL_CATEGORY )
 		{
@@ -189,7 +190,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 		return res;
 	}
-	std::vector<Model::ID> MoleculeSceneView::getAllItemsTo( const Model::BaseModel & p_model ) const
+	std::vector<App::Core::Model::ID> MoleculeSceneView::getAllItemsTo( const App::Core::Model::BaseModel & p_model ) const
 	{
 		const ID::VTX_ID & typeID = p_model.getTypeId();
 
@@ -198,7 +199,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			return SceneItemWidget::getAllItemsTo( p_model );
 		}
 
-		std::vector<Model::ID> res;
+		std::vector<App::Core::Model::ID> res;
 
 		if ( typeID == VTX::ID::Model::MODEL_CATEGORY )
 		{
@@ -267,7 +268,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 					}
 					else if ( itemTxt != _model->getDisplayName() )
 					{
-						VTX_ACTION( new VTX::Action::Molecule::Rename( *_model, itemTxt ) );
+						VTX_ACTION( new VTX::App::Action::Molecule::Rename( *_model, itemTxt ) );
 					}
 
 					const bool oldSignalState = blockSignals( true );
@@ -283,39 +284,39 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	}
 	void MoleculeSceneView::_onItemDoubleClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
 	{
-		const Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
-		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( modelId );
+		const App::Core::Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
+		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+			Model::Molecule & model = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelId );
 			VTX_ACTION( new QT::Action::Molecule::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			Model::Category & model = MVC::MvcManager::get().getModel<Model::Category>( modelId );
+			Model::Category & model = VTX::MVC_MANAGER().getModel<Model::Category>( modelId );
 			VTX_ACTION( new QT::Action::Category::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
-			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+			Model::Chain & model = VTX::MVC_MANAGER().getModel<Model::Chain>( modelId );
 			VTX_ACTION( new QT::Action::Chain::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+			Model::Residue & model = VTX::MVC_MANAGER().getModel<Model::Residue>( modelId );
 			VTX_ACTION( new QT::Action::Residue::Orient( model ) );
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
-			Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+			Model::Atom & model = VTX::MVC_MANAGER().getModel<Model::Atom>( modelId );
 			VTX_ACTION( new QT::Action::Atom::Orient( model ) );
 		}
 	}
 	void MoleculeSceneView::_onItemExpanded( QTreeWidgetItem * const p_item )
 	{
-		const Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
-		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( modelId );
+		const App::Core::Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
+		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
@@ -350,8 +351,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		if ( targetedItem == nullptr )
 			return;
 
-		const Model::ID &  modelId		 = _getModelIDFromItem( *targetedItem );
-		const ID::VTX_ID & modelTypeId	 = MVC::MvcManager::get().getModelTypeID( modelId );
+		const App::Core::Model::ID &  modelId		 = _getModelIDFromItem( *targetedItem );
+		const ID::VTX_ID & modelTypeId	 = VTX::MVC_MANAGER().getModelTypeID( modelId );
 		const QPoint	   globalClicPos = mapToGlobal( p_clicPos );
 
 		Model::Selection &		 selection		= Selection::SelectionManager::get().getSelectionModel();
@@ -359,7 +360,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelId );
 			if ( selection.isMoleculeFullySelected( molecule ) )
 			{
 				contextualMenu
@@ -372,7 +373,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			Model::Category & category = MVC::MvcManager::get().getModel<Model::Category>( modelId );
+			Model::Category & category = VTX::MVC_MANAGER().getModel<Model::Category>( modelId );
 			if ( selection.isCategoryFullySelected( category ) )
 			{
 				contextualMenu
@@ -385,7 +386,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
-			Model::Chain & chain = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+			Model::Chain & chain = VTX::MVC_MANAGER().getModel<Model::Chain>( modelId );
 			if ( selection.isChainFullySelected( chain ) )
 			{
 				contextualMenu
@@ -398,7 +399,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			Model::Residue & residue = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+			Model::Residue & residue = VTX::MVC_MANAGER().getModel<Model::Residue>( modelId );
 			if ( selection.isResidueFullySelected( residue ) )
 			{
 				contextualMenu
@@ -411,7 +412,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
-			Model::Atom & atom = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+			Model::Atom & atom = VTX::MVC_MANAGER().getModel<Model::Atom>( modelId );
 			if ( selection.isAtomSelected( atom ) )
 			{
 				contextualMenu
@@ -483,7 +484,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 			const uint chainIndex = chainIndexes[ currentChainIndexInCategory ];
 
-			const Model::ID &		   chainItemID = _getModelIDFromItem( *currentChainItem );
+			const App::Core::Model::ID &		   chainItemID = _getModelIDFromItem( *currentChainItem );
 			const Model::Chain * const chain	   = _model->getChain( chainIndex );
 
 			if ( chain == nullptr )
@@ -529,7 +530,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				continue;
 			}
 
-			const Model::ID &			 residueItemID = _getModelIDFromItem( *currentResidueItem );
+			const App::Core::Model::ID &			 residueItemID = _getModelIDFromItem( *currentResidueItem );
 			const Model::Residue * const residue
 				= molecule.getResidue( p_chain.getIndexFirstResidue() + currentResidueIndex );
 
@@ -576,7 +577,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				continue;
 			}
 
-			const Model::ID &		  atomItemID = _getModelIDFromItem( *currentAtomItem );
+			const App::Core::Model::ID &		  atomItemID = _getModelIDFromItem( *currentAtomItem );
 			const Model::Atom * const atom		 = molecule.getAtom( p_residue.getIndexFirstAtom() + currentAtomIndex );
 
 			if ( atom == nullptr )
@@ -621,7 +622,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 	void MoleculeSceneView::_expandAll( QTreeWidgetItem * const p_from )
 	{
-		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( _getModelIDFromItem( *p_from ) );
+		const ID::VTX_ID & modelTypeId
+			= VTX::MVC_MANAGER().getModelTypeID( _getModelIDFromItem( *p_from ) );
 
 		_enableSignals( false );
 
@@ -691,8 +693,9 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			if ( item->isHidden() )
 				continue;
 
-			const Model::ID &		categoryID = _getModelIDFromItem( *item );
-			const Model::Category & category   = MVC::MvcManager::get().getModel<Model::Category>( categoryID );
+			const App::Core::Model::ID &		categoryID = _getModelIDFromItem( *item );
+			const Model::Category & category
+				= VTX::MVC_MANAGER().getModel<Model::Category>( categoryID );
 
 			const Qt::CheckState newCheckState = QT::Util::getCheckState( category.isVisible() );
 			item->setCheckState( 0, newCheckState );
@@ -731,8 +734,9 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			QList<QTreeWidgetItem *> &	   items	 = *itemsPtr;
 			std::vector<QTreeWidgetItem *> nullItems = std::vector<QTreeWidgetItem *>();
 
-			const Model::ID &		categoryId = _getModelIDFromItem( *p_categoryItem );
-			const Model::Category & category   = MVC::MvcManager::get().getModel<Model::Category>( categoryId );
+			const App::Core::Model::ID &		categoryId = _getModelIDFromItem( *p_categoryItem );
+			const Model::Category & category
+				= VTX::MVC_MANAGER().getModel<Model::Category>( categoryId );
 
 			const std::vector<uint> & chains = category.getChains();
 
@@ -770,8 +774,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			if ( item->isHidden() )
 				continue;
 
-			const Model::ID &	 chainID = _getModelIDFromItem( *item );
-			const Model::Chain & chain	 = MVC::MvcManager::get().getModel<Model::Chain>( chainID );
+			const App::Core::Model::ID &	 chainID = _getModelIDFromItem( *item );
+			const Model::Chain & chain	 = VTX::MVC_MANAGER().getModel<Model::Chain>( chainID );
 
 			const Qt::CheckState newCheckState = QT::Util::getCheckState( chain.isVisible() );
 			item->setCheckState( 0, newCheckState );
@@ -812,8 +816,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			QList<QTreeWidgetItem *> &	   items	 = *itemsPtr;
 			std::vector<QTreeWidgetItem *> nullItems = std::vector<QTreeWidgetItem *>();
 
-			const Model::ID &	 chainId	  = _getModelIDFromItem( *p_chainItem );
-			const Model::Chain & chain		  = MVC::MvcManager::get().getModel<Model::Chain>( chainId );
+			const App::Core::Model::ID &	 chainId	  = _getModelIDFromItem( *p_chainItem );
+			const Model::Chain & chain		  = VTX::MVC_MANAGER().getModel<Model::Chain>( chainId );
 			const uint			 residueCount = chain.getResidueCount();
 			nullItems.reserve( residueCount );
 			items.reserve( residueCount );
@@ -851,8 +855,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			if ( item->isHidden() )
 				continue;
 
-			const Model::ID &	   residueID = _getModelIDFromItem( *item );
-			const Model::Residue & residue	 = MVC::MvcManager::get().getModel<Model::Residue>( residueID );
+			const App::Core::Model::ID &	   residueID = _getModelIDFromItem( *item );
+			const Model::Residue & residue	 = VTX::MVC_MANAGER().getModel<Model::Residue>( residueID );
 
 			const Qt::CheckState newCheckState = QT::Util::getCheckState( residue.isVisible() );
 			item->setCheckState( 0, newCheckState );
@@ -893,8 +897,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			QList<QTreeWidgetItem *> &	   items	 = *itemsPtr;
 			std::vector<QTreeWidgetItem *> nullItems = std::vector<QTreeWidgetItem *>();
 
-			const Model::ID &	   residueId = _getModelIDFromItem( *p_residueItem );
-			const Model::Residue & residue	 = MVC::MvcManager::get().getModel<Model::Residue>( residueId );
+			const App::Core::Model::ID &	   residueId = _getModelIDFromItem( *p_residueItem );
+			const Model::Residue & residue	 = VTX::MVC_MANAGER().getModel<Model::Residue>( residueId );
 			const uint			   atomCount = residue.getAtomCount();
 			nullItems.reserve( atomCount );
 			items.reserve( atomCount );
@@ -928,8 +932,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			if ( item->isHidden() )
 				continue;
 
-			const Model::ID &	atomID = _getModelIDFromItem( *item );
-			const Model::Atom & atom   = MVC::MvcManager::get().getModel<Model::Atom>( atomID );
+			const App::Core::Model::ID &	atomID = _getModelIDFromItem( *item );
+			const Model::Atom & atom   = VTX::MVC_MANAGER().getModel<Model::Atom>( atomID );
 
 			const Qt::CheckState newCheckState = QT::Util::getCheckState( atom.isVisible() );
 			item->setCheckState( 0, newCheckState );
@@ -962,7 +966,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	void MoleculeSceneView::_applyMoleculeDataOnItem( const Model::Molecule & p_molecule,
 													  QTreeWidgetItem &		  p_item ) const
 	{
-		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( p_molecule.getId() ) );
+		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::App::Core::Model::ID>( p_molecule.getId() ) );
 		p_item.setText( 0, QString::fromStdString( p_molecule.getDisplayName() ) );
 		p_item.setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( p_molecule.getTypeId() ) );
 
@@ -1036,84 +1040,83 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 	void MoleculeSceneView::_doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const
 	{
-		const Model::ID &  modelId		= _getModelIDFromItem( *p_item );
-		const ID::VTX_ID & modelTypeId	= MVC::MvcManager::get().getModelTypeID( modelId );
+		const App::Core::Model::ID &  modelId		= _getModelIDFromItem( *p_item );
+		const ID::VTX_ID & modelTypeId	= VTX::MVC_MANAGER().getModelTypeID( modelId );
 		const bool		   modelEnabled = p_item->checkState( 0 ) == Qt::CheckState::Checked ? true : false;
 
 		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 
-		const VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
-			= modelEnabled ? VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW
-						   : VTX::Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
+		const VTX::App::Action::VISIBILITY_MODE visibilityMode
+			= modelEnabled ? VTX::App::Action::VISIBILITY_MODE::SHOW : VTX::App::Action::VISIBILITY_MODE::HIDE;
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+			Model::Molecule & model = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelId );
 
 			if ( selection.isMoleculeFullySelected( model ) )
 			{
-				VTX_ACTION(
-					new VTX::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
+					selection, model, modelTypeId, visibilityMode ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Molecule::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Molecule::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			Model::Category & model = MVC::MvcManager::get().getModel<Model::Category>( modelId );
+			Model::Category & model = VTX::MVC_MANAGER().getModel<Model::Category>( modelId );
 
 			if ( selection.isCategoryFullySelected( model ) )
 			{
-				VTX_ACTION(
-					new VTX::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
+					selection, model, modelTypeId, visibilityMode ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Category::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Category::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
-			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+			Model::Chain & model = VTX::MVC_MANAGER().getModel<Model::Chain>( modelId );
 
 			if ( selection.isChainFullySelected( model ) )
 			{
-				VTX_ACTION(
-					new VTX::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
+					selection, model, modelTypeId, visibilityMode ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Chain::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Chain::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+			Model::Residue & model = VTX::MVC_MANAGER().getModel<Model::Residue>( modelId );
 
 			if ( selection.isResidueFullySelected( model ) )
 			{
-				VTX_ACTION(
-					new VTX::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
+					selection, model, modelTypeId, visibilityMode ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Residue::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Residue::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
 		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
 		{
-			Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+			Model::Atom & model = VTX::MVC_MANAGER().getModel<Model::Atom>( modelId );
 
 			if ( selection.isAtomSelected( model ) )
 			{
-				VTX_ACTION(
-					new VTX::Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Selection::ChangeVisibility(
+					selection, model, modelTypeId, visibilityMode ) );
 			}
 			else
 			{
-				VTX_ACTION( new VTX::Action::Atom::ChangeVisibility( model, visibilityMode ) );
+				VTX_ACTION( new VTX::App::Action::Atom::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
 	}
@@ -1338,16 +1341,16 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	void MoleculeSceneView::_refreshSymbolDisplayRecursive( QTreeWidgetItem * const					p_item,
 															const VTX::Style::SYMBOL_DISPLAY_MODE & p_displayMode )
 	{
-		const Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
-		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( modelId );
+		const App::Core::Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
+		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
 		if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
 		{
 			for ( int i = 0; i < p_item->childCount(); i++ )
 			{
 				QTreeWidgetItem * const child	= p_item->child( i );
-				const Model::ID &		modelId = _getModelIDFromItem( *child );
-				const Model::Residue &	residue = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+				const App::Core::Model::ID &		modelId = _getModelIDFromItem( *child );
+				const Model::Residue &	residue = VTX::MVC_MANAGER().getModel<Model::Residue>( modelId );
 
 				_applyResidueNameOnItem( residue, *child, p_displayMode );
 			}
@@ -1423,7 +1426,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		return CATEGORY_ENUM( dataID.value<int>() );
 	}
 
-	void MoleculeSceneView::_selectAllCategoriesFrom( std::vector<Model::ID> & p_selection,
+	void MoleculeSceneView::_selectAllCategoriesFrom( std::vector<App::Core::Model::ID> & p_selection,
 													  const Model::Category &  p_itemFrom ) const
 	{
 		const std::vector<Model::Category *> & categories = _model->getCategories();
@@ -1433,13 +1436,13 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			p_selection.emplace_back( _model->getCategory( CATEGORY_ENUM( iCategory ) ).getId() );
 		}
 	}
-	void MoleculeSceneView::_selectAllChainsFrom( std::vector<Model::ID> & p_selection,
+	void MoleculeSceneView::_selectAllChainsFrom( std::vector<App::Core::Model::ID> & p_selection,
 												  const Model::Chain &	   p_itemFrom ) const
 	{
 		for ( uint iChain = p_itemFrom.getIndex() + 1; iChain < _model->getChainCount(); iChain++ )
 			p_selection.emplace_back( _model->getChain( iChain )->getId() );
 	}
-	void MoleculeSceneView::_selectAllResiduesFrom( std::vector<Model::ID> & p_selection,
+	void MoleculeSceneView::_selectAllResiduesFrom( std::vector<App::Core::Model::ID> & p_selection,
 													const Model::Residue &	 p_itemFrom ) const
 	{
 		const Model::Chain & chain = *( p_itemFrom.getChainPtr() );
@@ -1449,7 +1452,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			p_selection.emplace_back( _model->getResidue( iResidue )->getId() );
 		}
 	}
-	void MoleculeSceneView::_selectAllAtomsFrom( std::vector<Model::ID> & p_selection,
+	void MoleculeSceneView::_selectAllAtomsFrom( std::vector<App::Core::Model::ID> & p_selection,
 												 const Model::Atom &	  p_itemFrom ) const
 	{
 		const Model::Residue & residue = *( p_itemFrom.getResiduePtr() );
@@ -1461,7 +1464,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		}
 	}
 
-	void MoleculeSceneView::_selectAllCategoriesTo( std::vector<Model::ID> & p_selection,
+	void MoleculeSceneView::_selectAllCategoriesTo( std::vector<App::Core::Model::ID> & p_selection,
 													const Model::Category &	 p_itemFrom ) const
 	{
 		const std::vector<Model::Category *> & categories = _model->getCategories();
@@ -1471,13 +1474,13 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			p_selection.emplace_back( _model->getCategory( CATEGORY_ENUM( iCategory ) ).getId() );
 		}
 	}
-	void MoleculeSceneView::_selectAllChainsTo( std::vector<Model::ID> & p_selection,
+	void MoleculeSceneView::_selectAllChainsTo( std::vector<App::Core::Model::ID> & p_selection,
 												const Model::Chain &	 p_itemFrom ) const
 	{
 		for ( uint iChain = 0; iChain < p_itemFrom.getIndex(); iChain++ )
 			p_selection.emplace_back( _model->getChain( iChain )->getId() );
 	}
-	void MoleculeSceneView::_selectAllResiduesTo( std::vector<Model::ID> & p_selection,
+	void MoleculeSceneView::_selectAllResiduesTo( std::vector<App::Core::Model::ID> & p_selection,
 												  const Model::Residue &   p_itemFrom ) const
 	{
 		const Model::Chain & chain = *( p_itemFrom.getChainPtr() );
@@ -1485,7 +1488,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		for ( uint iResidue = chain.getIndexFirstResidue(); iResidue < p_itemFrom.getIndex(); iResidue++ )
 			p_selection.emplace_back( _model->getResidue( iResidue )->getId() );
 	}
-	void MoleculeSceneView::_selectAllAtomsTo( std::vector<Model::ID> & p_selection,
+	void MoleculeSceneView::_selectAllAtomsTo( std::vector<App::Core::Model::ID> & p_selection,
 											   const Model::Atom &		p_itemFrom ) const
 	{
 		const Model::Residue & residue = *( p_itemFrom.getResiduePtr() );

@@ -7,14 +7,14 @@
 
 namespace VTX
 {
-	namespace Model
+	namespace App::Core::Model
 	{
 		class BaseModel;
-	}
+	} // namespace App::Core::Model
 
 	namespace UI::Widget
 	{
-		template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
+		template<typename M, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>>
 		class ViewItemWidget : public BaseManualWidget<QWidget>
 		{
 			VTX_WIDGET
@@ -29,7 +29,7 @@ namespace VTX
 				refresh();
 			}
 
-			virtual void notify( const VTX::Event::VTXEvent * const p_event ) {};
+			virtual void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) {};
 
 			virtual void refresh() {}
 

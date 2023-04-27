@@ -8,10 +8,10 @@
 #include "ui/old_ui/ui/widget/representation/representation_inspector_section.hpp"
 #include <QLabel>
 #include <QWidget>
-#include <app/old_app/model/representation/instantiated_representation.hpp>
-#include <app/old_app/model/representation/representation.hpp>
-#include <app/old_app/model/residue.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/model/representation/instantiated_representation.hpp>
+#include <app/model/representation/representation.hpp>
+#include <app/model/residue.hpp>
+#include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {

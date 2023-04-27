@@ -1,7 +1,7 @@
 #ifndef __VTX_ANALYSIS_STRUCT_RESIDUE_DATA_SET__
 #define __VTX_ANALYSIS_STRUCT_RESIDUE_DATA_SET__
 
-#include <app/old_app/model/residue.hpp>
+#include <app/model/residue.hpp>
 #include <map>
 #include <string>
 #include <vector>

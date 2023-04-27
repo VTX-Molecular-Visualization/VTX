@@ -3,7 +3,7 @@
 #include "app/old_app/vtx_app.hpp"
 #include <util/math.hpp>
 
-namespace VTX::Action::Transformable
+namespace VTX::App::Action::Transformable
 {
 	void SetTranslation::execute()
 	{
@@ -116,4 +116,4 @@ namespace VTX::Action::Transformable
 		for ( Generic::BaseAutoRotate * const autoRotateComponent : _autoRotateComponents )
 			autoRotateComponent->setAutoRotationPlaying( _play );
 	}
-} // namespace VTX::Action::Transformable
+} // namespace VTX::App::Action::Transformable

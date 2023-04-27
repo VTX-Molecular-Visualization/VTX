@@ -18,9 +18,13 @@
 
 namespace VTX
 {
-	namespace Model
+	namespace App::Core::Model
 	{
 		class BaseModel;
+	} // namespace App::Core::Model
+
+	namespace Model
+	{
 		class Molecule;
 		class Selection;
 	} // namespace Model
@@ -35,7 +39,7 @@ namespace VTX
 				= UI::Widget::Analysis::StructuralAlignment::StructuralAlignmentModelListWidget;
 
 		  public:
-			void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+			void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 			void localize() override;
 
 			void refresh();

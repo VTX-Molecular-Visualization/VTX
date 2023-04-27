@@ -1,6 +1,6 @@
 #include "ui/qt/controller/trackball.hpp"
 #include "ui/qt/style.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/style.hpp>

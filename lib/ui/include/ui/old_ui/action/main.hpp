@@ -2,22 +2,23 @@
 #define __VTX_UI_ACTION_MAIN__
 
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
+#include <app/core/event/vtx_event.hpp>
+#include <app/core/worker/worker_manager.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/path.hpp>
+#include <app/model/secondary_structure.hpp>
+#include <app/model/solvent_excluded_surface.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/path.hpp>
-#include <app/old_app/model/secondary_structure.hpp>
-#include <app/old_app/model/solvent_excluded_surface.hpp>
-#include <app/old_app/worker/snapshoter.hpp>
-#include <app/old_app/worker/worker_manager.hpp>
+#include <app/worker/snapshoter.hpp>
 #include <string>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::Action::Main
 {
-	class ChangeSelectionGranularity : public Core::Action::BaseAction
+	class ChangeSelectionGranularity : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeSelectionGranularity( const VTX::Selection::Granularity & p_granularity ) :
@@ -30,7 +31,7 @@ namespace VTX::Action::Main
 	  private:
 		const VTX::Selection::Granularity _granularity;
 	};
-	class ChangePicker : public Core::Action::BaseAction
+	class ChangePicker : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangePicker( const ID::VTX_ID & p_pickerController, const int p_mode = -1 ) :
@@ -45,12 +46,12 @@ namespace VTX::Action::Main
 		const int		   _mode;
 	};
 
-	class ClearConsoleInterface : public Core::Action::BaseAction
+	class ClearConsoleInterface : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ClearConsoleInterface() {}
 
-		virtual void execute() override { VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::CLEAR_CONSOLE ) ); };
+		virtual void execute() override { VTX_EVENT( VTX::App::Event::Global::CLEAR_CONSOLE ); };
 		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 	};
 

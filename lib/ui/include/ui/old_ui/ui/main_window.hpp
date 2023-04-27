@@ -4,8 +4,8 @@
 #include "contextual_menu.hpp"
 #include "cursor_handler.hpp"
 #include "ui/old_ui/event/base_event_firerer_input.hpp"
-#include <app/old_app/event/base_event_receiver_vtx.hpp>
-#include <app/old_app/event/event.hpp>
+#include <app/core/event/base_event_receiver_vtx.hpp>
+#include <app/core/event/vtx_event.hpp>
 // #include "widget/analysis/structural_alignment/structural_alignment_widget.hpp"
 #include "widget/base_widget.hpp"
 #include "widget/console/console_widget.hpp"
@@ -31,7 +31,7 @@ namespace VTX
 	{
 		class MainWindow :
 			public QMainWindow,
-			public VTX::Event::BaseEventReceiverVTX,
+			public VTX::App::Core::Event::BaseEventReceiverVTX,
 			public VTX::UI::Event::BaseEventFirererInput
 		{
 			Q_OBJECT
@@ -52,7 +52,7 @@ namespace VTX
 			void		updateRenderSetting( const Renderer::RENDER_SETTING );
 			const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
-			void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+			void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 			const ContextualMenu & getContextualMenu() { return *_contextualMenu; }
 			CursorHandler &		   getCursorHandler() { return *_cursorHandler; }

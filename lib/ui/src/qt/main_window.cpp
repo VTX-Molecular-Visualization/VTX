@@ -10,55 +10,54 @@
 #include "ui/qt/tool/session/dialog.hpp"
 #include "ui/qt/util.hpp"
 #include "ui/qt/widget_factory.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/dev.hpp>
 #include <app/action/main.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
+#include <app/core/event/vtx_event.hpp>
+#include <app/core/worker/worker_manager.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
-#include <app/old_app/model/selection.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/setting.hpp>
-#include <app/old_app/worker/worker_manager.hpp>
 
 namespace VTX::UI::QT
 {
 	MainWindow::MainWindow( QWidget * p_parent ) : BaseMainWindow(), BaseManualWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::CHANGE_STATE );
-		_registerEvent( VTX::Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
-		_registerEvent( VTX::Event::Global::SCENE_PATH_CHANGE );
+		_registerEvent( VTX::App::Event::Global::CHANGE_STATE );
+		_registerEvent( VTX::App::Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SCENE_PATH_CHANGE );
 
-		_registerEvent( VTX::Event::Global::PICKER_MODE_CHANGE );
+		_registerEvent( VTX::App::Event::Global::PICKER_MODE_CHANGE );
 	}
 
 	MainWindow::~MainWindow() {}
 
-	void MainWindow::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void MainWindow::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::CHANGE_STATE )
+		if ( p_event.name == VTX::App::Event::Global::CHANGE_STATE )
 		{
-			const VTX::Event::VTXEventValue<ID::VTX_ID> & event
-				= dynamic_cast<const VTX::Event::VTXEventValue<ID::VTX_ID> &>( p_event );
-
-			ID::VTX_ID state = event.value;
+			const ID::VTX_ID & state
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const ID::VTX_ID &> &>( p_event ).get();
 		}
-		else if ( p_event.name == VTX::Event::Global::SCENE_PATH_CHANGE
-				  || p_event.name == VTX::Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
+		else if ( p_event.name == VTX::App::Event::Global::SCENE_PATH_CHANGE
+				  || p_event.name == VTX::App::Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
 		{
 			refreshWindowTitle();
 		}
-		else if ( p_event.name == VTX::Event::Global::PICKER_MODE_CHANGE )
+		else if ( p_event.name == VTX::App::Event::Global::PICKER_MODE_CHANGE )
 		{
 			_updatePicker();
 		}
-		// else if ( p_event.name == VTX::Event::Global::RMSD_COMPUTED )
+		// else if ( p_event.name == VTX::App::Event::Global::RMSD_COMPUTED )
 		//{
-		//	const VTX::Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> & castedEvent
-		//		= dynamic_cast<const VTX::Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> &>( p_event );
+		//	const VTX::App::Core::Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> & castedEvent
+		//		= dynamic_cast<const VTX::App::Core::Event::VTXEventRef<const VTX::Tool::Analysis::RMSD::RMSDData> &>(
+		// p_event );
 
 		//	const std::string log = VTX::Tool::Analysis::RMSD::getLogString( castedEvent.ref );
 
@@ -71,7 +70,7 @@ namespace VTX::UI::QT
 		if ( VTXApp::get().hasAnyModifications() )
 		{
 			p_closeEvent->ignore();
-			Worker::CallbackThread callback = Worker::CallbackThread(
+			VTX::Core::Worker::CallbackThread callback = VTX::Core::Worker::CallbackThread(
 				[]( const uint p_code )
 				{
 					if ( p_code )
@@ -92,7 +91,7 @@ namespace VTX::UI::QT
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		const QSize winsize = QSize( VTX::Style::WINDOW_WIDTH_DEFAULT, VTX::Style::WINDOW_HEIGHT_DEFAULT );
+		const QSize winsize = QSize( UI::Style::WINDOW_WIDTH_DEFAULT, UI::Style::WINDOW_HEIGHT_DEFAULT );
 		resize( winsize );
 		setWindowState( Qt::WindowState::WindowNoState );
 		refreshWindowTitle();
@@ -294,33 +293,34 @@ namespace VTX::UI::QT
 	{
 		if ( windowState() & Qt::WindowStates::enum_type::WindowFullScreen )
 		{
-			// VTX_ACTION( new Action::Setting::WindowMode( Core::WindowMode::Windowed ) );
+			// VTX_ACTION( new App::Action::Setting::WindowMode( Core::WindowMode::Windowed ) );
 		}
 		else
 		{
-			// VTX_ACTION( new Action::Setting::WindowMode( Core::WindowMode::Fullscreen ) );
+			// VTX_ACTION( new App::Action::Setting::WindowMode( Core::WindowMode::Fullscreen ) );
 		}
 	}
 	void MainWindow::_onShortcutClearSelection() const
 	{
 		if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 		{
-			VTX_ACTION( new VTX::Action::Selection::ClearSelection(
+			VTX_ACTION( new VTX::App::Action::Selection::ClearSelection(
 				VTX::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 	void MainWindow::_onShortcutRestoreLayout() const { VTX_ACTION( new QT::Action::Main::RestoreLayout() ); }
-	void MainWindow::_onShortcutCompileShaders() const { VTX_ACTION( new VTX::Action::Dev::CompileShaders() ); }
+	void MainWindow::_onShortcutCompileShaders() const { VTX_ACTION( new VTX::App::Action::Dev::CompileShaders() ); }
 	void MainWindow::_onShortcutActiveRenderer() const
 	{
 		const bool rendererIsActive = VTX_SETTING().getActivateRenderer();
-		VTX_ACTION( new VTX::Action::Setting::ActiveRenderer( !rendererIsActive ) );
+		VTX_ACTION( new VTX::App::Action::Setting::ActiveRenderer( !rendererIsActive ) );
 	}
 	void MainWindow::_onShortcutDelete() const
 	{
 		if ( Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
 		{
-			VTX_ACTION( new VTX::Action::Selection::Delete( Selection::SelectionManager::get().getSelectionModel() ) );
+			VTX_ACTION(
+				new VTX::App::Action::Selection::Delete( Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 	void MainWindow::_onShortcutOrient() const
@@ -328,18 +328,18 @@ namespace VTX::UI::QT
 		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new VTX::UI::QT::Action::Selection::Orient( selection ) );
 	}
-	void MainWindow::_onShortcutSelectAll() const { VTX_ACTION( new VTX::Action::Selection::SelectAll() ); }
+	void MainWindow::_onShortcutSelectAll() const { VTX_ACTION( new VTX::App::Action::Selection::SelectAll() ); }
 	void MainWindow::_onShortcutCopy() const
 	{
 		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
-			VTX_ACTION( new VTX::Action::Selection::Copy( selectionModel ) );
+			VTX_ACTION( new VTX::App::Action::Selection::Copy( selectionModel ) );
 	}
 	void MainWindow::_onShortcutExtract() const
 	{
 		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
-			VTX_ACTION( new VTX::Action::Selection::Extract( selectionModel ) );
+			VTX_ACTION( new VTX::App::Action::Selection::Extract( selectionModel ) );
 	}
 	void MainWindow::_onShortcutSetSelectionPicker() const
 	{
@@ -514,7 +514,7 @@ namespace VTX::UI::QT
 		if ( p_event->type() == QEvent::Type::WindowStateChange )
 		{
 			Core::WindowMode newMode = _getWindowModeFromWindowState( windowState() );
-			VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::MAIN_WINDOW_MODE_CHANGE ) );
+			VTX_EVENT( VTX::App::Event::Global::MAIN_WINDOW_MODE_CHANGE );
 		}
 	}
 
@@ -552,7 +552,7 @@ namespace VTX::UI::QT
 				_paths.emplace_back( FilePath( url.toLocalFile().toStdString() ) );
 			}
 
-			VTX_ACTION( new VTX::Action::Main::Open( _paths ) );
+			VTX_ACTION( new VTX::App::Action::Main::Open( _paths ) );
 		}
 	}
 
@@ -621,7 +621,7 @@ namespace VTX::UI::QT
 			break;
 		}
 
-		VTX_EVENT( new VTX::Event::VTXEventValue( VTX::Event::Global::MAIN_WINDOW_MODE_CHANGE, p_mode ) );
+		VTX_EVENT<UI::Core::WindowMode>( VTX::App::Event::Global::MAIN_WINDOW_MODE_CHANGE, p_mode );
 	}
 	void MainWindow::toggleWindowState()
 	{

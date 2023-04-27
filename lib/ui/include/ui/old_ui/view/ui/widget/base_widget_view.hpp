@@ -5,29 +5,29 @@
 #include "ui/old_ui/ui/widget/view_item_widget.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QWidget>
-#include <app/old_app/model/base_model.hpp>
+#include <app/core/model/base_model.hpp>
 #include <type_traits>
 
 namespace VTX::View::UI::Widget
 {
 	template<typename M,
 			 typename W,
-			 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
+			 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
 			 typename = std::enable_if<std::is_base_of<VTX::UI::Widget::ViewItemWidget<M>, W>::value>>
-	class BaseWidgetView : public View::BaseView<M>
+	class BaseWidgetView : public App::Core::View::BaseView<M>
 	{
 	  public:
 		W * const getWidget() { return _widget; };
 
-		virtual void notify( const VTX::Event::VTXEvent * const p_event )
+		virtual void notify( const VTX::App::Core::Event::VTXEvent * const p_event )
 		{
-			View::BaseView<M>::notify( p_event );
+			App::Core::View::BaseView<M>::notify( p_event );
 			_widget->notify( p_event );
 		}
 
 	  protected:
 		BaseWidgetView( M * const p_model, const std::string & p_widgetName, QWidget * const p_parent = nullptr ) :
-			View::BaseView<M>( p_model )
+			App::Core::View::BaseView<M>( p_model )
 		{
 			_widget = VTX::UI::WidgetFactory::get().instantiateWidget<W>( p_parent, p_widgetName );
 			_widget->setModel( p_model );

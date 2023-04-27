@@ -1,7 +1,8 @@
 #ifndef __VTX_SCENE__
 #define __VTX_SCENE__
 
-#include "app/old_app/event/event_manager.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
 #include "app/old_app/generic/base_scene_item.hpp"
 #include "app/old_app/generic/base_updatable.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
@@ -119,7 +120,7 @@ namespace VTX::Object3D
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseSceneItem, T>::value>>
 		void _remove( T *							   p_item,
 					  std::vector<T *> &			   p_container,
-					  const VTX::Event::Global &	   p_removeEvent,
+					  const VTX::App::Event::Global &  p_removeEvent,
 					  const ModelCharacteristicsFlag & p_flag )
 		{
 			_itemOrder.erase( std::find( _itemOrder.begin(), _itemOrder.end(), p_item ) );
@@ -128,8 +129,8 @@ namespace VTX::Object3D
 			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::AABB ) ) != 0 )
 				_aabb.invalidate();
 
-			VTX_EVENT( new Event::VTXEventPtr<Generic::BaseSceneItem>( Event::Global::SCENE_ITEM_REMOVED, p_item ) );
-			VTX_EVENT( new Event::VTXEventPtr<T>( p_removeEvent, p_item ) );
+			VTX_EVENT<Generic::BaseSceneItem *>( VTX::App::Event::Global::SCENE_ITEM_REMOVED, p_item );
+			VTX_EVENT<T *>( p_removeEvent, p_item );
 
 			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::GRAPHIC ) ) != 0 )
 				_updateGraphicMask();
@@ -139,7 +140,7 @@ namespace VTX::Object3D
 				 typename = std::enable_if<std::is_base_of<Generic::BaseSceneItem, T1>::value>>
 		void _remove( T1 *							   p_item,
 					  std::map<T1 *, T2> &			   p_container,
-					  const VTX::Event::Global &	   p_removeEvent,
+					  const VTX::App::Event::Global &  p_removeEvent,
 					  const ModelCharacteristicsFlag & p_flag )
 		{
 			_itemOrder.erase( std::find( _itemOrder.begin(), _itemOrder.end(), p_item ) );
@@ -148,8 +149,8 @@ namespace VTX::Object3D
 			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::AABB ) ) != 0 )
 				_aabb.invalidate();
 
-			VTX_EVENT( new Event::VTXEventPtr<Generic::BaseSceneItem>( Event::Global::SCENE_ITEM_REMOVED, p_item ) );
-			VTX_EVENT( new Event::VTXEventPtr<T1>( p_removeEvent, p_item ) );
+			VTX_EVENT<Generic::BaseSceneItem *>( VTX::App::Event::Global::SCENE_ITEM_REMOVED, p_item );
+			VTX_EVENT<T1 *>( p_removeEvent, p_item );
 
 			if ( ( int( p_flag ) & int( ModelCharacteristicsFlag::GRAPHIC ) ) != 0 )
 				_updateGraphicMask();

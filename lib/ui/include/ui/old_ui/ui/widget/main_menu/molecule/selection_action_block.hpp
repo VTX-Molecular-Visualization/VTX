@@ -1,7 +1,7 @@
 #ifndef __VTX_UI_WIDGET_MENU_MOLECULE_SELECTION_ACTION_BLOCK__
 #define __VTX_UI_WIDGET_MENU_MOLECULE_SELECTION_ACTION_BLOCK__
 
-#include <app/old_app/event/event.hpp>
+#include <app/core/event/vtx_event.hpp>
 #include "ui/old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_submenu_widget.hpp"
@@ -17,7 +17,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	  public:
 		void localize() override;
 
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		SelectionActionBlock( QWidget * p_parent );

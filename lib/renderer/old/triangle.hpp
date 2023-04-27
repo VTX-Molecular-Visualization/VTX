@@ -1,9 +1,9 @@
 #ifndef __VTX_VIEW_3D_MESH_TRIANGLE__
 #define __VTX_VIEW_3D_MESH_TRIANGLE__
 
-#include "app/old_app/model/mesh_triangle.hpp"
-#include "app/old_app/model/solvent_excluded_surface.hpp"
-#include "app/old_app/view/base_view_3d.hpp"
+#include "app/core/view/base_view_3d.hpp"
+#include "app/model/mesh_triangle.hpp"
+#include "app/model/solvent_excluded_surface.hpp"
 
 namespace VTX
 {
@@ -11,7 +11,7 @@ namespace VTX
 	{
 		namespace D3
 		{
-			class Triangle : public BaseView3D<Model::MeshTriangle>
+			class Triangle : public App::Core::View::BaseView3D<Model::MeshTriangle>
 			{
 				VTX_VIEW
 
@@ -25,7 +25,7 @@ namespace VTX
 				explicit Triangle( Model::MeshTriangle * const p_model ) : BaseView3D( p_model ) {}
 			};
 
-			class TriangleSES : public BaseView3D<Model::SolventExcludedSurface>
+			class TriangleSES : public App::Core::View::BaseView3D<Model::SolventExcludedSurface>
 			{
 				VTX_VIEW
 

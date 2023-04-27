@@ -8,7 +8,7 @@
 #include <QString>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/selection/selection_enum.hpp>
 
 namespace VTX::UI::Widget::Selection
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::Selection
 		VTX_WIDGET
 
 	  public:
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 		void localize() override;
 
 	  protected:

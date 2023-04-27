@@ -1,13 +1,13 @@
 #include "app/old_app/generic/base_representable.hpp"
-#include "app/old_app/model/atom.hpp"
-#include "app/old_app/model/category.hpp"
-#include "app/old_app/model/chain.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/representation/representation_library.hpp"
-#include "app/old_app/model/residue.hpp"
-#include "app/old_app/model/secondary_structure.hpp"
-#include "app/old_app/model/solvent_excluded_surface.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/model/atom.hpp"
+#include "app/model/category.hpp"
+#include "app/model/chain.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/representation/representation_library.hpp"
+#include "app/model/residue.hpp"
+#include "app/model/secondary_structure.hpp"
+#include "app/model/solvent_excluded_surface.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -22,7 +22,7 @@ namespace VTX
 			_molecule = nullptr;
 		}
 
-		void BaseRepresentable::initBaseRepresentable( Model::BaseModel * const			  p_model,
+		void BaseRepresentable::initBaseRepresentable( App::Core::Model::BaseModel * const			  p_model,
 													   Generic::BaseRepresentable * const p_parent,
 													   Model::Molecule * const			  p_molecule )
 		{
@@ -80,7 +80,7 @@ namespace VTX
 			{
 				_delinkRepresentationToParent();
 
-				MVC::MvcManager::get().deleteModel( _representation );
+				VTX::MVC_MANAGER().deleteModel( _representation );
 				_representation = nullptr;
 
 				if ( p_notify )

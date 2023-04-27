@@ -3,7 +3,7 @@
 
 #include "base_widget_view.hpp"
 #include "ui/old_ui/ui/widget/sequence/molecule_sequence_widget.hpp"
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/molecule.hpp>
 
 namespace VTX
 {

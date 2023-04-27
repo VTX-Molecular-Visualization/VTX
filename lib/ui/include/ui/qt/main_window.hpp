@@ -56,7 +56,7 @@ namespace VTX::UI::QT
 		void updateRender() const;
 		void updateRenderSetting( const Renderer::RENDER_SETTING );
 
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 		Core::MainMenu::MainMenuBar &				getMainMenu() override { return *_mainMenuBar; }
 		QT::Widget::MainMenu::MenuTooltabWidget &	getMainMenuToolTab( const Core::ToolLayoutData & layoutData );

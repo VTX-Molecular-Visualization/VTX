@@ -1,9 +1,10 @@
-#ifndef __VTX_ACTION_VIEWPOINT__
-#define __VTX_ACTION_VIEWPOINT__
+#ifndef __VTX_APP_ACTION_VIEWPOINT__
+#define __VTX_APP_ACTION_VIEWPOINT__
 
+#include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
+#include "app/model/viewpoint.hpp"
 #include "app/old_app/math/transform.hpp"
-#include "app/old_app/model/viewpoint.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -12,9 +13,9 @@
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Action::Viewpoint
+namespace VTX::App::Action::Viewpoint
 {
-	// class AddAction : public Core::Action::BaseAction
+	// class AddAction : public App::Core::Action::BaseAction
 	//{
 	//   public:
 	//	explicit AddAction( Model::Viewpoint & p_viewpoint, const std::string & p_action ) :
@@ -29,7 +30,7 @@ namespace VTX::Action::Viewpoint
 	//	const std::string  _action;
 	//};
 
-	// class DeleteAction : public Core::Action::BaseAction
+	// class DeleteAction : public App::Core::Action::BaseAction
 	//{
 	//   public:
 	//	explicit DeleteAction( Model::Viewpoint &								p_viewpoint,
@@ -46,7 +47,7 @@ namespace VTX::Action::Viewpoint
 	//	const std::vector<std::string>::const_iterator _action;
 	//};
 
-	class ChangeDuration : public Core::Action::BaseAction
+	class ChangeDuration : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeDuration( Model::Viewpoint & p_viewpoint, const float p_duration ) :
@@ -61,7 +62,7 @@ namespace VTX::Action::Viewpoint
 		const float		   _duration;
 	};
 
-	class Relocate : public Core::Action::BaseAction
+	class Relocate : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Relocate( Model::Viewpoint & p_viewpoint ) :
@@ -103,7 +104,7 @@ namespace VTX::Action::Viewpoint
 		const Quatf						_rotation;
 	};
 
-	class Translate : public Core::Action::BaseAction
+	class Translate : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Translate( Model::Viewpoint & p_viewpoint, const Vec3f & p_translation ) :
@@ -124,7 +125,7 @@ namespace VTX::Action::Viewpoint
 		const Vec3f						_translation;
 	};
 
-	class Rotate : public Core::Action::BaseAction
+	class Rotate : public App::Core::Action::BaseAction
 	{
 	  private:
 		enum class RotationType
@@ -168,7 +169,7 @@ namespace VTX::Action::Viewpoint
 		const Vec3f							   _axis;
 	};
 
-	class Rename : public Core::Action::BaseAction
+	class Rename : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Rename( Model::Viewpoint & p_viewpoint, const std::string & p_name ) :
@@ -183,5 +184,5 @@ namespace VTX::Action::Viewpoint
 		const std::string & _name;
 	};
 
-} // namespace VTX::Action::Viewpoint
+} // namespace VTX::App::Action::Viewpoint
 #endif

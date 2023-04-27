@@ -9,8 +9,8 @@
 #include <QPoint>
 #include <QScrollArea>
 #include <QWidget>
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/core/event/vtx_event.hpp>
+#include <app/model/molecule.hpp>
 #include <vector>
 
 namespace VTX::Model
@@ -40,12 +40,12 @@ namespace VTX::UI::Widget::Sequence
 		};
 
 	  public:
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 		void refresh() override;
 		void localize() override;
 		void repaintSelection() const;
 
-		void notify( const VTX::Event::VTXEvent * const p_event ) override;
+		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
 
 	  protected:
 		MoleculeSequenceWidget( QWidget * p_parent );

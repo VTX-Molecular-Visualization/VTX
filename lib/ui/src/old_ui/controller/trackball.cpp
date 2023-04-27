@@ -1,6 +1,6 @@
 #include "ui/old_ui/controller/trackball.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>

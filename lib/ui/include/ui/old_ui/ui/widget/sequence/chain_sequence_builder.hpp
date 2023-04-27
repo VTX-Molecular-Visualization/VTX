@@ -3,7 +3,7 @@
 
 #include "dataset/sequence_dataset.hpp"
 #include <QString>
-#include <app/old_app/model/chain.hpp>
+#include <app/model/chain.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Sequence

@@ -11,10 +11,10 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QPixmap>
-#include <app/core/action/action_manager.hpp>
 #include <app/action/instantiated_representation.hpp>
 #include <app/action/molecule.hpp>
 #include <app/action/transformable.hpp>
+#include <app/event/global.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 
 namespace VTX::UI::Widget::Inspector
@@ -22,7 +22,7 @@ namespace VTX::UI::Widget::Inspector
 	MultipleMoleculeWidget::MultipleMoleculeWidget( QWidget * p_parent ) :
 		MultipleModelInspectorWidget( p_parent, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE )
 	{
-		_registerEvent( VTX::Event::Global::LATE_UPDATE );
+		_registerEvent( VTX::App::Event::Global::LATE_UPDATE );
 	};
 
 	MultipleMoleculeWidget::~MultipleMoleculeWidget() {}
@@ -287,7 +287,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new Action::Transformable::ApplyTransform( getTargets(), p_transform, p_mask ) );
+			VTX_ACTION( new App::Action::Transformable::ApplyTransform( getTargets(), p_transform, p_mask ) );
 		}
 	}
 
@@ -302,7 +302,7 @@ namespace VTX::UI::Widget::Inspector
 			for ( Model::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 
-			VTX_ACTION( new Action::Transformable::Translate( transformableSet, p_delta ) );
+			VTX_ACTION( new App::Action::Transformable::Translate( transformableSet, p_delta ) );
 		}
 	}
 	void MultipleMoleculeWidget::_onRotationDragged( const Vec3f & p_delta ) const
@@ -316,7 +316,7 @@ namespace VTX::UI::Widget::Inspector
 			for ( Model::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 
-			VTX_ACTION( new Action::Transformable::Rotate( transformableSet, p_delta ) );
+			VTX_ACTION( new App::Action::Transformable::Rotate( transformableSet, p_delta ) );
 		}
 	}
 	void MultipleMoleculeWidget::_onScaleDragged( const Vec3f & p_delta ) const
@@ -329,13 +329,13 @@ namespace VTX::UI::Widget::Inspector
 
 			for ( Model::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
-			VTX_ACTION( new Action::Transformable::Scale( transformableSet, p_delta ) );
+			VTX_ACTION( new App::Action::Transformable::Scale( transformableSet, p_delta ) );
 		}
 	}
 
 	void MultipleMoleculeWidget::_onRepresentationPresetChange( const int p_presetIndex ) const
 	{
-		VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
 	void MultipleMoleculeWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
@@ -343,7 +343,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new Action::Molecule::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
+			VTX_ACTION( new App::Action::Molecule::ApplyRepresentation( getTargets(), p_representation, p_flag ) );
 		}
 	}
 
@@ -357,11 +357,11 @@ namespace VTX::UI::Widget::Inspector
 			switch ( p_representation.getRibbonData().colorMode )
 			{
 			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-				VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
+				VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 				break;
 
 			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
-				VTX_ACTION( new Action::Molecule::ChangeColor( getTargets(), p_color ) );
+				VTX_ACTION( new App::Action::Molecule::ChangeColor( getTargets(), p_color ) );
 				break;
 
 			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
@@ -381,12 +381,12 @@ namespace VTX::UI::Widget::Inspector
 			{
 			case Generic::COLOR_MODE::ATOM_CUSTOM:
 			case Generic::COLOR_MODE::CUSTOM:
-				VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
+				VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 				break;
 
 			case Generic::COLOR_MODE::ATOM_PROTEIN:
 			case Generic::COLOR_MODE::PROTEIN:
-				VTX_ACTION( new Action::Molecule::ChangeColor( getTargets(), p_color ) );
+				VTX_ACTION( new App::Action::Molecule::ChangeColor( getTargets(), p_color ) );
 				break;
 
 			case Generic::COLOR_MODE::ATOM_CHAIN:
@@ -403,15 +403,15 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_onRevertRepresentation() const
 	{
-		VTX_ACTION( new Action::Molecule::RemoveRepresentation( getTargets() ) );
+		VTX_ACTION( new App::Action::Molecule::RemoveRepresentation( getTargets() ) );
 	}
 	void MultipleMoleculeWidget::_onApplyRepresentationToChildren() const
 	{
-		VTX_ACTION( new Action::Molecule::RemoveChildrenRepresentations( getTargets() ) );
+		VTX_ACTION( new App::Action::Molecule::RemoveChildrenRepresentations( getTargets() ) );
 	}
 	void MultipleMoleculeWidget::_onMoleculeColorChange( const Color::Rgba & p_color ) const
 	{
-		VTX_ACTION( new Action::Molecule::ChangeColor( getTargets(), p_color ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeColor( getTargets(), p_color ) );
 	}
 
 	void MultipleMoleculeWidget::_setInspectorToChain() const

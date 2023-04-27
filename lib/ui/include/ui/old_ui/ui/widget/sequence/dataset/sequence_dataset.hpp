@@ -4,7 +4,7 @@
 #include "ui/old_ui/style.hpp"
 #include <QPoint>
 #include <QString>
-#include <app/old_app/model/residue.hpp>
+#include <app/model/residue.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Sequence::Dataset

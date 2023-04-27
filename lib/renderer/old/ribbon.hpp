@@ -1,8 +1,8 @@
 #ifndef __VTX_VIEW_3D_RIBBON__
 #define __VTX_VIEW_3D_RIBBON__
 
-#include "app/old_app/model/secondary_structure.hpp"
-#include "app/old_app/view/base_view_3d.hpp"
+#include "app/core/view/base_view_3d.hpp"
+#include "app/model/secondary_structure.hpp"
 
 namespace VTX
 {
@@ -10,7 +10,7 @@ namespace VTX
 	{
 		namespace D3
 		{
-			class Ribbon : public BaseView3D<Model::SecondaryStructure>
+			class Ribbon : public App::Core::View::BaseView3D<Model::SecondaryStructure>
 			{
 				VTX_VIEW
 

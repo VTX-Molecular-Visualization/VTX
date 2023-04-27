@@ -1,7 +1,7 @@
 #include "tool/old_tool/ui/widget/inspector/multiple_measurement_dihedral_angle_inspector_widget.hpp"
 #include "tool/old_tool/model/measurement/distance.hpp"
 #include "tool/old_tool/util/measurement.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/atom.hpp>
 #include <app/action/label.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
@@ -201,7 +201,7 @@ namespace VTX::UI::Widget::Inspector
 		for ( Model::Measurement::DihedralAngle * const dihedralAngleModel : getTargets() )
 			labelTargets.emplace( dihedralAngleModel );
 
-		VTX_ACTION( new Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
+		VTX_ACTION( new App::Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
 	}
 
 	void MultipleMeasurmentDihedralAngleWidget::_setLabelColor( const Color::Rgba & p_color ) const
@@ -210,7 +210,7 @@ namespace VTX::UI::Widget::Inspector
 		for ( Model::Measurement::DihedralAngle * const targetDistance : getTargets() )
 			labelTargets.emplace( targetDistance );
 
-		VTX_ACTION( new Action::Label::ChangeColor( labelTargets, p_color ) );
+		VTX_ACTION( new App::Action::Label::ChangeColor( labelTargets, p_color ) );
 	}
 
 	void MultipleMeasurmentDihedralAngleWidget::_setAutoNameAction() const
@@ -219,7 +219,7 @@ namespace VTX::UI::Widget::Inspector
 		for ( Model::Measurement::DihedralAngle * const dihedralAngleModel : getTargets() )
 			labelTargets.emplace( dihedralAngleModel );
 
-		VTX_ACTION( new Action::Label::EnableAutoNaming( labelTargets, true ) );
+		VTX_ACTION( new App::Action::Label::EnableAutoNaming( labelTargets, true ) );
 	}
 
 	void MultipleMeasurmentDihedralAngleWidget::_resetFieldStates( const SectionFlag & p_flag )

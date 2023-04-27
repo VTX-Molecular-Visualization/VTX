@@ -1,8 +1,8 @@
 #include "tool/old_tool/view/ui/widget/measurement/distance_scene_view.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/label.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/model/selection.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <ui/old_ui/ui/contextual_menu.hpp>
 #include <ui/old_ui/ui/mime_type.hpp>
@@ -14,14 +14,14 @@
 namespace VTX::View::UI::Widget::Measurement
 {
 	DistanceSceneView::DistanceSceneView( Model::Measurement::Distance * const p_model, QWidget * const p_parent ) :
-		View::BaseView<Model::Measurement::Distance>( p_model ), SceneItemWidget( p_parent )
+		App::Core::View::BaseView<Model::Measurement::Distance>( p_model ), SceneItemWidget( p_parent )
 	{
 	}
 
-	void DistanceSceneView::notify( const Event::VTXEvent * const p_event )
+	void DistanceSceneView::notify( const App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DATA_CHANGE ) {}
-		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
+		if ( p_event->name ==App::Event::Model::DATA_CHANGE ) {}
+		else if ( p_event->name ==App::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			topLevelItem( 0 )->setText( 0, QString::fromStdString( _model->getDefaultName() ) );
 		}
@@ -43,12 +43,12 @@ namespace VTX::View::UI::Widget::Measurement
 
 			if ( newName != _model->getDefaultName() )
 			{
-				VTX_ACTION( new Action::Label::Rename( *_model, newName ) );
+				VTX_ACTION( new App::Action::Label::Rename( *_model, newName ) );
 			}
 			else
 			{
 				const bool enableState = Util::UI::getCheckState( p_item->checkState( 0 ) );
-				VTX_ACTION( new Action::Label::SetEnable( *_model, enableState ) );
+				VTX_ACTION( new App::Action::Label::SetEnable( *_model, enableState ) );
 			}
 		}
 	}

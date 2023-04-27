@@ -11,7 +11,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QWidget>
-#include <app/old_app/model/base_model.hpp>
+#include <app/core/model/base_model.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	  public:
 		~ModelListComponent();
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 		void localize() override;
 
@@ -33,17 +33,17 @@ namespace VTX::UI::Widget::CustomWidget
 		void setTitle( const QString & p_title ) const;
 		void setFoldState( const bool p_expanded ) const;
 
-		void addModel( Model::BaseModel * const p_model );
-		void insertModel( Model::BaseModel * const p_model, const int p_row );
-		void removeModel( Model::BaseModel * const p_model );
-		void swapModels( Model::BaseModel * const p_model1, Model::BaseModel * const p_model2 ) const;
+		void addModel( App::Core::Model::BaseModel * const p_model );
+		void insertModel( App::Core::Model::BaseModel * const p_model, const int p_row );
+		void removeModel( App::Core::Model::BaseModel * const p_model );
+		void swapModels( App::Core::Model::BaseModel * const p_model1, App::Core::Model::BaseModel * const p_model2 ) const;
 		void clearModels();
 
-		bool							hasModel( const Model::BaseModel * const p_model ) const;
+		bool							hasModel( const App::Core::Model::BaseModel * const p_model ) const;
 		int								getModelCount() const;
-		std::vector<Model::BaseModel *> getModels() const;
+		std::vector<App::Core::Model::BaseModel *> getModels() const;
 
-		template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
+		template<typename M, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>>
 		std::vector<M *> getModels() const
 		{
 			return _modelListWidget->getModels<M>();
@@ -61,7 +61,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void _setupSlots() override;
 
 		void _emitModelListChangeEvent();
-		void _onModelsDropped( std::vector<Model::BaseModel *> p_models );
+		void _onModelsDropped( std::vector<App::Core::Model::BaseModel *> p_models );
 
 	  private:
 		CustomWidget::FoldingButton *		 _foldButton	  = nullptr;

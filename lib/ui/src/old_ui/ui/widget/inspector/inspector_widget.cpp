@@ -11,15 +11,16 @@
 #include "ui/old_ui/ui/widget/inspector/multiple_viewpoint_inspector_widget.hpp"
 #include <QFrame>
 #include <QHBoxLayout>
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/chain.hpp>
-#include <app/old_app/model/label.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/representation/representation.hpp>
-#include <app/old_app/model/representation/representation_library.hpp>
-#include <app/old_app/model/residue.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/model/viewpoint.hpp>
+#include <app/event/global.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/chain.hpp>
+#include <app/model/label.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/representation/representation.hpp>
+#include <app/model/representation/representation_library.hpp>
+#include <app/model/residue.hpp>
+#include <app/model/selection.hpp>
+#include <app/model/viewpoint.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 // #include <tool/old_tool/model/measurement/angle.hpp>
@@ -32,62 +33,62 @@ namespace VTX::UI::Widget::Inspector
 {
 	InspectorWidget::InspectorWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
-		_registerEvent( VTX::Event::Global::MOLECULE_REMOVED );
-		_registerEvent( VTX::Event::Global::CHAIN_REMOVED );
-		_registerEvent( VTX::Event::Global::RESIDUE_REMOVED );
-		_registerEvent( VTX::Event::Global::ATOM_REMOVED );
-		_registerEvent( VTX::Event::Global::VIEWPOINT_REMOVED );
-		_registerEvent( VTX::Event::Global::LABEL_REMOVED );
+		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::App::Event::Global::CHAIN_REMOVED );
+		_registerEvent( VTX::App::Event::Global::RESIDUE_REMOVED );
+		_registerEvent( VTX::App::Event::Global::ATOM_REMOVED );
+		_registerEvent( VTX::App::Event::Global::VIEWPOINT_REMOVED );
+		_registerEvent( VTX::App::Event::Global::LABEL_REMOVED );
 	}
 
 	InspectorWidget::~InspectorWidget() {}
 
-	void InspectorWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void InspectorWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::SELECTION_CHANGE )
 		{
 			refresh();
 		}
-		else if ( p_event.name == VTX::Event::Global::MOLECULE_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Molecule> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Molecule> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
 
-			_removeTargetToInspector<MultipleMoleculeWidget>( INSPECTOR_TYPE::MOLECULE, castedEvent.ptr );
+			_removeTargetToInspector<MultipleMoleculeWidget>( INSPECTOR_TYPE::MOLECULE, castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::CHAIN_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::CHAIN_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Chain> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Chain> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Chain *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Chain *> &>( p_event );
 
-			_removeTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::CHAIN, castedEvent.ptr );
+			_removeTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::CHAIN, castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::RESIDUE_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::RESIDUE_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Residue> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Residue> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Residue *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Residue *> &>( p_event );
 
-			_removeTargetToInspector<MultipleResidueWidget>( INSPECTOR_TYPE::RESIDUE, castedEvent.ptr );
+			_removeTargetToInspector<MultipleResidueWidget>( INSPECTOR_TYPE::RESIDUE, castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::ATOM_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::ATOM_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Atom> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Atom> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Atom *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Atom *> &>( p_event );
 
-			_removeTargetToInspector<MultipleAtomWidget>( INSPECTOR_TYPE::ATOM, castedEvent.ptr );
+			_removeTargetToInspector<MultipleAtomWidget>( INSPECTOR_TYPE::ATOM, castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::VIEWPOINT_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::VIEWPOINT_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Model::Viewpoint> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Viewpoint> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> &>( p_event );
 
-			_removeTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, castedEvent.ptr );
+			_removeTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::LABEL_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
 		{
-			// const VTX::Event::VTXEventPtr<Model::Label> & castedEvent
-			//	= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Label> &>( p_event );
+			// const App::Core::Event::VTXEventArg<Model::Label*> & castedEvent
+			//	= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label*> &>( p_event );
 
 			// const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
 			// if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
@@ -215,13 +216,13 @@ namespace VTX::UI::Widget::Inspector
 
 			const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-			for ( const Model::ID & modelID : selectionModel.getItems() )
+			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( modelID );
+				const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
 
 				if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				{
-					Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+					Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
 					const Model::Selection::MapChainIds & moleculeSelection
 						= selectionModel.getMoleculesMap().at( modelID );
 
@@ -265,33 +266,34 @@ namespace VTX::UI::Widget::Inspector
 				}
 				else if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
 				{
-					Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
+					Model::Viewpoint & viewpoint
+						= VTX::MVC_MANAGER().getModel<Model::Viewpoint>( modelID );
 					_addTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, &viewpoint );
 				}
 				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
 				//{
 				//	Model::Measurement::Distance & distanceModel
-				//		= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+				//		= VTX::MVC_MANAGER().getModel<Model::Measurement::Distance>( modelID );
 				//	_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
 				//															 &distanceModel );
 				// }
 				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_ANGLE )
 				//{
 				//	Model::Measurement::Angle & angleModel
-				//		= MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
+				//		= VTX::MVC_MANAGER().getModel<Model::Measurement::Angle>( modelID );
 				//	_addTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, &angleModel );
 				// }
 				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
 				//{
 				//	Model::Measurement::DihedralAngle & dihedralAngleModel
-				//		= MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
+				//		= VTX::MVC_MANAGER().getModel<Model::Measurement::DihedralAngle>( modelID );
 				//	_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>(
 				//		INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE, &dihedralAngleModel );
 				// }
 				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
 				//{
 				//	Model::Measurement::Distance & distanceModel
-				//		= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+				//		= VTX::MVC_MANAGER().getModel<Model::Measurement::Distance>( modelID );
 				//	_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
 				//															 &distanceModel );
 				// }
@@ -335,12 +337,12 @@ namespace VTX::UI::Widget::Inspector
 		{
 		case INSPECTOR_TYPE::MOLECULE:
 		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
+			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				const ID::VTX_ID & modelTypeID = MVC::MvcManager::get().getModelTypeID( modelID );
+				const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
 				if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				{
-					Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+					Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
 					_addTargetToInspector<MultipleMoleculeWidget>( p_type, &molecule );
 				}
 			}
@@ -348,9 +350,9 @@ namespace VTX::UI::Widget::Inspector
 		break;
 		case INSPECTOR_TYPE::CHAIN:
 		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
+			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+				Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
 					= selectionModel.getMoleculesMap().at( modelID );
 
@@ -364,9 +366,9 @@ namespace VTX::UI::Widget::Inspector
 		break;
 		case INSPECTOR_TYPE::RESIDUE:
 		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
+			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+				Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
 					= selectionModel.getMoleculesMap().at( modelID );
 
@@ -385,9 +387,9 @@ namespace VTX::UI::Widget::Inspector
 		break;
 		case INSPECTOR_TYPE::ATOM:
 		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
+			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelID );
+				Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( modelID );
 				const Model::Selection::MapChainIds & moleculeSelection
 					= selectionModel.getMoleculesMap().at( modelID );
 
@@ -411,19 +413,19 @@ namespace VTX::UI::Widget::Inspector
 		break;
 		case INSPECTOR_TYPE::VIEWPOINT:
 		{
-			for ( const Model::ID & modelID : selectionModel.getItems() )
+			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				Model::Viewpoint & viewpoint = MVC::MvcManager::get().getModel<Model::Viewpoint>( modelID );
+				Model::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<Model::Viewpoint>( modelID );
 				_addTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, &viewpoint );
 			}
 		}
 		break;
 			// case INSPECTOR_TYPE::MEASURE_DISTANCE:
 			//{
-			//	for ( const Model::ID & modelID : selectionModel.getItems() )
+			//	for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			//	{
 			//		Model::Measurement::Distance & distanceModel
-			//			= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+			//			= VTX::MVC_MANAGER().getModel<Model::Measurement::Distance>( modelID );
 			//		_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
 			//																 &distanceModel );
 			//	}
@@ -431,20 +433,20 @@ namespace VTX::UI::Widget::Inspector
 			// break;
 			// case INSPECTOR_TYPE::MEASURE_ANGLE:
 			//{
-			//	for ( const Model::ID & modelID : selectionModel.getItems() )
+			//	for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			//	{
 			//		Model::Measurement::Angle & angleModel
-			//			= MVC::MvcManager::get().getModel<Model::Measurement::Angle>( modelID );
+			//			= VTX::MVC_MANAGER().getModel<Model::Measurement::Angle>( modelID );
 			//		_addTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, &angleModel );
 			//	}
 			// }
 			// break;
 			// case INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE:
 			//{
-			//	for ( const Model::ID & modelID : selectionModel.getItems() )
+			//	for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			//	{
 			//		Model::Measurement::DihedralAngle & dihedralAngleModel
-			//			= MVC::MvcManager::get().getModel<Model::Measurement::DihedralAngle>( modelID );
+			//			= VTX::MVC_MANAGER().getModel<Model::Measurement::DihedralAngle>( modelID );
 			//		_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>(
 			// INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE,
 			// &dihedralAngleModel
@@ -454,10 +456,10 @@ namespace VTX::UI::Widget::Inspector
 			// break;
 			// case INSPECTOR_TYPE::MEASURE_DISTANCE_TO_CYCLE:
 			//{
-			//	for ( const Model::ID & modelID : selectionModel.getItems() )
+			//	for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			//	{
 			//		Model::Measurement::Distance & distanceModel
-			//			= MVC::MvcManager::get().getModel<Model::Measurement::Distance>( modelID );
+			//			= VTX::MVC_MANAGER().getModel<Model::Measurement::Distance>( modelID );
 			//		_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
 			//																 &distanceModel );
 			//	}

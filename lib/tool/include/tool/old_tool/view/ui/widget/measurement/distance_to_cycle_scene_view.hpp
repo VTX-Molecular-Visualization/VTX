@@ -5,23 +5,23 @@
 #include <QMimeData>
 #include <QWidget>
 #include <app/old_app/id.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 #include <string>
 #include <ui/old_ui/ui/widget/scene/scene_item_widget.hpp>
 
 namespace VTX::View::UI::Widget::Measurement
 {
 	class DistanceToCycleSceneView :
-		public View::BaseView<Model::Measurement::DistanceToCycle>,
+		public App::Core::View::BaseView<Model::Measurement::DistanceToCycle>,
 		public VTX::UI::Widget::Scene::SceneItemWidget
 	{
 		VTX_MODEL
 
 	  public:
-		virtual const Model::ID &			   getModelID() const { return _model->getId(); };
+		virtual const App::Core::Model::ID &			   getModelID() const { return _model->getId(); };
 		virtual const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };
 
-		void notify( const Event::VTXEvent * const p_event ) override;
+		void notify( const App::Core::Event::VTXEvent * const p_event ) override;
 
 	  protected:
 		DistanceToCycleSceneView( Model::Measurement::DistanceToCycle * const p_model, QWidget * const p_parent );

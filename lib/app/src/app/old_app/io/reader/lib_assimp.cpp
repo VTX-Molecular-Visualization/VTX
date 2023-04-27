@@ -1,11 +1,11 @@
 #include "app/old_app/io/reader/lib_assimp.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/old_app/model/atom.hpp"
-#include "app/old_app/model/bond.hpp"
-#include "app/old_app/model/chain.hpp"
-#include "app/old_app/model/mesh_triangle.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/residue.hpp"
+#include "app/model/atom.hpp"
+#include "app/model/bond.hpp"
+#include "app/model/chain.hpp"
+#include "app/model/mesh_triangle.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/residue.hpp"
 #include <util/types.hpp>
 // #include <assimp/Importer.hpp>
 // #include <assimp/postprocess.h>

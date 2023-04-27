@@ -1,10 +1,10 @@
 #ifndef __VTX_UTIL_SECONDARY_STRUCTURE__
 #define __VTX_UTIL_SECONDARY_STRUCTURE__
 
-#include "app/old_app/model/chain.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/residue.hpp"
-#include "app/old_app/model/secondary_structure.hpp"
+#include "app/model/chain.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/residue.hpp"
+#include "app/model/secondary_structure.hpp"
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>

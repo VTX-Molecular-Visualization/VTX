@@ -12,10 +12,10 @@
 
 namespace VTX
 {
-	namespace Model
+	namespace App::Core::Model
 	{
 		class BaseModel;
-	}
+	} // namespace App::Core::Model
 
 	namespace UI::Widget::CustomWidget
 	{
@@ -36,11 +36,11 @@ namespace VTX
 
 			void addTypeFilter( const VTX::ID::VTX_ID & p_modelID );
 			bool matchFilter( const VTX::ID::VTX_ID & p_type ) const;
-			bool matchFilter( const Model::BaseModel & p_model ) const;
+			bool matchFilter( const App::Core::Model::BaseModel & p_model ) const;
 
 		  signals:
-			void onModelDropped( Model::BaseModel * const p_model );
-			void onModelsDropped( std::vector<Model::BaseModel *> p_models );
+			void onModelDropped( App::Core::Model::BaseModel * const p_model );
+			void onModelsDropped( std::vector<App::Core::Model::BaseModel *> p_models );
 
 		  protected:
 			ModelDropArea( QWidget * p_parent );

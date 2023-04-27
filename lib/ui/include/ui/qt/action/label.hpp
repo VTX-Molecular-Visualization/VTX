@@ -2,13 +2,13 @@
 #define __VTX_UI_QT_ACTION_LABEL__
 
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/label.hpp>
+#include <app/model/label.hpp>
 #include <unordered_set>
 #include <vector>
 
 namespace VTX::UI::QT::Action::Label
 {
-	class Orient : public VTX::Core::Action::BaseAction
+	class Orient : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Orient( Model::Label * const p_label ) : _labels( { p_label } ) {}

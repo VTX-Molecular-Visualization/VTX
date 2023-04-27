@@ -2,7 +2,7 @@
 #define __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT_CORE_STRUCT_RESIDUE_DATA_SET__
 
 #include <map>
-#include <app/old_app/model/residue.hpp>
+#include <app/model/residue.hpp>
 #include <string>
 #include <vector>
 

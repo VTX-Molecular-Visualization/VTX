@@ -1,28 +1,30 @@
-#ifndef __VTX_ACTION_RENDERER__
-#define __VTX_ACTION_RENDERER__
+#ifndef __VTX_APP_ACTION_RENDERER__
+#define __VTX_APP_ACTION_RENDERER__
 
+#include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
+#include "app/model/renderer/render_effect_preset.hpp"
+#include "app/model/renderer/render_effect_preset_library.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/old_app/model/renderer/render_effect_preset.hpp"
-#include "app/old_app/model/renderer/render_effect_preset_library.hpp"
+#include <unordered_set>
 
-namespace VTX::Action::Renderer
+namespace VTX::App::Action::Renderer
 {
-	class ReloadPresets : public Core::Action::BaseAction
+	class ReloadPresets : public App::Core::Action::BaseAction
 	{
 	  public:
 		ReloadPresets() {};
 		virtual void execute() override;
 	};
 
-	class ResetPresets : public Core::Action::BaseAction
+	class ResetPresets : public App::Core::Action::BaseAction
 	{
 	  public:
 		ResetPresets() {};
 		virtual void execute() override;
 	};
 
-	class SavePreset : public Core::Action::BaseAction
+	class SavePreset : public App::Core::Action::BaseAction
 	{
 	  public:
 		SavePreset( const Model::Renderer::RenderEffectPreset & p_preset )
@@ -53,7 +55,7 @@ namespace VTX::Action::Renderer
 		bool _async			 = true;
 	};
 
-	class ApplyRenderEffectPreset : public Core::Action::BaseAction
+	class ApplyRenderEffectPreset : public App::Core::Action::BaseAction
 	{
 	  public:
 		ApplyRenderEffectPreset( Model::Renderer::RenderEffectPreset & p_preset, const bool p_setAsDefault = false ) :
@@ -65,7 +67,7 @@ namespace VTX::Action::Renderer
 		const bool							  _setAsDefault;
 	};
 
-	class ChangeName : public Core::Action::BaseAction
+	class ChangeName : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeName( Model::Renderer::RenderEffectPreset & p_preset, const std::string & p_name ) :
@@ -78,7 +80,7 @@ namespace VTX::Action::Renderer
 		const std::string					  _name;
 	};
 
-	class ChangeQuickAccess : public Core::Action::BaseAction
+	class ChangeQuickAccess : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeQuickAccess( Model::Renderer::RenderEffectPreset & p_preset, const bool p_quickAccess ) :
@@ -91,7 +93,7 @@ namespace VTX::Action::Renderer
 		const bool							  _quickAccess;
 	};
 
-	class ChangeShading : public Core::Action::BaseAction
+	class ChangeShading : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeShading( Model::Renderer::RenderEffectPreset & p_preset, const VTX::Renderer::SHADING & p_shading ) :
@@ -104,7 +106,7 @@ namespace VTX::Action::Renderer
 		const VTX::Renderer::SHADING		  _shading;
 	};
 
-	class EnableSSAO : public Core::Action::BaseAction
+	class EnableSSAO : public App::Core::Action::BaseAction
 	{
 	  public:
 		EnableSSAO( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
@@ -116,7 +118,7 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPreset & _preset;
 		const bool							  _enable;
 	};
-	class ChangeSSAOIntensity : public Core::Action::BaseAction
+	class ChangeSSAOIntensity : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeSSAOIntensity( Model::Renderer::RenderEffectPreset & p_preset, const int p_intensity ) :
@@ -128,7 +130,7 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPreset & _preset;
 		const int							  _intensity;
 	};
-	class ChangeSSAOBlurSize : public Core::Action::BaseAction
+	class ChangeSSAOBlurSize : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeSSAOBlurSize( Model::Renderer::RenderEffectPreset & p_preset, const int p_blurSize ) :
@@ -141,7 +143,7 @@ namespace VTX::Action::Renderer
 		const int							  _blurSize;
 	};
 
-	class EnableOutline : public Core::Action::BaseAction
+	class EnableOutline : public App::Core::Action::BaseAction
 	{
 	  public:
 		EnableOutline( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
@@ -153,7 +155,7 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPreset & _preset;
 		const bool							  _enable;
 	};
-	class ChangeOutlineThickness : public Core::Action::BaseAction
+	class ChangeOutlineThickness : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeOutlineThickness( Model::Renderer::RenderEffectPreset & p_preset, const uint p_thickness ) :
@@ -165,7 +167,7 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPreset & _preset;
 		const uint							  _thickness;
 	};
-	class ChangeOutlineSensivity : public Core::Action::BaseAction
+	class ChangeOutlineSensivity : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeOutlineSensivity( Model::Renderer::RenderEffectPreset & p_preset, const float p_sensivity ) :
@@ -177,7 +179,7 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPreset & _preset;
 		const float							  _sensivity;
 	};
-	class ChangeOutlineColor : public Core::Action::BaseAction
+	class ChangeOutlineColor : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeOutlineColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
@@ -190,7 +192,7 @@ namespace VTX::Action::Renderer
 		const Color::Rgba					  _color;
 	};
 
-	class EnableFog : public Core::Action::BaseAction
+	class EnableFog : public App::Core::Action::BaseAction
 	{
 	  public:
 		EnableFog( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
@@ -202,7 +204,7 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPreset & _preset;
 		const bool							  _enable;
 	};
-	class ChangeFogNear : public Core::Action::BaseAction
+	class ChangeFogNear : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeFogNear( Model::Renderer::RenderEffectPreset & p_preset, const float p_near ) :
@@ -214,7 +216,7 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPreset & _preset;
 		const float							  _near;
 	};
-	class ChangeFogFar : public Core::Action::BaseAction
+	class ChangeFogFar : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeFogFar( Model::Renderer::RenderEffectPreset & p_preset, const float p_far ) :
@@ -226,7 +228,7 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPreset & _preset;
 		const float							  _far;
 	};
-	class ChangeFogDensity : public Core::Action::BaseAction
+	class ChangeFogDensity : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeFogDensity( Model::Renderer::RenderEffectPreset & p_preset, const float p_density ) :
@@ -238,7 +240,7 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPreset & _preset;
 		const float							  _density;
 	};
-	class ChangeFogColor : public Core::Action::BaseAction
+	class ChangeFogColor : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeFogColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
@@ -251,7 +253,7 @@ namespace VTX::Action::Renderer
 		const Color::Rgba					  _color;
 	};
 
-	class ChangeBackgroundColor : public Core::Action::BaseAction
+	class ChangeBackgroundColor : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeBackgroundColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
@@ -264,7 +266,7 @@ namespace VTX::Action::Renderer
 		const Color::Rgba					  _color;
 	};
 
-	class ChangeCameraLightColor : public Core::Action::BaseAction
+	class ChangeCameraLightColor : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeCameraLightColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
@@ -277,7 +279,7 @@ namespace VTX::Action::Renderer
 		const Color::Rgba					  _color;
 	};
 
-	class AddNewPresetInLibrary : public Core::Action::BaseAction
+	class AddNewPresetInLibrary : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit AddNewPresetInLibrary( const std::string & p_presetName ) : _presetName( p_presetName ) {}
@@ -287,7 +289,7 @@ namespace VTX::Action::Renderer
 		const std::string _presetName;
 	};
 
-	class CopyPresetInLibrary : public Core::Action::BaseAction
+	class CopyPresetInLibrary : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit CopyPresetInLibrary( const int p_presetIndex ) : _presetIndex( p_presetIndex ) {}
@@ -298,7 +300,7 @@ namespace VTX::Action::Renderer
 		const int _presetIndex;
 	};
 
-	class DeletePresetInLibrary : public Core::Action::BaseAction
+	class DeletePresetInLibrary : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit DeletePresetInLibrary( const int p_presetIndex ) : _presetIndex( p_presetIndex ) {}
@@ -308,5 +310,5 @@ namespace VTX::Action::Renderer
 	  private:
 		const int _presetIndex;
 	};
-} // namespace VTX::Action::Renderer
+} // namespace VTX::App::Action::Renderer
 #endif

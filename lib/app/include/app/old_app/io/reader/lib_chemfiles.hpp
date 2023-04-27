@@ -25,7 +25,7 @@ namespace VTX
 		class LibChemfiles : public BaseReader<Model::Molecule>, ChemfilesIO
 		{
 		  public:
-			LibChemfiles( const Worker::BaseThread * const p_loader );
+			LibChemfiles( const VTX::Core::Worker::BaseThread * const p_loader );
 
 			void readFile( const FilePath &, Model::Molecule & ) override;
 			void readBuffer( const std::string &, const FilePath &, Model::Molecule & ) override;

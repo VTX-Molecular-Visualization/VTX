@@ -7,12 +7,12 @@
 #include <QVBoxLayout>
 #include <QVariant>
 #include <app/old_app/generic/base_representable.hpp>
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/category.hpp>
-#include <app/old_app/model/chain.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/category.hpp>
+#include <app/model/chain.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 
@@ -43,11 +43,11 @@ namespace VTX::UI::Widget::Representation
 		_modelButton = nullptr;
 	}
 
-	void InstantiatedRepresentationListWidget::ModelFieldLine::setModel( Model::BaseModel * const p_model )
+	void InstantiatedRepresentationListWidget::ModelFieldLine::setModel( App::Core::Model::BaseModel * const p_model )
 	{
 		_instantiatedRepresentation = static_cast<Model::Representation::InstantiatedRepresentation *>( p_model );
 
-		const Model::BaseModel * const target = _instantiatedRepresentation->getTarget()->getLinkedModel();
+		const App::Core::Model::BaseModel * const target = _instantiatedRepresentation->getTarget()->getLinkedModel();
 
 		const QString representationName
 			= QString::fromStdString( _instantiatedRepresentation->getLinkedRepresentation()->getName() );
@@ -78,7 +78,7 @@ namespace VTX::UI::Widget::Representation
 
 	void InstantiatedRepresentationListWidget::ModelFieldLine::_onModelButtonClicked()
 	{
-		Model::BaseModel * const targetModel = _instantiatedRepresentation->getTarget()->getLinkedModel();
+		App::Core::Model::BaseModel * const targetModel = _instantiatedRepresentation->getTarget()->getLinkedModel();
 		const ID::VTX_ID &		 modelTypeID = targetModel->getTypeId();
 
 		if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
@@ -105,7 +105,7 @@ namespace VTX::UI::Widget::Representation
 
 	void InstantiatedRepresentationListWidget::ModelFieldLine::_callRemoveAction()
 	{
-		Model::BaseModel * targetModel		   = _instantiatedRepresentation->getTarget()->getLinkedModel();
+		App::Core::Model::BaseModel * targetModel		   = _instantiatedRepresentation->getTarget()->getLinkedModel();
 		const ID::VTX_ID & representableTypeID = targetModel->getTypeId();
 
 		if ( representableTypeID == ID::Model::MODEL_MOLECULE )

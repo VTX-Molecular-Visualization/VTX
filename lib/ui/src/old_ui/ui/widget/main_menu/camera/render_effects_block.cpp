@@ -5,21 +5,21 @@
 #include "ui/old_ui/ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/old_app/io/filesystem.hpp>
-#include <app/old_app/model/renderer/render_effect_preset.hpp>
-#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
-#include <app/old_app/worker/snapshoter.hpp>
+#include <app/model/renderer/render_effect_preset.hpp>
+#include <app/model/renderer/render_effect_preset_library.hpp>
+#include <app/worker/snapshoter.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
 	RenderEffectsBlock::RenderEffectsBlock( Model::Renderer::RenderEffectPresetLibrary * const _renderEffectLibrary,
 											QWidget *										   p_parent ) :
-		View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( _renderEffectLibrary ),
+		App::Core::View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( _renderEffectLibrary ),
 		MenuToolBlockWidget( p_parent ) {};
 
-	void RenderEffectsBlock::receiveEvent( const VTX::Event::VTXEvent & p_event ) {}
+	void RenderEffectsBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) {}
 
 	void RenderEffectsBlock::_setupUi( const QString & p_name )
 	{
@@ -32,11 +32,11 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	}
 	void RenderEffectsBlock::localize() { setTitle( "Render Effects" ); }
 
-	void RenderEffectsBlock::notify( const VTX::Event::VTXEvent * const p_event )
+	void RenderEffectsBlock::notify( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE
-			 || p_event->name == VTX::Event::Model::QUICK_ACCESS_CHANGE
-			 || p_event->name == VTX::Event::Model::DATA_CHANGE )
+		if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE
+			 || p_event->name == VTX::App::Event::Model::QUICK_ACCESS_CHANGE
+			 || p_event->name == VTX::App::Event::Model::DATA_CHANGE )
 		{
 			_refreshView();
 		}
@@ -93,7 +93,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	void RenderEffectsBlock::_takeSnapshotAction() const
 	{
 		VTX_ACTION(
-			new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+			new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
 										IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 										VTX_SETTING().getSnapshotResolution() ) );
 	}

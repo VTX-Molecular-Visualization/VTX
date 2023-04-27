@@ -12,21 +12,21 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 #include <map>
-#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/core/event/base_event_receiver_vtx.hpp>
 #include <app/old_app/generic/base_visible.hpp>
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/category.hpp>
-#include <app/old_app/model/category_enum.hpp>
-#include <app/old_app/model/chain.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/category.hpp>
+#include <app/model/category_enum.hpp>
+#include <app/model/chain.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/style.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View
 {
-	class MoleculeSceneView : public VTX::View::BaseView<Model::Molecule>, public SceneItemWidget
+	class MoleculeSceneView : public VTX::App::Core::View::BaseView<Model::Molecule>, public SceneItemWidget
 	{
 		NEW_ARCHI_VTX_WIDGET
 		VTX_VIEW
@@ -35,15 +35,15 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		inline static const Qt::ItemDataRole CATEGORY_ROLE = CHILD_FIRST_ROLE;
 
 	  public:
-		void notify( const VTX::Event::VTXEvent * const p_event ) override;
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
-		const Model::ID &					   getModelID() const override { return _model->getId(); };
+		const App::Core::Model::ID &					   getModelID() const override { return _model->getId(); };
 		virtual const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };
 
-		bool						   containsModel( const Model::BaseModel & p_model ) const override;
-		virtual std::vector<Model::ID> getAllItemsFrom( const Model::BaseModel & p_model ) const override;
-		virtual std::vector<Model::ID> getAllItemsTo( const Model::BaseModel & p_model ) const override;
+		bool						   containsModel( const App::Core::Model::BaseModel & p_model ) const override;
+		virtual std::vector<App::Core::Model::ID> getAllItemsFrom( const App::Core::Model::BaseModel & p_model ) const override;
+		virtual std::vector<App::Core::Model::ID> getAllItemsTo( const App::Core::Model::BaseModel & p_model ) const override;
 
 		QTreeWidgetItem * getLastVisibleItem() override;
 
@@ -59,15 +59,15 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		void _fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection ) override;
 		bool _itemCanBeRenamed( const QTreeWidgetItem * p_item ) override;
 
-		void _selectAllCategoriesFrom( std::vector<Model::ID> & p_selection, const Model::Category & p_itemFrom ) const;
-		void _selectAllChainsFrom( std::vector<Model::ID> & p_selection, const Model::Chain & p_itemFrom ) const;
-		void _selectAllResiduesFrom( std::vector<Model::ID> & p_selection, const Model::Residue & p_itemFrom ) const;
-		void _selectAllAtomsFrom( std::vector<Model::ID> & p_selection, const Model::Atom & p_itemFrom ) const;
+		void _selectAllCategoriesFrom( std::vector<App::Core::Model::ID> & p_selection, const Model::Category & p_itemFrom ) const;
+		void _selectAllChainsFrom( std::vector<App::Core::Model::ID> & p_selection, const Model::Chain & p_itemFrom ) const;
+		void _selectAllResiduesFrom( std::vector<App::Core::Model::ID> & p_selection, const Model::Residue & p_itemFrom ) const;
+		void _selectAllAtomsFrom( std::vector<App::Core::Model::ID> & p_selection, const Model::Atom & p_itemFrom ) const;
 
-		void _selectAllCategoriesTo( std::vector<Model::ID> & p_selection, const Model::Category & p_itemFrom ) const;
-		void _selectAllChainsTo( std::vector<Model::ID> & p_selection, const Model::Chain & p_itemFrom ) const;
-		void _selectAllResiduesTo( std::vector<Model::ID> & p_selection, const Model::Residue & p_itemFrom ) const;
-		void _selectAllAtomsTo( std::vector<Model::ID> & p_selection, const Model::Atom & p_itemFrom ) const;
+		void _selectAllCategoriesTo( std::vector<App::Core::Model::ID> & p_selection, const Model::Category & p_itemFrom ) const;
+		void _selectAllChainsTo( std::vector<App::Core::Model::ID> & p_selection, const Model::Chain & p_itemFrom ) const;
+		void _selectAllResiduesTo( std::vector<App::Core::Model::ID> & p_selection, const Model::Residue & p_itemFrom ) const;
+		void _selectAllAtomsTo( std::vector<App::Core::Model::ID> & p_selection, const Model::Atom & p_itemFrom ) const;
 
 	  private:
 		QMenu *													_contextMenu;

@@ -6,9 +6,10 @@
 #include "ui/qt/controller/measurement_picker.hpp"
 #include "ui/qt/controller/picker.hpp"
 #include "ui/qt/controller/trackball.hpp"
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/core/event/vtx_event.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
+#include <app/model/molecule.hpp>
 #include <app/old_app/object3d/camera.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
@@ -18,10 +19,10 @@ namespace VTX::UI::QT::State
 {
 	Visualization::Visualization()
 	{
-		_registerEvent( VTX::Event::Global::MOLECULE_ADDED );
-		_registerEvent( VTX::Event::Global::MOLECULE_REMOVED );
-		_registerEvent( VTX::Event::Global::MESH_ADDED );
-		_registerEvent( VTX::Event::Global::MESH_REMOVED );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_ADDED );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::App::Event::Global::MESH_ADDED );
+		_registerEvent( VTX::App::Event::Global::MESH_REMOVED );
 
 		// Create controller.
 		_controllers.emplace( ID::Controller::MAIN_WINDOW, new QT::Controller::MainWindowController() );
@@ -80,7 +81,7 @@ namespace VTX::UI::QT::State
 		}
 		_controllers[ _cameraController ]->setActive( true );
 
-		VTX_EVENT( new VTX::Event::VTXEventPtr( VTX::Event::Global::CONTROLLER_CHANGE, &_cameraController ) );
+		VTX_EVENT<const ID::VTX_ID &>( VTX::App::Event::Global::CONTROLLER_CHANGE, _cameraController );
 	}
 	void Visualization::setCameraController( const ID::VTX_ID & p_controllerId )
 	{
@@ -97,7 +98,7 @@ namespace VTX::UI::QT::State
 		_cameraController = p_controllerId;
 		_controllers[ _cameraController ]->setActive( true );
 
-		VTX_EVENT( new VTX::Event::VTXEventPtr( VTX::Event::Global::CONTROLLER_CHANGE, &_cameraController ) );
+		VTX_EVENT<const ID::VTX_ID &>( VTX::App::Event::Global::CONTROLLER_CHANGE, _cameraController );
 	}
 
 	void Visualization::resetCameraController()
@@ -156,24 +157,24 @@ namespace VTX::UI::QT::State
 		_pickerController = p_pickerId;
 		_controllers[ _pickerController ]->setActive( true );
 
-		VTX_EVENT( new VTX::Event::VTXEvent( VTX::Event::Global::PICKER_MODE_CHANGE ) );
+		VTX_EVENT( VTX::App::Event::Global::PICKER_MODE_CHANGE );
 	}
 
-	void Visualization::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void Visualization::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
 		// Recenter when add the first element in scene
-		if ( p_event.name == VTX::Event::MOLECULE_ADDED )
+		if ( p_event.name == VTX::App::Event::Global::MOLECULE_ADDED )
 		{
 			if ( VTXApp::get().getScene().getMolecules().size() == 1
 				 && VTXApp::get().getScene().getMeshes().size() == 0 )
 			{
-				const VTX::Event::VTXEventPtr<Model::Molecule> & castedEvent
-					= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Molecule> &>( p_event );
+				const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
+					= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
 
-				orientCameraController( castedEvent.ptr->getAABB() );
+				orientCameraController( castedEvent.get()->getAABB() );
 			}
 		}
-		else if ( p_event.name == VTX::Event::MESH_ADDED )
+		else if ( p_event.name == VTX::App::Event::Global::MESH_ADDED )
 		{
 			if ( VTXApp::get().getScene().getMolecules().size() == 0
 				 && VTXApp::get().getScene().getMeshes().size() == 1 )

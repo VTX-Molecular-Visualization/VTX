@@ -1,29 +1,30 @@
-#ifndef __VTX_ACTION_SELECTION__
-#define __VTX_ACTION_SELECTION__
+#ifndef __VTX_APP_ACTION_SELECTION__
+#define __VTX_APP_ACTION_SELECTION__
 
+#include "app/action.hpp"
 #include "app/action/visible.hpp"
 #include "app/core/action/base_action.hpp"
+#include "app/model/atom.hpp"
+#include "app/model/category.hpp"
+#include "app/model/chain.hpp"
+#include "app/model/generated_molecule.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/residue.hpp"
+#include "app/model/selection.hpp"
+#include "app/model/viewpoint.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/model/atom.hpp"
-#include "app/old_app/model/category.hpp"
-#include "app/old_app/model/chain.hpp"
-#include "app/old_app/model/generated_molecule.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/residue.hpp"
-#include "app/old_app/model/selection.hpp"
-#include "app/old_app/model/viewpoint.hpp"
 #include <vector>
 
-namespace VTX::Action::Selection
+namespace VTX::App::Action::Selection
 {
-	class SelectAll : public Core::Action::BaseAction
+	class SelectAll : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectAll() {}
 
 		virtual void execute() override;
 	};
-	class ClearSelection : public Core::Action::BaseAction
+	class ClearSelection : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ClearSelection( Model::Selection & p_selection ) : _selection( p_selection ) {}
@@ -34,11 +35,11 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 
-	class SelectModels : public Core::Action::BaseAction
+	class SelectModels : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectModels( Model::Selection &			  p_selection,
-							   const std::vector<Model::ID> & p_models,
+							   const std::vector<App::Core::Model::ID> & p_models,
 							   const bool					  p_appendToSelection = false ) :
 			_selection( p_selection ),
 			_appendToSelection( p_appendToSelection )
@@ -52,13 +53,13 @@ namespace VTX::Action::Selection
 
 	  private:
 		Model::Selection &	   _selection;
-		std::vector<Model::ID> _models = std::vector<Model::ID>();
+		std::vector<App::Core::Model::ID> _models = std::vector<App::Core::Model::ID>();
 		const bool			   _appendToSelection;
 	};
-	class UnselectModels : public Core::Action::BaseAction
+	class UnselectModels : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit UnselectModels( Model::Selection & p_selection, const std::vector<Model::ID> & p_models ) :
+		explicit UnselectModels( Model::Selection & p_selection, const std::vector<App::Core::Model::ID> & p_models ) :
 			_selection( p_selection )
 		{
 			_models.resize( p_models.size() );
@@ -70,10 +71,10 @@ namespace VTX::Action::Selection
 
 	  private:
 		Model::Selection &	   _selection;
-		std::vector<Model::ID> _models = std::vector<Model::ID>();
+		std::vector<App::Core::Model::ID> _models = std::vector<App::Core::Model::ID>();
 	};
 
-	class SelectMolecule : public Core::Action::BaseAction
+	class SelectMolecule : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectMolecule( Model::Selection & p_selection,
@@ -102,7 +103,7 @@ namespace VTX::Action::Selection
 		std::vector<Model::Molecule *> _molecules = std::vector<Model::Molecule *>();
 		const bool					   _appendToSelection;
 	};
-	class SelectCategory : public Core::Action::BaseAction
+	class SelectCategory : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectCategory( Model::Selection & p_selection,
@@ -128,7 +129,7 @@ namespace VTX::Action::Selection
 		std::vector<Model::Category *> _categories;
 		const bool					   _appendToSelection;
 	};
-	class SelectChain : public Core::Action::BaseAction
+	class SelectChain : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectChain( Model::Selection & p_selection,
@@ -154,7 +155,7 @@ namespace VTX::Action::Selection
 		std::vector<Model::Chain *> _chains;
 		const bool					_appendToSelection;
 	};
-	class SelectResidue : public Core::Action::BaseAction
+	class SelectResidue : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectResidue( Model::Selection & p_selection,
@@ -183,7 +184,7 @@ namespace VTX::Action::Selection
 		std::vector<Model::Residue *> _residues = std::vector<Model::Residue *>();
 		const bool					  _appendToSelection;
 	};
-	class SelectAtom : public Core::Action::BaseAction
+	class SelectAtom : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectAtom( Model::Selection & p_selection,
@@ -211,7 +212,7 @@ namespace VTX::Action::Selection
 		const bool				   _appendToSelection;
 	};
 
-	class UnselectMolecule : public Core::Action::BaseAction
+	class UnselectMolecule : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectMolecule( Model::Selection & p_selection,
@@ -240,7 +241,7 @@ namespace VTX::Action::Selection
 		std::vector<Model::Molecule *> _molecules = std::vector<Model::Molecule *>();
 		const bool					   _check;
 	};
-	class UnselectCategory : public Core::Action::BaseAction
+	class UnselectCategory : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectCategory( Model::Selection & p_selection,
@@ -269,7 +270,7 @@ namespace VTX::Action::Selection
 		std::vector<Model::Category *> _categories = std::vector<Model::Category *>();
 		const bool					   _check;
 	};
-	class UnselectChain : public Core::Action::BaseAction
+	class UnselectChain : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectChain( Model::Selection & p_selection, Model::Chain & p_chain, bool p_check = false ) :
@@ -295,7 +296,7 @@ namespace VTX::Action::Selection
 		std::vector<Model::Chain *> _chains = std::vector<Model::Chain *>();
 		const bool					_check;
 	};
-	class UnselectResidue : public Core::Action::BaseAction
+	class UnselectResidue : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectResidue( Model::Selection & p_selection, Model::Residue & p_residue, bool p_check = false ) :
@@ -321,7 +322,7 @@ namespace VTX::Action::Selection
 		std::vector<Model::Residue *> _residues = std::vector<Model::Residue *>();
 		const bool					  _check;
 	};
-	class UnselectAtom : public Core::Action::BaseAction
+	class UnselectAtom : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectAtom( Model::Selection & p_selection, Model::Atom & p_atom, bool p_check = false ) :
@@ -344,7 +345,7 @@ namespace VTX::Action::Selection
 		const bool				   _check;
 	};
 
-	class SelectViewpoint : public Core::Action::BaseAction
+	class SelectViewpoint : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SelectViewpoint( Model::Selection & p_selection,
@@ -373,7 +374,7 @@ namespace VTX::Action::Selection
 		std::vector<Model::Viewpoint *> _viewpoints = std::vector<Model::Viewpoint *>();
 		const bool						_appendToSelection;
 	};
-	class UnselectViewpoint : public Core::Action::BaseAction
+	class UnselectViewpoint : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit UnselectViewpoint( Model::Selection & p_selection,
@@ -432,7 +433,7 @@ namespace VTX::Action::Selection
 		const ID::VTX_ID		 _objRefTypeId;
 	};
 
-	class ToggleWatersVisibility : public Core::Action::BaseAction
+	class ToggleWatersVisibility : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleWatersVisibility( Model::Selection & p_selection ) : _selection( p_selection ) {}
@@ -443,7 +444,7 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 
-	class ToggleSolventVisibility : public Core::Action::BaseAction
+	class ToggleSolventVisibility : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleSolventVisibility( Model::Selection & p_selection ) : _selection( p_selection ) {}
@@ -454,7 +455,7 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 
-	class ToggleHydrogensVisibility : public Core::Action::BaseAction
+	class ToggleHydrogensVisibility : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleHydrogensVisibility( Model::Selection & p_selection ) : _selection( p_selection ) {}
@@ -465,7 +466,7 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 
-	class ToggleIonsVisibility : public Core::Action::BaseAction
+	class ToggleIonsVisibility : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleIonsVisibility( Model::Selection & p_selection ) : _selection( p_selection ) {}
@@ -476,7 +477,7 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 
-	class ToggleTrajectoryPlaying : public Core::Action::BaseAction
+	class ToggleTrajectoryPlaying : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleTrajectoryPlaying( Model::Selection & p_selection ) : _selection( p_selection ) {}
@@ -487,7 +488,7 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 
-	class ChangeRepresentationPreset : public Core::Action::BaseAction
+	class ChangeRepresentationPreset : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRepresentationPreset( Model::Selection & p_selection, const int p_indexPreset ) :
@@ -503,7 +504,7 @@ namespace VTX::Action::Selection
 		const int		   _indexPreset;
 	};
 
-	class Copy : public Core::Action::BaseAction
+	class Copy : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Copy( const Model::Selection & p_source,
@@ -523,7 +524,7 @@ namespace VTX::Action::Selection
 		const int				 _frame;
 	};
 
-	class Extract : public Core::Action::BaseAction
+	class Extract : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Extract( Model::Selection & p_source ) : _selection( p_source )
@@ -535,7 +536,7 @@ namespace VTX::Action::Selection
 	  private:
 		Model::Selection & _selection;
 	};
-	class Delete : public Core::Action::BaseAction
+	class Delete : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Delete( Model::Selection & p_selection ) : _selection( p_selection )
@@ -549,5 +550,5 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 	////////////////////////////////////////////////////////////////////////////////////////
-} // namespace VTX::Action::Selection
+} // namespace VTX::App::Action::Selection
 #endif

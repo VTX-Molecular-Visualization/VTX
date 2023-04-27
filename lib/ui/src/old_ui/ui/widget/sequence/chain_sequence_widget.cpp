@@ -3,8 +3,8 @@
 #include <QFont>
 #include <QString>
 #include <QVBoxLayout>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
 #include <string>
 #include <util/logger.hpp>
 

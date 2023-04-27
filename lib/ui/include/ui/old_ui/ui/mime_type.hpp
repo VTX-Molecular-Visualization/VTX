@@ -4,8 +4,8 @@
 #include <QByteArray>
 #include <QMimeData>
 #include <QString>
+#include <app/core/model/base_model.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/base_model.hpp>
 
 namespace VTX::UI
 {
@@ -32,17 +32,17 @@ namespace VTX::UI
 		class ModelData
 		{
 		  public:
-			ModelData( const Model::BaseModel & p_model, const DragSource & p_dragSource );
+			ModelData( const App::Core::Model::BaseModel & p_model, const DragSource & p_dragSource );
 			ModelData( const QByteArray & p_data );
 
 			void fillByteArray( QByteArray & p_byteArray ) const;
 
-			const Model::ID &  getModelID() const { return _modelID; };
+			const App::Core::Model::ID &  getModelID() const { return _modelID; };
 			const ID::VTX_ID & getTypeID() const { return _typeID; };
 			const DragSource & getDragSource() const { return _dragSource; };
 
 		  private:
-			Model::ID  _modelID;
+			App::Core::Model::ID  _modelID;
 			ID::VTX_ID _typeID;
 			DragSource _dragSource;
 		};
@@ -52,7 +52,7 @@ namespace VTX::UI
 			return applicationMimeTypes[ int( _mimeTypeID ) ];
 		}
 
-		static QMimeData * const generateMimeDataFromModel( const Model::BaseModel & p_model,
+		static QMimeData * const generateMimeDataFromModel( const App::Core::Model::BaseModel & p_model,
 															const DragSource &		 p_dragSource );
 
 		static ApplicationMimeType getMimeTypeEnum( const QMimeData * const p_mimeData );

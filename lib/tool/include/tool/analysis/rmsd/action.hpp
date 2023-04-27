@@ -2,14 +2,15 @@
 #define __VTX_TOOL_ANALYSIS_RMSD_ACTION__
 
 #include "core/rmsd.hpp"
+#include <app/action.hpp>
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/selection.hpp>
 #include <vector>
 
 namespace VTX::Tool::Analysis::RMSD::Action
 {
-	class ComputeRMSD : public VTX::Core::Action::BaseAction
+	class ComputeRMSD : public VTX::App::Core::Action::BaseAction
 	{
 	  private:
 		enum class MODE : int

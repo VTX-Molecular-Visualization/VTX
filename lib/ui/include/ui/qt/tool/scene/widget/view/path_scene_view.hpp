@@ -10,31 +10,31 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 #include <map>
-#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/core/event/base_event_receiver_vtx.hpp>
 #include <app/old_app/generic/base_visible.hpp>
-#include <app/old_app/model/path.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/model/viewpoint.hpp>
+#include <app/model/path.hpp>
+#include <app/model/selection.hpp>
+#include <app/model/viewpoint.hpp>
 #include "ui/qt/style.hpp"
-#include <app/old_app/view/base_view.hpp>
+#include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View
 {
-	class PathSceneView : public VTX::View::BaseView<Model::Path>, public SceneItemWidget
+	class PathSceneView : public VTX::App::Core::View::BaseView<Model::Path>, public SceneItemWidget
 	{
 		NEW_ARCHI_VTX_WIDGET
 		VTX_VIEW
 
 	  public:
 		void localize() override;
-		void notify( const VTX::Event::VTXEvent * const p_event ) override;
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
-		const Model::ID &			   getModelID() const override { return _model->getId(); };
+		const App::Core::Model::ID &			   getModelID() const override { return _model->getId(); };
 		const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };
-		virtual bool				   containsModel( const Model::BaseModel & p_model ) const override;
-		virtual std::vector<Model::ID> getAllItemsFrom( const Model::BaseModel & p_model ) const override;
-		virtual std::vector<Model::ID> getAllItemsTo( const Model::BaseModel & p_model ) const override;
+		virtual bool				   containsModel( const App::Core::Model::BaseModel & p_model ) const override;
+		virtual std::vector<App::Core::Model::ID> getAllItemsFrom( const App::Core::Model::BaseModel & p_model ) const override;
+		virtual std::vector<App::Core::Model::ID> getAllItemsTo( const App::Core::Model::BaseModel & p_model ) const override;
 
 		QTreeWidgetItem * getLastVisibleItem() override;
 

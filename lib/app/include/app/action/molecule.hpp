@@ -1,18 +1,19 @@
-#ifndef __VTX_ACTION_MOLECULE__
-#define __VTX_ACTION_MOLECULE__
+#ifndef __VTX_APP_ACTION_MOLECULE__
+#define __VTX_APP_ACTION_MOLECULE__
 
+#include "app/action.hpp"
 #include "app/action/visible.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/core/action/base_action_undonable.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/representation/instantiated_representation.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/representation/instantiated_representation.hpp"
 #include "app/old_app/trajectory/trajectory_enum.hpp"
 #include <string>
 #include <unordered_set>
 
-namespace VTX::Action::Molecule
+namespace VTX::App::Action::Molecule
 {
-	class RefreshSolventExcludedSurface : public Core::Action::BaseAction
+	class RefreshSolventExcludedSurface : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit RefreshSolventExcludedSurface( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
@@ -23,7 +24,7 @@ namespace VTX::Action::Molecule
 		Model::Molecule & _molecule;
 	};
 
-	class ChangeColor : public Core::Action::BaseAction
+	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgba & p_color ) :
@@ -56,7 +57,7 @@ namespace VTX::Action::Molecule
 		virtual void execute() override;
 	};
 
-	class ChangeRepresentationPreset : public Core::Action::BaseAction
+	class ChangeRepresentationPreset : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRepresentationPreset( Model::Molecule & p_molecule, const int p_indexPreset ) :
@@ -78,7 +79,7 @@ namespace VTX::Action::Molecule
 		const std::unordered_set<Model::Molecule *> _molecules;
 		const int									_indexPreset;
 	};
-	class RemoveRepresentation : public Core::Action::BaseAction
+	class RemoveRepresentation : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit RemoveRepresentation( Model::Molecule & p_molecule ) : _molecules { &p_molecule }
@@ -96,7 +97,7 @@ namespace VTX::Action::Molecule
 	  private:
 		const std::unordered_set<Model::Molecule *> _molecules;
 	};
-	class RemoveChildrenRepresentations : public Core::Action::BaseAction
+	class RemoveChildrenRepresentations : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit RemoveChildrenRepresentations( Model::Molecule & p_molecule ) : _molecules { &p_molecule }
@@ -115,7 +116,7 @@ namespace VTX::Action::Molecule
 		const std::unordered_set<Model::Molecule *> _molecules;
 	};
 
-	class ChangeFPS : public Core::Action::BaseAction
+	class ChangeFPS : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeFPS( Model::Molecule & p_molecule, const int p_fps ) : _fps( p_fps ), _molecules { &p_molecule }
@@ -135,7 +136,7 @@ namespace VTX::Action::Molecule
 		const int									_fps;
 	};
 
-	class ChangeFrame : public Core::Action::BaseAction
+	class ChangeFrame : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeFrame( Model::Molecule & p_molecule, const int p_frame, const bool p_pause = false ) :
@@ -160,7 +161,7 @@ namespace VTX::Action::Molecule
 		const int									_pause;
 	};
 
-	class PreviousFrame : public Core::Action::BaseAction
+	class PreviousFrame : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit PreviousFrame( Model::Molecule & p_molecule, const bool p_pause = false ) :
@@ -181,7 +182,7 @@ namespace VTX::Action::Molecule
 		const bool									_pause;
 	};
 
-	class NextFrame : public Core::Action::BaseAction
+	class NextFrame : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit NextFrame( Model::Molecule & p_molecule, const bool p_pause = false ) :
@@ -202,7 +203,7 @@ namespace VTX::Action::Molecule
 		const bool									_pause;
 	};
 
-	class ChangeIsPlaying : public Core::Action::BaseAction
+	class ChangeIsPlaying : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeIsPlaying( Model::Molecule & p_molecule, const bool p_isPlaying ) :
@@ -222,7 +223,7 @@ namespace VTX::Action::Molecule
 		const std::unordered_set<Model::Molecule *> _molecules;
 		const bool									_isPlaying;
 	};
-	class ChangePlayMode : public Core::Action::BaseAction
+	class ChangePlayMode : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangePlayMode( Model::Molecule & p_molecule, const Trajectory::PlayMode & p_playMode ) :
@@ -245,7 +246,7 @@ namespace VTX::Action::Molecule
 		const Trajectory::PlayMode					_playMode;
 	};
 
-	class ChangeShowIon : public Core::Action::BaseAction
+	class ChangeShowIon : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeShowIon( Model::Molecule & p_molecule, const bool p_showIon ) :
@@ -264,7 +265,7 @@ namespace VTX::Action::Molecule
 		const bool									_showIon;
 	};
 
-	class ChangeShowSolvent : public Core::Action::BaseAction
+	class ChangeShowSolvent : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeShowSolvent( Model::Molecule & p_molecule, const bool p_showSolvent ) :
@@ -283,7 +284,7 @@ namespace VTX::Action::Molecule
 		const bool									_showSolvent;
 	};
 
-	class ChangeShowWater : public Core::Action::BaseAction
+	class ChangeShowWater : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeShowWater( Model::Molecule & p_molecule, const bool p_showWater ) :
@@ -301,7 +302,7 @@ namespace VTX::Action::Molecule
 		const std::unordered_set<Model::Molecule *> _molecules;
 		const bool									_showWater;
 	};
-	class ChangeShowHydrogen : public Core::Action::BaseAction
+	class ChangeShowHydrogen : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeShowHydrogen( Model::Molecule & p_molecule, const bool p_showHydrogen ) :
@@ -320,7 +321,7 @@ namespace VTX::Action::Molecule
 		const bool									_showHydrogen;
 	};
 
-	class Delete : public Core::Action::BaseAction
+	class Delete : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Delete( Model::Molecule & p_molecule ) : _molecule( p_molecule )
@@ -334,7 +335,7 @@ namespace VTX::Action::Molecule
 		Model::Molecule & _molecule;
 	};
 
-	class Copy : public Core::Action::BaseAction
+	class Copy : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Copy( const Model::Molecule & p_target ) : _target( p_target )
@@ -347,7 +348,7 @@ namespace VTX::Action::Molecule
 		const Model::Molecule & _target;
 	};
 
-	class Rename : public Core::Action::BaseActionUndonable
+	class Rename : public App::Core::Action::BaseActionUndonable
 	{
 	  public:
 		explicit Rename( Model::Molecule & p_target, const std::string & p_newName ) :
@@ -366,7 +367,7 @@ namespace VTX::Action::Molecule
 		const std::string _newName;
 	};
 
-	class ApplyRepresentation : public Core::Action::BaseAction
+	class ApplyRepresentation : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ApplyRepresentation( const std::unordered_set<Model::Molecule *> &				p_molecules,
@@ -386,5 +387,5 @@ namespace VTX::Action::Molecule
 		const Model::Representation::MEMBER_FLAG				  _flag;
 	};
 
-} // namespace VTX::Action::Molecule
+} // namespace VTX::App::Action::Molecule
 #endif

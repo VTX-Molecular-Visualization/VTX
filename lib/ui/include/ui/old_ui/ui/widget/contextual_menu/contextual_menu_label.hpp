@@ -4,7 +4,7 @@
 #include "contextual_menu_template.hpp"
 #include "ui/old_ui/ui/widget/custom_widget/set_representation_menu.hpp"
 #include <QMenu>
-#include <app/old_app/model/label.hpp>
+#include <app/model/label.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {

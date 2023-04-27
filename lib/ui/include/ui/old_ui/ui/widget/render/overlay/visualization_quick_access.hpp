@@ -91,7 +91,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		~VisualizationQuickAccess() = default;
 		void localize() override;
 
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 	  protected:
 		VisualizationQuickAccess( QWidget * p_parent );

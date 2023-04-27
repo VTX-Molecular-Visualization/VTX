@@ -6,8 +6,8 @@
 #include "ui/old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include <QHideEvent>
 #include <QMenu>
-#include <app/old_app/model/base_model.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/core/model/base_model.hpp>
+#include <app/model/selection.hpp>
 #include <map>
 #include <unordered_set>
 #include <vector>
@@ -205,7 +205,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		~ContextualMenuSelection();
 		void localize() override;
 
-		void setFocusedTarget( Model::BaseModel * const p_focusedTarget );
+		void setFocusedTarget( App::Core::Model::BaseModel * const p_focusedTarget );
 
 	  protected:
 		ContextualMenuSelection( QWidget * p_parent = nullptr );
@@ -257,7 +257,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		std::map<ID::VTX_ID, int>		_submenusMap = std::map<ID::VTX_ID, int>();
 		std::vector<SelectionSubMenu *> _submenus	 = std::vector<SelectionSubMenu *>();
 
-		Model::BaseModel * _focusedTarget = nullptr;
+		App::Core::Model::BaseModel * _focusedTarget = nullptr;
 
 		TypeMask _getTypeMaskFromTypeSet( const std::set<ID::VTX_ID> & p_typeIds );
 		void	 _updateCurrentRepresentationFeedback( QAction & _action ) const;

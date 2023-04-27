@@ -1,7 +1,7 @@
 #include "ui/core/base_ui_application.hpp"
 #include "ui/core/io/vtx_layout_reader.hpp"
 #include "ui/core/layout_builder.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/vtx_app.hpp>
@@ -31,8 +31,8 @@ namespace VTX::UI::Core
 		if ( p_args.size() == 0 )
 		{
 			// VTX_ACTION(
-			//	 new Action::Main::Open( Util::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
-			VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
+			//	 new App::Action::Main::Open( Util::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
+			VTX_ACTION( new App::Action::Main::OpenApi( "1aga" ) );
 		}
 #endif
 	}

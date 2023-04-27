@@ -6,9 +6,9 @@
 // #include "ui/old_ui/view/ui/widget/measurement/distance_scene_view.hpp"
 // #include "ui/old_ui/view/ui/widget/measurement/distance_to_cycle_scene_view.hpp"
 #include "ui/qt/action/label.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/label.hpp>
-#include <app/old_app/model/path.hpp>
+#include <app/model/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -39,22 +39,22 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		// if ( _target->getTypeId() == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 		//{
-		//	sceneItem = MVC::MvcManager::get().getView<View::UI::Widget::Measurement::DistanceSceneView>(
+		//	sceneItem = VTX::MVC_MANAGER().getView<View::UI::Widget::Measurement::DistanceSceneView>(
 		//		_target, ID::View::UI_SCENE_DISTANCE_LABEL );
 		// }
 		// else if ( _target->getTypeId() == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
 		//{
-		//	sceneItem = MVC::MvcManager::get().getView<View::UI::Widget::Measurement::DistanceToCycleSceneView>(
+		//	sceneItem = VTX::MVC_MANAGER().getView<View::UI::Widget::Measurement::DistanceToCycleSceneView>(
 		//		_target, ID::View::UI_SCENE_DISTANCE_TO_CYCLE_LABEL );
 		// }
 		// else if ( _target->getTypeId() == ID::Model::MODEL_MEASUREMENT_ANGLE )
 		//{
-		//	sceneItem = MVC::MvcManager::get().getView<View::UI::Widget::Measurement::AngleSceneView>(
+		//	sceneItem = VTX::MVC_MANAGER().getView<View::UI::Widget::Measurement::AngleSceneView>(
 		//		_target, ID::View::UI_SCENE_ANGLE_LABEL );
 		// }
 		// else if ( _target->getTypeId() == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
 		//{
-		//	sceneItem = MVC::MvcManager::get().getView<View::UI::Widget::Measurement::DihedralAngleSceneView>(
+		//	sceneItem = VTX::MVC_MANAGER().getView<View::UI::Widget::Measurement::DihedralAngleSceneView>(
 		//		_target, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL );
 		// }
 		// else
@@ -67,6 +67,6 @@ namespace VTX::UI::Widget::ContextualMenu
 			sceneItem->openRenameEditor( _target->getId() );
 		}
 	}
-	void ContextualMenuLabel::_deleteAction() { VTX_ACTION( new Action::Label::Delete( _target ) ); }
+	void ContextualMenuLabel::_deleteAction() { VTX_ACTION( new App::Action::Label::Delete( _target ) ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

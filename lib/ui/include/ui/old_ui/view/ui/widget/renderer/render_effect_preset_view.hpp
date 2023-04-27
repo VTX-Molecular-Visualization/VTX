@@ -2,8 +2,8 @@
 #define __VTX_VIEW_UI_WIDGET_RENDER_EFFECT_PRESET__
 
 #include "ui/old_ui/ui/widget/base_manual_widget.hpp"
-#include <app/old_app/model/renderer/render_effect_preset.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/model/renderer/render_effect_preset.hpp>
+#include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -12,7 +12,7 @@ namespace VTX::UI::Widget::Settings
 
 namespace VTX::View::UI::Widget::Renderer
 {
-	class RenderEffectPresetView : public View::BaseView<Model::Renderer::RenderEffectPreset>
+	class RenderEffectPresetView : public App::Core::View::BaseView<Model::Renderer::RenderEffectPreset>
 	{
 		VTX_VIEW
 

@@ -2,8 +2,8 @@
 #define __VTX_UI_WIDGET_SEQUENCE_UNKNOWN_DATASET__
 
 #include "sequence_dataset.hpp"
-#include <app/old_app/model/chain.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/model/chain.hpp>
+#include <app/model/molecule.hpp>
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {

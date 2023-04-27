@@ -2,9 +2,9 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/view/ui/widget/path_scene_view.hpp"
 #include "ui/qt/action/viewpoint.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/viewpoint.hpp>
-#include <app/old_app/model/path.hpp>
+
+#include <app/model/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -32,14 +32,14 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuViewpoint::_renameAction()
 	{
 		View::UI::Widget::PathSceneView * const pathSceneView
-			= MVC::MvcManager::get().getView<View::UI::Widget::PathSceneView>( _target->getPathPtr(),
-																			   ID::View::UI_SCENE_PATH );
+			= VTX::MVC_MANAGER().getView<View::UI::Widget::PathSceneView>( _target->getPathPtr(),
+																						  ID::View::UI_SCENE_PATH );
 
 		pathSceneView->openRenameEditor( _target->getId() );
 	}
 
 	void ContextualMenuViewpoint::_deleteAction() { VTX_ACTION( new QT::Action::Viewpoint::Delete( *_target ) ); }
 	void ContextualMenuViewpoint::_gotoAction() { VTX_ACTION( new QT::Action::Viewpoint::GoTo( *_target ) ); }
-	void ContextualMenuViewpoint::_relocateAction() { VTX_ACTION( new Action::Viewpoint::Relocate( *_target ) ); }
+	void ContextualMenuViewpoint::_relocateAction() { VTX_ACTION( new App::Action::Viewpoint::Relocate( *_target ) ); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

@@ -4,7 +4,7 @@
 #include <QString>
 #include <QWidget>
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/worker/worker_manager.hpp>
+#include <app/core/worker/worker_manager.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -25,9 +25,9 @@ namespace VTX
 		{
 		  public:
 			static void openInformationDialog( const QString & p_title, const QString & p_message );
-			static void confirmActionDialog( VTX::Core::Action::BaseAction * const p_action,
-											 const QString &					   p_title,
-											 const QString &					   p_message );
+			static void confirmActionDialog( VTX::App::Core::Action::BaseAction * const p_action,
+											 const QString &							p_title,
+											 const QString &							p_message );
 
 			static void openDownloadMoleculeDialog();
 			static void openDownloadMoleculeDialog( const QString & p_pdbCode );
@@ -42,10 +42,10 @@ namespace VTX
 
 			static void createNewSessionDialog();
 
-			static void leavingSessionDialog( Worker::CallbackThread & p_callbackSucceed );
+			static void leavingSessionDialog( VTX::Core::Worker::CallbackThread & p_callbackSucceed );
 
 			static void openLoadSessionDialog();
-			static void openSaveSessionDialog( Worker::CallbackThread * const p_callback = nullptr );
+			static void openSaveSessionDialog( VTX::Core::Worker::CallbackThread * const p_callback = nullptr );
 
 			static void openAdvancedSettingImageExportDialog();
 			static bool openExportImageDialog( const IO::Struct::ImageExport & p_exportData );

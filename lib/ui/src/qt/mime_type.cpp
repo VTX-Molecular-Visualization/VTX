@@ -4,7 +4,7 @@
 
 namespace VTX::UI::QT
 {
-	MimeType::ModelData::ModelData( const Model::BaseModel & p_model, const DragSource & p_dragSource )
+	MimeType::ModelData::ModelData( const App::Core::Model::BaseModel & p_model, const DragSource & p_dragSource )
 	{
 		_modelID	= p_model.getId();
 		_typeID		= p_model.getTypeId();
@@ -36,7 +36,7 @@ namespace VTX::UI::QT
 		p_byteArray.append( dragSource );
 	}
 
-	QMimeData * const MimeType::generateMimeDataFromModel( const Model::BaseModel & p_model,
+	QMimeData * const MimeType::generateMimeDataFromModel( const App::Core::Model::BaseModel & p_model,
 														   const DragSource &		p_dragSource )
 	{
 		const ModelData data = ModelData( p_model, p_dragSource );

@@ -1,12 +1,12 @@
-#ifndef __VTX_CORE_ACTION_BASE_ACTION__
-#define __VTX_CORE_ACTION_BASE_ACTION__
+#ifndef __VTX_APP_CORE_ACTION_BASE_ACTION__
+#define __VTX_APP_CORE_ACTION_BASE_ACTION__
 
 #include "enum_action_tag.hpp"
 #include <string>
 #include <util/exceptions.hpp>
 #include <vector>
 
-namespace VTX::Core::Action
+namespace VTX::App::Core::Action
 {
 	class BaseAction
 	{
@@ -23,5 +23,5 @@ namespace VTX::Core::Action
 		ACTION_TAG _tag;
 	};
 
-} // namespace VTX::Core::Action
+} // namespace VTX::App::Core::Action
 #endif

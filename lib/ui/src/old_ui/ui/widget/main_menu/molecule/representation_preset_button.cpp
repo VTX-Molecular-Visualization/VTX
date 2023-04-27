@@ -2,13 +2,13 @@
 #include "ui/old_ui/style.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include <app/action/representable.hpp>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/old_app/generic/base_representable.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/representation/representation.hpp>
-#include <app/old_app/model/representation/representation_library.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/representation/representation.hpp>
+#include <app/model/representation/representation_library.hpp>
+#include <app/model/selection.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
@@ -35,7 +35,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 		if ( selection.getMoleculesMap().size() > 0 )
 		{
-			VTX_ACTION( new Action::Representable::SetRepresentation( &selection, representation ) );
+			VTX_ACTION( new App::Action::Representable::SetRepresentation( &selection, representation ) );
 		}
 		else
 		{
@@ -43,7 +43,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 			for ( const Object3D::Scene::PairMoleculePtrFloat & pair : mapMolFloat )
 			{
-				VTX_ACTION( new Action::Representable::SetRepresentation( *pair.first, representation ) );
+				VTX_ACTION( new App::Action::Representable::SetRepresentation( *pair.first, representation ) );
 			}
 		}
 	};

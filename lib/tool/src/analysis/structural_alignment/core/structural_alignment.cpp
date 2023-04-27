@@ -1,8 +1,9 @@
 #include "tool/analysis/structural_alignment/core/structural_alignment.hpp"
 #include "tool/analysis/structural_alignment/core/method/ce_align.hpp"
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
-#include <app/old_app/model/molecule.hpp>
+#include <app/core/event/vtx_event.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
+#include <app/model/molecule.hpp>
 #include <string>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -68,8 +69,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core
 
 				mobileMolecule->applyTransform( transform );
 
-				VTX_EVENT( new Event::VTXEventRef<const AlignmentResult>( Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED,
-																		  result ) );
+				VTX_EVENT<const AlignmentResult &>( VTX::App::Event::Global::STRUCTURAL_ALIGNMENT_COMPUTED, result );
 			}
 		}
 		catch ( const std::exception & e )

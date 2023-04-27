@@ -59,7 +59,7 @@ namespace VTX::UI::Widget::Inspector
 	  public:
 		~InspectorWidget();
 		void localize() override;
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 		void refresh();
 		void clear();
 

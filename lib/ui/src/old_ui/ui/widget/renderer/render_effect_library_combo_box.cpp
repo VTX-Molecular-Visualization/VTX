@@ -1,8 +1,8 @@
 #include "ui/old_ui/ui/widget/renderer/render_effect_library_combo_box.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/old_app/model/renderer/render_effect_preset_library.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
-#include <app/old_app/view/callback_view.hpp>
+#include <app/model/renderer/render_effect_preset_library.hpp>
+#include <app/mvc.hpp>
+#include <app/core/view/callback_view.hpp>
 
 namespace VTX::UI::Widget::Renderer
 {
@@ -15,8 +15,8 @@ namespace VTX::UI::Widget::Renderer
 	RenderEffectLibraryComboBox::~RenderEffectLibraryComboBox()
 	{
 		// Check view if setting window destroy before combo box (view can be destroyed twice)
-		if ( MVC::MvcManager::get().hasView( &Model::Renderer::RenderEffectPresetLibrary::get(), _viewID ) )
-			MVC::MvcManager::get().deleteView( &Model::Renderer::RenderEffectPresetLibrary::get(), _viewID );
+		if ( VTX::MVC_MANAGER().hasView( &Model::Renderer::RenderEffectPresetLibrary::get(), _viewID ) )
+			VTX::MVC_MANAGER().deleteView( &Model::Renderer::RenderEffectPresetLibrary::get(), _viewID );
 	}
 
 	void RenderEffectLibraryComboBox::_setupUi( const QString & p_name )
@@ -24,10 +24,10 @@ namespace VTX::UI::Widget::Renderer
 		BaseManualWidget::_setupUi( p_name );
 		_fillItemList();
 
-		View::CallbackView<Model::Renderer::RenderEffectPresetLibrary, RenderEffectLibraryComboBox> * const view
-			= MVC::MvcManager::get()
+		App::Core::View::CallbackView<Model::Renderer::RenderEffectPresetLibrary, RenderEffectLibraryComboBox> * const view
+			= VTX::MVC_MANAGER()
 				  .instantiateView<
-					  View::CallbackView<Model::Renderer::RenderEffectPresetLibrary, RenderEffectLibraryComboBox>>(
+					  App::Core::View::CallbackView<Model::Renderer::RenderEffectPresetLibrary, RenderEffectLibraryComboBox>>(
 					  &Model::Renderer::RenderEffectPresetLibrary::get(), _viewID );
 
 		view->setCallback( this, &RenderEffectLibraryComboBox::_onLibraryChange );
@@ -82,10 +82,10 @@ namespace VTX::UI::Widget::Renderer
 		}
 	}
 
-	void RenderEffectLibraryComboBox::_onLibraryChange( const VTX::Event::VTXEvent * const p_event )
+	void RenderEffectLibraryComboBox::_onLibraryChange( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE || p_event->name == VTX::Event::Model::DATA_CHANGE
-			 || p_event->name == VTX::Event::Model::APPLIED_PRESET_CHANGE )
+		if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE || p_event->name == VTX::App::Event::Model::DATA_CHANGE
+			 || p_event->name == VTX::App::Event::Model::APPLIED_PRESET_CHANGE )
 		{
 			_fillItemList();
 

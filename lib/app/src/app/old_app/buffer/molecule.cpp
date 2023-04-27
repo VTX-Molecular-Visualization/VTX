@@ -50,7 +50,7 @@ namespace VTX::Buffer
 
 		// Id.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_ID );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_ID, _vboAtomIds, sizeof( Model::ID ) );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_ID, _vboAtomIds, sizeof( App::Core::Model::ID ) );
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::ATOM_ID, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_ID, ATTRIBUTE_LOCATION::ATOM_ID );
 	}
@@ -80,7 +80,7 @@ namespace VTX::Buffer
 		_updateBuffer( _vboAtomSelections, p_selections );
 	}
 
-	void Molecule::setAtomIds( const std::vector<Model::ID> & p_ids ) { _updateBuffer( _vboAtomIds, p_ids ); }
+	void Molecule::setAtomIds( const std::vector<App::Core::Model::ID> & p_ids ) { _updateBuffer( _vboAtomIds, p_ids ); }
 
 	void Molecule::setBonds( const std::vector<uint> & p_bonds ) { _updateBuffer( _iboBonds, p_bonds ); }
 

@@ -1,10 +1,10 @@
 #include "ui/old_ui/ui/widget/custom_widget/representable_field_widget.hpp"
 #include "ui/old_ui/ui/mime_type.hpp"
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/base_model.hpp>
-#include <app/old_app/model/chain.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/model/base_model.hpp>
+#include <app/model/chain.hpp>
+#include <app/model/molecule.hpp>
+#include <app/mvc.hpp>
 
 namespace VTX
 {
@@ -51,8 +51,8 @@ namespace VTX
 				{
 					const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
 
-					Model::BaseModel * const representableModel
-						= &( MVC::MvcManager::get().getModel<Model::BaseModel>( modelData.getModelID() ) );
+					App::Core::Model::BaseModel * const representableModel
+						= &( VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( modelData.getModelID() ) );
 
 					Generic::BaseRepresentable * representable = nullptr;
 					const VTX::ID::VTX_ID &		 modelTypeID   = representableModel->getTypeId();

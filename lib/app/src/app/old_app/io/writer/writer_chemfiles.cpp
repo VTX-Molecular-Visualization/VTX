@@ -1,9 +1,9 @@
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
 #include "app/old_app/define.hpp"
-#include "app/old_app/model/atom.hpp"
-#include "app/old_app/model/bond.hpp"
-#include "app/old_app/model/chain.hpp"
-#include "app/old_app/model/residue.hpp"
+#include "app/model/atom.hpp"
+#include "app/model/bond.hpp"
+#include "app/model/chain.hpp"
+#include "app/model/residue.hpp"
 #include "app/old_app/util/secondary_structure.hpp"
 #include <string>
 

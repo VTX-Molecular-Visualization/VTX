@@ -1,20 +1,21 @@
 #include "app/old_app/setting.hpp"
+#include "app/core/event/vtx_event.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
+#include "app/model/category_enum.hpp"
+#include "app/model/representation/representation_enum.hpp"
 #include "app/old_app/define.hpp"
-#include "app/old_app/event/event.hpp"
-#include "app/old_app/event/event_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
 #include "app/old_app/io/serializer.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
 #include "app/old_app/io/writer/serialized_object.hpp"
-#include "app/old_app/model/category_enum.hpp"
-#include "app/old_app/model/representation/representation_enum.hpp"
+#include "app/old_app/path/path_enum.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/selection/selection_enum.hpp"
 #include "app/old_app/trajectory/trajectory_enum.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/old_app/path/path_enum.hpp"
 #include <exception>
 #include <string>
 #include <util/types.hpp>
@@ -236,7 +237,7 @@ namespace VTX
 
 		saveRecentPaths();
 
-		VTX_EVENT( new Event::VTXEvent( Event::Global::RECENT_FILES_CHANGE ) );
+		VTX_EVENT( VTX::App::Event::Global::RECENT_FILES_CHANGE );
 	}
 	const FilePath * const Setting::getRecentLoadingPath( const int p_index )
 	{
@@ -270,7 +271,7 @@ namespace VTX
 
 		saveRecentPaths();
 
-		VTX_EVENT( new Event::VTXEvent( Event::Global::RECENT_DOWNLOAD_CODE_CHANGE ) );
+		VTX_EVENT( VTX::App::Event::Global::RECENT_DOWNLOAD_CODE_CHANGE );
 	}
 	const std::string * const Setting::getRecentDownloadCode( const int p_index )
 	{
@@ -708,7 +709,7 @@ namespace VTX
 			parameters.emplace( p_parameter );
 		}
 
-		VTX_EVENT( new Event::VTXEventRef( Event::Global::SETTINGS_CHANGE, parameters ) );
+		VTX_EVENT<const std::set<PARAMETER> &>( VTX::App::Event::Global::SETTINGS_CHANGE, parameters );
 	}
 
 } // namespace VTX

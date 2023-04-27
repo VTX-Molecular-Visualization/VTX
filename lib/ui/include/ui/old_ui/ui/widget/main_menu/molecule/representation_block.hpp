@@ -5,14 +5,14 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "representation_preset_button.hpp"
 #include <QWidget>
-#include <app/old_app/model/representation/representation_library.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/model/representation/representation_library.hpp>
+#include <app/core/view/base_view.hpp>
 #include <map>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	class RepresentationBlock :
-		public VTX::View::BaseView<Model::Representation::RepresentationLibrary>,
+		public VTX::App::Core::View::BaseView<Model::Representation::RepresentationLibrary>,
 		public MenuToolBlockWidget
 	{
 		VTX_WIDGET
@@ -32,7 +32,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		void _refreshIcons();
 		void _refreshView() override;
 
-		void notify( const VTX::Event::VTXEvent * const p_event ) override;
+		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
 
 	  private:
 		std::map<int, RepresentationPresetButton *> _buttons   = std::map<int, RepresentationPresetButton *>();

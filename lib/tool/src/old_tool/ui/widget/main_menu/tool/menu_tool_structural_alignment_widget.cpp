@@ -3,10 +3,10 @@
 #include "tool/old_tool/util/analysis.hpp"
 #include <QAction>
 #include <QMenu>
-#include <app/core/action/action_manager.hpp>
+#include <app/mvc.hpp>
+#include <app/event/global.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <ui/old_ui/ui/main_window.hpp>
@@ -18,7 +18,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	MenuToolStructuralAlignmentWidget::MenuToolStructuralAlignmentWidget( QWidget * p_parent ) :
 		MenuToolBlockWidget( p_parent )
 	{
-		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
 	}
 
 	MenuToolStructuralAlignmentWidget::~MenuToolStructuralAlignmentWidget()
@@ -27,9 +27,9 @@ namespace VTX::UI::Widget::MainMenu::Tool
 			delete _alignmentParameter;
 	}
 
-	void MenuToolStructuralAlignmentWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void MenuToolStructuralAlignmentWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::SELECTION_CHANGE )
 			_refreshButtons();
 	}
 

@@ -1,14 +1,15 @@
-#ifndef __VTX_ACTION_REPRESENTABLE__
-#define __VTX_ACTION_REPRESENTABLE__
+#ifndef __VTX_APP_ACTION_REPRESENTABLE__
+#define __VTX_APP_ACTION_REPRESENTABLE__
 
+#include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
+#include "app/model/representation/representation.hpp"
+#include "app/model/selection.hpp"
 #include "app/old_app/generic/base_representable.hpp"
-#include "app/old_app/model/representation/representation.hpp"
-#include "app/old_app/model/selection.hpp"
 
-namespace VTX::Action::Representable
+namespace VTX::App::Action::Representable
 {
-	class SetRepresentation : public Core::Action::BaseAction
+	class SetRepresentation : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SetRepresentation( Generic::BaseRepresentable &				  p_representable,
@@ -34,7 +35,7 @@ namespace VTX::Action::Representable
 
 		Model::Representation::Representation * const _representation;
 	};
-	class RemoveRepresentation : public Core::Action::BaseAction
+	class RemoveRepresentation : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit RemoveRepresentation( Generic::BaseRepresentable & p_representable ) :
@@ -48,5 +49,5 @@ namespace VTX::Action::Representable
 	  private:
 		Generic::BaseRepresentable * const _representable;
 	};
-} // namespace VTX::Action::Representable
+} // namespace VTX::App::Action::Representable
 #endif

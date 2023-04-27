@@ -1,16 +1,20 @@
 #ifndef __VTX_BASE_REPRESENTABLE__
 #define __VTX_BASE_REPRESENTABLE__
 
-#include <util/types.hpp>
 #include "app/old_app/representation/representation_target.hpp"
 #include <map>
 #include <set>
+#include <util/types.hpp>
 
 namespace VTX
 {
-	namespace Model
+	namespace App::Core::Model
 	{
 		class BaseModel;
+	}
+
+	namespace Model
+	{
 		class Molecule;
 		class Residue;
 		namespace Representation
@@ -29,9 +33,9 @@ namespace VTX
 
 			~BaseRepresentable();
 
-			void initBaseRepresentable( Model::BaseModel * const		   p_model,
-										Generic::BaseRepresentable * const p_parent,
-										Model::Molecule * const			   p_molecule );
+			void initBaseRepresentable( App::Core::Model::BaseModel * const p_model,
+										Generic::BaseRepresentable * const	p_parent,
+										Model::Molecule * const				p_molecule );
 
 			const InstantiatedRepresentation * const							getRepresentation() const;
 			InstantiatedRepresentation * const									getCustomRepresentation();
@@ -77,8 +81,8 @@ namespace VTX
 			Model::Molecule * const getMolecule() const { return _molecule; };
 			void setRepresentableMolecule( Model::Molecule * const p_molecule ) { _molecule = p_molecule; };
 
-			Model::BaseModel * const getLinkedModel() const { return _model; };
-			void					 setLinkedModel( Model::BaseModel * const p_model ) { _model = p_model; };
+			App::Core::Model::BaseModel * const getLinkedModel() const { return _model; };
+			void setLinkedModel( App::Core::Model::BaseModel * const p_model ) { _model = p_model; };
 
 		  protected:
 			InstantiatedRepresentation *		   _representation	   = nullptr;
@@ -96,9 +100,9 @@ namespace VTX
 			bool _isResidueVisible( const Model::Residue & p_residue ) const;
 
 		  private:
-			Model::Molecule *	_molecule = nullptr;
-			BaseRepresentable * _parent	  = nullptr;
-			Model::BaseModel *	_model	  = nullptr;
+			Model::Molecule *			  _molecule = nullptr;
+			BaseRepresentable *			  _parent	= nullptr;
+			App::Core::Model::BaseModel * _model	= nullptr;
 		};
 	} // namespace Generic
 } // namespace VTX

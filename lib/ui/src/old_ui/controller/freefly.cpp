@@ -1,6 +1,6 @@
 #include "ui/old_ui/controller/freefly.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/old_app/object3d/scene.hpp>
 
 namespace VTX

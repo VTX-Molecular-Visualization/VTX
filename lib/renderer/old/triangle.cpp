@@ -1,6 +1,6 @@
 #include "app/old_app/view/d3/triangle.hpp"
-#include "app/old_app/model/category.hpp"
-#include "app/old_app/model/molecule.hpp"
+#include "app/model/category.hpp"
+#include "app/model/molecule.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 
 namespace VTX::View::D3

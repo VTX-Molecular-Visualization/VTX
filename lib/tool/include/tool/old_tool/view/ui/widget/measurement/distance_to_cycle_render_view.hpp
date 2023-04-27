@@ -3,7 +3,7 @@
 //
 // #include <util/types.hpp>
 // #include <app/old_app/id.hpp>
-// #include <app/old_app/model/measurement/distance_to_cycle.hpp"
+// #include <app/model/measurement/distance_to_cycle.hpp"
 // #include <ui/old_ui/ui/widget/base_manual_widget.hpp>
 // #include <ui/old_ui/ui/widget/render/base_integrated_widget.hpp>
 // #include "view/base_view.hpp"
@@ -19,7 +19,7 @@
 //  namespace VTX::View::UI::Widget::Measurement
 //{
 //	class DistanceToCycleRenderView :
-//		public View::BaseView<VTX::Model::Measurement::DistanceToCycle>,
+//		public App::Core::View::BaseView<VTX::Model::Measurement::DistanceToCycle>,
 //		public VTX::UI::Widget::Render::TemplatedIntegratedWidget<QWidget>
 //	{
 //		VTX_WIDGET

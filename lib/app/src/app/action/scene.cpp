@@ -3,7 +3,7 @@
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 
-namespace VTX::Action::Scene
+namespace VTX::App::Action::Scene
 {
 	void ResetScene::execute() { VTXApp::get().getScene().reset(); }
 
@@ -18,4 +18,4 @@ namespace VTX::Action::Scene
 
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
-} // namespace VTX::Action::Scene
+} // namespace VTX::App::Action::Scene

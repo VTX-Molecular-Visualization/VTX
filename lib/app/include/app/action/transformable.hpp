@@ -1,19 +1,20 @@
-#ifndef __VTX_ACTION_TRANSFORMABLE__
-#define __VTX_ACTION_TRANSFORMABLE__
+#ifndef __VTX_APP_ACTION_TRANSFORMABLE__
+#define __VTX_APP_ACTION_TRANSFORMABLE__
 
+#include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/core/action/base_action_undonable.hpp"
+#include "app/model/molecule.hpp"
 #include "app/old_app/generic/base_auto_rotate.hpp"
 #include "app/old_app/generic/base_transformable.hpp"
 #include "app/old_app/math/transform.hpp"
-#include "app/old_app/model/molecule.hpp"
 #include <unordered_set>
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Action::Transformable
+namespace VTX::App::Action::Transformable
 {
-	class SetTranslation : public Core::Action::BaseActionUndonable
+	class SetTranslation : public App::Core::Action::BaseActionUndonable
 	{
 	  public:
 		explicit SetTranslation( Generic::BaseTransformable & p_transformable, const Vec3f & p_translation ) :
@@ -31,7 +32,7 @@ namespace VTX::Action::Transformable
 		const Vec3f					 _translation;
 		const Mat4f					 _translationOld;
 	};
-	class Translate : public Core::Action::BaseAction
+	class Translate : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Translate( Generic::BaseTransformable & p_transformable, const Vec3f & p_delta ) :
@@ -54,7 +55,7 @@ namespace VTX::Action::Transformable
 		const Vec3f										 _delta;
 	};
 
-	class SetRotation : public Core::Action::BaseActionUndonable
+	class SetRotation : public App::Core::Action::BaseActionUndonable
 	{
 	  public:
 		explicit SetRotation( Generic::BaseTransformable & p_transformable, const Vec3f & p_euler ) :
@@ -72,7 +73,7 @@ namespace VTX::Action::Transformable
 		const Vec3f					 _euler;
 		const Vec3f					 _eulerOld;
 	};
-	class Rotate : public Core::Action::BaseAction
+	class Rotate : public App::Core::Action::BaseAction
 	{
 	  private:
 		enum class RotationType
@@ -119,7 +120,7 @@ namespace VTX::Action::Transformable
 		const Vec3f										 _axis;
 	};
 
-	class SetScale : public Core::Action::BaseActionUndonable
+	class SetScale : public App::Core::Action::BaseActionUndonable
 	{
 	  public:
 		explicit SetScale( Generic::BaseTransformable & p_transformable, const float p_scale ) :
@@ -136,7 +137,7 @@ namespace VTX::Action::Transformable
 		const float					 _scale;
 		const Mat4f					 _scaleOld;
 	};
-	class Scale : public Core::Action::BaseAction
+	class Scale : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Scale( Generic::BaseTransformable & p_transformable, const Vec3f & p_delta ) :
@@ -157,7 +158,7 @@ namespace VTX::Action::Transformable
 		const Vec3f										 _delta;
 	};
 
-	class ApplyTransform : public Core::Action::BaseAction
+	class ApplyTransform : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ApplyTransform( Model::Molecule &										  p_transformable,
@@ -193,7 +194,7 @@ namespace VTX::Action::Transformable
 		std::vector<Generic::BaseTransformable *> _transformables = std::vector<Generic::BaseTransformable *>();
 	};
 
-	class SetAutoRotationOrientation : public Core::Action::BaseAction
+	class SetAutoRotationOrientation : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SetAutoRotationOrientation( const std::unordered_set<Generic::BaseAutoRotate *> p_autoRotateComponent,
@@ -210,7 +211,7 @@ namespace VTX::Action::Transformable
 		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
 		const Vec3f									  _orientation;
 	};
-	class AddToAutoRotationOrientation : public Core::Action::BaseAction
+	class AddToAutoRotationOrientation : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit AddToAutoRotationOrientation(
@@ -229,7 +230,7 @@ namespace VTX::Action::Transformable
 		const Vec3f									  _delta;
 	};
 
-	class SetAutoRotationSpeed : public Core::Action::BaseAction
+	class SetAutoRotationSpeed : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SetAutoRotationSpeed( const std::unordered_set<Generic::BaseAutoRotate *> p_autoRotateComponent,
@@ -246,7 +247,7 @@ namespace VTX::Action::Transformable
 		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
 		const float									  _speed;
 	};
-	class SetAutoRotationPlay : public Core::Action::BaseAction
+	class SetAutoRotationPlay : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit SetAutoRotationPlay( const std::unordered_set<Generic::BaseAutoRotate *> p_autoRotateComponent,
@@ -262,5 +263,5 @@ namespace VTX::Action::Transformable
 		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
 		const bool									  _play;
 	};
-} // namespace VTX::Action::Transformable
+} // namespace VTX::App::Action::Transformable
 #endif

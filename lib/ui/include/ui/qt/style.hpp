@@ -12,8 +12,8 @@
 #include <QString>
 #include <iostream>
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/category_enum.hpp>
-#include <app/old_app/model/representation/representation_enum.hpp>
+#include <app/model/category_enum.hpp>
+#include <app/model/representation/representation_enum.hpp>
 #include <app/old_app/selection/selection_enum.hpp>
 #include <app/old_app/util/label.hpp>
 #include <string>

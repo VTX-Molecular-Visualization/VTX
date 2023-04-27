@@ -16,10 +16,10 @@
 #include <QWidget>
 #include <app/old_app/color/rgba.hpp>
 #include <app/old_app/generic/base_transformable.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/representation/instantiated_representation.hpp>
-#include <app/old_app/model/representation/representation.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/representation/instantiated_representation.hpp>
+#include <app/model/representation/representation.hpp>
+#include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {

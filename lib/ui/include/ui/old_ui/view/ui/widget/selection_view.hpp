@@ -7,16 +7,16 @@
 #include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
 #include <QTreeWidgetItem>
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/chain.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/residue.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/chain.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/residue.hpp>
+#include <app/model/selection.hpp>
+#include <app/core/view/base_view.hpp>
 
 namespace VTX::View::UI::Widget
 {
-	class SelectionView : public View::BaseView<Model::Selection>, public VTX::UI::Widget::BaseManualWidget<QTreeWidget>
+	class SelectionView : public App::Core::View::BaseView<Model::Selection>, public VTX::UI::Widget::BaseManualWidget<QTreeWidget>
 	{
 		class SelectionStyleItemDelegate : public QStyledItemDelegate
 		{
@@ -44,7 +44,7 @@ namespace VTX::View::UI::Widget
 
 	  protected:
 		SelectionView( Model::Selection * const p_model, QWidget * const p_parent ) :
-			View::BaseView<Model::Selection>( p_model ), BaseManualWidget( p_parent )
+			App::Core::View::BaseView<Model::Selection>( p_model ), BaseManualWidget( p_parent )
 		{
 		}
 		~SelectionView();
@@ -54,8 +54,8 @@ namespace VTX::View::UI::Widget
 		void _refreshView() override; // Debug only.
 
 	  private:
-		std::map<Model::ID, QList<QTreeWidgetItem *> *> _mapLoadedItems
-			= std::map<Model::ID, QList<QTreeWidgetItem *> *>();
+		std::map<App::Core::Model::ID, QList<QTreeWidgetItem *> *> _mapLoadedItems
+			= std::map<App::Core::Model::ID, QList<QTreeWidgetItem *> *>();
 
 		int							 _enableSignalCounter = 0;
 		SelectionStyleItemDelegate * _styleItemDelegate	  = nullptr;
@@ -83,12 +83,12 @@ namespace VTX::View::UI::Widget
 									  const Model::Selection::VecAtomIds & p_children ) const;
 		void _applyAtomDataOnItem( const Model::Atom & p_molecule, QTreeWidgetItem & p_item ) const;
 
-		QTreeWidgetItem * _extractItemFromList( const Model::ID & p_id, QList<QTreeWidgetItem *> & p_list ) const;
+		QTreeWidgetItem * _extractItemFromList( const App::Core::Model::ID & p_id, QList<QTreeWidgetItem *> & p_list ) const;
 		void			  _clearList( QList<QTreeWidgetItem *> & p_list ) const;
 
 		void _enableSignals( const bool p_enable );
 
-		Model::ID _getModelID( const QTreeWidgetItem & p_item ) const;
+		App::Core::Model::ID _getModelID( const QTreeWidgetItem & p_item ) const;
 		bool	  _getItemExpandState( const QTreeWidgetItem & p_item ) const;
 	};
 

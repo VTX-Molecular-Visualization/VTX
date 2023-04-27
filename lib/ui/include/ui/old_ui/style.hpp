@@ -10,9 +10,9 @@
 #include <QPixmap>
 #include <QSize>
 #include <QString>
+#include <app/model/category_enum.hpp>
+#include <app/model/representation/representation_enum.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/category_enum.hpp>
-#include <app/old_app/model/representation/representation_enum.hpp>
 #include <app/old_app/selection/selection_enum.hpp>
 #include <app/old_app/util/label.hpp>
 #include <iostream>
@@ -24,6 +24,17 @@ namespace VTX::UI
 {
 	namespace Style
 	{
+		enum class SYMBOL_DISPLAY_MODE : int
+		{
+			SHORT,
+			LONG,
+
+			COUNT
+		};
+
+		inline static const int WINDOW_WIDTH_DEFAULT  = 1280;
+		inline static const int WINDOW_HEIGHT_DEFAULT = 720;
+
 		inline static const std::vector<std::string> SYMBOL_DISPLAY_MODE_STRING { "Short", "Long" };
 
 		class IconConst

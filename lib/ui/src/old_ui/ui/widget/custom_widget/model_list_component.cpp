@@ -5,27 +5,28 @@
 #include <QRadioButton>
 #include <QVBoxLayout>
 #include <QVariant>
+#include <app/mvc.hpp>
+#include <app/event/global.hpp>
 #include <app/old_app/generic/base_scene_item.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
 	ModelListComponent::ModelListComponent( BaseModelListWidget * const p_modelList, QWidget * p_parent ) :
 		BaseManualWidget( p_parent ), _modelListWidget( p_modelList )
 	{
-		_registerEvent( VTX::Event::Global::SCENE_ITEM_REMOVED );
+		_registerEvent( VTX::App::Event::Global::SCENE_ITEM_REMOVED );
 	}
 	ModelListComponent::~ModelListComponent() {}
 
-	void ModelListComponent::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void ModelListComponent::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::SCENE_ITEM_REMOVED )
+		if ( p_event.name == VTX::App::Event::Global::SCENE_ITEM_REMOVED )
 		{
-			const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Generic::BaseSceneItem> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> &>( p_event );
 
-			Model::BaseModel & model
-				= MVC::MvcManager::get().getModel<Model::BaseModel>( castedEvent.ptr->getModelID() );
+			App::Core::Model::BaseModel & model
+				= VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( castedEvent.get()->getModelID() );
 			removeModel( &model );
 		}
 	}
@@ -71,33 +72,33 @@ namespace VTX::UI::Widget::CustomWidget
 	void ModelListComponent::setTitle( const QString & p_title ) const { _foldButton->setTitle( p_title ); }
 	void ModelListComponent::setFoldState( const bool p_expanded ) const { _foldButton->setFoldState( p_expanded ); }
 
-	void ModelListComponent::addModel( Model::BaseModel * const p_model ) { _modelListWidget->addModel( p_model ); }
-	void ModelListComponent::insertModel( Model::BaseModel * const p_model, const int p_row )
+	void ModelListComponent::addModel( App::Core::Model::BaseModel * const p_model ) { _modelListWidget->addModel( p_model ); }
+	void ModelListComponent::insertModel( App::Core::Model::BaseModel * const p_model, const int p_row )
 	{
 		_modelListWidget->insertModel( p_model, p_row );
 	}
-	void ModelListComponent::removeModel( Model::BaseModel * const p_model )
+	void ModelListComponent::removeModel( App::Core::Model::BaseModel * const p_model )
 	{
 		_modelListWidget->removeModel( p_model );
 	}
-	void ModelListComponent::swapModels( Model::BaseModel * const p_model1, Model::BaseModel * const p_model2 ) const
+	void ModelListComponent::swapModels( App::Core::Model::BaseModel * const p_model1, App::Core::Model::BaseModel * const p_model2 ) const
 	{
 		_modelListWidget->swapModels( p_model1, p_model2 );
 	}
 	void ModelListComponent::clearModels() { _modelListWidget->clearModels(); }
 
-	bool ModelListComponent::hasModel( const Model::BaseModel * const p_model ) const
+	bool ModelListComponent::hasModel( const App::Core::Model::BaseModel * const p_model ) const
 	{
 		return _modelListWidget->hasModel( p_model );
 	}
 	int ModelListComponent::getModelCount() const { return _modelListWidget->getModelCount(); }
 
-	std::vector<Model::BaseModel *> ModelListComponent::getModels() const { return _modelListWidget->getModels(); }
+	std::vector<App::Core::Model::BaseModel *> ModelListComponent::getModels() const { return _modelListWidget->getModels(); }
 
 	void ModelListComponent::_emitModelListChangeEvent() { emit onModelListChange(); }
-	void ModelListComponent::_onModelsDropped( std::vector<Model::BaseModel *> p_models )
+	void ModelListComponent::_onModelsDropped( std::vector<App::Core::Model::BaseModel *> p_models )
 	{
-		for ( Model::BaseModel * const model : p_models )
+		for ( App::Core::Model::BaseModel * const model : p_models )
 			addModel( model );
 
 		_foldButton->setFoldState( true );

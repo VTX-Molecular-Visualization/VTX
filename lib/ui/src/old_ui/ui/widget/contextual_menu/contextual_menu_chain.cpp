@@ -1,11 +1,11 @@
 #include "ui/old_ui/ui/widget/contextual_menu/contextual_menu_chain.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/chain.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/chain.hpp>
 #include <app/action/visible.hpp>
-#include <app/old_app/model/representation/representation.hpp>
-#include <app/old_app/model/representation/representation_library.hpp>
+#include <app/model/representation/representation.hpp>
+#include <app/model/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -50,26 +50,26 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuChain::_showAction()
 	{
 		VTX_ACTION(
-			new Action::Chain::ChangeVisibility( *_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+			new App::Action::Chain::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::ALL ) );
 	}
 	void ContextualMenuChain::_hideAction()
 	{
 		VTX_ACTION(
-			new Action::Chain::ChangeVisibility( *_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+			new App::Action::Chain::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::HIDE ) );
 	}
 	void ContextualMenuChain::_soloAction()
 	{
 		VTX_ACTION(
-			new Action::Chain::ChangeVisibility( *_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
+			new App::Action::Chain::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::SOLO ) );
 	}
-	void ContextualMenuChain::_copyAction() { VTX_ACTION( new Action::Chain::Copy( *_target ) ); }
-	void ContextualMenuChain::_extractAction() { VTX_ACTION( new Action::Chain::Extract( *_target ) ); }
+	void ContextualMenuChain::_copyAction() { VTX_ACTION( new App::Action::Chain::Copy( *_target ) ); }
+	void ContextualMenuChain::_extractAction() { VTX_ACTION( new App::Action::Chain::Extract( *_target ) ); }
 
-	void ContextualMenuChain::_deleteAction() { VTX_ACTION( new Action::Chain::Delete( *_target ) ); }
+	void ContextualMenuChain::_deleteAction() { VTX_ACTION( new App::Action::Chain::Delete( *_target ) ); }
 
 	void ContextualMenuChain::_applyRepresentationAction( const int p_representationIndex )
 	{
-		VTX_ACTION( new Action::Chain::ChangeRepresentationPreset( *_target, p_representationIndex ) );
+		VTX_ACTION( new App::Action::Chain::ChangeRepresentationPreset( *_target, p_representationIndex ) );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

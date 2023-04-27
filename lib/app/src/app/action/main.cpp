@@ -1,17 +1,20 @@
 #include "app/action/main.hpp"
+#include "app/core/worker/worker_manager.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
+#include "app/internal/network/request/download_mmtf.hpp"
+#include "app/network.hpp"
 #include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/network/network_manager.hpp"
-#include "app/old_app/network/request/download_mmtf.hpp"
 #include "app/old_app/object3d/camera_manager.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/old_app/worker/loader.hpp"
-#include "app/old_app/worker/render_effect_loader.hpp"
-#include "app/old_app/worker/representation_loader.hpp"
-#include "app/old_app/worker/saver.hpp"
-#include "app/old_app/worker/scene_loader.hpp"
+#include "app/worker/loader.hpp"
+#include "app/worker/render_effect_loader.hpp"
+#include "app/worker/representation_loader.hpp"
+#include "app/worker/saver.hpp"
+#include "app/worker/scene_loader.hpp"
 
-namespace VTX::Action::Main
+namespace VTX::App::Action::Main
 {
 	void New::execute()
 	{
@@ -84,7 +87,7 @@ namespace VTX::Action::Main
 
 			loader->setOpenTrajectoryAsMoleculeIfTargetFail( !trajectoryTargetsForced );
 
-			Worker::CallbackThread * callback = new Worker::CallbackThread(
+			VTX::Core::Worker::CallbackThread * callback = new VTX::Core::Worker::CallbackThread(
 				[ loader ]( const uint p_code )
 				{
 					for ( const std::pair<const FilePath, Worker::Loader::Result> & pairFilResult :
@@ -125,7 +128,7 @@ namespace VTX::Action::Main
 		}
 	}
 
-	void OpenApi::execute() { VTX_NETWORK_MANAGER().sendRequest( new Network::Request::DownloadMMTF( _id ) ); }
+	void OpenApi::execute() { VTX_NETWORK_REQUEST<App::Internal::Network::Request::DownloadMMTF>( _id ); }
 
 	// TODO keep only Dialog parts here and move real loading action into VTX_APP.
 	void Save::execute()
@@ -140,7 +143,7 @@ namespace VTX::Action::Main
 		if ( _path.extension() == "vtx" )
 		{
 			VTXApp::get().getScenePathData().setCurrentPath( _path, true );
-			VTX_EVENT( new Event::VTXEvent( Event::Global::SCENE_SAVED ) );
+			VTX_EVENT( VTX::App::Event::Global::SCENE_SAVED );
 		}
 		else
 		{
@@ -194,4 +197,4 @@ namespace VTX::Action::Main
 	{
 		VTXApp::get().getScene().getCameraManager().setPerspectiveCamera( !_perspective );
 	}
-} // namespace VTX::Action::Main
+} // namespace VTX::App::Action::Main

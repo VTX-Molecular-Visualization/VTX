@@ -1,7 +1,6 @@
 #ifndef __VTX_UI_DIALOG_SET_TRAJECTORY_TARGET__
 #define __VTX_UI_DIALOG_SET_TRAJECTORY_TARGET__
 
-
 #include "ui/old_ui/ui/widget/base_manual_widget.hpp"
 #include "ui/old_ui/ui/widget/custom_widget/model_list_widget.hpp"
 #include <QAbstractButton>
@@ -16,9 +15,13 @@
 
 namespace VTX
 {
-	namespace Model
+	namespace App::Core::Model
 	{
 		class BaseModel;
+	} // namespace App::Core::Model
+
+	namespace Model
+	{
 		class Molecule;
 	} // namespace Model
 
@@ -41,8 +44,8 @@ namespace VTX
 				ModelFieldLine( CustomWidget::BaseModelListWidget * const p_parent );
 				~ModelFieldLine();
 
-				Model::BaseModel * const getModel() const;
-				void					 setModel( Model::BaseModel * const p_model );
+				App::Core::Model::BaseModel * const getModel() const;
+				void								setModel( App::Core::Model::BaseModel * const p_model );
 
 				Model::Molecule * const getMolecule() const { return _linkedMolecule; }
 

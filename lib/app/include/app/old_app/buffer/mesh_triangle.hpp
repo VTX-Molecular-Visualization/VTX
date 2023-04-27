@@ -3,7 +3,7 @@
 
 #include "base_buffer_opengl.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/old_app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
 #include "app/old_app/renderer/gl/vertex_array.hpp"
 #include <util/types.hpp>
 #include <vector>
@@ -23,7 +23,7 @@ namespace VTX
 			void setColors( const std::vector<Color::Rgba> & );
 			void setVisibilities( const std::vector<uint> & );
 			void setSelections( const std::vector<uint> & );
-			void setIds( const std::vector<Model::ID> & );
+			void setIds( const std::vector<App::Core::Model::ID> & );
 			void setIndices( const std::vector<uint> & );
 
 			inline Renderer::GL::Buffer & getBufferPositions() { return _vboPositions; }

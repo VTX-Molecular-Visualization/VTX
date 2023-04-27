@@ -1,20 +1,22 @@
 #include "app/old_app/vtx_app.hpp"
-#include "app/core/action/action_manager.hpp"
 #include "app/action/main.hpp"
 #include "app/action/setting.hpp"
-#include "app/old_app/event/event.hpp"
-#include "app/old_app/event/event_manager.hpp"
+#include "app/core/event/vtx_event.hpp"
+#include "app/mvc.hpp"
+#include "app/event.hpp"
+#include "app/event/global.hpp"
+#include "app/manager/action_manager.hpp"
+#include "app/model/renderer/render_effect_preset.hpp"
+#include "app/model/renderer/render_effect_preset_library.hpp"
+#include "app/model/representation/representation_library.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
-#include "app/old_app/model/renderer/render_effect_preset.hpp"
-#include "app/old_app/model/renderer/render_effect_preset_library.hpp"
-#include "app/old_app/model/representation/representation_library.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 // #include "ui/dialog.hpp"
 // #include "ui/main_window.hpp"
+#include "app/core/worker/worker_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/worker/worker_manager.hpp"
 // #include <QApplication>
 // #include <QPalette>
 #include <exception>
@@ -34,20 +36,21 @@ namespace VTX
 		VTX_INFO( "Starting application: {}", IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 
 		// Load settings.
-		VTX_ACTION( new Action::Setting::Load() );
+		VTX_ACTION<App::Action::Setting::Load>();
 		_setting.loadRecentPaths();
 
 		// Create singletons.
-		MVC::MvcManager::get();
-		Core::Action::ActionManager::get();
-		Event::EventManager::get();
+		VTX::MVC_MANAGER();
+		App::Manager::ActionManager::get();
+		App::Manager::EventManager::get();
 		Selection::SelectionManager::get();
-		Worker::WorkerManager::get();
+		Core::Worker::WorkerManager::get();
 
 		// Create Databases
 		_representationLibrary
-			= MVC::MvcManager::get().instantiateModel<Model::Representation::RepresentationLibrary>();
-		_renderEffectLibrary = MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
+			= VTX::MVC_MANAGER().instantiateModel<Model::Representation::RepresentationLibrary>();
+		_renderEffectLibrary
+			= VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
 		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 
 		// Create scene.
@@ -64,10 +67,10 @@ namespace VTX
 		if ( p_args.size() == 0 )
 		{
 			// VTX_ACTION(
-			//	 new Action::Main::Open( IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
-			// VTX_ACTION( new Action::Main::OpenApi( "1aon" ) );
-			// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
-			// VTX_ACTION( new Action::Main::OpenApi( "1aga" ) );
+			//	 new App::Action::Main::Open( IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
+			// VTX_ACTION( new App::Action::Main::OpenApi( "1aon" ) );
+			// VTX_ACTION( new App::Action::Main::OpenApi( "4hhb" ) );
+			// VTX_ACTION( new App::Action::Main::OpenApi( "1aga" ) );
 		}
 #endif
 	}
@@ -106,12 +109,12 @@ namespace VTX
 
 		if ( files.size() > 0 )
 		{
-			VTX_ACTION( new Action::Main::Open( files ) );
+			VTX_ACTION<App::Action::Main::Open>( files );
 		}
 
 		for ( const std::string & pdbId : pdbIds )
 		{
-			VTX_ACTION( new Action::Main::OpenApi( pdbId ) );
+			VTX_ACTION<App::Action::Main::OpenApi>( pdbId );
 		}
 	}
 
@@ -127,7 +130,7 @@ namespace VTX
 		_applyEndOfFrameDeletes();
 
 		// Call late update event for processes at end of frame
-		VTX_EVENT( new Event::VTXEvent( Event::Global::LATE_UPDATE ) );
+		VTX_EVENT( VTX::App::Event::Global::LATE_UPDATE );
 
 		// TODO Reimplement this without Qt
 		//// Tickrate.
@@ -158,13 +161,13 @@ namespace VTX
 	void VTXApp::_stop()
 	{
 		// Prevent events throw for nothing when quitting app
-		Event::EventManager::get().freezeEvent( true );
-		Worker::WorkerManager::get().stopAll();
+		App::Manager::EventManager::get().freezeEvent( true );
+		Core::Worker::WorkerManager::get().stopAll();
 
 		_setting.backup();
 
-		MVC::MvcManager::get().deleteModel( _representationLibrary );
-		MVC::MvcManager::get().deleteModel( _renderEffectLibrary );
+		VTX::MVC_MANAGER().deleteModel( _representationLibrary );
+		VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 
 		Selection::SelectionManager::get().deleteModel();
 

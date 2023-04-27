@@ -1,7 +1,7 @@
 #include "tool/analysis/util.hpp"
 #include "tool/analysis/rmsd/core/rmsd.hpp"
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/model/selection.hpp>
+#include <app/model/molecule.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
 
@@ -18,7 +18,7 @@ namespace VTX::Tool::Analysis::Util
 		for ( const Model::Selection::PairMoleculeIds & pairMoleculeID : p_selection.getMoleculesMap() )
 		{
 			Model::Molecule * const currentMolecule
-				= &MVC::MvcManager::get().getModel<Model::Molecule>( pairMoleculeID.first );
+				= &VTX::MVC_MANAGER().getModel<Model::Molecule>( pairMoleculeID.first );
 
 			const int currentMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( *currentMolecule );
 
@@ -63,7 +63,7 @@ namespace VTX::Tool::Analysis::Util
 		for ( const Model::Selection::PairMoleculeIds & pairMoleculeID : p_selection.getMoleculesMap() )
 		{
 			Model::Molecule * const currentMolecule
-				= &MVC::MvcManager::get().getModel<Model::Molecule>( pairMoleculeID.first );
+				= &VTX::MVC_MANAGER().getModel<Model::Molecule>( pairMoleculeID.first );
 
 			const int currentMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( *currentMolecule );
 
@@ -111,7 +111,7 @@ namespace VTX::Tool::Analysis::Util
 		{
 			for ( const Model::Selection::PairResidueIds & residuePair : chainPair.second )
 			{
-				for ( const Model::ID & atomIndex : residuePair.second )
+				for ( const App::Core::Model::ID & atomIndex : residuePair.second )
 				{
 					p_positions[ counter ] = atomPositionFrame[ atomIndex ];
 					counter++;

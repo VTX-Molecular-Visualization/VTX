@@ -1,11 +1,11 @@
 #include "app/action/setting.hpp"
-#include "app/core/action/action_manager.hpp"
+#include "app/manager/action_manager.hpp"
+#include "app/model/renderer/render_effect_preset.hpp"
+#include "app/model/renderer/render_effect_preset_library.hpp"
+#include "app/model/representation/representation_library.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
 #include "app/old_app/io/writer/serialized_object.hpp"
-#include "app/old_app/model/renderer/render_effect_preset.hpp"
-#include "app/old_app/model/renderer/render_effect_preset_library.hpp"
-#include "app/old_app/model/representation/representation_library.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/camera_manager.hpp"
 #include "app/old_app/object3d/scene.hpp"
@@ -16,7 +16,7 @@
 #include <string>
 #include <util/math.hpp>
 
-namespace VTX::Action::Setting
+namespace VTX::App::Action::Setting
 {
 	void Load::execute()
 	{
@@ -290,56 +290,55 @@ namespace VTX::Action::Setting
 
 	void ApplyAllSettings::execute()
 	{
-		VTX_ACTION( new Action::Setting::ChangeSymbolDisplayMode( _setting.getSymbolDisplayMode() ) );
-		VTX_ACTION( new Action::Setting::ChangeCheckVTXUpdateAtLaunch( _setting.getCheckVTXUpdateAtLaunch() ) );
-		VTX_ACTION( new Action::Setting::ActivatePortableSave( _setting.isPortableSaveActivated() ) );
+		VTX_ACTION<ChangeSymbolDisplayMode>( _setting.getSymbolDisplayMode() );
+		VTX_ACTION<ChangeCheckVTXUpdateAtLaunch>( _setting.getCheckVTXUpdateAtLaunch() );
+		VTX_ACTION<ActivatePortableSave>( _setting.isPortableSaveActivated() );
 
-		VTX_ACTION( new Action::Setting::ActiveRenderer( _setting.getActivateRenderer() ) );
-		VTX_ACTION( new Action::Setting::ForceRenderer( _setting.getForceRenderer() ) );
+		VTX_ACTION<ActiveRenderer>( _setting.getActivateRenderer() );
+		VTX_ACTION<ForceRenderer>( _setting.getForceRenderer() );
 
 		// Active AA before changing representation effet preset to prevent assert call
-		VTX_ACTION( new Action::Setting::ActiveAA( _setting.getAA() ) );
+		VTX_ACTION<ActiveAA>( _setting.getAA() );
 
-		// VTX_ACTION( new Action::Setting::ChangeDefaultRepresentation( _setting.getDefaultRepresentationIndex() )
-		// ); VTX_ACTION( 	new Action::Setting::ChangeDefaultRenderEffectPreset(
+		// VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentation( _setting.getDefaultRepresentationIndex() )
+		// ); VTX_ACTION( 	new App::Action::Setting::ChangeDefaultRenderEffectPreset(
 		//_setting.getDefaultRenderEffectPresetIndex() ) );
 
-		VTX_ACTION( new Action::Setting::ActiveVerticalSync( _setting.getVSync() ) );
+		VTX_ACTION<ActiveVerticalSync>( _setting.getVSync() );
 
-		VTX_ACTION( new Action::Setting::ChangeSnapshotFormat( _setting.getSnapshotFormat() ) );
-		VTX_ACTION( new Action::Setting::ChangeBackgroundOpacity( _setting.getSnapshotBackgroundOpacity() ) );
-		VTX_ACTION( new Action::Setting::ChangeSnapshotQuality( _setting.getSnapshotQuality() ) );
-		VTX_ACTION( new Action::Setting::ChangeSnapshotResolution( _setting.getSnapshotResolution() ) );
+		VTX_ACTION<ChangeSnapshotFormat>( _setting.getSnapshotFormat() );
+		VTX_ACTION<ChangeBackgroundOpacity>( _setting.getSnapshotBackgroundOpacity() );
+		VTX_ACTION<ChangeSnapshotQuality>( _setting.getSnapshotQuality() );
+		VTX_ACTION<ChangeSnapshotResolution>( _setting.getSnapshotResolution() );
 
-		VTX_ACTION( new Action::Setting::ChangeCameraFov( _setting.getCameraFOV() ) );
-		VTX_ACTION(
-			new Action::Setting::ChangeCameraClip( _setting.getCameraNearClip(), _setting.getCameraFarClip() ) );
-		VTX_ACTION( new Action::Setting::ChangeCameraProjectionToPerspective( _setting.getCameraPerspective() ) );
+		VTX_ACTION<ChangeCameraFov>( _setting.getCameraFOV() );
+		VTX_ACTION<ChangeCameraClip>( _setting.getCameraNearClip(), _setting.getCameraFarClip() );
+		VTX_ACTION<ChangeCameraProjectionToPerspective>( _setting.getCameraPerspective() );
 
-		VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( _setting.getTranslationSpeed() ) );
-		VTX_ACTION( new Action::Setting::ChangeAccelerationFactorSpeed( _setting.getAccelerationSpeedFactor() ) );
-		VTX_ACTION( new Action::Setting::ChangeDecelerationFactorSpeed( _setting.getDecelerationSpeedFactor() ) );
-		VTX_ACTION( new Action::Setting::ChangeRotationSpeed( _setting.getRotationSpeed() ) );
-		VTX_ACTION( new Action::Setting::ActiveYAxisInversion( _setting.getYAxisInverted() ) );
+		VTX_ACTION<ChangeTranslationSpeed>( _setting.getTranslationSpeed() );
+		VTX_ACTION<ChangeAccelerationFactorSpeed>( _setting.getAccelerationSpeedFactor() );
+		VTX_ACTION<ChangeDecelerationFactorSpeed>( _setting.getDecelerationSpeedFactor() );
+		VTX_ACTION<ChangeRotationSpeed>( _setting.getRotationSpeed() );
+		VTX_ACTION<ActiveYAxisInversion>( _setting.getYAxisInverted() );
 
-		VTX_ACTION( new Action::Setting::ActiveControllerElasticity( _setting.getControllerElasticityActive() ) );
-		VTX_ACTION( new Action::Setting::ChangeControllerElasticity( _setting.getControllerElasticityFactor() ) );
+		VTX_ACTION<ActiveControllerElasticity>( _setting.getControllerElasticityActive() );
+		VTX_ACTION<ChangeControllerElasticity>( _setting.getControllerElasticityFactor() );
 
-		VTX_ACTION( new Action::Setting::ChangeDefaultTrajectorySpeed( _setting.getDefaultTrajectorySpeed() ) );
-		VTX_ACTION( new Action::Setting::ChangeDefaultTrajectoryPlayMode( _setting.getDefaultTrajectoryPlayMode() ) );
+		VTX_ACTION<ChangeDefaultTrajectorySpeed>( _setting.getDefaultTrajectorySpeed() );
+		VTX_ACTION<ChangeDefaultTrajectoryPlayMode>( _setting.getDefaultTrajectoryPlayMode() );
 	}
 
 	void ReloadSetting::execute()
 	{
-		VTX_ACTION( new Action::Setting::Load() );
-		VTX_ACTION( new Action::Setting::ApplyAllSettings( VTX_SETTING() ) );
+		VTX_ACTION<Load>();
+		VTX_ACTION<ApplyAllSettings>( VTX_SETTING() );
 	}
 
 	void RestoreSetting::execute()
 	{
 		VTX_SETTING().restore();
-		VTX_ACTION( new Action::Setting::ApplyAllSettings( VTX_SETTING() ) );
+		VTX_ACTION<ApplyAllSettings>( VTX_SETTING() );
 	}
 	void RestoreDefaultRepresentationPerCategory::execute() { VTX_SETTING().restoreDefaultRepresentationPerCategory(); }
 
-} // namespace VTX::Action::Setting
+} // namespace VTX::App::Action::Setting

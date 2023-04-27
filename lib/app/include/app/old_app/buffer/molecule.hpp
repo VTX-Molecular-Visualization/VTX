@@ -4,7 +4,7 @@
 #include "base_buffer_opengl.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include <util/types.hpp>
-#include "app/old_app/model/base_model.hpp"
+#include "app/core/model/base_model.hpp"
 #include "app/old_app/renderer/gl/vertex_array.hpp"
 #include <vector>
 
@@ -23,7 +23,7 @@ namespace VTX
 			void setAtomColors( const std::vector<Color::Rgba> & );
 			void setAtomVisibilities( const std::vector<uint> & );
 			void setAtomSelections( const std::vector<uint> & );
-			void setAtomIds( const std::vector<Model::ID> & );
+			void setAtomIds( const std::vector<App::Core::Model::ID> & );
 			void setBonds( const std::vector<uint> & );
 
 			inline Renderer::GL::Buffer & getBufferPositions() { return _vboAtomPositions; }

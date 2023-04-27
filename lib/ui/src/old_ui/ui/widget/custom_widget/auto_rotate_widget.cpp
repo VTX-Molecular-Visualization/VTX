@@ -2,7 +2,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/transformable.hpp>
 #include <app/old_app/setting.hpp>
 #include <app/old_app/trajectory/trajectory_enum.hpp>
@@ -95,7 +95,7 @@ namespace VTX::UI::Widget::CustomWidget
 		for ( const Generic::BaseAutoRotate * const target : _targets )
 			setPlay = setPlay && !target->isAutoRotationPlaying();
 
-		VTX_ACTION( new Action::Transformable::SetAutoRotationPlay( _targets, setPlay ) );
+		VTX_ACTION( new App::Action::Transformable::SetAutoRotationPlay( _targets, setPlay ) );
 	}
 	void AutoRotateWidget::_speedChange( const float p_speed ) const
 	{
@@ -111,7 +111,7 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 
 		if ( dataChange )
-			VTX_ACTION( new Action::Transformable::SetAutoRotationSpeed( _targets, p_speed ) );
+			VTX_ACTION( new App::Action::Transformable::SetAutoRotationSpeed( _targets, p_speed ) );
 	}
 
 	void AutoRotateWidget::_orientationChange( const Vec3f & p_orientation ) const
@@ -128,7 +128,7 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 
 		if ( dataChange )
-			VTX_ACTION( new Action::Transformable::SetAutoRotationOrientation( _targets, p_orientation ) );
+			VTX_ACTION( new App::Action::Transformable::SetAutoRotationOrientation( _targets, p_orientation ) );
 	}
 
 	void AutoRotateWidget::_orientationDragged( const Vec3f & p_delta ) const
@@ -136,7 +136,7 @@ namespace VTX::UI::Widget::CustomWidget
 		if ( p_delta == VEC3F_ZERO )
 			return;
 
-		VTX_ACTION( new Action::Transformable::AddToAutoRotationOrientation( _targets, p_delta ) );
+		VTX_ACTION( new App::Action::Transformable::AddToAutoRotationOrientation( _targets, p_delta ) );
 	}
 
 } // namespace VTX::UI::Widget::CustomWidget

@@ -7,11 +7,11 @@
 #include "ui/qt/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QAction>
 #include <QMenu>
-#include <app/old_app/event/base_event_receiver_vtx.hpp>
+#include <app/core/event/base_event_receiver_vtx.hpp>
 
 namespace VTX::UI::QT::Tool
 {
-	class PanelDisplayTool : public BaseQtTool, public VTX::Event::BaseEventReceiverVTX
+	class PanelDisplayTool : public BaseQtTool, public VTX::App::Core::Event::BaseEventReceiverVTX
 	{
 		REGISTER_TOOL( PanelDisplayTool, UI_FEATURE_PANEL_DISPLAY );
 
@@ -19,7 +19,7 @@ namespace VTX::UI::QT::Tool
 		PanelDisplayTool();
 		void instantiateTool() override;
 
-		virtual void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		virtual void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 	  private:
 		QMenu *									 _panelListMenu	  = nullptr;

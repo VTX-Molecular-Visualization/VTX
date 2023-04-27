@@ -1,6 +1,6 @@
 #include "app/old_app/io/chemfiles_io.hpp"
-#include "app/old_app/worker/base_thread.hpp"
-#include "app/old_app/worker/base_worker.hpp"
+#include "app/core/worker/base_thread.hpp"
+#include "app/core/worker/base_worker.hpp"
 #include <chemfiles.hpp>
 #include <util/logger.hpp>
 

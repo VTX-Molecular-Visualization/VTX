@@ -1,7 +1,7 @@
 #include "app/old_app/util/bond_guessing/bond_order_guessing.hpp"
-#include "app/old_app/model/bond.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/residue.hpp"
+#include "app/model/bond.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/residue.hpp"
 #include "app/old_app/util/chemfiles.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include <optional>

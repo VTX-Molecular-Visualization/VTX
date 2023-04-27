@@ -1,10 +1,11 @@
 #include "tool/old_tool/model/measurement/dihedral_angle.hpp"
 #include "tool/old_tool/util/measurement.hpp"
-#include <app/old_app/event/event.hpp>
-#include <app/old_app/event/event_manager.hpp>
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/core/event/vtx_event.hpp>
+#include <app/mvc.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/molecule.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <util/math.hpp>
 #include <variant>
@@ -16,9 +17,9 @@ namespace VTX::Model::Measurement
 		_atoms.resize( 4, nullptr );
 		_moleculeViews.resize( 4, nullptr );
 
-		_registerEvent( Event::Global::MOLECULE_REMOVED );
-		_registerEvent( Event::Global::ATOM_REMOVED );
-		_registerEvent( Event::Global::LABEL_REMOVED );
+		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
+		_registerEvent( VTX::App::Event::Global::ATOM_REMOVED );
+		_registerEvent( VTX::App::Event::Global::LABEL_REMOVED );
 
 		setAutoNaming( true, false );
 	}
@@ -34,14 +35,14 @@ namespace VTX::Model::Measurement
 
 	DihedralAngle ::~DihedralAngle() {}
 
-	void DihedralAngle::receiveEvent( const Event::VTXEvent & p_event )
+	void DihedralAngle::receiveEvent( const App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == Event::Global::ATOM_REMOVED )
+		if ( p_event.name == VTX::App::Event::Global::ATOM_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Atom> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Atom> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Atom *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Atom *> &>( p_event );
 
-			if ( _isLinkedToAtom( castedEvent.ptr ) )
+			if ( _isLinkedToAtom( castedEvent.get() ) )
 			{
 				// TODO : Use a manager instead of managing scene from model
 				VTXApp::get().getScene().removeLabel( this );
@@ -49,12 +50,12 @@ namespace VTX::Model::Measurement
 				VTXApp::get().deleteAtEndOfFrame( this );
 			}
 		}
-		else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Molecule> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
 
-			if ( _isLinkedToMolecule( castedEvent.ptr ) )
+			if ( _isLinkedToMolecule( castedEvent.get() ) )
 			{
 				// TODO : Use a manager instead of managing scene from model
 				VTXApp::get().getScene().removeLabel( this );
@@ -62,12 +63,12 @@ namespace VTX::Model::Measurement
 				VTXApp::get().deleteAtEndOfFrame( this );
 			}
 		}
-		else if ( p_event.name == Event::Global::LABEL_REMOVED )
+		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
 		{
-			const Event::VTXEventPtr<Model::Label> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Label> &>( p_event );
+			const App::Core::Event::VTXEventArg<Model::Label *> & castedEvent
+				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label *> &>( p_event );
 
-			if ( castedEvent.ptr == this )
+			if ( castedEvent.get() == this )
 				_cleanViews();
 		}
 	}
@@ -193,7 +194,7 @@ namespace VTX::Model::Measurement
 				if ( std::find( viewedMolecules.begin(), viewedMolecules.end(), molecule ) == viewedMolecules.end() )
 				{
 					MoleculeView * const moleculeView
-						= MVC::MvcManager::get().instantiateView<MoleculeView>( molecule, getViewID( i ) );
+						= VTX::MVC_MANAGER().instantiateView<MoleculeView>( molecule, getViewID( i ) );
 
 					moleculeView->setCallback( this, &DihedralAngle::_onMoleculeChange );
 					_moleculeViews[ i ] = moleculeView;
@@ -213,22 +214,22 @@ namespace VTX::Model::Measurement
 		{
 			if ( _moleculeViews[ i ] != nullptr )
 			{
-				MVC::MvcManager::get().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
+				VTX::MVC_MANAGER().deleteView( _atoms[ i ]->getMoleculePtr(), getViewID( i ) );
 				_moleculeViews[ i ] = nullptr;
 			}
 		}
 	}
 
-	void DihedralAngle::_onMoleculeChange( const Model::Molecule * const p_molecule,
-										   const Event::VTXEvent * const p_event )
+	void DihedralAngle::_onMoleculeChange( const Model::Molecule * const				 p_molecule,
+										   const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
 		bool recomputeAngle = false;
-		if ( p_event->name == Event::Model::TRANSFORM_CHANGE )
+		if ( p_event->name == App::Event::Model::TRANSFORM_CHANGE )
 		{
 			recomputeAngle = !_isAllAtomsOnSameMolecule;
 			_invalidateAABB();
 		}
-		else if ( p_event->name == Event::Model::TRAJECTORY_FRAME_CHANGE )
+		else if ( p_event->name == App::Event::Model::TRAJECTORY_FRAME_CHANGE )
 		{
 			recomputeAngle = true;
 			_invalidateAABB();
@@ -270,10 +271,10 @@ namespace VTX::Model::Measurement
 
 	VTX::ID::VTX_ID DihedralAngle::getViewID( const int p_atomPos ) const
 	{
-		return MVC::MvcManager::get().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
-													  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
+		return VTX::MVC_MANAGER().generateViewID(
+			VTX::ID::View::MEASUREMENT_ON_MOLECULE, std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 	}
 
-	void DihedralAngle::autoDelete() const { MVC::MvcManager::get().deleteModel( this ); }
+	void DihedralAngle::autoDelete() const { VTX::MVC_MANAGER().deleteModel( this ); }
 
 } // namespace VTX::Model::Measurement

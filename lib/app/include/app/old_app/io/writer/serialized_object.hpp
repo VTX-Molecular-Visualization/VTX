@@ -4,8 +4,8 @@
 #include "base_writer.hpp"
 #include "app/old_app/define.hpp"
 #include "app/old_app/io/serializer.hpp"
-#include "app/old_app/worker/base_thread.hpp"
-#include "app/old_app/worker/base_worker.hpp"
+#include "app/core/worker/base_thread.hpp"
+#include "app/core/worker/base_worker.hpp"
 // #include <QFile>
 // #include <QTextStream>
 #include <nlohmann/json.hpp>
@@ -18,8 +18,8 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		SerializedObject() : _thread( nullptr ) {}
-		SerializedObject( const Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
-		SerializedObject( const Worker::BaseWorker * const p_worker ) : _thread( nullptr ) {}
+		SerializedObject( const VTX::Core::Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
+		SerializedObject( const VTX::Core::Worker::BaseWorker * const p_worker ) : _thread( nullptr ) {}
 
 		void writeFile( const FilePath & p_path, const T & p_data ) override
 		{
@@ -79,7 +79,7 @@ namespace VTX::IO::Writer
 		}
 
 	  private:
-		const Worker::BaseThread * const _thread;
+		const VTX::Core::Worker::BaseThread * const _thread;
 	};
 } // namespace VTX::IO::Writer
 #endif

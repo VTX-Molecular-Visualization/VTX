@@ -1,9 +1,9 @@
 #include "ui/old_ui/ui/widget/representation/representation_library_combo_box.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/old_app/model/representation/representation_library.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
+#include <app/model/representation/representation_library.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/representation/representation_manager.hpp>
-#include <app/old_app/view/callback_view.hpp>
+#include <app/core/view/callback_view.hpp>
 
 namespace VTX::UI::Widget::Representation
 {
@@ -16,8 +16,8 @@ namespace VTX::UI::Widget::Representation
 	RepresentationLibraryComboBox::~RepresentationLibraryComboBox()
 	{
 		// Check view if setting window destroy before combo box (view can be destroyed twice)
-		if ( MVC::MvcManager::get().hasView( &Model::Representation::RepresentationLibrary::get(), _viewID ) )
-			MVC::MvcManager::get().deleteView( &Model::Representation::RepresentationLibrary::get(), _viewID );
+		if ( VTX::MVC_MANAGER().hasView( &Model::Representation::RepresentationLibrary::get(), _viewID ) )
+			VTX::MVC_MANAGER().deleteView( &Model::Representation::RepresentationLibrary::get(), _viewID );
 	}
 
 	void RepresentationLibraryComboBox::_setupUi( const QString & p_name )
@@ -25,10 +25,10 @@ namespace VTX::UI::Widget::Representation
 		BaseManualWidget::_setupUi( p_name );
 		_fillItemList();
 
-		View::CallbackView<Model::Representation::RepresentationLibrary, RepresentationLibraryComboBox> * const view
-			= MVC::MvcManager::get()
+		App::Core::View::CallbackView<Model::Representation::RepresentationLibrary, RepresentationLibraryComboBox> * const view
+			= VTX::MVC_MANAGER()
 				  .instantiateView<
-					  View::CallbackView<Model::Representation::RepresentationLibrary, RepresentationLibraryComboBox>>(
+					  App::Core::View::CallbackView<Model::Representation::RepresentationLibrary, RepresentationLibraryComboBox>>(
 					  &Model::Representation::RepresentationLibrary::get(), _viewID );
 
 		view->setCallback( this, &RepresentationLibraryComboBox::_onRepresentationLibraryChange );
@@ -81,10 +81,10 @@ namespace VTX::UI::Widget::Representation
 		}
 	}
 
-	void RepresentationLibraryComboBox::_onRepresentationLibraryChange( const VTX::Event::VTXEvent * const p_event )
+	void RepresentationLibraryComboBox::_onRepresentationLibraryChange( const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == VTX::Event::Model::DISPLAY_NAME_CHANGE
-			 || p_event->name == VTX::Event::Model::DATA_CHANGE )
+		if ( p_event->name == VTX::App::Event::Model::DISPLAY_NAME_CHANGE
+			 || p_event->name == VTX::App::Event::Model::DATA_CHANGE )
 		{
 			_fillItemList();
 

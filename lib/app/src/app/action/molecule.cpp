@@ -1,8 +1,8 @@
 #include "app/action/molecule.hpp"
-#include "app/old_app/model/generated_molecule.hpp"
-#include "app/old_app/model/representation/representation.hpp"
-#include "app/old_app/model/representation/representation_library.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
+#include "app/model/generated_molecule.hpp"
+#include "app/model/representation/representation.hpp"
+#include "app/model/representation/representation_library.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/setting.hpp"
@@ -10,7 +10,7 @@
 #include "app/old_app/vtx_app.hpp"
 #include <util/math.hpp>
 
-namespace VTX::Action::Molecule
+namespace VTX::App::Action::Molecule
 {
 	void RefreshSolventExcludedSurface::execute()
 	{
@@ -181,13 +181,13 @@ namespace VTX::Action::Molecule
 	void Delete::execute()
 	{
 		VTXApp::get().getScene().removeMolecule( &_molecule );
-		MVC::MvcManager::get().deleteModel( &_molecule );
+		VTX::MVC_MANAGER().deleteModel( &_molecule );
 	}
 
 	void Copy::execute()
 	{
 		Model::GeneratedMolecule * generatedMolecule
-			= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+			= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
 
 		generatedMolecule->copyFromMolecule( _target );
 		generatedMolecule->applyTransform( _target.getTransform() );
@@ -204,4 +204,4 @@ namespace VTX::Action::Molecule
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
 
-} // namespace VTX::Action::Molecule
+} // namespace VTX::App::Action::Molecule

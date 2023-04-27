@@ -1,11 +1,11 @@
 #include "app/action/residue.hpp"
-#include "app/old_app/model/generated_molecule.hpp"
-#include "app/old_app/model/molecule.hpp"
-#include "app/old_app/model/representation/representation.hpp"
-#include "app/old_app/model/representation/representation_library.hpp"
-#include "app/old_app/model/residue.hpp"
-#include "app/old_app/model/selection.hpp"
-#include "app/old_app/mvc/mvc_manager.hpp"
+#include "app/mvc.hpp"
+#include "app/model/generated_molecule.hpp"
+#include "app/model/molecule.hpp"
+#include "app/model/representation/representation.hpp"
+#include "app/model/representation/representation_library.hpp"
+#include "app/model/residue.hpp"
+#include "app/model/selection.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
@@ -15,7 +15,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace VTX::Action::Residue
+namespace VTX::App::Action::Residue
 {
 	void ChangeColor::execute()
 	{
@@ -119,7 +119,7 @@ namespace VTX::Action::Residue
 		if ( molecule->isEmpty() )
 		{
 			VTXApp::get().getScene().removeMolecule( molecule );
-			MVC::MvcManager::get().deleteModel( molecule );
+			VTX::MVC_MANAGER().deleteModel( molecule );
 		}
 		else
 		{
@@ -134,7 +134,7 @@ namespace VTX::Action::Residue
 	void Copy::execute()
 	{
 		Model::GeneratedMolecule * generatedMolecule
-			= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+			= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
 
 		generatedMolecule->copyFromResidue( _target );
 		generatedMolecule->applyTransform( _target.getMoleculePtr()->getTransform() );
@@ -147,7 +147,7 @@ namespace VTX::Action::Residue
 		VTX::Selection::SelectionManager::get().getSelectionModel().clear();
 
 		Model::GeneratedMolecule * const generatedMolecule
-			= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+			= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
 
 		generatedMolecule->extractResidue( _target );
 		VTXApp::get().getScene().addMolecule( generatedMolecule );
@@ -161,4 +161,4 @@ namespace VTX::Action::Residue
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
 
-} // namespace VTX::Action::Residue
+} // namespace VTX::App::Action::Residue

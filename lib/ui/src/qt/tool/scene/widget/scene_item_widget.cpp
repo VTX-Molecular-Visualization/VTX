@@ -9,13 +9,14 @@
 #include "ui/qt/util.hpp"
 #include <QAbstractItemModel>
 #include <QDrag>
+#include <app/mvc.hpp>
+#include <app/event/global.hpp>
+#include <app/model/atom.hpp>
+#include <app/model/category.hpp>
+#include <app/model/chain.hpp>
+#include <app/model/residue.hpp>
+#include <app/model/selection.hpp>
 #include <app/old_app/generic/base_visible.hpp>
-#include <app/old_app/model/atom.hpp>
-#include <app/old_app/model/category.hpp>
-#include <app/old_app/model/chain.hpp>
-#include <app/old_app/model/residue.hpp>
-#include <app/old_app/model/selection.hpp>
-#include <app/old_app/mvc/mvc_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 #include <stack>
 #include <util/logger.hpp>
@@ -24,25 +25,25 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 {
 	SceneItemWidget::SceneItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ), DraggableItem( this )
 	{
-		_registerEvent( VTX::Event::Global::SELECTION_CHANGE );
-		_registerEvent( VTX::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::SELECTION_CHANGE );
+		_registerEvent( VTX::App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE );
 	}
 
-	void SceneItemWidget::receiveEvent( const VTX::Event::VTXEvent & p_event )
+	void SceneItemWidget::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event )
 	{
-		if ( p_event.name == VTX::Event::Global::SELECTION_CHANGE )
+		if ( p_event.name == VTX::App::Event::Global::SELECTION_CHANGE )
 		{
-			const VTX::Event::VTXEventPtr<Model::Selection> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<Model::Selection> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<const Model::Selection *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const Model::Selection *> &>( p_event );
 
-			_refreshSelection( *castedEvent.ptr );
+			_refreshSelection( *castedEvent.get() );
 		}
-		else if ( p_event.name == VTX::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE )
+		else if ( p_event.name == VTX::App::Event::Global::CURRENT_ITEM_IN_SELECTION_CHANGE )
 		{
-			const VTX::Event::VTXEventPtr<const Model::BaseModel> & castedEvent
-				= dynamic_cast<const VTX::Event::VTXEventPtr<const Model::BaseModel> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<const App::Core::Model::BaseModel *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const App::Core::Model::BaseModel *> &>( p_event );
 
-			_refreshCurrentItemInSelection( castedEvent.ptr );
+			_refreshCurrentItemInSelection( castedEvent.get() );
 		}
 	}
 
@@ -66,7 +67,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		setEditTriggers( EditTrigger::SelectedClicked );
 		setExpandsOnDoubleClick( false );
 
-		Model::BaseModel & vtxModel = MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() );
+		App::Core::Model::BaseModel & vtxModel = VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( getModelID() );
 		setSelectionModel( new SceneItemSelectionModel( &vtxModel, model(), this ) );
 
 		_createTopLevelObject();
@@ -81,7 +82,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void SceneItemWidget::localize() {}
 
-	void SceneItemWidget::openRenameEditor( const Model::ID & p_modelID )
+	void SceneItemWidget::openRenameEditor( const App::Core::Model::ID & p_modelID )
 	{
 		QTreeWidgetItem * const itemWidget = _findItemFromModelID( p_modelID );
 
@@ -90,12 +91,12 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	}
 	void SceneItemWidget::_openRenameEditor( QTreeWidgetItem & p_target ) { editItem( &p_target ); }
 
-	std::vector<Model::ID> SceneItemWidget::getAllItemsFrom( const Model::BaseModel & p_model ) const
+	std::vector<App::Core::Model::ID> SceneItemWidget::getAllItemsFrom( const App::Core::Model::BaseModel & p_model ) const
 	{
 		// Default return for scene item without subitems
 		return { getModelID() };
 	}
-	std::vector<Model::ID> SceneItemWidget::getAllItemsTo( const Model::BaseModel & p_model ) const
+	std::vector<App::Core::Model::ID> SceneItemWidget::getAllItemsTo( const App::Core::Model::BaseModel & p_model ) const
 	{
 		// Default return for scene item without subitems
 		return { getModelID() };
@@ -256,29 +257,29 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	}
 	void SceneItemWidget::_refreshItemsVisibilityRecursive( QTreeWidgetItem & p_widget )
 	{
-		const Model::ID	   itemID	 = _getModelIDFromItem( p_widget );
-		const ID::VTX_ID & modelType = MVC::MvcManager::get().getModelTypeID( itemID );
+		const App::Core::Model::ID	   itemID	 = _getModelIDFromItem( p_widget );
+		const ID::VTX_ID & modelType = VTX::MVC_MANAGER().getModelTypeID( itemID );
 
 		bool visibility;
 		if ( modelType == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			visibility = MVC::MvcManager::get().getModel<Model::Molecule>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<Model::Molecule>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_CATEGORY )
 		{
-			visibility = MVC::MvcManager::get().getModel<Model::Category>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<Model::Category>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_CHAIN )
 		{
-			visibility = MVC::MvcManager::get().getModel<Model::Chain>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<Model::Chain>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_RESIDUE )
 		{
-			visibility = MVC::MvcManager::get().getModel<Model::Residue>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<Model::Residue>( itemID ).isVisible();
 		}
 		else if ( modelType == VTX::ID::Model::MODEL_ATOM )
 		{
-			visibility = MVC::MvcManager::get().getModel<Model::Atom>( itemID ).isVisible();
+			visibility = VTX::MVC_MANAGER().getModel<Model::Atom>( itemID ).isVisible();
 		}
 		else
 		{
@@ -307,12 +308,12 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void SceneItemWidget::_createTopLevelObject()
 	{
-		const Model::BaseModel & model = MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() );
+		const App::Core::Model::BaseModel & model = VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( getModelID() );
 
 		QTreeWidgetItem * const topLevelItem = new QTreeWidgetItem();
 		topLevelItem->setFlags( topLevelItem->flags() | Qt::ItemFlag::ItemIsEditable );
 
-		topLevelItem->setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( model.getId() ) );
+		topLevelItem->setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::App::Core::Model::ID>( model.getId() ) );
 		topLevelItem->setText( 0, QString::fromStdString( model.getDefaultName() ) );
 		topLevelItem->setIcon( 0, *VTX::UI::Style::IconConst::get().getModelSymbol( model.getTypeId() ) );
 
@@ -325,13 +326,14 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-		const Model::ID & itemModel = _getModelIDFromItem( p_itemToSelect );
-		const ID::VTX_ID  itemType	= MVC::MvcManager::get().getModelTypeID( itemModel );
+		const App::Core::Model::ID & itemModel = _getModelIDFromItem( p_itemToSelect );
+		const ID::VTX_ID  itemType	= VTX::MVC_MANAGER().getModelTypeID( itemModel );
 
 		p_itemToSelect.treeWidget()->setFocus( Qt::FocusReason::TabFocusReason );
 		p_itemToSelect.treeWidget()->setCurrentItem( &p_itemToSelect );
 
-		selectionModel.selectModel( MVC::MvcManager::get().getModel<Model::BaseModel>( itemModel ), p_append );
+		selectionModel.selectModel( VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( itemModel ),
+									p_append );
 	}
 
 	void SceneItemWidget::_refreshSize()
@@ -386,17 +388,17 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	bool SceneItemWidget::_itemCanBeRenamed( const QTreeWidgetItem * p_item ) { return true; }
 
-	Model::ID SceneItemWidget::_getModelIDFromItem( const QTreeWidgetItem & p_item ) const
+	App::Core::Model::ID SceneItemWidget::_getModelIDFromItem( const QTreeWidgetItem & p_item ) const
 	{
 		const QVariant & dataID = p_item.data( 0, MODEL_ID_ROLE );
-		return dataID.value<VTX::Model::ID>();
+		return dataID.value<VTX::App::Core::Model::ID>();
 	}
-	QTreeWidgetItem * SceneItemWidget::_findItemFromModelID( const Model::ID & p_id ) const
+	QTreeWidgetItem * SceneItemWidget::_findItemFromModelID( const App::Core::Model::ID & p_id ) const
 	{
 		return _findItemFromModelIDRecursive( *topLevelItem( 0 ), p_id );
 	}
 	QTreeWidgetItem * SceneItemWidget::_findItemFromModelIDRecursive( QTreeWidgetItem & p_parent,
-																	  const Model::ID & p_id ) const
+																	  const App::Core::Model::ID & p_id ) const
 	{
 		if ( _getModelIDFromItem( p_parent ) == p_id )
 			return &p_parent;
@@ -427,14 +429,14 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		const Model::Selection & selectionModel	 = VTX::Selection::SelectionManager::get().getSelectionModel();
 		const bool				 isModelSelected = selectionModel.isModelSelected( getModelID() );
 
-		const Model::BaseModel * const modelDragged
+		const App::Core::Model::BaseModel * const modelDragged
 			= isModelSelected ? &( selectionModel )
-							  : &( MVC::MvcManager::get().getModel<Model::BaseModel>( getModelID() ) );
+							  : &( VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( getModelID() ) );
 
 		return MimeType::generateMimeDataFromModel( *modelDragged, MimeType::DragSource::SCENE_VIEW );
 	}
 
-	void SceneItemWidget::_refreshCurrentItemInSelection( const Model::BaseModel * const p_obj )
+	void SceneItemWidget::_refreshCurrentItemInSelection( const App::Core::Model::BaseModel * const p_obj )
 	{
 		_enableSignals( false );
 		if ( p_obj == nullptr )

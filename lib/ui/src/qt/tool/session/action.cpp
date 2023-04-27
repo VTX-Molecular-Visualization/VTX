@@ -3,16 +3,16 @@
 #include "ui/qt/state/state_machine.hpp"
 #include "ui/qt/state/visualization.hpp"
 #include "ui/qt/tool/session/dialog.hpp"
-#include <app/core/action/action_manager.hpp>
 #include <app/action/main.hpp>
+#include <app/core/worker/worker_manager.hpp>
+
 #include <app/old_app/id.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
-#include <app/old_app/worker/loader.hpp>
-#include <app/old_app/worker/saver.hpp>
-#include <app/old_app/worker/scene_loader.hpp>
-#include <app/old_app/worker/worker_manager.hpp>
+#include <app/worker/loader.hpp>
+#include <app/worker/saver.hpp>
+#include <app/worker/scene_loader.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Tool::Session::Action
@@ -41,7 +41,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 			if ( _paths.empty() )
 				return;
 
-			Worker::CallbackThread callback = Worker::CallbackThread(
+			VTX::Core::Worker::CallbackThread callback = VTX::Core::Worker::CallbackThread(
 				[ this ]( const uint p_code )
 				{
 					if ( p_code )
@@ -61,15 +61,15 @@ namespace VTX::UI::QT::Tool::Session::Action
 	{
 		if ( !_trajectoryTargets.empty() )
 		{
-			VTX_ACTION( new VTX::Action::Main::Open( _paths[ 0 ], *_trajectoryTargets[ 0 ] ) );
+			VTX_ACTION( new VTX::App::Action::Main::Open( _paths[ 0 ], *_trajectoryTargets[ 0 ] ) );
 		}
 		else if ( !_buffers.empty() )
 		{
-			VTX_ACTION( new VTX::Action::Main::Open( _buffers ) );
+			VTX_ACTION( new VTX::App::Action::Main::Open( _buffers ) );
 		}
 		else
 		{
-			VTX_ACTION( new VTX::Action::Main::Open( _paths ) );
+			VTX_ACTION( new VTX::App::Action::Main::Open( _paths ) );
 		}
 	}
 
@@ -82,7 +82,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 			return;
 		}
 
-		VTX::Action::Main::Save( _path, _callback );
+		VTX_ACTION( new VTX::App::Action::Main::Save( _path, _callback ) );
 	}
 
 	void ToggleCameraController::execute()

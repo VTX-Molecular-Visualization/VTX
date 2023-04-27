@@ -3,7 +3,7 @@
 
 #include "contextual_menu_template.hpp"
 #include <QMenu>
-#include <app/old_app/model/atom.hpp>
+#include <app/model/atom.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {

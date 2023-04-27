@@ -1,7 +1,7 @@
 #ifndef __VTX_UTIL_BOND_GUESSING_RECOMPUTATION__
 #define __VTX_UTIL_BOND_GUESSING_RECOMPUTATION__
 
-#include "app/old_app/model/molecule.hpp"
+#include "app/model/molecule.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #pragma warning( push, 0 )

@@ -1,12 +1,12 @@
 #ifndef __VTX_MODEL_MEASUREMENT_DISTANCE__
 #define __VTX_MODEL_MEASUREMENT_DISTANCE__
 
-#include <app/old_app/event/base_event_receiver_vtx.hpp>
-#include <app/old_app/event/event.hpp>
+#include <app/core/event/base_event_receiver_vtx.hpp>
+#include <app/core/event/vtx_event.hpp>
+#include <app/model/label.hpp>
 #include <app/old_app/generic/base_auto_delete.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/model/label.hpp>
-#include <app/old_app/view/callback_view.hpp>
+#include <app/core/view/callback_view.hpp>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,19 +19,19 @@ namespace VTX::Model
 
 namespace VTX::Model::Measurement
 {
-	class Distance : public Model::Label, Event::BaseEventReceiverVTX, Generic::BaseAutoDelete
+	class Distance : public Model::Label, public App::Core::Event::BaseEventReceiverVTX, public Generic::BaseAutoDelete
 	{
 		VTX_MODEL
 
 	  private:
-		using MoleculeView = View::CallbackView<Model::Molecule, Model::Measurement::Distance>;
+		using MoleculeView = App::Core::View::CallbackView<Model::Molecule, Model::Measurement::Distance>;
 
 	  public:
 		using AtomPair = std::pair<const Model::Atom &, const Model::Atom &>;
 
 	  public:
 		void setAtoms( const Model::Atom & p_firstAtom, const Model::Atom & p_secondAtom );
-		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const App::Core::Event::VTXEvent & p_event ) override;
 
 		void _recomputeAABB( Object3D::Helper::AABB & p_aabb ) override;
 
@@ -72,7 +72,8 @@ namespace VTX::Model::Measurement
 
 		VTX::ID::VTX_ID getViewID( const int p_atomPos ) const;
 
-		void _onMoleculeChange( const Model::Molecule * const p_molecule, const Event::VTXEvent * const p_event );
+		void _onMoleculeChange( const Model::Molecule * const				  p_molecule,
+								const VTX::App::Core::Event::VTXEvent * const p_event );
 	};
 
 } // namespace VTX::Model::Measurement

@@ -8,7 +8,7 @@
 #include "view/ribbon_widget.hpp"
 #include "view/sphere_widget.hpp"
 #include <QWidget>
-#include <app/old_app/model/representation/instantiated_representation.hpp>
+#include <app/model/representation/instantiated_representation.hpp>
 #include <unordered_set>
 
 namespace VTX::View::UI::Widget::Representation

@@ -1,10 +1,10 @@
 #include "ui/qt/state/export.hpp"
-#include <app/core/action/action_manager.hpp>
+
 #include <app/action/main.hpp>
-#include <app/old_app/model/path.hpp>
-#include <app/old_app/model/viewpoint.hpp>
+#include <app/model/path.hpp>
+#include <app/model/viewpoint.hpp>
 #include <app/old_app/vtx_app.hpp>
-#include <app/old_app/worker/program_launcher.hpp>
+#include <app/worker/program_launcher.hpp>
 #include <util/chrono.hpp>
 #include <util/filesystem.hpp>
 
@@ -77,7 +77,7 @@ namespace VTX::UI::QT::State
 		std::string counterStr = std::to_string( _frame );
 		std::string fileName   = "frame" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
 
-		VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
+		VTX_ACTION( new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
 												IO::Filesystem::getVideosPath( fileName + ".png" ) ) );
 
 		VTX_INFO( std::to_string( (uint)( _frame * 100 / _frameCount ) ) + "%" );

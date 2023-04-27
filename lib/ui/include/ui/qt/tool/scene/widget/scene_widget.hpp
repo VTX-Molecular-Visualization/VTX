@@ -16,8 +16,8 @@
 #include <QVariant>
 #include <map>
 #include <app/old_app/generic/base_scene_item.hpp>
-#include <app/old_app/model/base_model.hpp>
-#include <app/old_app/view/base_view.hpp>
+#include <app/core/model/base_model.hpp>
+#include <app/core/view/base_view.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
@@ -27,7 +27,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		NEW_ARCHI_VTX_WIDGET
 
 	  public:
-		void receiveEvent( const VTX::Event::VTXEvent & p_event ) override;
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 		void registerSceneItemType( const ID::VTX_ID & p_type, SceneItemWidgetInstancier * const p_instancier );
 
@@ -38,9 +38,9 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		SceneItemWidget *					   getPreviousSceneItemWidgets( SceneItemWidget * p_item ) const;
 		SceneItemWidget *					   getNextSceneItemWidgets( SceneItemWidget * p_item ) const;
 
-		SceneItemWidget * getSceneItemWidgetFromModel( const Model::BaseModel & p_model ) const;
+		SceneItemWidget * getSceneItemWidgetFromModel( const App::Core::Model::BaseModel & p_model ) const;
 
-		void openRenameEditor( const Model::ID & p_itemID ) const;
+		void openRenameEditor( const App::Core::Model::ID & p_itemID ) const;
 		void scrollToItem( const QTreeWidgetItem & p_item );
 
 	  protected:
@@ -71,15 +71,15 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		void _removeWidgetInLayout( SceneItemWidget * const p_sceneItemWidget );
 		void _refreshItemIndex();
 
-		int	 _findItemIndex( const Model::ID & p_modelID, const int p_startIndex = 0 ) const;
+		int	 _findItemIndex( const App::Core::Model::ID & p_modelID, const int p_startIndex = 0 ) const;
 		void _swapItems( const int p_lhs, const int p_rhs );
 
 		template<typename V,
 				 typename M,
-				 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
+				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
 				 typename = std::enable_if<std::is_base_of<Generic::BaseSceneItem, M>::value>,
 				 typename = std::enable_if<std::is_base_of<SceneItemWidget, V>::value>,
-				 typename = std::enable_if<std::is_base_of<VTX::View::BaseView<M>, V>::value>>
+				 typename = std::enable_if<std::is_base_of<VTX::App::Core::View::BaseView<M>, V>::value>>
 		void instantiateSceneItem( M * const		   p_model,
 								   const ID::VTX_ID &  p_viewID,
 								   const std::string & p_widgetName = "" )
@@ -96,16 +96,16 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		template<typename V,
 				 typename M,
-				 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
+				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
 				 typename = std::enable_if<std::is_base_of<SceneItemWidget, V>::value>,
-				 typename = std::enable_if<std::is_base_of<VTX::View::BaseView<M>, V>::value>>
+				 typename = std::enable_if<std::is_base_of<VTX::App::Core::View::BaseView<M>, V>::value>>
 		void deleteSceneItem( M * const p_model, const ID::VTX_ID & p_viewID )
 		{
-			V * const sceneItemWidget = MVC::MvcManager::get().getView<V>( p_model, p_viewID );
+			V * const sceneItemWidget = VTX::MVC_MANAGER().getView<V>( p_model, p_viewID );
 
 			_removeWidgetInLayout( sceneItemWidget );
 
-			MVC::MvcManager::get().deleteView<V>( p_model, p_viewID );
+			VTX::MVC_MANAGER().deleteView<V>( p_model, p_viewID );
 		}
 	};
 

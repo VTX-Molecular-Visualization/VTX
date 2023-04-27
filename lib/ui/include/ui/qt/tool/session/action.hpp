@@ -4,14 +4,14 @@
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/dialog.hpp"
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/model/molecule.hpp>
-#include <app/old_app/worker/worker_manager.hpp>
+#include <app/model/molecule.hpp>
+#include <app/core/worker/worker_manager.hpp>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Tool::Session::Action
 {
-	class Open : public VTX::Core::Action::BaseAction
+	class Open : public VTX::App::Core::Action::BaseAction
 	{
 	  private:
 		class LoadSceneClass
@@ -46,12 +46,12 @@ namespace VTX::UI::QT::Tool::Session::Action
 		std::vector<Model::Molecule *> _trajectoryTargets = std::vector<Model::Molecule *>();
 	};
 
-	class Save : public VTX::Core::Action::BaseAction
+	class Save : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit Save() : _path( "" ), _callback( nullptr ) {}
 		explicit Save( const FilePath & p_path ) : _path( p_path ), _callback( nullptr ) {}
-		explicit Save( const FilePath & p_path, Worker::CallbackThread * const p_callback ) :
+		explicit Save( const FilePath & p_path, VTX::Core::Worker::CallbackThread * const p_callback ) :
 			_path( p_path ), _callback( p_callback )
 		{
 		}
@@ -60,17 +60,17 @@ namespace VTX::UI::QT::Tool::Session::Action
 
 	  private:
 		const FilePath				   _path;
-		Worker::CallbackThread * const _callback;
+		VTX::Core::Worker::CallbackThread * const _callback;
 	};
 
-	class ToggleCameraController : public VTX::Core::Action::BaseAction
+	class ToggleCameraController : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ToggleCameraController() {}
 		virtual void execute() override;
 	};
 
-	class ChangeCameraController : public VTX::Core::Action::BaseAction
+	class ChangeCameraController : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeCameraController( const ID::VTX_ID & p_controllerId ) : _id( p_controllerId ) {}
@@ -80,7 +80,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 		const ID::VTX_ID _id;
 	};
 
-	class ResetCameraController : public VTX::Core::Action::BaseAction
+	class ResetCameraController : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ResetCameraController() {}
