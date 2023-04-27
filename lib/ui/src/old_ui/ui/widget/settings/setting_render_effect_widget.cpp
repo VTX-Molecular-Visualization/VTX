@@ -15,7 +15,7 @@ namespace VTX::UI::Widget::Settings
 
 		_presetLibrary
 			= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::Renderer::RenderEffectPresetLibraryView>(
-				&Model::Renderer::RenderEffectPresetLibrary::get(),
+				&App::Application::RenderEffect::RenderEffectLibrary::get(),
 				ID::View::UI_RENDER_EFFECT_PRESET_LIBRARY,
 				this,
 				"PresetLibrary" );
@@ -31,7 +31,7 @@ namespace VTX::UI::Widget::Settings
 	{
 		BaseManualWidget::showEvent( p_event );
 
-		const int currentPresetUsed = Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPresetIndex();
+		const int currentPresetUsed = App::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPresetIndex();
 		_presetLibrary->selectPreset( currentPresetUsed );
 	}
 

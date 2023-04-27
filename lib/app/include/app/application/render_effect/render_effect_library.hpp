@@ -1,20 +1,21 @@
-#ifndef __VTX_MODEL_RENDER_EFFECT_PRESET_LIBRARY__
-#define __VTX_MODEL_RENDER_EFFECT_PRESET_LIBRARY__
+#ifndef __VTX_APP_APPLICATION_RENDER_EFFECT_RENDER_EFFECT_PRESET_LIBRARY__
+#define __VTX_APP_APPLICATION_RENDER_EFFECT_RENDER_EFFECT_PRESET_LIBRARY__
 
 #include "app/core/event/vtx_event.hpp"
-#include "app/mvc.hpp"
 #include "app/core/model/base_model.hpp"
+#include "app/mvc.hpp"
 #include "render_effect_preset.hpp"
+#include <string>
 #include <vector>
 
-namespace VTX::Model::Renderer
+namespace VTX::App::Application::RenderEffect
 {
-	class RenderEffectPresetLibrary : public App::Core::Model::BaseModel
+	class RenderEffectLibrary : public App::Core::Model::BaseModel
 	{
 		VTX_MODEL
 
 	  public:
-		static RenderEffectPresetLibrary & get();
+		static RenderEffectLibrary & get();
 
 		RenderEffectPreset * const		 getPreset( const int p_index );
 		const RenderEffectPreset * const getPreset( const int p_index ) const;
@@ -51,8 +52,8 @@ namespace VTX::Model::Renderer
 		void resetToDefault();
 
 	  private:
-		RenderEffectPresetLibrary();
-		~RenderEffectPresetLibrary();
+		RenderEffectLibrary();
+		~RenderEffectLibrary();
 
 		void _generateDefaultPreset();
 		void _generateDefaultLibrary( const bool p_notify = true );
@@ -63,5 +64,5 @@ namespace VTX::Model::Renderer
 		RenderEffectPreset *			  _appliedPreset		   = nullptr;
 		RenderEffectPreset *			  _lastPresetQuickAccessed = nullptr;
 	};
-} // namespace VTX::Model::Renderer
+} // namespace VTX::App::Application::RenderEffect
 #endif

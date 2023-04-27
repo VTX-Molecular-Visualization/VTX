@@ -54,7 +54,7 @@ namespace VTX::UI
 //	namespace Model::Renderer
 //	{
 //		class RenderEffectPreset;
-//		class RenderEffectPresetLibrary;
+//		class RenderEffectLibrary;
 //	} // namespace Model::Renderer
 //	namespace Object3D
 //	{
@@ -109,8 +109,8 @@ namespace VTX::UI
 //		{
 //			return *_representationLibrary;
 //		}
-//		inline Model::Renderer::RenderEffectPresetLibrary & getRenderEffectLibrary() { return *_renderEffectLibrary; }
-//		inline const Model::Renderer::RenderEffectPresetLibrary & getRenderEffectLibrary() const
+//		inline App::Application::RenderEffect::RenderEffectLibrary & getRenderEffectLibrary() { return *_renderEffectLibrary; }
+//		inline const App::Application::RenderEffect::RenderEffectLibrary & getRenderEffectLibrary() const
 //		{
 //			return *_renderEffectLibrary;
 //		}
@@ -139,7 +139,7 @@ namespace VTX::UI
 //		Object3D::Scene *							   _scene				  = nullptr;
 //		IO::Struct::ScenePathData *					   _pathSceneData		  = nullptr;
 //		App::Application::Representation::RepresentationLibrary * _representationLibrary = nullptr;
-//		Model::Renderer::RenderEffectPresetLibrary *   _renderEffectLibrary	  = nullptr;
+//		App::Application::RenderEffect::RenderEffectLibrary *   _renderEffectLibrary	  = nullptr;
 //
 //		std::vector<const Generic::BaseAutoDelete *> _deleteAtEndOfFrameObjects
 //			= std::vector<const Generic::BaseAutoDelete *>();
@@ -157,7 +157,7 @@ namespace VTX::UI
 //		void _applyEndOfFrameDeletes();
 //	};
 //
-//	// Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT();
+//	// App::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT();
 //	//  inline Setting &					  VTX_SETTING() { return VTXApp::get().getSetting(); }
 //	//  inline Stat & VTX_STAT() { return VTXApp::get().getStat(); }
 //	//  inline Spec & VTX_SPEC() { return VTXApp::get().getSpec(); }

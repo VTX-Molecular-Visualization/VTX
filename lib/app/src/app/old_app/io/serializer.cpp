@@ -17,7 +17,7 @@
 #include "app/model/label.hpp"
 #include "app/model/mesh_triangle.hpp"
 #include "app/model/path.hpp"
-#include "app/model/renderer/render_effect_preset.hpp"
+#include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/model/viewpoint.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
@@ -213,7 +213,7 @@ namespace VTX::IO
 		return json;
 	}
 
-	nlohmann::json Serializer::serialize( const Model::Renderer::RenderEffectPreset & p_preset ) const
+	nlohmann::json Serializer::serialize( const App::Application::RenderEffect::RenderEffectPreset & p_preset ) const
 	{
 		return {
 			{ "QUICK_ACCESS", p_preset.hasQuickAccess() },
@@ -277,7 +277,7 @@ namespace VTX::IO
 				  ->getName();
 
 		const std::string & defaultRenderEffectPresetName
-			= Model::Renderer::RenderEffectPresetLibrary::get()
+			= App::Application::RenderEffect::RenderEffectLibrary::get()
 				  .getPreset( p_setting.getDefaultRenderEffectPresetIndex() )
 				  ->getName();
 
@@ -708,7 +708,7 @@ namespace VTX::IO
 	}
 	void Serializer::deserialize( const nlohmann::json &				p_json,
 								  const std::tuple<uint, uint, uint> &	p_version,
-								  Model::Renderer::RenderEffectPreset & p_preset ) const
+								  App::Application::RenderEffect::RenderEffectPreset & p_preset ) const
 	{
 		Color::Rgba color;
 

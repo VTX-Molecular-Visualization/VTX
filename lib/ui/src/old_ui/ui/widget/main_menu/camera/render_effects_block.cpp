@@ -8,15 +8,15 @@
 
 #include <app/action/main.hpp>
 #include <app/old_app/io/filesystem.hpp>
-#include <app/model/renderer/render_effect_preset.hpp>
-#include <app/model/renderer/render_effect_preset_library.hpp>
+#include <app/application/render_effect/render_effect_preset.hpp>
+#include <app/application/render_effect/render_effect_library.hpp>
 #include <app/internal/worker/snapshoter.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
-	RenderEffectsBlock::RenderEffectsBlock( Model::Renderer::RenderEffectPresetLibrary * const _renderEffectLibrary,
+	RenderEffectsBlock::RenderEffectsBlock( App::Application::RenderEffect::RenderEffectLibrary * const _renderEffectLibrary,
 											QWidget *										   p_parent ) :
-		App::Core::View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( _renderEffectLibrary ),
+		App::Core::View::BaseView<App::Application::RenderEffect::RenderEffectLibrary>( _renderEffectLibrary ),
 		MenuToolBlockWidget( p_parent ) {};
 
 	void RenderEffectsBlock::receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) {}
@@ -56,10 +56,10 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		_presetButtons.clear();
 
 		int quickAccessRepresentationCount = 0;
-		for ( int i = 0; i < Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount(); i++ )
+		for ( int i = 0; i < App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount(); i++ )
 		{
-			const Model::Renderer::RenderEffectPreset * const renderEffectPreset
-				= Model::Renderer::RenderEffectPresetLibrary::get().getPreset( i );
+			const App::Application::RenderEffect::RenderEffectPreset * const renderEffectPreset
+				= App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( i );
 
 			if ( !renderEffectPreset->hasQuickAccess() )
 				continue;

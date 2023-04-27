@@ -7,16 +7,16 @@
 #include <app/action/renderer.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/model/renderer/render_effect_preset.hpp>
+#include <app/application/render_effect/render_effect_preset.hpp>
 #include <app/old_app/id.hpp>
 #include <app/old_app/setting.hpp>
 
 namespace VTX::View::UI::Widget::Renderer
 {
 	RenderEffectPresetLibraryView::RenderEffectPresetLibraryView(
-		Model::Renderer::RenderEffectPresetLibrary * const p_model,
+		App::Application::RenderEffect::RenderEffectLibrary * const p_model,
 		QWidget * const									   p_parent ) :
-		App::Core::View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( p_model ),
+		App::Core::View::BaseView<App::Application::RenderEffect::RenderEffectLibrary>( p_model ),
 		VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
 		_registerEvent( VTX::App::Event::Global::RENDER_EFFECT_ADDED );
@@ -131,7 +131,7 @@ namespace VTX::View::UI::Widget::Renderer
 
 	void RenderEffectPresetLibraryView::_onPresetIndexChanged( const int p_newIndex )
 	{
-		Model::Renderer::RenderEffectPreset * const currentPreset = _model->getPreset( p_newIndex );
+		App::Application::RenderEffect::RenderEffectPreset * const currentPreset = _model->getPreset( p_newIndex );
 
 		if ( currentPreset != nullptr )
 		{
@@ -177,7 +177,7 @@ namespace VTX::View::UI::Widget::Renderer
 	{
 		const int currentIndex = _presetList->currentIndex();
 
-		Model::Renderer::RenderEffectPreset * const currentPreset = _model->getPreset( currentIndex );
+		App::Application::RenderEffect::RenderEffectPreset * const currentPreset = _model->getPreset( currentIndex );
 		_renderPresetEditor->setPreset( currentPreset, p_updateRenderer );
 	}
 	void RenderEffectPresetLibraryView::_refreshDeletePresetButton()

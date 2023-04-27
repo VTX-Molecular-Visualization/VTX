@@ -2,8 +2,8 @@
 #include "app/application/representation/representation_library.hpp"
 #include "app/application/representation/representation_manager.hpp"
 #include "app/manager/action_manager.hpp"
-#include "app/model/renderer/render_effect_preset.hpp"
-#include "app/model/renderer/render_effect_preset_library.hpp"
+#include "app/application/render_effect/render_effect_preset.hpp"
+#include "app/application/render_effect/render_effect_library.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
 #include "app/old_app/io/writer/serialized_object.hpp"
@@ -110,7 +110,7 @@ namespace VTX::App::Action::Setting
 	void ChangeDefaultRenderEffectPreset::execute()
 	{
 		const int clampedIndex = Util::Math::clamp(
-			_renderEffectPresetIndex, 0, VTX::Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount() );
+			_renderEffectPresetIndex, 0, VTX::App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount() );
 
 		VTX_SETTING().setDefaultRenderEffectPresetIndex( clampedIndex );
 

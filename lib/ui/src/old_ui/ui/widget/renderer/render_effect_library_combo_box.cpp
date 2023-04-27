@@ -1,6 +1,6 @@
 #include "ui/old_ui/ui/widget/renderer/render_effect_library_combo_box.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/model/renderer/render_effect_preset_library.hpp>
+#include <app/application/render_effect/render_effect_library.hpp>
 #include <app/mvc.hpp>
 #include <app/core/view/callback_view.hpp>
 
@@ -15,8 +15,8 @@ namespace VTX::UI::Widget::Renderer
 	RenderEffectLibraryComboBox::~RenderEffectLibraryComboBox()
 	{
 		// Check view if setting window destroy before combo box (view can be destroyed twice)
-		if ( VTX::MVC_MANAGER().hasView( &Model::Renderer::RenderEffectPresetLibrary::get(), _viewID ) )
-			VTX::MVC_MANAGER().deleteView( &Model::Renderer::RenderEffectPresetLibrary::get(), _viewID );
+		if ( VTX::MVC_MANAGER().hasView( &App::Application::RenderEffect::RenderEffectLibrary::get(), _viewID ) )
+			VTX::MVC_MANAGER().deleteView( &App::Application::RenderEffect::RenderEffectLibrary::get(), _viewID );
 	}
 
 	void RenderEffectLibraryComboBox::_setupUi( const QString & p_name )
@@ -24,11 +24,11 @@ namespace VTX::UI::Widget::Renderer
 		BaseManualWidget::_setupUi( p_name );
 		_fillItemList();
 
-		App::Core::View::CallbackView<Model::Renderer::RenderEffectPresetLibrary, RenderEffectLibraryComboBox> * const view
+		App::Core::View::CallbackView<App::Application::RenderEffect::RenderEffectLibrary, RenderEffectLibraryComboBox> * const view
 			= VTX::MVC_MANAGER()
 				  .instantiateView<
-					  App::Core::View::CallbackView<Model::Renderer::RenderEffectPresetLibrary, RenderEffectLibraryComboBox>>(
-					  &Model::Renderer::RenderEffectPresetLibrary::get(), _viewID );
+					  App::Core::View::CallbackView<App::Application::RenderEffect::RenderEffectLibrary, RenderEffectLibraryComboBox>>(
+					  &App::Application::RenderEffect::RenderEffectLibrary::get(), _viewID );
 
 		view->setCallback( this, &RenderEffectLibraryComboBox::_onLibraryChange );
 	}
@@ -47,8 +47,8 @@ namespace VTX::UI::Widget::Renderer
 		int		   previousCurrentIndex = currentIndex();
 		clear();
 
-		for ( const Model::Renderer::RenderEffectPreset * const preset :
-			  Model::Renderer::RenderEffectPresetLibrary::get().getPresets() )
+		for ( const App::Application::RenderEffect::RenderEffectPreset * const preset :
+			  App::Application::RenderEffect::RenderEffectLibrary::get().getPresets() )
 		{
 			addItem( QString::fromStdString( preset->getName() ) );
 		}
@@ -69,11 +69,11 @@ namespace VTX::UI::Widget::Renderer
 	{
 		for ( int i = 0; i < count(); i++ )
 		{
-			const Model::Renderer::RenderEffectPreset * const preset
-				= Model::Renderer::RenderEffectPresetLibrary::get().getPreset( i );
+			const App::Application::RenderEffect::RenderEffectPreset * const preset
+				= App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( i );
 
 			const bool displayDefaultFeedback
-				= _highlightApplied && Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( preset );
+				= _highlightApplied && App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( preset );
 
 			const QIcon & displayedIcon
 				= displayDefaultFeedback ? Style::IconConst::get().DEFAULT_ITEM : NOT_APPLIED_ITEM_FEEDABCK;

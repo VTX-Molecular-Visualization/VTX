@@ -1,6 +1,6 @@
 #include "app/internal/worker/render_effect_loader.hpp"
-#include "app/model/renderer/render_effect_preset.hpp"
-#include "app/model/renderer/render_effect_preset_library.hpp"
+#include "app/application/render_effect/render_effect_preset.hpp"
+#include "app/application/render_effect/render_effect_library.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
 #include <filesystem>
 #include <util/logger.hpp>
@@ -11,8 +11,8 @@ namespace VTX::Worker
 	{
 		Util::Chrono chrono;
 
-		IO::Reader::SerializedObject<Model::Renderer::RenderEffectPreset> * const reader
-			= new IO::Reader::SerializedObject<Model::Renderer::RenderEffectPreset>();
+		IO::Reader::SerializedObject<App::Application::RenderEffect::RenderEffectPreset> * const reader
+			= new IO::Reader::SerializedObject<App::Application::RenderEffect::RenderEffectPreset>();
 
 		chrono.start();
 
@@ -22,8 +22,8 @@ namespace VTX::Worker
 		{
 			for ( const std::filesystem::directory_entry & file : std::filesystem::directory_iterator { _path } )
 			{
-				Model::Renderer::RenderEffectPreset * const preset
-					= VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPreset>();
+				App::Application::RenderEffect::RenderEffectPreset * const preset
+					= VTX::MVC_MANAGER().instantiateModel<App::Application::RenderEffect::RenderEffectPreset>();
 
 				try
 				{
@@ -57,21 +57,21 @@ namespace VTX::Worker
 	{
 		Util::Chrono chrono;
 
-		IO::Reader::SerializedObject<Model::Renderer::RenderEffectPreset> * const reader
-			= new IO::Reader::SerializedObject<Model::Renderer::RenderEffectPreset>();
+		IO::Reader::SerializedObject<App::Application::RenderEffect::RenderEffectPreset> * const reader
+			= new IO::Reader::SerializedObject<App::Application::RenderEffect::RenderEffectPreset>();
 
 		chrono.start();
 
 		for ( const FilePath & path : _paths )
 		{
-			Model::Renderer::RenderEffectPreset * const preset
-				= VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPreset>();
+			App::Application::RenderEffect::RenderEffectPreset * const preset
+				= VTX::MVC_MANAGER().instantiateModel<App::Application::RenderEffect::RenderEffectPreset>();
 
 			try
 			{
 				reader->readFile( path, *preset );
 				preset->setName( path.stem().string() );
-				Model::Renderer::RenderEffectPresetLibrary::get().addPreset( preset, true, true );
+				App::Application::RenderEffect::RenderEffectLibrary::get().addPreset( preset, true, true );
 			}
 			catch ( const std::exception & p_e )
 			{

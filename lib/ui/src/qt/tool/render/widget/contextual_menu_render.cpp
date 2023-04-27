@@ -80,10 +80,10 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		// addMenu( _backgroundColorMenu );
 
 		//_renderSettingPreset = new QMenu( "Apply render settings", this );
-		// for ( int i = 0; i < Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount(); i++ )
+		// for ( int i = 0; i < App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount(); i++ )
 		//{
-		//	const Model::Renderer::RenderEffectPreset & preset
-		//		= *Model::Renderer::RenderEffectPresetLibrary::get().getPreset( i );
+		//	const App::Application::RenderEffect::RenderEffectPreset & preset
+		//		= *App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( i );
 
 		//	QAction * const action = new QAction( QString::fromStdString( preset.getName() ), _renderSettingPreset );
 		//	action->setData( i );

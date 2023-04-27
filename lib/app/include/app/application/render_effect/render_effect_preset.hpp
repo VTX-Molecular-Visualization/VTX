@@ -1,14 +1,14 @@
-#ifndef __VTX_MODEL_RENDERER_RENDER_EFFECT_PRESET__
-#define __VTX_MODEL_RENDERER_RENDER_EFFECT_PRESET__
+#ifndef __VTX_APP_APPLICATION_RENDER_EFFECT_RENDER_EFFECT_PRESET__
+#define __VTX_APP_APPLICATION_RENDER_EFFECT_RENDER_EFFECT_PRESET__
 
+#include "app/core/model/base_model.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/id.hpp"
-#include "app/core/model/base_model.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
-#include <util/math.hpp>
 #include <string>
+#include <util/math.hpp>
 
-namespace VTX::Model::Renderer
+namespace VTX::App::Application::RenderEffect
 {
 	class RenderEffectPreset : public App::Core::Model::BaseModel
 	{
@@ -89,5 +89,5 @@ namespace VTX::Model::Renderer
 		Color::Rgba _cameraLightColor;
 	};
 
-} // namespace VTX::Model::Renderer
+} // namespace VTX::App::Application::RenderEffect
 #endif

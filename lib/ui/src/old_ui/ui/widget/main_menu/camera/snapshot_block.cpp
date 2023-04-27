@@ -8,8 +8,8 @@
 
 #include <app/action/main.hpp>
 #include <app/old_app/io/filesystem.hpp>
-#include <app/model/renderer/render_effect_preset.hpp>
-#include <app/model/renderer/render_effect_preset_library.hpp>
+#include <app/application/render_effect/render_effect_preset.hpp>
+#include <app/application/render_effect/render_effect_library.hpp>
 #include <app/internal/worker/snapshoter.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera

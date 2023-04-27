@@ -10,7 +10,7 @@ namespace VTX::UI::Action::Renderer
 	{
 		VTX_ACTION( new App::Action::Renderer::ChangeShading( _preset, _shading ) );
 
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
 		}
@@ -20,7 +20,7 @@ namespace VTX::UI::Action::Renderer
 	{
 		VTX_ACTION( new App::Action::Renderer::EnableSSAO( _preset, _enable ) );
 
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
 		}
@@ -30,7 +30,7 @@ namespace VTX::UI::Action::Renderer
 	{
 		VTX_ACTION( new App::Action::Renderer::EnableOutline( _preset, _enable ) );
 
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::OUTLINE );
 		}
@@ -40,7 +40,7 @@ namespace VTX::UI::Action::Renderer
 	{
 		VTX_ACTION( new App::Action::Renderer::EnableFog( _preset, _enable ) );
 
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
 		}

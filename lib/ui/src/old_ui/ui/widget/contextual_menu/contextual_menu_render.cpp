@@ -15,7 +15,7 @@
 #include <app/action/setting.hpp>
 #include <app/action/viewpoint.hpp>
 #include <app/event/global.hpp>
-#include <app/model/renderer/render_effect_preset_library.hpp>
+#include <app/application/render_effect/render_effect_library.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/setting.hpp>
@@ -108,10 +108,10 @@ namespace VTX::UI::Widget::ContextualMenu
 		addMenu( _backgroundColorMenu );
 
 		_renderSettingPreset = new QMenu( "Apply render settings", this );
-		for ( int i = 0; i < Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount(); i++ )
+		for ( int i = 0; i < App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount(); i++ )
 		{
-			const Model::Renderer::RenderEffectPreset & preset
-				= *Model::Renderer::RenderEffectPresetLibrary::get().getPreset( i );
+			const App::Application::RenderEffect::RenderEffectPreset & preset
+				= *App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( i );
 
 			QAction * const action = new QAction( QString::fromStdString( preset.getName() ), _renderSettingPreset );
 			action->setData( i );
@@ -238,9 +238,9 @@ namespace VTX::UI::Widget::ContextualMenu
 	}
 	void ContextualMenuRender::_refreshAppliedRenderSettingPreset() const
 	{
-		const int appliedRenderSettingIndex = Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPresetIndex();
+		const int appliedRenderSettingIndex = App::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPresetIndex();
 
-		for ( int i = 0; i < Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount(); i++ )
+		for ( int i = 0; i < App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount(); i++ )
 		{
 			_renderSettingPreset->actions()[ i ]->setChecked( i == appliedRenderSettingIndex );
 		}
@@ -343,8 +343,8 @@ namespace VTX::UI::Widget::ContextualMenu
 		}
 		else
 		{
-			Model::Renderer::RenderEffectPreset * const preset
-				= Model::Renderer::RenderEffectPresetLibrary::get().getPreset( presetIndex );
+			App::Application::RenderEffect::RenderEffectPreset * const preset
+				= App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( presetIndex );
 			VTX_ACTION( new App::Action::Renderer::ApplyRenderEffectPreset( *preset ) );
 		}
 	}

@@ -1,6 +1,7 @@
 #ifndef __VTX_SERIALIZER__
 #define __VTX_SERIALIZER__
 
+#include "app/application/render_effect/_fwd.hpp"
 #include "app/application/representation/_fwd.hpp"
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/core/model/base_model.hpp"
@@ -32,12 +33,6 @@ namespace VTX
 		class Label;
 		class Path;
 		class Viewpoint;
-
-		namespace Renderer
-		{
-			class RenderEffectPreset;
-		} // namespace Renderer
-
 	} // namespace Model
 
 	namespace Color
@@ -61,7 +56,7 @@ namespace VTX
 			nlohmann::json serialize( const Model::Label & ) const;
 
 			nlohmann::json serialize( const App::Application::Representation::RepresentationPreset & ) const;
-			nlohmann::json serialize( const Model::Renderer::RenderEffectPreset & ) const;
+			nlohmann::json serialize( const App::Application::RenderEffect::RenderEffectPreset & ) const;
 
 			nlohmann::json serialize( const Color::Rgba & ) const;
 			nlohmann::json serialize( const Math::Transform & ) const;
@@ -93,7 +88,7 @@ namespace VTX
 							  App::Application::Representation::RepresentationPreset & ) const;
 			void deserialize( const nlohmann::json &,
 							  const std::tuple<uint, uint, uint> &,
-							  Model::Renderer::RenderEffectPreset & ) const;
+							  App::Application::RenderEffect::RenderEffectPreset & ) const;
 
 			void deserialize( const nlohmann::json &, Color::Rgba & ) const;
 			void deserialize( const nlohmann::json &, Math::Transform & ) const;

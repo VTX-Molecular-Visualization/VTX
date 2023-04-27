@@ -1,6 +1,7 @@
 #ifndef __VTX_APP__
 #define __VTX_APP__
 
+#include "app/application/render_effect/_fwd.hpp"
 #include "app/application/representation/_fwd.hpp"
 #include "app/old_app/define.hpp"
 #include "app/old_app/generic/base_auto_delete.hpp"
@@ -13,11 +14,6 @@
 namespace VTX
 {
 	// class Setting;
-	namespace Model::Renderer
-	{
-		class RenderEffectPreset;
-		class RenderEffectPresetLibrary;
-	} // namespace Model::Renderer
 	namespace Object3D
 	{
 		class Scene;
@@ -69,8 +65,11 @@ namespace VTX
 		{
 			return *_representationLibrary;
 		}
-		inline Model::Renderer::RenderEffectPresetLibrary & getRenderEffectLibrary() { return *_renderEffectLibrary; }
-		inline const Model::Renderer::RenderEffectPresetLibrary & getRenderEffectLibrary() const
+		inline App::Application::RenderEffect::RenderEffectLibrary & getRenderEffectLibrary()
+		{
+			return *_renderEffectLibrary;
+		}
+		inline const App::Application::RenderEffect::RenderEffectLibrary & getRenderEffectLibrary() const
 		{
 			return *_renderEffectLibrary;
 		}
@@ -102,7 +101,7 @@ namespace VTX
 		Object3D::Scene *										  _scene				 = nullptr;
 		IO::Struct::ScenePathData *								  _pathSceneData		 = nullptr;
 		App::Application::Representation::RepresentationLibrary * _representationLibrary = nullptr;
-		Model::Renderer::RenderEffectPresetLibrary *			  _renderEffectLibrary	 = nullptr;
+		App::Application::RenderEffect::RenderEffectLibrary *	  _renderEffectLibrary	 = nullptr;
 
 		std::vector<const Generic::BaseAutoDelete *> _deleteAtEndOfFrameObjects
 			= std::vector<const Generic::BaseAutoDelete *>();
@@ -115,10 +114,10 @@ namespace VTX
 		void _applyEndOfFrameDeletes();
 	};
 
-	Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT();
-	inline Setting &					  VTX_SETTING() { return VTXApp::get().getSetting(); }
-	inline Stat &						  VTX_STAT() { return VTXApp::get().getStat(); }
-	inline Spec &						  VTX_SPEC() { return VTXApp::get().getSpec(); }
+	App::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT();
+	inline Setting &									 VTX_SETTING() { return VTXApp::get().getSetting(); }
+	inline Stat &										 VTX_STAT() { return VTXApp::get().getStat(); }
+	inline Spec &										 VTX_SPEC() { return VTXApp::get().getSpec(); }
 
 } // namespace VTX
 

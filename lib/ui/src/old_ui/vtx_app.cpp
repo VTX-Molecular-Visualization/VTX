@@ -48,7 +48,7 @@
 //		//		_representationLibrary
 //		//			= VTX::MVC_MANAGER().instantiateModel<App::Application::Representation::RepresentationLibrary>();
 //		//		_renderEffectLibrary =
-//		// VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
+//		// VTX::MVC_MANAGER().instantiateModel<App::Application::RenderEffect::RenderEffectLibrary>();
 //		//		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 //		//
 //		//		// Create scene.
@@ -220,9 +220,9 @@
 //		// QApplication::quit();
 //	}
 //
-//	// Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT()
+//	// App::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT()
 //	//{
-//	//	// return Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPreset();
+//	//	// return App::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPreset();
 //	// }
 //
 //	//	bool VTXApp::notify( QObject * const receiver, QEvent * const event )

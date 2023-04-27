@@ -1,6 +1,7 @@
 #ifndef __VTX_WORKER_RENDER_EFFECT_PRESET_LOADER__
 #define __VTX_WORKER_RENDER_EFFECT_PRESET_LOADER__
 
+#include "app/application/render_effect/_fwd.hpp"
 #include "app/core/worker/base_worker.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include <util/types.hpp>
@@ -8,23 +9,20 @@
 
 namespace VTX
 {
-	namespace Model::Renderer
-	{
-		class RenderEffectPresetLibrary;
-	}
-
 	namespace Worker
 	{
 		class RenderEffectPresetLibraryLoader : public App::Core::Worker::BaseWorker
 		{
 		  public:
-			explicit RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary & p_library ) :
+			explicit RenderEffectPresetLibraryLoader(
+				App::Application::RenderEffect::RenderEffectLibrary & p_library ) :
 				RenderEffectPresetLibraryLoader( p_library,
 												 FilePath( IO::Filesystem::getRenderEffectPresetsLibraryDir() ) )
 			{
 			}
-			explicit RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary & p_library,
-													  const FilePath							   p_path ) :
+			explicit RenderEffectPresetLibraryLoader(
+				App::Application::RenderEffect::RenderEffectLibrary & p_library,
+				const FilePath												p_path ) :
 				_path( p_path ),
 				_library( p_library )
 			{
@@ -36,9 +34,9 @@ namespace VTX
 			void _run() override;
 
 		  private:
-			const FilePath								 _path;
-			Model::Renderer::RenderEffectPresetLibrary & _library;
-			bool										 _notify = true;
+			const FilePath												_path;
+			App::Application::RenderEffect::RenderEffectLibrary & _library;
+			bool														_notify = true;
 		};
 
 		class RenderEffectPresetLoader : public VTX::App::Core::Worker::BaseWorker

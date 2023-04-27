@@ -5,7 +5,7 @@
 #include <QMainWindow>
 #include <QOpenGLVersionFunctionsFactory>
 #include <QScreen>
-#include <app/model/renderer/render_effect_preset.hpp>
+#include <app/application/render_effect/render_effect_preset.hpp>
 #include <app/old_app/object3d/camera.hpp>
 #include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/renderer/gl/gl.hpp>

@@ -6,14 +6,14 @@
 #include "render_effect_preset_button.hpp"
 #include <QWidget>
 #include <app/core/event/vtx_event.hpp>
-#include <app/model/renderer/render_effect_preset_library.hpp>
+#include <app/application/render_effect/render_effect_library.hpp>
 #include <app/core/view/base_view.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
 	class RenderEffectsBlock :
-		public VTX::App::Core::View::BaseView<Model::Renderer::RenderEffectPresetLibrary>,
+		public VTX::App::Core::View::BaseView<App::Application::RenderEffect::RenderEffectLibrary>,
 		public MenuToolBlockWidget
 	{
 		VTX_WIDGET
@@ -26,7 +26,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		void notify( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
 
 	  protected:
-		RenderEffectsBlock( Model::Renderer::RenderEffectPresetLibrary * const _renderEffectLibrary,
+		RenderEffectsBlock( App::Application::RenderEffect::RenderEffectLibrary * const _renderEffectLibrary,
 							QWidget *										   p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;

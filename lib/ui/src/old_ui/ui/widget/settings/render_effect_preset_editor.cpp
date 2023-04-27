@@ -215,7 +215,7 @@ namespace VTX::UI::Widget::Settings
 		_cameraLightColor->setColor( _preset->getCameraLightColor() );
 	}
 
-	void RenderEffectPresetEditor::setPreset( Model::Renderer::RenderEffectPreset * const p_model,
+	void RenderEffectPresetEditor::setPreset( App::Application::RenderEffect::RenderEffectPreset * const p_model,
 											  const bool								  p_updateRender )
 	{
 		if ( _preset == p_model )

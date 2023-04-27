@@ -1,11 +1,11 @@
-#include "app/model/renderer/render_effect_preset.hpp"
+#include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 
-namespace VTX::Model::Renderer
+namespace VTX::App::Application::RenderEffect
 {
 	RenderEffectPreset::RenderEffectPreset() : BaseModel( VTX::ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET )
 	{
@@ -150,4 +150,4 @@ namespace VTX::Model::Renderer
 		_cameraLightColor = p_source._cameraLightColor;
 	}
 
-} // namespace VTX::Model::Renderer
+} // namespace VTX::App::Application::RenderEffect

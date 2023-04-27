@@ -12,7 +12,7 @@ namespace VTX::UI::Widget::Settings
 
 namespace VTX::View::UI::Widget::Renderer
 {
-	class RenderEffectPresetView : public App::Core::View::BaseView<Model::Renderer::RenderEffectPreset>
+	class RenderEffectPresetView : public App::Core::View::BaseView<App::Application::RenderEffect::RenderEffectPreset>
 	{
 		VTX_VIEW
 
@@ -22,7 +22,7 @@ namespace VTX::View::UI::Widget::Renderer
 		void setEditor( RenderEffectPresetEditor * const p_linkedEditor ) { _linkedEditor = p_linkedEditor; }
 
 	  protected:
-		RenderEffectPresetView( Model::Renderer::RenderEffectPreset * const p_model ) : BaseView( p_model ) {};
+		RenderEffectPresetView( App::Application::RenderEffect::RenderEffectPreset * const p_model ) : BaseView( p_model ) {};
 		void _refreshView() override;
 
 	  private:

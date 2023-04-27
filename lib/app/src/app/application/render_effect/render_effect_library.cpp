@@ -1,4 +1,4 @@
-#include "app/model/renderer/render_effect_preset_library.hpp"
+#include "app/application/render_effect/render_effect_library.hpp"
 #include "app/action/renderer.hpp"
 #include "app/core/view/callback_view.hpp"
 #include "app/event.hpp"
@@ -12,11 +12,11 @@
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker.hpp"
 
-namespace VTX::Model::Renderer
+namespace VTX::App::Application::RenderEffect
 {
-	RenderEffectPresetLibrary & RenderEffectPresetLibrary::get() { return VTXApp::get().getRenderEffectLibrary(); }
+	RenderEffectLibrary & RenderEffectLibrary::get() { return VTXApp::get().getRenderEffectLibrary(); }
 
-	RenderEffectPresetLibrary::RenderEffectPresetLibrary() :
+	RenderEffectLibrary::RenderEffectLibrary() :
 		BaseModel( VTX::ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET_LIBRARY )
 	{
 		Worker::RenderEffectPresetLibraryLoader * libraryLoader = new Worker::RenderEffectPresetLibraryLoader( *this );
@@ -33,7 +33,7 @@ namespace VTX::Model::Renderer
 																			: defaultIndex );
 		VTX_SETTING().setTmpRenderEffectPresetDefaultName( "" );
 	};
-	RenderEffectPresetLibrary ::~RenderEffectPresetLibrary()
+	RenderEffectLibrary ::~RenderEffectLibrary()
 	{
 		App::Action::Renderer::SavePreset * const saveAction = new App::Action::Renderer::SavePreset( *this );
 		saveAction->setAsync( false );
@@ -42,21 +42,21 @@ namespace VTX::Model::Renderer
 		clear( false );
 	};
 
-	RenderEffectPreset * const RenderEffectPresetLibrary::getPreset( const int p_index )
+	RenderEffectPreset * const RenderEffectLibrary::getPreset( const int p_index )
 	{
 		if ( 0 <= p_index && p_index < _presets.size() )
 			return _presets[ p_index ];
 
 		return nullptr;
 	};
-	const RenderEffectPreset * const RenderEffectPresetLibrary::getPreset( const int p_index ) const
+	const RenderEffectPreset * const RenderEffectLibrary::getPreset( const int p_index ) const
 	{
 		if ( 0 <= p_index && p_index < _presets.size() )
 			return _presets[ p_index ];
 
 		return nullptr;
 	};
-	RenderEffectPreset * const RenderEffectPresetLibrary::getPresetByName( const std::string & p_name )
+	RenderEffectPreset * const RenderEffectLibrary::getPresetByName( const std::string & p_name )
 	{
 		for ( RenderEffectPreset * const it : _presets )
 		{
@@ -66,7 +66,7 @@ namespace VTX::Model::Renderer
 
 		return nullptr;
 	};
-	const RenderEffectPreset * const RenderEffectPresetLibrary::getPresetByName( const std::string & p_name ) const
+	const RenderEffectPreset * const RenderEffectLibrary::getPresetByName( const std::string & p_name ) const
 	{
 		for ( RenderEffectPreset * const it : _presets )
 		{
@@ -77,9 +77,9 @@ namespace VTX::Model::Renderer
 		return nullptr;
 	};
 
-	void RenderEffectPresetLibrary::addPreset( RenderEffectPreset * const p_preset,
-											   const bool				  p_emplace,
-											   const bool				  p_notify )
+	void RenderEffectLibrary::addPreset( RenderEffectPreset * const p_preset,
+										 const bool					p_emplace,
+										 const bool					p_notify )
 	{
 		if ( p_emplace )
 		{
@@ -90,12 +90,12 @@ namespace VTX::Model::Renderer
 			_presets.insert( _presets.begin(), p_preset );
 		}
 
-		App::Core::View::CallbackView<RenderEffectPreset, RenderEffectPresetLibrary> * const callbackView
+		App::Core::View::CallbackView<RenderEffectPreset, RenderEffectLibrary> * const callbackView
 			= VTX::MVC_MANAGER()
-				  .instantiateView<App::Core::View::CallbackView<RenderEffectPreset, RenderEffectPresetLibrary>>(
+				  .instantiateView<App::Core::View::CallbackView<RenderEffectPreset, RenderEffectLibrary>>(
 					  p_preset, VTX::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
 
-		callbackView->setCallback( this, &RenderEffectPresetLibrary::_onPresetChange );
+		callbackView->setCallback( this, &RenderEffectLibrary::_onPresetChange );
 
 		if ( p_notify )
 			_notifyDataChanged();
@@ -104,7 +104,7 @@ namespace VTX::Model::Renderer
 		VTX_EVENT<int>( VTX::App::Event::Global::RENDER_EFFECT_ADDED, presetAddedIndex );
 	};
 
-	RenderEffectPreset * const RenderEffectPresetLibrary::copyPreset( const int p_index )
+	RenderEffectPreset * const RenderEffectLibrary::copyPreset( const int p_index )
 	{
 		const RenderEffectPreset * const sourcePreset = _presets[ p_index ];
 		RenderEffectPreset * const		 copiedPreset = VTX::MVC_MANAGER().instantiateModel<RenderEffectPreset>();
@@ -118,7 +118,7 @@ namespace VTX::Model::Renderer
 		return copiedPreset;
 	}
 
-	RenderEffectPreset * const RenderEffectPresetLibrary::removePreset( const int p_index )
+	RenderEffectPreset * const RenderEffectLibrary::removePreset( const int p_index )
 	{
 		RenderEffectPreset * removedPreset;
 
@@ -151,7 +151,7 @@ namespace VTX::Model::Renderer
 
 		return removedPreset;
 	};
-	void RenderEffectPresetLibrary::deletePreset( const int p_index )
+	void RenderEffectLibrary::deletePreset( const int p_index )
 	{
 		const RenderEffectPreset * const presetToDelete = removePreset( p_index );
 
@@ -159,7 +159,7 @@ namespace VTX::Model::Renderer
 			VTX::MVC_MANAGER().deleteModel( presetToDelete );
 	}
 
-	int RenderEffectPresetLibrary::getPresetIndex( const RenderEffectPreset * const p_preset ) const
+	int RenderEffectLibrary::getPresetIndex( const RenderEffectPreset * const p_preset ) const
 	{
 		for ( int i = 0; i < _presets.size(); i++ )
 		{
@@ -171,7 +171,7 @@ namespace VTX::Model::Renderer
 
 		return -1;
 	}
-	int RenderEffectPresetLibrary::getPresetIndex( const std::string & p_presetName ) const
+	int RenderEffectLibrary::getPresetIndex( const std::string & p_presetName ) const
 	{
 		for ( int i = 0; i < _presets.size(); i++ )
 		{
@@ -184,12 +184,9 @@ namespace VTX::Model::Renderer
 		return -1;
 	}
 
-	bool RenderEffectPresetLibrary::canDeleteItem( RenderEffectPreset * const p_preset ) const
-	{
-		return _presets.size() > 1;
-	}
+	bool RenderEffectLibrary::canDeleteItem( RenderEffectPreset * const p_preset ) const { return _presets.size() > 1; }
 
-	void RenderEffectPresetLibrary::setAppliedPreset( const int p_presetIndex )
+	void RenderEffectLibrary::setAppliedPreset( const int p_presetIndex )
 	{
 		if ( 0 <= p_presetIndex && p_presetIndex < _presets.size() )
 			_appliedPreset = _presets[ p_presetIndex ];
@@ -197,31 +194,31 @@ namespace VTX::Model::Renderer
 			_appliedPreset = _presets[ 0 ];
 	}
 
-	void RenderEffectPresetLibrary::applyPreset( const int p_presetIndex )
+	void RenderEffectLibrary::applyPreset( const int p_presetIndex )
 	{
 		if ( 0 <= p_presetIndex && p_presetIndex < _presets.size() )
 			applyPreset( *_presets[ p_presetIndex ] );
 		else
 			applyPreset( *_presets[ 0 ] );
 	}
-	void RenderEffectPresetLibrary::applyPreset( RenderEffectPreset & p_preset )
+	void RenderEffectLibrary::applyPreset( RenderEffectPreset & p_preset )
 	{
 		_appliedPreset = &p_preset;
 
 		_notifyViews( App::Event::Model::APPLIED_PRESET_CHANGE );
 		VTX_EVENT( VTX::App::Event::Global::APPLIED_RENDER_EFFECT_CHANGE );
 	}
-	bool RenderEffectPresetLibrary::isAppliedPreset( const RenderEffectPreset & p_preset ) const
+	bool RenderEffectLibrary::isAppliedPreset( const RenderEffectPreset & p_preset ) const
 	{
 		return &p_preset == _appliedPreset;
 	}
-	bool RenderEffectPresetLibrary::isAppliedPreset( const RenderEffectPreset * const & p_preset ) const
+	bool RenderEffectLibrary::isAppliedPreset( const RenderEffectPreset * const & p_preset ) const
 	{
 		return p_preset == _appliedPreset;
 	}
-	RenderEffectPreset &	   RenderEffectPresetLibrary::getAppliedPreset() { return *_appliedPreset; }
-	const RenderEffectPreset & RenderEffectPresetLibrary::getAppliedPreset() const { return *_appliedPreset; }
-	int						   RenderEffectPresetLibrary::getAppliedPresetIndex() const
+	RenderEffectPreset &	   RenderEffectLibrary::getAppliedPreset() { return *_appliedPreset; }
+	const RenderEffectPreset & RenderEffectLibrary::getAppliedPreset() const { return *_appliedPreset; }
+	int						   RenderEffectLibrary::getAppliedPresetIndex() const
 	{
 		for ( int i = 0; i < _presets.size(); i++ )
 		{
@@ -233,7 +230,7 @@ namespace VTX::Model::Renderer
 		return -1;
 	}
 
-	void RenderEffectPresetLibrary::setQuickAccessToPreset( RenderEffectPreset & p_preset, const bool p_quickAccess )
+	void RenderEffectLibrary::setQuickAccessToPreset( RenderEffectPreset & p_preset, const bool p_quickAccess )
 	{
 		if ( p_quickAccess )
 		{
@@ -249,7 +246,7 @@ namespace VTX::Model::Renderer
 			_lastPresetQuickAccessed = &p_preset;
 	}
 
-	int RenderEffectPresetLibrary::_getNbPresetWithQuickAccess() const
+	int RenderEffectLibrary::_getNbPresetWithQuickAccess() const
 	{
 		int res = 0;
 		for ( const RenderEffectPreset * preset : _presets )
@@ -260,7 +257,7 @@ namespace VTX::Model::Renderer
 		return res;
 	}
 
-	void RenderEffectPresetLibrary::clear( const bool p_notify )
+	void RenderEffectLibrary::clear( const bool p_notify )
 	{
 		if ( getAppliedPresetIndex() != -1 )
 			_appliedPreset = nullptr;
@@ -278,7 +275,7 @@ namespace VTX::Model::Renderer
 		}
 	}
 
-	void RenderEffectPresetLibrary::resetToDefault()
+	void RenderEffectLibrary::resetToDefault()
 	{
 		clear( true );
 		_generateDefaultLibrary( false );
@@ -287,7 +284,7 @@ namespace VTX::Model::Renderer
 		_notifyDataChanged();
 	}
 
-	std::string RenderEffectPresetLibrary::getValidName( const std::string & p_name ) const
+	std::string RenderEffectLibrary::getValidName( const std::string & p_name ) const
 	{
 		const std::string & defaultStr = p_name;
 		std::string			validName  = defaultStr;
@@ -301,7 +298,7 @@ namespace VTX::Model::Renderer
 
 		return validName;
 	}
-	bool RenderEffectPresetLibrary::isValidName( const std::string & p_name ) const
+	bool RenderEffectLibrary::isValidName( const std::string & p_name ) const
 	{
 		for ( const RenderEffectPreset * const preset : _presets )
 			if ( preset->getName() == p_name )
@@ -310,7 +307,7 @@ namespace VTX::Model::Renderer
 		return true;
 	}
 
-	void RenderEffectPresetLibrary::_generateDefaultPreset()
+	void RenderEffectLibrary::_generateDefaultPreset()
 	{
 		// Preset default
 		RenderEffectPreset * const defaultPreset = VTX::MVC_MANAGER().instantiateModel<RenderEffectPreset>();
@@ -319,7 +316,7 @@ namespace VTX::Model::Renderer
 		addPreset( defaultPreset, false, false );
 	}
 
-	void RenderEffectPresetLibrary::_generateDefaultLibrary( const bool p_notify )
+	void RenderEffectLibrary::_generateDefaultLibrary( const bool p_notify )
 	{
 		_generateDefaultPreset();
 
@@ -339,11 +336,11 @@ namespace VTX::Model::Renderer
 			_notifyDataChanged();
 	}
 
-	void RenderEffectPresetLibrary::_onPresetChange( const App::Core::Event::VTXEvent * const p_event )
+	void RenderEffectLibrary::_onPresetChange( const App::Core::Event::VTXEvent * const p_event )
 	{
 		if ( p_event->name == App::Event::Model::DATA_CHANGE )
 			_notifyViews( App::Event::Model::SUBITEM_DATA_CHANGE );
 		else
 			_notifyViews( new App::Core::Event::VTXEvent( *p_event ) );
 	}
-} // namespace VTX::Model::Renderer
+} // namespace VTX::App::Application::RenderEffect

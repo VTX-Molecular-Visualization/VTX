@@ -2,9 +2,9 @@
 #define __VTX_APP_ACTION_RENDERER__
 
 #include "app/action.hpp"
+#include "app/application/render_effect/render_effect_library.hpp"
+#include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/model/renderer/render_effect_preset.hpp"
-#include "app/model/renderer/render_effect_preset_library.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include <unordered_set>
 
@@ -27,16 +27,16 @@ namespace VTX::App::Action::Renderer
 	class SavePreset : public App::Core::Action::BaseAction
 	{
 	  public:
-		SavePreset( const Model::Renderer::RenderEffectPreset & p_preset )
+		SavePreset( const App::Application::RenderEffect::RenderEffectPreset & p_preset )
 		{
 			_renderEffectPresets.emplace( &p_preset );
 		};
-		SavePreset( const std::unordered_set<const Model::Renderer::RenderEffectPreset *> & p_presets )
+		SavePreset( const std::unordered_set<const App::Application::RenderEffect::RenderEffectPreset *> & p_presets )
 		{
-			for ( const Model::Renderer::RenderEffectPreset * const preset : p_presets )
+			for ( const App::Application::RenderEffect::RenderEffectPreset * const preset : p_presets )
 				_renderEffectPresets.emplace( preset );
 		};
-		SavePreset( Model::Renderer::RenderEffectPresetLibrary & p_library )
+		SavePreset( App::Application::RenderEffect::RenderEffectLibrary & p_library )
 		{
 			for ( int i = 0; i < p_library.getPresetCount(); i++ )
 				_renderEffectPresets.emplace( p_library.getPreset( i ) );
@@ -48,8 +48,8 @@ namespace VTX::App::Action::Renderer
 		virtual void execute() override;
 
 	  private:
-		std::unordered_set<const Model::Renderer::RenderEffectPreset *> _renderEffectPresets
-			= std::unordered_set<const Model::Renderer::RenderEffectPreset *>();
+		std::unordered_set<const App::Application::RenderEffect::RenderEffectPreset *> _renderEffectPresets
+			= std::unordered_set<const App::Application::RenderEffect::RenderEffectPreset *>();
 
 		bool _clearDirectory = false;
 		bool _async			 = true;
@@ -58,225 +58,240 @@ namespace VTX::App::Action::Renderer
 	class ApplyRenderEffectPreset : public App::Core::Action::BaseAction
 	{
 	  public:
-		ApplyRenderEffectPreset( Model::Renderer::RenderEffectPreset & p_preset, const bool p_setAsDefault = false ) :
-			_preset( p_preset ), _setAsDefault( p_setAsDefault ) {};
+		ApplyRenderEffectPreset( App::Application::RenderEffect::RenderEffectPreset & p_preset,
+								 const bool											  p_setAsDefault = false ) :
+			_preset( p_preset ),
+			_setAsDefault( p_setAsDefault ) {};
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const bool							  _setAsDefault;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const bool											 _setAsDefault;
 	};
 
 	class ChangeName : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeName( Model::Renderer::RenderEffectPreset & p_preset, const std::string & p_name ) :
-			_preset( p_preset ), _name( Model::Renderer::RenderEffectPresetLibrary::get().getValidName( p_name ) ) {};
+		ChangeName( App::Application::RenderEffect::RenderEffectPreset & p_preset, const std::string & p_name ) :
+			_preset( p_preset ),
+			_name( App::Application::RenderEffect::RenderEffectLibrary::get().getValidName( p_name ) ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const std::string					  _name;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const std::string									 _name;
 	};
 
 	class ChangeQuickAccess : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeQuickAccess( Model::Renderer::RenderEffectPreset & p_preset, const bool p_quickAccess ) :
+		ChangeQuickAccess( App::Application::RenderEffect::RenderEffectPreset & p_preset, const bool p_quickAccess ) :
 			_preset( p_preset ), _quickAccess( p_quickAccess ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const bool							  _quickAccess;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const bool											 _quickAccess;
 	};
 
 	class ChangeShading : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeShading( Model::Renderer::RenderEffectPreset & p_preset, const VTX::Renderer::SHADING & p_shading ) :
-			_preset( p_preset ), _shading( p_shading ) {};
+		ChangeShading( App::Application::RenderEffect::RenderEffectPreset & p_preset,
+					   const VTX::Renderer::SHADING &						p_shading ) :
+			_preset( p_preset ),
+			_shading( p_shading ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const VTX::Renderer::SHADING		  _shading;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const VTX::Renderer::SHADING						 _shading;
 	};
 
 	class EnableSSAO : public App::Core::Action::BaseAction
 	{
 	  public:
-		EnableSSAO( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
+		EnableSSAO( App::Application::RenderEffect::RenderEffectPreset & p_preset, const bool p_enable ) :
 			_preset( p_preset ), _enable( p_enable ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const bool							  _enable;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const bool											 _enable;
 	};
 	class ChangeSSAOIntensity : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeSSAOIntensity( Model::Renderer::RenderEffectPreset & p_preset, const int p_intensity ) :
+		ChangeSSAOIntensity( App::Application::RenderEffect::RenderEffectPreset & p_preset, const int p_intensity ) :
 			_preset( p_preset ), _intensity( p_intensity ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const int							  _intensity;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const int											 _intensity;
 	};
 	class ChangeSSAOBlurSize : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeSSAOBlurSize( Model::Renderer::RenderEffectPreset & p_preset, const int p_blurSize ) :
+		ChangeSSAOBlurSize( App::Application::RenderEffect::RenderEffectPreset & p_preset, const int p_blurSize ) :
 			_preset( p_preset ), _blurSize( p_blurSize ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const int							  _blurSize;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const int											 _blurSize;
 	};
 
 	class EnableOutline : public App::Core::Action::BaseAction
 	{
 	  public:
-		EnableOutline( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
+		EnableOutline( App::Application::RenderEffect::RenderEffectPreset & p_preset, const bool p_enable ) :
 			_preset( p_preset ), _enable( p_enable ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const bool							  _enable;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const bool											 _enable;
 	};
 	class ChangeOutlineThickness : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeOutlineThickness( Model::Renderer::RenderEffectPreset & p_preset, const uint p_thickness ) :
-			_preset( p_preset ), _thickness( p_thickness ) {};
+		ChangeOutlineThickness( App::Application::RenderEffect::RenderEffectPreset & p_preset,
+								const uint											 p_thickness ) :
+			_preset( p_preset ),
+			_thickness( p_thickness ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const uint							  _thickness;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const uint											 _thickness;
 	};
 	class ChangeOutlineSensivity : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeOutlineSensivity( Model::Renderer::RenderEffectPreset & p_preset, const float p_sensivity ) :
-			_preset( p_preset ), _sensivity( p_sensivity ) {};
+		ChangeOutlineSensivity( App::Application::RenderEffect::RenderEffectPreset & p_preset,
+								const float											 p_sensivity ) :
+			_preset( p_preset ),
+			_sensivity( p_sensivity ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const float							  _sensivity;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const float											 _sensivity;
 	};
 	class ChangeOutlineColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeOutlineColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
-			_preset( p_preset ), _color( p_color ) {};
+		ChangeOutlineColor( App::Application::RenderEffect::RenderEffectPreset & p_preset,
+							const Color::Rgba &									 p_color ) :
+			_preset( p_preset ),
+			_color( p_color ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const Color::Rgba					  _color;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const Color::Rgba									 _color;
 	};
 
 	class EnableFog : public App::Core::Action::BaseAction
 	{
 	  public:
-		EnableFog( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
+		EnableFog( App::Application::RenderEffect::RenderEffectPreset & p_preset, const bool p_enable ) :
 			_preset( p_preset ), _enable( p_enable ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const bool							  _enable;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const bool											 _enable;
 	};
 	class ChangeFogNear : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeFogNear( Model::Renderer::RenderEffectPreset & p_preset, const float p_near ) :
+		ChangeFogNear( App::Application::RenderEffect::RenderEffectPreset & p_preset, const float p_near ) :
 			_preset( p_preset ), _near( p_near ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const float							  _near;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const float											 _near;
 	};
 	class ChangeFogFar : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeFogFar( Model::Renderer::RenderEffectPreset & p_preset, const float p_far ) :
+		ChangeFogFar( App::Application::RenderEffect::RenderEffectPreset & p_preset, const float p_far ) :
 			_preset( p_preset ), _far( p_far ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const float							  _far;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const float											 _far;
 	};
 	class ChangeFogDensity : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeFogDensity( Model::Renderer::RenderEffectPreset & p_preset, const float p_density ) :
+		ChangeFogDensity( App::Application::RenderEffect::RenderEffectPreset & p_preset, const float p_density ) :
 			_preset( p_preset ), _density( p_density ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const float							  _density;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const float											 _density;
 	};
 	class ChangeFogColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeFogColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
+		ChangeFogColor( App::Application::RenderEffect::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
 			_preset( p_preset ), _color( p_color ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const Color::Rgba					  _color;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const Color::Rgba									 _color;
 	};
 
 	class ChangeBackgroundColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeBackgroundColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
-			_preset( p_preset ), _color( p_color ) {};
+		ChangeBackgroundColor( App::Application::RenderEffect::RenderEffectPreset & p_preset,
+							   const Color::Rgba &									p_color ) :
+			_preset( p_preset ),
+			_color( p_color ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const Color::Rgba					  _color;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const Color::Rgba									 _color;
 	};
 
 	class ChangeCameraLightColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeCameraLightColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
-			_preset( p_preset ), _color( p_color ) {};
+		ChangeCameraLightColor( App::Application::RenderEffect::RenderEffectPreset & p_preset,
+								const Color::Rgba &									 p_color ) :
+			_preset( p_preset ),
+			_color( p_color ) {};
 
 		virtual void execute() override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const Color::Rgba					  _color;
+		App::Application::RenderEffect::RenderEffectPreset & _preset;
+		const Color::Rgba									 _color;
 	};
 
 	class AddNewPresetInLibrary : public App::Core::Action::BaseAction
