@@ -45,14 +45,6 @@ namespace VTX
 
 	namespace App::Application
 	{
-		class RegisterMap
-		{
-		  public:
-			static std::string getStringValue( const std::string & p_key, const std::string & p_default = "" );
-			static void		   setStringValue( const std::string & p_key, const std::string & p_value );
-			static bool		   containKey( const std::string & p_key );
-		};
-
 		class Setting
 		{
 		  public:

@@ -6,6 +6,7 @@
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/internal/chemdb/category.hpp"
+#include "app/internal/setting/register_map.hpp"
 #include "app/old_app/define.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
@@ -296,46 +297,14 @@ namespace VTX::App::Application
 		return &( *it );
 	}
 
-	// TODO reimplement that without Qt
-	std::string RegisterMap::getStringValue( const std::string & p_key, const std::string & p_default )
-	{
-		return "";
-		// const QSettings settings( QSettings::Format::NativeFormat,
-		//						  QSettings::Scope::UserScope,
-		//						  QString::fromStdString( VTX_PROJECT_NAME ),
-		//						  QString::fromStdString( VTX_PROJECT_NAME ) );
-
-		// return settings.value( p_key, p_default ).toString().toStdString();
-	}
-	void RegisterMap::setStringValue( const std::string & p_key, const std::string & p_value )
-	{
-		// QSettings settings( QSettings::Format::NativeFormat,
-		//					QSettings::Scope::UserScope,
-		//					QString::fromStdString( VTX_PROJECT_NAME ),
-		//					QString::fromStdString( VTX_PROJECT_NAME ) );
-
-		// settings.setValue( QString::fromStdString( p_key ), p_value );
-	}
-	bool RegisterMap::containKey( const std::string & p_key )
-	{
-		return false;
-
-		// QSettings settings( QSettings::Format::NativeFormat,
-		//					QSettings::Scope::UserScope,
-		//					QString::fromStdString( VTX_PROJECT_NAME ),
-		//					QString::fromStdString( VTX_PROJECT_NAME ) );
-
-		// return settings.contains( QString::fromStdString( p_key ) );
-	}
-
 	void VTX::App::Application::Setting::loadRecentPaths()
 	{
 		int			counter = 0;
 		std::string key		= RegisterKey::RECENT_LOADED_PATH_PREFIX + std::to_string( counter );
 
-		while ( RegisterMap::containKey( key ) )
+		while ( Internal::Setting::RegisterMap::containKey( key ) )
 		{
-			const std::string strPath = RegisterMap::getStringValue( key );
+			const std::string strPath = Internal::Setting::RegisterMap::getStringValue( key );
 
 			const FilePath path = FilePath( strPath );
 			if ( std::filesystem::exists( path ) )
@@ -350,9 +319,9 @@ namespace VTX::App::Application
 		counter = 0;
 		key		= RegisterKey::RECENT_DOWNLOADED_CODE_PREFIX + std::to_string( counter );
 
-		while ( RegisterMap::containKey( key ) )
+		while ( Internal::Setting::RegisterMap::containKey( key ) )
 		{
-			const std::string code = RegisterMap::getStringValue( key );
+			const std::string code = Internal::Setting::RegisterMap::getStringValue( key );
 			recentDownloadCodes.push_back( code );
 
 			counter++;
@@ -365,7 +334,7 @@ namespace VTX::App::Application
 		for ( const FilePath & path : recentLoadingPath )
 		{
 			const std::string key = RegisterKey::RECENT_LOADED_PATH_PREFIX + std::to_string( counter );
-			RegisterMap::setStringValue( key, path.string() );
+			Internal::Setting::RegisterMap::setStringValue( key, path.string() );
 
 			counter++;
 		}
@@ -374,7 +343,7 @@ namespace VTX::App::Application
 		for ( const std::string & code : recentDownloadCodes )
 		{
 			const std::string key = RegisterKey::RECENT_DOWNLOADED_CODE_PREFIX + std::to_string( counter );
-			RegisterMap::setStringValue( key, code );
+			Internal::Setting::RegisterMap::setStringValue( key, code );
 
 			counter++;
 		}
@@ -387,7 +356,7 @@ namespace VTX::App::Application
 	}
 	void VTX::App::Application::Setting::saveLastLoadedSessionFolder( const std::string & p_path )
 	{
-		RegisterMap::setStringValue( RegisterKey::LAST_OPEN_SESSION_FOLDER, p_path );
+		Internal::Setting::RegisterMap::setStringValue( RegisterKey::LAST_OPEN_SESSION_FOLDER, p_path );
 	}
 
 	std::string VTX::App::Application::Setting::getLastSavedSessionFolder()
@@ -397,7 +366,7 @@ namespace VTX::App::Application
 	}
 	void VTX::App::Application::Setting::saveLastSavedSessionFolder( const std::string & p_path )
 	{
-		RegisterMap::setStringValue( RegisterKey::LAST_SAVED_SESSION_FOLDER, p_path );
+		Internal::Setting::RegisterMap::setStringValue( RegisterKey::LAST_SAVED_SESSION_FOLDER, p_path );
 	}
 
 	std::string VTX::App::Application::Setting::getLastImportedMoleculeFolder()
@@ -407,7 +376,7 @@ namespace VTX::App::Application
 	}
 	void VTX::App::Application::Setting::saveLastImportedMoleculeFolder( const std::string & p_path )
 	{
-		RegisterMap::setStringValue( RegisterKey::LAST_IMPORTED_MOLECULE_FOLDER, p_path );
+		Internal::Setting::RegisterMap::setStringValue( RegisterKey::LAST_IMPORTED_MOLECULE_FOLDER, p_path );
 	}
 
 	std::string VTX::App::Application::Setting::getLastExportedMoleculeFolder()
@@ -417,7 +386,7 @@ namespace VTX::App::Application
 	}
 	void VTX::App::Application::Setting::saveLastExportedMoleculeFolder( const std::string & p_path )
 	{
-		RegisterMap::setStringValue( RegisterKey::LAST_EXPORTED_MOLECULE_FOLDER, p_path );
+		Internal::Setting::RegisterMap::setStringValue( RegisterKey::LAST_EXPORTED_MOLECULE_FOLDER, p_path );
 	}
 
 	std::string VTX::App::Application::Setting::getLastExportedImageFolder()
@@ -427,13 +396,13 @@ namespace VTX::App::Application
 	}
 	void VTX::App::Application::Setting::saveLastExportedImageFolder( const std::string & p_path )
 	{
-		RegisterMap::setStringValue( RegisterKey::LAST_EXPORTED_IMAGE_FOLDER, p_path );
+		Internal::Setting::RegisterMap::setStringValue( RegisterKey::LAST_EXPORTED_IMAGE_FOLDER, p_path );
 	}
 
 	std::string VTX::App::Application::Setting::_getFileInRegisterKey( const std::string & p_key,
 																	   const std::string & p_default )
 	{
-		const FilePath path = RegisterMap::getStringValue( p_key, p_default );
+		const FilePath path = Internal::Setting::RegisterMap::getStringValue( p_key, p_default );
 
 		if ( path.empty() || std::filesystem::exists( path ) == false )
 			return p_default;
