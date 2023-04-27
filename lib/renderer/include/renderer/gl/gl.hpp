@@ -11,6 +11,7 @@
 #include "pass/shading.hpp"
 #include "pass/ssao.hpp"
 #include "vertex_array.hpp"
+#include <renderer/gl/include_opengl.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::GL
@@ -18,7 +19,7 @@ namespace VTX::Renderer::GL
 	class GL
 	{
 	  public:
-		GL();
+		GL( void * p_proc );
 		~GL() = default;
 
 		/*

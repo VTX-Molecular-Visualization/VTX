@@ -3,6 +3,7 @@
 
 #include "renderer/gl/include_opengl.hpp"
 #include <cassert>
+#include <vector>
 
 namespace VTX::Renderer::GL
 {

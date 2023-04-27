@@ -1,10 +1,30 @@
 #include "renderer/gl/gl.hpp"
+#include "renderer/gl//util.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::Renderer::GL
 {
-	GL::GL()
+	GL::GL( void * p_proc )
 	{
+		VTX_INFO( "Creating renderer..." );
+
+		// Load OpenGL.
+		if ( gladLoadGLLoader( (GLADloadproc)p_proc ) == 0 )
+		{
+			throw GLException( "Failed to initialize GLAD" );
+		}
+
+		const unsigned char * const glVendor   = glGetString( GL_VENDOR );
+		const unsigned char * const glRenderer = glGetString( GL_RENDERER );
+
+		// VTX_INFO( "Device: " + glVendor + " " + glRenderer );
+		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
+
+		// Debug infos.
+		glEnable( GL_DEBUG_OUTPUT );
+		glDebugMessageCallback( VTX::Renderer::GL::Util::debugMessageCallback, NULL );
+
+		// Create all passes.
 		_passes.emplace_back( std::make_unique<Pass::Geometric>() );
 		_passes.emplace_back( std::make_unique<Pass::LinearizeDepth>() );
 		_passes.emplace_back( std::make_unique<Pass::SSAO>() );
