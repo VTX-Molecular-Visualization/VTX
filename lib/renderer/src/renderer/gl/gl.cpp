@@ -1,54 +1,39 @@
 #include "renderer/gl/gl.hpp"
+#include <util/logger.hpp>
 
 namespace VTX::Renderer::GL
 {
 	GL::GL()
 	{
-		_passGeometric		= new Pass::Geometric();
-		_passLinearizeDepth = new Pass::LinearizeDepth();
-		_passSSAO			= new Pass::SSAO();
-		_passBlur			= new Pass::Blur();
-		_passShading		= new Pass::Shading();
-		_passOutline		= new Pass::Outline();
-		_passSelection		= new Pass::Selection();
-		_passFXAA			= new Pass::FXAA();
+		_passes.emplace_back( std::make_unique<Pass::Geometric>() );
+		_passes.emplace_back( std::make_unique<Pass::LinearizeDepth>() );
+		_passes.emplace_back( std::make_unique<Pass::SSAO>() );
+		_passes.emplace_back( std::make_unique<Pass::Blur>() );
+		_passes.emplace_back( std::make_unique<Pass::Shading>() );
+		_passes.emplace_back( std::make_unique<Pass::Outline>() );
+		_passes.emplace_back( std::make_unique<Pass::Selection>() );
+		_passes.emplace_back( std::make_unique<Pass::FXAA>() );
 	}
 
-	GL::~GL()
-	{
-		delete _passGeometric;
-		delete _passLinearizeDepth;
-		delete _passSSAO;
-		delete _passBlur;
-		delete _passShading;
-		delete _passOutline;
-		delete _passSelection;
-		delete _passFXAA;
-	}
-
-	void GL::init( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId )
+	void GL::init( const size_t p_width, const size_t p_height )
 	{
 		VTX_INFO( "Initializing renderer..." );
 
 		// Set size.
-		BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
+		_width	= p_width;
+		_height = p_height;
 
-		// Init pass.
-		_passGeometric->init( _width, _height, *this );
-		_passLinearizeDepth->init( _width, _height, *this );
-		_passSSAO->init( _width, _height, *this );
-		_passBlur->init( _width, _height, *this );
-		_passShading->init( _width, _height, *this );
-		_passOutline->init( _width, _height, *this );
-		_passSelection->init( _width, _height, *this );
-		_passFXAA->init( _width, _height, *this );
+		// Init passes.
+		for ( std::unique_ptr<Pass::BasePass> & pass : _passes )
+		{
+			pass->init( _width, _height );
+		}
 
 		// Init quad vao/vbo for deferred shading.
 		std::vector<Vec2f> quadVertices
 			= { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
 
 		_quadVBO.create();
-
 		_quadVAO.create();
 
 		_quadVAO.enableAttribute( 0 );
@@ -61,27 +46,24 @@ namespace VTX::Renderer::GL
 		VTX_INFO( "Renderer initialized" );
 	}
 
-	void GL::resize( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId )
+	void GL::resize( const size_t p_width, const size_t p_height )
 	{
-		BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
-
-		_passGeometric->resize( _width, _height, *this );
-		_passLinearizeDepth->resize( _width, _height, *this );
-		_passSSAO->resize( _width, _height, *this );
-		_passBlur->resize( _width, _height, *this );
-		_passShading->resize( _width, _height, *this );
-		_passOutline->resize( _width, _height, *this );
-		_passSelection->resize( _width, _height, *this );
-		_passFXAA->resize( _width, _height, *this );
+		for ( std::unique_ptr<Pass::BasePass> & pass : _passes )
+		{
+			pass->resize( _width, _height );
+		}
 	}
 
-	void GL::renderFrame( const Object3D::Scene & p_scene )
+	void GL::renderFrame()
 	{
-		VTX_STAT().drawCalls = 0u;
+		// VTX_STAT().drawCalls = 0u;
+		for ( std::unique_ptr<Pass::BasePass> & pass : _passes )
+		{
+			pass->render();
+		}
 
-		enableDepthTest();
+		/*
 		_passGeometric->render( p_scene, *this );
-		disableDepthTest();
 
 		_passLinearizeDepth->render( p_scene, *this );
 
@@ -106,8 +88,10 @@ namespace VTX::Renderer::GL
 		}
 
 		VTXApp::get().MASK = VTX_SETTING().getForceRenderer() ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
+	*/
 	};
 
+	/*
 	void GL::updateRenderSetting( const RENDER_SETTING p_renderSetting )
 	{
 		switch ( p_renderSetting )
@@ -124,7 +108,9 @@ namespace VTX::Renderer::GL
 		case RENDER_SETTING::AA: _passSelection->updateOutputFBO( *this ); break;
 		}
 	}
+	*/
 
+	/*
 	const Vec2i GL::getPickedIds( const uint p_x, const uint p_y ) const
 	{
 		_passGeometric->getFbo().bind( Framebuffer::Target::READ_FRAMEBUFFER );
@@ -135,5 +121,6 @@ namespace VTX::Renderer::GL
 
 		return ids;
 	}
+	*/
 
 } // namespace VTX::Renderer::GL

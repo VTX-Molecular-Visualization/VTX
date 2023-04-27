@@ -54,7 +54,7 @@ namespace VTX::Renderer::GL
 		void renderFrame();
 		// void updateRenderSetting( const RENDER_SETTING );
 
-		const Vec2i getPickedIds( const uint p_x, const uint p_y ) const;
+		// const Vec2i getPickedIds( const uint p_x, const uint p_y ) const;
 
 	  private:
 		size_t _width  = 0;
@@ -65,7 +65,8 @@ namespace VTX::Renderer::GL
 
 		Framebuffer _output = Framebuffer();
 
-		std::vector<Pass::BasePass> _passes = std::vector<Pass::BasePass>();
+		std::vector<std::unique_ptr<Pass::BasePass>> _passes = std::vector<std::unique_ptr<Pass::BasePass>>();
+
 		/*
 		Pass::Geometric		 _passGeometric		 = Pass::Geometric();
 		Pass::LinearizeDepth _passLinearizeDepth = Pass::LinearizeDepth();

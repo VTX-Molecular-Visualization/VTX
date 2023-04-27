@@ -1,4 +1,5 @@
 #include "renderer/gl/program_manager.hpp"
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <vector>
 
@@ -111,8 +112,8 @@ namespace VTX::Renderer::GL
 		if ( shaderId == GL_INVALID_INDEX )
 		{
 			shaderId		 = glCreateShader( (int)type );
-			FilePath	path = Util::Filesystem::getShadersPath( p_path );
-			std::string src	 = Util::Filesystem::readPath( path );
+			FilePath	path = ""; // Util::Filesystem::getShadersPath(p_path);
+			std::string src	 = ""; // Util::Filesystem::readPath(path);
 			if ( src.empty() )
 			{
 				glDeleteShader( shaderId );
@@ -142,7 +143,7 @@ namespace VTX::Renderer::GL
 				size_t		startPosPath		= includeRelativePath.find( '"' );
 				size_t		endPosPath			= includeRelativePath.find( '"', startPosPath + 1 );
 				includeRelativePath = includeRelativePath.substr( startPosPath + 1, endPosPath - startPosPath - 1 );
-				FilePath includeAbsolutePath = path.dirpath();
+				FilePath includeAbsolutePath = ""; // path.dirpath();
 				includeAbsolutePath /= includeRelativePath;
 				const std::string srcInclude = Util::Filesystem::readPath( includeAbsolutePath );
 				src.replace( startPosInclude, endPosInclude - startPosInclude, srcInclude );

@@ -13,18 +13,18 @@ namespace VTX::Renderer::GL
 
 		~Texture2D() { destroy(); }
 
-		inline void create( const GLsizei p_width,
-							const GLsizei p_height,
-							const GLenum  p_format	  = GL_RGBA32F,
-							const GLenum  p_wrappingS = GL_REPEAT,
-							const GLenum  p_wrappingT = GL_REPEAT,
-							const GLint	  p_minFilter = GL_NEAREST_MIPMAP_LINEAR,
-							const GLint	  p_magFilter = GL_LINEAR )
+		inline void create( const size_t p_width,
+							const size_t p_height,
+							const GLenum p_format	 = GL_RGBA32F,
+							const GLenum p_wrappingS = GL_REPEAT,
+							const GLenum p_wrappingT = GL_REPEAT,
+							const GLint	 p_minFilter = GL_NEAREST_MIPMAP_LINEAR,
+							const GLint	 p_magFilter = GL_LINEAR )
 		{
 			assert( p_width > 0 && p_height > 0 );
 
-			_width	   = p_width;
-			_height	   = p_height;
+			_width	   = GLsizei( p_width );
+			_height	   = GLsizei( p_height );
 			_format	   = p_format;
 			_wrappingS = p_wrappingS;
 			_wrappingT = p_wrappingT;
@@ -46,11 +46,11 @@ namespace VTX::Renderer::GL
 			glClearTexImage( _id, p_level, p_format, p_type, p_data );
 		}
 
-		inline void resize( const GLsizei p_width, const GLsizei p_height )
+		inline void resize( const size_t p_width, const size_t p_height )
 		{
 			destroy();
-			_width	= p_width;
-			_height = p_height;
+			_width	= GLsizei( p_width );
+			_height = GLsizei( p_height );
 			_create();
 		}
 

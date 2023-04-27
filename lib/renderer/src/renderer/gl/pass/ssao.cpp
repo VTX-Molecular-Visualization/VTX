@@ -1,28 +1,15 @@
-#include "ssao.hpp"
-#include "model/renderer/render_effect_preset.hpp"
-#include "object3d/camera.hpp"
-#include "renderer/gl/gl.hpp"
-#include "renderer/gl/program_manager.hpp"
-#include "util/sampler.hpp"
-#include "vtx_app.hpp"
-#include <random>
+#include "renderer/gl/pass/ssao.hpp"
 
 namespace VTX::Renderer::GL::Pass
 {
-	void SSAO::init( const uint p_width, const uint p_height, const GL & )
+	void SSAO::init( const size_t p_width, const size_t p_height )
 	{
-		_texture.create( p_width,
-						 p_height,
-						 Texture2D::InternalFormat::R8,
-						 Texture2D::Wrapping::CLAMP_TO_EDGE,
-						 Texture2D::Wrapping::CLAMP_TO_EDGE,
-						 Texture2D::Filter::NEAREST,
-						 Texture2D::Filter::NEAREST );
+		_texture.create( p_width, p_height, GL_R8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
-		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
+		_fbo.create();
+		_fbo.attachTexture( _texture, GL_COLOR_ATTACHMENT0 );
 
-		_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { IO::FilePath( "shading/ssao.frag" ) } );
+		//_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { IO::FilePath( "shading/ssao.frag" ) } );
 
 		// generate random ao kernel
 		_aoKernel.resize( _kernelSize );
@@ -30,7 +17,7 @@ namespace VTX::Renderer::GL::Pass
 		for ( uint i = 0; i < _kernelSize; i++ )
 		{
 			// sample on unit hemisphere
-			Vec3f v = Util::Sampler::cosineWeightedHemisphere( Util::Math::randomFloat(), Util::Math::randomFloat() );
+			Vec3f v = Util::Math::cosineWeightedHemisphere();
 
 			// scale sample within the hemisphere
 			v *= Util::Math::randomFloat();
@@ -52,33 +39,29 @@ namespace VTX::Renderer::GL::Pass
 			noise[ i ] = Util::Math::normalize( noise[ i ] );
 		}
 
-		_noiseTexture.create( _noiseTextureSize,
-							  _noiseTextureSize,
-							  Texture2D::InternalFormat::RGB16F,
-							  Texture2D::Wrapping::REPEAT,
-							  Texture2D::Wrapping::REPEAT,
-							  Texture2D::Filter::NEAREST,
-							  Texture2D::Filter::NEAREST );
+		_noiseTexture.create(
+			_noiseTextureSize, _noiseTextureSize, GL_RGB16F, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST );
 
 		_noiseTexture.fill( noise.data() );
 
 		_program->use();
 		_program->setVec3fArray( "uAoKernel", _kernelSize, _aoKernel.data() );
-		_program->setInt( "uAoIntensity", VTX_RENDER_EFFECT().getSSAOIntensity() );
+		//_program->setInt( "uAoIntensity", VTX_RENDER_EFFECT().getSSAOIntensity() );
 		_program->setInt( "uKernelSize", _kernelSize );
 		_program->setFloat( "uNoiseSize", float( _noiseTextureSize ) );
 	}
 
-	void SSAO::resize( const uint p_width, const uint p_height, const GL & )
+	void SSAO::resize( const size_t p_width, const size_t p_height )
 	{
 		_texture.resize( p_width, p_height );
-		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
+		_fbo.attachTexture( _texture, GL_COLOR_ATTACHMENT0 );
 	}
 
-	void SSAO::render( const Object3D::Scene & p_scene, const GL & p_renderer )
+	void SSAO::render()
 	{
-		_fbo.bind();
+		_fbo.bind( GL_DRAW_FRAMEBUFFER );
 
+		/*
 		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
 		_noiseTexture.bindToUnit( 1 );
 		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 2 );
@@ -99,6 +82,8 @@ namespace VTX::Renderer::GL::Pass
 		}
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
+
+		*/
 	}
 
 } // namespace VTX::Renderer::GL::Pass

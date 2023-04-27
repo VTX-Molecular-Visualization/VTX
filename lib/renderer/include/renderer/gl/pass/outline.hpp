@@ -3,6 +3,7 @@
 
 #include "base_pass.hpp"
 #include "renderer/gl/framebuffer.hpp"
+#include "renderer/gl/program.hpp"
 #include "renderer/gl/texture_2d.hpp"
 
 namespace VTX::Renderer::GL::Pass

@@ -14,7 +14,7 @@ target_include_directories(VTX_RENDERER PUBLIC include)
 if(NOT TARGET VTX_UTIL)
 	add_subdirectory(../util lib)
 endif()
-target_link_libraries(VTX_RENDERER PRIVATE VTX_UTIL)
+target_link_libraries(VTX_RENDERER PUBLIC VTX_UTIL)
 
 # Target compile options.
 target_compile_features(VTX_RENDERER PUBLIC cxx_std_17)

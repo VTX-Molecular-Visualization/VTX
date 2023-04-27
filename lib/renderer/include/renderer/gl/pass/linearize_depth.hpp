@@ -3,6 +3,7 @@
 
 #include "base_pass.hpp"
 #include "renderer/gl/framebuffer.hpp"
+#include "renderer/gl/program.hpp"
 #include "renderer/gl/texture_2d.hpp"
 
 namespace VTX::Renderer::GL::Pass
@@ -20,9 +21,9 @@ namespace VTX::Renderer::GL::Pass
 		// inline const Texture2D & getTexture() const { return _texture; }
 
 	  private:
-		Program *	_program = nullptr;
-		Framebuffer _fbo	 = Framebuffer();
-		Texture2D	_texture = Texture2D();
+		std::unique_ptr<Program> _program;
+		Framebuffer				 _fbo	  = Framebuffer();
+		Texture2D				 _texture = Texture2D();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

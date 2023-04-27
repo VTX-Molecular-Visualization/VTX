@@ -379,7 +379,7 @@ namespace VTX::Util::Math
 		return glm::lerp( p_lhs, p_rhs, value );
 	}
 
-	// Morton utils
+	// Morton utils.
 	inline uint leftShift3( uint p_x )
 	{
 		assert( p_x <= ( 1 << 10 ) );
@@ -404,7 +404,7 @@ namespace VTX::Util::Math
 			   | leftShift3( uint( p_v.x ) );
 	}
 
-	// p_n (normal) must be normalized
+	// p_n (normal) must be normalized.
 	inline Mat3f createOrthonormalBasis( const Vec3f & p_n )
 	{
 		const Vec3f t = fabsf( p_n.x ) > fabsf( p_n.y )
@@ -481,6 +481,28 @@ namespace VTX::Util::Math
 		}
 		return exponent;
 	}
+
+	// Uniform hemisphere sampling: z is up.
+	inline Vec3f uniformHemisphere( const float p_u, const float p_v )
+	{
+		const float cosTheta = p_u;
+		const float phi		 = TWO_PIf * p_v;
+		const float sinTheta = sqrtf( 1.f - cosTheta * cosTheta );
+		return Vec3f( cosf( phi ) * sinTheta, sinf( phi ) * sinTheta, cosTheta );
+	}
+
+	inline float uniformHemispherePdf() { return INV_2PIf; }
+
+	// Cosine weighted hemisphere samping: z is up.
+	inline Vec3f cosineWeightedHemisphere( const float p_u = randomFloat(), const float p_v = randomFloat() )
+	{
+		const float cosTheta = sqrtf( p_u );
+		const float sinTheta = sqrtf( 1.f - p_u );
+		const float phi		 = TWO_PIf * p_v;
+		return Vec3f( cosf( phi ) * sinTheta, sinf( phi ) * sinTheta, cosTheta );
+	}
+
+	inline float cosineWeightedHemispherePdf( const float p_cosTheta ) { return p_cosTheta * INV_PIf; }
 
 	// TODO:  std::fabsf.
 	inline Vec3f orthogonalVector( const Vec3f & normal )

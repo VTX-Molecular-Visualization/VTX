@@ -3,6 +3,7 @@
 
 #include "base_pass.hpp"
 #include "renderer/gl/framebuffer.hpp"
+#include "renderer/gl/program.hpp"
 #include "renderer/gl/texture_2d.hpp"
 
 namespace VTX::Renderer::GL::Pass
@@ -26,7 +27,7 @@ namespace VTX::Renderer::GL::Pass
 		Texture2D		   _noiseTexture	 = Texture2D();
 		uint			   _kernelSize		 = 16;
 		uint			   _noiseTextureSize = 64;
-		std::vector<Vec3f> _aoKernel;
+		std::vector<Vec3f> _aoKernel		 = std::vector<Vec3f>();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

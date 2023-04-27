@@ -1,56 +1,43 @@
-#include "blur.hpp"
-#include "model/renderer/render_effect_preset.hpp"
-#include "renderer/gl/gl.hpp"
-#include "renderer/gl/program_manager.hpp"
-#include "vtx_app.hpp"
+#include "renderer/gl/pass/blur.hpp"
 
 namespace VTX::Renderer::GL::Pass
 {
-	void Blur::init( const uint p_width, const uint p_height, const GL & )
+	void Blur::init( const size_t p_width, const size_t p_height )
 	{
-		_textureFirstPass.create( p_width,
-								  p_height,
-								  Texture2D::InternalFormat::R16F,
-								  Texture2D::Wrapping::CLAMP_TO_EDGE,
-								  Texture2D::Wrapping::CLAMP_TO_EDGE,
-								  Texture2D::Filter::NEAREST,
-								  Texture2D::Filter::NEAREST );
+		_textureFirstPass.create(
+			p_width, p_height, GL_R16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_fboFirstPass.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
-		_fboFirstPass.attachTexture( _textureFirstPass, Framebuffer::Attachment::COLOR0 );
+		_fboFirstPass.create();
+		_fboFirstPass.attachTexture( _textureFirstPass, GL_COLOR_ATTACHMENT0 );
 
-		_texture.create( p_width,
-						 p_height,
-						 Texture2D::InternalFormat::R16F,
-						 Texture2D::Wrapping::CLAMP_TO_EDGE,
-						 Texture2D::Wrapping::CLAMP_TO_EDGE,
-						 Texture2D::Filter::NEAREST,
-						 Texture2D::Filter::NEAREST );
+		_texture.create( p_width, p_height, GL_R16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 		clearTexture();
 
-		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
-		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
+		_fbo.create();
+		_fbo.attachTexture( _texture, GL_COLOR_ATTACHMENT0 );
 
-		_program = VTX_PROGRAM_MANAGER().createProgram( "Blur", { IO::FilePath( "shading/bilateral_blur.frag" ) } );
+		//_program = VTX_PROGRAM_MANAGER().createProgram( "Blur", { IO::FilePath( "shading/bilateral_blur.frag" ) } );
 
 		_program->use();
-		_program->setInt( "uBlurSize", VTX_RENDER_EFFECT().getSSAOBlurSize() );
+		//_program->setInt( "uBlurSize", VTX_RENDER_EFFECT().getSSAOBlurSize() );
 	}
 
-	void Blur::resize( const uint p_width, const uint p_height, const GL & )
+	void Blur::resize( const size_t p_width, const size_t p_height )
 	{
 		_textureFirstPass.resize( p_width, p_height );
 		_texture.resize( p_width, p_height );
 
 		clearTexture();
 
-		_fboFirstPass.attachTexture( _textureFirstPass, Framebuffer::Attachment::COLOR0 );
-		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
+		_fboFirstPass.attachTexture( _textureFirstPass, GL_COLOR_ATTACHMENT0 );
+		_fbo.attachTexture( _texture, GL_COLOR_ATTACHMENT0 );
 	}
 
-	void Blur::render( const Object3D::Scene & p_scene, const GL & p_renderer )
+	void Blur::render()
 	{
-		_fboFirstPass.bind();
+		_fboFirstPass.bind( GL_DRAW_FRAMEBUFFER );
+
+		/*
 		p_renderer.getPassSSAO().getTexture().bindToUnit( 0 );
 		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 1 );
 
@@ -65,7 +52,7 @@ namespace VTX::Renderer::GL::Pass
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 
-		_fbo.bind();
+		_fbo.bind(GL_DRAW_FRAMEBUFFER);
 
 		_textureFirstPass.bindToUnit( 0 );
 		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 1 );
@@ -73,12 +60,13 @@ namespace VTX::Renderer::GL::Pass
 		_program->setVec2i( "uDirection", 0, 1 );
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
+		*/
 	}
 
 	void Blur::clearTexture()
 	{
 		const float value = 1.f;
-		_texture.clear( &value, Texture2D::Format::RED, Texture2D::Type::FLOAT );
+		_texture.clear( &value, GL_RED, GL_FLOAT );
 	}
 
 } // namespace VTX::Renderer::GL::Pass

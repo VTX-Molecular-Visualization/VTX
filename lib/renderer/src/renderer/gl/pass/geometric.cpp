@@ -1,78 +1,52 @@
-#include "geometric.hpp"
-#include "model/mesh_triangle.hpp"
-#include "model/molecule.hpp"
-#include "renderer/gl/gl.hpp"
-#include "renderer/gl/program_manager.hpp"
+#include "renderer/gl/pass/geometric.hpp"
 
 namespace VTX::Renderer::GL::Pass
 {
-	void Geometric::init( const uint p_width, const uint p_height, const GL & )
+	void Geometric::init( const size_t p_width, const size_t p_height )
 	{
-		// TODO: Only when using point sprites.
-		/*glEnable( GL_PROGRAM_POINT_SIZE );
-		glPointParameteri( GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT );*/
+		_viewPositionsNormalsCompressedTexture.create(
+			p_width, p_height, GL_RGBA32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_viewPositionsNormalsCompressedTexture.create( p_width,
-													   p_height,
-													   Texture2D::InternalFormat::RGBA32UI,
-													   Texture2D::Wrapping::CLAMP_TO_EDGE,
-													   Texture2D::Wrapping::CLAMP_TO_EDGE,
-													   Texture2D::Filter::NEAREST,
-													   Texture2D::Filter::NEAREST );
+		_colorsTexture.create(
+			p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_colorsTexture.create( p_width,
-							   p_height,
-							   Texture2D::InternalFormat::RGBA16F,
-							   Texture2D::Wrapping::CLAMP_TO_EDGE,
-							   Texture2D::Wrapping::CLAMP_TO_EDGE,
-							   Texture2D::Filter::NEAREST,
-							   Texture2D::Filter::NEAREST );
+		_depthTexture.create(
+			p_width, p_height, GL_DEPTH_COMPONENT32F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_depthTexture.create( p_width,
-							  p_height,
-							  Texture2D::InternalFormat::DEPTH_COMPONENT32F,
-							  Texture2D::Wrapping::CLAMP_TO_EDGE,
-							  Texture2D::Wrapping::CLAMP_TO_EDGE,
-							  Texture2D::Filter::NEAREST,
-							  Texture2D::Filter::NEAREST );
+		_pickingTexture.create(
+			p_width, p_height, GL_RG32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_pickingTexture.create( p_width,
-								p_height,
-								Texture2D::InternalFormat::RG32UI,
-								Texture2D::Wrapping::CLAMP_TO_EDGE,
-								Texture2D::Wrapping::CLAMP_TO_EDGE,
-								Texture2D::Filter::NEAREST,
-								Texture2D::Filter::NEAREST );
+		_fbo.create();
+		_fbo.attachTexture( _viewPositionsNormalsCompressedTexture, GL_COLOR_ATTACHMENT0 );
+		_fbo.attachTexture( _colorsTexture, GL_COLOR_ATTACHMENT1 );
+		_fbo.attachTexture( _depthTexture, GL_DEPTH );
+		_fbo.attachTexture( _pickingTexture, GL_COLOR_ATTACHMENT2 );
 
-		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
-		_fbo.attachTexture( _viewPositionsNormalsCompressedTexture, Framebuffer::Attachment::COLOR0 );
-		_fbo.attachTexture( _colorsTexture, Framebuffer::Attachment::COLOR1 );
-		_fbo.attachTexture( _depthTexture, Framebuffer::Attachment::DEPTH );
-		_fbo.attachTexture( _pickingTexture, Framebuffer::Attachment::COLOR2 );
-
-		_fbo.setDrawBuffers(
-			{ Framebuffer::Attachment::COLOR0, Framebuffer::Attachment::COLOR1, Framebuffer::Attachment::COLOR2 } );
+		_fbo.setDrawBuffers( { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 } );
 	}
 
-	void Geometric::resize( const uint p_width, const uint p_height, const GL & )
+	void Geometric::resize( const size_t p_width, const size_t p_height )
 	{
 		_viewPositionsNormalsCompressedTexture.resize( p_width, p_height );
 		_colorsTexture.resize( p_width, p_height );
 		_depthTexture.resize( p_width, p_height );
 		_pickingTexture.resize( p_width, p_height );
 
-		_fbo.attachTexture( _viewPositionsNormalsCompressedTexture, Framebuffer::Attachment::COLOR0 );
-		_fbo.attachTexture( _colorsTexture, Framebuffer::Attachment::COLOR1 );
-		_fbo.attachTexture( _depthTexture, Framebuffer::Attachment::DEPTH );
-		_fbo.attachTexture( _pickingTexture, Framebuffer::Attachment::COLOR2 );
+		_fbo.attachTexture( _viewPositionsNormalsCompressedTexture, GL_COLOR_ATTACHMENT0 );
+		_fbo.attachTexture( _colorsTexture, GL_COLOR_ATTACHMENT1 );
+		_fbo.attachTexture( _depthTexture, GL_DEPTH );
+		_fbo.attachTexture( _pickingTexture, GL_COLOR_ATTACHMENT2 );
 	}
 
-	void Geometric::render( const Object3D::Scene & p_scene, const GL & p_renderer )
+	void Geometric::render()
 	{
-		_fbo.bind();
-		_fbo.clear( Framebuffer::ClearBuffer::COLOR_DEPTH );
+		glEnable( GL_DEPTH_TEST );
+
+		_fbo.bind( GL_DRAW_FRAMEBUFFER );
+		_fbo.clear( GL_DEPTH );
 
 		//_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		/*
 		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 		{
 			pair.first->render( p_scene.getCamera() );
@@ -85,7 +59,9 @@ namespace VTX::Renderer::GL::Pass
 		{
 			helper->render( p_scene.getCamera() );
 		}
+		*/
 		//_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		glDisable( GL_DEPTH_TEST );
 	}
 
 } // namespace VTX::Renderer::GL::Pass

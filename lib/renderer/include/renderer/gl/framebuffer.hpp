@@ -2,7 +2,9 @@
 #define __VTX_RENDERER_GL_FRAMEBUFFER__
 
 #include "renderer/gl/include_opengl.hpp"
+#include "renderer/gl/texture_2d.hpp"
 #include <cassert>
+#include <vector>
 
 namespace VTX::Renderer::GL
 {

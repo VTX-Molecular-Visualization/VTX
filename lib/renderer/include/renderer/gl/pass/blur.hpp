@@ -3,6 +3,7 @@
 
 #include "base_pass.hpp"
 #include "renderer/gl/framebuffer.hpp"
+#include "renderer/gl/program.hpp"
 #include "renderer/gl/texture_2d.hpp"
 
 namespace VTX::Renderer::GL::Pass
@@ -19,7 +20,7 @@ namespace VTX::Renderer::GL::Pass
 
 		// inline const Texture2D & getTexture() const { return _texture; }
 
-		// void clearTexture();
+		void clearTexture();
 
 	  private:
 		Program *	_program		  = nullptr;

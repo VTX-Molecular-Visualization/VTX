@@ -22,13 +22,13 @@ namespace VTX::Renderer::GL
 		Buffer( const size_t p_size, const T & p_data, const GLbitfield p_flags = 0 )
 		{
 			create();
-			set<T>( p_size, p_data, p_flags );
+			set<T>( GLsizei( p_size ), p_data, p_flags );
 		}
 
 		Buffer( const size_t p_size, const GLbitfield p_flags = 0 )
 		{
 			create();
-			set( p_size, p_flags );
+			set( GLsizei( p_size ), p_flags );
 		}
 
 		~Buffer() { destroy(); }
@@ -65,7 +65,7 @@ namespace VTX::Renderer::GL
 			glBindBuffer( p_target, _id );
 		}
 
-		inline void bind( const GLenum p_target, const uint p_index )
+		inline void bind( const GLenum p_target, const GLuint p_index )
 		{
 			assert( glIsBuffer( _id ) );
 			assert( _target == 0 );
@@ -88,15 +88,15 @@ namespace VTX::Renderer::GL
 		{
 			assert( glIsBuffer( _id ) );
 
-			glNamedBufferData( _id, GLsizei( sizeof( T ) * p_vector.size() ), p_vector.data(),  p_usage ) );
+			glNamedBufferData( _id, GLsizei( sizeof( T ) * p_vector.size() ), p_vector.data(), p_usage );
 		}
 
 		template<typename T>
-		inline void setSub( const T & p_data, const uint p_offset, const size_t p_size ) const
+		inline void setSub( const T & p_data, const GLintptr p_offset, const GLsizei p_size ) const
 		{
 			assert( glIsBuffer( _id ) );
 
-			glNamedBufferSubData( _id, GLintptr( p_offset ), GLsizei( p_size ), p_data );
+			glNamedBufferSubData( _id, p_offset, p_size, p_data );
 		}
 
 		template<typename T>
