@@ -1,6 +1,7 @@
 #ifndef __VTX_SETTING__
 #define __VTX_SETTING__
 
+#include "app/application/representation/_fwd.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/old_app/color/rgba.hpp"
@@ -18,7 +19,6 @@ namespace VTX
 	{
 		enum class COLOR_MODE;
 		enum class COLOR_BLENDING_MODE;
-		enum class REPRESENTATION;
 	} // namespace Generic
 
 	namespace Renderer
@@ -72,8 +72,8 @@ namespace VTX
 		static const std::string REPRESENTATION_DEFAULT_NAME;
 		static const int		 REPRESENTATION_DEFAULT_INDEX;
 
-		static const Generic::REPRESENTATION DEFAULT_REPRESENTATION_TYPE;
-		static const std::string			 NEW_REPRESENTATION_DEFAULT_NAME;
+		static const App::Application::Representation::REPRESENTATION_ENUM DEFAULT_REPRESENTATION_TYPE;
+		static const std::string										   NEW_REPRESENTATION_DEFAULT_NAME;
 
 		static const float ATOMS_RADIUS_DEFAULT;
 		static const float ATOMS_RADIUS_MIN;

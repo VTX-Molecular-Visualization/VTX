@@ -7,7 +7,7 @@
 #include "app/core/action/base_action.hpp"
 #include "app/core/action/base_action_undonable.hpp"
 #include "app/component/chemistry/molecule.hpp"
-#include "app/model/representation/instantiated_representation.hpp"
+#include "app/application/representation/instantiated_representation.hpp"
 #include <string>
 #include <unordered_set>
 
@@ -371,8 +371,8 @@ namespace VTX::App::Action::Molecule
 	{
 	  public:
 		explicit ApplyRepresentation( const std::unordered_set<App::Component::Chemistry::Molecule *> &				p_molecules,
-									  const Model::Representation::InstantiatedRepresentation & p_source,
-									  const Model::Representation::MEMBER_FLAG &				p_flag ) :
+									  const App::Application::Representation::InstantiatedRepresentation & p_source,
+									  const Application::Representation::MEMBER_FLAG &				p_flag ) :
 			_representation( p_source ),
 			_flag( p_flag ), _molecules( p_molecules )
 		{
@@ -383,8 +383,8 @@ namespace VTX::App::Action::Molecule
 
 	  private:
 		const std::unordered_set<App::Component::Chemistry::Molecule *>				  _molecules;
-		const Model::Representation::InstantiatedRepresentation & _representation;
-		const Model::Representation::MEMBER_FLAG				  _flag;
+		const App::Application::Representation::InstantiatedRepresentation & _representation;
+		const Application::Representation::MEMBER_FLAG				  _flag;
 	};
 
 } // namespace VTX::App::Action::Molecule

@@ -14,8 +14,8 @@
 #include <app/action/instantiated_representation.hpp>
 #include <app/action/molecule.hpp>
 #include <app/action/transformable.hpp>
+#include <app/application/representation/representation_manager.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/representation/representation_manager.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -196,7 +196,7 @@ namespace VTX::UI::Widget::Inspector
 				{
 					_representationWidget->updateWithNewValue( *molecule->getRepresentation() );
 
-					for ( Model::Representation::InstantiatedRepresentation * representation :
+					for ( App::Application::Representation::InstantiatedRepresentation * representation :
 						  molecule->getSubRepresentations() )
 					{
 						_subRepresentationWidget->addModel( representation );
@@ -338,8 +338,8 @@ namespace VTX::UI::Widget::Inspector
 		VTX_ACTION( new App::Action::Molecule::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
 	void MultipleMoleculeWidget::_onRepresentationChange(
-		const Model::Representation::InstantiatedRepresentation & p_representation,
-		const Model::Representation::MEMBER_FLAG &				  p_flag ) const
+		const App::Application::Representation::InstantiatedRepresentation & p_representation,
+		const App::Application::Representation::MEMBER_FLAG &				 p_flag ) const
 	{
 		if ( !signalsBlocked() )
 		{
@@ -348,9 +348,9 @@ namespace VTX::UI::Widget::Inspector
 	}
 
 	void MultipleMoleculeWidget::_onRepresentationColorChange(
-		const Model::Representation::InstantiatedRepresentation & p_representation,
-		const Color::Rgba &										  p_color,
-		const bool												  p_ssColor ) const
+		const App::Application::Representation::InstantiatedRepresentation & p_representation,
+		const Color::Rgba &													 p_color,
+		const bool															 p_ssColor ) const
 	{
 		if ( p_ssColor )
 		{

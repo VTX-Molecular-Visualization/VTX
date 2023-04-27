@@ -1,4 +1,6 @@
 #include "app/component/chemistry/molecule.hpp"
+#include "app/application/representation/representation_library.hpp"
+#include "app/application/representation/representation_manager.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/category.hpp"
@@ -8,12 +10,10 @@
 #include "app/core/event/vtx_event.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
-#include "app/model/representation/representation_library.hpp"
 #include "app/model/selection.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/util/secondary_structure.hpp"
 #include "app/old_app/view/d3/cylinder.hpp"
@@ -153,7 +153,7 @@ namespace VTX::App::Component::Chemistry
 
 			if ( !hasCustomRepresentation() )
 			{
-				VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation(
+				App::Application::Representation::RepresentationManager::get().instantiateDefaultRepresentation(
 					*this, false, false );
 
 				_defaultRepresentationIDs.reserve( getCategories().size() );
@@ -162,7 +162,7 @@ namespace VTX::App::Component::Chemistry
 					if ( category->isEmpty() )
 						continue;
 
-					const Model::Representation::Representation * const defaultRepresentation
+					const App::Application::Representation::RepresentationPreset * const defaultRepresentation
 						= VTXApp::get().getRepresentationLibrary().getDefaultRepresentation(
 							category->getCategoryEnum() );
 
@@ -173,9 +173,9 @@ namespace VTX::App::Component::Chemistry
 						if ( chain == nullptr )
 							continue;
 
-						const Model::Representation::InstantiatedRepresentation * const
+						const App::Application::Representation::InstantiatedRepresentation * const
 							defaultInstantiatedRepresentation
-							= VTX::Representation::RepresentationManager::get().instantiateRepresentation(
+							= App::Application::Representation::RepresentationManager::get().instantiateRepresentation(
 								defaultRepresentation, *chain, false, false );
 
 						_markRepresentationAsDefault( defaultInstantiatedRepresentation );
@@ -200,7 +200,7 @@ namespace VTX::App::Component::Chemistry
 	}
 
 	void Molecule::_markRepresentationAsDefault(
-		const Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation )
+		const App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation )
 	{
 		_defaultRepresentationIDs.emplace_back( _instantiatedRepresentation->getId() );
 	}
@@ -228,11 +228,11 @@ namespace VTX::App::Component::Chemistry
 			if ( !VTX::MVC_MANAGER().doesModelExists( instantiatedRepresentationID ) )
 				continue;
 
-			Model::Representation::InstantiatedRepresentation & instantiatedRepresentation
-				= VTX::MVC_MANAGER().getModel<Model::Representation::InstantiatedRepresentation>(
+			App::Application::Representation::InstantiatedRepresentation & instantiatedRepresentation
+				= VTX::MVC_MANAGER().getModel<App::Application::Representation::InstantiatedRepresentation>(
 					instantiatedRepresentationID );
 
-			VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
+			App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
 				*instantiatedRepresentation.getTarget(), false, false );
 		}
 
@@ -241,7 +241,7 @@ namespace VTX::App::Component::Chemistry
 	}
 
 	bool Molecule::isDefaultRepresentation(
-		const Model::Representation::InstantiatedRepresentation & p_representation ) const
+		const App::Application::Representation::InstantiatedRepresentation & p_representation ) const
 	{
 		return std::find( _defaultRepresentationIDs.begin(), _defaultRepresentationIDs.end(), p_representation.getId() )
 			   != _defaultRepresentationIDs.end();
@@ -254,7 +254,8 @@ namespace VTX::App::Component::Chemistry
 			if ( chain == nullptr )
 				continue;
 
-			VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation( *chain, false, false );
+			App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
+				*chain, false, false );
 
 			chain->removeChildrenRepresentations();
 		}
@@ -308,7 +309,7 @@ namespace VTX::App::Component::Chemistry
 			if ( residue == nullptr )
 				continue;
 
-			const Model::Representation::InstantiatedRepresentation * const currentRepresentation
+			const App::Application::Representation::InstantiatedRepresentation * const currentRepresentation
 				= residue->getRepresentation();
 
 			Generic::COLOR_MODE colorMode = currentRepresentation->getColorMode();

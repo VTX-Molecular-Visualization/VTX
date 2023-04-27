@@ -1,7 +1,7 @@
 #include "app/old_app/view/d3/triangle.hpp"
 #include "app/component/chemistry/category.hpp"
 #include "app/component/chemistry/molecule.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
+#include "app/application/representation/representation_manager.hpp"
 
 namespace VTX::View::D3
 {
@@ -29,14 +29,14 @@ namespace VTX::View::D3
 	{
 		BaseView3D::render( p_camera );
 
-		for ( const std::pair<const Model::Representation::InstantiatedRepresentation * const,
-							  VTX::Representation::RepresentationTarget> & representationData :
+		for ( const std::pair<const App::Application::Representation::InstantiatedRepresentation * const,
+							  App::Application::Representation::RepresentationTarget> & representationData :
 			  _model->getCategory()->getMolecule()->getRepresentationData() )
 		{
 			if ( representationData.first->hasToDrawSES() )
 			{
-				const Model::Representation::SESData &		triangleData = representationData.first->getSESData();
-				const Representation::TargetRange<void *> & target
+				const App::Application::Representation::Primitive::SES &		triangleData = representationData.first->getSESData();
+				const App::Application::Representation::TargetRange<void *> & target
 					= representationData.second.getTrianglesSES( _model->getCategory()->getCategoryEnum() );
 
 				if ( target.indices.size() > 0 )

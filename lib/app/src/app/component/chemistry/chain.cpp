@@ -3,7 +3,7 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/internal/chemdb/chain.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
+#include "app/application/representation/representation_manager.hpp"
 
 namespace VTX::App::Component::Chemistry
 {
@@ -164,7 +164,7 @@ namespace VTX::App::Component::Chemistry
 			if ( residue == nullptr )
 				continue;
 
-			VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
+			App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
 				*residue, false, false );
 		}
 

@@ -8,7 +8,7 @@
 #include <QRadioButton>
 #include <QWidget>
 #include <app/core/model/base_model.hpp>
-#include <app/model/representation/instantiated_representation.hpp>
+#include <app/application/representation/instantiated_representation.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Representation
@@ -42,7 +42,7 @@ namespace VTX::UI::Widget::Representation
 
 		  private:
 			InstantiatedRepresentationListWidget * const		_owner						= nullptr;
-			Model::Representation::InstantiatedRepresentation * _instantiatedRepresentation = nullptr;
+			App::Application::Representation::InstantiatedRepresentation * _instantiatedRepresentation = nullptr;
 
 			QPushButton * _modelButton	= nullptr;
 			QPushButton * _removeButton = nullptr;

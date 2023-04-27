@@ -14,7 +14,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 	{
 		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 
-		for ( Model::Representation::InstantiatedRepresentation * const representation : _instantiatedRepresentations )
+		for ( App::Application::Representation::InstantiatedRepresentation * const representation : _instantiatedRepresentations )
 		{
 			representation->setColor( _color, false, true );
 			molecules.emplace( representation->getConstTarget()->getMolecule() );

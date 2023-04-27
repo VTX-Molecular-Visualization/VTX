@@ -36,30 +36,35 @@ namespace VTX::UI::Widget::Representation::View
 		emit onColorBlendingModeChange( Generic::COLOR_BLENDING_MODE( p_newMode ) );
 	}
 
-	void CylinderWidget::refresh( const Model::Representation::InstantiatedRepresentation &		 p_representation,
-								  const std::unordered_set<const Generic::BaseRepresentable *> & p_targets )
+	void CylinderWidget::refresh(
+		const App::Application::Representation::InstantiatedRepresentation &					p_representation,
+		const std::unordered_set<const App::Application::Representation::BaseRepresentable *> & p_targets )
 	{
+		const bool radiusOverrided = p_representation.isMemberOverrided(
+			App::Application::Representation::MEMBER_FLAG::ENUM::CYLINDER_RADIUS );
+
+		const bool colorBlendingModeOverrided = p_representation.isMemberOverrided(
+			App::Application::Representation::MEMBER_FLAG::ENUM::CYLINDER_COLOR_BLENDING_MODE );
+
+		Util::UI::setDynamicProperty( _radiusLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, radiusOverrided );
 		Util::UI::setDynamicProperty(
-			_radiusLabel,
-			Style::WidgetProperty::OVERIDDEN_PARAMETER,
-			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS ) );
-		Util::UI::setDynamicProperty(
-			_colorBlendingModeLabel,
-			Style::WidgetProperty::OVERIDDEN_PARAMETER,
-			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_COLOR_BLENDING_MODE ) );
+			_colorBlendingModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, colorBlendingModeOverrided );
 
 		_radiusWidget->setValue( p_representation.getCylinderData().radius );
 		_colorBlendingModeWidget->setCurrentIndex( int( p_representation.getCylinderData().colorBlendingMode ) );
 	}
 
-	void CylinderWidget::updateWithNewValue( const Model::Representation::InstantiatedRepresentation & p_representation,
-											 const std::unordered_set<const Generic::BaseRepresentable *> & p_targets )
+	void CylinderWidget::updateWithNewValue(
+		const App::Application::Representation::InstantiatedRepresentation &					p_representation,
+		const std::unordered_set<const App::Application::Representation::BaseRepresentable *> & p_targets )
 	{
-		_updateLabelOverriddenProperty(
-			_radiusLabel, p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS ) );
+		_updateLabelOverriddenProperty( _radiusLabel,
+										p_representation.isMemberOverrided(
+											App::Application::Representation::MEMBER_FLAG::ENUM::CYLINDER_RADIUS ) );
 		_updateLabelOverriddenProperty(
 			_colorBlendingModeLabel,
-			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_COLOR_BLENDING_MODE ) );
+			p_representation.isMemberOverrided(
+				App::Application::Representation::MEMBER_FLAG::ENUM::CYLINDER_COLOR_BLENDING_MODE ) );
 
 		_radiusWidget->updateWithNewValue( p_representation.getCylinderData().radius );
 		_colorBlendingModeWidget->updateWithNewValue( int( p_representation.getCylinderData().colorBlendingMode ) );

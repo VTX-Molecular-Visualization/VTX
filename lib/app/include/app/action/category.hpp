@@ -5,7 +5,7 @@
 #include "app/action/visible.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/component/chemistry/category.hpp"
-// #include "app/model/representation/instantiated_representation.hpp"
+// #include "app/application/representation/instantiated_representation.hpp"
 // #include <unordered_set>
 
 namespace VTX::App::Action::Category
@@ -148,8 +148,8 @@ namespace VTX::App::Action::Category
 	//{
 	//  public:
 	//	explicit ApplyRepresentation( const std::unordered_set<App::Component::Chemistry::Category *> &				p_categories,
-	//								  const Model::Representation::InstantiatedRepresentation & p_source,
-	//								  const Model::Representation::MEMBER_FLAG &				p_flag ) :
+	//								  const App::Application::Representation::InstantiatedRepresentation & p_source,
+	//								  const Application::Representation::MEMBER_FLAG &				p_flag ) :
 	//		_representation( p_source ),
 	//		_flag( p_flag ), _categories( p_categories )
 	//	{
@@ -160,8 +160,8 @@ namespace VTX::App::Action::Category
 
 	//  private:
 	//	const std::unordered_set<App::Component::Chemistry::Category *>				  _categories = std::unordered_set<App::Component::Chemistry::Category *>();
-	//	const Model::Representation::InstantiatedRepresentation & _representation;
-	//	const Model::Representation::MEMBER_FLAG				  _flag;
+	//	const App::Application::Representation::InstantiatedRepresentation & _representation;
+	//	const Application::Representation::MEMBER_FLAG				  _flag;
 	//};
 
 } // namespace VTX::App::Action::Category

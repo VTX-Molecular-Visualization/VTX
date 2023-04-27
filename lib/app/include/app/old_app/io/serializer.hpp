@@ -1,6 +1,7 @@
 #ifndef __VTX_SERIALIZER__
 #define __VTX_SERIALIZER__
 
+#include "app/application/representation/_fwd.hpp"
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/core/model/base_model.hpp"
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
@@ -31,11 +32,7 @@ namespace VTX
 		class Label;
 		class Path;
 		class Viewpoint;
-		namespace Representation
-		{
-			class InstantiatedRepresentation;
-			class Representation;
-		} // namespace Representation
+
 		namespace Renderer
 		{
 			class RenderEffectPreset;
@@ -60,10 +57,10 @@ namespace VTX
 			nlohmann::json serialize( const App::Component::Chemistry::Molecule & ) const;
 			nlohmann::json serialize( const Model::Path & ) const;
 			nlohmann::json serialize( const Model::Viewpoint & ) const;
-			nlohmann::json serialize( const Model::Representation::InstantiatedRepresentation & ) const;
+			nlohmann::json serialize( const App::Application::Representation::InstantiatedRepresentation & ) const;
 			nlohmann::json serialize( const Model::Label & ) const;
 
-			nlohmann::json serialize( const Model::Representation::Representation & ) const;
+			nlohmann::json serialize( const App::Application::Representation::RepresentationPreset & ) const;
 			nlohmann::json serialize( const Model::Renderer::RenderEffectPreset & ) const;
 
 			nlohmann::json serialize( const Color::Rgba & ) const;
@@ -89,11 +86,11 @@ namespace VTX
 			void deserialize( const nlohmann::json &, Model::Viewpoint & ) const;
 			void deserialize( const nlohmann::json &,
 							  const std::tuple<uint, uint, uint> &,
-							  Model::Representation::InstantiatedRepresentation & ) const;
+							  App::Application::Representation::InstantiatedRepresentation & ) const;
 
 			void deserialize( const nlohmann::json &,
 							  const std::tuple<uint, uint, uint> &,
-							  Model::Representation::Representation & ) const;
+							  App::Application::Representation::RepresentationPreset & ) const;
 			void deserialize( const nlohmann::json &,
 							  const std::tuple<uint, uint, uint> &,
 							  Model::Renderer::RenderEffectPreset & ) const;
@@ -133,10 +130,10 @@ namespace VTX
 		  private:
 			void _migrate( const nlohmann::json &,
 						   const std::tuple<uint, uint, uint> &,
-						   Model::Representation::InstantiatedRepresentation & ) const;
+						   App::Application::Representation::InstantiatedRepresentation & ) const;
 			void _migrate( const nlohmann::json &,
 						   const std::tuple<uint, uint, uint> &,
-						   Model::Representation::Representation & ) const;
+						   App::Application::Representation::RepresentationPreset & ) const;
 
 			nlohmann::json _serializeMoleculeRepresentations( const App::Component::Chemistry::Molecule &,
 															  const VTX::IO::Writer::ChemfilesWriter * ) const;

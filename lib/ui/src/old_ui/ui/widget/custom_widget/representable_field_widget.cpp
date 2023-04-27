@@ -54,14 +54,14 @@ namespace VTX
 					App::Core::Model::BaseModel * const representableModel
 						= &( VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( modelData.getModelID() ) );
 
-					Generic::BaseRepresentable * representable = nullptr;
+					App::Application::Representation::BaseRepresentable * representable = nullptr;
 					const VTX::ID::VTX_ID &		 modelTypeID   = representableModel->getTypeId();
 
 					if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
-						representable = static_cast<Generic::BaseRepresentable *>(
+						representable = static_cast<App::Application::Representation::BaseRepresentable *>(
 							static_cast<App::Component::Chemistry::Molecule *>( representableModel ) );
 					else if ( modelTypeID == VTX::ID::Model::MODEL_CHAIN )
-						representable = static_cast<Generic::BaseRepresentable *>(
+						representable = static_cast<App::Application::Representation::BaseRepresentable *>(
 							static_cast<App::Component::Chemistry::Chain *>( representableModel ) );
 
 					p_event->acceptProposedAction();

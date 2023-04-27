@@ -8,7 +8,7 @@
 #include "view/ribbon_widget.hpp"
 #include "view/sphere_widget.hpp"
 #include <QWidget>
-#include <app/model/representation/instantiated_representation.hpp>
+#include <app/application/representation/instantiated_representation.hpp>
 #include <unordered_set>
 
 namespace VTX::View::UI::Widget::Representation
@@ -20,26 +20,27 @@ namespace VTX::UI::Widget::Representation
 {
 	class BaseRepresentationWidget :
 		public VTX::UI::Widget::BaseManualWidget<QWidget>,
-		public TMultiDataField<const Model::Representation::InstantiatedRepresentation>
+		public TMultiDataField<const App::Application::Representation::InstantiatedRepresentation>
 	{
 		Q_OBJECT
 		VTX_WIDGET
 
 	  public:
-		using InstantiatedRepresentation	 = Model::Representation::InstantiatedRepresentation;
+		using InstantiatedRepresentation	 = App::Application::Representation::InstantiatedRepresentation;
 		using InstantiatedRepresentationView = VTX::View::UI::Widget::Representation::InstantiatedRepresentationView;
-		using MEMBER_FLAG					 = Model::Representation::MEMBER_FLAG;
+		using MEMBER_FLAG					 = App::Application::Representation::MEMBER_FLAG;
 
 		void refresh();
 		void setRepresentation( InstantiatedRepresentation * const p_representation );
 
 		// MultiDataField Implementation //////////////////////////////
-		void updateWithNewValue( const Model::Representation::InstantiatedRepresentation & p_value ) override;
+		void updateWithNewValue(
+			const App::Application::Representation::InstantiatedRepresentation & p_value ) override;
 		void resetState() override;
 		//////////////////////////////////////////////////////////////
 
 	  signals:
-		void onDataChange( const Model::Representation::MEMBER_FLAG & p_flag );
+		void onDataChange( const App::Application::Representation::MEMBER_FLAG & p_flag );
 		void onColorChange( const Color::Rgba & p_color, const bool p_ssColor );
 
 	  protected:
@@ -80,9 +81,9 @@ namespace VTX::UI::Widget::Representation
 		CustomWidget::ColorModeFieldWidget * _colorModeWidget = nullptr;
 
 	  private:
-		QGridLayout *										   _layout = nullptr;
-		std::unordered_set<const Generic::BaseRepresentable *> _targets
-			= std::unordered_set<const Generic::BaseRepresentable *>();
+		QGridLayout *																	_layout = nullptr;
+		std::unordered_set<const App::Application::Representation::BaseRepresentable *> _targets
+			= std::unordered_set<const App::Application::Representation::BaseRepresentable *>();
 
 		void _appendWidgetInLayout( QWidget * const p_label, QWidget * const p_widget );
 	};

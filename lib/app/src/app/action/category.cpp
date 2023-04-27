@@ -3,11 +3,11 @@
 // #include "app/component/chemistry/chain.hpp"
 // #include "app/component/chemistry/generated_molecule.hpp"
 #include "app/component/chemistry/molecule.hpp"
-// #include "app/model/representation/representation_library.hpp"
+// #include "app/application/representation/representation_library.hpp"
 // #include "app/model/selection.hpp"
 // #include "app/mvc.hpp"
 #include "app/old_app/object3d/scene.hpp"
-// #include "app/old_app/representation/representation_manager.hpp"
+// #include "app/application/representation/representation_manager.hpp"
 // #include "app/old_app/selection/selection_manager.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -101,16 +101,16 @@ namespace VTX::App::Action::Category
 
 	// void ChangeRepresentationPreset::execute()
 	//{
-	//	Model::Representation::Representation * const preset
-	//		= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
+	//	App::Application::Representation::RepresentationPreset * const preset
+	//		= App::Application::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
-	//	Representation::RepresentationManager::get().instantiateRepresentations( preset, _categories );
+	//	App::Application::Representation::RepresentationManager::get().instantiateRepresentations( preset, _categories );
 	//	VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	//}
 
 	// void RemoveRepresentation::execute()
 	//{
-	//	Representation::RepresentationManager::get().removeInstantiatedRepresentations( _categories );
+	//	App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentations( _categories );
 	//	VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	// }
 
@@ -181,7 +181,7 @@ namespace VTX::App::Action::Category
 
 	// void ApplyRepresentation::execute()
 	//{
-	//	Representation::RepresentationManager::get().applyRepresentation( _categories, _representation, _flag );
+	//	App::Application::Representation::RepresentationManager::get().applyRepresentation( _categories, _representation, _flag );
 	//	VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	//}
 

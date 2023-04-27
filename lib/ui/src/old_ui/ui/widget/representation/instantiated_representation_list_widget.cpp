@@ -6,14 +6,14 @@
 #include <QRadioButton>
 #include <QVBoxLayout>
 #include <QVariant>
-#include <app/old_app/generic/base_representable.hpp>
+#include <app/application/representation/base_representable.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/category.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/representation/representation_manager.hpp>
+#include <app/application/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::Representation
@@ -45,7 +45,7 @@ namespace VTX::UI::Widget::Representation
 
 	void InstantiatedRepresentationListWidget::ModelFieldLine::setModel( App::Core::Model::BaseModel * const p_model )
 	{
-		_instantiatedRepresentation = static_cast<Model::Representation::InstantiatedRepresentation *>( p_model );
+		_instantiatedRepresentation = static_cast<App::Application::Representation::InstantiatedRepresentation *>( p_model );
 
 		const App::Core::Model::BaseModel * const target = _instantiatedRepresentation->getTarget()->getLinkedModel();
 
@@ -111,17 +111,17 @@ namespace VTX::UI::Widget::Representation
 		if ( representableTypeID == ID::Model::MODEL_MOLECULE )
 		{
 			App::Component::Chemistry::Molecule * const molecule = static_cast<App::Component::Chemistry::Molecule *>( targetModel );
-			VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation( *molecule );
+			App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentation( *molecule );
 		}
 		else if ( representableTypeID == ID::Model::MODEL_CHAIN )
 		{
 			App::Component::Chemistry::Chain * const chain = static_cast<App::Component::Chemistry::Chain *>( targetModel );
-			VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation( *chain );
+			App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentation( *chain );
 		}
 		else if ( representableTypeID == ID::Model::MODEL_CHAIN )
 		{
 			App::Component::Chemistry::Residue * const residue = static_cast<App::Component::Chemistry::Residue *>( targetModel );
-			VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation( *residue );
+			App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentation( *residue );
 		}
 
 		_owner->removeModel( _instantiatedRepresentation );

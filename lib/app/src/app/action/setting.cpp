@@ -1,8 +1,9 @@
 #include "app/action/setting.hpp"
+#include "app/application/representation/representation_library.hpp"
+#include "app/application/representation/representation_manager.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/model/renderer/render_effect_preset.hpp"
 #include "app/model/renderer/render_effect_preset_library.hpp"
-#include "app/model/representation/representation_library.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
 #include "app/old_app/io/writer/serialized_object.hpp"
@@ -10,7 +11,6 @@
 #include "app/old_app/object3d/camera_manager.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <exception>
 #include <string>
@@ -80,23 +80,25 @@ namespace VTX::App::Action::Setting
 
 	void ChangeDefaultRepresentation::execute()
 	{
-		const VTX::Model::Representation::Representation * const previousDefaultRepresentation
-			= VTX::Model::Representation::RepresentationLibrary::get().getDefaultRepresentation();
+		const VTX::App::Application::Representation::RepresentationPreset * const previousDefaultRepresentation
+			= VTX::App::Application::Representation::RepresentationLibrary::get().getDefaultRepresentation();
 
-		VTX::Model::Representation::RepresentationLibrary::get().setDefaultRepresentation( _representationIndex );
+		VTX::App::Application::Representation::RepresentationLibrary::get().setDefaultRepresentation(
+			_representationIndex );
 
-		VTX::Model::Representation::Representation * const newDefaultRepresentation
-			= VTX::Model::Representation::RepresentationLibrary::get().getDefaultRepresentation();
+		VTX::App::Application::Representation::RepresentationPreset * const newDefaultRepresentation
+			= VTX::App::Application::Representation::RepresentationLibrary::get().getDefaultRepresentation();
 
 		if ( previousDefaultRepresentation != newDefaultRepresentation )
 		{
-			for ( Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
-				  VTX::Representation::RepresentationManager::get().getAllInstantiatedRepresentations(
+			for ( App::Application::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
+				  App::Application::Representation::RepresentationManager::get().getAllInstantiatedRepresentations(
 					  previousDefaultRepresentation ) )
 			{
-				if ( instantiatedRepresentation->getOverridedMembersFlag() == Model::Representation::MEMBER_FLAG::NONE )
+				if ( instantiatedRepresentation->getOverridedMembersFlag()
+					 == Application::Representation::MEMBER_FLAG::ENUM::NONE )
 				{
-					VTX::Representation::RepresentationManager::get().instantiateRepresentation(
+					App::Application::Representation::RepresentationManager::get().instantiateRepresentation(
 						newDefaultRepresentation, *instantiatedRepresentation->getTarget() );
 				}
 			}
@@ -117,11 +119,12 @@ namespace VTX::App::Action::Setting
 
 	void ChangeColorMode::execute()
 	{
-		for ( Model::Representation::Representation * const representation :
-			  Model::Representation::RepresentationLibrary::get().getRepresentations() )
+		for ( App::Application::Representation::RepresentationPreset * const representation :
+			  App::Application::Representation::RepresentationLibrary::get().getRepresentations() )
 		{
-			for ( Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
-				  Representation::RepresentationManager::get().getAllInstantiatedRepresentations( representation ) )
+			for ( App::Application::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
+				  App::Application::Representation::RepresentationManager::get().getAllInstantiatedRepresentations(
+					  representation ) )
 			{
 				instantiatedRepresentation->setColorMode( _mode );
 			}

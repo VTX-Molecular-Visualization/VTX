@@ -1,55 +1,48 @@
 #ifndef __VTX_WORKER_REPRESENTATION_SAVER__
 #define __VTX_WORKER_REPRESENTATION_SAVER__
 
+#include "app/application/representation/_fwd.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include "app/core/worker/base_worker.hpp"
 #include <util/types.hpp>
 
-namespace VTX
+namespace VTX::Worker
 {
-	namespace Model::Representation
+	/*
+	class RepresentationSaverThread : public App::Core::Worker::BaseThread
 	{
-		class Representation;
-	} // namespace Model::Representation
+		// Q_OBJECT
 
-	namespace Worker
+	  public:
+		explicit RepresentationSaverThread( const App::Application::Representation::RepresentationPreset * const
+	p_representation ) : _representation( p_representation )
+		{
+		}
+
+	  protected:
+		uint _run() override;
+
+	  private:
+		const App::Application::Representation::RepresentationPreset * const _representation;
+	};
+	*/
+
+	class RepresentationSaver : public App::Core::Worker::BaseWorker
 	{
-		/*
-		class RepresentationSaverThread : public App::Core::Worker::BaseThread
+	  public:
+		explicit RepresentationSaver( const App::Application::Representation::RepresentationPreset * const p_representation,
+									  const FilePath &												 p_path ) :
+			_representation( p_representation ),
+			_path( p_path )
 		{
-			// Q_OBJECT
+		}
 
-		  public:
-			explicit RepresentationSaverThread( const Model::Representation::Representation * const p_representation ) :
-				_representation( p_representation )
-			{
-			}
+	  protected:
+		void _run() override;
 
-		  protected:
-			uint _run() override;
-
-		  private:
-			const Model::Representation::Representation * const _representation;
-		};
-		*/
-
-		class RepresentationSaver : public App::Core::Worker::BaseWorker
-		{
-		  public:
-			explicit RepresentationSaver( const Model::Representation::Representation * const p_representation,
-										  const FilePath &									  p_path ) :
-				_representation( p_representation ),
-				_path( p_path )
-			{
-			}
-
-		  protected:
-			void _run() override;
-
-		  private:
-			const Model::Representation::Representation * const _representation;
-			const FilePath										_path;
-		};
-	}; // namespace Worker
-} // namespace VTX
+	  private:
+		const App::Application::Representation::RepresentationPreset * const _representation;
+		const FilePath												   _path;
+	};
+} // namespace VTX::Worker
 #endif

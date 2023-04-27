@@ -33,31 +33,34 @@ namespace VTX::UI::Widget::Representation::View
 
 	void SphereWidget::_onRadiusOffsetChange( const float p_newRadius ) { emit onRadiusOffsetChange( p_newRadius ); }
 
-	void SphereWidget::refresh( const Model::Representation::InstantiatedRepresentation &	   p_representation,
-								const std::unordered_set<const Generic::BaseRepresentable *> & p_targets )
+	void SphereWidget::refresh(
+		const App::Application::Representation::InstantiatedRepresentation &					p_representation,
+		const std::unordered_set<const App::Application::Representation::BaseRepresentable *> & p_targets )
 	{
-		Util::UI::setDynamicProperty(
-			_radiusLabel,
-			Style::WidgetProperty::OVERIDDEN_PARAMETER,
-			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
-		Util::UI::setDynamicProperty(
-			_radiusOffsetLabel,
-			Style::WidgetProperty::OVERIDDEN_PARAMETER,
-			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_ADD ) );
+		Util::UI::setDynamicProperty( _radiusLabel,
+									  Style::WidgetProperty::OVERIDDEN_PARAMETER,
+									  p_representation.isMemberOverrided(
+										  App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED ) );
+		Util::UI::setDynamicProperty( _radiusOffsetLabel,
+									  Style::WidgetProperty::OVERIDDEN_PARAMETER,
+									  p_representation.isMemberOverrided(
+										  App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_ADD ) );
 
 		_radiusWidget->setValue( p_representation.getSphereData().radiusFixed );
 		_radiusOffsetWidget->setValue( p_representation.getSphereData().radiusAdd );
 	}
 
-	void SphereWidget::updateWithNewValue( const Model::Representation::InstantiatedRepresentation & p_representation,
-										   const std::unordered_set<const Generic::BaseRepresentable *> & p_targets )
+	void SphereWidget::updateWithNewValue(
+		const App::Application::Representation::InstantiatedRepresentation &					p_representation,
+		const std::unordered_set<const App::Application::Representation::BaseRepresentable *> & p_targets )
 	{
 		_updateLabelOverriddenProperty(
 			_radiusLabel,
-			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
-		_updateLabelOverriddenProperty(
-			_radiusOffsetLabel,
-			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_ADD ) );
+			p_representation.isMemberOverrided(
+				App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED ) );
+		_updateLabelOverriddenProperty( _radiusOffsetLabel,
+										p_representation.isMemberOverrided(
+											App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_ADD ) );
 
 		_radiusWidget->updateWithNewValue( p_representation.getSphereData().radiusFixed );
 		_radiusOffsetWidget->updateWithNewValue( p_representation.getSphereData().radiusAdd );

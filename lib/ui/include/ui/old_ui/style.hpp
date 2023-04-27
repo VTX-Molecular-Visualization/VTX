@@ -10,8 +10,8 @@
 #include <QPixmap>
 #include <QSize>
 #include <QString>
+#include <app/application/representation/enum_representation.hpp>
 #include <app/internal/chemdb/category.hpp>
-#include <app/model/representation/representation_enum.hpp>
 #include <app/old_app/id.hpp>
 #include <app/old_app/selection/selection_enum.hpp>
 #include <app/old_app/util/label.hpp>
@@ -149,27 +149,39 @@ namespace VTX::UI
 				return res;
 			};
 
-			const QPixmap * const getRepresentationIcon( const Generic::REPRESENTATION & p_representation ) const
+			const QPixmap * const getRepresentationIcon(
+				const App::Application::Representation::REPRESENTATION_ENUM & p_representation ) const
 			{
 				const QPixmap * res;
 
 				switch ( p_representation )
 				{
-				case Generic::REPRESENTATION::BALL_AND_STICK: res = &REPRESENTATION_BALL_AND_STICK_ICON; break;
-				case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON:
+				case App::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK:
+					res = &REPRESENTATION_BALL_AND_STICK_ICON;
+					break;
+				case App::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK_AND_CARTOON:
 					res = &REPRESENTATION_BALL_STICK_AND_CARTOON_ICON;
 					break;
-				case Generic::REPRESENTATION::CARTOON: res = &REPRESENTATION_CARTOON_ICON; break;
-				case Generic::REPRESENTATION::SAS: res = &REPRESENTATION_SAS_ICON; break;
-				case Generic::REPRESENTATION::STICK: res = &REPRESENTATION_STICK_ICON; break;
-				case Generic::REPRESENTATION::STICK_AND_CARTOON: res = &REPRESENTATION_STICK_AND_CARTOON_ICON; break;
-				case Generic::REPRESENTATION::SES:
+				case App::Application::Representation::REPRESENTATION_ENUM::CARTOON:
+					res = &REPRESENTATION_CARTOON_ICON;
+					break;
+				case App::Application::Representation::REPRESENTATION_ENUM::SAS: res = &REPRESENTATION_SAS_ICON; break;
+				case App::Application::Representation::REPRESENTATION_ENUM::STICK:
+					res = &REPRESENTATION_STICK_ICON;
+					break;
+				case App::Application::Representation::REPRESENTATION_ENUM::STICK_AND_CARTOON:
+					res = &REPRESENTATION_STICK_AND_CARTOON_ICON;
+					break;
+				case App::Application::Representation::REPRESENTATION_ENUM::SES:
 					res = &REPRESENTATION_SES_ICON;
 					break;
 
 					// !V0.1
-					// case Generic::REPRESENTATION::TRACE: res = &REPRESENTATION_TRACE_ICON; break;
-				case Generic::REPRESENTATION::VAN_DER_WAALS: res = &REPRESENTATION_VDW_ICON; break;
+					// case App::Application::Representation::REPRESENTATION_ENUM::TRACE: res =
+					// &REPRESENTATION_TRACE_ICON; break;
+				case App::Application::Representation::REPRESENTATION_ENUM::VAN_DER_WAALS:
+					res = &REPRESENTATION_VDW_ICON;
+					break;
 				default:
 
 					VTX_WARNING( "Representation " + std::to_string( int( p_representation ) )

@@ -8,13 +8,13 @@
 #include "ui/old_ui/util/ui.hpp"
 #include <QGridLayout>
 #include <QWidget>
-#include <app/model/representation/instantiated_representation.hpp>
+#include <app/application/representation/instantiated_representation.hpp>
 
 namespace VTX::UI::Widget::Representation::View
 {
 	class BaseRepresentationViewWidget :
 		public VTX::UI::Widget::BaseManualWidget<QWidget>,
-		public TMultiDataTargetField<Model::Representation::InstantiatedRepresentation, Generic::BaseRepresentable>
+		public TMultiDataTargetField<App::Application::Representation::InstantiatedRepresentation, App::Application::Representation::BaseRepresentable>
 	{
 		Q_OBJECT
 		VTX_WIDGET

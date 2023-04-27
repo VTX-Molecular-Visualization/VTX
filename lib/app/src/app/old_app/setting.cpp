@@ -1,10 +1,11 @@
 #include "app/old_app/setting.hpp"
+#include "app/application/representation/enum_representation.hpp"
+#include "app/application/representation/representation_manager.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/internal/chemdb/category.hpp"
-#include "app/model/representation/representation_enum.hpp"
 #include "app/old_app/define.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
@@ -13,7 +14,6 @@
 #include "app/old_app/io/writer/serialized_object.hpp"
 #include "app/old_app/path/path_enum.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/selection/selection_enum.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <exception>
@@ -41,9 +41,10 @@ namespace VTX
 		= IO::Struct::ImageExport::RESOLUTION::Free;
 	const IO::Struct::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT = IO::Struct::ImageExport::Format::PNG;
 
-	const std::string				   Setting::REPRESENTATION_DEFAULT_NAME		  = "Stick";
-	const int						   Setting::REPRESENTATION_DEFAULT_INDEX	  = 4;
-	const Generic::REPRESENTATION	   Setting::DEFAULT_REPRESENTATION_TYPE		  = Generic::REPRESENTATION::STICK;
+	const std::string											Setting::REPRESENTATION_DEFAULT_NAME  = "Stick";
+	const int													Setting::REPRESENTATION_DEFAULT_INDEX = 4;
+	const App::Application::Representation::REPRESENTATION_ENUM Setting::DEFAULT_REPRESENTATION_TYPE
+		= App::Application::Representation::REPRESENTATION_ENUM::STICK;
 	const std::string				   Setting::NEW_REPRESENTATION_DEFAULT_NAME	  = "New representation";
 	const float						   Setting::ATOMS_RADIUS_DEFAULT			  = 0.4f;
 	const float						   Setting::ATOMS_RADIUS_MIN				  = 0.01f;
@@ -657,10 +658,11 @@ namespace VTX
 		symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
 		windowFullscreen  = WINDOW_FULLSCREEN_DEFAULT;
 
-		activeRenderer			   = ACTIVE_RENDERER_DEFAULT;
-		forceRenderer			   = FORCE_RENDERER_DEFAULT;
-		representationDefaultIndex = Representation::RepresentationManager::get().getDefaultRepresentationIndex();
-		renderEffectDefaultIndex   = RENDER_EFFECT_DEFAULT_INDEX;
+		activeRenderer = ACTIVE_RENDERER_DEFAULT;
+		forceRenderer  = FORCE_RENDERER_DEFAULT;
+		representationDefaultIndex
+			= App::Application::Representation::RepresentationManager::get().getDefaultRepresentationIndex();
+		renderEffectDefaultIndex = RENDER_EFFECT_DEFAULT_INDEX;
 
 		activeVSync = ACTIVE_VSYNC_DEFAULT;
 

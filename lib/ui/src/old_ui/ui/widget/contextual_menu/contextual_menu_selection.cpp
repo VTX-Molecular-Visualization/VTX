@@ -17,7 +17,7 @@
 #include <app/action/viewpoint.hpp>
 #include <app/action/visible.hpp>
 #include <app/component/chemistry/generated_molecule.hpp>
-#include <app/model/representation/representation_library.hpp>
+#include <app/application/representation/representation_library.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::ContextualMenu
@@ -450,7 +450,7 @@ namespace VTX::UI::Widget::ContextualMenu
 			if ( moleculeData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 			{
 				const int representationIndex
-					= Model::Representation::RepresentationLibrary::get().getRepresentationIndex(
+					= App::Application::Representation::RepresentationLibrary::get().getRepresentationIndex(
 						molecule.getRepresentation()->getLinkedRepresentation() );
 
 				if ( selectionRepresentationIndex == -1 )
@@ -467,7 +467,7 @@ namespace VTX::UI::Widget::ContextualMenu
 					if ( chainData.second.getFullySelectedChildCount() == chain->getRealResidueCount() )
 					{
 						const int representationIndex
-							= Model::Representation::RepresentationLibrary::get().getRepresentationIndex(
+							= App::Application::Representation::RepresentationLibrary::get().getRepresentationIndex(
 								chain->getRepresentation()->getLinkedRepresentation() );
 
 						if ( selectionRepresentationIndex == -1 )
@@ -482,7 +482,7 @@ namespace VTX::UI::Widget::ContextualMenu
 							App::Component::Chemistry::Residue * const residue = molecule.getResidue( residueData.first );
 
 							const int representationIndex
-								= Model::Representation::RepresentationLibrary::get().getRepresentationIndex(
+								= App::Application::Representation::RepresentationLibrary::get().getRepresentationIndex(
 									residue->getRepresentation()->getLinkedRepresentation() );
 
 							if ( selectionRepresentationIndex == -1 )

@@ -8,7 +8,7 @@
 #include "ui/old_ui/ui/widget/main_menu/camera/windows_block.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <app/model/renderer/render_effect_preset_library.hpp>
-#include <app/model/representation/representation_library.hpp>
+#include <app/application/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {

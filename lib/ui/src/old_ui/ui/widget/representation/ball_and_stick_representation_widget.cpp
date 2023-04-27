@@ -22,9 +22,8 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setSphereRadius( p_newRadius );
 
-		emit onDataChange(
-			Model::Representation::MEMBER_FLAG( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS
-												| Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
+		emit onDataChange( App::Application::Representation::MEMBER_FLAG::ENUM::CYLINDER_RADIUS
+						   | App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED );
 	}
 
 	void BallAndStickRepresentationWidget::_onCylinderRadiusChange( const float p_newRadius )
@@ -34,9 +33,8 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setCylinderRadius( p_newRadius );
 
-		emit onDataChange(
-			Model::Representation::MEMBER_FLAG( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS
-												| Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
+		emit onDataChange( App::Application::Representation::MEMBER_FLAG::ENUM::CYLINDER_RADIUS
+						   | App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED );
 	}
 
 } // namespace VTX::UI::Widget::Representation

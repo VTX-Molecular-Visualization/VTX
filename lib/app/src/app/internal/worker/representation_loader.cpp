@@ -1,8 +1,8 @@
 #include "app/internal/worker/representation_loader.hpp"
-#include "app/model/representation/representation_library.hpp"
+#include "app/application/representation/representation_library.hpp"
+#include "app/application/representation/representation_manager.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
 #include <filesystem>
 #include <util/logger.hpp>
 
@@ -12,23 +12,23 @@ namespace VTX::Worker
 	{
 		Util::Chrono chrono;
 
-		IO::Reader::SerializedObject<Model::Representation::Representation> * const reader
-			= new IO::Reader::SerializedObject<Model::Representation::Representation>();
+		IO::Reader::SerializedObject<App::Application::Representation::RepresentationPreset> * const reader
+			= new IO::Reader::SerializedObject<App::Application::Representation::RepresentationPreset>();
 
 		chrono.start();
 
 		if ( _restore )
 		{
-			Representation::RepresentationManager::get().storeRepresentations();
-			Representation::RepresentationManager::get().clearAllRepresentations( false );
+			App::Application::Representation::RepresentationManager::get().storeRepresentations();
+			App::Application::Representation::RepresentationManager::get().clearAllRepresentations( false );
 		}
 
 		if ( std::filesystem::exists( _path ) )
 		{
 			for ( const std::filesystem::directory_entry & file : std::filesystem::directory_iterator { _path } )
 			{
-				Model::Representation::Representation * const representation
-					= VTX::MVC_MANAGER().instantiateModel<Model::Representation::Representation>();
+				App::Application::Representation::RepresentationPreset * const representation
+					= VTX::MVC_MANAGER().instantiateModel<App::Application::Representation::RepresentationPreset>();
 
 				try
 				{
@@ -57,7 +57,7 @@ namespace VTX::Worker
 
 		if ( VTXApp::get().getSetting().getTmpRepresentationDefaultName() != "" )
 		{
-			Model::Representation::Representation * defaultRepresentation
+			App::Application::Representation::RepresentationPreset * defaultRepresentation
 				= _library.getRepresentationByName( VTX_SETTING().getTmpRepresentationDefaultName() );
 
 			if ( defaultRepresentation == nullptr )
@@ -75,7 +75,7 @@ namespace VTX::Worker
 		}
 		else
 		{
-			Model::Representation::Representation * defaultRepresentation
+			App::Application::Representation::RepresentationPreset * defaultRepresentation
 				= _library.getRepresentationByName( VTX_SETTING().REPRESENTATION_DEFAULT_NAME );
 
 			const int defaultRepresentationIndex = _library.getRepresentationIndex( defaultRepresentation );
@@ -92,7 +92,7 @@ namespace VTX::Worker
 			if ( representationName.empty() )
 				continue;
 
-			Model::Representation::Representation * defaultRepresentation
+			App::Application::Representation::RepresentationPreset * defaultRepresentation
 				= _library.getRepresentationByName( representationName );
 
 			if ( defaultRepresentation == nullptr )
@@ -110,7 +110,7 @@ namespace VTX::Worker
 		}
 
 		if ( _restore )
-			Representation::RepresentationManager::get().restoreRepresentations();
+			App::Application::Representation::RepresentationManager::get().restoreRepresentations();
 
 		if ( _notify )
 			_library.forceNotifyDataChanged();
@@ -124,21 +124,22 @@ namespace VTX::Worker
 	{
 		Util::Chrono chrono;
 
-		IO::Reader::SerializedObject<Model::Representation::Representation> * const reader
-			= new IO::Reader::SerializedObject<Model::Representation::Representation>();
+		IO::Reader::SerializedObject<App::Application::Representation::RepresentationPreset> * const reader
+			= new IO::Reader::SerializedObject<App::Application::Representation::RepresentationPreset>();
 
 		chrono.start();
 
 		for ( const FilePath & path : _paths )
 		{
-			Model::Representation::Representation * const representation
-				= VTX::MVC_MANAGER().instantiateModel<Model::Representation::Representation>();
+			App::Application::Representation::RepresentationPreset * const representation
+				= VTX::MVC_MANAGER().instantiateModel<App::Application::Representation::RepresentationPreset>();
 
 			try
 			{
 				reader->readFile( path, *representation );
 				representation->setName( path.stem().string() );
-				Model::Representation::RepresentationLibrary::get().addRepresentation( representation, true );
+				App::Application::Representation::RepresentationLibrary::get().addRepresentation( representation,
+																								  true );
 			}
 			catch ( const std::exception & p_e )
 			{

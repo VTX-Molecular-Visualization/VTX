@@ -46,7 +46,7 @@
 //		//
 //		//		// Create Databases
 //		//		_representationLibrary
-//		//			= VTX::MVC_MANAGER().instantiateModel<Model::Representation::RepresentationLibrary>();
+//		//			= VTX::MVC_MANAGER().instantiateModel<App::Application::Representation::RepresentationLibrary>();
 //		//		_renderEffectLibrary =
 //		// VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
 //		//		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );

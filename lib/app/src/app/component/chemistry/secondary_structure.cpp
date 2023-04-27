@@ -6,7 +6,7 @@
 #include "app/model/selection.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
+#include "app/application/representation/representation_manager.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 #include "app/old_app/view/d3/ribbon.hpp"
 #include <util/chrono.hpp>

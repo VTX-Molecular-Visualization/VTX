@@ -1,5 +1,5 @@
 #include "app/internal/worker/representation_saver.hpp"
-#include "app/model/representation/representation.hpp"
+#include "app/application/representation/representation_preset.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/writer/serialized_object.hpp"
@@ -18,8 +18,8 @@ namespace VTX::Worker
 		emit		   logInfo( "Saving " + _representation->getName() );
 		const FilePath path = IO::Filesystem::getRepresentationPath( _representation->getName() );
 
-		IO::Writer::SerializedObject<Model::Representation::Representation> * writer
-			= new IO::Writer::SerializedObject<Model::Representation::Representation>();
+		IO::Writer::SerializedObject<App::Application::Representation::RepresentationPreset> * writer
+			= new IO::Writer::SerializedObject<App::Application::Representation::RepresentationPreset>();
 
 		// Write.
 		try
@@ -49,8 +49,8 @@ namespace VTX::Worker
 		chrono.start();
 		VTX_INFO( "Saving " + _representation->getName() );
 
-		IO::Writer::SerializedObject<Model::Representation::Representation> * writer
-			= new IO::Writer::SerializedObject<Model::Representation::Representation>();
+		IO::Writer::SerializedObject<App::Application::Representation::RepresentationPreset> * writer
+			= new IO::Writer::SerializedObject<App::Application::Representation::RepresentationPreset>();
 
 		// Write.
 		try

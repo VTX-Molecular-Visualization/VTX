@@ -5,14 +5,14 @@
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include "representation_preset_button.hpp"
 #include <QWidget>
-#include <app/model/representation/representation_library.hpp>
+#include <app/application/representation/representation_library.hpp>
 #include <app/core/view/base_view.hpp>
 #include <map>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	class RepresentationBlock :
-		public VTX::App::Core::View::BaseView<Model::Representation::RepresentationLibrary>,
+		public VTX::App::Core::View::BaseView<App::Application::Representation::RepresentationLibrary>,
 		public MenuToolBlockWidget
 	{
 		VTX_WIDGET
@@ -22,7 +22,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		void localize() override;
 
 	  protected:
-		RepresentationBlock( Model::Representation::RepresentationLibrary * const _representationLibrary,
+		RepresentationBlock( App::Application::Representation::RepresentationLibrary * const _representationLibrary,
 							 QWidget *											  p_parent );
 		~RepresentationBlock();
 		void _setupUi( const QString & p_name ) override;

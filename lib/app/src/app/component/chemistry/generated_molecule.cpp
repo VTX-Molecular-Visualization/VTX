@@ -1,4 +1,5 @@
 #include "app/component/chemistry/generated_molecule.hpp"
+#include "app/application/representation/representation_manager.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/category.hpp"
@@ -7,7 +8,6 @@
 #include "app/model/selection.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
 #include <map>
 #include <util/chrono.hpp>
@@ -590,8 +590,8 @@ namespace VTX::App::Component::Chemistry
 		setDisplayName( p_namePrefix + p_molecule.getDefaultName() + p_nameSuffix );
 		setColor( Color::Rgba::randomPastel() );
 
-		const Model::Representation::InstantiatedRepresentation * const rep
-			= VTX::Representation::RepresentationManager::get().instantiateCopy(
+		const App::Application::Representation::InstantiatedRepresentation * const rep
+			= App::Application::Representation::RepresentationManager::get().instantiateCopy(
 				p_molecule.getRepresentation(), *this, false, false );
 
 		if ( p_frame == ALL_FRAMES_INDEX )
@@ -633,7 +633,7 @@ namespace VTX::App::Component::Chemistry
 	}
 	void GeneratedMolecule::_copyChainData( Chemistry::Chain & p_chain, const Chemistry::Chain & p_chainSource )
 	{
-		const Model::Representation::InstantiatedRepresentation * const sourceRepresentation
+		const App::Application::Representation::InstantiatedRepresentation * const sourceRepresentation
 			= p_chainSource.getRepresentation();
 
 		const bool hasDefaultRepresentation
@@ -652,8 +652,8 @@ namespace VTX::App::Component::Chemistry
 
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
-			const Model::Representation::InstantiatedRepresentation * const rep
-				= VTX::Representation::RepresentationManager::get().instantiateCopy(
+			const App::Application::Representation::InstantiatedRepresentation * const rep
+				= App::Application::Representation::RepresentationManager::get().instantiateCopy(
 					p_chainSource.getRepresentation(), p_chain, false, false );
 
 			if ( hasDefaultRepresentation )
@@ -676,7 +676,7 @@ namespace VTX::App::Component::Chemistry
 
 		if ( p_residueSource.hasCustomRepresentation() )
 		{
-			VTX::Representation::RepresentationManager::get().instantiateCopy(
+			App::Application::Representation::RepresentationManager::get().instantiateCopy(
 				p_residueSource.getRepresentation(), p_residue, false, false );
 		}
 	}
@@ -740,8 +740,8 @@ namespace VTX::App::Component::Chemistry
 		if ( chain.hasCustomRepresentation()
 			 && p_fromMolecule.isDefaultRepresentation( *( chain.getRepresentation() ) ) )
 		{
-			Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
-				= VTX::Representation::RepresentationManager::get().instantiateCopy(
+			App::Application::Representation::InstantiatedRepresentation * const instantiatedRepresentation
+				= App::Application::Representation::RepresentationManager::get().instantiateCopy(
 					chain.getRepresentation(), chain, false, false );
 
 			_markRepresentationAsDefault( instantiatedRepresentation );

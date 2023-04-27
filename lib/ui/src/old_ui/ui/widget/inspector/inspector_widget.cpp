@@ -16,12 +16,12 @@
 #include <app/component/chemistry/chain.hpp>
 #include <app/model/label.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/model/representation/representation.hpp>
-#include <app/model/representation/representation_library.hpp>
+#include <app/application/representation/representation_preset.hpp>
+#include <app/application/representation/representation_library.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/model/selection.hpp>
 #include <app/model/viewpoint.hpp>
-#include <app/old_app/representation/representation_manager.hpp>
+#include <app/application/representation/representation_manager.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
 // #include <tool/old_tool/model/measurement/angle.hpp>
 // #include <tool/old_tool/model/measurement/dihedral_angle.hpp>

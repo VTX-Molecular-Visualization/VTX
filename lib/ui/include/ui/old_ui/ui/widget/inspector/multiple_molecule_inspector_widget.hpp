@@ -14,12 +14,11 @@
 #include "ui/old_ui/ui/widget/representation/instantiated_representation_list_widget.hpp"
 #include "ui/old_ui/ui/widget/representation/representation_inspector_section.hpp"
 #include <QWidget>
+#include <app/application/representation/instantiated_representation.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/core/view/base_view.hpp>
 #include <app/old_app/color/rgba.hpp>
 #include <app/old_app/generic/base_transformable.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/model/representation/instantiated_representation.hpp>
-#include <app/model/representation/representation.hpp>
-#include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -74,11 +73,13 @@ namespace VTX::UI::Widget::Inspector
 		void _onScaleDragged( const Vec3f & ) const;
 
 		void _onRepresentationPresetChange( const int p_presetIndex ) const;
-		void _onRepresentationChange( const Model::Representation::InstantiatedRepresentation & p_representation,
-									  const Model::Representation::MEMBER_FLAG &				p_flag ) const;
-		void _onRepresentationColorChange( const Model::Representation::InstantiatedRepresentation & p_representation,
-										   const Color::Rgba &										 p_color,
-										   const bool												 p_ssColor ) const;
+		void _onRepresentationChange(
+			const App::Application::Representation::InstantiatedRepresentation & p_representation,
+			const App::Application::Representation::MEMBER_FLAG &				 p_flag ) const;
+		void _onRepresentationColorChange(
+			const App::Application::Representation::InstantiatedRepresentation & p_representation,
+			const Color::Rgba &													 p_color,
+			const bool															 p_ssColor ) const;
 		void _onRevertRepresentation() const;
 		void _onApplyRepresentationToChildren() const;
 		void _onMoleculeColorChange( const Color::Rgba & p_color ) const;

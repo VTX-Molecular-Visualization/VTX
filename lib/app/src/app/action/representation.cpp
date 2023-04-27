@@ -1,9 +1,9 @@
 #include "app/action/representation.hpp"
+#include "app/application/representation/representation_manager.hpp"
 #include "app/internal/worker/representation_loader.hpp"
 #include "app/internal/worker/representation_saver.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker.hpp"
@@ -15,11 +15,14 @@ namespace VTX::App::Action::Representation
 	void ReloadPresets::execute()
 	{
 		Worker::RepresentationLibraryLoader * libraryLoader
-			= new Worker::RepresentationLibraryLoader( Model::Representation::RepresentationLibrary::get() );
+			= new Worker::RepresentationLibraryLoader( App::Application::Representation::RepresentationLibrary::get() );
 		VTX_WORKER( libraryLoader );
 	}
 
-	void ResetPresetsToDefault::execute() { VTX::Representation::RepresentationManager::get().resetRepresentations(); }
+	void ResetPresetsToDefault::execute()
+	{
+		App::Application::Representation::RepresentationManager::get().resetRepresentations();
+	}
 
 	void SavePreset::execute()
 	{
@@ -29,7 +32,7 @@ namespace VTX::App::Action::Representation
 			std::filesystem::create_directory( IO::Filesystem::getRepresentationsLibraryDir() );
 		}
 
-		for ( const Model::Representation::Representation * const representation : _representations )
+		for ( const App::Application::Representation::RepresentationPreset * const representation : _representations )
 		{
 			// Don't think it's a good idea to run a thread at app exit.
 			/*
@@ -58,7 +61,8 @@ namespace VTX::App::Action::Representation
 
 	void ChangeQuickAccess::execute()
 	{
-		VTX::Representation::RepresentationManager::get().setQuickAccessToPreset( _representation, _quickAccess );
+		App::Application::Representation::RepresentationManager::get().setQuickAccessToPreset( _representation,
+																							   _quickAccess );
 	}
 
 	void ChangeRepresentation::execute()
@@ -111,32 +115,32 @@ namespace VTX::App::Action::Representation
 
 	void AddNewPresetInLibrary::execute()
 	{
-		Model::Representation::Representation * const newRepresentation
-			= VTX::MVC_MANAGER().instantiateModel<Model::Representation::Representation>(
+		App::Application::Representation::RepresentationPreset * const newRepresentation
+			= VTX::MVC_MANAGER().instantiateModel<App::Application::Representation::RepresentationPreset>(
 				VTX::Setting::DEFAULT_REPRESENTATION_TYPE );
 
 		newRepresentation->setName( _representationName );
-		Model::Representation::RepresentationLibrary::get().addRepresentation( newRepresentation );
+		App::Application::Representation::RepresentationLibrary::get().addRepresentation( newRepresentation );
 	}
 
 	void CopyPresetInLibrary::execute()
 	{
-		Model::Representation::RepresentationLibrary::get().copyRepresentation( _representationIndex );
+		App::Application::Representation::RepresentationLibrary::get().copyRepresentation( _representationIndex );
 	}
 
 	void DeletePresetInLibrary::execute()
 	{
-		const Model::Representation::Representation * representation
-			= Model::Representation::RepresentationLibrary::get().getRepresentation( _representationIndex );
+		const App::Application::Representation::RepresentationPreset * representation
+			= App::Application::Representation::RepresentationLibrary::get().getRepresentation( _representationIndex );
 
-		VTX::Representation::RepresentationManager::get().deleteRepresentation( representation );
+		App::Application::Representation::RepresentationManager::get().deleteRepresentation( representation );
 
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 
 	void SetAsDefaultRepresentation::execute()
 	{
-		Model::Representation::RepresentationLibrary::get().setDefaultRepresentation( _representationIndex );
+		App::Application::Representation::RepresentationLibrary::get().setDefaultRepresentation( _representationIndex );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 

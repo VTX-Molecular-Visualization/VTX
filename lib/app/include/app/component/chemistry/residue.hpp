@@ -7,7 +7,7 @@
 #include "app/internal/chemdb/residue.hpp"
 #include "app/internal/chemdb/secondary_structure.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
-#include "app/old_app/generic/base_representable.hpp"
+#include "app/application/representation/base_representable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
@@ -24,7 +24,7 @@ namespace VTX::App::Component::Chemistry
 		public App::Core::Model::BaseModel,
 		public Generic::BaseColorable,
 		public Generic::BaseVisible,
-		public Generic::BaseRepresentable
+		public App::Application::Representation::BaseRepresentable
 	{
 		VTX_MODEL
 

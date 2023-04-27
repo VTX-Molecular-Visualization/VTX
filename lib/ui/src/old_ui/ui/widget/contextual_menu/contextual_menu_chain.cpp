@@ -1,11 +1,9 @@
 #include "ui/old_ui/ui/widget/contextual_menu/contextual_menu_chain.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/chain.hpp"
-
 #include <app/action/chain.hpp>
 #include <app/action/visible.hpp>
-#include <app/model/representation/representation.hpp>
-#include <app/model/representation/representation_library.hpp>
+#include <app/application/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -49,18 +47,15 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuChain::_orientAction() { VTX_ACTION( new QT::Action::Chain::Orient( *_target ) ); }
 	void ContextualMenuChain::_showAction()
 	{
-		VTX_ACTION(
-			new App::Action::Chain::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::ALL ) );
+		VTX_ACTION( new App::Action::Chain::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::ALL ) );
 	}
 	void ContextualMenuChain::_hideAction()
 	{
-		VTX_ACTION(
-			new App::Action::Chain::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::HIDE ) );
+		VTX_ACTION( new App::Action::Chain::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::HIDE ) );
 	}
 	void ContextualMenuChain::_soloAction()
 	{
-		VTX_ACTION(
-			new App::Action::Chain::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::SOLO ) );
+		VTX_ACTION( new App::Action::Chain::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::SOLO ) );
 	}
 	void ContextualMenuChain::_copyAction() { VTX_ACTION( new App::Action::Chain::Copy( *_target ) ); }
 	void ContextualMenuChain::_extractAction() { VTX_ACTION( new App::Action::Chain::Extract( *_target ) ); }

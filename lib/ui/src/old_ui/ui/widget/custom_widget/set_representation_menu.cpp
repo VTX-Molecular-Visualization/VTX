@@ -1,9 +1,8 @@
 #include "ui/old_ui/ui/widget/custom_widget/set_representation_menu.hpp"
 #include "ui/old_ui/ui/widget/custom_widget/indexed_action.hpp"
-
 #include <app/action/molecule.hpp>
-#include <app/model/representation/representation.hpp>
-#include <app/model/representation/representation_library.hpp>
+#include <app/application/representation/representation_preset.hpp>
+#include <app/application/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -21,7 +20,8 @@ namespace VTX::UI::Widget::CustomWidget
 		_representationGroup = new QActionGroup( this );
 		_representationGroup->setExclusive( true );
 
-		for ( int i = 0; i < Model::Representation::RepresentationLibrary::get().getRepresentationCount(); i++ )
+		for ( int i = 0; i < App::Application::Representation::RepresentationLibrary::get().getRepresentationCount();
+			  i++ )
 		{
 			QAction * const setRepresentationAction = _generateSetRepresentationAction( i );
 			_representationGroup->addAction( setRepresentationAction );
@@ -32,8 +32,8 @@ namespace VTX::UI::Widget::CustomWidget
 
 	QAction * SetRepresentationMenu::_generateSetRepresentationAction( const int p_representationIndex )
 	{
-		const Model::Representation::Representation * const representation
-			= Model::Representation::RepresentationLibrary::get().getRepresentation( p_representationIndex );
+		const App::Application::Representation::RepresentationPreset * const representation
+			= App::Application::Representation::RepresentationLibrary::get().getRepresentation( p_representationIndex );
 
 		CustomWidget::IndexedAction * const res = new CustomWidget::IndexedAction( p_representationIndex, this );
 		res->setText( QString::fromStdString( representation->getName() ) );

@@ -7,7 +7,7 @@
 #include "app/manager/action_manager.hpp"
 #include "app/model/renderer/render_effect_preset.hpp"
 #include "app/model/renderer/render_effect_preset_library.hpp"
-#include "app/model/representation/representation_library.hpp"
+#include "app/application/representation/representation_library.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
 #include "app/old_app/object3d/camera.hpp"
@@ -47,7 +47,7 @@ namespace VTX
 		App::Manager::WorkerManager::get();
 
 		// Create Databases
-		_representationLibrary = VTX::MVC_MANAGER().instantiateModel<Model::Representation::RepresentationLibrary>();
+		_representationLibrary = VTX::MVC_MANAGER().instantiateModel<App::Application::Representation::RepresentationLibrary>();
 		_renderEffectLibrary   = VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
 		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 

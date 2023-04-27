@@ -2,6 +2,9 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_MOLECULE__
 
 #include "_fwd.hpp"
+#include "app/application/representation/base_representable.hpp"
+#include "app/application/representation/instantiated_representation.hpp"
+#include "app/application/representation/representation_target.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/chemistry/secondary_structure.hpp"
 #include "app/component/chemistry/solvent_excluded_surface.hpp"
@@ -9,16 +12,13 @@
 #include "app/core/model/base_model_3d.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/internal/chemdb/unknown_residue_data.hpp"
-#include "app/model/representation/instantiated_representation.hpp"
 #include "app/model/selection.hpp"
 #include "app/old_app/buffer/molecule.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/old_app/generic/base_representable.hpp"
 #include "app/old_app/generic/base_scene_item.hpp"
 #include "app/old_app/io/reader/prm.hpp"
 #include "app/old_app/io/reader/psf.hpp"
 #include "app/old_app/object3d/helper/aabb.hpp"
-#include "app/old_app/representation/representation_target.hpp"
 #include "app/old_app/struct/range.hpp"
 #include <iostream>
 #include <map>
@@ -33,17 +33,17 @@ namespace VTX::App::Component::Chemistry
 	namespace ChemDB = App::Internal::ChemDB;
 
 	class Molecule :
-		public App::Core::Model::BaseModel3D<Buffer::Molecule>,
+		public Core::Model::BaseModel3D<Buffer::Molecule>,
 		public Generic::BaseColorable,
-		public Generic::BaseRepresentable,
+		public Application::Representation::BaseRepresentable,
 		public Generic::BaseSceneItem
 	{
 		VTX_MODEL
 
 	  public:
 		using AtomPositionsFrame  = std::vector<Vec3f>;
-		using RepresentationState = std::map<const Model::Representation::InstantiatedRepresentation *,
-											 VTX::Representation::RepresentationTarget>;
+		using RepresentationState = std::map<const Application::Representation::InstantiatedRepresentation *,
+											 Application::Representation::RepresentationTarget>;
 
 		// Configuration.
 		inline const Component::IO::MoleculeConfiguration & getConfiguration() const { return _configuration; }
@@ -213,7 +213,7 @@ namespace VTX::App::Component::Chemistry
 
 		void clearDefaultRepresentations();
 		bool isDefaultRepresentation(
-			const Model::Representation::InstantiatedRepresentation & p_representation ) const;
+			const App::Application::Representation::InstantiatedRepresentation & p_representation ) const;
 		void removeChildrenRepresentations();
 
 		void refreshStructure();
@@ -298,7 +298,7 @@ namespace VTX::App::Component::Chemistry
 		void _addChain( Chemistry::Chain * const p_chain );
 
 		void _markRepresentationAsDefault(
-			const Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation );
+			const App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation );
 
 		void _onRepresentationChange() override;
 

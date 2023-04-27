@@ -16,20 +16,22 @@ namespace VTX::View::D3
 	{
 		BaseView3D::render( p_camera );
 
-		for ( const std::pair<const Model::Representation::InstantiatedRepresentation * const,
-							  VTX::Representation::RepresentationTarget> & representationData :
+		for ( const std::pair<const App::Application::Representation::InstantiatedRepresentation * const,
+							  App::Application::Representation::RepresentationTarget> & representationData :
 			  _model->getMolecule()->getRepresentationData() )
 		{
 			if ( representationData.first->hasToDrawCylinder() )
 			{
-				const Model::Representation::CylinderData & cylinderData = representationData.first->getCylinderData();
+				const App::Application::Representation::Primitive::Cylinder & cylinderData
+					= representationData.first->getCylinderData();
 
 				/// TODO: put a mask
 				_program->setFloat( "u_cylRad", cylinderData.radius );
 				_program->setUInt( "u_colorBlendingMode", uint( cylinderData.colorBlendingMode ) );
 				_program->setBool( "u_isPerspective", p_camera.isPerspective() );
 
-				const Representation::TargetRange<void *> & target = representationData.second.getBonds();
+				const App::Application::Representation::TargetRange<void *> & target
+					= representationData.second.getBonds();
 				/// TODO: use glDrawRangeElements?
 				if ( target.indices.size() > 0 )
 				{

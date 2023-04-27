@@ -101,11 +101,11 @@ namespace VTX::UI
 //		// inline const Stat &									  getStat() const { return _stat; }
 //		// inline Spec &										  getSpec() { return _spec; }
 //		// inline const Spec &									  getSpec() const { return _spec; }
-//		inline Model::Representation::RepresentationLibrary & getRepresentationLibrary()
+//		inline App::Application::Representation::RepresentationLibrary & getRepresentationLibrary()
 //		{
 //			return *_representationLibrary;
 //		}
-//		inline const Model::Representation::RepresentationLibrary & getRepresentationLibrary() const
+//		inline const App::Application::Representation::RepresentationLibrary & getRepresentationLibrary() const
 //		{
 //			return *_representationLibrary;
 //		}
@@ -138,7 +138,7 @@ namespace VTX::UI
 //		State::StateMachine *						   _stateMachine		  = nullptr;
 //		Object3D::Scene *							   _scene				  = nullptr;
 //		IO::Struct::ScenePathData *					   _pathSceneData		  = nullptr;
-//		Model::Representation::RepresentationLibrary * _representationLibrary = nullptr;
+//		App::Application::Representation::RepresentationLibrary * _representationLibrary = nullptr;
 //		Model::Renderer::RenderEffectPresetLibrary *   _renderEffectLibrary	  = nullptr;
 //
 //		std::vector<const Generic::BaseAutoDelete *> _deleteAtEndOfFrameObjects

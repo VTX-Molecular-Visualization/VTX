@@ -3,11 +3,9 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/view/ui/widget/molecule_scene_view.hpp"
 #include "ui/qt/action/molecule.hpp"
-
 #include <app/action/molecule.hpp>
 #include <app/action/visible.hpp>
-#include <app/model/representation/representation.hpp>
-#include <app/model/representation/representation_library.hpp>
+#include <app/application/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -62,8 +60,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		ContextualMenuTemplate::setTarget( p_target );
 		setTitle( QString::fromStdString( p_target->getPdbIdCode() ) );
 
-		const int representationIndex = Model::Representation::RepresentationLibrary::get().getRepresentationIndex(
-			p_target->getRepresentation()->getLinkedRepresentation() );
+		const int representationIndex
+			= App::Application::Representation::RepresentationLibrary::get().getRepresentationIndex(
+				p_target->getRepresentation()->getLinkedRepresentation() );
 
 		_toggleWaterAction->setText( p_target->showWater() ? "Hide waters" : "Show waters" );
 		_toggleHydrogenAction->setText( p_target->showHydrogen() ? "Hide hydrogens" : "Show hydrogens" );
@@ -80,7 +79,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		View::UI::Widget::MoleculeSceneView * const molSceneView
 			= VTX::MVC_MANAGER().getView<View::UI::Widget::MoleculeSceneView>( _target,
-																				   ID::View::UI_MOLECULE_STRUCTURE );
+																			   ID::View::UI_MOLECULE_STRUCTURE );
 
 		molSceneView->openRenameEditor( _target->getId() );
 	}
@@ -113,18 +112,15 @@ namespace VTX::UI::Widget::ContextualMenu
 	}
 	void ContextualMenuMolecule::_showAction()
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeVisibility( *_target,
-															App::Action::VISIBILITY_MODE::ALL ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::ALL ) );
 	}
 	void ContextualMenuMolecule::_hideAction()
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeVisibility(
-			*_target, App::Action::VISIBILITY_MODE::HIDE ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::HIDE ) );
 	}
 	void ContextualMenuMolecule::_soloAction()
 	{
-		VTX_ACTION( new App::Action::Molecule::ChangeVisibility(
-			*_target, App::Action::VISIBILITY_MODE::SOLO ) );
+		VTX_ACTION( new App::Action::Molecule::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::SOLO ) );
 	}
 
 	void ContextualMenuMolecule::_copyAction() { VTX_ACTION( new App::Action::Molecule::Copy( *_target ) ); }

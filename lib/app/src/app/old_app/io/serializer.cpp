@@ -2,6 +2,10 @@
 #include "app/action/main.hpp"
 #include "app/action/renderer.hpp"
 #include "app/action/setting.hpp"
+#include "app/application/representation/instantiated_representation.hpp"
+#include "app/application/representation/representation_preset.hpp"
+#include "app/application/representation/representation_library.hpp"
+#include "app/application/representation/representation_manager.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/chemistry/molecule.hpp"
@@ -14,9 +18,6 @@
 #include "app/model/mesh_triangle.hpp"
 #include "app/model/path.hpp"
 #include "app/model/renderer/render_effect_preset.hpp"
-#include "app/model/representation/instantiated_representation.hpp"
-#include "app/model/representation/representation.hpp"
-#include "app/model/representation/representation_library.hpp"
 #include "app/model/viewpoint.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
@@ -27,7 +28,6 @@
 #include "app/old_app/io/struct/scene_path_data.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/scene.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
 #include <algorithm>
 #include <magic_enum.hpp>
 #include <map>
@@ -150,38 +150,43 @@ namespace VTX::IO
 	}
 
 	nlohmann::json Serializer::serialize(
-		const Model::Representation::InstantiatedRepresentation & p_representation ) const
+		const App::Application::Representation::InstantiatedRepresentation & p_representation ) const
 	{
 		nlohmann::json json = nlohmann::json();
 
-		const Model::Representation::Representation * const linkedRep = p_representation.getLinkedRepresentation();
-		const int presetIndex = Model::Representation::RepresentationLibrary::get().getRepresentationIndex( linkedRep );
+		const App::Application::Representation::RepresentationPreset * const linkedRep
+			= p_representation.getLinkedRepresentation();
+		const int presetIndex
+			= App::Application::Representation::RepresentationLibrary::get().getRepresentationIndex( linkedRep );
 
 		json[ "REPRESENTATION_PRESET_INDEX" ] = presetIndex;
 
-		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_ADD ) )
+		if ( p_representation.isMemberOverrided( App::Application::Representation::MEMBER_ENUM::SPHERE_RADIUS_ADD ) )
 			json[ "SPHERE_RADIUS_ADD" ] = p_representation.getSphereData().radiusAdd;
-		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) )
+		if ( p_representation.isMemberOverrided( App::Application::Representation::MEMBER_ENUM::SPHERE_RADIUS_FIXED ) )
 			json[ "SPHERE_RADIUS_FIXED" ] = p_representation.getSphereData().radiusFixed;
-		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS ) )
+		if ( p_representation.isMemberOverrided( App::Application::Representation::MEMBER_ENUM::CYLINDER_RADIUS ) )
 			json[ "CYLINDER_RADIUS" ] = p_representation.getCylinderData().radius;
-		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_COLOR_BLENDING_MODE ) )
+		if ( p_representation.isMemberOverrided(
+				 App::Application::Representation::MEMBER_ENUM::CYLINDER_COLOR_BLENDING_MODE ) )
 			json[ "CYLINDER_COLOR_BLENDING_MODE" ]
 				= magic_enum::enum_name( p_representation.getCylinderData().colorBlendingMode );
-		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_MODE ) )
+		if ( p_representation.isMemberOverrided( App::Application::Representation::MEMBER_ENUM::RIBBON_COLOR_MODE ) )
 			json[ "RIBBON_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getRibbonData().colorMode );
-		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE ) )
+		if ( p_representation.isMemberOverrided(
+				 App::Application::Representation::MEMBER_ENUM::RIBBON_COLOR_BLENDING_MODE ) )
 			json[ "RIBBON_COLOR_BLENDING_MODE" ]
 				= magic_enum::enum_name( p_representation.getRibbonData().colorBlendingMode );
-		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::COLOR_MODE ) )
+		if ( p_representation.isMemberOverrided( App::Application::Representation::MEMBER_ENUM::COLOR_MODE ) )
 			json[ "COLOR_MODE" ] = magic_enum::enum_name( p_representation.getColorMode() );
-		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::COLOR ) )
+		if ( p_representation.isMemberOverrided( App::Application::Representation::MEMBER_ENUM::COLOR ) )
 			json[ "COLOR" ] = serialize( p_representation.getColor() );
 
 		return json;
 	}
 
-	nlohmann::json Serializer::serialize( const Model::Representation::Representation & p_representation ) const
+	nlohmann::json Serializer::serialize(
+		const App::Application::Representation::RepresentationPreset & p_representation ) const
 	{
 		nlohmann::json json = { { "QUICK_ACCESS", p_representation.hasQuickAccess() },
 								{ "TYPE", magic_enum::enum_name( p_representation.getRepresentationType() ) },
@@ -267,7 +272,7 @@ namespace VTX::IO
 	nlohmann::json Serializer::serialize( const Setting & p_setting ) const
 	{
 		const std::string & defaultRepresentationName
-			= Model::Representation::RepresentationLibrary::get()
+			= App::Application::Representation::RepresentationLibrary::get()
 				  .getRepresentation( p_setting.getDefaultRepresentationIndex() )
 				  ->getName();
 
@@ -283,11 +288,13 @@ namespace VTX::IO
 		{
 			const int representationIndex
 				= p_setting.getDefaultRepresentationIndexPerCategory( App::Internal::ChemDB::Category::TYPE( i ) );
-			const Model::Representation::Representation * representation
-				= Model::Representation::RepresentationLibrary::get().getRepresentation( representationIndex );
+			const App::Application::Representation::RepresentationPreset * representation
+				= App::Application::Representation::RepresentationLibrary::get().getRepresentation(
+					representationIndex );
 
 			if ( representation == nullptr )
-				representation = Model::Representation::RepresentationLibrary::get().getDefaultRepresentation();
+				representation
+					= App::Application::Representation::RepresentationLibrary::get().getDefaultRepresentation();
 
 			defaultRepresentationNamePerCategory[ i ] = representation->getName();
 		}
@@ -605,13 +612,15 @@ namespace VTX::IO
 		}
 	}
 
-	void Serializer::deserialize( const nlohmann::json &							  p_json,
-								  const std::tuple<uint, uint, uint> &				  p_version,
-								  Model::Representation::InstantiatedRepresentation & p_representation ) const
+	void Serializer::deserialize(
+		const nlohmann::json &										   p_json,
+		const std::tuple<uint, uint, uint> &						   p_version,
+		App::Application::Representation::InstantiatedRepresentation & p_representation ) const
 	{
 		const int representationPresetIndex = p_json.at( "REPRESENTATION_PRESET_INDEX" ).get<int>();
-		const Model::Representation::Representation * const sourceRepresentation
-			= Model::Representation::RepresentationLibrary::get().getRepresentation( representationPresetIndex );
+		const App::Application::Representation::RepresentationPreset * const sourceRepresentation
+			= App::Application::Representation::RepresentationLibrary::get().getRepresentation(
+				representationPresetIndex );
 
 		p_representation.setLinkedRepresentation( sourceRepresentation );
 
@@ -657,9 +666,9 @@ namespace VTX::IO
 		_migrate( p_json, p_version, p_representation );
 	}
 
-	void Serializer::deserialize( const nlohmann::json &				  p_json,
-								  const std::tuple<uint, uint, uint> &	  p_version,
-								  Model::Representation::Representation & p_representation ) const
+	void Serializer::deserialize( const nlohmann::json &								   p_json,
+								  const std::tuple<uint, uint, uint> &					   p_version,
+								  App::Application::Representation::RepresentationPreset & p_representation ) const
 	{
 		Color::Rgba color;
 		if ( p_json.contains( "COLOR" ) )
@@ -670,8 +679,9 @@ namespace VTX::IO
 
 		p_representation.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
 
-		p_representation.changeRepresentationType(
-			_getEnum<Generic::REPRESENTATION>( p_json, "TYPE", Setting::DEFAULT_REPRESENTATION_TYPE ), false );
+		p_representation.changeRepresentationType( _getEnum<App::Application::Representation::REPRESENTATION_ENUM>(
+													   p_json, "TYPE", Setting::DEFAULT_REPRESENTATION_TYPE ),
+												   false );
 		if ( p_representation.getData().hasToDrawSphere() )
 		{
 			p_representation.getData().setSphereRadius(
@@ -954,9 +964,9 @@ namespace VTX::IO
 		return jsonArrayRepresentations;
 	}
 
-	void Serializer::_migrate( const nlohmann::json &							   p_json,
-							   const std::tuple<uint, uint, uint> &				   p_version,
-							   Model::Representation::InstantiatedRepresentation & p_representation ) const
+	void Serializer::_migrate( const nlohmann::json &										  p_json,
+							   const std::tuple<uint, uint, uint> &							  p_version,
+							   App::Application::Representation::InstantiatedRepresentation & p_representation ) const
 	{
 		// 0.2.0 -> 0.3.0
 		// SS_COLOR_MODE -> RIBBON_COLOR_MODE
@@ -970,9 +980,9 @@ namespace VTX::IO
 		}
 	}
 
-	void Serializer::_migrate( const nlohmann::json &				   p_json,
-							   const std::tuple<uint, uint, uint> &	   p_version,
-							   Model::Representation::Representation & p_representation ) const
+	void Serializer::_migrate( const nlohmann::json &									p_json,
+							   const std::tuple<uint, uint, uint> &						p_version,
+							   App::Application::Representation::RepresentationPreset & p_representation ) const
 	{
 		// 0.2.0 -> 0.3.0
 		if ( std::get<1>( p_version ) < 3 )
@@ -1056,23 +1066,23 @@ namespace VTX::IO
 			if ( !dataValid )
 				continue;
 
-			Model::Representation::InstantiatedRepresentation * const representation
-				= VTX::MVC_MANAGER().instantiateModel<Model::Representation::InstantiatedRepresentation>();
+			App::Application::Representation::InstantiatedRepresentation * const representation
+				= VTX::MVC_MANAGER().instantiateModel<App::Application::Representation::InstantiatedRepresentation>();
 			deserialize( jsonRepresentations.at( "REPRESENTATION" ), p_version, *representation );
 
 			if ( type == VTX::ID::Model::MODEL_MOLECULE )
 			{
-				Representation::RepresentationManager::get().assignRepresentation(
+				App::Application::Representation::RepresentationManager::get().assignRepresentation(
 					representation, p_molecule, false, false );
 			}
 			else if ( type == VTX::ID::Model::MODEL_CHAIN )
 			{
-				Representation::RepresentationManager::get().assignRepresentation(
+				App::Application::Representation::RepresentationManager::get().assignRepresentation(
 					representation, *p_molecule.getChain( index ), false, false );
 			}
 			else if ( type == VTX::ID::Model::MODEL_RESIDUE )
 			{
-				Representation::RepresentationManager::get().assignRepresentation(
+				App::Application::Representation::RepresentationManager::get().assignRepresentation(
 					representation, *p_molecule.getResidue( index ), false, false );
 			}
 		}

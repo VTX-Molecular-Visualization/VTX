@@ -2,7 +2,7 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/scene.hpp"
-#include "app/old_app/representation/representation_target.hpp"
+#include "app/application/representation/representation_target.hpp"
 #include "app/old_app/vtx_app.hpp"
 
 namespace VTX::View::D3
@@ -32,8 +32,8 @@ namespace VTX::View::D3
 			_program->setVec3f( "u_camPosition", cam.getPosition() );
 		}
 
-		for ( const std::pair<const Model::Representation::InstantiatedRepresentation * const,
-							  VTX::Representation::RepresentationTarget> & representationData :
+		for ( const std::pair<const App::Application::Representation::InstantiatedRepresentation * const,
+							  App::Application::Representation::RepresentationTarget> & representationData :
 			  _model->getMolecule()->getRepresentationData() )
 		{
 			if ( !representationData.first->hasToDrawRibbon() )
@@ -44,7 +44,7 @@ namespace VTX::View::D3
 			_program->setUInt( "u_colorBlendingMode",
 							   uint( representationData.first->getRibbonData().colorBlendingMode ) );
 
-			const Representation::TargetRange<void *> & target = representationData.second.getRibbons();
+			const App::Application::Representation::TargetRange<void *> & target = representationData.second.getRibbons();
 			if ( target.indices.size() > 0 )
 			{
 				_model->getBuffer()->getVao().multiDrawElement( Renderer::GL::VertexArray::DrawMode::PATCHES,

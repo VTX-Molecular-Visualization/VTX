@@ -4,8 +4,8 @@
 #include "app/action/setting.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
-#include "app/model/representation/representation.hpp"
-#include "app/model/representation/representation_library.hpp"
+#include "app/application/representation/representation_preset.hpp"
+#include "app/application/representation/representation_library.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
@@ -64,8 +64,8 @@ namespace VTX::App::Manager
 		//	}
 		//	else if ( command == "set_representation_molecule" )
 		//	{
-		//		Model::Representation::Representation * const representation
-		//			= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
+		//		App::Application::Representation::RepresentationPreset * const representation
+		//			= App::Application::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 		//		action = new VTX::App::Action::Representable::SetRepresentation( molecule, representation );
 		//	}
 		//	else if ( command == "remove_representation_molecule" )
@@ -74,8 +74,8 @@ namespace VTX::App::Manager
 		//	}
 		//	else if ( command == "set_representation_chain" )
 		//	{
-		//		Model::Representation::Representation * const representation
-		//			= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
+		//		App::Application::Representation::RepresentationPreset * const representation
+		//			= App::Application::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 		//		const int idChain = std::stoi( words.at( 2 ) );
 		//		action			  = new VTX::App::Action::Representable::SetRepresentation( *molecule.getChains()[
 		// idChain
@@ -88,8 +88,8 @@ namespace VTX::App::Manager
 		//	}
 		//	else if ( command == "set_representation_residue" )
 		//	{
-		//		Model::Representation::Representation * const representation
-		//			= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
+		//		App::Application::Representation::RepresentationPreset * const representation
+		//			= App::Application::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 		//		const int indexResidue = std::stoi( words.at( 2 ) );
 		//		action = new VTX::App::Action::Representable::SetRepresentation( *molecule.getResidues()[ indexResidue
 		//], 																	representation );
