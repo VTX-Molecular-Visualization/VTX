@@ -1,5 +1,4 @@
 #include "app/old_app/renderer/rt/integrators/direct_lighting_integrator.hpp"
-#include "app/old_app/util/sampler.hpp"
 #include <util/math.hpp>
 
 namespace VTX

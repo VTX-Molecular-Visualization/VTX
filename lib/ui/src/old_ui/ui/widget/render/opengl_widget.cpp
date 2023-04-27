@@ -12,7 +12,6 @@
 #include <app/old_app/renderer/gl/program_manager.hpp>
 #include <app/old_app/renderer/rt/ray_tracer.hpp>
 #include <app/old_app/spec.hpp>
-#include <app/old_app/util/opengl.hpp>
 
 namespace VTX::UI::Widget::Render
 {
@@ -69,10 +68,12 @@ namespace VTX::UI::Widget::Render
 		_retrieveSpec();
 		VTX_SPEC().print();
 
-#ifndef VTX_PRODUCTION
-		_gl->glEnable( GL_DEBUG_OUTPUT );
-		_gl->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
-#endif
+		/*
+		#ifndef VTX_PRODUCTION
+				_gl->glEnable( GL_DEBUG_OUTPUT );
+				_gl->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
+		#endif
+		*/
 
 		VTX_PROGRAM_MANAGER();
 

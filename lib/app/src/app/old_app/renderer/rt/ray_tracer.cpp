@@ -13,7 +13,6 @@
 #include "app/old_app/renderer/rt/primitives/plane.hpp"
 #include "app/old_app/renderer/rt/primitives/sphere.hpp"
 #include "app/old_app/renderer/rt/primitives/triangle_mesh.hpp"
-#include "app/old_app/util/sampler.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <atomic>
 #include <thread>

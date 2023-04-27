@@ -42,6 +42,9 @@ int main( int argc, char ** argv )
 	std::cout << "GLSL version: " << glslVersion << std::endl;
 	std::cout << "GLAD initialized: " << GLVersion.major << "." << GLVersion.minor << std::endl;
 
+	glEnable( GL_DEBUG_OUTPUT );
+	// glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
+
 	glViewport( 0, 0, 800, 600 );
 	glClearColor( 0.5f, 0.5f, 0.5f, 1.f );
 
