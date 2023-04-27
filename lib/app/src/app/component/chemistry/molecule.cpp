@@ -328,7 +328,7 @@ namespace VTX::App::Component::Chemistry
 					if ( moleculeColorMode != Generic::COLOR_MODE::INHERITED )
 						colorMode = moleculeColorMode;
 					else
-						colorMode = Setting::COLOR_MODE_DEFAULT;
+						colorMode = VTX::App::Application::Setting::COLOR_MODE_DEFAULT;
 				}
 			}
 

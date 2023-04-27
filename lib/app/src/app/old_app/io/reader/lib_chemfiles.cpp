@@ -9,7 +9,7 @@
 #include "app/internal/chemdb/category.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/util/bond_guessing/bond_order_guessing.hpp"
 #include "app/old_app/util/chemfiles.hpp"
 #include "app/old_app/util/molecule.hpp"
@@ -573,7 +573,7 @@ namespace VTX::IO::Reader
 			_logDebug( "recomputeBonds : " + bondComputationChrono.elapsedTimeStr() );
 		}
 
-		if ( Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
+		if ( VTX::App::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
 		{
 			bondComputationChrono.start();
 			const bool allBondsRecomputed = Util::Chemfiles::recomputeBondOrdersFromFile( frame );
@@ -669,7 +669,7 @@ namespace VTX::IO::Reader
 			}
 		}
 
-		if ( !Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
+		if ( !VTX::App::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
 		{
 			bondComputationChrono.start();
 			const bool allBondsRecomputed = Util::Molecule::recomputeBondOrdersFromFile( p_molecule );

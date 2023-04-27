@@ -2,7 +2,7 @@
 #include "ui/qt/style.hpp"
 
 #include <app/old_app/object3d/scene.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 
 namespace VTX::UI::QT::Controller
 {

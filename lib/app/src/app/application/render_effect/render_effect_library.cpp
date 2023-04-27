@@ -8,7 +8,7 @@
 #include "app/mvc.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker.hpp"
 
@@ -236,7 +236,7 @@ namespace VTX::App::Application::RenderEffect
 		{
 			const int quickAccessCount = _getNbPresetWithQuickAccess();
 
-			if ( quickAccessCount >= Setting::MAX_QUICK_ACCESS_COUNT && _lastPresetQuickAccessed != nullptr )
+			if ( quickAccessCount >= VTX::App::Application::Setting::MAX_QUICK_ACCESS_COUNT && _lastPresetQuickAccessed != nullptr )
 				_lastPresetQuickAccessed->setQuickAccess( false );
 		}
 

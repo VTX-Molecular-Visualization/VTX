@@ -3,7 +3,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <app/action/transformable.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -23,14 +23,14 @@ namespace VTX::UI::Widget::CustomWidget
 		orientationLabel->setText( "Orientation" );
 		_orientationWidget
 			= WidgetFactory::get().instantiateWidget<CustomWidget::Vector3Widget>( this, "trajectory_speed" );
-		_orientationWidget->setMinMax( -Setting::AUTO_ROTATE_SPEED_MAX, Setting::AUTO_ROTATE_SPEED_MAX );
-		_orientationWidget->setDragValueFactor( Setting::AUTO_ROTATE_SPEED_MAX / 100.f );
+		_orientationWidget->setMinMax( -VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MAX, VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MAX );
+		_orientationWidget->setDragValueFactor( VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MAX / 100.f );
 
 		QLabel * speedLabel = new QLabel( this );
 		speedLabel->setText( "Speed" );
 		_speedWidget
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>( this, "trajectory_speed" );
-		_speedWidget->setMinMax( Setting::AUTO_ROTATE_SPEED_MIN, Setting::AUTO_ROTATE_SPEED_MAX );
+		_speedWidget->setMinMax( VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MIN, VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MAX );
 
 		_playButton = new QPushButton( this );
 		_playButton->setIcon( QIcon( ":/sprite/trajectory_play_icon.png" ) );

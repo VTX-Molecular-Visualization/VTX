@@ -19,11 +19,11 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	{
 		if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> &>(
+			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &>(
 					p_event );
 
-			if ( castedEvent.get().find( Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().end() )
+			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().end() )
 			{
 				_refreshCameraProjectionButton();
 			}

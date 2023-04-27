@@ -6,7 +6,7 @@
 #include "app/model/selection.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/selection/selection_manager.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "struct/image_export.hpp"
 #include "struct/scene_path_data.hpp"
 #include <util/chrono.hpp>
@@ -287,7 +287,7 @@ namespace VTX::IO::Filesystem
 
 	inline FilePath getDefaultMoleculeExportPath()
 	{
-		const FilePath defaultFolder = FilePath( Setting::getLastExportedMoleculeFolder() );
+		const FilePath defaultFolder = FilePath( VTX::App::Application::Setting::getLastExportedMoleculeFolder() );
 
 		const int nbMoleculeInSelection
 			= Selection::SelectionManager::get().getSelectionModel().getMoleculeSelectedCount();
@@ -322,7 +322,7 @@ namespace VTX::IO::Filesystem
 			return VTXApp::get().getScenePathData().getCurrentPath();
 		}
 
-		const FilePath defaultFolder = FilePath( Setting::getLastSavedSessionFolder() );
+		const FilePath defaultFolder = FilePath( VTX::App::Application::Setting::getLastSavedSessionFolder() );
 		FilePath	   defaultPath	 = defaultFolder / ( DEFAULT_SCENE_FILENAME + ".vtx" );
 
 		Util::Filesystem::generateUniqueFileName( defaultPath );

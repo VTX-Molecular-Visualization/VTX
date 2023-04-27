@@ -8,7 +8,7 @@
 #include <app/action/setting.hpp>
 #include <app/event/global.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -84,7 +84,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 		int actionIndex = 0;
 
-		for ( const FilePath & recentFile : Setting::recentLoadingPath )
+		for ( const FilePath & recentFile : VTX::App::Application::Setting::recentLoadingPath )
 		{
 			CustomWidget::IndexedAction * const action
 				= new CustomWidget::IndexedAction( actionIndex, _recentSessionMenu );
@@ -113,7 +113,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 	void MenuHomeSessionWidget::_loadRecentSession( const int & p_ptrSessionIndex ) const
 	{
-		const FilePath * const recentPath = Setting::getRecentLoadingPath( p_ptrSessionIndex );
+		const FilePath * const recentPath = VTX::App::Application::Setting::getRecentLoadingPath( p_ptrSessionIndex );
 
 		if ( recentPath == nullptr )
 		{

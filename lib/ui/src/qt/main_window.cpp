@@ -21,7 +21,7 @@
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 
 namespace VTX::UI::QT
 {

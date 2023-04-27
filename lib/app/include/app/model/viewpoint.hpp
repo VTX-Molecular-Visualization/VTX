@@ -1,10 +1,10 @@
 #ifndef __VTX_MODEL_VIEWPOINT__
 #define __VTX_MODEL_VIEWPOINT__
 
+#include "app/application/setting.hpp"
 #include "app/core/model/base_model.hpp"
-#include <util/types.hpp>
 #include "app/old_app/id.hpp"
-#include "app/old_app/setting.hpp"
+#include <util/types.hpp>
 
 namespace VTX
 {
@@ -62,7 +62,7 @@ namespace VTX
 
 			} _data;
 
-			VTX::ID::VTX_ID _controller = Setting::CONTROLLER_MODE_DEFAULT;
+			VTX::ID::VTX_ID _controller = VTX::App::Application::Setting::CONTROLLER_MODE_DEFAULT;
 
 			// std::vector<std::string> _actions = std::vector<std::string>();
 

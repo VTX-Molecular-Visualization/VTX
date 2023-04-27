@@ -2,32 +2,32 @@
 #include "app/old_app/object3d/camera.hpp"
 #include "app/old_app/object3d/scene.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 
 namespace VTX::App::Application::RenderEffect
 {
 	RenderEffectPreset::RenderEffectPreset() : BaseModel( VTX::ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET )
 	{
-		_shading = Setting::SHADING_DEFAULT;
+		_shading = VTX::App::Application::Setting::SHADING_DEFAULT;
 
-		_ssao		   = Setting::ACTIVE_AO_DEFAULT;
-		_ssaoIntensity = Setting::AO_INTENSITY_DEFAULT;
-		_ssaoBlurSize  = Setting::AO_BLUR_SIZE_DEFAULT;
+		_ssao		   = VTX::App::Application::Setting::ACTIVE_AO_DEFAULT;
+		_ssaoIntensity = VTX::App::Application::Setting::AO_INTENSITY_DEFAULT;
+		_ssaoBlurSize  = VTX::App::Application::Setting::AO_BLUR_SIZE_DEFAULT;
 
-		_outline		  = Setting::ACTIVE_OUTLINE_DEFAULT;
-		_outlineThickness = Setting::OUTLINE_THICKNESS_DEFAULT;
-		_outlineSensivity = Setting::OUTLINE_SENSIVITY_DEFAULT;
-		_outlineColor	  = Setting::OUTLINE_COLOR_DEFAULT;
+		_outline		  = VTX::App::Application::Setting::ACTIVE_OUTLINE_DEFAULT;
+		_outlineThickness = VTX::App::Application::Setting::OUTLINE_THICKNESS_DEFAULT;
+		_outlineSensivity = VTX::App::Application::Setting::OUTLINE_SENSIVITY_DEFAULT;
+		_outlineColor	  = VTX::App::Application::Setting::OUTLINE_COLOR_DEFAULT;
 
-		_fog		= Setting::ACTIVE_FOG_DEFAULT;
-		_fogNear	= Setting::FOG_NEAR_DEFAULT;
-		_fogFar		= Setting::FOG_FAR_DEFAULT;
-		_fogDensity = Setting::FOG_DENSITY_DEFAULT;
-		_fogColor	= Setting::FOG_COLOR_DEFAULT;
+		_fog		= VTX::App::Application::Setting::ACTIVE_FOG_DEFAULT;
+		_fogNear	= VTX::App::Application::Setting::FOG_NEAR_DEFAULT;
+		_fogFar		= VTX::App::Application::Setting::FOG_FAR_DEFAULT;
+		_fogDensity = VTX::App::Application::Setting::FOG_DENSITY_DEFAULT;
+		_fogColor	= VTX::App::Application::Setting::FOG_COLOR_DEFAULT;
 
-		_backgroundColor  = Setting::BACKGROUND_COLOR_DEFAULT;
-		_cameraLightColor = Setting::LIGHT_COLOR_DEFAULT;
+		_backgroundColor  = VTX::App::Application::Setting::BACKGROUND_COLOR_DEFAULT;
+		_cameraLightColor = VTX::App::Application::Setting::LIGHT_COLOR_DEFAULT;
 	}
 
 	void RenderEffectPreset::setName( const std::string & p_name )
@@ -55,13 +55,13 @@ namespace VTX::App::Application::RenderEffect
 	void RenderEffectPreset::setSSAOIntensity( const int p_ssaoIntensity )
 	{
 		_ssaoIntensity
-			= Util::Math::clamp( p_ssaoIntensity, VTX::Setting::AO_INTENSITY_MIN, VTX::Setting::AO_INTENSITY_MAX );
+			= Util::Math::clamp( p_ssaoIntensity, VTX::App::Application::Setting::AO_INTENSITY_MIN, VTX::App::Application::Setting::AO_INTENSITY_MAX );
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setSSAOBlurSize( const int p_ssaoBlurSize )
 	{
 		_ssaoBlurSize
-			= Util::Math::clamp( p_ssaoBlurSize, VTX::Setting::AO_BLUR_SIZE_MIN, VTX::Setting::AO_BLUR_SIZE_MAX );
+			= Util::Math::clamp( p_ssaoBlurSize, VTX::App::Application::Setting::AO_BLUR_SIZE_MIN, VTX::App::Application::Setting::AO_BLUR_SIZE_MAX );
 		_notifyDataChanged();
 	}
 
@@ -73,13 +73,13 @@ namespace VTX::App::Application::RenderEffect
 	void RenderEffectPreset::setOutlineThickness( const uint p_outlineThickness )
 	{
 		_outlineThickness
-			= Util::Math::clamp( p_outlineThickness, Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );
+			= Util::Math::clamp( p_outlineThickness, VTX::App::Application::Setting::OUTLINE_THICKNESS_MIN, VTX::App::Application::Setting::OUTLINE_THICKNESS_MAX );
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setOutlineSensivity( const float p_outlineSensivity )
 	{
 		_outlineSensivity
-			= Util::Math::clamp( p_outlineSensivity, Setting::OUTLINE_SENSIVITY_MIN, Setting::OUTLINE_SENSIVITY_MAX );
+			= Util::Math::clamp( p_outlineSensivity, VTX::App::Application::Setting::OUTLINE_SENSIVITY_MIN, VTX::App::Application::Setting::OUTLINE_SENSIVITY_MAX );
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setOutlineColor( const Color::Rgba & p_outlineColor )

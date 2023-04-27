@@ -14,11 +14,11 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Method
 	CEAlign::CustomParameters::CustomParameters() :
 		AlignmentParameters::AlignmentParameters( StructuralAlignment::AlignmentMethodEnum::CEAlign )
 	{
-		windowSize = Setting::CE_ALIGN_WIN_SIZE_DEFAULT;
-		gapMax	   = Setting::CE_ALIGN_GAP_MAX_DEFAULT;
-		maxPath	   = Setting::CE_ALIGN_MAX_PATH_DEFAULT;
-		d0		   = Setting::CE_ALIGN_D0_DEFAULT;
-		d1		   = Setting::CE_ALIGN_D1_DEFAULT;
+		windowSize = VTX::App::Application::Setting::CE_ALIGN_WIN_SIZE_DEFAULT;
+		gapMax	   = VTX::App::Application::Setting::CE_ALIGN_GAP_MAX_DEFAULT;
+		maxPath	   = VTX::App::Application::Setting::CE_ALIGN_MAX_PATH_DEFAULT;
+		d0		   = VTX::App::Application::Setting::CE_ALIGN_D0_DEFAULT;
+		d1		   = VTX::App::Application::Setting::CE_ALIGN_D1_DEFAULT;
 	}
 
 	StructuralAlignment::AlignmentResult CEAlign::compute(

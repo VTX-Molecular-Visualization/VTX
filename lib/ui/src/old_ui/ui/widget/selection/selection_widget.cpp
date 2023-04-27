@@ -10,7 +10,7 @@
 #include <app/event/global.hpp>
 #include <app/old_app/selection/selection_enum.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Selection
@@ -57,7 +57,7 @@ namespace VTX::UI::Widget::Selection
 		{
 			_selectionTypeComboBox->addItem( "" );
 		}
-		_selectionTypeComboBox->setCurrentIndex( int( Setting::SELECTION_GRANULARITY_DEFAULT ) );
+		_selectionTypeComboBox->setCurrentIndex( int( VTX::App::Application::Setting::SELECTION_GRANULARITY_DEFAULT ) );
 		_layout->addStretch( 100 );
 		_layout->addWidget( _selectionTypeComboBox );
 

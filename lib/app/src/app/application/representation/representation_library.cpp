@@ -8,7 +8,7 @@
 #include "app/manager/action_manager.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker.hpp"
 #include <string>

@@ -56,7 +56,7 @@ namespace VTX::UI
 	void Dialog::openLoadMoleculeDialog()
 	{
 		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
-		QString defaultPath	  = QString::fromStdString( Setting::getLastImportedMoleculeFolder() );
+		QString defaultPath	  = QString::fromStdString( VTX::App::Application::Setting::getLastImportedMoleculeFolder() );
 
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
@@ -67,7 +67,7 @@ namespace VTX::UI
 
 		if ( !filenames.isEmpty() )
 		{
-			Setting::saveLastImportedMoleculeFolder( filenames[ filenames.size() - 1 ].toStdString() );
+			VTX::App::Application::Setting::saveLastImportedMoleculeFolder( filenames[ filenames.size() - 1 ].toStdString() );
 
 			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
@@ -93,7 +93,7 @@ namespace VTX::UI
 			const FilePath path			 = FilePath( filename.toStdString() );
 			const FilePath directoryPath = path.parent_path();
 
-			Setting::saveLastExportedMoleculeFolder( directoryPath.string() );
+			VTX::App::Application::Setting::saveLastExportedMoleculeFolder( directoryPath.string() );
 			VTX_ACTION( new App::Action::Main::Save( path ) );
 		}
 	}
@@ -101,7 +101,7 @@ namespace VTX::UI
 	void Dialog::openLoadTrajectoryDialog()
 	{
 		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_TRAJECTORY_READ_FILTER );
-		QString defaultPath	  = QString::fromStdString( Setting::getLastImportedMoleculeFolder() );
+		QString defaultPath	  = QString::fromStdString( VTX::App::Application::Setting::getLastImportedMoleculeFolder() );
 
 		const QString filename
 			= QFileDialog::getOpenFileName( &VTXApp::get().getMainWindow(),
@@ -112,14 +112,14 @@ namespace VTX::UI
 
 		if ( !filename.isEmpty() )
 		{
-			Setting::saveLastImportedMoleculeFolder( filename.toStdString() );
+			VTX::App::Application::Setting::saveLastImportedMoleculeFolder( filename.toStdString() );
 			openSetTrajectoryTargetsDialog( filename.toStdString() );
 		}
 	}
 	void Dialog::openLoadTrajectoryDialog( App::Component::Chemistry::Molecule & p_target )
 	{
 		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
-		QString defaultPath	  = QString::fromStdString( Setting::getLastImportedMoleculeFolder() );
+		QString defaultPath	  = QString::fromStdString( VTX::App::Application::Setting::getLastImportedMoleculeFolder() );
 
 		const QString filename
 			= QFileDialog::getOpenFileName( &VTXApp::get().getMainWindow(),
@@ -130,7 +130,7 @@ namespace VTX::UI
 
 		if ( !filename.isEmpty() )
 		{
-			Setting::saveLastImportedMoleculeFolder( filename.toStdString() );
+			VTX::App::Application::Setting::saveLastImportedMoleculeFolder( filename.toStdString() );
 			VTX_ACTION( new App::Action::Main::Open( FilePath( filename.toStdString() ), p_target ) );
 		}
 	}
@@ -212,14 +212,14 @@ namespace VTX::UI
 			const FilePath path			 = FilePath( filename.toStdString() );
 			const FilePath directoryPath = path.parent_path();
 
-			Setting::saveLastSavedSessionFolder( directoryPath.string() );
+			VTX::App::Application::Setting::saveLastSavedSessionFolder( directoryPath.string() );
 			VTX_ACTION( new App::Action::Main::Save( path, p_callback ) );
 		}
 	}
 	void Dialog::openLoadSessionDialog()
 	{
 		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_FILE_READ_FILTER );
-		QString defaultPath	  = QString::fromStdString( Setting::getLastLoadedSessionFolder() );
+		QString defaultPath	  = QString::fromStdString( VTX::App::Application::Setting::getLastLoadedSessionFolder() );
 
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
@@ -230,7 +230,7 @@ namespace VTX::UI
 
 		if ( filenames.size() > 0 )
 		{
-			Setting::saveLastLoadedSessionFolder( filenames[ filenames.size() - 1 ].toStdString() );
+			VTX::App::Application::Setting::saveLastLoadedSessionFolder( filenames[ filenames.size() - 1 ].toStdString() );
 
 			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
@@ -244,7 +244,7 @@ namespace VTX::UI
 	bool Dialog::openExportImageDialog( const IO::Struct::ImageExport & p_exportData )
 	{
 		QString		  defaultFilter = QString::fromStdString( IO::Filesystem::getImageExportDefaultFilter() );
-		const QString defaultPath	= QString::fromStdString( Setting::getLastExportedImageFolder() );
+		const QString defaultPath	= QString::fromStdString( VTX::App::Application::Setting::getLastExportedImageFolder() );
 
 		const QString filepath
 			= QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
@@ -269,7 +269,7 @@ namespace VTX::UI
 				path += '.' + formatStr;
 			}
 
-			Setting::saveLastExportedImageFolder( directoryPath.string() );
+			VTX::App::Application::Setting::saveLastExportedImageFolder( directoryPath.string() );
 			VTX_ACTION( new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, path, p_exportData ) );
 
 			return true;

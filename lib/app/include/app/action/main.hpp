@@ -6,7 +6,7 @@
 #include "app/worker.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/internal/worker/snapshoter.hpp"
 #include <string>

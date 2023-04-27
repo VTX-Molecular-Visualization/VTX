@@ -8,7 +8,7 @@
 #include <app/action/main.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/old_app/object3d/scene.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Dialog

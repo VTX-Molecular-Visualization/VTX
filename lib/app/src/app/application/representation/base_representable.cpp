@@ -11,7 +11,7 @@
 #include "app/component/chemistry/secondary_structure.hpp"
 #include "app/component/chemistry/solvent_excluded_surface.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 
 namespace VTX::App::Application::Representation

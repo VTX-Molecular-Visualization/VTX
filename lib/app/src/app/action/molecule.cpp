@@ -5,7 +5,7 @@
 #include "app/component/chemistry/generated_molecule.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/object3d/scene.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <util/math.hpp>
@@ -82,7 +82,7 @@ namespace VTX::App::Action::Molecule
 	{
 		for ( Component::Chemistry::Molecule * molecule : _molecules )
 			molecule->setFPS(
-				Util::Math::clamp( _fps, VTX::Setting::MIN_TRAJECTORY_SPEED, VTX::Setting::MAX_TRAJECTORY_SPEED ) );
+				Util::Math::clamp( _fps, VTX::App::Application::Setting::MIN_TRAJECTORY_SPEED, VTX::App::Application::Setting::MAX_TRAJECTORY_SPEED ) );
 	}
 
 	void ChangeFrame::execute()

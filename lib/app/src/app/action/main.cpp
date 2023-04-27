@@ -103,11 +103,11 @@ namespace VTX::App::Action::Main
 						{
 							if ( result.molecule != nullptr )
 								VTXApp::get().getScenePathData().registerLoading( result.molecule, filepath );
-							VTX::Setting::enqueueNewLoadingPath( filepath );
+							VTX::App::Application::Setting::enqueueNewLoadingPath( filepath );
 						}
 						else if ( result.sourceType == Worker::Loader::SOURCE_TYPE::BUFFER )
 						{
-							VTX::Setting::enqueueNewDownloadCode( filepath.stem().string() );
+							VTX::App::Application::Setting::enqueueNewDownloadCode( filepath.stem().string() );
 						}
 
 						if ( result.molecule != nullptr )
@@ -147,7 +147,7 @@ namespace VTX::App::Action::Main
 		}
 		else
 		{
-			VTX::Setting::enqueueNewLoadingPath( _path );
+			VTX::App::Application::Setting::enqueueNewLoadingPath( _path );
 		}
 	}
 

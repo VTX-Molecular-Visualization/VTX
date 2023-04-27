@@ -121,7 +121,7 @@ namespace VTX::UI::QT::Tool
 
 		int actionIndex = 0;
 
-		for ( const FilePath & recentFile : Setting::recentLoadingPath )
+		for ( const FilePath & recentFile : VTX::App::Application::Setting::recentLoadingPath )
 		{
 			QT::Widget::CustomWidget::IndexedAction * const action
 				= new QT::Widget::CustomWidget::IndexedAction( actionIndex, _recentSessionMenu );
@@ -150,7 +150,7 @@ namespace VTX::UI::QT::Tool
 
 	void SessionTool::_loadRecentSession( const int & p_ptrSessionIndex ) const
 	{
-		const FilePath * const recentPath = Setting::getRecentLoadingPath( p_ptrSessionIndex );
+		const FilePath * const recentPath = VTX::App::Application::Setting::getRecentLoadingPath( p_ptrSessionIndex );
 
 		if ( recentPath == nullptr )
 		{

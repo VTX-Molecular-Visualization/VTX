@@ -5,7 +5,7 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include <app/action/representation.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -241,10 +241,10 @@ namespace VTX::UI::Widget::Settings
 	void RepresentationPresetEditor::_refreshBallAndStickRepresentation()
 	{
 		_sphereRadiusWidget->setValue( _preset->getData().getSphereRadius() );
-		_sphereRadiusWidget->setMinMax( Setting::ATOMS_RADIUS_MIN, Setting::ATOMS_RADIUS_MAX );
+		_sphereRadiusWidget->setMinMax( VTX::App::Application::Setting::ATOMS_RADIUS_MIN, VTX::App::Application::Setting::ATOMS_RADIUS_MAX );
 
 		_cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
-		_cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
+		_cylinderRadiusWidget->setMinMax( VTX::App::Application::Setting::BONDS_RADIUS_MIN, VTX::App::Application::Setting::BONDS_RADIUS_MAX );
 
 		_cylinderColorBlendingMode->setCurrentIndex( int( _preset->getData().getCylinderColorBlendingMode() ) );
 
@@ -253,10 +253,10 @@ namespace VTX::UI::Widget::Settings
 	void RepresentationPresetEditor::_refreshBallStickAndCartoonRepresentation()
 	{
 		_sphereRadiusWidget->setValue( _preset->getData().getSphereRadius() );
-		_sphereRadiusWidget->setMinMax( Setting::ATOMS_RADIUS_MIN, Setting::ATOMS_RADIUS_MAX );
+		_sphereRadiusWidget->setMinMax( VTX::App::Application::Setting::ATOMS_RADIUS_MIN, VTX::App::Application::Setting::ATOMS_RADIUS_MAX );
 
 		_cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
-		_cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
+		_cylinderRadiusWidget->setMinMax( VTX::App::Application::Setting::BONDS_RADIUS_MIN, VTX::App::Application::Setting::BONDS_RADIUS_MAX );
 
 		_cylinderColorBlendingMode->setCurrentIndex( int( _preset->getData().getCylinderColorBlendingMode() ) );
 		_colorModeWidget->setCurrentIndex( int( _preset->getData().getColorMode() ) );
@@ -266,14 +266,14 @@ namespace VTX::UI::Widget::Settings
 	void RepresentationPresetEditor::_refreshStickRepresentation()
 	{
 		_cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
-		_cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
+		_cylinderRadiusWidget->setMinMax( VTX::App::Application::Setting::BONDS_RADIUS_MIN, VTX::App::Application::Setting::BONDS_RADIUS_MAX );
 		_cylinderColorBlendingMode->setCurrentIndex( int( _preset->getData().getCylinderColorBlendingMode() ) );
 		_colorModeWidget->setCurrentIndex( int( _preset->getData().getColorMode() ) );
 	}
 	void RepresentationPresetEditor::_refreshStickAndCartoonRepresentation()
 	{
 		_cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
-		_cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
+		_cylinderRadiusWidget->setMinMax( VTX::App::Application::Setting::BONDS_RADIUS_MIN, VTX::App::Application::Setting::BONDS_RADIUS_MAX );
 
 		_cylinderColorBlendingMode->setCurrentIndex( int( _preset->getData().getCylinderColorBlendingMode() ) );
 		_colorModeWidget->setCurrentIndex( int( _preset->getData().getColorMode() ) );
@@ -283,13 +283,13 @@ namespace VTX::UI::Widget::Settings
 	void RepresentationPresetEditor::_refreshVanDerWaalsRepresentation()
 	{
 		_sphereRadiusWidget->setValue( _preset->getData().getSphereRadius() );
-		_sphereRadiusWidget->setMinMax( Setting::ATOMS_RADIUS_ADD_MIN, Setting::ATOMS_RADIUS_ADD_MAX );
+		_sphereRadiusWidget->setMinMax( VTX::App::Application::Setting::ATOMS_RADIUS_ADD_MIN, VTX::App::Application::Setting::ATOMS_RADIUS_ADD_MAX );
 		_colorModeWidget->setCurrentIndex( int( _preset->getData().getColorMode() ) );
 	}
 	void RepresentationPresetEditor::_refreshTraceRepresentation()
 	{
 		_cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
-		_cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
+		_cylinderRadiusWidget->setMinMax( VTX::App::Application::Setting::BONDS_RADIUS_MIN, VTX::App::Application::Setting::BONDS_RADIUS_MAX );
 		_colorModeWidget->setCurrentIndex( int( _preset->getData().getColorMode() ) );
 	}
 	void RepresentationPresetEditor::_refreshSASRepresentation()

@@ -1,10 +1,10 @@
 #include "app/application/representation/primitive/ribbon.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 
 namespace VTX::App::Application::Representation::Primitive
 {
 	Ribbon::Ribbon() :
-		colorMode( Setting::SS_COLOR_MODE_DEFAULT ), colorBlendingMode( Setting::SS_COLOR_BLENDING_MODE_DEFAULT )
+		colorMode( VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT ), colorBlendingMode( VTX::App::Application::Setting::SS_COLOR_BLENDING_MODE_DEFAULT )
 	{
 	}
 

@@ -9,7 +9,7 @@ namespace VTX::UI::Widget::Representation::View
 		_radiusLabel = new QLabel( this );
 		_radiusLabel->setText( "Sticks radius" );
 		_radiusWidget = _addFloatFieldSliderWidgetInLayout(
-			"cylinderRadiusWidget", _radiusLabel, Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
+			"cylinderRadiusWidget", _radiusLabel, VTX::App::Application::Setting::BONDS_RADIUS_MIN, VTX::App::Application::Setting::BONDS_RADIUS_MAX );
 
 		_colorBlendingModeLabel = new QLabel( this );
 		_colorBlendingModeLabel->setText( "Color blending mode" );

@@ -21,7 +21,7 @@ namespace VTX
 				App::Application::Representation::REPRESENTATION_ENUM::VAN_DER_WAALS;
 			// App::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK;
 			// App::Application::Representation::REPRESENTATION_ENUM::STICK;
-			// Setting::Rendering::representation;
+			// VTX::App::Application::Setting::Rendering::representation;
 
 			const uint nbAtoms = p_molecule->getAtomCount();
 			const uint nbBonds = p_molecule->getBondCount();

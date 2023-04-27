@@ -85,7 +85,7 @@ namespace VTX::IO::Struct
 		_currentFilePath = p_filePath;
 
 		if ( p_addInRecentPath )
-			Setting::enqueueNewLoadingPath( p_filePath );
+			VTX::App::Application::Setting::enqueueNewLoadingPath( p_filePath );
 
 		VTX_EVENT<const FilePath &>( VTX::App::Event::Global::SCENE_PATH_CHANGE, _currentFilePath );
 	}

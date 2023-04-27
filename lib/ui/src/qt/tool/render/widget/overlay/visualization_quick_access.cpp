@@ -13,7 +13,7 @@
 #include <app/event/global.hpp>
 #include <app/model/selection.hpp>
 #include <app/old_app/selection/selection_manager.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 #include <set>
 
 namespace VTX::UI::QT::Tool::Render::Widget::Overlay
@@ -37,11 +37,11 @@ namespace VTX::UI::QT::Tool::Render::Widget::Overlay
 		}
 		else if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> &>(
+			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &>(
 					p_event );
 
-			if ( castedEvent.get().find( Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.get().cend() )
+			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.get().cend() )
 				_refreshSelectionGranularity();
 		}
 	}

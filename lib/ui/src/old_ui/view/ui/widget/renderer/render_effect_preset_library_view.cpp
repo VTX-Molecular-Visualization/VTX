@@ -9,7 +9,7 @@
 #include <app/event/global.hpp>
 #include <app/application/render_effect/render_effect_preset.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 
 namespace VTX::View::UI::Widget::Renderer
 {
@@ -143,7 +143,7 @@ namespace VTX::View::UI::Widget::Renderer
 	void RenderEffectPresetLibraryView::_onAddPreset() const
 	{
 		VTX_ACTION(
-			new App::Action::Renderer::AddNewPresetInLibrary( Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME ) );
+			new App::Action::Renderer::AddNewPresetInLibrary( VTX::App::Application::Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME ) );
 	}
 	void RenderEffectPresetLibraryView::_onCopyPreset() const
 	{

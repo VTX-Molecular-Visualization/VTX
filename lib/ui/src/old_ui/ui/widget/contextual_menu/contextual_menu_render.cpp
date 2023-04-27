@@ -18,7 +18,7 @@
 #include <app/application/render_effect/render_effect_library.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/object3d/scene.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 #include <app/internal/worker/snapshoter.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
@@ -44,16 +44,16 @@ namespace VTX::UI::Widget::ContextualMenu
 		}
 		else if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> &>(
+			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &>(
 					p_event );
 
-			if ( castedEvent.get().find( Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().end() )
+			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().end() )
 			{
 				_refreshCameraProjection();
 			}
 
-			if ( castedEvent.get().find( Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.get().end() )
+			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.get().end() )
 			{
 				_refreshSelectionGranularityMenu();
 			}

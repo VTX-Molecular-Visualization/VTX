@@ -225,7 +225,7 @@ namespace VTX::App::Manager
 
 	void ActionManager::_purgeBuffer()
 	{
-		while ( _bufferUndo.size() > VTX::Setting::ACTION_BUFFER_SIZE )
+		while ( _bufferUndo.size() > VTX::App::Application::Setting::ACTION_BUFFER_SIZE )
 		{
 			delete _bufferUndo.back();
 			_bufferUndo.pop_back();

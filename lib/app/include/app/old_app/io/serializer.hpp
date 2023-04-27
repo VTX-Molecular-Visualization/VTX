@@ -16,7 +16,11 @@
 namespace VTX
 {
 	class VTXApp;
-	class Setting;
+
+	namespace App::Application
+	{
+		class Setting;
+	}
 
 	namespace Object3D
 	{
@@ -68,7 +72,7 @@ namespace VTX
 			nlohmann::json serialize( const glm::vec<4, T, Q> & ) const;
 			template<typename T, glm::qualifier Q>
 			nlohmann::json serialize( const glm::qua<T, Q> & ) const;
-			nlohmann::json serialize( const Setting & ) const;
+			nlohmann::json serialize( const App::Application::Setting & ) const;
 
 			nlohmann::json serializeAtomReference( const App::Component::Chemistry::Atom & ) const;
 
@@ -100,7 +104,9 @@ namespace VTX
 			void deserialize( const nlohmann::json &, glm::vec<4, T, Q> & ) const;
 			template<typename T, glm::qualifier Q>
 			void deserialize( const nlohmann::json &, glm::qua<T, Q> & ) const;
-			void deserialize( const nlohmann::json &, const std::tuple<uint, uint, uint> &, Setting & ) const;
+			void deserialize( const nlohmann::json &,
+							  const std::tuple<uint, uint, uint> &,
+							  App::Application::Setting & ) const;
 
 			const App::Component::Chemistry::Atom * deserializeAtomReference( const nlohmann::json & ) const;
 

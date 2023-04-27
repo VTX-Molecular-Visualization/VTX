@@ -5,7 +5,7 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/old_app/io/reader/residue_data_reader.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include <map>
 #include <string>
 #include <vector>

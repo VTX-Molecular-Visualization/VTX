@@ -6,7 +6,7 @@
 #include "app/core/event/vtx_event.hpp"
 #include "app/event/global.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <string>
 #include <util/logger.hpp>

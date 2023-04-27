@@ -1,5 +1,5 @@
 #include "app/old_app/object3d/camera.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <util/logger.hpp>
 

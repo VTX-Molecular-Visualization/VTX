@@ -4,7 +4,7 @@
 #include "app/internal/worker/representation_saver.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker.hpp"
 #include <filesystem>
@@ -117,7 +117,7 @@ namespace VTX::App::Action::Representation
 	{
 		App::Application::Representation::RepresentationPreset * const newRepresentation
 			= VTX::MVC_MANAGER().instantiateModel<App::Application::Representation::RepresentationPreset>(
-				VTX::Setting::DEFAULT_REPRESENTATION_TYPE );
+				VTX::App::Application::Setting::DEFAULT_REPRESENTATION_TYPE );
 
 		newRepresentation->setName( _representationName );
 		App::Application::Representation::RepresentationLibrary::get().addRepresentation( newRepresentation );

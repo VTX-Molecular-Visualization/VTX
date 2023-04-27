@@ -18,7 +18,7 @@
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
 #include <app/old_app/object3d/scene.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 #include <app/old_app/util/molecule.hpp>
 #include <util/logger.hpp>
 

@@ -1,7 +1,7 @@
 #include "ui/qt/tool/check_update_tool.hpp"
 #include "ui/qt/action/main.hpp"
 #include <app/event/global.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 
 namespace VTX::UI::QT::Tool
 {

@@ -27,7 +27,7 @@ namespace VTX::App::Action::Setting
 			return;
 		}
 
-		IO::Reader::SerializedObject<VTX::Setting> reader = IO::Reader::SerializedObject<VTX::Setting>();
+		IO::Reader::SerializedObject<VTX::App::Application::Setting> reader = IO::Reader::SerializedObject<VTX::App::Application::Setting>();
 		try
 		{
 			reader.readFile( path, VTX_SETTING() );
@@ -41,7 +41,7 @@ namespace VTX::App::Action::Setting
 
 	void Save::execute()
 	{
-		IO::Writer::SerializedObject<VTX::Setting> writer = IO::Writer::SerializedObject<VTX::Setting>();
+		IO::Writer::SerializedObject<VTX::App::Application::Setting> writer = IO::Writer::SerializedObject<VTX::App::Application::Setting>();
 		try
 		{
 			writer.writeFile( IO::Filesystem::getSettingJsonFile(), VTX_SETTING() );

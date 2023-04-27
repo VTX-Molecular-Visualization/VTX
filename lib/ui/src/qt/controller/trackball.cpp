@@ -179,7 +179,7 @@ namespace VTX::UI::QT::Controller
 				_velocity, VEC3F_ZERO, p_deltaTime * VTX_SETTING().getControllerElasticityFactor() );
 
 			Vec3f::bool_type res = VTX::Util::Math::lessThan( VTX::Util::Math::abs( _velocity ),
-															  Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
+															  Vec3f( VTX::App::Application::Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
 			if ( !_mouseLeftPressed && res.x && res.y && res.z )
 			{
 				_velocity = VEC3F_ZERO;

@@ -9,14 +9,14 @@ namespace VTX::UI::Widget::Representation::View
 		_radiusLabel = new QLabel( this );
 		_radiusLabel->setText( "Balls radius" );
 		_radiusWidget = _addFloatFieldSliderWidgetInLayout(
-			"sphereRadiusWidget", _radiusLabel, Setting::ATOMS_RADIUS_MIN, Setting::ATOMS_RADIUS_MAX );
+			"sphereRadiusWidget", _radiusLabel, VTX::App::Application::Setting::ATOMS_RADIUS_MIN, VTX::App::Application::Setting::ATOMS_RADIUS_MAX );
 
 		_radiusOffsetLabel = new QLabel( this );
 		_radiusOffsetLabel->setText( "Atom offset" );
 		_radiusOffsetWidget = _addFloatFieldSliderWidgetInLayout( "sphereRadiusOffsetWidget",
 																  _radiusOffsetLabel,
-																  Setting::ATOMS_RADIUS_ADD_MIN,
-																  Setting::ATOMS_RADIUS_ADD_MAX );
+																  VTX::App::Application::Setting::ATOMS_RADIUS_ADD_MIN,
+																  VTX::App::Application::Setting::ATOMS_RADIUS_ADD_MAX );
 	}
 
 	void SphereWidget::_setupSlots()

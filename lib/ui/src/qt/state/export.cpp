@@ -19,7 +19,7 @@ namespace VTX::UI::QT::State
 		// VTXApp::get().getSetting().backup();
 
 		float duration = _path->getDuration();
-		_frameCount	   = uint( Setting::VIDEO_FPS_DEFAULT * duration );
+		_frameCount	   = uint( VTX::App::Application::Setting::VIDEO_FPS_DEFAULT * duration );
 
 		if ( _frameCount == 0u || _path->getViewpoints().size() < 2 )
 		{
@@ -45,7 +45,7 @@ namespace VTX::UI::QT::State
 		/*
 		BaseState::update( p_deltaTime );
 
-		float			 time	   = _frame / (float)Setting::VIDEO_FPS_DEFAULT;
+		float			 time	   = _frame / (float)VTX::App::Application::Setting::VIDEO_FPS_DEFAULT;
 		Model::Viewpoint viewpoint = _path->getInterpolatedViewpoint( time );
 
 		// Action.
@@ -70,7 +70,7 @@ namespace VTX::UI::QT::State
 		{
 			VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
 		}
-		VTXApp::get().getScene().update( 1.f / (float)Setting::VIDEO_FPS_DEFAULT );
+		VTXApp::get().getScene().update( 1.f / (float)VTX::App::Application::Setting::VIDEO_FPS_DEFAULT );
 		VTXApp::get().renderScene();
 
 		std::string counterStr = std::to_string( _frame );
@@ -114,8 +114,8 @@ namespace VTX::UI::QT::State
 		FilePath files = Util::Filesystem::getVideosBatchPath( _directoryName );
 		files /= "frame%06d.png";
 		std::string command = Util::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate "
-							  + std::to_string( Setting::VIDEO_FPS_DEFAULT ) + " -i " + files.string()
-							  + " -vcodec libx264 -crf " + std::to_string( Setting::VIDEO_CRF_DEFAULT ) + " "
+							  + std::to_string( VTX::App::Application::Setting::VIDEO_FPS_DEFAULT ) + " -i " + files.string()
+							  + " -vcodec libx264 -crf " + std::to_string( VTX::App::Application::Setting::VIDEO_CRF_DEFAULT ) + " "
 							  + Util::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
 		Worker::ProgramLauncher * worker = new Worker::ProgramLauncher( command );
 		VTX_THREAD( worker );

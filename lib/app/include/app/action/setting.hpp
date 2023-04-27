@@ -9,7 +9,7 @@
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
 #include "app/old_app/selection/selection_enum.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::App::Action::Setting
@@ -551,12 +551,12 @@ namespace VTX::App::Action::Setting
 	class ApplyAllSettings : public App::Core::Action::BaseAction
 	{
 	  public:
-		ApplyAllSettings( VTX::Setting & p_setting ) : _setting( p_setting ) {}
+		ApplyAllSettings( VTX::App::Application::Setting & p_setting ) : _setting( p_setting ) {}
 
 		virtual void execute() override;
 
 	  private:
-		VTX::Setting _setting;
+		VTX::App::Application::Setting _setting;
 	};
 
 	class ReloadSetting : public App::Core::Action::BaseAction

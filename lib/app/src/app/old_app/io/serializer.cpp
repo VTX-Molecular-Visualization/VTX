@@ -2,10 +2,11 @@
 #include "app/action/main.hpp"
 #include "app/action/renderer.hpp"
 #include "app/action/setting.hpp"
+#include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/application/representation/instantiated_representation.hpp"
-#include "app/application/representation/representation_preset.hpp"
 #include "app/application/representation/representation_library.hpp"
 #include "app/application/representation/representation_manager.hpp"
+#include "app/application/representation/representation_preset.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/chemistry/molecule.hpp"
@@ -17,7 +18,6 @@
 #include "app/model/label.hpp"
 #include "app/model/mesh_triangle.hpp"
 #include "app/model/path.hpp"
-#include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/model/viewpoint.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
@@ -269,7 +269,7 @@ namespace VTX::IO
 		return nlohmann::json( { { "X", p_quat.x }, { "Y", p_quat.y }, { "Z", p_quat.z }, { "W", p_quat.w } } );
 	}
 
-	nlohmann::json Serializer::serialize( const Setting & p_setting ) const
+	nlohmann::json Serializer::serialize( const App::Application::Setting & p_setting ) const
 	{
 		const std::string & defaultRepresentationName
 			= App::Application::Representation::RepresentationLibrary::get()
@@ -556,13 +556,13 @@ namespace VTX::IO
 	{
 		p_path.setName( _get<std::string>( p_json, "NAME" ) );
 
-		p_path.setDurationMode(
-			_getEnum<VTX::Path::DURATION_MODE>( p_json, "MODE_DURATION", Setting::DEFAULT_PATH_DURATION_MODE ) );
+		p_path.setDurationMode( _getEnum<VTX::Path::DURATION_MODE>(
+			p_json, "MODE_DURATION", VTX::App::Application::Setting::DEFAULT_PATH_DURATION_MODE ) );
 
 		p_path.setInterpolationMode( _getEnum<VTX::Path::INTERPOLATION_MODE>(
-			p_json, "MODE_DURATION", Setting::DEFAULT_PATH_INTERPOLATION_MODE ) );
+			p_json, "MODE_DURATION", VTX::App::Application::Setting::DEFAULT_PATH_INTERPOLATION_MODE ) );
 
-		p_path.setDuration( _get<float>( p_json, "DURATION", Setting::PATH_DURATION_DEFAULT ) );
+		p_path.setDuration( _get<float>( p_json, "DURATION", VTX::App::Application::Setting::PATH_DURATION_DEFAULT ) );
 		p_path.setIsLooping( _get<bool>( p_json, "IS_LOOPING" ) );
 		p_path.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
 
@@ -582,7 +582,8 @@ namespace VTX::IO
 	void Serializer::deserialize( const nlohmann::json & p_json, Model::Viewpoint & p_viewpoint ) const
 	{
 		p_viewpoint.setName( _get<std::string>( p_json, "NAME" ) );
-		p_viewpoint.setController( _get<ID::VTX_ID>( p_json, "CONTROLLER", Setting::CONTROLLER_MODE_DEFAULT ) );
+		p_viewpoint.setController(
+			_get<ID::VTX_ID>( p_json, "CONTROLLER", VTX::App::Application::Setting::CONTROLLER_MODE_DEFAULT ) );
 		p_viewpoint.setDuration( _get<float>( p_json, "DURATION" ) );
 
 		if ( p_json.contains( "POSITION" ) )
@@ -639,22 +640,26 @@ namespace VTX::IO
 		if ( p_json.contains( "CYLINDER_COLOR_BLENDING_MODE" ) )
 		{
 			p_representation.setCylinderColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
-				p_json, "CYLINDER_COLOR_BLENDING_MODE", Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
+				p_json,
+				"CYLINDER_COLOR_BLENDING_MODE",
+				VTX::App::Application::Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "RIBBON_COLOR_MODE" ) )
 		{
 			p_representation.setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-				p_json, "RIBBON_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
+				p_json, "RIBBON_COLOR_MODE", VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "RIBBON_COLOR_BLENDING_MODE" ) )
 		{
 			p_representation.setRibbonColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
-				p_json, "RIBBON_COLOR_BLENDING_MODE", Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
+				p_json,
+				"RIBBON_COLOR_BLENDING_MODE",
+				VTX::App::Application::Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "COLOR_MODE" ) )
 		{
-			p_representation.setColorMode(
-				_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Setting::COLOR_MODE_DEFAULT ) );
+			p_representation.setColorMode( _getEnum<Generic::COLOR_MODE>(
+				p_json, "COLOR_MODE", VTX::App::Application::Setting::COLOR_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "COLOR" ) )
 		{
@@ -679,75 +684,87 @@ namespace VTX::IO
 
 		p_representation.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
 
-		p_representation.changeRepresentationType( _getEnum<App::Application::Representation::REPRESENTATION_ENUM>(
-													   p_json, "TYPE", Setting::DEFAULT_REPRESENTATION_TYPE ),
-												   false );
+		p_representation.changeRepresentationType(
+			_getEnum<App::Application::Representation::REPRESENTATION_ENUM>(
+				p_json, "TYPE", VTX::App::Application::Setting::DEFAULT_REPRESENTATION_TYPE ),
+			false );
 		if ( p_representation.getData().hasToDrawSphere() )
 		{
 			p_representation.getData().setSphereRadius(
-				_get<float>( p_json, "SPHERE_RADIUS", Setting::ATOMS_RADIUS_DEFAULT ) );
+				_get<float>( p_json, "SPHERE_RADIUS", VTX::App::Application::Setting::ATOMS_RADIUS_DEFAULT ) );
 		}
 		if ( p_representation.getData().hasToDrawCylinder() )
 		{
 			p_representation.getData().setCylinderRadius(
-				_get<float>( p_json, "CYLINDER_RADIUS", Setting::BONDS_RADIUS_DEFAULT ) );
+				_get<float>( p_json, "CYLINDER_RADIUS", VTX::App::Application::Setting::BONDS_RADIUS_DEFAULT ) );
 			p_representation.getData().setCylinderColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
-				p_json, "CYLINDER_COLOR_BLENDING_MODE", Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
+				p_json,
+				"CYLINDER_COLOR_BLENDING_MODE",
+				VTX::App::Application::Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_representation.getData().hasToDrawRibbon() )
 		{
 			p_representation.getData().setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-				p_json, "RIBBON_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
+				p_json, "RIBBON_COLOR_MODE", VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 			p_representation.getData().setRibbonColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
-				p_json, "RIBBON_COLOR_BLENDING_MODE", Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
+				p_json,
+				"RIBBON_COLOR_BLENDING_MODE",
+				VTX::App::Application::Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		p_representation.getData().setColorMode(
-			_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Setting::COLOR_MODE_DEFAULT ) );
+			_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", VTX::App::Application::Setting::COLOR_MODE_DEFAULT ) );
 
 		_migrate( p_json, p_version, p_representation );
 	}
-	void Serializer::deserialize( const nlohmann::json &				p_json,
-								  const std::tuple<uint, uint, uint> &	p_version,
+	void Serializer::deserialize( const nlohmann::json &							   p_json,
+								  const std::tuple<uint, uint, uint> &				   p_version,
 								  App::Application::RenderEffect::RenderEffectPreset & p_preset ) const
 	{
 		Color::Rgba color;
 
 		p_preset.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
-		p_preset.setShading( _getEnum<Renderer::SHADING>( p_json, "SHADING", Setting::SHADING_DEFAULT ) );
-		p_preset.enableSSAO( _get<bool>( p_json, "SSAO", Setting::ACTIVE_AO_DEFAULT ) );
-		p_preset.setSSAOIntensity( _get<int>( p_json, "SSAO_INTENSITY", Setting::AO_INTENSITY_DEFAULT ) );
-		p_preset.setSSAOBlurSize( _get<int>( p_json, "SSAO_BLUR_SIZE", Setting::AO_BLUR_SIZE_DEFAULT ) );
-		p_preset.enableOutline( _get<bool>( p_json, "OUTLINE", Setting::ACTIVE_OUTLINE_DEFAULT ) );
-		p_preset.setOutlineThickness( _get<int>( p_json, "OUTLINE_THICKNESS", Setting::OUTLINE_THICKNESS_DEFAULT ) );
-		p_preset.setOutlineSensivity( _get<float>( p_json, "OUTLINE_SENSIVITY", Setting::OUTLINE_SENSIVITY_DEFAULT ) );
+		p_preset.setShading(
+			_getEnum<Renderer::SHADING>( p_json, "SHADING", VTX::App::Application::Setting::SHADING_DEFAULT ) );
+		p_preset.enableSSAO( _get<bool>( p_json, "SSAO", VTX::App::Application::Setting::ACTIVE_AO_DEFAULT ) );
+		p_preset.setSSAOIntensity(
+			_get<int>( p_json, "SSAO_INTENSITY", VTX::App::Application::Setting::AO_INTENSITY_DEFAULT ) );
+		p_preset.setSSAOBlurSize(
+			_get<int>( p_json, "SSAO_BLUR_SIZE", VTX::App::Application::Setting::AO_BLUR_SIZE_DEFAULT ) );
+		p_preset.enableOutline(
+			_get<bool>( p_json, "OUTLINE", VTX::App::Application::Setting::ACTIVE_OUTLINE_DEFAULT ) );
+		p_preset.setOutlineThickness(
+			_get<int>( p_json, "OUTLINE_THICKNESS", VTX::App::Application::Setting::OUTLINE_THICKNESS_DEFAULT ) );
+		p_preset.setOutlineSensivity(
+			_get<float>( p_json, "OUTLINE_SENSIVITY", VTX::App::Application::Setting::OUTLINE_SENSIVITY_DEFAULT ) );
 
 		if ( p_json.contains( "OUTLINE_COLOR" ) )
 			deserialize( p_json.at( "OUTLINE_COLOR" ), color );
 		else
-			color = Setting::OUTLINE_COLOR_DEFAULT;
+			color = VTX::App::Application::Setting::OUTLINE_COLOR_DEFAULT;
 		p_preset.setOutlineColor( color );
 
-		p_preset.enableFog( _get<bool>( p_json, "FOG", Setting::ACTIVE_FOG_DEFAULT ) );
-		p_preset.setFogNear( _get<float>( p_json, "FOG_NEAR", Setting::FOG_NEAR_DEFAULT ) );
-		p_preset.setFogFar( _get<float>( p_json, "FOG_FAR", Setting::FOG_FAR_DEFAULT ) );
-		p_preset.setFogDensity( _get<float>( p_json, "FOG_DENSITY", Setting::FOG_DENSITY_DEFAULT ) );
+		p_preset.enableFog( _get<bool>( p_json, "FOG", VTX::App::Application::Setting::ACTIVE_FOG_DEFAULT ) );
+		p_preset.setFogNear( _get<float>( p_json, "FOG_NEAR", VTX::App::Application::Setting::FOG_NEAR_DEFAULT ) );
+		p_preset.setFogFar( _get<float>( p_json, "FOG_FAR", VTX::App::Application::Setting::FOG_FAR_DEFAULT ) );
+		p_preset.setFogDensity(
+			_get<float>( p_json, "FOG_DENSITY", VTX::App::Application::Setting::FOG_DENSITY_DEFAULT ) );
 
 		if ( p_json.contains( "FOG_COLOR" ) )
 			deserialize( p_json.at( "FOG_COLOR" ), color );
 		else
-			color = Setting::FOG_COLOR_DEFAULT;
+			color = VTX::App::Application::Setting::FOG_COLOR_DEFAULT;
 		p_preset.setFogColor( color );
 
 		if ( p_json.contains( "BACKGROUND_COLOR" ) )
 			deserialize( p_json.at( "BACKGROUND_COLOR" ), color );
 		else
-			color = Setting::BACKGROUND_COLOR_DEFAULT;
+			color = VTX::App::Application::Setting::BACKGROUND_COLOR_DEFAULT;
 		p_preset.setBackgroundColor( color );
 
 		if ( p_json.contains( "CAMERA_LIGHT_COLOR" ) )
 			deserialize( p_json.at( "CAMERA_LIGHT_COLOR" ), color );
 		else
-			color = Setting::LIGHT_COLOR_DEFAULT;
+			color = VTX::App::Application::Setting::LIGHT_COLOR_DEFAULT;
 		p_preset.setCameraLightColor( color );
 	}
 
@@ -815,70 +832,90 @@ namespace VTX::IO
 
 	void Serializer::deserialize( const nlohmann::json &			   p_json,
 								  const std::tuple<uint, uint, uint> & p_version,
-								  Setting &							   p_setting ) const
+								  App::Application::Setting &		   p_setting ) const
 	{
-		const Style::SYMBOL_DISPLAY_MODE symbolDisplayMode
-			= _get<Style::SYMBOL_DISPLAY_MODE>( p_json, "SYMBOL_DISPLAY_MODE", Setting::SYMBOL_DISPLAY_MODE_DEFAULT );
+		const Style::SYMBOL_DISPLAY_MODE symbolDisplayMode = _get<Style::SYMBOL_DISPLAY_MODE>(
+			p_json, "SYMBOL_DISPLAY_MODE", VTX::App::Application::Setting::SYMBOL_DISPLAY_MODE_DEFAULT );
 		p_setting.setSymbolDisplayMode(
 			Style::SYMBOL_DISPLAY_MODE( int( symbolDisplayMode ) % int( Style::SYMBOL_DISPLAY_MODE::COUNT ) ) );
 
-		p_setting.setWindowFullscreen( _get<bool>( p_json, "WINDOW_FULLSCREEN", Setting::WINDOW_FULLSCREEN_DEFAULT ) );
+		p_setting.setWindowFullscreen(
+			_get<bool>( p_json, "WINDOW_FULLSCREEN", VTX::App::Application::Setting::WINDOW_FULLSCREEN_DEFAULT ) );
 
-		p_setting.setActivateRenderer( _get<bool>( p_json, "ACTIVE_RENDERER", Setting::ACTIVE_RENDERER_DEFAULT ) );
-		p_setting.setForceRenderer( _get<bool>( p_json, "FORCE_RENDERER", Setting::FORCE_RENDERER_DEFAULT ) );
+		p_setting.setActivateRenderer(
+			_get<bool>( p_json, "ACTIVE_RENDERER", VTX::App::Application::Setting::ACTIVE_RENDERER_DEFAULT ) );
+		p_setting.setForceRenderer(
+			_get<bool>( p_json, "FORCE_RENDERER", VTX::App::Application::Setting::FORCE_RENDERER_DEFAULT ) );
 
 		p_setting.setTmpRepresentationDefaultName( _get<std::string>( p_json, "REPRESENTATION" ) );
 		p_setting.setTmpRenderEffectPresetDefaultName( _get<std::string>( p_json, "RENDER_EFFECT_DEFAULT" ) );
 
-		p_setting.setVSync( _get<bool>( p_json, "ACTIVE_VSYNC", Setting::ACTIVE_VSYNC_DEFAULT ) );
+		p_setting.setVSync(
+			_get<bool>( p_json, "ACTIVE_VSYNC", VTX::App::Application::Setting::ACTIVE_VSYNC_DEFAULT ) );
 
-		p_setting.setSnapshotFormat(
-			_getEnum<IO::Struct::ImageExport::Format>( p_json, "SNAPSHOT_FORMAT", Setting::SNAPSHOT_FORMAT_DEFAULT ) );
+		p_setting.setSnapshotFormat( _getEnum<IO::Struct::ImageExport::Format>(
+			p_json, "SNAPSHOT_FORMAT", VTX::App::Application::Setting::SNAPSHOT_FORMAT_DEFAULT ) );
 		p_setting.setSnapshotBackgroundOpacity(
-			_get<float>( p_json, "BACKGROUND_OPACITY", Setting::BACKGROUND_OPACITY_DEFAULT ) );
-		p_setting.setSnapshotQuality( _get<float>( p_json, "SNAPSHOT_QUALITY", Setting::SNAPSHOT_QUALITY_DEFAULT ) );
+			_get<float>( p_json, "BACKGROUND_OPACITY", VTX::App::Application::Setting::BACKGROUND_OPACITY_DEFAULT ) );
+		p_setting.setSnapshotQuality(
+			_get<float>( p_json, "SNAPSHOT_QUALITY", VTX::App::Application::Setting::SNAPSHOT_QUALITY_DEFAULT ) );
 		p_setting.setSnapshotResolution( _getEnum<IO::Struct::ImageExport::RESOLUTION>(
-			p_json, "BACKGROUND_RESOLUTION", Setting::SNAPSHOT_RESOLUTION_DEFAULT ) );
+			p_json, "BACKGROUND_RESOLUTION", VTX::App::Application::Setting::SNAPSHOT_RESOLUTION_DEFAULT ) );
 
-		p_setting.setCameraFOV( _get<float>( p_json, "CAMERA_FOV", Setting::CAMERA_FOV_DEFAULT ) );
-		p_setting.setCameraNearClip( _get<float>( p_json, "CAMERA_NEAR_CLIP", Setting::CAMERA_NEAR_DEFAULT ) );
-		p_setting.setCameraFarClip( _get<float>( p_json, "CAMERA_FAR_CLIP", Setting::CAMERA_FAR_DEFAULT ) );
-		p_setting.setAA( _get<bool>( p_json, "CAMERA_AA", Setting::ACTIVE_AA_DEFAULT ) );
-		p_setting.setCameraPerspectiveProjection(
-			_get<bool>( p_json, "CAMERA_PERSPECTIVE_PROJECTION", Setting::CAMERA_PERSPECTIVE_DEFAULT ) );
+		p_setting.setCameraFOV(
+			_get<float>( p_json, "CAMERA_FOV", VTX::App::Application::Setting::CAMERA_FOV_DEFAULT ) );
+		p_setting.setCameraNearClip(
+			_get<float>( p_json, "CAMERA_NEAR_CLIP", VTX::App::Application::Setting::CAMERA_NEAR_DEFAULT ) );
+		p_setting.setCameraFarClip(
+			_get<float>( p_json, "CAMERA_FAR_CLIP", VTX::App::Application::Setting::CAMERA_FAR_DEFAULT ) );
+		p_setting.setAA( _get<bool>( p_json, "CAMERA_AA", VTX::App::Application::Setting::ACTIVE_AA_DEFAULT ) );
+		p_setting.setCameraPerspectiveProjection( _get<bool>(
+			p_json, "CAMERA_PERSPECTIVE_PROJECTION", VTX::App::Application::Setting::CAMERA_PERSPECTIVE_DEFAULT ) );
 
 		p_setting.setTranslationSpeed(
-			_get<float>( p_json, "CONTROLLER_TRANSLATION_SPEED", Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT ) );
+			_get<float>( p_json,
+						 "CONTROLLER_TRANSLATION_SPEED",
+						 VTX::App::Application::Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT ) );
 		p_setting.setAccelerationSpeedFactor(
-			_get<float>( p_json, "CONTROLLER_ACCELERATION_FACTOR", Setting::CONTROLLER_ACCELERATION_FACTOR_DEFAULT ) );
+			_get<float>( p_json,
+						 "CONTROLLER_ACCELERATION_FACTOR",
+						 VTX::App::Application::Setting::CONTROLLER_ACCELERATION_FACTOR_DEFAULT ) );
 		p_setting.setDecelerationSpeedFactor(
-			_get<float>( p_json, "CONTROLLER_DECELERATION_FACTOR", Setting::CONTROLLER_DECELERATION_FACTOR_DEFAULT ) );
-		p_setting.setRotationSpeed(
-			_get<float>( p_json, "CONTROLLER_ROTATION_SPEED", Setting::CONTROLLER_ROTATION_SPEED_DEFAULT ) );
-		p_setting.setYAxisInverted(
-			_get<bool>( p_json, "CONTROLLER_Y_AXIS_INVERTED", Setting::CONTROLLER_Y_AXIS_INVERTED ) );
+			_get<float>( p_json,
+						 "CONTROLLER_DECELERATION_FACTOR",
+						 VTX::App::Application::Setting::CONTROLLER_DECELERATION_FACTOR_DEFAULT ) );
+		p_setting.setRotationSpeed( _get<float>(
+			p_json, "CONTROLLER_ROTATION_SPEED", VTX::App::Application::Setting::CONTROLLER_ROTATION_SPEED_DEFAULT ) );
+		p_setting.setYAxisInverted( _get<bool>(
+			p_json, "CONTROLLER_Y_AXIS_INVERTED", VTX::App::Application::Setting::CONTROLLER_Y_AXIS_INVERTED ) );
 
 		p_setting.setControllerElasticityActive(
-			_get<bool>( p_json, "ACTIVE_CONTROLLER_ELASTICITY", Setting::CONTROLLER_ELASTICITY_ACTIVE_DEFAULT ) );
+			_get<bool>( p_json,
+						"ACTIVE_CONTROLLER_ELASTICITY",
+						VTX::App::Application::Setting::CONTROLLER_ELASTICITY_ACTIVE_DEFAULT ) );
 		p_setting.setControllerElasticityFactor(
-			_get<float>( p_json, "CONTROLLER_ELASTICITY_FACTOR", Setting::CONTROLLER_ELASTICITY_FACTOR_DEFAULT ) );
+			_get<float>( p_json,
+						 "CONTROLLER_ELASTICITY_FACTOR",
+						 VTX::App::Application::Setting::CONTROLLER_ELASTICITY_FACTOR_DEFAULT ) );
 
 		p_setting.setDefaultTrajectorySpeed(
-			_get<int>( p_json, "DEFAULT_TRAJECTORY_SPEED", Setting::DEFAULT_TRAJECTORY_SPEED ) );
+			_get<int>( p_json, "DEFAULT_TRAJECTORY_SPEED", VTX::App::Application::Setting::DEFAULT_TRAJECTORY_SPEED ) );
 		p_setting.setDefaultTrajectoryPlayMode( _getEnum<App::Component::Chemistry::PlayMode>(
-			p_json, "DEFAULT_TRAJECTORY_PLAY_MODE", Setting::DEFAULT_TRAJECTORY_PLAY_MODE ) );
+			p_json, "DEFAULT_TRAJECTORY_PLAY_MODE", VTX::App::Application::Setting::DEFAULT_TRAJECTORY_PLAY_MODE ) );
 
-		p_setting.setCheckVTXUpdateAtLaunch(
-			_get<bool>( p_json, "CHECK_VTX_UPDATE_AT_LAUNCH", Setting::CHECK_VTX_UPDATE_DEFAULT ) );
+		p_setting.setCheckVTXUpdateAtLaunch( _get<bool>(
+			p_json, "CHECK_VTX_UPDATE_AT_LAUNCH", VTX::App::Application::Setting::CHECK_VTX_UPDATE_DEFAULT ) );
 
-		p_setting.activatePortableSave(
-			_get<bool>( p_json, "PORTABLE_SAVE_ACTIVATED", Setting::PORTABLE_SAVE_ACTIVATED_DEFAULT ) );
+		p_setting.activatePortableSave( _get<bool>(
+			p_json, "PORTABLE_SAVE_ACTIVATED", VTX::App::Application::Setting::PORTABLE_SAVE_ACTIVATED_DEFAULT ) );
 
-		p_setting.setSelectionGranularity(
-			_getEnum( p_json, "SELECTION_GRANULARITY", Setting::SELECTION_GRANULARITY_DEFAULT ) );
+		p_setting.setSelectionGranularity( _getEnum(
+			p_json, "SELECTION_GRANULARITY", VTX::App::Application::Setting::SELECTION_GRANULARITY_DEFAULT ) );
 
 		const std::vector<std::string> representationNamePerCategory = _get<std::vector<std::string>>(
-			p_json, "DEFAULT_REPRESENTATION_PER_CATEGORY", Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_NAME );
+			p_json,
+			"DEFAULT_REPRESENTATION_PER_CATEGORY",
+			VTX::App::Application::Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_NAME );
 
 		const int categoryCount = int( App::Internal::ChemDB::Category::TYPE::COUNT );
 		if ( representationNamePerCategory.size() == categoryCount )
@@ -975,7 +1012,7 @@ namespace VTX::IO
 			if ( p_representation.hasToDrawRibbon() )
 			{
 				p_representation.setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-					p_json, "SS_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
+					p_json, "SS_COLOR_MODE", VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 			}
 		}
 	}
@@ -990,7 +1027,7 @@ namespace VTX::IO
 			if ( p_representation.getData().hasToDrawRibbon() )
 			{
 				p_representation.getData().setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-					p_json, "SS_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
+					p_json, "SS_COLOR_MODE", VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 			}
 		}
 	}

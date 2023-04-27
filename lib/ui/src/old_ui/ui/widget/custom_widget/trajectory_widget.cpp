@@ -5,7 +5,7 @@
 #include <QVBoxLayout>
 #include <app/action/molecule.hpp>
 #include <app/component/chemistry/enum_trajectory.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -48,7 +48,7 @@ namespace VTX::UI::Widget::CustomWidget
 		speedLabel->setText( "Speed" );
 		_speedWidget = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldSliderWidget>(
 			this, "trajectory_speed" );
-		_speedWidget->setMinMax( Setting::MIN_TRAJECTORY_SPEED, Setting::MAX_TRAJECTORY_SPEED );
+		_speedWidget->setMinMax( VTX::App::Application::Setting::MIN_TRAJECTORY_SPEED, VTX::App::Application::Setting::MAX_TRAJECTORY_SPEED );
 
 		// QLabel * playRangeLabel = new QLabel( this );
 		// playRangeLabel->setText( "Play range" );

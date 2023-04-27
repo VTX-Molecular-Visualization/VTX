@@ -4,7 +4,7 @@
 #include "app/core/model/base_model.hpp"
 #include "app/old_app/generic/base_scene_item.hpp"
 #include "app/old_app/path/path_enum.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include <util/types.hpp>
 #include <vector>
 
@@ -51,9 +51,9 @@ namespace VTX
 		  private:
 			std::string					  _name				 = "";
 			VectorViewpointPtr			  _viewpoints		 = VectorViewpointPtr();
-			VTX::Path::DURATION_MODE	  _modeDuration		 = Setting::DEFAULT_PATH_DURATION_MODE;
-			VTX::Path::INTERPOLATION_MODE _modeInterpolation = Setting::DEFAULT_PATH_INTERPOLATION_MODE;
-			float						  _duration			 = Setting::PATH_DURATION_DEFAULT;
+			VTX::Path::DURATION_MODE	  _modeDuration		 = VTX::App::Application::Setting::DEFAULT_PATH_DURATION_MODE;
+			VTX::Path::INTERPOLATION_MODE _modeInterpolation = VTX::App::Application::Setting::DEFAULT_PATH_INTERPOLATION_MODE;
+			float						  _duration			 = VTX::App::Application::Setting::PATH_DURATION_DEFAULT;
 			bool						  _isLooping		 = false;
 
 			Path();

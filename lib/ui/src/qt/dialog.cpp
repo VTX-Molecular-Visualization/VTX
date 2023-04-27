@@ -27,7 +27,7 @@ namespace VTX::UI::QT
 	// bool Dialog::openExportImageDialog( const IO::Struct::ImageExport & p_exportData )
 	//{
 	// QString * const defaultFilter = new QString( Util::Filesystem::getImageExportDefaultFilter().c_str() );
-	// const QString	defaultPath	  = Setting::getLastExportedImageFolder();
+	// const QString	defaultPath	  = VTX::App::Application::Setting::getLastExportedImageFolder();
 
 	// const QString filepath = QFileDialog::getSaveFileName(
 	//	_getMainWindow(), "Export image", defaultPath, Util::Filesystem::IMAGE_EXPORT_EXTENSIONS, defaultFilter );
@@ -37,7 +37,7 @@ namespace VTX::UI::QT
 	//	const FilePath path		   = FilePath( filepath.toStdString() );
 	//	const FilePath directoryPath = Util::Filesystem::getParentDir( path );
 
-	//	Setting::saveLastExportedImageFolder( QString::fromStdString( directoryPath.path() ) );
+	//	VTX::App::Application::Setting::saveLastExportedImageFolder( QString::fromStdString( directoryPath.path() ) );
 	//	VTX_ACTION(
 	//		new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, filepath.toStdString(), p_exportData ) );
 

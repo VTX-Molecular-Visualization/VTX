@@ -299,7 +299,7 @@ namespace VTX::App::Component::Chemistry
 				if ( residue == nullptr )
 					continue;
 
-				Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode = Setting::SS_COLOR_MODE_DEFAULT;
+				Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode = VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT;
 				if ( residue->getRepresentation()->hasToDrawRibbon() )
 				{
 					colorMode = residue->getRepresentation()->getRibbonData().colorMode;

@@ -10,7 +10,7 @@
 #include <app/action/setting.hpp>
 #include <app/event/global.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 #include <app/component/chemistry/enum_trajectory.hpp>
 
 namespace VTX::UI::Widget::Settings
@@ -24,11 +24,11 @@ namespace VTX::UI::Widget::Settings
 	{
 		if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> & castedEvent
-				= static_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> &>(
+			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> & castedEvent
+				= static_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &>(
 					p_event );
 
-			if ( castedEvent.get().find( Setting::PARAMETER::DEFAULT_REPRESENTATION_PER_CATEGORY )
+			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::DEFAULT_REPRESENTATION_PER_CATEGORY )
 				 != castedEvent.get().end() )
 			{
 				_refreshData();

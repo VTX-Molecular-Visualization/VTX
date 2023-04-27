@@ -106,7 +106,7 @@ namespace VTX::View::UI::Widget::Representation
 	void RepresentationLibraryView::_onAddPreset() const
 	{
 		VTX_ACTION(
-			new App::Action::Representation::AddNewPresetInLibrary( Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
+			new App::Action::Representation::AddNewPresetInLibrary( VTX::App::Application::Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
 	}
 	void RepresentationLibraryView::_onCopyPreset() const
 	{

@@ -39,8 +39,8 @@ namespace VTX
 			virtual void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 		  private:
-			ID::VTX_ID _cameraController = Setting::CONTROLLER_MODE_DEFAULT;
-			ID::VTX_ID _pickerController = Setting::PICKER_MODE_DEFAULT;
+			ID::VTX_ID _cameraController = VTX::App::Application::Setting::CONTROLLER_MODE_DEFAULT;
+			ID::VTX_ID _pickerController = VTX::App::Application::Setting::PICKER_MODE_DEFAULT;
 		};
 	} // namespace State
 } // namespace VTX

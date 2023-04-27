@@ -1,7 +1,7 @@
 #include "app/old_app/util/bond_guessing/bond_recomputation.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/internal/chemdb/atom.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include <iostream>
 
 namespace VTX::Util::BondGuessing
@@ -212,7 +212,7 @@ namespace VTX::Util::BondGuessing
 
 	void BondRecomputation::recomputeBonds( chemfiles::Frame & p_frame, const VTX::Object3D::Helper::AABB & p_aabb )
 	{
-		CellList cellList = CellList( p_aabb, Setting::CELL_LIST_CUBE_SIZE );
+		CellList cellList = CellList( p_aabb, VTX::App::Application::Setting::CELL_LIST_CUBE_SIZE );
 
 		std::unordered_set<size_t> sulfurAtoms = std::unordered_set<size_t>();
 

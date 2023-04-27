@@ -1,5 +1,5 @@
 #include "app/model/label.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/style.hpp"
 
 namespace VTX::Model
@@ -8,7 +8,7 @@ namespace VTX::Model
 	{
 		const std::string *& namePtr = _getNamePtr();
 		namePtr						 = &_name;
-		_color						 = Setting::DEFAULT_LABEL_COLOR;
+		_color						 = VTX::App::Application::Setting::DEFAULT_LABEL_COLOR;
 	};
 	Label::Label() : Label( VTX::ID::Model::MODEL_LABEL ) {};
 

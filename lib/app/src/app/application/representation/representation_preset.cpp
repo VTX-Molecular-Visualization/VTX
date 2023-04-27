@@ -6,7 +6,7 @@
 #include "app/internal/chemdb/residue.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <util/logger.hpp>
 

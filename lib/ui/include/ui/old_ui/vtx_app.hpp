@@ -33,7 +33,7 @@ namespace VTX::UI
 } // namespace VTX::UI
 
 //
-//// #include <app/old_app/setting.hpp>
+//// #include <app/application/setting.hpp>
 // #include "state/state_machine.hpp"
 // #include <QElapsedTimer>
 // #include <QInputMethod>

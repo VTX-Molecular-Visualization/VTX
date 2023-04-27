@@ -10,7 +10,7 @@
 #include "app/event.hpp"
 #include "app/model/selection.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 
 namespace VTX::App::Application::Representation
 {
@@ -267,7 +267,7 @@ namespace VTX::App::Application::Representation
 		{
 			const int quickAccessCount = _getRepresentationWithQuickAccessCount();
 
-			if ( quickAccessCount >= Setting::MAX_QUICK_ACCESS_COUNT && _lastRepresentationQuickAccessed != nullptr )
+			if ( quickAccessCount >= VTX::App::Application::Setting::MAX_QUICK_ACCESS_COUNT && _lastRepresentationQuickAccessed != nullptr )
 				_lastRepresentationQuickAccessed->setQuickAccess( false );
 		}
 
@@ -349,7 +349,7 @@ namespace VTX::App::Application::Representation
 		const RepresentationLibrary & representations = RepresentationLibrary::get();
 
 		const RepresentationPreset * const representation
-			= representations.getRepresentationByName( Setting::REPRESENTATION_DEFAULT_NAME );
+			= representations.getRepresentationByName( VTX::App::Application::Setting::REPRESENTATION_DEFAULT_NAME );
 
 		if ( representation == nullptr )
 			return 0;

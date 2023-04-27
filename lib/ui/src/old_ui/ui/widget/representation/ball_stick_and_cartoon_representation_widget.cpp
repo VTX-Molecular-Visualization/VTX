@@ -3,7 +3,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <app/action/instantiated_representation.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 
 namespace VTX::UI::Widget::Representation
 {

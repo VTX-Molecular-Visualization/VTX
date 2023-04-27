@@ -3,9 +3,9 @@
 
 #include "app/application/render_effect/_fwd.hpp"
 #include "app/application/representation/_fwd.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/define.hpp"
 #include "app/old_app/generic/base_auto_delete.hpp"
-#include "app/old_app/setting.hpp"
 #include "app/old_app/spec.hpp"
 #include "stat.hpp"
 // #include <QElapsedTimer>
@@ -51,8 +51,8 @@ namespace VTX
 		inline const UI::MainWindow & getMainWindow() const { throw NotImplementedException(); }
 		inline UI::MainWindow &		  getMainWindow() { throw NotImplementedException(); }
 
-		inline Setting &												 getSetting() { return _setting; }
-		inline const Setting &											 getSetting() const { return _setting; }
+		inline App::Application::Setting &								 getSetting() { return _setting; }
+		inline const App::Application::Setting &						 getSetting() const { return _setting; }
 		inline Stat &													 getStat() { return _stat; }
 		inline const Stat &												 getStat() const { return _stat; }
 		inline Spec &													 getSpec() { return _spec; }
@@ -94,7 +94,7 @@ namespace VTX
 		// QElapsedTimer _tickTimer   = QElapsedTimer();
 		// uint _tickCounter = 0u;
 
-		Setting													  _setting				 = Setting();
+		App::Application::Setting								  _setting				 = App::Application::Setting();
 		Stat													  _stat					 = Stat();
 		Spec													  _spec					 = Spec();
 		UI::MainWindow *										  _mainWindow			 = nullptr;
@@ -115,7 +115,7 @@ namespace VTX
 	};
 
 	App::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT();
-	inline Setting &									 VTX_SETTING() { return VTXApp::get().getSetting(); }
+	inline App::Application::Setting &					 VTX_SETTING() { return VTXApp::get().getSetting(); }
 	inline Stat &										 VTX_STAT() { return VTXApp::get().getStat(); }
 	inline Spec &										 VTX_SPEC() { return VTXApp::get().getSpec(); }
 

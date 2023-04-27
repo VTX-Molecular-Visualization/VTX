@@ -1,5 +1,5 @@
 #include "ui/old_ui/ui/widget/representation/ball_and_stick_representation_widget.hpp"
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 
 namespace VTX::UI::Widget::Representation
 {

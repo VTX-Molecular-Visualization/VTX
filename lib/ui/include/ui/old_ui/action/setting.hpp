@@ -78,12 +78,12 @@ namespace VTX::UI::Action::Setting
 	class ApplyAllSettings : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
-		ApplyAllSettings( VTX::Setting & p_setting ) : _setting( p_setting ) {}
+		ApplyAllSettings( VTX::App::Application::Setting & p_setting ) : _setting( p_setting ) {}
 
 		virtual void execute() override;
 
 	  private:
-		VTX::Setting _setting;
+		VTX::App::Application::Setting _setting;
 	};
 } // namespace VTX::UI::Action::Setting
 

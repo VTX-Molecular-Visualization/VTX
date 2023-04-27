@@ -8,7 +8,7 @@
 #include <QVBoxLayout>
 
 #include <app/action/renderer.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 #include <app/core/view/callback_view.hpp>
 
 namespace VTX::UI::Widget::Settings
@@ -36,26 +36,26 @@ namespace VTX::UI::Widget::Settings
 
 		_ssaoIntensity
 			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( viewport, "ssaoIntensity" );
-		_ssaoIntensity->setMinMax( Setting::AO_INTENSITY_MIN, Setting::AO_INTENSITY_MAX );
+		_ssaoIntensity->setMinMax( VTX::App::Application::Setting::AO_INTENSITY_MIN, VTX::App::Application::Setting::AO_INTENSITY_MAX );
 		_ssaoBlurSize
 			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( viewport, "ssaoBlurSize" );
-		_ssaoBlurSize->setMinMax( Setting::AO_BLUR_SIZE_MIN, Setting::AO_BLUR_SIZE_MAX );
+		_ssaoBlurSize->setMinMax( VTX::App::Application::Setting::AO_BLUR_SIZE_MIN, VTX::App::Application::Setting::AO_BLUR_SIZE_MAX );
 
 		_enableOutline = new QCheckBox( viewport );
 		_outlineThickness
 			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( viewport, "outlineThickness" );
-		_outlineThickness->setMinMax( Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );
+		_outlineThickness->setMinMax( VTX::App::Application::Setting::OUTLINE_THICKNESS_MIN, VTX::App::Application::Setting::OUTLINE_THICKNESS_MAX );
 		_outlineSensivity
 			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( viewport, "outlineSensivity" );
-		_outlineSensivity->setMinMax( Setting::OUTLINE_SENSIVITY_MIN, Setting::OUTLINE_SENSIVITY_MAX );
+		_outlineSensivity->setMinMax( VTX::App::Application::Setting::OUTLINE_SENSIVITY_MIN, VTX::App::Application::Setting::OUTLINE_SENSIVITY_MAX );
 		_outlineColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( viewport, "outlineColor" );
 
 		_enableFog = new QCheckBox( viewport );
 		_nearFog = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldDraggableWidget>( viewport, "nearFog" );
-		_nearFog->setMinMax( Setting::FOG_NEAR_MIN, Setting::FOG_NEAR_MAX );
+		_nearFog->setMinMax( VTX::App::Application::Setting::FOG_NEAR_MIN, VTX::App::Application::Setting::FOG_NEAR_MAX );
 		_nearFog->setLabel( "Near" );
 		_farFog = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldDraggableWidget>( viewport, "farFog" );
-		_farFog->setMinMax( Setting::FOG_FAR_MIN, Setting::FOG_FAR_MAX );
+		_farFog->setMinMax( VTX::App::Application::Setting::FOG_FAR_MIN, VTX::App::Application::Setting::FOG_FAR_MAX );
 		_farFog->setLabel( "Far" );
 		_fogDensity = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( viewport, "fogDensity" );
 		_fogDensity->setMinMax( 0.0f, 1.0f );
