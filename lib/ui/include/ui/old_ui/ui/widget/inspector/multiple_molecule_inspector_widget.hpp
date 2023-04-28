@@ -66,7 +66,7 @@ namespace VTX::UI::Widget::Inspector
 		CustomWidget::QLabelMultiField * _nbResiduesLabel = nullptr;
 		CustomWidget::QLabelMultiField * _nbAtomsLabel	  = nullptr;
 
-		void _onTransformChange( const Math::Transform &,
+		void _onTransformChange( const App::Internal::Math::Transform &,
 								 const Generic::BaseTransformable::TransformComposantMask & ) const;
 		void _onPositionDragged( const Vec3f & ) const;
 		void _onRotationDragged( const Vec3f & ) const;

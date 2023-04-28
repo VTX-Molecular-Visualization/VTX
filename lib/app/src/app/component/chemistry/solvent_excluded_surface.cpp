@@ -1,17 +1,17 @@
 #include "app/component/chemistry/solvent_excluded_surface.hpp"
+#include "app/application/scene.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/category.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/component/object3d/helper/aabb.hpp"
+#include "app/internal/algorithm/marching_cube.hpp"
 #include "app/internal/chemdb/atom.hpp"
 #include "app/internal/worker/gpu_buffer_initializer.hpp"
 #include "app/internal/worker/gpu_computer.hpp"
 #include "app/old_app/custom/iterator.hpp"
-#include "app/old_app/math/marching_cube.hpp"
-#include "app/component/object3d/helper/aabb.hpp"
-#include "app/application/scene.hpp"
-#include "app/application/selection/selection_manager.hpp"
 #include "app/old_app/view/d3/triangle.hpp"
 #include "app/worker.hpp"
 #include <numeric>
@@ -30,7 +30,7 @@ namespace VTX::App::Component::Chemistry
 	{
 	}
 
-	const Math::Transform & SolventExcludedSurface::getTransform() const
+	const App::Internal::Math::Transform & SolventExcludedSurface::getTransform() const
 	{
 		return _category->getMoleculePtr()->getTransform();
 	}
@@ -67,7 +67,8 @@ namespace VTX::App::Component::Chemistry
 		const Vec3f gridSize	 = gridMax - gridMin;
 		Vec3i		atomGridSize = Vec3i( Util::Math::ceil( gridSize / atomGridCellSize ) );
 
-	 App::Component::Object3D::Helper::Grid gridAtoms = App::Component::Object3D::Helper::Grid( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
+		App::Component::Object3D::Helper::Grid gridAtoms
+			= App::Component::Object3D::Helper::Grid( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
 
 		std::vector<std::vector<uint>> atomGridDataTmp
 			= std::vector<std::vector<uint>>( gridAtoms.getCellCount(), std::vector<uint>() );
@@ -118,8 +119,9 @@ namespace VTX::App::Component::Chemistry
 		chrono2.start();
 
 		// Compute SES grid and compute SDF.
-		Vec3i				   sesGridSize = Vec3i( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
-	 App::Component::Object3D::Helper::Grid gridSES	   = App::Component::Object3D::Helper::Grid( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
+		Vec3i								   sesGridSize = Vec3i( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
+		App::Component::Object3D::Helper::Grid gridSES
+			= App::Component::Object3D::Helper::Grid( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
 
 		/////////////////////
 		// Worker: create SDF.
@@ -285,7 +287,7 @@ namespace VTX::App::Component::Chemistry
 		std::vector<uint> trianglesPerAtom( atomPositions.size(), 0 );
 		Buffer			  bufferTrianglesPerAtom( trianglesPerAtom );
 		// Input.
-		Buffer bufferTriangleTable( 256 * 16 * sizeof( int ), Math::MarchingCube::TRIANGLE_TABLE );
+		Buffer bufferTriangleTable( 256 * 16 * sizeof( int ), Internal::Algorithm::MarchingCube::TRIANGLE_TABLE );
 
 		bufferSesGridData.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 0 );
 		bufferPositionsTmp.bind( Buffer::Target::SHADER_STORAGE_BUFFER, 1 );

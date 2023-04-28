@@ -47,13 +47,13 @@ namespace VTX
 			_transformModifiedEvent();
 		}
 
-		void BaseTransformable::applyTransform( const Math::Transform & p_transform )
+		void BaseTransformable::applyTransform( const App::Internal::Math::Transform & p_transform )
 		{
 			_transform = p_transform;
 			_transformModifiedEvent();
 		}
 
-		void BaseTransformable::applyTransform( const Math::Transform &		 p_transform,
+		void BaseTransformable::applyTransform( const App::Internal::Math::Transform &		 p_transform,
 												const TransformComposantMask p_mask )
 		{
 			if ( p_mask == TransformComposantMask::TRANSFORM )

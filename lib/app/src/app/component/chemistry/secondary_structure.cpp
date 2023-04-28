@@ -275,7 +275,7 @@ namespace VTX::App::Component::Chemistry
 
 	App::Component::Object3D::Helper::AABB & SecondaryStructure::getAABB() const { return _molecule->getAABB(); }
 
-	const Math::Transform & SecondaryStructure::getTransform() const { return _molecule->getTransform(); };
+	const App::Internal::Math::Transform & SecondaryStructure::getTransform() const { return _molecule->getTransform(); };
 
 	void SecondaryStructure::_computeAABB() const
 	{

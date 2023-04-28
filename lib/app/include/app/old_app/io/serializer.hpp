@@ -8,7 +8,7 @@
 #include "app/component/video/_fwd.hpp"
 #include "app/core/model/base_model.hpp"
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
-#include "app/old_app/math/transform.hpp"
+#include "app/internal/math/transform.hpp"
 #include <magic_enum.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -53,7 +53,7 @@ namespace VTX
 			nlohmann::json serialize( const App::Application::RenderEffect::RenderEffectPreset & ) const;
 
 			nlohmann::json serialize( const Color::Rgba & ) const;
-			nlohmann::json serialize( const Math::Transform & ) const;
+			nlohmann::json serialize( const App::Internal::Math::Transform & ) const;
 			template<typename T, glm::qualifier Q>
 			nlohmann::json serialize( const glm::vec<2, T, Q> & ) const;
 			template<typename T, glm::qualifier Q>
@@ -87,7 +87,7 @@ namespace VTX
 							  App::Application::RenderEffect::RenderEffectPreset & ) const;
 
 			void deserialize( const nlohmann::json &, Color::Rgba & ) const;
-			void deserialize( const nlohmann::json &, Math::Transform & ) const;
+			void deserialize( const nlohmann::json &, App::Internal::Math::Transform & ) const;
 			template<typename T, glm::qualifier Q>
 			void deserialize( const nlohmann::json &, glm::vec<2, T, Q> & ) const;
 			template<typename T, glm::qualifier Q>

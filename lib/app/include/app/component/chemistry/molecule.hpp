@@ -19,7 +19,7 @@
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/io/reader/prm.hpp"
 #include "app/old_app/io/reader/psf.hpp"
-#include "app/old_app/struct/range.hpp"
+#include "app/internal/math/range.hpp"
 #include <iostream>
 #include <map>
 #include <string>

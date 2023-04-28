@@ -1,6 +1,6 @@
 #include "app/old_app/util/chemfiles.hpp"
-#include "app/old_app/util/bond_guessing/bond_order_guessing.hpp"
-#include "app/old_app/util/bond_guessing/bond_recomputation.hpp"
+#include "app/internal/algorithm/bond_order_guessing.hpp"
+#include "app/internal/algorithm/bond_recomputation.hpp"
 
 namespace VTX::Util::Chemfiles
 {
@@ -22,17 +22,17 @@ namespace VTX::Util::Chemfiles
 
 	void recomputeBonds( chemfiles::Frame & p_frame, const App::Component::Object3D::Helper::AABB & p_aabb )
 	{
-		BondGuessing::BondRecomputation::recomputeBonds( p_frame, p_aabb );
+		App::Internal::Algorithm::BondRecomputation::recomputeBonds( p_frame, p_aabb );
 	}
 
 	void recomputeBondOrders( chemfiles::Frame & p_frame )
 	{
-		BondGuessing::BondOrderGuessing::recomputeBondOrders( p_frame );
+		App::Internal::Algorithm::BondOrderGuessing::recomputeBondOrders( p_frame );
 	}
 
 	bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame )
 	{
-		return BondGuessing::BondOrderGuessing::recomputeBondOrdersFromFile( p_frame );
+		return App::Internal::Algorithm::BondOrderGuessing::recomputeBondOrdersFromFile( p_frame );
 	}
 
 } // namespace VTX::Util::Chemfiles

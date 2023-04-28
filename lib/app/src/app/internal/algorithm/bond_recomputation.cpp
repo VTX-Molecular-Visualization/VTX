@@ -1,10 +1,10 @@
-#include "app/old_app/util/bond_guessing/bond_recomputation.hpp"
+#include "app/internal/algorithm/bond_recomputation.hpp"
+#include "app/application/setting.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/internal/chemdb/atom.hpp"
-#include "app/application/setting.hpp"
 #include <iostream>
 
-namespace VTX::Util::BondGuessing
+namespace VTX::App::Internal::Algorithm
 {
 	void BondRecomputation::CellList::addAtom( const size_t p_atomIndex, const chemfiles::Vector3D & p_position )
 	{
@@ -210,7 +210,8 @@ namespace VTX::Util::BondGuessing
 		}
 	}
 
-	void BondRecomputation::recomputeBonds( chemfiles::Frame & p_frame, const App::Component::Object3D::Helper::AABB & p_aabb )
+	void BondRecomputation::recomputeBonds( chemfiles::Frame &							   p_frame,
+											const App::Component::Object3D::Helper::AABB & p_aabb )
 	{
 		CellList cellList = CellList( p_aabb, VTX::App::Application::Setting::CELL_LIST_CUBE_SIZE );
 
@@ -350,4 +351,4 @@ namespace VTX::Util::BondGuessing
 		}
 	}
 
-} // namespace VTX::Util::BondGuessing
+} // namespace VTX::App::Internal::Algorithm

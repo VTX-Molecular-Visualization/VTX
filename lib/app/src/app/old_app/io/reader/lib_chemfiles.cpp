@@ -10,7 +10,7 @@
 #include "app/mvc.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/application/setting.hpp"
-#include "app/old_app/util/bond_guessing/bond_order_guessing.hpp"
+#include "app/internal/algorithm/bond_order_guessing.hpp"
 #include "app/old_app/util/chemfiles.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include <algorithm>

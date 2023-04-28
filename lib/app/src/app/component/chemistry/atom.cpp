@@ -44,7 +44,7 @@ namespace VTX::App::Component::Chemistry
 	const Vec3f Atom::getWorldPosition() const
 	{
 		const Vec3f &			localPosition = getLocalPosition();
-		const Math::Transform & transform	  = getMoleculePtr()->getTransform();
+		const App::Internal::Math::Transform & transform	  = getMoleculePtr()->getTransform();
 
 		const Vec4f worldPosition = transform.get() * Vec4f( localPosition, 1 );
 		return Vec3f( worldPosition.x, worldPosition.y, worldPosition.z );
@@ -59,7 +59,7 @@ namespace VTX::App::Component::Chemistry
 	const App::Component::Object3D::Helper::AABB Atom::getWorldAABB() const
 	{
 		const App::Component::Object3D::Helper::AABB aabb	   = getAABB();
-		const Math::Transform &		 transform = getMoleculePtr()->getTransform();
+		const App::Internal::Math::Transform &		 transform = getMoleculePtr()->getTransform();
 
 		const Vec4f worldPosition = transform.get() * Vec4f( aabb.centroid(), 1 );
 

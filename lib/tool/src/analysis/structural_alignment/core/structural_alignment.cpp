@@ -64,8 +64,8 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core
 				chrono.stop();
 				VTX_INFO( "Alignment computed in " + chrono.elapsedTimeStr() );
 
-				const Math::Transform transform
-					= Math::Transform( p_staticMolecule->getTransform().get() * result.transformationMatrix );
+				const App::Internal::Math::Transform transform
+					= App::Internal::Math::Transform( p_staticMolecule->getTransform().get() * result.transformationMatrix );
 
 				mobileMolecule->applyTransform( transform );
 

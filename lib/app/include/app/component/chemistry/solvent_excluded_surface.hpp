@@ -26,7 +26,7 @@ namespace VTX::App::Component::Chemistry
 
 		inline const Component::Chemistry::Category * const getCategory() const { return _category; }
 		inline const std::vector<Range> &					getAtomsToTriangles() const { return _atomsToTriangles; }
-		const Math::Transform &								getTransform() const override;
+		const App::Internal::Math::Transform &								getTransform() const override;
 
 		void refreshColors();
 		void refreshVisibilities();

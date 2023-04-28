@@ -37,7 +37,7 @@ namespace VTX::App::Component::Chemistry
 
 		void print() const;
 
-		const Math::Transform &					 getTransform() const override;
+		const App::Internal::Math::Transform &					 getTransform() const override;
 		App::Component::Object3D::Helper::AABB & getAABB() const override;
 
 	  protected:

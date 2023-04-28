@@ -7,7 +7,7 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/old_app/generic/base_auto_rotate.hpp"
 #include "app/old_app/generic/base_transformable.hpp"
-#include "app/old_app/math/transform.hpp"
+#include "app/internal/math/transform.hpp"
 #include <unordered_set>
 #include <util/types.hpp>
 #include <vector>
@@ -162,7 +162,7 @@ namespace VTX::App::Action::Transformable
 	{
 	  public:
 		explicit ApplyTransform( App::Component::Chemistry::Molecule &										  p_transformable,
-								 const Math::Transform &								  p_transform,
+								 const App::Internal::Math::Transform &								  p_transform,
 								 const Generic::BaseTransformable::TransformComposantMask p_mask
 								 = Generic::BaseTransformable::TransformComposantMask::TRANSFORM ) :
 			_transform( p_transform ),
@@ -171,7 +171,7 @@ namespace VTX::App::Action::Transformable
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit ApplyTransform( const std::unordered_set<App::Component::Chemistry::Molecule *> &			  p_transformables,
-								 const Math::Transform &								  p_transform,
+								 const App::Internal::Math::Transform &								  p_transform,
 								 const Generic::BaseTransformable::TransformComposantMask p_mask
 								 = Generic::BaseTransformable::TransformComposantMask::TRANSFORM ) :
 			_transform( p_transform ),
@@ -189,7 +189,7 @@ namespace VTX::App::Action::Transformable
 		virtual void execute() override;
 
 	  private:
-		const Math::Transform									 _transform;
+		const App::Internal::Math::Transform									 _transform;
 		const Generic::BaseTransformable::TransformComposantMask _mask;
 		std::vector<Generic::BaseTransformable *> _transformables = std::vector<Generic::BaseTransformable *>();
 	};

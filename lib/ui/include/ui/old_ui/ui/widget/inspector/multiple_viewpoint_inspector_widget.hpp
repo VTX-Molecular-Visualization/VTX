@@ -44,7 +44,7 @@ namespace VTX::UI::Widget::Inspector
 
 		void _resetFieldStates( const SectionFlag & p_flag );
 
-		void _onTransformChange( const Math::Transform & ) const;
+		void _onTransformChange( const App::Internal::Math::Transform & ) const;
 		void _onPositionDragged( const Vec3f & ) const;
 		void _onRotationDragged( const Vec3f & ) const;
 

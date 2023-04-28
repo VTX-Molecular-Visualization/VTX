@@ -1,4 +1,4 @@
-#include "app/old_app/util/bond_guessing/bond_order_guessing.hpp"
+#include "app/internal/algorithm/bond_order_guessing.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
@@ -7,7 +7,7 @@
 #include <optional>
 #include <sstream>
 
-namespace VTX::Util::BondGuessing
+namespace VTX::App::Internal::Algorithm
 {
 	namespace ChemDB = App::Internal::ChemDB;
 
@@ -1369,4 +1369,4 @@ namespace VTX::Util::BondGuessing
 		return Util::Molecule::getResidueBonds( p_residueSymbol );
 	}
 
-} // namespace VTX::Util::BondGuessing
+} // namespace VTX::App::Internal::Algorithm

@@ -184,7 +184,7 @@ namespace VTX::App::Component::Chemistry
 	const App::Component::Object3D::Helper::AABB Category::getWorldAABB() const
 	{
 		const App::Component::Object3D::Helper::AABB aabb	   = getAABB();
-		const Math::Transform &		 transform = getMoleculePtr()->getTransform();
+		const App::Internal::Math::Transform &		 transform = getMoleculePtr()->getTransform();
 
 	 App::Component::Object3D::Helper::AABB worldAabb   = App::Component::Object3D::Helper::AABB();
 		std::vector<Vec3f>	   aabbSummits = aabb.getSummits();

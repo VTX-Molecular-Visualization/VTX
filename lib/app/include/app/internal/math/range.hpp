@@ -1,10 +1,10 @@
-#ifndef __VTX_STRUCT_RANGE__
-#define __VTX_STRUCT_RANGE__
+#ifndef __VTX_APP_INTERNAL_MATH_RANGE__
+#define __VTX_APP_INTERNAL_MATH_RANGE__
 
 #include <util/types.hpp>
 #include <utility>
 
-namespace VTX::Struct
+namespace VTX::App::Internal::Math
 {
 	class Range
 	{
@@ -25,6 +25,6 @@ namespace VTX::Struct
 		uint _start;
 		uint _count;
 	};
-} // namespace VTX::Struct
+} // namespace VTX::App::Internal::Math
 
 #endif

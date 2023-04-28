@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_BOND_GUESSING_RECOMPUTATION__
-#define __VTX_UTIL_BOND_GUESSING_RECOMPUTATION__
+#ifndef __VTX_APP_INTERNAL_ALGORITHM_BOND_RECOMPUTATION__
+#define __VTX_APP_INTERNAL_ALGORITHM_BOND_RECOMPUTATION__
 
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/object3d/helper/aabb.hpp"
@@ -11,7 +11,7 @@
 #include <string>
 #include <unordered_set>
 
-namespace VTX::Util::BondGuessing
+namespace VTX::App::Internal::Algorithm
 {
 	class BondRecomputation
 	{
@@ -82,6 +82,6 @@ namespace VTX::Util::BondGuessing
 										  const CellList &					 p_cellList,
 										  const std::unordered_set<size_t> & p_sulphurAtoms );
 	};
-} // namespace VTX::Util::BondGuessing
+} // namespace VTX::App::Internal::Algorithm
 
 #endif

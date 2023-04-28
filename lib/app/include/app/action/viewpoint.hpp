@@ -5,7 +5,7 @@
 #include "app/component/render/camera.hpp"
 #include "app/component/object3d/viewpoint.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/old_app/math/transform.hpp"
+#include "app/internal/math/transform.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/application/scene.hpp"
 #include <string>
@@ -87,14 +87,14 @@ namespace VTX::App::Action::Viewpoint
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
-		explicit Relocate( App::Component::Object3D::Viewpoint & p_viewpoint, const Math::Transform & p_transform ) :
+		explicit Relocate( App::Component::Object3D::Viewpoint & p_viewpoint, const App::Internal::Math::Transform & p_transform ) :
 			_viewpoints { &p_viewpoint }, _position( p_transform.getTranslationVector() ),
 			_rotation( p_transform.getRotation() )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit Relocate( std::vector<App::Component::Object3D::Viewpoint *> & p_viewpoints,
-						   const Math::Transform &								p_transform ) :
+						   const App::Internal::Math::Transform &								p_transform ) :
 			_viewpoints( p_viewpoints ),
 			_position( p_transform.getTranslationVector() ), _rotation( p_transform.getRotation() )
 		{

@@ -22,7 +22,7 @@
 #include <app/application/selection/selection_manager.hpp>
 #include <app/event/global.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/struct/range.hpp>
+#include <app/internal/math/range.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
 

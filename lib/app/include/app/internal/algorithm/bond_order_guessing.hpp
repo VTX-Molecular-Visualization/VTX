@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_BOND_GUESSING_ORDER__
-#define __VTX_UTIL_BOND_GUESSING_ORDER__
+#ifndef __VTX_APP_INTERNAL_ALGORITHM_BOND_ORDER_GUESSING__
+#define __VTX_APP_INTERNAL_ALGORITHM_BOND_ORDER_GUESSING__
 
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/internal/chemdb/bond.hpp"
@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace VTX::Util::BondGuessing
+namespace VTX::App::Internal::Algorithm
 {
 	class BondOrderGuessing
 	{
@@ -163,6 +163,6 @@ namespace VTX::Util::BondGuessing
 								   const bool								p_force = false );
 	};
 
-} // namespace VTX::Util::BondGuessing
+} // namespace VTX::App::Internal::Algorithm
 
 #endif

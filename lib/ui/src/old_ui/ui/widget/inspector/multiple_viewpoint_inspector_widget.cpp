@@ -83,8 +83,8 @@ namespace VTX::UI::Widget::Inspector
 				{
 					if ( !_transformWidget->hasDifferentData() )
 					{
-						Math::Transform viewpointTransform
-							= Math::Transform( viewpoint->getPosition(), viewpoint->getRotation(), VEC3F_XYZ );
+					 App::Internal::Math::Transform viewpointTransform
+							= App::Internal::Math::Transform( viewpoint->getPosition(), viewpoint->getRotation(), VEC3F_XYZ );
 						_transformWidget->updateWithNewValue( viewpointTransform );
 					}
 				}
@@ -118,7 +118,7 @@ namespace VTX::UI::Widget::Inspector
 		}
 	}
 
-	void MultipleViewpointWidget::_onTransformChange( const Math::Transform & p_transform ) const
+	void MultipleViewpointWidget::_onTransformChange( const App::Internal::Math::Transform & p_transform ) const
 	{
 		if ( !signalsBlocked() )
 		{

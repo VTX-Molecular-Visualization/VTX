@@ -134,7 +134,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_scaleWidget->resetState();
 	}
 
-	void TransformWidget::updateWithNewValue( const Math::Transform & p_value )
+	void TransformWidget::updateWithNewValue( const App::Internal::Math::Transform & p_value )
 	{
 		if ( _state == MultiDataField::State::Uninitialized )
 			_transform = p_value;

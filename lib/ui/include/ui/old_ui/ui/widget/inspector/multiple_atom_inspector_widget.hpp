@@ -9,7 +9,7 @@
 #include "ui/old_ui/ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include <QLabel>
 #include <QWidget>
-#include <app/old_app/math/transform.hpp>
+#include "app/internal/math/transform.hpp"
 #include <app/component/chemistry/atom.hpp>
 #include <app/core/view/base_view.hpp>
 #include <app/core/view/callback_view.hpp>
@@ -89,7 +89,7 @@ namespace VTX::UI::Widget::Inspector
 		CustomWidget::QLabelMultiField * _genericNameLabel = nullptr;
 		QLabel *						 _bondInfoLabel	   = nullptr;
 
-		Math::Transform _transformCache = Math::Transform();
+	 App::Internal::Math::Transform _transformCache = App::Internal::Math::Transform();
 
 		MoleculeViewContainer _moleculeViewerContainer = MoleculeViewContainer( this );
 

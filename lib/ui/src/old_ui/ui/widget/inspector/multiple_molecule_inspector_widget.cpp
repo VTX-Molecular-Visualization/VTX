@@ -282,7 +282,7 @@ namespace VTX::UI::Widget::Inspector
 	}
 
 	void MultipleMoleculeWidget::_onTransformChange(
-		const Math::Transform &									   p_transform,
+		const App::Internal::Math::Transform &									   p_transform,
 		const Generic::BaseTransformable::TransformComposantMask & p_mask ) const
 	{
 		if ( !signalsBlocked() )

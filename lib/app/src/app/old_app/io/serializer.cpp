@@ -240,7 +240,7 @@ namespace VTX::IO
 		return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() } };
 	}
 
-	nlohmann::json Serializer::serialize( const Math::Transform & p_transform ) const
+	nlohmann::json Serializer::serialize( const App::Internal::Math::Transform & p_transform ) const
 	{
 		return { { "POSITION", serialize( p_transform.getTranslationVector() ) },
 				 { "ROTATION", serialize( p_transform.getEulerAngles() ) },
@@ -490,7 +490,7 @@ namespace VTX::IO
 	{
 		if ( p_json.contains( "TRANSFORM" ) )
 		{
-			Math::Transform transform;
+		 App::Internal::Math::Transform transform;
 			deserialize( p_json.at( "TRANSFORM" ), transform );
 			p_molecule.applyTransform( transform );
 		}
@@ -777,7 +777,7 @@ namespace VTX::IO
 		p_color.setB( _get<float>( p_json, "B" ) );
 	}
 
-	void Serializer::deserialize( const nlohmann::json & p_json, Math::Transform & p_transform ) const
+	void Serializer::deserialize( const nlohmann::json & p_json, App::Internal::Math::Transform & p_transform ) const
 	{
 		if ( p_json.contains( "POSITION" ) )
 		{
