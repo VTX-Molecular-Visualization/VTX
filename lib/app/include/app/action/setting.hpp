@@ -9,7 +9,7 @@
 #include "app/internal/chemdb/category.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
-#include "app/old_app/io/struct/image_export.hpp"
+#include "app/internal/io/serialization/image_export.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::App::Action::Setting
@@ -64,12 +64,12 @@ namespace VTX::App::Action::Setting
 	class ChangeSnapshotFormat : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSnapshotFormat( const IO::Struct::ImageExport::Format p_format ) : _format( p_format ) {}
+		explicit ChangeSnapshotFormat( const App::Internal::IO::Serialization::ImageExport::Format p_format ) : _format( p_format ) {}
 
 		virtual void execute() override;
 
 	  private:
-		const IO::Struct::ImageExport::Format _format;
+		const App::Internal::IO::Serialization::ImageExport::Format _format;
 	};
 
 	class ChangeBackgroundOpacity : public App::Core::Action::BaseAction
@@ -97,7 +97,7 @@ namespace VTX::App::Action::Setting
 	class ChangeSnapshotResolution : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSnapshotResolution( const IO::Struct::ImageExport::RESOLUTION & p_resolution ) :
+		explicit ChangeSnapshotResolution( const App::Internal::IO::Serialization::ImageExport::RESOLUTION & p_resolution ) :
 			_resolution( p_resolution )
 		{
 		}
@@ -105,7 +105,7 @@ namespace VTX::App::Action::Setting
 		virtual void execute() override;
 
 	  private:
-		const IO::Struct::ImageExport::RESOLUTION _resolution;
+		const App::Internal::IO::Serialization::ImageExport::RESOLUTION _resolution;
 	};
 
 	class ChangeDefaultRepresentation : public App::Core::Action::BaseAction

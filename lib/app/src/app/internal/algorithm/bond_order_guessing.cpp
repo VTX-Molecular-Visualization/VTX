@@ -1282,7 +1282,7 @@ namespace VTX::App::Internal::Algorithm
 
 			const chemfiles::Residue & residue = firstResidue.value();
 
-			const std::vector<IO::Reader::BondData> & bondsData = getResidueBonds( residue.name() );
+			const std::vector<App::Internal::IO::Reader::BondData> & bondsData = getResidueBonds( residue.name() );
 
 			if ( previousResidue != &residue )
 			{
@@ -1299,7 +1299,7 @@ namespace VTX::App::Internal::Algorithm
 
 			for ( bondDataCurrentIndex; bondDataCurrentIndex < bondsData.size(); bondDataCurrentIndex++ )
 			{
-				const IO::Reader::BondData & bondData = bondsData[ bondDataCurrentIndex ];
+				const App::Internal::IO::Reader::BondData & bondData = bondsData[ bondDataCurrentIndex ];
 
 				if ( bondData.atom1 == firstAtomName && bondData.atom2 == secondAtomName )
 				{
@@ -1335,7 +1335,7 @@ namespace VTX::App::Internal::Algorithm
 			if ( firstAtomResidue != secondAtomResidue )
 				continue;
 
-			const std::vector<IO::Reader::BondData> & bondsData = getResidueBonds( firstAtomResidue->getSymbolStr() );
+			const std::vector<App::Internal::IO::Reader::BondData> & bondsData = getResidueBonds( firstAtomResidue->getSymbolStr() );
 
 			if ( previousResidue != firstAtomResidue )
 			{
@@ -1352,7 +1352,7 @@ namespace VTX::App::Internal::Algorithm
 
 			for ( bondDataCurrentIndex; bondDataCurrentIndex < bondsData.size(); bondDataCurrentIndex++ )
 			{
-				const IO::Reader::BondData & bondData = bondsData[ bondDataCurrentIndex ];
+				const App::Internal::IO::Reader::BondData & bondData = bondsData[ bondDataCurrentIndex ];
 
 				if ( bondData.atom1 == firstAtomName && bondData.atom2 == secondAtomName )
 				{
@@ -1364,7 +1364,7 @@ namespace VTX::App::Internal::Algorithm
 		return res;
 	}
 
-	const std::vector<IO::Reader::BondData> & BondOrderGuessing::getResidueBonds( const std::string & p_residueSymbol )
+	const std::vector<App::Internal::IO::Reader::BondData> & BondOrderGuessing::getResidueBonds( const std::string & p_residueSymbol )
 	{
 		return Util::Molecule::getResidueBonds( p_residueSymbol );
 	}

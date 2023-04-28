@@ -16,7 +16,7 @@
 #include <app/action/setting.hpp>
 #include <app/component/chemistry/enum_trajectory.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/io/struct/image_export.hpp>
+#include <app/internal/io/serialization/image_export.hpp>
 #include <app/application/setting.hpp>
 #include <app/old_app/style.hpp>
 
@@ -85,7 +85,7 @@ namespace VTX::UI::Widget::Settings
 
 		// Graphic
 		_snapshotFormatWidget = new QComboBox( viewport );
-		for ( const std::string & formatStr : IO::Struct::ImageExport::FORMAT_STR )
+		for ( const std::string & formatStr : App::Internal::IO::Serialization::ImageExport::FORMAT_STR )
 			_snapshotFormatWidget->addItem( QString::fromStdString( formatStr ) );
 
 		_snapshotBackgroundOpacitySlider = WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
@@ -93,7 +93,7 @@ namespace VTX::UI::Widget::Settings
 		_snapshotBackgroundOpacitySlider->setMinMax( 0.f, 1.f );
 
 		_snapshotResolutionWidget = new QComboBox( viewport );
-		for ( const std::string & resolutionStr : IO::Struct::ImageExport::RESOLUTION_STR )
+		for ( const std::string & resolutionStr : App::Internal::IO::Serialization::ImageExport::RESOLUTION_STR )
 			_snapshotResolutionWidget->addItem( QString::fromStdString( resolutionStr ) );
 
 		_snapshotQualitySlider = WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
@@ -480,7 +480,7 @@ namespace VTX::UI::Widget::Settings
 	{
 		_skipSettingEvents();
 
-		const IO::Struct::ImageExport::Format format = IO::Struct::ImageExport::Format( p_format );
+		const App::Internal::IO::Serialization::ImageExport::Format format = App::Internal::IO::Serialization::ImageExport::Format( p_format );
 		if ( VTX_SETTING().getSnapshotFormat() != format )
 			VTX_ACTION( new VTX::App::Action::Setting::ChangeSnapshotFormat( format ) );
 
@@ -499,7 +499,7 @@ namespace VTX::UI::Widget::Settings
 	{
 		_skipSettingEvents();
 
-		const IO::Struct::ImageExport::RESOLUTION resolution = IO::Struct::ImageExport::RESOLUTION( p_resolution );
+		const App::Internal::IO::Serialization::ImageExport::RESOLUTION resolution = App::Internal::IO::Serialization::ImageExport::RESOLUTION( p_resolution );
 		if ( VTX_SETTING().getSnapshotResolution() != resolution )
 			VTX_ACTION( new VTX::App::Action::Setting::ChangeSnapshotResolution( resolution ) );
 

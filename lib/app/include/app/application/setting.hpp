@@ -6,10 +6,10 @@
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/video/enum_path.hpp"
 #include "app/internal/chemdb/category.hpp"
+#include "app/internal/io/serialization/image_export.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/io/struct/image_export.hpp"
 #include "app/old_app/style.hpp"
 #include <list>
 #include <string>
@@ -49,10 +49,10 @@ namespace VTX
 
 			static const Color::Rgba BACKGROUND_COLOR_DEFAULT;
 
-			static const IO::Struct::ImageExport::RESOLUTION SNAPSHOT_RESOLUTION_DEFAULT;
-			static const IO::Struct::ImageExport::Format	 SNAPSHOT_FORMAT_DEFAULT;
-			static const float								 BACKGROUND_OPACITY_DEFAULT;
-			static const float								 SNAPSHOT_QUALITY_DEFAULT;
+			static const App::Internal::IO::Serialization::ImageExport::RESOLUTION SNAPSHOT_RESOLUTION_DEFAULT;
+			static const App::Internal::IO::Serialization::ImageExport::Format	   SNAPSHOT_FORMAT_DEFAULT;
+			static const float													   BACKGROUND_OPACITY_DEFAULT;
+			static const float													   SNAPSHOT_QUALITY_DEFAULT;
 
 			static const std::string REPRESENTATION_DEFAULT_NAME;
 			static const int		 REPRESENTATION_DEFAULT_INDEX;
@@ -290,14 +290,21 @@ namespace VTX
 			inline bool getVSync() const { return activeVSync; }
 			void		setVSync( const bool p_activeVSync );
 
-			inline IO::Struct::ImageExport::Format getSnapshotFormat() const { return snapshotFormat; }
-			void								   setSnapshotFormat( const IO::Struct::ImageExport::Format p_format );
-			inline float						   getSnapshotBackgroundOpacity() const { return backgroundOpacity; }
-			void								   setSnapshotBackgroundOpacity( const float p_backgroundOpacity );
-			inline float						   getSnapshotQuality() const { return snapshotQuality; }
-			void								   setSnapshotQuality( const float p_snapshotQuality );
-			inline IO::Struct::ImageExport::RESOLUTION getSnapshotResolution() const { return snapshotResolution; }
-			void setSnapshotResolution( const IO::Struct::ImageExport::RESOLUTION & p_snapshotResolution );
+			inline App::Internal::IO::Serialization::ImageExport::Format getSnapshotFormat() const
+			{
+				return snapshotFormat;
+			}
+			void		 setSnapshotFormat( const App::Internal::IO::Serialization::ImageExport::Format p_format );
+			inline float getSnapshotBackgroundOpacity() const { return backgroundOpacity; }
+			void		 setSnapshotBackgroundOpacity( const float p_backgroundOpacity );
+			inline float getSnapshotQuality() const { return snapshotQuality; }
+			void		 setSnapshotQuality( const float p_snapshotQuality );
+			inline App::Internal::IO::Serialization::ImageExport::RESOLUTION getSnapshotResolution() const
+			{
+				return snapshotResolution;
+			}
+			void setSnapshotResolution(
+				const App::Internal::IO::Serialization::ImageExport::RESOLUTION & p_snapshotResolution );
 
 			// Camera Settings
 			inline float getCameraFOV() const { return cameraFOV; };
@@ -419,10 +426,10 @@ namespace VTX
 			bool forceRenderer	  = FORCE_RENDERER_DEFAULT;
 			bool activeVSync	  = ACTIVE_VSYNC_DEFAULT;
 
-			IO::Struct::ImageExport::Format		snapshotFormat	   = SNAPSHOT_FORMAT_DEFAULT;
-			IO::Struct::ImageExport::RESOLUTION snapshotResolution = SNAPSHOT_RESOLUTION_DEFAULT;
-			float								backgroundOpacity  = BACKGROUND_OPACITY_DEFAULT;
-			float								snapshotQuality	   = SNAPSHOT_QUALITY_DEFAULT;
+			App::Internal::IO::Serialization::ImageExport::Format	  snapshotFormat	 = SNAPSHOT_FORMAT_DEFAULT;
+			App::Internal::IO::Serialization::ImageExport::RESOLUTION snapshotResolution = SNAPSHOT_RESOLUTION_DEFAULT;
+			float													  backgroundOpacity	 = BACKGROUND_OPACITY_DEFAULT;
+			float													  snapshotQuality	 = SNAPSHOT_QUALITY_DEFAULT;
 
 			float cameraFOV			= CAMERA_FOV_DEFAULT;
 			float cameraNearClip	= CAMERA_NEAR_DEFAULT;

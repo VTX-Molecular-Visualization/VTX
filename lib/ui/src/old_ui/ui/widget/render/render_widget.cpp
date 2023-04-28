@@ -22,7 +22,7 @@
 #include <app/event.hpp>
 #include <app/event/global.hpp>
 #include <app/component/object3d/label.hpp>
-#include <app/old_app/io/filesystem.hpp>
+#include <app/internal/io/filesystem.hpp>
 // #include <tool/old_tool/model/measurement/angle.hpp>
 // #include <tool/old_tool/model/measurement/dihedral_angle.hpp>
 // #include <tool/old_tool/model/measurement/distance.hpp>
@@ -233,7 +233,7 @@ namespace VTX::UI::Widget::Render
 	{
 		VTX_ACTION( new App::Action::Main::Snapshot(
 			Worker::Snapshoter::MODE::GL,
-			IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
+			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
 	}
 

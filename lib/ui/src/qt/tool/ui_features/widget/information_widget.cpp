@@ -8,7 +8,7 @@
 #include <QVBoxLayout>
 
 #include <app/old_app/define.hpp>		 // Get VTX version
-#include <app/old_app/io/filesystem.hpp> // Read license file
+#include <app/internal/io/filesystem.hpp> // Read license file
 #include <string>
 
 namespace VTX::UI::QT::Tool::UIFeatures::Widget
@@ -192,7 +192,7 @@ namespace VTX::UI::QT::Tool::UIFeatures::Widget
 
 	void InformationWidget::_getLicenseText( QString & p_txt ) const
 	{
-		p_txt = QString::fromStdString( VTX::Util::Filesystem::readPath( IO::Filesystem::getLicenseFile() ) );
+		p_txt = QString::fromStdString( VTX::Util::Filesystem::readPath( App::Internal::IO::Filesystem::getLicenseFile() ) );
 	}
 
 	void InformationWidget::_onFrameChange( const int p_frame )

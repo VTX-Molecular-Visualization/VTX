@@ -15,8 +15,8 @@
 #include <app/internal/worker/saver.hpp>
 #include <app/internal/worker/scene_loader.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/io/filesystem.hpp>
-#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/internal/io/filesystem.hpp>
+#include <app/internal/io/serialization/scene_path_data.hpp>
 #include <app/application/scene.hpp>
 #include <app/application/setting.hpp>
 #include <app/old_app/util/molecule.hpp>

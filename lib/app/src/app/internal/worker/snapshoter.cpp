@@ -2,7 +2,7 @@
 #include "app/action/setting.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/application/render_effect/render_effect_preset.hpp"
-#include "app/old_app/io/filesystem.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include "app/old_app/renderer/gl/framebuffer.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 // #include <QOffscreenSurface>
@@ -19,20 +19,20 @@ namespace VTX::Worker
 {
 	Snapshoter::Snapshoter( const MODE &					p_mode,
 							const FilePath &				p_path,
-							const IO::Struct::ImageExport & p_exportData ) :
+							const App::Internal::IO::Serialization::ImageExport & p_exportData ) :
 		_mode( p_mode ),
 		_path( p_path ), _exportData( p_exportData )
 	{
 	}
 
-	Snapshoter::Snapshoter( const MODE & p_mode, void * p_imageTarget, const IO::Struct::ImageExport & p_exportData ) :
+	Snapshoter::Snapshoter( const MODE & p_mode, void * p_imageTarget, const App::Internal::IO::Serialization::ImageExport & p_exportData ) :
 		Snapshoter( p_mode, FilePath(), p_exportData )
 	{
 	}
 
 	// Snapshoter::Snapshoter( const MODE &					p_mode,
 	//						QImage *						p_imageTarget,
-	//						const IO::Struct::ImageExport & p_exportData ) :
+	//						const App::Internal::IO::Serialization::ImageExport & p_exportData ) :
 	//	Snapshoter( p_mode, FilePath(), p_exportData )
 	//{
 	//	_imageTarget = p_imageTarget;

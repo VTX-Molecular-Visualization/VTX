@@ -7,7 +7,7 @@
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/internal/io/serialization/scene_path_data.hpp>
 #include <app/application/setting.hpp>
 #include <util/types.hpp>
 #include <vector>

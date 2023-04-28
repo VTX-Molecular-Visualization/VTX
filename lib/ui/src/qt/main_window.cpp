@@ -20,8 +20,8 @@
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/io/filesystem.hpp>
-#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/internal/io/filesystem.hpp>
+#include <app/internal/io/serialization/scene_path_data.hpp>
 
 namespace VTX::UI::QT
 {
@@ -135,7 +135,7 @@ namespace VTX::UI::QT
 
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
-		_loadStyleSheet( IO::Filesystem::STYLESHEET_FILE_DEFAULT.string().c_str() );
+		_loadStyleSheet( App::Internal::IO::Filesystem::STYLESHEET_FILE_DEFAULT.string().c_str() );
 	}
 
 	void MainWindow::initWindowLayout()
@@ -636,7 +636,7 @@ namespace VTX::UI::QT
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings  settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings  settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							 QSettings::IniFormat );
 		const bool settingsAreValid = settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 
@@ -645,7 +645,7 @@ namespace VTX::UI::QT
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
@@ -672,7 +672,7 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 
@@ -685,7 +685,7 @@ namespace VTX::UI::QT
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		settings.setValue( "Version", Style::LAYOUT_VERSION );
 
@@ -694,7 +694,7 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		settings.clear();
 	}

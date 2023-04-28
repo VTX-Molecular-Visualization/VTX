@@ -1,8 +1,8 @@
 #include "app/internal/worker/render_effect_saver.hpp"
 #include "app/application/render_effect/render_effect_preset.hpp"
+#include "app/core/io/writer/serialized_object.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/io/writer/serialized_object.hpp"
 #include <exception>
 #include <util/logger.hpp>
 
@@ -15,10 +15,10 @@ namespace VTX::Worker
 
 		chrono.start();
 		emitLogInfo( "Saving " + _preset->getName() );
-		const FilePath path = IO::Filesystem::getRenderEffectPath( _preset->getName() );
+		const FilePath path = App::Internal::IO::Filesystem::getRenderEffectPath( _preset->getName() );
 
-		IO::Writer::SerializedObject<App::Application::RenderEffect::RenderEffectPreset> * writer
-			= new IO::Writer::SerializedObject<App::Application::RenderEffect::RenderEffectPreset>();
+		App::Core::IO::Writer::SerializedObject<App::Application::RenderEffect::RenderEffectPreset> * writer
+			= new App::Core::IO::Writer::SerializedObject<App::Application::RenderEffect::RenderEffectPreset>();
 
 		// Write.
 		try
@@ -46,8 +46,8 @@ namespace VTX::Worker
 		chrono.start();
 		VTX_INFO( "Saving " + _preset->getName() );
 
-		IO::Writer::SerializedObject<App::Application::RenderEffect::RenderEffectPreset> * writer
-			= new IO::Writer::SerializedObject<App::Application::RenderEffect::RenderEffectPreset>();
+		App::Core::IO::Writer::SerializedObject<App::Application::RenderEffect::RenderEffectPreset> * writer
+			= new App::Core::IO::Writer::SerializedObject<App::Application::RenderEffect::RenderEffectPreset>();
 
 		// Write.
 		try

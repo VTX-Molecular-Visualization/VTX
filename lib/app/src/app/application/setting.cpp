@@ -9,11 +9,11 @@
 #include "app/internal/chemdb/category.hpp"
 #include "app/internal/setting/register_map.hpp"
 #include "app/old_app/define.hpp"
-#include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/io/reader/serialized_object.hpp"
-#include "app/old_app/io/serializer.hpp"
-#include "app/old_app/io/struct/image_export.hpp"
-#include "app/old_app/io/writer/serialized_object.hpp"
+#include "app/internal/io/filesystem.hpp"
+#include "app/core/io/reader/serialized_object.hpp"
+#include "app/internal/io/serializer.hpp"
+#include "app/internal/io/serialization/image_export.hpp"
+#include "app/core/io/writer/serialized_object.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
 #include "app/application/selection/enum_selection.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -38,9 +38,9 @@ namespace VTX::App::Application
 	const float		  Setting::BACKGROUND_OPACITY_DEFAULT = 1.0f;
 	const float		  Setting::SNAPSHOT_QUALITY_DEFAULT	  = 1.0f;
 
-	const IO::Struct::ImageExport::RESOLUTION Setting::SNAPSHOT_RESOLUTION_DEFAULT
-		= IO::Struct::ImageExport::RESOLUTION::Free;
-	const IO::Struct::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT = IO::Struct::ImageExport::Format::PNG;
+	const App::Internal::IO::Serialization::ImageExport::RESOLUTION Setting::SNAPSHOT_RESOLUTION_DEFAULT
+		= App::Internal::IO::Serialization::ImageExport::RESOLUTION::Free;
+	const App::Internal::IO::Serialization::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT = App::Internal::IO::Serialization::ImageExport::Format::PNG;
 
 	const std::string									   Setting::REPRESENTATION_DEFAULT_NAME	 = "Stick";
 	const int											   Setting::REPRESENTATION_DEFAULT_INDEX = 4;
@@ -345,7 +345,7 @@ namespace VTX::App::Application
 	std::string Setting::getLastLoadedSessionFolder()
 	{
 		return _getFileInRegisterKey( RegisterKey::LAST_OPEN_SESSION_FOLDER,
-									  IO::Filesystem::DEFAULT_SAVE_FOLDER.string() );
+									  App::Internal::IO::Filesystem::DEFAULT_SAVE_FOLDER.string() );
 	}
 	void Setting::saveLastLoadedSessionFolder( const std::string & p_path )
 	{
@@ -355,7 +355,7 @@ namespace VTX::App::Application
 	std::string Setting::getLastSavedSessionFolder()
 	{
 		return _getFileInRegisterKey( RegisterKey::LAST_SAVED_SESSION_FOLDER,
-									  IO::Filesystem::DEFAULT_SAVE_FOLDER.string() );
+									  App::Internal::IO::Filesystem::DEFAULT_SAVE_FOLDER.string() );
 	}
 	void Setting::saveLastSavedSessionFolder( const std::string & p_path )
 	{
@@ -365,7 +365,7 @@ namespace VTX::App::Application
 	std::string Setting::getLastImportedMoleculeFolder()
 	{
 		return _getFileInRegisterKey( RegisterKey::LAST_IMPORTED_MOLECULE_FOLDER,
-									  IO::Filesystem::DEFAULT_MOLECULE_FOLDER.string() );
+									  App::Internal::IO::Filesystem::DEFAULT_MOLECULE_FOLDER.string() );
 	}
 	void Setting::saveLastImportedMoleculeFolder( const std::string & p_path )
 	{
@@ -375,7 +375,7 @@ namespace VTX::App::Application
 	std::string Setting::getLastExportedMoleculeFolder()
 	{
 		return _getFileInRegisterKey( RegisterKey::LAST_EXPORTED_MOLECULE_FOLDER,
-									  IO::Filesystem::DEFAULT_MOLECULE_FOLDER.string() );
+									  App::Internal::IO::Filesystem::DEFAULT_MOLECULE_FOLDER.string() );
 	}
 	void Setting::saveLastExportedMoleculeFolder( const std::string & p_path )
 	{
@@ -385,7 +385,7 @@ namespace VTX::App::Application
 	std::string Setting::getLastExportedImageFolder()
 	{
 		return _getFileInRegisterKey( RegisterKey::LAST_EXPORTED_IMAGE_FOLDER,
-									  IO::Filesystem::getSnapshotsDir().string() );
+									  App::Internal::IO::Filesystem::getSnapshotsDir().string() );
 	}
 	void Setting::saveLastExportedImageFolder( const std::string & p_path )
 	{
@@ -410,10 +410,10 @@ namespace VTX::App::Application
 
 	void Setting::backup()
 	{
-		IO::Writer::SerializedObject<Setting> writer = IO::Writer::SerializedObject<Setting>();
+		Core::IO::Writer::SerializedObject<Setting> writer = Core::IO::Writer::SerializedObject<Setting>();
 		try
 		{
-			writer.writeFile( IO::Filesystem::getSettingJsonFile(), *this );
+			writer.writeFile( App::Internal::IO::Filesystem::getSettingJsonFile(), *this );
 			VTX_INFO( "Settings Saved " );
 		}
 		catch ( const std::exception & p_e )
@@ -423,10 +423,10 @@ namespace VTX::App::Application
 	}
 	void Setting::recover()
 	{
-		IO::Reader::SerializedObject<Setting> reader = IO::Reader::SerializedObject<Setting>();
+		Core::IO::Reader::SerializedObject<Setting> reader = Core::IO::Reader::SerializedObject<Setting>();
 		try
 		{
-			reader.readFile( IO::Filesystem::getSettingJsonFile(), VTX_SETTING() );
+			reader.readFile( App::Internal::IO::Filesystem::getSettingJsonFile(), VTX_SETTING() );
 			VTX_INFO( "Settings loaded " );
 		}
 		catch ( const std::exception & p_e )
@@ -456,7 +456,7 @@ namespace VTX::App::Application
 		_sendDataChangedEvent( PARAMETER::VSYNC );
 	}
 
-	void Setting::setSnapshotFormat( const IO::Struct::ImageExport::Format p_format )
+	void Setting::setSnapshotFormat( const App::Internal::IO::Serialization::ImageExport::Format p_format )
 	{
 		snapshotFormat = p_format;
 		_sendDataChangedEvent( PARAMETER::SNAPSHOT_FORMAT );
@@ -472,7 +472,7 @@ namespace VTX::App::Application
 		snapshotQuality = Util::Math::clamp( p_quality, 0.f, 1.f );
 		_sendDataChangedEvent( PARAMETER::SNAPSHOT_QUALITY );
 	}
-	void Setting::setSnapshotResolution( const IO::Struct::ImageExport::RESOLUTION & p_snapshotResolution )
+	void Setting::setSnapshotResolution( const App::Internal::IO::Serialization::ImageExport::RESOLUTION & p_snapshotResolution )
 	{
 		snapshotResolution = p_snapshotResolution;
 		_sendDataChangedEvent( PARAMETER::SNAPSHOT_RESOLUTION );

@@ -1,24 +1,24 @@
 #ifndef __VTX_UTIL_MOLECULE__
 #define __VTX_UTIL_MOLECULE__
 
+#include "app/application/setting.hpp"
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/internal/chemdb/category.hpp"
-#include "app/old_app/io/reader/residue_data_reader.hpp"
-#include "app/application/setting.hpp"
+#include "app/internal/io/reader/residue_data_reader.hpp"
 #include <map>
 #include <string>
 #include <vector>
 
 namespace VTX::Util::Molecule
 {
-	inline std::map<std::string, IO::Reader::ResidueData> mapLoadedResidueData
-		= { { "", IO::Reader::ResidueData::DEFAULT } };
+	inline std::map<std::string, App::Internal::IO::Reader::ResidueData> mapLoadedResidueData
+		= { { "", App::Internal::IO::Reader::ResidueData::DEFAULT } };
 
-	void									  loadResidueData( const std::string & p_residueSymbol );
-	const std::string &						  getResidueFullName( const std::string & p_residueSymbol );
-	const std::vector<IO::Reader::BondData> & getResidueBonds( const std::string & p_residueSymbol );
-	App::Internal::ChemDB::Category::TYPE	  getResidueCategory( const std::string & p_residueSymbol );
+	void													 loadResidueData( const std::string & p_residueSymbol );
+	const std::string &										 getResidueFullName( const std::string & p_residueSymbol );
+	const std::vector<App::Internal::IO::Reader::BondData> & getResidueBonds( const std::string & p_residueSymbol );
+	App::Internal::ChemDB::Category::TYPE					 getResidueCategory( const std::string & p_residueSymbol );
 
 	void recomputeBondOrders( App::Component::Chemistry::Molecule & p_molecule );
 	bool recomputeBondOrdersFromFile( App::Component::Chemistry::Molecule & p_molecule );

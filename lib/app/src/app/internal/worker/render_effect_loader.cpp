@@ -1,7 +1,7 @@
 #include "app/internal/worker/render_effect_loader.hpp"
-#include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/application/render_effect/render_effect_library.hpp"
-#include "app/old_app/io/reader/serialized_object.hpp"
+#include "app/application/render_effect/render_effect_preset.hpp"
+#include "app/core/io/reader/serialized_object.hpp"
 #include <filesystem>
 #include <util/logger.hpp>
 
@@ -11,8 +11,8 @@ namespace VTX::Worker
 	{
 		Util::Chrono chrono;
 
-		IO::Reader::SerializedObject<App::Application::RenderEffect::RenderEffectPreset> * const reader
-			= new IO::Reader::SerializedObject<App::Application::RenderEffect::RenderEffectPreset>();
+		App::Core::IO::Reader::SerializedObject<App::Application::RenderEffect::RenderEffectPreset> * const reader
+			= new App::Core::IO::Reader::SerializedObject<App::Application::RenderEffect::RenderEffectPreset>();
 
 		chrono.start();
 
@@ -57,8 +57,8 @@ namespace VTX::Worker
 	{
 		Util::Chrono chrono;
 
-		IO::Reader::SerializedObject<App::Application::RenderEffect::RenderEffectPreset> * const reader
-			= new IO::Reader::SerializedObject<App::Application::RenderEffect::RenderEffectPreset>();
+		App::Core::IO::Reader::SerializedObject<App::Application::RenderEffect::RenderEffectPreset> * const reader
+			= new App::Core::IO::Reader::SerializedObject<App::Application::RenderEffect::RenderEffectPreset>();
 
 		chrono.start();
 

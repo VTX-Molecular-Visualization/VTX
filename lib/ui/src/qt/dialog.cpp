@@ -4,8 +4,8 @@
 // 
 // #include <app/action/main.hpp>
 #include <util/logger.hpp>
-// #include <app/old_app/io/struct/image_export.hpp>
-// #include <app/old_app/io/struct/scene_path_data.hpp>
+// #include <app/internal/io/serialization/image_export.hpp>
+// #include <app/internal/io/serialization/scene_path_data.hpp>
 // #include <app/application/selection/selection_manager.hpp>
 // #include "ui/qt/widget/dialog/download_molecule_dialog.hpp"
 // #include "ui/old_ui/ui/widget/dialog/image_exporter.hpp"
@@ -24,7 +24,7 @@ namespace VTX::UI::QT
 	//{
 	//  UI::Widget::Dialog::ImageExporter::openDialog();
 	//}
-	// bool Dialog::openExportImageDialog( const IO::Struct::ImageExport & p_exportData )
+	// bool Dialog::openExportImageDialog( const App::Internal::IO::Serialization::ImageExport & p_exportData )
 	//{
 	// QString * const defaultFilter = new QString( Util::Filesystem::getImageExportDefaultFilter().c_str() );
 	// const QString	defaultPath	  = VTX::App::Application::Setting::getLastExportedImageFolder();

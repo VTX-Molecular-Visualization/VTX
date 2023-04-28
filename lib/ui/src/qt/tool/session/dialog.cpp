@@ -4,7 +4,7 @@
 #include "ui/qt/tool/session/widget/dialog/download_molecule_dialog.hpp"
 
 #include <app/action/main.hpp>
-#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/internal/io/serialization/scene_path_data.hpp>
 // #include <app/application/selection/selection_manager.hpp>
 #include <app/old_app/vtx_app.hpp>
 // #include "ui/old_ui/util/ui.hpp"
@@ -12,7 +12,7 @@
 #include <QMessageBox>
 #include <QString>
 #include <QStringList>
-#include <app/old_app/io/filesystem.hpp>
+#include <app/internal/io/filesystem.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Tool::Session::Dialog
@@ -25,14 +25,14 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 
 	void Dialog::openLoadMoleculeDialog()
 	{
-		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
+		QString defaultFilter = QString::fromStdString( App::Internal::IO::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
 		QString defaultPath	  = QString::fromStdString( VTX::App::Application::Setting::getLastImportedMoleculeFolder() );
 
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &QT_APP()->getMainWindow(),
 											 "Open molecule",
 											 defaultPath,
-											 QString::fromStdString( IO::Filesystem::LOAD_MOLECULE_FILTERS ),
+											 QString::fromStdString( App::Internal::IO::Filesystem::LOAD_MOLECULE_FILTERS ),
 											 &defaultFilter );
 
 		if ( !filenames.isEmpty() )
@@ -48,14 +48,14 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 	}
 	void Dialog::openExportMoleculeDialog()
 	{
-		QString		  defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_MOLECULE_WRITE_FILTER );
-		const QString defaultPath	= QString::fromStdString( IO::Filesystem::getDefaultMoleculeExportPath().string() );
+		QString		  defaultFilter = QString::fromStdString( App::Internal::IO::Filesystem::DEFAULT_MOLECULE_WRITE_FILTER );
+		const QString defaultPath	= QString::fromStdString( App::Internal::IO::Filesystem::getDefaultMoleculeExportPath().string() );
 
 		const QString filename
 			= QFileDialog::getSaveFileName( &QT_APP()->getMainWindow(),
 											"Export molecule",
 											defaultPath,
-											QString::fromStdString( IO::Filesystem::EXPORT_MOLECULE_FILTERS ),
+											QString::fromStdString( App::Internal::IO::Filesystem::EXPORT_MOLECULE_FILTERS ),
 											&defaultFilter );
 
 		if ( !filename.isNull() )
@@ -140,14 +140,14 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 
 	void Dialog::openSaveSessionDialog( VTX::App::Core::Worker::CallbackThread * const p_callback )
 	{
-		QString		  defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_FILE_WRITE_FILTER );
-		const QString defaultPath	= QString::fromStdString( IO::Filesystem::getDefaultSceneSavePath().string() );
+		QString		  defaultFilter = QString::fromStdString( App::Internal::IO::Filesystem::DEFAULT_FILE_WRITE_FILTER );
+		const QString defaultPath	= QString::fromStdString( App::Internal::IO::Filesystem::getDefaultSceneSavePath().string() );
 
 		const QString filename
 			= QFileDialog::getSaveFileName( &QT_APP()->getMainWindow(),
 											"Save session",
 											defaultPath,
-											QString::fromStdString( IO::Filesystem::SAVE_SCENE_FILTERS ),
+											QString::fromStdString( App::Internal::IO::Filesystem::SAVE_SCENE_FILTERS ),
 											&defaultFilter );
 
 		if ( !filename.isNull() )
@@ -161,14 +161,14 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 	}
 	void Dialog::openLoadSessionDialog()
 	{
-		QString defaultFilter = QString::fromStdString( IO::Filesystem::DEFAULT_FILE_READ_FILTER );
+		QString defaultFilter = QString::fromStdString( App::Internal::IO::Filesystem::DEFAULT_FILE_READ_FILTER );
 		QString defaultPath	  = QString::fromStdString( VTX::App::Application::Setting::getLastLoadedSessionFolder() );
 
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &QT_APP()->getMainWindow(),
 											 "Open session",
 											 defaultPath,
-											 QString::fromStdString( IO::Filesystem::OPEN_FILE_FILTERS ),
+											 QString::fromStdString( App::Internal::IO::Filesystem::OPEN_FILE_FILTERS ),
 											 &defaultFilter );
 
 		if ( filenames.size() > 0 )

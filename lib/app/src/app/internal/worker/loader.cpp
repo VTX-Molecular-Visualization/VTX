@@ -1,17 +1,17 @@
 #include "app/internal/worker/loader.hpp"
+#include "app/application/scene.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/io/molecule_configuration.hpp"
-#include "app/event.hpp"
 #include "app/component/object3d/mesh_triangle.hpp"
-#include "app/mvc.hpp"
-#include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/io/reader/lib_assimp.hpp"
-#include "app/old_app/io/reader/lib_chemfiles.hpp"
-#include "app/old_app/io/reader/prm.hpp"
-#include "app/old_app/io/reader/psf.hpp"
-#include "app/old_app/io/reader/serialized_object.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/application/scene.hpp"
+#include "app/core/io/reader/serialized_object.hpp"
+#include "app/event.hpp"
+#include "app/internal/io/filesystem.hpp"
+#include "app/internal/io/reader/lib_assimp.hpp"
+#include "app/internal/io/reader/lib_chemfiles.hpp"
+#include "app/internal/io/reader/prm.hpp"
+#include "app/internal/io/reader/psf.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <util/logger.hpp>
 
@@ -21,7 +21,7 @@ namespace VTX
 	{
 		uint Loader::_run()
 		{
-			IO::Filesystem::fillFilepathPerMode( _paths, _filepathsPerMode );
+			App::Internal::IO::Filesystem::fillFilepathPerMode( _paths, _filepathsPerMode );
 
 			// Load all files.
 			_loadSceneFiles();
@@ -32,7 +32,8 @@ namespace VTX
 			_loadMeshFiles();
 
 			// Display errors for unknown files
-			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE_ENUM::UNKNOWN ) ] )
+			for ( const FilePath & path :
+				  _filepathsPerMode[ int( App::Internal::IO::Filesystem::FILE_TYPE_ENUM::UNKNOWN ) ] )
 			{
 				emitLogError( "Error when loading " + path.string() + " : Format not supported" );
 				_pathResult[ path ].state = false;
@@ -46,11 +47,13 @@ namespace VTX
 
 		void Loader::_loadSceneFiles()
 		{
-			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE_ENUM::SCENE ) ] )
+			for ( const FilePath & path :
+				  _filepathsPerMode[ int( App::Internal::IO::Filesystem::FILE_TYPE_ENUM::SCENE ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
-				IO::Reader::SerializedObject<VTXApp> * const reader = new IO::Reader::SerializedObject<VTXApp>();
+				App::Core::IO::Reader::SerializedObject<VTXApp> * const reader
+					= new App::Core::IO::Reader::SerializedObject<VTXApp>();
 
 				try
 				{
@@ -67,7 +70,8 @@ namespace VTX
 		}
 		void Loader::_loadConfigurationFiles( App::Component::IO::MoleculeConfiguration & p_config )
 		{
-			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE_ENUM::CONFIGURATION ) ] )
+			for ( const FilePath & path :
+				  _filepathsPerMode[ int( App::Internal::IO::Filesystem::FILE_TYPE_ENUM::CONFIGURATION ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 				const std::string extension = path.extension().string();
@@ -76,12 +80,12 @@ namespace VTX
 				{
 					if ( extension == "prm" )
 					{
-						IO::Reader::PRM reader = IO::Reader::PRM();
+						App::Internal::IO::Reader::PRM reader = App::Internal::IO::Reader::PRM();
 						reader.readFile( path, p_config );
 					}
 					else if ( extension == "psf" )
 					{
-						IO::Reader::PSF reader = IO::Reader::PSF();
+						App::Internal::IO::Reader::PSF reader = App::Internal::IO::Reader::PSF();
 						reader.readFile( path, p_config );
 					}
 
@@ -95,12 +99,14 @@ namespace VTX
 		}
 		void Loader::_loadMoleculeFiles( const App::Component::IO::MoleculeConfiguration & p_config )
 		{
-			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE_ENUM::MOLECULE ) ] )
+			for ( const FilePath & path :
+				  _filepathsPerMode[ int( App::Internal::IO::Filesystem::FILE_TYPE_ENUM::MOLECULE ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
 				// Create reader.
-				IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles( this );
+				App::Internal::IO::Reader::LibChemfiles * const reader
+					= new App::Internal::IO::Reader::LibChemfiles( this );
 
 				// Set PRM.
 				App::Component::Chemistry::Molecule * const molecule
@@ -126,12 +132,14 @@ namespace VTX
 		}
 		void Loader::_loadTrajectoriesFiles( const App::Component::IO::MoleculeConfiguration & p_config )
 		{
-			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE_ENUM::TRAJECTORY ) ] )
+			for ( const FilePath & path :
+				  _filepathsPerMode[ int( App::Internal::IO::Filesystem::FILE_TYPE_ENUM::TRAJECTORY ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
 				// Create reader.
-				IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles( this );
+				App::Internal::IO::Reader::LibChemfiles * const reader
+					= new App::Internal::IO::Reader::LibChemfiles( this );
 
 				// Load.
 				try
@@ -179,12 +187,14 @@ namespace VTX
 		}
 		void Loader::_loadMeshFiles()
 		{
-			for ( const FilePath & path : _filepathsPerMode[ int( IO::Filesystem::FILE_TYPE_ENUM::MESH ) ] )
+			for ( const FilePath & path :
+				  _filepathsPerMode[ int( App::Internal::IO::Filesystem::FILE_TYPE_ENUM::MESH ) ] )
 			{
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
-				IO::Reader::LibAssimp * const reader = new IO::Reader::LibAssimp();
-			 App::Component::Object3D::MeshTriangle * const	  mesh	 = VTX::MVC_MANAGER().instantiateModel<App::Component::Object3D::MeshTriangle>();
+				App::Internal::IO::Reader::LibAssimp * const   reader = new App::Internal::IO::Reader::LibAssimp();
+				App::Component::Object3D::MeshTriangle * const mesh
+					= VTX::MVC_MANAGER().instantiateModel<App::Component::Object3D::MeshTriangle>();
 
 				try
 				{
@@ -209,13 +219,15 @@ namespace VTX
 			{
 				_startLoadingFile( pair.first, SOURCE_TYPE::BUFFER );
 
-				const IO::Filesystem::FILE_TYPE_ENUM bufferType = IO::Filesystem::getFileTypeFromFilePath( pair.first );
+				const App::Internal::IO::Filesystem::FILE_TYPE_ENUM bufferType
+					= App::Internal::IO::Filesystem::getFileTypeFromFilePath( pair.first );
 
-				if ( bufferType == IO::Filesystem::FILE_TYPE_ENUM::MOLECULE
-					 || bufferType == IO::Filesystem::FILE_TYPE_ENUM::TRAJECTORY )
+				if ( bufferType == App::Internal::IO::Filesystem::FILE_TYPE_ENUM::MOLECULE
+					 || bufferType == App::Internal::IO::Filesystem::FILE_TYPE_ENUM::TRAJECTORY )
 				{
 					// Create reader.
-					IO::Reader::LibChemfiles *			  reader = new IO::Reader::LibChemfiles( this );
+					App::Internal::IO::Reader::LibChemfiles * reader
+						= new App::Internal::IO::Reader::LibChemfiles( this );
 					App::Component::Chemistry::Molecule * molecule
 						= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Molecule>();
 

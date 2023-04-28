@@ -31,7 +31,7 @@
 //
 //	void VTXApp::start( const std::vector<std::string> & p_args )
 //	{
-//		// VTX_INFO( "Starting application: {}", IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
+//		// VTX_INFO( "Starting application: {}", App::Internal::IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 //
 //		//		// Load settings.
 //		//		VTX_ACTION( new App::Action::Setting::Load() );
@@ -55,7 +55,7 @@
 //		//		_scene = new App::Application::Scene();
 //		//		_scene->getCamera().setScreenSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
 //		//
-//		//		_pathSceneData = new IO::Struct::ScenePathData();
+//		//		_pathSceneData = new App::Internal::IO::Serialization::ScenePathData();
 //		//
 //		//		if ( VTX_SETTING().getCheckVTXUpdateAtLaunch() )
 //		//		{
@@ -75,7 +75,7 @@
 //		//		if ( p_args.size() == 0 )
 //		//		{
 //		//			// VTX_ACTION(
-//		//			//	 new App::Action::Main::Open( IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
+//		//			//	 new App::Action::Main::Open( App::Internal::IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
 //		//			// VTX_ACTION( new App::Action::Main::OpenApi( "1aon" ) );
 //		//			// VTX_ACTION( new App::Action::Main::OpenApi( "4hhb" ) );
 //		//			// VTX_ACTION( new App::Action::Main::OpenApi( "1aga" ) );

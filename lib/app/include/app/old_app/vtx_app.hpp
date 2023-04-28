@@ -12,7 +12,7 @@
 
 namespace VTX
 {
-	namespace IO::Struct
+	namespace App::Internal::IO::Serialization
 	{
 		class ScenePathData;
 	}
@@ -36,10 +36,13 @@ namespace VTX
 		void renderScene() const;
 		void stop();
 
-		inline IO::Struct::ScenePathData &		 getScenePathData() { return *_pathSceneData; };
-		inline const IO::Struct::ScenePathData & getScenePathData() const { return *_pathSceneData; };
-		inline App::Application::Scene &		 getScene() { return *_scene; }
-		inline const App::Application::Scene &	 getScene() const { return *_scene; }
+		inline App::Internal::IO::Serialization::ScenePathData &	   getScenePathData() { return *_pathSceneData; };
+		inline const App::Internal::IO::Serialization::ScenePathData & getScenePathData() const
+		{
+			return *_pathSceneData;
+		};
+		inline App::Application::Scene &	   getScene() { return *_scene; }
+		inline const App::Application::Scene & getScene() const { return *_scene; }
 
 		// TODO remove this. Must be In UI Module
 		inline const UI::MainWindow & getMainWindow() const { throw NotImplementedException(); }
@@ -93,7 +96,7 @@ namespace VTX
 		Spec													  _spec					 = Spec();
 		UI::MainWindow *										  _mainWindow			 = nullptr;
 		App::Application::Scene *								  _scene				 = nullptr;
-		IO::Struct::ScenePathData *								  _pathSceneData		 = nullptr;
+		App::Internal::IO::Serialization::ScenePathData *		  _pathSceneData		 = nullptr;
 		App::Application::Representation::RepresentationLibrary * _representationLibrary = nullptr;
 		App::Application::RenderEffect::RenderEffectLibrary *	  _renderEffectLibrary	 = nullptr;
 

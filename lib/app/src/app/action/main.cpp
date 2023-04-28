@@ -8,7 +8,7 @@
 #include "app/internal/worker/saver.hpp"
 #include "app/internal/worker/scene_loader.hpp"
 #include "app/network.hpp"
-#include "app/old_app/io/filesystem.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include "app/internal/scene/camera_manager.hpp"
 #include "app/application/scene.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -158,7 +158,7 @@ namespace VTX::App::Action::Main
 
 		for ( const FilePath & path : _paths )
 		{
-			FilePath target = IO::Filesystem::getRepresentationPath( path.filename() );
+			FilePath target = App::Internal::IO::Filesystem::getRepresentationPath( path.filename() );
 			Util::Filesystem::generateUniqueFileName( target );
 			if ( std::filesystem::copy_file( path, target ) )
 			{
@@ -175,7 +175,7 @@ namespace VTX::App::Action::Main
 
 		for ( const FilePath & path : _paths )
 		{
-			FilePath target = IO::Filesystem::getRenderEffectPath( path.filename() );
+			FilePath target = App::Internal::IO::Filesystem::getRenderEffectPath( path.filename() );
 			Util::Filesystem::generateUniqueFileName( target );
 			if ( std::filesystem::copy_file( path, target ) )
 			{

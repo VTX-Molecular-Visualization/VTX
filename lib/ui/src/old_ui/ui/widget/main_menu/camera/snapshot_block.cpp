@@ -7,7 +7,7 @@
 #include "ui/old_ui/vtx_app.hpp"
 
 #include <app/action/main.hpp>
-#include <app/old_app/io/filesystem.hpp>
+#include <app/internal/io/filesystem.hpp>
 #include <app/application/render_effect/render_effect_preset.hpp>
 #include <app/application/render_effect/render_effect_library.hpp>
 #include <app/internal/worker/snapshoter.hpp>
@@ -41,7 +41,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	{
 		VTX_ACTION(
 			new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-										IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
+										App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 										VTX_SETTING().getSnapshotResolution() ) );
 	}
 

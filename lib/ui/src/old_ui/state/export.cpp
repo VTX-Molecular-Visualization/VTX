@@ -79,7 +79,7 @@ namespace VTX
 			std::string fileName   = "frame" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
 
 			// VTX_ACTION( new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-			//										IO::Filesystem::getVideosPath( fileName + ".png" ) ) );
+			//										App::Internal::IO::Filesystem::getVideosPath( fileName + ".png" ) ) );
 
 			VTX_INFO( std::to_string( (uint)( _frame * 100 / _frameCount ) ) + "%" );
 
@@ -105,26 +105,26 @@ namespace VTX
 		/*
 		void Export::_generareVideo() const
 		{
-			if ( std::filesystem::exists( IO::Filesystem::FFMPEG_EXE_FILE ) == false )
+			if ( std::filesystem::exists( App::Internal::IO::Filesystem::FFMPEG_EXE_FILE ) == false )
 			{
 				throw LibException( "ffmpeg is missing, frames are saved on disk" );
 			}
 
 			VTX_INFO( "Encoding video" );
 
-			FilePath files = IO::Filesystem::getVideosBatchPath( _directoryName );
+			FilePath files = App::Internal::IO::Filesystem::getVideosBatchPath( _directoryName );
 			files /= "frame%06d.png";
-			std::string command = IO::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate "
+			std::string command = App::Internal::IO::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate "
 								  + std::to_string( VTX::App::Application::Setting::VIDEO_FPS_DEFAULT ) + " -i " +
 		files.string()
 								  + " -vcodec libx264 -crf " + std::to_string(
 		VTX::App::Application::Setting::VIDEO_CRF_DEFAULT ) + " "
-								  + IO::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
+								  + App::Internal::IO::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
 			Worker::ProgramLauncher * worker = new Worker::ProgramLauncher( command );
 			VTX_THREAD( worker );
 
 			// Clean frames
-			Util::Filesystem::removeAll( IO::Filesystem::getVideosBatchPath( _directoryName ) );
+			Util::Filesystem::removeAll( App::Internal::IO::Filesystem::getVideosBatchPath( _directoryName ) );
 		}
 		*/
 

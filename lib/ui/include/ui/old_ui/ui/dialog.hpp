@@ -11,7 +11,7 @@
 
 namespace VTX
 {
-	namespace IO::Struct
+	namespace App::Internal::IO::Serialization
 	{
 		class ImageExport;
 	}
@@ -45,7 +45,7 @@ namespace VTX
 			static void openSaveSessionDialog( VTX::App::Core::Worker::CallbackThread * const p_callback = nullptr );
 
 			static void openAdvancedSettingImageExportDialog();
-			static bool openExportImageDialog( const IO::Struct::ImageExport & p_exportData );
+			static bool openExportImageDialog( const App::Internal::IO::Serialization::ImageExport & p_exportData );
 
 			static void importRepresentationPresetDialog();
 			static void importRenderEffectPresetDialog();

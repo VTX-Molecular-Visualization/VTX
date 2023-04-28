@@ -16,7 +16,7 @@
 #include <app/action/viewpoint.hpp>
 #include <app/event/global.hpp>
 #include <app/application/render_effect/render_effect_library.hpp>
-#include <app/old_app/io/filesystem.hpp>
+#include <app/internal/io/filesystem.hpp>
 #include <app/application/scene.hpp>
 #include <app/application/setting.hpp>
 #include <app/internal/worker/snapshoter.hpp>
@@ -352,7 +352,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		VTX_ACTION( new App::Action::Main::Snapshot(
 			Worker::Snapshoter::MODE::GL,
-			IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
+			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
 	}
 	void ContextualMenuRender::_exportImageAction() { Dialog::openAdvancedSettingImageExportDialog(); }

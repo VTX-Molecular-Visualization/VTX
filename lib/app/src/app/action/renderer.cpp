@@ -2,7 +2,7 @@
 #include "app/internal/worker/render_effect_loader.hpp"
 #include "app/internal/worker/render_effect_saver.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/io/filesystem.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -31,8 +31,8 @@ namespace VTX::App::Action::Renderer
 	{
 		if ( _clearDirectory )
 		{
-			Util::Filesystem::removeAll( IO::Filesystem::getRenderEffectPresetsLibraryDir() );
-			std::filesystem::create_directory( IO::Filesystem::getRenderEffectPresetsLibraryDir() );
+			Util::Filesystem::removeAll( App::Internal::IO::Filesystem::getRenderEffectPresetsLibraryDir() );
+			std::filesystem::create_directory( App::Internal::IO::Filesystem::getRenderEffectPresetsLibraryDir() );
 		}
 
 		for ( const App::Application::RenderEffect::RenderEffectPreset * const renderEffect : _renderEffectPresets )
@@ -48,7 +48,7 @@ namespace VTX::App::Action::Renderer
 			}
 			else
 			{
-				FilePath path = IO::Filesystem::getRenderEffectPath( renderEffect->getName() );
+				FilePath path = App::Internal::IO::Filesystem::getRenderEffectPath( renderEffect->getName() );
 				Util::Filesystem::generateUniqueFileName( path );
 
 				Worker::RenderEffectPresetSaver * librarySaver

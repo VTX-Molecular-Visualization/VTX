@@ -7,8 +7,8 @@
 #include "app/application/representation/representation_preset.hpp"
 #include "app/application/representation/representation_library.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/io/struct/scene_path_data.hpp"
+#include "app/internal/io/filesystem.hpp"
+#include "app/internal/io/serialization/scene_path_data.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <magic_enum.hpp>
 #include <sstream>
@@ -46,7 +46,7 @@ namespace VTX::App::Manager
 		//	{
 		//		action = new VTX::App::Action::Main::Snapshot(
 		//			Worker::Snapshoter::MODE::GL,
-		//			IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ) );
+		//			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ) );
 		//	}
 		//	else if ( command == "change_representation" )
 		//	{

@@ -3,7 +3,7 @@
 #include "app/internal/worker/representation_loader.hpp"
 #include "app/internal/worker/representation_saver.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/io/filesystem.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker.hpp"
@@ -28,8 +28,8 @@ namespace VTX::App::Action::Representation
 	{
 		if ( _clearDirectory )
 		{
-			Util::Filesystem::removeAll( IO::Filesystem::getRepresentationsLibraryDir() );
-			std::filesystem::create_directory( IO::Filesystem::getRepresentationsLibraryDir() );
+			Util::Filesystem::removeAll( App::Internal::IO::Filesystem::getRepresentationsLibraryDir() );
+			std::filesystem::create_directory( App::Internal::IO::Filesystem::getRepresentationsLibraryDir() );
 		}
 
 		for ( const App::Application::Representation::RepresentationPreset * const representation : _representations )
@@ -47,7 +47,7 @@ namespace VTX::App::Action::Representation
 			else
 			*/
 			{
-				FilePath path = IO::Filesystem::getRepresentationPath( representation->getName() );
+				FilePath path = App::Internal::IO::Filesystem::getRepresentationPath( representation->getName() );
 				Util::Filesystem::generateUniqueFileName( path );
 
 				Worker::RepresentationSaver * librarySaver = new Worker::RepresentationSaver( representation, path );

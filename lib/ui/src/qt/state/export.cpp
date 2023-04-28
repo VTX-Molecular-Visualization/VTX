@@ -77,7 +77,7 @@ namespace VTX::UI::QT::State
 		std::string fileName   = "frame" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
 
 		VTX_ACTION( new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-												IO::Filesystem::getVideosPath( fileName + ".png" ) ) );
+												App::Internal::IO::Filesystem::getVideosPath( fileName + ".png" ) ) );
 
 		VTX_INFO( std::to_string( (uint)( _frame * 100 / _frameCount ) ) + "%" );
 

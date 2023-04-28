@@ -3,7 +3,7 @@
 
 #include "app/application/render_effect/_fwd.hpp"
 #include "app/core/worker/base_worker.hpp"
-#include "app/old_app/io/filesystem.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include <util/types.hpp>
 #include <vector>
 
@@ -17,7 +17,7 @@ namespace VTX
 			explicit RenderEffectPresetLibraryLoader(
 				App::Application::RenderEffect::RenderEffectLibrary & p_library ) :
 				RenderEffectPresetLibraryLoader( p_library,
-												 FilePath( IO::Filesystem::getRenderEffectPresetsLibraryDir() ) )
+												 FilePath( App::Internal::IO::Filesystem::getRenderEffectPresetsLibraryDir() ) )
 			{
 			}
 			explicit RenderEffectPresetLibraryLoader(

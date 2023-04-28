@@ -9,13 +9,13 @@
 #include "app/event/global.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/io/struct/scene_path_data.hpp"
+#include "app/internal/io/serialization/scene_path_data.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
 #include "app/application/selection/selection_manager.hpp"
 // #include "ui/dialog.hpp"
 // #include "ui/main_window.hpp"
-#include "app/old_app/io/filesystem.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include "app/worker.hpp"
 // #include <QApplication>
 // #include <QPalette>
@@ -33,7 +33,7 @@ namespace VTX
 
 	void VTXApp::start( const std::vector<std::string> & p_args )
 	{
-		VTX_INFO( "Starting application: {}", IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
+		VTX_INFO( "Starting application: {}", App::Internal::IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 
 		// Load settings.
 		VTX_ACTION<App::Action::Setting::Load>();
@@ -57,7 +57,7 @@ namespace VTX
 		_scene = new App::Application::Scene();
 		_scene->getCamera().setScreenSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
 
-		_pathSceneData = new IO::Struct::ScenePathData();
+		_pathSceneData = new App::Internal::IO::Serialization::ScenePathData();
 
 		//_tickTimer.start();
 
@@ -67,7 +67,7 @@ namespace VTX
 		if ( p_args.size() == 0 )
 		{
 			// VTX_ACTION(
-			//	 new App::Action::Main::Open( IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
+			//	 new App::Action::Main::Open( App::Internal::IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
 			// VTX_ACTION( new App::Action::Main::OpenApi( "1aon" ) );
 			// VTX_ACTION( new App::Action::Main::OpenApi( "4hhb" ) );
 			// VTX_ACTION( new App::Action::Main::OpenApi( "1aga" ) );

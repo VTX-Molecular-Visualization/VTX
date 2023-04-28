@@ -17,11 +17,11 @@ namespace VTX::UI::Widget::CustomWidget
 
 	QSize RenderPreviewWidget::sizeHint() const { return _previewPixmpap.size(); }
 
-	void RenderPreviewWidget::takeSnapshot( const IO::Struct::ImageExport & p_exportData )
+	void RenderPreviewWidget::takeSnapshot( const App::Internal::IO::Serialization::ImageExport & p_exportData )
 	{
 		QImage preview = QImage();
 
-		IO::Struct::ImageExport	  snapshotData = p_exportData;
+		App::Internal::IO::Serialization::ImageExport	  snapshotData = p_exportData;
 		const std::pair<int, int> exportSize   = snapshotData.getSize();
 		const float				  exportRatio  = exportSize.first / float( exportSize.second );
 

@@ -1,8 +1,8 @@
 #include "app/internal/worker/representation_loader.hpp"
 #include "app/application/representation/representation_library.hpp"
 #include "app/application/representation/representation_manager.hpp"
-#include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/io/reader/serialized_object.hpp"
+#include "app/core/io/reader/serialized_object.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include <filesystem>
 #include <util/logger.hpp>
 
@@ -12,8 +12,8 @@ namespace VTX::Worker
 	{
 		Util::Chrono chrono;
 
-		IO::Reader::SerializedObject<App::Application::Representation::RepresentationPreset> * const reader
-			= new IO::Reader::SerializedObject<App::Application::Representation::RepresentationPreset>();
+		App::Core::IO::Reader::SerializedObject<App::Application::Representation::RepresentationPreset> * const reader
+			= new App::Core::IO::Reader::SerializedObject<App::Application::Representation::RepresentationPreset>();
 
 		chrono.start();
 
@@ -124,8 +124,8 @@ namespace VTX::Worker
 	{
 		Util::Chrono chrono;
 
-		IO::Reader::SerializedObject<App::Application::Representation::RepresentationPreset> * const reader
-			= new IO::Reader::SerializedObject<App::Application::Representation::RepresentationPreset>();
+		App::Core::IO::Reader::SerializedObject<App::Application::Representation::RepresentationPreset> * const reader
+			= new App::Core::IO::Reader::SerializedObject<App::Application::Representation::RepresentationPreset>();
 
 		chrono.start();
 

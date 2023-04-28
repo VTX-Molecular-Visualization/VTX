@@ -5,7 +5,7 @@
 
 #include "app/core/worker/base_worker.hpp"
 #include "app/old_app/generic/base_opengl.hpp"
-#include "app/old_app/io/struct/image_export.hpp"
+#include "app/internal/io/serialization/image_export.hpp"
 // #include <QImage>
 
 namespace VTX::Worker
@@ -20,14 +20,14 @@ namespace VTX::Worker
 
 		explicit Snapshoter( const MODE &					 p_mode,
 							 const FilePath &				 p_path,
-							 const IO::Struct::ImageExport & p_exportData );
+							 const App::Internal::IO::Serialization::ImageExport & p_exportData );
 
 		// Temp constructor to bypass call with QImage.
-		explicit Snapshoter( const MODE & p_mode, void * p_imageTarget, const IO::Struct::ImageExport & p_exportData );
+		explicit Snapshoter( const MODE & p_mode, void * p_imageTarget, const App::Internal::IO::Serialization::ImageExport & p_exportData );
 
 		// explicit Snapshoter( const MODE &					 p_mode,
 		//					 QImage *						 p_imageTarget,
-		//					 const IO::Struct::ImageExport & p_exportData );
+		//					 const App::Internal::IO::Serialization::ImageExport & p_exportData );
 
 	  protected:
 		void _run() override;
@@ -42,7 +42,7 @@ namespace VTX::Worker
 		const FilePath _path;
 		// QImage *	   _imageTarget = nullptr;
 
-		const IO::Struct::ImageExport _exportData;
+		const App::Internal::IO::Serialization::ImageExport _exportData;
 	};
 } // namespace VTX::Worker
 #endif

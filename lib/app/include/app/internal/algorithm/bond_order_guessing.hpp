@@ -3,7 +3,7 @@
 
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/internal/chemdb/bond.hpp"
-#include "app/old_app/io/reader/residue_data_reader.hpp"
+#include "app/internal/io/reader/residue_data_reader.hpp"
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
 #pragma warning( pop )
@@ -78,7 +78,7 @@ namespace VTX::App::Internal::Algorithm
 		static bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
 		static bool recomputeBondOrdersFromFile( App::Component::Chemistry::Molecule & p_molecule );
 
-		static const std::vector<IO::Reader::BondData> & getResidueBonds( const std::string & p_residueSymbol );
+		static const std::vector<App::Internal::IO::Reader::BondData> & getResidueBonds( const std::string & p_residueSymbol );
 
 	  private:
 		// Guess bond order with topology

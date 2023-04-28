@@ -3,7 +3,7 @@
 
 #include "app/application/representation/_fwd.hpp"
 #include "app/core/worker/base_worker.hpp"
-#include "app/old_app/io/filesystem.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include <map>
 #include <vector>
 
@@ -13,7 +13,7 @@ namespace VTX::Worker
 	{
 	  public:
 		explicit RepresentationLibraryLoader( App::Application::Representation::RepresentationLibrary & p_library ) :
-			RepresentationLibraryLoader( p_library, IO::Filesystem::getRepresentationsLibraryDir() )
+			RepresentationLibraryLoader( p_library, App::Internal::IO::Filesystem::getRepresentationsLibraryDir() )
 		{
 		}
 		explicit RepresentationLibraryLoader( App::Application::Representation::RepresentationLibrary & p_library,

@@ -8,7 +8,7 @@
 #include <app/action/setting.hpp>
 #include <app/action/viewpoint.hpp>
 #include <app/event.hpp>
-#include <app/old_app/io/filesystem.hpp>
+#include <app/internal/io/filesystem.hpp>
 // #include <app/component/object3d/label.hpp>
 // #include <app/model/measurement/angle.hpp>
 // #include <app/model/measurement/dihedral_angle.hpp>
@@ -240,7 +240,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	{
 		VTX_ACTION( new VTX::App::Action::Main::Snapshot(
 			Worker::Snapshoter::MODE::GL,
-			IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
+			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
 	}
 

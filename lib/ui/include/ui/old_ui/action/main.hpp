@@ -10,7 +10,7 @@
 #include <app/component/video/path.hpp>
 #include <app/component/chemistry/secondary_structure.hpp>
 #include <app/component/chemistry/solvent_excluded_surface.hpp>
-#include <app/old_app/io/struct/image_export.hpp>
+#include <app/internal/io/serialization/image_export.hpp>
 #include <string>
 #include <util/types.hpp>
 #include <vector>

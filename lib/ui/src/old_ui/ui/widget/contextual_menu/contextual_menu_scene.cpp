@@ -2,11 +2,10 @@
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/vtx_app.hpp"
 #include "ui/qt/action/viewpoint.hpp"
-
 #include <app/action/main.hpp>
 #include <app/action/scene.hpp>
 #include <app/action/viewpoint.hpp>
-#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/internal/io/serialization/scene_path_data.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -41,7 +40,10 @@ namespace VTX::UI::Widget::ContextualMenu
 		VTX_ACTION( new App::Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 	void ContextualMenuScene::_saveAsSessionAction() { Dialog::openSaveSessionDialog(); }
-	void ContextualMenuScene::_showAllMoleculesAction() const { VTX_ACTION( new App::Action::Scene::ShowAllMolecules() ); }
+	void ContextualMenuScene::_showAllMoleculesAction() const
+	{
+		VTX_ACTION( new App::Action::Scene::ShowAllMolecules() );
+	}
 	void ContextualMenuScene::_addViewpointAction() { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
 	void ContextualMenuScene::_clearAction() { VTX_ACTION( new App::Action::Scene::ResetScene() ); }
 

@@ -1,8 +1,8 @@
 #include "app/internal/worker/representation_saver.hpp"
 #include "app/application/representation/representation_preset.hpp"
+#include "app/core/io/writer/serialized_object.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/io/writer/serialized_object.hpp"
 #include <exception>
 #include <util/logger.hpp>
 
@@ -16,10 +16,10 @@ namespace VTX::Worker
 
 		chrono.start();
 		emit		   logInfo( "Saving " + _representation->getName() );
-		const FilePath path = IO::Filesystem::getRepresentationPath( _representation->getName() );
+		const FilePath path = App::Internal::IO::Filesystem::getRepresentationPath( _representation->getName() );
 
-		IO::Writer::SerializedObject<App::Application::Representation::RepresentationPreset> * writer
-			= new IO::Writer::SerializedObject<App::Application::Representation::RepresentationPreset>();
+		Core::IO::Writer::SerializedObject<App::Application::Representation::RepresentationPreset> * writer
+			= new Core::IO::Writer::SerializedObject<App::Application::Representation::RepresentationPreset>();
 
 		// Write.
 		try
@@ -49,8 +49,8 @@ namespace VTX::Worker
 		chrono.start();
 		VTX_INFO( "Saving " + _representation->getName() );
 
-		IO::Writer::SerializedObject<App::Application::Representation::RepresentationPreset> * writer
-			= new IO::Writer::SerializedObject<App::Application::Representation::RepresentationPreset>();
+		App::Core::IO::Writer::SerializedObject<App::Application::Representation::RepresentationPreset> * writer
+			= new App::Core::IO::Writer::SerializedObject<App::Application::Representation::RepresentationPreset>();
 
 		// Write.
 		try

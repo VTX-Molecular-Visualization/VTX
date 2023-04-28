@@ -3,7 +3,7 @@
 #include "ui/core/layout_builder.hpp"
 
 #include <app/action/main.hpp>
-#include <app/old_app/io/filesystem.hpp>
+#include <app/internal/io/filesystem.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <util/logger.hpp>
 
@@ -14,7 +14,7 @@ namespace VTX::UI::Core
 	void BaseUIApplication::init() {}
 	void BaseUIApplication::start( const std::vector<std::string> & p_args )
 	{
-		VTX_INFO( "Starting application: " + VTX::IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
+		VTX_INFO( "Starting application: " + VTX::App::Internal::IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 
 		_initVTXApp( p_args );
 		_initUI( p_args );

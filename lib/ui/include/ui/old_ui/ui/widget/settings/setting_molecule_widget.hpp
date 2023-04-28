@@ -7,7 +7,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QWidget>
-#include <app/old_app/io/struct/image_export.hpp>
+#include <app/internal/io/serialization/image_export.hpp>
 
 namespace VTX::UI::Widget::Settings
 {

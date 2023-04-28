@@ -17,8 +17,8 @@
 #include "app/application/selection/selection.hpp"
 #include "app/old_app/buffer/molecule.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/old_app/io/reader/prm.hpp"
-#include "app/old_app/io/reader/psf.hpp"
+#include "app/internal/io/reader/prm.hpp"
+#include "app/internal/io/reader/psf.hpp"
 #include "app/internal/math/range.hpp"
 #include <iostream>
 #include <map>

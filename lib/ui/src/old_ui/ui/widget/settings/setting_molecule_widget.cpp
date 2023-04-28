@@ -9,7 +9,7 @@
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/io/struct/image_export.hpp>
+#include <app/internal/io/serialization/image_export.hpp>
 #include <app/application/setting.hpp>
 #include <app/component/chemistry/enum_trajectory.hpp>
 

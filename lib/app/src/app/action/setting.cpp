@@ -4,9 +4,9 @@
 #include "app/manager/action_manager.hpp"
 #include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/application/render_effect/render_effect_library.hpp"
-#include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/io/reader/serialized_object.hpp"
-#include "app/old_app/io/writer/serialized_object.hpp"
+#include "app/internal/io/filesystem.hpp"
+#include "app/core/io/reader/serialized_object.hpp"
+#include "app/core/io/writer/serialized_object.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/internal/scene/camera_manager.hpp"
 #include "app/application/scene.hpp"
@@ -20,14 +20,14 @@ namespace VTX::App::Action::Setting
 {
 	void Load::execute()
 	{
-		const FilePath & path = IO::Filesystem::getSettingJsonFile();
+		const FilePath & path = App::Internal::IO::Filesystem::getSettingJsonFile();
 		if ( std::filesystem::exists( path ) == false )
 		{
 			VTX_INFO( "No settings file found" );
 			return;
 		}
 
-		IO::Reader::SerializedObject<VTX::App::Application::Setting> reader = IO::Reader::SerializedObject<VTX::App::Application::Setting>();
+		Core::IO::Reader::SerializedObject<VTX::App::Application::Setting> reader = Core::IO::Reader::SerializedObject<VTX::App::Application::Setting>();
 		try
 		{
 			reader.readFile( path, VTX_SETTING() );
@@ -41,10 +41,10 @@ namespace VTX::App::Action::Setting
 
 	void Save::execute()
 	{
-		IO::Writer::SerializedObject<VTX::App::Application::Setting> writer = IO::Writer::SerializedObject<VTX::App::Application::Setting>();
+		Core::IO::Writer::SerializedObject<VTX::App::Application::Setting> writer = Core::IO::Writer::SerializedObject<VTX::App::Application::Setting>();
 		try
 		{
-			writer.writeFile( IO::Filesystem::getSettingJsonFile(), VTX_SETTING() );
+			writer.writeFile( App::Internal::IO::Filesystem::getSettingJsonFile(), VTX_SETTING() );
 			VTX_INFO( "Settings saved " );
 		}
 		catch ( const std::exception & p_e )
