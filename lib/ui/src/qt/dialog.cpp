@@ -6,7 +6,7 @@
 #include <util/logger.hpp>
 // #include <app/old_app/io/struct/image_export.hpp>
 // #include <app/old_app/io/struct/scene_path_data.hpp>
-// #include <app/old_app/selection/selection_manager.hpp>
+// #include <app/application/selection/selection_manager.hpp>
 // #include "ui/qt/widget/dialog/download_molecule_dialog.hpp"
 // #include "ui/old_ui/ui/widget/dialog/image_exporter.hpp"
 // #include "ui/old_ui/util/ui.hpp"

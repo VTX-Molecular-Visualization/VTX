@@ -11,7 +11,7 @@ namespace VTX::View::D3
 			"Triangle", { FilePath( "triangle/triangle.vert" ), FilePath( "triangle/triangle.frag" ) } );
 	}
 
-	void Triangle::render( const Object3D::Camera & p_camera ) const
+	void Triangle::render( const App::Component::Render::Camera & p_camera ) const
 	{
 		BaseView3D::render( p_camera );
 
@@ -25,7 +25,7 @@ namespace VTX::View::D3
 		return VTX_PROGRAM_MANAGER().createProgram(
 			"Triangle", { FilePath( "triangle/triangle.vert" ), FilePath( "triangle/triangle.frag" ) } );
 	}
-	void TriangleSES::render( const Object3D::Camera & p_camera ) const
+	void TriangleSES::render( const App::Component::Render::Camera & p_camera ) const
 	{
 		BaseView3D::render( p_camera );
 

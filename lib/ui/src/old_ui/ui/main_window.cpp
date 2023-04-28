@@ -262,10 +262,10 @@ namespace VTX::UI
 
 	void MainWindow::_onShortcutClearSelection() const
 	{
-		if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
+		if ( !App::Application::Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 		{
 			VTX_ACTION( new VTX::App::Action::Selection::ClearSelection(
-				Selection::SelectionManager::get().getSelectionModel() ) );
+				App::Application::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 
@@ -286,16 +286,17 @@ namespace VTX::UI
 
 	void MainWindow::_onShortcutDelete() const
 	{
-		if ( Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
+		if ( App::Application::Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
 		{
-			VTX_ACTION(
-				new VTX::App::Action::Selection::Delete( Selection::SelectionManager::get().getSelectionModel() ) );
+			VTX_ACTION( new VTX::App::Action::Selection::Delete(
+				App::Application::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 
 	void MainWindow::_onShortcutOrient() const
 	{
-		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selection
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new QT::Action::Selection::Orient( selection ) );
 	}
 
@@ -303,14 +304,16 @@ namespace VTX::UI
 
 	void MainWindow::_onShortcutCopy() const
 	{
-		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
 			VTX_ACTION( new VTX::App::Action::Selection::Copy( selectionModel ) );
 	}
 
 	void MainWindow::_onShortcutExtract() const
 	{
-		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
 			VTX_ACTION( new VTX::App::Action::Selection::Extract( selectionModel ) );
 	}

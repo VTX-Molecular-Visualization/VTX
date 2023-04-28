@@ -9,16 +9,16 @@
 #include "app/component/chemistry/secondary_structure.hpp"
 #include "app/component/chemistry/solvent_excluded_surface.hpp"
 #include "app/component/io/molecule_configuration.hpp"
+#include "app/component/object3d/helper/aabb.hpp"
 #include "app/core/model/base_model_3d.hpp"
+#include "app/core/scene/base_scene_item.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/internal/chemdb/unknown_residue_data.hpp"
-#include "app/model/selection.hpp"
+#include "app/application/selection/selection.hpp"
 #include "app/old_app/buffer/molecule.hpp"
 #include "app/old_app/color/rgba.hpp"
-#include "app/old_app/generic/base_scene_item.hpp"
 #include "app/old_app/io/reader/prm.hpp"
 #include "app/old_app/io/reader/psf.hpp"
-#include "app/old_app/object3d/helper/aabb.hpp"
 #include "app/old_app/struct/range.hpp"
 #include <iostream>
 #include <map>
@@ -36,7 +36,7 @@ namespace VTX::App::Component::Chemistry
 		public Core::Model::BaseModel3D<Buffer::Molecule>,
 		public Generic::BaseColorable,
 		public Application::Representation::BaseRepresentable,
-		public Generic::BaseSceneItem
+		public Core::Scene::BaseSceneItem
 	{
 		VTX_MODEL
 
@@ -219,7 +219,7 @@ namespace VTX::App::Component::Chemistry
 		void refreshStructure();
 		void refreshColors();
 		void refreshVisibilities();
-		void refreshSelection( const Model::Selection::MapChainIds * const );
+		void refreshSelection( const App::Application::Selection::SelectionModel::MapChainIds * const );
 		void refreshBondsBuffer();
 
 		inline bool									   hasTrajectory() { return _atomPositionsFrames.size() >= 2; }
@@ -258,7 +258,7 @@ namespace VTX::App::Component::Chemistry
 
 		void setVisible( const bool );
 		void setVisible( const bool p_visible, const bool p_notify );
-		void render( const Object3D::Camera & ) const override;
+		void render( const App::Component::Render::Camera & ) const override;
 
 		bool mergeTopology( const Molecule & );
 
@@ -371,7 +371,7 @@ namespace VTX::App::Component::Chemistry
 		// Fill Buffers Functions
 		void _fillBufferAtomColors();
 		void _fillBufferAtomVisibilities();
-		void _fillBufferAtomSelections( const Model::Selection::MapChainIds * const = nullptr );
+		void _fillBufferAtomSelections( const App::Application::Selection::SelectionModel::MapChainIds * const = nullptr );
 
 #ifdef _DEBUG
 	  public:

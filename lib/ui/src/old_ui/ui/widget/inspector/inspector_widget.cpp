@@ -11,18 +11,18 @@
 #include "ui/old_ui/ui/widget/inspector/multiple_viewpoint_inspector_widget.hpp"
 #include <QFrame>
 #include <QHBoxLayout>
-#include <app/event/global.hpp>
+#include <app/application/representation/representation_library.hpp>
+#include <app/application/representation/representation_manager.hpp>
+#include <app/application/representation/representation_preset.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
-#include <app/model/label.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/application/representation/representation_preset.hpp>
-#include <app/application/representation/representation_library.hpp>
 #include <app/component/chemistry/residue.hpp>
-#include <app/model/selection.hpp>
-#include <app/model/viewpoint.hpp>
-#include <app/application/representation/representation_manager.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/component/object3d/label.hpp>
+#include <app/component/object3d/viewpoint.hpp>
+#include <app/event/global.hpp>
 // #include <tool/old_tool/model/measurement/angle.hpp>
 // #include <tool/old_tool/model/measurement/dihedral_angle.hpp>
 // #include <tool/old_tool/model/measurement/distance.hpp>
@@ -53,42 +53,47 @@ namespace VTX::UI::Widget::Inspector
 		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 		{
 			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event );
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>(
+					p_event );
 
 			_removeTargetToInspector<MultipleMoleculeWidget>( INSPECTOR_TYPE::MOLECULE, castedEvent.get() );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::CHAIN_REMOVED )
 		{
 			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Chain *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Chain *> &>( p_event );
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Chain *> &>(
+					p_event );
 
 			_removeTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::CHAIN, castedEvent.get() );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::RESIDUE_REMOVED )
 		{
 			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Residue *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Residue *> &>( p_event );
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Residue *> &>(
+					p_event );
 
 			_removeTargetToInspector<MultipleResidueWidget>( INSPECTOR_TYPE::RESIDUE, castedEvent.get() );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::ATOM_REMOVED )
 		{
 			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom *> &>( p_event );
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom *> &>(
+					p_event );
 
 			_removeTargetToInspector<MultipleAtomWidget>( INSPECTOR_TYPE::ATOM, castedEvent.get() );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::VIEWPOINT_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Viewpoint *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Component::Object3D::Viewpoint *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Object3D::Viewpoint *> &>(
+					p_event );
 
 			_removeTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, castedEvent.get() );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
 		{
-			// const App::Core::Event::VTXEventArg<Model::Label*> & castedEvent
-			//	= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label*> &>( p_event );
+			// const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> & castedEvent
+			//	= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> &>( p_event );
 
 			// const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
 			// if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
@@ -214,7 +219,8 @@ namespace VTX::UI::Widget::Inspector
 		{
 			clear();
 
-			const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+			const App::Application::Selection::SelectionModel & selectionModel
+				= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 
 			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
@@ -222,8 +228,9 @@ namespace VTX::UI::Widget::Inspector
 
 				if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				{
-					App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
-					const Model::Selection::MapChainIds & moleculeSelection
+					App::Component::Chemistry::Molecule & molecule
+						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
+					const App::Application::Selection::SelectionModel::MapChainIds & moleculeSelection
 						= selectionModel.getMoleculesMap().at( modelID );
 
 					if ( moleculeSelection.getFullySelectedChildCount() == molecule.getRealChainCount() )
@@ -232,7 +239,8 @@ namespace VTX::UI::Widget::Inspector
 					}
 					else
 					{
-						for ( const Model::Selection::PairChainIds & chainData : moleculeSelection )
+						for ( const App::Application::Selection::SelectionModel::PairChainIds & chainData :
+							  moleculeSelection )
 						{
 							App::Component::Chemistry::Chain * const chain = molecule.getChain( chainData.first );
 
@@ -242,9 +250,11 @@ namespace VTX::UI::Widget::Inspector
 							}
 							else
 							{
-								for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
+								for ( const App::Application::Selection::SelectionModel::PairResidueIds & residueData :
+									  chainData.second )
 								{
-									App::Component::Chemistry::Residue * const residue = molecule.getResidue( residueData.first );
+									App::Component::Chemistry::Residue * const residue
+										= molecule.getResidue( residueData.first );
 
 									if ( residueData.second.getFullySelectedChildCount()
 										 == residue->getRealAtomCount() )
@@ -266,8 +276,8 @@ namespace VTX::UI::Widget::Inspector
 				}
 				else if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
 				{
-					Model::Viewpoint & viewpoint
-						= VTX::MVC_MANAGER().getModel<Model::Viewpoint>( modelID );
+					App::Component::Object3D::Viewpoint & viewpoint
+						= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( modelID );
 					_addTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, &viewpoint );
 				}
 				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
@@ -332,7 +342,8 @@ namespace VTX::UI::Widget::Inspector
 	void InspectorWidget::forceInspector( const INSPECTOR_TYPE & p_type )
 	{
 		clear();
-		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		switch ( p_type )
 		{
 		case INSPECTOR_TYPE::MOLECULE:
@@ -342,7 +353,8 @@ namespace VTX::UI::Widget::Inspector
 				const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
 				if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 				{
-					App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
+					App::Component::Chemistry::Molecule & molecule
+						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
 					_addTargetToInspector<MultipleMoleculeWidget>( p_type, &molecule );
 				}
 			}
@@ -352,11 +364,12 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
-				const Model::Selection::MapChainIds & moleculeSelection
+				App::Component::Chemistry::Molecule & molecule
+					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
+				const App::Application::Selection::SelectionModel::MapChainIds & moleculeSelection
 					= selectionModel.getMoleculesMap().at( modelID );
 
-				for ( const Model::Selection::PairChainIds & chainData : moleculeSelection )
+				for ( const App::Application::Selection::SelectionModel::PairChainIds & chainData : moleculeSelection )
 				{
 					App::Component::Chemistry::Chain * const chain = molecule.getChain( chainData.first );
 					_addTargetToInspector<MultipleChainWidget>( INSPECTOR_TYPE::CHAIN, chain );
@@ -368,15 +381,17 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
-				const Model::Selection::MapChainIds & moleculeSelection
+				App::Component::Chemistry::Molecule & molecule
+					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
+				const App::Application::Selection::SelectionModel::MapChainIds & moleculeSelection
 					= selectionModel.getMoleculesMap().at( modelID );
 
-				for ( const Model::Selection::PairChainIds & chainData : moleculeSelection )
+				for ( const App::Application::Selection::SelectionModel::PairChainIds & chainData : moleculeSelection )
 				{
 					const App::Component::Chemistry::Chain * const chain = molecule.getChain( chainData.first );
 
-					for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
+					for ( const App::Application::Selection::SelectionModel::PairResidueIds & residueData :
+						  chainData.second )
 					{
 						App::Component::Chemistry::Residue * const residue = molecule.getResidue( residueData.first );
 						_addTargetToInspector<MultipleResidueWidget>( INSPECTOR_TYPE::RESIDUE, residue );
@@ -389,17 +404,20 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
-				const Model::Selection::MapChainIds & moleculeSelection
+				App::Component::Chemistry::Molecule & molecule
+					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
+				const App::Application::Selection::SelectionModel::MapChainIds & moleculeSelection
 					= selectionModel.getMoleculesMap().at( modelID );
 
-				for ( const Model::Selection::PairChainIds & chainData : moleculeSelection )
+				for ( const App::Application::Selection::SelectionModel::PairChainIds & chainData : moleculeSelection )
 				{
 					const App::Component::Chemistry::Chain * const chain = molecule.getChain( chainData.first );
 
-					for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
+					for ( const App::Application::Selection::SelectionModel::PairResidueIds & residueData :
+						  chainData.second )
 					{
-						const App::Component::Chemistry::Residue * const residue = molecule.getResidue( residueData.first );
+						const App::Component::Chemistry::Residue * const residue
+							= molecule.getResidue( residueData.first );
 
 						for ( const uint & atomID : residueData.second )
 						{
@@ -415,7 +433,8 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				Model::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<Model::Viewpoint>( modelID );
+				App::Component::Object3D::Viewpoint & viewpoint
+					= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( modelID );
 				_addTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, &viewpoint );
 			}
 		}

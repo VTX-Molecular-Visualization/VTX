@@ -44,11 +44,11 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_adjustFrameActions( p_molecule.getFrameCount() );
 	}
-	void TrajectoryFramesMenu::updateFrames( const Model::Selection & p_selection )
+	void TrajectoryFramesMenu::updateFrames( const App::Application::Selection::SelectionModel & p_selection )
 	{
 		uint maxNbFrame = 1;
 
-		for ( const Model::Selection::PairMoleculeIds & pairMolecule : p_selection.getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & pairMolecule : p_selection.getMoleculesMap() )
 		{
 			const App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( pairMolecule.first );
 			maxNbFrame = maxNbFrame < molecule.getFrameCount() ? molecule.getFrameCount() : maxNbFrame;

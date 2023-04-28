@@ -5,7 +5,7 @@
 #include <app/core/event/base_event_receiver_vtx.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/core/view/callback_view.hpp>
-#include <app/model/label.hpp>
+#include <app/component/object3d/label.hpp>
 #include <app/old_app/generic/base_auto_delete.hpp>
 #include <app/old_app/id.hpp>
 #include <string>
@@ -14,7 +14,7 @@
 
 namespace VTX::Model::Measurement
 {
-	class Distance : public Model::Label, public App::Core::Event::BaseEventReceiverVTX, public Generic::BaseAutoDelete
+	class Distance : public App::Component::Object3D::Label, public App::Core::Event::BaseEventReceiverVTX, public Generic::BaseAutoDelete
 	{
 		VTX_MODEL
 
@@ -30,7 +30,7 @@ namespace VTX::Model::Measurement
 					   const App::Component::Chemistry::Atom & p_secondAtom );
 		void receiveEvent( const App::Core::Event::VTXEvent & p_event ) override;
 
-		void _recomputeAABB( Object3D::Helper::AABB & p_aabb ) override;
+		void _recomputeAABB( App::Component::Object3D::Helper::AABB & p_aabb ) override;
 
 		const App::Component::Chemistry::Atom & getFirstAtom() const { return *_atoms[ 0 ]; }
 		const App::Component::Chemistry::Atom & getSecondAtom() const { return *_atoms[ 1 ]; }

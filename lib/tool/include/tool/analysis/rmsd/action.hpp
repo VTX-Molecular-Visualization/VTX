@@ -5,7 +5,7 @@
 #include <app/action.hpp>
 #include <app/core/action/base_action.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/model/selection.hpp>
+#include <app/application/selection/selection.hpp>
 #include <vector>
 
 namespace VTX::Tool::Analysis::RMSD::Action
@@ -26,11 +26,11 @@ namespace VTX::Tool::Analysis::RMSD::Action
 				moleculeData { p_target, p_others }
 			{
 			}
-			RMSDTarget( const Model::Selection * const p_selection ) : selectionData( p_selection ) {}
+			RMSDTarget( const App::Application::Selection::SelectionModel * const p_selection ) : selectionData( p_selection ) {}
 			~RMSDTarget() {};
 
 			const std::pair<const App::Component::Chemistry::Molecule *, std::vector<const App::Component::Chemistry::Molecule *>> moleculeData;
-			const Model::Selection * const												   selectionData;
+			const App::Application::Selection::SelectionModel * const												   selectionData;
 		};
 
 	  public:
@@ -41,7 +41,7 @@ namespace VTX::Tool::Analysis::RMSD::Action
 			_target( p_target, p_others ), _considerTransform( p_considerTransform )
 		{
 		}
-		explicit ComputeRMSD( const Model::Selection & p_selection, const bool p_considerTransform = true ) :
+		explicit ComputeRMSD( const App::Application::Selection::SelectionModel & p_selection, const bool p_considerTransform = true ) :
 			_mode( MODE::SELECTION ), _target( &p_selection ), _considerTransform( p_considerTransform )
 		{
 		}

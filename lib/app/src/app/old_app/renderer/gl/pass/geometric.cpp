@@ -1,5 +1,5 @@
 #include "app/old_app/renderer/gl/pass/geometric.hpp"
-#include "app/model/mesh_triangle.hpp"
+#include "app/component/object3d/mesh_triangle.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
@@ -67,21 +67,21 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.attachTexture( _pickingTexture, Framebuffer::Attachment::COLOR2 );
 	}
 
-	void Geometric::render( const Object3D::Scene & p_scene, const GL & p_renderer )
+	void Geometric::render( const App::Application::Scene & p_scene, const GL & p_renderer )
 	{
 		_fbo.bind();
 		_fbo.clear( Framebuffer::ClearBuffer::COLOR_DEPTH );
 
 		//_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
+		for ( const App::Application::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 		{
 			pair.first->render( p_scene.getCamera() );
 		}
-		for ( const Object3D::Scene::MeshTrianglePtr & mesh : p_scene.getMeshes() )
+		for ( const App::Application::Scene::MeshTrianglePtr & mesh : p_scene.getMeshes() )
 		{
 			mesh->render( p_scene.getCamera() );
 		}
-		for ( const Object3D::Scene::HelperPtr & helper : p_scene.getHelpers() )
+		for ( const App::Application::Scene::HelperPtr & helper : p_scene.getHelpers() )
 		{
 			helper->render( p_scene.getCamera() );
 		}

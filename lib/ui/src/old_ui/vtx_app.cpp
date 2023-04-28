@@ -41,7 +41,7 @@
 //		//		VTX::MVC_MANAGER();
 //		//		Action::ActionManager::get();
 //		//		Event::EventManager::get();
-//		//		Selection::SelectionManager::get();
+//		//		App::Application::Selection::SelectionManager::get();
 //		//		Worker::WorkerManager::get();
 //		//
 //		//		// Create Databases
@@ -52,7 +52,7 @@
 //		//		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 //		//
 //		//		// Create scene.
-//		//		_scene = new Object3D::Scene();
+//		//		_scene = new App::Application::Scene();
 //		//		_scene->getCamera().setScreenSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
 //		//
 //		//		_pathSceneData = new IO::Struct::ScenePathData();
@@ -183,7 +183,7 @@
 //		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
 //		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 //
-//		// Selection::SelectionManager::get().deleteModel();
+//		// App::Application::Selection::SelectionManager::get().deleteModel();
 //
 //		// if ( _scene != nullptr )
 //		//{

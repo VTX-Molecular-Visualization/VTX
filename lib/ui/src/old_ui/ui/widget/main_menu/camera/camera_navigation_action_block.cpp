@@ -7,10 +7,10 @@
 #include <app/action/main.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/event/global.hpp>
-#include <app/model/selection.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
@@ -109,7 +109,8 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	}
 	void CameraNavigationActionBlock::_orientCamera() const
 	{
-		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selection
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new QT::Action::Selection::Orient( selection ) );
 	}
 

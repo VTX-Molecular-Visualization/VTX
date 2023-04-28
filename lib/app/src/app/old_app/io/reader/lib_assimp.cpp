@@ -4,7 +4,7 @@
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/model/mesh_triangle.hpp"
+#include "app/component/object3d/mesh_triangle.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include <util/types.hpp>
 // #include <assimp/Importer.hpp>
@@ -17,7 +17,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			void LibAssimp::readFile( const FilePath & p_path, Model::MeshTriangle & p_mesh )
+			void LibAssimp::readFile( const FilePath & p_path, App::Component::Object3D::MeshTriangle & p_mesh )
 			{
 				/*
 				Assimp::Importer Importer;
@@ -58,7 +58,7 @@ namespace VTX
 					{
 						const aiFace face = mesh->mFaces[ f ];
 
-						// Model::MeshTriangle::Triangle & tri = p_mesh.getTriangle( currentTriangle );
+						// App::Component::Object3D::MeshTriangle::Triangle & tri = p_mesh.getTriangle( currentTriangle );
 
 						for ( uint v = 0; v < 3; ++v )
 						{

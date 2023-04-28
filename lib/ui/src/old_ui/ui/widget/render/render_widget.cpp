@@ -21,13 +21,13 @@
 #include <app/action/viewpoint.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/model/label.hpp>
+#include <app/component/object3d/label.hpp>
 #include <app/old_app/io/filesystem.hpp>
 // #include <tool/old_tool/model/measurement/angle.hpp>
 // #include <tool/old_tool/model/measurement/dihedral_angle.hpp>
 // #include <tool/old_tool/model/measurement/distance.hpp>
 // #include <tool/old_tool/model/measurement/measure_in_progress.hpp>
-#include <app/model/mesh_triangle.hpp>
+#include <app/component/object3d/mesh_triangle.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <util/logger.hpp>
 
@@ -46,8 +46,8 @@ namespace VTX::UI::Widget::Render
 	{
 		if ( p_event.name == VTX::App::Event::Global::LABEL_ADDED )
 		{
-			const App::Core::Event::VTXEventArg<Model::Label *> & castedEvent
-				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label *> &>( p_event );
+			const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> & castedEvent
+				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> &>( p_event );
 
 			const ID::VTX_ID & labeltype = castedEvent.get()->getTypeId();
 
@@ -94,8 +94,8 @@ namespace VTX::UI::Widget::Render
 		}
 		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
 		{
-			const App::Core::Event::VTXEventArg<Model::Label *> & castedEvent
-				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label *> &>( p_event );
+			const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> & castedEvent
+				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> &>( p_event );
 
 			const ID::VTX_ID & labelTypeID = castedEvent.get()->getTypeId();
 

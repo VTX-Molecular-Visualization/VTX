@@ -52,7 +52,7 @@ namespace VTX::Renderer
 		}
 
 		virtual void init( const uint, const uint, const GLuint ) = 0;
-		virtual void renderFrame( const Object3D::Scene & )		  = 0;
+		virtual void renderFrame( const App::Application::Scene & )		  = 0;
 
 		virtual void updateRenderSetting( const RENDER_SETTING ) {}
 

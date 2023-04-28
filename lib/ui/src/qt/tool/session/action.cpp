@@ -9,7 +9,7 @@
 #include <app/internal/worker/scene_loader.hpp>
 #include <app/old_app/id.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/application/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <util/logger.hpp>
 

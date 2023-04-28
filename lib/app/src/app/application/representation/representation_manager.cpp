@@ -1,16 +1,16 @@
 #include "app/application/representation/representation_manager.hpp"
 #include "app/application/representation/base_representable.hpp"
 #include "app/application/representation/instantiated_representation.hpp"
-#include "app/application/representation/representation_preset.hpp"
 #include "app/application/representation/representation_library.hpp"
+#include "app/application/representation/representation_preset.hpp"
+#include "app/application/selection/selection.hpp"
+#include "app/application/setting.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/core/view/callback_view.hpp"
 #include "app/event.hpp"
-#include "app/model/selection.hpp"
 #include "app/mvc.hpp"
-#include "app/application/setting.hpp"
 
 namespace VTX::App::Application::Representation
 {
@@ -77,10 +77,12 @@ namespace VTX::App::Application::Representation
 		}
 	};
 
-	void RepresentationManager::instantiateRepresentations( const RepresentationPreset * const p_representation,
-															const Model::Selection &		   p_selection )
+	void RepresentationManager::instantiateRepresentations(
+		const RepresentationPreset * const					p_representation,
+		const App::Application::Selection::SelectionModel & p_selection )
 	{
-		for ( const Model::Selection::PairMoleculeIds & molData : p_selection.getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & molData :
+			  p_selection.getMoleculesMap() )
 		{
 			App::Component::Chemistry::Molecule & molecule
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( molData.first );
@@ -90,7 +92,7 @@ namespace VTX::App::Application::Representation
 			}
 			else
 			{
-				for ( const Model::Selection::PairChainIds & chainData : molData.second )
+				for ( const App::Application::Selection::SelectionModel::PairChainIds & chainData : molData.second )
 				{
 					App::Component::Chemistry::Chain & chain = *molecule.getChain( chainData.first );
 					if ( chainData.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
@@ -99,7 +101,8 @@ namespace VTX::App::Application::Representation
 					}
 					else
 					{
-						for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
+						for ( const App::Application::Selection::SelectionModel::PairResidueIds & residueData :
+							  chainData.second )
 						{
 							App::Component::Chemistry::Residue & residue = *molecule.getResidue( residueData.first );
 							instantiateRepresentation( p_representation, residue, false, true );
@@ -267,7 +270,8 @@ namespace VTX::App::Application::Representation
 		{
 			const int quickAccessCount = _getRepresentationWithQuickAccessCount();
 
-			if ( quickAccessCount >= VTX::App::Application::Setting::MAX_QUICK_ACCESS_COUNT && _lastRepresentationQuickAccessed != nullptr )
+			if ( quickAccessCount >= VTX::App::Application::Setting::MAX_QUICK_ACCESS_COUNT
+				 && _lastRepresentationQuickAccessed != nullptr )
 				_lastRepresentationQuickAccessed->setQuickAccess( false );
 		}
 

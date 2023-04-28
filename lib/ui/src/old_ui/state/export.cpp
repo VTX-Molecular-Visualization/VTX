@@ -1,11 +1,11 @@
 #include "ui/old_ui/state/export.hpp"
 #include <app/action/main.hpp>
+#include <app/component/object3d/viewpoint.hpp>
+#include <app/component/render/camera.hpp>
+#include <app/component/video/path.hpp>
 #include <app/internal/worker/program_launcher.hpp>
-#include <app/model/path.hpp>
-#include <app/model/viewpoint.hpp>
-#include <app/old_app/object3d/camera.hpp>
-#include <app/old_app/object3d/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
+#include <app/application/scene.hpp>
 #include <util/chrono.hpp>
 
 namespace VTX
@@ -15,7 +15,7 @@ namespace VTX
 		// Action loop
 		void Export::enter( void * const p_arg )
 		{
-			_path		   = (Model::Path *)p_arg;
+			_path		   = (App::Component::Video::Path *)p_arg;
 			_directoryName = std::to_string( Util::Chrono::getTimestamp() );
 			_directoryName.erase( remove_if( _directoryName.begin(), _directoryName.end(), isspace ),
 								  _directoryName.end() );
@@ -47,8 +47,8 @@ namespace VTX
 		{
 			BaseState::update( p_deltaTime );
 
-			float			 time	   = _frame / (float)VTX::App::Application::Setting::VIDEO_FPS_DEFAULT;
-			Model::Viewpoint viewpoint = _path->getInterpolatedViewpoint( time );
+			float time = _frame / (float)VTX::App::Application::Setting::VIDEO_FPS_DEFAULT;
+			App::Component::Object3D::Viewpoint viewpoint = _path->getInterpolatedViewpoint( time );
 
 			// Action.
 			/*
@@ -115,8 +115,10 @@ namespace VTX
 			FilePath files = IO::Filesystem::getVideosBatchPath( _directoryName );
 			files /= "frame%06d.png";
 			std::string command = IO::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate "
-								  + std::to_string( VTX::App::Application::Setting::VIDEO_FPS_DEFAULT ) + " -i " + files.string()
-								  + " -vcodec libx264 -crf " + std::to_string( VTX::App::Application::Setting::VIDEO_CRF_DEFAULT ) + " "
+								  + std::to_string( VTX::App::Application::Setting::VIDEO_FPS_DEFAULT ) + " -i " +
+		files.string()
+								  + " -vcodec libx264 -crf " + std::to_string(
+		VTX::App::Application::Setting::VIDEO_CRF_DEFAULT ) + " "
 								  + IO::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
 			Worker::ProgramLauncher * worker = new Worker::ProgramLauncher( command );
 			VTX_THREAD( worker );

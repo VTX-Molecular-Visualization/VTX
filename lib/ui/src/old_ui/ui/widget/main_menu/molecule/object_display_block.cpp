@@ -1,12 +1,12 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/object_display_block.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <app/action/molecule.hpp>
-#include <app/mvc.hpp>
-#include <app/event/global.hpp>
+#include <app/application/scene.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/model/selection.hpp>
-#include <app/old_app/object3d/scene.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/event/global.hpp>
+#include <app/mvc.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
@@ -76,7 +76,8 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 	void ObjectDisplayBlock::_refreshButtons()
 	{
-		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		// No molecules, buttons disabled
@@ -109,18 +110,22 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		}
 	}
 
-	void ObjectDisplayBlock::_fillContainerWithTarget( std::unordered_set<App::Component::Chemistry::Molecule *> & p_container ) const
+	void ObjectDisplayBlock::_fillContainerWithTarget(
+		std::unordered_set<App::Component::Chemistry::Molecule *> & p_container ) const
 	{
-		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selection
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		// No selection => check all molecules in scene
 		if ( selection.hasMolecule() )
 		{
-			selection.getItemsOfType<App::Component::Chemistry::Molecule>( VTX::ID::Model::MODEL_MOLECULE, p_container );
+			selection.getItemsOfType<App::Component::Chemistry::Molecule>( VTX::ID::Model::MODEL_MOLECULE,
+																		   p_container );
 		}
 		else
 		{
-			for ( const std::pair<App::Component::Chemistry::Molecule *, float> & molData : VTXApp::get().getScene().getMolecules() )
+			for ( const std::pair<App::Component::Chemistry::Molecule *, float> & molData :
+				  VTXApp::get().getScene().getMolecules() )
 			{
 				p_container.emplace( molData.first );
 			}
@@ -158,7 +163,8 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 	void ObjectDisplayBlock::_toggleWaterVisibilityAction() const
 	{
-		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		bool showWater = true;
@@ -170,7 +176,8 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	}
 	void ObjectDisplayBlock::_toggleSolventVisibilityAction() const
 	{
-		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		bool showSolvent = true;
@@ -182,7 +189,8 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	}
 	void ObjectDisplayBlock::_toggleHydrogenVisibilityAction() const
 	{
-		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		bool showHydrogen = true;
@@ -194,7 +202,8 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	}
 	void ObjectDisplayBlock::_toggleIonVisibilityAction() const
 	{
-		std::unordered_set<App::Component::Chemistry::Molecule *> molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Component::Chemistry::Molecule *>();
 		_fillContainerWithTarget( molecules );
 
 		bool showIon = true;

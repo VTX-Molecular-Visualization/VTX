@@ -22,7 +22,7 @@ namespace VTX::Renderer::GL
 		~GL();
 
 		void init( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId ) override;
-		void renderFrame( const Object3D::Scene & ) override;
+		void renderFrame( const App::Application::Scene & ) override;
 		void updateRenderSetting( const RENDER_SETTING ) override;
 		void resize( const uint, const uint, const GLuint ) override;
 

@@ -7,7 +7,7 @@
 #include <app/event/global.hpp>
 #include <app/internal/worker/snapshoter.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/model/path.hpp>
+#include <app/component/video/path.hpp>
 #include <app/component/chemistry/secondary_structure.hpp>
 #include <app/component/chemistry/solvent_excluded_surface.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
@@ -20,7 +20,7 @@ namespace VTX::Action::Main
 	class ChangeSelectionGranularity : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSelectionGranularity( const VTX::Selection::Granularity & p_granularity ) :
+		explicit ChangeSelectionGranularity( const VTX::App::Application::Selection::GRANULARITY & p_granularity ) :
 			_granularity( p_granularity )
 		{
 		}
@@ -28,7 +28,7 @@ namespace VTX::Action::Main
 		virtual void execute() override;
 
 	  private:
-		const VTX::Selection::Granularity _granularity;
+		const VTX::App::Application::Selection::GRANULARITY _granularity;
 	};
 	class ChangePicker : public App::Core::Action::BaseAction
 	{

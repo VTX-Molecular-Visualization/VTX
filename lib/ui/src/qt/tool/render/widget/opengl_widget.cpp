@@ -6,8 +6,8 @@
 #include <QOpenGLVersionFunctionsFactory>
 #include <QScreen>
 #include <app/application/render_effect/render_effect_preset.hpp>
-#include <app/old_app/object3d/camera.hpp>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/component/render/camera.hpp>
+#include <app/application/scene.hpp>
 #include <app/old_app/renderer/gl/gl.hpp>
 #include <app/old_app/renderer/gl/program_manager.hpp>
 #include <app/old_app/renderer/rt/ray_tracer.hpp>

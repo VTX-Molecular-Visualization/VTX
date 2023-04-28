@@ -10,12 +10,12 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/model/path.hpp>
+#include <app/component/video/path.hpp>
 
 namespace VTX::UI::QT::Tool
 {
 	Scene::Widget::SceneItemWidget * SceneWindow::MoleculeInstancier::instantiateItem(
-		Generic::BaseSceneItem * const p_item )
+		App::Core::Scene::BaseSceneItem * const p_item )
 	{
 		Scene::Widget::SceneWidget * const sceneWidget
 			= QT::QT_APP()->getMainWindow().getPanel<Scene::Widget::SceneWidget>( Tool::SCENE_WINDOW_KEY );
@@ -42,12 +42,12 @@ namespace VTX::UI::QT::Tool
 	}
 
 	Scene::Widget::SceneItemWidget * SceneWindow::PathInstancier::instantiateItem(
-		Generic::BaseSceneItem * const p_item )
+		App::Core::Scene::BaseSceneItem * const p_item )
 	{
 		Scene::Widget::SceneWidget * const sceneWidget
 			= QT::QT_APP()->getMainWindow().getPanel<Scene::Widget::SceneWidget>( Tool::SCENE_WINDOW_KEY );
 
-		Model::Path * const path = static_cast<Model::Path *>( p_item );
+	 App::Component::Video::Path * const path = static_cast<App::Component::Video::Path *>( p_item );
 
 		Scene::Widget::View::PathSceneView * const pathSceneItemWidget
 			= QT::WidgetFactory::get().instantiateViewWidget<Scene::Widget::View::PathSceneView>(
@@ -61,7 +61,7 @@ namespace VTX::UI::QT::Tool
 		const Scene::Widget::View::PathSceneView * const pathSceneItemWidget
 			= dynamic_cast<const Scene::Widget::View::PathSceneView *>( p_sceneWidget );
 
-		const Model::Path & path = VTX::MVC_MANAGER().getModel<Model::Path>( pathSceneItemWidget->getModelID() );
+		const App::Component::Video::Path & path = VTX::MVC_MANAGER().getModel<App::Component::Video::Path>( pathSceneItemWidget->getModelID() );
 
 		VTX::MVC_MANAGER().deleteView<Scene::Widget::View::PathSceneView>( &path, ID::View::UI_SCENE_PATH );
 	}
@@ -92,14 +92,14 @@ namespace VTX::UI::QT::Tool
 	}
 
 	void SceneWindow::_instantiateObjectsInScene( Scene::Widget::SceneWidget & p_sceneWidget,
-												  const VTX::Object3D::Scene & p_scene ) const
+												  const VTX::App::Application::Scene & p_scene ) const
 	{
 		for ( const std::pair<App::Component::Chemistry::Molecule *, float> pairMolecule : p_scene.getMolecules() )
 		{
 			p_sceneWidget.instantiateSceneItemWidget( pairMolecule.first );
 		}
 
-		for ( Model::Path * const path : p_scene.getPaths() )
+		for ( App::Component::Video::Path * const path : p_scene.getPaths() )
 		{
 			p_sceneWidget.instantiateSceneItemWidget( path );
 		}

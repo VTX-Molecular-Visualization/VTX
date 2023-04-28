@@ -2,10 +2,10 @@
 #include "app/mvc.hpp"
 #include "app/component/chemistry/generated_molecule.hpp"
 #include "app/component/chemistry/molecule.hpp"
-#include "app/model/selection.hpp"
+#include "app/application/selection/selection.hpp"
 #include "app/old_app/generic/base_visible.hpp"
-#include "app/old_app/object3d/scene.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
+#include "app/application/scene.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <map>
@@ -33,7 +33,7 @@ namespace VTX::App::Action::Atom
 				atomIDsPerMolecules[ atom->getMoleculePtr() ].emplace_back( atom->getIndex() );
 			}
 
-			for ( const Object3D::Scene::PairMoleculePtrFloat & sceneMolecule :
+			for ( const App::Application::Scene::PairMoleculePtrFloat & sceneMolecule :
 				  VTXApp::get().getScene().getMolecules() )
 			{
 				App::Component::Chemistry::Molecule * const molecule = sceneMolecule.first;
@@ -80,7 +80,7 @@ namespace VTX::App::Action::Atom
 
 	void Delete::execute()
 	{
-		VTX::Selection::SelectionManager::get().getSelectionModel().unselectAtom( _atom );
+		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().unselectAtom( _atom );
 
 		App::Component::Chemistry::Molecule * const molecule = _atom.getMoleculePtr();
 		molecule->removeAtom( _atom.getIndex() );
@@ -112,7 +112,7 @@ namespace VTX::App::Action::Atom
 
 	void Extract::execute()
 	{
-		VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().clear();
 
 		App::Component::Chemistry::GeneratedMolecule * const generatedMolecule
 			= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
@@ -120,6 +120,6 @@ namespace VTX::App::Action::Atom
 		generatedMolecule->extractAtom( _target );
 		VTXApp::get().getScene().addMolecule( generatedMolecule );
 
-		VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );
+		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );
 	}
 } // namespace VTX::App::Action::Atom

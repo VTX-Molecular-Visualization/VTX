@@ -1,15 +1,14 @@
 #include "ui/old_ui/controller/picker.hpp"
 #include "ui/old_ui/ui/main_window.hpp"
 #include "ui/qt/action/selection.hpp"
-
 #include <app/action/selection.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
-#include <app/model/selection.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <util/logger.hpp>
 
@@ -35,7 +34,8 @@ namespace VTX::Controller
 		_performSelection( ids );
 		_lastClickedIds = ids;
 
-		Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selection
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		const QPoint position = renderWidget.mapToGlobal( QPoint( p_x, p_y ) );
 
@@ -54,8 +54,8 @@ namespace VTX::Controller
 		// Clear selection if not CTRL.
 		if ( _isModifierExclusive( ModifierFlag::Control ) == false )
 		{
-			VTX_ACTION(
-				new App::Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
+			VTX_ACTION( new App::Action::Selection::ClearSelection(
+				App::Application::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 
 		// If something clicked.
@@ -64,10 +64,10 @@ namespace VTX::Controller
 			const ID::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( p_ids.x );
 
 			// Already selected.
-			if ( Selection::SelectionManager::get().getSelectionModel().isModelSelected(
+			if ( App::Application::Selection::SelectionManager::get().getSelectionModel().isModelSelected(
 					 VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( p_ids.x ) )
 				 && ( p_ids.y != App::Core::Model::ID_UNKNOWN
-						  ? Selection::SelectionManager::get().getSelectionModel().isModelSelected(
+						  ? App::Application::Selection::SelectionManager::get().getSelectionModel().isModelSelected(
 							  VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( p_ids.y ) )
 						  : true ) )
 			{
@@ -77,21 +77,25 @@ namespace VTX::Controller
 					// Residue.
 					if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
 					{
-						App::Component::Chemistry::Residue & residuePicked = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_ids.x );
+						App::Component::Chemistry::Residue & residuePicked
+							= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_ids.x );
 						_unselectItem( residuePicked );
 					}
 					// Bond.
 					else if ( p_ids.y != App::Core::Model::ID_UNKNOWN )
 					{
-						App::Component::Chemistry::Atom & atomPicked1 = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.x );
-						App::Component::Chemistry::Atom & atomPicked2 = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.y );
+						App::Component::Chemistry::Atom & atomPicked1
+							= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.x );
+						App::Component::Chemistry::Atom & atomPicked2
+							= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.y );
 
 						_unselectItem( atomPicked1, atomPicked2 );
 					}
 					// Atom.
 					else
 					{
-						App::Component::Chemistry::Atom & atomPicked = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.x );
+						App::Component::Chemistry::Atom & atomPicked
+							= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.x );
 						_unselectItem( atomPicked );
 					}
 				}
@@ -102,21 +106,25 @@ namespace VTX::Controller
 				// Residue.
 				if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
 				{
-					App::Component::Chemistry::Residue & residuePicked = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_ids.x );
+					App::Component::Chemistry::Residue & residuePicked
+						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_ids.x );
 					_selectItem( residuePicked );
 				}
 				// Bond.
 				else if ( p_ids.y != App::Core::Model::ID_UNKNOWN )
 				{
-					App::Component::Chemistry::Atom & atomPicked1 = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.x );
-					App::Component::Chemistry::Atom & atomPicked2 = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.y );
+					App::Component::Chemistry::Atom & atomPicked1
+						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.x );
+					App::Component::Chemistry::Atom & atomPicked2
+						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.y );
 
 					_selectItem( atomPicked1, atomPicked2 );
 				}
 				// Atom.
 				else
 				{
-					App::Component::Chemistry::Atom & atomPicked = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.x );
+					App::Component::Chemistry::Atom & atomPicked
+						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_ids.x );
 					_selectItem( atomPicked );
 				}
 			}
@@ -125,37 +133,40 @@ namespace VTX::Controller
 
 	void Picker::_selectItem( App::Component::Chemistry::Atom & p_atomPicked ) const
 	{
-		Model::Selection & selectionModel	 = Selection::SelectionManager::get().getSelectionModel();
-		const bool		   appendToSelection = _isModifierExclusive( ModifierFlag::Control );
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const bool appendToSelection = _isModifierExclusive( ModifierFlag::Control );
 
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
-		case VTX::Selection::Granularity::MOLECULE:
+		case VTX::App::Application::Selection::GRANULARITY::MOLECULE:
 			VTX_ACTION( new App::Action::Selection::SelectMolecule(
 				selectionModel, *p_atomPicked.getMoleculePtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::Granularity::CHAIN:
-			VTX_ACTION(
-				new App::Action::Selection::SelectChain( selectionModel, *p_atomPicked.getChainPtr(), appendToSelection ) );
+		case VTX::App::Application::Selection::GRANULARITY::CHAIN:
+			VTX_ACTION( new App::Action::Selection::SelectChain(
+				selectionModel, *p_atomPicked.getChainPtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::Granularity::RESIDUE:
+		case VTX::App::Application::Selection::GRANULARITY::RESIDUE:
 			VTX_ACTION( new App::Action::Selection::SelectResidue(
 				selectionModel, *p_atomPicked.getResiduePtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::Granularity::ATOM:
+		case VTX::App::Application::Selection::GRANULARITY::ATOM:
 		default:
 			VTX_ACTION( new App::Action::Selection::SelectAtom( selectionModel, p_atomPicked, appendToSelection ) );
 			break;
 		}
 	}
-	void Picker::_selectItem( App::Component::Chemistry::Atom & p_atomPicked1, App::Component::Chemistry::Atom & p_atomPicked2 ) const
+	void Picker::_selectItem( App::Component::Chemistry::Atom & p_atomPicked1,
+							  App::Component::Chemistry::Atom & p_atomPicked2 ) const
 	{
-		Model::Selection & selectionModel	 = Selection::SelectionManager::get().getSelectionModel();
-		const bool		   appendToSelection = _isModifierExclusive( ModifierFlag::Control );
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const bool appendToSelection = _isModifierExclusive( ModifierFlag::Control );
 
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
-		case VTX::Selection::Granularity::MOLECULE:
+		case VTX::App::Application::Selection::GRANULARITY::MOLECULE:
 		{
 			App::Component::Chemistry::Molecule * const mol1 = p_atomPicked1.getMoleculePtr();
 			App::Component::Chemistry::Molecule * const mol2 = p_atomPicked2.getMoleculePtr();
@@ -170,7 +181,7 @@ namespace VTX::Controller
 			}
 			break;
 		}
-		case VTX::Selection::Granularity::CHAIN:
+		case VTX::App::Application::Selection::GRANULARITY::CHAIN:
 		{
 			App::Component::Chemistry::Chain * const chain1 = p_atomPicked1.getChainPtr();
 			App::Component::Chemistry::Chain * const chain2 = p_atomPicked2.getChainPtr();
@@ -186,7 +197,7 @@ namespace VTX::Controller
 			}
 			break;
 		}
-		case VTX::Selection::Granularity::RESIDUE:
+		case VTX::App::Application::Selection::GRANULARITY::RESIDUE:
 		{
 			App::Component::Chemistry::Residue * const res1 = p_atomPicked1.getResiduePtr();
 			App::Component::Chemistry::Residue * const res2 = p_atomPicked2.getResiduePtr();
@@ -197,16 +208,18 @@ namespace VTX::Controller
 			}
 			else
 			{
-				VTX_ACTION( new App::Action::Selection::SelectResidue( selectionModel, { res1, res2 }, appendToSelection ) );
+				VTX_ACTION(
+					new App::Action::Selection::SelectResidue( selectionModel, { res1, res2 }, appendToSelection ) );
 			}
 			break;
 		}
-		case VTX::Selection::Granularity::ATOM:
+		case VTX::App::Application::Selection::GRANULARITY::ATOM:
 		default:
 		{
 			if ( &p_atomPicked1 == &p_atomPicked2 )
 			{
-				VTX_ACTION( new App::Action::Selection::SelectAtom( selectionModel, p_atomPicked1, appendToSelection ) );
+				VTX_ACTION(
+					new App::Action::Selection::SelectAtom( selectionModel, p_atomPicked1, appendToSelection ) );
 			}
 			else
 			{
@@ -219,60 +232,65 @@ namespace VTX::Controller
 	}
 	void Picker::_selectItem( App::Component::Chemistry::Residue & p_residuePicked ) const
 	{
-		Model::Selection & selectionModel	 = Selection::SelectionManager::get().getSelectionModel();
-		const bool		   appendToSelection = _isModifierExclusive( ModifierFlag::Control );
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const bool appendToSelection = _isModifierExclusive( ModifierFlag::Control );
 
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
-		case VTX::Selection::Granularity::MOLECULE:
+		case VTX::App::Application::Selection::GRANULARITY::MOLECULE:
 			VTX_ACTION( new App::Action::Selection::SelectMolecule(
 				selectionModel, *p_residuePicked.getMoleculePtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::Granularity::CHAIN:
+		case VTX::App::Application::Selection::GRANULARITY::CHAIN:
 			VTX_ACTION( new App::Action::Selection::SelectChain(
 				selectionModel, *p_residuePicked.getChainPtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::Granularity::RESIDUE:
-		case VTX::Selection::Granularity::ATOM:
+		case VTX::App::Application::Selection::GRANULARITY::RESIDUE:
+		case VTX::App::Application::Selection::GRANULARITY::ATOM:
 		default:
-			VTX_ACTION( new App::Action::Selection::SelectResidue( selectionModel, p_residuePicked, appendToSelection ) );
+			VTX_ACTION(
+				new App::Action::Selection::SelectResidue( selectionModel, p_residuePicked, appendToSelection ) );
 			break;
 		}
 	}
 
 	void Picker::_unselectItem( App::Component::Chemistry::Atom & p_atomPicked ) const
 	{
-		Model::Selection & selectionModel	 = Selection::SelectionManager::get().getSelectionModel();
-		const bool		   appendToSelection = _isModifierExclusive( ModifierFlag::Control );
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const bool appendToSelection = _isModifierExclusive( ModifierFlag::Control );
 
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
-		case VTX::Selection::Granularity::MOLECULE:
+		case VTX::App::Application::Selection::GRANULARITY::MOLECULE:
 			VTX_ACTION( new App::Action::Selection::UnselectMolecule(
 				selectionModel, *p_atomPicked.getMoleculePtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::Granularity::CHAIN:
+		case VTX::App::Application::Selection::GRANULARITY::CHAIN:
 			VTX_ACTION( new App::Action::Selection::UnselectChain(
 				selectionModel, *p_atomPicked.getChainPtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::Granularity::RESIDUE:
+		case VTX::App::Application::Selection::GRANULARITY::RESIDUE:
 			VTX_ACTION( new App::Action::Selection::UnselectResidue(
 				selectionModel, *p_atomPicked.getResiduePtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::Granularity::ATOM:
+		case VTX::App::Application::Selection::GRANULARITY::ATOM:
 		default:
 			VTX_ACTION( new App::Action::Selection::UnselectAtom( selectionModel, p_atomPicked, appendToSelection ) );
 			break;
 		}
 	}
-	void Picker::_unselectItem( App::Component::Chemistry::Atom & p_atomPicked1, App::Component::Chemistry::Atom & p_atomPicked2 ) const
+	void Picker::_unselectItem( App::Component::Chemistry::Atom & p_atomPicked1,
+								App::Component::Chemistry::Atom & p_atomPicked2 ) const
 	{
-		Model::Selection & selectionModel	 = Selection::SelectionManager::get().getSelectionModel();
-		const bool		   appendToSelection = _isModifierExclusive( ModifierFlag::Control );
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const bool appendToSelection = _isModifierExclusive( ModifierFlag::Control );
 
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
-		case VTX::Selection::Granularity::MOLECULE:
+		case VTX::App::Application::Selection::GRANULARITY::MOLECULE:
 		{
 			App::Component::Chemistry::Molecule * const mol1 = p_atomPicked1.getMoleculePtr();
 			App::Component::Chemistry::Molecule * const mol2 = p_atomPicked2.getMoleculePtr();
@@ -287,7 +305,7 @@ namespace VTX::Controller
 			}
 			break;
 		}
-		case VTX::Selection::Granularity::CHAIN:
+		case VTX::App::Application::Selection::GRANULARITY::CHAIN:
 		{
 			App::Component::Chemistry::Chain * const chain1 = p_atomPicked1.getChainPtr();
 			App::Component::Chemistry::Chain * const chain2 = p_atomPicked2.getChainPtr();
@@ -298,12 +316,12 @@ namespace VTX::Controller
 			}
 			else
 			{
-				VTX_ACTION(
-					new App::Action::Selection::UnselectChain( selectionModel, { chain1, chain2 }, appendToSelection ) );
+				VTX_ACTION( new App::Action::Selection::UnselectChain(
+					selectionModel, { chain1, chain2 }, appendToSelection ) );
 			}
 			break;
 		}
-		case VTX::Selection::Granularity::RESIDUE:
+		case VTX::App::Application::Selection::GRANULARITY::RESIDUE:
 		{
 			App::Component::Chemistry::Residue * const res1 = p_atomPicked1.getResiduePtr();
 			App::Component::Chemistry::Residue * const res2 = p_atomPicked2.getResiduePtr();
@@ -319,11 +337,12 @@ namespace VTX::Controller
 			}
 		}
 		break;
-		case VTX::Selection::Granularity::ATOM:
+		case VTX::App::Application::Selection::GRANULARITY::ATOM:
 		default:
 			if ( &p_atomPicked1 == &p_atomPicked2 )
 			{
-				VTX_ACTION( new App::Action::Selection::UnselectAtom( selectionModel, p_atomPicked1, appendToSelection ) );
+				VTX_ACTION(
+					new App::Action::Selection::UnselectAtom( selectionModel, p_atomPicked1, appendToSelection ) );
 			}
 			else
 			{
@@ -335,23 +354,25 @@ namespace VTX::Controller
 	}
 	void Picker::_unselectItem( App::Component::Chemistry::Residue & p_residuePicked ) const
 	{
-		Model::Selection & selectionModel	 = Selection::SelectionManager::get().getSelectionModel();
-		const bool		   appendToSelection = _isModifierExclusive( ModifierFlag::Control );
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const bool appendToSelection = _isModifierExclusive( ModifierFlag::Control );
 
 		switch ( VTX_SETTING().getSelectionGranularity() )
 		{
-		case VTX::Selection::Granularity::MOLECULE:
+		case VTX::App::Application::Selection::GRANULARITY::MOLECULE:
 			VTX_ACTION( new App::Action::Selection::UnselectMolecule(
 				selectionModel, *p_residuePicked.getMoleculePtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::Granularity::CHAIN:
+		case VTX::App::Application::Selection::GRANULARITY::CHAIN:
 			VTX_ACTION( new App::Action::Selection::UnselectChain(
 				selectionModel, *p_residuePicked.getChainPtr(), appendToSelection ) );
 			break;
-		case VTX::Selection::Granularity::RESIDUE:
-		case VTX::Selection::Granularity::ATOM:
+		case VTX::App::Application::Selection::GRANULARITY::RESIDUE:
+		case VTX::App::Application::Selection::GRANULARITY::ATOM:
 		default:
-			VTX_ACTION( new App::Action::Selection::UnselectResidue( selectionModel, p_residuePicked, appendToSelection ) );
+			VTX_ACTION(
+				new App::Action::Selection::UnselectResidue( selectionModel, p_residuePicked, appendToSelection ) );
 			break;
 		}
 	}
@@ -368,7 +389,8 @@ namespace VTX::Controller
 
 		if ( _isModifierExclusive( ModifierFlag::None ) )
 		{
-			const Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+			const App::Application::Selection::SelectionModel & selectionModel
+				= App::Application::Selection::SelectionManager::get().getSelectionModel();
 			VTX_ACTION( new UI::QT::Action::Selection::Orient( selectionModel ) );
 		}
 	}

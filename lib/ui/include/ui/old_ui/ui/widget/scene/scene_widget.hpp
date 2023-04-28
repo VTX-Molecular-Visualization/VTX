@@ -12,7 +12,7 @@
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QVariant>
-#include <app/old_app/generic/base_scene_item.hpp>
+#include <app/core/scene/base_scene_item.hpp>
 #include <app/core/model/base_model.hpp>
 #include <app/core/view/base_view.hpp>
 #include <vector>
@@ -64,7 +64,7 @@ namespace VTX::UI::Widget::Scene
 		template<typename V,
 				 typename M,
 				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
-				 typename = std::enable_if<std::is_base_of<Generic::BaseSceneItem, M>::value>,
+				 typename = std::enable_if<std::is_base_of<App::Core::Scene::BaseSceneItem, M>::value>,
 				 typename = std::enable_if<std::is_base_of<SceneItemWidget, V>::value>,
 				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>>
 		void instantiateSceneItem( M * const		   p_model,

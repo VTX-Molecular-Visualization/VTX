@@ -37,7 +37,7 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 	}
 
-	void Outline::render( const Object3D::Scene & p_scene, const GL & p_renderer )
+	void Outline::render( const App::Application::Scene & p_scene, const GL & p_renderer )
 	{
 		_fbo.bind();
 

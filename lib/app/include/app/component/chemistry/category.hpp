@@ -8,7 +8,7 @@
 #include "app/application/representation/base_representable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/object3d/helper/aabb.hpp"
+#include "app/component/object3d/helper/aabb.hpp"
 #include <string>
 #include <util/types.hpp>
 #include <vector>
@@ -52,8 +52,8 @@ namespace VTX::App::Component::Chemistry
 
 		void updateVisibilityState();
 
-		const Object3D::Helper::AABB getAABB() const;
-		const Object3D::Helper::AABB getWorldAABB() const;
+		const App::Component::Object3D::Helper::AABB getAABB() const;
+		const App::Component::Object3D::Helper::AABB getWorldAABB() const;
 
 	  protected:
 		Category() : BaseModel( VTX::ID::Model::MODEL_CATEGORY ) {}

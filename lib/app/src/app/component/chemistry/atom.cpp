@@ -49,20 +49,20 @@ namespace VTX::App::Component::Chemistry
 		const Vec4f worldPosition = transform.get() * Vec4f( localPosition, 1 );
 		return Vec3f( worldPosition.x, worldPosition.y, worldPosition.z );
 	}
-	const Object3D::Helper::AABB Atom::getAABB() const
+	const App::Component::Object3D::Helper::AABB Atom::getAABB() const
 	{
 		Vec3f & position			= getMoleculePtr()->getAtomPositionFrame( getMoleculePtr()->getFrame() )[ _index ];
-		Object3D::Helper::AABB aabb = Object3D::Helper::AABB( position, getVdwRadius() );
+	 App::Component::Object3D::Helper::AABB aabb = App::Component::Object3D::Helper::AABB( position, getVdwRadius() );
 
 		return aabb;
 	}
-	const Object3D::Helper::AABB Atom::getWorldAABB() const
+	const App::Component::Object3D::Helper::AABB Atom::getWorldAABB() const
 	{
-		const Object3D::Helper::AABB aabb	   = getAABB();
+		const App::Component::Object3D::Helper::AABB aabb	   = getAABB();
 		const Math::Transform &		 transform = getMoleculePtr()->getTransform();
 
 		const Vec4f worldPosition = transform.get() * Vec4f( aabb.centroid(), 1 );
 
-		return Object3D::Helper::AABB( Vec3f( worldPosition ), getVdwRadius() );
+		return App::Component::Object3D::Helper::AABB( Vec3f( worldPosition ), getVdwRadius() );
 	}
 } // namespace VTX::App::Component::Chemistry

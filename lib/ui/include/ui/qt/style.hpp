@@ -14,7 +14,7 @@
 #include <app/old_app/id.hpp>
 #include <app/internal/chemdb/category.hpp>
 #include <app/application/representation/enum_representation.hpp>
-#include <app/old_app/selection/selection_enum.hpp>
+#include <app/application/selection/enum_selection.hpp>
 #include <app/old_app/util/label.hpp>
 #include <string>
 #include <util/logger.hpp>

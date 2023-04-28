@@ -161,7 +161,7 @@ namespace VTX
 			// TODO: add options for splitMethod and maxPrimsLeaf
 			const uint maxPrimsLeaf = 8;
 			_bvh.build( primitives, maxPrimsLeaf, BVH::SplitMethod::SAH );
-			const Object3D::Helper::AABB & aabb		= _bvh.getAABB();
+			const App::Component::Object3D::Helper::AABB & aabb		= _bvh.getAABB();
 			const Vec3f					   centroid = aabb.centroid();
 			std::cout << "centroid " << centroid.x << " - " << centroid.y << " - " << centroid.z << std::endl;
 			std::cout << "min " << aabb.getMin().x << " - " << aabb.getMin().y << " - " << aabb.getMin().z << std::endl;

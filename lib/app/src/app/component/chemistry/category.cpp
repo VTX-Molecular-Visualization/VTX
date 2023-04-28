@@ -165,9 +165,9 @@ namespace VTX::App::Component::Chemistry
 		setVisible( false );
 	}
 
-	const Object3D::Helper::AABB Category::getAABB() const
+	const App::Component::Object3D::Helper::AABB Category::getAABB() const
 	{
-		Object3D::Helper::AABB aabb = Object3D::Helper::AABB();
+	 App::Component::Object3D::Helper::AABB aabb = App::Component::Object3D::Helper::AABB();
 
 		for ( const uint chainIndex : _linkedChains )
 		{
@@ -181,12 +181,12 @@ namespace VTX::App::Component::Chemistry
 
 		return aabb;
 	}
-	const Object3D::Helper::AABB Category::getWorldAABB() const
+	const App::Component::Object3D::Helper::AABB Category::getWorldAABB() const
 	{
-		const Object3D::Helper::AABB aabb	   = getAABB();
+		const App::Component::Object3D::Helper::AABB aabb	   = getAABB();
 		const Math::Transform &		 transform = getMoleculePtr()->getTransform();
 
-		Object3D::Helper::AABB worldAabb   = Object3D::Helper::AABB();
+	 App::Component::Object3D::Helper::AABB worldAabb   = App::Component::Object3D::Helper::AABB();
 		std::vector<Vec3f>	   aabbSummits = aabb.getSummits();
 
 		for ( const Vec3f & summit : aabbSummits )

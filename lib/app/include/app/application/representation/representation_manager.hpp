@@ -4,17 +4,13 @@
 #include "app/application/representation/_fwd.hpp"
 #include "app/application/representation/enum_representation.hpp"
 #include "app/application/representation/representation_data.hpp"
+#include "app/application/selection/_fwd.hpp"
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/old_app/id.hpp"
 #include <map>
 #include <unordered_set>
-
-namespace VTX::Model
-{
-	class Selection;
-} // namespace VTX::Model
 
 namespace VTX::App::Application::Representation
 {
@@ -46,8 +42,8 @@ namespace VTX::App::Application::Representation
 													  BaseRepresentable &					   p_target,
 													  const bool							   p_recompute = true,
 													  const bool							   p_notify	   = true );
-		void						 instantiateRepresentations( const RepresentationPreset * const p_representation,
-																 const Model::Selection &			p_selection );
+		void						 instantiateRepresentations( const RepresentationPreset * const				p_representation,
+																 const App::Application::Selection::SelectionModel & p_selection );
 		template<typename T, typename = std::enable_if<std::is_base_of<BaseRepresentable, T>::value>>
 		void instantiateRepresentations( const RepresentationPreset * const p_representation,
 										 const std::unordered_set<T *> &	p_targets )

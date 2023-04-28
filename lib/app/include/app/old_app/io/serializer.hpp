@@ -4,6 +4,8 @@
 #include "app/application/render_effect/_fwd.hpp"
 #include "app/application/representation/_fwd.hpp"
 #include "app/component/chemistry/_fwd.hpp"
+#include "app/component/object3d/_fwd.hpp"
+#include "app/component/video/_fwd.hpp"
 #include "app/core/model/base_model.hpp"
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
 #include "app/old_app/math/transform.hpp"
@@ -22,22 +24,10 @@ namespace VTX
 		class Setting;
 	}
 
-	namespace Object3D
-	{
-		class Scene;
-	}
-
 	namespace Worker
 	{
 		class BaseThread;
 	}
-
-	namespace Model
-	{
-		class Label;
-		class Path;
-		class Viewpoint;
-	} // namespace Model
 
 	namespace Color
 	{
@@ -52,12 +42,12 @@ namespace VTX
 			Serializer( const VTX::App::Core::Worker::BaseThread * const p_thread = nullptr );
 
 			nlohmann::json serialize( const VTXApp & ) const;
-			nlohmann::json serialize( const Object3D::Scene & ) const;
+			nlohmann::json serialize( const App::Application::Scene & ) const;
 			nlohmann::json serialize( const App::Component::Chemistry::Molecule & ) const;
-			nlohmann::json serialize( const Model::Path & ) const;
-			nlohmann::json serialize( const Model::Viewpoint & ) const;
+			nlohmann::json serialize( const App::Component::Video::Path & ) const;
+			nlohmann::json serialize( const App::Component::Object3D::Viewpoint & ) const;
 			nlohmann::json serialize( const App::Application::Representation::InstantiatedRepresentation & ) const;
-			nlohmann::json serialize( const Model::Label & ) const;
+			nlohmann::json serialize( const App::Component::Object3D::Label & ) const;
 
 			nlohmann::json serialize( const App::Application::Representation::RepresentationPreset & ) const;
 			nlohmann::json serialize( const App::Application::RenderEffect::RenderEffectPreset & ) const;
@@ -77,12 +67,14 @@ namespace VTX
 			nlohmann::json serializeAtomReference( const App::Component::Chemistry::Atom & ) const;
 
 			void deserialize( const nlohmann::json &, const std::tuple<uint, uint, uint> &, VTXApp & ) const;
-			void deserialize( const nlohmann::json &, const std::tuple<uint, uint, uint> &, Object3D::Scene & ) const;
+			void deserialize( const nlohmann::json &,
+							  const std::tuple<uint, uint, uint> &,
+							  App::Application::Scene & ) const;
 			void deserialize( const nlohmann::json &,
 							  const std::tuple<uint, uint, uint> &,
 							  App::Component::Chemistry::Molecule & ) const;
-			void deserialize( const nlohmann::json &, Model::Path & ) const;
-			void deserialize( const nlohmann::json &, Model::Viewpoint & ) const;
+			void deserialize( const nlohmann::json &, App::Component::Video::Path & ) const;
+			void deserialize( const nlohmann::json &, App::Component::Object3D::Viewpoint & ) const;
 			void deserialize( const nlohmann::json &,
 							  const std::tuple<uint, uint, uint> &,
 							  App::Application::Representation::InstantiatedRepresentation & ) const;

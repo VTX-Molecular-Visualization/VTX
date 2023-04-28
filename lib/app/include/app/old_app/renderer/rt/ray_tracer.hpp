@@ -26,7 +26,7 @@ namespace VTX
 			~RayTracer() = default;
 
 			void init( const uint, const uint, const GLuint p_outputFramebufferId ) override;
-			void renderFrame( const Object3D::Scene & ) override;
+			void renderFrame( const App::Application::Scene & ) override;
 			void updateRenderSetting( const RENDER_SETTING ) override {}
 
 			void resize( const uint, const uint, const GLuint ) override;
@@ -34,7 +34,7 @@ namespace VTX
 			const inline std::vector<float> & getPixels() const { return _pixels; }
 
 		  private:
-			void _initScene( const Object3D::Scene & );
+			void _initScene( const App::Application::Scene & );
 
 			void _renderTiles( std::vector<float> &		p_image,
 							   const CameraRayTracing & p_camera,

@@ -1,6 +1,6 @@
 #include "app/action/viewpoint.hpp"
+#include "app/component/video/path.hpp"
 #include "app/mvc.hpp"
-#include "app/model/path.hpp"
 #include <set>
 
 namespace VTX::App::Action::Viewpoint
@@ -16,36 +16,36 @@ namespace VTX::App::Action::Viewpoint
 
 	void Relocate::execute()
 	{
-		std::set<Model::Path *> paths = std::set<Model::Path *>();
+		std::set<App::Component::Video::Path *> paths = std::set<App::Component::Video::Path *>();
 
-		for ( Model::Viewpoint * const viewpoint : _viewpoints )
+		for ( App::Component::Object3D::Viewpoint * const viewpoint : _viewpoints )
 		{
 			viewpoint->setPosition( _position );
 			viewpoint->setRotation( _rotation );
 			paths.emplace( viewpoint->getPathPtr() );
 		}
 
-		for ( Model::Path * const path : paths )
+		for ( App::Component::Video::Path * const path : paths )
 			path->refreshAllDurations();
 	}
 
 	void Translate::execute()
 	{
-		std::set<Model::Path *> paths = std::set<Model::Path *>();
+		std::set<App::Component::Video::Path *> paths = std::set<App::Component::Video::Path *>();
 
-		for ( Model::Viewpoint * const viewpoint : _viewpoints )
+		for ( App::Component::Object3D::Viewpoint * const viewpoint : _viewpoints )
 		{
 			viewpoint->setPosition( viewpoint->getPosition() + _translation );
 			paths.emplace( viewpoint->getPathPtr() );
 		}
 
-		for ( Model::Path * const path : paths )
+		for ( App::Component::Video::Path * const path : paths )
 			path->refreshAllDurations();
 	}
 
 	void Rotate::execute()
 	{
-		for ( Model::Viewpoint * const viewpoint : _viewpoints )
+		for ( App::Component::Object3D::Viewpoint * const viewpoint : _viewpoints )
 		{
 			switch ( _rotationType )
 			{

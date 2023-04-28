@@ -8,8 +8,8 @@
 #include <QString>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
-#include <app/model/selection.hpp>
-#include <app/old_app/selection/selection_enum.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/enum_selection.hpp>
 
 namespace VTX::UI::Widget::Selection
 {
@@ -31,7 +31,7 @@ namespace VTX::UI::Widget::Selection
 		QVBoxLayout *								  _layout				 = nullptr;
 		QComboBox *									  _selectionTypeComboBox = nullptr;
 
-		void _addSelectionModel( Model::Selection * const p_selection );
+		void _addSelectionModel( App::Application::Selection::SelectionModel * const p_selection );
 
 		void _populateItemList();
 		void _selectionTypeCurrentIndexChanged( const int p_newIndex );

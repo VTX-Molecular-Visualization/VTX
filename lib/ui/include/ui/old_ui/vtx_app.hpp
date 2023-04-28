@@ -86,8 +86,8 @@ namespace VTX::UI
 //
 //		inline IO::Struct::ScenePathData &		 getScenePathData() { return *_pathSceneData; };
 //		inline const IO::Struct::ScenePathData & getScenePathData() const { return *_pathSceneData; };
-//		inline Object3D::Scene &				 getScene() { return *_scene; }
-//		inline const Object3D::Scene &			 getScene() const { return *_scene; }
+//		inline App::Application::Scene &				 getScene() { return *_scene; }
+//		inline const App::Application::Scene &			 getScene() const { return *_scene; }
 //
 //		// TODO remove this. Must be In UI Module
 //		inline const UI::MainWindow &	   getMainWindow() const { throw NotImplementedException(); }
@@ -136,7 +136,7 @@ namespace VTX::UI
 //		// Spec										   _spec				  = Spec();
 //		UI::MainWindow *							   _mainWindow			  = nullptr;
 //		State::StateMachine *						   _stateMachine		  = nullptr;
-//		Object3D::Scene *							   _scene				  = nullptr;
+//		App::Application::Scene *							   _scene				  = nullptr;
 //		IO::Struct::ScenePathData *					   _pathSceneData		  = nullptr;
 //		App::Application::Representation::RepresentationLibrary * _representationLibrary = nullptr;
 //		App::Application::RenderEffect::RenderEffectLibrary *   _renderEffectLibrary	  = nullptr;

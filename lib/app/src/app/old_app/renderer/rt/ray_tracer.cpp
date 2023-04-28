@@ -1,5 +1,5 @@
 #include "app/old_app/renderer/rt/ray_tracer.hpp"
-#include "app/old_app/object3d/camera.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/old_app/renderer/rt/integrators/ao_integrator.hpp"
 #include "app/old_app/renderer/rt/integrators/direct_lighting_integrator.hpp"
 #include "app/old_app/renderer/rt/integrators/raycast_integrator.hpp"
@@ -27,7 +27,7 @@ namespace VTX
 		class RayTracer::CameraRayTracing
 		{
 		  public:
-			CameraRayTracing( const Object3D::Camera & p_camera, const uint p_width, const uint p_height ) :
+			CameraRayTracing( const App::Component::Render::Camera & p_camera, const uint p_width, const uint p_height ) :
 				_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ),
 				_right( p_camera.getRight() ), _width( p_width ), _height( p_height )
 			{
@@ -183,7 +183,7 @@ namespace VTX
 			VTX_INFO( "Ray tracer initialized" );
 		}
 
-		void RayTracer::renderFrame( const Object3D::Scene & p_scene )
+		void RayTracer::renderFrame( const App::Application::Scene & p_scene )
 		{
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
@@ -253,7 +253,7 @@ namespace VTX
 			_texture.resize( p_width, p_height );
 		}
 
-		void RayTracer::_initScene( const Object3D::Scene & p_scene )
+		void RayTracer::_initScene( const App::Application::Scene & p_scene )
 		{
 			_scene.clean();
 			//_scene.addObject( new TriangleMesh( DATA_DIR + "Bunny.obj" ) );

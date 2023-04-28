@@ -1,8 +1,7 @@
 #ifndef __VTX_APP__
 #define __VTX_APP__
 
-#include "app/application/render_effect/_fwd.hpp"
-#include "app/application/representation/_fwd.hpp"
+#include "app/application/_fwd.hpp"
 #include "app/application/setting.hpp"
 #include "app/old_app/define.hpp"
 #include "app/old_app/generic/base_auto_delete.hpp"
@@ -13,11 +12,6 @@
 
 namespace VTX
 {
-	// class Setting;
-	namespace Object3D
-	{
-		class Scene;
-	}
 	namespace IO::Struct
 	{
 		class ScenePathData;
@@ -44,8 +38,8 @@ namespace VTX
 
 		inline IO::Struct::ScenePathData &		 getScenePathData() { return *_pathSceneData; };
 		inline const IO::Struct::ScenePathData & getScenePathData() const { return *_pathSceneData; };
-		inline Object3D::Scene &				 getScene() { return *_scene; }
-		inline const Object3D::Scene &			 getScene() const { return *_scene; }
+		inline App::Application::Scene &		 getScene() { return *_scene; }
+		inline const App::Application::Scene &	 getScene() const { return *_scene; }
 
 		// TODO remove this. Must be In UI Module
 		inline const UI::MainWindow & getMainWindow() const { throw NotImplementedException(); }
@@ -98,7 +92,7 @@ namespace VTX
 		Stat													  _stat					 = Stat();
 		Spec													  _spec					 = Spec();
 		UI::MainWindow *										  _mainWindow			 = nullptr;
-		Object3D::Scene *										  _scene				 = nullptr;
+		App::Application::Scene *								  _scene				 = nullptr;
 		IO::Struct::ScenePathData *								  _pathSceneData		 = nullptr;
 		App::Application::Representation::RepresentationLibrary * _representationLibrary = nullptr;
 		App::Application::RenderEffect::RenderEffectLibrary *	  _renderEffectLibrary	 = nullptr;

@@ -3,14 +3,14 @@
 #include "tool/old_tool/model/measurement/measure_in_progress.hpp"
 #include <QPoint>
 #include <app/action/selection.hpp>
-#include <app/mvc.hpp>
-#include <app/event.hpp>
-#include <app/event/global.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
-#include <app/model/selection.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
+#include <app/mvc.hpp>
 #include <ui/old_ui/state/state_machine.hpp>
 #include <ui/old_ui/state/visualization.hpp>
 #include <ui/old_ui/ui/cursor_handler.hpp>
@@ -23,8 +23,7 @@ namespace VTX::Controller
 {
 	MeasurementPicker::MeasurementPicker()
 	{
-		_currentMeasureModel
-			= VTX::MVC_MANAGER().instantiateModel<Model::Measurement::MeasureInProgress>();
+		_currentMeasureModel = VTX::MVC_MANAGER().instantiateModel<Model::Measurement::MeasureInProgress>();
 	}
 	MeasurementPicker::~MeasurementPicker() { VTX::MVC_MANAGER().deleteModel( _currentMeasureModel ); }
 
@@ -46,7 +45,8 @@ namespace VTX::Controller
 
 		const QPoint position = renderWidget.mapToGlobal( QPoint( p_x, p_y ) );
 
-		Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selection
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		if ( selection.isEmpty() )
 		{
@@ -85,8 +85,10 @@ namespace VTX::Controller
 				// Bond clicked => set atom pair to next target
 				if ( _currentMode == Mode::DISTANCE && _currentMeasureModel->getAtomCount() == 0 )
 				{
-					const App::Component::Chemistry::Atom & firstAtom  = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( ids.x );
-					const App::Component::Chemistry::Atom & secondAtom = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( ids.y );
+					const App::Component::Chemistry::Atom & firstAtom
+						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( ids.x );
+					const App::Component::Chemistry::Atom & secondAtom
+						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( ids.y );
 
 					_currentMeasureModel->setPotentialNextTarget( firstAtom, secondAtom );
 					hasFindTarget = true;
@@ -94,8 +96,8 @@ namespace VTX::Controller
 			}
 			else
 			{
-				const ID::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( ids.x );
-				App::Core::Model::ID		   atomID;
+				const ID::VTX_ID &	 typeId = VTX::MVC_MANAGER().getModelTypeID( ids.x );
+				App::Core::Model::ID atomID;
 
 				// If residue => select alpha carbon
 				if ( typeId == ID::Model::MODEL_RESIDUE )
@@ -110,7 +112,8 @@ namespace VTX::Controller
 				}
 
 				// Atom picked
-				const App::Component::Chemistry::Atom & atom = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( atomID );
+				const App::Component::Chemistry::Atom & atom
+					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( atomID );
 				if ( !_currentMeasureModel->contains( atom ) )
 				{
 					_currentMeasureModel->setPotentialNextTarget( atom );

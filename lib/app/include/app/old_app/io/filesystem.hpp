@@ -3,9 +3,9 @@
 
 // TODO: delete those includes
 #include "app/component/chemistry/molecule.hpp"
-#include "app/model/selection.hpp"
-#include "app/old_app/object3d/scene.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
+#include "app/application/selection/selection.hpp"
+#include "app/application/scene.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include "app/application/setting.hpp"
 #include "struct/image_export.hpp"
 #include "struct/scene_path_data.hpp"
@@ -290,13 +290,13 @@ namespace VTX::IO::Filesystem
 		const FilePath defaultFolder = FilePath( VTX::App::Application::Setting::getLastExportedMoleculeFolder() );
 
 		const int nbMoleculeInSelection
-			= Selection::SelectionManager::get().getSelectionModel().getMoleculeSelectedCount();
+			= App::Application::Selection::SelectionManager::get().getSelectionModel().getMoleculeSelectedCount();
 
 		const App::Component::Chemistry::Molecule * exportedMolecule;
 		if ( nbMoleculeInSelection > 0 )
 		{
 			const App::Core::Model::ID & moleculeID
-				= Selection::SelectionManager::get().getSelectionModel().getMoleculesMap().begin()->first;
+				= App::Application::Selection::SelectionManager::get().getSelectionModel().getMoleculesMap().begin()->first;
 			exportedMolecule = &( VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeID ) );
 		}
 		else if ( VTXApp::get().getScene().getMolecules().size() > 0 )

@@ -10,7 +10,7 @@
 #include <app/core/view/callback_view.hpp>
 #include <app/event/global.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Representation

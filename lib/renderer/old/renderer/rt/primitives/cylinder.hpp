@@ -80,7 +80,7 @@ namespace VTX
 				const Vec3f v = _v1 - _v0;
 				const Vec3f e = _radius * sqrt( 1.f - v * v / dot( v, v ) );
 
-				_aabb = Object3D::Helper::AABB( Util::Math::min( _v0 - e, _v1 - e ),
+				_aabb = App::Component::Object3D::Helper::AABB( Util::Math::min( _v0 - e, _v1 - e ),
 												Util::Math::max( _v0 + e, _v1 + e ) );
 			}
 

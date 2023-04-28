@@ -6,7 +6,7 @@
 #include <QItemSelectionModel>
 #include <app/component/chemistry/_fwd.hpp>
 #include <app/core/model/base_model.hpp>
-#include <app/model/selection.hpp>
+#include <app/application/selection/selection.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {
@@ -33,10 +33,10 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	  private:
 		const App::Core::Model::BaseModel * const _model;
 
-		void _selectModelAction( Model::Selection &			  p_selectionModel,
+		void _selectModelAction( App::Application::Selection::SelectionModel &			  p_selectionModel,
 								 const App::Core::Model::ID & p_modelId,
 								 const bool					  p_appendToSelection ) const;
-		void _unselectModelAction( Model::Selection & p_selectionModel, const App::Core::Model::ID & p_modelId ) const;
+		void _unselectModelAction( App::Application::Selection::SelectionModel & p_selectionModel, const App::Core::Model::ID & p_modelId ) const;
 
 		void _fillVectorWithItemIds( const QItemSelection &				 p_selection,
 									 std::vector<App::Core::Model::ID> & p_vectorId ) const;

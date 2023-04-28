@@ -65,7 +65,7 @@ namespace VTX::View::UI::Widget::Measurement
 		for ( const App::Component::Chemistry::Atom * const atom : atoms )
 			atomPositions.emplace_back( atom->getWorldPosition() );
 
-		const Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
+		const App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
 
 		const bool visible = Util::UIRender::anyVisibleToCamera( camera, atomPositions );
 		setVisible( visible );

@@ -172,7 +172,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMeasurmentAngleWidget::_renameAction() const
 	{
-		std::unordered_set<Model::Label *> labelTargets = std::unordered_set<Model::Label *>();
+		std::unordered_set<App::Component::Object3D::Label *> labelTargets = std::unordered_set<App::Component::Object3D::Label *>();
 		for ( Model::Measurement::Angle * const angleModel : getTargets() )
 			labelTargets.emplace( angleModel );
 
@@ -181,7 +181,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMeasurmentAngleWidget::_setLabelColor( const Color::Rgba & p_color ) const
 	{
-		std::unordered_set<Model::Label *> labelTargets = std::unordered_set<Model::Label *>();
+		std::unordered_set<App::Component::Object3D::Label *> labelTargets = std::unordered_set<App::Component::Object3D::Label *>();
 		for ( Model::Measurement::Angle * const targetDistance : getTargets() )
 			labelTargets.emplace( targetDistance );
 
@@ -190,7 +190,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMeasurmentAngleWidget::_setAutoNameAction() const
 	{
-		std::unordered_set<Model::Label *> labelTargets = std::unordered_set<Model::Label *>();
+		std::unordered_set<App::Component::Object3D::Label *> labelTargets = std::unordered_set<App::Component::Object3D::Label *>();
 		for ( Model::Measurement::Angle * const angleModel : getTargets() )
 			labelTargets.emplace( angleModel );
 

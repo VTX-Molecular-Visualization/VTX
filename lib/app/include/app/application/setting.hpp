@@ -2,7 +2,9 @@
 #define __VTX_APP_APPLICATION_SETTING__
 
 #include "app/application/representation/_fwd.hpp"
+#include "app/application/selection/enum_selection.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
+#include "app/component/video/enum_path.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
@@ -30,17 +32,6 @@ namespace VTX
 	namespace Trajectory
 	{
 		enum class PlayMode;
-	}
-
-	namespace Path
-	{
-		enum class DURATION_MODE;
-		enum class INTERPOLATION_MODE;
-	} // namespace Path
-
-	namespace Selection
-	{
-		enum class Granularity;
 	}
 
 	namespace App::Application
@@ -193,8 +184,8 @@ namespace VTX
 			static const float COPIED_MOLECULE_OFFSET;
 
 			// Path
-			static const Path::DURATION_MODE	  DEFAULT_PATH_DURATION_MODE;
-			static const Path::INTERPOLATION_MODE DEFAULT_PATH_INTERPOLATION_MODE;
+			static const App::Component::Video::PATH_DURATION_MODE		DEFAULT_PATH_DURATION_MODE;
+			static const App::Component::Video::PATH_INTERPOLATION_MODE DEFAULT_PATH_INTERPOLATION_MODE;
 
 			// Trajectory
 			static const int								 MIN_TRAJECTORY_SPEED;
@@ -229,7 +220,7 @@ namespace VTX
 			static const Color::Rgba DEFAULT_LABEL_COLOR;
 
 			// Selection
-			static const VTX::Selection::Granularity SELECTION_GRANULARITY_DEFAULT;
+			static const VTX::App::Application::Selection::GRANULARITY SELECTION_GRANULARITY_DEFAULT;
 
 			// Structural Alignment
 			static const int   CE_ALIGN_WIN_SIZE_DEFAULT;
@@ -351,8 +342,12 @@ namespace VTX
 				const App::Internal::ChemDB::Category::TYPE & p_categoryEnum,
 				const std::string &							  p_representationDefaultName );
 
-			inline VTX::Selection::Granularity getSelectionGranularity() const { return selectionGranularity; }
-			void setSelectionGranularity( const VTX::Selection::Granularity & p_selectionGranularity );
+			inline VTX::App::Application::Selection::GRANULARITY getSelectionGranularity() const
+			{
+				return selectionGranularity;
+			}
+			void setSelectionGranularity(
+				const VTX::App::Application::Selection::GRANULARITY & p_selectionGranularity );
 
 			inline int getDefaultTrajectorySpeed() const { return defaultTrajectorySpeed; }
 			void	   setDefaultTrajectorySpeed( const int p_defaultTrajectorySpeed );
@@ -453,7 +448,7 @@ namespace VTX
 
 			std::vector<std::string> _tmpRepresentationPerCategory = DEFAULT_REPRESENTATION_PER_CATEGORY_NAME;
 
-			VTX::Selection::Granularity selectionGranularity = SELECTION_GRANULARITY_DEFAULT;
+			VTX::App::Application::Selection::GRANULARITY selectionGranularity = SELECTION_GRANULARITY_DEFAULT;
 
 			int									defaultTrajectorySpeed	  = DEFAULT_TRAJECTORY_SPEED;
 			App::Component::Chemistry::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;

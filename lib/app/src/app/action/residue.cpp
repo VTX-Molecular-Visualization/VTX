@@ -5,10 +5,10 @@
 #include "app/component/chemistry/generated_molecule.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/model/selection.hpp"
+#include "app/application/selection/selection.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/object3d/scene.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
+#include "app/application/scene.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <map>
@@ -50,7 +50,7 @@ namespace VTX::App::Action::Residue
 				residuesIDsPerMolecules[ residue->getMoleculePtr() ].emplace_back( residue->getIndex() );
 			}
 
-			for ( const Object3D::Scene::PairMoleculePtrFloat & sceneMolecule :
+			for ( const App::Application::Scene::PairMoleculePtrFloat & sceneMolecule :
 				  VTXApp::get().getScene().getMolecules() )
 			{
 				App::Component::Chemistry::Molecule * const molecule = sceneMolecule.first;
@@ -116,7 +116,7 @@ namespace VTX::App::Action::Residue
 
 	void Delete::execute()
 	{
-		VTX::Selection::SelectionManager::get().getSelectionModel().unselectResidue( _residue );
+		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().unselectResidue( _residue );
 
 		App::Component::Chemistry::Molecule * const molecule = _residue.getMoleculePtr();
 		molecule->removeResidue( _residue.getIndex() );
@@ -149,7 +149,7 @@ namespace VTX::App::Action::Residue
 
 	void Extract::execute()
 	{
-		VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().clear();
 
 		App::Component::Chemistry::GeneratedMolecule * const generatedMolecule
 			= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
@@ -157,7 +157,7 @@ namespace VTX::App::Action::Residue
 		generatedMolecule->extractResidue( _target );
 		VTXApp::get().getScene().addMolecule( generatedMolecule );
 
-		VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );
+		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );
 	}
 
 	void ApplyRepresentation::execute()

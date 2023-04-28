@@ -4,11 +4,11 @@
 // #include "app/component/chemistry/generated_molecule.hpp"
 #include "app/component/chemistry/molecule.hpp"
 // #include "app/application/representation/representation_library.hpp"
-// #include "app/model/selection.hpp"
+// #include "app/application/selection/selection.hpp"
 // #include "app/mvc.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/application/scene.hpp"
 // #include "app/application/representation/representation_manager.hpp"
-// #include "app/old_app/selection/selection_manager.hpp"
+// #include "app/application/selection/selection_manager.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <unordered_set>
@@ -49,7 +49,7 @@ namespace VTX::App::Action::Category
 				categoriesPerMolecules[ category->getMoleculePtr() ].emplace_back( category->getCategoryEnum() );
 			}
 
-			for ( const Object3D::Scene::PairMoleculePtrFloat & sceneMolecule :
+			for ( const App::Application::Scene::PairMoleculePtrFloat & sceneMolecule :
 				  VTXApp::get().getScene().getMolecules() )
 			{
 				App::Component::Chemistry::Molecule * const molecule = sceneMolecule.first;
@@ -135,7 +135,7 @@ namespace VTX::App::Action::Category
 
 	// void Delete::execute()
 	//{
-	//	VTX::Selection::SelectionManager::get().getSelectionModel().unselectChain( _category );
+	//	VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().unselectChain( _category );
 
 	//	App::Component::Chemistry::Molecule * const molecule = _category.getMoleculePtr();
 	//	molecule->removeChain( _category.getIndex() );
@@ -168,7 +168,7 @@ namespace VTX::App::Action::Category
 
 	// void Extract::execute()
 	//{
-	//	VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+	//	VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().clear();
 
 	//	App::Component::Chemistry::GeneratedMolecule * const generatedMolecule
 	//		= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
@@ -176,7 +176,7 @@ namespace VTX::App::Action::Category
 	//	generatedMolecule->extractChain( _target );
 	//	VTXApp::get().getScene().addMolecule( generatedMolecule );
 
-	//	VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );
+	//	VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );
 	//}
 
 	// void ApplyRepresentation::execute()

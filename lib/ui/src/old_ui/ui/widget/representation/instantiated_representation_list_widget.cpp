@@ -14,7 +14,7 @@
 #include <app/component/chemistry/residue.hpp>
 #include <app/mvc.hpp>
 #include <app/application/representation/representation_manager.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/application/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::Representation
 {
@@ -84,22 +84,22 @@ namespace VTX::UI::Widget::Representation
 		if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
 		{
 			App::Component::Chemistry::Molecule * const molecule = static_cast<App::Component::Chemistry::Molecule *>( targetModel );
-			VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *molecule );
+			VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *molecule );
 		}
 		else if ( modelTypeID == VTX::ID::Model::MODEL_CHAIN )
 		{
 			App::Component::Chemistry::Chain * const chain = static_cast<App::Component::Chemistry::Chain *>( targetModel );
-			VTX::Selection::SelectionManager::get().getSelectionModel().selectChain( *chain );
+			VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectChain( *chain );
 		}
 		else if ( modelTypeID == VTX::ID::Model::MODEL_RESIDUE )
 		{
 			App::Component::Chemistry::Residue * const residue = static_cast<App::Component::Chemistry::Residue *>( targetModel );
-			VTX::Selection::SelectionManager::get().getSelectionModel().selectResidue( *residue );
+			VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectResidue( *residue );
 		}
 		else if ( modelTypeID == VTX::ID::Model::MODEL_ATOM )
 		{
 			App::Component::Chemistry::Atom * const atom = static_cast<App::Component::Chemistry::Atom *>( targetModel );
-			VTX::Selection::SelectionManager::get().getSelectionModel().selectAtom( *atom );
+			VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectAtom( *atom );
 		}
 	}
 

@@ -2,13 +2,13 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_CHAIN__
 
 #include "_fwd.hpp"
+#include "app/application/representation/base_representable.hpp"
+#include "app/component/object3d/helper/aabb.hpp"
 #include "app/core/model/base_model.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
-#include "app/application/representation/base_representable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/object3d/helper/aabb.hpp"
 #include <iostream>
 #include <string>
 #include <util/types.hpp>
@@ -64,8 +64,8 @@ namespace VTX::App::Component::Chemistry
 		void setVisible( const bool p_visible );
 		void setVisible( const bool p_visible, const bool p_notify );
 
-		const Object3D::Helper::AABB getAABB() const;
-		const Object3D::Helper::AABB getWorldAABB() const;
+		const App::Component::Object3D::Helper::AABB getAABB() const;
+		const App::Component::Object3D::Helper::AABB getWorldAABB() const;
 
 		void removeChildrenRepresentations();
 
@@ -86,7 +86,7 @@ namespace VTX::App::Component::Chemistry
 		uint		_indexFirstResidue = 0;
 		uint		_residueCount	   = 0;
 		uint		_realResidueCount  = 0;
-	}; // namespace Model
+	};
 
 } // namespace VTX::App::Component::Chemistry
 #endif

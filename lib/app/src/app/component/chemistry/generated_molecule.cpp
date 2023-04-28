@@ -1,14 +1,14 @@
 #include "app/component/chemistry/generated_molecule.hpp"
 #include "app/application/representation/representation_manager.hpp"
+#include "app/application/selection/selection.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/category.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/model/selection.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
 #include <map>
 #include <util/chrono.hpp>
 
@@ -24,15 +24,16 @@ namespace VTX::App::Component::Chemistry
 
 	GeneratedMolecule::GeneratedMolecule() : Chemistry::Molecule( VTX::ID::Model::MODEL_GENERATED_MOLECULE ) {}
 
-	void GeneratedMolecule::copyFromSelection( const Model::Selection &			 p_selection,
-											   const VTX::App::Core::Model::ID & p_moleculeID,
-											   const int						 p_frame )
+	void GeneratedMolecule::copyFromSelection( const App::Application::Selection::SelectionModel & p_selection,
+											   const VTX::App::Core::Model::ID &				   p_moleculeID,
+											   const int										   p_frame )
 	{
 		Util::Chrono chrono;
 		chrono.start();
 
 		const Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<Chemistry::Molecule>( p_moleculeID );
-		const Model::Selection::MapChainIds & moleculeSelectionData = p_selection.getMoleculesMap().at( p_moleculeID );
+		const App::Application::Selection::SelectionModel::MapChainIds & moleculeSelectionData
+			= p_selection.getMoleculesMap().at( p_moleculeID );
 
 		const std::string prefix = p_frame == ALL_FRAMES_INDEX ? COPY_PREFIX : _getFrameCopyPrefix( p_frame );
 		const std::string suffix = p_frame == ALL_FRAMES_INDEX ? COPY_SUFFIX : _getFrameCopySuffix( p_frame );
@@ -41,7 +42,8 @@ namespace VTX::App::Component::Chemistry
 
 		_mapAtomIds = std::map<const uint, const uint>();
 
-		for ( const std::pair<const VTX::App::Core::Model::ID, Model::Selection::MapResidueIds> & chainData :
+		for ( const std::pair<const VTX::App::Core::Model::ID,
+							  App::Application::Selection::SelectionModel::MapResidueIds> & chainData :
 			  moleculeSelectionData )
 		{
 			const Chemistry::Chain & chain			= *molecule.getChain( chainData.first );
@@ -51,7 +53,8 @@ namespace VTX::App::Component::Chemistry
 
 			generatedChain.setResidueCount( uint( chainData.second.size() ) );
 
-			for ( const std::pair<const VTX::App::Core::Model::ID, Model::Selection::VecAtomIds> & residueData :
+			for ( const std::pair<const VTX::App::Core::Model::ID,
+								  App::Application::Selection::SelectionModel::VecAtomIds> & residueData :
 				  chainData.second )
 			{
 				const Chemistry::Residue & residue			= *molecule.getResidue( residueData.first );
@@ -385,14 +388,15 @@ namespace VTX::App::Component::Chemistry
 		getBufferBonds().shrink_to_fit();
 	}
 
-	void GeneratedMolecule::extractFromSelection( const Model::Selection &			p_selection,
-												  const VTX::App::Core::Model::ID & p_moleculeID )
+	void GeneratedMolecule::extractFromSelection( const App::Application::Selection::SelectionModel & p_selection,
+												  const VTX::App::Core::Model::ID &					  p_moleculeID )
 	{
 		Util::Chrono chrono = Util::Chrono();
 		chrono.start();
 
 		Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<Chemistry::Molecule>( p_moleculeID );
-		const Model::Selection::MapChainIds & moleculeSelectionData = p_selection.getMoleculesMap().at( p_moleculeID );
+		const App::Application::Selection::SelectionModel::MapChainIds & moleculeSelectionData
+			= p_selection.getMoleculesMap().at( p_moleculeID );
 
 		_pendingExternalBonds.clear();
 		_pendingExternalBonds.reserve( molecule.getResidueCount() );
@@ -401,7 +405,8 @@ namespace VTX::App::Component::Chemistry
 
 		_copyMoleculeData( molecule, ALL_FRAMES_INDEX, EXTRACT_PREFIX, EXTRACT_SUFFIX );
 
-		for ( const std::pair<const VTX::App::Core::Model::ID, Model::Selection::MapResidueIds> & chainData :
+		for ( const std::pair<const VTX::App::Core::Model::ID,
+							  App::Application::Selection::SelectionModel::MapResidueIds> & chainData :
 			  moleculeSelectionData )
 		{
 			const Chemistry::Chain * const chain = molecule.getChain( chainData.first );
@@ -416,7 +421,8 @@ namespace VTX::App::Component::Chemistry
 			_copyChainData( generatedChain, *chain );
 			generatedChain.setResidueCount( uint( chainData.second.size() ) );
 
-			for ( const std::pair<const VTX::App::Core::Model::ID, Model::Selection::VecAtomIds> & residueData :
+			for ( const std::pair<const VTX::App::Core::Model::ID,
+								  App::Application::Selection::SelectionModel::VecAtomIds> & residueData :
 				  chainData.second )
 			{
 				const Chemistry::Residue * const residue = molecule.getResidue( residueData.first );

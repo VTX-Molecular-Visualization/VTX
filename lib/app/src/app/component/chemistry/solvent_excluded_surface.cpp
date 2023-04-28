@@ -9,9 +9,9 @@
 #include "app/internal/worker/gpu_computer.hpp"
 #include "app/old_app/custom/iterator.hpp"
 #include "app/old_app/math/marching_cube.hpp"
-#include "app/old_app/object3d/helper/aabb.hpp"
-#include "app/old_app/object3d/scene.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
+#include "app/component/object3d/helper/aabb.hpp"
+#include "app/application/scene.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include "app/old_app/view/d3/triangle.hpp"
 #include "app/worker.hpp"
 #include <numeric>
@@ -58,7 +58,7 @@ namespace VTX::App::Component::Chemistry
 		const float maxVdWRadius
 			= *std::max_element( ChemDB::Atom::SYMBOL_VDW_RADIUS,
 								 ChemDB::Atom::SYMBOL_VDW_RADIUS + std::size( ChemDB::Atom::SYMBOL_VDW_RADIUS ) );
-		const Object3D::Helper::AABB molAABB = _category->getAABB();
+		const App::Component::Object3D::Helper::AABB molAABB = _category->getAABB();
 
 		const float atomGridCellSize = PROBE_RADIUS + maxVdWRadius;
 		const Vec3f gridMin			 = molAABB.getMin() - atomGridCellSize;
@@ -67,7 +67,7 @@ namespace VTX::App::Component::Chemistry
 		const Vec3f gridSize	 = gridMax - gridMin;
 		Vec3i		atomGridSize = Vec3i( Util::Math::ceil( gridSize / atomGridCellSize ) );
 
-		Object3D::Helper::Grid gridAtoms = Object3D::Helper::Grid( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
+	 App::Component::Object3D::Helper::Grid gridAtoms = App::Component::Object3D::Helper::Grid( gridMin, Vec3f( atomGridCellSize ), atomGridSize );
 
 		std::vector<std::vector<uint>> atomGridDataTmp
 			= std::vector<std::vector<uint>>( gridAtoms.getCellCount(), std::vector<uint>() );
@@ -119,7 +119,7 @@ namespace VTX::App::Component::Chemistry
 
 		// Compute SES grid and compute SDF.
 		Vec3i				   sesGridSize = Vec3i( Util::Math::ceil( gridSize / VOXEL_SIZE ) );
-		Object3D::Helper::Grid gridSES	   = Object3D::Helper::Grid( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
+	 App::Component::Object3D::Helper::Grid gridSES	   = App::Component::Object3D::Helper::Grid( gridMin, Vec3f( VOXEL_SIZE ), sesGridSize );
 
 		/////////////////////
 		// Worker: create SDF.

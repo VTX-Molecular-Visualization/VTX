@@ -1,7 +1,7 @@
 #include "app/old_app/view/d3/ribbon.hpp"
 #include "app/component/chemistry/molecule.hpp"
-#include "app/old_app/object3d/camera.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/component/render/camera.hpp"
+#include "app/application/scene.hpp"
 #include "app/application/representation/representation_target.hpp"
 #include "app/old_app/vtx_app.hpp"
 
@@ -22,13 +22,13 @@ namespace VTX::View::D3
 		//_gl->glPatchParameteri( GL_PATCH_VERTICES, 4 );
 	}
 
-	void Ribbon::render( const Object3D::Camera & p_camera ) const
+	void Ribbon::render( const App::Component::Render::Camera & p_camera ) const
 	{
 		BaseView3D::render( p_camera );
 
 		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
 		{
-			const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
+			const App::Component::Render::Camera & cam = VTXApp::get().getScene().getCamera();
 			_program->setVec3f( "u_camPosition", cam.getPosition() );
 		}
 

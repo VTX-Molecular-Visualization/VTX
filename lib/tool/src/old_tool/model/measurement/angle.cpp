@@ -6,13 +6,13 @@
 #include <app/event/global.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/application/scene.hpp>
 #include <util/math.hpp>
 #include <variant>
 
 namespace VTX::Model::Measurement
 {
-	Angle::Angle() : Model::Label( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE )
+	Angle::Angle() : App::Component::Object3D::Label( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE )
 	{
 		_atoms.resize( 3, nullptr );
 		_moleculeViews.resize( 3, nullptr );
@@ -61,8 +61,8 @@ namespace VTX::Model::Measurement
 		}
 		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
 		{
-			const App::Core::Event::VTXEventArg<Model::Label *> & castedEvent
-				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label *> &>( p_event );
+			const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> & castedEvent
+				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> &>( p_event );
 
 			// TODO : Use a manager instead of managing scene from model
 			if ( castedEvent.get() == this )
@@ -168,9 +168,9 @@ namespace VTX::Model::Measurement
 		}
 	}
 
-	void Angle::_recomputeAABB( Object3D::Helper::AABB & p_aabb )
+	void Angle::_recomputeAABB( App::Component::Object3D::Helper::AABB & p_aabb )
 	{
-		p_aabb = Object3D::Helper::AABB();
+		p_aabb = App::Component::Object3D::Helper::AABB();
 
 		for ( const App::Component::Chemistry::Atom * const atom : _atoms )
 		{

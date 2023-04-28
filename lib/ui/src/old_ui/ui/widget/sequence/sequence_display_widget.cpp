@@ -9,8 +9,8 @@
 #include <app/action/residue.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/model/selection.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::Sequence
 {
@@ -101,7 +101,7 @@ namespace VTX::UI::Widget::Sequence
 	{
 		QLabel::paintEvent( p_paintEvent );
 
-		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel = VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.isChainSelected( _chainData->getChain() ) )
 		{
 			// linked chain is in selection => draw selection feedback on selected residues
@@ -119,10 +119,10 @@ namespace VTX::UI::Widget::Sequence
 
 			const App::Component::Chemistry::Molecule & molecule = *_chainData->getMoleculePtr();
 
-			const Model::Selection::MapResidueIds & mapSelectedResidueID
+			const App::Application::Selection::SelectionModel::MapResidueIds & mapSelectedResidueID
 				= selectionModel.getMoleculesMap()[ molecule.getId() ][ _chainData->getChainIndex() ];
 
-			for ( const Model::Selection::PairResidueIds & pairResiduesAtoms : mapSelectedResidueID )
+			for ( const App::Application::Selection::SelectionModel::PairResidueIds & pairResiduesAtoms : mapSelectedResidueID )
 			{
 				const App::Component::Chemistry::Residue * const residue		  = molecule.getResidue( pairResiduesAtoms.first );
 				const uint					 locaResidueIndex = _getLocalResidueIndexFromResidue( *residue );

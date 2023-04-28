@@ -3,7 +3,7 @@
 #include "app/internal/worker/render_effect_saver.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/object3d/camera.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker.hpp"

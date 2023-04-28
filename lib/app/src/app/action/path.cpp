@@ -1,8 +1,8 @@
 #include "app/action/path.hpp"
-#include "app/model/selection.hpp"
-#include "app/model/viewpoint.hpp"
+#include "app/application/selection/selection.hpp"
+#include "app/application/selection/selection_manager.hpp"
+#include "app/component/object3d/viewpoint.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
 // #include "state/export.hpp"
 #include "app/internal/worker/snapshoter.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -42,12 +42,13 @@ namespace VTX::App::Action::Path
 
 	void Clear::execute()
 	{
-		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		selectionModel.unselectModels( _path.getViewpoints() );
 
 		while ( _path.getViewpoints().size() )
 		{
-			Model::Viewpoint * const viewpointToDelete = _path.getViewpoints().back();
+			App::Component::Object3D::Viewpoint * const viewpointToDelete = _path.getViewpoints().back();
 			_path.removeViewpoint( viewpointToDelete );
 
 			VTX::MVC_MANAGER().deleteModel( viewpointToDelete );

@@ -1,8 +1,8 @@
 #include "ui/qt/controller/trackball.hpp"
 #include "ui/qt/style.hpp"
 
-#include <app/old_app/object3d/scene.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/application/scene.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/old_app/style.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Controller
 		}
 	}
 
-	Vec3f Trackball::targetSimulationFromCamera( const Object3D::Camera & p_camera ) const
+	Vec3f Trackball::targetSimulationFromCamera( const App::Component::Render::Camera & p_camera ) const
 	{
 		return p_camera.getPosition() + p_camera.getFront() * _distanceForced;
 	}
@@ -196,7 +196,7 @@ namespace VTX::UI::QT::Controller
 		_velocity	= VEC3F_ZERO;
 	}
 
-	void Trackball::_computeOrientPositions( const Object3D::Helper::AABB & p_aabb )
+	void Trackball::_computeOrientPositions( const App::Component::Object3D::Helper::AABB & p_aabb )
 	{
 		_orientStartingPosition = _target;
 		_orientTargetPosition	= p_aabb.centroid();

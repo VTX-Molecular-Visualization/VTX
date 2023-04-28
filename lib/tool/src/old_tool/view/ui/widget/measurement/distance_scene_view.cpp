@@ -1,9 +1,8 @@
 #include "tool/old_tool/view/ui/widget/measurement/distance_scene_view.hpp"
-
 #include <app/action/label.hpp>
-#include <app/model/selection.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
 #include <ui/old_ui/ui/contextual_menu.hpp>
 #include <ui/old_ui/ui/mime_type.hpp>
 #include <ui/old_ui/ui/widget/contextual_menu/contextual_menu_label.hpp>
@@ -20,8 +19,8 @@ namespace VTX::View::UI::Widget::Measurement
 
 	void DistanceSceneView::notify( const App::Core::Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name ==App::Event::Model::DATA_CHANGE ) {}
-		else if ( p_event->name ==App::Event::Model::DISPLAY_NAME_CHANGE )
+		if ( p_event->name == App::Event::Model::DATA_CHANGE ) {}
+		else if ( p_event->name == App::Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			topLevelItem( 0 )->setText( 0, QString::fromStdString( _model->getDefaultName() ) );
 		}
@@ -61,14 +60,15 @@ namespace VTX::View::UI::Widget::Measurement
 		}
 	}
 
-	void DistanceSceneView::_fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection )
+	void DistanceSceneView::_fillItemSelection( const App::Application::Selection::SelectionModel & p_selection,
+												QItemSelection &									p_itemSelection )
 	{
-		std::set<Model::Label *> selectedLabels = std::set<Model::Label *>();
+		std::set<App::Component::Object3D::Label *> selectedLabels = std::set<App::Component::Object3D::Label *>();
 		p_selection.getItemsOfType( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE, selectedLabels );
 
 		bool pathItemAdded = false;
 
-		for ( const Model::Label * const label : selectedLabels )
+		for ( const App::Component::Object3D::Label * const label : selectedLabels )
 		{
 			if ( label == _model )
 			{
@@ -88,8 +88,9 @@ namespace VTX::View::UI::Widget::Measurement
 		if ( targetedItem == nullptr )
 			return;
 
-		const QPoint	   globalClicPos = mapToGlobal( p_clicPos );
-		Model::Selection & selection	 = Selection::SelectionManager::get().getSelectionModel();
+		const QPoint								  globalClicPos = mapToGlobal( p_clicPos );
+		App::Application::Selection::SelectionModel & selection
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		if ( selection.isModelSelected( *_model ) )
 		{
@@ -101,7 +102,8 @@ namespace VTX::View::UI::Widget::Measurement
 		}
 		else
 		{
-			VTX::UI::ContextualMenu::pop<Model::Label>( VTX::UI::ContextualMenu::Menu::Label, _model, globalClicPos );
+			VTX::UI::ContextualMenu::pop<App::Component::Object3D::Label>(
+				VTX::UI::ContextualMenu::Menu::Label, _model, globalClicPos );
 		}
 	}
 

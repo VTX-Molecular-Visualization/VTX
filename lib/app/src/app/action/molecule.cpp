@@ -4,7 +4,7 @@
 #include "app/application/representation/representation_preset.hpp"
 #include "app/component/chemistry/generated_molecule.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/application/scene.hpp"
 #include "app/application/setting.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"

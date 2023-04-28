@@ -12,7 +12,7 @@
 //
 //  namespace VTX::Model::Measurement
 //{
-//	DistanceToCycle::DistanceToCycle() : Model::Label( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+//	DistanceToCycle::DistanceToCycle() : App::Component::Object3D::Label( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
 //	{
 //		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
 //		_registerEvent( VTX::App::Event::Global::ATOM_REMOVED );
@@ -59,8 +59,8 @@
 //		}
 //		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
 //		{
-//			const Event::VTXEventPtr<Model::Label> & castedEvent
-//				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label*> &>( p_event );
+//			const Event::VTXEventPtr<App::Component::Object3D::Label> & castedEvent
+//				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> &>( p_event );
 //
 //			// TODO : Use a manager instead of managing scene from model
 //			if ( castedEvent.ptr == this )
@@ -107,9 +107,9 @@
 //		}
 //	}
 //
-//	void DistanceToCycle::_recomputeAABB( Object3D::Helper::AABB & p_aabb )
+//	void DistanceToCycle::_recomputeAABB( App::Component::Object3D::Helper::AABB & p_aabb )
 //	{
-//		p_aabb = Object3D::Helper::AABB();
+//		p_aabb = App::Component::Object3D::Helper::AABB();
 //		p_aabb.extend( _firstAtom->getWorldAABB() );
 //		p_aabb.extend( _secondAtom->getWorldAABB() );
 //	}

@@ -66,7 +66,7 @@ namespace VTX::View::UI::Widget::Measurement
 			break;
 		}
 
-		const Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
+		const App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
 
 		const bool visible = Util::UIRender::anyVisibleToCamera( camera, atomPositions );
 

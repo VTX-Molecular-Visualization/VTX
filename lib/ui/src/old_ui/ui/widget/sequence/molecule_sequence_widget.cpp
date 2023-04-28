@@ -6,11 +6,11 @@
 #include <QScrollBar>
 #include <algorithm>
 #include <app/action/selection.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/event/global.hpp>
 #include <app/internal/chemdb/category.hpp>
-#include <app/model/selection.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::Widget::Sequence
@@ -191,7 +191,8 @@ namespace VTX::UI::Widget::Sequence
 
 		const bool targetWasSelected = _startResidueHovered != nullptr && _isSelected( _startResidueHovered );
 		const bool targetIsOnlyResidueSelected
-			= VTX::Selection::SelectionManager::get().getSelectionModel().getResidueSelectedCount() == 1;
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().getResidueSelectedCount()
+			  == 1;
 
 		if ( clickModifier == ClickModifier::Clear )
 			_clearSelection();
@@ -383,7 +384,8 @@ namespace VTX::UI::Widget::Sequence
 		{
 			if ( residueHovered != nullptr )
 			{
-				Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+				App::Application::Selection::SelectionModel & selection
+					= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 				if ( selection.isResidueSelected( *residueHovered ) )
 				{
 					UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Selection, &selection, globalMousePos );
@@ -604,22 +606,24 @@ namespace VTX::UI::Widget::Sequence
 
 	bool MoleculeSequenceWidget::_isSelected( const App::Component::Chemistry::Residue * const residue ) const
 	{
-		return VTX::Selection::SelectionManager::get().getSelectionModel().isResidueSelected( *residue );
+		return VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().isResidueSelected(
+			*residue );
 	}
 	void MoleculeSequenceWidget::_select( std::vector<App::Component::Chemistry::Residue *> & p_residues ) const
 	{
 		VTX_ACTION( new App::Action::Selection::SelectResidue(
-			VTX::Selection::SelectionManager::get().getSelectionModel(), p_residues, true ) );
+			VTX::App::Application::Selection::SelectionManager::get().getSelectionModel(), p_residues, true ) );
 	}
 	void MoleculeSequenceWidget::_unselect( std::vector<App::Component::Chemistry::Residue *> & p_residues,
 											const bool											p_checkData ) const
 	{
 		VTX_ACTION( new App::Action::Selection::UnselectResidue(
-			VTX::Selection::SelectionManager::get().getSelectionModel(), p_residues, p_checkData ) );
+			VTX::App::Application::Selection::SelectionManager::get().getSelectionModel(), p_residues, p_checkData ) );
 	}
 	void MoleculeSequenceWidget::_toggleSelect( std::vector<App::Component::Chemistry::Residue *> & p_residues ) const
 	{
-		Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selection
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		for ( std::vector<App::Component::Chemistry::Residue *>::const_iterator it = p_residues.cbegin();
 			  it != p_residues.cend();
 			  it++ )
@@ -629,18 +633,19 @@ namespace VTX::UI::Widget::Sequence
 			if ( selection.isResidueSelected( *residue ) )
 			{
 				VTX_ACTION( new App::Action::Selection::UnselectResidue(
-					VTX::Selection::SelectionManager::get().getSelectionModel(), *residue ) );
+					VTX::App::Application::Selection::SelectionManager::get().getSelectionModel(), *residue ) );
 			}
 			else
 			{
 				VTX_ACTION( new App::Action::Selection::SelectResidue(
-					VTX::Selection::SelectionManager::get().getSelectionModel(), *residue ) );
+					VTX::App::Application::Selection::SelectionManager::get().getSelectionModel(), *residue ) );
 			}
 		}
 	}
 	void MoleculeSequenceWidget::_clearSelection() const
 	{
-		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( !selectionModel.isEmpty() )
 		{
 			VTX_ACTION( new App::Action::Selection::ClearSelection( selectionModel ) );

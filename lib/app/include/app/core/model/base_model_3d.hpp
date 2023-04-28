@@ -9,7 +9,7 @@
 #include "app/old_app/generic/base_transformable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/object3d/helper/aabb.hpp"
+#include "app/component/object3d/helper/aabb.hpp"
 #include <unordered_set>
 #include <util/logger.hpp>
 #include <util/math.hpp>
@@ -29,14 +29,14 @@ namespace VTX::App::Core::Model
 		VTX_MODEL
 
 	  public:
-		inline virtual Object3D::Helper::AABB & getAABB() const
+		inline virtual App::Component::Object3D::Helper::AABB & getAABB() const
 		{
 			if ( !_aabb.isValid() )
 				_computeAABB();
 
 			return _aabb;
 		}
-		inline virtual Object3D::Helper::AABB & getWorldAABB() const
+		inline virtual App::Component::Object3D::Helper::AABB & getWorldAABB() const
 		{
 			if ( !_worldAabb.isValid() )
 				_computeWorldAABB();
@@ -47,7 +47,7 @@ namespace VTX::App::Core::Model
 		inline B * const	   getBuffer() { return _buffer; }
 		inline bool			   isInit() const { return _isInit; }
 
-		inline void referenceLinkedAABB( Object3D::Helper::AABB * const p_aabb ) { _linkedAABBs.emplace( p_aabb ); }
+		inline void referenceLinkedAABB( App::Component::Object3D::Helper::AABB * const p_aabb ) { _linkedAABBs.emplace( p_aabb ); }
 
 		void setAutoRotationVector( const Vec3f p_value ) override
 		{
@@ -70,7 +70,7 @@ namespace VTX::App::Core::Model
 			_notifyViews( App::Event::Model::AUTO_ROTATE_DATA_CHANGE );
 		}
 
-		virtual void render( const Object3D::Camera & p_camera ) const override
+		virtual void render( const App::Component::Render::Camera & p_camera ) const override
 		{
 			if ( _buffer == nullptr )
 				return;
@@ -95,13 +95,13 @@ namespace VTX::App::Core::Model
 		}
 
 	  protected:
-		mutable Object3D::Helper::AABB		   _aabb;
-		mutable Object3D::Helper::AABB		   _worldAabb;
+		mutable App::Component::Object3D::Helper::AABB		   _aabb;
+		mutable App::Component::Object3D::Helper::AABB		   _worldAabb;
 		std::vector<Generic::BaseRenderable *> _renderables = std::vector<Generic::BaseRenderable *>();
 		B *									   _buffer		= nullptr;
 		bool								   _isInit		= false;
 
-		std::unordered_set<Object3D::Helper::AABB *> _linkedAABBs = std::unordered_set<Object3D::Helper::AABB *>();
+		std::unordered_set<App::Component::Object3D::Helper::AABB *> _linkedAABBs = std::unordered_set<App::Component::Object3D::Helper::AABB *>();
 
 		BaseModel3D( const VTX::ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {}
 		virtual ~BaseModel3D()
@@ -132,7 +132,7 @@ namespace VTX::App::Core::Model
 		{
 			_worldAabb.invalidate();
 
-			for ( Object3D::Helper::AABB * const aabb : _linkedAABBs )
+			for ( App::Component::Object3D::Helper::AABB * const aabb : _linkedAABBs )
 				aabb->invalidate();
 		};
 
@@ -142,7 +142,7 @@ namespace VTX::App::Core::Model
 		{
 			std::vector<Vec3f> aabbSummits = getAABB().getSummits();
 
-			_worldAabb = Object3D::Helper::AABB();
+			_worldAabb = App::Component::Object3D::Helper::AABB();
 			for ( const Vec3f & summit : aabbSummits )
 			{
 				const Vec4f worldSummit = _transform.get() * Vec4f( summit, 1 );

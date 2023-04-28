@@ -2,14 +2,14 @@
 #define __VTX_APP_ACTION_SETTING__
 
 #include "app/action.hpp"
+#include "app/application/selection/enum_selection.hpp"
+#include "app/application/setting.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
-#include "app/old_app/selection/selection_enum.hpp"
-#include "app/application/setting.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::App::Action::Setting
@@ -520,7 +520,7 @@ namespace VTX::App::Action::Setting
 	class ChangeSelectionGranularity : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSelectionGranularity( const VTX::Selection::Granularity & p_granularity ) :
+		explicit ChangeSelectionGranularity( const VTX::App::Application::Selection::GRANULARITY & p_granularity ) :
 			_granularity( p_granularity )
 		{
 		}
@@ -528,7 +528,7 @@ namespace VTX::App::Action::Setting
 		virtual void execute() override;
 
 	  private:
-		const VTX::Selection::Granularity _granularity;
+		const VTX::App::Application::Selection::GRANULARITY _granularity;
 	};
 
 	class ChangeDefaultRepresentationPerCategory : public App::Core::Action::BaseAction

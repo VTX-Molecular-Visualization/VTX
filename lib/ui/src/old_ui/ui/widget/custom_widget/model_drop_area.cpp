@@ -1,8 +1,8 @@
 #include "ui/old_ui/ui/widget/custom_widget/model_drop_area.hpp"
 #include "ui/old_ui/ui/mime_type.hpp"
-#include <app/old_app/id.hpp>
-#include <app/model/selection.hpp>
+#include <app/application/selection/selection.hpp>
 #include <app/mvc.hpp>
+#include <app/old_app/id.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -58,8 +58,9 @@ namespace VTX::UI::Widget::CustomWidget
 				// For a selection, accept drop only if all models of the selection are accepted by the filter
 				if ( typeId == ID::Model::MODEL_SELECTION )
 				{
-					const Model::Selection & selection
-						= VTX::MVC_MANAGER().getModel<Model::Selection>( modelData.getModelID() );
+					const App::Application::Selection::SelectionModel & selection
+						= VTX::MVC_MANAGER().getModel<App::Application::Selection::SelectionModel>(
+							modelData.getModelID() );
 
 					if ( _acceptGroup )
 					{
@@ -99,14 +100,15 @@ namespace VTX::UI::Widget::CustomWidget
 	void ModelDropArea::dropEvent( QDropEvent * p_event )
 	{
 		const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
-		App::Core::Model::BaseModel & model = VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( modelData.getModelID() );
+		App::Core::Model::BaseModel & model
+			= VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( modelData.getModelID() );
 
 		p_event->acceptProposedAction();
 
 		if ( model.getTypeId() == ID::Model::MODEL_SELECTION )
 		{
-			const Model::Selection & selection
-				= VTX::MVC_MANAGER().getModel<Model::Selection>( modelData.getModelID() );
+			const App::Application::Selection::SelectionModel & selection
+				= VTX::MVC_MANAGER().getModel<App::Application::Selection::SelectionModel>( modelData.getModelID() );
 
 			std::set<ID::VTX_ID> types = std::set<ID::VTX_ID>();
 			selection.getItemTypes( types );
@@ -121,7 +123,8 @@ namespace VTX::UI::Widget::CustomWidget
 				}
 			}
 
-			std::vector<App::Core::Model::BaseModel *> droppedModelsVector = std::vector<App::Core::Model::BaseModel *>();
+			std::vector<App::Core::Model::BaseModel *> droppedModelsVector
+				= std::vector<App::Core::Model::BaseModel *>();
 			droppedModelsVector.resize( droppedModels.size() );
 			std::move( droppedModels.begin(), droppedModels.end(), droppedModelsVector.begin() );
 

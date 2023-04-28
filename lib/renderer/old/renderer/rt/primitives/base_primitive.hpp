@@ -21,7 +21,7 @@ namespace VTX
 			virtual ~BasePrimitive() = default;
 
 			const BaseMaterial *		   getMaterial() const { return _material; }
-			const Object3D::Helper::AABB & getAABB() const { return _aabb; }
+			const App::Component::Object3D::Helper::AABB & getAABB() const { return _aabb; }
 
 			virtual bool intersect( const Ray &	   p_ray,
 									const float	   p_tMin,

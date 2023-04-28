@@ -19,7 +19,7 @@ namespace VTX
 			BaseObject3D()			= default;
 			virtual ~BaseObject3D() = default;
 
-			const Object3D::Helper::AABB & getAABB() const { return _aabb; }
+			const App::Component::Object3D::Helper::AABB & getAABB() const { return _aabb; }
 
 			virtual bool intersect( const Ray &	   p_ray,
 									const float	   p_tMin,
@@ -30,7 +30,7 @@ namespace VTX
 			virtual bool intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const = 0;
 
 		  protected:
-			Object3D::Helper::AABB _aabb;
+		 App::Component::Object3D::Helper::AABB _aabb;
 
 		  private:
 			virtual void _computeAABB() = 0;

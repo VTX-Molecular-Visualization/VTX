@@ -6,7 +6,7 @@
 #include <app/core/event/base_event_receiver_vtx.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/core/view/callback_view.hpp>
-#include <app/model/label.hpp>
+#include <app/component/object3d/label.hpp>
 #include <app/old_app/generic/base_auto_delete.hpp>
 #include <app/old_app/id.hpp>
 #include <string>
@@ -15,7 +15,7 @@
 namespace VTX::Model::Measurement
 {
 	class MeasureInProgress :
-		public Model::Label,
+		public App::Component::Object3D::Label,
 		public App::Core::Event::BaseEventReceiverVTX,
 		public Generic::BaseAutoDelete
 	{
@@ -105,7 +105,7 @@ namespace VTX::Model::Measurement
 
 		void receiveEvent( const App::Core::Event::VTXEvent & p_event ) override;
 
-		void _recomputeAABB( Object3D::Helper::AABB & p_aabb ) override;
+		void _recomputeAABB( App::Component::Object3D::Helper::AABB & p_aabb ) override;
 
 		const std::vector<const App::Component::Chemistry::Atom *> getAtoms() const { return _atoms; };
 		bool													   isValid() const;

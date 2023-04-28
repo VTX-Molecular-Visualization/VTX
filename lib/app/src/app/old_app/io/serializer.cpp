@@ -11,23 +11,23 @@
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/component/render/camera.hpp"
+#include "app/component/object3d/label.hpp"
+#include "app/component/object3d/mesh_triangle.hpp"
+#include "app/component/video/path.hpp"
+#include "app/component/object3d/viewpoint.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include "app/event.hpp"
 #include "app/internal/chemdb/category.hpp"
-#include "app/model/label.hpp"
-#include "app/model/mesh_triangle.hpp"
-#include "app/model/path.hpp"
-#include "app/model/viewpoint.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
-#include "app/old_app/generic/base_scene_item.hpp"
+#include "app/core/scene/base_scene_item.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/lib_chemfiles.hpp"
 #include "app/old_app/io/struct/image_export.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
-#include "app/old_app/object3d/camera.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/application/scene.hpp"
 #include <algorithm>
 #include <magic_enum.hpp>
 #include <map>
@@ -42,10 +42,10 @@ namespace VTX::IO
 		return nlohmann::json { { "SCENE", serialize( p_app.getScene() ) } };
 	}
 
-	nlohmann::json Serializer::serialize( const Object3D::Scene & p_scene ) const
+	nlohmann::json Serializer::serialize( const App::Application::Scene & p_scene ) const
 	{
 		nlohmann::json jsonArrayMolecules = nlohmann::json::array();
-		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
+		for ( const App::Application::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 		{
 			nlohmann::json json
 				= { { "INDEX", p_scene.getItemPosition( *pair.first ) }, { "MOLECULE", serialize( *pair.first ) } };
@@ -54,14 +54,14 @@ namespace VTX::IO
 		}
 
 		nlohmann::json jsonArrayLabels = nlohmann::json::array();
-		for ( const Model::Label * const label : p_scene.getLabels() )
+		for ( const App::Component::Object3D::Label * const label : p_scene.getLabels() )
 		{
 			nlohmann::json json = { { "INDEX", p_scene.getItemPosition( *label ) }, { "LABEL", serialize( *label ) } };
 			jsonArrayLabels.emplace_back( json );
 		}
 
 		nlohmann::json jsonArrayPaths = nlohmann::json::array();
-		for ( const Model::Path * const path : p_scene.getPaths() )
+		for ( const App::Component::Video::Path * const path : p_scene.getPaths() )
 		{
 			nlohmann::json json = { { "INDEX", p_scene.getItemPosition( *path ) }, { "PATH", serialize( *path ) } };
 			jsonArrayPaths.emplace_back( json );
@@ -99,7 +99,7 @@ namespace VTX::IO
 				 { "PERSISTENT_SCENE_ID", p_molecule.getPersistentSceneID() } };
 	}
 
-	nlohmann::json Serializer::serialize( const Model::Label & p_label ) const
+	nlohmann::json Serializer::serialize( const App::Component::Object3D::Label & p_label ) const
 	{
 		const ID::VTX_ID & labelTypeID = p_label.getTypeId();
 
@@ -116,10 +116,10 @@ namespace VTX::IO
 		return {};
 	}
 
-	nlohmann::json Serializer::serialize( const Model::Path & p_path ) const
+	nlohmann::json Serializer::serialize( const App::Component::Video::Path & p_path ) const
 	{
 		nlohmann::json jsonArray = nlohmann::json::array();
-		for ( const Model::Viewpoint * const viewpoint : p_path.getViewpoints() )
+		for ( const App::Component::Object3D::Viewpoint * const viewpoint : p_path.getViewpoints() )
 		{
 			jsonArray.emplace_back( serialize( *viewpoint ) );
 		}
@@ -133,7 +133,7 @@ namespace VTX::IO
 				 { "PERSISTENT_SCENE_ID", p_path.getPersistentSceneID() } };
 	}
 
-	nlohmann::json Serializer::serialize( const Model::Viewpoint & p_viewpoint ) const
+	nlohmann::json Serializer::serialize( const App::Component::Object3D::Viewpoint & p_viewpoint ) const
 	{
 		nlohmann::json json = { { "NAME", p_viewpoint.getDefaultName() },
 								{ "DURATION", p_viewpoint.getDuration() },
@@ -352,7 +352,7 @@ namespace VTX::IO
 
 	void Serializer::deserialize( const nlohmann::json &			   p_json,
 								  const std::tuple<uint, uint, uint> & p_version,
-								  Object3D::Scene &					   p_scene ) const
+								  App::Application::Scene &				   p_scene ) const
 	{
 		Vec3f cameraPos;
 		if ( p_json.contains( "CAMERA_POSITION" ) )
@@ -364,7 +364,7 @@ namespace VTX::IO
 
 		std::vector<App::Component::Chemistry::Molecule *> molecules
 			= std::vector<App::Component::Chemistry::Molecule *>();
-		std::map<int, Generic::BaseSceneItem *> itemPositionMap = std::map<int, Generic::BaseSceneItem *>();
+		std::map<int, App::Core::Scene::BaseSceneItem *> itemPositionMap = std::map<int, App::Core::Scene::BaseSceneItem *>();
 
 		int lastItemIndex = -1;
 
@@ -403,10 +403,10 @@ namespace VTX::IO
 		{
 			for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
 			{
-				Model::Path * path;
+				App::Component::Video::Path * path;
 				if ( jsonPath.contains( "PATH" ) )
 				{
-					path = tryDeserializeModel<Model::Path>( jsonPath.at( "PATH" ) );
+					path = tryDeserializeModel<App::Component::Video::Path>( jsonPath.at( "PATH" ) );
 				}
 				else
 				{
@@ -433,8 +433,8 @@ namespace VTX::IO
 			{
 				if ( jsonLabel.contains( "LABEL" ) )
 				{
-					Model::Label *		   label		 = nullptr;
-					const nlohmann::json & jsonLabelData = jsonLabel.at( "LABEL" );
+					App::Component::Object3D::Label * label			= nullptr;
+					const nlohmann::json &			  jsonLabelData = jsonLabel.at( "LABEL" );
 
 					if ( jsonLabelData.contains( "TYPE_ID" ) )
 					{
@@ -467,7 +467,7 @@ namespace VTX::IO
 
 		for ( int i = 0; i <= lastItemIndex; i++ )
 		{
-			std::map<int, Generic::BaseSceneItem *>::iterator it = itemPositionMap.find( i );
+			std::map<int, App::Core::Scene::BaseSceneItem *>::iterator it = itemPositionMap.find( i );
 			if ( it != itemPositionMap.end() )
 			{
 				p_scene.changeModelPosition( *( it->second ), it->first );
@@ -552,14 +552,14 @@ namespace VTX::IO
 		p_molecule.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
 	}
 
-	void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const
+	void Serializer::deserialize( const nlohmann::json & p_json, App::Component::Video::Path & p_path ) const
 	{
 		p_path.setName( _get<std::string>( p_json, "NAME" ) );
 
-		p_path.setDurationMode( _getEnum<VTX::Path::DURATION_MODE>(
+		p_path.setDurationMode( _getEnum<App::Component::Video::PATH_DURATION_MODE>(
 			p_json, "MODE_DURATION", VTX::App::Application::Setting::DEFAULT_PATH_DURATION_MODE ) );
 
-		p_path.setInterpolationMode( _getEnum<VTX::Path::INTERPOLATION_MODE>(
+		p_path.setInterpolationMode( _getEnum<App::Component::Video::PATH_INTERPOLATION_MODE>(
 			p_json, "MODE_DURATION", VTX::App::Application::Setting::DEFAULT_PATH_INTERPOLATION_MODE ) );
 
 		p_path.setDuration( _get<float>( p_json, "DURATION", VTX::App::Application::Setting::PATH_DURATION_DEFAULT ) );
@@ -570,7 +570,8 @@ namespace VTX::IO
 		{
 			for ( const nlohmann::json & jsonViewpoint : p_json.at( "VIEWPOINTS" ) )
 			{
-				Model::Viewpoint * const viewpoint = VTX::MVC_MANAGER().instantiateModel<Model::Viewpoint>( &p_path );
+				App::Component::Object3D::Viewpoint * const viewpoint
+					= VTX::MVC_MANAGER().instantiateModel<App::Component::Object3D::Viewpoint>( &p_path );
 				deserialize( jsonViewpoint, *viewpoint );
 				p_path.addViewpoint( viewpoint );
 			}
@@ -579,7 +580,8 @@ namespace VTX::IO
 		p_path.refreshAllDurations();
 	}
 
-	void Serializer::deserialize( const nlohmann::json & p_json, Model::Viewpoint & p_viewpoint ) const
+	void Serializer::deserialize( const nlohmann::json &				p_json,
+								  App::Component::Object3D::Viewpoint & p_viewpoint ) const
 	{
 		p_viewpoint.setName( _get<std::string>( p_json, "NAME" ) );
 		p_viewpoint.setController(
@@ -935,10 +937,10 @@ namespace VTX::IO
 
 		const int moleculePersistentSceneID = p_json.at( "M" ).get<int>();
 
-		const Object3D::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
+		const App::Application::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
 
 		const App::Component::Chemistry::Molecule * linkedMolecule = nullptr;
-		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : sceneMolecules )
+		for ( const App::Application::Scene::PairMoleculePtrFloat & pair : sceneMolecules )
 		{
 			if ( pair.first->getPersistentSceneID() == moleculePersistentSceneID )
 			{

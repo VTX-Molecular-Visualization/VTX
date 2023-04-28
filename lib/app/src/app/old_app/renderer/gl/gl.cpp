@@ -94,7 +94,7 @@ namespace VTX::Renderer::GL
 		_quadVBO.set<Vec2f>( quadVertices );
 	}
 
-	void GL::renderFrame( const Object3D::Scene & p_scene )
+	void GL::renderFrame( const App::Application::Scene & p_scene )
 	{
 		VTX_STAT().drawCalls = 0u;
 

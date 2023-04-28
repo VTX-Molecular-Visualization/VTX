@@ -5,7 +5,7 @@
 #include "core/structural_alignment.hpp"
 #include <app/core/action/base_action.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/model/selection.hpp>
+#include <app/application/selection/selection.hpp>
 
 #include <vector>
 
@@ -23,7 +23,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Action
 		{
 		}
 
-		explicit ComputeStructuralAlignment( const Model::Selection & p_selection )
+		explicit ComputeStructuralAlignment( const App::Application::Selection::SelectionModel & p_selection )
 		{
 			Util::Analysis::pickTargetAndComparersFromSelection( p_selection, _staticMolecule, _mobileMolecules );
 

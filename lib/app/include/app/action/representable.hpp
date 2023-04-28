@@ -5,7 +5,7 @@
 #include "app/application/representation/base_representable.hpp"
 #include "app/application/representation/representation_preset.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/model/selection.hpp"
+#include "app/application/selection/selection.hpp"
 
 namespace VTX::App::Action::Representable
 {
@@ -19,7 +19,7 @@ namespace VTX::App::Action::Representable
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
-		explicit SetRepresentation( const Model::Selection * const							 p_selection,
+		explicit SetRepresentation( const App::Application::Selection::SelectionModel * const							 p_selection,
 									App::Application::Representation::RepresentationPreset * p_representation ) :
 			_selection( p_selection ),
 			_representation( p_representation )
@@ -30,7 +30,7 @@ namespace VTX::App::Action::Representable
 		void execute();
 
 	  private:
-		const Model::Selection * const								_selection	   = nullptr;
+		const App::Application::Selection::SelectionModel * const								_selection	   = nullptr;
 		App::Application::Representation::BaseRepresentable * const _representable = nullptr;
 
 		App::Application::Representation::RepresentationPreset * const _representation;

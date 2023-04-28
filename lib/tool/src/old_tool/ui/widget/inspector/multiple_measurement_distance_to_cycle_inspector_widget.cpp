@@ -143,7 +143,7 @@ namespace VTX::UI::Widget::Inspector
 
 	// void MultipleMeasurmentDistanceToCycleWidget::_renameAction() const
 	//{
-	//	std::unordered_set<Model::Label *> labelTargets = std::unordered_set<Model::Label *>();
+	//	std::unordered_set<App::Component::Object3D::Label *> labelTargets = std::unordered_set<App::Component::Object3D::Label *>();
 	//	for ( Model::Measurement::DistanceToCycle * const targetDistance : getTargets() )
 	//		labelTargets.emplace( targetDistance );
 
@@ -152,7 +152,7 @@ namespace VTX::UI::Widget::Inspector
 
 	// void MultipleMeasurmentDistanceToCycleWidget::_setAutoNameAction() const
 	//{
-	//	std::unordered_set<Model::Label *> labelTargets = std::unordered_set<Model::Label *>();
+	//	std::unordered_set<App::Component::Object3D::Label *> labelTargets = std::unordered_set<App::Component::Object3D::Label *>();
 	//	for ( Model::Measurement::DistanceToCycle * const targetDistance : getTargets() )
 	//		labelTargets.emplace( targetDistance );
 

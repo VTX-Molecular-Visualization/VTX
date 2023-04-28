@@ -1,15 +1,11 @@
 #ifndef __VTX_ANALYSIS_RMSD__
 #define __VTX_ANALYSIS_RMSD__
 
+#include <app/application/selection/_fwd.hpp>
 #include <app/component/chemistry/_fwd.hpp>
 #include <util/constants.hpp>
 #include <util/types.hpp>
 #include <vector>
-
-namespace VTX::Model
-{
-	class Selection;
-} // namespace VTX::Model
 
 namespace VTX::Analysis
 {
@@ -58,7 +54,8 @@ namespace VTX::Analysis
 										 const App::Component::Chemistry::Molecule * const p_secondMolecule,
 										 const bool										   p_considerTransform = true );
 
-		static void callRMSDComputation( const Model::Selection & p_selection, const bool p_considerTransform = true );
+		static void callRMSDComputation( const App::Application::Selection::SelectionModel & p_selection,
+										 const bool										p_considerTransform = true );
 
 		static double computeRMSD( const App::Component::Chemistry::Molecule & p_firstMolecule,
 								   const App::Component::Chemistry::Molecule & p_secondMolecule,

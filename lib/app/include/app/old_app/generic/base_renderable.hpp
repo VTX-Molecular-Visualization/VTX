@@ -1,23 +1,17 @@
 #ifndef __VTX_BASE_RENDERABLE__
 #define __VTX_BASE_RENDERABLE__
 
-namespace VTX
+#include "app/component/render/_fwd.hpp"
+
+namespace VTX::Generic
 {
-	namespace Object3D
+	class BaseRenderable
 	{
-		class Camera;
-	}
+	  public:
+		virtual ~BaseRenderable() = default;
 
-	namespace Generic
-	{
-		class BaseRenderable
-		{
-		  public:
-			virtual ~BaseRenderable() = default;
-
-			virtual void render( const Object3D::Camera & ) const = 0;
-			virtual void init() {};
-		};
-	} // namespace Generic
-} // namespace VTX
+		virtual void render( const App::Component::Render::Camera & ) const = 0;
+		virtual void init() {};
+	};
+} // namespace VTX::Generic
 #endif

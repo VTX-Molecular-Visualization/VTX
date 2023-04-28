@@ -5,7 +5,7 @@
 #include <app/core/event/base_event_receiver_vtx.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/core/view/callback_view.hpp>
-#include <app/model/label.hpp>
+#include <app/component/object3d/label.hpp>
 #include <app/old_app/generic/base_auto_delete.hpp>
 #include <app/old_app/id.hpp>
 #include <string>
@@ -14,7 +14,7 @@
 namespace VTX::Model::Measurement
 {
 	class DistanceToCycle :
-		public Model::Label,
+		public App::Component::Object3D::Label,
 		public App::Core::Event::BaseEventReceiverVTX,
 		public Generic::BaseAutoDelete
 	{

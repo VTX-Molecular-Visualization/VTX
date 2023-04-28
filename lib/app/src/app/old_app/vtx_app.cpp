@@ -10,9 +10,9 @@
 #include "app/manager/action_manager.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
-#include "app/old_app/object3d/camera.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
+#include "app/application/selection/selection_manager.hpp"
 // #include "ui/dialog.hpp"
 // #include "ui/main_window.hpp"
 #include "app/old_app/io/filesystem.hpp"
@@ -43,7 +43,7 @@ namespace VTX
 		VTX::MVC_MANAGER();
 		App::Manager::ActionManager::get();
 		App::Manager::EventManager::get();
-		Selection::SelectionManager::get();
+		App::Application::Selection::SelectionManager::get();
 		App::Manager::WorkerManager::get();
 
 		// Create Databases
@@ -54,7 +54,7 @@ namespace VTX
 		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 
 		// Create scene.
-		_scene = new Object3D::Scene();
+		_scene = new App::Application::Scene();
 		_scene->getCamera().setScreenSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
 
 		_pathSceneData = new IO::Struct::ScenePathData();
@@ -169,7 +169,7 @@ namespace VTX
 		VTX::MVC_MANAGER().deleteModel( _representationLibrary );
 		VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 
-		Selection::SelectionManager::get().deleteModel();
+		App::Application::Selection::SelectionManager::get().deleteModel();
 
 		if ( _scene != nullptr )
 		{

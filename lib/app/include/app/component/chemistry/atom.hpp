@@ -7,7 +7,7 @@
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/object3d/helper/aabb.hpp"
+#include "app/component/object3d/helper/aabb.hpp"
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry
@@ -49,8 +49,8 @@ namespace VTX::App::Component::Chemistry
 
 		const Vec3f &				 getLocalPosition() const;
 		const Vec3f					 getWorldPosition() const;
-		const Object3D::Helper::AABB getAABB() const;
-		const Object3D::Helper::AABB getWorldAABB() const;
+		const App::Component::Object3D::Helper::AABB getAABB() const;
+		const App::Component::Object3D::Helper::AABB getWorldAABB() const;
 
 	  private:
 		uint				 _index		 = 0;

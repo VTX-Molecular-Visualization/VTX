@@ -1,21 +1,21 @@
 #include "tool/analysis/util.hpp"
 #include "tool/analysis/rmsd/core/rmsd.hpp"
 #include <app/component/chemistry/molecule.hpp>
-#include <app/model/selection.hpp>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
 
 namespace VTX::Tool::Analysis::Util
 {
-	void pickTargetAndComparersFromSelection( const Model::Selection &		   p_selection,
+	void pickTargetAndComparersFromSelection( const App::Application::Selection::SelectionModel &		   p_selection,
 											  const App::Component::Chemistry::Molecule *&		   p_target,
 											  std::vector<App::Component::Chemistry::Molecule *> & p_comparers )
 	{
-		Model::Selection::MapMoleculeIds::const_iterator it = p_selection.getMoleculesMap().begin();
+		App::Application::Selection::SelectionModel::MapMoleculeIds::const_iterator it = p_selection.getMoleculesMap().begin();
 
 		std::list<App::Component::Chemistry::Molecule *> sortedMolecules = std::list<App::Component::Chemistry::Molecule *>();
 
-		for ( const Model::Selection::PairMoleculeIds & pairMoleculeID : p_selection.getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & pairMoleculeID : p_selection.getMoleculesMap() )
 		{
 			App::Component::Chemistry::Molecule * const currentMolecule
 				= &VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( pairMoleculeID.first );
@@ -52,15 +52,15 @@ namespace VTX::Tool::Analysis::Util
 		std::move( ++sortedMolecules.begin(), sortedMolecules.end(), p_comparers.begin() );
 	}
 
-	void pickTargetAndComparersFromSelection( const Model::Selection &				 p_selection,
+	void pickTargetAndComparersFromSelection( const App::Application::Selection::SelectionModel &				 p_selection,
 											  const App::Component::Chemistry::Molecule *&				 p_target,
 											  std::vector<const App::Component::Chemistry::Molecule *> & p_comparers )
 	{
-		Model::Selection::MapMoleculeIds::const_iterator it = p_selection.getMoleculesMap().begin();
+		App::Application::Selection::SelectionModel::MapMoleculeIds::const_iterator it = p_selection.getMoleculesMap().begin();
 
 		std::list<App::Component::Chemistry::Molecule *> sortedMolecules = std::list<App::Component::Chemistry::Molecule *>();
 
-		for ( const Model::Selection::PairMoleculeIds & pairMoleculeID : p_selection.getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & pairMoleculeID : p_selection.getMoleculesMap() )
 		{
 			App::Component::Chemistry::Molecule * const currentMolecule
 				= &VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( pairMoleculeID.first );
@@ -97,19 +97,19 @@ namespace VTX::Tool::Analysis::Util
 		std::move( ++sortedMolecules.begin(), sortedMolecules.end(), p_comparers.begin() );
 	}
 
-	void getAtomPositions( const Model::Selection & p_selection,
+	void getAtomPositions( const App::Application::Selection::SelectionModel & p_selection,
 						   const App::Component::Chemistry::Molecule *	p_target,
 						   std::vector<Vec3f> &		p_positions )
 	{
 		const App::Component::Chemistry::Molecule::AtomPositionsFrame & atomPositionFrame = p_target->getCurrentAtomPositionFrame();
-		const Model::Selection::MapChainIds &		chainMap = p_selection.getMoleculesMap().at( p_target->getId() );
+		const App::Application::Selection::SelectionModel::MapChainIds &		chainMap = p_selection.getMoleculesMap().at( p_target->getId() );
 
 		p_positions.resize( p_target->getAtomCount() );
 		size_t counter = 0;
 
-		for ( const Model::Selection::PairChainIds & chainPair : chainMap )
+		for ( const App::Application::Selection::SelectionModel::PairChainIds & chainPair : chainMap )
 		{
-			for ( const Model::Selection::PairResidueIds & residuePair : chainPair.second )
+			for ( const App::Application::Selection::SelectionModel::PairResidueIds & residuePair : chainPair.second )
 			{
 				for ( const App::Core::Model::ID & atomIndex : residuePair.second )
 				{

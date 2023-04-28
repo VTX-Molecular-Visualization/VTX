@@ -1,6 +1,7 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/application/representation/representation_library.hpp"
 #include "app/application/representation/representation_manager.hpp"
+#include "app/application/selection/selection.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/category.hpp"
@@ -10,7 +11,6 @@
 #include "app/core/event/vtx_event.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
-#include "app/model/selection.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/id.hpp"
@@ -444,7 +444,8 @@ namespace VTX::App::Component::Chemistry
 		_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 	}
 
-	void Molecule::_fillBufferAtomSelections( const Model::Selection::MapChainIds * const p_selection )
+	void Molecule::_fillBufferAtomSelections(
+		const App::Application::Selection::SelectionModel::MapChainIds * const p_selection )
 	{
 		_bufferAtomSelections.clear();
 		_bufferAtomSelections.resize( _atoms.size(), 0u );
@@ -457,7 +458,7 @@ namespace VTX::App::Component::Chemistry
 			}
 			else
 			{
-				for ( const Model::Selection::PairChainIds & pairChain : *p_selection )
+				for ( const App::Application::Selection::SelectionModel::PairChainIds & pairChain : *p_selection )
 				{
 					// Optimize buffer writing for full chains
 					const Chemistry::Chain * const chain = getChain( pairChain.first );
@@ -475,7 +476,8 @@ namespace VTX::App::Component::Chemistry
 					{
 						// Optimization like previously will not works for residues because it will add too much
 						// computation compared to add atoms one by one
-						for ( const Model::Selection::PairResidueIds & pairResidue : pairChain.second )
+						for ( const App::Application::Selection::SelectionModel::PairResidueIds & pairResidue :
+							  pairChain.second )
 						{
 							for ( const uint & atomIndex : pairResidue.second )
 							{
@@ -532,7 +534,8 @@ namespace VTX::App::Component::Chemistry
 		}
 	}
 
-	void Molecule::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
+	void Molecule::refreshSelection(
+		const App::Application::Selection::SelectionModel::MapChainIds * const p_selection )
 	{
 		_fillBufferAtomSelections( p_selection );
 		if ( _secondaryStructure != nullptr )
@@ -789,7 +792,7 @@ namespace VTX::App::Component::Chemistry
 		VTX_DEBUG( "Sizeof bond: " + std::to_string( sizeof( *_bonds[ 0 ] ) ) );
 	}
 
-	void Molecule::render( const Object3D::Camera & p_camera ) const
+	void Molecule::render( const App::Component::Render::Camera & p_camera ) const
 	{
 		BaseModel3D::render( p_camera );
 

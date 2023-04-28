@@ -3,11 +3,11 @@
 #include "ui/qt/action/viewpoint.hpp"
 #include <app/action/viewpoint.hpp>
 #include <app/event/global.hpp>
-#include <app/model/path.hpp>
-#include <app/model/selection.hpp>
+#include <app/component/video/path.hpp>
+#include <app/application/selection/selection.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/object3d/camera.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/component/render/camera.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
@@ -21,10 +21,10 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	{
 		if ( p_event.name == App::Event::Global::SELECTION_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Model::Selection *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Selection *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Application::Selection::SelectionModel *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Application::Selection::SelectionModel *> &>( p_event );
 
-			const Model::Selection * const selectionModel = castedEvent.get();
+			const App::Application::Selection::SelectionModel * const selectionModel = castedEvent.get();
 			_enableDeleteButtonState( selectionModel->hasItemOfType( VTX::ID::Model::MODEL_VIEWPOINT ) );
 		}
 	}
@@ -58,8 +58,8 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	void ViewpointBlock::_createViewpointAction() const { VTX_ACTION( new QT::Action::Viewpoint::Create() ); }
 	void ViewpointBlock::_deleteViewpointAction() const
 	{
-		std::vector<Model::Viewpoint *> viewpointsInSelection = std::vector<Model::Viewpoint *>();
-		const Model::Selection &		selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		std::vector<App::Component::Object3D::Viewpoint *> viewpointsInSelection = std::vector<App::Component::Object3D::Viewpoint *>();
+		const App::Application::Selection::SelectionModel &		selection = VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		viewpointsInSelection.reserve( selection.getItems().size() );
 
@@ -68,7 +68,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 			const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
 			if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
 			{
-				Model::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<Model::Viewpoint>( modelID );
+				App::Component::Object3D::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( modelID );
 				viewpointsInSelection.emplace_back( &viewpoint );
 			}
 		}

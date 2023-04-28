@@ -12,7 +12,7 @@
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/image_export.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/application/selection/selection_manager.hpp>
 
 namespace VTX::UI
 {

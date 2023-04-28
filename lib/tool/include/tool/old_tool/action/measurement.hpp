@@ -8,7 +8,7 @@
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/application/scene.hpp>
 #include <ui/old_ui/vtx_app.hpp>
 
 namespace VTX::Action::Measurement

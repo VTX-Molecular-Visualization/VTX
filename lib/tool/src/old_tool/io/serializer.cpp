@@ -3,11 +3,11 @@
 #include "tool/old_tool/model/measurement/dihedral_angle.hpp"
 #include "tool/old_tool/model/measurement/distance.hpp"
 #include "tool/old_tool/model/measurement/distance_to_cycle.hpp"
-#include <app/model/label.hpp>
+#include <app/component/object3d/label.hpp>
 
 namespace VTX::IO
 {
-	// nlohmann::json Serializer::serialize( const Model::Label & p_label ) const
+	// nlohmann::json Serializer::serialize( const App::Component::Object3D::Label & p_label ) const
 	//{
 	//	const ID::VTX_ID & labelTypeID = p_label.getTypeId();
 

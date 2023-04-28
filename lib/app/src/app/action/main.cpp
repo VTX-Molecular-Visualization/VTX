@@ -9,8 +9,8 @@
 #include "app/internal/worker/scene_loader.hpp"
 #include "app/network.hpp"
 #include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/object3d/camera_manager.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/internal/scene/camera_manager.hpp"
+#include "app/application/scene.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker.hpp"
 
@@ -79,7 +79,7 @@ namespace VTX::App::Action::Main
 			}
 			else
 			{
-				for ( const Object3D::Scene::PairMoleculePtrFloat & molPair : VTXApp::get().getScene().getMolecules() )
+				for ( const App::Application::Scene::PairMoleculePtrFloat & molPair : VTXApp::get().getScene().getMolecules() )
 				{
 					loader->addDynamicTarget( molPair.first );
 				}

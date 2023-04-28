@@ -54,13 +54,13 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		QMenu * const selectionGranularityMenu = new QMenu( this );
 		selectionGranularityMenu->setTitle( "Selection target" );
 		selectionGranularityMenu->addAction( "Atom" )->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME,
-																	int( VTX::Selection::Granularity::ATOM ) );
+																	int( VTX::App::Application::Selection::GRANULARITY::ATOM ) );
 		selectionGranularityMenu->addAction( "Residue" )
-			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::Selection::Granularity::RESIDUE ) );
+			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::App::Application::Selection::GRANULARITY::RESIDUE ) );
 		selectionGranularityMenu->addAction( "Chain" )->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME,
-																	 int( VTX::Selection::Granularity::CHAIN ) );
+																	 int( VTX::App::Application::Selection::GRANULARITY::CHAIN ) );
 		selectionGranularityMenu->addAction( "Molecule" )
-			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::Selection::Granularity::MOLECULE ) );
+			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::App::Application::Selection::GRANULARITY::MOLECULE ) );
 		connect(
 			selectionGranularityMenu, &QMenu::triggered, this, &ContextualMenuRender::_setSelectionGranularityAction );
 
@@ -165,8 +165,8 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void ContextualMenuRender::_setSelectionGranularityAction( QAction * p_action ) const
 	{
-		const VTX::Selection::Granularity granularity
-			= VTX::Selection::Granularity( p_action->property( SELECTION_GRANULARITY_PROPERTY_NAME ).toInt() );
+		const VTX::App::Application::Selection::GRANULARITY granularity
+			= VTX::App::Application::Selection::GRANULARITY( p_action->property( SELECTION_GRANULARITY_PROPERTY_NAME ).toInt() );
 		VTX_ACTION( new VTX::App::Action::Setting::ChangeSelectionGranularity( granularity ) );
 	}
 

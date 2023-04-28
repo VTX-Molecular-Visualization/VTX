@@ -17,7 +17,7 @@
 #include <app/event/global.hpp>
 #include <app/application/render_effect/render_effect_library.hpp>
 #include <app/old_app/io/filesystem.hpp>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/application/scene.hpp>
 #include <app/application/setting.hpp>
 #include <app/internal/worker/snapshoter.hpp>
 
@@ -88,10 +88,10 @@ namespace VTX::UI::Widget::ContextualMenu
 		addSection( "Selection" );
 		_selectionGranularityMenu = new QMenu( this );
 		_selectionGranularityMenu->setTitle( "Selection target" );
-		_addSelectionGranularityActionInMenu( int( VTX::Selection::Granularity::ATOM ), "Atom" );
-		_addSelectionGranularityActionInMenu( int( VTX::Selection::Granularity::RESIDUE ), "Residue" );
-		_addSelectionGranularityActionInMenu( int( VTX::Selection::Granularity::CHAIN ), "Chain" );
-		_addSelectionGranularityActionInMenu( int( VTX::Selection::Granularity::MOLECULE ), "Molecule" );
+		_addSelectionGranularityActionInMenu( int( VTX::App::Application::Selection::GRANULARITY::ATOM ), "Atom" );
+		_addSelectionGranularityActionInMenu( int( VTX::App::Application::Selection::GRANULARITY::RESIDUE ), "Residue" );
+		_addSelectionGranularityActionInMenu( int( VTX::App::Application::Selection::GRANULARITY::CHAIN ), "Chain" );
+		_addSelectionGranularityActionInMenu( int( VTX::App::Application::Selection::GRANULARITY::MOLECULE ), "Molecule" );
 		addMenu( _selectionGranularityMenu );
 
 		addSection( "Render" );
@@ -200,11 +200,11 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		const State::Visualization * const state
 			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
-		const VTX::Selection::Granularity currentGranularity = VTX_SETTING().getSelectionGranularity();
+		const VTX::App::Application::Selection::GRANULARITY currentGranularity = VTX_SETTING().getSelectionGranularity();
 
 		for ( QAction * const action : _selectionGranularityMenu->actions() )
 		{
-			const VTX::Selection::Granularity granularity = VTX::Selection::Granularity( action->data().toInt() );
+			const VTX::App::Application::Selection::GRANULARITY granularity = VTX::App::Application::Selection::GRANULARITY( action->data().toInt() );
 			action->setChecked( currentGranularity == granularity );
 		}
 	}
@@ -287,7 +287,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuRender::_setSelectionGranularityAction( QAction * p_action ) const
 	{
-		const VTX::Selection::Granularity granularity = VTX::Selection::Granularity( p_action->data().toInt() );
+		const VTX::App::Application::Selection::GRANULARITY granularity = VTX::App::Application::Selection::GRANULARITY( p_action->data().toInt() );
 		VTX_ACTION( new Action::Main::ChangeSelectionGranularity( granularity ) );
 	}
 

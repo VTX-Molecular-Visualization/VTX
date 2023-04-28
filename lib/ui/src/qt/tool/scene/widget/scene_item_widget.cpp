@@ -9,16 +9,16 @@
 #include "ui/qt/util.hpp"
 #include <QAbstractItemModel>
 #include <QDrag>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/category.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/event/global.hpp>
-#include <app/model/selection.hpp>
 #include <app/mvc.hpp>
 #include <app/old_app/generic/base_visible.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
 #include <stack>
 #include <util/logger.hpp>
 
@@ -34,8 +34,10 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		if ( p_event.name == VTX::App::Event::Global::SELECTION_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const Model::Selection *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const Model::Selection *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<const App::Application::Selection::SelectionModel *> & castedEvent
+				= dynamic_cast<
+					const VTX::App::Core::Event::VTXEventArg<const App::Application::Selection::SelectionModel *> &>(
+					p_event );
 
 			_refreshSelection( *castedEvent.get() );
 		}
@@ -125,7 +127,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		}
 		else if ( p_event->key() == Qt::Key::Key_F2 )
 		{
-			const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+			const App::Application::Selection::SelectionModel & selection
+				= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 
 			if ( selection.getItems().size() == 1 && _itemCanBeRenamed( currentItem() ) )
 			{
@@ -214,7 +217,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void SceneItemWidget::_onCustomContextMenuCalled( const QPoint & p_clicPos ) {}
 
-	void SceneItemWidget::_refreshSelection( const Model::Selection & p_selection )
+	void SceneItemWidget::_refreshSelection( const App::Application::Selection::SelectionModel & p_selection )
 	{
 		_enableSignals( false );
 		QItemSelection selection = QItemSelection();
@@ -240,8 +243,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		}
 		_enableSignals( true );
 	}
-	void SceneItemWidget::_fillItemSelection( const Model::Selection & p_selection,
-											  QItemSelection &		   p_itemSelection ) {};
+	void SceneItemWidget::_fillItemSelection( const App::Application::Selection::SelectionModel & p_selection,
+											  QItemSelection &									  p_itemSelection ) {};
 
 	void SceneItemWidget::_refreshItemVisibility( QTreeWidgetItem * const p_itemWidget, const bool p_visible )
 	{
@@ -330,7 +333,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void SceneItemWidget::_selectItemWithArrows( QTreeWidgetItem & p_itemToSelect, const bool p_append )
 	{
-		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		const App::Core::Model::ID & itemModel = _getModelIDFromItem( p_itemToSelect );
 		const ID::VTX_ID			 itemType  = VTX::MVC_MANAGER().getModelTypeID( itemModel );
@@ -431,8 +435,9 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	QMimeData * SceneItemWidget::_getDataForDrag() const
 	{
-		const Model::Selection & selectionModel	 = VTX::Selection::SelectionManager::get().getSelectionModel();
-		const bool				 isModelSelected = selectionModel.isModelSelected( getModelID() );
+		const App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const bool isModelSelected = selectionModel.isModelSelected( getModelID() );
 
 		const App::Core::Model::BaseModel * const modelDragged
 			= isModelSelected ? &( selectionModel )

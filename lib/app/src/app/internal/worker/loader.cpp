@@ -2,7 +2,7 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/io/molecule_configuration.hpp"
 #include "app/event.hpp"
-#include "app/model/mesh_triangle.hpp"
+#include "app/component/object3d/mesh_triangle.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/lib_assimp.hpp"
@@ -10,8 +10,8 @@
 #include "app/old_app/io/reader/prm.hpp"
 #include "app/old_app/io/reader/psf.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
-#include "app/old_app/object3d/camera.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/component/render/camera.hpp"
+#include "app/application/scene.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <util/logger.hpp>
 
@@ -184,7 +184,7 @@ namespace VTX
 				_startLoadingFile( path, SOURCE_TYPE::FILE );
 
 				IO::Reader::LibAssimp * const reader = new IO::Reader::LibAssimp();
-				Model::MeshTriangle * const	  mesh	 = VTX::MVC_MANAGER().instantiateModel<Model::MeshTriangle>();
+			 App::Component::Object3D::MeshTriangle * const	  mesh	 = VTX::MVC_MANAGER().instantiateModel<App::Component::Object3D::MeshTriangle>();
 
 				try
 				{

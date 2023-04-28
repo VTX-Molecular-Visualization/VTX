@@ -1,13 +1,13 @@
 #include "app/component/chemistry/secondary_structure.hpp"
+#include "app/application/representation/representation_manager.hpp"
+#include "app/application/selection/selection.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/internal/chemDB/secondary_structure.hpp"
-#include "app/model/selection.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"
-#include "app/application/representation/representation_manager.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
 #include "app/old_app/view/d3/ribbon.hpp"
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -26,7 +26,8 @@ namespace VTX::App::Component::Chemistry
 		VTX_DEBUG( "Creating secondary structure..." );
 
 		refresh();
-		refreshSelection( VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculeMap( *_molecule ) );
+		refreshSelection( VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().getMoleculeMap(
+			*_molecule ) );
 
 		chrono.stop();
 		VTX_DEBUG( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
@@ -272,7 +273,7 @@ namespace VTX::App::Component::Chemistry
 		}
 	}
 
-	Object3D::Helper::AABB & SecondaryStructure::getAABB() const { return _molecule->getAABB(); }
+	App::Component::Object3D::Helper::AABB & SecondaryStructure::getAABB() const { return _molecule->getAABB(); }
 
 	const Math::Transform & SecondaryStructure::getTransform() const { return _molecule->getTransform(); };
 
@@ -299,7 +300,8 @@ namespace VTX::App::Component::Chemistry
 				if ( residue == nullptr )
 					continue;
 
-				Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode = VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT;
+				Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode
+					= VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT;
 				if ( residue->getRepresentation()->hasToDrawRibbon() )
 				{
 					colorMode = residue->getRepresentation()->getRibbonData().colorMode;
@@ -353,16 +355,18 @@ namespace VTX::App::Component::Chemistry
 	}
 
 	// TODO: use molecule buffer instead of selection model.
-	void SecondaryStructure::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
+	void SecondaryStructure::refreshSelection(
+		const App::Application::Selection::SelectionModel::MapChainIds * const p_selection )
 	{
 		_bufferSelections.clear();
 		_bufferSelections.resize( _bufferCaPositions.size(), 0 );
 
 		if ( p_selection != nullptr )
 		{
-			for ( const Model::Selection::PairChainIds & pairChain : *p_selection )
+			for ( const App::Application::Selection::SelectionModel::PairChainIds & pairChain : *p_selection )
 			{
-				for ( const Model::Selection::PairResidueIds & pairResidue : pairChain.second )
+				for ( const App::Application::Selection::SelectionModel::PairResidueIds & pairResidue :
+					  pairChain.second )
 				{
 					if ( _residueToPositions.find( pairResidue.first ) != _residueToPositions.end() )
 					{

@@ -14,7 +14,7 @@ namespace VTX::View::D3
 
 	void Sphere::_init() {}
 
-	void Sphere::render( const Object3D::Camera & p_camera ) const
+	void Sphere::render( const App::Component::Render::Camera & p_camera ) const
 	{
 		BaseView3D::render( p_camera );
 

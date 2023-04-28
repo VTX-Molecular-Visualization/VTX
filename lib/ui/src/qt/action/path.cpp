@@ -11,7 +11,7 @@ namespace VTX::UI::QT::Action::Path
 	class ExportVideo : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ExportVideo( Model::Path * const p_path, Worker::Snapshoter::MODE p_mode ) :
+		explicit ExportVideo( App::Component::Video::Path * const p_path, Worker::Snapshoter::MODE p_mode ) :
 			_path( p_path ), _mode( p_mode )
 		{
 		}
@@ -27,7 +27,7 @@ namespace VTX::UI::QT::Action::Path
 
 	  private:
 		const Worker::Snapshoter::MODE _mode;
-		Model::Path * const			   _path;
+	 App::Component::Video::Path * const			   _path;
 	};
 	*/
 

@@ -36,7 +36,7 @@ namespace VTX
 					delete _child1;
 			}
 			// Constructor for leaves
-			BVHBuildNode( const uint p_idFirstPrim, const uint p_nbPrims, const Object3D::Helper::AABB & p_aabb ) :
+			BVHBuildNode( const uint p_idFirstPrim, const uint p_nbPrims, const App::Component::Object3D::Helper::AABB & p_aabb ) :
 				_idFirstPrim( p_idFirstPrim ), _nbPrims( p_nbPrims ), _aabb( p_aabb )
 			{
 				++leafNodes;
@@ -47,11 +47,11 @@ namespace VTX
 			BVHBuildNode( const uint p_splitAxis, BVHBuildNode * p_child0, BVHBuildNode * p_child1 ) :
 				_splitAxis( p_splitAxis ), _child0( p_child0 ), _child1( p_child1 )
 			{
-				_aabb = Object3D::Helper::AABB::join( p_child0->_aabb, p_child1->_aabb );
+				_aabb = App::Component::Object3D::Helper::AABB::join( p_child0->_aabb, p_child1->_aabb );
 				++interiorNodes;
 			}
 
-			Object3D::Helper::AABB _aabb;
+		 App::Component::Object3D::Helper::AABB _aabb;
 			BVHBuildNode *		   _child0		= nullptr;
 			BVHBuildNode *		   _child1		= nullptr;
 			uint				   _splitAxis	= 0;
@@ -62,19 +62,19 @@ namespace VTX
 		struct BVHPrimInfo
 		{
 			BVHPrimInfo() {}
-			BVHPrimInfo( const uint p_idPrimitive, const Object3D::Helper::AABB & p_aabb ) :
+			BVHPrimInfo( const uint p_idPrimitive, const App::Component::Object3D::Helper::AABB & p_aabb ) :
 				_idPrimitive( p_idPrimitive ), _aabb( p_aabb ), _centroid( _aabb.centroid() )
 			{
 			}
 			uint				   _idPrimitive = 0;
-			Object3D::Helper::AABB _aabb;
+		 App::Component::Object3D::Helper::AABB _aabb;
 			Vec3f				   _centroid = VEC3F_ZERO;
 		};
 
 		struct BinInfo
 		{
 			uint				   _count = 0;
-			Object3D::Helper::AABB _aabb;
+		 App::Component::Object3D::Helper::AABB _aabb;
 		};
 
 		struct MortonPrim
@@ -294,7 +294,7 @@ namespace VTX
 
 			p_totalNodes++;
 
-			Object3D::Helper::AABB aabb;
+		 App::Component::Object3D::Helper::AABB aabb;
 			for ( uint i = p_begin; i < p_end; ++i )
 			{
 				aabb.extend( p_primsInfo[ i ]._aabb );
@@ -312,7 +312,7 @@ namespace VTX
 			else
 			{
 				// Compute the AABB of primitives centroids
-				Object3D::Helper::AABB centroidsAABB;
+			 App::Component::Object3D::Helper::AABB centroidsAABB;
 				for ( uint i = p_begin; i < p_end; ++i )
 				{
 					centroidsAABB.extend( p_primsInfo[ i ]._centroid );
@@ -363,14 +363,14 @@ namespace VTX
 					float sahCostBins[ nbBins - 1 ];
 					for ( uint i = 0; i < nbBins - 1; ++i )
 					{
-						Object3D::Helper::AABB aabb0;
+					 App::Component::Object3D::Helper::AABB aabb0;
 						uint				   count0 = 0;
 						for ( uint j = 0; j <= i; ++j )
 						{
 							aabb0.extend( bins[ j ]._aabb );
 							count0 += bins[ j ]._count;
 						}
-						Object3D::Helper::AABB aabb1;
+					 App::Component::Object3D::Helper::AABB aabb1;
 						uint				   count1 = 0;
 						for ( uint j = i + 1; j < nbBins; ++j )
 						{
@@ -484,7 +484,7 @@ namespace VTX
 										 std::vector<BasePrimitive *> &	  p_outPrims )
 		{
 			// Compute the global AABB of primitives centroids
-			Object3D::Helper::AABB aabb;
+		 App::Component::Object3D::Helper::AABB aabb;
 			for ( uint i = 0; i < uint( p_primsInfo.size() ); ++i )
 			{
 				aabb.extend( p_primsInfo[ i ]._aabb );
@@ -610,7 +610,7 @@ namespace VTX
 				// Create and return leaf node of LBVH treelet
 				p_totalNodes++;
 				BVHBuildNode *		   node = p_buildNodes++;
-				Object3D::Helper::AABB aabb;
+			 App::Component::Object3D::Helper::AABB aabb;
 				uint				   idFirstPrimitive = p_outPrimsOffset.fetch_add( p_nbPrims );
 				for ( uint i = 0; i < p_nbPrims; ++i )
 				{
@@ -694,12 +694,12 @@ namespace VTX
 			totalNodes++;
 
 			// Compute AABB of each treelet
-			Object3D::Helper::AABB aabb;
+		 App::Component::Object3D::Helper::AABB aabb;
 			for ( uint i = p_begin; i < p_end; ++i )
 				aabb.extend( p_treeletRoots[ i ]->_aabb );
 
 			// Compute the AABB of each treelet root (HLBVH node) centroid
-			Object3D::Helper::AABB centroidsAABB;
+		 App::Component::Object3D::Helper::AABB centroidsAABB;
 			for ( uint i = p_begin; i < p_end; ++i )
 			{
 				centroidsAABB.extend( p_treeletRoots[ i ]->_aabb.centroid() );
@@ -733,14 +733,14 @@ namespace VTX
 			float sahCostBins[ nbBins - 1 ];
 			for ( uint i = 0; i < nbBins - 1; ++i )
 			{
-				Object3D::Helper::AABB aabb0;
+			 App::Component::Object3D::Helper::AABB aabb0;
 				uint				   count0 = 0;
 				for ( uint j = 0; j <= i; ++j )
 				{
 					aabb0.extend( bins[ j ]._aabb );
 					count0 += bins[ j ]._count;
 				}
-				Object3D::Helper::AABB aabb1;
+			 App::Component::Object3D::Helper::AABB aabb1;
 				uint				   count1 = 0;
 				for ( uint j = i + 1; j < nbBins; ++j )
 				{

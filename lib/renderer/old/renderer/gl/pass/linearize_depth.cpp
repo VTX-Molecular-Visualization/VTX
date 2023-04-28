@@ -30,7 +30,7 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 	}
 
-	void LinearizeDepth::render( const Object3D::Scene & p_scene, const GL & p_renderer )
+	void LinearizeDepth::render( const App::Application::Scene & p_scene, const GL & p_renderer )
 	{
 		_fbo.bind();
 
@@ -40,7 +40,7 @@ namespace VTX::Renderer::GL::Pass
 
 		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
 		{
-			const Object3D::Camera & cam	 = p_scene.getCamera();
+			const App::Component::Render::Camera & cam	 = p_scene.getCamera();
 			const float				 camNear = cam.getNear();
 			const float				 camFar	 = cam.getFar();
 

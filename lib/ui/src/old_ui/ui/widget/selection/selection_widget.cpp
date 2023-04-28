@@ -8,8 +8,8 @@
 #include <QtGlobal>
 #include <app/mvc.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/selection/selection_enum.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/application/selection/enum_selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/application/setting.hpp>
 #include <string>
 
@@ -25,8 +25,8 @@ namespace VTX::UI::Widget::Selection
 	{
 		if ( p_event.name == VTX::App::Event::Global::SELECTION_ADDED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Model::Selection *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Selection *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Application::Selection::SelectionModel *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Application::Selection::SelectionModel *> &>( p_event );
 			_addSelectionModel( castedEvent.get() );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::SELECTION_REMOVED )
@@ -53,7 +53,7 @@ namespace VTX::UI::Widget::Selection
 		_layout				   = new QVBoxLayout( _mainWidget );
 		_selectionTypeComboBox = new QComboBox( this );
 
-		for ( int i = 0; i < (int)VTX::Selection::Granularity::COUNT; i++ )
+		for ( int i = 0; i < (int)VTX::App::Application::Selection::GRANULARITY::COUNT; i++ )
 		{
 			_selectionTypeComboBox->addItem( "" );
 		}
@@ -63,7 +63,7 @@ namespace VTX::UI::Widget::Selection
 
 		setWidget( _mainWidget );
 
-		_addSelectionModel( &VTX::Selection::SelectionManager::get().getSelectionModel() );
+		_addSelectionModel( &VTX::App::Application::Selection::SelectionManager::get().getSelectionModel() );
 	}
 
 	void SelectionWidget::_setupSlots()
@@ -89,7 +89,7 @@ namespace VTX::UI::Widget::Selection
 		// this->setWindowTitle( QCoreApplication::translate( "SceneWidget", "Scene", nullptr ) );
 	}
 
-	void SelectionWidget::_addSelectionModel( Model::Selection * const p_selection )
+	void SelectionWidget::_addSelectionModel( App::Application::Selection::SelectionModel * const p_selection )
 	{
 		View::UI::Widget::SelectionView * const item
 			= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::SelectionView>(
@@ -99,18 +99,18 @@ namespace VTX::UI::Widget::Selection
 
 	void SelectionWidget::_populateItemList()
 	{
-		for ( int i = 0; i < (int)VTX::Selection::Granularity::COUNT; i++ )
+		for ( int i = 0; i < (int)VTX::App::Application::Selection::GRANULARITY::COUNT; i++ )
 		{
 			QString							  txt;
-			const VTX::Selection::Granularity selectionType = (VTX::Selection::Granularity)i;
+			const VTX::App::Application::Selection::GRANULARITY selectionType = (VTX::App::Application::Selection::GRANULARITY)i;
 
 			switch ( selectionType )
 			{
-			case VTX::Selection::Granularity::ATOM: txt = "Atom"; break;
-			// case VTX::Selection::Granularity::BOND: txt = "Bond"; break;
-			case VTX::Selection::Granularity::CHAIN: txt = "Chain"; break;
-			case VTX::Selection::Granularity::MOLECULE: txt = "Molecule"; break;
-			case VTX::Selection::Granularity::RESIDUE: txt = "Residue"; break;
+			case VTX::App::Application::Selection::GRANULARITY::ATOM: txt = "Atom"; break;
+			// case VTX::App::Application::Selection::GRANULARITY::BOND: txt = "Bond"; break;
+			case VTX::App::Application::Selection::GRANULARITY::CHAIN: txt = "Chain"; break;
+			case VTX::App::Application::Selection::GRANULARITY::MOLECULE: txt = "Molecule"; break;
+			case VTX::App::Application::Selection::GRANULARITY::RESIDUE: txt = "Residue"; break;
 
 			default:
 				VTX_WARNING( "Selection " + std::to_string( i )

@@ -210,7 +210,7 @@ namespace VTX::Util::BondGuessing
 		}
 	}
 
-	void BondRecomputation::recomputeBonds( chemfiles::Frame & p_frame, const VTX::Object3D::Helper::AABB & p_aabb )
+	void BondRecomputation::recomputeBonds( chemfiles::Frame & p_frame, const App::Component::Object3D::Helper::AABB & p_aabb )
 	{
 		CellList cellList = CellList( p_aabb, VTX::App::Application::Setting::CELL_LIST_CUBE_SIZE );
 

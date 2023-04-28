@@ -2,16 +2,16 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_SOLVENT_EXCLUDED_SURFACE__
 
 #include "_fwd.hpp"
-#include "app/model/mesh_triangle.hpp"
-#include "app/model/selection.hpp"
-#include "app/old_app/object3d/helper/grid.hpp"
+#include "app/component/object3d/mesh_triangle.hpp"
+#include "app/application/selection/selection.hpp"
+#include "app/component/object3d/helper/grid.hpp"
 #include "app/old_app/renderer/gl/buffer.hpp"
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::App::Component::Chemistry
 {
-	class SolventExcludedSurface : public Model::MeshTriangle
+	class SolventExcludedSurface : public App::Component::Object3D::MeshTriangle
 	{
 		VTX_MODEL
 

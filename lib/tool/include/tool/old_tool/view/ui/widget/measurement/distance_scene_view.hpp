@@ -19,7 +19,7 @@ namespace VTX::View::UI::Widget::Measurement
 
 	  public:
 		virtual const App::Core::Model::ID &			   getModelID() const { return _model->getId(); };
-		virtual const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };
+		virtual const App::Core::Scene::BaseSceneItem & getBaseSceneItem() const { return *_model; };
 
 		void notify( const App::Core::Event::VTXEvent * const p_event ) override;
 
@@ -27,7 +27,7 @@ namespace VTX::View::UI::Widget::Measurement
 		DistanceSceneView( Model::Measurement::Distance * const p_model, QWidget * const p_parent );
 		void _setupSlots() override;
 
-		void _fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection ) override;
+		void _fillItemSelection( const App::Application::Selection::SelectionModel & p_selection, QItemSelection & p_itemSelection ) override;
 
 		void _onItemChanged( QTreeWidgetItem * const, const int );
 		void _onCustomContextMenuCalled( const QPoint & p_clicPos ) override;

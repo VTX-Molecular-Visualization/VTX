@@ -13,9 +13,9 @@
 // #include <app/model/measurement/measure_in_progress.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
-#include <app/model/selection.hpp>
+#include <app/application/selection/selection.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 
@@ -44,7 +44,7 @@ namespace VTX::UI::QT::Controller
 	{
 		// const QPoint position = QT_APP()->getMainWindow().getRender()->mapToGlobal( QPoint( p_x, p_y ) );
 
-		// Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		// App::Application::Selection::SelectionModel & selection = VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		// if ( selection.isEmpty() )
 		//{

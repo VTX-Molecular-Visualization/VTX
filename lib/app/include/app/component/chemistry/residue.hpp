@@ -10,7 +10,7 @@
 #include "app/application/representation/base_representable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/object3d/helper/aabb.hpp"
+#include "app/component/object3d/helper/aabb.hpp"
 #include "atom.hpp"
 #include <map>
 #include <string>
@@ -90,8 +90,8 @@ namespace VTX::App::Component::Chemistry
 		void setVisible( const bool p_visible );
 		void setVisible( const bool p_visible, const bool p_notify );
 
-		Object3D::Helper::AABB getAABB() const;
-		Object3D::Helper::AABB getWorldAABB() const;
+	 App::Component::Object3D::Helper::AABB getAABB() const;
+	 App::Component::Object3D::Helper::AABB getWorldAABB() const;
 
 	  protected:
 		void _onRepresentationChange() override;

@@ -14,14 +14,14 @@
 #include <app/action/main.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
+#include <app/application/setting.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/model/selection.hpp>
 #include <app/old_app/io/filesystem.hpp>
 #include <app/old_app/io/struct/scene_path_data.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
-#include <app/application/setting.hpp>
 
 namespace VTX::UI::QT
 {
@@ -301,10 +301,10 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::_onShortcutClearSelection() const
 	{
-		if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
+		if ( !App::Application::Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 		{
 			VTX_ACTION( new VTX::App::Action::Selection::ClearSelection(
-				VTX::Selection::SelectionManager::get().getSelectionModel() ) );
+				VTX::App::Application::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 	void MainWindow::_onShortcutRestoreLayout() const { VTX_ACTION( new QT::Action::Main::RestoreLayout() ); }
@@ -316,27 +316,30 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::_onShortcutDelete() const
 	{
-		if ( Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
+		if ( App::Application::Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
 		{
-			VTX_ACTION(
-				new VTX::App::Action::Selection::Delete( Selection::SelectionManager::get().getSelectionModel() ) );
+			VTX_ACTION( new VTX::App::Action::Selection::Delete(
+				App::Application::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 	void MainWindow::_onShortcutOrient() const
 	{
-		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selection
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new VTX::UI::QT::Action::Selection::Orient( selection ) );
 	}
 	void MainWindow::_onShortcutSelectAll() const { VTX_ACTION( new VTX::App::Action::Selection::SelectAll() ); }
 	void MainWindow::_onShortcutCopy() const
 	{
-		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
 			VTX_ACTION( new VTX::App::Action::Selection::Copy( selectionModel ) );
 	}
 	void MainWindow::_onShortcutExtract() const
 	{
-		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
 			VTX_ACTION( new VTX::App::Action::Selection::Extract( selectionModel ) );
 	}

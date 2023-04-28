@@ -3,14 +3,14 @@
 #include "ui/old_ui/vtx_app.hpp"
 #include <app/action/representable.hpp>
 #include <app/application/representation/base_representable.hpp>
-#include <app/application/representation/representation_preset.hpp>
 #include <app/application/representation/representation_library.hpp>
 #include <app/application/representation/representation_manager.hpp>
+#include <app/application/representation/representation_preset.hpp>
+#include <app/application/scene.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/model/selection.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/object3d/scene.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
@@ -30,7 +30,8 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	{
 		App::Application::Representation::RepresentationPreset * representation
 			= App::Application::Representation::RepresentationLibrary::get().getRepresentation( _id );
-		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selection
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		if ( selection.getMoleculesMap().size() > 0 )
 		{
@@ -38,9 +39,9 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		}
 		else
 		{
-			Object3D::Scene::MapMoleculePtrFloat & mapMolFloat = VTXApp::get().getScene().getMolecules();
+			App::Application::Scene::MapMoleculePtrFloat & mapMolFloat = VTXApp::get().getScene().getMolecules();
 
-			for ( const Object3D::Scene::PairMoleculePtrFloat & pair : mapMolFloat )
+			for ( const App::Application::Scene::PairMoleculePtrFloat & pair : mapMolFloat )
 			{
 				VTX_ACTION( new App::Action::Representable::SetRepresentation( *pair.first, representation ) );
 			}

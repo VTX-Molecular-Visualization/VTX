@@ -1,6 +1,6 @@
 #include "app/internal/worker/scene_loader.hpp"
 #include "app/event.hpp"
-#include "app/model/mesh_triangle.hpp"
+#include "app/component/object3d/mesh_triangle.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/io/filesystem.hpp"
@@ -10,8 +10,8 @@
 #include "app/old_app/io/reader/psf.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
 #include "app/old_app/io/struct/scene_path_data.hpp"
-#include "app/old_app/object3d/camera.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/component/render/camera.hpp"
+#include "app/application/scene.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <util/logger.hpp>
 

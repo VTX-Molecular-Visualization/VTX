@@ -12,7 +12,7 @@ namespace VTX::View::D3
 
 	void Cylinder::_init() {}
 
-	void Cylinder::render( const Object3D::Camera & p_camera ) const
+	void Cylinder::render( const App::Component::Render::Camera & p_camera ) const
 	{
 		BaseView3D::render( p_camera );
 

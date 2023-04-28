@@ -2,8 +2,8 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_SECONDARY_STRUCTURE__
 
 #include "_fwd.hpp"
+#include "app/application/selection/selection.hpp"
 #include "app/core/model/base_model_3d.hpp"
-#include "app/model/selection.hpp"
 #include "app/old_app/buffer/secondary_structure.hpp"
 #include "app/old_app/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
@@ -28,7 +28,8 @@ namespace VTX::App::Component::Chemistry
 		void refresh();
 		void refreshColors();
 		void refreshVisibilities();
-		void refreshSelection( const Model::Selection::MapChainIds * const p_selection = nullptr );
+		void refreshSelection( const App::Application::Selection::SelectionModel::MapChainIds * const p_selection
+							   = nullptr );
 
 		inline const std::vector<uint> &	getIndices() const { return _bufferIndices; }
 		inline const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToIndices; }
@@ -36,8 +37,8 @@ namespace VTX::App::Component::Chemistry
 
 		void print() const;
 
-		const Math::Transform &	 getTransform() const override;
-		Object3D::Helper::AABB & getAABB() const override;
+		const Math::Transform &					 getTransform() const override;
+		App::Component::Object3D::Helper::AABB & getAABB() const override;
 
 	  protected:
 		void _init() override;

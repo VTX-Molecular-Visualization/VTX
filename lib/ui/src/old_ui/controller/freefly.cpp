@@ -1,7 +1,7 @@
 #include "ui/old_ui/controller/freefly.hpp"
 #include "ui/old_ui/style.hpp"
 
-#include <app/old_app/object3d/scene.hpp>
+#include <app/application/scene.hpp>
 
 namespace VTX
 {
@@ -75,7 +75,7 @@ namespace VTX
 			_cameraManager.getCamera()->move( translation );
 		}
 
-		void Freefly::_computeOrientPositions( const Object3D::Helper::AABB & p_aabb )
+		void Freefly::_computeOrientPositions( const App::Component::Object3D::Helper::AABB & p_aabb )
 		{
 			_orientStartingPosition = _camera().getPosition();
 			const float targetDistance

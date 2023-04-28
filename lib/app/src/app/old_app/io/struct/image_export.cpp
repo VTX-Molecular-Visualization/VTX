@@ -1,6 +1,6 @@
 #include "app/old_app/io/struct/image_export.hpp"
-#include "app/old_app/object3d/camera.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/component/render/camera.hpp"
+#include "app/application/scene.hpp"
 #include "app/old_app/spec.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <cctype>
@@ -35,7 +35,7 @@ namespace VTX::IO::Struct
 	{
 		if ( p_resolution == RESOLUTION::Free )
 		{
-			const Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
+			const App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
 			return std::pair<int, int>( camera.getScreenWidth(), camera.getScreenHeight() );
 		}
 		else

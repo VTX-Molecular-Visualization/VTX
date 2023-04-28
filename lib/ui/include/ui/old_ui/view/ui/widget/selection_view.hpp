@@ -11,12 +11,12 @@
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
-#include <app/model/selection.hpp>
+#include <app/application/selection/selection.hpp>
 #include <app/core/view/base_view.hpp>
 
 namespace VTX::View::UI::Widget
 {
-	class SelectionView : public App::Core::View::BaseView<Model::Selection>, public VTX::UI::Widget::BaseManualWidget<QTreeWidget>
+	class SelectionView : public App::Core::View::BaseView<App::Application::Selection::SelectionModel>, public VTX::UI::Widget::BaseManualWidget<QTreeWidget>
 	{
 		class SelectionStyleItemDelegate : public QStyledItemDelegate
 		{
@@ -43,8 +43,8 @@ namespace VTX::View::UI::Widget
 		void localize() override;
 
 	  protected:
-		SelectionView( Model::Selection * const p_model, QWidget * const p_parent ) :
-			App::Core::View::BaseView<Model::Selection>( p_model ), BaseManualWidget( p_parent )
+		SelectionView( App::Application::Selection::SelectionModel * const p_model, QWidget * const p_parent ) :
+			App::Core::View::BaseView<App::Application::Selection::SelectionModel>( p_model ), BaseManualWidget( p_parent )
 		{
 		}
 		~SelectionView();
@@ -74,13 +74,13 @@ namespace VTX::View::UI::Widget
 
 		void _applyMoleculeDataOnItem( const App::Component::Chemistry::Molecule &				 p_molecule,
 									   QTreeWidgetItem &					 p_item,
-									   const Model::Selection::MapChainIds & p_children ) const;
+									   const App::Application::Selection::SelectionModel::MapChainIds & p_children ) const;
 		void _applyChainDataOnItem( const App::Component::Chemistry::Chain &					p_chain,
 									QTreeWidgetItem &						p_item,
-									const Model::Selection::MapResidueIds & p_children ) const;
+									const App::Application::Selection::SelectionModel::MapResidueIds & p_children ) const;
 		void _applyResidueDataOnItem( const App::Component::Chemistry::Residue &			   p_residue,
 									  QTreeWidgetItem &					   p_item,
-									  const Model::Selection::VecAtomIds & p_children ) const;
+									  const App::Application::Selection::SelectionModel::VecAtomIds & p_children ) const;
 		void _applyAtomDataOnItem( const App::Component::Chemistry::Atom & p_molecule, QTreeWidgetItem & p_item ) const;
 
 		QTreeWidgetItem * _extractItemFromList( const App::Core::Model::ID & p_id, QList<QTreeWidgetItem *> & p_list ) const;

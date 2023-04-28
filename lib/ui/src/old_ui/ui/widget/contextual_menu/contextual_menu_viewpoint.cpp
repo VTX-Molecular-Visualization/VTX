@@ -4,7 +4,7 @@
 #include "ui/qt/action/viewpoint.hpp"
 #include <app/action/viewpoint.hpp>
 
-#include <app/model/path.hpp>
+#include <app/component/video/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuViewpoint::localize() {}
 
-	void ContextualMenuViewpoint::setTarget( Model::Viewpoint * const p_target )
+	void ContextualMenuViewpoint::setTarget( App::Component::Object3D::Viewpoint * const p_target )
 	{
 		ContextualMenuTemplate::setTarget( p_target );
 		setTitle( QString::fromStdString( p_target->getDefaultName() ) );

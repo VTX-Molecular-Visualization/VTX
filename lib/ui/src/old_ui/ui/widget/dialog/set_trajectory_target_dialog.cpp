@@ -7,7 +7,7 @@
 
 #include <app/action/main.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/application/scene.hpp>
 #include <app/application/setting.hpp>
 #include <string>
 
@@ -195,7 +195,7 @@ namespace VTX::UI::Widget::Dialog
 		std::vector<App::Component::Chemistry::Molecule *> molecules = std::vector<App::Component::Chemistry::Molecule *>();
 		molecules.reserve( VTXApp::get().getScene().getMolecules().size() );
 
-		for ( const Object3D::Scene::PairMoleculePtrFloat & pairMolecule : VTXApp::get().getScene().getMolecules() )
+		for ( const App::Application::Scene::PairMoleculePtrFloat & pairMolecule : VTXApp::get().getScene().getMolecules() )
 			molecules.emplace_back( pairMolecule.first );
 
 		VTXApp::get().getScene().sortMoleculesBySceneIndex( molecules );

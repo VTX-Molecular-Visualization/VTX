@@ -20,7 +20,7 @@
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
-#include <app/model/selection.hpp>
+#include <app/application/selection/selection.hpp>
 #include <app/old_app/style.hpp>
 #include <app/core/view/base_view.hpp>
 
@@ -39,7 +39,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 		const App::Core::Model::ID &					   getModelID() const override { return _model->getId(); };
-		virtual const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };
+		virtual const App::Core::Scene::BaseSceneItem & getBaseSceneItem() const { return *_model; };
 
 		bool						   containsModel( const App::Core::Model::BaseModel & p_model ) const override;
 		virtual std::vector<App::Core::Model::ID> getAllItemsFrom( const App::Core::Model::BaseModel & p_model ) const override;
@@ -56,7 +56,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 		bool _canDragAtPos( const QPoint & p_position ) const override;
 
-		void _fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection ) override;
+		void _fillItemSelection( const App::Application::Selection::SelectionModel & p_selection, QItemSelection & p_itemSelection ) override;
 		bool _itemCanBeRenamed( const QTreeWidgetItem * p_item ) override;
 
 		void _selectAllCategoriesFrom( std::vector<App::Core::Model::ID> & p_selection, const App::Component::Chemistry::Category & p_itemFrom ) const;

@@ -6,16 +6,13 @@
 // #include "ui/old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include <QHideEvent>
 #include <QMenu>
-#include <map>
+#include <app/component/object3d/_fwd.hpp>
+#include <app/component/video/_fwd.hpp>
 #include <app/core/model/base_model.hpp>
-#include <app/model/selection.hpp>
+#include <app/application/selection/selection.hpp>
+#include <map>
 #include <unordered_set>
 #include <vector>
-
-namespace VTX::Model
-{
-	class Label;
-}
 
 namespace VTX::UI::QT::Widget::ContextualMenu
 {
@@ -57,7 +54,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		return lhs;
 	}
 
-	class ContextualMenuSelection : public ContextualMenuTemplate<Model::Selection>
+	class ContextualMenuSelection : public ContextualMenuTemplate<App::Application::Selection::SelectionModel>
 	{
 		NEW_ARCHI_VTX_WIDGET
 
@@ -173,7 +170,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 			void addItemData( ItemData * const _itemData ) { _actions.emplace_back( _itemData ); };
 
-			void refreshWithTarget( const Model::Selection & p_target, const TypeMask & p_mask, QMenu * const p_parent )
+			void refreshWithTarget( const App::Application::Selection::SelectionModel & p_target, const TypeMask & p_mask, QMenu * const p_parent )
 			{
 				for ( ItemData * const action : _actions )
 				{
@@ -280,7 +277,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		// bool _checkApplyAlignementAction() const;
 		// bool _checkComputeRMSDAction() const;
 
-		void _getAllLabelTypes( std::unordered_set<Model::Label *> & p_labels ) const;
+		void _getAllLabelTypes( std::unordered_set<App::Component::Object3D::Label *> & p_labels ) const;
 	};
 
 } // namespace VTX::UI::QT::Widget::ContextualMenu

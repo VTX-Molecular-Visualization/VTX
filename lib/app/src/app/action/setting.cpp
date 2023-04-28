@@ -7,9 +7,9 @@
 #include "app/old_app/io/filesystem.hpp"
 #include "app/old_app/io/reader/serialized_object.hpp"
 #include "app/old_app/io/writer/serialized_object.hpp"
-#include "app/old_app/object3d/camera.hpp"
-#include "app/old_app/object3d/camera_manager.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/component/render/camera.hpp"
+#include "app/internal/scene/camera_manager.hpp"
+#include "app/application/scene.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <exception>

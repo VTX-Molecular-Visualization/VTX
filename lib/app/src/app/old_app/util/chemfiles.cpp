@@ -20,7 +20,7 @@ namespace VTX::Util::Chemfiles
 		}
 	}
 
-	void recomputeBonds( chemfiles::Frame & p_frame, const VTX::Object3D::Helper::AABB & p_aabb )
+	void recomputeBonds( chemfiles::Frame & p_frame, const App::Component::Object3D::Helper::AABB & p_aabb )
 	{
 		BondGuessing::BondRecomputation::recomputeBonds( p_frame, p_aabb );
 	}

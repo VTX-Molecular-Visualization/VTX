@@ -5,8 +5,8 @@
 #include "app/old_app/io/struct/scene_path_data.hpp"
 #include "app/old_app/io/writer/serialized_object.hpp"
 #include "app/old_app/io/writer/writer_chemfiles.hpp"
-#include "app/old_app/object3d/scene.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
+#include "app/application/scene.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include <set>
 #include <util/logger.hpp>
 
@@ -46,9 +46,9 @@ namespace VTX::Worker
 		try
 		{
 			// if selection is not empty -> export selected structures
-			if ( !VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculesMap().empty() )
+			if ( !VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().getMoleculesMap().empty() )
 			{
-				for ( const auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getMoleculesMap() )
+				for ( const auto it : VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().getMoleculesMap() )
 				{
 					App::Component::Chemistry::Molecule & molecule = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( it.first );
 					writer->writeFile( _path, molecule );
@@ -94,7 +94,7 @@ namespace VTX::Worker
 			// for each molecule check if :
 			// If not saved on computer => Create file in scene molecule directory
 			// Else if has any modifications => Create / Save file in scene molecule directory.
-			for ( const Object3D::Scene::PairMoleculePtrFloat & molecule : VTXApp::get().getScene().getMolecules() )
+			for ( const App::Application::Scene::PairMoleculePtrFloat & molecule : VTXApp::get().getScene().getMolecules() )
 			{
 				const IO::Struct::ScenePathData::Data & moleculePathData
 					= VTXApp::get().getScenePathData().getData( molecule.first );
@@ -127,7 +127,7 @@ namespace VTX::Worker
 
 			writer->writeFile( _path, VTXApp::get() );
 
-			for ( const Object3D::Scene::PairMoleculePtrFloat & molecule : VTXApp::get().getScene().getMolecules() )
+			for ( const App::Application::Scene::PairMoleculePtrFloat & molecule : VTXApp::get().getScene().getMolecules() )
 			{
 				VTXApp::get().getScenePathData().getData( molecule.first ).deleteWriter();
 				VTXApp::get().getScenePathData().getData( molecule.first ).setHasChanged( false );

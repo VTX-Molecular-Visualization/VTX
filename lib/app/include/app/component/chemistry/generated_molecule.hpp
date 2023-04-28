@@ -2,6 +2,7 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_GENERATED_MOLECULE__
 
 #include "_fwd.hpp"
+#include "app/application/selection/_fwd.hpp"
 #include "molecule.hpp"
 #include <map>
 #include <string>
@@ -10,7 +11,6 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	class Selection;
 	class GeneratedMolecule : public Molecule
 	{
 		VTX_MODEL
@@ -83,15 +83,16 @@ namespace VTX::App::Component::Chemistry
 		};
 
 	  public:
-		void copyFromSelection( const Model::Selection &	 p_selection,
-								const App::Core::Model::ID & p_moleculeID,
-								const int					 p_frame = ALL_FRAMES_INDEX );
+		void copyFromSelection( const App::Application::Selection::SelectionModel & p_selection,
+								const App::Core::Model::ID &				   p_moleculeID,
+								const int									   p_frame = ALL_FRAMES_INDEX );
 		void copyFromMolecule( const Chemistry::Molecule & p_molecule, const int p_frame = ALL_FRAMES_INDEX );
 		void copyFromChain( const Chemistry::Chain & p_chain, const int p_frame = ALL_FRAMES_INDEX );
 		void copyFromResidue( const Chemistry::Residue & p_residue, const int p_frame = ALL_FRAMES_INDEX );
 		void copyFromAtom( const Chemistry::Atom & p_atom, const int p_frame = ALL_FRAMES_INDEX );
 
-		void extractFromSelection( const Model::Selection & p_selection, const App::Core::Model::ID & p_moleculeID );
+		void extractFromSelection( const App::Application::Selection::SelectionModel & p_selection,
+								   const App::Core::Model::ID &					  p_moleculeID );
 		void extractChain( const Chemistry::Chain & p_chain );
 		void extractResidue( const Chemistry::Residue & p_residue );
 		void extractAtom( const Chemistry::Atom & p_atom );

@@ -4,18 +4,18 @@
 #include "contextual_menu_template.hpp"
 #include "ui/old_ui/ui/widget/custom_widget/set_representation_menu.hpp"
 #include <QMenu>
-#include <app/model/viewpoint.hpp>
+#include <app/component/object3d/viewpoint.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
-	class ContextualMenuViewpoint : public ContextualMenuTemplate<Model::Viewpoint>
+	class ContextualMenuViewpoint : public ContextualMenuTemplate<App::Component::Object3D::Viewpoint>
 	{
 		VTX_WIDGET
 
 	  public:
 		~ContextualMenuViewpoint();
 		void localize() override;
-		void setTarget( Model::Viewpoint * const p_target ) override;
+		void setTarget( App::Component::Object3D::Viewpoint * const p_target ) override;
 
 	  protected:
 		ContextualMenuViewpoint( QWidget * p_parent = nullptr );
