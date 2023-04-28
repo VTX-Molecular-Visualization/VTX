@@ -17,10 +17,21 @@ namespace VTX::Renderer::GL::Pass
 		void init( const size_t p_width, const size_t p_height ) override;
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render() override;
-		// void set();
 
-		// inline const Texture2D &   getTexture() const { return _texture; }
-		// inline const Framebuffer & getFbo() const { return _fbo; }
+		struct StructIn
+		{
+			Texture2D * textureViewPositionsNormals = nullptr;
+			Texture2D * texture						= nullptr;
+			// TODO: rename and check 2 textures are needed.
+			Texture2D * textureBlur = nullptr;
+		} in;
+
+		struct StructOut
+		{
+			Framebuffer fbo		= Framebuffer();
+			Texture2D	texture = Texture2D();
+
+		} out;
 
 	  private:
 		// TODO: merge shaders.
@@ -30,9 +41,6 @@ namespace VTX::Renderer::GL::Pass
 		Program * _flatShading	  = nullptr;
 
 		Program * _currentShading = nullptr;
-
-		Framebuffer _fbo	 = Framebuffer();
-		Texture2D	_texture = Texture2D();
 	};
 
 } // namespace VTX::Renderer::GL::Pass

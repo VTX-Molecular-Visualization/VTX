@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GL_PASS_FXAA__
 
 #include "base_pass.hpp"
+#include "renderer/gl/framebuffer.hpp"
 #include "renderer/gl/program.hpp"
 #include "renderer/gl/texture_2d.hpp"
 
@@ -17,11 +18,19 @@ namespace VTX::Renderer::GL::Pass
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render() override;
 
-		// inline const Texture2D & getTexture() const { return _texture; }
+		struct StructIn
+		{
+			Texture2D * texture = nullptr;
+		} in;
+
+		struct StructOut
+		{
+			// Framebuffer fbo		= Framebuffer();
+			Texture2D texture = Texture2D();
+		} out;
 
 	  private:
 		Program * _program = nullptr;
-		Texture2D _texture = Texture2D();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

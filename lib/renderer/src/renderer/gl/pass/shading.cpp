@@ -4,10 +4,10 @@ namespace VTX::Renderer::GL::Pass
 {
 	void Shading::init( const size_t p_width, const size_t p_height )
 	{
-		_texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
+		out.texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_fbo.create();
-		_fbo.attachTexture( _texture, GL_COLOR_ATTACHMENT0 );
+		out.fbo.create();
+		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
 		/*
 		_toonShading
@@ -26,21 +26,25 @@ namespace VTX::Renderer::GL::Pass
 
 	void Shading::resize( const size_t p_width, const size_t p_height )
 	{
-		_texture.resize( p_width, p_height );
+		out.texture.resize( p_width, p_height );
 
-		_fbo.attachTexture( _texture, GL_COLOR_ATTACHMENT0 );
+		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 	}
 
 	void Shading::render()
 	{
-		_fbo.bind( GL_DRAW_FRAMEBUFFER );
+		assert( in.textureViewPositionsNormals != nullptr );
+		assert( in.texture != nullptr );
+		assert( in.textureBlur != nullptr );
+
+		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
+
+		in.textureViewPositionsNormals->bindToUnit( 0 );
+		in.texture->bindToUnit( 1 );
+		// If SSAO/Blur disabled, texture is previoulsy cleared.
+		in.textureBlur->bindToUnit( 2 );
 
 		/*
-		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
-		p_renderer.getPassGeometric().getColorsTexture().bindToUnit( 1 );
-		// If SSAO/Blur disabled, texture is previoulsy cleared.
-		p_renderer.getPassBlur().getTexture().bindToUnit( 2 );
-
 		_currentShading->use();
 
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )

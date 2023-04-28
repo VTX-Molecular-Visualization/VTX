@@ -17,23 +17,20 @@ namespace VTX::Renderer::GL::Pass
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render() override;
 
-		/*
-		inline const Framebuffer & getFbo() const { return _fbo; }
-		inline const Texture2D &   getViewPositionsNormalsCompressedTexture() const
+		struct StructIn
 		{
-			return _viewPositionsNormalsCompressedTexture;
-		}
-		inline const Texture2D & getColorsTexture() const { return _colorsTexture; }
-		inline const Texture2D & getDepthTexture() const { return _depthTexture; }
-		*/
+			// TODO.
+		} in;
 
-	  private:
-		Framebuffer _fbo								   = Framebuffer();
-		Texture2D	_viewPositionsNormalsCompressedTexture = Texture2D();
-		Texture2D	_colorsTexture						   = Texture2D();
-		Texture2D	_depthTexture						   = Texture2D();
-		Texture2D	_pickingTexture						   = Texture2D();
-	};
+		struct StructOut
+		{
+			Framebuffer fbo							= Framebuffer();
+			Texture2D	textureViewPositionsNormals = Texture2D();
+			Texture2D	textureColors				= Texture2D();
+			Texture2D	textureDepth				= Texture2D();
+			Texture2D	texturePicking				= Texture2D();
+		} out;
+	}; // namespace VTX::Renderer::GL::Pass
 } // namespace VTX::Renderer::GL::Pass
 
 #endif

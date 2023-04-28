@@ -4,10 +4,10 @@ namespace VTX::Renderer::GL::Pass
 {
 	void LinearizeDepth::init( const size_t p_width, const size_t p_height )
 	{
-		_texture.create( p_width, p_height, GL_R32F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
+		out.texture.create( p_width, p_height, GL_R32F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_fbo.create();
-		_fbo.attachTexture( _texture, GL_COLOR_ATTACHMENT0 );
+		out.fbo.create();
+		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
 		/*
 		_program = VTX_PROGRAM_MANAGER().createProgram( "LinearizeDepth",
@@ -17,18 +17,20 @@ namespace VTX::Renderer::GL::Pass
 
 	void LinearizeDepth::resize( const size_t p_width, const size_t p_height )
 	{
-		_texture.resize( p_width, p_height );
+		out.texture.resize( p_width, p_height );
 
-		_fbo.attachTexture( _texture, GL_COLOR_ATTACHMENT0 );
+		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 	}
 
 	void LinearizeDepth::render()
 	{
-		_fbo.bind( GL_DRAW_FRAMEBUFFER );
+		assert( in.textureDepth != nullptr );
+
+		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
+
+		in.textureDepth->bindToUnit( 0 );
 
 		/*
-		p_renderer.getPassGeometric().getDepthTexture().bindToUnit( 0 );
-
 		_program->use();
 
 		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )

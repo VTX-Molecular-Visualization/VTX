@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GL_GL__
-#define __VTX_RENDERER_GL_GL__
+#ifndef __VTX_RENDERER_GL_OPENGL_RENDERER__
+#define __VTX_RENDERER_GL_OPENGL_RENDERER__
 
 #include "buffer.hpp"
 #include "pass/blur.hpp"
@@ -16,22 +16,12 @@
 
 namespace VTX::Renderer::GL
 {
-	class GL
+	class OpenGLRenderer
 	{
 	  public:
-		GL( void * p_proc );
-		~GL() = default;
-
-		/*
-		inline const Pass::Geometric &		getPassGeometric() const { return _passGeometric; }
-		inline const Pass::LinearizeDepth & getPassLinearizeDepth() const { return _passLinearizeDepth; }
-		inline const Pass::SSAO &			getPassSSAO() const { return _passSSAO; }
-		inline const Pass::Blur &			getPassBlur() const { return _passBlur; }
-		inline const Pass::Shading &		getPassShading() const { return _passShading; }
-		inline const Pass::Outline &		getPassOutline() const { return _passOutline; }
-		inline const Pass::Selection &		getPassSelection() const { return _passSelection; }
-		inline const Pass::FXAA &			getPassFXAA() const { return _passFXAA; }
-		*/
+		OpenGLRenderer() = default;
+		OpenGLRenderer( void * p_proc );
+		~OpenGLRenderer() = default;
 
 		inline void setOutput( const GLuint p_output ) {}
 
@@ -64,11 +54,8 @@ namespace VTX::Renderer::GL
 		VertexArray _quadVAO = VertexArray();
 		Buffer		_quadVBO = Buffer();
 
-		Framebuffer _output = Framebuffer();
+		// Framebuffer _output = Framebuffer();
 
-		std::vector<std::unique_ptr<Pass::BasePass>> _passes = std::vector<std::unique_ptr<Pass::BasePass>>();
-
-		/*
 		Pass::Geometric		 _passGeometric		 = Pass::Geometric();
 		Pass::LinearizeDepth _passLinearizeDepth = Pass::LinearizeDepth();
 		Pass::SSAO			 _passSSAO			 = Pass::SSAO();
@@ -77,7 +64,8 @@ namespace VTX::Renderer::GL
 		Pass::Outline		 _passOutline		 = Pass::Outline();
 		Pass::Selection		 _passSelection		 = Pass::Selection();
 		Pass::FXAA			 _passFXAA			 = Pass::FXAA();
-		*/
+
+		std::vector<Pass::BasePass *> _passes = std::vector<Pass::BasePass *>();
 	};
 } // namespace VTX::Renderer::GL
 

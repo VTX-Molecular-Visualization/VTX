@@ -4,9 +4,9 @@ namespace VTX::Renderer::GL::Pass
 {
 	void Selection::init( const size_t p_width, const size_t p_height )
 	{
-		_texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR );
+		out.texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR );
 
-		_fbo.create();
+		out.fbo.create();
 		// updateOutputFBO( p_renderer );
 
 		//_program = VTX_PROGRAM_MANAGER().createProgram( "Selection", { IO::FilePath( "shading/selection.frag" ) } );
@@ -19,13 +19,17 @@ namespace VTX::Renderer::GL::Pass
 
 	void Selection::resize( const size_t p_width, const size_t p_height )
 	{
-		_texture.resize( p_width, p_height );
+		out.texture.resize( p_width, p_height );
 
 		// updateOutputFBO( p_renderer );
 	}
 
 	void Selection::render()
 	{
+		assert( in.textureViewPositionsNormals != nullptr );
+		assert( in.texture != nullptr );
+		assert( in.textureLinearizeDepth != nullptr );
+
 		/*
 		if ( VTX_SETTING().getAA() )
 		{
@@ -35,8 +39,11 @@ namespace VTX::Renderer::GL::Pass
 		{
 			p_renderer.getOutputFramebuffer().bind();
 		}
+		*/
 
-		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
+		in.textureViewPositionsNormals->bindToUnit( 0 );
+
+		/*
 		if ( VTX_RENDER_EFFECT().isOutlineEnabled() )
 		{
 			p_renderer.getPassOutline().getTexture().bindToUnit( 1 );

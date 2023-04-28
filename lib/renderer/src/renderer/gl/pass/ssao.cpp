@@ -4,10 +4,10 @@ namespace VTX::Renderer::GL::Pass
 {
 	void SSAO::init( const size_t p_width, const size_t p_height )
 	{
-		_texture.create( p_width, p_height, GL_R8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
+		out.texture.create( p_width, p_height, GL_R8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_fbo.create();
-		_fbo.attachTexture( _texture, GL_COLOR_ATTACHMENT0 );
+		out.fbo.create();
+		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
 		//_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { IO::FilePath( "shading/ssao.frag" ) } );
 
@@ -53,19 +53,22 @@ namespace VTX::Renderer::GL::Pass
 
 	void SSAO::resize( const size_t p_width, const size_t p_height )
 	{
-		_texture.resize( p_width, p_height );
-		_fbo.attachTexture( _texture, GL_COLOR_ATTACHMENT0 );
+		out.texture.resize( p_width, p_height );
+		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 	}
 
 	void SSAO::render()
 	{
-		_fbo.bind( GL_DRAW_FRAMEBUFFER );
+		assert( in.textureViewPositionsNormals != nullptr );
+		assert( in.textureLinearizeDepth != nullptr );
+
+		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
+
+		in.textureViewPositionsNormals->bindToUnit( 0 );
+		_noiseTexture.bindToUnit( 1 );
+		in.textureLinearizeDepth->bindToUnit( 2 );
 
 		/*
-		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
-		_noiseTexture.bindToUnit( 1 );
-		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 2 );
-
 		_program->use();
 
 		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )

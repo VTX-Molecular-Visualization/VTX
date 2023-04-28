@@ -18,16 +18,26 @@ namespace VTX::Renderer::GL::Pass
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render() override;
 
-		// inline const Texture2D & getTexture() const { return _texture; }
-
 		void clearTexture();
 
+		struct StructIn
+		{
+			Texture2D * texture				  = nullptr;
+			Texture2D * textureLinearizeDepth = nullptr;
+		} in;
+
+		struct StructOut
+		{
+			Framebuffer fbo		= Framebuffer();
+			Texture2D	texture = Texture2D();
+
+		} out;
+
 	  private:
-		Program *	_program		  = nullptr;
+		Program * _program = nullptr;
+
 		Framebuffer _fboFirstPass	  = Framebuffer();
-		Framebuffer _fbo			  = Framebuffer();
 		Texture2D	_textureFirstPass = Texture2D();
-		Texture2D	_texture		  = Texture2D();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

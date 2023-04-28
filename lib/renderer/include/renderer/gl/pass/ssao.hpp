@@ -18,16 +18,26 @@ namespace VTX::Renderer::GL::Pass
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render() override;
 
-		// inline const Texture2D & getTexture() const { return _texture; }
+		struct StructIn
+		{
+			Texture2D * textureViewPositionsNormals = nullptr;
+			Texture2D * textureLinearizeDepth		= nullptr;
+		} in;
+
+		struct StructOut
+		{
+			Framebuffer fbo		= Framebuffer();
+			Texture2D	texture = Texture2D();
+
+		} out;
 
 	  private:
-		Program *		   _program			 = nullptr;
-		Framebuffer		   _fbo				 = Framebuffer();
-		Texture2D		   _texture			 = Texture2D();
-		Texture2D		   _noiseTexture	 = Texture2D();
+		Program * _program = nullptr;
+
 		uint			   _kernelSize		 = 16;
 		uint			   _noiseTextureSize = 64;
 		std::vector<Vec3f> _aoKernel		 = std::vector<Vec3f>();
+		Texture2D		   _noiseTexture	 = Texture2D();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

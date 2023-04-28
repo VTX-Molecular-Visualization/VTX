@@ -1,10 +1,10 @@
-#include "renderer/gl/gl.hpp"
-#include "renderer/gl//util.hpp"
+#include "renderer/gl/opengl_renderer.hpp"
+#include "renderer/gl/util.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::Renderer::GL
 {
-	GL::GL( void * p_proc )
+	OpenGLRenderer::OpenGLRenderer( void * p_proc )
 	{
 		VTX_INFO( "Creating renderer..." );
 
@@ -24,18 +24,40 @@ namespace VTX::Renderer::GL
 		glEnable( GL_DEBUG_OUTPUT );
 		glDebugMessageCallback( VTX::Renderer::GL::Util::debugMessageCallback, NULL );
 
-		// Create all passes.
-		_passes.emplace_back( std::make_unique<Pass::Geometric>() );
-		_passes.emplace_back( std::make_unique<Pass::LinearizeDepth>() );
-		_passes.emplace_back( std::make_unique<Pass::SSAO>() );
-		_passes.emplace_back( std::make_unique<Pass::Blur>() );
-		_passes.emplace_back( std::make_unique<Pass::Shading>() );
-		_passes.emplace_back( std::make_unique<Pass::Outline>() );
-		_passes.emplace_back( std::make_unique<Pass::Selection>() );
-		_passes.emplace_back( std::make_unique<Pass::FXAA>() );
+		// Add passes.
+		_passes.emplace_back( &_passGeometric );
+		_passes.emplace_back( &_passLinearizeDepth );
+		_passes.emplace_back( &_passSSAO );
+		_passes.emplace_back( &_passBlur );
+		_passes.emplace_back( &_passShading );
+		_passes.emplace_back( &_passOutline );
+		_passes.emplace_back( &_passSelection );
+		_passes.emplace_back( &_passFXAA );
+
+		// Setup default routing.
+		_passLinearizeDepth.in.textureDepth = &( _passGeometric.out.textureDepth );
+
+		_passSSAO.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
+		_passSSAO.in.textureLinearizeDepth		 = &( _passGeometric.out.textureDepth );
+
+		_passBlur.in.texture			   = &( _passSSAO.out.texture );
+		_passBlur.in.textureLinearizeDepth = &( _passLinearizeDepth.out.texture );
+
+		_passShading.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
+		_passShading.in.texture						= &( _passGeometric.out.textureColors );
+		_passShading.in.textureBlur					= &( _passBlur.out.texture );
+
+		_passOutline.in.texture				  = &( _passShading.out.texture );
+		_passOutline.in.textureLinearizeDepth = &( _passLinearizeDepth.out.texture );
+
+		_passSelection.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
+		_passSelection.in.texture					  = &( _passShading.out.texture );
+		_passSelection.in.textureLinearizeDepth		  = &( _passLinearizeDepth.out.texture );
+
+		_passFXAA.in.texture = &( _passSelection.out.texture );
 	}
 
-	void GL::init( const size_t p_width, const size_t p_height )
+	void OpenGLRenderer::init( const size_t p_width, const size_t p_height )
 	{
 		VTX_INFO( "Initializing renderer..." );
 
@@ -44,7 +66,7 @@ namespace VTX::Renderer::GL
 		_height = p_height;
 
 		// Init passes.
-		for ( std::unique_ptr<Pass::BasePass> & pass : _passes )
+		for ( Pass::BasePass * const pass : _passes )
 		{
 			pass->init( _width, _height );
 		}
@@ -66,18 +88,18 @@ namespace VTX::Renderer::GL
 		VTX_INFO( "Renderer initialized" );
 	}
 
-	void GL::resize( const size_t p_width, const size_t p_height )
+	void OpenGLRenderer::resize( const size_t p_width, const size_t p_height )
 	{
-		for ( std::unique_ptr<Pass::BasePass> & pass : _passes )
+		for ( Pass::BasePass * const pass : _passes )
 		{
 			pass->resize( _width, _height );
 		}
 	}
 
-	void GL::renderFrame()
+	void OpenGLRenderer::renderFrame()
 	{
 		// VTX_STAT().drawCalls = 0u;
-		for ( std::unique_ptr<Pass::BasePass> & pass : _passes )
+		for ( Pass::BasePass * const pass : _passes )
 		{
 			pass->render();
 		}

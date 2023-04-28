@@ -15,6 +15,18 @@ namespace VTX::Renderer::GL::Pass
 		virtual void init( const size_t p_width, const size_t p_height ) {}
 		virtual void resize( const size_t p_width, const size_t p_height ) {}
 		virtual void render() = 0;
+
+		/*
+		struct StructIn
+		{
+			// Input data as raw pointers.
+		} in;
+
+		struct StructOut
+		{
+			// Output data.
+		} out;
+		*/
 	};
 
 } // namespace VTX::Renderer::GL::Pass

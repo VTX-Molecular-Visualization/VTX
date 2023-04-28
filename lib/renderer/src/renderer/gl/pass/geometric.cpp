@@ -4,46 +4,46 @@ namespace VTX::Renderer::GL::Pass
 {
 	void Geometric::init( const size_t p_width, const size_t p_height )
 	{
-		_viewPositionsNormalsCompressedTexture.create(
+		out.textureViewPositionsNormals.create(
 			p_width, p_height, GL_RGBA32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_colorsTexture.create(
+		out.textureColors.create(
 			p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_depthTexture.create(
+		out.textureDepth.create(
 			p_width, p_height, GL_DEPTH_COMPONENT32F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_pickingTexture.create(
+		out.texturePicking.create(
 			p_width, p_height, GL_RG32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_fbo.create();
-		_fbo.attachTexture( _viewPositionsNormalsCompressedTexture, GL_COLOR_ATTACHMENT0 );
-		_fbo.attachTexture( _colorsTexture, GL_COLOR_ATTACHMENT1 );
-		_fbo.attachTexture( _depthTexture, GL_DEPTH );
-		_fbo.attachTexture( _pickingTexture, GL_COLOR_ATTACHMENT2 );
+		out.fbo.create();
+		out.fbo.attachTexture( out.textureViewPositionsNormals, GL_COLOR_ATTACHMENT0 );
+		out.fbo.attachTexture( out.textureColors, GL_COLOR_ATTACHMENT1 );
+		out.fbo.attachTexture( out.textureDepth, GL_DEPTH );
+		out.fbo.attachTexture( out.texturePicking, GL_COLOR_ATTACHMENT2 );
 
-		_fbo.setDrawBuffers( { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 } );
+		out.fbo.setDrawBuffers( { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 } );
 	}
 
 	void Geometric::resize( const size_t p_width, const size_t p_height )
 	{
-		_viewPositionsNormalsCompressedTexture.resize( p_width, p_height );
-		_colorsTexture.resize( p_width, p_height );
-		_depthTexture.resize( p_width, p_height );
-		_pickingTexture.resize( p_width, p_height );
+		out.textureViewPositionsNormals.resize( p_width, p_height );
+		out.textureColors.resize( p_width, p_height );
+		out.textureDepth.resize( p_width, p_height );
+		out.texturePicking.resize( p_width, p_height );
 
-		_fbo.attachTexture( _viewPositionsNormalsCompressedTexture, GL_COLOR_ATTACHMENT0 );
-		_fbo.attachTexture( _colorsTexture, GL_COLOR_ATTACHMENT1 );
-		_fbo.attachTexture( _depthTexture, GL_DEPTH );
-		_fbo.attachTexture( _pickingTexture, GL_COLOR_ATTACHMENT2 );
+		out.fbo.attachTexture( out.textureViewPositionsNormals, GL_COLOR_ATTACHMENT0 );
+		out.fbo.attachTexture( out.textureColors, GL_COLOR_ATTACHMENT1 );
+		out.fbo.attachTexture( out.textureDepth, GL_DEPTH );
+		out.fbo.attachTexture( out.texturePicking, GL_COLOR_ATTACHMENT2 );
 	}
 
 	void Geometric::render()
 	{
 		glEnable( GL_DEPTH_TEST );
 
-		_fbo.bind( GL_DRAW_FRAMEBUFFER );
-		_fbo.clear( GL_DEPTH );
+		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
+		out.fbo.clear( GL_DEPTH );
 
 		//_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		/*

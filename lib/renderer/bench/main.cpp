@@ -1,8 +1,11 @@
-#include <renderer/gl/gl.hpp>
+#include <renderer/gl/opengl_renderer.hpp>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <util/logger.hpp>
+
+constexpr size_t WIDTH	= 800;
+constexpr size_t HEIGHT = 600;
 
 int main( int argc, char ** argv )
 {
@@ -15,7 +18,7 @@ int main( int argc, char ** argv )
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 5 );
 	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 
-	GLFWwindow * const window = glfwCreateWindow( 800, 600, "VTX_RENDERER_BENCH", NULL, NULL );
+	GLFWwindow * const window = glfwCreateWindow( WIDTH, HEIGHT, "VTX_RENDERER_BENCH", NULL, NULL );
 	if ( window == nullptr )
 	{
 		VTX::VTX_ERROR( "Failed to create GLFW window" );
@@ -27,10 +30,11 @@ int main( int argc, char ** argv )
 
 	try
 	{
-		VTX::Renderer::GL::GL renderer( glfwGetProcAddress );
+		VTX::Renderer::GL::OpenGLRenderer renderer( glfwGetProcAddress );
+		renderer.init( WIDTH, HEIGHT );
 
-		glViewport( 0, 0, 800, 600 );
-		glClearColor( 0.5f, 0.5f, 0.5f, 1.f );
+		// glViewport( 0, 0, WIDTH, HEIGHT );
+		// glClearColor( 0.5f, 0.5f, 0.5f, 1.f );
 
 		while ( glfwWindowShouldClose( window ) == 0 )
 		{
