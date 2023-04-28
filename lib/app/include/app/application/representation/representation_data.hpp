@@ -7,7 +7,7 @@
 #include "app/application/representation/primitive/ribbon.hpp"
 #include "app/application/representation/primitive/ses.hpp"
 #include "app/application/representation/primitive/sphere.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 
 namespace VTX::App::Application::Representation

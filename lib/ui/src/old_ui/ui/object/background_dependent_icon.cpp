@@ -11,7 +11,7 @@ namespace VTX::UI::Object
 
 	const QIcon & BackgroundDependentIcon::getIcon() const { return _lightIcon; }
 
-	const QIcon & BackgroundDependentIcon::getIcon( const Color::Rgba & p_backgroundColor ) const
+	const QIcon & BackgroundDependentIcon::getIcon( const Util::Color::Rgba & p_backgroundColor ) const
 	{
 		return p_backgroundColor.brightness() < 0.5f ? _lightIcon : _shadeIcon;
 	}

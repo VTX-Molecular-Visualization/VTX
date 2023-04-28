@@ -4,7 +4,7 @@
 #include "app/component/object3d/helper/aabb.hpp"
 #include "app/core/model/base_model.hpp"
 #include "app/core/scene/base_scene_item.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include "app/old_app/id.hpp"
 #include <util/types.hpp>
 
@@ -29,8 +29,8 @@ namespace VTX::App::Component::Object3D
 
 		virtual Vec2f getSize() const;
 
-		const Color::Rgba & getColor() const { return _color; }
-		void				setColor( const Color::Rgba & p_color );
+		const Util::Color::Rgba & getColor() const { return _color; }
+		void				setColor( const Util::Color::Rgba & p_color );
 
 	  protected:
 		Label();
@@ -47,7 +47,7 @@ namespace VTX::App::Component::Object3D
 	  private:
 		std::string _name		= "";
 		bool		_autoNaming = false;
-		Color::Rgba _color;
+		Util::Color::Rgba _color;
 		Vec3f		_worldPosition = VEC3F_ZERO;
 
 		Component::Object3D::Helper::AABB _aabb = Component::Object3D::Helper::AABB();

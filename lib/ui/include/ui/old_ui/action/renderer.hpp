@@ -2,7 +2,7 @@
 #define __VTX_UI_ACTION_RENDERER__
 
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/color/rgba.hpp>
+#include <util/color/rgba.hpp>
 #include <app/application/render_effect/render_effect_preset.hpp>
 
 namespace VTX::UI::Action::Renderer

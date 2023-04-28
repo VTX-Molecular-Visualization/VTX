@@ -82,7 +82,7 @@ namespace VTX::App::Application::RenderEffect
 			= Util::Math::clamp( p_outlineSensivity, VTX::App::Application::Setting::OUTLINE_SENSIVITY_MIN, VTX::App::Application::Setting::OUTLINE_SENSIVITY_MAX );
 		_notifyDataChanged();
 	}
-	void RenderEffectPreset::setOutlineColor( const Color::Rgba & p_outlineColor )
+	void RenderEffectPreset::setOutlineColor( const Util::Color::Rgba & p_outlineColor )
 	{
 		_outlineColor = p_outlineColor;
 		_notifyDataChanged();
@@ -108,17 +108,17 @@ namespace VTX::App::Application::RenderEffect
 		_fogDensity = Util::Math::clamp( p_fogDensity, 0.0f, 1.0f );
 		_notifyDataChanged();
 	}
-	void RenderEffectPreset::setFogColor( const Color::Rgba & p_fogColor )
+	void RenderEffectPreset::setFogColor( const Util::Color::Rgba & p_fogColor )
 	{
 		_fogColor = p_fogColor;
 		_notifyDataChanged();
 	}
-	void RenderEffectPreset::setBackgroundColor( const Color::Rgba & p_backgroundColor )
+	void RenderEffectPreset::setBackgroundColor( const Util::Color::Rgba & p_backgroundColor )
 	{
 		_backgroundColor = p_backgroundColor;
 		_notifyDataChanged();
 	}
-	void RenderEffectPreset::setCameraLightColor( const Color::Rgba & p_cameraLightColor )
+	void RenderEffectPreset::setCameraLightColor( const Util::Color::Rgba & p_cameraLightColor )
 	{
 		_cameraLightColor = p_cameraLightColor;
 		_notifyDataChanged();

@@ -77,7 +77,7 @@ namespace VTX::IO
 
 		// if ( p_json.contains( "COLOR" ) )
 		//{
-		//	Color::Rgba color;
+		//	Util::Color::Rgba color;
 		//	deserialize( p_json.at( "COLOR" ), color );
 		//	p_distanceLabel.setColor( color );
 		// }
@@ -108,7 +108,7 @@ namespace VTX::IO
 
 		// if ( p_json.contains( "COLOR" ) )
 		//{
-		//	Color::Rgba color;
+		//	Util::Color::Rgba color;
 		//	deserialize( p_json.at( "COLOR" ), color );
 		//	p_angleLabel.setColor( color );
 		// }
@@ -140,7 +140,7 @@ namespace VTX::IO
 
 		// if ( p_json.contains( "COLOR" ) )
 		//{
-		//	Color::Rgba color;
+		//	Util::Color::Rgba color;
 		//	deserialize( p_json.at( "COLOR" ), color );
 		//	p_angleLabel.setColor( color );
 		// }

@@ -33,14 +33,14 @@ namespace VTX::App::Action::InstantiatedRepresentation
 	{
 	  public:
 		explicit ChangeColor( App::Application::Representation::InstantiatedRepresentation * const p_representation,
-							  const Color::Rgba &										p_color ) :
+							  const Util::Color::Rgba &										p_color ) :
 			_color( p_color )
 		{
 			_instantiatedRepresentations.emplace( p_representation );
 		}
 
 		template<typename T, typename = std::enable_if<std::is_base_of<App::Application::Representation::BaseRepresentable, T>::value>>
-		explicit ChangeColor( const std::unordered_set<T *> & p_representables, const Color::Rgba & p_color ) :
+		explicit ChangeColor( const std::unordered_set<T *> & p_representables, const Util::Color::Rgba & p_color ) :
 			_color( p_color )
 		{
 			for ( T * const representable : p_representables )
@@ -59,7 +59,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 		virtual void execute() override;
 
 	  private:
-		const Color::Rgba														_color;
+		const Util::Color::Rgba														_color;
 		std::unordered_set<App::Application::Representation::InstantiatedRepresentation *> _instantiatedRepresentations
 			= std::unordered_set<App::Application::Representation::InstantiatedRepresentation *>();
 	};

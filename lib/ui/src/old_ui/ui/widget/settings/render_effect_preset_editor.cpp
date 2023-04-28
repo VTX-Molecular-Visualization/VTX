@@ -141,7 +141,7 @@ namespace VTX::UI::Widget::Settings
 				 this,
 				 &RenderEffectPresetEditor::_onOutlineSensivityChanged );
 		connect( _outlineColor,
-				 QOverload<const Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
+				 QOverload<const Util::Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onOutlineColorChanged );
 
@@ -158,16 +158,16 @@ namespace VTX::UI::Widget::Settings
 				 this,
 				 &RenderEffectPresetEditor::_onFogDensityChanged );
 		connect( _fogColor,
-				 QOverload<const Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
+				 QOverload<const Util::Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onFogColorChanged );
 
 		connect( _backgroundColor,
-				 QOverload<const Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
+				 QOverload<const Util::Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onBackgroundColorChanged );
 		connect( _cameraLightColor,
-				 QOverload<const Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
+				 QOverload<const Util::Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onCameraLightColorChanged );
 	}
@@ -289,7 +289,7 @@ namespace VTX::UI::Widget::Settings
 		if ( !signalsBlocked() && p_value != _preset->getOutlineSensivity() )
 			VTX_ACTION( new VTX::App::Action::Renderer::ChangeOutlineSensivity( *_preset, p_value ) );
 	}
-	void RenderEffectPresetEditor::_onOutlineColorChanged( const Color::Rgba & p_color ) const
+	void RenderEffectPresetEditor::_onOutlineColorChanged( const Util::Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getOutlineColor() )
 			VTX_ACTION( new VTX::App::Action::Renderer::ChangeOutlineColor( *_preset, p_color ) );
@@ -316,17 +316,17 @@ namespace VTX::UI::Widget::Settings
 		if ( !signalsBlocked() && p_value != _preset->getFogDensity() )
 			VTX_ACTION( new VTX::App::Action::Renderer::ChangeFogDensity( *_preset, p_value ) );
 	}
-	void RenderEffectPresetEditor::_onFogColorChanged( const Color::Rgba & p_color ) const
+	void RenderEffectPresetEditor::_onFogColorChanged( const Util::Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getFogColor() )
 			VTX_ACTION( new VTX::App::Action::Renderer::ChangeFogColor( *_preset, p_color ) );
 	}
-	void RenderEffectPresetEditor::_onBackgroundColorChanged( const Color::Rgba & p_color ) const
+	void RenderEffectPresetEditor::_onBackgroundColorChanged( const Util::Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getBackgroundColor() )
 			VTX_ACTION( new VTX::App::Action::Renderer::ChangeBackgroundColor( *_preset, p_color ) );
 	}
-	void RenderEffectPresetEditor::_onCameraLightColorChanged( const Color::Rgba & p_color ) const
+	void RenderEffectPresetEditor::_onCameraLightColorChanged( const Util::Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getCameraLightColor() )
 			VTX_ACTION( new VTX::App::Action::Renderer::ChangeCameraLightColor( *_preset, p_color ) );

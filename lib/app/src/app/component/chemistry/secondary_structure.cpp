@@ -52,7 +52,7 @@ namespace VTX::App::Component::Chemistry
 		std::vector<Vec4f>				  caPositions;
 		std::vector<Vec3f>				  caODirections;
 		std::vector<uint>				  ssTypes;
-		std::vector<Color::Rgba>		  colors;
+		std::vector<Util::Color::Rgba>		  colors;
 		std::vector<uint>				  visibilities;
 		std::vector<App::Core::Model::ID> ids;
 		std::vector<uint>				  residueIndex;
@@ -85,7 +85,7 @@ namespace VTX::App::Component::Chemistry
 					caPositions	  = std::vector<Vec4f>();
 					caODirections = std::vector<Vec3f>();
 					ssTypes		  = std::vector<uint>();
-					colors		  = std::vector<Color::Rgba>();
+					colors		  = std::vector<Util::Color::Rgba>();
 					visibilities  = std::vector<uint>();
 					ids			  = std::vector<App::Core::Model::ID>();
 					residueIndex  = std::vector<uint>();
@@ -162,7 +162,7 @@ namespace VTX::App::Component::Chemistry
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
 						colors.emplace_back( residue->getColor() );
 						break;
-					default: colors.emplace_back( Color::Rgba::WHITE ); break;
+					default: colors.emplace_back( Util::Color::Rgba::WHITE ); break;
 					}
 				}
 				else
@@ -222,7 +222,7 @@ namespace VTX::App::Component::Chemistry
 											const std::vector<Vec4f> &				  p_caPositions,
 											std::vector<Vec3f> &					  p_caODirections,
 											const std::vector<uint> &				  p_ssTypes,
-											const std::vector<Color::Rgba> &		  p_colors,
+											const std::vector<Util::Color::Rgba> &		  p_colors,
 											const std::vector<uint> &				  p_visibilities,
 											const std::vector<App::Core::Model::ID> & p_ids )
 	{
@@ -324,7 +324,7 @@ namespace VTX::App::Component::Chemistry
 					_bufferColors.emplace_back( residue->getColor() );
 					break;
 
-				default: _bufferColors.emplace_back( Color::Rgba::WHITE ); break;
+				default: _bufferColors.emplace_back( Util::Color::Rgba::WHITE ); break;
 				}
 			}
 		}

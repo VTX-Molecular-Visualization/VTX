@@ -41,7 +41,7 @@ namespace VTX::UI::Widget::Representation
 
 	  signals:
 		void onDataChange( const App::Application::Representation::MEMBER_FLAG & p_flag );
-		void onColorChange( const Color::Rgba & p_color, const bool p_ssColor );
+		void onColorChange( const Util::Color::Rgba & p_color, const bool p_ssColor );
 
 	  protected:
 		BaseRepresentationWidget( QWidget * p_parent = nullptr );
@@ -67,10 +67,10 @@ namespace VTX::UI::Widget::Representation
 		virtual void _onSphereRadiusOffsetChange( const float p_newRadius );
 		virtual void _onCylinderRadiusChange( const float p_newRadius );
 		virtual void _onCylinderColorBlendingModeChange( const Generic::COLOR_BLENDING_MODE & p_colorBlendindrMode );
-		virtual void _onRibbonColorChange( const Color::Rgba & p_color );
+		virtual void _onRibbonColorChange( const Util::Color::Rgba & p_color );
 		virtual void _onRibbonColorModeChange( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
 		virtual void _onRibbonColorBlendingModeChange( const Generic::COLOR_BLENDING_MODE & p_colorBlendindrMode );
-		virtual void _onColorChange( const Color::Rgba & p_color );
+		virtual void _onColorChange( const Util::Color::Rgba & p_color );
 		virtual void _onColorModeChange( const Generic::COLOR_MODE & p_colorMode );
 
 		Representation::View::SphereWidget *   _sphereWidget   = nullptr;

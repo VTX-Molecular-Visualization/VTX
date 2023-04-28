@@ -21,10 +21,10 @@ namespace VTX
 			namespace OrenNayar
 			{
 				// TODO: optimize it ! acos/sin/tan can be removed...
-				inline Color::Rgba fr( const Intersection & p_hit,
+				inline Util::Color::Rgba fr( const Intersection & p_hit,
 									   const Vec3f &		p_wo,
 									   const Vec3f &		p_wi,
-									   const Color::Rgba &	p_albedo,
+									   const Util::Color::Rgba &	p_albedo,
 									   const float			p_roughness )
 				{
 					const float roughness2 = p_roughness * p_roughness;

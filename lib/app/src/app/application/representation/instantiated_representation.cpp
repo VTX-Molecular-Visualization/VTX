@@ -45,7 +45,7 @@ namespace VTX::App::Application::Representation
 		const RepresentationPreset * const p_linkedRepresentation ) :
 		BaseModel( VTX::ID::Model::MODEL_INTANTIATED_REPRESENTATION ),
 		_linkedRepresentation( p_linkedRepresentation ),
-		_color( Generic::OverridableParameter<Color::Rgba>( _linkedRepresentation->getColor() ) ),
+		_color( Generic::OverridableParameter<Util::Color::Rgba>( _linkedRepresentation->getColor() ) ),
 		_colorMode( Generic::OverridableParameter( _linkedRepresentation->getData().getColorMode() ) ),
 		_sphereData( Generic::OverridableParameter( _linkedRepresentation->getData().getSphereData() ) ),
 		_cylinderData( Generic::OverridableParameter( _linkedRepresentation->getData().getCylinderData() ) ),
@@ -109,7 +109,7 @@ namespace VTX::App::Application::Representation
 		_linkedRepresentation = p_linkedRepresentation;
 
 		if ( p_eraseOverride || !_color.isOverrided() )
-			_color = Generic::OverridableParameter<Color::Rgba>( _linkedRepresentation->getColor() );
+			_color = Generic::OverridableParameter<Util::Color::Rgba>( _linkedRepresentation->getColor() );
 		if ( p_eraseOverride || !_colorMode.isOverrided() )
 			_colorMode = Generic::OverridableParameter( _linkedRepresentation->getData().getColorMode() );
 		if ( p_eraseOverride || !_sphereData.isOverrided() )
@@ -140,7 +140,7 @@ namespace VTX::App::Application::Representation
 			_notifyDataChanged();
 	}
 
-	void InstantiatedRepresentation::setColor( const Color::Rgba & p_color,
+	void InstantiatedRepresentation::setColor( const Util::Color::Rgba & p_color,
 											   const bool		   p_recomputeBuffers,
 											   const bool		   p_notify )
 	{

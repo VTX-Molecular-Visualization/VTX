@@ -42,7 +42,7 @@ namespace VTX::App::Internal::IO
 		nlohmann::json serialize( const Application::Representation::RepresentationPreset & ) const;
 		nlohmann::json serialize( const Application::RenderEffect::RenderEffectPreset & ) const;
 
-		nlohmann::json serialize( const Color::Rgba & ) const;
+		nlohmann::json serialize( const Util::Color::Rgba & ) const;
 		nlohmann::json serialize( const Internal::Math::Transform & ) const;
 		template<typename T, glm::qualifier Q>
 		nlohmann::json serialize( const glm::vec<2, T, Q> & ) const;
@@ -74,7 +74,7 @@ namespace VTX::App::Internal::IO
 						  const std::tuple<uint, uint, uint> &,
 						  Application::RenderEffect::RenderEffectPreset & ) const;
 
-		void deserialize( const nlohmann::json &, Color::Rgba & ) const;
+		void deserialize( const nlohmann::json &, Util::Color::Rgba & ) const;
 		void deserialize( const nlohmann::json &, Internal::Math::Transform & ) const;
 		template<typename T, glm::qualifier Q>
 		void deserialize( const nlohmann::json &, glm::vec<2, T, Q> & ) const;

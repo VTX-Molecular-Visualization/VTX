@@ -5,7 +5,7 @@
 #include "app/application/render_effect/render_effect_library.hpp"
 #include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include <unordered_set>
 
 namespace VTX::App::Action::Renderer
@@ -192,7 +192,7 @@ namespace VTX::App::Action::Renderer
 	{
 	  public:
 		ChangeOutlineColor( App::Application::RenderEffect::RenderEffectPreset & p_preset,
-							const Color::Rgba &									 p_color ) :
+							const Util::Color::Rgba &									 p_color ) :
 			_preset( p_preset ),
 			_color( p_color ) {};
 
@@ -200,7 +200,7 @@ namespace VTX::App::Action::Renderer
 
 	  private:
 		App::Application::RenderEffect::RenderEffectPreset & _preset;
-		const Color::Rgba									 _color;
+		const Util::Color::Rgba									 _color;
 	};
 
 	class EnableFog : public App::Core::Action::BaseAction
@@ -254,21 +254,21 @@ namespace VTX::App::Action::Renderer
 	class ChangeFogColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeFogColor( App::Application::RenderEffect::RenderEffectPreset & p_preset, const Color::Rgba & p_color ) :
+		ChangeFogColor( App::Application::RenderEffect::RenderEffectPreset & p_preset, const Util::Color::Rgba & p_color ) :
 			_preset( p_preset ), _color( p_color ) {};
 
 		virtual void execute() override;
 
 	  private:
 		App::Application::RenderEffect::RenderEffectPreset & _preset;
-		const Color::Rgba									 _color;
+		const Util::Color::Rgba									 _color;
 	};
 
 	class ChangeBackgroundColor : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeBackgroundColor( App::Application::RenderEffect::RenderEffectPreset & p_preset,
-							   const Color::Rgba &									p_color ) :
+							   const Util::Color::Rgba &									p_color ) :
 			_preset( p_preset ),
 			_color( p_color ) {};
 
@@ -276,14 +276,14 @@ namespace VTX::App::Action::Renderer
 
 	  private:
 		App::Application::RenderEffect::RenderEffectPreset & _preset;
-		const Color::Rgba									 _color;
+		const Util::Color::Rgba									 _color;
 	};
 
 	class ChangeCameraLightColor : public App::Core::Action::BaseAction
 	{
 	  public:
 		ChangeCameraLightColor( App::Application::RenderEffect::RenderEffectPreset & p_preset,
-								const Color::Rgba &									 p_color ) :
+								const Util::Color::Rgba &									 p_color ) :
 			_preset( p_preset ),
 			_color( p_color ) {};
 
@@ -291,7 +291,7 @@ namespace VTX::App::Action::Renderer
 
 	  private:
 		App::Application::RenderEffect::RenderEffectPreset & _preset;
-		const Color::Rgba									 _color;
+		const Util::Color::Rgba									 _color;
 	};
 
 	class AddNewPresetInLibrary : public App::Core::Action::BaseAction

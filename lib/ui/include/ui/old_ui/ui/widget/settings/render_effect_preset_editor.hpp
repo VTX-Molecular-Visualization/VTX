@@ -17,7 +17,7 @@
 #include <QScrollArea>
 #include <QSpinBox>
 #include <QWidget>
-#include <app/old_app/color/rgba.hpp>
+#include <util/color/rgba.hpp>
 #include <app/application/render_effect/render_effect_preset.hpp>
 #include <app/core/view/base_view.hpp>
 
@@ -99,16 +99,16 @@ namespace VTX::UI::Widget::Settings
 		void _onOutlineStateChanged( const int p_state ) const;
 		void _onOutlineThicknessChanged( const uint p_value ) const;
 		void _onOutlineSensivityChanged( const float p_value ) const;
-		void _onOutlineColorChanged( const Color::Rgba & p_color ) const;
+		void _onOutlineColorChanged( const Util::Color::Rgba & p_color ) const;
 
 		void _onFogStateChanged( const int p_state ) const;
 		void _onFogNearChanged( const int p_value ) const;
 		void _onFogFarChanged( const int p_value ) const;
 		void _onFogDensityChanged( const float p_value ) const;
-		void _onFogColorChanged( const Color::Rgba & p_color ) const;
+		void _onFogColorChanged( const Util::Color::Rgba & p_color ) const;
 
-		void _onBackgroundColorChanged( const Color::Rgba & p_color ) const;
-		void _onCameraLightColorChanged( const Color::Rgba & p_color ) const;
+		void _onBackgroundColorChanged( const Util::Color::Rgba & p_color ) const;
+		void _onCameraLightColorChanged( const Util::Color::Rgba & p_color ) const;
 	};
 
 } // namespace VTX::UI::Widget::Settings

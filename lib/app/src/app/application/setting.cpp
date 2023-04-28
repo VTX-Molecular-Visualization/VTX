@@ -34,7 +34,7 @@ namespace VTX::App::Application
 #else
 	const bool Setting::FORCE_RENDERER_DEFAULT = true;
 #endif
-	const Color::Rgba Setting::BACKGROUND_COLOR_DEFAULT	  = Color::Rgba::BLACK;
+	const Util::Color::Rgba Setting::BACKGROUND_COLOR_DEFAULT	  = Util::Color::Rgba::BLACK;
 	const float		  Setting::BACKGROUND_OPACITY_DEFAULT = 1.0f;
 	const float		  Setting::SNAPSHOT_QUALITY_DEFAULT	  = 1.0f;
 
@@ -108,7 +108,7 @@ namespace VTX::App::Application
 	const float		  Setting::OUTLINE_SENSIVITY_DEFAULT = 0.4f;
 	const float		  Setting::OUTLINE_SENSIVITY_MIN	 = 0.01f;
 	const float		  Setting::OUTLINE_SENSIVITY_MAX	 = 1.f;
-	const Color::Rgba Setting::OUTLINE_COLOR_DEFAULT	 = Color::Rgba::WHITE;
+	const Util::Color::Rgba Setting::OUTLINE_COLOR_DEFAULT	 = Util::Color::Rgba::WHITE;
 	const bool		  Setting::ACTIVE_FOG_DEFAULT		 = false;
 	const float		  Setting::FOG_NEAR_DEFAULT			 = 30;
 	const float		  Setting::FOG_NEAR_MIN				 = 0.f;
@@ -117,9 +117,9 @@ namespace VTX::App::Application
 	const float		  Setting::FOG_FAR_MIN				 = 0.f;
 	const float		  Setting::FOG_FAR_MAX				 = 1000.f;
 	const float		  Setting::FOG_DENSITY_DEFAULT		 = 0.8f;
-	const Color::Rgba Setting::FOG_COLOR_DEFAULT		 = Color::Rgba::WHITE;
+	const Util::Color::Rgba Setting::FOG_COLOR_DEFAULT		 = Util::Color::Rgba::WHITE;
 	const bool		  Setting::ACTIVE_AA_DEFAULT		 = true;
-	const Color::Rgba Setting::LIGHT_COLOR_DEFAULT		 = Color::Rgba::WHITE;
+	const Util::Color::Rgba Setting::LIGHT_COLOR_DEFAULT		 = Util::Color::Rgba::WHITE;
 
 	// Scene.
 	const Vec3f Setting::MIN_SCENE_POS = Vec3f( -10000, -10000, -10000 );
@@ -196,7 +196,7 @@ namespace VTX::App::Application
 	const uint		 Setting::VIDEO_CRF_DEFAULT		  = 10;
 
 	// Measurement
-	const Color::Rgba Setting::DEFAULT_LABEL_COLOR = Color::Rgba( 0.f, 0.f, 1.f );
+	const Util::Color::Rgba Setting::DEFAULT_LABEL_COLOR = Util::Color::Rgba( 0.f, 0.f, 1.f );
 
 	// Selection
 	const VTX::App::Application::Selection::GRANULARITY Setting::SELECTION_GRANULARITY_DEFAULT = VTX::App::Application::Selection::GRANULARITY::RESIDUE;

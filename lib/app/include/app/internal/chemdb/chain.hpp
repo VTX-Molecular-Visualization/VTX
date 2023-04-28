@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_INTERNAL_CHEMDB_CHAIN__
 #define __VTX_APP_INTERNAL_CHEMDB_CHAIN__
 
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 
 namespace VTX::App::Internal::ChemDB::Chain
 {
@@ -15,7 +15,7 @@ namespace VTX::App::Internal::ChemDB::Chain
 	// one color per chain id + 1 unknown
 	const size_t NB_COLORS = 26;
 
-	const Color::Rgba CHAIN_ID_COLOR_ATOM[ NB_COLORS ] = {
+	const Util::Color::Rgba CHAIN_ID_COLOR_ATOM[ NB_COLORS ] = {
 		{ 192, 208, 255 }, // A, a,
 		{ 176, 255, 176 }, // B, b,
 		{ 255, 192, 200 }, // C, c,
@@ -44,7 +44,7 @@ namespace VTX::App::Internal::ChemDB::Chain
 		{ 178, 34, 34 },   // Z, z
 	};
 
-	const Color::Rgba CHAIN_ID_COLOR_HETATM[ NB_COLORS ] = {
+	const Util::Color::Rgba CHAIN_ID_COLOR_HETATM[ NB_COLORS ] = {
 		{ 144, 160, 207 }, // A, a,
 		{ 128, 207, 152 }, // B, b,
 		{ 207, 144, 176 }, // C, c,
@@ -73,7 +73,7 @@ namespace VTX::App::Internal::ChemDB::Chain
 		{ 194, 50, 50 },   // Z, z
 	};
 
-	const Color::Rgba CHAIN_ID_UNKNOWN_COLOR = Color::Rgba::WHITE;
+	const Util::Color::Rgba CHAIN_ID_UNKNOWN_COLOR = Util::Color::Rgba::WHITE;
 
 } // namespace VTX::App::Internal::ChemDB::Chain
 

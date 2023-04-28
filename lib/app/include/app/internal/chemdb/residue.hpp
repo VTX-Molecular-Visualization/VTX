@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_INTERNAL_CHEMDB_RESIDUE__
 #define __VTX_APP_INTERNAL_CHEMDB_RESIDUE__
 
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include <string>
 
 namespace VTX::App::Internal::ChemDB::Residue
@@ -179,7 +179,7 @@ namespace VTX::App::Internal::ChemDB::Residue
 	};
 
 	// http://jmol.sourceforge.net/jscolors/#Jmolcolors : Protein "amino" colors
-	const Color::Rgba SYMBOL_COLOR[ int( SYMBOL::COUNT ) ] = {
+	const Util::Color::Rgba SYMBOL_COLOR[ int( SYMBOL::COUNT ) ] = {
 		{ 190, 160, 110 }, // UNKNOWN
 		{ 200, 200, 200 }, // ALA
 		{ 20, 90, 255 },   // ARG

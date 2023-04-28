@@ -20,7 +20,7 @@ namespace VTX::UI::Widget::Representation::View
 		void resetState() override;
 
 	  signals:
-		void onColorChange( const Color::Rgba & p_color );
+		void onColorChange( const Util::Color::Rgba & p_color );
 		void onColorModeChange( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode );
 		void onColorBlendingModeChange( const Generic::COLOR_BLENDING_MODE & p_newMode );
 
@@ -36,7 +36,7 @@ namespace VTX::UI::Widget::Representation::View
 		CustomWidget::RibbonColorModeFieldWidget * _colorModeWidget			= nullptr;
 		CustomWidget::QComboBoxMultiField *		   _colorBlendingModeWidget = nullptr;
 
-		void _onColorChange( const Color::Rgba & p_color );
+		void _onColorChange( const Util::Color::Rgba & p_color );
 		void _onColorModeChange( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode );
 		void _onColorBlendingModeChange( const int p_newMode );
 	};

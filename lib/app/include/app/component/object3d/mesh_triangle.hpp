@@ -4,7 +4,7 @@
 #include "app/core/model/base_model_3d.hpp"
 #include "app/core/scene/base_scene_item.hpp"
 #include "app/old_app/buffer/mesh_triangle.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include <util/types.hpp>
 #include <vector>
 
@@ -28,10 +28,10 @@ namespace VTX::App::Component::Object3D
 		inline const Vec4f &			  getNormal( const uint p_idx ) const { return _normals[ p_idx ]; }
 		inline Vec4f &					  getNormal( const uint p_idx ) { return _normals[ p_idx ]; }
 
-		inline const std::vector<Color::Rgba> & getColors() const { return _colors; }
-		inline std::vector<Color::Rgba> &		getColors() { return _colors; }
-		inline const Color::Rgba &				getColor( const uint p_idx ) const { return _colors[ p_idx ]; }
-		inline Color::Rgba &					getColor( const uint p_idx ) { return _colors[ p_idx ]; }
+		inline const std::vector<Util::Color::Rgba> & getColors() const { return _colors; }
+		inline std::vector<Util::Color::Rgba> &		getColors() { return _colors; }
+		inline const Util::Color::Rgba &				getColor( const uint p_idx ) const { return _colors[ p_idx ]; }
+		inline Util::Color::Rgba &					getColor( const uint p_idx ) { return _colors[ p_idx ]; }
 
 		inline const std::vector<uint> & getVisibilities() const { return _visibilities; }
 		inline std::vector<uint> &		 getVisibilities() { return _visibilities; }
@@ -70,7 +70,7 @@ namespace VTX::App::Component::Object3D
 
 		std::vector<Vec4f>			 _vertices;
 		std::vector<Vec4f>			 _normals;
-		std::vector<Color::Rgba>	 _colors;
+		std::vector<Util::Color::Rgba>	 _colors;
 		std::vector<uint>			 _visibilities;
 		std::vector<uint>			 _selections;
 		std::vector<Core::Model::ID> _ids;

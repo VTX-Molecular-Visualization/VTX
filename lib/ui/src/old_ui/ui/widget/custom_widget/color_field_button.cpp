@@ -7,7 +7,7 @@
 namespace VTX::UI::Widget::CustomWidget
 {
 	ColorFieldButton::ColorFieldButton( QWidget * p_parent ) :
-		BaseManualWidget( p_parent ), TMultiDataFieldEquatable<const Color::Rgba>() {};
+		BaseManualWidget( p_parent ), TMultiDataFieldEquatable<const Util::Color::Rgba>() {};
 
 	void ColorFieldButton::_setupUi( const QString & p_name )
 	{
@@ -64,7 +64,7 @@ namespace VTX::UI::Widget::CustomWidget
 		QPushButton::setEnabled( p_enable );
 	}
 
-	void ColorFieldButton::setColor( const Color::Rgba & p_color )
+	void ColorFieldButton::setColor( const Util::Color::Rgba & p_color )
 	{
 		if ( _color != p_color )
 		{
@@ -75,16 +75,16 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 	};
 
-	void ColorFieldButton::_fillImageWithColor( const Color::Rgba & p_color )
+	void ColorFieldButton::_fillImageWithColor( const Util::Color::Rgba & p_color )
 	{
 		QColor color = _getQColorFromRgbColor( p_color );
 		_colorImage.fill( color );
 	}
-	Color::Rgba ColorFieldButton::_getRgbColorFromQColor( const QColor & p_color ) const
+	Util::Color::Rgba ColorFieldButton::_getRgbColorFromQColor( const QColor & p_color ) const
 	{
-		return Color::Rgba( p_color.red(), p_color.green(), p_color.blue() );
+		return Util::Color::Rgba( p_color.red(), p_color.green(), p_color.blue() );
 	}
-	QColor ColorFieldButton::_getQColorFromRgbColor( const Color::Rgba & p_color ) const
+	QColor ColorFieldButton::_getQColorFromRgbColor( const Util::Color::Rgba & p_color ) const
 	{
 		return QColor( p_color.getR() * 255, p_color.getG() * 255, p_color.getB() * 255 );
 	}
@@ -103,7 +103,7 @@ namespace VTX::UI::Widget::CustomWidget
 		const QRect colorRect	= QRect( border, border, width() - border * 2, height() - ( border * 2 + 1 ) );
 		const QRect paintedRect = colorRect.intersected( p_paintEvent->rect() );
 
-		const Color::Rgba displayedColorRGB = isEnabled() ? _color : ( _color / 2 );
+		const Util::Color::Rgba displayedColorRGB = isEnabled() ? _color : ( _color / 2 );
 		const QColor	  displayedColor	= _getQColorFromRgbColor( displayedColorRGB );
 
 		painter.fillRect( paintedRect, displayedColor );
@@ -122,7 +122,7 @@ namespace VTX::UI::Widget::CustomWidget
 	}
 	void ColorFieldButton::_displayDifferentsDataFeedback()
 	{
-		setColor( Color::Rgba::BLACK );
+		setColor( Util::Color::Rgba::BLACK );
 		setText( Style::DIFFERENT_MULTIPLE_DATA_STRING );
 	}
 

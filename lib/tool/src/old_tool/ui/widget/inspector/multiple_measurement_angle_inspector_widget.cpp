@@ -179,7 +179,7 @@ namespace VTX::UI::Widget::Inspector
 		VTX_ACTION( new App::Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
 	}
 
-	void MultipleMeasurmentAngleWidget::_setLabelColor( const Color::Rgba & p_color ) const
+	void MultipleMeasurmentAngleWidget::_setLabelColor( const Util::Color::Rgba & p_color ) const
 	{
 		std::unordered_set<App::Component::Object3D::Label *> labelTargets = std::unordered_set<App::Component::Object3D::Label *>();
 		for ( Model::Measurement::Angle * const targetDistance : getTargets() )

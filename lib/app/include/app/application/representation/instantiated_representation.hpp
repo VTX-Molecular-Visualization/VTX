@@ -10,7 +10,7 @@
 #include "app/core/event/base_event_receiver_vtx.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/core/model/base_model.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include "app/old_app/generic/base_objectoverride.hpp"
 #include "app/old_app/id.hpp"
 #include <string>
@@ -38,8 +38,8 @@ namespace VTX::App::Application::Representation
 
 		const std::string & getName() const { return _linkedRepresentation->getName(); };
 
-		const Color::Rgba & getColor() const { return _color.getValue(); }
-		void setColor( const Color::Rgba & p_color, const bool p_recomputeBuffers = true, const bool p_notify = true );
+		const Util::Color::Rgba & getColor() const { return _color.getValue(); }
+		void setColor( const Util::Color::Rgba & p_color, const bool p_recomputeBuffers = true, const bool p_notify = true );
 		const Generic::COLOR_MODE & getColorMode() const { return _colorMode.getValue(); }
 		void						setColorMode( const Generic::COLOR_MODE & p_colorMode,
 												  const bool				  p_recomputeBuffers = true,
@@ -97,7 +97,7 @@ namespace VTX::App::Application::Representation
 
 		BaseRepresentable * _target = nullptr;
 
-		Generic::OverridableParameter<Color::Rgba>		   _color;
+		Generic::OverridableParameter<Util::Color::Rgba>		   _color;
 		Generic::OverridableParameter<Generic::COLOR_MODE> _colorMode;
 
 		Generic::OverridableParameter<Primitive::Sphere>   _sphereData;

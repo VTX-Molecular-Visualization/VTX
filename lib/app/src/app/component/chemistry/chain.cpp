@@ -64,7 +64,7 @@ namespace VTX::App::Component::Chemistry
 		return realAtomCount;
 	}
 
-	Color::Rgba Chain::getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
+	Util::Color::Rgba Chain::getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
 	{
 		if ( p_chainId.empty() )
 			return ChemDB::Chain::CHAIN_ID_UNKNOWN_COLOR;

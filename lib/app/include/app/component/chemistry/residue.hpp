@@ -32,7 +32,7 @@ namespace VTX::App::Component::Chemistry
 		static const int SYMBOL_COUNT = int( ChemDB::Residue::SYMBOL::COUNT );
 
 		static bool				 checkIfStandardFromName( const std::string & p_residueName );
-		static const Color::Rgba getResidueColor( const Chemistry::Residue & p_residue );
+		static const Util::Color::Rgba getResidueColor( const Chemistry::Residue & p_residue );
 
 		inline bool isStandardResidue() const
 		{

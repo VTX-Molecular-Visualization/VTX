@@ -93,7 +93,7 @@ namespace VTX::App::Component::Chemistry
 
 		_computeBonds( molecule );
 
-		getBufferAtomColors().resize( getAtomCount(), Color::Rgba::BLUE );
+		getBufferAtomColors().resize( getAtomCount(), Util::Color::Rgba::BLUE );
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
@@ -376,7 +376,7 @@ namespace VTX::App::Component::Chemistry
 
 	void GeneratedMolecule::_validateBuffers()
 	{
-		getBufferAtomColors().resize( getAtomCount(), Color::Rgba::BLUE );
+		getBufferAtomColors().resize( getAtomCount(), Util::Color::Rgba::BLUE );
 		getBufferAtomVisibilities().resize( getAtomCount(), 1u );
 		getBufferAtomSelections().resize( getAtomCount(), 0u );
 
@@ -594,7 +594,7 @@ namespace VTX::App::Component::Chemistry
 		setName( p_namePrefix + p_molecule.getName() + p_nameSuffix );
 		setPdbIdCode( "none" );
 		setDisplayName( p_namePrefix + p_molecule.getDefaultName() + p_nameSuffix );
-		setColor( Color::Rgba::randomPastel() );
+		setColor( Util::Color::Rgba::randomPastel() );
 
 		const App::Application::Representation::InstantiatedRepresentation * const rep
 			= App::Application::Representation::RepresentationManager::get().instantiateCopy(

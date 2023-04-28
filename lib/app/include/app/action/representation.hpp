@@ -126,7 +126,7 @@ namespace VTX::App::Action::Representation
 	{
 	  public:
 		explicit ChangeColor( App::Application::Representation::RepresentationPreset * const p_representation,
-							  const Color::Rgba &							p_color ) :
+							  const Util::Color::Rgba &							p_color ) :
 			_representation( p_representation ),
 			_color( p_color )
 		{
@@ -135,7 +135,7 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const Color::Rgba							  _color;
+		const Util::Color::Rgba							  _color;
 	};
 
 	class ChangeSphereRadius : public App::Core::Action::BaseAction

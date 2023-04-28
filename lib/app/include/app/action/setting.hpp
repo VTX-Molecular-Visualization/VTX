@@ -7,7 +7,7 @@
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/internal/chemdb/category.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
 #include <util/logger.hpp>
@@ -53,12 +53,12 @@ namespace VTX::App::Action::Setting
 	class ChangeBackgroundColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeBackgroundColor( const Color::Rgba & p_color ) : _color( p_color ) {}
+		explicit ChangeBackgroundColor( const Util::Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override;
 
 	  private:
-		const Color::Rgba _color;
+		const Util::Color::Rgba _color;
 	};
 
 	class ChangeSnapshotFormat : public App::Core::Action::BaseAction
@@ -224,12 +224,12 @@ namespace VTX::App::Action::Setting
 	class ChangeOutlineColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeOutlineColor( const Color::Rgba & p_color ) : _color( p_color ) {}
+		explicit ChangeOutlineColor( const Util::Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override;
 
 	  private:
-		const Color::Rgba _color;
+		const Util::Color::Rgba _color;
 	};
 
 	class ChangeOutlineThickness : public App::Core::Action::BaseAction
@@ -301,12 +301,12 @@ namespace VTX::App::Action::Setting
 	class ChangeFogColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeFogColor( const Color::Rgba & p_color ) : _color( p_color ) {}
+		explicit ChangeFogColor( const Util::Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override;
 
 	  private:
-		const Color::Rgba _color;
+		const Util::Color::Rgba _color;
 	};
 
 	class ActiveAA : public App::Core::Action::BaseAction
@@ -323,12 +323,12 @@ namespace VTX::App::Action::Setting
 	class ChangeLightColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeLightColor( const Color::Rgba & p_color ) : _color( p_color ) {}
+		explicit ChangeLightColor( const Util::Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override;
 
 	  private:
-		const Color::Rgba _color;
+		const Util::Color::Rgba _color;
 	};
 
 	class ChangeCameraClip : public App::Core::Action::BaseAction

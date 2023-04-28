@@ -26,7 +26,7 @@ namespace VTX::App::Component::Chemistry
 		VTX_MODEL
 
 	  public:
-		static Color::Rgba getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
+		static Util::Color::Rgba getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
 
 	  public:
 		// inline CHAIN_TYPE	getType() const { return _type; }

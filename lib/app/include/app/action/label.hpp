@@ -4,7 +4,7 @@
 #include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/component/object3d/label.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -87,11 +87,11 @@ namespace VTX::App::Action::Label
 	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeColor( App::Component::Object3D::Label & p_label, const Color::Rgba & p_color ) :
+		explicit ChangeColor( App::Component::Object3D::Label & p_label, const Util::Color::Rgba & p_color ) :
 			_labels( { &p_label } ), _color( p_color )
 		{
 		}
-		explicit ChangeColor( const std::unordered_set<App::Component::Object3D::Label *> & p_labels, const Color::Rgba & p_color ) :
+		explicit ChangeColor( const std::unordered_set<App::Component::Object3D::Label *> & p_labels, const Util::Color::Rgba & p_color ) :
 			_labels( p_labels ), _color( p_color )
 		{
 		}
@@ -100,7 +100,7 @@ namespace VTX::App::Action::Label
 
 	  private:
 		const std::unordered_set<App::Component::Object3D::Label *> _labels;
-		const Color::Rgba &						 _color;
+		const Util::Color::Rgba &						 _color;
 	};
 
 } // namespace VTX::App::Action::Label

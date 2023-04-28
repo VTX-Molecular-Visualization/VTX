@@ -14,7 +14,7 @@
 #include <QScrollArea>
 #include <app/application/representation/enum_representation.hpp>
 #include <app/application/representation/representation_preset.hpp>
-#include <app/old_app/color/rgba.hpp>
+#include <util/color/rgba.hpp>
 #include <type_traits>
 #include <vector>
 
@@ -103,7 +103,7 @@ namespace VTX::UI::Widget::Settings
 		void _onRibbonColorModeChanged( const int p_index );
 		void _onRibbonColorBlendingModeChanged( const int p_index );
 		void _onColorModeChanged( const int p_index );
-		void _onColorChanged( const Color::Rgba & p_color );
+		void _onColorChanged( const Util::Color::Rgba & p_color );
 		void _onSetDefault();
 	};
 

@@ -14,11 +14,11 @@ namespace VTX
 		class FlatColorMaterial : public BaseMaterial
 		{
 		  public:
-			FlatColorMaterial( const Color::Rgba & p_color ) : _color( p_color ) {}
+			FlatColorMaterial( const Util::Color::Rgba & p_color ) : _color( p_color ) {}
 
-			Color::Rgba getColor() const override { return _color; }
+			Util::Color::Rgba getColor() const override { return _color; }
 
-			Color::Rgba shade( const Ray &			p_ray,
+			Util::Color::Rgba shade( const Ray &			p_ray,
 							   const Intersection & p_hit,
 							   const LightSample &	p_lightSample ) const override
 			{
@@ -26,7 +26,7 @@ namespace VTX
 			}
 
 		  private:
-			Color::Rgba _color;
+			Util::Color::Rgba _color;
 		};
 	} // namespace Renderer
 } // namespace VTX

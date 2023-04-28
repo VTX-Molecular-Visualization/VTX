@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_INTERNAL_CHEMDB_ATOM__
 #define __VTX_APP_INTERNAL_CHEMDB_ATOM__
 
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include <string>
 
 namespace VTX::App::Internal::ChemDB::Atom
@@ -505,7 +505,7 @@ namespace VTX::App::Internal::ChemDB::Atom
 	};
 
 	// CPK by http://jmol.sourceforge.net/jscolors/#Jmolcolors
-	const Color::Rgba SYMBOL_COLOR[ int( SYMBOL::COUNT ) ] = {
+	const Util::Color::Rgba SYMBOL_COLOR[ int( SYMBOL::COUNT ) ] = {
 		{ 250, 22, 145 },  // UNKNOWN		= 0,
 		{ 255, 255, 255 }, // H				= 1,
 		{ 217, 255, 255 }, // HE			= 2,

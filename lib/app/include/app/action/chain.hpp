@@ -6,7 +6,7 @@
 #include "app/core/action/base_action.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/application/representation/instantiated_representation.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include <unordered_set>
 
 namespace VTX::App::Action::Chain
@@ -14,12 +14,12 @@ namespace VTX::App::Action::Chain
 	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeColor( App::Component::Chemistry::Chain & p_chain, const Color::Rgba & p_color ) :
+		explicit ChangeColor( App::Component::Chemistry::Chain & p_chain, const Util::Color::Rgba & p_color ) :
 			_color( p_color ), _chains { &p_chain }
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
-		explicit ChangeColor( const std::unordered_set<App::Component::Chemistry::Chain *> & p_chains, const Color::Rgba & p_color ) :
+		explicit ChangeColor( const std::unordered_set<App::Component::Chemistry::Chain *> & p_chains, const Util::Color::Rgba & p_color ) :
 			_color( p_color ), _chains( p_chains )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
@@ -29,7 +29,7 @@ namespace VTX::App::Action::Chain
 
 	  private:
 		const std::unordered_set<App::Component::Chemistry::Chain *> _chains = std::unordered_set<App::Component::Chemistry::Chain *>();
-		const Color::Rgba						 _color;
+		const Util::Color::Rgba						 _color;
 	};
 
 	class ChangeVisibility : public Visible::ChangeVisibility

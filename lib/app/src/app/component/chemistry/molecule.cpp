@@ -12,7 +12,7 @@
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/util/secondary_structure.hpp"
@@ -292,7 +292,7 @@ namespace VTX::App::Component::Chemistry
 	{
 		_bufferAtomRadius.resize( _atoms.size() );
 		_bufferAtomVisibilities.resize( _atoms.size(), 1u );
-		_bufferAtomColors.resize( _atoms.size(), Color::Rgba::WHITE );
+		_bufferAtomColors.resize( _atoms.size(), Util::Color::Rgba::WHITE );
 		_bufferAtomSelections.resize( _atoms.size(), 0u );
 		_bufferAtomIds.resize( _atoms.size() );
 	}
@@ -333,7 +333,7 @@ namespace VTX::App::Component::Chemistry
 			}
 
 			bool		colorCarbon = false;
-			Color::Rgba color;
+			Util::Color::Rgba color;
 
 			switch ( colorMode )
 			{
@@ -1331,14 +1331,14 @@ namespace VTX::App::Component::Chemistry
 		_notifyViews( App::Event::Model::DISPLAY_NAME_CHANGE );
 	}
 
-	void Molecule::setColor( const Color::Rgba & p_color )
+	void Molecule::setColor( const Util::Color::Rgba & p_color )
 	{
 		Generic::BaseColorable::setColor( p_color );
 
 		if ( isInit() )
 		{
 			_notifyViews( App::Event::Model::COLOR_CHANGE );
-			VTX_EVENT<const Color::Rgba &>( VTX::App::Event::Global::MOLECULE_COLOR_CHANGE, p_color );
+			VTX_EVENT<const Util::Color::Rgba &>( VTX::App::Event::Global::MOLECULE_COLOR_CHANGE, p_color );
 		}
 	}
 } // namespace VTX::App::Component::Chemistry

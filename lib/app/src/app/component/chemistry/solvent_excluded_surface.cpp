@@ -375,7 +375,7 @@ namespace VTX::App::Component::Chemistry
 		bufferNormals.set( std::vector<Vec4f>( _indiceCount, Vec4f() ) );
 		bufferIndices.set( _indiceCount * sizeof( uint ),
 						   Buffer::Flags( Buffer::Flags::MAP_READ_BIT | Buffer::Flags::MAP_WRITE_BIT ) );
-		bufferColors.set( _indiceCount * sizeof( Color::Rgba ) );
+		bufferColors.set( _indiceCount * sizeof( Util::Color::Rgba ) );
 		bufferVisibilities.set( _indiceCount * sizeof( uint ) );
 		bufferIds.set( _indiceCount * sizeof( uint ) );
 		bufferSelections.set( _indiceCount * sizeof( uint ) );

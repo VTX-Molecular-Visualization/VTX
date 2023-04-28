@@ -220,7 +220,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_onRepresentationColorChange(
 		const App::Application::Representation::InstantiatedRepresentation & p_representation,
-		const Color::Rgba &													 p_color,
+		const Util::Color::Rgba &													 p_color,
 		const bool															 p_ssColor )
 	{
 		if ( !signalsBlocked() )
@@ -270,7 +270,7 @@ namespace VTX::UI::Widget::Inspector
 		}
 	}
 
-	void MultipleResidueWidget::_changeMoleculesColor( const Color::Rgba & p_color ) const
+	void MultipleResidueWidget::_changeMoleculesColor( const Util::Color::Rgba & p_color ) const
 	{
 		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
 			= std::unordered_set<App::Component::Chemistry::Molecule *>();

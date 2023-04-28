@@ -9,7 +9,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QWidget>
-#include <app/old_app/color/rgba.hpp>
+#include <util/color/rgba.hpp>
 #include <app/old_app/generic/base_colorable.hpp>
 #include <app/component/chemistry/secondary_structure.hpp>
 
@@ -17,7 +17,7 @@ namespace VTX::UI::Widget::CustomWidget
 {
 	class RibbonColorModeFieldWidget :
 		public BaseManualWidget<QWidget>,
-		public TMultiDataField<const std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgba>>
+		public TMultiDataField<const std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba>>
 	{
 		Q_OBJECT
 		VTX_WIDGET
@@ -29,16 +29,16 @@ namespace VTX::UI::Widget::CustomWidget
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & getColorMode() const { return _colorMode; };
 		void setColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
 
-		const Color::Rgba & getColor() { return _color; };
-		void				setColor( const Color::Rgba & p_color );
+		const Util::Color::Rgba & getColor() { return _color; };
+		void				setColor( const Util::Color::Rgba & p_color );
 
 		void updateWithNewValue(
-			const std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgba> & p_value ) override;
+			const std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba> & p_value ) override;
 		void resetState() override;
 
 	  signals:
 		void colorModeChanged( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
-		void colorChanged( const Color::Rgba & p_color );
+		void colorChanged( const Util::Color::Rgba & p_color );
 
 	  protected:
 		RibbonColorModeFieldWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ), TMultiDataField() {};
@@ -51,13 +51,13 @@ namespace VTX::UI::Widget::CustomWidget
 		void _displayDifferentsDataFeedback() override;
 
 		void _colorModeChange( int index );
-		void _applyColor( const Color::Rgba & p_color );
+		void _applyColor( const Util::Color::Rgba & p_color );
 		// !V0.1
 		// void _openColorSettings();
 
 	  private:
 		Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
-		Color::Rgba								_color;
+		Util::Color::Rgba								_color;
 
 		QHBoxLayout * _layout;
 

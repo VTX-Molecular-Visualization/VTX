@@ -26,7 +26,7 @@ namespace VTX::App::Component::Chemistry
 		inline Residue * const getResiduePtr() const { return _residuePtr; }
 		inline void			   setResiduePtr( Residue * const p_residue ) { _residuePtr = p_residue; }
 
-		inline const Color::Rgba & getColor() const { return ChemDB::Atom::SYMBOL_COLOR[ int( _symbol ) ]; };
+		inline const Util::Color::Rgba & getColor() const { return ChemDB::Atom::SYMBOL_COLOR[ int( _symbol ) ]; };
 
 		inline const ChemDB::Atom::SYMBOL getSymbol() const { return _symbol; };
 		inline const std::string &		  getSymbolStr() const { return ChemDB::Atom::SYMBOL_STR[ (int)_symbol ]; };

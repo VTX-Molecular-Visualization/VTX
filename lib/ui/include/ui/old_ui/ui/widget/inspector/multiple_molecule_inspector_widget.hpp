@@ -17,7 +17,7 @@
 #include <app/application/representation/instantiated_representation.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/core/view/base_view.hpp>
-#include <app/old_app/color/rgba.hpp>
+#include <util/color/rgba.hpp>
 #include <app/old_app/generic/base_transformable.hpp>
 
 namespace VTX::UI::Widget::Inspector
@@ -78,11 +78,11 @@ namespace VTX::UI::Widget::Inspector
 			const App::Application::Representation::MEMBER_FLAG &				 p_flag ) const;
 		void _onRepresentationColorChange(
 			const App::Application::Representation::InstantiatedRepresentation & p_representation,
-			const Color::Rgba &													 p_color,
+			const Util::Color::Rgba &													 p_color,
 			const bool															 p_ssColor ) const;
 		void _onRevertRepresentation() const;
 		void _onApplyRepresentationToChildren() const;
-		void _onMoleculeColorChange( const Color::Rgba & p_color ) const;
+		void _onMoleculeColorChange( const Util::Color::Rgba & p_color ) const;
 	};
 } // namespace VTX::UI::Widget::Inspector
 

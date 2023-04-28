@@ -5,7 +5,7 @@
 #include "app/application/selection/selection.hpp"
 #include "app/core/model/base_model_3d.hpp"
 #include "app/old_app/buffer/secondary_structure.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include <map>
 #include <string>
@@ -56,7 +56,7 @@ namespace VTX::App::Component::Chemistry
 		std::vector<Vec3f> _bufferCaODirections = std::vector<Vec3f>();
 		// Secondary structure types.
 		std::vector<uint>		 _bufferSSTypes		 = std::vector<uint>();
-		std::vector<Color::Rgba> _bufferColors		 = std::vector<Color::Rgba>();
+		std::vector<Util::Color::Rgba> _bufferColors		 = std::vector<Util::Color::Rgba>();
 		std::vector<uint>		 _bufferVisibilities = std::vector<uint>();
 		std::vector<uint>		 _bufferSelections	 = std::vector<uint>();
 		std::vector<uint>		 _bufferIds			 = std::vector<App::Core::Model::ID>();
@@ -74,7 +74,7 @@ namespace VTX::App::Component::Chemistry
 							const std::vector<Vec4f> &				  p_caPositions,
 							std::vector<Vec3f> &					  p_caODirections,
 							const std::vector<uint> &				  p_ssTypes,
-							const std::vector<Color::Rgba> &		  p_colors,
+							const std::vector<Util::Color::Rgba> &		  p_colors,
 							const std::vector<uint> &				  p_visibilities,
 							const std::vector<App::Core::Model::ID> & p_ids );
 	};

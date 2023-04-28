@@ -27,7 +27,7 @@ namespace VTX
 					class SequenceDisplayDataset_HtmlColorTag : public SequenceDisplayDataset_HtmlTag
 					{
 					  public:
-						SequenceDisplayDataset_HtmlColorTag( const uint p_charIndex, const Color::Rgba & p_color ) :
+						SequenceDisplayDataset_HtmlColorTag( const uint p_charIndex, const Util::Color::Rgba & p_color ) :
 							SequenceDisplayDataset_HtmlTag( p_charIndex ), _color( p_color ) {};
 
 						void appendToSequence( QString & p_sequenceString ) const override
@@ -39,7 +39,7 @@ namespace VTX
 						const bool isFinishingBlock( bool p_startBlock ) const override { return p_startBlock; };
 
 					  protected:
-						Color::Rgba _color;
+						Util::Color::Rgba _color;
 					};
 
 					class SequenceDisplayDataset_EndHtmlColorTag : public SequenceDisplayDataset_HtmlTag

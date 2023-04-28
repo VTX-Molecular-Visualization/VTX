@@ -5,14 +5,14 @@
 #include "app/action/visible.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 
 namespace VTX::App::Action::Atom
 {
 	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeColor( App::Component::Chemistry::Atom & p_atom, const Color::Rgba & p_color ) :
+		explicit ChangeColor( App::Component::Chemistry::Atom & p_atom, const Util::Color::Rgba & p_color ) :
 			_atom( p_atom ), _color( p_color )
 		{
 		}
@@ -21,7 +21,7 @@ namespace VTX::App::Action::Atom
 
 	  private:
 		App::Component::Chemistry::Atom & _atom;
-		const Color::Rgba				  _color;
+		const Util::Color::Rgba				  _color;
 	};
 
 	class ChangeVisibility : public Visible::ChangeVisibility

@@ -2,7 +2,7 @@
 #define __VTX_APP_APPLICATION_RENDER_EFFECT_RENDER_EFFECT_PRESET__
 
 #include "app/core/model/base_model.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
 #include <string>
@@ -38,8 +38,8 @@ namespace VTX::App::Application::RenderEffect
 		void				setOutlineThickness( const uint p_outlineThickness );
 		float				getOutlineSensivity() const { return _outlineSensivity; };
 		void				setOutlineSensivity( const float p_outlineSensivity );
-		const Color::Rgba & getOutlineColor() const { return _outlineColor; };
-		void				setOutlineColor( const Color::Rgba & p_outlineColor );
+		const Util::Color::Rgba & getOutlineColor() const { return _outlineColor; };
+		void				setOutlineColor( const Util::Color::Rgba & p_outlineColor );
 
 		bool		isFogEnabled() const { return _fog; };
 		void		enableFog( const bool p_enable );
@@ -49,13 +49,13 @@ namespace VTX::App::Application::RenderEffect
 		void		setFogFar( const float p_fogFar );
 		float		getFogDensity() const { return _fogDensity; };
 		void		setFogDensity( const float p_fogDensity );
-		Color::Rgba getFogColor() const { return _fogColor; };
-		void		setFogColor( const Color::Rgba & p_fogColor );
+		Util::Color::Rgba getFogColor() const { return _fogColor; };
+		void		setFogColor( const Util::Color::Rgba & p_fogColor );
 
-		Color::Rgba getBackgroundColor() const { return _backgroundColor; };
-		void		setBackgroundColor( const Color::Rgba & p_backgroundColor );
-		Color::Rgba getCameraLightColor() const { return _cameraLightColor; };
-		void		setCameraLightColor( const Color::Rgba & p_cameraLightColor );
+		Util::Color::Rgba getBackgroundColor() const { return _backgroundColor; };
+		void		setBackgroundColor( const Util::Color::Rgba & p_backgroundColor );
+		Util::Color::Rgba getCameraLightColor() const { return _cameraLightColor; };
+		void		setCameraLightColor( const Util::Color::Rgba & p_cameraLightColor );
 
 		void copyFrom( const RenderEffectPreset & p_source );
 
@@ -77,16 +77,16 @@ namespace VTX::App::Application::RenderEffect
 		bool		_outline;
 		uint		_outlineThickness;
 		float		_outlineSensivity;
-		Color::Rgba _outlineColor;
+		Util::Color::Rgba _outlineColor;
 
 		bool		_fog;
 		float		_fogNear;
 		float		_fogFar;
 		float		_fogDensity;
-		Color::Rgba _fogColor;
+		Util::Color::Rgba _fogColor;
 
-		Color::Rgba _backgroundColor;
-		Color::Rgba _cameraLightColor;
+		Util::Color::Rgba _backgroundColor;
+		Util::Color::Rgba _cameraLightColor;
 	};
 
 } // namespace VTX::App::Application::RenderEffect

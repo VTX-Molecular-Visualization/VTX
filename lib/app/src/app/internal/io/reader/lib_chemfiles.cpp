@@ -10,7 +10,7 @@
 #include "app/internal/algorithm/bond_order_guessing.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include "app/old_app/util/chemfiles.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include <algorithm>
@@ -208,7 +208,7 @@ namespace VTX::App::Internal::IO::Reader
 		{
 			p_molecule.setPdbIdCode( frame.get( "pdb_idcode" )->as_string() );
 		}
-		p_molecule.setColor( Color::Rgba::randomPastel() );
+		p_molecule.setColor( Util::Color::Rgba::randomPastel() );
 
 		// Check properties, same for all atoms/residues?
 		if ( frame.size() > 0 )

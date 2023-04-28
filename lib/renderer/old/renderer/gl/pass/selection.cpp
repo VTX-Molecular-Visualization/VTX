@@ -25,7 +25,7 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 
-		const Color::Rgba & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
+		const Util::Color::Rgba & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
 		_program->setVec4f( "uLineColor", lineColor );
 	}
 
@@ -63,7 +63,7 @@ namespace VTX::Renderer::GL::Pass
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
 			/// TODO: let the user define the line color.
-			const Color::Rgba lineColor = Color::Rgba( 45, 243, 26 );
+			const Util::Color::Rgba lineColor = Util::Color::Rgba( 45, 243, 26 );
 			_program->setVec4f( "uLineColor", lineColor );
 		}
 

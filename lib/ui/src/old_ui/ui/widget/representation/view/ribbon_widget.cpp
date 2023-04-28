@@ -35,7 +35,7 @@ namespace VTX::UI::Widget::Representation::View
 				 &RibbonWidget::_onColorBlendingModeChange );
 	}
 
-	void RibbonWidget::_onColorChange( const Color::Rgba & p_color ) { emit onColorChange( p_color ); }
+	void RibbonWidget::_onColorChange( const Util::Color::Rgba & p_color ) { emit onColorChange( p_color ); }
 	void RibbonWidget::_onColorModeChange( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode )
 	{
 		emit onColorModeChange( Generic::SECONDARY_STRUCTURE_COLOR_MODE( p_newMode ) );
@@ -95,8 +95,8 @@ namespace VTX::UI::Widget::Representation::View
 		_colorBlendingModeWidget->updateWithNewValue( int( p_representation.getRibbonData().colorBlendingMode ) );
 
 		// Color mode widget.
-		std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgba> pair
-			= std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgba>();
+		std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba> pair
+			= std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba>();
 
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getRibbonData().colorMode;
 

@@ -54,12 +54,12 @@ namespace VTX::UI::Widget::Inspector
 			const App::Application::Representation::MEMBER_FLAG &				 p_flag );
 		void _onRepresentationColorChange(
 			const App::Application::Representation::InstantiatedRepresentation & p_representation,
-			const Color::Rgba &													 p_color,
+			const Util::Color::Rgba &													 p_color,
 			const bool															 p_ssColor );
 		void _onRevertRepresentation() const;
 
 		void _resetFieldStates( const SectionFlag & p_flag );
-		void _changeMoleculesColor( const Color::Rgba & p_color ) const;
+		void _changeMoleculesColor( const Util::Color::Rgba & p_color ) const;
 		void _appendBondInfo( const App::Component::Chemistry::Residue & p_residue );
 	};
 } // namespace VTX::UI::Widget::Inspector

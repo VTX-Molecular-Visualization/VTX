@@ -5,7 +5,7 @@
 #include "app/action/visible.hpp"
 #include "app/application/representation/instantiated_representation.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include <unordered_set>
 
 namespace VTX::App::Action::Residue
@@ -13,12 +13,12 @@ namespace VTX::App::Action::Residue
 	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeColor( App::Component::Chemistry::Residue & p_residue, const Color::Rgba & p_color ) :
+		explicit ChangeColor( App::Component::Chemistry::Residue & p_residue, const Util::Color::Rgba & p_color ) :
 			_color( p_color ), _residues { &p_residue }
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
-		explicit ChangeColor( const std::unordered_set<App::Component::Chemistry::Residue *> & p_residues, const Color::Rgba & p_color ) :
+		explicit ChangeColor( const std::unordered_set<App::Component::Chemistry::Residue *> & p_residues, const Util::Color::Rgba & p_color ) :
 			_color( p_color ), _residues( p_residues )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
@@ -28,7 +28,7 @@ namespace VTX::App::Action::Residue
 
 	  private:
 		const std::unordered_set<App::Component::Chemistry::Residue *> _residues;
-		const Color::Rgba						   _color;
+		const Util::Color::Rgba						   _color;
 	};
 
 	class ChangeVisibility : public Visible::ChangeVisibility

@@ -223,7 +223,7 @@ namespace VTX::UI::Widget::Representation
 
 	void BaseRepresentationWidget::_addColorModeValue( const InstantiatedRepresentation & p_representation )
 	{
-		std::pair<Generic::COLOR_MODE, Color::Rgba> pair = std::pair<Generic::COLOR_MODE, Color::Rgba>();
+		std::pair<Generic::COLOR_MODE, Util::Color::Rgba> pair = std::pair<Generic::COLOR_MODE, Util::Color::Rgba>();
 
 		Generic::COLOR_MODE colorMode = p_representation.getColorMode();
 		pair.first					  = colorMode;
@@ -281,7 +281,7 @@ namespace VTX::UI::Widget::Representation
 		emit onDataChange( MEMBER_FLAG::ENUM::CYLINDER_COLOR_BLENDING_MODE );
 	}
 
-	void BaseRepresentationWidget::_onRibbonColorChange( const Color::Rgba & p_color )
+	void BaseRepresentationWidget::_onRibbonColorChange( const Util::Color::Rgba & p_color )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -310,7 +310,7 @@ namespace VTX::UI::Widget::Representation
 		emit onDataChange( MEMBER_FLAG::ENUM::RIBBON_COLOR_BLENDING_MODE );
 	}
 
-	void BaseRepresentationWidget::_onColorChange( const Color::Rgba & p_color )
+	void BaseRepresentationWidget::_onColorChange( const Util::Color::Rgba & p_color )
 	{
 		if ( signalsBlocked() )
 			return;

@@ -31,7 +31,7 @@ namespace VTX::Buffer
 
 		// Color.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_COLOR );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_COLOR, _vboColors, sizeof( Color::Rgba ) );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_COLOR, _vboColors, sizeof( Util::Color::Rgba ) );
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VERTEX_COLOR, 4, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VERTEX_COLOR, ATTRIBUTE_LOCATION::VERTEX_COLOR );
 
@@ -63,7 +63,7 @@ namespace VTX::Buffer
 
 	void MeshTriangle::setNormals( const std::vector<Vec4f> & p_normals ) { _updateBuffer( _vboNormals, p_normals ); }
 
-	void MeshTriangle::setColors( const std::vector<Color::Rgba> & p_colors ) { _updateBuffer( _vboColors, p_colors ); }
+	void MeshTriangle::setColors( const std::vector<Util::Color::Rgba> & p_colors ) { _updateBuffer( _vboColors, p_colors ); }
 
 	void MeshTriangle::setVisibilities( const std::vector<uint> & p_visibilities )
 	{

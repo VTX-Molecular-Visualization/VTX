@@ -19,7 +19,7 @@ namespace VTX
 			BaseIntegrator()		  = default;
 			virtual ~BaseIntegrator() = default;
 
-			virtual Color::Rgba Li( const Ray &	  p_ray,
+			virtual Util::Color::Rgba Li( const Ray &	  p_ray,
 									const Scene & p_scene,
 									const float	  p_tMin,
 									const float	  p_tMax ) const
@@ -29,9 +29,9 @@ namespace VTX
 			static constexpr float SHADOW_EPS = 0.00001f;
 
 			// TODO: static
-			const Color::Rgba _backgroundColor //
+			const Util::Color::Rgba _backgroundColor //
 											   //	= Vec3f( 1.5f ) * 0.1f;
-				= Color::Rgba( 0.5f, 0.6f, 0.8f ) * 0.05f;
+				= Util::Color::Rgba( 0.5f, 0.6f, 0.8f ) * 0.05f;
 			//( 0.7f, 0.7f, 0.7f );
 		};
 

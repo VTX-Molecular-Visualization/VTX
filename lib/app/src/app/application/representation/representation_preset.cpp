@@ -4,7 +4,7 @@
 #include "app/core/event/vtx_event.hpp"
 #include "app/event.hpp"
 #include "app/internal/chemdb/residue.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include "app/old_app/id.hpp"
 #include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -42,7 +42,7 @@ namespace VTX::App::Application::Representation
 		_name = std::string( p_name );
 		_notifyViews( App::Event::Model::DISPLAY_NAME_CHANGE );
 	}
-	void RepresentationPreset::setColor( const Color::Rgba & p_color )
+	void RepresentationPreset::setColor( const Util::Color::Rgba & p_color )
 	{
 		_color = p_color;
 		_notifyDataChanged();

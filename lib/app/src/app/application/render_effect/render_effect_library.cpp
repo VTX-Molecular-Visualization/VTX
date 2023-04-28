@@ -326,9 +326,9 @@ namespace VTX::App::Application::RenderEffect
 		presetSketch->setShading( VTX::Renderer::SHADING::FLAT_COLOR );
 		presetSketch->enableSSAO( true );
 		presetSketch->enableOutline( true );
-		presetSketch->setOutlineColor( Color::Rgba::BLACK );
+		presetSketch->setOutlineColor( Util::Color::Rgba::BLACK );
 		presetSketch->enableFog( false );
-		presetSketch->setBackgroundColor( Color::Rgba::WHITE );
+		presetSketch->setBackgroundColor( Util::Color::Rgba::WHITE );
 		setQuickAccessToPreset( *presetSketch, true );
 		addPreset( presetSketch, true, false );
 

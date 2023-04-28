@@ -1,7 +1,7 @@
 #ifndef __VTX_BASE_COLORABLE__
 #define __VTX_BASE_COLORABLE__
 
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include <util/types.hpp>
 #include <string>
 #include <vector>
@@ -44,22 +44,22 @@ namespace VTX
 																							 "Residue",
 																							 "Custom" };
 
-		inline static const Color::Rgba COLORS_JMOL[] = { Color::Rgba( 1.f, 0.f, 0.5f ),   // HELIX_ALPHA_RIGHT
-														  Color::Rgba( 1.f, 0.f, 0.5f ),   // HELIX_ALPHA_LEFT
-														  Color::Rgba( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
-														  Color::Rgba( 0.62f, 0.f, 0.5f ), // HELIX_3_10_LEFT
-														  Color::Rgba( 0.37f, 0.f, 0.5f ), // HELIX_PI
-														  Color::Rgba( 1.f, 0.78f, 0.f ),  // STRAND
-														  Color::Rgba( 0.37f, 0.5f, 1.f ), // TURN
-														  Color::Rgba::WHITE };			   // COIL
+		inline static const Util::Color::Rgba COLORS_JMOL[] = { Util::Color::Rgba( 1.f, 0.f, 0.5f ),   // HELIX_ALPHA_RIGHT
+														  Util::Color::Rgba( 1.f, 0.f, 0.5f ),   // HELIX_ALPHA_LEFT
+														  Util::Color::Rgba( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
+														  Util::Color::Rgba( 0.62f, 0.f, 0.5f ), // HELIX_3_10_LEFT
+														  Util::Color::Rgba( 0.37f, 0.f, 0.5f ), // HELIX_PI
+														  Util::Color::Rgba( 1.f, 0.78f, 0.f ),  // STRAND
+														  Util::Color::Rgba( 0.37f, 0.5f, 1.f ), // TURN
+														  Util::Color::Rgba::WHITE };			   // COIL
 		class BaseColorable
 		{
 		  public:
-			inline const Color::Rgba & getColor() const { return _color; }
-			inline void				   setColor( const Color::Rgba & p_color ) { _color = p_color; }
+			inline const Util::Color::Rgba & getColor() const { return _color; }
+			inline void				   setColor( const Util::Color::Rgba & p_color ) { _color = p_color; }
 
 		  protected:
-			Color::Rgba _color = Color::Rgba::random();
+			Util::Color::Rgba _color = Util::Color::Rgba::random();
 		};
 	} // namespace Generic
 } // namespace VTX

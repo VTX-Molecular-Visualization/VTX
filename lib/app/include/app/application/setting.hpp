@@ -7,7 +7,7 @@
 #include "app/component/video/enum_path.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/style.hpp"
@@ -47,7 +47,7 @@ namespace VTX
 			static const bool ACTIVE_RENDERER_DEFAULT;
 			static const bool FORCE_RENDERER_DEFAULT;
 
-			static const Color::Rgba BACKGROUND_COLOR_DEFAULT;
+			static const Util::Color::Rgba BACKGROUND_COLOR_DEFAULT;
 
 			static const App::Internal::IO::Serialization::ImageExport::RESOLUTION SNAPSHOT_RESOLUTION_DEFAULT;
 			static const App::Internal::IO::Serialization::ImageExport::Format	   SNAPSHOT_FORMAT_DEFAULT;
@@ -115,7 +115,7 @@ namespace VTX
 			static const float OUTLINE_SENSIVITY_MIN;
 			static const float OUTLINE_SENSIVITY_MAX;
 
-			static const Color::Rgba OUTLINE_COLOR_DEFAULT;
+			static const Util::Color::Rgba OUTLINE_COLOR_DEFAULT;
 
 			static const bool ACTIVE_FOG_DEFAULT;
 
@@ -129,11 +129,11 @@ namespace VTX
 
 			static const float FOG_DENSITY_DEFAULT;
 
-			static const Color::Rgba FOG_COLOR_DEFAULT;
+			static const Util::Color::Rgba FOG_COLOR_DEFAULT;
 
 			static const bool ACTIVE_AA_DEFAULT;
 
-			static const Color::Rgba LIGHT_COLOR_DEFAULT;
+			static const Util::Color::Rgba LIGHT_COLOR_DEFAULT;
 
 			// Scene.
 			static const Vec3f MIN_SCENE_POS;
@@ -217,7 +217,7 @@ namespace VTX
 			static const uint		VIDEO_CRF_DEFAULT;
 
 			// Measurement
-			static const Color::Rgba DEFAULT_LABEL_COLOR;
+			static const Util::Color::Rgba DEFAULT_LABEL_COLOR;
 
 			// Selection
 			static const VTX::App::Application::Selection::GRANULARITY SELECTION_GRANULARITY_DEFAULT;

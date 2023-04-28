@@ -235,7 +235,7 @@ namespace VTX::App::Internal::IO
 		};
 	}
 
-	nlohmann::json Serializer::serialize( const Color::Rgba & p_color ) const
+	nlohmann::json Serializer::serialize( const Util::Color::Rgba & p_color ) const
 	{
 		return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() } };
 	}
@@ -528,7 +528,7 @@ namespace VTX::App::Internal::IO
 
 		if ( p_json.contains( "COLOR" ) )
 		{
-			Color::Rgba color;
+			Util::Color::Rgba color;
 			deserialize( p_json.at( "COLOR" ), color );
 
 			p_molecule.setColor( color );
@@ -666,7 +666,7 @@ namespace VTX::App::Internal::IO
 		}
 		if ( p_json.contains( "COLOR" ) )
 		{
-			Color::Rgba color;
+			Util::Color::Rgba color;
 			deserialize( p_json.at( "COLOR" ), color );
 			p_representation.setColor( color );
 		}
@@ -678,7 +678,7 @@ namespace VTX::App::Internal::IO
 								  const std::tuple<uint, uint, uint> &					   p_version,
 								  App::Application::Representation::RepresentationPreset & p_representation ) const
 	{
-		Color::Rgba color;
+		Util::Color::Rgba color;
 		if ( p_json.contains( "COLOR" ) )
 		{
 			deserialize( p_json.at( "COLOR" ), color );
@@ -723,7 +723,7 @@ namespace VTX::App::Internal::IO
 								  const std::tuple<uint, uint, uint> &				   p_version,
 								  App::Application::RenderEffect::RenderEffectPreset & p_preset ) const
 	{
-		Color::Rgba color;
+		Util::Color::Rgba color;
 
 		p_preset.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
 		p_preset.setShading(
@@ -771,7 +771,7 @@ namespace VTX::App::Internal::IO
 		p_preset.setCameraLightColor( color );
 	}
 
-	void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgba & p_color ) const
+	void Serializer::deserialize( const nlohmann::json & p_json, Util::Color::Rgba & p_color ) const
 	{
 		p_color.setR( _get<float>( p_json, "R" ) );
 		p_color.setG( _get<float>( p_json, "G" ) );

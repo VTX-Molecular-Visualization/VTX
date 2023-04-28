@@ -4,7 +4,7 @@
 #include "app/application/representation/enum_representation.hpp"
 #include "app/application/representation/representation_data.hpp"
 #include "app/core/model/base_model.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include <string>
 #include <util/math.hpp>
@@ -19,9 +19,9 @@ namespace VTX::App::Application::Representation
 		const std::string & getName() const { return _name; };
 		void				setName( const std::string & p_name );
 
-		const Color::Rgba & getColor() const { return _color; }
-		Color::Rgba &		getColor() { return _color; }
-		void				setColor( const Color::Rgba & p_color );
+		const Util::Color::Rgba & getColor() const { return _color; }
+		Util::Color::Rgba &		getColor() { return _color; }
+		void				setColor( const Util::Color::Rgba & p_color );
 
 		const bool hasQuickAccess() const { return _quickAccess; };
 		void	   setQuickAccess( const bool p_quickAccess );
@@ -42,7 +42,7 @@ namespace VTX::App::Application::Representation
 
 	  private:
 		std::string _name;
-		Color::Rgba _color;
+		Util::Color::Rgba _color;
 		bool		_quickAccess;
 
 		RepresentationData * _data = nullptr;

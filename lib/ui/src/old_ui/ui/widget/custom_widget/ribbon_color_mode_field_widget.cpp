@@ -45,7 +45,7 @@ namespace VTX::UI::Widget::CustomWidget
 				 this,
 				 &RibbonColorModeFieldWidget::_colorModeChange );
 		connect( _colorSetButton,
-				 QOverload<const Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
+				 QOverload<const Util::Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &RibbonColorModeFieldWidget::_applyColor );
 		// !V0.1
@@ -86,7 +86,7 @@ namespace VTX::UI::Widget::CustomWidget
 		emit colorModeChanged( _colorMode );
 	}
 
-	void RibbonColorModeFieldWidget::setColor( const Color::Rgba & p_color )
+	void RibbonColorModeFieldWidget::setColor( const Util::Color::Rgba & p_color )
 	{
 		_color = p_color;
 		_colorSetButton->setColor( p_color );
@@ -103,7 +103,7 @@ namespace VTX::UI::Widget::CustomWidget
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode = Generic::SECONDARY_STRUCTURE_COLOR_MODE( p_index );
 		setColorMode( colorMode );
 	}
-	void RibbonColorModeFieldWidget::_applyColor( const Color::Rgba & p_color )
+	void RibbonColorModeFieldWidget::_applyColor( const Util::Color::Rgba & p_color )
 	{
 		_color = p_color;
 		emit colorChanged( _color );
@@ -112,7 +112,7 @@ namespace VTX::UI::Widget::CustomWidget
 	void RibbonColorModeFieldWidget::localize() {};
 
 	void RibbonColorModeFieldWidget::updateWithNewValue(
-		const std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgba> & p_value )
+		const std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba> & p_value )
 	{
 		_colorModeComboBox->updateWithNewValue( int( p_value.first ) );
 		_colorSetButton->updateWithNewValue( p_value.second );

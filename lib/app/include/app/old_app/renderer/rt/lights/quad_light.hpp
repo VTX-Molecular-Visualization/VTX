@@ -18,7 +18,7 @@ namespace VTX
 			QuadLight( const Vec3f &	   p_position,
 					   const Vec3f &	   p_u,
 					   const Vec3f &	   p_v,
-					   const Color::Rgba & p_color,
+					   const Util::Color::Rgba & p_color,
 					   const float		   p_power ) :
 				BaseLight( p_color, p_power ),
 				_position( p_position ), _u( p_u ), _v( p_v )
@@ -41,7 +41,7 @@ namespace VTX
 
 				const float		  cosDir   = Util::Math::dot( _invNormal, direction );
 				const float		  pdf	   = _pdf * ( dist * dist ) / fabsf( cosDir );
-				const Color::Rgba radiance = cosDir > 0.f ? _color * _power / pdf : Color::Rgba::BLACK;
+				const Util::Color::Rgba radiance = cosDir > 0.f ? _color * _power / pdf : Util::Color::Rgba::BLACK;
 
 				return LightSample( direction, dist, radiance, pdf );
 			}

@@ -185,7 +185,7 @@ namespace VTX::App::Component::Chemistry
 
 	void Residue::_onRepresentationChange() { _notifyViews( App::Event::Model::REPRESENTATION_CHANGE ); }
 
-	const Color::Rgba Residue::getResidueColor( const Chemistry::Residue & p_residue )
+	const Util::Color::Rgba Residue::getResidueColor( const Chemistry::Residue & p_residue )
 	{
 		return p_residue.isStandardResidue() ? ChemDB::Residue::SYMBOL_COLOR[ p_residue._symbol ]
 											 : ChemDB::Residue::SYMBOL_COLOR[ int( ChemDB::Residue::SYMBOL::UNKNOWN ) ];

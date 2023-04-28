@@ -10,14 +10,14 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QWidget>
-#include <app/old_app/color/rgba.hpp>
+#include <util/color/rgba.hpp>
 #include <app/old_app/generic/base_colorable.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
 	class ColorModeFieldWidget :
 		public BaseManualWidget<QWidget>,
-		public TMultiDataField<const std::pair<Generic::COLOR_MODE, Color::Rgba>>
+		public TMultiDataField<const std::pair<Generic::COLOR_MODE, Util::Color::Rgba>>
 	{
 		Q_OBJECT
 		VTX_WIDGET
@@ -29,19 +29,19 @@ namespace VTX::UI::Widget::CustomWidget
 		const Generic::COLOR_MODE & getColorMode() const { return _colorMode; };
 		void						setColorMode( const Generic::COLOR_MODE p_colorMode );
 
-		const Color::Rgba & getColor() { return _color; };
-		void				setColor( const Color::Rgba & p_color );
+		const Util::Color::Rgba & getColor() { return _color; };
+		void				setColor( const Util::Color::Rgba & p_color );
 
-		void updateWithNewValue( const std::pair<Generic::COLOR_MODE, Color::Rgba> & p_value ) override;
+		void updateWithNewValue( const std::pair<Generic::COLOR_MODE, Util::Color::Rgba> & p_value ) override;
 		void resetState() override;
 
 	  signals:
 		void colorModeChanged( const Generic::COLOR_MODE & p_colorMode );
-		void colorChanged( const Color::Rgba & p_color );
+		void colorChanged( const Util::Color::Rgba & p_color );
 
 	  protected:
 		ColorModeFieldWidget( QWidget * p_parent ) :
-			BaseManualWidget( p_parent ), TMultiDataField<const std::pair<Generic::COLOR_MODE, Color::Rgba>>() {};
+			BaseManualWidget( p_parent ), TMultiDataField<const std::pair<Generic::COLOR_MODE, Util::Color::Rgba>>() {};
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
@@ -51,7 +51,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void _displayDifferentsDataFeedback() override;
 
 		void _colorModeChange( int index );
-		void _applyColor( const Color::Rgba & p_color );
+		void _applyColor( const Util::Color::Rgba & p_color );
 		// !V0.1
 		// void _openColorSettings();
 
@@ -60,7 +60,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	  private:
 		Generic::COLOR_MODE _colorMode;
-		Color::Rgba			_color;
+		Util::Color::Rgba			_color;
 
 		QHBoxLayout * _layout;
 
