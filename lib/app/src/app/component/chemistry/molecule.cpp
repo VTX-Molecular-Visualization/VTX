@@ -12,14 +12,14 @@
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/mvc.hpp"
-#include <util/color/rgba.hpp>
 #include "app/old_app/id.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/util/secondary_structure.hpp"
-#include "app/old_app/view/d3/cylinder.hpp"
-#include "app/old_app/view/d3/sphere.hpp"
 #include "app/old_app/vtx_app.hpp"
+#include "app/render/view/cylinder.hpp"
+#include "app/render/view/sphere.hpp"
 #include <algorithm>
+#include <util/color/rgba.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Component::Chemistry
@@ -284,8 +284,10 @@ namespace VTX::App::Component::Chemistry
 
 	void Molecule::_instantiate3DViews()
 	{
-		_addRenderable( VTX::MVC_MANAGER().instantiateView<View::D3::Sphere>( this, VTX::ID::View::D3_SPHERE ) );
-		_addRenderable( VTX::MVC_MANAGER().instantiateView<View::D3::Cylinder>( this, VTX::ID::View::D3_CYLINDER ) );
+		_addRenderable(
+			VTX::MVC_MANAGER().instantiateView<App::Render::View::Sphere>( this, VTX::ID::View::D3_SPHERE ) );
+		_addRenderable(
+			VTX::MVC_MANAGER().instantiateView<App::Render::View::Cylinder>( this, VTX::ID::View::D3_CYLINDER ) );
 	}
 
 	void Molecule::resizeBuffers()
@@ -332,7 +334,7 @@ namespace VTX::App::Component::Chemistry
 				}
 			}
 
-			bool		colorCarbon = false;
+			bool			  colorCarbon = false;
 			Util::Color::Rgba color;
 
 			switch ( colorMode )

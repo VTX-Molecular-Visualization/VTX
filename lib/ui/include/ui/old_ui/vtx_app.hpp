@@ -40,7 +40,7 @@ namespace VTX::UI
 // #include <QTimer>
 // #include <app/old_app/define.hpp>
 // #include <app/old_app/generic/base_auto_delete.hpp>
-// #include <app/old_app/spec.hpp>
+// #include <app/render/spec.hpp>
 // #include <app/old_app/stat.hpp>
 // #include <util/exceptions.hpp>
 //

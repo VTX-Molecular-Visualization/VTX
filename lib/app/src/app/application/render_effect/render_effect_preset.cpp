@@ -1,9 +1,9 @@
 #include "app/application/render_effect/render_effect_preset.hpp"
-#include "app/component/render/camera.hpp"
 #include "app/application/scene.hpp"
-#include "app/old_app/renderer/gl/gl.hpp"
 #include "app/application/setting.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/old_app/vtx_app.hpp"
+#include "app/render/renderer/gl/gl.hpp"
 
 namespace VTX::App::Application::RenderEffect
 {
@@ -54,14 +54,16 @@ namespace VTX::App::Application::RenderEffect
 
 	void RenderEffectPreset::setSSAOIntensity( const int p_ssaoIntensity )
 	{
-		_ssaoIntensity
-			= Util::Math::clamp( p_ssaoIntensity, VTX::App::Application::Setting::AO_INTENSITY_MIN, VTX::App::Application::Setting::AO_INTENSITY_MAX );
+		_ssaoIntensity = Util::Math::clamp( p_ssaoIntensity,
+											VTX::App::Application::Setting::AO_INTENSITY_MIN,
+											VTX::App::Application::Setting::AO_INTENSITY_MAX );
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setSSAOBlurSize( const int p_ssaoBlurSize )
 	{
-		_ssaoBlurSize
-			= Util::Math::clamp( p_ssaoBlurSize, VTX::App::Application::Setting::AO_BLUR_SIZE_MIN, VTX::App::Application::Setting::AO_BLUR_SIZE_MAX );
+		_ssaoBlurSize = Util::Math::clamp( p_ssaoBlurSize,
+										   VTX::App::Application::Setting::AO_BLUR_SIZE_MIN,
+										   VTX::App::Application::Setting::AO_BLUR_SIZE_MAX );
 		_notifyDataChanged();
 	}
 
@@ -72,14 +74,16 @@ namespace VTX::App::Application::RenderEffect
 	}
 	void RenderEffectPreset::setOutlineThickness( const uint p_outlineThickness )
 	{
-		_outlineThickness
-			= Util::Math::clamp( p_outlineThickness, VTX::App::Application::Setting::OUTLINE_THICKNESS_MIN, VTX::App::Application::Setting::OUTLINE_THICKNESS_MAX );
+		_outlineThickness = Util::Math::clamp( p_outlineThickness,
+											   VTX::App::Application::Setting::OUTLINE_THICKNESS_MIN,
+											   VTX::App::Application::Setting::OUTLINE_THICKNESS_MAX );
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setOutlineSensivity( const float p_outlineSensivity )
 	{
-		_outlineSensivity
-			= Util::Math::clamp( p_outlineSensivity, VTX::App::Application::Setting::OUTLINE_SENSIVITY_MIN, VTX::App::Application::Setting::OUTLINE_SENSIVITY_MAX );
+		_outlineSensivity = Util::Math::clamp( p_outlineSensivity,
+											   VTX::App::Application::Setting::OUTLINE_SENSIVITY_MIN,
+											   VTX::App::Application::Setting::OUTLINE_SENSIVITY_MAX );
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setOutlineColor( const Util::Color::Rgba & p_outlineColor )

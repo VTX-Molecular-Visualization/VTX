@@ -7,12 +7,13 @@
 #include "app/component/video/enum_path.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
-#include <util/color/rgba.hpp>
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/style.hpp"
+#include "app/render/renderer/enum_renderer.hpp"
 #include <list>
 #include <string>
+#include <util/color/rgba.hpp>
 #include <util/types.hpp>
 
 namespace VTX
@@ -91,7 +92,7 @@ namespace VTX
 			static const int		 RENDER_EFFECT_DEFAULT_INDEX;
 			static const int		 MAX_QUICK_ACCESS_COUNT = 6;
 
-			static const Renderer::SHADING SHADING_DEFAULT;
+			static const App::Render::Renderer::SHADING SHADING_DEFAULT;
 
 			static const bool ACTIVE_VSYNC_DEFAULT;
 
@@ -415,8 +416,8 @@ namespace VTX
 			void restore();
 
 			// Dev.
-			static const Renderer::MODE MODE_DEFAULT;
-			Renderer::MODE				mode = MODE_DEFAULT;
+			static const App::Render::Renderer::MODE MODE_DEFAULT;
+			App::Render::Renderer::MODE				 mode = MODE_DEFAULT;
 
 		  private:
 			bool _freezeEvent = false;

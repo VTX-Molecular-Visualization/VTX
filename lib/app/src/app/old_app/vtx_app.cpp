@@ -11,7 +11,7 @@
 #include "app/mvc.hpp"
 #include "app/internal/io/serialization/scene_path_data.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/old_app/renderer/gl/program_manager.hpp"
+#include "app/render/renderer/gl/program_manager.hpp"
 #include "app/application/selection/selection_manager.hpp"
 // #include "ui/dialog.hpp"
 // #include "ui/main_window.hpp"

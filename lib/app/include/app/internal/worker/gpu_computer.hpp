@@ -3,8 +3,8 @@
 
 #include "app/core/worker/base_worker.hpp"
 #include "app/old_app/generic/base_opengl.hpp"
-#include "app/old_app/renderer/gl/program.hpp"
-#include "app/old_app/renderer/gl/program_manager.hpp"
+#include "app/render/renderer/gl/program.hpp"
+#include "app/render/renderer/gl/program_manager.hpp"
 #include <util/types.hpp>
 #include <vector>
 
@@ -47,15 +47,15 @@ namespace VTX::Worker
 
 		virtual ~GpuComputer() = default;
 
-		inline Renderer::GL::Program & getProgram() { return *_program; }
+		inline App::Render::Renderer::GL::Program & getProgram() { return *_program; }
 
 		virtual void start();
 		void		 start( const Vec3i & );
 		void		 start( const size_t );
 
 	  protected:
-		Renderer::GL::Program * _program;
-		Vec3i					_size;
+		App::Render::Renderer::GL::Program * _program;
+		Vec3i								 _size;
 
 		virtual void _run() override;
 

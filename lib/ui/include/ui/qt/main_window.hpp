@@ -19,7 +19,7 @@
 #include <QMainWindow>
 #include <QShortcut>
 #include <app/old_app/id.hpp>
-#include <app/old_app/renderer/base_renderer.hpp>
+#include <app/render/renderer/enum_renderer.hpp>
 #include <unordered_set>
 #include <util/types.hpp>
 
@@ -54,7 +54,7 @@ namespace VTX::UI::QT
 
 		bool isOpenGLValid() const;
 		void updateRender() const;
-		void updateRenderSetting( const Renderer::RENDER_SETTING );
+		void updateRenderSetting( const App::Render::Renderer::RENDER_SETTING );
 
 		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 

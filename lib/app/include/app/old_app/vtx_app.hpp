@@ -5,7 +5,7 @@
 #include "app/application/setting.hpp"
 #include "app/old_app/define.hpp"
 #include "app/old_app/generic/base_auto_delete.hpp"
-#include "app/old_app/spec.hpp"
+#include "app/render/spec.hpp"
 #include "stat.hpp"
 // #include <QElapsedTimer>
 #include <util/exceptions.hpp>
@@ -52,8 +52,8 @@ namespace VTX
 		inline const App::Application::Setting &						 getSetting() const { return _setting; }
 		inline Stat &													 getStat() { return _stat; }
 		inline const Stat &												 getStat() const { return _stat; }
-		inline Spec &													 getSpec() { return _spec; }
-		inline const Spec &												 getSpec() const { return _spec; }
+		inline App::Render::Spec &										 getSpec() { return _spec; }
+		inline const App::Render::Spec &								 getSpec() const { return _spec; }
 		inline App::Application::Representation::RepresentationLibrary & getRepresentationLibrary()
 		{
 			return *_representationLibrary;
@@ -93,7 +93,7 @@ namespace VTX
 
 		App::Application::Setting								  _setting				 = App::Application::Setting();
 		Stat													  _stat					 = Stat();
-		Spec													  _spec					 = Spec();
+		App::Render::Spec										  _spec					 = App::Render::Spec();
 		UI::MainWindow *										  _mainWindow			 = nullptr;
 		App::Application::Scene *								  _scene				 = nullptr;
 		App::Internal::IO::Serialization::ScenePathData *		  _pathSceneData		 = nullptr;
@@ -114,7 +114,7 @@ namespace VTX
 	App::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT();
 	inline App::Application::Setting &					 VTX_SETTING() { return VTXApp::get().getSetting(); }
 	inline Stat &										 VTX_STAT() { return VTXApp::get().getStat(); }
-	inline Spec &										 VTX_SPEC() { return VTXApp::get().getSpec(); }
+	inline App::Render::Spec &							 VTX_SPEC() { return VTXApp::get().getSpec(); }
 
 } // namespace VTX
 

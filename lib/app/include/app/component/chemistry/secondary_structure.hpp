@@ -4,17 +4,17 @@
 #include "_fwd.hpp"
 #include "app/application/selection/selection.hpp"
 #include "app/core/model/base_model_3d.hpp"
-#include "app/old_app/buffer/secondary_structure.hpp"
-#include <util/color/rgba.hpp>
 #include "app/old_app/generic/base_colorable.hpp"
+#include "app/render/buffer/secondary_structure.hpp"
 #include <map>
 #include <string>
+#include <util/color/rgba.hpp>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::App::Component::Chemistry
 {
-	class SecondaryStructure : public App::Core::Model::BaseModel3D<Buffer::SecondaryStructure>
+	class SecondaryStructure : public App::Core::Model::BaseModel3D<App::Render::Buffer::SecondaryStructure>
 	{
 		VTX_MODEL
 
@@ -37,7 +37,7 @@ namespace VTX::App::Component::Chemistry
 
 		void print() const;
 
-		const App::Internal::Math::Transform &					 getTransform() const override;
+		const App::Internal::Math::Transform &	 getTransform() const override;
 		App::Component::Object3D::Helper::AABB & getAABB() const override;
 
 	  protected:
@@ -55,12 +55,12 @@ namespace VTX::App::Component::Chemistry
 		// Ca -> O directions.
 		std::vector<Vec3f> _bufferCaODirections = std::vector<Vec3f>();
 		// Secondary structure types.
-		std::vector<uint>		 _bufferSSTypes		 = std::vector<uint>();
-		std::vector<Util::Color::Rgba> _bufferColors		 = std::vector<Util::Color::Rgba>();
-		std::vector<uint>		 _bufferVisibilities = std::vector<uint>();
-		std::vector<uint>		 _bufferSelections	 = std::vector<uint>();
-		std::vector<uint>		 _bufferIds			 = std::vector<App::Core::Model::ID>();
-		std::vector<uint>		 _bufferIndices		 = std::vector<uint>();
+		std::vector<uint>			   _bufferSSTypes	   = std::vector<uint>();
+		std::vector<Util::Color::Rgba> _bufferColors	   = std::vector<Util::Color::Rgba>();
+		std::vector<uint>			   _bufferVisibilities = std::vector<uint>();
+		std::vector<uint>			   _bufferSelections   = std::vector<uint>();
+		std::vector<uint>			   _bufferIds		   = std::vector<App::Core::Model::ID>();
+		std::vector<uint>			   _bufferIndices	   = std::vector<uint>();
 
 		std::map<uint, uint> _residueToIndices	 = std::map<uint, uint>();
 		std::map<uint, uint> _residueToPositions = std::map<uint, uint>();
@@ -74,7 +74,7 @@ namespace VTX::App::Component::Chemistry
 							const std::vector<Vec4f> &				  p_caPositions,
 							std::vector<Vec3f> &					  p_caODirections,
 							const std::vector<uint> &				  p_ssTypes,
-							const std::vector<Util::Color::Rgba> &		  p_colors,
+							const std::vector<Util::Color::Rgba> &	  p_colors,
 							const std::vector<uint> &				  p_visibilities,
 							const std::vector<App::Core::Model::ID> & p_ids );
 	};

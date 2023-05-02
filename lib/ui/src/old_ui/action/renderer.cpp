@@ -1,7 +1,6 @@
 #include "ui/old_ui/action/renderer.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/main_window.hpp"
-
 #include <app/action/renderer.hpp>
 
 namespace VTX::UI::Action::Renderer
@@ -12,7 +11,7 @@ namespace VTX::UI::Action::Renderer
 
 		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
-			QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
+			QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::SHADING );
 		}
 	};
 
@@ -22,7 +21,7 @@ namespace VTX::UI::Action::Renderer
 
 		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
-			QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
+			QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::SSAO );
 		}
 	};
 
@@ -32,7 +31,7 @@ namespace VTX::UI::Action::Renderer
 
 		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
-			QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::OUTLINE );
+			QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::OUTLINE );
 		}
 	};
 
@@ -42,7 +41,7 @@ namespace VTX::UI::Action::Renderer
 
 		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
-			QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
+			QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::FOG );
 		}
 	};
 } // namespace VTX::UI::Action::Renderer

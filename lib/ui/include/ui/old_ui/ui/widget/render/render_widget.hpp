@@ -1,20 +1,20 @@
 #ifndef __VTX_UI_WIDGET_RENDER__
 #define __VTX_UI_WIDGET_RENDER__
 
-#include "base_integrated_widget.hpp"
 #include "opengl_widget.hpp"
 #include "overlay/base_overlay.hpp"
 #include "overlay/visualization_quick_access.hpp"
 #include "ui/old_ui/event/base_event_firerer_input.hpp"
 #include "ui/old_ui/ui/widget/base_manual_widget.hpp"
+#include "ui/old_ui/ui/widget/render/base_integrated_widget.hpp"
 #include <QFocusEvent>
 #include <QResizeEvent>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <app/core/model/base_model.hpp>
-#include <app/mvc.hpp>
 #include <app/core/view/base_view.hpp>
 #include <app/internal/worker/snapshoter.hpp>
+#include <app/mvc.hpp>
 #include <map>
 
 namespace VTX::UI::Widget::Render
@@ -31,7 +31,7 @@ namespace VTX::UI::Widget::Render
 
 		inline bool isOpenGLValid() const { return _openGLWidget->isValid(); }
 		void		updateRender() const;
-		void		updateRenderSetting( const VTX::Renderer::RENDER_SETTING );
+		void		updateRenderSetting( const App::Render::Renderer::RENDER_SETTING );
 		const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
 		void displayOverlay( const Overlay::OVERLAY & p_overlay, const Overlay::OVERLAY_ANCHOR & p_position );

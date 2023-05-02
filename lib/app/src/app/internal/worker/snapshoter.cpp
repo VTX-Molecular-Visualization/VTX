@@ -3,8 +3,8 @@
 #include "app/manager/action_manager.hpp"
 #include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/internal/io/filesystem.hpp"
-#include "app/old_app/renderer/gl/framebuffer.hpp"
-#include "app/old_app/renderer/gl/gl.hpp"
+#include "app/render/renderer/gl/framebuffer.hpp"
+#include "app/render/renderer/gl/gl.hpp"
 // #include <QOffscreenSurface>
 // #include <QOpenGLFramebufferObject>
 // #include <QPainter>

@@ -11,7 +11,7 @@
 #include "app/internal/chemdb/atom.hpp"
 #include "app/internal/worker/gpu_buffer_initializer.hpp"
 #include "app/internal/worker/gpu_computer.hpp"
-#include "app/old_app/view/d3/triangle.hpp"
+#include "app/render/view/triangle.hpp"
 #include "app/worker.hpp"
 #include <numeric>
 #include <util/chrono.hpp>
@@ -127,7 +127,7 @@ namespace VTX::App::Component::Chemistry
 		Worker::GpuComputer workerCreateSDF( FilePath( "ses/create_sdf.comp" ) );
 
 		// Create SSBOs.
-		using VTX::Renderer::GL::Buffer;
+		using VTX::App::Render::Renderer::GL::Buffer;
 		// Output.
 		Buffer bufferSesGridData( gridSES.getCellCount() * sizeof( SESGridData ) );
 		// Input.
@@ -618,7 +618,7 @@ namespace VTX::App::Component::Chemistry
 		Util::Chrono chrono;
 		chrono.start();
 
-		using VTX::Renderer::GL::Buffer;
+		using VTX::App::Render::Renderer::GL::Buffer;
 		_buffer->makeContextCurrent();
 
 		Buffer & bufferColors			= _buffer->getBufferColors();
@@ -681,7 +681,7 @@ namespace VTX::App::Component::Chemistry
 		Util::Chrono chrono;
 		chrono.start();
 
-		using VTX::Renderer::GL::Buffer;
+		using VTX::App::Render::Renderer::GL::Buffer;
 		_buffer->makeContextCurrent();
 
 		Buffer & bufferVisibilities		= _buffer->getBufferVisibilities();
@@ -721,7 +721,7 @@ namespace VTX::App::Component::Chemistry
 		Util::Chrono chrono;
 		chrono.start();
 
-		using VTX::Renderer::GL::Buffer;
+		using VTX::App::Render::Renderer::GL::Buffer;
 		_buffer->makeContextCurrent();
 
 		Buffer & bufferSelections		= _buffer->getBufferSelections();
@@ -758,7 +758,7 @@ namespace VTX::App::Component::Chemistry
 
 	void SolventExcludedSurface::_instantiate3DViews()
 	{
-		_addRenderable(
-			VTX::MVC_MANAGER().instantiateView<View::D3::TriangleSES>( this, VTX::ID::View::D3_TRIANGLE_SES ) );
+		_addRenderable( VTX::MVC_MANAGER().instantiateView<App::Render::View::TriangleSES>(
+			this, VTX::ID::View::D3_TRIANGLE_SES ) );
 	}
 } // namespace VTX::App::Component::Chemistry

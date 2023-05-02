@@ -726,8 +726,8 @@ namespace VTX::App::Internal::IO
 		Util::Color::Rgba color;
 
 		p_preset.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
-		p_preset.setShading(
-			_getEnum<Renderer::SHADING>( p_json, "SHADING", VTX::App::Application::Setting::SHADING_DEFAULT ) );
+		p_preset.setShading( _getEnum<App::Render::Renderer::SHADING>(
+			p_json, "SHADING", VTX::App::Application::Setting::SHADING_DEFAULT ) );
 		p_preset.enableSSAO( _get<bool>( p_json, "SSAO", VTX::App::Application::Setting::ACTIVE_AO_DEFAULT ) );
 		p_preset.setSSAOIntensity(
 			_get<int>( p_json, "SSAO_INTENSITY", VTX::App::Application::Setting::AO_INTENSITY_DEFAULT ) );

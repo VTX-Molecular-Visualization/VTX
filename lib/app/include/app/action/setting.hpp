@@ -7,9 +7,9 @@
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/internal/chemdb/category.hpp"
-#include <util/color/rgba.hpp>
-#include "app/old_app/generic/base_colorable.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
+#include "app/old_app/generic/base_colorable.hpp"
+#include <util/color/rgba.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Action::Setting
@@ -64,7 +64,10 @@ namespace VTX::App::Action::Setting
 	class ChangeSnapshotFormat : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSnapshotFormat( const App::Internal::IO::Serialization::ImageExport::Format p_format ) : _format( p_format ) {}
+		explicit ChangeSnapshotFormat( const App::Internal::IO::Serialization::ImageExport::Format p_format ) :
+			_format( p_format )
+		{
+		}
 
 		virtual void execute() override;
 
@@ -97,7 +100,8 @@ namespace VTX::App::Action::Setting
 	class ChangeSnapshotResolution : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSnapshotResolution( const App::Internal::IO::Serialization::ImageExport::RESOLUTION & p_resolution ) :
+		explicit ChangeSnapshotResolution(
+			const App::Internal::IO::Serialization::ImageExport::RESOLUTION & p_resolution ) :
 			_resolution( p_resolution )
 		{
 		}
@@ -156,14 +160,14 @@ namespace VTX::App::Action::Setting
 	class ChangeShading : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeShading( const VTX::Renderer::SHADING p_shading ) : _shading( p_shading ) {}
+		ChangeShading( const App::Render::Renderer::SHADING p_shading ) : _shading( p_shading ) {}
 
 		virtual void execute() override;
 
 		virtual void displayUsage() override { VTX_INFO( "DIFFUSE|GLOSSY|TOON|FLAT_COLOR" ); }
 
 	  private:
-		const VTX::Renderer::SHADING _shading;
+		const App::Render::Renderer::SHADING _shading;
 	};
 
 	class ActiveVerticalSync : public App::Core::Action::BaseAction
@@ -509,12 +513,12 @@ namespace VTX::App::Action::Setting
 	class ChangeRenderMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeRenderMode( const VTX::Renderer::MODE p_mode ) : _mode( p_mode ) {}
+		ChangeRenderMode( const App::Render::Renderer::MODE p_mode ) : _mode( p_mode ) {}
 
 		virtual void execute() override;
 
 	  private:
-		const VTX::Renderer::MODE _mode;
+		const App::Render::Renderer::MODE _mode;
 	};
 
 	class ChangeSelectionGranularity : public App::Core::Action::BaseAction

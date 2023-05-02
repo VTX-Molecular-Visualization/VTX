@@ -1,19 +1,19 @@
 #ifndef __VTX_VIEW_BASE_VIEW_3D__
 #define __VTX_VIEW_BASE_VIEW_3D__
 
+#include "app/component/render/camera.hpp"
 #include "app/core/model/base_model_3d.hpp"
 #include "app/old_app/generic/base_renderable.hpp"
-#include "app/component/render/camera.hpp"
-#include "app/old_app/renderer/gl/program_manager.hpp"
 #include "app/old_app/vtx_app.hpp"
+#include "app/render/renderer/gl/program_manager.hpp"
 #include "base_view.hpp"
 #include <util/math.hpp>
 
 namespace VTX::App::Core::View
 {
 	template<typename T,
-			 typename
-			 = std::enable_if<std::is_base_of<App::Core::Model::BaseModel3D<Buffer::BaseBufferOpenGL>, T>::value>>
+			 typename = std::enable_if<
+				 std::is_base_of<App::Core::Model::BaseModel3D<Render::Buffer::BaseBufferOpenGL>, T>::value>>
 	class BaseView3D : public BaseView<T>, public Generic::BaseRenderable, public Generic::BaseOpenGL
 	{
 		VTX_VIEW
@@ -47,13 +47,13 @@ namespace VTX::App::Core::View
 		}
 
 	  protected:
-		Renderer::GL::Program * _program = nullptr;
+		App::Render::Renderer::GL::Program * _program = nullptr;
 
 		explicit BaseView3D( T * const p_model ) : BaseView<T>( p_model ) {}
 		virtual ~BaseView3D() = default;
 
-		virtual Renderer::GL::Program * const _createProgram() = 0;
-		virtual void						  _init() {}
+		virtual App::Render::Renderer::GL::Program * const _createProgram() = 0;
+		virtual void									   _init() {}
 	};
 } // namespace VTX::App::Core::View
 #endif

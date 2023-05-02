@@ -711,7 +711,7 @@ namespace VTX::UI::QT
 	//	_settingWidget->raise();
 	// }
 
-	void MainWindow::updateRenderSetting( const Renderer::RENDER_SETTING p_setting )
+	void MainWindow::updateRenderSetting( const App::Render::Renderer::RENDER_SETTING p_setting )
 	{
 		//_renderWidget->updateRenderSetting( p_setting );
 	}

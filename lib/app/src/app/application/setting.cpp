@@ -1,21 +1,20 @@
 #include "app/application/setting.hpp"
 #include "app/application/representation/enum_representation.hpp"
 #include "app/application/representation/representation_manager.hpp"
+#include "app/application/selection/enum_selection.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/video/enum_path.hpp"
 #include "app/core/event/vtx_event.hpp"
+#include "app/core/io/reader/serialized_object.hpp"
+#include "app/core/io/writer/serialized_object.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/internal/chemdb/category.hpp"
+#include "app/internal/io/filesystem.hpp"
+#include "app/internal/io/serialization/image_export.hpp"
+#include "app/internal/io/serializer.hpp"
 #include "app/internal/setting/register_map.hpp"
 #include "app/old_app/define.hpp"
-#include "app/internal/io/filesystem.hpp"
-#include "app/core/io/reader/serialized_object.hpp"
-#include "app/internal/io/serializer.hpp"
-#include "app/internal/io/serialization/image_export.hpp"
-#include "app/core/io/writer/serialized_object.hpp"
-#include "app/old_app/renderer/base_renderer.hpp"
-#include "app/application/selection/enum_selection.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <exception>
 #include <string>
@@ -34,13 +33,14 @@ namespace VTX::App::Application
 #else
 	const bool Setting::FORCE_RENDERER_DEFAULT = true;
 #endif
-	const Util::Color::Rgba Setting::BACKGROUND_COLOR_DEFAULT	  = Util::Color::Rgba::BLACK;
-	const float		  Setting::BACKGROUND_OPACITY_DEFAULT = 1.0f;
-	const float		  Setting::SNAPSHOT_QUALITY_DEFAULT	  = 1.0f;
+	const Util::Color::Rgba Setting::BACKGROUND_COLOR_DEFAULT	= Util::Color::Rgba::BLACK;
+	const float				Setting::BACKGROUND_OPACITY_DEFAULT = 1.0f;
+	const float				Setting::SNAPSHOT_QUALITY_DEFAULT	= 1.0f;
 
 	const App::Internal::IO::Serialization::ImageExport::RESOLUTION Setting::SNAPSHOT_RESOLUTION_DEFAULT
 		= App::Internal::IO::Serialization::ImageExport::RESOLUTION::Free;
-	const App::Internal::IO::Serialization::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT = App::Internal::IO::Serialization::ImageExport::Format::PNG;
+	const App::Internal::IO::Serialization::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT
+		= App::Internal::IO::Serialization::ImageExport::Format::PNG;
 
 	const std::string									   Setting::REPRESENTATION_DEFAULT_NAME	 = "Stick";
 	const int											   Setting::REPRESENTATION_DEFAULT_INDEX = 4;
@@ -88,38 +88,38 @@ namespace VTX::App::Application
 	const std::string Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME = "New render preset";
 	const int		  Setting::RENDER_EFFECT_DEFAULT_INDEX			 = 0;
 
-	const Renderer::SHADING Setting::SHADING_DEFAULT = Renderer::SHADING::DIFFUSE;
+	const App::Render::Renderer::SHADING Setting::SHADING_DEFAULT = App::Render::Renderer::SHADING::DIFFUSE;
 #ifdef VTX_PRODUCTION
 	const bool Setting::ACTIVE_VSYNC_DEFAULT = true;
 #else
 	const bool Setting::ACTIVE_VSYNC_DEFAULT   = false;
 #endif
-	const bool		  Setting::ACTIVE_AO_DEFAULT		 = true;
-	const int		  Setting::AO_INTENSITY_DEFAULT		 = 5;
-	const int		  Setting::AO_INTENSITY_MIN			 = 1;
-	const int		  Setting::AO_INTENSITY_MAX			 = 20;
-	const int		  Setting::AO_BLUR_SIZE_DEFAULT		 = 17;
-	const int		  Setting::AO_BLUR_SIZE_MIN			 = 1;
-	const int		  Setting::AO_BLUR_SIZE_MAX			 = 99;
-	const bool		  Setting::ACTIVE_OUTLINE_DEFAULT	 = false;
-	const uint		  Setting::OUTLINE_THICKNESS_DEFAULT = 1;
-	const uint		  Setting::OUTLINE_THICKNESS_MIN	 = 1;
-	const uint		  Setting::OUTLINE_THICKNESS_MAX	 = 5;
-	const float		  Setting::OUTLINE_SENSIVITY_DEFAULT = 0.4f;
-	const float		  Setting::OUTLINE_SENSIVITY_MIN	 = 0.01f;
-	const float		  Setting::OUTLINE_SENSIVITY_MAX	 = 1.f;
-	const Util::Color::Rgba Setting::OUTLINE_COLOR_DEFAULT	 = Util::Color::Rgba::WHITE;
-	const bool		  Setting::ACTIVE_FOG_DEFAULT		 = false;
-	const float		  Setting::FOG_NEAR_DEFAULT			 = 30;
-	const float		  Setting::FOG_NEAR_MIN				 = 0.f;
-	const float		  Setting::FOG_NEAR_MAX				 = 1000.f;
-	const float		  Setting::FOG_FAR_DEFAULT			 = 80.f;
-	const float		  Setting::FOG_FAR_MIN				 = 0.f;
-	const float		  Setting::FOG_FAR_MAX				 = 1000.f;
-	const float		  Setting::FOG_DENSITY_DEFAULT		 = 0.8f;
-	const Util::Color::Rgba Setting::FOG_COLOR_DEFAULT		 = Util::Color::Rgba::WHITE;
-	const bool		  Setting::ACTIVE_AA_DEFAULT		 = true;
-	const Util::Color::Rgba Setting::LIGHT_COLOR_DEFAULT		 = Util::Color::Rgba::WHITE;
+	const bool				Setting::ACTIVE_AO_DEFAULT		   = true;
+	const int				Setting::AO_INTENSITY_DEFAULT	   = 5;
+	const int				Setting::AO_INTENSITY_MIN		   = 1;
+	const int				Setting::AO_INTENSITY_MAX		   = 20;
+	const int				Setting::AO_BLUR_SIZE_DEFAULT	   = 17;
+	const int				Setting::AO_BLUR_SIZE_MIN		   = 1;
+	const int				Setting::AO_BLUR_SIZE_MAX		   = 99;
+	const bool				Setting::ACTIVE_OUTLINE_DEFAULT	   = false;
+	const uint				Setting::OUTLINE_THICKNESS_DEFAULT = 1;
+	const uint				Setting::OUTLINE_THICKNESS_MIN	   = 1;
+	const uint				Setting::OUTLINE_THICKNESS_MAX	   = 5;
+	const float				Setting::OUTLINE_SENSIVITY_DEFAULT = 0.4f;
+	const float				Setting::OUTLINE_SENSIVITY_MIN	   = 0.01f;
+	const float				Setting::OUTLINE_SENSIVITY_MAX	   = 1.f;
+	const Util::Color::Rgba Setting::OUTLINE_COLOR_DEFAULT	   = Util::Color::Rgba::WHITE;
+	const bool				Setting::ACTIVE_FOG_DEFAULT		   = false;
+	const float				Setting::FOG_NEAR_DEFAULT		   = 30;
+	const float				Setting::FOG_NEAR_MIN			   = 0.f;
+	const float				Setting::FOG_NEAR_MAX			   = 1000.f;
+	const float				Setting::FOG_FAR_DEFAULT		   = 80.f;
+	const float				Setting::FOG_FAR_MIN			   = 0.f;
+	const float				Setting::FOG_FAR_MAX			   = 1000.f;
+	const float				Setting::FOG_DENSITY_DEFAULT	   = 0.8f;
+	const Util::Color::Rgba Setting::FOG_COLOR_DEFAULT		   = Util::Color::Rgba::WHITE;
+	const bool				Setting::ACTIVE_AA_DEFAULT		   = true;
+	const Util::Color::Rgba Setting::LIGHT_COLOR_DEFAULT	   = Util::Color::Rgba::WHITE;
 
 	// Scene.
 	const Vec3f Setting::MIN_SCENE_POS = Vec3f( -10000, -10000, -10000 );
@@ -199,7 +199,8 @@ namespace VTX::App::Application
 	const Util::Color::Rgba Setting::DEFAULT_LABEL_COLOR = Util::Color::Rgba( 0.f, 0.f, 1.f );
 
 	// Selection
-	const VTX::App::Application::Selection::GRANULARITY Setting::SELECTION_GRANULARITY_DEFAULT = VTX::App::Application::Selection::GRANULARITY::RESIDUE;
+	const VTX::App::Application::Selection::GRANULARITY Setting::SELECTION_GRANULARITY_DEFAULT
+		= VTX::App::Application::Selection::GRANULARITY::RESIDUE;
 
 	// Structural Alignment
 	const int	Setting::CE_ALIGN_WIN_SIZE_DEFAULT = 8;
@@ -217,7 +218,7 @@ namespace VTX::App::Application
 	const float Setting::CELL_LIST_CUBE_SIZE			 = 8.f;
 
 	// Dev.
-	const Renderer::MODE Setting::MODE_DEFAULT = Renderer::MODE::GL;
+	const App::Render::Renderer::MODE Setting::MODE_DEFAULT = App::Render::Renderer::MODE::GL;
 
 	const int Setting::RECENT_PATH_SAVED_MAX_COUNT			= 10;
 	const int Setting::RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT = 20;
@@ -472,7 +473,8 @@ namespace VTX::App::Application
 		snapshotQuality = Util::Math::clamp( p_quality, 0.f, 1.f );
 		_sendDataChangedEvent( PARAMETER::SNAPSHOT_QUALITY );
 	}
-	void Setting::setSnapshotResolution( const App::Internal::IO::Serialization::ImageExport::RESOLUTION & p_snapshotResolution )
+	void Setting::setSnapshotResolution(
+		const App::Internal::IO::Serialization::ImageExport::RESOLUTION & p_snapshotResolution )
 	{
 		snapshotResolution = p_snapshotResolution;
 		_sendDataChangedEvent( PARAMETER::SNAPSHOT_RESOLUTION );

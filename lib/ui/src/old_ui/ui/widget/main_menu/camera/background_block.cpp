@@ -1,9 +1,9 @@
 #include "ui/old_ui/ui/widget/main_menu/camera/background_block.hpp"
 #include "ui/old_ui/ui/widget/renderer/default_background.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-
 #include <app/action/renderer.hpp>
 #include <app/old_app/id.hpp>
+#include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
@@ -46,8 +46,8 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 	void BackgroundBlock::_changeBackgroundColorActionTriggered( const QVariant & p_extraData )
 	{
-		const int			defaultBeckgroundIndex = p_extraData.toInt();
-		const Util::Color::Rgba & p_color				   = Renderer::DEFAULT_BACKGROUND_COLORS[ defaultBeckgroundIndex ];
+		const int				  defaultBeckgroundIndex = p_extraData.toInt();
+		const Util::Color::Rgba & p_color = Renderer::DEFAULT_BACKGROUND_COLORS[ defaultBeckgroundIndex ];
 		_setBackgroundColor( p_color );
 	}
 

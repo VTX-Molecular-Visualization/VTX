@@ -6,13 +6,13 @@
 #include <QOpenGLVersionFunctionsFactory>
 #include <QScreen>
 #include <app/application/render_effect/render_effect_preset.hpp>
-#include <app/component/render/camera.hpp>
 #include <app/application/scene.hpp>
-#include <app/old_app/renderer/gl/gl.hpp>
-#include <app/old_app/renderer/gl/program_manager.hpp>
-#include <app/old_app/renderer/rt/ray_tracer.hpp>
-#include <app/old_app/spec.hpp>
+#include <app/component/render/camera.hpp>
 #include <app/old_app/vtx_app.hpp>
+#include <app/render/renderer/gl/gl.hpp>
+#include <app/render/renderer/gl/program_manager.hpp>
+#include <app/render/renderer/rt/ray_tracer.hpp>
+#include <app/render/spec.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
@@ -36,7 +36,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 			delete _rendererGL;
 		}
 
-		Renderer::GL::ProgramManager::get().dispose();
+		App::Render::Renderer::GL::ProgramManager::get().dispose();
 
 		doneCurrent();
 	}
@@ -147,26 +147,26 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		return pickedIds;
 	}
 
-	void OpenGLWidget::_switchRenderer( const Renderer::MODE p_mode )
+	void OpenGLWidget::_switchRenderer( const App::Render::Renderer::MODE p_mode )
 	{
 		bool needInit = false;
 
 		switch ( p_mode )
 		{
-		case Renderer::MODE::GL:
+		case App::Render::Renderer::MODE::GL:
 			assert( _gl != nullptr );
 			if ( _rendererGL == nullptr )
 			{
-				_rendererGL = new Renderer::GL::GL();
+				_rendererGL = new App::Render::Renderer::GL::GL();
 				needInit	= true;
 			}
 			_renderer = _rendererGL;
 			break;
-		case Renderer::MODE::RT_CPU:
+		case App::Render::Renderer::MODE::RT_CPU:
 			assert( _gl != nullptr );
 			if ( _rendererRT == nullptr )
 			{
-				_rendererRT = new Renderer::RayTracer();
+				_rendererRT = new App::Render::Renderer::RT::RayTracer();
 				needInit	= true;
 			}
 			_renderer = _rendererRT;

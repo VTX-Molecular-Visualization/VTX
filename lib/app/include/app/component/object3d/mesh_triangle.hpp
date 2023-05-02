@@ -3,14 +3,16 @@
 
 #include "app/core/model/base_model_3d.hpp"
 #include "app/core/scene/base_scene_item.hpp"
-#include "app/old_app/buffer/mesh_triangle.hpp"
+#include "app/render/buffer/mesh_triangle.hpp"
 #include <util/color/rgba.hpp>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::App::Component::Object3D
 {
-	class MeshTriangle : public Core::Model::BaseModel3D<Buffer::MeshTriangle>, public Core::Scene::BaseSceneItem
+	class MeshTriangle :
+		public Core::Model::BaseModel3D<App::Render::Buffer::MeshTriangle>,
+		public Core::Scene::BaseSceneItem
 	{
 		VTX_MODEL
 
@@ -29,9 +31,9 @@ namespace VTX::App::Component::Object3D
 		inline Vec4f &					  getNormal( const uint p_idx ) { return _normals[ p_idx ]; }
 
 		inline const std::vector<Util::Color::Rgba> & getColors() const { return _colors; }
-		inline std::vector<Util::Color::Rgba> &		getColors() { return _colors; }
-		inline const Util::Color::Rgba &				getColor( const uint p_idx ) const { return _colors[ p_idx ]; }
-		inline Util::Color::Rgba &					getColor( const uint p_idx ) { return _colors[ p_idx ]; }
+		inline std::vector<Util::Color::Rgba> &		  getColors() { return _colors; }
+		inline const Util::Color::Rgba &			  getColor( const uint p_idx ) const { return _colors[ p_idx ]; }
+		inline Util::Color::Rgba &					  getColor( const uint p_idx ) { return _colors[ p_idx ]; }
 
 		inline const std::vector<uint> & getVisibilities() const { return _visibilities; }
 		inline std::vector<uint> &		 getVisibilities() { return _visibilities; }
@@ -68,13 +70,13 @@ namespace VTX::App::Component::Object3D
 		void		 _computeAABB() const override;
 		virtual void _instantiate3DViews() override;
 
-		std::vector<Vec4f>			 _vertices;
-		std::vector<Vec4f>			 _normals;
-		std::vector<Util::Color::Rgba>	 _colors;
-		std::vector<uint>			 _visibilities;
-		std::vector<uint>			 _selections;
-		std::vector<Core::Model::ID> _ids;
-		std::vector<uint>			 _indices;
+		std::vector<Vec4f>			   _vertices;
+		std::vector<Vec4f>			   _normals;
+		std::vector<Util::Color::Rgba> _colors;
+		std::vector<uint>			   _visibilities;
+		std::vector<uint>			   _selections;
+		std::vector<Core::Model::ID>   _ids;
+		std::vector<uint>			   _indices;
 	};
 } // namespace VTX::App::Component::Object3D
 

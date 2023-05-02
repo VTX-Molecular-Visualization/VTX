@@ -8,7 +8,7 @@
 #include "app/internal/chemDB/secondary_structure.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/view/d3/ribbon.hpp"
+#include "app/render/view/ribbon.hpp"
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 
@@ -52,7 +52,7 @@ namespace VTX::App::Component::Chemistry
 		std::vector<Vec4f>				  caPositions;
 		std::vector<Vec3f>				  caODirections;
 		std::vector<uint>				  ssTypes;
-		std::vector<Util::Color::Rgba>		  colors;
+		std::vector<Util::Color::Rgba>	  colors;
 		std::vector<uint>				  visibilities;
 		std::vector<App::Core::Model::ID> ids;
 		std::vector<uint>				  residueIndex;
@@ -222,7 +222,7 @@ namespace VTX::App::Component::Chemistry
 											const std::vector<Vec4f> &				  p_caPositions,
 											std::vector<Vec3f> &					  p_caODirections,
 											const std::vector<uint> &				  p_ssTypes,
-											const std::vector<Util::Color::Rgba> &		  p_colors,
+											const std::vector<Util::Color::Rgba> &	  p_colors,
 											const std::vector<uint> &				  p_visibilities,
 											const std::vector<App::Core::Model::ID> & p_ids )
 	{
@@ -275,7 +275,10 @@ namespace VTX::App::Component::Chemistry
 
 	App::Component::Object3D::Helper::AABB & SecondaryStructure::getAABB() const { return _molecule->getAABB(); }
 
-	const App::Internal::Math::Transform & SecondaryStructure::getTransform() const { return _molecule->getTransform(); };
+	const App::Internal::Math::Transform & SecondaryStructure::getTransform() const
+	{
+		return _molecule->getTransform();
+	};
 
 	void SecondaryStructure::_computeAABB() const
 	{
@@ -284,7 +287,8 @@ namespace VTX::App::Component::Chemistry
 
 	void SecondaryStructure::_instantiate3DViews()
 	{
-		_addRenderable( VTX::MVC_MANAGER().instantiateView<View::D3::Ribbon>( this, VTX::ID::View::D3_RIBBON_PATCH ) );
+		_addRenderable(
+			VTX::MVC_MANAGER().instantiateView<App::Render::View::Ribbon>( this, VTX::ID::View::D3_RIBBON_PATCH ) );
 	}
 
 	void SecondaryStructure::refreshColors()
