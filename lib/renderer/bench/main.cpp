@@ -9,6 +9,8 @@ constexpr size_t HEIGHT = 600;
 
 int main( int argc, char ** argv )
 {
+	VTX::Util::Logger::get().init( std::filesystem::current_path() / "logs" );
+
 	if ( glfwInit() == 0 )
 	{
 		exit( EXIT_FAILURE );

@@ -16,7 +16,7 @@ namespace VTX
 			Logger( StructPrivacyToken p_token );
 			Logger( std::initializer_list<int> ) = delete;
 
-			void init( const std::filesystem::path & );
+			void init( const std::filesystem::path & p_logDir = std::filesystem::current_path() );
 		};
 
 	} // namespace Util

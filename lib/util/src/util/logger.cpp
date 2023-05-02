@@ -41,6 +41,8 @@ namespace VTX::Util
 #endif
 
 			spdlog::set_default_logger( logger );
+
+			VTX_INFO( "Logger initialized" );
 		}
 		catch ( const spdlog::spdlog_ex & p_e )
 		{

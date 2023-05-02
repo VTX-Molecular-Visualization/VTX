@@ -20,7 +20,7 @@ namespace VTX::Renderer::GL
 	class OpenGLRenderer
 	{
 	  public:
-		OpenGLRenderer() = default;
+		OpenGLRenderer() = delete;
 		OpenGLRenderer( void * p_proc );
 		~OpenGLRenderer() = default;
 
