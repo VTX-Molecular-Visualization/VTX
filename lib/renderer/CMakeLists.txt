@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.16)
 project(VTX_RENDERER)
 
 # Get headers and sources.
-file(GLOB_RECURSE HEADERS include/*.hpp)
-file(GLOB_RECURSE SOURCES src/*.cpp  src/*.c)
+file(GLOB_RECURSE HEADERS include/*)
+file(GLOB_RECURSE SOURCES src/*)
 
 # Create library.
 add_library(VTX_RENDERER STATIC ${HEADERS} ${SOURCES})

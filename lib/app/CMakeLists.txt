@@ -19,8 +19,8 @@ FetchContent_Declare(magic_enum GIT_REPOSITORY ${GIT_URL_MAGIC_ENUM} GIT_TAG ${G
 FetchContent_MakeAvailable(chemfiles nlohmann_json magic_enum)
 
 # Get headers and sources.
-file(GLOB_RECURSE HEADERS include/*.hpp)
-file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE HEADERS include/*)
+file(GLOB_RECURSE SOURCES src/*)
 
 # Create library.
 add_library(VTX_APP STATIC ${HEADERS} ${SOURCES})

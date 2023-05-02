@@ -16,8 +16,8 @@ FetchContent_Declare(spdlog GIT_REPOSITORY ${GIT_URL_SPDLOG} GIT_TAG ${GIT_TAG_S
 FetchContent_MakeAvailable(glm spdlog)
 
 # Get headers and sources.
-file(GLOB_RECURSE HEADERS include/*.hpp)
-file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE HEADERS include/*)
+file(GLOB_RECURSE SOURCES src/*)
 
 # Create library.
 add_library(VTX_UTIL STATIC ${HEADERS} ${SOURCES})

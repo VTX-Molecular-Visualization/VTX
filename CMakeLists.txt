@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.16)
 project(VTX)
 
 # Get headers and sources.
-file(GLOB_RECURSE HEADERS include/*.hpp)
-file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE HEADERS include/*)
+file(GLOB_RECURSE SOURCES src/*)
 if(MSVC)
 	file(GLOB_RECURSE RESOURCES asset/windows_resources/*.rc)
 endif()

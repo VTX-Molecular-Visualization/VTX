@@ -25,8 +25,8 @@ if(MSVC)
 endif()
 
 # Get headers and sources.
-file(GLOB_RECURSE HEADERS include/*.hpp)
-file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE HEADERS include/*)
+file(GLOB_RECURSE SOURCES src/*)
 
 # Get QT forms and resources
 file(GLOB_RECURSE QT_FORMS asset/qt/forms/*.ui)
