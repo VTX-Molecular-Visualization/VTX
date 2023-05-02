@@ -54,16 +54,20 @@ namespace VTX::Renderer::GL::Pass
 		_program->setVec2i( "uDirection", 1, 0 );
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
+		*/
+		_fboFirstPass.unbind();
 
-		out.fbo.bind(GL_DRAW_FRAMEBUFFER);
+		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
 
 		_textureFirstPass.bindToUnit( 0 );
 		in.textureLinearizeDepth->bindToUnit( 1 );
 
+		/*
 		_program->setVec2i( "uDirection", 0, 1 );
-
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 		*/
+
+		out.fbo.unbind();
 	}
 
 	void Blur::clearTexture()

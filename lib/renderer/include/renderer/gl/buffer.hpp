@@ -93,11 +93,21 @@ namespace VTX::Renderer::GL
 		}
 
 		template<typename T>
-		inline void setSub( const T & p_data, const GLintptr p_offset, const GLsizei p_size ) const
+		inline void set( const T & p_data, const GLenum p_usage ) const
 		{
 			assert( glIsBuffer( _id ) );
 
-			glNamedBufferSubData( _id, p_offset, p_size, p_data );
+			glNamedBufferData( _id, GLsizei( sizeof( T ) ), &p_data, p_usage );
+		}
+
+		template<typename T>
+		inline void setSub( const T &	   p_data,
+							const GLintptr p_offset = GLintptr( 0 ),
+							const GLsizei  p_size = = GLsizei( sizeof( T ) ) ) const
+		{
+			assert( glIsBuffer( _id ) );
+
+			glNamedBufferSubData( _id, p_offset, p_size, &p_data );
 		}
 
 		template<typename T>

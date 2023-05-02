@@ -11,7 +11,7 @@ namespace VTX::Renderer::GL
 			{ ".frag", ENUM_SHADER_TYPE::FRAGMENT },	 { ".comp", ENUM_SHADER_TYPE::COMPUTE },
 			{ ".tesc", ENUM_SHADER_TYPE::TESS_CONTROL }, { ".tese", ENUM_SHADER_TYPE::TESS_EVALUATION } };
 
-	ProgramManager::ProgramManager( const FilePath & p_root ) : _rootPath( p_root ) {}
+	ProgramManager::ProgramManager( const FilePath & p_shaderPath ) : _shaderPath( p_shaderPath ) {}
 
 	ProgramManager::~ProgramManager() { dispose(); }
 
@@ -100,7 +100,7 @@ namespace VTX::Renderer::GL
 		if ( shaderId == GL_INVALID_INDEX )
 		{
 			shaderId		 = glCreateShader( (int)type );
-			FilePath	path = _rootPath / p_path;
+			FilePath	path = _shaderPath / p_path;
 			std::string src	 = Util::Filesystem::readPath( path );
 			if ( src.empty() )
 			{

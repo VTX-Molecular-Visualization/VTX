@@ -51,6 +51,8 @@ namespace VTX::Renderer::GL
 
 	void Program::detachShaders()
 	{
+		assert( _id != GL_INVALID_INDEX );
+
 		GLint nbShaders = 0;
 		glGetProgramiv( _id, GL_ATTACHED_SHADERS, &nbShaders );
 		std::vector<GLuint> shaders( nbShaders );

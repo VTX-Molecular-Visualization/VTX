@@ -4,7 +4,7 @@
 
 namespace VTX::Renderer::GL
 {
-	OpenGLRenderer::OpenGLRenderer( void * p_proc )
+	OpenGLRenderer::OpenGLRenderer( void * p_proc, const FilePath & p_shaderPath )
 	{
 		VTX_INFO( "Creating renderer..." );
 
@@ -22,7 +22,10 @@ namespace VTX::Renderer::GL
 
 		// Debug infos.
 		glEnable( GL_DEBUG_OUTPUT );
-		glDebugMessageCallback( VTX::Renderer::GL::Util::debugMessageCallback, NULL );
+		glDebugMessageCallback( Util::debugMessageCallback, NULL );
+
+		// Program manager.
+		_programManager = std::make_unique<ProgramManager>( p_shaderPath );
 
 		// Add passes.
 		_passes.emplace_back( &_passGeometric );
@@ -68,30 +71,25 @@ namespace VTX::Renderer::GL
 		// Init passes.
 		for ( Pass::BasePass * const pass : _passes )
 		{
-			// pass->init( _width, _height, _programManager );
+			pass->init( _width, _height, *_programManager );
 		}
-		_passGeometric.init( _width, _height, _programManager );
-		_passLinearizeDepth.init( _width, _height, _programManager );
-		_passSSAO.init( _width, _height, _programManager );
-		_passBlur.init( _width, _height, _programManager );
-		_passShading.init( _width, _height, _programManager );
-		_passOutline.init( _width, _height, _programManager );
-		_passSelection.init( _width, _height, _programManager );
-		_passFXAA.init( _width, _height, _programManager );
 
 		// Init quad vao/vbo for deferred shading.
 		std::vector<Vec2f> quadVertices
 			= { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
 
-		_quadVBO.create();
-		_quadVAO.create();
+		_vboQuad.create();
+		_vaoQuad.create();
+		_uboGlobal.create();
 
-		_quadVAO.enableAttribute( 0 );
-		_quadVAO.setVertexBuffer( 0, _quadVBO, sizeof( Vec2f ) );
-		_quadVAO.setAttributeFormat( 0, 2, GL_FLOAT );
-		_quadVAO.setAttributeBinding( 0, 0 );
+		_vaoQuad.enableAttribute( 0 );
+		_vaoQuad.setVertexBuffer( 0, _vboQuad, sizeof( Vec2f ) );
+		_vaoQuad.setAttributeFormat( 0, 2, GL_FLOAT );
+		_vaoQuad.setAttributeBinding( 0, 0 );
 
-		_quadVBO.set<Vec2f>( quadVertices );
+		_vboQuad.set( quadVertices );
+
+		_uboGlobal.set( _globalUniforms, GL_DYNAMIC_DRAW );
 
 		VTX_INFO( "Renderer initialized" );
 	}
@@ -106,11 +104,11 @@ namespace VTX::Renderer::GL
 
 	void OpenGLRenderer::renderFrame()
 	{
-		_quadVAO.drawCalls = 0;
+		_vaoQuad.drawCalls = 0;
 		for ( Pass::BasePass * const pass : _passes )
 		{
 			pass->render();
-			_quadVAO.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
+			_vaoQuad.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		}
 
 		/*

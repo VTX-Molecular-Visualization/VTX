@@ -69,7 +69,7 @@ namespace VTX::Renderer::GL::Pass
 		glEnable( GL_DEPTH_TEST );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-		out.fbo.clear( GL_DEPTH );
+		out.fbo.clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		//_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		/*
@@ -87,6 +87,9 @@ namespace VTX::Renderer::GL::Pass
 		}
 		*/
 		//_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+
+		out.fbo.unbind();
+
 		glDisable( GL_DEPTH_TEST );
 	}
 

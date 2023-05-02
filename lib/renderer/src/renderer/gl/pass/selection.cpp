@@ -41,7 +41,7 @@ namespace VTX::Renderer::GL::Pass
 		}
 		*/
 
-		in.textureViewPositionsNormals->bindToUnit( 0 );
+		// in.textureViewPositionsNormals->bindToUnit( 0 );
 
 		/*
 		if ( VTX_RENDER_EFFECT().isOutlineEnabled() )

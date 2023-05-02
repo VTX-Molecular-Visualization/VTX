@@ -12,6 +12,7 @@
 #include "pass/shading.hpp"
 #include "pass/ssao.hpp"
 #include "program_manager.hpp"
+#include "struct_global_uniforms.hpp"
 #include "vertex_array.hpp"
 #include <util/types.hpp>
 
@@ -20,27 +21,16 @@ namespace VTX::Renderer::GL
 	class OpenGLRenderer
 	{
 	  public:
-		OpenGLRenderer() = delete;
-		OpenGLRenderer( void * p_proc );
+		OpenGLRenderer( void * p_proc, const FilePath & p_shaderPath );
 		~OpenGLRenderer() = default;
-
-		inline void setOutput( const GLuint p_output ) {}
-
-		/*
-		inline void enableDepthClamp() const { glEnable( GL_DEPTH_CLAMP ); }
-		inline void disableDepthClamp() const { glDisable( GL_DEPTH_CLAMP ); }
-		inline void enableDepthTest() const { glEnable( GL_DEPTH_TEST ); }
-		inline void disableDepthTest() const { glDisable( GL_DEPTH_TEST ); }
-		inline void memoryBarrier( const GLbitfield p_barrier ) const { glMemoryBarrier( p_barrier ); }
-		inline void flush() const { glFlush(); }
-		inline void finish() const { glFinish(); }
-		*/
 
 		void init( const size_t p_width, const size_t p_height );
 		void resize( const size_t p_width, const size_t p_height );
 
 		void renderFrame();
-		// void updateRenderSetting( const RENDER_SETTING );
+
+		// inline void setOutput( const GLuint p_output ) {}
+		//  void updateRenderSetting( const RENDER_SETTING );
 
 		// const Vec2i getPickedIds( const uint p_x, const uint p_y ) const;
 
@@ -48,8 +38,11 @@ namespace VTX::Renderer::GL
 		size_t _width  = 0;
 		size_t _height = 0;
 
-		VertexArray _quadVAO = VertexArray();
-		Buffer		_quadVBO = Buffer();
+		StructGlobalUniforms _globalUniforms = StructGlobalUniforms();
+
+		VertexArray _vaoQuad   = VertexArray();
+		Buffer		_vboQuad   = Buffer();
+		Buffer		_uboGlobal = Buffer();
 
 		// Framebuffer _output = Framebuffer();
 
@@ -64,7 +57,7 @@ namespace VTX::Renderer::GL
 
 		std::vector<Pass::BasePass *> _passes = std::vector<Pass::BasePass *>();
 
-		ProgramManager _programManager = ProgramManager();
+		std::unique_ptr<ProgramManager> _programManager = nullptr;
 	};
 } // namespace VTX::Renderer::GL
 

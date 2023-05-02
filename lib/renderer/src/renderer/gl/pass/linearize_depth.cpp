@@ -43,5 +43,7 @@ namespace VTX::Renderer::GL::Pass
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 		*/
+
+		out.fbo.unbind();
 	}
 } // namespace VTX::Renderer::GL::Pass

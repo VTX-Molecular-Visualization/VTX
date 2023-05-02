@@ -32,7 +32,7 @@ namespace VTX::Util
 			std::vector<spdlog::sink_ptr> sinks { consoleSink, fileSink };
 			auto						  logger = std::make_shared<spdlog::async_logger>(
 				 "vtx_logger", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block );
-			logger->set_pattern( "[%t][%H:%M:%S][%^%l%$] %v" );
+			logger->set_pattern( "[%t] [%H:%M:%S] [%^%l%$] %v" );
 			logger->set_level( spdlog::level::trace );
 #ifdef VTX_PRODUCTION
 			logger->flush_on( spdlog::level::info );
