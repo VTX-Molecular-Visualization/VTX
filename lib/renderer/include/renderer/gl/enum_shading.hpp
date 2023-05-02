@@ -1,3 +1,6 @@
+#ifndef __VTX_RENDERER_GL_ENUM_SHADING__
+#define __VTX_RENDERER_GL_ENUM_SHADING__
+
 namespace VTX::Renderer::GL
 {
 	enum class ENUM_SHADING : int
@@ -9,3 +12,5 @@ namespace VTX::Renderer::GL
 		COUNT
 	};
 }
+
+#endif

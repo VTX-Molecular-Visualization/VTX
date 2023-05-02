@@ -5,24 +5,24 @@
 
 namespace VTX::Renderer::GL
 {
-	const ProgramManager::MapStringToEnum ProgramManager::EXTENSIONS
-		= MapStringToEnum( { { "vert", SHADER_TYPE::VERTEX },
-							 { "geom", SHADER_TYPE::GEOMETRY },
-							 { "frag", SHADER_TYPE::FRAGMENT },
-							 { "comp", SHADER_TYPE::COMPUTE },
-							 { "tesc", SHADER_TYPE::TESS_CONTROL },
-							 { "tese", SHADER_TYPE::TESS_EVALUATION } } );
+	const ProgramManager::MapStringToEnum ProgramManager::_EXTENSIONS
+		= MapStringToEnum( { { "vert", ENUM_SHADER_TYPE::VERTEX },
+							 { "geom", ENUM_SHADER_TYPE::GEOMETRY },
+							 { "frag", ENUM_SHADER_TYPE::FRAGMENT },
+							 { "comp", ENUM_SHADER_TYPE::COMPUTE },
+							 { "tesc", ENUM_SHADER_TYPE::TESS_CONTROL },
+							 { "tese", ENUM_SHADER_TYPE::TESS_EVALUATION } } );
 
-	SHADER_TYPE ProgramManager::getShaderType( const FilePath & p_name )
+	ENUM_SHADER_TYPE ProgramManager::getShaderType( const FilePath & p_name )
 	{
 		std::string extension = p_name.extension().string();
-		if ( ProgramManager::EXTENSIONS.find( extension ) != ProgramManager::EXTENSIONS.end() )
+		if ( ProgramManager::_EXTENSIONS.find( extension ) != ProgramManager::_EXTENSIONS.end() )
 		{
-			return ProgramManager::EXTENSIONS.at( extension );
+			return ProgramManager::_EXTENSIONS.at( extension );
 		}
 
 		VTX_WARNING( "Invalid extension: " + extension );
-		return SHADER_TYPE::INVALID;
+		return ENUM_SHADER_TYPE::INVALID;
 	}
 
 	ProgramManager::~ProgramManager() { dispose(); }
@@ -101,8 +101,8 @@ namespace VTX::Renderer::GL
 		const std::string name = p_path.filename().string() + p_suffix;
 		VTX_DEBUG( "Creating shader: " + name );
 
-		const SHADER_TYPE type = getShaderType( p_path );
-		if ( type == SHADER_TYPE::INVALID )
+		const ENUM_SHADER_TYPE type = getShaderType( p_path );
+		if ( type == ENUM_SHADER_TYPE::INVALID )
 		{
 			VTX_ERROR( "Invalid shader extension: " + name );
 			return GL_INVALID_INDEX;
