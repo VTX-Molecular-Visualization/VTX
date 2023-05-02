@@ -14,7 +14,7 @@ namespace VTX::Renderer::GL::Pass
 		LinearizeDepth()		  = default;
 		virtual ~LinearizeDepth() = default;
 
-		void init( const size_t p_width, const size_t p_height ) override;
+		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) override;
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render() override;
 
@@ -28,6 +28,9 @@ namespace VTX::Renderer::GL::Pass
 			Framebuffer fbo		= Framebuffer();
 			Texture2D	texture = Texture2D();
 		} out;
+
+	  private:
+		Program * _program = nullptr;
 	};
 } // namespace VTX::Renderer::GL::Pass
 

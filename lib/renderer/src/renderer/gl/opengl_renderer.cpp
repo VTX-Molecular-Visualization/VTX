@@ -68,7 +68,7 @@ namespace VTX::Renderer::GL
 		// Init passes.
 		for ( Pass::BasePass * const pass : _passes )
 		{
-			pass->init( _width, _height );
+			pass->init( _width, _height, _programManager );
 		}
 
 		// Init quad vao/vbo for deferred shading.
@@ -102,6 +102,7 @@ namespace VTX::Renderer::GL
 		for ( Pass::BasePass * const pass : _passes )
 		{
 			pass->render();
+			_quadVAO.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		}
 
 		/*

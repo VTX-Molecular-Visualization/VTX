@@ -2,14 +2,15 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void SSAO::init( const size_t p_width, const size_t p_height )
+	void SSAO::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
 		out.texture.create( p_width, p_height, GL_R8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		//_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { IO::FilePath( "shading/ssao.frag" ) } );
+		_program = p_pm.createProgram( "SSAO", { FilePath( "shading/ssao.frag" ) } );
+		assert( _program != nullptr );
 
 		// generate random ao kernel
 		_aoKernel.resize( _kernelSize );

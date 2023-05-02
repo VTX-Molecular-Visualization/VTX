@@ -30,11 +30,9 @@ namespace VTX
 			void			dispose();
 
 		  private:
-			using MapStringToEnum	  = std::map<std::string, ENUM_SHADER_TYPE>;
-			using MapStringToProgram  = std::map<std::string, Program *>;
-			using PairStringToProgram = std::pair<const std::string, Program *>;
-			using MapStringToGLuint	  = std::map<std::string, GLuint>;
-			using PairStringToGLuint  = std::pair<const std::string, GLuint>;
+			using MapStringToEnum	 = std::map<std::string, ENUM_SHADER_TYPE>;
+			using MapStringToProgram = std::map<std::string, Program *>;
+			using MapStringToGLuint	 = std::map<std::string, GLuint>;
 
 			static const MapStringToEnum _EXTENSIONS;
 

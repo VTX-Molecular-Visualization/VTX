@@ -29,12 +29,12 @@ namespace VTX::Renderer::GL
 
 	void ProgramManager::dispose()
 	{
-		for ( const PairStringToGLuint & pair : _shaders )
+		for ( const auto & pair : _shaders )
 		{
 			glDeleteShader( pair.second );
 		}
 
-		for ( const PairStringToProgram & pair : _programs )
+		for ( const auto & pair : _programs )
 		{
 			delete pair.second;
 		}
@@ -196,14 +196,14 @@ namespace VTX::Renderer::GL
 
 	void ProgramManager::refreshShaders()
 	{
-		for ( const PairStringToProgram & pair : _programs )
+		for ( const auto & pair : _programs )
 		{
 			Program * const program = pair.second;
 			program->detachShaders();
 		}
 
 		// Delete shaders.
-		for ( const PairStringToGLuint & pair : _shaders )
+		for ( const auto & pair : _shaders )
 		{
 			glDeleteShader( pair.second );
 		}
@@ -211,7 +211,7 @@ namespace VTX::Renderer::GL
 		_shaders.clear();
 
 		// Then recreate them.
-		for ( const PairStringToProgram & pair : _programs )
+		for ( const auto & pair : _programs )
 		{
 			Program * const program = pair.second;
 			// Don't need to delete program.

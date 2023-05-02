@@ -2,17 +2,17 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void Selection::init( const size_t p_width, const size_t p_height )
+	void Selection::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
 		out.texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR );
 
 		out.fbo.create();
 		// updateOutputFBO( p_renderer );
 
-		//_program = VTX_PROGRAM_MANAGER().createProgram( "Selection", { IO::FilePath( "shading/selection.frag" ) } );
+		_program = p_pm.createProgram( "Shading", { FilePath( "shading/shading.frag" ) } );
+		assert( _program != nullptr );
 
-		_program->use();
-
+		//_program->use();
 		// const Color::Rgba & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
 		//_program->setVec4f( "uLineColor", lineColor );
 	}

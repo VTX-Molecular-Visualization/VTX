@@ -2,7 +2,7 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void Blur::init( const size_t p_width, const size_t p_height )
+	void Blur::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
 		_textureFirstPass.create(
 			p_width, p_height, GL_R16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
@@ -16,9 +16,9 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		//_program = VTX_PROGRAM_MANAGER().createProgram( "Blur", { IO::FilePath( "shading/bilateral_blur.frag" ) } );
-
-		_program->use();
+		_program = p_pm.createProgram( "Blur", { FilePath( "shading/bilateral_blur.frag" ) } );
+		assert( _program != nullptr );
+		//_program->use();
 		//_program->setInt( "uBlurSize", VTX_RENDER_EFFECT().getSSAOBlurSize() );
 	}
 

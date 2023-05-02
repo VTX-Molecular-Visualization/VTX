@@ -2,7 +2,7 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void Geometric::init( const size_t p_width, const size_t p_height )
+	void Geometric::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
 		out.textureViewPositionsNormals.create(
 			p_width, p_height, GL_RGBA32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
@@ -23,6 +23,32 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.attachTexture( out.texturePicking, GL_COLOR_ATTACHMENT2 );
 
 		out.fbo.setDrawBuffers( { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 } );
+
+		_programSphere = p_pm.createProgram(
+			"Sphere",
+			{ FilePath( "sphere/sphere.vert" ), FilePath( "sphere/sphere.geom" ), FilePath( "sphere/sphere.frag" ) } );
+		_programCylinder = p_pm.createProgram( "Cylinder",
+											   { FilePath( "cylinder/cylinder.vert" ),
+												 FilePath( "cylinder/cylinder.geom" ),
+												 FilePath( "cylinder/cylinder.frag" ) } );
+		_programRibbon	 = p_pm.createProgram( "Ribbon",
+											   { FilePath( "ribbon/ribbon_patch.vert" ),
+												 FilePath( "ribbon/ribbon_patch.tesc" ),
+												 FilePath( "ribbon/ribbon_patch.tese" ),
+												 FilePath( "ribbon/ribbon_patch.frag" ) } );
+		_programLine	 = p_pm.createProgram( "Line", { FilePath( "line/line.vert" ), FilePath( "line/line.frag" ) } );
+		_programTriangle = p_pm.createProgram(
+			"Triangle", { FilePath( "triangle/triangle.vert" ), FilePath( "triangle/triangle.frag" ) } );
+		_programVoxel = p_pm.createProgram(
+			"Voxel",
+			{ FilePath( "voxel/voxel.vert" ), FilePath( "voxel/voxel.geom" ), FilePath( "voxel/voxel.frag" ) } );
+
+		assert( _programSphere != nullptr );
+		assert( _programCylinder != nullptr );
+		assert( _programRibbon != nullptr );
+		assert( _programLine != nullptr );
+		assert( _programTriangle != nullptr );
+		assert( _programVoxel != nullptr );
 	}
 
 	void Geometric::resize( const size_t p_width, const size_t p_height )

@@ -2,6 +2,7 @@
 #define __VTX_RENDERER_GL_OPENGL_RENDERER__
 
 #include "buffer.hpp"
+#include "include_opengl.hpp"
 #include "pass/blur.hpp"
 #include "pass/fxaa.hpp"
 #include "pass/geometric.hpp"
@@ -10,8 +11,8 @@
 #include "pass/selection.hpp"
 #include "pass/shading.hpp"
 #include "pass/ssao.hpp"
+#include "program_manager.hpp"
 #include "vertex_array.hpp"
-#include <renderer/gl/include_opengl.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer::GL
@@ -33,10 +34,6 @@ namespace VTX::Renderer::GL
 		inline void memoryBarrier( const GLbitfield p_barrier ) const { glMemoryBarrier( p_barrier ); }
 		inline void flush() const { glFlush(); }
 		inline void finish() const { glFinish(); }
-		*/
-		/*
-		inline const VertexArray & getQuadVAO() const { return _quadVAO; }
-		inline const Buffer &	   getQuadVBO() const { return _quadVBO; }
 		*/
 
 		void init( const size_t p_width, const size_t p_height );
@@ -66,6 +63,8 @@ namespace VTX::Renderer::GL
 		Pass::FXAA			 _passFXAA			 = Pass::FXAA();
 
 		std::vector<Pass::BasePass *> _passes = std::vector<Pass::BasePass *>();
+
+		ProgramManager _programManager = ProgramManager();
 	};
 } // namespace VTX::Renderer::GL
 

@@ -14,7 +14,7 @@ namespace VTX::Renderer::GL::Pass
 		Outline()		   = default;
 		virtual ~Outline() = default;
 
-		void init( const size_t p_width, const size_t p_height ) override;
+		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) override;
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render() override;
 

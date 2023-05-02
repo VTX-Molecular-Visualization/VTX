@@ -2,11 +2,12 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void FXAA::init( const size_t p_width, const size_t p_height )
+	void FXAA::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
 		out.texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		//_program = VTX_PROGRAM_MANAGER().createProgram( "AA", { IO::FilePath( "shading/fxaa.frag" ) } );
+		_program = p_pm.createProgram( "AA", { FilePath( "shading/fxaa.frag" ) } );
+		assert( _program != nullptr );
 	}
 
 	void FXAA::resize( const size_t p_width, const size_t p_height ) { out.texture.resize( p_width, p_height ); }

@@ -2,13 +2,14 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void Shading::init( const size_t p_width, const size_t p_height )
+	void Shading::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
 		out.texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
+		assert( _program != nullptr );
 		/*
 		_toonShading
 			= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { IO::FilePath( "shading/shading_toon.frag" ) } );
