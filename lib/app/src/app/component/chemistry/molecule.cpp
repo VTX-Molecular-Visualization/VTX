@@ -13,11 +13,11 @@
 #include "app/event/global.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/util/molecule.hpp"
-#include "app/old_app/util/secondary_structure.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/render/view/cylinder.hpp"
 #include "app/render/view/sphere.hpp"
+#include "app/util/molecule.hpp"
+#include "app/util/secondary_structure.hpp"
 #include <algorithm>
 #include <util/color/rgba.hpp>
 #include <util/logger.hpp>
@@ -731,7 +731,7 @@ namespace VTX::App::Component::Chemistry
 	bool Molecule::showWater() const { return getCategory( ChemDB::Category::TYPE::WATER ).isVisible(); }
 	void Molecule::setShowWater( const bool p_showWater )
 	{
-		Util::Molecule::show( getCategory( ChemDB::Category::TYPE::WATER ), p_showWater );
+		Util::App::Molecule::show( getCategory( ChemDB::Category::TYPE::WATER ), p_showWater );
 		_fillBufferAtomVisibilities();
 		VTX_EVENT( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 	}
@@ -745,14 +745,14 @@ namespace VTX::App::Component::Chemistry
 	bool Molecule::showSolvent() const { return getCategory( ChemDB::Category::TYPE::SOLVENT ).isVisible(); }
 	void Molecule::setShowSolvent( const bool p_showSolvent )
 	{
-		Util::Molecule::show( getCategory( ChemDB::Category::TYPE::SOLVENT ), p_showSolvent );
+		Util::App::Molecule::show( getCategory( ChemDB::Category::TYPE::SOLVENT ), p_showSolvent );
 		_fillBufferAtomVisibilities();
 		VTX_EVENT( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 	}
 	bool Molecule::showIon() const { return getCategory( ChemDB::Category::TYPE::ION ).isVisible(); }
 	void Molecule::setShowIon( const bool p_showIon )
 	{
-		Util::Molecule::show( getCategory( ChemDB::Category::TYPE::ION ), p_showIon );
+		Util::App::Molecule::show( getCategory( ChemDB::Category::TYPE::ION ), p_showIon );
 		_fillBufferAtomVisibilities();
 		VTX_EVENT( VTX::App::Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE );
 	}
@@ -903,7 +903,7 @@ namespace VTX::App::Component::Chemistry
 		// Compute secondary structure if not loaded.
 		if ( _configuration.isSecondaryStructureLoadedFromFile == false )
 		{
-			Util::SecondaryStructure::computeSecondaryStructure( *this );
+			Util::App::SecondaryStructure::computeSecondaryStructure( *this );
 		}
 
 		_secondaryStructure = VTX::MVC_MANAGER().instantiateModel<SecondaryStructure, Molecule>( this );

@@ -9,7 +9,7 @@
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
-#include "app/old_app/util/molecule.hpp"
+#include "app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <map>
 #include <vector>
@@ -59,7 +59,7 @@ namespace VTX::App::Action::Chain
 
 				if ( it != chainsIDsPerMolecules.end() )
 				{
-					Util::Molecule::soloChains( *molecule, it->second, false );
+					Util::App::Molecule::soloChains( *molecule, it->second, false );
 				}
 				else
 				{
@@ -87,7 +87,7 @@ namespace VTX::App::Action::Chain
 								  std::vector<App::Component::Chemistry::Chain *>> & pair : chainsPerMolecules )
 			{
 				for ( App::Component::Chemistry::Chain * const chain : pair.second )
-					Util::Molecule::show( *chain, _getVisibilityBool( *chain ), true, false, false );
+					Util::App::Molecule::show( *chain, _getVisibilityBool( *chain ), true, false, false );
 
 				pair.first->notifyVisibilityChange();
 				pair.first->refreshVisibilities();

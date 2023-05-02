@@ -1,5 +1,5 @@
 #include "app/render/renderer/rt/integrators/ao_integrator.hpp"
-#include "app/old_app/util/sampler.hpp"
+#include "app/util/sampler.hpp"
 #include <util/math.hpp>
 
 namespace VTX::App::Render::Renderer::RT::Integrator
@@ -23,8 +23,8 @@ namespace VTX::App::Render::Renderer::RT::Integrator
 				float u = Util::Math::randomFloat(); // cos theta
 				float v = Util::Math::randomFloat();
 
-				Vec3f sampleDir = Util::Sampler::cosineWeightedHemisphere( u, v );
-				float samplePdf = Util::Sampler::cosineWeightedHemispherePdf( u );
+				Vec3f sampleDir = Util::App::Sampler::cosineWeightedHemisphere( u, v );
+				float samplePdf = Util::App::Sampler::cosineWeightedHemispherePdf( u );
 
 				// transform in local coordinates systems
 				Vec3f aoDir = Util::Math::normalize( TBN * sampleDir );

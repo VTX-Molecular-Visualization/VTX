@@ -7,9 +7,9 @@
 #include "app/component/object3d/label.hpp"
 #include "app/component/video/path.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/util/label.hpp"
-#include "app/old_app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
+#include "app/util/label.hpp"
+#include "app/util/molecule.hpp"
 #include <util/chrono.hpp>
 
 namespace VTX::App::Action::Selection
@@ -116,7 +116,7 @@ namespace VTX::App::Action::Selection
 					= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( modelId );
 				viewpoints.emplace_back( &model );
 			}
-			else if ( Util::Label::isLabelType( modelTypeId ) )
+			else if ( Util::App::Label::isLabelType( modelTypeId ) )
 			{
 				App::Component::Object3D::Label & model
 					= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Label>( modelId );
@@ -304,7 +304,7 @@ namespace VTX::App::Action::Selection
 
 			if ( _selection.isMoleculeFullySelected( molecule ) )
 			{
-				Util::Molecule::show( molecule, p_show, false, true );
+				Util::App::Molecule::show( molecule, p_show, false, true );
 			}
 			else
 			{
@@ -315,7 +315,7 @@ namespace VTX::App::Action::Selection
 					App::Component::Chemistry::Chain & chain = *molecule.getChain( chainIds.first );
 					if ( _selection.isChainFullySelected( chain ) )
 					{
-						Util::Molecule::show( chain, p_show, false, false, false );
+						Util::App::Molecule::show( chain, p_show, false, false, false );
 					}
 					else
 					{
@@ -326,7 +326,7 @@ namespace VTX::App::Action::Selection
 							App::Component::Chemistry::Residue & residue = *molecule.getResidue( residueIds.first );
 							if ( _selection.isResidueFullySelected( residue ) )
 							{
-								Util::Molecule::show( residue, p_show, false, false, false );
+								Util::App::Molecule::show( residue, p_show, false, false, false );
 							}
 							else
 							{
@@ -756,7 +756,7 @@ namespace VTX::App::Action::Selection
 
 				path->refreshAllDurations();
 			}
-			else if ( Util::Label::isLabelType( modelTypeID ) )
+			else if ( Util::App::Label::isLabelType( modelTypeID ) )
 			{
 				App::Component::Object3D::Label & label
 					= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Label>( selectedObjectID );

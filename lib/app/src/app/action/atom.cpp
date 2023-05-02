@@ -6,7 +6,7 @@
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
-#include "app/old_app/util/molecule.hpp"
+#include "app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <map>
 #include <util/types.hpp>
@@ -42,7 +42,7 @@ namespace VTX::App::Action::Atom
 
 				if ( it != atomIDsPerMolecules.end() )
 				{
-					Util::Molecule::soloAtoms( *molecule, it->second, false );
+					Util::App::Molecule::soloAtoms( *molecule, it->second, false );
 				}
 				else
 				{
@@ -67,7 +67,7 @@ namespace VTX::App::Action::Atom
 			for ( const std::pair<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Atom *>> & pair : atomsPerMolecules )
 			{
 				for ( App::Component::Chemistry::Atom * const atom : pair.second )
-					Util::Molecule::show( *atom, _getVisibilityBool( *atom ), true, false, false );
+					Util::App::Molecule::show( *atom, _getVisibilityBool( *atom ), true, false, false );
 
 				pair.first->notifyVisibilityChange();
 				pair.first->refreshVisibilities();

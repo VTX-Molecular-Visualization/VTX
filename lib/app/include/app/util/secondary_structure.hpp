@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_SECONDARY_STRUCTURE__
-#define __VTX_UTIL_SECONDARY_STRUCTURE__
+#ifndef __VTX_APP_UTIL_SECONDARY_STRUCTURE__
+#define __VTX_APP_UTIL_SECONDARY_STRUCTURE__
 
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
@@ -10,24 +10,24 @@
 #include <util/logger.hpp>
 #include <util/types.hpp>
 
-namespace VTX::Util::SecondaryStructure
+namespace VTX::Util::App::SecondaryStructure
 {
-	namespace ChemDB = App::Internal::ChemDB;
+	namespace ChemDB = VTX::App::Internal::ChemDB;
 
-	static void computeStride( App::Component::Chemistry::Molecule & p_molecule )
+	static void computeStride( VTX::App::Component::Chemistry::Molecule & p_molecule )
 	{
-		const App::Component::Chemistry::Molecule::AtomPositionsFrame & positions
+		const VTX::App::Component::Chemistry::Molecule::AtomPositionsFrame & positions
 			= p_molecule.getAtomPositionFrame( p_molecule.getFrame() );
 
 		for ( uint chainIdx = 0; chainIdx < p_molecule.getChainCount(); ++chainIdx )
 		{
-			const App::Component::Chemistry::Chain * const chainPtr = p_molecule.getChain( chainIdx );
+			const VTX::App::Component::Chemistry::Chain * const chainPtr = p_molecule.getChain( chainIdx );
 
 			if ( chainPtr == nullptr )
 				continue;
 
-			const App::Component::Chemistry::Chain & chain		  = *chainPtr;
-			const uint								 residueCount = chain.getResidueCount();
+			const VTX::App::Component::Chemistry::Chain & chain		   = *chainPtr;
+			const uint									  residueCount = chain.getResidueCount();
 
 			// Not enought residues.
 			if ( residueCount < 4 )
@@ -55,11 +55,12 @@ namespace VTX::Util::SecondaryStructure
 
 			for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 			{
-				const uint										 currentResidueIndex = idxFirstResidue + residueIdx;
-				const App::Component::Chemistry::Residue * const residue0Ptr
+				const uint currentResidueIndex = idxFirstResidue + residueIdx;
+				const VTX::App::Component::Chemistry::Residue * const residue0Ptr
 					= p_molecule.getResidue( currentResidueIndex - 1 );
-				App::Component::Chemistry::Residue * const residue1Ptr = p_molecule.getResidue( currentResidueIndex );
-				const App::Component::Chemistry::Residue * const residue2Ptr
+				VTX::App::Component::Chemistry::Residue * const residue1Ptr
+					= p_molecule.getResidue( currentResidueIndex );
+				const VTX::App::Component::Chemistry::Residue * const residue2Ptr
 					= p_molecule.getResidue( currentResidueIndex + 1 );
 
 				if ( residue0Ptr == nullptr || residue1Ptr == nullptr || residue2Ptr == nullptr )
@@ -67,17 +68,17 @@ namespace VTX::Util::SecondaryStructure
 					continue;
 				}
 
-				const App::Component::Chemistry::Residue & residue0 = *residue0Ptr;
-				App::Component::Chemistry::Residue &	   residue1 = *residue1Ptr;
-				const App::Component::Chemistry::Residue & residue2 = *residue2Ptr;
+				const VTX::App::Component::Chemistry::Residue & residue0 = *residue0Ptr;
+				VTX::App::Component::Chemistry::Residue &		residue1 = *residue1Ptr;
+				const VTX::App::Component::Chemistry::Residue & residue2 = *residue2Ptr;
 
 				residue1.setSecondaryStructure( ChemDB::SecondaryStructure::TYPE::COIL );
 
-				const App::Component::Chemistry::Atom * C0	= residue0.findFirstAtomByName( "C" );
-				const App::Component::Chemistry::Atom * N1	= residue1.findFirstAtomByName( "N" );
-				const App::Component::Chemistry::Atom * CA1 = residue1.getAlphaCarbon();
-				const App::Component::Chemistry::Atom * C1	= residue1.findFirstAtomByName( "C" );
-				const App::Component::Chemistry::Atom * N2	= residue2.findFirstAtomByName( "N" );
+				const VTX::App::Component::Chemistry::Atom * C0	 = residue0.findFirstAtomByName( "C" );
+				const VTX::App::Component::Chemistry::Atom * N1	 = residue1.findFirstAtomByName( "N" );
+				const VTX::App::Component::Chemistry::Atom * CA1 = residue1.getAlphaCarbon();
+				const VTX::App::Component::Chemistry::Atom * C1	 = residue1.findFirstAtomByName( "C" );
+				const VTX::App::Component::Chemistry::Atom * N2	 = residue2.findFirstAtomByName( "N" );
 
 				if ( C0 == nullptr || N1 == nullptr || CA1 == nullptr || C1 == nullptr || N2 == nullptr )
 				{
@@ -121,7 +122,7 @@ namespace VTX::Util::SecondaryStructure
 					{
 						for ( uint k = firstHelixIdx; k < residueIdx; k++ )
 						{
-							App::Component::Chemistry::Residue & residue
+							VTX::App::Component::Chemistry::Residue & residue
 								= *p_molecule.getResidue( idxFirstResidue + k );
 							residue.setSecondaryStructure( ChemDB::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT );
 						}
@@ -147,7 +148,7 @@ namespace VTX::Util::SecondaryStructure
 					{
 						for ( uint k = firstHelixIdx; k < residueIdx; k++ )
 						{
-							App::Component::Chemistry::Residue & residue
+							VTX::App::Component::Chemistry::Residue & residue
 								= *p_molecule.getResidue( idxFirstResidue + k );
 							residue.setSecondaryStructure( ChemDB::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT );
 						}
@@ -173,7 +174,7 @@ namespace VTX::Util::SecondaryStructure
 					{
 						for ( uint k = firstStrandIdx; k < residueIdx; k++ )
 						{
-							App::Component::Chemistry::Residue & residue
+							VTX::App::Component::Chemistry::Residue & residue
 								= *p_molecule.getResidue( idxFirstResidue + k );
 							residue.setSecondaryStructure( ChemDB::SecondaryStructure::TYPE::STRAND );
 						}
@@ -184,11 +185,12 @@ namespace VTX::Util::SecondaryStructure
 
 			for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 			{
-				const uint										 currentResidueIndex = idxFirstResidue + residueIdx;
-				const App::Component::Chemistry::Residue * const residue0Ptr
+				const uint currentResidueIndex = idxFirstResidue + residueIdx;
+				const VTX::App::Component::Chemistry::Residue * const residue0Ptr
 					= p_molecule.getResidue( currentResidueIndex - 1 );
-				App::Component::Chemistry::Residue * const residue1Ptr = p_molecule.getResidue( currentResidueIndex );
-				const App::Component::Chemistry::Residue * const residue2Ptr
+				VTX::App::Component::Chemistry::Residue * const residue1Ptr
+					= p_molecule.getResidue( currentResidueIndex );
+				const VTX::App::Component::Chemistry::Residue * const residue2Ptr
 					= p_molecule.getResidue( currentResidueIndex + 1 );
 
 				if ( residue0Ptr == nullptr || residue1Ptr == nullptr || residue2Ptr == nullptr )
@@ -196,9 +198,9 @@ namespace VTX::Util::SecondaryStructure
 					continue;
 				}
 
-				const App::Component::Chemistry::Residue & residue0 = *residue0Ptr;
-				App::Component::Chemistry::Residue &	   residue	= *residue1Ptr;
-				const App::Component::Chemistry::Residue & residue2 = *residue2Ptr;
+				const VTX::App::Component::Chemistry::Residue & residue0 = *residue0Ptr;
+				VTX::App::Component::Chemistry::Residue &		residue	 = *residue1Ptr;
+				const VTX::App::Component::Chemistry::Residue & residue2 = *residue2Ptr;
 
 				if ( ( residue0.getSecondaryStructure() == residue2.getSecondaryStructure() )
 					 && ( ( residue0.getSecondaryStructure() == ChemDB::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT )
@@ -212,7 +214,7 @@ namespace VTX::Util::SecondaryStructure
 		}
 	}
 
-	static void computeSecondaryStructure( App::Component::Chemistry::Molecule & p_molecule )
+	static void computeSecondaryStructure( VTX::App::Component::Chemistry::Molecule & p_molecule )
 	{
 		Util::Chrono chrono;
 		chrono.start();
@@ -281,6 +283,6 @@ namespace VTX::Util::SecondaryStructure
 		return res;
 	}
 
-} // namespace VTX::Util::SecondaryStructure
+} // namespace VTX::Util::App::SecondaryStructure
 
 #endif

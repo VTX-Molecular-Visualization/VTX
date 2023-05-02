@@ -2,8 +2,8 @@
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/old_app/util/chemfiles.hpp"
-#include "app/old_app/util/molecule.hpp"
+#include "app/util/chemfiles.hpp"
+#include "app/util/molecule.hpp"
 #include <optional>
 #include <sstream>
 
@@ -1304,7 +1304,7 @@ namespace VTX::App::Internal::Algorithm
 				if ( bondData.atom1 == firstAtomName && bondData.atom2 == secondAtomName )
 				{
 					p_frame.change_bond_order(
-						firstAtomIndex, secondAtomIndex, Util::Chemfiles::convertBondOrder( bondData.bondOrder ) );
+						firstAtomIndex, secondAtomIndex, Util::App::Chemfiles::convertBondOrder( bondData.bondOrder ) );
 					break;
 				}
 			}
@@ -1366,7 +1366,7 @@ namespace VTX::App::Internal::Algorithm
 
 	const std::vector<App::Internal::IO::Reader::BondData> & BondOrderGuessing::getResidueBonds( const std::string & p_residueSymbol )
 	{
-		return Util::Molecule::getResidueBonds( p_residueSymbol );
+		return Util::App::Molecule::getResidueBonds( p_residueSymbol );
 	}
 
 } // namespace VTX::App::Internal::Algorithm

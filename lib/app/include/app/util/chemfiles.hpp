@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_CHEMFILES__
-#define __VTX_UTIL_CHEMFILES__
+#ifndef __VTX_APP_UTIL_CHEMFILES__
+#define __VTX_APP_UTIL_CHEMFILES__
 
 #include "app/component/object3d/helper/aabb.hpp"
 #include "app/internal/chemdb/bond.hpp"
@@ -11,14 +11,14 @@
 #include <string>
 #include <unordered_set>
 
-namespace VTX::Util::Chemfiles
+namespace VTX::Util::App::Chemfiles
 {
-	chemfiles::Bond::BondOrder convertBondOrder( const App::Internal::ChemDB::Bond::ORDER p_bondOrder );
+	chemfiles::Bond::BondOrder convertBondOrder( const VTX::App::Internal::ChemDB::Bond::ORDER p_bondOrder );
 
-	void recomputeBonds( chemfiles::Frame & p_frame, const App::Component::Object3D::Helper::AABB & p_aabb );
+	void recomputeBonds( chemfiles::Frame & p_frame, const VTX::App::Component::Object3D::Helper::AABB & p_aabb );
 	void recomputeBondOrders( chemfiles::Frame & p_frame );
 	bool recomputeBondOrdersFromFile( chemfiles::Frame & p_frame );
 
-} // namespace VTX::Util::Chemfiles
+} // namespace VTX::Util::App::Chemfiles
 
 #endif

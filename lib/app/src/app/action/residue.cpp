@@ -9,7 +9,7 @@
 #include "app/mvc.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
-#include "app/old_app/util/molecule.hpp"
+#include "app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <map>
 #include <unordered_set>
@@ -60,7 +60,7 @@ namespace VTX::App::Action::Residue
 
 				if ( it != residuesIDsPerMolecules.end() )
 				{
-					Util::Molecule::soloResidues( *molecule, it->second, false );
+					Util::App::Molecule::soloResidues( *molecule, it->second, false );
 				}
 				else
 				{
@@ -88,7 +88,7 @@ namespace VTX::App::Action::Residue
 								  std::vector<App::Component::Chemistry::Residue *>> & pair : residuesPerMolecules )
 			{
 				for ( App::Component::Chemistry::Residue * const residue : pair.second )
-					Util::Molecule::show( *residue, _getVisibilityBool( *residue ), true, false, false );
+					Util::App::Molecule::show( *residue, _getVisibilityBool( *residue ), true, false, false );
 
 				pair.first->notifyVisibilityChange();
 				pair.first->refreshVisibilities();

@@ -10,14 +10,14 @@
 #include "app/internal/algorithm/bond_order_guessing.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/mvc.hpp"
-#include <util/color/rgba.hpp>
-#include "app/old_app/util/chemfiles.hpp"
-#include "app/old_app/util/molecule.hpp"
+#include "app/util/chemfiles.hpp"
+#include "app/util/molecule.hpp"
 #include <algorithm>
 #include <iostream>
 #include <magic_enum.hpp>
 #include <thread>
 #include <unordered_map>
+#include <util/color/rgba.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Internal::IO::Reader
@@ -285,7 +285,7 @@ namespace VTX::App::Internal::IO::Reader
 			std::string		  residueSymbol = residue.name();
 
 			const App::Internal::ChemDB::Category::TYPE categoryEnum
-				= Util::Molecule::getResidueCategory( residueSymbol );
+				= Util::App::Molecule::getResidueCategory( residueSymbol );
 
 			const bool createNewChain = p_molecule.getChainCount() == 0 || // No chain created
 										chainName != lastChainName ||	   // New chain ID
@@ -350,7 +350,7 @@ namespace VTX::App::Internal::IO::Reader
 				{
 					unknownResidueData			   = new App::Internal::ChemDB::UnknownResidueData();
 					unknownResidueData->symbolStr  = residueSymbol;
-					unknownResidueData->symbolName = Util::Molecule::getResidueFullName( residueSymbol );
+					unknownResidueData->symbolName = Util::App::Molecule::getResidueFullName( residueSymbol );
 
 					symbolIndex = p_molecule.addUnknownResidueSymbol( unknownResidueData );
 				}
@@ -568,7 +568,7 @@ namespace VTX::App::Internal::IO::Reader
 		if ( p_recomputeBonds )
 		{
 			bondComputationChrono.start();
-			Util::Chemfiles::recomputeBonds( frame, p_molecule.getAABB() );
+			Util::App::Chemfiles::recomputeBonds( frame, p_molecule.getAABB() );
 			bondComputationChrono.stop();
 			_logDebug( "recomputeBonds : " + bondComputationChrono.elapsedTimeStr() );
 		}
@@ -576,12 +576,12 @@ namespace VTX::App::Internal::IO::Reader
 		if ( VTX::App::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
 		{
 			bondComputationChrono.start();
-			const bool allBondsRecomputed = Util::Chemfiles::recomputeBondOrdersFromFile( frame );
+			const bool allBondsRecomputed = Util::App::Chemfiles::recomputeBondOrdersFromFile( frame );
 
 			if ( !allBondsRecomputed )
 			{
 				_logDebug( "recomputeBondOrders with algorithm." );
-				Util::Chemfiles::recomputeBondOrders( frame );
+				Util::App::Chemfiles::recomputeBondOrders( frame );
 			}
 
 			bondComputationChrono.stop();
@@ -672,12 +672,12 @@ namespace VTX::App::Internal::IO::Reader
 		if ( !VTX::App::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
 		{
 			bondComputationChrono.start();
-			const bool allBondsRecomputed = Util::Molecule::recomputeBondOrdersFromFile( p_molecule );
+			const bool allBondsRecomputed = Util::App::Molecule::recomputeBondOrdersFromFile( p_molecule );
 
 			if ( !allBondsRecomputed )
 			{
 				_logInfo( "recomputeBondOrders with algorithm." );
-				Util::Molecule::recomputeBondOrders( p_molecule );
+				Util::App::Molecule::recomputeBondOrders( p_molecule );
 			}
 			bondComputationChrono.stop();
 			_logInfo( "recomputeBondOrders: " + bondComputationChrono.elapsedTimeStr() );

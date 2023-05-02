@@ -8,11 +8,11 @@
 #include <app/application/render_effect/render_effect_preset.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
-#include <app/old_app/util/opengl.hpp>
 #include <app/render/renderer/gl/gl.hpp>
 #include <app/render/renderer/gl/program_manager.hpp>
 #include <app/render/renderer/rt/ray_tracer.hpp>
 #include <app/render/spec.hpp>
+#include <app/util/opengl.hpp>
 
 namespace VTX::UI::Widget::Render
 {
@@ -71,7 +71,7 @@ namespace VTX::UI::Widget::Render
 
 #ifndef VTX_PRODUCTION
 		_gl->glEnable( GL_DEBUG_OUTPUT );
-		_gl->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
+		_gl->glDebugMessageCallback( Util::App::OpenGL::debugMessageCallback, NULL );
 #endif
 
 		VTX_PROGRAM_MANAGER();

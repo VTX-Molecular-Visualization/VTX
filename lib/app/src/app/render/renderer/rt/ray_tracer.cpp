@@ -1,6 +1,5 @@
 #include "app/render/renderer/rt/ray_tracer.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/old_app/util/sampler.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/render/renderer/rt/integrators/ao_integrator.hpp"
 #include "app/render/renderer/rt/integrators/direct_lighting_integrator.hpp"

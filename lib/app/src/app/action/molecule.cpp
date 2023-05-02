@@ -6,7 +6,7 @@
 #include "app/mvc.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/setting.hpp"
-#include "app/old_app/util/molecule.hpp"
+#include "app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <util/math.hpp>
 
@@ -40,9 +40,9 @@ namespace VTX::App::Action::Molecule
 			case VISIBILITY_MODE::SHOW:
 			case VISIBILITY_MODE::HIDE:
 			case VISIBILITY_MODE::ALL:
-				Util::Molecule::show( *molecule, _getVisibilityBool( *molecule ), true, true );
+				Util::App::Molecule::show( *molecule, _getVisibilityBool( *molecule ), true, true );
 				break;
-			case VISIBILITY_MODE::SOLO: Util::Molecule::solo( *molecule, false ); break;
+			case VISIBILITY_MODE::SOLO: Util::App::Molecule::solo( *molecule, false ); break;
 			}
 		}
 
