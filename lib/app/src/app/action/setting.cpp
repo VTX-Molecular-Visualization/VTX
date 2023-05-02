@@ -1,16 +1,16 @@
 #include "app/action/setting.hpp"
+#include "app/application/representation/representation_library.hpp"
+#include "app/application/representation/representation_manager.hpp"
 #include "app/manager/action_manager.hpp"
-#include "app/model/renderer/render_effect_preset.hpp"
-#include "app/model/renderer/render_effect_preset_library.hpp"
-#include "app/model/representation/representation_library.hpp"
-#include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/io/reader/serialized_object.hpp"
-#include "app/old_app/io/writer/serialized_object.hpp"
-#include "app/old_app/object3d/camera.hpp"
-#include "app/old_app/object3d/camera_manager.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/application/render_effect/render_effect_preset.hpp"
+#include "app/application/render_effect/render_effect_library.hpp"
+#include "app/internal/io/filesystem.hpp"
+#include "app/core/io/reader/serialized_object.hpp"
+#include "app/core/io/writer/serialized_object.hpp"
+#include "app/component/render/camera.hpp"
+#include "app/internal/scene/camera_manager.hpp"
+#include "app/application/scene.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <exception>
 #include <string>
@@ -20,14 +20,14 @@ namespace VTX::App::Action::Setting
 {
 	void Load::execute()
 	{
-		const FilePath & path = IO::Filesystem::getSettingJsonFile();
+		const FilePath & path = App::Internal::IO::Filesystem::getSettingJsonFile();
 		if ( std::filesystem::exists( path ) == false )
 		{
 			VTX_INFO( "No settings file found" );
 			return;
 		}
 
-		IO::Reader::SerializedObject<VTX::Setting> reader = IO::Reader::SerializedObject<VTX::Setting>();
+		Core::IO::Reader::SerializedObject<VTX::App::Application::Setting> reader = Core::IO::Reader::SerializedObject<VTX::App::Application::Setting>();
 		try
 		{
 			reader.readFile( path, VTX_SETTING() );
@@ -41,10 +41,10 @@ namespace VTX::App::Action::Setting
 
 	void Save::execute()
 	{
-		IO::Writer::SerializedObject<VTX::Setting> writer = IO::Writer::SerializedObject<VTX::Setting>();
+		Core::IO::Writer::SerializedObject<VTX::App::Application::Setting> writer = Core::IO::Writer::SerializedObject<VTX::App::Application::Setting>();
 		try
 		{
-			writer.writeFile( IO::Filesystem::getSettingJsonFile(), VTX_SETTING() );
+			writer.writeFile( App::Internal::IO::Filesystem::getSettingJsonFile(), VTX_SETTING() );
 			VTX_INFO( "Settings saved " );
 		}
 		catch ( const std::exception & p_e )
@@ -80,23 +80,25 @@ namespace VTX::App::Action::Setting
 
 	void ChangeDefaultRepresentation::execute()
 	{
-		const VTX::Model::Representation::Representation * const previousDefaultRepresentation
-			= VTX::Model::Representation::RepresentationLibrary::get().getDefaultRepresentation();
+		const VTX::App::Application::Representation::RepresentationPreset * const previousDefaultRepresentation
+			= VTX::App::Application::Representation::RepresentationLibrary::get().getDefaultRepresentation();
 
-		VTX::Model::Representation::RepresentationLibrary::get().setDefaultRepresentation( _representationIndex );
+		VTX::App::Application::Representation::RepresentationLibrary::get().setDefaultRepresentation(
+			_representationIndex );
 
-		VTX::Model::Representation::Representation * const newDefaultRepresentation
-			= VTX::Model::Representation::RepresentationLibrary::get().getDefaultRepresentation();
+		VTX::App::Application::Representation::RepresentationPreset * const newDefaultRepresentation
+			= VTX::App::Application::Representation::RepresentationLibrary::get().getDefaultRepresentation();
 
 		if ( previousDefaultRepresentation != newDefaultRepresentation )
 		{
-			for ( Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
-				  VTX::Representation::RepresentationManager::get().getAllInstantiatedRepresentations(
+			for ( App::Application::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
+				  App::Application::Representation::RepresentationManager::get().getAllInstantiatedRepresentations(
 					  previousDefaultRepresentation ) )
 			{
-				if ( instantiatedRepresentation->getOverridedMembersFlag() == Model::Representation::MEMBER_FLAG::NONE )
+				if ( instantiatedRepresentation->getOverridedMembersFlag()
+					 == Application::Representation::MEMBER_FLAG::ENUM::NONE )
 				{
-					VTX::Representation::RepresentationManager::get().instantiateRepresentation(
+					App::Application::Representation::RepresentationManager::get().instantiateRepresentation(
 						newDefaultRepresentation, *instantiatedRepresentation->getTarget() );
 				}
 			}
@@ -108,7 +110,7 @@ namespace VTX::App::Action::Setting
 	void ChangeDefaultRenderEffectPreset::execute()
 	{
 		const int clampedIndex = Util::Math::clamp(
-			_renderEffectPresetIndex, 0, VTX::Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount() );
+			_renderEffectPresetIndex, 0, VTX::App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount() );
 
 		VTX_SETTING().setDefaultRenderEffectPresetIndex( clampedIndex );
 
@@ -117,11 +119,12 @@ namespace VTX::App::Action::Setting
 
 	void ChangeColorMode::execute()
 	{
-		for ( Model::Representation::Representation * const representation :
-			  Model::Representation::RepresentationLibrary::get().getRepresentations() )
+		for ( App::Application::Representation::RepresentationPreset * const representation :
+			  App::Application::Representation::RepresentationLibrary::get().getRepresentations() )
 		{
-			for ( Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
-				  Representation::RepresentationManager::get().getAllInstantiatedRepresentations( representation ) )
+			for ( App::Application::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
+				  App::Application::Representation::RepresentationManager::get().getAllInstantiatedRepresentations(
+					  representation ) )
 			{
 				instantiatedRepresentation->setColorMode( _mode );
 			}

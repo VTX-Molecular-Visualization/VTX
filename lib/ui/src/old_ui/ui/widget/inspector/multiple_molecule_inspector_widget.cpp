@@ -14,8 +14,8 @@
 #include <app/action/instantiated_representation.hpp>
 #include <app/action/molecule.hpp>
 #include <app/action/transformable.hpp>
+#include <app/application/representation/representation_manager.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/representation/representation_manager.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -175,7 +175,7 @@ namespace VTX::UI::Widget::Inspector
 		bool blockSignalState = blockSignals( true );
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<Model::Molecule *> & targets = getTargets();
+		const std::unordered_set<App::Component::Chemistry::Molecule *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
@@ -185,7 +185,7 @@ namespace VTX::UI::Widget::Inspector
 			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( VTX::ID::Model::MODEL_MOLECULE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
-			for ( Model::Molecule * molecule : targets )
+			for ( App::Component::Chemistry::Molecule * molecule : targets )
 			{
 				if ( bool( p_flag & SectionFlag::TRANSFORM ) )
 				{
@@ -196,7 +196,7 @@ namespace VTX::UI::Widget::Inspector
 				{
 					_representationWidget->updateWithNewValue( *molecule->getRepresentation() );
 
-					for ( Model::Representation::InstantiatedRepresentation * representation :
+					for ( App::Application::Representation::InstantiatedRepresentation * representation :
 						  molecule->getSubRepresentations() )
 					{
 						_subRepresentationWidget->addModel( representation );
@@ -282,7 +282,7 @@ namespace VTX::UI::Widget::Inspector
 	}
 
 	void MultipleMoleculeWidget::_onTransformChange(
-		const Math::Transform &									   p_transform,
+		const App::Internal::Math::Transform &									   p_transform,
 		const Generic::BaseTransformable::TransformComposantMask & p_mask ) const
 	{
 		if ( !signalsBlocked() )
@@ -299,7 +299,7 @@ namespace VTX::UI::Widget::Inspector
 				= std::unordered_set<Generic::BaseTransformable *>();
 			transformableSet.reserve( getTargets().size() );
 
-			for ( Model::Molecule * target : getTargets() )
+			for ( App::Component::Chemistry::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 
 			VTX_ACTION( new App::Action::Transformable::Translate( transformableSet, p_delta ) );
@@ -313,7 +313,7 @@ namespace VTX::UI::Widget::Inspector
 				= std::unordered_set<Generic::BaseTransformable *>();
 			transformableSet.reserve( getTargets().size() );
 
-			for ( Model::Molecule * target : getTargets() )
+			for ( App::Component::Chemistry::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 
 			VTX_ACTION( new App::Action::Transformable::Rotate( transformableSet, p_delta ) );
@@ -327,7 +327,7 @@ namespace VTX::UI::Widget::Inspector
 				= std::unordered_set<Generic::BaseTransformable *>();
 			transformableSet.reserve( getTargets().size() );
 
-			for ( Model::Molecule * target : getTargets() )
+			for ( App::Component::Chemistry::Molecule * target : getTargets() )
 				transformableSet.emplace( target );
 			VTX_ACTION( new App::Action::Transformable::Scale( transformableSet, p_delta ) );
 		}
@@ -338,8 +338,8 @@ namespace VTX::UI::Widget::Inspector
 		VTX_ACTION( new App::Action::Molecule::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
 	void MultipleMoleculeWidget::_onRepresentationChange(
-		const Model::Representation::InstantiatedRepresentation & p_representation,
-		const Model::Representation::MEMBER_FLAG &				  p_flag ) const
+		const App::Application::Representation::InstantiatedRepresentation & p_representation,
+		const App::Application::Representation::MEMBER_FLAG &				 p_flag ) const
 	{
 		if ( !signalsBlocked() )
 		{
@@ -348,9 +348,9 @@ namespace VTX::UI::Widget::Inspector
 	}
 
 	void MultipleMoleculeWidget::_onRepresentationColorChange(
-		const Model::Representation::InstantiatedRepresentation & p_representation,
-		const Color::Rgba &										  p_color,
-		const bool												  p_ssColor ) const
+		const App::Application::Representation::InstantiatedRepresentation & p_representation,
+		const Util::Color::Rgba &													 p_color,
+		const bool															 p_ssColor ) const
 	{
 		if ( p_ssColor )
 		{
@@ -409,7 +409,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		VTX_ACTION( new App::Action::Molecule::RemoveChildrenRepresentations( getTargets() ) );
 	}
-	void MultipleMoleculeWidget::_onMoleculeColorChange( const Color::Rgba & p_color ) const
+	void MultipleMoleculeWidget::_onMoleculeColorChange( const Util::Color::Rgba & p_color ) const
 	{
 		VTX_ACTION( new App::Action::Molecule::ChangeColor( getTargets(), p_color ) );
 	}

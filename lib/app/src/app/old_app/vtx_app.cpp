@@ -1,22 +1,22 @@
 #include "app/old_app/vtx_app.hpp"
 #include "app/action/main.hpp"
 #include "app/action/setting.hpp"
+#include "app/application/render_effect/render_effect_library.hpp"
+#include "app/application/render_effect/render_effect_preset.hpp"
+#include "app/application/representation/representation_library.hpp"
 #include "app/core/event/vtx_event.hpp"
-#include "app/mvc.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/manager/action_manager.hpp"
-#include "app/model/renderer/render_effect_preset.hpp"
-#include "app/model/renderer/render_effect_preset_library.hpp"
-#include "app/model/representation/representation_library.hpp"
-#include "app/old_app/io/struct/scene_path_data.hpp"
-#include "app/old_app/object3d/camera.hpp"
+#include "app/mvc.hpp"
+#include "app/internal/io/serialization/scene_path_data.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
+#include "app/application/selection/selection_manager.hpp"
 // #include "ui/dialog.hpp"
 // #include "ui/main_window.hpp"
-#include "app/core/worker/worker_manager.hpp"
-#include "app/old_app/io/filesystem.hpp"
+#include "app/internal/io/filesystem.hpp"
+#include "app/worker.hpp"
 // #include <QApplication>
 // #include <QPalette>
 #include <exception>
@@ -33,7 +33,7 @@ namespace VTX
 
 	void VTXApp::start( const std::vector<std::string> & p_args )
 	{
-		VTX_INFO( "Starting application: {}", IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
+		VTX_INFO( "Starting application: {}", App::Internal::IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 
 		// Load settings.
 		VTX_ACTION<App::Action::Setting::Load>();
@@ -43,21 +43,21 @@ namespace VTX
 		VTX::MVC_MANAGER();
 		App::Manager::ActionManager::get();
 		App::Manager::EventManager::get();
-		Selection::SelectionManager::get();
-		Core::Worker::WorkerManager::get();
+		App::Application::Selection::SelectionManager::get();
+		App::Manager::WorkerManager::get();
 
 		// Create Databases
 		_representationLibrary
-			= VTX::MVC_MANAGER().instantiateModel<Model::Representation::RepresentationLibrary>();
+			= VTX::MVC_MANAGER().instantiateModel<App::Application::Representation::RepresentationLibrary>();
 		_renderEffectLibrary
-			= VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
+			= VTX::MVC_MANAGER().instantiateModel<App::Application::RenderEffect::RenderEffectLibrary>();
 		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 
 		// Create scene.
-		_scene = new Object3D::Scene();
+		_scene = new App::Application::Scene();
 		_scene->getCamera().setScreenSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
 
-		_pathSceneData = new IO::Struct::ScenePathData();
+		_pathSceneData = new App::Internal::IO::Serialization::ScenePathData();
 
 		//_tickTimer.start();
 
@@ -67,7 +67,7 @@ namespace VTX
 		if ( p_args.size() == 0 )
 		{
 			// VTX_ACTION(
-			//	 new App::Action::Main::Open( IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
+			//	 new App::Action::Main::Open( App::Internal::IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
 			// VTX_ACTION( new App::Action::Main::OpenApi( "1aon" ) );
 			// VTX_ACTION( new App::Action::Main::OpenApi( "4hhb" ) );
 			// VTX_ACTION( new App::Action::Main::OpenApi( "1aga" ) );
@@ -162,14 +162,14 @@ namespace VTX
 	{
 		// Prevent events throw for nothing when quitting app
 		App::Manager::EventManager::get().freezeEvent( true );
-		Core::Worker::WorkerManager::get().stopAll();
+		App::Manager::WorkerManager::get().stopAll();
 
 		_setting.backup();
 
 		VTX::MVC_MANAGER().deleteModel( _representationLibrary );
 		VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 
-		Selection::SelectionManager::get().deleteModel();
+		App::Application::Selection::SelectionManager::get().deleteModel();
 
 		if ( _scene != nullptr )
 		{
@@ -206,9 +206,9 @@ namespace VTX
 		// QApplication::quit();
 	}
 
-	Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT()
+	App::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT()
 	{
-		return Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPreset();
+		return App::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPreset();
 	}
 
 	//	bool VTXApp::notify( QObject * const receiver, QEvent * const event )

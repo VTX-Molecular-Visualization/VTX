@@ -1,9 +1,10 @@
 #ifndef __VTX_APP__
 #define __VTX_APP__
 
+#include "app/application/_fwd.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/define.hpp"
 #include "app/old_app/generic/base_auto_delete.hpp"
-#include "app/old_app/setting.hpp"
 #include "app/old_app/spec.hpp"
 #include "stat.hpp"
 // #include <QElapsedTimer>
@@ -11,21 +12,7 @@
 
 namespace VTX
 {
-	// class Setting;
-	namespace Model::Representation
-	{
-		class RepresentationLibrary;
-	}
-	namespace Model::Renderer
-	{
-		class RenderEffectPreset;
-		class RenderEffectPresetLibrary;
-	} // namespace Model::Renderer
-	namespace Object3D
-	{
-		class Scene;
-	}
-	namespace IO::Struct
+	namespace App::Internal::IO::Serialization
 	{
 		class ScenePathData;
 	}
@@ -49,31 +36,37 @@ namespace VTX
 		void renderScene() const;
 		void stop();
 
-		inline IO::Struct::ScenePathData &		 getScenePathData() { return *_pathSceneData; };
-		inline const IO::Struct::ScenePathData & getScenePathData() const { return *_pathSceneData; };
-		inline Object3D::Scene &				 getScene() { return *_scene; }
-		inline const Object3D::Scene &			 getScene() const { return *_scene; }
+		inline App::Internal::IO::Serialization::ScenePathData &	   getScenePathData() { return *_pathSceneData; };
+		inline const App::Internal::IO::Serialization::ScenePathData & getScenePathData() const
+		{
+			return *_pathSceneData;
+		};
+		inline App::Application::Scene &	   getScene() { return *_scene; }
+		inline const App::Application::Scene & getScene() const { return *_scene; }
 
 		// TODO remove this. Must be In UI Module
 		inline const UI::MainWindow & getMainWindow() const { throw NotImplementedException(); }
 		inline UI::MainWindow &		  getMainWindow() { throw NotImplementedException(); }
 
-		inline Setting &									  getSetting() { return _setting; }
-		inline const Setting &								  getSetting() const { return _setting; }
-		inline Stat &										  getStat() { return _stat; }
-		inline const Stat &									  getStat() const { return _stat; }
-		inline Spec &										  getSpec() { return _spec; }
-		inline const Spec &									  getSpec() const { return _spec; }
-		inline Model::Representation::RepresentationLibrary & getRepresentationLibrary()
+		inline App::Application::Setting &								 getSetting() { return _setting; }
+		inline const App::Application::Setting &						 getSetting() const { return _setting; }
+		inline Stat &													 getStat() { return _stat; }
+		inline const Stat &												 getStat() const { return _stat; }
+		inline Spec &													 getSpec() { return _spec; }
+		inline const Spec &												 getSpec() const { return _spec; }
+		inline App::Application::Representation::RepresentationLibrary & getRepresentationLibrary()
 		{
 			return *_representationLibrary;
 		}
-		inline const Model::Representation::RepresentationLibrary & getRepresentationLibrary() const
+		inline const App::Application::Representation::RepresentationLibrary & getRepresentationLibrary() const
 		{
 			return *_representationLibrary;
 		}
-		inline Model::Renderer::RenderEffectPresetLibrary & getRenderEffectLibrary() { return *_renderEffectLibrary; }
-		inline const Model::Renderer::RenderEffectPresetLibrary & getRenderEffectLibrary() const
+		inline App::Application::RenderEffect::RenderEffectLibrary & getRenderEffectLibrary()
+		{
+			return *_renderEffectLibrary;
+		}
+		inline const App::Application::RenderEffect::RenderEffectLibrary & getRenderEffectLibrary() const
 		{
 			return *_renderEffectLibrary;
 		}
@@ -98,14 +91,14 @@ namespace VTX
 		// QElapsedTimer _tickTimer   = QElapsedTimer();
 		// uint _tickCounter = 0u;
 
-		Setting										   _setting				  = Setting();
-		Stat										   _stat				  = Stat();
-		Spec										   _spec				  = Spec();
-		UI::MainWindow *							   _mainWindow			  = nullptr;
-		Object3D::Scene *							   _scene				  = nullptr;
-		IO::Struct::ScenePathData *					   _pathSceneData		  = nullptr;
-		Model::Representation::RepresentationLibrary * _representationLibrary = nullptr;
-		Model::Renderer::RenderEffectPresetLibrary *   _renderEffectLibrary	  = nullptr;
+		App::Application::Setting								  _setting				 = App::Application::Setting();
+		Stat													  _stat					 = Stat();
+		Spec													  _spec					 = Spec();
+		UI::MainWindow *										  _mainWindow			 = nullptr;
+		App::Application::Scene *								  _scene				 = nullptr;
+		App::Internal::IO::Serialization::ScenePathData *		  _pathSceneData		 = nullptr;
+		App::Application::Representation::RepresentationLibrary * _representationLibrary = nullptr;
+		App::Application::RenderEffect::RenderEffectLibrary *	  _renderEffectLibrary	 = nullptr;
 
 		std::vector<const Generic::BaseAutoDelete *> _deleteAtEndOfFrameObjects
 			= std::vector<const Generic::BaseAutoDelete *>();
@@ -118,10 +111,10 @@ namespace VTX
 		void _applyEndOfFrameDeletes();
 	};
 
-	Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT();
-	inline Setting &					  VTX_SETTING() { return VTXApp::get().getSetting(); }
-	inline Stat &						  VTX_STAT() { return VTXApp::get().getStat(); }
-	inline Spec &						  VTX_SPEC() { return VTXApp::get().getSpec(); }
+	App::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT();
+	inline App::Application::Setting &					 VTX_SETTING() { return VTXApp::get().getSetting(); }
+	inline Stat &										 VTX_STAT() { return VTXApp::get().getStat(); }
+	inline Spec &										 VTX_SPEC() { return VTXApp::get().getSpec(); }
 
 } // namespace VTX
 

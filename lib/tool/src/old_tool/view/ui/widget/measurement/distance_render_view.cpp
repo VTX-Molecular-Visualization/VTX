@@ -6,7 +6,7 @@
 #include <QPoint>
 #include <QVBoxLayout>
 #include <algorithm>
-#include <app/model/atom.hpp>
+#include <app/component/chemistry/atom.hpp>
 #include <string>
 #include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/main_window.hpp>
@@ -60,7 +60,7 @@ namespace VTX::View::UI::Widget::Measurement
 		const Vec3f & firstAtomWorldPos	 = _model->getFirstAtom().getWorldPosition();
 		const Vec3f & secondAtomWorldPos = _model->getSecondAtom().getWorldPosition();
 
-		const Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
+		const App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
 
 		const bool visible = Util::UIRender::isVisibleToCamera( camera, firstAtomWorldPos )
 							 || Util::UIRender::isVisibleToCamera( camera, secondAtomWorldPos );

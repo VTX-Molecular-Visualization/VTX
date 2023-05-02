@@ -7,13 +7,13 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QWidget>
-#include <app/model/renderer/render_effect_preset_library.hpp>
+#include <app/application/render_effect/render_effect_library.hpp>
 #include <app/core/view/base_view.hpp>
 
 namespace VTX::View::UI::Widget::Renderer
 {
 	class RenderEffectPresetLibraryView :
-		public App::Core::View::BaseView<Model::Renderer::RenderEffectPresetLibrary>,
+		public App::Core::View::BaseView<App::Application::RenderEffect::RenderEffectLibrary>,
 		public VTX::UI::Widget::BaseManualWidget<QWidget>
 	{
 		VTX_WIDGET
@@ -30,7 +30,7 @@ namespace VTX::View::UI::Widget::Renderer
 		void selectPreset( const int p_presetIndex );
 
 	  protected:
-		RenderEffectPresetLibraryView( Model::Renderer::RenderEffectPresetLibrary * const p_model,
+		RenderEffectPresetLibraryView( App::Application::RenderEffect::RenderEffectLibrary * const p_model,
 									   QWidget * const									  p_parent );
 
 		void _setupUi( const QString & ) override;

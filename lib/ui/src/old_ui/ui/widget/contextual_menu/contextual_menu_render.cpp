@@ -15,11 +15,11 @@
 #include <app/action/setting.hpp>
 #include <app/action/viewpoint.hpp>
 #include <app/event/global.hpp>
-#include <app/model/renderer/render_effect_preset_library.hpp>
-#include <app/old_app/io/filesystem.hpp>
-#include <app/old_app/object3d/scene.hpp>
-#include <app/old_app/setting.hpp>
-#include <app/worker/snapshoter.hpp>
+#include <app/application/render_effect/render_effect_library.hpp>
+#include <app/internal/io/filesystem.hpp>
+#include <app/application/scene.hpp>
+#include <app/application/setting.hpp>
+#include <app/internal/worker/snapshoter.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -44,16 +44,16 @@ namespace VTX::UI::Widget::ContextualMenu
 		}
 		else if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> &>(
+			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &>(
 					p_event );
 
-			if ( castedEvent.get().find( Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().end() )
+			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().end() )
 			{
 				_refreshCameraProjection();
 			}
 
-			if ( castedEvent.get().find( Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.get().end() )
+			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.get().end() )
 			{
 				_refreshSelectionGranularityMenu();
 			}
@@ -88,10 +88,10 @@ namespace VTX::UI::Widget::ContextualMenu
 		addSection( "Selection" );
 		_selectionGranularityMenu = new QMenu( this );
 		_selectionGranularityMenu->setTitle( "Selection target" );
-		_addSelectionGranularityActionInMenu( int( VTX::Selection::Granularity::ATOM ), "Atom" );
-		_addSelectionGranularityActionInMenu( int( VTX::Selection::Granularity::RESIDUE ), "Residue" );
-		_addSelectionGranularityActionInMenu( int( VTX::Selection::Granularity::CHAIN ), "Chain" );
-		_addSelectionGranularityActionInMenu( int( VTX::Selection::Granularity::MOLECULE ), "Molecule" );
+		_addSelectionGranularityActionInMenu( int( VTX::App::Application::Selection::GRANULARITY::ATOM ), "Atom" );
+		_addSelectionGranularityActionInMenu( int( VTX::App::Application::Selection::GRANULARITY::RESIDUE ), "Residue" );
+		_addSelectionGranularityActionInMenu( int( VTX::App::Application::Selection::GRANULARITY::CHAIN ), "Chain" );
+		_addSelectionGranularityActionInMenu( int( VTX::App::Application::Selection::GRANULARITY::MOLECULE ), "Molecule" );
 		addMenu( _selectionGranularityMenu );
 
 		addSection( "Render" );
@@ -108,10 +108,10 @@ namespace VTX::UI::Widget::ContextualMenu
 		addMenu( _backgroundColorMenu );
 
 		_renderSettingPreset = new QMenu( "Apply render settings", this );
-		for ( int i = 0; i < Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount(); i++ )
+		for ( int i = 0; i < App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount(); i++ )
 		{
-			const Model::Renderer::RenderEffectPreset & preset
-				= *Model::Renderer::RenderEffectPresetLibrary::get().getPreset( i );
+			const App::Application::RenderEffect::RenderEffectPreset & preset
+				= *App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( i );
 
 			QAction * const action = new QAction( QString::fromStdString( preset.getName() ), _renderSettingPreset );
 			action->setData( i );
@@ -200,11 +200,11 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		const State::Visualization * const state
 			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
-		const VTX::Selection::Granularity currentGranularity = VTX_SETTING().getSelectionGranularity();
+		const VTX::App::Application::Selection::GRANULARITY currentGranularity = VTX_SETTING().getSelectionGranularity();
 
 		for ( QAction * const action : _selectionGranularityMenu->actions() )
 		{
-			const VTX::Selection::Granularity granularity = VTX::Selection::Granularity( action->data().toInt() );
+			const VTX::App::Application::Selection::GRANULARITY granularity = VTX::App::Application::Selection::GRANULARITY( action->data().toInt() );
 			action->setChecked( currentGranularity == granularity );
 		}
 	}
@@ -238,9 +238,9 @@ namespace VTX::UI::Widget::ContextualMenu
 	}
 	void ContextualMenuRender::_refreshAppliedRenderSettingPreset() const
 	{
-		const int appliedRenderSettingIndex = Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPresetIndex();
+		const int appliedRenderSettingIndex = App::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPresetIndex();
 
-		for ( int i = 0; i < Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount(); i++ )
+		for ( int i = 0; i < App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount(); i++ )
 		{
 			_renderSettingPreset->actions()[ i ]->setChecked( i == appliedRenderSettingIndex );
 		}
@@ -287,7 +287,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuRender::_setSelectionGranularityAction( QAction * p_action ) const
 	{
-		const VTX::Selection::Granularity granularity = VTX::Selection::Granularity( p_action->data().toInt() );
+		const VTX::App::Application::Selection::GRANULARITY granularity = VTX::App::Application::Selection::GRANULARITY( p_action->data().toInt() );
 		VTX_ACTION( new Action::Main::ChangeSelectionGranularity( granularity ) );
 	}
 
@@ -343,8 +343,8 @@ namespace VTX::UI::Widget::ContextualMenu
 		}
 		else
 		{
-			Model::Renderer::RenderEffectPreset * const preset
-				= Model::Renderer::RenderEffectPresetLibrary::get().getPreset( presetIndex );
+			App::Application::RenderEffect::RenderEffectPreset * const preset
+				= App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( presetIndex );
 			VTX_ACTION( new App::Action::Renderer::ApplyRenderEffectPreset( *preset ) );
 		}
 	}
@@ -352,7 +352,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		VTX_ACTION( new App::Action::Main::Snapshot(
 			Worker::Snapshoter::MODE::GL,
-			IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
+			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
 	}
 	void ContextualMenuRender::_exportImageAction() { Dialog::openAdvancedSettingImageExportDialog(); }

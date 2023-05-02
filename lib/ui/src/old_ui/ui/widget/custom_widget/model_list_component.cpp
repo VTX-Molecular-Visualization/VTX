@@ -7,7 +7,7 @@
 #include <QVariant>
 #include <app/mvc.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/generic/base_scene_item.hpp>
+#include <app/core/scene/base_scene_item.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -22,8 +22,8 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		if ( p_event.name == VTX::App::Event::Global::SCENE_ITEM_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Core::Scene::BaseSceneItem *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Core::Scene::BaseSceneItem *> &>( p_event );
 
 			App::Core::Model::BaseModel & model
 				= VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( castedEvent.get()->getModelID() );

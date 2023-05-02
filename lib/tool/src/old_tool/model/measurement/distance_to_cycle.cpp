@@ -12,7 +12,7 @@
 //
 //  namespace VTX::Model::Measurement
 //{
-//	DistanceToCycle::DistanceToCycle() : Model::Label( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+//	DistanceToCycle::DistanceToCycle() : App::Component::Object3D::Label( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
 //	{
 //		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
 //		_registerEvent( VTX::App::Event::Global::ATOM_REMOVED );
@@ -33,8 +33,8 @@
 //	{
 //		if ( p_event.name == VTX::App::Event::Global::ATOM_REMOVED )
 //		{
-//			const Event::VTXEventPtr<Model::Atom> & castedEvent
-//				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Atom*> &>( p_event );
+//			const Event::VTXEventPtr<App::Component::Chemistry::Atom> & castedEvent
+//				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom*> &>( p_event );
 //
 //			if ( castedEvent.ptr == _firstAtom || castedEvent.ptr == _secondAtom )
 //			{
@@ -46,8 +46,8 @@
 //		}
 //		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 //		{
-//			const Event::VTXEventPtr<Model::Molecule> & castedEvent
-//				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Molecule*> &>( p_event );
+//			const Event::VTXEventPtr<App::Component::Chemistry::Molecule> & castedEvent
+//				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule*> &>( p_event );
 //
 //			if ( castedEvent.ptr == _firstAtom->getMoleculePtr() || castedEvent.ptr == _secondAtom->getMoleculePtr() )
 //			{
@@ -59,8 +59,8 @@
 //		}
 //		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
 //		{
-//			const Event::VTXEventPtr<Model::Label> & castedEvent
-//				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label*> &>( p_event );
+//			const Event::VTXEventPtr<App::Component::Object3D::Label> & castedEvent
+//				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> &>( p_event );
 //
 //			// TODO : Use a manager instead of managing scene from model
 //			if ( castedEvent.ptr == this )
@@ -68,13 +68,13 @@
 //		}
 //	}
 //
-//	void DistanceToCycle::setAtoms( const Model::Atom & p_firstAtom, const Model::Atom & p_secondAtom )
+//	void DistanceToCycle::setAtoms( const App::Component::Chemistry::Atom & p_firstAtom, const App::Component::Chemistry::Atom & p_secondAtom )
 //	{
 //		_setAtomsInternal( p_firstAtom, p_secondAtom );
 //	}
 //
-//	void DistanceToCycle::_setAtomsInternal( const Model::Atom & p_firstAtom,
-//											 const Model::Atom & p_secondAtom,
+//	void DistanceToCycle::_setAtomsInternal( const App::Component::Chemistry::Atom & p_firstAtom,
+//											 const App::Component::Chemistry::Atom & p_secondAtom,
 //											 const bool			 p_notify )
 //	{
 //		_cleanViews();
@@ -107,9 +107,9 @@
 //		}
 //	}
 //
-//	void DistanceToCycle::_recomputeAABB( Object3D::Helper::AABB & p_aabb )
+//	void DistanceToCycle::_recomputeAABB( App::Component::Object3D::Helper::AABB & p_aabb )
 //	{
-//		p_aabb = Object3D::Helper::AABB();
+//		p_aabb = App::Component::Object3D::Helper::AABB();
 //		p_aabb.extend( _firstAtom->getWorldAABB() );
 //		p_aabb.extend( _secondAtom->getWorldAABB() );
 //	}
@@ -147,7 +147,7 @@
 //		_moleculeViews.clear();
 //	}
 //
-//	void DistanceToCycle::_onMoleculeChange( const Model::Molecule * const p_molecule,
+//	void DistanceToCycle::_onMoleculeChange( const App::Component::Chemistry::Molecule * const p_molecule,
 //											 const App::Core::Event::VTXEvent * const p_event )
 //	{
 //		bool recomputeDistance = false;

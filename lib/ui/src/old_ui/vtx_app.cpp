@@ -31,7 +31,7 @@
 //
 //	void VTXApp::start( const std::vector<std::string> & p_args )
 //	{
-//		// VTX_INFO( "Starting application: {}", IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
+//		// VTX_INFO( "Starting application: {}", App::Internal::IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() );
 //
 //		//		// Load settings.
 //		//		VTX_ACTION( new App::Action::Setting::Load() );
@@ -41,21 +41,21 @@
 //		//		VTX::MVC_MANAGER();
 //		//		Action::ActionManager::get();
 //		//		Event::EventManager::get();
-//		//		Selection::SelectionManager::get();
+//		//		App::Application::Selection::SelectionManager::get();
 //		//		Worker::WorkerManager::get();
 //		//
 //		//		// Create Databases
 //		//		_representationLibrary
-//		//			= VTX::MVC_MANAGER().instantiateModel<Model::Representation::RepresentationLibrary>();
+//		//			= VTX::MVC_MANAGER().instantiateModel<App::Application::Representation::RepresentationLibrary>();
 //		//		_renderEffectLibrary =
-//		// VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
+//		// VTX::MVC_MANAGER().instantiateModel<App::Application::RenderEffect::RenderEffectLibrary>();
 //		//		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 //		//
 //		//		// Create scene.
-//		//		_scene = new Object3D::Scene();
+//		//		_scene = new App::Application::Scene();
 //		//		_scene->getCamera().setScreenSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
 //		//
-//		//		_pathSceneData = new IO::Struct::ScenePathData();
+//		//		_pathSceneData = new App::Internal::IO::Serialization::ScenePathData();
 //		//
 //		//		if ( VTX_SETTING().getCheckVTXUpdateAtLaunch() )
 //		//		{
@@ -75,7 +75,7 @@
 //		//		if ( p_args.size() == 0 )
 //		//		{
 //		//			// VTX_ACTION(
-//		//			//	 new App::Action::Main::Open( IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
+//		//			//	 new App::Action::Main::Open( App::Internal::IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
 //		//			// VTX_ACTION( new App::Action::Main::OpenApi( "1aon" ) );
 //		//			// VTX_ACTION( new App::Action::Main::OpenApi( "4hhb" ) );
 //		//			// VTX_ACTION( new App::Action::Main::OpenApi( "1aga" ) );
@@ -183,7 +183,7 @@
 //		// VTX::MVC_MANAGER().deleteModel( _representationLibrary );
 //		// VTX::MVC_MANAGER().deleteModel( _renderEffectLibrary );
 //
-//		// Selection::SelectionManager::get().deleteModel();
+//		// App::Application::Selection::SelectionManager::get().deleteModel();
 //
 //		// if ( _scene != nullptr )
 //		//{
@@ -220,9 +220,9 @@
 //		// QApplication::quit();
 //	}
 //
-//	// Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT()
+//	// App::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT()
 //	//{
-//	//	// return Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPreset();
+//	//	// return App::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPreset();
 //	// }
 //
 //	//	bool VTXApp::notify( QObject * const receiver, QEvent * const event )

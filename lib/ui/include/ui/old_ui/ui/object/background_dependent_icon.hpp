@@ -3,7 +3,7 @@
 
 #include <QIcon>
 #include <QImage>
-#include <app/old_app/color/rgba.hpp>
+#include <util/color/rgba.hpp>
 
 namespace VTX::UI::Object
 {
@@ -16,7 +16,7 @@ namespace VTX::UI::Object
 		void generateIcons( const QImage & p_image, bool p_isImageLight = true );
 
 		const QIcon & getIcon() const;
-		const QIcon & getIcon( const Color::Rgba & p_backgroundColor ) const;
+		const QIcon & getIcon( const Util::Color::Rgba & p_backgroundColor ) const;
 
 	  private:
 		QIcon _lightIcon;

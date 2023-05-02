@@ -3,12 +3,12 @@
 #include "tool/old_tool/util/analysis.hpp"
 #include <QAction>
 #include <QMenu>
-#include <app/mvc.hpp>
+#include <app/application/scene.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/event/global.hpp>
-#include <app/model/selection.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/object3d/scene.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
 #include <ui/old_ui/ui/main_window.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
 #include <ui/old_ui/vtx_app.hpp>
@@ -73,12 +73,14 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 	bool MenuToolStructuralAlignmentWidget::_checkRMSDEnableSate() const
 	{
-		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		return selectionModel.getMoleculeSelectedCount() >= 2;
 	}
 	bool MenuToolStructuralAlignmentWidget::_checkStructuralAlignmentEnableSate() const
 	{
-		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		return selectionModel.getMoleculeSelectedCount() >= 2;
 	}
 
@@ -90,7 +92,8 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 	void MenuToolStructuralAlignmentWidget::_computeRMSDAction() const
 	{
-		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selection
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new Action::Analysis::ComputeRMSD( selection ) );
 	}
 
@@ -107,10 +110,11 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 	void MenuToolStructuralAlignmentWidget::_launchStructuralAlignmentAction() const
 	{
-		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selection
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 
-		const Model::Molecule *		   staticMolecule;
-		std::vector<Model::Molecule *> mobileMolecules;
+		const App::Component::Chemistry::Molecule *		   staticMolecule;
+		std::vector<App::Component::Chemistry::Molecule *> mobileMolecules;
 		Util::Analysis::pickTargetAndComparersFromSelection( selection, staticMolecule, mobileMolecules );
 
 		VTX_ACTION(

@@ -54,13 +54,13 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		QMenu * const selectionGranularityMenu = new QMenu( this );
 		selectionGranularityMenu->setTitle( "Selection target" );
 		selectionGranularityMenu->addAction( "Atom" )->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME,
-																	int( VTX::Selection::Granularity::ATOM ) );
+																	int( VTX::App::Application::Selection::GRANULARITY::ATOM ) );
 		selectionGranularityMenu->addAction( "Residue" )
-			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::Selection::Granularity::RESIDUE ) );
+			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::App::Application::Selection::GRANULARITY::RESIDUE ) );
 		selectionGranularityMenu->addAction( "Chain" )->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME,
-																	 int( VTX::Selection::Granularity::CHAIN ) );
+																	 int( VTX::App::Application::Selection::GRANULARITY::CHAIN ) );
 		selectionGranularityMenu->addAction( "Molecule" )
-			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::Selection::Granularity::MOLECULE ) );
+			->setProperty( SELECTION_GRANULARITY_PROPERTY_NAME, int( VTX::App::Application::Selection::GRANULARITY::MOLECULE ) );
 		connect(
 			selectionGranularityMenu, &QMenu::triggered, this, &ContextualMenuRender::_setSelectionGranularityAction );
 
@@ -80,10 +80,10 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		// addMenu( _backgroundColorMenu );
 
 		//_renderSettingPreset = new QMenu( "Apply render settings", this );
-		// for ( int i = 0; i < Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount(); i++ )
+		// for ( int i = 0; i < App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount(); i++ )
 		//{
-		//	const Model::Renderer::RenderEffectPreset & preset
-		//		= *Model::Renderer::RenderEffectPresetLibrary::get().getPreset( i );
+		//	const App::Application::RenderEffect::RenderEffectPreset & preset
+		//		= *App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( i );
 
 		//	QAction * const action = new QAction( QString::fromStdString( preset.getName() ), _renderSettingPreset );
 		//	action->setData( i );
@@ -165,8 +165,8 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void ContextualMenuRender::_setSelectionGranularityAction( QAction * p_action ) const
 	{
-		const VTX::Selection::Granularity granularity
-			= VTX::Selection::Granularity( p_action->property( SELECTION_GRANULARITY_PROPERTY_NAME ).toInt() );
+		const VTX::App::Application::Selection::GRANULARITY granularity
+			= VTX::App::Application::Selection::GRANULARITY( p_action->property( SELECTION_GRANULARITY_PROPERTY_NAME ).toInt() );
 		VTX_ACTION( new VTX::App::Action::Setting::ChangeSelectionGranularity( granularity ) );
 	}
 

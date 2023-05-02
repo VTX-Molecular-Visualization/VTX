@@ -1,7 +1,7 @@
 #include "tool/old_tool/analysis/structural_alignment_method/ce_align.hpp"
 #include "tool/old_tool/analysis/rmsd.hpp"
-#include <app/model/molecule.hpp>
-#include <app/model/residue.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/residue.hpp>
 #include <cmath>
 #include <list>
 #include <string>
@@ -14,16 +14,16 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 	CEAlign::CustomParameters::CustomParameters() :
 		AlignmentParameters::AlignmentParameters( StructuralAlignment::AlignmentMethodEnum::CEAlign )
 	{
-		windowSize = Setting::CE_ALIGN_WIN_SIZE_DEFAULT;
-		gapMax	   = Setting::CE_ALIGN_GAP_MAX_DEFAULT;
-		maxPath	   = Setting::CE_ALIGN_MAX_PATH_DEFAULT;
-		d0		   = Setting::CE_ALIGN_D0_DEFAULT;
-		d1		   = Setting::CE_ALIGN_D1_DEFAULT;
+		windowSize = VTX::App::Application::Setting::CE_ALIGN_WIN_SIZE_DEFAULT;
+		gapMax	   = VTX::App::Application::Setting::CE_ALIGN_GAP_MAX_DEFAULT;
+		maxPath	   = VTX::App::Application::Setting::CE_ALIGN_MAX_PATH_DEFAULT;
+		d0		   = VTX::App::Application::Setting::CE_ALIGN_D0_DEFAULT;
+		d1		   = VTX::App::Application::Setting::CE_ALIGN_D1_DEFAULT;
 	}
 
 	StructuralAlignment::AlignmentResult CEAlign::compute(
-		const Model::Molecule &							 p_staticMolecule,
-		Model::Molecule &								 p_mobileMolecule,
+		const App::Component::Chemistry::Molecule &							 p_staticMolecule,
+		App::Component::Chemistry::Molecule &								 p_mobileMolecule,
 		const StructuralAlignment::AlignmentParameters & p_parameters )
 	{
 		const CustomParameters & castedParameters = reinterpret_cast<const CustomParameters &>( p_parameters );
@@ -72,7 +72,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		return result;
 	}
 
-	std::vector<Vec3f> CEAlign::_generateResiduePositionsVector( const Model::Molecule &  p_molecule,
+	std::vector<Vec3f> CEAlign::_generateResiduePositionsVector( const App::Component::Chemistry::Molecule &  p_molecule,
 																 const CustomParameters & p_parameters )
 	{
 		std::vector<Vec3f> residuePositionsVector = std::vector<Vec3f>();
@@ -82,7 +82,7 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 
 		for ( uint iResidue = 0; iResidue < p_molecule.getResidueCount(); iResidue++ )
 		{
-			const Model::Residue * const residuePtr = p_molecule.getResidue( iResidue );
+			const App::Component::Chemistry::Residue * const residuePtr = p_molecule.getResidue( iResidue );
 
 			bool considerResidue = residuePtr != nullptr;
 			considerResidue		 = considerResidue && ( p_parameters.considerWater || !residuePtr->isWater() );
@@ -100,12 +100,12 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		return residuePositionsVector;
 	}
 
-	Vec3f CEAlign::_computeResidueCenterOfMass( const Model::Residue & p_residue )
+	Vec3f CEAlign::_computeResidueCenterOfMass( const App::Component::Chemistry::Residue & p_residue )
 	{
 		// return _residuePositionsDataSet.getPositionInMolecule( p_residue );
 
-		const Model::Molecule &						molecule = *( p_residue.getMoleculePtr() );
-		const Model::Molecule::AtomPositionsFrame & atomPositions
+		const App::Component::Chemistry::Molecule &						molecule = *( p_residue.getMoleculePtr() );
+		const App::Component::Chemistry::Molecule::AtomPositionsFrame & atomPositions
 			= molecule.getAtomPositionFrame( molecule.getFrame() );
 
 		Vec3f res = VEC3F_ZERO;
@@ -596,8 +596,8 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		return result;
 	}
 
-	float CEAlign::_computeRMSDOnAtomOfPath( const Model::Molecule & p_staticMolecule,
-											 const Model::Molecule & p_mobileMolecule,
+	float CEAlign::_computeRMSDOnAtomOfPath( const App::Component::Chemistry::Molecule & p_staticMolecule,
+											 const App::Component::Chemistry::Molecule & p_mobileMolecule,
 											 const Path &			 p_path,
 											 const int				 p_windowSize,
 											 const Mat4f &			 p_transfoMatrix )
@@ -621,8 +621,8 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 					break;
 				}
 
-				const Model::Residue * const residue1 = p_staticMolecule.getResidue( iResidue1 );
-				const Model::Residue * const residue2 = p_mobileMolecule.getResidue( iResidue2 );
+				const App::Component::Chemistry::Residue * const residue1 = p_staticMolecule.getResidue( iResidue1 );
+				const App::Component::Chemistry::Residue * const residue2 = p_mobileMolecule.getResidue( iResidue2 );
 
 				if ( residue1 == nullptr || residue2 == nullptr )
 					continue;

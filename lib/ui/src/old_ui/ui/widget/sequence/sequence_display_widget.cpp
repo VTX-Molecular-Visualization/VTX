@@ -7,10 +7,10 @@
 #include <QRectF>
 
 #include <app/action/residue.hpp>
-#include <app/model/chain.hpp>
-#include <app/model/molecule.hpp>
-#include <app/model/selection.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/component/chemistry/chain.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 
 namespace VTX::UI::Widget::Sequence
 {
@@ -42,7 +42,7 @@ namespace VTX::UI::Widget::Sequence
 
 	void SequenceDisplayWidget::mouseDoubleClickEvent( QMouseEvent * p_event )
 	{
-		const Model::Residue * const residue = _getResidueFromLocaleXPos( p_event->localPos().x() );
+		const App::Component::Chemistry::Residue * const residue = _getResidueFromLocaleXPos( p_event->localPos().x() );
 		if ( residue != nullptr )
 		{
 			VTX_ACTION( new QT::Action::Residue::Orient( *residue ) );
@@ -50,25 +50,25 @@ namespace VTX::UI::Widget::Sequence
 		}
 	}
 
-	Model::Residue * const SequenceDisplayWidget::getResidueAtPos( const QPoint & p_pos )
+	App::Component::Chemistry::Residue * const SequenceDisplayWidget::getResidueAtPos( const QPoint & p_pos )
 	{
 		return _getResidueFromLocaleXPos( p_pos.x() );
 	}
 
-	Model::Residue * const SequenceDisplayWidget::getClosestResidueFromPos( const QPoint & p_pos,
+	App::Component::Chemistry::Residue * const SequenceDisplayWidget::getClosestResidueFromPos( const QPoint & p_pos,
 																			const bool	   p_takeforward )
 	{
 		const uint charIndex = p_pos.x() / _charSizeFromMetrics;
 		return _chainData->getClosestResidueFromCharIndex( charIndex, p_takeforward );
 	}
 
-	Model::Residue * const SequenceDisplayWidget::_getResidueFromLocaleXPos( const int p_localeXPos ) const
+	App::Component::Chemistry::Residue * const SequenceDisplayWidget::_getResidueFromLocaleXPos( const int p_localeXPos ) const
 	{
 		const uint charIndex = p_localeXPos / _charSizeFromMetrics;
 		return _chainData->getResidueFromCharIndex( charIndex );
 	}
 
-	Model::Residue & SequenceDisplayWidget::_getResidue( const uint p_localResidueIndex ) const
+	App::Component::Chemistry::Residue & SequenceDisplayWidget::_getResidue( const uint p_localResidueIndex ) const
 	{
 		const uint moleculeResidueIndex = _chainData->getIndexFirstResidue() + p_localResidueIndex;
 		return *_chainData->getMoleculePtr()->getResidue( moleculeResidueIndex );
@@ -77,11 +77,11 @@ namespace VTX::UI::Widget::Sequence
 	{
 		return _chainData->getCharIndex( p_residueIndex );
 	}
-	uint SequenceDisplayWidget::_getLocalResidueIndexFromResidue( const Model::Residue & p_residue ) const
+	uint SequenceDisplayWidget::_getLocalResidueIndexFromResidue( const App::Component::Chemistry::Residue & p_residue ) const
 	{
 		return p_residue.getIndex() - _chainData->getIndexFirstResidue();
 	}
-	QPoint SequenceDisplayWidget::getResiduePos( const Model::Residue & p_residue,
+	QPoint SequenceDisplayWidget::getResiduePos( const App::Component::Chemistry::Residue & p_residue,
 												 const QWidget * const	p_widgetSpace ) const
 	{
 		const uint localIndex = _getLocalResidueIndexFromResidue( p_residue );
@@ -101,7 +101,7 @@ namespace VTX::UI::Widget::Sequence
 	{
 		QLabel::paintEvent( p_paintEvent );
 
-		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel = VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.isChainSelected( _chainData->getChain() ) )
 		{
 			// linked chain is in selection => draw selection feedback on selected residues
@@ -117,14 +117,14 @@ namespace VTX::UI::Widget::Sequence
 			int currentFirstPixel = -1;
 			int currentRectWidth  = 0;
 
-			const Model::Molecule & molecule = *_chainData->getMoleculePtr();
+			const App::Component::Chemistry::Molecule & molecule = *_chainData->getMoleculePtr();
 
-			const Model::Selection::MapResidueIds & mapSelectedResidueID
+			const App::Application::Selection::SelectionModel::MapResidueIds & mapSelectedResidueID
 				= selectionModel.getMoleculesMap()[ molecule.getId() ][ _chainData->getChainIndex() ];
 
-			for ( const Model::Selection::PairResidueIds & pairResiduesAtoms : mapSelectedResidueID )
+			for ( const App::Application::Selection::SelectionModel::PairResidueIds & pairResiduesAtoms : mapSelectedResidueID )
 			{
-				const Model::Residue * const residue		  = molecule.getResidue( pairResiduesAtoms.first );
+				const App::Component::Chemistry::Residue * const residue		  = molecule.getResidue( pairResiduesAtoms.first );
 				const uint					 locaResidueIndex = _getLocalResidueIndexFromResidue( *residue );
 
 				const int charIndexPaint  = _chainData->getPaintCharIndex( locaResidueIndex );

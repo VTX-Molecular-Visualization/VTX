@@ -14,16 +14,15 @@
 #include "ui/old_ui/ui/widget/representation/instantiated_representation_list_widget.hpp"
 #include "ui/old_ui/ui/widget/representation/representation_inspector_section.hpp"
 #include <QWidget>
-#include <app/old_app/color/rgba.hpp>
-#include <app/old_app/generic/base_transformable.hpp>
-#include <app/model/molecule.hpp>
-#include <app/model/representation/instantiated_representation.hpp>
-#include <app/model/representation/representation.hpp>
+#include <app/application/representation/instantiated_representation.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/core/view/base_view.hpp>
+#include <util/color/rgba.hpp>
+#include <app/old_app/generic/base_transformable.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleMoleculeWidget : public MultipleModelInspectorWidget<Model::Molecule>
+	class MultipleMoleculeWidget : public MultipleModelInspectorWidget<App::Component::Chemistry::Molecule>
 	{
 		VTX_WIDGET
 
@@ -67,21 +66,23 @@ namespace VTX::UI::Widget::Inspector
 		CustomWidget::QLabelMultiField * _nbResiduesLabel = nullptr;
 		CustomWidget::QLabelMultiField * _nbAtomsLabel	  = nullptr;
 
-		void _onTransformChange( const Math::Transform &,
+		void _onTransformChange( const App::Internal::Math::Transform &,
 								 const Generic::BaseTransformable::TransformComposantMask & ) const;
 		void _onPositionDragged( const Vec3f & ) const;
 		void _onRotationDragged( const Vec3f & ) const;
 		void _onScaleDragged( const Vec3f & ) const;
 
 		void _onRepresentationPresetChange( const int p_presetIndex ) const;
-		void _onRepresentationChange( const Model::Representation::InstantiatedRepresentation & p_representation,
-									  const Model::Representation::MEMBER_FLAG &				p_flag ) const;
-		void _onRepresentationColorChange( const Model::Representation::InstantiatedRepresentation & p_representation,
-										   const Color::Rgba &										 p_color,
-										   const bool												 p_ssColor ) const;
+		void _onRepresentationChange(
+			const App::Application::Representation::InstantiatedRepresentation & p_representation,
+			const App::Application::Representation::MEMBER_FLAG &				 p_flag ) const;
+		void _onRepresentationColorChange(
+			const App::Application::Representation::InstantiatedRepresentation & p_representation,
+			const Util::Color::Rgba &													 p_color,
+			const bool															 p_ssColor ) const;
 		void _onRevertRepresentation() const;
 		void _onApplyRepresentationToChildren() const;
-		void _onMoleculeColorChange( const Color::Rgba & p_color ) const;
+		void _onMoleculeColorChange( const Util::Color::Rgba & p_color ) const;
 	};
 } // namespace VTX::UI::Widget::Inspector
 

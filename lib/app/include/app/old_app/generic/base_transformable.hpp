@@ -1,7 +1,7 @@
 #ifndef __VTX_BASE_TRANSFORMABLE__
 #define __VTX_BASE_TRANSFORMABLE__
 
-#include "app/old_app/math/transform.hpp"
+#include "app/internal/math/transform.hpp"
 
 namespace VTX
 {
@@ -34,7 +34,7 @@ namespace VTX
 				NONE	  = 0,
 			};
 
-			inline virtual const Math::Transform & getTransform() const { return _transform; };
+			inline virtual const App::Internal::Math::Transform & getTransform() const { return _transform; };
 
 			void rotate( const float, const Vec3f & );
 			void setRotation( const Vec3f & );
@@ -43,12 +43,12 @@ namespace VTX
 			void setScale( const Mat4f & );
 			void setTranslation( const Vec3f & );
 			void setTranslation( const Mat4f & );
-			void applyTransform( const Math::Transform & );
-			void applyTransform( const Math::Transform &, const TransformComposantMask );
+			void applyTransform( const App::Internal::Math::Transform & );
+			void applyTransform( const App::Internal::Math::Transform &, const TransformComposantMask );
 
 		  protected:
-			Math::Transform _transform;
-			virtual void	_transformModifiedEvent() {};
+			App::Internal::Math::Transform _transform;
+			virtual void				   _transformModifiedEvent() {};
 		};
 	} // namespace Generic
 } // namespace VTX

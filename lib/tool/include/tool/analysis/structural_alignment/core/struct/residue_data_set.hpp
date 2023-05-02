@@ -1,8 +1,9 @@
 #ifndef __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT_CORE_STRUCT_RESIDUE_DATA_SET__
 #define __VTX_TOOL_ANALYSIS_STRUCTURAL_ALIGNMENT_CORE_STRUCT_RESIDUE_DATA_SET__
 
+#include <app/component/chemistry/residue.hpp>
+#include <app/internal/chemdb/residue.hpp>
 #include <map>
-#include <app/model/residue.hpp>
 #include <string>
 #include <vector>
 
@@ -16,14 +17,14 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Struct
 		{
 			_standardResidueData = std::vector<T>();
 
-			const int standardResidueCount = int( Model::Residue::SYMBOL::COUNT );
+			const int standardResidueCount = int( App::Internal::ChemDB::Residue::SYMBOL::COUNT );
 			_standardResidueData.resize( standardResidueCount );
 			_standardResidueDataRegistered.resize( standardResidueCount, false );
 
 			_nonStandardResidueData = std::map<std::string, T>();
 		}
 
-		const T & get( const Model::Residue & p_residue )
+		const T & get( const App::Component::Chemistry::Residue & p_residue )
 		{
 			if ( p_residue.isStandardResidue() )
 			{
@@ -46,7 +47,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Struct
 		}
 
 	  protected:
-		void registerStandardResidueData( const Model::Residue & p_residue )
+		void registerStandardResidueData( const App::Component::Chemistry::Residue & p_residue )
 		{
 			const int symbolIndex = int( p_residue.getSymbol() );
 			const T	  data		  = generateResidueData( p_residue );
@@ -55,7 +56,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Struct
 			_standardResidueDataRegistered[ symbolIndex ] = true;
 		}
 
-		void registerNonStandardResidueData( const Model::Residue & p_residue )
+		void registerNonStandardResidueData( const App::Component::Chemistry::Residue & p_residue )
 		{
 			const std::string symbolName = p_residue.getSymbolName();
 			const T			  data		 = generateResidueData( p_residue );
@@ -63,7 +64,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core::Struct
 			_nonStandardResidueData[ symbolName ] = data;
 		}
 
-		virtual T generateResidueData( const Model::Residue & p_residue ) const = 0;
+		virtual T generateResidueData( const App::Component::Chemistry::Residue & p_residue ) const = 0;
 
 	  private:
 		std::vector<T>			 _standardResidueData;

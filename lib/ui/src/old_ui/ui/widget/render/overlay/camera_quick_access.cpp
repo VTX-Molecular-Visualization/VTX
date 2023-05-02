@@ -12,7 +12,7 @@
 #include <app/mvc.hpp>
 #include <app/event/global.hpp>
 #include <app/old_app/id.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::Render::Overlay
@@ -28,11 +28,11 @@ namespace VTX::UI::Widget::Render::Overlay
 	{
 		if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> &>(
+			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &>(
 					p_event );
 
-			if ( castedEvent.get().find( Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().cend() )
+			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::CAMERA_PROJECTION ) != castedEvent.get().cend() )
 				_refreshCameraProjectionButton();
 		}
 		else if ( p_event.name == VTX::App::Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
@@ -103,12 +103,12 @@ namespace VTX::UI::Widget::Render::Overlay
 	{
 		_renderEffectLibraryMenu->clear();
 
-		const int appliedPresetIndex = Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPresetIndex();
+		const int appliedPresetIndex = App::Application::RenderEffect::RenderEffectLibrary::get().getAppliedPresetIndex();
 
-		for ( int i = 0; i < Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount(); i++ )
+		for ( int i = 0; i < App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount(); i++ )
 		{
-			const Model::Renderer::RenderEffectPreset * const preset
-				= Model::Renderer::RenderEffectPresetLibrary::get().getPreset( i );
+			const App::Application::RenderEffect::RenderEffectPreset * const preset
+				= App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( i );
 
 			QAction * const action = _renderEffectLibraryMenu->addAction( QString::fromStdString( preset->getName() ) );
 
@@ -149,8 +149,8 @@ namespace VTX::UI::Widget::Render::Overlay
 		}
 		else
 		{
-			Model::Renderer::RenderEffectPreset * const preset
-				= Model::Renderer::RenderEffectPresetLibrary::get().getPreset( renderEffectPreset );
+			App::Application::RenderEffect::RenderEffectPreset * const preset
+				= App::Application::RenderEffect::RenderEffectLibrary::get().getPreset( renderEffectPreset );
 
 			VTX_ACTION( new App::Action::Renderer::ApplyRenderEffectPreset( *preset ) );
 		}

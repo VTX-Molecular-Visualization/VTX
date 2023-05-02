@@ -4,16 +4,11 @@
 #include "tool/old_tool/analysis/struct/residue_center_of_mass_data_set.hpp"
 #include "tool/old_tool/analysis/structural_alignment.hpp"
 #include <Eigen/Geometry>
+#include <app/component/chemistry/_fwd.hpp>
 #include <util/constants.hpp>
 #include <util/types.hpp>
 #include <utility>
 #include <vector>
-
-namespace VTX::Model
-{
-	class Molecule;
-	class Residue;
-} // namespace VTX::Model
 
 namespace VTX::Analysis::StructuralAlignmentMethod
 {
@@ -46,14 +41,15 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 
 	  public:
 		StructuralAlignment::AlignmentResult compute(
-			const Model::Molecule &							 p_staticMolecule,
-			Model::Molecule &								 p_mobileMolecule,
+			const App::Component::Chemistry::Molecule &		 p_staticMolecule,
+			App::Component::Chemistry::Molecule &			 p_mobileMolecule,
 			const StructuralAlignment::AlignmentParameters & p_parameters ) override;
 
 	  private:
 		// OK
-		static std::vector<Vec3f> _generateResiduePositionsVector( const Model::Molecule &	p_molecule,
-																   const CustomParameters & p_parameters );
+		static std::vector<Vec3f> _generateResiduePositionsVector(
+			const App::Component::Chemistry::Molecule & p_molecule,
+			const CustomParameters &					p_parameters );
 
 		// OK
 		static Matrix<float> _computeDistanceMatrix( const std::vector<Vec3f> & p_atomPositions );
@@ -81,13 +77,13 @@ namespace VTX::Analysis::StructuralAlignmentMethod
 		Eigen::Matrix3d _mat3fToEigenMat3d( const Mat3f & _mat );
 		Mat3f			_eigenMat3dToMat3f( const Eigen::Matrix3d & _eigenMat );
 
-		static Vec3f _computeResidueCenterOfMass( const Model::Residue & p_residue );
+		static Vec3f _computeResidueCenterOfMass( const App::Component::Chemistry::Residue & p_residue );
 
-		static float _computeRMSDOnAtomOfPath( const Model::Molecule & p_staticMolecule,
-											   const Model::Molecule & p_mobileMolecule,
-											   const Path &			   p_path,
-											   const int			   p_windowSize,
-											   const Mat4f &		   transformationMatrix = MAT4F_ID );
+		static float _computeRMSDOnAtomOfPath( const App::Component::Chemistry::Molecule & p_staticMolecule,
+											   const App::Component::Chemistry::Molecule & p_mobileMolecule,
+											   const Path &								   p_path,
+											   const int								   p_windowSize,
+											   const Mat4f & transformationMatrix = MAT4F_ID );
 
 		static Struct::ResidueCenterOfMassDataSet _residuePositionsDataSet;
 	};

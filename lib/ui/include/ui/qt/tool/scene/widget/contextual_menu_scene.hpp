@@ -4,11 +4,11 @@
 #include "ui/qt/widget/base_manual_widget.hpp"
 #include "ui/qt/widget/contextual_menu/contextual_menu_template.hpp"
 #include <QMenu>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/application/scene.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {
-	class ContextualMenuScene : public QT::Widget::ContextualMenu::ContextualMenuTemplate<Object3D::Scene>
+	class ContextualMenuScene : public QT::Widget::ContextualMenu::ContextualMenuTemplate<App::Application::Scene>
 	{
 		NEW_ARCHI_VTX_WIDGET
 

@@ -4,9 +4,8 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QVBoxLayout>
-
 #include <app/action/representation.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -69,7 +68,7 @@ namespace VTX::UI::Widget::Settings
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FilenameFieldWidget>( viewport, "nameWidget" );
 
 		_representationTypeWidget = new QComboBox( viewport );
-		Util::UI::fillComboBox( _representationTypeWidget, Generic::REPRESENTATION_STRING );
+		Util::UI::fillComboBox( _representationTypeWidget, App::Application::Representation::REPRESENTATION_STRING );
 
 		_quickAccess	   = new QCheckBox( viewport );
 		_colorButtonWidget = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorFieldButton>(
@@ -181,7 +180,10 @@ namespace VTX::UI::Widget::Settings
 
 	void RepresentationPresetEditor::localize() {}
 
-	void RepresentationPresetEditor::_catchModelEvent( const VTX::App::Core::Event::VTXEvent * const p_event ) { refresh(); }
+	void RepresentationPresetEditor::_catchModelEvent( const VTX::App::Core::Event::VTXEvent * const p_event )
+	{
+		refresh();
+	}
 
 	void RepresentationPresetEditor::refresh()
 	{
@@ -196,7 +198,7 @@ namespace VTX::UI::Widget::Settings
 	}
 
 	void RepresentationPresetEditor::_refreshOptionalParametersVisibility(
-		const Generic::REPRESENTATION & p_representationEnum )
+		const App::Application::Representation::REPRESENTATION_ENUM & p_representationEnum )
 	{
 		for ( int i = 0; i < _optionalParameterWidgets.size(); i++ )
 		{
@@ -216,27 +218,33 @@ namespace VTX::UI::Widget::Settings
 	{
 		switch ( _preset->getRepresentationType() )
 		{
-		case Generic::REPRESENTATION::BALL_AND_STICK: _refreshBallAndStickRepresentation(); break;
-		case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON: _refreshBallStickAndCartoonRepresentation(); break;
-		case Generic::REPRESENTATION::STICK: _refreshStickRepresentation(); break;
-		case Generic::REPRESENTATION::STICK_AND_CARTOON: _refreshStickAndCartoonRepresentation(); break;
-		case Generic::REPRESENTATION::VAN_DER_WAALS:
+		case App::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK:
+			_refreshBallAndStickRepresentation();
+			break;
+		case App::Application::Representation::REPRESENTATION_ENUM::BALL_AND_STICK_AND_CARTOON:
+			_refreshBallStickAndCartoonRepresentation();
+			break;
+		case App::Application::Representation::REPRESENTATION_ENUM::STICK: _refreshStickRepresentation(); break;
+		case App::Application::Representation::REPRESENTATION_ENUM::STICK_AND_CARTOON:
+			_refreshStickAndCartoonRepresentation();
+			break;
+		case App::Application::Representation::REPRESENTATION_ENUM::VAN_DER_WAALS:
 			_refreshVanDerWaalsRepresentation();
 			break;
 			// !V0.1
-		// case Generic::REPRESENTATION::TRACE: _refreshTraceRepresentation(); break;
-		case Generic::REPRESENTATION::SAS: _refreshSASRepresentation(); break;
-		case Generic::REPRESENTATION::CARTOON: _refreshCartoonRepresentation(); break;
-		case Generic::REPRESENTATION::SES: _refreshSESRepresentation(); break;
+		// case App::Application::Representation::REPRESENTATION_ENUM::TRACE: _refreshTraceRepresentation(); break;
+		case App::Application::Representation::REPRESENTATION_ENUM::SAS: _refreshSASRepresentation(); break;
+		case App::Application::Representation::REPRESENTATION_ENUM::CARTOON: _refreshCartoonRepresentation(); break;
+		case App::Application::Representation::REPRESENTATION_ENUM::SES: _refreshSESRepresentation(); break;
 		}
 	}
 	void RepresentationPresetEditor::_refreshBallAndStickRepresentation()
 	{
 		_sphereRadiusWidget->setValue( _preset->getData().getSphereRadius() );
-		_sphereRadiusWidget->setMinMax( Setting::ATOMS_RADIUS_MIN, Setting::ATOMS_RADIUS_MAX );
+		_sphereRadiusWidget->setMinMax( VTX::App::Application::Setting::ATOMS_RADIUS_MIN, VTX::App::Application::Setting::ATOMS_RADIUS_MAX );
 
 		_cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
-		_cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
+		_cylinderRadiusWidget->setMinMax( VTX::App::Application::Setting::BONDS_RADIUS_MIN, VTX::App::Application::Setting::BONDS_RADIUS_MAX );
 
 		_cylinderColorBlendingMode->setCurrentIndex( int( _preset->getData().getCylinderColorBlendingMode() ) );
 
@@ -245,10 +253,10 @@ namespace VTX::UI::Widget::Settings
 	void RepresentationPresetEditor::_refreshBallStickAndCartoonRepresentation()
 	{
 		_sphereRadiusWidget->setValue( _preset->getData().getSphereRadius() );
-		_sphereRadiusWidget->setMinMax( Setting::ATOMS_RADIUS_MIN, Setting::ATOMS_RADIUS_MAX );
+		_sphereRadiusWidget->setMinMax( VTX::App::Application::Setting::ATOMS_RADIUS_MIN, VTX::App::Application::Setting::ATOMS_RADIUS_MAX );
 
 		_cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
-		_cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
+		_cylinderRadiusWidget->setMinMax( VTX::App::Application::Setting::BONDS_RADIUS_MIN, VTX::App::Application::Setting::BONDS_RADIUS_MAX );
 
 		_cylinderColorBlendingMode->setCurrentIndex( int( _preset->getData().getCylinderColorBlendingMode() ) );
 		_colorModeWidget->setCurrentIndex( int( _preset->getData().getColorMode() ) );
@@ -258,14 +266,14 @@ namespace VTX::UI::Widget::Settings
 	void RepresentationPresetEditor::_refreshStickRepresentation()
 	{
 		_cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
-		_cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
+		_cylinderRadiusWidget->setMinMax( VTX::App::Application::Setting::BONDS_RADIUS_MIN, VTX::App::Application::Setting::BONDS_RADIUS_MAX );
 		_cylinderColorBlendingMode->setCurrentIndex( int( _preset->getData().getCylinderColorBlendingMode() ) );
 		_colorModeWidget->setCurrentIndex( int( _preset->getData().getColorMode() ) );
 	}
 	void RepresentationPresetEditor::_refreshStickAndCartoonRepresentation()
 	{
 		_cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
-		_cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
+		_cylinderRadiusWidget->setMinMax( VTX::App::Application::Setting::BONDS_RADIUS_MIN, VTX::App::Application::Setting::BONDS_RADIUS_MAX );
 
 		_cylinderColorBlendingMode->setCurrentIndex( int( _preset->getData().getCylinderColorBlendingMode() ) );
 		_colorModeWidget->setCurrentIndex( int( _preset->getData().getColorMode() ) );
@@ -275,13 +283,13 @@ namespace VTX::UI::Widget::Settings
 	void RepresentationPresetEditor::_refreshVanDerWaalsRepresentation()
 	{
 		_sphereRadiusWidget->setValue( _preset->getData().getSphereRadius() );
-		_sphereRadiusWidget->setMinMax( Setting::ATOMS_RADIUS_ADD_MIN, Setting::ATOMS_RADIUS_ADD_MAX );
+		_sphereRadiusWidget->setMinMax( VTX::App::Application::Setting::ATOMS_RADIUS_ADD_MIN, VTX::App::Application::Setting::ATOMS_RADIUS_ADD_MAX );
 		_colorModeWidget->setCurrentIndex( int( _preset->getData().getColorMode() ) );
 	}
 	void RepresentationPresetEditor::_refreshTraceRepresentation()
 	{
 		_cylinderRadiusWidget->setValue( _preset->getData().getCylinderRadius() );
-		_cylinderRadiusWidget->setMinMax( Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
+		_cylinderRadiusWidget->setMinMax( VTX::App::Application::Setting::BONDS_RADIUS_MIN, VTX::App::Application::Setting::BONDS_RADIUS_MAX );
 		_colorModeWidget->setCurrentIndex( int( _preset->getData().getColorMode() ) );
 	}
 	void RepresentationPresetEditor::_refreshSASRepresentation()
@@ -298,8 +306,8 @@ namespace VTX::UI::Widget::Settings
 		_ribbonColorBlendingMode->setCurrentIndex( int( _preset->getData().getRibbonColorBlendingMode() ) );
 	}
 
-	void RepresentationPresetEditor::setPreset( Model::Representation::Representation * const p_model,
-												const bool									  p_updateRender )
+	void RepresentationPresetEditor::setPreset( App::Application::Representation::RepresentationPreset * const p_model,
+												const bool p_updateRender )
 	{
 		if ( _preset == p_model )
 			return;
@@ -336,7 +344,8 @@ namespace VTX::UI::Widget::Settings
 
 	void RepresentationPresetEditor::_onRepresentationTypeChange( const int p_newIndex )
 	{
-		const Generic::REPRESENTATION representationType = Generic::REPRESENTATION( p_newIndex );
+		const App::Application::Representation::REPRESENTATION_ENUM representationType
+			= App::Application::Representation::REPRESENTATION_ENUM( p_newIndex );
 
 		if ( !signalsBlocked() && representationType != _preset->getRepresentationType() )
 			VTX_ACTION( new App::Action::Representation::ChangeRepresentation( _preset, representationType ) );
@@ -379,7 +388,7 @@ namespace VTX::UI::Widget::Settings
 		if ( !signalsBlocked() && colorMode != _preset->getData().getRibbonColorBlendingMode() )
 			VTX_ACTION( new App::Action::Representation::ChangeRibbonColorBendingMode( _preset, colorMode ) );
 	}
-	void RepresentationPresetEditor::_onColorChanged( const Color::Rgba & p_color )
+	void RepresentationPresetEditor::_onColorChanged( const Util::Color::Rgba & p_color )
 	{
 		if ( !signalsBlocked() && p_color != _preset->getColor() )
 			VTX_ACTION( new App::Action::Representation::ChangeColor( _preset, p_color ) );
@@ -387,10 +396,10 @@ namespace VTX::UI::Widget::Settings
 	void RepresentationPresetEditor::_onSetDefault()
 	{
 		if ( !signalsBlocked()
-			 && _preset != Model::Representation::RepresentationLibrary::get().getDefaultRepresentation() )
+			 && _preset != App::Application::Representation::RepresentationLibrary::get().getDefaultRepresentation() )
 		{
 			const int presetIndex
-				= Model::Representation::RepresentationLibrary::get().getRepresentationIndex( _preset );
+				= App::Application::Representation::RepresentationLibrary::get().getRepresentationIndex( _preset );
 			VTX_ACTION( new App::Action::Representation::SetAsDefaultRepresentation( presetIndex ) );
 		}
 	}

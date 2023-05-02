@@ -1,5 +1,5 @@
 #include "app/action/transformable.hpp"
-#include "app/old_app/setting.hpp"
+#include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <util/math.hpp>
 
@@ -21,7 +21,7 @@ namespace VTX::App::Action::Transformable
 		for ( Generic::BaseTransformable * transformable : _transformables )
 		{
 			Vec3f newPos = transformable->getTransform().getTranslationVector() + _delta;
-			newPos		 = Util::Math::clamp( newPos, VTX::Setting::MIN_SCENE_POS, VTX::Setting::MAX_SCENE_POS );
+			newPos		 = Util::Math::clamp( newPos, VTX::App::Application::Setting::MIN_SCENE_POS, VTX::App::Application::Setting::MAX_SCENE_POS );
 			transformable->setTranslation( newPos );
 		}
 
@@ -49,7 +49,7 @@ namespace VTX::App::Action::Transformable
 			case RotationType::Axis_Angle: transformable->rotate( _angle, _axis ); break;
 			case RotationType::Euler:
 				Vec3f newEuler = transformable->getTransform().getEulerAngles() + _axis;
-				newEuler = Util::Math::clamp( newEuler, VTX::Setting::MIN_EULER_VEC, VTX::Setting::MAX_EULER_VEC );
+				newEuler = Util::Math::clamp( newEuler, VTX::App::Application::Setting::MIN_EULER_VEC, VTX::App::Application::Setting::MAX_EULER_VEC );
 				transformable->setRotation( newEuler );
 				break;
 			}
@@ -75,7 +75,7 @@ namespace VTX::App::Action::Transformable
 		for ( Generic::BaseTransformable * transformable : _transformables )
 		{
 			Vec3f newScale = transformable->getTransform().getScaleVector() + _delta;
-			newScale	   = Util::Math::clamp( newScale, VTX::Setting::MIN_SCALE_VEC, VTX::Setting::MAX_SCALE_VEC );
+			newScale	   = Util::Math::clamp( newScale, VTX::App::Application::Setting::MIN_SCALE_VEC, VTX::App::Application::Setting::MAX_SCALE_VEC );
 
 			transformable->setScale( newScale );
 		}

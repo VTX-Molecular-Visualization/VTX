@@ -5,14 +5,14 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		Color::Rgba DirectLightingIntegrator::Li( const Ray &	p_ray,
+		Util::Color::Rgba DirectLightingIntegrator::Li( const Ray &	p_ray,
 												  const Scene & p_scene,
 												  const float	p_tMin,
 												  const float	p_tMax ) const
 		{
 			// TODO: for now only the same as RaycastIntegrator
 			Intersection intersection;
-			Color::Rgba	 Li = Color::Rgba::BLACK;
+			Util::Color::Rgba	 Li = Util::Color::Rgba::BLACK;
 
 			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
@@ -23,7 +23,7 @@ namespace VTX
 				{
 					const uint nbLightSamples = light->isSurface() ? 32 : 1;
 
-					Color::Rgba lightContrib = Color::Rgba::BLACK;
+					Util::Color::Rgba lightContrib = Util::Color::Rgba::BLACK;
 					for ( uint i = 0; i < nbLightSamples; ++i )
 					{
 						const LightSample ls = light->sample( intersection._point );

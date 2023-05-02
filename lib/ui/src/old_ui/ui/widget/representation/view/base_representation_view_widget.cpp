@@ -4,7 +4,7 @@ namespace VTX::UI::Widget::Representation::View
 {
 	BaseRepresentationViewWidget::BaseRepresentationViewWidget( QWidget * p_parent ) :
 		BaseManualWidget( p_parent ),
-		TMultiDataTargetField<Model::Representation::InstantiatedRepresentation, Generic::BaseRepresentable>()
+		TMultiDataTargetField<App::Application::Representation::InstantiatedRepresentation, App::Application::Representation::BaseRepresentable>()
 	{
 	}
 

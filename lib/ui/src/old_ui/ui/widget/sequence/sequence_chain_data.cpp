@@ -1,10 +1,11 @@
 #include "ui/old_ui/ui/widget/sequence/sequence_chain_data.hpp"
-#include <app/model/molecule.hpp>
-#include <app/model/residue.hpp>
+#include <app/component/chemistry/chain.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/residue.hpp>
 
 namespace VTX::UI::Widget::Sequence
 {
-	SequenceChainData::SequenceChainData( const Model::Chain & p_chain ) :
+	SequenceChainData::SequenceChainData( const App::Component::Chemistry::Chain & p_chain ) :
 		_chain( p_chain ), _molecule( *( p_chain.getMoleculePtr() ) ), _fromResidue( _chain.getIndexFirstResidue() ),
 		_toResidue( _chain.getIndexLastResidue() ), _chainSequenceBuilder( p_chain )
 	{
@@ -56,7 +57,8 @@ namespace VTX::UI::Widget::Sequence
 		}
 	}
 
-	Model::Residue * const SequenceChainData::getResidueFromCharIndex( const uint p_charIndex ) const
+	App::Component::Chemistry::Residue * const SequenceChainData::getResidueFromCharIndex(
+		const uint p_charIndex ) const
 	{
 		for ( const auto it : _chainSequenceBuilder.getDataSet() )
 		{
@@ -66,10 +68,11 @@ namespace VTX::UI::Widget::Sequence
 
 		return nullptr;
 	}
-	Model::Residue * const SequenceChainData::getClosestResidueFromCharIndex( const uint p_charIndex,
-																			  const bool takeForward ) const
+	App::Component::Chemistry::Residue * const SequenceChainData::getClosestResidueFromCharIndex(
+		const uint p_charIndex,
+		const bool takeForward ) const
 	{
-		Model::Residue * res = nullptr;
+		App::Component::Chemistry::Residue * res = nullptr;
 
 		bool takeNext = false;
 

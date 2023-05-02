@@ -1,6 +1,6 @@
 #include "ui/old_ui/ui/widget/representation/stick_and_cartoon_representation_widget.hpp"
 #include <QHBoxLayout>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 
 namespace VTX::UI::Widget::Representation
 {
@@ -22,9 +22,8 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setCylinderRadius( p_newRadius );
 
-		emit onDataChange(
-			Model::Representation::MEMBER_FLAG( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS
-												| Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
+		emit onDataChange( App::Application::Representation::MEMBER_FLAG::ENUM::CYLINDER_RADIUS
+						   | App::Application::Representation::MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED );
 	}
 
 } // namespace VTX::UI::Widget::Representation

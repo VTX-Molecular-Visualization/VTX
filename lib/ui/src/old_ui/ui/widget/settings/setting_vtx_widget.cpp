@@ -14,11 +14,11 @@
 #include <QLabel>
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
+#include <app/component/chemistry/enum_trajectory.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/io/struct/image_export.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/internal/io/serialization/image_export.hpp>
+#include <app/application/setting.hpp>
 #include <app/old_app/style.hpp>
-#include <app/old_app/trajectory/trajectory_enum.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -49,18 +49,18 @@ namespace VTX::UI::Widget::Settings
 		_controllerAccelerationFactorWidget
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
 				viewport, "ControllerAccelerationFactorWidget" );
-		_controllerAccelerationFactorWidget->setMinMax( Setting::CONTROLLER_ACCELERATION_FACTOR_MIN,
-														Setting::CONTROLLER_ACCELERATION_FACTOR_MAX );
+		_controllerAccelerationFactorWidget->setMinMax( VTX::App::Application::Setting::CONTROLLER_ACCELERATION_FACTOR_MIN,
+														VTX::App::Application::Setting::CONTROLLER_ACCELERATION_FACTOR_MAX );
 		_controllerDecelerationFactorWidget
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
 				viewport, "ControllerDecelerationFactorWidget" );
-		_controllerDecelerationFactorWidget->setMinMax( Setting::CONTROLLER_DECELERATION_FACTOR_MIN,
-														Setting::CONTROLLER_DECELERATION_FACTOR_MAX );
+		_controllerDecelerationFactorWidget->setMinMax( VTX::App::Application::Setting::CONTROLLER_DECELERATION_FACTOR_MIN,
+														VTX::App::Application::Setting::CONTROLLER_DECELERATION_FACTOR_MAX );
 		_controllerTranslationSpeedWidget
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
 				viewport, "ControllerTranslationSpeedWidget" );
-		_controllerTranslationSpeedWidget->setMinMax( Setting::CONTROLLER_TRANSLATION_SPEED_MIN,
-													  Setting::CONTROLLER_TRANSLATION_SPEED_MAX );
+		_controllerTranslationSpeedWidget->setMinMax( VTX::App::Application::Setting::CONTROLLER_TRANSLATION_SPEED_MIN,
+													  VTX::App::Application::Setting::CONTROLLER_TRANSLATION_SPEED_MAX );
 		_controllerRotationSpeedWidget = WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
 			viewport, "ControllerRotationSpeedWidget" );
 		_controllerRotationSpeedWidget->setMinMax( 0.0f, 1.0f );
@@ -69,14 +69,14 @@ namespace VTX::UI::Widget::Settings
 		// Camera
 		_cameraFOV
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>( viewport, "cameraFov" );
-		_cameraFOV->setMinMax( Setting::CAMERA_FOV_MIN, Setting::CAMERA_FOV_MAX );
+		_cameraFOV->setMinMax( VTX::App::Application::Setting::CAMERA_FOV_MIN, VTX::App::Application::Setting::CAMERA_FOV_MAX );
 		_cameraNear
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldDraggableWidget>( viewport, "cameraNear" );
-		_cameraNear->setMinMax( Setting::CAMERA_NEAR_MIN, Setting::CAMERA_NEAR_MAX );
+		_cameraNear->setMinMax( VTX::App::Application::Setting::CAMERA_NEAR_MIN, VTX::App::Application::Setting::CAMERA_NEAR_MAX );
 		_cameraNear->setLabel( "Near clip" );
 		_cameraFar
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldDraggableWidget>( viewport, "cameraNear" );
-		_cameraFar->setMinMax( Setting::CAMERA_FAR_MIN, Setting::CAMERA_FAR_MAX );
+		_cameraFar->setMinMax( VTX::App::Application::Setting::CAMERA_FAR_MIN, VTX::App::Application::Setting::CAMERA_FAR_MAX );
 		_cameraFar->setLabel( "Far clip" );
 		_antialiasing	  = new QCheckBox( viewport );
 		_cameraProjection = new QComboBox( viewport );
@@ -85,7 +85,7 @@ namespace VTX::UI::Widget::Settings
 
 		// Graphic
 		_snapshotFormatWidget = new QComboBox( viewport );
-		for ( const std::string & formatStr : IO::Struct::ImageExport::FORMAT_STR )
+		for ( const std::string & formatStr : App::Internal::IO::Serialization::ImageExport::FORMAT_STR )
 			_snapshotFormatWidget->addItem( QString::fromStdString( formatStr ) );
 
 		_snapshotBackgroundOpacitySlider = WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
@@ -93,7 +93,7 @@ namespace VTX::UI::Widget::Settings
 		_snapshotBackgroundOpacitySlider->setMinMax( 0.f, 1.f );
 
 		_snapshotResolutionWidget = new QComboBox( viewport );
-		for ( const std::string & resolutionStr : IO::Struct::ImageExport::RESOLUTION_STR )
+		for ( const std::string & resolutionStr : App::Internal::IO::Serialization::ImageExport::RESOLUTION_STR )
 			_snapshotResolutionWidget->addItem( QString::fromStdString( resolutionStr ) );
 
 		_snapshotQualitySlider = WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
@@ -109,12 +109,12 @@ namespace VTX::UI::Widget::Settings
 
 		// Trajectory
 		_defaultTrajectoryPlayModeWidget = new QComboBox( viewport );
-		for ( const std::string & playmodeStr : Trajectory::PLAY_MODE_STRING )
+		for ( const std::string & playmodeStr : App::Component::Chemistry::PLAY_MODE_STRING )
 			_defaultTrajectoryPlayModeWidget->addItem( QString::fromStdString( playmodeStr ) );
 
 		_defaultTrajectorySpeedWidget = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldSliderWidget>(
 			viewport, "DefaultTrajectorySpeedWidget" );
-		_defaultTrajectorySpeedWidget->setMinMax( Setting::MIN_TRAJECTORY_SPEED, Setting::MAX_TRAJECTORY_SPEED );
+		_defaultTrajectorySpeedWidget->setMinMax( VTX::App::Application::Setting::MIN_TRAJECTORY_SPEED, VTX::App::Application::Setting::MAX_TRAJECTORY_SPEED );
 
 		// Data
 		_symbolDisplayModeWidget = new QComboBox( viewport );
@@ -302,8 +302,8 @@ namespace VTX::UI::Widget::Settings
 
 		const float elasticityValue
 			= 1
-			  - ( VTX_SETTING().getControllerElasticityFactor() - Setting::CONTROLLER_ELASTICITY_FACTOR_MIN )
-					/ ( Setting::CONTROLLER_ELASTICITY_FACTOR_MAX - Setting::CONTROLLER_ELASTICITY_FACTOR_MIN );
+			  - ( VTX_SETTING().getControllerElasticityFactor() - VTX::App::Application::Setting::CONTROLLER_ELASTICITY_FACTOR_MIN )
+					/ ( VTX::App::Application::Setting::CONTROLLER_ELASTICITY_FACTOR_MAX - VTX::App::Application::Setting::CONTROLLER_ELASTICITY_FACTOR_MIN );
 		_controllerElasticityFactorWidget->setValue( elasticityValue );
 
 		_controllerAccelerationFactorWidget->setValue( VTX_SETTING().getAccelerationSpeedFactor() );
@@ -311,8 +311,8 @@ namespace VTX::UI::Widget::Settings
 		_controllerTranslationSpeedWidget->setValue( VTX_SETTING().getTranslationSpeed() );
 
 		const float rotationSpeedValue
-			= ( VTX_SETTING().getRotationSpeed() - Setting::CONTROLLER_ROTATION_SPEED_MIN )
-			  / ( Setting::CONTROLLER_ROTATION_SPEED_MAX - Setting::CONTROLLER_ROTATION_SPEED_MIN );
+			= ( VTX_SETTING().getRotationSpeed() - VTX::App::Application::Setting::CONTROLLER_ROTATION_SPEED_MIN )
+			  / ( VTX::App::Application::Setting::CONTROLLER_ROTATION_SPEED_MAX - VTX::App::Application::Setting::CONTROLLER_ROTATION_SPEED_MIN );
 
 		_controllerRotationSpeedWidget->setValue( rotationSpeedValue );
 		_controllerYAxisInvertedWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getYAxisInverted() ) );
@@ -359,9 +359,9 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		const float elasticityValue
-			= ( Setting::CONTROLLER_ELASTICITY_FACTOR_MIN
+			= ( VTX::App::Application::Setting::CONTROLLER_ELASTICITY_FACTOR_MIN
 				+ ( 1 - p_value )
-					  * ( Setting::CONTROLLER_ELASTICITY_FACTOR_MAX - Setting::CONTROLLER_ELASTICITY_FACTOR_MIN ) );
+					  * ( VTX::App::Application::Setting::CONTROLLER_ELASTICITY_FACTOR_MAX - VTX::App::Application::Setting::CONTROLLER_ELASTICITY_FACTOR_MIN ) );
 
 		if ( VTX_SETTING().getControllerElasticityFactor() != elasticityValue )
 			VTX_ACTION( new VTX::App::Action::Setting::ChangeControllerElasticity( elasticityValue ) );
@@ -400,8 +400,8 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		const float rotationSpeed
-			= Setting::CONTROLLER_ROTATION_SPEED_MIN
-			  + ( Setting::CONTROLLER_ROTATION_SPEED_MAX - Setting::CONTROLLER_ROTATION_SPEED_MIN ) * p_value;
+			= VTX::App::Application::Setting::CONTROLLER_ROTATION_SPEED_MIN
+			  + ( VTX::App::Application::Setting::CONTROLLER_ROTATION_SPEED_MAX - VTX::App::Application::Setting::CONTROLLER_ROTATION_SPEED_MIN ) * p_value;
 
 		if ( VTX_SETTING().getRotationSpeed() != rotationSpeed )
 			VTX_ACTION( new VTX::App::Action::Setting::ChangeRotationSpeed( rotationSpeed ) );
@@ -480,7 +480,7 @@ namespace VTX::UI::Widget::Settings
 	{
 		_skipSettingEvents();
 
-		const IO::Struct::ImageExport::Format format = IO::Struct::ImageExport::Format( p_format );
+		const App::Internal::IO::Serialization::ImageExport::Format format = App::Internal::IO::Serialization::ImageExport::Format( p_format );
 		if ( VTX_SETTING().getSnapshotFormat() != format )
 			VTX_ACTION( new VTX::App::Action::Setting::ChangeSnapshotFormat( format ) );
 
@@ -499,7 +499,7 @@ namespace VTX::UI::Widget::Settings
 	{
 		_skipSettingEvents();
 
-		const IO::Struct::ImageExport::RESOLUTION resolution = IO::Struct::ImageExport::RESOLUTION( p_resolution );
+		const App::Internal::IO::Serialization::ImageExport::RESOLUTION resolution = App::Internal::IO::Serialization::ImageExport::RESOLUTION( p_resolution );
 		if ( VTX_SETTING().getSnapshotResolution() != resolution )
 			VTX_ACTION( new VTX::App::Action::Setting::ChangeSnapshotResolution( resolution ) );
 
@@ -559,7 +559,7 @@ namespace VTX::UI::Widget::Settings
 	{
 		_skipSettingEvents();
 
-		const Trajectory::PlayMode playMode = Trajectory::PlayMode( p_playmode );
+		const App::Component::Chemistry::PlayMode playMode = App::Component::Chemistry::PlayMode( p_playmode );
 		if ( VTX_SETTING().getDefaultTrajectoryPlayMode() != playMode )
 			VTX_ACTION( new VTX::App::Action::Setting::ChangeDefaultTrajectoryPlayMode( playMode ) );
 

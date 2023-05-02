@@ -9,11 +9,11 @@
 #include "ui/old_ui/ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include <QPushButton>
 #include <QWidget>
-#include <app/model/viewpoint.hpp>
+#include <app/component/object3d/viewpoint.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleViewpointWidget : public MultipleModelInspectorWidget<Model::Viewpoint>
+	class MultipleViewpointWidget : public MultipleModelInspectorWidget<App::Component::Object3D::Viewpoint>
 	{
 		VTX_WIDGET
 
@@ -44,7 +44,7 @@ namespace VTX::UI::Widget::Inspector
 
 		void _resetFieldStates( const SectionFlag & p_flag );
 
-		void _onTransformChange( const Math::Transform & ) const;
+		void _onTransformChange( const App::Internal::Math::Transform & ) const;
 		void _onPositionDragged( const Vec3f & ) const;
 		void _onRotationDragged( const Vec3f & ) const;
 

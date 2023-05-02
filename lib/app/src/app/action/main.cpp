@@ -1,18 +1,18 @@
 #include "app/action/main.hpp"
-#include "app/core/worker/worker_manager.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/internal/network/request/download_mmtf.hpp"
+#include "app/internal/worker/loader.hpp"
+#include "app/internal/worker/render_effect_loader.hpp"
+#include "app/internal/worker/representation_loader.hpp"
+#include "app/internal/worker/saver.hpp"
+#include "app/internal/worker/scene_loader.hpp"
 #include "app/network.hpp"
-#include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/object3d/camera_manager.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/internal/io/filesystem.hpp"
+#include "app/internal/scene/camera_manager.hpp"
+#include "app/application/scene.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/worker/loader.hpp"
-#include "app/worker/render_effect_loader.hpp"
-#include "app/worker/representation_loader.hpp"
-#include "app/worker/saver.hpp"
-#include "app/worker/scene_loader.hpp"
+#include "app/worker.hpp"
 
 namespace VTX::App::Action::Main
 {
@@ -72,14 +72,14 @@ namespace VTX::App::Action::Main
 
 			if ( trajectoryTargetsForced )
 			{
-				for ( Model::Molecule * const trajectoryTarget : _trajectoryTargets )
+				for ( App::Component::Chemistry::Molecule * const trajectoryTarget : _trajectoryTargets )
 				{
 					loader->addDynamicTarget( trajectoryTarget );
 				}
 			}
 			else
 			{
-				for ( const Object3D::Scene::PairMoleculePtrFloat & molPair : VTXApp::get().getScene().getMolecules() )
+				for ( const App::Application::Scene::PairMoleculePtrFloat & molPair : VTXApp::get().getScene().getMolecules() )
 				{
 					loader->addDynamicTarget( molPair.first );
 				}
@@ -87,7 +87,7 @@ namespace VTX::App::Action::Main
 
 			loader->setOpenTrajectoryAsMoleculeIfTargetFail( !trajectoryTargetsForced );
 
-			VTX::Core::Worker::CallbackThread * callback = new VTX::Core::Worker::CallbackThread(
+			VTX::App::Core::Worker::CallbackThread * callback = new VTX::App::Core::Worker::CallbackThread(
 				[ loader ]( const uint p_code )
 				{
 					for ( const std::pair<const FilePath, Worker::Loader::Result> & pairFilResult :
@@ -103,11 +103,11 @@ namespace VTX::App::Action::Main
 						{
 							if ( result.molecule != nullptr )
 								VTXApp::get().getScenePathData().registerLoading( result.molecule, filepath );
-							VTX::Setting::enqueueNewLoadingPath( filepath );
+							VTX::App::Application::Setting::enqueueNewLoadingPath( filepath );
 						}
 						else if ( result.sourceType == Worker::Loader::SOURCE_TYPE::BUFFER )
 						{
-							VTX::Setting::enqueueNewDownloadCode( filepath.stem().string() );
+							VTX::App::Application::Setting::enqueueNewDownloadCode( filepath.stem().string() );
 						}
 
 						if ( result.molecule != nullptr )
@@ -147,7 +147,7 @@ namespace VTX::App::Action::Main
 		}
 		else
 		{
-			VTX::Setting::enqueueNewLoadingPath( _path );
+			VTX::App::Application::Setting::enqueueNewLoadingPath( _path );
 		}
 	}
 
@@ -158,7 +158,7 @@ namespace VTX::App::Action::Main
 
 		for ( const FilePath & path : _paths )
 		{
-			FilePath target = IO::Filesystem::getRepresentationPath( path.filename() );
+			FilePath target = App::Internal::IO::Filesystem::getRepresentationPath( path.filename() );
 			Util::Filesystem::generateUniqueFileName( target );
 			if ( std::filesystem::copy_file( path, target ) )
 			{
@@ -175,7 +175,7 @@ namespace VTX::App::Action::Main
 
 		for ( const FilePath & path : _paths )
 		{
-			FilePath target = IO::Filesystem::getRenderEffectPath( path.filename() );
+			FilePath target = App::Internal::IO::Filesystem::getRenderEffectPath( path.filename() );
 			Util::Filesystem::generateUniqueFileName( target );
 			if ( std::filesystem::copy_file( path, target ) )
 			{

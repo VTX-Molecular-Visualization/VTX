@@ -2,18 +2,18 @@
 #define __VTX_UI_QT_ACTION_CATEGORY__
 
 #include <app/core/action/base_action.hpp>
-#include <app/model/category.hpp>
+#include <app/component/chemistry/category.hpp>
 
 namespace VTX::UI::QT::Action::Category
 {
 	class Orient : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
-		explicit Orient( const Model::Category & p_category ) : _category( p_category ) {}
+		explicit Orient( const App::Component::Chemistry::Category & p_category ) : _category( p_category ) {}
 		virtual void execute() override;
 
 	  private:
-		const Model::Category & _category;
+		const App::Component::Chemistry::Category & _category;
 	};
 } // namespace VTX::UI::QT::Action::Category
 #endif

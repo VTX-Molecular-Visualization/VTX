@@ -12,9 +12,9 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QScrollArea>
-#include <app/old_app/color/rgba.hpp>
-#include <app/model/representation/representation.hpp>
-#include <app/model/representation/representation_enum.hpp>
+#include <app/application/representation/enum_representation.hpp>
+#include <app/application/representation/representation_preset.hpp>
+#include <util/color/rgba.hpp>
 #include <type_traits>
 #include <vector>
 
@@ -22,12 +22,12 @@ namespace VTX::UI::Widget::Settings
 {
 	class RepresentationPresetEditor :
 		public VTX::UI::Widget::BaseManualWidget<QScrollArea>,
-		View::UI::EditorView<Model::Representation::Representation>
+		View::UI::EditorView<App::Application::Representation::RepresentationPreset>
 	{
 		VTX_WIDGET
 
 	  private:
-		using Representation = Model::Representation::Representation;
+		using Representation = App::Application::Representation::RepresentationPreset;
 
 		enum class OPTIONAL_PARAMETER : int
 		{
@@ -47,8 +47,9 @@ namespace VTX::UI::Widget::Settings
 		void localize() override;
 		void refresh();
 
-		const Model::Representation::Representation * const getPreset() const { return _preset; };
-		void setPreset( Model::Representation::Representation * const p_model, const bool p_updateRender = true );
+		const App::Application::Representation::RepresentationPreset * const getPreset() const { return _preset; };
+		void setPreset( App::Application::Representation::RepresentationPreset * const p_model,
+						const bool													   p_updateRender = true );
 
 	  protected:
 		RepresentationPresetEditor( QWidget * const p_parent );
@@ -90,7 +91,8 @@ namespace VTX::UI::Widget::Settings
 		void _refreshCartoonRepresentation();
 		void _refreshSESRepresentation();
 
-		void _refreshOptionalParametersVisibility( const Generic::REPRESENTATION & p_representationEnum );
+		void _refreshOptionalParametersVisibility(
+			const App::Application::Representation::REPRESENTATION_ENUM & p_representationEnum );
 
 		void _onRepresentationNameChange();
 		void _onQuickAccessChange( const int p_state );
@@ -101,7 +103,7 @@ namespace VTX::UI::Widget::Settings
 		void _onRibbonColorModeChanged( const int p_index );
 		void _onRibbonColorBlendingModeChanged( const int p_index );
 		void _onColorModeChanged( const int p_index );
-		void _onColorChanged( const Color::Rgba & p_color );
+		void _onColorChanged( const Util::Color::Rgba & p_color );
 		void _onSetDefault();
 	};
 

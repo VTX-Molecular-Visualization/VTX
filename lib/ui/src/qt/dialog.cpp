@@ -4,9 +4,9 @@
 // 
 // #include <app/action/main.hpp>
 #include <util/logger.hpp>
-// #include <app/old_app/io/struct/image_export.hpp>
-// #include <app/old_app/io/struct/scene_path_data.hpp>
-// #include <app/old_app/selection/selection_manager.hpp>
+// #include <app/internal/io/serialization/image_export.hpp>
+// #include <app/internal/io/serialization/scene_path_data.hpp>
+// #include <app/application/selection/selection_manager.hpp>
 // #include "ui/qt/widget/dialog/download_molecule_dialog.hpp"
 // #include "ui/old_ui/ui/widget/dialog/image_exporter.hpp"
 // #include "ui/old_ui/util/ui.hpp"
@@ -24,10 +24,10 @@ namespace VTX::UI::QT
 	//{
 	//  UI::Widget::Dialog::ImageExporter::openDialog();
 	//}
-	// bool Dialog::openExportImageDialog( const IO::Struct::ImageExport & p_exportData )
+	// bool Dialog::openExportImageDialog( const App::Internal::IO::Serialization::ImageExport & p_exportData )
 	//{
 	// QString * const defaultFilter = new QString( Util::Filesystem::getImageExportDefaultFilter().c_str() );
-	// const QString	defaultPath	  = Setting::getLastExportedImageFolder();
+	// const QString	defaultPath	  = VTX::App::Application::Setting::getLastExportedImageFolder();
 
 	// const QString filepath = QFileDialog::getSaveFileName(
 	//	_getMainWindow(), "Export image", defaultPath, Util::Filesystem::IMAGE_EXPORT_EXTENSIONS, defaultFilter );
@@ -37,7 +37,7 @@ namespace VTX::UI::QT
 	//	const FilePath path		   = FilePath( filepath.toStdString() );
 	//	const FilePath directoryPath = Util::Filesystem::getParentDir( path );
 
-	//	Setting::saveLastExportedImageFolder( QString::fromStdString( directoryPath.path() ) );
+	//	VTX::App::Application::Setting::saveLastExportedImageFolder( QString::fromStdString( directoryPath.path() ) );
 	//	VTX_ACTION(
 	//		new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, filepath.toStdString(), p_exportData ) );
 

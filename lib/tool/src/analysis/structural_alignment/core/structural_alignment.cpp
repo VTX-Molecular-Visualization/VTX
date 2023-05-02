@@ -3,7 +3,7 @@
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <string>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -18,8 +18,8 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core
 	{
 	}
 	StructuralAlignment::AlignmentMethod::AlignmentMethod() {}
-	StructuralAlignment::AlignmentResult::AlignmentResult( const Model::Molecule * const p_staticMolecule,
-														   const Model::Molecule * const p_mobileMolecule ) :
+	StructuralAlignment::AlignmentResult::AlignmentResult( const App::Component::Chemistry::Molecule * const p_staticMolecule,
+														   const App::Component::Chemistry::Molecule * const p_mobileMolecule ) :
 		staticMolecule( p_staticMolecule ),
 		mobileMolecule( p_mobileMolecule )
 	{
@@ -39,8 +39,8 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core
 		}
 	}
 
-	void StructuralAlignment::computeAlignment( const Model::Molecule * const		   p_staticMolecule,
-												const std::vector<Model::Molecule *> & p_mobilesMolecules,
+	void StructuralAlignment::computeAlignment( const App::Component::Chemistry::Molecule * const		   p_staticMolecule,
+												const std::vector<App::Component::Chemistry::Molecule *> & p_mobilesMolecules,
 												const AlignmentParameters &			   p_parameters )
 	{
 		Util::Chrono chrono = Util::Chrono();
@@ -56,7 +56,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core
 
 		try
 		{
-			for ( Model::Molecule * const mobileMolecule : p_mobilesMolecules )
+			for ( App::Component::Chemistry::Molecule * const mobileMolecule : p_mobilesMolecules )
 			{
 				Util::Chrono chrono = Util::Chrono();
 				chrono.start();
@@ -64,8 +64,8 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Core
 				chrono.stop();
 				VTX_INFO( "Alignment computed in " + chrono.elapsedTimeStr() );
 
-				const Math::Transform transform
-					= Math::Transform( p_staticMolecule->getTransform().get() * result.transformationMatrix );
+				const App::Internal::Math::Transform transform
+					= App::Internal::Math::Transform( p_staticMolecule->getTransform().get() * result.transformationMatrix );
 
 				mobileMolecule->applyTransform( transform );
 

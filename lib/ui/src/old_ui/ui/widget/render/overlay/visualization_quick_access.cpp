@@ -11,9 +11,9 @@
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
 #include <app/event/global.hpp>
-#include <app/model/selection.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
+#include <app/application/setting.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::Render::Overlay
@@ -37,11 +37,11 @@ namespace VTX::UI::Widget::Render::Overlay
 		}
 		else if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> &>(
+			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &>(
 					p_event );
 
-			if ( castedEvent.get().find( Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.get().cend() )
+			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.get().cend() )
 				_refreshSelectionGranularity();
 		}
 	}
@@ -79,7 +79,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		QMenu * const changeSelectionGranularityMenu = new QMenu( this );
 		for ( int i = 0; i < SELECTION_GRANULARITY.size(); i++ )
 		{
-			const MenuItemData<VTX::Selection::Granularity> & data = SELECTION_GRANULARITY[ i ];
+			const MenuItemData<VTX::App::Application::Selection::GRANULARITY> & data = SELECTION_GRANULARITY[ i ];
 			QAction * const action = changeSelectionGranularityMenu->addAction( QIcon( data.iconPath ), data.name );
 			action->setProperty( GRANULARITY_PROPERTY_NAME, QVariant( int( data.data ) ) );
 		}
@@ -171,9 +171,9 @@ namespace VTX::UI::Widget::Render::Overlay
 	}
 	void VisualizationQuickAccess::_refreshSelectionGranularity()
 	{
-		const VTX::Selection::Granularity granularity = VTX_SETTING().getSelectionGranularity();
+		const VTX::App::Application::Selection::GRANULARITY granularity = VTX_SETTING().getSelectionGranularity();
 
-		for ( const MenuItemData<VTX::Selection::Granularity> & data : SELECTION_GRANULARITY )
+		for ( const MenuItemData<VTX::App::Application::Selection::GRANULARITY> & data : SELECTION_GRANULARITY )
 		{
 			if ( data.data == granularity )
 			{
@@ -203,7 +203,7 @@ namespace VTX::UI::Widget::Render::Overlay
 
 	void VisualizationQuickAccess::_orientAction()
 	{
-		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selection = VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new QT::Action::Selection::Orient( selection ) );
 	}
 	void VisualizationQuickAccess::_changeCameraControllerAction( const QAction * const p_action )
@@ -222,8 +222,8 @@ namespace VTX::UI::Widget::Render::Overlay
 
 	void VisualizationQuickAccess::_changeSelectionGranularityAction( const QAction * const p_action )
 	{
-		const VTX::Selection::Granularity granularity
-			= VTX::Selection::Granularity( p_action->property( GRANULARITY_PROPERTY_NAME ).toInt() );
+		const VTX::App::Application::Selection::GRANULARITY granularity
+			= VTX::App::Application::Selection::GRANULARITY( p_action->property( GRANULARITY_PROPERTY_NAME ).toInt() );
 
 		VTX_ACTION( new App::Action::Setting::ChangeSelectionGranularity( granularity ) );
 	}

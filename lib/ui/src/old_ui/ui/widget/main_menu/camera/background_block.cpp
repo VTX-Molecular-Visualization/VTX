@@ -47,11 +47,11 @@ namespace VTX::UI::Widget::MainMenu::Camera
 	void BackgroundBlock::_changeBackgroundColorActionTriggered( const QVariant & p_extraData )
 	{
 		const int			defaultBeckgroundIndex = p_extraData.toInt();
-		const Color::Rgba & p_color				   = Renderer::DEFAULT_BACKGROUND_COLORS[ defaultBeckgroundIndex ];
+		const Util::Color::Rgba & p_color				   = Renderer::DEFAULT_BACKGROUND_COLORS[ defaultBeckgroundIndex ];
 		_setBackgroundColor( p_color );
 	}
 
-	void BackgroundBlock::_setBackgroundColor( const Color::Rgba & p_color ) const
+	void BackgroundBlock::_setBackgroundColor( const Util::Color::Rgba & p_color ) const
 	{
 		VTX_ACTION( new App::Action::Renderer::ChangeBackgroundColor( VTX_RENDER_EFFECT(), p_color ) );
 	}

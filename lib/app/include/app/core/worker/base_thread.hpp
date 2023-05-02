@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_WORKER_BASE_THREAD__
-#define __VTX_APP_CORE_WORKER_BASE_THREAD__
+#ifndef __VTX_APP_MANAGER_WORKER_BASE_THREAD__
+#define __VTX_APP_MANAGER_WORKER_BASE_THREAD__
 
 // TODO reimplemente that without Qt and check thread which inherts from BaseThread
 // #include <QThread>
@@ -7,7 +7,7 @@
 #include <thread>
 #include <util/types.hpp>
 
-namespace VTX::Core::Worker
+namespace VTX::App::Core::Worker
 {
 	class BaseThread // : public QThread
 	{
@@ -66,5 +66,5 @@ namespace VTX::Core::Worker
 	  protected:
 		virtual uint _run() = 0;
 	};
-} // namespace VTX::Core::Worker
+} // namespace VTX::App::Core::Worker
 #endif

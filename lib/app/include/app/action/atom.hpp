@@ -3,30 +3,31 @@
 
 #include "app/action.hpp"
 #include "app/action/visible.hpp"
+#include "app/component/chemistry/atom.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/model/atom.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 
 namespace VTX::App::Action::Atom
 {
 	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeColor( Model::Atom & p_atom, const Color::Rgba & p_color ) : _atom( p_atom ), _color( p_color )
+		explicit ChangeColor( App::Component::Chemistry::Atom & p_atom, const Util::Color::Rgba & p_color ) :
+			_atom( p_atom ), _color( p_color )
 		{
 		}
 
 		virtual void execute() override;
 
 	  private:
-		Model::Atom &	  _atom;
-		const Color::Rgba _color;
+		App::Component::Chemistry::Atom & _atom;
+		const Util::Color::Rgba				  _color;
 	};
 
 	class ChangeVisibility : public Visible::ChangeVisibility
 	{
 	  public:
-		explicit ChangeVisibility( Model::Atom & p_atom, const VISIBILITY_MODE p_mode ) :
+		explicit ChangeVisibility( App::Component::Chemistry::Atom & p_atom, const VISIBILITY_MODE p_mode ) :
 			Visible::ChangeVisibility( p_atom, p_mode )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
@@ -38,7 +39,7 @@ namespace VTX::App::Action::Atom
 	class Delete : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit Delete( Model::Atom & p_atom ) : _atom( p_atom )
+		explicit Delete( App::Component::Chemistry::Atom & p_atom ) : _atom( p_atom )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
@@ -46,33 +47,33 @@ namespace VTX::App::Action::Atom
 		virtual void execute() override;
 
 	  private:
-		Model::Atom & _atom;
+		App::Component::Chemistry::Atom & _atom;
 	};
 
 	class Copy : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit Copy( const Model::Atom & p_target ) : _target( p_target )
+		explicit Copy( const App::Component::Chemistry::Atom & p_target ) : _target( p_target )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override;
 
 	  private:
-		const Model::Atom & _target;
+		const App::Component::Chemistry::Atom & _target;
 	};
 
 	class Extract : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit Extract( const Model::Atom & p_target ) : _target( p_target )
+		explicit Extract( const App::Component::Chemistry::Atom & p_target ) : _target( p_target )
 		{
 			_tag = Core::Action::ACTION_TAG( _tag | Core::Action::ACTION_TAG::MODIFY_SCENE );
 		}
 		virtual void execute() override;
 
 	  private:
-		const Model::Atom & _target;
+		const App::Component::Chemistry::Atom & _target;
 	};
 } // namespace VTX::App::Action::Atom
 #endif

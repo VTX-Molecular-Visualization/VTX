@@ -9,9 +9,9 @@
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/model/molecule.hpp>
-#include <app/old_app/object3d/camera.hpp>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/render/camera.hpp>
+#include <app/application/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <util/math.hpp>
 
@@ -104,7 +104,7 @@ namespace VTX::UI::QT::State
 	void Visualization::resetCameraController()
 	{
 		// Reset camera.
-		Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
+	 App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
 		const Vec3f		   defaultPos
 			= VTXApp::get().getScene().getAABB().centroid()
 			  - CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
@@ -116,7 +116,7 @@ namespace VTX::UI::QT::State
 		getController<QT::Controller::Freefly>( ID::Controller::FREEFLY )->reset();
 	}
 
-	void Visualization::orientCameraController( const Object3D::Helper::AABB & p_aabb )
+	void Visualization::orientCameraController( const App::Component::Object3D::Helper::AABB & p_aabb )
 	{
 		getController<QT::Controller::BaseCameraController>( _cameraController )->orient( p_aabb );
 		// Override Trackball distance.
@@ -168,8 +168,8 @@ namespace VTX::UI::QT::State
 			if ( VTXApp::get().getScene().getMolecules().size() == 1
 				 && VTXApp::get().getScene().getMeshes().size() == 0 )
 			{
-				const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
-					= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
+				const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
+					= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event );
 
 				orientCameraController( castedEvent.get()->getAABB() );
 			}

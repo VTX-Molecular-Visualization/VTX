@@ -2,10 +2,10 @@
 #include "tool/analysis/rmsd/action.hpp"
 // #include "ui/widget/main_menu/tool/menu_tool_structural_alignment_widget.hpp"
 
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/event/global.hpp>
-#include <app/model/selection.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
 #include <ui/qt/application_qt.hpp>
 #include <ui/qt/main_window.hpp>
 #include <ui/qt/widget/main_menu/menu_tooltab_widget.hpp>
@@ -57,13 +57,15 @@ namespace VTX::Tool::Analysis::RMSD::UI::QT
 	void RMSDTool::_refreshButton() const { _rmsdButton->setEnabled( _checkRMSDEnableSate() ); }
 	bool RMSDTool::_checkRMSDEnableSate() const
 	{
-		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		return selectionModel.getMoleculeSelectedCount() >= 2;
 	}
 
 	void RMSDTool::_computeRMSDAction() const
 	{
-		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selection
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new VTX::Tool::Analysis::RMSD::Action::ComputeRMSD( selection ) );
 	}
 

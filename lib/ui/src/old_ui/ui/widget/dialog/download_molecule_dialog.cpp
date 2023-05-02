@@ -5,7 +5,7 @@
 #include <QPushButton>
 
 #include <app/action/main.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::Dialog

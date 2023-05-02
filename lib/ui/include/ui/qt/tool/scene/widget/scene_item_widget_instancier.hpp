@@ -2,14 +2,14 @@
 #define __VTX_UI_QT_TOOL_SCENE_WIDGET_SCENE_ITEM_WIDGET_INSTANTIER__
 
 #include "ui/qt/tool/scene/widget/scene_item_widget.hpp"
-#include <app/old_app/generic/base_scene_item.hpp>
+#include <app/core/scene/base_scene_item.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {
 	class SceneItemWidgetInstancier
 	{
 	  public:
-		virtual SceneItemWidget * instantiateItem( Generic::BaseSceneItem * const p_model ) = 0;
+		virtual SceneItemWidget * instantiateItem( App::Core::Scene::BaseSceneItem * const p_model ) = 0;
 		virtual void			  destroyItem( const SceneItemWidget * p_item )				= 0;
 	};
 

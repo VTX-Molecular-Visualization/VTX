@@ -1,13 +1,9 @@
 #ifndef __VTX_ANALYSIS_STRUCT_RESIDUE_CENTER_OF_MASS_DATA_SET__
 #define __VTX_ANALYSIS_STRUCT_RESIDUE_CENTER_OF_MASS_DATA_SET__
 
-#include <util/types.hpp>
 #include "residue_data_set.hpp"
-
-namespace VTX::Model
-{
-	class Residue;
-} // namespace VTX::Model
+#include <app/component/chemistry/_fwd.hpp>
+#include <util/types.hpp>
 
 namespace VTX::Analysis::Struct
 {
@@ -15,10 +11,10 @@ namespace VTX::Analysis::Struct
 	{
 	  public:
 		ResidueCenterOfMassDataSet() : ResidueDataSet<Vec3f>() {}
-		Vec3f getPositionInMolecule( const Model::Residue & p_residue );
+		Vec3f getPositionInMolecule( const App::Component::Chemistry::Residue & p_residue );
 
 	  protected:
-		Vec3f generateResidueData( const Model::Residue & p_residue ) const override;
+		Vec3f generateResidueData( const App::Component::Chemistry::Residue & p_residue ) const override;
 	};
 } // namespace VTX::Analysis::Struct
 

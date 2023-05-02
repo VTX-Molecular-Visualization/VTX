@@ -9,12 +9,12 @@
 #include <algorithm>
 #include <app/action/scene.hpp>
 #include <app/action/selection.hpp>
-#include <app/mvc.hpp>
+#include <app/application/scene.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
+#include <app/component/video/path.hpp>
 #include <app/event/global.hpp>
-#include <app/model/path.hpp>
-#include <app/model/selection.hpp>
-#include <app/old_app/object3d/scene.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/mvc.hpp>
 #include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
@@ -51,15 +51,17 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		if ( p_event.name == VTX::App::Event::Global::SCENE_ITEM_ADDED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Core::Scene::BaseSceneItem *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Core::Scene::BaseSceneItem *> &>(
+					p_event );
 
 			instantiateSceneItemWidget( castedEvent.get() );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::SCENE_ITEM_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Generic::BaseSceneItem *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Core::Scene::BaseSceneItem *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Core::Scene::BaseSceneItem *> &>(
+					p_event );
 
 			App::Core::Model::BaseModel & model
 				= VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( castedEvent.get()->getModelID() );
@@ -79,11 +81,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		_mapInstanciers[ p_type ] = p_instancier;
 	}
-	SceneItemWidget * SceneWidget::instantiateSceneItemWidget( Generic::BaseSceneItem * const p_sceneItem )
+	SceneItemWidget * SceneWidget::instantiateSceneItemWidget( App::Core::Scene::BaseSceneItem * const p_sceneItem )
 	{
 		const int defaultPosition = _getDefaultIndex( *p_sceneItem );
 
-		const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( p_sceneItem->getModelID() );
+		const ID::VTX_ID &		modelTypeID		= VTX::MVC_MANAGER().getModelTypeID( p_sceneItem->getModelID() );
 		SceneItemWidget * const sceneItemWidget = _mapInstanciers[ modelTypeID ]->instantiateItem( p_sceneItem );
 
 		const int index = int( _sceneWidgets.size() );
@@ -91,7 +93,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		_sceneWidgets.emplace_back( sceneItemWidget );
 		sceneItemWidget->updatePosInSceneHierarchy( index );
 
-		Object3D::Scene & scene = VTXApp::get().getScene();
+		App::Application::Scene & scene = VTXApp::get().getScene();
 		scene.changeModelPosition( *p_sceneItem, defaultPosition );
 
 		return sceneItemWidget;
@@ -106,11 +108,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void SceneWidget::_refreshItemIndex()
 	{
-		const Object3D::Scene & scene = VTXApp::get().getScene();
+		const App::Application::Scene & scene = VTXApp::get().getScene();
 
 		for ( int i = 0; i < _sceneWidgets.size(); i++ )
 		{
-			const Generic::BaseSceneItem * item = scene.getItemAtPosition( i );
+			const App::Core::Scene::BaseSceneItem * item = scene.getItemAtPosition( i );
 			if ( _sceneWidgets[ i ]->getModelID() != item->getModelID() )
 			{
 				const int previousItemIndex = _findItemIndex( item->getModelID(), i + 1 );
@@ -242,7 +244,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		}
 	}
 
-	int SceneWidget::_getDefaultIndex( const Generic::BaseSceneItem & p_item ) const
+	int SceneWidget::_getDefaultIndex( const App::Core::Scene::BaseSceneItem & p_item ) const
 	{
 		if ( _sceneWidgets.size() == 0 )
 			return 0;
@@ -342,7 +344,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		if ( p_event->buttons() & ( Qt::MouseButton::LeftButton | Qt::MouseButton::RightButton ) )
 		{
-			Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+			App::Application::Selection::SelectionModel & selectionModel
+				= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 			if ( !selectionModel.isEmpty() )
 			{
 				VTX_ACTION( new App::Action::Selection::ClearSelection( selectionModel ) );
@@ -353,7 +356,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		if ( p_event->buttons() & Qt::MouseButton::RightButton )
 		{
-			Object3D::Scene & scene = VTXApp::get().getScene();
+			App::Application::Scene & scene = VTXApp::get().getScene();
 
 			QT_APP()->getMainWindow().getContextualMenu().pop( Tool::ContextualMenu::SCENE, p_event->globalPos() );
 
@@ -389,8 +392,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		if ( modelData.getTypeID() == ID::Model::MODEL_SELECTION )
 		{
-			const Model::Selection & selection
-				= VTX::MVC_MANAGER().getModel<Model::Selection>( modelData.getModelID() );
+			const App::Application::Selection::SelectionModel & selection
+				= VTX::MVC_MANAGER().getModel<App::Application::Selection::SelectionModel>( modelData.getModelID() );
 
 			droppedModelIDs.reserve( selection.getItems().size() );
 			for ( const App::Core::Model::ID & id : selection.getItems() )
@@ -404,7 +407,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 			droppedModelIDs[ 0 ] = modelData.getModelID();
 		}
 
-		std::vector<const Generic::BaseSceneItem *> droppedItems = std::vector<const Generic::BaseSceneItem *>();
+		std::vector<const App::Core::Scene::BaseSceneItem *> droppedItems
+			= std::vector<const App::Core::Scene::BaseSceneItem *>();
 		droppedItems.reserve( droppedModelIDs.size() );
 
 		for ( const App::Core::Model::ID & droppedModelId : droppedModelIDs )
@@ -421,7 +425,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 				sceneItemIndex++;
 			}
 
-			const Generic::BaseSceneItem & sceneItem = _sceneWidgets[ sceneItemIndex ]->getBaseSceneItem();
+			const App::Core::Scene::BaseSceneItem & sceneItem = _sceneWidgets[ sceneItemIndex ]->getBaseSceneItem();
 			droppedItems.emplace_back( &sceneItem );
 		}
 

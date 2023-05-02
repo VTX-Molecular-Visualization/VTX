@@ -4,15 +4,16 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <app/action/representation.hpp>
+#include <app/application/representation/representation_preset.hpp>
 #include <app/event/global.hpp>
-#include <app/model/representation/representation.hpp>
 #include <app/old_app/id.hpp>
 
 namespace VTX::View::UI::Widget::Representation
 {
-	RepresentationLibraryView::RepresentationLibraryView( Model::Representation::RepresentationLibrary * const p_model,
-														  QWidget * const p_parent ) :
-		App::Core::View::BaseView<Model::Representation::RepresentationLibrary>( p_model ),
+	RepresentationLibraryView::RepresentationLibraryView(
+		App::Application::Representation::RepresentationLibrary * const p_model,
+		QWidget * const													p_parent ) :
+		App::Core::View::BaseView<App::Application::Representation::RepresentationLibrary>( p_model ),
 		VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
 		_registerEvent( VTX::App::Event::Global::REPRESENTATION_ADDED );
@@ -105,7 +106,7 @@ namespace VTX::View::UI::Widget::Representation
 	void RepresentationLibraryView::_onAddPreset() const
 	{
 		VTX_ACTION(
-			new App::Action::Representation::AddNewPresetInLibrary( Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
+			new App::Action::Representation::AddNewPresetInLibrary( VTX::App::Application::Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
 	}
 	void RepresentationLibraryView::_onCopyPreset() const
 	{
@@ -138,7 +139,8 @@ namespace VTX::View::UI::Widget::Representation
 	{
 		const int currentIndex = _presetList->currentIndex();
 
-		Model::Representation::Representation * const representation = _model->getRepresentation( currentIndex );
+		App::Application::Representation::RepresentationPreset * const representation
+			= _model->getRepresentation( currentIndex );
 
 		_representationPresetEditor->setPreset( representation, p_applyPreset );
 		_deletePresetButton->setEnabled( _model->canDeleteRepresentation( representation ) );

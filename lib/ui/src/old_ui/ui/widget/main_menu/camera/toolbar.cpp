@@ -7,8 +7,8 @@
 #include "ui/old_ui/ui/widget/main_menu/camera/viewpoint_block.hpp"
 #include "ui/old_ui/ui/widget/main_menu/camera/windows_block.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
-#include <app/model/renderer/render_effect_preset_library.hpp>
-#include <app/model/representation/representation_library.hpp>
+#include <app/application/render_effect/render_effect_library.hpp>
+#include <app/application/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
@@ -25,7 +25,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		addToolBlock<BackgroundBlock>( "backgroundBlockWidget" );
 
 		RenderEffectsBlock * const renderEffects = WidgetFactory::get().instantiateViewWidget<RenderEffectsBlock>(
-			&Model::Renderer::RenderEffectPresetLibrary::get(),
+			&App::Application::RenderEffect::RenderEffectLibrary::get(),
 			ID::View::UI_MENU_VISUALIZATION_RENDER_EFFECT_LIBRARY,
 			this,
 			"renderEffectsBlockWidget" );

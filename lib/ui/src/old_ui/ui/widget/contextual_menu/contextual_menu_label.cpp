@@ -8,7 +8,7 @@
 #include "ui/qt/action/label.hpp"
 
 #include <app/action/label.hpp>
-#include <app/model/path.hpp>
+#include <app/component/video/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -26,7 +26,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuLabel::localize() {}
 
-	void ContextualMenuLabel::setTarget( Model::Label * const p_target )
+	void ContextualMenuLabel::setTarget( App::Component::Object3D::Label * const p_target )
 	{
 		ContextualMenuTemplate::setTarget( p_target );
 		setTitle( QString::fromStdString( p_target->getDefaultName() ) );

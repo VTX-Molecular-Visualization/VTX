@@ -11,13 +11,12 @@
 #include "ui/old_ui/ui/widget/representation/instantiated_representation_list_widget.hpp"
 #include "ui/old_ui/ui/widget/representation/representation_inspector_section.hpp"
 #include <QWidget>
-#include <app/model/chain.hpp>
-#include <app/model/representation/instantiated_representation.hpp>
-#include <app/model/representation/representation.hpp>
+#include <app/application/representation/instantiated_representation.hpp>
+#include <app/component/chemistry/chain.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleChainWidget : public MultipleModelInspectorWidget<Model::Chain>
+	class MultipleChainWidget : public MultipleModelInspectorWidget<App::Component::Chemistry::Chain>
 	{
 		VTX_WIDGET
 
@@ -58,15 +57,17 @@ namespace VTX::UI::Widget::Inspector
 		int _subRepresentationPresentationCount = 0;
 
 		void _onRepresentationPresetChange( const int p_presetIndex );
-		void _onRepresentationChange( const Model::Representation::InstantiatedRepresentation & p_representation,
-									  const Model::Representation::MEMBER_FLAG &				p_flag );
-		void _onRepresentationColorChange( const Model::Representation::InstantiatedRepresentation & p_representation,
-										   const Color::Rgba &										 p_color,
-										   const bool												 p_ssColor );
+		void _onRepresentationChange(
+			const App::Application::Representation::InstantiatedRepresentation & p_representation,
+			const App::Application::Representation::MEMBER_FLAG &				 p_flag );
+		void _onRepresentationColorChange(
+			const App::Application::Representation::InstantiatedRepresentation & p_representation,
+			const Util::Color::Rgba &													 p_color,
+			const bool															 p_ssColor );
 		void _onRevertRepresentation() const;
 		void _onApplyRepresentationToChildren() const;
 
-		void _changeMoleculesColor( const Color::Rgba & p_color ) const;
+		void _changeMoleculesColor( const Util::Color::Rgba & p_color ) const;
 	};
 } // namespace VTX::UI::Widget::Inspector
 

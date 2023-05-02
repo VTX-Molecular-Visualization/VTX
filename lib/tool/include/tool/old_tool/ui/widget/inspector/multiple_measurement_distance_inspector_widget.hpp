@@ -4,7 +4,7 @@
 #include "tool/old_tool/model/measurement/distance.hpp"
 #include <QPushButton>
 #include <QWidget>
-#include <app/old_app/color/rgba.hpp>
+#include <util/color/rgba.hpp>
 #include <ui/old_ui/ui/widget/custom_widget/collapsing_header_widget.hpp>
 #include <ui/old_ui/ui/widget/custom_widget/color_field_button.hpp>
 #include <ui/old_ui/ui/widget/custom_widget/qt_multi_data_field.hpp>
@@ -49,7 +49,7 @@ namespace VTX::UI::Widget::Inspector
 
 		void _setAutoNameAction() const;
 		void _renameAction() const;
-		void _setLabelColor( const Color::Rgba & p_color ) const;
+		void _setLabelColor( const Util::Color::Rgba & p_color ) const;
 
 		void _orientOnFirstAtom() const;
 		void _orientOnSecondAtom() const;

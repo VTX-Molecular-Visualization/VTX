@@ -14,7 +14,7 @@ namespace VTX
 		class PointLight : public BaseLight
 		{
 		  public:
-			PointLight( const Vec3f & p_position, const Color::Rgba & p_color, const float p_power ) :
+			PointLight( const Vec3f & p_position, const Util::Color::Rgba & p_color, const float p_power ) :
 				BaseLight( p_color, p_power ), _position( p_position )
 			{
 			}

@@ -3,14 +3,14 @@
 #include "ui/old_ui/ui/widget/settings/setting_widget.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/model/representation/representation_library.hpp>
+#include <app/application/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
 	RepresentationBlock::RepresentationBlock(
-		Model::Representation::RepresentationLibrary * const _representationLibrary,
-		QWidget *											 p_parent ) :
-		App::Core::View::BaseView<Model::Representation::RepresentationLibrary>( _representationLibrary ),
+		App::Application::Representation::RepresentationLibrary * const _representationLibrary,
+		QWidget *														p_parent ) :
+		App::Core::View::BaseView<App::Application::Representation::RepresentationLibrary>( _representationLibrary ),
 		MenuToolBlockWidget( p_parent )
 	{
 	}
@@ -60,10 +60,11 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		_buttons.clear();
 
 		int quickAccessRepresentationCount = 0;
-		for ( int i = 0; i < Model::Representation::RepresentationLibrary::get().getRepresentationCount(); i++ )
+		for ( int i = 0; i < App::Application::Representation::RepresentationLibrary::get().getRepresentationCount();
+			  i++ )
 		{
-			const Model::Representation::Representation * const representation
-				= Model::Representation::RepresentationLibrary::get().getRepresentation( i );
+			const App::Application::Representation::RepresentationPreset * const representation
+				= App::Application::Representation::RepresentationLibrary::get().getRepresentation( i );
 
 			if ( !representation->hasQuickAccess() )
 				continue;
@@ -95,10 +96,11 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 	void RepresentationBlock::_refreshNames()
 	{
-		for ( int i = 0; i < Model::Representation::RepresentationLibrary::get().getRepresentationCount(); i++ )
+		for ( int i = 0; i < App::Application::Representation::RepresentationLibrary::get().getRepresentationCount();
+			  i++ )
 		{
-			const Model::Representation::Representation * const representation
-				= Model::Representation::RepresentationLibrary::get().getRepresentation( i );
+			const App::Application::Representation::RepresentationPreset * const representation
+				= App::Application::Representation::RepresentationLibrary::get().getRepresentation( i );
 
 			if ( !representation->hasQuickAccess() )
 				continue;
@@ -108,10 +110,11 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	}
 	void RepresentationBlock::_refreshIcons()
 	{
-		for ( int i = 0; i < Model::Representation::RepresentationLibrary::get().getRepresentationCount(); i++ )
+		for ( int i = 0; i < App::Application::Representation::RepresentationLibrary::get().getRepresentationCount();
+			  i++ )
 		{
-			const Model::Representation::Representation * const representation
-				= Model::Representation::RepresentationLibrary::get().getRepresentation( i );
+			const App::Application::Representation::RepresentationPreset * const representation
+				= App::Application::Representation::RepresentationLibrary::get().getRepresentation( i );
 
 			if ( !representation->hasQuickAccess() )
 				continue;

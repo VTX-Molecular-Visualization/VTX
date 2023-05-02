@@ -1,5 +1,5 @@
 #include "ui/old_ui/ui/widget/representation/view/ribbon_widget.hpp"
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 
 namespace VTX::UI::Widget::Representation::View
 {
@@ -35,7 +35,7 @@ namespace VTX::UI::Widget::Representation::View
 				 &RibbonWidget::_onColorBlendingModeChange );
 	}
 
-	void RibbonWidget::_onColorChange( const Color::Rgba & p_color ) { emit onColorChange( p_color ); }
+	void RibbonWidget::_onColorChange( const Util::Color::Rgba & p_color ) { emit onColorChange( p_color ); }
 	void RibbonWidget::_onColorModeChange( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode )
 	{
 		emit onColorModeChange( Generic::SECONDARY_STRUCTURE_COLOR_MODE( p_newMode ) );
@@ -45,21 +45,23 @@ namespace VTX::UI::Widget::Representation::View
 		emit onColorBlendingModeChange( Generic::COLOR_BLENDING_MODE( p_newMode ) );
 	}
 
-	void RibbonWidget::refresh( const Model::Representation::InstantiatedRepresentation &	   p_representation,
-								const std::unordered_set<const Generic::BaseRepresentable *> & p_targets )
+	void RibbonWidget::refresh(
+		const App::Application::Representation::InstantiatedRepresentation &					p_representation,
+		const std::unordered_set<const App::Application::Representation::BaseRepresentable *> & p_targets )
 	{
 		Util::UI::setDynamicProperty(
 			_colorBlendingModeLabel,
 			Style::WidgetProperty::OVERIDDEN_PARAMETER,
-			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE ) );
+			p_representation.isMemberOverrided(
+				App::Application::Representation::MEMBER_FLAG::ENUM::RIBBON_COLOR_BLENDING_MODE ) );
 
 		_colorBlendingModeWidget->setCurrentIndex( int( p_representation.getRibbonData().colorBlendingMode ) );
 
 		// Color mode widget.
 		_colorModeWidget->resetState();
 
-		const bool overriden
-			= p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_MODE );
+		const bool overriden = p_representation.isMemberOverrided(
+			App::Application::Representation::MEMBER_FLAG::ENUM::RIBBON_COLOR_MODE );
 
 		Util::UI::setDynamicProperty( _colorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, overriden );
 
@@ -74,25 +76,27 @@ namespace VTX::UI::Widget::Representation::View
 		else if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
 		{
 			_colorModeWidget->resetState();
-			for ( const Generic::BaseRepresentable * const target : p_targets )
+			for ( const App::Application::Representation::BaseRepresentable * const target : p_targets )
 			{
 				_colorModeWidget->updateWithNewValue( std::pair( colorMode, target->getMolecule()->getColor() ) );
 			}
 		}
 	}
 
-	void RibbonWidget::updateWithNewValue( const Model::Representation::InstantiatedRepresentation & p_representation,
-										   const std::unordered_set<const Generic::BaseRepresentable *> & p_targets )
+	void RibbonWidget::updateWithNewValue(
+		const App::Application::Representation::InstantiatedRepresentation &					p_representation,
+		const std::unordered_set<const App::Application::Representation::BaseRepresentable *> & p_targets )
 	{
 		_updateLabelOverriddenProperty(
 			_colorBlendingModeLabel,
-			p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE ) );
+			p_representation.isMemberOverrided(
+				App::Application::Representation::MEMBER_FLAG::ENUM::RIBBON_COLOR_BLENDING_MODE ) );
 
 		_colorBlendingModeWidget->updateWithNewValue( int( p_representation.getRibbonData().colorBlendingMode ) );
 
 		// Color mode widget.
-		std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgba> pair
-			= std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgba>();
+		std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba> pair
+			= std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba>();
 
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getRibbonData().colorMode;
 

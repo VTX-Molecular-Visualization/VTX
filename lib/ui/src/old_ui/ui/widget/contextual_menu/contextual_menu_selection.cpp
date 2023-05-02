@@ -16,8 +16,8 @@
 #include <app/action/selection.hpp>
 #include <app/action/viewpoint.hpp>
 #include <app/action/visible.hpp>
-#include <app/model/generated_molecule.hpp>
-#include <app/model/representation/representation_library.hpp>
+#include <app/application/representation/representation_library.hpp>
+#include <app/component/chemistry/generated_molecule.hpp>
 #include <string>
 
 namespace VTX::UI::Widget::ContextualMenu
@@ -298,34 +298,30 @@ namespace VTX::UI::Widget::ContextualMenu
 			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
 			if ( focusedModelTypeID == VTX::ID::Model::MODEL_MOLECULE )
-				focusedModelBaseVisible = static_cast<Model::Molecule *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CATEGORY )
-				focusedModelBaseVisible = static_cast<Model::Category *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Category *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CHAIN )
-				focusedModelBaseVisible = static_cast<Model::Chain *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Chain *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_RESIDUE )
-				focusedModelBaseVisible = static_cast<Model::Residue *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Residue *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_ATOM )
-				focusedModelBaseVisible = static_cast<Model::Atom *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Atom *>( _focusedTarget );
 
 			if ( focusedModelBaseVisible != nullptr )
 			{
 				VTX_ACTION( new App::Action::Selection::ChangeVisibility(
-					*_target,
-					*focusedModelBaseVisible,
-					focusedModelTypeID,
-					App::Action::VISIBILITY_MODE::ALL ) );
+					*_target, *focusedModelBaseVisible, focusedModelTypeID, App::Action::VISIBILITY_MODE::ALL ) );
 			}
 			else
 			{
-				VTX_ACTION( new App::Action::Selection::ChangeVisibility(
-					*_target, App::Action::VISIBILITY_MODE::ALL ) );
+				VTX_ACTION(
+					new App::Action::Selection::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::ALL ) );
 			}
 		}
 		else
 		{
-			VTX_ACTION( new App::Action::Selection::ChangeVisibility(
-				*_target, App::Action::VISIBILITY_MODE::ALL ) );
+			VTX_ACTION( new App::Action::Selection::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::ALL ) );
 		}
 	}
 	void ContextualMenuSelection::_hideAction()
@@ -336,34 +332,30 @@ namespace VTX::UI::Widget::ContextualMenu
 			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
 			if ( focusedModelTypeID == VTX::ID::Model::MODEL_MOLECULE )
-				focusedModelBaseVisible = static_cast<Model::Molecule *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CATEGORY )
-				focusedModelBaseVisible = static_cast<Model::Category *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Category *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CHAIN )
-				focusedModelBaseVisible = static_cast<Model::Chain *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Chain *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_RESIDUE )
-				focusedModelBaseVisible = static_cast<Model::Residue *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Residue *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_ATOM )
-				focusedModelBaseVisible = static_cast<Model::Atom *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Atom *>( _focusedTarget );
 
 			if ( focusedModelBaseVisible != nullptr )
 			{
 				VTX_ACTION( new App::Action::Selection::ChangeVisibility(
-					*_target,
-					*focusedModelBaseVisible,
-					focusedModelTypeID,
-					App::Action::VISIBILITY_MODE::HIDE ) );
+					*_target, *focusedModelBaseVisible, focusedModelTypeID, App::Action::VISIBILITY_MODE::HIDE ) );
 			}
 			else
 			{
-				VTX_ACTION( new App::Action::Selection::ChangeVisibility(
-					*_target, App::Action::VISIBILITY_MODE::HIDE ) );
+				VTX_ACTION(
+					new App::Action::Selection::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::HIDE ) );
 			}
 		}
 		else
 		{
-			VTX_ACTION( new App::Action::Selection::ChangeVisibility(
-				*_target, App::Action::VISIBILITY_MODE::HIDE ) );
+			VTX_ACTION( new App::Action::Selection::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::HIDE ) );
 		}
 	}
 	void ContextualMenuSelection::_soloAction()
@@ -374,34 +366,30 @@ namespace VTX::UI::Widget::ContextualMenu
 			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
 			if ( focusedModelTypeID == VTX::ID::Model::MODEL_MOLECULE )
-				focusedModelBaseVisible = static_cast<Model::Molecule *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CATEGORY )
-				focusedModelBaseVisible = static_cast<Model::Category *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Category *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CHAIN )
-				focusedModelBaseVisible = static_cast<Model::Chain *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Chain *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_RESIDUE )
-				focusedModelBaseVisible = static_cast<Model::Residue *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Residue *>( _focusedTarget );
 			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_ATOM )
-				focusedModelBaseVisible = static_cast<Model::Atom *>( _focusedTarget );
+				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Atom *>( _focusedTarget );
 
 			if ( focusedModelBaseVisible != nullptr )
 			{
 				VTX_ACTION( new App::Action::Selection::ChangeVisibility(
-					*_target,
-					*focusedModelBaseVisible,
-					focusedModelTypeID,
-					App::Action::VISIBILITY_MODE::SOLO ) );
+					*_target, *focusedModelBaseVisible, focusedModelTypeID, App::Action::VISIBILITY_MODE::SOLO ) );
 			}
 			else
 			{
-				VTX_ACTION( new App::Action::Selection::ChangeVisibility(
-					*_target, App::Action::VISIBILITY_MODE::SOLO ) );
+				VTX_ACTION(
+					new App::Action::Selection::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::SOLO ) );
 			}
 		}
 		else
 		{
-			VTX_ACTION( new App::Action::Selection::ChangeVisibility(
-				*_target, App::Action::VISIBILITY_MODE::SOLO ) );
+			VTX_ACTION( new App::Action::Selection::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::SOLO ) );
 		}
 	}
 	void ContextualMenuSelection::_copyAction() { VTX_ACTION( new App::Action::Selection::Copy( *_target ) ); }
@@ -415,16 +403,16 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_exportAction() { UI::Dialog::openExportMoleculeDialog(); }
 	void ContextualMenuSelection::_loadTrajectoryAction()
 	{
-		Model::Molecule * molecule = nullptr;
+		App::Component::Chemistry::Molecule * molecule = nullptr;
 
 		if ( _focusedTarget->getTypeId() == VTX::ID::Model::MODEL_MOLECULE )
 		{
-			molecule = static_cast<Model::Molecule *>( _focusedTarget );
+			molecule = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
 		}
 		else if ( _target->getMoleculesMap().size() > 0 )
 		{
 			const App::Core::Model::ID & moleculeID = _target->getMoleculesMap().begin()->first;
-			molecule					 = &( VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeID ) );
+			molecule = &( VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeID ) );
 		}
 
 		if ( molecule != nullptr )
@@ -443,14 +431,16 @@ namespace VTX::UI::Widget::ContextualMenu
 		bool allSelectionHasSameRepresentation = true;
 		int	 selectionRepresentationIndex	   = -1;
 
-		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & moleculeData :
+			  _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
+			App::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeData.first );
 
 			if ( moleculeData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 			{
 				const int representationIndex
-					= Model::Representation::RepresentationLibrary::get().getRepresentationIndex(
+					= App::Application::Representation::RepresentationLibrary::get().getRepresentationIndex(
 						molecule.getRepresentation()->getLinkedRepresentation() );
 
 				if ( selectionRepresentationIndex == -1 )
@@ -460,14 +450,15 @@ namespace VTX::UI::Widget::ContextualMenu
 			}
 			else
 			{
-				for ( const Model::Selection::PairChainIds & chainData : moleculeData.second )
+				for ( const App::Application::Selection::SelectionModel::PairChainIds & chainData :
+					  moleculeData.second )
 				{
-					Model::Chain * const chain = molecule.getChain( chainData.first );
+					App::Component::Chemistry::Chain * const chain = molecule.getChain( chainData.first );
 
 					if ( chainData.second.getFullySelectedChildCount() == chain->getRealResidueCount() )
 					{
 						const int representationIndex
-							= Model::Representation::RepresentationLibrary::get().getRepresentationIndex(
+							= App::Application::Representation::RepresentationLibrary::get().getRepresentationIndex(
 								chain->getRepresentation()->getLinkedRepresentation() );
 
 						if ( selectionRepresentationIndex == -1 )
@@ -477,12 +468,14 @@ namespace VTX::UI::Widget::ContextualMenu
 					}
 					else
 					{
-						for ( const Model::Selection::PairResidueIds & residueData : chainData.second )
+						for ( const App::Application::Selection::SelectionModel::PairResidueIds & residueData :
+							  chainData.second )
 						{
-							Model::Residue * const residue = molecule.getResidue( residueData.first );
+							App::Component::Chemistry::Residue * const residue
+								= molecule.getResidue( residueData.first );
 
 							const int representationIndex
-								= Model::Representation::RepresentationLibrary::get().getRepresentationIndex(
+								= App::Application::Representation::RepresentationLibrary::get().getRepresentationIndex(
 									residue->getRepresentation()->getLinkedRepresentation() );
 
 							if ( selectionRepresentationIndex == -1 )
@@ -513,10 +506,12 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleWaterText( QAction & _action ) const
 	{
 		bool displayShowWater = true;
-		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & moleculeData :
+			  _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
-			displayShowWater		   = displayShowWater && !molecule.showWater();
+			App::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeData.first );
+			displayShowWater = displayShowWater && !molecule.showWater();
 		}
 
 		QString text = displayShowWater ? "Show waters" : "Hide waters";
@@ -525,10 +520,12 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleHydrogenText( QAction & _action ) const
 	{
 		bool displayShowHydrogen = true;
-		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & moleculeData :
+			  _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
-			displayShowHydrogen		   = displayShowHydrogen && !molecule.showHydrogen();
+			App::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeData.first );
+			displayShowHydrogen = displayShowHydrogen && !molecule.showHydrogen();
 		}
 
 		QString text = displayShowHydrogen ? "Show hydrogens" : "Hide hydrogens";
@@ -537,10 +534,12 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleSolventText( QAction & _action ) const
 	{
 		bool displayShowSolvent = true;
-		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & moleculeData :
+			  _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
-			displayShowSolvent		   = displayShowSolvent && !molecule.showSolvent();
+			App::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeData.first );
+			displayShowSolvent = displayShowSolvent && !molecule.showSolvent();
 		}
 
 		QString text = displayShowSolvent ? "Show solvent" : "Hide solvent";
@@ -549,10 +548,12 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleIonText( QAction & _action ) const
 	{
 		bool displayShowIon = true;
-		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & moleculeData :
+			  _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
-			displayShowIon			   = displayShowIon && !molecule.showIon();
+			App::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeData.first );
+			displayShowIon = displayShowIon && !molecule.showIon();
 		}
 
 		QString text = displayShowIon ? "Show ions" : "Hide ions";
@@ -568,9 +569,11 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_refreshToggleTrajectoryPlay( QAction & _action ) const
 	{
 		bool displayPlay = true;
-		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & moleculeData :
+			  _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
+			App::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeData.first );
 			if ( molecule.hasTrajectory() )
 				displayPlay = displayPlay && !molecule.isPlaying();
 		}
@@ -581,9 +584,11 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	bool ContextualMenuSelection::_checkToggleTrajectoryPlayAction() const
 	{
-		for ( const Model::Selection::PairMoleculeIds & moleculeData : _target->getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & moleculeData :
+			  _target->getMoleculesMap() )
 		{
-			Model::Molecule & molecule = VTX::MVC_MANAGER().getModel<Model::Molecule>( moleculeData.first );
+			App::Component::Chemistry::Molecule & molecule
+				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeData.first );
 			if ( molecule.hasTrajectory() )
 				return true;
 		}
@@ -593,28 +598,29 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_gotoViewpointAction()
 	{
-		const std::vector<Model::Viewpoint *> viewpointsInSelection
-			= _target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT );
+		const std::vector<App::Component::Object3D::Viewpoint *> viewpointsInSelection
+			= _target->getItemsOfType<App::Component::Object3D::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT );
 
 		if ( viewpointsInSelection.size() > 0 )
 			VTX_ACTION( new QT::Action::Viewpoint::GoTo( **viewpointsInSelection.crbegin() ) );
 	}
 	void ContextualMenuSelection::_relocateViewpointAction()
 	{
-		std::vector<Model::Viewpoint *> viewpointsInSelection
-			= _target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT );
+		std::vector<App::Component::Object3D::Viewpoint *> viewpointsInSelection
+			= _target->getItemsOfType<App::Component::Object3D::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT );
 
 		VTX_ACTION( new App::Action::Viewpoint::Relocate( viewpointsInSelection ) );
 	}
 	void ContextualMenuSelection::_deleteViewpointAction()
 	{
 		VTX_ACTION( new QT::Action::Viewpoint::Delete(
-			_target->getItemsOfType<Model::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT ) ) );
+			_target->getItemsOfType<App::Component::Object3D::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT ) ) );
 	}
 
 	void ContextualMenuSelection::_orientToLabelAction()
 	{
-		std::unordered_set<Model::Label *> labelsInSelection = std::unordered_set<Model::Label *>();
+		std::unordered_set<App::Component::Object3D::Label *> labelsInSelection
+			= std::unordered_set<App::Component::Object3D::Label *>();
 		_getAllLabelTypes( labelsInSelection );
 
 		if ( labelsInSelection.size() > 0 )
@@ -622,33 +628,38 @@ namespace VTX::UI::Widget::ContextualMenu
 	}
 	void ContextualMenuSelection::_deleteLabelAction()
 	{
-		std::unordered_set<Model::Label *> labelsInSelection = std::unordered_set<Model::Label *>();
+		std::unordered_set<App::Component::Object3D::Label *> labelsInSelection
+			= std::unordered_set<App::Component::Object3D::Label *>();
 		_getAllLabelTypes( labelsInSelection );
 
 		if ( labelsInSelection.size() > 0 )
 			VTX_ACTION( new App::Action::Label::Delete( labelsInSelection ) );
 	}
 
-	void ContextualMenuSelection::_getAllLabelTypes( std::unordered_set<Model::Label *> & p_labels ) const
+	void ContextualMenuSelection::_getAllLabelTypes(
+		std::unordered_set<App::Component::Object3D::Label *> & p_labels ) const
 	{
-		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_LABEL, p_labels );
-		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE, p_labels );
-		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE, p_labels );
-		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE, p_labels );
-		_target->getItemsOfType<Model::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE, p_labels );
+		_target->getItemsOfType<App::Component::Object3D::Label>( VTX::ID::Model::MODEL_LABEL, p_labels );
+		_target->getItemsOfType<App::Component::Object3D::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE,
+																  p_labels );
+		_target->getItemsOfType<App::Component::Object3D::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE,
+																  p_labels );
+		_target->getItemsOfType<App::Component::Object3D::Label>( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE, p_labels );
+		_target->getItemsOfType<App::Component::Object3D::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE,
+																  p_labels );
 	}
 
 	bool ContextualMenuSelection::_checkComputeRMSDAction() const
 	{
-		std::vector<Model::Molecule *> molecules
-			= _target->getItemsOfType<Model::Molecule>( ID::Model::MODEL_MOLECULE );
+		std::vector<App::Component::Chemistry::Molecule *> molecules
+			= _target->getItemsOfType<App::Component::Chemistry::Molecule>( ID::Model::MODEL_MOLECULE );
 
 		return molecules.size() >= 2;
 	}
 	bool ContextualMenuSelection::_checkApplyAlignementAction() const
 	{
-		std::vector<Model::Molecule *> molecules
-			= _target->getItemsOfType<Model::Molecule>( ID::Model::MODEL_MOLECULE );
+		std::vector<App::Component::Chemistry::Molecule *> molecules
+			= _target->getItemsOfType<App::Component::Chemistry::Molecule>( ID::Model::MODEL_MOLECULE );
 
 		return molecules.size() >= 2;
 	}

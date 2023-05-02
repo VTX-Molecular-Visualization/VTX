@@ -1,5 +1,5 @@
 #include "app/action/scene.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/application/scene.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 
@@ -11,7 +11,7 @@ namespace VTX::App::Action::Scene
 
 	void ShowAllMolecules::execute()
 	{
-		for ( Object3D::Scene::PairMoleculePtrFloat & pairMol : VTXApp::get().getScene().getMolecules() )
+		for ( App::Application::Scene::PairMoleculePtrFloat & pairMol : VTXApp::get().getScene().getMolecules() )
 		{
 			Util::Molecule::show( *pairMol.first, true, true, true );
 		}

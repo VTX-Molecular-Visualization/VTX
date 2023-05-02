@@ -4,7 +4,7 @@
 #include "ui/old_ui/ui/multi_data_field.hpp"
 #include "ui/old_ui/ui/widget/base_manual_widget.hpp"
 #include "ui/old_ui/ui/widget/custom_widget/integer_field_slider_widget.hpp"
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/molecule.hpp>
 // #include "ui/old_ui/ui/widget/custom_widget/integer_range_widget.hpp"
 #include "ui/old_ui/ui/widget/custom_widget/qt_multi_data_field.hpp"
 #include <QWidget>
@@ -12,7 +12,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class TrajectoryWidget : public BaseManualWidget<QWidget>, public TMultiDataField<Model::Molecule>
+	class TrajectoryWidget : public BaseManualWidget<QWidget>, public TMultiDataField<App::Component::Chemistry::Molecule>
 	{
 		VTX_WIDGET
 
@@ -20,7 +20,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void localize() override;
 
 		void resetState() override;
-		void updateWithNewValue( Model::Molecule & p_value ) override;
+		void updateWithNewValue( App::Component::Chemistry::Molecule & p_value ) override;
 
 		void refreshTimer();
 
@@ -45,7 +45,7 @@ namespace VTX::UI::Widget::CustomWidget
 		CustomWidget::IntegerFieldSliderWidget * _speedWidget	 = nullptr;
 		// CustomWidget::IntegerRangeWidget *	_playRangeWidget= nullptr;
 
-		std::unordered_set<Model::Molecule *> _molecules = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> _molecules = std::unordered_set<App::Component::Chemistry::Molecule *>();
 
 		void _setFrameAction( const int p_frame );
 		void _backToStartAction();

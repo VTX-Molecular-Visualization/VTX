@@ -14,19 +14,19 @@
 #include <map>
 #include <app/core/event/base_event_receiver_vtx.hpp>
 #include <app/old_app/generic/base_visible.hpp>
-#include <app/model/atom.hpp>
-#include <app/model/category.hpp>
-#include <app/model/category_enum.hpp>
-#include <app/model/chain.hpp>
-#include <app/model/molecule.hpp>
-#include <app/model/residue.hpp>
-#include <app/model/selection.hpp>
+#include <app/component/chemistry/atom.hpp>
+#include <app/component/chemistry/category.hpp>
+#include <app/internal/chemdb/category.hpp>
+#include <app/component/chemistry/chain.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/residue.hpp>
+#include <app/application/selection/selection.hpp>
 #include <app/old_app/style.hpp>
 #include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget::View
 {
-	class MoleculeSceneView : public VTX::App::Core::View::BaseView<Model::Molecule>, public SceneItemWidget
+	class MoleculeSceneView : public VTX::App::Core::View::BaseView<App::Component::Chemistry::Molecule>, public SceneItemWidget
 	{
 		NEW_ARCHI_VTX_WIDGET
 		VTX_VIEW
@@ -39,7 +39,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 		const App::Core::Model::ID &					   getModelID() const override { return _model->getId(); };
-		virtual const Generic::BaseSceneItem & getBaseSceneItem() const { return *_model; };
+		virtual const App::Core::Scene::BaseSceneItem & getBaseSceneItem() const { return *_model; };
 
 		bool						   containsModel( const App::Core::Model::BaseModel & p_model ) const override;
 		virtual std::vector<App::Core::Model::ID> getAllItemsFrom( const App::Core::Model::BaseModel & p_model ) const override;
@@ -56,18 +56,18 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 		bool _canDragAtPos( const QPoint & p_position ) const override;
 
-		void _fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection ) override;
+		void _fillItemSelection( const App::Application::Selection::SelectionModel & p_selection, QItemSelection & p_itemSelection ) override;
 		bool _itemCanBeRenamed( const QTreeWidgetItem * p_item ) override;
 
-		void _selectAllCategoriesFrom( std::vector<App::Core::Model::ID> & p_selection, const Model::Category & p_itemFrom ) const;
-		void _selectAllChainsFrom( std::vector<App::Core::Model::ID> & p_selection, const Model::Chain & p_itemFrom ) const;
-		void _selectAllResiduesFrom( std::vector<App::Core::Model::ID> & p_selection, const Model::Residue & p_itemFrom ) const;
-		void _selectAllAtomsFrom( std::vector<App::Core::Model::ID> & p_selection, const Model::Atom & p_itemFrom ) const;
+		void _selectAllCategoriesFrom( std::vector<App::Core::Model::ID> & p_selection, const App::Component::Chemistry::Category & p_itemFrom ) const;
+		void _selectAllChainsFrom( std::vector<App::Core::Model::ID> & p_selection, const App::Component::Chemistry::Chain & p_itemFrom ) const;
+		void _selectAllResiduesFrom( std::vector<App::Core::Model::ID> & p_selection, const App::Component::Chemistry::Residue & p_itemFrom ) const;
+		void _selectAllAtomsFrom( std::vector<App::Core::Model::ID> & p_selection, const App::Component::Chemistry::Atom & p_itemFrom ) const;
 
-		void _selectAllCategoriesTo( std::vector<App::Core::Model::ID> & p_selection, const Model::Category & p_itemFrom ) const;
-		void _selectAllChainsTo( std::vector<App::Core::Model::ID> & p_selection, const Model::Chain & p_itemFrom ) const;
-		void _selectAllResiduesTo( std::vector<App::Core::Model::ID> & p_selection, const Model::Residue & p_itemFrom ) const;
-		void _selectAllAtomsTo( std::vector<App::Core::Model::ID> & p_selection, const Model::Atom & p_itemFrom ) const;
+		void _selectAllCategoriesTo( std::vector<App::Core::Model::ID> & p_selection, const App::Component::Chemistry::Category & p_itemFrom ) const;
+		void _selectAllChainsTo( std::vector<App::Core::Model::ID> & p_selection, const App::Component::Chemistry::Chain & p_itemFrom ) const;
+		void _selectAllResiduesTo( std::vector<App::Core::Model::ID> & p_selection, const App::Component::Chemistry::Residue & p_itemFrom ) const;
+		void _selectAllAtomsTo( std::vector<App::Core::Model::ID> & p_selection, const App::Component::Chemistry::Atom & p_itemFrom ) const;
 
 	  private:
 		QMenu *													_contextMenu;
@@ -76,7 +76,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		std::map<QTreeWidgetItem *, QList<QTreeWidgetItem *> *> _mapLoadedItems
 			= std::map<QTreeWidgetItem *, QList<QTreeWidgetItem *> *>();
 
-		MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
+		MoleculeSceneView( App::Component::Chemistry::Molecule * const p_model, QWidget * const p_parent );
 		~MoleculeSceneView();
 
 		void _clearLoadedItems();
@@ -100,15 +100,15 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 		void _fillListWithItemChildren( const QTreeWidgetItem & p_parent, QList<QTreeWidgetItem *> & p_list ) const;
 
-		void _applyMoleculeDataOnItem( const Model::Molecule & p_molecule, QTreeWidgetItem & p_item ) const;
-		void _applyCategoryDataOnItem( const Model::Category & p_category, QTreeWidgetItem & p_item ) const;
-		void _applyChainDataOnItem( const Model::Chain & p_molecule,
+		void _applyMoleculeDataOnItem( const App::Component::Chemistry::Molecule & p_molecule, QTreeWidgetItem & p_item ) const;
+		void _applyCategoryDataOnItem( const App::Component::Chemistry::Category & p_category, QTreeWidgetItem & p_item ) const;
+		void _applyChainDataOnItem( const App::Component::Chemistry::Chain & p_molecule,
 									QTreeWidgetItem &	 p_item,
-									const CATEGORY_ENUM	 p_category ) const;
-		void _applyResidueDataOnItem( const Model::Residue & p_molecule, QTreeWidgetItem & p_item ) const;
-		void _applyAtomDataOnItem( const Model::Atom & p_molecule, QTreeWidgetItem & p_item ) const;
+									const App::Internal::ChemDB::Category::TYPE	 p_category ) const;
+		void _applyResidueDataOnItem( const App::Component::Chemistry::Residue & p_molecule, QTreeWidgetItem & p_item ) const;
+		void _applyAtomDataOnItem( const App::Component::Chemistry::Atom & p_molecule, QTreeWidgetItem & p_item ) const;
 
-		void _applyResidueNameOnItem( const Model::Residue &				  p_molecule,
+		void _applyResidueNameOnItem( const App::Component::Chemistry::Residue &				  p_molecule,
 									  QTreeWidgetItem &						  p_item,
 									  const VTX::Style::SYMBOL_DISPLAY_MODE & p_symbolDisplayMode ) const;
 
@@ -117,22 +117,22 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 											 const VTX::Style::SYMBOL_DISPLAY_MODE & p_displayMode );
 
 		void _updateMoleculeStructure();
-		void _updateCategoryStructure( const Model::Category & p_category, QTreeWidgetItem & p_item );
-		void _updateChainStructure( const Model::Chain & p_chain, QTreeWidgetItem & p_item );
-		void _updateResidueStructure( const Model::Residue & p_residue, QTreeWidgetItem & p_item );
+		void _updateCategoryStructure( const App::Component::Chemistry::Category & p_category, QTreeWidgetItem & p_item );
+		void _updateChainStructure( const App::Component::Chemistry::Chain & p_chain, QTreeWidgetItem & p_item );
+		void _updateResidueStructure( const App::Component::Chemistry::Residue & p_residue, QTreeWidgetItem & p_item );
 
 		QTreeWidgetItem * const _getMoleculeTreeWidgetItem() const;
-		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Category & p_category ) const;
-		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Chain & p_chain ) const;
-		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Residue & p_residue ) const;
-		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Atom & p_atom ) const;
+		QTreeWidgetItem * const _getTreeWidgetItem( const App::Component::Chemistry::Category & p_category ) const;
+		QTreeWidgetItem * const _getTreeWidgetItem( const App::Component::Chemistry::Chain & p_chain ) const;
+		QTreeWidgetItem * const _getTreeWidgetItem( const App::Component::Chemistry::Residue & p_residue ) const;
+		QTreeWidgetItem * const _getTreeWidgetItem( const App::Component::Chemistry::Atom & p_atom ) const;
 
 		bool _isMoleculeExpanded() const;
-		bool _isCategoryExpanded( const Model::Category & p_category ) const;
-		bool _isChainExpanded( const Model::Chain & p_chain ) const;
-		bool _isResidueExpanded( const Model::Residue & p_residue ) const;
+		bool _isCategoryExpanded( const App::Component::Chemistry::Category & p_category ) const;
+		bool _isChainExpanded( const App::Component::Chemistry::Chain & p_chain ) const;
+		bool _isResidueExpanded( const App::Component::Chemistry::Residue & p_residue ) const;
 
-		CATEGORY_ENUM _getCategoryFromItem( const QTreeWidgetItem & p_item ) const;
+		App::Internal::ChemDB::Category::TYPE _getCategoryFromItem( const QTreeWidgetItem & p_item ) const;
 	};
 
 } // namespace VTX::UI::QT::Tool::Scene::Widget::View

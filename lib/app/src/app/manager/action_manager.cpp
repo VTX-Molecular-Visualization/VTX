@@ -2,13 +2,13 @@
 #include "app/action/main.hpp"
 #include "app/action/representable.hpp"
 #include "app/action/setting.hpp"
-#include "app/model/chain.hpp"
-#include "app/model/molecule.hpp"
-#include "app/model/representation/representation.hpp"
-#include "app/model/representation/representation_library.hpp"
-#include "app/model/residue.hpp"
-#include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/io/struct/scene_path_data.hpp"
+#include "app/component/chemistry/chain.hpp"
+#include "app/component/chemistry/molecule.hpp"
+#include "app/application/representation/representation_preset.hpp"
+#include "app/application/representation/representation_library.hpp"
+#include "app/component/chemistry/residue.hpp"
+#include "app/internal/io/filesystem.hpp"
+#include "app/internal/io/serialization/scene_path_data.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <magic_enum.hpp>
 #include <sstream>
@@ -40,13 +40,13 @@ namespace VTX::App::Manager
 		//// TODO: map with ids.
 		// try
 		//{
-		//	Model::Molecule & molecule = *( *VTXApp::get().getScene().getMolecules().begin() ).first;
+		//	App::Component::Chemistry::Molecule & molecule = *( *VTXApp::get().getScene().getMolecules().begin() ).first;
 
 		//	if ( command == "snapshot" )
 		//	{
 		//		action = new VTX::App::Action::Main::Snapshot(
 		//			Worker::Snapshoter::MODE::GL,
-		//			IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ) );
+		//			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ) );
 		//	}
 		//	else if ( command == "change_representation" )
 		//	{
@@ -64,8 +64,8 @@ namespace VTX::App::Manager
 		//	}
 		//	else if ( command == "set_representation_molecule" )
 		//	{
-		//		Model::Representation::Representation * const representation
-		//			= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
+		//		App::Application::Representation::RepresentationPreset * const representation
+		//			= App::Application::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 		//		action = new VTX::App::Action::Representable::SetRepresentation( molecule, representation );
 		//	}
 		//	else if ( command == "remove_representation_molecule" )
@@ -74,8 +74,8 @@ namespace VTX::App::Manager
 		//	}
 		//	else if ( command == "set_representation_chain" )
 		//	{
-		//		Model::Representation::Representation * const representation
-		//			= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
+		//		App::Application::Representation::RepresentationPreset * const representation
+		//			= App::Application::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 		//		const int idChain = std::stoi( words.at( 2 ) );
 		//		action			  = new VTX::App::Action::Representable::SetRepresentation( *molecule.getChains()[
 		// idChain
@@ -88,8 +88,8 @@ namespace VTX::App::Manager
 		//	}
 		//	else if ( command == "set_representation_residue" )
 		//	{
-		//		Model::Representation::Representation * const representation
-		//			= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
+		//		App::Application::Representation::RepresentationPreset * const representation
+		//			= App::Application::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 		//		const int indexResidue = std::stoi( words.at( 2 ) );
 		//		action = new VTX::App::Action::Representable::SetRepresentation( *molecule.getResidues()[ indexResidue
 		//], 																	representation );
@@ -225,7 +225,7 @@ namespace VTX::App::Manager
 
 	void ActionManager::_purgeBuffer()
 	{
-		while ( _bufferUndo.size() > VTX::Setting::ACTION_BUFFER_SIZE )
+		while ( _bufferUndo.size() > VTX::App::Application::Setting::ACTION_BUFFER_SIZE )
 		{
 			delete _bufferUndo.back();
 			_bufferUndo.pop_back();

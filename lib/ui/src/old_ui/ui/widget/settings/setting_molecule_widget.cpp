@@ -9,9 +9,9 @@
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/io/struct/image_export.hpp>
-#include <app/old_app/setting.hpp>
-#include <app/old_app/trajectory/trajectory_enum.hpp>
+#include <app/internal/io/serialization/image_export.hpp>
+#include <app/application/setting.hpp>
+#include <app/component/chemistry/enum_trajectory.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -24,11 +24,11 @@ namespace VTX::UI::Widget::Settings
 	{
 		if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> & castedEvent
-				= static_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<Setting::PARAMETER> &> &>(
+			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> & castedEvent
+				= static_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &>(
 					p_event );
 
-			if ( castedEvent.get().find( Setting::PARAMETER::DEFAULT_REPRESENTATION_PER_CATEGORY )
+			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::DEFAULT_REPRESENTATION_PER_CATEGORY )
 				 != castedEvent.get().end() )
 			{
 				_refreshData();
@@ -115,16 +115,16 @@ namespace VTX::UI::Widget::Settings
 
 	void SettingMoleculeWidget::_refreshData()
 	{
-		_refreshRepresentationComboBox( _defaultRepresentationForPolymer, CATEGORY_ENUM::POLYMER );
-		_refreshRepresentationComboBox( _defaultRepresentationForCarbohydrate, CATEGORY_ENUM::CARBOHYDRATE );
-		_refreshRepresentationComboBox( _defaultRepresentationForLigand, CATEGORY_ENUM::LIGAND );
-		_refreshRepresentationComboBox( _defaultRepresentationForIon, CATEGORY_ENUM::ION );
-		_refreshRepresentationComboBox( _defaultRepresentationForSolvent, CATEGORY_ENUM::SOLVENT );
-		_refreshRepresentationComboBox( _defaultRepresentationForWater, CATEGORY_ENUM::WATER );
+		_refreshRepresentationComboBox( _defaultRepresentationForPolymer, App::Internal::ChemDB::Category::TYPE::POLYMER );
+		_refreshRepresentationComboBox( _defaultRepresentationForCarbohydrate, App::Internal::ChemDB::Category::TYPE::CARBOHYDRATE );
+		_refreshRepresentationComboBox( _defaultRepresentationForLigand, App::Internal::ChemDB::Category::TYPE::LIGAND );
+		_refreshRepresentationComboBox( _defaultRepresentationForIon, App::Internal::ChemDB::Category::TYPE::ION );
+		_refreshRepresentationComboBox( _defaultRepresentationForSolvent, App::Internal::ChemDB::Category::TYPE::SOLVENT );
+		_refreshRepresentationComboBox( _defaultRepresentationForWater, App::Internal::ChemDB::Category::TYPE::WATER );
 	}
 
 	void SettingMoleculeWidget::_refreshRepresentationComboBox( RepresentationLibraryComboBox * const p_comboBox,
-																const CATEGORY_ENUM					  p_categoryEnum )
+																const App::Internal::ChemDB::Category::TYPE					  p_categoryEnum )
 	{
 		p_comboBox->setCurrentIndex( VTX_SETTING().getDefaultRepresentationIndexPerCategory( p_categoryEnum ) );
 	}
@@ -132,30 +132,30 @@ namespace VTX::UI::Widget::Settings
 	void SettingMoleculeWidget::_defaultRepresentationForPolymerChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::POLYMER, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Internal::ChemDB::Category::TYPE::POLYMER, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForCarbohydrateChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::CARBOHYDRATE, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Internal::ChemDB::Category::TYPE::CARBOHYDRATE, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForLigandChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::LIGAND, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Internal::ChemDB::Category::TYPE::LIGAND, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForIonChange( int p_index )
 	{
-		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::ION, p_index ) );
+		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Internal::ChemDB::Category::TYPE::ION, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForSolventChange( int p_index )
 	{
 		VTX_ACTION(
-			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::SOLVENT, p_index ) );
+			new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Internal::ChemDB::Category::TYPE::SOLVENT, p_index ) );
 	}
 	void SettingMoleculeWidget::_defaultRepresentationForWaterChange( int p_index )
 	{
-		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( CATEGORY_ENUM::WATER, p_index ) );
+		VTX_ACTION( new App::Action::Setting::ChangeDefaultRepresentationPerCategory( App::Internal::ChemDB::Category::TYPE::WATER, p_index ) );
 	}
 
 	void SettingMoleculeWidget::_restoreDefaultRepresentations()

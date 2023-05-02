@@ -5,13 +5,13 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		Color::Rgba AOIntegrator::Li( const Ray &	p_ray,
+		Util::Color::Rgba AOIntegrator::Li( const Ray &	p_ray,
 									  const Scene & p_scene,
 									  const float	p_tMin,
 									  const float	p_tMax ) const
 		{
 			Intersection intersection;
-			Color::Rgba	 Li = Color::Rgba::BLACK;
+			Util::Color::Rgba	 Li = Util::Color::Rgba::BLACK;
 
 			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{

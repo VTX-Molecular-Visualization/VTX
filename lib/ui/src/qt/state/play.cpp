@@ -1,17 +1,16 @@
 #include "ui/qt/state/play.hpp"
-
-#include <app/model/path.hpp>
-#include <app/model/viewpoint.hpp>
-#include <app/old_app/object3d/camera.hpp>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/component/object3d/viewpoint.hpp>
+#include <app/component/render/camera.hpp>
+#include <app/component/video/path.hpp>
 #include <app/old_app/vtx_app.hpp>
+#include <app/application/scene.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::State
 {
 	void Play::enter( void * const p_arg )
 	{
-		_path = (Model::Path *)p_arg;
+		_path = (App::Component::Video::Path *)p_arg;
 		// VTXApp::get().getSetting().backup();
 
 		if ( _path->getDuration() == 0.f || _path->getViewpoints().size() < 2 )
@@ -67,7 +66,7 @@ namespace VTX::UI::QT::State
 
 	void Play::_setCamera() const
 	{
-		Model::Viewpoint viewpoint = _path->getInterpolatedViewpoint( _time );
+		App::Component::Object3D::Viewpoint viewpoint = _path->getInterpolatedViewpoint( _time );
 		if ( viewpoint.getController() == ID::Controller::TRACKBALL )
 		{
 			VTXApp::get().getScene().getCamera().setRotationAround(

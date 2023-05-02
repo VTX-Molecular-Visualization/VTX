@@ -14,15 +14,14 @@
 #include <app/action/main.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
+#include <app/application/setting.hpp>
 #include <app/core/event/vtx_event.hpp>
-#include <app/core/worker/worker_manager.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/model/selection.hpp>
-#include <app/old_app/io/filesystem.hpp>
-#include <app/old_app/io/struct/scene_path_data.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/internal/io/filesystem.hpp>
+#include <app/internal/io/serialization/scene_path_data.hpp>
 
 namespace VTX::UI::QT
 {
@@ -70,7 +69,7 @@ namespace VTX::UI::QT
 		if ( VTXApp::get().hasAnyModifications() )
 		{
 			p_closeEvent->ignore();
-			VTX::Core::Worker::CallbackThread callback = VTX::Core::Worker::CallbackThread(
+			VTX::App::Core::Worker::CallbackThread callback = VTX::App::Core::Worker::CallbackThread(
 				[]( const uint p_code )
 				{
 					if ( p_code )
@@ -136,7 +135,7 @@ namespace VTX::UI::QT
 
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
-		_loadStyleSheet( IO::Filesystem::STYLESHEET_FILE_DEFAULT.string().c_str() );
+		_loadStyleSheet( App::Internal::IO::Filesystem::STYLESHEET_FILE_DEFAULT.string().c_str() );
 	}
 
 	void MainWindow::initWindowLayout()
@@ -302,10 +301,10 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::_onShortcutClearSelection() const
 	{
-		if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
+		if ( !App::Application::Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 		{
 			VTX_ACTION( new VTX::App::Action::Selection::ClearSelection(
-				VTX::Selection::SelectionManager::get().getSelectionModel() ) );
+				VTX::App::Application::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 	void MainWindow::_onShortcutRestoreLayout() const { VTX_ACTION( new QT::Action::Main::RestoreLayout() ); }
@@ -317,27 +316,30 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::_onShortcutDelete() const
 	{
-		if ( Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
+		if ( App::Application::Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
 		{
-			VTX_ACTION(
-				new VTX::App::Action::Selection::Delete( Selection::SelectionManager::get().getSelectionModel() ) );
+			VTX_ACTION( new VTX::App::Action::Selection::Delete(
+				App::Application::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 	void MainWindow::_onShortcutOrient() const
 	{
-		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selection
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new VTX::UI::QT::Action::Selection::Orient( selection ) );
 	}
 	void MainWindow::_onShortcutSelectAll() const { VTX_ACTION( new VTX::App::Action::Selection::SelectAll() ); }
 	void MainWindow::_onShortcutCopy() const
 	{
-		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
 			VTX_ACTION( new VTX::App::Action::Selection::Copy( selectionModel ) );
 	}
 	void MainWindow::_onShortcutExtract() const
 	{
-		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
 			VTX_ACTION( new VTX::App::Action::Selection::Extract( selectionModel ) );
 	}
@@ -634,7 +636,7 @@ namespace VTX::UI::QT
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings  settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings  settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							 QSettings::IniFormat );
 		const bool settingsAreValid = settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 
@@ -643,7 +645,7 @@ namespace VTX::UI::QT
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
@@ -670,7 +672,7 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 
@@ -683,7 +685,7 @@ namespace VTX::UI::QT
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		settings.setValue( "Version", Style::LAYOUT_VERSION );
 
@@ -692,7 +694,7 @@ namespace VTX::UI::QT
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		settings.clear();
 	}

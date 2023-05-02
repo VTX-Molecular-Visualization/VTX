@@ -20,7 +20,7 @@ namespace VTX
 			{
 			}
 
-			Color::Rgba Li( const Ray &	  p_ray,
+			Util::Color::Rgba Li( const Ray &	  p_ray,
 							const Scene & p_scene,
 							const float	  p_tMin,
 							const float	  p_tMax ) const override;

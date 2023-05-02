@@ -3,8 +3,8 @@
 
 #include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/model/representation/representation.hpp"
-#include "app/model/representation/representation_library.hpp"
+#include "app/application/representation/representation_preset.hpp"
+#include "app/application/representation/representation_library.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include <string>
 #include <unordered_set>
@@ -28,16 +28,16 @@ namespace VTX::App::Action::Representation
 	class SavePreset : public App::Core::Action::BaseAction
 	{
 	  public:
-		SavePreset( const Model::Representation::Representation & p_representation )
+		SavePreset( const App::Application::Representation::RepresentationPreset & p_representation )
 		{
 			_representations.emplace( &p_representation );
 		};
-		SavePreset( const std::unordered_set<const Model::Representation::Representation *> & p_representations )
+		SavePreset( const std::unordered_set<const App::Application::Representation::RepresentationPreset *> & p_representations )
 		{
-			for ( const Model::Representation::Representation * const representation : p_representations )
+			for ( const App::Application::Representation::RepresentationPreset * const representation : p_representations )
 				_representations.emplace( representation );
 		};
-		SavePreset( Model::Representation::RepresentationLibrary & p_library )
+		SavePreset( App::Application::Representation::RepresentationLibrary & p_library )
 		{
 			for ( int i = 0; i < p_library.getRepresentationCount(); i++ )
 				_representations.emplace( p_library.getRepresentation( i ) );
@@ -49,8 +49,8 @@ namespace VTX::App::Action::Representation
 		virtual void execute() override;
 
 	  private:
-		std::unordered_set<const Model::Representation::Representation *> _representations
-			= std::unordered_set<const Model::Representation::Representation *>();
+		std::unordered_set<const App::Application::Representation::RepresentationPreset *> _representations
+			= std::unordered_set<const App::Application::Representation::RepresentationPreset *>();
 
 		bool _clearDirectory = false;
 		bool _async			 = true;
@@ -59,23 +59,23 @@ namespace VTX::App::Action::Representation
 	class ChangeName : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeName( Model::Representation::Representation * const p_representation,
+		explicit ChangeName( App::Application::Representation::RepresentationPreset * const p_representation,
 							 const std::string &						   p_name ) :
 			_representation( p_representation ),
-			_name( Model::Representation::RepresentationLibrary::get().getValidName( p_name ) )
+			_name( App::Application::Representation::RepresentationLibrary::get().getValidName( p_name ) )
 		{
 		}
 
 		void execute();
 
 	  private:
-		Model::Representation::Representation * const _representation;
+		App::Application::Representation::RepresentationPreset * const _representation;
 		const std::string							  _name;
 	};
 	class ChangeQuickAccess : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeQuickAccess( Model::Representation::Representation * const p_representation,
+		explicit ChangeQuickAccess( App::Application::Representation::RepresentationPreset * const p_representation,
 									const bool									  p_quickAccess ) :
 			_representation( p_representation ),
 			_quickAccess( p_quickAccess )
@@ -85,15 +85,15 @@ namespace VTX::App::Action::Representation
 		void execute();
 
 	  private:
-		Model::Representation::Representation * const _representation;
+		App::Application::Representation::RepresentationPreset * const _representation;
 		const bool									  _quickAccess;
 	};
 
 	class ChangeRepresentation : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeRepresentation( Model::Representation::Representation * const p_representation,
-									   const Generic::REPRESENTATION &				 p_representationType ) :
+		explicit ChangeRepresentation( App::Application::Representation::RepresentationPreset * const p_representation,
+									   const App::Application::Representation::REPRESENTATION_ENUM &				 p_representationType ) :
 			_representation( p_representation ),
 			_representationType( p_representationType )
 		{
@@ -102,13 +102,13 @@ namespace VTX::App::Action::Representation
 		void execute();
 
 	  private:
-		Model::Representation::Representation * const _representation;
-		const Generic::REPRESENTATION				  _representationType;
+		App::Application::Representation::RepresentationPreset * const _representation;
+		const App::Application::Representation::REPRESENTATION_ENUM				  _representationType;
 	};
 	class ChangeColorMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeColorMode( Model::Representation::Representation * const p_representation,
+		explicit ChangeColorMode( App::Application::Representation::RepresentationPreset * const p_representation,
 								  const Generic::COLOR_MODE &					p_colorMode ) :
 			_representation( p_representation ),
 			_colorMode( p_colorMode )
@@ -118,15 +118,15 @@ namespace VTX::App::Action::Representation
 		void execute();
 
 	  private:
-		Model::Representation::Representation * const _representation;
+		App::Application::Representation::RepresentationPreset * const _representation;
 		const Generic::COLOR_MODE					  _colorMode;
 	};
 
 	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeColor( Model::Representation::Representation * const p_representation,
-							  const Color::Rgba &							p_color ) :
+		explicit ChangeColor( App::Application::Representation::RepresentationPreset * const p_representation,
+							  const Util::Color::Rgba &							p_color ) :
 			_representation( p_representation ),
 			_color( p_color )
 		{
@@ -134,14 +134,14 @@ namespace VTX::App::Action::Representation
 		void execute();
 
 	  private:
-		Model::Representation::Representation * const _representation;
-		const Color::Rgba							  _color;
+		App::Application::Representation::RepresentationPreset * const _representation;
+		const Util::Color::Rgba							  _color;
 	};
 
 	class ChangeSphereRadius : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSphereRadius( Model::Representation::Representation * const p_representation,
+		explicit ChangeSphereRadius( App::Application::Representation::RepresentationPreset * const p_representation,
 									 const float								   p_radius ) :
 			_representation( p_representation ),
 			_radius( p_radius )
@@ -151,14 +151,14 @@ namespace VTX::App::Action::Representation
 		void execute();
 
 	  private:
-		Model::Representation::Representation * const _representation;
+		App::Application::Representation::RepresentationPreset * const _representation;
 		const float									  _radius;
 	};
 
 	class ChangeCylinderRadius : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeCylinderRadius( Model::Representation::Representation * const p_representation,
+		explicit ChangeCylinderRadius( App::Application::Representation::RepresentationPreset * const p_representation,
 									   const float									 p_radius ) :
 			_representation( p_representation ),
 			_radius( p_radius )
@@ -168,14 +168,14 @@ namespace VTX::App::Action::Representation
 		void execute();
 
 	  private:
-		Model::Representation::Representation * const _representation;
+		App::Application::Representation::RepresentationPreset * const _representation;
 		const float									  _radius;
 	};
 
 	class ChangeCylinderColorBendingMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeCylinderColorBendingMode( Model::Representation::Representation * const p_representation,
+		explicit ChangeCylinderColorBendingMode( App::Application::Representation::RepresentationPreset * const p_representation,
 												 const Generic::COLOR_BLENDING_MODE &		   p_colorBendingMode ) :
 			_representation( p_representation ),
 			_colorBendingMode( p_colorBendingMode )
@@ -185,14 +185,14 @@ namespace VTX::App::Action::Representation
 		void execute();
 
 	  private:
-		Model::Representation::Representation * const _representation;
+		App::Application::Representation::RepresentationPreset * const _representation;
 		const Generic::COLOR_BLENDING_MODE			  _colorBendingMode;
 	};
 
 	class ChangeRibbonColorMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeRibbonColorMode( Model::Representation::Representation * const p_representation,
+		explicit ChangeRibbonColorMode( App::Application::Representation::RepresentationPreset * const p_representation,
 										Generic::SECONDARY_STRUCTURE_COLOR_MODE &	  p_colorMode ) :
 			_representation( p_representation ),
 			_colorMode( p_colorMode )
@@ -202,14 +202,14 @@ namespace VTX::App::Action::Representation
 		void execute();
 
 	  private:
-		Model::Representation::Representation * const _representation;
+		App::Application::Representation::RepresentationPreset * const _representation;
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
 	};
 
 	class ChangeRibbonColorBendingMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeRibbonColorBendingMode( Model::Representation::Representation * const p_representation,
+		explicit ChangeRibbonColorBendingMode( App::Application::Representation::RepresentationPreset * const p_representation,
 											   const Generic::COLOR_BLENDING_MODE &			 p_colorBendingMode ) :
 			_representation( p_representation ),
 			_colorBendingMode( p_colorBendingMode )
@@ -219,7 +219,7 @@ namespace VTX::App::Action::Representation
 		void execute();
 
 	  private:
-		Model::Representation::Representation * const _representation;
+		App::Application::Representation::RepresentationPreset * const _representation;
 		const Generic::COLOR_BLENDING_MODE			  _colorBendingMode;
 	};
 

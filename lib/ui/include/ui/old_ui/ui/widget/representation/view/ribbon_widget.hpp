@@ -13,14 +13,14 @@ namespace VTX::UI::Widget::Representation::View
 		VTX_WIDGET
 
 	  public:
-		void refresh( const Model::Representation::InstantiatedRepresentation &		 p_representation,
-					  const std::unordered_set<const Generic::BaseRepresentable *> & p_targets ) override;
-		void updateWithNewValue( const Model::Representation::InstantiatedRepresentation &		p_representation,
-								 const std::unordered_set<const Generic::BaseRepresentable *> & p_targets ) override;
+		void refresh( const App::Application::Representation::InstantiatedRepresentation &		 p_representation,
+					  const std::unordered_set<const App::Application::Representation::BaseRepresentable *> & p_targets ) override;
+		void updateWithNewValue( const App::Application::Representation::InstantiatedRepresentation &		p_representation,
+								 const std::unordered_set<const App::Application::Representation::BaseRepresentable *> & p_targets ) override;
 		void resetState() override;
 
 	  signals:
-		void onColorChange( const Color::Rgba & p_color );
+		void onColorChange( const Util::Color::Rgba & p_color );
 		void onColorModeChange( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode );
 		void onColorBlendingModeChange( const Generic::COLOR_BLENDING_MODE & p_newMode );
 
@@ -36,7 +36,7 @@ namespace VTX::UI::Widget::Representation::View
 		CustomWidget::RibbonColorModeFieldWidget * _colorModeWidget			= nullptr;
 		CustomWidget::QComboBoxMultiField *		   _colorBlendingModeWidget = nullptr;
 
-		void _onColorChange( const Color::Rgba & p_color );
+		void _onColorChange( const Util::Color::Rgba & p_color );
 		void _onColorModeChange( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode );
 		void _onColorBlendingModeChange( const int p_newMode );
 	};

@@ -7,7 +7,7 @@
 #include "ui/qt/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QMenu>
 #include <QObject>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/application/scene.hpp>
 
 namespace VTX::UI::QT::Tool
 {

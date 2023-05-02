@@ -3,20 +3,17 @@
 
 #include <QString>
 #include <QWidget>
+#include <app/component/chemistry/_fwd.hpp>
 #include <app/core/action/base_action.hpp>
-#include <app/core/worker/worker_manager.hpp>
+#include <app/core/worker/callback.hpp>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX
 {
-	namespace IO::Struct
+	namespace App::Internal::IO::Serialization
 	{
 		class ImageExport;
-	}
-	namespace Model
-	{
-		class Molecule;
 	}
 
 	namespace UI
@@ -35,20 +32,20 @@ namespace VTX
 			static void openLoadMoleculeDialog();
 			static void openExportMoleculeDialog();
 			static void openLoadTrajectoryDialog();
-			static void openLoadTrajectoryDialog( Model::Molecule & p_target );
+			static void openLoadTrajectoryDialog( App::Component::Chemistry::Molecule & p_target );
 
 			static void openSetTrajectoryTargetsDialog( const FilePath & p_trajectoryFilePath );
 			static void openSetTrajectoryTargetsDialog( const std::vector<FilePath> & p_trajectoryFilePaths );
 
 			static void createNewSessionDialog();
 
-			static void leavingSessionDialog( VTX::Core::Worker::CallbackThread & p_callbackSucceed );
+			static void leavingSessionDialog( VTX::App::Core::Worker::CallbackThread & p_callbackSucceed );
 
 			static void openLoadSessionDialog();
-			static void openSaveSessionDialog( VTX::Core::Worker::CallbackThread * const p_callback = nullptr );
+			static void openSaveSessionDialog( VTX::App::Core::Worker::CallbackThread * const p_callback = nullptr );
 
 			static void openAdvancedSettingImageExportDialog();
-			static bool openExportImageDialog( const IO::Struct::ImageExport & p_exportData );
+			static bool openExportImageDialog( const App::Internal::IO::Serialization::ImageExport & p_exportData );
 
 			static void importRepresentationPresetDialog();
 			static void importRenderEffectPresetDialog();

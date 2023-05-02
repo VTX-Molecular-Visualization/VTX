@@ -1,7 +1,7 @@
 #include "ui/old_ui/ui/widget/custom_widget/render_preview_widget.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/worker/snapshoter.hpp>
-#include <app/core/worker/worker_manager.hpp>
+#include <app/internal/worker/snapshoter.hpp>
+#include <app/worker.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -17,11 +17,11 @@ namespace VTX::UI::Widget::CustomWidget
 
 	QSize RenderPreviewWidget::sizeHint() const { return _previewPixmpap.size(); }
 
-	void RenderPreviewWidget::takeSnapshot( const IO::Struct::ImageExport & p_exportData )
+	void RenderPreviewWidget::takeSnapshot( const App::Internal::IO::Serialization::ImageExport & p_exportData )
 	{
 		QImage preview = QImage();
 
-		IO::Struct::ImageExport	  snapshotData = p_exportData;
+		App::Internal::IO::Serialization::ImageExport	  snapshotData = p_exportData;
 		const std::pair<int, int> exportSize   = snapshotData.getSize();
 		const float				  exportRatio  = exportSize.first / float( exportSize.second );
 

@@ -2,10 +2,10 @@
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <app/action/selection.hpp>
-#include <app/mvc.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/event/global.hpp>
-#include <app/model/selection.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/mvc.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Home
 {
@@ -18,8 +18,10 @@ namespace VTX::UI::Widget::MainMenu::Home
 	{
 		if ( p_event.name == App::Event::Global::SELECTION_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const Model::Selection *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const Model::Selection *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<const App::Application::Selection::SelectionModel *> & castedEvent
+				= dynamic_cast<
+					const VTX::App::Core::Event::VTXEventArg<const App::Application::Selection::SelectionModel *> &>(
+					p_event );
 
 			const bool enableSelection = castedEvent.get()->getMoleculeSelectedCount() > 0;
 			_enableButtons( enableSelection );

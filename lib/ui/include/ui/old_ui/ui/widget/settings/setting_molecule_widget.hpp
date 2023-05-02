@@ -7,7 +7,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QWidget>
-#include <app/old_app/io/struct/image_export.hpp>
+#include <app/internal/io/serialization/image_export.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
@@ -29,7 +29,7 @@ namespace VTX::UI::Widget::Settings
 		void _refreshData();
 
 		void _refreshRepresentationComboBox( RepresentationLibraryComboBox * const p_comboBox,
-											 const CATEGORY_ENUM				   p_categoryEnum );
+											 const App::Internal::ChemDB::Category::TYPE				   p_categoryEnum );
 
 	  private:
 		Layout::AttributeListLayout * _layout;

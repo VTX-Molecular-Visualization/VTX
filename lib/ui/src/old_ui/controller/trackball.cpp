@@ -1,8 +1,8 @@
 #include "ui/old_ui/controller/trackball.hpp"
 #include "ui/old_ui/style.hpp"
 
-#include <app/old_app/object3d/scene.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/application/scene.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 
@@ -31,7 +31,7 @@ namespace VTX
 			}
 		}
 
-		Vec3f Trackball::targetSimulationFromCamera( const Object3D::Camera & p_camera ) const
+		Vec3f Trackball::targetSimulationFromCamera( const App::Component::Render::Camera & p_camera ) const
 		{
 			Vec3f res;
 
@@ -185,7 +185,7 @@ namespace VTX
 					_velocity, VEC3F_ZERO, p_deltaTime * VTX_SETTING().getControllerElasticityFactor() );
 
 				Vec3f::bool_type res = Util::Math::lessThan( Util::Math::abs( _velocity ),
-															 Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
+															 Vec3f( VTX::App::Application::Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
 				if ( !_mouseLeftPressed && res.x && res.y && res.z )
 				{
 					_velocity = VEC3F_ZERO;
@@ -209,7 +209,7 @@ namespace VTX
 			_camera().setTarget( _target );
 		}
 
-		void Trackball::_computeOrientPositions( const Object3D::Helper::AABB & p_aabb )
+		void Trackball::_computeOrientPositions( const App::Component::Object3D::Helper::AABB & p_aabb )
 		{
 			_orientStartingPosition = _target;
 			_orientTargetPosition	= p_aabb.centroid();

@@ -4,8 +4,8 @@
 #include "tool/analysis/util.hpp"
 #include "core/structural_alignment.hpp"
 #include <app/core/action/base_action.hpp>
-#include <app/model/molecule.hpp>
-#include <app/model/selection.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/application/selection/selection.hpp>
 
 #include <vector>
 
@@ -15,15 +15,15 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Action
 	{
 	  public:
 		explicit ComputeStructuralAlignment(
-			const Model::Molecule * const								 p_staticMolecule,
-			const std::vector<Model::Molecule *> &						 p_mobileMolecules,
+			const App::Component::Chemistry::Molecule * const								 p_staticMolecule,
+			const std::vector<App::Component::Chemistry::Molecule *> &						 p_mobileMolecules,
 			const Core::StructuralAlignment::AlignmentParameters * const p_parameters ) :
 			_staticMolecule( p_staticMolecule ),
 			_mobileMolecules( p_mobileMolecules ), _parameters( p_parameters )
 		{
 		}
 
-		explicit ComputeStructuralAlignment( const Model::Selection & p_selection )
+		explicit ComputeStructuralAlignment( const App::Application::Selection::SelectionModel & p_selection )
 		{
 			Util::Analysis::pickTargetAndComparersFromSelection( p_selection, _staticMolecule, _mobileMolecules );
 
@@ -49,8 +49,8 @@ namespace VTX::Tool::Analysis::StructuralAlignment::Action
 		}
 
 	  private:
-		const Model::Molecule *								   _staticMolecule;
-		std::vector<Model::Molecule *>						   _mobileMolecules;
+		const App::Component::Chemistry::Molecule *								   _staticMolecule;
+		std::vector<App::Component::Chemistry::Molecule *>						   _mobileMolecules;
 		const Core::StructuralAlignment::AlignmentParameters * _parameters;
 	};
 

@@ -8,7 +8,7 @@
 #include <QMenu>
 #include <QObject>
 #include <app/core/event/base_event_receiver_vtx.hpp>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/application/scene.hpp>
 
 namespace VTX::UI::QT::Tool
 {

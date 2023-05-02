@@ -2,7 +2,7 @@
 #define __VTX_BUFFER_SECONDARY_STRUCTURE__
 
 #include "base_buffer_opengl.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "util/color/rgba.hpp"
 #include <util/types.hpp>
 #include "app/core/model/base_model.hpp"
 #include "app/old_app/renderer/gl/vertex_array.hpp"
@@ -21,7 +21,7 @@ namespace VTX
 			void setControlPointPositions( const std::vector<Vec4f> & );
 			void setControlPointDirections( const std::vector<Vec3f> & );
 			void setSecondaryStructures( const std::vector<uint> & );
-			void setColors( const std::vector<Color::Rgba> & );
+			void setColors( const std::vector<Util::Color::Rgba> & );
 			void setVisibilities( const std::vector<uint> & );
 			void setSelections( const std::vector<uint> & );
 			void setIds( const std::vector<App::Core::Model::ID> & );

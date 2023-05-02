@@ -27,8 +27,8 @@
 #include <app/event.hpp>
 #include <app/event/global.hpp>
 #include <app/old_app/define.hpp>
-#include <app/old_app/io/filesystem.hpp>
-#include <app/old_app/io/struct/scene_path_data.hpp>
+#include <app/internal/io/filesystem.hpp>
+#include <app/internal/io/serialization/scene_path_data.hpp>
 #include <iostream>
 
 namespace VTX::UI
@@ -83,7 +83,7 @@ namespace VTX::UI
 		if ( VTXApp::get().hasAnyModifications() )
 		{
 			p_closeEvent->ignore();
-			VTX::Core::Worker::CallbackThread callback = VTX::Core::Worker::CallbackThread(
+			VTX::App::Core::Worker::CallbackThread callback = VTX::App::Core::Worker::CallbackThread(
 				[]( const uint p_code )
 				{
 					if ( p_code )
@@ -172,13 +172,13 @@ namespace VTX::UI
 
 	void MainWindow::_loadStyleSheet()
 	{
-		QFile stylesheetFile( IO::Filesystem::STYLESHEET_FILE_DEFAULT );
+		QFile stylesheetFile( App::Internal::IO::Filesystem::STYLESHEET_FILE_DEFAULT );
 		stylesheetFile.open( QFile::ReadOnly );
 
 		QString stylesheetTxt = stylesheetFile.readAll();
 
 #ifdef _WIN32
-		QFile stylesheetWindowsFile( IO::Filesystem::STYLESHEET_FILE_WINDOWS );
+		QFile stylesheetWindowsFile( App::Internal::IO::Filesystem::STYLESHEET_FILE_WINDOWS );
 		stylesheetWindowsFile.open( QFile::ReadOnly );
 
 		stylesheetTxt += stylesheetWindowsFile.readAll();
@@ -262,10 +262,10 @@ namespace VTX::UI
 
 	void MainWindow::_onShortcutClearSelection() const
 	{
-		if ( !Selection::SelectionManager::get().getSelectionModel().isEmpty() )
+		if ( !App::Application::Selection::SelectionManager::get().getSelectionModel().isEmpty() )
 		{
 			VTX_ACTION( new VTX::App::Action::Selection::ClearSelection(
-				Selection::SelectionManager::get().getSelectionModel() ) );
+				App::Application::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 
@@ -286,16 +286,17 @@ namespace VTX::UI
 
 	void MainWindow::_onShortcutDelete() const
 	{
-		if ( Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
+		if ( App::Application::Selection::SelectionManager::get().getSelectionModel().isEmpty() == false )
 		{
-			VTX_ACTION(
-				new VTX::App::Action::Selection::Delete( Selection::SelectionManager::get().getSelectionModel() ) );
+			VTX_ACTION( new VTX::App::Action::Selection::Delete(
+				App::Application::Selection::SelectionManager::get().getSelectionModel() ) );
 		}
 	}
 
 	void MainWindow::_onShortcutOrient() const
 	{
-		const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selection
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new QT::Action::Selection::Orient( selection ) );
 	}
 
@@ -303,14 +304,16 @@ namespace VTX::UI
 
 	void MainWindow::_onShortcutCopy() const
 	{
-		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
 			VTX_ACTION( new VTX::App::Action::Selection::Copy( selectionModel ) );
 	}
 
 	void MainWindow::_onShortcutExtract() const
 	{
-		Model::Selection & selectionModel = Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		if ( selectionModel.hasMolecule() )
 			VTX_ACTION( new VTX::App::Action::Selection::Extract( selectionModel ) );
 	}
@@ -474,12 +477,12 @@ namespace VTX::UI
 		if ( UI::MimeType::getMimeTypeEnum( mimeData ) == UI::MimeType::ApplicationMimeType::FILE )
 		{
 			const QList<QUrl> &				   urlList = mimeData->urls();
-			const std::vector<FilePath>		   paths   = IO::Filesystem::getFilePathVectorFromQUrlList( urlList );
+			const std::vector<FilePath>		   paths   = App::Internal::IO::Filesystem::getFilePathVectorFromQUrlList( urlList );
 			std::vector<std::vector<FilePath>> pathPerFileTypes = std::vector<std::vector<FilePath>>();
-			IO::Filesystem::fillFilepathPerMode( paths, pathPerFileTypes );
+			App::Internal::IO::Filesystem::fillFilepathPerMode( paths, pathPerFileTypes );
 
 			const std::vector<FilePath> & trajectoryPaths
-				= pathPerFileTypes[ int( IO::Filesystem::FILE_TYPE::TRAJECTORY ) ];
+				= pathPerFileTypes[ int( App::Internal::IO::Filesystem::FILE_TYPE::TRAJECTORY ) ];
 
 			// If drop contains only trajectory path, open the specific window
 			if ( trajectoryPaths.size() == paths.size() )
@@ -579,7 +582,7 @@ namespace VTX::UI
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings  settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings  settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							 QSettings::IniFormat );
 		const bool settingsAreValid = settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 
@@ -588,7 +591,7 @@ namespace VTX::UI
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
@@ -615,7 +618,7 @@ namespace VTX::UI
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 
@@ -628,7 +631,7 @@ namespace VTX::UI
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		settings.setValue( "Version", Style::LAYOUT_VERSION );
 
@@ -637,7 +640,7 @@ namespace VTX::UI
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QString::fromStdString( IO::Filesystem::getConfigIniFile().string() ),
+		QSettings settings( QString::fromStdString( App::Internal::IO::Filesystem::getConfigIniFile().string() ),
 							QSettings::IniFormat );
 		settings.clear();
 	}

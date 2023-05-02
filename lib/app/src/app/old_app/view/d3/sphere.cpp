@@ -1,5 +1,5 @@
 #include "app/old_app/view/d3/sphere.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
+#include "app/application/representation/representation_manager.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <util/logger.hpp>
 
@@ -14,17 +14,18 @@ namespace VTX::View::D3
 
 	void Sphere::_init() {}
 
-	void Sphere::render( const Object3D::Camera & p_camera ) const
+	void Sphere::render( const App::Component::Render::Camera & p_camera ) const
 	{
 		BaseView3D::render( p_camera );
 
-		for ( const std::pair<const Model::Representation::InstantiatedRepresentation * const,
-							  VTX::Representation::RepresentationTarget> & representationData :
+		for ( const std::pair<const App::Application::Representation::InstantiatedRepresentation * const,
+							  App::Application::Representation::RepresentationTarget> & representationData :
 			  _model->getMolecule()->getRepresentationData() )
 		{
 			if ( representationData.first->hasToDrawSphere() )
 			{
-				const Model::Representation::SphereData & sphereData = representationData.first->getSphereData();
+				const App::Application::Representation::Primitive::Sphere & sphereData
+					= representationData.first->getSphereData();
 
 				/// TODO: put a mask
 				_program->setFloat( "u_radiusFixed", sphereData.radiusFixed );
@@ -32,7 +33,8 @@ namespace VTX::View::D3
 				_program->setBool( "u_isRadiusFixed", sphereData.isRadiusFixed );
 				_program->setBool( "u_isPerspective", p_camera.isPerspective() );
 
-				const Representation::TargetRange<uint> & target = representationData.second.getAtoms();
+				const App::Application::Representation::TargetRange<uint> & target
+					= representationData.second.getAtoms();
 				if ( target.counts.size() > 0 )
 				{
 					_model->getBuffer()->getVao().multiDrawArray( Renderer::GL::VertexArray::DrawMode::POINTS,

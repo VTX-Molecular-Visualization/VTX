@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuAtom::localize() {}
 
-	void ContextualMenuAtom::setTarget( Model::Atom * const p_target )
+	void ContextualMenuAtom::setTarget( App::Component::Chemistry::Atom * const p_target )
 	{
 		ContextualMenuTemplate::setTarget( p_target );
 

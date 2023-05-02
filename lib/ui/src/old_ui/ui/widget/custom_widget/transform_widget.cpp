@@ -2,7 +2,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <QGridLayout>
 #include <QLabel>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -16,17 +16,19 @@ namespace VTX::UI::Widget::CustomWidget
 		_positionLabel = new QLabel();
 		_positionLabel->setText( "Position" );
 		_positionWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_position_widget" );
-		_positionWidget->setMinMax( Setting::MIN_SCENE_POS, Setting::MAX_SCENE_POS );
+		_positionWidget->setMinMax( VTX::App::Application::Setting::MIN_SCENE_POS,
+									VTX::App::Application::Setting::MAX_SCENE_POS );
 
 		_rotationLabel = new QLabel();
 		_rotationLabel->setText( "Rotation" );
 		_rotationWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_rotation_widget" );
-		_rotationWidget->setMinMax( Setting::MIN_EULER, Setting::MAX_EULER );
+		_rotationWidget->setMinMax( VTX::App::Application::Setting::MIN_EULER,
+									VTX::App::Application::Setting::MAX_EULER );
 
 		_scaleLabel = new QLabel();
 		_scaleLabel->setText( "Scale" );
 		_scaleWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_scale_widget" );
-		_scaleWidget->setMinMax( Setting::MIN_SCALE, Setting::MAX_SCALE );
+		_scaleWidget->setMinMax( VTX::App::Application::Setting::MIN_SCALE, VTX::App::Application::Setting::MAX_SCALE );
 		_scaleWidget->setDragValueFactor( 0.01f );
 
 		mainLayout->addWidget( _positionLabel, 0, 0 );
@@ -132,7 +134,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_scaleWidget->resetState();
 	}
 
-	void TransformWidget::updateWithNewValue( const Math::Transform & p_value )
+	void TransformWidget::updateWithNewValue( const App::Internal::Math::Transform & p_value )
 	{
 		if ( _state == MultiDataField::State::Uninitialized )
 			_transform = p_value;

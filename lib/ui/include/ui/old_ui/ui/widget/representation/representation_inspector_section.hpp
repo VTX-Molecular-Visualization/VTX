@@ -20,19 +20,19 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/old_app/color/rgba.hpp>
+#include <app/application/representation/base_representable.hpp>
+#include <app/application/representation/instantiated_representation.hpp>
 #include <app/core/event/vtx_event.hpp>
-#include <app/old_app/generic/base_colorable.hpp>
-#include <app/old_app/generic/base_representable.hpp>
-#include <app/model/representation/instantiated_representation.hpp>
 #include <app/core/view/base_view.hpp>
+#include <util/color/rgba.hpp>
+#include <app/old_app/generic/base_colorable.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Representation
 {
 	class RepresentationInspectorSection :
 		public BaseManualWidget<QWidget>,
-		public TMultiDataField<const Model::Representation::InstantiatedRepresentation>
+		public TMultiDataField<const App::Application::Representation::InstantiatedRepresentation>
 	{
 		Q_OBJECT
 		VTX_WIDGET
@@ -47,7 +47,7 @@ namespace VTX::UI::Widget::Representation
 			None = 0,
 		};
 
-		using InstantiatedRepresentation = Model::Representation::InstantiatedRepresentation;
+		using InstantiatedRepresentation = App::Application::Representation::InstantiatedRepresentation;
 
 	  public:
 		void localize() override;
@@ -65,10 +65,10 @@ namespace VTX::UI::Widget::Representation
 
 	  signals:
 		void onRepresentationPresetChange( const int p_presetIndex );
-		void onRepresentationChange( const InstantiatedRepresentation &			p_representation,
-									 const Model::Representation::MEMBER_FLAG & p_flag );
+		void onRepresentationChange( const InstantiatedRepresentation &					   p_representation,
+									 const App::Application::Representation::MEMBER_FLAG & p_flag );
 		void onRepresentationColorChange( const InstantiatedRepresentation & p_representation,
-										  const Color::Rgba &				 p_color,
+										  const Util::Color::Rgba &				 p_color,
 										  const bool						 p_ssColor );
 		void onRevertRepresentation();
 		void onApplyRepresentationToChildren();
@@ -93,18 +93,19 @@ namespace VTX::UI::Widget::Representation
 
 		std::unordered_set<App::Core::Model::ID> _representationIDs = std::unordered_set<App::Core::Model::ID>();
 
-		Model::Representation::InstantiatedRepresentation * _dummyRepresentation	 = nullptr;
-		int													_baseRepresentationIndex = -1;
-		bool												_isDirty				 = false;
+		App::Application::Representation::InstantiatedRepresentation * _dummyRepresentation		= nullptr;
+		int															   _baseRepresentationIndex = -1;
+		bool														   _isDirty					= false;
 
-		void _instantiateRepresentationSettingWidget( const Generic::REPRESENTATION & p_representation );
+		void _instantiateRepresentationSettingWidget(
+			const App::Application::Representation::REPRESENTATION_ENUM & p_representation );
 		void _deleteRepresentationSettingWidget();
 
 		void _toggleSettingDisplay() const;
 		void _setSettingDisplay( const bool p_expand ) const;
 		void _representationPresetChange( const int p_resetIndex );
-		void _representationDataChange( const Model::Representation::MEMBER_FLAG & p_flagDataModified );
-		void _representationColorChange( const Color::Rgba & p_color, const bool p_ssColor );
+		void _representationDataChange( const App::Application::Representation::MEMBER_FLAG & p_flagDataModified );
+		void _representationColorChange( const Util::Color::Rgba & p_color, const bool p_ssColor );
 		void _revertRepresentation();
 		void _applyRepresentationToChildren();
 

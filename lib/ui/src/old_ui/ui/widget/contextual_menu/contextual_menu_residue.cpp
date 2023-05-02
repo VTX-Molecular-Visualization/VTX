@@ -1,11 +1,9 @@
 #include "ui/old_ui/ui/widget/contextual_menu/contextual_menu_residue.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/qt/action/residue.hpp"
-
 #include <app/action/residue.hpp>
 #include <app/action/visible.hpp>
-#include <app/model/representation/representation.hpp>
-#include <app/model/representation/representation_library.hpp>
+#include <app/application/representation/representation_library.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -38,7 +36,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuResidue::localize() {}
 
-	void ContextualMenuResidue::setTarget( Model::Residue * const p_target )
+	void ContextualMenuResidue::setTarget( App::Component::Chemistry::Residue * const p_target )
 	{
 		ContextualMenuTemplate::setTarget( p_target );
 
@@ -49,18 +47,15 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuResidue::_orientAction() { VTX_ACTION( new QT::Action::Residue::Orient( *_target ) ); }
 	void ContextualMenuResidue::_showAction()
 	{
-		VTX_ACTION( new App::Action::Residue::ChangeVisibility( *_target,
-														   App::Action::VISIBILITY_MODE::ALL ) );
+		VTX_ACTION( new App::Action::Residue::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::ALL ) );
 	}
 	void ContextualMenuResidue::_hideAction()
 	{
-		VTX_ACTION( new App::Action::Residue::ChangeVisibility( *_target,
-														   App::Action::VISIBILITY_MODE::HIDE ) );
+		VTX_ACTION( new App::Action::Residue::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::HIDE ) );
 	}
 	void ContextualMenuResidue::_soloAction()
 	{
-		VTX_ACTION( new App::Action::Residue::ChangeVisibility( *_target,
-														   App::Action::VISIBILITY_MODE::SOLO ) );
+		VTX_ACTION( new App::Action::Residue::ChangeVisibility( *_target, App::Action::VISIBILITY_MODE::SOLO ) );
 	}
 	void ContextualMenuResidue::_copyAction() { VTX_ACTION( new App::Action::Residue::Copy( *_target ) ); }
 	void ContextualMenuResidue::_extractAction() { VTX_ACTION( new App::Action::Residue::Extract( *_target ) ); }

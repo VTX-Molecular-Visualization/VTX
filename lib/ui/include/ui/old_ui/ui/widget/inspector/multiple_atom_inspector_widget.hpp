@@ -9,15 +9,15 @@
 #include "ui/old_ui/ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include <QLabel>
 #include <QWidget>
-#include <app/old_app/math/transform.hpp>
-#include <app/model/atom.hpp>
+#include "app/internal/math/transform.hpp"
+#include <app/component/chemistry/atom.hpp>
 #include <app/core/view/base_view.hpp>
 #include <app/core/view/callback_view.hpp>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleAtomWidget : public MultipleModelInspectorWidget<Model::Atom>
+	class MultipleAtomWidget : public MultipleModelInspectorWidget<App::Component::Chemistry::Atom>
 	{
 		VTX_WIDGET
 
@@ -25,17 +25,17 @@ namespace VTX::UI::Widget::Inspector
 		class MoleculeView
 		{
 		  public:
-			MoleculeView( const Model::Molecule * _molecule );
+			MoleculeView( const App::Component::Chemistry::Molecule * _molecule );
 			~MoleculeView();
 
 			void addViewer() { _counter++; }
 			void removeViewer() { _counter--; };
 			bool hasViewer() { return _counter > 0; };
 
-			App::Core::View::CallbackView<const Model::Molecule, MultipleAtomWidget> & getView() { return *_view; }
+			App::Core::View::CallbackView<const App::Component::Chemistry::Molecule, MultipleAtomWidget> & getView() { return *_view; }
 
 		  private:
-			App::Core::View::CallbackView<const Model::Molecule, MultipleAtomWidget> * _view	 = nullptr;
+			App::Core::View::CallbackView<const App::Component::Chemistry::Molecule, MultipleAtomWidget> * _view	 = nullptr;
 			uint															_counter = 1;
 		};
 		class MoleculeViewContainer
@@ -45,18 +45,18 @@ namespace VTX::UI::Widget::Inspector
 				_linkedInspector( p_linkedInspector )
 			{
 			}
-			void addViewOnMolecule( const Model::Molecule * p_molecule );
-			void removeViewOnMolecule( const Model::Molecule * p_molecule );
-			App::Core::View::CallbackView<const Model::Molecule, MultipleAtomWidget> & getView(
-				const Model::Molecule * p_molecule )
+			void addViewOnMolecule( const App::Component::Chemistry::Molecule * p_molecule );
+			void removeViewOnMolecule( const App::Component::Chemistry::Molecule * p_molecule );
+			App::Core::View::CallbackView<const App::Component::Chemistry::Molecule, MultipleAtomWidget> & getView(
+				const App::Component::Chemistry::Molecule * p_molecule )
 			{
 				return _mapMolecules[ p_molecule ]->getView();
 			}
 			void clear();
 
 		  private:
-			std::map<const Model::Molecule *, MoleculeView *> _mapMolecules
-				= std::map<const Model::Molecule *, MoleculeView *>();
+			std::map<const App::Component::Chemistry::Molecule *, MoleculeView *> _mapMolecules
+				= std::map<const App::Component::Chemistry::Molecule *, MoleculeView *>();
 			MultipleAtomWidget * const _linkedInspector;
 		};
 
@@ -66,8 +66,8 @@ namespace VTX::UI::Widget::Inspector
 		void localize() override;
 
 		virtual void clearTargets() override;
-		virtual void addTarget( Model::Atom * const p_target ) override;
-		virtual void removeTarget( Model::Atom * const p_target ) override;
+		virtual void addTarget( App::Component::Chemistry::Atom * const p_target ) override;
+		virtual void removeTarget( App::Component::Chemistry::Atom * const p_target ) override;
 
 	  protected:
 		MultipleAtomWidget( QWidget * p_parent = nullptr );
@@ -89,7 +89,7 @@ namespace VTX::UI::Widget::Inspector
 		CustomWidget::QLabelMultiField * _genericNameLabel = nullptr;
 		QLabel *						 _bondInfoLabel	   = nullptr;
 
-		Math::Transform _transformCache = Math::Transform();
+	 App::Internal::Math::Transform _transformCache = App::Internal::Math::Transform();
 
 		MoleculeViewContainer _moleculeViewerContainer = MoleculeViewContainer( this );
 

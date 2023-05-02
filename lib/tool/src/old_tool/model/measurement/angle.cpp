@@ -4,15 +4,15 @@
 #include <app/mvc.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/model/atom.hpp>
-#include <app/model/molecule.hpp>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/component/chemistry/atom.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/application/scene.hpp>
 #include <util/math.hpp>
 #include <variant>
 
 namespace VTX::Model::Measurement
 {
-	Angle::Angle() : Model::Label( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE )
+	Angle::Angle() : App::Component::Object3D::Label( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE )
 	{
 		_atoms.resize( 3, nullptr );
 		_moleculeViews.resize( 3, nullptr );
@@ -35,8 +35,8 @@ namespace VTX::Model::Measurement
 	{
 		if ( p_event.name == VTX::App::Event::Global::ATOM_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Model::Atom *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Atom *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom *> &>( p_event );
 
 			if ( _isLinkedToAtom( castedEvent.get() ) )
 			{
@@ -48,8 +48,8 @@ namespace VTX::Model::Measurement
 		}
 		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 		{
-			const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<Model::Molecule *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event );
 
 			if ( _isLinkedToMolecule( castedEvent.get() ) )
 			{
@@ -61,8 +61,8 @@ namespace VTX::Model::Measurement
 		}
 		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
 		{
-			const App::Core::Event::VTXEventArg<Model::Label *> & castedEvent
-				= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label *> &>( p_event );
+			const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> & castedEvent
+				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> &>( p_event );
 
 			// TODO : Use a manager instead of managing scene from model
 			if ( castedEvent.get() == this )
@@ -70,16 +70,16 @@ namespace VTX::Model::Measurement
 		}
 	}
 
-	void Angle::setAtoms( const Model::Atom & p_firstAtom,
-						  const Model::Atom & p_secondAtom,
-						  const Model::Atom & p_thirdAtom )
+	void Angle::setAtoms( const App::Component::Chemistry::Atom & p_firstAtom,
+						  const App::Component::Chemistry::Atom & p_secondAtom,
+						  const App::Component::Chemistry::Atom & p_thirdAtom )
 	{
 		_setAtomsInternal( p_firstAtom, p_secondAtom, p_thirdAtom );
 	}
 
 	bool Angle::isValid() const
 	{
-		for ( const Model::Atom * const atomPtr : _atoms )
+		for ( const App::Component::Chemistry::Atom * const atomPtr : _atoms )
 			if ( atomPtr == nullptr )
 				return false;
 
@@ -92,9 +92,9 @@ namespace VTX::Model::Measurement
 			_atoms[ i ] = nullptr;
 	}
 
-	void Angle::_setAtomsInternal( const Model::Atom & p_firstAtom,
-								   const Model::Atom & p_secondAtom,
-								   const Model::Atom & p_thirdAtom,
+	void Angle::_setAtomsInternal( const App::Component::Chemistry::Atom & p_firstAtom,
+								   const App::Component::Chemistry::Atom & p_secondAtom,
+								   const App::Component::Chemistry::Atom & p_thirdAtom,
 								   const bool		   p_notify )
 	{
 		_cleanViews();
@@ -103,7 +103,7 @@ namespace VTX::Model::Measurement
 		_atoms[ 1 ] = &p_secondAtom;
 		_atoms[ 2 ] = &p_thirdAtom;
 
-		const Model::Molecule * const firstAtomMolecule = p_firstAtom.getMoleculePtr();
+		const App::Component::Chemistry::Molecule * const firstAtomMolecule = p_firstAtom.getMoleculePtr();
 		_isAllAtomsOnSameMolecule						= true;
 
 		for ( int i = 1; i < _atoms.size(); i++ )
@@ -122,23 +122,23 @@ namespace VTX::Model::Measurement
 			_performAutoName( p_notify );
 	}
 
-	bool Angle::_isLinkedToAtom( const Model::Atom * const p_atom ) const
+	bool Angle::_isLinkedToAtom( const App::Component::Chemistry::Atom * const p_atom ) const
 	{
 		if ( !isValid() )
 			return false;
 
-		for ( const Model::Atom * const linkedAtom : _atoms )
+		for ( const App::Component::Chemistry::Atom * const linkedAtom : _atoms )
 			if ( linkedAtom == p_atom )
 				return true;
 
 		return false;
 	}
-	bool Angle::_isLinkedToMolecule( const Model::Molecule * const p_molecule ) const
+	bool Angle::_isLinkedToMolecule( const App::Component::Chemistry::Molecule * const p_molecule ) const
 	{
 		if ( !isValid() )
 			return false;
 
-		for ( const Model::Atom * const linkedAtom : _atoms )
+		for ( const App::Component::Chemistry::Atom * const linkedAtom : _atoms )
 			if ( linkedAtom->getMoleculePtr() == p_molecule )
 				return true;
 
@@ -168,11 +168,11 @@ namespace VTX::Model::Measurement
 		}
 	}
 
-	void Angle::_recomputeAABB( Object3D::Helper::AABB & p_aabb )
+	void Angle::_recomputeAABB( App::Component::Object3D::Helper::AABB & p_aabb )
 	{
-		p_aabb = Object3D::Helper::AABB();
+		p_aabb = App::Component::Object3D::Helper::AABB();
 
-		for ( const Model::Atom * const atom : _atoms )
+		for ( const App::Component::Chemistry::Atom * const atom : _atoms )
 		{
 			if ( atom != nullptr )
 				p_aabb.extend( atom->getWorldAABB() );
@@ -181,14 +181,14 @@ namespace VTX::Model::Measurement
 
 	void Angle::_instantiateViewsOnMolecules()
 	{
-		std::vector<Model::Molecule *> viewedMolecules = std::vector<Model::Molecule *>();
+		std::vector<App::Component::Chemistry::Molecule *> viewedMolecules = std::vector<App::Component::Chemistry::Molecule *>();
 		viewedMolecules.reserve( _moleculeViews.size() );
 
 		for ( int i = 0; i < _atoms.size(); i++ )
 		{
 			if ( _atoms[ i ] != nullptr )
 			{
-				Model::Molecule * const molecule = _atoms[ i ]->getMoleculePtr();
+				App::Component::Chemistry::Molecule * const molecule = _atoms[ i ]->getMoleculePtr();
 
 				if ( std::find( viewedMolecules.begin(), viewedMolecules.end(), molecule ) == viewedMolecules.end() )
 				{
@@ -219,7 +219,7 @@ namespace VTX::Model::Measurement
 		}
 	}
 
-	void Angle::_onMoleculeChange( const Model::Molecule * const				 p_molecule,
+	void Angle::_onMoleculeChange( const App::Component::Chemistry::Molecule * const				 p_molecule,
 								   const VTX::App::Core::Event::VTXEvent * const p_event )
 	{
 		bool recomputeAngle = false;

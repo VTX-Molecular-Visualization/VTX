@@ -14,7 +14,7 @@
 #include <app/core/model/base_model.hpp>
 #include <app/mvc.hpp>
 #include <app/core/view/base_view.hpp>
-#include <app/worker/snapshoter.hpp>
+#include <app/internal/worker/snapshoter.hpp>
 #include <map>
 
 namespace VTX::UI::Widget::Render

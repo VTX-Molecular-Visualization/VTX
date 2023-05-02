@@ -8,14 +8,14 @@
 #include <app/action/setting.hpp>
 #include <app/action/viewpoint.hpp>
 #include <app/event.hpp>
-#include <app/old_app/io/filesystem.hpp>
-// #include <app/model/label.hpp>
+#include <app/internal/io/filesystem.hpp>
+// #include <app/component/object3d/label.hpp>
 // #include <app/model/measurement/angle.hpp>
 // #include <app/model/measurement/dihedral_angle.hpp>
 // #include <app/model/measurement/distance.hpp>
 // #include <app/model/measurement/measure_in_progress.hpp>
-#include <app/model/mesh_triangle.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/object3d/mesh_triangle.hpp>
+#include <app/component/chemistry/molecule.hpp>
 // #include "ui/state/state_machine.hpp"
 // #include "ui/state/visualization.hpp"
 #include "ui/qt/style.hpp"
@@ -58,8 +58,8 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 		// if ( p_event.name == VTX::App::Event::Global::LABEL_ADDED )
 		//{
-		//	const App::Core::Event::VTXEventArg<Model::Label*> & castedEvent
-		//		= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label*> &>( p_event );
+		//	const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> & castedEvent
+		//		= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> &>( p_event );
 
 		//	const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
 
@@ -106,8 +106,8 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		//}
 		// else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
 		//{
-		//	const App::Core::Event::VTXEventArg<Model::Label*> & castedEvent
-		//		= dynamic_cast<const App::Core::Event::VTXEventArg<Model::Label*> &>( p_event );
+		//	const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> & castedEvent
+		//		= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> &>( p_event );
 
 		//	const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
 
@@ -240,7 +240,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	{
 		VTX_ACTION( new VTX::App::Action::Main::Snapshot(
 			Worker::Snapshoter::MODE::GL,
-			IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
+			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
 	}
 

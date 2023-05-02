@@ -17,14 +17,14 @@ namespace VTX
 		class MatteMaterial : public BaseMaterial
 		{
 		  public:
-			MatteMaterial( const Color::Rgba & p_kd, const float p_roughness = 0.f ) :
+			MatteMaterial( const Util::Color::Rgba & p_kd, const float p_roughness = 0.f ) :
 				_kd( p_kd ), _roughness( p_roughness )
 			{
 			}
 
-			Color::Rgba getColor() const override { return _kd; }
+			Util::Color::Rgba getColor() const override { return _kd; }
 
-			Color::Rgba shade( const Ray &			p_ray,
+			Util::Color::Rgba shade( const Ray &			p_ray,
 							   const Intersection & p_hit,
 							   const LightSample &	p_lightSample ) const override
 			{
@@ -40,7 +40,7 @@ namespace VTX
 			}
 
 		  private:
-			Color::Rgba _kd		   = Color::Rgba::WHITE;
+			Util::Color::Rgba _kd		   = Util::Color::Rgba::WHITE;
 			float		_roughness = 0.f; // [0, 2PI]
 		};
 	} // namespace Renderer

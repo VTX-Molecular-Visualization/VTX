@@ -3,7 +3,6 @@
 #include "ui/qt/main_window.hpp"
 #include <app/action/setting.hpp>
 
-
 namespace VTX::UI::Action::Setting
 {
 	void ChangeShading::execute()

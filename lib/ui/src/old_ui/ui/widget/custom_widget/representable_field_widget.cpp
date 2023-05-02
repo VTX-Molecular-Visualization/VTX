@@ -2,8 +2,8 @@
 #include "ui/old_ui/ui/mime_type.hpp"
 #include <app/old_app/id.hpp>
 #include <app/core/model/base_model.hpp>
-#include <app/model/chain.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/chain.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/mvc.hpp>
 
 namespace VTX
@@ -54,15 +54,15 @@ namespace VTX
 					App::Core::Model::BaseModel * const representableModel
 						= &( VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( modelData.getModelID() ) );
 
-					Generic::BaseRepresentable * representable = nullptr;
+					App::Application::Representation::BaseRepresentable * representable = nullptr;
 					const VTX::ID::VTX_ID &		 modelTypeID   = representableModel->getTypeId();
 
 					if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
-						representable = static_cast<Generic::BaseRepresentable *>(
-							static_cast<Model::Molecule *>( representableModel ) );
+						representable = static_cast<App::Application::Representation::BaseRepresentable *>(
+							static_cast<App::Component::Chemistry::Molecule *>( representableModel ) );
 					else if ( modelTypeID == VTX::ID::Model::MODEL_CHAIN )
-						representable = static_cast<Generic::BaseRepresentable *>(
-							static_cast<Model::Chain *>( representableModel ) );
+						representable = static_cast<App::Application::Representation::BaseRepresentable *>(
+							static_cast<App::Component::Chemistry::Chain *>( representableModel ) );
 
 					p_event->acceptProposedAction();
 

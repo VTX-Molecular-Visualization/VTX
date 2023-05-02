@@ -5,7 +5,7 @@
 
 #include <app/action/path.hpp>
 #include <app/action/viewpoint.hpp>
-#include <app/model/path.hpp>
+#include <app/component/video/path.hpp>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -22,7 +22,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuPath::localize() {}
 
-	void ContextualMenuPath::setTarget( Model::Path * const p_target )
+	void ContextualMenuPath::setTarget( App::Component::Video::Path * const p_target )
 	{
 		ContextualMenuTemplate::setTarget( p_target );
 		setTitle( QString::fromStdString( p_target->getDefaultName() ) );

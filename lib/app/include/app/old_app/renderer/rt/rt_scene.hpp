@@ -94,7 +94,7 @@ namespace VTX
 		  private:
 			std::vector<BaseObject3D *> _objects;
 			std::vector<BaseLight *>	_lights;
-			Object3D::Helper::AABB		_aabb;
+		 App::Component::Object3D::Helper::AABB		_aabb;
 		};
 	} // namespace Renderer
 } // namespace VTX

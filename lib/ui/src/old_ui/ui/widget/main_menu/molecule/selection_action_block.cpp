@@ -3,10 +3,10 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <app/action/selection.hpp>
 #include <app/action/visible.hpp>
-#include <app/mvc.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/event/global.hpp>
-#include <app/model/selection.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/mvc.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Molecule
 {
@@ -19,8 +19,10 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	{
 		if ( p_event.name == App::Event::Global::SELECTION_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const Model::Selection *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const Model::Selection *> &>( p_event );
+			const VTX::App::Core::Event::VTXEventArg<const App::Application::Selection::SelectionModel *> & castedEvent
+				= dynamic_cast<
+					const VTX::App::Core::Event::VTXEventArg<const App::Application::Selection::SelectionModel *> &>(
+					p_event );
 
 			const bool enableSelection = castedEvent.get()->getMoleculeSelectedCount() > 0;
 			_enableButtons( enableSelection );
@@ -96,41 +98,48 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 	void SelectionActionBlock::_copySelection() const
 	{
-		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new App::Action::Selection::Copy( selectionModel ) );
 	}
 	void SelectionActionBlock::_copyFrameSelection( const int p_frame ) const
 	{
-		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new App::Action::Selection::Copy( selectionModel, p_frame ) );
 	}
 
 	void SelectionActionBlock::_extractSelection() const
 	{
-		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new App::Action::Selection::Extract( selectionModel ) );
 	}
 	void SelectionActionBlock::_deleteSelection() const
 	{
-		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new App::Action::Selection::Delete( selectionModel ) );
 	}
 
 	void SelectionActionBlock::_showSelection() const
 	{
-		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION(
 			new App::Action::Selection::ChangeVisibility( selectionModel, App::Action::VISIBILITY_MODE::SHOW ) );
 	}
 	void SelectionActionBlock::_hideSelection() const
 	{
-		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION(
 			new App::Action::Selection::ChangeVisibility( selectionModel, App::Action::VISIBILITY_MODE::HIDE ) );
 	}
 	void SelectionActionBlock::_soloSelection() const
 	{
-		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selectionModel
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION(
 			new App::Action::Selection::ChangeVisibility( selectionModel, App::Action::VISIBILITY_MODE::SOLO ) );
 	}

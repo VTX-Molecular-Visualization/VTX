@@ -2,12 +2,11 @@
 #include "ui/old_ui/style.hpp"
 #include "ui/old_ui/util/ui.hpp"
 #include <QLabel>
-
 #include <app/action/instantiated_representation.hpp>
 #include <app/action/molecule.hpp>
-#include <app/old_app/generic/base_representable.hpp>
+#include <app/application/representation/base_representable.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/old_app/id.hpp>
-#include <app/model/molecule.hpp>
 #include <string>
 #include <util/logger.hpp>
 
@@ -117,7 +116,7 @@ namespace VTX::UI::Widget::Representation
 	}
 
 	void BaseRepresentationWidget::updateWithNewValue(
-		const Model::Representation::InstantiatedRepresentation & p_value )
+		const App::Application::Representation::InstantiatedRepresentation & p_value )
 	{
 		if ( _sphereWidget != nullptr )
 		{
@@ -199,7 +198,7 @@ namespace VTX::UI::Widget::Representation
 	{
 		_colorModeWidget->resetState();
 
-		const bool overriden = _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::COLOR_MODE );
+		const bool overriden = _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::ENUM::COLOR_MODE );
 
 		Util::UI::setDynamicProperty( _colorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, overriden );
 
@@ -215,7 +214,7 @@ namespace VTX::UI::Widget::Representation
 		else if ( colorMode == Generic::COLOR_MODE::ATOM_PROTEIN || colorMode == Generic::COLOR_MODE::PROTEIN )
 		{
 			_colorModeWidget->resetState();
-			for ( const Generic::BaseRepresentable * const target : _targets )
+			for ( const App::Application::Representation::BaseRepresentable * const target : _targets )
 			{
 				_colorModeWidget->updateWithNewValue( std::pair( colorMode, target->getMolecule()->getColor() ) );
 			}
@@ -224,7 +223,7 @@ namespace VTX::UI::Widget::Representation
 
 	void BaseRepresentationWidget::_addColorModeValue( const InstantiatedRepresentation & p_representation )
 	{
-		std::pair<Generic::COLOR_MODE, Color::Rgba> pair = std::pair<Generic::COLOR_MODE, Color::Rgba>();
+		std::pair<Generic::COLOR_MODE, Util::Color::Rgba> pair = std::pair<Generic::COLOR_MODE, Util::Color::Rgba>();
 
 		Generic::COLOR_MODE colorMode = p_representation.getColorMode();
 		pair.first					  = colorMode;
@@ -248,7 +247,7 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setSphereRadius( p_newRadius );
 
-		emit onDataChange( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED );
+		emit onDataChange( MEMBER_FLAG::ENUM::SPHERE_RADIUS_FIXED );
 	}
 
 	void BaseRepresentationWidget::_onSphereRadiusOffsetChange( const float p_newRadius )
@@ -258,7 +257,7 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setSphereRadius( p_newRadius );
 
-		emit onDataChange( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_ADD );
+		emit onDataChange( MEMBER_FLAG::ENUM::SPHERE_RADIUS_ADD );
 	}
 
 	void BaseRepresentationWidget::_onCylinderRadiusChange( const float p_newRadius )
@@ -268,7 +267,7 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setCylinderRadius( p_newRadius );
 
-		emit onDataChange( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS );
+		emit onDataChange( MEMBER_FLAG::ENUM::CYLINDER_RADIUS );
 	}
 
 	void BaseRepresentationWidget::_onCylinderColorBlendingModeChange(
@@ -279,10 +278,10 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setCylinderColorBlendingMode( p_colorBlendindrMode );
 
-		emit onDataChange( Model::Representation::MEMBER_FLAG::CYLINDER_COLOR_BLENDING_MODE );
+		emit onDataChange( MEMBER_FLAG::ENUM::CYLINDER_COLOR_BLENDING_MODE );
 	}
 
-	void BaseRepresentationWidget::_onRibbonColorChange( const Color::Rgba & p_color )
+	void BaseRepresentationWidget::_onRibbonColorChange( const Util::Color::Rgba & p_color )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -298,7 +297,7 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setRibbonColorMode( p_colorMode, false );
 
-		emit onDataChange( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_MODE );
+		emit onDataChange( MEMBER_FLAG::ENUM::RIBBON_COLOR_MODE );
 	}
 
 	void BaseRepresentationWidget::_onRibbonColorBlendingModeChange( const Generic::COLOR_BLENDING_MODE & p_mode )
@@ -308,10 +307,10 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setRibbonColorBlendingMode( p_mode, false );
 
-		emit onDataChange( Model::Representation::MEMBER_FLAG::RIBBON_COLOR_BLENDING_MODE );
+		emit onDataChange( MEMBER_FLAG::ENUM::RIBBON_COLOR_BLENDING_MODE );
 	}
 
-	void BaseRepresentationWidget::_onColorChange( const Color::Rgba & p_color )
+	void BaseRepresentationWidget::_onColorChange( const Util::Color::Rgba & p_color )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -326,7 +325,7 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setColorMode( p_colorMode, false );
 
-		emit onDataChange( Model::Representation::MEMBER_FLAG::COLOR_MODE );
+		emit onDataChange( MEMBER_FLAG::ENUM::COLOR_MODE );
 	}
 
 	void BaseRepresentationWidget::_displayDifferentsDataFeedback() {}

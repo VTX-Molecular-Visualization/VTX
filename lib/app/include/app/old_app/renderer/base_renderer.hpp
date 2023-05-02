@@ -3,7 +3,7 @@
 
 #include "app/core/model/base_model.hpp"
 #include "app/old_app/generic/base_opengl.hpp"
-#include "app/old_app/object3d/scene.hpp"
+#include "app/application/scene.hpp"
 #include "gl/framebuffer.hpp"
 #include <vector>
 
@@ -52,7 +52,7 @@ namespace VTX::Renderer
 		}
 
 		virtual void init( const uint, const uint, const GLuint ) = 0;
-		virtual void renderFrame( const Object3D::Scene & )		  = 0;
+		virtual void renderFrame( const App::Application::Scene & )		  = 0;
 
 		virtual void updateRenderSetting( const RENDER_SETTING ) {}
 

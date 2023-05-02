@@ -10,12 +10,11 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QPixmap>
-
 #include <app/action/chain.hpp>
 #include <app/action/instantiated_representation.hpp>
 #include <app/action/molecule.hpp>
-#include <app/model/molecule.hpp>
-#include <app/old_app/representation/representation_manager.hpp>
+#include <app/application/representation/representation_manager.hpp>
+#include <app/component/chemistry/molecule.hpp>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -139,7 +138,7 @@ namespace VTX::UI::Widget::Inspector
 		bool blockSignalState = blockSignals( true );
 		_resetFieldStates( p_flag );
 
-		const std::unordered_set<Model::Chain *> & targets = getTargets();
+		const std::unordered_set<App::Component::Chemistry::Chain *> & targets = getTargets();
 
 		if ( targets.size() > 0 )
 		{
@@ -157,13 +156,13 @@ namespace VTX::UI::Widget::Inspector
 			QString atomCountText			   = QString();
 			QString indexText				   = QString();
 
-			for ( const Model::Chain * chain : targets )
+			for ( const App::Component::Chemistry::Chain * chain : targets )
 			{
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
 					_representationWidget->updateWithNewValue( *chain->getRepresentation() );
 
-					for ( Model::Representation::InstantiatedRepresentation * representation :
+					for ( App::Application::Representation::InstantiatedRepresentation * representation :
 						  chain->getSubRepresentations() )
 					{
 						_subRepresentationWidget->addModel( representation );
@@ -265,8 +264,8 @@ namespace VTX::UI::Widget::Inspector
 		VTX_ACTION( new App::Action::Chain::ChangeRepresentationPreset( getTargets(), p_presetIndex ) );
 	}
 	void MultipleChainWidget::_onRepresentationChange(
-		const Model::Representation::InstantiatedRepresentation & p_representation,
-		const Model::Representation::MEMBER_FLAG &				  p_flag )
+		const App::Application::Representation::InstantiatedRepresentation & p_representation,
+		const App::Application::Representation::MEMBER_FLAG &				 p_flag )
 	{
 		if ( !signalsBlocked() )
 		{
@@ -275,9 +274,9 @@ namespace VTX::UI::Widget::Inspector
 	}
 
 	void MultipleChainWidget::_onRepresentationColorChange(
-		const Model::Representation::InstantiatedRepresentation & p_representation,
-		const Color::Rgba &										  p_color,
-		const bool												  p_ssColor )
+		const App::Application::Representation::InstantiatedRepresentation & p_representation,
+		const Util::Color::Rgba &													 p_color,
+		const bool															 p_ssColor )
 	{
 		if ( !signalsBlocked() )
 		{
@@ -326,11 +325,12 @@ namespace VTX::UI::Widget::Inspector
 		}
 	}
 
-	void MultipleChainWidget::_changeMoleculesColor( const Color::Rgba & p_color ) const
+	void MultipleChainWidget::_changeMoleculesColor( const Util::Color::Rgba & p_color ) const
 	{
-		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Component::Chemistry::Molecule *>();
 
-		for ( const Model::Chain * const item : getTargets() )
+		for ( const App::Component::Chemistry::Chain * const item : getTargets() )
 		{
 			molecules.emplace( item->getMoleculePtr() );
 		}

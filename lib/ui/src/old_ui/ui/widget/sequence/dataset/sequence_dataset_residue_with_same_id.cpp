@@ -3,7 +3,7 @@
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {
-	SequenceDisplayDataset_ResidueWithSameId::SequenceDisplayDataset_ResidueWithSameId( const Model::Chain & p_chain,
+	SequenceDisplayDataset_ResidueWithSameId::SequenceDisplayDataset_ResidueWithSameId( const App::Component::Chemistry::Chain & p_chain,
 																						const uint p_startIndexChar,
 																						const uint p_startResidueIndex,
 																						const uint p_endResidueIndex ) :
@@ -19,12 +19,12 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		QString	   sequenceString = QString();
 		sequenceString.resize( size );
 
-		const Model::Molecule * const molecule		  = _linkedChain.getMoleculePtr();
+		const App::Component::Chemistry::Molecule * const molecule		  = _linkedChain.getMoleculePtr();
 		const uint					  chainFirstIndex = _linkedChain.getIndexFirstResidue();
 
 		for ( uint i = 0; i < size; i++ )
 		{
-			const Model::Residue * const residue = molecule->getResidue( chainFirstIndex + _startResidueIndex + i );
+			const App::Component::Chemistry::Residue * const residue = molecule->getResidue( chainFirstIndex + _startResidueIndex + i );
 			sequenceString[ i ]					 = residue->getSymbolShort()[ 0 ];
 		}
 
@@ -76,7 +76,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		}
 	}
 
-	Model::Residue * const SequenceDisplayDataset_ResidueWithSameId::getResidueAtCharIndex( const uint p_charIndex )
+	App::Component::Chemistry::Residue * const SequenceDisplayDataset_ResidueWithSameId::getResidueAtCharIndex( const uint p_charIndex )
 	{
 		const uint firstIndexInOriginlaChain
 			= _linkedChain.getMoleculePtr()

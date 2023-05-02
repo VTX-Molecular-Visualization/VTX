@@ -15,7 +15,7 @@
 #include <QVBoxLayout>
 #include <QVariant>
 #include <map>
-#include <app/old_app/generic/base_scene_item.hpp>
+#include <app/core/scene/base_scene_item.hpp>
 #include <app/core/model/base_model.hpp>
 #include <app/core/view/base_view.hpp>
 #include <vector>
@@ -31,7 +31,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		void registerSceneItemType( const ID::VTX_ID & p_type, SceneItemWidgetInstancier * const p_instancier );
 
-		SceneItemWidget * instantiateSceneItemWidget( Generic::BaseSceneItem * const p_sceneItem );
+		SceneItemWidget * instantiateSceneItemWidget( App::Core::Scene::BaseSceneItem * const p_sceneItem );
 		void			  deleteSceneItemWidget( SceneItemWidget * const p_item );
 
 		const std::vector<SceneItemWidget *> & getSceneItemWidgets() const { return _sceneWidgets; }
@@ -65,7 +65,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		std::map<ID::VTX_ID, SceneItemWidgetInstancier *> _mapInstanciers
 			= std::map<ID::VTX_ID, SceneItemWidgetInstancier *>();
 
-		int	 _getDefaultIndex( const Generic::BaseSceneItem & p_item ) const;
+		int	 _getDefaultIndex( const App::Core::Scene::BaseSceneItem & p_item ) const;
 		void _addWidgetInLayout( QWidget * const p_sceneItemWidget, const int p_index );
 
 		void _removeWidgetInLayout( SceneItemWidget * const p_sceneItemWidget );
@@ -77,7 +77,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		template<typename V,
 				 typename M,
 				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
-				 typename = std::enable_if<std::is_base_of<Generic::BaseSceneItem, M>::value>,
+				 typename = std::enable_if<std::is_base_of<App::Core::Scene::BaseSceneItem, M>::value>,
 				 typename = std::enable_if<std::is_base_of<SceneItemWidget, V>::value>,
 				 typename = std::enable_if<std::is_base_of<VTX::App::Core::View::BaseView<M>, V>::value>>
 		void instantiateSceneItem( M * const		   p_model,

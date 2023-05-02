@@ -6,13 +6,13 @@
 #include "ui/old_ui/ui/widget/representation/representation_library_combo_box.hpp"
 #include "ui/old_ui/ui/widget/settings/representation_preset_editor.hpp"
 #include <QWidget>
-#include <app/model/representation/representation_library.hpp>
+#include <app/application/representation/representation_library.hpp>
 #include <app/core/view/base_view.hpp>
 
 namespace VTX::View::UI::Widget::Representation
 {
 	class RepresentationLibraryView :
-		public App::Core::View::BaseView<Model::Representation::RepresentationLibrary>,
+		public App::Core::View::BaseView<App::Application::Representation::RepresentationLibrary>,
 		public VTX::UI::Widget::BaseManualWidget<QWidget>
 	{
 		VTX_WIDGET
@@ -27,7 +27,7 @@ namespace VTX::View::UI::Widget::Representation
 		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
 
 	  protected:
-		RepresentationLibraryView( Model::Representation::RepresentationLibrary * const p_model,
+		RepresentationLibraryView( App::Application::Representation::RepresentationLibrary * const p_model,
 								   QWidget * const										p_parent );
 
 		void _setupUi( const QString & ) override;

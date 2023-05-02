@@ -1,14 +1,14 @@
 #include "app/action/residue.hpp"
+#include "app/application/representation/representation_library.hpp"
+#include "app/application/representation/representation_manager.hpp"
+#include "app/application/representation/representation_preset.hpp"
+#include "app/component/chemistry/generated_molecule.hpp"
+#include "app/component/chemistry/molecule.hpp"
+#include "app/component/chemistry/residue.hpp"
+#include "app/application/selection/selection.hpp"
 #include "app/mvc.hpp"
-#include "app/model/generated_molecule.hpp"
-#include "app/model/molecule.hpp"
-#include "app/model/representation/representation.hpp"
-#include "app/model/representation/representation_library.hpp"
-#include "app/model/residue.hpp"
-#include "app/model/selection.hpp"
-#include "app/old_app/object3d/scene.hpp"
-#include "app/old_app/representation/representation_manager.hpp"
-#include "app/old_app/selection/selection_manager.hpp"
+#include "app/application/scene.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <map>
@@ -19,15 +19,16 @@ namespace VTX::App::Action::Residue
 {
 	void ChangeColor::execute()
 	{
-		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+		std::unordered_set<App::Component::Chemistry::Molecule *> molecules
+			= std::unordered_set<App::Component::Chemistry::Molecule *>();
 
-		for ( Model::Residue * const residue : _residues )
+		for ( App::Component::Chemistry::Residue * const residue : _residues )
 		{
 			residue->setColor( _color );
 			molecules.emplace( residue->getMolecule() );
 		}
 
-		for ( Model::Molecule * const molecule : molecules )
+		for ( App::Component::Chemistry::Molecule * const molecule : molecules )
 		{
 			molecule->refreshColors();
 		}
@@ -39,21 +40,23 @@ namespace VTX::App::Action::Residue
 	{
 		if ( _mode == VISIBILITY_MODE::SOLO )
 		{
-			std::map<Model::Molecule *, std::vector<uint>> residuesIDsPerMolecules
-				= std::map<Model::Molecule *, std::vector<uint>>();
+			std::map<App::Component::Chemistry::Molecule *, std::vector<uint>> residuesIDsPerMolecules
+				= std::map<App::Component::Chemistry::Molecule *, std::vector<uint>>();
 
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				Model::Residue * const residue = static_cast<Model::Residue *>( visible );
+				App::Component::Chemistry::Residue * const residue
+					= static_cast<App::Component::Chemistry::Residue *>( visible );
 				residuesIDsPerMolecules[ residue->getMoleculePtr() ].emplace_back( residue->getIndex() );
 			}
 
-			for ( const Object3D::Scene::PairMoleculePtrFloat & sceneMolecule :
+			for ( const App::Application::Scene::PairMoleculePtrFloat & sceneMolecule :
 				  VTXApp::get().getScene().getMolecules() )
 			{
-				Model::Molecule * const molecule = sceneMolecule.first;
+				App::Component::Chemistry::Molecule * const molecule = sceneMolecule.first;
 
-				std::map<Model::Molecule *, std::vector<uint>>::iterator it = residuesIDsPerMolecules.find( molecule );
+				std::map<App::Component::Chemistry::Molecule *, std::vector<uint>>::iterator it
+					= residuesIDsPerMolecules.find( molecule );
 
 				if ( it != residuesIDsPerMolecules.end() )
 				{
@@ -70,19 +73,21 @@ namespace VTX::App::Action::Residue
 		}
 		else
 		{
-			std::map<Model::Molecule *, std::vector<Model::Residue *>> residuesPerMolecules
-				= std::map<Model::Molecule *, std::vector<Model::Residue *>>();
+			std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Residue *>>
+				residuesPerMolecules
+				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Residue *>>();
 
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				Model::Residue * const residue = static_cast<Model::Residue *>( visible );
+				App::Component::Chemistry::Residue * const residue
+					= static_cast<App::Component::Chemistry::Residue *>( visible );
 				residuesPerMolecules[ residue->getMoleculePtr() ].emplace_back( residue );
 			}
 
-			for ( const std::pair<Model::Molecule * const, std::vector<Model::Residue *>> & pair :
-				  residuesPerMolecules )
+			for ( const std::pair<App::Component::Chemistry::Molecule * const,
+								  std::vector<App::Component::Chemistry::Residue *>> & pair : residuesPerMolecules )
 			{
-				for ( Model::Residue * const residue : pair.second )
+				for ( App::Component::Chemistry::Residue * const residue : pair.second )
 					Util::Molecule::show( *residue, _getVisibilityBool( *residue ), true, false, false );
 
 				pair.first->notifyVisibilityChange();
@@ -96,24 +101,24 @@ namespace VTX::App::Action::Residue
 
 	void ChangeRepresentationPreset::execute()
 	{
-		Model::Representation::Representation * const preset
-			= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
+		App::Application::Representation::RepresentationPreset * const preset
+			= App::Application::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
-		Representation::RepresentationManager::get().instantiateRepresentations( preset, _residues );
+		App::Application::Representation::RepresentationManager::get().instantiateRepresentations( preset, _residues );
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void RemoveRepresentation::execute()
 	{
-		Representation::RepresentationManager::get().removeInstantiatedRepresentations( _residues );
+		App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentations( _residues );
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Delete::execute()
 	{
-		VTX::Selection::SelectionManager::get().getSelectionModel().unselectResidue( _residue );
+		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().unselectResidue( _residue );
 
-		Model::Molecule * const molecule = _residue.getMoleculePtr();
+		App::Component::Chemistry::Molecule * const molecule = _residue.getMoleculePtr();
 		molecule->removeResidue( _residue.getIndex() );
 
 		if ( molecule->isEmpty() )
@@ -133,8 +138,8 @@ namespace VTX::App::Action::Residue
 
 	void Copy::execute()
 	{
-		Model::GeneratedMolecule * generatedMolecule
-			= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
+		App::Component::Chemistry::GeneratedMolecule * generatedMolecule
+			= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
 
 		generatedMolecule->copyFromResidue( _target );
 		generatedMolecule->applyTransform( _target.getMoleculePtr()->getTransform() );
@@ -144,20 +149,21 @@ namespace VTX::App::Action::Residue
 
 	void Extract::execute()
 	{
-		VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().clear();
 
-		Model::GeneratedMolecule * const generatedMolecule
-			= VTX::MVC_MANAGER().instantiateModel<Model::GeneratedMolecule>();
+		App::Component::Chemistry::GeneratedMolecule * const generatedMolecule
+			= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
 
 		generatedMolecule->extractResidue( _target );
 		VTXApp::get().getScene().addMolecule( generatedMolecule );
 
-		VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );
+		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );
 	}
 
 	void ApplyRepresentation::execute()
 	{
-		Representation::RepresentationManager::get().applyRepresentation( _residues, _representation, _flag );
+		App::Application::Representation::RepresentationManager::get().applyRepresentation(
+			_residues, _representation, _flag );
 		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 	}
 

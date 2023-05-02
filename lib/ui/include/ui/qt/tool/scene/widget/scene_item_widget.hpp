@@ -9,17 +9,14 @@
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QTreeWidget>
-#include <app/old_app/generic/base_scene_item.hpp>
+#include <app/application/selection/_fwd.hpp>
 #include <app/core/model/base_model.hpp>
+#include <app/core/scene/base_scene_item.hpp>
 #include <vector>
 
 namespace VTX::Generic
 {
 	class BaseVisible;
-};
-namespace VTX::Model
-{
-	class Selection;
 };
 
 namespace VTX::UI::QT::Tool::Scene::Widget
@@ -41,11 +38,14 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		virtual void updatePosInSceneHierarchy( const int p_position );
 
-		virtual const App::Core::Model::ID &			   getModelID() const		= 0;
-		virtual const Generic::BaseSceneItem & getBaseSceneItem() const = 0;
-		virtual QTreeWidgetItem *			   getLastVisibleItem();
+		virtual const App::Core::Model::ID &			getModelID() const		 = 0;
+		virtual const App::Core::Scene::BaseSceneItem & getBaseSceneItem() const = 0;
+		virtual QTreeWidgetItem *						getLastVisibleItem();
 
-		virtual bool containsModel( const App::Core::Model::BaseModel & p_model ) const { return p_model.getId() == getModelID(); }
+		virtual bool containsModel( const App::Core::Model::BaseModel & p_model ) const
+		{
+			return p_model.getId() == getModelID();
+		}
 		virtual std::vector<App::Core::Model::ID> getAllItemsFrom( const App::Core::Model::BaseModel & p_model ) const;
 		virtual std::vector<App::Core::Model::ID> getAllItemsTo( const App::Core::Model::BaseModel & p_model ) const;
 
@@ -70,8 +70,9 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		virtual void _createTopLevelObject();
 		void		 _openRenameEditor( QTreeWidgetItem & p_target );
 
-		void		 _refreshSelection( const Model::Selection & p_selection );
-		virtual void _fillItemSelection( const Model::Selection & p_selection, QItemSelection & p_itemSelection );
+		void		 _refreshSelection( const App::Application::Selection::SelectionModel & p_selection );
+		virtual void _fillItemSelection( const App::Application::Selection::SelectionModel & p_selection,
+										 QItemSelection &								p_itemSelection );
 
 		virtual void _refreshSize();
 		virtual int	 _getMinimumHeight() const;
@@ -88,10 +89,11 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		void _refreshCurrentItemInSelection( const App::Core::Model::BaseModel * const p_obj );
 
-		App::Core::Model::ID				  _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;
+		App::Core::Model::ID	  _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;
 		virtual QTreeWidgetItem * _findItemFromModelID( const App::Core::Model::ID & p_id ) const;
-		QTreeWidgetItem * _findItemFromModelIDRecursive( QTreeWidgetItem & p_parent, const App::Core::Model::ID & p_id ) const;
-		bool			  _getItemExpandState( const QTreeWidgetItem & p_item ) const;
+		QTreeWidgetItem *		  _findItemFromModelIDRecursive( QTreeWidgetItem &			  p_parent,
+																 const App::Core::Model::ID & p_id ) const;
+		bool					  _getItemExpandState( const QTreeWidgetItem & p_item ) const;
 
 		QMimeData * _getDataForDrag() const override;
 

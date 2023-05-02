@@ -15,7 +15,7 @@ namespace VTX::Renderer::GL::Pass
 
 		void init( const uint, const uint, const GL & ) override;
 		void resize( const uint, const uint, const GL & ) override;
-		void render( const Object3D::Scene &, const GL & ) override;
+		void render( const App::Application::Scene &, const GL & ) override;
 
 		inline const Framebuffer & getFbo() const { return _fbo; }
 		inline const Texture2D &   getViewPositionsNormalsCompressedTexture() const

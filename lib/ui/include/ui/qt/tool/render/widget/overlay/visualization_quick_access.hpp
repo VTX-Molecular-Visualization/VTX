@@ -10,7 +10,7 @@
 #include <QFrame>
 #include <QToolButton>
 #include <app/old_app/id.hpp>
-#include <app/old_app/selection/selection_enum.hpp>
+#include <app/application/selection/enum_selection.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Tool::Render::Widget::Overlay
@@ -68,11 +68,11 @@ namespace VTX::UI::QT::Tool::Render::Widget::Overlay
 										 ":/sprite/measurement_picker_icon.png" )
 		};
 
-		inline static std::vector<MenuItemData<VTX::Selection::Granularity>> SELECTION_GRANULARITY {
-			MenuItemData( VTX::Selection::Granularity::ATOM, "Pick Atom", ":/sprite/pick_atom.png" ),
-			MenuItemData( VTX::Selection::Granularity::RESIDUE, "Pick Residue", ":/sprite/pick_residue.png" ),
-			MenuItemData( VTX::Selection::Granularity::CHAIN, "Pick Chain", ":/sprite/pick_chain.png" ),
-			MenuItemData( VTX::Selection::Granularity::MOLECULE, "Pick Molecule", ":/sprite/pick_molecule.png" )
+		inline static std::vector<MenuItemData<VTX::App::Application::Selection::GRANULARITY>> SELECTION_GRANULARITY {
+			MenuItemData( VTX::App::Application::Selection::GRANULARITY::ATOM, "Pick Atom", ":/sprite/pick_atom.png" ),
+			MenuItemData( VTX::App::Application::Selection::GRANULARITY::RESIDUE, "Pick Residue", ":/sprite/pick_residue.png" ),
+			MenuItemData( VTX::App::Application::Selection::GRANULARITY::CHAIN, "Pick Chain", ":/sprite/pick_chain.png" ),
+			MenuItemData( VTX::App::Application::Selection::GRANULARITY::MOLECULE, "Pick Molecule", ":/sprite/pick_molecule.png" )
 		};
 
 		inline static std::vector<MenuItemData<QT::Controller::MeasurementPicker::Mode>> MEASUREMENT_MODE {

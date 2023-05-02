@@ -6,7 +6,7 @@
 #include <QPoint>
 #include <QVBoxLayout>
 #include <algorithm>
-#include <app/model/atom.hpp>
+#include <app/component/chemistry/atom.hpp>
 #include <string>
 #include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/main_window.hpp>
@@ -48,10 +48,10 @@ namespace VTX::View::UI::Widget::Measurement
 		if ( !_model->isValid() )
 			return;
 
-		const std::vector<const Model::Atom *> & atoms		   = _model->getAtoms();
+		const std::vector<const App::Component::Chemistry::Atom *> & atoms		   = _model->getAtoms();
 		std::vector<Vec3f>						 atomPositions = std::vector<Vec3f>();
 		atomPositions.reserve( atoms.size() );
-		for ( const Model::Atom * const atom : atoms )
+		for ( const App::Component::Chemistry::Atom * const atom : atoms )
 			atomPositions.emplace_back( atom->getWorldPosition() );
 
 		switch ( _model->getPotentialNextTargetType() )
@@ -66,7 +66,7 @@ namespace VTX::View::UI::Widget::Measurement
 			break;
 		}
 
-		const Object3D::Camera & camera = VTXApp::get().getScene().getCamera();
+		const App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
 
 		const bool visible = Util::UIRender::anyVisibleToCamera( camera, atomPositions );
 

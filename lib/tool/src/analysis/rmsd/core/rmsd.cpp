@@ -1,18 +1,18 @@
 #include "tool/analysis/rmsd/core/rmsd.hpp"
 #include "tool/analysis/util.hpp"
+#include <app/application/selection/selection.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/model/molecule.hpp>
-#include <app/model/selection.hpp>
 #include <cmath>
 #include <util/math.hpp>
 
 namespace VTX::Tool::Analysis::RMSD::Core
 {
-	void callRMSDComputation( const Model::Molecule * const p_firstMolecule,
-							  const Model::Molecule * const p_secondMolecule,
-							  const bool					p_considerTransform )
+	void callRMSDComputation( const App::Component::Chemistry::Molecule * const p_firstMolecule,
+							  const App::Component::Chemistry::Molecule * const p_secondMolecule,
+							  const bool										p_considerTransform )
 	{
 		const double rmsd = computeRMSD( *p_firstMolecule, *p_secondMolecule, p_considerTransform );
 
@@ -25,12 +25,15 @@ namespace VTX::Tool::Analysis::RMSD::Core
 		VTX_EVENT<const RMSDData &>( VTX::App::Event::Global::RMSD_COMPUTED, data );
 	}
 
-	void callRMSDComputation( const Model::Selection & p_selection, const bool p_considerTransform )
+	void callRMSDComputation( const App::Application::Selection::SelectionModel & p_selection,
+							  const bool										  p_considerTransform )
 	{
-		const Model::Selection::MapMoleculeIds & selectedMolecules = p_selection.getMoleculesMap();
+		const App::Application::Selection::SelectionModel::MapMoleculeIds & selectedMolecules
+			= p_selection.getMoleculesMap();
 
-		const Model::Molecule *				 targetMolecule = nullptr;
-		std::vector<const Model::Molecule *> otherMolecules = std::vector<const Model::Molecule *>();
+		const App::Component::Chemistry::Molecule *				 targetMolecule = nullptr;
+		std::vector<const App::Component::Chemistry::Molecule *> otherMolecules
+			= std::vector<const App::Component::Chemistry::Molecule *>();
 		otherMolecules.reserve( p_selection.getMoleculeSelectedCount() - 1 );
 
 		Analysis::Util::pickTargetAndComparersFromSelection( p_selection, targetMolecule, otherMolecules );
@@ -40,7 +43,7 @@ namespace VTX::Tool::Analysis::RMSD::Core
 
 		const Mat4f targetTransform = p_considerTransform ? targetMolecule->getTransform().get() : MAT4F_ID;
 
-		for ( const Model::Molecule * otherMolecule : otherMolecules )
+		for ( const App::Component::Chemistry::Molecule * otherMolecule : otherMolecules )
 		{
 			std::vector<Vec3f> otherAtomPositions = std::vector<Vec3f>();
 			Analysis::Util::getAtomPositions( p_selection, otherMolecule, otherAtomPositions );
@@ -89,9 +92,9 @@ namespace VTX::Tool::Analysis::RMSD::Core
 		return rmsd;
 	}
 
-	double computeRMSD( const Model::Molecule & p_firstMolecule,
-						const Model::Molecule & p_secondMolecule,
-						const bool				p_considerTransform )
+	double computeRMSD( const App::Component::Chemistry::Molecule & p_firstMolecule,
+						const App::Component::Chemistry::Molecule & p_secondMolecule,
+						const bool									p_considerTransform )
 	{
 		const size_t minAtomLength = p_firstMolecule.getAtomCount() < p_secondMolecule.getAtomCount()
 										 ? p_firstMolecule.getAtomCount()
@@ -99,9 +102,9 @@ namespace VTX::Tool::Analysis::RMSD::Core
 
 		double rmsd = 0;
 
-		const Model::Molecule::AtomPositionsFrame & frame1
+		const App::Component::Chemistry::Molecule::AtomPositionsFrame & frame1
 			= p_firstMolecule.getAtomPositionFrame( p_firstMolecule.getFrame() );
-		const Model::Molecule::AtomPositionsFrame & frame2
+		const App::Component::Chemistry::Molecule::AtomPositionsFrame & frame2
 			= p_secondMolecule.getAtomPositionFrame( p_secondMolecule.getFrame() );
 
 		if ( p_considerTransform )

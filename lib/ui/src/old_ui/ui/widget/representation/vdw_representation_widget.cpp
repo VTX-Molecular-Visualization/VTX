@@ -3,7 +3,7 @@
 #include <QHBoxLayout>
 
 #include <app/action/representable.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 
 namespace VTX::UI::Widget::Representation
 {

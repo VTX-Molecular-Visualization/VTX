@@ -1,5 +1,5 @@
 #include "app/old_app/renderer/gl/program_manager.hpp"
-#include "app/old_app/io/filesystem.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include <util/logger.hpp>
 #include <vector>
 
@@ -114,7 +114,7 @@ namespace VTX::Renderer::GL
 		// if ( shaderId == GL_INVALID_INDEX )
 		//{
 		//	shaderId		 = _gl->glCreateShader( (int)type );
-		//	FilePath	path = IO::Filesystem::getShadersPath( p_path );
+		//	FilePath	path = App::Internal::IO::Filesystem::getShadersPath( p_path );
 		//	std::string src	 = Util::Filesystem::readPath( path );
 		//	if ( src.empty() )
 		//	{

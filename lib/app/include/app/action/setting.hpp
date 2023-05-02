@@ -2,14 +2,14 @@
 #define __VTX_APP_ACTION_SETTING__
 
 #include "app/action.hpp"
+#include "app/application/selection/enum_selection.hpp"
+#include "app/application/setting.hpp"
+#include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/model/category_enum.hpp"
-#include "app/old_app/color/rgba.hpp"
+#include "app/internal/chemdb/category.hpp"
+#include "util/color/rgba.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
-#include "app/old_app/io/struct/image_export.hpp"
-#include "app/old_app/selection/selection_enum.hpp"
-#include "app/old_app/setting.hpp"
-#include "app/old_app/trajectory/trajectory_enum.hpp"
+#include "app/internal/io/serialization/image_export.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::App::Action::Setting
@@ -53,23 +53,23 @@ namespace VTX::App::Action::Setting
 	class ChangeBackgroundColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeBackgroundColor( const Color::Rgba & p_color ) : _color( p_color ) {}
+		explicit ChangeBackgroundColor( const Util::Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override;
 
 	  private:
-		const Color::Rgba _color;
+		const Util::Color::Rgba _color;
 	};
 
 	class ChangeSnapshotFormat : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSnapshotFormat( const IO::Struct::ImageExport::Format p_format ) : _format( p_format ) {}
+		explicit ChangeSnapshotFormat( const App::Internal::IO::Serialization::ImageExport::Format p_format ) : _format( p_format ) {}
 
 		virtual void execute() override;
 
 	  private:
-		const IO::Struct::ImageExport::Format _format;
+		const App::Internal::IO::Serialization::ImageExport::Format _format;
 	};
 
 	class ChangeBackgroundOpacity : public App::Core::Action::BaseAction
@@ -97,7 +97,7 @@ namespace VTX::App::Action::Setting
 	class ChangeSnapshotResolution : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSnapshotResolution( const IO::Struct::ImageExport::RESOLUTION & p_resolution ) :
+		explicit ChangeSnapshotResolution( const App::Internal::IO::Serialization::ImageExport::RESOLUTION & p_resolution ) :
 			_resolution( p_resolution )
 		{
 		}
@@ -105,7 +105,7 @@ namespace VTX::App::Action::Setting
 		virtual void execute() override;
 
 	  private:
-		const IO::Struct::ImageExport::RESOLUTION _resolution;
+		const App::Internal::IO::Serialization::ImageExport::RESOLUTION _resolution;
 	};
 
 	class ChangeDefaultRepresentation : public App::Core::Action::BaseAction
@@ -224,12 +224,12 @@ namespace VTX::App::Action::Setting
 	class ChangeOutlineColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeOutlineColor( const Color::Rgba & p_color ) : _color( p_color ) {}
+		explicit ChangeOutlineColor( const Util::Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override;
 
 	  private:
-		const Color::Rgba _color;
+		const Util::Color::Rgba _color;
 	};
 
 	class ChangeOutlineThickness : public App::Core::Action::BaseAction
@@ -301,12 +301,12 @@ namespace VTX::App::Action::Setting
 	class ChangeFogColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeFogColor( const Color::Rgba & p_color ) : _color( p_color ) {}
+		explicit ChangeFogColor( const Util::Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override;
 
 	  private:
-		const Color::Rgba _color;
+		const Util::Color::Rgba _color;
 	};
 
 	class ActiveAA : public App::Core::Action::BaseAction
@@ -323,12 +323,12 @@ namespace VTX::App::Action::Setting
 	class ChangeLightColor : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeLightColor( const Color::Rgba & p_color ) : _color( p_color ) {}
+		explicit ChangeLightColor( const Util::Color::Rgba & p_color ) : _color( p_color ) {}
 
 		virtual void execute() override;
 
 	  private:
-		const Color::Rgba _color;
+		const Util::Color::Rgba _color;
 	};
 
 	class ChangeCameraClip : public App::Core::Action::BaseAction
@@ -456,12 +456,15 @@ namespace VTX::App::Action::Setting
 	class ChangeDefaultTrajectoryPlayMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_playMode ) : _playMode( p_playMode ) {}
+		explicit ChangeDefaultTrajectoryPlayMode( const Component::Chemistry::PlayMode p_playMode ) :
+			_playMode( p_playMode )
+		{
+		}
 
 		virtual void execute() override;
 
 	  private:
-		const Trajectory::PlayMode _playMode;
+		const Component::Chemistry::PlayMode _playMode;
 	};
 
 	class ChangeSymbolDisplayMode : public App::Core::Action::BaseAction
@@ -517,7 +520,7 @@ namespace VTX::App::Action::Setting
 	class ChangeSelectionGranularity : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSelectionGranularity( const VTX::Selection::Granularity & p_granularity ) :
+		explicit ChangeSelectionGranularity( const VTX::App::Application::Selection::GRANULARITY & p_granularity ) :
 			_granularity( p_granularity )
 		{
 		}
@@ -525,14 +528,14 @@ namespace VTX::App::Action::Setting
 		virtual void execute() override;
 
 	  private:
-		const VTX::Selection::Granularity _granularity;
+		const VTX::App::Application::Selection::GRANULARITY _granularity;
 	};
 
 	class ChangeDefaultRepresentationPerCategory : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeDefaultRepresentationPerCategory( const CATEGORY_ENUM & p_categoryEnum,
-														 const int			   p_representationIndex ) :
+		explicit ChangeDefaultRepresentationPerCategory( const App::Internal::ChemDB::Category::TYPE & p_categoryEnum,
+														 const int p_representationIndex ) :
 			_categoryEnum( p_categoryEnum ),
 			_representationIndex( p_representationIndex )
 		{
@@ -541,19 +544,19 @@ namespace VTX::App::Action::Setting
 		virtual void execute() override;
 
 	  private:
-		const CATEGORY_ENUM _categoryEnum;
-		const int			_representationIndex;
+		const App::Internal::ChemDB::Category::TYPE _categoryEnum;
+		const int									_representationIndex;
 	};
 
 	class ApplyAllSettings : public App::Core::Action::BaseAction
 	{
 	  public:
-		ApplyAllSettings( VTX::Setting & p_setting ) : _setting( p_setting ) {}
+		ApplyAllSettings( VTX::App::Application::Setting & p_setting ) : _setting( p_setting ) {}
 
 		virtual void execute() override;
 
 	  private:
-		VTX::Setting _setting;
+		VTX::App::Application::Setting _setting;
 	};
 
 	class ReloadSetting : public App::Core::Action::BaseAction

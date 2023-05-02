@@ -1,54 +1,54 @@
 #include "app/action/renderer.hpp"
+#include "app/internal/worker/render_effect_loader.hpp"
+#include "app/internal/worker/render_effect_saver.hpp"
 #include "app/mvc.hpp"
-#include "app/core/worker/worker_manager.hpp"
-#include "app/old_app/io/filesystem.hpp"
-#include "app/old_app/object3d/camera.hpp"
+#include "app/internal/io/filesystem.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/vtx_app.hpp"
-#include "app/worker/render_effect_loader.hpp"
-#include "app/worker/render_effect_saver.hpp"
+#include "app/worker.hpp"
 
 namespace VTX::App::Action::Renderer
 {
 	void ReloadPresets::execute()
 	{
 		Worker::RenderEffectPresetLibraryLoader * libraryLoader
-			= new Worker::RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary::get() );
+			= new Worker::RenderEffectPresetLibraryLoader( App::Application::RenderEffect::RenderEffectLibrary::get() );
 
-		VTX::Core::Worker::CallbackWorker * const callback = new VTX::Core::Worker::CallbackWorker(
+		VTX::App::Core::Worker::CallbackWorker * const callback = new VTX::App::Core::Worker::CallbackWorker(
 			[]()
 			{
-				Model::Renderer::RenderEffectPresetLibrary::get().applyPreset(
+				App::Application::RenderEffect::RenderEffectLibrary::get().applyPreset(
 					VTX_SETTING().getDefaultRenderEffectPresetIndex() );
 			} );
 
 		VTX_WORKER( libraryLoader, callback );
 	}
 
-	void ResetPresets::execute() { Model::Renderer::RenderEffectPresetLibrary::get().resetToDefault(); }
+	void ResetPresets::execute() { App::Application::RenderEffect::RenderEffectLibrary::get().resetToDefault(); }
 
 	void SavePreset::execute()
 	{
 		if ( _clearDirectory )
 		{
-			Util::Filesystem::removeAll( IO::Filesystem::getRenderEffectPresetsLibraryDir() );
-			std::filesystem::create_directory( IO::Filesystem::getRenderEffectPresetsLibraryDir() );
+			Util::Filesystem::removeAll( App::Internal::IO::Filesystem::getRenderEffectPresetsLibraryDir() );
+			std::filesystem::create_directory( App::Internal::IO::Filesystem::getRenderEffectPresetsLibraryDir() );
 		}
 
-		for ( const Model::Renderer::RenderEffectPreset * const renderEffect : _renderEffectPresets )
+		for ( const App::Application::RenderEffect::RenderEffectPreset * const renderEffect : _renderEffectPresets )
 		{
 			if ( _async )
 			{
 				Worker::RenderEffectPresetSaverThread * librarySaver
 					= new Worker::RenderEffectPresetSaverThread( renderEffect );
-				VTX::Core::Worker::CallbackThread * callback
-					= new VTX::Core::Worker::CallbackThread( []( const uint p_code ) {} );
+				VTX::App::Core::Worker::CallbackThread * callback
+					= new VTX::App::Core::Worker::CallbackThread( []( const uint p_code ) {} );
 
 				VTX_THREAD( librarySaver, callback );
 			}
 			else
 			{
-				FilePath path = IO::Filesystem::getRenderEffectPath( renderEffect->getName() );
+				FilePath path = App::Internal::IO::Filesystem::getRenderEffectPath( renderEffect->getName() );
 				Util::Filesystem::generateUniqueFileName( path );
 
 				Worker::RenderEffectPresetSaver * librarySaver
@@ -60,11 +60,11 @@ namespace VTX::App::Action::Renderer
 
 	void ApplyRenderEffectPreset::execute()
 	{
-		Model::Renderer::RenderEffectPresetLibrary::get().applyPreset( _preset );
+		App::Application::RenderEffect::RenderEffectLibrary::get().applyPreset( _preset );
 
 		if ( _setAsDefault )
 		{
-			const int presetIndex = Model::Renderer::RenderEffectPresetLibrary::get().getPresetIndex( &_preset );
+			const int presetIndex = App::Application::RenderEffect::RenderEffectLibrary::get().getPresetIndex( &_preset );
 
 			if ( presetIndex >= 0 )
 				VTX_SETTING().setDefaultRenderEffectPresetIndex( presetIndex );
@@ -77,14 +77,14 @@ namespace VTX::App::Action::Renderer
 
 	void ChangeQuickAccess::execute()
 	{
-		Model::Renderer::RenderEffectPresetLibrary::get().setQuickAccessToPreset( _preset, _quickAccess );
+		App::Application::RenderEffect::RenderEffectLibrary::get().setQuickAccessToPreset( _preset, _quickAccess );
 	}
 
 	void ChangeShading::execute()
 	{
 		_preset.setShading( _shading );
 
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
@@ -93,7 +93,7 @@ namespace VTX::App::Action::Renderer
 	void EnableSSAO::execute()
 	{
 		_preset.enableSSAO( _enable );
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
@@ -102,7 +102,7 @@ namespace VTX::App::Action::Renderer
 	void ChangeSSAOIntensity::execute()
 	{
 		_preset.setSSAOIntensity( _intensity );
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
@@ -111,7 +111,7 @@ namespace VTX::App::Action::Renderer
 	void ChangeSSAOBlurSize::execute()
 	{
 		_preset.setSSAOBlurSize( _blurSize );
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
@@ -121,7 +121,7 @@ namespace VTX::App::Action::Renderer
 	{
 		_preset.enableOutline( _enable );
 
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
@@ -130,7 +130,7 @@ namespace VTX::App::Action::Renderer
 	void ChangeOutlineThickness ::execute()
 	{
 		_preset.setOutlineThickness( _thickness );
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
@@ -139,7 +139,7 @@ namespace VTX::App::Action::Renderer
 	void ChangeOutlineSensivity ::execute()
 	{
 		_preset.setOutlineSensivity( _sensivity );
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
@@ -148,7 +148,7 @@ namespace VTX::App::Action::Renderer
 	void ChangeOutlineColor::execute()
 	{
 		_preset.setOutlineColor( _color );
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
@@ -157,7 +157,7 @@ namespace VTX::App::Action::Renderer
 	void EnableFog::execute()
 	{
 		_preset.enableFog( _enable );
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
@@ -166,7 +166,7 @@ namespace VTX::App::Action::Renderer
 	void ChangeFogNear::execute()
 	{
 		_preset.setFogNear( _near );
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
@@ -175,7 +175,7 @@ namespace VTX::App::Action::Renderer
 	void ChangeFogFar::execute()
 	{
 		_preset.setFogFar( _far );
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
@@ -184,7 +184,7 @@ namespace VTX::App::Action::Renderer
 	void ChangeFogDensity::execute()
 	{
 		_preset.setFogDensity( _density );
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
@@ -194,7 +194,7 @@ namespace VTX::App::Action::Renderer
 	{
 		_preset.setFogColor( _color );
 
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
@@ -203,7 +203,7 @@ namespace VTX::App::Action::Renderer
 	{
 		_preset.setBackgroundColor( _color );
 
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
@@ -212,7 +212,7 @@ namespace VTX::App::Action::Renderer
 	{
 		_preset.setCameraLightColor( _color );
 
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		if ( App::Application::RenderEffect::RenderEffectLibrary::get().isAppliedPreset( _preset ) )
 		{
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
@@ -220,24 +220,24 @@ namespace VTX::App::Action::Renderer
 
 	void AddNewPresetInLibrary::execute()
 	{
-		Model::Renderer::RenderEffectPreset * const newRenderEffect
-			= VTX::MVC_MANAGER().instantiateModel<Model::Renderer::RenderEffectPreset>();
+		App::Application::RenderEffect::RenderEffectPreset * const newRenderEffect
+			= VTX::MVC_MANAGER().instantiateModel<App::Application::RenderEffect::RenderEffectPreset>();
 
 		newRenderEffect->setName( _presetName );
-		Model::Renderer::RenderEffectPresetLibrary::get().addPreset( newRenderEffect );
-		Model::Renderer::RenderEffectPresetLibrary::get().applyPreset( *newRenderEffect );
+		App::Application::RenderEffect::RenderEffectLibrary::get().addPreset( newRenderEffect );
+		App::Application::RenderEffect::RenderEffectLibrary::get().applyPreset( *newRenderEffect );
 	}
 
 	void CopyPresetInLibrary::execute()
 	{
-		Model::Renderer::RenderEffectPreset * const newPreset
-			= Model::Renderer::RenderEffectPresetLibrary::get().copyPreset( _presetIndex );
-		Model::Renderer::RenderEffectPresetLibrary::get().applyPreset( *newPreset );
+		App::Application::RenderEffect::RenderEffectPreset * const newPreset
+			= App::Application::RenderEffect::RenderEffectLibrary::get().copyPreset( _presetIndex );
+		App::Application::RenderEffect::RenderEffectLibrary::get().applyPreset( *newPreset );
 	}
 
 	void DeletePresetInLibrary::execute()
 	{
-		Model::Renderer::RenderEffectPresetLibrary::get().deletePreset( _presetIndex );
+		App::Application::RenderEffect::RenderEffectLibrary::get().deletePreset( _presetIndex );
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 } // namespace VTX::App::Action::Renderer

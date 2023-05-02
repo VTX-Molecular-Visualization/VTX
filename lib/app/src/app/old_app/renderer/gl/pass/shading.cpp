@@ -1,6 +1,6 @@
 #include "app/old_app/renderer/gl/pass/shading.hpp"
-#include "app/model/renderer/render_effect_preset.hpp"
-#include "app/old_app/object3d/camera.hpp"
+#include "app/application/render_effect/render_effect_preset.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -40,7 +40,7 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 	}
 
-	void Shading::render( const Object3D::Scene & p_scene, const GL & p_renderer )
+	void Shading::render( const App::Application::Scene & p_scene, const GL & p_renderer )
 	{
 		_fbo.bind();
 
@@ -53,7 +53,7 @@ namespace VTX::Renderer::GL::Pass
 
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
-			const Color::Rgba & bgColor = VTX_RENDER_EFFECT().getBackgroundColor();
+			const Util::Color::Rgba & bgColor = VTX_RENDER_EFFECT().getBackgroundColor();
 			_currentShading->setVec4f( "uBackgroundColor",
 									   bgColor.getR(),
 									   bgColor.getG(),
@@ -63,10 +63,10 @@ namespace VTX::Renderer::GL::Pass
 			_currentShading->setFloat( "uFogFar", VTX_RENDER_EFFECT().getFogFar() );
 			_currentShading->setFloat( "uFogDensity",
 									   VTX_RENDER_EFFECT().isFogEnabled() ? VTX_RENDER_EFFECT().getFogDensity() : 0.f );
-			const Color::Rgba & fogColor = VTX_RENDER_EFFECT().getFogColor();
+			const Util::Color::Rgba & fogColor = VTX_RENDER_EFFECT().getFogColor();
 			_currentShading->setVec3f( "uFogColor", fogColor );
 
-			const Color::Rgba & lightColor = VTX_RENDER_EFFECT().getCameraLightColor();
+			const Util::Color::Rgba & lightColor = VTX_RENDER_EFFECT().getCameraLightColor();
 			_currentShading->setVec3f( "uLightColor", lightColor );
 		}
 

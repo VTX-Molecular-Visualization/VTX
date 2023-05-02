@@ -9,63 +9,51 @@
 #include <QString>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/old_app/generic/base_scene_item.hpp>
+#include <app/application/selection/_fwd.hpp>
+#include <app/component/chemistry/_fwd.hpp>
+#include <app/core/scene/base_scene_item.hpp>
 #include <ui/old_ui/ui/layout/attribute_list_layout.hpp>
 #include <ui/old_ui/ui/widget/base_manual_widget.hpp>
 #include <ui/old_ui/ui/widget/custom_widget/dock_window_main_widget.hpp>
 #include <ui/old_ui/ui/widget/custom_widget/model_list_component.hpp>
 #include <vector>
 
-namespace VTX
+namespace VTX::UI::Widget::Analysis::StructuralAlignment
 {
-	namespace App::Core::Model
+	class StructuralAlignmentWidget : public BaseManualWidget<QDockWidget>
 	{
-		class BaseModel;
-	} // namespace App::Core::Model
+		VTX_WIDGET
 
-	namespace Model
-	{
-		class Molecule;
-		class Selection;
-	} // namespace Model
+		using StructuralAlignmentModelListWidget
+			= UI::Widget::Analysis::StructuralAlignment::StructuralAlignmentModelListWidget;
 
-	namespace UI::Widget::Analysis::StructuralAlignment
-	{
-		class StructuralAlignmentWidget : public BaseManualWidget<QDockWidget>
-		{
-			VTX_WIDGET
+	  public:
+		void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		void localize() override;
 
-			using StructuralAlignmentModelListWidget
-				= UI::Widget::Analysis::StructuralAlignment::StructuralAlignmentModelListWidget;
+		void refresh();
 
-		  public:
-			void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
-			void localize() override;
+	  protected:
+		StructuralAlignmentWidget( QWidget * p_parent );
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 
-			void refresh();
+		virtual void showEvent( QShowEvent * p_event ) override;
 
-		  protected:
-			StructuralAlignmentWidget( QWidget * p_parent );
-			void _setupUi( const QString & p_name ) override;
-			void _setupSlots() override;
+		void _updateTargetedMoleculesWithSelection( const App::Application::Selection::SelectionModel & p_selection );
+		void _computeAlign() const;
+		bool _isConcernedByAlignment( const VTX::Analysis::StructuralAlignment::AlignmentResult & p_result ) const;
 
-			virtual void showEvent( QShowEvent * p_event ) override;
+		void _onModelListChange();
 
-			void _updateTargetedMoleculesWithSelection( const Model::Selection & p_selection );
-			void _computeAlign() const;
-			bool _isConcernedByAlignment( const VTX::Analysis::StructuralAlignment::AlignmentResult & p_result ) const;
+	  private:
+		StructuralAlignmentModelListWidget * _moleculeList				= nullptr;
+		CustomWidget::ModelListComponent *	 _moleculesComponent		= nullptr;
+		AlignParametersWidget *				 _alignmentParametersWidget = nullptr;
 
-			void _onModelListChange();
+		QPushButton * _alignButton = nullptr;
+	};
 
-		  private:
-			StructuralAlignmentModelListWidget * _moleculeList				= nullptr;
-			CustomWidget::ModelListComponent *	 _moleculesComponent		= nullptr;
-			AlignParametersWidget *				 _alignmentParametersWidget = nullptr;
-
-			QPushButton * _alignButton = nullptr;
-		};
-
-	} // namespace UI::Widget::Analysis::StructuralAlignment
-} // namespace VTX
+} // namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 #endif

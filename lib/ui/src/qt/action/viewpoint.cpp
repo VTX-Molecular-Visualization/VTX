@@ -4,10 +4,10 @@
 #include "ui/qt/controller/trackball.hpp"
 #include "ui/qt/state/state_machine.hpp"
 #include "ui/qt/state/visualization.hpp"
-#include <app/model/selection.hpp>
+#include <app/application/selection/selection.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/object3d/scene.hpp>
-#include <app/old_app/selection/selection_manager.hpp>
+#include <app/application/scene.hpp>
+#include <app/application/selection/selection_manager.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <set>
 
@@ -23,8 +23,8 @@ namespace VTX::UI::QT::Action::Viewpoint
 	{
 	}
 
-	Create::Create( Model::Path &							 p_path,
-					const Object3D::Camera &				 p_camera,
+	Create::Create( App::Component::Video::Path &							 p_path,
+					const App::Component::Render::Camera &				 p_camera,
 					Controller::BaseCameraController * const p_controller ) :
 		_path( p_path ),
 		_rotation( p_camera.getRotation() ), _position( p_camera.getPosition() ), _controller( p_controller->getID() )
@@ -50,8 +50,8 @@ namespace VTX::UI::QT::Action::Viewpoint
 	void Create::execute()
 	{
 		const std::string		 viewpointName = _path.generateNewViewpointName();
-		Model::Viewpoint * const viewpoint
-			= VTX::MVC_MANAGER().instantiateModel<Model::Viewpoint, Model::Path * const>( &_path );
+		App::Component::Object3D::Viewpoint * const viewpoint
+			= VTX::MVC_MANAGER().instantiateModel<App::Component::Object3D::Viewpoint, App::Component::Video::Path * const>( &_path );
 		viewpoint->setController( _controller );
 		viewpoint->setRotation( _rotation );
 		viewpoint->setPosition( _position );
@@ -67,23 +67,23 @@ namespace VTX::UI::QT::Action::Viewpoint
 
 	void Delete::execute()
 	{
-		VTX::Selection::SelectionManager::get().getSelectionModel().unselectModels( _viewpoints );
+		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().unselectModels( _viewpoints );
 
-		std::set<Model::Path *> paths = std::set<Model::Path *>();
-		for ( Model::Viewpoint * const viewpoint : _viewpoints )
+		std::set<App::Component::Video::Path *> paths = std::set<App::Component::Video::Path *>();
+		for ( App::Component::Object3D::Viewpoint * const viewpoint : _viewpoints )
 		{
-			Model::Path * const path = viewpoint->getPathPtr();
+		 App::Component::Video::Path * const path = viewpoint->getPathPtr();
 			path->removeViewpoint( viewpoint );
 			paths.emplace( path );
 
 			VTX::MVC_MANAGER().deleteModel( viewpoint );
 		}
 
-		for ( Model::Path * const path : paths )
+		for ( App::Component::Video::Path * const path : paths )
 			path->refreshAllDurations();
 	}
 
-	GoTo::GoTo( const Model::Viewpoint & p_viewpoint ) : GoTo( p_viewpoint, VTXApp::get().getScene().getCamera() ) {}
+	GoTo::GoTo( const App::Component::Object3D::Viewpoint & p_viewpoint ) : GoTo( p_viewpoint, VTXApp::get().getScene().getCamera() ) {}
 	void GoTo::execute()
 	{
 		State::Visualization * const state

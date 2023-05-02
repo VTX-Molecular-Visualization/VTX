@@ -1,5 +1,5 @@
 #include "app/action/dev.hpp"
-#include "app/old_app/io/filesystem.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <filesystem>
@@ -10,9 +10,10 @@ namespace VTX::App::Action::Dev
 	void CompileShaders::execute()
 	{
 		// Delete files.
-		Util::Filesystem::removeAll( IO::Filesystem::getShadersDir() );
+		Util::Filesystem::removeAll( App::Internal::IO::Filesystem::getShadersDir() );
 		// Copy from sources.
-		std::filesystem::copy( IO::Filesystem::SHADERS_DIR_SRC, IO::Filesystem::getShadersDir() );
+		std::filesystem::copy( App::Internal::IO::Filesystem::SHADERS_DIR_SRC,
+							   App::Internal::IO::Filesystem::getShadersDir() );
 		// Recompile.
 		VTX_PROGRAM_MANAGER().refreshShaders();
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;

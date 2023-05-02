@@ -5,10 +5,10 @@
 #include "tool/old_tool/model/measurement/dihedral_angle.hpp"
 #include "tool/old_tool/model/measurement/distance.hpp"
 #include <app/core/action/base_action.hpp>
-#include <app/model/atom.hpp>
-#include <app/model/molecule.hpp>
+#include <app/component/chemistry/atom.hpp>
+#include <app/component/chemistry/molecule.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/object3d/scene.hpp>
+#include <app/application/scene.hpp>
 #include <ui/old_ui/vtx_app.hpp>
 
 namespace VTX::Action::Measurement
@@ -16,7 +16,7 @@ namespace VTX::Action::Measurement
 	class InstantiateDistanceLabel : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit InstantiateDistanceLabel( const Model::Atom & p_firstAtom, const Model::Atom & p_secondAtom ) :
+		explicit InstantiateDistanceLabel( const App::Component::Chemistry::Atom & p_firstAtom, const App::Component::Chemistry::Atom & p_secondAtom ) :
 			_firstAtom( p_firstAtom ), _secondAtom( p_secondAtom )
 		{
 		}
@@ -24,7 +24,7 @@ namespace VTX::Action::Measurement
 		virtual void execute() override
 		{
 			// TODO : perf test, to remove
-			// const Model::Molecule &				mol = *( VTXApp::get().getScene().getMolecules().begin()->first );
+			// const App::Component::Chemistry::Molecule &				mol = *( VTXApp::get().getScene().getMolecules().begin()->first );
 			// std::default_random_engine			generator;
 			// std::uniform_int_distribution<uint> distribution( 0, mol.getAtomCount() );
 			// for ( int i = 0; i < 100; i++ )
@@ -50,16 +50,16 @@ namespace VTX::Action::Measurement
 		}
 
 	  private:
-		const Model::Atom & _firstAtom;
-		const Model::Atom & _secondAtom;
+		const App::Component::Chemistry::Atom & _firstAtom;
+		const App::Component::Chemistry::Atom & _secondAtom;
 	};
 
 	class InstantiateAngleLabel : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit InstantiateAngleLabel( const Model::Atom & p_firstAtom,
-										const Model::Atom & p_secondAtom,
-										const Model::Atom & p_thirdAtom ) :
+		explicit InstantiateAngleLabel( const App::Component::Chemistry::Atom & p_firstAtom,
+										const App::Component::Chemistry::Atom & p_secondAtom,
+										const App::Component::Chemistry::Atom & p_thirdAtom ) :
 			_firstAtom( p_firstAtom ),
 			_secondAtom( p_secondAtom ), _thirdAtom( p_thirdAtom )
 		{
@@ -75,18 +75,18 @@ namespace VTX::Action::Measurement
 		}
 
 	  private:
-		const Model::Atom & _firstAtom;
-		const Model::Atom & _secondAtom;
-		const Model::Atom & _thirdAtom;
+		const App::Component::Chemistry::Atom & _firstAtom;
+		const App::Component::Chemistry::Atom & _secondAtom;
+		const App::Component::Chemistry::Atom & _thirdAtom;
 	};
 
 	class InstantiateDihedralAngleLabel : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit InstantiateDihedralAngleLabel( const Model::Atom & p_firstAtom,
-												const Model::Atom & p_secondAtom,
-												const Model::Atom & p_thirdAtom,
-												const Model::Atom & p_fourthAtom ) :
+		explicit InstantiateDihedralAngleLabel( const App::Component::Chemistry::Atom & p_firstAtom,
+												const App::Component::Chemistry::Atom & p_secondAtom,
+												const App::Component::Chemistry::Atom & p_thirdAtom,
+												const App::Component::Chemistry::Atom & p_fourthAtom ) :
 			_firstAtom( p_firstAtom ),
 			_secondAtom( p_secondAtom ), _thirdAtom( p_thirdAtom ), _fourthAtom( p_fourthAtom )
 		{
@@ -104,10 +104,10 @@ namespace VTX::Action::Measurement
 		}
 
 	  private:
-		const Model::Atom & _firstAtom;
-		const Model::Atom & _secondAtom;
-		const Model::Atom & _thirdAtom;
-		const Model::Atom & _fourthAtom;
+		const App::Component::Chemistry::Atom & _firstAtom;
+		const App::Component::Chemistry::Atom & _secondAtom;
+		const App::Component::Chemistry::Atom & _thirdAtom;
+		const App::Component::Chemistry::Atom & _fourthAtom;
 	};
 
 } // namespace VTX::Action::Measurement

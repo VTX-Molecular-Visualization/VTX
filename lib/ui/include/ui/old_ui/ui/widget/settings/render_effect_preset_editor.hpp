@@ -17,15 +17,15 @@
 #include <QScrollArea>
 #include <QSpinBox>
 #include <QWidget>
-#include <app/old_app/color/rgba.hpp>
-#include <app/model/renderer/render_effect_preset.hpp>
+#include <util/color/rgba.hpp>
+#include <app/application/render_effect/render_effect_preset.hpp>
 #include <app/core/view/base_view.hpp>
 
 namespace VTX::UI::Widget::Settings
 {
 	class RenderEffectPresetEditor :
 		public VTX::UI::Widget::BaseManualWidget<QScrollArea>,
-		View::UI::EditorView<Model::Renderer::RenderEffectPreset>
+		View::UI::EditorView<App::Application::RenderEffect::RenderEffectPreset>
 	{
 		VTX_WIDGET
 
@@ -42,8 +42,8 @@ namespace VTX::UI::Widget::Settings
 		void localize() override;
 		void refresh();
 
-		const Model::Renderer::RenderEffectPreset * const getPreset() const { return _preset; };
-		void setPreset( Model::Renderer::RenderEffectPreset * const p_model, const bool p_updateRender = true );
+		const App::Application::RenderEffect::RenderEffectPreset * const getPreset() const { return _preset; };
+		void setPreset( App::Application::RenderEffect::RenderEffectPreset * const p_model, const bool p_updateRender = true );
 
 	  protected:
 		RenderEffectPresetEditor( QWidget * const p_parent );
@@ -54,7 +54,7 @@ namespace VTX::UI::Widget::Settings
 		void _catchModelEvent( const VTX::App::Core::Event::VTXEvent * const p_event ) override;
 
 	  private:
-		Model::Renderer::RenderEffectPreset *					  _preset			 = nullptr;
+		App::Application::RenderEffect::RenderEffectPreset *					  _preset			 = nullptr;
 		VTX::View::UI::Widget::Renderer::RenderEffectPresetView * _currentPresetView = nullptr;
 
 		Layout::AttributeListLayout * _attributeLayout = nullptr;
@@ -99,16 +99,16 @@ namespace VTX::UI::Widget::Settings
 		void _onOutlineStateChanged( const int p_state ) const;
 		void _onOutlineThicknessChanged( const uint p_value ) const;
 		void _onOutlineSensivityChanged( const float p_value ) const;
-		void _onOutlineColorChanged( const Color::Rgba & p_color ) const;
+		void _onOutlineColorChanged( const Util::Color::Rgba & p_color ) const;
 
 		void _onFogStateChanged( const int p_state ) const;
 		void _onFogNearChanged( const int p_value ) const;
 		void _onFogFarChanged( const int p_value ) const;
 		void _onFogDensityChanged( const float p_value ) const;
-		void _onFogColorChanged( const Color::Rgba & p_color ) const;
+		void _onFogColorChanged( const Util::Color::Rgba & p_color ) const;
 
-		void _onBackgroundColorChanged( const Color::Rgba & p_color ) const;
-		void _onCameraLightColorChanged( const Color::Rgba & p_color ) const;
+		void _onBackgroundColorChanged( const Util::Color::Rgba & p_color ) const;
+		void _onCameraLightColorChanged( const Util::Color::Rgba & p_color ) const;
 	};
 
 } // namespace VTX::UI::Widget::Settings

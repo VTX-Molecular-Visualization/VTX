@@ -8,7 +8,7 @@
 #include <QVBoxLayout>
 
 #include <app/action/renderer.hpp>
-#include <app/old_app/setting.hpp>
+#include <app/application/setting.hpp>
 #include <app/core/view/callback_view.hpp>
 
 namespace VTX::UI::Widget::Settings
@@ -36,26 +36,26 @@ namespace VTX::UI::Widget::Settings
 
 		_ssaoIntensity
 			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( viewport, "ssaoIntensity" );
-		_ssaoIntensity->setMinMax( Setting::AO_INTENSITY_MIN, Setting::AO_INTENSITY_MAX );
+		_ssaoIntensity->setMinMax( VTX::App::Application::Setting::AO_INTENSITY_MIN, VTX::App::Application::Setting::AO_INTENSITY_MAX );
 		_ssaoBlurSize
 			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( viewport, "ssaoBlurSize" );
-		_ssaoBlurSize->setMinMax( Setting::AO_BLUR_SIZE_MIN, Setting::AO_BLUR_SIZE_MAX );
+		_ssaoBlurSize->setMinMax( VTX::App::Application::Setting::AO_BLUR_SIZE_MIN, VTX::App::Application::Setting::AO_BLUR_SIZE_MAX );
 
 		_enableOutline = new QCheckBox( viewport );
 		_outlineThickness
 			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( viewport, "outlineThickness" );
-		_outlineThickness->setMinMax( Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );
+		_outlineThickness->setMinMax( VTX::App::Application::Setting::OUTLINE_THICKNESS_MIN, VTX::App::Application::Setting::OUTLINE_THICKNESS_MAX );
 		_outlineSensivity
 			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( viewport, "outlineSensivity" );
-		_outlineSensivity->setMinMax( Setting::OUTLINE_SENSIVITY_MIN, Setting::OUTLINE_SENSIVITY_MAX );
+		_outlineSensivity->setMinMax( VTX::App::Application::Setting::OUTLINE_SENSIVITY_MIN, VTX::App::Application::Setting::OUTLINE_SENSIVITY_MAX );
 		_outlineColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( viewport, "outlineColor" );
 
 		_enableFog = new QCheckBox( viewport );
 		_nearFog = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldDraggableWidget>( viewport, "nearFog" );
-		_nearFog->setMinMax( Setting::FOG_NEAR_MIN, Setting::FOG_NEAR_MAX );
+		_nearFog->setMinMax( VTX::App::Application::Setting::FOG_NEAR_MIN, VTX::App::Application::Setting::FOG_NEAR_MAX );
 		_nearFog->setLabel( "Near" );
 		_farFog = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldDraggableWidget>( viewport, "farFog" );
-		_farFog->setMinMax( Setting::FOG_FAR_MIN, Setting::FOG_FAR_MAX );
+		_farFog->setMinMax( VTX::App::Application::Setting::FOG_FAR_MIN, VTX::App::Application::Setting::FOG_FAR_MAX );
 		_farFog->setLabel( "Far" );
 		_fogDensity = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( viewport, "fogDensity" );
 		_fogDensity->setMinMax( 0.0f, 1.0f );
@@ -141,7 +141,7 @@ namespace VTX::UI::Widget::Settings
 				 this,
 				 &RenderEffectPresetEditor::_onOutlineSensivityChanged );
 		connect( _outlineColor,
-				 QOverload<const Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
+				 QOverload<const Util::Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onOutlineColorChanged );
 
@@ -158,16 +158,16 @@ namespace VTX::UI::Widget::Settings
 				 this,
 				 &RenderEffectPresetEditor::_onFogDensityChanged );
 		connect( _fogColor,
-				 QOverload<const Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
+				 QOverload<const Util::Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onFogColorChanged );
 
 		connect( _backgroundColor,
-				 QOverload<const Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
+				 QOverload<const Util::Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onBackgroundColorChanged );
 		connect( _cameraLightColor,
-				 QOverload<const Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
+				 QOverload<const Util::Color::Rgba &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onCameraLightColorChanged );
 	}
@@ -215,7 +215,7 @@ namespace VTX::UI::Widget::Settings
 		_cameraLightColor->setColor( _preset->getCameraLightColor() );
 	}
 
-	void RenderEffectPresetEditor::setPreset( Model::Renderer::RenderEffectPreset * const p_model,
+	void RenderEffectPresetEditor::setPreset( App::Application::RenderEffect::RenderEffectPreset * const p_model,
 											  const bool								  p_updateRender )
 	{
 		if ( _preset == p_model )
@@ -289,7 +289,7 @@ namespace VTX::UI::Widget::Settings
 		if ( !signalsBlocked() && p_value != _preset->getOutlineSensivity() )
 			VTX_ACTION( new VTX::App::Action::Renderer::ChangeOutlineSensivity( *_preset, p_value ) );
 	}
-	void RenderEffectPresetEditor::_onOutlineColorChanged( const Color::Rgba & p_color ) const
+	void RenderEffectPresetEditor::_onOutlineColorChanged( const Util::Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getOutlineColor() )
 			VTX_ACTION( new VTX::App::Action::Renderer::ChangeOutlineColor( *_preset, p_color ) );
@@ -316,17 +316,17 @@ namespace VTX::UI::Widget::Settings
 		if ( !signalsBlocked() && p_value != _preset->getFogDensity() )
 			VTX_ACTION( new VTX::App::Action::Renderer::ChangeFogDensity( *_preset, p_value ) );
 	}
-	void RenderEffectPresetEditor::_onFogColorChanged( const Color::Rgba & p_color ) const
+	void RenderEffectPresetEditor::_onFogColorChanged( const Util::Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getFogColor() )
 			VTX_ACTION( new VTX::App::Action::Renderer::ChangeFogColor( *_preset, p_color ) );
 	}
-	void RenderEffectPresetEditor::_onBackgroundColorChanged( const Color::Rgba & p_color ) const
+	void RenderEffectPresetEditor::_onBackgroundColorChanged( const Util::Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getBackgroundColor() )
 			VTX_ACTION( new VTX::App::Action::Renderer::ChangeBackgroundColor( *_preset, p_color ) );
 	}
-	void RenderEffectPresetEditor::_onCameraLightColorChanged( const Color::Rgba & p_color ) const
+	void RenderEffectPresetEditor::_onCameraLightColorChanged( const Util::Color::Rgba & p_color ) const
 	{
 		if ( !signalsBlocked() && p_color != _preset->getCameraLightColor() )
 			VTX_ACTION( new VTX::App::Action::Renderer::ChangeCameraLightColor( *_preset, p_color ) );

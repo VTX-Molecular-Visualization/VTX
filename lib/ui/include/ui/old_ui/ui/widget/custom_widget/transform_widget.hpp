@@ -8,11 +8,11 @@
 #include <QFrame>
 #include <QSpinBox>
 #include <app/old_app/generic/base_transformable.hpp>
-#include <app/old_app/math/transform.hpp>
+#include "app/internal/math/transform.hpp"
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class TransformWidget : public BaseManualWidget<QFrame>, public TMultiDataField<const Math::Transform>
+	class TransformWidget : public BaseManualWidget<QFrame>, public TMultiDataField<const App::Internal::Math::Transform>
 	{
 		VTX_WIDGET
 		Q_OBJECT
@@ -28,7 +28,7 @@ namespace VTX::UI::Widget::CustomWidget
 	  public:
 		~TransformWidget() {};
 
-		void setData( const Math::Transform & p_data )
+		void setData( const App::Internal::Math::Transform & p_data )
 		{
 			_transform = p_data;
 			_refresh();
@@ -38,7 +38,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		// MultiDataField Implementation //////////////////////////////
 		void resetState() override;
-		void updateWithNewValue( const Math::Transform & p_value ) override;
+		void updateWithNewValue( const App::Internal::Math::Transform & p_value ) override;
 		//////////////////////////////////////////////////////////////
 
 		void displayPosition( const bool p_display ) const;
@@ -46,7 +46,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void displayScale( const bool p_display ) const;
 
 	  signals:
-		void onValueChange( const Math::Transform & p_value,
+		void onValueChange( const App::Internal::Math::Transform & p_value,
 							const Generic::BaseTransformable::TransformComposantMask & ) const;
 		void onPositionDragged( const Vec3f & p_delta ) const;
 		void onRotationDragged( const Vec3f & p_delta ) const;
@@ -54,7 +54,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	  protected:
 		TransformWidget( QWidget * p_parent ) :
-			BaseManualWidget( p_parent ), TMultiDataField<const Math::Transform>() {};
+			BaseManualWidget( p_parent ), TMultiDataField<const App::Internal::Math::Transform>() {};
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();
@@ -88,7 +88,7 @@ namespace VTX::UI::Widget::CustomWidget
 			const Field &					p_field,
 			const Vector3Widget::AxisMask & p_axis );
 
-		Math::Transform _transform = Math::Transform();
+	 App::Internal::Math::Transform _transform = App::Internal::Math::Transform();
 	};
 } // namespace VTX::UI::Widget::CustomWidget
 #endif

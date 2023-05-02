@@ -3,7 +3,7 @@
 
 #include "app/core/model/base_model_3d.hpp"
 #include "app/old_app/generic/base_renderable.hpp"
-#include "app/old_app/object3d/camera.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "base_view.hpp"
@@ -19,7 +19,7 @@ namespace VTX::App::Core::View
 		VTX_VIEW
 
 	  public:
-		virtual void render( const Object3D::Camera & p_camera ) const override
+		virtual void render( const App::Component::Render::Camera & p_camera ) const override
 		{
 			_program->use();
 

@@ -14,14 +14,14 @@ namespace VTX
 				VTX_VIEW
 
 			  public:
-				void render( const Object3D::Camera & p_camera ) const override;
+				void render( const App::Component::Render::Camera & p_camera ) const override;
 
 			  protected:
 				Renderer::GL::Program * const _createProgram() override;
 				void						  _init() override;
 
 			  private:
-				explicit Sphere( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
+				explicit Sphere( App::Component::Chemistry::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 			};
 		} // namespace D3
 	}	  // namespace View

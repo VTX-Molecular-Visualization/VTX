@@ -23,7 +23,7 @@ namespace VTX
 		void unhandledException();
 
 		// static void openAdvancedSettingImageExportDialog();
-		// static bool openExportImageDialog( const IO::Struct::ImageExport & p_exportData );
+		// static bool openExportImageDialog( const App::Internal::IO::Serialization::ImageExport & p_exportData );
 
 		// static void importRepresentationPresetDialog();
 		// static void importRenderEffectPresetDialog();

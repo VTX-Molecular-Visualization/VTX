@@ -1,6 +1,6 @@
 #include "app/old_app/renderer/gl/pass/ssao.hpp"
-#include "app/model/renderer/render_effect_preset.hpp"
-#include "app/old_app/object3d/camera.hpp"
+#include "app/application/render_effect/render_effect_preset.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/old_app/renderer/gl/gl.hpp"
 #include "app/old_app/renderer/gl/program_manager.hpp"
 #include "app/old_app/vtx_app.hpp"
@@ -74,7 +74,7 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 	}
 
-	void SSAO::render( const Object3D::Scene & p_scene, const GL & p_renderer )
+	void SSAO::render( const App::Application::Scene & p_scene, const GL & p_renderer )
 	{
 		_fbo.bind();
 
