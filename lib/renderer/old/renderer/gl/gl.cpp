@@ -125,7 +125,7 @@ namespace VTX::Renderer::GL
 			_passFXAA->render( p_scene, *this );
 		}
 
-		VTXApp::get().MASK = VTX_SETTING().getForceRenderer() ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
+		VTXApp::get().MASK = VTX_SETTING().getForceRenderer() ? Render::VTX_MASK_NEED_UPDATE : Render::VTX_MASK_NO_UPDATE;
 	};
 
 	void GL::updateRenderSetting( const RENDER_SETTING p_renderSetting )

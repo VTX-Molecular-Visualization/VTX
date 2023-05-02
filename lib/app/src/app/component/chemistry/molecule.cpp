@@ -572,7 +572,7 @@ namespace VTX::App::Component::Chemistry
 
 		_notifyViews( App::Event::Model::TRAJECTORY_FRAME_CHANGE );
 
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= App::Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Molecule::applyNextFrame( const uint p_frameCount )

@@ -32,7 +32,7 @@ namespace VTX::App::Action::Chain
 			molecule->refreshColors();
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeVisibility::execute()
@@ -95,7 +95,7 @@ namespace VTX::App::Action::Chain
 			}
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeRepresentationPreset::execute()
@@ -104,13 +104,13 @@ namespace VTX::App::Action::Chain
 			= App::Application::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
 		App::Application::Representation::RepresentationManager::get().instantiateRepresentations( preset, _chains );
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void RemoveRepresentation::execute()
 	{
 		App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentations( _chains );
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void RemoveChildrenRepresentations::execute()
@@ -129,7 +129,7 @@ namespace VTX::App::Action::Chain
 			molecule->computeAllRepresentationData();
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Delete::execute()
@@ -150,8 +150,8 @@ namespace VTX::App::Action::Chain
 			molecule->computeAllRepresentationData();
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Copy::execute()
@@ -182,7 +182,7 @@ namespace VTX::App::Action::Chain
 	{
 		App::Application::Representation::RepresentationManager::get().applyRepresentation(
 			_chains, _representation, _flag );
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 } // namespace VTX::App::Action::Chain

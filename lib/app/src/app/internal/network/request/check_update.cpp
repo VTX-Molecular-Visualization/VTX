@@ -1,5 +1,5 @@
 #include "app/internal/network/request/check_update.hpp"
-#include "app/old_app/define.hpp"
+#include "app/application/define.hpp"
 // #include "ui/dialog.hpp"
 #include <nlohmann/json.hpp>
 #include <util/logger.hpp>
@@ -7,7 +7,7 @@
 namespace VTX::App::Internal::Network::Request
 {
 	CheckUpdate::CheckUpdate( const bool p_showPopupIfNoUpdate ) :
-		NetworkRequest( std::string( VTX_VERSION_URL ) ), _showPopupIfNoUpdate( p_showPopupIfNoUpdate )
+		NetworkRequest( std::string( Application::VTX_VERSION_URL ) ), _showPopupIfNoUpdate( p_showPopupIfNoUpdate )
 	{
 		VTX_INFO( "Checking for update" );
 	}
@@ -23,15 +23,16 @@ namespace VTX::App::Internal::Network::Request
 			const int revision = json.at( "REVISION" );
 
 			bool needUpdate = false;
-			if ( major > VTX_VERSION_MAJOR )
+			if ( major > Application::VTX_VERSION_MAJOR )
 			{
 				needUpdate = true;
 			}
-			else if ( major == VTX_VERSION_MAJOR && minor > VTX_VERSION_MINOR )
+			else if ( major == Application::VTX_VERSION_MAJOR && minor > Application::VTX_VERSION_MINOR )
 			{
 				needUpdate = true;
 			}
-			else if ( major == VTX_VERSION_MAJOR && minor == VTX_VERSION_MINOR && revision > VTX_VERSION_REVISION )
+			else if ( major == Application::VTX_VERSION_MAJOR && minor == Application::VTX_VERSION_MINOR
+					  && revision > Application::VTX_VERSION_REVISION )
 			{
 				needUpdate = true;
 			}
@@ -40,7 +41,8 @@ namespace VTX::App::Internal::Network::Request
 			{
 				const std::string consoleMessage = "VTX " + std::to_string( major ) + "." + std::to_string( minor )
 												   + "." + std::to_string( revision ) + " is available at:\n"
-												   + VTX_RELEASES_URL + "\nor\n" + VTX_WEBSITE_URL;
+												   + Application::VTX_RELEASES_URL + "\nor\n"
+												   + Application::VTX_WEBSITE_URL;
 				VTX_INFO( consoleMessage );
 
 				// TODO reimplement this out of VTX_APP

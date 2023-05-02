@@ -97,7 +97,7 @@ namespace VTX::App::Render::Worker
 		//		const float previousBackgroundOpacity = VTX_SETTING().getSnapshotBackgroundOpacity();
 		//		VTX_SETTING().freezeEvent( true );
 		//		VTX_SETTING().setSnapshotBackgroundOpacity( _exportData.getBackgroundOpacity() );
-		//		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		//		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 		//		glWidget.getRenderer().renderFrame( VTXApp::get().getScene() );
 		//		VTX_SETTING().setSnapshotBackgroundOpacity( previousBackgroundOpacity );
 		//		VTX_SETTING().freezeEvent( false );

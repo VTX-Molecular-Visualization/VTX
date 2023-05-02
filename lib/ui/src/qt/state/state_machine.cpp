@@ -5,7 +5,6 @@
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/define.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <util/exceptions.hpp>
 

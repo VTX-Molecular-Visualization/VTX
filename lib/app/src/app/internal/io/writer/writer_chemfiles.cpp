@@ -3,9 +3,10 @@
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/old_app/define.hpp"
+#include "app/component/define.hpp"
 #include "app/util/secondary_structure.hpp"
 #include <string>
+#include <util/constants.hpp>
 
 namespace VTX::App::Internal::IO::Writer
 {

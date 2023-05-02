@@ -1,11 +1,11 @@
-#ifndef __VTX_DEFINE__
-#define __VTX_DEFINE__
+#ifndef __VTX_APP_APPLICATION_DEFINE__
+#define __VTX_APP_APPLICATION_DEFINE__
 
 #include <string>
 #include <util/constants.hpp>
 #include <util/types.hpp>
 
-namespace VTX
+namespace VTX::App::Application
 {
 	// VTX.
 	const std::string VTX_PROJECT_NAME	   = "VTX";
@@ -26,24 +26,6 @@ namespace VTX
 	// API.
 	const std::string API_URL_MMTF = "https://mmtf.rcsb.org/v1.0/full/";
 
-	// Constants.
-	constexpr Vec3f CAMERA_RIGHT_DEFAULT = VEC3F_X;
-	constexpr Vec3f CAMERA_UP_DEFAULT	 = VEC3F_Y;
-	constexpr Vec3f CAMERA_FRONT_DEFAULT = Vec3f( 0.f, 0.f, -1.f );
-
-	constexpr uint INVALID_ID = UINT_MAX;
-
-	// Mask.
-	using VTX_MASK = unsigned char;
-
-	constexpr VTX_MASK VTX_MASK_NEED_UPDATE		  = 0xFF;
-	constexpr VTX_MASK VTX_MASK_NO_UPDATE		  = 0x00;
-	constexpr VTX_MASK VTX_MASK_SELECTION_UPDATED = 0x01;
-	constexpr VTX_MASK VTX_MASK_CAMERA_UPDATED	  = 0x02;
-	constexpr VTX_MASK VTX_MASK_3D_MODEL_UPDATED  = 0x04;
-	constexpr VTX_MASK VTX_MASK_UNIFORM_UPDATED	  = 0x08;
-	constexpr VTX_MASK VTX_MASK_FORCE_AA		  = 0x10;
-
 	// Register Keys
 	namespace RegisterKey
 	{
@@ -58,6 +40,6 @@ namespace VTX
 
 	} // namespace RegisterKey
 
-} // namespace VTX
+} // namespace VTX::App::Application
 
 #endif

@@ -46,7 +46,7 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 
-		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
+		if ( VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
 		{
 			const Util::Color::Rgba & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
 			_program->setVec4f( "uLineColor", lineColor );

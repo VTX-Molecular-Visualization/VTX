@@ -38,7 +38,7 @@ namespace VTX::UI
 // #include <QElapsedTimer>
 // #include <QInputMethod>
 // #include <QTimer>
-// #include <app/old_app/define.hpp>
+// #include <app/internal/define.hpp>
 // #include <app/old_app/generic/base_auto_delete.hpp>
 // #include <app/render/spec.hpp>
 // #include <app/old_app/stat.hpp>
@@ -76,7 +76,7 @@ namespace VTX::UI
 //			static VTXApp instance;
 //			return instance;
 //		}
-//		VTX_MASK MASK = VTX_MASK_NEED_UPDATE;
+//		VTX_MASK MASK = Render::VTX_MASK_NEED_UPDATE;
 //
 //		void start( const std::vector<std::string> & );
 //		void update();

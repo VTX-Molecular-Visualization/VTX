@@ -3,7 +3,7 @@
 
 #include "../bvh.hpp"
 #include "app/component/chemistry/molecule.hpp"
-#include "app/old_app/define.hpp"
+#include <util/constants.hpp>
 
 namespace VTX::App::Render::Renderer::RT::Primitive
 {

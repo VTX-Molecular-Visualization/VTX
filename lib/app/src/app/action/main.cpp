@@ -122,7 +122,7 @@ namespace VTX::App::Action::Main
 						}
 					}
 
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 				} );
 
 			VTX_THREAD( loader, callback );

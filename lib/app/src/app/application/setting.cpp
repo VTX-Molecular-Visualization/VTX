@@ -14,7 +14,6 @@
 #include "app/internal/io/serialization/image_export.hpp"
 #include "app/internal/io/serializer.hpp"
 #include "app/internal/setting/register_map.hpp"
-#include "app/old_app/define.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <exception>
 #include <string>

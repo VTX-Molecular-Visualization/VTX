@@ -11,6 +11,7 @@
 #include "app/old_app/id.hpp"
 #include <map>
 #include <util/chrono.hpp>
+#include <util/constants.hpp>
 
 namespace VTX::App::Component::Chemistry
 {

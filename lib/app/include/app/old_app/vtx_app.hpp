@@ -3,8 +3,8 @@
 
 #include "app/application/_fwd.hpp"
 #include "app/application/setting.hpp"
-#include "app/old_app/define.hpp"
 #include "app/old_app/generic/base_auto_delete.hpp"
+#include "app/render/define.hpp"
 #include "app/render/spec.hpp"
 #include "stat.hpp"
 // #include <QElapsedTimer>
@@ -28,7 +28,7 @@ namespace VTX
 			static VTXApp instance;
 			return instance;
 		}
-		VTX_MASK MASK = VTX_MASK_NEED_UPDATE;
+		App::Render::VTX_MASK MASK = App::Render::VTX_MASK_NEED_UPDATE;
 
 		void start( const std::vector<std::string> & );
 		void update();

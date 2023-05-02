@@ -34,6 +34,8 @@ namespace VTX
 	constexpr float TWO_PIf	 = glm::two_pi<float>();
 	constexpr float INV_PIf	 = glm::one_over_pi<float>();
 	constexpr float INV_2PIf = glm::one_over_two_pi<float>();
+
+	constexpr uint INVALID_ID = UINT_MAX;
 } // namespace VTX
 
 #endif

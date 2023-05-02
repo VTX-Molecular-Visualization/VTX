@@ -56,7 +56,7 @@ namespace VTX::App::Render::Renderer::GL::Pass
 
 		_program->use();
 
-		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
+		if ( VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
 		{
 			_program->setInt( "uBlurSize", VTX_RENDER_EFFECT().getSSAOBlurSize() );
 		}

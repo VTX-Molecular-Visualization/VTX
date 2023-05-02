@@ -38,7 +38,7 @@ namespace VTX::App::Render::Renderer::GL::Pass
 
 		_program->use();
 
-		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+		if ( VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
 		{
 			const App::Component::Render::Camera & cam	   = p_scene.getCamera();
 			const float							   camNear = cam.getNear();

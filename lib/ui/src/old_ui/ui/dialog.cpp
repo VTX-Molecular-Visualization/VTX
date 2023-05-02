@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <app/action/main.hpp>
+#include <app/application/define.hpp>
 #include <app/application/selection/selection_manager.hpp>
 #include <app/internal/io/filesystem.hpp>
 #include <app/internal/io/serialization/image_export.hpp>
@@ -336,8 +337,8 @@ namespace VTX::UI
 	}
 	void Dialog::unhandledException()
 	{
-		std::string msg = "An unhandlded error has occured, please open an issue at \n" + VTX_BUG_REPORT_URL
-						  + " \nwith your latest file in the /logs directory.";
+		std::string msg = "An unhandlded error has occured, please open an issue at \n"
+						  + App::Application::VTX_BUG_REPORT_URL + " \nwith your latest file in the /logs directory.";
 		VTX_ERROR( msg );
 
 		QMessageBox::critical( &VTXApp::get().getMainWindow(),

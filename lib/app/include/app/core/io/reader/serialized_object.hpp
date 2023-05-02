@@ -1,9 +1,9 @@
 #ifndef __VTX_APP_CORE_IO_READER_SERIALIZED_OBJECT__
 #define __VTX_APP_CORE_IO_READER_SERIALIZED_OBJECT__
 
+#include "app/application/define.hpp"
 #include "app/core/io/reader/base_reader.hpp"
 #include "app/internal/io/serializer.hpp"
-#include "app/old_app/define.hpp"
 // #include <QFile>
 // #include <QTextStream>
 #include <nlohmann/json.hpp>
@@ -23,15 +23,16 @@ namespace VTX::App::Core::IO::Reader
 			const uint minor	  = json.at( "_VERSION" ).at( "MINOR" );
 			const uint revision	  = json.at( "_VERSION" ).at( "REVISION" );
 			bool	   needUpdate = false;
-			if ( major > VTX_VERSION_MAJOR )
+			if ( major > Application::VTX_VERSION_MAJOR )
 			{
 				needUpdate = true;
 			}
-			else if ( major == VTX_VERSION_MAJOR && minor > VTX_VERSION_MINOR )
+			else if ( major == Application::VTX_VERSION_MAJOR && minor > Application::VTX_VERSION_MINOR )
 			{
 				needUpdate = true;
 			}
-			else if ( major == VTX_VERSION_MAJOR && minor == VTX_VERSION_MINOR && revision > VTX_VERSION_REVISION )
+			else if ( major == Application::VTX_VERSION_MAJOR && minor == Application::VTX_VERSION_MINOR
+					  && revision > Application::VTX_VERSION_REVISION )
 			{
 				needUpdate = true;
 			}

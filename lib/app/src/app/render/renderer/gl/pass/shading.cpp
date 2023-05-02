@@ -51,7 +51,7 @@ namespace VTX::App::Render::Renderer::GL::Pass
 
 		_currentShading->use();
 
-		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
+		if ( VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
 		{
 			const Util::Color::Rgba & bgColor = VTX_RENDER_EFFECT().getBackgroundColor();
 			_currentShading->setVec4f( "uBackgroundColor",
@@ -73,7 +73,7 @@ namespace VTX::App::Render::Renderer::GL::Pass
 		// TODO: no need for flat shading
 		// TODO: let the user choose where's the light
 		// TODO: distinguish "view" and "world" lights
-		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+		if ( VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
 		{
 			_currentShading->setBool( "uIsPerspective", p_scene.getCamera().isPerspective() );
 		}

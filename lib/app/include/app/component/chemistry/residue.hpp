@@ -2,18 +2,19 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_RESIDUE__
 
 #include "_fwd.hpp"
+#include "app/application/representation/base_representable.hpp"
 #include "app/component/chemistry/secondary_structure.hpp"
+#include "app/component/object3d/helper/aabb.hpp"
 #include "app/core/model/base_model.hpp"
 #include "app/internal/chemdb/residue.hpp"
 #include "app/internal/chemdb/secondary_structure.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
-#include "app/application/representation/base_representable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
-#include "app/component/object3d/helper/aabb.hpp"
 #include "atom.hpp"
 #include <map>
 #include <string>
+#include <util/constants.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry
@@ -31,7 +32,7 @@ namespace VTX::App::Component::Chemistry
 	  public:
 		static const int SYMBOL_COUNT = int( ChemDB::Residue::SYMBOL::COUNT );
 
-		static bool				 checkIfStandardFromName( const std::string & p_residueName );
+		static bool					   checkIfStandardFromName( const std::string & p_residueName );
 		static const Util::Color::Rgba getResidueColor( const Chemistry::Residue & p_residue );
 
 		inline bool isStandardResidue() const
@@ -90,8 +91,8 @@ namespace VTX::App::Component::Chemistry
 		void setVisible( const bool p_visible );
 		void setVisible( const bool p_visible, const bool p_notify );
 
-	 App::Component::Object3D::Helper::AABB getAABB() const;
-	 App::Component::Object3D::Helper::AABB getWorldAABB() const;
+		App::Component::Object3D::Helper::AABB getAABB() const;
+		App::Component::Object3D::Helper::AABB getWorldAABB() const;
 
 	  protected:
 		void _onRepresentationChange() override;
@@ -104,10 +105,10 @@ namespace VTX::App::Component::Chemistry
 
 		int _symbol = int( ChemDB::Residue::SYMBOL::UNKNOWN );
 
-		uint			   _indexFirstAtom = 0;
+		uint			   _indexFirstAtom = INVALID_ID;
 		uint			   _atomCount	   = 0;
 		uint			   _realAtomCount  = 0;
-		uint			   _indexFirstBond = 0;
+		uint			   _indexFirstBond = INVALID_ID;
 		uint			   _bondCount	   = 0;
 		ChemDB::Atom::TYPE _atomType	   = ChemDB::Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
 		ChemDB::SecondaryStructure::TYPE _secondaryStructure = ChemDB::SecondaryStructure::TYPE::COIL;

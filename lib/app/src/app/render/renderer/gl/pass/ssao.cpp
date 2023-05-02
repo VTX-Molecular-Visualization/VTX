@@ -86,12 +86,12 @@ namespace VTX::App::Render::Renderer::GL::Pass
 
 		_program->use();
 
-		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+		if ( VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
 		{
 			_program->setMat4f( "uProjMatrix", p_scene.getCamera().getProjectionMatrix() );
 		}
 
-		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
+		if ( VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
 		{
 			_program->setVec3fArray( "uAoKernel", _kernelSize, _aoKernel.data() );
 			_program->setInt( "uAoIntensity", VTX_RENDER_EFFECT().getSSAOIntensity() );

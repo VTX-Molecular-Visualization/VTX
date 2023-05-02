@@ -26,7 +26,7 @@ namespace VTX::App::Render::View
 	{
 		BaseView3D::render( p_camera );
 
-		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+		if ( VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
 		{
 			const App::Component::Render::Camera & cam = VTXApp::get().getScene().getCamera();
 			_program->setVec3f( "u_camPosition", cam.getPosition() );

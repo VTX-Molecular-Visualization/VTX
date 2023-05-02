@@ -16,7 +16,7 @@ namespace VTX::App::Action::Dev
 							   App::Internal::IO::Filesystem::getShadersDir() );
 		// Recompile.
 		VTX_PROGRAM_MANAGER().refreshShaders();
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 } // namespace VTX::App::Action::Dev

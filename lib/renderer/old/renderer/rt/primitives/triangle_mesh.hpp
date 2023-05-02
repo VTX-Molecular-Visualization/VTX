@@ -7,6 +7,7 @@
 
 #include "../bvh.hpp"
 #include "model/molecule.hpp"
+#include <util/constants.hpp>
 
 namespace VTX
 {
