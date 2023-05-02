@@ -93,7 +93,6 @@ namespace VTX::Renderer::GL
 										  const std::string & p_suffix )
 	{
 		const std::string name = p_path.filename().string() + p_suffix;
-		VTX_DEBUG( "Creating shader: " + name );
 
 		const ENUM_SHADER_TYPE type = getShaderType( p_path );
 
@@ -153,7 +152,6 @@ namespace VTX::Renderer::GL
 				throw GLException( error );
 			}
 			_shaders.emplace( name, shaderId );
-			VTX_DEBUG( "Shader created: " + name );
 		}
 
 		return shaderId;

@@ -106,7 +106,7 @@ namespace VTX::Renderer::GL
 
 	void OpenGLRenderer::renderFrame()
 	{
-		// VTX_STAT().drawCalls = 0u;
+		_quadVAO.drawCalls = 0;
 		for ( Pass::BasePass * const pass : _passes )
 		{
 			pass->render();
