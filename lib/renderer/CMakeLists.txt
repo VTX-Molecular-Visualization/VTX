@@ -20,7 +20,7 @@ target_link_libraries(VTX_RENDERER PUBLIC VTX_UTIL)
 target_compile_features(VTX_RENDERER PUBLIC cxx_std_17)
 
 # Copy shaders.
-add_custom_command(TARGET VTX_RENDERER POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory src/shaders ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+add_custom_command(TARGET VTX_RENDERER POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/gl/shaders $<TARGET_FILE_DIR:VTX_RENDERER>/shaders)
 
 # Tests.
 if(NOT TARGET Catch2)
