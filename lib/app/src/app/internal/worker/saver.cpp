@@ -10,7 +10,7 @@
 #include <set>
 #include <util/logger.hpp>
 
-namespace VTX::Worker
+namespace VTX::App::Internal::Worker
 {
 	uint Saver::_run()
 	{
@@ -175,4 +175,4 @@ namespace VTX::Worker
 			return MODE::UNKNOWN;
 		}
 	}
-} // namespace VTX::Worker
+} // namespace VTX::App::Internal::Worker

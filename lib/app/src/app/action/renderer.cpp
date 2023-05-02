@@ -1,19 +1,20 @@
 #include "app/action/renderer.hpp"
+#include "app/component/render/camera.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include "app/internal/worker/render_effect_loader.hpp"
 #include "app/internal/worker/render_effect_saver.hpp"
 #include "app/mvc.hpp"
-#include "app/internal/io/filesystem.hpp"
-#include "app/component/render/camera.hpp"
-#include "app/render/renderer/gl/gl.hpp"
 #include "app/old_app/vtx_app.hpp"
+#include "app/render/renderer/gl/gl.hpp"
 #include "app/worker.hpp"
 
 namespace VTX::App::Action::Renderer
 {
 	void ReloadPresets::execute()
 	{
-		Worker::RenderEffectPresetLibraryLoader * libraryLoader
-			= new Worker::RenderEffectPresetLibraryLoader( App::Application::RenderEffect::RenderEffectLibrary::get() );
+		Internal::Worker::RenderEffectPresetLibraryLoader * libraryLoader
+			= new Internal::Worker::RenderEffectPresetLibraryLoader(
+				App::Application::RenderEffect::RenderEffectLibrary::get() );
 
 		VTX::App::Core::Worker::CallbackWorker * const callback = new VTX::App::Core::Worker::CallbackWorker(
 			[]()
@@ -39,8 +40,8 @@ namespace VTX::App::Action::Renderer
 		{
 			if ( _async )
 			{
-				Worker::RenderEffectPresetSaverThread * librarySaver
-					= new Worker::RenderEffectPresetSaverThread( renderEffect );
+				Internal::Worker::RenderEffectPresetSaverThread * librarySaver
+					= new Internal::Worker::RenderEffectPresetSaverThread( renderEffect );
 				VTX::App::Core::Worker::CallbackThread * callback
 					= new VTX::App::Core::Worker::CallbackThread( []( const uint p_code ) {} );
 
@@ -51,8 +52,8 @@ namespace VTX::App::Action::Renderer
 				FilePath path = App::Internal::IO::Filesystem::getRenderEffectPath( renderEffect->getName() );
 				Util::Filesystem::generateUniqueFileName( path );
 
-				Worker::RenderEffectPresetSaver * librarySaver
-					= new Worker::RenderEffectPresetSaver( renderEffect, path );
+				Internal::Worker::RenderEffectPresetSaver * librarySaver
+					= new Internal::Worker::RenderEffectPresetSaver( renderEffect, path );
 				VTX_WORKER( librarySaver );
 			}
 		}
@@ -64,7 +65,8 @@ namespace VTX::App::Action::Renderer
 
 		if ( _setAsDefault )
 		{
-			const int presetIndex = App::Application::RenderEffect::RenderEffectLibrary::get().getPresetIndex( &_preset );
+			const int presetIndex
+				= App::Application::RenderEffect::RenderEffectLibrary::get().getPresetIndex( &_preset );
 
 			if ( presetIndex >= 0 )
 				VTX_SETTING().setDefaultRenderEffectPresetIndex( presetIndex );

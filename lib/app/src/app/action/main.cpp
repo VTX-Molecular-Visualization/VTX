@@ -24,7 +24,7 @@ namespace VTX::App::Action::Main
 	// TODO keep only Dialog parts here and move real loading action into VTX_APP.
 	void Open::LoadSceneClass::_loadScene()
 	{
-		Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
+		Internal::Worker::SceneLoader * sceneLoader = new Internal::Worker::SceneLoader( _paths );
 		VTX_WORKER( sceneLoader );
 
 		for ( const FilePath & path : _paths )
@@ -54,14 +54,14 @@ namespace VTX::App::Action::Main
 		}
 		else
 		{
-			Worker::Loader * loader = nullptr;
+			Internal::Worker::Loader * loader = nullptr;
 			if ( _paths.empty() == false )
 			{
-				loader = new Worker::Loader( _paths );
+				loader = new Internal::Worker::Loader( _paths );
 			}
 			else if ( _buffers.empty() == false )
 			{
-				loader = new Worker::Loader( _buffers );
+				loader = new Internal::Worker::Loader( _buffers );
 			}
 			if ( loader == nullptr )
 			{
@@ -91,22 +91,22 @@ namespace VTX::App::Action::Main
 			VTX::App::Core::Worker::CallbackThread * callback = new VTX::App::Core::Worker::CallbackThread(
 				[ loader ]( const uint p_code )
 				{
-					for ( const std::pair<const FilePath, Worker::Loader::Result> & pairFilResult :
+					for ( const std::pair<const FilePath, Internal::Worker::Loader::Result> & pairFilResult :
 						  loader->getPathsResult() )
 					{
-						const FilePath &			   filepath = pairFilResult.first;
-						const Worker::Loader::Result & result	= pairFilResult.second;
+						const FilePath &						 filepath = pairFilResult.first;
+						const Internal::Worker::Loader::Result & result	  = pairFilResult.second;
 
 						if ( !result.state )
 							continue;
 
-						if ( result.sourceType == Worker::Loader::SOURCE_TYPE::FILE )
+						if ( result.sourceType == Internal::Worker::Loader::SOURCE_TYPE::FILE )
 						{
 							if ( result.molecule != nullptr )
 								VTXApp::get().getScenePathData().registerLoading( result.molecule, filepath );
 							VTX::App::Application::Setting::enqueueNewLoadingPath( filepath );
 						}
-						else if ( result.sourceType == Worker::Loader::SOURCE_TYPE::BUFFER )
+						else if ( result.sourceType == Internal::Worker::Loader::SOURCE_TYPE::BUFFER )
 						{
 							VTX::App::Application::Setting::enqueueNewDownloadCode( filepath.stem().string() );
 						}
@@ -134,7 +134,7 @@ namespace VTX::App::Action::Main
 	// TODO keep only Dialog parts here and move real loading action into VTX_APP.
 	void Save::execute()
 	{
-		Worker::Saver * const saver = new Worker::Saver( _path );
+		Internal::Worker::Saver * const saver = new Internal::Worker::Saver( _path );
 
 		if ( saver == nullptr )
 			return;
@@ -163,7 +163,8 @@ namespace VTX::App::Action::Main
 			Util::Filesystem::generateUniqueFileName( target );
 			if ( std::filesystem::copy_file( path, target ) )
 			{
-				Worker::RepresentationLoader * const loader = new Worker::RepresentationLoader( target );
+				Internal::Worker::RepresentationLoader * const loader
+					= new Internal::Worker::RepresentationLoader( target );
 				VTX_WORKER( loader );
 			}
 		}
@@ -180,7 +181,8 @@ namespace VTX::App::Action::Main
 			Util::Filesystem::generateUniqueFileName( target );
 			if ( std::filesystem::copy_file( path, target ) )
 			{
-				Worker::RenderEffectPresetLoader * const loader = new Worker::RenderEffectPresetLoader( target );
+				Internal::Worker::RenderEffectPresetLoader * const loader
+					= new Internal::Worker::RenderEffectPresetLoader( target );
 				VTX_WORKER( loader );
 			}
 		}

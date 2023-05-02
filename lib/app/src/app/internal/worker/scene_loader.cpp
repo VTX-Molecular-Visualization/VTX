@@ -15,7 +15,7 @@
 #include "app/old_app/vtx_app.hpp"
 #include <util/logger.hpp>
 
-namespace VTX::Worker
+namespace VTX::App::Internal::Worker
 {
 	void SceneLoader::_run()
 	{
@@ -46,4 +46,4 @@ namespace VTX::Worker
 			VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 	}
-} // namespace VTX::Worker
+} // namespace VTX::App::Internal::Worker

@@ -1,5 +1,6 @@
 #include "app/application/representation/representation_library.hpp"
 #include "app/action/representation.hpp"
+#include "app/application/setting.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/core/view/callback_view.hpp"
 #include "app/event.hpp"
@@ -8,7 +9,6 @@
 #include "app/manager/action_manager.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"
-#include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker.hpp"
 #include <string>
@@ -19,7 +19,8 @@ namespace VTX::App::Application::Representation
 
 	RepresentationLibrary::RepresentationLibrary() : BaseModel( VTX::ID::Model::MODEL_REPRESENTATION_LIBRARY )
 	{
-		Worker::RepresentationLibraryLoader * libraryLoader = new Worker::RepresentationLibraryLoader( *this );
+		Internal::Worker::RepresentationLibraryLoader * libraryLoader
+			= new Internal::Worker::RepresentationLibraryLoader( *this );
 		libraryLoader->activeNotify( false );
 		libraryLoader->activeRepresentationRestoration( false );
 		VTX_WORKER( libraryLoader );

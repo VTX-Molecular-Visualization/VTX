@@ -1,12 +1,12 @@
-#ifndef __VTX_WORKER_REPRESENTATION_SAVER__
-#define __VTX_WORKER_REPRESENTATION_SAVER__
+#ifndef __VTX_APP_INTERNAL_WORKER_REPRESENTATION_SAVER__
+#define __VTX_APP_INTERNAL_WORKER_REPRESENTATION_SAVER__
 
 #include "app/application/representation/_fwd.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include "app/core/worker/base_worker.hpp"
 #include <util/types.hpp>
 
-namespace VTX::Worker
+namespace VTX::App::Internal::Worker
 {
 	/*
 	class RepresentationSaverThread : public App::Core::Worker::BaseThread
@@ -30,8 +30,9 @@ namespace VTX::Worker
 	class RepresentationSaver : public App::Core::Worker::BaseWorker
 	{
 	  public:
-		explicit RepresentationSaver( const App::Application::Representation::RepresentationPreset * const p_representation,
-									  const FilePath &												 p_path ) :
+		explicit RepresentationSaver(
+			const App::Application::Representation::RepresentationPreset * const p_representation,
+			const FilePath &													 p_path ) :
 			_representation( p_representation ),
 			_path( p_path )
 		{
@@ -42,7 +43,7 @@ namespace VTX::Worker
 
 	  private:
 		const App::Application::Representation::RepresentationPreset * const _representation;
-		const FilePath												   _path;
+		const FilePath														 _path;
 	};
-} // namespace VTX::Worker
+} // namespace VTX::App::Internal::Worker
 #endif

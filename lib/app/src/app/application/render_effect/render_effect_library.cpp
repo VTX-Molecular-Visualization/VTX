@@ -19,7 +19,8 @@ namespace VTX::App::Application::RenderEffect
 	RenderEffectLibrary::RenderEffectLibrary() :
 		BaseModel( VTX::ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET_LIBRARY )
 	{
-		Worker::RenderEffectPresetLibraryLoader * libraryLoader = new Worker::RenderEffectPresetLibraryLoader( *this );
+		Internal::Worker::RenderEffectPresetLibraryLoader * libraryLoader
+			= new Internal::Worker::RenderEffectPresetLibraryLoader( *this );
 		libraryLoader->activeNotify( false );
 		VTX_WORKER( libraryLoader );
 

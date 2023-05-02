@@ -1,11 +1,11 @@
 #include "ui/old_ui/state/export.hpp"
 #include <app/action/main.hpp>
+#include <app/application/scene.hpp>
 #include <app/component/object3d/viewpoint.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/component/video/path.hpp>
 #include <app/internal/worker/program_launcher.hpp>
 #include <app/old_app/vtx_app.hpp>
-#include <app/application/scene.hpp>
 #include <util/chrono.hpp>
 
 namespace VTX
@@ -79,7 +79,8 @@ namespace VTX
 			std::string fileName   = "frame" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
 
 			// VTX_ACTION( new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-			//										App::Internal::IO::Filesystem::getVideosPath( fileName + ".png" ) ) );
+			//										App::Internal::IO::Filesystem::getVideosPath( fileName + ".png" ) )
+			//);
 
 			VTX_INFO( std::to_string( (uint)( _frame * 100 / _frameCount ) ) + "%" );
 
@@ -120,7 +121,7 @@ namespace VTX
 								  + " -vcodec libx264 -crf " + std::to_string(
 		VTX::App::Application::Setting::VIDEO_CRF_DEFAULT ) + " "
 								  + App::Internal::IO::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
-			Worker::ProgramLauncher * worker = new Worker::ProgramLauncher( command );
+			Internal::Worker::ProgramLauncher * worker = new Internal::Worker::ProgramLauncher( command );
 			VTX_THREAD( worker );
 
 			// Clean frames

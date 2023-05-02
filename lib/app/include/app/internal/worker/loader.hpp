@@ -1,5 +1,5 @@
-#ifndef __VTX_LOADER__
-#define __VTX_LOADER__
+#ifndef __VTX_APP_INTERNAL_WORKER_LOADER__
+#define __VTX_APP_INTERNAL_WORKER_LOADER__
 
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/component/io/_fwd.hpp"
@@ -11,7 +11,7 @@
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Worker
+namespace VTX::App::Internal::Worker
 {
 	class Loader : public App::Core::Worker::BaseThread
 	{
@@ -81,5 +81,6 @@ namespace VTX::Worker
 		void _endLoadingFileSuccess( const FilePath & p_path );
 		void _endLoadingFileFail( const FilePath & p_path, const std::string & p_message );
 	};
-} // namespace VTX::Worker
+} // namespace VTX::App::Internal::Worker
+
 #endif

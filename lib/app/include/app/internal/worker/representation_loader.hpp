@@ -1,5 +1,5 @@
-#ifndef __VTX_WORKER_REPRESENTATION_LOADER__
-#define __VTX_WORKER_REPRESENTATION_LOADER__
+#ifndef __VTX_APP_INTERNAL_WORKER_REPRESENTATION_LOADER__
+#define __VTX_APP_INTERNAL_WORKER_REPRESENTATION_LOADER__
 
 #include "app/application/representation/_fwd.hpp"
 #include "app/core/worker/base_worker.hpp"
@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 
-namespace VTX::Worker
+namespace VTX::App::Internal::Worker
 {
 	class RepresentationLibraryLoader : public App::Core::Worker::BaseWorker
 	{
@@ -50,5 +50,5 @@ namespace VTX::Worker
 		std::vector<FilePath> _paths = std::vector<FilePath>();
 	};
 
-} // namespace VTX::Worker
+} // namespace VTX::App::Internal::Worker
 #endif

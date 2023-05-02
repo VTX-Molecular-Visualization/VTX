@@ -1,11 +1,11 @@
-#ifndef __VTX_PROGRAM_LAUNCHER__
-#define __VTX_PROGRAM_LAUNCHER__
+#ifndef __VTX_APP_INTERNAL_WORKER_PROGRAM_LAUNCHER__
+#define __VTX_APP_INTERNAL_WORKER_PROGRAM_LAUNCHER__
 
 #include "app/core/worker/base_thread.hpp"
 #include <string>
 #include <util/types.hpp>
 
-namespace VTX::Worker
+namespace VTX::App::Internal::Worker
 {
 	class ProgramLauncher : public App::Core::Worker::BaseThread
 	{
@@ -20,5 +20,5 @@ namespace VTX::Worker
 	  private:
 		std::string _command;
 	};
-} // namespace VTX::Worker
+} // namespace VTX::App::Internal::Worker
 #endif

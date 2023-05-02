@@ -1,10 +1,7 @@
 #include "app/internal/worker/program_launcher.hpp"
 
-namespace VTX
+namespace VTX::App::Internal::Worker
 {
-	namespace Worker
-	{
-		uint ProgramLauncher::_run() { return system( _command.c_str() ); }
+	uint ProgramLauncher::_run() { return system( _command.c_str() ); }
 
-	} // namespace Worker
-} // namespace VTX
+} // namespace VTX::App::Internal::Worker
