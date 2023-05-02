@@ -1,6 +1,6 @@
 #include "ui/old_ui/ui/widget/custom_widget/render_preview_widget.hpp"
 #include "ui/old_ui/style.hpp"
-#include <app/internal/worker/snapshoter.hpp>
+#include <app/render/worker/snapshoter.hpp>
 #include <app/worker.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
@@ -21,9 +21,9 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		QImage preview = QImage();
 
-		App::Internal::IO::Serialization::ImageExport	  snapshotData = p_exportData;
-		const std::pair<int, int> exportSize   = snapshotData.getSize();
-		const float				  exportRatio  = exportSize.first / float( exportSize.second );
+		App::Internal::IO::Serialization::ImageExport snapshotData = p_exportData;
+		const std::pair<int, int>					  exportSize   = snapshotData.getSize();
+		const float									  exportRatio  = exportSize.first / float( exportSize.second );
 
 		if ( exportRatio >= 1 )
 		{
@@ -41,8 +41,8 @@ namespace VTX::UI::Widget::CustomWidget
 			snapshotData.setSize( snapshotWidth, Style::EXPORT_IMAGE_PREVIEW_SIZE.height() );
 		}
 
-		Worker::Snapshoter * const snapshoter
-			= new Worker::Snapshoter( Worker::Snapshoter::MODE::GL, (void *)( &preview ), snapshotData );
+		App::Render::Worker::Snapshoter * const snapshoter = new App::Render::Worker::Snapshoter(
+			App::Render::Worker::Snapshoter::MODE::GL, (void *)( &preview ), snapshotData );
 		VTX_WORKER( snapshoter );
 
 		const QSize	 imgSize = Style::EXPORT_IMAGE_PREVIEW_SIZE;

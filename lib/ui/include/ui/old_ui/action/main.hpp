@@ -1,15 +1,14 @@
 #ifndef __VTX_UI_ACTION_MAIN__
 #define __VTX_UI_ACTION_MAIN__
 
+#include <app/component/chemistry/molecule.hpp>
+#include <app/component/chemistry/secondary_structure.hpp>
+#include <app/component/chemistry/solvent_excluded_surface.hpp>
+#include <app/component/video/path.hpp>
 #include <app/core/action/base_action.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/internal/worker/snapshoter.hpp>
-#include <app/component/chemistry/molecule.hpp>
-#include <app/component/video/path.hpp>
-#include <app/component/chemistry/secondary_structure.hpp>
-#include <app/component/chemistry/solvent_excluded_surface.hpp>
 #include <app/internal/io/serialization/image_export.hpp>
 #include <string>
 #include <util/types.hpp>

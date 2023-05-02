@@ -14,8 +14,8 @@
 #include <QWidget>
 #include <app/core/model/base_model.hpp>
 #include <app/core/view/base_view.hpp>
-#include <app/internal/worker/snapshoter.hpp>
 #include <app/mvc.hpp>
+#include <app/render/worker/snapshoter.hpp>
 #include <map>
 
 namespace VTX::UI::QT::Tool::Render::Widget
@@ -24,7 +24,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	{
 		NEW_ARCHI_VTX_WIDGET
 
-		friend VTX::Worker::Snapshoter;
+		friend App::Render::Worker::Snapshoter;
 
 	  public:
 		~RenderWidget();

@@ -1,8 +1,8 @@
-#include "app/internal/worker/snapshoter.hpp"
+#include "app/render/worker/snapshoter.hpp"
 #include "app/action/setting.hpp"
-#include "app/manager/action_manager.hpp"
 #include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/internal/io/filesystem.hpp"
+#include "app/manager/action_manager.hpp"
 #include "app/render/renderer/gl/framebuffer.hpp"
 #include "app/render/renderer/gl/gl.hpp"
 // #include <QOffscreenSurface>
@@ -15,17 +15,19 @@
 // #define VTX_DEBUG_WATERMARK
 
 // TODO reimplemente that without Qt
-namespace VTX::Worker
+namespace VTX::App::Render::Worker
 {
-	Snapshoter::Snapshoter( const MODE &					p_mode,
-							const FilePath &				p_path,
+	Snapshoter::Snapshoter( const MODE &										  p_mode,
+							const FilePath &									  p_path,
 							const App::Internal::IO::Serialization::ImageExport & p_exportData ) :
 		_mode( p_mode ),
 		_path( p_path ), _exportData( p_exportData )
 	{
 	}
 
-	Snapshoter::Snapshoter( const MODE & p_mode, void * p_imageTarget, const App::Internal::IO::Serialization::ImageExport & p_exportData ) :
+	Snapshoter::Snapshoter( const MODE &										  p_mode,
+							void *												  p_imageTarget,
+							const App::Internal::IO::Serialization::ImageExport & p_exportData ) :
 		Snapshoter( p_mode, FilePath(), p_exportData )
 	{
 	}
@@ -190,4 +192,4 @@ namespace VTX::Worker
 		// imagePainter.drawImage( rect, watermarkImg );
 	}
 
-} // namespace VTX::Worker
+} // namespace VTX::App::Render::Worker

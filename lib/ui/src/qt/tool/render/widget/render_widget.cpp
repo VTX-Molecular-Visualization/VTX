@@ -239,7 +239,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	void RenderWidget::_onShortcutSnapshot()
 	{
 		VTX_ACTION( new VTX::App::Action::Main::Snapshot(
-			Worker::Snapshoter::MODE::GL,
+			App::Render::Worker::Snapshoter::MODE::GL,
 			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
 	}

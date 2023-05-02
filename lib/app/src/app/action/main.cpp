@@ -1,16 +1,16 @@
 #include "app/action/main.hpp"
+#include "app/application/scene.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include "app/internal/network/request/download_mmtf.hpp"
+#include "app/internal/scene/camera_manager.hpp"
 #include "app/internal/worker/loader.hpp"
 #include "app/internal/worker/render_effect_loader.hpp"
 #include "app/internal/worker/representation_loader.hpp"
 #include "app/internal/worker/saver.hpp"
 #include "app/internal/worker/scene_loader.hpp"
 #include "app/network.hpp"
-#include "app/internal/io/filesystem.hpp"
-#include "app/internal/scene/camera_manager.hpp"
-#include "app/application/scene.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker.hpp"
 
@@ -79,7 +79,8 @@ namespace VTX::App::Action::Main
 			}
 			else
 			{
-				for ( const App::Application::Scene::PairMoleculePtrFloat & molPair : VTXApp::get().getScene().getMolecules() )
+				for ( const App::Application::Scene::PairMoleculePtrFloat & molPair :
+					  VTXApp::get().getScene().getMolecules() )
 				{
 					loader->addDynamicTarget( molPair.first );
 				}
@@ -189,7 +190,7 @@ namespace VTX::App::Action::Main
 
 	void Snapshot::execute()
 	{
-		Worker::Snapshoter * worker = new Worker::Snapshoter( _mode, _path, _exportData );
+		Render::Worker::Snapshoter * worker = new Render::Worker::Snapshoter( _mode, _path, _exportData );
 		VTX_WORKER( worker );
 	}
 

@@ -1,5 +1,5 @@
-#ifndef __VTX_WORKER_GPU_COMPUTER__
-#define __VTX_WORKER_GPU_COMPUTER__
+#ifndef __VTX_APP_RENDER_WORKER_GPU_COMPUTER__
+#define __VTX_APP_RENDER_WORKER_GPU_COMPUTER__
 
 #include "app/core/worker/base_worker.hpp"
 #include "app/old_app/generic/base_opengl.hpp"
@@ -12,7 +12,7 @@
 #define LOCAL_SIZE_Y 1
 #define LOCAL_SIZE_Z 1
 
-namespace VTX::Worker
+namespace VTX::App::Render::Worker
 {
 	class GpuComputer : public App::Core::Worker::BaseWorker, public Generic::BaseOpenGL
 	{
@@ -63,6 +63,6 @@ namespace VTX::Worker
 		virtual void _setUniforms() {}
 		const Vec3i	 _computeSize( const size_t ) const;
 	};
-} // namespace VTX::Worker
+} // namespace VTX::App::Render::Worker
 
 #endif

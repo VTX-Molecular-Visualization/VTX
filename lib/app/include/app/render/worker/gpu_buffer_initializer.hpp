@@ -1,10 +1,10 @@
-#ifndef __VTX_WORKER_GPU_BUFFER_INITIALIZER__
-#define __VTX_WORKER_GPU_BUFFER_INITIALIZER__
+#ifndef __VTX_APP_RENDER_WORKER_GPU_BUFFER_INITIALIZER__
+#define __VTX_APP_RENDER_WORKER_GPU_BUFFER_INITIALIZER__
 
 #include "app/render/renderer/gl/buffer.hpp"
 #include "gpu_computer.hpp"
 
-namespace VTX::Worker
+namespace VTX::App::Render::Worker
 {
 	class GpuBufferInitializer : public GpuComputer
 	{
@@ -37,6 +37,6 @@ namespace VTX::Worker
 
 		void _setUniforms() override { _program->setUInt( "uSize", uint( _bufferSize ) ); }
 	};
-} // namespace VTX::Worker
+} // namespace VTX::App::Render::Worker
 
 #endif

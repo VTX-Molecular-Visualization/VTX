@@ -4,7 +4,6 @@
 #include "app/component/object3d/viewpoint.hpp"
 #include "app/mvc.hpp"
 // #include "state/export.hpp"
-#include "app/internal/worker/snapshoter.hpp"
 #include "app/old_app/vtx_app.hpp"
 
 namespace VTX::App::Action::Path

@@ -1,14 +1,14 @@
-#ifndef __VTX_WORKER_SNAPSHOTER__
-#define __VTX_WORKER_SNAPSHOTER__
+#ifndef __VTX_APP_RENDER_WORKER_SNAPSHOTER__
+#define __VTX_APP_RENDER_WORKER_SNAPSHOTER__
 
 // TODO reimplemente that without Qt
 
 #include "app/core/worker/base_worker.hpp"
-#include "app/old_app/generic/base_opengl.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
+#include "app/old_app/generic/base_opengl.hpp"
 // #include <QImage>
 
-namespace VTX::Worker
+namespace VTX::App::Render::Worker
 {
 	class Snapshoter : public App::Core::Worker::BaseWorker, public Generic::BaseOpenGL
 	{
@@ -18,12 +18,14 @@ namespace VTX::Worker
 			GL
 		};
 
-		explicit Snapshoter( const MODE &					 p_mode,
-							 const FilePath &				 p_path,
+		explicit Snapshoter( const MODE &										   p_mode,
+							 const FilePath &									   p_path,
 							 const App::Internal::IO::Serialization::ImageExport & p_exportData );
 
 		// Temp constructor to bypass call with QImage.
-		explicit Snapshoter( const MODE & p_mode, void * p_imageTarget, const App::Internal::IO::Serialization::ImageExport & p_exportData );
+		explicit Snapshoter( const MODE &										   p_mode,
+							 void *												   p_imageTarget,
+							 const App::Internal::IO::Serialization::ImageExport & p_exportData );
 
 		// explicit Snapshoter( const MODE &					 p_mode,
 		//					 QImage *						 p_imageTarget,
@@ -44,5 +46,5 @@ namespace VTX::Worker
 
 		const App::Internal::IO::Serialization::ImageExport _exportData;
 	};
-} // namespace VTX::Worker
+} // namespace VTX::App::Render::Worker
 #endif

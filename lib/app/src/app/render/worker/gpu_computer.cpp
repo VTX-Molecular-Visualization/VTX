@@ -1,7 +1,7 @@
-#include "app/internal/worker/gpu_computer.hpp"
+#include "app/render/worker/gpu_computer.hpp"
 #include "app/old_app/vtx_app.hpp"
 
-namespace VTX::Worker
+namespace VTX::App::Render::Worker
 {
 	void GpuComputer::_run()
 	{
@@ -49,4 +49,4 @@ namespace VTX::Worker
 
 		return { xDimension, yDimension, zDimension };
 	}
-} // namespace VTX::Worker
+} // namespace VTX::App::Render::Worker

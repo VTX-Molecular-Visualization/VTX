@@ -13,8 +13,8 @@
 #include <QWidget>
 #include <app/core/model/base_model.hpp>
 #include <app/core/view/base_view.hpp>
-#include <app/internal/worker/snapshoter.hpp>
 #include <app/mvc.hpp>
+#include <app/render/worker/snapshoter.hpp>
 #include <map>
 
 namespace VTX::UI::Widget::Render
@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::Render
 	{
 		VTX_WIDGET
 
-		friend Worker::Snapshoter;
+		friend App::Render::Worker::Snapshoter;
 
 	  public:
 		~RenderWidget();
