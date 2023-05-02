@@ -4,7 +4,7 @@
 #include "app/application/representation/enum_representation.hpp"
 #include "app/application/representation/representation_data.hpp"
 #include "app/core/model/base_model.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include "app/old_app/generic/base_colorable.hpp"
 #include <string>
 #include <util/math.hpp>

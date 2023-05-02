@@ -7,7 +7,7 @@
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/internal/chemdb/category.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
 #include <util/logger.hpp>

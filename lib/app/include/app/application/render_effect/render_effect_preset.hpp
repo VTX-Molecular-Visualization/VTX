@@ -2,7 +2,7 @@
 #define __VTX_APP_APPLICATION_RENDER_EFFECT_RENDER_EFFECT_PRESET__
 
 #include "app/core/model/base_model.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include "app/old_app/id.hpp"
 #include "app/old_app/renderer/base_renderer.hpp"
 #include <string>

@@ -4,7 +4,7 @@
 #include "app/core/event/vtx_event.hpp"
 #include "app/event.hpp"
 #include "app/internal/chemdb/residue.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include "app/old_app/id.hpp"
 #include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"

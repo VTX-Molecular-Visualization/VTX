@@ -1,7 +1,7 @@
 #ifndef __VTX_BASE_COLORABLE__
 #define __VTX_BASE_COLORABLE__
 
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include <util/types.hpp>
 #include <string>
 #include <vector>

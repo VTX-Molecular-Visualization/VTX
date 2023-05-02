@@ -12,7 +12,7 @@
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/mvc.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include "app/old_app/id.hpp"
 #include "app/old_app/util/molecule.hpp"
 #include "app/old_app/util/secondary_structure.hpp"

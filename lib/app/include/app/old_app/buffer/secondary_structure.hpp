@@ -2,7 +2,7 @@
 #define __VTX_BUFFER_SECONDARY_STRUCTURE__
 
 #include "base_buffer_opengl.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include <util/types.hpp>
 #include "app/core/model/base_model.hpp"
 #include "app/old_app/renderer/gl/vertex_array.hpp"

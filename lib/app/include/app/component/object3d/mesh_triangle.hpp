@@ -4,7 +4,7 @@
 #include "app/core/model/base_model_3d.hpp"
 #include "app/core/scene/base_scene_item.hpp"
 #include "app/old_app/buffer/mesh_triangle.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include <util/types.hpp>
 #include <vector>
 

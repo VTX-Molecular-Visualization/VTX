@@ -5,7 +5,7 @@
 #include "app/action/visible.hpp"
 #include "app/application/representation/instantiated_representation.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include <unordered_set>
 
 namespace VTX::App::Action::Residue

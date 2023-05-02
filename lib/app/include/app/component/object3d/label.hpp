@@ -4,7 +4,7 @@
 #include "app/component/object3d/helper/aabb.hpp"
 #include "app/core/model/base_model.hpp"
 #include "app/core/scene/base_scene_item.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include "app/old_app/id.hpp"
 #include <util/types.hpp>
 

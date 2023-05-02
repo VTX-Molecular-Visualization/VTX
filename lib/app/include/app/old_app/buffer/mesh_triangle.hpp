@@ -2,7 +2,7 @@
 #define __VTX_BUFFER_MESH_TRIANGLE__
 
 #include "base_buffer_opengl.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include "app/core/model/base_model.hpp"
 #include "app/old_app/renderer/gl/vertex_array.hpp"
 #include <util/types.hpp>

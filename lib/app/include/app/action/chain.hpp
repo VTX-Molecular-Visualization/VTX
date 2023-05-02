@@ -6,7 +6,7 @@
 #include "app/core/action/base_action.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/application/representation/instantiated_representation.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include <unordered_set>
 
 namespace VTX::App::Action::Chain

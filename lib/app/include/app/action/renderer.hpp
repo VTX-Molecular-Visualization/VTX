@@ -5,7 +5,7 @@
 #include "app/application/render_effect/render_effect_library.hpp"
 #include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/core/action/base_action.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include <unordered_set>
 
 namespace VTX::App::Action::Renderer

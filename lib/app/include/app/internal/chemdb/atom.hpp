@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_INTERNAL_CHEMDB_ATOM__
 #define __VTX_APP_INTERNAL_CHEMDB_ATOM__
 
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include <string>
 
 namespace VTX::App::Internal::ChemDB::Atom

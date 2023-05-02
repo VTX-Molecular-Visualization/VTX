@@ -7,7 +7,7 @@
 #include "app/component/video/enum_path.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/id.hpp"
 #include "app/old_app/style.hpp"

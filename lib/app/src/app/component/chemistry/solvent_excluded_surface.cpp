@@ -11,7 +11,6 @@
 #include "app/internal/chemdb/atom.hpp"
 #include "app/internal/worker/gpu_buffer_initializer.hpp"
 #include "app/internal/worker/gpu_computer.hpp"
-#include "app/old_app/custom/iterator.hpp"
 #include "app/old_app/view/d3/triangle.hpp"
 #include "app/worker.hpp"
 #include <numeric>

@@ -1,5 +1,5 @@
 #include "app/internal/io/reader/lib_mmtf.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include <magic_enum.hpp>
 #include <util/types.hpp>
 

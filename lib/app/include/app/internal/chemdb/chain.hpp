@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_INTERNAL_CHEMDB_CHAIN__
 #define __VTX_APP_INTERNAL_CHEMDB_CHAIN__
 
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 
 namespace VTX::App::Internal::ChemDB::Chain
 {

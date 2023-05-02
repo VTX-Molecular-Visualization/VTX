@@ -16,7 +16,7 @@
 #include "app/internal/chemdb/unknown_residue_data.hpp"
 #include "app/application/selection/selection.hpp"
 #include "app/old_app/buffer/molecule.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include "app/internal/io/reader/prm.hpp"
 #include "app/internal/io/reader/psf.hpp"
 #include "app/internal/math/range.hpp"

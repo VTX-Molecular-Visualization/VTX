@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include <util/types.hpp>
 
 namespace VTX

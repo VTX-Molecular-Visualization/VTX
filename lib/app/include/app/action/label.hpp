@@ -4,7 +4,7 @@
 #include "app/action.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/component/object3d/label.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include <string>
 #include <unordered_set>
 #include <vector>

@@ -10,7 +10,7 @@
 #include "app/core/event/base_event_receiver_vtx.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/core/model/base_model.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include "app/old_app/generic/base_objectoverride.hpp"
 #include "app/old_app/id.hpp"
 #include <string>

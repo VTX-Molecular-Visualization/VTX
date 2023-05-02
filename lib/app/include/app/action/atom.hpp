@@ -5,7 +5,7 @@
 #include "app/action/visible.hpp"
 #include "app/component/chemistry/atom.hpp"
 #include "app/core/action/base_action.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 
 namespace VTX::App::Action::Atom
 {
