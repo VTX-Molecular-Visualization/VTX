@@ -14,7 +14,7 @@ namespace VTX
 		class ProgramManager
 		{
 		  public:
-			ProgramManager() = default;
+			ProgramManager( const FilePath & p_rootPath = std::filesystem::current_path() );
 			~ProgramManager();
 
 			static ENUM_SHADER_TYPE getShaderType( const FilePath & );
@@ -30,12 +30,12 @@ namespace VTX
 			void			dispose();
 
 		  private:
-			using MapStringToEnum	 = std::map<std::string, ENUM_SHADER_TYPE>;
-			using MapStringToProgram = std::map<std::string, Program *>;
+			using MapStringToProgram = std::map<std::string, std::unique_ptr<Program>>;
 			using MapStringToGLuint	 = std::map<std::string, GLuint>;
 
-			static const MapStringToEnum _EXTENSIONS;
+			static const std::map<std::string, ENUM_SHADER_TYPE> _EXTENSIONS;
 
+			const FilePath	   _rootPath;
 			MapStringToProgram _programs = MapStringToProgram();
 			MapStringToGLuint  _shaders	 = MapStringToGLuint();
 

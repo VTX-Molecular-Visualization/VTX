@@ -19,10 +19,11 @@ namespace VTX::Renderer::GL
 		}
 		inline void destroy()
 		{
-			assert( _id != GL_INVALID_INDEX );
-
-			glDeleteVertexArrays( 1, &_id );
-			_id = GL_INVALID_INDEX;
+			if ( _id != GL_INVALID_INDEX )
+			{
+				glDeleteVertexArrays( 1, &_id );
+				_id = GL_INVALID_INDEX;
+			}
 		}
 
 		inline GLuint getId() const { return _id; }

@@ -1,17 +1,19 @@
 #include "renderer/gl/program_manager.hpp"
+#include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <vector>
 
 namespace VTX::Renderer::GL
 {
-	const ProgramManager::MapStringToEnum ProgramManager::_EXTENSIONS
-		= MapStringToEnum( { { "vert", ENUM_SHADER_TYPE::VERTEX },
-							 { "geom", ENUM_SHADER_TYPE::GEOMETRY },
-							 { "frag", ENUM_SHADER_TYPE::FRAGMENT },
-							 { "comp", ENUM_SHADER_TYPE::COMPUTE },
-							 { "tesc", ENUM_SHADER_TYPE::TESS_CONTROL },
-							 { "tese", ENUM_SHADER_TYPE::TESS_EVALUATION } } );
+	const std::map<std::string, ENUM_SHADER_TYPE> ProgramManager::_EXTENSIONS
+		= { { ".vert", ENUM_SHADER_TYPE::VERTEX },		 { ".geom", ENUM_SHADER_TYPE::GEOMETRY },
+			{ ".frag", ENUM_SHADER_TYPE::FRAGMENT },	 { ".comp", ENUM_SHADER_TYPE::COMPUTE },
+			{ ".tesc", ENUM_SHADER_TYPE::TESS_CONTROL }, { ".tese", ENUM_SHADER_TYPE::TESS_EVALUATION } };
+
+	ProgramManager::ProgramManager( const FilePath & p_root ) : _rootPath( p_root ) {}
+
+	ProgramManager::~ProgramManager() { dispose(); }
 
 	ENUM_SHADER_TYPE ProgramManager::getShaderType( const FilePath & p_name )
 	{
@@ -21,22 +23,14 @@ namespace VTX::Renderer::GL
 			return ProgramManager::_EXTENSIONS.at( extension );
 		}
 
-		VTX_WARNING( "Invalid extension: " + extension );
-		return ENUM_SHADER_TYPE::INVALID;
+		throw GLException( "Invalid extension: " + extension );
 	}
-
-	ProgramManager::~ProgramManager() { dispose(); }
 
 	void ProgramManager::dispose()
 	{
 		for ( const auto & pair : _shaders )
 		{
 			glDeleteShader( pair.second );
-		}
-
-		for ( const auto & pair : _programs )
-		{
-			delete pair.second;
 		}
 
 		_shaders.clear();
@@ -51,7 +45,7 @@ namespace VTX::Renderer::GL
 		const std::string name = p_name + p_suffix;
 		if ( _programs.find( name ) == _programs.end() )
 		{
-			_programs[ name ] = new Program( p_shaders, p_toInject );
+			_programs[ name ] = std::make_unique<Program>( p_shaders, p_toInject );
 			Program & program = *_programs[ name ];
 			program.create( name );
 
@@ -69,7 +63,7 @@ namespace VTX::Renderer::GL
 			VTX_DEBUG( "Program " + std::to_string( _programs[ name ]->getId() ) + " created: " + p_name );
 		}
 
-		return _programs[ name ];
+		return _programs[ name ].get();
 	}
 
 	void ProgramManager::deleteProgram( const std::string & p_name )
@@ -87,7 +81,7 @@ namespace VTX::Renderer::GL
 	{
 		if ( _programs.find( p_name ) != _programs.end() )
 		{
-			return _programs.at( p_name );
+			return _programs.at( p_name ).get();
 		}
 
 		VTX_ERROR( "Program " + p_name + " does not exists" );
@@ -102,18 +96,13 @@ namespace VTX::Renderer::GL
 		VTX_DEBUG( "Creating shader: " + name );
 
 		const ENUM_SHADER_TYPE type = getShaderType( p_path );
-		if ( type == ENUM_SHADER_TYPE::INVALID )
-		{
-			VTX_ERROR( "Invalid shader extension: " + name );
-			return GL_INVALID_INDEX;
-		}
 
 		GLuint shaderId = getShader( name );
 		if ( shaderId == GL_INVALID_INDEX )
 		{
 			shaderId		 = glCreateShader( (int)type );
-			FilePath	path = ""; // Util::Filesystem::getShadersPath(p_path);
-			std::string src	 = ""; // Util::Filesystem::readPath(path);
+			FilePath	path = _rootPath / p_path;
+			std::string src	 = Util::Filesystem::readPath( path );
 			if ( src.empty() )
 			{
 				glDeleteShader( shaderId );
@@ -143,7 +132,7 @@ namespace VTX::Renderer::GL
 				size_t		startPosPath		= includeRelativePath.find( '"' );
 				size_t		endPosPath			= includeRelativePath.find( '"', startPosPath + 1 );
 				includeRelativePath = includeRelativePath.substr( startPosPath + 1, endPosPath - startPosPath - 1 );
-				FilePath includeAbsolutePath = ""; // path.dirpath();
+				FilePath includeAbsolutePath = path.parent_path();
 				includeAbsolutePath /= includeRelativePath;
 				const std::string srcInclude = Util::Filesystem::readPath( includeAbsolutePath );
 				src.replace( startPosInclude, endPosInclude - startPosInclude, srcInclude );
@@ -161,8 +150,7 @@ namespace VTX::Renderer::GL
 				error += "\n";
 				error += _getShaderErrors( shaderId );
 				glDeleteShader( shaderId );
-				VTX_ERROR( error );
-				return GL_INVALID_INDEX;
+				throw GLException( error );
 			}
 			_shaders.emplace( name, shaderId );
 			VTX_DEBUG( "Shader created: " + name );
@@ -198,8 +186,7 @@ namespace VTX::Renderer::GL
 	{
 		for ( const auto & pair : _programs )
 		{
-			Program * const program = pair.second;
-			program->detachShaders();
+			pair.second->detachShaders();
 		}
 
 		// Delete shaders.
@@ -213,20 +200,16 @@ namespace VTX::Renderer::GL
 		// Then recreate them.
 		for ( const auto & pair : _programs )
 		{
-			Program * const program = pair.second;
-			// Don't need to delete program.
-			// glDeleteProgram( program->getId() );
-			// program->setId( glCreateProgram() );
-			for ( const FilePath & shader : program->getShaderPaths() )
+			for ( const FilePath & shader : pair.second->getShaderPaths() )
 			{
-				GLuint id = _createShader( shader, program->getToInject() );
+				GLuint id = _createShader( shader, pair.second->getToInject() );
 				if ( id != GL_INVALID_INDEX )
 				{
-					program->attachShader( id );
+					pair.second->attachShader( id );
 				}
 			}
 
-			program->link();
+			pair.second->link();
 		}
 	}
 } // namespace VTX::Renderer::GL

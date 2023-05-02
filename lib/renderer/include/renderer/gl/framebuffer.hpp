@@ -26,11 +26,13 @@ namespace VTX::Renderer::GL
 
 		inline void destroy()
 		{
-			assert( _id != GL_INVALID_INDEX );
 			assert( _target == 0 );
 
-			glDeleteFramebuffers( 1, &_id );
-			_id = GL_INVALID_INDEX;
+			if ( _id != GL_INVALID_INDEX )
+			{
+				glDeleteFramebuffers( 1, &_id );
+				_id = GL_INVALID_INDEX;
+			}
 		}
 
 		inline GLuint getId() const { return _id; }

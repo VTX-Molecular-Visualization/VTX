@@ -19,14 +19,14 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.create();
 		out.fbo.attachTexture( out.textureViewPositionsNormals, GL_COLOR_ATTACHMENT0 );
 		out.fbo.attachTexture( out.textureColors, GL_COLOR_ATTACHMENT1 );
-		out.fbo.attachTexture( out.textureDepth, GL_DEPTH );
+		out.fbo.attachTexture( out.textureDepth, GL_DEPTH_ATTACHMENT );
 		out.fbo.attachTexture( out.texturePicking, GL_COLOR_ATTACHMENT2 );
 
 		out.fbo.setDrawBuffers( { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 } );
 
-		_programSphere = p_pm.createProgram(
-			"Sphere",
-			{ FilePath( "sphere/sphere.vert" ), FilePath( "sphere/sphere.geom" ), FilePath( "sphere/sphere.frag" ) } );
+		const FilePath pathSphere = FilePath( "sphere" );
+		_programSphere			  = p_pm.createProgram(
+			   "Sphere", { pathSphere / "sphere.vert", pathSphere / "sphere.geom", pathSphere / "sphere.frag" } );
 		_programCylinder = p_pm.createProgram( "Cylinder",
 											   { FilePath( "cylinder/cylinder.vert" ),
 												 FilePath( "cylinder/cylinder.geom" ),
@@ -60,7 +60,7 @@ namespace VTX::Renderer::GL::Pass
 
 		out.fbo.attachTexture( out.textureViewPositionsNormals, GL_COLOR_ATTACHMENT0 );
 		out.fbo.attachTexture( out.textureColors, GL_COLOR_ATTACHMENT1 );
-		out.fbo.attachTexture( out.textureDepth, GL_DEPTH );
+		out.fbo.attachTexture( out.textureDepth, GL_DEPTH_ATTACHMENT );
 		out.fbo.attachTexture( out.texturePicking, GL_COLOR_ATTACHMENT2 );
 	}
 

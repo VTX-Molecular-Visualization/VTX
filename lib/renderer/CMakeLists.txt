@@ -19,6 +19,9 @@ target_link_libraries(VTX_RENDERER PUBLIC VTX_UTIL)
 # Target compile options.
 target_compile_features(VTX_RENDERER PUBLIC cxx_std_17)
 
+# Copy shaders.
+add_custom_command(TARGET VTX_RENDERER POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory src/shaders ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
 # Tests.
 if(NOT TARGET Catch2)
 	set(GIT_URL_CATCH2 https://github.com/catchorg/Catch2.git)

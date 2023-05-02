@@ -68,8 +68,16 @@ namespace VTX::Renderer::GL
 		// Init passes.
 		for ( Pass::BasePass * const pass : _passes )
 		{
-			pass->init( _width, _height, _programManager );
+			// pass->init( _width, _height, _programManager );
 		}
+		_passGeometric.init( _width, _height, _programManager );
+		//_passLinearizeDepth.init( _width, _height, _programManager );
+		//_passSSAO.init( _width, _height, _programManager );
+		//_passBlur.init( _width, _height, _programManager );
+		//_passShading.init( _width, _height, _programManager );
+		//_passOutline.init( _width, _height, _programManager );
+		//_passSelection.init( _width, _height, _programManager );
+		//_passFXAA.init( _width, _height, _programManager );
 
 		// Init quad vao/vbo for deferred shading.
 		std::vector<Vec2f> quadVertices
