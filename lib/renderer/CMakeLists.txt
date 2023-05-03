@@ -1,5 +1,5 @@
 message("VTX_RENDERER")
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 project(VTX_RENDERER)
 
 # Get headers and sources.
@@ -16,25 +16,9 @@ if(NOT TARGET VTX_UTIL)
 endif()
 target_link_libraries(VTX_RENDERER PUBLIC VTX_UTIL)
 
-# Target compile options.
-target_compile_features(VTX_RENDERER PUBLIC cxx_std_17)
-
 # Copy shaders.
-add_custom_command(TARGET VTX_RENDERER POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/gl/shaders $<TARGET_FILE_DIR:VTX_RENDERER>/shaders)
-
-# Tests.
-if(NOT TARGET Catch2)
-	set(GIT_URL_CATCH2 https://github.com/catchorg/Catch2.git)
-	set(GIT_TAG_CATCH2 v3.3.2)
-
-	FetchContent_Declare(Catch2 GIT_REPOSITORY ${GIT_URL_CATCH2} GIT_TAG ${GIT_TAG_CATCH2})
-	FetchContent_MakeAvailable(Catch2)
-
-	# Catch2 configuration.
-	list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-	include(CTest)
-	include(Catch)
-endif()
+add_custom_target(VTX_RENDERER_COPY_SHADERS ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/gl/shaders $<TARGET_FILE_DIR:VTX_RENDERER>/shaders)
+add_dependencies(VTX_RENDERER VTX_RENDERER_COPY_SHADERS)
 
 # Create executable.
 add_executable(VTX_RENDERER_TEST test/main.cpp)
