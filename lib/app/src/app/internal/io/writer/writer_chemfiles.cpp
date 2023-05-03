@@ -6,6 +6,7 @@
 #include "app/component/define.hpp"
 #include "app/util/secondary_structure.hpp"
 #include <string>
+#include <util/chrono.hpp>
 #include <util/constants.hpp>
 
 namespace VTX::App::Internal::IO::Writer
