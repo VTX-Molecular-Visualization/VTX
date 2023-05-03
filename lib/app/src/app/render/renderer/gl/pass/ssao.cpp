@@ -1,10 +1,10 @@
 #include "app/render/renderer/gl/pass/ssao.hpp"
 #include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/component/render/camera.hpp"
+#include "app/internal/math/sampler.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/render/renderer/gl/gl.hpp"
 #include "app/render/renderer/gl/program_manager.hpp"
-#include "app/util/sampler.hpp"
 #include <random>
 
 namespace VTX::App::Render::Renderer::GL::Pass
@@ -30,8 +30,8 @@ namespace VTX::App::Render::Renderer::GL::Pass
 		for ( uint i = 0; i < _kernelSize; i++ )
 		{
 			// sample on unit hemisphere
-			Vec3f v
-				= Util::App::Sampler::cosineWeightedHemisphere( Util::Math::randomFloat(), Util::Math::randomFloat() );
+			Vec3f v = App::Internal::Math::Sampler::cosineWeightedHemisphere( Util::Math::randomFloat(),
+																			  Util::Math::randomFloat() );
 
 			// scale sample within the hemisphere
 			v *= Util::Math::randomFloat();

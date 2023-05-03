@@ -1,10 +1,10 @@
-#ifndef __VTX_APP_UTIL_SAMPLER__
-#define __VTX_APP_UTIL_SAMPLER__
+#ifndef __VTX_APP_INTERNAL_MATH_SAMPLER__
+#define __VTX_APP_INTERNAL_MATH_SAMPLER__
 
 #include <util/math.hpp>
 #include <util/types.hpp>
 
-namespace VTX::Util::App::Sampler
+namespace VTX::App::Internal::Math::Sampler
 {
 	// Uniform hemisphere sampling: z is up
 	inline Vec3f uniformHemisphere( const float p_u, const float p_v )
@@ -28,6 +28,6 @@ namespace VTX::Util::App::Sampler
 
 	inline float cosineWeightedHemispherePdf( const float p_cosTheta ) { return p_cosTheta * INV_PIf; }
 
-} // namespace VTX::Util::App::Sampler
+} // namespace VTX::App::Internal::Math::Sampler
 
 #endif
