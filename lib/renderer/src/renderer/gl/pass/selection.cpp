@@ -9,7 +9,7 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.create();
 		// updateOutputFBO( p_renderer );
 
-		_program = p_pm.createProgram( "Shading", std::vector<FilePath> { "shading/shading.frag" } );
+		_program = p_pm.createProgram( "Shading", std::vector<FilePath> { "shading.frag" } );
 		assert( _program != nullptr );
 
 		//_program->use();

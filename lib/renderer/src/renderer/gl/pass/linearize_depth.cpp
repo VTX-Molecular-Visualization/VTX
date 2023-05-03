@@ -9,7 +9,7 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		_program = p_pm.createProgram( "LinearizeDepth", std::vector<FilePath> { "shading/linearize_depth.frag" } );
+		_program = p_pm.createProgram( "LinearizeDepth", std::vector<FilePath> { "linearize_depth.frag" } );
 		assert( _program != nullptr );
 	}
 
