@@ -12,19 +12,14 @@ namespace VTX::Renderer::GL::Pass
 
 	void FXAA::resize( const size_t p_width, const size_t p_height ) { out.texture.resize( p_width, p_height ); }
 
-	void FXAA::render()
+	void FXAA::render( VertexArray & p_vao )
 	{
 		assert( in.texture != nullptr );
 
-		/*
-		p_renderer.getOutputFramebuffer().bind();
-
-		p_renderer.getPassSelection().getTexture().bindToUnit( 0 );
-
+		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+		in.texture->bindToUnit( 1 );
 		_program->use();
-
-		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
-		*/
+		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 	}
 
 } // namespace VTX::Renderer::GL::Pass

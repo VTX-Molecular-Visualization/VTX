@@ -4,8 +4,12 @@
 // adapted from: http://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf
 // and Timothy Lottes' code (NVidia)
 
-layout( binding = 0 ) uniform sampler2D image;
+#include "global_uniforms.glsl"
 
+// In.
+layout( binding = 1 ) uniform sampler2D image;
+
+// Out.
 out vec4 fragColor;
 
 // the minimum amount of local contrast required to apply algorithm.

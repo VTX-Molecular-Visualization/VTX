@@ -3,6 +3,7 @@
 
 #include "renderer/gl/include_opengl.hpp"
 #include "renderer/gl/program_manager.hpp"
+#include "renderer/gl/vertex_array.hpp"
 
 namespace VTX::Renderer::GL::Pass
 {
@@ -15,7 +16,7 @@ namespace VTX::Renderer::GL::Pass
 
 		virtual void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) {}
 		virtual void resize( const size_t p_width, const size_t p_height ) {}
-		virtual void render() = 0;
+		virtual void render( VertexArray & p_vao ) = 0;
 
 		/*
 		struct StructIn

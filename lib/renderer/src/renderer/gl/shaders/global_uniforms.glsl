@@ -6,28 +6,22 @@ layout ( std140, binding = 0 ) uniform Uniforms
 	float cameraNear;
 	float cameraFar;
 	vec4  clipInfos;
-
 	bool ssao;
 	uint ssaoIntensity;
 	uint blurSize;
-	// ivec2 blurDirection;
-
 	vec4 backgroundColor;
-
+	vec4 lightColor;
+	uint  shadingMode;	
+	float specularFactor;
 	bool  fog;
 	float fogNear;
 	float fogFar;
 	float fogDensity;
 	vec4  fogColor;
-
-	vec4 lightColor;
-
 	bool  outline;
 	vec4  outlineColor;
 	int	  outlineThickness;
-	float outlineSensivity ;
-
+	float outlineSensivity;
 	vec4 selectionColor;
-
 	bool aa;
 } uniforms;

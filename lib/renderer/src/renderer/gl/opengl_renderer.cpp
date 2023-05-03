@@ -89,6 +89,7 @@ namespace VTX::Renderer::GL
 
 		_vboQuad.set( quadVertices );
 
+		// Global uniforms buffer.
 		_ubo.set( _globalUniforms, GL_DYNAMIC_DRAW );
 
 		VTX_INFO( "Renderer initialized" );
@@ -108,58 +109,10 @@ namespace VTX::Renderer::GL
 		for ( Pass::BasePass * const pass : _passes )
 		{
 			_ubo.bind( GL_UNIFORM_BUFFER, 0 );
-			pass->render();
-			_vaoQuad.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
+			pass->render( _vaoQuad );
 			_ubo.unbind();
 		}
-
-		/*
-		_passGeometric->render( p_scene, *this );
-
-		_passLinearizeDepth->render( p_scene, *this );
-
-		if ( VTX_RENDER_EFFECT().isSSAOEnabled() )
-		{
-			_passSSAO->render( p_scene, *this );
-			_passBlur->render( p_scene, *this );
-		}
-
-		_passShading->render( p_scene, *this );
-
-		if ( VTX_RENDER_EFFECT().isOutlineEnabled() )
-		{
-			_passOutline->render( p_scene, *this );
-		}
-
-		_passSelection->render( p_scene, *this );
-
-		if ( VTX_SETTING().getAA() )
-		{
-			_passFXAA->render( p_scene, *this );
-		}
-
-		VTXApp::get().MASK = VTX_SETTING().getForceRenderer() ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
-	*/
 	};
-
-	/*
-	void GL::updateRenderSetting( const RENDER_SETTING p_renderSetting )
-	{
-		switch ( p_renderSetting )
-		{
-		case RENDER_SETTING::SHADING: _passShading->set(); break;
-		case RENDER_SETTING::SSAO:
-			if ( VTX_RENDER_EFFECT().isSSAOEnabled() == false )
-			{
-				_passBlur->clearTexture();
-			}
-			break;
-		case RENDER_SETTING::OUTLINE: break;
-		case RENDER_SETTING::FOG: break;
-		case RENDER_SETTING::AA: _passSelection->updateOutputFBO( *this ); break;
-		}
-	}
-	*/
 
 	const Vec2i OpenGLRenderer::getPickedIds( const uint p_x, const uint p_y )
 	{

@@ -4,17 +4,19 @@
 
 // Crytek (Crysis) like SSAO
 
+// In.
 layout( binding = 1 ) uniform usampler2D gbViewPositionNormal;
 layout( binding = 2 ) uniform sampler2D noise;
 layout( binding = 3 ) uniform sampler2D linearDepth;
 
+uniform vec3  uAoKernel[ 512 ];
+uniform int	  uKernelSize;
+uniform float uNoiseSize;
+
+// Out.
 layout( location = 0 ) out float ambientOcclusion;
 
 const float BIAS = 0.025f;
-
-uniform vec3  uAoKernel[ 512 ]; // TODO: better use texture no ? ;-)
-uniform int	  uKernelSize;
-uniform float uNoiseSize;
 
 struct UnpackedData
 {

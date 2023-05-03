@@ -52,7 +52,7 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.attachTexture( out.texturePicking, GL_COLOR_ATTACHMENT2 );
 	}
 
-	void Geometric::render()
+	void Geometric::render( VertexArray & p_vao )
 	{
 		glEnable( GL_DEPTH_TEST );
 
@@ -75,7 +75,7 @@ namespace VTX::Renderer::GL::Pass
 		}
 		*/
 		//_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
+		// p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 ); // why not here?
 		out.fbo.unbind();
 
 		glDisable( GL_DEPTH_TEST );
