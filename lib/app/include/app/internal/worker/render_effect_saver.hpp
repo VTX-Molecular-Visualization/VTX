@@ -1,12 +1,12 @@
-#ifndef __VTX_WORKER_RENDER_EFFECT_PRESET_SAVER__
-#define __VTX_WORKER_RENDER_EFFECT_PRESET_SAVER__
+#ifndef __VTX_APP_INTERNAL_WORKER_RENDER_EFFECT_PRESET_SAVER__
+#define __VTX_APP_INTERNAL_WORKER_RENDER_EFFECT_PRESET_SAVER__
 
 #include "app/application/render_effect/_fwd.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include "app/core/worker/base_worker.hpp"
 #include <util/types.hpp>
 
-namespace VTX::Worker
+namespace VTX::App::Internal::Worker
 {
 	class RenderEffectPresetSaverThread : public App::Core::Worker::BaseThread
 	{
@@ -42,5 +42,5 @@ namespace VTX::Worker
 		const App::Application::RenderEffect::RenderEffectPreset * const _preset;
 		const FilePath													 _path;
 	};
-}; // namespace VTX::Worker
+}; // namespace VTX::App::Internal::Worker
 #endif

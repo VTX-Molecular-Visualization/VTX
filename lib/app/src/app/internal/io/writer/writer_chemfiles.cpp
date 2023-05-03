@@ -3,9 +3,11 @@
 #include "app/component/chemistry/bond.hpp"
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/old_app/define.hpp"
-#include "app/old_app/util/secondary_structure.hpp"
+#include "app/component/define.hpp"
+#include "app/util/secondary_structure.hpp"
 #include <string>
+#include <util/chrono.hpp>
+#include <util/constants.hpp>
 
 namespace VTX::App::Internal::IO::Writer
 {
@@ -110,7 +112,7 @@ namespace VTX::App::Internal::IO::Writer
 					chemResidue.set( "chainid", chainId );
 
 					chemResidue.set( "secondary_structure",
-									 Util::SecondaryStructure::enumToPdbFormattedSecondaryStructure(
+									 Util::App::SecondaryStructure::enumToPdbFormattedSecondaryStructure(
 										 residue->getSecondaryStructure() ) );
 
 					if ( residue->hasInsertionCode() )

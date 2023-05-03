@@ -1,8 +1,8 @@
 #include "ui/qt/dialog.hpp"
 #include "ui/qt/application_qt.hpp"
 #include "ui/qt/main_window.hpp"
-// 
 // #include <app/action/main.hpp>
+#include <app/application/define.hpp>
 #include <util/logger.hpp>
 // #include <app/internal/io/serialization/image_export.hpp>
 // #include <app/internal/io/serialization/scene_path_data.hpp>
@@ -88,7 +88,8 @@ namespace VTX::UI::QT
 		std::string msg = "Exception : " + std::string( e.what() );
 		msg += '\n';
 
-		msg += "Please open an issue at \n" + VTX_BUG_REPORT_URL + " \nwith your latest file in the /logs directory.";
+		msg += "Please open an issue at \n" + App::Application::VTX_BUG_REPORT_URL
+			   + " \nwith your latest file in the /logs directory.";
 
 		VTX_ERROR( msg );
 

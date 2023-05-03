@@ -1,7 +1,7 @@
 #include "ui/qt/state/export.hpp"
 #include <app/action/main.hpp>
-#include <app/component/video/path.hpp>
 #include <app/component/object3d/viewpoint.hpp>
+#include <app/component/video/path.hpp>
 #include <app/internal/worker/program_launcher.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <util/chrono.hpp>
@@ -119,7 +119,7 @@ namespace VTX::UI::QT::State
 							  + " -vcodec libx264 -crf " + std::to_string(
 	VTX::App::Application::Setting::VIDEO_CRF_DEFAULT ) + " "
 							  + Util::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
-		Worker::ProgramLauncher * worker = new Worker::ProgramLauncher( command );
+		Internal::Worker::ProgramLauncher * worker = new Internal::Worker::ProgramLauncher( command );
 		VTX_THREAD( worker );
 
 		// Clean frames

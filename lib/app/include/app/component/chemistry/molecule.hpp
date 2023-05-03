@@ -5,6 +5,7 @@
 #include "app/application/representation/base_representable.hpp"
 #include "app/application/representation/instantiated_representation.hpp"
 #include "app/application/representation/representation_target.hpp"
+#include "app/application/selection/selection.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/chemistry/secondary_structure.hpp"
 #include "app/component/chemistry/solvent_excluded_surface.hpp"
@@ -14,16 +15,15 @@
 #include "app/core/scene/base_scene_item.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/internal/chemdb/unknown_residue_data.hpp"
-#include "app/application/selection/selection.hpp"
-#include "app/old_app/buffer/molecule.hpp"
-#include "util/color/rgba.hpp"
 #include "app/internal/io/reader/prm.hpp"
 #include "app/internal/io/reader/psf.hpp"
 #include "app/internal/math/range.hpp"
+#include "app/render/buffer/molecule.hpp"
 #include <iostream>
 #include <map>
 #include <string>
 #include <unordered_set>
+#include <util/color/rgba.hpp>
 #include <util/types.hpp>
 #include <utility>
 #include <vector>
@@ -33,7 +33,7 @@ namespace VTX::App::Component::Chemistry
 	namespace ChemDB = App::Internal::ChemDB;
 
 	class Molecule :
-		public Core::Model::BaseModel3D<Buffer::Molecule>,
+		public Core::Model::BaseModel3D<App::Render::Buffer::Molecule>,
 		public Generic::BaseColorable,
 		public Application::Representation::BaseRepresentable,
 		public Core::Scene::BaseSceneItem
@@ -145,7 +145,7 @@ namespace VTX::App::Component::Chemistry
 
 		inline const bool isAtomVisible( const uint p_idx ) const { return bool( _bufferAtomVisibilities[ p_idx ] ); }
 
-		inline const float &	   getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
+		inline const float &			 getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
 		inline const Util::Color::Rgba & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 		inline const uint getAtomVisibility( const uint p_idx ) const { return _bufferAtomVisibilities[ p_idx ]; }
 
@@ -193,8 +193,8 @@ namespace VTX::App::Component::Chemistry
 		inline std::vector<AtomPositionsFrame> &	   getAtomPositionFrames() { return _atomPositionsFrames; }
 		inline std::vector<float> &					   getBufferAtomRadius() { return _bufferAtomRadius; }
 		inline const std::vector<float> &			   getBufferAtomRadius() const { return _bufferAtomRadius; }
-		inline std::vector<Util::Color::Rgba> &			   getBufferAtomColors() { return _bufferAtomColors; }
-		inline const std::vector<Util::Color::Rgba> &		   getBufferAtomColors() const { return _bufferAtomColors; }
+		inline std::vector<Util::Color::Rgba> &		   getBufferAtomColors() { return _bufferAtomColors; }
+		inline const std::vector<Util::Color::Rgba> &  getBufferAtomColors() const { return _bufferAtomColors; }
 		inline std::vector<uint> &					   getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
 		inline const std::vector<uint> & getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
 		inline std::vector<uint> &		 getBufferAtomSelections() { return _bufferAtomSelections; }
@@ -336,12 +336,12 @@ namespace VTX::App::Component::Chemistry
 		std::unordered_set<std::string> _unknownAtomSymbol = std::unordered_set<std::string>();
 
 		// Buffers.
-		std::vector<float>		 _bufferAtomRadius		 = std::vector<float>();
-		std::vector<Util::Color::Rgba> _bufferAtomColors		 = std::vector<Util::Color::Rgba>();
-		std::vector<uint>		 _bufferAtomVisibilities = std::vector<uint>();
-		std::vector<uint>		 _bufferAtomSelections	 = std::vector<uint>();
-		std::vector<uint>		 _bufferAtomIds			 = std::vector<uint>();
-		std::vector<uint>		 _bufferBonds			 = std::vector<uint>();
+		std::vector<float>			   _bufferAtomRadius	   = std::vector<float>();
+		std::vector<Util::Color::Rgba> _bufferAtomColors	   = std::vector<Util::Color::Rgba>();
+		std::vector<uint>			   _bufferAtomVisibilities = std::vector<uint>();
+		std::vector<uint>			   _bufferAtomSelections   = std::vector<uint>();
+		std::vector<uint>			   _bufferAtomIds		   = std::vector<uint>();
+		std::vector<uint>			   _bufferBonds			   = std::vector<uint>();
 
 		// Secondary structure.
 		SecondaryStructure * _secondaryStructure = nullptr;
@@ -371,7 +371,8 @@ namespace VTX::App::Component::Chemistry
 		// Fill Buffers Functions
 		void _fillBufferAtomColors();
 		void _fillBufferAtomVisibilities();
-		void _fillBufferAtomSelections( const App::Application::Selection::SelectionModel::MapChainIds * const = nullptr );
+		void _fillBufferAtomSelections( const App::Application::Selection::SelectionModel::MapChainIds * const
+										= nullptr );
 
 #ifdef _DEBUG
 	  public:

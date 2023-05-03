@@ -9,7 +9,7 @@
 #include "app/mvc.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
-#include "app/old_app/util/molecule.hpp"
+#include "app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <map>
 #include <unordered_set>
@@ -33,7 +33,7 @@ namespace VTX::App::Action::Residue
 			molecule->refreshColors();
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeVisibility::execute()
@@ -60,7 +60,7 @@ namespace VTX::App::Action::Residue
 
 				if ( it != residuesIDsPerMolecules.end() )
 				{
-					Util::Molecule::soloResidues( *molecule, it->second, false );
+					Util::App::Molecule::soloResidues( *molecule, it->second, false );
 				}
 				else
 				{
@@ -88,7 +88,7 @@ namespace VTX::App::Action::Residue
 								  std::vector<App::Component::Chemistry::Residue *>> & pair : residuesPerMolecules )
 			{
 				for ( App::Component::Chemistry::Residue * const residue : pair.second )
-					Util::Molecule::show( *residue, _getVisibilityBool( *residue ), true, false, false );
+					Util::App::Molecule::show( *residue, _getVisibilityBool( *residue ), true, false, false );
 
 				pair.first->notifyVisibilityChange();
 				pair.first->refreshVisibilities();
@@ -96,7 +96,7 @@ namespace VTX::App::Action::Residue
 			}
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeRepresentationPreset::execute()
@@ -105,13 +105,13 @@ namespace VTX::App::Action::Residue
 			= App::Application::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
 		App::Application::Representation::RepresentationManager::get().instantiateRepresentations( preset, _residues );
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void RemoveRepresentation::execute()
 	{
 		App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentations( _residues );
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Delete::execute()
@@ -132,8 +132,8 @@ namespace VTX::App::Action::Residue
 			molecule->computeAllRepresentationData();
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Copy::execute()
@@ -164,7 +164,7 @@ namespace VTX::App::Action::Residue
 	{
 		App::Application::Representation::RepresentationManager::get().applyRepresentation(
 			_residues, _representation, _flag );
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 } // namespace VTX::App::Action::Residue

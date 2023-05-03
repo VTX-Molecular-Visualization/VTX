@@ -1,10 +1,10 @@
 #ifndef __VTX_APP_CORE_IO_WRITER_SERIALIZED_OBJECT__
 #define __VTX_APP_CORE_IO_WRITER_SERIALIZED_OBJECT__
 
+#include "app/application/define.hpp"
 #include "app/core/io/writer/base_writer.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include "app/core/worker/base_worker.hpp"
-#include "app/old_app/define.hpp"
 #include "app/internal/io/serializer.hpp"
 // #include <QFile>
 // #include <QTextStream>
@@ -26,9 +26,9 @@ namespace VTX::App::Core::IO::Writer
 			Internal::IO::Serializer serializer = Internal::IO::Serializer( _thread );
 
 			nlohmann::json json = { { "_VERSION",
-									  { { "MAJOR", VTX_VERSION_MAJOR },
-										{ "MINOR", VTX_VERSION_MINOR },
-										{ "REVISION", VTX_VERSION_REVISION } } },
+									  { { "MAJOR", Application::VTX_VERSION_MAJOR },
+										{ "MINOR", Application::VTX_VERSION_MINOR },
+										{ "REVISION", Application::VTX_VERSION_REVISION } } },
 									{ "DATA", serializer.serialize( p_data ) } };
 
 			_writeJsonFile( p_path, json );

@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_INTERNAL_CHEMDB_RESIDUE__
 #define __VTX_APP_INTERNAL_CHEMDB_RESIDUE__
 
-#include "util/color/rgba.hpp"
 #include <string>
+#include <util/color/rgba.hpp>
 
 namespace VTX::App::Internal::ChemDB::Residue
 {
@@ -10,6 +10,14 @@ namespace VTX::App::Internal::ChemDB::Residue
 	{
 		STANDARD,
 		NON_STANDARD
+	};
+
+	enum class SYMBOL_DISPLAY_MODE : int
+	{
+		SHORT,
+		LONG,
+
+		COUNT
 	};
 
 	enum class SYMBOL : int

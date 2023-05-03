@@ -7,9 +7,9 @@
 #include <QVBoxLayout>
 #include <algorithm>
 #include <app/component/chemistry/atom.hpp>
-#include <app/old_app/style.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <string>
+#include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/main_window.hpp>
 
 namespace VTX::View::UI::Widget::Measurement

@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_INTERNAL_CHEMDB_BOND__
 #define __VTX_APP_INTERNAL_CHEMDB_BOND__
 
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include <string>
 
 namespace VTX::App::Internal::ChemDB::Bond

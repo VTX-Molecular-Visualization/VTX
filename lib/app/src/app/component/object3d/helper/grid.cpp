@@ -59,7 +59,7 @@ namespace VTX::App::Component::Object3D::Helper
 			}
 		}
 
-		_vbo.set<Voxel>( voxels, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vbo.set<Voxel>( voxels, App::Render::Renderer::GL::Buffer::Usage::STATIC_DRAW );
 		_size = uint( voxels.size() );
 	}
 
@@ -75,12 +75,14 @@ namespace VTX::App::Component::Object3D::Helper
 
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VOXEL_MIN );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VOXEL_MIN, _vbo, sizeof( Voxel ) );
-		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VOXEL_MIN, 3, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setAttributeFormat(
+			ATTRIBUTE_LOCATION::VOXEL_MIN, 3, App::Render::Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VOXEL_MIN, ATTRIBUTE_LOCATION::VOXEL_MIN );
 
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VOXEL_MAX );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VOXEL_MAX, _vbo, sizeof( Voxel ), offsetof( Voxel, max.x ) );
-		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::VOXEL_MAX, 3, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setAttributeFormat(
+			ATTRIBUTE_LOCATION::VOXEL_MAX, 3, App::Render::Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::VOXEL_MAX, ATTRIBUTE_LOCATION::VOXEL_MAX );
 
 		refresh();
@@ -96,7 +98,7 @@ namespace VTX::App::Component::Object3D::Helper
 		_program->setMat4f( "u_normalMatrix", Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) );
 
 		_vao.bind();
-		_vao.drawArray( Renderer::GL::VertexArray::DrawMode::POINTS, 0, GLsizei( _size ) );
+		_vao.drawArray( App::Render::Renderer::GL::VertexArray::DrawMode::POINTS, 0, GLsizei( _size ) );
 		_vao.unbind();
 	}
 

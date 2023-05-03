@@ -9,7 +9,7 @@
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
-#include "app/old_app/util/molecule.hpp"
+#include "app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <map>
 #include <vector>
@@ -32,7 +32,7 @@ namespace VTX::App::Action::Chain
 			molecule->refreshColors();
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeVisibility::execute()
@@ -59,7 +59,7 @@ namespace VTX::App::Action::Chain
 
 				if ( it != chainsIDsPerMolecules.end() )
 				{
-					Util::Molecule::soloChains( *molecule, it->second, false );
+					Util::App::Molecule::soloChains( *molecule, it->second, false );
 				}
 				else
 				{
@@ -87,7 +87,7 @@ namespace VTX::App::Action::Chain
 								  std::vector<App::Component::Chemistry::Chain *>> & pair : chainsPerMolecules )
 			{
 				for ( App::Component::Chemistry::Chain * const chain : pair.second )
-					Util::Molecule::show( *chain, _getVisibilityBool( *chain ), true, false, false );
+					Util::App::Molecule::show( *chain, _getVisibilityBool( *chain ), true, false, false );
 
 				pair.first->notifyVisibilityChange();
 				pair.first->refreshVisibilities();
@@ -95,7 +95,7 @@ namespace VTX::App::Action::Chain
 			}
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeRepresentationPreset::execute()
@@ -104,13 +104,13 @@ namespace VTX::App::Action::Chain
 			= App::Application::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
 		App::Application::Representation::RepresentationManager::get().instantiateRepresentations( preset, _chains );
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void RemoveRepresentation::execute()
 	{
 		App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentations( _chains );
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void RemoveChildrenRepresentations::execute()
@@ -129,7 +129,7 @@ namespace VTX::App::Action::Chain
 			molecule->computeAllRepresentationData();
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Delete::execute()
@@ -150,8 +150,8 @@ namespace VTX::App::Action::Chain
 			molecule->computeAllRepresentationData();
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Copy::execute()
@@ -182,7 +182,7 @@ namespace VTX::App::Action::Chain
 	{
 		App::Application::Representation::RepresentationManager::get().applyRepresentation(
 			_chains, _representation, _flag );
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 } // namespace VTX::App::Action::Chain

@@ -8,7 +8,7 @@
 #include <app/action/main.hpp>
 #include <app/internal/io/serialization/image_export.hpp>
 #include <app/application/setting.hpp>
-#include <app/old_app/spec.hpp>
+#include <app/render/spec.hpp>
 
 namespace VTX::UI::Widget::Dialog
 {

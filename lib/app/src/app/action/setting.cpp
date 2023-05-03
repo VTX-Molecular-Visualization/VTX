@@ -1,17 +1,17 @@
 #include "app/action/setting.hpp"
+#include "app/application/render_effect/render_effect_library.hpp"
+#include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/application/representation/representation_library.hpp"
 #include "app/application/representation/representation_manager.hpp"
-#include "app/manager/action_manager.hpp"
-#include "app/application/render_effect/render_effect_preset.hpp"
-#include "app/application/render_effect/render_effect_library.hpp"
-#include "app/internal/io/filesystem.hpp"
+#include "app/application/scene.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/core/io/reader/serialized_object.hpp"
 #include "app/core/io/writer/serialized_object.hpp"
-#include "app/component/render/camera.hpp"
+#include "app/internal/io/filesystem.hpp"
 #include "app/internal/scene/camera_manager.hpp"
-#include "app/application/scene.hpp"
-#include "app/old_app/renderer/base_renderer.hpp"
+#include "app/manager/action_manager.hpp"
 #include "app/old_app/vtx_app.hpp"
+#include "app/render/renderer/base_renderer.hpp"
 #include <exception>
 #include <string>
 #include <util/math.hpp>
@@ -27,7 +27,8 @@ namespace VTX::App::Action::Setting
 			return;
 		}
 
-		Core::IO::Reader::SerializedObject<VTX::App::Application::Setting> reader = Core::IO::Reader::SerializedObject<VTX::App::Application::Setting>();
+		Core::IO::Reader::SerializedObject<VTX::App::Application::Setting> reader
+			= Core::IO::Reader::SerializedObject<VTX::App::Application::Setting>();
 		try
 		{
 			reader.readFile( path, VTX_SETTING() );
@@ -41,7 +42,8 @@ namespace VTX::App::Action::Setting
 
 	void Save::execute()
 	{
-		Core::IO::Writer::SerializedObject<VTX::App::Application::Setting> writer = Core::IO::Writer::SerializedObject<VTX::App::Application::Setting>();
+		Core::IO::Writer::SerializedObject<VTX::App::Application::Setting> writer
+			= Core::IO::Writer::SerializedObject<VTX::App::Application::Setting>();
 		try
 		{
 			writer.writeFile( App::Internal::IO::Filesystem::getSettingJsonFile(), VTX_SETTING() );
@@ -59,7 +61,7 @@ namespace VTX::App::Action::Setting
 	void ChangeBackgroundColor::execute()
 	{
 		VTX_RENDER_EFFECT().setBackgroundColor( _color );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeSnapshotFormat::execute() { VTX_SETTING().setSnapshotFormat( _format ); }
@@ -67,13 +69,13 @@ namespace VTX::App::Action::Setting
 	void ChangeBackgroundOpacity::execute()
 	{
 		VTX_SETTING().setSnapshotBackgroundOpacity( _opacity );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeSnapshotQuality::execute()
 	{
 		VTX_SETTING().setSnapshotQuality( _quality );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeSnapshotResolution::execute() { VTX_SETTING().setSnapshotResolution( _resolution ); }
@@ -104,17 +106,19 @@ namespace VTX::App::Action::Setting
 			}
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeDefaultRenderEffectPreset::execute()
 	{
-		const int clampedIndex = Util::Math::clamp(
-			_renderEffectPresetIndex, 0, VTX::App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount() );
+		const int clampedIndex
+			= Util::Math::clamp( _renderEffectPresetIndex,
+								 0,
+								 VTX::App::Application::RenderEffect::RenderEffectLibrary::get().getPresetCount() );
 
 		VTX_SETTING().setDefaultRenderEffectPresetIndex( clampedIndex );
 
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeColorMode::execute()
@@ -130,13 +134,13 @@ namespace VTX::App::Action::Setting
 			}
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeShading::execute()
 	{
 		VTX_RENDER_EFFECT().setShading( _shading );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 	void ActiveVerticalSync::execute()
 	{
@@ -147,79 +151,79 @@ namespace VTX::App::Action::Setting
 	void ActiveAO::execute()
 	{
 		VTX_RENDER_EFFECT().enableSSAO( _active );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeAOIntensity::execute()
 	{
 		VTX_RENDER_EFFECT().setSSAOIntensity( _intensity );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeAOBlurSize::execute()
 	{
 		VTX_RENDER_EFFECT().setSSAOBlurSize( _blurSize );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ActiveOutline::execute()
 	{
 		VTX_RENDER_EFFECT().enableOutline( _active );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeOutlineColor::execute()
 	{
 		VTX_RENDER_EFFECT().setOutlineColor( _color );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeOutlineThickness::execute()
 	{
 		VTX_RENDER_EFFECT().setOutlineThickness( _thickness );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeOutlineSensivity::execute()
 	{
 		VTX_RENDER_EFFECT().setOutlineSensivity( _sensivity );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ActiveFog::execute()
 	{
 		VTX_RENDER_EFFECT().enableFog( _active );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeFogNear::execute()
 	{
 		VTX_RENDER_EFFECT().setFogNear( _near );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeFogFar::execute()
 	{
 		VTX_RENDER_EFFECT().setFogFar( _far );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeFogDensity::execute()
 	{
 		VTX_RENDER_EFFECT().setFogDensity( _density );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeFogColor::execute()
 	{
 		VTX_RENDER_EFFECT().setFogColor( _color );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeLightColor::execute()
 	{
 		VTX_RENDER_EFFECT().setCameraLightColor( _color );
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeCameraClip::execute()
@@ -236,7 +240,7 @@ namespace VTX::App::Action::Setting
 		VTX_SETTING().setCameraFOV( _fov );
 		VTXApp::get().getScene().getCamera().setFov( _fov );
 
-		VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_CAMERA_UPDATED;
 	}
 
 	void ChangeCameraProjectionToPerspective::execute()
@@ -244,13 +248,13 @@ namespace VTX::App::Action::Setting
 		VTX_SETTING().setCameraPerspectiveProjection( _perspective );
 		VTXApp::get().getScene().getCameraManager().refresh();
 
-		VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ActiveAA::execute()
 	{
 		VTX_SETTING().setAA( _active );
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeTranslationSpeed::execute() { VTX_SETTING().setTranslationSpeed( _speed ); }
@@ -281,7 +285,7 @@ namespace VTX::App::Action::Setting
 	{
 		VTX_SETTING().mode = _mode;
 		// TODO
-		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeSelectionGranularity::execute() { VTX_SETTING().setSelectionGranularity( _granularity ); }

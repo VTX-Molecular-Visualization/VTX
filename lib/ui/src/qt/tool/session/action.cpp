@@ -4,12 +4,12 @@
 #include "ui/qt/state/visualization.hpp"
 #include "ui/qt/tool/session/dialog.hpp"
 #include <app/action/main.hpp>
+#include <app/application/scene.hpp>
+#include <app/internal/io/serialization/scene_path_data.hpp>
 #include <app/internal/worker/loader.hpp>
 #include <app/internal/worker/saver.hpp>
 #include <app/internal/worker/scene_loader.hpp>
 #include <app/old_app/id.hpp>
-#include <app/internal/io/serialization/scene_path_data.hpp>
-#include <app/application/scene.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <util/logger.hpp>
 
@@ -18,7 +18,7 @@ namespace VTX::UI::QT::Tool::Session::Action
 	// TODO keep only Dialog parts here and move real loading action into VTX_APP.
 	void Open::LoadSceneClass::_loadScene()
 	{
-		Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
+		App::Internal::Worker::SceneLoader * sceneLoader = new App::Internal::Worker::SceneLoader( _paths );
 		VTX_WORKER( sceneLoader );
 
 		for ( const FilePath & path : _paths )

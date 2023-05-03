@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <util/logger.hpp>
 
-namespace VTX::Worker
+namespace VTX::App::Internal::Worker
 {
 	void RepresentationLibraryLoader::_run()
 	{
@@ -156,4 +156,4 @@ namespace VTX::Worker
 
 		VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
-} // namespace VTX::Worker
+} // namespace VTX::App::Internal::Worker

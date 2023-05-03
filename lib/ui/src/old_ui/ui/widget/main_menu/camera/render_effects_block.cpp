@@ -5,17 +5,17 @@
 #include "ui/old_ui/ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-
 #include <app/action/main.hpp>
-#include <app/internal/io/filesystem.hpp>
-#include <app/application/render_effect/render_effect_preset.hpp>
 #include <app/application/render_effect/render_effect_library.hpp>
-#include <app/internal/worker/snapshoter.hpp>
+#include <app/application/render_effect/render_effect_preset.hpp>
+#include <app/internal/io/filesystem.hpp>
+#include <app/render/worker/snapshoter.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
-	RenderEffectsBlock::RenderEffectsBlock( App::Application::RenderEffect::RenderEffectLibrary * const _renderEffectLibrary,
-											QWidget *										   p_parent ) :
+	RenderEffectsBlock::RenderEffectsBlock(
+		App::Application::RenderEffect::RenderEffectLibrary * const _renderEffectLibrary,
+		QWidget *													p_parent ) :
 		App::Core::View::BaseView<App::Application::RenderEffect::RenderEffectLibrary>( _renderEffectLibrary ),
 		MenuToolBlockWidget( p_parent ) {};
 
@@ -92,10 +92,10 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 	void RenderEffectsBlock::_takeSnapshotAction() const
 	{
-		VTX_ACTION(
-			new App::Action::Main::Snapshot( Worker::Snapshoter::MODE::GL,
-										App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
-										VTX_SETTING().getSnapshotResolution() ) );
+		VTX_ACTION( new App::Action::Main::Snapshot(
+			App::Render::Worker::Snapshoter::MODE::GL,
+			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
+			VTX_SETTING().getSnapshotResolution() ) );
 	}
 
 	void RenderEffectsBlock::_exportAsImageAction() const { Dialog::openAdvancedSettingImageExportDialog(); }

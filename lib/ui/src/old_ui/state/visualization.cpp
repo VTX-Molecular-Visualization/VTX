@@ -5,14 +5,15 @@
 #include "ui/old_ui/controller/picker.hpp"
 #include "ui/old_ui/controller/trackball.hpp"
 #include "ui/old_ui/style.hpp"
+#include <app/application/scene.hpp>
 #include <app/component/chemistry/molecule.hpp>
+#include <app/component/define.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/vtx_app.hpp>
 #include <app/internal/scene/camera_manager.hpp>
-#include <app/application/scene.hpp>
+#include <app/old_app/vtx_app.hpp>
 
 namespace VTX
 {
@@ -106,9 +107,9 @@ namespace VTX
 		{
 			// Reset camera.
 			App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
-			const Vec3f						   defaultPos
+			const Vec3f						 defaultPos
 				= VTXApp::get().getScene().getAABB().centroid()
-				  - CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
+				  - App::Component::CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
 						/ (float)( tan( Util::Math::radians( camera.getFov() ) * UI::Style::ORIENT_ZOOM_FACTOR ) );
 			camera.reset( defaultPos );
 

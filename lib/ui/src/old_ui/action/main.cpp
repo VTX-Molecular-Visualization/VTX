@@ -5,8 +5,12 @@
 #include "ui/old_ui/ui/dialog.hpp"
 #include "ui/old_ui/ui/main_window.hpp"
 #include "ui/old_ui/vtx_app.hpp"
+#include <app/application/scene.hpp>
+#include <app/application/setting.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
+#include <app/internal/io/filesystem.hpp>
+#include <app/internal/io/serialization/scene_path_data.hpp>
 #include <app/internal/network/request/check_update.hpp>
 #include <app/internal/network/request/download_mmtf.hpp>
 #include <app/internal/worker/loader.hpp>
@@ -15,11 +19,6 @@
 #include <app/internal/worker/saver.hpp>
 #include <app/internal/worker/scene_loader.hpp>
 #include <app/mvc.hpp>
-#include <app/internal/io/filesystem.hpp>
-#include <app/internal/io/serialization/scene_path_data.hpp>
-#include <app/application/scene.hpp>
-#include <app/application/setting.hpp>
-#include <app/old_app/util/molecule.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Action::Main

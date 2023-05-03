@@ -1,10 +1,10 @@
-#ifndef __VTX_SAVER__
-#define __VTX_SAVER__
+#ifndef __VTX_APP_INTERNAL_WORKER_SAVER__
+#define __VTX_APP_INTERNAL_WORKER_SAVER__
 
 #include "app/core/worker/base_thread.hpp"
 #include <util/types.hpp>
 
-namespace VTX::Worker
+namespace VTX::App::Internal::Worker
 {
 	class Saver : public App::Core::Worker::BaseThread
 	{
@@ -33,5 +33,5 @@ namespace VTX::Worker
 		MODE _getMode( const FilePath & ) const;
 	};
 
-} // namespace VTX::Worker
+} // namespace VTX::App::Internal::Worker
 #endif

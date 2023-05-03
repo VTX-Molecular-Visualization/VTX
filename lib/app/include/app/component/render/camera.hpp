@@ -1,8 +1,8 @@
 #ifndef __VTX_APP_COMPONENT_RENDER_CAMERA__
 #define __VTX_APP_COMPONENT_RENDER_CAMERA__
 
+#include "app/component/define.hpp"
 #include "app/component/render/enum_camera.hpp"
-#include "app/old_app/define.hpp"
 #include <util/math.hpp>
 #include <util/types.hpp>
 

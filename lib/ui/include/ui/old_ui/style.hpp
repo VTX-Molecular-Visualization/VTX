@@ -11,10 +11,10 @@
 #include <QSize>
 #include <QString>
 #include <app/application/representation/enum_representation.hpp>
+#include <app/application/selection/enum_selection.hpp>
 #include <app/internal/chemdb/category.hpp>
 #include <app/old_app/id.hpp>
-#include <app/application/selection/enum_selection.hpp>
-#include <app/old_app/util/label.hpp>
+#include <app/util/label.hpp>
 #include <iostream>
 #include <string>
 #include <util/logger.hpp>
@@ -24,14 +24,6 @@ namespace VTX::UI
 {
 	namespace Style
 	{
-		enum class SYMBOL_DISPLAY_MODE : int
-		{
-			SHORT,
-			LONG,
-
-			COUNT
-		};
-
 		inline static const int WINDOW_WIDTH_DEFAULT  = 1280;
 		inline static const int WINDOW_HEIGHT_DEFAULT = 720;
 
@@ -136,7 +128,7 @@ namespace VTX::UI
 					res = &VIEWPOINT_SYMBOL;
 				else if ( p_id == VTX::ID::Model::MODEL_VIEWPOINT )
 					res = &VIEWPOINT_SYMBOL;
-				else if ( Util::Label::isLabelType( p_id ) )
+				else if ( Util::App::Label::isLabelType( p_id ) )
 				{
 					res = &LABEL_SYMBOL;
 				}

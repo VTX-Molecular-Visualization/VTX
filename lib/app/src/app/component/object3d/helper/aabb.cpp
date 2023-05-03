@@ -87,7 +87,7 @@ namespace VTX::App::Component::Object3D::Helper
 		std::vector<uint> indices
 			= std::vector<uint>( { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 } );
 
-		_vbo.set<Vec3f>( corners, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vbo.set<Vec3f>( corners, App::Render::Renderer::GL::Buffer::Usage::STATIC_DRAW );
 		_ibo.set<uint>( indices );
 		_iboSize = uint( indices.size() );
 	}
@@ -107,7 +107,8 @@ namespace VTX::App::Component::Object3D::Helper
 
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::AABB_CORNER );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::AABB_CORNER, _vbo, sizeof( Vec3f ) );
-		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::AABB_CORNER, 3, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setAttributeFormat(
+			ATTRIBUTE_LOCATION::AABB_CORNER, 3, App::Render::Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::AABB_CORNER, ATTRIBUTE_LOCATION::AABB_CORNER );
 
 		refresh();
@@ -123,9 +124,9 @@ namespace VTX::App::Component::Object3D::Helper
 		_program->setMat4f( "u_normalMatrix", Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) );
 
 		_vao.bind();
-		_vao.drawElement( Renderer::GL::VertexArray::DrawMode::LINES,
+		_vao.drawElement( App::Render::Renderer::GL::VertexArray::DrawMode::LINES,
 						  GLsizei( _iboSize ),
-						  Renderer::GL::VertexArray::Type::UNSIGNED_INT );
+						  App::Render::Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.unbind();
 	}
 } // namespace VTX::App::Component::Object3D::Helper

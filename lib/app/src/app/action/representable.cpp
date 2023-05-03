@@ -8,20 +8,23 @@ namespace VTX::App::Action::Representable
 	{
 		if ( _selection != nullptr )
 		{
-			App::Application::Representation::RepresentationManager::get().instantiateRepresentations( _representation, *_selection );
+			App::Application::Representation::RepresentationManager::get().instantiateRepresentations( _representation,
+																									   *_selection );
 		}
 		else
 		{
-			App::Application::Representation::RepresentationManager::get().instantiateRepresentation( _representation, *_representable );
+			App::Application::Representation::RepresentationManager::get().instantiateRepresentation( _representation,
+																									  *_representable );
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void RemoveRepresentation::execute()
 	{
-		App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentation( *_representable );
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
+			*_representable );
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 } // namespace VTX::App::Action::Representable

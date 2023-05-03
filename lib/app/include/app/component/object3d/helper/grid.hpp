@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_COMPONENT_OBJECT3D_HELPER_GRID__
 #define __VTX_APP_COMPONENT_OBJECT3D_HELPER_GRID__
 
-#include "app/old_app/renderer/gl/program_manager.hpp"
+#include "app/render/renderer/gl/program_manager.hpp"
 #include "base_helper.hpp"
 
 namespace VTX::App::Component::Object3D::Helper
@@ -49,10 +49,10 @@ namespace VTX::App::Component::Object3D::Helper
 			VOXEL_MAX = 1
 		};
 
-		Renderer::GL::Buffer _vbo  = Renderer::GL::Buffer();
-		size_t				 _size = 0;
+		App::Render::Renderer::GL::Buffer _vbo	= App::Render::Renderer::GL::Buffer();
+		size_t							  _size = 0;
 
-		Renderer::GL::Program * _program = nullptr;
+		App::Render::Renderer::GL::Program * _program = nullptr;
 	};
 } // namespace VTX::App::Component::Object3D::Helper
 

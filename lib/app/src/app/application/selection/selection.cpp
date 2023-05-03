@@ -6,9 +6,9 @@
 #include "app/component/chemistry/residue.hpp"
 #include "app/event.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/define.hpp"
 #include <unordered_set>
 #include <util/chrono.hpp>
+#include <util/constants.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::App::Application::Selection

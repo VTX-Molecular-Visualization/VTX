@@ -13,9 +13,9 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <app/core/model/base_model.hpp>
-#include <app/mvc.hpp>
 #include <app/core/view/base_view.hpp>
-#include <app/internal/worker/snapshoter.hpp>
+#include <app/mvc.hpp>
+#include <app/render/worker/snapshoter.hpp>
 #include <map>
 
 namespace VTX::UI::QT::Tool::Render::Widget
@@ -24,7 +24,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	{
 		NEW_ARCHI_VTX_WIDGET
 
-		friend VTX::Worker::Snapshoter;
+		friend App::Render::Worker::Snapshoter;
 
 	  public:
 		~RenderWidget();
@@ -33,7 +33,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 		inline bool isOpenGLValid() const { return _openGLWidget->isValid(); }
 		void		updateRender() const;
-		void		updateRenderSetting( const Renderer::RENDER_SETTING );
+		void		updateRenderSetting( const App::Render::Renderer::RENDER_SETTING );
 		const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
 		void displayOverlay( const Overlay::OVERLAY & p_overlay, const Overlay::OVERLAY_ANCHOR & p_position );

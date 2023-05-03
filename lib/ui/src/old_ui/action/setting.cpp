@@ -8,31 +8,31 @@ namespace VTX::UI::Action::Setting
 	void ChangeShading::execute()
 	{
 		VTX_ACTION( new App::Action::Setting::ChangeShading( _shading ) );
-		QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
+		QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::SHADING );
 	}
 
 	void ActiveAO::execute()
 	{
 		VTX_ACTION( new App::Action::Setting::ActiveAO( _active ) );
-		QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
+		QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::SSAO );
 	}
 
 	void ActiveOutline::execute()
 	{
 		VTX_ACTION( new App::Action::Setting::ActiveOutline( _active ) );
-		QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::OUTLINE );
+		QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::OUTLINE );
 	}
 
 	void ActiveFog::execute()
 	{
 		VTX_ACTION( new App::Action::Setting::ActiveFog( _active ) );
-		QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
+		QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::FOG );
 	}
 
 	void ActiveAA::execute()
 	{
 		VTX_ACTION( new App::Action::Setting::ActiveAA( _active ) );
-		QT::QT_APP()->getMainWindow().updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
+		QT::QT_APP()->getMainWindow().updateRenderSetting( App::Render::Renderer::RENDER_SETTING::AA );
 	}
 
 	void WindowMode::execute()

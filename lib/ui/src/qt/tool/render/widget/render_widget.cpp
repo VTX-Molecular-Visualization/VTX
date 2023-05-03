@@ -14,8 +14,8 @@
 // #include <app/model/measurement/dihedral_angle.hpp>
 // #include <app/model/measurement/distance.hpp>
 // #include <app/model/measurement/measure_in_progress.hpp>
-#include <app/component/object3d/mesh_triangle.hpp>
 #include <app/component/chemistry/molecule.hpp>
+#include <app/component/object3d/mesh_triangle.hpp>
 // #include "ui/state/state_machine.hpp"
 // #include "ui/state/visualization.hpp"
 #include "ui/qt/style.hpp"
@@ -49,11 +49,11 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	{
 		if ( p_event.name == VTX::App::Event::Global::APPLIED_RENDER_EFFECT_CHANGE )
 		{
-			updateRenderSetting( VTX::Renderer::RENDER_SETTING::SHADING );
-			updateRenderSetting( VTX::Renderer::RENDER_SETTING::SSAO );
-			updateRenderSetting( VTX::Renderer::RENDER_SETTING::OUTLINE );
-			updateRenderSetting( VTX::Renderer::RENDER_SETTING::FOG );
-			updateRenderSetting( VTX::Renderer::RENDER_SETTING::AA );
+			updateRenderSetting( App::Render::Renderer::RENDER_SETTING::SHADING );
+			updateRenderSetting( App::Render::Renderer::RENDER_SETTING::SSAO );
+			updateRenderSetting( App::Render::Renderer::RENDER_SETTING::OUTLINE );
+			updateRenderSetting( App::Render::Renderer::RENDER_SETTING::FOG );
+			updateRenderSetting( App::Render::Renderer::RENDER_SETTING::AA );
 		}
 
 		// if ( p_event.name == VTX::App::Event::Global::LABEL_ADDED )
@@ -239,15 +239,15 @@ namespace VTX::UI::QT::Tool::Render::Widget
 	void RenderWidget::_onShortcutSnapshot()
 	{
 		VTX_ACTION( new VTX::App::Action::Main::Snapshot(
-			Worker::Snapshoter::MODE::GL,
+			App::Render::Worker::Snapshoter::MODE::GL,
 			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
 	}
 
 	void RenderWidget::_onShortcutChangeRenderMode()
 	{
-		VTX_ACTION( new VTX::App::Action::Setting::ChangeRenderMode(
-			Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)Renderer::MODE::COUNT ) ) );
+		VTX_ACTION( new VTX::App::Action::Setting::ChangeRenderMode( App::Render::Renderer::MODE(
+			( (uint)VTX_SETTING().mode + 1 ) % (uint)App::Render::Renderer::MODE::COUNT ) ) );
 	}
 
 	void RenderWidget::_onShortcutPrintCameraInfos() { VTXApp::get().getScene().getCamera().print(); }
@@ -264,7 +264,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 			integratedWidget->updatePosition();
 	}
 
-	void RenderWidget::updateRenderSetting( const Renderer::RENDER_SETTING p_setting )
+	void RenderWidget::updateRenderSetting( const App::Render::Renderer::RENDER_SETTING p_setting )
 	{
 		_openGLWidget->updateRenderSetting( p_setting );
 	}

@@ -6,8 +6,8 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
-#include "app/internal/worker/snapshoter.hpp"
 #include "app/old_app/vtx_app.hpp"
+#include "app/render/worker/snapshoter.hpp"
 #include "app/worker.hpp"
 #include <string>
 #include <util/types.hpp>
@@ -132,7 +132,7 @@ namespace VTX::App::Action::Main
 	class Snapshot : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const FilePath & p_path ) :
+		explicit Snapshot( const Render::Worker::Snapshoter::MODE p_mode, const FilePath & p_path ) :
 			Snapshot( p_mode,
 					  p_path,
 					  App::Internal::IO::Serialization::ImageExport(
@@ -141,7 +141,7 @@ namespace VTX::App::Action::Main
 						  VTX_SETTING().getSnapshotQuality() ) )
 		{
 		}
-		explicit Snapshot( const Worker::Snapshoter::MODE								   p_mode,
+		explicit Snapshot( const Render::Worker::Snapshoter::MODE						   p_mode,
 						   const FilePath &												   p_path,
 						   const App::Internal::IO::Serialization::ImageExport::RESOLUTION p_resolution ) :
 			Snapshot( p_mode,
@@ -151,10 +151,10 @@ namespace VTX::App::Action::Main
 																	 VTX_SETTING().getSnapshotQuality() ) )
 		{
 		}
-		explicit Snapshot( const Worker::Snapshoter::MODE p_mode,
-						   const FilePath &				  p_path,
-						   const int					  p_width,
-						   const int					  p_height ) :
+		explicit Snapshot( const Render::Worker::Snapshoter::MODE p_mode,
+						   const FilePath &						  p_path,
+						   const int							  p_width,
+						   const int							  p_height ) :
 			Snapshot( p_mode,
 					  p_path,
 					  App::Internal::IO::Serialization::ImageExport( std::pair<const int, int>( p_width, p_height ),
@@ -162,7 +162,7 @@ namespace VTX::App::Action::Main
 																	 VTX_SETTING().getSnapshotQuality() ) )
 		{
 		}
-		explicit Snapshot( const Worker::Snapshoter::MODE						 p_mode,
+		explicit Snapshot( const Render::Worker::Snapshoter::MODE				 p_mode,
 						   const FilePath &										 p_path,
 						   const App::Internal::IO::Serialization::ImageExport & p_exportData ) :
 			_mode( p_mode ),
@@ -175,7 +175,7 @@ namespace VTX::App::Action::Main
 		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 
 	  private:
-		const Worker::Snapshoter::MODE						_mode;
+		const Render::Worker::Snapshoter::MODE				_mode;
 		const FilePath										_path;
 		const App::Internal::IO::Serialization::ImageExport _exportData;
 	};

@@ -1,7 +1,7 @@
 #include "app/component/object3d/mesh_triangle.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/view/d3/triangle.hpp"
+#include "app/render/view/triangle.hpp"
 #include <numeric>
 #include <util/logger.hpp>
 
@@ -30,7 +30,8 @@ namespace VTX::App::Component::Object3D
 
 	void MeshTriangle::_instantiate3DViews()
 	{
-		_addRenderable( VTX::MVC_MANAGER().instantiateView<View::D3::Triangle>( this, VTX::ID::View::D3_TRIANGLE ) );
+		_addRenderable(
+			VTX::MVC_MANAGER().instantiateView<App::Render::View::Triangle>( this, VTX::ID::View::D3_TRIANGLE ) );
 	}
 
 	void MeshTriangle::computeNormals( const std::vector<Vec4f> & p_vertices,

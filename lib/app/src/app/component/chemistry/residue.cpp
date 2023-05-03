@@ -149,9 +149,9 @@ namespace VTX::App::Component::Chemistry
 		}
 	}
 
- App::Component::Object3D::Helper::AABB Residue::getAABB() const
+	App::Component::Object3D::Helper::AABB Residue::getAABB() const
 	{
-	 App::Component::Object3D::Helper::AABB aabb = App::Component::Object3D::Helper::AABB();
+		App::Component::Object3D::Helper::AABB aabb = App::Component::Object3D::Helper::AABB();
 
 		for ( uint i = 0; i < _atomCount; ++i )
 		{
@@ -166,13 +166,13 @@ namespace VTX::App::Component::Chemistry
 		return aabb;
 	}
 
- App::Component::Object3D::Helper::AABB Residue::getWorldAABB() const
+	App::Component::Object3D::Helper::AABB Residue::getWorldAABB() const
 	{
 		const App::Component::Object3D::Helper::AABB aabb	   = getAABB();
 		const App::Internal::Math::Transform &		 transform = getMoleculePtr()->getTransform();
 
-	 App::Component::Object3D::Helper::AABB worldAabb   = App::Component::Object3D::Helper::AABB();
-		std::vector<Vec3f>	   aabbSummits = aabb.getSummits();
+		App::Component::Object3D::Helper::AABB worldAabb   = App::Component::Object3D::Helper::AABB();
+		std::vector<Vec3f>					   aabbSummits = aabb.getSummits();
 
 		for ( const Vec3f & summit : aabbSummits )
 		{

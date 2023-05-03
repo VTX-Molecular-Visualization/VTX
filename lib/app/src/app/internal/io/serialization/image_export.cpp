@@ -1,7 +1,7 @@
 #include "app/internal/io/serialization/image_export.hpp"
 #include "app/application/scene.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/old_app/spec.hpp"
+#include "app/render/spec.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <cctype>
 

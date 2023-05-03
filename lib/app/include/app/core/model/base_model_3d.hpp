@@ -1,15 +1,15 @@
 #ifndef __VTX_MODEL_BASE_MODEL_3D__
 #define __VTX_MODEL_BASE_MODEL_3D__
 
+#include "app/component/object3d/helper/aabb.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/core/model/base_model.hpp"
-#include "app/old_app/buffer/base_buffer_opengl.hpp"
 #include "app/old_app/generic/base_auto_rotate.hpp"
 #include "app/old_app/generic/base_renderable.hpp"
 #include "app/old_app/generic/base_transformable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
 #include "app/old_app/id.hpp"
-#include "app/component/object3d/helper/aabb.hpp"
+#include "app/render/buffer/base_buffer_opengl.hpp"
 #include <unordered_set>
 #include <util/logger.hpp>
 #include <util/math.hpp>
@@ -18,7 +18,7 @@
 
 namespace VTX::App::Core::Model
 {
-	template<typename B, typename = std::enable_if<std::is_base_of<Buffer::BaseBufferOpenGL, B>::value>>
+	template<typename B, typename = std::enable_if<std::is_base_of<Render::Buffer::BaseBufferOpenGL, B>::value>>
 	class BaseModel3D :
 		public App::Core::Model::BaseModel,
 		public Generic::BaseTransformable,
@@ -47,7 +47,10 @@ namespace VTX::App::Core::Model
 		inline B * const	   getBuffer() { return _buffer; }
 		inline bool			   isInit() const { return _isInit; }
 
-		inline void referenceLinkedAABB( App::Component::Object3D::Helper::AABB * const p_aabb ) { _linkedAABBs.emplace( p_aabb ); }
+		inline void referenceLinkedAABB( App::Component::Object3D::Helper::AABB * const p_aabb )
+		{
+			_linkedAABBs.emplace( p_aabb );
+		}
 
 		void setAutoRotationVector( const Vec3f p_value ) override
 		{
@@ -95,13 +98,14 @@ namespace VTX::App::Core::Model
 		}
 
 	  protected:
-		mutable App::Component::Object3D::Helper::AABB		   _aabb;
-		mutable App::Component::Object3D::Helper::AABB		   _worldAabb;
-		std::vector<Generic::BaseRenderable *> _renderables = std::vector<Generic::BaseRenderable *>();
-		B *									   _buffer		= nullptr;
-		bool								   _isInit		= false;
+		mutable App::Component::Object3D::Helper::AABB _aabb;
+		mutable App::Component::Object3D::Helper::AABB _worldAabb;
+		std::vector<Generic::BaseRenderable *>		   _renderables = std::vector<Generic::BaseRenderable *>();
+		B *											   _buffer		= nullptr;
+		bool										   _isInit		= false;
 
-		std::unordered_set<App::Component::Object3D::Helper::AABB *> _linkedAABBs = std::unordered_set<App::Component::Object3D::Helper::AABB *>();
+		std::unordered_set<App::Component::Object3D::Helper::AABB *> _linkedAABBs
+			= std::unordered_set<App::Component::Object3D::Helper::AABB *>();
 
 		BaseModel3D( const VTX::ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {}
 		virtual ~BaseModel3D()

@@ -4,15 +4,15 @@
 #include "app/application/render_effect/render_effect_library.hpp"
 #include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/application/representation/representation_library.hpp"
+#include "app/application/selection/selection_manager.hpp"
+#include "app/component/render/camera.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
+#include "app/internal/io/serialization/scene_path_data.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/mvc.hpp"
-#include "app/internal/io/serialization/scene_path_data.hpp"
-#include "app/component/render/camera.hpp"
-#include "app/old_app/renderer/gl/program_manager.hpp"
-#include "app/application/selection/selection_manager.hpp"
+#include "app/render/renderer/gl/program_manager.hpp"
 // #include "ui/dialog.hpp"
 // #include "ui/main_window.hpp"
 #include "app/internal/io/filesystem.hpp"
@@ -54,9 +54,7 @@ namespace VTX
 		_renderEffectLibrary->setAppliedPreset( _setting.getDefaultRenderEffectPresetIndex() );
 
 		// Create scene.
-		_scene = new App::Application::Scene();
-		_scene->getCamera().setScreenSize( Style::WINDOW_WIDTH_DEFAULT, Style::WINDOW_HEIGHT_DEFAULT );
-
+		_scene		   = new App::Application::Scene();
 		_pathSceneData = new App::Internal::IO::Serialization::ScenePathData();
 
 		//_tickTimer.start();
@@ -67,7 +65,8 @@ namespace VTX
 		if ( p_args.size() == 0 )
 		{
 			// VTX_ACTION(
-			//	 new App::Action::Main::Open( App::Internal::IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
+			//	 new App::Action::Main::Open( App::Internal::IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" )
+			//).absolute() ) );
 			// VTX_ACTION( new App::Action::Main::OpenApi( "1aon" ) );
 			// VTX_ACTION( new App::Action::Main::OpenApi( "4hhb" ) );
 			// VTX_ACTION( new App::Action::Main::OpenApi( "1aga" ) );

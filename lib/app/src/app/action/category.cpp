@@ -9,8 +9,8 @@
 #include "app/application/scene.hpp"
 // #include "app/application/representation/representation_manager.hpp"
 // #include "app/application/selection/selection_manager.hpp"
-#include "app/old_app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
+#include "app/util/molecule.hpp"
 #include <unordered_set>
 
 namespace VTX::App::Action::Category
@@ -31,7 +31,7 @@ namespace VTX::App::Action::Category
 	//		molecule->refreshColors();
 	//	}
 
-	//	VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+	//	VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	//}
 
 	void ChangeVisibility::execute()
@@ -60,7 +60,7 @@ namespace VTX::App::Action::Category
 
 				if ( it != categoriesPerMolecules.end() )
 				{
-					Util::Molecule::soloCategories( *molecule, it->second, false );
+					Util::App::Molecule::soloCategories( *molecule, it->second, false );
 				}
 				else
 				{
@@ -88,7 +88,7 @@ namespace VTX::App::Action::Category
 								  std::vector<App::Component::Chemistry::Category *>> & pair : categoriesPerMolecules )
 			{
 				for ( App::Component::Chemistry::Category * const category : pair.second )
-					Util::Molecule::show( *category, _getVisibilityBool( *category ), true, false, false );
+					Util::App::Molecule::show( *category, _getVisibilityBool( *category ), true, false, false );
 
 				pair.first->notifyVisibilityChange();
 				pair.first->refreshVisibilities();
@@ -96,7 +96,7 @@ namespace VTX::App::Action::Category
 			}
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	// void ChangeRepresentationPreset::execute()
@@ -104,14 +104,14 @@ namespace VTX::App::Action::Category
 	//	App::Application::Representation::RepresentationPreset * const preset
 	//		= App::Application::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
-	//	App::Application::Representation::RepresentationManager::get().instantiateRepresentations( preset, _categories );
-	//	VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+	//	App::Application::Representation::RepresentationManager::get().instantiateRepresentations( preset, _categories
+	//); 	VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	//}
 
 	// void RemoveRepresentation::execute()
 	//{
 	//	App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentations( _categories );
-	//	VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+	//	VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	// }
 
 	// void RemoveChildrenRepresentations::execute()
@@ -130,7 +130,7 @@ namespace VTX::App::Action::Category
 	//		molecule->computeAllRepresentationData();
 	//	}
 
-	//	VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+	//	VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	//}
 
 	// void Delete::execute()
@@ -151,8 +151,8 @@ namespace VTX::App::Action::Category
 	//		molecule->computeAllRepresentationData();
 	//	}
 
-	//	VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-	//	VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+	//	VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+	//	VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	//}
 
 	// void Copy::execute()
@@ -176,13 +176,14 @@ namespace VTX::App::Action::Category
 	//	generatedMolecule->extractChain( _target );
 	//	VTXApp::get().getScene().addMolecule( generatedMolecule );
 
-	//	VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );
+	//	VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule
+	//);
 	//}
 
 	// void ApplyRepresentation::execute()
 	//{
-	//	App::Application::Representation::RepresentationManager::get().applyRepresentation( _categories, _representation, _flag );
-	//	VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+	//	App::Application::Representation::RepresentationManager::get().applyRepresentation( _categories,
+	//_representation, _flag ); 	VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	//}
 
 } // namespace VTX::App::Action::Category

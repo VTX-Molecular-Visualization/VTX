@@ -5,7 +5,7 @@
 #include "app/core/action/base_action.hpp"
 #include "app/component/video/path.hpp"
 #include "app/component/video/enum_path.hpp"
-// #include "app/internal/worker/snapshoter.hpp"
+// #include "app/render/worker/snapshoter.hpp"
 
 namespace VTX::App::Action::Path
 {

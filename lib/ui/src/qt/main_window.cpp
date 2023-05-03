@@ -14,6 +14,7 @@
 #include <app/action/main.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
+#include <app/application/define.hpp>
 #include <app/application/selection/selection.hpp>
 #include <app/application/selection/selection_manager.hpp>
 #include <app/application/setting.hpp>
@@ -355,9 +356,10 @@ namespace VTX::UI::QT
 	void		MainWindow::refreshWindowTitle() { setWindowTitle( QString::fromStdString( _getWindowTitle() ) ); }
 	std::string MainWindow::_getWindowTitle() const
 	{
-		std::string title = VTX_PROJECT_NAME + " v" + std::to_string( VTX_VERSION_MAJOR ) + "."
-							+ std::to_string( VTX_VERSION_MINOR ) + "." + std::to_string( VTX_VERSION_REVISION )
-							+ " (BETA)";
+		std::string title = App::Application::VTX_PROJECT_NAME + " v"
+							+ std::to_string( App::Application::VTX_VERSION_MAJOR ) + "."
+							+ std::to_string( App::Application::VTX_VERSION_MINOR ) + "."
+							+ std::to_string( App::Application::VTX_VERSION_REVISION ) + " (BETA)";
 #ifndef VTX_PRODUCTION
 		title += " - DEV";
 #ifdef _DEBUG
@@ -711,7 +713,7 @@ namespace VTX::UI::QT
 	//	_settingWidget->raise();
 	// }
 
-	void MainWindow::updateRenderSetting( const Renderer::RENDER_SETTING p_setting )
+	void MainWindow::updateRenderSetting( const App::Render::Renderer::RENDER_SETTING p_setting )
 	{
 		//_renderWidget->updateRenderSetting( p_setting );
 	}

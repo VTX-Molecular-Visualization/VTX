@@ -24,9 +24,9 @@
 #include <app/action/molecule.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
+#include <app/application/define.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/define.hpp>
 #include <app/internal/io/filesystem.hpp>
 #include <app/internal/io/serialization/scene_path_data.hpp>
 #include <iostream>
@@ -329,9 +329,10 @@ namespace VTX::UI
 
 	void MainWindow::refreshWindowTitle()
 	{
-		std::string title = VTX_PROJECT_NAME + " v" + std::to_string( VTX_VERSION_MAJOR ) + "."
-							+ std::to_string( VTX_VERSION_MINOR ) + "." + std::to_string( VTX_VERSION_REVISION )
-							+ " (BETA)";
+		std::string title = App::Application::VTX_PROJECT_NAME + " v"
+							+ std::to_string( App::Application::VTX_VERSION_MAJOR ) + "."
+							+ std::to_string( App::Application::VTX_VERSION_MINOR ) + "."
+							+ std::to_string( App::Application::VTX_VERSION_REVISION ) + " (BETA)";
 #ifndef VTX_PRODUCTION
 		title += " - DEV";
 #ifdef _DEBUG
@@ -477,8 +478,8 @@ namespace VTX::UI
 		if ( UI::MimeType::getMimeTypeEnum( mimeData ) == UI::MimeType::ApplicationMimeType::FILE )
 		{
 			const QList<QUrl> &				   urlList = mimeData->urls();
-			const std::vector<FilePath>		   paths   = App::Internal::IO::Filesystem::getFilePathVectorFromQUrlList( urlList );
-			std::vector<std::vector<FilePath>> pathPerFileTypes = std::vector<std::vector<FilePath>>();
+			const std::vector<FilePath>		   paths   = App::Internal::IO::Filesystem::getFilePathVectorFromQUrlList(
+		urlList ); std::vector<std::vector<FilePath>> pathPerFileTypes = std::vector<std::vector<FilePath>>();
 			App::Internal::IO::Filesystem::fillFilepathPerMode( paths, pathPerFileTypes );
 
 			const std::vector<FilePath> & trajectoryPaths
@@ -657,7 +658,7 @@ namespace VTX::UI
 		_settingWidget->raise();
 	}
 
-	void MainWindow::updateRenderSetting( const Renderer::RENDER_SETTING p_setting )
+	void MainWindow::updateRenderSetting( const App::Render::Renderer::RENDER_SETTING p_setting )
 	{
 		_renderWidget->updateRenderSetting( p_setting );
 	}

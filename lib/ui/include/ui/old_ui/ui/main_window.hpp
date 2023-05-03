@@ -49,7 +49,7 @@ namespace VTX
 
 			inline bool isOpenGLValid() const { return _renderWidget->isOpenGLValid(); }
 			inline void updateRender() const { _renderWidget->updateRender(); }
-			void		updateRenderSetting( const Renderer::RENDER_SETTING );
+			void		updateRenderSetting( const App::Render::Renderer::RENDER_SETTING );
 			const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
 			void receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;

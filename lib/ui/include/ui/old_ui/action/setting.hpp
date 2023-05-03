@@ -3,7 +3,7 @@
 
 #include "ui/core/base_main_window.hpp"
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/renderer/base_renderer.hpp>
+#include <app/render/renderer/base_renderer.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::Action::Setting
@@ -21,14 +21,14 @@ namespace VTX::UI::Action::Setting
 	class ChangeShading : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
-		ChangeShading( const VTX::Renderer::SHADING p_shading ) : _shading( p_shading ) {}
+		ChangeShading( const App::Render::Renderer::SHADING p_shading ) : _shading( p_shading ) {}
 
 		virtual void execute() override;
 
 		virtual void displayUsage() override { VTX_INFO( "DIFFUSE|GLOSSY|TOON|FLAT_COLOR" ); }
 
 	  private:
-		const VTX::Renderer::SHADING _shading;
+		const App::Render::Renderer::SHADING _shading;
 	};
 
 	class ActiveAO : public VTX::App::Core::Action::BaseAction

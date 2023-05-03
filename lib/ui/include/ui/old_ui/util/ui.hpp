@@ -13,9 +13,9 @@
 #include <QVariant>
 #include <QWidget>
 #include <app/component/chemistry/_fwd.hpp>
-#include <util/color/rgba.hpp>
 #include <set>
 #include <string>
+#include <util/color/rgba.hpp>
 #include <vector>
 
 // namespace VTX::Model
@@ -106,7 +106,7 @@ namespace VTX::Util::UI
 		return QBitmap::fromImage( QImage( p_filepath ).createAlphaMask() );
 	}
 
-	void appendBondInfo( const App::Component::Chemistry::Bond & p_bond, QString & p_str );
+	void appendBondInfo( const VTX::App::Component::Chemistry::Bond & p_bond, QString & p_str );
 
 } // namespace VTX::Util::UI
 

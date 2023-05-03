@@ -5,7 +5,7 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/object3d/mesh_triangle.hpp"
-#include "util/color/rgba.hpp"
+#include <util/color/rgba.hpp>
 #include <util/types.hpp>
 // #include <assimp/Importer.hpp>
 // #include <assimp/postprocess.h>

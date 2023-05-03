@@ -1,15 +1,15 @@
 #include "app/application/render_effect/render_effect_library.hpp"
 #include "app/action/renderer.hpp"
+#include "app/application/setting.hpp"
 #include "app/core/view/callback_view.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/internal/worker/render_effect_loader.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/renderer/base_renderer.hpp"
-#include "app/old_app/renderer/gl/gl.hpp"
-#include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
+#include "app/render/renderer/base_renderer.hpp"
+#include "app/render/renderer/gl/gl.hpp"
 #include "app/worker.hpp"
 
 namespace VTX::App::Application::RenderEffect
@@ -19,7 +19,8 @@ namespace VTX::App::Application::RenderEffect
 	RenderEffectLibrary::RenderEffectLibrary() :
 		BaseModel( VTX::ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET_LIBRARY )
 	{
-		Worker::RenderEffectPresetLibraryLoader * libraryLoader = new Worker::RenderEffectPresetLibraryLoader( *this );
+		Internal::Worker::RenderEffectPresetLibraryLoader * libraryLoader
+			= new Internal::Worker::RenderEffectPresetLibraryLoader( *this );
 		libraryLoader->activeNotify( false );
 		VTX_WORKER( libraryLoader );
 
@@ -236,7 +237,8 @@ namespace VTX::App::Application::RenderEffect
 		{
 			const int quickAccessCount = _getNbPresetWithQuickAccess();
 
-			if ( quickAccessCount >= VTX::App::Application::Setting::MAX_QUICK_ACCESS_COUNT && _lastPresetQuickAccessed != nullptr )
+			if ( quickAccessCount >= VTX::App::Application::Setting::MAX_QUICK_ACCESS_COUNT
+				 && _lastPresetQuickAccessed != nullptr )
 				_lastPresetQuickAccessed->setQuickAccess( false );
 		}
 
@@ -323,7 +325,7 @@ namespace VTX::App::Application::RenderEffect
 		// Preset Sketch
 		RenderEffectPreset * const presetSketch = VTX::MVC_MANAGER().instantiateModel<RenderEffectPreset>();
 		presetSketch->setName( "Sketch" );
-		presetSketch->setShading( VTX::Renderer::SHADING::FLAT_COLOR );
+		presetSketch->setShading( Render::Renderer::SHADING::FLAT_COLOR );
 		presetSketch->enableSSAO( true );
 		presetSketch->enableOutline( true );
 		presetSketch->setOutlineColor( Util::Color::Rgba::BLACK );

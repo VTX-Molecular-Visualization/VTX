@@ -19,16 +19,16 @@
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
 #include <app/action/viewpoint.hpp>
+#include <app/component/object3d/label.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/component/object3d/label.hpp>
 #include <app/internal/io/filesystem.hpp>
 // #include <tool/old_tool/model/measurement/angle.hpp>
 // #include <tool/old_tool/model/measurement/dihedral_angle.hpp>
 // #include <tool/old_tool/model/measurement/distance.hpp>
 // #include <tool/old_tool/model/measurement/measure_in_progress.hpp>
-#include <app/component/object3d/mesh_triangle.hpp>
 #include <app/component/chemistry/molecule.hpp>
+#include <app/component/object3d/mesh_triangle.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::Widget::Render
@@ -232,15 +232,15 @@ namespace VTX::UI::Widget::Render
 	void RenderWidget::_onShortcutSnapshot()
 	{
 		VTX_ACTION( new App::Action::Main::Snapshot(
-			Worker::Snapshoter::MODE::GL,
+			App::Render::Worker::Snapshoter::MODE::GL,
 			App::Internal::IO::Filesystem::getUniqueSnapshotsPath( VTX_SETTING().getSnapshotFormat() ),
 			VTX_SETTING().getSnapshotResolution() ) );
 	}
 
 	void RenderWidget::_onShortcutChangeRenderMode()
 	{
-		VTX_ACTION( new App::Action::Setting::ChangeRenderMode(
-			VTX::Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)VTX::Renderer::MODE::COUNT ) ) );
+		VTX_ACTION( new App::Action::Setting::ChangeRenderMode( App::Render::Renderer::MODE(
+			( (uint)VTX_SETTING().mode + 1 ) % (uint)App::Render::Renderer::MODE::COUNT ) ) );
 	}
 
 	void RenderWidget::_onShortcutPrintCameraInfos() { VTXApp::get().getScene().getCamera().print(); }
@@ -278,7 +278,7 @@ namespace VTX::UI::Widget::Render
 			integratedWidget->updatePosition();
 	}
 
-	void RenderWidget::updateRenderSetting( const VTX::Renderer::RENDER_SETTING p_setting )
+	void RenderWidget::updateRenderSetting( const App::Render::Renderer::RENDER_SETTING p_setting )
 	{
 		_openGLWidget->updateRenderSetting( p_setting );
 	}

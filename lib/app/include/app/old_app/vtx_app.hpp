@@ -3,10 +3,10 @@
 
 #include "app/application/_fwd.hpp"
 #include "app/application/setting.hpp"
-#include "app/old_app/define.hpp"
+#include "app/internal/monitoring/stat.hpp"
 #include "app/old_app/generic/base_auto_delete.hpp"
-#include "app/old_app/spec.hpp"
-#include "stat.hpp"
+#include "app/render/define.hpp"
+#include "app/render/spec.hpp"
 // #include <QElapsedTimer>
 #include <util/exceptions.hpp>
 
@@ -28,7 +28,7 @@ namespace VTX
 			static VTXApp instance;
 			return instance;
 		}
-		VTX_MASK MASK = VTX_MASK_NEED_UPDATE;
+		App::Render::VTX_MASK MASK = App::Render::VTX_MASK_NEED_UPDATE;
 
 		void start( const std::vector<std::string> & );
 		void update();
@@ -50,10 +50,10 @@ namespace VTX
 
 		inline App::Application::Setting &								 getSetting() { return _setting; }
 		inline const App::Application::Setting &						 getSetting() const { return _setting; }
-		inline Stat &													 getStat() { return _stat; }
-		inline const Stat &												 getStat() const { return _stat; }
-		inline Spec &													 getSpec() { return _spec; }
-		inline const Spec &												 getSpec() const { return _spec; }
+		inline App::Internal::Monitoring::Stat &						 getStat() { return _stat; }
+		inline const App::Internal::Monitoring::Stat &					 getStat() const { return _stat; }
+		inline App::Render::Spec &										 getSpec() { return _spec; }
+		inline const App::Render::Spec &								 getSpec() const { return _spec; }
 		inline App::Application::Representation::RepresentationLibrary & getRepresentationLibrary()
 		{
 			return *_representationLibrary;
@@ -91,12 +91,12 @@ namespace VTX
 		// QElapsedTimer _tickTimer   = QElapsedTimer();
 		// uint _tickCounter = 0u;
 
-		App::Application::Setting								  _setting				 = App::Application::Setting();
-		Stat													  _stat					 = Stat();
-		Spec													  _spec					 = Spec();
-		UI::MainWindow *										  _mainWindow			 = nullptr;
-		App::Application::Scene *								  _scene				 = nullptr;
-		App::Internal::IO::Serialization::ScenePathData *		  _pathSceneData		 = nullptr;
+		App::Application::Setting								  _setting		 = App::Application::Setting();
+		App::Internal::Monitoring::Stat							  _stat			 = App::Internal::Monitoring::Stat();
+		App::Render::Spec										  _spec			 = App::Render::Spec();
+		UI::MainWindow *										  _mainWindow	 = nullptr;
+		App::Application::Scene *								  _scene		 = nullptr;
+		App::Internal::IO::Serialization::ScenePathData *		  _pathSceneData = nullptr;
 		App::Application::Representation::RepresentationLibrary * _representationLibrary = nullptr;
 		App::Application::RenderEffect::RenderEffectLibrary *	  _renderEffectLibrary	 = nullptr;
 
@@ -113,8 +113,8 @@ namespace VTX
 
 	App::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT();
 	inline App::Application::Setting &					 VTX_SETTING() { return VTXApp::get().getSetting(); }
-	inline Stat &										 VTX_STAT() { return VTXApp::get().getStat(); }
-	inline Spec &										 VTX_SPEC() { return VTXApp::get().getSpec(); }
+	inline App::Internal::Monitoring::Stat &			 VTX_STAT() { return VTXApp::get().getStat(); }
+	inline App::Render::Spec &							 VTX_SPEC() { return VTXApp::get().getSpec(); }
 
 } // namespace VTX
 

@@ -1,13 +1,13 @@
 #include "app/action/atom.hpp"
-#include "app/mvc.hpp"
+#include "app/application/scene.hpp"
+#include "app/application/selection/selection.hpp"
+#include "app/application/selection/selection_manager.hpp"
 #include "app/component/chemistry/generated_molecule.hpp"
 #include "app/component/chemistry/molecule.hpp"
-#include "app/application/selection/selection.hpp"
+#include "app/mvc.hpp"
 #include "app/old_app/generic/base_visible.hpp"
-#include "app/application/scene.hpp"
-#include "app/application/selection/selection_manager.hpp"
-#include "app/old_app/util/molecule.hpp"
 #include "app/old_app/vtx_app.hpp"
+#include "app/util/molecule.hpp"
 #include <map>
 #include <util/types.hpp>
 #include <vector>
@@ -29,7 +29,8 @@ namespace VTX::App::Action::Atom
 
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				App::Component::Chemistry::Atom * const atom = static_cast<App::Component::Chemistry::Atom *>( visible );
+				App::Component::Chemistry::Atom * const atom
+					= static_cast<App::Component::Chemistry::Atom *>( visible );
 				atomIDsPerMolecules[ atom->getMoleculePtr() ].emplace_back( atom->getIndex() );
 			}
 
@@ -38,11 +39,12 @@ namespace VTX::App::Action::Atom
 			{
 				App::Component::Chemistry::Molecule * const molecule = sceneMolecule.first;
 
-				std::map<App::Component::Chemistry::Molecule *, std::vector<uint>>::iterator it = atomIDsPerMolecules.find( molecule );
+				std::map<App::Component::Chemistry::Molecule *, std::vector<uint>>::iterator it
+					= atomIDsPerMolecules.find( molecule );
 
 				if ( it != atomIDsPerMolecules.end() )
 				{
-					Util::Molecule::soloAtoms( *molecule, it->second, false );
+					Util::App::Molecule::soloAtoms( *molecule, it->second, false );
 				}
 				else
 				{
@@ -55,19 +57,22 @@ namespace VTX::App::Action::Atom
 		}
 		else
 		{
-			std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Atom *>> atomsPerMolecules
+			std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Atom *>>
+				atomsPerMolecules
 				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Atom *>>();
 
 			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-				App::Component::Chemistry::Atom * const atom = static_cast<App::Component::Chemistry::Atom *>( visible );
+				App::Component::Chemistry::Atom * const atom
+					= static_cast<App::Component::Chemistry::Atom *>( visible );
 				atomsPerMolecules[ atom->getMoleculePtr() ].emplace_back( atom );
 			}
 
-			for ( const std::pair<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Atom *>> & pair : atomsPerMolecules )
+			for ( const std::pair<App::Component::Chemistry::Molecule *,
+								  std::vector<App::Component::Chemistry::Atom *>> & pair : atomsPerMolecules )
 			{
 				for ( App::Component::Chemistry::Atom * const atom : pair.second )
-					Util::Molecule::show( *atom, _getVisibilityBool( *atom ), true, false, false );
+					Util::App::Molecule::show( *atom, _getVisibilityBool( *atom ), true, false, false );
 
 				pair.first->notifyVisibilityChange();
 				pair.first->refreshVisibilities();
@@ -75,7 +80,7 @@ namespace VTX::App::Action::Atom
 			}
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Delete::execute()
@@ -96,8 +101,8 @@ namespace VTX::App::Action::Atom
 			molecule->computeAllRepresentationData();
 		}
 
-		VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-		VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Copy::execute()
@@ -120,6 +125,7 @@ namespace VTX::App::Action::Atom
 		generatedMolecule->extractAtom( _target );
 		VTXApp::get().getScene().addMolecule( generatedMolecule );
 
-		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectMolecule( *generatedMolecule );
+		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectMolecule(
+			*generatedMolecule );
 	}
 } // namespace VTX::App::Action::Atom

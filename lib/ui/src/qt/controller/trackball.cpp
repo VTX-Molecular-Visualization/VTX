@@ -1,9 +1,7 @@
 #include "ui/qt/controller/trackball.hpp"
 #include "ui/qt/style.hpp"
-
 #include <app/application/scene.hpp>
 #include <app/application/selection/selection_manager.hpp>
-#include <app/old_app/style.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 
@@ -178,8 +176,9 @@ namespace VTX::UI::QT::Controller
 			_velocity = VTX::Util::Math::linearInterpolation(
 				_velocity, VEC3F_ZERO, p_deltaTime * VTX_SETTING().getControllerElasticityFactor() );
 
-			Vec3f::bool_type res = VTX::Util::Math::lessThan( VTX::Util::Math::abs( _velocity ),
-															  Vec3f( VTX::App::Application::Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
+			Vec3f::bool_type res
+				= VTX::Util::Math::lessThan( VTX::Util::Math::abs( _velocity ),
+											 Vec3f( VTX::App::Application::Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
 			if ( !_mouseLeftPressed && res.x && res.y && res.z )
 			{
 				_velocity = VEC3F_ZERO;
