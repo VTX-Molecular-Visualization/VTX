@@ -7,6 +7,7 @@
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/internal/chemdb/category.hpp"
+#include "app/internal/chemdb/residue.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include <util/color/rgba.hpp>
@@ -474,7 +475,7 @@ namespace VTX::App::Action::Setting
 	class ChangeSymbolDisplayMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE & p_displayMode ) :
+		explicit ChangeSymbolDisplayMode( const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE & p_displayMode ) :
 			_displayMode( p_displayMode )
 		{
 		}
@@ -482,7 +483,7 @@ namespace VTX::App::Action::Setting
 		virtual void execute() override;
 
 	  private:
-		const Style::SYMBOL_DISPLAY_MODE _displayMode;
+		const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE _displayMode;
 	};
 
 	class ChangeCheckVTXUpdateAtLaunch : public App::Core::Action::BaseAction
@@ -538,7 +539,7 @@ namespace VTX::App::Action::Setting
 	class ChangeDefaultRepresentationPerCategory : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeDefaultRepresentationPerCategory( const App::Internal::ChemDB::Category::TYPE & p_categoryEnum,
+		explicit ChangeDefaultRepresentationPerCategory( const Internal::ChemDB::Category::TYPE & p_categoryEnum,
 														 const int p_representationIndex ) :
 			_categoryEnum( p_categoryEnum ),
 			_representationIndex( p_representationIndex )
@@ -548,8 +549,8 @@ namespace VTX::App::Action::Setting
 		virtual void execute() override;
 
 	  private:
-		const App::Internal::ChemDB::Category::TYPE _categoryEnum;
-		const int									_representationIndex;
+		const Internal::ChemDB::Category::TYPE _categoryEnum;
+		const int							   _representationIndex;
 	};
 
 	class ApplyAllSettings : public App::Core::Action::BaseAction

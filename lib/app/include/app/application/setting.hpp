@@ -6,10 +6,10 @@
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/video/enum_path.hpp"
 #include "app/internal/chemdb/category.hpp"
+#include "app/internal/chemdb/residue.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/style.hpp"
 #include "app/render/renderer/enum_renderer.hpp"
 #include <list>
 #include <string>
@@ -24,25 +24,14 @@ namespace VTX
 		enum class COLOR_BLENDING_MODE;
 	} // namespace Generic
 
-	namespace Renderer
-	{
-		enum class SHADING;
-		enum class MODE;
-	} // namespace Renderer
-
-	namespace Trajectory
-	{
-		enum class PlayMode;
-	}
-
 	namespace App::Application
 	{
 		class Setting
 		{
 		  public:
 			// UI.
-			static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
-			static const bool						WINDOW_FULLSCREEN_DEFAULT;
+			static const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
+			static const bool											WINDOW_FULLSCREEN_DEFAULT;
 
 			// Rendering.
 			static const bool ACTIVE_RENDERER_DEFAULT;
@@ -50,10 +39,10 @@ namespace VTX
 
 			static const Util::Color::Rgba BACKGROUND_COLOR_DEFAULT;
 
-			static const App::Internal::IO::Serialization::ImageExport::RESOLUTION SNAPSHOT_RESOLUTION_DEFAULT;
-			static const App::Internal::IO::Serialization::ImageExport::Format	   SNAPSHOT_FORMAT_DEFAULT;
-			static const float													   BACKGROUND_OPACITY_DEFAULT;
-			static const float													   SNAPSHOT_QUALITY_DEFAULT;
+			static const Internal::IO::Serialization::ImageExport::RESOLUTION SNAPSHOT_RESOLUTION_DEFAULT;
+			static const Internal::IO::Serialization::ImageExport::Format	  SNAPSHOT_FORMAT_DEFAULT;
+			static const float												  BACKGROUND_OPACITY_DEFAULT;
+			static const float												  SNAPSHOT_QUALITY_DEFAULT;
 
 			static const std::string REPRESENTATION_DEFAULT_NAME;
 			static const int		 REPRESENTATION_DEFAULT_INDEX;
@@ -92,7 +81,7 @@ namespace VTX
 			static const int		 RENDER_EFFECT_DEFAULT_INDEX;
 			static const int		 MAX_QUICK_ACCESS_COUNT = 6;
 
-			static const App::Render::Renderer::SHADING SHADING_DEFAULT;
+			static const Render::Renderer::SHADING SHADING_DEFAULT;
 
 			static const bool ACTIVE_VSYNC_DEFAULT;
 
@@ -185,14 +174,14 @@ namespace VTX
 			static const float COPIED_MOLECULE_OFFSET;
 
 			// Path
-			static const App::Component::Video::PATH_DURATION_MODE		DEFAULT_PATH_DURATION_MODE;
-			static const App::Component::Video::PATH_INTERPOLATION_MODE DEFAULT_PATH_INTERPOLATION_MODE;
+			static const Component::Video::PATH_DURATION_MODE	   DEFAULT_PATH_DURATION_MODE;
+			static const Component::Video::PATH_INTERPOLATION_MODE DEFAULT_PATH_INTERPOLATION_MODE;
 
 			// Trajectory
-			static const int								 MIN_TRAJECTORY_SPEED;
-			static const int								 MAX_TRAJECTORY_SPEED;
-			static const int								 DEFAULT_TRAJECTORY_SPEED;
-			static const App::Component::Chemistry::PlayMode DEFAULT_TRAJECTORY_PLAY_MODE;
+			static const int							MIN_TRAJECTORY_SPEED;
+			static const int							MAX_TRAJECTORY_SPEED;
+			static const int							DEFAULT_TRAJECTORY_SPEED;
+			static const Component::Chemistry::PlayMode DEFAULT_TRAJECTORY_PLAY_MODE;
 
 			// Transform
 			static const float MIN_EULER;
@@ -221,7 +210,7 @@ namespace VTX
 			static const Util::Color::Rgba DEFAULT_LABEL_COLOR;
 
 			// Selection
-			static const VTX::App::Application::Selection::GRANULARITY SELECTION_GRANULARITY_DEFAULT;
+			static const Application::Selection::GRANULARITY SELECTION_GRANULARITY_DEFAULT;
 
 			// Structural Alignment
 			static const int   CE_ALIGN_WIN_SIZE_DEFAULT;
@@ -291,21 +280,18 @@ namespace VTX
 			inline bool getVSync() const { return activeVSync; }
 			void		setVSync( const bool p_activeVSync );
 
-			inline App::Internal::IO::Serialization::ImageExport::Format getSnapshotFormat() const
-			{
-				return snapshotFormat;
-			}
-			void		 setSnapshotFormat( const App::Internal::IO::Serialization::ImageExport::Format p_format );
+			inline Internal::IO::Serialization::ImageExport::Format getSnapshotFormat() const { return snapshotFormat; }
+			void		 setSnapshotFormat( const Internal::IO::Serialization::ImageExport::Format p_format );
 			inline float getSnapshotBackgroundOpacity() const { return backgroundOpacity; }
 			void		 setSnapshotBackgroundOpacity( const float p_backgroundOpacity );
 			inline float getSnapshotQuality() const { return snapshotQuality; }
 			void		 setSnapshotQuality( const float p_snapshotQuality );
-			inline App::Internal::IO::Serialization::ImageExport::RESOLUTION getSnapshotResolution() const
+			inline Internal::IO::Serialization::ImageExport::RESOLUTION getSnapshotResolution() const
 			{
 				return snapshotResolution;
 			}
 			void setSnapshotResolution(
-				const App::Internal::IO::Serialization::ImageExport::RESOLUTION & p_snapshotResolution );
+				const Internal::IO::Serialization::ImageExport::RESOLUTION & p_snapshotResolution );
 
 			// Camera Settings
 			inline float getCameraFOV() const { return cameraFOV; };
@@ -341,32 +327,30 @@ namespace VTX
 			void	   setDefaultRenderEffectPresetIndex( const int p_renderEffectDefaultIndex );
 
 			int getDefaultRepresentationIndexPerCategory(
-				const App::Internal::ChemDB::Category::TYPE & p_categoryEnum ) const;
-			void setDefaultRepresentationIndexPerCategory( const App::Internal::ChemDB::Category::TYPE & p_categoryEnum,
+				const Internal::ChemDB::Category::TYPE & p_categoryEnum ) const;
+			void setDefaultRepresentationIndexPerCategory( const Internal::ChemDB::Category::TYPE & p_categoryEnum,
 														   const int p_representationDefaultIndex );
 			const std::string & getTmpDefaultRepresentationNamePerCategory(
-				const App::Internal::ChemDB::Category::TYPE & p_categoryEnum );
-			void setTmpDefaultRepresentationNamePerCategory(
-				const App::Internal::ChemDB::Category::TYPE & p_categoryEnum,
-				const std::string &							  p_representationDefaultName );
+				const Internal::ChemDB::Category::TYPE & p_categoryEnum );
+			void setTmpDefaultRepresentationNamePerCategory( const Internal::ChemDB::Category::TYPE & p_categoryEnum,
+															 const std::string & p_representationDefaultName );
 
-			inline VTX::App::Application::Selection::GRANULARITY getSelectionGranularity() const
-			{
-				return selectionGranularity;
-			}
-			void setSelectionGranularity(
-				const VTX::App::Application::Selection::GRANULARITY & p_selectionGranularity );
+			inline Application::Selection::GRANULARITY getSelectionGranularity() const { return selectionGranularity; }
+			void setSelectionGranularity( const Application::Selection::GRANULARITY & p_selectionGranularity );
 
 			inline int getDefaultTrajectorySpeed() const { return defaultTrajectorySpeed; }
 			void	   setDefaultTrajectorySpeed( const int p_defaultTrajectorySpeed );
-			inline const App::Component::Chemistry::PlayMode & getDefaultTrajectoryPlayMode() const
+			inline const Component::Chemistry::PlayMode & getDefaultTrajectoryPlayMode() const
 			{
 				return defaultTrajectoryPlayMode;
 			}
-			void setDefaultTrajectoryPlayMode( const App::Component::Chemistry::PlayMode p_defaultTrajectoryPlayMode );
+			void setDefaultTrajectoryPlayMode( const Component::Chemistry::PlayMode p_defaultTrajectoryPlayMode );
 
-			inline const Style::SYMBOL_DISPLAY_MODE getSymbolDisplayMode() const { return symbolDisplayMode; }
-			void setSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE p_symbolDisplayMode );
+			inline const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE getSymbolDisplayMode() const
+			{
+				return symbolDisplayMode;
+			}
+			void setSymbolDisplayMode( const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE p_symbolDisplayMode );
 
 			inline const bool getCheckVTXUpdateAtLaunch() const { return checkVTXUpdate; }
 			void			  setCheckVTXUpdateAtLaunch( const bool p_checkVTXUpdate );
@@ -416,8 +400,8 @@ namespace VTX
 			void restore();
 
 			// Dev.
-			static const App::Render::Renderer::MODE MODE_DEFAULT;
-			App::Render::Renderer::MODE				 mode = MODE_DEFAULT;
+			static const Render::Renderer::MODE MODE_DEFAULT;
+			Render::Renderer::MODE				mode = MODE_DEFAULT;
 
 		  private:
 			bool _freezeEvent = false;
@@ -427,10 +411,10 @@ namespace VTX
 			bool forceRenderer	  = FORCE_RENDERER_DEFAULT;
 			bool activeVSync	  = ACTIVE_VSYNC_DEFAULT;
 
-			App::Internal::IO::Serialization::ImageExport::Format	  snapshotFormat	 = SNAPSHOT_FORMAT_DEFAULT;
-			App::Internal::IO::Serialization::ImageExport::RESOLUTION snapshotResolution = SNAPSHOT_RESOLUTION_DEFAULT;
-			float													  backgroundOpacity	 = BACKGROUND_OPACITY_DEFAULT;
-			float													  snapshotQuality	 = SNAPSHOT_QUALITY_DEFAULT;
+			Internal::IO::Serialization::ImageExport::Format	 snapshotFormat		= SNAPSHOT_FORMAT_DEFAULT;
+			Internal::IO::Serialization::ImageExport::RESOLUTION snapshotResolution = SNAPSHOT_RESOLUTION_DEFAULT;
+			float												 backgroundOpacity	= BACKGROUND_OPACITY_DEFAULT;
+			float												 snapshotQuality	= SNAPSHOT_QUALITY_DEFAULT;
 
 			float cameraFOV			= CAMERA_FOV_DEFAULT;
 			float cameraNearClip	= CAMERA_NEAR_DEFAULT;
@@ -456,14 +440,14 @@ namespace VTX
 
 			std::vector<std::string> _tmpRepresentationPerCategory = DEFAULT_REPRESENTATION_PER_CATEGORY_NAME;
 
-			VTX::App::Application::Selection::GRANULARITY selectionGranularity = SELECTION_GRANULARITY_DEFAULT;
+			Application::Selection::GRANULARITY selectionGranularity = SELECTION_GRANULARITY_DEFAULT;
 
-			int									defaultTrajectorySpeed	  = DEFAULT_TRAJECTORY_SPEED;
-			App::Component::Chemistry::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
+			int							   defaultTrajectorySpeed	 = DEFAULT_TRAJECTORY_SPEED;
+			Component::Chemistry::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
 
-			Style::SYMBOL_DISPLAY_MODE symbolDisplayMode	 = SYMBOL_DISPLAY_MODE_DEFAULT;
-			bool					   checkVTXUpdate		 = CHECK_VTX_UPDATE_DEFAULT;
-			bool					   portableSaveActivated = PORTABLE_SAVE_ACTIVATED_DEFAULT;
+			Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE symbolDisplayMode	 = SYMBOL_DISPLAY_MODE_DEFAULT;
+			bool										   checkVTXUpdate		 = CHECK_VTX_UPDATE_DEFAULT;
+			bool										   portableSaveActivated = PORTABLE_SAVE_ACTIVATED_DEFAULT;
 
 			static std::string _getFileInRegisterKey( const std::string & p_key, const std::string & p_default );
 

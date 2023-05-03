@@ -22,8 +22,9 @@
 namespace VTX::App::Application
 {
 	// UI.
-	const Style::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT = Style::SYMBOL_DISPLAY_MODE::SHORT;
-	const bool						 Setting::WINDOW_FULLSCREEN_DEFAULT	  = false;
+	const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT
+		= Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE::SHORT;
+	const bool Setting::WINDOW_FULLSCREEN_DEFAULT = false;
 
 	// Rendering.
 	const bool Setting::ACTIVE_RENDERER_DEFAULT = true;
@@ -36,10 +37,10 @@ namespace VTX::App::Application
 	const float				Setting::BACKGROUND_OPACITY_DEFAULT = 1.0f;
 	const float				Setting::SNAPSHOT_QUALITY_DEFAULT	= 1.0f;
 
-	const App::Internal::IO::Serialization::ImageExport::RESOLUTION Setting::SNAPSHOT_RESOLUTION_DEFAULT
-		= App::Internal::IO::Serialization::ImageExport::RESOLUTION::Free;
-	const App::Internal::IO::Serialization::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT
-		= App::Internal::IO::Serialization::ImageExport::Format::PNG;
+	const Internal::IO::Serialization::ImageExport::RESOLUTION Setting::SNAPSHOT_RESOLUTION_DEFAULT
+		= Internal::IO::Serialization::ImageExport::RESOLUTION::Free;
+	const Internal::IO::Serialization::ImageExport::Format Setting::SNAPSHOT_FORMAT_DEFAULT
+		= Internal::IO::Serialization::ImageExport::Format::PNG;
 
 	const std::string									   Setting::REPRESENTATION_DEFAULT_NAME	 = "Stick";
 	const int											   Setting::REPRESENTATION_DEFAULT_INDEX = 4;
@@ -87,7 +88,7 @@ namespace VTX::App::Application
 	const std::string Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME = "New render preset";
 	const int		  Setting::RENDER_EFFECT_DEFAULT_INDEX			 = 0;
 
-	const App::Render::Renderer::SHADING Setting::SHADING_DEFAULT = App::Render::Renderer::SHADING::DIFFUSE;
+	const Render::Renderer::SHADING Setting::SHADING_DEFAULT = Render::Renderer::SHADING::DIFFUSE;
 #ifdef VTX_PRODUCTION
 	const bool Setting::ACTIVE_VSYNC_DEFAULT = true;
 #else
@@ -160,10 +161,10 @@ namespace VTX::App::Application
 	const float Setting::COPIED_MOLECULE_OFFSET = 5.0f;
 
 	// Path
-	const App::Component::Video::PATH_DURATION_MODE Setting::DEFAULT_PATH_DURATION_MODE
-		= App::Component::Video::PATH_DURATION_MODE::CONSTANT_SPEED;
-	const App::Component::Video::PATH_INTERPOLATION_MODE Setting::DEFAULT_PATH_INTERPOLATION_MODE
-		= App::Component::Video::PATH_INTERPOLATION_MODE::CATMULL_ROM;
+	const Component::Video::PATH_DURATION_MODE Setting::DEFAULT_PATH_DURATION_MODE
+		= Component::Video::PATH_DURATION_MODE::CONSTANT_SPEED;
+	const Component::Video::PATH_INTERPOLATION_MODE Setting::DEFAULT_PATH_INTERPOLATION_MODE
+		= Component::Video::PATH_INTERPOLATION_MODE::CATMULL_ROM;
 
 	// Trajectory
 	const int							 Setting::MIN_TRAJECTORY_SPEED		   = 1;
@@ -198,8 +199,8 @@ namespace VTX::App::Application
 	const Util::Color::Rgba Setting::DEFAULT_LABEL_COLOR = Util::Color::Rgba( 0.f, 0.f, 1.f );
 
 	// Selection
-	const VTX::App::Application::Selection::GRANULARITY Setting::SELECTION_GRANULARITY_DEFAULT
-		= VTX::App::Application::Selection::GRANULARITY::RESIDUE;
+	const Application::Selection::GRANULARITY Setting::SELECTION_GRANULARITY_DEFAULT
+		= Application::Selection::GRANULARITY::RESIDUE;
 
 	// Structural Alignment
 	const int	Setting::CE_ALIGN_WIN_SIZE_DEFAULT = 8;
@@ -217,7 +218,7 @@ namespace VTX::App::Application
 	const float Setting::CELL_LIST_CUBE_SIZE			 = 8.f;
 
 	// Dev.
-	const App::Render::Renderer::MODE Setting::MODE_DEFAULT = App::Render::Renderer::MODE::GL;
+	const Render::Renderer::MODE Setting::MODE_DEFAULT = Render::Renderer::MODE::GL;
 
 	const int Setting::RECENT_PATH_SAVED_MAX_COUNT			= 10;
 	const int Setting::RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT = 20;
@@ -241,7 +242,7 @@ namespace VTX::App::Application
 
 		saveRecentPaths();
 
-		VTX_EVENT( VTX::App::Event::Global::RECENT_FILES_CHANGE );
+		VTX_EVENT( Event::Global::RECENT_FILES_CHANGE );
 	}
 	const FilePath * const Setting::getRecentLoadingPath( const int p_index )
 	{
@@ -275,7 +276,7 @@ namespace VTX::App::Application
 
 		saveRecentPaths();
 
-		VTX_EVENT( VTX::App::Event::Global::RECENT_DOWNLOAD_CODE_CHANGE );
+		VTX_EVENT( Event::Global::RECENT_DOWNLOAD_CODE_CHANGE );
 	}
 	const std::string * const Setting::getRecentDownloadCode( const int p_index )
 	{
@@ -345,7 +346,7 @@ namespace VTX::App::Application
 	std::string Setting::getLastLoadedSessionFolder()
 	{
 		return _getFileInRegisterKey( RegisterKey::LAST_OPEN_SESSION_FOLDER,
-									  App::Internal::IO::Filesystem::DEFAULT_SAVE_FOLDER.string() );
+									  Internal::IO::Filesystem::DEFAULT_SAVE_FOLDER.string() );
 	}
 	void Setting::saveLastLoadedSessionFolder( const std::string & p_path )
 	{
@@ -355,7 +356,7 @@ namespace VTX::App::Application
 	std::string Setting::getLastSavedSessionFolder()
 	{
 		return _getFileInRegisterKey( RegisterKey::LAST_SAVED_SESSION_FOLDER,
-									  App::Internal::IO::Filesystem::DEFAULT_SAVE_FOLDER.string() );
+									  Internal::IO::Filesystem::DEFAULT_SAVE_FOLDER.string() );
 	}
 	void Setting::saveLastSavedSessionFolder( const std::string & p_path )
 	{
@@ -365,7 +366,7 @@ namespace VTX::App::Application
 	std::string Setting::getLastImportedMoleculeFolder()
 	{
 		return _getFileInRegisterKey( RegisterKey::LAST_IMPORTED_MOLECULE_FOLDER,
-									  App::Internal::IO::Filesystem::DEFAULT_MOLECULE_FOLDER.string() );
+									  Internal::IO::Filesystem::DEFAULT_MOLECULE_FOLDER.string() );
 	}
 	void Setting::saveLastImportedMoleculeFolder( const std::string & p_path )
 	{
@@ -375,7 +376,7 @@ namespace VTX::App::Application
 	std::string Setting::getLastExportedMoleculeFolder()
 	{
 		return _getFileInRegisterKey( RegisterKey::LAST_EXPORTED_MOLECULE_FOLDER,
-									  App::Internal::IO::Filesystem::DEFAULT_MOLECULE_FOLDER.string() );
+									  Internal::IO::Filesystem::DEFAULT_MOLECULE_FOLDER.string() );
 	}
 	void Setting::saveLastExportedMoleculeFolder( const std::string & p_path )
 	{
@@ -385,7 +386,7 @@ namespace VTX::App::Application
 	std::string Setting::getLastExportedImageFolder()
 	{
 		return _getFileInRegisterKey( RegisterKey::LAST_EXPORTED_IMAGE_FOLDER,
-									  App::Internal::IO::Filesystem::getSnapshotsDir().string() );
+									  Internal::IO::Filesystem::getSnapshotsDir().string() );
 	}
 	void Setting::saveLastExportedImageFolder( const std::string & p_path )
 	{
@@ -413,7 +414,7 @@ namespace VTX::App::Application
 		Core::IO::Writer::SerializedObject<Setting> writer = Core::IO::Writer::SerializedObject<Setting>();
 		try
 		{
-			writer.writeFile( App::Internal::IO::Filesystem::getSettingJsonFile(), *this );
+			writer.writeFile( Internal::IO::Filesystem::getSettingJsonFile(), *this );
 			VTX_INFO( "Settings Saved " );
 		}
 		catch ( const std::exception & p_e )
@@ -426,7 +427,7 @@ namespace VTX::App::Application
 		Core::IO::Reader::SerializedObject<Setting> reader = Core::IO::Reader::SerializedObject<Setting>();
 		try
 		{
-			reader.readFile( App::Internal::IO::Filesystem::getSettingJsonFile(), VTX_SETTING() );
+			reader.readFile( Internal::IO::Filesystem::getSettingJsonFile(), VTX_SETTING() );
 			VTX_INFO( "Settings loaded " );
 		}
 		catch ( const std::exception & p_e )
@@ -456,7 +457,7 @@ namespace VTX::App::Application
 		_sendDataChangedEvent( PARAMETER::VSYNC );
 	}
 
-	void Setting::setSnapshotFormat( const App::Internal::IO::Serialization::ImageExport::Format p_format )
+	void Setting::setSnapshotFormat( const Internal::IO::Serialization::ImageExport::Format p_format )
 	{
 		snapshotFormat = p_format;
 		_sendDataChangedEvent( PARAMETER::SNAPSHOT_FORMAT );
@@ -473,7 +474,7 @@ namespace VTX::App::Application
 		_sendDataChangedEvent( PARAMETER::SNAPSHOT_QUALITY );
 	}
 	void Setting::setSnapshotResolution(
-		const App::Internal::IO::Serialization::ImageExport::RESOLUTION & p_snapshotResolution )
+		const Internal::IO::Serialization::ImageExport::RESOLUTION & p_snapshotResolution )
 	{
 		snapshotResolution = p_snapshotResolution;
 		_sendDataChangedEvent( PARAMETER::SNAPSHOT_RESOLUTION );
@@ -584,7 +585,7 @@ namespace VTX::App::Application
 		_tmpRepresentationPerCategory[ int( p_categoryEnum ) ] = p_representationDefaultName;
 	}
 
-	void Setting::setSelectionGranularity( const App::Application::Selection::GRANULARITY & p_selectionGranularity )
+	void Setting::setSelectionGranularity( const Application::Selection::GRANULARITY & p_selectionGranularity )
 	{
 		selectionGranularity = p_selectionGranularity;
 		_sendDataChangedEvent( PARAMETER::SELECTION_GRANULARITY );
@@ -602,7 +603,7 @@ namespace VTX::App::Application
 		_sendDataChangedEvent( PARAMETER::TRAJECTORY_DEFAULT_PLAY_MODE );
 	}
 
-	void Setting::setSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE p_symbolDisplayMode )
+	void Setting::setSymbolDisplayMode( const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE p_symbolDisplayMode )
 	{
 		symbolDisplayMode = p_symbolDisplayMode;
 		_sendDataChangedEvent( PARAMETER::SYMBOL_DISPLAY_MODE );
@@ -683,7 +684,7 @@ namespace VTX::App::Application
 			parameters.emplace( p_parameter );
 		}
 
-		VTX_EVENT<const std::set<PARAMETER> &>( VTX::App::Event::Global::SETTINGS_CHANGE, parameters );
+		VTX_EVENT<const std::set<PARAMETER> &>( Event::Global::SETTINGS_CHANGE, parameters );
 	}
 
 } // namespace VTX::App::Application

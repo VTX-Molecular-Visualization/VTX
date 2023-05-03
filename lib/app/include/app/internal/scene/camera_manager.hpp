@@ -7,6 +7,10 @@ namespace VTX::App::Internal::Scene
 {
 	class CameraManager
 	{
+	  private:
+		inline static const int CAMERA_WIDTH_DEFAULT  = 1280;
+		inline static const int CAMERA_HEIGHT_DEFAULT = 720;
+
 	  public:
 		CameraManager();
 		~CameraManager();

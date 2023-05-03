@@ -1,6 +1,5 @@
 #include "app/component/object3d/label.hpp"
 #include "app/application/setting.hpp"
-#include "app/old_app/style.hpp"
 
 namespace VTX::App::Component::Object3D
 {

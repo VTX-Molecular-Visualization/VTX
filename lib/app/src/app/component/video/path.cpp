@@ -5,7 +5,6 @@
 #include "app/event/global.hpp"
 #include "app/mvc.hpp"
 #include "app/old_app/id.hpp"
-#include "app/old_app/style.hpp"
 #include <algorithm>
 #include <fstream>
 #include <sstream>
@@ -206,32 +205,4 @@ namespace VTX::App::Component::Video
 			}
 		}
 	}
-
-	std::string Path::generateNewViewpointName() const
-	{
-		int intSuffix = 1;
-
-		std::string viewpointName;
-		bool		nameIsValid;
-		do
-		{
-			viewpointName = Style::VIEWPOINT_DEFAULT_NAME + ' ' + std::to_string( intSuffix );
-			nameIsValid	  = true;
-
-			for ( const Object3D::Viewpoint * const viewpoint : _viewpoints )
-			{
-				if ( viewpoint->getDefaultName() == viewpointName )
-				{
-					nameIsValid = false;
-					break;
-				}
-			}
-
-			intSuffix++;
-
-		} while ( !nameIsValid );
-
-		return viewpointName;
-	}
-
 } // namespace VTX::App::Component::Video

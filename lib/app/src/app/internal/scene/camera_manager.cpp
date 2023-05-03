@@ -5,7 +5,11 @@
 
 namespace VTX::App::Internal::Scene
 {
-	CameraManager::CameraManager() { _currentCamera = new App::Component::Render::Camera(); }
+	CameraManager::CameraManager()
+	{
+		_currentCamera = new App::Component::Render::Camera();
+		_currentCamera->setScreenSize( CAMERA_WIDTH_DEFAULT, CAMERA_HEIGHT_DEFAULT );
+	}
 	CameraManager::~CameraManager() { delete _currentCamera; }
 
 	void CameraManager::setPerspectiveCamera( const bool p_perspective )

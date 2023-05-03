@@ -35,17 +35,17 @@
 
 namespace VTX::App::Internal::IO
 {
-	Serializer::Serializer( const VTX::App::Core::Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
+	Serializer::Serializer( const Core::Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
 
 	nlohmann::json Serializer::serialize( const VTXApp & p_app ) const
 	{
 		return nlohmann::json { { "SCENE", serialize( p_app.getScene() ) } };
 	}
 
-	nlohmann::json Serializer::serialize( const App::Application::Scene & p_scene ) const
+	nlohmann::json Serializer::serialize( const Application::Scene & p_scene ) const
 	{
 		nlohmann::json jsonArrayMolecules = nlohmann::json::array();
-		for ( const App::Application::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
+		for ( const Application::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 		{
 			nlohmann::json json
 				= { { "INDEX", p_scene.getItemPosition( *pair.first ) }, { "MOLECULE", serialize( *pair.first ) } };
@@ -54,14 +54,14 @@ namespace VTX::App::Internal::IO
 		}
 
 		nlohmann::json jsonArrayLabels = nlohmann::json::array();
-		for ( const App::Component::Object3D::Label * const label : p_scene.getLabels() )
+		for ( const Component::Object3D::Label * const label : p_scene.getLabels() )
 		{
 			nlohmann::json json = { { "INDEX", p_scene.getItemPosition( *label ) }, { "LABEL", serialize( *label ) } };
 			jsonArrayLabels.emplace_back( json );
 		}
 
 		nlohmann::json jsonArrayPaths = nlohmann::json::array();
-		for ( const App::Component::Video::Path * const path : p_scene.getPaths() )
+		for ( const Component::Video::Path * const path : p_scene.getPaths() )
 		{
 			nlohmann::json json = { { "INDEX", p_scene.getItemPosition( *path ) }, { "PATH", serialize( *path ) } };
 			jsonArrayPaths.emplace_back( json );
@@ -75,7 +75,7 @@ namespace VTX::App::Internal::IO
 				 { "LABELS", jsonArrayLabels } };
 	}
 
-	nlohmann::json Serializer::serialize( const App::Component::Chemistry::Molecule & p_molecule ) const
+	nlohmann::json Serializer::serialize( const Component::Chemistry::Molecule & p_molecule ) const
 	{
 		const FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
 
@@ -99,7 +99,7 @@ namespace VTX::App::Internal::IO
 				 { "PERSISTENT_SCENE_ID", p_molecule.getPersistentSceneID() } };
 	}
 
-	nlohmann::json Serializer::serialize( const App::Component::Object3D::Label & p_label ) const
+	nlohmann::json Serializer::serialize( const Component::Object3D::Label & p_label ) const
 	{
 		const ID::VTX_ID & labelTypeID = p_label.getTypeId();
 
@@ -116,10 +116,10 @@ namespace VTX::App::Internal::IO
 		return {};
 	}
 
-	nlohmann::json Serializer::serialize( const App::Component::Video::Path & p_path ) const
+	nlohmann::json Serializer::serialize( const Component::Video::Path & p_path ) const
 	{
 		nlohmann::json jsonArray = nlohmann::json::array();
-		for ( const App::Component::Object3D::Viewpoint * const viewpoint : p_path.getViewpoints() )
+		for ( const Component::Object3D::Viewpoint * const viewpoint : p_path.getViewpoints() )
 		{
 			jsonArray.emplace_back( serialize( *viewpoint ) );
 		}
@@ -133,7 +133,7 @@ namespace VTX::App::Internal::IO
 				 { "PERSISTENT_SCENE_ID", p_path.getPersistentSceneID() } };
 	}
 
-	nlohmann::json Serializer::serialize( const App::Component::Object3D::Viewpoint & p_viewpoint ) const
+	nlohmann::json Serializer::serialize( const Component::Object3D::Viewpoint & p_viewpoint ) const
 	{
 		nlohmann::json json = { { "NAME", p_viewpoint.getDefaultName() },
 								{ "DURATION", p_viewpoint.getDuration() },
@@ -150,43 +150,43 @@ namespace VTX::App::Internal::IO
 	}
 
 	nlohmann::json Serializer::serialize(
-		const App::Application::Representation::InstantiatedRepresentation & p_representation ) const
+		const Application::Representation::InstantiatedRepresentation & p_representation ) const
 	{
 		nlohmann::json json = nlohmann::json();
 
-		const App::Application::Representation::RepresentationPreset * const linkedRep
+		const Application::Representation::RepresentationPreset * const linkedRep
 			= p_representation.getLinkedRepresentation();
 		const int presetIndex
-			= App::Application::Representation::RepresentationLibrary::get().getRepresentationIndex( linkedRep );
+			= Application::Representation::RepresentationLibrary::get().getRepresentationIndex( linkedRep );
 
 		json[ "REPRESENTATION_PRESET_INDEX" ] = presetIndex;
 
-		if ( p_representation.isMemberOverrided( App::Application::Representation::MEMBER_ENUM::SPHERE_RADIUS_ADD ) )
+		if ( p_representation.isMemberOverrided( Application::Representation::MEMBER_ENUM::SPHERE_RADIUS_ADD ) )
 			json[ "SPHERE_RADIUS_ADD" ] = p_representation.getSphereData().radiusAdd;
-		if ( p_representation.isMemberOverrided( App::Application::Representation::MEMBER_ENUM::SPHERE_RADIUS_FIXED ) )
+		if ( p_representation.isMemberOverrided( Application::Representation::MEMBER_ENUM::SPHERE_RADIUS_FIXED ) )
 			json[ "SPHERE_RADIUS_FIXED" ] = p_representation.getSphereData().radiusFixed;
-		if ( p_representation.isMemberOverrided( App::Application::Representation::MEMBER_ENUM::CYLINDER_RADIUS ) )
+		if ( p_representation.isMemberOverrided( Application::Representation::MEMBER_ENUM::CYLINDER_RADIUS ) )
 			json[ "CYLINDER_RADIUS" ] = p_representation.getCylinderData().radius;
 		if ( p_representation.isMemberOverrided(
-				 App::Application::Representation::MEMBER_ENUM::CYLINDER_COLOR_BLENDING_MODE ) )
+				 Application::Representation::MEMBER_ENUM::CYLINDER_COLOR_BLENDING_MODE ) )
 			json[ "CYLINDER_COLOR_BLENDING_MODE" ]
 				= magic_enum::enum_name( p_representation.getCylinderData().colorBlendingMode );
-		if ( p_representation.isMemberOverrided( App::Application::Representation::MEMBER_ENUM::RIBBON_COLOR_MODE ) )
+		if ( p_representation.isMemberOverrided( Application::Representation::MEMBER_ENUM::RIBBON_COLOR_MODE ) )
 			json[ "RIBBON_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getRibbonData().colorMode );
 		if ( p_representation.isMemberOverrided(
-				 App::Application::Representation::MEMBER_ENUM::RIBBON_COLOR_BLENDING_MODE ) )
+				 Application::Representation::MEMBER_ENUM::RIBBON_COLOR_BLENDING_MODE ) )
 			json[ "RIBBON_COLOR_BLENDING_MODE" ]
 				= magic_enum::enum_name( p_representation.getRibbonData().colorBlendingMode );
-		if ( p_representation.isMemberOverrided( App::Application::Representation::MEMBER_ENUM::COLOR_MODE ) )
+		if ( p_representation.isMemberOverrided( Application::Representation::MEMBER_ENUM::COLOR_MODE ) )
 			json[ "COLOR_MODE" ] = magic_enum::enum_name( p_representation.getColorMode() );
-		if ( p_representation.isMemberOverrided( App::Application::Representation::MEMBER_ENUM::COLOR ) )
+		if ( p_representation.isMemberOverrided( Application::Representation::MEMBER_ENUM::COLOR ) )
 			json[ "COLOR" ] = serialize( p_representation.getColor() );
 
 		return json;
 	}
 
 	nlohmann::json Serializer::serialize(
-		const App::Application::Representation::RepresentationPreset & p_representation ) const
+		const Application::Representation::RepresentationPreset & p_representation ) const
 	{
 		nlohmann::json json = { { "QUICK_ACCESS", p_representation.hasQuickAccess() },
 								{ "TYPE", magic_enum::enum_name( p_representation.getRepresentationType() ) },
@@ -213,7 +213,7 @@ namespace VTX::App::Internal::IO
 		return json;
 	}
 
-	nlohmann::json Serializer::serialize( const App::Application::RenderEffect::RenderEffectPreset & p_preset ) const
+	nlohmann::json Serializer::serialize( const Application::RenderEffect::RenderEffectPreset & p_preset ) const
 	{
 		return {
 			{ "QUICK_ACCESS", p_preset.hasQuickAccess() },
@@ -240,7 +240,7 @@ namespace VTX::App::Internal::IO
 		return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() } };
 	}
 
-	nlohmann::json Serializer::serialize( const App::Internal::Math::Transform & p_transform ) const
+	nlohmann::json Serializer::serialize( const Internal::Math::Transform & p_transform ) const
 	{
 		return { { "POSITION", serialize( p_transform.getTranslationVector() ) },
 				 { "ROTATION", serialize( p_transform.getEulerAngles() ) },
@@ -269,32 +269,30 @@ namespace VTX::App::Internal::IO
 		return nlohmann::json( { { "X", p_quat.x }, { "Y", p_quat.y }, { "Z", p_quat.z }, { "W", p_quat.w } } );
 	}
 
-	nlohmann::json Serializer::serialize( const App::Application::Setting & p_setting ) const
+	nlohmann::json Serializer::serialize( const Application::Setting & p_setting ) const
 	{
 		const std::string & defaultRepresentationName
-			= App::Application::Representation::RepresentationLibrary::get()
+			= Application::Representation::RepresentationLibrary::get()
 				  .getRepresentation( p_setting.getDefaultRepresentationIndex() )
 				  ->getName();
 
 		const std::string & defaultRenderEffectPresetName
-			= App::Application::RenderEffect::RenderEffectLibrary::get()
+			= Application::RenderEffect::RenderEffectLibrary::get()
 				  .getPreset( p_setting.getDefaultRenderEffectPresetIndex() )
 				  ->getName();
 
 		std::vector<std::string> defaultRepresentationNamePerCategory = std::vector<std::string>();
-		defaultRepresentationNamePerCategory.resize( int( App::Internal::ChemDB::Category::TYPE::COUNT ) );
+		defaultRepresentationNamePerCategory.resize( int( Internal::ChemDB::Category::TYPE::COUNT ) );
 
-		for ( int i = 0; i < int( App::Internal::ChemDB::Category::TYPE::COUNT ); i++ )
+		for ( int i = 0; i < int( Internal::ChemDB::Category::TYPE::COUNT ); i++ )
 		{
 			const int representationIndex
-				= p_setting.getDefaultRepresentationIndexPerCategory( App::Internal::ChemDB::Category::TYPE( i ) );
-			const App::Application::Representation::RepresentationPreset * representation
-				= App::Application::Representation::RepresentationLibrary::get().getRepresentation(
-					representationIndex );
+				= p_setting.getDefaultRepresentationIndexPerCategory( Internal::ChemDB::Category::TYPE( i ) );
+			const Application::Representation::RepresentationPreset * representation
+				= Application::Representation::RepresentationLibrary::get().getRepresentation( representationIndex );
 
 			if ( representation == nullptr )
-				representation
-					= App::Application::Representation::RepresentationLibrary::get().getDefaultRepresentation();
+				representation = Application::Representation::RepresentationLibrary::get().getDefaultRepresentation();
 
 			defaultRepresentationNamePerCategory[ i ] = representation->getName();
 		}
@@ -337,7 +335,7 @@ namespace VTX::App::Internal::IO
 		};
 	}
 
-	nlohmann::json Serializer::serializeAtomReference( const App::Component::Chemistry::Atom & p_atom ) const
+	nlohmann::json Serializer::serializeAtomReference( const Component::Chemistry::Atom & p_atom ) const
 	{
 		return nlohmann::json(
 			{ { "M", p_atom.getMoleculePtr()->getPersistentSceneID() }, { "A", p_atom.getIndex() } } );
@@ -352,7 +350,7 @@ namespace VTX::App::Internal::IO
 
 	void Serializer::deserialize( const nlohmann::json &			   p_json,
 								  const std::tuple<uint, uint, uint> & p_version,
-								  App::Application::Scene &			   p_scene ) const
+								  Application::Scene &				   p_scene ) const
 	{
 		Vec3f cameraPos;
 		if ( p_json.contains( "CAMERA_POSITION" ) )
@@ -362,10 +360,8 @@ namespace VTX::App::Internal::IO
 		if ( p_json.contains( "CAMERA_ROTATION" ) )
 			deserialize( p_json.at( "CAMERA_ROTATION" ), cameraRot );
 
-		std::vector<App::Component::Chemistry::Molecule *> molecules
-			= std::vector<App::Component::Chemistry::Molecule *>();
-		std::map<int, App::Core::Scene::BaseSceneItem *> itemPositionMap
-			= std::map<int, App::Core::Scene::BaseSceneItem *>();
+		std::vector<Component::Chemistry::Molecule *> molecules		  = std::vector<Component::Chemistry::Molecule *>();
+		std::map<int, Core::Scene::BaseSceneItem *>	  itemPositionMap = std::map<int, Core::Scene::BaseSceneItem *>();
 
 		int lastItemIndex = -1;
 
@@ -375,8 +371,8 @@ namespace VTX::App::Internal::IO
 			{
 				if ( jsonMolecule.contains( "MOLECULE" ) )
 				{
-					App::Component::Chemistry::Molecule * const molecule
-						= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::Molecule>();
+					Component::Chemistry::Molecule * const molecule
+						= VTX::MVC_MANAGER().instantiateModel<Component::Chemistry::Molecule>();
 
 					try
 					{
@@ -404,10 +400,10 @@ namespace VTX::App::Internal::IO
 		{
 			for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
 			{
-				App::Component::Video::Path * path;
+				Component::Video::Path * path;
 				if ( jsonPath.contains( "PATH" ) )
 				{
-					path = tryDeserializeModel<App::Component::Video::Path>( jsonPath.at( "PATH" ) );
+					path = tryDeserializeModel<Component::Video::Path>( jsonPath.at( "PATH" ) );
 				}
 				else
 				{
@@ -434,8 +430,8 @@ namespace VTX::App::Internal::IO
 			{
 				if ( jsonLabel.contains( "LABEL" ) )
 				{
-					App::Component::Object3D::Label * label			= nullptr;
-					const nlohmann::json &			  jsonLabelData = jsonLabel.at( "LABEL" );
+					Component::Object3D::Label * label		   = nullptr;
+					const nlohmann::json &		 jsonLabelData = jsonLabel.at( "LABEL" );
 
 					if ( jsonLabelData.contains( "TYPE_ID" ) )
 					{
@@ -468,7 +464,7 @@ namespace VTX::App::Internal::IO
 
 		for ( int i = 0; i <= lastItemIndex; i++ )
 		{
-			std::map<int, App::Core::Scene::BaseSceneItem *>::iterator it = itemPositionMap.find( i );
+			std::map<int, Core::Scene::BaseSceneItem *>::iterator it = itemPositionMap.find( i );
 			if ( it != itemPositionMap.end() )
 			{
 				p_scene.changeModelPosition( *( it->second ), it->first );
@@ -485,13 +481,13 @@ namespace VTX::App::Internal::IO
 		p_scene.getCamera().setRotation( cameraRot );
 	}
 
-	void Serializer::deserialize( const nlohmann::json &				p_json,
-								  const std::tuple<uint, uint, uint> &	p_version,
-								  App::Component::Chemistry::Molecule & p_molecule ) const
+	void Serializer::deserialize( const nlohmann::json &			   p_json,
+								  const std::tuple<uint, uint, uint> & p_version,
+								  Component::Chemistry::Molecule &	   p_molecule ) const
 	{
 		if ( p_json.contains( "TRANSFORM" ) )
 		{
-			App::Internal::Math::Transform transform;
+			Internal::Math::Transform transform;
 			deserialize( p_json.at( "TRANSFORM" ), transform );
 			p_molecule.applyTransform( transform );
 		}
@@ -500,14 +496,14 @@ namespace VTX::App::Internal::IO
 
 		if ( molPath.is_relative() )
 		{
-			const FilePath sceneFolder = App::Internal::IO::Filesystem::getSceneSaveDirectory(
-				VTXApp::get().getScenePathData().getCurrentPath() );
+			const FilePath sceneFolder
+				= Internal::IO::Filesystem::getSceneSaveDirectory( VTXApp::get().getScenePathData().getCurrentPath() );
 			molPath = sceneFolder / molPath;
 		}
 
 		try
 		{
-			App::Internal::IO::Reader::LibChemfiles reader = App::Internal::IO::Reader::LibChemfiles( _thread );
+			Internal::IO::Reader::LibChemfiles reader = Internal::IO::Reader::LibChemfiles( _thread );
 			reader.readFile( molPath, p_molecule );
 			VTXApp::get().getScenePathData().registerLoading( &p_molecule, molPath );
 		}
@@ -548,22 +544,22 @@ namespace VTX::App::Internal::IO
 
 		p_molecule.setFrame( _get<uint>( p_json, "CURRENT_FRAME" ) );
 		p_molecule.setFPS( _get<uint>( p_json, "TRAJECTORY_FPS" ) );
-		p_molecule.setPlayMode( _getEnum<App::Component::Chemistry::PlayMode>( p_json, "TRAJECTORY_PLAYMODE" ) );
+		p_molecule.setPlayMode( _getEnum<Component::Chemistry::PlayMode>( p_json, "TRAJECTORY_PLAYMODE" ) );
 		p_molecule.setIsPlaying( _get<bool>( p_json, "TRAJECTORY_ISPLAYING" ) );
 		p_molecule.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
 	}
 
-	void Serializer::deserialize( const nlohmann::json & p_json, App::Component::Video::Path & p_path ) const
+	void Serializer::deserialize( const nlohmann::json & p_json, Component::Video::Path & p_path ) const
 	{
 		p_path.setName( _get<std::string>( p_json, "NAME" ) );
 
-		p_path.setDurationMode( _getEnum<App::Component::Video::PATH_DURATION_MODE>(
-			p_json, "MODE_DURATION", VTX::App::Application::Setting::DEFAULT_PATH_DURATION_MODE ) );
+		p_path.setDurationMode( _getEnum<Component::Video::PATH_DURATION_MODE>(
+			p_json, "MODE_DURATION", Application::Setting::DEFAULT_PATH_DURATION_MODE ) );
 
-		p_path.setInterpolationMode( _getEnum<App::Component::Video::PATH_INTERPOLATION_MODE>(
-			p_json, "MODE_DURATION", VTX::App::Application::Setting::DEFAULT_PATH_INTERPOLATION_MODE ) );
+		p_path.setInterpolationMode( _getEnum<Component::Video::PATH_INTERPOLATION_MODE>(
+			p_json, "MODE_DURATION", Application::Setting::DEFAULT_PATH_INTERPOLATION_MODE ) );
 
-		p_path.setDuration( _get<float>( p_json, "DURATION", VTX::App::Application::Setting::PATH_DURATION_DEFAULT ) );
+		p_path.setDuration( _get<float>( p_json, "DURATION", Application::Setting::PATH_DURATION_DEFAULT ) );
 		p_path.setIsLooping( _get<bool>( p_json, "IS_LOOPING" ) );
 		p_path.setPersistentSceneID( _get<int>( p_json, "PERSISTENT_SCENE_ID" ) );
 
@@ -571,8 +567,8 @@ namespace VTX::App::Internal::IO
 		{
 			for ( const nlohmann::json & jsonViewpoint : p_json.at( "VIEWPOINTS" ) )
 			{
-				App::Component::Object3D::Viewpoint * const viewpoint
-					= VTX::MVC_MANAGER().instantiateModel<App::Component::Object3D::Viewpoint>( &p_path );
+				Component::Object3D::Viewpoint * const viewpoint
+					= VTX::MVC_MANAGER().instantiateModel<Component::Object3D::Viewpoint>( &p_path );
 				deserialize( jsonViewpoint, *viewpoint );
 				p_path.addViewpoint( viewpoint );
 			}
@@ -581,12 +577,11 @@ namespace VTX::App::Internal::IO
 		p_path.refreshAllDurations();
 	}
 
-	void Serializer::deserialize( const nlohmann::json &				p_json,
-								  App::Component::Object3D::Viewpoint & p_viewpoint ) const
+	void Serializer::deserialize( const nlohmann::json & p_json, Component::Object3D::Viewpoint & p_viewpoint ) const
 	{
 		p_viewpoint.setName( _get<std::string>( p_json, "NAME" ) );
 		p_viewpoint.setController(
-			_get<ID::VTX_ID>( p_json, "CONTROLLER", VTX::App::Application::Setting::CONTROLLER_MODE_DEFAULT ) );
+			_get<ID::VTX_ID>( p_json, "CONTROLLER", Application::Setting::CONTROLLER_MODE_DEFAULT ) );
 		p_viewpoint.setDuration( _get<float>( p_json, "DURATION" ) );
 
 		if ( p_json.contains( "POSITION" ) )
@@ -616,15 +611,13 @@ namespace VTX::App::Internal::IO
 		}
 	}
 
-	void Serializer::deserialize(
-		const nlohmann::json &										   p_json,
-		const std::tuple<uint, uint, uint> &						   p_version,
-		App::Application::Representation::InstantiatedRepresentation & p_representation ) const
+	void Serializer::deserialize( const nlohmann::json &									p_json,
+								  const std::tuple<uint, uint, uint> &						p_version,
+								  Application::Representation::InstantiatedRepresentation & p_representation ) const
 	{
 		const int representationPresetIndex = p_json.at( "REPRESENTATION_PRESET_INDEX" ).get<int>();
-		const App::Application::Representation::RepresentationPreset * const sourceRepresentation
-			= App::Application::Representation::RepresentationLibrary::get().getRepresentation(
-				representationPresetIndex );
+		const Application::Representation::RepresentationPreset * const sourceRepresentation
+			= Application::Representation::RepresentationLibrary::get().getRepresentation( representationPresetIndex );
 
 		p_representation.setLinkedRepresentation( sourceRepresentation );
 
@@ -643,26 +636,22 @@ namespace VTX::App::Internal::IO
 		if ( p_json.contains( "CYLINDER_COLOR_BLENDING_MODE" ) )
 		{
 			p_representation.setCylinderColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
-				p_json,
-				"CYLINDER_COLOR_BLENDING_MODE",
-				VTX::App::Application::Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
+				p_json, "CYLINDER_COLOR_BLENDING_MODE", Application::Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "RIBBON_COLOR_MODE" ) )
 		{
 			p_representation.setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-				p_json, "RIBBON_COLOR_MODE", VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT ) );
+				p_json, "RIBBON_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "RIBBON_COLOR_BLENDING_MODE" ) )
 		{
 			p_representation.setRibbonColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
-				p_json,
-				"RIBBON_COLOR_BLENDING_MODE",
-				VTX::App::Application::Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
+				p_json, "RIBBON_COLOR_BLENDING_MODE", Application::Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "COLOR_MODE" ) )
 		{
-			p_representation.setColorMode( _getEnum<Generic::COLOR_MODE>(
-				p_json, "COLOR_MODE", VTX::App::Application::Setting::COLOR_MODE_DEFAULT ) );
+			p_representation.setColorMode(
+				_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Application::Setting::COLOR_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "COLOR" ) )
 		{
@@ -674,9 +663,9 @@ namespace VTX::App::Internal::IO
 		_migrate( p_json, p_version, p_representation );
 	}
 
-	void Serializer::deserialize( const nlohmann::json &								   p_json,
-								  const std::tuple<uint, uint, uint> &					   p_version,
-								  App::Application::Representation::RepresentationPreset & p_representation ) const
+	void Serializer::deserialize( const nlohmann::json &							  p_json,
+								  const std::tuple<uint, uint, uint> &				  p_version,
+								  Application::Representation::RepresentationPreset & p_representation ) const
 	{
 		Util::Color::Rgba color;
 		if ( p_json.contains( "COLOR" ) )
@@ -688,86 +677,78 @@ namespace VTX::App::Internal::IO
 		p_representation.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
 
 		p_representation.changeRepresentationType(
-			_getEnum<App::Application::Representation::REPRESENTATION_ENUM>(
-				p_json, "TYPE", VTX::App::Application::Setting::DEFAULT_REPRESENTATION_TYPE ),
+			_getEnum<Application::Representation::REPRESENTATION_ENUM>(
+				p_json, "TYPE", Application::Setting::DEFAULT_REPRESENTATION_TYPE ),
 			false );
 		if ( p_representation.getData().hasToDrawSphere() )
 		{
 			p_representation.getData().setSphereRadius(
-				_get<float>( p_json, "SPHERE_RADIUS", VTX::App::Application::Setting::ATOMS_RADIUS_DEFAULT ) );
+				_get<float>( p_json, "SPHERE_RADIUS", Application::Setting::ATOMS_RADIUS_DEFAULT ) );
 		}
 		if ( p_representation.getData().hasToDrawCylinder() )
 		{
 			p_representation.getData().setCylinderRadius(
-				_get<float>( p_json, "CYLINDER_RADIUS", VTX::App::Application::Setting::BONDS_RADIUS_DEFAULT ) );
+				_get<float>( p_json, "CYLINDER_RADIUS", Application::Setting::BONDS_RADIUS_DEFAULT ) );
 			p_representation.getData().setCylinderColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
-				p_json,
-				"CYLINDER_COLOR_BLENDING_MODE",
-				VTX::App::Application::Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
+				p_json, "CYLINDER_COLOR_BLENDING_MODE", Application::Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_representation.getData().hasToDrawRibbon() )
 		{
 			p_representation.getData().setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-				p_json, "RIBBON_COLOR_MODE", VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT ) );
+				p_json, "RIBBON_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 			p_representation.getData().setRibbonColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
-				p_json,
-				"RIBBON_COLOR_BLENDING_MODE",
-				VTX::App::Application::Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
+				p_json, "RIBBON_COLOR_BLENDING_MODE", Application::Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		p_representation.getData().setColorMode(
-			_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", VTX::App::Application::Setting::COLOR_MODE_DEFAULT ) );
+			_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Application::Setting::COLOR_MODE_DEFAULT ) );
 
 		_migrate( p_json, p_version, p_representation );
 	}
-	void Serializer::deserialize( const nlohmann::json &							   p_json,
-								  const std::tuple<uint, uint, uint> &				   p_version,
-								  App::Application::RenderEffect::RenderEffectPreset & p_preset ) const
+	void Serializer::deserialize( const nlohmann::json &						  p_json,
+								  const std::tuple<uint, uint, uint> &			  p_version,
+								  Application::RenderEffect::RenderEffectPreset & p_preset ) const
 	{
 		Util::Color::Rgba color;
 
 		p_preset.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
-		p_preset.setShading( _getEnum<App::Render::Renderer::SHADING>(
-			p_json, "SHADING", VTX::App::Application::Setting::SHADING_DEFAULT ) );
-		p_preset.enableSSAO( _get<bool>( p_json, "SSAO", VTX::App::Application::Setting::ACTIVE_AO_DEFAULT ) );
-		p_preset.setSSAOIntensity(
-			_get<int>( p_json, "SSAO_INTENSITY", VTX::App::Application::Setting::AO_INTENSITY_DEFAULT ) );
-		p_preset.setSSAOBlurSize(
-			_get<int>( p_json, "SSAO_BLUR_SIZE", VTX::App::Application::Setting::AO_BLUR_SIZE_DEFAULT ) );
-		p_preset.enableOutline(
-			_get<bool>( p_json, "OUTLINE", VTX::App::Application::Setting::ACTIVE_OUTLINE_DEFAULT ) );
+		p_preset.setShading(
+			_getEnum<Render::Renderer::SHADING>( p_json, "SHADING", Application::Setting::SHADING_DEFAULT ) );
+		p_preset.enableSSAO( _get<bool>( p_json, "SSAO", Application::Setting::ACTIVE_AO_DEFAULT ) );
+		p_preset.setSSAOIntensity( _get<int>( p_json, "SSAO_INTENSITY", Application::Setting::AO_INTENSITY_DEFAULT ) );
+		p_preset.setSSAOBlurSize( _get<int>( p_json, "SSAO_BLUR_SIZE", Application::Setting::AO_BLUR_SIZE_DEFAULT ) );
+		p_preset.enableOutline( _get<bool>( p_json, "OUTLINE", Application::Setting::ACTIVE_OUTLINE_DEFAULT ) );
 		p_preset.setOutlineThickness(
-			_get<int>( p_json, "OUTLINE_THICKNESS", VTX::App::Application::Setting::OUTLINE_THICKNESS_DEFAULT ) );
+			_get<int>( p_json, "OUTLINE_THICKNESS", Application::Setting::OUTLINE_THICKNESS_DEFAULT ) );
 		p_preset.setOutlineSensivity(
-			_get<float>( p_json, "OUTLINE_SENSIVITY", VTX::App::Application::Setting::OUTLINE_SENSIVITY_DEFAULT ) );
+			_get<float>( p_json, "OUTLINE_SENSIVITY", Application::Setting::OUTLINE_SENSIVITY_DEFAULT ) );
 
 		if ( p_json.contains( "OUTLINE_COLOR" ) )
 			deserialize( p_json.at( "OUTLINE_COLOR" ), color );
 		else
-			color = VTX::App::Application::Setting::OUTLINE_COLOR_DEFAULT;
+			color = Application::Setting::OUTLINE_COLOR_DEFAULT;
 		p_preset.setOutlineColor( color );
 
-		p_preset.enableFog( _get<bool>( p_json, "FOG", VTX::App::Application::Setting::ACTIVE_FOG_DEFAULT ) );
-		p_preset.setFogNear( _get<float>( p_json, "FOG_NEAR", VTX::App::Application::Setting::FOG_NEAR_DEFAULT ) );
-		p_preset.setFogFar( _get<float>( p_json, "FOG_FAR", VTX::App::Application::Setting::FOG_FAR_DEFAULT ) );
-		p_preset.setFogDensity(
-			_get<float>( p_json, "FOG_DENSITY", VTX::App::Application::Setting::FOG_DENSITY_DEFAULT ) );
+		p_preset.enableFog( _get<bool>( p_json, "FOG", Application::Setting::ACTIVE_FOG_DEFAULT ) );
+		p_preset.setFogNear( _get<float>( p_json, "FOG_NEAR", Application::Setting::FOG_NEAR_DEFAULT ) );
+		p_preset.setFogFar( _get<float>( p_json, "FOG_FAR", Application::Setting::FOG_FAR_DEFAULT ) );
+		p_preset.setFogDensity( _get<float>( p_json, "FOG_DENSITY", Application::Setting::FOG_DENSITY_DEFAULT ) );
 
 		if ( p_json.contains( "FOG_COLOR" ) )
 			deserialize( p_json.at( "FOG_COLOR" ), color );
 		else
-			color = VTX::App::Application::Setting::FOG_COLOR_DEFAULT;
+			color = Application::Setting::FOG_COLOR_DEFAULT;
 		p_preset.setFogColor( color );
 
 		if ( p_json.contains( "BACKGROUND_COLOR" ) )
 			deserialize( p_json.at( "BACKGROUND_COLOR" ), color );
 		else
-			color = VTX::App::Application::Setting::BACKGROUND_COLOR_DEFAULT;
+			color = Application::Setting::BACKGROUND_COLOR_DEFAULT;
 		p_preset.setBackgroundColor( color );
 
 		if ( p_json.contains( "CAMERA_LIGHT_COLOR" ) )
 			deserialize( p_json.at( "CAMERA_LIGHT_COLOR" ), color );
 		else
-			color = VTX::App::Application::Setting::LIGHT_COLOR_DEFAULT;
+			color = Application::Setting::LIGHT_COLOR_DEFAULT;
 		p_preset.setCameraLightColor( color );
 	}
 
@@ -778,7 +759,7 @@ namespace VTX::App::Internal::IO
 		p_color.setB( _get<float>( p_json, "B" ) );
 	}
 
-	void Serializer::deserialize( const nlohmann::json & p_json, App::Internal::Math::Transform & p_transform ) const
+	void Serializer::deserialize( const nlohmann::json & p_json, Internal::Math::Transform & p_transform ) const
 	{
 		if ( p_json.contains( "POSITION" ) )
 		{
@@ -835,113 +816,102 @@ namespace VTX::App::Internal::IO
 
 	void Serializer::deserialize( const nlohmann::json &			   p_json,
 								  const std::tuple<uint, uint, uint> & p_version,
-								  App::Application::Setting &		   p_setting ) const
+								  Application::Setting &			   p_setting ) const
 	{
-		const Style::SYMBOL_DISPLAY_MODE symbolDisplayMode = _get<Style::SYMBOL_DISPLAY_MODE>(
-			p_json, "SYMBOL_DISPLAY_MODE", VTX::App::Application::Setting::SYMBOL_DISPLAY_MODE_DEFAULT );
-		p_setting.setSymbolDisplayMode(
-			Style::SYMBOL_DISPLAY_MODE( int( symbolDisplayMode ) % int( Style::SYMBOL_DISPLAY_MODE::COUNT ) ) );
+		const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE symbolDisplayMode
+			= _get<Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE>(
+				p_json, "SYMBOL_DISPLAY_MODE", Application::Setting::SYMBOL_DISPLAY_MODE_DEFAULT );
+		p_setting.setSymbolDisplayMode( Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE(
+			int( symbolDisplayMode ) % int( Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE::COUNT ) ) );
 
 		p_setting.setWindowFullscreen(
-			_get<bool>( p_json, "WINDOW_FULLSCREEN", VTX::App::Application::Setting::WINDOW_FULLSCREEN_DEFAULT ) );
+			_get<bool>( p_json, "WINDOW_FULLSCREEN", Application::Setting::WINDOW_FULLSCREEN_DEFAULT ) );
 
 		p_setting.setActivateRenderer(
-			_get<bool>( p_json, "ACTIVE_RENDERER", VTX::App::Application::Setting::ACTIVE_RENDERER_DEFAULT ) );
+			_get<bool>( p_json, "ACTIVE_RENDERER", Application::Setting::ACTIVE_RENDERER_DEFAULT ) );
 		p_setting.setForceRenderer(
-			_get<bool>( p_json, "FORCE_RENDERER", VTX::App::Application::Setting::FORCE_RENDERER_DEFAULT ) );
+			_get<bool>( p_json, "FORCE_RENDERER", Application::Setting::FORCE_RENDERER_DEFAULT ) );
 
 		p_setting.setTmpRepresentationDefaultName( _get<std::string>( p_json, "REPRESENTATION" ) );
 		p_setting.setTmpRenderEffectPresetDefaultName( _get<std::string>( p_json, "RENDER_EFFECT_DEFAULT" ) );
 
-		p_setting.setVSync(
-			_get<bool>( p_json, "ACTIVE_VSYNC", VTX::App::Application::Setting::ACTIVE_VSYNC_DEFAULT ) );
+		p_setting.setVSync( _get<bool>( p_json, "ACTIVE_VSYNC", Application::Setting::ACTIVE_VSYNC_DEFAULT ) );
 
-		p_setting.setSnapshotFormat( _getEnum<App::Internal::IO::Serialization::ImageExport::Format>(
-			p_json, "SNAPSHOT_FORMAT", VTX::App::Application::Setting::SNAPSHOT_FORMAT_DEFAULT ) );
+		p_setting.setSnapshotFormat( _getEnum<Internal::IO::Serialization::ImageExport::Format>(
+			p_json, "SNAPSHOT_FORMAT", Application::Setting::SNAPSHOT_FORMAT_DEFAULT ) );
 		p_setting.setSnapshotBackgroundOpacity(
-			_get<float>( p_json, "BACKGROUND_OPACITY", VTX::App::Application::Setting::BACKGROUND_OPACITY_DEFAULT ) );
+			_get<float>( p_json, "BACKGROUND_OPACITY", Application::Setting::BACKGROUND_OPACITY_DEFAULT ) );
 		p_setting.setSnapshotQuality(
-			_get<float>( p_json, "SNAPSHOT_QUALITY", VTX::App::Application::Setting::SNAPSHOT_QUALITY_DEFAULT ) );
-		p_setting.setSnapshotResolution( _getEnum<App::Internal::IO::Serialization::ImageExport::RESOLUTION>(
-			p_json, "BACKGROUND_RESOLUTION", VTX::App::Application::Setting::SNAPSHOT_RESOLUTION_DEFAULT ) );
+			_get<float>( p_json, "SNAPSHOT_QUALITY", Application::Setting::SNAPSHOT_QUALITY_DEFAULT ) );
+		p_setting.setSnapshotResolution( _getEnum<Internal::IO::Serialization::ImageExport::RESOLUTION>(
+			p_json, "BACKGROUND_RESOLUTION", Application::Setting::SNAPSHOT_RESOLUTION_DEFAULT ) );
 
-		p_setting.setCameraFOV(
-			_get<float>( p_json, "CAMERA_FOV", VTX::App::Application::Setting::CAMERA_FOV_DEFAULT ) );
+		p_setting.setCameraFOV( _get<float>( p_json, "CAMERA_FOV", Application::Setting::CAMERA_FOV_DEFAULT ) );
 		p_setting.setCameraNearClip(
-			_get<float>( p_json, "CAMERA_NEAR_CLIP", VTX::App::Application::Setting::CAMERA_NEAR_DEFAULT ) );
+			_get<float>( p_json, "CAMERA_NEAR_CLIP", Application::Setting::CAMERA_NEAR_DEFAULT ) );
 		p_setting.setCameraFarClip(
-			_get<float>( p_json, "CAMERA_FAR_CLIP", VTX::App::Application::Setting::CAMERA_FAR_DEFAULT ) );
-		p_setting.setAA( _get<bool>( p_json, "CAMERA_AA", VTX::App::Application::Setting::ACTIVE_AA_DEFAULT ) );
-		p_setting.setCameraPerspectiveProjection( _get<bool>(
-			p_json, "CAMERA_PERSPECTIVE_PROJECTION", VTX::App::Application::Setting::CAMERA_PERSPECTIVE_DEFAULT ) );
+			_get<float>( p_json, "CAMERA_FAR_CLIP", Application::Setting::CAMERA_FAR_DEFAULT ) );
+		p_setting.setAA( _get<bool>( p_json, "CAMERA_AA", Application::Setting::ACTIVE_AA_DEFAULT ) );
+		p_setting.setCameraPerspectiveProjection(
+			_get<bool>( p_json, "CAMERA_PERSPECTIVE_PROJECTION", Application::Setting::CAMERA_PERSPECTIVE_DEFAULT ) );
 
-		p_setting.setTranslationSpeed(
-			_get<float>( p_json,
-						 "CONTROLLER_TRANSLATION_SPEED",
-						 VTX::App::Application::Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT ) );
-		p_setting.setAccelerationSpeedFactor(
-			_get<float>( p_json,
-						 "CONTROLLER_ACCELERATION_FACTOR",
-						 VTX::App::Application::Setting::CONTROLLER_ACCELERATION_FACTOR_DEFAULT ) );
-		p_setting.setDecelerationSpeedFactor(
-			_get<float>( p_json,
-						 "CONTROLLER_DECELERATION_FACTOR",
-						 VTX::App::Application::Setting::CONTROLLER_DECELERATION_FACTOR_DEFAULT ) );
+		p_setting.setTranslationSpeed( _get<float>(
+			p_json, "CONTROLLER_TRANSLATION_SPEED", Application::Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT ) );
+		p_setting.setAccelerationSpeedFactor( _get<float>(
+			p_json, "CONTROLLER_ACCELERATION_FACTOR", Application::Setting::CONTROLLER_ACCELERATION_FACTOR_DEFAULT ) );
+		p_setting.setDecelerationSpeedFactor( _get<float>(
+			p_json, "CONTROLLER_DECELERATION_FACTOR", Application::Setting::CONTROLLER_DECELERATION_FACTOR_DEFAULT ) );
 		p_setting.setRotationSpeed( _get<float>(
-			p_json, "CONTROLLER_ROTATION_SPEED", VTX::App::Application::Setting::CONTROLLER_ROTATION_SPEED_DEFAULT ) );
-		p_setting.setYAxisInverted( _get<bool>(
-			p_json, "CONTROLLER_Y_AXIS_INVERTED", VTX::App::Application::Setting::CONTROLLER_Y_AXIS_INVERTED ) );
+			p_json, "CONTROLLER_ROTATION_SPEED", Application::Setting::CONTROLLER_ROTATION_SPEED_DEFAULT ) );
+		p_setting.setYAxisInverted(
+			_get<bool>( p_json, "CONTROLLER_Y_AXIS_INVERTED", Application::Setting::CONTROLLER_Y_AXIS_INVERTED ) );
 
-		p_setting.setControllerElasticityActive(
-			_get<bool>( p_json,
-						"ACTIVE_CONTROLLER_ELASTICITY",
-						VTX::App::Application::Setting::CONTROLLER_ELASTICITY_ACTIVE_DEFAULT ) );
-		p_setting.setControllerElasticityFactor(
-			_get<float>( p_json,
-						 "CONTROLLER_ELASTICITY_FACTOR",
-						 VTX::App::Application::Setting::CONTROLLER_ELASTICITY_FACTOR_DEFAULT ) );
+		p_setting.setControllerElasticityActive( _get<bool>(
+			p_json, "ACTIVE_CONTROLLER_ELASTICITY", Application::Setting::CONTROLLER_ELASTICITY_ACTIVE_DEFAULT ) );
+		p_setting.setControllerElasticityFactor( _get<float>(
+			p_json, "CONTROLLER_ELASTICITY_FACTOR", Application::Setting::CONTROLLER_ELASTICITY_FACTOR_DEFAULT ) );
 
 		p_setting.setDefaultTrajectorySpeed(
-			_get<int>( p_json, "DEFAULT_TRAJECTORY_SPEED", VTX::App::Application::Setting::DEFAULT_TRAJECTORY_SPEED ) );
-		p_setting.setDefaultTrajectoryPlayMode( _getEnum<App::Component::Chemistry::PlayMode>(
-			p_json, "DEFAULT_TRAJECTORY_PLAY_MODE", VTX::App::Application::Setting::DEFAULT_TRAJECTORY_PLAY_MODE ) );
+			_get<int>( p_json, "DEFAULT_TRAJECTORY_SPEED", Application::Setting::DEFAULT_TRAJECTORY_SPEED ) );
+		p_setting.setDefaultTrajectoryPlayMode( _getEnum<Component::Chemistry::PlayMode>(
+			p_json, "DEFAULT_TRAJECTORY_PLAY_MODE", Application::Setting::DEFAULT_TRAJECTORY_PLAY_MODE ) );
 
-		p_setting.setCheckVTXUpdateAtLaunch( _get<bool>(
-			p_json, "CHECK_VTX_UPDATE_AT_LAUNCH", VTX::App::Application::Setting::CHECK_VTX_UPDATE_DEFAULT ) );
+		p_setting.setCheckVTXUpdateAtLaunch(
+			_get<bool>( p_json, "CHECK_VTX_UPDATE_AT_LAUNCH", Application::Setting::CHECK_VTX_UPDATE_DEFAULT ) );
 
-		p_setting.activatePortableSave( _get<bool>(
-			p_json, "PORTABLE_SAVE_ACTIVATED", VTX::App::Application::Setting::PORTABLE_SAVE_ACTIVATED_DEFAULT ) );
+		p_setting.activatePortableSave(
+			_get<bool>( p_json, "PORTABLE_SAVE_ACTIVATED", Application::Setting::PORTABLE_SAVE_ACTIVATED_DEFAULT ) );
 
-		p_setting.setSelectionGranularity( _getEnum(
-			p_json, "SELECTION_GRANULARITY", VTX::App::Application::Setting::SELECTION_GRANULARITY_DEFAULT ) );
+		p_setting.setSelectionGranularity(
+			_getEnum( p_json, "SELECTION_GRANULARITY", Application::Setting::SELECTION_GRANULARITY_DEFAULT ) );
 
-		const std::vector<std::string> representationNamePerCategory = _get<std::vector<std::string>>(
-			p_json,
-			"DEFAULT_REPRESENTATION_PER_CATEGORY",
-			VTX::App::Application::Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_NAME );
+		const std::vector<std::string> representationNamePerCategory
+			= _get<std::vector<std::string>>( p_json,
+											  "DEFAULT_REPRESENTATION_PER_CATEGORY",
+											  Application::Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_NAME );
 
-		const int categoryCount = int( App::Internal::ChemDB::Category::TYPE::COUNT );
+		const int categoryCount = int( Internal::ChemDB::Category::TYPE::COUNT );
 		if ( representationNamePerCategory.size() == categoryCount )
 		{
 			for ( int i = 0; i < categoryCount; i++ )
 			{
-				p_setting.setTmpDefaultRepresentationNamePerCategory( App::Internal::ChemDB::Category::TYPE( i ),
+				p_setting.setTmpDefaultRepresentationNamePerCategory( Internal::ChemDB::Category::TYPE( i ),
 																	  representationNamePerCategory[ i ] );
 			}
 		}
 	}
 
-	const App::Component::Chemistry::Atom * Serializer::deserializeAtomReference( const nlohmann::json & p_json ) const
+	const Component::Chemistry::Atom * Serializer::deserializeAtomReference( const nlohmann::json & p_json ) const
 	{
 		if ( !p_json.contains( "M" ) || !p_json.contains( "A" ) )
 			return nullptr;
 
 		const int moleculePersistentSceneID = p_json.at( "M" ).get<int>();
 
-		const App::Application::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
+		const Application::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
 
-		const App::Component::Chemistry::Molecule * linkedMolecule = nullptr;
-		for ( const App::Application::Scene::PairMoleculePtrFloat & pair : sceneMolecules )
+		const Component::Chemistry::Molecule * linkedMolecule = nullptr;
+		for ( const Application::Scene::PairMoleculePtrFloat & pair : sceneMolecules )
 		{
 			if ( pair.first->getPersistentSceneID() == moleculePersistentSceneID )
 			{
@@ -957,9 +927,8 @@ namespace VTX::App::Internal::IO
 		return linkedMolecule->getAtom( atomIndex );
 	}
 
-	nlohmann::json Serializer::_serializeMoleculeRepresentations(
-		const App::Component::Chemistry::Molecule & p_molecule,
-		const Writer::ChemfilesWriter *				p_writer ) const
+	nlohmann::json Serializer::_serializeMoleculeRepresentations( const Component::Chemistry::Molecule & p_molecule,
+																  const Writer::ChemfilesWriter * p_writer ) const
 	{
 		nlohmann::json jsonArrayRepresentations = nlohmann::json::array();
 		nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", VTX::ID::Model::MODEL_MOLECULE },
@@ -967,7 +936,7 @@ namespace VTX::App::Internal::IO
 													{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
 		jsonArrayRepresentations.emplace_back( jsonRepresentation );
 
-		for ( const App::Component::Chemistry::Chain * const chain : p_molecule.getChains() )
+		for ( const Component::Chemistry::Chain * const chain : p_molecule.getChains() )
 		{
 			if ( chain == nullptr )
 				continue;
@@ -982,7 +951,7 @@ namespace VTX::App::Internal::IO
 
 			for ( uint residueIndex = 0; residueIndex < chain->getResidueCount(); residueIndex++ )
 			{
-				const App::Component::Chemistry::Residue * const residue
+				const Component::Chemistry::Residue * const residue
 					= p_molecule.getResidue( chain->getIndexFirstResidue() + residueIndex );
 
 				if ( residue == nullptr )
@@ -1004,9 +973,9 @@ namespace VTX::App::Internal::IO
 		return jsonArrayRepresentations;
 	}
 
-	void Serializer::_migrate( const nlohmann::json &										  p_json,
-							   const std::tuple<uint, uint, uint> &							  p_version,
-							   App::Application::Representation::InstantiatedRepresentation & p_representation ) const
+	void Serializer::_migrate( const nlohmann::json &									 p_json,
+							   const std::tuple<uint, uint, uint> &						 p_version,
+							   Application::Representation::InstantiatedRepresentation & p_representation ) const
 	{
 		// 0.2.0 -> 0.3.0
 		// SS_COLOR_MODE -> RIBBON_COLOR_MODE
@@ -1015,14 +984,14 @@ namespace VTX::App::Internal::IO
 			if ( p_representation.hasToDrawRibbon() )
 			{
 				p_representation.setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-					p_json, "SS_COLOR_MODE", VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT ) );
+					p_json, "SS_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 			}
 		}
 	}
 
-	void Serializer::_migrate( const nlohmann::json &									p_json,
-							   const std::tuple<uint, uint, uint> &						p_version,
-							   App::Application::Representation::RepresentationPreset & p_representation ) const
+	void Serializer::_migrate( const nlohmann::json &							   p_json,
+							   const std::tuple<uint, uint, uint> &				   p_version,
+							   Application::Representation::RepresentationPreset & p_representation ) const
 	{
 		// 0.2.0 -> 0.3.0
 		if ( std::get<1>( p_version ) < 3 )
@@ -1030,19 +999,19 @@ namespace VTX::App::Internal::IO
 			if ( p_representation.getData().hasToDrawRibbon() )
 			{
 				p_representation.getData().setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-					p_json, "SS_COLOR_MODE", VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT ) );
+					p_json, "SS_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 			}
 		}
 	}
 
-	nlohmann::json Serializer::_serializeMoleculeVisibilities( const App::Component::Chemistry::Molecule & p_molecule,
-															   const Writer::ChemfilesWriter * p_writer ) const
+	nlohmann::json Serializer::_serializeMoleculeVisibilities( const Component::Chemistry::Molecule & p_molecule,
+															   const Writer::ChemfilesWriter *		  p_writer ) const
 	{
 		nlohmann::json jsonChainVisibilitiesArray	= nlohmann::json::array();
 		nlohmann::json jsonResidueVisibilitiesArray = nlohmann::json::array();
 		nlohmann::json jsonAtomVisibilitiesArray	= nlohmann::json::array();
 
-		for ( const App::Component::Chemistry::Chain * const chain : p_molecule.getChains() )
+		for ( const Component::Chemistry::Chain * const chain : p_molecule.getChains() )
 		{
 			if ( chain == nullptr )
 				continue;
@@ -1055,7 +1024,7 @@ namespace VTX::App::Internal::IO
 			}
 		}
 
-		for ( const App::Component::Chemistry::Residue * const residue : p_molecule.getResidues() )
+		for ( const Component::Chemistry::Residue * const residue : p_molecule.getResidues() )
 		{
 			if ( residue == nullptr )
 				continue;
@@ -1068,7 +1037,7 @@ namespace VTX::App::Internal::IO
 			}
 		}
 
-		for ( const App::Component::Chemistry::Atom * const atom : p_molecule.getAtoms() )
+		for ( const Component::Chemistry::Atom * const atom : p_molecule.getAtoms() )
 		{
 			if ( atom == nullptr )
 				continue;
@@ -1086,9 +1055,9 @@ namespace VTX::App::Internal::IO
 				 { "ATOMS", jsonAtomVisibilitiesArray } };
 	}
 
-	void Serializer::_deserializeMoleculeRepresentations( const nlohmann::json &				p_json,
-														  const std::tuple<uint, uint, uint> &	p_version,
-														  App::Component::Chemistry::Molecule & p_molecule ) const
+	void Serializer::_deserializeMoleculeRepresentations( const nlohmann::json &			   p_json,
+														  const std::tuple<uint, uint, uint> & p_version,
+														  Component::Chemistry::Molecule &	   p_molecule ) const
 	{
 		for ( const nlohmann::json & jsonRepresentations : p_json )
 		{
@@ -1106,29 +1075,29 @@ namespace VTX::App::Internal::IO
 			if ( !dataValid )
 				continue;
 
-			App::Application::Representation::InstantiatedRepresentation * const representation
-				= VTX::MVC_MANAGER().instantiateModel<App::Application::Representation::InstantiatedRepresentation>();
+			Application::Representation::InstantiatedRepresentation * const representation
+				= VTX::MVC_MANAGER().instantiateModel<Application::Representation::InstantiatedRepresentation>();
 			deserialize( jsonRepresentations.at( "REPRESENTATION" ), p_version, *representation );
 
 			if ( type == VTX::ID::Model::MODEL_MOLECULE )
 			{
-				App::Application::Representation::RepresentationManager::get().assignRepresentation(
+				Application::Representation::RepresentationManager::get().assignRepresentation(
 					representation, p_molecule, false, false );
 			}
 			else if ( type == VTX::ID::Model::MODEL_CHAIN )
 			{
-				App::Application::Representation::RepresentationManager::get().assignRepresentation(
+				Application::Representation::RepresentationManager::get().assignRepresentation(
 					representation, *p_molecule.getChain( index ), false, false );
 			}
 			else if ( type == VTX::ID::Model::MODEL_RESIDUE )
 			{
-				App::Application::Representation::RepresentationManager::get().assignRepresentation(
+				Application::Representation::RepresentationManager::get().assignRepresentation(
 					representation, *p_molecule.getResidue( index ), false, false );
 			}
 		}
 	}
-	void Serializer::_deserializeMoleculeVisibilities( const nlohmann::json &				 p_json,
-													   App::Component::Chemistry::Molecule & p_molecule ) const
+	void Serializer::_deserializeMoleculeVisibilities( const nlohmann::json &			p_json,
+													   Component::Chemistry::Molecule & p_molecule ) const
 	{
 		p_molecule.setVisible( _get<bool>( p_json, "SELF", true ) );
 
