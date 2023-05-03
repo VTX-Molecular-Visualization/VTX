@@ -102,7 +102,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 	void RenderEffectsBlock::_openPresetSettings() const
 	{
-		VTXApp::get().getMainWindow().openSettingWindow( UI::Widget::Settings::SETTING_MENU::RENDER_EFFECTS );
+		UI::VTXApp::get().getMainWindow().openSettingWindow( UI::Widget::Settings::SETTING_MENU::RENDER_EFFECTS );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Camera

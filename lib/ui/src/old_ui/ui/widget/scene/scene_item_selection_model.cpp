@@ -46,7 +46,7 @@ namespace VTX::UI::Widget::Scene
 			if ( command & QItemSelectionModel::Current )
 			{
 				const SceneWidget & sceneWidget
-					= VTXApp::get().getMainWindow().getWidget<SceneWidget>( UI::ID::Window::SCENE );
+					= UI::VTXApp::get().getMainWindow().getWidget<SceneWidget>( UI::ID::Window::SCENE );
 
 				assert( sceneWidget.getSceneItemWidgets().size() > 0 );
 

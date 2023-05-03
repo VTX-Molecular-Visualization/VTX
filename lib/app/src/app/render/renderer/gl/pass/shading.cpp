@@ -1,7 +1,7 @@
 #include "app/render/renderer/gl/pass/shading.hpp"
 #include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/render/renderer/gl/gl.hpp"
 #include "app/render/renderer/gl/program_manager.hpp"
 
@@ -51,7 +51,7 @@ namespace VTX::App::Render::Renderer::GL::Pass
 
 		_currentShading->use();
 
-		if ( VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
+		if ( App::VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
 		{
 			const Util::Color::Rgba & bgColor = VTX_RENDER_EFFECT().getBackgroundColor();
 			_currentShading->setVec4f( "uBackgroundColor",
@@ -73,7 +73,7 @@ namespace VTX::App::Render::Renderer::GL::Pass
 		// TODO: no need for flat shading
 		// TODO: let the user choose where's the light
 		// TODO: distinguish "view" and "world" lights
-		if ( VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
+		if ( App::VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
 		{
 			_currentShading->setBool( "uIsPerspective", p_scene.getCamera().isPerspective() );
 		}

@@ -1,5 +1,5 @@
 #include "app/render/worker/gpu_computer.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Render::Worker
 {

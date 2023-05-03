@@ -57,7 +57,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 		_fullscreen = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleFullscreenButton" );
 		_fullscreen->setData( "Fullscreen", ":/sprite/fullscreen_icon.png", Qt::Orientation::Vertical );
-		_updateFullscreenButton( VTXApp::get().getMainWindow().getWindowMode() );
+		_updateFullscreenButton( UI::VTXApp::get().getMainWindow().getWindowMode() );
 		pushButton( *_fullscreen, 2 );
 
 		// !V0.1
@@ -85,7 +85,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 	}
 	void WindowsBlock::_refreshButton( const App::VTX_ID & p_id )
 	{
-		const bool	windowVisibility = VTXApp::get().getMainWindow().getWidgetVisibility( p_id );
+		const bool	windowVisibility = UI::VTXApp::get().getMainWindow().getWidgetVisibility( p_id );
 		std::string windowName		 = p_id;
 		std::transform( ++windowName.begin(), windowName.end(), ++windowName.begin(), ::tolower );
 
@@ -126,30 +126,30 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		}
 	}
 
-	void WindowsBlock::_toggleSceneWindow() { VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SCENE ); }
-	void WindowsBlock::_toggleRenderWindow() { VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::RENDER ); }
-	void WindowsBlock::_toggleConsoleWindow() { VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::CONSOLE ); }
+	void WindowsBlock::_toggleSceneWindow() { UI::VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SCENE ); }
+	void WindowsBlock::_toggleRenderWindow() { UI::VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::RENDER ); }
+	void WindowsBlock::_toggleConsoleWindow() { UI::VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::CONSOLE ); }
 	void WindowsBlock::_toggleInspectorWindow()
 	{
-		VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::INSPECTOR );
+		UI::VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::INSPECTOR );
 	}
 	// !V0.1
 	// void WindowsBlock::_toggleSelectionWindow()
 	//{
-	//	VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SELECTION );
+	//	UI::VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SELECTION );
 	//}
 	void WindowsBlock::_toggleSequenceWindow()
 	{
-		VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SEQUENCE );
+		UI::VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SEQUENCE );
 	}
 
 	void WindowsBlock::_displaySettingsWindow()
 	{
-		VTXApp::get().getMainWindow().openSettingWindow( Settings::SETTING_MENU::VTX );
+		UI::VTXApp::get().getMainWindow().openSettingWindow( Settings::SETTING_MENU::VTX );
 	}
 	void WindowsBlock::_toggleWindowState() const
 	{
-		const Qt::WindowStates windowState = VTXApp::get().getMainWindow().windowState();
+		const Qt::WindowStates windowState = UI::VTXApp::get().getMainWindow().windowState();
 
 		if ( windowState & Qt::WindowStates::enum_type::WindowFullScreen )
 			VTX_ACTION( new Action::Setting::WindowMode( Core::WindowMode::Windowed ) );

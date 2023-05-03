@@ -102,7 +102,7 @@ namespace VTX::UI::Widget::Render
 
 		_timer.start();
 
-		getRenderer().renderFrame( VTXApp::get().getScene() );
+		getRenderer().renderFrame( App::VTXApp::get().getScene() );
 
 		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6f;
 
@@ -126,7 +126,7 @@ namespace VTX::UI::Widget::Render
 			return;
 		}
 
-		VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
+		App::VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
 
 		if ( _renderer != nullptr )
 		{

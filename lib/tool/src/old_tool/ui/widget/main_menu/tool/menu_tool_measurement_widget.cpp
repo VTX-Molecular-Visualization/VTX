@@ -70,7 +70,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 	void MenuToolMeasurementWidget::_refreshButtons() const
 	{
 		const State::Visualization * const state
-			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+			= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
 		if ( state->getCurrentPickerID() == ID::Controller::MEASUREMENT )
 		{
@@ -115,7 +115,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 		const Controller::MeasurementPicker::Mode & p_measurementMode ) const
 	{
 		State::Visualization * const state
-			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+			= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
 		if ( state->getCurrentPickerID() != ID::Controller::MEASUREMENT )
 		{

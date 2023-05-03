@@ -97,7 +97,7 @@ namespace VTX::UI::Widget::Dialog
 		if ( _instance == nullptr )
 		{
 			_instance = WidgetFactory::get().instantiateWidget<Dialog::SetTrajectoryTargetDialog>(
-				&VTXApp::get().getMainWindow(), "setTrajectoryTargetDialog" );
+				&UI::VTXApp::get().getMainWindow(), "setTrajectoryTargetDialog" );
 		}
 
 		return *_instance;
@@ -193,12 +193,12 @@ namespace VTX::UI::Widget::Dialog
 		const std::string filename = _filepath.stem().string();
 
 		std::vector<App::Component::Chemistry::Molecule *> molecules = std::vector<App::Component::Chemistry::Molecule *>();
-		molecules.reserve( VTXApp::get().getScene().getMolecules().size() );
+		molecules.reserve( App::VTXApp::get().getScene().getMolecules().size() );
 
-		for ( const App::Application::Scene::PairMoleculePtrFloat & pairMolecule : VTXApp::get().getScene().getMolecules() )
+		for ( const App::Application::Scene::PairMoleculePtrFloat & pairMolecule : App::VTXApp::get().getScene().getMolecules() )
 			molecules.emplace_back( pairMolecule.first );
 
-		VTXApp::get().getScene().sortMoleculesBySceneIndex( molecules );
+		App::VTXApp::get().getScene().sortMoleculesBySceneIndex( molecules );
 
 		for ( App::Component::Chemistry::Molecule * const molecule : molecules )
 		{

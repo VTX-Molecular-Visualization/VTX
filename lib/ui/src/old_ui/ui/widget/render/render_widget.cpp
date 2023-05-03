@@ -126,7 +126,7 @@ namespace VTX::UI::Widget::Render
 		else if ( p_event.name == VTX::App::Event::Global::PICKER_MODE_CHANGE )
 		{
 			State::Visualization * const state
-				= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+				= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
 			// Model::Measurement::MeasureInProgress & measureInProgressModel
 			//	= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )
@@ -243,7 +243,7 @@ namespace VTX::UI::Widget::Render
 			( (uint)VTX_SETTING().mode + 1 ) % (uint)App::Render::Renderer::MODE::COUNT ) ) );
 	}
 
-	void RenderWidget::_onShortcutPrintCameraInfos() { VTXApp::get().getScene().getCamera().print(); }
+	void RenderWidget::_onShortcutPrintCameraInfos() { App::VTXApp::get().getScene().getCamera().print(); }
 
 	void RenderWidget::_onShortcutToggleAllOverlays()
 	{

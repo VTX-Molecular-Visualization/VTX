@@ -16,8 +16,8 @@
 // #include <app/action/main.hpp>
 #include <app/event.hpp>
 #include <app/old_app/generic/base_opengl.hpp>
-#include <app/old_app/vtx_app.hpp>
-// #include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
+// #include <app/vtx_app.hpp>
 
 namespace VTX::UI::QT
 {
@@ -119,7 +119,7 @@ namespace VTX::UI::QT
 
 	void ApplicationQt::renderScene() const
 	{
-		if ( VTX_SETTING().getActivateRenderer() && VTXApp::get().MASK )
+		if ( VTX_SETTING().getActivateRenderer() && App::VTXApp::get().MASK )
 		{
 			_mainWindow->updateRender();
 		}

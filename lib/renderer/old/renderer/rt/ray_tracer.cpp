@@ -168,7 +168,7 @@ namespace VTX
 			//_aoIntegrator = new AOIntegrator( 50.f, 12 );
 
 			VTX_INFO( "Init Scene" );
-			_initScene( VTXApp::get().getScene() );
+			_initScene( App::VTXApp::get().getScene() );
 
 			_texture.create( p_width,
 							 p_height,

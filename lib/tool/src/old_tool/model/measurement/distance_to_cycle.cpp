@@ -39,9 +39,9 @@
 //			if ( castedEvent.ptr == _firstAtom || castedEvent.ptr == _secondAtom )
 //			{
 //				// TODO : Use a manager instead of managing scene from model
-//				VTXApp::get().getScene().removeLabel( this );
+//				App::VTXApp::get().getScene().removeLabel( this );
 //				_invalidate();
-//				VTXApp::get().deleteAtEndOfFrame( this );
+//				App::VTXApp::get().deleteAtEndOfFrame( this );
 //			}
 //		}
 //		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
@@ -52,9 +52,9 @@
 //			if ( castedEvent.ptr == _firstAtom->getMoleculePtr() || castedEvent.ptr == _secondAtom->getMoleculePtr() )
 //			{
 //				// TODO : Use a manager instead of managing scene from model
-//				VTXApp::get().getScene().removeLabel( this );
+//				App::VTXApp::get().getScene().removeLabel( this );
 //				_invalidate();
-//				VTXApp::get().deleteAtEndOfFrame( this );
+//				App::VTXApp::get().deleteAtEndOfFrame( this );
 //			}
 //		}
 //		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )

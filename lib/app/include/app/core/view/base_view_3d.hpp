@@ -4,7 +4,7 @@
 #include "app/component/render/camera.hpp"
 #include "app/core/model/base_model_3d.hpp"
 #include "app/old_app/generic/base_renderable.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/render/renderer/gl/program_manager.hpp"
 #include "base_view.hpp"
 #include <util/math.hpp>
@@ -26,7 +26,7 @@ namespace VTX::App::Core::View
 			// Update camera uniforms.
 			// TO CHECK.
 			/// TODO ! ^^
-			/// if ( VTXApp::get().MASK )
+			/// if ( App::VTXApp::get().MASK )
 			//{
 
 			const Mat4f MVMatrix = p_camera.getViewMatrix() * this->_model->getTransform().get();

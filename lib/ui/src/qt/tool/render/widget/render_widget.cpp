@@ -26,7 +26,7 @@
 // #include "ui/view/ui/widget/measurement/distance_render_view.hpp"
 // #include "ui/view/ui/widget/measurement/measure_in_progress_render_view.hpp"
 #include <QShortcut>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool::Render::Widget
 {
@@ -138,7 +138,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		// else if ( p_event.name == VTX::App::Event::Global::PICKER_MODE_CHANGE )
 		//{
 		//	State::Visualization * const state
-		//		= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+		//		= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
 		//	Model::Measurement::MeasureInProgress & measureInProgressModel
 		//		= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )
@@ -250,7 +250,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 			( (uint)VTX_SETTING().mode + 1 ) % (uint)App::Render::Renderer::MODE::COUNT ) ) );
 	}
 
-	void RenderWidget::_onShortcutPrintCameraInfos() { VTXApp::get().getScene().getCamera().print(); }
+	void RenderWidget::_onShortcutPrintCameraInfos() { App::VTXApp::get().getScene().getCamera().print(); }
 
 	void RenderWidget::_addIntegratedWidget( BaseIntegratedWidget * const p_widget )
 	{

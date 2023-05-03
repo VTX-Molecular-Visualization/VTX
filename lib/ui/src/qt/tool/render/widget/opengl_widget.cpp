@@ -8,7 +8,7 @@
 #include <app/application/render_effect/render_effect_preset.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/render/camera.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 #include <app/render/renderer/gl/gl.hpp>
 #include <app/render/renderer/gl/program_manager.hpp>
 #include <app/render/renderer/rt/ray_tracer.hpp>
@@ -100,7 +100,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 		_timer.start();
 
-		getRenderer().renderFrame( VTXApp::get().getScene() );
+		getRenderer().renderFrame( App::VTXApp::get().getScene() );
 
 		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6f;
 
@@ -124,7 +124,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 			return;
 		}
 
-		VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
+		App::VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
 
 		if ( _renderer != nullptr )
 		{

@@ -145,7 +145,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		// data == -1 => Settings else preset
 		if ( renderEffectPreset == -1 )
 		{
-			VTXApp::get().getMainWindow().openSettingWindow( UI::Widget::Settings::SETTING_MENU::RENDER_EFFECTS );
+			UI::VTXApp::get().getMainWindow().openSettingWindow( UI::Widget::Settings::SETTING_MENU::RENDER_EFFECTS );
 		}
 		else
 		{

@@ -95,7 +95,7 @@ namespace VTX::UI::Widget::CustomWidget
 	// !V0.1
 	// void ColorModeFieldWidget::_openColorSettings()
 	//{
-	//	VTXApp::get().getMainWindow().openSettingWindow( Widget::Settings::SETTING_MENU::COLORS );
+	//	UI::VTXApp::get().getMainWindow().openSettingWindow( Widget::Settings::SETTING_MENU::COLORS );
 	//}
 
 	void ColorModeFieldWidget::_colorModeChange( int p_index )

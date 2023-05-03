@@ -266,21 +266,21 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleAtomWidget::_setInspectorToMolecule() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::MOLECULE );
 	}
 	void MultipleAtomWidget::_setInspectorToChain() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::CHAIN );
 	}
 	void MultipleAtomWidget::_setInspectorToResidue() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::RESIDUE );

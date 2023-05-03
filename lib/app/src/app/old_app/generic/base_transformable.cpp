@@ -1,5 +1,5 @@
 #include "app/old_app/generic/base_transformable.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX
 {

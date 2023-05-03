@@ -15,7 +15,7 @@
 
 namespace VTX::UI
 {
-	const ContextualMenu & ContextualMenu::_getInstance() { return VTXApp::get().getMainWindow().getContextualMenu(); }
+	const ContextualMenu & ContextualMenu::_getInstance() { return UI::VTXApp::get().getMainWindow().getContextualMenu(); }
 
 	ContextualMenu::ContextualMenu() { _buildMenus(); }
 
@@ -33,7 +33,7 @@ namespace VTX::UI
 	{
 		_menus.resize( int( Menu::COUNT ) );
 
-		QWidget * const parent = &VTXApp::get().getMainWindow();
+		QWidget * const parent = &UI::VTXApp::get().getMainWindow();
 
 		_menus[ int( Menu::Molecule ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuMolecule>(

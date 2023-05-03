@@ -9,14 +9,14 @@
 #include <app/application/selection/selection.hpp>
 #include <app/application/selection/selection_manager.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 #include <set>
 
 namespace VTX::UI::QT::Action::Viewpoint
 {
 	Create::Create() :
-		Create( *VTXApp::get().getScene().getPaths()[ 0 ],
-				VTXApp::get().getScene().getCamera(),
+		Create( *App::VTXApp::get().getScene().getPaths()[ 0 ],
+				App::VTXApp::get().getScene().getCamera(),
 				QT_APP()
 					->getStateMachine()
 					.getState<State::Visualization>( ID::State::VISUALIZATION )
@@ -113,7 +113,7 @@ namespace VTX::UI::QT::Action::Viewpoint
 	}
 
 	GoTo::GoTo( const App::Component::Object3D::Viewpoint & p_viewpoint ) :
-		GoTo( p_viewpoint, VTXApp::get().getScene().getCamera() )
+		GoTo( p_viewpoint, App::VTXApp::get().getScene().getCamera() )
 	{
 	}
 	void GoTo::execute()

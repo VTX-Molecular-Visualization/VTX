@@ -1,26 +1,29 @@
 #include "tool/analysis/util.hpp"
 #include "tool/analysis/rmsd/core/rmsd.hpp"
-#include <app/component/chemistry/molecule.hpp>
-#include <app/application/selection/selection.hpp>
 #include <app/application/scene.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/application/selection/selection.hpp>
+#include <app/component/chemistry/molecule.hpp>
+#include <app/vtx_app.hpp>
 
 namespace VTX::Tool::Analysis::Util
 {
-	void pickTargetAndComparersFromSelection( const App::Application::Selection::SelectionModel &		   p_selection,
+	void pickTargetAndComparersFromSelection( const App::Application::Selection::SelectionModel &  p_selection,
 											  const App::Component::Chemistry::Molecule *&		   p_target,
 											  std::vector<App::Component::Chemistry::Molecule *> & p_comparers )
 	{
-		App::Application::Selection::SelectionModel::MapMoleculeIds::const_iterator it = p_selection.getMoleculesMap().begin();
+		App::Application::Selection::SelectionModel::MapMoleculeIds::const_iterator it
+			= p_selection.getMoleculesMap().begin();
 
-		std::list<App::Component::Chemistry::Molecule *> sortedMolecules = std::list<App::Component::Chemistry::Molecule *>();
+		std::list<App::Component::Chemistry::Molecule *> sortedMolecules
+			= std::list<App::Component::Chemistry::Molecule *>();
 
-		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & pairMoleculeID : p_selection.getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & pairMoleculeID :
+			  p_selection.getMoleculesMap() )
 		{
 			App::Component::Chemistry::Molecule * const currentMolecule
 				= &VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( pairMoleculeID.first );
 
-			const int currentMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( *currentMolecule );
+			const int currentMoleculeSceneIndex = App::VTXApp::get().getScene().getItemPosition( *currentMolecule );
 
 			bool inserted = false;
 
@@ -28,7 +31,7 @@ namespace VTX::Tool::Analysis::Util
 				  it != sortedMolecules.end();
 				  it++ )
 			{
-				const int sortedMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( **it );
+				const int sortedMoleculeSceneIndex = App::VTXApp::get().getScene().getItemPosition( **it );
 
 				if ( currentMoleculeSceneIndex < sortedMoleculeSceneIndex )
 				{
@@ -52,20 +55,23 @@ namespace VTX::Tool::Analysis::Util
 		std::move( ++sortedMolecules.begin(), sortedMolecules.end(), p_comparers.begin() );
 	}
 
-	void pickTargetAndComparersFromSelection( const App::Application::Selection::SelectionModel &				 p_selection,
+	void pickTargetAndComparersFromSelection( const App::Application::Selection::SelectionModel &		 p_selection,
 											  const App::Component::Chemistry::Molecule *&				 p_target,
 											  std::vector<const App::Component::Chemistry::Molecule *> & p_comparers )
 	{
-		App::Application::Selection::SelectionModel::MapMoleculeIds::const_iterator it = p_selection.getMoleculesMap().begin();
+		App::Application::Selection::SelectionModel::MapMoleculeIds::const_iterator it
+			= p_selection.getMoleculesMap().begin();
 
-		std::list<App::Component::Chemistry::Molecule *> sortedMolecules = std::list<App::Component::Chemistry::Molecule *>();
+		std::list<App::Component::Chemistry::Molecule *> sortedMolecules
+			= std::list<App::Component::Chemistry::Molecule *>();
 
-		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & pairMoleculeID : p_selection.getMoleculesMap() )
+		for ( const App::Application::Selection::SelectionModel::PairMoleculeIds & pairMoleculeID :
+			  p_selection.getMoleculesMap() )
 		{
 			App::Component::Chemistry::Molecule * const currentMolecule
 				= &VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( pairMoleculeID.first );
 
-			const int currentMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( *currentMolecule );
+			const int currentMoleculeSceneIndex = App::VTXApp::get().getScene().getItemPosition( *currentMolecule );
 
 			bool inserted = false;
 
@@ -73,7 +79,7 @@ namespace VTX::Tool::Analysis::Util
 				  it != sortedMolecules.end();
 				  it++ )
 			{
-				const int sortedMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( **it );
+				const int sortedMoleculeSceneIndex = App::VTXApp::get().getScene().getItemPosition( **it );
 
 				if ( currentMoleculeSceneIndex < sortedMoleculeSceneIndex )
 				{
@@ -98,11 +104,13 @@ namespace VTX::Tool::Analysis::Util
 	}
 
 	void getAtomPositions( const App::Application::Selection::SelectionModel & p_selection,
-						   const App::Component::Chemistry::Molecule *	p_target,
-						   std::vector<Vec3f> &		p_positions )
+						   const App::Component::Chemistry::Molecule *		   p_target,
+						   std::vector<Vec3f> &								   p_positions )
 	{
-		const App::Component::Chemistry::Molecule::AtomPositionsFrame & atomPositionFrame = p_target->getCurrentAtomPositionFrame();
-		const App::Application::Selection::SelectionModel::MapChainIds &		chainMap = p_selection.getMoleculesMap().at( p_target->getId() );
+		const App::Component::Chemistry::Molecule::AtomPositionsFrame & atomPositionFrame
+			= p_target->getCurrentAtomPositionFrame();
+		const App::Application::Selection::SelectionModel::MapChainIds & chainMap
+			= p_selection.getMoleculesMap().at( p_target->getId() );
 
 		p_positions.resize( p_target->getAtomCount() );
 		size_t counter = 0;

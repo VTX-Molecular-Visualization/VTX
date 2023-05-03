@@ -82,7 +82,7 @@ namespace VTX::UI::QT::Tool
 			sceneWidget, Qt::DockWidgetArea::LeftDockWidgetArea, Qt::Orientation::Horizontal );
 
 		_registerDefaultObjects( *sceneWidget );
-		_instantiateObjectsInScene( *sceneWidget, VTXApp::get().getScene() );
+		_instantiateObjectsInScene( *sceneWidget, App::VTXApp::get().getScene() );
 
 		setupContextualMenu();
 	}

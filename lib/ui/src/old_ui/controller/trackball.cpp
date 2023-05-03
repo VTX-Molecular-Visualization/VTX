@@ -198,7 +198,7 @@ namespace VTX
 			BaseCameraController::reset();
 
 			_needUpdate = true;
-			_target		= VTXApp::get().getScene().getAABB().centroid();
+			_target		= App::VTXApp::get().getScene().getAABB().centroid();
 			_camera().setTarget( _target );
 			_velocity = VEC3F_ZERO;
 		}

@@ -7,7 +7,7 @@
 #include "app/event/global.hpp"
 #include "app/mvc.hpp"
 #include "app/application/setting.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <string>
 #include <util/logger.hpp>
 

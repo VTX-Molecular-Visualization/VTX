@@ -39,7 +39,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		}
 		else
 		{
-			App::Application::Scene::MapMoleculePtrFloat & mapMolFloat = VTXApp::get().getScene().getMolecules();
+			App::Application::Scene::MapMoleculePtrFloat & mapMolFloat = App::VTXApp::get().getScene().getMolecules();
 
 			for ( const App::Application::Scene::PairMoleculePtrFloat & pair : mapMolFloat )
 			{

@@ -4,7 +4,7 @@
 #include <app/component/object3d/viewpoint.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/component/video/path.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::State
@@ -12,11 +12,11 @@ namespace VTX::UI::QT::State
 	void Play::enter( void * const p_arg )
 	{
 		_path = (App::Component::Video::Path *)p_arg;
-		// VTXApp::get().getSetting().backup();
+		// App::VTXApp::get().getSetting().backup();
 
 		if ( _path->getDuration() == 0.f || _path->getViewpoints().size() < 2 )
 		{
-			VTXApp::get().goToState( ID::State::VISUALIZATION );
+			App::VTXApp::get().goToState( ID::State::VISUALIZATION );
 			return;
 		}
 
@@ -31,7 +31,7 @@ namespace VTX::UI::QT::State
 		_path	 = nullptr;
 		_actions = nullptr;
 		_time	 = 0.f;
-		// VTXApp::get().getSetting().recover();
+		// App::VTXApp::get().getSetting().recover();
 	}
 
 	void Play::update( const float & p_deltaTime )
@@ -49,19 +49,19 @@ namespace VTX::UI::QT::State
 			{
 				_time	 = 0.f;
 				_actions = nullptr;
-				// VTXApp::get().getSetting().recover();
+				// App::VTXApp::get().getSetting().recover();
 			}
 			else
 			{
-				VTXApp::get().goToState( ID::State::VISUALIZATION );
+				App::VTXApp::get().goToState( ID::State::VISUALIZATION );
 				return;
 			}
 		}
 
 		_setCamera();
 		_executeActions( _time );
-		VTXApp::get().getScene().update( p_deltaTime );
-		VTXApp::get().renderScene();
+		App::VTXApp::get().getScene().update( p_deltaTime );
+		App::VTXApp::get().renderScene();
 
 	} // namespace State
 
@@ -70,12 +70,12 @@ namespace VTX::UI::QT::State
 		App::Component::Object3D::Viewpoint viewpoint = _path->getInterpolatedViewpoint( _time );
 		if ( viewpoint.getController() == ID::Controller::TRACKBALL )
 		{
-			VTXApp::get().getScene().getCamera().setRotationAround(
+			App::VTXApp::get().getScene().getCamera().setRotationAround(
 				Quatf( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );
 		}
 		else
 		{
-			VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
+			App::VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
 		}
 	}
 

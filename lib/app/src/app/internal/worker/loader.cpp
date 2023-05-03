@@ -12,7 +12,7 @@
 #include "app/internal/io/reader/prm.hpp"
 #include "app/internal/io/reader/psf.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::App::Internal::Worker
@@ -54,7 +54,7 @@ namespace VTX::App::Internal::Worker
 
 			try
 			{
-				reader->readFile( path, VTXApp::get() );
+				reader->readFile( path, App::VTXApp::get() );
 				_endLoadingFileSuccess( path );
 			}
 			catch ( const std::exception & p_e )

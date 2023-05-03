@@ -233,7 +233,7 @@ namespace VTX::View::UI::Widget
 			{
 				App::Component::Object3D::Viewpoint & viewpoint
 					= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( idTarget );
-				App::Component::Render::Camera & mainCamera = VTXApp::get().getScene().getCamera();
+				App::Component::Render::Camera & mainCamera = App::VTXApp::get().getScene().getCamera();
 
 				VTX_ACTION( new VTX::UI::QT::Action::Viewpoint::GoTo( viewpoint, mainCamera ) );
 			}

@@ -65,7 +65,7 @@ namespace VTX::App::Action::Viewpoint
 			}
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Rename::execute() { _viewpoint.setName( _name ); }

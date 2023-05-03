@@ -132,7 +132,7 @@ namespace VTX::UI::Widget::Scene
 		else if ( p_event->key() == Qt::Key::Key_Up && itemFromIndex( currentIndex() ) == topLevelItem( 0 ) )
 		{
 			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
-				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( UI::ID::Window::SCENE );
+				= UI::VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( UI::ID::Window::SCENE );
 			SceneItemWidget * const previousTree = sceneWidget.getPreviousSceneItemWidgets( this );
 
 			if ( previousTree != this )
@@ -146,7 +146,7 @@ namespace VTX::UI::Widget::Scene
 		else if ( p_event->key() == Qt::Key::Key_Down && itemFromIndex( currentIndex() ) == getLastVisibleItem() )
 		{
 			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
-				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( UI::ID::Window::SCENE );
+				= UI::VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( UI::ID::Window::SCENE );
 			SceneItemWidget * const nextTree = sceneWidget.getNextSceneItemWidgets( this );
 
 			if ( nextTree != this )
@@ -457,7 +457,7 @@ namespace VTX::UI::Widget::Scene
 			if ( item != nullptr )
 			{
 				selectionModel()->setCurrentIndex( indexFromItem( item ), QItemSelectionModel::SelectionFlag::Current );
-				VTXApp::get().getMainWindow().getWidget<SceneWidget>( UI::ID::Window::SCENE ).scrollToItem( *item );
+				UI::VTXApp::get().getMainWindow().getWidget<SceneWidget>( UI::ID::Window::SCENE ).scrollToItem( *item );
 			}
 		}
 		_enableSignals( true );

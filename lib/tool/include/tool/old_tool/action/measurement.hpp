@@ -24,7 +24,7 @@ namespace VTX::Action::Measurement
 		virtual void execute() override
 		{
 			// TODO : perf test, to remove
-			// const App::Component::Chemistry::Molecule &				mol = *( VTXApp::get().getScene().getMolecules().begin()->first );
+			// const App::Component::Chemistry::Molecule &				mol = *( App::VTXApp::get().getScene().getMolecules().begin()->first );
 			// std::default_random_engine			generator;
 			// std::uniform_int_distribution<uint> distribution( 0, mol.getAtomCount() );
 			// for ( int i = 0; i < 100; i++ )
@@ -37,7 +37,7 @@ namespace VTX::Action::Measurement
 			//			Model::Measurement::Distance::AtomPair( *mol.getAtom( firstAtomIndex ),
 			//													*mol.getAtom( secondAtomIndex ) ) );
 
-			//	VTXApp::get().getScene().addLabel( distanceModel );
+			//	App::VTXApp::get().getScene().addLabel( distanceModel );
 			//}
 
 			// return;
@@ -46,7 +46,7 @@ namespace VTX::Action::Measurement
 			Model::Measurement::Distance * const		 distanceModel
 				= VTX::MVC_MANAGER().instantiateModel<Model::Measurement::Distance>( pair );
 
-			VTXApp::get().getScene().addLabel( distanceModel );
+			App::VTXApp::get().getScene().addLabel( distanceModel );
 		}
 
 	  private:
@@ -71,7 +71,7 @@ namespace VTX::Action::Measurement
 			Model::Measurement::Angle * const			 angleModel
 				= VTX::MVC_MANAGER().instantiateModel<Model::Measurement::Angle>( triplet );
 
-			VTXApp::get().getScene().addLabel( angleModel );
+			App::VTXApp::get().getScene().addLabel( angleModel );
 		}
 
 	  private:
@@ -100,7 +100,7 @@ namespace VTX::Action::Measurement
 			Model::Measurement::DihedralAngle * const dihedralAngleModel
 				= VTX::MVC_MANAGER().instantiateModel<Model::Measurement::DihedralAngle>( quadruplet );
 
-			VTXApp::get().getScene().addLabel( dihedralAngleModel );
+			App::VTXApp::get().getScene().addLabel( dihedralAngleModel );
 		}
 
 	  private:

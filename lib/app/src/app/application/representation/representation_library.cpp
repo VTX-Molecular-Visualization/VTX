@@ -9,13 +9,13 @@
 #include "app/internal/worker/representation_loader.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/worker.hpp"
 #include <string>
 
 namespace VTX::App::Application::Representation
 {
-	RepresentationLibrary & RepresentationLibrary::get() { return VTXApp::get().getRepresentationLibrary(); };
+	RepresentationLibrary & RepresentationLibrary::get() { return App::VTXApp::get().getRepresentationLibrary(); };
 
 	RepresentationLibrary::RepresentationLibrary() : BaseModel( App::ID::Model::MODEL_REPRESENTATION_LIBRARY )
 	{

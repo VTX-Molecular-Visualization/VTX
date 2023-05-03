@@ -15,7 +15,7 @@ namespace VTX::UI::Widget::Dialog
 		if ( _instance == nullptr )
 		{
 			_instance = WidgetFactory::get().instantiateWidget<Dialog::DownloadMoleculeDialog>(
-				&VTXApp::get().getMainWindow(), "downloadMoleculeDialog" );
+				&UI::VTXApp::get().getMainWindow(), "downloadMoleculeDialog" );
 		}
 
 		return *_instance;

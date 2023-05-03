@@ -44,7 +44,7 @@ namespace VTX::UI::QT
 	//{
 	//_menus.resize( int( Menu::COUNT ) );
 
-	// QWidget * const parent = &VTXApp::get().getMainWindow();
+	// QWidget * const parent = &UI::VTXApp::get().getMainWindow();
 
 	//_menus[ int( Menu::Molecule ) ]
 	//	= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuMolecule>(

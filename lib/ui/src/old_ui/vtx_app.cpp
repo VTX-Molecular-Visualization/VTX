@@ -1,4 +1,21 @@
 #include "ui/old_ui/vtx_app.hpp"
+
+namespace VTX::UI
+{
+	void VTXApp::closeAllWindows()
+	{
+		// QApplication::closeAllWindows();
+	}
+	void VTXApp::exit( int p_returnCode )
+	{
+		// QApplication::exit(p_returnCode);
+	}
+	void VTXApp::quit()
+	{
+		// QApplication::quit();
+	}
+} // namespace VTX::UI
+
 //// #include "ui/action/action_manager.hpp"
 //// #include "ui/action/main.hpp"
 //// #include "ui/action/setting.hpp"
@@ -75,7 +92,8 @@
 //		//		if ( p_args.size() == 0 )
 //		//		{
 //		//			// VTX_ACTION(
-//		//			//	 new App::Action::Main::Open( App::Internal::IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" ) ).absolute() ) );
+//		//			//	 new App::Action::Main::Open( App::Internal::IO::Filesystem::getDataPath( FilePath( "4hhb.pdb" )
+//).absolute() ) );
 //		//			// VTX_ACTION( new App::Action::Main::OpenApi( "1aon" ) );
 //		//			// VTX_ACTION( new App::Action::Main::OpenApi( "4hhb" ) );
 //		//			// VTX_ACTION( new App::Action::Main::OpenApi( "1aga" ) );

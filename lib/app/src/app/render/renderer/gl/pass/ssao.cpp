@@ -2,7 +2,7 @@
 #include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/internal/math/sampler.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/render/renderer/gl/gl.hpp"
 #include "app/render/renderer/gl/program_manager.hpp"
 #include <random>
@@ -86,12 +86,12 @@ namespace VTX::App::Render::Renderer::GL::Pass
 
 		_program->use();
 
-		if ( VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
+		if ( App::VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
 		{
 			_program->setMat4f( "uProjMatrix", p_scene.getCamera().getProjectionMatrix() );
 		}
 
-		if ( VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
+		if ( App::VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
 		{
 			_program->setVec3fArray( "uAoKernel", _kernelSize, _aoKernel.data() );
 			_program->setInt( "uAoIntensity", VTX_RENDER_EFFECT().getSSAOIntensity() );

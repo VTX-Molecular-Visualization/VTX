@@ -1,6 +1,6 @@
 #include "app/component/render/camera.hpp"
 #include "app/application/setting.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/render/define.hpp"
 #include <util/logger.hpp>
 
@@ -149,7 +149,7 @@ namespace VTX::App::Component::Render
 		if ( _projection == CAMERA_PROJECTION::ORTHOGRAPHIC )
 			_updateProjectionMatrix();
 
-		VTXApp::get().MASK |= App::Render::VTX_MASK_CAMERA_UPDATED;
+		App::VTXApp::get().MASK |= App::Render::VTX_MASK_CAMERA_UPDATED;
 	}
 
 	void Camera::_updateProjectionMatrix()
@@ -164,7 +164,7 @@ namespace VTX::App::Component::Render
 			break;
 		}
 
-		VTXApp::get().MASK |= App::Render::VTX_MASK_CAMERA_UPDATED;
+		App::VTXApp::get().MASK |= App::Render::VTX_MASK_CAMERA_UPDATED;
 	}
 
 	void Camera::_computePerspectiveProjectionMatrix()

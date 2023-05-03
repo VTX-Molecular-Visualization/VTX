@@ -56,7 +56,7 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 
-		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
+		if ( App::VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
 			/// TODO: let the user define the line color.
 			const Color::Rgba lineColor = Color::Rgba( 45, 243, 26 );

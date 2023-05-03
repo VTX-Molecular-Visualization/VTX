@@ -1,6 +1,6 @@
 #include "app/action/transformable.hpp"
 #include "app/application/setting.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <util/math.hpp>
 
 namespace VTX::App::Action::Transformable
@@ -8,13 +8,13 @@ namespace VTX::App::Action::Transformable
 	void SetTranslation::execute()
 	{
 		_transformable.setTranslation( _translation );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void SetTranslation::undo()
 	{
 		_transformable.setTranslation( _translationOld );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 	void Translate::execute()
 	{
@@ -25,19 +25,19 @@ namespace VTX::App::Action::Transformable
 			transformable->setTranslation( newPos );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void SetRotation::execute()
 	{
 		_transformable.setRotation( _euler );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void SetRotation::undo()
 	{
 		_transformable.setRotation( _eulerOld );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Rotate::execute()
@@ -55,19 +55,19 @@ namespace VTX::App::Action::Transformable
 			}
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void SetScale::execute()
 	{
 		_transformable.setScale( _scale );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void SetScale::undo()
 	{
 		_transformable.setScale( _scaleOld );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Scale::execute()
@@ -80,7 +80,7 @@ namespace VTX::App::Action::Transformable
 			transformable->setScale( newScale );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ApplyTransform::execute()
@@ -90,7 +90,7 @@ namespace VTX::App::Action::Transformable
 			transformable->applyTransform( _transform, _mask );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void SetAutoRotationOrientation::execute()

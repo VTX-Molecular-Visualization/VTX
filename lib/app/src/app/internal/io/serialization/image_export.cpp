@@ -2,7 +2,7 @@
 #include "app/application/scene.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/render/spec.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <cctype>
 
 namespace VTX::App::Internal::IO::Serialization
@@ -35,7 +35,7 @@ namespace VTX::App::Internal::IO::Serialization
 	{
 		if ( p_resolution == RESOLUTION::Free )
 		{
-			const App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
+			const App::Component::Render::Camera & camera = App::VTXApp::get().getScene().getCamera();
 			return std::pair<int, int>( camera.getScreenWidth(), camera.getScreenHeight() );
 		}
 		else

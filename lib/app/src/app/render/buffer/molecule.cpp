@@ -1,5 +1,5 @@
 #include "app/render/buffer/molecule.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Render::Buffer
 {

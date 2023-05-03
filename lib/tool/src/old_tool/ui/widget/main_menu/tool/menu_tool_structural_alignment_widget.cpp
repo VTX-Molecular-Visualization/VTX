@@ -123,7 +123,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 	void MenuToolStructuralAlignmentWidget::_openStructuralAlignmentWindow() const
 	{
-		VTXApp::get().getMainWindow().showWidget( UI::ID::Window::STRUCTURAL_ALIGNMENT, true );
+		UI::VTXApp::get().getMainWindow().showWidget( UI::ID::Window::STRUCTURAL_ALIGNMENT, true );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Tool

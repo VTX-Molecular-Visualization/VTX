@@ -20,7 +20,7 @@ namespace VTX::UI
 									  const QString &							 p_title,
 									  const QString &							 p_message )
 	{
-		const int res = QMessageBox::warning( &VTXApp::get().getMainWindow(),
+		const int res = QMessageBox::warning( &UI::VTXApp::get().getMainWindow(),
 											  p_title,
 											  p_message,
 											  ( QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No ),
@@ -41,7 +41,7 @@ namespace VTX::UI
 											   p_title,
 											   p_message.toUtf8(),
 											   QMessageBox::StandardButton::Ok,
-											   &VTXApp::get().getMainWindow() );
+											   &UI::VTXApp::get().getMainWindow() );
 		information.setTextFormat( Qt::TextFormat::RichText );
 
 		information.exec();
@@ -59,7 +59,7 @@ namespace VTX::UI
 		QString defaultPath = QString::fromStdString( VTX::App::Application::Setting::getLastImportedMoleculeFolder() );
 
 		const QStringList filenames = QFileDialog::getOpenFileNames(
-			&VTXApp::get().getMainWindow(),
+			&UI::VTXApp::get().getMainWindow(),
 			"Open molecule",
 			defaultPath,
 			QString::fromStdString( App::Internal::IO::Filesystem::LOAD_MOLECULE_FILTERS ),
@@ -84,7 +84,7 @@ namespace VTX::UI
 			= QString::fromStdString( App::Internal::IO::Filesystem::getDefaultMoleculeExportPath().string() );
 
 		const QString filename = QFileDialog::getSaveFileName(
-			&VTXApp::get().getMainWindow(),
+			&UI::VTXApp::get().getMainWindow(),
 			"Export molecule",
 			defaultPath,
 			QString::fromStdString( App::Internal::IO::Filesystem::EXPORT_MOLECULE_FILTERS ),
@@ -106,7 +106,7 @@ namespace VTX::UI
 		QString defaultPath = QString::fromStdString( VTX::App::Application::Setting::getLastImportedMoleculeFolder() );
 
 		const QString filename = QFileDialog::getOpenFileName(
-			&VTXApp::get().getMainWindow(),
+			&UI::VTXApp::get().getMainWindow(),
 			"Open trajectory",
 			defaultPath,
 			QString::fromStdString( App::Internal::IO::Filesystem::LOAD_TRAJECTORY_FILTERS ),
@@ -124,7 +124,7 @@ namespace VTX::UI
 		QString defaultPath = QString::fromStdString( VTX::App::Application::Setting::getLastImportedMoleculeFolder() );
 
 		const QString filename = QFileDialog::getOpenFileName(
-			&VTXApp::get().getMainWindow(),
+			&UI::VTXApp::get().getMainWindow(),
 			"Open trajectory",
 			defaultPath,
 			QString::fromStdString( App::Internal::IO::Filesystem::LOAD_TRAJECTORY_FILTERS ),
@@ -159,13 +159,13 @@ namespace VTX::UI
 	}
 	void Dialog::leavingSessionDialog( VTX::App::Core::Worker::CallbackThread & p_callback )
 	{
-		if ( !VTXApp::get().hasAnyModifications() )
+		if ( !App::VTXApp::get().hasAnyModifications() )
 		{
 			p_callback( 1 );
 			return;
 		}
 
-		const int res = QMessageBox::warning( &VTXApp::get().getMainWindow(),
+		const int res = QMessageBox::warning( &UI::VTXApp::get().getMainWindow(),
 											  "Save session",
 											  "All changes on current session will be lost. Continue ?",
 											  ( QMessageBox::StandardButton::Save | QMessageBox::StandardButton::Discard
@@ -174,7 +174,7 @@ namespace VTX::UI
 
 		if ( res == QMessageBox::StandardButton::Save )
 		{
-			const FilePath & filepath = VTXApp::get().getScenePathData().getCurrentPath();
+			const FilePath & filepath = App::VTXApp::get().getScenePathData().getCurrentPath();
 
 			VTX::App::Core::Worker::CallbackThread * threadCallback
 				= new VTX::App::Core::Worker::CallbackThread( p_callback );
@@ -205,7 +205,7 @@ namespace VTX::UI
 			= QString::fromStdString( App::Internal::IO::Filesystem::getDefaultSceneSavePath().string() );
 
 		const QString filename
-			= QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
+			= QFileDialog::getSaveFileName( &UI::VTXApp::get().getMainWindow(),
 											"Save session",
 											defaultPath,
 											QString::fromStdString( App::Internal::IO::Filesystem::SAVE_SCENE_FILTERS ),
@@ -226,7 +226,7 @@ namespace VTX::UI
 		QString defaultPath	  = QString::fromStdString( VTX::App::Application::Setting::getLastLoadedSessionFolder() );
 
 		const QStringList filenames
-			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
+			= QFileDialog::getOpenFileNames( &UI::VTXApp::get().getMainWindow(),
 											 "Open session",
 											 defaultPath,
 											 QString::fromStdString( App::Internal::IO::Filesystem::OPEN_FILE_FILTERS ),
@@ -253,7 +253,7 @@ namespace VTX::UI
 			= QString::fromStdString( VTX::App::Application::Setting::getLastExportedImageFolder() );
 
 		const QString filepath = QFileDialog::getSaveFileName(
-			&VTXApp::get().getMainWindow(),
+			&UI::VTXApp::get().getMainWindow(),
 			"Export image",
 			defaultPath,
 			QString::fromStdString( App::Internal::IO::Filesystem::IMAGE_EXPORT_EXTENSIONS ),
@@ -290,7 +290,7 @@ namespace VTX::UI
 	void Dialog::importRepresentationPresetDialog()
 	{
 		const QStringList filenames = QFileDialog::getOpenFileNames(
-			&VTXApp::get().getMainWindow(),
+			&UI::VTXApp::get().getMainWindow(),
 			"Import representation preset",
 			QString::fromStdString( App::Internal::IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() ),
 			QString::fromStdString( App::Internal::IO::Filesystem::REPRESENTATION_PRESET_FILE_FILTERS ) );
@@ -307,7 +307,7 @@ namespace VTX::UI
 	void Dialog::importRenderEffectPresetDialog()
 	{
 		const QStringList filenames = QFileDialog::getOpenFileNames(
-			&VTXApp::get().getMainWindow(),
+			&UI::VTXApp::get().getMainWindow(),
 			"Import render effect preset",
 			QString::fromStdString( App::Internal::IO::Filesystem::EXECUTABLE_ABSOLUTE_PATH.string() ),
 			QString::fromStdString( App::Internal::IO::Filesystem::RENDER_EFFECT_PRESET_FILE_FILTERS ) );
@@ -328,7 +328,7 @@ namespace VTX::UI
 			= "Unable to create OpenGL 4.5 context. Update your drivers and check your hardware compatibility.";
 		VTX_ERROR( msg );
 
-		QMessageBox::critical( &VTXApp::get().getMainWindow(),
+		QMessageBox::critical( &UI::VTXApp::get().getMainWindow(),
 							   "Error",
 							   msg.c_str(),
 							   QMessageBox::StandardButton::Ok,
@@ -341,12 +341,12 @@ namespace VTX::UI
 						  + App::Application::VTX_BUG_REPORT_URL + " \nwith your latest file in the /logs directory.";
 		VTX_ERROR( msg );
 
-		QMessageBox::critical( &VTXApp::get().getMainWindow(),
+		QMessageBox::critical( &UI::VTXApp::get().getMainWindow(),
 							   "Error",
 							   msg.c_str(),
 							   QMessageBox::StandardButton::Ok,
 							   QMessageBox::StandardButton::Ok );
-		VTXApp::get().exit( EXIT_FAILURE );
+		UI::VTXApp::get().exit( EXIT_FAILURE );
 	}
 
 } // namespace VTX::UI

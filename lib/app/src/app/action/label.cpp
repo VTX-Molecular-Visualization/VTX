@@ -3,7 +3,7 @@
 #include "app/application/selection/selection.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Action::Label
 {
@@ -19,7 +19,7 @@ namespace VTX::App::Action::Label
 
 		for ( App::Component::Object3D::Label * label : _labels )
 		{
-			VTXApp::get().getScene().removeLabel( label );
+			App::VTXApp::get().getScene().removeLabel( label );
 			VTX::MVC_MANAGER().deleteModel<App::Component::Object3D::Label>( label );
 		}
 	}

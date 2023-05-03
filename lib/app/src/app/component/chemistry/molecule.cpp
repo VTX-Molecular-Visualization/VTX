@@ -13,7 +13,7 @@
 #include "app/event/global.hpp"
 #include "app/mvc.hpp"
 #include "app/id.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/render/view/cylinder.hpp"
 #include "app/render/view/sphere.hpp"
 #include "app/util/molecule.hpp"
@@ -163,7 +163,7 @@ namespace VTX::App::Component::Chemistry
 						continue;
 
 					const App::Application::Representation::RepresentationPreset * const defaultRepresentation
-						= VTXApp::get().getRepresentationLibrary().getDefaultRepresentation(
+						= App::VTXApp::get().getRepresentationLibrary().getDefaultRepresentation(
 							category->getCategoryEnum() );
 
 					for ( const uint chainIndex : category->getChains() )
@@ -572,7 +572,7 @@ namespace VTX::App::Component::Chemistry
 
 		_notifyViews( App::Event::Model::TRAJECTORY_FRAME_CHANGE );
 
-		VTXApp::get().MASK |= App::Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= App::Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Molecule::applyNextFrame( const uint p_frameCount )

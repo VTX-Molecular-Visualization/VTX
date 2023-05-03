@@ -6,7 +6,7 @@
 #include "app/component/object3d/viewpoint.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/internal/math/transform.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/application/scene.hpp"
 #include <string>
 #include <unordered_set>
@@ -66,11 +66,11 @@ namespace VTX::App::Action::Viewpoint
 	{
 	  public:
 		explicit Relocate( App::Component::Object3D::Viewpoint & p_viewpoint ) :
-			Relocate( p_viewpoint, VTXApp::get().getScene().getCamera() )
+			Relocate( p_viewpoint, App::VTXApp::get().getScene().getCamera() )
 		{
 		}
 		explicit Relocate( std::vector<App::Component::Object3D::Viewpoint *> & p_viewpoints ) :
-			Relocate( p_viewpoints, VTXApp::get().getScene().getCamera() )
+			Relocate( p_viewpoints, App::VTXApp::get().getScene().getCamera() )
 		{
 		}
 		explicit Relocate( App::Component::Object3D::Viewpoint &	p_viewpoint,

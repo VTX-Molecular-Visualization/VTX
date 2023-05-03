@@ -12,7 +12,7 @@
 #include "app/internal/io/reader/psf.hpp"
 #include "app/internal/io/serialization/scene_path_data.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::App::Internal::Worker
@@ -31,8 +31,8 @@ namespace VTX::App::Internal::Worker
 
 			try
 			{
-				VTXApp::get().getScenePathData().setCurrentPath( path, false );
-				reader->readFile( path, VTXApp::get() );
+				App::VTXApp::get().getScenePathData().setCurrentPath( path, false );
+				reader->readFile( path, App::VTXApp::get() );
 				VTX_INFO( "App loaded " );
 			}
 			catch ( const std::exception & p_e )

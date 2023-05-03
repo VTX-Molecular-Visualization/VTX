@@ -12,7 +12,7 @@
 #include "app/component/chemistry/solvent_excluded_surface.hpp"
 #include "app/mvc.hpp"
 #include "app/application/setting.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Application::Representation
 {

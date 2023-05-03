@@ -6,7 +6,7 @@
 #include <app/component/render/camera.hpp>
 #include <app/component/video/path.hpp>
 #include <app/internal/worker/program_launcher.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 #include <util/chrono.hpp>
 
 namespace VTX
@@ -20,7 +20,7 @@ namespace VTX
 			_directoryName = std::to_string( Util::Chrono::getTimestamp() );
 			_directoryName.erase( remove_if( _directoryName.begin(), _directoryName.end(), isspace ),
 								  _directoryName.end() );
-			// VTXApp::get().getSetting().backup();
+			// App::VTXApp::get().getSetting().backup();
 
 			float duration = _path->getDuration();
 			_frameCount	   = uint( VTX::App::Application::Setting::VIDEO_FPS_DEFAULT * duration );
@@ -28,7 +28,7 @@ namespace VTX
 			if ( _frameCount == 0u || _path->getViewpoints().size() < 2 )
 			{
 				VTX_WARNING( "Total time must be > 0" );
-				VTXApp::get().goToState( UI::ID::State::VISUALIZATION );
+				App::VTXApp::get().goToState( UI::ID::State::VISUALIZATION );
 				return;
 			}
 
@@ -41,7 +41,7 @@ namespace VTX
 			_actions	= nullptr;
 			_frame		= 0u;
 			_frameCount = 0u;
-			// VTXApp::get().getSetting().recover();
+			// App::VTXApp::get().getSetting().recover();
 		}
 
 		void Export::update( const float & p_deltaTime )
@@ -66,15 +66,15 @@ namespace VTX
 			// Update renderer.
 			if ( viewpoint.getController() == UI::ID::Controller::TRACKBALL )
 			{
-				VTXApp::get().getScene().getCamera().setRotationAround(
+				App::VTXApp::get().getScene().getCamera().setRotationAround(
 					Quatf( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );
 			}
 			else
 			{
-				VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
+				App::VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
 			}
-			VTXApp::get().getScene().update( 1.f / (float)VTX::App::Application::Setting::VIDEO_FPS_DEFAULT );
-			VTXApp::get().renderScene();
+			App::VTXApp::get().getScene().update( 1.f / (float)VTX::App::Application::Setting::VIDEO_FPS_DEFAULT );
+			App::VTXApp::get().renderScene();
 
 			std::string counterStr = std::to_string( _frame );
 			std::string fileName   = "frame" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
@@ -96,7 +96,7 @@ namespace VTX
 					VTX_ERROR( p_e.what() );
 				}
 
-				VTXApp::get().goToState( UI::ID::State::VISUALIZATION );
+				App::VTXApp::get().goToState( UI::ID::State::VISUALIZATION );
 			}
 			else
 			{

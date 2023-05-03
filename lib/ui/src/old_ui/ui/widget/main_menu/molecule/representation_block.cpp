@@ -128,7 +128,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 	void RepresentationBlock::_addPresetAction()
 	{
-		VTXApp::get().getMainWindow().openSettingWindow( Settings::SETTING_MENU::REPRESENTATIONS );
+		UI::VTXApp::get().getMainWindow().openSettingWindow( Settings::SETTING_MENU::REPRESENTATIONS );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Molecule

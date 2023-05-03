@@ -2,7 +2,7 @@
 #include "app/application/scene.hpp"
 #include "app/application/setting.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/render/renderer/gl/gl.hpp"
 
 namespace VTX::App::Application::RenderEffect

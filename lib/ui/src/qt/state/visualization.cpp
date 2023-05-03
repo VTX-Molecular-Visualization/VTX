@@ -13,7 +13,7 @@
 #include <app/core/event/vtx_event.hpp>
 #include <app/event.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::State
@@ -28,11 +28,11 @@ namespace VTX::UI::QT::State
 		// Create controller.
 		_controllers.emplace( ID::Controller::MAIN_WINDOW, new QT::Controller::MainWindowController() );
 		_controllers.emplace( ID::Controller::FREEFLY,
-							  new QT::Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
+							  new QT::Controller::Freefly( App::VTXApp::get().getScene().getCamera() ) );
 		_controllers.emplace( ID::Controller::TRACKBALL,
-							  new QT::Controller::Trackball( VTXApp::get().getScene().getCamera(),
-															 VTXApp::get().getScene().getAABB().centroid(),
-															 VTXApp::get().getScene().getAABB().diameter() ) );
+							  new QT::Controller::Trackball( App::VTXApp::get().getScene().getCamera(),
+															 App::VTXApp::get().getScene().getAABB().centroid(),
+															 App::VTXApp::get().getScene().getAABB().diameter() ) );
 		_controllers.emplace( ID::Controller::PICKER, new QT::Controller::Picker() );
 		_controllers.emplace( ID::Controller::MEASUREMENT, new QT::Controller::MeasurementPicker() );
 	}
@@ -59,7 +59,7 @@ namespace VTX::UI::QT::State
 	{
 		BaseState::update( p_deltaTime );
 
-		VTXApp::get().getScene().update( p_deltaTime );
+		App::VTXApp::get().getScene().update( p_deltaTime );
 		QT_APP()->renderScene();
 	}
 
@@ -105,10 +105,10 @@ namespace VTX::UI::QT::State
 	void Visualization::resetCameraController()
 	{
 		// Reset camera.
-		App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
+		App::Component::Render::Camera & camera = App::VTXApp::get().getScene().getCamera();
 		const Vec3f						 defaultPos
-			= VTXApp::get().getScene().getAABB().centroid()
-			  - App::Component::CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
+			= App::VTXApp::get().getScene().getAABB().centroid()
+			  - App::Component::CAMERA_FRONT_DEFAULT * App::VTXApp::get().getScene().getAABB().radius()
 					/ (float)( tan( Util::Math::radians( camera.getFov() ) * UI::Style::ORIENT_ZOOM_FACTOR ) );
 		camera.reset( defaultPos );
 
@@ -166,8 +166,8 @@ namespace VTX::UI::QT::State
 		// Recenter when add the first element in scene
 		if ( p_event.name == VTX::App::Event::Global::MOLECULE_ADDED )
 		{
-			if ( VTXApp::get().getScene().getMolecules().size() == 1
-				 && VTXApp::get().getScene().getMeshes().size() == 0 )
+			if ( App::VTXApp::get().getScene().getMolecules().size() == 1
+				 && App::VTXApp::get().getScene().getMeshes().size() == 0 )
 			{
 				const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
 					= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>(
@@ -178,8 +178,8 @@ namespace VTX::UI::QT::State
 		}
 		else if ( p_event.name == VTX::App::Event::Global::MESH_ADDED )
 		{
-			if ( VTXApp::get().getScene().getMolecules().size() == 0
-				 && VTXApp::get().getScene().getMeshes().size() == 1 )
+			if ( App::VTXApp::get().getScene().getMolecules().size() == 0
+				 && App::VTXApp::get().getScene().getMeshes().size() == 1 )
 				resetCameraController();
 		}
 	}

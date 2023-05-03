@@ -86,10 +86,10 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 	void CameraNavigationActionBlock::_updateCameraModeFeedback()
 	{
-		const App::VTX_ID currentControllerID = VTXApp::get()
-												   .getStateMachine()
-												   .getState<State::Visualization>( ID::State::VISUALIZATION )
-												   ->getCurrentCameraControllerID();
+		const App::VTX_ID currentControllerID = UI::VTXApp::get()
+													.getStateMachine()
+													.getState<State::Visualization>( ID::State::VISUALIZATION )
+													->getCurrentCameraControllerID();
 
 		_trackball->showActiveFeedback( currentControllerID == ID::Controller::TRACKBALL );
 		_freefly->showActiveFeedback( currentControllerID == ID::Controller::FREEFLY );

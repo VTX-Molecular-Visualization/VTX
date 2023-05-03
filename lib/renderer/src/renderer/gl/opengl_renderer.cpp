@@ -129,7 +129,7 @@ namespace VTX::Renderer::GL
 			_passFXAA->render( p_scene, *this );
 		}
 
-		VTXApp::get().MASK = VTX_SETTING().getForceRenderer() ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
+		App::VTXApp::get().MASK = VTX_SETTING().getForceRenderer() ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
 	*/
 	};
 

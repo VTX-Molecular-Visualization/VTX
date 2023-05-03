@@ -4,11 +4,11 @@
 #include "ui/old_ui/state/state_machine.hpp"
 #include "ui/old_ui/ui/main_window.hpp"
 #include <QApplication>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 
 namespace VTX::UI
 {
-	class VTXApp : public ::VTX::VTXApp
+	class VTXApp : public ::VTX::App::VTXApp
 	{
 	  public:
 		inline static VTXApp & get()
@@ -24,8 +24,12 @@ namespace VTX::UI
 
 		QInputMethod * inputMethod() const { return QApplication::inputMethod(); }
 
+		void closeAllWindows();
+		void exit( int p_returnCode = 0 );
+		void quit();
+
 	  private:
-		VTXApp() : ::VTX::VTXApp() {};
+		VTXApp() : ::VTX::App::VTXApp() {};
 		VTXApp( const VTXApp & )			 = delete;
 		VTXApp & operator=( const VTXApp & ) = delete;
 		~VTXApp() {}
@@ -85,9 +89,10 @@ namespace VTX::UI
 //		void stop();
 //
 //		inline App::Internal::IO::Serialization::ScenePathData &		 getScenePathData() { return *_pathSceneData; };
-//		inline const App::Internal::IO::Serialization::ScenePathData & getScenePathData() const { return *_pathSceneData; };
-//		inline App::Application::Scene &				 getScene() { return *_scene; }
-//		inline const App::Application::Scene &			 getScene() const { return *_scene; }
+//		inline const App::Internal::IO::Serialization::ScenePathData & getScenePathData() const { return
+//*_pathSceneData;
+//}; 		inline App::Application::Scene &				 getScene() { return *_scene; } 		inline const
+// App::Application::Scene &			 getScene() const { return *_scene; }
 //
 //		// TODO remove this. Must be In UI Module
 //		inline const UI::MainWindow &	   getMainWindow() const { throw NotImplementedException(); }
@@ -109,8 +114,9 @@ namespace VTX::UI
 //		{
 //			return *_representationLibrary;
 //		}
-//		inline App::Application::RenderEffect::RenderEffectLibrary & getRenderEffectLibrary() { return *_renderEffectLibrary; }
-//		inline const App::Application::RenderEffect::RenderEffectLibrary & getRenderEffectLibrary() const
+//		inline App::Application::RenderEffect::RenderEffectLibrary & getRenderEffectLibrary() { return
+//*_renderEffectLibrary; } 		inline const App::Application::RenderEffect::RenderEffectLibrary &
+// getRenderEffectLibrary() const
 //		{
 //			return *_renderEffectLibrary;
 //		}
@@ -158,9 +164,9 @@ namespace VTX::UI
 //	};
 //
 //	// App::Application::RenderEffect::RenderEffectPreset & VTX_RENDER_EFFECT();
-//	//  inline Setting &					  VTX_SETTING() { return VTXApp::get().getSetting(); }
-//	//  inline Stat & VTX_STAT() { return VTXApp::get().getStat(); }
-//	//  inline Spec & VTX_SPEC() { return VTXApp::get().getSpec(); }
+//	//  inline Setting &					  VTX_SETTING() { return App::VTXApp::get().getSetting(); }
+//	//  inline Stat & VTX_STAT() { return App::VTXApp::get().getStat(); }
+//	//  inline Spec & VTX_SPEC() { return App::VTXApp::get().getSpec(); }
 //
 // } // namespace VTX
 //

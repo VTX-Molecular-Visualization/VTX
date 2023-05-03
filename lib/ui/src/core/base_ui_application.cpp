@@ -4,7 +4,7 @@
 
 #include <app/action/main.hpp>
 #include <app/internal/io/filesystem.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::Core
@@ -24,7 +24,7 @@ namespace VTX::UI::Core
 		_postInit( p_args );
 	}
 
-	void BaseUIApplication::_initVTXApp( const std::vector<std::string> & p_args ) { VTXApp::get().start( p_args ); }
+	void BaseUIApplication::_initVTXApp( const std::vector<std::string> & p_args ) { App::VTXApp::get().start( p_args ); }
 	void BaseUIApplication::_postInit( const std::vector<std::string> & p_args )
 	{
 #ifndef VTX_PRODUCTION
@@ -46,9 +46,9 @@ namespace VTX::UI::Core
 		layoutBuilder.build( reader.getResult().layoutDescriptor );
 	}
 
-	void BaseUIApplication::update() { VTXApp::get().update(); }
+	void BaseUIApplication::update() { App::VTXApp::get().update(); }
 
-	void BaseUIApplication::stop() { VTXApp::get().stop(); }
+	void BaseUIApplication::stop() { App::VTXApp::get().stop(); }
 
 	void BaseUIApplication::quit() {};
 

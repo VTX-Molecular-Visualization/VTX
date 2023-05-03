@@ -22,7 +22,7 @@ namespace VTX::UI::QT::Action::Path
 			arg.mode = _mode;
 			arg.path = _path;
 
-			VTXApp::get().goToState( UI::ID::State::EXPORT, &arg );
+			App::VTXApp::get().goToState( UI::ID::State::EXPORT, &arg );
 		};
 
 	  private:

@@ -1,7 +1,7 @@
 #include "app/render/renderer/gl/pass/outline.hpp"
 #include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/render/renderer/gl/gl.hpp"
 #include "app/render/renderer/gl/program_manager.hpp"
 
@@ -46,7 +46,7 @@ namespace VTX::App::Render::Renderer::GL::Pass
 
 		_program->use();
 
-		if ( VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
+		if ( App::VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
 		{
 			const Util::Color::Rgba & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
 			_program->setVec4f( "uLineColor", lineColor );

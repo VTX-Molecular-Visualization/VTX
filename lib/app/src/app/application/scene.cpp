@@ -89,7 +89,7 @@ namespace VTX::App::Application
 			VTX_EVENT<Component::Chemistry::Molecule *>( Event::Global::MOLECULE_ADDED, p_molecule );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void Scene::removeMolecule( MoleculePtr const p_molecule )
@@ -121,7 +121,7 @@ namespace VTX::App::Application
 
 		p_mesh->referenceLinkedAABB( &_aabb );
 		VTX_EVENT<MeshTrianglePtr>( Event::Global::MESH_ADDED, p_mesh );
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void Scene::removeMesh( MeshTrianglePtr const p_mesh )
@@ -143,16 +143,16 @@ namespace VTX::App::Application
 	{
 		p_helper->generate();
 		_helpers.emplace_back( p_helper );
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void Scene::removeHelper( HelperPtr const p_helper )
 	{
 		_helpers.erase( std::find( _helpers.begin(), _helpers.end(), p_helper ) );
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
-	void Scene::_updateGraphicMask() const { VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE; }
+	void Scene::_updateGraphicMask() const { App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE; }
 
 	const Core::Scene::BaseSceneItem * const Scene::getItemAtPosition( const int p_index ) const
 	{
@@ -339,7 +339,7 @@ namespace VTX::App::Application
 				pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().x, VEC3F_X );
 				pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().y, VEC3F_Y );
 				pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().z, VEC3F_Z );
-				VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+				App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 			}
 		}
 
@@ -350,7 +350,7 @@ namespace VTX::App::Application
 				mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().x, VEC3F_X );
 				mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().y, VEC3F_Y );
 				mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().z, VEC3F_Z );
-				VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+				App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 			}
 		}
 	}

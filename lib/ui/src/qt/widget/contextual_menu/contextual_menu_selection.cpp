@@ -699,7 +699,7 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 	// void ContextualMenuSelection::_openAlignmentWindowAction()
 	//{
-	//	VTXApp::get().getMainWindow().showWidget( UI::ID::Window::STRUCTURAL_ALIGNMENT, true );
+	//	UI::VTXApp::get().getMainWindow().showWidget( UI::ID::Window::STRUCTURAL_ALIGNMENT, true );
 	// }
 
 } // namespace VTX::UI::QT::Widget::ContextualMenu

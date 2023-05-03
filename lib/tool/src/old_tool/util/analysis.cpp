@@ -3,7 +3,7 @@
 #include <app/application/scene.hpp>
 #include <app/application/selection/selection.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 
 namespace VTX::Util::Analysis
 {
@@ -23,7 +23,7 @@ namespace VTX::Util::Analysis
 			App::Component::Chemistry::Molecule * const currentMolecule
 				= &VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( pairMoleculeID.first );
 
-			const int currentMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( *currentMolecule );
+			const int currentMoleculeSceneIndex = App::VTXApp::get().getScene().getItemPosition( *currentMolecule );
 
 			bool inserted = false;
 
@@ -31,7 +31,7 @@ namespace VTX::Util::Analysis
 				  it != sortedMolecules.end();
 				  it++ )
 			{
-				const int sortedMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( **it );
+				const int sortedMoleculeSceneIndex = App::VTXApp::get().getScene().getItemPosition( **it );
 
 				if ( currentMoleculeSceneIndex < sortedMoleculeSceneIndex )
 				{
@@ -71,7 +71,7 @@ namespace VTX::Util::Analysis
 			App::Component::Chemistry::Molecule * const currentMolecule
 				= &VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( pairMoleculeID.first );
 
-			const int currentMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( *currentMolecule );
+			const int currentMoleculeSceneIndex = App::VTXApp::get().getScene().getItemPosition( *currentMolecule );
 
 			bool inserted = false;
 
@@ -79,7 +79,7 @@ namespace VTX::Util::Analysis
 				  it != sortedMolecules.end();
 				  it++ )
 			{
-				const int sortedMoleculeSceneIndex = VTXApp::get().getScene().getItemPosition( **it );
+				const int sortedMoleculeSceneIndex = App::VTXApp::get().getScene().getItemPosition( **it );
 
 				if ( currentMoleculeSceneIndex < sortedMoleculeSceneIndex )
 				{

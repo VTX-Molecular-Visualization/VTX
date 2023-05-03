@@ -1,6 +1,6 @@
 #include "app/manager/event_manager.hpp"
 #include "app/core/event/base_event_receiver_vtx.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::App::Manager

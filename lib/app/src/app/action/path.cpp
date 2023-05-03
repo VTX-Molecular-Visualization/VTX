@@ -4,7 +4,7 @@
 #include "app/component/object3d/viewpoint.hpp"
 #include "app/mvc.hpp"
 // #include "state/export.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Action::Path
 {
@@ -26,7 +26,7 @@ namespace VTX::App::Action::Path
 		_path.refreshAllDurations();
 	}
 
-	void Play::execute() { VTXApp::get().goToState( ID::State::PLAY, _path ); }
+	void Play::execute() { App::VTXApp::get().goToState( ID::State::PLAY, _path ); }
 
 	// void ExportVideo::execute()
 	//{
@@ -34,7 +34,7 @@ namespace VTX::App::Action::Path
 	//	arg.mode = _mode;
 	//	arg.path = _path;
 
-	//	VTXApp::get().goToState( ID::State::EXPORT, &arg );
+	//	App::VTXApp::get().goToState( ID::State::EXPORT, &arg );
 	//}
 
 	void ChangeIsLooping::execute() { _path.setIsLooping( _isLooping ); }

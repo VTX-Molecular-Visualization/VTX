@@ -39,7 +39,7 @@ namespace VTX::Controller
 
 	void MeasurementPicker::_onMouseRightClick( const uint p_x, const uint p_y )
 	{
-		UI::MainWindow &						 mw = VTXApp::get().getMainWindow();
+		UI::MainWindow &						 mw = UI::VTXApp::get().getMainWindow();
 		const UI::Widget::Render::RenderWidget & renderWidget
 			= mw.getWidget<UI::Widget::Render::RenderWidget>( UI::ID::Window::RENDER );
 
@@ -76,7 +76,7 @@ namespace VTX::Controller
 
 		bool hasFindTarget = false;
 
-		const Vec2i ids = VTXApp::get().getMainWindow().getPickedIds( p_event.pos().x(), p_event.pos().y() );
+		const Vec2i ids = UI::VTXApp::get().getMainWindow().getPickedIds( p_event.pos().x(), p_event.pos().y() );
 
 		if ( ids.x != App::Core::Model::ID_UNKNOWN )
 		{
@@ -139,7 +139,7 @@ namespace VTX::Controller
 		{
 			_currentMeasureModel->clearAtoms();
 
-			// VTXApp::get()
+			// App::VTXApp::get()
 			//	.getStateMachine()
 			//	.getState<State::Visualization>( ID::State::VISUALIZATION )
 			//	->setPickerController( ID::Controller::PICKER );

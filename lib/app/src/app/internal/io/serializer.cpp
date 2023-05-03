@@ -77,10 +77,10 @@ namespace VTX::App::Internal::IO
 
 	nlohmann::json Serializer::serialize( const Component::Chemistry::Molecule & p_molecule ) const
 	{
-		const FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
+		const FilePath moleculePath = App::VTXApp::get().getScenePathData().getFilepath( &p_molecule );
 
 		const Writer::ChemfilesWriter * const writer
-			= VTXApp::get().getScenePathData().getData( &p_molecule ).getWriter();
+			= App::VTXApp::get().getScenePathData().getData( &p_molecule ).getWriter();
 
 		return { { "TRANSFORM", serialize( p_molecule.getTransform() ) },
 				 { "PATH", moleculePath.string() },
@@ -472,7 +472,7 @@ namespace VTX::App::Internal::IO
 		}
 
 		// TODO Manage this
-		// VTXApp::get()
+		// App::VTXApp::get()
 		//	.getStateMachine()
 		//	.getState<State::Visualization>( ID::State::VISUALIZATION )
 		//	->resetCameraController();
@@ -497,7 +497,7 @@ namespace VTX::App::Internal::IO
 		if ( molPath.is_relative() )
 		{
 			const FilePath sceneFolder
-				= Internal::IO::Filesystem::getSceneSaveDirectory( VTXApp::get().getScenePathData().getCurrentPath() );
+				= Internal::IO::Filesystem::getSceneSaveDirectory( App::VTXApp::get().getScenePathData().getCurrentPath() );
 			molPath = sceneFolder / molPath;
 		}
 
@@ -505,7 +505,7 @@ namespace VTX::App::Internal::IO
 		{
 			Internal::IO::Reader::LibChemfiles reader = Internal::IO::Reader::LibChemfiles( _thread );
 			reader.readFile( molPath, p_molecule );
-			VTXApp::get().getScenePathData().registerLoading( &p_molecule, molPath );
+			App::VTXApp::get().getScenePathData().registerLoading( &p_molecule, molPath );
 		}
 		catch ( const std::exception & p_exception )
 		{
@@ -908,7 +908,7 @@ namespace VTX::App::Internal::IO
 
 		const int moleculePersistentSceneID = p_json.at( "M" ).get<int>();
 
-		const Application::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
+		const Application::Scene::MapMoleculePtrFloat & sceneMolecules = App::VTXApp::get().getScene().getMolecules();
 
 		const Component::Chemistry::Molecule * linkedMolecule = nullptr;
 		for ( const Application::Scene::PairMoleculePtrFloat & pair : sceneMolecules )

@@ -6,6 +6,7 @@
 #include "ui/old_ui/ui/widget/custom_widget/folding_button.hpp"
 #include "ui/old_ui/ui/widget/inspector/inspector_widget.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
+#include "ui/old_ui/vtx_app.hpp"
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>
@@ -282,7 +283,7 @@ namespace VTX::UI::Widget::Inspector
 	}
 
 	void MultipleMoleculeWidget::_onTransformChange(
-		const App::Internal::Math::Transform &									   p_transform,
+		const App::Internal::Math::Transform &					   p_transform,
 		const Generic::BaseTransformable::TransformComposantMask & p_mask ) const
 	{
 		if ( !signalsBlocked() )
@@ -349,7 +350,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_onRepresentationColorChange(
 		const App::Application::Representation::InstantiatedRepresentation & p_representation,
-		const Util::Color::Rgba &													 p_color,
+		const Util::Color::Rgba &											 p_color,
 		const bool															 p_ssColor ) const
 	{
 		if ( p_ssColor )
@@ -416,21 +417,21 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_setInspectorToChain() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::CHAIN );
 	}
 	void MultipleMoleculeWidget::_setInspectorToResidue() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::RESIDUE );
 	}
 	void MultipleMoleculeWidget::_setInspectorToAtom() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );

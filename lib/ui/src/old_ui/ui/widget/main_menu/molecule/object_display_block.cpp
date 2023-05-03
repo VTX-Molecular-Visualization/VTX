@@ -125,7 +125,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		else
 		{
 			for ( const std::pair<App::Component::Chemistry::Molecule *, float> & molData :
-				  VTXApp::get().getScene().getMolecules() )
+				  App::VTXApp::get().getScene().getMolecules() )
 			{
 				p_container.emplace( molData.first );
 			}

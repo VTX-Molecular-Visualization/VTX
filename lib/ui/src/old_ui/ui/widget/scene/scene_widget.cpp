@@ -55,7 +55,7 @@ namespace VTX::UI::Widget::Scene
 			instantiateSceneItem<View::UI::Widget::MoleculeSceneView, App::Component::Chemistry::Molecule>(
 				moleculePtr, ID::View::UI_MOLECULE_STRUCTURE, "moleculeSceneView" );
 
-			App::Application::Scene & scene = VTXApp::get().getScene();
+			App::Application::Scene & scene = App::VTXApp::get().getScene();
 			scene.changeModelPosition( *moleculePtr, defaultPosition );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
@@ -77,7 +77,7 @@ namespace VTX::UI::Widget::Scene
 			instantiateSceneItem<View::UI::Widget::PathSceneView, App::Component::Video::Path>(
 				castedEvent.get(), ID::View::UI_SCENE_PATH, "pathSceneView" );
 
-			App::Application::Scene & scene = VTXApp::get().getScene();
+			App::Application::Scene & scene = App::VTXApp::get().getScene();
 			scene.changeModelPosition( *castedEvent.get(), defaultPosition );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::PATH_REMOVED )
@@ -122,7 +122,7 @@ namespace VTX::UI::Widget::Scene
 			//		angleModel, ID::View::UI_SCENE_DIHEDRAL_ANGLE_LABEL, "dihedralAngleSceneView" );
 			//}
 
-			App::Application::Scene & scene = VTXApp::get().getScene();
+			App::Application::Scene & scene = App::VTXApp::get().getScene();
 			scene.changeModelPosition( *castedEvent.get(), defaultPosition );
 		}
 		else if ( p_event.name == VTX::App::Event::Global::LABEL_REMOVED )
@@ -164,7 +164,7 @@ namespace VTX::UI::Widget::Scene
 
 	void SceneWidget::_refreshItemIndex()
 	{
-		const App::Application::Scene & scene = VTXApp::get().getScene();
+		const App::Application::Scene & scene = App::VTXApp::get().getScene();
 
 		for ( int i = 0; i < _sceneWidgets.size(); i++ )
 		{
@@ -386,12 +386,12 @@ namespace VTX::UI::Widget::Scene
 		setAcceptDrops( true );
 
 		for ( const std::pair<App::Component::Chemistry::Molecule *, float> pairMolecule :
-			  VTXApp::get().getScene().getMolecules() )
+			  App::VTXApp::get().getScene().getMolecules() )
 		{
 			instantiateSceneItem<View::UI::Widget::MoleculeSceneView, App::Component::Chemistry::Molecule>(
 				pairMolecule.first, ID::View::UI_MOLECULE_STRUCTURE, "moleculeSceneView" );
 		}
-		for ( App::Component::Video::Path * const path : VTXApp::get().getScene().getPaths() )
+		for ( App::Component::Video::Path * const path : App::VTXApp::get().getScene().getPaths() )
 		{
 			instantiateSceneItem<View::UI::Widget::PathSceneView, App::Component::Video::Path>(
 				path, ID::View::UI_SCENE_PATH, "pathSceneView" );
@@ -428,7 +428,7 @@ namespace VTX::UI::Widget::Scene
 
 		if ( p_event->buttons() & Qt::MouseButton::RightButton )
 		{
-			App::Application::Scene & scene = VTXApp::get().getScene();
+			App::Application::Scene & scene = App::VTXApp::get().getScene();
 			UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Scene, &scene, p_event->globalPos() );
 
 			p_event->accept();

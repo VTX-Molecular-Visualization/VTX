@@ -1,6 +1,6 @@
 #include "app/render/renderer/gl/pass/blur.hpp"
 #include "app/application/render_effect/render_effect_preset.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/render/renderer/gl/gl.hpp"
 #include "app/render/renderer/gl/program_manager.hpp"
 
@@ -56,7 +56,7 @@ namespace VTX::App::Render::Renderer::GL::Pass
 
 		_program->use();
 
-		if ( VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
+		if ( App::VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
 		{
 			_program->setInt( "uBlurSize", VTX_RENDER_EFFECT().getSSAOBlurSize() );
 		}

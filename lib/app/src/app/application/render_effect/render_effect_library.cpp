@@ -7,14 +7,14 @@
 #include "app/internal/worker/render_effect_loader.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/render/renderer/base_renderer.hpp"
 #include "app/render/renderer/gl/gl.hpp"
 #include "app/worker.hpp"
 
 namespace VTX::App::Application::RenderEffect
 {
-	RenderEffectLibrary & RenderEffectLibrary::get() { return VTXApp::get().getRenderEffectLibrary(); }
+	RenderEffectLibrary & RenderEffectLibrary::get() { return App::VTXApp::get().getRenderEffectLibrary(); }
 
 	RenderEffectLibrary::RenderEffectLibrary() :
 		BaseModel( App::ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET_LIBRARY )

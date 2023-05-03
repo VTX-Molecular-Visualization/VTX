@@ -220,7 +220,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_onRepresentationColorChange(
 		const App::Application::Representation::InstantiatedRepresentation & p_representation,
-		const Util::Color::Rgba &													 p_color,
+		const Util::Color::Rgba &											 p_color,
 		const bool															 p_ssColor )
 	{
 		if ( !signalsBlocked() )
@@ -317,21 +317,21 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_setInspectorToMolecule() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::MOLECULE );
 	}
 	void MultipleResidueWidget::_setInspectorToChain() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::CHAIN );
 	}
 	void MultipleResidueWidget::_setInspectorToAtom() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );

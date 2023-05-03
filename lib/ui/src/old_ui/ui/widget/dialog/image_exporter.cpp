@@ -16,7 +16,7 @@ namespace VTX::UI::Widget::Dialog
 	{
 		if ( _instance == nullptr )
 		{
-			_instance = WidgetFactory::get().instantiateWidget<Dialog::ImageExporter>( &VTXApp::get().getMainWindow(),
+			_instance = WidgetFactory::get().instantiateWidget<Dialog::ImageExporter>( &UI::VTXApp::get().getMainWindow(),
 																					   "imageExporterDialog" );
 		}
 

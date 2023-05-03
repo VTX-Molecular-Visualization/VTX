@@ -2,7 +2,7 @@
 #define __VTX_APP_RENDER_GL_VERETX_ARRAY__
 
 #include "app/old_app/generic/base_opengl.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "buffer.hpp"
 #include <util/types.hpp>
 

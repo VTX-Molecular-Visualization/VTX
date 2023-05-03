@@ -1,6 +1,6 @@
 #include "app/render/view/sphere.hpp"
 #include "app/application/representation/representation_manager.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::App::Render::View
