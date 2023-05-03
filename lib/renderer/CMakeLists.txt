@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.16)
 project(VTX_RENDERER)
 
 # Get headers and sources.
-file(GLOB_RECURSE HEADERS include/*.hpp)
-file(GLOB_RECURSE SOURCES src/*.cpp  src/*.c)
+file(GLOB_RECURSE HEADERS include/*)
+file(GLOB_RECURSE SOURCES src/*)
 
 # Create library.
 add_library(VTX_RENDERER STATIC ${HEADERS} ${SOURCES})
@@ -14,7 +14,7 @@ target_include_directories(VTX_RENDERER PUBLIC include)
 if(NOT TARGET VTX_UTIL)
 	add_subdirectory(../util lib)
 endif()
-target_link_libraries(VTX_RENDERER PRIVATE VTX_UTIL)
+target_link_libraries(VTX_RENDERER PUBLIC VTX_UTIL)
 
 # Target compile options.
 target_compile_features(VTX_RENDERER PUBLIC cxx_std_17)

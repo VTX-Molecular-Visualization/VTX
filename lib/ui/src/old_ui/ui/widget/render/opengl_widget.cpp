@@ -69,10 +69,12 @@ namespace VTX::UI::Widget::Render
 		_retrieveSpec();
 		VTX_SPEC().print();
 
-#ifndef VTX_PRODUCTION
-		_gl->glEnable( GL_DEBUG_OUTPUT );
-		_gl->glDebugMessageCallback( Util::App::OpenGL::debugMessageCallback, NULL );
-#endif
+		/*
+		#ifndef VTX_PRODUCTION
+				_gl->glEnable( GL_DEBUG_OUTPUT );
+				_gl->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
+		#endif
+		*/
 
 		VTX_PROGRAM_MANAGER();
 

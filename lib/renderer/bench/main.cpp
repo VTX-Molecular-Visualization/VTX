@@ -1,14 +1,15 @@
-#include <glad/glad.h>
+#include <renderer/gl/opengl_renderer.hpp>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <memory>
+#include <util/logger.hpp>
 
-void errorCallback( int error, const char * p_description ) { std::cerr << p_description << std::endl; }
+constexpr size_t WIDTH	= 800;
+constexpr size_t HEIGHT = 600;
 
 int main( int argc, char ** argv )
 {
-	if ( !glfwInit() )
+	if ( glfwInit() == 0 )
 	{
 		exit( EXIT_FAILURE );
 	}
@@ -17,43 +18,39 @@ int main( int argc, char ** argv )
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 5 );
 	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 
-	GLFWwindow * const window = glfwCreateWindow( 800, 600, "VTX_RENDERER_BENCH", NULL, NULL );
-	if ( !window )
+	GLFWwindow * const window = glfwCreateWindow( WIDTH, HEIGHT, "VTX_RENDERER_BENCH", NULL, NULL );
+	if ( window == nullptr )
 	{
-		std::cout << "Failed to create GLFW window" << std::endl;
+		VTX::VTX_ERROR( "Failed to create GLFW window" );
 		glfwTerminate();
 		exit( EXIT_FAILURE );
 	}
 
 	glfwMakeContextCurrent( window );
-	if ( !gladLoadGLLoader( (GLADloadproc)glfwGetProcAddress ) )
+
+	try
 	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return EXIT_FAILURE;
+		VTX::Renderer::GL::OpenGLRenderer renderer( glfwGetProcAddress );
+		renderer.init( WIDTH, HEIGHT );
+
+		// glViewport( 0, 0, WIDTH, HEIGHT );
+		// glClearColor( 0.5f, 0.5f, 0.5f, 1.f );
+
+		while ( glfwWindowShouldClose( window ) == 0 )
+		{
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+			glfwSwapBuffers( window );
+			glfwPollEvents();
+		}
+
+		glfwDestroyWindow( window );
+		glfwTerminate();
+		exit( EXIT_SUCCESS );
 	}
-
-	const unsigned char * glVendor	  = glGetString( GL_VENDOR );
-	const unsigned char * glRenderer  = glGetString( GL_RENDERER );
-	const unsigned char * glVersion	  = glGetString( GL_VERSION );
-	const unsigned char * glslVersion = glGetString( GL_SHADING_LANGUAGE_VERSION );
-
-	std::cout << "GL device: " << glVendor << " " << glRenderer << std::endl;
-	std::cout << "GL version: " << glVersion << std::endl;
-	std::cout << "GLSL version: " << glslVersion << std::endl;
-	std::cout << "GLAD initialized: " << GLVersion.major << "." << GLVersion.minor << std::endl;
-
-	glViewport( 0, 0, 800, 600 );
-	glClearColor( 0.5f, 0.5f, 0.5f, 1.f );
-
-	while ( !glfwWindowShouldClose( window ) )
+	catch ( const std::exception & p_e )
 	{
-		glClear( GL_COLOR_BUFFER_BIT );
-		glfwSwapBuffers( window );
-		glfwPollEvents();
+		VTX::VTX_ERROR( p_e.what() );
+		glfwTerminate();
+		exit( EXIT_FAILURE );
 	}
-
-	glfwDestroyWindow( window );
-
-	glfwTerminate();
-	exit( EXIT_SUCCESS );
 }
