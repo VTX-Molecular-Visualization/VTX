@@ -20,15 +20,15 @@ namespace VTX::App::Component::Object3D
 		inline void				   setDuration( const float p_duration ) { _duration = p_duration; }
 
 		inline const VTX::App::VTX_ID getController() const { return _controller; }
-		inline void					 setController( const VTX::App::VTX_ID p_controller ) { _controller = p_controller; }
-		inline const Vec3f &		 getPosition() const { return _position; }
-		void						 setPosition( const Vec3f & p_position );
-		inline const Quatf &		 getRotation() const { return _rotation; }
-		void						 setRotation( const Quatf & p_rotation );
-		inline const Vec3f &		 getTarget() const { return _data._target._target; }
-		inline void					 setTarget( const Vec3f & p_target ) { _data._target._target = p_target; }
-		inline const float			 getDistance() const { return _data._target._distance; }
-		inline void					 setDistance( const float p_distance ) { _data._target._distance = p_distance; }
+		inline void			 setController( const VTX::App::VTX_ID p_controller ) { _controller = p_controller; }
+		inline const Vec3f & getPosition() const { return _position; }
+		void				 setPosition( const Vec3f & p_position );
+		inline const Quatf & getRotation() const { return _rotation; }
+		void				 setRotation( const Quatf & p_rotation );
+		inline const Vec3f & getTarget() const { return _data._target._target; }
+		inline void			 setTarget( const Vec3f & p_target ) { _data._target._target = p_target; }
+		inline const float	 getDistance() const { return _data._target._distance; }
+		inline void			 setDistance( const float p_distance ) { _data._target._distance = p_distance; }
 		/*
 		inline const std::vector<std::string> & getActions() const { return _actions; }
 		inline void addAction( const std::string & p_action ) { _actions.emplace_back( p_action ); }
@@ -63,7 +63,6 @@ namespace VTX::App::Component::Object3D
 		VTX::App::VTX_ID _controller = Application::Setting::CONTROLLER_MODE_DEFAULT;
 
 		// std::vector<std::string> _actions = std::vector<std::string>();
-
-	}; // namespace Camera
+	};
 } // namespace VTX::App::Component::Object3D
 #endif
