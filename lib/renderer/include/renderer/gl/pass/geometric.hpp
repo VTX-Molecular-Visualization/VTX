@@ -17,6 +17,8 @@ namespace VTX::Renderer::GL::Pass
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render() override;
 
+		Vec2i getPickedData( const uint p_x, const uint p_y );
+
 		struct StructIn
 		{
 			// TODO.

@@ -81,4 +81,14 @@ namespace VTX::Renderer::GL::Pass
 		glDisable( GL_DEPTH_TEST );
 	}
 
+	Vec2i Geometric::getPickedData( const uint p_x, const uint p_y )
+	{
+		out.fbo.bind( GL_READ_FRAMEBUFFER );
+		out.fbo.setReadBuffer( GL_COLOR_ATTACHMENT2 );
+		Vec2i data = Vec2i( INVALID_ID, INVALID_ID );
+		glReadPixels( p_x, p_y, 1, 1, GLenum( GL_RG_INTEGER ), GL_UNSIGNED_INT, &data );
+		out.fbo.unbind();
+		return data;
+	}
+
 } // namespace VTX::Renderer::GL::Pass

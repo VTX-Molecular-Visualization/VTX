@@ -25,23 +25,8 @@ namespace VTX::Renderer::GL::Pass
 		assert( in.textureDepth != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-		in.textureDepth->bindToUnit( 0 );
+		in.textureDepth->bindToUnit( 1 );
 		_program->use();
-
-		/*
-		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
-		{
-			const Object3D::Camera & cam	 = p_scene.getCamera();
-			const float				 camNear = cam.getNear();
-			const float				 camFar	 = cam.getFar();
-
-			_program->setVec4f( "uClipInfo", camNear * camFar, camFar, camFar - camNear, camNear );
-			_program->setBool( "uIsPerspective", cam.isPerspective() );
-		}
-
-		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
-		*/
-
 		out.fbo.unbind();
 	}
 } // namespace VTX::Renderer::GL::Pass

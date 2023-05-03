@@ -1,5 +1,5 @@
 #include "renderer/gl/opengl_renderer.hpp"
-#include "renderer/gl/util.hpp"
+#include <util/exceptions.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Renderer::GL
@@ -22,7 +22,7 @@ namespace VTX::Renderer::GL
 
 		// Debug infos.
 		glEnable( GL_DEBUG_OUTPUT );
-		glDebugMessageCallback( Util::debugMessageCallback, NULL );
+		glDebugMessageCallback( _debugMessageCallback, NULL );
 
 		// Program manager.
 		_programManager = std::make_unique<ProgramManager>( p_shaderPath );
@@ -80,7 +80,7 @@ namespace VTX::Renderer::GL
 
 		_vboQuad.create();
 		_vaoQuad.create();
-		_uboGlobal.create();
+		_ubo.create();
 
 		_vaoQuad.enableAttribute( 0 );
 		_vaoQuad.setVertexBuffer( 0, _vboQuad, sizeof( Vec2f ) );
@@ -89,7 +89,7 @@ namespace VTX::Renderer::GL
 
 		_vboQuad.set( quadVertices );
 
-		//_uboGlobal.set( _globalUniforms, GL_DYNAMIC_DRAW );
+		_ubo.set( _globalUniforms, GL_DYNAMIC_DRAW );
 
 		VTX_INFO( "Renderer initialized" );
 	}
@@ -107,8 +107,10 @@ namespace VTX::Renderer::GL
 		_vaoQuad.drawCalls = 0;
 		for ( Pass::BasePass * const pass : _passes )
 		{
+			_ubo.bind( GL_UNIFORM_BUFFER, 0 );
 			pass->render();
 			_vaoQuad.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
+			_ubo.unbind();
 		}
 
 		/*
@@ -159,17 +161,67 @@ namespace VTX::Renderer::GL
 	}
 	*/
 
-	/*
-	const Vec2i GL::getPickedIds( const uint p_x, const uint p_y ) const
+	const Vec2i OpenGLRenderer::getPickedIds( const uint p_x, const uint p_y )
 	{
-		_passGeometric->getFbo().bind( Framebuffer::Target::READ_FRAMEBUFFER );
-		_passGeometric->getFbo().setReadBuffer( Framebuffer::Attachment::COLOR2 );
-		Vec2i ids = Vec2i( Model::ID_UNKNOWN, Model::ID_UNKNOWN );
-		_gl->glReadPixels( p_x, p_y, 1, 1, GLenum( Texture2D::Format::RG_INTEGER ), GL_UNSIGNED_INT, &ids );
-		_passGeometric->getFbo().unbind();
-
-		return ids;
+		return _passGeometric.getPickedData( p_x, p_y );
 	}
-	*/
+
+	void APIENTRY OpenGLRenderer::_debugMessageCallback( const GLenum	p_source,
+														 const GLenum	p_type,
+														 const GLuint	p_id,
+														 const GLenum	p_severity,
+														 const GLsizei	p_length,
+														 const GLchar * p_msg,
+														 const void *	p_data )
+	{
+		std::string source;
+		std::string type;
+		std::string severity;
+
+		switch ( p_source )
+		{
+		case GL_DEBUG_SOURCE_API: source = "API"; break;
+		case GL_DEBUG_SOURCE_WINDOW_SYSTEM: source = "WINDOW SYSTEM"; break;
+		case GL_DEBUG_SOURCE_SHADER_COMPILER: source = "SHADER COMPILER"; break;
+		case GL_DEBUG_SOURCE_THIRD_PARTY: source = "THIRD PARTY"; break;
+		case GL_DEBUG_SOURCE_APPLICATION: source = "APPLICATION"; break;
+		case GL_DEBUG_SOURCE_OTHER: source = "UNKNOWN"; break;
+		default: source = "UNKNOWN"; break;
+		}
+
+		switch ( p_type )
+		{
+		case GL_DEBUG_TYPE_ERROR: type = "ERROR"; break;
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: type = "DEPRECATED BEHAVIOR"; break;
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: type = "UDEFINED BEHAVIOR"; break;
+		case GL_DEBUG_TYPE_PORTABILITY: type = "PORTABILITY"; break;
+		case GL_DEBUG_TYPE_PERFORMANCE: type = "PERFORMANCE"; break;
+		case GL_DEBUG_TYPE_OTHER: type = "OTHER"; break;
+		case GL_DEBUG_TYPE_MARKER: type = "MARKER"; break;
+		default: type = "UNKNOWN"; break;
+		}
+
+		switch ( p_severity )
+		{
+		case GL_DEBUG_SEVERITY_HIGH: severity = "HIGH"; break;
+		case GL_DEBUG_SEVERITY_MEDIUM: severity = "MEDIUM"; break;
+		case GL_DEBUG_SEVERITY_LOW: severity = "LOW"; break;
+		case GL_DEBUG_SEVERITY_NOTIFICATION: severity = "NOTIFICATION"; break;
+		default: severity = "UNKNOWN"; break;
+		}
+
+		std::string message( "[OPENGL] [" + severity + "] [" + type + "] " + source + ": " + p_msg );
+
+		switch ( p_severity )
+		{
+		case GL_DEBUG_SEVERITY_HIGH:
+			std::cerr << message << std::endl;
+			throw GLException( message );
+			break;
+		case GL_DEBUG_SEVERITY_MEDIUM:
+		case GL_DEBUG_SEVERITY_LOW: std::cout << message << std::endl; break;
+		default: break;
+		}
+	}
 
 } // namespace VTX::Renderer::GL

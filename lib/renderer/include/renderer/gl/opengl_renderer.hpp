@@ -29,20 +29,18 @@ namespace VTX::Renderer::GL
 
 		void renderFrame();
 
-		// inline void setOutput( const GLuint p_output ) {}
-		//  void updateRenderSetting( const RENDER_SETTING );
-
-		// const Vec2i getPickedIds( const uint p_x, const uint p_y ) const;
+		const Vec2i getPickedIds( const uint p_x, const uint p_y );
 
 	  private:
 		size_t _width  = 0;
 		size_t _height = 0;
 
-		VertexArray _vaoQuad   = VertexArray();
-		Buffer		_vboQuad   = Buffer();
-		Buffer		_uboGlobal = Buffer();
+		VertexArray _vaoQuad = VertexArray();
+		Buffer		_vboQuad = Buffer();
 
-		// Framebuffer _output = Framebuffer();
+		// TEST.
+		Buffer				 _ubo			 = Buffer();
+		StructGlobalUniforms _globalUniforms = StructGlobalUniforms();
 
 		Pass::Geometric		 _passGeometric		 = Pass::Geometric();
 		Pass::LinearizeDepth _passLinearizeDepth = Pass::LinearizeDepth();
@@ -56,6 +54,14 @@ namespace VTX::Renderer::GL
 		std::vector<Pass::BasePass *> _passes = std::vector<Pass::BasePass *>();
 
 		std::unique_ptr<ProgramManager> _programManager = nullptr;
+
+		static void APIENTRY _debugMessageCallback( const GLenum   p_source,
+													const GLenum   p_type,
+													const GLuint   p_id,
+													const GLenum   p_severity,
+													const GLsizei  p_length,
+													const GLchar * p_msg,
+													const void *   p_data );
 	};
 } // namespace VTX::Renderer::GL
 
