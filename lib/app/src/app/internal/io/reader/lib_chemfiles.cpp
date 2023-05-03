@@ -9,8 +9,8 @@
 #include "app/core/worker/base_thread.hpp"
 #include "app/internal/algorithm/bond_order_guessing.hpp"
 #include "app/internal/chemdb/category.hpp"
+#include "app/internal/chemfiles/util.hpp"
 #include "app/mvc.hpp"
-#include "app/util/chemfiles.hpp"
 #include "app/util/molecule.hpp"
 #include <algorithm>
 #include <iostream>
@@ -568,7 +568,7 @@ namespace VTX::App::Internal::IO::Reader
 		if ( p_recomputeBonds )
 		{
 			bondComputationChrono.start();
-			Util::App::Chemfiles::recomputeBonds( frame, p_molecule.getAABB() );
+			Internal::Chemfiles::Util::recomputeBonds( frame, p_molecule.getAABB() );
 			bondComputationChrono.stop();
 			_logDebug( "recomputeBonds : " + bondComputationChrono.elapsedTimeStr() );
 		}
@@ -576,12 +576,12 @@ namespace VTX::App::Internal::IO::Reader
 		if ( VTX::App::Application::Setting::COMPUTE_BOND_ORDER_ON_CHEMFILE )
 		{
 			bondComputationChrono.start();
-			const bool allBondsRecomputed = Util::App::Chemfiles::recomputeBondOrdersFromFile( frame );
+			const bool allBondsRecomputed = Internal::Chemfiles::Util::recomputeBondOrdersFromFile( frame );
 
 			if ( !allBondsRecomputed )
 			{
 				_logDebug( "recomputeBondOrders with algorithm." );
-				Util::App::Chemfiles::recomputeBondOrders( frame );
+				Internal::Chemfiles::Util::recomputeBondOrders( frame );
 			}
 
 			bondComputationChrono.stop();

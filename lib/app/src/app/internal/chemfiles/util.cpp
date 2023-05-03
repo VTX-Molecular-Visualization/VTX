@@ -1,8 +1,8 @@
-#include "app/util/chemfiles.hpp"
+#include "app/internal/chemfiles/util.hpp"
 #include "app/internal/algorithm/bond_order_guessing.hpp"
 #include "app/internal/algorithm/bond_recomputation.hpp"
 
-namespace VTX::Util::App::Chemfiles
+namespace VTX::App::Internal::Chemfiles::Util
 {
 	chemfiles::Bond::BondOrder convertBondOrder( const VTX::App::Internal::ChemDB::Bond::ORDER p_bondOrder )
 	{
@@ -35,4 +35,4 @@ namespace VTX::Util::App::Chemfiles
 		return VTX::App::Internal::Algorithm::BondOrderGuessing::recomputeBondOrdersFromFile( p_frame );
 	}
 
-} // namespace VTX::Util::App::Chemfiles
+} // namespace VTX::App::Internal::Chemfiles::Util
