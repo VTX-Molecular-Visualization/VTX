@@ -9,7 +9,7 @@ namespace VTX::IO
 {
 	// nlohmann::json Serializer::serialize( const App::Component::Object3D::Label & p_label ) const
 	//{
-	//	const ID::VTX_ID & labelTypeID = p_label.getTypeId();
+	//	const App::VTX_ID & labelTypeID = p_label.getTypeId();
 
 	//	if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 	//		return serialize( dynamic_cast<const Model::Measurement::Distance &>( p_label ) );

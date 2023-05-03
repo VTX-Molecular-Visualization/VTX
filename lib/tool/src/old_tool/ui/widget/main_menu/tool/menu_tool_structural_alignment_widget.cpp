@@ -8,7 +8,7 @@
 #include <app/application/selection/selection_manager.hpp>
 #include <app/event/global.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include <ui/old_ui/ui/main_window.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
 #include <ui/old_ui/vtx_app.hpp>
@@ -123,7 +123,7 @@ namespace VTX::UI::Widget::MainMenu::Tool
 
 	void MenuToolStructuralAlignmentWidget::_openStructuralAlignmentWindow() const
 	{
-		VTXApp::get().getMainWindow().showWidget( ID::UI::Window::STRUCTURAL_ALIGNMENT, true );
+		VTXApp::get().getMainWindow().showWidget( UI::ID::Window::STRUCTURAL_ALIGNMENT, true );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Tool

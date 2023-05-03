@@ -54,7 +54,7 @@ namespace VTX
 					 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>,
 					 typename = std::enable_if<std::is_base_of<Widget::BaseManualWidgetInitializer, V>::value>>
 			V * const instantiateViewWidget( M * const			 p_model,
-											 const ID::VTX_ID &	 p_id,
+											 const App::VTX_ID &	 p_id,
 											 QWidget * const	 p_parent,
 											 const std::string & p_name ) const
 			{

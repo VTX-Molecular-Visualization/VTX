@@ -12,7 +12,7 @@
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/object3d/viewpoint.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include <vector>
 
 namespace VTX::App::Action::Selection
@@ -429,7 +429,7 @@ namespace VTX::App::Action::Selection
 	  public:
 		explicit ChangeVisibility( const App::Application::Selection::SelectionModel & p_selection,
 								   const Generic::BaseVisible &						   p_objReference,
-								   const ID::VTX_ID &								   p_objRefTypeId,
+								   const App::VTX_ID &								   p_objRefTypeId,
 								   const VISIBILITY_MODE							   p_mode ) :
 			Visible::ChangeVisibility( p_mode ),
 			_selection( p_selection ), _objRefTypeId( p_objRefTypeId )
@@ -451,7 +451,7 @@ namespace VTX::App::Action::Selection
 
 	  private:
 		const App::Application::Selection::SelectionModel & _selection;
-		const ID::VTX_ID									_objRefTypeId;
+		const App::VTX_ID									_objRefTypeId;
 	};
 
 	class ToggleWatersVisibility : public App::Core::Action::BaseAction

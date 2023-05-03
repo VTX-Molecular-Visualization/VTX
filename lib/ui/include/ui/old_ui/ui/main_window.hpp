@@ -57,9 +57,9 @@ namespace VTX
 			const ContextualMenu & getContextualMenu() { return *_contextualMenu; }
 			CursorHandler &		   getCursorHandler() { return *_cursorHandler; }
 
-			bool getWidgetVisibility( const ID::VTX_ID & p_winId ) const;
-			void showWidget( const ID::VTX_ID & p_winId, const bool p_show ) const;
-			void toggleWidget( const ID::VTX_ID & p_winId ) const;
+			bool getWidgetVisibility( const App::VTX_ID & p_winId ) const;
+			void showWidget( const App::VTX_ID & p_winId, const bool p_show ) const;
+			void toggleWidget( const App::VTX_ID & p_winId ) const;
 			void openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const;
 
 			WindowMode getWindowMode();
@@ -72,14 +72,14 @@ namespace VTX
 			void deleteLayoutSaveFile() const;
 			void restoreDefaultLayout();
 
-			QWidget & getWidget( const ID::VTX_ID & p_winId ) const;
+			QWidget & getWidget( const App::VTX_ID & p_winId ) const;
 			template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-			W & getWidget( const ID::VTX_ID & p_winId ) const
+			W & getWidget( const App::VTX_ID & p_winId ) const
 			{
 				return static_cast<W &>( getWidget( p_winId ) );
 			}
 
-			const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::MAIN_WINDOW; };
+			const App::VTX_ID getEventFirererId() const override { return UI::ID::Input::MAIN_WINDOW; };
 
 		  protected:
 			void resizeEvent( QResizeEvent * ) override;

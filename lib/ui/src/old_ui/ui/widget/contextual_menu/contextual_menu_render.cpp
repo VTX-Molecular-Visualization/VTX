@@ -190,7 +190,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuRender::_refreshPickerMode() const
 	{
-		const ID::VTX_ID & pickerID = VTXApp::get()
+		const App::VTX_ID & pickerID = VTXApp::get()
 										  .getStateMachine()
 										  .getState<State::Visualization>( ID::State::VISUALIZATION )
 										  ->getCurrentPickerID();
@@ -220,7 +220,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		const State::Visualization * const state
 			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
-		const ID::VTX_ID & pickerID = state->getCurrentPickerID();
+		const App::VTX_ID & pickerID = state->getCurrentPickerID();
 
 		// const Controller::MeasurementPicker::Mode & currentMode
 		//	= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )->getCurrentMode();
@@ -256,7 +256,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_refreshOverlayVisibilityMenu() const
 	{
 		const Render::RenderWidget & renderWigdet
-			= VTXApp::get().getMainWindow().getWidget<Render::RenderWidget>( ID::UI::Window::RENDER );
+			= VTXApp::get().getMainWindow().getWidget<Render::RenderWidget>( UI::ID::Window::RENDER );
 
 		for ( QAction * const action : _overlaysMenu->actions() )
 		{
@@ -324,7 +324,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_setOverlayVisibilityAction( QAction * const p_action )
 	{
 		Widget::Render::RenderWidget & renderWidget
-			= VTXApp::get().getMainWindow().getWidget<Widget::Render::RenderWidget>( ID::UI::Window::RENDER );
+			= VTXApp::get().getMainWindow().getWidget<Widget::Render::RenderWidget>( UI::ID::Window::RENDER );
 
 		const int actionData = p_action->data().toInt();
 

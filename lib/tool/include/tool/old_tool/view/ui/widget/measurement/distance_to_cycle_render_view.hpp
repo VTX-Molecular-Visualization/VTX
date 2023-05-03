@@ -2,7 +2,7 @@
 // #define __VTX_VIEW_UI_WIDGET_MEASUREMENT_DISTANCE_TO_CYCLE_RENDER__
 //
 // #include <util/types.hpp>
-// #include <app/old_app/id.hpp>
+// #include <app/id.hpp>
 // #include <app/model/measurement/distance_to_cycle.hpp"
 // #include <ui/old_ui/ui/widget/base_manual_widget.hpp>
 // #include <ui/old_ui/ui/widget/render/base_integrated_widget.hpp>

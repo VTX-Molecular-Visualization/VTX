@@ -93,7 +93,7 @@ namespace VTX::UI::QT::Controller
 		//	}
 		//	else
 		//	{
-		//		const ID::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( ids.x );
+		//		const App::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( ids.x );
 		//		App::Core::Model::ID		   atomID;
 
 		//		// If residue => select alpha carbon

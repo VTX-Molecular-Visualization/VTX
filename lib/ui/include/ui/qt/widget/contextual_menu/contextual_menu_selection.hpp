@@ -6,10 +6,10 @@
 // #include "ui/old_ui/ui/widget/custom_widget/trajectory_frames_menu.hpp"
 #include <QHideEvent>
 #include <QMenu>
+#include <app/application/selection/selection.hpp>
 #include <app/component/object3d/_fwd.hpp>
 #include <app/component/video/_fwd.hpp>
 #include <app/core/model/base_model.hpp>
-#include <app/application/selection/selection.hpp>
 #include <map>
 #include <unordered_set>
 #include <vector>
@@ -170,7 +170,9 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 
 			void addItemData( ItemData * const _itemData ) { _actions.emplace_back( _itemData ); };
 
-			void refreshWithTarget( const App::Application::Selection::SelectionModel & p_target, const TypeMask & p_mask, QMenu * const p_parent )
+			void refreshWithTarget( const App::Application::Selection::SelectionModel & p_target,
+									const TypeMask &									p_mask,
+									QMenu * const										p_parent )
 			{
 				for ( ItemData * const action : _actions )
 				{
@@ -256,12 +258,12 @@ namespace VTX::UI::QT::Widget::ContextualMenu
 		// UI::Widget::CustomWidget::SetRepresentationMenu * _representationMenu = nullptr;
 		// UI::Widget::CustomWidget::TrajectoryFramesMenu *  _frameListMenu	  = nullptr;
 
-		std::map<ID::VTX_ID, int>		_submenusMap = std::map<ID::VTX_ID, int>();
+		std::map<App::VTX_ID, int>		_submenusMap = std::map<App::VTX_ID, int>();
 		std::vector<SelectionSubMenu *> _submenus	 = std::vector<SelectionSubMenu *>();
 
 		App::Core::Model::BaseModel * _focusedTarget = nullptr;
 
-		TypeMask _getTypeMaskFromTypeSet( const std::set<ID::VTX_ID> & p_typeIds );
+		TypeMask _getTypeMaskFromTypeSet( const std::set<App::VTX_ID> & p_typeIds );
 		void	 _updateCurrentRepresentationFeedback( QAction & _action ) const;
 
 		void _refreshToggleWaterText( QAction & _action ) const;

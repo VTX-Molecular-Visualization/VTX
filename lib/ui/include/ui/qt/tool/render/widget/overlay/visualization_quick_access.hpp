@@ -9,8 +9,8 @@
 #include <QComboBox>
 #include <QFrame>
 #include <QToolButton>
-#include <app/old_app/id.hpp>
 #include <app/application/selection/enum_selection.hpp>
+#include <app/id.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Tool::Render::Widget::Overlay
@@ -50,29 +50,31 @@ namespace VTX::UI::QT::Tool::Render::Widget::Overlay
 			const QString iconPath;
 		};
 
-		inline static std::vector<MenuItemDataRef<ID::VTX_ID>> CAMERA_CONTROLLERS {
-			MenuItemDataRef<ID::VTX_ID>( ID::UI_NEW::Controller::TRACKBALL,
-										 "Trackball",
-										 ":/sprite/camera_trackball_mode.png" ),
-			MenuItemDataRef<ID::VTX_ID>( ID::UI_NEW::Controller::FREEFLY,
-										 "Freefly",
-										 ":/sprite/camera_freefly_mode.png" )
+		inline static std::vector<MenuItemDataRef<App::VTX_ID>> CAMERA_CONTROLLERS {
+			MenuItemDataRef<App::VTX_ID>( ID::Controller::TRACKBALL,
+										  "Trackball",
+										  ":/sprite/camera_trackball_mode.png" ),
+			MenuItemDataRef<App::VTX_ID>( ID::Controller::FREEFLY, "Freefly", ":/sprite/camera_freefly_mode.png" )
 		};
 
-		inline static std::vector<MenuItemDataRef<ID::VTX_ID>> PICKER_CONTROLLERS {
-			MenuItemDataRef<ID::VTX_ID>( ID::UI_NEW::Controller::PICKER,
-										 "Selection",
-										 ":/sprite/picker_selection_icon.png" ),
-			MenuItemDataRef<ID::VTX_ID>( ID::UI_NEW::Controller::MEASUREMENT,
-										 "Measurement",
-										 ":/sprite/measurement_picker_icon.png" )
+		inline static std::vector<MenuItemDataRef<App::VTX_ID>> PICKER_CONTROLLERS {
+			MenuItemDataRef<App::VTX_ID>( ID::Controller::PICKER, "Selection", ":/sprite/picker_selection_icon.png" ),
+			MenuItemDataRef<App::VTX_ID>( ID::Controller::MEASUREMENT,
+										  "Measurement",
+										  ":/sprite/measurement_picker_icon.png" )
 		};
 
 		inline static std::vector<MenuItemData<VTX::App::Application::Selection::GRANULARITY>> SELECTION_GRANULARITY {
 			MenuItemData( VTX::App::Application::Selection::GRANULARITY::ATOM, "Pick Atom", ":/sprite/pick_atom.png" ),
-			MenuItemData( VTX::App::Application::Selection::GRANULARITY::RESIDUE, "Pick Residue", ":/sprite/pick_residue.png" ),
-			MenuItemData( VTX::App::Application::Selection::GRANULARITY::CHAIN, "Pick Chain", ":/sprite/pick_chain.png" ),
-			MenuItemData( VTX::App::Application::Selection::GRANULARITY::MOLECULE, "Pick Molecule", ":/sprite/pick_molecule.png" )
+			MenuItemData( VTX::App::Application::Selection::GRANULARITY::RESIDUE,
+						  "Pick Residue",
+						  ":/sprite/pick_residue.png" ),
+			MenuItemData( VTX::App::Application::Selection::GRANULARITY::CHAIN,
+						  "Pick Chain",
+						  ":/sprite/pick_chain.png" ),
+			MenuItemData( VTX::App::Application::Selection::GRANULARITY::MOLECULE,
+						  "Pick Molecule",
+						  ":/sprite/pick_molecule.png" )
 		};
 
 		inline static std::vector<MenuItemData<QT::Controller::MeasurementPicker::Mode>> MEASUREMENT_MODE {

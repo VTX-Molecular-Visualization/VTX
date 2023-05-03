@@ -42,7 +42,7 @@ namespace VTX::UI::Widget::Render
 		void showAllOverlays( const bool p_show );
 
 		void			 receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
-		const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::RENDER_WIDGET; }
+		const App::VTX_ID getEventFirererId() const override { return UI::ID::Input::RENDER_WIDGET; }
 
 	  protected:
 		RenderWidget( QWidget * p_parent );
@@ -81,7 +81,7 @@ namespace VTX::UI::Widget::Render
 				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
 				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>,
 				 typename = std::enable_if<std::is_base_of<BaseIntegratedWidget, V>::value>>
-		void _removeViewIntegratedWidget( const M * const p_model, const ID::VTX_ID & p_viewName )
+		void _removeViewIntegratedWidget( const M * const p_model, const App::VTX_ID & p_viewName )
 		{
 			V * const integratedWidgetView = VTX::MVC_MANAGER().getView<V>( p_model, p_viewName );
 

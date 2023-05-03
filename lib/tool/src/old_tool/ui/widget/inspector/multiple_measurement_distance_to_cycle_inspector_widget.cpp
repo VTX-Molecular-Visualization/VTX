@@ -95,7 +95,7 @@ namespace VTX::UI::Widget::Inspector
 	//		_getHeader()->setHeaderTitle( headerTitle );
 
 	//		const QPixmap * symbolPixmap
-	//			= Style::IconConst::get().getModelSymbol( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE );
+	//			= Style::IconConst::get().getModelSymbol( App::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE );
 	//		_getHeader()->setHeaderIcon( *symbolPixmap );
 
 	//		for ( const Model::Measurement::DistanceToCycle * distanceModel : targets )
@@ -109,7 +109,7 @@ namespace VTX::UI::Widget::Inspector
 	//				const std::string distanceStr = Util::Measurement::getDistanceString( *distanceModel );
 	//				_distanceLabelWidget->updateWithNewValue( distanceStr );
 
-	//				if ( distanceModel->getTypeId() == ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+	//				if ( distanceModel->getTypeId() == App::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
 	//				{
 	//					if ( goToAtomButtonsVisible )
 	//					{
@@ -143,18 +143,18 @@ namespace VTX::UI::Widget::Inspector
 
 	// void MultipleMeasurmentDistanceToCycleWidget::_renameAction() const
 	//{
-	//	std::unordered_set<App::Component::Object3D::Label *> labelTargets = std::unordered_set<App::Component::Object3D::Label *>();
-	//	for ( Model::Measurement::DistanceToCycle * const targetDistance : getTargets() )
-	//		labelTargets.emplace( targetDistance );
+	//	std::unordered_set<App::Component::Object3D::Label *> labelTargets =
+	// std::unordered_set<App::Component::Object3D::Label *>(); 	for ( Model::Measurement::DistanceToCycle * const
+	// targetDistance : getTargets() ) 		labelTargets.emplace( targetDistance );
 
 	//	VTX_ACTION( new App::Action::Label::Rename( labelTargets, _nameWidget->text().toStdString() ) );
 	//}
 
 	// void MultipleMeasurmentDistanceToCycleWidget::_setAutoNameAction() const
 	//{
-	//	std::unordered_set<App::Component::Object3D::Label *> labelTargets = std::unordered_set<App::Component::Object3D::Label *>();
-	//	for ( Model::Measurement::DistanceToCycle * const targetDistance : getTargets() )
-	//		labelTargets.emplace( targetDistance );
+	//	std::unordered_set<App::Component::Object3D::Label *> labelTargets =
+	// std::unordered_set<App::Component::Object3D::Label *>(); 	for ( Model::Measurement::DistanceToCycle * const
+	// targetDistance : getTargets() ) 		labelTargets.emplace( targetDistance );
 
 	//	VTX_ACTION( new App::Action::Label::EnableAutoNaming( labelTargets, true ) );
 	//}

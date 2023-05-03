@@ -5,6 +5,7 @@
 #include "ui/core/base_panel.hpp"
 #include "ui/core/define.hpp"
 #include "ui/core/layout_descriptor.hpp"
+#include "ui/id.hpp"
 #include "ui/old_ui/event/base_event_firerer_input.hpp"
 #include "ui/qt/contextual_menu.hpp"
 #include "ui/qt/cursor_handler.hpp"
@@ -12,13 +13,12 @@
 #include "ui/qt/widget/main_menu/main_menu_bar.hpp"
 #include "ui/qt/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/qt/widget/main_menu/menu_tooltab_widget.hpp"
-#include "widget/base_manual_widget.hpp"
 #include <QCloseEvent>
 #include <QDockWidget>
 #include <QKeySequence>
 #include <QMainWindow>
 #include <QShortcut>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include <app/render/renderer/enum_renderer.hpp>
 #include <unordered_set>
 #include <util/types.hpp>
@@ -79,9 +79,9 @@ namespace VTX::UI::QT
 		ContextualMenu &	   getContextualMenu() { return *_contextualMenu; }
 		CursorHandler &		   getCursorHandler() { return *_cursorHandler; }
 
-		bool getWidgetVisibility( const ID::VTX_ID & p_winId ) const;
-		void showWidget( const ID::VTX_ID & p_winId, const bool p_show ) const;
-		void toggleWidget( const ID::VTX_ID & p_winId ) const;
+		bool getWidgetVisibility( const App::VTX_ID & p_winId ) const;
+		void showWidget( const App::VTX_ID & p_winId, const bool p_show ) const;
+		void toggleWidget( const App::VTX_ID & p_winId ) const;
 		// void openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const;
 
 		Core::WindowMode getWindowMode();
@@ -106,16 +106,16 @@ namespace VTX::UI::QT
 
 		void addFloatingWindow( QDialog * const p_window, const QSize & p_size, const bool p_visible );
 
-		QWidget & getWidget( const ID::VTX_ID & p_winId ) const;
+		QWidget & getWidget( const App::VTX_ID & p_winId ) const;
 		template<typename W, typename = std::enable_if<std::is_base_of<QWidget, W>::value>>
-		W & getWidget( const ID::VTX_ID & p_winId ) const
+		W & getWidget( const App::VTX_ID & p_winId ) const
 		{
 			return static_cast<W &>( getWidget( p_winId ) );
 		}
 
 		void appendStylesheet( const char * p_stylesheetPath );
 
-		const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::MAIN_WINDOW; };
+		const App::VTX_ID getEventFirererId() const override { return UI::ID::Input::MAIN_WINDOW; };
 
 	  protected:
 		void _setupUi( const QString & p_name ) override;

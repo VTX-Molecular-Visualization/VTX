@@ -72,45 +72,45 @@ namespace VTX::App::Action::Selection
 
 		for ( const App::Core::Model::ID modelId : _models )
 		{
-			ID::VTX_ID modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
+			App::VTX_ID modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
-			if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
+			if ( modelTypeId == App::ID::Model::MODEL_MOLECULE )
 			{
 				App::Component::Chemistry::Molecule & model
 					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelId );
 				molecules.emplace_back( &model );
 			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+			else if ( modelTypeId == App::ID::Model::MODEL_CATEGORY )
 			{
 				App::Component::Chemistry::Category & model
 					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( modelId );
 				categories.emplace_back( &model );
 			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
+			else if ( modelTypeId == App::ID::Model::MODEL_CHAIN )
 			{
 				App::Component::Chemistry::Chain & model
 					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( modelId );
 				chains.emplace_back( &model );
 			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
+			else if ( modelTypeId == App::ID::Model::MODEL_RESIDUE )
 			{
 				App::Component::Chemistry::Residue & model
 					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( modelId );
 				residues.emplace_back( &model );
 			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
+			else if ( modelTypeId == App::ID::Model::MODEL_ATOM )
 			{
 				App::Component::Chemistry::Atom & model
 					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( modelId );
 				atoms.emplace_back( &model );
 			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_PATH )
+			else if ( modelTypeId == App::ID::Model::MODEL_PATH )
 			{
 				App::Component::Video::Path & path
 					= VTX::MVC_MANAGER().getModel<App::Component::Video::Path>( modelId );
 				paths.emplace_back( &path );
 			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_VIEWPOINT )
+			else if ( modelTypeId == App::ID::Model::MODEL_VIEWPOINT )
 			{
 				App::Component::Object3D::Viewpoint & model
 					= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( modelId );
@@ -145,33 +145,33 @@ namespace VTX::App::Action::Selection
 
 		for ( const App::Core::Model::ID modelId : _models )
 		{
-			ID::VTX_ID modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
+			App::VTX_ID modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
-			if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
+			if ( modelTypeId == App::ID::Model::MODEL_MOLECULE )
 			{
 				App::Component::Chemistry::Molecule & model
 					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelId );
 				molecules.emplace_back( &model );
 			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+			else if ( modelTypeId == App::ID::Model::MODEL_CATEGORY )
 			{
 				App::Component::Chemistry::Category & model
 					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( modelId );
 				categories.emplace_back( &model );
 			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
+			else if ( modelTypeId == App::ID::Model::MODEL_CHAIN )
 			{
 				App::Component::Chemistry::Chain & model
 					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( modelId );
 				chains.emplace_back( &model );
 			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
+			else if ( modelTypeId == App::ID::Model::MODEL_RESIDUE )
 			{
 				App::Component::Chemistry::Residue & model
 					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( modelId );
 				residues.emplace_back( &model );
 			}
-			else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
+			else if ( modelTypeId == App::ID::Model::MODEL_ATOM )
 			{
 				App::Component::Chemistry::Atom & model
 					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( modelId );
@@ -587,9 +587,9 @@ namespace VTX::App::Action::Selection
 	{
 		for ( const App::Core::Model::ID & selectedObjectID : _selection.getItems() )
 		{
-			const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( selectedObjectID );
+			const App::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( selectedObjectID );
 
-			if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
+			if ( modelTypeID == App::ID::Model::MODEL_MOLECULE )
 			{
 				const App::Component::Chemistry::Molecule & source
 					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( selectedObjectID );
@@ -681,9 +681,9 @@ namespace VTX::App::Action::Selection
 
 		for ( const App::Core::Model::ID & selectedObjectID : itemsToDeleteCopy )
 		{
-			const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( selectedObjectID );
+			const App::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( selectedObjectID );
 
-			if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
+			if ( modelTypeID == App::ID::Model::MODEL_MOLECULE )
 			{
 				const App::Application::Selection::SelectionModel::PairMoleculeIds & molIds
 					= *moleculeMapToDeleteCopy.find( selectedObjectID );
@@ -737,7 +737,7 @@ namespace VTX::App::Action::Selection
 					molecule.notifyStructureChange();
 				}
 			}
-			else if ( modelTypeID == VTX::ID::Model::MODEL_PATH )
+			else if ( modelTypeID == App::ID::Model::MODEL_PATH )
 			{
 				App::Component::Video::Path & path
 					= VTX::MVC_MANAGER().getModel<App::Component::Video::Path>( selectedObjectID );
@@ -745,7 +745,7 @@ namespace VTX::App::Action::Selection
 				VTX::VTXApp::get().getScene().removePath( &path );
 				VTX::MVC_MANAGER().deleteModel( &path );
 			}
-			else if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
+			else if ( modelTypeID == App::ID::Model::MODEL_VIEWPOINT )
 			{
 				App::Component::Object3D::Viewpoint & viewpoint
 					= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( selectedObjectID );

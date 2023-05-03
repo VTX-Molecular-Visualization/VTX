@@ -10,7 +10,7 @@
 #include <app/application/selection/selection.hpp>
 #include <app/application/selection/selection_manager.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {
@@ -86,7 +86,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 	void CameraNavigationActionBlock::_updateCameraModeFeedback()
 	{
-		const ID::VTX_ID currentControllerID = VTXApp::get()
+		const App::VTX_ID currentControllerID = VTXApp::get()
 												   .getStateMachine()
 												   .getState<State::Visualization>( ID::State::VISUALIZATION )
 												   ->getCurrentCameraControllerID();

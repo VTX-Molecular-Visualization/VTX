@@ -131,7 +131,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 
 	void ContextualMenuRender::_refreshPickerMode() const
 	{
-		const ID::VTX_ID & pickerID = QT_APP()
+		const App::VTX_ID & pickerID = QT_APP()
 										  ->getStateMachine()
 										  .getState<QT::State::Visualization>( ID::State::VISUALIZATION )
 										  ->getCurrentPickerID();

@@ -9,7 +9,7 @@
 #include "app/internal/chemdb/residue.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include "app/render/renderer/enum_renderer.hpp"
 #include <list>
 #include <string>
@@ -201,8 +201,8 @@ namespace VTX
 
 			// Video.
 			static const float		PATH_DURATION_DEFAULT;
-			static const ID::VTX_ID CONTROLLER_MODE_DEFAULT;
-			static const ID::VTX_ID PICKER_MODE_DEFAULT;
+			static const App::VTX_ID CONTROLLER_MODE_DEFAULT;
+			static const App::VTX_ID PICKER_MODE_DEFAULT;
 			static const uint		VIDEO_FPS_DEFAULT;
 			static const uint		VIDEO_CRF_DEFAULT;
 

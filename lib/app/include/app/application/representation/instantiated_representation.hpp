@@ -12,7 +12,7 @@
 #include "app/core/model/base_model.hpp"
 #include <util/color/rgba.hpp>
 #include "app/old_app/generic/base_objectoverride.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include <string>
 
 namespace VTX::App::Application::Representation

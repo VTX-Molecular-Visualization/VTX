@@ -28,7 +28,7 @@ namespace VTX::Controller
 	{
 		UI::MainWindow &						 mw = VTXApp::get().getMainWindow();
 		const UI::Widget::Render::RenderWidget & renderWidget
-			= mw.getWidget<UI::Widget::Render::RenderWidget>( ID::UI::Window::RENDER );
+			= mw.getWidget<UI::Widget::Render::RenderWidget>( UI::ID::Window::RENDER );
 
 		const Vec2i ids = mw.getPickedIds( p_x, p_y );
 		_performSelection( ids );
@@ -61,7 +61,7 @@ namespace VTX::Controller
 		// If something clicked.
 		if ( p_ids.x != App::Core::Model::ID_UNKNOWN )
 		{
-			const ID::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( p_ids.x );
+			const App::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( p_ids.x );
 
 			// Already selected.
 			if ( App::Application::Selection::SelectionManager::get().getSelectionModel().isModelSelected(
@@ -75,7 +75,7 @@ namespace VTX::Controller
 				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					// Residue.
-					if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
+					if ( typeId == App::ID::Model::MODEL_RESIDUE )
 					{
 						App::Component::Chemistry::Residue & residuePicked
 							= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_ids.x );
@@ -104,7 +104,7 @@ namespace VTX::Controller
 			else
 			{
 				// Residue.
-				if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
+				if ( typeId == App::ID::Model::MODEL_RESIDUE )
 				{
 					App::Component::Chemistry::Residue & residuePicked
 						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_ids.x );

@@ -1,17 +1,18 @@
 #include "tool/old_tool/model/measurement/distance.hpp"
 #include "tool/old_tool/util/measurement.hpp"
-#include <app/core/event/vtx_event.hpp>
-#include <app/mvc.hpp>
-#include <app/event.hpp>
-#include <app/event/global.hpp>
+#include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/application/scene.hpp>
+#include <app/core/event/vtx_event.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
+#include <app/mvc.hpp>
+#include <ui/id.hpp>
 #include <util/math.hpp>
 
 namespace VTX::Model::Measurement
 {
-	Distance::Distance() : App::Component::Object3D::Label( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
+	Distance::Distance() : App::Component::Object3D::Label( App::ID::Model::MODEL_MEASUREMENT_DISTANCE )
 	{
 		_atoms.resize( 2, nullptr );
 		_moleculeViews.resize( 2, nullptr );
@@ -35,7 +36,8 @@ namespace VTX::Model::Measurement
 		if ( p_event.name == VTX::App::Event::Global::ATOM_REMOVED )
 		{
 			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom *> &>( p_event );
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Atom *> &>(
+					p_event );
 
 			if ( _isLinkedToAtom( castedEvent.get() ) )
 			{
@@ -48,7 +50,8 @@ namespace VTX::Model::Measurement
 		else if ( p_event.name == VTX::App::Event::Global::MOLECULE_REMOVED )
 		{
 			const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>( p_event );
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> &>(
+					p_event );
 
 			if ( _isLinkedToMolecule( castedEvent.get() ) )
 			{
@@ -69,14 +72,15 @@ namespace VTX::Model::Measurement
 		}
 	}
 
-	void Distance::setAtoms( const App::Component::Chemistry::Atom & p_firstAtom, const App::Component::Chemistry::Atom & p_secondAtom )
+	void Distance::setAtoms( const App::Component::Chemistry::Atom & p_firstAtom,
+							 const App::Component::Chemistry::Atom & p_secondAtom )
 	{
 		_setAtomsInternal( p_firstAtom, p_secondAtom );
 	}
 
 	void Distance::_setAtomsInternal( const App::Component::Chemistry::Atom & p_firstAtom,
 									  const App::Component::Chemistry::Atom & p_secondAtom,
-									  const bool		  p_notify )
+									  const bool							  p_notify )
 	{
 		_cleanViews();
 
@@ -159,15 +163,15 @@ namespace VTX::Model::Measurement
 
 	void Distance::_instantiateViewsOnMolecules()
 	{
-		MoleculeView * const firstMoleculeView = VTX::MVC_MANAGER().instantiateView<MoleculeView>(
-			_atoms[ 0 ]->getMoleculePtr(), getViewID( 0 ) );
+		MoleculeView * const firstMoleculeView
+			= VTX::MVC_MANAGER().instantiateView<MoleculeView>( _atoms[ 0 ]->getMoleculePtr(), getViewID( 0 ) );
 		firstMoleculeView->setCallback( this, &Distance::_onMoleculeChange );
 		_moleculeViews[ 0 ] = firstMoleculeView;
 
 		if ( _atoms[ 0 ]->getMoleculePtr() != _atoms[ 1 ]->getMoleculePtr() )
 		{
-			MoleculeView * const secondMoleculeView = VTX::MVC_MANAGER().instantiateView<MoleculeView>(
-				_atoms[ 1 ]->getMoleculePtr(), getViewID( 1 ) );
+			MoleculeView * const secondMoleculeView
+				= VTX::MVC_MANAGER().instantiateView<MoleculeView>( _atoms[ 1 ]->getMoleculePtr(), getViewID( 1 ) );
 			secondMoleculeView->setCallback( this, &Distance::_onMoleculeChange );
 			_moleculeViews[ 1 ] = firstMoleculeView;
 		}
@@ -187,8 +191,8 @@ namespace VTX::Model::Measurement
 		}
 	}
 
-	void Distance::_onMoleculeChange( const App::Component::Chemistry::Molecule * const					p_molecule,
-									  const VTX::App::Core::Event::VTXEvent * const p_event )
+	void Distance::_onMoleculeChange( const App::Component::Chemistry::Molecule * const p_molecule,
+									  const VTX::App::Core::Event::VTXEvent * const		p_event )
 	{
 		bool recomputeDistance = false;
 		if ( p_event->name == App::Event::Model::TRANSFORM_CHANGE )
@@ -237,10 +241,10 @@ namespace VTX::Model::Measurement
 		}
 	}
 
-	VTX::ID::VTX_ID Distance::getViewID( const int p_atomPos ) const
+	VTX::App::VTX_ID Distance::getViewID( const int p_atomPos ) const
 	{
-		return VTX::MVC_MANAGER().generateViewID(
-			VTX::ID::View::MEASUREMENT_ON_MOLECULE, std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
+		return VTX::MVC_MANAGER().generateViewID( UI::ID::View::MEASUREMENT_ON_MOLECULE,
+												  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 	}
 
 	void Distance::autoDelete() const { VTX::MVC_MANAGER().deleteModel( this ); }

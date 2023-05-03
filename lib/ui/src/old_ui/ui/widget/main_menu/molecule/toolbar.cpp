@@ -1,4 +1,5 @@
 #include "ui/old_ui/ui/widget/main_menu/molecule/toolbar.hpp"
+#include "ui/id.hpp"
 #include "ui/old_ui/ui/widget/main_menu/molecule/object_display_block.hpp"
 #include "ui/old_ui/ui/widget/main_menu/molecule/representation_block.hpp"
 #include "ui/old_ui/ui/widget/main_menu/molecule/selection_action_block.hpp"
@@ -21,7 +22,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		RepresentationBlock * const representationBlock
 			= WidgetFactory::get().instantiateViewWidget<RepresentationBlock>(
 				&App::Application::Representation::RepresentationLibrary::get(),
-				ID::View::UI_MENU_VISUALIZATION_REPRESENTATION_LIBRARY,
+				UI::ID::View::UI_MENU_VISUALIZATION_REPRESENTATION_LIBRARY,
 				this,
 				"representationBlock" );
 		addToolBlock( representationBlock );

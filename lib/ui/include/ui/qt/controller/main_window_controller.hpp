@@ -3,7 +3,7 @@
 
 #include "base_keyboard_controller.hpp"
 #include "ui/id.hpp"
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 
 namespace VTX::UI::QT::Controller
 {
@@ -12,8 +12,8 @@ namespace VTX::UI::QT::Controller
 	  public:
 		MainWindowController() : BaseKeyboardController() {}
 
-		inline VTX::ID::VTX_ID getTargetWidget() override { return VTX::ID::UI_NEW::Input::MAIN_WINDOW; }
-		inline bool			   readEventFromInput( const VTX::ID::VTX_ID & p_id ) override
+		inline VTX::App::VTX_ID getTargetWidget() override { return UI::ID::Input::MAIN_WINDOW; }
+		inline bool				readEventFromInput( const VTX::App::VTX_ID & p_id ) override
 		{
 			// This controller events from every target
 			return true;

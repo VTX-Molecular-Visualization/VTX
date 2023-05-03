@@ -612,7 +612,7 @@ namespace VTX::UI::Widget::Settings
 		_skipSettingEvents();
 
 		VTX_ACTION( new QT::Action::Main::RestoreLayout() );
-		VTXApp::get().getMainWindow().showWidget( ID::UI::Window::SETTINGS, true );
+		VTXApp::get().getMainWindow().showWidget( UI::ID::Window::SETTINGS, true );
 
 		_listenSettingEvents();
 	}

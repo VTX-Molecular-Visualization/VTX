@@ -2,7 +2,7 @@
 #define __VTX_UI_WIDGET_MENU_CAMERA_WINDOWS_BLOCK__
 
 #include <app/core/event/vtx_event.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include "ui/old_ui/ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/old_ui/ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QAction>
@@ -32,7 +32,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
-		void _refreshButton( const ID::VTX_ID & p_id );
+		void _refreshButton( const App::VTX_ID & p_id );
 		void _updateFullscreenButton( const WindowMode & p_mode );
 		void _refreshOverlayVisibilityMenu() const;
 
@@ -48,9 +48,9 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 		QMenu * _windowsMenu = nullptr;
 
-		std::map<const ID::VTX_ID *, QAction *> _mapWindowsActions = std::map<const ID::VTX_ID *, QAction *>();
+		std::map<const App::VTX_ID *, QAction *> _mapWindowsActions = std::map<const App::VTX_ID *, QAction *>();
 
-		void _instantiateButton( const ID::VTX_ID & p_id,
+		void _instantiateButton( const App::VTX_ID & p_id,
 								 void ( WindowsBlock::*p_action )(),
 								 const QKeySequence & p_shortcut = 0 );
 

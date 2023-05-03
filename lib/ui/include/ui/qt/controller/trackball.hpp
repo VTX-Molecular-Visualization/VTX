@@ -17,7 +17,7 @@ namespace VTX::UI::QT::Controller
 		{
 		}
 
-		const ID::VTX_ID getID() const override { return ID::Controller::TRACKBALL; }
+		const App::VTX_ID getID() const override { return ID::Controller::TRACKBALL; }
 		void			 setActive( const bool p_active ) override;
 		void			 reset() override;
 

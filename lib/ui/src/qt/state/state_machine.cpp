@@ -19,19 +19,19 @@ namespace VTX::UI::QT::State
 
 	StateMachine::~StateMachine()
 	{
-		for ( const std::pair<const ID::VTX_ID, BaseState * const> & pair : _states )
+		for ( const std::pair<const App::VTX_ID, BaseState * const> & pair : _states )
 		{
 			delete pair.second;
 		}
 		_states.clear();
 	}
 
-	void StateMachine::goToState( const ID::VTX_ID & p_name, void * const p_arg )
+	void StateMachine::goToState( const App::VTX_ID & p_name, void * const p_arg )
 	{
 		VTX_DEBUG( "Go to state: " + p_name );
 		if ( _states.find( p_name ) != _states.end() )
 		{
-			VTX_EVENT<const ID::VTX_ID &>( VTX::App::Event::Global::CHANGE_STATE, p_name );
+			VTX_EVENT<const App::VTX_ID &>( VTX::App::Event::Global::CHANGE_STATE, p_name );
 			_switchState( _states[ p_name ], p_arg );
 		}
 		else

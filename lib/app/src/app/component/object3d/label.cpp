@@ -3,13 +3,13 @@
 
 namespace VTX::App::Component::Object3D
 {
-	Label::Label( const VTX::ID::VTX_ID & p_typeId ) : BaseModel( p_typeId )
+	Label::Label( const VTX::App::VTX_ID & p_typeId ) : BaseModel( p_typeId )
 	{
 		const std::string *& namePtr = _getNamePtr();
 		namePtr						 = &_name;
 		_color						 = VTX::App::Application::Setting::DEFAULT_LABEL_COLOR;
 	};
-	Label::Label() : Label( VTX::ID::Model::MODEL_LABEL ) {};
+	Label::Label() : Label( App::ID::Model::MODEL_LABEL ) {};
 
 	void Label::setName( const std::string & p_name )
 	{

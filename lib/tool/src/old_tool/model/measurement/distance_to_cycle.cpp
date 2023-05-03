@@ -12,7 +12,7 @@
 //
 //  namespace VTX::Model::Measurement
 //{
-//	DistanceToCycle::DistanceToCycle() : App::Component::Object3D::Label( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+//	DistanceToCycle::DistanceToCycle() : App::Component::Object3D::Label( App::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
 //	{
 //		_registerEvent( VTX::App::Event::Global::MOLECULE_REMOVED );
 //		_registerEvent( VTX::App::Event::Global::ATOM_REMOVED );
@@ -197,9 +197,9 @@
 //		}
 //	}
 //
-//	VTX::ID::VTX_ID DistanceToCycle::getViewID( const int p_atomPos ) const
+//	VTX::App::VTX_ID DistanceToCycle::getViewID( const int p_atomPos ) const
 //	{
-//		return VTX::MVC_MANAGER().generateViewID( VTX::ID::View::MEASUREMENT_ON_MOLECULE,
+//		return VTX::MVC_MANAGER().generateViewID( VTX::App::ID::View::MEASUREMENT_ON_MOLECULE,
 //													  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 //	}
 //

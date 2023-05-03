@@ -5,10 +5,11 @@
 #include "base_gamepad_controller.hpp"
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
+#include "ui/id.hpp"
 #include <app/component/object3d/helper/aabb.hpp>
 #include <app/component/render/camera.hpp>
+#include <app/id.hpp>
 #include <app/internal/scene/camera_manager.hpp>
-#include <app/old_app/id.hpp>
 
 namespace VTX
 {
@@ -30,8 +31,8 @@ namespace VTX
 			}
 			virtual ~BaseCameraController() = default;
 
-			virtual const ID::VTX_ID getID() const = 0;
-			inline ID::VTX_ID		 getTargetWidget() override { return ID::UI::Input::RENDER_WIDGET; }
+			virtual const App::VTX_ID getID() const = 0;
+			inline App::VTX_ID		  getTargetWidget() override { return UI::ID::Input::RENDER_WIDGET; }
 
 			inline const bool	 isOrienting() const { return _isOrienting; }
 			inline const Vec3f & getOrientStartingPosition() const { return _orientStartingPosition; }

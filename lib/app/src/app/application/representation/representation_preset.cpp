@@ -5,7 +5,7 @@
 #include "app/event.hpp"
 #include "app/internal/chemdb/residue.hpp"
 #include <util/color/rgba.hpp>
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include "app/application/setting.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include <util/logger.hpp>
@@ -14,14 +14,14 @@ namespace VTX::App::Application::Representation
 {
 	namespace ChemDB = VTX::App::Internal::ChemDB;
 
-	RepresentationPreset::RepresentationPreset() : BaseModel( VTX::ID::Model::MODEL_REPRESENTATION )
+	RepresentationPreset::RepresentationPreset() : BaseModel( App::ID::Model::MODEL_REPRESENTATION )
 	{
 		const int randomColorIndex = getId() % int( App::Internal::ChemDB::Residue::SYMBOL::COUNT );
 		_color					   = ChemDB::Residue::SYMBOL_COLOR[ randomColorIndex ];
 	}
 
 	RepresentationPreset::RepresentationPreset( const REPRESENTATION_ENUM & p_type ) :
-		BaseModel( VTX::ID::Model::MODEL_REPRESENTATION )
+		BaseModel( App::ID::Model::MODEL_REPRESENTATION )
 	{
 		changeRepresentationType( p_type, false );
 

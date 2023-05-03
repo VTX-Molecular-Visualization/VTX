@@ -39,7 +39,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	SceneWidget ::~SceneWidget()
 	{
-		for ( const std::pair<ID::VTX_ID, SceneItemWidgetInstancier *> & pairInstancier : _mapInstanciers )
+		for ( const auto & pairInstancier : _mapInstanciers )
 		{
 			delete pairInstancier.second;
 		}
@@ -77,7 +77,8 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		}
 	}
 
-	void SceneWidget::registerSceneItemType( const ID::VTX_ID & p_type, SceneItemWidgetInstancier * const p_instancier )
+	void SceneWidget::registerSceneItemType( const App::VTX_ID &			   p_type,
+											 SceneItemWidgetInstancier * const p_instancier )
 	{
 		_mapInstanciers[ p_type ] = p_instancier;
 	}
@@ -85,7 +86,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		const int defaultPosition = _getDefaultIndex( *p_sceneItem );
 
-		const ID::VTX_ID &		modelTypeID		= VTX::MVC_MANAGER().getModelTypeID( p_sceneItem->getModelID() );
+		const App::VTX_ID &		modelTypeID		= VTX::MVC_MANAGER().getModelTypeID( p_sceneItem->getModelID() );
 		SceneItemWidget * const sceneItemWidget = _mapInstanciers[ modelTypeID ]->instantiateItem( p_sceneItem );
 
 		const int index = int( _sceneWidgets.size() );
@@ -102,7 +103,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	{
 		_removeWidgetInLayout( p_item );
 
-		const ID::VTX_ID & itemType = VTX::MVC_MANAGER().getModelTypeID( p_item->getModelID() );
+		const App::VTX_ID & itemType = VTX::MVC_MANAGER().getModelTypeID( p_item->getModelID() );
 		_mapInstanciers[ itemType ]->destroyItem( p_item );
 	}
 
@@ -390,7 +391,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		std::vector<App::Core::Model::ID> droppedModelIDs = std::vector<App::Core::Model::ID>();
 
-		if ( modelData.getTypeID() == ID::Model::MODEL_SELECTION )
+		if ( modelData.getTypeID() == App::ID::Model::MODEL_SELECTION )
 		{
 			const App::Application::Selection::SelectionModel & selection
 				= VTX::MVC_MANAGER().getModel<App::Application::Selection::SelectionModel>( modelData.getModelID() );

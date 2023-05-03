@@ -3,8 +3,8 @@
 
 #include "ui/old_ui/controller/base_controller.hpp"
 #include <app/core/event/base_event_receiver_vtx.hpp>
+#include <app/id.hpp>
 #include <app/old_app/generic/base_updatable.hpp>
-#include <app/old_app/id.hpp>
 #include <map>
 
 namespace VTX
@@ -17,7 +17,7 @@ namespace VTX
 			BaseState() = default;
 			virtual ~BaseState()
 			{
-				for ( const std::pair<const ID::VTX_ID, Controller::BaseController * const> & pair : _controllers )
+				for ( const std::pair<const App::VTX_ID, Controller::BaseController * const> & pair : _controllers )
 				{
 					delete pair.second;
 				}
@@ -25,19 +25,19 @@ namespace VTX
 			}
 
 			template<typename T, typename = std::enable_if<std::is_base_of<Controller::BaseController, T>::value>>
-			inline T * const getController( const ID::VTX_ID & p_id )
+			inline T * const getController( const App::VTX_ID & p_id )
 			{
 				return dynamic_cast<T * const>( _controllers[ p_id ] );
 			}
 			template<typename T, typename = std::enable_if<std::is_base_of<Controller::BaseController, T>::value>>
-			inline const T * const getController( const ID::VTX_ID & p_id ) const
+			inline const T * const getController( const App::VTX_ID & p_id ) const
 			{
 				return dynamic_cast<T * const>( _controllers.at( p_id ) );
 			}
 
 			virtual void enter( void * const )
 			{
-				for ( const std::pair<const ID::VTX_ID, Controller::BaseController * const> & pair : _controllers )
+				for ( const std::pair<const App::VTX_ID, Controller::BaseController * const> & pair : _controllers )
 				{
 					pair.second->setActive( true );
 				}
@@ -45,7 +45,7 @@ namespace VTX
 
 			virtual void exit()
 			{
-				for ( const std::pair<const ID::VTX_ID, Controller::BaseController * const> & pair : _controllers )
+				for ( const std::pair<const App::VTX_ID, Controller::BaseController * const> & pair : _controllers )
 				{
 					pair.second->setActive( false );
 				}
@@ -53,7 +53,7 @@ namespace VTX
 
 			virtual void update( const float & p_deltaTime ) override
 			{
-				for ( const std::pair<const ID::VTX_ID, Controller::BaseController * const> & pair : _controllers )
+				for ( const std::pair<const App::VTX_ID, Controller::BaseController * const> & pair : _controllers )
 				{
 					if ( pair.second->isActive() )
 					{
@@ -63,8 +63,8 @@ namespace VTX
 			}
 
 		  protected:
-			std::map<const ID::VTX_ID, Controller::BaseController * const> _controllers
-				= std::map<const ID::VTX_ID, Controller::BaseController * const>();
+			std::map<const App::VTX_ID, Controller::BaseController * const> _controllers
+				= std::map<const App::VTX_ID, Controller::BaseController * const>();
 
 		}; // namespace State
 	}	   // namespace State

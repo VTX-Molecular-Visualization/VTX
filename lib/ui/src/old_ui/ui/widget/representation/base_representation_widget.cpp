@@ -6,7 +6,7 @@
 #include <app/action/molecule.hpp>
 #include <app/application/representation/base_representable.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include <string>
 #include <util/logger.hpp>
 

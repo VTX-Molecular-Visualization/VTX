@@ -138,7 +138,7 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_containsOnlyUniqueModel = p_containsOnlyUniqueModel;
 	}
-	void BaseModelListWidget::addTypeFilter( const ID::VTX_ID & p_typeID ) { _filters.emplace_back( p_typeID ); }
+	void BaseModelListWidget::addTypeFilter( const App::VTX_ID & p_typeID ) { _filters.emplace_back( p_typeID ); }
 
 	bool BaseModelListWidget::_isModelAlreadyInList( const App::Core::Model::BaseModel * const p_model ) const
 	{

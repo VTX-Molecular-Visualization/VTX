@@ -8,7 +8,7 @@
 #include "app/old_app/generic/base_renderable.hpp"
 #include "app/old_app/generic/base_transformable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include "app/render/buffer/base_buffer_opengl.hpp"
 #include <unordered_set>
 #include <util/logger.hpp>
@@ -107,7 +107,7 @@ namespace VTX::App::Core::Model
 		std::unordered_set<App::Component::Object3D::Helper::AABB *> _linkedAABBs
 			= std::unordered_set<App::Component::Object3D::Helper::AABB *>();
 
-		BaseModel3D( const VTX::ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {}
+		BaseModel3D( const VTX::App::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {}
 		virtual ~BaseModel3D()
 		{
 			_linkedAABBs.clear();

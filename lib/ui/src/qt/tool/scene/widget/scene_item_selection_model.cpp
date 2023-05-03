@@ -203,9 +203,9 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 													  const App::Core::Model::ID &					p_modelId,
 													  const bool p_appendToSelection ) const
 	{
-		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( p_modelId );
+		const App::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( p_modelId );
 
-		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == App::ID::Model::MODEL_MOLECULE )
 		{
 			App::Component::Chemistry::Molecule & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( p_modelId );
@@ -215,7 +215,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 				VTX_ACTION(
 					new App::Action::Selection::SelectMolecule( p_selectionModel, model, p_appendToSelection ) );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+		else if ( modelTypeId == App::ID::Model::MODEL_CATEGORY )
 		{
 			App::Component::Chemistry::Category & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( p_modelId );
@@ -225,7 +225,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 				VTX_ACTION(
 					new App::Action::Selection::SelectCategory( p_selectionModel, model, p_appendToSelection ) );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == App::ID::Model::MODEL_CHAIN )
 		{
 			App::Component::Chemistry::Chain & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( p_modelId );
@@ -234,7 +234,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 			else
 				VTX_ACTION( new App::Action::Selection::SelectChain( p_selectionModel, model, p_appendToSelection ) );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == App::ID::Model::MODEL_RESIDUE )
 		{
 			App::Component::Chemistry::Residue & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_modelId );
@@ -243,7 +243,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 			else
 				VTX_ACTION( new App::Action::Selection::SelectResidue( p_selectionModel, model, p_appendToSelection ) );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == App::ID::Model::MODEL_ATOM )
 		{
 			App::Component::Chemistry::Atom & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_modelId );
@@ -257,33 +257,33 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	void SceneItemSelectionModel::_unselectModelAction( App::Application::Selection::SelectionModel & p_selectionModel,
 														const App::Core::Model::ID &				  p_modelId ) const
 	{
-		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( p_modelId );
+		const App::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( p_modelId );
 
-		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == App::ID::Model::MODEL_MOLECULE )
 		{
 			App::Component::Chemistry::Molecule & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( p_modelId );
 			VTX_ACTION( new App::Action::Selection::UnselectMolecule( p_selectionModel, model ) );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+		else if ( modelTypeId == App::ID::Model::MODEL_CATEGORY )
 		{
 			App::Component::Chemistry::Category & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( p_modelId );
 			VTX_ACTION( new App::Action::Selection::UnselectCategory( p_selectionModel, model ) );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == App::ID::Model::MODEL_CHAIN )
 		{
 			App::Component::Chemistry::Chain & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( p_modelId );
 			VTX_ACTION( new App::Action::Selection::UnselectChain( p_selectionModel, model ) );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == App::ID::Model::MODEL_RESIDUE )
 		{
 			App::Component::Chemistry::Residue & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_modelId );
 			VTX_ACTION( new App::Action::Selection::UnselectResidue( p_selectionModel, model ) );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == App::ID::Model::MODEL_ATOM )
 		{
 			App::Component::Chemistry::Atom & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( p_modelId );

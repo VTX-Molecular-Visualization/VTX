@@ -82,9 +82,9 @@ namespace VTX::UI::QT::State
 		}
 		_controllers[ _cameraController ]->setActive( true );
 
-		VTX_EVENT<const ID::VTX_ID &>( VTX::App::Event::Global::CONTROLLER_CHANGE, _cameraController );
+		VTX_EVENT<const App::VTX_ID &>( VTX::App::Event::Global::CONTROLLER_CHANGE, _cameraController );
 	}
-	void Visualization::setCameraController( const ID::VTX_ID & p_controllerId )
+	void Visualization::setCameraController( const App::VTX_ID & p_controllerId )
 	{
 		if ( getController<QT::Controller::BaseCameraController>( _cameraController )->isOrienting() )
 		{
@@ -99,7 +99,7 @@ namespace VTX::UI::QT::State
 		_cameraController = p_controllerId;
 		_controllers[ _cameraController ]->setActive( true );
 
-		VTX_EVENT<const ID::VTX_ID &>( VTX::App::Event::Global::CONTROLLER_CHANGE, _cameraController );
+		VTX_EVENT<const App::VTX_ID &>( VTX::App::Event::Global::CONTROLLER_CHANGE, _cameraController );
 	}
 
 	void Visualization::resetCameraController()
@@ -148,7 +148,7 @@ namespace VTX::UI::QT::State
 		}
 	}
 
-	void Visualization::setPickerController( const ID::VTX_ID & p_pickerId )
+	void Visualization::setPickerController( const App::VTX_ID & p_pickerId )
 	{
 		// Do nothing if id not in collection or already in use
 		if ( _controllers.find( p_pickerId ) == _controllers.end() || _pickerController == p_pickerId )

@@ -4,7 +4,7 @@
 #include "_fwd.hpp"
 #include "app/core/model/base_model.hpp"
 #include "app/internal/chemdb/bond.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include <string>
 #include <util/types.hpp>
 
@@ -36,7 +36,7 @@ namespace VTX::App::Component::Chemistry
 		Molecule *			_moleculePtr	 = nullptr;
 		ChemDB::Bond::ORDER _order			 = ChemDB::Bond::ORDER::UNKNOWN;
 
-		Bond() : BaseModel( VTX::ID::Model::MODEL_BOND ) {};
+		Bond() : BaseModel( App::ID::Model::MODEL_BOND ) {};
 	};
 
 } // namespace VTX::App::Component::Chemistry
