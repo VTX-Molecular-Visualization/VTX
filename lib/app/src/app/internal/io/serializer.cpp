@@ -101,7 +101,7 @@ namespace VTX::App::Internal::IO
 
 	nlohmann::json Serializer::serialize( const Component::Object3D::Label & p_label ) const
 	{
-		const ID::VTX_ID & labelTypeID = p_label.getTypeId();
+		const App::VTX_ID & labelTypeID = p_label.getTypeId();
 
 		// if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 		//	return serialize( dynamic_cast<const Model::Measurement::Distance &>( p_label ) );
@@ -435,7 +435,7 @@ namespace VTX::App::Internal::IO
 
 					if ( jsonLabelData.contains( "TYPE_ID" ) )
 					{
-						ID::VTX_ID typeID = jsonLabelData.at( "TYPE_ID" ).get<ID::VTX_ID>();
+						App::VTX_ID typeID = jsonLabelData.at( "TYPE_ID" ).get<VTX_ID>();
 
 						// if ( typeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 						//	label = tryDeserializeModel<Model::Measurement::Distance>( jsonLabelData );
@@ -581,7 +581,7 @@ namespace VTX::App::Internal::IO
 	{
 		p_viewpoint.setName( _get<std::string>( p_json, "NAME" ) );
 		p_viewpoint.setController(
-			_get<ID::VTX_ID>( p_json, "CONTROLLER", Application::Setting::CONTROLLER_MODE_DEFAULT ) );
+			_get<VTX_ID>( p_json, "CONTROLLER", Application::Setting::CONTROLLER_MODE_DEFAULT ) );
 		p_viewpoint.setDuration( _get<float>( p_json, "DURATION" ) );
 
 		if ( p_json.contains( "POSITION" ) )
@@ -931,7 +931,7 @@ namespace VTX::App::Internal::IO
 																  const Writer::ChemfilesWriter * p_writer ) const
 	{
 		nlohmann::json jsonArrayRepresentations = nlohmann::json::array();
-		nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", VTX::ID::Model::MODEL_MOLECULE },
+		nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", App::ID::Model::MODEL_MOLECULE },
 													{ "INDEX", 0 },
 													{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
 		jsonArrayRepresentations.emplace_back( jsonRepresentation );
@@ -943,7 +943,7 @@ namespace VTX::App::Internal::IO
 
 			if ( chain->hasCustomRepresentation() )
 			{
-				jsonRepresentation = { { "TARGET_TYPE", VTX::ID::Model::MODEL_CHAIN },
+				jsonRepresentation = { { "TARGET_TYPE", App::ID::Model::MODEL_CHAIN },
 									   { "INDEX", chain->getIndex() },
 									   { "REPRESENTATION", serialize( *chain->getRepresentation() ) } };
 				jsonArrayRepresentations.emplace_back( jsonRepresentation );
@@ -961,7 +961,7 @@ namespace VTX::App::Internal::IO
 				{
 					const uint newResidueIndex
 						= p_writer != nullptr ? p_writer->getNewResidueIndex( *residue ) : residue->getIndex();
-					jsonRepresentation = { { "TARGET_TYPE", VTX::ID::Model::MODEL_RESIDUE },
+					jsonRepresentation = { { "TARGET_TYPE", App::ID::Model::MODEL_RESIDUE },
 										   { "INDEX", newResidueIndex },
 										   { "REPRESENTATION", serialize( *residue->getRepresentation() ) } };
 
@@ -1064,12 +1064,12 @@ namespace VTX::App::Internal::IO
 			if ( !jsonRepresentations.contains( "TARGET_TYPE" ) || !jsonRepresentations.contains( "INDEX" ) )
 				continue;
 
-			const ID::VTX_ID type  = jsonRepresentations.at( "TARGET_TYPE" ).get<ID::VTX_ID>();
-			const uint		 index = jsonRepresentations.at( "INDEX" ).get<uint>();
+			const App::VTX_ID type	= jsonRepresentations.at( "TARGET_TYPE" ).get<VTX_ID>();
+			const uint		  index = jsonRepresentations.at( "INDEX" ).get<uint>();
 
-			const bool dataValid = ( type == VTX::ID::Model::MODEL_MOLECULE )
-								   || ( type == VTX::ID::Model::MODEL_CHAIN && index < p_molecule.getChainCount() )
-								   || ( type == VTX::ID::Model::MODEL_RESIDUE && index < p_molecule.getResidueCount() );
+			const bool dataValid = ( type == App::ID::Model::MODEL_MOLECULE )
+								   || ( type == App::ID::Model::MODEL_CHAIN && index < p_molecule.getChainCount() )
+								   || ( type == App::ID::Model::MODEL_RESIDUE && index < p_molecule.getResidueCount() );
 
 			// Currently prevent app from crash when lodading out of range (because of deletion)
 			if ( !dataValid )
@@ -1079,17 +1079,17 @@ namespace VTX::App::Internal::IO
 				= VTX::MVC_MANAGER().instantiateModel<Application::Representation::InstantiatedRepresentation>();
 			deserialize( jsonRepresentations.at( "REPRESENTATION" ), p_version, *representation );
 
-			if ( type == VTX::ID::Model::MODEL_MOLECULE )
+			if ( type == App::ID::Model::MODEL_MOLECULE )
 			{
 				Application::Representation::RepresentationManager::get().assignRepresentation(
 					representation, p_molecule, false, false );
 			}
-			else if ( type == VTX::ID::Model::MODEL_CHAIN )
+			else if ( type == App::ID::Model::MODEL_CHAIN )
 			{
 				Application::Representation::RepresentationManager::get().assignRepresentation(
 					representation, *p_molecule.getChain( index ), false, false );
 			}
-			else if ( type == VTX::ID::Model::MODEL_RESIDUE )
+			else if ( type == App::ID::Model::MODEL_RESIDUE )
 			{
 				Application::Representation::RepresentationManager::get().assignRepresentation(
 					representation, *p_molecule.getResidue( index ), false, false );

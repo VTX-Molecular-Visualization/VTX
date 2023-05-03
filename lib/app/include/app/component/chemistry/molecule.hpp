@@ -303,7 +303,7 @@ namespace VTX::App::Component::Chemistry
 		void _onRepresentationChange() override;
 
 		Molecule();
-		Molecule( const VTX::ID::VTX_ID & p_typeId );
+		Molecule( const VTX::App::VTX_ID & p_typeId );
 		virtual ~Molecule();
 
 	  private:

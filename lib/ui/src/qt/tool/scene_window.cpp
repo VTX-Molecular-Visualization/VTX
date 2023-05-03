@@ -20,7 +20,8 @@ namespace VTX::UI::QT::Tool
 		Scene::Widget::SceneWidget * const sceneWidget
 			= QT::QT_APP()->getMainWindow().getPanel<Scene::Widget::SceneWidget>( Tool::SCENE_WINDOW_KEY );
 
-		App::Component::Chemistry::Molecule * const molecule = static_cast<App::Component::Chemistry::Molecule *>( p_item );
+		App::Component::Chemistry::Molecule * const molecule
+			= static_cast<App::Component::Chemistry::Molecule *>( p_item );
 
 		Scene::Widget::View::MoleculeSceneView * const moleculeSceneItemWidget
 			= QT::WidgetFactory::get().instantiateViewWidget<Scene::Widget::View::MoleculeSceneView>(
@@ -38,7 +39,7 @@ namespace VTX::UI::QT::Tool
 			= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeSceneItemWidget->getModelID() );
 
 		VTX::MVC_MANAGER().deleteView<Scene::Widget::View::MoleculeSceneView>( &molecule,
-																				   ID::View::UI_MOLECULE_STRUCTURE );
+																			   ID::View::UI_MOLECULE_STRUCTURE );
 	}
 
 	Scene::Widget::SceneItemWidget * SceneWindow::PathInstancier::instantiateItem(
@@ -47,7 +48,7 @@ namespace VTX::UI::QT::Tool
 		Scene::Widget::SceneWidget * const sceneWidget
 			= QT::QT_APP()->getMainWindow().getPanel<Scene::Widget::SceneWidget>( Tool::SCENE_WINDOW_KEY );
 
-	 App::Component::Video::Path * const path = static_cast<App::Component::Video::Path *>( p_item );
+		App::Component::Video::Path * const path = static_cast<App::Component::Video::Path *>( p_item );
 
 		Scene::Widget::View::PathSceneView * const pathSceneItemWidget
 			= QT::WidgetFactory::get().instantiateViewWidget<Scene::Widget::View::PathSceneView>(
@@ -61,7 +62,8 @@ namespace VTX::UI::QT::Tool
 		const Scene::Widget::View::PathSceneView * const pathSceneItemWidget
 			= dynamic_cast<const Scene::Widget::View::PathSceneView *>( p_sceneWidget );
 
-		const App::Component::Video::Path & path = VTX::MVC_MANAGER().getModel<App::Component::Video::Path>( pathSceneItemWidget->getModelID() );
+		const App::Component::Video::Path & path
+			= VTX::MVC_MANAGER().getModel<App::Component::Video::Path>( pathSceneItemWidget->getModelID() );
 
 		VTX::MVC_MANAGER().deleteView<Scene::Widget::View::PathSceneView>( &path, ID::View::UI_SCENE_PATH );
 	}
@@ -87,11 +89,11 @@ namespace VTX::UI::QT::Tool
 
 	void SceneWindow::_registerDefaultObjects( Scene::Widget::SceneWidget & p_sceneWidget ) const
 	{
-		p_sceneWidget.registerSceneItemType( ID::Model::MODEL_MOLECULE, new MoleculeInstancier() );
-		p_sceneWidget.registerSceneItemType( ID::Model::MODEL_PATH, new PathInstancier() );
+		p_sceneWidget.registerSceneItemType( App::ID::Model::MODEL_MOLECULE, new MoleculeInstancier() );
+		p_sceneWidget.registerSceneItemType( App::ID::Model::MODEL_PATH, new PathInstancier() );
 	}
 
-	void SceneWindow::_instantiateObjectsInScene( Scene::Widget::SceneWidget & p_sceneWidget,
+	void SceneWindow::_instantiateObjectsInScene( Scene::Widget::SceneWidget &		   p_sceneWidget,
 												  const VTX::App::Application::Scene & p_scene ) const
 	{
 		for ( const std::pair<App::Component::Chemistry::Molecule *, float> pairMolecule : p_scene.getMolecules() )

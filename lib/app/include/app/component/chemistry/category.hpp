@@ -7,7 +7,7 @@
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/application/representation/base_representable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include "app/component/object3d/helper/aabb.hpp"
 #include <string>
 #include <util/types.hpp>
@@ -56,7 +56,7 @@ namespace VTX::App::Component::Chemistry
 		const App::Component::Object3D::Helper::AABB getWorldAABB() const;
 
 	  protected:
-		Category() : BaseModel( VTX::ID::Model::MODEL_CATEGORY ) {}
+		Category() : BaseModel( App::ID::Model::MODEL_CATEGORY ) {}
 
 		void _onRepresentationChange() override;
 

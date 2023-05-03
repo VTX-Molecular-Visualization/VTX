@@ -2,7 +2,7 @@
 #define __VTX_UI_WIDGET_RENDER_EFFECT_REPRESENTATION_LIBRARY_COMBO_BOX__
 
 #include <app/core/event/vtx_event.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include "ui/old_ui/ui/widget/base_manual_widget.hpp"
 #include "ui/old_ui/ui/widget/custom_widget/qt_multi_data_field.hpp"
 #include <QIcon>
@@ -37,7 +37,7 @@ namespace VTX::UI::Widget::Renderer
 		void _fillItemList();
 		void _updateHighlightAppliedItemFeedback();
 
-		const ID::VTX_ID _viewID;
+		const App::VTX_ID _viewID;
 		bool			 _highlightApplied = false;
 	};
 } // namespace VTX::UI::Widget::Renderer

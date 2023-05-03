@@ -182,7 +182,7 @@ namespace VTX::UI::Widget::Inspector
 			const QString headerTitle = QString::fromStdString( "Molecule (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
-			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( VTX::ID::Model::MODEL_MOLECULE );
+			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::ID::Model::MODEL_MOLECULE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
 			for ( App::Component::Chemistry::Molecule * molecule : targets )
@@ -418,21 +418,21 @@ namespace VTX::UI::Widget::Inspector
 	{
 		VTXApp::get()
 			.getMainWindow()
-			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::CHAIN );
 	}
 	void MultipleMoleculeWidget::_setInspectorToResidue() const
 	{
 		VTXApp::get()
 			.getMainWindow()
-			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::RESIDUE );
 	}
 	void MultipleMoleculeWidget::_setInspectorToAtom() const
 	{
 		VTXApp::get()
 			.getMainWindow()
-			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );
 	}
 

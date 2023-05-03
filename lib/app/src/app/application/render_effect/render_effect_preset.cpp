@@ -7,7 +7,7 @@
 
 namespace VTX::App::Application::RenderEffect
 {
-	RenderEffectPreset::RenderEffectPreset() : BaseModel( VTX::ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET )
+	RenderEffectPreset::RenderEffectPreset() : BaseModel( App::ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET )
 	{
 		_shading = VTX::App::Application::Setting::SHADING_DEFAULT;
 

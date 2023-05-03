@@ -2,7 +2,7 @@
 
 namespace VTX::App::Component::Object3D
 {
-	Viewpoint::Viewpoint( Video::Path * const p_path ) : BaseModel( VTX::ID::Model::MODEL_VIEWPOINT ), _path( p_path )
+	Viewpoint::Viewpoint( Video::Path * const p_path ) : BaseModel( App::ID::Model::MODEL_VIEWPOINT ), _path( p_path )
 	{
 		_storedName = "Viewpoint";
 		_name		= &_storedName;

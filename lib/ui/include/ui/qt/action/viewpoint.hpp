@@ -27,7 +27,7 @@ namespace VTX::UI::QT::Action::Viewpoint
 		const Vec3f					  _position;
 		const Quatf					  _rotation;
 		Vec3f						  _target	  = VEC3F_ZERO;
-		ID::VTX_ID					  _controller = VTX::App::Application::Setting::CONTROLLER_MODE_DEFAULT;
+	 App::VTX_ID					  _controller = VTX::App::Application::Setting::CONTROLLER_MODE_DEFAULT;
 	};
 
 	class Delete : public VTX::App::Core::Action::BaseAction

@@ -7,7 +7,7 @@
 #include <app/core/event/vtx_event.hpp>
 #include <app/old_app/generic/base_lockable.hpp>
 #include <app/old_app/generic/base_updatable.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include <map>
 #include <queue>
 #include <set>
@@ -44,9 +44,9 @@ namespace VTX::UI::Event
 		void freezeEvent( const bool p_freeze );
 
 	  private:
-		void fireEventKeyboard( QKeyEvent * const, const ID::VTX_ID & );
-		void fireEventMouse( QMouseEvent * const, const ID::VTX_ID & );
-		void fireEventWheel( QWheelEvent * const, const ID::VTX_ID & );
+		void fireEventKeyboard( QKeyEvent * const, const App::VTX_ID & );
+		void fireEventMouse( QMouseEvent * const, const App::VTX_ID & );
+		void fireEventWheel( QWheelEvent * const, const App::VTX_ID & );
 
 	  private:
 		// Input events.
@@ -69,9 +69,9 @@ namespace VTX::UI::Event
 		EventManager & operator=( const EventManager & ) = delete;
 		~EventManager();
 
-		void _flushEventKeyboard( QKeyEvent * const, const ID::VTX_ID & );
-		void _flushEventMouse( QMouseEvent * const, const ID::VTX_ID & );
-		void _flushEventWheel( QWheelEvent * const, const ID::VTX_ID & );
+		void _flushEventKeyboard( QKeyEvent * const, const App::VTX_ID & );
+		void _flushEventMouse( QMouseEvent * const, const App::VTX_ID & );
+		void _flushEventWheel( QWheelEvent * const, const App::VTX_ID & );
 	};
 } // namespace VTX::UI::Event
 #endif

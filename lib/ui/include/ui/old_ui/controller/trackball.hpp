@@ -2,6 +2,7 @@
 #define __VTX_CONTROLLER_TRACKBALL__
 
 #include "base_camera_controller.hpp"
+#include "ui/id.hpp"
 #include <app/component/render/_fwd.hpp>
 
 namespace VTX::Controller
@@ -18,9 +19,9 @@ namespace VTX::Controller
 			_camera().setTarget( p_target );
 		}
 
-		const ID::VTX_ID getID() const override { return ID::Controller::TRACKBALL; }
-		void			 setActive( const bool p_active ) override;
-		void			 reset() override;
+		const App::VTX_ID getID() const override { return UI::ID::Controller::TRACKBALL; }
+		void			  setActive( const bool p_active ) override;
+		void			  reset() override;
 
 		inline const Vec3f & getTarget() const { return _target; }
 		void				 setTarget( const Vec3f & p_target );

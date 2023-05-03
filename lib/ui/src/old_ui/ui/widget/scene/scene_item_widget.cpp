@@ -132,7 +132,7 @@ namespace VTX::UI::Widget::Scene
 		else if ( p_event->key() == Qt::Key::Key_Up && itemFromIndex( currentIndex() ) == topLevelItem( 0 ) )
 		{
 			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
-				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
+				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( UI::ID::Window::SCENE );
 			SceneItemWidget * const previousTree = sceneWidget.getPreviousSceneItemWidgets( this );
 
 			if ( previousTree != this )
@@ -146,7 +146,7 @@ namespace VTX::UI::Widget::Scene
 		else if ( p_event->key() == Qt::Key::Key_Down && itemFromIndex( currentIndex() ) == getLastVisibleItem() )
 		{
 			const VTX::UI::Widget::Scene::SceneWidget & sceneWidget
-				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
+				= VTXApp::get().getMainWindow().getWidget<VTX::UI::Widget::Scene::SceneWidget>( UI::ID::Window::SCENE );
 			SceneItemWidget * const nextTree = sceneWidget.getNextSceneItemWidgets( this );
 
 			if ( nextTree != this )
@@ -264,26 +264,26 @@ namespace VTX::UI::Widget::Scene
 			return;
 
 		const App::Core::Model::ID itemID	 = _getModelIDFromItem( p_widget );
-		const ID::VTX_ID &		   modelType = VTX::MVC_MANAGER().getModelTypeID( itemID );
+		const App::VTX_ID &		   modelType = VTX::MVC_MANAGER().getModelTypeID( itemID );
 
 		bool visibility;
-		if ( modelType == VTX::ID::Model::MODEL_MOLECULE )
+		if ( modelType == App::ID::Model::MODEL_MOLECULE )
 		{
 			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( itemID ).isVisible();
 		}
-		else if ( modelType == VTX::ID::Model::MODEL_CATEGORY )
+		else if ( modelType == App::ID::Model::MODEL_CATEGORY )
 		{
 			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( itemID ).isVisible();
 		}
-		else if ( modelType == VTX::ID::Model::MODEL_CHAIN )
+		else if ( modelType == App::ID::Model::MODEL_CHAIN )
 		{
 			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( itemID ).isVisible();
 		}
-		else if ( modelType == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( modelType == App::ID::Model::MODEL_RESIDUE )
 		{
 			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( itemID ).isVisible();
 		}
-		else if ( modelType == VTX::ID::Model::MODEL_ATOM )
+		else if ( modelType == App::ID::Model::MODEL_ATOM )
 		{
 			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( itemID ).isVisible();
 		}
@@ -335,7 +335,7 @@ namespace VTX::UI::Widget::Scene
 			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		const App::Core::Model::ID & itemModel = _getModelIDFromItem( p_itemToSelect );
-		const ID::VTX_ID			 itemType  = VTX::MVC_MANAGER().getModelTypeID( itemModel );
+		const App::VTX_ID			 itemType  = VTX::MVC_MANAGER().getModelTypeID( itemModel );
 
 		p_itemToSelect.treeWidget()->setFocus( Qt::FocusReason::TabFocusReason );
 		p_itemToSelect.treeWidget()->setCurrentItem( &p_itemToSelect );
@@ -457,7 +457,7 @@ namespace VTX::UI::Widget::Scene
 			if ( item != nullptr )
 			{
 				selectionModel()->setCurrentIndex( indexFromItem( item ), QItemSelectionModel::SelectionFlag::Current );
-				VTXApp::get().getMainWindow().getWidget<SceneWidget>( ID::UI::Window::SCENE ).scrollToItem( *item );
+				VTXApp::get().getMainWindow().getWidget<SceneWidget>( UI::ID::Window::SCENE ).scrollToItem( *item );
 			}
 		}
 		_enableSignals( true );

@@ -8,7 +8,7 @@
 #include "app/internal/chemdb/category.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include <iostream>
 #include <string>
 #include <util/types.hpp>
@@ -70,7 +70,7 @@ namespace VTX::App::Component::Chemistry
 		void removeChildrenRepresentations();
 
 	  protected:
-		Chain() : BaseModel( VTX::ID::Model::MODEL_CHAIN ) {}
+		Chain() : BaseModel( App::ID::Model::MODEL_CHAIN ) {}
 
 		void _onRepresentationChange() override;
 

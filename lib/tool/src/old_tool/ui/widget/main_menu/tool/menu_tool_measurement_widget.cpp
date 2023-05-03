@@ -4,7 +4,7 @@
 #include <app/action/main.hpp>
 #include <app/event/global.hpp>
 #include <app/component/chemistry/atom.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include <ui/old_ui/action/main.hpp>
 #include <ui/old_ui/state/state_machine.hpp>
 #include <ui/old_ui/state/visualization.hpp>

@@ -1,4 +1,5 @@
 #include "ui/old_ui/ui/widget/main_menu/camera/toolbar.hpp"
+#include "ui/id.hpp"
 #include "ui/old_ui/ui/widget/main_menu/camera/background_block.hpp"
 #include "ui/old_ui/ui/widget/main_menu/camera/camera_navigation_action_block.hpp"
 #include "ui/old_ui/ui/widget/main_menu/camera/camera_projection_block.hpp"
@@ -26,7 +27,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 		RenderEffectsBlock * const renderEffects = WidgetFactory::get().instantiateViewWidget<RenderEffectsBlock>(
 			&App::Application::RenderEffect::RenderEffectLibrary::get(),
-			ID::View::UI_MENU_VISUALIZATION_RENDER_EFFECT_LIBRARY,
+			UI::ID::View::UI_MENU_VISUALIZATION_RENDER_EFFECT_LIBRARY,
 			this,
 			"renderEffectsBlockWidget" );
 		addToolBlock( renderEffects );

@@ -8,7 +8,7 @@
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include <map>
 #include <util/chrono.hpp>
 #include <util/constants.hpp>
@@ -23,7 +23,7 @@ namespace VTX::App::Component::Chemistry
 	{
 	}
 
-	GeneratedMolecule::GeneratedMolecule() : Chemistry::Molecule( VTX::ID::Model::MODEL_GENERATED_MOLECULE ) {}
+	GeneratedMolecule::GeneratedMolecule() : Chemistry::Molecule( App::ID::Model::MODEL_GENERATED_MOLECULE ) {}
 
 	void GeneratedMolecule::copyFromSelection( const App::Application::Selection::SelectionModel & p_selection,
 											   const VTX::App::Core::Model::ID &				   p_moleculeID,

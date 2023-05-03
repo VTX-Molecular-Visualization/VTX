@@ -62,7 +62,7 @@ namespace VTX::UI::QT::Controller
 		// If something clicked.
 		if ( p_ids.x != App::Core::Model::ID_UNKNOWN )
 		{
-			const ID::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( p_ids.x );
+			const App::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( p_ids.x );
 
 			// Already selected.
 			if ( App::Application::Selection::SelectionManager::get().getSelectionModel().isModelSelected(
@@ -76,7 +76,7 @@ namespace VTX::UI::QT::Controller
 				if ( _isModifierExclusive( ModifierFlag::Control ) )
 				{
 					// Residue.
-					if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
+					if ( typeId == App::ID::Model::MODEL_RESIDUE )
 					{
 						App::Component::Chemistry::Residue & residuePicked
 							= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_ids.x );
@@ -105,7 +105,7 @@ namespace VTX::UI::QT::Controller
 			else
 			{
 				// Residue.
-				if ( typeId == VTX::ID::Model::MODEL_RESIDUE )
+				if ( typeId == App::ID::Model::MODEL_RESIDUE )
 				{
 					App::Component::Chemistry::Residue & residuePicked
 						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( p_ids.x );

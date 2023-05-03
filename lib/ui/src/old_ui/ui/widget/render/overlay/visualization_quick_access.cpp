@@ -10,10 +10,10 @@
 #include <app/action/main.hpp>
 #include <app/action/selection.hpp>
 #include <app/action/setting.hpp>
-#include <app/event/global.hpp>
 #include <app/application/selection/selection.hpp>
 #include <app/application/selection/selection_manager.hpp>
 #include <app/application/setting.hpp>
+#include <app/event/global.hpp>
 #include <set>
 
 namespace VTX::UI::Widget::Render::Overlay
@@ -37,11 +37,13 @@ namespace VTX::UI::Widget::Render::Overlay
 		}
 		else if ( p_event.name == VTX::App::Event::Global::SETTINGS_CHANGE )
 		{
-			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> & castedEvent
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &>(
-					p_event );
+			const VTX::App::Core::Event::VTXEventArg<const std::set<VTX::App::Application::Setting::PARAMETER> &> &
+				castedEvent
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<
+					const std::set<VTX::App::Application::Setting::PARAMETER> &> &>( p_event );
 
-			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::SELECTION_GRANULARITY ) != castedEvent.get().cend() )
+			if ( castedEvent.get().find( VTX::App::Application::Setting::PARAMETER::SELECTION_GRANULARITY )
+				 != castedEvent.get().cend() )
 				_refreshSelectionGranularity();
 		}
 	}
@@ -57,7 +59,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		QMenu * const changeCameraControllerMenu = new QMenu( this );
 		for ( int i = 0; i < CAMERA_CONTROLLERS.size(); i++ )
 		{
-			const MenuItemDataRef<ID::VTX_ID> & data = CAMERA_CONTROLLERS[ i ];
+			const MenuItemDataRef<App::VTX_ID> & data = CAMERA_CONTROLLERS[ i ];
 			QAction * const action = changeCameraControllerMenu->addAction( QIcon( data.iconPath ), data.name );
 			action->setProperty( CAMERA_CONTROLLER_PROPERTY_NAME, QVariant( i ) );
 		}
@@ -68,7 +70,7 @@ namespace VTX::UI::Widget::Render::Overlay
 		QMenu * const changePickerControllerMenu = new QMenu( this );
 		for ( int i = 0; i < PICKER_CONTROLLERS.size(); i++ )
 		{
-			const MenuItemDataRef<ID::VTX_ID> & data = PICKER_CONTROLLERS[ i ];
+			const MenuItemDataRef<App::VTX_ID> & data = PICKER_CONTROLLERS[ i ];
 			QAction * const action = changePickerControllerMenu->addAction( QIcon( data.iconPath ), data.name );
 			action->setProperty( PICKER_CONTROLLER_PROPERTY_NAME, QVariant( i ) );
 		}
@@ -137,8 +139,8 @@ namespace VTX::UI::Widget::Render::Overlay
 		const State::Visualization * const visualizationState
 			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
-		const ID::VTX_ID & currentCameraControllerID = visualizationState->getCurrentCameraControllerID();
-		for ( const MenuItemDataRef<ID::VTX_ID> & data : CAMERA_CONTROLLERS )
+		const App::VTX_ID & currentCameraControllerID = visualizationState->getCurrentCameraControllerID();
+		for ( const MenuItemDataRef<App::VTX_ID> & data : CAMERA_CONTROLLERS )
 		{
 			if ( data.data == currentCameraControllerID )
 			{
@@ -151,8 +153,8 @@ namespace VTX::UI::Widget::Render::Overlay
 	{
 		const State::Visualization * const visualizationState
 			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
-		const ID::VTX_ID & currentPickerID = visualizationState->getCurrentPickerID();
-		for ( const MenuItemDataRef<ID::VTX_ID> & data : PICKER_CONTROLLERS )
+		const App::VTX_ID & currentPickerID = visualizationState->getCurrentPickerID();
+		for ( const MenuItemDataRef<App::VTX_ID> & data : PICKER_CONTROLLERS )
 		{
 			if ( data.data == currentPickerID )
 			{
@@ -203,13 +205,14 @@ namespace VTX::UI::Widget::Render::Overlay
 
 	void VisualizationQuickAccess::_orientAction()
 	{
-		const App::Application::Selection::SelectionModel & selection = VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
+		const App::Application::Selection::SelectionModel & selection
+			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 		VTX_ACTION( new QT::Action::Selection::Orient( selection ) );
 	}
 	void VisualizationQuickAccess::_changeCameraControllerAction( const QAction * const p_action )
 	{
-		const int		   controllerIndex = p_action->property( CAMERA_CONTROLLER_PROPERTY_NAME ).toInt();
-		const ID::VTX_ID & controllerID	   = CAMERA_CONTROLLERS[ controllerIndex ].data;
+		const int			controllerIndex = p_action->property( CAMERA_CONTROLLER_PROPERTY_NAME ).toInt();
+		const App::VTX_ID & controllerID	= CAMERA_CONTROLLERS[ controllerIndex ].data;
 
 		VTX_ACTION( new QT::Action::Main::ChangeCameraController( controllerID ) );
 	}

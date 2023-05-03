@@ -37,13 +37,13 @@ namespace VTX::App::Application::Representation
 	}
 
 	InstantiatedRepresentation::InstantiatedRepresentation() :
-		BaseModel( VTX::ID::Model::MODEL_INTANTIATED_REPRESENTATION )
+		BaseModel( App::ID::Model::MODEL_INTANTIATED_REPRESENTATION )
 	{
 	}
 
 	InstantiatedRepresentation::InstantiatedRepresentation(
 		const RepresentationPreset * const p_linkedRepresentation ) :
-		BaseModel( VTX::ID::Model::MODEL_INTANTIATED_REPRESENTATION ),
+		BaseModel( App::ID::Model::MODEL_INTANTIATED_REPRESENTATION ),
 		_linkedRepresentation( p_linkedRepresentation ),
 		_color( Generic::OverridableParameter<Util::Color::Rgba>( _linkedRepresentation->getColor() ) ),
 		_colorMode( Generic::OverridableParameter( _linkedRepresentation->getData().getColorMode() ) ),

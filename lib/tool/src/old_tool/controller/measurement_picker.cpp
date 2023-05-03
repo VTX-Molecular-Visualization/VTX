@@ -41,7 +41,7 @@ namespace VTX::Controller
 	{
 		UI::MainWindow &						 mw = VTXApp::get().getMainWindow();
 		const UI::Widget::Render::RenderWidget & renderWidget
-			= mw.getWidget<UI::Widget::Render::RenderWidget>( ID::UI::Window::RENDER );
+			= mw.getWidget<UI::Widget::Render::RenderWidget>( UI::ID::Window::RENDER );
 
 		const QPoint position = renderWidget.mapToGlobal( QPoint( p_x, p_y ) );
 
@@ -96,11 +96,11 @@ namespace VTX::Controller
 			}
 			else
 			{
-				const ID::VTX_ID &	 typeId = VTX::MVC_MANAGER().getModelTypeID( ids.x );
+				const App::VTX_ID &	 typeId = VTX::MVC_MANAGER().getModelTypeID( ids.x );
 				App::Core::Model::ID atomID;
 
 				// If residue => select alpha carbon
-				if ( typeId == ID::Model::MODEL_RESIDUE )
+				if ( typeId == App::ID::Model::MODEL_RESIDUE )
 				{
 					const App::Component::Chemistry::Residue & residue
 						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( ids.x );
@@ -164,8 +164,8 @@ namespace VTX::Controller
 				{
 					UI::VTXApp::get()
 						.getStateMachine()
-						.getState<State::Visualization>( ID::State::VISUALIZATION )
-						->setPickerController( ID::Controller::PICKER );
+						.getState<State::Visualization>( UI::ID::State::VISUALIZATION )
+						->setPickerController( UI::ID::Controller::PICKER );
 				}
 			}
 		}

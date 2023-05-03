@@ -5,7 +5,7 @@
 #include <QMimeData>
 #include <QString>
 #include <app/core/model/base_model.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 
 namespace VTX::UI
 {
@@ -38,12 +38,12 @@ namespace VTX::UI
 			void fillByteArray( QByteArray & p_byteArray ) const;
 
 			const App::Core::Model::ID &  getModelID() const { return _modelID; };
-			const ID::VTX_ID & getTypeID() const { return _typeID; };
+			const App::VTX_ID & getTypeID() const { return _typeID; };
 			const DragSource & getDragSource() const { return _dragSource; };
 
 		  private:
 			App::Core::Model::ID  _modelID;
-			ID::VTX_ID _typeID;
+		 App::VTX_ID _typeID;
 			DragSource _dragSource;
 		};
 

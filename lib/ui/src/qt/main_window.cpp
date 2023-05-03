@@ -41,8 +41,8 @@ namespace VTX::UI::QT
 	{
 		if ( p_event.name == VTX::App::Event::Global::CHANGE_STATE )
 		{
-			const ID::VTX_ID & state
-				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const ID::VTX_ID &> &>( p_event ).get();
+			const App::VTX_ID & state
+				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<const App::VTX_ID &> &>( p_event ).get();
 		}
 		else if ( p_event.name == VTX::App::Event::Global::SCENE_PATH_CHANGE
 				  || p_event.name == VTX::App::Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
@@ -564,30 +564,30 @@ namespace VTX::UI::QT
 	{
 		QWidget * widget = nullptr;
 
-		// if ( p_winId == ID::UI::Window::RENDER )
+		// if ( p_winId == UI::ID::Window::RENDER )
 		//	widget = _renderWidget;
-		// else if ( p_winId == ID::UI::Window::SCENE )
+		// else if ( p_winId == UI::ID::Window::SCENE )
 		//	widget = _sceneWidget;
-		// else if ( p_winId == ID::UI::Window::INSPECTOR )
+		// else if ( p_winId == UI::ID::Window::INSPECTOR )
 		//	widget = _inspectorWidget;
-		// else if ( p_winId == ID::UI::Window::CONSOLE )
+		// else if ( p_winId == UI::ID::Window::CONSOLE )
 		//	widget = _consoleWidget;
-		// else if ( p_winId == ID::UI::Window::SEQUENCE )
+		// else if ( p_winId == UI::ID::Window::SEQUENCE )
 		//	widget = _sequenceWidget;
 		//// !V0.1
-		//// else if ( p_winId == ID::UI::Window::SELECTION )
+		//// else if ( p_winId == UI::ID::Window::SELECTION )
 		////	widget = _selectionWidget;
-		// else if ( p_winId == ID::UI::Window::SETTINGS )
+		// else if ( p_winId == UI::ID::Window::SETTINGS )
 		//	widget = _settingWidget;
-		// else if ( p_winId == ID::UI::Window::INFORMATION )
+		// else if ( p_winId == UI::ID::Window::INFORMATION )
 		//	widget = _informationWidget;
-		// else if ( p_winId == ID::UI::Window::STRUCTURAL_ALIGNMENT )
+		// else if ( p_winId == UI::ID::Window::STRUCTURAL_ALIGNMENT )
 		//	widget = _structuralAlignmentWidget;
 
 		return *widget;
 	}
 
-	void MainWindow::showWidget( const ID::VTX_ID & p_winId, const bool p_show ) const
+	void MainWindow::showWidget( const App::VTX_ID & p_winId, const bool p_show ) const
 	{
 		QWidget & widget = getWidget( p_winId );
 
@@ -601,7 +601,7 @@ namespace VTX::UI::QT
 			widget.hide();
 		}
 	}
-	void MainWindow::toggleWidget( const ID::VTX_ID & p_winId ) const
+	void MainWindow::toggleWidget( const App::VTX_ID & p_winId ) const
 	{
 		showWidget( p_winId, !getWidget( p_winId ).isVisible() );
 	}
@@ -701,7 +701,7 @@ namespace VTX::UI::QT
 		settings.clear();
 	}
 
-	bool MainWindow::getWidgetVisibility( const ID::VTX_ID & p_winId ) const
+	bool MainWindow::getWidgetVisibility( const App::VTX_ID & p_winId ) const
 	{
 		return getWidget( p_winId ).isVisible();
 	};
@@ -768,12 +768,12 @@ namespace VTX::UI::QT
 		// const QT::State::Visualization * const visualizationState
 		//	= QT_APP()->getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
-		// const ID::VTX_ID & pickerID = visualizationState->getCurrentPickerID();
+		// const App::VTX_ID & pickerID = visualizationState->getCurrentPickerID();
 
 		// if ( pickerID == ID::Controller::PICKER )
 		//{
 		//	_cursorHandler->applyCursor(
-		//		CursorHandler::Cursor::DEFAULT, &getWidget( ID::UI::Window::RENDER ), "Picker" );
+		//		CursorHandler::Cursor::DEFAULT, &getWidget( UI::ID::Window::RENDER ), "Picker" );
 		// }
 		// else if ( pickerID == ID::Controller::MEASUREMENT )
 		//{
@@ -797,7 +797,7 @@ namespace VTX::UI::QT
 		//	default: cursor = CursorHandler::Cursor::DEFAULT; break;
 		//	}
 
-		//	_cursorHandler->applyCursor( cursor, &getWidget( ID::UI::Window::RENDER ), "Picker_Measurement" );
+		//	_cursorHandler->applyCursor( cursor, &getWidget( UI::ID::Window::RENDER ), "Picker_Measurement" );
 		//}
 	}
 

@@ -2,14 +2,14 @@
 #define __VTX_BASE_EVENT_FIRERER_INPUT__
 
 #include "event_manager.hpp"
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 
 namespace VTX::UI::Event
 {
 	class BaseEventFirererInput
 	{
 	  public:
-		virtual const ID::VTX_ID getEventFirererId() const = 0;
+		virtual const App::VTX_ID getEventFirererId() const = 0;
 
 	  protected:
 		void _fireEventInput( QKeyEvent * const p_event )

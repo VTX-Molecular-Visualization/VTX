@@ -22,7 +22,7 @@
 #include <app/internal/chemdb/category.hpp>
 #include <app/internal/chemdb/residue.hpp>
 #include <app/old_app/generic/base_visible.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include <map>
 
 namespace VTX::View::UI::Widget

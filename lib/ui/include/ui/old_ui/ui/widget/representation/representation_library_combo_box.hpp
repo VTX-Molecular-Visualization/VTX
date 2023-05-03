@@ -7,7 +7,7 @@
 #include <QWheelEvent>
 #include <QWidget>
 #include <app/core/event/vtx_event.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 
 namespace VTX::UI::Widget::Representation
 {
@@ -37,7 +37,7 @@ namespace VTX::UI::Widget::Representation
 		void _fillItemList();
 		void _updateHighlightDefaultRepresentationFeedback();
 
-		const ID::VTX_ID _viewID;
+		const App::VTX_ID _viewID;
 		bool			 _highlightDefault = false;
 	};
 } // namespace VTX::UI::Widget::Representation

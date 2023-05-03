@@ -95,7 +95,7 @@ namespace VTX::UI::Widget::Inspector
 			// const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> & castedEvent
 			//	= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> &>( p_event );
 
-			// const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
+			// const App::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
 			// if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 			//{
 			//	Model::Measurement::Distance * const distanceModel
@@ -224,9 +224,9 @@ namespace VTX::UI::Widget::Inspector
 
 			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
+				const App::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
 
-				if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
+				if ( modelTypeID == App::ID::Model::MODEL_MOLECULE )
 				{
 					App::Component::Chemistry::Molecule & molecule
 						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );
@@ -274,33 +274,33 @@ namespace VTX::UI::Widget::Inspector
 						}
 					}
 				}
-				else if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
+				else if ( modelTypeID == App::ID::Model::MODEL_VIEWPOINT )
 				{
 					App::Component::Object3D::Viewpoint & viewpoint
 						= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( modelID );
 					_addTargetToInspector<MultipleViewpointWidget>( INSPECTOR_TYPE::VIEWPOINT, &viewpoint );
 				}
-				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE )
+				// else if ( modelTypeID == App::ID::Model::MODEL_MEASUREMENT_DISTANCE )
 				//{
 				//	Model::Measurement::Distance & distanceModel
 				//		= VTX::MVC_MANAGER().getModel<Model::Measurement::Distance>( modelID );
 				//	_addTargetToInspector<MultipleMeasurmentDistanceWidget>( INSPECTOR_TYPE::MEASURE_DISTANCE,
 				//															 &distanceModel );
 				// }
-				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_ANGLE )
+				// else if ( modelTypeID == App::ID::Model::MODEL_MEASUREMENT_ANGLE )
 				//{
 				//	Model::Measurement::Angle & angleModel
 				//		= VTX::MVC_MANAGER().getModel<Model::Measurement::Angle>( modelID );
 				//	_addTargetToInspector<MultipleMeasurmentAngleWidget>( INSPECTOR_TYPE::MEASURE_ANGLE, &angleModel );
 				// }
-				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+				// else if ( modelTypeID == App::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
 				//{
 				//	Model::Measurement::DihedralAngle & dihedralAngleModel
 				//		= VTX::MVC_MANAGER().getModel<Model::Measurement::DihedralAngle>( modelID );
 				//	_addTargetToInspector<MultipleMeasurmentDihedralAngleWidget>(
 				//		INSPECTOR_TYPE::MEASURE_DIHEDRAL_ANGLE, &dihedralAngleModel );
 				// }
-				// else if ( modelTypeID == VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
+				// else if ( modelTypeID == App::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE )
 				//{
 				//	Model::Measurement::Distance & distanceModel
 				//		= VTX::MVC_MANAGER().getModel<Model::Measurement::Distance>( modelID );
@@ -350,8 +350,8 @@ namespace VTX::UI::Widget::Inspector
 		{
 			for ( const App::Core::Model::ID & modelID : selectionModel.getItems() )
 			{
-				const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
-				if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
+				const App::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
+				if ( modelTypeID == App::ID::Model::MODEL_MOLECULE )
 				{
 					App::Component::Chemistry::Molecule & molecule
 						= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelID );

@@ -25,7 +25,7 @@ namespace VTX::UI::Widget::MainMenu::Camera
 				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Application::Selection::SelectionModel *> &>( p_event );
 
 			const App::Application::Selection::SelectionModel * const selectionModel = castedEvent.get();
-			_enableDeleteButtonState( selectionModel->hasItemOfType( VTX::ID::Model::MODEL_VIEWPOINT ) );
+			_enableDeleteButtonState( selectionModel->hasItemOfType( App::ID::Model::MODEL_VIEWPOINT ) );
 		}
 	}
 
@@ -65,8 +65,8 @@ namespace VTX::UI::Widget::MainMenu::Camera
 
 		for ( const App::Core::Model::ID & modelID : selection.getItems() )
 		{
-			const ID::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
-			if ( modelTypeID == VTX::ID::Model::MODEL_VIEWPOINT )
+			const App::VTX_ID & modelTypeID = VTX::MVC_MANAGER().getModelTypeID( modelID );
+			if ( modelTypeID == App::ID::Model::MODEL_VIEWPOINT )
 			{
 				App::Component::Object3D::Viewpoint & viewpoint = VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( modelID );
 				viewpointsInSelection.emplace_back( &viewpoint );

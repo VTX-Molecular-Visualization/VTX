@@ -5,10 +5,10 @@
 #include "app/core/view/callback_view.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
+#include "app/id.hpp"
 #include "app/internal/worker/representation_loader.hpp"
 #include "app/manager/action_manager.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/id.hpp"
 #include "app/old_app/vtx_app.hpp"
 #include "app/worker.hpp"
 #include <string>
@@ -17,7 +17,7 @@ namespace VTX::App::Application::Representation
 {
 	RepresentationLibrary & RepresentationLibrary::get() { return VTXApp::get().getRepresentationLibrary(); };
 
-	RepresentationLibrary::RepresentationLibrary() : BaseModel( VTX::ID::Model::MODEL_REPRESENTATION_LIBRARY )
+	RepresentationLibrary::RepresentationLibrary() : BaseModel( App::ID::Model::MODEL_REPRESENTATION_LIBRARY )
 	{
 		Internal::Worker::RepresentationLibraryLoader * libraryLoader
 			= new Internal::Worker::RepresentationLibraryLoader( *this );
@@ -90,7 +90,7 @@ namespace VTX::App::Application::Representation
 
 		Core::View::CallbackView<RepresentationPreset, RepresentationLibrary> * const callbackView
 			= VTX::MVC_MANAGER().instantiateView<Core::View::CallbackView<RepresentationPreset, RepresentationLibrary>>(
-				p_representation, VTX::ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
+				p_representation, VTX::App::ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
 
 		callbackView->setCallback( this, &RepresentationLibrary::_onRepresentationChange );
 
@@ -123,7 +123,7 @@ namespace VTX::App::Application::Representation
 			removedRepresentation = _representations[ p_index ];
 
 			VTX::MVC_MANAGER().deleteView( _representations[ p_index ],
-										   VTX::ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
+										   VTX::App::ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
 			_representations.erase( _representations.begin() + p_index );
 
 			if ( p_notify )

@@ -4,7 +4,7 @@
 #include <app/action/main.hpp>
 #include <app/action/setting.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {

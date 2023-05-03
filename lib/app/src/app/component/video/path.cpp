@@ -3,8 +3,8 @@
 #include "app/core/event/vtx_event.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
+#include "app/id.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/id.hpp"
 #include <algorithm>
 #include <fstream>
 #include <sstream>
@@ -12,7 +12,7 @@
 
 namespace VTX::App::Component::Video
 {
-	Path::Path() : BaseModel( VTX::ID::Model::MODEL_PATH ) {};
+	Path::Path() : BaseModel( App::ID::Model::MODEL_PATH ) {};
 	Path::~Path() { VTX::MVC_MANAGER().deleteAllModels( _viewpoints ); }
 
 	void Path::addViewpoint( Object3D::Viewpoint * const p_viewpoint )
@@ -71,17 +71,17 @@ namespace VTX::App::Component::Video
 			Object3D::Viewpoint * const p1	  = _viewpoints[ Util::Math::min<int>( (int)size - 1, offset ) ];
 			float						value = 1.f - ( ( total - p_time ) / p1->getDuration() );
 
-			VTX::ID::VTX_ID controller = p0->getController() == VTX::ID::Controller::TRACKBALL
-												 && p1->getController() == VTX::ID::Controller::TRACKBALL
-											 ? VTX::ID::Controller::TRACKBALL
-											 : VTX::ID::Controller::FREEFLY;
+			VTX::App::VTX_ID controller = p0->getController() == VTX::App::ID::Controller::TRACKBALL
+												  && p1->getController() == VTX::App::ID::Controller::TRACKBALL
+											  ? VTX::App::ID::Controller::TRACKBALL
+											  : VTX::App::ID::Controller::FREEFLY;
 
 			// Lerp.
 			viewpoint.setController( controller );
 			viewpoint.setRotation( Util::Math::linearInterpolation( p0->getRotation(), p1->getRotation(), value ) );
 			viewpoint.setPosition( Util::Math::linearInterpolation( p0->getPosition(), p1->getPosition(), value ) );
 
-			if ( controller == VTX::ID::Controller::TRACKBALL )
+			if ( controller == VTX::App::ID::Controller::TRACKBALL )
 			{
 				viewpoint.setTarget( Util::Math::linearInterpolation( p0->getTarget(), p1->getTarget(), value ) );
 				viewpoint.setDistance( Util::Math::linearInterpolation( p0->getDistance(), p1->getDistance(), value ) );
@@ -95,10 +95,10 @@ namespace VTX::App::Component::Video
 			Object3D::Viewpoint * const p3	  = _viewpoints[ Util::Math::min<int>( (int)size - 1, offset + 1 ) ];
 			float						value = 1.f - ( ( total - p_time ) / p2->getDuration() );
 
-			VTX::ID::VTX_ID controller = p1->getController() == VTX::ID::Controller::TRACKBALL
-												 && p2->getController() == VTX::ID::Controller::TRACKBALL
-											 ? VTX::ID::Controller::TRACKBALL
-											 : VTX::ID::Controller::FREEFLY;
+			VTX::App::VTX_ID controller = p1->getController() == VTX::App::ID::Controller::TRACKBALL
+												  && p2->getController() == VTX::App::ID::Controller::TRACKBALL
+											  ? VTX::App::ID::Controller::TRACKBALL
+											  : VTX::App::ID::Controller::FREEFLY;
 
 			viewpoint.setController( controller );
 			viewpoint.setRotation( Util::Math::catmullRomInterpolation(
@@ -107,7 +107,7 @@ namespace VTX::App::Component::Video
 			viewpoint.setPosition( Util::Math::catmullRomInterpolation(
 				p0->getPosition(), p1->getPosition(), p2->getPosition(), p3->getPosition(), value ) );
 
-			if ( controller == VTX::ID::Controller::TRACKBALL )
+			if ( controller == VTX::App::ID::Controller::TRACKBALL )
 			{
 				viewpoint.setTarget( Util::Math::catmullRomInterpolation(
 					p0->getTarget(), p1->getTarget(), p2->getTarget(), p3->getTarget(), value ) );
@@ -122,10 +122,10 @@ namespace VTX::App::Component::Video
 			Object3D::Viewpoint * const p3	  = _viewpoints[ Util::Math::min<int>( (int)size - 1, offset + 1 ) ];
 			float						value = 1.f - ( ( total - p_time ) / p2->getDuration() );
 
-			VTX::ID::VTX_ID controller = p1->getController() == VTX::ID::Controller::TRACKBALL
-												 && p2->getController() == VTX::ID::Controller::TRACKBALL
-											 ? VTX::ID::Controller::TRACKBALL
-											 : VTX::ID::Controller::FREEFLY;
+			VTX::App::VTX_ID controller = p1->getController() == VTX::App::ID::Controller::TRACKBALL
+												  && p2->getController() == VTX::App::ID::Controller::TRACKBALL
+											  ? VTX::App::ID::Controller::TRACKBALL
+											  : VTX::App::ID::Controller::FREEFLY;
 
 			viewpoint.setController( controller );
 			viewpoint.setRotation( Util::Math::cubicInterpolation(
@@ -133,7 +133,7 @@ namespace VTX::App::Component::Video
 			viewpoint.setPosition( Util::Math::cubicInterpolation(
 				p0->getPosition(), p1->getPosition(), p2->getPosition(), p3->getPosition(), value ) );
 
-			if ( controller == VTX::ID::Controller::TRACKBALL )
+			if ( controller == VTX::App::ID::Controller::TRACKBALL )
 			{
 				viewpoint.setTarget( Util::Math::cubicInterpolation(
 					p0->getTarget(), p1->getTarget(), p2->getTarget(), p3->getTarget(), value ) );

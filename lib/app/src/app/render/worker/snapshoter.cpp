@@ -52,7 +52,7 @@ namespace VTX::App::Render::Worker
 	const void Snapshoter::_takeSnapshotGL() const
 	{
 		//		UI::Widget::Render::RenderWidget & renderWidget
-		//			= VTXApp::get().getMainWindow().getWidget<UI::Widget::Render::RenderWidget>( ID::UI::Window::RENDER
+		//			= VTXApp::get().getMainWindow().getWidget<UI::Widget::Render::RenderWidget>( UI::ID::Window::RENDER
 		//);
 		//
 		//		UI::Widget::Render::OpenGLWidget & glWidget = renderWidget.getOpenGLWidget();

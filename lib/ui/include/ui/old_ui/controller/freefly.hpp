@@ -2,6 +2,7 @@
 #define __VTX_CONTROLLER_FREEFLY__
 
 #include "base_camera_controller.hpp"
+#include "ui/id.hpp"
 
 namespace VTX
 {
@@ -15,7 +16,7 @@ namespace VTX
 			{
 			}
 
-			const ID::VTX_ID getID() const override { return ID::Controller::FREEFLY; }
+			const App::VTX_ID getID() const override { return UI::ID::Controller::FREEFLY; }
 
 		  protected:
 			void _updateInputs( const float & ) override;

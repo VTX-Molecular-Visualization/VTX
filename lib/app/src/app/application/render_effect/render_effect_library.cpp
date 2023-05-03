@@ -17,7 +17,7 @@ namespace VTX::App::Application::RenderEffect
 	RenderEffectLibrary & RenderEffectLibrary::get() { return VTXApp::get().getRenderEffectLibrary(); }
 
 	RenderEffectLibrary::RenderEffectLibrary() :
-		BaseModel( VTX::ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET_LIBRARY )
+		BaseModel( App::ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET_LIBRARY )
 	{
 		Internal::Worker::RenderEffectPresetLibraryLoader * libraryLoader
 			= new Internal::Worker::RenderEffectPresetLibraryLoader( *this );
@@ -94,7 +94,7 @@ namespace VTX::App::Application::RenderEffect
 		App::Core::View::CallbackView<RenderEffectPreset, RenderEffectLibrary> * const callbackView
 			= VTX::MVC_MANAGER()
 				  .instantiateView<App::Core::View::CallbackView<RenderEffectPreset, RenderEffectLibrary>>(
-					  p_preset, VTX::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
+					  p_preset, VTX::App::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
 
 		callbackView->setCallback( this, &RenderEffectLibrary::_onPresetChange );
 
@@ -125,7 +125,7 @@ namespace VTX::App::Application::RenderEffect
 
 		if ( 0 <= p_index && p_index < _presets.size() )
 		{
-			VTX::MVC_MANAGER().deleteView( _presets[ p_index ], VTX::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
+			VTX::MVC_MANAGER().deleteView( _presets[ p_index ], VTX::App::ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
 
 			removedPreset = _presets[ p_index ];
 

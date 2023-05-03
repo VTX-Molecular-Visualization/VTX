@@ -7,7 +7,7 @@
 #include <QFrame>
 #include <QString>
 #include <QWidget>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include <vector>
 
 namespace VTX
@@ -34,8 +34,8 @@ namespace VTX
 			bool isAcceptingGroup() const { return _acceptGroup; }
 			void setAcceptGroup( const bool p_accept );
 
-			void addTypeFilter( const VTX::ID::VTX_ID & p_modelID );
-			bool matchFilter( const VTX::ID::VTX_ID & p_type ) const;
+			void addTypeFilter( const VTX::App::VTX_ID & p_modelID );
+			bool matchFilter( const VTX::App::VTX_ID & p_type ) const;
 			bool matchFilter( const App::Core::Model::BaseModel & p_model ) const;
 
 		  signals:
@@ -54,7 +54,7 @@ namespace VTX
 			void dropEvent( QDropEvent * event ) override;
 
 		  private:
-			std::vector<VTX::ID::VTX_ID> _filters	  = std::vector<VTX::ID::VTX_ID>();
+			std::vector<VTX::App::VTX_ID> _filters	  = std::vector<VTX::App::VTX_ID>();
 			bool						 _acceptGroup = false;
 		};
 	} // namespace UI::Widget::CustomWidget

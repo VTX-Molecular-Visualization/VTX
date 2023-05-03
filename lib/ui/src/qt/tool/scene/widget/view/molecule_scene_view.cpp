@@ -134,18 +134,18 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 	bool MoleculeSceneView::containsModel( const App::Core::Model::BaseModel & p_model ) const
 	{
-		const VTX::ID::VTX_ID &						modelTypeID = p_model.getTypeId();
+		const VTX::App::VTX_ID &					modelTypeID = p_model.getTypeId();
 		const App::Component::Chemistry::Molecule * linkedMolecule;
 
-		if ( modelTypeID == ID::Model::MODEL_MOLECULE )
+		if ( modelTypeID == App::ID::Model::MODEL_MOLECULE )
 			linkedMolecule = static_cast<const App::Component::Chemistry::Molecule *>( &p_model );
-		else if ( modelTypeID == ID::Model::MODEL_CATEGORY )
+		else if ( modelTypeID == App::ID::Model::MODEL_CATEGORY )
 			linkedMolecule = static_cast<const App::Component::Chemistry::Category &>( p_model ).getMoleculePtr();
-		else if ( modelTypeID == ID::Model::MODEL_CHAIN )
+		else if ( modelTypeID == App::ID::Model::MODEL_CHAIN )
 			linkedMolecule = static_cast<const App::Component::Chemistry::Chain &>( p_model ).getMoleculePtr();
-		else if ( modelTypeID == ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeID == App::ID::Model::MODEL_RESIDUE )
 			linkedMolecule = static_cast<const App::Component::Chemistry::Residue &>( p_model ).getMoleculePtr();
-		else if ( modelTypeID == ID::Model::MODEL_ATOM )
+		else if ( modelTypeID == App::ID::Model::MODEL_ATOM )
 			linkedMolecule = static_cast<const App::Component::Chemistry::Atom &>( p_model ).getMoleculePtr();
 		else // Not a valid type. Return false.
 			return false;
@@ -156,30 +156,30 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	std::vector<App::Core::Model::ID> MoleculeSceneView::getAllItemsFrom(
 		const App::Core::Model::BaseModel & p_model ) const
 	{
-		const ID::VTX_ID & typeID = p_model.getTypeId();
+		const App::VTX_ID & typeID = p_model.getTypeId();
 
-		if ( typeID == VTX::ID::Model::MODEL_MOLECULE )
+		if ( typeID == App::ID::Model::MODEL_MOLECULE )
 		{
 			return SceneItemWidget::getAllItemsFrom( p_model );
 		}
 
 		std::vector<App::Core::Model::ID> res;
 
-		if ( typeID == VTX::ID::Model::MODEL_CATEGORY )
+		if ( typeID == App::ID::Model::MODEL_CATEGORY )
 		{
 			const App::Component::Chemistry::Category & category
 				= static_cast<const App::Component::Chemistry::Category &>( p_model );
 			res.emplace_back( category.getId() );
 			_selectAllCategoriesFrom( res, category );
 		}
-		else if ( typeID == VTX::ID::Model::MODEL_CHAIN )
+		else if ( typeID == App::ID::Model::MODEL_CHAIN )
 		{
 			const App::Component::Chemistry::Chain & chain
 				= static_cast<const App::Component::Chemistry::Chain &>( p_model );
 			res.emplace_back( chain.getId() );
 			_selectAllChainsFrom( res, chain );
 		}
-		else if ( typeID == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( typeID == App::ID::Model::MODEL_RESIDUE )
 		{
 			const App::Component::Chemistry::Residue & residue
 				= static_cast<const App::Component::Chemistry::Residue &>( p_model );
@@ -187,7 +187,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			_selectAllResiduesFrom( res, residue );
 			_selectAllChainsFrom( res, *residue.getChainPtr() );
 		}
-		else if ( typeID == VTX::ID::Model::MODEL_ATOM )
+		else if ( typeID == App::ID::Model::MODEL_ATOM )
 		{
 			const App::Component::Chemistry::Atom & atom
 				= static_cast<const App::Component::Chemistry::Atom &>( p_model );
@@ -202,30 +202,30 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	std::vector<App::Core::Model::ID> MoleculeSceneView::getAllItemsTo(
 		const App::Core::Model::BaseModel & p_model ) const
 	{
-		const ID::VTX_ID & typeID = p_model.getTypeId();
+		const App::VTX_ID & typeID = p_model.getTypeId();
 
-		if ( typeID == VTX::ID::Model::MODEL_MOLECULE )
+		if ( typeID == App::ID::Model::MODEL_MOLECULE )
 		{
 			return SceneItemWidget::getAllItemsTo( p_model );
 		}
 
 		std::vector<App::Core::Model::ID> res;
 
-		if ( typeID == VTX::ID::Model::MODEL_CATEGORY )
+		if ( typeID == App::ID::Model::MODEL_CATEGORY )
 		{
 			const App::Component::Chemistry::Category & category
 				= static_cast<const App::Component::Chemistry::Category &>( p_model );
 			res.emplace_back( category.getId() );
 			_selectAllCategoriesTo( res, category );
 		}
-		else if ( typeID == VTX::ID::Model::MODEL_CHAIN )
+		else if ( typeID == App::ID::Model::MODEL_CHAIN )
 		{
 			const App::Component::Chemistry::Chain & chain
 				= static_cast<const App::Component::Chemistry::Chain &>( p_model );
 			res.emplace_back( chain.getId() );
 			_selectAllChainsTo( res, chain );
 		}
-		else if ( typeID == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( typeID == App::ID::Model::MODEL_RESIDUE )
 		{
 			const App::Component::Chemistry::Residue & residue
 				= static_cast<const App::Component::Chemistry::Residue &>( p_model );
@@ -233,7 +233,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			_selectAllResiduesFrom( res, residue );
 			_selectAllChainsTo( res, *residue.getChainPtr() );
 		}
-		else if ( typeID == VTX::ID::Model::MODEL_ATOM )
+		else if ( typeID == App::ID::Model::MODEL_ATOM )
 		{
 			const App::Component::Chemistry::Atom & atom
 				= static_cast<const App::Component::Chemistry::Atom &>( p_model );
@@ -299,33 +299,33 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	void MoleculeSceneView::_onItemDoubleClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
 	{
 		const App::Core::Model::ID & modelId	 = _getModelIDFromItem( *p_item );
-		const ID::VTX_ID &			 modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
+		const App::VTX_ID &			 modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
-		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == App::ID::Model::MODEL_MOLECULE )
 		{
 			App::Component::Chemistry::Molecule & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelId );
 			VTX_ACTION( new QT::Action::Molecule::Orient( model ) );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+		else if ( modelTypeId == App::ID::Model::MODEL_CATEGORY )
 		{
 			App::Component::Chemistry::Category & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( modelId );
 			VTX_ACTION( new QT::Action::Category::Orient( model ) );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == App::ID::Model::MODEL_CHAIN )
 		{
 			App::Component::Chemistry::Chain & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( modelId );
 			VTX_ACTION( new QT::Action::Chain::Orient( model ) );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == App::ID::Model::MODEL_RESIDUE )
 		{
 			App::Component::Chemistry::Residue & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( modelId );
 			VTX_ACTION( new QT::Action::Residue::Orient( model ) );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == App::ID::Model::MODEL_ATOM )
 		{
 			App::Component::Chemistry::Atom & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( modelId );
@@ -335,21 +335,21 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	void MoleculeSceneView::_onItemExpanded( QTreeWidgetItem * const p_item )
 	{
 		const App::Core::Model::ID & modelId	 = _getModelIDFromItem( *p_item );
-		const ID::VTX_ID &			 modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
+		const App::VTX_ID &			 modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
-		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == App::ID::Model::MODEL_MOLECULE )
 		{
 			_expandMolecule( p_item );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+		else if ( modelTypeId == App::ID::Model::MODEL_CATEGORY )
 		{
 			_expandCategory( p_item );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == App::ID::Model::MODEL_CHAIN )
 		{
 			_expandChain( p_item );
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == App::ID::Model::MODEL_RESIDUE )
 		{
 			_expandResidue( p_item );
 		}
@@ -371,14 +371,14 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 			return;
 
 		const App::Core::Model::ID & modelId	   = _getModelIDFromItem( *targetedItem );
-		const ID::VTX_ID &			 modelTypeId   = VTX::MVC_MANAGER().getModelTypeID( modelId );
+		const App::VTX_ID &			 modelTypeId   = VTX::MVC_MANAGER().getModelTypeID( modelId );
 		const QPoint				 globalClicPos = mapToGlobal( p_clicPos );
 
 		App::Application::Selection::SelectionModel & selection
 			= App::Application::Selection::SelectionManager::get().getSelectionModel();
 		UI::QT::ContextualMenu & contextualMenu = QT_APP()->getMainWindow().getContextualMenu();
 
-		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == App::ID::Model::MODEL_MOLECULE )
 		{
 			App::Component::Chemistry::Molecule & molecule
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelId );
@@ -392,7 +392,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				contextualMenu.pop( Tool::ContextualMenu::SELECTION, &selection, globalClicPos );
 			}
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+		else if ( modelTypeId == App::ID::Model::MODEL_CATEGORY )
 		{
 			App::Component::Chemistry::Category & category
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( modelId );
@@ -406,7 +406,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				contextualMenu.pop( Tool::ContextualMenu::SELECTION, &selection, globalClicPos );
 			}
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == App::ID::Model::MODEL_CHAIN )
 		{
 			App::Component::Chemistry::Chain & chain
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( modelId );
@@ -420,7 +420,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				contextualMenu.pop( Tool::ContextualMenu::SELECTION, &selection, globalClicPos );
 			}
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == App::ID::Model::MODEL_RESIDUE )
 		{
 			App::Component::Chemistry::Residue & residue
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( modelId );
@@ -434,7 +434,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				contextualMenu.pop( Tool::ContextualMenu::SELECTION, &selection, globalClicPos );
 			}
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == App::ID::Model::MODEL_ATOM )
 		{
 			App::Component::Chemistry::Atom & atom
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( modelId );
@@ -652,15 +652,15 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 
 	void MoleculeSceneView::_expandAll( QTreeWidgetItem * const p_from )
 	{
-		const ID::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( _getModelIDFromItem( *p_from ) );
+		const App::VTX_ID & modelTypeId = VTX::MVC_MANAGER().getModelTypeID( _getModelIDFromItem( *p_from ) );
 
 		_enableSignals( false );
 
-		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == App::ID::Model::MODEL_MOLECULE )
 			_expandMolecule( p_from, true );
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == App::ID::Model::MODEL_CHAIN )
 			_expandChain( p_from, true );
-		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == App::ID::Model::MODEL_RESIDUE )
 			_expandResidue( p_from, true );
 
 		_enableSignals( true );
@@ -1079,7 +1079,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 	void MoleculeSceneView::_doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const
 	{
 		const App::Core::Model::ID & modelId	  = _getModelIDFromItem( *p_item );
-		const ID::VTX_ID &			 modelTypeId  = VTX::MVC_MANAGER().getModelTypeID( modelId );
+		const App::VTX_ID &			 modelTypeId  = VTX::MVC_MANAGER().getModelTypeID( modelId );
 		const bool					 modelEnabled = p_item->checkState( 0 ) == Qt::CheckState::Checked ? true : false;
 
 		const App::Application::Selection::SelectionModel & selection
@@ -1088,7 +1088,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		const VTX::App::Action::VISIBILITY_MODE visibilityMode
 			= modelEnabled ? VTX::App::Action::VISIBILITY_MODE::SHOW : VTX::App::Action::VISIBILITY_MODE::HIDE;
 
-		if ( modelTypeId == VTX::ID::Model::MODEL_MOLECULE )
+		if ( modelTypeId == App::ID::Model::MODEL_MOLECULE )
 		{
 			App::Component::Chemistry::Molecule & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( modelId );
@@ -1103,7 +1103,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				VTX_ACTION( new VTX::App::Action::Molecule::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CATEGORY )
+		else if ( modelTypeId == App::ID::Model::MODEL_CATEGORY )
 		{
 			App::Component::Chemistry::Category & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( modelId );
@@ -1118,7 +1118,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				VTX_ACTION( new VTX::App::Action::Category::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
+		else if ( modelTypeId == App::ID::Model::MODEL_CHAIN )
 		{
 			App::Component::Chemistry::Chain & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( modelId );
@@ -1133,7 +1133,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				VTX_ACTION( new VTX::App::Action::Chain::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeId == App::ID::Model::MODEL_RESIDUE )
 		{
 			App::Component::Chemistry::Residue & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( modelId );
@@ -1148,7 +1148,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 				VTX_ACTION( new VTX::App::Action::Residue::ChangeVisibility( model, visibilityMode ) );
 			}
 		}
-		else if ( modelTypeId == VTX::ID::Model::MODEL_ATOM )
+		else if ( modelTypeId == App::ID::Model::MODEL_ATOM )
 		{
 			App::Component::Chemistry::Atom & model
 				= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( modelId );
@@ -1393,9 +1393,9 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		const App::Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE & p_displayMode )
 	{
 		const App::Core::Model::ID & modelId	 = _getModelIDFromItem( *p_item );
-		const ID::VTX_ID &			 modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
+		const App::VTX_ID &			 modelTypeId = VTX::MVC_MANAGER().getModelTypeID( modelId );
 
-		if ( modelTypeId == VTX::ID::Model::MODEL_CHAIN )
+		if ( modelTypeId == App::ID::Model::MODEL_CHAIN )
 		{
 			for ( int i = 0; i < p_item->childCount(); i++ )
 			{

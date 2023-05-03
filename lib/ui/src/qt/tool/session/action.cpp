@@ -5,11 +5,11 @@
 #include "ui/qt/tool/session/dialog.hpp"
 #include <app/action/main.hpp>
 #include <app/application/scene.hpp>
+#include <app/id.hpp>
 #include <app/internal/io/serialization/scene_path_data.hpp>
 #include <app/internal/worker/loader.hpp>
 #include <app/internal/worker/saver.hpp>
 #include <app/internal/worker/scene_loader.hpp>
-#include <app/old_app/id.hpp>
 #include <app/old_app/vtx_app.hpp>
 #include <util/logger.hpp>
 
@@ -87,21 +87,21 @@ namespace VTX::UI::QT::Tool::Session::Action
 	{
 		QT_APP()
 			->getStateMachine()
-			.getState<QT::State::Visualization>( VTX::ID::UI_NEW::State::VISUALIZATION )
+			.getState<QT::State::Visualization>( UI::ID::State::VISUALIZATION )
 			->toggleCameraController();
 	}
 	void ChangeCameraController::execute()
 	{
 		QT_APP()
 			->getStateMachine()
-			.getState<QT::State::Visualization>( VTX::ID::UI_NEW::State::VISUALIZATION )
+			.getState<QT::State::Visualization>( UI::ID::State::VISUALIZATION )
 			->setCameraController( _id );
 	};
 	void ResetCameraController::execute()
 	{
 		QT_APP()
 			->getStateMachine()
-			.getState<QT::State::Visualization>( VTX::ID::UI_NEW::State::VISUALIZATION )
+			.getState<QT::State::Visualization>( UI::ID::State::VISUALIZATION )
 			->resetCameraController();
 	};
 } // namespace VTX::UI::QT::Tool::Session::Action

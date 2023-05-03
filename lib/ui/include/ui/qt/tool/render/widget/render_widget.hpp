@@ -2,6 +2,7 @@
 #define __VTX_UI_QT_TOOL_RENDER_WIDGET_RENDER__
 
 #include "ui/core/define.hpp"
+#include "ui/id.hpp"
 #include "ui/old_ui/event/base_event_firerer_input.hpp"
 #include "ui/qt/qt_panel.hpp"
 #include "ui/qt/tool/render/widget/base_integrated_widget.hpp"
@@ -39,8 +40,8 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		void displayOverlay( const Overlay::OVERLAY & p_overlay, const Overlay::OVERLAY_ANCHOR & p_position );
 		void hideOverlay( const Overlay::OVERLAY & p_overlay );
 
-		void			 receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
-		const ID::VTX_ID getEventFirererId() const override { return ID::UI::Input::RENDER_WIDGET; }
+		void			  receiveEvent( const VTX::App::Core::Event::VTXEvent & p_event ) override;
+		const App::VTX_ID getEventFirererId() const override { return UI::ID::Input::RENDER_WIDGET; }
 
 	  protected:
 		RenderWidget( QWidget * p_parent );
@@ -79,7 +80,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
 				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>,
 				 typename = std::enable_if<std::is_base_of<BaseIntegratedWidget, V>::value>>
-		void _removeViewIntegratedWidget( const M * const p_model, const ID::VTX_ID & p_viewName )
+		void _removeViewIntegratedWidget( const M * const p_model, const App::VTX_ID & p_viewName )
 		{
 			V * const integratedWidgetView = VTX::MVC_MANAGER().getView<V>( p_model, p_viewName );
 

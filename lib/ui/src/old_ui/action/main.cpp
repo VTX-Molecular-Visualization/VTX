@@ -1,5 +1,6 @@
 #include "ui/old_ui/action/main.hpp"
 // #include "ui/old_ui/controller/measurement_picker.hpp"
+#include "ui/id.hpp"
 #include "ui/old_ui/state/state_machine.hpp"
 #include "ui/old_ui/state/visualization.hpp"
 #include "ui/old_ui/ui/dialog.hpp"
@@ -26,24 +27,24 @@ namespace VTX::Action::Main
 	void ChangeSelectionGranularity::execute()
 	{
 		State::Visualization * const state
-			= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+			= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( UI::ID::State::VISUALIZATION );
 
-		if ( state->getCurrentPickerID() != ID::Controller::PICKER )
-			state->setPickerController( ID::Controller::PICKER );
+		if ( state->getCurrentPickerID() != UI::ID::Controller::PICKER )
+			state->setPickerController( UI::ID::Controller::PICKER );
 
 		VTX_SETTING().setSelectionGranularity( _granularity );
 	}
 	void ChangePicker::execute()
 	{
 		State::Visualization * const state
-			= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+			= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( UI::ID::State::VISUALIZATION );
 
 		if ( state->getCurrentPickerID() != _pickerController )
 			state->setPickerController( _pickerController );
 
 		if ( _mode > -1 )
 		{
-			if ( _pickerController == ID::Controller::MEASUREMENT )
+			if ( _pickerController == UI::ID::Controller::MEASUREMENT )
 			{
 				// Controller::MeasurementPicker * const measurementController
 				//	= state->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT );

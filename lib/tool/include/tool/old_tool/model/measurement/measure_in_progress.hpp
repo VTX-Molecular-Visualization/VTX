@@ -8,7 +8,7 @@
 #include <app/core/view/callback_view.hpp>
 #include <app/component/object3d/label.hpp>
 #include <app/old_app/generic/base_auto_delete.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include <string>
 #include <vector>
 
@@ -132,7 +132,7 @@ namespace VTX::Model::Measurement
 
 		void _cleanViews();
 
-		VTX::ID::VTX_ID getViewID( const int p_atomPos ) const;
+		VTX::App::VTX_ID getViewID( const int p_atomPos ) const;
 
 		void _onMoleculeChange( const App::Component::Chemistry::Molecule * const p_molecule,
 								const App::Core::Event::VTXEvent * const		  p_event );

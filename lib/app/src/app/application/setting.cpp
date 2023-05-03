@@ -9,6 +9,7 @@
 #include "app/core/io/writer/serialized_object.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
+#include "app/id.hpp"
 #include "app/internal/chemdb/category.hpp"
 #include "app/internal/io/filesystem.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
@@ -189,11 +190,11 @@ namespace VTX::App::Application
 	const float Setting::AUTO_ROTATE_SPEED_MAX			 = 15.0f;
 
 	// Video.
-	const float		 Setting::PATH_DURATION_DEFAULT	  = 5.f;
-	const ID::VTX_ID Setting::CONTROLLER_MODE_DEFAULT = ID::Controller::TRACKBALL;
-	const ID::VTX_ID Setting::PICKER_MODE_DEFAULT	  = ID::Controller::PICKER;
-	const uint		 Setting::VIDEO_FPS_DEFAULT		  = 60;
-	const uint		 Setting::VIDEO_CRF_DEFAULT		  = 10;
+	const float	 Setting::PATH_DURATION_DEFAULT	  = 5.f;
+	const VTX_ID Setting::CONTROLLER_MODE_DEFAULT = ID::Controller::TRACKBALL;
+	const VTX_ID Setting::PICKER_MODE_DEFAULT	  = ID::Controller::PICKER;
+	const uint	 Setting::VIDEO_FPS_DEFAULT		  = 60;
+	const uint	 Setting::VIDEO_CRF_DEFAULT		  = 10;
 
 	// Measurement
 	const Util::Color::Rgba Setting::DEFAULT_LABEL_COLOR = Util::Color::Rgba( 0.f, 0.f, 1.f );

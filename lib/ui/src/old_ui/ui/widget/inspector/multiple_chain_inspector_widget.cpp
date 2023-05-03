@@ -145,7 +145,7 @@ namespace VTX::UI::Widget::Inspector
 			const QString headerTitle = QString::fromStdString( "Chain (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
-			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( VTX::ID::Model::MODEL_CHAIN );
+			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::ID::Model::MODEL_CHAIN );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
 			int		currentChainDisplayedCount = 0;
@@ -275,7 +275,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_onRepresentationColorChange(
 		const App::Application::Representation::InstantiatedRepresentation & p_representation,
-		const Util::Color::Rgba &													 p_color,
+		const Util::Color::Rgba &											 p_color,
 		const bool															 p_ssColor )
 	{
 		if ( !signalsBlocked() )
@@ -351,21 +351,21 @@ namespace VTX::UI::Widget::Inspector
 	{
 		VTXApp::get()
 			.getMainWindow()
-			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::MOLECULE );
 	}
 	void MultipleChainWidget::_setInspectorToResidue() const
 	{
 		VTXApp::get()
 			.getMainWindow()
-			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::RESIDUE );
 	}
 	void MultipleChainWidget::_setInspectorToAtom() const
 	{
 		VTXApp::get()
 			.getMainWindow()
-			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );
 	}
 

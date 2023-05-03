@@ -14,7 +14,7 @@ namespace VTX::View::UI
 	class EditorView
 	{
 	  public:
-		EditorView( const ID::VTX_ID & p_viewId ) : _viewId( p_viewId ) {}
+		EditorView( const App::VTX_ID & p_viewId ) : _viewId( p_viewId ) {}
 		virtual ~EditorView()
 		{
 			if ( _view != nullptr && VTX::MVC_MANAGER().hasView( _target, _viewId ) )
@@ -37,7 +37,7 @@ namespace VTX::View::UI
 		virtual void _catchModelEvent( const VTX::App::Core::Event::VTXEvent * const p_event ) = 0;
 
 	  private:
-		const ID::VTX_ID							   _viewId;
+		const App::VTX_ID							   _viewId;
 		App::Core::View::CallbackView<T, EditorView> * _view   = nullptr;
 		const T *									   _target = nullptr;
 	};

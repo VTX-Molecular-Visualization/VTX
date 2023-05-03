@@ -3,7 +3,7 @@
 
 #include <app/action.hpp>
 #include <app/core/action/base_action.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Action::Main
@@ -32,11 +32,11 @@ namespace VTX::UI::QT::Action::Main
 	class ChangeCameraController : public VTX::App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeCameraController( const ID::VTX_ID & p_controllerId ) : _id( p_controllerId ) {}
+		explicit ChangeCameraController( const App::VTX_ID & p_controllerId ) : _id( p_controllerId ) {}
 		virtual void execute() override;
 
 	  private:
-		const ID::VTX_ID _id;
+		const App::VTX_ID _id;
 	};
 
 	class ResetCameraController : public VTX::App::Core::Action::BaseAction

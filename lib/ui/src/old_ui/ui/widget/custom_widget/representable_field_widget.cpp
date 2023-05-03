@@ -1,9 +1,9 @@
 #include "ui/old_ui/ui/widget/custom_widget/representable_field_widget.hpp"
 #include "ui/old_ui/ui/mime_type.hpp"
-#include <app/old_app/id.hpp>
-#include <app/core/model/base_model.hpp>
 #include <app/component/chemistry/chain.hpp>
 #include <app/component/chemistry/molecule.hpp>
+#include <app/core/model/base_model.hpp>
+#include <app/id.hpp>
 #include <app/mvc.hpp>
 
 namespace VTX
@@ -36,10 +36,10 @@ namespace VTX
 					{
 						const UI::MimeType::ModelData modelData = UI::MimeType::getModelData( p_event->mimeData() );
 
-						const bool isRepresentable = ( modelData.getTypeID() == ID::Model::MODEL_ATOM )
-													 || ( modelData.getTypeID() == ID::Model::MODEL_RESIDUE )
-													 || ( modelData.getTypeID() == ID::Model::MODEL_CHAIN )
-													 || ( modelData.getTypeID() == ID::Model::MODEL_MOLECULE );
+						const bool isRepresentable = ( modelData.getTypeID() == App::ID::Model::MODEL_ATOM )
+													 || ( modelData.getTypeID() == App::ID::Model::MODEL_RESIDUE )
+													 || ( modelData.getTypeID() == App::ID::Model::MODEL_CHAIN )
+													 || ( modelData.getTypeID() == App::ID::Model::MODEL_MOLECULE );
 
 						if ( isRepresentable )
 						{
@@ -55,12 +55,12 @@ namespace VTX
 						= &( VTX::MVC_MANAGER().getModel<App::Core::Model::BaseModel>( modelData.getModelID() ) );
 
 					App::Application::Representation::BaseRepresentable * representable = nullptr;
-					const VTX::ID::VTX_ID &		 modelTypeID   = representableModel->getTypeId();
+					const VTX::App::VTX_ID &							  modelTypeID = representableModel->getTypeId();
 
-					if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
+					if ( modelTypeID == App::ID::Model::MODEL_MOLECULE )
 						representable = static_cast<App::Application::Representation::BaseRepresentable *>(
 							static_cast<App::Component::Chemistry::Molecule *>( representableModel ) );
-					else if ( modelTypeID == VTX::ID::Model::MODEL_CHAIN )
+					else if ( modelTypeID == App::ID::Model::MODEL_CHAIN )
 						representable = static_cast<App::Application::Representation::BaseRepresentable *>(
 							static_cast<App::Component::Chemistry::Chain *>( representableModel ) );
 

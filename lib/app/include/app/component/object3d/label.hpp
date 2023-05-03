@@ -5,7 +5,7 @@
 #include "app/core/model/base_model.hpp"
 #include "app/core/scene/base_scene_item.hpp"
 #include <util/color/rgba.hpp>
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Object3D
@@ -34,7 +34,7 @@ namespace VTX::App::Component::Object3D
 
 	  protected:
 		Label();
-		Label( const VTX::ID::VTX_ID & p_typeId );
+		Label( const VTX::App::VTX_ID & p_typeId );
 
 		virtual ~Label() {}
 

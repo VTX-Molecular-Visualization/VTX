@@ -77,7 +77,7 @@ namespace VTX::App::Application::Selection
 		inline MapMoleculeIds &		  getMoleculesMap() { return _moleculesMap; }
 		const MapChainIds * const	  getMoleculeMap( const App::Component::Chemistry::Molecule & );
 
-		bool hasItemOfType( const VTX::ID::VTX_ID & p_id ) const;
+		bool hasItemOfType( const VTX::App::VTX_ID & p_id ) const;
 
 		bool hasMolecule() const;
 		void selectMolecule( App::Component::Chemistry::Molecule &, const bool p_appendToSelection = false );
@@ -194,7 +194,7 @@ namespace VTX::App::Application::Selection
 		}
 
 		template<typename T, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, T>::value>>
-		std::vector<T *> getItemsOfType( const VTX::ID::VTX_ID & p_modelTypeID )
+		std::vector<T *> getItemsOfType( const VTX::App::VTX_ID & p_modelTypeID )
 		{
 			std::vector<T *> models = std::vector<T *>();
 			for ( const VTX::App::Core::Model::ID & modelID : getItems() )
@@ -216,12 +216,12 @@ namespace VTX::App::Application::Selection
 
 		void receiveEvent( const App::Core::Event::VTXEvent & p_event ) override;
 
-		void									  getItemTypes( std::set<VTX::ID::VTX_ID> & p_types ) const;
+		void									  getItemTypes( std::set<VTX::App::VTX_ID> & p_types ) const;
 		App::Component::Object3D::Helper::AABB	  getAABB() const;
 		const App::Core::Model::BaseModel * const getCurrentObject() const;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, T>::value>>
-		void getItemsOfType( const VTX::ID::VTX_ID & p_itemType, std::set<T *> & p_items ) const
+		void getItemsOfType( const VTX::App::VTX_ID & p_itemType, std::set<T *> & p_items ) const
 		{
 			for ( const VTX::App::Core::Model::ID & itemID : _items )
 			{
@@ -233,7 +233,7 @@ namespace VTX::App::Application::Selection
 			}
 		}
 		template<typename T, typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, T>::value>>
-		void getItemsOfType( const VTX::ID::VTX_ID & p_itemType, std::unordered_set<T *> & p_items ) const
+		void getItemsOfType( const VTX::App::VTX_ID & p_itemType, std::unordered_set<T *> & p_items ) const
 		{
 			for ( const VTX::App::Core::Model::ID & itemID : _items )
 			{
@@ -246,7 +246,7 @@ namespace VTX::App::Application::Selection
 		}
 
 	  protected:
-		SelectionModel() : BaseModel( VTX::ID::Model::MODEL_SELECTION )
+		SelectionModel() : BaseModel( App::ID::Model::MODEL_SELECTION )
 		{
 			_registerEvent( App::Event::Global::MOLECULE_REMOVED );
 		}

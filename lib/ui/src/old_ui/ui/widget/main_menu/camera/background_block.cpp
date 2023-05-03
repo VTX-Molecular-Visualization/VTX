@@ -2,7 +2,7 @@
 #include "ui/old_ui/ui/widget/renderer/default_background.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include <app/action/renderer.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include <app/old_app/vtx_app.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera

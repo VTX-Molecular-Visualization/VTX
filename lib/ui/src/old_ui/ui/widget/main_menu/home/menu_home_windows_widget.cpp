@@ -57,13 +57,13 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 		_windowsMenu = new QMenu( this );
 
-		_instantiateButton( ID::UI::Window::RENDER, &MenuHomeWindowsWidget::_toggleRenderWindow );
-		_instantiateButton( ID::UI::Window::SCENE, &MenuHomeWindowsWidget::_toggleSceneWindow );
-		_instantiateButton( ID::UI::Window::INSPECTOR, &MenuHomeWindowsWidget::_toggleInspectorWindow );
+		_instantiateButton( UI::ID::Window::RENDER, &MenuHomeWindowsWidget::_toggleRenderWindow );
+		_instantiateButton( UI::ID::Window::SCENE, &MenuHomeWindowsWidget::_toggleSceneWindow );
+		_instantiateButton( UI::ID::Window::INSPECTOR, &MenuHomeWindowsWidget::_toggleInspectorWindow );
 		// !V0.1
-		//_instantiateButton( ID::UI::Window::SELECTION, &MenuHomeWindowsWidget::_toggleSelectionWindow );
-		_instantiateButton( ID::UI::Window::SEQUENCE, &MenuHomeWindowsWidget::_toggleSequenceWindow );
-		_instantiateButton( ID::UI::Window::CONSOLE, &MenuHomeWindowsWidget::_toggleConsoleWindow );
+		//_instantiateButton( UI::ID::Window::SELECTION, &MenuHomeWindowsWidget::_toggleSelectionWindow );
+		_instantiateButton( UI::ID::Window::SEQUENCE, &MenuHomeWindowsWidget::_toggleSequenceWindow );
+		_instantiateButton( UI::ID::Window::CONSOLE, &MenuHomeWindowsWidget::_toggleConsoleWindow );
 
 		_windowComboBoxButton->setMenu( _windowsMenu );
 
@@ -90,10 +90,10 @@ namespace VTX::UI::Widget::MainMenu::Home
 	void MenuHomeWindowsWidget::localize() { setTitle( "Windows" ); }
 	void MenuHomeWindowsWidget::refresh()
 	{
-		for ( const std::pair<const ID::VTX_ID * const, QAction *> & pair : _mapWindowsActions )
+		for ( const std::pair<const App::VTX_ID * const, QAction *> & pair : _mapWindowsActions )
 			_refreshButton( *pair.first );
 	}
-	void MenuHomeWindowsWidget::_refreshButton( const ID::VTX_ID & p_id )
+	void MenuHomeWindowsWidget::_refreshButton( const App::VTX_ID & p_id )
 	{
 		const bool	windowVisibility = VTXApp::get().getMainWindow().getWidgetVisibility( p_id );
 		std::string windowName		 = p_id;
@@ -103,7 +103,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 		//_mapWindowsActions[ &p_id ]->setIcon( *Style::IconConst::get().getWindowIcon( p_id ) );
 	}
 
-	void MenuHomeWindowsWidget::_instantiateButton( const ID::VTX_ID & p_id,
+	void MenuHomeWindowsWidget::_instantiateButton( const App::VTX_ID & p_id,
 													void ( MenuHomeWindowsWidget::*p_action )(),
 													const QKeySequence & p_shortcut )
 	{
@@ -138,28 +138,28 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 	void MenuHomeWindowsWidget::_toggleSceneWindow()
 	{
-		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SCENE );
+		VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SCENE );
 	}
 	void MenuHomeWindowsWidget::_toggleRenderWindow()
 	{
-		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::RENDER );
+		VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::RENDER );
 	}
 	void MenuHomeWindowsWidget::_toggleConsoleWindow()
 	{
-		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::CONSOLE );
+		VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::CONSOLE );
 	}
 	void MenuHomeWindowsWidget::_toggleInspectorWindow()
 	{
-		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::INSPECTOR );
+		VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::INSPECTOR );
 	}
 	// !V0.1
 	// void MenuHomeWindowsWidget::_toggleSelectionWindow()
 	//{
-	//	VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SELECTION );
+	//	VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SELECTION );
 	//}
 	void MenuHomeWindowsWidget::_toggleSequenceWindow()
 	{
-		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SEQUENCE );
+		VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SEQUENCE );
 	}
 
 	void MenuHomeWindowsWidget::_toggleWindowState() const
