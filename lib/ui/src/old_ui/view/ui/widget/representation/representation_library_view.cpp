@@ -6,7 +6,7 @@
 #include <app/action/representation.hpp>
 #include <app/application/representation/representation_preset.hpp>
 #include <app/event/global.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 
 namespace VTX::View::UI::Widget::Representation
 {

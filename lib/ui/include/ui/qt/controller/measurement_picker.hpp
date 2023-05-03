@@ -3,6 +3,7 @@
 
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
+#include "ui/id.hpp"
 #include <app/component/chemistry/_fwd.hpp>
 #include <app/core/model/base_model.hpp>
 #include <vector>
@@ -31,7 +32,7 @@ namespace VTX
 			MeasurementPicker();
 			~MeasurementPicker();
 
-			inline ID::VTX_ID getTargetWidget() override { return ID::UI::Input::RENDER_WIDGET; }
+			inline App::VTX_ID getTargetWidget() override { return UI::ID::Input::RENDER_WIDGET; }
 
 			const Mode & getCurrentMode() const { return _currentMode; }
 			void		 setCurrentMode( const Mode & p_mode );

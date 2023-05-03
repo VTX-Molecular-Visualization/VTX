@@ -760,6 +760,6 @@ namespace VTX::App::Component::Chemistry
 	void SolventExcludedSurface::_instantiate3DViews()
 	{
 		_addRenderable( VTX::MVC_MANAGER().instantiateView<App::Render::View::TriangleSES>(
-			this, VTX::ID::View::D3_TRIANGLE_SES ) );
+			this, VTX::App::ID::View::D3_TRIANGLE_SES ) );
 	}
 } // namespace VTX::App::Component::Chemistry

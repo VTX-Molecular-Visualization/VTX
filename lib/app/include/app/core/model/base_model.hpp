@@ -3,7 +3,7 @@
 
 #include "app/core/event/vtx_event.hpp"
 #include "app/event/model.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include <string>
 #include <util/types.hpp>
 
@@ -24,7 +24,7 @@ namespace VTX::App::Core::Model
 
 	  public:
 		inline const ID &			   getId() const { return _id; }
-		inline const VTX::ID::VTX_ID & getTypeId() const { return *_typeId; }
+		inline const VTX::App::VTX_ID & getTypeId() const { return *_typeId; }
 		inline bool					   isEnable() const { return _enabled; }
 		inline void					   setEnable( bool p_enable )
 		{
@@ -46,9 +46,9 @@ namespace VTX::App::Core::Model
 		const ID					  _id	   = COUNTER++;
 		bool						  _enabled = true;
 		const std::string *			  _name	   = &DEFAULT_NAME;
-		const VTX::ID::VTX_ID * const _typeId;
+		const VTX::App::VTX_ID * const _typeId;
 
-		BaseModel( const VTX::ID::VTX_ID & p_typeId ) : _typeId( &p_typeId ) {}
+		BaseModel( const VTX::App::VTX_ID & p_typeId ) : _typeId( &p_typeId ) {}
 		~BaseModel() {}
 
 		const std::string *& _getNamePtr() { return _name; }

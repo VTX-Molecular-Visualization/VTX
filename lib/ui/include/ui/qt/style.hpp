@@ -1,6 +1,7 @@
 #ifndef __VTX_UI_QT_STYLE__
 #define __VTX_UI_QT_STYLE__
 
+#include "ui/id.hpp"
 #include "ui/qt/util.hpp"
 #include <QBitmap>
 #include <QChar>
@@ -12,8 +13,8 @@
 #include <QString>
 #include <app/application/representation/enum_representation.hpp>
 #include <app/application/selection/enum_selection.hpp>
+#include <app/id.hpp>
 #include <app/internal/chemdb/category.hpp>
-#include <app/old_app/id.hpp>
 #include <app/util/label.hpp>
 #include <iostream>
 #include <string>
@@ -79,24 +80,24 @@ namespace VTX::UI::QT::Style
 
 		const QPixmap TOOLTAB_SEPARATOR;
 
-		const QPixmap * const getWindowIcon( const ID::VTX_ID & p_id ) const
+		const QPixmap * const getWindowIcon( const App::VTX_ID & p_id ) const
 		{
 			const QPixmap * res;
 
-			if ( p_id == ID::UI::Window::SCENE )
+			if ( p_id == UI::ID::Window::SCENE )
 				res = &SCENE_WINDOW_ICON;
-			else if ( p_id == ID::UI::Window::RENDER )
+			else if ( p_id == UI::ID::Window::RENDER )
 				res = &RENDER_WINDOW_ICON;
-			else if ( p_id == ID::UI::Window::INSPECTOR )
+			else if ( p_id == UI::ID::Window::INSPECTOR )
 				res = &INSPECTOR_WINDOW_ICON;
-			else if ( p_id == ID::UI::Window::CONSOLE )
+			else if ( p_id == UI::ID::Window::CONSOLE )
 				res = &CONSOLE_WINDOW_ICON;
-			else if ( p_id == ID::UI::Window::SETTINGS )
+			else if ( p_id == UI::ID::Window::SETTINGS )
 				res = &SETTING_WINDOW_ICON;
 			// !V0.1
-			// else if ( p_id == ID::UI::Window::SELECTION )
+			// else if ( p_id == UI::ID::Window::SELECTION )
 			//	res = &SELECTION_WINDOW_ICON;
-			else if ( p_id == ID::UI::Window::SEQUENCE )
+			else if ( p_id == UI::ID::Window::SEQUENCE )
 				res = &SEQUENCE_WINDOW_ICON;
 			else
 			{
@@ -107,21 +108,21 @@ namespace VTX::UI::QT::Style
 			return res;
 		}
 
-		const QPixmap * const getModelSymbol( const ID::VTX_ID & p_id ) const
+		const QPixmap * const getModelSymbol( const App::VTX_ID & p_id ) const
 		{
 			const QPixmap * res;
 
-			if ( p_id == VTX::ID::Model::MODEL_MOLECULE )
+			if ( p_id == App::ID::Model::MODEL_MOLECULE )
 				res = &MOLECULE_SYMBOL;
-			else if ( p_id == VTX::ID::Model::MODEL_CHAIN )
+			else if ( p_id == App::ID::Model::MODEL_CHAIN )
 				res = &CHAIN_SYMBOL;
-			else if ( p_id == VTX::ID::Model::MODEL_RESIDUE )
+			else if ( p_id == App::ID::Model::MODEL_RESIDUE )
 				res = &RESIDUE_SYMBOL;
-			else if ( p_id == VTX::ID::Model::MODEL_ATOM )
+			else if ( p_id == App::ID::Model::MODEL_ATOM )
 				res = &ATOM_SYMBOL;
-			else if ( p_id == VTX::ID::Model::MODEL_PATH )
+			else if ( p_id == App::ID::Model::MODEL_PATH )
 				res = &VIEWPOINT_SYMBOL;
-			else if ( p_id == VTX::ID::Model::MODEL_VIEWPOINT )
+			else if ( p_id == App::ID::Model::MODEL_VIEWPOINT )
 				res = &VIEWPOINT_SYMBOL;
 			else if ( VTX::Util::App::Label::isLabelType( p_id ) )
 			{

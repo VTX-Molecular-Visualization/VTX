@@ -266,26 +266,26 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 	void SceneItemWidget::_refreshItemsVisibilityRecursive( QTreeWidgetItem & p_widget )
 	{
 		const App::Core::Model::ID itemID	 = _getModelIDFromItem( p_widget );
-		const ID::VTX_ID &		   modelType = VTX::MVC_MANAGER().getModelTypeID( itemID );
+		const App::VTX_ID &		   modelType = VTX::MVC_MANAGER().getModelTypeID( itemID );
 
 		bool visibility;
-		if ( modelType == VTX::ID::Model::MODEL_MOLECULE )
+		if ( modelType == App::ID::Model::MODEL_MOLECULE )
 		{
 			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( itemID ).isVisible();
 		}
-		else if ( modelType == VTX::ID::Model::MODEL_CATEGORY )
+		else if ( modelType == App::ID::Model::MODEL_CATEGORY )
 		{
 			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Category>( itemID ).isVisible();
 		}
-		else if ( modelType == VTX::ID::Model::MODEL_CHAIN )
+		else if ( modelType == App::ID::Model::MODEL_CHAIN )
 		{
 			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Chain>( itemID ).isVisible();
 		}
-		else if ( modelType == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( modelType == App::ID::Model::MODEL_RESIDUE )
 		{
 			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Residue>( itemID ).isVisible();
 		}
-		else if ( modelType == VTX::ID::Model::MODEL_ATOM )
+		else if ( modelType == App::ID::Model::MODEL_ATOM )
 		{
 			visibility = VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Atom>( itemID ).isVisible();
 		}
@@ -337,7 +337,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
 
 		const App::Core::Model::ID & itemModel = _getModelIDFromItem( p_itemToSelect );
-		const ID::VTX_ID			 itemType  = VTX::MVC_MANAGER().getModelTypeID( itemModel );
+		const App::VTX_ID			 itemType  = VTX::MVC_MANAGER().getModelTypeID( itemModel );
 
 		p_itemToSelect.treeWidget()->setFocus( Qt::FocusReason::TabFocusReason );
 		p_itemToSelect.treeWidget()->setCurrentItem( &p_itemToSelect );

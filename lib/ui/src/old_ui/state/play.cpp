@@ -1,9 +1,10 @@
 #include "ui/old_ui/state/play.hpp"
+#include "ui/id.hpp"
+#include <app/application/scene.hpp>
 #include <app/component/object3d/viewpoint.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/component/video/path.hpp>
 #include <app/old_app/vtx_app.hpp>
-#include <app/application/scene.hpp>
 #include <util/math.hpp>
 
 namespace VTX
@@ -17,7 +18,7 @@ namespace VTX
 
 			if ( _path->getDuration() == 0.f || _path->getViewpoints().size() < 2 )
 			{
-				VTXApp::get().goToState( ID::State::VISUALIZATION );
+				VTXApp::get().goToState( UI::ID::State::VISUALIZATION );
 				return;
 			}
 
@@ -54,7 +55,7 @@ namespace VTX
 				}
 				else
 				{
-					VTXApp::get().goToState( ID::State::VISUALIZATION );
+					VTXApp::get().goToState( UI::ID::State::VISUALIZATION );
 					return;
 				}
 			}
@@ -69,7 +70,7 @@ namespace VTX
 		void Play::_setCamera() const
 		{
 			App::Component::Object3D::Viewpoint viewpoint = _path->getInterpolatedViewpoint( _time );
-			if ( viewpoint.getController() == ID::Controller::TRACKBALL )
+			if ( viewpoint.getController() == UI::ID::Controller::TRACKBALL )
 			{
 				VTXApp::get().getScene().getCamera().setRotationAround(
 					Quatf( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );

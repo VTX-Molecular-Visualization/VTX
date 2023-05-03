@@ -3,7 +3,7 @@
 
 #include "app/core/model/base_model.hpp"
 #include "app/core/view/base_view.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include <map>
 
 namespace VTX::App::Manager::Details::MVC
@@ -11,8 +11,8 @@ namespace VTX::App::Manager::Details::MVC
 	class MvcData
 	{
 	  public:
-		using MapViews	= std::map<ID::VTX_ID, App::Core::View::BaseView<App::Core::Model::BaseModel> *>;
-		using PairViews = std::pair<const ID::VTX_ID, App::Core::View::BaseView<App::Core::Model::BaseModel> *>;
+		using MapViews	= std::map<VTX_ID, App::Core::View::BaseView<App::Core::Model::BaseModel> *>;
+		using PairViews = std::pair<const App::VTX_ID, App::Core::View::BaseView<App::Core::Model::BaseModel> *>;
 
 		MvcData( App::Core::Model::BaseModel * const p_model ) : _model( p_model ) {}
 		~MvcData() = default;
@@ -25,7 +25,7 @@ namespace VTX::App::Manager::Details::MVC
 				 typename V,
 				 typename = std::enable_if<std::is_base_of<M, App::Core::Model::BaseModel>::value>,
 				 typename = std::enable_if<std::is_base_of<V, App::Core::View::BaseView<M>>::value>>
-		inline void addView( const ID::VTX_ID & p_id, V * const p_view )
+		inline void addView( const App::VTX_ID & p_id, V * const p_view )
 		{
 			_views.emplace( p_id, (App::Core::View::BaseView<App::Core::Model::BaseModel> * const)p_view );
 		}
@@ -34,14 +34,14 @@ namespace VTX::App::Manager::Details::MVC
 				 typename V,
 				 typename = std::enable_if<std::is_base_of<M, App::Core::Model::BaseModel>::value>,
 				 typename = std::enable_if<std::is_base_of<V, App::Core::View::BaseView<M>>::value>>
-		inline V * const removeView( const ID::VTX_ID & p_id )
+		inline V * const removeView( const App::VTX_ID & p_id )
 		{
 			V * const view = (V * const)_views[ p_id ];
 			_views.erase( p_id );
 			return view;
 		}
 
-		inline App::Core::View::BaseView<App::Core::Model::BaseModel> * removeView( const ID::VTX_ID & p_id )
+		inline App::Core::View::BaseView<App::Core::Model::BaseModel> * removeView( const App::VTX_ID & p_id )
 		{
 			App::Core::View::BaseView<App::Core::Model::BaseModel> * const view = _views[ p_id ];
 			_views.erase( p_id );
@@ -52,12 +52,12 @@ namespace VTX::App::Manager::Details::MVC
 				 typename V,
 				 typename = std::enable_if<std::is_base_of<M, App::Core::Model::BaseModel>::value>,
 				 typename = std::enable_if<std::is_base_of<V, App::Core::View::BaseView<M>>::value>>
-		inline V * const getView( const ID::VTX_ID & p_id )
+		inline V * const getView( const App::VTX_ID & p_id )
 		{
 			return (V * const)_views[ p_id ];
 		}
 
-		inline const bool		hasView( const ID::VTX_ID & p_id ) const { return _views.find( p_id ) != _views.end(); }
+		inline const bool		hasView( const App::VTX_ID & p_id ) const { return _views.find( p_id ) != _views.end(); }
 		inline MapViews &		getViews() { return _views; }
 		inline const MapViews & getViews() const { return _views; }
 

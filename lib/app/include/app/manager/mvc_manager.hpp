@@ -4,7 +4,7 @@
 #include "app/core/model/base_model.hpp"
 #include "app/core/view/base_view.hpp"
 #include "app/old_app/generic/base_lockable.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include "details/mvc/mvc_data.hpp"
 #include <type_traits>
 #include <unordered_map>
@@ -78,7 +78,7 @@ namespace VTX::App::Manager
 			_container.erase( p_model->getId() );
 			_unlock();
 
-			for ( const std::pair<const VTX::ID::VTX_ID, App::Core::View::BaseView<App::Core::Model::BaseModel> *> &
+			for ( const std::pair<const VTX::App::VTX_ID, App::Core::View::BaseView<App::Core::Model::BaseModel> *> &
 					  pair : mvc->getViews() )
 			{
 				delete pair.second;
@@ -127,7 +127,7 @@ namespace VTX::App::Manager
 			return _container.find( p_id ) != _container.end();
 		}
 
-		const ID::VTX_ID & getModelTypeID( const App::Core::Model::ID & p_id )
+		const App::VTX_ID & getModelTypeID( const App::Core::Model::ID & p_id )
 		{
 			return _container[ p_id ]->getModel().getTypeId();
 		};
@@ -136,7 +136,7 @@ namespace VTX::App::Manager
 				 typename M,
 				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
 				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>>
-		inline V * const instantiateView( M * const p_model, const ID::VTX_ID & p_id )
+		inline V * const instantiateView( M * const p_model, const App::VTX_ID & p_id )
 		{
 			_lock();
 			V * const view = new V( p_model );
@@ -153,7 +153,7 @@ namespace VTX::App::Manager
 				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
 				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>>
 		inline V * const instantiateViewWidget( M * const		   p_model,
-												const ID::VTX_ID & p_id,
+												const App::VTX_ID & p_id,
 												W * const		   p_parentWidget = nullptr )
 		{
 			_lock();
@@ -168,7 +168,7 @@ namespace VTX::App::Manager
 				 typename M,
 				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
 				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>>
-		inline V * const getView( const M * const p_model, const ID::VTX_ID & p_id )
+		inline V * const getView( const M * const p_model, const App::VTX_ID & p_id )
 		{
 			return static_cast<MvcData *>( _container[ p_model->getId() ] )->getView<M, V>( p_id );
 		}
@@ -177,7 +177,7 @@ namespace VTX::App::Manager
 				 typename M,
 				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
 				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>>
-		inline void deleteView( const M * const p_model, const ID::VTX_ID & p_id )
+		inline void deleteView( const M * const p_model, const App::VTX_ID & p_id )
 		{
 			_lock();
 			delete static_cast<MvcData *>( _container[ p_model->getId() ] )->removeView<M, V>( p_id );
@@ -188,21 +188,21 @@ namespace VTX::App::Manager
 				 typename M,
 				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
 				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>>
-		inline void deleteView( const V * const p_view, const ID::VTX_ID & p_id )
+		inline void deleteView( const V * const p_view, const App::VTX_ID & p_id )
 		{
 			_lock();
 			delete static_cast<MvcData *>( _container[ p_view->_model->getId() ] )->removeView( p_id );
 			_unlock();
 		}
 
-		inline void deleteView( const App::Core::Model::BaseModel * const p_model, const ID::VTX_ID & p_id )
+		inline void deleteView( const App::Core::Model::BaseModel * const p_model, const App::VTX_ID & p_id )
 		{
 			_lock();
 			delete _container[ p_model->getId() ]->removeView( p_id );
 			_unlock();
 		}
 
-		inline const bool hasView( const App::Core::Model::BaseModel * const p_model, const ID::VTX_ID & p_id )
+		inline const bool hasView( const App::Core::Model::BaseModel * const p_model, const App::VTX_ID & p_id )
 		{
 			return _container.find( p_model->getId() ) != _container.end()
 				   && _container[ p_model->getId() ]->hasView( p_id );
@@ -216,7 +216,7 @@ namespace VTX::App::Manager
 			_unlock();
 		}
 
-		inline ID::VTX_ID generateViewID( const ID::VTX_ID & p_baseID, const std::string & p_suffix )
+		inline App::VTX_ID generateViewID( const App::VTX_ID & p_baseID, const std::string & p_suffix )
 		{
 			return p_baseID + '_' + p_suffix;
 		}

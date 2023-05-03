@@ -1,4 +1,5 @@
 #include "ui/qt/state/export.hpp"
+#include "ui/id.hpp"
 #include <app/action/main.hpp>
 #include <app/component/object3d/viewpoint.hpp>
 #include <app/component/video/path.hpp>

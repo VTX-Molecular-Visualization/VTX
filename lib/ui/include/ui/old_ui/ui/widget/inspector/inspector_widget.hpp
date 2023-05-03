@@ -11,7 +11,7 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Inspector
@@ -27,11 +27,11 @@ namespace VTX::UI::Widget::Inspector
 	struct ViewData
 	{
 	  public:
-		ViewData( const uint p_modelID, const ID::VTX_ID & p_view, QWidget * const p_widget ) :
+		ViewData( const uint p_modelID, const App::VTX_ID & p_view, QWidget * const p_widget ) :
 			_modelID( p_modelID ), _viewID( p_view ), _widget( p_widget ) {};
 
 		const uint		 _modelID;
-		const ID::VTX_ID _viewID;
+		const App::VTX_ID _viewID;
 		QWidget * const	 _widget;
 	};
 

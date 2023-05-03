@@ -10,7 +10,7 @@ namespace VTX::UI::QT::Controller
 	  public:
 		explicit Freefly( App::Component::Render::Camera & p_camera ) : BaseCameraController( p_camera ) {}
 
-		const ID::VTX_ID getID() const override { return ID::Controller::FREEFLY; }
+		const App::VTX_ID getID() const override { return ID::Controller::FREEFLY; }
 
 	  protected:
 		void _updateInputs( const float & ) override;

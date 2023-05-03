@@ -4,7 +4,7 @@
 #include "app/application/setting.hpp"
 #include "app/component/video/_fwd.hpp"
 #include "app/core/model/base_model.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Object3D
@@ -19,8 +19,8 @@ namespace VTX::App::Component::Object3D
 		inline float			   getDuration() const { return _duration; }
 		inline void				   setDuration( const float p_duration ) { _duration = p_duration; }
 
-		inline const VTX::ID::VTX_ID getController() const { return _controller; }
-		inline void					 setController( const VTX::ID::VTX_ID p_controller ) { _controller = p_controller; }
+		inline const VTX::App::VTX_ID getController() const { return _controller; }
+		inline void					 setController( const VTX::App::VTX_ID p_controller ) { _controller = p_controller; }
 		inline const Vec3f &		 getPosition() const { return _position; }
 		void						 setPosition( const Vec3f & p_position );
 		inline const Quatf &		 getRotation() const { return _rotation; }
@@ -60,7 +60,7 @@ namespace VTX::App::Component::Object3D
 
 		} _data;
 
-		VTX::ID::VTX_ID _controller = Application::Setting::CONTROLLER_MODE_DEFAULT;
+		VTX::App::VTX_ID _controller = Application::Setting::CONTROLLER_MODE_DEFAULT;
 
 		// std::vector<std::string> _actions = std::vector<std::string>();
 

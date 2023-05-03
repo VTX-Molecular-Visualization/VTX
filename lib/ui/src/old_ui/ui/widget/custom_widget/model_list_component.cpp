@@ -104,7 +104,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_foldButton->setFoldState( true );
 	}
 
-	void ModelListComponent::addTypeFilter( const ID::VTX_ID & p_typeID ) const
+	void ModelListComponent::addTypeFilter( const App::VTX_ID & p_typeID ) const
 	{
 		_dropArea->addTypeFilter( p_typeID );
 		_modelListWidget->addTypeFilter( p_typeID );

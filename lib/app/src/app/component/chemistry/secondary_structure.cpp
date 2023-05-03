@@ -7,7 +7,7 @@
 #include "app/component/chemistry/residue.hpp"
 #include "app/internal/chemDB/secondary_structure.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include "app/render/view/ribbon.hpp"
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -15,7 +15,7 @@
 namespace VTX::App::Component::Chemistry
 {
 	SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) :
-		BaseModel3D( VTX::ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
+		BaseModel3D( App::ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
 	{
 	}
 
@@ -288,7 +288,7 @@ namespace VTX::App::Component::Chemistry
 	void SecondaryStructure::_instantiate3DViews()
 	{
 		_addRenderable(
-			VTX::MVC_MANAGER().instantiateView<App::Render::View::Ribbon>( this, VTX::ID::View::D3_RIBBON_PATCH ) );
+			VTX::MVC_MANAGER().instantiateView<App::Render::View::Ribbon>( this, VTX::App::ID::View::D3_RIBBON_PATCH ) );
 	}
 
 	void SecondaryStructure::refreshColors()

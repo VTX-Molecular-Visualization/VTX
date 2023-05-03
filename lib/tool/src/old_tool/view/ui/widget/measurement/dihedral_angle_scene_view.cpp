@@ -66,7 +66,7 @@ namespace VTX::View::UI::Widget::Measurement
 													 QItemSelection & p_itemSelection )
 	{
 		std::set<App::Component::Object3D::Label *> selectedLabels = std::set<App::Component::Object3D::Label *>();
-		p_selection.getItemsOfType( VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE, selectedLabels );
+		p_selection.getItemsOfType( App::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE, selectedLabels );
 
 		bool pathItemAdded = false;
 

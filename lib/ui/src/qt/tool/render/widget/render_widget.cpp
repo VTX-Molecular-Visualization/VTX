@@ -61,7 +61,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		//	const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> & castedEvent
 		//		= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> &>( p_event );
 
-		//	const ID::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
+		//	const App::VTX_ID & labeltype = castedEvent.ptr->getTypeId();
 
 		//	BaseIntegratedWidget * integratedWidget = nullptr;
 
@@ -109,7 +109,7 @@ namespace VTX::UI::QT::Tool::Render::Widget
 		//	const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> & castedEvent
 		//		= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label*> &>( p_event );
 
-		//	const ID::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
+		//	const App::VTX_ID & labelTypeID = castedEvent.ptr->getTypeId();
 
 		//	if ( labelTypeID == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 		//	{

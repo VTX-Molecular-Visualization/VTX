@@ -52,7 +52,7 @@ namespace VTX::UI::Widget::Scene
 		QVBoxLayout *									  _layout			 = nullptr;
 		std::vector<SceneItemWidget *>					  _sceneWidgets		 = std::vector<SceneItemWidget *>();
 
-		int	 _getDefaultIndex( const ID::VTX_ID & p_itemTypeID ) const;
+		int	 _getDefaultIndex( const App::VTX_ID & p_itemTypeID ) const;
 		void _addWidgetInLayout( QWidget * const p_sceneItemWidget, const int p_index );
 
 		void _removeWidgetInLayout( SceneItemWidget * const p_sceneItemWidget );
@@ -68,7 +68,7 @@ namespace VTX::UI::Widget::Scene
 				 typename = std::enable_if<std::is_base_of<SceneItemWidget, V>::value>,
 				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>>
 		void instantiateSceneItem( M * const		   p_model,
-								   const ID::VTX_ID &  p_viewID,
+								   const App::VTX_ID &  p_viewID,
 								   const std::string & p_widgetName = "" )
 		{
 			// Set no parent to not trigger ItemChange event during init
@@ -86,7 +86,7 @@ namespace VTX::UI::Widget::Scene
 				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
 				 typename = std::enable_if<std::is_base_of<SceneItemWidget, V>::value>,
 				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>>
-		void deleteSceneItem( M * const p_model, const ID::VTX_ID & p_viewID )
+		void deleteSceneItem( M * const p_model, const App::VTX_ID & p_viewID )
 		{
 			V * const sceneItemWidget = VTX::MVC_MANAGER().getView<V>( p_model, p_viewID );
 

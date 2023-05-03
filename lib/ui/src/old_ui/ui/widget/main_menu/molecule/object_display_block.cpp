@@ -119,7 +119,7 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		// No selection => check all molecules in scene
 		if ( selection.hasMolecule() )
 		{
-			selection.getItemsOfType<App::Component::Chemistry::Molecule>( VTX::ID::Model::MODEL_MOLECULE,
+			selection.getItemsOfType<App::Component::Chemistry::Molecule>( App::ID::Model::MODEL_MOLECULE,
 																		   p_container );
 		}
 		else

@@ -148,19 +148,19 @@ namespace VTX::UI::Widget::ContextualMenu
 		_submenus[ int( SUBMENU_TEMPLATE::VIEWPOINT ) ]			 = viewpointSubmenu;
 		_submenus[ int( SUBMENU_TEMPLATE::LABEL ) ]				 = labelSubmenu;
 
-		_submenusMap[ VTX::ID::Model::MODEL_MOLECULE ] = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
-		_submenusMap[ VTX::ID::Model::MODEL_CHAIN ]	   = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
-		_submenusMap[ VTX::ID::Model::MODEL_RESIDUE ]  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
-		_submenusMap[ VTX::ID::Model::MODEL_ATOM ]	   = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ App::ID::Model::MODEL_MOLECULE ] = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ App::ID::Model::MODEL_CHAIN ]	   = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ App::ID::Model::MODEL_RESIDUE ]  = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
+		_submenusMap[ App::ID::Model::MODEL_ATOM ]	   = int( SUBMENU_TEMPLATE::MOLECULE_STRUCTURE );
 
-		_submenusMap[ VTX::ID::Model::MODEL_VIEWPOINT ] = int( SUBMENU_TEMPLATE::VIEWPOINT );
-		_submenusMap[ VTX::ID::Model::MODEL_PATH ]		= int( SUBMENU_TEMPLATE::VIEWPOINT );
+		_submenusMap[ App::ID::Model::MODEL_VIEWPOINT ] = int( SUBMENU_TEMPLATE::VIEWPOINT );
+		_submenusMap[ App::ID::Model::MODEL_PATH ]		= int( SUBMENU_TEMPLATE::VIEWPOINT );
 
-		_submenusMap[ VTX::ID::Model::MODEL_LABEL ]							= int( SUBMENU_TEMPLATE::LABEL );
-		_submenusMap[ VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE ]			= int( SUBMENU_TEMPLATE::LABEL );
-		_submenusMap[ VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE ] = int( SUBMENU_TEMPLATE::LABEL );
-		_submenusMap[ VTX::ID::Model::MODEL_MEASUREMENT_ANGLE ]				= int( SUBMENU_TEMPLATE::LABEL );
-		_submenusMap[ VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE ]	= int( SUBMENU_TEMPLATE::LABEL );
+		_submenusMap[ App::ID::Model::MODEL_LABEL ]							= int( SUBMENU_TEMPLATE::LABEL );
+		_submenusMap[ App::ID::Model::MODEL_MEASUREMENT_DISTANCE ]			= int( SUBMENU_TEMPLATE::LABEL );
+		_submenusMap[ App::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE ] = int( SUBMENU_TEMPLATE::LABEL );
+		_submenusMap[ App::ID::Model::MODEL_MEASUREMENT_ANGLE ]				= int( SUBMENU_TEMPLATE::LABEL );
+		_submenusMap[ App::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE ]	= int( SUBMENU_TEMPLATE::LABEL );
 	}
 	ContextualMenuSelection ::~ContextualMenuSelection()
 	{
@@ -197,13 +197,13 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_updateActionsWithSelection()
 	{
-		std::set<ID::VTX_ID> typesInSelection = std::set<ID::VTX_ID>();
+		std::set<App::VTX_ID> typesInSelection = std::set<App::VTX_ID>();
 		_target->getItemTypes( typesInSelection );
 
 		const TypeMask selectionTypeMask = _getTypeMaskFromTypeSet( typesInSelection );
 
 		std::set<SelectionSubMenu *> submenuDisplayed = std::set<SelectionSubMenu *>();
-		for ( const ID::VTX_ID & itemType : typesInSelection )
+		for ( const App::VTX_ID & itemType : typesInSelection )
 		{
 			submenuDisplayed.emplace( _submenus[ _submenusMap[ itemType ] ] );
 		}
@@ -227,31 +227,31 @@ namespace VTX::UI::Widget::ContextualMenu
 		}
 	}
 
-	TypeMask ContextualMenuSelection::_getTypeMaskFromTypeSet( const std::set<ID::VTX_ID> & p_typeIds )
+	TypeMask ContextualMenuSelection::_getTypeMaskFromTypeSet( const std::set<App::VTX_ID> & p_typeIds )
 	{
 		TypeMask res = TypeMask::None;
 
-		if ( p_typeIds.find( VTX::ID::Model::MODEL_MOLECULE ) != p_typeIds.end() )
+		if ( p_typeIds.find( App::ID::Model::MODEL_MOLECULE ) != p_typeIds.end() )
 			res |= TypeMask::Molecule;
-		if ( p_typeIds.find( VTX::ID::Model::MODEL_CHAIN ) != p_typeIds.end() )
+		if ( p_typeIds.find( App::ID::Model::MODEL_CHAIN ) != p_typeIds.end() )
 			res |= TypeMask::Chain;
-		if ( p_typeIds.find( VTX::ID::Model::MODEL_RESIDUE ) != p_typeIds.end() )
+		if ( p_typeIds.find( App::ID::Model::MODEL_RESIDUE ) != p_typeIds.end() )
 			res |= TypeMask::Residue;
-		if ( p_typeIds.find( VTX::ID::Model::MODEL_ATOM ) != p_typeIds.end() )
+		if ( p_typeIds.find( App::ID::Model::MODEL_ATOM ) != p_typeIds.end() )
 			res |= TypeMask::Atom;
-		if ( p_typeIds.find( VTX::ID::Model::MODEL_VIEWPOINT ) != p_typeIds.end() )
+		if ( p_typeIds.find( App::ID::Model::MODEL_VIEWPOINT ) != p_typeIds.end() )
 			res |= TypeMask::Viewpoint;
-		if ( p_typeIds.find( VTX::ID::Model::MODEL_PATH ) != p_typeIds.end() )
+		if ( p_typeIds.find( App::ID::Model::MODEL_PATH ) != p_typeIds.end() )
 			res |= TypeMask::Viewpoint;
-		if ( p_typeIds.find( VTX::ID::Model::MODEL_LABEL ) != p_typeIds.end() )
+		if ( p_typeIds.find( App::ID::Model::MODEL_LABEL ) != p_typeIds.end() )
 			res |= TypeMask::Label;
-		if ( p_typeIds.find( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE ) != p_typeIds.end() )
+		if ( p_typeIds.find( App::ID::Model::MODEL_MEASUREMENT_DISTANCE ) != p_typeIds.end() )
 			res |= TypeMask::Label;
-		if ( p_typeIds.find( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE ) != p_typeIds.end() )
+		if ( p_typeIds.find( App::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE ) != p_typeIds.end() )
 			res |= TypeMask::Label;
-		if ( p_typeIds.find( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE ) != p_typeIds.end() )
+		if ( p_typeIds.find( App::ID::Model::MODEL_MEASUREMENT_ANGLE ) != p_typeIds.end() )
 			res |= TypeMask::Label;
-		if ( p_typeIds.find( VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE ) != p_typeIds.end() )
+		if ( p_typeIds.find( App::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE ) != p_typeIds.end() )
 			res |= TypeMask::Label;
 
 		return res;
@@ -262,7 +262,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		const App::Core::Model::ID & modelID = *_target->getItems().begin();
 
 		UI::Widget::Scene::SceneWidget & sceneWidget
-			= VTXApp::get().getMainWindow().getWidget<UI::Widget::Scene::SceneWidget>( ID::UI::Window::SCENE );
+			= VTXApp::get().getMainWindow().getWidget<UI::Widget::Scene::SceneWidget>( UI::ID::Window::SCENE );
 
 		sceneWidget.openRenameEditor( modelID );
 	}
@@ -294,18 +294,18 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		if ( _focusedTarget != nullptr )
 		{
-			const ID::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
+			const App::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
 			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
-			if ( focusedModelTypeID == VTX::ID::Model::MODEL_MOLECULE )
+			if ( focusedModelTypeID == App::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
-			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CATEGORY )
+			else if ( focusedModelTypeID == App::ID::Model::MODEL_CATEGORY )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Category *>( _focusedTarget );
-			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CHAIN )
+			else if ( focusedModelTypeID == App::ID::Model::MODEL_CHAIN )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Chain *>( _focusedTarget );
-			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_RESIDUE )
+			else if ( focusedModelTypeID == App::ID::Model::MODEL_RESIDUE )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Residue *>( _focusedTarget );
-			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_ATOM )
+			else if ( focusedModelTypeID == App::ID::Model::MODEL_ATOM )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Atom *>( _focusedTarget );
 
 			if ( focusedModelBaseVisible != nullptr )
@@ -328,18 +328,18 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		if ( _focusedTarget != nullptr )
 		{
-			const ID::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
+			const App::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
 			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
-			if ( focusedModelTypeID == VTX::ID::Model::MODEL_MOLECULE )
+			if ( focusedModelTypeID == App::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
-			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CATEGORY )
+			else if ( focusedModelTypeID == App::ID::Model::MODEL_CATEGORY )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Category *>( _focusedTarget );
-			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CHAIN )
+			else if ( focusedModelTypeID == App::ID::Model::MODEL_CHAIN )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Chain *>( _focusedTarget );
-			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_RESIDUE )
+			else if ( focusedModelTypeID == App::ID::Model::MODEL_RESIDUE )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Residue *>( _focusedTarget );
-			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_ATOM )
+			else if ( focusedModelTypeID == App::ID::Model::MODEL_ATOM )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Atom *>( _focusedTarget );
 
 			if ( focusedModelBaseVisible != nullptr )
@@ -362,18 +362,18 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		if ( _focusedTarget != nullptr )
 		{
-			const ID::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
+			const App::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
 			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
-			if ( focusedModelTypeID == VTX::ID::Model::MODEL_MOLECULE )
+			if ( focusedModelTypeID == App::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
-			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CATEGORY )
+			else if ( focusedModelTypeID == App::ID::Model::MODEL_CATEGORY )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Category *>( _focusedTarget );
-			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_CHAIN )
+			else if ( focusedModelTypeID == App::ID::Model::MODEL_CHAIN )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Chain *>( _focusedTarget );
-			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_RESIDUE )
+			else if ( focusedModelTypeID == App::ID::Model::MODEL_RESIDUE )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Residue *>( _focusedTarget );
-			else if ( focusedModelTypeID == VTX::ID::Model::MODEL_ATOM )
+			else if ( focusedModelTypeID == App::ID::Model::MODEL_ATOM )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Atom *>( _focusedTarget );
 
 			if ( focusedModelBaseVisible != nullptr )
@@ -405,7 +405,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		App::Component::Chemistry::Molecule * molecule = nullptr;
 
-		if ( _focusedTarget->getTypeId() == VTX::ID::Model::MODEL_MOLECULE )
+		if ( _focusedTarget->getTypeId() == App::ID::Model::MODEL_MOLECULE )
 		{
 			molecule = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
 		}
@@ -599,7 +599,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_gotoViewpointAction()
 	{
 		const std::vector<App::Component::Object3D::Viewpoint *> viewpointsInSelection
-			= _target->getItemsOfType<App::Component::Object3D::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT );
+			= _target->getItemsOfType<App::Component::Object3D::Viewpoint>( App::ID::Model::MODEL_VIEWPOINT );
 
 		if ( viewpointsInSelection.size() > 0 )
 			VTX_ACTION( new QT::Action::Viewpoint::GoTo( **viewpointsInSelection.crbegin() ) );
@@ -607,14 +607,14 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_relocateViewpointAction()
 	{
 		std::vector<App::Component::Object3D::Viewpoint *> viewpointsInSelection
-			= _target->getItemsOfType<App::Component::Object3D::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT );
+			= _target->getItemsOfType<App::Component::Object3D::Viewpoint>( App::ID::Model::MODEL_VIEWPOINT );
 
 		VTX_ACTION( new App::Action::Viewpoint::Relocate( viewpointsInSelection ) );
 	}
 	void ContextualMenuSelection::_deleteViewpointAction()
 	{
 		VTX_ACTION( new QT::Action::Viewpoint::Delete(
-			_target->getItemsOfType<App::Component::Object3D::Viewpoint>( VTX::ID::Model::MODEL_VIEWPOINT ) ) );
+			_target->getItemsOfType<App::Component::Object3D::Viewpoint>( App::ID::Model::MODEL_VIEWPOINT ) ) );
 	}
 
 	void ContextualMenuSelection::_orientToLabelAction()
@@ -639,27 +639,27 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_getAllLabelTypes(
 		std::unordered_set<App::Component::Object3D::Label *> & p_labels ) const
 	{
-		_target->getItemsOfType<App::Component::Object3D::Label>( VTX::ID::Model::MODEL_LABEL, p_labels );
-		_target->getItemsOfType<App::Component::Object3D::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE,
+		_target->getItemsOfType<App::Component::Object3D::Label>( App::ID::Model::MODEL_LABEL, p_labels );
+		_target->getItemsOfType<App::Component::Object3D::Label>( App::ID::Model::MODEL_MEASUREMENT_DISTANCE,
 																  p_labels );
-		_target->getItemsOfType<App::Component::Object3D::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE,
+		_target->getItemsOfType<App::Component::Object3D::Label>( App::ID::Model::MODEL_MEASUREMENT_DISTANCE_TO_CYCLE,
 																  p_labels );
-		_target->getItemsOfType<App::Component::Object3D::Label>( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE, p_labels );
-		_target->getItemsOfType<App::Component::Object3D::Label>( VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE,
+		_target->getItemsOfType<App::Component::Object3D::Label>( App::ID::Model::MODEL_MEASUREMENT_ANGLE, p_labels );
+		_target->getItemsOfType<App::Component::Object3D::Label>( App::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE,
 																  p_labels );
 	}
 
 	bool ContextualMenuSelection::_checkComputeRMSDAction() const
 	{
 		std::vector<App::Component::Chemistry::Molecule *> molecules
-			= _target->getItemsOfType<App::Component::Chemistry::Molecule>( ID::Model::MODEL_MOLECULE );
+			= _target->getItemsOfType<App::Component::Chemistry::Molecule>( App::ID::Model::MODEL_MOLECULE );
 
 		return molecules.size() >= 2;
 	}
 	bool ContextualMenuSelection::_checkApplyAlignementAction() const
 	{
 		std::vector<App::Component::Chemistry::Molecule *> molecules
-			= _target->getItemsOfType<App::Component::Chemistry::Molecule>( ID::Model::MODEL_MOLECULE );
+			= _target->getItemsOfType<App::Component::Chemistry::Molecule>( App::ID::Model::MODEL_MOLECULE );
 
 		return molecules.size() >= 2;
 	}
@@ -676,7 +676,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_openAlignmentWindowAction()
 	{
-		VTXApp::get().getMainWindow().showWidget( ID::UI::Window::STRUCTURAL_ALIGNMENT, true );
+		VTXApp::get().getMainWindow().showWidget( UI::ID::Window::STRUCTURAL_ALIGNMENT, true );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

@@ -8,7 +8,7 @@
 #include <app/component/chemistry/molecule.hpp>
 #include <app/core/model/base_model.hpp>
 #include <app/application/selection/selection.hpp>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 
 namespace VTX::UI::Widget::Scene
 {

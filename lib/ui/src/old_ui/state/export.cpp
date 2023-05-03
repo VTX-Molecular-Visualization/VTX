@@ -1,4 +1,5 @@
 #include "ui/old_ui/state/export.hpp"
+#include "ui/id.hpp"
 #include <app/action/main.hpp>
 #include <app/application/scene.hpp>
 #include <app/component/object3d/viewpoint.hpp>
@@ -27,7 +28,7 @@ namespace VTX
 			if ( _frameCount == 0u || _path->getViewpoints().size() < 2 )
 			{
 				VTX_WARNING( "Total time must be > 0" );
-				VTXApp::get().goToState( ID::State::VISUALIZATION );
+				VTXApp::get().goToState( UI::ID::State::VISUALIZATION );
 				return;
 			}
 
@@ -63,7 +64,7 @@ namespace VTX
 			*/
 
 			// Update renderer.
-			if ( viewpoint.getController() == ID::Controller::TRACKBALL )
+			if ( viewpoint.getController() == UI::ID::Controller::TRACKBALL )
 			{
 				VTXApp::get().getScene().getCamera().setRotationAround(
 					Quatf( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );
@@ -95,7 +96,7 @@ namespace VTX
 					VTX_ERROR( p_e.what() );
 				}
 
-				VTXApp::get().goToState( ID::State::VISUALIZATION );
+				VTXApp::get().goToState( UI::ID::State::VISUALIZATION );
 			}
 			else
 			{

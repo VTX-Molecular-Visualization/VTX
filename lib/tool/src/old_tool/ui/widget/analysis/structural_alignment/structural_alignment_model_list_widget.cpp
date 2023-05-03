@@ -25,7 +25,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 
 		_modelField = WidgetFactory::get().instantiateWidget<CustomWidget::ModelFieldWidget>( _owner, "modelField" );
 
-		for ( const ID::VTX_ID & typeID : _owner->getFilters() )
+		for ( const App::VTX_ID & typeID : _owner->getFilters() )
 			_modelField->addTypeFilter( typeID );
 
 		connect(
@@ -83,7 +83,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		App::Core::Model::BaseModel * const model = _modelField->getModel();
 		_owner->removeModel( model );
 	}
-	void StructuralAlignmentModelListWidget::ModelFieldLine::_checkModelChange( App::Core::Model::BaseModel * const p_model )
+	void StructuralAlignmentModelListWidget::ModelFieldLine::_checkModelChange(
+		App::Core::Model::BaseModel * const p_model )
 	{
 		if ( _owner->getContainsOnlyUniqueModel() && _owner->hasModel( p_model ) )
 			_owner->swapModels( _modelField->getModel(), p_model );
@@ -144,8 +145,8 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 	}
 
 	void StructuralAlignmentModelListWidget::setRMSD( const App::Core::Model::BaseModel * const p_model,
-													  const float					 p_rmsd,
-													  const size_t					 p_residueCount ) const
+													  const float								p_rmsd,
+													  const size_t								p_residueCount ) const
 	{
 		_findLineFromModel<ModelFieldLine>( p_model )->setRMSD( p_rmsd, p_residueCount );
 	}
@@ -168,7 +169,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 		return newLine;
 	}
 	void StructuralAlignmentModelListWidget::_initLine( CustomWidget::BaseModelFieldLine * const p_line,
-														App::Core::Model::BaseModel * const				 p_model ) const
+														App::Core::Model::BaseModel * const		 p_model ) const
 	{
 		CustomWidget::BaseModelListWidget::_initLine( p_line, p_model );
 

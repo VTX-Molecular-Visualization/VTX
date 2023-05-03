@@ -59,12 +59,12 @@ namespace VTX::View::UI::Widget
 
 	bool PathSceneView::containsModel( const App::Core::Model::BaseModel & p_model ) const
 	{
-		const VTX::ID::VTX_ID &				modelTypeID = p_model.getTypeId();
+		const VTX::App::VTX_ID &			modelTypeID = p_model.getTypeId();
 		const App::Component::Video::Path * linkedPath;
 
-		if ( modelTypeID == ID::Model::MODEL_PATH )
+		if ( modelTypeID == App::ID::Model::MODEL_PATH )
 			linkedPath = static_cast<const App::Component::Video::Path *>( &p_model );
-		else if ( modelTypeID == ID::Model::MODEL_VIEWPOINT )
+		else if ( modelTypeID == App::ID::Model::MODEL_VIEWPOINT )
 			linkedPath = static_cast<const App::Component::Object3D::Viewpoint *>( &p_model )->getPathPtr();
 		else // Not a valid type. Return false.
 			return false;
@@ -75,16 +75,16 @@ namespace VTX::View::UI::Widget
 	std::vector<App::Core::Model::ID> PathSceneView::getAllItemsFrom(
 		const App::Core::Model::BaseModel & p_model ) const
 	{
-		const ID::VTX_ID & typeID = p_model.getTypeId();
+		const App::VTX_ID & typeID = p_model.getTypeId();
 
-		if ( typeID == VTX::ID::Model::MODEL_PATH )
+		if ( typeID == App::ID::Model::MODEL_PATH )
 		{
 			return SceneItemWidget::getAllItemsFrom( p_model );
 		}
 
 		std::vector<App::Core::Model::ID> res;
 
-		if ( p_model.getTypeId() == VTX::ID::Model::MODEL_VIEWPOINT )
+		if ( p_model.getTypeId() == App::ID::Model::MODEL_VIEWPOINT )
 		{
 			for ( size_t i = _model->getViewpoints().size() - 1; i <= 0; i-- )
 			{
@@ -100,16 +100,16 @@ namespace VTX::View::UI::Widget
 	}
 	std::vector<App::Core::Model::ID> PathSceneView::getAllItemsTo( const App::Core::Model::BaseModel & p_model ) const
 	{
-		const ID::VTX_ID & typeID = p_model.getTypeId();
+		const App::VTX_ID & typeID = p_model.getTypeId();
 
-		if ( typeID == VTX::ID::Model::MODEL_PATH )
+		if ( typeID == App::ID::Model::MODEL_PATH )
 		{
 			return SceneItemWidget::getAllItemsFrom( p_model );
 		}
 
 		std::vector<App::Core::Model::ID> res;
 
-		if ( p_model.getTypeId() == VTX::ID::Model::MODEL_VIEWPOINT )
+		if ( p_model.getTypeId() == App::ID::Model::MODEL_VIEWPOINT )
 		{
 			for ( int i = 0; i < _model->getViewpoints().size(); i++ )
 			{
@@ -168,7 +168,7 @@ namespace VTX::View::UI::Widget
 											QItemSelection &									p_itemSelection )
 	{
 		std::set<App::Component::Object3D::Viewpoint *> viewpoints = std::set<App::Component::Object3D::Viewpoint *>();
-		p_selection.getItemsOfType( VTX::ID::Model::MODEL_VIEWPOINT, viewpoints );
+		p_selection.getItemsOfType( App::ID::Model::MODEL_VIEWPOINT, viewpoints );
 
 		bool pathItemAdded = false;
 
@@ -196,7 +196,7 @@ namespace VTX::View::UI::Widget
 		if ( p_column == 0 )
 		{
 			const App::Core::Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<App::Core::Model::ID>();
-			if ( VTX::MVC_MANAGER().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
+			if ( VTX::MVC_MANAGER().getModelTypeID( idTarget ) == App::ID::Model::MODEL_VIEWPOINT )
 			{
 				App::Component::Object3D::Viewpoint & viewpoint
 					= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( idTarget );
@@ -229,7 +229,7 @@ namespace VTX::View::UI::Widget
 		if ( p_column == 0 )
 		{
 			const App::Core::Model::ID idTarget = p_item->data( 0, MODEL_ID_ROLE ).value<App::Core::Model::ID>();
-			if ( VTX::MVC_MANAGER().getModelTypeID( idTarget ) == VTX::ID::Model::MODEL_VIEWPOINT )
+			if ( VTX::MVC_MANAGER().getModelTypeID( idTarget ) == App::ID::Model::MODEL_VIEWPOINT )
 			{
 				App::Component::Object3D::Viewpoint & viewpoint
 					= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( idTarget );
@@ -251,13 +251,13 @@ namespace VTX::View::UI::Widget
 
 		const QPoint globalClicPos = mapToGlobal( p_clicPos );
 
-		if ( VTX::MVC_MANAGER().getModelTypeID( itemID ) == VTX::ID::Model::MODEL_PATH )
+		if ( VTX::MVC_MANAGER().getModelTypeID( itemID ) == App::ID::Model::MODEL_PATH )
 		{
 			App::Component::Video::Path & pathTargeted
 				= VTX::MVC_MANAGER().getModel<App::Component::Video::Path>( itemID );
 			VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Path, &pathTargeted, globalClicPos );
 		}
-		else if ( VTX::MVC_MANAGER().getModelTypeID( itemID ) == VTX::ID::Model::MODEL_VIEWPOINT )
+		else if ( VTX::MVC_MANAGER().getModelTypeID( itemID ) == App::ID::Model::MODEL_VIEWPOINT )
 		{
 			App::Component::Object3D::Viewpoint & viewpointTargeted
 				= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Viewpoint>( itemID );

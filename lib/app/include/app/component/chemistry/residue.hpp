@@ -10,7 +10,7 @@
 #include "app/internal/chemdb/secondary_structure.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include "atom.hpp"
 #include <map>
 #include <string>
@@ -114,7 +114,7 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::SecondaryStructure::TYPE _secondaryStructure = ChemDB::SecondaryStructure::TYPE::COIL;
 		char							 _insertionCode		 = ' ';
 
-		Residue() : BaseModel( VTX::ID::Model::MODEL_RESIDUE ) {}
+		Residue() : BaseModel( App::ID::Model::MODEL_RESIDUE ) {}
 	};
 
 } // namespace VTX::App::Component::Chemistry

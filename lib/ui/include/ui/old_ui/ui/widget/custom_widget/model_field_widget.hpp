@@ -5,7 +5,7 @@
 #include "ui/old_ui/ui/widget/custom_widget/model_drop_area.hpp"
 #include <QLabel>
 #include <QWidget>
-#include <app/old_app/id.hpp>
+#include <app/id.hpp>
 #include <type_traits>
 
 namespace VTX

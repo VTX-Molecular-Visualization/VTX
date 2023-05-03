@@ -50,7 +50,7 @@ namespace VTX::UI::Widget::Scene
 
 			App::Component::Chemistry::Molecule * const moleculePtr = castedEvent.get();
 
-			const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_MOLECULE );
+			const int defaultPosition = _getDefaultIndex( App::ID::Model::MODEL_MOLECULE );
 
 			instantiateSceneItem<View::UI::Widget::MoleculeSceneView, App::Component::Chemistry::Molecule>(
 				moleculePtr, ID::View::UI_MOLECULE_STRUCTURE, "moleculeSceneView" );
@@ -72,7 +72,7 @@ namespace VTX::UI::Widget::Scene
 			const VTX::App::Core::Event::VTXEventArg<App::Component::Video::Path *> & castedEvent
 				= dynamic_cast<const VTX::App::Core::Event::VTXEventArg<App::Component::Video::Path *> &>( p_event );
 
-			const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_PATH );
+			const int defaultPosition = _getDefaultIndex( App::ID::Model::MODEL_PATH );
 
 			instantiateSceneItem<View::UI::Widget::PathSceneView, App::Component::Video::Path>(
 				castedEvent.get(), ID::View::UI_SCENE_PATH, "pathSceneView" );
@@ -93,9 +93,9 @@ namespace VTX::UI::Widget::Scene
 			const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> & castedEvent
 				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> &>( p_event );
 
-			const int defaultPosition = _getDefaultIndex( ID::Model::MODEL_LABEL );
+			const int defaultPosition = _getDefaultIndex( App::ID::Model::MODEL_LABEL );
 
-			const ID::VTX_ID & labeltype = castedEvent.get()->getTypeId();
+			const App::VTX_ID & labeltype = castedEvent.get()->getTypeId();
 			// if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 			//{
 			//	Model::Measurement::Distance * const distanceModel
@@ -130,7 +130,7 @@ namespace VTX::UI::Widget::Scene
 			const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> & castedEvent
 				= dynamic_cast<const App::Core::Event::VTXEventArg<App::Component::Object3D::Label *> &>( p_event );
 
-			const ID::VTX_ID & labeltype = castedEvent.get()->getTypeId();
+			const App::VTX_ID & labeltype = castedEvent.get()->getTypeId();
 			// if ( labeltype == ID::Model::MODEL_MEASUREMENT_DISTANCE )
 			//{
 			//	Model::Measurement::Distance * const distanceModel
@@ -300,18 +300,18 @@ namespace VTX::UI::Widget::Scene
 		}
 	}
 
-	int SceneWidget::_getDefaultIndex( const ID::VTX_ID & p_itemTypeID ) const
+	int SceneWidget::_getDefaultIndex( const App::VTX_ID & p_itemTypeID ) const
 	{
 		if ( _sceneWidgets.size() == 0 )
 			return 0;
 
 		// TODO : Better management of section in scene view.
-		if ( p_itemTypeID != VTX::ID::Model::MODEL_PATH )
+		if ( p_itemTypeID != App::ID::Model::MODEL_PATH )
 		{
 			const std::vector<SceneItemWidget *>::const_reverse_iterator lastItemIt = _sceneWidgets.crbegin();
-			const ID::VTX_ID & lastItemTypeId = VTX::MVC_MANAGER().getModelTypeID( ( *lastItemIt )->getModelID() );
+			const App::VTX_ID & lastItemTypeId = VTX::MVC_MANAGER().getModelTypeID( ( *lastItemIt )->getModelID() );
 
-			if ( lastItemTypeId == VTX::ID::Model::MODEL_PATH )
+			if ( lastItemTypeId == App::ID::Model::MODEL_PATH )
 			{
 				return int( _sceneWidgets.size() - 1 );
 			}
@@ -466,7 +466,7 @@ namespace VTX::UI::Widget::Scene
 
 		std::vector<App::Core::Model::ID> droppedModelIDs = std::vector<App::Core::Model::ID>();
 
-		if ( modelData.getTypeID() == ID::Model::MODEL_SELECTION )
+		if ( modelData.getTypeID() == App::ID::Model::MODEL_SELECTION )
 		{
 			const App::Application::Selection::SelectionModel & selection
 				= VTX::MVC_MANAGER().getModel<App::Application::Selection::SelectionModel>( modelData.getModelID() );

@@ -6,7 +6,7 @@
 #include "app/internal/chemdb/atom.hpp"
 #include "app/old_app/generic/base_colorable.hpp"
 #include "app/old_app/generic/base_visible.hpp"
-#include "app/old_app/id.hpp"
+#include "app/id.hpp"
 #include "app/component/object3d/helper/aabb.hpp"
 #include <util/types.hpp>
 
@@ -60,7 +60,7 @@ namespace VTX::App::Component::Chemistry
 		// /!\ Names PDB != MMTF (CA and C1 for alpha carbon).
 		std::string _name = "";
 
-		Atom() : BaseModel( VTX::ID::Model::MODEL_ATOM ) {}
+		Atom() : BaseModel( App::ID::Model::MODEL_ATOM ) {}
 	};
 
 } // namespace VTX::App::Component::Chemistry

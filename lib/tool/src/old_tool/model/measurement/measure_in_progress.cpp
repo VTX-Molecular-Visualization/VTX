@@ -1,13 +1,14 @@
 #include "tool/old_tool/model/measurement/measure_in_progress.hpp"
 #include "tool/old_tool/util/measurement.hpp"
 #include <algorithm>
-#include <app/core/event/vtx_event.hpp>
-#include <app/mvc.hpp>
-#include <app/event.hpp>
-#include <app/event/global.hpp>
+#include <app/application/scene.hpp>
 #include <app/component/chemistry/atom.hpp>
 #include <app/component/chemistry/molecule.hpp>
-#include <app/application/scene.hpp>
+#include <app/core/event/vtx_event.hpp>
+#include <app/event.hpp>
+#include <app/event/global.hpp>
+#include <app/mvc.hpp>
+#include <ui/id.hpp>
 #include <util/math.hpp>
 #include <variant>
 
@@ -30,7 +31,7 @@ namespace VTX::Model::Measurement
 		_target.atomPair = { p_firstAtom, p_secondAtom };
 	}
 
-	MeasureInProgress::MeasureInProgress() : App::Component::Object3D::Label( VTX::ID::Model::MODEL_MEASUREMENT_ANGLE )
+	MeasureInProgress::MeasureInProgress() : App::Component::Object3D::Label( App::ID::Model::MODEL_MEASUREMENT_ANGLE )
 	{
 		_atoms.reserve( 4 );
 		_moleculeViews.reserve( 4 );
@@ -95,7 +96,8 @@ namespace VTX::Model::Measurement
 			break;
 
 		case PotentialTargetType::ATOMPAIR:
-			const std::pair<const App::Component::Chemistry::Atom *, const App::Component::Chemistry::Atom *> & atomPair = _potentialNextTarget.getAtomPair();
+			const std::pair<const App::Component::Chemistry::Atom *, const App::Component::Chemistry::Atom *> & atomPair
+				= _potentialNextTarget.getAtomPair();
 			addAtom( *atomPair.first );
 			addAtom( *atomPair.second );
 			updated = true;
@@ -184,7 +186,8 @@ namespace VTX::Model::Measurement
 		_potentialNextTarget.setAtom( &p_atom );
 		_notifyDataChanged();
 	}
-	void MeasureInProgress::setPotentialNextTarget( const App::Component::Chemistry::Atom & p_firstAtom, const App::Component::Chemistry::Atom & p_secondAtom )
+	void MeasureInProgress::setPotentialNextTarget( const App::Component::Chemistry::Atom & p_firstAtom,
+													const App::Component::Chemistry::Atom & p_secondAtom )
 	{
 		_potentialNextTarget.setAtomPair( &p_firstAtom, &p_secondAtom );
 		_notifyDataChanged();
@@ -251,8 +254,8 @@ namespace VTX::Model::Measurement
 		}
 	}
 
-	void MeasureInProgress::_onMoleculeChange( const App::Component::Chemistry::Molecule * const			p_molecule,
-											   const App::Core::Event::VTXEvent * const p_event )
+	void MeasureInProgress::_onMoleculeChange( const App::Component::Chemistry::Molecule * const p_molecule,
+											   const App::Core::Event::VTXEvent * const			 p_event )
 	{
 		if ( p_event->name == App::Event::Model::TRANSFORM_CHANGE )
 		{
@@ -264,10 +267,10 @@ namespace VTX::Model::Measurement
 		}
 	}
 
-	VTX::ID::VTX_ID MeasureInProgress::getViewID( const int p_atomPos ) const
+	VTX::App::VTX_ID MeasureInProgress::getViewID( const int p_atomPos ) const
 	{
-		return VTX::MVC_MANAGER().generateViewID(
-			VTX::ID::View::MEASUREMENT_ON_MOLECULE, std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
+		return VTX::MVC_MANAGER().generateViewID( UI::ID::View::MEASUREMENT_ON_MOLECULE,
+												  std::to_string( getId() ) + '_' + std::to_string( p_atomPos ) );
 	}
 
 	void MeasureInProgress::autoDelete() const { VTX::MVC_MANAGER().deleteModel( this ); }

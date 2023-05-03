@@ -1,7 +1,6 @@
 #include "tool/old_tool/ui/widget/inspector/multiple_measurement_dihedral_angle_inspector_widget.hpp"
 #include "tool/old_tool/model/measurement/distance.hpp"
 #include "tool/old_tool/util/measurement.hpp"
-
 #include <app/action/atom.hpp>
 #include <app/action/label.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
@@ -127,7 +126,7 @@ namespace VTX::UI::Widget::Inspector
 			_getHeader()->setHeaderTitle( headerTitle );
 
 			const QPixmap * symbolPixmap
-				= Style::IconConst::get().getModelSymbol( VTX::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE );
+				= Style::IconConst::get().getModelSymbol( App::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
 			for ( const Model::Measurement::DihedralAngle * dihedralAngleModel : targets )
@@ -143,7 +142,7 @@ namespace VTX::UI::Widget::Inspector
 					_dihedralAngleLabelWidget->updateWithNewValue( dihedralAngleStr );
 					_colorWidget->updateWithNewValue( dihedralAngleModel->getColor() );
 
-					if ( dihedralAngleModel->getTypeId() == ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
+					if ( dihedralAngleModel->getTypeId() == App::ID::Model::MODEL_MEASUREMENT_DIHEDRAL_ANGLE )
 					{
 						if ( goToAtomButtonsVisible )
 						{
@@ -197,7 +196,8 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMeasurmentDihedralAngleWidget::_renameAction() const
 	{
-		std::unordered_set<App::Component::Object3D::Label *> labelTargets = std::unordered_set<App::Component::Object3D::Label *>();
+		std::unordered_set<App::Component::Object3D::Label *> labelTargets
+			= std::unordered_set<App::Component::Object3D::Label *>();
 		for ( Model::Measurement::DihedralAngle * const dihedralAngleModel : getTargets() )
 			labelTargets.emplace( dihedralAngleModel );
 
@@ -206,7 +206,8 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMeasurmentDihedralAngleWidget::_setLabelColor( const Util::Color::Rgba & p_color ) const
 	{
-		std::unordered_set<App::Component::Object3D::Label *> labelTargets = std::unordered_set<App::Component::Object3D::Label *>();
+		std::unordered_set<App::Component::Object3D::Label *> labelTargets
+			= std::unordered_set<App::Component::Object3D::Label *>();
 		for ( Model::Measurement::DihedralAngle * const targetDistance : getTargets() )
 			labelTargets.emplace( targetDistance );
 
@@ -215,7 +216,8 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMeasurmentDihedralAngleWidget::_setAutoNameAction() const
 	{
-		std::unordered_set<App::Component::Object3D::Label *> labelTargets = std::unordered_set<App::Component::Object3D::Label *>();
+		std::unordered_set<App::Component::Object3D::Label *> labelTargets
+			= std::unordered_set<App::Component::Object3D::Label *>();
 		for ( Model::Measurement::DihedralAngle * const dihedralAngleModel : getTargets() )
 			labelTargets.emplace( dihedralAngleModel );
 

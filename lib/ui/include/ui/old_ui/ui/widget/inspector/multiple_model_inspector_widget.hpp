@@ -68,7 +68,7 @@ namespace VTX::UI::Widget::Inspector
 		std::unordered_set<T *> &		getTargets() { return _targets; }
 
 	  protected:
-		MultipleModelInspectorWidget( QWidget * p_parent, const ID::VTX_ID & p_callbackViewId ) :
+		MultipleModelInspectorWidget( QWidget * p_parent, const App::VTX_ID & p_callbackViewId ) :
 			InspectorItemWidget( p_parent ), _callbackViewId( p_callbackViewId )
 		{
 			_registerEvent( VTX::App::Event::Global::LATE_UPDATE );
@@ -138,7 +138,7 @@ namespace VTX::UI::Widget::Inspector
 
 		SectionFlag		 _sectionToRefresh = SectionFlag::NONE;
 		bool			 _clearFlag		   = false;
-		const ID::VTX_ID _callbackViewId;
+		const App::VTX_ID _callbackViewId;
 	};
 
 } // namespace VTX::UI::Widget::Inspector

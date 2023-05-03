@@ -127,7 +127,7 @@ namespace VTX::UI::Widget::Inspector
 			const QString headerTitle = QString::fromStdString( "Residue (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
-			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( VTX::ID::Model::MODEL_RESIDUE );
+			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( App::ID::Model::MODEL_RESIDUE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
 			int		currentResidueDisplayedCount = 0;
@@ -319,21 +319,21 @@ namespace VTX::UI::Widget::Inspector
 	{
 		VTXApp::get()
 			.getMainWindow()
-			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::MOLECULE );
 	}
 	void MultipleResidueWidget::_setInspectorToChain() const
 	{
 		VTXApp::get()
 			.getMainWindow()
-			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::CHAIN );
 	}
 	void MultipleResidueWidget::_setInspectorToAtom() const
 	{
 		VTXApp::get()
 			.getMainWindow()
-			.getWidget<Inspector::InspectorWidget>( ID::UI::Window::INSPECTOR )
+			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );
 	}
 

@@ -28,7 +28,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void localize() override;
 
 		void setContainsOnlyUniqueModel( const bool p_containsOnlyUniqueModel ) const;
-		void addTypeFilter( const ID::VTX_ID & p_typeID ) const;
+		void addTypeFilter( const App::VTX_ID & p_typeID ) const;
 
 		void setTitle( const QString & p_title ) const;
 		void setFoldState( const bool p_expanded ) const;

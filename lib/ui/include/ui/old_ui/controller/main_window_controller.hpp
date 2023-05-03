@@ -2,6 +2,7 @@
 #define __VTX_CONTROLLER_MAIN_WINDOW__
 
 #include "base_keyboard_controller.hpp"
+#include "ui/id.hpp"
 
 namespace VTX::Controller
 {
@@ -10,8 +11,8 @@ namespace VTX::Controller
 	  public:
 		MainWindowController() : BaseKeyboardController() {}
 
-		inline ID::VTX_ID getTargetWidget() override { return ID::UI::Input::MAIN_WINDOW; }
-		inline bool		  readEventFromInput( const ID::VTX_ID & p_id ) override
+		inline App::VTX_ID getTargetWidget() override { return UI::ID::Input::MAIN_WINDOW; }
+		inline bool		   readEventFromInput( const App::VTX_ID & p_id ) override
 		{
 			// This controller events from every target
 			return true;

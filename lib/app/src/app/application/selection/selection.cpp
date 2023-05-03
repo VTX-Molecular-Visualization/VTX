@@ -13,7 +13,7 @@
 
 namespace VTX::App::Application::Selection
 {
-	bool SelectionModel::hasItemOfType( const VTX::ID::VTX_ID & p_id ) const
+	bool SelectionModel::hasItemOfType( const VTX::App::VTX_ID & p_id ) const
 	{
 		for ( const App::Core::Model::ID & modelID : getItems() )
 		{
@@ -1019,15 +1019,15 @@ namespace VTX::App::Application::Selection
 		if ( !p_appendToSelection )
 			_clearWithoutNotify();
 
-		const VTX::ID::VTX_ID & modelType = p_model.getTypeId();
+		const VTX::App::VTX_ID & modelType = p_model.getTypeId();
 
-		if ( modelType == VTX::ID::Model::MODEL_MOLECULE )
+		if ( modelType == App::ID::Model::MODEL_MOLECULE )
 			selectMolecule( static_cast<App::Component::Chemistry::Molecule &>( p_model ), p_appendToSelection );
-		else if ( modelType == VTX::ID::Model::MODEL_CHAIN )
+		else if ( modelType == App::ID::Model::MODEL_CHAIN )
 			selectChain( static_cast<App::Component::Chemistry::Chain &>( p_model ), p_appendToSelection );
-		else if ( modelType == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( modelType == App::ID::Model::MODEL_RESIDUE )
 			selectResidue( static_cast<App::Component::Chemistry::Residue &>( p_model ), p_appendToSelection );
-		else if ( modelType == VTX::ID::Model::MODEL_ATOM )
+		else if ( modelType == App::ID::Model::MODEL_ATOM )
 			selectAtom( static_cast<App::Component::Chemistry::Atom &>( p_model ), p_appendToSelection );
 		else
 		{
@@ -1098,15 +1098,15 @@ namespace VTX::App::Application::Selection
 
 	bool SelectionModel::isModelSelected( const App::Core::Model::BaseModel & p_model ) const
 	{
-		const VTX::ID::VTX_ID & modelTypeID = p_model.getTypeId();
+		const VTX::App::VTX_ID & modelTypeID = p_model.getTypeId();
 
-		if ( modelTypeID == VTX::ID::Model::MODEL_MOLECULE )
+		if ( modelTypeID == App::ID::Model::MODEL_MOLECULE )
 			return isMoleculeFullySelected( static_cast<const App::Component::Chemistry::Molecule &>( p_model ) );
-		else if ( modelTypeID == VTX::ID::Model::MODEL_CHAIN )
+		else if ( modelTypeID == App::ID::Model::MODEL_CHAIN )
 			return isChainFullySelected( static_cast<const App::Component::Chemistry::Chain &>( p_model ) );
-		else if ( modelTypeID == VTX::ID::Model::MODEL_RESIDUE )
+		else if ( modelTypeID == App::ID::Model::MODEL_RESIDUE )
 			return isResidueFullySelected( static_cast<const App::Component::Chemistry::Residue &>( p_model ) );
-		else if ( modelTypeID == VTX::ID::Model::MODEL_ATOM )
+		else if ( modelTypeID == App::ID::Model::MODEL_ATOM )
 			return isAtomSelected( static_cast<const App::Component::Chemistry::Atom &>( p_model ) );
 		else
 			return _items.find( p_model.getId() ) != _items.end();
@@ -1180,15 +1180,15 @@ namespace VTX::App::Application::Selection
 		VTX_EVENT<const App::Application::Selection::SelectionModel *>( App::Event::Global::SELECTION_CHANGE, this );
 	}
 
-	void SelectionModel::getItemTypes( std::set<VTX::ID::VTX_ID> & p_types ) const
+	void SelectionModel::getItemTypes( std::set<VTX::App::VTX_ID> & p_types ) const
 	{
 		p_types.clear();
 
 		for ( const App::Core::Model::ID & id : _items )
 		{
-			const VTX::ID::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( id );
+			const VTX::App::VTX_ID & typeId = VTX::MVC_MANAGER().getModelTypeID( id );
 
-			if ( typeId == VTX::ID::Model::MODEL_MOLECULE )
+			if ( typeId == App::ID::Model::MODEL_MOLECULE )
 			{
 				const App::Component::Chemistry::Molecule & molecule
 					= VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( id );
@@ -1217,7 +1217,7 @@ namespace VTX::App::Application::Selection
 						}
 						else
 						{
-							p_types.emplace( VTX::ID::Model::MODEL_ATOM );
+							p_types.emplace( App::ID::Model::MODEL_ATOM );
 						}
 					}
 				}

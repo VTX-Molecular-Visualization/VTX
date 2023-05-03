@@ -32,7 +32,7 @@ namespace VTX::Action::Main
 	class ChangePicker : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangePicker( const ID::VTX_ID & p_pickerController, const int p_mode = -1 ) :
+		explicit ChangePicker( const App::VTX_ID & p_pickerController, const int p_mode = -1 ) :
 			_pickerController( p_pickerController ), _mode( p_mode )
 		{
 		}
@@ -40,8 +40,8 @@ namespace VTX::Action::Main
 		virtual void execute() override;
 
 	  private:
-		const ID::VTX_ID & _pickerController;
-		const int		   _mode;
+		const App::VTX_ID & _pickerController;
+		const int			_mode;
 	};
 
 	class ClearConsoleInterface : public App::Core::Action::BaseAction
