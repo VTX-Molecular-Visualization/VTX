@@ -9,22 +9,9 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		_program = p_pm.createProgram( "Shading", { FilePath( "shading/shading.frag" ) } );
+		_program = p_pm.createProgram( "Shading", std::vector<FilePath> { "shading/shading.frag" } );
 
 		assert( _program != nullptr );
-		/*
-		_toonShading
-			= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { IO::FilePath( "shading/shading_toon.frag" ) } );
-		_diffuseShading = VTX_PROGRAM_MANAGER().createProgram( "DiffuseShading",
-															   { IO::FilePath( "shading/shading_diffuse.frag" ) } );
-		_glossyShading
-			= VTX_PROGRAM_MANAGER().createProgram( "GlossyShading", { IO::FilePath( "shading/shading_glossy.frag" ) } );
-		_flatShading
-			= VTX_PROGRAM_MANAGER().createProgram( "FlatShading", { IO::FilePath( "shading/shading_flat.frag" ) } );
-
-		// Use setting value.
-		set();
-		*/
 	}
 
 	void Shading::resize( const size_t p_width, const size_t p_height )

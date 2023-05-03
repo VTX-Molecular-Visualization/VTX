@@ -9,7 +9,7 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		_program = p_pm.createProgram( "LinearizeDepth", { FilePath( "shading/linearize_depth.frag" ) } );
+		_program = p_pm.createProgram( "LinearizeDepth", std::vector<FilePath> { "shading/linearize_depth.frag" } );
 		assert( _program != nullptr );
 	}
 
@@ -25,12 +25,10 @@ namespace VTX::Renderer::GL::Pass
 		assert( in.textureDepth != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-
 		in.textureDepth->bindToUnit( 0 );
-
-		/*
 		_program->use();
 
+		/*
 		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
 		{
 			const Object3D::Camera & cam	 = p_scene.getCamera();

@@ -6,7 +6,7 @@ namespace VTX::Renderer::GL::Pass
 	{
 		out.texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
-		_program = p_pm.createProgram( "AA", { FilePath( "shading/fxaa.frag" ) } );
+		_program = p_pm.createProgram( "AA", std::vector<FilePath> { "shading/fxaa.frag" } );
 		assert( _program != nullptr );
 	}
 

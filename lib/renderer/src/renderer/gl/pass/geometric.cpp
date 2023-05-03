@@ -24,24 +24,12 @@ namespace VTX::Renderer::GL::Pass
 
 		out.fbo.setDrawBuffers( { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 } );
 
-		const FilePath pathSphere = FilePath( "sphere" );
-		_programSphere			  = p_pm.createProgram(
-			   "Sphere", { pathSphere / "sphere.vert", pathSphere / "sphere.geom", pathSphere / "sphere.frag" } );
-		_programCylinder = p_pm.createProgram( "Cylinder",
-											   { FilePath( "cylinder/cylinder.vert" ),
-												 FilePath( "cylinder/cylinder.geom" ),
-												 FilePath( "cylinder/cylinder.frag" ) } );
-		_programRibbon	 = p_pm.createProgram( "Ribbon",
-											   { FilePath( "ribbon/ribbon_patch.vert" ),
-												 FilePath( "ribbon/ribbon_patch.tesc" ),
-												 FilePath( "ribbon/ribbon_patch.tese" ),
-												 FilePath( "ribbon/ribbon_patch.frag" ) } );
-		_programLine	 = p_pm.createProgram( "Line", { FilePath( "line/line.vert" ), FilePath( "line/line.frag" ) } );
-		_programTriangle = p_pm.createProgram(
-			"Triangle", { FilePath( "triangle/triangle.vert" ), FilePath( "triangle/triangle.frag" ) } );
-		_programVoxel = p_pm.createProgram(
-			"Voxel",
-			{ FilePath( "voxel/voxel.vert" ), FilePath( "voxel/voxel.geom" ), FilePath( "voxel/voxel.frag" ) } );
+		_programSphere	 = p_pm.createProgram( "Sphere", FilePath( "sphere" ) );
+		_programCylinder = p_pm.createProgram( "Cylinder", FilePath( "cylinder" ) );
+		_programRibbon	 = p_pm.createProgram( "Ribbon", FilePath( "ribbon" ) );
+		_programLine	 = p_pm.createProgram( "Line", FilePath( "line" ) );
+		_programTriangle = p_pm.createProgram( "Triangle", FilePath( "triangle" ) );
+		_programVoxel	 = p_pm.createProgram( "Voxel", FilePath( "voxel" ) );
 
 		assert( _programSphere != nullptr );
 		assert( _programCylinder != nullptr );

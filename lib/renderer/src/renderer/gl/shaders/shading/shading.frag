@@ -59,7 +59,7 @@ void main()
 	// DIFFUSE.
 	if( uShadingEnum == 0 )
 	{		
-		float lighting = max( dot( data.normal, lightDir ), 0.f );
+		lighting = max( dot( data.normal, lightDir ), 0.f );
 	}
 	// GLOSSY.
 	else if( uShadingEnum == 1 )
@@ -68,7 +68,6 @@ void main()
 		const vec3	viewDir = normalize( -data.viewPosition );
 		const vec3	h		= normalize( lightDir + viewDir );
 		const float specular = uSpecularFactor * pow( max( dot( h, data.normal ), 0.f ), texelFetch( gbColor, texCoord, 0 ).w );
-
 		const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
 		lighting = ( diffuse + specular ) * cosTheta;
 	}

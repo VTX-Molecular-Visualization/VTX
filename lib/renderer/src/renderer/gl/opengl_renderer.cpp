@@ -89,7 +89,7 @@ namespace VTX::Renderer::GL
 
 		_vboQuad.set( quadVertices );
 
-		_uboGlobal.set( _globalUniforms, GL_DYNAMIC_DRAW );
+		//_uboGlobal.set( _globalUniforms, GL_DYNAMIC_DRAW );
 
 		VTX_INFO( "Renderer initialized" );
 	}

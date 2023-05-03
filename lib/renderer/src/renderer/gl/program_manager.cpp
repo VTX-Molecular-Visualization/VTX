@@ -35,6 +35,20 @@ namespace VTX::Renderer::GL
 
 		_shaders.clear();
 		_programs.clear();
+		_buffers.clear();
+	}
+
+	Program * const ProgramManager::createProgram( const std::string & p_name,
+												   const FilePath &	   p_shaders,
+												   const std::string & p_toInject,
+												   const std::string & p_suffix )
+	{
+		std::vector<FilePath> paths;
+		for ( const auto & file : std::filesystem::directory_iterator { _shaderPath / p_shaders } )
+		{
+			paths.emplace_back( file.path() );
+		}
+		return createProgram( p_name, paths, p_toInject, p_suffix );
 	}
 
 	Program * const ProgramManager::createProgram( const std::string &			 p_name,
@@ -100,7 +114,7 @@ namespace VTX::Renderer::GL
 		if ( shaderId == GL_INVALID_INDEX )
 		{
 			shaderId		 = glCreateShader( (int)type );
-			FilePath	path = _shaderPath / p_path;
+			FilePath	path = p_path.is_relative() ? _shaderPath / p_path : p_path;
 			std::string src	 = Util::Filesystem::readPath( path );
 			if ( src.empty() )
 			{
@@ -152,6 +166,7 @@ namespace VTX::Renderer::GL
 				throw GLException( error );
 			}
 			_shaders.emplace( name, shaderId );
+			VTX_DEBUG( "Shader " + std::to_string( shaderId ) + " created: " + name );
 		}
 
 		return shaderId;
@@ -209,5 +224,37 @@ namespace VTX::Renderer::GL
 
 			pair.second->link();
 		}
+	}
+
+	Buffer * const ProgramManager::createBuffer( const std::string & p_name )
+	{
+		if ( _buffers.find( p_name ) == _buffers.end() )
+		{
+			_buffers[ p_name ] = std::make_unique<Buffer>();
+		}
+
+		return _buffers[ p_name ].get();
+	}
+
+	void ProgramManager::deleteBuffer( const std::string & p_name )
+	{
+		if ( _buffers.find( p_name ) == _buffers.end() )
+		{
+			VTX_WARNING( "Buffer " + p_name + " does not exists" );
+			return;
+		}
+
+		_buffers.erase( p_name );
+	}
+
+	Buffer * const ProgramManager::getBuffer( const std::string & p_name )
+	{
+		if ( _buffers.find( p_name ) != _buffers.end() )
+		{
+			return _buffers.at( p_name ).get();
+		}
+
+		VTX_ERROR( "Program " + p_name + " does not exists" );
+		return nullptr;
 	}
 } // namespace VTX::Renderer::GL

@@ -38,8 +38,6 @@ namespace VTX::Renderer::GL
 		size_t _width  = 0;
 		size_t _height = 0;
 
-		StructGlobalUniforms _globalUniforms = StructGlobalUniforms();
-
 		VertexArray _vaoQuad   = VertexArray();
 		Buffer		_vboQuad   = Buffer();
 		Buffer		_uboGlobal = Buffer();
