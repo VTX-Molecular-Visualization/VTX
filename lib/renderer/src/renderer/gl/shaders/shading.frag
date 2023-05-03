@@ -5,15 +5,13 @@ layout( binding = 1 ) uniform sampler2D gbColor;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
 uniform vec4 uBackgroundColor;
-
+uniform uint uShadingEnum; // DIFFUSE = 0, GLOSSY, TOON, FLAT_COLOR
 uniform float uFogNear;
 uniform float uFogFar;
 uniform float uFogDensity;
 uniform vec3  uFogColor;
 uniform vec3 uLightColor;
 uniform bool uIsPerspective;
-
-// TODO: let the user set it !
 uniform float uSpecularFactor = 0.4f;
 
 out vec4 fragColor;
@@ -43,35 +41,51 @@ void main()
 	if ( data.viewPosition.z == 0.f )
 	{
 		if ( uFogDensity != 0.f )
-			fragColor = vec4( mix( vec3( uBackgroundColor ), uFogColor, uFogDensity ), uBackgroundColor.w );
+		{
+			fragColor = vec4( mix( vec3( uBackgroundColor ), uFogColor, uFogDensity ) * uLightColor, uBackgroundColor.w );
+		}
 		else
+		{
 			fragColor = uBackgroundColor;
+		}
 		return;
 	}
 
-	// Light on camera.
-	const vec3 lightDir = uIsPerspective ?
-		normalize( -data.viewPosition ) :
-		vec3( 0.f, 0.f, 1.f );
+	// Lighting (on camera).
+	const vec3 lightDir = uIsPerspective ? normalize( -data.viewPosition ) : vec3( 0.f, 0.f, 1.f );
 
-	// Shader does not produce energy ! ;-)
-	const float diffuse = 1.f - uSpecularFactor;
+	// FLAT_COLOR.
+	float lighting = 1.f;
+	// DIFFUSE.
+	if( uShadingEnum == 0 )
+	{		
+		lighting = max( dot( data.normal, lightDir ), 0.f );
+	}
+	// GLOSSY.
+	else if( uShadingEnum == 1 )
+	{		
+		const float diffuse = 1.f - uSpecularFactor;
+		const vec3	viewDir = normalize( -data.viewPosition );
+		const vec3	h		= normalize( lightDir + viewDir );
+		const float specular = uSpecularFactor * pow( max( dot( h, data.normal ), 0.f ), texelFetch( gbColor, texCoord, 0 ).w );
+		const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
+		lighting = ( diffuse + specular ) * cosTheta;
+	}
+	// TOON.
+	else if( uShadingEnum == 2 ) 
+	{
+		const float intensity = dot( data.normal, lightDir );		
 
-	const vec4 pixelColor = texelFetch( gbColor, texCoord, 0 );
-
-	// Blinn-Phong.
-	const vec3	viewDir = normalize( -data.viewPosition ); // == lightDir for the moment
-	const vec3	h		= normalize( lightDir + viewDir );
-	const float specular
-		= uSpecularFactor * pow( max( dot( h, data.normal ), 0.f ), pixelColor.w ); // pixelColor.x is shininess.
-
-	const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
-	const float lighting = ( diffuse + specular ) * cosTheta;
+		if ( intensity < 0.25f ) lighting = 0.2f;
+		else if ( intensity < 0.5f ) lighting = 0.4f;
+		else if ( intensity < 0.75f ) lighting = 0.55f;
+		else if ( intensity < 0.95f ) lighting = 0.7f;
+	}
 
 	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, texCoord, 0 ).x;
 
 	const float fogFactor = smoothstep( uFogNear, uFogFar, -data.viewPosition.z ) * uFogDensity;
-	const vec3	color	  = pixelColor.xyz * lighting * ambientOcclusion;
+	const vec3	color	  = texelFetch( gbColor, texCoord, 0 ).xyz * ambientOcclusion * lighting;
 
 	fragColor = vec4( mix( color, uFogColor, fogFactor ) * uLightColor, 1.f );
 }

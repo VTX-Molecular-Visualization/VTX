@@ -2,14 +2,15 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void SSAO::init( const size_t p_width, const size_t p_height )
+	void SSAO::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
 		out.texture.create( p_width, p_height, GL_R8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		//_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { IO::FilePath( "shading/ssao.frag" ) } );
+		_program = p_pm.createProgram( "SSAO", std::vector<FilePath> { "ssao.frag" } );
+		assert( _program != nullptr );
 
 		// generate random ao kernel
 		_aoKernel.resize( _kernelSize );
@@ -46,7 +47,6 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 		_program->setVec3fArray( "uAoKernel", _kernelSize, _aoKernel.data() );
-		//_program->setInt( "uAoIntensity", VTX_RENDER_EFFECT().getSSAOIntensity() );
 		_program->setInt( "uKernelSize", _kernelSize );
 		_program->setFloat( "uNoiseSize", float( _noiseTextureSize ) );
 	}
@@ -64,29 +64,11 @@ namespace VTX::Renderer::GL::Pass
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
 
-		in.textureViewPositionsNormals->bindToUnit( 0 );
-		_noiseTexture.bindToUnit( 1 );
-		in.textureLinearizeDepth->bindToUnit( 2 );
-
-		/*
+		in.textureViewPositionsNormals->bindToUnit( 1 );
+		_noiseTexture.bindToUnit( 2 );
+		in.textureLinearizeDepth->bindToUnit( 3 );
 		_program->use();
-
-		if ( App::VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
-		{
-			_program->setMat4f( "uProjMatrix", p_scene.getCamera().getProjectionMatrix() );
-		}
-
-		if ( App::VTXApp::get().MASK & Render::VTX_MASK_UNIFORM_UPDATED )
-		{
-			_program->setVec3fArray( "uAoKernel", _kernelSize, _aoKernel.data() );
-			_program->setInt( "uAoIntensity", VTX_RENDER_EFFECT().getSSAOIntensity() );
-			_program->setInt( "uKernelSize", _kernelSize );
-			_program->setFloat( "uNoiseSize", float( _noiseTextureSize ) );
-		}
-
-		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
-
-		*/
+		out.fbo.unbind();
 	}
 
 } // namespace VTX::Renderer::GL::Pass

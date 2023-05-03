@@ -3,13 +3,12 @@
 
 namespace VTX::Renderer::GL
 {
-	enum class ENUM_SHADING : int
+	enum class ENUM_SHADING : unsigned int
 	{
 		DIFFUSE,
 		GLOSSY,
 		TOON,
-		FLAT_COLOR,
-		COUNT
+		FLAT_COLOR
 	};
 }
 

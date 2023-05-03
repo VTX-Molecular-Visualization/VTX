@@ -11,6 +11,8 @@ namespace VTX::Renderer::GL
 		VertexArray() = default;
 		~VertexArray() { destroy(); }
 
+		int drawCalls = 0;
+
 		inline void create()
 		{
 			assert( _id == GL_INVALID_INDEX );
@@ -19,10 +21,11 @@ namespace VTX::Renderer::GL
 		}
 		inline void destroy()
 		{
-			assert( _id != GL_INVALID_INDEX );
-
-			glDeleteVertexArrays( 1, &_id );
-			_id = GL_INVALID_INDEX;
+			if ( _id != GL_INVALID_INDEX )
+			{
+				glDeleteVertexArrays( 1, &_id );
+				_id = GL_INVALID_INDEX;
+			}
 		}
 
 		inline GLuint getId() const { return _id; }
@@ -90,33 +93,33 @@ namespace VTX::Renderer::GL
 			glVertexArrayAttribBinding( _id, p_attributeIndex, p_bindingIndex );
 		}
 
-		inline void drawArray( const GLenum p_mode, const GLint p_first, const GLsizei p_count ) const
+		inline void drawArray( const GLenum p_mode, const GLint p_first, const GLsizei p_count )
 		{
 			bind();
 			glDrawArrays( p_mode, p_first, p_count );
-			// VTX_STAT().drawCalls++;
+			drawCalls++;
 			unbind();
 		}
 
 		inline void multiDrawArray( const GLenum		  p_mode,
 									const GLint * const	  p_first,
 									const GLsizei * const p_count,
-									const GLsizei		  p_primcount ) const
+									const GLsizei		  p_primcount )
 		{
 			bind();
 			glMultiDrawArrays( p_mode, p_first, p_count, p_primcount );
-			// VTX_STAT().drawCalls++;
+			drawCalls++;
 			unbind();
 		}
 
 		inline void drawElement( const GLenum		  p_mode,
 								 const GLsizei		  p_count,
 								 const GLenum		  p_type,
-								 const GLvoid * const p_offset = 0 ) const
+								 const GLvoid * const p_offset = 0 )
 		{
 			bind();
 			glDrawElements( p_mode, p_count, p_type, p_offset );
-			// VTX_STAT().drawCalls++;
+			drawCalls++;
 			unbind();
 		}
 
@@ -124,11 +127,11 @@ namespace VTX::Renderer::GL
 									  const GLsizei * const		   p_count,
 									  const GLenum				   p_type,
 									  const GLvoid * const * const p_offset,
-									  const GLsizei				   p_primcount ) const
+									  const GLsizei				   p_primcount )
 		{
 			bind();
 			glMultiDrawElements( p_mode, p_count, p_type, p_offset, p_primcount );
-			// VTX_STAT().drawCalls++;
+			drawCalls++;
 			unbind();
 		}
 

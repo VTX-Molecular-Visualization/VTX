@@ -9,6 +9,8 @@ constexpr size_t HEIGHT = 600;
 
 int main( int argc, char ** argv )
 {
+	VTX::Util::Logger::get().init( std::filesystem::current_path() / "logs" );
+
 	if ( glfwInit() == 0 )
 	{
 		exit( EXIT_FAILURE );
@@ -30,7 +32,7 @@ int main( int argc, char ** argv )
 
 	try
 	{
-		VTX::Renderer::GL::OpenGLRenderer renderer( glfwGetProcAddress );
+		VTX::Renderer::GL::OpenGLRenderer renderer( glfwGetProcAddress, std::filesystem::current_path() / "shaders" );
 		renderer.init( WIDTH, HEIGHT );
 
 		// glViewport( 0, 0, WIDTH, HEIGHT );
@@ -38,7 +40,8 @@ int main( int argc, char ** argv )
 
 		while ( glfwWindowShouldClose( window ) == 0 )
 		{
-			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+			// glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+			renderer.renderFrame();
 			glfwSwapBuffers( window );
 			glfwPollEvents();
 		}

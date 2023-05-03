@@ -13,9 +13,11 @@ namespace VTX::Renderer::GL::Pass
 		Geometric()			 = default;
 		virtual ~Geometric() = default;
 
-		void init( const size_t p_width, const size_t p_height ) override;
+		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) override;
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render() override;
+
+		Vec2i getPickedData( const uint p_x, const uint p_y );
 
 		struct StructIn
 		{
@@ -30,6 +32,14 @@ namespace VTX::Renderer::GL::Pass
 			Texture2D	textureDepth				= Texture2D();
 			Texture2D	texturePicking				= Texture2D();
 		} out;
+
+	  private:
+		Program * _programSphere   = nullptr;
+		Program * _programCylinder = nullptr;
+		Program * _programRibbon   = nullptr;
+		Program * _programLine	   = nullptr;
+		Program * _programTriangle = nullptr;
+		Program * _programVoxel	   = nullptr;
 	}; // namespace VTX::Renderer::GL::Pass
 } // namespace VTX::Renderer::GL::Pass
 

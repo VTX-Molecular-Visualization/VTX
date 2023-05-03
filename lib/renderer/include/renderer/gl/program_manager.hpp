@@ -1,6 +1,7 @@
 #ifndef __VTX_RENDERER_GL_PROGRAM_MANAGER__
 #define __VTX_RENDERER_GL_PROGRAM_MANAGER__
 
+#include "buffer.hpp"
 #include "enum_shader_type.hpp"
 #include "program.hpp"
 #include <map>
@@ -14,11 +15,15 @@ namespace VTX
 		class ProgramManager
 		{
 		  public:
-			ProgramManager() = default;
+			ProgramManager( const FilePath & p_shaderPath );
 			~ProgramManager();
 
 			static ENUM_SHADER_TYPE getShaderType( const FilePath & );
 
+			Program * const createProgram( const std::string & p_name,
+										   const FilePath &	   p_shaders,
+										   const std::string & p_toInject = "",
+										   const std::string & p_suffix	  = "" );
 			Program * const createProgram( const std::string &			 p_name,
 										   const std::vector<FilePath> & p_shaders,
 										   const std::string &			 p_toInject = "",
@@ -27,19 +32,23 @@ namespace VTX
 			Program * const getProgram( const std::string & p_name );
 			void			refreshShaders();
 			GLuint			getShader( const std::string & p_name ) const;
-			void			dispose();
+
+			Buffer * const createBuffer( const std::string & p_name );
+			void		   deleteBuffer( const std::string & );
+			Buffer * const getBuffer( const std::string & p_name );
+			void		   dispose();
 
 		  private:
-			using MapStringToEnum	  = std::map<std::string, ENUM_SHADER_TYPE>;
-			using MapStringToProgram  = std::map<std::string, Program *>;
-			using PairStringToProgram = std::pair<const std::string, Program *>;
-			using MapStringToGLuint	  = std::map<std::string, GLuint>;
-			using PairStringToGLuint  = std::pair<const std::string, GLuint>;
+			using MapStringToProgram = std::map<std::string, std::unique_ptr<Program>>;
+			using MapStringToGLuint	 = std::map<std::string, GLuint>;
+			using MapStringToBuffer	 = std::map<std::string, std::unique_ptr<Buffer>>;
 
-			static const MapStringToEnum _EXTENSIONS;
+			static const std::map<std::string, ENUM_SHADER_TYPE> _EXTENSIONS;
 
+			const FilePath	   _shaderPath;
 			MapStringToProgram _programs = MapStringToProgram();
 			MapStringToGLuint  _shaders	 = MapStringToGLuint();
+			MapStringToBuffer  _buffers	 = MapStringToBuffer();
 
 			GLuint		_createShader( const FilePath &, const std::string & = "", const std::string & = "" );
 			std::string _getShaderErrors( const GLuint );

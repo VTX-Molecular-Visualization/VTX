@@ -2,18 +2,17 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void Outline::init( const size_t p_width, const size_t p_height )
+	void Outline::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
 		out.texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR );
 
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		//_program = VTX_PROGRAM_MANAGER().createProgram( "Outline", { IO::FilePath( "shading/outline.frag" ) } );
-
-		_program->use();
-
+		_program = p_pm.createProgram( "Outline", std::vector<FilePath> { "outline.frag" } );
+		assert( _program != nullptr );
 		/*
+		_program->use();
 		const Color::Rgba & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
 		_program->setVec4f( "uLineColor", lineColor );
 		_program->setInt( "uThickness", VTX_RENDER_EFFECT().getOutlineThickness() );
@@ -51,5 +50,7 @@ namespace VTX::Renderer::GL::Pass
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 		*/
+
+		out.fbo.unbind();
 	}
 } // namespace VTX::Renderer::GL::Pass

@@ -2,26 +2,16 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void Shading::init( const size_t p_width, const size_t p_height )
+	void Shading::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
 		out.texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		/*
-		_toonShading
-			= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { IO::FilePath( "shading/shading_toon.frag" ) } );
-		_diffuseShading = VTX_PROGRAM_MANAGER().createProgram( "DiffuseShading",
-															   { IO::FilePath( "shading/shading_diffuse.frag" ) } );
-		_glossyShading
-			= VTX_PROGRAM_MANAGER().createProgram( "GlossyShading", { IO::FilePath( "shading/shading_glossy.frag" ) } );
-		_flatShading
-			= VTX_PROGRAM_MANAGER().createProgram( "FlatShading", { IO::FilePath( "shading/shading_flat.frag" ) } );
+		_program = p_pm.createProgram( "Shading", std::vector<FilePath> { "shading.frag" } );
 
-		// Use setting value.
-		set();
-		*/
+		assert( _program != nullptr );
 	}
 
 	void Shading::resize( const size_t p_width, const size_t p_height )
@@ -76,5 +66,7 @@ namespace VTX::Renderer::GL::Pass
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 		*/
+
+		out.fbo.unbind();
 	}
 } // namespace VTX::Renderer::GL::Pass

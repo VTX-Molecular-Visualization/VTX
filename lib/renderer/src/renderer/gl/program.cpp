@@ -1,4 +1,5 @@
 #include <renderer/gl/program.hpp>
+#include <util/exceptions.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Renderer::GL
@@ -15,35 +16,24 @@ namespace VTX::Renderer::GL
 
 	void Program::create( const std::string & p_name )
 	{
-		if ( _id == GL_INVALID_INDEX )
-		{
-			_name = p_name;
-			_id	  = glCreateProgram();
-		}
-		else
-		{
-			VTX_WARNING( "Program already created" );
-		}
+		assert( _id == GL_INVALID_INDEX );
+
+		_name = p_name;
+		_id	  = glCreateProgram();
+
+		assert( _id != GL_INVALID_INDEX );
 	}
 
 	void Program::attachShader( const GLuint p_shaderId )
 	{
-		if ( _id == GL_INVALID_INDEX )
-		{
-			VTX_ERROR( "Cannot attach shader: program is not created" );
-			return;
-		}
+		assert( _id != GL_INVALID_INDEX );
 
 		glAttachShader( _id, p_shaderId );
 	}
 
 	void Program::link()
 	{
-		if ( _id == GL_INVALID_INDEX )
-		{
-			VTX_ERROR( "Can not link program: program is not created" );
-			return;
-		}
+		assert( _id != GL_INVALID_INDEX );
 
 		GLint linked;
 		glLinkProgram( _id );
@@ -55,13 +45,14 @@ namespace VTX::Renderer::GL
 			error += "\n";
 			error += _getProgramErrors();
 			glDeleteProgram( _id );
-			VTX_ERROR( error );
-			return;
+			throw GLException( error );
 		}
 	}
 
 	void Program::detachShaders()
 	{
+		assert( _id != GL_INVALID_INDEX );
+
 		GLint nbShaders = 0;
 		glGetProgramiv( _id, GL_ATTACHED_SHADERS, &nbShaders );
 		std::vector<GLuint> shaders( nbShaders );

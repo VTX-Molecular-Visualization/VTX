@@ -14,7 +14,7 @@ namespace VTX::Renderer::GL::Pass
 		Shading()		   = default;
 		virtual ~Shading() = default;
 
-		void init( const size_t p_width, const size_t p_height ) override;
+		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) override;
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render() override;
 
@@ -22,7 +22,7 @@ namespace VTX::Renderer::GL::Pass
 		{
 			Texture2D * textureViewPositionsNormals = nullptr;
 			Texture2D * texture						= nullptr;
-			// TODO: rename and check 2 textures are needed.
+			// TODO:check why 2 textures are needed.
 			Texture2D * textureBlur = nullptr;
 		} in;
 
@@ -34,13 +34,7 @@ namespace VTX::Renderer::GL::Pass
 		} out;
 
 	  private:
-		// TODO: merge shaders.
-		Program * _diffuseShading = nullptr;
-		Program * _glossyShading  = nullptr;
-		Program * _toonShading	  = nullptr;
-		Program * _flatShading	  = nullptr;
-
-		Program * _currentShading = nullptr;
+		Program * _program = nullptr;
 	};
 
 } // namespace VTX::Renderer::GL::Pass
