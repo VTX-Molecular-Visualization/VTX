@@ -1,5 +1,5 @@
 message("VTX_APP")
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 project(VTX_APP)
 
 # Git dependencies.
