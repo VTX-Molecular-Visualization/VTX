@@ -85,20 +85,20 @@ namespace VTX::UI::Widget::Settings
 		_optionalParameterWidgets[ int( OPTIONAL_PARAMETER::CYLINDER_RADIUS ) ] = _cylinderRadiusWidget;
 
 		_cylinderColorBlendingMode = new QComboBox( viewport );
-		Util::UI::fillComboBox( _cylinderColorBlendingMode, Generic::COLOR_BLENDING_MODE_STRING );
+		Util::UI::fillComboBox( _cylinderColorBlendingMode, App::Internal::ChemDB::Color::COLOR_BLENDING_MODE_STRING );
 		_optionalParameterWidgets[ int( OPTIONAL_PARAMETER::CYLINDER_COLOR_BLENDING_MODE ) ]
 			= _cylinderColorBlendingMode;
 
 		_colorModeWidget = new QComboBox( viewport );
-		Util::UI::fillComboBox( _colorModeWidget, Generic::COLOR_MODE_STRING );
+		Util::UI::fillComboBox( _colorModeWidget, App::Internal::ChemDB::Color::COLOR_MODE_STRING );
 		_optionalParameterWidgets[ int( OPTIONAL_PARAMETER::COLOR_MODE ) ] = _colorModeWidget;
 
 		_ribbonColorModeWidget = new QComboBox( viewport );
-		Util::UI::fillComboBox( _ribbonColorModeWidget, Generic::SECONDARY_STRUCTURE_COLOR_MODE_STRING );
+		Util::UI::fillComboBox( _ribbonColorModeWidget, App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE_STRING );
 		_optionalParameterWidgets[ int( OPTIONAL_PARAMETER::RIBBON_COLOR_MODE ) ] = _ribbonColorModeWidget;
 
 		_ribbonColorBlendingMode = new QComboBox( viewport );
-		Util::UI::fillComboBox( _ribbonColorBlendingMode, Generic::COLOR_BLENDING_MODE_STRING );
+		Util::UI::fillComboBox( _ribbonColorBlendingMode, App::Internal::ChemDB::Color::COLOR_BLENDING_MODE_STRING );
 		_optionalParameterWidgets[ int( OPTIONAL_PARAMETER::RIBBON_COLOR_BLENDING_MODE ) ] = _ribbonColorBlendingMode;
 
 		_setDefaultButton = new QPushButton( viewport );
@@ -362,28 +362,28 @@ namespace VTX::UI::Widget::Settings
 	}
 	void RepresentationPresetEditor::_onCylinderColorBendingModeChanged( const int p_colorMode )
 	{
-		Generic::COLOR_BLENDING_MODE colorMode = Generic::COLOR_BLENDING_MODE( p_colorMode );
+		App::Internal::ChemDB::Color::COLOR_BLENDING_MODE colorMode = App::Internal::ChemDB::Color::COLOR_BLENDING_MODE( p_colorMode );
 
 		if ( !signalsBlocked() && colorMode != _preset->getData().getCylinderColorBlendingMode() )
 			VTX_ACTION( new App::Action::Representation::ChangeCylinderColorBendingMode( _preset, colorMode ) );
 	}
 	void RepresentationPresetEditor::_onColorModeChanged( const int p_colorMode )
 	{
-		Generic::COLOR_MODE colorMode = Generic::COLOR_MODE( p_colorMode );
+		App::Internal::ChemDB::Color::COLOR_MODE colorMode = App::Internal::ChemDB::Color::COLOR_MODE( p_colorMode );
 
 		if ( !signalsBlocked() && colorMode != _preset->getData().getColorMode() )
 			VTX_ACTION( new App::Action::Representation::ChangeColorMode( _preset, colorMode ) );
 	}
 	void RepresentationPresetEditor::_onRibbonColorModeChanged( const int p_colorMode )
 	{
-		Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode = Generic::SECONDARY_STRUCTURE_COLOR_MODE( p_colorMode );
+		App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE colorMode = App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE( p_colorMode );
 
 		if ( !signalsBlocked() && colorMode != _preset->getData().getRibbonColorMode() )
 			VTX_ACTION( new App::Action::Representation::ChangeRibbonColorMode( _preset, colorMode ) );
 	}
 	void RepresentationPresetEditor::_onRibbonColorBlendingModeChanged( const int p_colorMode )
 	{
-		Generic::COLOR_BLENDING_MODE colorMode = Generic::COLOR_BLENDING_MODE( p_colorMode );
+		App::Internal::ChemDB::Color::COLOR_BLENDING_MODE colorMode = App::Internal::ChemDB::Color::COLOR_BLENDING_MODE( p_colorMode );
 
 		if ( !signalsBlocked() && colorMode != _preset->getData().getRibbonColorBlendingMode() )
 			VTX_ACTION( new App::Action::Representation::ChangeRibbonColorBendingMode( _preset, colorMode ) );

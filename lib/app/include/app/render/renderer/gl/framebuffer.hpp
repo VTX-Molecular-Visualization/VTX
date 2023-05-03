@@ -1,14 +1,14 @@
 #ifndef __VTX_APP_RENDER_GL_FRAMEBUFFER__
 #define __VTX_APP_RENDER_GL_FRAMEBUFFER__
 
-#include "app/old_app/generic/base_opengl.hpp"
+#include "app/render/generic/base_opengl.hpp"
 #include "texture_2d.hpp"
 #include <util/types.hpp>
 
 namespace VTX::App::Render::Renderer::GL
 {
 	// TODO reimplement this without Qt (OpenGL embedded by Qt)
-	class Framebuffer : public Generic::BaseOpenGL
+	class Framebuffer : public Render::Generic::BaseOpenGL
 	{
 	  public:
 		enum class Attachment : GLenum

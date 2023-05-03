@@ -9,15 +9,16 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QWidget>
-#include <util/color/rgba.hpp>
-#include <app/old_app/generic/base_colorable.hpp>
 #include <app/component/chemistry/secondary_structure.hpp>
+#include <app/internal/chemdb/color.hpp>
+#include <util/color/rgba.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
 	class RibbonColorModeFieldWidget :
 		public BaseManualWidget<QWidget>,
-		public TMultiDataField<const std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba>>
+		public TMultiDataField<
+			const std::pair<App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba>>
 	{
 		Q_OBJECT
 		VTX_WIDGET
@@ -26,18 +27,21 @@ namespace VTX::UI::Widget::CustomWidget
 		~RibbonColorModeFieldWidget() {};
 		void localize() override;
 
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & getColorMode() const { return _colorMode; };
-		void setColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
+		const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & getColorMode() const
+		{
+			return _colorMode;
+		};
+		void setColorMode( const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
 
 		const Util::Color::Rgba & getColor() { return _color; };
-		void				setColor( const Util::Color::Rgba & p_color );
+		void					  setColor( const Util::Color::Rgba & p_color );
 
-		void updateWithNewValue(
-			const std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba> & p_value ) override;
+		void updateWithNewValue( const std::pair<App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE,
+												 Util::Color::Rgba> & p_value ) override;
 		void resetState() override;
 
 	  signals:
-		void colorModeChanged( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
+		void colorModeChanged( const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
 		void colorChanged( const Util::Color::Rgba & p_color );
 
 	  protected:
@@ -56,8 +60,8 @@ namespace VTX::UI::Widget::CustomWidget
 		// void _openColorSettings();
 
 	  private:
-		Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
-		Util::Color::Rgba								_color;
+		App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
+		Util::Color::Rgba											 _color;
 
 		QHBoxLayout * _layout;
 

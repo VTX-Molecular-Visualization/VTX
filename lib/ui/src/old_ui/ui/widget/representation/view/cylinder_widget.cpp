@@ -14,7 +14,7 @@ namespace VTX::UI::Widget::Representation::View
 		_colorBlendingModeLabel = new QLabel( this );
 		_colorBlendingModeLabel->setText( "Color blending mode" );
 		_colorBlendingModeWidget = _addQComboBoxMultiFieldWidgetInLayout(
-			"cylinderColorBLendingModeWidget", _colorBlendingModeLabel, Generic::COLOR_BLENDING_MODE_STRING );
+			"cylinderColorBLendingModeWidget", _colorBlendingModeLabel, App::Internal::ChemDB::Color::COLOR_BLENDING_MODE_STRING );
 	}
 
 	void CylinderWidget::_setupSlots()
@@ -33,7 +33,7 @@ namespace VTX::UI::Widget::Representation::View
 
 	void CylinderWidget::_onColorBlendingModeChange( const int p_newMode )
 	{
-		emit onColorBlendingModeChange( Generic::COLOR_BLENDING_MODE( p_newMode ) );
+		emit onColorBlendingModeChange( App::Internal::ChemDB::Color::COLOR_BLENDING_MODE( p_newMode ) );
 	}
 
 	void CylinderWidget::refresh(

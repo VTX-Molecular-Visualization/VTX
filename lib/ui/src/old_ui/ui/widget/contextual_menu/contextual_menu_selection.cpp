@@ -294,8 +294,8 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		if ( _focusedTarget != nullptr )
 		{
-			const App::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
-			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
+			const App::VTX_ID &					   focusedModelTypeID	   = _focusedTarget->getTypeId();
+			App::Component::Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
 			if ( focusedModelTypeID == App::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
@@ -328,8 +328,8 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		if ( _focusedTarget != nullptr )
 		{
-			const App::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
-			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
+			const App::VTX_ID &					   focusedModelTypeID	   = _focusedTarget->getTypeId();
+			App::Component::Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
 			if ( focusedModelTypeID == App::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
@@ -362,8 +362,8 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		if ( _focusedTarget != nullptr )
 		{
-			const App::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
-			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
+			const App::VTX_ID &					   focusedModelTypeID	   = _focusedTarget->getTypeId();
+			App::Component::Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
 			if ( focusedModelTypeID == App::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );

@@ -43,7 +43,7 @@ namespace VTX::App::Action::Residue
 			std::map<App::Component::Chemistry::Molecule *, std::vector<uint>> residuesIDsPerMolecules
 				= std::map<App::Component::Chemistry::Molecule *, std::vector<uint>>();
 
-			for ( Generic::BaseVisible * const visible : _visibles )
+			for ( Component::Generic::BaseVisible * const visible : _visibles )
 			{
 				App::Component::Chemistry::Residue * const residue
 					= static_cast<App::Component::Chemistry::Residue *>( visible );
@@ -77,7 +77,7 @@ namespace VTX::App::Action::Residue
 				residuesPerMolecules
 				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Residue *>>();
 
-			for ( Generic::BaseVisible * const visible : _visibles )
+			for ( Component::Generic::BaseVisible * const visible : _visibles )
 			{
 				App::Component::Chemistry::Residue * const residue
 					= static_cast<App::Component::Chemistry::Residue *>( visible );

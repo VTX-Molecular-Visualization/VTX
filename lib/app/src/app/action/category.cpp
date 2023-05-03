@@ -9,8 +9,8 @@
 #include "app/application/scene.hpp"
 // #include "app/application/representation/representation_manager.hpp"
 // #include "app/application/selection/selection_manager.hpp"
-#include "app/vtx_app.hpp"
 #include "app/util/molecule.hpp"
+#include "app/vtx_app.hpp"
 #include <unordered_set>
 
 namespace VTX::App::Action::Category
@@ -42,7 +42,7 @@ namespace VTX::App::Action::Category
 				categoriesPerMolecules
 				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Internal::ChemDB::Category::TYPE>>();
 
-			for ( Generic::BaseVisible * const visible : _visibles )
+			for ( Component::Generic::BaseVisible * const visible : _visibles )
 			{
 				App::Component::Chemistry::Category * const category
 					= static_cast<App::Component::Chemistry::Category *>( visible );
@@ -77,7 +77,7 @@ namespace VTX::App::Action::Category
 				categoriesPerMolecules
 				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Category *>>();
 
-			for ( Generic::BaseVisible * const visible : _visibles )
+			for ( Component::Generic::BaseVisible * const visible : _visibles )
 			{
 				App::Component::Chemistry::Category * const category
 					= static_cast<App::Component::Chemistry::Category *>( visible );

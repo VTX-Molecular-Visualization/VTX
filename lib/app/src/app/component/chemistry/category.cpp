@@ -120,7 +120,7 @@ namespace VTX::App::Component::Chemistry
 	{
 		const bool previousVisibleState = isVisible();
 
-		BaseVisible::setVisible( p_visible );
+	 Component::Generic::BaseVisible::setVisible( p_visible );
 
 		if ( previousVisibleState != p_visible )
 		{
@@ -133,7 +133,7 @@ namespace VTX::App::Component::Chemistry
 	{
 		const bool previousVisibleState = isVisible();
 
-		BaseVisible::setVisible( p_visible );
+	 Component::Generic::BaseVisible::setVisible( p_visible );
 
 		if ( previousVisibleState != p_visible )
 		{
@@ -167,7 +167,7 @@ namespace VTX::App::Component::Chemistry
 
 	const App::Component::Object3D::Helper::AABB Category::getAABB() const
 	{
-	 App::Component::Object3D::Helper::AABB aabb = App::Component::Object3D::Helper::AABB();
+		App::Component::Object3D::Helper::AABB aabb = App::Component::Object3D::Helper::AABB();
 
 		for ( const uint chainIndex : _linkedChains )
 		{
@@ -186,8 +186,8 @@ namespace VTX::App::Component::Chemistry
 		const App::Component::Object3D::Helper::AABB aabb	   = getAABB();
 		const App::Internal::Math::Transform &		 transform = getMoleculePtr()->getTransform();
 
-	 App::Component::Object3D::Helper::AABB worldAabb   = App::Component::Object3D::Helper::AABB();
-		std::vector<Vec3f>	   aabbSummits = aabb.getSummits();
+		App::Component::Object3D::Helper::AABB worldAabb   = App::Component::Object3D::Helper::AABB();
+		std::vector<Vec3f>					   aabbSummits = aabb.getSummits();
 
 		for ( const Vec3f & summit : aabbSummits )
 		{

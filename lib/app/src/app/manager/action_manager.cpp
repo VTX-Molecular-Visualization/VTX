@@ -60,7 +60,7 @@ namespace VTX::App::Manager
 		//	else if ( command == "change_color_mode" )
 		//	{
 		//		action = new VTX::App::Action::Setting::ChangeColorMode(
-		//			magic_enum::enum_cast<Generic::COLOR_MODE>( words.at( 1 ) ).value() );
+		//			magic_enum::enum_cast<App::Internal::ChemDB::Color::COLOR_MODE>( words.at( 1 ) ).value() );
 		//	}
 		//	else if ( command == "set_representation_molecule" )
 		//	{

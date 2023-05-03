@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_RENDER_GL_PROGRAM__
 #define __VTX_APP_RENDER_GL_PROGRAM__
 
-#include "app/old_app/generic/base_opengl.hpp"
+#include "app/render/generic/base_opengl.hpp"
 #include <string>
 #include <util/logger.hpp>
 #include <util/math.hpp>
@@ -10,7 +10,7 @@
 // TODO reimplement this without Qt (OpenGL embedded by Qt)
 namespace VTX::App::Render::Renderer::GL
 {
-	class Program : public Generic::BaseOpenGL
+	class Program : public Render::Generic::BaseOpenGL
 	{
 	  public:
 		Program( const std::vector<FilePath> & p_shaderPaths, const std::string & p_toInject = "" ) :

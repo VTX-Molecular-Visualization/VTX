@@ -7,9 +7,9 @@
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/internal/chemdb/category.hpp"
+#include "app/internal/chemdb/color.hpp"
 #include "app/internal/chemdb/residue.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
-#include "app/old_app/generic/base_colorable.hpp"
 #include <util/color/rgba.hpp>
 #include <util/logger.hpp>
 
@@ -148,14 +148,14 @@ namespace VTX::App::Action::Setting
 	class ChangeColorMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeColorMode( const Generic::COLOR_MODE p_mode ) : _mode( p_mode ) {}
+		explicit ChangeColorMode( const App::Internal::ChemDB::Color::COLOR_MODE p_mode ) : _mode( p_mode ) {}
 
 		virtual void execute() override;
 
 		virtual void displayUsage() override { VTX_INFO( "ATOM|RESIDUE|CHAIN|PROTEIN" ); }
 
 	  private:
-		const Generic::COLOR_MODE _mode;
+		const App::Internal::ChemDB::Color::COLOR_MODE _mode;
 	};
 
 	class ChangeShading : public App::Core::Action::BaseAction

@@ -1,18 +1,20 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_TRANSFORM__
 #define __VTX_UI_WIDGET_CUSTOM_TRANSFORM__
 
+#include "app/internal/math/transform.hpp"
 #include "ui/old_ui/ui/multi_data_field.hpp"
 #include "ui/old_ui/ui/widget/base_manual_widget.hpp"
 #include "vector3_widget.hpp"
 #include <QBoxLayout>
 #include <QFrame>
 #include <QSpinBox>
-#include <app/old_app/generic/base_transformable.hpp>
-#include "app/internal/math/transform.hpp"
+#include <app/component/generic/base_transformable.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class TransformWidget : public BaseManualWidget<QFrame>, public TMultiDataField<const App::Internal::Math::Transform>
+	class TransformWidget :
+		public BaseManualWidget<QFrame>,
+		public TMultiDataField<const App::Internal::Math::Transform>
 	{
 		VTX_WIDGET
 		Q_OBJECT
@@ -47,7 +49,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	  signals:
 		void onValueChange( const App::Internal::Math::Transform & p_value,
-							const Generic::BaseTransformable::TransformComposantMask & ) const;
+							const App::Internal::Math::TRANSFORM_COMPOSANT_MASK & ) const;
 		void onPositionDragged( const Vec3f & p_delta ) const;
 		void onRotationDragged( const Vec3f & p_delta ) const;
 		void onScaleDragged( const Vec3f & p_delta ) const;
@@ -84,11 +86,11 @@ namespace VTX::UI::Widget::CustomWidget
 									const Vec3f &					p_vector,
 									const Vector3Widget::AxisMask & p_mask );
 
-		Generic::BaseTransformable::TransformComposantMask _generateTransformMask(
+		App::Internal::Math::TRANSFORM_COMPOSANT_MASK _generateTransformMask(
 			const Field &					p_field,
 			const Vector3Widget::AxisMask & p_axis );
 
-	 App::Internal::Math::Transform _transform = App::Internal::Math::Transform();
+		App::Internal::Math::Transform _transform = App::Internal::Math::Transform();
 	};
 } // namespace VTX::UI::Widget::CustomWidget
 #endif

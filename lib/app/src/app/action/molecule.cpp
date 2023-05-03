@@ -31,7 +31,7 @@ namespace VTX::App::Action::Molecule
 
 	void ChangeVisibility::execute()
 	{
-		for ( Generic::BaseVisible * const visible : _visibles )
+		for ( Component::Generic::BaseVisible * const visible : _visibles )
 		{
 			Component::Chemistry::Molecule * molecule = static_cast<Component::Chemistry::Molecule *>( visible );
 

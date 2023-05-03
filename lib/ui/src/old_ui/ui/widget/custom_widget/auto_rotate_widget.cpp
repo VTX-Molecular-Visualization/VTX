@@ -9,7 +9,7 @@
 namespace VTX::UI::Widget::CustomWidget
 {
 	AutoRotateWidget::AutoRotateWidget( QWidget * p_parent ) :
-		BaseManualWidget<QWidget>( p_parent ), TMultiDataField<Generic::BaseAutoRotate>()
+		BaseManualWidget<QWidget>( p_parent ), TMultiDataField<App::Component::Generic::BaseAutoRotate>()
 	{
 	}
 
@@ -23,14 +23,16 @@ namespace VTX::UI::Widget::CustomWidget
 		orientationLabel->setText( "Orientation" );
 		_orientationWidget
 			= WidgetFactory::get().instantiateWidget<CustomWidget::Vector3Widget>( this, "trajectory_speed" );
-		_orientationWidget->setMinMax( -VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MAX, VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MAX );
+		_orientationWidget->setMinMax( -VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MAX,
+									   VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MAX );
 		_orientationWidget->setDragValueFactor( VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MAX / 100.f );
 
 		QLabel * speedLabel = new QLabel( this );
 		speedLabel->setText( "Speed" );
 		_speedWidget
 			= WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>( this, "trajectory_speed" );
-		_speedWidget->setMinMax( VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MIN, VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MAX );
+		_speedWidget->setMinMax( VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MIN,
+								 VTX::App::Application::Setting::AUTO_ROTATE_SPEED_MAX );
 
 		_playButton = new QPushButton( this );
 		_playButton->setIcon( QIcon( ":/sprite/trajectory_play_icon.png" ) );
@@ -67,7 +69,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_speedWidget->resetState();
 		_playButton->setIcon( QIcon( ":/sprite/trajectory_play_icon.png" ) );
 	}
-	void AutoRotateWidget::updateWithNewValue( Generic::BaseAutoRotate & p_value )
+	void AutoRotateWidget::updateWithNewValue( App::Component::Generic::BaseAutoRotate & p_value )
 	{
 		_targets.emplace( &p_value );
 
@@ -90,7 +92,7 @@ namespace VTX::UI::Widget::CustomWidget
 		// if one is playing => set to pause else play all
 		bool setPlay = true;
 
-		for ( const Generic::BaseAutoRotate * const target : _targets )
+		for ( const App::Component::Generic::BaseAutoRotate * const target : _targets )
 			setPlay = setPlay && !target->isAutoRotationPlaying();
 
 		VTX_ACTION( new App::Action::Transformable::SetAutoRotationPlay( _targets, setPlay ) );
@@ -99,7 +101,7 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		bool dataChange = false;
 
-		for ( const Generic::BaseAutoRotate * const target : _targets )
+		for ( const App::Component::Generic::BaseAutoRotate * const target : _targets )
 		{
 			if ( target->getAutoRotationMagnitude() != p_speed )
 			{
@@ -116,7 +118,7 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		bool dataChange = false;
 
-		for ( const Generic::BaseAutoRotate * const target : _targets )
+		for ( const App::Component::Generic::BaseAutoRotate * const target : _targets )
 		{
 			if ( target->getAutoRotationVector() != p_orientation )
 			{

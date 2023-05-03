@@ -15,7 +15,6 @@
 #include <util/logger.hpp>
 // #include <app/action/main.hpp>
 #include <app/event.hpp>
-#include <app/old_app/generic/base_opengl.hpp>
 #include <app/vtx_app.hpp>
 // #include <app/vtx_app.hpp>
 

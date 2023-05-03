@@ -2,14 +2,14 @@
 #define __VTX_UI_QT_STATE_MACHINE__
 
 #include "base_state.hpp"
+#include <app/application/generic/base_updatable.hpp>
 #include <app/id.hpp>
 #include <map>
 #include <memory>
-#include <app/old_app/generic/base_updatable.hpp>
 
 namespace VTX::UI::QT::State
 {
-	class StateMachine : public Generic::BaseUpdatable
+	class StateMachine : public App::Application::Generic::BaseUpdatable
 	{
 	  public:
 		StateMachine();
@@ -26,8 +26,8 @@ namespace VTX::UI::QT::State
 		virtual void update( const float & ) override;
 
 	  private:
-		BaseState *									  _currentState = nullptr;
-		std::map<const App::VTX_ID, BaseState * const> _states		= std::map<const App::VTX_ID, BaseState * const>();
+		BaseState *									   _currentState = nullptr;
+		std::map<const App::VTX_ID, BaseState * const> _states		 = std::map<const App::VTX_ID, BaseState * const>();
 
 		void _switchState( BaseState * const, void * const p_arg );
 	};

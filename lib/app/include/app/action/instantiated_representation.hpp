@@ -2,11 +2,11 @@
 #define __VTX_APP_ACTION_INSTANTIATED_REPRESENTATION__
 
 #include "app/action.hpp"
-#include "app/application/representation/instantiated_representation.hpp"
-#include "app/core/action/base_action.hpp"
-#include "app/application/representation/representation_manager.hpp"
-#include "app/old_app/generic/base_colorable.hpp"
 #include "app/application/representation/base_representable.hpp"
+#include "app/application/representation/instantiated_representation.hpp"
+#include "app/application/representation/representation_manager.hpp"
+#include "app/core/action/base_action.hpp"
+#include "app/internal/chemdb/color.hpp"
 #include <type_traits>
 #include <unordered_set>
 
@@ -16,7 +16,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 	{
 	  public:
 		explicit ChangeColorMode( App::Application::Representation::InstantiatedRepresentation * const p_representation,
-								  const Generic::COLOR_MODE &								p_colorMode ) :
+								  const App::Internal::ChemDB::Color::COLOR_MODE &					   p_colorMode ) :
 			_instantiatedRepresentation( p_representation ),
 			_colorMode( p_colorMode )
 		{
@@ -25,7 +25,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 		virtual void execute() override;
 
 	  private:
-		const Generic::COLOR_MODE								  _colorMode;
+		const App::Internal::ChemDB::Color::COLOR_MODE						 _colorMode;
 		App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 
@@ -33,13 +33,15 @@ namespace VTX::App::Action::InstantiatedRepresentation
 	{
 	  public:
 		explicit ChangeColor( App::Application::Representation::InstantiatedRepresentation * const p_representation,
-							  const Util::Color::Rgba &										p_color ) :
+							  const Util::Color::Rgba &											   p_color ) :
 			_color( p_color )
 		{
 			_instantiatedRepresentations.emplace( p_representation );
 		}
 
-		template<typename T, typename = std::enable_if<std::is_base_of<App::Application::Representation::BaseRepresentable, T>::value>>
+		template<typename T,
+				 typename
+				 = std::enable_if<std::is_base_of<App::Application::Representation::BaseRepresentable, T>::value>>
 		explicit ChangeColor( const std::unordered_set<T *> & p_representables, const Util::Color::Rgba & p_color ) :
 			_color( p_color )
 		{
@@ -59,7 +61,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 		virtual void execute() override;
 
 	  private:
-		const Util::Color::Rgba														_color;
+		const Util::Color::Rgba															   _color;
 		std::unordered_set<App::Application::Representation::InstantiatedRepresentation *> _instantiatedRepresentations
 			= std::unordered_set<App::Application::Representation::InstantiatedRepresentation *>();
 	};
@@ -67,8 +69,9 @@ namespace VTX::App::Action::InstantiatedRepresentation
 	class ChangeSphereRadius : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeSphereRadius( App::Application::Representation::InstantiatedRepresentation * const p_representation,
-									 const float											   p_radius ) :
+		explicit ChangeSphereRadius(
+			App::Application::Representation::InstantiatedRepresentation * const p_representation,
+			const float															 p_radius ) :
 			_instantiatedRepresentation( p_representation ),
 			_radius( p_radius )
 		{
@@ -77,14 +80,15 @@ namespace VTX::App::Action::InstantiatedRepresentation
 		virtual void execute() override;
 
 	  private:
-		const float												  _radius;
+		const float															 _radius;
 		App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 	class ChangeCylinderRadius : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeCylinderRadius( App::Application::Representation::InstantiatedRepresentation * const p_representation,
-									   const float												 p_radius ) :
+		explicit ChangeCylinderRadius(
+			App::Application::Representation::InstantiatedRepresentation * const p_representation,
+			const float															 p_radius ) :
 			_instantiatedRepresentation( p_representation ),
 			_radius( p_radius )
 		{
@@ -93,7 +97,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 		virtual void execute() override;
 
 	  private:
-		const float												  _radius;
+		const float															 _radius;
 		App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 
@@ -102,7 +106,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 	  public:
 		explicit ChangeCylindeColorBlendingMode(
 			App::Application::Representation::InstantiatedRepresentation * const p_representation,
-			const Generic::COLOR_BLENDING_MODE &					  p_mode ) :
+			const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE &								 p_mode ) :
 			_instantiatedRepresentation( p_representation ),
 			_mode( p_mode )
 		{
@@ -111,15 +115,16 @@ namespace VTX::App::Action::InstantiatedRepresentation
 		virtual void execute() override;
 
 	  private:
-		const Generic::COLOR_BLENDING_MODE						  _mode;
+		const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE									 _mode;
 		App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 
 	class ChangeRibbonColorMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeRibbonColorMode( App::Application::Representation::InstantiatedRepresentation * const p_representation,
-										const Generic::SECONDARY_STRUCTURE_COLOR_MODE &			  p_colorMode ) :
+		explicit ChangeRibbonColorMode(
+			App::Application::Representation::InstantiatedRepresentation * const p_representation,
+			const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode ) :
 			_instantiatedRepresentation( p_representation ),
 			_colorMode( p_colorMode )
 		{
@@ -128,7 +133,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 		virtual void execute() override;
 
 	  private:
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE			  _colorMode;
+		const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE	 _colorMode;
 		App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 
@@ -137,7 +142,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 	  public:
 		explicit ChangeRibbonColorBlendingMode(
 			App::Application::Representation::InstantiatedRepresentation * const p_representation,
-			const Generic::COLOR_BLENDING_MODE &					  p_mode ) :
+			const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE &								 p_mode ) :
 			_instantiatedRepresentation( p_representation ),
 			_mode( p_mode )
 		{
@@ -146,7 +151,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 		virtual void execute() override;
 
 	  private:
-		const Generic::COLOR_BLENDING_MODE						  _mode;
+		const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE									 _mode;
 		App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 } // namespace VTX::App::Action::InstantiatedRepresentation

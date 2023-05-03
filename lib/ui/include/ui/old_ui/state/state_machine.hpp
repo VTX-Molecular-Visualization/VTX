@@ -2,7 +2,7 @@
 #define __VTX_STATE_MACHINE__
 
 #include "base_state.hpp"
-#include <app/old_app/generic/base_updatable.hpp>
+#include <app/application/generic/base_updatable.hpp>
 #include <app/id.hpp>
 #include <map>
 #include <memory>
@@ -11,7 +11,7 @@ namespace VTX
 {
 	namespace State
 	{
-		class StateMachine : public Generic::BaseUpdatable
+		class StateMachine : public App::Application::Generic::BaseUpdatable
 		{
 		  public:
 			StateMachine();
@@ -33,7 +33,7 @@ namespace VTX
 			virtual void update( const float & ) override;
 
 		  private:
-			BaseState *									  _currentState = nullptr;
+			BaseState *									   _currentState = nullptr;
 			std::map<const App::VTX_ID, BaseState * const> _states = std::map<const App::VTX_ID, BaseState * const>();
 
 			void _switchState( BaseState * const, void * const p_arg );

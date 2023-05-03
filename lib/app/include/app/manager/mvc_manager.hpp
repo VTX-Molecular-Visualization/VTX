@@ -1,9 +1,9 @@
 #ifndef __VTX_APP_MANAGER_MVC_MANAGER__
 #define __VTX_APP_MANAGER_MVC_MANAGER__
 
+#include "app/application/generic/base_lockable.hpp"
 #include "app/core/model/base_model.hpp"
 #include "app/core/view/base_view.hpp"
-#include "app/old_app/generic/base_lockable.hpp"
 #include "app/id.hpp"
 #include "details/mvc/mvc_data.hpp"
 #include <type_traits>
@@ -14,7 +14,7 @@ namespace VTX::App::Manager
 {
 	using namespace ::VTX::App::Manager::Details::MVC;
 
-	class MvcManager : public VTX::Generic::BaseLockable
+	class MvcManager : public Application::Generic::BaseLockable
 	{
 	  public:
 		inline static MvcManager & get()
@@ -152,9 +152,9 @@ namespace VTX::App::Manager
 				 typename W,
 				 typename = std::enable_if<std::is_base_of<App::Core::Model::BaseModel, M>::value>,
 				 typename = std::enable_if<std::is_base_of<App::Core::View::BaseView<M>, V>::value>>
-		inline V * const instantiateViewWidget( M * const		   p_model,
+		inline V * const instantiateViewWidget( M * const			p_model,
 												const App::VTX_ID & p_id,
-												W * const		   p_parentWidget = nullptr )
+												W * const			p_parentWidget = nullptr )
 		{
 			_lock();
 			V * const view = new V( p_model, p_parentWidget );

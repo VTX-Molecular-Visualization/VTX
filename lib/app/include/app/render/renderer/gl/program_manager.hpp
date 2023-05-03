@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_RENDER_GL_PROGRAM_MANAGER__
 #define __VTX_APP_RENDER_GL_PROGRAM_MANAGER__
 
-#include "app/old_app/generic/base_opengl.hpp"
+#include "app/render/generic/base_opengl.hpp"
 #include "program.hpp"
 #include <map>
 #include <util/types.hpp>
@@ -22,7 +22,7 @@ namespace VTX
 			INVALID,		 //	= GL_INVALID_VALUE
 		};
 
-		class ProgramManager : public Generic::BaseOpenGL
+		class ProgramManager : public Render::Generic::BaseOpenGL
 		{
 		  public:
 			using MapStringToEnum	  = std::map<std::string, SHADER_TYPE>;

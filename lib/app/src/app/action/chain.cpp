@@ -6,7 +6,7 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/application/selection/selection.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/generic/base_visible.hpp"
+#include "app/component/generic/base_visible.hpp"
 #include "app/application/scene.hpp"
 #include "app/application/selection/selection_manager.hpp"
 #include "app/util/molecule.hpp"
@@ -42,7 +42,7 @@ namespace VTX::App::Action::Chain
 			std::map<App::Component::Chemistry::Molecule *, std::vector<uint>> chainsIDsPerMolecules
 				= std::map<App::Component::Chemistry::Molecule *, std::vector<uint>>();
 
-			for ( Generic::BaseVisible * const visible : _visibles )
+			for ( Component::Generic::BaseVisible * const visible : _visibles )
 			{
 				App::Component::Chemistry::Chain * const chain
 					= static_cast<App::Component::Chemistry::Chain *>( visible );
@@ -76,7 +76,7 @@ namespace VTX::App::Action::Chain
 				chainsPerMolecules
 				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Chain *>>();
 
-			for ( Generic::BaseVisible * const visible : _visibles )
+			for ( Component::Generic::BaseVisible * const visible : _visibles )
 			{
 				App::Component::Chemistry::Chain * const chain
 					= static_cast<App::Component::Chemistry::Chain *>( visible );

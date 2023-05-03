@@ -1,14 +1,14 @@
 #ifndef __VTX_APP_RENDER_BASE_BUFFER_OPENGL__
 #define __VTX_APP_RENDER_BASE_BUFFER_OPENGL__
 
-#include "app/old_app/generic/base_opengl.hpp"
+#include "app/render/generic/base_opengl.hpp"
 #include "app/render/renderer/gl/vertex_array.hpp"
 #include <util/constants.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Render::Buffer
 {
-	class BaseBufferOpenGL : public Generic::BaseOpenGL
+	class BaseBufferOpenGL : public Render::Generic::BaseOpenGL
 	{
 	  public:
 		BaseBufferOpenGL()			= default;

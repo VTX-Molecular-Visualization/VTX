@@ -1,10 +1,10 @@
-#ifndef __VTX_BASE_LOCKABLE__
-#define __VTX_BASE_LOCKABLE__
+#ifndef __VTX_APP_APPLICATION_GENERIC_BASE_LOCKABLE__
+#define __VTX_APP_APPLICATION_GENERIC_BASE_LOCKABLE__
 
 // #include <QRecursiveMutex>
 
 // TODO make that without Qt
-namespace VTX::Generic
+namespace VTX::App::Application::Generic
 {
 	class BaseLockable
 	{
@@ -21,5 +21,5 @@ namespace VTX::Generic
 	  private:
 		// QRecursiveMutex _mutex = QRecursiveMutex();
 	};
-} // namespace VTX::Generic
+} // namespace VTX::App::Application::Generic
 #endif

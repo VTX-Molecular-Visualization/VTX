@@ -269,7 +269,7 @@ namespace VTX::App::Application::Representation
 				= VTX::MVC_MANAGER().instantiateModel<RepresentationPreset>( representationType );
 			ballsAndsticks->setName( name );
 			ballsAndsticks->setQuickAccess( true );
-			ballsAndsticks->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
+			ballsAndsticks->getData().setColorMode( App::Internal::ChemDB::Color::COLOR_MODE::CHAIN );
 			addRepresentation( ballsAndsticks, p_notify );
 		}
 
@@ -281,7 +281,7 @@ namespace VTX::App::Application::Representation
 				= VTX::MVC_MANAGER().instantiateModel<RepresentationPreset>( representationType );
 			cartoon->setName( name );
 			cartoon->setQuickAccess( true );
-			cartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
+			cartoon->getData().setColorMode( App::Internal::ChemDB::Color::COLOR_MODE::CHAIN );
 			addRepresentation( cartoon, p_notify );
 		}
 
@@ -294,7 +294,7 @@ namespace VTX::App::Application::Representation
 			stickAndCartoon->setName( name );
 			stickAndCartoon->setQuickAccess( true );
 			stickAndCartoon->getData().setCylinderRadius( 0.15f );
-			stickAndCartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
+			stickAndCartoon->getData().setColorMode( App::Internal::ChemDB::Color::COLOR_MODE::CHAIN );
 			addRepresentation( stickAndCartoon, p_notify );
 		}
 
@@ -306,7 +306,7 @@ namespace VTX::App::Application::Representation
 				= VTX::MVC_MANAGER().instantiateModel<RepresentationPreset>( representationType );
 			sas->setName( name );
 			sas->setQuickAccess( true );
-			sas->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
+			sas->getData().setColorMode( App::Internal::ChemDB::Color::COLOR_MODE::CHAIN );
 			addRepresentation( sas, p_notify );
 		}
 
@@ -318,7 +318,7 @@ namespace VTX::App::Application::Representation
 				= VTX::MVC_MANAGER().instantiateModel<RepresentationPreset>( representationType );
 			ses->setName( name );
 			ses->setQuickAccess( true );
-			ses->getData().setColorMode( Generic::COLOR_MODE::PROTEIN );
+			ses->getData().setColorMode( App::Internal::ChemDB::Color::COLOR_MODE::PROTEIN );
 			addRepresentation( ses, p_notify );
 		}
 
@@ -331,7 +331,7 @@ namespace VTX::App::Application::Representation
 			stick->setName( name );
 			stick->setQuickAccess( true );
 			stick->getData().setCylinderRadius( 0.15f );
-			stick->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
+			stick->getData().setColorMode( App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CHAIN );
 			addRepresentation( stick, p_notify );
 		}
 
@@ -343,7 +343,7 @@ namespace VTX::App::Application::Representation
 				= VTX::MVC_MANAGER().instantiateModel<RepresentationPreset>( representationType );
 			vdw->setName( name );
 			vdw->setQuickAccess( true );
-			vdw->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
+			vdw->getData().setColorMode( App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CHAIN );
 			vdw->getData().setSphereRadius( 0 );
 			addRepresentation( vdw, p_notify );
 		}

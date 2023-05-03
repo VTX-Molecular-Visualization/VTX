@@ -5,7 +5,7 @@
 #include "app/component/chemistry/generated_molecule.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/generic/base_visible.hpp"
+#include "app/component/generic/base_visible.hpp"
 #include "app/vtx_app.hpp"
 #include "app/util/molecule.hpp"
 #include <map>
@@ -27,7 +27,7 @@ namespace VTX::App::Action::Atom
 			std::map<App::Component::Chemistry::Molecule *, std::vector<uint>> atomIDsPerMolecules
 				= std::map<App::Component::Chemistry::Molecule *, std::vector<uint>>();
 
-			for ( Generic::BaseVisible * const visible : _visibles )
+			for ( Component::Generic::BaseVisible * const visible : _visibles )
 			{
 				App::Component::Chemistry::Atom * const atom
 					= static_cast<App::Component::Chemistry::Atom *>( visible );
@@ -61,7 +61,7 @@ namespace VTX::App::Action::Atom
 				atomsPerMolecules
 				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Atom *>>();
 
-			for ( Generic::BaseVisible * const visible : _visibles )
+			for ( Component::Generic::BaseVisible * const visible : _visibles )
 			{
 				App::Component::Chemistry::Atom * const atom
 					= static_cast<App::Component::Chemistry::Atom *>( visible );

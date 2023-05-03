@@ -5,11 +5,11 @@
 #include "app/application/selection/enum_selection.hpp"
 #include "app/component/chemistry/enum_trajectory.hpp"
 #include "app/component/video/enum_path.hpp"
+#include "app/id.hpp"
 #include "app/internal/chemdb/category.hpp"
+#include "app/internal/chemdb/color.hpp"
 #include "app/internal/chemdb/residue.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
-#include "app/old_app/generic/base_colorable.hpp"
-#include "app/id.hpp"
 #include "app/render/renderer/enum_renderer.hpp"
 #include <list>
 #include <string>
@@ -54,10 +54,10 @@ namespace VTX
 			static const float ATOMS_RADIUS_MIN;
 			static const float ATOMS_RADIUS_MAX;
 
-			static const float						  BONDS_RADIUS_DEFAULT;
-			static const float						  BONDS_RADIUS_MIN;
-			static const float						  BONDS_RADIUS_MAX;
-			static const Generic::COLOR_BLENDING_MODE BONDS_COLOR_BLENDING_MODE_DEFAULT;
+			static const float											   BONDS_RADIUS_DEFAULT;
+			static const float											   BONDS_RADIUS_MIN;
+			static const float											   BONDS_RADIUS_MAX;
+			static const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE BONDS_COLOR_BLENDING_MODE_DEFAULT;
 
 			static const float ATOMS_RADIUS_ADD_DEFAULT;
 			static const float ATOMS_RADIUS_ADD_MIN;
@@ -65,14 +65,14 @@ namespace VTX
 
 			static const bool ATOMS_IS_RADIUS_FIXED_DEFAULT;
 
-			static const Generic::SECONDARY_STRUCTURE_COLOR_MODE SS_COLOR_MODE_DEFAULT;
-			static const Generic::COLOR_BLENDING_MODE			 SS_COLOR_BLENDING_MODE_DEFAULT;
+			static const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE SS_COLOR_MODE_DEFAULT;
+			static const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE			  SS_COLOR_BLENDING_MODE_DEFAULT;
 
 			static const float SES_RESOLUTION_DEFAULT;
 			static const float SES_RESOLUTION_MIN;
 			static const float SES_RESOLUTION_MAX;
 
-			static const Generic::COLOR_MODE COLOR_MODE_DEFAULT;
+			static const App::Internal::ChemDB::Color::COLOR_MODE COLOR_MODE_DEFAULT;
 
 			static const std::vector<std::string> DEFAULT_REPRESENTATION_PER_CATEGORY_NAME;
 			static const std::vector<int>		  DEFAULT_REPRESENTATION_PER_CATEGORY_INDEX;
@@ -200,11 +200,11 @@ namespace VTX
 			static const float AUTO_ROTATE_SPEED_MAX;
 
 			// Video.
-			static const float		PATH_DURATION_DEFAULT;
+			static const float		 PATH_DURATION_DEFAULT;
 			static const App::VTX_ID CONTROLLER_MODE_DEFAULT;
 			static const App::VTX_ID PICKER_MODE_DEFAULT;
-			static const uint		VIDEO_FPS_DEFAULT;
-			static const uint		VIDEO_CRF_DEFAULT;
+			static const uint		 VIDEO_FPS_DEFAULT;
+			static const uint		 VIDEO_CRF_DEFAULT;
 
 			// Measurement
 			static const Util::Color::Rgba DEFAULT_LABEL_COLOR;

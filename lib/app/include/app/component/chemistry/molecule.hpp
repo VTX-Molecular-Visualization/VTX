@@ -34,7 +34,7 @@ namespace VTX::App::Component::Chemistry
 
 	class Molecule :
 		public Core::Model::BaseModel3D<App::Render::Buffer::Molecule>,
-		public Generic::BaseColorable,
+		public Component::Generic::BaseColorable,
 		public Application::Representation::BaseRepresentable,
 		public Core::Scene::BaseSceneItem
 	{
@@ -328,7 +328,7 @@ namespace VTX::App::Component::Chemistry
 		uint							_indexFirstBondExtraResidue = 0;
 
 		// Options.
-		Generic::COLOR_MODE _colorMode = Generic::COLOR_MODE::INHERITED;
+		App::Internal::ChemDB::Color::COLOR_MODE _colorMode = App::Internal::ChemDB::Color::COLOR_MODE::INHERITED;
 
 		// Missing symbols.
 		std::vector<Internal::ChemDB::UnknownResidueData *> _unknownResidueSymbol

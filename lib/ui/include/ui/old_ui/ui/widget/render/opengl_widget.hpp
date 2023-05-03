@@ -29,7 +29,7 @@ namespace VTX::App::Render::Renderer
 
 namespace VTX::UI::Widget::Render
 {
-	class OpenGLWidget : public BaseManualWidget<QOpenGLWidget>, public Generic::BaseOpenGL
+	class OpenGLWidget : public BaseManualWidget<QOpenGLWidget>, public App::Render::Generic::BaseOpenGL
 	{
 		VTX_WIDGET
 

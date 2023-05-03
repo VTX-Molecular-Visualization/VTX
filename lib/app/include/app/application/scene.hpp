@@ -1,6 +1,7 @@
 #ifndef __VTX_APP_APPLICATION_SCENE__
 #define __VTX_APP_APPLICATION_SCENE__
 
+#include "app/application/generic/base_updatable.hpp"
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/component/object3d/_fwd.hpp"
 #include "app/component/object3d/helper/aabb.hpp"
@@ -10,14 +11,13 @@
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/internal/scene/_fwd.hpp"
-#include "app/old_app/generic/base_updatable.hpp"
 #include <map>
 #include <type_traits>
 #include <vector>
 
 namespace VTX::App::Application
 {
-	class Scene : public Generic::BaseUpdatable
+	class Scene : public Application::Generic::BaseUpdatable
 	{
 	  private:
 		enum class ModelCharacteristicsFlag

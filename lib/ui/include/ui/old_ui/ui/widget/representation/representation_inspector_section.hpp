@@ -24,8 +24,8 @@
 #include <app/application/representation/instantiated_representation.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/core/view/base_view.hpp>
+#include <app/internal/chemdb/color.hpp>
 #include <util/color/rgba.hpp>
-#include <app/old_app/generic/base_colorable.hpp>
 #include <vector>
 
 namespace VTX::UI::Widget::Representation
@@ -68,7 +68,7 @@ namespace VTX::UI::Widget::Representation
 		void onRepresentationChange( const InstantiatedRepresentation &					   p_representation,
 									 const App::Application::Representation::MEMBER_FLAG & p_flag );
 		void onRepresentationColorChange( const InstantiatedRepresentation & p_representation,
-										  const Util::Color::Rgba &				 p_color,
+										  const Util::Color::Rgba &			 p_color,
 										  const bool						 p_ssColor );
 		void onRevertRepresentation();
 		void onApplyRepresentationToChildren();

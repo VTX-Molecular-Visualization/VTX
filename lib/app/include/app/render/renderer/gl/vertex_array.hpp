@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_RENDER_GL_VERETX_ARRAY__
 #define __VTX_APP_RENDER_GL_VERETX_ARRAY__
 
-#include "app/old_app/generic/base_opengl.hpp"
+#include "app/render/generic/base_opengl.hpp"
 #include "app/vtx_app.hpp"
 #include "buffer.hpp"
 #include <util/types.hpp>
@@ -11,7 +11,7 @@
 namespace VTX::App::Render::Renderer::GL
 {
 	// TODO: methods such as 'enableAttrib', 'setVertexBuffer', etc. might be merged...
-	class VertexArray : public Generic::BaseOpenGL
+	class VertexArray : public Render::Generic::BaseOpenGL
 	{
 	  public:
 		enum class Type : GLenum

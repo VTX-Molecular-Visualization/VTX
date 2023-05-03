@@ -43,7 +43,7 @@ namespace VTX::UI
 // #include <QInputMethod>
 // #include <QTimer>
 // #include <app/internal/define.hpp>
-// #include <app/old_app/generic/base_auto_delete.hpp>
+// #include <app/component/generic/base_auto_delete.hpp>
 // #include <app/render/spec.hpp>
 // #include <app/old_app/stat.hpp>
 // #include <util/exceptions.hpp>

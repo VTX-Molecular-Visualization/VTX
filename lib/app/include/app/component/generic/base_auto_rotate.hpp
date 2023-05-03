@@ -1,10 +1,10 @@
-#ifndef __VTX_BASE_AUTO_ROTATE__
-#define __VTX_BASE_AUTO_ROTATE__
+#ifndef __VTX_APP_COMPONENT_GENERIC_BASE_AUTO_ROTATE__
+#define __VTX_APP_COMPONENT_GENERIC_BASE_AUTO_ROTATE__
 
 #include <util/math.hpp>
 #include <util/types.hpp>
 
-namespace VTX::Generic
+namespace VTX::App::Component::Generic
 {
 	class BaseAutoRotate
 	{
@@ -33,5 +33,5 @@ namespace VTX::Generic
 		Vec3f _autoRotationVector;
 		bool  _isPlaying = false;
 	};
-} // namespace VTX::Generic
+} // namespace VTX::App::Component::Generic
 #endif

@@ -4,9 +4,9 @@
 #include "base_event_receiver_keyboard.hpp"
 #include "base_event_receiver_mouse.hpp"
 #include "base_event_receiver_wheel.hpp"
+#include <app/application/generic/base_lockable.hpp>
+#include <app/application/generic/base_updatable.hpp>
 #include <app/core/event/vtx_event.hpp>
-#include <app/old_app/generic/base_lockable.hpp>
-#include <app/old_app/generic/base_updatable.hpp>
 #include <app/id.hpp>
 #include <map>
 #include <queue>
@@ -18,7 +18,9 @@ namespace VTX::UI::Event
 {
 	class BaseEventFirererInput;
 
-	class EventManager final : public Generic::BaseUpdatable, public Generic::BaseLockable
+	class EventManager final :
+		public App::Application::Generic::BaseUpdatable,
+		public App::Application::Generic::BaseLockable
 	{
 		friend BaseEventFirererInput;
 

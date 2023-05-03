@@ -181,13 +181,13 @@ namespace VTX
 
 		void VTXApp::renderScene() const {}
 
-		void VTXApp::deleteAtEndOfFrame( const Generic::BaseAutoDelete * const p_object )
+		void VTXApp::deleteAtEndOfFrame( const Component::Generic::BaseAutoDelete * const p_object )
 		{
 			_deleteAtEndOfFrameObjects.emplace_back( p_object );
 		}
 		void VTXApp::_applyEndOfFrameDeletes()
 		{
-			for ( const Generic::BaseAutoDelete * const p_object : _deleteAtEndOfFrameObjects )
+			for ( const Component::Generic::BaseAutoDelete * const p_object : _deleteAtEndOfFrameObjects )
 				p_object->autoDelete();
 
 			_deleteAtEndOfFrameObjects.clear();

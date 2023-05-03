@@ -2,13 +2,13 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_CATEGORY__
 
 #include "_fwd.hpp"
-#include "app/core/model/base_model.hpp"
-#include "app/internal/chemdb/category.hpp"
-#include "app/old_app/generic/base_colorable.hpp"
 #include "app/application/representation/base_representable.hpp"
-#include "app/old_app/generic/base_visible.hpp"
-#include "app/id.hpp"
 #include "app/component/object3d/helper/aabb.hpp"
+#include "app/core/model/base_model.hpp"
+#include "app/id.hpp"
+#include "app/internal/chemdb/category.hpp"
+#include "app/component/generic/base_colorable.hpp"
+#include "app/component/generic/base_visible.hpp"
 #include <string>
 #include <util/types.hpp>
 #include <vector>
@@ -18,9 +18,9 @@ namespace VTX::App::Component::Chemistry
 	namespace ChemDB = App::Internal::ChemDB;
 
 	class Category :
-		public App::Core::Model::BaseModel,
-		public Generic::BaseColorable,
-		public Generic::BaseVisible,
+		public Core::Model::BaseModel,
+		public Component::Generic::BaseColorable,
+		public Component::Generic::BaseVisible,
 		public App::Application::Representation::BaseRepresentable
 	{
 		VTX_MODEL

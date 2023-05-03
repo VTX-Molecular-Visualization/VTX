@@ -3,8 +3,8 @@
 
 #include "app/application/_fwd.hpp"
 #include "app/application/setting.hpp"
+#include "app/component/generic/base_auto_delete.hpp"
 #include "app/internal/monitoring/stat.hpp"
-#include "app/old_app/generic/base_auto_delete.hpp"
 #include "app/render/define.hpp"
 #include "app/render/spec.hpp"
 // #include <QElapsedTimer>
@@ -70,7 +70,7 @@ namespace VTX
 
 			bool hasAnyModifications() const;
 
-			void deleteAtEndOfFrame( const Generic::BaseAutoDelete * const p_object );
+			void deleteAtEndOfFrame( const Component::Generic::BaseAutoDelete * const p_object );
 
 		  protected:
 			VTXApp();
@@ -91,8 +91,8 @@ namespace VTX
 			Application::Representation::RepresentationLibrary * _representationLibrary = nullptr;
 			Application::RenderEffect::RenderEffectLibrary *	 _renderEffectLibrary	= nullptr;
 
-			std::vector<const Generic::BaseAutoDelete *> _deleteAtEndOfFrameObjects
-				= std::vector<const Generic::BaseAutoDelete *>();
+			std::vector<const Component::Generic::BaseAutoDelete *> _deleteAtEndOfFrameObjects
+				= std::vector<const Component::Generic::BaseAutoDelete *>();
 
 			void _initQt();
 			void _handleArgs( const std::vector<std::string> & );

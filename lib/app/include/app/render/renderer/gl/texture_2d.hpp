@@ -1,13 +1,13 @@
 #ifndef __VTX_APP_RENDER_GL_TEXTURE_2D__
 #define __VTX_APP_RENDER_GL_TEXTURE_2D__
 
-#include "app/old_app/generic/base_opengl.hpp"
+#include "app/render/generic/base_opengl.hpp"
 #include <util/types.hpp>
 
 namespace VTX::App::Render::Renderer::GL
 {
 	// TODO reimplement this without Qt (OpenGL embedded by Qt)
-	class Texture2D : public Generic::BaseOpenGL
+	class Texture2D : public Render::Generic::BaseOpenGL
 	{
 	  public:
 		enum class Type : GLenum
