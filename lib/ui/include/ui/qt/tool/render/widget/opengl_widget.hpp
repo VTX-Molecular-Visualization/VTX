@@ -7,6 +7,7 @@
 #include <QOpenGLWidget>
 #include <QPainter>
 #include <QSurface>
+#include <app/render/generic/base_opengl.hpp>
 #include <app/render/renderer/base_renderer.hpp>
 
 using OpenGLFunctions = QOpenGLFunctions_4_5_Core;
@@ -32,7 +33,7 @@ namespace VTX
 
 	namespace UI::QT::Tool::Render::Widget
 	{
-		class OpenGLWidget : public QT::Widget::BaseManualWidget<QOpenGLWidget>, public Generic::BaseOpenGL
+		class OpenGLWidget : public QT::Widget::BaseManualWidget<QOpenGLWidget>, public App::Render::Generic::BaseOpenGL
 		{
 			NEW_ARCHI_VTX_WIDGET
 

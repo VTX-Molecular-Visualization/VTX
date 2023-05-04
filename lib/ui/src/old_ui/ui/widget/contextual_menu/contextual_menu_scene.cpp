@@ -37,7 +37,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuScene::_downloadMoleculeAction() { UI::Dialog::openDownloadMoleculeDialog(); }
 	void ContextualMenuScene::_saveSessionAction()
 	{
-		VTX_ACTION( new App::Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new App::Action::Main::Save( App::VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 	void ContextualMenuScene::_saveAsSessionAction() { Dialog::openSaveSessionDialog(); }
 	void ContextualMenuScene::_showAllMoleculesAction() const

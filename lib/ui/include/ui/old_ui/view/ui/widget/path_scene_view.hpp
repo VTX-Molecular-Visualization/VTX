@@ -14,7 +14,7 @@
 #include <app/component/video/path.hpp>
 #include <app/application/selection/selection.hpp>
 #include <app/component/object3d/viewpoint.hpp>
-#include <app/old_app/generic/base_visible.hpp>
+#include <app/component/generic/base_visible.hpp>
 #include <app/id.hpp>
 #include <app/core/view/base_view.hpp>
 #include <map>

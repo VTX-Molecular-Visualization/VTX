@@ -6,14 +6,14 @@ namespace VTX::App::Action::Visible
 {
 	void ChangeVisibility::execute()
 	{
-		for ( Generic::BaseVisible * const visible : _visibles )
+		for ( Component::Generic::BaseVisible * const visible : _visibles )
 		{
 			const bool newVisibility = _getVisibilityBool( *visible );
 			visible->setVisible( newVisibility );
 		}
 	}
 
-	bool ChangeVisibility::_getVisibilityBool( const Generic::BaseVisible & visible ) const
+	bool ChangeVisibility::_getVisibilityBool( const Component::Generic::BaseVisible & visible ) const
 	{
 		bool newVisibility;
 		switch ( _mode )

@@ -86,7 +86,7 @@ namespace VTX::UI::Widget::CustomWidget
 		Vec3f newPosition = _applyVectorWithMask( _transform.getTranslationVector(), p_position, p_axisMask );
 
 		_transform.setTranslation( newPosition );
-		const Generic::BaseTransformable::TransformComposantMask mask
+		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK mask
 			= _generateTransformMask( Field::Position, p_axisMask );
 		emit onValueChange( _transform, mask );
 	}
@@ -95,7 +95,7 @@ namespace VTX::UI::Widget::CustomWidget
 		Vec3f newEuler = _applyVectorWithMask( _transform.getTranslationVector(), p_euler, p_axisMask );
 
 		_transform.setRotation( newEuler );
-		const Generic::BaseTransformable::TransformComposantMask mask
+		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK mask
 			= _generateTransformMask( Field::Euler, p_axisMask );
 		emit onValueChange( _transform, mask );
 	}
@@ -104,7 +104,7 @@ namespace VTX::UI::Widget::CustomWidget
 		Vec3f newScale = _applyVectorWithMask( _transform.getTranslationVector(), p_scale, p_axisMask );
 
 		_transform.setScale( newScale );
-		const Generic::BaseTransformable::TransformComposantMask mask
+		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK mask
 			= _generateTransformMask( Field::Scale, p_axisMask );
 		emit onValueChange( _transform, mask );
 	}
@@ -167,30 +167,27 @@ namespace VTX::UI::Widget::CustomWidget
 		return res;
 	}
 
-	Generic::BaseTransformable::TransformComposantMask TransformWidget::_generateTransformMask(
+	App::Internal::Math::TRANSFORM_COMPOSANT_MASK TransformWidget::_generateTransformMask(
 		const Field &					p_field,
 		const Vector3Widget::AxisMask & p_axis )
 	{
-		Generic::BaseTransformable::TransformComposantMask res
-			= Generic::BaseTransformable::TransformComposantMask::NONE;
+		App::Internal::Math::TRANSFORM_COMPOSANT_MASK res
+			= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::NONE;
 
 		switch ( p_field )
 		{
 		case Field::Position:
 			if ( p_axis & Vector3Widget::AxisMask::X )
 			{
-				res = Generic::BaseTransformable::TransformComposantMask(
-					res | Generic::BaseTransformable::TransformComposantMask::TRANSLATE_X );
+				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::TRANSLATE_X;
 			}
 			if ( p_axis & Vector3Widget::AxisMask::Y )
 			{
-				res = Generic::BaseTransformable::TransformComposantMask(
-					res | Generic::BaseTransformable::TransformComposantMask::TRANSLATE_Y );
+				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::TRANSLATE_Y;
 			}
 			if ( p_axis & Vector3Widget::AxisMask::Z )
 			{
-				res = Generic::BaseTransformable::TransformComposantMask(
-					res | Generic::BaseTransformable::TransformComposantMask::TRANSLATE_Z );
+				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::TRANSLATE_Z;
 			}
 
 			break;
@@ -198,18 +195,15 @@ namespace VTX::UI::Widget::CustomWidget
 		case Field::Euler:
 			if ( p_axis & Vector3Widget::AxisMask::X )
 			{
-				res = Generic::BaseTransformable::TransformComposantMask(
-					res | Generic::BaseTransformable::TransformComposantMask::EULER_X );
+				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::EULER_X;
 			}
 			if ( p_axis & Vector3Widget::AxisMask::Y )
 			{
-				res = Generic::BaseTransformable::TransformComposantMask(
-					res | Generic::BaseTransformable::TransformComposantMask::EULER_Y );
+				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::EULER_Y;
 			}
 			if ( p_axis & Vector3Widget::AxisMask::Z )
 			{
-				res = Generic::BaseTransformable::TransformComposantMask(
-					res | Generic::BaseTransformable::TransformComposantMask::EULER_Z );
+				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::EULER_Z;
 			}
 
 			break;
@@ -217,18 +211,15 @@ namespace VTX::UI::Widget::CustomWidget
 		case Field::Scale:
 			if ( p_axis & Vector3Widget::AxisMask::X )
 			{
-				res = Generic::BaseTransformable::TransformComposantMask(
-					res | Generic::BaseTransformable::TransformComposantMask::SCALE_X );
+				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::SCALE_X;
 			}
 			if ( p_axis & Vector3Widget::AxisMask::Y )
 			{
-				res = Generic::BaseTransformable::TransformComposantMask(
-					res | Generic::BaseTransformable::TransformComposantMask::SCALE_Y );
+				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::SCALE_Y;
 			}
 			if ( p_axis & Vector3Widget::AxisMask::Z )
 			{
-				res = Generic::BaseTransformable::TransformComposantMask(
-					res | Generic::BaseTransformable::TransformComposantMask::SCALE_Z );
+				res |= App::Internal::Math::TRANSFORM_COMPOSANT_MASK::ENUM::SCALE_Z;
 			}
 
 			break;

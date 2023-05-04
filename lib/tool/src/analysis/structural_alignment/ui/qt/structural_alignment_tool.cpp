@@ -15,7 +15,7 @@ namespace VTX::Tool::Analysis::StructuralAlignment::UI::QT
 	{
 		_addButtonsInMainMenu();
 
-		// VTXApp::get().getMainWindow().getContextualMenu().getMenu()
+		// UI::VTXApp::get().getMainWindow().getContextualMenu().getMenu()
 	}
 
 	void StructuralAlignmentTool::_addButtonsInMainMenu() const

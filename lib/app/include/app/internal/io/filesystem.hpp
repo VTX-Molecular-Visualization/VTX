@@ -302,9 +302,9 @@ namespace VTX::App::Internal::IO::Filesystem
 														  ->first;
 			exportedMolecule = &( VTX::MVC_MANAGER().getModel<App::Component::Chemistry::Molecule>( moleculeID ) );
 		}
-		else if ( VTXApp::get().getScene().getMolecules().size() > 0 )
+		else if ( App::VTXApp::get().getScene().getMolecules().size() > 0 )
 		{
-			exportedMolecule = VTXApp::get().getScene().getMolecules().begin()->first;
+			exportedMolecule = App::VTXApp::get().getScene().getMolecules().begin()->first;
 		}
 		else
 		{
@@ -320,9 +320,9 @@ namespace VTX::App::Internal::IO::Filesystem
 
 	inline FilePath getDefaultSceneSavePath()
 	{
-		if ( !VTXApp::get().getScenePathData().getCurrentPath().empty() )
+		if ( !App::VTXApp::get().getScenePathData().getCurrentPath().empty() )
 		{
-			return VTXApp::get().getScenePathData().getCurrentPath();
+			return App::VTXApp::get().getScenePathData().getCurrentPath();
 		}
 
 		const FilePath defaultFolder = FilePath( VTX::App::Application::Setting::getLastSavedSessionFolder() );

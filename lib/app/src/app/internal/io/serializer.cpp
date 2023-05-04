@@ -22,12 +22,12 @@
 #include "app/core/worker/base_thread.hpp"
 #include "app/event.hpp"
 #include "app/internal/chemdb/category.hpp"
+#include "app/internal/chemdb/color.hpp"
 #include "app/internal/io/filesystem.hpp"
 #include "app/internal/io/reader/lib_chemfiles.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
 #include "app/internal/io/serialization/scene_path_data.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/generic/base_colorable.hpp"
 #include <algorithm>
 #include <magic_enum.hpp>
 #include <map>
@@ -77,10 +77,10 @@ namespace VTX::App::Internal::IO
 
 	nlohmann::json Serializer::serialize( const Component::Chemistry::Molecule & p_molecule ) const
 	{
-		const FilePath moleculePath = VTXApp::get().getScenePathData().getFilepath( &p_molecule );
+		const FilePath moleculePath = App::VTXApp::get().getScenePathData().getFilepath( &p_molecule );
 
 		const Writer::ChemfilesWriter * const writer
-			= VTXApp::get().getScenePathData().getData( &p_molecule ).getWriter();
+			= App::VTXApp::get().getScenePathData().getData( &p_molecule ).getWriter();
 
 		return { { "TRANSFORM", serialize( p_molecule.getTransform() ) },
 				 { "PATH", moleculePath.string() },
@@ -472,7 +472,7 @@ namespace VTX::App::Internal::IO
 		}
 
 		// TODO Manage this
-		// VTXApp::get()
+		// App::VTXApp::get()
 		//	.getStateMachine()
 		//	.getState<State::Visualization>( ID::State::VISUALIZATION )
 		//	->resetCameraController();
@@ -496,8 +496,8 @@ namespace VTX::App::Internal::IO
 
 		if ( molPath.is_relative() )
 		{
-			const FilePath sceneFolder
-				= Internal::IO::Filesystem::getSceneSaveDirectory( VTXApp::get().getScenePathData().getCurrentPath() );
+			const FilePath sceneFolder = Internal::IO::Filesystem::getSceneSaveDirectory(
+				App::VTXApp::get().getScenePathData().getCurrentPath() );
 			molPath = sceneFolder / molPath;
 		}
 
@@ -505,7 +505,7 @@ namespace VTX::App::Internal::IO
 		{
 			Internal::IO::Reader::LibChemfiles reader = Internal::IO::Reader::LibChemfiles( _thread );
 			reader.readFile( molPath, p_molecule );
-			VTXApp::get().getScenePathData().registerLoading( &p_molecule, molPath );
+			App::VTXApp::get().getScenePathData().registerLoading( &p_molecule, molPath );
 		}
 		catch ( const std::exception & p_exception )
 		{
@@ -635,23 +635,23 @@ namespace VTX::App::Internal::IO
 		}
 		if ( p_json.contains( "CYLINDER_COLOR_BLENDING_MODE" ) )
 		{
-			p_representation.setCylinderColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
+			p_representation.setCylinderColorBlendingMode( _getEnum<App::Internal::ChemDB::Color::COLOR_BLENDING_MODE>(
 				p_json, "CYLINDER_COLOR_BLENDING_MODE", Application::Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "RIBBON_COLOR_MODE" ) )
 		{
-			p_representation.setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
+			p_representation.setRibbonColorMode( _getEnum<App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE>(
 				p_json, "RIBBON_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "RIBBON_COLOR_BLENDING_MODE" ) )
 		{
-			p_representation.setRibbonColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
+			p_representation.setRibbonColorBlendingMode( _getEnum<App::Internal::ChemDB::Color::COLOR_BLENDING_MODE>(
 				p_json, "RIBBON_COLOR_BLENDING_MODE", Application::Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "COLOR_MODE" ) )
 		{
-			p_representation.setColorMode(
-				_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Application::Setting::COLOR_MODE_DEFAULT ) );
+			p_representation.setColorMode( _getEnum<App::Internal::ChemDB::Color::COLOR_MODE>(
+				p_json, "COLOR_MODE", Application::Setting::COLOR_MODE_DEFAULT ) );
 		}
 		if ( p_json.contains( "COLOR" ) )
 		{
@@ -689,18 +689,21 @@ namespace VTX::App::Internal::IO
 		{
 			p_representation.getData().setCylinderRadius(
 				_get<float>( p_json, "CYLINDER_RADIUS", Application::Setting::BONDS_RADIUS_DEFAULT ) );
-			p_representation.getData().setCylinderColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
-				p_json, "CYLINDER_COLOR_BLENDING_MODE", Application::Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
+			p_representation.getData().setCylinderColorBlendingMode(
+				_getEnum<App::Internal::ChemDB::Color::COLOR_BLENDING_MODE>(
+					p_json, "CYLINDER_COLOR_BLENDING_MODE", Application::Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
 		if ( p_representation.getData().hasToDrawRibbon() )
 		{
-			p_representation.getData().setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-				p_json, "RIBBON_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
-			p_representation.getData().setRibbonColorBlendingMode( _getEnum<Generic::COLOR_BLENDING_MODE>(
-				p_json, "RIBBON_COLOR_BLENDING_MODE", Application::Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
+			p_representation.getData().setRibbonColorMode(
+				_getEnum<App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE>(
+					p_json, "RIBBON_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
+			p_representation.getData().setRibbonColorBlendingMode(
+				_getEnum<App::Internal::ChemDB::Color::COLOR_BLENDING_MODE>(
+					p_json, "RIBBON_COLOR_BLENDING_MODE", Application::Setting::SS_COLOR_BLENDING_MODE_DEFAULT ) );
 		}
-		p_representation.getData().setColorMode(
-			_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Application::Setting::COLOR_MODE_DEFAULT ) );
+		p_representation.getData().setColorMode( _getEnum<App::Internal::ChemDB::Color::COLOR_MODE>(
+			p_json, "COLOR_MODE", Application::Setting::COLOR_MODE_DEFAULT ) );
 
 		_migrate( p_json, p_version, p_representation );
 	}
@@ -908,7 +911,7 @@ namespace VTX::App::Internal::IO
 
 		const int moleculePersistentSceneID = p_json.at( "M" ).get<int>();
 
-		const Application::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
+		const Application::Scene::MapMoleculePtrFloat & sceneMolecules = App::VTXApp::get().getScene().getMolecules();
 
 		const Component::Chemistry::Molecule * linkedMolecule = nullptr;
 		for ( const Application::Scene::PairMoleculePtrFloat & pair : sceneMolecules )
@@ -983,8 +986,9 @@ namespace VTX::App::Internal::IO
 		{
 			if ( p_representation.hasToDrawRibbon() )
 			{
-				p_representation.setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-					p_json, "SS_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
+				p_representation.setRibbonColorMode(
+					_getEnum<App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE>(
+						p_json, "SS_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 			}
 		}
 	}
@@ -998,8 +1002,9 @@ namespace VTX::App::Internal::IO
 		{
 			if ( p_representation.getData().hasToDrawRibbon() )
 			{
-				p_representation.getData().setRibbonColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
-					p_json, "SS_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
+				p_representation.getData().setRibbonColorMode(
+					_getEnum<App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE>(
+						p_json, "SS_COLOR_MODE", Application::Setting::SS_COLOR_MODE_DEFAULT ) );
 			}
 		}
 	}

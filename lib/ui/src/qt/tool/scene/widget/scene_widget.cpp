@@ -15,7 +15,7 @@
 #include <app/component/video/path.hpp>
 #include <app/event/global.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool::Scene::Widget
 {
@@ -94,7 +94,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		_sceneWidgets.emplace_back( sceneItemWidget );
 		sceneItemWidget->updatePosInSceneHierarchy( index );
 
-		App::Application::Scene & scene = VTXApp::get().getScene();
+		App::Application::Scene & scene = App::VTXApp::get().getScene();
 		scene.changeModelPosition( *p_sceneItem, defaultPosition );
 
 		return sceneItemWidget;
@@ -109,7 +109,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 	void SceneWidget::_refreshItemIndex()
 	{
-		const App::Application::Scene & scene = VTXApp::get().getScene();
+		const App::Application::Scene & scene = App::VTXApp::get().getScene();
 
 		for ( int i = 0; i < _sceneWidgets.size(); i++ )
 		{
@@ -250,7 +250,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 		if ( _sceneWidgets.size() == 0 )
 			return 0;
 
-		const App::Core::Model::ID & sceneDefaultPathID = VTXApp::get().getScene().getDefaultPath()->getId();
+		const App::Core::Model::ID & sceneDefaultPathID = App::VTXApp::get().getScene().getDefaultPath()->getId();
 
 		// TODO : Better management of section in scene view.
 		if ( p_item.getModelID() != sceneDefaultPathID )
@@ -357,7 +357,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget
 
 		if ( p_event->buttons() & Qt::MouseButton::RightButton )
 		{
-			App::Application::Scene & scene = VTXApp::get().getScene();
+			App::Application::Scene & scene = App::VTXApp::get().getScene();
 
 			QT_APP()->getMainWindow().getContextualMenu().pop( Tool::ContextualMenu::SCENE, p_event->globalPos() );
 

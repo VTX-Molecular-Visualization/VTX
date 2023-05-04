@@ -3,14 +3,14 @@
 
 #include "app/application/scene.hpp"
 #include "app/core/model/base_model.hpp"
-#include "app/old_app/generic/base_opengl.hpp"
+#include "app/render/generic/base_opengl.hpp"
 #include "app/render/renderer/enum_renderer.hpp"
 #include "gl/framebuffer.hpp"
 #include <vector>
 
 namespace VTX::App::Render::Renderer
 {
-	class BaseRenderer : public Generic::BaseOpenGL
+	class BaseRenderer : public Render::Generic::BaseOpenGL
 	{
 	  public:
 		BaseRenderer()			= default;

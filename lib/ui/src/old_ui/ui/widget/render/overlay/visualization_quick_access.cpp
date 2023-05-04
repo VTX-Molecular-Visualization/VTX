@@ -137,7 +137,7 @@ namespace VTX::UI::Widget::Render::Overlay
 	void VisualizationQuickAccess::_refreshController()
 	{
 		const State::Visualization * const visualizationState
-			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+			= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
 		const App::VTX_ID & currentCameraControllerID = visualizationState->getCurrentCameraControllerID();
 		for ( const MenuItemDataRef<App::VTX_ID> & data : CAMERA_CONTROLLERS )
@@ -152,7 +152,7 @@ namespace VTX::UI::Widget::Render::Overlay
 	void VisualizationQuickAccess::_refreshPicker()
 	{
 		const State::Visualization * const visualizationState
-			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+			= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 		const App::VTX_ID & currentPickerID = visualizationState->getCurrentPickerID();
 		for ( const MenuItemDataRef<App::VTX_ID> & data : PICKER_CONTROLLERS )
 		{
@@ -187,7 +187,7 @@ namespace VTX::UI::Widget::Render::Overlay
 	void VisualizationQuickAccess::_refreshMeasurementMode()
 	{
 		// const Controller::MeasurementPicker::Mode currentMeasurementMode
-		//	= VTXApp::get()
+		//	= App::VTXApp::get()
 		//		  .getStateMachine()
 		//		  .getState<State::Visualization>( ID::State::VISUALIZATION )
 		//		  ->getController<Controller::MeasurementPicker>( ID::Controller::MEASUREMENT )

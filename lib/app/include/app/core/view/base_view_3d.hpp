@@ -1,11 +1,12 @@
 #ifndef __VTX_VIEW_BASE_VIEW_3D__
 #define __VTX_VIEW_BASE_VIEW_3D__
 
+#include "app/component/generic/base_renderable.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/core/model/base_model_3d.hpp"
-#include "app/old_app/generic/base_renderable.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/render/generic/base_opengl.hpp"
 #include "app/render/renderer/gl/program_manager.hpp"
+#include "app/vtx_app.hpp"
 #include "base_view.hpp"
 #include <util/math.hpp>
 
@@ -14,7 +15,7 @@ namespace VTX::App::Core::View
 	template<typename T,
 			 typename = std::enable_if<
 				 std::is_base_of<App::Core::Model::BaseModel3D<Render::Buffer::BaseBufferOpenGL>, T>::value>>
-	class BaseView3D : public BaseView<T>, public Generic::BaseRenderable, public Generic::BaseOpenGL
+	class BaseView3D : public BaseView<T>, public Component::Generic::BaseRenderable, public Render::Generic::BaseOpenGL
 	{
 		VTX_VIEW
 
@@ -26,7 +27,7 @@ namespace VTX::App::Core::View
 			// Update camera uniforms.
 			// TO CHECK.
 			/// TODO ! ^^
-			/// if ( VTXApp::get().MASK )
+			/// if ( App::VTXApp::get().MASK )
 			//{
 
 			const Mat4f MVMatrix = p_camera.getViewMatrix() * this->_model->getTransform().get();

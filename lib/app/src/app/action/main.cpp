@@ -11,15 +11,15 @@
 #include "app/internal/worker/saver.hpp"
 #include "app/internal/worker/scene_loader.hpp"
 #include "app/network.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/worker.hpp"
 
 namespace VTX::App::Action::Main
 {
 	void New::execute()
 	{
-		VTXApp::get().getScene().reset();
-		VTXApp::get().getScenePathData().clearCurrentPath();
+		App::VTXApp::get().getScene().reset();
+		App::VTXApp::get().getScenePathData().clearCurrentPath();
 	}
 	// TODO keep only Dialog parts here and move real loading action into VTX_APP.
 	void Open::LoadSceneClass::_loadScene()
@@ -29,7 +29,7 @@ namespace VTX::App::Action::Main
 
 		for ( const FilePath & path : _paths )
 		{
-			VTXApp::get().getScenePathData().setCurrentPath( path, true );
+			App::VTXApp::get().getScenePathData().setCurrentPath( path, true );
 		}
 	}
 	void Open::execute()
@@ -45,7 +45,7 @@ namespace VTX::App::Action::Main
 			if ( _paths.empty() )
 				return;
 
-			VTXApp::get().getScene().clear();
+			App::VTXApp::get().getScene().clear();
 
 			LoadSceneClass * const sceneClass = new LoadSceneClass( _paths );
 			sceneClass->_loadScene();
@@ -80,7 +80,7 @@ namespace VTX::App::Action::Main
 			else
 			{
 				for ( const App::Application::Scene::PairMoleculePtrFloat & molPair :
-					  VTXApp::get().getScene().getMolecules() )
+					  App::VTXApp::get().getScene().getMolecules() )
 				{
 					loader->addDynamicTarget( molPair.first );
 				}
@@ -103,7 +103,7 @@ namespace VTX::App::Action::Main
 						if ( result.sourceType == Internal::Worker::Loader::SOURCE_TYPE::FILE )
 						{
 							if ( result.molecule != nullptr )
-								VTXApp::get().getScenePathData().registerLoading( result.molecule, filepath );
+								App::VTXApp::get().getScenePathData().registerLoading( result.molecule, filepath );
 							VTX::App::Application::Setting::enqueueNewLoadingPath( filepath );
 						}
 						else if ( result.sourceType == Internal::Worker::Loader::SOURCE_TYPE::BUFFER )
@@ -114,15 +114,15 @@ namespace VTX::App::Action::Main
 						if ( result.molecule != nullptr )
 						{
 							result.molecule->setDisplayName( filepath.stem().string() );
-							VTXApp::get().getScene().addMolecule( result.molecule );
+							App::VTXApp::get().getScene().addMolecule( result.molecule );
 						}
 						else if ( result.mesh != nullptr )
 						{
-							VTXApp::get().getScene().addMesh( result.mesh );
+							App::VTXApp::get().getScene().addMesh( result.mesh );
 						}
 					}
 
-					VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+					App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 				} );
 
 			VTX_THREAD( loader, callback );
@@ -143,7 +143,7 @@ namespace VTX::App::Action::Main
 
 		if ( _path.extension() == "vtx" )
 		{
-			VTXApp::get().getScenePathData().setCurrentPath( _path, true );
+			App::VTXApp::get().getScenePathData().setCurrentPath( _path, true );
 			VTX_EVENT( VTX::App::Event::Global::SCENE_SAVED );
 		}
 		else
@@ -188,7 +188,7 @@ namespace VTX::App::Action::Main
 		}
 	}
 
-	void ToggleCamera::execute() { VTXApp::get().getScene().getCameraManager().toggle(); }
+	void ToggleCamera::execute() { App::VTXApp::get().getScene().getCameraManager().toggle(); }
 
 	void Snapshot::execute()
 	{
@@ -198,6 +198,6 @@ namespace VTX::App::Action::Main
 
 	void SetCameraProjectionToPerspective::execute()
 	{
-		VTXApp::get().getScene().getCameraManager().setPerspectiveCamera( !_perspective );
+		App::VTXApp::get().getScene().getCameraManager().setPerspectiveCamera( !_perspective );
 	}
 } // namespace VTX::App::Action::Main

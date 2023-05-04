@@ -1,6 +1,6 @@
 #include "app/render/renderer/gl/pass/linearize_depth.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/render/renderer/gl/gl.hpp"
 #include "app/render/renderer/gl/program_manager.hpp"
 
@@ -38,7 +38,7 @@ namespace VTX::App::Render::Renderer::GL::Pass
 
 		_program->use();
 
-		if ( VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
+		if ( App::VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
 		{
 			const App::Component::Render::Camera & cam	   = p_scene.getCamera();
 			const float							   camNear = cam.getNear();

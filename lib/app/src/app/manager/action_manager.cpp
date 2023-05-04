@@ -9,7 +9,7 @@
 #include "app/component/chemistry/residue.hpp"
 #include "app/internal/io/filesystem.hpp"
 #include "app/internal/io/serialization/scene_path_data.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <magic_enum.hpp>
 #include <sstream>
 
@@ -40,7 +40,7 @@ namespace VTX::App::Manager
 		//// TODO: map with ids.
 		// try
 		//{
-		//	App::Component::Chemistry::Molecule & molecule = *( *VTXApp::get().getScene().getMolecules().begin() ).first;
+		//	App::Component::Chemistry::Molecule & molecule = *( *App::VTXApp::get().getScene().getMolecules().begin() ).first;
 
 		//	if ( command == "snapshot" )
 		//	{
@@ -60,7 +60,7 @@ namespace VTX::App::Manager
 		//	else if ( command == "change_color_mode" )
 		//	{
 		//		action = new VTX::App::Action::Setting::ChangeColorMode(
-		//			magic_enum::enum_cast<Generic::COLOR_MODE>( words.at( 1 ) ).value() );
+		//			magic_enum::enum_cast<App::Internal::ChemDB::Color::COLOR_MODE>( words.at( 1 ) ).value() );
 		//	}
 		//	else if ( command == "set_representation_molecule" )
 		//	{
@@ -140,7 +140,7 @@ namespace VTX::App::Manager
 
 		switch ( actionToUndo->getTag() )
 		{
-		case ACTION_TAG::MODIFY_SCENE: VTXApp::get().getScenePathData().decrementSceneModifications(); break;
+		case ACTION_TAG::MODIFY_SCENE: App::VTXApp::get().getScenePathData().decrementSceneModifications(); break;
 		case ACTION_TAG::NONE:
 		default: break;
 		}
@@ -163,7 +163,7 @@ namespace VTX::App::Manager
 
 		switch ( actionToRedo->getTag() )
 		{
-		case ACTION_TAG::MODIFY_SCENE: VTXApp::get().getScenePathData().incrementSceneModifications(); break;
+		case ACTION_TAG::MODIFY_SCENE: App::VTXApp::get().getScenePathData().incrementSceneModifications(); break;
 		case ACTION_TAG::NONE:
 		default: break;
 		}
@@ -190,9 +190,9 @@ namespace VTX::App::Manager
 			{
 			case ACTION_TAG::MODIFY_SCENE:
 				if ( isActionUndonable )
-					VTXApp::get().getScenePathData().incrementSceneModifications();
+					App::VTXApp::get().getScenePathData().incrementSceneModifications();
 				else // if the action is not undoable, it make a permanent modification on scene
-					VTXApp::get().getScenePathData().forceSceneModifications();
+					App::VTXApp::get().getScenePathData().forceSceneModifications();
 				break;
 			case ACTION_TAG::NONE:
 			default: break;
@@ -232,9 +232,9 @@ namespace VTX::App::Manager
 		}
 
 		// If we loose the last action which modify scene before saving, the scene can't return to unmodified state
-		if ( VTXApp::get().getScenePathData().getSceneModificationsCounter() < 0 )
+		if ( App::VTXApp::get().getScenePathData().getSceneModificationsCounter() < 0 )
 		{
-			VTXApp::get().getScenePathData().forceSceneModifications();
+			App::VTXApp::get().getScenePathData().forceSceneModifications();
 		}
 	}
 } // namespace VTX::App::Manager

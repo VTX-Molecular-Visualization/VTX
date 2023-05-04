@@ -107,7 +107,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 	void MenuHomeSessionWidget::_openFile() const { Dialog::openLoadSessionDialog(); }
 	void MenuHomeSessionWidget::_saveSession() const
 	{
-		VTX_ACTION( new App::Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new App::Action::Main::Save( App::VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 	void MenuHomeSessionWidget::_saveAsSession() const { Dialog::openSaveSessionDialog(); }
 

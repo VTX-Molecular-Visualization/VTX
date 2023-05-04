@@ -5,7 +5,7 @@
 #include "app/internal/worker/representation_loader.hpp"
 #include "app/internal/worker/representation_saver.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/worker.hpp"
 #include <filesystem>
 #include <util/filesystem.hpp>
@@ -70,49 +70,49 @@ namespace VTX::App::Action::Representation
 	void ChangeRepresentation::execute()
 	{
 		_representation->changeRepresentationType( _representationType );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeColorMode::execute()
 	{
 		_representation->getData().setColorMode( _colorMode );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeColor::execute()
 	{
 		_representation->setColor( _color );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeSphereRadius::execute()
 	{
 		_representation->getData().setSphereRadius( _radius );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeCylinderRadius::execute()
 	{
 		_representation->getData().setCylinderRadius( _radius );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeCylinderColorBendingMode::execute()
 	{
 		_representation->getData().setCylinderColorBlendingMode( _colorBendingMode );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeRibbonColorMode::execute()
 	{
 		_representation->getData().setRibbonColorMode( _colorMode );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeRibbonColorBendingMode::execute()
 	{
 		_representation->getData().setRibbonColorBlendingMode( _colorBendingMode );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void AddNewPresetInLibrary::execute()
@@ -137,13 +137,13 @@ namespace VTX::App::Action::Representation
 
 		App::Application::Representation::RepresentationManager::get().deleteRepresentation( representation );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void SetAsDefaultRepresentation::execute()
 	{
 		App::Application::Representation::RepresentationLibrary::get().setDefaultRepresentation( _representationIndex );
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 } // namespace VTX::App::Action::Representation

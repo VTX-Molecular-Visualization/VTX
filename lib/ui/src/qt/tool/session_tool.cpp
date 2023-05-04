@@ -17,7 +17,7 @@
 #include <app/internal/io/serialization/scene_path_data.hpp>
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/video/path.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Tool
 {
@@ -143,7 +143,7 @@ namespace VTX::UI::QT::Tool
 	void SessionTool::_openFile() const { Session::Dialog::openLoadSessionDialog(); }
 	void SessionTool::_saveSession() const
 	{
-		VTX_ACTION( new Session::Action::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new Session::Action::Save( App::VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 	void SessionTool::_saveAsSession() const { Session::Dialog::openSaveSessionDialog(); }
 	void SessionTool::_clearSession() const { VTX_ACTION( new VTX::App::Action::Scene::ResetScene() ); }

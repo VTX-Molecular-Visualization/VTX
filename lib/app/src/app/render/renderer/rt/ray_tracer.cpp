@@ -1,6 +1,6 @@
 #include "app/render/renderer/rt/ray_tracer.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/render/renderer/rt/integrators/ao_integrator.hpp"
 #include "app/render/renderer/rt/integrators/direct_lighting_integrator.hpp"
 #include "app/render/renderer/rt/integrators/raycast_integrator.hpp"
@@ -165,7 +165,7 @@ namespace VTX::App::Render::Renderer::RT
 		//_aoIntegrator = new AOIntegrator( 50.f, 12 );
 
 		VTX_INFO( "Init Scene" );
-		_initScene( VTXApp::get().getScene() );
+		_initScene( App::VTXApp::get().getScene() );
 
 		_texture.create( p_width,
 						 p_height,

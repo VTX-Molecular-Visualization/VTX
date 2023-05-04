@@ -80,14 +80,14 @@ namespace VTX::UI
 
 	void MainWindow::closeEvent( QCloseEvent * p_closeEvent )
 	{
-		if ( VTXApp::get().hasAnyModifications() )
+		if ( App::VTXApp::get().hasAnyModifications() )
 		{
 			p_closeEvent->ignore();
 			VTX::App::Core::Worker::CallbackThread callback = VTX::App::Core::Worker::CallbackThread(
 				[]( const uint p_code )
 				{
 					if ( p_code )
-						VTXApp::get().quit();
+						UI::VTXApp::get().quit();
 				} );
 
 			UI::Dialog::leavingSessionDialog( callback );
@@ -243,7 +243,7 @@ namespace VTX::UI
 
 	void MainWindow::_onShortcutSave() const
 	{
-		VTX_ACTION( new VTX::App::Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
+		VTX_ACTION( new VTX::App::Action::Main::Save( App::VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 
 	void MainWindow::_onShortcutSaveAs() const { UI::Dialog::openSaveSessionDialog(); }
@@ -281,7 +281,7 @@ namespace VTX::UI
 	void MainWindow::_onShortcutRefreshSES() const
 	{
 		VTX_ACTION( new VTX::App::Action::Molecule::RefreshSolventExcludedSurface(
-			*( ( *( VTXApp::get().getScene().getMolecules().begin() ) ).first ) ) );
+			*( ( *( App::VTXApp::get().getScene().getMolecules().begin() ) ).first ) ) );
 	}
 
 	void MainWindow::_onShortcutDelete() const
@@ -341,13 +341,13 @@ namespace VTX::UI
 		title += " - RELEASE";
 #endif
 #endif
-		const FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
+		const FilePath & currentSessionFilepath = App::VTXApp::get().getScenePathData().getCurrentPath();
 
 		if ( !currentSessionFilepath.empty() )
 		{
 			title += " - " + currentSessionFilepath.filename().string();
 
-			if ( VTXApp::get().getScenePathData().sceneHasModifications() )
+			if ( App::VTXApp::get().getScenePathData().sceneHasModifications() )
 			{
 				title += Style::WINDOW_TITLE_SCENE_MODIFIED_FEEDBACK;
 			}
@@ -711,7 +711,7 @@ namespace VTX::UI
 	void MainWindow::_updatePicker() const
 	{
 		// const State::Visualization * const visualizationState
-		//	= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+		//	= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
 		// const App::VTX_ID & pickerID = visualizationState->getCurrentPickerID();
 

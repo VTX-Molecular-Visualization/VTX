@@ -8,7 +8,7 @@
 #include <app/mvc.hpp>
 #include <app/component/render/camera.hpp>
 #include <app/application/selection/selection_manager.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 
 namespace VTX::UI::Widget::MainMenu::Camera
 {

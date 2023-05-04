@@ -1,9 +1,9 @@
 #ifndef __VTX_APP_MANAGER_ACTION_MANAGER__
 #define __VTX_APP_MANAGER_ACTION_MANAGER__
 
+#include "app/application/generic/base_updatable.hpp"
 #include "app/core/action/base_action.hpp"
 #include "app/core/action/base_action_undonable.hpp"
-#include "app/old_app/generic/base_updatable.hpp"
 #include <functional>
 #include <list>
 #include <queue>
@@ -15,7 +15,7 @@ namespace VTX
 	{
 		using namespace VTX::App::Core::Action;
 
-		class ActionManager final : public Generic::BaseUpdatable
+		class ActionManager final : public Application::Generic::BaseUpdatable
 		{
 		  public:
 			using ListActionUndonablePtr = std::list<BaseActionUndonable *>;

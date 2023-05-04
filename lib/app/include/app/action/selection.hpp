@@ -428,7 +428,7 @@ namespace VTX::App::Action::Selection
 	{
 	  public:
 		explicit ChangeVisibility( const App::Application::Selection::SelectionModel & p_selection,
-								   const Generic::BaseVisible &						   p_objReference,
+								   const Component::Generic::BaseVisible &						   p_objReference,
 								   const App::VTX_ID &								   p_objRefTypeId,
 								   const VISIBILITY_MODE							   p_mode ) :
 			Visible::ChangeVisibility( p_mode ),

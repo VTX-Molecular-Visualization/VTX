@@ -4,14 +4,14 @@
 #include "ui/qt/state/visualization.hpp"
 #include <app/component/object3d/helper/aabb.hpp>
 #include <app/application/scene.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 
 namespace VTX::UI::QT::Action::Selection
 {
 	void Orient::execute()
 	{
 		const App::Component::Object3D::Helper::AABB target
-			= _selection.hasMolecule() ? _selection.getAABB() : VTXApp::get().getScene().getAABB();
+			= _selection.hasMolecule() ? _selection.getAABB() : App::VTXApp::get().getScene().getAABB();
 
 		QT_APP()
 			->getStateMachine()

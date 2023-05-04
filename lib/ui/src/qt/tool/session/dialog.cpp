@@ -6,7 +6,7 @@
 #include <app/action/main.hpp>
 #include <app/internal/io/serialization/scene_path_data.hpp>
 // #include <app/application/selection/selection_manager.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 // #include "ui/old_ui/util/ui.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
@@ -100,7 +100,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 	}
 	void Dialog::leavingSessionDialog( VTX::App::Core::Worker::CallbackThread & p_callback )
 	{
-		if ( !VTXApp::get().hasAnyModifications() )
+		if ( !App::VTXApp::get().hasAnyModifications() )
 		{
 			p_callback( 1 );
 			return;
@@ -115,7 +115,7 @@ namespace VTX::UI::QT::Tool::Session::Dialog
 
 		if ( res == QMessageBox::StandardButton::Save )
 		{
-			const FilePath & filepath = VTXApp::get().getScenePathData().getCurrentPath();
+			const FilePath & filepath = App::VTXApp::get().getScenePathData().getCurrentPath();
 
 			VTX::App::Core::Worker::CallbackThread * threadCallback = new VTX::App::Core::Worker::CallbackThread( p_callback );
 

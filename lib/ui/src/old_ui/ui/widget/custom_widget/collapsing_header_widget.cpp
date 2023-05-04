@@ -77,12 +77,12 @@ namespace VTX::UI::Widget::CustomWidget
 		QPoint submenuPos = mapToGlobal( _submenuButton->pos() );
 		submenuPos.setY( submenuPos.y() + _submenuButton->height() );
 
-		if ( submenuPos.x() + _submenu->width() > VTXApp::get().getMainWindow().width() )
+		if ( submenuPos.x() + _submenu->width() > UI::VTXApp::get().getMainWindow().width() )
 		{
 			submenuPos.setX( submenuPos.x() - _submenu->width() + _submenuButton->width() );
 		}
 
-		if ( submenuPos.y() + _submenu->height() > VTXApp::get().getMainWindow().height() )
+		if ( submenuPos.y() + _submenu->height() > UI::VTXApp::get().getMainWindow().height() )
 		{
 			submenuPos.setY( submenuPos.y() - _submenu->height() - ( _submenuButton->height() * 2 ) );
 		}

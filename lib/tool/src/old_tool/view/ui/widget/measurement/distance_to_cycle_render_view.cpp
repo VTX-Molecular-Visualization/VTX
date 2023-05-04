@@ -7,7 +7,7 @@
 #include <QVBoxLayout>
 #include <algorithm>
 #include <app/component/chemistry/atom.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 #include <string>
 #include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/main_window.hpp>
@@ -104,7 +104,7 @@ namespace VTX::View::UI::Widget::Measurement
 	//	const QRect & parentRect = parentWidget()->contentsRect();
 	//	const QPoint  renderPos	 = QPoint( parentRect.width() / 2, parentRect.height() / 2 );
 
-	//	const App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
+	//	const App::Component::Render::Camera & camera = App::VTXApp::get().getScene().getCamera();
 
 	//	const Mat4f & projectionMatrix = camera.getProjectionMatrix();
 	//	const Mat4f & viewMatrix	   = camera.getViewMatrix();
@@ -129,13 +129,13 @@ namespace VTX::View::UI::Widget::Measurement
 
 	// float DistanceRenderView::_distanceToCamera( const Vec3f & p_worldPos ) const
 	//{
-	//	const App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
+	//	const App::Component::Render::Camera & camera = App::VTXApp::get().getScene().getCamera();
 	//	return Util::distance( camera.getPosition(), p_worldPos );
 	//}
 
 	// bool DistanceRenderView::_isVisibleToCamera( const Vec3f & p_worldPos ) const
 	//{
-	//	const App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
+	//	const App::Component::Render::Camera & camera = App::VTXApp::get().getScene().getCamera();
 
 	//	const Vec3f & cameraForward = camera.getFront();
 	//	const Vec3f	  clipPos		= camera.getPosition() + cameraForward;

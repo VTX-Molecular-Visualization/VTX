@@ -21,7 +21,7 @@
 #include <app/core/view/base_view.hpp>
 #include <app/internal/chemdb/category.hpp>
 #include <app/internal/chemdb/residue.hpp>
-#include <app/old_app/generic/base_visible.hpp>
+#include <app/component/generic/base_visible.hpp>
 #include <app/id.hpp>
 #include <map>
 

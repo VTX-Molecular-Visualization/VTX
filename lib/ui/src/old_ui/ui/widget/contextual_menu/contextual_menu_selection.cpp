@@ -6,11 +6,11 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/view/ui/widget/molecule_scene_view.hpp"
 #include "ui/old_ui/view/ui/widget/path_scene_view.hpp"
+#include "ui/old_ui/vtx_app.hpp"
 #include "ui/qt/action/label.hpp"
 #include "ui/qt/action/selection.hpp"
 #include "ui/qt/action/viewpoint.hpp"
 #include <QTimer>
-
 // #include <tool/old_tool/action/analysis.hpp>
 #include <app/action/label.hpp>
 #include <app/action/selection.hpp>
@@ -262,7 +262,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		const App::Core::Model::ID & modelID = *_target->getItems().begin();
 
 		UI::Widget::Scene::SceneWidget & sceneWidget
-			= VTXApp::get().getMainWindow().getWidget<UI::Widget::Scene::SceneWidget>( UI::ID::Window::SCENE );
+			= UI::VTXApp::get().getMainWindow().getWidget<UI::Widget::Scene::SceneWidget>( UI::ID::Window::SCENE );
 
 		sceneWidget.openRenameEditor( modelID );
 	}
@@ -294,8 +294,8 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		if ( _focusedTarget != nullptr )
 		{
-			const App::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
-			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
+			const App::VTX_ID &					   focusedModelTypeID	   = _focusedTarget->getTypeId();
+			App::Component::Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
 			if ( focusedModelTypeID == App::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
@@ -328,8 +328,8 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		if ( _focusedTarget != nullptr )
 		{
-			const App::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
-			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
+			const App::VTX_ID &					   focusedModelTypeID	   = _focusedTarget->getTypeId();
+			App::Component::Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
 			if ( focusedModelTypeID == App::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
@@ -362,8 +362,8 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		if ( _focusedTarget != nullptr )
 		{
-			const App::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
-			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
+			const App::VTX_ID &					   focusedModelTypeID	   = _focusedTarget->getTypeId();
+			App::Component::Generic::BaseVisible * focusedModelBaseVisible = nullptr;
 
 			if ( focusedModelTypeID == App::ID::Model::MODEL_MOLECULE )
 				focusedModelBaseVisible = static_cast<App::Component::Chemistry::Molecule *>( _focusedTarget );
@@ -676,7 +676,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuSelection::_openAlignmentWindowAction()
 	{
-		VTXApp::get().getMainWindow().showWidget( UI::ID::Window::STRUCTURAL_ALIGNMENT, true );
+		UI::VTXApp::get().getMainWindow().showWidget( UI::ID::Window::STRUCTURAL_ALIGNMENT, true );
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

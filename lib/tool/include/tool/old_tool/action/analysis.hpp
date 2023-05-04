@@ -81,7 +81,7 @@ namespace VTX::Action::Analysis
 			break;
 			}
 
-			VTXApp::get().MASK |= App::Render::VTX_MASK_3D_MODEL_UPDATED;
+			App::VTXApp::get().MASK |= App::Render::VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
@@ -118,7 +118,7 @@ namespace VTX::Action::Analysis
 			try
 			{
 				VTX::Analysis::StructuralAlignment::computeAlignment( _staticMolecule, _mobileMolecules, *_parameters );
-				VTXApp::get().MASK |= App::Render::VTX_MASK_3D_MODEL_UPDATED;
+				App::VTXApp::get().MASK |= App::Render::VTX_MASK_3D_MODEL_UPDATED;
 			}
 			catch ( std::exception & e )
 			{

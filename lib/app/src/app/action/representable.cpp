@@ -1,6 +1,6 @@
 #include "app/action/representable.hpp"
 #include "app/application/representation/representation_manager.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Action::Representable
 {
@@ -17,14 +17,14 @@ namespace VTX::App::Action::Representable
 																									  *_representable );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void RemoveRepresentation::execute()
 	{
 		App::Application::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
 			*_representable );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 } // namespace VTX::App::Action::Representable

@@ -10,7 +10,7 @@
 #include "app/internal/io/filesystem.hpp"
 #include "app/internal/scene/camera_manager.hpp"
 #include "app/manager/action_manager.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/render/renderer/base_renderer.hpp"
 #include <exception>
 #include <string>
@@ -61,7 +61,7 @@ namespace VTX::App::Action::Setting
 	void ChangeBackgroundColor::execute()
 	{
 		VTX_RENDER_EFFECT().setBackgroundColor( _color );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeSnapshotFormat::execute() { VTX_SETTING().setSnapshotFormat( _format ); }
@@ -69,13 +69,13 @@ namespace VTX::App::Action::Setting
 	void ChangeBackgroundOpacity::execute()
 	{
 		VTX_SETTING().setSnapshotBackgroundOpacity( _opacity );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeSnapshotQuality::execute()
 	{
 		VTX_SETTING().setSnapshotQuality( _quality );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeSnapshotResolution::execute() { VTX_SETTING().setSnapshotResolution( _resolution ); }
@@ -106,7 +106,7 @@ namespace VTX::App::Action::Setting
 			}
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeDefaultRenderEffectPreset::execute()
@@ -118,7 +118,7 @@ namespace VTX::App::Action::Setting
 
 		VTX_SETTING().setDefaultRenderEffectPresetIndex( clampedIndex );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeColorMode::execute()
@@ -134,13 +134,13 @@ namespace VTX::App::Action::Setting
 			}
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeShading::execute()
 	{
 		VTX_RENDER_EFFECT().setShading( _shading );
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 	void ActiveVerticalSync::execute()
 	{
@@ -151,79 +151,79 @@ namespace VTX::App::Action::Setting
 	void ActiveAO::execute()
 	{
 		VTX_RENDER_EFFECT().enableSSAO( _active );
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeAOIntensity::execute()
 	{
 		VTX_RENDER_EFFECT().setSSAOIntensity( _intensity );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeAOBlurSize::execute()
 	{
 		VTX_RENDER_EFFECT().setSSAOBlurSize( _blurSize );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ActiveOutline::execute()
 	{
 		VTX_RENDER_EFFECT().enableOutline( _active );
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeOutlineColor::execute()
 	{
 		VTX_RENDER_EFFECT().setOutlineColor( _color );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeOutlineThickness::execute()
 	{
 		VTX_RENDER_EFFECT().setOutlineThickness( _thickness );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeOutlineSensivity::execute()
 	{
 		VTX_RENDER_EFFECT().setOutlineSensivity( _sensivity );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ActiveFog::execute()
 	{
 		VTX_RENDER_EFFECT().enableFog( _active );
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeFogNear::execute()
 	{
 		VTX_RENDER_EFFECT().setFogNear( _near );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeFogFar::execute()
 	{
 		VTX_RENDER_EFFECT().setFogFar( _far );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeFogDensity::execute()
 	{
 		VTX_RENDER_EFFECT().setFogDensity( _density );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeFogColor::execute()
 	{
 		VTX_RENDER_EFFECT().setFogColor( _color );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeLightColor::execute()
 	{
 		VTX_RENDER_EFFECT().setCameraLightColor( _color );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeCameraClip::execute()
@@ -231,30 +231,30 @@ namespace VTX::App::Action::Setting
 		VTX_SETTING().setCameraNearClip( Util::Math::min( _near, _far ) );
 		VTX_SETTING().setCameraFarClip( Util::Math::max( _near, _far ) );
 
-		VTXApp::get().getScene().getCamera().setNear( VTX_SETTING().getCameraNearClip() );
-		VTXApp::get().getScene().getCamera().setFar( VTX_SETTING().getCameraFarClip() );
+		App::VTXApp::get().getScene().getCamera().setNear( VTX_SETTING().getCameraNearClip() );
+		App::VTXApp::get().getScene().getCamera().setFar( VTX_SETTING().getCameraFarClip() );
 	}
 
 	void ChangeCameraFov::execute()
 	{
 		VTX_SETTING().setCameraFOV( _fov );
-		VTXApp::get().getScene().getCamera().setFov( _fov );
+		App::VTXApp::get().getScene().getCamera().setFov( _fov );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_CAMERA_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_CAMERA_UPDATED;
 	}
 
 	void ChangeCameraProjectionToPerspective::execute()
 	{
 		VTX_SETTING().setCameraPerspectiveProjection( _perspective );
-		VTXApp::get().getScene().getCameraManager().refresh();
+		App::VTXApp::get().getScene().getCameraManager().refresh();
 
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ActiveAA::execute()
 	{
 		VTX_SETTING().setAA( _active );
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeTranslationSpeed::execute() { VTX_SETTING().setTranslationSpeed( _speed ); }
@@ -285,7 +285,7 @@ namespace VTX::App::Action::Setting
 	{
 		VTX_SETTING().mode = _mode;
 		// TODO
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeSelectionGranularity::execute() { VTX_SETTING().setSelectionGranularity( _granularity ); }

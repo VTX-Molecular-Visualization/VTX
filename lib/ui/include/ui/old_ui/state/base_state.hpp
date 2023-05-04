@@ -2,16 +2,18 @@
 #define __VTX_BASE_STATE__
 
 #include "ui/old_ui/controller/base_controller.hpp"
+#include <app/application/generic/base_updatable.hpp>
 #include <app/core/event/base_event_receiver_vtx.hpp>
 #include <app/id.hpp>
-#include <app/old_app/generic/base_updatable.hpp>
 #include <map>
 
 namespace VTX
 {
 	namespace State
 	{
-		class BaseState : public Generic::BaseUpdatable, public VTX::App::Core::Event::BaseEventReceiverVTX
+		class BaseState :
+			public App::Application::Generic::BaseUpdatable,
+			public VTX::App::Core::Event::BaseEventReceiverVTX
 		{
 		  public:
 			BaseState() = default;

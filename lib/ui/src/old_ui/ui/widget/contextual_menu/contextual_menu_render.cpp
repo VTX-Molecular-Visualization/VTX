@@ -190,10 +190,10 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuRender::_refreshPickerMode() const
 	{
-		const App::VTX_ID & pickerID = VTXApp::get()
-										  .getStateMachine()
-										  .getState<State::Visualization>( ID::State::VISUALIZATION )
-										  ->getCurrentPickerID();
+		const App::VTX_ID & pickerID = UI::VTXApp::get()
+										   .getStateMachine()
+										   .getState<State::Visualization>( ID::State::VISUALIZATION )
+										   ->getCurrentPickerID();
 
 		_selectionModeAction->setChecked( pickerID == ID::Controller::PICKER );
 		_measurementModeAction->setChecked( pickerID == ID::Controller::MEASUREMENT );
@@ -204,7 +204,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_refreshSelectionGranularityMenu() const
 	{
 		const State::Visualization * const state
-			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+			= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 		const VTX::App::Application::Selection::GRANULARITY currentGranularity
 			= VTX_SETTING().getSelectionGranularity();
 
@@ -218,7 +218,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_refreshMeasurementModeMenu() const
 	{
 		const State::Visualization * const state
-			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+			= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
 		const App::VTX_ID & pickerID = state->getCurrentPickerID();
 
@@ -256,7 +256,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_refreshOverlayVisibilityMenu() const
 	{
 		const Render::RenderWidget & renderWigdet
-			= VTXApp::get().getMainWindow().getWidget<Render::RenderWidget>( UI::ID::Window::RENDER );
+			= UI::VTXApp::get().getMainWindow().getWidget<Render::RenderWidget>( UI::ID::Window::RENDER );
 
 		for ( QAction * const action : _overlaysMenu->actions() )
 		{
@@ -285,7 +285,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_setPickerToSelection() const
 	{
 		const State::Visualization * const state
-			= VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
+			= UI::VTXApp::get().getStateMachine().getState<State::Visualization>( ID::State::VISUALIZATION );
 
 		if ( state->getCurrentPickerID() != ID::Controller::PICKER )
 			VTX_ACTION( new Action::Main::ChangePicker( ID::Controller::PICKER ) );
@@ -324,7 +324,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuRender::_setOverlayVisibilityAction( QAction * const p_action )
 	{
 		Widget::Render::RenderWidget & renderWidget
-			= VTXApp::get().getMainWindow().getWidget<Widget::Render::RenderWidget>( UI::ID::Window::RENDER );
+			= UI::VTXApp::get().getMainWindow().getWidget<Widget::Render::RenderWidget>( UI::ID::Window::RENDER );
 
 		const int actionData = p_action->data().toInt();
 
@@ -348,7 +348,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		if ( presetIndex == -1 )
 		{
-			VTXApp::get().getMainWindow().openSettingWindow( UI::Widget::Settings::SETTING_MENU::RENDER_EFFECTS );
+			UI::VTXApp::get().getMainWindow().openSettingWindow( UI::Widget::Settings::SETTING_MENU::RENDER_EFFECTS );
 		}
 		else
 		{

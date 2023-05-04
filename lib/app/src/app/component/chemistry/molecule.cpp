@@ -11,13 +11,14 @@
 #include "app/core/event/vtx_event.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
-#include "app/mvc.hpp"
 #include "app/id.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/internal/chemdb/color.hpp"
+#include "app/mvc.hpp"
 #include "app/render/view/cylinder.hpp"
 #include "app/render/view/sphere.hpp"
 #include "app/util/molecule.hpp"
 #include "app/util/secondary_structure.hpp"
+#include "app/vtx_app.hpp"
 #include <algorithm>
 #include <util/color/rgba.hpp>
 #include <util/logger.hpp>
@@ -163,7 +164,7 @@ namespace VTX::App::Component::Chemistry
 						continue;
 
 					const App::Application::Representation::RepresentationPreset * const defaultRepresentation
-						= VTXApp::get().getRepresentationLibrary().getDefaultRepresentation(
+						= App::VTXApp::get().getRepresentationLibrary().getDefaultRepresentation(
 							category->getCategoryEnum() );
 
 					for ( const uint chainIndex : category->getChains() )
@@ -314,20 +315,21 @@ namespace VTX::App::Component::Chemistry
 			const App::Application::Representation::InstantiatedRepresentation * const currentRepresentation
 				= residue->getRepresentation();
 
-			Generic::COLOR_MODE colorMode = currentRepresentation->getColorMode();
+			App::Internal::ChemDB::Color::COLOR_MODE colorMode = currentRepresentation->getColorMode();
 
-			if ( colorMode == Generic::COLOR_MODE::INHERITED )
+			if ( colorMode == App::Internal::ChemDB::Color::COLOR_MODE::INHERITED )
 			{
-				const Generic::COLOR_MODE & chainColorMode
+				const App::Internal::ChemDB::Color::COLOR_MODE & chainColorMode
 					= residue->getChainPtr()->getRepresentation()->getColorMode();
-				if ( chainColorMode != Generic::COLOR_MODE::INHERITED )
+				if ( chainColorMode != App::Internal::ChemDB::Color::COLOR_MODE::INHERITED )
 				{
 					colorMode = chainColorMode;
 				}
 				else
 				{
-					const Generic::COLOR_MODE & moleculeColorMode = getRepresentation()->getColorMode();
-					if ( moleculeColorMode != Generic::COLOR_MODE::INHERITED )
+					const App::Internal::ChemDB::Color::COLOR_MODE & moleculeColorMode
+						= getRepresentation()->getColorMode();
+					if ( moleculeColorMode != App::Internal::ChemDB::Color::COLOR_MODE::INHERITED )
 						colorMode = moleculeColorMode;
 					else
 						colorMode = VTX::App::Application::Setting::COLOR_MODE_DEFAULT;
@@ -339,21 +341,21 @@ namespace VTX::App::Component::Chemistry
 
 			switch ( colorMode )
 			{
-			case Generic::COLOR_MODE::ATOM_CHAIN: colorCarbon = true; [[fallthrough]];
-			case Generic::COLOR_MODE::CHAIN: color = residue->getChainPtr()->getColor(); break;
+			case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CHAIN: colorCarbon = true; [[fallthrough]];
+			case App::Internal::ChemDB::Color::COLOR_MODE::CHAIN: color = residue->getChainPtr()->getColor(); break;
 
-			case Generic::COLOR_MODE::ATOM_PROTEIN: colorCarbon = true; [[fallthrough]];
-			case Generic::COLOR_MODE::PROTEIN: color = getColor(); break;
+			case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN: colorCarbon = true; [[fallthrough]];
+			case App::Internal::ChemDB::Color::COLOR_MODE::PROTEIN: color = getColor(); break;
 
-			case Generic::COLOR_MODE::ATOM_CUSTOM: colorCarbon = true; [[fallthrough]];
-			case Generic::COLOR_MODE::CUSTOM: color = currentRepresentation->getColor(); break;
+			case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM: colorCarbon = true; [[fallthrough]];
+			case App::Internal::ChemDB::Color::COLOR_MODE::CUSTOM: color = currentRepresentation->getColor(); break;
 
-			case Generic::COLOR_MODE::RESIDUE:
+			case App::Internal::ChemDB::Color::COLOR_MODE::RESIDUE:
 				colorCarbon = false;
 				color		= residue->getColor();
 				break;
 
-			case Generic::COLOR_MODE::INHERITED:
+			case App::Internal::ChemDB::Color::COLOR_MODE::INHERITED:
 			default: break;
 			}
 
@@ -572,7 +574,7 @@ namespace VTX::App::Component::Chemistry
 
 		_notifyViews( App::Event::Model::TRAJECTORY_FRAME_CHANGE );
 
-		VTXApp::get().MASK |= App::Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= App::Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Molecule::applyNextFrame( const uint p_frameCount )
@@ -1319,28 +1321,25 @@ namespace VTX::App::Component::Chemistry
 	void Molecule::notifyStructureChange()
 	{
 		_notifyDataChanged();
-		VTX_EVENT<Chemistry::Molecule *>( VTX::App::Event::Global::MOLECULE_STRUCTURE_CHANGE, this );
+		VTX_EVENT<Chemistry::Molecule *>( Event::Global::MOLECULE_STRUCTURE_CHANGE, this );
 	}
 
-	void Molecule::notifyVisibilityChange()
-	{
-		_notifyViews( new App::Core::Event::VTXEvent( App::Event::Model::VISIBILITY ) );
-	}
+	void Molecule::notifyVisibilityChange() { _notifyViews( new Core::Event::VTXEvent( Event::Model::VISIBILITY ) ); }
 
 	void Molecule::setDisplayName( const std::string & p_name )
 	{
 		_displayName = p_name;
-		_notifyViews( App::Event::Model::DISPLAY_NAME_CHANGE );
+		_notifyViews( Event::Model::DISPLAY_NAME_CHANGE );
 	}
 
 	void Molecule::setColor( const Util::Color::Rgba & p_color )
 	{
-		Generic::BaseColorable::setColor( p_color );
+		Component::Generic::BaseColorable::setColor( p_color );
 
 		if ( isInit() )
 		{
-			_notifyViews( App::Event::Model::COLOR_CHANGE );
-			VTX_EVENT<const Util::Color::Rgba &>( VTX::App::Event::Global::MOLECULE_COLOR_CHANGE, p_color );
+			_notifyViews( Event::Model::COLOR_CHANGE );
+			VTX_EVENT<const Util::Color::Rgba &>( Event::Global::MOLECULE_COLOR_CHANGE, p_color );
 		}
 	}
 } // namespace VTX::App::Component::Chemistry

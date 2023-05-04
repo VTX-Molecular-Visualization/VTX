@@ -18,7 +18,7 @@
 #include <app/component/chemistry/residue.hpp>
 #include <app/event/global.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/generic/base_visible.hpp>
+#include <app/component/generic/base_visible.hpp>
 #include <stack>
 #include <util/logger.hpp>
 

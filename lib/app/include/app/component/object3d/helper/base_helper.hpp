@@ -1,12 +1,12 @@
 #ifndef __VTX_APP_COMPONENT_OBJECT3D_HELPER_BASE_HELPER__
 #define __VTX_APP_COMPONENT_OBJECT3D_HELPER_BASE_HELPER__
 
-#include "app/old_app/generic/base_renderable.hpp"
+#include "app/component/generic/base_renderable.hpp"
 #include "app/render/buffer/base_buffer_opengl.hpp"
 
 namespace VTX::App::Component::Object3D::Helper
 {
-	class BaseHelper : public Generic::BaseRenderable, public App::Render::Buffer::BaseBufferOpenGL
+	class BaseHelper : public Component::Generic::BaseRenderable, public App::Render::Buffer::BaseBufferOpenGL
 	{
 	  public:
 		BaseHelper()		  = default;

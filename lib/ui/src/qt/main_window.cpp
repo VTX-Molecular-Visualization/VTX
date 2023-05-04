@@ -67,7 +67,7 @@ namespace VTX::UI::QT
 
 	void MainWindow::closeEvent( QCloseEvent * p_closeEvent )
 	{
-		if ( VTXApp::get().hasAnyModifications() )
+		if ( App::VTXApp::get().hasAnyModifications() )
 		{
 			p_closeEvent->ignore();
 			VTX::App::Core::Worker::CallbackThread callback = VTX::App::Core::Worker::CallbackThread(
@@ -368,13 +368,13 @@ namespace VTX::UI::QT
 		title += " - RELEASE";
 #endif
 #endif
-		const FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
+		const FilePath & currentSessionFilepath = App::VTXApp::get().getScenePathData().getCurrentPath();
 
 		if ( !currentSessionFilepath.empty() )
 		{
 			title += " - " + currentSessionFilepath.filename().string();
 
-			if ( VTXApp::get().getScenePathData().sceneHasModifications() )
+			if ( App::VTXApp::get().getScenePathData().sceneHasModifications() )
 			{
 				title += Style::WINDOW_TITLE_SCENE_MODIFIED_FEEDBACK;
 			}

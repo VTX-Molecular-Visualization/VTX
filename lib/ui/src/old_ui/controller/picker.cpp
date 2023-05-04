@@ -1,5 +1,6 @@
 #include "ui/old_ui/controller/picker.hpp"
 #include "ui/old_ui/ui/main_window.hpp"
+#include "ui/old_ui/vtx_app.hpp"
 #include "ui/qt/action/selection.hpp"
 #include <app/action/selection.hpp>
 #include <app/application/selection/selection.hpp>
@@ -9,7 +10,6 @@
 #include <app/component/chemistry/molecule.hpp>
 #include <app/component/chemistry/residue.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/vtx_app.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Controller
@@ -19,14 +19,14 @@ namespace VTX::Controller
 
 	void Picker::_onMouseLeftClick( const uint p_x, const uint p_y )
 	{
-		const Vec2i ids = VTXApp::get().getMainWindow().getPickedIds( p_x, p_y );
+		const Vec2i ids = UI::VTXApp::get().getMainWindow().getPickedIds( p_x, p_y );
 		_performSelection( ids );
 		_lastClickedIds = ids;
 	}
 
 	void Picker::_onMouseRightClick( const uint p_x, const uint p_y )
 	{
-		UI::MainWindow &						 mw = VTXApp::get().getMainWindow();
+		UI::MainWindow &						 mw = UI::VTXApp::get().getMainWindow();
 		const UI::Widget::Render::RenderWidget & renderWidget
 			= mw.getWidget<UI::Widget::Render::RenderWidget>( UI::ID::Window::RENDER );
 
@@ -379,7 +379,7 @@ namespace VTX::Controller
 
 	void Picker::_onMouseLeftDoubleClick( const uint p_x, const uint p_y )
 	{
-		const Vec2i ids = VTXApp::get().getMainWindow().getPickedIds( p_x, p_y );
+		const Vec2i ids = UI::VTXApp::get().getMainWindow().getPickedIds( p_x, p_y );
 
 		if ( ids.x == App::Core::Model::ID_UNKNOWN )
 			return;

@@ -5,12 +5,12 @@
 
 #include "app/core/worker/base_worker.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
-#include "app/old_app/generic/base_opengl.hpp"
+#include "app/render/generic/base_opengl.hpp"
 // #include <QImage>
 
 namespace VTX::App::Render::Worker
 {
-	class Snapshoter : public App::Core::Worker::BaseWorker, public Generic::BaseOpenGL
+	class Snapshoter : public App::Core::Worker::BaseWorker, public Render::Generic::BaseOpenGL
 	{
 	  public:
 		enum class MODE : int

@@ -55,7 +55,7 @@ namespace VTX::App::Internal::Worker
 
 		_library.applyDefault( _notify );
 
-		if ( VTXApp::get().getSetting().getTmpRepresentationDefaultName() != "" )
+		if ( App::VTXApp::get().getSetting().getTmpRepresentationDefaultName() != "" )
 		{
 			App::Application::Representation::RepresentationPreset * defaultRepresentation
 				= _library.getRepresentationByName( VTX_SETTING().getTmpRepresentationDefaultName() );
@@ -87,7 +87,7 @@ namespace VTX::App::Internal::Worker
 		{
 			const App::Internal::ChemDB::Category::TYPE categoryEnum = App::Internal::ChemDB::Category::TYPE( i );
 			const std::string &							representationName
-				= VTXApp::get().getSetting().getTmpDefaultRepresentationNamePerCategory( categoryEnum );
+				= App::VTXApp::get().getSetting().getTmpDefaultRepresentationNamePerCategory( categoryEnum );
 
 			if ( representationName.empty() )
 				continue;

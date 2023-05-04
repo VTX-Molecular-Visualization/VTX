@@ -6,12 +6,14 @@
 #include "ui/old_ui/ui/widget/custom_widget/vector3_widget.hpp"
 #include <QPushButton>
 #include <QWidget>
-#include <app/old_app/generic/base_auto_rotate.hpp>
+#include <app/component/generic/base_auto_rotate.hpp>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class AutoRotateWidget : public BaseManualWidget<QWidget>, public TMultiDataField<Generic::BaseAutoRotate>
+	class AutoRotateWidget :
+		public BaseManualWidget<QWidget>,
+		public TMultiDataField<App::Component::Generic::BaseAutoRotate>
 	{
 		VTX_WIDGET
 
@@ -19,7 +21,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void localize() override;
 
 		void resetState() override;
-		void updateWithNewValue( Generic::BaseAutoRotate & p_value ) override;
+		void updateWithNewValue( App::Component::Generic::BaseAutoRotate & p_value ) override;
 
 	  protected:
 		AutoRotateWidget( QWidget * p_parent = nullptr );
@@ -35,7 +37,8 @@ namespace VTX::UI::Widget::CustomWidget
 		CustomWidget::Vector3Widget *		   _orientationWidget = nullptr;
 		CustomWidget::FloatFieldSliderWidget * _speedWidget		  = nullptr;
 
-		std::unordered_set<Generic::BaseAutoRotate *> _targets = std::unordered_set<Generic::BaseAutoRotate *>();
+		std::unordered_set<App::Component::Generic::BaseAutoRotate *> _targets
+			= std::unordered_set<App::Component::Generic::BaseAutoRotate *>();
 
 		void _togglePlayAction();
 		void _speedChange( const float p_speed ) const;

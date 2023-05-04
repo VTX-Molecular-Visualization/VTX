@@ -3,7 +3,7 @@
 #include "app/application/scene.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/render/camera.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Render::View
 {
@@ -26,9 +26,9 @@ namespace VTX::App::Render::View
 	{
 		BaseView3D::render( p_camera );
 
-		if ( VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
+		if ( App::VTXApp::get().MASK & Render::VTX_MASK_CAMERA_UPDATED )
 		{
-			const App::Component::Render::Camera & cam = VTXApp::get().getScene().getCamera();
+			const App::Component::Render::Camera & cam = App::VTXApp::get().getScene().getCamera();
 			_program->setVec3f( "u_camPosition", cam.getPosition() );
 		}
 

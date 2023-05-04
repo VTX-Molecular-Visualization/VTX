@@ -48,7 +48,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 		_fullscreen = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleFullscreenButton" );
 		_fullscreen->setData( "Fullscreen", ":/sprite/fullscreen_icon.png", Qt::Orientation::Vertical );
-		_updateFullscreenButton( VTXApp::get().getMainWindow().getWindowMode() );
+		_updateFullscreenButton( UI::VTXApp::get().getMainWindow().getWindowMode() );
 		pushButton( *_fullscreen, 3 );
 
 		_quitButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "quitButton" );
@@ -95,7 +95,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 	}
 	void MenuHomeWindowsWidget::_refreshButton( const App::VTX_ID & p_id )
 	{
-		const bool	windowVisibility = VTXApp::get().getMainWindow().getWidgetVisibility( p_id );
+		const bool	windowVisibility = UI::VTXApp::get().getMainWindow().getWidgetVisibility( p_id );
 		std::string windowName		 = p_id;
 		std::transform( ++windowName.begin(), windowName.end(), ++windowName.begin(), ::tolower );
 
@@ -138,33 +138,33 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 	void MenuHomeWindowsWidget::_toggleSceneWindow()
 	{
-		VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SCENE );
+		UI::VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SCENE );
 	}
 	void MenuHomeWindowsWidget::_toggleRenderWindow()
 	{
-		VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::RENDER );
+		UI::VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::RENDER );
 	}
 	void MenuHomeWindowsWidget::_toggleConsoleWindow()
 	{
-		VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::CONSOLE );
+		UI::VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::CONSOLE );
 	}
 	void MenuHomeWindowsWidget::_toggleInspectorWindow()
 	{
-		VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::INSPECTOR );
+		UI::VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::INSPECTOR );
 	}
 	// !V0.1
 	// void MenuHomeWindowsWidget::_toggleSelectionWindow()
 	//{
-	//	VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SELECTION );
+	//	UI::VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SELECTION );
 	//}
 	void MenuHomeWindowsWidget::_toggleSequenceWindow()
 	{
-		VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SEQUENCE );
+		UI::VTXApp::get().getMainWindow().toggleWidget( UI::ID::Window::SEQUENCE );
 	}
 
 	void MenuHomeWindowsWidget::_toggleWindowState() const
 	{
-		const Qt::WindowStates windowState = VTXApp::get().getMainWindow().windowState();
+		const Qt::WindowStates windowState = UI::VTXApp::get().getMainWindow().windowState();
 
 		if ( windowState & Qt::WindowStates::enum_type::WindowFullScreen )
 			VTX_ACTION( new Action::Setting::WindowMode( Core::WindowMode::Windowed ) );
@@ -174,7 +174,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 	void MenuHomeWindowsWidget::_displaySettingsWindow()
 	{
-		VTXApp::get().getMainWindow().openSettingWindow( Settings::SETTING_MENU::VTX );
+		UI::VTXApp::get().getMainWindow().openSettingWindow( Settings::SETTING_MENU::VTX );
 	}
 
 	void MenuHomeWindowsWidget::_quit() { VTX_ACTION( new QT::Action::Main::Quit() ); }

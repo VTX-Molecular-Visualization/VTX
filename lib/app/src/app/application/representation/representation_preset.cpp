@@ -7,7 +7,7 @@
 #include <util/color/rgba.hpp>
 #include "app/id.hpp"
 #include "app/application/setting.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <util/logger.hpp>
 
 namespace VTX::App::Application::Representation

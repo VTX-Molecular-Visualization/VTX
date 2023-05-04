@@ -15,7 +15,7 @@
 #include "app/internal/io/serialization/image_export.hpp"
 #include "app/internal/io/serializer.hpp"
 #include "app/internal/setting/register_map.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <exception>
 #include <string>
 #include <util/types.hpp>
@@ -54,18 +54,18 @@ namespace VTX::App::Application
 	const float						   Setting::BONDS_RADIUS_DEFAULT			  = 0.15f;
 	const float						   Setting::BONDS_RADIUS_MIN				  = 0.01f;
 	const float						   Setting::BONDS_RADIUS_MAX				  = 1.f;
-	const Generic::COLOR_BLENDING_MODE Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT = Generic::COLOR_BLENDING_MODE::HARD;
+	const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT = App::Internal::ChemDB::Color::COLOR_BLENDING_MODE::HARD;
 	const float						   Setting::ATOMS_RADIUS_ADD_DEFAULT		  = 0.f;
 	const float						   Setting::ATOMS_RADIUS_ADD_MIN			  = -1.f;
 	const float						   Setting::ATOMS_RADIUS_ADD_MAX			  = 1.f;
 	const bool						   Setting::ATOMS_IS_RADIUS_FIXED_DEFAULT	  = true;
-	const Generic::SECONDARY_STRUCTURE_COLOR_MODE Setting::SS_COLOR_MODE_DEFAULT
-		= Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
-	const Generic::COLOR_BLENDING_MODE Setting::SS_COLOR_BLENDING_MODE_DEFAULT = Generic::COLOR_BLENDING_MODE::HARD;
+	const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE Setting::SS_COLOR_MODE_DEFAULT
+		= App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
+	const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE Setting::SS_COLOR_BLENDING_MODE_DEFAULT = App::Internal::ChemDB::Color::COLOR_BLENDING_MODE::HARD;
 	const float						   Setting::SES_RESOLUTION_DEFAULT		   = 0.5f;
 	const float						   Setting::SES_RESOLUTION_MIN			   = 0.3f;
 	const float						   Setting::SES_RESOLUTION_MAX			   = 1.f;
-	const Generic::COLOR_MODE		   Setting::COLOR_MODE_DEFAULT			   = Generic::COLOR_MODE::CHAIN;
+	const App::Internal::ChemDB::Color::COLOR_MODE		   Setting::COLOR_MODE_DEFAULT			   = App::Internal::ChemDB::Color::COLOR_MODE::CHAIN;
 
 	const std::vector<std::string> Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_NAME = {
 		"Stick", // POLYMER

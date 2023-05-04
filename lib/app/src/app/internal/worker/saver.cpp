@@ -62,7 +62,7 @@ namespace VTX::App::Internal::Worker
 			// else export all the structures imported in the scene
 			else
 			{
-				for ( const auto it : VTXApp::get().getScene().getMolecules() )
+				for ( const auto it : App::VTXApp::get().getScene().getMolecules() )
 				{
 					App::Component::Chemistry::Molecule * molecule = it.first;
 					writer->writeFile( _path, *molecule );
@@ -101,10 +101,10 @@ namespace VTX::App::Internal::Worker
 			// If not saved on computer => Create file in scene molecule directory
 			// Else if has any modifications => Create / Save file in scene molecule directory.
 			for ( const App::Application::Scene::PairMoleculePtrFloat & molecule :
-				  VTXApp::get().getScene().getMolecules() )
+				  App::VTXApp::get().getScene().getMolecules() )
 			{
 				const App::Internal::IO::Serialization::ScenePathData::Data & moleculePathData
-					= VTXApp::get().getScenePathData().getData( molecule.first );
+					= App::VTXApp::get().getScenePathData().getData( molecule.first );
 
 				FilePath filePath = moleculePathData.getFilepath();
 
@@ -125,21 +125,21 @@ namespace VTX::App::Internal::Worker
 					{
 						filePath = itemDirectory / "molecule.mmcif";
 						Util::Filesystem::generateUniqueFileName( filePath );
-						VTXApp::get().getScenePathData().getData( molecule.first ).registerPath( filePath );
+						App::VTXApp::get().getScenePathData().getData( molecule.first ).registerPath( filePath );
 					}
 
 					moleculeWriter->writeFile( filePath, *molecule.first );
-					VTXApp::get().getScenePathData().getData( molecule.first ).registerWriter( moleculeWriter );
+					App::VTXApp::get().getScenePathData().getData( molecule.first ).registerWriter( moleculeWriter );
 				}
 			}
 
-			writer->writeFile( _path, VTXApp::get() );
+			writer->writeFile( _path, App::VTXApp::get() );
 
 			for ( const App::Application::Scene::PairMoleculePtrFloat & molecule :
-				  VTXApp::get().getScene().getMolecules() )
+				  App::VTXApp::get().getScene().getMolecules() )
 			{
-				VTXApp::get().getScenePathData().getData( molecule.first ).deleteWriter();
-				VTXApp::get().getScenePathData().getData( molecule.first ).setHasChanged( false );
+				App::VTXApp::get().getScenePathData().getData( molecule.first ).deleteWriter();
+				App::VTXApp::get().getScenePathData().getData( molecule.first ).setHasChanged( false );
 			}
 		}
 		catch ( const std::exception & p_e )

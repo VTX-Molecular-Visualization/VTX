@@ -1,7 +1,7 @@
 #include "app/action/dev.hpp"
 #include "app/internal/io/filesystem.hpp"
 #include "app/render/renderer/gl/program_manager.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <filesystem>
 #include <util/filesystem.hpp>
 
@@ -16,7 +16,7 @@ namespace VTX::App::Action::Dev
 							   App::Internal::IO::Filesystem::getShadersDir() );
 		// Recompile.
 		VTX_PROGRAM_MANAGER().refreshShaders();
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 } // namespace VTX::App::Action::Dev

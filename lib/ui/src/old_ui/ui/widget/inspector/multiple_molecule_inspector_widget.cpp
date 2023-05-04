@@ -6,6 +6,7 @@
 #include "ui/old_ui/ui/widget/custom_widget/folding_button.hpp"
 #include "ui/old_ui/ui/widget/inspector/inspector_widget.hpp"
 #include "ui/old_ui/ui/widget_factory.hpp"
+#include "ui/old_ui/vtx_app.hpp"
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>
@@ -283,7 +284,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_onTransformChange(
 		const App::Internal::Math::Transform &									   p_transform,
-		const Generic::BaseTransformable::TransformComposantMask & p_mask ) const
+		const App::Internal::Math::TRANSFORM_COMPOSANT_MASK & p_mask ) const
 	{
 		if ( !signalsBlocked() )
 		{
@@ -295,8 +296,8 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			std::unordered_set<Generic::BaseTransformable *> transformableSet
-				= std::unordered_set<Generic::BaseTransformable *>();
+			std::unordered_set<App::Component::Generic::BaseTransformable *> transformableSet
+				= std::unordered_set<App::Component::Generic::BaseTransformable *>();
 			transformableSet.reserve( getTargets().size() );
 
 			for ( App::Component::Chemistry::Molecule * target : getTargets() )
@@ -309,8 +310,8 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			std::unordered_set<Generic::BaseTransformable *> transformableSet
-				= std::unordered_set<Generic::BaseTransformable *>();
+			std::unordered_set<App::Component::Generic::BaseTransformable *> transformableSet
+				= std::unordered_set<App::Component::Generic::BaseTransformable *>();
 			transformableSet.reserve( getTargets().size() );
 
 			for ( App::Component::Chemistry::Molecule * target : getTargets() )
@@ -323,8 +324,8 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			std::unordered_set<Generic::BaseTransformable *> transformableSet
-				= std::unordered_set<Generic::BaseTransformable *>();
+			std::unordered_set<App::Component::Generic::BaseTransformable *> transformableSet
+				= std::unordered_set<App::Component::Generic::BaseTransformable *>();
 			transformableSet.reserve( getTargets().size() );
 
 			for ( App::Component::Chemistry::Molecule * target : getTargets() )
@@ -349,24 +350,24 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_onRepresentationColorChange(
 		const App::Application::Representation::InstantiatedRepresentation & p_representation,
-		const Util::Color::Rgba &													 p_color,
+		const Util::Color::Rgba &											 p_color,
 		const bool															 p_ssColor ) const
 	{
 		if ( p_ssColor )
 		{
 			switch ( p_representation.getRibbonData().colorMode )
 			{
-			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
+			case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
 				VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 				break;
 
-			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
+			case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
 				VTX_ACTION( new App::Action::Molecule::ChangeColor( getTargets(), p_color ) );
 				break;
 
-			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
-			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
-			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE: break;
+			case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
+			case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
+			case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE: break;
 
 			default:
 				VTX_WARNING( "SECONDARY_STRUCTURE_COLOR_MODE "
@@ -379,19 +380,19 @@ namespace VTX::UI::Widget::Inspector
 		{
 			switch ( p_representation.getColorMode() )
 			{
-			case Generic::COLOR_MODE::ATOM_CUSTOM:
-			case Generic::COLOR_MODE::CUSTOM:
+			case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM:
+			case App::Internal::ChemDB::Color::COLOR_MODE::CUSTOM:
 				VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 				break;
 
-			case Generic::COLOR_MODE::ATOM_PROTEIN:
-			case Generic::COLOR_MODE::PROTEIN:
+			case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN:
+			case App::Internal::ChemDB::Color::COLOR_MODE::PROTEIN:
 				VTX_ACTION( new App::Action::Molecule::ChangeColor( getTargets(), p_color ) );
 				break;
 
-			case Generic::COLOR_MODE::ATOM_CHAIN:
-			case Generic::COLOR_MODE::CHAIN:
-			case Generic::COLOR_MODE::RESIDUE: break;
+			case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CHAIN:
+			case App::Internal::ChemDB::Color::COLOR_MODE::CHAIN:
+			case App::Internal::ChemDB::Color::COLOR_MODE::RESIDUE: break;
 
 			default:
 				VTX_WARNING( "COLOR_MODE " + std::to_string( int( p_representation.getColorMode() ) )
@@ -416,21 +417,21 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_setInspectorToChain() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::CHAIN );
 	}
 	void MultipleMoleculeWidget::_setInspectorToResidue() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::RESIDUE );
 	}
 	void MultipleMoleculeWidget::_setInspectorToAtom() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );

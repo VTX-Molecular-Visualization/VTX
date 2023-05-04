@@ -1,13 +1,13 @@
 #ifndef __VTX_APP_RENDER_GL_BUFFER_OBJECT__
 #define __VTX_APP_RENDER_GL_BUFFER_OBJECT__
 
-#include "app/old_app/generic/base_opengl.hpp"
+#include "app/render/generic/base_opengl.hpp"
 #include <util/types.hpp>
 
 // TODO Reimplement this without Qt (Gl functions and class was embedded by Qt
 namespace VTX::App::Render::Renderer::GL
 {
-	class Buffer : public Generic::BaseOpenGL
+	class Buffer : public Render::Generic::BaseOpenGL
 	{
 	  public:
 		// See http://docs.gl/gl4/glBufferData.

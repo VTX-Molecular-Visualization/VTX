@@ -5,8 +5,8 @@
 #include "app/component/chemistry/generated_molecule.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/generic/base_visible.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/component/generic/base_visible.hpp"
+#include "app/vtx_app.hpp"
 #include "app/util/molecule.hpp"
 #include <map>
 #include <util/types.hpp>
@@ -27,7 +27,7 @@ namespace VTX::App::Action::Atom
 			std::map<App::Component::Chemistry::Molecule *, std::vector<uint>> atomIDsPerMolecules
 				= std::map<App::Component::Chemistry::Molecule *, std::vector<uint>>();
 
-			for ( Generic::BaseVisible * const visible : _visibles )
+			for ( Component::Generic::BaseVisible * const visible : _visibles )
 			{
 				App::Component::Chemistry::Atom * const atom
 					= static_cast<App::Component::Chemistry::Atom *>( visible );
@@ -35,7 +35,7 @@ namespace VTX::App::Action::Atom
 			}
 
 			for ( const App::Application::Scene::PairMoleculePtrFloat & sceneMolecule :
-				  VTXApp::get().getScene().getMolecules() )
+				  App::VTXApp::get().getScene().getMolecules() )
 			{
 				App::Component::Chemistry::Molecule * const molecule = sceneMolecule.first;
 
@@ -61,7 +61,7 @@ namespace VTX::App::Action::Atom
 				atomsPerMolecules
 				= std::map<App::Component::Chemistry::Molecule *, std::vector<App::Component::Chemistry::Atom *>>();
 
-			for ( Generic::BaseVisible * const visible : _visibles )
+			for ( Component::Generic::BaseVisible * const visible : _visibles )
 			{
 				App::Component::Chemistry::Atom * const atom
 					= static_cast<App::Component::Chemistry::Atom *>( visible );
@@ -80,7 +80,7 @@ namespace VTX::App::Action::Atom
 			}
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Delete::execute()
@@ -92,7 +92,7 @@ namespace VTX::App::Action::Atom
 
 		if ( molecule->isEmpty() )
 		{
-			VTXApp::get().getScene().removeMolecule( molecule );
+			App::VTXApp::get().getScene().removeMolecule( molecule );
 			VTX::MVC_MANAGER().deleteModel( molecule );
 		}
 		else
@@ -101,8 +101,8 @@ namespace VTX::App::Action::Atom
 			molecule->computeAllRepresentationData();
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Copy::execute()
@@ -112,7 +112,7 @@ namespace VTX::App::Action::Atom
 
 		generatedMolecule->copyFromAtom( _target );
 		generatedMolecule->applyTransform( _target.getMoleculePtr()->getTransform() );
-		VTXApp::get().getScene().addMolecule( generatedMolecule );
+		App::VTXApp::get().getScene().addMolecule( generatedMolecule );
 	}
 
 	void Extract::execute()
@@ -123,7 +123,7 @@ namespace VTX::App::Action::Atom
 			= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
 
 		generatedMolecule->extractAtom( _target );
-		VTXApp::get().getScene().addMolecule( generatedMolecule );
+		App::VTXApp::get().getScene().addMolecule( generatedMolecule );
 
 		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectMolecule(
 			*generatedMolecule );

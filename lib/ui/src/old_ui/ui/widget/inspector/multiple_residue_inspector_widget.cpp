@@ -220,7 +220,7 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_onRepresentationColorChange(
 		const App::Application::Representation::InstantiatedRepresentation & p_representation,
-		const Util::Color::Rgba &													 p_color,
+		const Util::Color::Rgba &											 p_color,
 		const bool															 p_ssColor )
 	{
 		if ( !signalsBlocked() )
@@ -229,14 +229,14 @@ namespace VTX::UI::Widget::Inspector
 			{
 				switch ( p_representation.getRibbonData().colorMode )
 				{
-				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
+				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
 					VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
-				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
-				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
-				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
-				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE: break;
+				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
+				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
+				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
+				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE: break;
 
 				default:
 					VTX_WARNING( "SECONDARY_STRUCTURE_COLOR_MODE "
@@ -249,17 +249,17 @@ namespace VTX::UI::Widget::Inspector
 			{
 				switch ( p_representation.getColorMode() )
 				{
-				case Generic::COLOR_MODE::ATOM_CUSTOM:
-				case Generic::COLOR_MODE::CUSTOM:
+				case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM:
+				case App::Internal::ChemDB::Color::COLOR_MODE::CUSTOM:
 					VTX_ACTION( new App::Action::InstantiatedRepresentation::ChangeColor( getTargets(), p_color ) );
 					break;
 
-				case Generic::COLOR_MODE::ATOM_PROTEIN:
-				case Generic::COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
+				case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN:
+				case App::Internal::ChemDB::Color::COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
 
-				case Generic::COLOR_MODE::ATOM_CHAIN:
-				case Generic::COLOR_MODE::CHAIN:
-				case Generic::COLOR_MODE::RESIDUE: break;
+				case App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CHAIN:
+				case App::Internal::ChemDB::Color::COLOR_MODE::CHAIN:
+				case App::Internal::ChemDB::Color::COLOR_MODE::RESIDUE: break;
 
 				default:
 					VTX_WARNING( "COLOR_MODE " + std::to_string( int( p_representation.getColorMode() ) )
@@ -317,21 +317,21 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::_setInspectorToMolecule() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::MOLECULE );
 	}
 	void MultipleResidueWidget::_setInspectorToChain() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::CHAIN );
 	}
 	void MultipleResidueWidget::_setInspectorToAtom() const
 	{
-		VTXApp::get()
+		UI::VTXApp::get()
 			.getMainWindow()
 			.getWidget<Inspector::InspectorWidget>( UI::ID::Window::INSPECTOR )
 			.forceInspector( Inspector::InspectorWidget::INSPECTOR_TYPE::ATOM );

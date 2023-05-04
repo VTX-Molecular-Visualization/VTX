@@ -7,7 +7,7 @@
 #include "app/application/scene.hpp"
 #include "app/application/setting.hpp"
 #include "app/util/molecule.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <util/math.hpp>
 
 namespace VTX::App::Action::Molecule
@@ -15,7 +15,7 @@ namespace VTX::App::Action::Molecule
 	void RefreshSolventExcludedSurface::execute()
 	{
 		_molecule.refreshSolventExcludedSurfaces();
-		VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_NEED_UPDATE;
 	}
 
 	void ChangeColor::execute()
@@ -26,12 +26,12 @@ namespace VTX::App::Action::Molecule
 			molecule->refreshColors();
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeVisibility::execute()
 	{
-		for ( Generic::BaseVisible * const visible : _visibles )
+		for ( Component::Generic::BaseVisible * const visible : _visibles )
 		{
 			Component::Chemistry::Molecule * molecule = static_cast<Component::Chemistry::Molecule *>( visible );
 
@@ -46,7 +46,7 @@ namespace VTX::App::Action::Molecule
 			}
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeRepresentationPreset::execute()
@@ -55,7 +55,7 @@ namespace VTX::App::Action::Molecule
 			= Application::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
 		App::Application::Representation::RepresentationManager::get().instantiateRepresentations( preset, _molecules );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void RemoveRepresentation::execute()
@@ -64,7 +64,7 @@ namespace VTX::App::Action::Molecule
 			App::Application::Representation::RepresentationManager::get().instantiateDefaultRepresentation(
 				*molecule );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void RemoveChildrenRepresentations::execute()
@@ -75,7 +75,7 @@ namespace VTX::App::Action::Molecule
 			molecule->computeAllRepresentationData();
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeFPS::execute()
@@ -94,7 +94,7 @@ namespace VTX::App::Action::Molecule
 				molecule->setIsPlaying( false );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void PreviousFrame::execute()
@@ -110,7 +110,7 @@ namespace VTX::App::Action::Molecule
 				molecule->setIsPlaying( false );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void NextFrame::execute()
@@ -127,7 +127,7 @@ namespace VTX::App::Action::Molecule
 				molecule->setIsPlaying( false );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeIsPlaying::execute()
@@ -152,7 +152,7 @@ namespace VTX::App::Action::Molecule
 		for ( Component::Chemistry::Molecule * const molecule : _molecules )
 			molecule->setShowIon( _showIon );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeShowSolvent::execute()
@@ -160,7 +160,7 @@ namespace VTX::App::Action::Molecule
 		for ( Component::Chemistry::Molecule * const molecule : _molecules )
 			molecule->setShowSolvent( _showSolvent );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeShowWater::execute()
@@ -168,7 +168,7 @@ namespace VTX::App::Action::Molecule
 		for ( Component::Chemistry::Molecule * const molecule : _molecules )
 			molecule->setShowWater( _showWater );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeShowHydrogen::execute()
@@ -176,12 +176,12 @@ namespace VTX::App::Action::Molecule
 		for ( Component::Chemistry::Molecule * const molecule : _molecules )
 			molecule->setShowHydrogen( _showHydrogen );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Delete::execute()
 	{
-		VTXApp::get().getScene().removeMolecule( &_molecule );
+		App::VTXApp::get().getScene().removeMolecule( &_molecule );
 		VTX::MVC_MANAGER().deleteModel( &_molecule );
 	}
 
@@ -193,7 +193,7 @@ namespace VTX::App::Action::Molecule
 		generatedMolecule->copyFromMolecule( _target );
 		generatedMolecule->applyTransform( _target.getTransform() );
 
-		VTXApp::get().getScene().addMolecule( generatedMolecule );
+		App::VTXApp::get().getScene().addMolecule( generatedMolecule );
 	}
 
 	void Rename::execute() { _target.setDisplayName( _newName ); }
@@ -203,7 +203,7 @@ namespace VTX::App::Action::Molecule
 	{
 		App::Application::Representation::RepresentationManager::get().applyRepresentation(
 			_molecules, _representation, _flag );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 } // namespace VTX::App::Action::Molecule

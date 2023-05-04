@@ -7,7 +7,7 @@
 #include "app/component/object3d/label.hpp"
 #include "app/component/video/path.hpp"
 #include "app/mvc.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include "app/util/label.hpp"
 #include "app/util/molecule.hpp"
 #include <util/chrono.hpp>
@@ -16,7 +16,7 @@ namespace VTX::App::Action::Selection
 {
 	void SelectAll::execute()
 	{
-		const App::Application::Scene::MapMoleculePtrFloat & sceneMolecules = VTXApp::get().getScene().getMolecules();
+		const App::Application::Scene::MapMoleculePtrFloat & sceneMolecules = App::VTXApp::get().getScene().getMolecules();
 		std::vector<App::Component::Chemistry::Molecule *>	 molecules
 			= std::vector<App::Component::Chemistry::Molecule *>();
 		molecules.reserve( sceneMolecules.size() );
@@ -26,7 +26,7 @@ namespace VTX::App::Action::Selection
 			molecules.emplace_back( moleculePair.first );
 		}
 
-		const App::Application::Scene::VectorPathPtr & paths		  = VTXApp::get().getScene().getPaths();
+		const App::Application::Scene::VectorPathPtr & paths		  = App::VTXApp::get().getScene().getPaths();
 		size_t										   viewpointCount = 0;
 		for ( const App::Component::Video::Path * const path : paths )
 			viewpointCount += path->getViewpoints().size();
@@ -42,8 +42,8 @@ namespace VTX::App::Action::Selection
 			}
 		}
 
-		const App::Application::Scene::VectorMeshTrianglePtr & meshes = VTXApp::get().getScene().getMeshes();
-		const App::Application::Scene::VectorLabelPtr &		   labels = VTXApp::get().getScene().getLabels();
+		const App::Application::Scene::VectorMeshTrianglePtr & meshes = App::VTXApp::get().getScene().getMeshes();
+		const App::Application::Scene::VectorLabelPtr &		   labels = App::VTXApp::get().getScene().getLabels();
 
 		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectMolecules( molecules,
 																									   false );
@@ -51,7 +51,7 @@ namespace VTX::App::Action::Selection
 		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectModels( meshes, true );
 		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectModels( labels, true );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void SelectModels::execute()
@@ -129,7 +129,7 @@ namespace VTX::App::Action::Selection
 		_selection.selectModels( viewpoints, true );
 		_selection.selectModels( labels, true );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void UnselectModels::execute()
@@ -181,37 +181,37 @@ namespace VTX::App::Action::Selection
 
 		_selection.unselectModels( molecules, categories, chains, residues, atoms );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void SelectMolecule::execute()
 	{
 		_selection.selectMolecules( _molecules, _appendToSelection );
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void SelectCategory::execute()
 	{
 		_selection.selectCategories( _categories, _appendToSelection );
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void SelectChain::execute()
 	{
 		_selection.selectChains( _chains, _appendToSelection );
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void SelectResidue::execute()
 	{
 		_selection.selectResidues( _residues, _appendToSelection );
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void SelectAtom::execute()
 	{
 		_selection.selectAtoms( _atoms, _appendToSelection );
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void UnselectMolecule::execute()
@@ -221,7 +221,7 @@ namespace VTX::App::Action::Selection
 		else
 			_selection.unselectMoleculesWithCheck( _molecules );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void UnselectCategory::execute()
@@ -231,7 +231,7 @@ namespace VTX::App::Action::Selection
 		else
 			_selection.unselectCategoriesWithCheck( _categories );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void UnselectChain::execute()
@@ -241,7 +241,7 @@ namespace VTX::App::Action::Selection
 		else
 			_selection.unselectChainsWithCheck( _chains );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void UnselectResidue::execute()
@@ -251,7 +251,7 @@ namespace VTX::App::Action::Selection
 		else
 			_selection.unselectResiduesWithCheck( _residues );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void UnselectAtom::execute()
@@ -261,13 +261,13 @@ namespace VTX::App::Action::Selection
 		else
 			_selection.unselectAtomsWithCheck( _atoms );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void ClearSelection::execute()
 	{
 		_selection.clear();
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 	void SelectViewpoint::execute() { _selection.selectModels( _viewpoints, _appendToSelection ); }
 
@@ -278,7 +278,7 @@ namespace VTX::App::Action::Selection
 		else
 			_selection.unselectModelsWithCheck( _viewpoints );
 
-		// VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		// App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
 	}
 
 	void ChangeVisibility::execute()
@@ -292,7 +292,7 @@ namespace VTX::App::Action::Selection
 		case VISIBILITY_MODE::TOGGLE: break;
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 	void ChangeVisibility::show( const bool p_show )
 	{
@@ -353,7 +353,7 @@ namespace VTX::App::Action::Selection
 
 	void ChangeVisibility::solo()
 	{
-		const App::Application::Scene::MapMoleculePtrFloat & moleculesInScene = VTXApp::get().getScene().getMolecules();
+		const App::Application::Scene::MapMoleculePtrFloat & moleculesInScene = App::VTXApp::get().getScene().getMolecules();
 		const App::Application::Selection::SelectionModel::MapMoleculeIds & moleculesInSelection
 			= _selection.getMoleculesMap();
 
@@ -470,7 +470,7 @@ namespace VTX::App::Action::Selection
 			molecule.setShowWater( showWater );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ToggleSolventVisibility::execute()
@@ -493,7 +493,7 @@ namespace VTX::App::Action::Selection
 			molecule.setShowSolvent( showSolvent );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ToggleHydrogensVisibility::execute()
@@ -516,7 +516,7 @@ namespace VTX::App::Action::Selection
 			molecule.setShowHydrogen( showHydrogen );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ToggleIonsVisibility::execute()
@@ -539,7 +539,7 @@ namespace VTX::App::Action::Selection
 			molecule.setShowIon( showIons );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ToggleTrajectoryPlaying::execute()
@@ -570,7 +570,7 @@ namespace VTX::App::Action::Selection
 			}
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeRepresentationPreset::execute()
@@ -580,7 +580,7 @@ namespace VTX::App::Action::Selection
 
 		App::Application::Representation::RepresentationManager::get().instantiateRepresentations( preset, _selection );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Copy::execute()
@@ -625,7 +625,7 @@ namespace VTX::App::Action::Selection
 		chrono.start();
 
 		generatedMolecule->applyTransform( p_source.getTransform() );
-		VTXApp::get().getScene().addMolecule( generatedMolecule );
+		App::VTXApp::get().getScene().addMolecule( generatedMolecule );
 
 		chrono.stop();
 		VTX_DEBUG( "Molecule " + generatedMolecule->getDisplayName() + " copied in " + chrono.elapsedTimeStr() );
@@ -656,7 +656,7 @@ namespace VTX::App::Action::Selection
 				= VTX::MVC_MANAGER().instantiateModel<App::Component::Chemistry::GeneratedMolecule>();
 
 			generatedMolecule->extractFromSelection( *tmpSelection, idMolSource );
-			VTXApp::get().getScene().addMolecule( generatedMolecule );
+			App::VTXApp::get().getScene().addMolecule( generatedMolecule );
 			generatedMolecules.emplace_back( generatedMolecule );
 		}
 
@@ -665,8 +665,8 @@ namespace VTX::App::Action::Selection
 		VTX::App::Application::Selection::SelectionManager::get().getSelectionModel().selectMolecules(
 			generatedMolecules );
 
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void Delete::execute()
@@ -742,7 +742,7 @@ namespace VTX::App::Action::Selection
 				App::Component::Video::Path & path
 					= VTX::MVC_MANAGER().getModel<App::Component::Video::Path>( selectedObjectID );
 
-				VTX::VTXApp::get().getScene().removePath( &path );
+				VTX::App::VTXApp::get().getScene().removePath( &path );
 				VTX::MVC_MANAGER().deleteModel( &path );
 			}
 			else if ( modelTypeID == App::ID::Model::MODEL_VIEWPOINT )
@@ -760,19 +760,19 @@ namespace VTX::App::Action::Selection
 			{
 				App::Component::Object3D::Label & label
 					= VTX::MVC_MANAGER().getModel<App::Component::Object3D::Label>( selectedObjectID );
-				VTXApp::get().getScene().removeLabel( &label );
+				App::VTXApp::get().getScene().removeLabel( &label );
 				VTX::MVC_MANAGER().deleteModel<App::Component::Object3D::Label>( &label );
 			}
 		}
 
 		for ( App::Component::Chemistry::Molecule * const moleculeToDelete : moleculesToDelete )
 		{
-			VTXApp::get().getScene().removeMolecule( moleculeToDelete );
+			App::VTXApp::get().getScene().removeMolecule( moleculeToDelete );
 			VTX::MVC_MANAGER().deleteModel( moleculeToDelete );
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_SELECTION_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 } // namespace VTX::App::Action::Selection

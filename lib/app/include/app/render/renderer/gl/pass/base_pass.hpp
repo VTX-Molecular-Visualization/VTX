@@ -2,7 +2,7 @@
 #define __VTX_RENDER_RENDERER_GL_PASS_BASE_PASS__
 
 #include "app/application/scene.hpp"
-#include "app/old_app/generic/base_opengl.hpp"
+#include "app/render/generic/base_opengl.hpp"
 #include "app/render/renderer/gl/program.hpp"
 #include <util/logger.hpp>
 #include <util/types.hpp>
@@ -12,7 +12,7 @@ namespace VTX::App::Render::Renderer::GL
 	class GL;
 	namespace Pass
 	{
-		class BasePass : public Generic::BaseOpenGL
+		class BasePass : public Render::Generic::BaseOpenGL
 		{
 		  public:
 			BasePass()			= default;

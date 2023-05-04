@@ -3,12 +3,12 @@
 
 #include "_fwd.hpp"
 #include "app/application/representation/base_representable.hpp"
+#include "app/component/generic/base_colorable.hpp"
+#include "app/component/generic/base_visible.hpp"
 #include "app/component/object3d/helper/aabb.hpp"
 #include "app/core/model/base_model.hpp"
-#include "app/internal/chemdb/category.hpp"
-#include "app/old_app/generic/base_colorable.hpp"
-#include "app/old_app/generic/base_visible.hpp"
 #include "app/id.hpp"
+#include "app/internal/chemdb/category.hpp"
 #include <iostream>
 #include <string>
 #include <util/types.hpp>
@@ -19,8 +19,8 @@ namespace VTX::App::Component::Chemistry
 
 	class Chain :
 		public App::Core::Model::BaseModel,
-		public Generic::BaseColorable,
-		public Generic::BaseVisible,
+		public Component::Generic::BaseColorable,
+		public Component::Generic::BaseVisible,
 		public App::Application::Representation::BaseRepresentable
 	{
 		VTX_MODEL

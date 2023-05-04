@@ -191,7 +191,7 @@ namespace VTX::UI::QT::Controller
 		BaseCameraController::reset();
 
 		_needUpdate = true;
-		_target		= VTXApp::get().getScene().getAABB().centroid();
+		_target		= App::VTXApp::get().getScene().getAABB().centroid();
 		_velocity	= VEC3F_ZERO;
 	}
 

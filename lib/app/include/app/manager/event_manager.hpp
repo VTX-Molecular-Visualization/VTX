@@ -1,9 +1,9 @@
 #ifndef __VTX_APP_CORE_EVENT_EVENT_MANAGER__
 #define __VTX_APP_CORE_EVENT_EVENT_MANAGER__
 
+#include "app/application/generic/base_lockable.hpp"
+#include "app/application/generic/base_updatable.hpp"
 #include "app/core/event/vtx_event.hpp"
-#include "app/old_app/generic/base_lockable.hpp"
-#include "app/old_app/generic/base_updatable.hpp"
 #include "app/id.hpp"
 #include <map>
 #include <queue>
@@ -21,7 +21,7 @@ namespace VTX::App
 
 	namespace Manager
 	{
-		class EventManager final : public Generic::BaseUpdatable, public Generic::BaseLockable
+		class EventManager final : public Application::Generic::BaseUpdatable, public Application::Generic::BaseLockable
 		{
 		  public:
 			inline static EventManager & get()

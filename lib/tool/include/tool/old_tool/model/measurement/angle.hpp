@@ -3,11 +3,11 @@
 
 #include <app/component/chemistry/_fwd.hpp>
 #include <app/component/chemistry/molecule.hpp>
+#include <app/component/generic/base_auto_delete.hpp>
+#include <app/component/object3d/label.hpp>
 #include <app/core/event/base_event_receiver_vtx.hpp>
 #include <app/core/event/vtx_event.hpp>
 #include <app/core/view/callback_view.hpp>
-#include <app/component/object3d/label.hpp>
-#include <app/old_app/generic/base_auto_delete.hpp>
 #include <app/id.hpp>
 #include <string>
 #include <tuple>
@@ -15,7 +15,10 @@
 
 namespace VTX::Model::Measurement
 {
-	class Angle : public App::Component::Object3D::Label, public App::Core::Event::BaseEventReceiverVTX, public Generic::BaseAutoDelete
+	class Angle :
+		public App::Component::Object3D::Label,
+		public App::Core::Event::BaseEventReceiverVTX,
+		public App::Component::Generic::BaseAutoDelete
 	{
 		VTX_MODEL
 

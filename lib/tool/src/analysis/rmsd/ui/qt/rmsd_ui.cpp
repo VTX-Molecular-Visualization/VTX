@@ -23,7 +23,7 @@ namespace VTX::Tool::Analysis::RMSD::UI::QT
 		_addButtonsInMainMenu();
 		_refreshButton();
 
-		// VTXApp::get().getMainWindow().getContextualMenu().getMenu()
+		// UI::VTXApp::get().getMainWindow().getContextualMenu().getMenu()
 	}
 
 	void RMSDTool::receiveEvent( const App::Core::Event::VTXEvent & p_event )

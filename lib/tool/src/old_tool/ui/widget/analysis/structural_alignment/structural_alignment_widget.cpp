@@ -8,7 +8,7 @@
 #include <app/component/chemistry/molecule.hpp>
 #include <app/event/global.hpp>
 #include <app/mvc.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 #include <ui/old_ui/style.hpp>
 #include <ui/old_ui/ui/widget_factory.hpp>
 
@@ -168,7 +168,7 @@ namespace VTX::UI::Widget::Analysis::StructuralAlignment
 			selectedMolecules.emplace_back( &molecule );
 		}
 
-		VTXApp::get().getScene().sortMoleculesBySceneIndex( selectedMolecules );
+		App::VTXApp::get().getScene().sortMoleculesBySceneIndex( selectedMolecules );
 
 		for ( int i = 0; i < selectedMolecules.size(); i++ )
 			_moleculesComponent->addModel( selectedMolecules[ i ] );

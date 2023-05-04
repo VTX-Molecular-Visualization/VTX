@@ -2,7 +2,7 @@
 #include "app/application/render_effect/render_effect_preset.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/render/view/base_view_3d_molecule.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 #include <random>
 
 namespace VTX::App::Render::Renderer::GL
@@ -124,7 +124,7 @@ namespace VTX::App::Render::Renderer::GL
 			_passFXAA->render( p_scene, *this );
 		}
 
-		VTXApp::get().MASK = VTX_SETTING().getForceRenderer() ? Render::VTX_MASK_NEED_UPDATE : Render::VTX_MASK_NO_UPDATE;
+		App::VTXApp::get().MASK = VTX_SETTING().getForceRenderer() ? Render::VTX_MASK_NEED_UPDATE : Render::VTX_MASK_NO_UPDATE;
 	};
 
 	void GL::updateRenderSetting( const RENDER_SETTING p_renderSetting )

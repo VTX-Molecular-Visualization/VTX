@@ -13,7 +13,7 @@
 #include <app/event.hpp>
 #include <app/event/global.hpp>
 #include <app/internal/scene/camera_manager.hpp>
-#include <app/old_app/vtx_app.hpp>
+#include <app/vtx_app.hpp>
 
 namespace VTX
 {
@@ -29,11 +29,11 @@ namespace VTX
 			// Create controller.
 			_controllers.emplace( UI::ID::Controller::MAIN_WINDOW, new Controller::MainWindowController() );
 			_controllers.emplace( UI::ID::Controller::FREEFLY,
-								  new Controller::Freefly( VTXApp::get().getScene().getCameraManager() ) );
+								  new Controller::Freefly( App::VTXApp::get().getScene().getCameraManager() ) );
 			_controllers.emplace( UI::ID::Controller::TRACKBALL,
-								  new Controller::Trackball( VTXApp::get().getScene().getCameraManager(),
-															 VTXApp::get().getScene().getAABB().centroid(),
-															 VTXApp::get().getScene().getAABB().diameter() ) );
+								  new Controller::Trackball( App::VTXApp::get().getScene().getCameraManager(),
+															 App::VTXApp::get().getScene().getAABB().centroid(),
+															 App::VTXApp::get().getScene().getAABB().diameter() ) );
 			_controllers.emplace( UI::ID::Controller::PICKER, new Controller::Picker() );
 			//_controllers.emplace( ID::Controller::MEASUREMENT, new Controller::MeasurementPicker() );
 		}
@@ -60,8 +60,8 @@ namespace VTX
 		{
 			BaseState::update( p_deltaTime );
 
-			VTXApp::get().getScene().update( p_deltaTime );
-			VTXApp::get().renderScene();
+			App::VTXApp::get().getScene().update( p_deltaTime );
+			App::VTXApp::get().renderScene();
 		}
 
 		void Visualization::toggleCameraController()
@@ -106,10 +106,10 @@ namespace VTX
 		void Visualization::resetCameraController()
 		{
 			// Reset camera.
-			App::Component::Render::Camera & camera = VTXApp::get().getScene().getCamera();
+			App::Component::Render::Camera & camera = App::VTXApp::get().getScene().getCamera();
 			const Vec3f						 defaultPos
-				= VTXApp::get().getScene().getAABB().centroid()
-				  - App::Component::CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
+				= App::VTXApp::get().getScene().getAABB().centroid()
+				  - App::Component::CAMERA_FRONT_DEFAULT * App::VTXApp::get().getScene().getAABB().radius()
 						/ (float)( tan( Util::Math::radians( camera.getFov() ) * UI::Style::ORIENT_ZOOM_FACTOR ) );
 			camera.reset( defaultPos );
 
@@ -171,8 +171,8 @@ namespace VTX
 			// Recenter when add the first element in scene
 			if ( p_event.name == VTX::App::Event::Global::MOLECULE_ADDED )
 			{
-				if ( VTXApp::get().getScene().getMolecules().size() == 1
-					 && VTXApp::get().getScene().getMeshes().size() == 0 )
+				if ( App::VTXApp::get().getScene().getMolecules().size() == 1
+					 && App::VTXApp::get().getScene().getMeshes().size() == 0 )
 				{
 					const VTX::App::Core::Event::VTXEventArg<App::Component::Chemistry::Molecule *> & castedEvent
 						= dynamic_cast<
@@ -184,8 +184,8 @@ namespace VTX
 			}
 			else if ( p_event.name == VTX::App::Event::Global::MESH_ADDED )
 			{
-				if ( VTXApp::get().getScene().getMolecules().size() == 0
-					 && VTXApp::get().getScene().getMeshes().size() == 1 )
+				if ( App::VTXApp::get().getScene().getMolecules().size() == 0
+					 && App::VTXApp::get().getScene().getMeshes().size() == 1 )
 					resetCameraController();
 			}
 		}

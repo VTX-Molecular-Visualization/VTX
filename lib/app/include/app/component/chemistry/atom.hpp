@@ -2,19 +2,18 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_ATOM__
 
 #include "_fwd.hpp"
-#include "app/core/model/base_model.hpp"
-#include "app/internal/chemdb/atom.hpp"
-#include "app/old_app/generic/base_colorable.hpp"
-#include "app/old_app/generic/base_visible.hpp"
-#include "app/id.hpp"
+#include "app/component/generic/base_visible.hpp"
 #include "app/component/object3d/helper/aabb.hpp"
+#include "app/core/model/base_model.hpp"
+#include "app/id.hpp"
+#include "app/internal/chemdb/atom.hpp"
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
 	namespace ChemDB = App::Internal::ChemDB;
 
-	class Atom : public App::Core::Model::BaseModel, public Generic::BaseVisible
+	class Atom : public Core::Model::BaseModel, public Component::Generic::BaseVisible
 	{
 		VTX_MODEL
 
@@ -47,8 +46,8 @@ namespace VTX::App::Component::Chemistry
 		void setVisible( const bool p_visible );
 		void setVisible( const bool p_visible, const bool p_notify );
 
-		const Vec3f &				 getLocalPosition() const;
-		const Vec3f					 getWorldPosition() const;
+		const Vec3f &								 getLocalPosition() const;
+		const Vec3f									 getWorldPosition() const;
 		const App::Component::Object3D::Helper::AABB getAABB() const;
 		const App::Component::Object3D::Helper::AABB getWorldAABB() const;
 

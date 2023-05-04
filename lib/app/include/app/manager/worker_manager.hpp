@@ -6,7 +6,7 @@
 #include "app/core/worker/callback.hpp"
 #include "app/event.hpp"
 #include "app/event/global.hpp"
-#include "app/old_app/generic/base_updatable.hpp"
+#include "app/application/generic/base_updatable.hpp"
 // #include <QMetaType>
 //  #include <QThreadPool>
 #include <string>

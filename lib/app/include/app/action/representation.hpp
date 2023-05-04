@@ -2,10 +2,10 @@
 #define __VTX_APP_ACTION_REPRESENTATION__
 
 #include "app/action.hpp"
-#include "app/core/action/base_action.hpp"
-#include "app/application/representation/representation_preset.hpp"
 #include "app/application/representation/representation_library.hpp"
-#include "app/old_app/generic/base_colorable.hpp"
+#include "app/application/representation/representation_preset.hpp"
+#include "app/core/action/base_action.hpp"
+#include "app/internal/chemdb/color.hpp"
 #include <string>
 #include <unordered_set>
 
@@ -32,9 +32,11 @@ namespace VTX::App::Action::Representation
 		{
 			_representations.emplace( &p_representation );
 		};
-		SavePreset( const std::unordered_set<const App::Application::Representation::RepresentationPreset *> & p_representations )
+		SavePreset( const std::unordered_set<const App::Application::Representation::RepresentationPreset *> &
+						p_representations )
 		{
-			for ( const App::Application::Representation::RepresentationPreset * const representation : p_representations )
+			for ( const App::Application::Representation::RepresentationPreset * const representation :
+				  p_representations )
 				_representations.emplace( representation );
 		};
 		SavePreset( App::Application::Representation::RepresentationLibrary & p_library )
@@ -60,7 +62,7 @@ namespace VTX::App::Action::Representation
 	{
 	  public:
 		explicit ChangeName( App::Application::Representation::RepresentationPreset * const p_representation,
-							 const std::string &						   p_name ) :
+							 const std::string &											p_name ) :
 			_representation( p_representation ),
 			_name( App::Application::Representation::RepresentationLibrary::get().getValidName( p_name ) )
 		{
@@ -70,13 +72,13 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const std::string							  _name;
+		const std::string											   _name;
 	};
 	class ChangeQuickAccess : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeQuickAccess( App::Application::Representation::RepresentationPreset * const p_representation,
-									const bool									  p_quickAccess ) :
+									const bool													   p_quickAccess ) :
 			_representation( p_representation ),
 			_quickAccess( p_quickAccess )
 		{
@@ -86,14 +88,15 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const bool									  _quickAccess;
+		const bool													   _quickAccess;
 	};
 
 	class ChangeRepresentation : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeRepresentation( App::Application::Representation::RepresentationPreset * const p_representation,
-									   const App::Application::Representation::REPRESENTATION_ENUM &				 p_representationType ) :
+		explicit ChangeRepresentation(
+			App::Application::Representation::RepresentationPreset * const p_representation,
+			const App::Application::Representation::REPRESENTATION_ENUM &  p_representationType ) :
 			_representation( p_representation ),
 			_representationType( p_representationType )
 		{
@@ -103,13 +106,13 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const App::Application::Representation::REPRESENTATION_ENUM				  _representationType;
+		const App::Application::Representation::REPRESENTATION_ENUM	   _representationType;
 	};
 	class ChangeColorMode : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColorMode( App::Application::Representation::RepresentationPreset * const p_representation,
-								  const Generic::COLOR_MODE &					p_colorMode ) :
+								  const App::Internal::ChemDB::Color::COLOR_MODE &				 p_colorMode ) :
 			_representation( p_representation ),
 			_colorMode( p_colorMode )
 		{
@@ -119,14 +122,14 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const Generic::COLOR_MODE					  _colorMode;
+		const App::Internal::ChemDB::Color::COLOR_MODE				   _colorMode;
 	};
 
 	class ChangeColor : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeColor( App::Application::Representation::RepresentationPreset * const p_representation,
-							  const Util::Color::Rgba &							p_color ) :
+							  const Util::Color::Rgba &										 p_color ) :
 			_representation( p_representation ),
 			_color( p_color )
 		{
@@ -135,14 +138,14 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const Util::Color::Rgba							  _color;
+		const Util::Color::Rgba										   _color;
 	};
 
 	class ChangeSphereRadius : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeSphereRadius( App::Application::Representation::RepresentationPreset * const p_representation,
-									 const float								   p_radius ) :
+									 const float													p_radius ) :
 			_representation( p_representation ),
 			_radius( p_radius )
 		{
@@ -152,14 +155,14 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const float									  _radius;
+		const float													   _radius;
 	};
 
 	class ChangeCylinderRadius : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeCylinderRadius( App::Application::Representation::RepresentationPreset * const p_representation,
-									   const float									 p_radius ) :
+									   const float													  p_radius ) :
 			_representation( p_representation ),
 			_radius( p_radius )
 		{
@@ -169,14 +172,15 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const float									  _radius;
+		const float													   _radius;
 	};
 
 	class ChangeCylinderColorBendingMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeCylinderColorBendingMode( App::Application::Representation::RepresentationPreset * const p_representation,
-												 const Generic::COLOR_BLENDING_MODE &		   p_colorBendingMode ) :
+		explicit ChangeCylinderColorBendingMode(
+			App::Application::Representation::RepresentationPreset * const p_representation,
+			const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE &	   p_colorBendingMode ) :
 			_representation( p_representation ),
 			_colorBendingMode( p_colorBendingMode )
 		{
@@ -186,14 +190,14 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const Generic::COLOR_BLENDING_MODE			  _colorBendingMode;
+		const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE		   _colorBendingMode;
 	};
 
 	class ChangeRibbonColorMode : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRibbonColorMode( App::Application::Representation::RepresentationPreset * const p_representation,
-										Generic::SECONDARY_STRUCTURE_COLOR_MODE &	  p_colorMode ) :
+										App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode ) :
 			_representation( p_representation ),
 			_colorMode( p_colorMode )
 		{
@@ -202,15 +206,16 @@ namespace VTX::App::Action::Representation
 		void execute();
 
 	  private:
-		App::Application::Representation::RepresentationPreset * const _representation;
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
+		App::Application::Representation::RepresentationPreset * const	   _representation;
+		const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
 	};
 
 	class ChangeRibbonColorBendingMode : public App::Core::Action::BaseAction
 	{
 	  public:
-		explicit ChangeRibbonColorBendingMode( App::Application::Representation::RepresentationPreset * const p_representation,
-											   const Generic::COLOR_BLENDING_MODE &			 p_colorBendingMode ) :
+		explicit ChangeRibbonColorBendingMode(
+			App::Application::Representation::RepresentationPreset * const p_representation,
+			const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE &	   p_colorBendingMode ) :
 			_representation( p_representation ),
 			_colorBendingMode( p_colorBendingMode )
 		{
@@ -220,7 +225,7 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const Generic::COLOR_BLENDING_MODE			  _colorBendingMode;
+		const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE		   _colorBendingMode;
 	};
 
 	class AddNewPresetInLibrary : public App::Core::Action::BaseAction

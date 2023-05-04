@@ -1,13 +1,13 @@
 #ifndef __VTX_MODEL_BASE_MODEL_3D__
 #define __VTX_MODEL_BASE_MODEL_3D__
 
+#include "app/component/generic/base_auto_rotate.hpp"
+#include "app/component/generic/base_renderable.hpp"
+#include "app/component/generic/base_transformable.hpp"
+#include "app/component/generic/base_visible.hpp"
 #include "app/component/object3d/helper/aabb.hpp"
 #include "app/core/event/vtx_event.hpp"
 #include "app/core/model/base_model.hpp"
-#include "app/old_app/generic/base_auto_rotate.hpp"
-#include "app/old_app/generic/base_renderable.hpp"
-#include "app/old_app/generic/base_transformable.hpp"
-#include "app/old_app/generic/base_visible.hpp"
 #include "app/id.hpp"
 #include "app/render/buffer/base_buffer_opengl.hpp"
 #include <unordered_set>
@@ -21,10 +21,10 @@ namespace VTX::App::Core::Model
 	template<typename B, typename = std::enable_if<std::is_base_of<Render::Buffer::BaseBufferOpenGL, B>::value>>
 	class BaseModel3D :
 		public App::Core::Model::BaseModel,
-		public Generic::BaseTransformable,
-		public Generic::BaseRenderable,
-		public Generic::BaseVisible,
-		public Generic::BaseAutoRotate
+		public Component::Generic::BaseTransformable,
+		public Component::Generic::BaseRenderable,
+		public Component::Generic::BaseVisible,
+		public Component::Generic::BaseAutoRotate
 	{
 		VTX_MODEL
 
@@ -54,22 +54,22 @@ namespace VTX::App::Core::Model
 
 		void setAutoRotationVector( const Vec3f p_value ) override
 		{
-			Generic::BaseAutoRotate::setAutoRotationVector( p_value );
+			Component::Generic::BaseAutoRotate::setAutoRotationVector( p_value );
 			_notifyViews( App::Event::Model::AUTO_ROTATE_DATA_CHANGE );
 		}
 		void setAutoRotationNormalizedVector( const Vec3f p_value ) override
 		{
-			Generic::BaseAutoRotate::setAutoRotationNormalizedVector( p_value );
+			Component::Generic::BaseAutoRotate::setAutoRotationNormalizedVector( p_value );
 			_notifyViews( App::Event::Model::AUTO_ROTATE_DATA_CHANGE );
 		}
 		void setAutoRotationMagnitude( const float p_speed ) override
 		{
-			Generic::BaseAutoRotate::setAutoRotationMagnitude( p_speed );
+			Component::Generic::BaseAutoRotate::setAutoRotationMagnitude( p_speed );
 			_notifyViews( App::Event::Model::AUTO_ROTATE_DATA_CHANGE );
 		}
 		void setAutoRotationPlaying( const bool p_play ) override
 		{
-			Generic::BaseAutoRotate::setAutoRotationPlaying( p_play );
+			Component::Generic::BaseAutoRotate::setAutoRotationPlaying( p_play );
 			_notifyViews( App::Event::Model::AUTO_ROTATE_DATA_CHANGE );
 		}
 
@@ -79,7 +79,7 @@ namespace VTX::App::Core::Model
 				return;
 
 			_buffer->bind();
-			for ( Generic::BaseRenderable * const renderable : _renderables )
+			for ( App::Component::Generic::BaseRenderable * const renderable : _renderables )
 			{
 				renderable->render( p_camera );
 			}
@@ -98,11 +98,12 @@ namespace VTX::App::Core::Model
 		}
 
 	  protected:
-		mutable App::Component::Object3D::Helper::AABB _aabb;
-		mutable App::Component::Object3D::Helper::AABB _worldAabb;
-		std::vector<Generic::BaseRenderable *>		   _renderables = std::vector<Generic::BaseRenderable *>();
-		B *											   _buffer		= nullptr;
-		bool										   _isInit		= false;
+		mutable App::Component::Object3D::Helper::AABB		   _aabb;
+		mutable App::Component::Object3D::Helper::AABB		   _worldAabb;
+		std::vector<App::Component::Generic::BaseRenderable *> _renderables
+			= std::vector<App::Component::Generic::BaseRenderable *>();
+		B *	 _buffer = nullptr;
+		bool _isInit = false;
 
 		std::unordered_set<App::Component::Object3D::Helper::AABB *> _linkedAABBs
 			= std::unordered_set<App::Component::Object3D::Helper::AABB *>();
@@ -154,7 +155,7 @@ namespace VTX::App::Core::Model
 			}
 		};
 		virtual void _instantiate3DViews() = 0;
-		inline void	 _addRenderable( Generic::BaseRenderable * const p_renderable )
+		inline void	 _addRenderable( App::Component::Generic::BaseRenderable * const p_renderable )
 		{
 			p_renderable->init();
 			_renderables.push_back( p_renderable );

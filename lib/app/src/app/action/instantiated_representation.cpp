@@ -1,13 +1,13 @@
 #include "app/action/instantiated_representation.hpp"
 #include "app/component/chemistry/molecule.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Action::InstantiatedRepresentation
 {
 	void ChangeColorMode::execute()
 	{
 		_instantiatedRepresentation->setColorMode( _colorMode );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeColor::execute()
@@ -25,37 +25,37 @@ namespace VTX::App::Action::InstantiatedRepresentation
 			molecule->refreshColors();
 		}
 
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeSphereRadius::execute()
 	{
 		_instantiatedRepresentation->setSphereRadius( _radius );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeCylinderRadius::execute()
 	{
 		_instantiatedRepresentation->setCylinderRadius( _radius );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeCylindeColorBlendingMode::execute()
 	{
 		_instantiatedRepresentation->setCylinderColorBlendingMode( _mode );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 	void ChangeRibbonColorMode::execute()
 	{
 		_instantiatedRepresentation->setRibbonColorMode( _colorMode );
-		VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_3D_MODEL_UPDATED;
 	}
 
 	void ChangeRibbonColorBlendingMode::execute()
 	{
 		_instantiatedRepresentation->setRibbonColorBlendingMode( _mode );
-		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
 	}
 
 } // namespace VTX::App::Action::InstantiatedRepresentation

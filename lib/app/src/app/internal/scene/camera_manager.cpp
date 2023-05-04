@@ -1,7 +1,7 @@
 #include "app/internal/scene/camera_manager.hpp"
 #include "app/component/render/camera.hpp"
 #include "app/component/render/enum_camera.hpp"
-#include "app/old_app/vtx_app.hpp"
+#include "app/vtx_app.hpp"
 
 namespace VTX::App::Internal::Scene
 {

@@ -5,9 +5,10 @@
 #include "app/component/chemistry/chain.hpp"
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
+#include "app/id.hpp"
+#include "app/internal/chemDB/color.hpp"
 #include "app/internal/chemDB/secondary_structure.hpp"
 #include "app/mvc.hpp"
-#include "app/id.hpp"
 #include "app/render/view/ribbon.hpp"
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
@@ -147,19 +148,20 @@ namespace VTX::App::Component::Chemistry
 				{
 					switch ( residue->getRepresentation()->getRibbonData().colorMode )
 					{
-					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
-						colors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
+					case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
+						colors.emplace_back( App::Internal::ChemDB::SecondaryStructure::COLORS_JMOL[ uint(
+							residue->getSecondaryStructure() ) ] );
 						break;
-					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
+					case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
 						colors.emplace_back( residue->getMoleculePtr()->getColor() );
 						break;
-					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
+					case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
 						colors.emplace_back( residue->getRepresentation()->getColor() );
 						break;
-					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
+					case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
 						colors.emplace_back( residue->getChainPtr()->getColor() );
 						break;
-					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
+					case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
 						colors.emplace_back( residue->getColor() );
 						break;
 					default: colors.emplace_back( Util::Color::Rgba::WHITE ); break;
@@ -167,7 +169,8 @@ namespace VTX::App::Component::Chemistry
 				}
 				else
 				{
-					colors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
+					colors.emplace_back( App::Internal::ChemDB::SecondaryStructure::COLORS_JMOL[ uint(
+						residue->getSecondaryStructure() ) ] );
 				}
 
 				visibilities.emplace_back( uint( _molecule->isVisible() && chain->isVisible() && residue->isVisible()
@@ -287,8 +290,8 @@ namespace VTX::App::Component::Chemistry
 
 	void SecondaryStructure::_instantiate3DViews()
 	{
-		_addRenderable(
-			VTX::MVC_MANAGER().instantiateView<App::Render::View::Ribbon>( this, VTX::App::ID::View::D3_RIBBON_PATCH ) );
+		_addRenderable( VTX::MVC_MANAGER().instantiateView<App::Render::View::Ribbon>(
+			this, VTX::App::ID::View::D3_RIBBON_PATCH ) );
 	}
 
 	void SecondaryStructure::refreshColors()
@@ -304,7 +307,7 @@ namespace VTX::App::Component::Chemistry
 				if ( residue == nullptr )
 					continue;
 
-				Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode
+				App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE colorMode
 					= VTX::App::Application::Setting::SS_COLOR_MODE_DEFAULT;
 				if ( residue->getRepresentation()->hasToDrawRibbon() )
 				{
@@ -312,19 +315,20 @@ namespace VTX::App::Component::Chemistry
 				}
 				switch ( colorMode )
 				{
-				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
-					_bufferColors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
+				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
+					_bufferColors.emplace_back( App::Internal::ChemDB::SecondaryStructure::COLORS_JMOL[ uint(
+						residue->getSecondaryStructure() ) ] );
 					break;
-				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
+				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
 					_bufferColors.emplace_back( residue->getMoleculePtr()->getColor() );
 					break;
-				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
+				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
 					_bufferColors.emplace_back( residue->getRepresentation()->getColor() );
 					break;
-				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
+				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
 					_bufferColors.emplace_back( residue->getChainPtr()->getColor() );
 					break;
-				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
+				case App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
 					_bufferColors.emplace_back( residue->getColor() );
 					break;
 

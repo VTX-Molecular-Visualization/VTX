@@ -52,7 +52,7 @@ namespace VTX::App::Render::Worker
 	const void Snapshoter::_takeSnapshotGL() const
 	{
 		//		UI::Widget::Render::RenderWidget & renderWidget
-		//			= VTXApp::get().getMainWindow().getWidget<UI::Widget::Render::RenderWidget>( UI::ID::Window::RENDER
+		//			= UI::VTXApp::get().getMainWindow().getWidget<UI::Widget::Render::RenderWidget>( UI::ID::Window::RENDER
 		//);
 		//
 		//		UI::Widget::Render::OpenGLWidget & glWidget = renderWidget.getOpenGLWidget();
@@ -87,7 +87,7 @@ namespace VTX::App::Render::Worker
 		//		QOpenGLFramebufferObject fbo = QOpenGLFramebufferObject( width, height );
 		//
 		//		// Resize renderer and use new FBO as output.
-		//		VTXApp::get().getScene().getCamera().setScreenSize( width, height );
+		//		App::VTXApp::get().getScene().getCamera().setScreenSize( width, height );
 		//		glWidget.getRenderer().resize( width * pixelRatio, height * pixelRatio, fbo.handle() );
 		//
 		//		// Render.
@@ -97,8 +97,8 @@ namespace VTX::App::Render::Worker
 		//		const float previousBackgroundOpacity = VTX_SETTING().getSnapshotBackgroundOpacity();
 		//		VTX_SETTING().freezeEvent( true );
 		//		VTX_SETTING().setSnapshotBackgroundOpacity( _exportData.getBackgroundOpacity() );
-		//		VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
-		//		glWidget.getRenderer().renderFrame( VTXApp::get().getScene() );
+		//		App::VTXApp::get().MASK |= Render::VTX_MASK_UNIFORM_UPDATED;
+		//		glWidget.getRenderer().renderFrame( App::VTXApp::get().getScene() );
 		//		VTX_SETTING().setSnapshotBackgroundOpacity( previousBackgroundOpacity );
 		//		VTX_SETTING().freezeEvent( false );
 		//

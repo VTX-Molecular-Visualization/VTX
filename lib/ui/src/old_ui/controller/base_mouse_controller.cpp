@@ -142,7 +142,7 @@ namespace VTX
 		/*
 		bool BaseMouseController::_mouseHoveringRenderWidget() const
 		{
-			const QWidget & renderWidget  = VTXApp::get().getMainWindow().getOpenGLWidget();
+			const QWidget & renderWidget  = UI::VTXApp::get().getMainWindow().getOpenGLWidget();
 			const QRect &	renderRect	  = renderWidget.contentsRect();
 			const QPoint	localMousePos = renderWidget.mapFromGlobal( QCursor::pos() );
 
