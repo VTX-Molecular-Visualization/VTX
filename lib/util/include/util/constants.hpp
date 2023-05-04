@@ -21,6 +21,7 @@ namespace VTX
 	constexpr Vec3f VEC3F_MAX  = Vec3f( FLOAT_MAX );
 
 	constexpr Vec4f VEC4F_ZERO = Vec4f( 0.f, 0.f, 0.f, 0.f );
+	constexpr Vec4f VEC4F_XYZW = Vec4f( 1.f, 1.f, 1.f, 1.f );
 
 	constexpr Mat3f MAT3F_ID = Mat3f( 1.f );
 	constexpr Mat4f MAT4F_ID = Mat4f( 1.f );

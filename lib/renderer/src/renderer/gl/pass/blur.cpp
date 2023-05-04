@@ -36,8 +36,8 @@ namespace VTX::Renderer::GL::Pass
 		assert( in.textureLinearizeDepth != nullptr );
 		assert( in.texture != nullptr );
 
+		// First pass.
 		_fboFirstPass.bind( GL_DRAW_FRAMEBUFFER );
-
 		in.texture->bindToUnit( 1 );
 		in.textureLinearizeDepth->bindToUnit( 2 );
 		_program->use();
@@ -45,6 +45,7 @@ namespace VTX::Renderer::GL::Pass
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		_fboFirstPass.unbind();
 
+		// Second pass.
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
 		_textureFirstPass.bindToUnit( 1 );
 		in.textureLinearizeDepth->bindToUnit( 2 );

@@ -81,6 +81,7 @@ namespace VTX::Renderer::GL
 		_vboQuad.create();
 		_vaoQuad.create();
 		_ubo.create();
+		_ssbo.create();
 
 		_vaoQuad.enableAttribute( 0 );
 		_vaoQuad.setVertexBuffer( 0, _vboQuad, sizeof( Vec2f ) );
@@ -91,6 +92,10 @@ namespace VTX::Renderer::GL
 
 		// Global uniforms buffer.
 		_ubo.set( _globalUniforms, GL_DYNAMIC_DRAW );
+
+		// Debug SSBO.
+		auto debug = std::vector<Vec4f>( 100, Vec4f( 0.f, 1.f, 2.f, 30.f ) );
+		_ssbo.set( debug, GL_DYNAMIC_STORAGE_BIT );
 
 		VTX_INFO( "Renderer initialized" );
 	}
@@ -106,12 +111,16 @@ namespace VTX::Renderer::GL
 	void OpenGLRenderer::renderFrame()
 	{
 		_vaoQuad.drawCalls = 0;
+		_ubo.bind( GL_UNIFORM_BUFFER, 0 );
+		_ssbo.bind( GL_SHADER_STORAGE_BUFFER, 10 );
+
 		for ( Pass::BasePass * const pass : _passes )
 		{
-			_ubo.bind( GL_UNIFORM_BUFFER, 0 );
 			pass->render( _vaoQuad );
-			_ubo.unbind();
 		}
+
+		_ssbo.unbind();
+		_ubo.unbind();
 	};
 
 	const Vec2i OpenGLRenderer::getPickedIds( const uint p_x, const uint p_y )

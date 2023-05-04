@@ -71,5 +71,5 @@ void main()
 	}
 
 	ao				 = 1.f - ( ao / uKernelSize );
-	ambientOcclusion = pow( ao, uniforms.ssaoIntensity );
+	ambientOcclusion = pow( ao, uniforms.uintData.x );
 }

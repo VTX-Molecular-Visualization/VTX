@@ -10,30 +10,24 @@ namespace VTX::Renderer::GL
 	// TODO: model and normal matrix.
 	struct StructGlobalUniforms
 	{
-		Mat4f matrixView		  = MAT4F_ID;
-		Mat4f matrixProjection	  = MAT4F_ID;
-		bool  isCameraPerspective = true;
-		float cameraNear		  = 0.f;
-		float cameraFar			  = 1e4f;
-		Vec4f clipInfos			  = Vec4f( cameraNear * cameraFar, cameraFar, cameraFar - cameraNear, cameraNear );
-		bool  ssao				  = true;
-		uint  ssaoIntensity		  = 5;
-		uint  blurSize			  = 17;
-		Vec4f backgroundColor	  = Util::Color::Rgba::BLACK;
-		Vec4f lightColor		  = Util::Color::Rgba::WHITE;
-		uint  shadingMode		  = uint( ENUM_SHADING::DIFFUSE );
-		float specularFactor	  = 0.4f;
-		bool  fog				  = true;
-		float fogNear			  = 30.f;
-		float fogFar			  = 1000.f;
-		float fogDensity		  = 0.f;
-		Vec4f fogColor			  = Util::Color::Rgba::WHITE;
-		bool  outline			  = true;
-		Vec4f outlineColor		  = Util::Color::Rgba::WHITE;
-		int	  outlineThickness	  = 1;
-		float outlineSensivity	  = 0.4f;
-		Vec4f selectionColor	  = Util::Color::Rgba::WHITE;
-		bool  aa				  = true;
+		Mat4f matrixView	   = MAT4F_ID;
+		Mat4f matrixProjection = MAT4F_ID;
+		Vec4f cameraNearFar	   = Vec4f( 0.f, 1e4f, 0.f, 0.f ); // near, far
+		Vec4f cameraClipInfos  = Vec4f( cameraNearFar.x * cameraNearFar.y,
+										cameraNearFar.y,
+										cameraNearFar.y - cameraNearFar.x,
+										cameraNearFar.x );
+		Vec4f backgroundColor  = Util::Color::Rgba::BLACK;
+		Vec4f lightColor	   = Util::Color::Rgba::WHITE;
+		Vec4f fog			   = Vec4f( 30.f, 1000.f, 0.f, 0.f ); // fogNear, fogFar, fogDensity
+		Vec4f fogColor		   = Util::Color::Rgba::WHITE;
+		Vec4f outlineColor	   = Util::Color::Rgba::WHITE;
+		Vec4f selectionColor   = Util::Color::Rgba::WHITE;
+		// Compress data into vec4.
+		Vec4i boolData	= { true, false, false, false };			   // isCameraPerspective
+		Vec4i intData	= { 1, 0, 0, 0 };							   // outlineThickness
+		Vec4u uintData	= { 5, 17, uint( ENUM_SHADING::DIFFUSE ), 0 }; // ssaoIntensity, blurSize, shadingMode
+		Vec4f floatData = { 0.4f, 0.4f, 0.f, 0.f };					   // specularFactor, outlineSensivity
 	};
 } // namespace VTX::Renderer::GL
 
