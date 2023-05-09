@@ -1,4 +1,4 @@
-#version 450
+#version 450 core
 
 // FXAA : Fast Approximated Anti-Aliasing
 // adapted from: http://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf

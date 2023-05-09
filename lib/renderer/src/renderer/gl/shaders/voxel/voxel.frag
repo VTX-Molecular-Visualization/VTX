@@ -1,4 +1,4 @@
-#version 450
+#version 450 core
 
 // 3 16 bits for position.
 // 3 16 bits for normal.

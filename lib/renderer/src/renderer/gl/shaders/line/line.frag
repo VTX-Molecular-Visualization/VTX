@@ -1,4 +1,4 @@
-#version 450
+#version 450 core
 
 in 
 #include "struct_vertex_shader.glsl"
