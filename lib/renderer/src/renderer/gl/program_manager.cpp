@@ -46,7 +46,14 @@ namespace VTX::Renderer::GL
 		std::vector<FilePath> paths;
 		for ( const auto & file : std::filesystem::directory_iterator { _shaderPath / p_shaders } )
 		{
-			paths.emplace_back( file.path() );
+			try
+			{
+				ProgramManager::getShaderType( file );
+				paths.emplace_back( file.path() );
+			}
+			catch ( const GLException & )
+			{
+			}
 		}
 		return createProgram( p_name, paths, p_toInject, p_suffix );
 	}

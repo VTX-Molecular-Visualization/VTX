@@ -11,15 +11,9 @@ uniform mat4 u_MVMatrix;
 uniform mat4 u_projMatrix;
 uniform mat4 u_normalMatrix;
 
-out VsOut
-{
-	smooth vec3 viewPosition;
-	smooth vec3 normal;
-	smooth vec3	color;
-	flat uint   selected;
-	flat uint   id;
-}
-vsOut;
+out 
+#include "struct_vertex_shader.glsl"
+dataOut;
 
 void main()
 {
@@ -28,11 +22,11 @@ void main()
 		return;
 	}
 
-	vsOut.viewPosition = vec3( u_MVMatrix * aVertexPosition );
-	vsOut.normal	   = vec3( u_normalMatrix * aVertexNormal );
-	vsOut.color		   = aVertexColor;
-	vsOut.selected	   = aVertexSelected;
-	vsOut.id		   = aVertexId;
+	dataOut.viewPosition = vec3( u_MVMatrix * aVertexPosition );
+	dataOut.normal	   = vec3( u_normalMatrix * aVertexNormal );
+	dataOut.color		   = aVertexColor;
+	dataOut.selected	   = aVertexSelected;
+	dataOut.id		   = aVertexId;
 
-	gl_Position = u_projMatrix * vec4( vsOut.viewPosition, 1.f );
+	gl_Position = u_projMatrix * vec4( dataOut.viewPosition, 1.f );
 }

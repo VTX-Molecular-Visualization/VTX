@@ -22,6 +22,7 @@ namespace VTX::Renderer::GL
 
 		// Debug infos.
 		glEnable( GL_DEBUG_OUTPUT );
+		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		glDebugMessageCallback( _debugMessageCallback, NULL );
 
 		// Program manager.

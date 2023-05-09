@@ -9,30 +9,13 @@ layout( vertices = 4 ) out;
 
 uniform vec3 u_camPosition;
 
-in VsOut
-{
-	vec4	  position;
-	vec3	  direction;
-	flat vec4 color;
-	flat uint ssType;
-	flat uint visibility;
-	flat uint selection;
-	flat uint id;
-}
-vsIn[];
+in 
+#include "struct_vertex_shader.glsl"
+dataIn[];
 
-out TcOut
-{
-	vec3	  position;
-	vec3	  direction;
-	vec3	  normal;
-	flat vec4 color;
-	flat uint ssType;
-	flat uint visibility;
-	flat uint selection;
-	flat uint id;
-}
-tcOut[];
+out 
+#include "struct_tessellation_control_shader.glsl"
+dataOut[];
 
 // Values from original paper.
 const float MAX_DISTANCE   = 160.f;
@@ -80,24 +63,24 @@ float computeTessellationFactor( vec3 p_point )
 void main()
 {
 	// Transmit data.
-	tcOut[ gl_InvocationID ].position	= vsIn[ gl_InvocationID ].position.xyz;
-	tcOut[ gl_InvocationID ].direction	= vsIn[ gl_InvocationID ].direction;
-	tcOut[ gl_InvocationID ].ssType		= vsIn[ gl_InvocationID ].ssType;
-	tcOut[ gl_InvocationID ].visibility = vsIn[ gl_InvocationID ].visibility;
-	tcOut[ gl_InvocationID ].color		= vsIn[ gl_InvocationID ].color;
-	tcOut[ gl_InvocationID ].selection	= vsIn[ gl_InvocationID ].selection;
-	tcOut[ gl_InvocationID ].id			= vsIn[ gl_InvocationID ].id;
+	dataOut[ gl_InvocationID ].position	= dataIn[ gl_InvocationID ].position.xyz;
+	dataOut[ gl_InvocationID ].direction	= dataIn[ gl_InvocationID ].direction;
+	dataOut[ gl_InvocationID ].ssType		= dataIn[ gl_InvocationID ].ssType;
+	dataOut[ gl_InvocationID ].visibility = dataIn[ gl_InvocationID ].visibility;
+	dataOut[ gl_InvocationID ].color		= dataIn[ gl_InvocationID ].color;
+	dataOut[ gl_InvocationID ].selection	= dataIn[ gl_InvocationID ].selection;
+	dataOut[ gl_InvocationID ].id			= dataIn[ gl_InvocationID ].id;
 
 	// Normals are known only for the two center controls points.
 	if ( gl_InvocationID == 1 || gl_InvocationID == 2 )
 	{
 		// dir = 1 in backbones direction and -1 in the reverse direction.
-		const float dir = vsIn[ gl_InvocationID + 1 ].position.w - vsIn[ gl_InvocationID ].position.w;
-		tcOut[ gl_InvocationID ].direction *= dir;
+		const float dir = dataIn[ gl_InvocationID + 1 ].position.w - dataIn[ gl_InvocationID ].position.w;
+		dataOut[ gl_InvocationID ].direction *= dir;
 		const vec3 v02
-			= normalize( ( vsIn[ gl_InvocationID + 1 ].position.xyz - vsIn[ gl_InvocationID - 1 ].position.xyz ) );
+			= normalize( ( dataIn[ gl_InvocationID + 1 ].position.xyz - dataIn[ gl_InvocationID - 1 ].position.xyz ) );
 
-		tcOut[ gl_InvocationID ].normal = normalize( cross( v02, tcOut[ gl_InvocationID ].direction ) );
+		dataOut[ gl_InvocationID ].normal = normalize( cross( v02, dataOut[ gl_InvocationID ].direction ) );
 	}
 
 	// Compute tessellation levels
@@ -125,18 +108,18 @@ void main()
 		*/
 
 		// Patch is defined for the two center controls points.
-		const vec3 c1 = vsIn[ 1 ].position.xyz;
-		const vec3 c2 = vsIn[ 2 ].position.xyz;
+		const vec3 c1 = dataIn[ 1 ].position.xyz;
+		const vec3 c2 = dataIn[ 2 ].position.xyz;
 
 		// Adaptive tessellation factors wrt the distance of the central control points and the camera.
 		const float tessFactorC1 = computeTessellationFactor( c1 );
 		const float tessFactorC2 = computeTessellationFactor( c2 );
 
 		// Tessellation limits wrt secondary structure type.
-		const float tessMinC1 = MIN_TESS_SS[ vsIn[ 1 ].ssType ];
-		const float tessMaxC1 = MAX_TESS_SS[ vsIn[ 1 ].ssType ];
-		const float tessMinC2 = MIN_TESS_SS[ vsIn[ 2 ].ssType ];
-		const float tessMaxC2 = MAX_TESS_SS[ vsIn[ 2 ].ssType ];
+		const float tessMinC1 = MIN_TESS_SS[ dataIn[ 1 ].ssType ];
+		const float tessMaxC1 = MAX_TESS_SS[ dataIn[ 1 ].ssType ];
+		const float tessMinC2 = MIN_TESS_SS[ dataIn[ 2 ].ssType ];
+		const float tessMaxC2 = MAX_TESS_SS[ dataIn[ 2 ].ssType ];
 
 		const float vTessC1			  = tessFactorC1 * ( tessMaxC1 - tessMinC1 ) + tessMinC1;
 		const float vTessC2			  = tessFactorC2 * ( tessMaxC2 - tessMinC2 ) + tessMinC2;

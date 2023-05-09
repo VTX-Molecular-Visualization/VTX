@@ -12,16 +12,14 @@ uniform mat4 u_MVMatrix;
 uniform mat4 u_projMatrix;
 uniform mat4 u_normalMatrix;
 
-in GsOut
-{	
-	flat vec3 center;
-}
-gsIn;
+in
+#include "struct_geometry_shader.glsl"
+dataIn;
 
 void main()
 {
-	vec3 viewPosition = vec3( u_MVMatrix * vec4( gsIn.center, 1.f ) );
-	vec3	normal	   = normalize( vec3( u_normalMatrix * vec4( gsIn.center, 1.f )) );
+	vec3 viewPosition = vec3( u_MVMatrix * vec4( dataIn.center, 1.f ) );
+	vec3	normal	   = normalize( vec3( u_normalMatrix * vec4( dataIn.center, 1.f )) );
 	uvec4 viewPositionNormalCompressed;
 	viewPositionNormalCompressed.x = packHalf2x16( viewPosition.xy );
 	viewPositionNormalCompressed.y = packHalf2x16( vec2( viewPosition.z, normal.x ) );

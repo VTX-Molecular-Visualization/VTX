@@ -10,17 +10,14 @@ uniform mat4 u_MVMatrix;
 uniform mat4 u_projMatrix;
 uniform mat4 u_normalMatrix;
 
-out VsOut
-{
-	flat vec3 voxelSize;
-	flat vec3 center;
-}
-vsOut;
+out 
+#include "struct_vertex_shader.glsl"
+dataOut;
 
 void main()
 {
 	vec3 center = (aVoxelMin + aVoxelMax) / 2.;
-	vsOut.center = center;
-	vsOut.voxelSize = aVoxelMax - aVoxelMin;		
+	dataOut.center = center;
+	dataOut.voxelSize = aVoxelMax - aVoxelMin;		
 	gl_Position = u_projMatrix * u_MVMatrix * vec4(center, 1.f);
 }

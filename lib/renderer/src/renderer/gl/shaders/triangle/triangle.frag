@@ -1,14 +1,8 @@
 #version 450
 
-in VsOut
-{
-	smooth vec3 viewPosition;
-	smooth vec3 normal;
-	smooth vec3	color;
-	flat uint   selected;
-	flat uint   id;
-}
-fsIn;
+in
+#include "struct_vertex_shader.glsl"
+dataIn;
 
 // 3 16 bits for position.
 // 3 16 bits for normal.
@@ -23,13 +17,13 @@ void main()
 {
 	// Compress position and normal.
 	uvec4 viewPositionNormalCompressed;
-	viewPositionNormalCompressed.x = packHalf2x16( fsIn.viewPosition.xy );
-	viewPositionNormalCompressed.y = packHalf2x16( vec2( fsIn.viewPosition.z, fsIn.normal.x ) );
-	viewPositionNormalCompressed.z = packHalf2x16( fsIn.normal.yz );
-	viewPositionNormalCompressed.w = packHalf2x16( vec2( fsIn.selected, 0 ) );
+	viewPositionNormalCompressed.x = packHalf2x16( dataIn.viewPosition.xy );
+	viewPositionNormalCompressed.y = packHalf2x16( vec2( dataIn.viewPosition.z, dataIn.normal.x ) );
+	viewPositionNormalCompressed.z = packHalf2x16( dataIn.normal.yz );
+	viewPositionNormalCompressed.w = packHalf2x16( vec2( dataIn.selected, 0 ) );
 
 	// Output data.
 	outViewPositionNormal = viewPositionNormalCompressed;
-	outColor			  = vec4( fsIn.color, 32.f ); // w = specular shininess.
-	outId				  = uvec2( fsIn.id, 0 );
+	outColor			  = vec4( dataIn.color, 32.f ); // w = specular shininess.
+	outId				  = uvec2( dataIn.id, 0 );
 }

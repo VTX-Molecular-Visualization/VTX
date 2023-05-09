@@ -21,6 +21,7 @@ int main( int argc, char ** argv )
 	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 
 	GLFWwindow * const window = glfwCreateWindow( WIDTH, HEIGHT, "VTX_RENDERER_BENCH", NULL, NULL );
+
 	if ( window == nullptr )
 	{
 		VTX::VTX_ERROR( "Failed to create GLFW window" );
@@ -32,11 +33,15 @@ int main( int argc, char ** argv )
 
 	try
 	{
-		VTX::Renderer::GL::OpenGLRenderer renderer( glfwGetProcAddress, std::filesystem::current_path() / "shaders" );
+		auto renderer
+			= VTX::Renderer::GL::OpenGLRenderer( glfwGetProcAddress, std::filesystem::current_path() / "shaders" );
 		renderer.init( WIDTH, HEIGHT );
 
-		// glViewport( 0, 0, WIDTH, HEIGHT );
-		// glClearColor( 0.5f, 0.5f, 0.5f, 1.f );
+		/*
+		GLFWframebuffersizefun fun = [ &renderer ]( GLFWwindow * p_window, int p_width, int p_height )
+		{ renderer.resize( p_width, p_height ); };
+		glfwSetFramebufferSizeCallback( window, fun );
+		*/
 
 		while ( glfwWindowShouldClose( window ) == 0 )
 		{
@@ -53,6 +58,7 @@ int main( int argc, char ** argv )
 	catch ( const std::exception & p_e )
 	{
 		VTX::VTX_ERROR( p_e.what() );
+		glfwDestroyWindow( window );
 		glfwTerminate();
 		exit( EXIT_FAILURE );
 	}
