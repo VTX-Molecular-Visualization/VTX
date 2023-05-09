@@ -1,18 +1,11 @@
 #version 450
 
-#define ATOM_POSITION 0
-#define ATOM_COLOR 1
-#define ATOM_RADIUS 2
-#define ATOM_VISIBILITY 3
-#define ATOM_SELECTION 4
-#define ATOM_ID 5
-
-layout( location = ATOM_POSITION ) in vec3 aSpherePos;
-layout( location = ATOM_COLOR ) in vec4 aSphereColor;
-layout( location = ATOM_RADIUS ) in float aSphereRadius;
-layout( location = ATOM_VISIBILITY ) in uint aSphereVisible;
-layout( location = ATOM_SELECTION ) in uint aSphereSelected;
-layout( location = ATOM_ID ) in uint aSphereId;
+layout( location = 0 ) in vec3 aSpherePos;
+layout( location = 1 ) in vec4 aSphereColor;
+layout( location = 2 ) in float aSphereRadius;
+layout( location = 3 ) in uint aSphereVisible;
+layout( location = 4 ) in uint aSphereSelected;
+layout( location = 5 ) in uint aSphereId;
 
 uniform mat4  u_MVMatrix;
 uniform mat4  u_projMatrix;

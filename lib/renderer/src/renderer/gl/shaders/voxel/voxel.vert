@@ -1,10 +1,7 @@
 #version 450
 
-#define VOXEL_MIN 0
-#define VOXEL_MAX 1
-
-layout( location = VOXEL_MIN ) in vec3 aVoxelMin;
-layout( location = VOXEL_MAX ) in vec3 aVoxelMax;
+layout( location = 0 ) in vec3 aVoxelMin;
+layout( location = 1 ) in vec3 aVoxelMax;
 
 uniform mat4 u_MVMatrix;
 uniform mat4 u_projMatrix;
