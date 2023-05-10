@@ -14,13 +14,13 @@
 	<file>sprite/camera_recenter_icon.png</file>
 	<file>sprite/camera_trackball_mode.png</file>
 	<file>sprite/camera_vessel_mode.png</file>
-	<file>sprite/checkbox_checked.png</file>
-	<file>sprite/checkbox_unchecked.png</file>
 	<file>sprite/citations_icon.png</file>
 	<file>sprite/citations_icon_hovered.png</file>
 	<file>sprite/close_icon.png</file>
 	<file>sprite/close_icon_hovered.png</file>
 	<file>sprite/cloud_connector.png</file>
+	<file>sprite/collapsing_groupbox_collapse.png</file>
+	<file>sprite/collapsing_groupbox_expand.png</file>
 	<file>sprite/console_window_icon.png</file>
 	<file>sprite/copy_preset_icon.png</file>
 	<file>sprite/copy_selection_icon.png</file>
@@ -126,6 +126,7 @@
 	<file>sprite/trajectory_previous_frame_icon.png</file>
 	<file>sprite/treeview_folded_molecule_icon.png</file>
 	<file>sprite/treeview_unfolded_molecule_icon.png</file>
+	<file>sprite/ubuntu/checkbox_checked.png</file>
 	<file>sprite/undock_icon.png</file>
 	<file>sprite/undock_icon_hovered.png</file>
 	<file>sprite/unlocked_icon.png</file>
@@ -134,6 +135,8 @@
 	<file>sprite/windowed_icon.png</file>
 	<file>sprite/windows_icon.png</file>
 	<file>stylesheet_ui.css</file>
+	<file>stylesheet_ui_linux.css</file>
+	<file>stylesheet_ui_windows.css</file>
 	<file>video/video_intro.gif</file>
 </qresource>
 </RCC>
