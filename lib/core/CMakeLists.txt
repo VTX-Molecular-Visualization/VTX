@@ -9,3 +9,9 @@ file(GLOB_RECURSE SOURCES src/*)
 # Create library.
 add_library(VTX_CORE STATIC ${HEADERS} ${SOURCES})
 target_include_directories(VTX_CORE PRIVATE include)
+
+# Link VTX_UTIL.
+if(NOT TARGET VTX_UTIL)
+	add_subdirectory(../util lib/util)
+endif()
+target_link_libraries(VTX_CORE PRIVATE VTX_UTIL)

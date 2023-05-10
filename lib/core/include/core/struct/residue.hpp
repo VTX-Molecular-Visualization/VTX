@@ -1,38 +1,25 @@
-#ifndef __VTX_APP_COMPONENT_CHEMISTRY_RESIDUE__
-#define __VTX_APP_COMPONENT_CHEMISTRY_RESIDUE__
+#ifndef __VTX_CORE_STRUCT_RESIDUE__
+#define __VTX_CORE_STRUCT_RESIDUE__
 
 #include "_fwd.hpp"
-#include "app/application/representation/base_representable.hpp"
-#include "app/component/generic/base_colorable.hpp"
-#include "app/component/generic/base_visible.hpp"
-#include "app/component/object3d/helper/aabb.hpp"
-#include "app/core/model/base_model.hpp"
-#include "app/id.hpp"
-#include "app/internal/chemdb/residue.hpp"
-#include "app/internal/chemdb/secondary_structure.hpp"
-#include "atom.hpp"
-#include <map>
+#include "core/chemdb/atom.hpp"
+#include "core/chemdb/residue.hpp"
+#include "core/chemdb/secondary_structure.hpp"
 #include <string>
 #include <util/constants.hpp>
 #include <util/types.hpp>
 
-namespace VTX::App::Component::Chemistry
+namespace VTX::Core::Struct
 {
-	namespace ChemDB = VTX::App::Internal::ChemDB;
-
-	class Residue :
-		public App::Core::Model::BaseModel,
-		public Component::Generic::BaseColorable,
-		public Component::Generic::BaseVisible,
-		public App::Application::Representation::BaseRepresentable
+	class Residue
 	{
-		VTX_MODEL
-
 	  public:
 		static const int SYMBOL_COUNT = int( ChemDB::Residue::SYMBOL::COUNT );
 
 		static bool					   checkIfStandardFromName( const std::string & p_residueName );
-		static const Util::Color::Rgba getResidueColor( const Chemistry::Residue & p_residue );
+		static const Util::Color::Rgba getResidueColor( const Residue & p_residue );
+
+		Residue() {}
 
 		inline bool isStandardResidue() const
 		{
@@ -70,7 +57,7 @@ namespace VTX::App::Component::Chemistry
 		inline uint				  getBondCount() const { return _bondCount; };
 		inline void				  setBondCount( const uint p_count ) { _bondCount = p_count; };
 		inline uint				  getRealAtomCount() const { return _realAtomCount; };
-		void					  removeToAtoms( const uint p_atomIndex );
+		void					  removeToAtom( const uint p_atomIndex );
 		inline char				  getInsertionCode() const { return _insertionCode; }
 		inline void				  setInsertionCode( char p_insertionCode ) { _insertionCode = p_insertionCode; }
 		inline bool				  hasInsertionCode() const { return _insertionCode != ' '; }
@@ -86,20 +73,10 @@ namespace VTX::App::Component::Chemistry
 
 		const Atom * const getAlphaCarbon() const;
 
-		// Mask BaseVisible::setVisible
-		void setVisible( const bool p_visible );
-		void setVisible( const bool p_visible, const bool p_notify );
-
-		App::Component::Object3D::Helper::AABB getAABB() const;
-		App::Component::Object3D::Helper::AABB getWorldAABB() const;
-
-	  protected:
-		void _onRepresentationChange() override;
-
 	  private:
 		ChemDB::Residue::TYPE _type					= ChemDB::Residue::TYPE::STANDARD;
-		uint				  _index				= 0;
-		int					  _indexInOriginalChain = INT_MIN;
+		uint				  _index				= INVALID_ID;
+		int					  _indexInOriginalChain = 0;
 		Chain *				  _chainPtr				= nullptr;
 
 		int _symbol = int( ChemDB::Residue::SYMBOL::UNKNOWN );
@@ -112,9 +89,6 @@ namespace VTX::App::Component::Chemistry
 		ChemDB::Atom::TYPE _atomType	   = ChemDB::Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
 		ChemDB::SecondaryStructure::TYPE _secondaryStructure = ChemDB::SecondaryStructure::TYPE::COIL;
 		char							 _insertionCode		 = ' ';
-
-		Residue() : BaseModel( App::ID::Model::MODEL_RESIDUE ) {}
 	};
-
-} // namespace VTX::App::Component::Chemistry
+} // namespace VTX::Core::Struct
 #endif
