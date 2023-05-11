@@ -3,8 +3,8 @@
 
 #include "_fwd.hpp"
 #include "app/application/selection/selection.hpp"
-#include "app/core/model/base_model_3d.hpp"
 #include "app/component/generic/base_colorable.hpp"
+#include "app/core/model/base_model_3d.hpp"
 #include "app/render/buffer/secondary_structure.hpp"
 #include <map>
 #include <string>

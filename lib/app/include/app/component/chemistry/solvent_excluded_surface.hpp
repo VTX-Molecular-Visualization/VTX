@@ -2,9 +2,9 @@
 #define __VTX_APP_COMPONENT_CHEMISTRY_SOLVENT_EXCLUDED_SURFACE__
 
 #include "_fwd.hpp"
-#include "app/component/object3d/mesh_triangle.hpp"
 #include "app/application/selection/selection.hpp"
 #include "app/component/object3d/helper/grid.hpp"
+#include "app/component/object3d/mesh_triangle.hpp"
 #include "app/render/renderer/gl/buffer.hpp"
 #include <util/types.hpp>
 #include <vector>
@@ -26,7 +26,7 @@ namespace VTX::App::Component::Chemistry
 
 		inline const Component::Chemistry::Category * const getCategory() const { return _category; }
 		inline const std::vector<Range> &					getAtomsToTriangles() const { return _atomsToTriangles; }
-		const App::Internal::Math::Transform &								getTransform() const override;
+		const App::Internal::Math::Transform &				getTransform() const override;
 
 		void refreshColors();
 		void refreshVisibilities();

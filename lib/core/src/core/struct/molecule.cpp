@@ -124,43 +124,6 @@ namespace VTX::Core::Struct
 		return true;
 	}
 
-	void Molecule::print() const
-	{
-		// TODO: add more infos in debug (solvents, ions, ss...).
-		VTX_INFO( "Molecule: " + _name );
-		VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: " + std::to_string( _residues.size() )
-				  + " / Atoms: " + std::to_string( _atoms.size() ) + " / Bonds: " + std::to_string( _bonds.size() ) );
-
-		// Display unknown symbols.
-		const std::vector<ChemDB::UnknownResidueData *> & unknownResidueSymbols = getUnknownResidueSymbols();
-		if ( unknownResidueSymbols.empty() == false )
-		{
-			std::string unknownResidueSymbolsStr = "";
-			for ( const ChemDB::UnknownResidueData * const unknownResidueData : unknownResidueSymbols )
-			{
-				unknownResidueSymbolsStr += unknownResidueData->symbolStr + " ";
-			}
-			VTX_INFO( "Unknown residue symbols : " + unknownResidueSymbolsStr );
-		}
-
-		const std::unordered_set<std::string> & unknownAtomSymbols = getUnknownAtomSymbols();
-		if ( unknownAtomSymbols.empty() == false )
-		{
-			std::string unknownAtomSymbolsStr = "";
-			for ( std::string symbol : unknownAtomSymbols )
-			{
-				unknownAtomSymbolsStr += symbol + " ";
-			}
-			VTX_WARNING( "Unknown atom symbols : " + unknownAtomSymbolsStr );
-		}
-
-		VTX_DEBUG( "Sizeof molecule: " + std::to_string( sizeof( *this ) ) );
-		VTX_DEBUG( "Sizeof chain: " + std::to_string( sizeof( *_chains[ 0 ] ) ) );
-		VTX_DEBUG( "Sizeof residue: " + std::to_string( sizeof( *_residues[ 0 ] ) ) );
-		VTX_DEBUG( "Sizeof atom: " + std::to_string( sizeof( *_atoms[ 0 ] ) ) );
-		VTX_DEBUG( "Sizeof bond: " + std::to_string( sizeof( *_bonds[ 0 ] ) ) );
-	}
-
 	bool Molecule::mergeTopology( const Molecule & p_molecule )
 	{
 		if ( p_molecule.getAtomCount() > getAtomCount() )

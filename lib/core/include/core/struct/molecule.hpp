@@ -128,8 +128,6 @@ namespace VTX::Core::Struct
 		inline bool hasTopology() const { return getResidueCount() > 1; }
 		inline bool hasDynamic() const { return getFrameCount() > 1; }
 
-		void print() const;
-
 		bool mergeTopology( const Molecule & );
 
 	  protected:
