@@ -9,7 +9,7 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		_program = p_pm.createProgram( "Outline", std::vector<FilePath> { "outline.frag" } );
+		_program = p_pm.createProgram( "Outline", std::vector<FilePath> { "default.vert", "outline.frag" } );
 		assert( _program != nullptr );
 	}
 
