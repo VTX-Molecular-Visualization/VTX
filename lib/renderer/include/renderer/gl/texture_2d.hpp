@@ -69,7 +69,7 @@ namespace VTX::Renderer::GL
 			glTextureSubImage2D( _id, p_level, p_offsetX, p_offsetY, width, height, p_format, p_type, p_pixels );
 		}
 
-		inline void bindToUnit( const GLuint p_unit ) const { glBindTextureUnit( p_unit, _id ); }
+		inline void bind( const GLuint p_unit ) const { glBindTextureUnit( p_unit, _id ); }
 
 		inline void getImage( const GLint	p_level,
 							  const GLenum	p_format,

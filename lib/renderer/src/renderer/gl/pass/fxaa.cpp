@@ -17,7 +17,7 @@ namespace VTX::Renderer::GL::Pass
 		assert( in.texture != nullptr );
 
 		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-		in.texture->bindToUnit( 1 );
+		in.texture->bind( 0 );
 		_program->use();
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 	}

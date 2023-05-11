@@ -3,9 +3,9 @@
 #include "global_uniforms.glsl"
 
 // In.
-layout( binding = 1 ) uniform usampler2D gbViewPositionNormal;
-layout( binding = 2 ) uniform sampler2D gbColor;
-layout( binding = 3 ) uniform sampler2D gbAmbientOcclusion;
+layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
+layout( binding = 1 ) uniform sampler2D gbColor;
+layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
 // Out.
 out vec4 fragColor;

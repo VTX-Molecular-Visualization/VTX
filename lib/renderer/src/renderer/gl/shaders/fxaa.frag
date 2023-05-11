@@ -7,7 +7,7 @@
 #include "global_uniforms.glsl"
 
 // In.
-layout( binding = 1 ) uniform sampler2D image;
+layout( binding = 0 ) uniform sampler2D image;
 
 // Out.
 out vec4 fragColor;

@@ -2,7 +2,7 @@
 
 #include "global_uniforms.glsl"
 
-layout( binding = 1 ) uniform sampler2D depthTexture;
+layout( binding = 0 ) uniform sampler2D depthTexture;
 
 // Out.
 layout( location = 0 ) out float linearDepth;

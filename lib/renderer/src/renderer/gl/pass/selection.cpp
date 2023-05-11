@@ -22,9 +22,9 @@ namespace VTX::Renderer::GL::Pass
 		assert( in.textureLinearizeDepth != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-		in.textureViewPositionsNormals->bindToUnit( 1 );
-		in.texture->bindToUnit( 2 );
-		in.textureLinearizeDepth->bindToUnit( 3 );
+		in.textureViewPositionsNormals->bind( 0 );
+		in.texture->bind( 1 );
+		in.textureLinearizeDepth->bind( 2 );
 		_program->use();
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		out.fbo.unbind();

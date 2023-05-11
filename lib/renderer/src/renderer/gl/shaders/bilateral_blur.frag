@@ -3,8 +3,8 @@
 #include "global_uniforms.glsl"
 
 // In.
-layout( binding = 1 ) uniform sampler2D inputTexture;
-layout( binding = 2 ) uniform sampler2D linearDepthTexture;
+layout( binding = 0 ) uniform sampler2D inputTexture;
+layout( binding = 1 ) uniform sampler2D linearDepthTexture;
 
 uniform ivec2 uDirection;
 

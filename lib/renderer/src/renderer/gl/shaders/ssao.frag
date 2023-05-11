@@ -5,9 +5,9 @@
 // Crytek (Crysis) like SSAO
 
 // In.
-layout( binding = 1 ) uniform usampler2D gbViewPositionNormal;
-layout( binding = 2 ) uniform sampler2D noise;
-layout( binding = 3 ) uniform sampler2D linearDepth;
+layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
+layout( binding = 1 ) uniform sampler2D noise;
+layout( binding = 2 ) uniform sampler2D linearDepth;
 
 uniform vec3  uAoKernel[ 512 ];
 uniform int	  uKernelSize;

@@ -1,4 +1,4 @@
-layout ( std140, binding = 0 ) uniform Uniforms
+layout ( std140, binding = 15 ) uniform Uniforms
 {
 	mat4 matrixView;
 	mat4 matrixProjection;
