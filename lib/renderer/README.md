@@ -19,7 +19,7 @@
     subgraph SSAO
       subgraph ssao.in
         ssao.in.textVPN[textureViewPositionsNormals]
-        ssao.in.textDepth[texture]
+        ssao.in.textDepth[textureDepth]
       end
       subgraph ssao.out
         ssao.out.text[texture]
