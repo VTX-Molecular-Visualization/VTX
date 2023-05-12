@@ -23,11 +23,11 @@ namespace VTX::Renderer::GL::Pass
 	void Outline::render( VertexArray & p_vao )
 	{
 		assert( in.texture != nullptr );
-		assert( in.textureLinearizeDepth != nullptr );
+		assert( in.textureDepth != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
 		in.texture->bind( 0 );
-		in.textureLinearizeDepth->bind( 1 );
+		in.textureDepth->bind( 1 );
 		_program->use();
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		out.fbo.unbind();

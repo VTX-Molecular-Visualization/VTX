@@ -20,8 +20,8 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructIn
 		{
-			Texture2D * texture				  = nullptr;
-			Texture2D * textureLinearizeDepth = nullptr;
+			Texture2D * texture		 = nullptr;
+			Texture2D * textureDepth = nullptr;
 		} in;
 
 		struct StructOut

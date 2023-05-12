@@ -42,7 +42,7 @@ namespace VTX::Renderer::GL
 		_passLinearizeDepth.in.textureDepth = &( _passGeometric.out.textureDepth );
 
 		_passSSAO.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
-		_passSSAO.in.textureLinearizeDepth		 = &( _passGeometric.out.textureDepth );
+		_passSSAO.in.textureDepth				 = &( _passLinearizeDepth.out.texture );
 
 		_passBlur.in.texture			   = &( _passSSAO.out.texture );
 		_passBlur.in.textureLinearizeDepth = &( _passLinearizeDepth.out.texture );
@@ -51,12 +51,12 @@ namespace VTX::Renderer::GL
 		_passShading.in.texture						= &( _passGeometric.out.textureColors );
 		_passShading.in.textureBlur					= &( _passBlur.out.texture );
 
-		_passOutline.in.texture				  = &( _passShading.out.texture );
-		_passOutline.in.textureLinearizeDepth = &( _passLinearizeDepth.out.texture );
+		_passOutline.in.texture		 = &( _passShading.out.texture );
+		_passOutline.in.textureDepth = &( _passLinearizeDepth.out.texture );
 
 		_passSelection.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
-		_passSelection.in.texture					  = &( _passShading.out.texture );
-		_passSelection.in.textureLinearizeDepth		  = &( _passLinearizeDepth.out.texture );
+		_passSelection.in.texture					  = &( _passOutline.out.texture );
+		_passSelection.in.textureDepth				  = &( _passLinearizeDepth.out.texture );
 
 		_passFXAA.in.texture = &( _passSelection.out.texture );
 	}

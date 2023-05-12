@@ -19,12 +19,12 @@ namespace VTX::Renderer::GL::Pass
 	{
 		assert( in.textureViewPositionsNormals != nullptr );
 		assert( in.texture != nullptr );
-		assert( in.textureLinearizeDepth != nullptr );
+		assert( in.textureDepth != nullptr );
 
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
 		in.textureViewPositionsNormals->bind( 0 );
 		in.texture->bind( 1 );
-		in.textureLinearizeDepth->bind( 2 );
+		in.textureDepth->bind( 2 );
 		_program->use();
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		out.fbo.unbind();
