@@ -21,7 +21,7 @@ namespace VTX::Util
 	{
 		Duration intervalTime = std::chrono::duration_cast<Duration>( Clock::now() - _interval );
 		_interval			  = Clock::now();
-		return ( intervalTime ).count();
+		return intervalTime.count();
 	}
 
 } // namespace VTX::Util
