@@ -24,11 +24,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Installing packages
-      run: |
-        if [[ ${{ matrix.os }} == 'ubuntu-latest' ]]; then          
-          sudo apt-get install -y libglu1-mesa-dev
-        fi
+    - uses: knicknic/os-specific-run@v1
+      with:
+        linux: sudo apt-get install -y libglu1-mesa-dev
 
     - name: Configure CMake
       working-directory: ${{env.CMAKELISTS_DIR}}
