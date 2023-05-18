@@ -38,8 +38,10 @@ target_link_libraries(VTX_RENDERER_TEST PRIVATE glfw)
 target_link_libraries(VTX_RENDERER_TEST PRIVATE VTX_RENDERER)
 
 # Catch2.
+include(CTest)
 catch_discover_tests(VTX_RENDERER_TEST)
 
+# Benchmark.
 # Create executable.
 add_executable(VTX_RENDERER_BENCH bench/main.cpp)
 
