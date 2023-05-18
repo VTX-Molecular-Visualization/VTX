@@ -103,7 +103,7 @@ namespace VTX::Renderer::GL
 		template<typename T>
 		inline void setSub( const T &	   p_data,
 							const GLintptr p_offset = GLintptr( 0 ),
-							const GLsizei  p_size = = GLsizei( sizeof( T ) ) ) const
+							const GLsizei  p_size	= GLsizei( sizeof( T ) ) ) const
 		{
 			assert( glIsBuffer( _id ) );
 
