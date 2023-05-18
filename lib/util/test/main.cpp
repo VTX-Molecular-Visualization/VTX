@@ -71,7 +71,6 @@ TEST_CASE( "Util::BaseStaticSingleton", "[generic]" )
 	const SingletonTest & instance = VTX::Util::Generic::BaseStaticSingleton<SingletonTest>::get();
 
 	// Forbidden.
-	
 	// const SingletonTest consDefault;
 	// const SingletonTest consCopy( instance );
 	// const SingletonTest consMove( std::move( instance ) );
