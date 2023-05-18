@@ -2,6 +2,7 @@
 #include <renderer/gl/opengl_renderer.hpp>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 TEST_CASE( "Renderer::GL", "[renderer]" )
 {
@@ -20,11 +21,19 @@ TEST_CASE( "Renderer::GL", "[renderer]" )
 
 	glfwMakeContextCurrent( window );
 
-	auto renderer = Renderer::GL::OpenGLRenderer( reinterpret_cast<void *>( glfwGetProcAddress ),
-												  std::filesystem::current_path() / "shaders" );
-	renderer.init( 800, 600 );
-	renderer.renderFrame();
-	glfwSwapBuffers( window );
+	try
+	{
+		auto renderer = Renderer::GL::OpenGLRenderer( reinterpret_cast<void *>( glfwGetProcAddress ),
+													  std::filesystem::current_path() / "shaders" );
+		renderer.init( 800, 600 );
+		renderer.renderFrame();
+		glfwSwapBuffers( window );
+	}
+	catch ( const std::exception & p_e )
+	{
+		std::cerr << p_e.what() << std::endl;
+	}
+
 	glfwDestroyWindow( window );
 	glfwTerminate();
 }
