@@ -59,7 +59,7 @@ int main( int, char ** )
 			= Util::Math::perspective( Util::Math::radians( 60.f ), WIDTH / float( HEIGHT ), 0.0001f, 1000.f );
 
 		renderer.setCameraMatrix( viewMatrix, projectionMatrix );
-		renderer.setBackgroundColor( Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f ) );
+		//renderer.setBackgroundColor( Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f ) );
 
 		while ( glfwWindowShouldClose( window ) == 0 )
 		{

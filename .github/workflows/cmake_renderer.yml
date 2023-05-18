@@ -26,7 +26,7 @@ jobs:
     
     - uses: knicknic/os-specific-run@v1
       with:
-        linux: sudo apt-get install -y libglu1-mesa-dev
+        linux: sudo apt-get install -y libglu1-mesa-dev xorg-dev
 
     - name: Configure CMake
       working-directory: ${{env.CMAKELISTS_DIR}}
