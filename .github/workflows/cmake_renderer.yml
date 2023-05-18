@@ -1,13 +1,13 @@
-name: CMake Util
+name: CMake Renderer
 
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
-    paths: ['lib/util/**']
+    paths: ['lib/renderer/**']
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  CMAKELISTS_DIR: ${{github.workspace}}/lib/util
+  CMAKELISTS_DIR: ${{github.workspace}}/lib/renderer
   CMAKE_BUILD_DIR: out
   BUILD_TYPE: Release
 
@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v3
