@@ -23,9 +23,9 @@ namespace VTX::Util
 		using Duration	  = std::chrono::duration<float>;
 		using Ms		  = std::chrono::milliseconds;
 
-		Clock::time_point begin;
-		Clock::time_point interval;
-		Clock::time_point end;
+		Clock::time_point _begin;
+		Clock::time_point _interval;
+		Clock::time_point _end;
 	};
 } // namespace VTX::Util
 #endif

@@ -9,18 +9,18 @@ namespace VTX::Util
 		return ms.count();
 	}
 
-	void Chrono::start() { begin = interval = Clock::now(); }
+	void Chrono::start() { _begin = _interval = Clock::now(); }
 
-	void Chrono::stop() { end = interval = Clock::now(); }
+	void Chrono::stop() { _end = _interval = Clock::now(); }
 
-	float Chrono::elapsedTime() const { return ( std::chrono::duration_cast<Duration>( end - begin ) ).count(); }
+	float Chrono::elapsedTime() const { return ( std::chrono::duration_cast<Duration>( _end - _begin ) ).count(); }
 
 	std::string Chrono::elapsedTimeStr() const { return std::to_string( elapsedTime() ) + 's'; }
 
 	float Chrono::intervalTime()
 	{
-		Duration intervalTime = std::chrono::duration_cast<Duration>( Clock::now() - interval );
-		interval			  = Clock::now();
+		Duration intervalTime = std::chrono::duration_cast<Duration>( Clock::now() - _interval );
+		_interval			  = Clock::now();
 		return ( intervalTime ).count();
 	}
 
