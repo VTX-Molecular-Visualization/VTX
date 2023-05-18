@@ -43,7 +43,7 @@ int main( int, char ** )
 	try
 	{
 		// Renderer.
-		auto renderer = Renderer::GL::OpenGLRenderer( static_cast<void *>( glfwGetProcAddress ),
+		auto renderer = Renderer::GL::OpenGLRenderer( reinterpret_cast<void *>( glfwGetProcAddress ),
 													  std::filesystem::current_path() / "shaders" );
 		renderer.init( WIDTH, HEIGHT );
 
