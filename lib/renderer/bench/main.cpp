@@ -43,15 +43,13 @@ int main( int, char ** )
 	try
 	{
 		// Renderer.
-		auto renderer = Renderer::GL::OpenGLRenderer( reinterpret_cast<void *>( glfwGetProcAddress ),
-													  std::filesystem::current_path() / "shaders" );
+		static auto renderer = Renderer::GL::OpenGLRenderer( reinterpret_cast<void *>( glfwGetProcAddress ),
+															 std::filesystem::current_path() / "shaders" );
 		renderer.init( WIDTH, HEIGHT );
 
-		/*
-		GLFWframebuffersizefun fun = [ &renderer ]( GLFWwindow * p_window, int p_width, int p_height )
-		{ renderer.resize( p_width, p_height ); };
+		GLFWframebuffersizefun fun
+			= []( GLFWwindow * p_window, int p_width, int p_height ) { renderer.resize( p_width, p_height ); };
 		glfwSetFramebufferSizeCallback( window, fun );
-		*/
 
 		// Camera.
 		Vec3f position	 = Vec3f( 0.f, 0.f, 2.f );
