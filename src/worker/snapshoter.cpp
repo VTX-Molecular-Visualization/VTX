@@ -76,14 +76,14 @@ namespace VTX::Worker
 		const int height = _exportData.getSize().second;
 
 		// Create FBO.
-		QOpenGLFramebufferObject fbo = QOpenGLFramebufferObject( width, height );
+		QOpenGLFramebufferObject fbo = QOpenGLFramebufferObject( width* pixelRatio, height * pixelRatio);
 
 		// Resize renderer and use new FBO as output.
 		VTXApp::get().getScene().getCamera().setScreenSize( width, height );
 		glWidget.getRenderer().resize( width * pixelRatio, height * pixelRatio, fbo.handle() );
 
 		// Render.
-		_gl->glViewport( 0, 0, width, height );
+		_gl->glViewport( 0, 0, width * pixelRatio, height * pixelRatio );
 
 		// Use Export Data background opacity for the render.
 		const float previousBackgroundOpacity = VTX_SETTING().getSnapshotBackgroundOpacity();
