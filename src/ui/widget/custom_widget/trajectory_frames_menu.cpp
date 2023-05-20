@@ -59,9 +59,11 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void TrajectoryFramesMenu::_adjustFrameActions( const uint p_newFrameCount )
 	{
-		if ( p_newFrameCount > _frameCount )
+		const uint clampedFrameCount = p_newFrameCount > 10 ? 10 : p_newFrameCount;
+
+		if ( clampedFrameCount > _frameCount )
 		{
-			for ( uint i = _frameCount; i < p_newFrameCount; i++ )
+			for ( uint i = _frameCount; i < clampedFrameCount; i++ )
 			{
 				const QString						   actionTitle = _getFrameDisplayName( i );
 				UIAction::SelfReferencedAction * const action = new UIAction::SelfReferencedAction( actionTitle, this );
@@ -75,12 +77,12 @@ namespace VTX::UI::Widget::CustomWidget
 				addAction( action );
 			}
 
-			_frameCount = p_newFrameCount;
+			_frameCount = clampedFrameCount;
 		}
 		else
 		{
 			// New frame count = maxNbFrame + "All"
-			while ( _frameCount > p_newFrameCount )
+			while ( _frameCount > clampedFrameCount )
 			{
 				removeAction( actions().last() );
 				_frameCount--;
