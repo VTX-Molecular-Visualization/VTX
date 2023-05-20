@@ -76,7 +76,7 @@ namespace VTX::Worker
 		const int height = _exportData.getSize().second;
 
 		// Create FBO.
-		QOpenGLFramebufferObject fbo = QOpenGLFramebufferObject( width* pixelRatio, height * pixelRatio);
+		QOpenGLFramebufferObject fbo = QOpenGLFramebufferObject( width * pixelRatio, height * pixelRatio );
 
 		// Resize renderer and use new FBO as output.
 		VTXApp::get().getScene().getCamera().setScreenSize( width, height );
