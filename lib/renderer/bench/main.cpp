@@ -25,7 +25,11 @@ int main( int, char ** )
 	}
 
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 4 );
+#if ( VTX_OPENGL_VERSION == 450 )
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 5 );
+#else
+	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 1 );
+#endif
 	glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 
 	GLFWwindow * const window = glfwCreateWindow( WIDTH, HEIGHT, "VTX_RENDERER_BENCH", nullptr, nullptr );
