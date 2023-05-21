@@ -54,38 +54,38 @@ namespace VTX::Renderer::GL::Pass
 
 		// Position.
 		in.triangles.vao.enableAttribute( 0 );
-		in.triangles.vao.setVertexBuffer( 0, in.triangles.vboPositions, sizeof( Vec4f ) );
-		in.triangles.vao.setAttributeFormat( 0, 4, GL_FLOAT );
+		in.triangles.vao.setVertexBuffer<float>( 0, in.triangles.vboPositions, sizeof( Vec4f ) );
+		in.triangles.vao.setAttributeFormat<float>( 0, 4 );
 		in.triangles.vao.setAttributeBinding( 0, 0 );
 
 		// Normal.
 		in.triangles.vao.enableAttribute( 1 );
-		in.triangles.vao.setVertexBuffer( 1, in.triangles.vboNormals, sizeof( Vec4f ) );
-		in.triangles.vao.setAttributeFormat( 1, 4, GL_FLOAT );
+		in.triangles.vao.setVertexBuffer<float>( 1, in.triangles.vboNormals, sizeof( Vec4f ) );
+		in.triangles.vao.setAttributeFormat<float>( 1, 4 );
 		in.triangles.vao.setAttributeBinding( 1, 1 );
 
 		// Color.
 		in.triangles.vao.enableAttribute( 2 );
-		in.triangles.vao.setVertexBuffer( 2, in.triangles.vboColors, sizeof( Util::Color::Rgba ) );
-		in.triangles.vao.setAttributeFormat( 2, 4, GL_FLOAT );
+		in.triangles.vao.setVertexBuffer<float>( 2, in.triangles.vboColors, sizeof( Util::Color::Rgba ) );
+		in.triangles.vao.setAttributeFormat<float>( 2, 4 );
 		in.triangles.vao.setAttributeBinding( 2, 2 );
 
 		// Visbility.
 		in.triangles.vao.enableAttribute( 3 );
-		in.triangles.vao.setVertexBuffer( 3, in.triangles.vboVisibilities, sizeof( uint ) );
-		in.triangles.vao.setAttributeFormat( 3, 1, GL_UNSIGNED_INT );
+		in.triangles.vao.setVertexBuffer<uint>( 3, in.triangles.vboVisibilities, sizeof( uint ) );
+		in.triangles.vao.setAttributeFormat<uint>( 3, 1 );
 		in.triangles.vao.setAttributeBinding( 3, 3 );
 
 		// Selection.
 		in.triangles.vao.enableAttribute( 4 );
-		in.triangles.vao.setVertexBuffer( 4, in.triangles.vboSelections, sizeof( uint ) );
-		in.triangles.vao.setAttributeFormat( 4, 1, GL_UNSIGNED_INT );
+		in.triangles.vao.setVertexBuffer<uint>( 4, in.triangles.vboSelections, sizeof( uint ) );
+		in.triangles.vao.setAttributeFormat<uint>( 4, 1 );
 		in.triangles.vao.setAttributeBinding( 4, 4 );
 
 		// Id.
 		in.triangles.vao.enableAttribute( 5 );
-		in.triangles.vao.setVertexBuffer( 5, in.triangles.vboIds, sizeof( uint ) );
-		in.triangles.vao.setAttributeFormat( 5, 1, GL_UNSIGNED_INT );
+		in.triangles.vao.setVertexBuffer<uint>( 5, in.triangles.vboIds, sizeof( uint ) );
+		in.triangles.vao.setAttributeFormat<uint>( 5, 1 );
 		in.triangles.vao.setAttributeBinding( 5, 5 );
 
 		in.triangles.vboPositions.set( std::vector<Vec4f> {

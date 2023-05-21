@@ -44,7 +44,6 @@ namespace VTX::Renderer::GL
 		// TEST.
 		Buffer				 _ubo			 = Buffer();
 		StructGlobalUniforms _globalUniforms = StructGlobalUniforms();
-		Buffer				 _ssbo			 = Buffer();
 
 		Pass::Geometric		 _passGeometric		 = Pass::Geometric();
 		Pass::LinearizeDepth _passLinearizeDepth = Pass::LinearizeDepth();

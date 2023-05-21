@@ -20,10 +20,12 @@ namespace VTX::Renderer::GL
 		// VTX_INFO( "Device: " + glVendor + " " + glRenderer );
 		VTX_INFO( "OpenGL initialized: {}.{}", GLVersion.major, GLVersion.minor );
 
+#if ( VTX_OPENGL_VERSION == 450 )
 		// Debug infos.
 		glEnable( GL_DEBUG_OUTPUT );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-		glDebugMessageCallback( _debugMessageCallback, NULL );
+		glDebugMessageCallback( _debugMessageCallback, nullptr );
+#endif
 
 		// Program manager.
 		_programManager = std::make_unique<ProgramManager>( p_shaderPath );
@@ -82,21 +84,16 @@ namespace VTX::Renderer::GL
 		_vboQuad.create();
 		_vaoQuad.create();
 		_ubo.create();
-		_ssbo.create();
 
 		_vaoQuad.enableAttribute( 0 );
-		_vaoQuad.setVertexBuffer( 0, _vboQuad, sizeof( Vec2f ) );
-		_vaoQuad.setAttributeFormat( 0, 2, GL_FLOAT );
+		_vaoQuad.setVertexBuffer<float>( 0, _vboQuad, sizeof( Vec2f ) );
+		_vaoQuad.setAttributeFormat<float>( 0, 2 );
 		_vaoQuad.setAttributeBinding( 0, 0 );
 
 		_vboQuad.set( quadVertices );
 
 		// Global uniforms buffer.
 		_ubo.set( _globalUniforms, GL_DYNAMIC_DRAW );
-
-		// Debug SSBO.
-		auto debug = std::vector<Vec4f>( 100, Vec4f( 0.f, 1.f, 2.f, 30.f ) );
-		_ssbo.set( debug, GL_DYNAMIC_STORAGE_BIT );
 
 		VTX_INFO( "Renderer initialized" );
 	}
@@ -113,14 +110,12 @@ namespace VTX::Renderer::GL
 	{
 		_vaoQuad.drawCalls = 0;
 		_ubo.bind( GL_UNIFORM_BUFFER, 15 );
-		_ssbo.bind( GL_SHADER_STORAGE_BUFFER, 10 );
 
 		for ( Pass::BasePass * const pass : _passes )
 		{
 			pass->render( _vaoQuad );
 		}
 
-		_ssbo.unbind();
 		_ubo.unbind();
 	};
 
@@ -140,6 +135,7 @@ namespace VTX::Renderer::GL
 		_ubo.setSub( p_color, 10 * sizeof( Vec4f ), sizeof( Util::Color::Rgba ) );
 	}
 
+#if ( VTX_OPENGL_VERSION == 450 )
 	void APIENTRY OpenGLRenderer::_debugMessageCallback( const GLenum	p_source,
 														 const GLenum	p_type,
 														 const GLuint	p_id,
@@ -197,5 +193,6 @@ namespace VTX::Renderer::GL
 		default: break;
 		}
 	}
+#endif
 
 } // namespace VTX::Renderer::GL
