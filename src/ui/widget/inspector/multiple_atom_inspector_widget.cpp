@@ -73,7 +73,7 @@ namespace VTX::UI::Widget::Inspector
 
 		// TRANSFORM SECTION ///////////////////////////////////////////////////////////////////////////////////////////
 		_transformSection
-			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "transform_section " );
+			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
 
 		_transformWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::TransformWidget>( this, "transformWidget" );
@@ -234,7 +234,10 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleAtomWidget::localize()
 	{
 		_infoSection->setHeaderTitle( "Infos" );
+		_transformSection->setHeaderTitle( "Position" );
+
 		_infoSection->localize();
+		_transformSection->localize();
 	}
 
 	void MultipleAtomWidget::_eventCalledOnMolecule( const Event::VTXEvent * const p_event )
