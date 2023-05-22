@@ -53,6 +53,8 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 		void _soloSelection() const;
 
 		void _exportSelection() const;
+
+		void _updateFrameSubmenu() const;
 	};
 } // namespace VTX::UI::Widget::MainMenu::Molecule
 #endif

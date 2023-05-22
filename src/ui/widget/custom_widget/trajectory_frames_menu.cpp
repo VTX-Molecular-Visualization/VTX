@@ -16,6 +16,8 @@ namespace VTX::UI::Widget::CustomWidget
 
 		setTitle( "Frames" );
 
+		setStyleSheet( "QMenu { menu-scrollable: 1; }" );
+
 		_allFramesAction = new UIAction::SelfReferencedAction( "All", this );
 		_allFramesAction->setData( QVariant( Model::GeneratedMolecule::ALL_FRAMES_SEPARATED_INDEX ) );
 		connect( _allFramesAction,
@@ -57,9 +59,27 @@ namespace VTX::UI::Widget::CustomWidget
 		_adjustFrameActions( maxNbFrame );
 	}
 
+	bool TrajectoryFramesMenu::hasToBeDisplayed( const Model::Molecule & p_molecule ) const
+	{
+		return p_molecule.getFrameCount() > 1;
+	}
+	bool TrajectoryFramesMenu::hasToBeDisplayed( const Model::Selection & p_selection ) const
+	{
+		for ( const Model::Selection::PairMoleculeIds & pairMolecule : p_selection.getMoleculesMap() )
+		{
+			const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( pairMolecule.first );
+
+			if ( hasToBeDisplayed( molecule ) )
+				return true;
+		}
+
+		return false;
+	}
+
 	void TrajectoryFramesMenu::_adjustFrameActions( const uint p_newFrameCount )
 	{
-		const uint clampedFrameCount = p_newFrameCount > 10 ? 10 : p_newFrameCount;
+		// const uint clampedFrameCount = p_newFrameCount > 10 ? 10 : p_newFrameCount;
+		const uint clampedFrameCount = p_newFrameCount;
 
 		if ( clampedFrameCount > _frameCount )
 		{

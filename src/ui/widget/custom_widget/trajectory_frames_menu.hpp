@@ -40,6 +40,9 @@ namespace VTX
 			void updateFrames( const Model::Molecule & p_molecule );
 			void updateFrames( const Model::Selection & p_selection );
 
+			bool hasToBeDisplayed( const Model::Molecule & p_molecule ) const;
+			bool hasToBeDisplayed( const Model::Selection & p_selection ) const;
+
 			void setDisplayAllFramesOption( const bool p_displayAllFramesOption );
 
 		  signals:

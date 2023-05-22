@@ -24,8 +24,6 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 
 			const bool enableSelection = castedEvent.ptr->getMoleculeSelectedCount() > 0;
 			_enableButtons( enableSelection );
-
-			_copyFrameSubmenu->updateFrames( *castedEvent.ptr );
 		}
 	}
 
@@ -91,8 +89,18 @@ namespace VTX::UI::Widget::MainMenu::Molecule
 				 &CustomWidget::TrajectoryFramesMenu::onFrameSelected,
 				 this,
 				 &SelectionActionBlock::_copyFrameSelection );
+
+		connect( _copyFrameSubmenu,
+				 &CustomWidget::TrajectoryFramesMenu::aboutToShow,
+				 this,
+				 &SelectionActionBlock::_updateFrameSubmenu );
 	}
 	void SelectionActionBlock::localize() { setTitle( "Molecule Action" ); }
+
+	void SelectionActionBlock::_updateFrameSubmenu() const
+	{
+		_copyFrameSubmenu->updateFrames( VTX::Selection::SelectionManager::get().getSelectionModel() );
+	}
 
 	void SelectionActionBlock::_copySelection() const
 	{
