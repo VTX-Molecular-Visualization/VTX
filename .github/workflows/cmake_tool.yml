@@ -1,13 +1,13 @@
-name: CMake Renderer
+name: CMake Tool
 
 on:
   push:
     branches: [ "master", "dev", "dev-ndy", "dev-sge" ]
-    paths: ['lib/renderer/**']
+    paths: ['lib/tool/**']
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  CMAKELISTS_DIR: ${{github.workspace}}/lib/renderer
+  CMAKELISTS_DIR: ${{github.workspace}}/lib/tool
   CMAKE_BUILD_DIR: out
   BUILD_TYPE: Release
 
@@ -24,10 +24,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
-    - uses: knicknic/os-specific-run@v1
-      with:
-        linux: sudo apt-get install -y libglu1-mesa-dev xorg-dev
 
     - name: Configure CMake
       working-directory: ${{env.CMAKELISTS_DIR}}
