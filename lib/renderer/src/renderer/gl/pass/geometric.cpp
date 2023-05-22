@@ -3,21 +3,19 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void Geometric::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
+	Geometric::Geometric( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) :
+		out( { Framebuffer(),
+			   Texture2D( p_width, p_height, GL_RGBA32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST ),
+			   Texture2D( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST ),
+			   Texture2D( p_width,
+						  p_height,
+						  GL_DEPTH_COMPONENT32F,
+						  GL_CLAMP_TO_EDGE,
+						  GL_CLAMP_TO_EDGE,
+						  GL_NEAREST,
+						  GL_NEAREST ),
+			   Texture2D( p_width, p_height, GL_RG32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST ) } )
 	{
-		out.textureViewPositionsNormals.create(
-			p_width, p_height, GL_RGBA32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
-
-		out.textureColors.create(
-			p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
-
-		out.textureDepth.create(
-			p_width, p_height, GL_DEPTH_COMPONENT32F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
-
-		out.texturePicking.create(
-			p_width, p_height, GL_RG32UI, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
-
-		out.fbo.create();
 		out.fbo.attachTexture( out.textureViewPositionsNormals, GL_COLOR_ATTACHMENT0 );
 		out.fbo.attachTexture( out.textureColors, GL_COLOR_ATTACHMENT1 );
 		out.fbo.attachTexture( out.textureDepth, GL_DEPTH_ATTACHMENT );
@@ -40,16 +38,6 @@ namespace VTX::Renderer::GL::Pass
 		assert( _programVoxel != nullptr );
 
 		///////////////// Triangles test.
-		in.triangles.vboPositions.create();
-		in.triangles.vboNormals.create();
-		in.triangles.vboColors.create();
-		in.triangles.vboVisibilities.create();
-		in.triangles.vboSelections.create();
-		in.triangles.vboIds.create();
-		in.triangles.ibo.create();
-
-		in.triangles.vao.create();
-
 		in.triangles.vao.bindElementBuffer( in.triangles.ibo );
 
 		// Position.

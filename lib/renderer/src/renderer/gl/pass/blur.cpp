@@ -2,18 +2,14 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void Blur::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
+	Blur::Blur( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) :
+		out( { Framebuffer(),
+			   Texture2D( p_width, p_height, GL_R16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST ) } ),
+		_textureFirstPass(
+			Texture2D( p_width, p_height, GL_R16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST ) )
 	{
-		_textureFirstPass.create(
-			p_width, p_height, GL_R16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
-
-		_fboFirstPass.create();
 		_fboFirstPass.attachTexture( _textureFirstPass, GL_COLOR_ATTACHMENT0 );
-
-		out.texture.create( p_width, p_height, GL_R16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
 		clearTexture();
-
-		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
 		_program = p_pm.createProgram( "Blur", std::vector<FilePath> { "bilateral_blur.frag" } );

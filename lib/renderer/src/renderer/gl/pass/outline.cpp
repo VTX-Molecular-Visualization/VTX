@@ -2,11 +2,10 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	void Outline::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
+	Outline::Outline( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) :
+		out( { Framebuffer(),
+			   Texture2D( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR ) } )
 	{
-		out.texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR );
-
-		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
 		_program = p_pm.createProgram( "Outline", std::vector<FilePath> { "default.vert", "outline.frag" } );

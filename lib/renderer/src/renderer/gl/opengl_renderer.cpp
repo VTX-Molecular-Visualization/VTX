@@ -4,7 +4,17 @@
 
 namespace VTX::Renderer::GL
 {
-	OpenGLRenderer::OpenGLRenderer( void * p_proc, const FilePath & p_shaderPath )
+	OpenGLRenderer::OpenGLRenderer( void *			 p_proc,
+									const size_t	 p_width,
+									const size_t	 p_height,
+									const FilePath & p_shaderPath ) :
+		_width( p_width ),
+		_height( p_height ), _programManager( p_shaderPath ), _passGeometric( p_width, p_height, _programManager ),
+		_passLinearizeDepth( p_width, p_height, _programManager ), _passSSAO( p_width, p_height, _programManager ),
+		_passBlur( p_width, p_height, _programManager ), _passShading( p_width, p_height, _programManager ),
+		_passOutline( p_width, p_height, _programManager ), _passSelection( p_width, p_height, _programManager ),
+		_passFXAA( p_width, p_height, _programManager )
+
 	{
 		VTX_INFO( "Creating renderer..." );
 
@@ -26,9 +36,6 @@ namespace VTX::Renderer::GL
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		glDebugMessageCallback( _debugMessageCallback, nullptr );
 #endif
-
-		// Program manager.
-		_programManager = std::make_unique<ProgramManager>( p_shaderPath );
 
 		// Add passes.
 		_passes.emplace_back( &_passGeometric );
@@ -61,29 +68,10 @@ namespace VTX::Renderer::GL
 		_passSelection.in.textureDepth				  = &( _passLinearizeDepth.out.texture );
 
 		_passFXAA.in.texture = &( _passSelection.out.texture );
-	}
-
-	void OpenGLRenderer::init( const size_t p_width, const size_t p_height )
-	{
-		VTX_INFO( "Initializing renderer..." );
-
-		// Set size.
-		_width	= p_width;
-		_height = p_height;
-
-		// Init passes.
-		for ( Pass::BasePass * const pass : _passes )
-		{
-			pass->init( _width, _height, *_programManager );
-		}
 
 		// Init quad vao/vbo for deferred shading.
 		std::vector<Vec2f> quadVertices
 			= { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
-
-		_vboQuad.create();
-		_vaoQuad.create();
-		_ubo.create();
 
 		_vaoQuad.enableAttribute( 0 );
 		_vaoQuad.setVertexBuffer<float>( 0, _vboQuad, sizeof( Vec2f ) );

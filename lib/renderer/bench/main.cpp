@@ -48,8 +48,9 @@ int main( int, char ** )
 	{
 		// Renderer.
 		static auto renderer = Renderer::GL::OpenGLRenderer( reinterpret_cast<void *>( glfwGetProcAddress ),
+															 WIDTH,
+															 HEIGHT,
 															 std::filesystem::current_path() / "shaders" );
-		renderer.init( WIDTH, HEIGHT );
 
 		GLFWframebuffersizefun fun
 			= []( GLFWwindow * p_window, int p_width, int p_height ) { renderer.resize( p_width, p_height ); };

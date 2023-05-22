@@ -11,27 +11,26 @@ namespace VTX::Renderer::GL::Pass
 	class Outline : public BasePass
 	{
 	  public:
-		Outline()		   = default;
+		Outline( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
 		virtual ~Outline() = default;
 
-		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) override;
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render( VertexArray & p_vao ) override;
 
 		struct StructIn
 		{
-			Texture2D * texture		 = nullptr;
-			Texture2D * textureDepth = nullptr;
+			Texture2D * texture;
+			Texture2D * textureDepth;
 		} in;
 
 		struct StructOut
 		{
-			Framebuffer fbo		= Framebuffer();
-			Texture2D	texture = Texture2D();
+			Framebuffer fbo;
+			Texture2D	texture;
 		} out;
 
 	  private:
-		Program * _program = nullptr;
+		Program * _program;
 	};
 } // namespace VTX::Renderer::GL::Pass
 
