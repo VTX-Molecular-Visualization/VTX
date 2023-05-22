@@ -21,9 +21,10 @@ namespace VTX::Renderer::GL
 	class OpenGLRenderer
 	{
 	  public:
-		OpenGLRenderer( void * p_proc, const size_t p_width, const size_t p_height, const FilePath & p_shaderPath );
+		OpenGLRenderer( void * p_proc, const FilePath & p_shaderPath );
 		~OpenGLRenderer() = default;
 
+		void init( const size_t p_width, const size_t p_height );
 		void resize( const size_t p_width, const size_t p_height );
 
 		void renderFrame();
@@ -37,25 +38,25 @@ namespace VTX::Renderer::GL
 		size_t _width  = 0;
 		size_t _height = 0;
 
-		VertexArray _vaoQuad;
-		Buffer		_vboQuad;
+		VertexArray _vaoQuad = VertexArray();
+		Buffer		_vboQuad = Buffer();
 
 		// TEST.
-		Buffer				 _ubo;
-		StructGlobalUniforms _globalUniforms;
+		Buffer				 _ubo			 = Buffer();
+		StructGlobalUniforms _globalUniforms = StructGlobalUniforms();
 
-		Pass::Geometric		 _passGeometric;
-		Pass::LinearizeDepth _passLinearizeDepth;
-		Pass::SSAO			 _passSSAO;
-		Pass::Blur			 _passBlur;
-		Pass::Shading		 _passShading;
-		Pass::Outline		 _passOutline;
-		Pass::Selection		 _passSelection;
-		Pass::FXAA			 _passFXAA;
+		Pass::Geometric		 _passGeometric		 = Pass::Geometric();
+		Pass::LinearizeDepth _passLinearizeDepth = Pass::LinearizeDepth();
+		Pass::SSAO			 _passSSAO			 = Pass::SSAO();
+		Pass::Blur			 _passBlur			 = Pass::Blur();
+		Pass::Shading		 _passShading		 = Pass::Shading();
+		Pass::Outline		 _passOutline		 = Pass::Outline();
+		Pass::Selection		 _passSelection		 = Pass::Selection();
+		Pass::FXAA			 _passFXAA			 = Pass::FXAA();
 
-		std::vector<Pass::BasePass *> _passes;
+		std::vector<Pass::BasePass *> _passes = std::vector<Pass::BasePass *>();
 
-		ProgramManager _programManager;
+		std::unique_ptr<ProgramManager> _programManager = nullptr;
 
 		static void APIENTRY _debugMessageCallback( const GLenum   p_source,
 													const GLenum   p_type,

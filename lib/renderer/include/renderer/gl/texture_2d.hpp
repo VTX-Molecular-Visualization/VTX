@@ -9,13 +9,17 @@ namespace VTX::Renderer::GL
 	class Texture2D
 	{
 	  public:
-		Texture2D( const size_t p_width,
-				   const size_t p_height,
-				   const GLenum p_format	= GL_RGBA32F,
-				   const GLenum p_wrappingS = GL_REPEAT,
-				   const GLenum p_wrappingT = GL_REPEAT,
-				   const GLint	p_minFilter = GL_NEAREST_MIPMAP_LINEAR,
-				   const GLint	p_magFilter = GL_LINEAR )
+		Texture2D() = default;
+
+		~Texture2D() { destroy(); }
+
+		inline void create( const size_t p_width,
+							const size_t p_height,
+							const GLenum p_format	 = GL_RGBA32F,
+							const GLenum p_wrappingS = GL_REPEAT,
+							const GLenum p_wrappingT = GL_REPEAT,
+							const GLint	 p_minFilter = GL_NEAREST_MIPMAP_LINEAR,
+							const GLint	 p_magFilter = GL_LINEAR )
 		{
 			assert( p_width > 0 && p_height > 0 );
 
@@ -30,7 +34,7 @@ namespace VTX::Renderer::GL
 			_create();
 		}
 
-		~Texture2D() { _destroy(); }
+		inline void destroy() { glDeleteTextures( 1, &_id ); }
 
 		inline int getId() const { return _id; }
 
@@ -48,7 +52,7 @@ namespace VTX::Renderer::GL
 
 		inline void resize( const size_t p_width, const size_t p_height )
 		{
-			_destroy();
+			destroy();
 			_width	= GLsizei( p_width );
 			_height = GLsizei( p_height );
 			_create();
@@ -149,8 +153,6 @@ namespace VTX::Renderer::GL
 			glTexImage2D( GL_TEXTURE_2D, 0, _format, _width, _height, 0, _format, GL_FLOAT, nullptr );
 #endif
 		}
-
-		inline void _destroy() { glDeleteTextures( 1, &_id ); }
 	};
 } // namespace VTX::Renderer::GL
 

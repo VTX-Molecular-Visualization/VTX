@@ -2,10 +2,11 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	Selection::Selection( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) :
-		out( { Framebuffer(),
-			   Texture2D( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR ) } )
+	void Selection::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
+		out.texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR );
+
+		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
 		_program = p_pm.createProgram( "Shading", std::vector<FilePath> { "default.vert", "shading.frag" } );

@@ -2,12 +2,11 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	SSAO::SSAO( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) :
-		out( { Framebuffer(),
-			   Texture2D( p_width, p_height, GL_R8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST ) } ),
-		_noiseTexture(
-			Texture2D( _noiseTextureSize, _noiseTextureSize, GL_RGB16F, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST ) )
+	void SSAO::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
+		out.texture.create( p_width, p_height, GL_R8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
+
+		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
 		_program = p_pm.createProgram( "SSAO", std::vector<FilePath> { "default.vert", "ssao.frag" } );
@@ -40,6 +39,9 @@ namespace VTX::Renderer::GL::Pass
 								0.f ); // Vec3f([-1;1],[-1;1],0)
 			noise[ i ] = Util::Math::normalize( noise[ i ] );
 		}
+
+		_noiseTexture.create(
+			_noiseTextureSize, _noiseTextureSize, GL_RGB16F, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST );
 
 		_noiseTexture.fill( noise.data() );
 

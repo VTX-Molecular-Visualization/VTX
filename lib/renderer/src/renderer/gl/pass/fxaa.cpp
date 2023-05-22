@@ -2,10 +2,10 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	FXAA::FXAA( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) :
-		out(
-			{ Texture2D( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST ) } )
+	void FXAA::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
+		out.texture.create( p_width, p_height, GL_RGBA16F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
+
 		_program = p_pm.createProgram( "AA", std::vector<FilePath> { "default.vert", "fxaa.frag" } );
 		assert( _program != nullptr );
 	}

@@ -11,7 +11,11 @@ namespace VTX::Renderer::GL
 	class Framebuffer
 	{
 	  public:
-		Framebuffer()
+		Framebuffer() = default;
+
+		~Framebuffer() { destroy(); }
+
+		inline void create()
 		{
 			assert( _id == GL_INVALID_INDEX );
 
@@ -23,7 +27,8 @@ namespace VTX::Renderer::GL
 
 			assert( glIsFramebuffer( _id ) );
 		}
-		~Framebuffer()
+
+		inline void destroy()
 		{
 			assert( _target == 0 );
 

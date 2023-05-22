@@ -11,9 +11,10 @@ namespace VTX::Renderer::GL::Pass
 	class Geometric : public BasePass
 	{
 	  public:
-		Geometric( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
+		Geometric()			 = default;
 		virtual ~Geometric() = default;
 
+		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) override;
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render( VertexArray & p_vao ) override;
 
@@ -23,33 +24,33 @@ namespace VTX::Renderer::GL::Pass
 		{
 			struct Triangle
 			{
-				Buffer		vboPositions;
-				Buffer		vboNormals;
-				Buffer		vboColors;
-				Buffer		vboVisibilities;
-				Buffer		vboSelections;
-				Buffer		vboIds;
-				Buffer		ibo;
-				VertexArray vao;
+				Buffer		vboPositions	= Buffer();
+				Buffer		vboNormals		= Buffer();
+				Buffer		vboColors		= Buffer();
+				Buffer		vboVisibilities = Buffer();
+				Buffer		vboSelections	= Buffer();
+				Buffer		vboIds			= Buffer();
+				Buffer		ibo				= Buffer();
+				VertexArray vao				= VertexArray();
 			} triangles;
 		} in;
 
 		struct StructOut
 		{
-			Framebuffer fbo;
-			Texture2D	textureViewPositionsNormals;
-			Texture2D	textureColors;
-			Texture2D	textureDepth;
-			Texture2D	texturePicking;
+			Framebuffer fbo							= Framebuffer();
+			Texture2D	textureViewPositionsNormals = Texture2D();
+			Texture2D	textureColors				= Texture2D();
+			Texture2D	textureDepth				= Texture2D();
+			Texture2D	texturePicking				= Texture2D();
 		} out;
 
 	  private:
-		Program * _programSphere;
-		Program * _programCylinder;
-		Program * _programRibbon;
-		Program * _programLine;
-		Program * _programTriangle;
-		Program * _programVoxel;
+		Program * _programSphere   = nullptr;
+		Program * _programCylinder = nullptr;
+		Program * _programRibbon   = nullptr;
+		Program * _programLine	   = nullptr;
+		Program * _programTriangle = nullptr;
+		Program * _programVoxel	   = nullptr;
 	}; // namespace VTX::Pass
 } // namespace VTX::Renderer::GL::Pass
 

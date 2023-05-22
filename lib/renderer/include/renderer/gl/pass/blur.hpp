@@ -11,9 +11,10 @@ namespace VTX::Renderer::GL::Pass
 	class Blur : public BasePass
 	{
 	  public:
-		Blur( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
+		Blur()			= default;
 		virtual ~Blur() = default;
 
+		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) override;
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render( VertexArray & p_vao ) override;
 
@@ -21,22 +22,22 @@ namespace VTX::Renderer::GL::Pass
 
 		struct StructIn
 		{
-			Texture2D * texture;
-			Texture2D * textureLinearizeDepth;
+			Texture2D * texture				  = nullptr;
+			Texture2D * textureLinearizeDepth = nullptr;
 		} in;
 
 		struct StructOut
 		{
-			Framebuffer fbo;
-			Texture2D	texture;
+			Framebuffer fbo		= Framebuffer();
+			Texture2D	texture = Texture2D();
 
 		} out;
 
 	  private:
 		Program * _program = nullptr;
 
-		Framebuffer _fboFirstPass;
-		Texture2D	_textureFirstPass;
+		Framebuffer _fboFirstPass	  = Framebuffer();
+		Texture2D	_textureFirstPass = Texture2D();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

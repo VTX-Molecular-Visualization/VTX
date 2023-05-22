@@ -11,22 +11,23 @@ namespace VTX::Renderer::GL::Pass
 	class SSAO : public BasePass
 	{
 	  public:
-		SSAO( const size_t p_width, const size_t p_height, ProgramManager & p_pm );
+		SSAO()			= default;
 		virtual ~SSAO() = default;
 
+		void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) override;
 		void resize( const size_t p_width, const size_t p_height ) override;
 		void render( VertexArray & p_vao ) override;
 
 		struct StructIn
 		{
-			Texture2D * textureViewPositionsNormals;
-			Texture2D * textureDepth;
+			Texture2D * textureViewPositionsNormals = nullptr;
+			Texture2D * textureDepth				= nullptr;
 		} in;
 
 		struct StructOut
 		{
-			Framebuffer fbo;
-			Texture2D	texture;
+			Framebuffer fbo		= Framebuffer();
+			Texture2D	texture = Texture2D();
 
 		} out;
 
@@ -35,8 +36,8 @@ namespace VTX::Renderer::GL::Pass
 
 		uint			   _kernelSize		 = 16;
 		uint			   _noiseTextureSize = 64;
-		std::vector<Vec3f> _aoKernel;
-		Texture2D		   _noiseTexture;
+		std::vector<Vec3f> _aoKernel		 = std::vector<Vec3f>();
+		Texture2D		   _noiseTexture	 = Texture2D();
 	};
 } // namespace VTX::Renderer::GL::Pass
 

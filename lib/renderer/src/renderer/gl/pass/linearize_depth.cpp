@@ -2,10 +2,11 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	LinearizeDepth::LinearizeDepth( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) :
-		out( { Framebuffer(),
-			   Texture2D( p_width, p_height, GL_R32F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST ) } )
+	void LinearizeDepth::init( const size_t p_width, const size_t p_height, ProgramManager & p_pm )
 	{
+		out.texture.create( p_width, p_height, GL_R32F, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST );
+
+		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
 		_program

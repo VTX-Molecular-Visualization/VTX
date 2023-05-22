@@ -14,6 +14,7 @@ namespace VTX::Renderer::GL::Pass
 		BasePass()			= default;
 		virtual ~BasePass() = default;
 
+		virtual void init( const size_t p_width, const size_t p_height, ProgramManager & p_pm ) {}
 		virtual void resize( const size_t p_width, const size_t p_height ) {}
 		virtual void render( VertexArray & p_vao ) = 0;
 
