@@ -1009,8 +1009,7 @@ namespace VTX::View::UI::Widget
 	void MoleculeSceneView::_applyAtomDataOnItem( const Model::Atom & p_atom, QTreeWidgetItem & p_item ) const
 	{
 		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue( p_atom.getId() ) );
-		p_item.setText( 0,
-						QString::fromStdString( p_atom.getSymbolStr() + " " + std::to_string( p_atom.getIndex() ) ) );
+		p_item.setText( 0, QString::fromStdString( p_atom.getName() + " " + std::to_string( p_atom.getIndex() ) ) );
 		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_atom.getTypeId() ) );
 		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::DontShowIndicator );
 	}
