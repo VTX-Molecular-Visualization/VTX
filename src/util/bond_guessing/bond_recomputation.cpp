@@ -233,17 +233,23 @@ namespace VTX::Util::BondGuessing
 						cellList.addCysteineSulfur( atomId, atomPos );
 						sulfurAtoms.emplace( atomId );
 					}
-					else
-					{
-						cellList.addAtom( atomId, atomPos );
-					}
+
+					cellList.addAtom( atomId, atomPos );
 				}
 			}
 			else
 			{
 				for ( const size_t atomId : residue )
 				{
-					const chemfiles::Vector3D & atomPos = p_frame.positions()[ atomId ];
+					const chemfiles::Vector3D & atomPos	 = p_frame.positions()[ atomId ];
+					const bool					isSulfur = p_frame[ atomId ].type() == "S";
+
+					if ( isSulfur )
+					{
+						cellList.addCysteineSulfur( atomId, atomPos );
+						sulfurAtoms.emplace( atomId );
+					}
+
 					cellList.addAtomFromNonStandardResidue( atomId, atomPos );
 				}
 			}
@@ -258,6 +264,7 @@ namespace VTX::Util::BondGuessing
 												  const std::unordered_set<size_t> & p_sulfurAtoms )
 	{
 		const double maxDistanceForDisulfidesBond = 3.0;
+		const double maxSqrDistanceForDisulfidesBond = maxDistanceForDisulfidesBond * maxDistanceForDisulfidesBond;
 
 		for ( const size_t sulfurAtom1 : p_sulfurAtoms )
 		{
@@ -272,10 +279,9 @@ namespace VTX::Util::BondGuessing
 					if ( sulfurAtom1 <= sulfurAtom2 )
 						continue;
 
-					// TODO : Change with sqrDistance when it will be added in chemfiles library
-					const double dist = p_frame.distance( sulfurAtom1, sulfurAtom2 );
+					const double sqrDist = p_frame.sqrDistance( sulfurAtom1, sulfurAtom2 );
 
-					if ( dist < maxDistanceForDisulfidesBond )
+					if ( sqrDist < maxSqrDistanceForDisulfidesBond )
 						p_frame.add_bond( sulfurAtom1, sulfurAtom2 );
 				}
 			}
@@ -285,10 +291,9 @@ namespace VTX::Util::BondGuessing
 	void BondRecomputation::_recomputeBondsOfNonStandardResidues( chemfiles::Frame & frame,
 																  const CellList &	 p_cellList )
 	{
-		// float cutoff = 8.f;
-		// float	  cutoffPow2		  = cutoff * cutoff;
-		float	  cutoffPow2		  = 8.f;
-		const int hydrogenSymbolValue = int( Model::Atom::SYMBOL::A_H );
+		const float cutoff				= 3.48f * 2.f;
+		const float cutoffPow2			= cutoff * cutoff;
+		const int	hydrogenSymbolValue = int( Model::Atom::SYMBOL::A_H );
 
 		const std::vector<std::vector<size_t>> & atomsToCheck = p_cellList.getNonStdAtoms();
 
@@ -298,14 +303,10 @@ namespace VTX::Util::BondGuessing
 
 			for ( size_t nghb = 0; nghb < p_cellList.getNeighbourList()[ cellIndex ].size(); nghb++ )
 			{
-				size_t neighborCellIndex = p_cellList.getNeighbourList()[ cellIndex ][ nghb ];
-				size_t atomNumInCell	 = p_cellList.getCellList()[ neighborCellIndex ].size();
+				const size_t neighborCellIndex = p_cellList.getNeighbourList()[ cellIndex ][ nghb ];
+				const size_t atomNumInCell	   = p_cellList.getCellList()[ neighborCellIndex ].size();
 
-				bool selfCell;
-				if ( cellIndex == neighborCellIndex )
-					selfCell = true;
-				else
-					selfCell = false;
+				const bool selfCell = ( cellIndex == neighborCellIndex );
 
 				for ( size_t i = 0; i < atomsInCell; i++ )
 				{
@@ -317,14 +318,10 @@ namespace VTX::Util::BondGuessing
 					{
 						const size_t indexAtom2 = p_cellList.getCellList()[ neighborCellIndex ][ j ];
 
-						// TODO : Change with frame.sqrDistance when it will be added in chemfiles
-						const float interAtomicDist
-							= ( frame.positions()[ indexAtom2 ] - frame.positions()[ indexAtom1 ] ).sqrNorm();
-						// float interAtomicDist = frame.distance( indexAtom1, indexAtom2 );
-						// interAtomicDist *= interAtomicDist;
+						const float interAtomicSqrDist = frame.sqrDistance( indexAtom1, indexAtom2 );
 
 						// Perform distance test and ignore atoms with almost the same coordinates
-						if ( ( interAtomicDist > cutoffPow2 ) || ( interAtomicDist < 0.03 ) )
+						if ( ( interAtomicSqrDist > cutoffPow2 ) || ( interAtomicSqrDist < 0.03 ) )
 						{
 							continue;
 						}
@@ -332,11 +329,12 @@ namespace VTX::Util::BondGuessing
 						const chemfiles::Atom & atom2		= frame.topology()[ indexAtom2 ];
 						const int				symbolAtom2 = atom2.atomic_number().value_or( 0 );
 
-						const float atom1Radius = Model::Atom::SYMBOL_VDW_RADIUS[ symbolAtom1 ];
-						const float atom2Radius = Model::Atom::SYMBOL_VDW_RADIUS[ symbolAtom2 ];
-						const float radii		= atom1Radius + atom2Radius;
+						const float atom1Radius		  = Model::Atom::SYMBOL_VDW_RADIUS[ symbolAtom1 ];
+						const float atom2Radius		  = Model::Atom::SYMBOL_VDW_RADIUS[ symbolAtom2 ];
+						const float radiusDistance	  = atom1Radius > atom2Radius ? atom1Radius : atom2Radius;
+						const float radiusSqrDistance = radiusDistance * radiusDistance;
 
-						if ( interAtomicDist < radii )
+						if ( interAtomicSqrDist < radiusSqrDistance )
 						{
 							// Prevent hydrogen atoms from bonding with each other
 							if ( symbolAtom1 != hydrogenSymbolValue || symbolAtom2 != hydrogenSymbolValue )
