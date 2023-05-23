@@ -87,13 +87,8 @@ namespace VTX::Renderer::GL
 			glBindTexture( p_target, _id );
 		}
 
-		inline void bind( const GLenum p_target, const GLuint p_index )
+		inline void bindToUnit( const GLuint p_index )
 		{
-			assert( glIsBuffer( _id ) );
-			assert( _target == 0 );
-			assert( p_target != 0 );
-
-			_target = p_target;
 #if ( VTX_OPENGL_VERSION == 450 )
 			glBindTextureUnit( p_index, _id );
 #else

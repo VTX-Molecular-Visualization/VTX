@@ -38,8 +38,8 @@ namespace VTX::Renderer::GL::Pass
 
 		// First pass.
 		_fboFirstPass.bind( GL_DRAW_FRAMEBUFFER );
-		in.texture->bind( 0 );
-		in.textureLinearizeDepth->bind( 1 );
+		in.texture->bindToUnit( 0 );
+		in.textureLinearizeDepth->bindToUnit( 1 );
 		_program->use();
 		_program->setVec2i( "uDirection", 1, 0 );
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
@@ -47,8 +47,8 @@ namespace VTX::Renderer::GL::Pass
 
 		// Second pass.
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-		_textureFirstPass.bind( 0 );
-		in.textureLinearizeDepth->bind( 1 );
+		_textureFirstPass.bindToUnit( 0 );
+		in.textureLinearizeDepth->bindToUnit( 1 );
 		_program->setVec2i( "uDirection", 0, 1 );
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		out.fbo.unbind();
