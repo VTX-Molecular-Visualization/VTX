@@ -204,7 +204,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 			= _chain->getMoleculePtr()->getResidue( _chain->getIndexFirstResidue() + _residueLastIndex );
 		const uint lastIndexStrLength = uint( std::to_string( lastResidue->getIndexInOriginalChain() ).size() );
 
-		res += lastIndexStrLength / 2;
+		res += _spaceBefore ? lastIndexStrLength / 2 : lastIndexStrLength;
 
 		return res;
 	}
