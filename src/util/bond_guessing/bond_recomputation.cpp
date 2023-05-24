@@ -263,9 +263,6 @@ namespace VTX::Util::BondGuessing
 												  const CellList &					 p_cellList,
 												  const std::unordered_set<size_t> & p_sulfurAtoms )
 	{
-		const double maxDistanceForDisulfidesBond = 3.0;
-		const double maxSqrDistanceForDisulfidesBond = maxDistanceForDisulfidesBond * maxDistanceForDisulfidesBond;
-
 		for ( const size_t sulfurAtom1 : p_sulfurAtoms )
 		{
 			const std::vector<size_t> & neighbours = p_cellList.getNeighbours( p_frame.positions()[ sulfurAtom1 ] );
@@ -279,9 +276,9 @@ namespace VTX::Util::BondGuessing
 					if ( sulfurAtom1 <= sulfurAtom2 )
 						continue;
 
-					const double sqrDist = p_frame.sqrDistance( sulfurAtom1, sulfurAtom2 );
+					const double sqrDist = _sqrDistance( p_frame.positions()[ sulfurAtom1], p_frame.positions()[ sulfurAtom2 ]);
 
-					if ( sqrDist < maxSqrDistanceForDisulfidesBond )
+					if ( sqrDist < MAX_SQR_DISTANCE_FOR_DISULFIDE_BOND )
 						p_frame.add_bond( sulfurAtom1, sulfurAtom2 );
 				}
 			}
@@ -318,7 +315,8 @@ namespace VTX::Util::BondGuessing
 					{
 						const size_t indexAtom2 = p_cellList.getCellList()[ neighborCellIndex ][ j ];
 
-						const float interAtomicSqrDist = frame.sqrDistance( indexAtom1, indexAtom2 );
+						const float interAtomicSqrDist
+							= _sqrDistance( frame.positions()[ indexAtom1 ], frame.positions()[ indexAtom2 ] );
 
 						// Perform distance test and ignore atoms with almost the same coordinates
 						if ( ( interAtomicSqrDist > cutoffPow2 ) || ( interAtomicSqrDist < 0.03 ) )
@@ -347,5 +345,11 @@ namespace VTX::Util::BondGuessing
 			}
 		}
 	}
+
+	double BondRecomputation::_sqrDistance( const chemfiles::Vector3D & p_lhs, const chemfiles::Vector3D & p_rhs )
+	{
+		return (p_rhs - p_lhs).sqrNorm();
+	}
+
 
 } // namespace VTX::Util::BondGuessing

@@ -77,10 +77,16 @@ namespace VTX::Util::BondGuessing
 		static void recomputeBonds( chemfiles::Frame & p_frame, const VTX::Object3D::Helper::AABB & p_aabb );
 
 	  private:
+		inline static const double MAX_DISTANCE_FOR_DISULFIDE_BOND = 3.0;
+		inline static const double MAX_SQR_DISTANCE_FOR_DISULFIDE_BOND
+			= MAX_DISTANCE_FOR_DISULFIDE_BOND * MAX_DISTANCE_FOR_DISULFIDE_BOND;
+
 		static void _recomputeBondsOfNonStandardResidues( chemfiles::Frame & frame, const CellList & p_cellList );
 		static void _recomputeDisulfides( chemfiles::Frame &				 p_frame,
 										  const CellList &					 p_cellList,
 										  const std::unordered_set<size_t> & p_sulphurAtoms );
+
+		static double _sqrDistance( const chemfiles::Vector3D & p_lhs, const chemfiles::Vector3D & p_rhs );
 	};
 } // namespace VTX::Util::BondGuessing
 

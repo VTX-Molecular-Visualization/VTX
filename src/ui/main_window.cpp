@@ -36,6 +36,22 @@ namespace VTX::UI
 
 	MainWindow::~MainWindow()
 	{
+		disconnect( _sceneWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+		disconnect(
+			_inspectorWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+		// !V0.1
+		// disconnect( _selectionWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange
+		// );
+		disconnect( _consoleWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+		disconnect( _settingWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+		disconnect(
+			_sequenceWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+
+		disconnect( _structuralAlignmentWidget,
+					&QDockWidget::visibilityChanged,
+					this,
+					&MainWindow::_onDockWindowVisibilityChange );
+
 		delete _contextualMenu;
 		delete _cursorHandler;
 	}
