@@ -37,7 +37,7 @@ namespace VTX
 			void updateSelection( const std::vector<Model::Residue *> & p_selection )
 			{
 				_moleculeSelection = &p_selection;
-				repaint();
+				update();
 			};
 			QPoint getResiduePos( const Model::Residue & p_residue, const QWidget * const p_widgetSpace ) const;
 			qreal  getSize() const { return _chainData->getCharCount() * _charSizeFromMetrics; };

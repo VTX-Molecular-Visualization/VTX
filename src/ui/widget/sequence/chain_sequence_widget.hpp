@@ -55,7 +55,10 @@ namespace VTX
 						return pos().x() + _sequenceDisplayWidget->pos().x() + _sequenceDisplayWidget->getSize() - 1;
 					};
 
-					void repaintSelection() const { _sequenceDisplayWidget->repaint(); };
+					void repaintSelection() const
+					{
+						_sequenceDisplayWidget->update();
+					};
 
 				  protected:
 					ChainSequenceWidget( QWidget * p_parent );

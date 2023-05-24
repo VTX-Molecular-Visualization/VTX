@@ -1161,7 +1161,7 @@ namespace VTX::Model
 	void Selection::_notifyDataChanged()
 	{
 		BaseModel::_notifyDataChanged();
-		VTX_EVENT( new Event::VTXEventPtr( Event ::SELECTION_CHANGE, this ) );
+		VTX_EVENT( new Event::VTXEventPtr( Event::SELECTION_CHANGE, this ) );
 	}
 
 	void Selection::getItemTypes( std::set<VTX::ID::VTX_ID> & p_types ) const
