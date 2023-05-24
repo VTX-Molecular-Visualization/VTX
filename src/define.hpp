@@ -44,10 +44,10 @@ namespace VTX
 	const std::string VTX_VERSION_URL			= VTX_WEBSITE_URL + "/vtx.json";
 	const std::string VTX_WEBSITE_CLICKABLE_URL = "<a href=\"" + VTX_WEBSITE_URL + "\">" + VTX_WEBSITE_URL + "</a>";
 
-	const std::string VTX_GIT_URL				 = "https://gitlab.com/VTX_mol/VTX";
-	const std::string VTX_DOCUMENTATION_URL		 = "https://gitlab.com/VTX_mol/VTX";
-	const std::string VTX_BUG_REPORT_URL		 = "https://gitlab.com/VTX_mol/VTX/-/issues";
-	const std::string VTX_RELEASES_URL			 = "https://gitlab.com/VTX_mol/VTX/-/releases";
+	const std::string VTX_GIT_URL				 = "https://github.com/VTX-Molecular-Visualization/VTX";
+	const std::string VTX_DOCUMENTATION_URL		 = "https://github.com/VTX-Molecular-Visualization/VTX";
+	const std::string VTX_BUG_REPORT_URL		 = "https://github.com/VTX-Molecular-Visualization/VTX/issues";
+	const std::string VTX_RELEASES_URL			 = "https://github.com/VTX-Molecular-Visualization/VTX/releases";
 	const std::string VTX_RELEASES_CLICKABLE_URL = "<a href=\"" + VTX_RELEASES_URL + "\">" + VTX_RELEASES_URL + "</a>";
 
 	// API.
