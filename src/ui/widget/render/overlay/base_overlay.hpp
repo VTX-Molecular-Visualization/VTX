@@ -49,6 +49,8 @@ namespace VTX::UI::Widget::Render::Overlay
 		BaseOverlay( QWidget * p_parent );
 
 		bool eventFilter( QObject * p_obj, QEvent * p_event ) override;
+		void mousePressEvent( QMouseEvent * event ) override;
+		void mouseReleaseEvent( QMouseEvent * event ) override;
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
