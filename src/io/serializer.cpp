@@ -272,7 +272,7 @@ namespace VTX::IO
 
 	nlohmann::json Serializer::serialize( const Color::Rgba & p_color ) const
 	{
-		return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() } };
+		return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() }, { "A", p_color.getA() } };
 	}
 
 	nlohmann::json Serializer::serialize( const Math::Transform & p_transform ) const
@@ -877,9 +877,10 @@ namespace VTX::IO
 
 	void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgba & p_color ) const
 	{
-		p_color.setR( _get<float>( p_json, "R" ) );
-		p_color.setG( _get<float>( p_json, "G" ) );
-		p_color.setB( _get<float>( p_json, "B" ) );
+		p_color.setR( _get<float>( p_json, "R", 0.f ) );
+		p_color.setG( _get<float>( p_json, "G", 0.f ) );
+		p_color.setB( _get<float>( p_json, "B", 0.f ) );
+		p_color.setA( _get<float>( p_json, "A", 1.f ) );
 	}
 
 	void Serializer::deserialize( const nlohmann::json & p_json, Math::Transform & p_transform ) const
