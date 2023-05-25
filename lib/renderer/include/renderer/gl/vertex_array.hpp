@@ -12,7 +12,7 @@ namespace VTX::Renderer::GL
 		VertexArray() = default;
 		~VertexArray() { destroy(); }
 
-		int drawCalls = 0;
+		// int drawCalls = 0;
 
 		inline void create()
 		{
@@ -147,7 +147,7 @@ namespace VTX::Renderer::GL
 		{
 			bind();
 			glDrawArrays( p_mode, p_first, p_count );
-			drawCalls++;
+			// drawCalls++;
 			unbind();
 		}
 
@@ -158,7 +158,7 @@ namespace VTX::Renderer::GL
 		{
 			bind();
 			glMultiDrawArrays( p_mode, p_first, p_count, p_primcount );
-			drawCalls++;
+			// drawCalls++;
 			unbind();
 		}
 
@@ -169,7 +169,7 @@ namespace VTX::Renderer::GL
 		{
 			bind();
 			glDrawElements( p_mode, p_count, p_type, p_offset );
-			drawCalls++;
+			// drawCalls++;
 			unbind();
 		}
 
@@ -181,7 +181,7 @@ namespace VTX::Renderer::GL
 		{
 			bind();
 			glMultiDrawElements( p_mode, p_count, p_type, p_offset, p_primcount );
-			drawCalls++;
+			// drawCalls++;
 			unbind();
 		}
 

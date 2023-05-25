@@ -16,7 +16,6 @@ namespace VTX::Renderer::GL::Pass
 	void Outline::resize( const size_t p_width, const size_t p_height )
 	{
 		out.texture.resize( p_width, p_height );
-
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 	}
 

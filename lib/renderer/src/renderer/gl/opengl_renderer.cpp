@@ -78,19 +78,18 @@ namespace VTX::Renderer::GL
 		}
 
 		// Init quad vao/vbo for deferred shading.
-		std::vector<Vec2f> quadVertices
-			= { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
+		std::vector<Vec2f> quad = { Vec2f( -1.f, 1.f ), Vec2f( -1.f, -1.f ), Vec2f( 1.f, 1.f ), Vec2f( 1.f, -1.f ) };
 
-		_vboQuad.create();
-		_vaoQuad.create();
+		_vbo.create();
+		_vao.create();
 		_ubo.create();
 
-		_vaoQuad.enableAttribute( 0 );
-		_vaoQuad.setVertexBuffer<float>( 0, _vboQuad, sizeof( Vec2f ) );
-		_vaoQuad.setAttributeFormat<float>( 0, 2 );
-		_vaoQuad.setAttributeBinding( 0, 0 );
+		_vao.enableAttribute( 0 );
+		_vao.setVertexBuffer<float>( 0, _vbo, sizeof( Vec2f ) );
+		_vao.setAttributeFormat<float>( 0, 2 );
+		_vao.setAttributeBinding( 0, 0 );
 
-		_vboQuad.set( quadVertices );
+		_vbo.set( quad );
 
 		// Global uniforms buffer.
 		_ubo.set( _globalUniforms, GL_DYNAMIC_DRAW );
@@ -100,6 +99,9 @@ namespace VTX::Renderer::GL
 
 	void OpenGLRenderer::resize( const size_t p_width, const size_t p_height )
 	{
+		_width	= p_width;
+		_height = p_height;
+
 		for ( Pass::BasePass * const pass : _passes )
 		{
 			pass->resize( _width, _height );
@@ -108,14 +110,15 @@ namespace VTX::Renderer::GL
 
 	void OpenGLRenderer::renderFrame()
 	{
-		_vaoQuad.drawCalls = 0;
-		_ubo.bind( GL_UNIFORM_BUFFER, 15 );
+		//_vao.drawCalls = 0;
 
+		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
+		_ubo.bind( GL_UNIFORM_BUFFER, 15 );
 		for ( Pass::BasePass * const pass : _passes )
 		{
-			pass->render( _vaoQuad );
+			// pass->render( _vao );
 		}
-
+		_passGeometric.render( _vao );
 		_ubo.unbind();
 	};
 

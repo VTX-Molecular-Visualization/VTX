@@ -16,7 +16,7 @@ namespace VTX::Renderer::GL::Pass
 		out.fbo.create();
 		out.fbo.attachTexture( out.texture, GL_COLOR_ATTACHMENT0 );
 
-		_program = p_pm.createProgram( "Blur", std::vector<FilePath> { "bilateral_blur.frag" } );
+		_program = p_pm.createProgram( "Blur", std::vector<FilePath> { "default.vert", "bilateral_blur.frag" } );
 		assert( _program != nullptr );
 	}
 

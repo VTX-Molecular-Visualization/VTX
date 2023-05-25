@@ -38,8 +38,8 @@ namespace VTX::Renderer::GL
 		size_t _width  = 0;
 		size_t _height = 0;
 
-		VertexArray _vaoQuad = VertexArray();
-		Buffer		_vboQuad = Buffer();
+		VertexArray _vao = VertexArray();
+		Buffer		_vbo = Buffer();
 
 		// TEST.
 		Buffer				 _ubo			 = Buffer();

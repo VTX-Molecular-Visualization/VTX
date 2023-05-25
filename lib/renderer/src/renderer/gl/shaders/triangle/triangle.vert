@@ -17,14 +17,14 @@ void main()
 {
 	if ( aVertexVis == 0 )
 	{
-		return;
+		//return;
 	}
 
-	dataOut.viewPosition	= vec3( uniforms.matrixView * aVertexPosition );
-	dataOut.normal			= vec3( uniforms.matrixView * aVertexNormal );
+	//dataOut.viewPosition	= vec3( uniforms.matrixView * aVertexPosition );
+	//dataOut.normal			= vec3( uniforms.matrixView * aVertexNormal );
 	dataOut.color			= vec3( aVertexColor );
-	dataOut.selected		= aVertexSelected;
-	dataOut.id				= aVertexId;
+	//dataOut.selected		= aVertexSelected;
+	//dataOut.id				= aVertexId;
 
-	gl_Position = uniforms.matrixProjection * vec4( dataOut.viewPosition, 1.f );
+	gl_Position = uniforms.matrixProjection * uniforms.matrixView * aVertexPosition;
 }
