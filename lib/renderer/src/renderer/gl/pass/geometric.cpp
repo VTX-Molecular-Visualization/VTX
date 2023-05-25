@@ -55,14 +55,14 @@ namespace VTX::Renderer::GL::Pass
 
 		// Position.
 		in.triangles.vao.enableAttribute( 0 );
-		in.triangles.vao.setVertexBuffer<float>( 0, in.triangles.vboPositions, sizeof( Vec4f ) );
-		in.triangles.vao.setAttributeFormat<float>( 0, 4 );
+		in.triangles.vao.setVertexBuffer<float>( 0, in.triangles.vboPositions, sizeof( Vec3f ) );
+		in.triangles.vao.setAttributeFormat<float>( 0, 3 );
 		in.triangles.vao.setAttributeBinding( 0, 0 );
 
 		// Normal.
 		in.triangles.vao.enableAttribute( 1 );
-		in.triangles.vao.setVertexBuffer<float>( 1, in.triangles.vboNormals, sizeof( Vec4f ) );
-		in.triangles.vao.setAttributeFormat<float>( 1, 4 );
+		in.triangles.vao.setVertexBuffer<float>( 1, in.triangles.vboNormals, sizeof( Vec3f ) );
+		in.triangles.vao.setAttributeFormat<float>( 1, 3 );
 		in.triangles.vao.setAttributeBinding( 1, 1 );
 
 		// Color.
@@ -89,22 +89,17 @@ namespace VTX::Renderer::GL::Pass
 		in.triangles.vao.setAttributeFormat<uint>( 5, 1 );
 		in.triangles.vao.setAttributeBinding( 5, 5 );
 
-		in.triangles.vboPositions.set( std::vector<Vec4f> { Vec4f( 1.f, 0.f, 0.f, 1.f ),
-															Vec4f( -1.f, 0.f, 0.f, 1.f ),
-															Vec4f( 0.f, 1.f, 0.f, 1.f ),
-															Vec4f( 1.f, 1.f, 0.f, 1.f ) } );
-		in.triangles.vboNormals.set( std::vector<Vec4f> { Vec4f( 0.f, 0.f, 1.f, 0.f ),
-														  Vec4f( 0.f, 0.f, 1.f, 0.f ),
-														  Vec4f( 0.f, 0.f, 1.f, 0.f ),
-														  Vec4f( 0.f, 0.f, 1.f, 0.f ) } );
+		in.triangles.vboPositions.set(
+			std::vector<Vec3f> { Vec3f( 1.f, 0.f, 0.f ), Vec3f( -1.f, 0.f, 0.f ), Vec3f( 0.f, 1.f, 0.f ) } );
+		in.triangles.vboNormals.set(
+			std::vector<Vec3f> { Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ), Vec3f( 0.f, 0.f, 1.f ) } );
 		in.triangles.vboColors.set( std::vector<Util::Color::Rgba> { Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f ),
 																	 Util::Color::Rgba( 0.f, 1.f, 0.f, 1.f ),
-																	 Util::Color::Rgba( 0.f, 0.f, 1.f, 1.f ),
 																	 Util::Color::Rgba( 0.f, 0.f, 1.f, 1.f ) } );
 		in.triangles.vboVisibilities.set( std::vector<uint> { 1, 1, 1, 1 } );
 		in.triangles.vboSelections.set( std::vector<uint> { 0, 0, 0, 0 } );
 		in.triangles.vboIds.set( std::vector<uint> { 0, 0, 0, 0 } );
-		in.triangles.ebo.set( std::vector<uint> { 0, 1, 2, 1, 2, 3 } );
+		in.triangles.ebo.set( std::vector<uint> { 0, 1, 2 } );
 	}
 
 	void Geometric::resize( const size_t p_width, const size_t p_height )
@@ -122,18 +117,11 @@ namespace VTX::Renderer::GL::Pass
 
 	void Geometric::render( VertexArray & p_vao )
 	{
-		// glEnable( GL_DEPTH_TEST );
-		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-		// out.fbo.bind( GL_DRAW_FRAMEBUFFER );
-
-		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		glClearColor( 0.1, 0.1, 1, 1 );
-		// out.fbo.clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
+		glEnable( GL_DEPTH_TEST );
+		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
+		out.fbo.clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		_programTriangle->use();
-		in.triangles.vao.drawElement( GL_TRIANGLES, 6, GL_UNSIGNED_INT );
+		in.triangles.vao.drawElement( GL_TRIANGLES, 3, GL_UNSIGNED_INT );
 
 		/*
 		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
@@ -150,9 +138,8 @@ namespace VTX::Renderer::GL::Pass
 		}
 		*/
 
-		// out.fbo.unbind();
-
-		// glDisable( GL_DEPTH_TEST );
+		out.fbo.unbind();
+		glDisable( GL_DEPTH_TEST );
 	}
 
 	Vec2i Geometric::getPickedData( const uint p_x, const uint p_y )

@@ -46,8 +46,8 @@ namespace VTX::Renderer::GL
 		_passSSAO.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
 		_passSSAO.in.textureDepth				 = &( _passLinearizeDepth.out.texture );
 
-		_passBlur.in.texture			   = &( _passSSAO.out.texture );
-		_passBlur.in.textureLinearizeDepth = &( _passLinearizeDepth.out.texture );
+		_passBlur.in.texture	  = &( _passSSAO.out.texture );
+		_passBlur.in.textureDepth = &( _passLinearizeDepth.out.texture );
 
 		_passShading.in.textureViewPositionsNormals = &( _passGeometric.out.textureViewPositionsNormals );
 		_passShading.in.texture						= &( _passGeometric.out.textureColors );
@@ -94,6 +94,8 @@ namespace VTX::Renderer::GL
 		// Global uniforms buffer.
 		_ubo.set( _globalUniforms, GL_DYNAMIC_DRAW );
 
+		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
+
 		VTX_INFO( "Renderer initialized" );
 	}
 
@@ -106,21 +108,21 @@ namespace VTX::Renderer::GL
 		{
 			pass->resize( _width, _height );
 		}
+
+		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
 	}
 
 	void OpenGLRenderer::renderFrame()
 	{
 		//_vao.drawCalls = 0;
 
-		glViewport( 0, 0, GLsizei( _width ), GLsizei( _height ) );
 		_ubo.bind( GL_UNIFORM_BUFFER, 15 );
 		for ( Pass::BasePass * const pass : _passes )
 		{
-			// pass->render( _vao );
+			pass->render( _vao );
 		}
-		_passGeometric.render( _vao );
 		_ubo.unbind();
-	};
+	}
 
 	const Vec2i OpenGLRenderer::getPickedIds( const uint p_x, const uint p_y )
 	{

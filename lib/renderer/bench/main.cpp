@@ -59,7 +59,7 @@ int main( int, char ** )
 		Vec3f position	 = Vec3f( 0.f, 0.f, 2.f );
 		Mat4f viewMatrix = Util::Math::lookAt( position, position - VEC3F_Z, VEC3F_Y );
 		Mat4f projectionMatrix
-			= Util::Math::perspective( Util::Math::radians( 60.f ), float( WIDTH ) / float( HEIGHT ), 0.001f, 100.f );
+			= Util::Math::perspective( Util::Math::radians( 60.f ), float( WIDTH ) / float( HEIGHT ), 0.0001f, 1e4f );
 
 		renderer.setCameraMatrix( viewMatrix, projectionMatrix );
 		auto bgColor = Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f );

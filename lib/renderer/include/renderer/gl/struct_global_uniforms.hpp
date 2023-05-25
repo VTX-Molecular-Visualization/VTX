@@ -24,10 +24,10 @@ namespace VTX::Renderer::GL
 		Vec4f outlineColor	   = Util::Color::Rgba::WHITE;
 		Vec4f selectionColor   = Util::Color::Rgba::WHITE;
 		// Compress data into vec4.
-		Vec4i boolData	= { true, false, false, false };				  // isCameraPerspective
-		Vec4i intData	= { 1, 0, 0, 0 };								  // outlineThickness
-		Vec4u uintData	= { 5, 17, uint( ENUM_SHADING::FLAT_COLOR ), 0 }; // ssaoIntensity, blurSize, shadingMode
-		Vec4f floatData = { 0.4f, 0.4f, 0.f, 0.f };						  // specularFactor, outlineSensivity
+		Vec4i boolData	= { true, false, false, false };			   // isCameraPerspective
+		Vec4i intData	= { 1, 0, 0, 0 };							   // outlineThickness
+		Vec4u uintData	= { 5, 17, uint( ENUM_SHADING::DIFFUSE ), 0 }; // ssaoIntensity, blurSize, shadingMode
+		Vec4f floatData = { 0.4f, 0.4f, 0.f, 0.f };					   // specularFactor, outlineSensivity
 	};
 } // namespace VTX::Renderer::GL
 

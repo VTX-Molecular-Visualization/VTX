@@ -33,13 +33,13 @@ namespace VTX::Renderer::GL::Pass
 
 	void Blur::render( VertexArray & p_vao )
 	{
-		assert( in.textureLinearizeDepth != nullptr );
+		assert( in.textureDepth != nullptr );
 		assert( in.texture != nullptr );
 
 		// First pass.
 		_fboFirstPass.bind( GL_DRAW_FRAMEBUFFER );
 		in.texture->bindToUnit( 0 );
-		in.textureLinearizeDepth->bindToUnit( 1 );
+		in.textureDepth->bindToUnit( 1 );
 		_program->use();
 		_program->setVec2i( "uDirection", 1, 0 );
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
@@ -48,7 +48,7 @@ namespace VTX::Renderer::GL::Pass
 		// Second pass.
 		out.fbo.bind( GL_DRAW_FRAMEBUFFER );
 		_textureFirstPass.bindToUnit( 0 );
-		in.textureLinearizeDepth->bindToUnit( 1 );
+		in.textureDepth->bindToUnit( 1 );
 		_program->setVec2i( "uDirection", 0, 1 );
 		p_vao.drawArray( GL_TRIANGLE_STRIP, 0, 4 );
 		out.fbo.unbind();

@@ -16,8 +16,3 @@ layout ( std140, binding = 15 ) uniform Uniforms
 	uvec4 uintData; // ssaoIntensity, blurSize, shadingMode
 	vec4 floatData;  // specularFactor, outlineSensivity
 } uniforms;
-
-layout (std140, binding = 10) buffer Debug
-{
-	vec4[] debug;
-};
