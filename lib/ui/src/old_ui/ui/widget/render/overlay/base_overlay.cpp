@@ -1,5 +1,6 @@
 #include "ui/old_ui/ui/widget/render/overlay/base_overlay.hpp"
 #include "ui/old_ui/util/ui.hpp"
+#include <QMouseEvent>
 #include <QToolButton>
 
 namespace VTX::UI::Widget::Render::Overlay
@@ -63,6 +64,9 @@ namespace VTX::UI::Widget::Render::Overlay
 
 		return false;
 	}
+
+	void BaseOverlay::mousePressEvent( QMouseEvent * p_event ) { p_event->accept(); }
+	void BaseOverlay::mouseReleaseEvent( QMouseEvent * p_event ) { p_event->accept(); }
 
 	QAction * BaseOverlay::addMenu( QMenu * const p_menu )
 	{

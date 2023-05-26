@@ -213,21 +213,14 @@ namespace VTX::App::Internal::IO::Reader
 		// Check properties, same for all atoms/residues?
 		if ( frame.size() > 0 )
 		{
-			if ( frame[ 0 ].properties() )
+			std::string propAtom = std::to_string( frame[ 0 ].properties().size() ) + " properties in atoms:";
+			for ( chemfiles::property_map::const_iterator it = frame[ 0 ].properties().begin();
+				  it != frame[ 0 ].properties().end();
+				  ++it )
 			{
-				std::string propAtom = std::to_string( frame[ 0 ].properties()->size() ) + " properties in atoms:";
-				for ( chemfiles::property_map::const_iterator it = frame[ 0 ].properties()->begin();
-					  it != frame[ 0 ].properties()->end();
-					  ++it )
-				{
-					propAtom += " " + it->first;
-				}
-				_logDebug( propAtom );
+				propAtom += " " + it->first;
 			}
-			else
-			{
-				_logDebug( "No properties in atoms." );
-			}
+			_logDebug( propAtom );
 		}
 
 		if ( residues.size() > 0 )
@@ -466,11 +459,7 @@ namespace VTX::App::Internal::IO::Reader
 				const uint				atomId = uint( *it );
 				const chemfiles::Atom & atom   = topology[ atomId ];
 				uint					atomType;
-				atomType = uint( atom.properties()
-									 .value_or( chemfiles::property_map() )
-									 .get( "atom_type" )
-									 .value_or( -1 )
-									 .as_double() );
+				atomType = uint( atom.properties().get( "atom_type" ).value_or( -1 ).as_double() );
 
 				// Create atom.
 				App::Component::Chemistry::Atom * modelAtom

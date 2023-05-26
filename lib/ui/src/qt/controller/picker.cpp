@@ -32,8 +32,11 @@ namespace VTX::UI::QT::Controller
 		QT::Tool::Render::Widget::RenderWidget * renderWidget = QT_APP()->getMainWindow().getRender();
 
 		const Vec2i ids = renderWidget->getPickedIds( p_x, p_y );
-		_performSelection( ids );
-		_lastClickedIds = ids;
+		if ( !_isTargetSelected( ids ) )
+		{
+			_performSelection( ids );
+			_lastClickedIds = ids;
+		}
 
 		App::Application::Selection::SelectionModel & selection
 			= VTX::App::Application::Selection::SelectionManager::get().getSelectionModel();
@@ -130,6 +133,25 @@ namespace VTX::UI::QT::Controller
 				}
 			}
 		}
+	}
+
+	bool Picker::_isTargetSelected( const Vec2i & p_ids ) const
+	{
+		if ( p_ids.x == App::Core::Model::ID_UNKNOWN )
+			return false;
+
+		bool targetSelected = App::Application::Selection::SelectionManager::get().getSelectionModel().isModelSelected(
+			MVC_MANAGER().getModel<App::Core::Model::BaseModel>( p_ids.x ) );
+
+		if ( p_ids.y != App::Core::Model::ID_UNKNOWN )
+		{
+			targetSelected
+				= targetSelected
+				  && App::Application::Selection::SelectionManager::get().getSelectionModel().isModelSelected(
+					  MVC_MANAGER().getModel<App::Core::Model::BaseModel>( p_ids.y ) );
+		}
+
+		return targetSelected;
 	}
 
 	void Picker::_selectItem( App::Component::Chemistry::Atom & p_atomPicked ) const

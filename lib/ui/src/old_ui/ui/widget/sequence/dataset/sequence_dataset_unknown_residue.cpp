@@ -4,12 +4,13 @@
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {
-	SequenceDisplayDataset_UnknownResidue::SequenceDisplayDataset_UnknownResidue( const App::Component::Chemistry::Chain & p_chain,
-																				  const uint		   p_startIndexChar,
-																				  const uint p_residueFirstIndex,
-																				  const uint p_residueLastIndex,
-																				  const bool p_spaceBefore,
-																				  const bool p_spaceAfter ) :
+	SequenceDisplayDataset_UnknownResidue::SequenceDisplayDataset_UnknownResidue(
+		const App::Component::Chemistry::Chain & p_chain,
+		const uint								 p_startIndexChar,
+		const uint								 p_residueFirstIndex,
+		const uint								 p_residueLastIndex,
+		const bool								 p_spaceBefore,
+		const bool								 p_spaceAfter ) :
 		SequenceDisplayDataset( p_startIndexChar, 0 ),
 		_residueFirstIndex( p_residueFirstIndex ), _residueLastIndex( p_residueLastIndex ), _chain( &p_chain ),
 		_spaceBefore( p_spaceBefore ), _spaceAfter( p_spaceAfter )
@@ -28,8 +29,9 @@ namespace VTX::UI::Widget::Sequence::Dataset
 
 		for ( uint i = _residueFirstIndex; i <= _residueLastIndex; i++ )
 		{
-			const App::Component::Chemistry::Residue * const residue = molecule->getResidue( _chain->getIndexFirstResidue() + i );
-			const uint					 residueSymbolStrLength = uint( residue->getSymbolStr().length() );
+			const App::Component::Chemistry::Residue * const residue
+				= molecule->getResidue( _chain->getIndexFirstResidue() + i );
+			const uint residueSymbolStrLength = uint( residue->getSymbolStr().length() );
 
 			if ( residueSymbolStrLength != currentCharLength )
 			{
@@ -78,14 +80,14 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		for ( uint i = residueFirstIndexInMolecule; i < residueLastIndexInMolecule; i++ )
 		{
 			const App::Component::Chemistry::Residue * const residue = p_molecule.getResidue( i );
-			const std::string &			 symbol	 = residue->getSymbolStr();
+			const std::string &								 symbol	 = residue->getSymbolStr();
 
 			str.append( QString::fromStdString( symbol ) );
 			str.append( ' ' );
 		}
 
 		const App::Component::Chemistry::Residue * const residue = p_molecule.getResidue( residueLastIndexInMolecule );
-		const std::string &			 symbol	 = residue->getSymbolStr();
+		const std::string &								 symbol	 = residue->getSymbolStr();
 
 		str.append( QString::fromStdString( symbol ) );
 
@@ -100,9 +102,10 @@ namespace VTX::UI::Widget::Sequence::Dataset
 															   bool		 p_startBloc ) const
 	{
 		const App::Component::Chemistry::Molecule & molecule = *_chain->getMoleculePtr();
-		const App::Component::Chemistry::Residue *	residue	 = molecule.getResidue( _chain->getIndexFirstResidue() + _residueFirstIndex );
-		uint					residueSymbolStrLength = uint( residue->getSymbolStr().length() );
-		std::string				residueIndexStr		   = std::to_string( residue->getIndexInOriginalChain() );
+		const App::Component::Chemistry::Residue *	residue
+			= molecule.getResidue( _chain->getIndexFirstResidue() + _residueFirstIndex );
+		uint		residueSymbolStrLength = uint( residue->getSymbolStr().length() );
+		std::string residueIndexStr		   = std::to_string( residue->getIndexInOriginalChain() );
 
 		uint currentCharOffset = _startIndexChar + ( _spaceBefore ? 1 : 0 );
 
@@ -172,7 +175,8 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		return charOffset;
 	};
 
-	App::Component::Chemistry::Residue * const SequenceDisplayDataset_UnknownResidue::getResidueAtCharIndex( const uint p_charIndex )
+	App::Component::Chemistry::Residue * const SequenceDisplayDataset_UnknownResidue::getResidueAtCharIndex(
+		const uint p_charIndex )
 	{
 		uint charOffset	  = _startIndexChar + ( _spaceBefore ? 1 : 0 );
 		uint residueIndex = _residueFirstIndex;
@@ -204,7 +208,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 			= _chain->getMoleculePtr()->getResidue( _chain->getIndexFirstResidue() + _residueLastIndex );
 		const uint lastIndexStrLength = uint( std::to_string( lastResidue->getIndexInOriginalChain() ).size() );
 
-		res += lastIndexStrLength / 2;
+		res += _spaceBefore ? lastIndexStrLength / 2 : lastIndexStrLength;
 
 		return res;
 	}

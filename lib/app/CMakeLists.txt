@@ -4,7 +4,7 @@ project(VTX_APP)
 
 # Git dependencies.
 set(GIT_URL_CHEMFILES https://github.com/sacraiou/chemfiles.git)
-set(GIT_TAG_CHEMFILES e6177423c015ac6ff1a0307b3c3a67c7850d0fe2)
+set(GIT_TAG_CHEMFILES 7eaaa3ad00fe9c602c5e90b808370204ff4b90f9)
 set(GIT_URL_JSON https://github.com/nlohmann/json.git)
 set(GIT_TAG_JSON v3.11.2)
 set(GIT_URL_MAGIC_ENUM https://github.com/Neargye/magic_enum.git)
