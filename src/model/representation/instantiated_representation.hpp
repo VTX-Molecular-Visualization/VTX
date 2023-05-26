@@ -25,7 +25,7 @@ namespace VTX::Generic
 
 namespace VTX::Model::Representation
 {
-	class InstantiatedRepresentation : public BaseModel, public Generic::BaseObjectOverride, Event::BaseEventReceiverVTX
+	class InstantiatedRepresentation : public BaseModel, Event::BaseEventReceiverVTX
 	{
 		VTX_MODEL
 
