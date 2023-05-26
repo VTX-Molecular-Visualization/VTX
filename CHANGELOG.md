@@ -1,6 +1,30 @@
 # Change Log
 
-## [0.4.0] (beta) - 2022-03-XX
+
+## [0.4.1] (beta) - 2022-05-30
+
+### Debug
+
+- Fix issue with snapshot on scaled screens.
+- Fix transparent outline on snapshots.
+- Debug display of Position section of atom Inspector.
+- Debug issue with Disulfide bond guessing on .cif files.
+- Debug right click on Overlay which was applied on render.
+
+### Optimizations
+
+- Optimize duplicate frame submenu.
+- Optimize selection.
+
+## UI
+
+- Improve resize area of docked panels.
+
+### Other
+
+- Update links in information to the new VTX git repository.
+
+## [0.4.0] (beta) - 2022-05-04
 
 ### New features
 
