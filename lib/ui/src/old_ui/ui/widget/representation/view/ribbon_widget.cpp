@@ -16,7 +16,7 @@ namespace VTX::UI::Widget::Representation::View
 		_colorBlendingModeLabel = new QLabel( this );
 		_colorBlendingModeLabel->setText( "Ribbon color blending mode" );
 		_colorBlendingModeWidget = _addQComboBoxMultiFieldWidgetInLayout(
-			"ribonColorBLendingModeWidget", _colorBlendingModeLabel, App::Internal::ChemDB::Color::COLOR_BLENDING_MODE_STRING );
+			"ribonColorBLendingModeWidget", _colorBlendingModeLabel, VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE_STRING );
 	}
 
 	void RibbonWidget::_setupSlots()
@@ -36,13 +36,13 @@ namespace VTX::UI::Widget::Representation::View
 	}
 
 	void RibbonWidget::_onColorChange( const Util::Color::Rgba & p_color ) { emit onColorChange( p_color ); }
-	void RibbonWidget::_onColorModeChange( const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode )
+	void RibbonWidget::_onColorModeChange( const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode )
 	{
-		emit onColorModeChange( App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE( p_newMode ) );
+		emit onColorModeChange( VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE( p_newMode ) );
 	}
 	void RibbonWidget::_onColorBlendingModeChange( const int p_newMode )
 	{
-		emit onColorBlendingModeChange( App::Internal::ChemDB::Color::COLOR_BLENDING_MODE( p_newMode ) );
+		emit onColorBlendingModeChange( VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE( p_newMode ) );
 	}
 
 	void RibbonWidget::refresh(
@@ -65,15 +65,15 @@ namespace VTX::UI::Widget::Representation::View
 
 		Util::UI::setDynamicProperty( _colorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, overriden );
 
-		const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getRibbonData().colorMode;
+		const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getRibbonData().colorMode;
 
 		_colorModeWidget->setColorMode( colorMode );
 
-		if ( colorMode == App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM )
+		if ( colorMode == VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM )
 		{
 			_colorModeWidget->setColor( p_representation.getColor() );
 		}
-		else if ( colorMode == App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
+		else if ( colorMode == VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
 		{
 			_colorModeWidget->resetState();
 			for ( const App::Application::Representation::BaseRepresentable * const target : p_targets )
@@ -95,18 +95,18 @@ namespace VTX::UI::Widget::Representation::View
 		_colorBlendingModeWidget->updateWithNewValue( int( p_representation.getRibbonData().colorBlendingMode ) );
 
 		// Color mode widget.
-		std::pair<App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba> pair
-			= std::pair<App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba>();
+		std::pair<VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba> pair
+			= std::pair<VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE, Util::Color::Rgba>();
 
-		const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getRibbonData().colorMode;
+		const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getRibbonData().colorMode;
 
 		pair.first = colorMode;
 
-		if ( colorMode == App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM )
+		if ( colorMode == VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM )
 		{
 			pair.second = p_representation.getColor();
 		}
-		else if ( colorMode == App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
+		else if ( colorMode == VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
 		{
 			pair.second = p_representation.getConstTarget()->getMolecule()->getColor();
 		}

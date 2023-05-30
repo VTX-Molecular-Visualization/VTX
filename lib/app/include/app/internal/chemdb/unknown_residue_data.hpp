@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace VTX::App::Internal::ChemDB
+namespace VTX::Core::ChemDB
 {
 	struct UnknownResidueData
 	{
@@ -11,6 +11,6 @@ namespace VTX::App::Internal::ChemDB
 		std::string symbolStr;
 		std::string symbolName;
 	};
-} // namespace VTX::App::Internal::ChemDB
+} // namespace VTX::Core::ChemDB
 
 #endif

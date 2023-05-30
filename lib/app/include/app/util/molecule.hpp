@@ -4,8 +4,8 @@
 #include "app/application/setting.hpp"
 #include "app/component/chemistry/_fwd.hpp"
 #include "app/component/chemistry/molecule.hpp"
-#include "app/internal/chemdb/category.hpp"
 #include "app/internal/io/reader/residue_data_reader.hpp"
+#include <core/chemdb/category.hpp>
 #include <map>
 #include <string>
 #include <vector>
@@ -19,7 +19,7 @@ namespace VTX::Util::App::Molecule
 	const std::string & getResidueFullName( const std::string & p_residueSymbol );
 	const std::vector<VTX::App::Internal::IO::Reader::BondData> & getResidueBonds(
 		const std::string & p_residueSymbol );
-	VTX::App::Internal::ChemDB::Category::TYPE getResidueCategory( const std::string & p_residueSymbol );
+	VTX::Core::ChemDB::Category::TYPE getResidueCategory( const std::string & p_residueSymbol );
 
 	void recomputeBondOrders( VTX::App::Component::Chemistry::Molecule & p_molecule );
 	bool recomputeBondOrdersFromFile( VTX::App::Component::Chemistry::Molecule & p_molecule );
@@ -51,9 +51,9 @@ namespace VTX::Util::App::Molecule
 
 	void solo( VTX::App::Component::Chemistry::Molecule & p_molecule, const bool p_refreshMoleculeVisibility = true );
 	void solo( VTX::App::Component::Chemistry::Category & p_category, const bool p_refreshMoleculeVisibility = true );
-	void soloCategories( VTX::App::Component::Chemistry::Molecule &						 p_moleculeParent,
-						 const std::vector<VTX::App::Internal::ChemDB::Category::TYPE> & p_categories,
-						 const bool p_refreshMoleculeVisibility = true );
+	void soloCategories( VTX::App::Component::Chemistry::Molecule &				p_moleculeParent,
+						 const std::vector<VTX::Core::ChemDB::Category::TYPE> & p_categories,
+						 const bool												p_refreshMoleculeVisibility = true );
 	void solo( VTX::App::Component::Chemistry::Chain & p_chain, const bool p_refreshMoleculeVisibility = true );
 	void soloChains( VTX::App::Component::Chemistry::Molecule & p_moleculeParent,
 					 const std::vector<uint> &					p_chainIndexes,

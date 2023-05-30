@@ -19,7 +19,7 @@ namespace VTX::UI::Widget::Representation::View
 
 	  signals:
 		void onRadiusChange( const float p_newRadius );
-		void onColorBlendingModeChange( const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & p_newMode );
+		void onColorBlendingModeChange( const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_newMode );
 
 	  protected:
 		CylinderWidget( QWidget * p_parent = nullptr ) : BaseRepresentationViewWidget( p_parent ) {}

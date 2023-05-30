@@ -4,7 +4,7 @@
 #include <util/color/rgba.hpp>
 #include <string>
 
-namespace VTX::App::Internal::ChemDB::Bond
+namespace VTX::Core::ChemDB::Bond
 {
 	enum class ORDER : int
 	{
@@ -28,6 +28,6 @@ namespace VTX::App::Internal::ChemDB::Bond
 
 	inline static const std::string TYPE_STR[ int( ORDER::COUNT ) ] { "Unknown", "Simple",	  "Double",
 																	  "Triple",	 "Quadruple", "Quintuple" };
-} // namespace VTX::App::Internal::ChemDB::Bond
+} // namespace VTX::Core::ChemDB::Bond
 
 #endif

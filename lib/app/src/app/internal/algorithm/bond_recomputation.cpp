@@ -1,7 +1,7 @@
 #include "app/internal/algorithm/bond_recomputation.hpp"
 #include "app/application/setting.hpp"
 #include "app/component/chemistry/residue.hpp"
-#include "app/internal/chemdb/atom.hpp"
+#include <core/chemdb/atom.hpp>
 #include <iostream>
 
 namespace VTX::App::Internal::Algorithm
@@ -292,7 +292,7 @@ namespace VTX::App::Internal::Algorithm
 	{
 		const double cutoff				 = 3.48 * 2.;
 		const double cutoffPow2			 = cutoff * cutoff;
-		const int	 hydrogenSymbolValue = int( ChemDB::Atom::SYMBOL::A_H );
+		const int	 hydrogenSymbolValue = int( VTX::Core::ChemDB::Atom::SYMBOL::A_H );
 
 		const std::vector<std::vector<size_t>> & atomsToCheck = p_cellList.getNonStdAtoms();
 
@@ -329,8 +329,8 @@ namespace VTX::App::Internal::Algorithm
 						const chemfiles::Atom & atom2		= frame.topology()[ indexAtom2 ];
 						const int				symbolAtom2 = int( atom2.atomic_number().value_or( 0 ) );
 
-						const float atom1Radius		  = ChemDB::Atom::SYMBOL_VDW_RADIUS[ symbolAtom1 ];
-						const float atom2Radius		  = ChemDB::Atom::SYMBOL_VDW_RADIUS[ symbolAtom2 ];
+						const float atom1Radius		  = VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ symbolAtom1 ];
+						const float atom2Radius		  = VTX::Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ symbolAtom2 ];
 						const float radiusDistance	  = atom1Radius > atom2Radius ? atom1Radius : atom2Radius;
 						const float radiusSqrDistance = radiusDistance * radiusDistance;
 

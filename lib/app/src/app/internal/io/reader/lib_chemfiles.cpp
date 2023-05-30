@@ -8,11 +8,11 @@
 #include "app/component/chemistry/residue.hpp"
 #include "app/core/worker/base_thread.hpp"
 #include "app/internal/algorithm/bond_order_guessing.hpp"
-#include "app/internal/chemdb/category.hpp"
 #include "app/internal/chemfiles/util.hpp"
 #include "app/mvc.hpp"
 #include "app/util/molecule.hpp"
 #include <algorithm>
+#include <core/chemdb/category.hpp>
 #include <iostream>
 #include <magic_enum.hpp>
 #include <thread>
@@ -22,7 +22,7 @@
 
 namespace VTX::App::Internal::IO::Reader
 {
-	namespace ChemDB = VTX::App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	LibChemfiles::LibChemfiles( const VTX::App::Core::Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
 
@@ -265,8 +265,8 @@ namespace VTX::App::Internal::IO::Reader
 		std::map<uint, std::vector<size_t>> mapResidueBonds		 = std::map<uint, std::vector<size_t>>();
 		std::map<uint, std::vector<size_t>> mapResidueExtraBonds = std::map<uint, std::vector<size_t>>();
 
-		int									  oldIndexInChain  = INT_MIN;
-		App::Internal::ChemDB::Category::TYPE lastCategoryEnum = App::Internal::ChemDB::Category::TYPE::UNKNOWN;
+		int								  oldIndexInChain  = INT_MIN;
+		VTX::Core::ChemDB::Category::TYPE lastCategoryEnum = VTX::Core::ChemDB::Category::TYPE::UNKNOWN;
 
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 		{
@@ -277,7 +277,7 @@ namespace VTX::App::Internal::IO::Reader
 			const std::string chainId		= residue.properties().get( "chainid" ).value_or( "" ).as_string();
 			std::string		  residueSymbol = residue.name();
 
-			const App::Internal::ChemDB::Category::TYPE categoryEnum
+			const VTX::Core::ChemDB::Category::TYPE categoryEnum
 				= Util::App::Molecule::getResidueCategory( residueSymbol );
 
 			const bool createNewChain = p_molecule.getChainCount() == 0 || // No chain created
@@ -333,7 +333,7 @@ namespace VTX::App::Internal::IO::Reader
 			else
 			{
 				int symbolIndex = p_molecule.getUnknownResidueSymbolIndex( residueSymbol );
-				App::Internal::ChemDB::UnknownResidueData * unknownResidueData;
+				VTX::Core::ChemDB::UnknownResidueData * unknownResidueData;
 
 				if ( symbolIndex >= 0 )
 				{
@@ -341,7 +341,7 @@ namespace VTX::App::Internal::IO::Reader
 				}
 				else
 				{
-					unknownResidueData			   = new App::Internal::ChemDB::UnknownResidueData();
+					unknownResidueData			   = new VTX::Core::ChemDB::UnknownResidueData();
 					unknownResidueData->symbolStr  = residueSymbol;
 					unknownResidueData->symbolName = Util::App::Molecule::getResidueFullName( residueSymbol );
 

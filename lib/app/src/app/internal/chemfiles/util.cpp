@@ -4,18 +4,18 @@
 
 namespace VTX::App::Internal::Chemfiles::Util
 {
-	chemfiles::Bond::BondOrder convertBondOrder( const VTX::App::Internal::ChemDB::Bond::ORDER p_bondOrder )
+	chemfiles::Bond::BondOrder convertBondOrder( const VTX::Core::ChemDB::Bond::ORDER p_bondOrder )
 	{
 		switch ( p_bondOrder )
 		{
-		case VTX::App::Internal::ChemDB::Bond::ORDER::SINGLE: return chemfiles::Bond::BondOrder::SINGLE; break;
-		case VTX::App::Internal::ChemDB::Bond::ORDER::DOUBLE: return chemfiles::Bond::BondOrder::DOUBLE; break;
-		case VTX::App::Internal::ChemDB::Bond::ORDER::TRIPLE: return chemfiles::Bond::BondOrder::TRIPLE; break;
-		case VTX::App::Internal::ChemDB::Bond::ORDER::QUADRUPLE: return chemfiles::Bond::BondOrder::QUADRUPLE; break;
-		case VTX::App::Internal::ChemDB::Bond::ORDER::QUINTUPLET: return chemfiles::Bond::BondOrder::QUINTUPLET; break;
-		case VTX::App::Internal::ChemDB::Bond::ORDER::AROMATIC: return chemfiles::Bond::BondOrder::AROMATIC; break;
+		case VTX::Core::ChemDB::Bond::ORDER::SINGLE: return chemfiles::Bond::BondOrder::SINGLE; break;
+		case VTX::Core::ChemDB::Bond::ORDER::DOUBLE: return chemfiles::Bond::BondOrder::DOUBLE; break;
+		case VTX::Core::ChemDB::Bond::ORDER::TRIPLE: return chemfiles::Bond::BondOrder::TRIPLE; break;
+		case VTX::Core::ChemDB::Bond::ORDER::QUADRUPLE: return chemfiles::Bond::BondOrder::QUADRUPLE; break;
+		case VTX::Core::ChemDB::Bond::ORDER::QUINTUPLET: return chemfiles::Bond::BondOrder::QUINTUPLET; break;
+		case VTX::Core::ChemDB::Bond::ORDER::AROMATIC: return chemfiles::Bond::BondOrder::AROMATIC; break;
 
-		case VTX::App::Internal::ChemDB::Bond::ORDER::UNKNOWN:
+		case VTX::Core::ChemDB::Bond::ORDER::UNKNOWN:
 		default: return chemfiles::Bond::BondOrder::UNKNOWN; break;
 		}
 	}

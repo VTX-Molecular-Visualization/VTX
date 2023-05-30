@@ -3,14 +3,15 @@
 
 #include "_fwd.hpp"
 #include "app/core/model/base_model.hpp"
-#include "app/internal/chemdb/bond.hpp"
 #include "app/id.hpp"
+#include <core/chemdb/bond.hpp>
+#include <core/struct/bond.hpp>
 #include <string>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
-	namespace ChemDB = VTX::App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	class Bond : public App::Core::Model::BaseModel
 	{
@@ -19,24 +20,28 @@ namespace VTX::App::Component::Chemistry
 	  public:
 		static bool comparer( const Bond & p_lhs, const Bond & p_rhs );
 
-		inline uint getIndexFirstAtom() const { return _indexFirstAtom; }
-		inline void setIndexFirstAtom( const uint p_index ) { _indexFirstAtom = p_index; }
-		inline uint getIndexSecondAtom() const { return _indexSecondAtom; }
-		inline void setIndexSecondAtom( const uint p_index ) { _indexSecondAtom = p_index; }
+		inline VTX::Core::Struct::Bond &	   getBondStruct() { return *_bondStruct; }
+		inline const VTX::Core::Struct::Bond & getBondStruct() const { return *_bondStruct; }
 
-		inline ChemDB::Bond::ORDER getOrder() const { return _order; }
-		inline void				   setOrder( const ChemDB::Bond::ORDER p_order ) { _order = p_order; }
+		inline uint getIndexFirstAtom() const { return _bondStruct->getIndexFirstAtom(); }
+		inline void setIndexFirstAtom( const uint p_index ) { _bondStruct->setIndexFirstAtom( p_index ); }
+		inline uint getIndexSecondAtom() const { return _bondStruct->getIndexSecondAtom(); }
+		inline void setIndexSecondAtom( const uint p_index ) { _bondStruct->setIndexSecondAtom( p_index ); }
+
+		inline ChemDB::Bond::ORDER getOrder() const { return _bondStruct->getOrder(); }
+		inline void				   setOrder( const ChemDB::Bond::ORDER p_order ) { _bondStruct->setOrder( p_order ); }
 
 		inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-		inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
+		void					setMoleculePtr( Molecule * const p_molecule );
+
+	  protected:
+		Bond() : BaseModel( App::ID::Model::MODEL_BOND ) {};
 
 	  private:
-		uint				_indexFirstAtom	 = 0;
-		uint				_indexSecondAtom = 0;
-		Molecule *			_moleculePtr	 = nullptr;
-		ChemDB::Bond::ORDER _order			 = ChemDB::Bond::ORDER::UNKNOWN;
+		VTX::Core::Struct::Bond * _bondStruct = nullptr;
 
-		Bond() : BaseModel( App::ID::Model::MODEL_BOND ) {};
+		// TODO manage access to Model::Molecule from Struct::Molecule with EnTT.
+		Molecule * _moleculePtr = nullptr;
 	};
 
 } // namespace VTX::App::Component::Chemistry

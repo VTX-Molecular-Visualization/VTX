@@ -19,8 +19,8 @@
 #include <app/component/chemistry/residue.hpp>
 #include <app/core/event/base_event_receiver_vtx.hpp>
 #include <app/core/view/base_view.hpp>
-#include <app/internal/chemdb/category.hpp>
-#include <app/internal/chemdb/residue.hpp>
+#include <core/chemdb/category.hpp>
+#include <core/chemdb/residue.hpp>
 #include <app/component/generic/base_visible.hpp>
 #include <map>
 
@@ -119,7 +119,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 									   QTreeWidgetItem &						   p_item ) const;
 		void _applyChainDataOnItem( const App::Component::Chemistry::Chain &	p_molecule,
 									QTreeWidgetItem &							p_item,
-									const App::Internal::ChemDB::Category::TYPE p_category ) const;
+									const VTX::Core::ChemDB::Category::TYPE p_category ) const;
 		void _applyResidueDataOnItem( const App::Component::Chemistry::Residue & p_molecule,
 									  QTreeWidgetItem &							 p_item ) const;
 		void _applyAtomDataOnItem( const App::Component::Chemistry::Atom & p_molecule, QTreeWidgetItem & p_item ) const;
@@ -127,12 +127,12 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		void _applyResidueNameOnItem(
 			const App::Component::Chemistry::Residue &					p_molecule,
 			QTreeWidgetItem &											p_item,
-			const App::Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE & p_symbolDisplayMode ) const;
+			const VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE & p_symbolDisplayMode ) const;
 
-		void _refreshSymbolDisplay( const App::Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE & p_displayMode );
+		void _refreshSymbolDisplay( const VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE & p_displayMode );
 		void _refreshSymbolDisplayRecursive(
 			QTreeWidgetItem * const										p_item,
-			const App::Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE & p_displayMode );
+			const VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE & p_displayMode );
 
 		void _updateMoleculeStructure();
 		void _updateCategoryStructure( const App::Component::Chemistry::Category & p_category,
@@ -151,7 +151,7 @@ namespace VTX::UI::QT::Tool::Scene::Widget::View
 		bool _isChainExpanded( const App::Component::Chemistry::Chain & p_chain ) const;
 		bool _isResidueExpanded( const App::Component::Chemistry::Residue & p_residue ) const;
 
-		App::Internal::ChemDB::Category::TYPE _getCategoryFromItem( const QTreeWidgetItem & p_item ) const;
+		VTX::Core::ChemDB::Category::TYPE _getCategoryFromItem( const QTreeWidgetItem & p_item ) const;
 	};
 
 } // namespace VTX::UI::QT::Tool::Scene::Widget::View

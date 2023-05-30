@@ -3,19 +3,19 @@
 
 #include "_fwd.hpp"
 #include "app/application/representation/base_representable.hpp"
+#include "app/component/generic/base_colorable.hpp"
+#include "app/component/generic/base_visible.hpp"
 #include "app/component/object3d/helper/aabb.hpp"
 #include "app/core/model/base_model.hpp"
 #include "app/id.hpp"
-#include "app/internal/chemdb/category.hpp"
-#include "app/component/generic/base_colorable.hpp"
-#include "app/component/generic/base_visible.hpp"
+#include <core/chemdb/category.hpp>
 #include <string>
 #include <util/types.hpp>
 #include <vector>
 
 namespace VTX::App::Component::Chemistry
 {
-	namespace ChemDB = App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	class Category :
 		public Core::Model::BaseModel,

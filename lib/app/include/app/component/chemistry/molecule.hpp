@@ -13,11 +13,12 @@
 #include "app/component/object3d/helper/aabb.hpp"
 #include "app/core/model/base_model_3d.hpp"
 #include "app/core/scene/base_scene_item.hpp"
-#include "app/internal/chemdb/category.hpp"
-#include "app/internal/chemdb/unknown_residue_data.hpp"
 #include "app/internal/io/reader/prm.hpp"
 #include "app/internal/io/reader/psf.hpp"
 #include "app/render/buffer/molecule.hpp"
+#include <core/chemdb/category.hpp>
+#include <core/chemdb/unknown_residue_data.hpp>
+#include <core/struct/molecule.hpp>
 #include <iostream>
 #include <map>
 #include <string>
@@ -29,7 +30,7 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	namespace ChemDB = App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	class Molecule :
 		public Core::Model::BaseModel3D<App::Render::Buffer::Molecule>,
@@ -40,9 +41,23 @@ namespace VTX::App::Component::Chemistry
 		VTX_MODEL
 
 	  public:
-		using AtomPositionsFrame  = std::vector<Vec3f>;
+		using AtomPositionsFrame  = VTX::Core::Struct::Molecule::AtomPositionsFrame;
 		using RepresentationState = std::map<const Application::Representation::InstantiatedRepresentation *,
 											 Application::Representation::RepresentationTarget>;
+
+	  private:
+		// Using these tmp vector while new archi of molecule is not ready for getChains functions
+		inline static std::vector<Chain *> TMP_CHAIN_VECTOR = std::vector<Chain *>();
+		// Using these tmp vector while new archi of molecule is not ready for getChains functions
+		inline static std::vector<Residue *> TMP_RESIDUE_VECTOR = std::vector<Residue *>();
+		// Using these tmp vector while new archi of molecule is not ready for getChains functions
+		inline static std::vector<Atom *> TMP_ATOM_VECTOR = std::vector<Atom *>();
+		// Using these tmp vector while new archi of molecule is not ready for getChains functions
+		inline static std::vector<Bond *> TMP_BOND_VECTOR = std::vector<Bond *>();
+
+	  public:
+		inline VTX::Core::Struct::Molecule &	   getMoleculeStruct() { return *_moleculeStruct; };
+		inline const VTX::Core::Struct::Molecule & getMoleculeStruct() const { return *_moleculeStruct; };
 
 		// Configuration.
 		inline const Component::IO::MoleculeConfiguration & getConfiguration() const { return _configuration; }
@@ -60,64 +75,168 @@ namespace VTX::App::Component::Chemistry
 		inline RepresentationState &	   getRepresentationState() { return _representationState; }
 
 		// Models.
-		inline const std::string & getName() const { return _name; }
-		inline void				   setName( const std::string & p_name ) { _name = p_name; }
+		inline const std::string & getName() const { return _moleculeStruct->getName(); }
+		inline void				   setName( const std::string & p_name ) { _moleculeStruct->setName( p_name ); }
 		inline const std::string & getPdbIdCode() const { return _pdbIdCode; }
 		void					   setPdbIdCode( const std::string & p_pdbId );
+		inline const FilePath &	   getPath() const { return _path; }
+		inline void				   setPath( const FilePath & p_path ) { _path = p_path; }
 
-		inline const FilePath & getPath() const { return _path; }
-		inline void				setPath( const FilePath & p_path ) { _path = p_path; }
+		Chain &				 addChain();
+		inline Chain * const getChain( const uint p_idx )
+		{
+			return nullptr;
+			// return _moleculeStruct->getChain( p_idx );
+		}
+		inline const Chain * const getChain( const uint p_idx ) const
+		{
+			return nullptr;
+			// return _moleculeStruct->getChain( p_idx );
+		}
+		Chain * getFirstChain()
+		{
+			return nullptr;
+			// return _moleculeStruct->getFirstChain();
+		}
+		const Chain * const getFirstChain() const
+		{
+			return nullptr;
+			//	return _moleculeStruct->getFirstChain();
+		}
+		const Chain * const getPreviousChain( const uint p_idBaseChain ) const
+		{
+			return nullptr;
+			// return _moleculeStruct->getPreviousChain();
+		}
+		Chain * const getPreviousChain( const uint p_idBaseChain )
+		{
+			return nullptr;
+			//	return _moleculeStruct->getPreviousChain();
+		}
+		const Chain * const getNextChain( const uint p_idBaseChain ) const
+		{
+			return nullptr;
+			// return _moleculeStruct->getNextChain( p_idBaseChain );
+		}
+		Chain * const getNextChain( const uint p_idBaseChain )
+		{
+			return nullptr;
+			// return _moleculeStruct->getNextChain( p_idBaseChain );
+		}
+		inline std::vector<Chain *> & getChains()
+		{
+			return TMP_CHAIN_VECTOR;
+			// return _moleculeStruct->getChains();
+		}
 
-		Chain &								addChain();
-		inline Chain * const				getChain( const uint p_idx ) { return _chains[ p_idx ]; }
-		inline const Chain * const			getChain( const uint p_idx ) const { return _chains[ p_idx ]; }
-		Chain *								getFirstChain();
-		const Chain * const					getFirstChain() const;
-		const Chain * const					getPreviousChain( const uint p_idBaseChain ) const;
-		Chain * const						getPreviousChain( const uint p_idBaseChain );
-		const Chain * const					getNextChain( const uint p_idBaseChain ) const;
-		Chain * const						getNextChain( const uint p_idBaseChain );
-		inline std::vector<Chain *> &		getChains() { return _chains; }
-		inline const std::vector<Chain *> & getChains() const { return _chains; }
-		uint								getRealChainCount() const { return _realChainCount; };
-		void								removeChain( const uint p_id,
-														 const bool p_delete	  = true,
-														 const bool p_recursive	  = true,
-														 const bool p_notifyViews = true );
+		inline const std::vector<Chain *> & getChains() const
+		{
+			return TMP_CHAIN_VECTOR;
+			// return _moleculeStruct->getChains();
+		}
+		uint getRealChainCount() const { return _moleculeStruct->getRealChainCount(); };
+		void removeChain( const uint p_id,
+						  const bool p_delete	   = true,
+						  const bool p_recursive   = true,
+						  const bool p_notifyViews = true );
 
-		Residue &							  addResidue();
-		inline Residue * const				  getResidue( const uint p_idx ) { return _residues[ p_idx ]; }
-		inline const Residue * const		  getResidue( const uint p_idx ) const { return _residues[ p_idx ]; }
-		const Residue * const				  getPreviousResidue( const uint p_idBaseResidue ) const;
-		Residue * const						  getPreviousResidue( const uint p_idBaseResidue );
-		const Residue * const				  getNextResidue( const uint p_idBaseResidue ) const;
-		Residue * const						  getNextResidue( const uint p_idBaseResidue );
-		inline std::vector<Residue *> &		  getResidues() { return _residues; }
-		inline const std::vector<Residue *> & getResidues() const { return _residues; }
-		int									  getRealResidueCount() const;
-		void								  removeResidue( const uint p_id,
-															 const bool p_delete			= true,
-															 const bool p_recursive			= true,
-															 const bool p_checkParentUpdate = true,
-															 const bool p_notifyViews		= true );
+		Residue &			   addResidue();
+		inline Residue * const getResidue( const uint p_idx )
+		{
+			return nullptr;
+			// return _moleculeStruct->getResidue( p_idx );
+		}
+		inline const Residue * const getResidue( const uint p_idx ) const
+		{
+			return nullptr;
+			// return _moleculeStruct->getResidue( p_idx );
+		}
+		const Residue * const getPreviousResidue( const uint p_idBaseResidue ) const
+		{
+			return nullptr;
+			// return _moleculeStruct->getPreviousResidue( p_idBaseResidue );
+		}
+		Residue * const getPreviousResidue( const uint p_idBaseResidue )
+		{
+			return nullptr;
+			// return _moleculeStruct->getPreviousResidue( p_idBaseResidue );
+		}
+		const Residue * const getNextResidue( const uint p_idBaseResidue ) const
+		{
+			return nullptr;
+			// return _moleculeStruct->getNextResidue( p_idBaseResidue );
+		}
+		Residue * const getNextResidue( const uint p_idBaseResidue )
+		{
+			return nullptr;
+			// return _moleculeStruct->getNextResidue( p_idBaseResidue );
+		}
+		inline std::vector<Residue *> & getResidues()
+		{
+			return TMP_RESIDUE_VECTOR;
+			// return _moleculeStruct->getResidues();
+		}
+		inline const std::vector<Residue *> & getResidues() const
+		{
+			return TMP_RESIDUE_VECTOR;
+			// return _moleculeStruct->getResidues();
+		}
+		int	 getRealResidueCount() const { return _moleculeStruct->getRealResidueCount(); }
+		void removeResidue( const uint p_id,
+							const bool p_delete			   = true,
+							const bool p_recursive		   = true,
+							const bool p_checkParentUpdate = true,
+							const bool p_notifyViews	   = true );
 
-		Atom &							   addAtom();
-		inline Atom * const				   getAtom( const uint p_idx ) { return _atoms[ p_idx ]; }
-		inline const Atom * const		   getAtom( const uint p_idx ) const { return _atoms[ p_idx ]; }
-		inline std::vector<Atom *> &	   getAtoms() { return _atoms; }
-		inline const std::vector<Atom *> & getAtoms() const { return _atoms; }
-		int								   getRealAtomCount() const;
-		void							   removeAtom( const uint p_id,
-													   const bool p_delete			  = true,
-													   const bool p_checkBonds		  = true,
-													   const bool p_checkParentUpdate = true,
-													   const bool p_notifyViews		  = true );
+		Atom &				addAtom();
+		inline Atom * const getAtom( const uint p_idx )
+		{
+			return nullptr;
+			// return _moleculeStruct->getAtom( p_idx );
+		}
+		inline const Atom * const getAtom( const uint p_idx ) const
+		{
+			return nullptr;
+			// return _moleculeStruct->getAtom( p_idx );
+		}
+		inline std::vector<Atom *> & getAtoms()
+		{
+			return TMP_ATOM_VECTOR;
+			// return _moleculeStruct->getAtoms();
+		}
+		inline const std::vector<Atom *> & getAtoms() const
+		{
+			return TMP_ATOM_VECTOR;
+			// return _moleculeStruct->getAtoms();
+		}
+		int	 getRealAtomCount() const { return _moleculeStruct->getRealAtomCount(); }
+		void removeAtom( const uint p_id,
+						 const bool p_delete			= true,
+						 const bool p_checkBonds		= true,
+						 const bool p_checkParentUpdate = true,
+						 const bool p_notifyViews		= true );
 
-		Bond &							   addBond();
-		inline Bond * const				   getBond( const uint p_idx ) { return _bonds[ p_idx ]; }
-		inline const Bond * const		   getBond( const uint p_idx ) const { return _bonds[ p_idx ]; }
-		inline std::vector<Bond *> &	   getBonds() { return _bonds; }
-		inline const std::vector<Bond *> & getBonds() const { return _bonds; }
+		Bond &				addBond();
+		inline Bond * const getBond( const uint p_idx )
+		{
+			return nullptr;
+			// return _moleculeStruct->getBond( p_idx );
+		}
+		inline const Bond * const getBond( const uint p_idx ) const
+		{
+			return nullptr;
+			// return _moleculeStruct->getBond( p_idx );
+		}
+		inline std::vector<Bond *> & getBonds()
+		{
+			return TMP_BOND_VECTOR;
+			// return _moleculeStruct->getBonds();
+		}
+		inline const std::vector<Bond *> & getBonds() const
+		{
+			return TMP_BOND_VECTOR;
+			// return _moleculeStruct->getBonds();
+		}
 		void removeBond( const uint p_id, const bool p_delete = true, const bool p_notifyViews = true );
 
 		inline const bool				  hasSecondaryStructure() const { return _secondaryStructure != nullptr; }
@@ -140,7 +259,7 @@ namespace VTX::App::Component::Chemistry
 		Chemistry::Category *							  getCategoryFromChain( const Chemistry::Chain & p_chain );
 		const Chemistry::Category * getCategoryFromChain( const Chemistry::Chain & p_chain ) const;
 
-		bool isEmpty();
+		bool isEmpty() { return _moleculeStruct->isEmpty(); }
 
 		inline const bool isAtomVisible( const uint p_idx ) const { return bool( _bufferAtomVisibilities[ p_idx ] ); }
 
@@ -148,53 +267,76 @@ namespace VTX::App::Component::Chemistry
 		inline const Util::Color::Rgba & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 		inline const uint getAtomVisibility( const uint p_idx ) const { return _bufferAtomVisibilities[ p_idx ]; }
 
-		inline const std::vector<Internal::ChemDB::UnknownResidueData *> & getUnknownResidueSymbols() const
+		inline const std::vector<VTX::Core::ChemDB::UnknownResidueData *> & getUnknownResidueSymbols() const
 		{
-			return _unknownResidueSymbol;
+			return _moleculeStruct->getUnknownResidueSymbols();
 		}
-		inline const std::unordered_set<std::string> & getUnknownAtomSymbols() const { return _unknownAtomSymbol; }
-
-		int											 getUnknownResidueSymbolIndex( const std::string & p_symbol ) const;
-		Internal::ChemDB::UnknownResidueData * const getUnknownResidueSymbol( const uint p_symbolIndex ) const;
-		Internal::ChemDB::UnknownResidueData * const getUnknownResidueSymbol( const std::string & p_symbol ) const;
-		int			addUnknownResidueSymbol( Internal::ChemDB::UnknownResidueData * const p_data );
-		inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
-
-		inline AtomPositionsFrame & addAtomPositionFrame()
+		inline const std::unordered_set<std::string> & getUnknownAtomSymbols() const
 		{
-			_atomPositionsFrames.emplace_back();
-			return _atomPositionsFrames.back();
-		}
-		inline void addAtomPositionFrame( const AtomPositionsFrame & p_frame )
-		{
-			_atomPositionsFrames.emplace_back( p_frame );
+			return _moleculeStruct->getUnknownAtomSymbols();
 		}
 
-		inline void setAtomPositionFrames( const std::vector<AtomPositionsFrame> & p_frame )
+		int getUnknownResidueSymbolIndex( const std::string & p_symbol ) const
 		{
-			_atomPositionsFrames.clear();
-			_atomPositionsFrames = p_frame;
+			return _moleculeStruct->getUnknownResidueSymbolIndex( p_symbol );
+		}
+		VTX::Core::ChemDB::UnknownResidueData * const getUnknownResidueSymbol( const uint p_symbolIndex ) const
+		{
+			return _moleculeStruct->getUnknownResidueSymbol( p_symbolIndex );
+		}
+		VTX::Core::ChemDB::UnknownResidueData * const getUnknownResidueSymbol( const std::string & p_symbol ) const
+		{
+			return _moleculeStruct->getUnknownResidueSymbol( p_symbol );
+		}
+		int addUnknownResidueSymbol( VTX::Core::ChemDB::UnknownResidueData * const p_data )
+		{
+			return _moleculeStruct->addUnknownResidueSymbol( p_data );
+		}
+		inline void addUnknownAtomSymbol( const std::string & p_symbol )
+		{
+			_moleculeStruct->addUnknownAtomSymbol( p_symbol );
+		}
+
+		inline AtomPositionsFrame & addAtomPositionFrame() { return _moleculeStruct->addAtomPositionFrame(); }
+		inline void					addAtomPositionFrame( const AtomPositionsFrame & p_frame )
+		{
+			return _moleculeStruct->addAtomPositionFrame( p_frame );
+		}
+
+		inline void setAtomPositionFrames( const std::vector<AtomPositionsFrame> & p_frames )
+		{
+			return _moleculeStruct->setAtomPositionFrames( p_frames );
 		}
 		inline const AtomPositionsFrame & getCurrentAtomPositionFrame() const
 		{
-			return _atomPositionsFrames[ _currentFrame ];
+			return _moleculeStruct->getAtomPositionFrame( _currentFrame );
 		}
-		inline AtomPositionsFrame & getCurrentAtomPositionFrame() { return _atomPositionsFrames[ _currentFrame ]; }
+		inline AtomPositionsFrame & getCurrentAtomPositionFrame()
+		{
+			return _moleculeStruct->getAtomPositionFrame( _currentFrame );
+		}
 		inline const AtomPositionsFrame & getAtomPositionFrame( const uint p_frame ) const
 		{
-			return _atomPositionsFrames[ p_frame ];
+			return _moleculeStruct->getAtomPositionFrame( p_frame );
 		}
 		inline AtomPositionsFrame & getAtomPositionFrame( const uint p_frame )
 		{
-			return _atomPositionsFrames[ p_frame ];
+			return _moleculeStruct->getAtomPositionFrame( p_frame );
 		}
-		inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const { return _atomPositionsFrames; }
-		inline std::vector<AtomPositionsFrame> &	   getAtomPositionFrames() { return _atomPositionsFrames; }
-		inline std::vector<float> &					   getBufferAtomRadius() { return _bufferAtomRadius; }
-		inline const std::vector<float> &			   getBufferAtomRadius() const { return _bufferAtomRadius; }
-		inline std::vector<Util::Color::Rgba> &		   getBufferAtomColors() { return _bufferAtomColors; }
-		inline const std::vector<Util::Color::Rgba> &  getBufferAtomColors() const { return _bufferAtomColors; }
-		inline std::vector<uint> &					   getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
+		inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const
+		{
+			return _moleculeStruct->getAtomPositionFrames();
+		}
+		inline std::vector<AtomPositionsFrame> & getAtomPositionFrames()
+		{
+			return _moleculeStruct->getAtomPositionFrames();
+		}
+
+		inline std::vector<float> &					  getBufferAtomRadius() { return _bufferAtomRadius; }
+		inline const std::vector<float> &			  getBufferAtomRadius() const { return _bufferAtomRadius; }
+		inline std::vector<Util::Color::Rgba> &		  getBufferAtomColors() { return _bufferAtomColors; }
+		inline const std::vector<Util::Color::Rgba> & getBufferAtomColors() const { return _bufferAtomColors; }
+		inline std::vector<uint> &					  getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
 		inline const std::vector<uint> & getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
 		inline std::vector<uint> &		 getBufferAtomSelections() { return _bufferAtomSelections; }
 		inline const std::vector<uint> & getBufferAtomSelections() const { return _bufferAtomSelections; }
@@ -205,10 +347,10 @@ namespace VTX::App::Component::Chemistry
 
 		void resizeBuffers();
 
-		inline const uint getChainCount() const { return uint( _chains.size() ); }
-		inline const uint getResidueCount() const { return uint( _residues.size() ); }
-		inline const uint getAtomCount() const { return uint( _atoms.size() ); }
-		inline const uint getBondCount() const { return uint( _bonds.size() ); }
+		inline const uint getChainCount() const { return _moleculeStruct->getChainCount(); }
+		inline const uint getResidueCount() const { return _moleculeStruct->getResidueCount(); }
+		inline const uint getAtomCount() const { return _moleculeStruct->getAtomCount(); }
+		inline const uint getBondCount() const { return _moleculeStruct->getBondCount(); }
 
 		void clearDefaultRepresentations();
 		bool isDefaultRepresentation(
@@ -221,13 +363,13 @@ namespace VTX::App::Component::Chemistry
 		void refreshSelection( const App::Application::Selection::SelectionModel::MapChainIds * const );
 		void refreshBondsBuffer();
 
-		inline bool									   hasTrajectory() { return _atomPositionsFrames.size() >= 2; }
-		inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
-		inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
+		inline bool									   hasTrajectory() { return _moleculeStruct->hasTrajectory(); }
+		inline std::vector<AtomPositionsFrame> &	   getFrames() { return _moleculeStruct->getFrames(); }
+		inline const std::vector<AtomPositionsFrame> & getFrames() const { return _moleculeStruct->getFrames(); }
 		inline uint									   getFrame() const { return _currentFrame; }
 		void										   setFrame( const uint );
 		void										   applyNextFrame( const uint p_frameCount = 1 );
-		inline const uint		   getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
+		inline const uint		   getFrameCount() const { return _moleculeStruct->getFrameCount(); }
 		inline uint				   getFPS() const { return _fps; }
 		void					   setFPS( const uint p_fps );
 		inline bool				   isPlaying() const { return _isPlaying; }
@@ -259,7 +401,10 @@ namespace VTX::App::Component::Chemistry
 		void setVisible( const bool p_visible, const bool p_notify );
 		void render( const App::Component::Render::Camera & ) const override;
 
-		bool mergeTopology( const Molecule & );
+		bool mergeTopology( const Molecule & p_other )
+		{
+			_moleculeStruct->mergeTopology( p_other.getMoleculeStruct() );
+		}
 
 		// Secondary structure.
 		void createSecondaryStructure();
@@ -294,8 +439,6 @@ namespace VTX::App::Component::Chemistry
 		void _computeAABB() const override;
 		void _instantiate3DViews() override;
 
-		void _addChain( Chemistry::Chain * const p_chain );
-
 		void _markRepresentationAsDefault(
 			const App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation );
 
@@ -306,8 +449,8 @@ namespace VTX::App::Component::Chemistry
 		virtual ~Molecule();
 
 	  private:
-		std::string _displayName;
-		uint		_realChainCount = 0;
+		VTX::Core::Struct::Molecule * _moleculeStruct = nullptr;
+		std::string					  _displayName;
 
 		// Configuration.
 		Component::IO::MoleculeConfiguration _configuration = Component::IO::MoleculeConfiguration();
@@ -316,23 +459,11 @@ namespace VTX::App::Component::Chemistry
 		RepresentationState _representationState = RepresentationState();
 
 		// Models.
-		FilePath						_path;
-		std::string						_name						= "unknown";
-		std::string						_pdbIdCode					= "unknown";
-		std::vector<Chain *>			_chains						= std::vector<Chain *>();
-		std::vector<Residue *>			_residues					= std::vector<Residue *>();
-		std::vector<Atom *>				_atoms						= std::vector<Atom *>();
-		std::vector<Bond *>				_bonds						= std::vector<Bond *>();
-		std::vector<AtomPositionsFrame> _atomPositionsFrames		= std::vector<AtomPositionsFrame>();
-		uint							_indexFirstBondExtraResidue = 0;
+		FilePath	_path;
+		std::string _pdbIdCode = "unknown";
 
 		// Options.
-		App::Internal::ChemDB::Color::COLOR_MODE _colorMode = App::Internal::ChemDB::Color::COLOR_MODE::INHERITED;
-
-		// Missing symbols.
-		std::vector<Internal::ChemDB::UnknownResidueData *> _unknownResidueSymbol
-			= std::vector<Internal::ChemDB::UnknownResidueData *>();
-		std::unordered_set<std::string> _unknownAtomSymbol = std::unordered_set<std::string>();
+		VTX::Core::ChemDB::Color::COLOR_MODE _colorMode = VTX::Core::ChemDB::Color::COLOR_MODE::INHERITED;
 
 		// Buffers.
 		std::vector<float>			   _bufferAtomRadius	   = std::vector<float>();
@@ -372,15 +503,6 @@ namespace VTX::App::Component::Chemistry
 		void _fillBufferAtomVisibilities();
 		void _fillBufferAtomSelections( const App::Application::Selection::SelectionModel::MapChainIds * const
 										= nullptr );
-
-#ifdef _DEBUG
-	  public:
-		// Validation.
-		uint chainCount	  = 0;
-		uint residueCount = 0;
-		uint atomCount	  = 0;
-		uint bondCount	  = 0;
-#endif
 	};
 } // namespace VTX::App::Component::Chemistry
 

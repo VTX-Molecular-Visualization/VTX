@@ -12,8 +12,6 @@ namespace VTX::Core::Struct
 	  public:
 		Bond() {};
 
-		static bool comparer( const Bond & p_lhs, const Bond & p_rhs );
-
 		inline uint getIndexFirstAtom() const { return _indexFirstAtom; }
 		inline void setIndexFirstAtom( const uint p_index ) { _indexFirstAtom = p_index; }
 		inline uint getIndexSecondAtom() const { return _indexSecondAtom; }

@@ -8,14 +8,15 @@
 #include "app/component/object3d/helper/aabb.hpp"
 #include "app/core/model/base_model.hpp"
 #include "app/id.hpp"
-#include "app/internal/chemdb/category.hpp"
+#include <core/chemdb/category.hpp>
+#include <core/struct/chain.hpp>
 #include <iostream>
 #include <string>
 #include <util/types.hpp>
 
 namespace VTX::App::Component::Chemistry
 {
-	namespace ChemDB = App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	class Chain :
 		public App::Core::Model::BaseModel,
@@ -29,34 +30,32 @@ namespace VTX::App::Component::Chemistry
 		static Util::Color::Rgba getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
 
 	  public:
-		// inline CHAIN_TYPE	getType() const { return _type; }
-		// inline void			setType( const CHAIN_TYPE p_type ) { _type = p_type; }
-		inline uint				getIndex() const { return _index; };
-		inline void				setIndex( const uint p_index ) { _index = p_index; };
+		inline VTX::Core::Struct::Chain &		getChainStruct() { return *_chainStruct; };
+		inline const VTX::Core::Struct::Chain & getChainStruct() const { return *_chainStruct; };
+
+		// inline CHAIN_TYPE	getType() const { return _chainStruct->getType(); }
+		// inline void			setType( const CHAIN_TYPE p_type ) { _chainStruct->setType( p_type ); }
+		inline uint				getIndex() const { return _chainStruct->getIndex(); };
+		inline void				setIndex( const uint p_index ) { _chainStruct->setIndex( p_index ); };
 		inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 		void					setMoleculePtr( Molecule * const p_molecule );
 
-		const std::string & getOriginalChainID() const { return _originalChainID; };
-		void				setOriginalChainID( const std::string & p_chainId ) { _originalChainID = p_chainId; };
+		const std::string & getOriginalChainID() const { return _chainStruct->getOriginalChainID(); };
+		void setOriginalChainID( const std::string & p_chainId ) { _chainStruct->setOriginalChainID( p_chainId ); };
 
-		inline const std::string & getName() const { return _name; };
-		inline void				   setName( const std::string & p_name )
-		{
-			_name = p_name;
-			BaseModel::setDefaultName( &_name );
-		};
-		inline uint getIndexFirstResidue() const { return _indexFirstResidue; };
-		inline void setIndexFirstResidue( const uint p_id ) { _indexFirstResidue = p_id; };
-		inline uint getResidueCount() const { return _residueCount; };
-		void		setResidueCount( const uint p_count );
-		uint		getRealResidueCount() const { return _realResidueCount; };
-		void		removeToResidues( const uint p_residueIndex );
+		inline const std::string & getName() const { return _chainStruct->getName(); };
+		void					   setName( const std::string & p_name );
+		inline uint				   getIndexFirstResidue() const { return _chainStruct->getIndexFirstResidue(); };
+		inline void setIndexFirstResidue( const uint p_id ) { _chainStruct->setIndexFirstResidue( p_id ); };
+		inline uint getResidueCount() const { return _chainStruct->getResidueCount(); };
+		inline void setResidueCount( const uint p_count ) { _chainStruct->setResidueCount( p_count ); }
+		inline uint getRealResidueCount() const { return _chainStruct->getRealResidueCount(); };
+		inline void removeToResidues( const uint p_residueIndex ) { _chainStruct->removeToResidue( p_residueIndex ); }
 
-		uint computeRealAtomCount() const;
+		uint computeRealAtomCount() const { return _chainStruct->computeRealAtomCount(); }
 
-		inline uint getIndexLastResidue() const { return _indexFirstResidue + _residueCount - 1; };
+		inline uint getIndexLastResidue() const { return _chainStruct->getIndexLastResidue(); };
 
-		// Mask BaseVisible::setVisible
 		const ChemDB::Category::TYPE & getCategoryEnum() const { return _categoryEnum; }
 		void						   setCategoryEnum( const ChemDB::Category::TYPE & p_categoryEnum );
 
@@ -75,17 +74,10 @@ namespace VTX::App::Component::Chemistry
 		void _onRepresentationChange() override;
 
 	  private:
-		// CHAIN_TYPE	   _type		= CHAIN_TYPE::STANDARD;
+		VTX::Core::Struct::Chain * _chainStruct = nullptr;
+		Molecule *				   _moleculePtr = nullptr;
+
 		ChemDB::Category::TYPE _categoryEnum = ChemDB::Category::TYPE::UNKNOWN;
-
-		uint		_index			 = 0;
-		Molecule *	_moleculePtr	 = nullptr;
-		std::string _originalChainID = "";
-
-		std::string _name			   = "unknown";
-		uint		_indexFirstResidue = 0;
-		uint		_residueCount	   = 0;
-		uint		_realResidueCount  = 0;
 	};
 
 } // namespace VTX::App::Component::Chemistry

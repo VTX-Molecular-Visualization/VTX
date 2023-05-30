@@ -2,13 +2,13 @@
 #define __VTX_APP_UTIL_SECONDARY_STRUCTURE__
 
 #include "app/component/chemistry/_fwd.hpp"
-#include "app/internal/chemdb/secondary_structure.hpp"
+#include <core/chemdb/secondary_structure.hpp>
 #include <string>
 #include <util/types.hpp>
 
 namespace VTX::Util::App::SecondaryStructure
 {
-	namespace ChemDB = VTX::App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	void computeSecondaryStructure( VTX::App::Component::Chemistry::Molecule & p_molecule );
 	void computeStride( VTX::App::Component::Chemistry::Molecule & p_molecule );

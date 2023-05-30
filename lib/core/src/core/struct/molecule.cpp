@@ -37,11 +37,11 @@ namespace VTX::Core::Struct
 	Chain & Molecule::addChain()
 	{
 		Chain * const chain = new Chain();
-		_addChain( chain );
+		addChain( chain );
 
 		return *chain;
 	};
-	void Molecule::_addChain( Chain * const p_chain )
+	void Molecule::addChain( Chain * const p_chain )
 	{
 		_chains.emplace_back( p_chain );
 		_realChainCount++;
@@ -51,6 +51,7 @@ namespace VTX::Core::Struct
 	{
 		Residue * const residue = new Residue();
 		_residues.emplace_back( residue );
+
 		return *residue;
 	}
 
@@ -58,14 +59,15 @@ namespace VTX::Core::Struct
 	{
 		Atom * const atom = new Atom();
 		_atoms.emplace_back( atom );
+
 		return *atom;
 	}
 
 	Bond & Molecule::addBond()
 	{
 		Bond * const bond = new Bond();
-		bond->setMoleculePtr( this );
 		_bonds.emplace_back( bond );
+
 		return *bond;
 	}
 

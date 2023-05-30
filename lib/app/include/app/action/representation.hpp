@@ -5,7 +5,7 @@
 #include "app/application/representation/representation_library.hpp"
 #include "app/application/representation/representation_preset.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/internal/chemdb/color.hpp"
+#include <core/chemdb/color.hpp>
 #include <string>
 #include <unordered_set>
 
@@ -112,7 +112,7 @@ namespace VTX::App::Action::Representation
 	{
 	  public:
 		explicit ChangeColorMode( App::Application::Representation::RepresentationPreset * const p_representation,
-								  const App::Internal::ChemDB::Color::COLOR_MODE &				 p_colorMode ) :
+								  const VTX::Core::ChemDB::Color::COLOR_MODE &					 p_colorMode ) :
 			_representation( p_representation ),
 			_colorMode( p_colorMode )
 		{
@@ -122,7 +122,7 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const App::Internal::ChemDB::Color::COLOR_MODE				   _colorMode;
+		const VTX::Core::ChemDB::Color::COLOR_MODE					   _colorMode;
 	};
 
 	class ChangeColor : public App::Core::Action::BaseAction
@@ -180,7 +180,7 @@ namespace VTX::App::Action::Representation
 	  public:
 		explicit ChangeCylinderColorBendingMode(
 			App::Application::Representation::RepresentationPreset * const p_representation,
-			const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE &	   p_colorBendingMode ) :
+			const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE &		   p_colorBendingMode ) :
 			_representation( p_representation ),
 			_colorBendingMode( p_colorBendingMode )
 		{
@@ -190,14 +190,14 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE		   _colorBendingMode;
+		const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE			   _colorBendingMode;
 	};
 
 	class ChangeRibbonColorMode : public App::Core::Action::BaseAction
 	{
 	  public:
 		explicit ChangeRibbonColorMode( App::Application::Representation::RepresentationPreset * const p_representation,
-										App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode ) :
+										VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE &	   p_colorMode ) :
 			_representation( p_representation ),
 			_colorMode( p_colorMode )
 		{
@@ -206,8 +206,8 @@ namespace VTX::App::Action::Representation
 		void execute();
 
 	  private:
-		App::Application::Representation::RepresentationPreset * const	   _representation;
-		const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
+		App::Application::Representation::RepresentationPreset * const _representation;
+		const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
 	};
 
 	class ChangeRibbonColorBendingMode : public App::Core::Action::BaseAction
@@ -215,7 +215,7 @@ namespace VTX::App::Action::Representation
 	  public:
 		explicit ChangeRibbonColorBendingMode(
 			App::Application::Representation::RepresentationPreset * const p_representation,
-			const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE &	   p_colorBendingMode ) :
+			const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE &		   p_colorBendingMode ) :
 			_representation( p_representation ),
 			_colorBendingMode( p_colorBendingMode )
 		{
@@ -225,7 +225,7 @@ namespace VTX::App::Action::Representation
 
 	  private:
 		App::Application::Representation::RepresentationPreset * const _representation;
-		const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE		   _colorBendingMode;
+		const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE			   _colorBendingMode;
 	};
 
 	class AddNewPresetInLibrary : public App::Core::Action::BaseAction

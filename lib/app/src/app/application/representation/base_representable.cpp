@@ -186,10 +186,10 @@ namespace VTX::App::Application::Representation
 			{
 				const App::Component::Chemistry::Category * const category
 					= _molecule->getCategoryFromChain( *residue->getChainPtr() );
-				const App::Internal::ChemDB::Category::TYPE categoryEnum = category->getCategoryEnum();
+				const VTX::Core::ChemDB::Category::TYPE categoryEnum = category->getCategoryEnum();
 
-				if ( categoryEnum == App::Internal::ChemDB::Category::TYPE::POLYMER
-					 || categoryEnum == App::Internal::ChemDB::Category::TYPE::CARBOHYDRATE )
+				if ( categoryEnum == VTX::Core::ChemDB::Category::TYPE::POLYMER
+					 || categoryEnum == VTX::Core::ChemDB::Category::TYPE::CARBOHYDRATE )
 				{
 					if ( _molecule->hasSolventExcludedSurface( categoryEnum ) == false )
 					{
@@ -247,7 +247,7 @@ namespace VTX::App::Application::Representation
 
 					const App::Component::Chemistry::Category * const category
 						= _molecule->getCategoryFromChain( *residue->getChainPtr() );
-					const App::Internal::ChemDB::Category::TYPE categoryEnum = category->getCategoryEnum();
+					const VTX::Core::ChemDB::Category::TYPE categoryEnum = category->getCategoryEnum();
 
 					if ( !_molecule->hasSolventExcludedSurface( categoryEnum ) )
 						continue;
@@ -280,12 +280,12 @@ namespace VTX::App::Application::Representation
 			 || molecule->isVisible() == false )
 			return false;
 
-		const App::Internal::ChemDB::Atom::TYPE atomType = p_residue.getAtomType();
+		const VTX::Core::ChemDB::Atom::TYPE atomType = p_residue.getAtomType();
 
-		if ( molecule->showSolvent() == false && atomType == App::Internal::ChemDB::Atom::TYPE::SOLVENT )
+		if ( molecule->showSolvent() == false && atomType == VTX::Core::ChemDB::Atom::TYPE::SOLVENT )
 			return false;
 
-		if ( molecule->showIon() == false && atomType == App::Internal::ChemDB::Atom::TYPE::ION )
+		if ( molecule->showIon() == false && atomType == VTX::Core::ChemDB::Atom::TYPE::ION )
 			return false;
 
 		return true;

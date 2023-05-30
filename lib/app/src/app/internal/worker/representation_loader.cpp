@@ -83,9 +83,9 @@ namespace VTX::App::Internal::Worker
 			_library.setDefaultRepresentation( defaultRepresentationIndex, false );
 		}
 
-		for ( int i = 0; i < int( App::Internal::ChemDB::Category::TYPE::COUNT ); i++ )
+		for ( int i = 0; i < int( VTX::Core::ChemDB::Category::TYPE::COUNT ); i++ )
 		{
-			const App::Internal::ChemDB::Category::TYPE categoryEnum = App::Internal::ChemDB::Category::TYPE( i );
+			const VTX::Core::ChemDB::Category::TYPE categoryEnum = VTX::Core::ChemDB::Category::TYPE( i );
 			const std::string &							representationName
 				= App::VTXApp::get().getSetting().getTmpDefaultRepresentationNamePerCategory( categoryEnum );
 

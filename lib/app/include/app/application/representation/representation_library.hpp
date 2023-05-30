@@ -3,9 +3,9 @@
 
 #include "app/core/event/vtx_event.hpp"
 #include "app/core/model/base_model.hpp"
-#include "app/internal/chemdb/category.hpp"
 #include "app/mvc.hpp"
 #include "representation_preset.hpp"
+#include <core/chemdb/category.hpp>
 #include <string>
 #include <vector>
 
@@ -38,7 +38,7 @@ namespace VTX::App::Application::Representation
 		void				   setDefaultRepresentation( const int p_representationIndex, const bool p_notify = true );
 		int					   getDefaultRepresentationIndex() const;
 		RepresentationPreset * getDefaultRepresentation();
-		RepresentationPreset * getDefaultRepresentation( const App::Internal::ChemDB::Category::TYPE & p_categoryEnum );
+		RepresentationPreset * getDefaultRepresentation( const VTX::Core::ChemDB::Category::TYPE & p_categoryEnum );
 
 		std::string getValidName( const std::string & p_name ) const;
 		bool		isValidName( const std::string & p_name ) const;

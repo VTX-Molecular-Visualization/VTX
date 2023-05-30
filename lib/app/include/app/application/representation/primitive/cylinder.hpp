@@ -1,7 +1,7 @@
 #ifndef __VTX_APP_INTERNAL_REPRESENTATION_PRIMITIVE_CYLINDER__
 #define __VTX_APP_INTERNAL_REPRESENTATION_PRIMITIVE_CYLINDER__
 
-#include "app/internal/chemdb/color.hpp"
+#include <core/chemdb/color.hpp>
 
 namespace VTX::App::Application::Representation::Primitive
 {
@@ -10,8 +10,8 @@ namespace VTX::App::Application::Representation::Primitive
 	  public:
 		Cylinder();
 
-		float											  radius;
-		App::Internal::ChemDB::Color::COLOR_BLENDING_MODE colorBlendingMode;
+		float										  radius;
+		VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE colorBlendingMode;
 	};
 
 } // namespace VTX::App::Application::Representation::Primitive

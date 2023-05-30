@@ -39,8 +39,8 @@ namespace VTX::App::Application::Representation
 		void											 setColor( const Util::Color::Rgba & p_color,
 																   const bool				 p_recomputeBuffers = true,
 																   const bool				 p_notify = true );
-		const App::Internal::ChemDB::Color::COLOR_MODE & getColorMode() const { return _colorMode.getValue(); }
-		void setColorMode( const App::Internal::ChemDB::Color::COLOR_MODE & p_colorMode,
+		const VTX::Core::ChemDB::Color::COLOR_MODE & getColorMode() const { return _colorMode.getValue(); }
+		void setColorMode( const VTX::Core::ChemDB::Color::COLOR_MODE & p_colorMode,
 						   const bool										p_recomputeBuffers = true,
 						   const bool										p_notify		   = true );
 
@@ -57,14 +57,14 @@ namespace VTX::App::Application::Representation
 		const Primitive::Cylinder & getCylinderData() const { return _cylinderData.getValue(); };
 		void						setCylinderRadius( const float p_radius, const bool p_notify = true );
 		void						setCylinderColorBlendingMode(
-								   const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode,
+								   const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode,
 								   const bool												 p_notify = true );
 
 		bool hasToDrawRibbon() const { return _linkedRepresentation->getData().hasToDrawRibbon(); };
 		const Primitive::Ribbon & getRibbonData() const { return _ribbonData.getValue(); };
-		void setRibbonColorMode( const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode,
+		void setRibbonColorMode( const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode,
 								 const bool															  p_notify = true );
-		void setRibbonColorBlendingMode( const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode,
+		void setRibbonColorBlendingMode( const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode,
 										 const bool												   p_notify = true );
 
 		bool				   hasToDrawSES() const { return _linkedRepresentation->getData().hasToDrawSES(); };
@@ -98,7 +98,7 @@ namespace VTX::App::Application::Representation
 		BaseRepresentable * _target = nullptr;
 
 		Generic::OverridableParameter<Util::Color::Rgba>						_color;
-		Generic::OverridableParameter<App::Internal::ChemDB::Color::COLOR_MODE> _colorMode;
+		Generic::OverridableParameter<VTX::Core::ChemDB::Color::COLOR_MODE> _colorMode;
 
 		Generic::OverridableParameter<Primitive::Sphere>   _sphereData;
 		Generic::OverridableParameter<Primitive::Cylinder> _cylinderData;

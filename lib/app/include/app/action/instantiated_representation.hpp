@@ -6,7 +6,7 @@
 #include "app/application/representation/instantiated_representation.hpp"
 #include "app/application/representation/representation_manager.hpp"
 #include "app/core/action/base_action.hpp"
-#include "app/internal/chemdb/color.hpp"
+#include <core/chemdb/color.hpp>
 #include <type_traits>
 #include <unordered_set>
 
@@ -16,7 +16,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 	{
 	  public:
 		explicit ChangeColorMode( App::Application::Representation::InstantiatedRepresentation * const p_representation,
-								  const App::Internal::ChemDB::Color::COLOR_MODE &					   p_colorMode ) :
+								  const VTX::Core::ChemDB::Color::COLOR_MODE &						   p_colorMode ) :
 			_instantiatedRepresentation( p_representation ),
 			_colorMode( p_colorMode )
 		{
@@ -25,7 +25,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 		virtual void execute() override;
 
 	  private:
-		const App::Internal::ChemDB::Color::COLOR_MODE						 _colorMode;
+		const VTX::Core::ChemDB::Color::COLOR_MODE							 _colorMode;
 		App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 
@@ -106,7 +106,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 	  public:
 		explicit ChangeCylindeColorBlendingMode(
 			App::Application::Representation::InstantiatedRepresentation * const p_representation,
-			const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE &								 p_mode ) :
+			const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE &				 p_mode ) :
 			_instantiatedRepresentation( p_representation ),
 			_mode( p_mode )
 		{
@@ -115,7 +115,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 		virtual void execute() override;
 
 	  private:
-		const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE									 _mode;
+		const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE					 _mode;
 		App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 
@@ -124,7 +124,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 	  public:
 		explicit ChangeRibbonColorMode(
 			App::Application::Representation::InstantiatedRepresentation * const p_representation,
-			const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode ) :
+			const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE &	 p_colorMode ) :
 			_instantiatedRepresentation( p_representation ),
 			_colorMode( p_colorMode )
 		{
@@ -133,7 +133,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 		virtual void execute() override;
 
 	  private:
-		const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE	 _colorMode;
+		const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE		 _colorMode;
 		App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 
@@ -142,7 +142,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 	  public:
 		explicit ChangeRibbonColorBlendingMode(
 			App::Application::Representation::InstantiatedRepresentation * const p_representation,
-			const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE &								 p_mode ) :
+			const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE &				 p_mode ) :
 			_instantiatedRepresentation( p_representation ),
 			_mode( p_mode )
 		{
@@ -151,7 +151,7 @@ namespace VTX::App::Action::InstantiatedRepresentation
 		virtual void execute() override;
 
 	  private:
-		const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE									 _mode;
+		const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE					 _mode;
 		App::Application::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
 	};
 } // namespace VTX::App::Action::InstantiatedRepresentation

@@ -20,6 +20,15 @@ namespace VTX::Core::Struct
 			   != std::end( ChemDB::Residue::SYMBOL_STR );
 	}
 
+	bool Residue::isStandardResidue() const
+	{
+		return int( ChemDB::Residue::SYMBOL::ALA ) <= _symbol && _symbol <= int( ChemDB::Residue::SYMBOL::PYL );
+	}
+	bool Residue::isWater() const
+	{
+		return ( _symbol == int( ChemDB::Residue::SYMBOL::WAT ) ) || ( _symbol == int( ChemDB::Residue::SYMBOL::HOH ) );
+	}
+
 	Molecule * const Residue::getMoleculePtr() const { return _chainPtr->getMoleculePtr(); };
 	void			 Residue::setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
 

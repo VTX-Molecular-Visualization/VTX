@@ -3,7 +3,7 @@
 
 #include <util/color/rgba.hpp>
 
-namespace VTX::App::Internal::ChemDB::SecondaryStructure
+namespace VTX::Core::ChemDB::SecondaryStructure
 {
 	enum class TYPE : int
 	{
@@ -26,6 +26,6 @@ namespace VTX::App::Internal::ChemDB::SecondaryStructure
 															Util::Color::Rgba( 1.f, 0.78f, 0.f ),  // STRAND
 															Util::Color::Rgba( 0.37f, 0.5f, 1.f ), // TURN
 															Util::Color::Rgba::WHITE };			   // COIL
-} // namespace VTX::App::Internal::ChemDB::SecondaryStructure
+} // namespace VTX::Core::ChemDB::SecondaryStructure
 
 #endif

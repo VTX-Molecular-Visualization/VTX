@@ -27,6 +27,7 @@ namespace VTX::Core::Struct
 		inline void				   setName( const std::string & p_name ) { _name = p_name; }
 
 		Chain &								addChain();
+		void								addChain( Chain * const p_chain );
 		inline Chain * const				getChain( const uint p_idx ) { return _chains[ p_idx ]; }
 		inline const Chain * const			getChain( const uint p_idx ) const { return _chains[ p_idx ]; }
 		Chain *								getFirstChain();
@@ -131,8 +132,6 @@ namespace VTX::Core::Struct
 		bool mergeTopology( const Molecule & );
 
 	  protected:
-		void _addChain( Chain * const p_chain );
-
 	  private:
 		// Models.
 		std::string						_name						= "unknown";

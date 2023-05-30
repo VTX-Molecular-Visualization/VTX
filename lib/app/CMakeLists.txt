@@ -34,7 +34,7 @@ target_link_libraries(VTX_APP PRIVATE VTX_UTIL)
 
 # Link VTX_CORE.
 add_subdirectory(../core lib/core)
-target_link_libraries(VTX_APP PRIVATE VTX_CORE)
+target_link_libraries(VTX_APP PUBLIC VTX_CORE)
 
 # Link VTX_RENDERER.
 add_subdirectory(../renderer lib/renderer)

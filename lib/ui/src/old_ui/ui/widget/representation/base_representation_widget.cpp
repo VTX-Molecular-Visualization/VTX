@@ -202,16 +202,16 @@ namespace VTX::UI::Widget::Representation
 
 		Util::UI::setDynamicProperty( _colorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, overriden );
 
-		const App::Internal::ChemDB::Color::COLOR_MODE & colorMode = _instantiatedRepresentation->getColorMode();
+		const VTX::Core::ChemDB::Color::COLOR_MODE & colorMode = _instantiatedRepresentation->getColorMode();
 
 		if ( colorMode != _colorModeWidget->getColorMode() )
 			_colorModeWidget->setColorMode( colorMode );
 
-		if ( colorMode == App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM || colorMode == App::Internal::ChemDB::Color::COLOR_MODE::CUSTOM )
+		if ( colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM || colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::CUSTOM )
 		{
 			_colorModeWidget->setColor( _instantiatedRepresentation->getColor() );
 		}
-		else if ( colorMode == App::Internal::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN || colorMode == App::Internal::ChemDB::Color::COLOR_MODE::PROTEIN )
+		else if ( colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN || colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::PROTEIN )
 		{
 			_colorModeWidget->resetState();
 			for ( const App::Application::Representation::BaseRepresentable * const target : _targets )
@@ -223,16 +223,16 @@ namespace VTX::UI::Widget::Representation
 
 	void BaseRepresentationWidget::_addColorModeValue( const InstantiatedRepresentation & p_representation )
 	{
-		std::pair<App::Internal::ChemDB::Color::COLOR_MODE, Util::Color::Rgba> pair = std::pair<App::Internal::ChemDB::Color::COLOR_MODE, Util::Color::Rgba>();
+		std::pair<VTX::Core::ChemDB::Color::COLOR_MODE, Util::Color::Rgba> pair = std::pair<VTX::Core::ChemDB::Color::COLOR_MODE, Util::Color::Rgba>();
 
-		App::Internal::ChemDB::Color::COLOR_MODE colorMode = p_representation.getColorMode();
+		VTX::Core::ChemDB::Color::COLOR_MODE colorMode = p_representation.getColorMode();
 		pair.first					  = colorMode;
 
-		if ( colorMode == App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM || colorMode == App::Internal::ChemDB::Color::COLOR_MODE::CUSTOM )
+		if ( colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM || colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::CUSTOM )
 		{
 			pair.second = p_representation.getColor();
 		}
-		else if ( colorMode == App::Internal::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN || colorMode == App::Internal::ChemDB::Color::COLOR_MODE::PROTEIN )
+		else if ( colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN || colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::PROTEIN )
 		{
 			pair.second = p_representation.getTarget()->getMolecule()->getColor();
 		}
@@ -271,7 +271,7 @@ namespace VTX::UI::Widget::Representation
 	}
 
 	void BaseRepresentationWidget::_onCylinderColorBlendingModeChange(
-		const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendindrMode )
+		const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendindrMode )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -290,7 +290,7 @@ namespace VTX::UI::Widget::Representation
 	}
 
 	void BaseRepresentationWidget::_onRibbonColorModeChange(
-		const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
+		const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -300,7 +300,7 @@ namespace VTX::UI::Widget::Representation
 		emit onDataChange( MEMBER_FLAG::ENUM::RIBBON_COLOR_MODE );
 	}
 
-	void BaseRepresentationWidget::_onRibbonColorBlendingModeChange( const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & p_mode )
+	void BaseRepresentationWidget::_onRibbonColorBlendingModeChange( const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_mode )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -318,7 +318,7 @@ namespace VTX::UI::Widget::Representation
 		emit onColorChange( p_color, false );
 	}
 
-	void BaseRepresentationWidget::_onColorModeChange( const App::Internal::ChemDB::Color::COLOR_MODE & p_colorMode )
+	void BaseRepresentationWidget::_onColorModeChange( const VTX::Core::ChemDB::Color::COLOR_MODE & p_colorMode )
 	{
 		if ( signalsBlocked() )
 			return;

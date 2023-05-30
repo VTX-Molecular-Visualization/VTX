@@ -36,7 +36,7 @@ namespace VTX::Util::App::Molecule
 		return mapLoadedResidueData[ p_residueSymbol ].bondData;
 	}
 
-	VTX::App::Internal::ChemDB::Category::TYPE getResidueCategory( const std::string & p_residueSymbol )
+	VTX::Core::ChemDB::Category::TYPE getResidueCategory( const std::string & p_residueSymbol )
 	{
 		if ( mapLoadedResidueData.find( p_residueSymbol ) == mapLoadedResidueData.end() )
 			loadResidueData( p_residueSymbol );
@@ -256,14 +256,14 @@ namespace VTX::Util::App::Molecule
 		}
 	}
 	void soloCategories( VTX::App::Component::Chemistry::Molecule &						 p_moleculeParent,
-						 const std::vector<VTX::App::Internal::ChemDB::Category::TYPE> & p_categories,
+						 const std::vector<VTX::Core::ChemDB::Category::TYPE> & p_categories,
 						 const bool														 p_refreshMoleculeVisibility )
 	{
 		p_moleculeParent.setVisible( true, false );
 
-		std::vector<VTX::App::Internal::ChemDB::Category::TYPE>::const_iterator itCategoryToSoloize
+		std::vector<VTX::Core::ChemDB::Category::TYPE>::const_iterator itCategoryToSoloize
 			= p_categories.cbegin();
-		VTX::App::Internal::ChemDB::Category::TYPE categoryEnumToSoloize = *itCategoryToSoloize;
+		VTX::Core::ChemDB::Category::TYPE categoryEnumToSoloize = *itCategoryToSoloize;
 
 		for ( VTX::App::Component::Chemistry::Category * const category : p_moleculeParent.getFilledCategories() )
 		{
@@ -273,7 +273,7 @@ namespace VTX::Util::App::Molecule
 				itCategoryToSoloize++;
 
 				categoryEnumToSoloize = itCategoryToSoloize == p_categories.cend()
-											? VTX::App::Internal::ChemDB::Category::TYPE::COUNT
+											? VTX::Core::ChemDB::Category::TYPE::COUNT
 											: *itCategoryToSoloize;
 			}
 			else

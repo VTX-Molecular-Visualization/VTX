@@ -3,7 +3,7 @@
 #include "app/component/chemistry/molecule.hpp"
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/chemistry/secondary_structure.hpp"
-#include "app/internal/chemdb/secondary_structure.hpp"
+#include <core/chemdb/secondary_structure.hpp>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <util/types.hpp>

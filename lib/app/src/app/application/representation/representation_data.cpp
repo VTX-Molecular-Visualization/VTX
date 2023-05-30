@@ -64,9 +64,9 @@ namespace VTX::App::Application::Representation
 
 	const REPRESENTATION_ENUM & RepresentationData::getRepresentationType() const { return _representationType; }
 
-	const App::Internal::ChemDB::Color::COLOR_MODE & RepresentationData::getColorMode() const { return _colorMode; }
+	const VTX::Core::ChemDB::Color::COLOR_MODE & RepresentationData::getColorMode() const { return _colorMode; }
 
-	void RepresentationData::setColorMode( const App::Internal::ChemDB::Color::COLOR_MODE & p_colorMode )
+	void RepresentationData::setColorMode( const VTX::Core::ChemDB::Color::COLOR_MODE & p_colorMode )
 	{
 		_colorMode = p_colorMode;
 		notifyRepresentationDataChange();
@@ -87,7 +87,7 @@ namespace VTX::App::Application::Representation
 		notifyRepresentationDataChange();
 	}
 
-	void RepresentationData::setCylinderColorBlendingMode( const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode )
+	void RepresentationData::setCylinderColorBlendingMode( const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode )
 	{
 		assert( _cylinderData != nullptr );
 
@@ -95,7 +95,7 @@ namespace VTX::App::Application::Representation
 		notifyRepresentationDataChange();
 	}
 
-	void RepresentationData::setRibbonColorMode( const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
+	void RepresentationData::setRibbonColorMode( const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
 	{
 		assert( _ribbonData != nullptr );
 
@@ -103,7 +103,7 @@ namespace VTX::App::Application::Representation
 		notifyRepresentationDataChange();
 	}
 
-	void RepresentationData::setRibbonColorBlendingMode( const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode )
+	void RepresentationData::setRibbonColorBlendingMode( const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendingMode )
 	{
 		assert( _ribbonData != nullptr );
 

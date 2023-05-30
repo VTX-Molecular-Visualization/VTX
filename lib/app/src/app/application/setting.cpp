@@ -10,12 +10,12 @@
 #include "app/event.hpp"
 #include "app/event/global.hpp"
 #include "app/id.hpp"
-#include "app/internal/chemdb/category.hpp"
 #include "app/internal/io/filesystem.hpp"
 #include "app/internal/io/serialization/image_export.hpp"
 #include "app/internal/io/serializer.hpp"
 #include "app/internal/setting/register_map.hpp"
 #include "app/vtx_app.hpp"
+#include <core/chemdb/category.hpp>
 #include <exception>
 #include <string>
 #include <util/types.hpp>
@@ -23,8 +23,8 @@
 namespace VTX::App::Application
 {
 	// UI.
-	const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT
-		= Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE::SHORT;
+	const VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT
+		= VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE::SHORT;
 	const bool Setting::WINDOW_FULLSCREEN_DEFAULT = false;
 
 	// Rendering.
@@ -47,25 +47,28 @@ namespace VTX::App::Application
 	const int											   Setting::REPRESENTATION_DEFAULT_INDEX = 4;
 	const Application::Representation::REPRESENTATION_ENUM Setting::DEFAULT_REPRESENTATION_TYPE
 		= Application::Representation::REPRESENTATION_ENUM::STICK;
-	const std::string				   Setting::NEW_REPRESENTATION_DEFAULT_NAME	  = "New representation";
-	const float						   Setting::ATOMS_RADIUS_DEFAULT			  = 0.4f;
-	const float						   Setting::ATOMS_RADIUS_MIN				  = 0.01f;
-	const float						   Setting::ATOMS_RADIUS_MAX				  = 1.f;
-	const float						   Setting::BONDS_RADIUS_DEFAULT			  = 0.15f;
-	const float						   Setting::BONDS_RADIUS_MIN				  = 0.01f;
-	const float						   Setting::BONDS_RADIUS_MAX				  = 1.f;
-	const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT = App::Internal::ChemDB::Color::COLOR_BLENDING_MODE::HARD;
-	const float						   Setting::ATOMS_RADIUS_ADD_DEFAULT		  = 0.f;
-	const float						   Setting::ATOMS_RADIUS_ADD_MIN			  = -1.f;
-	const float						   Setting::ATOMS_RADIUS_ADD_MAX			  = 1.f;
-	const bool						   Setting::ATOMS_IS_RADIUS_FIXED_DEFAULT	  = true;
-	const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE Setting::SS_COLOR_MODE_DEFAULT
-		= App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
-	const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE Setting::SS_COLOR_BLENDING_MODE_DEFAULT = App::Internal::ChemDB::Color::COLOR_BLENDING_MODE::HARD;
-	const float						   Setting::SES_RESOLUTION_DEFAULT		   = 0.5f;
-	const float						   Setting::SES_RESOLUTION_MIN			   = 0.3f;
-	const float						   Setting::SES_RESOLUTION_MAX			   = 1.f;
-	const App::Internal::ChemDB::Color::COLOR_MODE		   Setting::COLOR_MODE_DEFAULT			   = App::Internal::ChemDB::Color::COLOR_MODE::CHAIN;
+	const std::string									Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
+	const float											Setting::ATOMS_RADIUS_DEFAULT			 = 0.4f;
+	const float											Setting::ATOMS_RADIUS_MIN				 = 0.01f;
+	const float											Setting::ATOMS_RADIUS_MAX				 = 1.f;
+	const float											Setting::BONDS_RADIUS_DEFAULT			 = 0.15f;
+	const float											Setting::BONDS_RADIUS_MIN				 = 0.01f;
+	const float											Setting::BONDS_RADIUS_MAX				 = 1.f;
+	const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE Setting::BONDS_COLOR_BLENDING_MODE_DEFAULT
+		= VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE::HARD;
+	const float													   Setting::ATOMS_RADIUS_ADD_DEFAULT	  = 0.f;
+	const float													   Setting::ATOMS_RADIUS_ADD_MIN		  = -1.f;
+	const float													   Setting::ATOMS_RADIUS_ADD_MAX		  = 1.f;
+	const bool													   Setting::ATOMS_IS_RADIUS_FIXED_DEFAULT = true;
+	const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE Setting::SS_COLOR_MODE_DEFAULT
+		= VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
+	const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE Setting::SS_COLOR_BLENDING_MODE_DEFAULT
+		= VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE::HARD;
+	const float								   Setting::SES_RESOLUTION_DEFAULT = 0.5f;
+	const float								   Setting::SES_RESOLUTION_MIN	   = 0.3f;
+	const float								   Setting::SES_RESOLUTION_MAX	   = 1.f;
+	const VTX::Core::ChemDB::Color::COLOR_MODE Setting::COLOR_MODE_DEFAULT
+		= VTX::Core::ChemDB::Color::COLOR_MODE::CHAIN;
 
 	const std::vector<std::string> Setting::DEFAULT_REPRESENTATION_PER_CATEGORY_NAME = {
 		"Stick", // POLYMER
@@ -564,23 +567,23 @@ namespace VTX::App::Application
 	}
 
 	int Setting::getDefaultRepresentationIndexPerCategory(
-		const Internal::ChemDB::Category::TYPE & p_categoryEnum ) const
+		const VTX::Core::ChemDB::Category::TYPE & p_categoryEnum ) const
 	{
 		return representationPerCategory[ int( p_categoryEnum ) ];
 	}
-	void Setting::setDefaultRepresentationIndexPerCategory( const Internal::ChemDB::Category::TYPE & p_categoryEnum,
+	void Setting::setDefaultRepresentationIndexPerCategory( const VTX::Core::ChemDB::Category::TYPE & p_categoryEnum,
 															const int p_representationDefaultIndex )
 	{
 		representationPerCategory[ int( p_categoryEnum ) ] = p_representationDefaultIndex;
 		_sendDataChangedEvent( PARAMETER::DEFAULT_REPRESENTATION_PER_CATEGORY );
 	}
 	const std::string & Setting::getTmpDefaultRepresentationNamePerCategory(
-		const Internal::ChemDB::Category::TYPE & p_categoryEnum )
+		const VTX::Core::ChemDB::Category::TYPE & p_categoryEnum )
 	{
 		return _tmpRepresentationPerCategory[ int( p_categoryEnum ) ];
 	}
 
-	void Setting::setTmpDefaultRepresentationNamePerCategory( const Internal::ChemDB::Category::TYPE & p_categoryEnum,
+	void Setting::setTmpDefaultRepresentationNamePerCategory( const VTX::Core::ChemDB::Category::TYPE & p_categoryEnum,
 															  const std::string & p_representationDefaultName )
 	{
 		_tmpRepresentationPerCategory[ int( p_categoryEnum ) ] = p_representationDefaultName;
@@ -604,7 +607,7 @@ namespace VTX::App::Application
 		_sendDataChangedEvent( PARAMETER::TRAJECTORY_DEFAULT_PLAY_MODE );
 	}
 
-	void Setting::setSymbolDisplayMode( const Internal::ChemDB::Residue::SYMBOL_DISPLAY_MODE p_symbolDisplayMode )
+	void Setting::setSymbolDisplayMode( const VTX::Core::ChemDB::Residue::SYMBOL_DISPLAY_MODE p_symbolDisplayMode )
 	{
 		symbolDisplayMode = p_symbolDisplayMode;
 		_sendDataChangedEvent( PARAMETER::SYMBOL_DISPLAY_MODE );

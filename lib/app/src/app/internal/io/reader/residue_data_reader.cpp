@@ -25,7 +25,7 @@ namespace VTX::App::Internal::IO::Reader
 		std::string categoryStr;
 		std::getline( stream, categoryStr, '\n' );
 
-		p_residueData.category = App::Internal::ChemDB::Category::TYPE( std::atoi( categoryStr.c_str() ) );
+		p_residueData.category = VTX::Core::ChemDB::Category::TYPE( std::atoi( categoryStr.c_str() ) );
 
 		std::string line;
 		while ( std::getline( stream, line ) )
@@ -42,7 +42,7 @@ namespace VTX::App::Internal::IO::Reader
 
 			std::string orderStr;
 			std::getline( streamLine, orderStr, ',' );
-			bondData.bondOrder = App::Internal::ChemDB::Bond::ORDER( std::stoi( orderStr ) );
+			bondData.bondOrder = VTX::Core::ChemDB::Bond::ORDER( std::stoi( orderStr ) );
 
 			p_residueData.bondData.emplace_back( bondData );
 		}

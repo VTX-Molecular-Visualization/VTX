@@ -4,7 +4,7 @@
 #include <util/color/rgba.hpp>
 #include <string>
 
-namespace VTX::App::Internal::ChemDB::Atom
+namespace VTX::Core::ChemDB::Atom
 {
 	enum class TYPE : int
 	{
@@ -627,6 +627,6 @@ namespace VTX::App::Internal::ChemDB::Atom
 		{ 255, 255, 255 }  // UUO			= 118,
 	};
 
-} // namespace VTX::App::Internal::ChemDB::Atom
+} // namespace VTX::Core::ChemDB::Atom
 
 #endif

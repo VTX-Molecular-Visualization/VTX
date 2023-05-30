@@ -4,7 +4,7 @@
 #include "ui/old_ui/ui/widget_factory.hpp"
 #include "ui/old_ui/util/ui.hpp"
 #include "ui/old_ui/vtx_app.hpp"
-#include <app/internal/chemdb/color.hpp>
+#include <core/chemdb/color.hpp>
 
 namespace VTX::UI::Widget::CustomWidget
 {
@@ -20,7 +20,7 @@ namespace VTX::UI::Widget::CustomWidget
 		Util::UI::filterEventOnWidget( _colorModeComboBox, QEvent::Type::Wheel );
 
 		QStringList colorModeList = QStringList();
-		for ( const std::string colorModeStrings : App::Internal::ChemDB::Color::COLOR_MODE_STRING )
+		for ( const std::string colorModeStrings : VTX::Core::ChemDB::Color::COLOR_MODE_STRING )
 			colorModeList.append( QString::fromStdString( colorModeStrings ) );
 
 		_colorModeComboBox->addItems( colorModeList );
@@ -55,17 +55,17 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void ColorModeFieldWidget::_refresh()
 	{
-		const App::Internal::ChemDB::Color::COLOR_MODE currentColorMode
-			= App::Internal::ChemDB::Color::COLOR_MODE( _colorModeComboBox->currentIndex() );
+		const VTX::Core::ChemDB::Color::COLOR_MODE currentColorMode
+			= VTX::Core::ChemDB::Color::COLOR_MODE( _colorModeComboBox->currentIndex() );
 
-		const bool displayColorSetButton = currentColorMode == App::Internal::ChemDB::Color::COLOR_MODE::PROTEIN
-										   || currentColorMode == App::Internal::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN
-										   || currentColorMode == App::Internal::ChemDB::Color::COLOR_MODE::CUSTOM
-										   || currentColorMode == App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM;
+		const bool displayColorSetButton = currentColorMode == VTX::Core::ChemDB::Color::COLOR_MODE::PROTEIN
+										   || currentColorMode == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN
+										   || currentColorMode == VTX::Core::ChemDB::Color::COLOR_MODE::CUSTOM
+										   || currentColorMode == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM;
 
 		const bool displayColorSettingButton
-			= currentColorMode == App::Internal::ChemDB::Color::COLOR_MODE::CHAIN
-			  || currentColorMode == App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CHAIN;
+			= currentColorMode == VTX::Core::ChemDB::Color::COLOR_MODE::CHAIN
+			  || currentColorMode == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CHAIN;
 
 		if ( displayColorSetButton )
 			_colorSetButton->show();
@@ -79,7 +79,7 @@ namespace VTX::UI::Widget::CustomWidget
 		//	_openColorSettingsButton->hide();
 	}
 
-	void ColorModeFieldWidget::setColorMode( const App::Internal::ChemDB::Color::COLOR_MODE p_colorMode )
+	void ColorModeFieldWidget::setColorMode( const VTX::Core::ChemDB::Color::COLOR_MODE p_colorMode )
 	{
 		_colorMode = p_colorMode;
 		_colorModeComboBox->setCurrentIndex( (int)_colorMode );
@@ -103,7 +103,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void ColorModeFieldWidget::_colorModeChange( int p_index )
 	{
-		const App::Internal::ChemDB::Color::COLOR_MODE colorMode = (App::Internal::ChemDB::Color::COLOR_MODE)p_index;
+		const VTX::Core::ChemDB::Color::COLOR_MODE colorMode = (VTX::Core::ChemDB::Color::COLOR_MODE)p_index;
 		setColorMode( colorMode );
 	}
 	void ColorModeFieldWidget::_applyColor( const Util::Color::Rgba & p_color )
@@ -115,22 +115,22 @@ namespace VTX::UI::Widget::CustomWidget
 	void ColorModeFieldWidget::localize() {};
 
 	bool ColorModeFieldWidget::_hasToDisplayColorButton(
-		const App::Internal::ChemDB::Color::COLOR_MODE & p_colorMode ) const
+		const VTX::Core::ChemDB::Color::COLOR_MODE & p_colorMode ) const
 	{
-		return p_colorMode == App::Internal::ChemDB::Color::COLOR_MODE::PROTEIN
-			   || p_colorMode == App::Internal::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN
-			   || p_colorMode == App::Internal::ChemDB::Color::COLOR_MODE::CUSTOM
-			   || p_colorMode == App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM;
+		return p_colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::PROTEIN
+			   || p_colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_PROTEIN
+			   || p_colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::CUSTOM
+			   || p_colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CUSTOM;
 	}
 	bool ColorModeFieldWidget::_hasToDisplaySettingButton(
-		const App::Internal::ChemDB::Color::COLOR_MODE & p_colorMode ) const
+		const VTX::Core::ChemDB::Color::COLOR_MODE & p_colorMode ) const
 	{
-		return p_colorMode == App::Internal::ChemDB::Color::COLOR_MODE::CHAIN
-			   || p_colorMode == App::Internal::ChemDB::Color::COLOR_MODE::ATOM_CHAIN;
+		return p_colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::CHAIN
+			   || p_colorMode == VTX::Core::ChemDB::Color::COLOR_MODE::ATOM_CHAIN;
 	}
 
 	void ColorModeFieldWidget::updateWithNewValue(
-		const std::pair<App::Internal::ChemDB::Color::COLOR_MODE, Util::Color::Rgba> & p_value )
+		const std::pair<VTX::Core::ChemDB::Color::COLOR_MODE, Util::Color::Rgba> & p_value )
 	{
 		_colorModeComboBox->updateWithNewValue( int( p_value.first ) );
 		_colorSetButton->updateWithNewValue( p_value.second );

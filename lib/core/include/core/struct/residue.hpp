@@ -21,15 +21,8 @@ namespace VTX::Core::Struct
 
 		Residue() {}
 
-		inline bool isStandardResidue() const
-		{
-			return int( ChemDB::Residue::SYMBOL::ALA ) <= _symbol && _symbol <= int( ChemDB::Residue::SYMBOL::PYL );
-		}
-		inline bool isWater() const
-		{
-			return ( _symbol == int( ChemDB::Residue::SYMBOL::WAT ) )
-				   || ( _symbol == int( ChemDB::Residue::SYMBOL::HOH ) );
-		}
+		bool isStandardResidue() const;
+		bool isWater() const;
 
 		inline ChemDB::Residue::TYPE getType() const { return _type; }
 		inline void					 setType( const ChemDB::Residue::TYPE p_type ) { _type = p_type; }

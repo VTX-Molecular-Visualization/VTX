@@ -5,7 +5,7 @@
 #include <util/color/rgba.hpp>
 #include <vector>
 
-namespace VTX::App::Internal::ChemDB::Color
+namespace VTX::Core::ChemDB::Color
 {
 	enum class COLOR_MODE : int
 	{
@@ -40,6 +40,6 @@ namespace VTX::App::Internal::ChemDB::Color
 																						 "Chain",
 																						 "Residue",
 																						 "Custom" };
-} // namespace VTX::App::Internal::ChemDB::Color
+} // namespace VTX::Core::ChemDB::Color
 
 #endif

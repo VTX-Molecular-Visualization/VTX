@@ -9,7 +9,7 @@
 #include <app/application/selection/selection.hpp>
 #include <app/application/selection/selection_manager.hpp>
 #include <app/event/global.hpp>
-#include <app/internal/chemdb/category.hpp>
+#include <core/chemdb/category.hpp>
 #include <app/mvc.hpp>
 #include <util/logger.hpp>
 
@@ -112,7 +112,7 @@ namespace VTX::UI::Widget::Sequence
 		else
 		{
 			txt = _model->getDisplayName() + Style::SEQUENCE_CHAIN_NAME_SEPARATOR + p_currentChainDisplayed->getName()
-				  + "-" + App::Internal::ChemDB::Category::TYPE_STR[ int( p_currentChainDisplayed->getCategoryEnum() ) ]
+				  + "-" + VTX::Core::ChemDB::Category::TYPE_STR[ int( p_currentChainDisplayed->getCategoryEnum() ) ]
 				  + Style::SEQUENCE_CHAIN_NAME_SEPARATOR;
 		}
 
@@ -157,7 +157,7 @@ namespace VTX::UI::Widget::Sequence
 			chainNameWidget->setFont( Style::SEQUENCE_DISPLAY_FONT() );
 			chainNameWidget->setText(
 				QString::fromStdString( Style::SEQUENCE_CHAIN_NAME_SEPARATOR + chain->getName() + "-"
-										+ App::Internal::ChemDB::Category::TYPE_STR[ int( chain->getCategoryEnum() ) ]
+										+ VTX::Core::ChemDB::Category::TYPE_STR[ int( chain->getCategoryEnum() ) ]
 										+ Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
 			_chainLabelWidgets.emplace_back( chainNameWidget );
 

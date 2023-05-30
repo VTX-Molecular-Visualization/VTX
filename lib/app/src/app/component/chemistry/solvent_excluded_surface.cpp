@@ -8,11 +8,11 @@
 #include "app/component/chemistry/residue.hpp"
 #include "app/component/object3d/helper/aabb.hpp"
 #include "app/internal/algorithm/marching_cube.hpp"
-#include "app/internal/chemdb/atom.hpp"
 #include "app/render/view/triangle.hpp"
 #include "app/render/worker/gpu_buffer_initializer.hpp"
 #include "app/render/worker/gpu_computer.hpp"
 #include "app/worker.hpp"
+#include <core/chemdb/atom.hpp>
 #include <numeric>
 #include <util/chrono.hpp>
 
@@ -22,7 +22,7 @@
 
 namespace VTX::App::Component::Chemistry
 {
-	namespace ChemDB = VTX::App::Internal::ChemDB;
+	namespace ChemDB = VTX::Core::ChemDB;
 
 	SolventExcludedSurface::SolventExcludedSurface( const Category * const p_category ) :
 		MeshTriangle(), _category( p_category )

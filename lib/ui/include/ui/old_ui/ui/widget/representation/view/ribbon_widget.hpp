@@ -21,8 +21,8 @@ namespace VTX::UI::Widget::Representation::View
 
 	  signals:
 		void onColorChange( const Util::Color::Rgba & p_color );
-		void onColorModeChange( const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode );
-		void onColorBlendingModeChange( const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & p_newMode );
+		void onColorModeChange( const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode );
+		void onColorBlendingModeChange( const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_newMode );
 
 	  protected:
 		RibbonWidget( QWidget * p_parent = nullptr ) : BaseRepresentationViewWidget( p_parent ) {}
@@ -37,7 +37,7 @@ namespace VTX::UI::Widget::Representation::View
 		CustomWidget::QComboBoxMultiField *		   _colorBlendingModeWidget = nullptr;
 
 		void _onColorChange( const Util::Color::Rgba & p_color );
-		void _onColorModeChange( const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode );
+		void _onColorModeChange( const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_newMode );
 		void _onColorBlendingModeChange( const int p_newMode );
 	};
 } // namespace VTX::UI::Widget::Representation::View

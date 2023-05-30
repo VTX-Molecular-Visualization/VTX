@@ -66,12 +66,12 @@ namespace VTX::UI::Widget::Representation
 		virtual void _onSphereRadiusChange( const float p_newRadius );
 		virtual void _onSphereRadiusOffsetChange( const float p_newRadius );
 		virtual void _onCylinderRadiusChange( const float p_newRadius );
-		virtual void _onCylinderColorBlendingModeChange( const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendindrMode );
+		virtual void _onCylinderColorBlendingModeChange( const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendindrMode );
 		virtual void _onRibbonColorChange( const Util::Color::Rgba & p_color );
-		virtual void _onRibbonColorModeChange( const App::Internal::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
-		virtual void _onRibbonColorBlendingModeChange( const App::Internal::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendindrMode );
+		virtual void _onRibbonColorModeChange( const VTX::Core::ChemDB::Color::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
+		virtual void _onRibbonColorBlendingModeChange( const VTX::Core::ChemDB::Color::COLOR_BLENDING_MODE & p_colorBlendindrMode );
 		virtual void _onColorChange( const Util::Color::Rgba & p_color );
-		virtual void _onColorModeChange( const App::Internal::ChemDB::Color::COLOR_MODE & p_colorMode );
+		virtual void _onColorModeChange( const VTX::Core::ChemDB::Color::COLOR_MODE & p_colorMode );
 
 		Representation::View::SphereWidget *   _sphereWidget   = nullptr;
 		Representation::View::CylinderWidget * _cylinderWidget = nullptr;
